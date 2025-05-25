@@ -243,11 +243,12 @@ export const CrowniclesIcons: {
 	},
 	events: {
 		1: {
-			cutTree: "🪓",
+			chopTree: "🪓",
+			climbOver: "🧗",
+			findPath: "🗺️",
 			end: {
 				0: "🪓"
-			},
-			otherWay: "🚶"
+			}
 		},
 		10: {
 			end: {
@@ -942,13 +943,6 @@ export const CrowniclesIcons: {
 			ask: "❓",
 			stepAside: "👋",
 			help: "🤝"
-		},
-		100: {
-			end: {
-				0: "👀"
-			},
-			cutTree: "🐐",
-			otherWay: "🏃‍♂️"
 		},
 		8: {
 			end: {
