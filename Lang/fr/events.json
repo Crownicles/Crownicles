@@ -2803,5 +2803,30 @@
       }
     },
     "text": "Au milieu d'un champ, vous rencontrez un paysan. Ce dernier a perdu sa fourche..."
+  },
+  "100": {
+    "possibilities": {
+      "cutTree": {
+        "outcomes": {
+          "0": "plus que 100",
+          "1": "plus que 50",
+          "2": "moins que 50",
+          "3": "sans check"
+        },
+        "text": "test 1"
+      },
+      "otherWay": {
+        "outcomes": {
+          "0": "fujiezhfuoizehjufoiezhouifhzeuoihfzuoe"
+        },
+        "text": "dazfzefgzefzefze"
+      },
+      "end": {
+        "outcomes": {
+          "0": "woa truc de ouf"
+        }
+      }
+    },
+    "text": "ceci est un test de code pour les possibilités d'événements. Il n'y a pas de sens à cette histoire, mais il faut que ça fonctionne correctement."
   }
 }

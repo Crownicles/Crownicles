@@ -943,6 +943,13 @@ export const CrowniclesIcons: {
 			stepAside: "👋",
 			help: "🤝"
 		},
+		100: {
+			end: {
+				0: "👀"
+			},
+			cutTree: "🐐",
+			otherWay: "🏃‍♂️"
+		},
 		8: {
 			end: {
 				0: "🚶"
