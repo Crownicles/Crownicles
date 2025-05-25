@@ -218,7 +218,7 @@ async function doPossibility(
 		return;
 	}
 
-	const validOutcomes = getValidOutcomesForPlayer(possibility[1].outcomes, player);
+	const validOutcomes = await getValidOutcomesForPlayer(possibility[1].outcomes, player);
 	const randomOutcome = RandomUtils.draftbotRandom.pick(validOutcomes);
 
 	crowniclesInstance.logsDatabase.logBigEvent(player.keycloakId, event.id, possibility[0], randomOutcome[0])
