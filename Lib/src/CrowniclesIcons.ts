@@ -376,9 +376,10 @@ export const CrowniclesIcons: {
 	},
 	events: {
 		1: {
-			cutTree: "🪓",
-			end: { 0: "🪓" },
-			otherWay: "🚶"
+			chopTree: "🪓",
+			climbOver: "🧗",
+			findPath: "🗺️",
+			end: { 0: "🪓" }
 		},
 		10: {
 			end: { 0: "🚶" },
@@ -1013,13 +1014,6 @@ export const CrowniclesIcons: {
 			ask: "❓",
 			stepAside: "👋",
 			help: "🤝"
-		},
-		100: {
-			end: {
-				0: "👀"
-			},
-			cutTree: "🐐",
-			otherWay: "🏃‍♂️"
 		},
 		8: {
 			end: { 0: "🚶" },
@@ -2139,9 +2133,7 @@ export const CrowniclesIcons: {
 		contribute: "💰",
 		refuse: "🚶"
 	},
-	infoFightSmallEvent: {
-		showHandednessInfo: "✋"
-	},
+	infoFightSmallEvent: { showHandednessInfo: "✋" },
 	fightCommand: {
 		accept: "🔍",
 		aiThinking: "🧠",
@@ -2752,9 +2744,7 @@ export const CrowniclesIcons: {
 		"8️⃣",
 		"9️⃣"
 	],
-	profile: {
-		displayAllBadgeEmote: "🎖️"
-	},
+	profile: { displayAllBadgeEmote: "🎖️" },
 	fightHistory: {
 		won: "🟢",
 		lost: "🔴",
