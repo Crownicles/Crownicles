@@ -8,34 +8,34 @@
               "min": 100
             }
           }
-        },
-        "1": {
-          "requirements": {
-            "level": {
-              "min": 50
-            }
+        }
+      },
+      "1": {
+        "requirements": {
+          "level": {
+            "min": 50
           }
-        },
-        "2": {
-          "requirements": {
-            "level": {
-              "max": 50
-            }
+        }
+      },
+      "2": {
+        "requirements": {
+          "level": {
+            "max": 50
           }
-        },
-        "3": {
-          "requirements": {
-            "level": {
-              "min": 100
-            }
+        }
+      },
+      "3": {
+        "requirements": {
+          "level": {
+            "min": 100
           }
         }
       }
-    },
-    "otherWay": {
-      "outcomes": {
-        "0": {
-        }
+    }
+  },
+  "otherWay": {
+    "outcomes": {
+      "0": {
       }
     },
     "end": {
