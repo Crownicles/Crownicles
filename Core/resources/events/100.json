@@ -1,0 +1,52 @@
+{
+  "possibilities": {
+    "cutTree": {
+      "outcomes": {
+        "0": {
+          "requirements": {
+            "level": {
+              "min": 100
+            }
+          }
+        }
+      },
+      "1": {
+        "requirements": {
+          "level": {
+            "min": 50
+          }
+        }
+      },
+      "2": {
+        "requirements": {
+          "level": {
+            "max": 50
+          }
+        }
+      },
+      "3": {
+        "requirements": {
+          "level": {
+            "min": 100
+          }
+        }
+      }
+    }
+  },
+  "otherWay": {
+    "outcomes": {
+      "0": {
+      }
+    },
+    "end": {
+      "outcomes": {
+        "0": {}
+      }
+    }
+  },
+  "triggers": [
+    {
+      "mapId": 24
+    }
+  ]
+}
