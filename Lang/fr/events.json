@@ -1,26 +1,40 @@
 {
   "1": {
     "possibilities": {
-      "cutTree": {
+      "chopTree": {
         "outcomes": {
-          "0": "Couper cet arbre aura pris 30 minutes !"
+          "0": "Après de longs efforts, vous parvenez à couper l'arbre avec vos outils de fortune. Les copeaux de bois sentent bon la résine, et vous dégagez enfin le passage. Votre persévérance a payé !",
+          "1": "En coupant l'arbre, vous découvrez qu'il était creux et abritait une petite cache laissée par un autre voyageur. Vous y trouvez un objet qui vous sera utile pour votre périple.",
+          "2": "L'arbre est plus coriace que prévu. Vos efforts acharnés finissent par porter leurs fruits, mais vous vous êtes épuisé dans l'opération. Il faudra vous reposer avant de continuer.",
+          "3": "Vous décidez d'utiliser votre arme pour couper l'arbre mais la lame n'est pas assez aiguisée. Après plusieurs tentatives infructueuses, vous finissez par abandonner et vous reposez un moment pour reprendre des forces.",
+          "4": "Vous décidez d'utiliser votre arme pour couper l'arbre, cette dernière ne fait qu'une bouchée de l'arbre ! L'obstacle est rapidement dégagé et vous reprenez votre aventure."
         },
-        "text": "Couper l'arbre et continuer."
+        "text": "Couper l'arbre pour dégager le passage."
+      },
+      "climbOver": {
+        "outcomes": {
+          "0": "Avec agilité, vous escaladez le tronc imposant. La vue depuis le sommet de l'arbre vous permet d'apercevoir la suite du sentier au loin.",
+          "1": "Vous grimpez prudemment sur l'arbre. En redescendant de l'autre côté, vous glissez sur l'écorce humide et vous égratignez les mains, mais rien de grave.",
+          "2": "Votre tentative d'escalade se solde par une chute douloureuse. Vous vous relevez tant bien que mal, meurtri mais déterminé à continuer."
+        },
+        "text": "Escalader le tronc pour passer par-dessus."
+      },
+      "findPath": {
+        "outcomes": {
+          "0": "En explorant les alentours, vous découvrez un ancien sentier de bûcherons qui contourne l'obstacle. Ce chemin discret vous mène rapidement de l'autre côté.",
+          "1": "Vous trouvez un passage entre les racines de l'arbre déraciné. C'est étroit, mais vous parvenez à vous faufiler sans trop de difficultés.",
+          "2": "Votre recherche d'un chemin alternatif vous égare dans les fourrés. Après avoir tourné en rond, vous finissez par retrouver le sentier principal, mais vous avez perdu un temps précieux.",
+          "3": "En cherchant un passage, vous vous enfoncez dans les sous-bois où des ronces vous griffent et ralentissent votre progression. Vous décidez de les contourner également et vous rendez rapidement compte que vous n'êtes plus capable de retrouver votre chemin. Perdu, il vous faudra du temps pour retrouver le sentier principal."
+        },
+        "text": "Chercher un chemin pour contourner l'obstacle."
       },
       "end": {
         "outcomes": {
-          "0": "L'arbre a bien été coupé et la route est dégagée, mais malheureusement, des pillards ont volé quasiment tout ce que vous aviez récolté depuis votre dernier voyage !"
+          "0": "Découragé par l'obstacle et l'atmosphère sinistre de la Forêt Du Vieillard, vous décidez d'établir un campement temporaire. Très vite, vous entendez des bruits suspects dans les fourrés. Vous regardez autour de vous et découvrez que votre sac a été fouillé et plusieurs objets de valeur ont disparu."
         }
-      },
-      "otherWay": {
-        "outcomes": {
-          "0": "Passer par un autre chemin semblait être une bonne solution, vous n'avez pas perdu de temps !",
-          "1": "Passer par un autre chemin semblait être une bonne solution, mais malheureusement, vous vous êtes blessé en marchant."
-        },
-        "text": "Passer par un autre chemin."
       }
     },
-    "text": "Un arbre est tombé sur le chemin et bloque le passage !"
+    "text": "Dans la pénombre de la Forêt Du Vieillard, vous progressez prudemment sur le sentier sinueux quand votre route est soudainement bloquée par un énorme chêne déraciné. L'arbre ancestral, dont le tronc fait bien deux mètres de diamètre, barre complètement le passage. Ses branches emmêlées forment un véritable mur végétal, et ses racines imposantes, encore chargées de terre, témoignent de la violence de sa chute récente. L'air sent l'humus et la sève fraîche..."
   },
   "10": {
     "possibilities": {
@@ -2803,30 +2817,5 @@
       }
     },
     "text": "Au milieu d'un champ, vous rencontrez un paysan. Ce dernier a perdu sa fourche..."
-  },
-  "100": {
-    "possibilities": {
-      "cutTree": {
-        "outcomes": {
-          "0": "plus que 100",
-          "1": "plus que 50",
-          "2": "moins que 50",
-          "3": "sans check"
-        },
-        "text": "test 1"
-      },
-      "otherWay": {
-        "outcomes": {
-          "0": "fujiezhfuoizehjufoiezhouifhzeuoihfzuoe"
-        },
-        "text": "dazfzefgzefzefze"
-      },
-      "end": {
-        "outcomes": {
-          "0": "woa truc de ouf"
-        }
-      }
-    },
-    "text": "ceci est un test de code pour les possibilités d'événements. Il n'y a pas de sens à cette histoire, mais il faut que ça fonctionne correctement."
   }
 }
