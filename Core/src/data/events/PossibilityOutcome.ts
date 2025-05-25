@@ -495,7 +495,6 @@ export async function getValidOutcomesForPlayer(
 	player: Player
 ): Promise<[string, PossibilityOutcome][]> {
 	const playerActiveObjects: PlayerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
-
 	return Object.entries(outcomes).filter(([_, outcome]) =>
 		isOutcomeValidForPlayer(outcome, player, playerActiveObjects));
 }
