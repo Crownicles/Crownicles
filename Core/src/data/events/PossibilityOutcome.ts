@@ -267,6 +267,36 @@ export async function applyPossibilityOutcome(possibilityOutcome: ApplyOutcome, 
 
 export interface PossibilityOutcome {
 
+	requirements?: {
+		level: {
+			min?: number;
+			max?: number;
+		};
+		health?: {
+			min?: number;
+			max?: number;
+		};
+		defense?: {
+			min?: number;
+			max?: number;
+		};
+		attack?: {
+			min?: number;
+			max?: number;
+		};
+		speed?: {
+			min?: number;
+			max?: number;
+		};
+		campaignCurrentMissionId?: number;
+		petTypeId?: number;
+		petRarity?: {
+			min?: number;
+			max?: number;
+		};
+		validClassIds?: number[];
+	};
+
 	/**
 	 * Time lost for the lost time effect
 	 */
