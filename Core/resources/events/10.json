@@ -1,48 +1,157 @@
 {
   "possibilities": {
-    "end": {
-      "outcomes": {
-        "0": {}
-      }
-    },
     "help": {
       "outcomes": {
-        "0": {},
+        "0": {
+          "money": 50,
+          "karma": 2
+        },
         "1": {
-          "effect": "occupied",
-          "lostTime": 30,
-          "randomItem": {}
+          "requirements": {
+            "level": {
+              "min": 30
+            }
+          },
+          "randomItem": {},
+          "karma": 8
         },
         "2": {
-          "effect": "occupied",
-          "lostTime": 30,
-          "money": 234
+          "money": 25,
+          "karma": 7
         },
         "3": {
-          "effect": "confounded",
-          "health": -10
+          "requirements": {
+            "attack": {
+              "max": 250
+            }
+          },
+          "health": -15,
+          "effect": "hurt"
+        },
+        "4": {
+          "karma": 3
+        }
+      }
+    },
+    "advice": {
+      "outcomes": {
+        "0": {
+          "requirements": {
+            "level": {
+              "min": 80
+            }
+          },
+          "money": 40,
+          "karma": 3
+        },
+        "1": {
+          "karma": 1
+        },
+        "2": {},
+        "3": {
+          "karma": 1
+        },
+        "4": {
+          "requirements": {
+            "karma": {
+              "max": -10
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 3,
+          "karma": -1
         }
       }
     },
     "push": {
       "outcomes": {
         "0": {
-          "money": -500,
-          "tags": [
-            "moneyUsage"
-          ]
+          "requirements": {
+            "karma": {
+              "min": -5
+            }
+          },
+          "money": -100,
+          "health": -10,
+          "karma": -15,
+          "effect": "occupied",
+          "lostTime": 30
+        },
+        "1": {
+          "requirements": {
+            "karma": {
+              "min": 0
+            }
+          },
+          "money": -200,
+          "health": -15,
+          "karma": -25,
+          "effect": "hurt"
+        },
+        "2": {
+          "requirements": {
+            "karma": {
+              "max": 0
+            }
+          },
+          "money": -150,
+          "randomItem": {},
+          "karma": -45,
+          "effect": "occupied",
+          "lostTime": 10
+        },
+        "3": {
+          "health": -20,
+          "karma": -35,
+          "effect": "hurt"
+        },
+        "4": {
+          "requirements": {
+            "speed": {
+              "min": 50,
+              "max": 300
+            }
+          },
+          "health": -25,
+          "karma": -17,
+          "effect": "freezing"
+        },
+        "5": {
+          "requirements": {
+            "karma": {
+              "min": 0
+            }
+          },
+          "money": -300,
+          "karma": -30,
+          "effect": "occupied",
+          "lostTime": 45
         }
       }
     },
     "skip": {
       "outcomes": {
-        "0": {}
+        "0": {
+          "karma": -2
+        },
+        "1": {
+          "karma": -3
+        }
+      }
+    },
+    "end": {
+      "outcomes": {
+        "0": {
+          "effect": "occupied",
+          "lostTime": 45,
+          "karma": -1
+        }
       }
     }
   },
   "triggers": [
     {
-      "mapId": 14
+      "mapId": 18
     }
   ]
 }
