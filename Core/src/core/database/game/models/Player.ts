@@ -2101,6 +2101,10 @@ export function initModel(sequelize: Sequelize): void {
 			type: DataTypes.INTEGER,
 			defaultValue: EntityConstants.DEFAULT_VALUES.HEALTH
 		},
+		karma: {
+			type: DataTypes.INTEGER,
+			defaultValue: EntityConstants.DEFAULT_VALUES.KARMA
+		},
 		fightPointsLost: {
 			type: DataTypes.INTEGER,
 			defaultValue: EntityConstants.DEFAULT_VALUES.FIGHT_POINTS_LOST

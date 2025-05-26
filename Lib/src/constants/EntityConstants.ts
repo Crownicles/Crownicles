@@ -4,6 +4,7 @@ export abstract class EntityConstants {
 		ATTACK: 50,
 		DEFENSE: 20,
 		SPEED: 10,
-		FIGHT_POINTS_LOST: 0
+		FIGHT_POINTS_LOST: 0,
+		KARMA: 0
 	};
 }
