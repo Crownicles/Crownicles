@@ -137,6 +137,8 @@ export class Player extends Model {
 
 	declare banned: boolean;
 
+	declare karma: number;
+
 	declare updatedAt: Date;
 
 	declare createdAt: Date;
@@ -907,6 +909,28 @@ export class Player extends Model {
 	public async setRage(rage: number, reason: NumberChangeReason): Promise<void> {
 		this.rage = rage;
 		crowniclesInstance.logsDatabase.logRageChange(this.keycloakId, this.rage, reason)
+			.then();
+		await this.save();
+	}
+
+	/**
+	 * Add karma to the player
+	 * @param karmas
+	 * @param reason
+	 * @param _response
+	 */
+	public async addKarma(karmas: number, _response: DraftBotPacket[], reason: NumberChangeReason): Promise<void> {
+		await this.setKarma(this.karma + karmas, reason);
+	}
+
+	/**
+	 * Set the karma of the player to a specific value
+	 * @param karmas
+	 * @param reason
+	 */
+	public async setKarma(karmas: number, reason: NumberChangeReason): Promise<void> {
+		this.karma = karmas;
+		draftBotInstance.logsDatabase.logKarmaChange(this.keycloakId, this.karma, reason)
 			.then();
 		await this.save();
 	}
