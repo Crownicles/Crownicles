@@ -384,6 +384,7 @@ export const CrowniclesIcons: {
 		10: {
 			end: { 0: "🚶" },
 			help: "🎣",
+			advice: "🗣️",
 			push: "🖐️",
 			skip: "🏃"
 		},
