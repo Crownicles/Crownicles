@@ -103,6 +103,7 @@ import { LogsCommandOrigins } from "./models/LogsCommandOrigins";
 import { LogsCommandSubOrigins } from "./models/LogsCommandSubOrigins";
 import { ReactionCollectorReactPacket } from "../../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { LogsPlayersTeleportations } from "./models/LogsPlayersTeleportations";
+import { LogsPlayersKarma } from "./models/LogsPlayersKarma";
 
 /**
  * This class is used to log all the changes in the game database
@@ -335,6 +336,16 @@ export class LogsDatabase extends Database {
 	 */
 	public logMoneyChange(keycloakId: string, value: number, reason: NumberChangeReason): Promise<void> {
 		return LogsDatabase.logNumberChange(keycloakId, value, reason, LogsPlayersMoney);
+	}
+
+	/**
+	 * Log a player's karma change
+	 * @param keycloakId
+	 * @param value
+	 * @param reason
+	 */
+	public logKarmaChange(keycloakId: string, value: number, reason: NumberChangeReason): Promise<void> {
+		return LogsDatabase.logNumberChange(keycloakId, value, reason, LogsPlayersKarma);
 	}
 
 	/**
