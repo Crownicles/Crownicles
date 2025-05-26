@@ -38,34 +38,51 @@
   },
   "10": {
     "possibilities": {
-      "end": {
-        "outcomes": {
-          "0": "Vous finissez par passer votre chemin sans prêter plus d'attention à cette situation somme toute assez banale !"
-        }
-      },
       "help": {
         "outcomes": {
-          "0": "L'homme refuse gentiment votre aide, vous poursuivez votre route.",
-          "1": "Grâce à vous, l'homme attrape un superbe poisson de 3 kg ! Pour vous remercier, il vous offre quelque chose qui pourrait vous être utile...",
-          "2": "Vous aidez l'homme à attraper une superbe prise de plus d'un kilo ! Le pêcheur vous offre quelques pièces pour vous remercier.",
-          "3": "Le poisson au bout de la ligne devait vraiment être énorme ! Vous vous retrouvez rapidement emporté au fond de l'eau ! Vous êtes sauvé juste à temps par le pêcheur. Tout étourdi après cette aventure, il faudra vous soigner !"
+          "0": "Malgré vos efforts conjugués, le courant puissant de la Rivière Vacarme emporte la ligne. Le pêcheur vous remercie chaleureusement pour votre tentative et partage quelques pièces de monnaie qu'il avait dans sa poche.",
+          "1": "Ensemble, vous parvenez à remonter une prise exceptionnelle ! Le vieux pêcheur, ravi de ce succès inattendu, vous offre un objet précieux qu'il gardait depuis des années en guise de porte-bonheur.",
+          "2": "Votre aide permet au pêcheur de capturer un poisson de belle taille. Reconnaissant, il vous donne quelques pièces et vous met en garde contre les zones les plus dangereuses de la rivière.",
+          "3": "Le poisson que vous tentez d'aider à remonter s'avère être d'une force redoutable ! Vous glissez sur les rochers humides et tombez dans les eaux tumultueuses. Le pêcheur vous repêche in extremis, mais vous êtes sonnés et trempés jusqu'aux os.",
+          "4": "En unissant vos forces, vous réussissez à sortir de l'eau une vieille botte remplie de vase. Le pêcheur éclate de rire devant cette 'prise' et vous laisse repartir en vous remerciant de vos efforts."
         },
-        "text": "Proposer son aide."
+        "text": "Prêter main-forte au pêcheur en difficulté."
+      },
+      "advice": {
+        "outcomes": {
+          "0": "Vos conseils avisés permettent au pêcheur de changer de technique. Il attrape rapidement un beau poisson et vous remercie avec quelques pièces qui traînaient au fond de ses poches.",
+          "1": "Le pêcheur suit vos recommandations mais sans succès. Il apprécie néanmoins votre bienveillance. Vous repartez avec un léger sourire, heureux d'avoir tenté d'aider.",
+          "2": "Vous tentez de donner des conseils au pêcheur, mais il vous ignore complètement, trop concentré sur sa tâche. Vous finissez par vous lasser et décidez de continuer votre route.",
+          "3": "Le pêcheur, amusé par vos tentatives de conseils, vous écoute poliment mais ne change pas sa technique. Il finit par attraper un poisson malgré tout et vous offre un sourire en guise de remerciement.",
+          "4": "Il semblerait que votre mauvaise réputation vous ai précédé ! Le pêcheur vous regarde d'un air méfiant et refuse vos conseils, vous demandant de partir immédiatement. Déçu, car pour une fois vous étiez animé de bonnes intentions, vous reprenez votre route."
+        },
+        "text": "Donner des conseils depuis la berge."
       },
       "push": {
         "outcomes": {
-          "0": "Mais pourquoi avoir fait cela ? {emote:other.why} Pris de remords, vous secourez le pauvre homme et lui offrez quelques pièces pour vous faire pardonner."
+          "0": "Votre geste impulsif pousse le pêcheur dans les eaux tumultueuses ! Horrifié par votre propre action, vous plongez immédiatement pour le secourir. Vous parvenez à le ramener sur la berge après une lutte épuisante contre le courant. Le vieil homme, choqué mais reconnaissant d'être en vie, accepte vos excuses et quelques pièces de dédommagement.",
+          "1": "Votre poussée envoie le pêcheur directement dans un remous violent ! Paniqué, vous tentez de le sauver mais le courant vous emporte tous les deux. Par miracle, vous échouez plus loin sur un banc de sable, trempés et meurtris. Le pêcheur, furieux, exige une compensation substantielle pour ce 'petit jeu' qui a failli vous coûter la vie à tous deux.",
+          "2": "Le pêcheur, surpris par votre geste, tombe dans l'eau en lâchant tout son matériel ! Vous le repêchez rapidement, mais sa canne à pêche et son équipement ont été emportés par les flots. Rongé par les remords, vous lui offrez une généreuse compensation, mais l'homme reste amer de cette perte. Ironiquement, vous retrouvez un objet lui appartenant quelques minutes après vous être séparé de lui. Vous décidez de le garder pour vous et continuez votre route.",
+          "3": "Votre poussée fait perdre l'équilibre au pêcheur qui s'agrippe instinctivement à vous ! Vous basculez tous les deux dans la rivière tumultueuse. Après une chute chaotique et quelques mètres emportés par le courant, vous parvenez à vous extraire de l'eau, mais vous êtes tous deux blessés par cette mésaventure.",
+          "4": "Le pêcheur, plus agile que vous ne le pensiez, évite votre poussée au dernier moment ! Déséquilibré par votre propre élan, c'est vous qui tombez dans les eaux glacées de la Rivière Vacarme. Le vieil homme vous aide à sortir de l'eau, mais vous êtes trempé, frigorifié, et profondément humilié par votre geste raté.",
+          "5": "Votre geste malveillant propulse le pêcheur dans les rapides les plus dangereux ! Vous réalisez immédiatement la gravité de la situation et vous lancez à son secours. Après de longues minutes angoissantes, vous parvenez à le sortir de l'eau, inconscient mais vivant. Quand il revient à lui, terrorisé et en colère, vous devez lui verser une compensation importante et promettre de ne plus jamais remettre les pieds dans la région."
         },
-        "text": "Pousser le pêcheur dans l'eau !"
+        "text": "Pousser le pêcheur dans l'eau."
       },
       "skip": {
         "outcomes": {
-          "0": "Vous n'avez pas une minute à perdre pour aider un simple pêcheur ! Vous passez votre chemin."
+          "0": "Vous passez votre chemin sans vous attarder. Le bruit assourdissant de la Rivière Vacarme couvre vos pas tandis que vous poursuivez votre route.",
+          "1": "Vous décidez de ne pas vous mêler des affaires du pêcheur et de continuer votre route. Le bruit de la rivière s'estompe derrière vous tandis que vous avancez dans la forêt."
         },
-        "text": "Continuer votre route, pas de temps à perdre !"
+        "text": "Poursuivre votre route sans vous arrêter."
+      },
+      "end": {
+        "outcomes": {
+          "0": "Vous décidez de rester un moment sur la berge pour vous reposer et observer les flots tumultueux. Le bruit hypnotique de la Rivière Vacarme et le spectacle du pêcheur luttant contre les éléments vous plongent dans une méditation profonde. Quand vous reprenez finalement votre route, vous vous sentez apaisé malgré le vacarme environnant, mais le temps a filé sans que vous vous en rendiez compte."
+        }
       }
     },
-    "text": "Alors que vous passiez près d'un plan d'eau, vous remarquez un homme qui semble en difficulté sur sa partie de pêche !"
+    "text": "Le grondement assourdissant de la Rivière Vacarme emplit l'air tandis que vous approchez de ses berges tumultueuses. Les eaux bouillonnantes charrient des branches et de l'écume, témoignant de la violence du cours d'eau. Sur un rocher instable au bord des rapides, un pêcheur âgé lutte désespérément contre son matériel : sa ligne semble prise dans un courant particulièrement fort, et l'homme peine visiblement à maintenir son équilibre face à la puissance de la rivière..."
   },
   "11": {
     "possibilities": {
