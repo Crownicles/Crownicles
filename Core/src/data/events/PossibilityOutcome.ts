@@ -109,6 +109,14 @@ async function applyOutcomeHealth(outcome: PossibilityOutcome, player: Player, r
 	return 0;
 }
 
+async function applyOutcomeKarma(outcome: PossibilityOutcome, player: Player, response: CrowniclesPacket[]): Promise<number> {
+	if (outcome.karma && outcome.karma !== 0) {
+		await player.addKarma(outcome.karma, response, NumberChangeReason.BIG_EVENT);
+		return outcome.karma;
+	}
+	return 0;
+}
+
 async function applyOutcomeMoneyUnderLock(outcome: PossibilityOutcome, time: number, player: Locked<Player>, response: CrowniclesPacket[]): Promise<number> {
 	let moneyChange = (outcome.money ?? 0) + Math.round(time / 10 + RandomUtils.crowniclesRandom.integer(0, time / 10 + player.level / 5 - 1));
 	if (outcome.money && outcome.money < 0 && moneyChange > 0) {
@@ -296,6 +304,9 @@ export async function applyPossibilityOutcome(possibilityOutcome: ApplyOutcome, 
 	// Health
 	const health = await applyOutcomeHealth(possibilityOutcome.outcome[1], player, response);
 
+	// Karma
+	await applyOutcomeKarma(possibilityOutcome.outcome[1], player, response);
+
 	// Energy
 	const energy = applyOutcomeEnergy(possibilityOutcome.outcome[1], player, playerActiveObjects);
 
@@ -347,6 +358,10 @@ export interface PossibilityOutcome {
 			min?: number;
 			max?: number;
 		};
+		karma?: {
+			min?: number;
+			max?: number;
+		};
 		health?: {
 			min?: number;
 			max?: number;
@@ -381,6 +396,11 @@ export interface PossibilityOutcome {
 	 * Health lost or won
 	 */
 	health?: number;
+
+	/**
+	 * Karma lost or won
+	 */
+	karma?: number;
 
 	/**
 	 * Effect to apply
@@ -519,6 +539,7 @@ function isOutcomeValidForPlayer(
 	return (
 		isRangeValid(req.level, player.level)
 		&& isRangeValid(req.health, player.health)
+		&& isRangeValid(req.karma, player.karma)
 		&& isRangeValid(req.defense, player.getCumulativeDefense(playerActiveObjects))
 		&& isRangeValid(req.attack, player.getCumulativeAttack(playerActiveObjects))
 		&& isRangeValid(req.speed, player.getCumulativeSpeed(playerActiveObjects))

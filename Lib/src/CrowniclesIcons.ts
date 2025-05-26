@@ -2133,7 +2133,9 @@ export const CrowniclesIcons: {
 		contribute: "💰",
 		refuse: "🚶"
 	},
-	infoFightSmallEvent: { showHandednessInfo: "✋" },
+	infoFightSmallEvent: {
+		showHandednessInfo: "✋"
+	},
 	fightCommand: {
 		accept: "🔍",
 		aiThinking: "🧠",
@@ -2744,7 +2746,9 @@ export const CrowniclesIcons: {
 		"8️⃣",
 		"9️⃣"
 	],
-	profile: { displayAllBadgeEmote: "🎖️" },
+	profile: {
+		displayAllBadgeEmote: "🎖️"
+	},
 	fightHistory: {
 		won: "🟢",
 		lost: "🔴",
