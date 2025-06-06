@@ -1,0 +1,8 @@
+{
+  "type": "ci",
+  "tags": [
+    "detA"
+  ],
+  "canBeGoToPlaceMissionDestination": true,
+  "attribute": "continent1"
+}
