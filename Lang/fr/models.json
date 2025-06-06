@@ -863,7 +863,7 @@
     },
     "10": {
       "description": "Ancienne grande ville fortifiée, Ville Forte n'est plus que l'ombre d'elle-même. Ravagée par l'ancienne guerre il ne reste qu'une dizaine de maisons et paysans. Le reste de l'ancienne fortification n'est que ruine.",
-      "name": "Ville Forte",
+      "name": "Ville Forte (nord)",
       "particle": "vers la"
     },
     "1000": {
@@ -968,7 +968,7 @@
     },
     "17": {
       "description": "Village chaud bordant la vallée des rois. Il s'agit d'une oasis chaleureuse pour les voyageurs en transit.",
-      "name": "Village Coco",
+      "name": "Village Coco (ouest)",
       "particle": "vers le"
     },
     "18": {
@@ -1013,7 +1013,7 @@
     },
     "23": {
       "description": "Grande ville marchande et carrefour économique, Claire de Ville n'a pas toujours été aussi accueillante. Au début très pauvre, elle a su se développer rapidement grâce à ses nombreux commerces et hôtels offrant un large choix aux voyageurs de la région. Claire de Ville est aussi réputée pour son calme et son respect de l'ordre.",
-      "name": "Claire de Ville",
+      "name": "Claire de Ville (nord)",
       "particle": "vers"
     },
     "24": {
@@ -1028,7 +1028,7 @@
     },
     "26": {
       "description": "Une paisible ville au bord de la Plage Sentinelle.",
-      "name": "Mergagnan",
+      "name": "Mergagnan (ouest)",
       "particle": "vers"
     },
     "27": {
@@ -1083,7 +1083,7 @@
     },
     "6": {
       "description": "Un village paisible réputé pour son auberge accueillante.",
-      "name": "Boug-Coton",
+      "name": "Boug-Coton (nord)",
       "particle": "vers"
     },
     "7": {
@@ -1100,6 +1100,31 @@
       "description": "Ancienne grande route commerciale reliant le Berceau et Ville forte, il ne reste de la Grande Rue que de vieux pavés ébréchés.",
       "name": "Grande Rue",
       "particle": "vers la"
+    },
+    "34": {
+      "description": "Une paisible ville au bord de la Plage Sentinelle.",
+      "name": "Mergagnan (est)",
+      "particle": "vers"
+    },
+    "35": {
+      "description": "Un village paisible réputé pour son auberge accueillante.",
+      "name": "Boug-Coton (sud)",
+      "particle": "vers"
+    },
+    "36": {
+      "description": "Ancienne grande ville fortifiée, Ville Forte n'est plus que l'ombre d'elle-même. Ravagée par l'ancienne guerre il ne reste qu'une dizaine de maisons et paysans. Le reste de l'ancienne fortification n'est que ruine.",
+      "name": "Ville Forte (sud)",
+      "particle": "vers la"
+    },
+    "37": {
+      "description": "Grande ville marchande et carrefour économique, Claire de Ville n'a pas toujours été aussi accueillante. Au début très pauvre, elle a su se développer rapidement grâce à ses nombreux commerces et hôtels offrant un large choix aux voyageurs de la région. Claire de Ville est aussi réputée pour son calme et son respect de l'ordre.",
+      "name": "Claire de Ville (sud)",
+      "particle": "vers"
+    },
+    "38": {
+      "description": "Village chaud bordant la vallée des rois. Il s'agit d'une oasis chaleureuse pour les voyageurs en transit.",
+      "name": "Village Coco (nord)",
+      "particle": "vers le"
     }
   },
   "map_types": {
