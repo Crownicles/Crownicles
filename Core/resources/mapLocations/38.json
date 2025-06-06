@@ -1,0 +1,8 @@
+{
+  "type": "vi",
+  "tags": [
+    "detAu"
+  ],
+  "canBeGoToPlaceMissionDestination": true,
+  "attribute": "continent1"
+}
