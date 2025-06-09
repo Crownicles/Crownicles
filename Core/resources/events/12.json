@@ -1,20 +1,149 @@
 {
   "possibilities": {
-    "craftBoat": {
+    "useBridge": {
+      "outcomes": {
+        "0": {
+          "requirements": {
+            "level": {
+              "min": 50
+            }
+          }
+        },
+        "1": {
+          "requirements": {
+            "level": {
+              "max": 60
+            }
+          },
+          "health": -10,
+          "effect": "hurt"
+        },
+        "2": {
+          "requirements": {
+            "speed": {
+              "min": 200
+            }
+          }
+        },
+        "3": {
+          "requirements": {
+            "level": {
+              "max": 40
+            }
+          },
+          "health": -25,
+          "effect": "hurt"
+        },
+        "4": {
+          "requirements": {
+            "level": {
+              "min": 70
+            }
+          },
+          "randomItem": {},
+          "money": 75
+        }
+      }
+    },
+    "crossRiver": {
+      "outcomes": {
+        "0": {
+          "requirements": {
+            "speed": {
+              "max": 300
+            }
+          },
+          "health": -15,
+          "effect": "wet"
+        },
+        "1": {
+          "requirements": {
+            "speed": {
+              "max": 250
+            }
+          },
+          "health": -25,
+          "effect": "freezing"
+        },
+        "2": {
+          "requirements": {
+            "speed": {
+              "min": 350
+            }
+          },
+          "karma": 2
+        }
+      }
+    },
+    "searchAlternative": {
       "outcomes": {
         "0": {
           "effect": "occupied",
-          "health": -5,
-          "lostTime": 30
+          "lostTime": 180
         },
         "1": {
-          "effect": "freezing",
-          "health": -30
+          "requirements": {
+            "level": {
+              "min": 40
+            }
+          },
+          "mapTypesDestination": ["vi"]
         },
         "2": {
-          "effect": "occupied",
-          "lostTime": 140,
-          "randomItem": {}
+          "requirements": {
+            "level": {
+              "min": 50
+            }
+          },
+          "mapTypesDestination": ["be"]
+        },
+        "3": {
+          "requirements": {
+            "level": {
+              "min": 60
+            }
+          },
+          "mapTypesDestination": ["fo"]
+        },
+        "4": {
+          "requirements": {
+            "level": {
+              "min": 70
+            }
+          },
+          "randomItem": {},
+          "money": 100
+        }
+      }
+    },
+    "makeRaft": {
+      "outcomes": {
+        "0": {
+          "requirements": {
+            "level": {
+              "max": 50
+            }
+          },
+          "health": -10,
+          "effect": "wet"
+        },
+        "1": {
+          "requirements": {
+            "level": {
+              "min": 60
+            }
+          },
+          "randomItem": {},
+          "karma": 3
+        },
+        "2": {
+          "requirements": {
+            "level": {
+              "max": 40
+            }
+          },
+          "health": -20,
+          "effect": "wet"
         }
       }
     },
@@ -22,45 +151,8 @@
       "outcomes": {
         "0": {
           "effect": "occupied",
-          "lostTime": 165
-        }
-      }
-    },
-    "otherWay": {
-      "outcomes": {
-        "0": {
-          "effect": "occupied",
-          "lostTime": 55
-        }
-      }
-    },
-    "searchBridge": {
-      "outcomes": {
-        "0": {
-          "effect": "occupied",
-          "lostTime": 30
-        },
-        "1": {
-          "effect": "occupied",
-          "lostTime": 60
-        },
-        "2": {
-          "money": 30
-        },
-        "3": {
-          "effect": "confounded",
-          "health": -25
-        }
-      }
-    },
-    "swim": {
-      "outcomes": {
-        "0": {
-          "effect": "freezing",
-          "health": -30
-        },
-        "1": {
-          "health": 5
+          "lostTime": 150,
+          "karma": -1
         }
       }
     }

@@ -137,43 +137,49 @@
   },
   "12": {
     "possibilities": {
-      "craftBoat": {
+      "useBridge": {
         "outcomes": {
-          "0": "En tentant de fabriquer votre embarcation, vous vous blessez légèrement ! Vous décidez donc d'abandonner la construction après avoir passé plusieurs heures dessus et vous repartez dans une autre direction.",
-          "1": "Après avoir passé plusieurs heures à fabriquer votre bateau, vous vous élancez sur la rivière... puis vous coulez lamentablement au milieu. L'eau est gelée, mais vous parvenez tant bien que mal à atteindre l'autre rive, gelé et affaibli. Il faudra vous soigner avant de continuer !",
-          "2": "Vous fabriquez une petite barque en quelques heures et vous atteignez l'autre côté facilement. En sortant de votre bateau, vous ramassez un objet qui, à défaut de vous servir, sera facile à revendre !"
+          "0": "Malgré son état délabré, le vieux pont tient bon sous votre poids. Vous traversez prudemment, testant chaque planche avant d'y poser le pied. La traversée est lente mais sûre.",
+          "1": "À mi-chemin, une planche vermoule cède sous votre poids ! Vous parvenez de justesse à vous rattraper aux poutres, mais la frayeur et l'effort vous laissent secoué. Vous terminez la traversée avec plus de prudence encore.",
+          "2": "Le pont s'avère plus solide qu'il n'y paraît. Votre traversée se déroule sans encombre, et vous atteignez l'autre rive rapidement.",
+          "3": "Alors que vous êtes presque arrivé de l'autre côté, plusieurs planches s'effondrent d'un coup ! Vous chutez lourdement mais parvenez à vous hisser sur la berge opposée, meurtri mais vivant.",
+          "4": "En inspectant le pont de plus près, vous découvrez qu'un voyageur précédent y a caché quelques objets sous une planche descellée. Votre traversée vous rapporte plus que prévu !"
         },
-        "text": "Tenter de bricoler un petit bateau."
+        "text": "Emprunter le vieux pont délabré."
+      },
+      "crossRiver": {
+        "outcomes": {
+          "0": "Vous vous élancez dans les eaux tumultueuses de la Rivière Vacarme. Le courant puissant vous emporte plus loin que prévu, mais vous parvenez à atteindre l'autre rive, trempé et épuisé.",
+          "1": "La traversée à la nage se révèle plus ardue que prévu. L'eau glacée saisit vos membres et vous devez lutter contre le courant pour ne pas être emporté. Vous atteignez finalement la berge opposée, mais vous êtes transi de froid.",
+          "2": "Vos talents de nageur vous permettent de traverser aisément la Rivière Vacarme. Une fois de l'autre côté, vous reprenez votre route avec satisfaction."
+        },
+        "text": "Traverser la rivière à la nage."
+      },
+      "searchAlternative": {
+        "outcomes": {
+          "0": "Vous longez la berge à la recherche d'un passage plus sûr. Après de longues heures de marche, vous finissez par abandonner et revenez au pont délabré, ayant perdu un temps précieux.",
+          "1": "Votre exploration vous mène vers l'amont où vous découvrez un gué praticable. Vous traversez prudemment et vous retrouvez du côté du Village Coco.",
+          "2": "En descendant vers l'aval, vous trouvez un passage rocheux qui vous permet de rejoindre les terres de la Dune.",
+          "3": "Votre recherche vous mène vers un sentier qui s'éloigne de la rivière pour rejoindre les abords du Bois Hurlant.",
+          "4": "En explorant les berges, vous découvrez une cache abandonnée contenant quelques objets de valeur, probablement oubliés par un ancien voyageur."
+        },
+        "text": "Chercher un autre passage plus sûr."
+      },
+      "makeRaft": {
+        "outcomes": {
+          "0": "Vos efforts de construction aboutissent à un radeau de fortune. Malgré sa fragilité, il vous permet de traverser, bien que vous soyez trempé à l'arrivée.",
+          "1": "Le radeau que vous assemblez avec les matériaux trouvés sur place tient bon. Vous traversez avec succès et récupérez même quelques objets flottants en chemin.",
+          "2": "Votre construction se révèle trop fragile. À mi-parcours, votre radeau se disloque et vous devez regagner la rive à la nage, plus mouillé et fatigué qu'au départ."
+        },
+        "text": "Construire un radeau de fortune."
       },
       "end": {
         "outcomes": {
-          "0": "Au bout de quelques heures au bord de la rivière, vous finissez par repartir dans une direction aléatoire."
+          "0": "Vous décidez de faire une pause sur les berges de la Rivière Vacarme pour réfléchir à votre prochaine destination. Le grondement des eaux et la vue du pont délabré vous plongent dans une méditation profonde, mais le temps s'écoule sans que vous trouviez de solution satisfaisante."
         }
-      },
-      "otherWay": {
-        "outcomes": {
-          "0": "Vous décidez de partir dans un autre sens, mais vous mettez une bonne heure avant de trouver une direction qui vous convienne !"
-        },
-        "text": "Partir dans une autre direction."
-      },
-      "searchBridge": {
-        "outcomes": {
-          "0": "Au bout de 30 minutes, vous finissez par abandonner et vous reprenez votre route dans une autre direction...",
-          "1": "Au bout de 60 minutes, vous finissez par trouver un passage à gué. Vous décidez alors de ne pas rejoindre le village qui est maintenant trop loin et vous reprenez votre route.",
-          "2": "Au bout de quelques minutes, vous trouvez un petit pont en bois. Vous arrivez rapidement au village où les habitants, heureux de rencontrer un étranger pour la première fois depuis des années, vous offrent quelques pièces.",
-          "3": "Au bout de quelques minutes, vous trouvez un petit pont en bois. Malheureusement, il est délabré car personne ne l'a emprunté depuis des années. Après quelques pas, une planche s'effondre sous votre poids ! Vous parvenez à vous accrocher au garde-fou de justesse et retrouvez la terre ferme. Sonné, il faudra cependant aller vous soigner !"
-        },
-        "text": "Chercher un pont plus loin."
-      },
-      "swim": {
-        "outcomes": {
-          "0": "L'eau est gelée ! Vous prenez votre courage à deux mains et plongez. Une fois de l'autre coté, vous vous rendez compte de votre erreur. Vous êtes gelé et affaibli. Il faudra vous soigner avant de continuer !",
-          "1": "Vous atteignez l'autre côté facilement, arrivé au village, les gens vous accueillent et vous donnent à manger."
-        },
-        "text": "Traverser la rivière en nageant."
       }
     },
-    "text": "Vous voyez une rivière devant vous. De l'autre côté du rivage, vous apercevez un village."
+    "text": "Vous voici face à la tumultueuse Rivière Vacarme, dont le grondement assourdissant emplit l'air de sa puissance. Les eaux bouillonnantes charrient branches et écume, témoignant de la violence du cours d'eau. Un vieux pont de bois enjambe les flots, mais son état délabré inspire peu confiance : plusieurs planches manquent, d'autres pendent dangereusement, et la structure grince sous les assauts du vent. De part et d'autre des berges, différents chemins s'offrent à vous..."
   },
   "13": {
     "possibilities": {
