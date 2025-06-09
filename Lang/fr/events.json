@@ -93,7 +93,7 @@
           "2": "Le piège se referme ! À peine avez-vous emprunté le chemin de l'ouest que des brigands du Bois Hurlant surgissent des fourrés et... s'inclinent devant vous en vous reconnaissant. Votre réputation vous a précédé et les brigands ne sauraient se résoudre à dépouiller l'un des leurs.",
           "3": "Le piège se referme ! À peine avez-vous emprunté le chemin de l'ouest que des brigands du Bois Hurlant surgissent des fourrés. La bataille s'engage et vous parvenez initialement à les repousser, mais vous êtes blessé dans l'affrontement. Vous finissez par laisser votre bourse au sol et prenez la fuite en boitant.",
           "4": "Le piège se referme ! À peine avez-vous emprunté le chemin de l'ouest que des brigands surgissent des fourrés. La bataille s'engage et vous parvenez initialement à les repousser, mais, sentant que vous ne parviendrez pas à les vaincre, vous finissez par laisser votre bourse au sol et prenez la fuite en boitant.",
-          "5": "Le piège se referme ! À peine avez-vous emprunté le chemin de l'ouest que des brigands surgissent des fourrés. e fer s'entrechoque, et par votre vaillance, vous les repoussez aisément. Si la plupart des gredins prirent leurs jambes à leur cou, votre poigne se referma sur quelques fuyards. Pour prix de leur liberté, ils vous cédèrent une part de leurs rapines.",
+          "5": "Le piège se referme ! À peine avez-vous emprunté le chemin de l'ouest que des brigands surgissent des fourrés. Le fer s'entrechoque, et par votre vaillance, vous les repoussez aisément. Tandis que la plupart des gredins prennent leurs jambes à leur cou, votre poigne se referme sur quelques fuyards. Pour prix de leur liberté, ils vous cèdent une part de leurs rapines.",
           "6": "Le chemin conseillé vous mène dans les profondeurs les plus sombres du Bois Hurlant. Bien qu'il soit effectivement plus court, vous devez progresser en silence pour éviter d'attirer l'attention des nombreux hors-la-loi qui hantent ces bois.",
           "7": "En suivant les indications de l'inconnue, vous découvrez une cache abandonnée par d'anciens bandits du Bois Hurlant. Parmi les restes de leur butin, vous trouvez quelques objets de valeur qu'ils avaient oubliés dans leur fuite."
         },
@@ -120,7 +120,7 @@
       },
       "oppositeSide": {
         "outcomes": {
-          "0": "Votre méfiance vous pousse à contourner entièrement le Bois Hurlant par l'est. Ce détour considérable vous fait perdre une journée entière, mais vous atteignez Claire de Ville sans avoir risqué votre vie.",
+          "0": "Votre méfiance vous pousse à contourner entièrement le Bois Hurlant par l'est. Ce détour considérable vous fait perdre beaucoup de temps, mais vous atteignez Claire de Ville sans avoir risqué votre vie.",
           "1": "En contournant par l'est, vous croisez une patrouille de gardes de Claire de Ville. Votre réputation de voyageur honorable les rassure et ils vous escortent gratuitement, partageant même leurs rations avec vous.",
           "2": "Votre expérience vous fait remarquer des détails que d'autres auraient manqués : des ruines d'un ancien poste de garde. Votre connaissance de l'histoire vous permet de localiser une cache d'armes et d'équipements anciens mais encore utilisables."
         },
@@ -128,7 +128,7 @@
       },
       "end": {
         "outcomes": {
-          "0": "En voyageur expérimenté, vous reconnaissez en l'inconnue une conteuse professionnelle. Elle vous régale avec des récits authentiques sur l'histoire sombre du Bois Hurlant, vous apprenant des détails précieux sur la géographie secrète de cette forêt maudite. Ces connaissances vous seront utiles.",
+          "0": "En voyageur expérimenté, vous reconnaissez en l'inconnue une conteuse professionnelle. Elle vous régale avec des récits authentiques sur l'histoire sombre du Bois Hurlant, vous apprenant des détails précieux sur la géographie secrète de cette forêt maudite.",
           "1": "L'inconnue se révèle être une conteuse qui collecte les légendes du Bois Hurlant. Ses récits terrifiants résonnent dans votre esprit quand vous reprenez la route à la tombée de la nuit."
         }
       }
