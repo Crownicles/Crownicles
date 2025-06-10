@@ -8,6 +8,7 @@ import { ReactionCollectorBigEventData } from "../../../../Lib/src/packets/inter
 import {
 	chooseDestinationCollector,
 	createBigEventCollector,
+	handleCityCollector,
 	handleStartPveFight
 } from "../../commands/player/ReportCommand";
 import { ReactionCollectorChooseDestinationData } from "../../../../Lib/src/packets/interaction/ReactionCollectorChooseDestination";
@@ -96,6 +97,7 @@ import { ReactionCollectorDailyBonusData } from "../../../../Lib/src/packets/int
 import { handleDailyBonusCollector } from "../../commands/player/DailyBonusCommand";
 import { ReactionCollectorDeposeItemData } from "../../../../Lib/src/packets/interaction/ReactionCollectorDeposeItem";
 import { deposeItemCollector } from "../../commands/player/DepositCommand";
+import { ReactionCollectorCityData } from "../../../../Lib/src/packets/interaction/ReactionCollectorCity";
 
 // Needed because we need to accept any parameter
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -150,6 +152,7 @@ export default class ReactionCollectorHandler {
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorPveFightData.name, handleStartPveFight);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorDailyBonusData.name, handleDailyBonusCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorLimogesData.name, limogesCollector);
+		ReactionCollectorHandler.collectorMap.set(ReactionCollectorCityData.name, handleCityCollector);
 	}
 
 	@packetHandler(ReactionCollectorCreationPacket)

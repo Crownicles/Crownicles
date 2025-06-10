@@ -510,7 +510,26 @@
     "travellingDescription": "Tout se passe bien depuis votre dernière aventure {{smallEventEmoji}}. Prochain arrêt prévu {{time}}.",
     "travellingDescriptionEndTravel": "Tout se passe bien dans votre aventure, vous arriverez bientôt à destination.",
     "travellingDescriptionWithoutSmallEvent": "Tout se passe bien dans votre aventure. Prochain arrêt prévu {{time}}.",
-    "travellingTitle": "Vous êtes actuellement en train d'avancer !"
+    "travellingTitle": "Vous êtes actuellement en train d'avancer !",
+    "city": {
+      "placeholder": "Choisissez quelque chose à faire",
+      "title": "{{pseudo}}, vous êtes en ville !",
+      "description": "{emote:commands.report} Vous vous trouvez $t(models:map_locations.{{mapLocationId}}.atParticle) **{emote:mapTypes.{{mapTypeId}}} $t(models:map_locations.{{mapLocationId}}.name)** depuis **{{timeInCity}}**.\n\nVous pouvez accéder à beaucoup de services ici, mais vous pouvez également choisir de partir pour continuer votre aventure.",
+      "shortTime": "peu de temps",
+      "stayTitle": "{{pseudo}}, vous avez décidé de rester en ville",
+      "stayDescription": "Vous avez décidé de rester en ville pour profiter des services disponibles. Vous pouvez toujours partir plus tard en utilisant la commande {command:report}.",
+      "destination": "Vous entrez $t(models:map_locations.{{mapLocationId}}.inParticle) {emote:mapTypes.{{mapTypeId}}} **$t(models:map_locations.{{mapLocationId}}.name)**. Vous pouvez y trouver de nombreux choses utiles pour votre aventure!\n\nFaites la commande {command:report} afin de voir les services disponibles.",
+      "reactions": {
+        "exit": {
+          "label": "Sortir de la ville",
+          "description": "Sortez de la ville pour continuer votre aventure."
+        },
+        "stay": {
+          "label": "Rester en ville",
+          "description": "Restez en ville et profitez des services disponibles."
+        }
+      }
+    }
   },
   "update": {
     "description": "La version actuelle du noyau du bot est la **{{coreVersion}}**. Celle du module Discord est la **{{discordModuleVersion}}**.\n\nToutes les informations concernant les mises à jour sont disponibles ici :\nhttps://guide.crownicles.com/lore/historique-des-mises-a-jour",

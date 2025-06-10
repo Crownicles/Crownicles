@@ -60,6 +60,7 @@ import { Badge } from "../../../../../../Lib/src/types/Badge";
 // skipcq: JS-C1003 - moment does not expose itself as an ES Module.
 import * as moment from "moment";
 import { ClassConstants } from "../../../../../../Lib/src/constants/ClassConstants";
+import { CityDataController } from "../../../../data/City";
 
 export type PlayerEditValueParameters = {
 	player: Player;
@@ -1620,7 +1621,10 @@ export function initModel(sequelize: Sequelize): void {
 				await ScheduledReportNotifications.bulkDelete([pendingReportNotification]);
 			}
 
-			if (travelEndDate > now) {
+			if (
+				travelEndDate > now
+				&& !CityDataController.instance.getCityByMapLinkId(instance.mapLinkId) // Don't schedule notifications for cities
+			) {
 				await ScheduledReportNotifications.scheduleNotification(instance.id, instance.keycloakId, destinationId, travelEndDate);
 				return;
 			}

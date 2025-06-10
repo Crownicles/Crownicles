@@ -6,19 +6,29 @@ import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
 import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
 import {
 	CommandReportBigEventResultRes,
+	CommandReportChooseDestinationCityRes,
 	CommandReportMonsterRewardRes,
 	CommandReportPacketReq,
 	CommandReportRefusePveFightRes,
 	CommandReportTravelSummaryRes
 } from "../../../../Lib/src/packets/commands/CommandReportPacket";
-import { ReactionCollectorCreationPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
+import {
+	ReactionCollectorCreationPacket,
+	ReactionCollectorRefuseReaction
+} from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import {
 	ReactionCollectorBigEventData,
 	ReactionCollectorBigEventPossibilityReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorBigEvent";
 import i18n, { TranslationOption } from "../../translations/i18n";
 import {
-	ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, parseEmoji
+	ActionRowBuilder,
+	ButtonBuilder,
+	ButtonInteraction,
+	ButtonStyle,
+	parseEmoji,
+	StringSelectMenuBuilder,
+	StringSelectMenuInteraction
 } from "discord.js";
 import { DiscordCache } from "../../bot/DiscordCache";
 import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
@@ -46,6 +56,10 @@ import { ReactionCollectorPveFightData } from "../../../../Lib/src/packets/inter
 import { escapeUsername } from "../../utils/StringUtils";
 import { Language } from "../../../../Lib/src/Language";
 import { DisplayUtils } from "../../utils/DisplayUtils";
+import {
+	ReactionCollectorCityData,
+	ReactionCollectorExitCityReaction
+} from "../../../../Lib/src/packets/interaction/ReactionCollectorCity";
 
 async function getPacket(interaction: CrowniclesInteraction): Promise<CommandReportPacketReq> {
 	await interaction.deferReply();
@@ -88,14 +102,20 @@ export async function createBigEventCollector(context: PacketContext, packet: Re
 		}
 	}
 
-	const msg = (await interaction.editReply({
+	const msgOptions = {
 		content: i18n.t("commands:report.doEvent", {
 			lng,
 			event: eventText,
 			pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
 		}),
 		components: rows
-	}))!;
+	};
+
+	// Can be from a string select menu when the player started the event from a city
+	const msg = context.discord?.stringSelectMenuInteraction ? await interaction.followUp(msgOptions) : await interaction.editReply(msgOptions);
+	if (!msg) {
+		return null;
+	}
 
 	let responded = false; // To avoid concurrence between the button controller and reaction controller
 	const respondToEvent = (possibilityName: string, buttonInteraction: ButtonInteraction | null): void => {
@@ -264,7 +284,12 @@ export async function chooseDestinationCollector(context: PacketContext, packet:
 			} ${
 				i18n.t(`models:map_locations.${destinationReaction.mapId}.name`, { lng })} (${duration})`;
 		})
-	}, { refuse: { can: false } });
+	}, {
+		refuse: {
+			can: false
+		},
+		deferUpdate: true
+	});
 }
 
 function isCurrentlyInEffect(packet: CommandReportTravelSummaryRes, now: number): boolean {
@@ -558,6 +583,127 @@ export async function reportTravelSummary(packet: CommandReportTravelSummaryRes,
 		inline: true
 	});
 	await interaction.editReply({ embeds: [travelEmbed] });
+}
+
+export async function stayInCity(context: PacketContext): Promise<void> {
+	const lng = context.discord!.language!;
+	const interaction = DiscordCache.getInteraction(context.discord!.interaction!)!;
+	const embed = new DraftBotEmbed()
+		.formatAuthor(i18n.t("commands:report.city.stayTitle", {
+			pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng),
+			lng
+		}), interaction.user)
+		.setDescription(i18n.t("commands:report.city.stayDescription", {
+			lng
+		}));
+	await interaction.followUp({
+		embeds: [embed]
+	});
+}
+
+export async function handleCityCollector(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
+	const interaction = DiscordCache.getInteraction(context.discord!.interaction);
+	if (!interaction) {
+		return null;
+	}
+	const lng = interaction.userLanguage;
+	const data = packet.data.data as ReactionCollectorCityData;
+
+	const embed = new DraftBotEmbed();
+	embed.formatAuthor(i18n.t("commands:report.city.title", {
+		lng,
+		pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
+	}), interaction.user);
+	embed.setDescription(i18n.t("commands:report.city.description", {
+		lng,
+		mapLocationId: data.mapLocationId,
+		mapTypeId: data.mapTypeId,
+		timeInCity: data.timeInCity < 60000 ? i18n.t("commands:report.city.shortTime", { lng }) : minutesDisplay(millisecondsToMinutes(data.timeInCity), lng)
+	}));
+
+	const selectMenu = new StringSelectMenuBuilder()
+		.setCustomId(ReactionCollectorExitCityReaction.name)
+		.setPlaceholder(i18n.t("commands:report.city.placeholder", { lng }));
+	for (const reaction of packet.reactions) {
+		switch (reaction.type) {
+			case ReactionCollectorExitCityReaction.name:
+				selectMenu.addOptions({
+					label: i18n.t("commands:report.city.reactions.exit.label", { lng }),
+					description: i18n.t("commands:report.city.reactions.exit.description", { lng }),
+					value: ReactionCollectorExitCityReaction.name,
+					emoji: DraftBotIcons.city.exit
+				});
+				break;
+			case ReactionCollectorRefuseReaction.name:
+				selectMenu.addOptions({
+					label: i18n.t("commands:report.city.reactions.stay.label", { lng }),
+					description: i18n.t("commands:report.city.reactions.stay.description", { lng }),
+					value: ReactionCollectorRefuseReaction.name,
+					emoji: DraftBotIcons.city.stay
+				});
+				break;
+			default:
+				break;
+		}
+	}
+
+	const msg = await interaction.editReply({
+		embeds: [embed],
+		components: [new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(selectMenu)]
+	});
+
+	if (!msg) {
+		return null;
+	}
+
+	const selectMenuCollector = msg.createMessageComponentCollector({
+		time: packet.endTime - Date.now()
+	});
+
+	selectMenuCollector.on("collect", async (selectInteraction: StringSelectMenuInteraction) => {
+		if (selectInteraction.user.id !== interaction.user.id) {
+			await sendInteractionNotForYou(selectInteraction.user, selectInteraction, lng);
+			return;
+		}
+
+		await selectInteraction.deferUpdate();
+		const selectedValue = selectInteraction.values[0];
+		const reactionIndex = packet.reactions.findIndex(reaction => reaction.type === selectedValue);
+		if (reactionIndex !== -1) {
+			DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, selectInteraction, reactionIndex);
+		}
+	});
+
+	selectMenuCollector.on("end", async () => {
+		await msg.edit({
+			components: []
+		});
+	});
+
+	return [selectMenuCollector];
+}
+
+export async function handleChooseDestinationCity(packet: CommandReportChooseDestinationCityRes, context: PacketContext): Promise<void> {
+	const interaction = DiscordCache.getInteraction(context.discord!.interaction);
+	if (!interaction) {
+		return;
+	}
+	const lng = interaction.userLanguage;
+
+	const embed = new DraftBotEmbed();
+	embed.formatAuthor(i18n.t("commands:report.destinationTitle", {
+		lng,
+		pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
+	}), interaction.user);
+	embed.setDescription(i18n.t("commands:report.city.destination", {
+		lng,
+		mapLocationId: packet.mapId,
+		mapTypeId: packet.mapTypeId
+	}));
+
+	await interaction.followUp({
+		embeds: [embed]
+	});
 }
 
 export const commandInfo: ICommand = {
