@@ -519,6 +519,7 @@
       "stayTitle": "{{pseudo}}, vous avez décidé de rester en ville",
       "stayDescription": "Vous avez décidé de rester en ville pour profiter des services disponibles. Vous pouvez toujours partir plus tard en utilisant la commande {command:report}.",
       "destination": "Vous entrez $t(models:map_locations.{{mapLocationId}}.inParticle) {emote:mapTypes.{{mapTypeId}}} **$t(models:map_locations.{{mapLocationId}}.name)**. Vous pouvez y trouver de nombreux choses utiles pour votre aventure!\n\nFaites la commande {command:report} afin de voir les services disponibles.",
+      "enterIn": "Entrer $t(models:map_locations.{{mapLocationId}}.inParticle) ",
       "reactions": {
         "exit": {
           "label": "Sortir de la ville",
