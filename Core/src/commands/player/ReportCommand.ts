@@ -484,7 +484,8 @@ async function chooseDestination(
 		return {
 			mapId,
 			mapTypeId,
-			tripDuration: isPveMap || RandomUtils.crowniclesRandom.bool() ? mapLink.tripDuration : null
+			tripDuration: isPveMap || RandomUtils.crowniclesRandom.bool() ? mapLink.tripDuration : null,
+			enterInCity: Boolean(CityDataController.instance.getCityByMapLinkId(mapLink.id))
 		};
 	});
 
