@@ -46,8 +46,7 @@ import {
 import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import { ReactionCollectorChooseDestinationReaction } from "../../../../Lib/src/packets/interaction/ReactionCollectorChooseDestination";
 import {
-	DiscordCollectorUtils,
-	disableRows
+	disableRows, DiscordCollectorUtils
 } from "../../utils/DiscordCollectorUtils";
 import { EmoteUtils } from "../../utils/EmoteUtils";
 import { ReportConstants } from "../../../../Lib/src/constants/ReportConstants";
@@ -284,8 +283,12 @@ export async function chooseDestinationCollector(context: PacketContext, packet:
 					.replace("2", "?");
 			return `${
 				EmoteUtils.translateEmojiToDiscord(CrowniclesIcons.mapTypes[destinationReaction.mapTypeId])
-			} ${
-				i18n.t(`models:map_locations.${destinationReaction.mapId}.name`, { lng })} (${duration})`;
+			} ${destinationReaction.enterInCity
+				? i18n.t("commands:report.city.enterIn", {
+					lng, mapLocationId: destinationReaction.mapId
+				})
+				: ""}${
+				i18n.t(`models:map_locations.${destinationReaction.mapId}.name`, { lng })} ${destinationReaction.enterInCity ? "" : `(${duration})`}`;
 		})
 	}, {
 		refuse: {
@@ -591,7 +594,7 @@ export async function reportTravelSummary(packet: CommandReportTravelSummaryRes,
 export async function stayInCity(context: PacketContext): Promise<void> {
 	const lng = context.discord!.language!;
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction!)!;
-	const embed = new DraftBotEmbed()
+	const embed = new CrowniclesEmbed()
 		.formatAuthor(i18n.t("commands:report.city.stayTitle", {
 			pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng),
 			lng
@@ -612,7 +615,7 @@ export async function handleCityCollector(context: PacketContext, packet: Reacti
 	const lng = interaction.userLanguage;
 	const data = packet.data.data as ReactionCollectorCityData;
 
-	const embed = new DraftBotEmbed();
+	const embed = new CrowniclesEmbed();
 	embed.formatAuthor(i18n.t("commands:report.city.title", {
 		lng,
 		pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
@@ -634,7 +637,7 @@ export async function handleCityCollector(context: PacketContext, packet: Reacti
 					label: i18n.t("commands:report.city.reactions.exit.label", { lng }),
 					description: i18n.t("commands:report.city.reactions.exit.description", { lng }),
 					value: ReactionCollectorExitCityReaction.name,
-					emoji: DraftBotIcons.city.exit
+					emoji: CrowniclesIcons.city.exit
 				});
 				break;
 			case ReactionCollectorRefuseReaction.name:
@@ -642,7 +645,7 @@ export async function handleCityCollector(context: PacketContext, packet: Reacti
 					label: i18n.t("commands:report.city.reactions.stay.label", { lng }),
 					description: i18n.t("commands:report.city.reactions.stay.description", { lng }),
 					value: ReactionCollectorRefuseReaction.name,
-					emoji: DraftBotIcons.city.stay
+					emoji: CrowniclesIcons.city.stay
 				});
 				break;
 			default:
@@ -693,7 +696,7 @@ export async function handleChooseDestinationCity(packet: CommandReportChooseDes
 	}
 	const lng = interaction.userLanguage;
 
-	const embed = new DraftBotEmbed();
+	const embed = new CrowniclesEmbed();
 	embed.formatAuthor(i18n.t("commands:report.destinationTitle", {
 		lng,
 		pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
