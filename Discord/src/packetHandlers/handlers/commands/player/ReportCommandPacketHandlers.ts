@@ -1,17 +1,21 @@
 import { packetHandler } from "../../../PacketHandler";
 import {
 	CommandReportBigEventResultRes,
+	CommandReportChooseDestinationCityRes,
 	CommandReportErrorNoMonsterRes,
 	CommandReportMonsterRewardRes,
 	CommandReportRefusePveFightRes,
+	CommandReportStayInCity,
 	CommandReportTravelSummaryRes
 } from "../../../../../../Lib/src/packets/commands/CommandReportPacket";
 import { PacketContext } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	displayMonsterReward,
+	handleChooseDestinationCity,
 	refusePveFight,
 	reportResult,
-	reportTravelSummary
+	reportTravelSummary,
+	stayInCity
 } from "../../../../commands/player/ReportCommand";
 import { handleClassicError } from "../../../../utils/ErrorUtils";
 
@@ -39,5 +43,15 @@ export default class ReportCommandPacketHandlers {
 	@packetHandler(CommandReportRefusePveFightRes)
 	async reportRefusePveFightRes(context: PacketContext, packet: CommandReportRefusePveFightRes): Promise<void> {
 		await refusePveFight(packet, context);
+	}
+
+	@packetHandler(CommandReportStayInCity)
+	async reportStayInCity(context: PacketContext, _packet: CommandReportStayInCity): Promise<void> {
+		await stayInCity(context);
+	}
+
+	@packetHandler(CommandReportChooseDestinationCityRes)
+	async reportChooseDestinationCityRes(context: PacketContext, packet: CommandReportChooseDestinationCityRes): Promise<void> {
+		await handleChooseDestinationCity(packet, context);
 	}
 }

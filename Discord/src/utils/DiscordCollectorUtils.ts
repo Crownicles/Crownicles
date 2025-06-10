@@ -290,6 +290,7 @@ export class DiscordCollectorUtils {
 				emoji?: string;
 			}[];
 			sendManners?: SendManner[];
+			deferUpdate?: boolean;
 		}
 	): Promise<ReactionCollectorReturnTypeOrNull> {
 		if (items.length > DiscordCollectorUtils.choiceListEmotes.length) {
@@ -385,7 +386,12 @@ export class DiscordCollectorUtils {
 				return;
 			}
 
-			await buttonInteraction.deferReply();
+			if (options.deferUpdate) {
+				await buttonInteraction.deferUpdate();
+			}
+			else {
+				await buttonInteraction.deferReply();
+			}
 			if (buttonInteraction.customId !== "refuse") {
 				DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, buttonInteraction, parseInt(buttonInteraction.customId, 10));
 			}

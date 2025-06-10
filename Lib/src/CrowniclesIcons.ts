@@ -223,6 +223,10 @@ export const CrowniclesIcons: {
 	items: {
 		drinkPotion: string;
 	};
+	city: {
+		exit: string;
+		stay: string;
+	};
 } = {
 	effects: {
 		notStarted: "👶",
@@ -2376,5 +2380,9 @@ export const CrowniclesIcons: {
 	},
 	items: {
 		drinkPotion: "🥤"
+	},
+	city: {
+		exit: "🏃‍➡️",
+		stay: "👀"
 	}
 };
