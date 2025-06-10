@@ -103,3 +103,13 @@ export class CommandReportBigEventResultRes extends CrowniclesPacket {
 
 	oneshot!: boolean;
 }
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportStayInCity extends DraftBotPacket {}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportChooseDestinationCityRes extends DraftBotPacket {
+	mapId!: number;
+
+	mapTypeId!: string;
+}

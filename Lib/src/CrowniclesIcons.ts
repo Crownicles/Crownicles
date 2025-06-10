@@ -220,6 +220,10 @@ export const CrowniclesIcons: {
 		lost: string;
 		draw: string;
 	};
+	city: {
+		exit: string;
+		stay: string;
+	};
 } = {
 	effects: {
 		notStarted: "👶",
@@ -2369,5 +2373,9 @@ export const CrowniclesIcons: {
 		won: "🟢",
 		lost: "🔴",
 		draw: "🟡"
+	},
+	city: {
+		exit: "🏃‍➡️",
+		stay: "👀"
 	}
 };
