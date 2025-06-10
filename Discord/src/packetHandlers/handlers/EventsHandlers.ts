@@ -67,7 +67,7 @@ export default class EventsHandlers {
 		try {
 			if (context.discord!.buttonInteraction) {
 				await DiscordCache.getButtonInteraction(context.discord!.buttonInteraction)
-					?.editReply({ embeds: [embed] });
+					?.followUp({ embeds: [embed] });
 				return;
 			}
 		}

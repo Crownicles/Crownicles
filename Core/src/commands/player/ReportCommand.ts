@@ -3,11 +3,13 @@ import {
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	CommandReportBigEventResultRes,
+	CommandReportChooseDestinationCityRes,
 	CommandReportChooseDestinationRes,
 	CommandReportErrorNoMonsterRes,
 	CommandReportMonsterRewardRes,
 	CommandReportPacketReq,
 	CommandReportRefusePveFightRes,
+	CommandReportStayInCity,
 	CommandReportTravelSummaryRes
 } from "../../../../Lib/src/packets/commands/CommandReportPacket";
 import {
@@ -60,8 +62,7 @@ import {
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorBigEvent";
 import { Possibility } from "../../data/events/Possibility";
 import {
-	applyPossibilityOutcome,
-	PossibilityOutcome
+	applyPossibilityOutcome, PossibilityOutcome
 } from "../../data/events/PossibilityOutcome";
 import { ErrorPacket } from "../../../../Lib/src/packets/commands/ErrorPacket";
 import { MapLocationDataController } from "../../data/MapLocation";
@@ -72,6 +73,12 @@ import { Effect } from "../../../../Lib/src/types/Effect";
 import { ReactionCollectorRefuseReaction } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { verifyPossibilityOutcomeCondition } from "../../data/events/PossibilityOutcomeCondition";
+import { CityDataController } from "../../data/City";
+import {
+	ReactionCollectorCity,
+	ReactionCollectorExitCityReaction
+} from "../../../../Lib/src/packets/interaction/ReactionCollectorCity";
+import { RequirementEffectPacket } from "../../../../Lib/src/packets/commands/requirements/RequirementEffectPacket";
 
 export default class ReportCommand {
 	@commandRequires(CommandReportPacketReq, {
@@ -97,8 +104,15 @@ export default class ReportCommand {
 
 		const currentDate = new Date();
 
-		if (player.effectId !== Effect.NO_EFFECT.id && player.currentEffectFinished(currentDate)) {
+		const currentEffectFinished = player.currentEffectFinished(currentDate);
+		if (player.effectId !== Effect.NO_EFFECT.id && currentEffectFinished) {
 			await MissionsController.update(player, response, { missionId: "recoverAlteration" });
+		}
+
+		const city = CityDataController.instance.getCityByMapLinkId(player.mapLinkId);
+		if (city && currentEffectFinished) {
+			sendCityCollector(context, response, player, currentDate, forceSpecificEvent);
+			return;
 		}
 
 		if (Maps.isArrived(player, currentDate)) {
@@ -118,8 +132,16 @@ export default class ReportCommand {
 			return;
 		}
 
-		if (!player.currentEffectFinished(currentDate)) {
-			await sendTravelPath(player, response, currentDate, player.effectId);
+		if (!currentEffectFinished) {
+			if (city) {
+				response.push(makePacket(RequirementEffectPacket, {
+					currentEffectId: player.effectId,
+					remainingTime: player.effectRemainingTime()
+				}));
+			}
+			else {
+				await sendTravelPath(player, response, currentDate, player.effectId);
+			}
 			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.REPORT_COMMAND);
 			return;
 		}
@@ -139,6 +161,41 @@ export default class ReportCommand {
 		await sendTravelPath(player, response, currentDate, null);
 		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.REPORT_COMMAND);
 	}
+}
+
+function cityCollectorEndCallback(context: PacketContext, player: Player, forceSpecificEvent: number): EndCallback {
+	return async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
+		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.REPORT_COMMAND);
+		const firstReaction = collector.getFirstReaction();
+		if (!firstReaction || firstReaction.reaction.type === ReactionCollectorRefuseReaction.name) {
+			response.push(makePacket(CommandReportStayInCity, {}));
+		}
+		else if (firstReaction.reaction.type === ReactionCollectorExitCityReaction.name) {
+			await doRandomBigEvent(context, response, player, forceSpecificEvent);
+		}
+	};
+}
+
+function sendCityCollector(context: PacketContext, response: CrowniclesPacket[], player: Player, currentDate: Date, forceSpecificEvent: number): void {
+	const collector = new ReactionCollectorCity({
+		timeInCity: TravelTime.getTravelDataSimplified(player, currentDate).playerTravelledTime,
+		mapTypeId: MapLocationDataController.instance.getById(player.getDestinationId()).type,
+		mapLocationId: player.getDestinationId()
+	});
+
+	const collectorPacket = new ReactionCollectorInstance(
+		collector,
+		context,
+		{
+			allowedPlayerKeycloakIds: [player.keycloakId],
+			reactionLimit: 1
+		},
+		cityCollectorEndCallback(context, player, forceSpecificEvent)
+	)
+		.block(player.keycloakId, BlockingConstants.REASONS.REPORT_COMMAND)
+		.build();
+
+	response.push(collectorPacket);
 }
 
 /**
@@ -354,6 +411,27 @@ async function doRandomBigEvent(
 	await doEvent(event, player, time, context, response);
 }
 
+function addDestinationResToResponse(
+	response: CrowniclesPacket[],
+	mapLink: MapLink,
+	mapTypeId: string,
+	tripDuration: number
+): void {
+	if (CityDataController.instance.getCityByMapLinkId(mapLink.id)) {
+		response.push(makePacket(CommandReportChooseDestinationCityRes, {
+			mapId: mapLink.endMap,
+			mapTypeId
+		}));
+	}
+	else {
+		response.push(makePacket(CommandReportChooseDestinationRes, {
+			mapId: mapLink.endMap,
+			mapTypeId,
+			tripDuration
+		}));
+	}
+}
+
 /**
  * Automatically chooses a destination at random / based on the forced link
  * @param forcedLink
@@ -365,11 +443,7 @@ async function automaticChooseDestination(forcedLink: MapLink, player: Player, d
 	const newLink = forcedLink && forcedLink.id !== -1 ? forcedLink : MapLinkDataController.instance.getLinkByLocations(player.getDestinationId(), destinationMaps[0]);
 	const endMap = MapLocationDataController.instance.getById(newLink.endMap);
 	await Maps.startTravel(player, newLink, Date.now());
-	response.push(makePacket(CommandReportChooseDestinationRes, {
-		mapId: newLink.endMap,
-		mapTypeId: endMap.type,
-		tripDuration: newLink.tripDuration
-	}));
+	addDestinationResToResponse(response, newLink, endMap.type, newLink.tripDuration);
 }
 
 /**
@@ -426,11 +500,8 @@ async function chooseDestination(
 
 		await Maps.startTravel(player, newLink, Date.now());
 
-		response.push(makePacket(CommandReportChooseDestinationRes, {
-			mapId: newLink.endMap,
-			mapTypeId: endMap.type,
-			tripDuration: newLink.tripDuration
-		}));
+		addDestinationResToResponse(response, newLink, endMap.type, newLink.tripDuration);
+
 		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.CHOOSE_DESTINATION);
 	};
 
