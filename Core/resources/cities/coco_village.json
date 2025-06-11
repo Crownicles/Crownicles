@@ -1,3 +1,32 @@
 {
-  "mapLinks": [93, 94]
+  "mapLinks": [93, 94],
+  "inns": [{
+    "id": "hotSwallow",
+    "meals": [{
+      "id": "fishAndChips",
+      "price": 80,
+      "health": 8,
+      "quality": 2
+    }, {
+      "id": "coldVegetableStew",
+      "price": 40,
+      "health": 4,
+      "quality": 1
+    }, {
+      "id": "roastedPork",
+      "price": 150,
+      "health": 15,
+      "quality": 3
+    }, {
+      "id": "oysterPlatter",
+      "price": 250,
+      "health": 10,
+      "quality": 4
+    }, {
+      "id": "tamale",
+      "price": 300,
+      "health": 20,
+      "quality": 5
+    }]
+  }]
 }

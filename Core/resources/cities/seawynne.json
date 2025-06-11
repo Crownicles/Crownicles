@@ -1,3 +1,32 @@
 {
-  "mapLinks": [85, 86]
+  "mapLinks": [85, 86],
+  "inns": [{
+    "id": "fireside",
+    "meals": [{
+      "id": "friedShrimp",
+      "price": 100,
+      "health": 10,
+      "quality": 2
+    }, {
+      "id": "clamChowder",
+      "price": 80,
+      "health": 8,
+      "quality": 1
+    }, {
+      "id": "grilledFish",
+      "price": 200,
+      "health": 20,
+      "quality": 3
+    }, {
+      "id": "lobsterRoll",
+      "price": 300,
+      "health": 35,
+      "quality": 4
+    }, {
+      "id": "jellyfishCarpaccio",
+      "price": 500,
+      "health": 45,
+      "quality": 5
+    }]
+  }]
 }

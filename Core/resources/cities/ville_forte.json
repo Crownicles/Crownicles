@@ -1,3 +1,22 @@
 {
-  "mapLinks": [89, 90]
+  "mapLinks": [89, 90],
+  "inns": [{
+    "id": "bloodyTankard",
+    "meals": [{
+      "id": "bread",
+      "price": 50,
+      "health": 5,
+      "quality": 1
+    }, {
+      "id": "pretzels",
+      "price": 60,
+      "health": 6,
+      "quality": 2
+    }, {
+      "id": "simpleSalad",
+      "price": 60,
+      "health": 5,
+      "quality": 2
+    }]
+  }]
 }
