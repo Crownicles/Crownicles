@@ -1,39 +1,39 @@
 import {
 	ActionRowBuilder, ButtonBuilder, ButtonStyle
 } from "discord.js";
-import { DraftbotInteraction } from "./DraftbotInteraction";
-import { DraftBotEmbed } from "./DraftBotEmbed";
+import { CrowniclesInteraction } from "./CrowniclesInteraction";
+import { CrowniclesEmbed } from "./CrowniclesEmbed";
 import { EmoteUtils } from "../utils/EmoteUtils";
 import { sendInteractionNotForYou } from "../utils/ErrorUtils";
-import { DraftBotIcons } from "../../../Lib/src/DraftBotIcons";
+import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 import { DiscordCollectorUtils } from "../utils/DiscordCollectorUtils";
 import { ReactionCollectorCreationPacket } from "../../../Lib/src/packets/interaction/ReactionCollectorPacket";
-import { PacketContext } from "../../../Lib/src/packets/DraftBotPacket";
+import { PacketContext } from "../../../Lib/src/packets/CrowniclesPacket";
 import { ReactionCollectorReturnTypeOrNull } from "../packetHandlers/handlers/ReactionCollectorHandlers";
 
-export type DraftbotButtonReaction = {
+export type CrowniclesButtonReaction = {
 	customId: string;
 	emote: string;
 	description: string;
 	buttonStyle?: ButtonStyle;
 };
 
-type DraftbotButtonReactionMessageOptions = {
-	reactions: DraftbotButtonReaction[];
-	embed: DraftBotEmbed;
+type CrowniclesButtonReactionMessageOptions = {
+	reactions: CrowniclesButtonReaction[];
+	embed: CrowniclesEmbed;
 	packet: ReactionCollectorCreationPacket;
 	context: PacketContext;
 	canEndReact?: boolean;
 };
 
-export class DraftbotButtonReactionMessage {
+export class CrowniclesButtonReactionMessage {
 	private readonly _buttonRow: ActionRowBuilder<ButtonBuilder>;
 
-	private readonly _embed: DraftBotEmbed;
+	private readonly _embed: CrowniclesEmbed;
 
-	private readonly _interaction: DraftbotInteraction;
+	private readonly _interaction: CrowniclesInteraction;
 
-	private readonly _messageOptions: DraftbotButtonReactionMessageOptions;
+	private readonly _messageOptions: CrowniclesButtonReactionMessageOptions;
 
 	/**
 	 * Create a new button reaction message: a message consisting of an embed and a list of buttons,
@@ -41,7 +41,7 @@ export class DraftbotButtonReactionMessage {
 	 * @param interaction
 	 * @param messageOptions
 	 */
-	constructor(interaction: DraftbotInteraction, messageOptions: DraftbotButtonReactionMessageOptions) {
+	constructor(interaction: CrowniclesInteraction, messageOptions: CrowniclesButtonReactionMessageOptions) {
 		this._buttonRow = new ActionRowBuilder<ButtonBuilder>();
 		this._buttonRow.addComponents(messageOptions.reactions.map(({
 			emote,
@@ -85,7 +85,7 @@ export class DraftbotButtonReactionMessage {
 
 		const reactionCollector = this._messageOptions.canEndReact
 			? message.createReactionCollector({
-				filter: (reaction, user) => user.id === this._interaction.user.id && reaction.emoji.name === DraftBotIcons.messages.notReplied,
+				filter: (reaction, user) => user.id === this._interaction.user.id && reaction.emoji.name === CrowniclesIcons.messages.notReplied,
 				time: this._messageOptions.packet.endTime - Date.now()
 			})
 			: null;
@@ -121,7 +121,7 @@ export class DraftbotButtonReactionMessage {
 	 * Create the menu text
 	 * @param reactions
 	 */
-	private createMenuDescription(reactions: DraftbotButtonReaction[]): string {
+	private createMenuDescription(reactions: CrowniclesButtonReaction[]): string {
 		return `\n\n${reactions.map(({
 			emote,
 			description

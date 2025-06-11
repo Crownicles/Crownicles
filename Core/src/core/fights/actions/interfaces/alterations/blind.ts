@@ -12,7 +12,7 @@ import { FightActionDataController } from "../../../../../data/FightAction";
 
 const use: FightAlterationFunc = (affected, fightAlteration, _opponent) => {
 	// 90 % chance to be healed
-	if (RandomUtils.draftbotRandom.bool(0.9) && affected.alterationTurn > 1) {
+	if (RandomUtils.crowniclesRandom.bool(0.9) && affected.alterationTurn > 1) {
 		affected.removeDefenseModifiers(fightAlteration);
 		affected.removeSpeedModifiers(fightAlteration);
 		return defaultHealFightAlterationResult(affected);
@@ -42,7 +42,7 @@ const use: FightAlterationFunc = (affected, fightAlteration, _opponent) => {
 	}
 
 	// 80% chance of not being able to attack this turn
-	if (RandomUtils.draftbotRandom.bool(0.8)) {
+	if (RandomUtils.crowniclesRandom.bool(0.8)) {
 		affected.nextFightAction = FightActionDataController.instance.getNone();
 		result.state = FightAlterationState.NO_ACTION;
 	}

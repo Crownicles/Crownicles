@@ -1,6 +1,6 @@
 import {
-	DraftBotPacket, makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, makePacket, PacketContext
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	CommandGuildShopEmpty,
 	CommandGuildShopGiveXp,
@@ -22,7 +22,7 @@ import { GuildUtils } from "../../core/utils/GuildUtils";
 import {
 	NumberChangeReason, ShopItemType
 } from "../../../../Lib/src/constants/LogsConstants";
-import { draftBotInstance } from "../../index";
+import { crowniclesInstance } from "../../index";
 import {
 	getFoodIndexOf, giveFoodToGuild
 } from "../../core/utils/FoodUtils";
@@ -36,7 +36,7 @@ import { LockManager } from "../../../../Lib/src/locks/LockManager";
 
 const giveXpLockManager = new LockManager();
 
-async function giveGuildXp(response: DraftBotPacket[], playerId: number, price: number): Promise<boolean> {
+async function giveGuildXp(response: CrowniclesPacket[], playerId: number, price: number): Promise<boolean> {
 	const player = await Players.getById(playerId);
 
 	const lock = giveXpLockManager.getLock(player.guildId);
@@ -65,7 +65,7 @@ function getGuildXPShopItem(): ShopItem {
 		id: ShopItemType.SMALL_GUILD_XP,
 		price: GuildShopConstants.PRICES.SMALL_XP,
 		amounts: [1],
-		buyCallback: async (response: DraftBotPacket[], playerId: number): Promise<boolean> => await giveGuildXp(response, playerId, GuildShopConstants.PRICES.SMALL_XP)
+		buyCallback: async (response: CrowniclesPacket[], playerId: number): Promise<boolean> => await giveGuildXp(response, playerId, GuildShopConstants.PRICES.SMALL_XP)
 	};
 }
 
@@ -77,7 +77,7 @@ function getBigGuildXPShopItem(): ShopItem {
 		id: ShopItemType.BIG_GUILD_XP,
 		price: GuildShopConstants.PRICES.BIG_XP,
 		amounts: [1],
-		buyCallback: async (response: DraftBotPacket[], playerId: number): Promise<boolean> => await giveGuildXp(response, playerId, GuildShopConstants.PRICES.BIG_XP)
+		buyCallback: async (response: CrowniclesPacket[], playerId: number): Promise<boolean> => await giveGuildXp(response, playerId, GuildShopConstants.PRICES.BIG_XP)
 	};
 }
 
@@ -92,7 +92,7 @@ function getFoodShopItem(name: string, amounts: number[]): ShopItem {
 		id: shopItemTypeFromId(name),
 		price: GuildShopConstants.PRICES.FOOD[indexFood],
 		amounts,
-		buyCallback: async (response: DraftBotPacket[], playerId: number, _context: PacketContext, amount: number): Promise<boolean> => {
+		buyCallback: async (response: CrowniclesPacket[], playerId: number, _context: PacketContext, amount: number): Promise<boolean> => {
 			const player = await Players.getById(playerId);
 			const guild = await Guilds.getById(player.guildId);
 
@@ -123,7 +123,7 @@ export default class GuildShopCommand {
 		whereAllowed: [WhereAllowed.CONTINENT]
 	})
 	static async execute(
-		response: DraftBotPacket[],
+		response: CrowniclesPacket[],
 		player: Player,
 		_packet: CommandGuildShopPacketReq,
 		context: PacketContext
@@ -196,7 +196,7 @@ export default class GuildShopCommand {
 		await ShopUtils.createAndSendShopCollector(context, response, {
 			shopCategories,
 			player,
-			logger: draftBotInstance.logsDatabase.logGuildShopBuyout
+			logger: crowniclesInstance.logsDatabase.logGuildShopBuyout
 		});
 	}
 }

@@ -1,6 +1,6 @@
 # Keycloak
 
-Keycloak is the project used to authenticate users on DraftBot
+Keycloak is the project used to authenticate users on Crownicles
 
 ## Start with docker
 

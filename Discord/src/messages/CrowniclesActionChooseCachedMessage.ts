@@ -1,13 +1,13 @@
-import { DraftbotCachedMessage } from "./DraftbotCachedMessage";
-import { PacketContext } from "../../../Lib/src/packets/DraftBotPacket";
+import { CrowniclesCachedMessage } from "./CrowniclesCachedMessage";
+import { PacketContext } from "../../../Lib/src/packets/CrowniclesPacket";
 import { DiscordCache } from "../bot/DiscordCache";
-import { DraftBotEmbed } from "./DraftBotEmbed";
+import { CrowniclesEmbed } from "./CrowniclesEmbed";
 import i18n from "../translations/i18n";
 import {
 	ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, parseEmoji
 } from "discord.js";
 import { EmoteUtils } from "../utils/EmoteUtils";
-import { DraftBotIcons } from "../../../Lib/src/DraftBotIcons";
+import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 import { DiscordCollectorUtils } from "../utils/DiscordCollectorUtils";
 import { ReactionCollectorCreationPacket } from "../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import {
@@ -19,7 +19,7 @@ import { DiscordConstants } from "../DiscordConstants";
 import { sendInteractionNotForYou } from "../utils/ErrorUtils";
 import { DisplayUtils } from "../utils/DisplayUtils";
 
-export class DraftbotActionChooseCachedMessage extends DraftbotCachedMessage<ReactionCollectorCreationPacket> {
+export class CrowniclesActionChooseCachedMessage extends CrowniclesCachedMessage<ReactionCollectorCreationPacket> {
 	private usernameCache?: string;
 
 	readonly duration = 30;
@@ -35,7 +35,7 @@ export class DraftbotActionChooseCachedMessage extends DraftbotCachedMessage<Rea
 		if (!this.usernameCache) {
 			this.usernameCache = await DisplayUtils.getEscapedUsername(data.fighterKeycloakId, interaction.userLanguage);
 		}
-		const embed = new DraftBotEmbed().formatAuthor(i18n.t("commands:fight.fightActionChoose.turnIndicationTitle", {
+		const embed = new CrowniclesEmbed().formatAuthor(i18n.t("commands:fight.fightActionChoose.turnIndicationTitle", {
 			lng,
 			pseudo: this.usernameCache
 		}), interaction.user)
@@ -46,7 +46,7 @@ export class DraftbotActionChooseCachedMessage extends DraftbotCachedMessage<Rea
 		}[];
 		reactions.forEach(action => {
 			const react = action.data as ReactionCollectorFightChooseActionReaction;
-			const emoji = EmoteUtils.translateEmojiToDiscord(DraftBotIcons.fightActions[react.id]);
+			const emoji = EmoteUtils.translateEmojiToDiscord(CrowniclesIcons.fightActions[react.id]);
 
 			const button = new ButtonBuilder()
 				.setEmoji(parseEmoji(emoji)!)

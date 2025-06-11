@@ -1,14 +1,14 @@
 import { ReactionCollectorCreationPacket } from "../../../Lib/src/packets/interaction/ReactionCollectorPacket";
-import { PacketContext } from "../../../Lib/src/packets/DraftBotPacket";
+import { PacketContext } from "../../../Lib/src/packets/CrowniclesPacket";
 import { DiscordCache } from "../bot/DiscordCache";
-import { DraftbotSmallEventEmbed } from "../messages/DraftbotSmallEventEmbed";
+import { CrowniclesSmallEventEmbed } from "../messages/CrowniclesSmallEventEmbed";
 import { StringUtils } from "../utils/StringUtils";
 import { DiscordCollectorUtils } from "../utils/DiscordCollectorUtils";
 import { DisplayUtils } from "../utils/DisplayUtils";
 import i18n from "../translations/i18n";
 import { ReactionCollectorEpicShopSmallEventData } from "../../../Lib/src/packets/interaction/ReactionCollectorEpicShopSmallEvent";
 import { ReactionCollectorReturnTypeOrNull } from "../packetHandlers/handlers/ReactionCollectorHandlers";
-import { DraftBotIcons } from "../../../Lib/src/DraftBotIcons";
+import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 
 /**
  * Send the initial embed for this small event
@@ -24,14 +24,14 @@ export async function epicItemShopCollector(context: PacketContext, packet: Reac
 	const data = packet.data.data as ReactionCollectorEpicShopSmallEventData;
 	const tip = data.tip ? i18n.t("smallEvents:epicItemShop.reductionTip", { lng }) : "";
 
-	const embed = new DraftbotSmallEventEmbed(
+	const embed = new CrowniclesSmallEventEmbed(
 		"epicItemShop",
 		StringUtils.getRandomTranslation("smallEvents:epicItemShop.intro", lng)
 		+ tip
 		+ StringUtils.getRandomTranslation("smallEvents:shop.end", lng, {
 			item: DisplayUtils.getItemDisplayWithStats(data.item, lng),
 			price: data.price,
-			type: `${DraftBotIcons.itemCategories[data.item.category]}${i18n.t("smallEvents:shop.types", {
+			type: `${CrowniclesIcons.itemCategories[data.item.category]}${i18n.t("smallEvents:shop.types", {
 				returnObjects: true,
 				lng
 			})[data.item.category]}`
@@ -51,7 +51,7 @@ export async function epicItemShopHandler(context: PacketContext, translationKey
 	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
 	await buttonInteraction?.editReply({
 		embeds: [
-			new DraftbotSmallEventEmbed(
+			new CrowniclesSmallEventEmbed(
 				"epicItemShop",
 				StringUtils.getRandomTranslation(translationKey, originalInteraction.userLanguage),
 				buttonInteraction.user,

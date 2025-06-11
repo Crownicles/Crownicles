@@ -1,5 +1,5 @@
 import { ICommand } from "../ICommand";
-import { DraftbotInteraction } from "../../messages/DraftbotInteraction";
+import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
 import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
 import {
 	NotificationsConfiguration,
@@ -9,10 +9,10 @@ import {
 	ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, parseEmoji, User
 } from "discord.js";
 import { Constants } from "../../../../Lib/src/constants/Constants";
-import { DraftBotIcons } from "../../../../Lib/src/DraftBotIcons";
+import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 import i18n from "../../translations/i18n";
 import { Language } from "../../../../Lib/src/Language";
-import { DraftBotEmbed } from "../../messages/DraftBotEmbed";
+import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import { sendInteractionNotForYou } from "../../utils/ErrorUtils";
 import {
 	NotificationSendType, NotificationSendTypeEnum
@@ -33,7 +33,7 @@ const currentCollectors = new Map<string, () => void>();
 const backButtonCustomId = "back";
 const forceStopReason = "force";
 
-async function getPacket(interaction: DraftbotInteraction): Promise<null> {
+async function getPacket(interaction: CrowniclesInteraction): Promise<null> {
 	const notificationsConfiguration = await NotificationsConfigurations.getOrRegister(interaction.user.id);
 
 	await mainPage(interaction, notificationsConfiguration, interaction.userLanguage);
@@ -48,14 +48,14 @@ function clearCurrentCollector(userId: string): void {
 	}
 }
 
-async function mainPage(interaction: DraftbotInteraction | ButtonInteraction, notificationsConfiguration: NotificationsConfiguration, lng: Language): Promise<void> {
+async function mainPage(interaction: CrowniclesInteraction | ButtonInteraction, notificationsConfiguration: NotificationsConfiguration, lng: Language): Promise<void> {
 	clearCurrentCollector(interaction.user.id);
 
 	// Build the rows and buttons
 	const chooseEnabledCustomId = "chooseEnabled";
 	const chooseSendTypeCustomId = "chooseSendType";
-	const chooseEnabledEmoji = DraftBotIcons.notifications.bell;
-	const chooseSendTypeEmoji = DraftBotIcons.notifications.sendLocation;
+	const chooseEnabledEmoji = CrowniclesIcons.notifications.bell;
+	const chooseSendTypeEmoji = CrowniclesIcons.notifications.sendLocation;
 
 	const row = new ActionRowBuilder<ButtonBuilder>();
 	row.addComponents(new ButtonBuilder()
@@ -144,7 +144,7 @@ function getSettingsRows(notificationsConfiguration: NotificationsConfiguration,
 	});
 	const rowBack = new ActionRowBuilder<ButtonBuilder>();
 	rowBack.addComponents(new ButtonBuilder()
-		.setEmoji(parseEmoji(DraftBotIcons.notifications.back)!)
+		.setEmoji(parseEmoji(CrowniclesIcons.notifications.back)!)
 		.setLabel(i18n.t("commands:notifications.back", { lng }))
 		.setCustomId(backButtonCustomId)
 		.setStyle(ButtonStyle.Secondary));
@@ -262,21 +262,21 @@ async function chooseSendType(buttonInteraction: ButtonInteraction, notification
 	});
 }
 
-function getNotificationsEmbed(notificationsConfiguration: NotificationsConfiguration, user: User, lng: Language, footer?: string): DraftBotEmbed {
+function getNotificationsEmbed(notificationsConfiguration: NotificationsConfiguration, user: User, lng: Language, footer?: string): CrowniclesEmbed {
 	let description = "";
 	NotificationsTypes.ALL.forEach(notificationType => {
 		const notificationTypeValue = notificationType.value(notificationsConfiguration);
 		const sendLocation = NotificationSendType.toString(notificationTypeValue.sendType, lng, notificationTypeValue.channelId);
 		description
 			+= `${notificationType.emote} **__${i18n.t(notificationType.i18nKey, { lng })}__**
-- **${i18n.t("commands:notifications.enabledField", { lng })}** ${notificationTypeValue.enabled ? DraftBotIcons.collectors.accept : DraftBotIcons.collectors.refuse}`;
+- **${i18n.t("commands:notifications.enabledField", { lng })}** ${notificationTypeValue.enabled ? CrowniclesIcons.collectors.accept : CrowniclesIcons.collectors.refuse}`;
 		if (notificationTypeValue.enabled) {
 			description += `\n- **${i18n.t("commands:notifications.sendLocationField", { lng })}** ${sendLocation}`;
 		}
 		description += "\n\n";
 	});
 
-	const embed = new DraftBotEmbed()
+	const embed = new CrowniclesEmbed()
 		.formatAuthor(i18n.t("commands:notifications.embedTitle", { lng }), user)
 		.setDescription(description);
 	if (footer) {

@@ -1,8 +1,8 @@
 import { packetHandler } from "../PacketHandler";
-import { PacketContext } from "../../../../Lib/src/packets/DraftBotPacket";
+import { PacketContext } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { SmallEventAdvanceTimePacket } from "../../../../Lib/src/packets/smallEvents/SmallEventAdvanceTimePacket";
 import { DiscordCache } from "../../bot/DiscordCache";
-import { DraftbotSmallEventEmbed } from "../../messages/DraftbotSmallEventEmbed";
+import { CrowniclesSmallEventEmbed } from "../../messages/CrowniclesSmallEventEmbed";
 import { Language } from "../../../../Lib/src/Language";
 import {
 	escapeUsername, StringUtils
@@ -14,7 +14,7 @@ import {
 } from "../../../../Lib/src/packets/smallEvents/SmallEventSmallBadPacket";
 import { SmallEventBigBadKind } from "../../../../Lib/src/types/SmallEventBigBadKind";
 import i18n from "../../translations/i18n";
-import { DraftBotIcons } from "../../../../Lib/src/DraftBotIcons";
+import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 import { SmallEventBoatAdvicePacket } from "../../../../Lib/src/packets/smallEvents/SmallEventBoatAdvicePacket";
 import {
 	SmallEventGoToPVEIslandAcceptPacket,
@@ -77,7 +77,7 @@ import { SmallEventCartPacket } from "../../../../Lib/src/packets/smallEvents/Sm
 import { cartResult } from "../../smallEvents/cart";
 import { SmallEventFindMissionPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventFindMissionPacket";
 import { MissionUtils } from "../../utils/MissionUtils";
-import { DraftBotEmbed } from "../../messages/DraftBotEmbed";
+import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import { baseFunctionHandler } from "../../smallEvents/shop";
 import { epicItemShopHandler } from "../../smallEvents/epicItemShop";
 import {
@@ -86,7 +86,7 @@ import {
 	SmallEventEpicItemShopRefusePacket
 } from "../../../../Lib/src/packets/smallEvents/SmallEventEpicItemShopPacket";
 import { Badge } from "../../../../Lib/src/types/Badge";
-import { DraftbotInteraction } from "../../messages/DraftbotInteraction";
+import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
 import { SmallEventDwarfPetFanPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventDwarfPetFanPacket";
 import { SmallEventInfoFightPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventInfoFightPacket";
 import { infoFightResult } from "../../smallEvents/infoFight";
@@ -106,7 +106,7 @@ export default class SmallEventsHandler {
 		const lng = interaction.userLanguage;
 		const description = getRandomSmallEventIntro(lng)
 			+ StringUtils.getRandomTranslation("smallEvents:advanceTime.stories", lng, { time: packet.amount });
-		await interaction.editReply({ embeds: [new DraftbotSmallEventEmbed("advanceTime", description, interaction.user, lng)] });
+		await interaction.editReply({ embeds: [new CrowniclesSmallEventEmbed("advanceTime", description, interaction.user, lng)] });
 	}
 
 	@packetHandler(SmallEventBigBadPacket)
@@ -122,7 +122,7 @@ export default class SmallEventsHandler {
 				story = StringUtils.getRandomTranslation("smallEvents:bigBad.lifeLoss", lng, { lifeLoss: packet.lifeLost });
 				break;
 			case SmallEventBigBadKind.ALTERATION:
-				story = `${i18n.t(`smallEvents:bigBad.alterationStories.${packet.receivedStory}`, { lng })} ${DraftBotIcons.effects[packet.effectId!]}`;
+				story = `${i18n.t(`smallEvents:bigBad.alterationStories.${packet.receivedStory}`, { lng })} ${CrowniclesIcons.effects[packet.effectId!]}`;
 				break;
 			case SmallEventBigBadKind.MONEY_LOSS:
 				story = StringUtils.getRandomTranslation("smallEvents:bigBad.moneyLoss", lng, { moneyLost: packet.moneyLost });
@@ -131,7 +131,7 @@ export default class SmallEventsHandler {
 				story = "";
 		}
 		const description = getRandomSmallEventIntro(lng) + story;
-		await interaction.editReply({ embeds: [new DraftbotSmallEventEmbed("bigBad", description, interaction.user, lng)] });
+		await interaction.editReply({ embeds: [new CrowniclesSmallEventEmbed("bigBad", description, interaction.user, lng)] });
 	}
 
 	@packetHandler(SmallEventBoatAdvicePacket)
@@ -146,7 +146,7 @@ export default class SmallEventsHandler {
 			lng,
 			{ advice: StringUtils.getRandomTranslation("smallEvents:boatAdvice.advices", lng) }
 		);
-		await interaction.editReply({ embeds: [new DraftbotSmallEventEmbed("boatAdvice", description, interaction.user, lng)] });
+		await interaction.editReply({ embeds: [new CrowniclesSmallEventEmbed("boatAdvice", description, interaction.user, lng)] });
 	}
 
 	@packetHandler(SmallEventGoToPVEIslandAcceptPacket)
@@ -158,7 +158,7 @@ export default class SmallEventsHandler {
 		const lng = context.discord!.language;
 		await interaction.editReply({
 			embeds: [
-				new DraftbotSmallEventEmbed(
+				new CrowniclesSmallEventEmbed(
 					"goToPVEIsland",
 					i18n.t(`smallEvents:goToPVEIsland.endStoryAccept${packet.alone ? "" : "WithMember"}`, {
 						lng,
@@ -182,7 +182,7 @@ export default class SmallEventsHandler {
 		const lng = context.discord!.language;
 		await interaction?.editReply({
 			embeds: [
-				new DraftbotSmallEventEmbed(
+				new CrowniclesSmallEventEmbed(
 					"goToPVEIsland",
 					i18n.t("smallEvents:goToPVEIsland.endStoryRefuse", { lng }),
 					interaction.user,
@@ -198,7 +198,7 @@ export default class SmallEventsHandler {
 		const lng = context.discord!.language;
 		await interaction?.editReply({
 			embeds: [
-				new DraftbotSmallEventEmbed(
+				new CrowniclesSmallEventEmbed(
 					"goToPVEIsland",
 					i18n.t("smallEvents:goToPVEIsland.notEnoughGems", { lng }),
 					interaction.user,
@@ -216,7 +216,7 @@ export default class SmallEventsHandler {
 		}
 		const lng = interaction.userLanguage;
 		await interaction.editReply({
-			embeds: [new DraftbotSmallEventEmbed("lottery", i18n.t("smallEvents:lottery.end", { lng }), interaction.user, lng)]
+			embeds: [new CrowniclesSmallEventEmbed("lottery", i18n.t("smallEvents:lottery.end", { lng }), interaction.user, lng)]
 		});
 	}
 
@@ -226,7 +226,7 @@ export default class SmallEventsHandler {
 		const lng = context.discord!.language;
 		await interaction?.editReply({
 			embeds: [
-				new DraftbotSmallEventEmbed(
+				new CrowniclesSmallEventEmbed(
 					"lottery",
 					i18n.t("smallEvents:lottery.poor", { lng }),
 					interaction.user,
@@ -242,7 +242,7 @@ export default class SmallEventsHandler {
 		const lng = context.discord!.language;
 		await interaction?.editReply({
 			embeds: [
-				new DraftbotSmallEventEmbed(
+				new CrowniclesSmallEventEmbed(
 					"lottery",
 					i18n.t(`smallEvents:lottery.${packet.level}.${packet.moneyLost > 0 ? "failWithMalus" : "fail"}`, {
 						lng,
@@ -262,7 +262,7 @@ export default class SmallEventsHandler {
 		const lng = context.discord!.language;
 		await interaction?.editReply({
 			embeds: [
-				new DraftbotSmallEventEmbed(
+				new CrowniclesSmallEventEmbed(
 					"lottery",
 					i18n.t(`smallEvents:lottery.${packet.level}.success`, {
 						lng,
@@ -283,10 +283,10 @@ export default class SmallEventsHandler {
 	 * @param interaction
 	 * @param lng
 	 */
-	private static async handleNoPlayerInteraction(interaction: DraftbotInteraction, lng: Language): Promise<void> {
+	private static async handleNoPlayerInteraction(interaction: CrowniclesInteraction, lng: Language): Promise<void> {
 		await interaction.editReply({
 			embeds: [
-				new DraftbotSmallEventEmbed(
+				new CrowniclesSmallEventEmbed(
 					"interactOtherPlayers",
 					StringUtils.getRandomTranslation("smallEvents:interactOtherPlayers.no_one", lng),
 					interaction.user,
@@ -303,10 +303,10 @@ export default class SmallEventsHandler {
 	 * @param lng
 	 * @param playerDisplay
 	 */
-	private static async handleEffectInteraction(interaction: DraftbotInteraction, packet: SmallEventInteractOtherPlayersPacket, lng: Language, playerDisplay: string): Promise<void> {
+	private static async handleEffectInteraction(interaction: CrowniclesInteraction, packet: SmallEventInteractOtherPlayersPacket, lng: Language, playerDisplay: string): Promise<void> {
 		await interaction.editReply({
 			embeds: [
-				new DraftbotSmallEventEmbed(
+				new CrowniclesSmallEventEmbed(
 					"interactOtherPlayers",
 					StringUtils.getRandomTranslation(`smallEvents:interactOtherPlayers.effect.${packet.data!.effectId}`, lng, { playerDisplay }),
 					interaction.user,
@@ -323,11 +323,11 @@ export default class SmallEventsHandler {
 	 * @param lng
 	 * @param playerDisplay
 	 */
-	private static async handleOtherInteractions(interaction: DraftbotInteraction, packet: SmallEventInteractOtherPlayersPacket, lng: Language, playerDisplay: string): Promise<void> {
+	private static async handleOtherInteractions(interaction: CrowniclesInteraction, packet: SmallEventInteractOtherPlayersPacket, lng: Language, playerDisplay: string): Promise<void> {
 		const hasPetInfo = packet.data!.petId && packet.data!.petSex;
 		await interaction.editReply({
 			embeds: [
-				new DraftbotSmallEventEmbed(
+				new CrowniclesSmallEventEmbed(
 					"interactOtherPlayers",
 					StringUtils.getRandomTranslation(
 						`smallEvents:interactOtherPlayers.${InteractOtherPlayerInteraction[packet.playerInteraction!].toLowerCase()}`,
@@ -335,7 +335,7 @@ export default class SmallEventsHandler {
 						{
 							playerDisplay,
 							level: packet.data!.level,
-							class: `${DraftBotIcons.classes[packet.data!.classId]} ${i18n.t(`models:classes.${packet.data!.classId}`, { lng })}`,
+							class: `${CrowniclesIcons.classes[packet.data!.classId]} ${i18n.t(`models:classes.${packet.data!.classId}`, { lng })}`,
 							advice: StringUtils.getRandomTranslation("advices:advices", lng),
 							petEmote: hasPetInfo ? DisplayUtils.getPetIcon(packet.data!.petId!, packet.data!.petSex!) : "",
 							petName: hasPetInfo ? DisplayUtils.getPetNicknameOrTypeName(packet.data!.petName ?? null, packet.data!.petId!, packet.data!.petSex!, lng) : "",
@@ -386,7 +386,7 @@ export default class SmallEventsHandler {
 		const lng = context.discord!.language;
 		await interaction?.editReply({
 			embeds: [
-				new DraftbotSmallEventEmbed(
+				new CrowniclesSmallEventEmbed(
 					"interactOtherPlayers",
 					StringUtils.getRandomTranslation("smallEvents:interactOtherPlayers.poor_give_money", lng),
 					interaction.user,
@@ -402,7 +402,7 @@ export default class SmallEventsHandler {
 		const lng = context.discord!.language;
 		await interaction?.editReply({
 			embeds: [
-				new DraftbotSmallEventEmbed(
+				new CrowniclesSmallEventEmbed(
 					"interactOtherPlayers",
 					StringUtils.getRandomTranslation("smallEvents:interactOtherPlayers.poor_dont_give_money", lng),
 					interaction!.user,
@@ -431,7 +431,7 @@ export default class SmallEventsHandler {
 		});
 		await interaction.editReply({
 			embeds: [
-				new DraftbotSmallEventEmbed(
+				new CrowniclesSmallEventEmbed(
 					"leagueReward",
 					getRandomSmallEventIntro(lng) + StringUtils.getRandomTranslation("smallEvents:leagueReward.intrigue", lng) + endMessage,
 					interaction.user,
@@ -447,7 +447,7 @@ export default class SmallEventsHandler {
 		const lng = interaction!.userLanguage;
 		await interaction?.editReply({
 			embeds: [
-				new DraftbotSmallEventEmbed(
+				new CrowniclesSmallEventEmbed(
 					"winGuildXP",
 					StringUtils.getRandomTranslation("smallEvents:winGuildXP.stories", lng, { guild: packet.guildName })
 					+ i18n.t("smallEvents:winGuildXP.end", {
@@ -466,7 +466,7 @@ export default class SmallEventsHandler {
 		const interaction = DiscordCache.getInteraction(context.discord!.interaction);
 		await interaction?.editReply({
 			embeds: [
-				new DraftbotSmallEventEmbed(
+				new CrowniclesSmallEventEmbed(
 					"doNothing",
 					StringUtils.getRandomTranslation("smallEvents:doNothing.stories", interaction.userLanguage),
 					interaction.user,
@@ -483,13 +483,13 @@ export default class SmallEventsHandler {
 			return;
 		}
 		const lng = interaction.userLanguage;
-		const staffMember = RandomUtils.draftbotRandom.pick(Object.keys(i18n.t("smallEvents:staffMember.members", {
+		const staffMember = RandomUtils.crowniclesRandom.pick(Object.keys(i18n.t("smallEvents:staffMember.members", {
 			returnObjects: true,
 			lng
 		})));
 		await interaction.editReply({
 			embeds: [
-				new DraftbotSmallEventEmbed(
+				new CrowniclesSmallEventEmbed(
 					"staffMember",
 					StringUtils.getRandomTranslation("smallEvents:staffMember.context", lng, {
 						pseudo: staffMember,
@@ -510,7 +510,7 @@ export default class SmallEventsHandler {
 		const lng = interaction!.userLanguage;
 		await interaction?.editReply({
 			embeds: [
-				new DraftbotSmallEventEmbed(
+				new CrowniclesSmallEventEmbed(
 					"winEnergy",
 					getRandomSmallEventIntro(lng) + StringUtils.getRandomTranslation("smallEvents:winEnergy.stories", lng),
 					interaction.user,
@@ -526,7 +526,7 @@ export default class SmallEventsHandler {
 		const lng = interaction!.userLanguage;
 		await interaction?.editReply({
 			embeds: [
-				new DraftbotSmallEventEmbed(
+				new CrowniclesSmallEventEmbed(
 					"winEnergyOnIsland",
 					getRandomSmallEventIntro(lng)
 					+ StringUtils.getRandomTranslation(
@@ -547,7 +547,7 @@ export default class SmallEventsHandler {
 		const lng = interaction!.userLanguage;
 		await interaction?.editReply({
 			embeds: [
-				new DraftbotSmallEventEmbed(
+				new CrowniclesSmallEventEmbed(
 					"winHealth",
 					getRandomSmallEventIntro(lng)
 					+ StringUtils.getRandomTranslation("smallEvents:winHealth.stories", lng, { health: packet.amount }),
@@ -564,7 +564,7 @@ export default class SmallEventsHandler {
 		const lng = interaction!.userLanguage;
 		await interaction?.editReply({
 			embeds: [
-				new DraftbotSmallEventEmbed(
+				new CrowniclesSmallEventEmbed(
 					"winPersonalXP",
 					getRandomSmallEventIntro(lng)
 					+ StringUtils.getRandomTranslation("smallEvents:winPersonalXP.stories", lng)
@@ -600,7 +600,7 @@ export default class SmallEventsHandler {
 				: "noFood";
 		await interaction.editReply({
 			embeds: [
-				new DraftbotSmallEventEmbed(
+				new CrowniclesSmallEventEmbed(
 					"findPet",
 					getRandomSmallEventIntro(lng)
 					+ StringUtils.getRandomTranslation(
@@ -624,7 +624,7 @@ export default class SmallEventsHandler {
 		const lng = interaction!.userLanguage;
 		await interaction?.editReply({
 			embeds: [
-				new DraftbotSmallEventEmbed(
+				new CrowniclesSmallEventEmbed(
 					"space",
 					i18n.t("smallEvents:space.before_search_format", {
 						lng,
@@ -659,7 +659,7 @@ export default class SmallEventsHandler {
 
 		await interaction.editReply({
 			embeds: [
-				new DraftbotSmallEventEmbed(
+				new CrowniclesSmallEventEmbed(
 					"space",
 					i18n.t("smallEvents:space.after_search_format", {
 						lng,
@@ -699,7 +699,7 @@ export default class SmallEventsHandler {
 		const lng = interaction!.userLanguage;
 		await interaction?.editReply({
 			embeds: [
-				new DraftbotSmallEventEmbed(
+				new CrowniclesSmallEventEmbed(
 					"botFacts",
 					getRandomSmallEventIntro(lng)
 					+ StringUtils.getRandomTranslation("smallEvents:botFacts.stories", lng, {
@@ -726,7 +726,7 @@ export default class SmallEventsHandler {
 			: packet.amount;
 		await interaction?.editReply({
 			embeds: [
-				new DraftbotSmallEventEmbed(
+				new CrowniclesSmallEventEmbed(
 					"smallBad",
 					getRandomSmallEventIntro(lng)
 					+ StringUtils.getRandomTranslation(`smallEvents:smallBad.${packet.issue}.stories`, lng, { amount: amountDisplay }),
@@ -743,7 +743,7 @@ export default class SmallEventsHandler {
 		const lng = interaction!.userLanguage;
 		await interaction?.editReply({
 			embeds: [
-				new DraftbotSmallEventEmbed(
+				new CrowniclesSmallEventEmbed(
 					"findPotion",
 					getRandomSmallEventIntro(lng)
 					+ StringUtils.getRandomTranslation("smallEvents:findPotion.stories", lng),
@@ -760,7 +760,7 @@ export default class SmallEventsHandler {
 		const lng = interaction!.userLanguage;
 		await interaction?.editReply({
 			embeds: [
-				new DraftbotSmallEventEmbed(
+				new CrowniclesSmallEventEmbed(
 					"findItem",
 					getRandomSmallEventIntro(lng)
 					+ StringUtils.getRandomTranslation("smallEvents:findItem.stories", lng),
@@ -777,7 +777,7 @@ export default class SmallEventsHandler {
 		const lng = interaction!.userLanguage;
 		await interaction?.editReply({
 			embeds: [
-				new DraftbotSmallEventEmbed(
+				new CrowniclesSmallEventEmbed(
 					"pet",
 					StringUtils.getRandomTranslation(
 						`smallEvents:pet.stories.${packet.interactionName}`,
@@ -787,7 +787,7 @@ export default class SmallEventsHandler {
 							pet: PetUtils.petToShortString(lng, packet.petNickname, packet.petTypeId, packet.petSex),
 							amount: packet.amount,
 							food: packet.food ? DisplayUtils.getFoodDisplay(packet.food, 1, lng, false) : null,
-							badge: DraftBotIcons.badges[Badge.LEGENDARY_PET],
+							badge: CrowniclesIcons.badges[Badge.LEGENDARY_PET],
 							randomAnimal: i18n.t("smallEvents:pet.randomAnimal", {
 								lng,
 								context: packet.randomPetSex,
@@ -808,7 +808,7 @@ export default class SmallEventsHandler {
 		const lng = interaction!.userLanguage;
 		await interaction?.editReply({
 			embeds: [
-				new DraftbotSmallEventEmbed(
+				new CrowniclesSmallEventEmbed(
 					"class",
 					getRandomSmallEventIntro(lng)
 					+ StringUtils.getRandomTranslation(`smallEvents:class.${packet.classKind}.${packet.interactionName}`, lng, {
@@ -827,13 +827,13 @@ export default class SmallEventsHandler {
 		const lng = interaction!.userLanguage;
 		await interaction?.editReply({
 			embeds: [
-				new DraftbotSmallEventEmbed(
+				new CrowniclesSmallEventEmbed(
 					"ultimateFoodMerchant",
 					getRandomSmallEventIntro(lng)
 					+ StringUtils.getRandomTranslation("smallEvents:ultimateFoodMerchant.stories", lng)
 					+ StringUtils.getRandomTranslation(`smallEvents:ultimateFoodMerchant.rewards.${packet.interactionName}`, lng, {
 						count: packet.amount,
-						moneyEmote: EmoteUtils.translateEmojiToDiscord(DraftBotIcons.unitValues.money)
+						moneyEmote: EmoteUtils.translateEmojiToDiscord(CrowniclesIcons.unitValues.money)
 					}),
 					interaction.user,
 					lng
@@ -853,7 +853,7 @@ export default class SmallEventsHandler {
 		const lng = interaction!.userLanguage;
 		await interaction?.editReply({
 			embeds: [
-				new DraftbotSmallEventEmbed(
+				new CrowniclesSmallEventEmbed(
 					"bonusGuildPVEIsland",
 					`${i18n.t(`smallEvents:bonusGuildPVEIsland.events.${packet.event}.intro`, { lng })}\n\n${
 						i18n.t(`smallEvents:bonusGuildPVEIsland.events.${packet.event}.${packet.result}.${packet.surrounding}`, {
@@ -874,7 +874,7 @@ export default class SmallEventsHandler {
 		const lng = interaction!.userLanguage;
 		await interaction?.channel.send({
 			embeds: [
-				new DraftbotSmallEventEmbed(
+				new CrowniclesSmallEventEmbed(
 					"fightPet",
 					i18n.t(`smallEvents:fightPet.fightPetActions.${packet.fightPetActionId}.${packet.isSuccess ? "success" : "failure"}`, { lng })
 					+ (packet.isSuccess
@@ -899,7 +899,7 @@ export default class SmallEventsHandler {
 		const lng = interaction.userLanguage;
 		await interaction.channel.send({
 			embeds: [
-				new DraftBotEmbed()
+				new CrowniclesEmbed()
 					.formatAuthor(
 						i18n.t("commands:report.journal", {
 							lng,
@@ -911,7 +911,7 @@ export default class SmallEventsHandler {
 						i18n.t(`{emote:goblets.{{goblet}}} $t(smallEvents:gobletsGame.results.${packet.malus})`, {
 							lng,
 							quantity: packet.malus === SmallEventGobletsGameMalus.TIME ? minutesDisplay(packet.value) : packet.value,
-							goblet: packet.goblet ?? RandomUtils.draftbotRandom.pick(Object.keys(DraftBotIcons.goblets))
+							goblet: packet.goblet ?? RandomUtils.crowniclesRandom.pick(Object.keys(CrowniclesIcons.goblets))
 						})
 					)
 			]
@@ -940,7 +940,7 @@ export default class SmallEventsHandler {
 		const lng = interaction!.userLanguage;
 		await interaction?.editReply({
 			embeds: [
-				new DraftbotSmallEventEmbed(
+				new CrowniclesSmallEventEmbed(
 					"findMission",
 					`${
 						getRandomSmallEventIntro(lng)
@@ -978,7 +978,7 @@ export default class SmallEventsHandler {
 		const keyReward = packet.isGemReward ? "gem" : "money";
 		await interaction?.editReply({
 			embeds: [
-				new DraftbotSmallEventEmbed(
+				new CrowniclesSmallEventEmbed(
 					"dwarfPetFan",
 					`${StringUtils.getRandomTranslation("smallEvents:dwarfPetFan.intro", lng)} ${StringUtils.getRandomTranslation(`smallEvents:dwarfPetFan.${packet.interactionName}`, lng, {
 						context: packet.petTypeId ? packet.petSex : "m",

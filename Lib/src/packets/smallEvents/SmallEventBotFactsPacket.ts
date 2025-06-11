@@ -1,7 +1,7 @@
 import { SmallEventPacket } from "./SmallEventPacket";
 import {
 	PacketDirection, sendablePacket
-} from "../DraftBotPacket";
+} from "../CrowniclesPacket";
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class SmallEventBotFactsPacket extends SmallEventPacket {

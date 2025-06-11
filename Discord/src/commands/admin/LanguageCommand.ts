@@ -6,30 +6,30 @@ import {
 	StringSelectMenuInteraction,
 	StringSelectMenuOptionBuilder
 } from "discord.js";
-import { DraftbotInteraction } from "../../messages/DraftbotInteraction";
+import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
 import i18n from "../../translations/i18n";
-import { DraftBotEmbed } from "../../messages/DraftBotEmbed";
+import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import { KeycloakUser } from "../../../../Lib/src/keycloak/KeycloakUser";
 import { KeycloakUtils } from "../../../../Lib/src/keycloak/KeycloakUtils";
-import { keycloakConfig } from "../../bot/DraftBotShard";
+import { keycloakConfig } from "../../bot/CrowniclesShard";
 import { Constants } from "../../../../Lib/src/constants/Constants";
 import { sendInteractionNotForYou } from "../../utils/ErrorUtils";
 import {
 	LANGUAGE, Language
 } from "../../../../Lib/src/Language";
-import { DraftBotIcons } from "../../../../Lib/src/DraftBotIcons";
+import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 
 /**
  * Change the language used by the bot to interact with the player
  */
-async function getPacket(interaction: DraftbotInteraction, keycloakUser: KeycloakUser): Promise<null> {
+async function getPacket(interaction: CrowniclesInteraction, keycloakUser: KeycloakUser): Promise<null> {
 	const selectLanguageMenuId = "languageSelectionMenu";
 	const lng = interaction.userLanguage;
 
 	const selectLanguageMenuOptions = LANGUAGE.LANGUAGES
 		.map(languageCode => new StringSelectMenuOptionBuilder()
 			.setLabel(i18n.t(`commands:language.languages.${languageCode}`, { lng }))
-			.setEmoji(DraftBotIcons.languages[languageCode])
+			.setEmoji(CrowniclesIcons.languages[languageCode])
 			.setValue(languageCode));
 
 	const languageSelectionMenu = new StringSelectMenuBuilder()
@@ -42,7 +42,7 @@ async function getPacket(interaction: DraftbotInteraction, keycloakUser: Keycloa
 
 	const reply = await interaction.reply({
 		embeds: [
-			new DraftBotEmbed()
+			new CrowniclesEmbed()
 				.setTitle(i18n.t("commands:language.title", { lng }))
 				.setDescription(i18n.t("commands:language.description", { lng }))
 		],
@@ -70,7 +70,7 @@ async function getPacket(interaction: DraftbotInteraction, keycloakUser: Keycloa
 
 		await menuInteraction.reply({
 			embeds: [
-				new DraftBotEmbed()
+				new CrowniclesEmbed()
 					.setTitle(i18n.t("commands:language.newLanguageSetTitle", {
 						lng: menuInteraction.values[0] as Language
 					}))

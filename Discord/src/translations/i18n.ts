@@ -7,8 +7,8 @@ import { readdirSync } from "fs";
 import { resolve } from "path";
 import { BotUtils } from "../utils/BotUtils";
 import { EmoteUtils } from "../utils/EmoteUtils";
-import { DraftBotIcons } from "../../../Lib/src/DraftBotIcons";
-import { DraftBotLogger } from "../../../Lib/src/logs/DraftBotLogger";
+import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
+import { CrowniclesLogger } from "../../../Lib/src/logs/CrowniclesLogger";
 
 function getI18nOptions(): i18next.InitOptions<unknown> {
 	const resources: i18next.Resource = {};
@@ -61,7 +61,7 @@ export type TranslationOption = {
  */
 function getEmote(emote: string): string | null {
 	try {
-		let basePath: EmotePath = DraftBotIcons as EmotePathFolder;
+		let basePath: EmotePath = CrowniclesIcons as EmotePathFolder;
 		const emotePath = emote.split(".");
 		for (const path of emotePath) {
 			if (typeof basePath === "string") {
@@ -72,23 +72,23 @@ function getEmote(emote: string): string | null {
 		return typeof basePath === "string" ? basePath : null;
 	}
 	catch (e) {
-		DraftBotLogger.errorWithObj(`Error while getting emote ${emote}`, e);
+		CrowniclesLogger.errorWithObj(`Error while getting emote ${emote}`, e);
 		return null;
 	}
 }
 
 /**
- * Apply all the draftbot formatting to the given string
+ * Apply all the crownicles formatting to the given string
  * @param str
  */
-function draftbotFormat(str: string): string {
+function crowniclesFormat(str: string): string {
 	return convertCommandFormat(convertEmoteFormat(str));
 }
 
 i18next.init(getI18nOptions())
 	.then();
 
-export class I18nDraftbot {
+export class I18nCrownicles {
 	/**
 	 * Translate the given key with the given options and returns all the objects found
 	 * @param key
@@ -133,17 +133,17 @@ export class I18nDraftbot {
 		if (options.returnObjects && !Array.isArray(value)) {
 			return Object.entries(value)
 				.reduce((acc, [k, v]) => {
-					acc[k] = draftbotFormat(v as string);
+					acc[k] = crowniclesFormat(v as string);
 					return acc;
 				}, {} as Record<string, string>);
 		}
 		if (Array.isArray(value)) {
-			return (value as string[]).map(draftbotFormat);
+			return (value as string[]).map(crowniclesFormat);
 		}
-		return draftbotFormat(value);
+		return crowniclesFormat(value);
 	}
 }
 
-const i18n = I18nDraftbot;
+const i18n = I18nCrownicles;
 
 export default i18n;

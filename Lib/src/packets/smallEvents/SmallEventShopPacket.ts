@@ -5,7 +5,7 @@ import {
 } from "./SmallEventAnyShopPacket";
 import {
 	PacketDirection, sendablePacket
-} from "../DraftBotPacket";
+} from "../CrowniclesPacket";
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class SmallEventShopAcceptPacket extends SmallEventAnyShopAcceptedPacket {

@@ -4,8 +4,8 @@ import {
 	EndCallback, ReactionCollectorInstance
 } from "../utils/ReactionsCollector";
 import {
-	DraftBotPacket, makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, makePacket, PacketContext
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	WitchAction, WitchActionDataController
 } from "../../data/WitchAction";
@@ -79,7 +79,7 @@ function getRandomWitchEvents(isMage: boolean): WitchEventSelection {
  * @param potionToGive
  * @param response
  */
-async function givePotion(context: PacketContext, player: Player, potionToGive: GenericItem, response: DraftBotPacket[]): Promise<void> {
+async function givePotion(context: PacketContext, player: Player, potionToGive: GenericItem, response: CrowniclesPacket[]): Promise<void> {
 	await giveItemToPlayer(response, context, player, potionToGive);
 }
 
@@ -91,7 +91,7 @@ async function givePotion(context: PacketContext, player: Player, potionToGive: 
  * @param player
  * @param response
  */
-async function applyOutcome(outcome: WitchActionOutcomeType, selectedEvent: WitchAction, context: PacketContext, player: Player, response: DraftBotPacket[]): Promise<void> {
+async function applyOutcome(outcome: WitchActionOutcomeType, selectedEvent: WitchAction, context: PacketContext, player: Player, response: CrowniclesPacket[]): Promise<void> {
 	if (selectedEvent.forceEffect || outcome === WitchActionOutcomeType.EFFECT) {
 		await selectedEvent.giveEffect(player);
 	}
@@ -137,7 +137,7 @@ function getEndCallback(player: Player): EndCallback {
 		});
 
 		// There is a chance that the player will get a no effect potion, no matter what he chose
-		if (RandomUtils.draftbotRandom.bool(SmallEventConstants.WITCH.NO_EFFECT_CHANCE)) {
+		if (RandomUtils.crowniclesRandom.bool(SmallEventConstants.WITCH.NO_EFFECT_CHANCE)) {
 			if (selectedEvent.forceEffect) {
 				await selectedEvent.giveEffect(player);
 			}

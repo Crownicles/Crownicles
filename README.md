@@ -1,7 +1,7 @@
 <div style="text-align: center;">
-<img src="https://cdn.discordapp.com/attachments/456120666874183680/575235193384861716/couronne.png" style="border-radius: 50%; width: 300px" alt="Couronne DraftBot">
+<img src="https://cdn.discordapp.com/attachments/456120666874183680/575235193384861716/couronne.png" style="border-radius: 50%; width: 300px" alt="Couronne Crownicles">
 
-DraftBot is a text adventure game. The story takes place in a medieval world, and the player embodies an adventurer who
+Crownicles is a text adventure game. The story takes place in a medieval world, and the player embodies an adventurer who
 wants to win a competition launched by the king, to win the princess' hand. To achieve this, he must travel and earn
 points by going through a lot of danger, including thieves, wilderness, and scary children. Every few hours, the player
 can follow their adventure through "reports" and interact with a multiple choice system, using reactions below the
@@ -18,12 +18,12 @@ fight other players, and ascend the leaderboard.
 
 # How to play the game?
 
-DraftBot is originally a discord bot and has evolved to become a fully fledged game that you can play either through
+Crownicles is originally a discord bot and has evolved to become a fully fledged game that you can play either through
 discord or through other clients.
 
 You can start playing by visiting our website: https://draftbot.com
 
-# Create a custom DraftBot instance
+# Create a custom Crownicles instance
 
 _Before creating your own instance, please note that you can add the bot to your server through the link available on
 the bot's discord_
@@ -44,7 +44,7 @@ Please do not copy and paste the commands we provide in this readme without :
 
 ### Requirements
 
-This list contains all the software programs necessary to run DraftBot. Our start guide will walk you through the
+This list contains all the software programs necessary to run Crownicles. Our start guide will walk you through the
 installation process
 
 - Docker desktop
@@ -61,7 +61,7 @@ installation process
 
 ### Start guide
 
-This guide will help you run DraftBot on your computer. We provide instructions for Linux, MacOS (🐧) and Windows (🪟). If
+This guide will help you run Crownicles on your computer. We provide instructions for Linux, MacOS (🐧) and Windows (🪟). If
 not specified, the command is the same for all OS.
 Please do not skip any step of this guide; otherwise, the following commands will not work.
 
@@ -94,7 +94,7 @@ For the database, you can use a mariadb container with the following command:
 
 ```sh
 # Run mariadb database with docker
-docker run -d --name mariadb -e MARIADB_USER=draftbot -e MARIADB_PASSWORD=secret_password -e MARIADB_ROOT_PASSWORD=super_secret_password -v /path/to/volumes/mariadb:/var/lib/mysql -p 3306:3306 mariadb:latest
+docker run -d --name mariadb -e MARIADB_USER=crownicles -e MARIADB_PASSWORD=secret_password -e MARIADB_ROOT_PASSWORD=super_secret_password -v /path/to/volumes/mariadb:/var/lib/mysql -p 3306:3306 mariadb:latest
 ```
 
 #### MQTT broker
@@ -120,11 +120,11 @@ The only thing important is to allow anonymous connections.
 
 ```sh
 # Copy files with default values
-cp $DRAFTBOT_ROOT/Core/config/config.default.toml $DRAFTBOT_ROOT/Core/config/config.toml
-cp $DRAFTBOT_ROOT/Discord/config/config.default.toml $DRAFTBOT_ROOT/Discord/config/config.toml
+cp $CROWNICLES_ROOT/Core/config/config.default.toml $CROWNICLES_ROOT/Core/config/config.toml
+cp $CROWNICLES_ROOT/Discord/config/config.default.toml $CROWNICLES_ROOT/Discord/config/config.toml
 # The Core module also need access to the Keycloak server on the first launch
-touch $DRAFTBOT_ROOT/Core/config/keycloak.toml # 🐧
-New-Item $DRAFTBOT_ROOT/Core/config/keycloak.toml # 🪟
+touch $CROWNICLES_ROOT/Core/config/keycloak.toml # 🐧
+New-Item $CROWNICLES_ROOT/Core/config/keycloak.toml # 🪟
 ```
 
 You can copy and paste the content of the keycloak section from the config.toml file in the Discord folder in the
@@ -134,9 +134,9 @@ keycloak.toml file.
 
 ```sh
 # First: start the core module
-cd $DRAFTBOT_ROOT/Core && pnpm start
+cd $CROWNICLES_ROOT/Core && pnpm start
 # Then: start the discord module
-cd $DRAFTBOT_ROOT/Discord && pnpm start
+cd $CROWNICLES_ROOT/Discord && pnpm start
 ```
 
 You can set up npm launch scripts to make the start easier.
@@ -150,8 +150,8 @@ module.
 You can also compile the bot in a docker container. To do so, you can use the following commands **at the root of the project**:
 
 ```sh
-docker build . -f Core/Dockerfile -t draftbot/core
-docker build . -f Discord/Dockerfile -t draftbot/discord
+docker build . -f Core/Dockerfile -t crownicles/core
+docker build . -f Discord/Dockerfile -t crownicles/discord
 ```
 
 # License

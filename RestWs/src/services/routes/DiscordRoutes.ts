@@ -1,17 +1,13 @@
-import {
-	FastifyInstance, FastifyRequest
-} from "fastify";
-import { DraftBotLogger } from "../../../../Lib/src/logs/DraftBotLogger";
-import { DiscordSsoConfig } from "../../config/DiscordSsoConfig";
-import { KeycloakUtils } from "../../../../Lib/src/keycloak/KeycloakUtils";
-import { keycloakConfig } from "../../index";
-import {
-	Language, LANGUAGE
-} from "../../../../Lib/src/Language";
-import { betaLoginVerifyGroup } from "./LoginRoute";
-import { KeycloakUser } from "../../../../Lib/src/keycloak/KeycloakUser";
-import { KeycloakOAuth2Token } from "../../../../Lib/src/keycloak/KeycloakOAuth2Token";
-import { getRequestLoggerMetadata } from "../RestApi";
+import {FastifyInstance, FastifyRequest} from "fastify";
+import {CrowniclesLogger} from "../../../../Lib/src/logs/CrowniclesLogger";
+import {DiscordSsoConfig} from "../../config/DiscordSsoConfig";
+import {KeycloakUtils} from "../../../../Lib/src/keycloak/KeycloakUtils";
+import {keycloakConfig} from "../../index";
+import {Language, LANGUAGE} from "../../../../Lib/src/Language";
+import {betaLoginVerifyGroup} from "./LoginRoute";
+import {KeycloakUser} from "../../../../Lib/src/keycloak/KeycloakUser";
+import {KeycloakOAuth2Token} from "../../../../Lib/src/keycloak/KeycloakOAuth2Token";
+import {getRequestLoggerMetadata} from "../RestApi";
 
 /**
  * Fetches the access token from Discord using the provided code.
@@ -40,7 +36,7 @@ async function getDiscordUserAccessToken(req: FastifyRequest, discordOptions: Di
 
 	if (!tokenResponse.ok) {
 		// It can be someone trying codes manually or a bot, so don't log as error
-		DraftBotLogger.warn("Failed to get access token from Discord", {
+		CrowniclesLogger.warn("Failed to get access token from Discord", {
 			code,
 			response: tokenResponse,
 			...getRequestLoggerMetadata(req)
@@ -68,7 +64,7 @@ async function getDiscordUserInfo(req: FastifyRequest, accessToken: string): Pro
 	});
 
 	if (!userResponse.ok) {
-		DraftBotLogger.error("Failed to get user info from Discord", {
+		CrowniclesLogger.error("Failed to get user info from Discord", {
 			response: userResponse,
 			...getRequestLoggerMetadata(req)
 		});
@@ -102,7 +98,7 @@ async function getOrRegisterDiscordUser(req: FastifyRequest, discordId: string, 
 	const resUser = await KeycloakUtils.getOrRegisterDiscordUser(keycloakConfig, discordId, displayName, language);
 
 	if (resUser.isError) {
-		DraftBotLogger.error("Failed to get or register user", {
+		CrowniclesLogger.error("Failed to get or register user", {
 			discordId,
 			displayName,
 			language,
@@ -124,7 +120,7 @@ async function getKeycloakToken(req: FastifyRequest, keycloakId: string): Promis
 	const resToken = await KeycloakUtils.getUserAccessToken(keycloakConfig, keycloakId);
 
 	if (resToken.isError) {
-		DraftBotLogger.error("Failed to get Keycloak access token", {
+		CrowniclesLogger.error("Failed to get Keycloak access token", {
 			apiReturn: resToken,
 			keycloakId,
 			...getRequestLoggerMetadata(req)
@@ -153,7 +149,7 @@ export function setupDiscordRoutes(server: FastifyInstance, discordOptions: Disc
 	 */
 	server.get("/discord/callback", async (request, reply) => {
 		try {
-			DraftBotLogger.debug("Discord OAuth callback", {
+			CrowniclesLogger.debug("Discord OAuth callback", {
 				...getRequestLoggerMetadata(request)
 			});
 
@@ -192,14 +188,14 @@ export function setupDiscordRoutes(server: FastifyInstance, discordOptions: Disc
 
 			// Get the Keycloak access token for the user and send it in the response
 			const keycloakToken = await getKeycloakToken(request, keycloakUser.id);
-			DraftBotLogger.info("User logged in via Discord", {
+			CrowniclesLogger.info("User logged in via Discord", {
 				...discordUserInfo,
 				keycloakId: keycloakUser.id
 			});
 			reply.redirect(`crownicles://${Buffer.from(JSON.stringify(keycloakToken)).toString("base64")}`);
 		}
 		catch (error) {
-			DraftBotLogger.error("Error during Discord OAuth callback", {
+			CrowniclesLogger.error("Error during Discord OAuth callback", {
 				err: error as unknown,
 				...getRequestLoggerMetadata(request)
 			});

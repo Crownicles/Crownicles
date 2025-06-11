@@ -2,8 +2,8 @@ import {
 	commandRequires, CommandUtils
 } from "../../core/utils/CommandUtils";
 import {
-	DraftBotPacket, makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, makePacket, PacketContext
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import Player, { Players } from "../../core/database/game/models/Player";
 import {
 	CommandPetTransferAnotherMemberTransferringErrorPacket,
@@ -31,20 +31,20 @@ import { Guilds } from "../../core/database/game/models/Guild";
 import { BlockingUtils } from "../../core/utils/BlockingUtils";
 import { GuildPets } from "../../core/database/game/models/GuildPet";
 import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
-import { draftBotInstance } from "../../index";
+import { crowniclesInstance } from "../../index";
 import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
-import { DraftBotLogger } from "../../../../Lib/src/logs/DraftBotLogger";
+import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 
 
 /**
  * Transfer your pet to the guild's shelter
  */
 async function deposePetToGuild(
-	response: DraftBotPacket[],
+	response: CrowniclesPacket[],
 	player: Player
 ): Promise<void> {
 	if (!player.petId) {
-		DraftBotLogger.warn("Player tried to transfer a pet to the guild but has no pet");
+		CrowniclesLogger.warn("Player tried to transfer a pet to the guild but has no pet");
 		response.push(makePacket(CommandPetTransferSituationChangedErrorPacket, {}));
 		return;
 	}
@@ -52,14 +52,14 @@ async function deposePetToGuild(
 	const playerPet = await PetEntities.getById(player.petId);
 
 	if (playerPet.isFeisty()) {
-		DraftBotLogger.warn("Player tried to transfer a feisty pet to the guild");
+		CrowniclesLogger.warn("Player tried to transfer a feisty pet to the guild");
 		response.push(makePacket(CommandPetTransferSituationChangedErrorPacket, {}));
 		return;
 	}
 
 	const guildPets = await GuildPets.getOfGuild(player.guildId);
 	if (guildPets.length >= PetConstants.SLOTS) {
-		DraftBotLogger.warn("Player tried to transfer a pet to the guild but the shelter is full");
+		CrowniclesLogger.warn("Player tried to transfer a pet to the guild but the shelter is full");
 		response.push(makePacket(CommandPetTransferSituationChangedErrorPacket, {}));
 		return;
 	}
@@ -69,7 +69,7 @@ async function deposePetToGuild(
 	player.petId = null;
 	await player.save();
 	await GuildPets.addPet(guild, playerPet, false).save();
-	draftBotInstance.logsDatabase.logPetTransfer(playerPet, null).then();
+	crowniclesInstance.logsDatabase.logPetTransfer(playerPet, null).then();
 
 	response.push(makePacket(CommandPetTransferSuccessPacket, {
 		oldPet: playerPet.asOwnedPet()
@@ -77,12 +77,12 @@ async function deposePetToGuild(
 }
 
 async function withdrawPetFromGuild(
-	response: DraftBotPacket[],
+	response: CrowniclesPacket[],
 	player: Player,
 	petEntityId: number
 ): Promise<void> {
 	if (player.petId) {
-		DraftBotLogger.warn("Player tried to withdraw a pet from the guild but already has a pet");
+		CrowniclesLogger.warn("Player tried to withdraw a pet from the guild but already has a pet");
 		response.push(makePacket(CommandPetTransferSituationChangedErrorPacket, {}));
 		return;
 	}
@@ -91,7 +91,7 @@ async function withdrawPetFromGuild(
 	const toWithdrawPet = guildPets.find(guildPet => guildPet.petEntityId === petEntityId);
 
 	if (!toWithdrawPet) {
-		DraftBotLogger.warn("Player tried to withdraw a pet from the guild but the pet is not in the guild");
+		CrowniclesLogger.warn("Player tried to withdraw a pet from the guild but the pet is not in the guild");
 		response.push(makePacket(CommandPetTransferSituationChangedErrorPacket, {}));
 		return;
 	}
@@ -100,7 +100,7 @@ async function withdrawPetFromGuild(
 	await player.save();
 	await toWithdrawPet.destroy();
 	PetEntities.getById(toWithdrawPet.petEntityId).then(petEntity => {
-		draftBotInstance.logsDatabase.logPetTransfer(null, petEntity).then();
+		crowniclesInstance.logsDatabase.logPetTransfer(null, petEntity).then();
 	});
 
 	response.push(makePacket(CommandPetTransferSuccessPacket, {
@@ -109,12 +109,12 @@ async function withdrawPetFromGuild(
 }
 
 async function switchPetWithGuild(
-	response: DraftBotPacket[],
+	response: CrowniclesPacket[],
 	player: Player,
 	petEntityId: number
 ): Promise<void> {
 	if (!player.petId) {
-		DraftBotLogger.warn("Player tried to switch a pet with the guild but has no pet");
+		CrowniclesLogger.warn("Player tried to switch a pet with the guild but has no pet");
 		response.push(makePacket(CommandPetTransferSituationChangedErrorPacket, {}));
 		return;
 	}
@@ -122,7 +122,7 @@ async function switchPetWithGuild(
 	const playerPet = await PetEntities.getById(player.petId);
 
 	if (playerPet.isFeisty()) {
-		DraftBotLogger.warn("Player tried to switch a feisty pet with the guild");
+		CrowniclesLogger.warn("Player tried to switch a feisty pet with the guild");
 		response.push(makePacket(CommandPetTransferSituationChangedErrorPacket, {}));
 		return;
 	}
@@ -131,7 +131,7 @@ async function switchPetWithGuild(
 	const toSwitchPet = guildPets.find(guildPet => guildPet.petEntityId === petEntityId);
 
 	if (!toSwitchPet) {
-		DraftBotLogger.warn("Player tried to switch a pet with the guild but the pet is not in the guild");
+		CrowniclesLogger.warn("Player tried to switch a pet with the guild but the pet is not in the guild");
 		response.push(makePacket(CommandPetTransferSituationChangedErrorPacket, {}));
 		return;
 	}
@@ -143,7 +143,7 @@ async function switchPetWithGuild(
 
 	const newPlayerPet = await PetEntities.getById(player.petId);
 
-	draftBotInstance.logsDatabase.logPetTransfer(playerPet, newPlayerPet).then();
+	crowniclesInstance.logsDatabase.logPetTransfer(playerPet, newPlayerPet).then();
 
 	response.push(makePacket(CommandPetTransferSuccessPacket, {
 		oldPet: playerPet.asOwnedPet(),
@@ -152,7 +152,7 @@ async function switchPetWithGuild(
 }
 
 function getEndCallback(player: Player) {
-	return async (collector: ReactionCollectorInstance, response: DraftBotPacket[]): Promise<void> => {
+	return async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
 		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.PET_TRANSFER);
 
 		const firstReaction = collector.getFirstReaction();
@@ -191,7 +191,7 @@ export default class PetTransferCommand {
 		allowedEffects: CommandUtils.ALLOWED_EFFECTS.NO_EFFECT,
 		whereAllowed: [WhereAllowed.CONTINENT]
 	})
-	async execute(response: DraftBotPacket[], player: Player, _packet: CommandPetTransferPacketReq, context: PacketContext): Promise<void> {
+	async execute(response: CrowniclesPacket[], player: Player, _packet: CommandPetTransferPacketReq, context: PacketContext): Promise<void> {
 		const guild = await Guilds.getById(player.guildId);
 
 		// Can't transfer pet if another guild member is transferring

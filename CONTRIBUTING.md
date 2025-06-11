@@ -1,10 +1,10 @@
-# Contributing to DraftBot
+# Contributing to Crownicles
 
-🇫🇷 Version Française de ce document ci-dessous ! (Cliquez [ici](#contribuer-à-draftbot) !)
+🇫🇷 Version Française de ce document ci-dessous ! (Cliquez [ici](#contribuer-à-crownicles) !)
 
 :thumbsup::tada: First off, thanks for taking the time to contribute! :tada::thumbsup:
 
-The following is a set of guidelines for contributing to DraftBot, and its other repositories, which are hosted in the [DraftBot-A-Discord-Adventure Organization](https://github.com/DraftBot-A-Discord-Adventure) on GitHub. These are mostly guidelines, not rules. Use your best judgment, and feel free to propose changes to this document in a pull
+The following is a set of guidelines for contributing to Crownicles, and its other repositories, which are hosted in the [DraftBot-A-Discord-Adventure Organization](https://github.com/DraftBot-A-Discord-Adventure) on GitHub. These are mostly guidelines, not rules. Use your best judgment, and feel free to propose changes to this document in a pull
 request.
 
 ## Table Of Contents
@@ -20,7 +20,7 @@ request.
 
 ## Code of Conduct
 
-This project and is governed by the [DraftBot Code of Conduct](CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code. Please report unacceptable behavior to [contact@draftbot.com](mailto:contact@draftbot.com).
+This project and is governed by the [Crownicles Code of Conduct](CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code. Please report unacceptable behavior to [contact@draftbot.com](mailto:contact@draftbot.com).
 
 ## I don't want to read this whole thing I just have a question
 
@@ -34,7 +34,7 @@ We have an official Discord server with detailed information and where the commu
 
 ### Reporting Bugs
 
-This section guides you through submitting a bug report for DraftBot. Following these guidelines helps maintainers and the community understand your report :pencil:, reproduce the behavior :computer:, and find related reports :mag_right:.
+This section guides you through submitting a bug report for Crownicles. Following these guidelines helps maintainers and the community understand your report :pencil:, reproduce the behavior :computer:, and find related reports :mag_right:.
 
 Before creating bug reports, please check [this list](#before-submitting-a-bug-report) as you might find out that you don't need to create one. When you are creating a bug report, please [include as many details as possible](#how-do-i-submit-a-good-bug-report). Send all the information in our discord server, we have a dedicated channel where we discuss the bugs of the game.
 
@@ -59,7 +59,7 @@ When sending your message in our discord server, explain the problem and include
 
 ### Suggesting Enhancements
 
-This section guides you through submitting an enhancement suggestion for DraftBot, including completely new features and minor improvements to existing.
+This section guides you through submitting an enhancement suggestion for Crownicles, including completely new features and minor improvements to existing.
 
 We use GitHub Discussion to receive suggestions.
 You can vote, discuss and add suggestions by following this link:
@@ -70,11 +70,11 @@ https://github.com/DraftBot-A-Discord-Adventure/DraftBot/discussions
 * **Perform a [cursory search](https://github.com/search?l=&q=is%3Aissue+repo%3ADraftBot-A-Discord-Adventure%2FDraftBot&type=discussions)** to see if the enhancement has already been suggested. If it has, add a comment to the existing issue instead of opening a new one.
 * **Discuss with the community in the [official discord server](https://discord.gg/draftbot)** to get an idea of how your idea may be received.
 
-## Contribuer à DraftBot
+## Contribuer à Crownicles
 
 :thumbsup::tada: Tout d'abord, merci de prendre le temps de contribuer ! :tada::thumbsup:
 
-Ce qui suit est un ensemble de lignes directrices pour contribuer à DraftBot dont les dépots sont hébergés dans l'organisation [DraftBot-A-Discord-Adventure](https://github.com/DraftBot-A-Discord-Adventure) sur GitHub. Il s'agit principalement de directives et non de règles. Utilisez votre meilleur jugement, et n'hésitez pas à proposer des changements à ce document dans une pull request.
+Ce qui suit est un ensemble de lignes directrices pour contribuer à Crownicles dont les dépots sont hébergés dans l'organisation [DraftBot-A-Discord-Adventure](https://github.com/DraftBot-A-Discord-Adventure) sur GitHub. Il s'agit principalement de directives et non de règles. Utilisez votre meilleur jugement, et n'hésitez pas à proposer des changements à ce document dans une pull request.
 
 ## Table des matières
 
@@ -89,7 +89,7 @@ Ce qui suit est un ensemble de lignes directrices pour contribuer à DraftBot do
 
 ## Code de conduite
 
-Ce projet est régi par le [Code de conduite de DraftBot](CODE_OF_CONDUCT.md). En participant, vous êtes censé respecter ce code. Veuillez signaler tout comportement inacceptable à [contact@draftbot.com](mailto:contact@draftbot.com).
+Ce projet est régi par le [Code de conduite de Crownicles](CODE_OF_CONDUCT.md). En participant, vous êtes censé respecter ce code. Veuillez signaler tout comportement inacceptable à [contact@draftbot.com](mailto:contact@draftbot.com).
 
 ## <a name="flemme"></a> Je n'ai pas envie de lire tout ça, j'ai juste une question
 
@@ -104,7 +104,7 @@ Nous disposons d'un serveur Discord officiel contenant des informations détaill
 
 ### <a name="bogues"></a>Signaler des bugs
 
-Cette section vous guide dans la soumission d'un rapport de bug pour DraftBot. Suivre ces directives aide les mainteneurs et la communauté à la communauté à comprendre votre rapport :pencil:, à reproduire le comportement :computer:, et à trouver des rapports similaires :mag_right:.
+Cette section vous guide dans la soumission d'un rapport de bug pour Crownicles. Suivre ces directives aide les mainteneurs et la communauté à la communauté à comprendre votre rapport :pencil:, à reproduire le comportement :computer:, et à trouver des rapports similaires :mag_right:.
 
 Avant de créer un rapport de bug, veuillez consulter [cette liste](#avant) car vous pourriez découvrir que vous n'avez pas besoin d'en créer un. Lorsque vous créez un rapport de bogue, veuillez [inclure autant de détails que possible](#bonrapport).
 Nous souhaitons que les bugs soient centralisés sur notre serveur discord avant d'être postés sur github. Utilisez donc ce média pour nous transmettre vos informations sur le soucis que vous rencontrez.
@@ -127,7 +127,7 @@ Expliquez le problème et incluez des détails supplémentaires pour aider les r
 
 ### <a name="suggestion"></a>Suggestion d'améliorations
 
-Cette section vous guide dans la soumission d'une suggestion d'amélioration pour DraftBot, y compris de nouvelles fonctionnalités et des améliorations mineures aux fonctionnalités existantes.
+Cette section vous guide dans la soumission d'une suggestion d'amélioration pour Crownicles, y compris de nouvelles fonctionnalités et des améliorations mineures aux fonctionnalités existantes.
 
 Nous utilisons GitHub Discussion pour recevoir les suggestions. Vous pouvez voter, discuter et ajouter des suggestions en suivant ce lien : https://github.com/DraftBot-A-Discord-Adventure/DraftBot/discussions
 

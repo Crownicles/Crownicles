@@ -1,12 +1,12 @@
 import {
-	DraftBotPacket, PacketDirection, sendablePacket
-} from "../DraftBotPacket";
+	CrowniclesPacket, PacketDirection, sendablePacket
+} from "../CrowniclesPacket";
 import {
 	ItemNature, ItemRarity
 } from "../../constants/ItemConstants";
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
-export class CommandInventoryPacketReq extends DraftBotPacket {
+export class CommandInventoryPacketReq extends CrowniclesPacket {
 	askedPlayer!: {
 		rank?: number;
 		keycloakId?: string;
@@ -41,7 +41,7 @@ export interface SupportItemDisplayPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandInventoryPacketRes extends DraftBotPacket {
+export class CommandInventoryPacketRes extends CrowniclesPacket {
 	foundPlayer!: boolean;
 
 	keycloakId?: string;

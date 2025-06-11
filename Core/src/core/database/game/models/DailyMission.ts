@@ -4,7 +4,7 @@ import {
 import { datesAreOnSameDay } from "../../../../../../Lib/src/utils/TimeUtils";
 import { MissionsController } from "../../../missions/MissionsController";
 import PlayerMissionsInfo from "./PlayerMissionsInfo";
-import { draftBotInstance } from "../../../../index";
+import { crowniclesInstance } from "../../../../index";
 import { MissionDataController } from "../../../../data/Mission";
 
 // skipcq: JS-C1003 - moment does not expose itself as an ES Module.
@@ -81,7 +81,7 @@ export class DailyMissions {
 				lastDate: new Date()
 			}, { returning: true });
 		}
-		draftBotInstance.logsDatabase.logMissionDailyRefreshed(dailyMission.missionId, dailyMission.missionVariant, dailyMission.missionObjective)
+		crowniclesInstance.logsDatabase.logMissionDailyRefreshed(dailyMission.missionId, dailyMission.missionVariant, dailyMission.missionObjective)
 			.then();
 		return await this.queryDailyMission();
 	}

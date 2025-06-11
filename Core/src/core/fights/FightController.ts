@@ -9,8 +9,8 @@ import { MonsterFighter } from "./fighter/MonsterFighter";
 import { PlayerFighter } from "./fighter/PlayerFighter";
 import { PVEConstants } from "../../../../Lib/src/constants/PVEConstants";
 import {
-	DraftBotPacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, PacketContext
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	attackInfo, FightActionController, statsInfo
 } from "./actions/FightActionController";
@@ -28,7 +28,7 @@ import {
 } from "../../data/FightAlteration";
 import { PetAssistance } from "../../data/PetAssistance";
 import { getAiPetBehavior } from "./PetAssistManager";
-import { DraftBotLogger } from "../../../../Lib/src/logs/DraftBotLogger";
+import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { FightsManager } from "./FightsManager";
 
 export class FightController {
@@ -44,7 +44,7 @@ export class FightController {
 
 	private state: FightState;
 
-	private endCallback: (fight: FightController, response: DraftBotPacket[]) => Promise<void>;
+	private endCallback: (fight: FightController, response: CrowniclesPacket[]) => Promise<void>;
 
 	private readonly overtimeBehavior: FightOvertimeBehavior;
 
@@ -68,7 +68,7 @@ export class FightController {
 	/**
 	 * Start a fight
 	 */
-	public async startFight(response: DraftBotPacket[]): Promise<void> {
+	public async startFight(response: CrowniclesPacket[]): Promise<void> {
 		// Make the fighters ready
 		for (let i = 0; i < this.fighters.length; i++) {
 			await this.fighters[i].startFight(this._fightView, i === 0 ? FighterStatus.ATTACKER : FighterStatus.DEFENDER);
@@ -77,7 +77,7 @@ export class FightController {
 		this._fightView.introduceFight(response, this.fighters[0] as PlayerFighter, this.fighters[1] as MonsterFighter | AiPlayerFighter);
 
 		// The player with the highest speed starts the fight
-		if (this.fighters[1].getSpeed() > this.fighters[0].getSpeed() || RandomUtils.draftbotRandom.bool() && this.fighters[1].getSpeed() === this.fighters[0].getSpeed()) {
+		if (this.fighters[1].getSpeed() > this.fighters[0].getSpeed() || RandomUtils.crowniclesRandom.bool() && this.fighters[1].getSpeed() === this.fighters[0].getSpeed()) {
 			this.invertFighters();
 		}
 		this.state = FightState.RUNNING;
@@ -113,7 +113,7 @@ export class FightController {
 	 * @param response the response to send to the player
 	 * @param bug true if the fight has bugged
 	 */
-	public async endFight(response: DraftBotPacket[], bug = false): Promise<void> {
+	public async endFight(response: CrowniclesPacket[], bug = false): Promise<void> {
 		this.state = bug ? FightState.FINISHED : FightState.BUG;
 
 		this.checkNegativeEnergy();
@@ -134,9 +134,9 @@ export class FightController {
 
 	/**
 	 * Cancel a fight and unblock the fighters, used when a fight has bugged (for example, if a message was deleted)
-	 * @param response {DraftBotPacket[]}
+	 * @param response {CrowniclesPacket[]}
 	 */
-	public async endBugFight(response: DraftBotPacket[]): Promise<void> {
+	public async endBugFight(response: CrowniclesPacket[]): Promise<void> {
 		for (const fighter of this.fighters) {
 			fighter.unblock();
 			if (fighter instanceof PlayerFighter) {
@@ -175,9 +175,9 @@ export class FightController {
 	 * Execute the next fight action
 	 * @param fightAction {FightAction} the fight action to execute
 	 * @param endTurn {boolean} true if the turn should be ended after the action has been executed
-	 * @param response {DraftBotPacket[]} the response to send to the player
+	 * @param response {CrowniclesPacket[]} the response to send to the player
 	 */
-	public async executeFightAction(fightAction: FightAction, endTurn: boolean, response: DraftBotPacket[]): Promise<void> {
+	public async executeFightAction(fightAction: FightAction, endTurn: boolean, response: CrowniclesPacket[]): Promise<void> {
 		if (this.hadEnded()) {
 			// The fight is probably bugged, no need to continue
 			return;
@@ -227,7 +227,7 @@ export class FightController {
 	 * Set a callback to be called when the fight ends
 	 * @param callback
 	 */
-	public setEndCallback(callback: (fight: FightController, response: DraftBotPacket[]) => Promise<void>): void {
+	public setEndCallback(callback: (fight: FightController, response: CrowniclesPacket[]) => Promise<void>): void {
 		this.endCallback = callback;
 	}
 
@@ -236,7 +236,7 @@ export class FightController {
 	 * @param alteration
 	 * @param response
 	 */
-	private async executeFightAlteration(alteration: FightAlteration, response: DraftBotPacket[]): Promise<void> {
+	private async executeFightAlteration(alteration: FightAlteration, response: CrowniclesPacket[]): Promise<void> {
 		const result = alteration.happen(this.getPlayingFighter(), this.getDefendingFighter(), this.turn, this);
 		await this._fightView.addActionToHistory(response, this.getPlayingFighter(), alteration, result);
 		if (this.hadEnded()) {
@@ -251,7 +251,7 @@ export class FightController {
 	 * @param petAssistance
 	 * @param response
 	 */
-	private async executePetAssistance(petAssistance: PetAssistance, response: DraftBotPacket[]): Promise<void> {
+	private async executePetAssistance(petAssistance: PetAssistance, response: CrowniclesPacket[]): Promise<void> {
 		const result = await petAssistance.execute(this.getPlayingFighter(), this.getDefendingFighter(), this.turn, this);
 		if (!result) {
 			return;
@@ -283,7 +283,7 @@ export class FightController {
 
 		// Handle out of breath scenario
 		if (!enoughBreath) {
-			if (RandomUtils.draftbotRandom.bool(FightConstants.OUT_OF_BREATH_FAILURE_PROBABILITY)) {
+			if (RandomUtils.crowniclesRandom.bool(FightConstants.OUT_OF_BREATH_FAILURE_PROBABILITY)) {
 				const outOfBreathAction = FightAlterationDataController.instance.getById(FightConstants.FIGHT_ACTIONS.ALTERATION.OUT_OF_BREATH);
 				result = outOfBreathAction.happen(attacker, defender, this.turn, this);
 				fightAction = outOfBreathAction;
@@ -318,7 +318,7 @@ export class FightController {
 	/**
 	 * Execute a turn of a fight
 	 */
-	private async prepareNextTurn(response: DraftBotPacket[]): Promise<void> {
+	private async prepareNextTurn(response: CrowniclesPacket[]): Promise<void> {
 		if (this.overtimeBehavior === FightOvertimeBehavior.INCREASE_DAMAGE_PVE && this.turn >= FightConstants.MAX_TURNS) {
 			this.increaseDamagesPve(this.turn);
 		}
@@ -364,7 +364,7 @@ export class FightController {
 					.chooseAction(this._fightView, response);
 			}
 			catch (e) {
-				DraftBotLogger.errorWithObj("Fight message deleted or lost : displayFightStatus", e);
+				CrowniclesLogger.errorWithObj("Fight message deleted or lost : displayFightStatus", e);
 				await this.endBugFight(response);
 			}
 		}

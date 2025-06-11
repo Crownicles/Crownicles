@@ -82,6 +82,6 @@ export abstract class MapCache {
 			return MapCache.boatEntryMapLinks[0];
 		}
 
-		return RandomUtils.draftbotRandom.pick(MapCache.boatEntryMapLinks.filter(id => excludeLinkId !== id));
+		return RandomUtils.crowniclesRandom.pick(MapCache.boatEntryMapLinks.filter(id => excludeLinkId !== id));
 	}
 }

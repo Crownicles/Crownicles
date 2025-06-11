@@ -111,7 +111,7 @@ export class Constants {
 	static readonly MAX_TIME_BOT_RESPONSE = 30000;
 
 	static readonly DM = {
-		TITLE_SUPPORT: "Welcome to the DraftBot Assistance Program.",
+		TITLE_SUPPORT: "Welcome to the Crownicles Assistance Program.",
 
 		INTERACTION_SUPPORT: ":flag_gb: Hello, commands are disabled in private messages. Please go on a server to play!\n\n:flag_fr: Bonjour, les commandes sont désactivées en messages privés. Merci d'aller sur un serveur pour jouer !",
 		TOO_LONG_MESSAGE: "*Message trop long, voir l'attaché dans le message.*",

@@ -24,13 +24,13 @@ import {
 	LANGUAGE, Language
 } from "../../../Lib/src/Language";
 import { CommandInteractionOptionResolver } from "discord.js/typings";
-import { DraftBotEmbed } from "./DraftBotEmbed";
-import { DraftBotLogger } from "../../../Lib/src/logs/DraftBotLogger";
+import { CrowniclesEmbed } from "./CrowniclesEmbed";
+import { CrowniclesLogger } from "../../../Lib/src/logs/CrowniclesLogger";
 import { MessageFlags } from "discord-api-types/v10";
 import { DiscordConstants } from "../DiscordConstants";
 
-type DraftbotInteractionWithoutSendCommands = new(client: Client<true>, data: RawInteractionData) => Omit<CommandInteraction, "reply" | "followUp" | "channel" | "editReply">;
-const DraftbotInteractionWithoutSendCommands: DraftbotInteractionWithoutSendCommands = CommandInteraction as unknown as DraftbotInteractionWithoutSendCommands;
+type CrowniclesInteractionWithoutSendCommands = new(client: Client<true>, data: RawInteractionData) => Omit<CommandInteraction, "reply" | "followUp" | "channel" | "editReply">;
+const CrowniclesInteractionWithoutSendCommands: CrowniclesInteractionWithoutSendCommands = CommandInteraction as unknown as CrowniclesInteractionWithoutSendCommands;
 
 type ChannelTypeWithoutSend = new(client: Client<true>, data: RawWebhookData) => Omit<BaseGuildTextChannel, "send">;
 const GuildTextBasedChannel: GuildTextBasedChannel = BaseGuildTextChannel as unknown as GuildTextBasedChannel;
@@ -44,17 +44,17 @@ type ReturnType<OptionValue> = OptionValue extends InteractionReplyOptions
 		: InteractionResponse<BooleanCache<"cached">>
 	: Message;
 
-export class DraftbotInteraction extends DraftbotInteractionWithoutSendCommands {
+export class CrowniclesInteraction extends CrowniclesInteractionWithoutSendCommands {
 	public userLanguage: Language = LANGUAGE.DEFAULT_LANGUAGE;
 
 	public options!: CommandInteractionOptionResolver;
 
-	private _channel!: DraftbotChannel;
+	private _channel!: CrowniclesChannel;
 
 	/**
 	 * Get the channel of the interaction
 	 */
-	get channel(): DraftbotChannel {
+	get channel(): CrowniclesChannel {
 		return this._channel;
 	}
 
@@ -65,25 +65,25 @@ export class DraftbotInteraction extends DraftbotInteractionWithoutSendCommands 
 	}
 
 	/**
-	 * Cast a CommandInteraction to a DraftbotInteraction
+	 * Cast a CommandInteraction to a CrowniclesInteraction
 	 * @param discordInteraction
 	 */
-	static cast(discordInteraction: CommandInteraction | ButtonInteraction | StringSelectMenuInteraction): DraftbotInteraction {
+	static cast(discordInteraction: CommandInteraction | ButtonInteraction | StringSelectMenuInteraction): CrowniclesInteraction {
 		if (discordInteraction === null) {
-			throw new Error("DraftbotInteraction casting: discordInteraction is null.");
+			throw new Error("CrowniclesInteraction casting: discordInteraction is null.");
 		}
 
 		// @ts-expect-error - We aim at changing the signature of the followUp function to allow it to return null
-		discordInteraction.followUp = DraftbotInteraction.prototype.followUp.bind(discordInteraction);
+		discordInteraction.followUp = CrowniclesInteraction.prototype.followUp.bind(discordInteraction);
 
 		// @ts-expect-error - We aim at changing the signature of the reply function to add a fallback parameter, so ts is not happy with it
-		discordInteraction.reply = DraftbotInteraction.prototype.reply.bind(discordInteraction);
+		discordInteraction.reply = CrowniclesInteraction.prototype.reply.bind(discordInteraction);
 
 		// @ts-expect-error - We aim at changing the signature of the editReply function to allow it to return null
-		discordInteraction.editReply = DraftbotInteraction.prototype.editReply.bind(discordInteraction);
+		discordInteraction.editReply = CrowniclesInteraction.prototype.editReply.bind(discordInteraction);
 
-		const interaction = discordInteraction as unknown as DraftbotInteraction;
-		interaction._channel = DraftbotChannel.cast(discordInteraction.channel as GuildTextBasedChannel);
+		const interaction = discordInteraction as unknown as CrowniclesInteraction;
+		interaction._channel = CrowniclesChannel.cast(discordInteraction.channel as GuildTextBasedChannel);
 		if (Object.prototype.hasOwnProperty.call(discordInteraction, "options")) {
 			interaction.options = this.properCastOptions((discordInteraction as CommandInteraction).options as CommandInteractionOptionResolver);
 		}
@@ -101,32 +101,32 @@ export class DraftbotInteraction extends DraftbotInteractionWithoutSendCommands 
 		// Not present in class AutoCompleteInteraction | MessageContextMenuInteraction
 		// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 		options.getUser ??= () => {
-			throw new Error("DraftbotInteraction: interaction.options.getUser is not defined for this interaction.");
+			throw new Error("CrowniclesInteraction: interaction.options.getUser is not defined for this interaction.");
 		};
 
 		// Not present in class AutoCompleteInteraction
 		// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 		options.getMember ??= () => {
-			throw new Error("DraftbotInteraction: interaction.options.getMember is not defined for this interaction.");
+			throw new Error("CrowniclesInteraction: interaction.options.getMember is not defined for this interaction.");
 		};
 
 		// Not present in class ChatInputCommandInteraction | AutocompleteInteraction | UserContextMenuCommandInteraction
 		// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 		options.getMessage ??= () => {
-			throw new Error("DraftbotInteraction: interaction.options.getMessage is not defined for this interaction.");
+			throw new Error("CrowniclesInteraction: interaction.options.getMessage is not defined for this interaction.");
 		};
 
 		// Not present in class ChatInputCommandInteraction | MessageContextMenuInteraction | UserContextMenuCommandInteraction
 		// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 		options.getFocused ??= () => {
-			throw new Error("DraftbotInteraction: interaction.options.getFocused is not defined for this interaction.");
+			throw new Error("CrowniclesInteraction: interaction.options.getFocused is not defined for this interaction.");
 		};
 
 		// Not present in AutoCompleteInteraction | UserContextMenuCommandInteraction
 		// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 		options.getChannel ??= () => {
 			throw new Error(
-				"DraftbotInteraction: interaction.options.getChannel is not defined for this interaction."
+				"CrowniclesInteraction: interaction.options.getChannel is not defined for this interaction."
 			);
 		};
 
@@ -134,21 +134,21 @@ export class DraftbotInteraction extends DraftbotInteractionWithoutSendCommands 
 		// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 		options.getAttachment ??= () => {
 			throw new Error(
-				"DraftbotInteraction: interaction.options.getAttachment is not defined for this interaction."
+				"CrowniclesInteraction: interaction.options.getAttachment is not defined for this interaction."
 			);
 		};
 
 		// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 		options.getMentionable ??= () => {
 			throw new Error(
-				"DraftbotInteraction: interaction.options.getMentionable is not defined for this interaction."
+				"CrowniclesInteraction: interaction.options.getMentionable is not defined for this interaction."
 			);
 		};
 
 		// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 		options.getRole ??= () => {
 			throw new Error(
-				"DraftbotInteraction: interaction.options.getRole is not defined for this interaction."
+				"CrowniclesInteraction: interaction.options.getRole is not defined for this interaction."
 			);
 		};
 
@@ -156,42 +156,42 @@ export class DraftbotInteraction extends DraftbotInteractionWithoutSendCommands 
 		// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 		options.getNumber ??= () => {
 			throw new Error(
-				"DraftbotInteraction: interaction.options.getNumber is not defined for this interaction."
+				"CrowniclesInteraction: interaction.options.getNumber is not defined for this interaction."
 			);
 		};
 
 		// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 		options.getInteger ??= () => {
 			throw new Error(
-				"DraftbotInteraction: interaction.options.getInteger is not defined for this interaction."
+				"CrowniclesInteraction: interaction.options.getInteger is not defined for this interaction."
 			);
 		};
 
 		// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 		options.getString ??= () => {
 			throw new Error(
-				"DraftbotInteraction: interaction.options.getString is not defined for this interaction."
+				"CrowniclesInteraction: interaction.options.getString is not defined for this interaction."
 			);
 		};
 
 		// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 		options.getBoolean ??= () => {
 			throw new Error(
-				"DraftbotInteraction: interaction.options.getBoolean is not defined for this interaction."
+				"CrowniclesInteraction: interaction.options.getBoolean is not defined for this interaction."
 			);
 		};
 
 		// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 		options.getSubcommandGroup ??= () => {
 			throw new Error(
-				"DraftbotInteraction: interaction.options.getSubcommandGroup is not defined for this interaction."
+				"CrowniclesInteraction: interaction.options.getSubcommandGroup is not defined for this interaction."
 			);
 		};
 
 		// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 		options.getSubcommand ??= () => {
 			throw new Error(
-				"DraftbotInteraction: interaction.options.getSubcommand is not defined for this interaction."
+				"CrowniclesInteraction: interaction.options.getSubcommand is not defined for this interaction."
 			);
 		};
 
@@ -209,7 +209,7 @@ export class DraftbotInteraction extends DraftbotInteractionWithoutSendCommands 
 	 * @param fallback function to execute if the bot can't send the message
 	 */
 	public async reply<T extends string | MessagePayload | InteractionReplyOptions>(options: T, fallback?: () => void | Promise<void>): Promise<Omit<ReturnType<T>, "createMessageComponentCollector"> | null> {
-		return await (DraftbotInteraction.prototype.commonSendCommand<T>).call(
+		return await (CrowniclesInteraction.prototype.commonSendCommand<T>).call(
 			this,
 			(CommandInteraction.prototype.reply as ReplyFunctionLike<T>).bind(this),
 			options,
@@ -225,7 +225,7 @@ export class DraftbotInteraction extends DraftbotInteractionWithoutSendCommands 
 	 * @param fallback function to execute if the bot can't send the message
 	 */
 	public async followUp(options: string | InteractionReplyOptions | MessagePayload, fallback?: () => void | Promise<void>): Promise<Message | null> {
-		return await (DraftbotInteraction.prototype.commonSendCommand<string | MessagePayload | InteractionReplyOptions>).call(
+		return await (CrowniclesInteraction.prototype.commonSendCommand<string | MessagePayload | InteractionReplyOptions>).call(
 			this,
 			CommandInteraction.prototype.followUp.bind(this),
 			options,
@@ -237,7 +237,7 @@ export class DraftbotInteraction extends DraftbotInteractionWithoutSendCommands 
 
 	public async editReply(options: string | MessagePayload | InteractionEditReplyOptions, fallback?: () => void | Promise<void>): Promise<Message | null> {
 		this._replyEdited = true;
-		return await (DraftbotInteraction.prototype.commonSendCommand<string | MessagePayload | InteractionEditReplyOptions>).call(
+		return await (CrowniclesInteraction.prototype.commonSendCommand<string | MessagePayload | InteractionEditReplyOptions>).call(
 			this,
 			CommandInteraction.prototype.editReply.bind(this),
 			options,
@@ -262,8 +262,8 @@ export class DraftbotInteraction extends DraftbotInteractionWithoutSendCommands 
 			return await functionPrototype(options);
 		}
 		catch (e) {
-			DraftBotLogger.errorWithObj("An error occurred during a send, either a permission issue or a send/reply/followUp/editReply conflict", e);
-			await DraftbotInteraction.prototype.manageFallback.bind(this)(functionPrototype, e as Error);
+			CrowniclesLogger.errorWithObj("An error occurred during a send, either a permission issue or a send/reply/followUp/editReply conflict", e);
+			await CrowniclesInteraction.prototype.manageFallback.bind(this)(functionPrototype, e as Error);
 			await fallback();
 			return null;
 		}
@@ -293,13 +293,13 @@ export class DraftbotInteraction extends DraftbotInteractionWithoutSendCommands 
 		];
 
 		let toSendProp: {
-			content?: string; embeds?: DraftBotEmbed[];
+			content?: string; embeds?: CrowniclesEmbed[];
 		};
 		const lng = this.userLanguage;
 		if (e?.constructor.name === DiscordjsError.name && manageFallbackDevErrorCodes.includes((e as DiscordjsError).code)) {
 			toSendProp = {
 				embeds: [
-					new DraftBotEmbed()
+					new CrowniclesEmbed()
 						.formatAuthor(i18n.t("error:errorOccurredTitle", { lng }), this.user)
 						.setDescription(i18n.t("error:aDevMessedUp", { lng }))
 						.setErrorColor()
@@ -318,8 +318,8 @@ export class DraftbotInteraction extends DraftbotInteractionWithoutSendCommands 
 		}
 		catch {
 			// Try again to manage fallback with the send function
-			if (functionPrototype !== DraftbotChannel.prototype.send) {
-				await DraftbotInteraction.prototype.manageFallback.bind(this)(BaseGuildTextChannel.prototype.send.bind(this.channel), e);
+			if (functionPrototype !== CrowniclesChannel.prototype.send) {
+				await CrowniclesInteraction.prototype.manageFallback.bind(this)(BaseGuildTextChannel.prototype.send.bind(this.channel), e);
 				return;
 			}
 
@@ -328,24 +328,24 @@ export class DraftbotInteraction extends DraftbotInteractionWithoutSendCommands 
 				await CommandInteraction.prototype.user.send.bind(this.user)({ ...toSendProp });
 			}
 			catch (e) {
-				DraftBotLogger.errorWithObj(`Unable to alert user of no speak permission : c:${this.channel?.id} / u:${this.user?.id}`, e);
+				CrowniclesLogger.errorWithObj(`Unable to alert user of no speak permission : c:${this.channel?.id} / u:${this.user?.id}`, e);
 			}
 		}
 	}
 }
 
-export class DraftbotChannel extends ChannelTypeWithoutSend {
+export class CrowniclesChannel extends ChannelTypeWithoutSend {
 	// @ts-expect-error - Property 'language' starts undefined and is initialized if we are sure the channel is a valid channel
 	public language: Language;
 
 	/**
-	 * Cast a GuildTextBasedChannel to a DraftbotChannel
+	 * Cast a GuildTextBasedChannel to a CrowniclesChannel
 	 * @param channel
 	 */
-	static cast(channel: GuildTextBasedChannel): DraftbotChannel {
+	static cast(channel: GuildTextBasedChannel): CrowniclesChannel {
 		// @ts-expect-error - We aim at changing the signature of the send function to add a fallback parameter, so ts is not happy with it
-		channel.send = DraftbotChannel.prototype.send.bind(channel);
-		return channel as unknown as DraftbotChannel;
+		channel.send = CrowniclesChannel.prototype.send.bind(channel);
+		return channel as unknown as CrowniclesChannel;
 	}
 
 	/**
@@ -358,8 +358,8 @@ export class DraftbotChannel extends ChannelTypeWithoutSend {
 			return await BaseGuildTextChannel.prototype.send.bind(this)(options);
 		}
 		catch (e) {
-			DraftBotLogger.errorWithObj("Weird Permission Error", e);
-			DraftbotChannel.prototype.manageFallback.bind(this)();
+			CrowniclesLogger.errorWithObj("Weird Permission Error", e);
+			CrowniclesChannel.prototype.manageFallback.bind(this)();
 			fallback ??= (): void => {
 				// Do nothing by default if no fallback is provided
 			};
@@ -373,6 +373,6 @@ export class DraftbotChannel extends ChannelTypeWithoutSend {
 	 */
 	private manageFallback(): void {
 		// We can't send ephemeral message nor send messages in DM
-		DraftBotLogger.error(`Unable to alert user of no speak permission : c:${this.id} / u:N/A`);
+		CrowniclesLogger.error(`Unable to alert user of no speak permission : c:${this.id} / u:N/A`);
 	}
 }

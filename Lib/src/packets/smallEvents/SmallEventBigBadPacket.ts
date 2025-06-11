@@ -2,7 +2,7 @@ import { SmallEventPacket } from "./SmallEventPacket";
 import { SmallEventBigBadKind } from "../../types/SmallEventBigBadKind";
 import {
 	PacketDirection, sendablePacket
-} from "../DraftBotPacket";
+} from "../CrowniclesPacket";
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class SmallEventBigBadPacket extends SmallEventPacket {

@@ -19,7 +19,7 @@ export function piercingOrSimpleAttack(opponent: PlayerFighter | AiPlayerFighter
 	// Use piercing attack if the opponent has high defense
 	if (
 		(opponent.getDefense() > me.getDefense()
-			|| RandomUtils.draftbotRandom.bool(0.2))
+			|| RandomUtils.crowniclesRandom.bool(0.2))
 		&& me.getBreath() >= FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.PIERCING_ATTACK)
 	) {
 		return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.PIERCING_ATTACK);

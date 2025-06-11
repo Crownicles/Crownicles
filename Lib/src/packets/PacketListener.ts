@@ -1,12 +1,12 @@
 import {
-	DraftBotPacket, PacketContext, PacketLike
-} from "./DraftBotPacket";
-import { DraftBotLogger } from "../logs/DraftBotLogger";
+	CrowniclesPacket, PacketContext, PacketLike
+} from "./CrowniclesPacket";
+import { CrowniclesLogger } from "../logs/CrowniclesLogger";
 
 export class PacketListenerServer {
-	private packetCallbacks: Map<string, PacketListenerCallbackServer<DraftBotPacket>> = new Map<string, PacketListenerCallbackServer<DraftBotPacket>>();
+	private packetCallbacks: Map<string, PacketListenerCallbackServer<CrowniclesPacket>> = new Map<string, PacketListenerCallbackServer<CrowniclesPacket>>();
 
-	public addPacketListener<T extends DraftBotPacket>(PacketInstance: PacketLike<T>, callback: PacketListenerCallbackServer<T>): void {
+	public addPacketListener<T extends CrowniclesPacket>(PacketInstance: PacketLike<T>, callback: PacketListenerCallbackServer<T>): void {
 		const instance = new PacketInstance();
 
 		// TODO, when going to strict mode in Core, replace ts-ignore by ts-expect-error
@@ -17,23 +17,23 @@ export class PacketListenerServer {
 				await callback(response, context, packet);
 			}
 			catch (e) {
-				DraftBotLogger.errorWithObj(`${PacketListenerServer.name} : Error while handling packet ${instance.constructor.name}`, e);
+				CrowniclesLogger.errorWithObj(`${PacketListenerServer.name} : Error while handling packet ${instance.constructor.name}`, e);
 				throw e;
 			}
 		});
 	}
 
-	public getListener(packet: string): PacketListenerCallbackServer<DraftBotPacket> {
+	public getListener(packet: string): PacketListenerCallbackServer<CrowniclesPacket> {
 		return this.packetCallbacks.get(packet)!;
 	}
 }
 
-export type PacketListenerCallbackServer<T extends DraftBotPacket> = (response: DraftBotPacket[], context: PacketContext, packet: T) => void | Promise<void>;
+export type PacketListenerCallbackServer<T extends CrowniclesPacket> = (response: CrowniclesPacket[], context: PacketContext, packet: T) => void | Promise<void>;
 
 export class PacketListenerClient {
-	private packetCallbacks: Map<string, PacketListenerCallbackClient<DraftBotPacket>> = new Map<string, PacketListenerCallbackClient<DraftBotPacket>>();
+	private packetCallbacks: Map<string, PacketListenerCallbackClient<CrowniclesPacket>> = new Map<string, PacketListenerCallbackClient<CrowniclesPacket>>();
 
-	public addPacketListener<T extends DraftBotPacket>(PacketInstance: PacketLike<T>, callback: PacketListenerCallbackClient<T>): void {
+	public addPacketListener<T extends CrowniclesPacket>(PacketInstance: PacketLike<T>, callback: PacketListenerCallbackClient<T>): void {
 		const instance = new PacketInstance();
 
 		// TODO, when going to strict mode in Core, replace ts-ignore by ts-expect-error
@@ -44,15 +44,15 @@ export class PacketListenerClient {
 				await callback(context, packet);
 			}
 			catch (e) {
-				DraftBotLogger.errorWithObj(`${PacketListenerClient.name} : Error while handling packet ${instance.constructor.name}`, e);
+				CrowniclesLogger.errorWithObj(`${PacketListenerClient.name} : Error while handling packet ${instance.constructor.name}`, e);
 				throw e;
 			}
 		});
 	}
 
-	public getListener(packet: string): PacketListenerCallbackClient<DraftBotPacket> | undefined {
+	public getListener(packet: string): PacketListenerCallbackClient<CrowniclesPacket> | undefined {
 		return this.packetCallbacks.get(packet);
 	}
 }
 
-export type PacketListenerCallbackClient<T extends DraftBotPacket> = (context: PacketContext, packet: T) => Promise<void>;
+export type PacketListenerCallbackClient<T extends CrowniclesPacket> = (context: PacketContext, packet: T) => Promise<void>;

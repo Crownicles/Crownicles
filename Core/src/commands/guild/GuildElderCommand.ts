@@ -1,7 +1,7 @@
 import Player, { Players } from "../../core/database/game/models/Player";
 import {
-	DraftBotPacket, makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, makePacket, PacketContext
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import { Guilds } from "../../core/database/game/models/Guild";
 import {
 	CommandGuildElderAcceptPacketRes,
@@ -12,7 +12,7 @@ import {
 	CommandGuildElderRefusePacketRes,
 	CommandGuildElderSameGuildPacketRes
 } from "../../../../Lib/src/packets/commands/CommandGuildElderPacket";
-import { draftBotInstance } from "../../index";
+import { crowniclesInstance } from "../../index";
 import {
 	commandRequires, CommandUtils
 } from "../../core/utils/CommandUtils";
@@ -32,7 +32,7 @@ import { ReactionCollectorGuildElder } from "../../../../Lib/src/packets/interac
  * @param promotedPlayer
  * @param response
  */
-async function isEligible(player: Player, promotedPlayer: Player, response: DraftBotPacket[]): Promise<boolean> {
+async function isEligible(player: Player, promotedPlayer: Player, response: CrowniclesPacket[]): Promise<boolean> {
 	if (promotedPlayer === null) {
 		response.push(makePacket(CommandGuildElderFoundPlayerPacketRes, {}));
 		return false;
@@ -69,7 +69,7 @@ async function isEligible(player: Player, promotedPlayer: Player, response: Draf
  * @param promotedPlayer
  * @param response
  */
-async function acceptGuildElder(player: Player, promotedPlayer: Player, response: DraftBotPacket[]): Promise<void> {
+async function acceptGuildElder(player: Player, promotedPlayer: Player, response: CrowniclesPacket[]): Promise<void> {
 	await player.reload();
 	await promotedPlayer.reload();
 
@@ -84,7 +84,7 @@ async function acceptGuildElder(player: Player, promotedPlayer: Player, response
 		promotedPlayer.save(),
 		guild.save()
 	]);
-	draftBotInstance.logsDatabase.logGuildElderAdd(guild, promotedPlayer.keycloakId).then();
+	crowniclesInstance.logsDatabase.logGuildElderAdd(guild, promotedPlayer.keycloakId).then();
 
 	response.push(makePacket(CommandGuildElderAcceptPacketRes, {
 		promotedKeycloakId: promotedPlayer.keycloakId,
@@ -101,7 +101,7 @@ export default class GuildElderCommand {
 		guildRoleNeeded: GuildRole.CHIEF,
 		whereAllowed: CommandUtils.WHERE.EVERYWHERE
 	})
-	async execute(response: DraftBotPacket[], player: Player, packet: CommandGuildElderPacketReq, context: PacketContext): Promise<void> {
+	async execute(response: CrowniclesPacket[], player: Player, packet: CommandGuildElderPacketReq, context: PacketContext): Promise<void> {
 		const promotedPlayer = await Players.getAskedPlayer({ keycloakId: packet.askedPlayerKeycloakId }, player);
 
 		if (!await isEligible(player, promotedPlayer, response)) {
@@ -114,7 +114,7 @@ export default class GuildElderCommand {
 			promotedPlayer.keycloakId
 		);
 
-		const endCallback: EndCallback = async (collector: ReactionCollectorInstance, response: DraftBotPacket[]): Promise<void> => {
+		const endCallback: EndCallback = async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
 			const reaction = collector.getFirstReaction();
 			if (reaction && reaction.reaction.type === ReactionCollectorAcceptReaction.name) {
 				await acceptGuildElder(player, promotedPlayer, response);

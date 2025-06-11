@@ -1,10 +1,10 @@
-import { DraftBotIcons } from "../../../Lib/src/DraftBotIcons";
+import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 import {
 	ActionRowBuilder, parseEmoji, StringSelectMenuBuilder, StringSelectMenuOptionBuilder
 } from "discord.js";
-import { DraftBotEmbed } from "../messages/DraftBotEmbed";
-import { DraftbotInteraction } from "../messages/DraftbotInteraction";
-import { DraftBotLogger } from "../../../Lib/src/logs/DraftBotLogger";
+import { CrowniclesEmbed } from "../messages/CrowniclesEmbed";
+import { CrowniclesInteraction } from "../messages/CrowniclesInteraction";
+import { CrowniclesLogger } from "../../../Lib/src/logs/CrowniclesLogger";
 
 export class EmoteUtils {
 	/**
@@ -51,12 +51,12 @@ export class EmoteUtils {
 		return emoji;
 	}
 
-	static async testAllEmotesInSelectMenu(interaction: DraftbotInteraction): Promise<void> {
-		let emojis = Object.values(DraftBotIcons.weapons).concat(
-			Object.values(DraftBotIcons.armors),
-			Object.values(DraftBotIcons.potions),
-			Object.values(DraftBotIcons.pets).map(pet => pet.emoteMale),
-			Object.values(DraftBotIcons.pets).map(pet => pet.emoteFemale)
+	static async testAllEmotesInSelectMenu(interaction: CrowniclesInteraction): Promise<void> {
+		let emojis = Object.values(CrowniclesIcons.weapons).concat(
+			Object.values(CrowniclesIcons.armors),
+			Object.values(CrowniclesIcons.potions),
+			Object.values(CrowniclesIcons.pets).map(pet => pet.emoteMale),
+			Object.values(CrowniclesIcons.pets).map(pet => pet.emoteFemale)
 		);
 
 		// Remove duplicates
@@ -69,7 +69,7 @@ export class EmoteUtils {
 		emojis.splice(emojis.indexOf("🦖️"), 1);
 		emojis.splice(emojis.indexOf("🦔️"), 1);
 
-		const embed = new DraftBotEmbed()
+		const embed = new CrowniclesEmbed()
 			.setTitle("Test select menu")
 			.setDescription("Test select menu");
 
@@ -79,9 +79,9 @@ export class EmoteUtils {
 
 		const maxOptions = 25;
 		for (let i = 0; i < Math.ceil(emojis.length / maxOptions); i++) {
-			DraftBotLogger.info(`Test select menu slice ${i} / ${Math.ceil(emojis.length / maxOptions)}`);
+			CrowniclesLogger.info(`Test select menu slice ${i} / ${Math.ceil(emojis.length / maxOptions)}`);
 			const emojisSlice = emojis.slice(i * maxOptions, (i + 1) * maxOptions);
-			DraftBotLogger.info(`Emojis slice: ${emojisSlice}`);
+			CrowniclesLogger.info(`Emojis slice: ${emojisSlice}`);
 			const row = new ActionRowBuilder<StringSelectMenuBuilder>();
 			const selectMenu = new StringSelectMenuBuilder()
 				.setCustomId("testSelectMenu")
@@ -98,7 +98,7 @@ export class EmoteUtils {
 				});
 			}
 			catch (e) {
-				DraftBotLogger.errorWithObj("Error while sending select menu", e);
+				CrowniclesLogger.errorWithObj("Error while sending select menu", e);
 			}
 		}
 	}

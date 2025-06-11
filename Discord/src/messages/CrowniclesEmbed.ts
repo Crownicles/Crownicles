@@ -6,7 +6,7 @@ import { ColorConstants } from "../../../Lib/src/constants/ColorConstants";
 /**
  * Base class for bot embeds
  */
-export class DraftBotEmbed extends EmbedBuilder {
+export class CrowniclesEmbed extends EmbedBuilder {
 	/**
 	 * Add the title and the user icon as the title of the embed
 	 * pseudo is automatically replaced in the title. If you have other replacements, you have to replace it yourself before

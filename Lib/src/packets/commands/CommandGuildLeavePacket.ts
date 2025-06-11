@@ -1,17 +1,17 @@
 import {
-	DraftBotPacket, PacketDirection, sendablePacket
-} from "../DraftBotPacket";
+	CrowniclesPacket, PacketDirection, sendablePacket
+} from "../CrowniclesPacket";
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
-export class CommandGuildLeavePacketReq extends DraftBotPacket {
+export class CommandGuildLeavePacketReq extends CrowniclesPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandGuildLeaveRefusePacketRes extends DraftBotPacket {
+export class CommandGuildLeaveRefusePacketRes extends CrowniclesPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandGuildLeaveAcceptPacketRes extends DraftBotPacket {
+export class CommandGuildLeaveAcceptPacketRes extends CrowniclesPacket {
 	newChiefKeycloakId?: string;
 
 	guildName!: string;
@@ -20,5 +20,5 @@ export class CommandGuildLeaveAcceptPacketRes extends DraftBotPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandGuildLeaveNotInAGuildPacketRes extends DraftBotPacket {
+export class CommandGuildLeaveNotInAGuildPacketRes extends CrowniclesPacket {
 }

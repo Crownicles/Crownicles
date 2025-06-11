@@ -7,7 +7,7 @@ import { FightConstants } from "../../../../../../../Lib/src/constants/FightCons
 
 const use: FightAlterationFunc = (affected, _fightAlteration, _opponent) => {
 	// 50 % chance to be spitted from the front door on turn 2
-	if (RandomUtils.draftbotRandom.bool(0.5) && affected.alterationTurn === 2) {
+	if (RandomUtils.crowniclesRandom.bool(0.5) && affected.alterationTurn === 2) {
 		return defaultHealFightAlterationResult(affected);
 	}
 

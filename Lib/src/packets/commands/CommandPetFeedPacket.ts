@@ -1,6 +1,6 @@
 import {
-	DraftBotPacket, PacketDirection, sendablePacket
-} from "../DraftBotPacket";
+	CrowniclesPacket, PacketDirection, sendablePacket
+} from "../CrowniclesPacket";
 import { OwnedPet } from "../../types/OwnedPet";
 
 export enum CommandPetFeedResult {
@@ -11,26 +11,26 @@ export enum CommandPetFeedResult {
 }
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
-export class CommandPetFeedPacketReq extends DraftBotPacket {}
+export class CommandPetFeedPacketReq extends CrowniclesPacket {}
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandPetFeedNoPetErrorPacket extends DraftBotPacket {}
+export class CommandPetFeedNoPetErrorPacket extends CrowniclesPacket {}
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandPetFeedNotHungryErrorPacket extends DraftBotPacket {
+export class CommandPetFeedNotHungryErrorPacket extends CrowniclesPacket {
 	pet!: OwnedPet;
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandPetFeedNoMoneyFeedErrorPacket extends DraftBotPacket {}
+export class CommandPetFeedNoMoneyFeedErrorPacket extends CrowniclesPacket {}
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandPetFeedGuildStorageEmptyErrorPacket extends DraftBotPacket {}
+export class CommandPetFeedGuildStorageEmptyErrorPacket extends CrowniclesPacket {}
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandPetFeedCancelErrorPacket extends DraftBotPacket {}
+export class CommandPetFeedCancelErrorPacket extends CrowniclesPacket {}
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandPetFeedSuccessPacket extends DraftBotPacket {
+export class CommandPetFeedSuccessPacket extends CrowniclesPacket {
 	result!: CommandPetFeedResult;
 }

@@ -11,7 +11,7 @@ import {
 	CommandShopNotEnoughCurrency,
 	CommandShopTooManyEnergyBought
 } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorShop";
-import { PacketContext } from "../../../../../../Lib/src/packets/DraftBotPacket";
+import { PacketContext } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	handleCommandShopAlreadyHaveBadge,
 	handleCommandShopBadgeBought,

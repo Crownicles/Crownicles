@@ -1,7 +1,7 @@
 // skipcq: JS-C1003 - prom-client does not expose itself as an ES Module.
 import * as client from "prom-client";
 
-export const draftBotMetricsRegistry = new client.Registry();
+export const crowniclesMetricsRegistry = new client.Registry();
 
 /*
  * The time buckets for the histogram are defined here
@@ -18,12 +18,12 @@ for (let i = 5; i <= 10; i += 1) {
 	packetsTimeBuckets.push(i);
 }
 
-export abstract class DraftBotDiscordMetrics {
+export abstract class CrowniclesDiscordMetrics {
 	private static packetsTimeHistogram = new client.Histogram({
 		name: "discord_packets_time",
 		help: "Histogram of packets times",
 		labelNames: ["packet"],
-		registers: [draftBotMetricsRegistry],
+		registers: [crowniclesMetricsRegistry],
 		buckets: packetsTimeBuckets
 	});
 
@@ -31,14 +31,14 @@ export abstract class DraftBotDiscordMetrics {
 		name: "discord_packets_count",
 		help: "Count of packets",
 		labelNames: ["packet"],
-		registers: [draftBotMetricsRegistry]
+		registers: [crowniclesMetricsRegistry]
 	});
 
 	private static packetsErrorCount = new client.Counter({
 		name: "discord_packets_error_count",
 		help: "Count of packets errors",
 		labelNames: ["packet"],
-		registers: [draftBotMetricsRegistry]
+		registers: [crowniclesMetricsRegistry]
 	});
 
 	static observePacketTime(packetName: string, time: number): void {
@@ -58,5 +58,5 @@ export abstract class DraftBotDiscordMetrics {
 }
 
 client.collectDefaultMetrics({
-	register: draftBotMetricsRegistry
+	register: crowniclesMetricsRegistry
 });

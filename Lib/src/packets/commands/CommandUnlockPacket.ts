@@ -1,9 +1,9 @@
 import {
-	DraftBotPacket, PacketDirection, sendablePacket
-} from "../DraftBotPacket";
+	CrowniclesPacket, PacketDirection, sendablePacket
+} from "../CrowniclesPacket";
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
-export class CommandUnlockPacketReq extends DraftBotPacket {
+export class CommandUnlockPacketReq extends CrowniclesPacket {
 	askedPlayer!: {
 		rank?: number;
 		keycloakId?: string;
@@ -11,7 +11,7 @@ export class CommandUnlockPacketReq extends DraftBotPacket {
 }
 
 @sendablePacket(PacketDirection.NONE)
-export class CommandUnlockErrorPacket extends DraftBotPacket {
+export class CommandUnlockErrorPacket extends CrowniclesPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
@@ -32,11 +32,11 @@ export class CommandUnlockHimself extends CommandUnlockErrorPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandUnlockAcceptPacketRes extends DraftBotPacket {
+export class CommandUnlockAcceptPacketRes extends CrowniclesPacket {
 	unlockedKeycloakId!: string;
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandUnlockRefusePacketRes extends DraftBotPacket {
+export class CommandUnlockRefusePacketRes extends CrowniclesPacket {
 
 }

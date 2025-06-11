@@ -2,13 +2,13 @@ import {
 	BaseMessageOptions, Message
 } from "discord.js";
 import {
-	DraftBotPacket, PacketContext
-} from "../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, PacketContext
+} from "../../../Lib/src/packets/CrowniclesPacket";
 import { minutesToMilliseconds } from "../../../Lib/src/utils/TimeUtils";
 import { DiscordCache } from "../bot/DiscordCache";
 import { ReactionCollectorReturnTypeOrNull } from "../packetHandlers/handlers/ReactionCollectorHandlers";
 
-export abstract class DraftbotCachedMessage<T extends DraftBotPacket = DraftBotPacket> {
+export abstract class CrowniclesCachedMessage<T extends CrowniclesPacket = CrowniclesPacket> {
 	// Duration of the message's cached life in minutes
 	abstract readonly duration: number;
 
@@ -65,15 +65,15 @@ export abstract class DraftbotCachedMessage<T extends DraftBotPacket = DraftBotP
 	}
 }
 
-type MessageLike<Message extends DraftbotCachedMessage> = new (originalMessageId: string) => Message;
+type MessageLike<Message extends CrowniclesCachedMessage> = new (originalMessageId: string) => Message;
 
-export class DraftbotCachedMessages {
-	static cachedMessages: Map<string, DraftbotCachedMessage> = new Map<string, DraftbotCachedMessage>();
+export class CrowniclesCachedMessages {
+	static cachedMessages: Map<string, CrowniclesCachedMessage> = new Map<string, CrowniclesCachedMessage>();
 
-	static createCachedMessage(message: DraftbotCachedMessage): void {
-		DraftbotCachedMessages.cachedMessages.set(message.cacheKey, message);
+	static createCachedMessage(message: CrowniclesCachedMessage): void {
+		CrowniclesCachedMessages.cachedMessages.set(message.cacheKey, message);
 		setTimeout(() => {
-			DraftbotCachedMessages.remove(message.cacheKey);
+			CrowniclesCachedMessages.remove(message.cacheKey);
 		}, minutesToMilliseconds(message.duration));
 	}
 
@@ -82,7 +82,7 @@ export class DraftbotCachedMessages {
 	 * @param cacheKey
 	 */
 	static remove(cacheKey: string): void {
-		DraftbotCachedMessages.cachedMessages.delete(cacheKey);
+		CrowniclesCachedMessages.cachedMessages.delete(cacheKey);
 	}
 
 	/**
@@ -90,27 +90,27 @@ export class DraftbotCachedMessages {
 	 * @param originalMessageId
 	 * @param removeCallback
 	 */
-	static removeAllFromMessageId(originalMessageId: string, removeCallback: (cachedMessage: DraftbotCachedMessage) => void): void {
-		DraftbotCachedMessages.cachedMessages.forEach((message, key) => {
+	static removeAllFromMessageId(originalMessageId: string, removeCallback: (cachedMessage: CrowniclesCachedMessage) => void): void {
+		CrowniclesCachedMessages.cachedMessages.forEach((message, key) => {
 			if (key.startsWith(originalMessageId)) {
-				DraftbotCachedMessages.remove(key);
+				CrowniclesCachedMessages.remove(key);
 				removeCallback(message);
 			}
 		});
 	}
 
-	static getOrCreate<Packet extends DraftBotPacket, Message extends DraftbotCachedMessage<Packet>>(originalMessageId: string, MessageLike: MessageLike<Message>): Message {
+	static getOrCreate<Packet extends CrowniclesPacket, Message extends CrowniclesCachedMessage<Packet>>(originalMessageId: string, MessageLike: MessageLike<Message>): Message {
 		const type = new MessageLike("").type;
-		const message = DraftbotCachedMessages.cachedMessages.get(`${originalMessageId}-${type}`);
+		const message = CrowniclesCachedMessages.cachedMessages.get(`${originalMessageId}-${type}`);
 		if (!message) {
 			const newMessage = new MessageLike(originalMessageId);
-			DraftbotCachedMessages.createCachedMessage(newMessage);
+			CrowniclesCachedMessages.createCachedMessage(newMessage);
 			return newMessage;
 		}
 		return message as Message;
 	}
 
-	static markAsReupload(message: DraftbotCachedMessage): void {
-		DraftbotCachedMessages.cachedMessages.get(message.cacheKey)!.reuploadMessage = true;
+	static markAsReupload(message: CrowniclesCachedMessage): void {
+		CrowniclesCachedMessages.cachedMessages.get(message.cacheKey)!.reuploadMessage = true;
 	}
 }

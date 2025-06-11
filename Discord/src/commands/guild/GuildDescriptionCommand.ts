@@ -1,7 +1,7 @@
-import { DraftbotInteraction } from "../../messages/DraftbotInteraction";
+import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
 import {
 	makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import { ICommand } from "../ICommand";
 import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
 import { SlashCommandBuilder } from "@discordjs/builders";
@@ -12,7 +12,7 @@ import {
 } from "../../../../Lib/src/packets/commands/CommandGuildDescriptionPacket";
 import { ReactionCollectorCreationPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { DiscordCache } from "../../bot/DiscordCache";
-import { DraftBotEmbed } from "../../messages/DraftBotEmbed";
+import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import i18n from "../../translations/i18n";
 import { DiscordCollectorUtils } from "../../utils/DiscordCollectorUtils";
 import { ReactionCollectorGuildDescriptionData } from "../../../../Lib/src/packets/interaction/ReactionCollectorGuildDescription";
@@ -25,7 +25,7 @@ export async function createGuildDescriptionCollector(context: PacketContext, pa
 	await interaction.deferReply();
 	const data = packet.data.data as ReactionCollectorGuildDescriptionData;
 	const lng = interaction.userLanguage;
-	const embed = new DraftBotEmbed().formatAuthor(i18n.t("commands:guildDescription.title", {
+	const embed = new CrowniclesEmbed().formatAuthor(i18n.t("commands:guildDescription.title", {
 		lng,
 		pseudo: escapeUsername(interaction.user.displayName)
 	}), interaction.user)
@@ -48,7 +48,7 @@ export async function handleCommandGuildDescriptionRefusePacketRes(_packet: Comm
 	const lng = originalInteraction.userLanguage;
 	await buttonInteraction?.editReply({
 		embeds: [
-			new DraftBotEmbed().formatAuthor(i18n.t("commands:guildDescription.canceledTitle", {
+			new CrowniclesEmbed().formatAuthor(i18n.t("commands:guildDescription.canceledTitle", {
 				lng,
 				pseudo: escapeUsername(originalInteraction.user.displayName)
 			}), originalInteraction.user)
@@ -69,7 +69,7 @@ export async function handleCommandGuildDescriptionAcceptPacketRes(_packet: Comm
 		const lng = originalInteraction.userLanguage;
 		await buttonInteraction.editReply({
 			embeds: [
-				new DraftBotEmbed().formatAuthor(i18n.t("commands:guildDescription.successDescriptionTitle", {
+				new CrowniclesEmbed().formatAuthor(i18n.t("commands:guildDescription.successDescriptionTitle", {
 					lng,
 					pseudo: escapeUsername(originalInteraction.user.displayName)
 				}), originalInteraction.user)
@@ -81,7 +81,7 @@ export async function handleCommandGuildDescriptionAcceptPacketRes(_packet: Comm
 	}
 }
 
-function getPacket(interaction: DraftbotInteraction): CommandGuildDescriptionPacketReq {
+function getPacket(interaction: CrowniclesInteraction): CommandGuildDescriptionPacketReq {
 	const description = <string>interaction.options.get("description", true).value;
 	return makePacket(CommandGuildDescriptionPacketReq, { description });
 }

@@ -14,8 +14,8 @@ import { TravelTime } from "../maps/TravelTime";
 import { Effect } from "../../../../Lib/src/types/Effect";
 import { SmallEventPetPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventPetPacket";
 import {
-	DraftBotPacket, makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, makePacket, PacketContext
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import Player from "../database/game/models/Player";
 import {
 	PetConstants, PetInteraction
@@ -72,7 +72,7 @@ function pickRandomInteraction(possibleIssues: PetInteraction[]): string {
  * @param player
  * @param petEntity
  */
-async function managePickedInteraction(packet: SmallEventPetPacket, response: DraftBotPacket[], context: PacketContext, player: Player, petEntity: PetEntity): Promise<void> {
+async function managePickedInteraction(packet: SmallEventPetPacket, response: CrowniclesPacket[], context: PacketContext, player: Player, petEntity: PetEntity): Promise<void> {
 	switch (packet.interactionName) {
 		case PetConstants.PET_INTERACTIONS_NAMES.WIN_ENERGY:
 			if (player.fightPointsLost === 0) {
@@ -88,7 +88,7 @@ async function managePickedInteraction(packet: SmallEventPetPacket, response: Dr
 				packet.interactionName = PetConstants.PET_INTERACTIONS_NAMES.NOTHING;
 				break;
 			}
-			packet.food = RandomUtils.draftbotRandom.pick(Object.values(PetConstants.PET_FOOD)) as PetFood;
+			packet.food = RandomUtils.crowniclesRandom.pick(Object.values(PetConstants.PET_FOOD)) as PetFood;
 			await giveFoodToGuild(response, player, packet.food, 1, NumberChangeReason.SMALL_EVENT);
 			break;
 

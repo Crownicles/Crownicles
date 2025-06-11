@@ -19,7 +19,7 @@ export function intenseOrSimpleAttack(me: AiPlayerFighter, opponent: AiPlayerFig
 		me.getEnergy() < opponent.getEnergy()
 		&& opponent.getEnergy() > opponent.getMaxEnergy() * 0.15
 		&& FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.INTENSE_ATTACK)
-		&& RandomUtils.draftbotRandom.bool(0.8)
+		&& RandomUtils.crowniclesRandom.bool(0.8)
 	) {
 		return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.INTENSE_ATTACK);
 	}
@@ -41,7 +41,7 @@ class GlovedFightBehavior implements ClassBehavior {
 				ClassConstants.CLASSES_ID.ESQUIRE,
 				ClassConstants.CLASSES_ID.HORSE_RIDER
 			].includes(opponent.player.class)
-			&& RandomUtils.draftbotRandom.bool(0.2)
+			&& RandomUtils.crowniclesRandom.bool(0.2)
 		) {
 			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.DEFENSE_BUFF);
 		}

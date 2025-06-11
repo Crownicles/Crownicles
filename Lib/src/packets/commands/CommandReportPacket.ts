@@ -1,13 +1,13 @@
 import {
-	DraftBotPacket, PacketDirection, sendablePacket
-} from "../DraftBotPacket";
+	CrowniclesPacket, PacketDirection, sendablePacket
+} from "../CrowniclesPacket";
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
-export class CommandReportPacketReq extends DraftBotPacket {
+export class CommandReportPacketReq extends CrowniclesPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandReportTravelSummaryRes extends DraftBotPacket {
+export class CommandReportTravelSummaryRes extends CrowniclesPacket {
 	startMap!: {
 		id: number;
 		type: string;
@@ -47,7 +47,7 @@ export class CommandReportTravelSummaryRes extends DraftBotPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandReportMonsterRewardRes extends DraftBotPacket {
+export class CommandReportMonsterRewardRes extends CrowniclesPacket {
 	money!: number;
 
 	experience!: number;
@@ -58,17 +58,17 @@ export class CommandReportMonsterRewardRes extends DraftBotPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandReportErrorNoMonsterRes extends DraftBotPacket {
+export class CommandReportErrorNoMonsterRes extends CrowniclesPacket {
 
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandReportRefusePveFightRes extends DraftBotPacket {
+export class CommandReportRefusePveFightRes extends CrowniclesPacket {
 
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandReportChooseDestinationRes extends DraftBotPacket {
+export class CommandReportChooseDestinationRes extends CrowniclesPacket {
 	mapId!: number;
 
 	mapTypeId!: string;
@@ -77,7 +77,7 @@ export class CommandReportChooseDestinationRes extends DraftBotPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandReportBigEventResultRes extends DraftBotPacket {
+export class CommandReportBigEventResultRes extends CrowniclesPacket {
 	eventId!: number;
 
 	possibilityId!: string;

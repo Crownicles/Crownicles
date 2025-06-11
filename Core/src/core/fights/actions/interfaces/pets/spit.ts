@@ -19,7 +19,7 @@ const use: PetAssistanceFunc = (_fighter, opponent, turn, _fightController): Pro
 	};
 
 	// 9 % chance of blinding the opponent
-	if (RandomUtils.draftbotRandom.bool(0.09) && !opponent.hasFightAlteration()) {
+	if (RandomUtils.crowniclesRandom.bool(0.09) && !opponent.hasFightAlteration()) {
 		FightActionController.applyAlteration(result, {
 			selfTarget: false,
 			alteration: FightAlterations.BLIND

@@ -1,18 +1,18 @@
 import { ICommand } from "../ICommand";
 import {
 	makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
-import { DraftbotInteraction } from "../../messages/DraftbotInteraction";
+} from "../../../../Lib/src/packets/CrowniclesPacket";
+import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
 import i18n from "../../translations/i18n";
 import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { DraftBotEmbed } from "../../messages/DraftBotEmbed";
+import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import {
 	ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, EmbedField
 } from "discord.js";
 import { Constants } from "../../../../Lib/src/constants/Constants";
 import { DiscordCache } from "../../bot/DiscordCache";
-import { DraftBotErrorEmbed } from "../../messages/DraftBotErrorEmbed";
+import { CrowniclesErrorEmbed } from "../../messages/CrowniclesErrorEmbed";
 import { Language } from "../../../../Lib/src/Language";
 import { KeycloakUser } from "../../../../Lib/src/keycloak/KeycloakUser";
 import {
@@ -27,7 +27,7 @@ import { PacketUtils } from "../../utils/PacketUtils";
 import { MessageFlags } from "discord-api-types/v10";
 import { DisplayUtils } from "../../utils/DisplayUtils";
 
-async function getPacket(interaction: DraftbotInteraction, keycloakUser: KeycloakUser): Promise<CommandInventoryPacketReq | null> {
+async function getPacket(interaction: CrowniclesInteraction, keycloakUser: KeycloakUser): Promise<CommandInventoryPacketReq | null> {
 	const askedPlayer = await PacketUtils.prepareAskedPlayer(interaction, keycloakUser);
 	if (!askedPlayer) {
 		return null;
@@ -76,9 +76,9 @@ function getBackupField<T = MainItemDisplayPacket | SupportItemDisplayPacket>(
 	};
 }
 
-function getEquippedEmbed(packet: CommandInventoryPacketRes, pseudo: string, lng: Language): DraftBotEmbed {
+function getEquippedEmbed(packet: CommandInventoryPacketRes, pseudo: string, lng: Language): CrowniclesEmbed {
 	if (packet.data) {
-		return new DraftBotEmbed()
+		return new CrowniclesEmbed()
 			.setTitle(i18n.t("commands:inventory.title", {
 				lng,
 				pseudo
@@ -94,9 +94,9 @@ function getEquippedEmbed(packet: CommandInventoryPacketRes, pseudo: string, lng
 	throw new Error("Inventory packet data must not be undefined");
 }
 
-function getBackupEmbed(packet: CommandInventoryPacketRes, pseudo: string, lng: Language): DraftBotEmbed {
+function getBackupEmbed(packet: CommandInventoryPacketRes, pseudo: string, lng: Language): CrowniclesEmbed {
 	if (packet.data) {
-		return new DraftBotEmbed()
+		return new CrowniclesEmbed()
 			.setTitle(i18n.t("commands:inventory.stockTitle", {
 				lng,
 				pseudo
@@ -122,7 +122,7 @@ export async function handleCommandInventoryPacketRes(packet: CommandInventoryPa
 	if (!packet.foundPlayer) {
 		await interaction.reply({
 			embeds: [
-				new DraftBotErrorEmbed(
+				new CrowniclesErrorEmbed(
 					interaction.user,
 					context,
 					interaction,

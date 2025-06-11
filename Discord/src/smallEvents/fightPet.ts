@@ -1,27 +1,28 @@
 import { ReactionCollectorCreationPacket } from "../../../Lib/src/packets/interaction/ReactionCollectorPacket";
-import { PacketContext } from "../../../Lib/src/packets/DraftBotPacket";
+import { PacketContext } from "../../../Lib/src/packets/CrowniclesPacket";
 import { DiscordCache } from "../bot/DiscordCache";
-import { DraftbotSmallEventEmbed } from "../messages/DraftbotSmallEventEmbed";
+import { CrowniclesSmallEventEmbed } from "../messages/CrowniclesSmallEventEmbed";
 import { StringUtils } from "../utils/StringUtils";
-import { DraftBotIcons } from "../../../Lib/src/DraftBotIcons";
+import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 import i18n from "../translations/i18n";
 import { getRandomSmallEventIntro } from "../packetHandlers/handlers/SmallEventsHandler";
 import {
-	ReactionCollectorFightPetData, ReactionCollectorFightPetReaction
+	ReactionCollectorFightPetData,
+	ReactionCollectorFightPetReaction
 } from "../../../Lib/src/packets/interaction/ReactionCollectorFightPet";
 import {
-	DraftbotButtonReaction, DraftbotButtonReactionMessage
-} from "../messages/DraftbotButtonReactionMessage";
+	CrowniclesButtonReaction, CrowniclesButtonReactionMessage
+} from "../messages/CrowniclesButtonReactionMessage";
 import { StringConstants } from "../../../Lib/src/constants/StringConstants";
 import { ReactionCollectorReturnTypeOrNull } from "../packetHandlers/handlers/ReactionCollectorHandlers";
 import { Language } from "../../../Lib/src/Language";
 
-function getFightPetReactions(baseReactions: ReactionCollectorFightPetReaction[], lng: Language): DraftbotButtonReaction[] {
-	const reactions: DraftbotButtonReaction[] = [];
+function getFightPetReactions(baseReactions: ReactionCollectorFightPetReaction[], lng: Language): CrowniclesButtonReaction[] {
+	const reactions: CrowniclesButtonReaction[] = [];
 	for (const reaction of baseReactions) {
 		reactions.push({
 			customId: reaction.actionId,
-			emote: DraftBotIcons.fightPetActions[reaction.actionId],
+			emote: CrowniclesIcons.fightPetActions[reaction.actionId],
 			description: i18n.t(`smallEvents:fightPet.fightPetActions.${reaction.actionId}.name`, { lng })
 		});
 	}
@@ -40,7 +41,7 @@ export async function fightPetCollector(context: PacketContext, packet: Reaction
 
 	const reactions = getFightPetReactions(packet.reactions.map(reaction => reaction.data as ReactionCollectorFightPetReaction), lng);
 
-	const embed = new DraftbotSmallEventEmbed(
+	const embed = new CrowniclesSmallEventEmbed(
 		"fightPet",
 		`${getRandomSmallEventIntro(lng)}${
 			StringUtils.getRandomTranslation("smallEvents:fightPet.intro", lng, {
@@ -56,7 +57,7 @@ export async function fightPetCollector(context: PacketContext, packet: Reaction
 		lng
 	);
 
-	return await new DraftbotButtonReactionMessage(interaction, {
+	return await new CrowniclesButtonReactionMessage(interaction, {
 		reactions,
 		embed,
 		packet,

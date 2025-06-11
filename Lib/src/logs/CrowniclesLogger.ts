@@ -23,7 +23,7 @@ type LogMetadata = { [key: string]: unknown } & {
 	label?: never;
 };
 
-export abstract class DraftBotLogger {
+export abstract class CrowniclesLogger {
 	private static logger: Logger;
 
 	public static init(level: string, locations: string[], labels: { [key: string]: string }, lokiSettings?: {

@@ -1,7 +1,7 @@
 import Player, { Players } from "../../core/database/game/models/Player";
 import {
-	DraftBotPacket, makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, makePacket, PacketContext
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import { Guilds } from "../../core/database/game/models/Guild";
 import {
 	CommandGuildElderRemoveAcceptPacketRes,
@@ -9,7 +9,7 @@ import {
 	CommandGuildElderRemovePacketReq,
 	CommandGuildElderRemoveRefusePacketRes
 } from "../../../../Lib/src/packets/commands/CommandGuildElderRemovePacket";
-import { draftBotInstance } from "../../index";
+import { crowniclesInstance } from "../../index";
 import {
 	commandRequires, CommandUtils
 } from "../../core/utils/CommandUtils";
@@ -29,7 +29,7 @@ import { GuildRole } from "../../../../Lib/src/types/GuildRole";
  * @param demotedElder
  * @param response
  */
-async function acceptGuildElderRemove(player: Player, demotedElder: Player, response: DraftBotPacket[]): Promise<void> {
+async function acceptGuildElderRemove(player: Player, demotedElder: Player, response: CrowniclesPacket[]): Promise<void> {
 	await player.reload();
 	await demotedElder.reload();
 	const guild = await Guilds.getById(player.guildId);
@@ -45,7 +45,7 @@ async function acceptGuildElderRemove(player: Player, demotedElder: Player, resp
 		demotedElder.save(),
 		guild.save()
 	]);
-	draftBotInstance.logsDatabase.logGuildElderRemove(guild, demotedElder.id).then();
+	crowniclesInstance.logsDatabase.logGuildElderRemove(guild, demotedElder.id).then();
 
 	response.push(makePacket(CommandGuildElderRemoveAcceptPacketRes, {
 		demotedKeycloakId: demotedElder.keycloakId,
@@ -75,7 +75,7 @@ export default class GuildElderRemoveCommand {
 		guildRoleNeeded: GuildRole.CHIEF,
 		whereAllowed: CommandUtils.WHERE.EVERYWHERE
 	})
-	async execute(response: DraftBotPacket[], player: Player, _packet: CommandGuildElderRemovePacketReq, context: PacketContext): Promise<void> {
+	async execute(response: CrowniclesPacket[], player: Player, _packet: CommandGuildElderRemovePacketReq, context: PacketContext): Promise<void> {
 		const guild = await Guilds.getById(player.guildId);
 
 		if (!guild.elderId) {

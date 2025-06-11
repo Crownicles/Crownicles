@@ -1,6 +1,6 @@
 import {
 	makePacket, PacketContext
-} from "../../../Lib/src/packets/DraftBotPacket";
+} from "../../../Lib/src/packets/CrowniclesPacket";
 import {
 	ReactionCollectorAcceptReaction,
 	ReactionCollectorCreationPacket,
@@ -18,16 +18,16 @@ import {
 	MessageComponentInteraction,
 	parseEmoji
 } from "discord.js";
-import { DraftBotIcons } from "../../../Lib/src/DraftBotIcons";
-import { DraftBotEmbed } from "../messages/DraftBotEmbed";
-import { DraftbotInteraction } from "../messages/DraftbotInteraction";
+import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
+import { CrowniclesEmbed } from "../messages/CrowniclesEmbed";
+import { CrowniclesInteraction } from "../messages/CrowniclesInteraction";
 import {
 	sendInteractionNotForYou, SendManner
 } from "./ErrorUtils";
 import { PacketUtils } from "./PacketUtils";
 import {
 	keycloakConfig, shardId
-} from "../bot/DraftBotShard.js";
+} from "../bot/CrowniclesShard.js";
 import { KeycloakUtils } from "../../../Lib/src/keycloak/KeycloakUtils.js";
 import { ReactionCollectorReturnTypeOrNull } from "../packetHandlers/handlers/ReactionCollectorHandlers";
 import { DiscordMQTT } from "../bot/DiscordMQTT";
@@ -42,7 +42,7 @@ type SendingContext = {
 };
 
 type SendingValues = {
-	embed: DraftBotEmbed | string;
+	embed: CrowniclesEmbed | string;
 	items: string[];
 };
 
@@ -55,13 +55,13 @@ export const SEND_POLITICS = {
 };
 
 const MANNER_TO_METHOD = {
-	[SendManner.SEND]: (interaction: DraftbotInteraction): typeof interaction.channel.send => interaction.channel.send,
-	[SendManner.REPLY]: (interaction: DraftbotInteraction): typeof interaction.reply => interaction.reply,
-	[SendManner.FOLLOWUP]: (interaction: DraftbotInteraction): typeof interaction.followUp => interaction.followUp,
-	[SendManner.EDIT_REPLY]: (interaction: DraftbotInteraction): typeof interaction.editReply => interaction.editReply
+	[SendManner.SEND]: (interaction: CrowniclesInteraction): typeof interaction.channel.send => interaction.channel.send,
+	[SendManner.REPLY]: (interaction: CrowniclesInteraction): typeof interaction.reply => interaction.reply,
+	[SendManner.FOLLOWUP]: (interaction: CrowniclesInteraction): typeof interaction.followUp => interaction.followUp,
+	[SendManner.EDIT_REPLY]: (interaction: CrowniclesInteraction): typeof interaction.editReply => interaction.editReply
 };
 
-function getSendingManner(interaction: DraftbotInteraction, sendManners: SendManner[]): SendManner {
+function getSendingManner(interaction: CrowniclesInteraction, sendManners: SendManner[]): SendManner {
 	return sendManners.length === 1 ? sendManners[0] : interaction.replied ? sendManners[1] : sendManners[0];
 }
 
@@ -120,8 +120,8 @@ export class DiscordCollectorUtils {
 	}
 
 	static async createAcceptRefuseCollector(
-		interaction: DraftbotInteraction,
-		messageContentOrEmbed: DraftBotEmbed | string,
+		interaction: CrowniclesInteraction,
+		messageContentOrEmbed: CrowniclesEmbed | string,
 		reactionCollectorCreationPacket: ReactionCollectorCreationPacket,
 		context: PacketContext,
 		options?: {
@@ -136,8 +136,8 @@ export class DiscordCollectorUtils {
 		}
 	): Promise<ReactionCollectorReturnTypeOrNull> {
 		const emojis = {
-			accept: DraftBotIcons.collectors.accept,
-			refuse: DraftBotIcons.collectors.refuse,
+			accept: CrowniclesIcons.collectors.accept,
+			refuse: CrowniclesIcons.collectors.refuse,
 			...options?.emojis
 		};
 		const userDiscordIds: string[] = [context.discord!.user];
@@ -171,7 +171,7 @@ export class DiscordCollectorUtils {
 
 		// Edit message
 		let msg: Message;
-		if (messageContentOrEmbed instanceof DraftBotEmbed) {
+		if (messageContentOrEmbed instanceof CrowniclesEmbed) {
 			msg = await sendFunction({
 				embeds: [messageContentOrEmbed],
 				components: [row]
@@ -202,7 +202,7 @@ export class DiscordCollectorUtils {
 				if (!options?.notDeferReply) {
 					await buttonInteraction.deferReply();
 				}
-				else if (messageContentOrEmbed instanceof DraftBotEmbed) {
+				else if (messageContentOrEmbed instanceof CrowniclesEmbed) {
 					await msg.edit({
 						embeds: [messageContentOrEmbed],
 						components: []
@@ -246,7 +246,7 @@ export class DiscordCollectorUtils {
 	}
 
 	static async createChoiceListCollector(
-		interaction: DraftbotInteraction,
+		interaction: CrowniclesInteraction,
 		{
 			packet,
 			context
@@ -286,7 +286,7 @@ export class DiscordCollectorUtils {
 
 		if (options.refuse.can) {
 			const buttonRefuse = new ButtonBuilder()
-				.setEmoji(parseEmoji(DraftBotIcons.collectors.refuse)!)
+				.setEmoji(parseEmoji(CrowniclesIcons.collectors.refuse)!)
 				.setCustomId("refuse")
 				.setStyle(ButtonStyle.Secondary);
 
@@ -297,7 +297,7 @@ export class DiscordCollectorUtils {
 		}
 
 		// Add a choice description to the embed
-		if (embed instanceof DraftBotEmbed) {
+		if (embed instanceof CrowniclesEmbed) {
 			embed.setDescription((embed.data.description ?? "") + choiceDesc);
 		}
 		else {
@@ -314,7 +314,7 @@ export class DiscordCollectorUtils {
 		const reply: Message | InteractionCallbackResponse | null = await MANNER_TO_METHOD[sendManner](interaction)({
 			components: rows,
 			withResponse: true,
-			...embed instanceof DraftBotEmbed
+			...embed instanceof CrowniclesEmbed
 				? { embeds: [embed] }
 				: { content: embed }
 		});

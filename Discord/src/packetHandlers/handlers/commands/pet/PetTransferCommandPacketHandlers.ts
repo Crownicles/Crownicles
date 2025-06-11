@@ -1,5 +1,5 @@
 import { packetHandler } from "../../../PacketHandler";
-import { PacketContext } from "../../../../../../Lib/src/packets/DraftBotPacket";
+import { PacketContext } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import { handleClassicError } from "../../../../utils/ErrorUtils";
 import {
 	CommandPetTransferAnotherMemberTransferringErrorPacket,
@@ -10,7 +10,7 @@ import {
 	CommandPetTransferSuccessPacket
 } from "../../../../../../Lib/src/packets/commands/CommandPetTransferPacket";
 import { KeycloakUtils } from "../../../../../../Lib/src/keycloak/KeycloakUtils";
-import { keycloakConfig } from "../../../../bot/DraftBotShard";
+import { keycloakConfig } from "../../../../bot/CrowniclesShard";
 import { handlePetTransferSuccess } from "../../../../commands/pet/PetTransferCommand";
 import { escapeUsername } from "../../../../utils/StringUtils";
 

@@ -1,7 +1,7 @@
 import { adminCommand } from "../../core/utils/CommandUtils";
 import {
-	DraftBotPacket, makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, makePacket, PacketContext
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	CommandGetResourcesReq,
 	CommandGetResourcesRes
@@ -25,7 +25,7 @@ export default class GetResourcesCommand {
 	}
 
 	@adminCommand(CommandGetResourcesReq, GetResourcesCommand.verifyRights)
-	execute(response: DraftBotPacket[], packet: CommandGetResourcesReq): void {
+	execute(response: CrowniclesPacket[], packet: CommandGetResourcesReq): void {
 		const res = makePacket(CommandGetResourcesRes, {});
 
 		if (packet.badges) {

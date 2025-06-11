@@ -18,7 +18,7 @@ const use: PetAssistanceFunc = async (fighter, opponent, turn, _fightController)
 	}
 
 	// 85 % of the time, nothing happens
-	if (RandomUtils.draftbotRandom.bool(0.85)) {
+	if (RandomUtils.crowniclesRandom.bool(0.85)) {
 		return null;
 	}
 

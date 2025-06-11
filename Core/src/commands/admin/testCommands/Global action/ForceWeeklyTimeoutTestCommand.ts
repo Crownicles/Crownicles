@@ -1,4 +1,4 @@
-import { DraftBot } from "../../../../core/bot/DraftBot";
+import { Crownicles } from "../../../../core/bot/Crownicles";
 import {
 	ExecuteTestCommandLike, ITestCommand
 } from "../../../../core/CommandsTest";
@@ -17,7 +17,7 @@ export const commandInfo: ITestCommand = {
  * Force a weekly timeout
  */
 const forceWeeklyTimeoutTestCommand: ExecuteTestCommandLike = async () => {
-	await DraftBot.weeklyTimeout();
+	await Crownicles.weeklyTimeout();
 	return "Vous avez effectué une fin de semaine !";
 };
 

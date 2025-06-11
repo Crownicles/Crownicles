@@ -1,6 +1,6 @@
 import {
-	DraftBotPacket, makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, makePacket, PacketContext
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import { Player } from "../../core/database/game/models/Player";
 import {
 	commandRequires, CommandUtils
@@ -30,7 +30,7 @@ import { BlockingUtils } from "../../core/utils/BlockingUtils";
  * @param inventorySlots
  */
 async function switchItems(
-	response: DraftBotPacket[],
+	response: CrowniclesPacket[],
 	player: Player,
 	toEquipItem: InventorySlot,
 	inventorySlots: InventorySlot[]
@@ -44,7 +44,7 @@ async function switchItems(
 }
 
 function getEndCallbackSwitchItems(player: Player, profileSlots: InventorySlot[], toSwitchItems: InventorySlot[]) {
-	return async (collector: ReactionCollectorInstance, response: DraftBotPacket[]): Promise<void> => {
+	return async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
 		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.SWITCH);
 		const selectedEmote = collector.getFirstReaction();
 		if (!selectedEmote || selectedEmote.reaction.type === ReactionCollectorSwitchItemCloseReaction.name) {
@@ -69,7 +69,7 @@ export default class SwitchCommand {
 		disallowedEffects: CommandUtils.DISALLOWED_EFFECTS.NOT_STARTED_OR_DEAD_OR_JAILED,
 		whereAllowed: CommandUtils.WHERE.EVERYWHERE
 	})
-	async execute(response: DraftBotPacket[], player: Player, _packet: CommandSwitchPacketReq, context: PacketContext): Promise<void> {
+	async execute(response: CrowniclesPacket[], player: Player, _packet: CommandSwitchPacketReq, context: PacketContext): Promise<void> {
 		const profileSlots = await InventorySlots.getOfPlayer(player.id);
 
 		// Get the items that can be switched or send an error if none

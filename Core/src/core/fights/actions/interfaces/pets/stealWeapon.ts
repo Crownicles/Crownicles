@@ -31,7 +31,7 @@ const use: PetAssistanceFunc = async (_fighter, opponent, turn, _fightController
 	}
 
 	// 10% chance to fail to steal the weapon
-	if (RandomUtils.draftbotRandom.bool(0.1) || weaponDamages === 0) {
+	if (RandomUtils.crowniclesRandom.bool(0.1) || weaponDamages === 0) {
 		return Promise.resolve({
 			assistanceStatus: PetAssistanceState.FAILURE
 		});

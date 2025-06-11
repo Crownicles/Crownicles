@@ -10,8 +10,8 @@ import {
 import {
 	MapLocation, MapLocationDataController
 } from "../../data/MapLocation";
-import { draftBotInstance } from "../../index";
-import { DraftBotPacket } from "../../../../Lib/src/packets/DraftBotPacket";
+import { crowniclesInstance } from "../../index";
+import { CrowniclesPacket } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { PlayerMissionsInfos } from "../database/game/models/PlayerMissionsInfo";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { Settings } from "../database/game/models/Setting";
@@ -77,7 +77,7 @@ export class Maps {
 		player.startTravelDate = new Date(time);
 		await player.save();
 
-		draftBotInstance.logsDatabase.logNewTravel(player.keycloakId, newLink)
+		crowniclesInstance.logsDatabase.logNewTravel(player.keycloakId, newLink)
 			.then();
 	}
 
@@ -194,7 +194,7 @@ export class Maps {
 	 * @param reason
 	 * @param response
 	 */
-	static async startBoatTravel(player: Player, options: OptionsStartBoatTravel, reason: NumberChangeReason, response: DraftBotPacket[]): Promise<void> {
+	static async startBoatTravel(player: Player, options: OptionsStartBoatTravel, reason: NumberChangeReason, response: CrowniclesPacket[]): Promise<void> {
 		const missionInfo = await PlayerMissionsInfos.getOfPlayer(player.id);
 
 		await TravelTime.removeEffect(player, reason);

@@ -13,8 +13,8 @@ import {
 	generateRandomItem, giveItemToPlayer
 } from "../utils/ItemUtils";
 import {
-	DraftBotPacket, makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, makePacket, PacketContext
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import Player from "../database/game/models/Player";
 import { ClassKind } from "../../../../Lib/src/types/ClassKind";
 
@@ -26,7 +26,7 @@ import { ClassKind } from "../../../../Lib/src/types/ClassKind";
  * @param context
  * @param classKind
  */
-async function managePickedInteraction(player: Player, packet: SmallEventClassPacket, response: DraftBotPacket[], context: PacketContext, classKind: ClassKind): Promise<void> {
+async function managePickedInteraction(player: Player, packet: SmallEventClassPacket, response: CrowniclesPacket[], context: PacketContext, classKind: ClassKind): Promise<void> {
 	let item;
 
 	switch (packet.interactionName) {
@@ -86,7 +86,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 	executeSmallEvent: async (response, player, context): Promise<void> => {
 		const playerClassId = player.class;
 		const classKind = ClassDataController.instance.getById(playerClassId).classKind;
-		const issue = RandomUtils.draftbotRandom.pick(ClassConstants.CLASS_SMALL_EVENT_INTERACTIONS[classKind.toUpperCase() as keyof typeof ClassConstants.CLASS_SMALL_EVENT_INTERACTIONS]);
+		const issue = RandomUtils.crowniclesRandom.pick(ClassConstants.CLASS_SMALL_EVENT_INTERACTIONS[classKind.toUpperCase() as keyof typeof ClassConstants.CLASS_SMALL_EVENT_INTERACTIONS]);
 		const packet: SmallEventClassPacket = {
 			classKind,
 			interactionName: issue

@@ -13,11 +13,11 @@ import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstan
 import { ReactionCollectorCart } from "../../../../Lib/src/packets/interaction/ReactionCollectorCart";
 import Player from "../database/game/models/Player";
 import { ReactionCollectorAcceptReaction } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
-import { makePacket } from "../../../../Lib/src/packets/DraftBotPacket";
+import { makePacket } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { SmallEventCartPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventCartPacket";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { BlockingUtils } from "../utils/BlockingUtils";
-import { draftBotInstance } from "../../index";
+import { crowniclesInstance } from "../../index";
 
 type CartResult = {
 	destination: MapLink;
@@ -42,7 +42,7 @@ function getEndCallback(player: Player, destination: CartResult): EndCallback {
 		if (reaction && reaction.reaction.type === ReactionCollectorAcceptReaction.name) {
 			if (packet.travelDone.hasEnoughMoney) {
 				const newMapLinkId = destination.isScam ? destination.scamDestination.id : destination.destination.id;
-				draftBotInstance.logsDatabase.logTeleportation(player.keycloakId, player.mapLinkId, newMapLinkId).then();
+				crowniclesInstance.logsDatabase.logTeleportation(player.keycloakId, player.mapLinkId, newMapLinkId).then();
 				player.mapLinkId = newMapLinkId;
 				await player.spendMoney({
 					amount: destination.price, response, reason: NumberChangeReason.SMALL_EVENT
@@ -60,7 +60,7 @@ function getEndCallback(player: Player, destination: CartResult): EndCallback {
 }
 
 function generateRandomDestination(player: Player): CartResult {
-	const chance = RandomUtils.draftbotRandom.realZeroToOneInclusive();
+	const chance = RandomUtils.crowniclesRandom.realZeroToOneInclusive();
 	const destination = MapLinkDataController.instance.generateRandomMapLinkDifferentOfCurrent(player.mapLinkId);
 	const result: CartResult = {
 		destination,
@@ -89,7 +89,7 @@ function generateRandomDestination(player: Player): CartResult {
 		result.price = SmallEventConstants.CART.SCAM_TP_PRICE;
 	}
 
-	result.price = Math.round(result.price * (1 + RandomUtils.draftbotRandom.realZeroToOneInclusive() * SmallEventConstants.CART.RANDOM_PRICE_BONUS));
+	result.price = Math.round(result.price * (1 + RandomUtils.crowniclesRandom.realZeroToOneInclusive() * SmallEventConstants.CART.RANDOM_PRICE_BONUS));
 
 	return result;
 }

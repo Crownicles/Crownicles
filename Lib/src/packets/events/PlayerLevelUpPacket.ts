@@ -1,9 +1,9 @@
 import {
-	DraftBotPacket, PacketDirection, sendablePacket
-} from "../DraftBotPacket";
+	CrowniclesPacket, PacketDirection, sendablePacket
+} from "../CrowniclesPacket";
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class PlayerLevelUpPacket extends DraftBotPacket {
+export class PlayerLevelUpPacket extends CrowniclesPacket {
 	keycloakId!: string;
 
 	level!: number;

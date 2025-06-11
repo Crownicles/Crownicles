@@ -1,16 +1,16 @@
-import { DraftbotInteraction } from "../../messages/DraftbotInteraction";
+import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
 import i18n from "../../translations/i18n";
-import { DraftBotEmbed } from "../../messages/DraftBotEmbed";
+import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import { ICommand } from "../ICommand";
 import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
 import { ReactionCollectorCreationPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import {
 	makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import { DiscordCache } from "../../bot/DiscordCache";
 import { DiscordCollectorUtils } from "../../utils/DiscordCollectorUtils";
 import { EmoteUtils } from "../../utils/EmoteUtils";
-import { DraftBotIcons } from "../../../../Lib/src/DraftBotIcons";
+import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 import { PacketUtils } from "../../utils/PacketUtils";
 import { CommandFightPacketReq } from "../../../../Lib/src/packets/commands/CommandFightPacket";
 import { ReactionCollectorFightData } from "../../../../Lib/src/packets/interaction/ReactionCollectorFight";
@@ -19,14 +19,14 @@ import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { FightConstants } from "../../../../Lib/src/constants/FightConstants";
 import { Language } from "../../../../Lib/src/Language";
 import { KeycloakUtils } from "../../../../Lib/src/keycloak/KeycloakUtils";
-import { keycloakConfig } from "../../bot/DraftBotShard";
-import { DraftbotFightStatusCachedMessage } from "../../messages/DraftbotFightStatusCachedMessage";
-import { DraftbotCachedMessages } from "../../messages/DraftbotCachedMessage";
+import { keycloakConfig } from "../../bot/CrowniclesShard";
+import { CrowniclesFightStatusCachedMessage } from "../../messages/CrowniclesFightStatusCachedMessage";
+import { CrowniclesCachedMessages } from "../../messages/CrowniclesCachedMessage";
 import { CommandFightIntroduceFightersPacket } from "../../../../Lib/src/packets/fights/FightIntroductionPacket";
 import { CommandFightStatusPacket } from "../../../../Lib/src/packets/fights/FightStatusPacket";
 import { CommandFightHistoryItemPacket } from "../../../../Lib/src/packets/fights/FightHistoryItemPacket";
-import { DraftbotHistoryCachedMessage } from "../../messages/DraftbotHistoryCachedMessage";
-import { DraftbotActionChooseCachedMessage } from "../../messages/DraftbotActionChooseCachedMessage";
+import { CrowniclesHistoryCachedMessage } from "../../messages/CrowniclesHistoryCachedMessage";
+import { CrowniclesActionChooseCachedMessage } from "../../messages/CrowniclesActionChooseCachedMessage";
 import { CommandFightEndOfFightPacket } from "../../../../Lib/src/packets/fights/EndOfFightPacket";
 import {
 	millisecondsToMinutes, minutesDisplay
@@ -39,7 +39,7 @@ import { OwnedPet } from "../../../../Lib/src/types/OwnedPet";
 import { DisplayUtils } from "../../utils/DisplayUtils";
 import { escapeUsername } from "../../../../Lib/src/utils/StringUtils";
 import { CommandFightCancelPacketReq } from "../../../../Lib/src/packets/commands/CommandFightCancelPacket";
-import { DraftBotLogger } from "../../../../Lib/src/logs/DraftBotLogger";
+import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { ReactionCollectorFightChooseActionData } from "../../../../Lib/src/packets/interaction/ReactionCollectorFightChooseAction";
 import { DiscordConstants } from "../../DiscordConstants";
 
@@ -50,7 +50,7 @@ function fightBugged(context: PacketContext, fightId: string): void {
 	PacketUtils.sendPacketToBackend(context, makePacket(CommandFightCancelPacketReq, {
 		fightId
 	}));
-	DraftBotLogger.error("Fight bugged, cancelling fight");
+	CrowniclesLogger.error("Fight bugged, cancelling fight");
 }
 
 export async function createFightCollector(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
@@ -58,8 +58,8 @@ export async function createFightCollector(context: PacketContext, packet: React
 	await interaction.deferReply();
 	const lng = interaction.userLanguage;
 	const data = packet.data.data as ReactionCollectorFightData;
-	const subTextKey = RandomUtils.draftbotRandom.bool(FightConstants.RARE_SUB_TEXT_INTRO) ? "rare" : "common";
-	const embed = new DraftBotEmbed().formatAuthor(i18n.t("commands:fight.title", {
+	const subTextKey = RandomUtils.crowniclesRandom.bool(FightConstants.RARE_SUB_TEXT_INTRO) ? "rare" : "common";
+	const embed = new CrowniclesEmbed().formatAuthor(i18n.t("commands:fight.title", {
 		lng,
 		pseudo: escapeUsername(interaction.user.displayName)
 	}), interaction.user)
@@ -92,8 +92,8 @@ export async function createFightCollector(context: PacketContext, packet: React
 
 	return await DiscordCollectorUtils.createAcceptRefuseCollector(interaction, embed, packet, context, {
 		emojis: {
-			accept: EmoteUtils.translateEmojiToDiscord(DraftBotIcons.fightCommand.accept),
-			refuse: EmoteUtils.translateEmojiToDiscord(DraftBotIcons.fightCommand.refuse)
+			accept: EmoteUtils.translateEmojiToDiscord(CrowniclesIcons.fightCommand.accept),
+			refuse: EmoteUtils.translateEmojiToDiscord(CrowniclesIcons.fightCommand.refuse)
 		}
 	});
 }
@@ -107,7 +107,7 @@ export async function handleCommandFightRefusePacketRes(context: PacketContext):
 	const lng = originalInteraction.userLanguage;
 	await buttonInteraction?.editReply({
 		embeds: [
-			new DraftBotEmbed().formatAuthor(i18n.t("commands:fight.canceledTitle", {
+			new CrowniclesEmbed().formatAuthor(i18n.t("commands:fight.canceledTitle", {
 				lng,
 				pseudo: escapeUsername(originalInteraction.user.displayName)
 			}), originalInteraction.user)
@@ -130,10 +130,10 @@ export async function handleCommandFightRefusePacketRes(context: PacketContext):
  * @param opponentFightActionsCount - Number of fight actions of the opponent
  * @param pet - Pet of the fighter
  */
-function addFightProfileFor(introEmbed: DraftBotEmbed, lng: Language, fighterName: string, fightActions: Array<[string, number]>, opponentFightActionsCount: number, pet?: OwnedPet): void {
+function addFightProfileFor(introEmbed: CrowniclesEmbed, lng: Language, fighterName: string, fightActions: Array<[string, number]>, opponentFightActionsCount: number, pet?: OwnedPet): void {
 	let fightActionsDisplay = fightActions.map(([actionId, breathCost]) => i18n.t("commands:fight.fightActionNameDisplay", {
 		lng,
-		fightActionEmote: EmoteUtils.translateEmojiToDiscord(DraftBotIcons.fightActions[actionId]),
+		fightActionEmote: EmoteUtils.translateEmojiToDiscord(CrowniclesIcons.fightActions[actionId]),
 		fightActionName: i18n.t(`models:fight_actions.${actionId}.name`, {
 			lng,
 			count: 1
@@ -185,7 +185,7 @@ export async function handleCommandFightIntroduceFightersRes(context: PacketCont
 		const opponentDisplayName = getUser
 			? escapeUsername(getUser.payload.user.attributes.gameUsername[0])
 			: i18n.t(`models:monsters.${packet.fightOpponentMonsterId}.name`, { lng });
-		const embed = new DraftBotEmbed().formatAuthor(i18n.t("commands:fight.fightIntroTitle", {
+		const embed = new CrowniclesEmbed().formatAuthor(i18n.t("commands:fight.fightIntroTitle", {
 			lng,
 			fightInitiator: escapeUsername(interaction.user.displayName),
 			opponent: escapeUsername(opponentDisplayName)
@@ -195,15 +195,15 @@ export async function handleCommandFightIntroduceFightersRes(context: PacketCont
 		addFightProfileFor(embed, lng, escapeUsername(opponentDisplayName), packet.fightOpponentActions, packet.fightInitiatorActions.length, packet.fightOpponentPet);
 
 		await buttonInteraction?.editReply({ embeds: [embed] });
-		await DraftbotCachedMessages.getOrCreate(interaction.id, DraftbotHistoryCachedMessage)
+		await CrowniclesCachedMessages.getOrCreate(interaction.id, CrowniclesHistoryCachedMessage)
 			.post({ content: DiscordConstants.EMPTY_MESSAGE });
-		await DraftbotCachedMessages.getOrCreate(interaction.id, DraftbotFightStatusCachedMessage)
+		await CrowniclesCachedMessages.getOrCreate(interaction.id, CrowniclesFightStatusCachedMessage)
 			.post({ content: DiscordConstants.EMPTY_MESSAGE });
-		await DraftbotCachedMessages.getOrCreate(interaction.id, DraftbotActionChooseCachedMessage)
+		await CrowniclesCachedMessages.getOrCreate(interaction.id, CrowniclesActionChooseCachedMessage)
 			.post({ content: DiscordConstants.EMPTY_MESSAGE });
 	}
 	catch (e) {
-		DraftBotLogger.errorWithObj("Fight introduction failed", e);
+		CrowniclesLogger.errorWithObj("Fight introduction failed", e);
 		fightBugged(context, packet.fightId);
 	}
 }
@@ -219,11 +219,11 @@ export async function handleCommandFightUpdateStatusRes(context: PacketContext, 
 	}
 
 	try {
-		await DraftbotCachedMessages.getOrCreate(context.discord.interaction, DraftbotFightStatusCachedMessage)
+		await CrowniclesCachedMessages.getOrCreate(context.discord.interaction, CrowniclesFightStatusCachedMessage)
 			.update(packet, context);
 	}
 	catch (e) {
-		DraftBotLogger.errorWithObj("Fight status update failed", e);
+		CrowniclesLogger.errorWithObj("Fight status update failed", e);
 		fightBugged(context, packet.fightId);
 	}
 }
@@ -239,11 +239,11 @@ export async function handleCommandFightHistoryItemRes(context: PacketContext, p
 	}
 
 	try {
-		await DraftbotCachedMessages.getOrCreate(context.discord.interaction, DraftbotHistoryCachedMessage)
+		await CrowniclesCachedMessages.getOrCreate(context.discord.interaction, CrowniclesHistoryCachedMessage)
 			.update(packet, context);
 	}
 	catch (e) {
-		DraftBotLogger.errorWithObj("Fight history update failed", e);
+		CrowniclesLogger.errorWithObj("Fight history update failed", e);
 		fightBugged(context, packet.fightId);
 	}
 }
@@ -256,12 +256,12 @@ export async function handleCommandFightAIFightActionChoose(context: PacketConte
 
 	try {
 		const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
-		await DraftbotCachedMessages.getOrCreate(context.discord.interaction, DraftbotActionChooseCachedMessage)
-			.post({ embeds: [new DraftBotEmbed().setDescription(i18n.t("commands:fight.actions.aiChoose", { lng: interaction.userLanguage }))] });
+		await CrowniclesCachedMessages.getOrCreate(context.discord.interaction, CrowniclesActionChooseCachedMessage)
+			.post({ embeds: [new CrowniclesEmbed().setDescription(i18n.t("commands:fight.actions.aiChoose", { lng: interaction.userLanguage }))] });
 		await new Promise(f => setTimeout(f, packet.ms));
 	}
 	catch (e) {
-		DraftBotLogger.errorWithObj("Fight AI action choose failed", e);
+		CrowniclesLogger.errorWithObj("Fight AI action choose failed", e);
 		fightBugged(context, packet.fightId);
 	}
 }
@@ -279,11 +279,11 @@ export async function handleCommandFightActionChoose(context: PacketContext, pac
 	}
 
 	try {
-		return await DraftbotCachedMessages.getOrCreate(context.discord.interaction, DraftbotActionChooseCachedMessage)
+		return await CrowniclesCachedMessages.getOrCreate(context.discord.interaction, CrowniclesActionChooseCachedMessage)
 			.update(packet, context);
 	}
 	catch (e) {
-		DraftBotLogger.errorWithObj("Fight action choose failed", e);
+		CrowniclesLogger.errorWithObj("Fight action choose failed", e);
 		fightBugged(context, data.fightId);
 		return null;
 	}
@@ -300,8 +300,8 @@ export async function handleEndOfFight(context: PacketContext, packet: CommandFi
 	}
 
 	// Erase all cached messages
-	DraftbotCachedMessages.removeAllFromMessageId(context.discord.interaction, cachedMessage => {
-		if (!(cachedMessage instanceof DraftbotHistoryCachedMessage)) {
+	CrowniclesCachedMessages.removeAllFromMessageId(context.discord.interaction, cachedMessage => {
+		if (!(cachedMessage instanceof CrowniclesHistoryCachedMessage)) {
 			cachedMessage.delete()
 				.then();
 		}
@@ -353,7 +353,7 @@ export async function handleEndOfFight(context: PacketContext, packet: CommandFi
 	});
 
 	// Send embed with handshake reaction
-	const embed = new DraftBotEmbed()
+	const embed = new CrowniclesEmbed()
 		.setTitle(packet.draw
 			? i18n.t("commands:fight.end.draw", {
 				lng,
@@ -368,7 +368,7 @@ export async function handleEndOfFight(context: PacketContext, packet: CommandFi
 		.setDescription(description);
 
 	const message = await interaction.channel?.send({ embeds: [embed] });
-	await message?.react(EmoteUtils.translateEmojiToDiscord(DraftBotIcons.fightCommand.handshake));
+	await message?.react(EmoteUtils.translateEmojiToDiscord(CrowniclesIcons.fightCommand.handshake));
 }
 
 /**
@@ -378,7 +378,7 @@ export async function handleEndOfFight(context: PacketContext, packet: CommandFi
  * @param lng
  * @param player1Username
  */
-function generateFightRewardField(embed: DraftBotEmbed, packet: FightRewardPacket, lng: Language, player1Username: string): void {
+function generateFightRewardField(embed: CrowniclesEmbed, packet: FightRewardPacket, lng: Language, player1Username: string): void {
 	embed.addFields({
 		name: i18n.t("commands:fight.fightReward.scoreAndMoneyField", { lng }),
 		value: ((): string => {
@@ -418,7 +418,7 @@ function generateFightRewardField(embed: DraftBotEmbed, packet: FightRewardPacke
  * @param player1Username
  * @param player2Username
  */
-function generateGloryChangesField(embed: DraftBotEmbed, packet: FightRewardPacket, lng: Language, player1Username: string, player2Username: string): void {
+function generateGloryChangesField(embed: CrowniclesEmbed, packet: FightRewardPacket, lng: Language, player1Username: string, player2Username: string): void {
 	embed.addFields({
 		name: i18n.t("commands:fight.fightReward.gloryField", { lng }),
 		value: [
@@ -453,15 +453,15 @@ function generateGloryChangesField(embed: DraftBotEmbed, packet: FightRewardPack
  * @param player1Username
  * @param player2Username
  */
-function displayLeagueChangesIfNeeded(embed: DraftBotEmbed, packet: FightRewardPacket, lng: Language, player1Username: string, player2Username: string): void {
+function displayLeagueChangesIfNeeded(embed: CrowniclesEmbed, packet: FightRewardPacket, lng: Language, player1Username: string, player2Username: string): void {
 	const leagueChangeValue = [
 		...packet.player1.newLeagueId !== packet.player1.oldLeagueId
 			? [
 				i18n.t(`commands:fight.fightReward.leagueChange${packet.player1.newLeagueId > packet.player1.oldLeagueId ? "Up" : "Down"}`, {
 					lng,
 					player: player1Username,
-					oldLeagueEmoji: EmoteUtils.translateEmojiToDiscord(DraftBotIcons.leagues[packet.player1.oldLeagueId]),
-					newLeagueEmoji: EmoteUtils.translateEmojiToDiscord(DraftBotIcons.leagues[packet.player1.newLeagueId]),
+					oldLeagueEmoji: EmoteUtils.translateEmojiToDiscord(CrowniclesIcons.leagues[packet.player1.oldLeagueId]),
+					newLeagueEmoji: EmoteUtils.translateEmojiToDiscord(CrowniclesIcons.leagues[packet.player1.newLeagueId]),
 					oldLeague: i18n.t(`models:leagues.${packet.player1.oldLeagueId}`, { lng }),
 					newLeague: i18n.t(`models:leagues.${packet.player1.newLeagueId}`, { lng })
 				})
@@ -472,8 +472,8 @@ function displayLeagueChangesIfNeeded(embed: DraftBotEmbed, packet: FightRewardP
 				i18n.t(`commands:fight.fightReward.leagueChange${packet.player2.newLeagueId > packet.player2.oldLeagueId ? "Up" : "Down"}`, {
 					lng,
 					player: player2Username,
-					oldLeagueEmoji: EmoteUtils.translateEmojiToDiscord(DraftBotIcons.leagues[packet.player2.oldLeagueId]),
-					newLeagueEmoji: EmoteUtils.translateEmojiToDiscord(DraftBotIcons.leagues[packet.player2.newLeagueId]),
+					oldLeagueEmoji: EmoteUtils.translateEmojiToDiscord(CrowniclesIcons.leagues[packet.player2.oldLeagueId]),
+					newLeagueEmoji: EmoteUtils.translateEmojiToDiscord(CrowniclesIcons.leagues[packet.player2.newLeagueId]),
 					oldLeague: i18n.t(`models:leagues.${packet.player2.oldLeagueId}`, { lng }),
 					newLeague: i18n.t(`models:leagues.${packet.player2.newLeagueId}`, { lng })
 				})
@@ -497,7 +497,7 @@ function displayLeagueChangesIfNeeded(embed: DraftBotEmbed, packet: FightRewardP
  * @param player1Username
  * @param player2Username
  */
-function generateFightRecapDescription(embed: DraftBotEmbed, packet: FightRewardPacket, lng: Language, player1Username: string, player2Username: string): void {
+function generateFightRecapDescription(embed: CrowniclesEmbed, packet: FightRewardPacket, lng: Language, player1Username: string, player2Username: string): void {
 	const player1Won = packet.player1.newGlory > packet.player1.oldGlory;
 	const player2Won = packet.player2.newGlory > packet.player2.oldGlory;
 	const gloryDifference = Math.abs(packet.player1.oldGlory - packet.player2.oldGlory);
@@ -560,7 +560,7 @@ export async function handleFightReward(context: PacketContext, packet: FightRew
 	const player2Username = escapeUsername(getPlayer2.isError ? "Unknown" : getPlayer2.payload.user.attributes.gameUsername[0]);
 
 	// Create an embed to show glory and league changes
-	const embed = new DraftBotEmbed()
+	const embed = new CrowniclesEmbed()
 		.setTitle(i18n.t("commands:fight.fightReward.title", {
 			lng
 		}));
@@ -580,7 +580,7 @@ export async function handleFightReward(context: PacketContext, packet: FightRew
 	await interaction.channel?.send({ embeds: [embed] });
 }
 
-async function getPacket(interaction: DraftbotInteraction, user: KeycloakUser): Promise<CommandFightPacketReq | null> {
+async function getPacket(interaction: CrowniclesInteraction, user: KeycloakUser): Promise<CommandFightPacketReq | null> {
 	const player = await PacketUtils.prepareAskedPlayer(interaction, user);
 	if (!player || !player.keycloakId) {
 		return null;

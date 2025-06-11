@@ -2,8 +2,8 @@ import {
 	commandRequires, CommandUtils
 } from "../../core/utils/CommandUtils";
 import {
-	DraftBotPacket, makePacket
-} from "../../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, makePacket
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import Player, { Players } from "../../core/database/game/models/Player";
 import {
 	CommandTopGuildsEmptyPacket,
@@ -23,7 +23,7 @@ import { FightConstants } from "../../../../Lib/src/constants/FightConstants";
 import { Guilds } from "../../core/database/game/models/Guild";
 import { TravelTime } from "../../core/maps/TravelTime";
 
-async function getTopScore(initiator: Player, page: number, timing: TopTiming): Promise<DraftBotPacket> {
+async function getTopScore(initiator: Player, page: number, timing: TopTiming): Promise<CrowniclesPacket> {
 	const totalElements = await Players.getNumberOfPlayingPlayers(timing === TopTiming.WEEK);
 	if (totalElements === 0) {
 		return makePacket(CommandTopPlayersEmptyPacket, {});
@@ -75,7 +75,7 @@ async function getTopScore(initiator: Player, page: number, timing: TopTiming): 
 	});
 }
 
-async function getTopGlory(initiator: Player, page: number): Promise<DraftBotPacket> {
+async function getTopGlory(initiator: Player, page: number): Promise<CrowniclesPacket> {
 	const totalElements = await Players.getNumberOfFightingPlayers();
 	if (totalElements === 0) {
 		return makePacket(CommandTopPlayersEmptyPacket, {
@@ -119,7 +119,7 @@ async function getTopGlory(initiator: Player, page: number): Promise<DraftBotPac
 	});
 }
 
-async function getTopGuild(initiator: Player, page: number): Promise<DraftBotPacket> {
+async function getTopGuild(initiator: Player, page: number): Promise<CrowniclesPacket> {
 	const totalElements = await Guilds.getTotalRanked();
 	if (totalElements === 0) {
 		return makePacket(CommandTopGuildsEmptyPacket, {});
@@ -167,7 +167,7 @@ export default class TopCommand {
 		whereAllowed: CommandUtils.WHERE.EVERYWHERE
 	})
 	static async execute(
-		response: DraftBotPacket[],
+		response: CrowniclesPacket[],
 		player: Player,
 		packet: CommandTopPacketReq
 	): Promise<void> {

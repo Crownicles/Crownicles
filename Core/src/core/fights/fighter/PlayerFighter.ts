@@ -18,7 +18,7 @@ import { Class } from "../../../data/Class";
 import {
 	FightAction, FightActionDataController
 } from "../../../data/FightAction";
-import { DraftBotPacket } from "../../../../../Lib/src/packets/DraftBotPacket";
+import { CrowniclesPacket } from "../../../../../Lib/src/packets/CrowniclesPacket";
 import { Potion } from "../../../data/Potion";
 import PetEntity, { PetEntities } from "../../database/game/models/PetEntity";
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
@@ -58,7 +58,7 @@ export class PlayerFighter extends Fighter {
 	 * @param response
 	 * @param bug Indicate if the fight is bugged
 	 */
-	async endFight(winner: boolean, response: DraftBotPacket[], bug: boolean): Promise<void> {
+	async endFight(winner: boolean, response: CrowniclesPacket[], bug: boolean): Promise<void> {
 		await this.player.reload();
 		this.player.setEnergyLost(this.stats.maxEnergy - this.stats.energy, NumberChangeReason.FIGHT);
 		await this.player.save();
@@ -114,9 +114,9 @@ export class PlayerFighter extends Fighter {
 	 * Delete the potion from the inventory of the player if needed
 	 * @param response
 	 */
-	public async consumePotionIfNeeded(response: DraftBotPacket[]): Promise<void> {
+	public async consumePotionIfNeeded(response: CrowniclesPacket[]): Promise<void> {
 		// Potions have a chance of not being consumed
-		if (RandomUtils.draftbotRandom.realZeroToOneInclusive() < FightConstants.POTION_NO_DRINK_PROBABILITY.PLAYER) {
+		if (RandomUtils.crowniclesRandom.realZeroToOneInclusive() < FightConstants.POTION_NO_DRINK_PROBABILITY.PLAYER) {
 			return;
 		}
 		const inventorySlots = await InventorySlots.getOfPlayer(this.player.id);
@@ -142,7 +142,7 @@ export class PlayerFighter extends Fighter {
 	 * @param fightView
 	 * @param response
 	 */
-	async chooseAction(fightView: FightView, response: DraftBotPacket[]): Promise<void> {
+	async chooseAction(fightView: FightView, response: CrowniclesPacket[]): Promise<void> {
 		const actions: Map<string, FightAction> = new Map(this.availableFightActions);
 
 		// Add guild attack if on PVE island and members are here
@@ -159,7 +159,7 @@ export class PlayerFighter extends Fighter {
 				}
 			}
 
-			if (this.pveMembers.length !== 0 && RandomUtils.draftbotRandom.realZeroToOneInclusive() < PVEConstants.GUILD_ATTACK_PROBABILITY) {
+			if (this.pveMembers.length !== 0 && RandomUtils.crowniclesRandom.realZeroToOneInclusive() < PVEConstants.GUILD_ATTACK_PROBABILITY) {
 				actions.set("guildAttack", FightActionDataController.instance.getById("guildAttack"));
 			}
 		}
@@ -179,7 +179,7 @@ export class PlayerFighter extends Fighter {
 	 * Check the fight action history of a fighter
 	 * @param response
 	 */
-	private async checkFightActionHistory(response: DraftBotPacket[]): Promise<void> {
+	private async checkFightActionHistory(response: CrowniclesPacket[]): Promise<void> {
 		const playerFightActionsHistory: Map<string, number> = this.getFightActionCount();
 
 		// Iterate on each action in the history
@@ -196,7 +196,7 @@ export class PlayerFighter extends Fighter {
 	 * Manage the mission of a fighter
 	 * @param response
 	 */
-	private async manageMissionsOf(response: DraftBotPacket[]): Promise<void> {
+	private async manageMissionsOf(response: CrowniclesPacket[]): Promise<void> {
 		await this.checkFightActionHistory(response);
 
 		await MissionsController.update(this.player, response, { missionId: "anyFight" });

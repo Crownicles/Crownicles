@@ -17,8 +17,8 @@ const use: FightAlterationFunc = (affected, _fightAlteration, opponent) => {
 	}
 
 	if (affected.alterationTurn > 4
-		|| affected.alterationTurn > 2 && RandomUtils.draftbotRandom.bool(0.15)
-		|| RandomUtils.draftbotRandom.bool(0.05)) {
+		|| affected.alterationTurn > 2 && RandomUtils.crowniclesRandom.bool(0.15)
+		|| RandomUtils.crowniclesRandom.bool(0.05)) {
 		return defaultHealFightAlterationResult(affected);
 	}
 

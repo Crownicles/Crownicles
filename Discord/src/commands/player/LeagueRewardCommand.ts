@@ -1,11 +1,11 @@
 import {
 	makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import { ICommand } from "../ICommand";
 import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
 import { DiscordCache } from "../../bot/DiscordCache";
-import { DraftBotEmbed } from "../../messages/DraftBotEmbed";
-import { DraftbotInteraction } from "../../messages/DraftbotInteraction";
+import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
+import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
 import {
 	CommandLeagueRewardPacketReq,
 	CommandLeagueRewardSuccessPacketRes
@@ -16,7 +16,7 @@ import { escapeUsername } from "../../utils/StringUtils";
 /**
  * Get the packet
  */
-async function getPacket(interaction: DraftbotInteraction): Promise<CommandLeagueRewardPacketReq> {
+async function getPacket(interaction: CrowniclesInteraction): Promise<CommandLeagueRewardPacketReq> {
 	await interaction.deferReply();
 	return makePacket(CommandLeagueRewardPacketReq, {});
 }
@@ -31,7 +31,7 @@ export async function handleCommandLeagueRewardSuccessPacket(packet: CommandLeag
 
 	await interaction.editReply({
 		embeds: [
-			new DraftBotEmbed()
+			new CrowniclesEmbed()
 				.formatAuthor(i18n.t("commands:leagueReward.title", {
 					lng,
 					pseudo: escapeUsername(interaction.user.displayName)

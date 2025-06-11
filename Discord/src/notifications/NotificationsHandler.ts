@@ -2,13 +2,13 @@ import { NotificationsSerializedPacket } from "../../../Lib/src/packets/notifica
 import {
 	BaseGuildTextChannel, TextChannel, User
 } from "discord.js";
-import { DraftBotEmbed } from "../messages/DraftBotEmbed";
+import { CrowniclesEmbed } from "../messages/CrowniclesEmbed";
 import i18n from "../translations/i18n";
 import { Language } from "../../../Lib/src/Language";
 import { NotificationSendTypeEnum } from "./NotificationSendType";
 import {
-	draftBotClient, keycloakConfig
-} from "../bot/DraftBotShard";
+	crowniclesClient, keycloakConfig
+} from "../bot/CrowniclesShard";
 import { getMention } from "../../../Lib/src/utils/StringUtils";
 import {
 	NotificationsTypes, NotificationType
@@ -19,7 +19,7 @@ import { KeycloakUtils } from "../../../Lib/src/keycloak/KeycloakUtils";
 import { DisplayUtils } from "../utils/DisplayUtils";
 import { GuildDailyNotificationPacket } from "../../../Lib/src/packets/notifications/GuildDailyNotificationPacket";
 import { getCommandGuildDailyRewardPacketString } from "../commands/guild/GuildDailyCommand";
-import { DraftBotLogger } from "../../../Lib/src/logs/DraftBotLogger";
+import { CrowniclesLogger } from "../../../Lib/src/logs/CrowniclesLogger";
 import { PlayerFreedFromJailNotificationPacket } from "../../../Lib/src/packets/notifications/PlayerFreedFromJailNotificationPacket";
 import { PlayerWasAttackedNotificationPacket } from "../../../Lib/src/packets/notifications/PlayerWasAttackedNotificationPacket";
 
@@ -32,7 +32,7 @@ export abstract class NotificationsHandler {
 		for (const notification of notificationSerializedPacket.notifications) {
 			this._processSingleNotification(notification)
 				.catch(error => {
-					DraftBotLogger.error(`Failed to process notification: ${error}`);
+					CrowniclesLogger.error(`Failed to process notification: ${error}`);
 				});
 		}
 	}
@@ -93,7 +93,7 @@ export abstract class NotificationsHandler {
 				throw `Unknown notification type: ${notification.type}`;
 		}
 
-		const discordUser = await draftBotClient.users.fetch(discordId);
+		const discordUser = await crowniclesClient.users.fetch(discordId);
 		await NotificationsHandler.sendNotification(
 			discordUser,
 			await NotificationsConfigurations.getOrRegister(discordId),
@@ -142,8 +142,8 @@ export abstract class NotificationsHandler {
 	 * @param content
 	 * @param lng
 	 */
-	private static getNotificationEmbed(user: User, content: string, lng: Language): DraftBotEmbed {
-		return new DraftBotEmbed()
+	private static getNotificationEmbed(user: User, content: string, lng: Language): CrowniclesEmbed {
+		return new CrowniclesEmbed()
 			.formatAuthor(i18n.t("bot:notificationTitle", { lng }), user)
 			.setDescription(content)
 			.setFooter({ text: i18n.t("bot:notificationFooter", { lng }) });
@@ -161,10 +161,10 @@ export abstract class NotificationsHandler {
 			.catch(e => {
 				if (e.toString()
 					.includes("DiscordAPIError[50007]")) {
-					DraftBotLogger.debug(`Failed to send DM notification to user ${user.id}`, e);
+					CrowniclesLogger.debug(`Failed to send DM notification to user ${user.id}`, e);
 				}
 				else {
-					DraftBotLogger.errorWithObj(`Failed to send DM notification to user ${user.id}`, e);
+					CrowniclesLogger.errorWithObj(`Failed to send DM notification to user ${user.id}`, e);
 				}
 			});
 	}
@@ -182,7 +182,7 @@ export abstract class NotificationsHandler {
 
 		const notificationTypeValue = notificationType.value(notificationConfiguration);
 
-		const channelAccess = await draftBotClient.shard!.broadcastEval((client, context) =>
+		const channelAccess = await crowniclesClient.shard!.broadcastEval((client, context) =>
 			client.channels.fetch(context.channel)
 				.then(channel => {
 					if ((<BaseGuildTextChannel>channel).guild.shardId === client.shard!.ids[0]) {

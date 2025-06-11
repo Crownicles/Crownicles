@@ -1,6 +1,6 @@
 import {
-	DraftBotPacket, makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, makePacket, PacketContext
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	CommandGuildDailyCooldownErrorPacket,
 	CommandGuildDailyPacketReq,
@@ -15,7 +15,7 @@ import { GuildConstants } from "../../../../Lib/src/constants/GuildConstants";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { GuildDailyConstants } from "../../../../Lib/src/constants/GuildDailyConstants";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
-import { draftBotInstance } from "../../index";
+import { crowniclesInstance } from "../../index";
 import { Effect } from "../../../../Lib/src/types/Effect";
 import { TravelTime } from "../../core/maps/TravelTime";
 import {
@@ -37,7 +37,7 @@ type GuildLike = {
 	guild: Guild; members: Player[];
 };
 type RewardStage = { [key: string]: number };
-type FunctionRewardType = (guildLike: GuildLike, response: DraftBotPacket[], rewardPacket: CommandGuildDailyRewardPacket) => Promise<void>;
+type FunctionRewardType = (guildLike: GuildLike, response: CrowniclesPacket[], rewardPacket: CommandGuildDailyRewardPacket) => Promise<void>;
 
 /**
  * Reward the guild with a new pet if they are lucky
@@ -85,7 +85,7 @@ function doesSomeoneNeedsHeal(guildLike: GuildLike): boolean {
  * @param rewardPacket
  * @param fullHeal
  */
-async function healEveryMember(guildLike: GuildLike, response: DraftBotPacket[], rewardPacket: CommandGuildDailyRewardPacket, fullHeal = false): Promise<void> {
+async function healEveryMember(guildLike: GuildLike, response: CrowniclesPacket[], rewardPacket: CommandGuildDailyRewardPacket, fullHeal = false): Promise<void> {
 	if (!doesSomeoneNeedsHeal(guildLike)) {
 		// No heal = money
 		await awardMoneyToMembers(guildLike, response, rewardPacket);
@@ -112,7 +112,7 @@ async function healEveryMember(guildLike: GuildLike, response: DraftBotPacket[],
 	else {
 		rewardPacket.heal = healthWon;
 	}
-	draftBotInstance.logsDatabase.logGuildDaily(guildLike.guild, fullHeal ? GuildDailyConstants.REWARD_TYPES.FULL_HEAL : GuildDailyConstants.REWARD_TYPES.PARTIAL_HEAL).then();
+	crowniclesInstance.logsDatabase.logGuildDaily(guildLike.guild, fullHeal ? GuildDailyConstants.REWARD_TYPES.FULL_HEAL : GuildDailyConstants.REWARD_TYPES.PARTIAL_HEAL).then();
 }
 
 /**
@@ -121,7 +121,7 @@ async function healEveryMember(guildLike: GuildLike, response: DraftBotPacket[],
  * @param response
  * @param rewardPacket
  */
-async function alterationHealEveryMember(guildLike: GuildLike, response: DraftBotPacket[], rewardPacket: CommandGuildDailyRewardPacket): Promise<void> {
+async function alterationHealEveryMember(guildLike: GuildLike, response: CrowniclesPacket[], rewardPacket: CommandGuildDailyRewardPacket): Promise<void> {
 	const healthWon = Math.round(guildLike.guild.level * GuildDailyConstants.LEVEL_MULTIPLIER);
 	let noAlterationHeal = true;
 	const needsHeal = doesSomeoneNeedsHeal(guildLike);
@@ -153,7 +153,7 @@ async function alterationHealEveryMember(guildLike: GuildLike, response: DraftBo
 
 	rewardPacket.alteration = healthWon > 0 ? { healAmount: healthWon } : {};
 
-	draftBotInstance.logsDatabase.logGuildDaily(guildLike.guild, GuildDailyConstants.REWARD_TYPES.ALTERATION).then();
+	crowniclesInstance.logsDatabase.logGuildDaily(guildLike.guild, GuildDailyConstants.REWARD_TYPES.ALTERATION).then();
 }
 
 /**
@@ -162,7 +162,7 @@ async function alterationHealEveryMember(guildLike: GuildLike, response: DraftBo
  * @param response
  * @param rewardPacket
  */
-async function awardPersonalXpToMembers(guildLike: GuildLike, response: DraftBotPacket[], rewardPacket: CommandGuildDailyRewardPacket): Promise<void> {
+async function awardPersonalXpToMembers(guildLike: GuildLike, response: CrowniclesPacket[], rewardPacket: CommandGuildDailyRewardPacket): Promise<void> {
 	const xpWon = RandomUtils.rangedInt(GuildDailyConstants.XP, guildLike.guild.level, guildLike.guild.level * GuildDailyConstants.XP_MULTIPLIER);
 	await genericAwardingFunction(guildLike.members, member => {
 		member.addExperience({
@@ -172,7 +172,7 @@ async function awardPersonalXpToMembers(guildLike: GuildLike, response: DraftBot
 		});
 	});
 	rewardPacket.personalXp = xpWon;
-	draftBotInstance.logsDatabase.logGuildDaily(guildLike.guild, GuildDailyConstants.REWARD_TYPES.PERSONAL_XP).then();
+	crowniclesInstance.logsDatabase.logGuildDaily(guildLike.guild, GuildDailyConstants.REWARD_TYPES.PERSONAL_XP).then();
 }
 
 /**
@@ -181,12 +181,12 @@ async function awardPersonalXpToMembers(guildLike: GuildLike, response: DraftBot
  * @param response
  * @param rewardPacket
  */
-async function awardGuildXp(guildLike: GuildLike, response: DraftBotPacket[], rewardPacket: CommandGuildDailyRewardPacket): Promise<void> {
+async function awardGuildXp(guildLike: GuildLike, response: CrowniclesPacket[], rewardPacket: CommandGuildDailyRewardPacket): Promise<void> {
 	const xpGuildWon = RandomUtils.rangedInt(GuildDailyConstants.XP, guildLike.guild.level, guildLike.guild.level * GuildDailyConstants.XP_MULTIPLIER);
 	await guildLike.guild.addExperience(xpGuildWon, response, NumberChangeReason.GUILD_DAILY);
 	await guildLike.guild.save();
 	rewardPacket.guildXp = xpGuildWon;
-	draftBotInstance.logsDatabase.logGuildDaily(guildLike.guild, GuildDailyConstants.REWARD_TYPES.GUILD_XP).then();
+	crowniclesInstance.logsDatabase.logGuildDaily(guildLike.guild, GuildDailyConstants.REWARD_TYPES.GUILD_XP).then();
 }
 
 /**
@@ -195,7 +195,7 @@ async function awardGuildXp(guildLike: GuildLike, response: DraftBotPacket[], re
  * @param response
  * @param rewardPacket
  */
-async function awardCommonFood(guildLike: GuildLike, response: DraftBotPacket[], rewardPacket: CommandGuildDailyRewardPacket): Promise<void> {
+async function awardCommonFood(guildLike: GuildLike, response: CrowniclesPacket[], rewardPacket: CommandGuildDailyRewardPacket): Promise<void> {
 	if (guildLike.guild.commonFood + GuildDailyConstants.FIXED_PET_FOOD > GuildConstants.MAX_COMMON_PET_FOOD) {
 		await awardMoneyToMembers(guildLike, response, rewardPacket);
 		return;
@@ -203,7 +203,7 @@ async function awardCommonFood(guildLike: GuildLike, response: DraftBotPacket[],
 	guildLike.guild.commonFood += GuildDailyConstants.FIXED_PET_FOOD;
 	await Promise.all([guildLike.guild.save()]);
 	rewardPacket.commonFood = GuildDailyConstants.FIXED_PET_FOOD;
-	draftBotInstance.logsDatabase.logGuildDaily(guildLike.guild, GuildDailyConstants.REWARD_TYPES.PET_FOOD).then();
+	crowniclesInstance.logsDatabase.logGuildDaily(guildLike.guild, GuildDailyConstants.REWARD_TYPES.PET_FOOD).then();
 }
 
 /**
@@ -212,7 +212,7 @@ async function awardCommonFood(guildLike: GuildLike, response: DraftBotPacket[],
  * @param response
  * @param rewardPacket
  */
-async function fullHealEveryMember(guildLike: GuildLike, response: DraftBotPacket[], rewardPacket: CommandGuildDailyRewardPacket): Promise<void> {
+async function fullHealEveryMember(guildLike: GuildLike, response: CrowniclesPacket[], rewardPacket: CommandGuildDailyRewardPacket): Promise<void> {
 	await healEveryMember(guildLike, response, rewardPacket, true);
 }
 
@@ -222,7 +222,7 @@ async function fullHealEveryMember(guildLike: GuildLike, response: DraftBotPacke
  * @param response
  * @param rewardPacket
  */
-async function awardGuildBadgeToMembers(guildLike: GuildLike, response: DraftBotPacket[], rewardPacket: CommandGuildDailyRewardPacket): Promise<void> {
+async function awardGuildBadgeToMembers(guildLike: GuildLike, response: CrowniclesPacket[], rewardPacket: CommandGuildDailyRewardPacket): Promise<void> {
 	let membersThatOwnTheBadge = 0;
 	await genericAwardingFunction(guildLike.members, member => {
 		if (!member.addBadge(Badge.POWERFUL_GUILD)) {
@@ -235,7 +235,7 @@ async function awardGuildBadgeToMembers(guildLike: GuildLike, response: DraftBot
 		return;
 	}
 	rewardPacket.badge = true;
-	draftBotInstance.logsDatabase.logGuildDaily(guildLike.guild, GuildDailyConstants.REWARD_TYPES.BADGE).then();
+	crowniclesInstance.logsDatabase.logGuildDaily(guildLike.guild, GuildDailyConstants.REWARD_TYPES.BADGE).then();
 }
 
 /**
@@ -244,11 +244,11 @@ async function awardGuildBadgeToMembers(guildLike: GuildLike, response: DraftBot
  * @param _response
  * @param rewardPacket
  */
-async function advanceTimeOfEveryMember(guildLike: GuildLike, _response: DraftBotPacket[], rewardPacket: CommandGuildDailyRewardPacket): Promise<void> {
+async function advanceTimeOfEveryMember(guildLike: GuildLike, _response: CrowniclesPacket[], rewardPacket: CommandGuildDailyRewardPacket): Promise<void> {
 	const timeAdvanced = Math.ceil((guildLike.guild.level + 1) * GuildDailyConstants.TIME_ADVANCED_MULTIPLIER);
 	await genericAwardingFunction(guildLike.members, async member => await TravelTime.timeTravel(member, hoursToMinutes(timeAdvanced), NumberChangeReason.GUILD_DAILY));
 	rewardPacket.advanceTime = timeAdvanced;
-	draftBotInstance.logsDatabase.logGuildDaily(guildLike.guild, GuildDailyConstants.REWARD_TYPES.HOSPITAL).then();
+	crowniclesInstance.logsDatabase.logGuildDaily(guildLike.guild, GuildDailyConstants.REWARD_TYPES.HOSPITAL).then();
 }
 
 /**
@@ -257,7 +257,7 @@ async function advanceTimeOfEveryMember(guildLike: GuildLike, _response: DraftBo
  * @param response
  * @param rewardPacket
  */
-async function awardGuildSuperBadgeToMembers(guildLike: GuildLike, response: DraftBotPacket[], rewardPacket: CommandGuildDailyRewardPacket): Promise<void> {
+async function awardGuildSuperBadgeToMembers(guildLike: GuildLike, response: CrowniclesPacket[], rewardPacket: CommandGuildDailyRewardPacket): Promise<void> {
 	let membersThatOwnTheBadge = 0;
 	const guildRank = await guildLike.guild.getRanking();
 
@@ -280,7 +280,7 @@ async function awardGuildSuperBadgeToMembers(guildLike: GuildLike, response: Dra
 	}
 
 	rewardPacket.superBadge = true;
-	draftBotInstance.logsDatabase.logGuildDaily(guildLike.guild, GuildDailyConstants.REWARD_TYPES.SUPER_BADGE).then();
+	crowniclesInstance.logsDatabase.logGuildDaily(guildLike.guild, GuildDailyConstants.REWARD_TYPES.SUPER_BADGE).then();
 }
 
 /**
@@ -311,7 +311,7 @@ const linkToFunction = getMapOfAllRewardCommands();
  * @param response
  * @param rewardPacket
  */
-async function notifyAndUpdatePlayers(initiatorKeycloakId: string, members: Player[], response: DraftBotPacket[], rewardPacket: CommandGuildDailyRewardPacket): Promise<void> {
+async function notifyAndUpdatePlayers(initiatorKeycloakId: string, members: Player[], response: CrowniclesPacket[], rewardPacket: CommandGuildDailyRewardPacket): Promise<void> {
 	const notifications: GuildDailyNotificationPacket[] = [];
 	for (const member of members) {
 		// We have to check if the member is not KO because if he is, he should not receive the notification as he does not receive the reward
@@ -358,7 +358,7 @@ function generateRandomProperty(guild: Guild): string {
  * @param response
  * @param rewardPacket
  */
-async function awardMoneyToMembers(guildLike: GuildLike, response: DraftBotPacket[], rewardPacket: CommandGuildDailyRewardPacket): Promise<void> {
+async function awardMoneyToMembers(guildLike: GuildLike, response: CrowniclesPacket[], rewardPacket: CommandGuildDailyRewardPacket): Promise<void> {
 	const levelUsed = Math.min(guildLike.guild.level, GuildConstants.GOLDEN_GUILD_LEVEL);
 	const moneyWon = RandomUtils.rangedInt(GuildDailyConstants.MONEY, levelUsed, levelUsed * GuildDailyConstants.MONEY_MULTIPLIER);
 	await genericAwardingFunction(guildLike.members, member => {
@@ -369,7 +369,7 @@ async function awardMoneyToMembers(guildLike: GuildLike, response: DraftBotPacke
 		});
 	});
 	rewardPacket.money = moneyWon;
-	draftBotInstance.logsDatabase.logGuildDaily(guildLike.guild, GuildDailyConstants.REWARD_TYPES.MONEY).then();
+	crowniclesInstance.logsDatabase.logGuildDaily(guildLike.guild, GuildDailyConstants.REWARD_TYPES.MONEY).then();
 }
 
 /**
@@ -378,7 +378,7 @@ async function awardMoneyToMembers(guildLike: GuildLike, response: DraftBotPacke
  * @param response
  * @returns
  */
-function verifyMembers(members: Player[], response: DraftBotPacket[]): boolean {
+function verifyMembers(members: Player[], response: CrowniclesPacket[]): boolean {
 	for (const member of members) {
 		if (Maps.isOnPveIsland(member)) {
 			response.push(makePacket(CommandGuildDailyPveIslandErrorPacket, {}));
@@ -396,7 +396,7 @@ function verifyMembers(members: Player[], response: DraftBotPacket[]): boolean {
 	return true;
 }
 
-async function generateAndGiveReward(guild: Guild, members: Player[], response: DraftBotPacket[], forcedReward?: string): Promise<CommandGuildDailyRewardPacket> {
+async function generateAndGiveReward(guild: Guild, members: Player[], response: CrowniclesPacket[], forcedReward?: string): Promise<CommandGuildDailyRewardPacket> {
 	const guildLike = {
 		guild, members
 	};
@@ -405,7 +405,7 @@ async function generateAndGiveReward(guild: Guild, members: Player[], response: 
 	const reward = forcedReward ?? generateRandomProperty(guild);
 	await linkToFunction.get(reward)(guildLike, response, rewardPacket); // Give the award
 
-	if (!guildLike.guild.isPetShelterFull(await GuildPets.getOfGuild(guildLike.guild.id)) && RandomUtils.draftbotRandom.realZeroToOneInclusive() <= GuildDailyConstants.PET_DROP_CHANCE) {
+	if (!guildLike.guild.isPetShelterFull(await GuildPets.getOfGuild(guildLike.guild.id)) && RandomUtils.crowniclesRandom.realZeroToOneInclusive() <= GuildDailyConstants.PET_DROP_CHANCE) {
 		await awardGuildWithNewPet(guildLike.guild, rewardPacket);
 	}
 
@@ -420,7 +420,7 @@ export default class GuildDailyCommand {
 		guildNeeded: true,
 		whereAllowed: [WhereAllowed.CONTINENT]
 	})
-	static async execute(response: DraftBotPacket[], player: Player, _packet: CommandGuildDailyPacketReq, _context: PacketContext, forcedReward?: string): Promise<void> {
+	static async execute(response: CrowniclesPacket[], player: Player, _packet: CommandGuildDailyPacketReq, _context: PacketContext, forcedReward?: string): Promise<void> {
 		const guild = await Guilds.getById(player.guildId);
 
 		// Verify if the cooldown is over

@@ -1,29 +1,29 @@
 import {
-	DraftBotPacket, PacketDirection, sendablePacket
-} from "../DraftBotPacket";
+	CrowniclesPacket, PacketDirection, sendablePacket
+} from "../CrowniclesPacket";
 import { BaseMission } from "../../types/CompletedMission";
 import { PetDiet } from "../../constants/PetConstants";
 import { SexTypeShort } from "../../constants/StringConstants";
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
-export class CommandMissionShopPacketReq extends DraftBotPacket {
+export class CommandMissionShopPacketReq extends CrowniclesPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandMissionShopAlreadyBoughtPointsThisWeek extends DraftBotPacket {
+export class CommandMissionShopAlreadyBoughtPointsThisWeek extends CrowniclesPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandMissionShopMoney extends DraftBotPacket {
+export class CommandMissionShopMoney extends CrowniclesPacket {
 	amount!: number;
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandMissionShopKingsFavor extends DraftBotPacket {
+export class CommandMissionShopKingsFavor extends CrowniclesPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandMissionShopPetInformation extends DraftBotPacket {
+export class CommandMissionShopPetInformation extends CrowniclesPacket {
 	nickname!: string;
 
 	petId!: number;
@@ -52,24 +52,24 @@ export class CommandMissionShopPetInformation extends DraftBotPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandMissionShopSkipMissionResult extends DraftBotPacket {
+export class CommandMissionShopSkipMissionResult extends CrowniclesPacket {
 	oldMission!: BaseMission;
 
 	newMission!: BaseMission;
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandMissionShopBadge extends DraftBotPacket {
+export class CommandMissionShopBadge extends CrowniclesPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandMissionShopNoMissionToSkip extends DraftBotPacket {
+export class CommandMissionShopNoMissionToSkip extends CrowniclesPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandMissionShopAlreadyHadBadge extends DraftBotPacket {
+export class CommandMissionShopAlreadyHadBadge extends CrowniclesPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandMissionShopNoPet extends DraftBotPacket {
+export class CommandMissionShopNoPet extends CrowniclesPacket {
 }

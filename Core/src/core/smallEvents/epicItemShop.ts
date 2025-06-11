@@ -8,7 +8,7 @@ import { generateRandomItem } from "../utils/ItemUtils";
 import {
 	ItemCategory, ItemRarity
 } from "../../../../Lib/src/constants/ItemConstants";
-import { makePacket } from "../../../../Lib/src/packets/DraftBotPacket";
+import { makePacket } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { SmallEventFuncs } from "../../data/SmallEvent";
 import { MapConstants } from "../../../../Lib/src/constants/MapConstants";
 import Player from "../database/game/models/Player";
@@ -34,7 +34,7 @@ class ShopSmallEvent extends Shop<
 		if (destination.id === MapConstants.LOCATIONS_IDS.ROAD_OF_WONDERS || origin.id === MapConstants.LOCATIONS_IDS.ROAD_OF_WONDERS) {
 			return SmallEventConstants.EPIC_ITEM_SHOP.ROAD_OF_WONDERS_MULTIPLIER;
 		}
-		return RandomUtils.draftbotRandom.bool(SmallEventConstants.EPIC_ITEM_SHOP.GREAT_DEAL_PROBABILITY)
+		return RandomUtils.crowniclesRandom.bool(SmallEventConstants.EPIC_ITEM_SHOP.GREAT_DEAL_PROBABILITY)
 			? SmallEventConstants.EPIC_ITEM_SHOP.GREAT_DEAL_MULTIPLAYER
 			: SmallEventConstants.EPIC_ITEM_SHOP.BASE_MULTIPLIER;
 	}
@@ -42,7 +42,7 @@ class ShopSmallEvent extends Shop<
 	getRandomItem(): GenericItem {
 		return generateRandomItem({
 			// We exclude potions from the list of possible items
-			itemCategory: RandomUtils.draftbotRandom.pick([
+			itemCategory: RandomUtils.crowniclesRandom.pick([
 				ItemCategory.WEAPON,
 				ItemCategory.ARMOR,
 				ItemCategory.OBJECT
@@ -67,7 +67,7 @@ class ShopSmallEvent extends Shop<
 	getPopulatedReactionCollector(basePacket: ReactionCollectorEpicShopSmallEventData, shopItem: ShopSmallEventItem): ReactionCollectorEpicShopSmallEvent {
 		return new ReactionCollectorEpicShopSmallEvent({
 			...basePacket,
-			tip: RandomUtils.draftbotRandom.bool(SmallEventConstants.EPIC_ITEM_SHOP.REDUCTION_TIP_PROBABILITY)
+			tip: RandomUtils.crowniclesRandom.bool(SmallEventConstants.EPIC_ITEM_SHOP.REDUCTION_TIP_PROBABILITY)
 				&& shopItem.multiplier > SmallEventConstants.EPIC_ITEM_SHOP.ROAD_OF_WONDERS_MULTIPLIER
 		});
 	}

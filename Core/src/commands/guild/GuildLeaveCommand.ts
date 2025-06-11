@@ -3,12 +3,14 @@ import {
 } from "../../core/utils/CommandUtils";
 import { GuildConstants } from "../../../../Lib/src/constants/GuildConstants";
 import {
-	DraftBotPacket, makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, makePacket, PacketContext
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import Player, { Players } from "../../core/database/game/models/Player";
 import {
-	CommandGuildLeaveAcceptPacketRes, CommandGuildLeaveNotInAGuildPacketRes,
-	CommandGuildLeavePacketReq, CommandGuildLeaveRefusePacketRes
+	CommandGuildLeaveAcceptPacketRes,
+	CommandGuildLeaveNotInAGuildPacketRes,
+	CommandGuildLeavePacketReq,
+	CommandGuildLeaveRefusePacketRes
 } from "../../../../Lib/src/packets/commands/CommandGuildLeavePacket";
 import { Guilds } from "../../core/database/game/models/Guild";
 import { ReactionCollectorGuildLeave } from "../../../../Lib/src/packets/interaction/ReactionCollectorGuildLeave";
@@ -18,7 +20,7 @@ import {
 import { ReactionCollectorAcceptReaction } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { BlockingUtils } from "../../core/utils/BlockingUtils";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
-import { draftBotInstance } from "../../index";
+import { crowniclesInstance } from "../../index";
 import { LogsDatabase } from "../../core/database/logs/LogsDatabase";
 
 
@@ -27,7 +29,7 @@ import { LogsDatabase } from "../../core/database/logs/LogsDatabase";
  * @param player
  * @param response
  */
-async function acceptGuildLeave(player: Player, response: DraftBotPacket[]): Promise<void> {
+async function acceptGuildLeave(player: Player, response: CrowniclesPacket[]): Promise<void> {
 	await player.reload();
 
 	// The player is no longer in a guild since the menu
@@ -39,8 +41,8 @@ async function acceptGuildLeave(player: Player, response: DraftBotPacket[]): Pro
 	if (player.id === guild.chiefId) {
 		// The guild's chief is leaving
 		if (guild.elderId !== null) {
-			draftBotInstance.logsDatabase.logGuildElderRemove(guild, guild.elderId).then();
-			draftBotInstance.logsDatabase.logGuildChiefChange(guild, guild.elderId).then();
+			crowniclesInstance.logsDatabase.logGuildElderRemove(guild, guild.elderId).then();
+			crowniclesInstance.logsDatabase.logGuildChiefChange(guild, guild.elderId).then();
 
 			// An elder can recover the guild
 			player.guildId = null;
@@ -70,7 +72,7 @@ async function acceptGuildLeave(player: Player, response: DraftBotPacket[]): Pro
 	}
 	if (guild.elderId === player.id) {
 		// The guild's elder is leaving
-		draftBotInstance.logsDatabase.logGuildElderRemove(guild, guild.elderId).then();
+		crowniclesInstance.logsDatabase.logGuildElderRemove(guild, guild.elderId).then();
 		guild.elderId = null;
 	}
 	LogsDatabase.logGuildLeave(guild, player.keycloakId).then();
@@ -104,7 +106,7 @@ export default class GuildLeaveCommand {
 		guildNeeded: true,
 		whereAllowed: CommandUtils.WHERE.EVERYWHERE
 	})
-	async execute(response: DraftBotPacket[], player: Player, _packet: CommandGuildLeavePacketReq, context: PacketContext): Promise<void> {
+	async execute(response: CrowniclesPacket[], player: Player, _packet: CommandGuildLeavePacketReq, context: PacketContext): Promise<void> {
 		const guild = await Guilds.getById(player.guildId);
 		const newChief = guild.chiefId === player.id && guild.elderId ? await Players.getById(guild.elderId) : null;
 

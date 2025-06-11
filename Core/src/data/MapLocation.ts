@@ -61,7 +61,7 @@ export class MapLocationDataController extends DataControllerNumber<MapLocation>
 				.filter(map => map.canBeGoToPlaceMissionDestination);
 		}
 
-		return RandomUtils.draftbotRandom.pick(this.missionsMapsCache);
+		return RandomUtils.crowniclesRandom.pick(this.missionsMapsCache);
 	}
 
 	/**

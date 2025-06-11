@@ -198,7 +198,7 @@
       "INVENTORY": {
         "description": "Affiche le contenu de votre inventaire qui peut contenir 4 types d'objets :\n```\n-armes\n-armures\n-potions\n-items\n```\nLa commande affiche également le contenu de la réserve qui dispose de stockage supplémentaire."
       },
-      "INVITE_DRAFTBOT": {
+      "INVITE_CROWNICLES": {
         "description": "Cette commande vous permet d'obtenir un lien permettant de rejoindre le serveur d'aide !"
       },
       "JOIN_BOAT": {
@@ -331,7 +331,7 @@
       "it": "Italien",
       "pt": "Portugais"
     },
-    "newLanguageSetDescription": "DraftBot vous parlera désormais en français ! {emote:languageFlavors.fr}",
+    "newLanguageSetDescription": "Crownicles vous parlera désormais en français ! {emote:languageFlavors.fr}",
     "newLanguageSetTitle": "Langue changée",
     "selectLanguage": "Sélectionnez une langue",
     "title": "{emote:commands.language} Sélection de la langue"
