@@ -1,3 +1,32 @@
 {
-  "mapLinks": [87, 88]
+  "mapLinks": [87, 88],
+  "inns": [{
+    "id": "lordInn",
+    "meals": [{
+      "id": "breadAndCheese",
+      "price": 100,
+      "health": 5,
+      "quality": 1
+    }, {
+      "id": "roastedFowl",
+      "price": 200,
+      "health": 10,
+      "quality": 3
+    }, {
+      "id": "roastedBeef",
+      "price": 300,
+      "health": 15,
+      "quality": 4
+    }, {
+      "id": "stew",
+      "price": 140,
+      "health": 7,
+      "quality": 2
+    }, {
+      "id": "lordPie",
+      "price": 600,
+      "health": 30,
+      "quality": 5
+    }]
+  }]
 }
