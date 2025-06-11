@@ -529,6 +529,47 @@
           "label": "Rester en ville",
           "description": "Restez en ville et profitez des services disponibles."
         }
+      },
+      "inns": {
+        "names": {
+          "lordInn": "L'Auberge du Seigneur",
+          "bravesStop": "L'Alte des Braves",
+          "hotSwallow": "La Gorgée Brûlante",
+          "fireside": "Au Coin du Feu",
+          "bloodyTankard": "La Chope Sanglante"
+        },
+        "stories": {
+          "lordInn": "Vous entrez dans l'Auberge du Seigneur. Ici, tout est luxueux, du mobilier aux boissons. Vous pouvez y trouver des aventuriers de renom et des nobles en quête de sensations fortes. Vous avez même déjà entendu dire que le Roi y avait séjourné lors de ses voyages.",
+          "bravesStop": "Qui n'a jamais entendu parler de l'Alte des Braves ? C'est la plus vieille et la plus célèbre auberge de la région. Vous entrez dans une salle bondée, remplie de rires et de chants. Les murs sont couverts de trophées de chasse et d'armes anciennes. C'est l'endroit idéal pour rencontrer d'autres aventuriers.",
+          "hotSwallow": "Vous entrez dans la Gorgée Brûlante, une petit auberge de village où il fait bon se rafraichir, contrairement à ce que laisse penser son nom. Sa désignation vient de la boisson phare de l'établissement, une bière épicée qui réchauffe le cœur et l'âme. Les murs sont décorés de souvenirs de voyageurs passés, et l'atmosphère est chaleureuse.",
+          "fireside": "Vous entrez dans l'Auberge Au Coin du Feu, un endroit où les aventuriers se rassemblent pour partager des histoires autour d'un feu crépitant. L'odeur de poisson grillé flotte dans l'air, à côté des rires et des chants des clients. La décoration est simple mais rappelle la vie des marins et des pêcheurs.",
+          "bloodyTankard": "Vous entrez dans la Chope Sanglante, une auberge réputée pour ses boissons fortes et son ambiance sombre. Vous y trouvez beaucoup de trophées de monstres chassés par les clients, et un air chargé de l'odeur de la bière et du tabac. La nourriture n'y est pas de grande qualité, et les lits non plus d'ailleurs."
+        },
+        "meals": {
+          "breadAndCheese": "Pain et fromage",
+          "roastedFowl": "Volaille rôtie",
+          "roastedBeef": "Boeuf rôti",
+          "stew": "Ragoût",
+          "lordPie": "Tourte du Seigneur",
+          "potatoSoup": "Soupe de pommes de terre",
+          "friedEggs": "Œufs au plat",
+          "curryRice": "Curry et riz",
+          "sushi": "Sushi",
+          "bravesPanOfFood": "Poêlon de nourriture des Braves",
+          "fishAndChips": "Poisson et frites",
+          "coldVegetableStew": "Ragoût de légumes froid",
+          "roastedPork": "Porc rôti",
+          "oysterPlatter": "Plateau d'huîtres",
+          "tamale": "Tamale",
+          "friedShrimp": "Crevettes frites",
+          "clamChowder": "Chaudrée de palourdes",
+          "grilledSalmon": "Poisson grillé",
+          "lobsterRoll": "Rouleau de homard",
+          "jellyfishCarpaccio": "Carpaccio de méduse",
+          "bread": "Pain",
+          "pretzels": "Bretzels",
+          "simpleSalad": "Salade simple"
+        }
       }
     }
   },

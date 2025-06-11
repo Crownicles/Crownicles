@@ -205,6 +205,9 @@ export const CrowniclesIcons: {
 		exit: string;
 		stay: string;
 	};
+	meals: {
+		[mealId: string]: string;
+	};
 } = {
 	effects: {
 		notStarted: "👶",
@@ -2325,5 +2328,30 @@ export const CrowniclesIcons: {
 	city: {
 		exit: "🏃‍➡️",
 		stay: "👀"
+	},
+	meals: {
+		breadAndCheese: "🧀",
+		roastedFowl: "🍗",
+		roastedBeef: "🥩",
+		stew: "🍲",
+		lordPie: "🥧",
+		potatoSoup: "🥔",
+		friedEggs: "🍳",
+		curryRice: "🍛",
+		sushi: "🍣",
+		bravesPanOfFood: "🍳",
+		fishAndChips: "🍟",
+		coldVegetableStew: "🥗",
+		roastedPork: "🍖",
+		oysterPlatter: "🦪",
+		tamale: "🫔",
+		friedShrimp: "🍤",
+		clamChowder: "🍲",
+		grilledFish: "🐟",
+		lobsterRoll: "🦞",
+		jellyfishCarpaccio: "🪼",
+		bread: "🍞",
+		pretzels: "🥨",
+		simpleSalad: "🥗"
 	}
 };
