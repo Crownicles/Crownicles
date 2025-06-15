@@ -1,5 +1,5 @@
 <div style="text-align: center;">
-<img src="https://cdn.discordapp.com/attachments/456120666874183680/575235193384861716/couronne.png" style="border-radius: 50%; width: 300px" alt="Couronne Crownicles">
+<img src="https://crownicles.com/public/ressources/Crownicles_logo_HD.png" style="border-radius: 50%; width: 300px" alt="Couronne Crownicles">
 
 Crownicles is a text adventure game. The story takes place in a medieval world, and the player embodies an adventurer who
 wants to win a competition launched by the king, to win the princess' hand. To achieve this, he must travel and earn
@@ -10,7 +10,7 @@ the journey, they earn money, equipments, and points, and can use them to buy po
 fight other players, and ascend the leaderboard.
 
 [![](https://img.shields.io/discord/429765017332613120.svg)](https://discord.gg/5JqrMtZ)
-[![](https://img.shields.io/github/stars/BastLast/DraftBot-A-Discord-Adventure.svg?label=Stars&style=social)](https://github.com/BastLast/DraftBot-A-Discord-Adventure)
+[![](https://img.shields.io/github/stars/Crownicles/Crownicles.svg?label=Stars&style=social)](https://github.com/Crownicles/Crownicles)
 
 </div>
 
@@ -21,7 +21,7 @@ fight other players, and ascend the leaderboard.
 Crownicles is originally a discord bot and has evolved to become a fully fledged game that you can play either through
 discord or through other clients.
 
-You can start playing by visiting our website: https://draftbot.com
+You can start playing by visiting our website: https://crownicles.com
 
 # Create a custom Crownicles instance
 
@@ -142,7 +142,7 @@ cd $CROWNICLES_ROOT/Discord && pnpm start
 You can set up npm launch scripts to make the start easier.
 From now on you should be able to start the bot by running `pnpm start` in the Core and Discord folders while having the
 database and keycloak running.
-Starting order is important, start with the database container and keycloak, then the Core and finally the Discord
+Starting order is important, starts with the database container and keycloak, then the Core and finally the Discord
 module.
 
 # Docker container
@@ -166,7 +166,7 @@ For details, see the [LICENSE](LICENSE) file in this repository.
 
 # Links
 
-- [Website](https://draftbot.com)
+- [Website](https://crownicles.com)
 - [Discord server _(in French)_](https://discord.gg/5JqrMtZ)
 - [Suggestion board _(in French)_](https://feedback.draftbot.com/)
 - [Player guide](https://guide.draftbot.com)
