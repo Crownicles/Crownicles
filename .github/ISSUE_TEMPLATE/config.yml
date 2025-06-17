@@ -1,10 +1,10 @@
 blank_issues_enabled: true
 contact_links:
   - name: 🖋️ Report a typo
-    url: https://github.com/DraftBot-A-Discord-Adventure/DraftBot/issues?q=is%3Aopen+is%3Aissue+label%3A%22typo+%2F+visu%22++typos
+    url: https://github.com/Crownicles/Crownicles/issues?q=is%3Aopen+is%3Aissue+label%3A%22typo+%2F+visu%22++typos
     about: Pour signaler une erreur dans un texte, envoyez un commentaire sur l'issue dédiée. (Si le lien, ci-dessus ne fonctionne pas, contactez nous sur discord.)
   - name: 💡 I have an idea
-    url: https://github.com/DraftBot-A-Discord-Adventure/DraftBot/discussions
+    url: https://github.com/Crownicles/Crownicles/discussions
     about: Vous pouvez utiliser cet espace pour nous envoyer vos suggestions.
   - name: 🖐️ I need help !
     url: https://discord.gg/draftbot
