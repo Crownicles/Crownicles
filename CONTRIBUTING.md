@@ -28,7 +28,7 @@ This project and is governed by the [Crownicles Code of Conduct](CODE_OF_CONDUCT
 
 We have an official Discord server with detailed information and where the community chimes in with helpful advice if you have questions. You can also contact us by sending an Email to [contact@crownicles.com](mailto:contact@crownicles.com).
 
-* [Discord Server](https://discord.gg/draftbot)
+* [Discord Server](https://discord.gg/crownicles)
 
 ## How Can I Contribute?
 
@@ -42,7 +42,7 @@ Before creating bug reports, please check [this list](#before-submitting-a-bug-r
 
 #### Before Submitting A Bug Report
 
-* **Discuss the bug with the community** Join the [official discord server](https://discord.gg/draftbot) and share the bug with us, you might be able to find someone who know the cause of the problem and help you fix things yourself.
+* **Discuss the bug with the community** Join the [official discord server](https://discord.gg/crownicles) and share the bug with us, you might be able to find someone who know the cause of the problem and help you fix things yourself.
 * **Perform a [cursory search](https://github.com/search?q=+is%3Aissue+user%3ACrownicles)** to see if the problem has already been reported. If it has **and the issue is still open**, add a comment to the existing issue instead of opening a new one.
 
 #### How Do I Submit A (Good) Bug Report
@@ -68,7 +68,7 @@ https://github.com/Crownicles/Crownicles/discussions
 #### Before Submitting An Enhancement Suggestion
 
 * **Perform a [cursory search](https://github.com/search?l=&q=is%3Aissue+repo%3ACrownicles%2FCrownicles&type=discussions)** to see if the enhancement has already been suggested. If it has, add a comment to the existing issue instead of opening a new one.
-* **Discuss with the community in the [official discord server](https://discord.gg/draftbot)** to get an idea of how your idea may be received.
+* **Discuss with the community in the [official discord server](https://discord.gg/crownicles)** to get an idea of how your idea may be received.
 
 ## Contribuer à Crownicles
 
@@ -98,7 +98,7 @@ Vous obtiendrez des résultats plus rapides en utilisant les ressources ci-desso
 
 Nous disposons d'un serveur Discord officiel contenant des informations détaillées et où la communauté donne des conseils utiles si vous avez des questions. Si vous avez des questions. Vous pouvez également nous contacter en envoyant un courrier électronique à [contact@crownicles.com](mailto:contact@crownicles.com).
 
-* [Serveur Discord](https://discord.gg/draftbot)
+* [Serveur Discord](https://discord.gg/crownicles)
 
 ## <a name="contribuer"></a>Comment puis-je contribuer
 
@@ -111,7 +111,7 @@ Nous souhaitons que les bugs soient centralisés sur notre serveur discord avant
 
 #### <a name="avant"></a> Avant de soumettre un rapport de bogue
 
-**Discutez du bug avec la communauté** Rejoignez le [serveur discord officiel](https://discord.gg/draftbot) et partagez le bug avec nous. Vous pourrez peut-être trouver quelqu'un qui connaît la cause du problème et vous aider à le résoudre vous-même.
+**Discutez du bug avec la communauté** Rejoignez le [serveur discord officiel](https://discord.gg/crownicles) et partagez le bug avec nous. Vous pourrez peut-être trouver quelqu'un qui connaît la cause du problème et vous aider à le résoudre vous-même.
 **Faites une [recherche rapide](https://github.com/search?q=+is%3Aissue+user%3ACrownicles)** pour voir si le problème a déjà été signalé. Le problème a déjà été signalé. Si c'est le cas **et que la question est toujours ouverte**, ajoutez un commentaire à la question existante au lieu d'en ouvrir un nouveau.
 
 #### <a name="bonrapport"></a>Comment soumettre un (bon) rapport de bogue
@@ -134,4 +134,4 @@ Nous utilisons GitHub Discussion pour recevoir les suggestions. Vous pouvez vote
 #### Avant de soumettre une suggestion d'amélioration
 
 * **Faire une [recherche rapide](https://github.com/search?l=&q=is%3Aissue+repo%3ACrownicles%2FCrownicles&type=discussions)** pour voir si l'amélioration a déjà été suggérée. Si c'est le cas, ajoutez un commentaire à la discussion existant au lieu d'en ouvrir un nouveau.
-* **Discutez avec la communauté sur le [serveur discord officiel](https://discord.gg/draftbot)** pour avoir une idée de la façon dont votre idée peut être reçue.
+* **Discutez avec la communauté sur le [serveur discord officiel](https://discord.gg/crownicles)** pour avoir une idée de la façon dont votre idée peut être reçue.

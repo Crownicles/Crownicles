@@ -8,7 +8,7 @@ body:
     - type: markdown
       attributes:
           value: |
-              Merci de prendre le temps de réaliser un rapport de bug. Si vous avez besoin d'aide supplémentaire, rejoignez nous sur discord ! https://discord.gg/draftbot
+              Merci de prendre le temps de réaliser un rapport de bug. Si vous avez besoin d'aide supplémentaire, rejoignez nous sur discord ! https://discord.gg/crownicles
     - type: markdown
       attributes:
           value: |
