@@ -11,4 +11,4 @@
 
 Use the bot's discord server if you find any security breach.
 
-https://discord.gg/draftbot
+https://discord.gg/crownicles
