@@ -1,6 +1,6 @@
 {
   "badges": {
-    "description": "Les badges sont des distinctions difficiles à obtenir qui ont été créées pour récompenser les personnes ayant le plus soutenu le développement du bot. La liste des badges est disponible sur le guide du bot.\n(via ce lien : https://guide.draftbot.com/notions-avancees/badges)",
+    "description": "Les badges sont des distinctions difficiles à obtenir qui ont été créées pour récompenser les personnes ayant le plus soutenu le développement du bot. La liste des badges est disponible sur le guide du bot.\n(via ce lien : https://guide.crownicles.com/notions-avancees/badges)",
     "title": "{emote:commands.badges} Informations détaillées :"
   },
   "pet": {
@@ -129,10 +129,10 @@
     "commandEmbedTitle": "{{emote}} Informations détaillées :",
     "commands": {
       "BADGES": {
-        "description": "Les badges sont des distinctions difficiles à obtenir qui ont été créées pour récompenser les personnes ayant le plus soutenu le développement du bot. La liste des badges est disponible sur le guide du bot.\n(via ce lien : https://guide.draftbot.com/notions-avancees/badges)"
+        "description": "Les badges sont des distinctions difficiles à obtenir qui ont été créées pour récompenser les personnes ayant le plus soutenu le développement du bot. La liste des badges est disponible sur le guide du bot.\n(via ce lien : https://guide.crownicles.com/notions-avancees/badges)"
       },
       "CLASSES": {
-        "description": "Permet de changer de classe. Plus d'informations sur les classes sont disponibles sur le guide du joueur : https://guide.draftbot.com"
+        "description": "Permet de changer de classe. Plus d'informations sur les classes sont disponibles sur le guide du joueur : https://guide.crownicles.com"
       },
       "CLASSES_INFO": {
         "description": "Permet de lire une comparaison rapide des statistiques et des informations des classes qui sont accessibles à l'utilisateur effectuant la commande."
@@ -144,8 +144,8 @@
         "description": "Cette commande permet de consommer la potion que vous transportez. Certaines potions ne peuvent pas être bues et sont consommées automatiquement lors d'un combat."
       },
       "FIGHT": {
-        "description": "Utilisez cette commande pour défier les autres joueurs qui se trouvent sur le même serveur que vous.\nLes combats se déroulent tour par tour. À chaque tour, vous pouvez choisir une action à effectuer.\n\nPour plus d'informations vous pouvez aller voir la page du guide : https://guide.draftbot.com/notions-principale/combats",
-        "image": "https://draftbot.com/public/ressources/fighthelp/fr/5.0.2.png"
+        "description": "Utilisez cette commande pour défier les autres joueurs qui se trouvent sur le même serveur que vous.\nLes combats se déroulent tour par tour. À chaque tour, vous pouvez choisir une action à effectuer.\n\nPour plus d'informations vous pouvez aller voir la page du guide : https://guide.crownicles.com/notions-principale/combats",
+        "image": "https://crownicles.com/public/ressources/fighthelp/fr/5.0.2.png"
       },
       "GLORY_TOP": {
         "description": "Affiche le classement glorieux du jeu par tranche de 15 joueurs. La ligue des joueurs est également affichée. Les joueurs dans le même serveur que vous sont marqués par une pastille bleue."
@@ -278,7 +278,7 @@
       }
     },
     "forMoreHelp": "{emote:messages.item} Pour plus d'aide : ",
-    "forMoreHelpValue": "Vous pouvez vous rendre sur le [wiki](https://guide.draftbot.com/) du bot !",
+    "forMoreHelpValue": "Vous pouvez vous rendre sur le [wiki](https://guide.crownicles.com/) du bot !",
     "guildCommands": "{emote:guild.icon} Guilde :",
     "helpEmbedDescription": "{emote:messages.item} Si vous voulez plus d'informations sur une commande en particulier, cliquez ici : {command:help}, et donnez la commande qui vous pose problème en paramètre. {emote:other.wink}",
     "helpEmbedTitle": "{{pseudo}}, voici la liste des commandes disponibles :",
@@ -289,10 +289,10 @@
     "usageFieldTitle": "Utilisation",
     "utilCommands": "{emote:collectors.question} Utiles :",
     "needHelp": "Besoin d'aide ?",
-    "needHelpDescription": "{emote:fightCommand.crossedSwords} Bonjour ! Ce message est envoyé suite à une demande d'aide.\n\nPour toute assistance concernant l'utilisation du jeu, il est possible de rejoindre le serveur officiel du bot !\n\nVous pourrez participer au développement du jeu et obtenir toutes les informations nécessaires !\n\nIl est également recommandé de consulter le guide détaillé du bot : https://guide.draftbot.com/"
+    "needHelpDescription": "{emote:fightCommand.crossedSwords} Bonjour ! Ce message est envoyé suite à une demande d'aide.\n\nPour toute assistance concernant l'utilisation du jeu, il est possible de rejoindre le serveur officiel du bot !\n\nVous pourrez participer au développement du jeu et obtenir toutes les informations nécessaires !\n\nIl est également recommandé de consulter le guide détaillé du bot : https://guide.crownicles.com/"
   },
   "idea": {
-    "description": "Vous pouvez proposer des suggestions et voter pour vos idées préférées via ce lien:\nhttps://feedback.draftbot.com/",
+    "description": "Vous pouvez proposer des suggestions et voter pour vos idées préférées via ce lien:\nhttps://feedback.crownicles.com/",
     "title": "{emote:other.advice} Idées"
   },
   "inventory": {
@@ -480,7 +480,7 @@
     "travellingTitle": "Vous êtes actuellement en train d'avancer !"
   },
   "update": {
-    "description": "La version actuelle du noyau du bot est la **{{coreVersion}}**. Celle du module Discord est la **{{discordModuleVersion}}**.\n\nToutes les informations concernant les mises à jour sont disponibles ici :\nhttps://guide.draftbot.com/lore/historique-des-mises-a-jour",
+    "description": "La version actuelle du noyau du bot est la **{{coreVersion}}**. Celle du module Discord est la **{{discordModuleVersion}}**.\n\nToutes les informations concernant les mises à jour sont disponibles ici :\nhttps://guide.crownicles.com/lore/historique-des-mises-a-jour",
     "title": "{emote:messages.description} Mises à jour"
   },
   "vote": {
