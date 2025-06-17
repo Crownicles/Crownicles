@@ -20,13 +20,13 @@ request.
 
 ## Code of Conduct
 
-This project and is governed by the [Crownicles Code of Conduct](CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code. Please report unacceptable behavior to [contact@draftbot.com](mailto:contact@draftbot.com).
+This project and is governed by the [Crownicles Code of Conduct](CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code. Please report unacceptable behavior to [contact@crownicles.com](mailto:contact@crownicles.com).
 
 ## I don't want to read this whole thing I just have a question
 
 > **Note:** [Please don't file an issue to ask a question.](https://media.discordapp.net/attachments/435100271413297152/926483517230186496/unknown.png) You'll get faster results by using the resources below.
 
-We have an official Discord server with detailed information and where the community chimes in with helpful advice if you have questions. You can also contact us by sending an Email to [contact@draftbot.com](mailto:contact@draftbot.com).
+We have an official Discord server with detailed information and where the community chimes in with helpful advice if you have questions. You can also contact us by sending an Email to [contact@crownicles.com](mailto:contact@crownicles.com).
 
 * [Discord Server](https://discord.gg/draftbot)
 
@@ -89,14 +89,14 @@ Ce qui suit est un ensemble de lignes directrices pour contribuer à Crownicles 
 
 ## Code de conduite
 
-Ce projet est régi par le [Code de conduite de Crownicles](CODE_OF_CONDUCT.md). En participant, vous êtes censé respecter ce code. Veuillez signaler tout comportement inacceptable à [contact@draftbot.com](mailto:contact@draftbot.com).
+Ce projet est régi par le [Code de conduite de Crownicles](CODE_OF_CONDUCT.md). En participant, vous êtes censé respecter ce code. Veuillez signaler tout comportement inacceptable à [contact@crownicles.com](mailto:contact@crownicles.com).
 
 ## <a name="flemme"></a> Je n'ai pas envie de lire tout ça, j'ai juste une question
 
 **Note:** [Veuillez ne pas déposer un problème pour poser une question](https://media.discordapp.net/attachments/435100271413297152/926483517230186496/unknown.png)
 Vous obtiendrez des résultats plus rapides en utilisant les ressources ci-dessous.
 
-Nous disposons d'un serveur Discord officiel contenant des informations détaillées et où la communauté donne des conseils utiles si vous avez des questions. Si vous avez des questions. Vous pouvez également nous contacter en envoyant un courrier électronique à [contact@draftbot.com](mailto:contact@draftbot.com).
+Nous disposons d'un serveur Discord officiel contenant des informations détaillées et où la communauté donne des conseils utiles si vous avez des questions. Si vous avez des questions. Vous pouvez également nous contacter en envoyant un courrier électronique à [contact@crownicles.com](mailto:contact@crownicles.com).
 
 * [Serveur Discord](https://discord.gg/draftbot)
 
