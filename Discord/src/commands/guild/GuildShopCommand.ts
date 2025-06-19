@@ -30,7 +30,7 @@ export async function handleCommandGuildShopEmpty(context: PacketContext): Promi
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction!);
 
 	if (interaction) {
-		await sendErrorMessage(interaction.user, context, interaction, i18n.t("commands:guildShop.empty", { lng: interaction.userLanguage }), { sendManner: SendManner.FOLLOWUP });
+		await sendErrorMessage(interaction.user, context, interaction, i18n.t("commands:guildShop.empty", { lng: interaction.userLanguage }), { sendManner: SendManner.REPLY });
 	}
 }
 
