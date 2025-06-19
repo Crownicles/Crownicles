@@ -21,7 +21,6 @@ import {
 	NotificationSendType,
 	NotificationSendTypeEnum
 } from "../../notifications/NotificationSendType";
-import { DraftBotEmbed } from "../../messages/DraftBotEmbed";
 import { sendInteractionNotForYou } from "../../utils/ErrorUtils";
 import {
 	NotificationsConstantsClass
@@ -44,46 +43,14 @@ function clearCurrentCollector(userId: string): void {
 	}
 }
 
-const backButtonCustomId = "back";
 const forceStopReason = "force";
 
-async function getPacket(interaction: DraftbotInteraction): Promise<null> {
+async function getPacket(interaction: CrowniclesInteraction): Promise<null> {
 	const notificationsConfiguration = await NotificationsConfigurations.getOrRegister(interaction.user.id);
 
 	await mainPage(interaction, notificationsConfiguration, interaction.userLanguage);
 
 	return null;
-}
-
-export const commandInfo: ICommand = {
-	slashCommandBuilder: SlashCommandBuilderGenerator.generateBaseCommand("notifications"),
-	getPacket,
-	mainGuildCommand: false
-};
-
-
-function getNotificationsEmbed(notificationsConfiguration: NotificationsConfiguration, user: User, lng: Language, footer?: string): DraftBotEmbed {
-	let description = "";
-	NotificationsTypes.ALL.forEach(notificationType => {
-		const notificationTypeValue = notificationType.value(notificationsConfiguration);
-		const sendLocation = NotificationSendType.toString(notificationTypeValue.sendType, lng, notificationTypeValue.channelId);
-		description
-			+= `${notificationType.emote} **__${i18n.t(notificationType.i18nKey, { lng })}__**
-- **${i18n.t("commands:notifications.enabledField", { lng })}** ${notificationTypeValue.enabled ? DraftBotIcons.collectors.accept : DraftBotIcons.collectors.refuse}`;
-		if (notificationTypeValue.enabled) {
-			description += `\n- **${i18n.t("commands:notifications.sendLocationField", { lng })}** ${sendLocation}`;
-		}
-		description += "\n\n";
-	});
-
-	const embed = new DraftBotEmbed()
-		.formatAuthor(i18n.t("commands:notifications.embedTitle", { lng }), user)
-		.setDescription(description);
-	if (footer) {
-		embed.setFooter({ text: footer });
-	}
-
-	return embed;
 }
 
 async function mainPage(interaction: CrowniclesInteraction | StringSelectMenuInteraction, notificationsConfiguration: NotificationsConfiguration, lng: Language): Promise<void> {
@@ -186,7 +153,7 @@ function getSettingsRows(notificationsConfiguration: NotificationsConfiguration,
 	notificationsOptions.push(
 		new StringSelectMenuOptionBuilder()
 			.setLabel(i18n.t("commands:notifications.back", { lng }))
-			.setEmoji(parseEmoji(DraftBotIcons.notifications.back)!)
+			.setEmoji(parseEmoji(CrowniclesIcons.notifications.back)!)
 			.setValue(NotificationsConstantsClass.MENU_IDS.BACK)
 	);
 
@@ -312,22 +279,21 @@ async function chooseSendType(buttonInteraction: ButtonInteraction, notification
 		}
 	});
 }
-
-function getNotificationsEmbed(notificationsConfiguration: NotificationsConfiguration, user: User, lng: Language, footer?: string): DraftBotEmbed {
+function getNotificationsEmbed(notificationsConfiguration: NotificationsConfiguration, user: User, lng: Language, footer?: string): CrowniclesEmbed {
 	let description = "";
 	NotificationsTypes.ALL.forEach(notificationType => {
 		const notificationTypeValue = notificationType.value(notificationsConfiguration);
 		const sendLocation = NotificationSendType.toString(notificationTypeValue.sendType, lng, notificationTypeValue.channelId);
 		description
 			+= `${notificationType.emote} **__${i18n.t(notificationType.i18nKey, { lng })}__**
-- **${i18n.t("commands:notifications.enabledField", { lng })}** ${notificationTypeValue.enabled ? DraftBotIcons.collectors.accept : DraftBotIcons.collectors.refuse}`;
+- **${i18n.t("commands:notifications.enabledField", { lng })}** ${notificationTypeValue.enabled ? CrowniclesIcons.collectors.accept : CrowniclesIcons.collectors.refuse}`;
 		if (notificationTypeValue.enabled) {
 			description += `\n- **${i18n.t("commands:notifications.sendLocationField", { lng })}** ${sendLocation}`;
 		}
 		description += "\n\n";
 	});
 
-	const embed = new DraftBotEmbed()
+	const embed = new CrowniclesEmbed()
 		.formatAuthor(i18n.t("commands:notifications.embedTitle", { lng }), user)
 		.setDescription(description);
 	if (footer) {
