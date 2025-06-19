@@ -1,7 +1,7 @@
-import { DraftbotInteraction } from "../../messages/DraftbotInteraction";
+import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
 import {
 	makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	CommandPetSellPacketReq,
 	CommandPetSellSuccessPacket
@@ -11,7 +11,7 @@ import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { ReactionCollectorCreationPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { DiscordCache } from "../../bot/DiscordCache";
-import { DraftBotEmbed } from "../../messages/DraftBotEmbed";
+import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import i18n from "../../translations/i18n";
 import { DisplayUtils } from "../../utils/DisplayUtils";
 import { DiscordCollectorUtils } from "../../utils/DiscordCollectorUtils";
@@ -23,7 +23,7 @@ import { escapeUsername } from "../../../../Lib/src/utils/StringUtils";
 import { PacketUtils } from "../../utils/PacketUtils";
 import { KeycloakUser } from "../../../../Lib/src/keycloak/KeycloakUser";
 
-async function getPacket(interaction: DraftbotInteraction, keycloakUser: KeycloakUser): Promise<CommandPetSellPacketReq | null> {
+async function getPacket(interaction: CrowniclesInteraction, keycloakUser: KeycloakUser): Promise<CommandPetSellPacketReq | null> {
 	const price = <number>interaction.options.get("price", true).value;
 
 	const askedPlayer = await PacketUtils.prepareAskedPlayer(interaction, keycloakUser);
@@ -55,7 +55,7 @@ export async function createPetSellCollector(context: PacketContext, packet: Rea
 
 	const embedKeyTitle = buyerUser ? "sellTitleWithBuyer" : "sellTitle";
 
-	const embed = new DraftBotEmbed()
+	const embed = new CrowniclesEmbed()
 		.formatAuthor(
 			i18n.t(`commands:petSell.${embedKeyTitle}`, {
 				lng,
@@ -107,7 +107,7 @@ export async function handlePetSellSuccess(context: PacketContext, packet: Comma
 	// Send pet sell success message
 	await buttonInteraction.editReply({
 		embeds: [
-			new DraftBotEmbed()
+			new CrowniclesEmbed()
 				.formatAuthor(
 					i18n.t("commands:petSell.successTitle", {
 						lng,

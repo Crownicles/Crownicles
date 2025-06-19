@@ -57,14 +57,14 @@ export class MissionDataController extends DataControllerString<Mission> {
 					? (mission): boolean => mission.canBeMedium()
 					: (mission): boolean => mission.canBeHard();
 
-		return RandomUtils.draftbotRandom.pick(
+		return RandomUtils.crowniclesRandom.pick(
 			this.getValuesArray()
 				.filter(mission => filter(mission) && mission.campaignOnly === false && mission.id !== (exception ?? ""))
 		);
 	}
 
 	public getRandomDailyMission(): Mission {
-		return RandomUtils.draftbotRandom.pick(
+		return RandomUtils.crowniclesRandom.pick(
 			this.getValuesArray()
 				.filter(mission => mission.dailyIndexes?.length !== 0 && !mission.campaignOnly)
 		);

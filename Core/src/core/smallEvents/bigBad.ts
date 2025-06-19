@@ -6,7 +6,7 @@ import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { TravelTime } from "../maps/TravelTime";
 import { MissionsController } from "../missions/MissionsController";
-import { makePacket } from "../../../../Lib/src/packets/DraftBotPacket";
+import { makePacket } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { SmallEventBigBadPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventBigBadPacket";
 import { Maps } from "../maps/Maps";
 import { Effect } from "../../../../Lib/src/types/Effect";
@@ -24,7 +24,7 @@ type BigBadProperties = {
 export const smallEventFuncs: SmallEventFuncs = {
 	canBeExecuted: Maps.isOnContinent,
 	executeSmallEvent: async (response, player): Promise<void> => {
-		const outRand: SmallEventBigBadKind = RandomUtils.draftbotRandom.integer(0, 2);
+		const outRand: SmallEventBigBadKind = RandomUtils.crowniclesRandom.integer(0, 2);
 		let lifeLoss, seFallen, moneyLoss, effect;
 		const bigBadProperties = SmallEventDataController.instance.getById("bigBad").getProperties<BigBadProperties>();
 		switch (outRand) {
@@ -33,7 +33,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 				await player.addHealth(-lifeLoss, response, NumberChangeReason.SMALL_EVENT);
 				break;
 			case SmallEventBigBadKind.ALTERATION:
-				seFallen = RandomUtils.draftbotRandom.pick(Object.keys(bigBadProperties.alterationStories));
+				seFallen = RandomUtils.crowniclesRandom.pick(Object.keys(bigBadProperties.alterationStories));
 				effect = bigBadProperties.alterationStories[seFallen].alte;
 				await TravelTime.applyEffect(player, Effect.getById(effect), 0, new Date(), NumberChangeReason.SMALL_EVENT);
 				if (bigBadProperties.alterationStories[seFallen].tags) {

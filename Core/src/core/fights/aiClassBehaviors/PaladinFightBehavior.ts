@@ -87,9 +87,9 @@ class PaladinFightBehavior implements ClassBehavior {
 		return (
 			isOpponentDivine && usedGodMoves < 2
 			|| usedUltimateAttacks === 1 && usedGodMoves < 2
-			|| isOpponentKnightType && RandomUtils.draftbotRandom.bool(0.2) && usedGodMoves === 0
+			|| isOpponentKnightType && RandomUtils.crowniclesRandom.bool(0.2) && usedGodMoves === 0
 			|| isOpponentPaladinType
-			&& (isOpponentDivine || RandomUtils.draftbotRandom.bool(0.2))
+			&& (isOpponentDivine || RandomUtils.crowniclesRandom.bool(0.2))
 			&& usedGodMoves < 2
 			&& fightView.fightController.turn >= 8
 		);
@@ -132,7 +132,7 @@ class PaladinFightBehavior implements ClassBehavior {
 			&& (
 				opponent.getLastFightActionUsed()?.id === FightConstants.FIGHT_ACTIONS.PLAYER.CHARGE_CHARGING_ATTACK
 				|| opponent.getLastFightActionUsed()?.id === FightConstants.FIGHT_ACTIONS.PLAYER.CHARGE_ULTIMATE_ATTACK
-				|| opponent.getDefense() > me.getDefense() * 0.9 && RandomUtils.draftbotRandom.bool([
+				|| opponent.getDefense() > me.getDefense() * 0.9 && RandomUtils.crowniclesRandom.bool([
 					0.05,
 					0.2,
 					0.8

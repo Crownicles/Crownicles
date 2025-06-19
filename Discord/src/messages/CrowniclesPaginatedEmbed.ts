@@ -1,10 +1,10 @@
-import { DraftBotEmbed } from "./DraftBotEmbed";
+import { CrowniclesEmbed } from "./CrowniclesEmbed";
 import {
 	ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle
 } from "discord.js";
 import { sendInteractionNotForYou } from "../utils/ErrorUtils";
-import { DraftBotIcons } from "../../../Lib/src/DraftBotIcons";
-import { DraftbotInteraction } from "./DraftbotInteraction";
+import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
+import { CrowniclesInteraction } from "./CrowniclesInteraction";
 import { Language } from "../../../Lib/src/Language";
 import { Constants } from "../../../Lib/src/constants/Constants";
 import i18n from "../translations/i18n";
@@ -12,7 +12,7 @@ import i18n from "../translations/i18n";
 /**
  * Options for the paginated embed
  */
-export type DraftBotPaginatedEmbedOptions = {
+export type CrowniclesPaginatedEmbedOptions = {
 	pages: string[];
 
 	lng: Language;
@@ -40,10 +40,10 @@ export type DraftBotPaginatedEmbedOptions = {
  * Class for the paginated embed
  * Use the send method to send the embed
  */
-export class DraftBotPaginatedEmbed extends DraftBotEmbed {
-	private readonly options: DraftBotPaginatedEmbedOptions;
+export class CrowniclesPaginatedEmbed extends CrowniclesEmbed {
+	private readonly options: CrowniclesPaginatedEmbedOptions;
 
-	constructor(options: DraftBotPaginatedEmbedOptions) {
+	constructor(options: CrowniclesPaginatedEmbedOptions) {
 		super();
 		this.options = options;
 	}
@@ -52,23 +52,23 @@ export class DraftBotPaginatedEmbed extends DraftBotEmbed {
 	 * Send the paginated embed
 	 * @param originalInteraction
 	 */
-	async send(originalInteraction: DraftbotInteraction): Promise<void> {
+	async send(originalInteraction: CrowniclesInteraction): Promise<void> {
 		let currentPage = this.options.selectedPageIndex ?? 0;
 
 		const previousCustomId = "previous";
 		const nextCustomId = "next";
 		const previousButton = new ButtonBuilder()
-			.setEmoji(DraftBotIcons.collectors.previousPage)
+			.setEmoji(CrowniclesIcons.collectors.previousPage)
 			.setCustomId(previousCustomId)
 			.setStyle(ButtonStyle.Secondary);
 		const nextButton = new ButtonBuilder()
-			.setEmoji(DraftBotIcons.collectors.nextPage)
+			.setEmoji(CrowniclesIcons.collectors.nextPage)
 			.setCustomId(nextCustomId)
 			.setStyle(ButtonStyle.Secondary);
 
 		const msg = await originalInteraction.editReply({
-			embeds: [this.setDescription(this.options.pages[currentPage]).setFooter(DraftBotPaginatedEmbed.getPageFooter(currentPage, this.options.pages.length, this.options.lng))],
-			components: DraftBotPaginatedEmbed.getPageComponents(currentPage, this.options.pages.length, previousButton, nextButton)
+			embeds: [this.setDescription(this.options.pages[currentPage]).setFooter(CrowniclesPaginatedEmbed.getPageFooter(currentPage, this.options.pages.length, this.options.lng))],
+			components: CrowniclesPaginatedEmbed.getPageComponents(currentPage, this.options.pages.length, previousButton, nextButton)
 		});
 
 		if (!msg) {
@@ -96,8 +96,8 @@ export class DraftBotPaginatedEmbed extends DraftBotEmbed {
 			}
 
 			await buttonInteraction.update({
-				embeds: [this.setDescription(this.options.pages[currentPage]).setFooter(DraftBotPaginatedEmbed.getPageFooter(currentPage, this.options.pages.length, this.options.lng))],
-				components: DraftBotPaginatedEmbed.getPageComponents(currentPage, this.options.pages.length, previousButton, nextButton)
+				embeds: [this.setDescription(this.options.pages[currentPage]).setFooter(CrowniclesPaginatedEmbed.getPageFooter(currentPage, this.options.pages.length, this.options.lng))],
+				components: CrowniclesPaginatedEmbed.getPageComponents(currentPage, this.options.pages.length, previousButton, nextButton)
 			});
 		});
 

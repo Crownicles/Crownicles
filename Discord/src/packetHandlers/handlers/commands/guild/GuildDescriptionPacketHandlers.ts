@@ -6,7 +6,7 @@ import {
 	CommandGuildDescriptionNotAnElderPacket,
 	CommandGuildDescriptionRefusePacketRes
 } from "../../../../../../Lib/src/packets/commands/CommandGuildDescriptionPacket";
-import { PacketContext } from "../../../../../../Lib/src/packets/DraftBotPacket";
+import { PacketContext } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import { CommandGuildElderRemoveNoElderPacket } from "../../../../../../Lib/src/packets/commands/CommandGuildElderRemovePacket";
 import { handleClassicError } from "../../../../utils/ErrorUtils";
 import {

@@ -10,7 +10,7 @@ import { PetDataController } from "../../data/Pet";
 import { BlockingUtils } from "../utils/BlockingUtils";
 import {
 	makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
@@ -67,7 +67,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 	canBeExecuted: Maps.isOnPveIsland,
 	executeSmallEvent: (response, player, context: PacketContext) => {
 		const pet = PetDataController.instance.getRandom();
-		const isFemale = RandomUtils.draftbotRandom.bool();
+		const isFemale = RandomUtils.crowniclesRandom.bool();
 
 		const collector = new ReactionCollectorFightPet(
 			pet.id,

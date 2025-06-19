@@ -1,16 +1,16 @@
 import {
-	DraftBotPacket, PacketDirection, sendablePacket
-} from "../DraftBotPacket";
+	CrowniclesPacket, PacketDirection, sendablePacket
+} from "../CrowniclesPacket";
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
-export class CommandGuildCreatePacketReq extends DraftBotPacket {
+export class CommandGuildCreatePacketReq extends CrowniclesPacket {
 	keycloakId!: string;
 
 	askedGuildName!: string;
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandGuildCreatePacketRes extends DraftBotPacket {
+export class CommandGuildCreatePacketRes extends CrowniclesPacket {
 	playerMoney!: number;
 
 	foundGuild!: boolean;
@@ -21,11 +21,11 @@ export class CommandGuildCreatePacketRes extends DraftBotPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandGuildCreateRefusePacketRes extends DraftBotPacket {
+export class CommandGuildCreateRefusePacketRes extends CrowniclesPacket {
 
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandGuildCreateAcceptPacketRes extends DraftBotPacket {
+export class CommandGuildCreateAcceptPacketRes extends CrowniclesPacket {
 	guildName!: string;
 }

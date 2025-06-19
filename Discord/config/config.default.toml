@@ -6,7 +6,7 @@ main_server_id = ""
 # Test mode
 test_mode = false
 # Prefix used to prefix the MQTT topics and the databases. It must be the same for all the services
-prefix = "draftbot"
+prefix = "crownicles"
 
 [mqtt]
 # MQTT host
@@ -18,7 +18,7 @@ host = "127.0.0.1"
 # The port of the database
 port = 3306
 # The user of the database
-user = "draftbot"
+user = "crownicles"
 # The password of a database user.
 password = "secret_password"
 # The root password, used to create the databases. Use this only in development. In production, leave the field empty and create the databases manually
@@ -48,7 +48,7 @@ english_announcements_channel_id = ""
 
 [keycloak]
 # Keycloak realm
-realm = "DraftBot"
+realm = "Crownicles"
 # Keycloak URL
 url = "http://127.0.0.1:8080"
 # Keycloak client ID

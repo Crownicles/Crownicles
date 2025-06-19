@@ -4,9 +4,9 @@ import {
 } from "../../../../Lib/src/packets/commands/CommandClassesInfoPacket";
 import {
 	makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import { DiscordCache } from "../../bot/DiscordCache";
-import { DraftBotEmbed } from "../../messages/DraftBotEmbed";
+import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import i18n from "../../translations/i18n";
 import { ICommand } from "../ICommand";
 import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
@@ -21,7 +21,7 @@ import {
 	StringSelectMenuOptionBuilder
 } from "discord.js";
 import { sendInteractionNotForYou } from "../../utils/ErrorUtils";
-import { DraftBotIcons } from "../../../../Lib/src/DraftBotIcons";
+import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 import { ClassStats } from "../../../../Lib/src/types/ClassStats";
 import { ClassKind } from "../../../../Lib/src/types/ClassKind";
 import { DisplayUtils } from "../../utils/DisplayUtils";
@@ -45,8 +45,8 @@ function getListEmbed(lng: Language, classList: {
 		id: string;
 		cost: number;
 	}[];
-}[]): DraftBotEmbed {
-	const embed = new DraftBotEmbed().setTitle(i18n.t("commands:classesInfo.title.list", { lng }));
+}[]): CrowniclesEmbed {
+	const embed = new CrowniclesEmbed().setTitle(i18n.t("commands:classesInfo.title.list", { lng }));
 
 	const classesFields: EmbedField[] = [];
 	for (const foundClass of classList) {
@@ -92,15 +92,15 @@ function getDetailsEmbed(lng: Language, classDetails: {
 		description: string;
 		cost: number;
 	}[];
-}): DraftBotEmbed {
-	const embed = new DraftBotEmbed().setTitle(DisplayUtils.getClassDisplay(classDetails.id, lng));
+}): CrowniclesEmbed {
+	const embed = new CrowniclesEmbed().setTitle(DisplayUtils.getClassDisplay(classDetails.id, lng));
 
 	const attackFields: EmbedField[] = [];
 	for (const attack of classDetails.attacks) {
 		attackFields.push({
 			name: i18n.t("commands:classesInfo.title.attack", {
 				lng,
-				emote: DraftBotIcons.fightActions[attack.id],
+				emote: CrowniclesIcons.fightActions[attack.id],
 				name: attack.name,
 				cost: attack.cost
 			}),
@@ -133,11 +133,11 @@ export async function handleCommandClassesInfoPacketRes(packet: CommandClassesIn
 	const classListEmbed = getListEmbed(lng, packet.data!.classesStats);
 	const classesMenuOptions = packet.data!.classesStats.map(classStats => new StringSelectMenuOptionBuilder()
 		.setLabel(`${i18n.t(`models:classes.${classStats.id}`, { lng })}`)
-		.setEmoji(DraftBotIcons.classes[classStats.id])
+		.setEmoji(CrowniclesIcons.classes[classStats.id])
 		.setValue(classStats.id.toString()));
 	const classSelectionMenuOption = new StringSelectMenuOptionBuilder()
 		.setLabel(i18n.t("commands:classesInfo.mainOption.name", { lng }))
-		.setEmoji(DraftBotIcons.commands.classesInfo)
+		.setEmoji(CrowniclesIcons.commands.classesInfo)
 		.setValue(ClassInfoConstants.MENU_IDS.LIST_OPTION);
 	classesMenuOptions.unshift(classSelectionMenuOption);
 	const classSelectionMenu = new StringSelectMenuBuilder()

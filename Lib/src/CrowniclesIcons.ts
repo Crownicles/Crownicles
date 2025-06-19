@@ -4,7 +4,7 @@ type EventPossibilities = {
 	end: { [outcomeId: string]: string };
 } & Record<string, string | { [outcomeId: string]: string }>;
 
-export const DraftBotIcons: {
+export const CrowniclesIcons: {
 	effects: {
 		[effectId: string]: string;
 	};

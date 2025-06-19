@@ -5,7 +5,7 @@ import { DatabaseConfiguration } from "../../../../Lib/src/database/DatabaseConf
 /**
  * Represents the main constants of the bot
  */
-export interface DraftBotConfig {
+export interface CrowniclesConfig {
 	MODE_MAINTENANCE: boolean;
 	TEST_MODE: boolean;
 	PREFIX: string;
@@ -57,7 +57,7 @@ type ConfigStructure = {
 /**
  * Loads the config from the config file
  */
-export function loadConfig(): DraftBotConfig {
+export function loadConfig(): CrowniclesConfig {
 	const config = parse(readFileSync(`${process.cwd()}/config/config.toml`, "utf-8")) as ConfigStructure;
 	return {
 		MODE_MAINTENANCE: config.bot.maintenance,
@@ -78,7 +78,7 @@ export function loadConfig(): DraftBotConfig {
 	};
 }
 
-export function getDatabaseConfiguration(config: DraftBotConfig, databaseName: string): DatabaseConfiguration {
+export function getDatabaseConfiguration(config: CrowniclesConfig, databaseName: string): DatabaseConfiguration {
 	return {
 		host: config.MARIADB_HOST,
 		port: config.MARIADB_PORT,

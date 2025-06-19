@@ -5,7 +5,7 @@ import {
 	CommandTopPacketResGlory, CommandTopPacketResGuild,
 	CommandTopPacketResScore, CommandTopPlayersEmptyPacket
 } from "../../../../../../Lib/src/packets/commands/CommandTopPacket";
-import { PacketContext } from "../../../../../../Lib/src/packets/DraftBotPacket";
+import { PacketContext } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	handleCommandTopGuildsEmptyPacket,
 	handleCommandTopInvalidPagePacket,

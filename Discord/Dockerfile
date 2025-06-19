@@ -7,7 +7,7 @@ FROM node:${NODE_VERSION}-alpine AS builder
 ARG PNPM_VERSION=latest-10
 
 # Set the working directory
-WORKDIR /draftbot/Discord
+WORKDIR /crownicles/Discord
 
 # Setup PNPM
 RUN npm install --global corepack@latest
@@ -34,9 +34,9 @@ COPY ./Lang ../Lang
 COPY ./Discord/src ./src
 
 # Install the lib dependencies
-WORKDIR /draftbot/Lib
+WORKDIR /crownicles/Lib
 RUN pnpm install --prod
-WORKDIR /draftbot/Discord
+WORKDIR /crownicles/Discord
 
 # Compile the source code
 RUN pnpm interface
@@ -44,7 +44,7 @@ RUN pnpm run tsc
 
 FROM node:${NODE_VERSION}-alpine
 
-WORKDIR /draftbot
+WORKDIR /crownicles
 
 # Setup PNPM
 RUN npm install --global corepack@latest
@@ -60,7 +60,7 @@ RUN mkdir config
 RUN pnpm install --prod
 
 # Copy the built app from the builder
-COPY --from=builder /draftbot/Discord/dist ./dist
+COPY --from=builder /crownicles/Discord/dist ./dist
 
 # Setup permissions
 RUN mkdir -p /.cache/node/corepack

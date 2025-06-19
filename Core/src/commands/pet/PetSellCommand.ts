@@ -1,6 +1,6 @@
 import {
-	DraftBotPacket, makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, makePacket, PacketContext
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	PetEntities, PetEntity
 } from "../../core/database/game/models/PetEntity";
@@ -57,7 +57,7 @@ type SellerInformation = {
  * @param response
  * @param sellerInformation
  */
-function missingRequirementsToSellPet(response: DraftBotPacket[], sellerInformation: SellerInformation): boolean {
+function missingRequirementsToSellPet(response: CrowniclesPacket[], sellerInformation: SellerInformation): boolean {
 	if (sellerInformation.pet.isFeisty()) {
 		response.push(makePacket(CommandPetSellFeistyErrorPacket, {}));
 		return true;
@@ -74,7 +74,7 @@ function missingRequirementsToSellPet(response: DraftBotPacket[], sellerInformat
 	return false;
 }
 
-async function verifyBuyerRequirements(response: DraftBotPacket[], sellerInformation: SellerInformation, buyer: Player): Promise<boolean> {
+async function verifyBuyerRequirements(response: CrowniclesPacket[], sellerInformation: SellerInformation, buyer: Player): Promise<boolean> {
 	// Check if the player has started the game
 	if (!await CommandUtils.verifyStartedAndNotDead(buyer, response)) {
 		return false;
@@ -108,7 +108,7 @@ async function verifyBuyerRequirements(response: DraftBotPacket[], sellerInforma
 	return true;
 }
 
-async function executePetSell(collector: ReactionCollectorInstance, response: DraftBotPacket[], sellerInformation: SellerInformation, buyer: Player): Promise<void> {
+async function executePetSell(collector: ReactionCollectorInstance, response: CrowniclesPacket[], sellerInformation: SellerInformation, buyer: Player): Promise<void> {
 	// Add guild XP
 	const xpToAdd = GuildUtils.calculateAmountOfXPToAdd(sellerInformation.petCost);
 	await sellerInformation.guild.addExperience(xpToAdd, response, NumberChangeReason.PET_SELL);
@@ -151,7 +151,7 @@ async function executePetSell(collector: ReactionCollectorInstance, response: Dr
 	await collector.end(response);
 }
 
-async function acceptPetSellCallback(collector: ReactionCollectorInstance, initiatorPlayer: Player, reactingPlayerKeycloakId: string, response: DraftBotPacket[], price: number): Promise<void> {
+async function acceptPetSellCallback(collector: ReactionCollectorInstance, initiatorPlayer: Player, reactingPlayerKeycloakId: string, response: CrowniclesPacket[], price: number): Promise<void> {
 	// Can't buy your own pet
 	if (initiatorPlayer.keycloakId === reactingPlayerKeycloakId) {
 		response.push(makePacket(CommandPetSellCantSellToYourselfErrorPacket, {}));
@@ -193,7 +193,7 @@ async function acceptPetSellCallback(collector: ReactionCollectorInstance, initi
 	}
 }
 
-function refusePetSellCallback(initiatorPlayerKeycloakId: string, reactingPlayerKeycloakId: string, response: DraftBotPacket[]): boolean {
+function refusePetSellCallback(initiatorPlayerKeycloakId: string, reactingPlayerKeycloakId: string, response: CrowniclesPacket[]): boolean {
 	if (initiatorPlayerKeycloakId !== reactingPlayerKeycloakId) {
 		// Only the owner can refuse the pet sell
 		response.push(makePacket(CommandPetSellOnlyOwnerCanCancelErrorPacket, {}));
@@ -204,7 +204,7 @@ function refusePetSellCallback(initiatorPlayerKeycloakId: string, reactingPlayer
 	return true;
 }
 
-function createAndPushCollector(player: Player, packet: CommandPetSellPacketReq, guild: Guild, pet: PetEntity, context: PacketContext, response: DraftBotPacket[]): void {
+function createAndPushCollector(player: Player, packet: CommandPetSellPacketReq, guild: Guild, pet: PetEntity, context: PacketContext, response: CrowniclesPacket[]): void {
 	// Send collector
 	const collector = new ReactionCollectorPetSell(
 		player.keycloakId,
@@ -214,14 +214,14 @@ function createAndPushCollector(player: Player, packet: CommandPetSellPacketReq,
 		packet.askedPlayer.keycloakId
 	);
 
-	const endCallback: EndCallback = (collector: ReactionCollectorInstance, response: DraftBotPacket[]): void => {
+	const endCallback: EndCallback = (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): void => {
 		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.PET_SELL);
 		if (collector.hasEndedByTime) {
 			response.push(makePacket(CommandPetSellNoOneAvailableErrorPacket, {}));
 		}
 	};
 
-	const collectCallback: CollectCallback = async (collector: ReactionCollectorInstance, reaction: ReactionCollectorReaction, keycloakId: string, response: DraftBotPacket[]): Promise<void> => {
+	const collectCallback: CollectCallback = async (collector: ReactionCollectorInstance, reaction: ReactionCollectorReaction, keycloakId: string, response: CrowniclesPacket[]): Promise<void> => {
 		if (reaction instanceof ReactionCollectorAcceptReaction) {
 			await acceptPetSellCallback(collector, player, keycloakId, response, packet.price);
 		}
@@ -252,7 +252,7 @@ export default class PetSellCommand {
 		allowedEffects: CommandUtils.ALLOWED_EFFECTS.NO_EFFECT,
 		whereAllowed: [WhereAllowed.CONTINENT]
 	})
-	async execute(response: DraftBotPacket[], player: Player, packet: CommandPetSellPacketReq, context: PacketContext): Promise<void> {
+	async execute(response: CrowniclesPacket[], player: Player, packet: CommandPetSellPacketReq, context: PacketContext): Promise<void> {
 		const pet = await PetEntities.getById(player.petId);
 
 		if (!pet) {

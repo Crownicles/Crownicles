@@ -3,6 +3,7 @@ import {
 } from "sequelize";
 import Player from "./Player";
 import { PetDataController } from "../../../../data/Pet";
+import { RandomUtils } from "../../../../../../Lib/src/utils/RandomUtils";
 
 export class DwarfPetsSeen extends Model {
 	declare readonly playerId: number;
@@ -48,6 +49,40 @@ export class DwarfPetsSeen extends Model {
 		});
 
 		return petsSeen === PetDataController.instance.getPetsCount();
+	}
+
+	/**
+	 * Return an array of pet ID that the player has showed to the dwarf
+	 * @param player
+	 */
+	static async getPetsSeenId(player: Player): Promise<number[]> {
+		const petsSeen = await DwarfPetsSeen.findAll({
+			where: {
+				playerId: player.id
+			}
+		});
+		return petsSeen.map(pet => pet.petTypeId);
+	}
+
+	static async getPetsNotSeenId(player: Player): Promise<number[]> {
+		const petsSeenId = await DwarfPetsSeen.getPetsSeenId(player);
+		const petsNotSeenIds: number[] = [];
+		for (let i = 1; i < PetDataController.instance.getPetsCount(); i++) {
+			if (!petsSeenId.includes(i)) {
+				petsNotSeenIds.push(i);
+			}
+		}
+		return petsNotSeenIds;
+	}
+
+	static async getRandomPetNotSeenId(player: Player): Promise<number> {
+		const petsNotSeenIds = await DwarfPetsSeen.getPetsNotSeenId(player);
+		return petsNotSeenIds.length > 0 ? RandomUtils.crowniclesRandom.pick(petsNotSeenIds) : 0;
+	}
+
+	static async getNumberOfPetsNotSeen(player: Player): Promise<number> {
+		const petsNotSeenIds = await DwarfPetsSeen.getPetsNotSeenId(player);
+		return petsNotSeenIds.length;
 	}
 }
 

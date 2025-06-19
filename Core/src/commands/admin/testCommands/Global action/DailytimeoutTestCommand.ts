@@ -1,7 +1,7 @@
 import {
 	ExecuteTestCommandLike, ITestCommand
 } from "../../../../core/CommandsTest";
-import { DraftBot } from "../../../../core/bot/DraftBot";
+import { Crownicles } from "../../../../core/bot/Crownicles";
 
 export const commandInfo: ITestCommand = {
 	name: "dailytimeout",
@@ -12,7 +12,7 @@ export const commandInfo: ITestCommand = {
  * Do a dailytimeout
  */
 const dailyTimeoutTestCommand: ExecuteTestCommandLike = async () => {
-	await DraftBot.dailyTimeout();
+	await Crownicles.dailyTimeout();
 	return "Vous avez effectué un dailytimeout !";
 };
 

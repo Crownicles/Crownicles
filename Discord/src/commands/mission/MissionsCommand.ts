@@ -1,23 +1,23 @@
 import { ICommand } from "../ICommand";
 import {
 	makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
-import { DraftbotInteraction } from "../../messages/DraftbotInteraction";
+} from "../../../../Lib/src/packets/CrowniclesPacket";
+import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
 import i18n from "../../translations/i18n";
 import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { DiscordCache } from "../../bot/DiscordCache";
-import { DraftBotErrorEmbed } from "../../messages/DraftBotErrorEmbed";
+import { CrowniclesErrorEmbed } from "../../messages/CrowniclesErrorEmbed";
 import { KeycloakUser } from "../../../../Lib/src/keycloak/KeycloakUser";
 import { KeycloakUtils } from "../../../../Lib/src/keycloak/KeycloakUtils";
 import {
-	draftBotClient, keycloakConfig
-} from "../../bot/DraftBotShard";
+	crowniclesClient, keycloakConfig
+} from "../../bot/CrowniclesShard";
 import {
 	CommandMissionsPacketReq,
 	CommandMissionsPacketRes
 } from "../../../../Lib/src/packets/commands/CommandMissionsPacket";
-import { DraftBotEmbed } from "../../messages/DraftBotEmbed";
+import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import { MissionType } from "../../../../Lib/src/types/CompletedMission";
 import { MissionUtils } from "../../utils/MissionUtils";
 import {
@@ -33,7 +33,7 @@ import { escapeUsername } from "../../../../Lib/src/utils/StringUtils";
  * @param interaction
  * @param keycloakUser
  */
-async function getPacket(interaction: DraftbotInteraction, keycloakUser: KeycloakUser): Promise<CommandMissionsPacketReq | null> {
+async function getPacket(interaction: CrowniclesInteraction, keycloakUser: KeycloakUser): Promise<CommandMissionsPacketReq | null> {
 	const askedPlayer = await PacketUtils.prepareAskedPlayer(interaction, keycloakUser);
 	if (!askedPlayer) {
 		return null;
@@ -48,7 +48,7 @@ async function getPacket(interaction: DraftbotInteraction, keycloakUser: Keycloa
 export async function handleCommandMissionPlayerNotFoundPacket(context: PacketContext): Promise<void> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction);
 	await interaction?.reply({
-		embeds: [new DraftBotErrorEmbed(interaction.user, context, interaction, i18n.t("error:playerDoesntExist", { lng: interaction.userLanguage }))],
+		embeds: [new CrowniclesErrorEmbed(interaction.user, context, interaction, i18n.t("error:playerDoesntExist", { lng: interaction.userLanguage }))],
 		flags: MessageFlags.Ephemeral
 	});
 }
@@ -151,9 +151,9 @@ export async function handleCommandMissionsPacketRes(packet: CommandMissionsPack
 		return;
 	}
 	const discordUser = getUser.payload.user.attributes.discordId
-		? draftBotClient.users.cache.get(getUser.payload.user.attributes.discordId[0]) ?? await draftBotClient.users.fetch(getUser.payload.user.attributes.discordId[0])
+		? crowniclesClient.users.cache.get(getUser.payload.user.attributes.discordId[0]) ?? await crowniclesClient.users.fetch(getUser.payload.user.attributes.discordId[0])
 		: null;
-	const missionCommandEmbed = new DraftBotEmbed();
+	const missionCommandEmbed = new CrowniclesEmbed();
 
 	if (discordUser) {
 		missionCommandEmbed.formatAuthor(i18n.t("commands:missions.title", {

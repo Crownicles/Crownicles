@@ -6,7 +6,7 @@ import { PlayerSmallEvents } from "../database/game/models/PlayerSmallEvent";
 import { Maps } from "./Maps";
 import { PVEConstants } from "../../../../Lib/src/constants/PVEConstants";
 import { MapLinkDataController } from "../../data/MapLink";
-import { draftBotInstance } from "../../index";
+import { crowniclesInstance } from "../../index";
 import { Effect } from "../../../../Lib/src/types/Effect";
 import { Constants } from "../../../../Lib/src/constants/Constants";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
@@ -180,7 +180,7 @@ export class TravelTime {
 		}
 
 		// Log
-		draftBotInstance.logsDatabase.logTimeWarp(player.keycloakId, isMilliseconds ? millisecondsToMinutes(time) : time, reason)
+		crowniclesInstance.logsDatabase.logTimeWarp(player.keycloakId, isMilliseconds ? millisecondsToMinutes(time) : time, reason)
 			.then();
 	}
 
@@ -238,7 +238,7 @@ export class TravelTime {
 
 		// Save and log
 		await player.save();
-		draftBotInstance.logsDatabase.logAlteration(player.keycloakId, effect.id, reason, time)
+		crowniclesInstance.logsDatabase.logAlteration(player.keycloakId, effect.id, reason, time)
 			.then();
 	}
 
@@ -247,7 +247,7 @@ export class TravelTime {
 	 * @param time - time must be in minutes
 	 */
 	static timeTravelledToScore(time: number): number {
-		const score = time + RandomUtils.draftbotRandom.integer(0, time / Constants.REPORT.BONUS_POINT_TIME_DIVIDER);
+		const score = time + RandomUtils.crowniclesRandom.integer(0, time / Constants.REPORT.BONUS_POINT_TIME_DIVIDER);
 		return score > 0 ? score : 0; // Return 0 if the score is negative
 	}
 

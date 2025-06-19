@@ -1,26 +1,26 @@
 import {
-	DraftBotPacket, PacketDirection, sendablePacket
-} from "../DraftBotPacket";
+	CrowniclesPacket, PacketDirection, sendablePacket
+} from "../CrowniclesPacket";
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
-export class CommandLeagueRewardPacketReq extends DraftBotPacket {
+export class CommandLeagueRewardPacketReq extends CrowniclesPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandLeagueRewardNotSundayPacketRes extends DraftBotPacket {
+export class CommandLeagueRewardNotSundayPacketRes extends CrowniclesPacket {
 	nextSunday!: number;
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandLeagueRewardNoPointsPacketRes extends DraftBotPacket {
+export class CommandLeagueRewardNoPointsPacketRes extends CrowniclesPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandLeagueRewardAlreadyClaimedPacketRes extends DraftBotPacket {
+export class CommandLeagueRewardAlreadyClaimedPacketRes extends CrowniclesPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandLeagueRewardSuccessPacketRes extends DraftBotPacket {
+export class CommandLeagueRewardSuccessPacketRes extends CrowniclesPacket {
 	score!: number;
 
 	money!: number;

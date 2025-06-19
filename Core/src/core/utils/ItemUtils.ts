@@ -11,8 +11,8 @@ import {
 import { GenericItem } from "../../data/GenericItem";
 import { BlockingUtils } from "./BlockingUtils";
 import {
-	DraftBotPacket, makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, makePacket, PacketContext
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	Potion, PotionDataController
 } from "../../data/Potion";
@@ -20,12 +20,13 @@ import { WeaponDataController } from "../../data/Weapon";
 import { ArmorDataController } from "../../data/Armor";
 import { ObjectItemDataController } from "../../data/ObjectItem";
 import { ItemDataController } from "../../data/DataController";
-import { draftBotInstance } from "../../index";
+import { crowniclesInstance } from "../../index";
 import { ItemRefusePacket } from "../../../../Lib/src/packets/events/ItemRefusePacket";
 import { ItemAcceptPacket } from "../../../../Lib/src/packets/events/ItemAcceptPacket";
 import { ItemFoundPacket } from "../../../../Lib/src/packets/events/ItemFoundPacket";
 import {
-	ReactionCollectorItemChoice, ReactionCollectorItemChoiceItemReaction
+	ReactionCollectorItemChoice,
+	ReactionCollectorItemChoiceItemReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorItemChoice";
 import { ReactionCollectorInstance } from "./ReactionsCollector";
 import { ReactionCollectorItemAccept } from "../../../../Lib/src/packets/interaction/ReactionCollectorItemAccept";
@@ -61,7 +62,7 @@ export function countNbOfPotions(invSlots: InventorySlot[]): number {
  * @param potion
  * @param inventorySlots
  */
-export async function checkDrinkPotionMissions(response: DraftBotPacket[], player: Player, potion: Potion, inventorySlots: InventorySlot[]): Promise<void> {
+export async function checkDrinkPotionMissions(response: CrowniclesPacket[], player: Player, potion: Potion, inventorySlots: InventorySlot[]): Promise<void> {
 	await MissionsController.update(player, response, { missionId: "drinkPotion" });
 	await MissionsController.update(player, response, {
 		missionId: "drinkPotionRarity",
@@ -152,7 +153,7 @@ type SellKeepItemOptions = {
  * @param item
  * @param itemToReplace
  */
-async function dontKeepOriginalItem(response: DraftBotPacket[], player: Player, item: GenericItem, itemToReplace: InventorySlot): Promise<void> {
+async function dontKeepOriginalItem(response: CrowniclesPacket[], player: Player, item: GenericItem, itemToReplace: InventorySlot): Promise<void> {
 	response.push(makePacket(ItemAcceptPacket, {
 		itemWithDetails: toItemWithDetails(item)
 	}));
@@ -169,7 +170,7 @@ async function dontKeepOriginalItem(response: DraftBotPacket[], player: Player, 
 		missionId: "haveItemRarity",
 		params: { rarity: item.rarity }
 	});
-	draftBotInstance.logsDatabase.logItemGain(player.keycloakId, item)
+	crowniclesInstance.logsDatabase.logItemGain(player.keycloakId, item)
 		.then();
 }
 
@@ -180,7 +181,7 @@ async function dontKeepOriginalItem(response: DraftBotPacket[], player: Player, 
  * @param item
  * @param money
  */
-async function manageMoneyPayment(response: DraftBotPacket[], player: Player, item: GenericItem, money: number): Promise<void> {
+async function manageMoneyPayment(response: CrowniclesPacket[], player: Player, item: GenericItem, money: number): Promise<void> {
 	await player.addMoney({
 		amount: money,
 		response,
@@ -191,7 +192,7 @@ async function manageMoneyPayment(response: DraftBotPacket[], player: Player, it
 		params: { itemCost: money }
 	});
 	await player.save();
-	draftBotInstance.logsDatabase.logItemSell(player.keycloakId, item)
+	crowniclesInstance.logsDatabase.logItemSell(player.keycloakId, item)
 		.then();
 }
 
@@ -204,7 +205,7 @@ async function manageMoneyPayment(response: DraftBotPacket[], player: Player, it
  * @param money
  * @param autoSell
  */
-async function manageItemRefusal(response: DraftBotPacket[], {
+async function manageItemRefusal(response: CrowniclesPacket[], {
 	player,
 	inventorySlots
 }: WhoIsConcerned, item: GenericItem, money: number, autoSell: boolean): Promise<void> {
@@ -237,7 +238,7 @@ async function manageItemRefusal(response: DraftBotPacket[], {
  * @param autoSell
  */
 async function sellOrKeepItem(
-	response: DraftBotPacket[],
+	response: CrowniclesPacket[],
 	whoIsConcerned: WhoIsConcerned,
 	{
 		item,
@@ -273,7 +274,7 @@ async function sellOrKeepItem(
  * @param sellKeepOptions
  */
 function getMoreThan2ItemsSwitchingEndCallback(whoIsConcerned: WhoIsConcerned, toTradeItem: GenericItem, tradableItems: InventorySlot[], sellKeepOptions: SellKeepItemOptions) {
-	return async (collector: ReactionCollectorInstance, response: DraftBotPacket[]): Promise<void> => {
+	return async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
 		const reaction = collector.getFirstReaction();
 		await whoIsConcerned.player.reload();
 
@@ -311,7 +312,7 @@ type ItemsToManage = {
  * @param sellKeepOptions
  */
 function manageMoreThan2ItemsSwitching(
-	response: DraftBotPacket[],
+	response: CrowniclesPacket[],
 	context: PacketContext,
 	whoIsConcerned: WhoIsConcerned,
 	{
@@ -349,7 +350,7 @@ function manageMoreThan2ItemsSwitching(
 }
 
 
-async function manageGiveItemRelateds(response: DraftBotPacket[], player: Player, item: GenericItem): Promise<void> {
+async function manageGiveItemRelateds(response: CrowniclesPacket[], player: Player, item: GenericItem): Promise<void> {
 	await MissionsController.update(player, response, { missionId: "findOrBuyItem" });
 	await MissionsController.update(player, response, {
 		missionId: "havePotions",
@@ -360,12 +361,12 @@ async function manageGiveItemRelateds(response: DraftBotPacket[], player: Player
 		missionId: "haveItemRarity",
 		params: { rarity: item.rarity }
 	});
-	draftBotInstance.logsDatabase.logItemGain(player.keycloakId, item)
+	crowniclesInstance.logsDatabase.logItemGain(player.keycloakId, item)
 		.then();
 }
 
 function getGiveItemToPlayerEndCallback(whoIsConcerned: WhoIsConcerned, concernedItems: ConcernedItems, resaleMultiplier: number) {
-	return async (collector: ReactionCollectorInstance, response: DraftBotPacket[]): Promise<void> => {
+	return async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
 		const reaction = collector.getFirstReaction();
 		const isValidated = reaction && reaction.reaction.type === ReactionCollectorAcceptReaction.name;
 		await whoIsConcerned.player.reload();
@@ -386,7 +387,7 @@ function getGiveItemToPlayerEndCallback(whoIsConcerned: WhoIsConcerned, concerne
  * @param resaleMultiplier
  */
 export async function giveItemToPlayer(
-	response: DraftBotPacket[],
+	response: CrowniclesPacket[],
 	context: PacketContext,
 	player: Player,
 	item: GenericItem,
@@ -464,7 +465,7 @@ export async function giveItemToPlayer(
  * @returns generated rarity
  */
 export function generateRandomRarity(minRarity: ItemRarity = ItemRarity.COMMON, maxRarity: ItemRarity = ItemRarity.MYTHICAL): ItemRarity {
-	const randomValue = RandomUtils.draftbotRandom.integer(
+	const randomValue = RandomUtils.crowniclesRandom.integer(
 		1 + (minRarity === ItemRarity.COMMON ? -1 : ItemConstants.RARITY.GENERATOR.VALUES[minRarity - 2]),
 		ItemConstants.RARITY.GENERATOR.MAX_VALUE
 		- (maxRarity === ItemRarity.MYTHICAL
@@ -525,7 +526,7 @@ export function generateRandomItem(
 		return (controller as PotionDataController | ObjectItemDataController).randomItem(subType, rarity);
 	}
 	const itemsIds = controller.getAllIdsForRarity(rarity);
-	return controller.getById(itemsIds[RandomUtils.draftbotRandom.integer(0, itemsIds.length - 1)]);
+	return controller.getById(itemsIds[RandomUtils.crowniclesRandom.integer(0, itemsIds.length - 1)]);
 }
 
 
@@ -535,7 +536,7 @@ export function generateRandomItem(
  * @param response
  * @param player
  */
-export async function giveRandomItem(context: PacketContext, response: DraftBotPacket[], player: Player): Promise<void> {
+export async function giveRandomItem(context: PacketContext, response: CrowniclesPacket[], player: Player): Promise<void> {
 	await giveItemToPlayer(response, context, player, generateRandomItem({}));
 }
 

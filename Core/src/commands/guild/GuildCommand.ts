@@ -1,6 +1,6 @@
 import {
-	DraftBotPacket, makePacket
-} from "../../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, makePacket
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	Player, Players
 } from "../../core/database/game/models/Player";
@@ -22,7 +22,7 @@ export default class GuildCommand {
 		whereAllowed: CommandUtils.WHERE.EVERYWHERE,
 		disallowedEffects: CommandUtils.DISALLOWED_EFFECTS.NOT_STARTED_OR_DEAD_OR_JAILED
 	})
-	async execute(response: DraftBotPacket[], player: Player, packet: CommandGuildPacketReq): Promise<void> {
+	async execute(response: CrowniclesPacket[], player: Player, packet: CommandGuildPacketReq): Promise<void> {
 		let guild: Guild;
 		const toCheckPlayer = await Players.getAskedPlayer(packet.askedPlayer, player);
 		if (packet.askedGuildName) {

@@ -152,7 +152,7 @@ export class FightActionController {
 		}
 		if (randomValue < failureProbability + criticalHitProbability) {
 			return {
-				damages: Math.round(damageDealt * RandomUtils.draftbotRandom.pick(FightConstants.FAILURE_DIVIDERS)),
+				damages: Math.round(damageDealt * RandomUtils.crowniclesRandom.pick(FightConstants.FAILURE_DIVIDERS)),
 				status: FightActionStatus.MISSED
 			};
 		}

@@ -1,8 +1,8 @@
 import { ICommand } from "../ICommand";
 import {
 	makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
-import { DraftbotInteraction } from "../../messages/DraftbotInteraction";
+} from "../../../../Lib/src/packets/CrowniclesPacket";
+import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
 import i18n from "../../translations/i18n";
 import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
 import {
@@ -10,22 +10,22 @@ import {
 } from "../../../../Lib/src/packets/commands/CommandGuildPacket";
 import { GuildMember } from "../../../../Lib/src/types/GuildMember";
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { DraftBotEmbed } from "../../messages/DraftBotEmbed";
+import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import { DiscordCache } from "../../bot/DiscordCache";
-import { DraftBotErrorEmbed } from "../../messages/DraftBotErrorEmbed";
+import { CrowniclesErrorEmbed } from "../../messages/CrowniclesErrorEmbed";
 import { GuildConstants } from "../../../../Lib/src/constants/GuildConstants";
 import { ColorConstants } from "../../../../Lib/src/constants/ColorConstants";
 import { KeycloakUser } from "../../../../Lib/src/keycloak/KeycloakUser";
 import { progressBar } from "../../../../Lib/src/utils/StringUtils";
 import { PacketUtils } from "../../utils/PacketUtils";
-import { DraftBotIcons } from "../../../../Lib/src/DraftBotIcons";
+import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 import { Language } from "../../../../Lib/src/Language";
 import { DisplayUtils } from "../../utils/DisplayUtils";
 
 /**
  * Display all the information about a guild
  */
-async function getPacket(interaction: DraftbotInteraction, keycloakUser: KeycloakUser): Promise<CommandGuildPacketReq | null> {
+async function getPacket(interaction: CrowniclesInteraction, keycloakUser: KeycloakUser): Promise<CommandGuildPacketReq | null> {
 	const guildNameOption = interaction.options.get("guild");
 	const askedGuildName = guildNameOption ? <string>guildNameOption.value : undefined;
 
@@ -47,10 +47,10 @@ async function getPacket(interaction: DraftbotInteraction, keycloakUser: Keycloa
  */
 function getMemberTypeIcon(member: GuildMember, packet: CommandGuildPacketRes): string {
 	return member.id === packet.data!.chiefId
-		? DraftBotIcons.guild.chief
+		? CrowniclesIcons.guild.chief
 		: member.id === packet.data!.elderId
-			? DraftBotIcons.guild.elder
-			: DraftBotIcons.guild.member;
+			? CrowniclesIcons.guild.elder
+			: CrowniclesIcons.guild.member;
 }
 
 /**
@@ -62,16 +62,16 @@ function getIslandStatusIcon(member: GuildMember, lng: Language): string {
 	return member.islandStatus.isOnPveIsland || member.islandStatus.isOnBoat || member.islandStatus.isPveIslandAlly || member.islandStatus.cannotBeJoinedOnBoat
 		? i18n.t("commands:guild.separator", { lng })
 		+ (member.islandStatus.isOnPveIsland
-			? DraftBotIcons.guild.isOnPveIsland
+			? CrowniclesIcons.guild.isOnPveIsland
 			: "")
 		+ (member.islandStatus.isOnBoat
-			? DraftBotIcons.guild.isOnBoat
+			? CrowniclesIcons.guild.isOnBoat
 			: "")
 		+ (member.islandStatus.isPveIslandAlly
-			? DraftBotIcons.guild.countAsAnAlly
+			? CrowniclesIcons.guild.countAsAnAlly
 			: "")
 		+ (member.islandStatus.cannotBeJoinedOnBoat
-			? DraftBotIcons.guild.cannotBeJoinedOnBoat
+			? CrowniclesIcons.guild.cannotBeJoinedOnBoat
 			: "")
 		: "";
 }
@@ -87,7 +87,7 @@ export async function handleCommandGuildPacketRes(packet: CommandGuildPacketRes,
 	if (!packet.foundGuild) {
 		await interaction.reply({
 			embeds: [
-				new DraftBotErrorEmbed(
+				new CrowniclesErrorEmbed(
 					interaction.user,
 					context,
 					interaction,
@@ -108,7 +108,7 @@ export async function handleCommandGuildPacketRes(packet: CommandGuildPacketRes,
 			islandStatusIcon: getIslandStatusIcon(member, lng)
 		});
 	}
-	const guildCommandEmbed = new DraftBotEmbed()
+	const guildCommandEmbed = new CrowniclesEmbed()
 		.setThumbnail(GuildConstants.ICON)
 		.setTitle(i18n.t("commands:guild.embedTitle", {
 			lng,

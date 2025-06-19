@@ -1,16 +1,16 @@
 import {
-	DraftBotPacket, PacketDirection, sendablePacket
-} from "../DraftBotPacket";
+	CrowniclesPacket, PacketDirection, sendablePacket
+} from "../CrowniclesPacket";
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
-export class CommandRespawnPacketReq extends DraftBotPacket {
+export class CommandRespawnPacketReq extends CrowniclesPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandRespawnPacketRes extends DraftBotPacket {
+export class CommandRespawnPacketRes extends CrowniclesPacket {
 	lostScore!: number;
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandRespawnErrorAlreadyAlive extends DraftBotPacket {
+export class CommandRespawnErrorAlreadyAlive extends CrowniclesPacket {
 }

@@ -4,7 +4,7 @@ import {
 	CommandPetFreePacketRes,
 	CommandPetFreeRefusePacketRes
 } from "../../../../../../Lib/src/packets/commands/CommandPetFreePacket";
-import { PacketContext } from "../../../../../../Lib/src/packets/DraftBotPacket";
+import { PacketContext } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	handleCommandPetFreeAcceptPacketRes,
 	handleCommandPetFreePacketRes,

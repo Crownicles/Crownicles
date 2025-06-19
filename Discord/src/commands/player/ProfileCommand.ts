@@ -1,8 +1,8 @@
 import { ICommand } from "../ICommand";
 import {
 	makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
-import { DraftbotInteraction } from "../../messages/DraftbotInteraction";
+} from "../../../../Lib/src/packets/CrowniclesPacket";
+import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
 import i18n, { TranslationOption } from "../../translations/i18n";
 import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
 import {
@@ -10,7 +10,7 @@ import {
 	CommandProfilePacketRes
 } from "../../../../Lib/src/packets/commands/CommandProfilePacket";
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { DraftBotEmbed } from "../../messages/DraftBotEmbed";
+import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import {
 	ColorResolvable, EmbedField, Message, MessageReaction
 } from "discord.js";
@@ -21,7 +21,7 @@ import { Language } from "../../../../Lib/src/Language";
 import { KeycloakUser } from "../../../../Lib/src/keycloak/KeycloakUser";
 import { PacketUtils } from "../../utils/PacketUtils";
 import { EmoteUtils } from "../../utils/EmoteUtils";
-import { DraftBotIcons } from "../../../../Lib/src/DraftBotIcons";
+import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 import {
 	millisecondsToMinutes, minutesDisplay
 } from "../../../../Lib/src/utils/TimeUtils";
@@ -31,7 +31,7 @@ import { Badge } from "../../../../Lib/src/types/Badge";
 /**
  * Display the profile of a player
  */
-async function getPacket(interaction: DraftbotInteraction, keycloakUser: KeycloakUser): Promise<CommandProfilePacketReq | null> {
+async function getPacket(interaction: CrowniclesInteraction, keycloakUser: KeycloakUser): Promise<CommandProfilePacketReq | null> {
 	const askedPlayer = await PacketUtils.prepareAskedPlayer(interaction, keycloakUser);
 	if (!askedPlayer) {
 		return null;
@@ -45,18 +45,18 @@ async function getPacket(interaction: DraftbotInteraction, keycloakUser: Keycloa
  * @param badges
  * @param interaction
  */
-async function sendMessageAllBadgesTooMuchBadges(gameUsername: string, badges: Badge[], interaction: DraftbotInteraction): Promise<void> {
+async function sendMessageAllBadgesTooMuchBadges(gameUsername: string, badges: Badge[], interaction: CrowniclesInteraction): Promise<void> {
 	const lng = interaction.userLanguage;
 	let content = "";
 	for (const badgeId of badges) {
-		const badgeEmote = DraftBotIcons.badges[badgeId];
+		const badgeEmote = CrowniclesIcons.badges[badgeId];
 		if (badgeEmote) {
 			content += `${badgeEmote} \`${i18n.t(`commands:profile.badges.${badgeId}`, { lng: interaction.userLanguage })}\`\n`;
 		}
 	}
 	await interaction.followUp({
 		embeds: [
-			new DraftBotEmbed()
+			new CrowniclesEmbed()
 				.setTitle(i18n.t("commands:profile.badgeDisplay.title", {
 					lng,
 					pseudo: gameUsername
@@ -76,11 +76,11 @@ async function sendMessageAllBadgesTooMuchBadges(gameUsername: string, badges: B
  */
 async function displayBadges(badges: Badge[], msg: Message): Promise<void> {
 	if (badges.length >= Constants.PROFILE.MAX_EMOTE_DISPLAY_NUMBER) {
-		await msg.react(DraftBotIcons.profile.displayAllBadgeEmote);
+		await msg.react(CrowniclesIcons.profile.displayAllBadgeEmote);
 		return;
 	}
 	for (const badgeId of badges) {
-		const badgeEmote = DraftBotIcons.badges[badgeId];
+		const badgeEmote = CrowniclesIcons.badges[badgeId];
 		if (badgeEmote) {
 			await msg.react(badgeEmote);
 		}
@@ -160,7 +160,7 @@ function generateFields(packet: CommandProfilePacketRes, lng: Language): EmbedFi
 
 	addField(fields, "fightRanking", Boolean(packet.playerData.fightRanking), {
 		lng,
-		leagueEmoji: packet.playerData.fightRanking ? DraftBotIcons.leagues[packet.playerData.fightRanking.league] : "",
+		leagueEmoji: packet.playerData.fightRanking ? CrowniclesIcons.leagues[packet.playerData.fightRanking.league] : "",
 		leagueId: packet.playerData.fightRanking ? packet.playerData.fightRanking.league : 0,
 		gloryPoints: packet.playerData.fightRanking ? packet.playerData.fightRanking.glory : 0
 	});
@@ -178,7 +178,7 @@ function generateFields(packet: CommandProfilePacketRes, lng: Language): EmbedFi
 
 	addField(fields, "pet", Boolean(packet.playerData.pet), {
 		lng,
-		rarity: EmoteUtils.translateEmojiToDiscord(DraftBotIcons.unitValues.petRarity)
+		rarity: EmoteUtils.translateEmojiToDiscord(CrowniclesIcons.unitValues.petRarity)
 			.repeat(packet.playerData.pet?.rarity ?? 0),
 		emote: packet.playerData.pet ? DisplayUtils.getPetIcon(packet.playerData.pet?.typeId, packet.playerData.pet?.sex) : "",
 		name: packet.playerData.pet ? packet.playerData.pet?.nickname ?? DisplayUtils.getPetTypeName(lng, packet.playerData.pet?.typeId, packet.playerData.pet?.sex) : ""
@@ -203,7 +203,7 @@ export async function handleCommandProfilePacketRes(packet: CommandProfilePacket
 	const pseudo = await DisplayUtils.getEscapedUsername(packet.keycloakId, lng);
 	const reply = await interaction.reply({
 		embeds: [
-			new DraftBotEmbed()
+			new CrowniclesEmbed()
 				.setColor(<ColorResolvable>packet.playerData!.color)
 				.setTitle(i18n.t("commands:profile.title", {
 					lng,
@@ -226,12 +226,12 @@ export async function handleCommandProfilePacketRes(packet: CommandProfilePacket
 		max: ProfileConstants.BADGE_MAXIMUM_REACTION
 	});
 	collector.on("collect", async reaction => {
-		if (reaction.emoji.name === DraftBotIcons.profile.displayAllBadgeEmote) {
+		if (reaction.emoji.name === CrowniclesIcons.profile.displayAllBadgeEmote) {
 			collector.stop(); // Only one is allowed to avoid spam
 			await sendMessageAllBadgesTooMuchBadges(pseudo, packet.playerData!.badges!, interaction);
 		}
 		else {
-			const badge = Object.entries(DraftBotIcons.badges).find(badgeEntry => badgeEntry[1] === reaction.emoji.name);
+			const badge = Object.entries(CrowniclesIcons.badges).find(badgeEntry => badgeEntry[1] === reaction.emoji.name);
 			if (badge) {
 				interaction.channel.send({ content: `\`${EmoteUtils.translateEmojiToDiscord(reaction.emoji.name!)} ${i18n.t(`commands:profile.badges.${badge[0]}`, { lng })}\`` })
 					.then((msg: Message | null) => {

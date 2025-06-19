@@ -1,20 +1,20 @@
 import { ICommand } from "../ICommand";
 import {
 	makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
-import { DraftbotInteraction } from "../../messages/DraftbotInteraction";
+import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
 import {
 	CommandDailyBonusPacketReq,
 	CommandDailyBonusPacketRes
 } from "../../../../Lib/src/packets/commands/CommandDailyBonusPacket";
 import { DiscordCache } from "../../bot/DiscordCache";
-import { DraftBotErrorEmbed } from "../../messages/DraftBotErrorEmbed";
+import { CrowniclesErrorEmbed } from "../../messages/CrowniclesErrorEmbed";
 import i18n from "../../translations/i18n";
 import {
 	hoursToMilliseconds, minutesDisplay, printTimeBeforeDate
 } from "../../../../Lib/src/utils/TimeUtils";
-import { DraftBotEmbed } from "../../messages/DraftBotEmbed";
+import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import {
 	ItemConstants, ItemNature
 } from "../../../../Lib/src/constants/ItemConstants";
@@ -24,7 +24,7 @@ import { escapeUsername } from "../../utils/StringUtils";
  * Get the daily bonus packet to send to the server
  * @param interaction
  */
-async function getPacket(interaction: DraftbotInteraction): Promise<CommandDailyBonusPacketReq> {
+async function getPacket(interaction: CrowniclesInteraction): Promise<CommandDailyBonusPacketReq> {
 	await interaction.deferReply();
 	return makePacket(CommandDailyBonusPacketReq, {});
 }
@@ -39,7 +39,7 @@ export async function handleDailyBonusCooldownError(context: PacketContext, last
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction);
 	await interaction?.editReply({
 		embeds: [
-			new DraftBotErrorEmbed(
+			new CrowniclesErrorEmbed(
 				interaction.user,
 				context,
 				interaction,
@@ -66,7 +66,7 @@ export async function handleDailyBonusRes(context: PacketContext, packet: Comman
 	const lng = interaction.userLanguage;
 	await interaction.editReply({
 		embeds: [
-			new DraftBotEmbed()
+			new CrowniclesEmbed()
 				.formatAuthor(i18n.t("commands:daily.title", {
 					pseudo: escapeUsername(interaction.user.displayName),
 					lng

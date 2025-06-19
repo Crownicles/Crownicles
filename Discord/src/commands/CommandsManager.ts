@@ -24,28 +24,28 @@ import {
 	RESTPostAPIChatInputApplicationCommandsJSONBody, Routes
 } from "discord-api-types/v10";
 import {
-	discordConfig, draftBotClient, keycloakConfig
-} from "../bot/DraftBotShard";
+	crowniclesClient, discordConfig, keycloakConfig
+} from "../bot/CrowniclesShard";
 import { KeycloakUser } from "../../../Lib/src/keycloak/KeycloakUser";
 import { readdirSync } from "fs";
 import i18n from "../translations/i18n";
 import { replyEphemeralErrorMessage } from "../utils/ErrorUtils";
 import { Constants } from "../../../Lib/src/constants/Constants";
-import { DraftBotEmbed } from "../messages/DraftBotEmbed";
+import { CrowniclesEmbed } from "../messages/CrowniclesEmbed";
 import { escapeUsername } from "../../../Lib/src/utils/StringUtils";
 import { KeycloakUtils } from "../../../Lib/src/keycloak/KeycloakUtils";
 import {
-	DraftbotChannel, DraftbotInteraction
-} from "../messages/DraftbotInteraction";
+	CrowniclesChannel, CrowniclesInteraction
+} from "../messages/CrowniclesInteraction";
 import { DiscordCache } from "../bot/DiscordCache";
 import { BotUtils } from "../utils/BotUtils";
 import {
 	Language, LANGUAGE
 } from "../../../Lib/src/Language";
 import { PacketUtils } from "../utils/PacketUtils";
-import { DraftBotIcons } from "../../../Lib/src/DraftBotIcons";
+import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 import { DiscordConstants } from "../DiscordConstants";
-import { DraftBotLogger } from "../../../Lib/src/logs/DraftBotLogger";
+import { CrowniclesLogger } from "../../../Lib/src/logs/CrowniclesLogger";
 
 export class CommandsManager {
 	static commands = new Map<string, ICommand>();
@@ -75,21 +75,21 @@ export class CommandsManager {
 	static async registerCommands(clientId: Snowflake, commands: RESTPostAPIChatInputApplicationCommandsJSONBody[], regFunc: (clientId: Snowflake, serverId: Snowflake) => RouteLike): Promise<void> {
 		const rest = new REST({ version: "10" }).setToken(discordConfig.DISCORD_CLIENT_TOKEN);
 		try {
-			DraftBotLogger.info(`Started refreshing ${commands.length} application (/) commands.`);
+			CrowniclesLogger.info(`Started refreshing ${commands.length} application (/) commands.`);
 			const data = await rest.put(
 				regFunc(clientId, discordConfig.MAIN_SERVER_ID),
 				{ body: commands }
 			);
 			if (Array.isArray(data)) {
-				DraftBotLogger.info(`Successfully reloaded ${data.length} application (/) commands.`);
+				CrowniclesLogger.info(`Successfully reloaded ${data.length} application (/) commands.`);
 			}
 			else {
-				DraftBotLogger.error("Failed to reload commands", { data });
+				CrowniclesLogger.error("Failed to reload commands", { data });
 			}
 		}
 		catch (error) {
 			// And of course, make sure you catch and log any errors!
-			DraftBotLogger.errorWithObj("Failed to reload commands", error);
+			CrowniclesLogger.errorWithObj("Failed to reload commands", error);
 		}
 	}
 
@@ -108,7 +108,7 @@ export class CommandsManager {
 			await this.refreshCommands(client);
 		}
 		catch (e) {
-			DraftBotLogger.errorWithObj("Failed to register commands", e);
+			CrowniclesLogger.errorWithObj("Failed to register commands", e);
 
 			// Do not start the bot if we can't register the commands
 			process.exit(1);
@@ -153,7 +153,7 @@ export class CommandsManager {
 	 * @param client
 	 */
 	private static async refreshCommands(client: Client): Promise<void> {
-		DraftBotLogger.info("Fetching and saving commands...");
+		CrowniclesLogger.info("Fetching and saving commands...");
 		const commands = (await client.application!.commands.fetch({ withLocalizations: true }))
 			.concat(await (await client.guilds.fetch(discordConfig.MAIN_SERVER_ID)).commands.fetch({ withLocalizations: true }));
 
@@ -200,17 +200,17 @@ export class CommandsManager {
 		for (const commandFile of commandsFiles) {
 			const commandInfo = (await import(`./${category}/${commandFile}`)).commandInfo as ICommand;
 			if (!commandInfo?.slashCommandBuilder) {
-				DraftBotLogger.error(`Command dist/Discord/src/commands/${category}/${commandFile} is not a slash command`);
+				CrowniclesLogger.error(`Command dist/Discord/src/commands/${category}/${commandFile} is not a slash command`);
 				continue;
 			}
 			this.commands.set(commandInfo.slashCommandBuilder.name, commandInfo);
 			if (commandInfo.mainGuildCommand || discordConfig.TEST_MODE) {
 				guildsCommandsToRegister.push(commandInfo.slashCommandBuilder.toJSON());
-				DraftBotLogger.info(`Registering guild command ${category}/${commandFile}`);
+				CrowniclesLogger.info(`Registering guild command ${category}/${commandFile}`);
 			}
 			else {
 				globalCommandsToRegister.push(commandInfo.slashCommandBuilder.toJSON());
-				DraftBotLogger.info(`Registering global command ${category}/${commandFile}`);
+				CrowniclesLogger.info(`Registering global command ${category}/${commandFile}`);
 			}
 		}
 	}
@@ -248,7 +248,7 @@ export class CommandsManager {
 	 * @param client
 	 */
 	private static shouldSendHelpMessage(message: Message, client: Client): boolean {
-		return message.mentions.has(client.user!.id) && this.hasChannelPermission(message.channel as unknown as DraftbotChannel)[0];
+		return message.mentions.has(client.user!.id) && this.hasChannelPermission(message.channel as unknown as CrowniclesChannel)[0];
 	}
 
 	/**
@@ -264,7 +264,7 @@ export class CommandsManager {
 	 * @param message
 	 */
 	private static isAMessageFromBotOrEmpty(message: Message): boolean {
-		return message.author.bot || message.author.id === draftBotClient!.user!.id || !message.content && message.channel.type !== ChannelType.DM;
+		return message.author.bot || message.author.id === crowniclesClient!.user!.id || !message.content && message.channel.type !== ChannelType.DM;
 	}
 
 	/**
@@ -273,10 +273,10 @@ export class CommandsManager {
 	 */
 	private static manageInteractionCreate(client: Client): void {
 		client.on("interactionCreate", async discordInteraction => {
-			if (!discordInteraction.isCommand() || discordInteraction.user.bot || discordInteraction.user.id === draftBotClient!.user!.id) {
+			if (!discordInteraction.isCommand() || discordInteraction.user.bot || discordInteraction.user.id === crowniclesClient!.user!.id) {
 				return;
 			}
-			const interaction: DraftbotInteraction = DraftbotInteraction.cast(discordInteraction);
+			const interaction: CrowniclesInteraction = CrowniclesInteraction.cast(discordInteraction);
 			const getUser = await KeycloakUtils.getOrRegisterDiscordUser(
 				keycloakConfig,
 				discordInteraction.user.id,
@@ -291,7 +291,7 @@ export class CommandsManager {
 					i18n.t("error:errorOccurred", { lng: (LANGUAGE.LANGUAGES as string[]).includes(errorLng) ? errorLng as Language : LANGUAGE.DEFAULT_LANGUAGE })
 				)
 					.finally(() => null);
-				DraftBotLogger.error("Error while getting user", { apiResult: getUser });
+				CrowniclesLogger.error("Error while getting user", { apiResult: getUser });
 				return;
 			}
 			const lng = KeycloakUtils.getUserLanguage(getUser.payload.user);
@@ -320,7 +320,7 @@ export class CommandsManager {
 	 * @param message
 	 */
 	private static async sendBackDMMessageToSupportChannel(message: Message): Promise<void> {
-		await draftBotClient!.users.fetch(discordConfig.DM_MANAGER_ID)
+		await crowniclesClient!.users.fetch(discordConfig.DM_MANAGER_ID)
 			.then(async user => {
 				const attachmentList: (Attachment | AttachmentBuilder)[] = Array.from(message.attachments.values());
 				if (message.content.length > Constants.DM.MAX_MESSAGE_LENGTH_ALLOWED) {
@@ -346,7 +346,7 @@ export class CommandsManager {
 					});
 				}
 			})
-			.catch(e => DraftBotLogger.warn("Could not find a place to forward the DM message", e));
+			.catch(e => CrowniclesLogger.warn("Could not find a place to forward the DM message", e));
 	}
 
 	/**
@@ -365,7 +365,7 @@ export class CommandsManager {
 		for (const lng of [LANGUAGE.FRENCH, LANGUAGE.ENGLISH]) {
 			desc += `${i18n.t(descTrKey, {
 				lng,
-				langFlag: DraftBotIcons.languages[lng]
+				langFlag: CrowniclesIcons.languages[lng]
 			})}\n`;
 		}
 
@@ -376,13 +376,13 @@ export class CommandsManager {
 
 			row[row.length - 1].addComponents(
 				new ButtonBuilder()
-					.setEmoji(DraftBotIcons.languages[lng])
+					.setEmoji(CrowniclesIcons.languages[lng])
 					.setCustomId(lng)
 					.setStyle(ButtonStyle.Secondary)
 			);
 		}
 
-		const supportMessage = new DraftBotEmbed()
+		const supportMessage = new CrowniclesEmbed()
 			.formatAuthor(title, author)
 			.setDescription(desc);
 
@@ -403,7 +403,7 @@ export class CommandsManager {
 			const lng = buttonInteraction.customId as Language;
 			await sendMessage({
 				embeds: [
-					new DraftBotEmbed()
+					new CrowniclesEmbed()
 						.formatAuthor(i18n.t("bot:dmHelpMessageTitle", {
 							lng
 						}), author)
@@ -437,14 +437,14 @@ export class CommandsManager {
 	 * @param interaction the interaction to reply to
 	 * @param user
 	 */
-	private static async handleCommand(interaction: DraftbotInteraction, user: KeycloakUser): Promise<void> {
+	private static async handleCommand(interaction: CrowniclesInteraction, user: KeycloakUser): Promise<void> {
 		const lng = interaction.userLanguage;
 
 		const commandInfo = this.commands.get(interaction.commandName);
 
 		if (!commandInfo) {
 			await replyEphemeralErrorMessage(null, interaction, i18n.t("bot:command404", { lng }));
-			DraftBotLogger.error(`Command "${interaction.commandName}" is not registered`);
+			CrowniclesLogger.error(`Command "${interaction.commandName}" is not registered`);
 			return;
 		}
 
@@ -466,47 +466,47 @@ export class CommandsManager {
 	 * Check if the bot has every needed permission in the channel where the command is launched
 	 * @param channel
 	 */
-	private static hasChannelPermission(channel: DraftbotChannel): [boolean, string] {
-		if (!channel.permissionsFor(draftBotClient!.user!)
+	private static hasChannelPermission(channel: CrowniclesChannel): [boolean, string] {
+		if (!channel.permissionsFor(crowniclesClient!.user!)
 			?.has(PermissionsBitField.Flags.ViewChannel)) {
-			DraftBotLogger.error(`No way to access the channel where the command has been executed : ${channel.guildId}/${channel.id}`);
+			CrowniclesLogger.error(`No way to access the channel where the command has been executed : ${channel.guildId}/${channel.id}`);
 			return [false, "noChannelAccess"];
 		}
 
-		if (!channel.permissionsFor(draftBotClient!.user!)
+		if (!channel.permissionsFor(crowniclesClient!.user!)
 			?.has(PermissionsBitField.Flags.SendMessages)) {
-			DraftBotLogger.error(`No way to send messages in the channel where the command has been executed : ${channel.guildId}/${channel.id}`);
+			CrowniclesLogger.error(`No way to send messages in the channel where the command has been executed : ${channel.guildId}/${channel.id}`);
 			return [false, "noSpeakPermission"];
 		}
 
-		if (!channel.permissionsFor(draftBotClient!.user!)
+		if (!channel.permissionsFor(crowniclesClient!.user!)
 			?.has(PermissionsBitField.Flags.SendMessagesInThreads) && channel.isThread()) {
 			const thread = channel as AnyThreadChannel;
-			DraftBotLogger.error(`No way to send messages in the thread where the command has been executed : ${thread.guildId}/${thread.id}`);
+			CrowniclesLogger.error(`No way to send messages in the thread where the command has been executed : ${thread.guildId}/${thread.id}`);
 			return [false, "noSpeakInThreadPermission"];
 		}
 
-		if (!channel.permissionsFor(draftBotClient!.user!)
+		if (!channel.permissionsFor(crowniclesClient!.user!)
 			?.has(PermissionsBitField.Flags.AddReactions)) {
-			DraftBotLogger.error(`No perms to show i can't react in server / channel : ${channel.guildId}/${channel.id}`);
+			CrowniclesLogger.error(`No perms to show i can't react in server / channel : ${channel.guildId}/${channel.id}`);
 			return [false, "noReacPermission"];
 		}
 
-		if (!channel.permissionsFor(draftBotClient!.user!)
+		if (!channel.permissionsFor(crowniclesClient!.user!)
 			?.has(PermissionsBitField.Flags.EmbedLinks)) {
-			DraftBotLogger.error(`No perms to show i can't embed in server / channel : ${channel.guildId}/${channel.id}`);
+			CrowniclesLogger.error(`No perms to show i can't embed in server / channel : ${channel.guildId}/${channel.id}`);
 			return [false, "noEmbedPermission"];
 		}
 
-		if (!channel.permissionsFor(draftBotClient!.user!)
+		if (!channel.permissionsFor(crowniclesClient!.user!)
 			?.has(PermissionsBitField.Flags.AttachFiles)) {
-			DraftBotLogger.error(`No perms to show i can't attach files in server / channel : ${channel.guildId}/${channel.id}`);
+			CrowniclesLogger.error(`No perms to show i can't attach files in server / channel : ${channel.guildId}/${channel.id}`);
 			return [false, "noFilePermission"];
 		}
 
-		if (!channel.permissionsFor(draftBotClient!.user!)
+		if (!channel.permissionsFor(crowniclesClient!.user!)
 			?.has(PermissionsBitField.Flags.ReadMessageHistory)) {
-			DraftBotLogger.error(`No perms to show i can't see messages history in server / channel : ${channel.guildId}/${channel.id}`);
+			CrowniclesLogger.error(`No perms to show i can't see messages history in server / channel : ${channel.guildId}/${channel.id}`);
 			return [false, "noHistoryPermission"];
 		}
 

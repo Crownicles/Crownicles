@@ -1,10 +1,10 @@
 import {
-	DraftBotPacket, PacketDirection, sendablePacket
-} from "../DraftBotPacket";
+	CrowniclesPacket, PacketDirection, sendablePacket
+} from "../CrowniclesPacket";
 import { SexTypeShort } from "../../constants/StringConstants";
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class PlayerReceivePetPacket extends DraftBotPacket {
+export class PlayerReceivePetPacket extends CrowniclesPacket {
 	noRoomInGuild!: boolean;
 
 	giveInGuild!: boolean;

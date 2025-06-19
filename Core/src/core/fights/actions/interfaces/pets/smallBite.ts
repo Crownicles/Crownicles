@@ -45,7 +45,7 @@ const use: PetAssistanceFunc = (fighter, opponent, turn, _fightController): Prom
 		assistanceStatus: PetAssistanceState.SUCCESS
 	};
 
-	if (RandomUtils.draftbotRandom.bool(0.4) && !opponent.hasFightAlteration()) {
+	if (RandomUtils.crowniclesRandom.bool(0.4) && !opponent.hasFightAlteration()) {
 		FightActionController.applyAlteration(result, {
 			selfTarget: false,
 			alteration: FightAlterations.POISONED

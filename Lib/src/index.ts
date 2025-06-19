@@ -92,12 +92,12 @@ function walkDirectory(dir: string, callback: (fullPath: string) => void): void 
 		});
 }
 
-function isDraftBotPacket(packetName: string): boolean {
+function isCrowniclesPacket(packetName: string): boolean {
 	if (parentTypes.has(packetName)) {
-		return isDraftBotPacket(parentTypes.get(packetName)!);
+		return isCrowniclesPacket(parentTypes.get(packetName)!);
 	}
 
-	return packetName === "DraftBotPacket";
+	return packetName === "CrowniclesPacket";
 }
 
 // Try only if we are in a dev environment
@@ -108,7 +108,7 @@ if (existsSync(folderPath)) {
 	console.log("Verifying packets decorators...");
 
 	for (const packet of parentTypes.keys()) {
-		if (isDraftBotPacket(packet) && !typeHasDecorator.get(packet)) {
+		if (isCrowniclesPacket(packet) && !typeHasDecorator.get(packet)) {
 			console.error(`Packet decorator missing on packet: ${packet}`);
 			error = true;
 		}

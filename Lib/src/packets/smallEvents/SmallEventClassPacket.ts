@@ -1,6 +1,6 @@
 import {
 	PacketDirection, sendablePacket
-} from "../DraftBotPacket";
+} from "../CrowniclesPacket";
 import { SmallEventPacket } from "./SmallEventPacket";
 import { ClassKind } from "../../types/ClassKind";
 

@@ -16,7 +16,7 @@ const use: FightActionFunc = (sender, receiver) => {
 		damages: damageDealt.damages
 	};
 
-	const alterationToApply = RandomUtils.draftbotRandom.bool() ? FightAlterations.FROZEN : FightAlterations.CONFUSED;
+	const alterationToApply = RandomUtils.crowniclesRandom.bool() ? FightAlterations.FROZEN : FightAlterations.CONFUSED;
 	FightActionController.applyAlteration(result, {
 		selfTarget: false,
 		alteration: alterationToApply

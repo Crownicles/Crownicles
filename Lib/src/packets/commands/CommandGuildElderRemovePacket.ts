@@ -1,23 +1,23 @@
 import {
-	DraftBotPacket, PacketDirection, sendablePacket
-} from "../DraftBotPacket";
+	CrowniclesPacket, PacketDirection, sendablePacket
+} from "../CrowniclesPacket";
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandGuildElderRemoveAcceptPacketRes extends DraftBotPacket {
+export class CommandGuildElderRemoveAcceptPacketRes extends CrowniclesPacket {
 	demotedKeycloakId!: string;
 
 	guildName!: string;
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandGuildElderRemoveRefusePacketRes extends DraftBotPacket {
+export class CommandGuildElderRemoveRefusePacketRes extends CrowniclesPacket {
 	demotedKeycloakId!: string;
 }
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
-export class CommandGuildElderRemovePacketReq extends DraftBotPacket {
+export class CommandGuildElderRemovePacketReq extends CrowniclesPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandGuildElderRemoveNoElderPacket extends DraftBotPacket {
+export class CommandGuildElderRemoveNoElderPacket extends CrowniclesPacket {
 }

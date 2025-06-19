@@ -19,7 +19,7 @@ const use: FightAlterationFunc = (affected, fightAlteration, opponent) => {
 	}
 
 	// 50% chance to be healed from the frozen (except for the first two turns)
-	if (RandomUtils.draftbotRandom.bool() && affected.alterationTurn > 2) {
+	if (RandomUtils.crowniclesRandom.bool() && affected.alterationTurn > 2) {
 		affected.removeSpeedModifiers(fightAlteration);
 		return defaultHealFightAlterationResult(affected);
 	}

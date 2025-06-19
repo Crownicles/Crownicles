@@ -1,19 +1,21 @@
-import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
 import { ICommand } from "../ICommand";
+import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
+import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
 import {
 	NotificationsConfiguration,
 	NotificationsConfigurations
 } from "../../database/discord/models/NotificationsConfiguration";
-import { DraftbotInteraction } from "../../messages/DraftbotInteraction";
 import {
 	ActionRowBuilder,
 	ButtonBuilder,
 	ButtonInteraction, ButtonStyle, parseEmoji, StringSelectMenuBuilder,
 	StringSelectMenuInteraction, StringSelectMenuOptionBuilder, User
 } from "discord.js";
+import { Constants } from "../../../../Lib/src/constants/Constants";
+import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 import { Language } from "../../../../Lib/src/Language";
-import { DraftBotIcons } from "../../../../Lib/src/DraftBotIcons";
 import i18n from "../../translations/i18n";
+import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import { NotificationsTypes } from "../../notifications/NotificationType";
 import {
 	NotificationSendType,
@@ -21,7 +23,6 @@ import {
 } from "../../notifications/NotificationSendType";
 import { DraftBotEmbed } from "../../messages/DraftBotEmbed";
 import { sendInteractionNotForYou } from "../../utils/ErrorUtils";
-import { Constants } from "../../../../Lib/src/constants/Constants";
 import {
 	NotificationsConstantsClass
 } from "../../../../Lib/src/constants/NotificationsConstants";
@@ -43,6 +44,7 @@ function clearCurrentCollector(userId: string): void {
 	}
 }
 
+const backButtonCustomId = "back";
 const forceStopReason = "force";
 
 async function getPacket(interaction: DraftbotInteraction): Promise<null> {
@@ -84,14 +86,14 @@ function getNotificationsEmbed(notificationsConfiguration: NotificationsConfigur
 	return embed;
 }
 
-async function mainPage(interaction: DraftbotInteraction | StringSelectMenuInteraction, notificationsConfiguration: NotificationsConfiguration, lng: Language): Promise<void> {
+async function mainPage(interaction: CrowniclesInteraction | StringSelectMenuInteraction, notificationsConfiguration: NotificationsConfiguration, lng: Language): Promise<void> {
 	clearCurrentCollector(interaction.user.id);
 
 	// Build the rows and buttons
 	const chooseEnabledCustomId = "chooseEnabled";
 	const chooseSendTypeCustomId = "chooseSendType";
-	const chooseEnabledEmoji = DraftBotIcons.notifications.bell;
-	const chooseSendTypeEmoji = DraftBotIcons.notifications.sendLocation;
+	const chooseEnabledEmoji = CrowniclesIcons.notifications.bell;
+	const chooseSendTypeEmoji = CrowniclesIcons.notifications.sendLocation;
 
 	const row = new ActionRowBuilder<ButtonBuilder>();
 	row.addComponents(new ButtonBuilder()
@@ -310,3 +312,33 @@ async function chooseSendType(buttonInteraction: ButtonInteraction, notification
 		}
 	});
 }
+
+function getNotificationsEmbed(notificationsConfiguration: NotificationsConfiguration, user: User, lng: Language, footer?: string): DraftBotEmbed {
+	let description = "";
+	NotificationsTypes.ALL.forEach(notificationType => {
+		const notificationTypeValue = notificationType.value(notificationsConfiguration);
+		const sendLocation = NotificationSendType.toString(notificationTypeValue.sendType, lng, notificationTypeValue.channelId);
+		description
+			+= `${notificationType.emote} **__${i18n.t(notificationType.i18nKey, { lng })}__**
+- **${i18n.t("commands:notifications.enabledField", { lng })}** ${notificationTypeValue.enabled ? DraftBotIcons.collectors.accept : DraftBotIcons.collectors.refuse}`;
+		if (notificationTypeValue.enabled) {
+			description += `\n- **${i18n.t("commands:notifications.sendLocationField", { lng })}** ${sendLocation}`;
+		}
+		description += "\n\n";
+	});
+
+	const embed = new DraftBotEmbed()
+		.formatAuthor(i18n.t("commands:notifications.embedTitle", { lng }), user)
+		.setDescription(description);
+	if (footer) {
+		embed.setFooter({ text: footer });
+	}
+
+	return embed;
+}
+
+export const commandInfo: ICommand = {
+	slashCommandBuilder: SlashCommandBuilderGenerator.generateBaseCommand("notifications"),
+	getPacket,
+	mainGuildCommand: false
+};

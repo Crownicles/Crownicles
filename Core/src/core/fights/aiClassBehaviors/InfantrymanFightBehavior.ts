@@ -35,7 +35,7 @@ class InfantryManFightBehavior implements ClassBehavior {
 		return (fightView.fightController.turn > 11 || powerfulAttacksUsed > 2)
 			&& me.getEnergy() > me.getMaxEnergy() * 0.21
 			&& (opponent.player.class !== ClassConstants.CLASSES_ID.MYSTIC_MAGE || me.hasFightAlteration())
-			&& (RandomUtils.draftbotRandom.bool() || opponent.getDefense() < me.getDefense());
+			&& (RandomUtils.crowniclesRandom.bool() || opponent.getDefense() < me.getDefense());
 	}
 
 	/**
@@ -70,7 +70,7 @@ class InfantryManFightBehavior implements ClassBehavior {
 		// Priority is to use powerful attacks
 		if (
 			powerfulAttacksUsed <= 2
-			&& RandomUtils.draftbotRandom.bool(0.9) // Add a bit of randomness here to avoid being too predictable
+			&& RandomUtils.crowniclesRandom.bool(0.9) // Add a bit of randomness here to avoid being too predictable
 			&& me.getBreath() >= FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.POWERFUL_ATTACK)
 		) {
 			this.powerfulAttacksUsedMap++;

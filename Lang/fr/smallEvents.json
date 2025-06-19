@@ -153,7 +153,7 @@
       "Vous passez près de {{playerDisplay}} sur votre route, le meilleur joueur actuellement !",
       "Alors que vous marchez, vous rencontrez {{playerDisplay}}. Il est actuellement à la tête du classement. Les yeux emplis d'admiration, vous décidez de ne pas gêner sa progression, et vous continuez votre route.",
       "Oh mon dieu ! C'est incroyable ! C'est le légendaire {{playerDisplay}}, le plus grand combattant actuellement ! Vous passez à côté de celui-ci et discutez un moment. Il vous donne quelques conseils pour votre aventure !",
-      "Faites place à {{playerDisplay}}, le premier mondial de DraftBot ! Vous croisez effectivement cette personne et continuez à marcher pour atteindre votre destination."
+      "Faites place à {{playerDisplay}}, le premier mondial de Crownicles ! Vous croisez effectivement cette personne et continuez à marcher pour atteindre votre destination."
     ],
     "top10": [
       "Sur votre chemin, vous rencontrez quelqu'un d'important. En effet, {{playerDisplay}} est dans le top 10 !",
@@ -168,7 +168,7 @@
     "top100": [
       "La persévérance mène à la réussite, c'est ce que vous dit {{playerDisplay}} qui fait partie du top 100 ! Vous continuez ensuite votre route vers votre destination.",
       "Woah, vous reconnaissez un des débutants des tournois, vous l'aviez déjà croisé dans un village au nord, mais si... C'est {{playerDisplay}} !",
-      "Alors que vous progressez vers votre but, vous faites la rencontre de {{playerDisplay}}, une étoile montante de DraftBot. En effet, il est dans le top 100 !"
+      "Alors que vous progressez vers votre but, vous faites la rencontre de {{playerDisplay}}, une étoile montante de Crownicles. En effet, il est dans le top 100 !"
     ],
     "powerful_guild": [
       "{{playerDisplay}}, que vous rencontrez par hasard sur votre chemin, fait partie d'une guilde puissante ! C'est ce que vous concluez en voyant son badge étincelant.",
@@ -196,9 +196,9 @@
       "Vous rencontrez {{playerDisplay}} de votre guilde ! Vous réalisez la poignée de main secrète de la guilde et repartez chacun sur vos chemins respectifs."
     ],
     "staff_member": [
-      "{{playerDisplay}}, qui fait partie du staff de DraftBot, vous donne un conseil pour la suite de votre aventure :\n\n{{advice}}\n\nVous reprenez ensuite votre chemin.",
+      "{{playerDisplay}}, qui fait partie du staff de Crownicles, vous donne un conseil pour la suite de votre aventure :\n\n{{advice}}\n\nVous reprenez ensuite votre chemin.",
       "\"{{advice}}\". C'est ce que vous a dit {{playerDisplay}}, un des célèbres membres du staff du bot, que vous croisez au detour d'un chemin !",
-      "Vous discutez avec {{playerDisplay}} qui fait partie de l'équipe DraftBot, et qui a de bons conseils pour la suite de votre aventure:\n\n{{advice}}"
+      "Vous discutez avec {{playerDisplay}} qui fait partie de l'équipe Crownicles, et qui a de bons conseils pour la suite de votre aventure:\n\n{{advice}}"
     ],
     "top_week": [
       "Vous voyez sur votre route {{playerDisplay}}, essoufflé. Il ne se repose pas : en effet, il est dans le top 5 de la semaine !",

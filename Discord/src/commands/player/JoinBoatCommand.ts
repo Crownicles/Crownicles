@@ -1,10 +1,10 @@
 import {
 	makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import { ReactionCollectorCreationPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { DiscordCache } from "../../bot/DiscordCache";
 import { ReactionCollectorJoinBoatData } from "../../../../Lib/src/packets/interaction/ReactionCollectorJoinBoat";
-import { DraftBotEmbed } from "../../messages/DraftBotEmbed";
+import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import i18n from "../../translations/i18n";
 import { DiscordCollectorUtils } from "../../utils/DiscordCollectorUtils";
 import { ReactionCollectorReturnTypeOrNull } from "../../packetHandlers/handlers/ReactionCollectorHandlers";
@@ -22,7 +22,7 @@ export async function createJoinBoatCollector(context: PacketContext, packet: Re
 	await interaction.deferReply();
 	const data = packet.data.data as ReactionCollectorJoinBoatData;
 	const lng = interaction.userLanguage;
-	const embed = new DraftBotEmbed().formatAuthor(i18n.t("commands:joinBoat.confirmationMessage.title.confirmation", {
+	const embed = new CrowniclesEmbed().formatAuthor(i18n.t("commands:joinBoat.confirmationMessage.title.confirmation", {
 		lng,
 		pseudo: escapeUsername(interaction.user.displayName)
 	}), interaction.user)
@@ -49,7 +49,7 @@ export async function handleCommandJoinBoatAcceptPacketRes(packet: CommandJoinBo
 		const lng = originalInteraction.userLanguage;
 		await buttonInteraction.editReply({
 			embeds: [
-				new DraftBotEmbed().formatAuthor(i18n.t("commands:joinBoat.confirmationMessage.title.confirmed", {
+				new CrowniclesEmbed().formatAuthor(i18n.t("commands:joinBoat.confirmationMessage.title.confirmed", {
 					lng,
 					pseudo: escapeUsername(originalInteraction.user.displayName)
 				}), originalInteraction.user)
@@ -78,7 +78,7 @@ export async function handleCommandJoinBoatRefusePacketRes(_packet: CommandJoinB
 	const lng = originalInteraction.userLanguage;
 	await buttonInteraction?.editReply({
 		embeds: [
-			new DraftBotEmbed().formatAuthor(i18n.t("commands:joinBoat.confirmationMessage.title.confirmed", {
+			new CrowniclesEmbed().formatAuthor(i18n.t("commands:joinBoat.confirmationMessage.title.confirmed", {
 				lng,
 				pseudo: escapeUsername(originalInteraction.user.displayName)
 			}), originalInteraction.user)

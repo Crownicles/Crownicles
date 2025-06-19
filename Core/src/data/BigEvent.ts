@@ -106,6 +106,6 @@ export class BigEventDataController extends DataControllerNumber<BigEvent> {
 		if (possibleEvents.length === 0) {
 			return null;
 		}
-		return RandomUtils.draftbotRandom.pick(possibleEvents);
+		return RandomUtils.crowniclesRandom.pick(possibleEvents);
 	}
 }

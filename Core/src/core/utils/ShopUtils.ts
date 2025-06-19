@@ -8,8 +8,8 @@ import {
 	ShopCategory
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorShop";
 import {
-	DraftBotPacket, makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, makePacket, PacketContext
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	EndCallback, ReactionCollectorInstance
 } from "./ReactionsCollector";
@@ -32,7 +32,7 @@ export type ShopInformations = {
 export class ShopUtils {
 	public static async createAndSendShopCollector(
 		context: PacketContext,
-		response: DraftBotPacket[],
+		response: CrowniclesPacket[],
 		{
 			shopCategories,
 			player,
@@ -84,7 +84,7 @@ export class ShopUtils {
 		player: T extends ShopCurrency.MONEY ? Player : PlayerMissionsInfo,
 		reactionInstance: ReactionCollectorShopItemReaction,
 		currency: T,
-		response: DraftBotPacket[]
+		response: CrowniclesPacket[]
 	): boolean {
 		const valueToCheck = player instanceof Player ? player.money : player.gems;
 		if (valueToCheck < reactionInstance.price) {
@@ -100,7 +100,7 @@ export class ShopUtils {
 	private static async manageCurrencySpending<T extends ShopCurrency>(
 		player: T extends ShopCurrency.MONEY ? Player : PlayerMissionsInfo,
 		reactionInstance: ReactionCollectorShopItemReaction,
-		response: DraftBotPacket[]
+		response: CrowniclesPacket[]
 	): Promise<void> {
 		if (player instanceof Player) {
 			await player.spendMoney({

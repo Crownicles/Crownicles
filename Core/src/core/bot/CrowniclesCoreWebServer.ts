@@ -2,29 +2,29 @@ import {
 	Express, Request, Response
 } from "express";
 import {
-	botConfig, draftBotInstance
+	botConfig, crowniclesInstance
 } from "../../index";
 import {
-	DraftBotCoreMetrics, draftBotMetricsRegistry
-} from "./DraftBotCoreMetrics";
-import { DraftBotLogger } from "../../../../Lib/src/logs/DraftBotLogger";
+	CrowniclesCoreMetrics, crowniclesMetricsRegistry
+} from "./CrowniclesCoreMetrics";
+import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { BlockingUtils } from "../utils/BlockingUtils";
 import express = require("express");
 
-export abstract class DraftBotCoreWebServer {
+export abstract class CrowniclesCoreWebServer {
 	static start(): void {
 		const app: Express = express();
 
 		app.get("/metrics", async (_req: Request, res: Response) => {
-			DraftBotCoreMetrics.computeSporadicMetrics();
-			res.setHeader("Content-Type", draftBotMetricsRegistry.contentType);
-			res.end(await draftBotMetricsRegistry.metrics());
+			CrowniclesCoreMetrics.computeSporadicMetrics();
+			res.setHeader("Content-Type", crowniclesMetricsRegistry.contentType);
+			res.end(await crowniclesMetricsRegistry.metrics());
 		});
 
 		app.post("/maintenance", (req: Request, res: Response) => {
 			const enabled = req.query.enabled === "1";
-			draftBotInstance.setMaintenance(enabled, false);
-			DraftBotLogger.info("Maintenance mode changed", { enabled });
+			crowniclesInstance.setMaintenance(enabled, false);
+			CrowniclesLogger.info("Maintenance mode changed", { enabled });
 			res.status(200).send("OK");
 		});
 
@@ -33,7 +33,7 @@ export abstract class DraftBotCoreWebServer {
 		});
 
 		app.post("/log_level", (req: Request, res: Response) => {
-			const logger = DraftBotLogger.get();
+			const logger = CrowniclesLogger.get();
 			if (!req.query.level) {
 				res.status(400).send("Missing log level");
 				return;
@@ -44,7 +44,7 @@ export abstract class DraftBotCoreWebServer {
 		});
 
 		app.listen(botConfig.WEB_SERVER_PORT, () => {
-			DraftBotLogger.info(`Web server is running on port ${botConfig.WEB_SERVER_PORT}`);
+			CrowniclesLogger.info(`Web server is running on port ${botConfig.WEB_SERVER_PORT}`);
 		});
 	}
 }

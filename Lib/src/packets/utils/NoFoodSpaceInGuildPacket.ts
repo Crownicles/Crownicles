@@ -1,10 +1,10 @@
 import {
-	DraftBotPacket, PacketDirection, sendablePacket
-} from "../DraftBotPacket";
+	CrowniclesPacket, PacketDirection, sendablePacket
+} from "../CrowniclesPacket";
 import { PetFood } from "../../types/PetFood";
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class NoFoodSpaceInGuildPacket extends DraftBotPacket {
+export class NoFoodSpaceInGuildPacket extends CrowniclesPacket {
 	food!: PetFood;
 
 	quantity!: number;

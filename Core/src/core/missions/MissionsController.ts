@@ -10,10 +10,10 @@ import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import PlayerMissionsInfo, { PlayerMissionsInfos } from "../database/game/models/PlayerMissionsInfo";
 import {
-	DraftBotPacket, makePacket
-} from "../../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, makePacket
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import { MissionsExpiredPacket } from "../../../../Lib/src/packets/events/MissionsExpiredPacket";
-import { draftBotInstance } from "../../index";
+import { crowniclesInstance } from "../../index";
 import {
 	Mission, MissionDataController
 } from "../../data/Mission";
@@ -76,7 +76,7 @@ export class MissionsController {
 		player: Player,
 		missionSlots: MissionSlot[],
 		missionInfo: PlayerMissionsInfo,
-		response: DraftBotPacket[],
+		response: CrowniclesPacket[],
 		specialMissionCompletion: SpecialMissionCompletion = {
 			daily: false,
 			campaign: false
@@ -104,7 +104,7 @@ export class MissionsController {
 	 */
 	static async update(
 		player: Player,
-		response: DraftBotPacket[],
+		response: CrowniclesPacket[],
 		{
 			missionId,
 			count = 1,
@@ -143,7 +143,7 @@ export class MissionsController {
 				...mission.toJSON(),
 				gemsToWin: 0 // Don't win gems in secondary missions
 			});
-			draftBotInstance.logsDatabase.logMissionFinished(player.keycloakId, mission.missionId, mission.missionVariant, mission.missionObjective)
+			crowniclesInstance.logsDatabase.logMissionFinished(player.keycloakId, mission.missionId, mission.missionVariant, mission.missionObjective)
 				.then();
 			await mission.destroy();
 		}
@@ -155,14 +155,14 @@ export class MissionsController {
 				moneyToWin: Math.round(dailyMission.moneyToWin * Constants.MISSIONS.DAILY_MISSION_MONEY_MULTIPLIER), // Daily missions gives less money than secondary missions
 				pointsToWin: Math.round(dailyMission.pointsToWin * Constants.MISSIONS.DAILY_MISSION_POINTS_MULTIPLIER) // Daily missions give more points than secondary missions
 			});
-			draftBotInstance.logsDatabase.logMissionDailyFinished(player.keycloakId)
+			crowniclesInstance.logsDatabase.logMissionDailyFinished(player.keycloakId)
 				.then();
 		}
 		await player.save();
 		return completedMissions;
 	}
 
-	static async updatePlayerStats(player: Player, missionInfo: PlayerMissionsInfo, completedMissions: CompletedMission[], response: DraftBotPacket[]): Promise<Player> {
+	static async updatePlayerStats(player: Player, missionInfo: PlayerMissionsInfo, completedMissions: CompletedMission[], response: CrowniclesPacket[]): Promise<Player> {
 		// Totalizer function to sum the values of the completed missions
 		const totalizer = (mapper: (m: CompletedMission) => number): number => completedMissions.map(mapper)
 			.reduce((a, b) => a + b);
@@ -188,12 +188,12 @@ export class MissionsController {
 		return player;
 	}
 
-	static async handleExpiredMissions(player: Player, missionSlots: MissionSlot[], response: DraftBotPacket[]): Promise<void> {
+	static async handleExpiredMissions(player: Player, missionSlots: MissionSlot[], response: CrowniclesPacket[]): Promise<void> {
 		const expiredMissions: MissionSlot[] = [];
 		for (const mission of missionSlots) {
 			if (mission.hasExpired()) {
 				expiredMissions.push(mission);
-				draftBotInstance.logsDatabase.logMissionFailed(player.keycloakId, mission.missionId, mission.missionVariant, mission.missionObjective)
+				crowniclesInstance.logsDatabase.logMissionFailed(player.keycloakId, mission.missionId, mission.missionVariant, mission.missionObjective)
 					.then();
 				await mission.destroy();
 			}
@@ -270,7 +270,7 @@ export class MissionsController {
 		if (!daily) {
 			return generatedMission.index === null ? null : generatedMission;
 		}
-		generatedMission.index = RandomUtils.draftbotRandom.pick(mission.dailyIndexes);
+		generatedMission.index = RandomUtils.crowniclesRandom.pick(mission.dailyIndexes);
 		return generatedMission;
 	}
 
@@ -295,7 +295,7 @@ export class MissionsController {
 			moneyToWin: missionData.money[prop.index]
 		});
 		const retMission = await MissionSlots.getById(missionSlot.id);
-		draftBotInstance.logsDatabase.logMissionFound(player.keycloakId, retMission.missionId, retMission.missionVariant, retMission.missionObjective)
+		crowniclesInstance.logsDatabase.logMissionFound(player.keycloakId, retMission.missionId, retMission.missionVariant, retMission.missionObjective)
 			.then();
 		return retMission;
 	}
@@ -309,7 +309,7 @@ export class MissionsController {
 		for (let i = Constants.MISSIONS.SLOTS_LEVEL_PROBABILITIES.length - 1; i >= 0; i--) {
 			const probability = Constants.MISSIONS.SLOTS_LEVEL_PROBABILITIES[i];
 			if (player.level >= probability.LEVEL) {
-				const randomNumber = RandomUtils.draftbotRandom.realZeroToOneInclusive();
+				const randomNumber = RandomUtils.crowniclesRandom.realZeroToOneInclusive();
 				return randomNumber < probability.EASY
 					? MissionDifficulty.EASY
 					: randomNumber < probability.MEDIUM + probability.EASY
@@ -323,13 +323,13 @@ export class MissionsController {
 
 	private static generateMissionIndex(mission: Mission, difficulty: MissionDifficulty): number {
 		if (difficulty === MissionDifficulty.EASY && mission.canBeEasy()) {
-			return RandomUtils.draftbotRandom.pick(mission.difficulties.easy);
+			return RandomUtils.crowniclesRandom.pick(mission.difficulties.easy);
 		}
 		if (difficulty === MissionDifficulty.MEDIUM && mission.canBeMedium()) {
-			return RandomUtils.draftbotRandom.pick(mission.difficulties.medium);
+			return RandomUtils.crowniclesRandom.pick(mission.difficulties.medium);
 		}
 		if (difficulty === MissionDifficulty.HARD && mission.canBeHard()) {
-			return RandomUtils.draftbotRandom.pick(mission.difficulties.hard);
+			return RandomUtils.crowniclesRandom.pick(mission.difficulties.hard);
 		}
 		return null;
 	}

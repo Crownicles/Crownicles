@@ -663,6 +663,11 @@ export abstract class PetConstants {
 		PetConstants.PETS.RAVEN,
 		PetConstants.PETS.PHOENIX
 	];
+
+	static SEX = {
+		MALE: "m",
+		FEMALE: "f"
+	};
 }
 
 export enum PET_ENTITY_GIVE_RETURN {

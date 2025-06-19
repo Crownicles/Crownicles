@@ -50,7 +50,7 @@ export class PetDataController extends DataControllerNumber<Pet> {
 		if (rarity !== -1) {
 			pets = pets.filter(pet => pet.rarity === rarity);
 		}
-		return RandomUtils.draftbotRandom.pick(pets);
+		return RandomUtils.crowniclesRandom.pick(pets);
 	}
 
 	public getPetsCount(): number {

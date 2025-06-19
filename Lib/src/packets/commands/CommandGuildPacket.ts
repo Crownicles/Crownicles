@@ -1,10 +1,10 @@
 import {
-	DraftBotPacket, sendablePacket, PacketDirection
-} from "../DraftBotPacket";
+	CrowniclesPacket, sendablePacket, PacketDirection
+} from "../CrowniclesPacket";
 import { GuildMember } from "../../types/GuildMember";
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
-export class CommandGuildPacketReq extends DraftBotPacket {
+export class CommandGuildPacketReq extends CrowniclesPacket {
 	askedPlayer!: {
 		rank?: number;
 		keycloakId?: string;
@@ -14,7 +14,7 @@ export class CommandGuildPacketReq extends DraftBotPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandGuildPacketRes extends DraftBotPacket {
+export class CommandGuildPacketRes extends CrowniclesPacket {
 	foundGuild!: boolean;
 
 	askedPlayerKeycloakId?: string;

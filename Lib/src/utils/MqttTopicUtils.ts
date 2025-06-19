@@ -1,19 +1,19 @@
 export abstract class MqttTopicUtils {
-	private static readonly CORE_TOPIC = "draftbot_core";
+	private static readonly CORE_TOPIC = "crownicles_core";
 
-	private static readonly DISCORD_TOPIC = "draftbot_discord/shard";
+	private static readonly DISCORD_TOPIC = "crownicles_discord/shard";
 
-	private static readonly DISCORD_TOP_WEEK_ANNOUNCEMENT_TOPIC = "draftbot_discord_top_week_announcement";
+	private static readonly DISCORD_TOP_WEEK_ANNOUNCEMENT_TOPIC = "crownicles_discord_top_week_announcement";
 
-	private static readonly DISCORD_TOP_WEEK_FIGHT_ANNOUNCEMENT_TOPIC = "draftbot_discord_top_week_fight_announcement";
+	private static readonly DISCORD_TOP_WEEK_FIGHT_ANNOUNCEMENT_TOPIC = "crownicles_discord_top_week_fight_announcement";
 
-	private static readonly NOTIFICATIONS = "draftbot_notifications";
+	private static readonly NOTIFICATIONS = "crownicles_notifications";
 
 	private static readonly NOTIFICATIONS_CONSUMER = "notifications-consumer";
 
-	private static readonly DISCORD_SHARD_MANAGER_TOPIC = "discord_shard_manager";
+	private static readonly DISCORD_SHARD_MANAGER_TOPIC = "crownicles_shard_manager";
 
-	private static readonly WEB_SOCKET_TOPIC = "draftbot_websocket";
+	private static readonly WEB_SOCKET_TOPIC = "crownicles_websocket";
 
 
 	static getCoreTopic(prefix: string): string {

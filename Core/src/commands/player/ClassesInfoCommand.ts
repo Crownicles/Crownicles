@@ -1,6 +1,6 @@
 import {
-	DraftBotPacket, makePacket
-} from "../../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, makePacket
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	CommandClassesInfoPacketReq,
 	CommandClassesInfoPacketRes
@@ -22,7 +22,7 @@ export default class ClassesInfoCommand {
 		level: ClassConstants.REQUIRED_LEVEL,
 		whereAllowed: [WhereAllowed.CONTINENT]
 	})
-	execute(response: DraftBotPacket[], player: Player): void {
+	execute(response: CrowniclesPacket[], player: Player): void {
 		const classGroup = player.getClassGroup();
 		const classes = ClassDataController.instance.getByGroup(classGroup);
 

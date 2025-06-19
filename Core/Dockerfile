@@ -7,7 +7,7 @@ FROM node:${NODE_VERSION}-alpine AS builder
 ARG PNPM_VERSION=latest-10
 
 # Set the working directory
-WORKDIR /draftbot/Core
+WORKDIR /crownicles/Core
 
 # Setup PNPM
 RUN npm install --global corepack@latest
@@ -32,16 +32,16 @@ COPY ./Core/src ./src
 COPY ./Core/resources ./resources
 
 # Install the lib dependencies
-WORKDIR /draftbot/Lib
+WORKDIR /crownicles/Lib
 RUN pnpm install --prod
-WORKDIR /draftbot/Core
+WORKDIR /crownicles/Core
 
 # Compile the source code
 RUN pnpm run tsc
 
 FROM node:${NODE_VERSION}-alpine
 
-WORKDIR /draftbot
+WORKDIR /crownicles
 
 # Setup PNPM
 RUN npm install --global corepack@latest
@@ -57,8 +57,8 @@ RUN mkdir config resources
 RUN pnpm install --prod
 
 # Copy the built app from the builder
-COPY --from=builder /draftbot/Core/dist ./dist
-COPY --from=builder /draftbot/Core/resources ./resources
+COPY --from=builder /crownicles/Core/dist ./dist
+COPY --from=builder /crownicles/Core/resources ./resources
 
 # Setup permissions
 RUN mkdir -p /.cache/node/corepack

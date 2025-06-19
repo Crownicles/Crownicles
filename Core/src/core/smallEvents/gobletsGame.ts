@@ -7,8 +7,8 @@ import { SmallEventConstants } from "../../../../Lib/src/constants/SmallEventCon
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { BlockingUtils } from "../utils/BlockingUtils";
 import {
-	DraftBotPacket, makePacket
-} from "../../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, makePacket
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { TravelTime } from "../maps/TravelTime";
 import {
@@ -34,7 +34,7 @@ function computeLostValue(level: number, modifiers: {
 async function manageHealthLost(
 	packet: SmallEventGobletsGamePacket,
 	player: Player, malus: SmallEventGobletsGameMalus.LIFE | SmallEventGobletsGameMalus.END,
-	response: DraftBotPacket[]
+	response: CrowniclesPacket[]
 ): Promise<void> {
 	packet.value = computeLostValue(player.level, SmallEventConstants.GOBLETS_GAME.HEALTH_LOST);
 	if (malus === SmallEventGobletsGameMalus.END) {
@@ -44,10 +44,10 @@ async function manageHealthLost(
 	await player.killIfNeeded(response, NumberChangeReason.SMALL_EVENT);
 }
 
-async function applyMalus(response: DraftBotPacket[], player: Player, reaction: ReactionCollectorReaction): Promise<void> {
+async function applyMalus(response: CrowniclesPacket[], player: Player, reaction: ReactionCollectorReaction): Promise<void> {
 	const malus = !reaction
 		? SmallEventGobletsGameMalus.END
-		: RandomUtils.draftbotRandom.pick(Object.values(SmallEventGobletsGameMalus)
+		: RandomUtils.crowniclesRandom.pick(Object.values(SmallEventGobletsGameMalus)
 			.filter(m => m !== SmallEventGobletsGameMalus.END));
 	const packet = makePacket(SmallEventGobletsGamePacket, {
 		malus,

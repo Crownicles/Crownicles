@@ -1,17 +1,17 @@
 import { ReactionCollectorCreationPacket } from "../../../Lib/src/packets/interaction/ReactionCollectorPacket";
-import { PacketContext } from "../../../Lib/src/packets/DraftBotPacket";
+import { PacketContext } from "../../../Lib/src/packets/CrowniclesPacket";
 import { DiscordCache } from "../bot/DiscordCache";
 import i18n from "../translations/i18n";
-import { DraftbotSmallEventEmbed } from "../messages/DraftbotSmallEventEmbed";
+import { CrowniclesSmallEventEmbed } from "../messages/CrowniclesSmallEventEmbed";
 import {
 	escapeUsername, StringUtils
 } from "../utils/StringUtils";
 import { DiscordCollectorUtils } from "../utils/DiscordCollectorUtils";
 import { ReactionCollectorInteractOtherPlayersPoorData } from "../../../Lib/src/packets/interaction/ReactionCollectorInteractOtherPlayers";
 import { KeycloakUtils } from "../../../Lib/src/keycloak/KeycloakUtils";
-import { keycloakConfig } from "../bot/DraftBotShard";
+import { keycloakConfig } from "../bot/CrowniclesShard";
 import { Language } from "../../../Lib/src/Language";
-import { DraftBotIcons } from "../../../Lib/src/DraftBotIcons";
+import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 import { EmoteUtils } from "../utils/EmoteUtils";
 import { ReactionCollectorReturnTypeOrNull } from "../packetHandlers/handlers/ReactionCollectorHandlers";
 
@@ -30,7 +30,7 @@ export async function interactOtherPlayersCollector(context: PacketContext, pack
 	const data = packet.data.data as ReactionCollectorInteractOtherPlayersPoorData;
 	const playerDisplay = await interactOtherPlayerGetPlayerDisplay(data.keycloakId, data.rank, lng);
 
-	const embed = new DraftbotSmallEventEmbed(
+	const embed = new CrowniclesSmallEventEmbed(
 		"interactOtherPlayers",
 		StringUtils.getRandomTranslation(
 			"smallEvents:interactOtherPlayers.poor",
@@ -48,8 +48,8 @@ export async function interactOtherPlayersCollector(context: PacketContext, pack
 		context,
 		{
 			emojis: {
-				accept: EmoteUtils.translateEmojiToDiscord(DraftBotIcons.collectors.interactPoorCoin),
-				refuse: DraftBotIcons.collectors.refuse
+				accept: EmoteUtils.translateEmojiToDiscord(CrowniclesIcons.collectors.interactPoorCoin),
+				refuse: CrowniclesIcons.collectors.refuse
 			}
 		}
 	);

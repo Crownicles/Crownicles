@@ -1,13 +1,13 @@
 import {
-	DraftBotPacket, PacketDirection, sendablePacket
-} from "../DraftBotPacket";
+	CrowniclesPacket, PacketDirection, sendablePacket
+} from "../CrowniclesPacket";
 import { OwnedPet } from "../../types/OwnedPet";
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
-export class CommandGuildShelterPacketReq extends DraftBotPacket {}
+export class CommandGuildShelterPacketReq extends CrowniclesPacket {}
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandGuildShelterPacketRes extends DraftBotPacket {
+export class CommandGuildShelterPacketRes extends CrowniclesPacket {
 	guildName!: string;
 
 	pets!: OwnedPet[];
@@ -16,4 +16,4 @@ export class CommandGuildShelterPacketRes extends DraftBotPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandGuildShelterNoPetErrorPacket extends DraftBotPacket {}
+export class CommandGuildShelterNoPetErrorPacket extends CrowniclesPacket {}

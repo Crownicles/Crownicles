@@ -25,7 +25,7 @@ const use: PetAssistanceFunc = (fighter, _opponent, _turn, _fightController): Pr
 		selfTarget: false,
 		stat: FightStatBuffed.ENERGY,
 		operator: FightStatModifierOperation.ADDITION,
-		value: RandomUtils.draftbotRandom.integer(15, Math.max(fighter.getMaxEnergy() * 0.07, 20))
+		value: RandomUtils.crowniclesRandom.integer(15, Math.max(fighter.getMaxEnergy() * 0.07, 20))
 	}, fighter, this);
 
 	return Promise.resolve(result);

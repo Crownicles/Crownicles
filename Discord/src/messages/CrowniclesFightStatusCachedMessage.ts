@@ -1,12 +1,12 @@
-import { DraftbotCachedMessage } from "./DraftbotCachedMessage";
-import { PacketContext } from "../../../Lib/src/packets/DraftBotPacket";
+import { CrowniclesCachedMessage } from "./CrowniclesCachedMessage";
+import { PacketContext } from "../../../Lib/src/packets/CrowniclesPacket";
 import { DiscordCache } from "../bot/DiscordCache";
-import { DraftBotEmbed } from "./DraftBotEmbed";
+import { CrowniclesEmbed } from "./CrowniclesEmbed";
 import i18n from "../translations/i18n";
 import { CommandFightStatusPacket } from "../../../Lib/src/packets/fights/FightStatusPacket";
 import { DisplayUtils } from "../utils/DisplayUtils";
 
-export class DraftbotFightStatusCachedMessage extends DraftbotCachedMessage<CommandFightStatusPacket> {
+export class CrowniclesFightStatusCachedMessage extends CrowniclesCachedMessage<CommandFightStatusPacket> {
 	private usernamesCache?: Map<string, string>;
 
 	readonly duration = 30;
@@ -31,7 +31,7 @@ export class DraftbotFightStatusCachedMessage extends DraftbotCachedMessage<Comm
 		const defenderUsername = packet.defendingFighter.keycloakId ? this.usernamesCache.get(packet.defendingFighter.keycloakId) : i18n.t(`models:monsters.${packet.defendingFighter.monsterId}.name`, { lng });
 		const keyProlongation = packet.numberOfTurn > packet.maxNumberOfTurn ? "prolongation" : "noProlongation";
 
-		const embed = new DraftBotEmbed()
+		const embed = new CrowniclesEmbed()
 			.setTitle(i18n.t("commands:fight.summarize.title", { lng }))
 			.setDescription(
 				i18n.t("commands:fight.summarize.intro.start", {

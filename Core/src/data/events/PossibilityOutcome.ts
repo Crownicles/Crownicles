@@ -10,15 +10,15 @@ import { PlayerMissionsInfos } from "../../core/database/game/models/PlayerMissi
 import { PetEntities } from "../../core/database/game/models/PetEntity";
 import { CommandReportBigEventResultRes } from "../../../../Lib/src/packets/commands/CommandReportPacket";
 import {
-	DraftBotPacket, makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, makePacket, PacketContext
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	MapLink, MapLinkDataController
 } from "../MapLink";
 import { Effect } from "../../../../Lib/src/types/Effect";
 import { TravelTime } from "../../core/maps/TravelTime";
 
-async function applyOutcomeScore(outcome: PossibilityOutcome, time: number, player: Player, response: DraftBotPacket[]): Promise<number> {
+async function applyOutcomeScore(outcome: PossibilityOutcome, time: number, player: Player, response: CrowniclesPacket[]): Promise<number> {
 	const scoreChange = TravelTime.timeTravelledToScore(time)
 		+ await PlayerSmallEvents.calculateCurrentScore(player)
 		+ (outcome.bonusPoints ?? 0);
@@ -30,7 +30,7 @@ async function applyOutcomeScore(outcome: PossibilityOutcome, time: number, play
 	return scoreChange;
 }
 
-async function applyOutcomeExperience(outcome: PossibilityOutcome, player: Player, response: DraftBotPacket[]): Promise<number> {
+async function applyOutcomeExperience(outcome: PossibilityOutcome, player: Player, response: CrowniclesPacket[]): Promise<number> {
 	let experienceChange = 150
 		+ (outcome.health > 0 ? 200 : 0)
 		+ (outcome.randomItem ? 300 : 0)
@@ -86,7 +86,7 @@ async function applyOutcomeEffect(outcome: PossibilityOutcome, player: Player): 
 	return undefined;
 }
 
-async function applyOutcomeHealth(outcome: PossibilityOutcome, player: Player, response: DraftBotPacket[]): Promise<number> {
+async function applyOutcomeHealth(outcome: PossibilityOutcome, player: Player, response: CrowniclesPacket[]): Promise<number> {
 	if (outcome.health && outcome.health !== 0) {
 		await player.addHealth(outcome.health, response, NumberChangeReason.BIG_EVENT);
 		return outcome.health;
@@ -94,8 +94,8 @@ async function applyOutcomeHealth(outcome: PossibilityOutcome, player: Player, r
 	return 0;
 }
 
-async function applyOutcomeMoney(outcome: PossibilityOutcome, time: number, player: Player, response: DraftBotPacket[]): Promise<number> {
-	let moneyChange = (outcome.money ?? 0) + Math.round(time / 10 + RandomUtils.draftbotRandom.integer(0, time / 10 + player.level / 5 - 1));
+async function applyOutcomeMoney(outcome: PossibilityOutcome, time: number, player: Player, response: CrowniclesPacket[]): Promise<number> {
+	let moneyChange = (outcome.money ?? 0) + Math.round(time / 10 + RandomUtils.crowniclesRandom.integer(0, time / 10 + player.level / 5 - 1));
 	if (outcome.money && outcome.money < 0 && moneyChange > 0) {
 		moneyChange = Math.floor(outcome.money / 2);
 	}
@@ -138,7 +138,7 @@ async function applyOutcomeGems(outcome: PossibilityOutcome, player: Player): Pr
 	return 0;
 }
 
-async function applyOutcomeRandomItem(outcome: PossibilityOutcome, player: Player, context: PacketContext, response: DraftBotPacket[]): Promise<void> {
+async function applyOutcomeRandomItem(outcome: PossibilityOutcome, player: Player, context: PacketContext, response: CrowniclesPacket[]): Promise<void> {
 	if (!outcome.randomItem) {
 		return;
 	}
@@ -149,7 +149,7 @@ async function applyOutcomeRandomItem(outcome: PossibilityOutcome, player: Playe
 	}));
 }
 
-async function applyOutcomeRandomPet(outcome: PossibilityOutcome, player: Player, response: DraftBotPacket[]): Promise<void> {
+async function applyOutcomeRandomPet(outcome: PossibilityOutcome, player: Player, response: CrowniclesPacket[]): Promise<void> {
 	if (outcome.randomPet) {
 		const minRarity = outcome.randomPet.rarity?.min ?? 1;
 		const maxRarity = outcome.randomPet.rarity?.max ?? 5;
@@ -159,7 +159,7 @@ async function applyOutcomeRandomPet(outcome: PossibilityOutcome, player: Player
 	}
 }
 
-async function applyOutcomeOneshot(outcome: PossibilityOutcome, player: Player, response: DraftBotPacket[]): Promise<void> {
+async function applyOutcomeOneshot(outcome: PossibilityOutcome, player: Player, response: CrowniclesPacket[]): Promise<void> {
 	if (outcome.oneshot === true) {
 		await player.addHealth(-player.health, response, NumberChangeReason.BIG_EVENT);
 	}
@@ -185,7 +185,7 @@ function getNextMapLink(outcome: PossibilityOutcome, player: Player): MapLink {
 			allowedMapTypes = allowedMapTypes.filter(mapType => !outcome.mapTypesExcludeDestination.includes(mapType));
 		}
 
-		return RandomUtils.draftbotRandom.pick(
+		return RandomUtils.crowniclesRandom.pick(
 			MapLinkDataController.instance.getMapLinksWithMapTypes(
 				allowedMapTypes,
 				player.getDestinationId(),
@@ -211,7 +211,7 @@ type ApplyOutcome = {
  * @param context
  * @param response
  */
-export async function applyPossibilityOutcome(possibilityOutcome: ApplyOutcome, player: Player, context: PacketContext, response: DraftBotPacket[]): Promise<MapLink> {
+export async function applyPossibilityOutcome(possibilityOutcome: ApplyOutcome, player: Player, context: PacketContext, response: CrowniclesPacket[]): Promise<MapLink> {
 	// Score
 	const score = await applyOutcomeScore(possibilityOutcome.outcome[1], possibilityOutcome.time, player, response);
 

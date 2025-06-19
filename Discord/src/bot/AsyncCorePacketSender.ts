@@ -1,11 +1,11 @@
 import { AsyncPacketSender } from "../../../Lib/src/packets/AsyncPacketSender";
 import {
-	DraftBotPacket, PacketContext
-} from "../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, PacketContext
+} from "../../../Lib/src/packets/CrowniclesPacket";
 import { PacketUtils } from "../utils/PacketUtils";
 
 export class AsyncCorePacketSender extends AsyncPacketSender {
-	protected sendPacket(context: PacketContext, packet: DraftBotPacket): Promise<void> {
+	protected sendPacket(context: PacketContext, packet: CrowniclesPacket): Promise<void> {
 		PacketUtils.sendPacketToBackend(context, packet);
 		return Promise.resolve();
 	}

@@ -1,6 +1,6 @@
 import {
 	makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import { ICommand } from "../ICommand";
 import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
 import {
@@ -9,12 +9,12 @@ import {
 } from "../../../../Lib/src/packets/commands/CommandGuildLeavePacket";
 import { ReactionCollectorCreationPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { DiscordCache } from "../../bot/DiscordCache";
-import { DraftBotEmbed } from "../../messages/DraftBotEmbed";
+import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import i18n from "../../translations/i18n";
 import { DiscordCollectorUtils } from "../../utils/DiscordCollectorUtils";
 import { ReactionCollectorGuildLeaveData } from "../../../../Lib/src/packets/interaction/ReactionCollectorGuildLeave";
 import { KeycloakUtils } from "../../../../Lib/src/keycloak/KeycloakUtils";
-import { keycloakConfig } from "../../bot/DraftBotShard";
+import { keycloakConfig } from "../../bot/CrowniclesShard";
 import { ReactionCollectorReturnTypeOrNull } from "../../packetHandlers/handlers/ReactionCollectorHandlers";
 import { escapeUsername } from "../../utils/StringUtils";
 import { DisplayUtils } from "../../utils/DisplayUtils";
@@ -30,7 +30,7 @@ export async function createGuildLeaveCollector(context: PacketContext, packet: 
 	const data = packet.data.data as ReactionCollectorGuildLeaveData;
 	const keyDesc = data.isGuildDestroyed ? "confirmChiefDesc" : data.newChiefKeycloakId ? "confirmChiefDescWithElder" : "confirmDesc";
 	const lng = interaction.userLanguage;
-	const embed = new DraftBotEmbed().formatAuthor(i18n.t("commands:guildLeave.title", {
+	const embed = new CrowniclesEmbed().formatAuthor(i18n.t("commands:guildLeave.title", {
 		lng,
 		pseudo: escapeUsername(interaction.user.displayName)
 	}), interaction.user)
@@ -63,7 +63,7 @@ export async function handleCommandGuildLeaveAcceptPacketRes(packet: CommandGuil
 		const lng = originalInteraction.userLanguage;
 		await buttonInteraction.editReply({
 			embeds: [
-				new DraftBotEmbed().formatAuthor(i18n.t("commands:guildLeave.successTitle", {
+				new CrowniclesEmbed().formatAuthor(i18n.t("commands:guildLeave.successTitle", {
 					lng,
 					pseudo: escapeUsername(originalInteraction.user.displayName),
 					guildName: packet.guildName
@@ -93,7 +93,7 @@ export async function handleCommandGuildLeaveRefusePacketRes(context: PacketCont
 	const lng = originalInteraction.userLanguage;
 	await buttonInteraction?.editReply({
 		embeds: [
-			new DraftBotEmbed().formatAuthor(i18n.t("commands:guildLeave.canceledTitle", {
+			new CrowniclesEmbed().formatAuthor(i18n.t("commands:guildLeave.canceledTitle", {
 				lng,
 				pseudo: escapeUsername(originalInteraction.user.displayName)
 			}), originalInteraction.user)

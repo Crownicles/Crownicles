@@ -1,4 +1,4 @@
-import { DraftbotInteraction } from "../../messages/DraftbotInteraction";
+import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
 import { ICommand } from "../ICommand";
 import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
 import { SlashCommandBuilder } from "@discordjs/builders";
@@ -7,8 +7,8 @@ import { RightGroup } from "../../../../Lib/src/types/RightGroup";
 import { DiscordMQTT } from "../../bot/DiscordMQTT";
 import { PacketUtils } from "../../utils/PacketUtils";
 import {
-	DraftBotPacket, makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, makePacket, PacketContext
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	CommandGetResourcesReq,
 	CommandGetResourcesRes
@@ -20,7 +20,7 @@ import {
 	CommandGetPlayerInfoRes
 } from "../../../../Lib/src/packets/commands/CommandGetPlayerInfo";
 import i18n from "../../translations/i18n";
-import { DraftBotErrorEmbed } from "../../messages/DraftBotErrorEmbed";
+import { CrowniclesErrorEmbed } from "../../messages/CrowniclesErrorEmbed";
 import {
 	ActionRowBuilder,
 	parseEmoji,
@@ -28,20 +28,20 @@ import {
 	StringSelectMenuInteraction,
 	StringSelectMenuOptionBuilder
 } from "discord.js";
-import { DraftBotIcons } from "../../../../Lib/src/DraftBotIcons";
+import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 import { DiscordConstants } from "../../DiscordConstants";
 import { Constants } from "../../../../Lib/src/constants/Constants";
 import { sendInteractionNotForYou } from "../../utils/ErrorUtils";
 import { CommandSetPlayerInfoReq } from "../../../../Lib/src/packets/commands/CommandSetPlayerInfo";
 import { Badge } from "../../../../Lib/src/types/Badge";
-import { DraftBotEmbed } from "../../messages/DraftBotEmbed";
+import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import { escapeUsername } from "../../utils/StringUtils";
 
 async function handleGetPlayerInfoResponse(
-	interaction: DraftbotInteraction,
+	interaction: CrowniclesInteraction,
 	context: PacketContext,
 	packetName: string,
-	packet: DraftBotPacket,
+	packet: CrowniclesPacket,
 	resources: CommandGetResourcesRes,
 	targetKeycloakId: string
 ): Promise<void> {
@@ -49,7 +49,7 @@ async function handleGetPlayerInfoResponse(
 		const getPlayerInfoPacket = packet as CommandGetPlayerInfoRes;
 		if (!getPlayerInfoPacket.exists) {
 			await interaction.editReply({
-				embeds: [new DraftBotErrorEmbed(interaction.user, context, interaction, i18n.t("error:playerDoesntExist", { lng: interaction.userLanguage }))]
+				embeds: [new CrowniclesErrorEmbed(interaction.user, context, interaction, i18n.t("error:playerDoesntExist", { lng: interaction.userLanguage }))]
 			});
 			return;
 		}
@@ -58,7 +58,7 @@ async function handleGetPlayerInfoResponse(
 
 		if (badges.length === 0) {
 			await interaction.editReply({
-				embeds: [new DraftBotErrorEmbed(interaction.user, context, interaction, i18n.t("commands:giveBadge.alreadyHaveBadge", { lng: interaction.userLanguage }))]
+				embeds: [new CrowniclesErrorEmbed(interaction.user, context, interaction, i18n.t("commands:giveBadge.alreadyHaveBadge", { lng: interaction.userLanguage }))]
 			});
 			return;
 		}
@@ -66,7 +66,7 @@ async function handleGetPlayerInfoResponse(
 		const rows = [];
 
 		for (const badge of badges) {
-			const badgeEmote = DraftBotIcons.badges[badge];
+			const badgeEmote = CrowniclesIcons.badges[badge];
 			if (badgeEmote) {
 				if (rows.length === 0 || rows[rows.length - 1].components[0].options.length >= DiscordConstants.MAX_SELECT_MENU_OPTIONS) {
 					rows.push(new ActionRowBuilder<StringSelectMenuBuilder>());
@@ -83,7 +83,7 @@ async function handleGetPlayerInfoResponse(
 
 		const msg = await interaction.editReply({
 			embeds: [
-				new DraftBotEmbed()
+				new CrowniclesEmbed()
 					.formatAuthor(i18n.t("commands:giveBadge.selectBadgeTitle", {
 						lng: interaction.userLanguage,
 						pseudo: escapeUsername(interaction.user.displayName)
@@ -132,10 +132,10 @@ async function handleGetPlayerInfoResponse(
 }
 
 async function handleGetResourcesResponse(
-	interaction: DraftbotInteraction,
+	interaction: CrowniclesInteraction,
 	resourcesContext: PacketContext,
 	resourcesPacketName: string,
-	resourcesPacket: DraftBotPacket,
+	resourcesPacket: CrowniclesPacket,
 	targetKeycloakId: string
 ): Promise<void> {
 	if (resourcesPacketName === CommandGetResourcesRes.name) {
@@ -150,7 +150,7 @@ async function handleGetResourcesResponse(
 	}
 }
 
-async function getPacket(interaction: DraftbotInteraction, keycloakUser: KeycloakUser): Promise<null> {
+async function getPacket(interaction: CrowniclesInteraction, keycloakUser: KeycloakUser): Promise<null> {
 	const context = await PacketUtils.createPacketContext(interaction, keycloakUser);
 
 	if (!context.rightGroups?.includes(RightGroup.BADGES) && !context.rightGroups?.includes(RightGroup.ADMIN)) {

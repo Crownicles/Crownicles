@@ -1,6 +1,6 @@
-import { PacketContext } from "../../../Lib/src/packets/DraftBotPacket";
+import { PacketContext } from "../../../Lib/src/packets/CrowniclesPacket";
 import { DiscordCache } from "../bot/DiscordCache";
-import { DraftbotSmallEventEmbed } from "../messages/DraftbotSmallEventEmbed";
+import { CrowniclesSmallEventEmbed } from "../messages/CrowniclesSmallEventEmbed";
 import { StringUtils } from "../utils/StringUtils";
 
 export async function infoFightResult(context: PacketContext): Promise<void> {
@@ -10,7 +10,7 @@ export async function infoFightResult(context: PacketContext): Promise<void> {
 	const description = StringUtils.getRandomTranslation("smallEvents:infoFight.fightActions", lng);
 	await interaction?.editReply({
 		embeds: [
-			new DraftbotSmallEventEmbed(
+			new CrowniclesSmallEventEmbed(
 				"infoFight",
 				intro + description,
 				interaction.user,

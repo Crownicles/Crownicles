@@ -3,14 +3,14 @@ import {
 	CommandTestPacketReq, CommandTestPacketRes
 } from "../../../../Lib/src/packets/commands/CommandTestPacket";
 import {
-	DraftBotPacket, makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, makePacket, PacketContext
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import { CommandsTest } from "../../core/CommandsTest";
 import { Player } from "../../core/database/game/models/Player";
 import {
 	commandRequires, CommandUtils
 } from "../../core/utils/CommandUtils";
-import { DraftBotLogger } from "../../../../Lib/src/logs/DraftBotLogger";
+import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 
 export default class TestCommand {
 	// Don't use adminCommand there because we need all the checks for the player
@@ -18,7 +18,7 @@ export default class TestCommand {
 		notBlocked: false,
 		whereAllowed: CommandUtils.WHERE.EVERYWHERE
 	})
-	async execute(response: DraftBotPacket[], player: Player, packet: CommandTestPacketReq, context: PacketContext): Promise<void> {
+	async execute(response: CrowniclesPacket[], player: Player, packet: CommandTestPacketReq, context: PacketContext): Promise<void> {
 		if (!botConfig.TEST_MODE) {
 			return;
 		}
@@ -74,7 +74,7 @@ export default class TestCommand {
 					}));
 				}
 				catch (e) {
-					DraftBotLogger.errorWithObj(`Error while executing test command ${testCommand}`, e);
+					CrowniclesLogger.errorWithObj(`Error while executing test command ${testCommand}`, e);
 					response.push(makePacket(CommandTestPacketRes, {
 						commandName: testCommand,
 						result: `:x: | Une erreur est survenue pendant la commande test ${testCommand} : \`\`\`${e.stack}\`\`\``,

@@ -1,6 +1,6 @@
 import {
-	DraftBotPacket, PacketDirection, sendablePacket
-} from "../DraftBotPacket";
+	CrowniclesPacket, PacketDirection, sendablePacket
+} from "../CrowniclesPacket";
 import { TopDataType } from "../../types/TopDataType";
 import { TopTiming } from "../../types/TopTimings";
 import {
@@ -8,7 +8,7 @@ import {
 } from "../../types/TopElement";
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
-export class CommandTopPacketReq extends DraftBotPacket {
+export class CommandTopPacketReq extends CrowniclesPacket {
 	dataType!: TopDataType;
 
 	timing!: TopTiming;
@@ -17,7 +17,7 @@ export class CommandTopPacketReq extends DraftBotPacket {
 }
 
 @sendablePacket(PacketDirection.NONE)
-export class CommandTopPacketRes<T extends TopElement<Attr1, Attr2, Attr3>, Attr1, Attr2, Attr3> extends DraftBotPacket {
+export class CommandTopPacketRes<T extends TopElement<Attr1, Attr2, Attr3>, Attr1, Attr2, Attr3> extends CrowniclesPacket {
 	timing!: TopTiming;
 
 	minRank!: number;
@@ -52,17 +52,17 @@ export class CommandTopPacketResGuild extends CommandTopPacketRes<TopElement<num
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandTopInvalidPagePacket extends DraftBotPacket {
+export class CommandTopInvalidPagePacket extends CrowniclesPacket {
 	minPage!: number;
 
 	maxPage!: number;
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandTopPlayersEmptyPacket extends DraftBotPacket {
+export class CommandTopPlayersEmptyPacket extends CrowniclesPacket {
 	needFight?: number;
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandTopGuildsEmptyPacket extends DraftBotPacket {
+export class CommandTopGuildsEmptyPacket extends CrowniclesPacket {
 }
