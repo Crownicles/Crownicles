@@ -166,11 +166,12 @@ function checkMoney(otherPlayer: Player, interactionsList: InteractOtherPlayerIn
 
 /**
  * Check pet interactions
+ * @param player
  * @param otherPlayer
  * @param interactionsList
  */
-function checkPet(otherPlayer: Player, interactionsList: InteractOtherPlayerInteraction[]): void {
-	if (otherPlayer.petId) {
+function checkPet(player: Player, otherPlayer: Player, interactionsList: InteractOtherPlayerInteraction[]): void {
+	if (otherPlayer.petId && otherPlayer.petId !== player.petId) {
 		interactionsList.push(InteractOtherPlayerInteraction.PET);
 	}
 }
@@ -259,7 +260,7 @@ async function getAvailableInteractions(otherPlayer: Player, player: Player, num
 	checkHealth(otherPlayer, interactionsList);
 	checkRanking(otherPlayerRank, numberOfPlayers, interactionsList, playerRank);
 	checkMoney(otherPlayer, interactionsList, player);
-	checkPet(otherPlayer, interactionsList);
+	checkPet(player, otherPlayer, interactionsList);
 	guild = await checkGuildResponsibilities(otherPlayer, guild, interactionsList);
 	interactionsList.push(InteractOtherPlayerInteraction.CLASS);
 	checkEffects(otherPlayer, interactionsList);
