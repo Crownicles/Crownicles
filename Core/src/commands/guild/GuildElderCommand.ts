@@ -25,6 +25,8 @@ import { ReactionCollectorAcceptReaction } from "../../../../Lib/src/packets/int
 import { BlockingUtils } from "../../core/utils/BlockingUtils";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
 import { ReactionCollectorGuildElder } from "../../../../Lib/src/packets/interaction/ReactionCollectorGuildElder";
+import { GuildStatusChangeNotificationPacket } from "../../../../Lib/src/packets/notifications/GuildStatusChangeNotificationPacket";
+import { PacketUtils } from "../../core/utils/PacketUtils";
 
 /**
  * Return true if promotedPlayer can be promoted
@@ -90,6 +92,13 @@ async function acceptGuildElder(player: Player, promotedPlayer: Player, response
 		promotedKeycloakId: promotedPlayer.keycloakId,
 		guildName: guild.name
 	}));
+	const notifications: GuildStatusChangeNotificationPacket[] = [];
+	notifications.push(makePacket(GuildStatusChangeNotificationPacket, {
+		keycloakId: promotedPlayer.keycloakId,
+		becomeElder: true,
+		guildName: guild.name
+	}));
+	PacketUtils.sendNotifications(notifications);
 }
 
 export default class GuildElderCommand {

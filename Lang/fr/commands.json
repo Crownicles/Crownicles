@@ -952,7 +952,9 @@
       "report": "Rapports",
       "guildDaily": "Récompenses de guilde",
       "playerFreedFromJail": "Libération de prison",
-      "fightChallenge": "Attaqué par un autre joueur"
+      "fightChallenge": "Attaqué par un autre joueur",
+      "guildKick": "Exclusion de guilde",
+      "guildStatusChange": "Changement de statut au sein de la guilde"
     },
     "enableDisable": "Activer/Désactiver",
     "sendLocationField": "Endroit d'envoi :",
@@ -963,7 +965,8 @@
     "inChannel": "Dans le salon {{channel}}",
     "footerEnableDisable": "Utilisez les boutons ci-dessous pour activer ou désactiver les notifications.",
     "back": "Retour",
-    "footerSendLocation": "Utilisez les boutons ci-dessous pour choisir où vous souhaitez recevoir les notifications."
+    "footerSendLocation": "Utilisez les boutons ci-dessous pour choisir où vous souhaitez recevoir les notifications.",
+    "selectPlaceholder": "Sélectionnez une notification à modifier"
   },
   "maintenance": {
     "title": "Maintenance",

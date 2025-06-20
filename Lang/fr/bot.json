@@ -26,6 +26,12 @@
   "notificationsNoChannelAccess": "{emote:messages.refuse} Il semble que le bot n'ait plus accès à votre salon de notification, les notifications seront désormais en messages privés. Afin de changer le mode de notification, merci d'exécuter la commande {command:notifications}.",
   "notificationReachDestination": "Vous êtes arrivé à **{{destination}}** !",
   "notificationGuildDaily": "**{{pseudo}}** a récupéré le bonus journalier de votre guilde :\n\n{{rewards}}",
+  "notificationGuildKick": "**{{pseudo}}** vous a exclu de la guilde `{{guildName}}`.",
+  "notificationGuildStatusChange": {
+    "becomeElder": "Vous avez été promu en tant qu'ainé de la guilde `{{guildName}}`.",
+    "becomeMember": "Vous avez été rétrogadé du poste d'ainé de la guilde `{{guildName}}`.",
+    "becomeChief": "Vous êtes devenu le chef de la guilde `{{guildName}}`."
+  },
   "supportMessage": "{{langFlag}} Si vous avez besoin d'aide, sélectionnez votre langue en utilisant les boutons ci-dessous. Si vous n'avez pas besoin d'aide, ignorez ce message.\n{emote:collectors.warning} **Chaque message envoyé ici peut être lu par un humain !**\n",
   "commandDisabledInDM": "{{langFlag}} Bonjour, les commandes sont désactivées en messages privés. Merci d'aller sur un serveur pour jouer !\nSi vous souhaitez obtenir de l'aide, cliquez sur le bouton correspondant à votre langue ci-dessous.\n"
 }

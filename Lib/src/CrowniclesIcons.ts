@@ -2083,8 +2083,10 @@ export const CrowniclesIcons: {
 		types: {
 			report: "📰",
 			guildDaily: "🏟️",
+			guildKick: "🚪",
 			playerFreedFromJail: "🔓",
-			fightChallenge: "⚔️"
+			fightChallenge: "⚔️",
+			guildStatusChange: "📜"
 		}
 	},
 	missions: {

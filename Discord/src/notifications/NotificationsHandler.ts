@@ -22,6 +22,8 @@ import { getCommandGuildDailyRewardPacketString } from "../commands/guild/GuildD
 import { CrowniclesLogger } from "../../../Lib/src/logs/CrowniclesLogger";
 import { PlayerFreedFromJailNotificationPacket } from "../../../Lib/src/packets/notifications/PlayerFreedFromJailNotificationPacket";
 import { PlayerWasAttackedNotificationPacket } from "../../../Lib/src/packets/notifications/PlayerWasAttackedNotificationPacket";
+import { GuildKickNotificationPacket } from "../../../Lib/src/packets/notifications/GuildKickNotificationPacket";
+import { GuildStatusChangeNotificationPacket } from "../../../Lib/src/packets/notifications/GuildStatusChangeNotificationPacket";
 
 export abstract class NotificationsHandler {
 	/**
@@ -69,6 +71,26 @@ export abstract class NotificationsHandler {
 					rewards: getCommandGuildDailyRewardPacketString((notification.packet as GuildDailyNotificationPacket).reward, lng)
 				});
 				notificationType = NotificationsTypes.GUILD_DAILY;
+				break;
+			}
+			case GuildKickNotificationPacket.name: {
+				const packet = notification.packet as GuildKickNotificationPacket;
+				notificationContent = i18n.t("bot:notificationGuildKick", {
+					lng,
+					pseudo: await DisplayUtils.getEscapedUsername(packet.keycloakIdOfExecutor, lng),
+					guildName: packet.guildName
+				});
+				notificationType = NotificationsTypes.GUILD_KICK;
+				break;
+			}
+			case GuildStatusChangeNotificationPacket.name: {
+				const packet = notification.packet as GuildStatusChangeNotificationPacket;
+				const keyNotification = packet.becomeChief ? "becomeChief" : packet.becomeElder ? "becomeElder" : "becomeMember";
+				notificationContent = i18n.t(`bot:notificationGuildStatusChange.${keyNotification}`, {
+					lng,
+					guildName: packet.guildName
+				});
+				notificationType = NotificationsTypes.GUILD_STATUS_CHANGE;
 				break;
 			}
 			case PlayerFreedFromJailNotificationPacket.name: {

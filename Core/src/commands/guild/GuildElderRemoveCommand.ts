@@ -22,6 +22,8 @@ import { BlockingUtils } from "../../core/utils/BlockingUtils";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
 import { ReactionCollectorGuildElderRemove } from "../../../../Lib/src/packets/interaction/ReactionCollectorGuildElderRemove";
 import { GuildRole } from "../../../../Lib/src/types/GuildRole";
+import { GuildStatusChangeNotificationPacket } from "../../../../Lib/src/packets/notifications/GuildStatusChangeNotificationPacket";
+import { PacketUtils } from "../../core/utils/PacketUtils";
 
 /**
  * Demote demotedElder as a simple member of the guild
@@ -51,6 +53,12 @@ async function acceptGuildElderRemove(player: Player, demotedElder: Player, resp
 		demotedKeycloakId: demotedElder.keycloakId,
 		guildName: guild.name
 	}));
+	const notifications: GuildStatusChangeNotificationPacket[] = [];
+	notifications.push(makePacket(GuildStatusChangeNotificationPacket, {
+		keycloakId: demotedElder.keycloakId,
+		guildName: guild.name
+	}));
+	PacketUtils.sendNotifications(notifications);
 }
 
 function endCallback(player: Player, demotedElder: Player): EndCallback {

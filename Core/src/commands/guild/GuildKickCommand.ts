@@ -25,6 +25,8 @@ import {
 import { GuildRole } from "../../../../Lib/src/types/GuildRole";
 import { ReactionCollectorGuildKick } from "../../../../Lib/src/packets/interaction/ReactionCollectorGuildKick";
 import { crowniclesInstance } from "../../index";
+import { GuildKickNotificationPacket } from "../../../../Lib/src/packets/notifications/GuildKickNotificationPacket";
+import { PacketUtils } from "../../core/utils/PacketUtils";
 
 /**
  * Check if the kicked player is only blocked by this command
@@ -60,6 +62,13 @@ async function acceptGuildKick(player: Player, kickedPlayer: Player, response: C
 		kickedKeycloakId: kickedPlayer.keycloakId,
 		guildName: guild.name
 	}));
+	const notifications: GuildKickNotificationPacket[] = [];
+	notifications.push(makePacket(GuildKickNotificationPacket, {
+		keycloakId: kickedPlayer.keycloakId,
+		keycloakIdOfExecutor: player.keycloakId,
+		guildName: guild.name
+	}));
+	PacketUtils.sendNotifications(notifications);
 }
 
 /**
