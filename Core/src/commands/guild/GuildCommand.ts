@@ -79,7 +79,6 @@ export default class GuildCommand {
 								isOnPveIsland: Maps.isOnPveIsland(member),
 								isOnBoat: MapCache.boatEntryMapLinks.includes(member.mapLinkId),
 								isPveIslandAlly: membersPveAlliesIds.includes(member.id),
-								isInactive: member.isInactive(),
 								cannotBeJoinedOnBoat: member.isNotActiveEnoughToBeJoinedInTheBoat()
 							}
 						}))
