@@ -87,7 +87,7 @@ export class Maps {
 	 * @returns
 	 */
 	static async stopTravel(player: Player): Promise<void> {
-		player.startTravelDate = new Date(0);
+		player.startTravelDate = new Date();
 		await player.save();
 	}
 
