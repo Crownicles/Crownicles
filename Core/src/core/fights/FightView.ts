@@ -28,7 +28,6 @@ import { CommandFightEndOfFightPacket } from "../../../../Lib/src/packets/fights
 import { BuggedFightPacket } from "../../../../Lib/src/packets/fights/BuggedFightPacket";
 import { PetAssistanceResult } from "../../../../Lib/src/types/PetAssistanceResult";
 import { OwnedPet } from "../../../../Lib/src/types/OwnedPet";
-import { PetEntities } from "../database/game/models/PetEntity";
 
 export class FightView {
 	public context: PacketContext;
@@ -116,12 +115,12 @@ export class FightView {
 	 * @param fightAction - the action made by the fighter
 	 * @param fightActionResult - the result of the action
 	 */
-	async addActionToHistory(
+	addActionToHistory(
 		response: CrowniclesPacket[],
 		fighter: PlayerFighter | MonsterFighter | AiPlayerFighter,
 		fightAction: FightAction,
 		fightActionResult: FightActionResult | FightAlterationResult | PetAssistanceResult
-	): Promise<void> {
+	): void {
 		const buildStatsChange = (selfTarget: boolean): {
 			attack?: number;
 			defense?: number;
@@ -172,16 +171,14 @@ export class FightView {
 		 * @param fighter
 		 * @param fightActionResult
 		 */
-		const getPetIfRelevant = async (
+		const getPetIfRelevant = (
 			fighter: PlayerFighter | MonsterFighter | AiPlayerFighter,
 			fightActionResult: FightActionResult | FightAlterationResult | PetAssistanceResult
-		): Promise<OwnedPet | null> => {
-			// Check if the fighter is a player (not a monster) and has a pet
-			if (!(fighter instanceof MonsterFighter) && fighter.player.petId) {
-				// Check if the action result is pet assistance (has assistanceStatus property)
+		): OwnedPet | null => {
+			// Check if the fighter is a player (not a monster) and has a cached pet
+			if (!(fighter instanceof MonsterFighter) && fighter.pet) {
 				if ("assistanceStatus" in fightActionResult) {
-					const petEntity = await PetEntities.getById(fighter.player.petId);
-					return petEntity ? petEntity.asOwnedPet() : null;
+					return fighter.pet.asOwnedPet();
 				}
 			}
 			return null;
@@ -207,7 +204,7 @@ export class FightView {
 					: "state" in fightActionResult
 						? fightActionResult.state // FightAction is an alteration, so we have a state
 						: fightActionResult.assistanceStatus, // FightAction is pet assistance, so we have an assistanceStatus
-			pet: await getPetIfRelevant(fighter, fightActionResult),
+			pet: getPetIfRelevant(fighter, fightActionResult),
 			fightActionEffectDealt:
 				{
 					...buildStatsChange(false),
