@@ -34,7 +34,7 @@ import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
 import { crowniclesInstance } from "../../index";
 import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
-import {MissionsController} from "../../core/missions/MissionsController";
+import { MissionsController } from "../../core/missions/MissionsController";
 
 
 /**
