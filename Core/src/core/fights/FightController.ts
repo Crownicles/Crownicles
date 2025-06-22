@@ -200,7 +200,7 @@ export class FightController {
 			// If the result is a fight alteration result, that means that the player did not have enough breath
 			fightAction = FightAlterationDataController.instance.getById(FightConstants.FIGHT_ACTIONS.ALTERATION.OUT_OF_BREATH);
 		}
-		await this._fightView.addActionToHistory(response, attacker, fightAction, result);
+		this._fightView.addActionToHistory(response, attacker, fightAction, result);
 
 		if (this.state !== FightState.RUNNING) {
 			// An error occurred during the update of the history
@@ -238,7 +238,7 @@ export class FightController {
 	 */
 	private async executeFightAlteration(alteration: FightAlteration, response: CrowniclesPacket[]): Promise<void> {
 		const result = alteration.happen(this.getPlayingFighter(), this.getDefendingFighter(), this.turn, this);
-		await this._fightView.addActionToHistory(response, this.getPlayingFighter(), alteration, result);
+		this._fightView.addActionToHistory(response, this.getPlayingFighter(), alteration, result);
 		if (this.hadEnded()) {
 			await this.endFight(response);
 			return;
@@ -256,7 +256,7 @@ export class FightController {
 		if (!result) {
 			return;
 		}
-		await this._fightView.addActionToHistory(response, this.getPlayingFighter(), petAssistance, result);
+		this._fightView.addActionToHistory(response, this.getPlayingFighter(), petAssistance, result);
 		if (this.hadEnded()) {
 			await this.endFight(response);
 			return;
