@@ -14,7 +14,14 @@ import { DiscordCache } from "../../bot/DiscordCache";
 import { KeycloakUser } from "../../../../Lib/src/keycloak/KeycloakUser";
 import { PacketUtils } from "../../utils/PacketUtils";
 import { DisplayUtils } from "../../utils/DisplayUtils";
-import { escapeUsername } from "../../utils/StringUtils";
+import {
+	escapeUsername, StringUtils
+} from "../../utils/StringUtils";
+import {
+	ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, ComponentType
+} from "discord.js";
+import { sendInteractionNotForYou } from "../../utils/ErrorUtils";
+import { Constants } from "../../../../Lib/src/constants/Constants";
 
 /**
  * Display all the information about a Pet
@@ -41,7 +48,15 @@ export async function handleCommandPetPacketRes(packet: CommandPetPacketRes, con
 		foundPlayerUsername = await DisplayUtils.getEscapedUsername(packet.askedKeycloakId, lng);
 	}
 
-	await interaction.reply({
+	const petButton = new ButtonBuilder()
+		.setCustomId("pet_the_pet")
+		.setLabel(i18n.t("commands:pet.button", { lng }))
+		.setStyle(ButtonStyle.Secondary);
+
+	const row = new ActionRowBuilder<ButtonBuilder>()
+		.addComponents(petButton);
+
+	const reply = await interaction.reply({
 		embeds: [
 			new CrowniclesEmbed()
 				.formatAuthor(
@@ -54,8 +69,43 @@ export async function handleCommandPetPacketRes(packet: CommandPetPacketRes, con
 				.setDescription(
 					DisplayUtils.getOwnedPetFieldDisplay(packet.pet, lng)
 				)
-		]
+		],
+		components: packet.pet ? [row] : [],
+		withResponse: true
 	});
+
+	if (!reply?.resource?.message) {
+		return;
+	}
+	const message = reply.resource.message;
+
+	if (packet.pet) {
+		const collector = message.createMessageComponentCollector({
+			componentType: ComponentType.Button,
+			filter: i => {
+				if (i.user.id !== interaction.user.id) {
+					sendInteractionNotForYou(i.user, i, interaction.userLanguage);
+					return false;
+				}
+				return i.customId === "pet_the_pet";
+			},
+			time: Constants.MESSAGES.COLLECTOR_TIME,
+			max: 1
+		});
+
+		collector.on("collect", async (i: ButtonInteraction) => {
+			await i.reply({
+				content: StringUtils.getRandomTranslation("commands:pet.petPhrases", lng, {
+					petName: packet.pet?.nickname || i18n.t("commands:pet.defaultPetName", { lng })
+				})
+			});
+		});
+
+		collector.on("end", async () => {
+			petButton.setDisabled(true);
+			await message.edit({ components: [row] });
+		});
+	}
 }
 
 export const commandInfo: ICommand = {

@@ -27,7 +27,31 @@
     },
     "sexDisplay_f": "Femelle {emote:sex.female}",
     "sexDisplay_m": "Mâle {emote:sex.male}",
-    "shortPetField": "{{emote}} {{name}}"
+    "shortPetField": "{{emote}} {{name}}",
+    "button": "{emote:petCommand.petButton} Caresser",
+    "defaultPetName": "votre familier",
+    "petPhrases": [
+      "{emote:petCommand.pet} Votre main caresse {{petName}} qui se frotte contre vous avec la plus grande affection.",
+      "{emote:petCommand.pet} Sous votre toucher bienveillant, {{petName}} semble empli de contentement.",
+      "{emote:petCommand.pet} Vos caresses apaisent {{petName}} qui ronronne tel un doux murmure.",
+      "{emote:petCommand.pet} Avec grande ferveur, {{petName}} vous lèche la main en signe de dévotion.",
+      "{emote:petCommand.pet} La queue de {{petName}} frétille de joie pure sous vos attentions.",
+      "{emote:petCommand.pet} Les yeux clos de béatitude, {{petName}} savoure vos tendres caresses.",
+      "{emote:petCommand.pet} Un bond joyeux anime {{petName}} lorsque votre main le touche.",
+      "{emote:petCommand.pet} Sur le dos se roule {{petName}}, quémandant que vous lui grattiez le ventre.",
+      "{emote:petCommand.pet} Un doux son de satisfaction s'échappe de {{petName}} qui se blottit contre votre main.",
+      "{emote:petCommand.pet} D'un regard empli d'affection, {{petName}} vous contemple avec dévotion.",
+      "{emote:petCommand.pet} Contre votre jambe se frotte {{petName}} avec la plus douce tendresse.",
+      "{emote:petCommand.pet} Sous vos doigts qui grattent ses oreilles, {{petName}} frémit de pur bonheur.",
+      "{emote:petCommand.pet} Autour de vous sautille {{petName}} dans une danse de joie.",
+      "{emote:petCommand.pet} Sous vos caresses bienfaisantes, {{petName}} se prélasse avec délice.",
+      "{emote:petCommand.pet} L'air même vibre autour de {{petName}} tant son plaisir est grand.",
+      "{emote:petCommand.pet} Avec satisfaction, {{petName}} s'étire sous la douceur de votre main.",
+      "{emote:petCommand.pet} Un bâillement de béatitude échappe à {{petName}} durant vos câlins.",
+      "{emote:petCommand.pet} D'un regard empli de reconnaissance, {{petName}} vous honore de sa gratitude.",
+      "{emote:petCommand.pet} D'excitation tressaille {{petName}} au contact de votre main bienveillante.",
+      "{emote:petCommand.pet} Sous vos doigts experts, {{petName}} se détend en toute quiétude."
+    ]
   },
   "guild": {
     "embedTitle": "Guilde {{guildName}} | Niveau {{level}}",

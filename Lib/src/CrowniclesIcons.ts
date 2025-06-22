@@ -145,6 +145,10 @@ export const CrowniclesIcons: {
 	petInformation: {
 		[petInfoId: string]: string;
 	};
+	petCommand: {
+		petButton: string;
+		pet: string;
+	};
 	leagues: {
 		[leagueId: string]: string;
 	};
@@ -2149,6 +2153,10 @@ export const CrowniclesIcons: {
 		nextFeed: "🕙",
 		fightEffect: "⚔️",
 		age: "👶"
+	},
+	petCommand: {
+		petButton: "🖐️",
+		pet: "😻"
 	},
 	leagues: {
 		0: "🌲",
