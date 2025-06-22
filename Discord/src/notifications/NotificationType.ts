@@ -53,7 +53,7 @@ export abstract class NotificationsTypes {
 	};
 
 	static GUILD_KICK: NotificationType = {
-		emote: DraftBotIcons.notifications.types.guildKick,
+		emote: CrowniclesIcons.notifications.types.guildKick,
 		customId: "guildKick",
 		i18nKey: "commands:notifications.types.guildKick",
 		value: notificationsConfiguration => ({
@@ -71,7 +71,7 @@ export abstract class NotificationsTypes {
 	};
 
 	static GUILD_STATUS_CHANGE: NotificationType = {
-		emote: DraftBotIcons.notifications.types.guildStatusChange,
+		emote: CrowniclesIcons.notifications.types.guildStatusChange,
 		customId: "guildStatusChange",
 		i18nKey: "commands:notifications.types.guildStatusChange",
 		value: notificationsConfiguration => ({
