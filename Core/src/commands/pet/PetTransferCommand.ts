@@ -34,6 +34,7 @@ import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
 import { crowniclesInstance } from "../../index";
 import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
+import {MissionsController} from "../../core/missions/MissionsController";
 
 
 /**
@@ -98,6 +99,7 @@ async function withdrawPetFromGuild(
 
 	player.petId = toWithdrawPet.petEntityId;
 	await player.save();
+	await MissionsController.update(player, response, { missionId: "havePet" });
 	await toWithdrawPet.destroy();
 	PetEntities.getById(toWithdrawPet.petEntityId).then(petEntity => {
 		crowniclesInstance.logsDatabase.logPetTransfer(null, petEntity).then();
