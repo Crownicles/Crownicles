@@ -180,7 +180,8 @@ export class FightView {
 			if (!(fighter instanceof MonsterFighter) && fighter.player.petId) {
 				// Check if the action result is pet assistance (has assistanceStatus property)
 				if ("assistanceStatus" in fightActionResult) {
-					return (await PetEntities.getById(fighter.player.petId)).asOwnedPet();
+					const petEntity = await PetEntities.getById(fighter.player.petId);
+					return petEntity ? petEntity.asOwnedPet() : null;
 				}
 			}
 			return null;
