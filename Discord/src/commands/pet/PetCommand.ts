@@ -54,13 +54,12 @@ function createPetButton(lng: Language): ButtonBuilder {
  * Create the embed for the pet command response
  * @param packet
  * @param interaction
- * @param lng
  */
 async function createPetEmbed(
 	packet: CommandPetPacketRes,
-	interaction: CrowniclesInteraction,
-	lng: Language
+	interaction: CrowniclesInteraction
 ): Promise<CrowniclesEmbed> {
+	const lng = interaction.userLanguage;
 	let foundPlayerUsername;
 	if (packet.askedKeycloakId) {
 		foundPlayerUsername = await DisplayUtils.getEscapedUsername(packet.askedKeycloakId, lng);
@@ -86,21 +85,20 @@ async function createPetEmbed(
  * @param interaction
  * @param petButton
  * @param row
- * @param lng
  */
 function setupPetButtonCollector(
 	message: Message,
 	packet: CommandPetPacketRes,
 	interaction: CrowniclesInteraction,
 	petButton: ButtonBuilder,
-	row: ActionRowBuilder<ButtonBuilder>,
-	lng: Language
+	row: ActionRowBuilder<ButtonBuilder>
 ): void {
+	const lng = interaction.userLanguage;
 	const collector = message.createMessageComponentCollector({
 		componentType: ComponentType.Button,
 		filter: (i: ButtonInteraction) => {
 			if (i.user.id !== interaction.user.id) {
-				sendInteractionNotForYou(i.user, i, interaction.userLanguage);
+				sendInteractionNotForYou(i.user, i, lng);
 				return false;
 			}
 			return i.customId === "pet_the_pet";
@@ -135,7 +133,7 @@ export async function handleCommandPetPacketRes(packet: CommandPetPacketRes, con
 
 	const petButton = createPetButton(lng);
 	const row = new ActionRowBuilder<ButtonBuilder>().addComponents(petButton);
-	const embed = await createPetEmbed(packet, interaction, lng);
+	const embed = await createPetEmbed(packet, interaction);
 
 	const reply = await interaction.reply({
 		embeds: [embed],
@@ -150,7 +148,7 @@ export async function handleCommandPetPacketRes(packet: CommandPetPacketRes, con
 	const message = reply.resource.message;
 
 	if (packet.pet && isOwnerViewingOwnPet) {
-		setupPetButtonCollector(message, packet, interaction, petButton, row, lng);
+		setupPetButtonCollector(message, packet, interaction, petButton, row);
 	}
 }
 
