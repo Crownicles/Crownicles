@@ -835,7 +835,7 @@ export const CrowniclesIcons: {
 		},
 		69: {
 			accept: "👍",
-			comrpomise: "🤝",
+			compromise: "🤝",
 			deny: "👿",
 			end: {
 				0: "👁️"
