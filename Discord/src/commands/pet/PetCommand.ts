@@ -22,6 +22,7 @@ import {
 } from "discord.js";
 import { sendInteractionNotForYou } from "../../utils/ErrorUtils";
 import { Constants } from "../../../../Lib/src/constants/Constants";
+import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 
 /**
  * Display all the information about a Pet
@@ -50,11 +51,15 @@ export async function handleCommandPetPacketRes(packet: CommandPetPacketRes, con
 
 	const petButton = new ButtonBuilder()
 		.setCustomId("pet_the_pet")
-		.setLabel(i18n.t("commands:pet.button", { lng }))
+		.setLabel(i18n.t("commands:pet.petButton", { lng }))
+		.setEmoji(CrowniclesIcons.petCommand.petButton)
 		.setStyle(ButtonStyle.Secondary);
 
 	const row = new ActionRowBuilder<ButtonBuilder>()
 		.addComponents(petButton);
+
+	// Only show the pet button if the pet belongs to the user executing the command
+	const isOwnerViewingOwnPet = !packet.askedKeycloakId || packet.askedKeycloakId === context.keycloakId;
 
 	const reply = await interaction.reply({
 		embeds: [
@@ -70,7 +75,7 @@ export async function handleCommandPetPacketRes(packet: CommandPetPacketRes, con
 					DisplayUtils.getOwnedPetFieldDisplay(packet.pet, lng)
 				)
 		],
-		components: packet.pet ? [row] : [],
+		components: packet.pet && isOwnerViewingOwnPet ? [row] : [],
 		withResponse: true
 	});
 
@@ -79,7 +84,7 @@ export async function handleCommandPetPacketRes(packet: CommandPetPacketRes, con
 	}
 	const message = reply.resource.message;
 
-	if (packet.pet) {
+	if (packet.pet && isOwnerViewingOwnPet) {
 		const collector = message.createMessageComponentCollector({
 			componentType: ComponentType.Button,
 			filter: i => {
