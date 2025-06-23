@@ -134,9 +134,16 @@ export async function handleChangeClassReactionCollector(context: PacketContext,
 		}
 
 		await selectMenuInteraction.deferReply();
+		// Disable components instead of removing them
+		const disabledRow = new ActionRowBuilder<StringSelectMenuBuilder>();
+		mainEmbedRow.components.forEach(component => {
+			const selectMenu = StringSelectMenuBuilder.from(component).setDisabled(true);
+			disabledRow.addComponents(selectMenu);
+		});
+		
 		await msg.edit({
 			embeds: [mainEmbed],
-			components: []
+			components: [disabledRow]
 		});
 
 		const selectedOption = selectMenuInteraction.values[0];
@@ -228,15 +235,28 @@ export async function handleChangeClassReactionCollector(context: PacketContext,
 		});
 
 		validateCollector.on("end", async () => {
+			const disabledRow = new ActionRowBuilder<ButtonBuilder>();
+			validateRow.components.forEach(component => {
+				const button = ButtonBuilder.from(component).setDisabled(true);
+				disabledRow.addComponents(button);
+			});
+
 			await validateMsg.edit({
-				components: []
+				components: [disabledRow]
 			});
 		});
 	});
 
 	selectCollector.on("end", async () => {
+		// Disable components instead of removing them
+		const disabledRow = new ActionRowBuilder<StringSelectMenuBuilder>();
+		mainEmbedRow.components.forEach(component => {
+			const selectMenu = StringSelectMenuBuilder.from(component).setDisabled(true);
+			disabledRow.addComponents(selectMenu);
+		});
+		
 		await msg.edit({
-			components: []
+			components: [disabledRow]
 		});
 		if (validateCollector && !validateCollector.ended) {
 			validateCollector.stop();

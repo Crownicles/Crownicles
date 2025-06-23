@@ -404,9 +404,19 @@ export async function handlePetTransferReactionCollector(context: PacketContext,
 	});
 
 	msgCollector.on("end", () => {
+		// Disable buttons instead of removing them
+		const disabledComponents = mainMenuComponents.map(row => {
+			const newRow = new ActionRowBuilder<ButtonBuilder>();
+			row.components.forEach(component => {
+				const button = ButtonBuilder.from(component).setDisabled(true);
+				newRow.addComponents(button);
+			});
+			return newRow;
+		});
+		
 		msg.edit({
 			embeds: [mainMenuEmbed],
-			components: []
+			components: disabledComponents
 		});
 	});
 

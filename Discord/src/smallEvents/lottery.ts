@@ -100,8 +100,15 @@ export async function lotteryCollector(context: PacketContext, packet: ReactionC
 	});
 
 	buttonCollector.on("end", async () => {
+		// Disable buttons instead of removing them
+		const disabledRow = new ActionRowBuilder<ButtonBuilder>();
+		easyButton.setDisabled(true);
+		mediumButton.setDisabled(true);
+		hardButton.setDisabled(true);
+		disabledRow.addComponents(easyButton, mediumButton, hardButton);
+		
 		await msg.edit({
-			components: []
+			components: [disabledRow]
 		});
 	});
 

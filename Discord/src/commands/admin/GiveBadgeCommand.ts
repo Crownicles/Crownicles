@@ -63,7 +63,7 @@ async function handleGetPlayerInfoResponse(
 			return;
 		}
 
-		const rows = [];
+		const rows: ActionRowBuilder<StringSelectMenuBuilder>[] = [];
 
 		for (const badge of badges) {
 			const badgeEmote = CrowniclesIcons.badges[badge];
@@ -108,8 +108,18 @@ async function handleGetPlayerInfoResponse(
 			}
 
 			selectCollector.stop();
+			// Disable components instead of removing them
+			const disabledRows = rows.map(row => {
+				const newRow = new ActionRowBuilder<StringSelectMenuBuilder>();
+				row.components.forEach(component => {
+					const selectMenu = StringSelectMenuBuilder.from(component).setDisabled(true);
+					newRow.addComponents(selectMenu);
+				});
+				return newRow;
+			});
+			
 			await selectMenuInteraction.update({
-				components: []
+				components: disabledRows
 			});
 
 			const selectedOption = selectMenuInteraction.values[0];
@@ -124,8 +134,18 @@ async function handleGetPlayerInfoResponse(
 		});
 
 		selectCollector.on("end", async () => {
+			// Disable components instead of removing them
+			const disabledRows = rows.map(row => {
+				const newRow = new ActionRowBuilder<StringSelectMenuBuilder>();
+				row.components.forEach(component => {
+					const selectMenu = StringSelectMenuBuilder.from(component).setDisabled(true);
+					newRow.addComponents(selectMenu);
+				});
+				return newRow;
+			});
+			
 			await msg.edit({
-				components: []
+				components: disabledRows
 			});
 		});
 	}

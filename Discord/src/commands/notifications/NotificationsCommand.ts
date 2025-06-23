@@ -130,7 +130,15 @@ async function mainPage(interaction: CrowniclesInteraction | StringSelectMenuInt
 		currentCollectors.delete(interaction.user.id);
 
 		if (reason !== forceStopReason) {
-			await msg.edit({ components: [] });
+			const disabledRow = new ActionRowBuilder<ButtonBuilder>();
+			row.components.forEach(component => {
+				const button = ButtonBuilder.from(component).setDisabled(true);
+				disabledRow.addComponents(button);
+			});
+
+			await msg.edit({
+				components: [disabledRow]
+			});
 		}
 	});
 }
@@ -217,7 +225,17 @@ async function chooseEnabled(buttonInteraction: ButtonInteraction, notifications
 		await notificationsConfiguration.save();
 
 		if (reason !== forceStopReason) {
-			await msg.edit({ components: [] });
+			// Disable menu instead of removing components
+			const disabledMenu = menu.map(row => {
+				const newRow = new ActionRowBuilder<StringSelectMenuBuilder>();
+				row.components.forEach(component => {
+					const selectMenu = StringSelectMenuBuilder.from(component).setDisabled(true);
+					newRow.addComponents(selectMenu);
+				});
+				return newRow;
+			});
+
+			await msg.edit({ components: disabledMenu });
 		}
 	});
 }
@@ -275,7 +293,17 @@ async function chooseSendType(buttonInteraction: ButtonInteraction, notification
 		await notificationsConfiguration.save();
 
 		if (reason !== forceStopReason) {
-			await msg.edit({ components: [] });
+			// Disable menu instead of removing components
+			const disabledMenu = menu.map(row => {
+				const newRow = new ActionRowBuilder<StringSelectMenuBuilder>();
+				row.components.forEach(component => {
+					const selectMenu = StringSelectMenuBuilder.from(component).setDisabled(true);
+					newRow.addComponents(selectMenu);
+				});
+				return newRow;
+			});
+
+			await msg.edit({ components: disabledMenu });
 		}
 	});
 }

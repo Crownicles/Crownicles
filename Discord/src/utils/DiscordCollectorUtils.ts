@@ -203,15 +203,27 @@ export class DiscordCollectorUtils {
 					await buttonInteraction.deferReply();
 				}
 				else if (messageContentOrEmbed instanceof CrowniclesEmbed) {
+					const disabledRow = new ActionRowBuilder<ButtonBuilder>();
+					row.components.forEach(component => {
+						const button = ButtonBuilder.from(component).setDisabled(true);
+						disabledRow.addComponents(button);
+					});
+
 					await msg.edit({
 						embeds: [messageContentOrEmbed],
-						components: []
+						components: [disabledRow]
 					});
 				}
 				else {
+					const disabledRow = new ActionRowBuilder<ButtonBuilder>();
+					row.components.forEach(component => {
+						const button = ButtonBuilder.from(component).setDisabled(true);
+						disabledRow.addComponents(button);
+					});
+
 					await msg.edit({
 						content: messageContentOrEmbed,
-						components: []
+						components: [disabledRow]
 					});
 				}
 				DiscordCollectorUtils.sendReaction(
@@ -237,8 +249,14 @@ export class DiscordCollectorUtils {
 		});
 
 		buttonCollector.on("end", async () => {
+			const disabledRow = new ActionRowBuilder<ButtonBuilder>();
+			row.components.forEach(component => {
+				const button = ButtonBuilder.from(component).setDisabled(true);
+				disabledRow.addComponents(button);
+			});
+
 			await msg.edit({
-				components: []
+				components: [disabledRow]
 			});
 		});
 
@@ -353,8 +371,17 @@ export class DiscordCollectorUtils {
 		});
 
 		buttonCollector.on("end", async () => {
+			const disabledRows = rows.map(row => {
+				const newRow = new ActionRowBuilder<ButtonBuilder>();
+				row.components.forEach(component => {
+					const button = ButtonBuilder.from(component).setDisabled(true);
+					newRow.addComponents(button);
+				});
+				return newRow;
+			});
+
 			await msg.edit({
-				components: []
+				components: disabledRows
 			});
 		});
 
