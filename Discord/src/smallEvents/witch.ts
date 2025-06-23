@@ -90,7 +90,7 @@ export async function witchCollector(context: PacketContext, packet: ReactionCol
 			const button = ButtonBuilder.from(component).setDisabled(true);
 			disabledRow.addComponents(button);
 		});
-		
+
 		await msg.edit({
 			components: [disabledRow]
 		});

@@ -134,13 +134,13 @@ export async function handleChangeClassReactionCollector(context: PacketContext,
 		}
 
 		await selectMenuInteraction.deferReply();
-		// Disable components instead of removing them
+
 		const disabledRow = new ActionRowBuilder<StringSelectMenuBuilder>();
 		mainEmbedRow.components.forEach(component => {
 			const selectMenu = StringSelectMenuBuilder.from(component).setDisabled(true);
 			disabledRow.addComponents(selectMenu);
 		});
-		
+
 		await msg.edit({
 			embeds: [mainEmbed],
 			components: [disabledRow]
@@ -248,13 +248,12 @@ export async function handleChangeClassReactionCollector(context: PacketContext,
 	});
 
 	selectCollector.on("end", async () => {
-		// Disable components instead of removing them
 		const disabledRow = new ActionRowBuilder<StringSelectMenuBuilder>();
 		mainEmbedRow.components.forEach(component => {
 			const selectMenu = StringSelectMenuBuilder.from(component).setDisabled(true);
 			disabledRow.addComponents(selectMenu);
 		});
-		
+
 		await msg.edit({
 			components: [disabledRow]
 		});

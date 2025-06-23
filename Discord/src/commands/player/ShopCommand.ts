@@ -217,13 +217,14 @@ export async function shopInventoryExtensionCollector(context: PacketContext, pa
 			await sendInteractionNotForYou(buttonInteraction.user, buttonInteraction, lng);
 			return;
 		}
+
 		// Disable buttons instead of removing them
 		const disabledRow = new ActionRowBuilder<ButtonBuilder>();
 		row.components.forEach(component => {
 			const button = ButtonBuilder.from(component).setDisabled(true);
 			disabledRow.addComponents(button);
 		});
-		
+
 		await buttonInteraction.update({ components: [disabledRow] });
 
 		if (buttonInteraction.customId === "closeShop") {
@@ -244,7 +245,7 @@ export async function shopInventoryExtensionCollector(context: PacketContext, pa
 			const button = ButtonBuilder.from(component).setDisabled(true);
 			disabledRow.addComponents(button);
 		});
-		
+
 		await msg.edit({
 			components: [disabledRow]
 		});
@@ -371,13 +372,14 @@ async function manageBuyoutConfirmation(packet: ReactionCollectorCreationPacket,
 			await sendInteractionNotForYou(buttonInteraction.user, buttonInteraction, lng);
 			return;
 		}
+
 		// Disable buttons instead of removing them
 		const disabledRow = new ActionRowBuilder<ButtonBuilder>();
 		row.components.forEach(component => {
 			const button = ButtonBuilder.from(component).setDisabled(true);
 			disabledRow.addComponents(button);
 		});
-		
+
 		await buttonInteraction.update({ components: [disabledRow] });
 
 		if (buttonInteraction.customId === "refuse") {
@@ -399,7 +401,7 @@ async function manageBuyoutConfirmation(packet: ReactionCollectorCreationPacket,
 			const button = ButtonBuilder.from(component).setDisabled(true);
 			disabledRow.addComponents(button);
 		});
-		
+
 		await msg.edit({
 			components: [disabledRow]
 		});
@@ -544,17 +546,17 @@ export async function shopCollector(context: PacketContext, packet: ReactionColl
 		}
 
 		hasEnded = true;
-		// Disable components instead of removing them
+
 		const disabledSelectRow = new ActionRowBuilder<StringSelectMenuBuilder>();
 		const disabledSelect = StringSelectMenuBuilder.from(selectRow.components[0]).setDisabled(true);
 		disabledSelectRow.addComponents(disabledSelect);
-		
+
 		const disabledButtonRow = new ActionRowBuilder<ButtonBuilder>();
 		buttonRow.components.forEach(component => {
 			const button = ButtonBuilder.from(component).setDisabled(true);
 			disabledButtonRow.addComponents(button);
 		});
-		
+
 		await msgComponentInteraction.update({ components: [disabledSelectRow, disabledButtonRow] });
 
 		if (msgComponentInteraction.customId === "closeShop") {
@@ -576,17 +578,16 @@ export async function shopCollector(context: PacketContext, packet: ReactionColl
 	});
 
 	buttonCollector.on("end", async () => {
-		// Disable components instead of removing them
 		const disabledSelectRow = new ActionRowBuilder<StringSelectMenuBuilder>();
 		const disabledSelect = StringSelectMenuBuilder.from(selectRow.components[0]).setDisabled(true);
 		disabledSelectRow.addComponents(disabledSelect);
-		
+
 		const disabledButtonRow = new ActionRowBuilder<ButtonBuilder>();
 		buttonRow.components.forEach(component => {
 			const button = ButtonBuilder.from(component).setDisabled(true);
 			disabledButtonRow.addComponents(button);
 		});
-		
+
 		await msg.edit({
 			components: [disabledSelectRow, disabledButtonRow]
 		});

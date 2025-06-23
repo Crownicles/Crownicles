@@ -108,7 +108,7 @@ async function handleGetPlayerInfoResponse(
 			}
 
 			selectCollector.stop();
-			// Disable components instead of removing them
+
 			const disabledRows = rows.map(row => {
 				const newRow = new ActionRowBuilder<StringSelectMenuBuilder>();
 				row.components.forEach(component => {
@@ -117,7 +117,7 @@ async function handleGetPlayerInfoResponse(
 				});
 				return newRow;
 			});
-			
+
 			await selectMenuInteraction.update({
 				components: disabledRows
 			});
@@ -134,7 +134,6 @@ async function handleGetPlayerInfoResponse(
 		});
 
 		selectCollector.on("end", async () => {
-			// Disable components instead of removing them
 			const disabledRows = rows.map(row => {
 				const newRow = new ActionRowBuilder<StringSelectMenuBuilder>();
 				row.components.forEach(component => {
@@ -143,7 +142,7 @@ async function handleGetPlayerInfoResponse(
 				});
 				return newRow;
 			});
-			
+
 			await msg.edit({
 				components: disabledRows
 			});

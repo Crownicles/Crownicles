@@ -413,7 +413,6 @@ export class CommandsManager {
 		});
 
 		collector.on("end", async () => {
-			// Disable components instead of removing them
 			const disabledRows = row.map(buttonRow => {
 				const newRow = new ActionRowBuilder<ButtonBuilder>();
 				buttonRow.components.forEach(component => {
@@ -422,7 +421,7 @@ export class CommandsManager {
 				});
 				return newRow;
 			});
-			
+
 			await msg.edit({
 				components: disabledRows
 			});
