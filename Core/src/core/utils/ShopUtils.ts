@@ -61,7 +61,9 @@ export class ShopUtils {
 				.find(category => category.id === reactionInstance.shopCategoryId).items
 				.find(item => item.id === reactionInstance.shopItemId).buyCallback(response, player.id, context, reactionInstance.amount);
 			if (buyResult) {
-				await this.manageCurrencySpending(interestingPlayerInfo, reactionInstance, response);
+				// Get fresh PlayerMissionsInfo after buyCallback in case missions updated gem count
+				const currentPlayerInfo = additionnalShopData.currency === ShopCurrency.MONEY ? player : await PlayerMissionsInfos.getOfPlayer(player.id);
+				await this.manageCurrencySpending(currentPlayerInfo, reactionInstance, response);
 				logger(player.keycloakId, reactionInstance.shopItemId, reactionInstance.amount).then();
 			}
 		};
@@ -108,10 +110,11 @@ export class ShopUtils {
 				reason: NumberChangeReason.SHOP,
 				response
 			});
+			await player.save();
 		}
 		else {
 			await player.spendGems(reactionInstance.price, response, NumberChangeReason.MISSION_SHOP);
+			await player.save();
 		}
-		await player.save();
 	}
 }
