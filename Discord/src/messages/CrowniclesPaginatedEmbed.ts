@@ -102,8 +102,10 @@ export class CrowniclesPaginatedEmbed extends CrowniclesEmbed {
 		});
 
 		collector.on("end", async () => {
+			const disabledComponents = CrowniclesPaginatedEmbed.getPageComponents(currentPage, this.options.pages.length, previousButton.setDisabled(true), nextButton.setDisabled(true));
+
 			await msg.edit({
-				components: []
+				components: disabledComponents
 			});
 		});
 	}

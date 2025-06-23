@@ -18,7 +18,8 @@ import {
 	EmbedField,
 	StringSelectMenuBuilder,
 	StringSelectMenuInteraction,
-	StringSelectMenuOptionBuilder
+	StringSelectMenuOptionBuilder,
+	ButtonBuilder
 } from "discord.js";
 import { sendInteractionNotForYou } from "../../utils/ErrorUtils";
 import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
@@ -199,7 +200,16 @@ export async function handleCommandClassesInfoPacketRes(packet: CommandClassesIn
 	});
 
 	collector.on("end", async () => {
-		await msg.edit({ components: [] });
+		// Disable components instead of removing them
+		const disabledRow = new ActionRowBuilder<StringSelectMenuBuilder>();
+		row.components.forEach(component => {
+			const selectMenu = StringSelectMenuBuilder.from(component).setDisabled(true);
+			disabledRow.addComponents(selectMenu);
+		});
+		
+		await msg.edit({ 
+			components: [disabledRow] 
+		});
 	});
 }
 

@@ -171,8 +171,13 @@ export async function handleCommandInventoryPacketRes(packet: CommandInventoryPa
 		});
 	});
 	collector.on("end", async () => {
+		// Disable buttons instead of removing them
+		const disabledRow = new ActionRowBuilder<ButtonBuilder>();
+		switchItemsButton.setDisabled(true);
+		disabledRow.addComponents(switchItemsButton);
+		
 		await msg.edit({
-			components: []
+			components: [disabledRow]
 		});
 	});
 }

@@ -70,8 +70,18 @@ export class CrowniclesActionChooseCachedMessage extends CrowniclesCachedMessage
 				await sendInteractionNotForYou(buttonInteraction.user, buttonInteraction, lng);
 				return;
 			}
+
+			const disabledRows = rows.map(row => {
+				const newRow = new ActionRowBuilder<ButtonBuilder>();
+				row.components.forEach(component => {
+					const button = ButtonBuilder.from(component).setDisabled(true);
+					newRow.addComponents(button);
+				});
+				return newRow;
+			});
+
 			await buttonInteraction.update({
-				components: []
+				components: disabledRows
 			});
 			DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, buttonInteraction, reactions.findIndex(reaction => reaction.data.id === buttonInteraction.customId));
 		});

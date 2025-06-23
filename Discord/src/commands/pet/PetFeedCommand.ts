@@ -149,8 +149,20 @@ export async function handleCommandPetFeedWithGuildCollector(context: PacketCont
 	});
 
 	msgCollector.on("end", async () => {
+		const disabledFoodRow = new ActionRowBuilder<ButtonBuilder>();
+		rowFood.components.forEach(component => {
+			const button = ButtonBuilder.from(component).setDisabled(true);
+			disabledFoodRow.addComponents(button);
+		});
+
+		const disabledRefuseRow = new ActionRowBuilder<ButtonBuilder>();
+		rowRefuse.components.forEach(component => {
+			const button = ButtonBuilder.from(component).setDisabled(true);
+			disabledRefuseRow.addComponents(button);
+		});
+
 		await msg.edit({
-			components: []
+			components: [disabledFoodRow, disabledRefuseRow]
 		});
 	});
 
