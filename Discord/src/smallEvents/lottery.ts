@@ -106,7 +106,7 @@ export async function lotteryCollector(context: PacketContext, packet: ReactionC
 		mediumButton.setDisabled(true);
 		hardButton.setDisabled(true);
 		disabledRow.addComponents(easyButton, mediumButton, hardButton);
-		
+
 		await msg.edit({
 			components: [disabledRow]
 		});

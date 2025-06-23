@@ -413,7 +413,7 @@ export async function handlePetTransferReactionCollector(context: PacketContext,
 			});
 			return newRow;
 		});
-		
+
 		msg.edit({
 			embeds: [mainMenuEmbed],
 			components: disabledComponents

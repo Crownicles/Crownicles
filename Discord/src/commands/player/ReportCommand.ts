@@ -136,7 +136,7 @@ export async function createBigEventCollector(context: PacketContext, packet: Re
 			});
 			return newRow;
 		});
-		
+
 		await msg.edit({
 			components: disabledRows
 		});
