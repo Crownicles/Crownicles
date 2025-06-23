@@ -9,7 +9,7 @@ import {
 import { RandomUtils } from "../../../../../../../Lib/src/utils/RandomUtils";
 
 const use: FightActionFunc = (sender, receiver) => {
-	const nbOfMonsters = RandomUtils.draftbotRandom.integer(2, 5);
+	const nbOfMonsters = RandomUtils.crowniclesRandom.integer(2, 5);
 	const result = simpleDamageFightAction(
 		{
 			sender, receiver

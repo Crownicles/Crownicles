@@ -39,7 +39,7 @@ const use: PetAssistanceFunc = (fighter, opponent, turn, _fightController): Prom
 		return null;
 	}
 
-	if (opponent.getLastFightActionUsed().type !== FightActionType.PHYSICAL) {
+	if (opponent.getLastFightActionUsed()?.type !== FightActionType.PHYSICAL) {
 		return null;
 	}
 

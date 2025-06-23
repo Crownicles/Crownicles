@@ -2,7 +2,7 @@ import {
 	CommandsTest, ExecuteTestCommandLike, ITestCommand, TypeKey
 } from "../../../../core/CommandsTest";
 import ReportCommand from "../../../player/ReportCommand";
-import { makePacket } from "../../../../../../Lib/src/packets/DraftBotPacket";
+import { makePacket } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import { CommandReportPacketReq } from "../../../../../../Lib/src/packets/commands/CommandReportPacket";
 
 export const commandInfo: ITestCommand = {

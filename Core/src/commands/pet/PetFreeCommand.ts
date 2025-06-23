@@ -1,6 +1,6 @@
 import {
-	DraftBotPacket, makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, makePacket, PacketContext
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import { Player } from "../../core/database/game/models/Player";
 import {
 	PetEntities, PetEntity
@@ -57,7 +57,7 @@ function getMissingMoneyToFreePet(player: Player, playerPet: PetEntity): number 
  */
 function generateLuckyMeat(guild: Guild, pPet: PetEntity): boolean {
 	return guild && guild.carnivorousFood + 1 <= GuildConstants.MAX_PET_FOOD[getFoodIndexOf(PetConstants.PET_FOOD.CARNIVOROUS_FOOD)]
-		&& RandomUtils.draftbotRandom.realZeroToOneInclusive() <= PetFreeConstants.GIVE_MEAT_PROBABILITY
+		&& RandomUtils.crowniclesRandom.realZeroToOneInclusive() <= PetFreeConstants.GIVE_MEAT_PROBABILITY
 		&& !pPet.isFeisty();
 }
 
@@ -67,7 +67,7 @@ function generateLuckyMeat(guild: Guild, pPet: PetEntity): boolean {
  * @param playerPet
  * @param response
  */
-async function acceptPetFree(player: Player, playerPet: PetEntity, response: DraftBotPacket[]): Promise<void> {
+async function acceptPetFree(player: Player, playerPet: PetEntity, response: CrowniclesPacket[]): Promise<void> {
 	await player.reload(); // Let's make sure the player has not lost money in the meantime
 	// Check money again just in case
 	const missingMoney = getMissingMoneyToFreePet(player, playerPet);
@@ -120,7 +120,7 @@ export default class PetFreeCommand {
 		allowedEffects: CommandUtils.ALLOWED_EFFECTS.NO_EFFECT,
 		whereAllowed: CommandUtils.WHERE.EVERYWHERE
 	})
-	async execute(response: DraftBotPacket[], player: Player, _packet: CommandPetFreePacketReq, context: PacketContext): Promise<void> {
+	async execute(response: CrowniclesPacket[], player: Player, _packet: CommandPetFreePacketReq, context: PacketContext): Promise<void> {
 		const playerPet = await PetEntities.getById(player.petId);
 		if (!playerPet) {
 			response.push(makePacket(CommandPetFreePacketRes, {
@@ -159,7 +159,7 @@ export default class PetFreeCommand {
 			playerPet.isFeisty() ? PetFreeConstants.FREE_FEISTY_COST : 0
 		);
 
-		const endCallback: EndCallback = async (collector: ReactionCollectorInstance, response: DraftBotPacket[]): Promise<void> => {
+		const endCallback: EndCallback = async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
 			const reaction = collector.getFirstReaction();
 
 			if (reaction && reaction.reaction.type === ReactionCollectorAcceptReaction.name) {

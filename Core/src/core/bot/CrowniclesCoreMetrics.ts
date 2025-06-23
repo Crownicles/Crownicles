@@ -2,41 +2,41 @@
 import * as client from "prom-client";
 import { BlockingUtils } from "../utils/BlockingUtils";
 
-export const draftBotMetricsRegistry = new client.Registry();
+export const crowniclesMetricsRegistry = new client.Registry();
 
-export abstract class DraftBotCoreMetrics {
+export abstract class CrowniclesCoreMetrics {
 	private static packetsTimeHistogram = new client.Histogram({
-		name: "draftbot_packets_time",
+		name: "crownicles_packets_time",
 		help: "Histogram of packets times",
 		labelNames: ["packet"],
-		registers: [draftBotMetricsRegistry]
+		registers: [crowniclesMetricsRegistry]
 	});
 
 	private static packetsCount = new client.Counter({
-		name: "draftbot_packets_count",
+		name: "crownicles_packets_count",
 		help: "Count of packets",
 		labelNames: ["packet"],
-		registers: [draftBotMetricsRegistry]
+		registers: [crowniclesMetricsRegistry]
 	});
 
 	private static packetsErrorCount = new client.Counter({
-		name: "draftbot_packets_error_count",
+		name: "crownicles_packets_error_count",
 		help: "Count of packets errors",
 		labelNames: ["packet"],
-		registers: [draftBotMetricsRegistry]
+		registers: [crowniclesMetricsRegistry]
 	});
 
 	private static blockedPlayersCount = new client.Gauge({
-		name: "draftbot_blocked_players_count",
+		name: "crownicles_blocked_players_count",
 		help: "Count of blocked players",
-		registers: [draftBotMetricsRegistry]
+		registers: [crowniclesMetricsRegistry]
 	});
 
 	private static blockedPlayersTimes = new client.Gauge({
-		name: "draftbot_blocked_players_times",
+		name: "crownicles_blocked_players_times",
 		help: "Times of blocked players",
 		labelNames: ["keycloakId", "reason"],
-		registers: [draftBotMetricsRegistry]
+		registers: [crowniclesMetricsRegistry]
 	});
 
 	static observePacketTime(packetName: string, time: number): void {
@@ -71,5 +71,5 @@ export abstract class DraftBotCoreMetrics {
 }
 
 client.collectDefaultMetrics({
-	register: draftBotMetricsRegistry
+	register: crowniclesMetricsRegistry
 });

@@ -8,7 +8,7 @@ export class RandomUtils {
 	/**
 	 * Redefining the random js library
 	 */
-	public static draftbotRandom: Random = new Random();
+	public static crowniclesRandom: Random = new Random();
 
 	/**
 	 * Generates a random number between min included and max excluded
@@ -16,7 +16,7 @@ export class RandomUtils {
 	 * @param max
 	 * @returns a random number between min included and max excluded
 	 */
-	public static randInt = (min: number, max: number): number => RandomUtils.draftbotRandom.integer(min, max - 1);
+	public static randInt = (min: number, max: number): number => RandomUtils.crowniclesRandom.integer(min, max - 1);
 
 	/**
 	 * Generates a random number in the range (both interval bounds included)
@@ -26,7 +26,7 @@ export class RandomUtils {
 	 * @returns a random number in [MIN, MAX]
 	 */
 	public static rangedInt = (range: ConstantRange, minAdd = 0, maxAdd = 0): number =>
-		RandomUtils.draftbotRandom.integer(range.MIN + minAdd, range.MAX + maxAdd);
+		RandomUtils.crowniclesRandom.integer(range.MIN + minAdd, range.MAX + maxAdd);
 
 	/**
 	 * Generates a random number between -variation and variation
@@ -34,7 +34,7 @@ export class RandomUtils {
 	 * @returns a random number in [-variation, variation]
 	 */
 	public static variationInt = (variation: number): number =>
-		RandomUtils.draftbotRandom.integer(-variation, variation);
+		RandomUtils.crowniclesRandom.integer(-variation, variation);
 
 	/**
 	 * Pick a random element from an enum

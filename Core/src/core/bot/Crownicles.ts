@@ -2,7 +2,7 @@ import { PacketListenerServer } from "../../../../Lib/src/packets/PacketListener
 import { GameDatabase } from "../database/game/GameDatabase";
 import { LogsDatabase } from "../database/logs/LogsDatabase";
 import {
-	botConfig, draftBotInstance
+	botConfig, crowniclesInstance
 } from "../../index";
 import { Settings } from "../database/game/models/Setting";
 import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
@@ -20,7 +20,7 @@ import { CommandsTest } from "../CommandsTest";
 import Player from "../database/game/models/Player";
 import { FightConstants } from "../../../../Lib/src/constants/FightConstants";
 import { PacketUtils } from "../utils/PacketUtils";
-import { makePacket } from "../../../../Lib/src/packets/DraftBotPacket";
+import { makePacket } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { TopWeekAnnouncementPacket } from "../../../../Lib/src/packets/announcements/TopWeekAnnouncementPacket";
 import { TopWeekFightAnnouncementPacket } from "../../../../Lib/src/packets/announcements/TopWeekFightAnnouncementPacket";
 import PlayerMissionsInfo from "../database/game/models/PlayerMissionsInfo";
@@ -33,15 +33,15 @@ import * as fs from "fs";
 import { MqttTopicUtils } from "../../../../Lib/src/utils/MqttTopicUtils";
 import { initializeAllClassBehaviors } from "../fights/AiBehaviorController";
 import { initializeAllPetBehaviors } from "../fights/PetAssistManager";
-import { DraftBotCoreWebServer } from "./DraftBotCoreWebServer";
-import { DraftBotLogger } from "../../../../Lib/src/logs/DraftBotLogger";
+import { CrowniclesCoreWebServer } from "./CrowniclesCoreWebServer";
+import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { Badge } from "../../../../Lib/src/types/Badge";
 import { FightsManager } from "../fights/FightsManager";
 import {
 	DayOfTheWeek, setDailyCronJob, setWeeklyCronJob
 } from "../utils/CronInterface";
 
-export class DraftBot {
+export class Crownicles {
 	public readonly packetListener: PacketListenerServer;
 
 	public readonly gameDatabase: GameDatabase;
@@ -69,12 +69,12 @@ export class DraftBot {
 		 */
 		await Settings.NEXT_DAILY_RESET.setValue(await Settings.NEXT_DAILY_RESET.getValue() + 24 * 60 * 60 * 1000);
 
-		DraftBot.randomPotion()
+		Crownicles.randomPotion()
 			.finally(() => null);
-		DraftBot.randomLovePointsLoose()
-			.then(petLoveChange => draftBotInstance.logsDatabase.logDailyTimeout(petLoveChange)
+		Crownicles.randomLovePointsLoose()
+			.then(petLoveChange => crowniclesInstance.logsDatabase.logDailyTimeout(petLoveChange)
 				.then());
-		draftBotInstance.logsDatabase.log15BestTopWeek()
+		crowniclesInstance.logsDatabase.log15BestTopWeek()
 			.then();
 	}
 
@@ -82,12 +82,12 @@ export class DraftBot {
 	 * Update the random potion sold in the shop
 	 */
 	static async randomPotion(): Promise<void> {
-		DraftBotLogger.info("Daily timeout");
+		CrowniclesLogger.info("Daily timeout");
 		const previousPotionId = await Settings.SHOP_POTION.getValue();
 		const newPotionId = PotionDataController.instance.randomShopPotion(previousPotionId).id;
 		await Settings.SHOP_POTION.setValue(newPotionId);
-		DraftBotLogger.info("New potion in shop", { newPotionId });
-		draftBotInstance.logsDatabase.logDailyPotion(newPotionId)
+		CrowniclesLogger.info("New potion in shop", { newPotionId });
+		crowniclesInstance.logsDatabase.logDailyPotion(newPotionId)
 			.then();
 	}
 
@@ -95,8 +95,8 @@ export class DraftBot {
 	 * Make some pet lose some love points
 	 */
 	static async randomLovePointsLoose(): Promise<boolean> {
-		if (RandomUtils.draftbotRandom.bool()) {
-			DraftBotLogger.info("All pets lost 4 loves point");
+		if (RandomUtils.crowniclesRandom.bool()) {
+			CrowniclesLogger.info("All pets lost 4 loves point");
 			await PetEntity.update(
 				{
 					lovePoints: literal(
@@ -121,8 +121,8 @@ export class DraftBot {
 	 */
 	static async seasonEnd(): Promise<void> {
 		if (!PacketUtils.isMqttConnected()) {
-			DraftBotLogger.error("MQTT is not connected, can't announce the end of the season. Trying again in 1 minute");
-			setTimeout(DraftBot.seasonEnd, 60000);
+			CrowniclesLogger.error("MQTT is not connected, can't announce the end of the season. Trying again in 1 minute");
+			setTimeout(Crownicles.seasonEnd, 60000);
 			return;
 		}
 
@@ -136,9 +136,9 @@ export class DraftBot {
 		 */
 		await Settings.NEXT_SEASON_RESET.setValue(await Settings.NEXT_SEASON_RESET.getValue() + 7 * 24 * 60 * 60 * 1000);
 
-		draftBotInstance.logsDatabase.log15BestSeason()
+		crowniclesInstance.logsDatabase.log15BestSeason()
 			.then();
-		const winner = await DraftBot.findSeasonWinner();
+		const winner = await Crownicles.findSeasonWinner();
 		if (winner !== null) {
 			PacketUtils.announce(makePacket(TopWeekFightAnnouncementPacket, { winnerKeycloakId: winner.keycloakId }), MqttTopicUtils.getDiscordTopWeekFightAnnouncementTopic(botConfig.PREFIX));
 			winner.addBadge(Badge.TOP_GLORY);
@@ -147,10 +147,10 @@ export class DraftBot {
 		else {
 			PacketUtils.announce(makePacket(TopWeekFightAnnouncementPacket, {}), MqttTopicUtils.getDiscordTopWeekFightAnnouncementTopic(botConfig.PREFIX));
 		}
-		await DraftBot.seasonEndQueries();
+		await Crownicles.seasonEndQueries();
 
-		DraftBotLogger.info("Season has been ended !");
-		draftBotInstance.logsDatabase.logSeasonEnd()
+		CrowniclesLogger.info("Season has been ended !");
+		crowniclesInstance.logsDatabase.logSeasonEnd()
 			.then();
 	}
 
@@ -158,7 +158,7 @@ export class DraftBot {
 	 * End the top week
 	 */
 	static async topWeekEnd(): Promise<void> {
-		draftBotInstance.logsDatabase.log15BestTopWeek()
+		crowniclesInstance.logsDatabase.log15BestTopWeek()
 			.then();
 		const winner = await Player.findOne({
 			where: {
@@ -181,10 +181,10 @@ export class DraftBot {
 			PacketUtils.announce(makePacket(TopWeekAnnouncementPacket, {}), MqttTopicUtils.getDiscordTopWeekAnnouncementTopic(botConfig.PREFIX));
 		}
 		await Player.update({ weeklyScore: 0 }, { where: {} });
-		DraftBotLogger.info("Weekly leaderboard has been reset !");
+		CrowniclesLogger.info("Weekly leaderboard has been reset !");
 		await PlayerMissionsInfo.resetShopBuyout();
-		DraftBotLogger.info("All players can now buy again points from the mission shop !");
-		draftBotInstance.logsDatabase.logTopWeekEnd()
+		CrowniclesLogger.info("All players can now buy again points from the mission shop !");
+		crowniclesInstance.logsDatabase.logTopWeekEnd()
 			.then();
 	}
 
@@ -255,7 +255,7 @@ export class DraftBot {
 	 */
 	static async newPveIsland(): Promise<void> {
 		const newMapLink = MapCache.randomPveBoatLinkId(await Settings.PVE_ISLAND.getValue());
-		DraftBotLogger.info("New pve island map link of the week", { newMapLink });
+		CrowniclesLogger.info("New pve island map link of the week", { newMapLink });
 		await Settings.PVE_ISLAND.setValue(newMapLink);
 	}
 
@@ -278,7 +278,7 @@ export class DraftBot {
 		)
 			.finally(() => null);
 		setTimeout(
-			DraftBot.fightPowerRegenerationLoop,
+			Crownicles.fightPowerRegenerationLoop,
 			minutesToMilliseconds(FightConstants.POINTS_REGEN_MINUTES)
 		);
 	}
@@ -288,8 +288,8 @@ export class DraftBot {
 	 */
 	static async weeklyTimeout(): Promise<void> {
 		if (!PacketUtils.isMqttConnected()) {
-			DraftBotLogger.error("MQTT is not connected, can't announce the end of the week. Trying again in 1 minute");
-			setTimeout(DraftBot.weeklyTimeout, 60000);
+			CrowniclesLogger.error("MQTT is not connected, can't announce the end of the week. Trying again in 1 minute");
+			setTimeout(Crownicles.weeklyTimeout, 60000);
 			return;
 		}
 
@@ -300,9 +300,9 @@ export class DraftBot {
 		 * The first one is set immediately so if the bot crashes before programming the next one, it will be set anyway to approximately a valid date (at 1s max of difference)
 		 */
 		await Settings.NEXT_WEEKLY_RESET.setValue(await Settings.NEXT_WEEKLY_RESET.getValue() + 7 * 24 * 60 * 60 * 1000);
-		DraftBot.topWeekEnd()
+		Crownicles.topWeekEnd()
 			.then();
-		DraftBot.newPveIsland()
+		Crownicles.newPveIsland()
 			.then();
 	}
 
@@ -319,10 +319,10 @@ export class DraftBot {
 			}
 		}
 		else {
-			DraftBotLogger.error(`MQTT is not connected, can't do report notifications. Trying again in ${TimeoutFunctionsConstants.REPORT_NOTIFICATIONS} ms`);
+			CrowniclesLogger.error(`MQTT is not connected, can't do report notifications. Trying again in ${TimeoutFunctionsConstants.REPORT_NOTIFICATIONS} ms`);
 		}
 
-		setTimeout(DraftBot.reportNotifications, TimeoutFunctionsConstants.REPORT_NOTIFICATIONS);
+		setTimeout(Crownicles.reportNotifications, TimeoutFunctionsConstants.REPORT_NOTIFICATIONS);
 	}
 
 	/**
@@ -355,7 +355,7 @@ export class DraftBot {
 	}
 
 	async init(): Promise<void> {
-		DraftBotCoreWebServer.start();
+		CrowniclesCoreWebServer.start();
 		await registerAllPacketHandlers();
 		initializeAllClassBehaviors();
 		initializeAllPetBehaviors();
@@ -367,20 +367,20 @@ export class DraftBot {
 			await CommandsTest.init();
 		}
 
-		await DraftBot.programTimeouts();
+		await Crownicles.programTimeouts();
 
-		DraftBot.reportNotifications()
+		Crownicles.reportNotifications()
 			.then();
 
 		setTimeout(
-			DraftBot.fightPowerRegenerationLoop,
+			Crownicles.fightPowerRegenerationLoop,
 			minutesToMilliseconds(FightConstants.POINTS_REGEN_MINUTES)
 		);
 	}
 
 	private static async programTimeouts(): Promise<void> {
-		await setDailyCronJob(DraftBot.dailyTimeout, await Settings.NEXT_DAILY_RESET.getValue() < Date.now());
-		await setWeeklyCronJob(DraftBot.seasonEnd, await Settings.NEXT_SEASON_RESET.getValue() < Date.now(), DayOfTheWeek.SUNDAY);
-		await setWeeklyCronJob(DraftBot.weeklyTimeout, await Settings.NEXT_WEEKLY_RESET.getValue() < Date.now(), DayOfTheWeek.MONDAY);
+		await setDailyCronJob(Crownicles.dailyTimeout, await Settings.NEXT_DAILY_RESET.getValue() < Date.now());
+		await setWeeklyCronJob(Crownicles.seasonEnd, await Settings.NEXT_SEASON_RESET.getValue() < Date.now(), DayOfTheWeek.SUNDAY);
+		await setWeeklyCronJob(Crownicles.weeklyTimeout, await Settings.NEXT_WEEKLY_RESET.getValue() < Date.now(), DayOfTheWeek.MONDAY);
 	}
 }

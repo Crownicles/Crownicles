@@ -1,19 +1,19 @@
 import {
 	MessageComponentInteraction, User
 } from "discord.js";
-import { DraftBotErrorEmbed } from "../messages/DraftBotErrorEmbed";
+import { CrowniclesErrorEmbed } from "../messages/CrowniclesErrorEmbed";
 import {
 	LANGUAGE, Language
 } from "../../../Lib/src/Language";
-import { DraftbotInteraction } from "../messages/DraftbotInteraction";
+import { CrowniclesInteraction } from "../messages/CrowniclesInteraction";
 import i18n from "../translations/i18n";
-import { DraftBotEmbed } from "../messages/DraftBotEmbed";
+import { CrowniclesEmbed } from "../messages/CrowniclesEmbed";
 import { escapeUsername } from "../../../Lib/src/utils/StringUtils";
 import {
 	millisecondsToMinutes, minutesDisplay
 } from "../../../Lib/src/utils/TimeUtils";
 import { Effect } from "../../../Lib/src/types/Effect";
-import { PacketContext } from "../../../Lib/src/packets/DraftBotPacket";
+import { PacketContext } from "../../../Lib/src/packets/CrowniclesPacket";
 import { MessagesUtils } from "./MessagesUtils";
 import { MessageFlags } from "discord-api-types/v10";
 
@@ -23,14 +23,14 @@ import { MessageFlags } from "discord-api-types/v10";
  * @param interaction
  * @param reason
  */
-export async function replyEphemeralErrorMessage(context: PacketContext | null, interaction: DraftbotInteraction, reason: string): Promise<void> {
+export async function replyEphemeralErrorMessage(context: PacketContext | null, interaction: CrowniclesInteraction, reason: string): Promise<void> {
 	if (interaction.deferred) {
 		await interaction.deleteReply();
 	}
 
 	// Without a bind, context is lost for "this"
 	await (interaction.replied || interaction.deferred ? interaction.followUp.bind(interaction) : interaction.reply.bind(interaction))({
-		embeds: [new DraftBotErrorEmbed(interaction.user, context, interaction, reason)],
+		embeds: [new CrowniclesErrorEmbed(interaction.user, context, interaction, reason)],
 		flags: MessageFlags.Ephemeral
 	});
 }
@@ -55,7 +55,7 @@ export enum SendManner {
 export async function sendErrorMessage(
 	user: User,
 	context: PacketContext,
-	interaction: DraftbotInteraction,
+	interaction: CrowniclesInteraction,
 	reason: string,
 	{
 		isCancelling = false,
@@ -68,7 +68,7 @@ export async function sendErrorMessage(
 	} = {}
 ): Promise<void> {
 	const sendArg = {
-		embeds: [new DraftBotErrorEmbed(user, context, interaction, reason, isCancelling, isBlockedError)]
+		embeds: [new CrowniclesErrorEmbed(user, context, interaction, reason, isCancelling, isBlockedError)]
 	};
 	switch (sendManner) {
 		case SendManner.REPLY:
@@ -93,7 +93,7 @@ export async function sendInteractionNotForYou(
 ): Promise<void> {
 	await interaction.reply({
 		embeds: [
-			new DraftBotEmbed()
+			new CrowniclesEmbed()
 				.setDescription(i18n.t("error:interactionNotForYou", { lng }))
 				.setErrorColor()
 				.formatAuthor(i18n.t("error:titleDidntWork", {
@@ -162,7 +162,7 @@ export async function handleClassicError(context: PacketContext, errorKey: strin
 	const interactionToRespondTo = MessagesUtils.getCurrentInteraction(context);
 	const lng = interactionToRespondTo.userLanguage ?? context.discord?.language ?? LANGUAGE.DEFAULT_LANGUAGE;
 
-	const embed = new DraftBotErrorEmbed(
+	const embed = new CrowniclesErrorEmbed(
 		interactionToRespondTo.user,
 		context,
 		interactionToRespondTo,

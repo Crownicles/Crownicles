@@ -1,15 +1,15 @@
 import {
-	DraftBotPacket, PacketDirection, sendablePacket
-} from "../DraftBotPacket";
+	CrowniclesPacket, PacketDirection, sendablePacket
+} from "../CrowniclesPacket";
 import { SexTypeShort } from "../../constants/StringConstants";
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
-export class CommandPetFreePacketReq extends DraftBotPacket {
+export class CommandPetFreePacketReq extends CrowniclesPacket {
 	keycloakId!: string;
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandPetFreePacketRes extends DraftBotPacket {
+export class CommandPetFreePacketRes extends CrowniclesPacket {
 	foundPet!: boolean;
 
 	petCanBeFreed?: boolean;
@@ -20,12 +20,12 @@ export class CommandPetFreePacketRes extends DraftBotPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandPetFreeRefusePacketRes extends DraftBotPacket {
+export class CommandPetFreeRefusePacketRes extends CrowniclesPacket {
 
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandPetFreeAcceptPacketRes extends DraftBotPacket {
+export class CommandPetFreeAcceptPacketRes extends CrowniclesPacket {
 	petId!: number;
 
 	petSex!: SexTypeShort;

@@ -7,7 +7,7 @@ import { Monster } from "../../../data/Monster";
 import {
 	FightAction, FightActionDataController
 } from "../../../data/FightAction";
-import { DraftBotPacket } from "../../../../../Lib/src/packets/DraftBotPacket";
+import { CrowniclesPacket } from "../../../../../Lib/src/packets/CrowniclesPacket";
 
 export class MonsterFighter extends Fighter {
 	public readonly monster: Monster;
@@ -44,7 +44,7 @@ export class MonsterFighter extends Fighter {
 		return Math.round(Math.round(stat.A * level * level + stat.B * level + stat.C) * ratio / 100.0);
 	}
 
-	async chooseAction(fightView: FightView, response: DraftBotPacket[]): Promise<void> {
+	async chooseAction(fightView: FightView, response: CrowniclesPacket[]): Promise<void> {
 		fightView.displayAiChooseAction(response, RandomUtils.randInt(300, 1800));
 
 		const fightAction = this.getRandomAvailableFightAction();

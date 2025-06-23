@@ -1,11 +1,15 @@
 import { packetHandler } from "../PacketHandler";
-import { PacketContext } from "../../../../Lib/src/packets/DraftBotPacket";
+import { PacketContext } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { DiscordCache } from "../../bot/DiscordCache";
 import i18n from "../../translations/i18n";
 import {
-	ErrorBannedPacket, ErrorMaintenancePacket, ErrorPacket, ErrorResetIsNow, ErrorSeasonEndIsNow
+	ErrorBannedPacket,
+	ErrorMaintenancePacket,
+	ErrorPacket,
+	ErrorResetIsNow,
+	ErrorSeasonEndIsNow
 } from "../../../../Lib/src/packets/commands/ErrorPacket";
-import { DraftBotEmbed } from "../../messages/DraftBotEmbed";
+import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import { BlockedPacket } from "../../../../Lib/src/packets/commands/BlockedPacket";
 import { LANGUAGE } from "../../../../Lib/src/Language";
 import { handleClassicError } from "../../utils/ErrorUtils";
@@ -18,7 +22,7 @@ export default class ErrorHandler {
 		if (!interaction) {
 			return;
 		}
-		const embed = new DraftBotEmbed()
+		const embed = new CrowniclesEmbed()
 			.setErrorColor()
 			.setTitle(i18n.t("error:unexpectedError", { lng: interaction.userLanguage }))
 			.setDescription(packet.message);
@@ -41,7 +45,7 @@ export default class ErrorHandler {
 		});
 		errorReasons = errorReasons.slice(0, -2);
 
-		const embed = new DraftBotEmbed()
+		const embed = new CrowniclesEmbed()
 			.setErrorColor()
 			.setTitle(i18n.t("error:titleDidntWork", {
 				lng,

@@ -1,23 +1,23 @@
 import {
-	DraftbotCachedMessage, DraftbotCachedMessages
-} from "./DraftbotCachedMessage";
-import { PacketContext } from "../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesCachedMessage, CrowniclesCachedMessages
+} from "./CrowniclesCachedMessage";
+import { PacketContext } from "../../../Lib/src/packets/CrowniclesPacket";
 import { DiscordCache } from "../bot/DiscordCache";
 import i18n from "../translations/i18n";
 import { CommandFightHistoryItemPacket } from "../../../Lib/src/packets/fights/FightHistoryItemPacket";
 import { EmoteUtils } from "../utils/EmoteUtils";
-import { DraftBotIcons } from "../../../Lib/src/DraftBotIcons";
+import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 import { FightAlterationState } from "../../../Lib/src/types/FightAlterationResult";
 import { FightConstants } from "../../../Lib/src/constants/FightConstants";
-import { DraftbotFightStatusCachedMessage } from "./DraftbotFightStatusCachedMessage";
+import { CrowniclesFightStatusCachedMessage } from "./CrowniclesFightStatusCachedMessage";
 import { StringUtils } from "../utils/StringUtils";
-import { DraftbotActionChooseCachedMessage } from "./DraftbotActionChooseCachedMessage";
+import { CrowniclesActionChooseCachedMessage } from "./CrowniclesActionChooseCachedMessage";
 import { PetAssistanceState } from "../../../Lib/src/types/PetAssistanceResult";
 import { StringConstants } from "../../../Lib/src/constants/StringConstants";
 import { DisplayUtils } from "../utils/DisplayUtils";
 import { Language } from "../../../Lib/src/Language";
 
-export class DraftbotHistoryCachedMessage extends DraftbotCachedMessage<CommandFightHistoryItemPacket> {
+export class CrowniclesHistoryCachedMessage extends CrowniclesCachedMessage<CommandFightHistoryItemPacket> {
 	private usernamesCachePlayer = new Map<string, string>();
 
 	private usernamesCacheMonster = new Map<string, string>();
@@ -48,8 +48,8 @@ export class DraftbotHistoryCachedMessage extends DraftbotCachedMessage<CommandF
 		let newLine = i18n.t("commands:fight.actions.intro", {
 			lng,
 			emote: EmoteUtils.translateEmojiToDiscord(packet.pet
-				? DraftBotIcons.pets[packet.pet.typeId][packet.pet.sex === StringConstants.SEX.FEMALE.short ? "emoteFemale" : "emoteMale"]
-				: DraftBotIcons.fightActions[packet.fightActionId]),
+				? CrowniclesIcons.pets[packet.pet.typeId][packet.pet.sex === StringConstants.SEX.FEMALE.short ? "emoteFemale" : "emoteMale"]
+				: CrowniclesIcons.fightActions[packet.fightActionId]),
 			fighter: packet.fighterKeycloakId ? this.usernamesCachePlayer?.get(packet.fighterKeycloakId) : this.usernamesCacheMonster?.get(packet.monsterId!)
 		}) + this.manageMainMessage(packet, lng);
 
@@ -70,8 +70,8 @@ export class DraftbotHistoryCachedMessage extends DraftbotCachedMessage<CommandF
 		this.storedMessage = undefined;
 		this.historyContent = newLine;
 		await this.post({ content: this.historyContent });
-		DraftbotCachedMessages.markAsReupload(DraftbotCachedMessages.getOrCreate(this.originalMessageId, DraftbotFightStatusCachedMessage));
-		DraftbotCachedMessages.markAsReupload(DraftbotCachedMessages.getOrCreate(this.originalMessageId, DraftbotActionChooseCachedMessage));
+		CrowniclesCachedMessages.markAsReupload(CrowniclesCachedMessages.getOrCreate(this.originalMessageId, CrowniclesFightStatusCachedMessage));
+		CrowniclesCachedMessages.markAsReupload(CrowniclesCachedMessages.getOrCreate(this.originalMessageId, CrowniclesActionChooseCachedMessage));
 		return null;
 	};
 

@@ -1,13 +1,13 @@
 import { ReactionCollectorCreationPacket } from "../../../Lib/src/packets/interaction/ReactionCollectorPacket";
-import { PacketContext } from "../../../Lib/src/packets/DraftBotPacket";
+import { PacketContext } from "../../../Lib/src/packets/CrowniclesPacket";
 import { DiscordCache } from "../bot/DiscordCache";
-import { DraftbotSmallEventEmbed } from "../messages/DraftbotSmallEventEmbed";
+import { CrowniclesSmallEventEmbed } from "../messages/CrowniclesSmallEventEmbed";
 import i18n from "../translations/i18n";
 import { DiscordCollectorUtils } from "../utils/DiscordCollectorUtils";
 import {
 	ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, Message, parseEmoji
 } from "discord.js";
-import { DraftBotIcons } from "../../../Lib/src/DraftBotIcons";
+import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 import { sendInteractionNotForYou } from "../utils/ErrorUtils";
 import { ReactionCollectorWitchReaction } from "../../../Lib/src/packets/interaction/ReactionCollectorWitch";
 import { getRandomSmallEventIntro } from "../packetHandlers/handlers/SmallEventsHandler";
@@ -27,13 +27,13 @@ export async function witchCollector(context: PacketContext, packet: ReactionCol
 	const reactions: [string, string][] = [];
 	for (const reaction of packet.reactions) {
 		const ingredientId = (reaction.data as ReactionCollectorWitchReaction).id;
-		const emoji = EmoteUtils.translateEmojiToDiscord(DraftBotIcons.witchSmallEvent[ingredientId]);
+		const emoji = EmoteUtils.translateEmojiToDiscord(CrowniclesIcons.witchSmallEvent[ingredientId]);
 		witchIngredients += `${emoji} ${i18n.t(`smallEvents:witch.witchEventNames.${ingredientId}`, { lng })}\n`;
 		reactions.push([ingredientId, emoji]);
 	}
 
 	const intro = getRandomSmallEventIntro(lng);
-	const embed = new DraftbotSmallEventEmbed(
+	const embed = new CrowniclesSmallEventEmbed(
 		"witch",
 		intro
 		+ StringUtils.getRandomTranslation("smallEvents:witch.intro", lng)
@@ -107,10 +107,10 @@ export async function witchResult(packet: SmallEventWitchResultPacket, context: 
 		: `smallEvents:witch.witchEventResults.outcomes.${packet.outcome + 1}`;
 	await (interaction.isRepliable() ? interaction.followUp : interaction.editReply).bind(interaction)({
 		embeds: [
-			new DraftbotSmallEventEmbed(
+			new CrowniclesSmallEventEmbed(
 				"witch",
 				`${StringUtils.getRandomTranslation(introToLoad, lng, {
-					witchEvent: `${i18n.t(`smallEvents:witch.witchEventNames.${packet.ingredientId}`, { lng })} ${DraftBotIcons.witchSmallEvent[packet.ingredientId]}`
+					witchEvent: `${i18n.t(`smallEvents:witch.witchEventNames.${packet.ingredientId}`, { lng })} ${CrowniclesIcons.witchSmallEvent[packet.ingredientId]}`
 						.toLowerCase()
 				})} ${StringUtils.getRandomTranslation(outcomeTranslationToLoad, lng, { lifeLoss: packet.lifeLoss })}${timeOutro}`,
 				interaction.user,

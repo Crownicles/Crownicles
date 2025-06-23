@@ -21,8 +21,8 @@ import { LogsReadRequests } from "../../logs/LogsReadRequests";
 import { PlayerSmallEvents } from "./PlayerSmallEvent";
 import { Guilds } from "./Guild";
 import {
-	DraftBotPacket, makePacket
-} from "../../../../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, makePacket
+} from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import { PlayerDeathPacket } from "../../../../../../Lib/src/packets/events/PlayerDeathPacket";
 import { PlayerLeavePveIslandPacket } from "../../../../../../Lib/src/packets/events/PlayerLeavePveIslandPacket";
 import { PlayerLevelUpPacket } from "../../../../../../Lib/src/packets/events/PlayerLevelUpPacket";
@@ -30,7 +30,7 @@ import { MapLinkDataController } from "../../../../data/MapLink";
 import {
 	MapLocation, MapLocationDataController
 } from "../../../../data/MapLocation";
-import { draftBotInstance } from "../../../../index";
+import { crowniclesInstance } from "../../../../index";
 import { GenericItem } from "../../../../data/GenericItem";
 import {
 	Class, ClassDataController
@@ -54,7 +54,7 @@ import { ScheduledReportNotifications } from "./ScheduledReportNotification";
 import { PacketUtils } from "../../../utils/PacketUtils";
 import { StatValues } from "../../../../../../Lib/src/types/StatValues";
 import { ReachDestinationNotificationPacket } from "../../../../../../Lib/src/packets/notifications/ReachDestinationNotificationPacket";
-import { DraftBotLogger } from "../../../../../../Lib/src/logs/DraftBotLogger";
+import { CrowniclesLogger } from "../../../../../../Lib/src/logs/CrowniclesLogger";
 import { Badge } from "../../../../../../Lib/src/types/Badge";
 
 // skipcq: JS-C1003 - moment does not expose itself as an ES Module.
@@ -64,13 +64,13 @@ import { ClassConstants } from "../../../../../../Lib/src/constants/ClassConstan
 export type PlayerEditValueParameters = {
 	player: Player;
 	amount: number;
-	response: DraftBotPacket[];
+	response: CrowniclesPacket[];
 	reason: NumberChangeReason;
 };
 
 export type EditValueParameters = {
 	amount: number;
-	response: DraftBotPacket[];
+	response: CrowniclesPacket[];
 	reason: NumberChangeReason;
 };
 
@@ -247,7 +247,7 @@ export class Player extends Model {
 			Object.assign(this, newPlayer);
 		}
 		await this.setScore(this.score, parameters.response);
-		draftBotInstance.logsDatabase.logScoreChange(this.keycloakId, this.score, parameters.reason)
+		crowniclesInstance.logsDatabase.logScoreChange(this.keycloakId, this.score, parameters.reason)
 			.then();
 		this.addWeeklyScore(parameters.amount);
 		return this;
@@ -272,7 +272,7 @@ export class Player extends Model {
 			Object.assign(this, newPlayer);
 		}
 		this.setMoney(this.money);
-		draftBotInstance.logsDatabase.logMoneyChange(this.keycloakId, this.money, parameters.reason)
+		crowniclesInstance.logsDatabase.logMoneyChange(this.keycloakId, this.money, parameters.reason)
 			.then();
 		return this;
 	}
@@ -323,7 +323,7 @@ export class Player extends Model {
 	 * @param response
 	 * @param newLevel
 	 */
-	public async addLevelUpPacket(response: DraftBotPacket[], newLevel: number): Promise<void> {
+	public async addLevelUpPacket(response: CrowniclesPacket[], newLevel: number): Promise<void> {
 		const healthRestored = newLevel % 10 === 0;
 
 		const packet = makePacket(PlayerLevelUpPacket, {
@@ -356,17 +356,17 @@ export class Player extends Model {
 	 * Level up a player if he has enough experience
 	 * @param response
 	 */
-	public async levelUpIfNeeded(response: DraftBotPacket[]): Promise<void> {
+	public async levelUpIfNeeded(response: CrowniclesPacket[]): Promise<void> {
 		if (!this.needLevelUp()) {
 			return;
 		}
 
 		const xpNeeded = this.getExperienceNeededToLevelUp();
 		this.experience -= xpNeeded;
-		draftBotInstance.logsDatabase.logExperienceChange(this.keycloakId, this.experience, NumberChangeReason.LEVEL_UP)
+		crowniclesInstance.logsDatabase.logExperienceChange(this.keycloakId, this.experience, NumberChangeReason.LEVEL_UP)
 			.then();
 		const newLevel = ++this.level;
-		draftBotInstance.logsDatabase.logLevelChange(this.keycloakId, this.level)
+		crowniclesInstance.logsDatabase.logLevelChange(this.keycloakId, this.level)
 			.then();
 		Object.assign(this, await MissionsController.update(this, response, {
 			missionId: "reachLevel",
@@ -395,7 +395,7 @@ export class Player extends Model {
 	 * @param response
 	 * @param reason
 	 */
-	public async killIfNeeded(response: DraftBotPacket[], reason: NumberChangeReason): Promise<boolean> {
+	public async killIfNeeded(response: CrowniclesPacket[], reason: NumberChangeReason): Promise<boolean> {
 		if (this.health > 0) {
 			return false;
 		}
@@ -569,7 +569,7 @@ export class Player extends Model {
 				itemCategory: ItemCategory.POTION
 			}
 		})
-			.then(async item => await draftBotInstance.logsDatabase.logItemSell(this.keycloakId, await item.getItem()));
+			.then(async item => await crowniclesInstance.logsDatabase.logItemSell(this.keycloakId, await item.getItem()));
 		await InventorySlot.update(
 			{
 				itemId: InventoryConstants.POTION_DEFAULT_ID
@@ -606,7 +606,7 @@ export class Player extends Model {
 	 */
 	public async addExperience(parameters: EditValueParameters): Promise<Player> {
 		this.experience += parameters.amount;
-		draftBotInstance.logsDatabase.logExperienceChange(this.keycloakId, this.experience, parameters.reason)
+		crowniclesInstance.logsDatabase.logExperienceChange(this.keycloakId, this.experience, parameters.reason)
 			.then();
 		if (parameters.amount > 0) {
 			const newPlayer = await MissionsController.update(this, parameters.response, {
@@ -638,7 +638,7 @@ export class Player extends Model {
 	 */
 	public setPet(petEntity: PetEntity): void {
 		this.petId = petEntity.id;
-		draftBotInstance.logsDatabase.logPlayerNewPet(this.keycloakId, petEntity)
+		crowniclesInstance.logsDatabase.logPlayerNewPet(this.keycloakId, petEntity)
 			.then();
 	}
 
@@ -740,12 +740,12 @@ export class Player extends Model {
 	 * @param reason
 	 * @param missionHealthParameter
 	 */
-	public async addHealth(health: number, response: DraftBotPacket[], reason: NumberChangeReason, missionHealthParameter: MissionHealthParameter = {
+	public async addHealth(health: number, response: CrowniclesPacket[], reason: NumberChangeReason, missionHealthParameter: MissionHealthParameter = {
 		overHealCountsForMission: true,
 		shouldPokeMission: true
 	}): Promise<void> {
 		await this.setHealth(this.health + health, response, missionHealthParameter);
-		draftBotInstance.logsDatabase.logHealthChange(this.keycloakId, this.health, reason)
+		crowniclesInstance.logsDatabase.logHealthChange(this.keycloakId, this.health, reason)
 			.then();
 	}
 
@@ -765,7 +765,7 @@ export class Player extends Model {
 	 */
 	public setEnergyLost(energy: number, reason: NumberChangeReason): void {
 		this.fightPointsLost = Math.min(energy, this.getMaxCumulativeEnergy());
-		draftBotInstance.logsDatabase.logEnergyChange(this.keycloakId, this.fightPointsLost, reason)
+		crowniclesInstance.logsDatabase.logEnergyChange(this.keycloakId, this.fightPointsLost, reason)
 			.then();
 	}
 
@@ -773,7 +773,7 @@ export class Player extends Model {
 	 * Leave the PVE island if no energy left
 	 * @param response
 	 */
-	public async leavePVEIslandIfNoEnergy(response: DraftBotPacket[]): Promise<boolean> {
+	public async leavePVEIslandIfNoEnergy(response: CrowniclesPacket[]): Promise<boolean> {
 		if (!(Maps.isOnPveIsland(this) && this.fightPointsLost >= this.getMaxCumulativeEnergy())) {
 			return false;
 		}
@@ -854,14 +854,14 @@ export class Player extends Model {
 	 * @param response
 	 * @param fightId
 	 */
-	public async setGloryPoints(gloryPoints: number, isDefense: boolean, reason: NumberChangeReason, response: DraftBotPacket[], fightId: number = null): Promise<void> {
+	public async setGloryPoints(gloryPoints: number, isDefense: boolean, reason: NumberChangeReason, response: CrowniclesPacket[], fightId: number = null): Promise<void> {
 		if (isDefense) {
 			this.defenseGloryPoints = gloryPoints;
-			await draftBotInstance.logsDatabase.logPlayersDefenseGloryPoints(this.keycloakId, gloryPoints, reason, fightId);
+			await crowniclesInstance.logsDatabase.logPlayersDefenseGloryPoints(this.keycloakId, gloryPoints, reason, fightId);
 		}
 		else {
 			this.attackGloryPoints = gloryPoints;
-			await draftBotInstance.logsDatabase.logPlayersAttackGloryPoints(this.keycloakId, gloryPoints, reason, fightId);
+			await crowniclesInstance.logsDatabase.logPlayersAttackGloryPoints(this.keycloakId, gloryPoints, reason, fightId);
 		}
 		Object.assign(this, await MissionsController.update(this, response, {
 			missionId: "reachGlory",
@@ -894,7 +894,7 @@ export class Player extends Model {
 		return dateOfLastLeagueReward && !(dateOfLastLeagueReward < millisecondsToSeconds(getOneDayAgo()));
 	}
 
-	public async addRage(rage: number, reason: NumberChangeReason, response: DraftBotPacket[]): Promise<void> {
+	public async addRage(rage: number, reason: NumberChangeReason, response: CrowniclesPacket[]): Promise<void> {
 		await this.setRage(this.rage + rage, reason);
 		if (rage > 0) {
 			await MissionsController.update(this, response, {
@@ -906,7 +906,7 @@ export class Player extends Model {
 
 	public async setRage(rage: number, reason: NumberChangeReason): Promise<void> {
 		this.rage = rage;
-		draftBotInstance.logsDatabase.logRageChange(this.keycloakId, this.rage, reason)
+		crowniclesInstance.logsDatabase.logRageChange(this.keycloakId, this.rage, reason)
 			.then();
 		await this.save();
 	}
@@ -922,7 +922,7 @@ export class Player extends Model {
 	 * Calculate and apply maluses on money and guild points when a player faints on PVE island
 	 * @param response
 	 */
-	private async getAndApplyLostRessourcesOnPveFaint(response: DraftBotPacket[]): Promise<ressourcesLostOnPveFaint> {
+	private async getAndApplyLostRessourcesOnPveFaint(response: CrowniclesPacket[]): Promise<ressourcesLostOnPveFaint> {
 		const malusMultiplier = this.hasAGuild() ? PVEConstants.MONEY_MALUS_MULTIPLIER_FOR_GUILD_PLAYERS : PVEConstants.MONEY_MALUS_MULTIPLIER_FOR_SOLO_PLAYERS;
 		let moneyLost = Math.round(this.level * PVEConstants.MONEY_LOST_PER_LEVEL_ON_DEATH * malusMultiplier);
 		if (moneyLost > this.money) {
@@ -936,7 +936,7 @@ export class Player extends Model {
 		await this.save();
 
 		let guildPointsLost = PVEConstants.GUILD_POINTS_LOST_ON_DEATH
-			+ RandomUtils.draftbotRandom.integer(-PVEConstants.RANDOM_RANGE_FOR_GUILD_POINTS_LOST_ON_DEATH, PVEConstants.RANDOM_RANGE_FOR_GUILD_POINTS_LOST_ON_DEATH);
+			+ RandomUtils.crowniclesRandom.integer(-PVEConstants.RANDOM_RANGE_FOR_GUILD_POINTS_LOST_ON_DEATH, PVEConstants.RANDOM_RANGE_FOR_GUILD_POINTS_LOST_ON_DEATH);
 		if (this.hasAGuild()) {
 			const playerGuild = await Guilds.getById(this.guildId);
 			if (guildPointsLost > playerGuild.score) {
@@ -956,7 +956,7 @@ export class Player extends Model {
 	 * @param score
 	 * @param response
 	 */
-	private async setScore(score: number, response: DraftBotPacket[]): Promise<void> {
+	private async setScore(score: number, response: CrowniclesPacket[]): Promise<void> {
 		await MissionsController.update(this, response, {
 			missionId: "reachScore",
 			count: score,
@@ -1011,7 +1011,7 @@ export class Player extends Model {
 	 * @param response
 	 * @param missionHealthParameter
 	 */
-	private async setHealth(health: number, response: DraftBotPacket[], missionHealthParameter: MissionHealthParameter = {
+	private async setHealth(health: number, response: CrowniclesPacket[], missionHealthParameter: MissionHealthParameter = {
 		overHealCountsForMission: true,
 		shouldPokeMission: true
 	}): Promise<void> {
@@ -1649,7 +1649,7 @@ export function initModel(sequelize: Sequelize): void {
 		handleNotifications()
 			.then()
 			.catch(error => {
-				DraftBotLogger.errorWithObj("Error while handling notifications", error);
+				CrowniclesLogger.errorWithObj("Error while handling notifications", error);
 			});
 	});
 }

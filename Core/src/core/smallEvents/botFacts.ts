@@ -1,7 +1,7 @@
 import {
 	SmallEventDataController, SmallEventFuncs
 } from "../../data/SmallEvent";
-import { makePacket } from "../../../../Lib/src/packets/DraftBotPacket";
+import { makePacket } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { Players } from "../database/game/models/Player";
 import { PetEntities } from "../database/game/models/PetEntity";
@@ -23,7 +23,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 	canBeExecuted: Maps.isOnContinent,
 	executeSmallEvent: async (response, player): Promise<void> => {
 		const botFactsProperties = SmallEventDataController.instance.getById("botFacts").getProperties<BotFactsProperties>();
-		const information = RandomUtils.draftbotRandom.pick(Object.values(botFactsProperties.possibleInfo));
+		const information = RandomUtils.crowniclesRandom.pick(Object.values(botFactsProperties.possibleInfo));
 		const packet: SmallEventBotFactsPacket = {
 			information, infoNumber: 0
 		};

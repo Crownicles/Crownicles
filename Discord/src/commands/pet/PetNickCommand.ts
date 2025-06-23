@@ -1,12 +1,12 @@
 import { ICommand } from "../ICommand";
 import {
 	makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
-import { DraftbotInteraction } from "../../messages/DraftbotInteraction";
+} from "../../../../Lib/src/packets/CrowniclesPacket";
+import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
 import i18n from "../../translations/i18n";
 import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
 import { DiscordCache } from "../../bot/DiscordCache";
-import { DraftBotErrorEmbed } from "../../messages/DraftBotErrorEmbed";
+import { CrowniclesErrorEmbed } from "../../messages/CrowniclesErrorEmbed";
 import { KeycloakUser } from "../../../../Lib/src/keycloak/KeycloakUser";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import {
@@ -14,13 +14,13 @@ import {
 	CommandPetNickPacketRes
 } from "../../../../Lib/src/packets/commands/CommandPetNickPacket";
 import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
-import { DraftBotEmbed } from "../../messages/DraftBotEmbed";
+import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import { escapeUsername } from "../../utils/StringUtils";
 
 /**
  * Change the nickname of a player pet.
  */
-function getPacket(interaction: DraftbotInteraction, keycloakUser: KeycloakUser): CommandPetNickPacketReq {
+function getPacket(interaction: CrowniclesInteraction, keycloakUser: KeycloakUser): CommandPetNickPacketReq {
 	const newNameOption = interaction.options.get("nickname");
 
 	let newNickname;
@@ -47,7 +47,7 @@ export async function handleCommandPetNickPacketRes(packet: CommandPetNickPacket
 	if (!packet.foundPet) {
 		await interaction.reply({
 			embeds: [
-				new DraftBotErrorEmbed(
+				new CrowniclesErrorEmbed(
 					interaction.user,
 					context,
 					interaction,
@@ -61,7 +61,7 @@ export async function handleCommandPetNickPacketRes(packet: CommandPetNickPacket
 	if (!packet.nickNameIsAcceptable) {
 		await interaction.reply({
 			embeds: [
-				new DraftBotErrorEmbed(
+				new CrowniclesErrorEmbed(
 					interaction.user,
 					context,
 					interaction,
@@ -79,7 +79,7 @@ export async function handleCommandPetNickPacketRes(packet: CommandPetNickPacket
 	if (!packet.newNickname) {
 		await interaction.reply({
 			embeds: [
-				new DraftBotEmbed()
+				new CrowniclesEmbed()
 					.formatAuthor(i18n.t("commands:petNick.successTitle", {
 						lng,
 						pseudo: escapeUsername(interaction.user.displayName)
@@ -91,7 +91,7 @@ export async function handleCommandPetNickPacketRes(packet: CommandPetNickPacket
 	}
 	await interaction.reply({
 		embeds: [
-			new DraftBotEmbed()
+			new CrowniclesEmbed()
 				.formatAuthor(i18n.t("commands:petNick.successTitle", {
 					lng,
 					pseudo: escapeUsername(interaction.user.displayName)

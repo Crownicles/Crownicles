@@ -1,6 +1,6 @@
 {
   "id": "2d04d5d6-9aa5-441c-8141-42cb343e7cc2",
-  "realm": "DraftBot",
+  "realm": "Crownicles",
   "notBefore": 0,
   "defaultSignatureAlgorithm": "RS256",
   "revokeRefreshToken": false,
@@ -65,7 +65,7 @@
       },
       {
         "id": "5a520256-1a23-4345-b9f2-be76bd9cbf15",
-        "name": "default-roles-draftbot",
+        "name": "default-roles-crownicles",
         "description": "${role_default-roles}",
         "composite": true,
         "composites": {
@@ -443,7 +443,7 @@
   "groups": [],
   "defaultRole": {
     "id": "5a520256-1a23-4345-b9f2-be76bd9cbf15",
-    "name": "default-roles-draftbot",
+    "name": "default-roles-crownicles",
     "description": "${role_default-roles}",
     "composite": true,
     "clientRole": false,
@@ -500,7 +500,7 @@
       "disableableCredentialTypes": [],
       "requiredActions": [],
       "realmRoles": [
-        "default-roles-draftbot"
+        "default-roles-crownicles"
       ],
       "clientRoles": {
         "realm-management": [
@@ -540,13 +540,13 @@
       "clientId": "account",
       "name": "${client_account}",
       "rootUrl": "${authBaseUrl}",
-      "baseUrl": "/realms/DraftBot/account/",
+      "baseUrl": "/realms/Crownicles/account/",
       "surrogateAuthRequired": false,
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
       "redirectUris": [
-        "/realms/DraftBot/account/*"
+        "/realms/Crownicles/account/*"
       ],
       "webOrigins": [],
       "notBefore": 0,
@@ -584,13 +584,13 @@
       "clientId": "account-console",
       "name": "${client_account-console}",
       "rootUrl": "${authBaseUrl}",
-      "baseUrl": "/realms/DraftBot/account/",
+      "baseUrl": "/realms/Crownicles/account/",
       "surrogateAuthRequired": false,
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
       "redirectUris": [
-        "/realms/DraftBot/account/*"
+        "/realms/Crownicles/account/*"
       ],
       "webOrigins": [],
       "notBefore": 0,
@@ -859,13 +859,13 @@
       "clientId": "security-admin-console",
       "name": "${client_security-admin-console}",
       "rootUrl": "${authAdminUrl}",
-      "baseUrl": "/admin/DraftBot/console/",
+      "baseUrl": "/admin/Crownicles/console/",
       "surrogateAuthRequired": false,
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
       "redirectUris": [
-        "/admin/DraftBot/console/*"
+        "/admin/Crownicles/console/*"
       ],
       "webOrigins": [
         "+"

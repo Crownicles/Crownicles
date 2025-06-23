@@ -1,5 +1,5 @@
 import { packetHandler } from "../PacketHandler";
-import { PacketContext } from "../../../../Lib/src/packets/DraftBotPacket";
+import { PacketContext } from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	ReactionCollectorCreationPacket,
 	ReactionCollectorEnded
@@ -89,7 +89,7 @@ import { createJoinBoatCollector } from "../../commands/player/JoinBoatCommand";
 import { ReactionCollectorJoinBoatData } from "../../../../Lib/src/packets/interaction/ReactionCollectorJoinBoat";
 import { ReactionCollectorPveFightData } from "../../../../Lib/src/packets/interaction/ReactionCollectorPveFight";
 import { handleClassicError } from "../../utils/ErrorUtils";
-import { DraftBotLogger } from "../../../../Lib/src/logs/DraftBotLogger";
+import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 
 // Needed because we need to accept any parameter
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -150,7 +150,7 @@ export default class ReactionCollectorHandler {
 		}
 		const collector = ReactionCollectorHandler.collectorMap.get(packet.data.type);
 		if (!collector) {
-			DraftBotLogger.error("Unknown collector type", { type: packet.data.type });
+			CrowniclesLogger.error("Unknown collector type", { type: packet.data.type });
 			await handleClassicError(context, "error:aDevMessedUp");
 			return;
 		}
@@ -165,12 +165,12 @@ export default class ReactionCollectorHandler {
 	async collectorStop(_context: PacketContext, packet: ReactionCollectorStopPacket): Promise<void> {
 		const collector = ReactionCollectorHandler.collectorsCache.get(packet.id);
 		if (!collector) {
-			DraftBotLogger.warn(`Collector stop received for collector with ID ${packet.id} but no collector was found with this ID`);
+			CrowniclesLogger.warn(`Collector stop received for collector with ID ${packet.id} but no collector was found with this ID`);
 			return;
 		}
 		collector.forEach(c => {
 			if (c.ended) {
-				DraftBotLogger.warn(`Collector stop received for collector with ID ${packet.id} but collector was already stopped`);
+				CrowniclesLogger.warn(`Collector stop received for collector with ID ${packet.id} but collector was already stopped`);
 				return;
 			}
 			c.stop();
@@ -188,12 +188,12 @@ export default class ReactionCollectorHandler {
 	async collectorResetTimer(_context: PacketContext, packet: ReactionCollectorResetTimerPacketRes): Promise<void> {
 		const collector = ReactionCollectorHandler.collectorsCache.get(packet.reactionCollectorId);
 		if (!collector) {
-			DraftBotLogger.warn(`Collector reset timer received for collector with ID ${packet.reactionCollectorId} but no collector was found with this ID`);
+			CrowniclesLogger.warn(`Collector reset timer received for collector with ID ${packet.reactionCollectorId} but no collector was found with this ID`);
 			return;
 		}
 		collector.forEach(c => {
 			if (c.ended) {
-				DraftBotLogger.warn(`Collector reset timer received for collector with ID ${packet.reactionCollectorId} but collector was already stopped`);
+				CrowniclesLogger.warn(`Collector reset timer received for collector with ID ${packet.reactionCollectorId} but collector was already stopped`);
 				return;
 			}
 			c.resetTimer({

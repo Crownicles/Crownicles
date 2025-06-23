@@ -11,8 +11,8 @@ import {
 	generateRandomItem, giveItemToPlayer
 } from "../utils/ItemUtils";
 import {
-	DraftBotPacket, makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, makePacket, PacketContext
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import { SmallEventUltimateFoodMerchantPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventUltimateFoodMerchantPacket";
 import { SmallEventFuncs } from "../../data/SmallEvent";
 import { Maps } from "../maps/Maps";
@@ -60,7 +60,7 @@ function generateReward(player: Player, guild: Guild): string {
 		return SmallEventConstants.ULTIMATE_FOOD_MERCHANT.INTERACTIONS_NAMES.MONEY;
 	}
 	if (player.level >= SmallEventConstants.ULTIMATE_FOOD_MERCHANT.MINIMUM_LEVEL_GOOD_PLAYER) {
-		return RandomUtils.draftbotRandom.bool()
+		return RandomUtils.crowniclesRandom.bool()
 			? guild.ultimateFood < GuildConstants.MAX_ULTIMATE_PET_FOOD
 				? SmallEventConstants.ULTIMATE_FOOD_MERCHANT.INTERACTIONS_NAMES.ULTIMATE_FOOD
 				: SmallEventConstants.ULTIMATE_FOOD_MERCHANT.INTERACTIONS_NAMES.FULL_ULTIMATE_FOOD
@@ -82,7 +82,7 @@ function generateReward(player: Player, guild: Guild): string {
  * @param player
  * @param guild
  */
-async function giveReward(packet: SmallEventUltimateFoodMerchantPacket, response: DraftBotPacket[], context: PacketContext, player: Player, guild: Guild): Promise<void> {
+async function giveReward(packet: SmallEventUltimateFoodMerchantPacket, response: CrowniclesPacket[], context: PacketContext, player: Player, guild: Guild): Promise<void> {
 	switch (packet.interactionName) {
 		case SmallEventConstants.ULTIMATE_FOOD_MERCHANT.INTERACTIONS_NAMES.ULTIMATE_FOOD:
 			packet.amount = foodAmount(player, guild.ultimateFood, true);

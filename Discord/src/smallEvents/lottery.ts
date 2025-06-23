@@ -1,7 +1,7 @@
 import { ReactionCollectorCreationPacket } from "../../../Lib/src/packets/interaction/ReactionCollectorPacket";
-import { PacketContext } from "../../../Lib/src/packets/DraftBotPacket";
+import { PacketContext } from "../../../Lib/src/packets/CrowniclesPacket";
 import { DiscordCache } from "../bot/DiscordCache";
-import { DraftbotSmallEventEmbed } from "../messages/DraftbotSmallEventEmbed";
+import { CrowniclesSmallEventEmbed } from "../messages/CrowniclesSmallEventEmbed";
 import i18n from "../translations/i18n";
 import { DiscordCollectorUtils } from "../utils/DiscordCollectorUtils";
 import {
@@ -12,7 +12,7 @@ import {
 import {
 	ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, Message, parseEmoji
 } from "discord.js";
-import { DraftBotIcons } from "../../../Lib/src/DraftBotIcons";
+import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 import { sendInteractionNotForYou } from "../utils/ErrorUtils";
 import { ReactionCollectorReturnTypeOrNull } from "../packetHandlers/handlers/ReactionCollectorHandlers";
 
@@ -20,7 +20,7 @@ export async function lotteryCollector(context: PacketContext, packet: ReactionC
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
 	const lng = interaction.userLanguage;
 
-	const embed = new DraftbotSmallEventEmbed(
+	const embed = new CrowniclesSmallEventEmbed(
 		"lottery",
 		i18n.t("smallEvents:lottery.intro", { lng }),
 		interaction.user,
@@ -32,19 +32,19 @@ export async function lotteryCollector(context: PacketContext, packet: ReactionC
 	// Create buttons
 	const easyButtonId = "easy";
 	const easyButton = new ButtonBuilder()
-		.setEmoji(parseEmoji(DraftBotIcons.collectors.lottery.easy)!)
+		.setEmoji(parseEmoji(CrowniclesIcons.collectors.lottery.easy)!)
 		.setCustomId(easyButtonId)
 		.setStyle(ButtonStyle.Secondary);
 
 	const mediumButtonId = "medium";
 	const mediumButton = new ButtonBuilder()
-		.setEmoji(parseEmoji(DraftBotIcons.collectors.lottery.medium)!)
+		.setEmoji(parseEmoji(CrowniclesIcons.collectors.lottery.medium)!)
 		.setCustomId(mediumButtonId)
 		.setStyle(ButtonStyle.Secondary);
 
 	const hardButtonId = "hard";
 	const hardButton = new ButtonBuilder()
-		.setEmoji(parseEmoji(DraftBotIcons.collectors.lottery.hard)!)
+		.setEmoji(parseEmoji(CrowniclesIcons.collectors.lottery.hard)!)
 		.setCustomId(hardButtonId)
 		.setStyle(ButtonStyle.Secondary);
 

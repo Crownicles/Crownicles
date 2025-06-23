@@ -5,7 +5,7 @@ import { DatabaseConfiguration } from "../../../Lib/src/database/DatabaseConfigu
 /**
  * Represents the main constants of the bot
  */
-export interface DraftBotConfig {
+export interface CrowniclesConfig {
 	DISCORD_CLIENT_TOKEN: string;
 	BADGE_MANAGER_ROLE: string;
 	CONTRIBUTOR_ROLE: string;
@@ -93,7 +93,7 @@ type ConfigStructure = {
 /**
  * Loads the config from the config file
  */
-export function loadConfig(): DraftBotConfig {
+export function loadConfig(): CrowniclesConfig {
 	const config = parse(readFileSync(`${process.cwd()}/config/config.toml`, "utf-8")) as ConfigStructure;
 	return {
 		BADGE_MANAGER_ROLE: config.roles.badge_manager_ids,
@@ -127,7 +127,7 @@ export function loadConfig(): DraftBotConfig {
 	};
 }
 
-export function getDatabaseConfiguration(config: DraftBotConfig, databaseName: string): DatabaseConfiguration {
+export function getDatabaseConfiguration(config: CrowniclesConfig, databaseName: string): DatabaseConfiguration {
 	return {
 		host: config.MARIADB_HOST,
 		port: config.MARIADB_PORT,

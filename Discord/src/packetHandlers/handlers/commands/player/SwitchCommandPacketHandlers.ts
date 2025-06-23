@@ -3,7 +3,7 @@ import {
 	CommandSwitchCancelled, CommandSwitchErrorNoItemToSwitch,
 	CommandSwitchSuccess
 } from "../../../../../../Lib/src/packets/commands/CommandSwitchPacket";
-import { PacketContext } from "../../../../../../Lib/src/packets/DraftBotPacket";
+import { PacketContext } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import { handleItemSwitch } from "../../../../commands/player/SwitchCommand";
 import { handleClassicError } from "../../../../utils/ErrorUtils";
 

@@ -5,14 +5,14 @@ import {
 	ReactionCollectorReaction
 } from "./ReactionCollectorPacket";
 import {
-	DraftBotPacket, PacketDirection, sendablePacket
-} from "../DraftBotPacket";
+	CrowniclesPacket, PacketDirection, sendablePacket
+} from "../CrowniclesPacket";
 import {
 	ItemCategory, ItemConstants
 } from "../../constants/ItemConstants";
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class ReactionCollectorBuyCategorySlotBuySuccess extends DraftBotPacket {
+export class ReactionCollectorBuyCategorySlotBuySuccess extends CrowniclesPacket {
 }
 
 export class ReactionCollectorBuyCategorySlotData extends ReactionCollectorData {

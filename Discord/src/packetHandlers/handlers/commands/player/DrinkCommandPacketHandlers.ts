@@ -5,7 +5,7 @@ import {
 	CommandDrinkNoActiveObjectError,
 	CommandDrinkObjectIsActiveDuringFights
 } from "../../../../../../Lib/src/packets/commands/CommandDrinkPacket";
-import { PacketContext } from "../../../../../../Lib/src/packets/DraftBotPacket";
+import { PacketContext } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	handleDrinkCancellation, handleDrinkConsumePotion
 } from "../../../../commands/player/DrinkCommand";

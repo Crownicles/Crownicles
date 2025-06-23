@@ -1,7 +1,7 @@
 import fastify, {
 	FastifyInstance, FastifyRequest
 } from "fastify";
-import { DraftBotLogger } from "../../../Lib/src/logs/DraftBotLogger";
+import { CrowniclesLogger } from "../../../Lib/src/logs/CrowniclesLogger";
 import { setupRegisterRoute } from "./routes/RegisterRoute";
 import { setupLoginRoute } from "./routes/LoginRoute";
 import { setupRefreshTokenRoute } from "./routes/RefreshTokenRoute";
@@ -95,10 +95,10 @@ export class RestApi {
 	public start(port: number): void {
 		this.server.listen({ port }, (err, address) => {
 			if (err) {
-				DraftBotLogger.errorWithObj("Failed to start Rest API", err);
+				CrowniclesLogger.errorWithObj("Failed to start Rest API", err);
 				process.exit(1);
 			}
-			DraftBotLogger.info("Rest API is running", {
+			CrowniclesLogger.info("Rest API is running", {
 				address
 			});
 		});

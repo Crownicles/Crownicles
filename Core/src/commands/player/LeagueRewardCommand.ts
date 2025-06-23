@@ -2,8 +2,8 @@ import {
 	commandRequires, CommandUtils
 } from "../../core/utils/CommandUtils";
 import {
-	DraftBotPacket, makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, makePacket, PacketContext
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import Player, { Players } from "../../core/database/game/models/Player";
 import {
 	CommandLeagueRewardAlreadyClaimedPacketRes,
@@ -14,7 +14,7 @@ import {
 } from "../../../../Lib/src/packets/commands/CommandLeagueRewardPacket";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { giveItemToPlayer } from "../../core/utils/ItemUtils";
-import { draftBotInstance } from "../../index";
+import { crowniclesInstance } from "../../index";
 import {
 	getNextSaturdayMidnight, todayIsSunday
 } from "../../../../Lib/src/utils/TimeUtils";
@@ -28,7 +28,7 @@ export default class LeagueRewardCommand {
 		level: FightConstants.REQUIRED_LEVEL,
 		whereAllowed: [WhereAllowed.CONTINENT]
 	})
-	static async execute(response: DraftBotPacket[], player: Player, _packet: CommandLeagueRewardPacketReq, context: PacketContext, ignoreDate = false): Promise<void> {
+	static async execute(response: CrowniclesPacket[], player: Player, _packet: CommandLeagueRewardPacketReq, context: PacketContext, ignoreDate = false): Promise<void> {
 		if (!ignoreDate && !todayIsSunday()) {
 			response.push(makePacket(CommandLeagueRewardNotSundayPacketRes, {
 				nextSunday: getNextSaturdayMidnight()
@@ -65,7 +65,7 @@ export default class LeagueRewardCommand {
 		});
 		const item = leagueLastSeason.generateRewardItem();
 		await giveItemToPlayer(response, context, player, item);
-		draftBotInstance.logsDatabase.logPlayerLeagueReward(player.keycloakId, leagueLastSeason.id)
+		crowniclesInstance.logsDatabase.logPlayerLeagueReward(player.keycloakId, leagueLastSeason.id)
 			.then();
 		await player.save();
 		response.push(makePacket(CommandLeagueRewardSuccessPacketRes, {

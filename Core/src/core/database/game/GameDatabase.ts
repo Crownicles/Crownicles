@@ -1,8 +1,8 @@
 import { Database } from "../../../../../Lib/src/database/Database";
 import { DataTypes } from "sequelize";
-import { getDatabaseConfiguration } from "../../bot/DraftBotConfig";
+import { getDatabaseConfiguration } from "../../bot/CrowniclesConfig";
 import { botConfig } from "../../../index";
-import { DraftBotLogger } from "../../../../../Lib/src/logs/DraftBotLogger";
+import { CrowniclesLogger } from "../../../../../Lib/src/logs/CrowniclesLogger";
 
 export class GameDatabase extends Database {
 	constructor() {
@@ -29,7 +29,7 @@ export class GameDatabase extends Database {
 			const maxId: number = await MigrationTable.max("id");
 
 			if (maxId !== 28) {
-				DraftBotLogger.error("This version of DraftBot includes a new version of migrations. You have to update the bot to the 3.0.0 version first, and after the migrations, you can upgrade the bot to an older version");
+				CrowniclesLogger.error("This version of Crownicles includes a new version of migrations. You have to update the bot to the 3.0.0 version first, and after the migrations, you can upgrade the bot to an older version");
 				process.exit();
 			}
 

@@ -1,9 +1,9 @@
 import {
-	DraftBotPacket, PacketDirection, sendablePacket
-} from "../../DraftBotPacket";
+	CrowniclesPacket, PacketDirection, sendablePacket
+} from "../../CrowniclesPacket";
 import { GuildRole } from "../../../types/GuildRole";
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class RequirementGuildRolePacket extends DraftBotPacket {
+export class RequirementGuildRolePacket extends CrowniclesPacket {
 	roleNeeded!: GuildRole;
 }

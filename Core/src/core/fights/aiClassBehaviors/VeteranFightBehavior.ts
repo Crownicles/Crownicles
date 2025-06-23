@@ -64,7 +64,7 @@ class VeteranFightBehavior implements ClassBehavior {
 		// If no fight alteration, random check, energy condition and specific class or breath matches trigger concentration.
 		if (
 			!me.hasFightAlteration()
-			&& RandomUtils.draftbotRandom.bool()
+			&& RandomUtils.crowniclesRandom.bool()
 			&& me.getEnergy() > me.getMaxEnergy() * 0.15
 		) {
 			const concentrationClasses = [
@@ -145,10 +145,10 @@ class VeteranFightBehavior implements ClassBehavior {
 		if (opponent.getSpeed() < me.getSpeed() * 0.4) {
 			return true;
 		}
-		if (RandomUtils.draftbotRandom.bool() && opponent.getSpeed() < me.getSpeed() * 0.6) {
+		if (RandomUtils.crowniclesRandom.bool() && opponent.getSpeed() < me.getSpeed() * 0.6) {
 			return true;
 		}
-		return RandomUtils.draftbotRandom.bool(0.2);
+		return RandomUtils.crowniclesRandom.bool(0.2);
 	}
 }
 

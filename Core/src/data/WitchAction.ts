@@ -4,7 +4,7 @@ import { readdirSync } from "fs";
 import { RandomUtils } from "../../../Lib/src/utils/RandomUtils";
 import Player from "../core/database/game/models/Player";
 import { SmallEventConstants } from "../../../Lib/src/constants/SmallEventConstants";
-import { DraftBotPacket } from "../../../Lib/src/packets/DraftBotPacket";
+import { CrowniclesPacket } from "../../../Lib/src/packets/CrowniclesPacket";
 import { TravelTime } from "../core/maps/TravelTime";
 import { NumberChangeReason } from "../../../Lib/src/constants/LogsConstants";
 import { Effect } from "../../../Lib/src/types/Effect";
@@ -33,7 +33,7 @@ export class WitchAction extends Data<string> {
 		return withActionFunctions?.generatePotion ? withActionFunctions.generatePotion() : null;
 	}
 
-	public async checkMissionsWitchAction(player: Player, outcome: WitchActionOutcomeType, response: DraftBotPacket[]): Promise<void> {
+	public async checkMissionsWitchAction(player: Player, outcome: WitchActionOutcomeType, response: CrowniclesPacket[]): Promise<void> {
 		const withActionFunctions = WitchActionDataController.getWitchActionFunction(this.id);
 		if (withActionFunctions?.checkMissions) {
 			await withActionFunctions.checkMissions(player, outcome, response, this.tags);
@@ -98,7 +98,7 @@ export type WitchActionFuncs = {
 	generatePotion?: GeneratePotionLike;
 };
 
-export type CheckMissionsLike = (player: Player, outcome: WitchActionOutcomeType, response: DraftBotPacket[], tags: string[]) => void | Promise<void>;
+export type CheckMissionsLike = (player: Player, outcome: WitchActionOutcomeType, response: CrowniclesPacket[], tags: string[]) => void | Promise<void>;
 export type GeneratePotionLike = () => GenerateRandomItemOptions;
 
 export class WitchActionDataController extends DataControllerString<WitchAction> {
@@ -134,7 +134,7 @@ export class WitchActionDataController extends DataControllerString<WitchAction>
 	}
 
 	public getRandomWitchAction(excludedWitchActions: WitchAction[]): WitchAction {
-		return RandomUtils.draftbotRandom.pick(Array.from(this.data.values())
+		return RandomUtils.crowniclesRandom.pick(Array.from(this.data.values())
 			.filter(witchAction => !excludedWitchActions.includes(witchAction)));
 	}
 
@@ -143,7 +143,7 @@ export class WitchActionDataController extends DataControllerString<WitchAction>
 	}
 
 	getRandomWitchEventByType(isIngredient: boolean): WitchAction {
-		return RandomUtils.draftbotRandom.pick(Array.from(this.data.values())
+		return RandomUtils.crowniclesRandom.pick(Array.from(this.data.values())
 			.filter(witchAction => witchAction.isIngredient === isIngredient));
 	}
 

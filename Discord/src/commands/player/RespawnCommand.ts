@@ -1,7 +1,7 @@
 import { ICommand } from "../ICommand";
 import {
 	makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
 import {
 	CommandRespawnPacketReq,
@@ -9,16 +9,16 @@ import {
 } from "../../../../Lib/src/packets/commands/CommandRespawnPacket";
 import { DiscordCache } from "../../bot/DiscordCache";
 import i18n from "../../translations/i18n";
-import { DraftBotIcons } from "../../../../Lib/src/DraftBotIcons";
+import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 import { EmoteUtils } from "../../utils/EmoteUtils";
-import { DraftbotInteraction } from "../../messages/DraftbotInteraction";
+import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
 import { escapeUsername } from "../../utils/StringUtils";
 
 /**
  * Get the respawn packet to send it to the server
  * @param interaction
  */
-async function getPacket(interaction: DraftbotInteraction): Promise<CommandRespawnPacketReq> {
+async function getPacket(interaction: CrowniclesInteraction): Promise<CommandRespawnPacketReq> {
 	await interaction.deferReply();
 	return makePacket(CommandRespawnPacketReq, {});
 }
@@ -34,8 +34,8 @@ export async function handleCommandRespawnPacketRes(packet: CommandRespawnPacket
 	await interaction?.editReply({
 		content: i18n.t("commands:respawn.response", {
 			lng: interaction.userLanguage,
-			respawnEmote: EmoteUtils.translateEmojiToDiscord(DraftBotIcons.commands.respawn),
-			scoreEmote: EmoteUtils.translateEmojiToDiscord(DraftBotIcons.unitValues.score),
+			respawnEmote: EmoteUtils.translateEmojiToDiscord(CrowniclesIcons.commands.respawn),
+			scoreEmote: EmoteUtils.translateEmojiToDiscord(CrowniclesIcons.unitValues.score),
 			pseudo: escapeUsername(interaction.user.displayName),
 			count: packet.lostScore
 		})

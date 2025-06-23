@@ -1,7 +1,7 @@
 import { SmallEventPacket } from "./SmallEventPacket";
 import {
 	PacketDirection, sendablePacket
-} from "../DraftBotPacket";
+} from "../CrowniclesPacket";
 
 @sendablePacket(PacketDirection.NONE)
 export class SmallEventAnyShopAcceptedPacket extends SmallEventPacket {

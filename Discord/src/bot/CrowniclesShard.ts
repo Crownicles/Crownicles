@@ -12,25 +12,25 @@ import {
 	LANGUAGE, Language
 } from "../../../Lib/src/Language";
 import { DiscordDatabase } from "../database/discord/DiscordDatabase";
-import { DraftBotDiscordWebServer } from "./DraftBotDiscordWebServer";
-import { DraftBotLogger } from "../../../Lib/src/logs/DraftBotLogger";
+import { CrowniclesDiscordWebServer } from "./CrowniclesDiscordWebServer";
+import { CrowniclesLogger } from "../../../Lib/src/logs/CrowniclesLogger";
 import "source-map-support/register";
 
 process.on("uncaughtException", error => {
 	console.error(`Uncaught exception: ${error}`);
-	if (DraftBotLogger.isInitialized()) {
-		DraftBotLogger.errorWithObj("Uncaught exception", error);
+	if (CrowniclesLogger.isInitialized()) {
+		CrowniclesLogger.errorWithObj("Uncaught exception", error);
 	}
 });
 
 process.on("unhandledRejection", error => {
 	console.error(`Unhandled rejection: ${error}`);
-	if (DraftBotLogger.isInitialized()) {
-		DraftBotLogger.errorWithObj("Unhandled rejection", error);
+	if (CrowniclesLogger.isInitialized()) {
+		CrowniclesLogger.errorWithObj("Unhandled rejection", error);
 	}
 });
 
-export let draftBotClient!: Client;
+export let crowniclesClient!: Client;
 export const discordConfig = loadConfig();
 export const keycloakConfig: KeycloakConfig = {
 	realm: discordConfig.KEYCLOAK_REALM,
@@ -56,7 +56,7 @@ process.on("message", (message: {
 	if (message.type === "shardId") {
 		shardId = message.data.shardId;
 		shardCount = message.data.shardCount;
-		DraftBotLogger.init(discordConfig.LOGGER_LEVEL, discordConfig.LOGGER_LOCATIONS, {
+		CrowniclesLogger.init(discordConfig.LOGGER_LEVEL, discordConfig.LOGGER_LOCATIONS, {
 			app: "Discord",
 			shard: shardId.toString(10)
 		}, discordConfig.LOKI_HOST
@@ -66,7 +66,7 @@ process.on("message", (message: {
 				password: discordConfig.LOKI_PASSWORD
 			}
 			: undefined);
-		DraftBotLogger.info(`Starting shard ${shardId} (shards total: ${shardCount})`);
+		CrowniclesLogger.info(`Starting shard ${shardId} (shards total: ${shardCount})`);
 		connectAndStartBot().then();
 	}
 	return true;
@@ -147,7 +147,7 @@ async function connectAndStartBot(): Promise<void> {
 	 */
 	function onDiscordGuildCreate(guild: Guild): void {
 		const msg = getJoinLeaveMessage(guild, true, LANGUAGE.ENGLISH);
-		DraftBotLogger.info(msg);
+		CrowniclesLogger.info(msg);
 	}
 
 	/**
@@ -156,32 +156,32 @@ async function connectAndStartBot(): Promise<void> {
 	 */
 	function onDiscordGuildDelete(guild: Guild): void {
 		const msg = getJoinLeaveMessage(guild, false, LANGUAGE.ENGLISH);
-		DraftBotLogger.info(msg);
+		CrowniclesLogger.info(msg);
 	}
 
 	client.on("ready", () => console.log("Bot is ready"));
 	client.on("guildCreate", onDiscordGuildCreate);
 	client.on("guildDelete", onDiscordGuildDelete);
 
-	draftBotClient = client;
+	crowniclesClient = client;
 
 	await client.login(discordConfig.DISCORD_CLIENT_TOKEN).catch(error => {
 		console.error("Error while logging in the bot", error);
 		process.exit(1);
 	});
 
-	DraftBotDiscordWebServer.start(shardId);
+	CrowniclesDiscordWebServer.start(shardId);
 	const isMainShard = shardId === 0;
-	await CommandsManager.register(draftBotClient, isMainShard);
+	await CommandsManager.register(crowniclesClient, isMainShard);
 	await DiscordMQTT.init(isMainShard);
 	await discordDatabase.init(isMainShard);
 
-	const guild = draftBotClient?.guilds.cache.get(discordConfig.MAIN_SERVER_ID);
+	const guild = crowniclesClient?.guilds.cache.get(discordConfig.MAIN_SERVER_ID);
 	if (guild?.shard) {
 		(await guild.channels.fetch(discordConfig.CONSOLE_CHANNEL_ID) as TextChannel)
-			.send(`:robot: **DraftBot** - v${process.env.npm_package_version} - Shard ${shardId}`)
+			.send(`:robot: **Crownicles** - v${process.env.npm_package_version} - Shard ${shardId}`)
 			.catch(e => {
-				DraftBotLogger.errorWithObj("Error while sending message to console channel", e);
+				CrowniclesLogger.errorWithObj("Error while sending message to console channel", e);
 			});
 	}
 }

@@ -2,8 +2,8 @@ import { SmallEventFuncs } from "../../data/SmallEvent";
 import { Maps } from "../maps/Maps";
 import Player from "../database/game/models/Player";
 import {
-	DraftBotPacket, makePacket
-} from "../../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, makePacket
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import { SmallEventDwarfPetFanPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventDwarfPetFanPacket";
 import {
 	PetEntities, PetEntity
@@ -23,7 +23,7 @@ import { SmallEventConstants } from "../../../../Lib/src/constants/SmallEventCon
  * @param player
  * @param petEntity
  */
-async function canContinueSmallEvent(response: DraftBotPacket[], player: Player, petEntity: PetEntity): Promise<boolean> {
+async function canContinueSmallEvent(response: CrowniclesPacket[], player: Player, petEntity: PetEntity): Promise<boolean> {
 	// Check if the player has shown all the pets
 	if (await DwarfPetsSeen.isAllPetSeen(player)) {
 		await manageAllPetsAreSeen(response, player, petEntity);
@@ -65,7 +65,7 @@ async function canContinueSmallEvent(response: DraftBotPacket[], player: Player,
  * @param player
  * @param petEntity
  */
-async function manageAllPetsAreSeen(response: DraftBotPacket[], player: Player, petEntity: PetEntity): Promise<void> {
+async function manageAllPetsAreSeen(response: CrowniclesPacket[], player: Player, petEntity: PetEntity): Promise<void> {
 	if (player.petId && petEntity.isFeisty()) {
 		response.push(makePacket(SmallEventDwarfPetFanPacket, {
 			petNickname: petEntity.nickname,
@@ -86,7 +86,7 @@ async function manageAllPetsAreSeen(response: DraftBotPacket[], player: Player, 
 	}
 
 	// Give a gem
-	if (RandomUtils.draftbotRandom.bool(SmallEventConstants.DWARF_PET_FAN.ALL_PETS_SEEN.GEM_PROBABILITY)) {
+	if (RandomUtils.crowniclesRandom.bool(SmallEventConstants.DWARF_PET_FAN.ALL_PETS_SEEN.GEM_PROBABILITY)) {
 		const missionInfo = await PlayerMissionsInfos.getOfPlayer(player.id);
 		await missionInfo.addGems(
 			SmallEventConstants.DWARF_PET_FAN.ALL_PETS_SEEN.GEM_REWARD,
@@ -121,7 +121,7 @@ async function manageAllPetsAreSeen(response: DraftBotPacket[], player: Player, 
  * @param player
  * @param petEntity
  */
-async function manageNewPetSeen(response: DraftBotPacket[], player: Player, petEntity: PetEntity): Promise<void> {
+async function manageNewPetSeen(response: CrowniclesPacket[], player: Player, petEntity: PetEntity): Promise<void> {
 	await DwarfPetsSeen.markPetAsSeen(player, petEntity.typeId);
 	const missionInfo = await PlayerMissionsInfos.getOfPlayer(player.id);
 	await missionInfo.addGems(

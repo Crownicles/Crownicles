@@ -1,7 +1,7 @@
 import {
 	ItemCategory, itemCategoryToString, ItemNature
 } from "../../../Lib/src/constants/ItemConstants";
-import { DraftBotIcons } from "../../../Lib/src/DraftBotIcons";
+import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 import i18n from "../translations/i18n";
 import { Language } from "../../../Lib/src/Language";
 import { ItemWithDetails } from "../../../Lib/src/types/ItemWithDetails";
@@ -17,7 +17,7 @@ import {
 	escapeUsername, StringUtils
 } from "./StringUtils";
 import { KeycloakUtils } from "../../../Lib/src/keycloak/KeycloakUtils";
-import { keycloakConfig } from "../bot/DraftBotShard";
+import { keycloakConfig } from "../bot/CrowniclesShard";
 
 export class DisplayUtils {
 	/**
@@ -48,16 +48,16 @@ export class DisplayUtils {
 		let emote;
 		switch (item.category) {
 			case ItemCategory.WEAPON:
-				emote = DraftBotIcons.weapons[item.id];
+				emote = CrowniclesIcons.weapons[item.id];
 				break;
 			case ItemCategory.ARMOR:
-				emote = DraftBotIcons.armors[item.id];
+				emote = CrowniclesIcons.armors[item.id];
 				break;
 			case ItemCategory.POTION:
-				emote = DraftBotIcons.potions[item.id];
+				emote = CrowniclesIcons.potions[item.id];
 				break;
 			case ItemCategory.OBJECT:
-				emote = DraftBotIcons.objects[item.id];
+				emote = CrowniclesIcons.objects[item.id];
 				break;
 			default:
 				return "Missing no";
@@ -154,7 +154,7 @@ export class DisplayUtils {
 	 * @param sex
 	 */
 	static getPetIcon(petId: number, sex: SexTypeShort): string {
-		return DraftBotIcons.pets[petId][sex === StringConstants.SEX.FEMALE.short ? "emoteFemale" : "emoteMale"];
+		return CrowniclesIcons.pets[petId][sex === StringConstants.SEX.FEMALE.short ? "emoteFemale" : "emoteMale"];
 	}
 
 	/**
@@ -216,7 +216,7 @@ export class DisplayUtils {
 	 * @param rarity
 	 */
 	static getPetRarityDisplay(rarity: number): string {
-		return DraftBotIcons.unitValues.petRarity.repeat(rarity);
+		return CrowniclesIcons.unitValues.petRarity.repeat(rarity);
 	}
 
 	/**
@@ -296,7 +296,7 @@ export class DisplayUtils {
 		if (capitalizeFirstLetter) {
 			name = StringUtils.capitalizeFirstLetter(name);
 		}
-		return `${DraftBotIcons.foods[food]} ${name}`;
+		return `${CrowniclesIcons.foods[food]} ${name}`;
 	}
 
 	static async getEscapedUsername(keycloakId: string, lng: Language): Promise<string> {
@@ -333,7 +333,7 @@ export class DisplayUtils {
 			name: i18n.t(`models:${itemType}.${itemWithDetails.id}`, {
 				lng
 			}),
-			emote: EmoteUtils.translateEmojiToDiscord(DraftBotIcons[itemType][itemWithDetails.id]),
+			emote: EmoteUtils.translateEmojiToDiscord(CrowniclesIcons[itemType][itemWithDetails.id]),
 			rarity: i18n.t(`items:rarities.${itemWithDetails.rarity}`, { lng }),
 			values: values.join(" ")
 		});
@@ -427,7 +427,7 @@ export class DisplayUtils {
 			name: i18n.t(`models:objects.${itemWithDetails.id}`, {
 				lng
 			}),
-			emote: EmoteUtils.translateEmojiToDiscord(DraftBotIcons.objects[itemWithDetails.id]),
+			emote: EmoteUtils.translateEmojiToDiscord(CrowniclesIcons.objects[itemWithDetails.id]),
 			rarity: i18n.t(`items:rarities.${itemWithDetails.rarity}`, { lng }),
 			values: DisplayUtils.getObjectNatureTranslation(itemWithDetails, lng),
 			lng

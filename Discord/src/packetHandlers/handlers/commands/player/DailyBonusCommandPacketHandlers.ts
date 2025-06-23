@@ -5,7 +5,7 @@ import {
 	CommandDailyBonusObjectDoNothing, CommandDailyBonusObjectIsActiveDuringFights,
 	CommandDailyBonusPacketRes
 } from "../../../../../../Lib/src/packets/commands/CommandDailyBonusPacket";
-import { PacketContext } from "../../../../../../Lib/src/packets/DraftBotPacket";
+import { PacketContext } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	handleDailyBonusCooldownError, handleDailyBonusRes
 } from "../../../../commands/player/DailyBonusCommand";

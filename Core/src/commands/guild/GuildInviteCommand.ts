@@ -11,8 +11,8 @@ import {
 	CommandGuildInviteRefusePacketRes
 } from "../../../../Lib/src/packets/commands/CommandGuildInvitePacket.js";
 import {
-	DraftBotPacket, makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket.js";
+	CrowniclesPacket, makePacket, PacketContext
+} from "../../../../Lib/src/packets/CrowniclesPacket.js";
 import {
 	Player, Players
 } from "../../core/database/game/models/Player.js";
@@ -43,7 +43,7 @@ export default class GuildInviteCommand {
 		guildRoleNeeded: GuildConstants.PERMISSION_LEVEL.ELDER,
 		whereAllowed: [WhereAllowed.CONTINENT]
 	})
-	async execute(response: DraftBotPacket[], player: Player, packet: CommandGuildInvitePacketReq, context: PacketContext): Promise<void> {
+	async execute(response: CrowniclesPacket[], player: Player, packet: CommandGuildInvitePacketReq, context: PacketContext): Promise<void> {
 		const invitedPlayer = await Players.getByKeycloakId(packet.invitedPlayerKeycloakId);
 		if (!invitedPlayer) {
 			response.push(makePacket(CommandGuildInvitePlayerNotFound, {}));
@@ -61,7 +61,7 @@ export default class GuildInviteCommand {
 			invitedPlayer.keycloakId
 		);
 
-		const endCallback: EndCallback = async (collector: ReactionCollectorInstance, response: DraftBotPacket[]): Promise<void> => {
+		const endCallback: EndCallback = async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
 			const reaction = collector.getFirstReaction();
 			await invitedPlayer.reload();
 			await player.reload();
@@ -103,7 +103,7 @@ export default class GuildInviteCommand {
  * @param guild
  * @param response
  */
-async function canSendInvite(invitedPlayer: Player, guild: Guild, response: DraftBotPacket[]): Promise<boolean> {
+async function canSendInvite(invitedPlayer: Player, guild: Guild, response: CrowniclesPacket[]): Promise<boolean> {
 	const packetData = {
 		invitedPlayerKeycloakId: invitedPlayer.keycloakId,
 		guildName: guild?.name
@@ -141,7 +141,7 @@ async function canSendInvite(invitedPlayer: Player, guild: Guild, response: Draf
 	return true;
 }
 
-async function acceptInvitation(invitedPlayer: Player, invitingPlayer: Player, guild: Guild, response: DraftBotPacket[]): Promise<void> {
+async function acceptInvitation(invitedPlayer: Player, invitingPlayer: Player, guild: Guild, response: CrowniclesPacket[]): Promise<void> {
 	invitedPlayer.guildId = guild.id;
 	guild.updateLastDailyAt();
 	await guild.save();

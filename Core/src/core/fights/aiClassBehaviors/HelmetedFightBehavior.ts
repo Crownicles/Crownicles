@@ -24,7 +24,7 @@ export function shouldUseShieldAttack(opponent: AiPlayerFighter | PlayerFighter,
 	].includes(opponent.getLastFightActionUsed()?.id)
 			|| opponent.getBreath() > opponent.getMaxBreath() * 0.85)
 		&& me.getBreath() >= FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.SHIELD_ATTACK)
-		&& RandomUtils.draftbotRandom.bool(0.8);
+		&& RandomUtils.crowniclesRandom.bool(0.8);
 }
 
 class TankFightBehavior implements ClassBehavior {

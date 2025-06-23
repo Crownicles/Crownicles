@@ -1,6 +1,6 @@
 import {
 	makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	CommandGuildDailyPacketReq,
 	CommandGuildDailyRewardPacket
@@ -12,7 +12,7 @@ import i18n from "../../translations/i18n";
 import { Language } from "../../../../Lib/src/Language";
 import { DisplayUtils } from "../../utils/DisplayUtils";
 import { DiscordCache } from "../../bot/DiscordCache";
-import { DraftBotEmbed } from "../../messages/DraftBotEmbed";
+import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import { StringConstants } from "../../../../Lib/src/constants/StringConstants";
 
 function getPacket(): CommandGuildDailyPacketReq {
@@ -63,7 +63,7 @@ export async function handleCommandGuildDailyRewardPacket(packet: CommandGuildDa
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction!)!;
 	const lng = interaction.userLanguage;
 
-	const embed = new DraftBotEmbed()
+	const embed = new CrowniclesEmbed()
 		.formatAuthor(i18n.t("commands:guildDaily.rewardTitle", {
 			lng,
 			guildName: packet.guildName

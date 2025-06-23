@@ -4,7 +4,7 @@ import { ItemCategory } from "../../../../Lib/src/constants/ItemConstants";
 import {
 	generateRandomItem, giveItemToPlayer
 } from "../utils/ItemUtils";
-import { makePacket } from "../../../../Lib/src/packets/DraftBotPacket";
+import { makePacket } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { SmallEventFindPotionPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventFindPotionPacket";
 
 export const smallEventFuncs: SmallEventFuncs = {

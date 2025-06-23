@@ -1,6 +1,6 @@
 import {
-	DraftBotPacket, makePacket
-} from "../../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, makePacket
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import { Player } from "../../core/database/game/models/Player";
 import { Effect } from "../../../../Lib/src/types/Effect";
 import { RespawnConstants } from "../../../../Lib/src/constants/RespawnConstants";
@@ -29,7 +29,7 @@ export default class RespawnCommand {
 		disallowedEffects: CommandUtils.DISALLOWED_EFFECTS.NOT_STARTED,
 		whereAllowed: CommandUtils.WHERE.EVERYWHERE
 	})
-	async execute(response: DraftBotPacket[], player: Player): Promise<void> {
+	async execute(response: CrowniclesPacket[], player: Player): Promise<void> {
 		if (player.effectId !== Effect.DEAD.id) {
 			response.push(makePacket(CommandRespawnErrorAlreadyAlive, {}));
 			return;

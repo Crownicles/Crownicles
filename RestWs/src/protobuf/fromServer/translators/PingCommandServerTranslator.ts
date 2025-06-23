@@ -1,5 +1,5 @@
 import { fromServerTranslator } from "../FromServerTranslator";
-import { PacketContext } from "../../../../../Lib/src/packets/DraftBotPacket";
+import { PacketContext } from "../../../../../Lib/src/packets/CrowniclesPacket";
 import { CommandPingPacketRes } from "../../../../../Lib/src/packets/commands/CommandPingPacket";
 import { PingRes } from "../../../@types/protobufs-server";
 

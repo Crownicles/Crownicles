@@ -2,7 +2,7 @@ import { ICommand } from "../ICommand";
 import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
 import {
 	makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	CommandGuildShopGiveXp,
 	CommandGuildShopPacketReq
@@ -12,7 +12,7 @@ import {
 	sendErrorMessage, SendManner
 } from "../../utils/ErrorUtils";
 import i18n from "../../translations/i18n";
-import { DraftBotEmbed } from "../../messages/DraftBotEmbed";
+import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 
 function getPacket(): CommandGuildShopPacketReq {
 	return makePacket(CommandGuildShopPacketReq, {});
@@ -30,7 +30,7 @@ export async function handleCommandGuildShopEmpty(context: PacketContext): Promi
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction!);
 
 	if (interaction) {
-		await sendErrorMessage(interaction.user, context, interaction, i18n.t("commands:guildShop.empty", { lng: interaction.userLanguage }), { sendManner: SendManner.FOLLOWUP });
+		await sendErrorMessage(interaction.user, context, interaction, i18n.t("commands:guildShop.empty", { lng: interaction.userLanguage }), { sendManner: SendManner.REPLY });
 	}
 }
 
@@ -43,7 +43,7 @@ export async function handleCommandGuildShopGiveXp(packet: CommandGuildShopGiveX
 	const lng = interaction.userLanguage;
 	await interaction.followUp({
 		embeds: [
-			new DraftBotEmbed()
+			new CrowniclesEmbed()
 				.formatAuthor(i18n.t("commands:guildShop.giveXpTitle", { lng }), interaction.user)
 				.setDescription(
 					i18n.t("commands:guildShop.giveXp", {

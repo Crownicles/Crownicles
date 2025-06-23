@@ -4,7 +4,7 @@ type EventPossibilities = {
 	end: { [outcomeId: string]: string };
 } & Record<string, string | { [outcomeId: string]: string }>;
 
-export const DraftBotIcons: {
+export const CrowniclesIcons: {
 	effects: {
 		[effectId: string]: string;
 	};
@@ -2083,8 +2083,10 @@ export const DraftBotIcons: {
 		types: {
 			report: "📰",
 			guildDaily: "🏟️",
+			guildKick: "🚪",
 			playerFreedFromJail: "🔓",
-			fightChallenge: "⚔️"
+			fightChallenge: "⚔️",
+			guildStatusChange: "📜"
 		}
 	},
 	missions: {

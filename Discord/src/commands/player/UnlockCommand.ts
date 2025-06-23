@@ -1,8 +1,8 @@
 import { ICommand } from "../ICommand";
 import {
 	makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
-import { DraftbotInteraction } from "../../messages/DraftbotInteraction";
+} from "../../../../Lib/src/packets/CrowniclesPacket";
+import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
 import i18n from "../../translations/i18n";
 import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
 import { SlashCommandBuilder } from "@discordjs/builders";
@@ -14,7 +14,7 @@ import {
 	CommandUnlockPacketReq
 } from "../../../../Lib/src/packets/commands/CommandUnlockPacket";
 import { ReactionCollectorCreationPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
-import { DraftBotEmbed } from "../../messages/DraftBotEmbed";
+import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import { DiscordCollectorUtils } from "../../utils/DiscordCollectorUtils";
 import { ReactionCollectorUnlockData } from "../../../../Lib/src/packets/interaction/ReactionCollectorUnlock";
 import { PacketUtils } from "../../utils/PacketUtils";
@@ -30,7 +30,7 @@ import { DisplayUtils } from "../../utils/DisplayUtils";
 /**
  * Free a player from the prison
  */
-async function getPacket(interaction: DraftbotInteraction, user: KeycloakUser): Promise<CommandProfilePacketReq | null> {
+async function getPacket(interaction: CrowniclesInteraction, user: KeycloakUser): Promise<CommandProfilePacketReq | null> {
 	const askedPlayer = await PacketUtils.prepareAskedPlayer(interaction, user);
 	if (!askedPlayer) {
 		return null;
@@ -71,7 +71,7 @@ export async function createUnlockCollector(context: PacketContext, packet: Reac
 	const lng = interaction.userLanguage;
 	const data = packet.data.data as ReactionCollectorUnlockData;
 	const pseudo = await DisplayUtils.getEscapedUsername(data.unlockedKeycloakId, lng);
-	const embed = new DraftBotEmbed().formatAuthor(i18n.t("commands:unlock.title", {
+	const embed = new CrowniclesEmbed().formatAuthor(i18n.t("commands:unlock.title", {
 		lng,
 		pseudo
 	}), interaction.user)
@@ -99,7 +99,7 @@ export async function handleCommandUnlockRefusePacketRes(context: PacketContext)
 	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
 	await buttonInteraction?.editReply({
 		embeds: [
-			new DraftBotEmbed().formatAuthor(i18n.t("commands:unlock.canceledTitle", {
+			new CrowniclesEmbed().formatAuthor(i18n.t("commands:unlock.canceledTitle", {
 				lng,
 				pseudo: escapeUsername(originalInteraction.user.displayName)
 			}), originalInteraction.user)
@@ -126,7 +126,7 @@ export async function handleCommandUnlockAcceptPacketRes(packet: CommandUnlockAc
 	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
 	await buttonInteraction?.editReply({
 		embeds: [
-			new DraftBotEmbed().formatAuthor(i18n.t("commands:unlock.title", {
+			new CrowniclesEmbed().formatAuthor(i18n.t("commands:unlock.title", {
 				lng,
 				pseudo: await DisplayUtils.getEscapedUsername(packet.unlockedKeycloakId, lng)
 			}), originalInteraction.user)

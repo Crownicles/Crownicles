@@ -1,9 +1,9 @@
 import { ReactionCollectorCreationPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import {
 	makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import { DiscordCache } from "../../bot/DiscordCache";
-import { DraftBotEmbed } from "../../messages/DraftBotEmbed";
+import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import i18n from "../../translations/i18n";
 import { DiscordCollectorUtils } from "../../utils/DiscordCollectorUtils";
 import { ICommand } from "../ICommand";
@@ -28,7 +28,7 @@ export async function createGuildElderRemoveCollector(context: PacketContext, pa
 	await interaction.deferReply();
 	const data = packet.data.data as ReactionCollectorGuildElderRemoveData;
 	const lng = interaction.userLanguage;
-	const embed = new DraftBotEmbed().formatAuthor(i18n.t("commands:guildElderRemove.title", {
+	const embed = new CrowniclesEmbed().formatAuthor(i18n.t("commands:guildElderRemove.title", {
 		lng,
 		pseudo: escapeUsername(interaction.user.displayName)
 	}), interaction.user)
@@ -58,7 +58,7 @@ export async function handleCommandGuildElderRemoveRefusePacketRes(packet: Comma
 	const lng = originalInteraction.userLanguage;
 	await buttonInteraction?.editReply({
 		embeds: [
-			new DraftBotEmbed().formatAuthor(i18n.t("commands:guildElderRemove.canceledTitle", {
+			new CrowniclesEmbed().formatAuthor(i18n.t("commands:guildElderRemove.canceledTitle", {
 				lng,
 				pseudo: escapeUsername(originalInteraction.user.displayName)
 			}), originalInteraction.user)
@@ -86,7 +86,7 @@ export async function handleCommandGuildElderRemoveAcceptPacketRes(packet: Comma
 		const lng = originalInteraction.userLanguage;
 		await buttonInteraction.editReply({
 			embeds: [
-				new DraftBotEmbed().formatAuthor(i18n.t("commands:guildElderRemove.successElderRemoveTitle", {
+				new CrowniclesEmbed().formatAuthor(i18n.t("commands:guildElderRemove.successElderRemoveTitle", {
 					lng,
 					elderPseudo: await DisplayUtils.getEscapedUsername(packet.demotedKeycloakId!, originalInteraction.userLanguage),
 					guildName: packet.guildName

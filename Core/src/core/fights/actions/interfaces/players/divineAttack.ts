@@ -39,7 +39,7 @@ const use: FightActionFunc = (sender, receiver, _fightAction, turn) => {
 		},
 		{
 			critical: 0,
-			failure: Math.round(95 - turn * 7 < 10 ? 10 : 95 - turn * 7)
+			failure: 97 - turn * 7 < 5 ? 5 : 97 - turn * 7
 		},
 		{
 			attackInfo: getAttackInfo(),

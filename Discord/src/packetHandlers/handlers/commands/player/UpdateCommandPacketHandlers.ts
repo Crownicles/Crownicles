@@ -1,6 +1,6 @@
 import { packetHandler } from "../../../PacketHandler";
 import { CommandUpdatePacketRes } from "../../../../../../Lib/src/packets/commands/CommandUpdatePacket";
-import { PacketContext } from "../../../../../../Lib/src/packets/DraftBotPacket";
+import { PacketContext } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import { handleCommandUpdatePacketRes } from "../../../../commands/player/UpdateCommand";
 
 export default class UpdateCommandPacketHandlers {

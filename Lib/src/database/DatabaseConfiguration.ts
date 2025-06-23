@@ -8,7 +8,7 @@
  * user The user
  * userPassword The user password
  * databaseName The database name. For example "game" or "notifications"
- * prefix The database prefix used to name the databases. For example, if the prefix is "draftbot_beta" and the database is "game", the database will be named "draftbot_beta_game"
+ * prefix The database prefix used to name the databases. For example, if the prefix is "crownicles_beta" and the database is "game", the database will be named "crownicles_beta_game"
  */
 export type DatabaseConfiguration = {
 	host: string;

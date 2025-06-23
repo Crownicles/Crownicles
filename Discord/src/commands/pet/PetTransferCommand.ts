@@ -1,7 +1,7 @@
-import { DraftbotInteraction } from "../../messages/DraftbotInteraction";
+import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
 import {
 	makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	CommandPetTransferPacketReq,
 	CommandPetTransferSuccessPacket
@@ -13,7 +13,7 @@ import {
 } from "@discordjs/builders";
 import { DiscordCache } from "../../bot/DiscordCache";
 import { DisplayUtils } from "../../utils/DisplayUtils";
-import { DraftBotEmbed } from "../../messages/DraftBotEmbed";
+import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import i18n from "../../translations/i18n";
 import {
 	ReactionCollectorCreationPacket,
@@ -41,14 +41,14 @@ import {
 import {
 	LANGUAGE, Language
 } from "../../../../Lib/src/Language";
-import { DraftBotIcons } from "../../../../Lib/src/DraftBotIcons";
+import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 import { sendInteractionNotForYou } from "../../utils/ErrorUtils";
 import { DiscordCollectorUtils } from "../../utils/DiscordCollectorUtils";
 import { EmoteUtils } from "../../utils/EmoteUtils";
 import { MessagesUtils } from "../../utils/MessagesUtils";
 import { escapeUsername } from "../../utils/StringUtils";
 
-async function getPacket(interaction: DraftbotInteraction): Promise<CommandPetTransferPacketReq> {
+async function getPacket(interaction: CrowniclesInteraction): Promise<CommandPetTransferPacketReq> {
 	await interaction.deferReply();
 	return makePacket(CommandPetTransferPacketReq, {});
 }
@@ -69,7 +69,7 @@ export async function handlePetTransferSuccess(context: PacketContext, packet: C
 
 	await interaction.editReply({
 		embeds: [
-			new DraftBotEmbed()
+			new CrowniclesEmbed()
 				.formatAuthor(i18n.t("commands:petTransfer.confirmTransferTitle", {
 					lng,
 					pseudo: escapeUsername(interaction.user.displayName)
@@ -112,7 +112,7 @@ function getMainMenuComponents(
 	if (reactions.deposit) {
 		rows.push(new ActionRowBuilder<ButtonBuilder>().addComponents(
 			new ButtonBuilder()
-				.setEmoji(parseEmoji(DraftBotIcons.petTransfer.deposit)!)
+				.setEmoji(parseEmoji(CrowniclesIcons.petTransfer.deposit)!)
 				.setLabel(i18n.t("commands:petTransfer.depositButton", {
 					lng,
 					pet: DisplayUtils.getOwnedPetInlineDisplay(data.ownPet!, lng)
@@ -125,7 +125,7 @@ function getMainMenuComponents(
 	if (reactions.switches.length > 0) {
 		rows.push(new ActionRowBuilder<ButtonBuilder>().addComponents(
 			new ButtonBuilder()
-				.setEmoji(parseEmoji(DraftBotIcons.petTransfer.switch)!)
+				.setEmoji(parseEmoji(CrowniclesIcons.petTransfer.switch)!)
 				.setLabel(i18n.t("commands:petTransfer.switchButton", {
 					lng,
 					pet: DisplayUtils.getOwnedPetInlineDisplay(data.ownPet!, lng)
@@ -138,7 +138,7 @@ function getMainMenuComponents(
 	if (reactions.withdraws.length > 0) {
 		rows.push(new ActionRowBuilder<ButtonBuilder>().addComponents(
 			new ButtonBuilder()
-				.setEmoji(parseEmoji(DraftBotIcons.petTransfer.withdraw)!)
+				.setEmoji(parseEmoji(CrowniclesIcons.petTransfer.withdraw)!)
 				.setLabel(i18n.t("commands:petTransfer.withdrawButton", { lng }))
 				.setStyle(ButtonStyle.Secondary)
 				.setCustomId(withdrawCustomId)
@@ -147,7 +147,7 @@ function getMainMenuComponents(
 
 	rows.push(new ActionRowBuilder<ButtonBuilder>().addComponents(
 		new ButtonBuilder()
-			.setEmoji(parseEmoji(DraftBotIcons.collectors.refuse)!)
+			.setEmoji(parseEmoji(CrowniclesIcons.collectors.refuse)!)
 			.setLabel(i18n.t("commands:petTransfer.refuseButton", { lng }))
 			.setStyle(ButtonStyle.Secondary)
 			.setCustomId(refuseCustomId)
@@ -158,7 +158,7 @@ function getMainMenuComponents(
 
 function getBackButton(lng: Language): ButtonBuilder {
 	return new ButtonBuilder()
-		.setEmoji(parseEmoji(DraftBotIcons.collectors.back)!)
+		.setEmoji(parseEmoji(CrowniclesIcons.collectors.back)!)
 		.setLabel(i18n.t("commands:petTransfer.backButton", { lng }))
 		.setStyle(ButtonStyle.Secondary)
 		.setCustomId(backCustomId);
@@ -256,7 +256,7 @@ async function handlePetTransferCollect(
 	},
 	discord: {
 		collectedInteraction: MessageComponentInteraction;
-		mainMenuEmbed: DraftBotEmbed;
+		mainMenuEmbed: CrowniclesEmbed;
 		switchComponents: ActionRowBuilder<MessageActionRowComponentBuilder>[];
 		withdrawComponents: ActionRowBuilder<MessageActionRowComponentBuilder>[];
 		mainMenuComponents: ActionRowBuilder<ButtonBuilder>[];
@@ -355,7 +355,7 @@ export async function handlePetTransferReactionCollector(context: PacketContext,
 	}))
 		.find(reaction => reaction.reaction.type === ReactionCollectorRefuseReaction.name);
 
-	const mainMenuEmbed = new DraftBotEmbed()
+	const mainMenuEmbed = new CrowniclesEmbed()
 		.formatAuthor(i18n.t("commands:petTransfer.chooseActionTitle", { lng }), interaction.user)
 		.setDescription(i18n.t("commands:petTransfer.chooseActionDesc", { lng }));
 

@@ -10,7 +10,7 @@ import {
 	CommandGuildInvitePlayerNotFound,
 	CommandGuildInviteRefusePacketRes
 } from "../../../../../../Lib/src/packets/commands/CommandGuildInvitePacket";
-import { PacketContext } from "../../../../../../Lib/src/packets/DraftBotPacket";
+import { PacketContext } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	handleCommandGuildInviteAcceptPacketRes,
 	handleCommandGuildInviteError,

@@ -1,5 +1,5 @@
 import { SmallEventFuncs } from "../../data/SmallEvent";
-import { makePacket } from "../../../../Lib/src/packets/DraftBotPacket";
+import { makePacket } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { PVEConstants } from "../../../../Lib/src/constants/PVEConstants";
 import { SmallEventWinEnergyOnIslandPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventWinEnergyOnIslandPacket";

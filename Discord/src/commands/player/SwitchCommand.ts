@@ -1,25 +1,27 @@
 import { ICommand } from "../ICommand";
 import {
 	makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
 import { DiscordCache } from "../../bot/DiscordCache";
 import i18n from "../../translations/i18n";
-import { DraftbotInteraction } from "../../messages/DraftbotInteraction";
+import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
 import {
 	CommandSwitchPacketReq, CommandSwitchSuccess
 } from "../../../../Lib/src/packets/commands/CommandSwitchPacket";
-import { DraftBotEmbed } from "../../messages/DraftBotEmbed";
+import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import { ReactionCollectorCreationPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import {
 	DiscordCollectorUtils, SEND_POLITICS
 } from "../../utils/DiscordCollectorUtils";
 import {
-	ReactionCollectorSwitchItemCloseReaction, ReactionCollectorSwitchItemReaction
+	ReactionCollectorSwitchItemCloseReaction,
+	ReactionCollectorSwitchItemReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorSwitchItem";
 import { DiscordItemUtils } from "../../utils/DiscordItemUtils";
 import {
-	MainItemDisplayPacket, SupportItemDisplayPacket
+	MainItemDisplayPacket,
+	SupportItemDisplayPacket
 } from "../../../../Lib/src/packets/commands/CommandInventoryPacket";
 import { Language } from "../../../../Lib/src/Language";
 import { EmbedField } from "discord.js";
@@ -30,7 +32,7 @@ import { escapeUsername } from "../../utils/StringUtils";
  * Get the switch command packet
  * @param interaction
  */
-async function getPacket(interaction: DraftbotInteraction): Promise<CommandSwitchPacketReq> {
+async function getPacket(interaction: CrowniclesInteraction): Promise<CommandSwitchPacketReq> {
 	await interaction.deferReply();
 	return makePacket(CommandSwitchPacketReq, {});
 }
@@ -49,7 +51,7 @@ export async function handleItemSwitch(packet: CommandSwitchSuccess, context: Pa
 	const lng = interaction.userLanguage;
 	await (buttonInteraction ?? interaction)?.editReply({
 		embeds: [
-			new DraftBotEmbed()
+			new CrowniclesEmbed()
 				.formatAuthor(i18n.t("commands:switch.titleSuccess", {
 					lng,
 					pseudo: escapeUsername(interaction.user.displayName)
@@ -86,7 +88,7 @@ export async function switchItemCollector(context: PacketContext, packet: Reacti
 		return null;
 	}
 	const lng = interaction.userLanguage;
-	const embed = new DraftBotEmbed()
+	const embed = new CrowniclesEmbed()
 		.formatAuthor(i18n.t("commands:switch.switchSelectionTitle", {
 			lng,
 			pseudo: escapeUsername(interaction.user.displayName)

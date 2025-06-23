@@ -3,14 +3,14 @@ import {
 } from "sequelize";
 import { datesAreOnSameDay } from "../../../../../../Lib/src/utils/TimeUtils";
 import { NumberChangeReason } from "../../../../../../Lib/src/constants/LogsConstants";
-import { draftBotInstance } from "../../../../index";
+import { crowniclesInstance } from "../../../../index";
 import { Campaign } from "../../../missions/Campaign";
 
 // skipcq: JS-C1003 - moment does not expose itself as an ES Module.
 import * as moment from "moment";
 import { MissionsController } from "../../../missions/MissionsController";
 import { Players } from "./Player";
-import { DraftBotPacket } from "../../../../../../Lib/src/packets/DraftBotPacket";
+import { CrowniclesPacket } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 
 export class PlayerMissionsInfo extends Model {
 	declare readonly playerId: number;
@@ -44,11 +44,11 @@ export class PlayerMissionsInfo extends Model {
 	public async addGems(amount: number, keycloakId: string, reason: NumberChangeReason): Promise<void> {
 		this.gems += amount;
 		await this.save();
-		draftBotInstance.logsDatabase.logGemsChange(keycloakId, this.gems, reason)
+		crowniclesInstance.logsDatabase.logGemsChange(keycloakId, this.gems, reason)
 			.then();
 	}
 
-	public async spendGems(amount: number, response: DraftBotPacket[], reason: NumberChangeReason): Promise<void> {
+	public async spendGems(amount: number, response: CrowniclesPacket[], reason: NumberChangeReason): Promise<void> {
 		const player = await Players.getById(this.playerId);
 		await MissionsController.update(player, response, { missionId: "spendGems" });
 		await this.addGems(-amount, player.keycloakId, reason);

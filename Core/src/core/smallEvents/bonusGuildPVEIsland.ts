@@ -8,8 +8,8 @@ import {
 	SmallEventBonusGuildPVEIslandResultType
 } from "../../../../Lib/src/packets/smallEvents/SmallEventBonusGuildPVEIslandPacket";
 import {
-	DraftBotPacket, makePacket
-} from "../../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, makePacket
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import { Maps } from "../maps/Maps";
 import Player from "../database/game/models/Player";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
@@ -48,7 +48,7 @@ type Winnings = {
 	isExperienceGain: boolean;
 };
 
-async function manageGuildReward(response: DraftBotPacket[], player: Player, result: Winnings): Promise<void> {
+async function manageGuildReward(response: CrowniclesPacket[], player: Player, result: Winnings): Promise<void> {
 	const guild = await Guilds.getById(player.guildId);
 	if (guild.isAtMaxLevel()) {
 		result.isExperienceGain = false;
@@ -58,7 +58,7 @@ async function manageGuildReward(response: DraftBotPacket[], player: Player, res
 	await guild.save();
 }
 
-async function manageClassicReward(response: DraftBotPacket[], player: Player, result: Winnings, rewardKind: Outcome): Promise<void> {
+async function manageClassicReward(response: CrowniclesPacket[], player: Player, result: Winnings, rewardKind: Outcome): Promise<void> {
 	const reason = NumberChangeReason.SMALL_EVENT;
 	switch (rewardKind) {
 		case Outcome.MONEY:
@@ -92,7 +92,7 @@ async function manageClassicReward(response: DraftBotPacket[], player: Player, r
 
 async function applyPossibility(
 	player: Player,
-	response: DraftBotPacket[],
+	response: CrowniclesPacket[],
 	issue: SmallEventBonusGuildPVEIslandResultType,
 	rewardKind: Outcome
 ): Promise<Winnings> {
@@ -100,7 +100,7 @@ async function applyPossibility(
 		.getProperties<BonusGuildPVEIslandProperties>().ranges[rewardKind];
 	const result = {
 		amount: RandomUtils.randInt(rewardRange.min, rewardRange.max),
-		isExperienceGain: rewardKind === Outcome.EXP_OR_POINTS_GUILD && RandomUtils.draftbotRandom.bool()
+		isExperienceGain: rewardKind === Outcome.EXP_OR_POINTS_GUILD && RandomUtils.crowniclesRandom.bool()
 	};
 	if (issue === SmallEventBonusGuildPVEIslandResultType.SUCCESS && player.hasAGuild()) {
 		await manageGuildReward(response, player, result);

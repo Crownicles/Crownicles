@@ -4,9 +4,9 @@ import {
 import { ICommand } from "../ICommand";
 import {
 	makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
-import { DraftBotEmbed } from "../../messages/DraftBotEmbed";
+import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import i18n from "../../translations/i18n";
 import { DiscordCache } from "../../bot/DiscordCache";
 
@@ -26,7 +26,7 @@ export async function handleCommandUpdatePacketRes(packet: CommandUpdatePacketRe
 	const lng = interaction.userLanguage;
 	await interaction.reply({
 		embeds: [
-			new DraftBotEmbed()
+			new CrowniclesEmbed()
 				.setTitle(i18n.t("commands:update.title", { lng }))
 				.setDescription(i18n.t("commands:update.description", {
 					coreVersion: packet.coreVersion,

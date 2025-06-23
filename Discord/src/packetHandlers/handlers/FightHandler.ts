@@ -1,5 +1,5 @@
 import { packetHandler } from "../PacketHandler";
-import { PacketContext } from "../../../../Lib/src/packets/DraftBotPacket";
+import { PacketContext } from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	CommandFightNotEnoughEnergyPacketRes,
 	CommandFightOpponentsNotFoundPacket,

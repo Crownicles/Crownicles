@@ -5,7 +5,7 @@ import { PVEConstants } from "../../../../../Lib/src/constants/PVEConstants";
 import { FightStatModifierOperation } from "../../../../../Lib/src/types/FightStatModifierOperation";
 import { FightAlteration } from "../../../data/FightAlteration";
 import { FightAction } from "../../../data/FightAction";
-import { DraftBotPacket } from "../../../../../Lib/src/packets/DraftBotPacket";
+import { CrowniclesPacket } from "../../../../../Lib/src/packets/CrowniclesPacket";
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
 
 type FighterStats = {
@@ -91,7 +91,7 @@ export abstract class Fighter {
 	 * @param fightView
 	 * @param response
 	 */
-	abstract chooseAction(fightView: FightView, response: DraftBotPacket[]): Promise<void>;
+	abstract chooseAction(fightView: FightView, response: CrowniclesPacket[]): Promise<void>;
 
 	/**
 	 * Function called when the fight starts
@@ -104,7 +104,7 @@ export abstract class Fighter {
 	 * @param response
 	 * @param bug - Indicate if the fighter is buggy
 	 */
-	abstract endFight(winner: boolean, response: DraftBotPacket[], bug: boolean): Promise<void>;
+	abstract endFight(winner: boolean, response: CrowniclesPacket[], bug: boolean): Promise<void>;
 
 	/**
 	 * Allow the fighter to unblock himself
@@ -408,11 +408,11 @@ export abstract class Fighter {
 	getRandomAvailableFightAction(): FightAction {
 		const attacks = Array.from(this.availableFightActions.values());
 		let availableAttacks = attacks.filter(action => action.breath < this.getBreath()
-			|| RandomUtils.draftbotRandom.realZeroToOneInclusive() < PVEConstants.OUT_OF_BREATH_CHOOSE_PROBABILITY);
+			|| RandomUtils.crowniclesRandom.realZeroToOneInclusive() < PVEConstants.OUT_OF_BREATH_CHOOSE_PROBABILITY);
 
 		availableAttacks = availableAttacks.length === 0 ? attacks : availableAttacks;
 		let selectedAttack = availableAttacks[0]; // Default value
-		let random = RandomUtils.draftbotRandom.realZeroToOneInclusive() * availableAttacks.reduce((sum, attack) => sum + attack.getWeightForRandomSelection(), 0);
+		let random = RandomUtils.crowniclesRandom.realZeroToOneInclusive() * availableAttacks.reduce((sum, attack) => sum + attack.getWeightForRandomSelection(), 0);
 
 		for (const attack of availableAttacks) {
 			random -= attack.getWeightForRandomSelection();

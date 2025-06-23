@@ -1,4 +1,4 @@
-import "../index"; // Import so it will verify decorators if we use DraftBotPacket
+import "../index"; // Import so it will verify decorators if we use CrowniclesPacket
 import { Language } from "../Language";
 import { RightGroup } from "../types/RightGroup";
 
@@ -21,7 +21,7 @@ export function sendablePacket(direction: PacketDirection) {
 	};
 }
 
-export class DraftBotPacket {
+export class CrowniclesPacket {
 }
 
 export interface PacketContext {
@@ -49,18 +49,18 @@ export interface PacketContext {
 	packetId?: string;
 }
 
-export interface PacketLike<Packet extends DraftBotPacket> {
+export interface PacketLike<Packet extends CrowniclesPacket> {
 	new(): Packet;
 }
 
 
-export function makePacket<Packet extends DraftBotPacket>(PacketObject: PacketLike<Packet>, { ...args }: Packet): Packet {
+export function makePacket<Packet extends CrowniclesPacket>(PacketObject: PacketLike<Packet>, { ...args }: Packet): Packet {
 	const instance = new PacketObject();
 	Object.assign(instance, args);
 	return instance;
 }
 
-export function asyncMakePacket<Packet extends DraftBotPacket>(PacketObject: PacketLike<Packet>, { ...args }: Packet): Promise<Packet> {
+export function asyncMakePacket<Packet extends CrowniclesPacket>(PacketObject: PacketLike<Packet>, { ...args }: Packet): Promise<Packet> {
 	const instance = new PacketObject();
 	Object.assign(instance, args);
 	return Promise.resolve(instance);

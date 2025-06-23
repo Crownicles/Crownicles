@@ -7,7 +7,6 @@ export interface GuildMember {
 		isOnPveIsland: boolean;
 		isOnBoat: boolean;
 		isPveIslandAlly: boolean;
-		isInactive: boolean;
 		cannotBeJoinedOnBoat: boolean;
 	};
 }

@@ -1,12 +1,12 @@
 import {
-	DraftBotPacket, PacketDirection, sendablePacket
-} from "../DraftBotPacket";
+	CrowniclesPacket, PacketDirection, sendablePacket
+} from "../CrowniclesPacket";
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
-export class CommandUpdatePacketReq extends DraftBotPacket {
+export class CommandUpdatePacketReq extends CrowniclesPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandUpdatePacketRes extends DraftBotPacket {
+export class CommandUpdatePacketRes extends CrowniclesPacket {
 	coreVersion!: string;
 }

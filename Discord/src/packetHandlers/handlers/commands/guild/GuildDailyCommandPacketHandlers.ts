@@ -4,7 +4,7 @@ import {
 	CommandGuildDailyPveIslandErrorPacket,
 	CommandGuildDailyRewardPacket
 } from "../../../../../../Lib/src/packets/commands/CommandGuildDailyPacket";
-import { PacketContext } from "../../../../../../Lib/src/packets/DraftBotPacket";
+import { PacketContext } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import { handleCommandGuildDailyRewardPacket } from "../../../../commands/guild/GuildDailyCommand";
 import { handleClassicError } from "../../../../utils/ErrorUtils";
 import { finishInTimeDisplay } from "../../../../../../Lib/src/utils/TimeUtils";

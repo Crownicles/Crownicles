@@ -105,6 +105,6 @@ export class ClassDataController extends DataControllerNumber<Class> {
 	}
 
 	getRandomClass(): Class {
-		return RandomUtils.draftbotRandom.pick(Array.from(this.data.values()));
+		return RandomUtils.crowniclesRandom.pick(Array.from(this.data.values()));
 	}
 }

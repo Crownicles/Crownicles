@@ -1,8 +1,8 @@
 import { ICommand } from "../ICommand";
-import { DraftbotInteraction } from "../../messages/DraftbotInteraction";
+import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
 import i18n from "../../translations/i18n";
 import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
-import { DraftBotEmbed } from "../../messages/DraftBotEmbed";
+import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { BotUtils } from "../../utils/BotUtils";
 import {
@@ -11,10 +11,10 @@ import {
 import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
 import { HelpConstants } from "../../../../Lib/src/constants/HelpConstants";
 import {
-	discordConfig, draftBotClient
-} from "../../bot/DraftBotShard";
+	crowniclesClient, discordConfig
+} from "../../bot/CrowniclesShard";
 import { minutesToMilliseconds } from "../../../../Lib/src/utils/TimeUtils";
-import { DraftBotLogger } from "../../../../Lib/src/logs/DraftBotLogger";
+import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { escapeUsername } from "../../utils/StringUtils";
 
 const dmHelpCooldowns: Map<string, Date> = new Map<string, Date>();
@@ -86,7 +86,7 @@ function getCommandByCategories(language: Language): { [key: string]: string[] }
  * @param helpMessage
  * @param interaction
  */
-function generateGenericHelpMessage(helpMessage: DraftBotEmbed, interaction: DraftbotInteraction): void {
+function generateGenericHelpMessage(helpMessage: CrowniclesEmbed, interaction: CrowniclesInteraction): void {
 	const lng = interaction.userLanguage;
 	const {
 		utilCommands,
@@ -155,8 +155,8 @@ function getCommandAliasMap(): Map<string, string> {
  * @param interaction
  * @param lng
  */
-function sendHelpDm(interaction: DraftbotInteraction, lng: Language): void {
-	draftBotClient.shard!.broadcastEval(async (client, context) => {
+function sendHelpDm(interaction: CrowniclesInteraction, lng: Language): void {
+	crowniclesClient.shard!.broadcastEval(async (client, context) => {
 		const guild = await client.guilds.fetch(context.mainServerId);
 		if (guild.shard) {
 			try {
@@ -178,7 +178,7 @@ function sendHelpDm(interaction: DraftbotInteraction, lng: Language): void {
 				interaction.user.send({
 					content: HelpConstants.HELP_INVITE_LINK,
 					embeds: [
-						new DraftBotEmbed()
+						new CrowniclesEmbed()
 							.formatAuthor(i18n.t("commands:help.needHelp", {
 								lng
 							}), interaction.user)
@@ -189,22 +189,22 @@ function sendHelpDm(interaction: DraftbotInteraction, lng: Language): void {
 					]
 				})
 					.catch(e => {
-						DraftBotLogger.errorWithObj(`Error while sending help DM to user ${interaction.user.id}`, e);
+						CrowniclesLogger.errorWithObj(`Error while sending help DM to user ${interaction.user.id}`, e);
 					});
 			}
 
 			dmHelpCooldowns.set(interaction.user.id, new Date(Date.now() + minutesToMilliseconds(HelpConstants.HELP_DM_COOLDOWN_TIME_MINUTES)));
 		})
 		.catch(error => {
-			DraftBotLogger.errorWithObj("Error while broadcasting the message in help command", error);
+			CrowniclesLogger.errorWithObj("Error while broadcasting the message in help command", error);
 		});
 }
 
 /**
  * Get the list of available commands and information about what they do
  */
-async function getPacket(interaction: DraftbotInteraction): Promise<null> {
-	const helpMessage = new DraftBotEmbed();
+async function getPacket(interaction: CrowniclesInteraction): Promise<null> {
+	const helpMessage = new CrowniclesEmbed();
 	const command = interaction.options.get(i18n.t("discordBuilder:help.options.commandName.name", { lng: LANGUAGE.ENGLISH }));
 	const askedCommand = command ? command.value as string : null;
 	const lng = interaction.userLanguage;

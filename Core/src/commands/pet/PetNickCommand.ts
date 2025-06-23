@@ -1,6 +1,6 @@
 import {
-	DraftBotPacket, makePacket
-} from "../../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, makePacket
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import { PetEntities } from "../../core/database/game/models/PetEntity";
 import {
 	CommandPetNickPacketReq,
@@ -12,7 +12,7 @@ import {
 	commandRequires, CommandUtils
 } from "../../core/utils/CommandUtils";
 import Player from "../../core/database/game/models/Player";
-import { draftBotInstance } from "../../index";
+import { crowniclesInstance } from "../../index";
 
 
 export default class PetNickCommand {
@@ -21,7 +21,7 @@ export default class PetNickCommand {
 		disallowedEffects: CommandUtils.DISALLOWED_EFFECTS.NOT_STARTED_OR_DEAD,
 		whereAllowed: CommandUtils.WHERE.EVERYWHERE
 	})
-	async execute(response: DraftBotPacket[], player: Player, packet: CommandPetNickPacketReq): Promise<void> {
+	async execute(response: CrowniclesPacket[], player: Player, packet: CommandPetNickPacketReq): Promise<void> {
 		const playerPet = await PetEntities.getById(player.petId);
 
 		if (!playerPet) {
@@ -60,6 +60,6 @@ export default class PetNickCommand {
 		playerPet.nickname = newPetNickName ? newPetNickName : null;
 		await playerPet.save();
 
-		draftBotInstance.logsDatabase.logPetNickname(playerPet).then();
+		crowniclesInstance.logsDatabase.logPetNickname(playerPet).then();
 	}
 }

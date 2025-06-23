@@ -1,10 +1,10 @@
 import {
-	DraftBotPacket, PacketDirection, sendablePacket
-} from "../DraftBotPacket";
+	CrowniclesPacket, PacketDirection, sendablePacket
+} from "../CrowniclesPacket";
 import { OwnedPet } from "../../types/OwnedPet";
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
-export class CommandPetSellPacketReq extends DraftBotPacket {
+export class CommandPetSellPacketReq extends CrowniclesPacket {
 	price!: number;
 
 	askedPlayer!: {
@@ -14,46 +14,46 @@ export class CommandPetSellPacketReq extends DraftBotPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandPetSellNoPetErrorPacket extends DraftBotPacket {}
+export class CommandPetSellNoPetErrorPacket extends CrowniclesPacket {}
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandPetSellNotInGuildErrorPacket extends DraftBotPacket {}
+export class CommandPetSellNotInGuildErrorPacket extends CrowniclesPacket {}
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandPetSellFeistyErrorPacket extends DraftBotPacket {}
+export class CommandPetSellFeistyErrorPacket extends CrowniclesPacket {}
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandPetSellBadPriceErrorPacket extends DraftBotPacket {
+export class CommandPetSellBadPriceErrorPacket extends CrowniclesPacket {
 	minPrice!: number;
 
 	maxPrice!: number;
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandPetSellOnlyOwnerCanCancelErrorPacket extends DraftBotPacket {}
+export class CommandPetSellOnlyOwnerCanCancelErrorPacket extends CrowniclesPacket {}
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandPetSellCancelPacket extends DraftBotPacket {}
+export class CommandPetSellCancelPacket extends CrowniclesPacket {}
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandPetSellCantSellToYourselfErrorPacket extends DraftBotPacket {}
+export class CommandPetSellCantSellToYourselfErrorPacket extends CrowniclesPacket {}
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandPetSellSameGuildError extends DraftBotPacket {}
+export class CommandPetSellSameGuildError extends CrowniclesPacket {}
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandPetSellAlreadyHavePetError extends DraftBotPacket {}
+export class CommandPetSellAlreadyHavePetError extends CrowniclesPacket {}
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandPetSellNotEnoughMoneyError extends DraftBotPacket {
+export class CommandPetSellNotEnoughMoneyError extends CrowniclesPacket {
 	missingMoney!: number;
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandPetSellInitiatorSituationChangedErrorPacket extends DraftBotPacket {}
+export class CommandPetSellInitiatorSituationChangedErrorPacket extends CrowniclesPacket {}
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandPetSellSuccessPacket extends DraftBotPacket {
+export class CommandPetSellSuccessPacket extends CrowniclesPacket {
 	guildName!: string;
 
 	xpEarned!: number;
@@ -64,4 +64,4 @@ export class CommandPetSellSuccessPacket extends DraftBotPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandPetSellNoOneAvailableErrorPacket extends DraftBotPacket {}
+export class CommandPetSellNoOneAvailableErrorPacket extends CrowniclesPacket {}

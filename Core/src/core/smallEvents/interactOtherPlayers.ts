@@ -5,8 +5,8 @@ import { Op } from "sequelize";
 import { MapLocationDataController } from "../../data/MapLocation";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import {
-	DraftBotPacket, makePacket
-} from "../../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, makePacket
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	InteractOtherPlayerInteraction,
 	SmallEventInteractOtherPlayersAcceptToGivePoorPacket,
@@ -166,11 +166,12 @@ function checkMoney(otherPlayer: Player, interactionsList: InteractOtherPlayerIn
 
 /**
  * Check pet interactions
+ * @param player
  * @param otherPlayer
  * @param interactionsList
  */
-function checkPet(otherPlayer: Player, interactionsList: InteractOtherPlayerInteraction[]): void {
-	if (otherPlayer.petId) {
+function checkPet(player: Player, otherPlayer: Player, interactionsList: InteractOtherPlayerInteraction[]): void {
+	if (otherPlayer.petId && otherPlayer.petId !== player.petId) {
 		interactionsList.push(InteractOtherPlayerInteraction.PET);
 	}
 }
@@ -259,7 +260,7 @@ async function getAvailableInteractions(otherPlayer: Player, player: Player, num
 	checkHealth(otherPlayer, interactionsList);
 	checkRanking(otherPlayerRank, numberOfPlayers, interactionsList, playerRank);
 	checkMoney(otherPlayer, interactionsList, player);
-	checkPet(otherPlayer, interactionsList);
+	checkPet(player, otherPlayer, interactionsList);
 	guild = await checkGuildResponsibilities(otherPlayer, guild, interactionsList);
 	interactionsList.push(InteractOtherPlayerInteraction.CLASS);
 	checkEffects(otherPlayer, interactionsList);
@@ -275,7 +276,7 @@ async function getAvailableInteractions(otherPlayer: Player, player: Player, num
  * @param player
  * @param response
  */
-async function sendACoin(otherPlayer: Player, player: Player, response: DraftBotPacket[]): Promise<void> {
+async function sendACoin(otherPlayer: Player, player: Player, response: CrowniclesPacket[]): Promise<void> {
 	await Promise.all([
 		otherPlayer.addMoney({
 			amount: 1,
@@ -312,7 +313,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 			return;
 		}
 
-		const selectedPlayerKeycloakId = RandomUtils.draftbotRandom.pick(playersOnMap).keycloakId;
+		const selectedPlayerKeycloakId = RandomUtils.crowniclesRandom.pick(playersOnMap).keycloakId;
 		const otherPlayer = await Players.getOrRegister(selectedPlayerKeycloakId);
 		await MissionsController.update(player, response, {
 			missionId: "meetDifferentPlayers",
@@ -323,7 +324,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 			inventorySlots,
 			interactionsList
 		} = await getAvailableInteractions(otherPlayer, player, numberOfPlayers);
-		const interaction = RandomUtils.draftbotRandom.pick(interactionsList);
+		const interaction = RandomUtils.crowniclesRandom.pick(interactionsList);
 		const otherPlayerRank = await Players.getRankById(otherPlayer.id) > numberOfPlayers ? undefined : await Players.getRankById(otherPlayer.id);
 
 		if (interaction === InteractOtherPlayerInteraction.POOR) {
@@ -332,7 +333,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 				otherPlayerRank
 			);
 
-			const endCallback: EndCallback = async (collector: ReactionCollectorInstance, response: DraftBotPacket[]): Promise<void> => {
+			const endCallback: EndCallback = async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
 				const reaction = collector.getFirstReaction();
 
 				if (reaction && reaction.reaction.type === ReactionCollectorAcceptReaction.name) {

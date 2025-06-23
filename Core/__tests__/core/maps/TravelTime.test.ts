@@ -1,5 +1,5 @@
 import {beforeEach, describe, expect, it, vi} from 'vitest';
-import {draftBotInstance} from '../../../src';
+import {crowniclesInstance} from '../../../src';
 import {MapLinkDataController} from '../../../src/data/MapLink';
 import {PVEConstants} from '../../../../Lib/src/constants/PVEConstants';
 import {Constants} from '../../../../Lib/src/constants/Constants';
@@ -22,8 +22,8 @@ describe('TravelTime', () => {
 		vi.setSystemTime(now);
 
 		// stub out the two logging methods so they *always* return a promise
-		draftBotInstance.logsDatabase.logTimeWarp = vi.fn().mockResolvedValue(undefined);
-		draftBotInstance.logsDatabase.logAlteration = vi.fn().mockResolvedValue(undefined);
+		crowniclesInstance.logsDatabase.logTimeWarp = vi.fn().mockResolvedValue(undefined);
+		crowniclesInstance.logsDatabase.logAlteration = vi.fn().mockResolvedValue(undefined);
 
 		// MapLink stub
 		vi.spyOn(MapLinkDataController.instance, 'getById')
@@ -39,7 +39,7 @@ describe('TravelTime', () => {
 		vi.spyOn(PlayerSmallEvents, 'calculateCurrentScore').mockResolvedValue(50);
 
 		// Random
-		vi.spyOn(RandomUtils.draftbotRandom, 'integer').mockReturnValue(5);
+		vi.spyOn(RandomUtils.crowniclesRandom, 'integer').mockReturnValue(5);
 	});
 
 	it('calculates simplified travel data correctly', () => {
@@ -103,7 +103,7 @@ describe('TravelTime', () => {
 		// 1 minute = 60_000ms
 		expect(player.effectEndDate.valueOf()).toBe(now - 295_000);
 		expect(player.startTravelDate.valueOf()).toBe(now - 305_000);
-		expect(draftBotInstance.logsDatabase.logTimeWarp).toHaveBeenCalledWith('user123', 5, 0);
+		expect(crowniclesInstance.logsDatabase.logTimeWarp).toHaveBeenCalledWith('user123', 5, 0);
 	});
 
 	it('timeTravel moves support milliseconds inputs', async () => {
@@ -121,7 +121,7 @@ describe('TravelTime', () => {
 		// 1 minute = 60_000ms
 		expect(player.effectEndDate.valueOf()).toBe(now - 495_000);
 		expect(player.startTravelDate.valueOf()).toBe(now - 505_000);
-		expect(draftBotInstance.logsDatabase.logTimeWarp).toHaveBeenCalledWith('user123', 8, 0);
+		expect(crowniclesInstance.logsDatabase.logTimeWarp).toHaveBeenCalledWith('user123', 8, 0);
 	});
 
 	it('removeEffect clears effect and moves travel start', async () => {
@@ -161,7 +161,7 @@ describe('TravelTime', () => {
 		expect(player.effectDuration).toBe(5);
 		expect(player.effectEndDate.valueOf()).toBe(now + 5 * 60_000);
 		expect(save).toHaveBeenCalledOnce();
-		expect(draftBotInstance.logsDatabase.logAlteration).toHaveBeenCalledOnce();
+		expect(crowniclesInstance.logsDatabase.logAlteration).toHaveBeenCalledOnce();
 	});
 
 	it('timeTravelledToScore returns non-negative score', () => {

@@ -3,8 +3,8 @@ import PlayerMissionsInfo, { PlayerMissionsInfos } from "../../core/database/gam
 import { InventorySlots } from "../../core/database/game/models/InventorySlot";
 import { FightConstants } from "../../../../Lib/src/constants/FightConstants";
 import {
-	DraftBotPacket, makePacket
-} from "../../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, makePacket
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	CommandProfilePacketReq,
 	CommandProfilePacketRes,
@@ -39,7 +39,7 @@ export default class ProfileCommand {
 		disallowedEffects: CommandUtils.DISALLOWED_EFFECTS.NOT_STARTED,
 		whereAllowed: CommandUtils.WHERE.EVERYWHERE
 	})
-	async execute(response: DraftBotPacket[], player: Player, packet: CommandProfilePacketReq): Promise<void> {
+	async execute(response: CrowniclesPacket[], player: Player, packet: CommandProfilePacketReq): Promise<void> {
 		const toCheckPlayer = await Players.getAskedPlayer(packet.askedPlayer, player);
 
 		if (!toCheckPlayer?.hasStartedToPlay()) {
