@@ -28,7 +28,7 @@
     "sexDisplay_f": "Femelle {emote:sex.female}",
     "sexDisplay_m": "Mâle {emote:sex.male}",
     "shortPetField": "{{emote}} {{name}}",
-    "button": "{emote:petCommand.petButton} Caresser",
+    "petButton": "Caresser",
     "defaultPetName": "votre familier",
     "petPhrases": [
       "{emote:petCommand.pet} Votre main caresse {{petName}} qui se frotte contre vous avec la plus grande affection.",
@@ -222,9 +222,6 @@
       "INVENTORY": {
         "description": "Affiche le contenu de votre inventaire qui peut contenir 4 types d'objets :\n```\n-armes\n-armures\n-potions\n-items\n```\nLa commande affiche également le contenu de la réserve qui dispose de stockage supplémentaire."
       },
-      "INVITE_CROWNICLES": {
-        "description": "Cette commande vous permet d'obtenir un lien permettant de rejoindre le serveur d'aide !"
-      },
       "JOIN_BOAT": {
         "description": "Permet de rejoindre un membre de la guilde dans un bateau allant vers une île mystérieuse."
       },
@@ -299,6 +296,9 @@
       },
       "VOTE": {
         "description": "Permet d'obtenir le lien pour voter pour le bot."
+      },
+      "INVITE_CROWNICLES": {
+        "description": "Cette commande vous permet d'obtenir un lien permettant de rejoindre le serveur d'aide !"
       }
     },
     "forMoreHelp": "{emote:messages.item} Pour plus d'aide : ",
@@ -662,32 +662,6 @@
         "info": "Obtenir des informations détaillées sur votre familier.",
         "giveTitle": "{{pseudo}}, achat effectué !",
         "giveDesc": "Après avoir longuement étudié votre animal et son état de santé, le vétérinaire vous donne son rapport :\n\n**{{petName}}** {{commentOnResult}}\n{emote:petInformation.loveScore} **Score d'amour** : {{actualLP}} / 100\n{emote:petInformation.diet} **Régime alimentaire** : {{diet}}\n{emote:petInformation.nextFeed} **Prochaine faim** : {{nextFeed}}\n{emote:petInformation.age} **Âge** : {{commentOnPetAge}}\n\n{emote:petInformation.fightEffect} **Effet de combat** : {{commentOnFightEffect}}\n\n {{dwarfPet}}",
-        "dwarf": [
-          "{emote:smallEvents.dwarfPetFan} Au fait, Tarval n'arrête pas de m'écrire au sujet d'un {{pet}} ces derniers temps... Je ne sais pas trop ce qu'il a en ce moment, mais il a l'air complètement obsédé ! Enfin bref, d'après mes notes, il lui reste {{numberOfPetsNotSeen}} créatures à découvrir si ça peut vous intéresser.",
-          "{emote:smallEvents.dwarfPetFan} Vous savez, j'ai reçu encore une lettre de ce cher Tarval hier. Il me raconte qu'il a vu un {{pet}} et depuis, impossible de lui faire parler d'autre chose ! Ce nain devient vraiment étrange avec l'âge... Ah, et au passage, {{numberOfPetsNotSeen}} espèces lui échappent encore selon mon registre.",
-          "{emote:smallEvents.dwarfPetFan} Dites-moi, vous connaissez Tarval des montagnes ? Ce brave nain m'envoie des lettres dithyrambiques sur un {{pet}} qu'il a croisé ! Franchement, je ne l'avais jamais vu dans cet état... Si vous voulez mon avis, il y a {{numberOfPetsNotSeen}} autres créatures qui pourraient le mettre dans le même émoi !",
-          "{emote:smallEvents.dwarfPetFan} Ah, ça me fait penser... Mon ami Tarval des cimes est devenu complètement fou d'un {{pet}} dernièrement. Il m'écrit des poèmes entiers dessus, vous vous rendez compte ? Enfin, si jamais vous cherchez à faire des affaires avec lui, mes archives indiquent {{numberOfPetsNotSeen}} espèces qu'il n'a jamais vues !",
-          "{emote:smallEvents.dwarfPetFan} Je ne sais pas si vous avez déjà rencontré Tarval, mais ce nain collectionneur devient de plus en plus excentrique ! Sa dernière lubie ? Un {{pet}} qu'il a aperçu et qu'il ne cesse de me décrire dans ses moindres détails... Entre nous, {{numberOfPetsNotSeen}} autres créatures attendent encore sa découverte.",
-          "{emote:smallEvents.dwarfPetFan} En parlant de choses étranges... Tarval des hauteurs m'a envoyé trois lettres cette semaine, toutes à propos du même {{pet}} ! Je commence à m'inquiéter pour sa santé mentale... Cela dit, si vous voulez lui faire plaisir, il ignore encore l'existence de {{numberOfPetsNotSeen}} espèces dans nos contrées.",
-          "{emote:smallEvents.dwarfPetFan} Oh, j'ai une anecdote amusante ! Ce vieux Tarval m'a écrit qu'il avait rêvé d'un {{pet}} trois nuits de suite après l'avoir croisé. Franchement, je ne sais plus quoi penser de lui ! Enfin, si ça peut vous servir, mes calculs montrent qu'il lui reste {{numberOfPetsNotSeen}} découvertes à faire.",
-          "{emote:smallEvents.dwarfPetFan} Vous ne devinerez jamais... Tarval des montagnes m'a envoyé un croquis détaillé d'un {{pet}} avec une lettre de quinze pages pour l'accompagner ! Ce nain a vraiment trop de temps libre... D'ailleurs, selon mon inventaire, {{numberOfPetsNotSeen}} créatures n'ont jamais eu droit à un tel traitement artistique de sa part !",
-          "{emote:smallEvents.dwarfPetFan} Je reçois des nouvelles bien curieuses de Tarval ces temps-ci. Il paraît qu'il s'est mis à imiter les cris d'un {{pet}} qu'il a rencontré ! Les autres nains des montagnes commencent à le regarder bizarrement... Si vous voulez changer ses idées, {{numberOfPetsNotSeen}} autres espèces pourraient occuper son esprit !",
-          "{emote:smallEvents.dwarfPetFan} Ah, avant que j'oublie... Mon correspondant Tarval traverse une phase pour le moins... particulière. Il a nommé un {{pet}} qu'il a vu et lui écrit des lettres ! Je ne sais vraiment pas quoi lui répondre... Bon, si jamais vous passez dans le coin, {{numberOfPetsNotSeen}} créatures restent inexplorées dans son petit monde personnel !",
-          "{emote:smallEvents.dwarfPetFan} Il y a quelques jours, j'ai reçu une lettre de mon ami Tarval. Ce nain m'a transmis sa passion des animaux, mais il manque parfois de rigueur... alors il me demande souvent des conseils sur certaines espèces. Cette fois-ci, il me demande le meilleur moyen d'approcher un {{pet}} : je me demande ce qu'il a encore derrière la tête. En compilant toutes nos correspondances, j'ai pu faire une liste des animaux qu'il souhaite observer, et ceux-ci sont nombreux : {{numberOfPetsNotSeen}} créatures restent à découvrir !",
-          "{emote:smallEvents.dwarfPetFan} Oh, histoire rigolote ! Tarval a essayé de dresser un {{pet}} sauvage la semaine dernière... Il a fini avec trois bosses sur le crâne et un sourire béat ! Ce nain est incorrigible. Je m'inquiète pour lui car il m'a parlé d'au moins {{numberOfPetsNotSeen}} autres espèces qu'il espère apprivoiser !",
-          "{emote:smallEvents.dwarfPetFan} Vous savez ce que m'a raconté un marchand qui revenait des montagnes ? Il a vu Tarval construire une petite maison pour un {{pet}} ! Apparemment, il lui a même tricoté une écharpe... Je ne sais plus quoi penser de ce nain. D'après mes registres, {{numberOfPetsNotSeen}} créatures pourraient bénéficier du même traitement de faveur !",
-          "{emote:smallEvents.dwarfPetFan} J'ai appris que Tarval s'est lancé dans la cuisine dernièrement... pour préparer des mets spéciaux à un {{pet}} qu'il a rencontré ! Sa soupe aux champignons des cavernes fait paraît-il fureur chez cette espèce. Entre nous, {{numberOfPetsNotSeen}} autres animaux mériteraient peut-être un menu personnalisé !",
-          "{emote:smallEvents.dwarfPetFan} Mon cousin forgeron m'a dit que Tarval lui a commandé une armure miniature... pour protéger un {{pet}} des intempéries ! L'amour qu'il porte aux créatures n'a vraiment plus de limites. Si ça continue, il va falloir équiper les {{numberOfPetsNotSeen}} espèces qu'il n'a pas encore rencontrées !",
-          "{emote:smallEvents.dwarfPetFan} Incroyable nouvelle des hauteurs ! Tarval aurait organisé une fête d'anniversaire pour un {{pet}} avec gâteau aux baies et tout le tralala. Les autres nains pensent qu'il a perdu la boule, mais moi je trouve ça touchant. Imaginez s'il découvrait les {{numberOfPetsNotSeen}} autres créatures qui traînent par ici !",
-          "{emote:smallEvents.dwarfPetFan} Alors là, vous n'allez pas me croire... Tarval écrit des ballades sur un {{pet}} qu'il a croisé ! Certains pleurent d'émotion, d'autres de rire... Peut-être que {{numberOfPetsNotSeen}} créatures supplémentaires inspireraient son génie artistique !",
-          "{emote:smallEvents.dwarfPetFan} Les nouvelles du clan de Tarval sont... particulières. Il semblerait qu'il ait peint un portrait géant d'un {{pet}} sur le mur de sa maison ! Sa femme n'est pas ravie, mais lui rayonne de fierté car il s'agit de son animal fétiche en ce moment. Si vous voulez mon avis, peut être qu'avoir {{numberOfPetsNotSeen}} autres modèles d'animaux l'aiderait à perfectionner sa technique !",
-          "{emote:smallEvents.dwarfPetFan} J'ai entendu dire que Tarval s'était mis à méditer avec un {{pet}} au sommet de la montagne... Ils restent assis ensemble pendant des heures, paraît-il ! Les anciens du village parlent d'une connexion spirituelle extraordinaire. Qui sait, {{numberOfPetsNotSeen}} autres guides spirituels l'attendent peut-être !",
-          "{emote:smallEvents.dwarfPetFan} Dernière rumeur en date : Tarval aurait appris le langage d'un {{pet}} et tiendrait de longues conversations avec lui ! Les autres nains l'entendent parler tout seul dans sa forge... enfin, pas tout seul apparemment ! {{numberOfPetsNotSeen}} interlocuteurs potentiels pourraient enrichir son vocabulaire animal !",
-          "{emote:smallEvents.dwarfPetFan} Selon mes derniers calculs, {{numberOfPetsNotSeen}} espèces restent à découvrir pour Tarval... Ce nain devient de plus en plus obsédé par un {{pet}} qu'il a croisé ! Il m'écrit des lettres enflammées à son sujet depuis des semaines maintenant.",
-          "{emote:smallEvents.dwarfPetFan} Mes archives montrent que {{numberOfPetsNotSeen}} créatures échappent encore à Tarval... et devinez quoi ? Il vient de tomber sous le charme d'un {{pet}} ! Depuis, impossible de le faire parler d'autre chose dans ses courriers.",
-          "{emote:smallEvents.dwarfPetFan} D'après mes registres, {{numberOfPetsNotSeen}} animaux attendent encore leur découverte par Tarval... Mais en attendant, il est complètement fasciné par un {{pet}} qu'il a rencontré ! Ce nain me surprendra toujours.",
-          "{emote:smallEvents.dwarfPetFan} Si vous voulez tout savoir, {{numberOfPetsNotSeen}} espèces restent inconnues de Tarval selon mes notes... Pourtant, il ne peut plus s'arrêter de me parler d'un {{pet}} qu'il a aperçu ! Son enthousiasme est vraiment contagieux."
-        ],
         "petIsHungry": "{emote:effects.starving} affamé",
         "commentOnFightEffect": {
           "bite": [
@@ -941,7 +915,33 @@
             "semble vous apprécier totalement. Vous n'avez même plus besoin de vous occuper de votre familier pour qu'il continue à vous aimer !",
             "semble partager un lien fort avec vous. Votre lien est imperturbable, tant que vous n'êtes pas séparés, vous continuerez de profiter de l'amour de votre familier !"
           ]
-        }
+        },
+        "dwarf": [
+          "{emote:smallEvents.dwarfPetFan} Au fait, Tarval n'arrête pas de m'écrire au sujet d'un {{pet}} ces derniers temps... Je ne sais pas trop ce qu'il a en ce moment, mais il a l'air complètement obsédé ! Enfin bref, d'après mes notes, il lui reste {{numberOfPetsNotSeen}} créatures à découvrir si ça peut vous intéresser.",
+          "{emote:smallEvents.dwarfPetFan} Vous savez, j'ai reçu encore une lettre de ce cher Tarval hier. Il me raconte qu'il a vu un {{pet}} et depuis, impossible de lui faire parler d'autre chose ! Ce nain devient vraiment étrange avec l'âge... Ah, et au passage, {{numberOfPetsNotSeen}} espèces lui échappent encore selon mon registre.",
+          "{emote:smallEvents.dwarfPetFan} Dites-moi, vous connaissez Tarval des montagnes ? Ce brave nain m'envoie des lettres dithyrambiques sur un {{pet}} qu'il a croisé ! Franchement, je ne l'avais jamais vu dans cet état... Si vous voulez mon avis, il y a {{numberOfPetsNotSeen}} autres créatures qui pourraient le mettre dans le même émoi !",
+          "{emote:smallEvents.dwarfPetFan} Ah, ça me fait penser... Mon ami Tarval des cimes est devenu complètement fou d'un {{pet}} dernièrement. Il m'écrit des poèmes entiers dessus, vous vous rendez compte ? Enfin, si jamais vous cherchez à faire des affaires avec lui, mes archives indiquent {{numberOfPetsNotSeen}} espèces qu'il n'a jamais vues !",
+          "{emote:smallEvents.dwarfPetFan} Je ne sais pas si vous avez déjà rencontré Tarval, mais ce nain collectionneur devient de plus en plus excentrique ! Sa dernière lubie ? Un {{pet}} qu'il a aperçu et qu'il ne cesse de me décrire dans ses moindres détails... Entre nous, {{numberOfPetsNotSeen}} autres créatures attendent encore sa découverte.",
+          "{emote:smallEvents.dwarfPetFan} En parlant de choses étranges... Tarval des hauteurs m'a envoyé trois lettres cette semaine, toutes à propos du même {{pet}} ! Je commence à m'inquiéter pour sa santé mentale... Cela dit, si vous voulez lui faire plaisir, il ignore encore l'existence de {{numberOfPetsNotSeen}} espèces dans nos contrées.",
+          "{emote:smallEvents.dwarfPetFan} Oh, j'ai une anecdote amusante ! Ce vieux Tarval m'a écrit qu'il avait rêvé d'un {{pet}} trois nuits de suite après l'avoir croisé. Franchement, je ne sais plus quoi penser de lui ! Enfin, si ça peut vous servir, mes calculs montrent qu'il lui reste {{numberOfPetsNotSeen}} découvertes à faire.",
+          "{emote:smallEvents.dwarfPetFan} Vous ne devinerez jamais... Tarval des montagnes m'a envoyé un croquis détaillé d'un {{pet}} avec une lettre de quinze pages pour l'accompagner ! Ce nain a vraiment trop de temps libre... D'ailleurs, selon mon inventaire, {{numberOfPetsNotSeen}} créatures n'ont jamais eu droit à un tel traitement artistique de sa part !",
+          "{emote:smallEvents.dwarfPetFan} Je reçois des nouvelles bien curieuses de Tarval ces temps-ci. Il paraît qu'il s'est mis à imiter les cris d'un {{pet}} qu'il a rencontré ! Les autres nains des montagnes commencent à le regarder bizarrement... Si vous voulez changer ses idées, {{numberOfPetsNotSeen}} autres espèces pourraient occuper son esprit !",
+          "{emote:smallEvents.dwarfPetFan} Ah, avant que j'oublie... Mon correspondant Tarval traverse une phase pour le moins... particulière. Il a nommé un {{pet}} qu'il a vu et lui écrit des lettres ! Je ne sais vraiment pas quoi lui répondre... Bon, si jamais vous passez dans le coin, {{numberOfPetsNotSeen}} créatures restent inexplorées dans son petit monde personnel !",
+          "{emote:smallEvents.dwarfPetFan} Il y a quelques jours, j'ai reçu une lettre de mon ami Tarval. Ce nain m'a transmis sa passion des animaux, mais il manque parfois de rigueur... alors il me demande souvent des conseils sur certaines espèces. Cette fois-ci, il me demande le meilleur moyen d'approcher un {{pet}} : je me demande ce qu'il a encore derrière la tête. En compilant toutes nos correspondances, j'ai pu faire une liste des animaux qu'il souhaite observer, et ceux-ci sont nombreux : {{numberOfPetsNotSeen}} créatures restent à découvrir !",
+          "{emote:smallEvents.dwarfPetFan} Oh, histoire rigolote ! Tarval a essayé de dresser un {{pet}} sauvage la semaine dernière... Il a fini avec trois bosses sur le crâne et un sourire béat ! Ce nain est incorrigible. Je m'inquiète pour lui car il m'a parlé d'au moins {{numberOfPetsNotSeen}} autres espèces qu'il espère apprivoiser !",
+          "{emote:smallEvents.dwarfPetFan} Vous savez ce que m'a raconté un marchand qui revenait des montagnes ? Il a vu Tarval construire une petite maison pour un {{pet}} ! Apparemment, il lui a même tricoté une écharpe... Je ne sais plus quoi penser de ce nain. D'après mes registres, {{numberOfPetsNotSeen}} créatures pourraient bénéficier du même traitement de faveur !",
+          "{emote:smallEvents.dwarfPetFan} J'ai appris que Tarval s'est lancé dans la cuisine dernièrement... pour préparer des mets spéciaux à un {{pet}} qu'il a rencontré ! Sa soupe aux champignons des cavernes fait paraît-il fureur chez cette espèce. Entre nous, {{numberOfPetsNotSeen}} autres animaux mériteraient peut-être un menu personnalisé !",
+          "{emote:smallEvents.dwarfPetFan} Mon cousin forgeron m'a dit que Tarval lui a commandé une armure miniature... pour protéger un {{pet}} des intempéries ! L'amour qu'il porte aux créatures n'a vraiment plus de limites. Si ça continue, il va falloir équiper les {{numberOfPetsNotSeen}} espèces qu'il n'a pas encore rencontrées !",
+          "{emote:smallEvents.dwarfPetFan} Incroyable nouvelle des hauteurs ! Tarval aurait organisé une fête d'anniversaire pour un {{pet}} avec gâteau aux baies et tout le tralala. Les autres nains pensent qu'il a perdu la boule, mais moi je trouve ça touchant. Imaginez s'il découvrait les {{numberOfPetsNotSeen}} autres créatures qui traînent par ici !",
+          "{emote:smallEvents.dwarfPetFan} Alors là, vous n'allez pas me croire... Tarval écrit des ballades sur un {{pet}} qu'il a croisé ! Certains pleurent d'émotion, d'autres de rire... Peut-être que {{numberOfPetsNotSeen}} créatures supplémentaires inspireraient son génie artistique !",
+          "{emote:smallEvents.dwarfPetFan} Les nouvelles du clan de Tarval sont... particulières. Il semblerait qu'il ait peint un portrait géant d'un {{pet}} sur le mur de sa maison ! Sa femme n'est pas ravie, mais lui rayonne de fierté car il s'agit de son animal fétiche en ce moment. Si vous voulez mon avis, peut être qu'avoir {{numberOfPetsNotSeen}} autres modèles d'animaux l'aiderait à perfectionner sa technique !",
+          "{emote:smallEvents.dwarfPetFan} J'ai entendu dire que Tarval s'était mis à méditer avec un {{pet}} au sommet de la montagne... Ils restent assis ensemble pendant des heures, paraît-il ! Les anciens du village parlent d'une connexion spirituelle extraordinaire. Qui sait, {{numberOfPetsNotSeen}} autres guides spirituels l'attendent peut-être !",
+          "{emote:smallEvents.dwarfPetFan} Dernière rumeur en date : Tarval aurait appris le langage d'un {{pet}} et tiendrait de longues conversations avec lui ! Les autres nains l'entendent parler tout seul dans sa forge... enfin, pas tout seul apparemment ! {{numberOfPetsNotSeen}} interlocuteurs potentiels pourraient enrichir son vocabulaire animal !",
+          "{emote:smallEvents.dwarfPetFan} Selon mes derniers calculs, {{numberOfPetsNotSeen}} espèces restent à découvrir pour Tarval... Ce nain devient de plus en plus obsédé par un {{pet}} qu'il a croisé ! Il m'écrit des lettres enflammées à son sujet depuis des semaines maintenant.",
+          "{emote:smallEvents.dwarfPetFan} Mes archives montrent que {{numberOfPetsNotSeen}} créatures échappent encore à Tarval... et devinez quoi ? Il vient de tomber sous le charme d'un {{pet}} ! Depuis, impossible de le faire parler d'autre chose dans ses courriers.",
+          "{emote:smallEvents.dwarfPetFan} D'après mes registres, {{numberOfPetsNotSeen}} animaux attendent encore leur découverte par Tarval... Mais en attendant, il est complètement fasciné par un {{pet}} qu'il a rencontré ! Ce nain me surprendra toujours.",
+          "{emote:smallEvents.dwarfPetFan} Si vous voulez tout savoir, {{numberOfPetsNotSeen}} espèces restent inconnues de Tarval selon mes notes... Pourtant, il ne peut plus s'arrêter de me parler d'un {{pet}} qu'il a aperçu ! Son enthousiasme est vraiment contagieux."
+        ]
       },
       "questMasterBadge": {
         "name": "{emote:badges.mission_completer} Badge \"Maître des quêtes\"",
@@ -955,14 +955,14 @@
       "attack": "{{emote}} {{name}} | {{cost}} {emote:unitValues.breath}"
     },
     "description": {
-      "list": "Voici la liste des classes disponibles pour votre personnage et leurs statistiques. Pour plus d'informations sur une classe, sélectionnez celle-ci parmi les choix ci-dessous.\n\u200B"
+      "list": "Voici la liste des classes disponibles pour votre personnage et leurs statistiques. Pour plus d'informations sur une classe, sélectionnez celle-ci parmi les choix ci-dessous.\n​"
     },
     "mainOption": {
       "name": "Liste des classes",
       "placeholder": "Sélectionnez une classe"
     },
     "displays": {
-      "details": "{{classDetails}}\n\n**Attaques disponibles pour cette classe :**\n\u200B",
+      "details": "{{classDetails}}\n\n**Attaques disponibles pour cette classe :**\n​",
       "class": "{emote:unitValues.energy} {{fightPoint}} | {emote:unitValues.attack} {{attack}} | {emote:unitValues.defense} {{defense}} | {emote:unitValues.speed} {{speed}} | {emote:unitValues.breath} {{baseBreath}} / {{maxBreath}} | {emote:unitValues.breathRegen} {{breathRegen}} | {emote:unitValues.health} {{health}}"
     }
   },
@@ -1353,7 +1353,7 @@
       "24": "Une classe polyvalente axée sur des mécaniques de combat uniques."
     },
     "title": "{emote:commands.classes} Changer de classe :",
-    "desc": "Choisissez une classe dans la liste ci-dessous pour plus d'informations.\n\u200B",
+    "desc": "Choisissez une classe dans la liste ci-dessous pour plus d'informations.\n​",
     "display": "{{name}}\n\n{emote:commands.classesDescription} `{{description}}`\n\nSouhaitez-vous changer pour cette classe ? Vous ne pourrez pas changer de classe avant le {{time}}.",
     "success": "{{pseudo}}, votre classe a été modifiée !",
     "newClass": "Votre nouvelle classe est : **{{name}}**",

@@ -49,11 +49,6 @@ export class PlayerFighter extends Fighter {
 	async startFight(fightView: FightView, startStatus: FighterStatus): Promise<void> {
 		this.status = startStatus;
 
-		// Cache the pet entity at the start of the fight
-		if (this.player.petId) {
-			this.pet = await PetEntities.getById(this.player.petId);
-		}
-
 		await this.consumePotionIfNeeded([fightView.context]);
 		this.block();
 	}
