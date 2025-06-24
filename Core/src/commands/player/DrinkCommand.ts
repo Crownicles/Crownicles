@@ -91,7 +91,7 @@ function drinkPotionCallback(
 export default class DrinkCommand {
 	@commandRequires(CommandDrinkPacketReq, {
 		notBlocked: true,
-		disallowedEffects: CommandUtils.DISALLOWED_EFFECTS.NOT_STARTED_OR_DEAD,
+		disallowedEffects: CommandUtils.DISALLOWED_EFFECTS.NOT_STARTED_OR_DEAD_OR_JAILED,
 		whereAllowed: [WhereAllowed.CONTINENT]
 	})
 	async execute(response: CrowniclesPacket[], player: Player, packet: CommandDrinkPacketReq, context: PacketContext): Promise<void> {
