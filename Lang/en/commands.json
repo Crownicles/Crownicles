@@ -145,7 +145,7 @@
       },
       "FIGHT": {
         "description": "Use this command to challenge other players on the same server as you.\nBattles take place on a turn-by-turn basis. Each turn, you can choose an action to perform.\n\nFor more information, please visit the guide page: https://guide.draftbot.com/v/en/notions-principale/combats",
-        "image": "https://draftbot.com/public/ressources/fighthelp/en/5.0.2.png"
+        "image": "https://draftbot.com/public/ressources/fighthelp/en/5.1.1.png"
       },
       "GLORY_TOP": {
         "description": "Displays the ranking of the fights in 15 player intervals. Player's league is also displayed. Players in the same server as you are shown by a blue dot."
