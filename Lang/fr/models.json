@@ -222,7 +222,7 @@
       "stop": "n'est plus confus."
     },
     "counterAttack": {
-      "description": "Réplique avec la même action que celle que vient de jouer votre adversaire. Ne fonctionne pas sur les attaques magiques ou divines, ni si l'adversaire n'a pas attaqué.",
+      "description": "Réplique avec la même action que celle que vient de jouer votre adversaire. Ne fonctionne pas sur certaines attaques, ni si l'adversaire n'a pas attaqué.",
       "name_one": "Attaque riposte",
       "customMessage": "ne parvient pas à riposter.",
       "name_other": "Attaques riposte"
@@ -276,7 +276,7 @@
       "afraid": "est aidé par **{{petNickname}}** qui, bien que se rappelant parfaitement des événements récents, tremble trop de peur pour pouvoir restituer le souffle perdu."
     },
     "energeticAttack": {
-      "description": "La moitié des dégâts de cette attaque sont restitués au lanceur sous forme de soin. Ignore une partie de la défense adverse.",
+      "description": "Une partie des dégâts de cette attaque sont restitués au lanceur sous forme de soin. Ignore une partie de la défense adverse. Le soin est réduit contre les monstres.",
       "name_one": "Attaque énergique",
       "name_other": "Attaques énergiques"
     },
