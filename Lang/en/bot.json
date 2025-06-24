@@ -26,6 +26,12 @@
   "notificationsNoChannelAccess": "{emote:messages.refuse} It seems that the bot no longer has access to your notification room, notifications will now be in private messages. To change the notification mode, please run the {command:notifications} command.",
   "notificationReachDestination": "You arrived at **{{destination}}**!",
   "notificationGuildDaily": "**{{pseudo}}** has received your guild's daily bonus:\n\n{{rewards}}",
+  "notificationGuildKick": "**{{pseudo}}** vous a exclu de la guilde `{{guildName}}`.",
+  "notificationGuildStatusChange": {
+    "becomeElder": "Vous avez été promu en tant qu'ainé de la guilde `{{guildName}}`.",
+    "becomeMember": "Vous avez été rétrogadé du poste d'ainé de la guilde `{{guildName}}`.",
+    "becomeChief": "Vous êtes devenu le chef de la guilde `{{guildName}}`."
+  },
   "supportMessage": "{{langFlag}} If you need help, select your language using the buttons below. If you don't need help, ignore this message.\n{emote:collectors.warning} **Every message sent here can be read by a human!**\n",
   "commandDisabledInDM": "{{langFlag}} Hello, commands are disabled in private messages. Please go to a server to play!\nIf you would like help, click the button corresponding to your language below.\n"
 }
