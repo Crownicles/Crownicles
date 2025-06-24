@@ -71,17 +71,14 @@ export class CrowniclesActionChooseCachedMessage extends CrowniclesCachedMessage
 				return;
 			}
 
-			const disabledRows = rows.map(row => {
-				const newRow = new ActionRowBuilder<ButtonBuilder>();
+			rows.map(row => {
 				row.components.forEach(component => {
-					const button = ButtonBuilder.from(component).setDisabled(true);
-					newRow.addComponents(button);
+					component.setDisabled(true);
 				});
-				return newRow;
 			});
 
 			await buttonInteraction.update({
-				components: disabledRows
+				components: rows
 			});
 			DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, buttonInteraction, reactions.findIndex(reaction => reaction.data.id === buttonInteraction.customId));
 		});

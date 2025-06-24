@@ -203,27 +203,23 @@ export class DiscordCollectorUtils {
 					await buttonInteraction.deferReply();
 				}
 				else if (messageContentOrEmbed instanceof CrowniclesEmbed) {
-					const disabledRow = new ActionRowBuilder<ButtonBuilder>();
 					row.components.forEach(component => {
-						const button = ButtonBuilder.from(component).setDisabled(true);
-						disabledRow.addComponents(button);
+						component.setDisabled(true);
 					});
 
 					await msg.edit({
 						embeds: [messageContentOrEmbed],
-						components: [disabledRow]
+						components: [row]
 					});
 				}
 				else {
-					const disabledRow = new ActionRowBuilder<ButtonBuilder>();
 					row.components.forEach(component => {
-						const button = ButtonBuilder.from(component).setDisabled(true);
-						disabledRow.addComponents(button);
+						component.setDisabled(true);
 					});
 
 					await msg.edit({
 						content: messageContentOrEmbed,
-						components: [disabledRow]
+						components: [row]
 					});
 				}
 				DiscordCollectorUtils.sendReaction(
@@ -249,14 +245,12 @@ export class DiscordCollectorUtils {
 		});
 
 		buttonCollector.on("end", async () => {
-			const disabledRow = new ActionRowBuilder<ButtonBuilder>();
 			row.components.forEach(component => {
-				const button = ButtonBuilder.from(component).setDisabled(true);
-				disabledRow.addComponents(button);
+				component.setDisabled(true);
 			});
 
 			await msg.edit({
-				components: [disabledRow]
+				components: [row]
 			});
 		});
 
@@ -371,17 +365,14 @@ export class DiscordCollectorUtils {
 		});
 
 		buttonCollector.on("end", async () => {
-			const disabledRows = rows.map(row => {
-				const newRow = new ActionRowBuilder<ButtonBuilder>();
+			rows.map(row => {
 				row.components.forEach(component => {
-					const button = ButtonBuilder.from(component).setDisabled(true);
-					newRow.addComponents(button);
+					component.setDisabled(true);
 				});
-				return newRow;
 			});
 
 			await msg.edit({
-				components: disabledRows
+				components: rows
 			});
 		});
 

@@ -109,17 +109,14 @@ async function handleGetPlayerInfoResponse(
 
 			selectCollector.stop();
 
-			const disabledRows = rows.map(row => {
-				const newRow = new ActionRowBuilder<StringSelectMenuBuilder>();
+			rows.map(row => {
 				row.components.forEach(component => {
-					const selectMenu = StringSelectMenuBuilder.from(component).setDisabled(true);
-					newRow.addComponents(selectMenu);
+					component.setDisabled(true);
 				});
-				return newRow;
 			});
 
 			await selectMenuInteraction.update({
-				components: disabledRows
+				components: rows
 			});
 
 			const selectedOption = selectMenuInteraction.values[0];
@@ -134,17 +131,14 @@ async function handleGetPlayerInfoResponse(
 		});
 
 		selectCollector.on("end", async () => {
-			const disabledRows = rows.map(row => {
-				const newRow = new ActionRowBuilder<StringSelectMenuBuilder>();
+			rows.map(row => {
 				row.components.forEach(component => {
-					const selectMenu = StringSelectMenuBuilder.from(component).setDisabled(true);
-					newRow.addComponents(selectMenu);
+					component.setDisabled(true);
 				});
-				return newRow;
 			});
 
 			await msg.edit({
-				components: disabledRows
+				components: rows
 			});
 		});
 	}

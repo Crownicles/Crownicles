@@ -104,15 +104,13 @@ export class CrowniclesButtonReactionMessage {
 		});
 
 		buttonCollector.on("end", async () => {
-			const disabledRow = new ActionRowBuilder<ButtonBuilder>();
 			this._buttonRow.components.forEach(component => {
-				const button = ButtonBuilder.from(component).setDisabled(true);
-				disabledRow.addComponents(button);
+				component.setDisabled(true);
 			});
 
 			await message.edit({
 				embeds: [this._embed],
-				components: [disabledRow]
+				components: [this._buttonRow]
 			});
 		});
 
