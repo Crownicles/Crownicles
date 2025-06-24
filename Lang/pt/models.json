@@ -144,7 +144,7 @@
       "stop": "recupera a visão."
     },
     "boomerangAttack": {
-      "description": "Cette attaque peut infliger jusqu'à 2 retours des dégâts.",
+      "description": "Este ataque pode infligir até 2 retornos de dano.",
       "name_one": "Ataque boomerang",
       "name_other": "Ataques de boomerang"
     },
@@ -178,7 +178,7 @@
       "name_other": "Ataques de canhão"
     },
     "chargeChargingAttack": {
-      "description": "Attaque sur 2 tours. Durant le premier tour, la défense du lanceur est augmentée de 50 %. Durant le second tour, la défense du lanceur est diminuée, infligeant au passage de lourds dégâts.",
+      "description": "Ataque de 2 turnos. Durante a primeira ronda, a defesa do jogador é aumentada em 50%. Durante a segunda ronda, a defesa é reduzida, infligindo danos pesados no processo.",
       "name_one": "Ataque carregado",
       "name_other": "Ataques carregados"
     },
@@ -187,7 +187,7 @@
       "name_other": "Ataques a clubes"
     },
     "chargeUltimateAttack": {
-      "description": "Nécessite un tour pour charger l’attaque. Si l’attaquant dispose de moins de 45% de son énergie, cette attaque ne peut pas échouer. Cette attaque ne peut être utilisée qu’une fois par joueur et par combat.",
+      "description": "Requer um turno para carregar o ataque. Se o atacante tiver menos de 45% da sua energia, este ataque não pode falhar. Este ataque só pode ser usado uma vez por jogador e por batalha.",
       "name_one": "Ataque final",
       "name_other": "Ataques finais"
     },
@@ -244,12 +244,12 @@
       "stop": "sofre as consequências da maldição."
     },
     "cursedAttack": {
-      "description": "Maudit l'adversaire, peut être en subira-t-il les conséquences dans le futur... Soigne le lanceur si l'adversaire a plus de 40% de son énergie.",
+      "description": "Amaldiçoa o adversário, talvez sofrendo as consequências no futuro... Cura o jogador se o adversário tiver mais de 40% da sua energia.",
       "name_one": "Ataque amaldiçoado",
       "name_other": "Ataques amaldiçoados"
     },
     "darkAttack": {
-      "description": "Ignore la défense de l'adversaire. Plus efficace contre un joueur ayant une attaque élevée. Aveugle l'adversaire ou rend au lanceur une partie de son souffle perdu. L'altération \"aveuglé\" dure au moins 1 tour et rend l'adversaire incapable d'attaquer parfois, tout en réduisant sa défense et sa vitesse.",
+      "description": "Ignora a defesa do adversário. Mais eficaz contra um jogador com um ataque elevado. Cega o oponente ou restaura parte do fôlego perdido. A alteração \"cego\" dura pelo menos 1 turno e torna o adversário incapaz de atacar por vezes, reduzindo a sua defesa e velocidade.",
       "name_one": "Ataque negro",
       "name_other": "Ataques negros"
     },
@@ -290,7 +290,7 @@
       "name_other": "Refeições em família"
     },
     "fireAttack": {
-      "description": "Brûle l'adversaire. L'altération \"brûlé\" inflige des dégâts à votre adversaire sur la durée.",
+      "description": "Queima o teu adversário. A alteração \"queimado\" inflige danos ao teu adversário ao longo do tempo.",
       "name_one": "Ataque de incêndio",
       "name_other": "Ataques de fogo"
     },
@@ -335,7 +335,7 @@
       "success": "é tratado por **{{petNickname}}** que lhe devolve a sua energia."
     },
     "heatDrainAttack": {
-      "customMessage": "draine la chaleur de son adversaire.",
+      "customMessage": "drena o calor do seu oponente.",
       "name_one": "Dreno de calor",
       "name_other": "Drenos de calor"
     },
@@ -344,7 +344,7 @@
       "name_other": "Ataques de lama ardente"
     },
     "heavyAttack": {
-      "description": "Échoue si le défenseur dispose de moins de défense que l'attaquant. La défense de l'ennemi est réduite de 25%.",
+      "description": "Falha se o defensor tiver menos defesa do que o atacante. A defesa do inimigo é reduzida em 25%.",
       "name_one": "Ataque pesado",
       "name_other": "Ataques pesados"
     },
@@ -359,7 +359,7 @@
       "success": "é ajudado por **{{petNickname}}** que utiliza os seus poderes hipnóticos para confundir o inimigo."
     },
     "intenseAttack": {
-      "description": "La défense permet de se protéger efficacement de cette attaque. N'échoue jamais sur un adversaire plus rapide. Fonctionne mieux sur un adversaire rapide. Force le lanceur à utiliser l'action \"repos\" au tour suivant. Ne peut pas tuer l'adversaire.",
+      "description": "Defende-te eficazmente contra este ataque. Nunca falha contra um adversário mais rápido. Funciona melhor num adversário rápido. Força o lançador a usar a ação \"descansar\" no próximo turno. Não pode matar o oponente.",
       "name_one": "Ataque intenso",
       "name_other": "Ataques intensos"
     },
@@ -456,7 +456,7 @@
       "stop": "já não está envenenado."
     },
     "poisonousAttack": {
-      "description": "Plus efficace en début de combat. Empoisonne l'adversaire. L'altération \"empoisonné\" dure au moins trois tours et inflige des dégâts à votre adversaire sur la durée.",
+      "description": "Mais eficaz no início de um combate. Envenena o teu adversário. Envenenado\" dura pelo menos três turnos e inflige dano ao teu adversário ao longo do tempo.",
       "name_one": "Ataque envenenado",
       "name_other": "Ataques envenenados"
     },
@@ -465,7 +465,7 @@
       "success": "recebe o apoio de **{{petNickname}}** que decide morder o seu adversário... Este último não se sente muito bem de repente."
     },
     "powerfulAttack": {
-      "description": "Cette attaque a 25 % de chance de faire plus de dégâts, au prix d'un étourdissement de l'attaquant. Réduit la vitesse de l'adversaire. Après 3 utilisations, les dégâts de l'attaque sont réduits de 70%.",
+      "description": "Este ataque tem 25% de hipóteses de causar mais danos, ao custo de atordoar o atacante. Reduz a velocidade do adversário. Após 3 utilizações, o dano do ataque é reduzido em 70%.",
       "name_one": "Ataque poderoso",
       "name_other": "Ataques poderosos"
     },
@@ -533,7 +533,7 @@
       "generalEffect": "é assistido por **{{petNickname}}** que afugenta os peixes."
     },
     "shieldAttack": {
-      "description": "Utilise la défense de l’attaquant pour attaquer, affaiblissant l'adversaire, ce qui réduit son attaque de 70% durant 2 tours.",
+      "description": "Usa a defesa do atacante para atacar, enfraquecendo o adversário e reduzindo o seu ataque em 70% durante 2 turnos.",
       "name_one": "Ataque com escudo",
       "name_other": "Ataques com escudo"
     },
@@ -543,100 +543,100 @@
       "name_other": "Ataques simples"
     },
     "glacialCaveCollapseAttack": {
-      "customMessage": "rugit si fort que des stalactites de glace se détachent du plafond ! Mais l'ennemi est suffisamment proche pour éviter l'attaque.",
-      "name_one": "Attaque effondrement glacial",
-      "name_other": "Attaques effondrements glaciaux"
+      "customMessage": "ruge tão alto que as estalactites de gelo saltam do teto! Mas o inimigo está suficientemente perto para evitar o ataque.",
+      "name_one": "Ataque de colapso por congelamento",
+      "name_other": "Ataques de colapso arrepiantes"
     },
     "chargeChargeRadiantBlastAttack": {
-      "customMessage": "charge son énergie et se prépare à lancer une attaque puissante.",
-      "name_one": "Attaque rayon radieux explosif",
-      "name_other": "Attaques rayons radieux explosifs"
+      "customMessage": "carrega a sua energia e prepara-se para lançar um ataque poderoso.",
+      "name_one": "Ataque de Raio Explosivo Radiante",
+      "name_other": "Ataques explosivos de raios radiantes"
     },
     "chargeRadiantBlastAttack": {
-      "customMessage": "continue de charger son énergie et de se préparer à lancer une attaque puissante.",
-      "name_one": "Attaque rayon radieux explosif",
-      "name_other": "Attaques rayons radieux explosifs"
+      "customMessage": "continua a carregar a sua energia e prepara-se para lançar um ataque poderoso.",
+      "name_one": "Ataque de Raio Explosivo Radiante",
+      "name_other": "Ataques explosivos de raios radiantes"
     },
     "radiantBlastAttack": {
-      "name_one": "Attaque rayon radieux explosif",
-      "name_other": "Attaques rayons radieux explosifs"
+      "name_one": "Ataque de Raio Explosivo Radiante",
+      "name_other": "Ataques explosivos de raios radiantes"
     },
     "hammerQuakeAttack": {
-      "customMessage": "frappe le sol avec une force titanesque, provoquant un tremblement de terre ! Mais l'ennemi s'élève dans les airs avec son compagnon ailé, échappant aux secousses.",
-      "name_one": "Attaque marteau sismique",
-      "name_other": "Attaque marteaux sismiques"
+      "customMessage": "atinge o chão com uma força titânica, provocando um terramoto! Mas o inimigo levanta-se no ar com o seu companheiro alado, escapando aos tremores.",
+      "name_one": "Ataque de martelo sísmico",
+      "name_other": "Ataque de martelo sísmico"
     },
     "startPolarEmbraceAttack": {
-      "customMessage": "ne parvient pas à attraper son adversaire qui la tient à distance respectable grâce à ses attaques",
-      "name_one": "Attaque étreinte polaire",
-      "name_other": "Attaques étreintes polaires"
+      "customMessage": "não consegue apanhar a sua adversária, que a mantém a uma distância respeitável com os seus ataques",
+      "name_one": "Ataque do abraço polar",
+      "name_other": "Ataques do abraço polar"
     },
     "isStuckInPolarEmbrace": {
-      "customMessage": "ne parvient pas à maintenir son accroche sur son adversaire qui parvient à se libérer grâce à ses attaques",
-      "name_one": "Attaque étreinte polaire",
-      "name_other": "Attaques étreintes polaires"
+      "customMessage": "não consegue segurar o seu adversário, que se consegue libertar com os seus ataques",
+      "name_one": "Ataque do abraço polar",
+      "name_other": "Ataques do abraço polar"
     },
     "glacialBreathAttack": {
-      "name_one": "Attaque souffle glacial",
-      "name_other": "Attaques souffles glacials"
+      "name_one": "Ataque de explosão de gelo",
+      "name_other": "Ataques de rajada de gelo"
     },
     "blizzardRageAttack": {
-      "customMessage": "invoque la rage du blizzard sur son adversaire, mais les vents glacés font déjà rage dans l'arène.",
-      "name_one": "Attaque rage de blizzard",
-      "name_other": "Attaques rages de blizzard"
+      "customMessage": "invoca a fúria do nevão no seu adversário, mas os ventos gelados já estão a assolar a arena.",
+      "name_one": "Ataque de fúria do Blizzard",
+      "name_other": "Ataques de fúria do Blizzard"
     },
     "aerialDiveAttack": {
-      "customMessage": "s'élance dans les airs pour plonger sur son adversaire, mais celui-ci parvient à le maintenir à distance grâce à ses attaques.",
-      "name_one": "Attaque plongée aérienne",
-      "name_other": "Attaques plongées aériennes"
+      "customMessage": "salta no ar para mergulhar sobre o seu adversário, mas este consegue mantê-lo à distância com os seus ataques.",
+      "name_one": "Ataque de mergulho aéreo",
+      "name_other": "Ataques aéreos de mergulho"
     },
     "crystallineArmorAttack": {
-      "customMessage": "fait briller son armure cristalline dans l'espoir de blesser son adversaire, mais les pointes acérées n'ont pas été touchées.",
-      "name_one": "Attaque armure cristalline",
-      "name_other": "Attaques armures cristallines"
+      "customMessage": "brilha a sua armadura cristalina na esperança de ferir o seu adversário, mas as pontas afiadas permanecem intactas.",
+      "name_one": "Ataque de armadura cristalina",
+      "name_other": "Ataques de armaduras cristalinas"
     },
     "icySeductionAttack": {
-      "name_one": "Attaque séduction glaciale",
-      "name_other": "Attaque séductions glaciales"
+      "name_one": "Ataque de sedução gelado",
+      "name_other": "Ataque de sedução gelado"
     },
     "frozenKissAttack": {
-      "name_one": "Attaque baiser gelé",
-      "name_other": "Attaques baisers gelés"
+      "name_one": "Ataque de beijo congelado",
+      "name_other": "Ataques de beijos congelados"
     },
     "spectralRevengeAttack": {
-      "customMessage": "ne parvient pas à se venger de son adversaire.",
-      "name_one": "Revanche spectrale",
-      "name_other": "Revanches spectrales"
+      "customMessage": "não consegue vingar-se do seu adversário.",
+      "name_one": "Vingança espetral",
+      "name_other": "Vingança espetral"
     },
     "ambush": {
-      "customMessage": "se cache pour préparer une embuscade...",
-      "name_one": "Embuscade",
-      "name_other": "Embuscades"
+      "customMessage": "está a esconder-se para preparar uma emboscada...",
+      "name_one": "Emboscada",
+      "name_other": "Emboscadas"
     },
     "tailWhipAttack": {
-      "name_one": "Attaque coup de queue",
-      "name_other": "Attaques coups de queue"
+      "name_one": "Golpe de cauda",
+      "name_other": "Ataques de Cue"
     },
     "lightRayAttack": {
-      "name_one": "Attaque rayon de lumière",
-      "name_other": "Attaques rayon de lumière"
+      "name_one": "Ataque de raio de luz",
+      "name_other": "Ataques com feixes de luz"
     },
     "crystalShardAttack": {
-      "name_one": "Attaque éclat de cristal",
-      "name_other": "Attaques éclats de cristal"
+      "name_one": "Ataque com fragmento de cristal",
+      "name_other": "Ataques de estilhaços de cristal"
     },
     "clawAttack": {
-      "name_one": "Attaque griffe",
-      "name_other": "Attaques griffes"
+      "name_one": "Ataque com garras",
+      "name_other": "Ataques com garras"
     },
     "callPack": {
-      "customMessage": "appelle sa meute d'un hurlement strident.",
-      "name_one": "Appel à la meute",
-      "name_other": "Appels à la meute"
+      "customMessage": "chama a sua alcateia com um uivo estridente.",
+      "name_one": "Chamar a matilha",
+      "name_other": "Chamadas para a matilha"
     },
     "packAttack": {
-      "name_one": "Attaque de meute",
-      "name_other": "Attaques de meute"
+      "name_one": "Ataque de matilha",
+      "name_other": "Ataques de matilha"
     },
     "slamAttack": {
       "name_one": "Ataque de impacto",
@@ -740,19 +740,19 @@
       "name_other": "Ataques de lançamento de teia"
     },
     "hardBiteAttack": {
-      "name_one": "Attaque morsure puissante",
-      "name_other": "Attaques morsures puissantes"
+      "name_one": "Poderoso ataque de mordida",
+      "name_other": "Poderosos ataques de mordida"
     },
     "bleeding": {
-      "name": "en train de saigner",
-      "new": "saigne.",
-      "active": "saigne.",
-      "stop": "n'est plus en train de saigner."
+      "name": "sangramento",
+      "new": "sangramento.",
+      "active": "sangramento.",
+      "stop": "já não está a sangrar."
     },
     "howlAttack": {
-      "customMessage": "hurle au ciel.",
-      "name_one": "Hurlement",
-      "name_other": "Hurlements"
+      "customMessage": "grita para o céu.",
+      "name_one": "Uivando",
+      "name_other": "Uivando"
     }
   },
   "leagues": {
@@ -819,39 +819,39 @@
       "particle": "para o"
     },
     "1101": {
-      "description": "Une étendue de terre gelée où le climat est sans pitié. Une tempête permanente de neige rend difficile la progression et la cartographie du lieu. On peut y croiser tous types d’animaux arctiques.",
-      "name": "Toundra",
+      "description": "Uma extensão de terra gelada onde o clima é impiedoso. Uma tempestade de neve permanente dificulta o progresso e a cartografia da zona. Todos os tipos de animais do Ártico podem ser vistos aqui.",
+      "name": "Tundra",
       "particle": "para o"
     },
     "1102": {
-      "description": "Une grande caverne dans laquelle le moindre rayon de soleil qui rentre est démultiplié par les cristaux rendant celle-ci très lumineuse. Des stalactites pointus et des stalagmites tranchantes, synonymes de blessures graves voir mortelles si l’une d’elle nous tombe dessus ou que l’on fait un pas de travers, forment le décor de la caverne. Si vous osez vous aventurez plus loin, vous devrez choisir entre sortir vers le sommet du pic enneigée ou vous enfoncer encore plus profond.",
-      "name": "Caverne de cristal",
-      "particle": "vers la"
+      "description": "Uma grande caverna em que o mais pequeno raio de sol que entra é multiplicado pelos cristais, tornando-a muito luminosa. Estalactites e estalagmites pontiagudas, sinónimo de ferimentos graves ou mesmo mortais se uma delas cair em cima de nós ou se dermos um passo em falso, formam o pano de fundo da caverna. Se se atrever a aventurar-se mais, terá de escolher entre subir ao topo do pico coberto de neve ou ir ainda mais fundo.",
+      "name": "Gruta de cristal",
+      "particle": "para o"
     },
     "1103": {
-      "description": "Deux majestueuses portes se dressent en haut d’une longue série de marches. Les monter ne sera pas de tout repos. On raconte qu’elles ont été construites par une civilisation ancienne en l’honneur d’une divinité.",
-      "name": "Portes sacrées",
-      "particle": "vers les"
+      "description": "Duas portas majestosas encontram-se no topo de uma longa série de degraus. Subi-las não será fácil. Diz-se que foram construídas por uma antiga civilização em honra de uma divindade.",
+      "name": "Portas sagradas",
+      "particle": "para o"
     },
     "1104": {
-      "description": "Dans la chaîne de montagnes, ce pic se démarque par la violence de ses tempêtes de neige et la vitesse de ses vents. Il est si haut que l’oxygène y est rare et que le risque de mourir de froid est élevé si vous n’avez pas déjà succombé aux animaux sauvages…",
-      "name": "Pic enneigé",
-      "particle": "vers le"
+      "description": "Este pico da cordilheira destaca-se pela violência das suas tempestades de neve e pela velocidade dos seus ventos. A altitude é tão elevada que o oxigénio é escasso e o risco de morrer congelado é elevado, se ainda não tiver sucumbido aos animais selvagens…",
+      "name": "Pico nevado",
+      "particle": "para o"
     },
     "1105": {
-      "description": "Un grand lac au cœur de la montagne dont la traversée n’est pas sans risque. Comme la température est glaciale, le fait qu’il ne soit pas gelé reste un mystère. Nul n’en connait sa profondeur ni sa faune.",
-      "name": "Lac souterrain",
-      "particle": "vers le"
+      "description": "Um grande lago no coração das montanhas, a sua travessia não é isenta de riscos. Como a temperatura é muito baixa, o facto de não estar congelado permanece um mistério. Ninguém conhece a sua profundidade nem a sua fauna.",
+      "name": "Lago subterrâneo",
+      "particle": "para o"
     },
     "1106": {
-      "description": "Un village riche abandonné dont il ne reste que ruines et désolations. On peut y voir le toit d’un manoir qui a plié sous le poids de la cloche de l’église effondrée. Il y règne un silence pesant parfois interrompu par les cris de souffrance des âmes égarés.",
-      "name": "Village dévasté",
+      "description": "Uma aldeia rica e abandonada da qual só restam ruínas e desolação. O telhado de uma casa senhorial pode ser visto a dobrar-se sob o peso do sino da igreja que ruiu. Um silêncio pesado reina aqui, ocasionalmente interrompido pelos gritos de sofrimento das almas perdidas.",
+      "name": "Aldeia devastada",
       "particle": "para o"
     },
     "1107": {
-      "description": "Personne ne s'est encore aventuré jusque là. Au loin, vous voyez une gigantesque silhouette se réfléchir sur un mur de glace.",
-      "name": "Nid glacé",
-      "particle": "vers le"
+      "description": "Ainda ninguém se aventurou tão longe. Ao longe, vê-se uma silhueta gigantesca reflectida numa parede de gelo.",
+      "name": "Ninho congelado",
+      "particle": "para o"
     },
     "12": {
       "description": "Uma vasta e vazia planície setentrional de pouco interesse.",
@@ -1026,7 +1026,7 @@
       "prefix": "de"
     },
     "crystalCavern": {
-      "name": "Caverne de cristal",
+      "name": "Gruta de cristal",
       "prefix": "do"
     },
     "de": {
@@ -1098,7 +1098,7 @@
       "prefix": "de"
     },
     "undergroundLake": {
-      "name": "Lac",
+      "name": "Lago",
       "prefix": "de"
     },
     "dragonsNest": {
@@ -1217,32 +1217,32 @@
       "description": "O Slime Mutante é um monstro que pode copiar outros monstros ou o seu adversário diretamente. É muito versátil e pode adaptar-se a qualquer situação."
     },
     "whiteWolf": {
-      "name": "Loup blanc",
-      "description": "Un prédateur féroce et agile. Ses griffes acérées pourraient sceller votre destin. Le froid et les sentiers sinueux lui offrent un grand avantage face aux aventuriers imprudents."
+      "name": "Lobo branco",
+      "description": "Um predador feroz e ágil. As suas garras afiadas podem selar o teu destino. O frio e os trilhos sinuosos dão-lhe uma grande vantagem sobre os aventureiros incautos."
     },
     "shinyElementary": {
-      "name": "Élémentaire brillant",
-      "description": "Un être né des cristaux de la caverne. Il n'hésitera pas à utiliser ses pouvoirs élémentaires pour vous faire valser à l'autre bout du chemin."
+      "name": "Ensino básico brilhante",
+      "description": "Um ser nascido dos cristais da gruta. Ele não hesitará em usar os seus poderes elementares para te mandar para o outro lado do caminho."
     },
     "crocodile": {
-      "name": "Crocodile",
-      "description": "Un grand crocodile terrifiant, à la recherche d'un aventurier pour en faire son festin."
+      "name": "Crocodilo",
+      "description": "Um crocodilo grande e assustador à procura de um aventureiro para se banquetear."
     },
     "yukiOnna": {
       "name": "Yuki-Onna",
-      "description": "Une femme esprit des neiges. Elle est très belle mais aussi très dangereuse. Elle peut geler ses proies d'un simple regard et les faire disparaître dans la neige."
+      "description": "Um espírito da neve feminino. É muito bonita, mas também muito perigosa. Consegue congelar as suas presas num relance e fazê-las desaparecer na neve."
     },
     "celestialGuardian": {
-      "name": "Gardien céleste",
-      "description": "Le gardien des portes sacrées. Empêcher les aventuriers de passer est son devoir, et il utilisera son marteau divin pour vous faire comprendre que vous n'êtes pas le bienvenu."
+      "name": "Guardião Celestial",
+      "description": "O guardião dos portões sagrados. O seu dever é impedir a passagem de aventureiros, e ele usará o seu martelo divino para vos fazer compreender que não são bem-vindos."
     },
     "maleIceDragon": {
-      "name": "Seigneur des glaces",
-      "description": "Un majestueux dragon aux écailles cristallines qui règne depuis les sommets glacés. Perché sur les pics les plus élevés, il surveille son territoire d'un œil vigilant. Son souffle glacial peut transformer un aventurier en statue de glace en quelques secondes, et ses serres acérées lui permettent de fondre sur ses proies depuis les hauteurs avec une précision mortelle."
+      "name": "Senhor do gelo",
+      "description": "Um dragão majestoso com escamas cristalinas que reina nos picos gelados. Empoleirado nos picos mais altos, vigia o seu território. O seu hálito gelado pode transformar um aventureiro numa estátua de gelo numa questão de segundos, e as suas garras afiadas permitem-lhe atacar a sua presa das alturas com uma precisão mortal."
     },
     "femaleIceDragon": {
-      "name": "Reine des glaces",
-      "description": "Une redoutable dragonne qui protège férocement son trésor et sa progéniture dans les profondeurs glacées de son antre. Plus agressive que son compagnon, elle n'hésite pas à déchaîner sa fureur contre quiconque ose s'approcher de son nid. Ses écailles scintillent comme des diamants et sa queue peut briser la glace la plus épaisse d'un seul coup."
+      "name": "Rainha do Gelo",
+      "description": "Uma dragonesa temível que protege ferozmente o seu tesouro e a sua prole nas profundezas geladas do seu covil. Mais agressiva do que a sua companheira, não hesita em libertar a sua fúria sobre qualquer um que se atreva a aproximar-se do seu ninho. As suas escamas brilham como diamantes e a sua cauda pode quebrar o gelo mais espesso com um único golpe."
     }
   },
   "objects": {
@@ -1794,41 +1794,41 @@
   },
   "pveMapsStory": {
     "1001": {
-      "forestTroll": "Vous vous enfoncez dans la Forêt de la pénombre, où les cendres volcaniques dansent dans l'air comme une neige grisâtre. La visibilité réduite vous oblige à avancer avec prudence entre les arbres centenaires aux troncs noircis. Soudain, un craquement sourd brise le silence inquiétant. Les branches se plient et se cassent sous un poids immense. À travers le voile de cendres, une silhouette massive émerge : un troll colossal, sa peau rugueuse maculée de suie volcanique. Ses yeux rougeoyants percent l'obscurité poussiéreuse tandis qu'il pousse un rugissement qui fait trembler les arbres alentour. Ce gardien primitif de la forêt n'apprécie visiblement pas votre intrusion dans son domaine...",
-      "slimyMutant": "Plus vous progressez dans la Forêt de la pénombre, plus l'atmosphère devient oppressante. Les cendres volcaniques semblent absorber tous les sons, créant un silence presque surnaturel. C'est alors que vous remarquez quelque chose d'étrange : votre propre ombre semble bouger indépendamment de vos mouvements. Vous vous retournez brusquement et découvrez avec horreur une masse gélatineuse et verdâtre qui ondule lentement vers vous. Mais le plus troublant, c'est qu'elle commence à prendre votre apparence, copiant vos traits, vos vêtements, même vos armes. Le Mutant Vaseux vous observe avec vos propres yeux, un sourire malveillant déformant ce qui devrait être votre visage. Ce mimétisme parfait rend le combat à venir d'autant plus déstabilisant..."
+      "forestTroll": "Entramos na Floresta do Crepúsculo, onde as cinzas vulcânicas dançam no ar como uma neve acinzentada. A fraca visibilidade obriga-nos a caminhar com cuidado entre as árvores centenárias com os troncos enegrecidos. De repente, um estalido abafado quebra o silêncio sinistro. Os ramos dobram-se e partem-se sob o seu imenso peso. Através do véu de cinzas, surge uma figura maciça: um troll colossal, com a pele áspera manchada de fuligem vulcânica. Os seus olhos brilhantes perfuram a escuridão poeirenta enquanto ele solta um rugido que faz estremecer as árvores circundantes. Este guardião primitivo da floresta ressente-se claramente da vossa intrusão no seu domínio...",
+      "slimyMutant": "Quanto mais se entra na Floresta do Crepúsculo, mais opressiva se torna a atmosfera. As cinzas vulcânicas parecem absorver todos os sons, criando um silêncio quase sobrenatural. Depois, reparas numa coisa estranha: a tua própria sombra parece mover-se independentemente dos teus movimentos. Vira-se bruscamente e descobre, para seu horror, uma massa gelatinosa e esverdeada que ondula lentamente na sua direção. Mas o mais perturbador é que ela começa a assumir a tua aparência, copiando as tuas feições, as tuas roupas e até as tuas armas. O Mutante de Lodo observa-te com os teus próprios olhos, um sorriso malévolo distorcendo o que deveria ser o teu rosto. Este mimetismo perfeito torna a batalha que se aproxima ainda mais desestabilizadora..."
     },
     "1002": {
-      "skeleton": "Alors que vous progressez sur le sentier, les ruines d’un ancien village apparaissent à l’horizon. À première vue, les lieux semblent paisibles malgré les toits effondrés. Vous avancez prudemment entre les maisons délabrées, scrutant les moindres recoins dans l’espoir de trouver un signe de vie. Soudain, au détour d’une ruelle, vous vous figez. Un craquement sec résonne sur les pavés. Devant vous se dresse un squelette au regard vide, armé jusqu'aux dents, semblant prêt à en découdre..."
+      "skeleton": "Ao longo do caminho, as ruínas de uma antiga aldeia surgem no horizonte. À primeira vista, o local parece pacífico, apesar dos telhados caídos. Caminha cautelosamente por entre as casas em ruínas, examinando todos os cantos e recantos na esperança de encontrar um sinal de vida. De repente, na curva de um beco, fica paralisado. Um estalido agudo ecoa nos paralelepípedos. Diante de si está um esqueleto com um olhar vazio, armado até aos dentes e pronto para a batalha..."
     },
     "1003": {
-      "spider": "Vous arrivez à l'entrée d'une mine abandonnée, le cadre en bois vieilli empêche les parois de s'effondrer. Vous entrez, nettoyant les nombreuses toiles au passage, et explorez les galeries. Plus vous avancez, plus de minuscules araignées se massent autour de vos pieds. Obligé de les piétiner, les cris d'effroi de ces petites créatures résonnent dans la caverne. Vous sentez le sol vibré, quelque chose de gros approchez à grande vitesse, ce n'est autre qu'une abominale araignée d'une taille immense, voyant les cadavres de ses enfants à vos pieds, celle-ci crie de rage et vous fonce dessus."
+      "spider": "Chegas à entrada de uma mina abandonada, a estrutura de madeira envelhecida impede que as paredes se desmoronem. Entra, limpando as muitas teias à medida que avança, e explora as galerias. Quanto mais avanças, mais pequenas aranhas se aglomeram à volta dos teus pés. Forçado a pisá-las, os gritos assustados destas pequenas criaturas ecoam pela caverna. Sentes o chão vibrar quando algo grande se aproxima a grande velocidade, nada mais nada menos do que uma aranha abominável de tamanho imenso. Ao ver os cadáveres dos seus filhos a teus pés, ela grita de raiva e ataca-te."
     },
     "1004": {
-      "rockGolem": "Alors que vous avancez péniblement sur le sentier escarpé, vous décidez de faire une pause. Le souffle court, vous vous laissez tomber sur un rocher pensant enfin pouvoir vous reposer après avoir combattu tous ces monstres. C'est alors que vous entendez un bruit semblable à celui d'un éboulement lointain. Vous vous levez précipitamment et sous vos yeux ébahi un immense golem de roche émerge du flanc de la montagne. Il semble lent mais sachant qu'il ne faut jamais sous-estimer son adversaire vous dégainez votre arme prêt à affronter cette nouvelle menace..."
+      "rockGolem": "Enquanto percorres o caminho íngreme, decides fazer uma pausa. Sem fôlego, deixas-te cair sobre uma rocha, pensando que podes finalmente descansar depois de teres lutado contra todos aqueles monstros. É então que ouves um barulho semelhante ao de um deslizamento de terras distante. Levantas-te e, perante os teus olhos espantados, um enorme golem de pedra emerge da encosta da montanha. Parece lento, mas sabendo que nunca deves subestimar o teu adversário, sacas da tua arma, pronto para enfrentar esta nova ameaça..."
     },
     "1005": {
-      "magmaTitan": "Rassemblant vos forces les plus profondes, vous escaladez courageusement le volcan. La chaleur du sol vous transperce, mais votre vaillance vous tient debout. L’air étouffant, chargé des remontées magmatiques, vous fait tourner la tête. À chaque inspiration, la nausée vous gagne. Vos blessures passées se réveillent, chaque pas est plus lourd que le précédent, mais vous avancez coûte que coûte. Alors que vous pensez toucher le bout de vos peines, le sol tremble. Le magma se fige, la lave s’écoule et ensemble ils prennent forme. Une entité s’élève. Un colosse se dresse devant vous. Le sang, brûlant comme ce volcan, pulse en vous. Vous vous préparez pour l’ultime bataille."
+      "magmaTitan": "Reunindo as tuas forças mais profundas, sobes corajosamente o vulcão. O calor do solo perfura-te, mas a tua coragem mantém-te de pé. O ar sufocante, carregado de magma ascendente, faz-te girar a cabeça. Cada vez que inspiras, sentes náuseas. As feridas do passado são reavivadas, cada passo é mais pesado do que o anterior, mas continuas a andar, custe o que custar. Quando pensas que chegaste ao fim da tua corda, o chão treme. O magma congela, a lava flui e juntos tomam forma. Uma entidade ergue-se. Um colosso está diante de ti. O sangue, ardente como o vulcão, pulsa dentro de ti. Preparas-te para a derradeira batalha."
     },
     "1101": {
-      "whiteWolf": "Dans cette toundra impitoyable, chaque pas que vous faites s'enfonce profondément dans la neige fraîche. Le vent glacial fouette votre visage tandis que la tempête perpétuelle réduit votre visibilité à quelques mètres. Vos membres s'engourdissent progressivement malgré vos efforts pour maintenir votre circulation sanguine. Soudain, vous distinguez une forme sombre qui se déplace silencieusement à travers le rideau de neige. Vous vous figez, tous vos sens en alerte. Un grondement sourd perce le hurlement du vent. Émergent alors de la tempête deux yeux d'un bleu glacial, brillant d'une intelligence sauvage. Un loup blanc, majestueux et imposant, se dresse devant vous. Sa fourrure immaculée se confond parfaitement avec son environnement, et ses crocs acérés luisent dans la pénombre. Ce prédateur arctique vous juge, évaluant si vous êtes une proie ou une menace. Son regard perçant semble lire dans votre âme tandis qu'il se prépare à bondir..."
+      "whiteWolf": "Nesta tundra implacável, cada passo que damos afunda-se profundamente na neve fresca. O vento gelado açoita-nos o rosto, enquanto a tempestade perpétua reduz a nossa visibilidade a alguns metros. Os seus membros ficam gradualmente dormentes, apesar dos seus esforços para manter a circulação. De repente, vê uma forma escura a mover-se silenciosamente por entre a cortina de neve. Fica paralisado, com todos os seus sentidos alerta. Um rugido surdo atravessa o vento uivante. Dois olhos azuis gelados emergem da tempestade, brilhando com uma inteligência selvagem. Um lobo branco, majestoso e imponente, surge diante de ti. O seu pelo imaculado mistura-se perfeitamente com o ambiente, e as suas presas afiadas brilham à meia-luz. Este predador do Ártico está a julgar-te, a avaliar se és uma presa ou uma ameaça. O seu olhar penetrante parece ler a tua alma enquanto se prepara para atacar..."
     },
     "1102": {
-      "shinyElementary": "Vous poursuivez votre quête d'aventure dans la caverne de cristal, un chemin dans le flanc de la montagne qui permet d'accéder à d'autres paysages. Vous constatez de par les magnifiques gemmes sortant des murs que l'endroit porte bien son nom. Vos pas retentissent contre les parois vous entourant, leur son revenant vers vous tout comme votre image qui se reflètent contre les milliers de pierres précieuses. Vous jouez avec l'écho tout en admirant le lieu, mais tout d'un coup, un son qui ne semble pas venir de vous arrive jusqu'à vos tympans. Des cristaux semblent se taper entre eux, de plus en plus fort. Soudain, un amas de ces pierres prend une forme humanoïde deux fois plus grande que vous. La lumière qui traverse cette entité se décompose en un magnifique arc-en-ciel, mais au vu de l'agressivité que la créature a envers vous, vous estimez qu'il va être nécessaire de mettre fin à cette belle illumination."
+      "shinyElementary": "Continuas a tua busca de aventura na Gruta de Cristal, um caminho na encosta da montanha que conduz a outras paisagens. Pelas magníficas pedras preciosas que sobressaem das paredes, podes ver que o local faz jus ao seu nome. Os teus passos ecoam nas paredes que te rodeiam, o seu som chega até ti tal como a tua imagem se reflecte nos milhares de pedras preciosas. Brinca com o eco enquanto admira o local, mas de repente um som que não parece vir de si chega aos seus tímpanos. Os cristais parecem estar a bater uns contra os outros, cada vez mais alto. De repente, um aglomerado destas pedras assume uma forma humanoide com o dobro do teu tamanho. A luz que atravessa esta entidade desfaz-se num magnífico arco-íris, mas tendo em conta a agressividade da criatura para contigo, achas que vai ser necessário pôr fim a esta bela iluminação."
     },
     "1103": {
       "celestialGuardian": "Vous sortez de la caverne de cristal et vous vous retrouvez ébloui par le soleil qui de reflète sur la neige qui vous entoure. Après plusieurs secondes pour vous habituer à la luminosité, vous apercevez des centaines de marches qui mènent à deux gigantesques portes entourées de deux statues tout aussi grandes. Vous ne comptez pas vous arrêter en si bon chemin, donc vous commencez à gravir difficilement les marches les unes après les autres. Vous faites attention à ne pas déraper sur les pierres rendues glissantes par la glace qui s'est formée dessus. Après plusieurs minutes de marche intense, vous arrivez aux pieds de la construction. Les inscriptions sur les portes ne vous sont pas familières: en effet, elles sont rédigées dans une écriture qui vous est inconnue. En tout cas, les portes sont sur votre chemin, et il vous faut les franchir pour avancer. Vous tentez donc de poser votre paume sur la pierre froide, et soudain, un mécanisme s'active et les portes commencent à grincer. Après plusieurs secondes, les portes sont enfin totalement ouvertes, mais le mécanisme ne s'arrête pourtant pas de faire du bruit. C'est alors qu'en vous retournant sur votre droite, vous remarquez que la statue commence à bouger et attraper un marteau qui est à son échelle..."
     },
     "1104": {
-      "maleIceDragon": "L'ascension du pic enneigé vous a mené à bout de forces. À cette altitude vertigineuse, chaque respiration est un combat contre l'air raréfié qui brûle vos poumons. Vos pas craquent sur la neige durcie par des vents violents qui menacent de vous faire perdre l'équilibre à chaque instant. Alors que vous pensiez avoir atteint le sommet, le sol tremble sous vos pieds. Un rugissement titanesque déchire l'air glacé, si puissant qu'il provoque une avalanche au loin. Levant les yeux vers les nuages bas, vous voyez une ombre gigantesque planer au-dessus de vous. Soudain, elle plonge vers la terre dans un fracas assourdissant. Un dragon de glace d'une taille colossale atterrit devant vous, ses écailles cristallines scintillant comme mille diamants. Son souffle transforme instantanément l'air en brouillard glacé tandis que ses yeux bleu arctique vous fixent avec une intelligence millénaire. Ce seigneur des cimes a décidé que votre intrusion dans son domaine méritait une réponse... définitive."
+      "maleIceDragon": "A subida ao pico coberto de neve deixou-o exausto. A esta altitude vertiginosa, cada respiração é uma batalha contra o ar rarefeito que queima os seus pulmões. Os teus passos rangem na neve endurecida por ventos violentos que ameaçam desequilibrar-te a qualquer momento. Quando pensamos que chegámos ao cume, o chão treme debaixo dos nossos pés. Um rugido titânico rasga o ar gelado, tão poderoso que provoca uma avalanche ao longe. Ao olhar para as nuvens baixas, vê uma sombra gigantesca a pairar sobre si. De repente, cai na terra com um estrondo ensurdecedor. Um colossal dragão de gelo aterra à tua frente, com as suas escamas cristalinas a brilhar como mil diamantes. O seu hálito transforma instantaneamente o ar em névoa gelada, enquanto os seus olhos azuis árcticos olham para ti com uma inteligência milenar. Este senhor dos picos decidiu que a tua intrusão no seu domínio merece uma... resposta definitiva."
     },
     "1105": {
-      "crocodile": "Vous vous approchez prudemment des rives du lac souterrain, intrigué par ce mystère géologique. Comment ces eaux peuvent-elles rester liquides dans un tel froid ? La température ambiante devrait normalement transformer ce lac en bloc de glace solide. Vous vous agenouillez pour examiner l'eau sombre, tentant de percer le secret de sa profondeur abyssale. C'est alors qu'une série de bulles remontent lentement à la surface, troublant le miroir parfait du lac. Vous reculez instinctivement quand soudain, l'eau se met à bouillonner violemment. Une gueule monstrueuse surgit des profondeurs, armée de crocs préhistoriques. Un crocodile géant, adapté au froid extrême par des milliers d'années d'évolution, émerge de son antre aquatique. Sa peau épaisse et écailleuse porte les marques d'innombrables combats. Ses yeux jaunes, froids comme la glace qui l'entoure, vous fixent avec la patience implacable d'un prédateur parfait. Il a survécu dans ces eaux mystérieuses en dévorant tout ce qui osait s'approcher de son territoire..."
+      "crocodile": "Aproximamo-nos cautelosamente das margens do lago subterrâneo, intrigados com este mistério geológico. Como é que estas águas se mantêm líquidas com temperaturas tão baixas? A temperatura ambiente normalmente transformaria este lago num bloco sólido de gelo. Ajoelha-se para examinar a água escura, tentando desvendar o segredo da sua profundidade abismal. Nesse momento, uma série de bolhas sobe lentamente à superfície, perturbando o espelho perfeito do lago. Recuamos instintivamente quando, de repente, a água começa a borbulhar violentamente. Uma bocarra monstruosa emerge das profundezas, armada com presas pré-históricas. Um crocodilo gigante, adaptado ao frio extremo por milhares de anos de evolução, emerge do seu covil aquático. A sua pele espessa e escamosa tem as marcas de inúmeras batalhas. Os seus olhos amarelos, tão frios como o gelo que o rodeia, fitam-nos com a paciência implacável de um predador perfeito. Sobreviveu nestas águas misteriosas devorando tudo o que se atreve a aproximar-se do seu território..."
     },
     "1106": {
-      "yukiOnna": "Vous pénétrez dans les ruines du village dévasté, où le silence oppressant n'est brisé que par le sifflement lugubre du vent à travers les structures effondrées. Chaque pas résonne étrangement dans cette désolation, comme si les pierres elles-mêmes gardaient la mémoire des tragédies passées. Vous explorez prudemment les décombres, tentant d'imaginer la prospérité qui régnait autrefois en ces lieux. Soudain, une mélodie cristalline flotte dans l'air glacé, si belle qu'elle vous attire irrésistiblement vers sa source. Au détour d'une maison écroulée, vous apercevez une silhouette éthérée d'une beauté saisissante. Une femme en kimono blanc immaculé semble glisser sur la neige sans laisser de traces. Ses longs cheveux noirs flottent dans une brise invisible tandis que sa peau d'albâtre rayonne d'une lueur spectrale. Mais quand elle tourne son visage vers vous, vous réalisez avec horreur que ses yeux sont deux puits de néant glacé. La Yuki-Onna, esprit vengeur des montagnes enneigées, vous dévoile un rictus qui promet une mort aussi belle que terrible."
+      "yukiOnna": "Entramos nas ruínas da aldeia devastada, onde o silêncio opressivo é quebrado apenas pelo assobio lúgubre do vento através das estruturas desmoronadas. Cada passo ecoa estranhamente nesta desolação, como se as próprias pedras guardassem a memória de tragédias passadas. Explora cautelosamente os escombros, tentando imaginar a prosperidade que outrora reinou aqui. De repente, uma melodia cristalina flutua no ar gelado, tão bela que o atrai irresistivelmente para a sua fonte. Ao virar a esquina de uma casa desmoronada, vislumbra uma figura etérea de uma beleza surpreendente. Uma mulher vestida com um quimono branco imaculado parece deslizar sobre a neve sem deixar rasto. Os seus longos cabelos negros flutuam numa brisa invisível, enquanto a sua pele de alabastro brilha com uma luminosidade espetral. Mas quando ela vira o rosto para ti, apercebes-te com horror que os seus olhos são dois feixes de um nada gelado. A Yuki-Onna, espírito vingativo das montanhas nevadas, revela uma careta que promete uma morte tão bela quanto terrível."
     },
     "1107": {
-      "femaleIceDragon": "Vous avancez dans cette région inexplorée, guidé par une curiosité mêlée d'appréhension. Le mur de glace qui se dresse devant vous reflète une silhouette si imposante qu'elle défie l'imagination. Plus vous approchez dans la pénombre glacée, plus vous réalisez l'ampleur de la créature cachée derrière cette barrière. Soudain, des fissures apparaissent dans la glace, s'étendant comme des toiles d'araignée. Un grondement sourd fait vibrer les parois rocheuses. Le mur explose dans un fracas apocalyptique, projetant des blocs de glace massifs. À travers ce rideau de cristaux brisés émerge la plus majestueuse des créatures : une dragonne de glace aux dimensions pharaoniques. Sa présence semble imposante, ses ailes repliées touchant presque les voûtes de pierre. Elle possède une beauté terrifiante, ses écailles irisées captant la faible lumière en arcs-en-ciel glacés. Ses yeux, d'un bleu profond comme les abysses, brillent d'une sagesse ancienne et d'une fureur maternelle. Derrière elle, vous apercevez un œuf gigantesque aux reflets nacrés, pulsant d'une lueur mystérieuse. Vous venez de pénétrer dans sa nurserie, et aucune intrusion ne restera impunie dans le sanctuaire de la Reine des Glaces..."
+      "femaleIceDragon": "Percorremos esta região inexplorada, guiados por uma curiosidade misturada com apreensão. A parede de gelo diante de ti reflecte uma figura tão imponente que desafia a imaginação. Quanto mais nos aproximamos na escuridão gelada, mais nos apercebemos da dimensão da criatura que se esconde por detrás desta barreira. De repente, surgem fendas no gelo, que se espalham como teias de aranha. Um rugido surdo faz vibrar as paredes rochosas. A parede explode com um estrondo apocalítico, atirando para o ar enormes blocos de gelo. Através desta cortina de cristais estilhaçados emerge a mais majestosa das criaturas: um dragão de gelo de proporções faraónicas. A sua presença parece imponente, as suas asas dobradas quase tocam as abóbadas de pedra. Tem uma beleza aterradora, as suas escamas iridescentes captam a luz ténue em arco-íris gelados. Os seus olhos, de um azul profundo como o abismo, brilham com sabedoria antiga e fúria maternal. Atrás dela, podes ver um ovo gigantesco com um brilho perolado, pulsando com um brilho misterioso. Acabaste de entrar no seu berçário, e nenhum intruso ficará impune no santuário da Rainha do Gelo..."
     }
   }
 }
