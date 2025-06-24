@@ -2328,12 +2328,12 @@
         },
         "text": "Aceita a sua oferta."
       },
-      "comrpomise": {
+      "compromise": {
         "outcomes": {
-          "0": "Ela parece desapontada, mas oferece-lhe uma rosa vermelha como presente para a princesa. Partem de novo, tão desiludidos como ela, por terem recebido apenas uma pobre flor.",
-          "1": "Em vez de uma bênção, pergunta-lhe se ela conhece algum sítio na floresta onde possa descansar um pouco. Ela leva-te então para casa dela, onde te serve boa comida e vinho. O vinho é incrivelmente agradável e acabas por beber a garrafa toda, arrastando-te depois para a cama. Enquanto dormes, tens um pesadelo bastante peculiar: Donia é uma mulher velha e encurvada, o arquétipo da bruxa, e quer matar-te antes de te cozer no seu forno. A verdadeira Donia deixa-o a dormir e segue o seu caminho."
+          "0": "Elle semble déçue, mais vous offre une rose rouge, en tant que cadeau pour la princesse. Vous reprenez chemin, tout aussi déçu qu'elle, n'ayant reçu qu'une pauvre fleur.",
+          "1": "Plutôt qu'une bénédiction vous lui demandez si elle connaît un endroit en cette forêt où vous pourriez vous reposer un moment. Elle vous amène alors à sa maison, où vous recevez de la bonne nourriture ainsi que du vin. Ce dernier est incroyablement agréable et vous finissez la bouteille entière, vous traînant après cela jusqu'à un lit. Alors que vous dormez, vous faites un cauchemar assez particulier : Donia y est une vieille femme voûtée, archétype de la sorcière, et elle veut vous tuer avant de vous cuire en son four. La véritable Donia vous laisse ainsi endormi et continue sa route."
         },
-        "text": "Encontrar um compromisso."
+        "text": "Trouver un compromis."
       },
       "deny": {
         "outcomes": {
