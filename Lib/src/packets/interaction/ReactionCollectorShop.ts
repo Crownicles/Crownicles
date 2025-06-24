@@ -72,7 +72,7 @@ export class ReactionCollectorShopData extends ReactionCollectorData {
 
 	currency!: ShopCurrency;
 
-	additionnalShopData?: AdditionnalShopData;
+	additionalShopData?: additionalShopData;
 }
 
 export class ReactionCollectorShopItemReaction extends ReactionCollectorReaction {
@@ -89,7 +89,7 @@ export class ReactionCollectorShopCloseReaction extends ReactionCollectorReactio
 
 }
 
-export type AdditionnalShopData = {
+export type additionalShopData = {
 	remainingPotions?: number;
 	dailyPotion?: ItemWithDetails;
 	gemToMoneyRatio?: number;
@@ -102,20 +102,20 @@ export class ReactionCollectorShop extends ReactionCollector {
 
 	private readonly availableCurrency!: number;
 
-	private readonly additionnalShopData!: AdditionnalShopData;
+	private readonly additionalShopData!: additionalShopData;
 
 	constructor(
 		shopCategories: ShopCategory[],
 		availableCurrency: number,
-		additionnalShopData: AdditionnalShopData & {
+		additionalShopData: additionalShopData & {
 			currency?: ShopCurrency;
 		} = {}
 	) {
 		super();
 		this.shopCategories = shopCategories;
 		this.availableCurrency = availableCurrency;
-		this.currency = additionnalShopData.currency ?? ShopCurrency.MONEY;
-		this.additionnalShopData = additionnalShopData;
+		this.currency = additionalShopData.currency ?? ShopCurrency.MONEY;
+		this.additionalShopData = additionalShopData;
 	}
 
 	creationPacket(id: string, endTime: number): ReactionCollectorCreationPacket {
@@ -142,7 +142,7 @@ export class ReactionCollectorShop extends ReactionCollector {
 			data: this.buildData(ReactionCollectorShopData, {
 				availableCurrency: this.availableCurrency,
 				currency: this.currency,
-				additionnalShopData: this.additionnalShopData
+				additionalShopData: this.additionalShopData
 			})
 		};
 	}

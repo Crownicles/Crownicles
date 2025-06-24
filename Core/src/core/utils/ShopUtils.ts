@@ -1,5 +1,5 @@
 import {
-	AdditionnalShopData,
+	additionalShopData,
 	CommandShopClosed,
 	CommandShopNotEnoughCurrency,
 	ReactionCollectorShop,
@@ -25,7 +25,7 @@ import PlayerMissionsInfo, { PlayerMissionsInfos } from "../database/game/models
 export type ShopInformations = {
 	shopCategories: ShopCategory[];
 	player: Player;
-	additionnalShopData?: AdditionnalShopData & { currency?: ShopCurrency };
+	additionalShopData?: additionalShopData & { currency?: ShopCurrency };
 	logger: (keycloakId: string, shopItemName: ShopItemType, amount?: number) => Promise<void>;
 };
 
@@ -36,14 +36,14 @@ export class ShopUtils {
 		{
 			shopCategories,
 			player,
-			additionnalShopData = {},
+			additionalShopData = {},
 			logger
 		}: ShopInformations
 	): Promise<void> {
-		additionnalShopData.currency ??= ShopCurrency.MONEY;
-		const interestingPlayerInfo = additionnalShopData.currency === ShopCurrency.MONEY ? player : await PlayerMissionsInfos.getOfPlayer(player.id);
+		additionalShopData.currency ??= ShopCurrency.MONEY;
+		const interestingPlayerInfo = additionalShopData.currency === ShopCurrency.MONEY ? player : await PlayerMissionsInfos.getOfPlayer(player.id);
 		const availableCurrency = interestingPlayerInfo instanceof Player ? interestingPlayerInfo.money : interestingPlayerInfo.gems;
-		const collectorShop = new ReactionCollectorShop(shopCategories, availableCurrency, additionnalShopData);
+		const collectorShop = new ReactionCollectorShop(shopCategories, availableCurrency, additionalShopData);
 		const endCallback: EndCallback = async (collector, response) => {
 			const reaction = collector.getFirstReaction();
 
@@ -62,7 +62,7 @@ export class ShopUtils {
 				.find(item => item.id === reactionInstance.shopItemId).buyCallback(response, player.id, context, reactionInstance.amount);
 			if (buyResult) {
 				// Get fresh PlayerMissionsInfo after buyCallback in case missions updated gem count
-				const currentPlayerInfo = additionnalShopData.currency === ShopCurrency.MONEY ? player : await PlayerMissionsInfos.getOfPlayer(player.id);
+				const currentPlayerInfo = additionalShopData.currency === ShopCurrency.MONEY ? player : await PlayerMissionsInfos.getOfPlayer(player.id);
 				await this.manageCurrencySpending(currentPlayerInfo, reactionInstance, response);
 				logger(player.keycloakId, reactionInstance.shopItemId, reactionInstance.amount).then();
 			}

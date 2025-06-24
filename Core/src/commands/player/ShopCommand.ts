@@ -341,7 +341,7 @@ export default class ShopCommand {
 		await ShopUtils.createAndSendShopCollector(context, response, {
 			shopCategories,
 			player,
-			additionnalShopData: {
+			additionalShopData: {
 				remainingPotions: ShopConstants.MAX_DAILY_POTION_BUYOUTS - await LogsReadRequests.getAmountOfDailyPotionsBoughtByPlayer(player.keycloakId),
 				dailyPotion: toItemWithDetails(potion)
 			},

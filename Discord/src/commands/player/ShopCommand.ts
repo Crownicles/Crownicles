@@ -336,7 +336,7 @@ async function manageBuyoutConfirmation(packet: ReactionCollectorCreationPacket,
 				}\n${EmoteUtils.translateEmojiToDiscord(CrowniclesIcons.collectors.warning)} ${
 					i18n.t(`commands:shop.shopItems.${shopItemTypeToId(shopItemId)}.info`, {
 						lng,
-						kingsMoneyAmount: data.additionnalShopData?.gemToMoneyRatio,
+						kingsMoneyAmount: data.additionalShopData?.gemToMoneyRatio,
 						thousandPoints: Constants.MISSION_SHOP.THOUSAND_POINTS
 					})
 				}`)
@@ -386,10 +386,10 @@ type ShopItemNames = {
 function getShopItemNames(data: ReactionCollectorShopData, shopItemId: ShopItemType, lng: Language): ShopItemNames {
 	if (shopItemId === ShopItemType.DAILY_POTION) {
 		return {
-			normal: DisplayUtils.getItemDisplayWithStats(data.additionnalShopData!.dailyPotion!, lng),
+			normal: DisplayUtils.getItemDisplayWithStats(data.additionalShopData!.dailyPotion!, lng),
 			short: DisplayUtils.getItemDisplay({
-				id: data.additionnalShopData!.dailyPotion!.id,
-				category: data.additionnalShopData!.dailyPotion!.category
+				id: data.additionalShopData!.dailyPotion!.id,
+				category: data.additionalShopData!.dailyPotion!.category
 			}, lng)
 		};
 	}
@@ -409,7 +409,7 @@ function getShopItemDisplay(data: ReactionCollectorShopData, reaction: ReactionC
 			name: shopItemNames.normal,
 			price: reaction.price,
 			currency: data.currency,
-			remainingPotions: data.additionnalShopData!.remainingPotions
+			remainingPotions: data.additionalShopData!.remainingPotions
 		})}\n`;
 	}
 
@@ -453,7 +453,7 @@ export async function shopCollector(context: PacketContext, packet: ReactionColl
 
 		shopText += `${`**${i18n.t(`commands:shop.shopCategories.${categoryId}`, {
 			lng,
-			count: data.additionnalShopData!.remainingPotions
+			count: data.additionalShopData!.remainingPotions
 		})}** :\n`
 			.concat(...categoryItemsIds.map(id => {
 				const reaction = packet.reactions.find(reaction => (reaction.data as ReactionCollectorShopItemReaction).shopItemId === id)!.data as ReactionCollectorShopItemReaction;
