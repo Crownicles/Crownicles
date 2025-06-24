@@ -241,18 +241,8 @@ async function handlePetTransferCollect(
 	packet: ReactionCollectorCreationPacket,
 	context: PacketContext,
 	reactions: {
-		depositReaction?: {
-			reaction: {
-				type: string; data: ReactionCollectorReaction;
-			};
-			index: number;
-		};
-		refuseReaction?: {
-			reaction: {
-				type: string; data: ReactionCollectorReaction;
-			};
-			index: number;
-		};
+		depositReaction?: ReactionMap;
+		refuseReaction?: ReactionMap;
 	},
 	discord: {
 		collectedInteraction: MessageComponentInteraction;
@@ -260,8 +250,14 @@ async function handlePetTransferCollect(
 		switchComponents: ActionRowBuilder<MessageActionRowComponentBuilder>[];
 		withdrawComponents: ActionRowBuilder<MessageActionRowComponentBuilder>[];
 		mainMenuComponents: ActionRowBuilder<ButtonBuilder>[];
-	}
-): Promise<boolean> {
+	},
+	currentComponents: ActionRowBuilder<MessageActionRowComponentBuilder>[]
+): Promise<{
+		inMainMenu: boolean;
+		currentComponents: ActionRowBuilder<MessageActionRowComponentBuilder>[];
+	}> {
+	let updatedComponents: ActionRowBuilder<MessageActionRowComponentBuilder>[] = currentComponents;
+
 	if (inMainMenu) {
 		const customId = discord.collectedInteraction.customId;
 
@@ -276,20 +272,25 @@ async function handlePetTransferCollect(
 					reactions.depositReaction!.index
 				);
 				break;
+
 			case switchCustomId:
 				await discord.collectedInteraction.update({
 					embeds: [discord.mainMenuEmbed],
 					components: discord.switchComponents
 				});
 				inMainMenu = false;
+				updatedComponents = discord.switchComponents;
 				break;
+
 			case withdrawCustomId:
 				await discord.collectedInteraction.update({
 					embeds: [discord.mainMenuEmbed],
 					components: discord.withdrawComponents
 				});
 				inMainMenu = false;
+				updatedComponents = discord.withdrawComponents;
 				break;
+
 			case refuseCustomId:
 				await discord.collectedInteraction.deferReply();
 				DiscordCollectorUtils.sendReaction(
@@ -300,6 +301,7 @@ async function handlePetTransferCollect(
 					reactions.refuseReaction!.index
 				);
 				break;
+
 			default:
 				break;
 		}
@@ -310,6 +312,7 @@ async function handlePetTransferCollect(
 			components: discord.mainMenuComponents
 		});
 		inMainMenu = true;
+		updatedComponents = discord.mainMenuComponents;
 	}
 	else {
 		await discord.collectedInteraction.deferReply();
@@ -320,10 +323,16 @@ async function handlePetTransferCollect(
 			discord.collectedInteraction,
 			parseInt((discord.collectedInteraction as StringSelectMenuInteraction).values[0], 10)
 		);
+
+		updatedComponents =
+			discord.collectedInteraction.customId === "switchSelect"
+				? discord.switchComponents
+				: discord.withdrawComponents;
 	}
 
-	return inMainMenu;
+	return { inMainMenu, currentComponents: updatedComponents };
 }
+
 
 export async function handlePetTransferReactionCollector(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction);
@@ -373,6 +382,7 @@ export async function handlePetTransferReactionCollector(context: PacketContext,
 		components: mainMenuComponents
 	}) as Message;
 
+	let currentComponents: ActionRowBuilder<MessageActionRowComponentBuilder>[] = mainMenuComponents;
 	let inMainMenu = true;
 
 	const msgCollector = msg.createMessageComponentCollector({
@@ -385,7 +395,7 @@ export async function handlePetTransferReactionCollector(context: PacketContext,
 			return;
 		}
 
-		inMainMenu = await handlePetTransferCollect(
+		const result = await handlePetTransferCollect(
 			inMainMenu,
 			packet,
 			context,
@@ -399,24 +409,26 @@ export async function handlePetTransferReactionCollector(context: PacketContext,
 				switchComponents,
 				withdrawComponents,
 				mainMenuComponents
-			}
+			},
+			currentComponents
 		);
+
+		inMainMenu = result.inMainMenu;
+		currentComponents = result.currentComponents;
 	});
+
 
 	msgCollector.on("end", () => {
 		// Disable buttons instead of removing them
-		const disabledComponents = mainMenuComponents.map(row => {
-			const newRow = new ActionRowBuilder<ButtonBuilder>();
+		currentComponents.forEach(row => {
 			row.components.forEach(component => {
-				const button = ButtonBuilder.from(component).setDisabled(true);
-				newRow.addComponents(button);
+				component.setDisabled(true);
 			});
-			return newRow;
 		});
 
 		msg.edit({
 			embeds: [mainMenuEmbed],
-			components: disabledComponents
+			components: currentComponents
 		});
 	});
 

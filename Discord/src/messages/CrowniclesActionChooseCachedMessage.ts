@@ -71,7 +71,7 @@ export class CrowniclesActionChooseCachedMessage extends CrowniclesCachedMessage
 				return;
 			}
 
-			rows.map(row => {
+			rows.forEach(row => {
 				row.components.forEach(component => {
 					component.setDisabled(true);
 				});

@@ -128,7 +128,7 @@ export async function createBigEventCollector(context: PacketContext, packet: Re
 
 	buttonCollector.on("end", async () => {
 		// Disable buttons instead of removing them
-		rows.map(row => {
+		rows.forEach(row => {
 			row.components.forEach(component => {
 				component.setDisabled(true);
 			});
