@@ -413,7 +413,7 @@ export class CommandsManager {
 		});
 
 		collector.on("end", async () => {
-			row.map(buttonRow => {
+			row.forEach(buttonRow => {
 				buttonRow.components.forEach(component => {
 					component.setDisabled(true);
 				});

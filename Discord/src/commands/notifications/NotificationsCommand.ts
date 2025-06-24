@@ -132,7 +132,7 @@ async function mainPage(interaction: CrowniclesInteraction | StringSelectMenuInt
 		if (reason !== forceStopReason) {
 			row.components.forEach(component => {
 				component.setDisabled(true);
-				});
+			});
 
 			await msg.edit({
 				components: [row]

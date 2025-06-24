@@ -365,7 +365,7 @@ export class DiscordCollectorUtils {
 		});
 
 		buttonCollector.on("end", async () => {
-			rows.map(row => {
+			rows.forEach(row => {
 				row.components.forEach(component => {
 					component.setDisabled(true);
 				});

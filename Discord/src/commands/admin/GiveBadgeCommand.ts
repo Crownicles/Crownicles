@@ -109,7 +109,7 @@ async function handleGetPlayerInfoResponse(
 
 			selectCollector.stop();
 
-			rows.map(row => {
+			rows.forEach(row => {
 				row.components.forEach(component => {
 					component.setDisabled(true);
 				});
@@ -131,7 +131,7 @@ async function handleGetPlayerInfoResponse(
 		});
 
 		selectCollector.on("end", async () => {
-			rows.map(row => {
+			rows.forEach(row => {
 				row.components.forEach(component => {
 					component.setDisabled(true);
 				});
