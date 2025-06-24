@@ -110,11 +110,10 @@ export class ShopUtils {
 				reason: NumberChangeReason.SHOP,
 				response
 			});
-			await player.save();
 		}
 		else {
 			await player.spendGems(reactionInstance.price, response, NumberChangeReason.MISSION_SHOP);
-			await player.save();
 		}
+		await player.save();
 	}
 }
