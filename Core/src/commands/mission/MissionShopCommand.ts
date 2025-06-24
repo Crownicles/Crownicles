@@ -298,7 +298,7 @@ export default class MissionShopCommand {
 			shopCategories,
 			player,
 			logger: crowniclesInstance.logsDatabase.logMissionShopBuyout,
-			additionnalShopData: {
+			additionalShopData: {
 				currency: ShopCurrency.GEM,
 				gemToMoneyRatio: calculateGemsToMoneyRatio()
 			}
