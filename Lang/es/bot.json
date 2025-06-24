@@ -26,6 +26,12 @@
   "notificationsNoChannelAccess": "{emote:messages.refuse} Parece que el bot ya no tiene acceso a tu sala de notificaciones. Ahora las notificaciones se enviarán como mensajes privados. Para cambiar el modo de notificación, ejecuta el comando {command:notifications}.",
   "notificationReachDestination": "{{destination}}¡Has llegado a ** ** !",
   "notificationGuildDaily": "{{pseudo}}\n\n{{rewards}}** ** ha cobrado la bonificación diaria de su gremio:",
+  "notificationGuildKick": "**{{pseudo}}** vous a exclu de la guilde `{{guildName}}`.",
+  "notificationGuildStatusChange": {
+    "becomeElder": "Vous avez été promu en tant qu'ainé de la guilde `{{guildName}}`.",
+    "becomeMember": "Vous avez été rétrogadé du poste d'ainé de la guilde `{{guildName}}`.",
+    "becomeChief": "Vous êtes devenu le chef de la guilde `{{guildName}}`."
+  },
   "supportMessage": "{{langFlag}} Si necesitas ayuda, selecciona tu idioma con los botones de abajo. Si no la necesitas, ignora este mensaje.\n{emote:collectors.warning} **¡Todos los mensajes enviados aquí pueden ser leídos por una persona!**\n",
   "commandDisabledInDM": "{{langFlag}} Hola, los comandos están deshabilitados en los mensajes privados. ¡Ve a un servidor para jugar!\nSi necesitas ayuda, haz clic en el botón correspondiente a tu idioma a continuación.\n"
 }
