@@ -224,7 +224,7 @@ async function chooseEnabled(buttonInteraction: ButtonInteraction, notifications
 
 		if (reason !== forceStopReason) {
 			// Disable menu instead of removing components
-			menu.map(row => {
+			menu.forEach(row => {
 				row.components.forEach(component => {
 					component.setDisabled(true);
 				});
@@ -289,7 +289,7 @@ async function chooseSendType(buttonInteraction: ButtonInteraction, notification
 
 		if (reason !== forceStopReason) {
 			// Disable menu instead of removing components
-			menu.map(row => {
+			menu.forEach(row => {
 				row.components.forEach(component => {
 					component.setDisabled(true);
 				});
