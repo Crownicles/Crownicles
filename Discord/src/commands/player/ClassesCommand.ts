@@ -135,15 +135,13 @@ export async function handleChangeClassReactionCollector(context: PacketContext,
 
 		await selectMenuInteraction.deferReply();
 
-		const disabledRow = new ActionRowBuilder<StringSelectMenuBuilder>();
 		mainEmbedRow.components.forEach(component => {
-			const selectMenu = StringSelectMenuBuilder.from(component).setDisabled(true);
-			disabledRow.addComponents(selectMenu);
+			component.setDisabled(true);
 		});
 
 		await msg.edit({
 			embeds: [mainEmbed],
-			components: [disabledRow]
+			components: [mainEmbedRow]
 		});
 
 		const selectedOption = selectMenuInteraction.values[0];

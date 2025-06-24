@@ -413,17 +413,14 @@ export class CommandsManager {
 		});
 
 		collector.on("end", async () => {
-			const disabledRows = row.map(buttonRow => {
-				const newRow = new ActionRowBuilder<ButtonBuilder>();
+			row.map(buttonRow => {
 				buttonRow.components.forEach(component => {
-					const button = ButtonBuilder.from(component).setDisabled(true);
-					newRow.addComponents(button);
+					component.setDisabled(true);
 				});
-				return newRow;
 			});
 
 			await msg.edit({
-				components: disabledRows
+				components: row
 			});
 		});
 	}

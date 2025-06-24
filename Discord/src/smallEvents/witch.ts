@@ -85,14 +85,12 @@ export async function witchCollector(context: PacketContext, packet: ReactionCol
 
 	buttonCollector.on("end", async () => {
 		// Disable buttons instead of removing them
-		const disabledRow = new ActionRowBuilder<ButtonBuilder>();
 		row.components.forEach(component => {
-			const button = ButtonBuilder.from(component).setDisabled(true);
-			disabledRow.addComponents(button);
+			component.setDisabled(true);
 		});
 
 		await msg.edit({
-			components: [disabledRow]
+			components: [row]
 		});
 	});
 

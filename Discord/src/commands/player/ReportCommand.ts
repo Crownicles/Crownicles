@@ -128,17 +128,14 @@ export async function createBigEventCollector(context: PacketContext, packet: Re
 
 	buttonCollector.on("end", async () => {
 		// Disable buttons instead of removing them
-		const disabledRows = rows.map(row => {
-			const newRow = new ActionRowBuilder<ButtonBuilder>();
+		rows.map(row => {
 			row.components.forEach(component => {
-				const button = ButtonBuilder.from(component).setDisabled(true);
-				newRow.addComponents(button);
+				component.setDisabled(true);
 			});
-			return newRow;
 		});
 
 		await msg.edit({
-			components: disabledRows
+			components: rows
 		});
 	});
 

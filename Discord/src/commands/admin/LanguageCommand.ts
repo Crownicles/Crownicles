@@ -84,14 +84,12 @@ async function getPacket(interaction: CrowniclesInteraction, keycloakUser: Keycl
 	});
 
 	collector.on("end", async () => {
-		const disabledRow = new ActionRowBuilder<StringSelectMenuBuilder>();
 		row.components.forEach(component => {
-			const selectMenu = StringSelectMenuBuilder.from(component).setDisabled(true);
-			disabledRow.addComponents(selectMenu);
+			component.setDisabled(true);
 		});
 
 		await msg.edit({
-			components: [disabledRow]
+			components: [row]
 		});
 	});
 
