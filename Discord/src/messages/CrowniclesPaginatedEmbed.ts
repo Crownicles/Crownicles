@@ -102,7 +102,9 @@ export class CrowniclesPaginatedEmbed extends CrowniclesEmbed {
 		});
 
 		collector.on("end", async () => {
-			const disabledComponents = CrowniclesPaginatedEmbed.getPageComponents(currentPage, this.options.pages.length, previousButton.setDisabled(true), nextButton.setDisabled(true));
+			previousButton.setDisabled(true);
+			nextButton.setDisabled(true);
+			const disabledComponents = CrowniclesPaginatedEmbed.getPageComponents(currentPage, this.options.pages.length, previousButton, nextButton);
 
 			await msg.edit({
 				components: disabledComponents
