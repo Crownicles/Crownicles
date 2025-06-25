@@ -315,7 +315,7 @@ async function handlePetTransferCollect(
 		updatedComponents = discord.mainMenuComponents;
 	}
 	else {
-		await discord.collectedInteraction.deferReply();
+		await discord.collectedInteraction.deferUpdate();
 		DiscordCollectorUtils.sendReaction(
 			packet,
 			context,
@@ -324,13 +324,23 @@ async function handlePetTransferCollect(
 			parseInt((discord.collectedInteraction as StringSelectMenuInteraction).values[0], 10)
 		);
 
-		updatedComponents =
-			discord.collectedInteraction.customId === "switchSelect"
-				? discord.switchComponents
-				: discord.withdrawComponents;
+		// Immediately disable all components to prevent further clicks
+		currentComponents.forEach(row => {
+			row.components.forEach(c => c.setDisabled(true));
+		});
+
+		// Update the original message to reflect the disabled state
+		await discord.collectedInteraction.editReply({
+			embeds: [discord.mainMenuEmbed],
+			components: currentComponents
+		});
+
+		updatedComponents = currentComponents;
 	}
 
-	return { inMainMenu, currentComponents: updatedComponents };
+	return {
+		inMainMenu, currentComponents: updatedComponents
+	};
 }
 
 
