@@ -26,6 +26,7 @@ import { sendInteractionNotForYou } from "../../utils/ErrorUtils";
 import { PacketUtils } from "../../utils/PacketUtils";
 import { MessageFlags } from "discord-api-types/v10";
 import { DisplayUtils } from "../../utils/DisplayUtils";
+import { disableRows } from "../../utils/DiscordCollectorUtils";
 
 async function getPacket(interaction: CrowniclesInteraction, keycloakUser: KeycloakUser): Promise<CommandInventoryPacketReq | null> {
 	const askedPlayer = await PacketUtils.prepareAskedPlayer(interaction, keycloakUser);
@@ -172,10 +173,11 @@ export async function handleCommandInventoryPacketRes(packet: CommandInventoryPa
 	});
 	collector.on("end", async () => {
 		// Disable buttons instead of removing them
-		switchItemsButton.setDisabled(true);
+		const row = new ActionRowBuilder<ButtonBuilder>().addComponents(switchItemsButton.setDisabled(true));
+		disableRows([row]);
 
 		await msg.edit({
-			components: [new ActionRowBuilder<ButtonBuilder>().addComponents(switchItemsButton)]
+			components: [row]
 		});
 	});
 }

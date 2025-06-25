@@ -43,7 +43,10 @@ import {
 } from "../../../../Lib/src/Language";
 import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 import { sendInteractionNotForYou } from "../../utils/ErrorUtils";
-import { DiscordCollectorUtils } from "../../utils/DiscordCollectorUtils";
+import {
+	DiscordCollectorUtils,
+	disableRows
+} from "../../utils/DiscordCollectorUtils";
 import { EmoteUtils } from "../../utils/EmoteUtils";
 import { MessagesUtils } from "../../utils/MessagesUtils";
 import { escapeUsername } from "../../utils/StringUtils";
@@ -325,9 +328,7 @@ async function handlePetTransferCollect(
 		);
 
 		// Immediately disable all components to prevent further clicks
-		currentComponents.forEach(row => {
-			row.components.forEach(c => c.setDisabled(true));
-		});
+		disableRows(currentComponents);
 
 		// Update the original message to reflect the disabled state
 		await discord.collectedInteraction.editReply({
@@ -430,11 +431,7 @@ export async function handlePetTransferReactionCollector(context: PacketContext,
 
 	msgCollector.on("end", () => {
 		// Disable buttons instead of removing them
-		currentComponents.forEach(row => {
-			row.components.forEach(component => {
-				component.setDisabled(true);
-			});
-		});
+		disableRows(currentComponents);
 
 		msg.edit({
 			embeds: [mainMenuEmbed],

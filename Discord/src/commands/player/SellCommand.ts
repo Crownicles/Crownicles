@@ -33,7 +33,10 @@ import {
 	StringSelectMenuOptionBuilder
 } from "discord.js";
 import { sendInteractionNotForYou } from "../../utils/ErrorUtils";
-import { DiscordCollectorUtils } from "../../utils/DiscordCollectorUtils";
+import {
+	DiscordCollectorUtils,
+	disableRows
+} from "../../utils/DiscordCollectorUtils";
 import { PacketUtils } from "../../utils/PacketUtils";
 import { ReactionCollectorResetTimerPacketReq } from "../../../../Lib/src/packets/interaction/ReactionCollectorResetTimer";
 import { escapeUsername } from "../../utils/StringUtils";
@@ -148,9 +151,7 @@ async function validateSell(
 
 	validateCollector.on("end", async () => {
 		// Disable buttons instead of removing them
-		validateRow.components.forEach(component => {
-			component.setDisabled(true);
-		});
+		disableRows([validateRow]);
 
 		await validateMsg.edit({
 			components: [validateRow]

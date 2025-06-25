@@ -16,7 +16,8 @@ import {
 	InteractionCallbackResponse,
 	Message,
 	MessageComponentInteraction,
-	parseEmoji
+	parseEmoji,
+	MessageActionRowComponentBuilder
 } from "discord.js";
 import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 import { CrowniclesEmbed } from "../messages/CrowniclesEmbed";
@@ -63,6 +64,18 @@ const MANNER_TO_METHOD = {
 
 function getSendingManner(interaction: CrowniclesInteraction, sendManners: SendManner[]): SendManner {
 	return sendManners.length === 1 ? sendManners[0] : interaction.replied ? sendManners[1] : sendManners[0];
+}
+
+/**
+ * Disables all components in the provided action rows
+ * @param rows - Array of action rows containing components to disable
+ */
+export function disableRows(rows: ActionRowBuilder<MessageActionRowComponentBuilder>[]): void {
+	rows.forEach(row => {
+		row.components.forEach(component => {
+			component.setDisabled(true);
+		});
+	});
 }
 
 export class DiscordCollectorUtils {
@@ -203,9 +216,7 @@ export class DiscordCollectorUtils {
 					await buttonInteraction.deferReply();
 				}
 				else if (messageContentOrEmbed instanceof CrowniclesEmbed) {
-					row.components.forEach(component => {
-						component.setDisabled(true);
-					});
+					disableRows([row]);
 
 					await msg.edit({
 						embeds: [messageContentOrEmbed],
@@ -213,9 +224,7 @@ export class DiscordCollectorUtils {
 					});
 				}
 				else {
-					row.components.forEach(component => {
-						component.setDisabled(true);
-					});
+					disableRows([row]);
 
 					await msg.edit({
 						content: messageContentOrEmbed,
@@ -245,9 +254,7 @@ export class DiscordCollectorUtils {
 		});
 
 		buttonCollector.on("end", async () => {
-			row.components.forEach(component => {
-				component.setDisabled(true);
-			});
+			disableRows([row]);
 
 			await msg.edit({
 				components: [row]
@@ -365,11 +372,7 @@ export class DiscordCollectorUtils {
 		});
 
 		buttonCollector.on("end", async () => {
-			rows.forEach(row => {
-				row.components.forEach(component => {
-					component.setDisabled(true);
-				});
-			});
+			disableRows(rows);
 
 			await msg.edit({
 				components: rows
