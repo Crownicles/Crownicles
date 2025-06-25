@@ -19,7 +19,7 @@ class KnightFightBehavior implements ClassBehavior {
 		const currentRound = fightView.fightController.turn;
 
 		// Initialize defense tracking on first round
-		if (currentRound <= 1) {
+		if (currentRound <= 2) {
 			this.blessRoundChosen = RandomUtils.randInt(8, 14); // Choose when to use benediction
 			this.restCount = 0; // Reset rest counter at the beginning of a fight
 		}
