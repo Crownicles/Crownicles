@@ -46,6 +46,7 @@ import { PacketUtils } from "../utils/PacketUtils";
 import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 import { DiscordConstants } from "../DiscordConstants";
 import { CrowniclesLogger } from "../../../Lib/src/logs/CrowniclesLogger";
+import { disableRows } from "../utils/DiscordCollectorUtils";
 
 export class CommandsManager {
 	static commands = new Map<string, ICommand>();
@@ -413,11 +414,7 @@ export class CommandsManager {
 		});
 
 		collector.on("end", async () => {
-			row.forEach(buttonRow => {
-				buttonRow.components.forEach(component => {
-					component.setDisabled(true);
-				});
-			});
+			disableRows(row);
 
 			await msg.edit({
 				components: row
