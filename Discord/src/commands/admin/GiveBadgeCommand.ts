@@ -36,6 +36,7 @@ import { CommandSetPlayerInfoReq } from "../../../../Lib/src/packets/commands/Co
 import { Badge } from "../../../../Lib/src/types/Badge";
 import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import { escapeUsername } from "../../utils/StringUtils";
+import { disableRows } from "../../utils/DiscordCollectorUtils";
 
 async function handleGetPlayerInfoResponse(
 	interaction: CrowniclesInteraction,
@@ -109,11 +110,7 @@ async function handleGetPlayerInfoResponse(
 
 			selectCollector.stop();
 
-			rows.forEach(row => {
-				row.components.forEach(component => {
-					component.setDisabled(true);
-				});
-			});
+			disableRows(rows);
 
 			await selectMenuInteraction.update({
 				components: rows
@@ -131,11 +128,7 @@ async function handleGetPlayerInfoResponse(
 		});
 
 		selectCollector.on("end", async () => {
-			rows.forEach(row => {
-				row.components.forEach(component => {
-					component.setDisabled(true);
-				});
-			});
+			disableRows(rows);
 
 			await msg.edit({
 				components: rows

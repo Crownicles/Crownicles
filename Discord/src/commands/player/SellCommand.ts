@@ -283,14 +283,12 @@ export async function handleSellReactionCollector(context: PacketContext, packet
 	});
 
 	selectCollector.on("end", async () => {
-		const disabledRow = new ActionRowBuilder<StringSelectMenuBuilder>();
 		mainEmbedRow.components.forEach(component => {
-			const selectMenu = StringSelectMenuBuilder.from(component).setDisabled(true);
-			disabledRow.addComponents(selectMenu);
+			component.setDisabled(true);
 		});
 
 		await msg.edit({
-			components: [disabledRow]
+			components: [mainEmbedRow]
 		});
 		if (validateCollector && !validateCollector.ended) {
 			validateCollector.stop();

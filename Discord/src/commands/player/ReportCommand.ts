@@ -35,7 +35,10 @@ import {
 } from "../../../../Lib/src/utils/TimeUtils";
 import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import { ReactionCollectorChooseDestinationReaction } from "../../../../Lib/src/packets/interaction/ReactionCollectorChooseDestination";
-import { DiscordCollectorUtils } from "../../utils/DiscordCollectorUtils";
+import {
+	DiscordCollectorUtils,
+	disableRows
+} from "../../utils/DiscordCollectorUtils";
 import { EmoteUtils } from "../../utils/EmoteUtils";
 import { ReportConstants } from "../../../../Lib/src/constants/ReportConstants";
 import { ReactionCollectorReturnTypeOrNull } from "../../packetHandlers/handlers/ReactionCollectorHandlers";
@@ -128,11 +131,7 @@ export async function createBigEventCollector(context: PacketContext, packet: Re
 
 	buttonCollector.on("end", async () => {
 		// Disable buttons instead of removing them
-		rows.forEach(row => {
-			row.components.forEach(component => {
-				component.setDisabled(true);
-			});
-		});
+		disableRows(rows);
 
 		await msg.edit({
 			components: rows
