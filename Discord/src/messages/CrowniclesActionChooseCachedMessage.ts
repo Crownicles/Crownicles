@@ -8,7 +8,9 @@ import {
 } from "discord.js";
 import { EmoteUtils } from "../utils/EmoteUtils";
 import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
-import { DiscordCollectorUtils } from "../utils/DiscordCollectorUtils";
+import {
+	disableRows, DiscordCollectorUtils
+} from "../utils/DiscordCollectorUtils";
 import { ReactionCollectorCreationPacket } from "../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import {
 	ReactionCollectorFightChooseActionData,
@@ -71,11 +73,7 @@ export class CrowniclesActionChooseCachedMessage extends CrowniclesCachedMessage
 				return;
 			}
 
-			rows.forEach(row => {
-				row.components.forEach(component => {
-					component.setDisabled(true);
-				});
-			});
+			disableRows(rows);
 
 			await buttonInteraction.update({
 				components: rows

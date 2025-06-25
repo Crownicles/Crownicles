@@ -25,6 +25,7 @@ import { sendInteractionNotForYou } from "../../utils/ErrorUtils";
 import {
 	NotificationsConstantsClass
 } from "../../../../Lib/src/constants/NotificationsConstants";
+import { disableRows } from "../../utils/DiscordCollectorUtils";
 
 /**
  * Map of the current notification configuration collectors
@@ -130,9 +131,7 @@ async function mainPage(interaction: CrowniclesInteraction | StringSelectMenuInt
 		currentCollectors.delete(interaction.user.id);
 
 		if (reason !== forceStopReason) {
-			row.components.forEach(component => {
-				component.setDisabled(true);
-			});
+			disableRows([row]);
 
 			await msg.edit({
 				components: [row]
@@ -224,11 +223,7 @@ async function chooseEnabled(buttonInteraction: ButtonInteraction, notifications
 
 		if (reason !== forceStopReason) {
 			// Disable menu instead of removing components
-			menu.forEach(row => {
-				row.components.forEach(component => {
-					component.setDisabled(true);
-				});
-			});
+			disableRows(menu);
 
 			await msg.edit({ components: menu });
 		}
@@ -289,11 +284,7 @@ async function chooseSendType(buttonInteraction: ButtonInteraction, notification
 
 		if (reason !== forceStopReason) {
 			// Disable menu instead of removing components
-			menu.forEach(row => {
-				row.components.forEach(component => {
-					component.setDisabled(true);
-				});
-			});
+			disableRows(menu);
 
 			await msg.edit({ components: menu });
 		}

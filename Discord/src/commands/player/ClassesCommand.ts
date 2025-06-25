@@ -38,7 +38,9 @@ import { sendInteractionNotForYou } from "../../utils/ErrorUtils";
 import { dateDisplay } from "../../../../Lib/src/utils/TimeUtils";
 import { PacketUtils } from "../../utils/PacketUtils";
 import { ReactionCollectorResetTimerPacketReq } from "../../../../Lib/src/packets/interaction/ReactionCollectorResetTimer";
-import { DiscordCollectorUtils } from "../../utils/DiscordCollectorUtils";
+import {
+	disableRows, DiscordCollectorUtils
+} from "../../utils/DiscordCollectorUtils";
 import { escapeUsername } from "../../utils/StringUtils";
 
 /**
@@ -135,9 +137,7 @@ export async function handleChangeClassReactionCollector(context: PacketContext,
 
 		await selectMenuInteraction.deferReply();
 
-		mainEmbedRow.components.forEach(component => {
-			component.setDisabled(true);
-		});
+		disableRows([mainEmbedRow]);
 
 		await msg.edit({
 			embeds: [mainEmbed],

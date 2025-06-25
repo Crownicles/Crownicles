@@ -36,7 +36,9 @@ import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstan
 import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 import { EmoteUtils } from "../../utils/EmoteUtils";
 import { Language } from "../../../../Lib/src/Language";
-import { DiscordCollectorUtils } from "../../utils/DiscordCollectorUtils";
+import {
+	disableRows, DiscordCollectorUtils
+} from "../../utils/DiscordCollectorUtils";
 import {
 	ReactionCollectorBuyCategorySlotCancelReaction,
 	ReactionCollectorBuyCategorySlotReaction
@@ -219,9 +221,7 @@ export async function shopInventoryExtensionCollector(context: PacketContext, pa
 		}
 
 		// Disable buttons instead of removing them
-		row.components.forEach(component => {
-			component.setDisabled(true);
-		});
+		disableRows([row]);
 
 		await buttonInteraction.update({ components: [row] });
 
@@ -238,9 +238,7 @@ export async function shopInventoryExtensionCollector(context: PacketContext, pa
 
 	buttonCollector.on("end", async () => {
 		// Disable buttons instead of removing them
-		row.components.forEach(component => {
-			component.setDisabled(true);
-		});
+		disableRows([row]);
 
 		await msg.edit({
 			components: [row]
@@ -370,9 +368,7 @@ async function manageBuyoutConfirmation(packet: ReactionCollectorCreationPacket,
 		}
 
 		// Disable buttons instead of removing them
-		row.components.forEach(component => {
-			component.setDisabled(true);
-		});
+		disableRows([row]);
 
 		await buttonInteraction.update({ components: [row] });
 
@@ -390,9 +386,7 @@ async function manageBuyoutConfirmation(packet: ReactionCollectorCreationPacket,
 
 	buttonCollector.on("end", async () => {
 		// Disable buttons instead of removing them
-		row.components.forEach(component => {
-			component.setDisabled(true);
-		});
+		disableRows([row]);
 
 		await msg.edit({
 			components: [row]
