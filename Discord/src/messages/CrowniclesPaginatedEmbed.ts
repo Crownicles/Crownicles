@@ -125,18 +125,29 @@ export class CrowniclesPaginatedEmbed extends CrowniclesEmbed {
 		}
 
 		const components = [];
-		if (currentPage > 0) {
+
+		// Check if the button is already disabled before applying page-based logic
+		if (previousButton.data.disabled) {
+			components.push(previousButton);
+		}
+		else if (currentPage > 0) {
 			components.push(previousButton.setDisabled(false));
 		}
 		else {
 			components.push(previousButton.setDisabled(true));
 		}
-		if (currentPage < pagesCount - 1) {
+
+		// Check if the button is already disabled before applying page-based logic
+		if (nextButton.data.disabled) {
+			components.push(nextButton);
+		}
+		else if (currentPage < pagesCount - 1) {
 			components.push(nextButton.setDisabled(false));
 		}
 		else {
 			components.push(nextButton.setDisabled(true));
 		}
+
 		return [
 			new ActionRowBuilder<ButtonBuilder>()
 				.addComponents(components)
