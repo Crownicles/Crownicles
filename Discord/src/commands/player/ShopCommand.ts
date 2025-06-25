@@ -545,7 +545,7 @@ export async function shopCollector(context: PacketContext, packet: ReactionColl
 			component.setDisabled(true);
 		});
 
-		await msgComponentInteraction.update({ components: [buttonRow, selectRow] });
+		await msgComponentInteraction.update({ components: [selectRow, buttonRow] });
 
 		if (msgComponentInteraction.customId === "closeShop") {
 			DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, msgComponentInteraction, packet.reactions.findIndex(r =>
