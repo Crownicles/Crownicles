@@ -9,7 +9,8 @@ import {
 import { EmoteUtils } from "../utils/EmoteUtils";
 import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 import {
-	disableRows, DiscordCollectorUtils
+	DiscordCollectorUtils,
+	disableRows
 } from "../utils/DiscordCollectorUtils";
 import { ReactionCollectorCreationPacket } from "../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import {
