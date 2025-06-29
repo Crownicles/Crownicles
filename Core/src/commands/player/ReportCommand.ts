@@ -403,7 +403,13 @@ async function chooseDestination(
 			: (RandomUtils.crowniclesRandom.pick(collector.creationPacket.reactions).data as ReactionCollectorChooseDestinationReaction).mapId;
 		const newLink = MapLinkDataController.instance.getLinkByLocations(player.getDestinationId(), mapId);
 		const endMap = MapLocationDataController.instance.getById(mapId);
-		await Maps.startTravel(player, newLink, Date.now());
+
+		const startTime = firstReaction
+			? Date.now()
+			: Date.now() - (collector.creationPacket.endTime - Date.now());
+
+		await Maps.startTravel(player, newLink, startTime);
+
 		response.push(makePacket(CommandReportChooseDestinationRes, {
 			mapId: newLink.endMap,
 			mapTypeId: endMap.type,
