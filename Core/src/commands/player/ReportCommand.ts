@@ -404,11 +404,7 @@ async function chooseDestination(
 		const newLink = MapLinkDataController.instance.getLinkByLocations(player.getDestinationId(), mapId);
 		const endMap = MapLocationDataController.instance.getById(mapId);
 
-		const startTime = firstReaction
-			? Date.now()
-			: Date.now() - (collector.creationPacket.endTime - Date.now());
-
-		await Maps.startTravel(player, newLink, startTime);
+		await Maps.startTravel(player, newLink, Date.now());
 
 		response.push(makePacket(CommandReportChooseDestinationRes, {
 			mapId: newLink.endMap,
@@ -423,7 +419,8 @@ async function chooseDestination(
 		context,
 		{
 			allowedPlayerKeycloakIds: [player.keycloakId],
-			mainPacket
+			mainPacket,
+			time: Math.min(Constants.MESSAGES.COLLECTOR_TIME, player.effectRemainingTime() || Constants.MESSAGES.COLLECTOR_TIME)
 		},
 		endCallback
 	)
