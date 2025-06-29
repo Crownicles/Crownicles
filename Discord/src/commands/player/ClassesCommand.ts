@@ -39,7 +39,8 @@ import { dateDisplay } from "../../../../Lib/src/utils/TimeUtils";
 import { PacketUtils } from "../../utils/PacketUtils";
 import { ReactionCollectorResetTimerPacketReq } from "../../../../Lib/src/packets/interaction/ReactionCollectorResetTimer";
 import {
-	disableRows, DiscordCollectorUtils
+	DiscordCollectorUtils,
+	disableRows
 } from "../../utils/DiscordCollectorUtils";
 import { escapeUsername } from "../../utils/StringUtils";
 
