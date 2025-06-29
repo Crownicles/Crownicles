@@ -102,22 +102,13 @@ export class CrowniclesPaginatedEmbed extends CrowniclesEmbed {
 		});
 
 		collector.on("end", async () => {
-			// Create disabled buttons for the end state
-			const disabledPreviousButton = new ButtonBuilder()
-				.setEmoji(CrowniclesIcons.collectors.previousPage)
-				.setCustomId(previousCustomId)
-				.setStyle(ButtonStyle.Secondary)
-				.setDisabled(true);
-			const disabledNextButton = new ButtonBuilder()
-				.setEmoji(CrowniclesIcons.collectors.nextPage)
-				.setCustomId(nextCustomId)
-				.setStyle(ButtonStyle.Secondary)
-				.setDisabled(true);
+			previousButton.setDisabled(true);
+			nextButton.setDisabled(true);
 
 			await msg.edit({
 				components: [
 					new ActionRowBuilder<ButtonBuilder>()
-						.addComponents([disabledPreviousButton, disabledNextButton])
+						.addComponents([previousButton, nextButton])
 				]
 			});
 		});
