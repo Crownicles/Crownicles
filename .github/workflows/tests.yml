@@ -32,7 +32,6 @@ jobs:
         with:
           path: |
             **/node_modules
-            **/pnpm-lock.yaml
           key: ${{ runner.os }}-all-deps-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-all-deps-

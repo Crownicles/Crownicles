@@ -32,7 +32,6 @@ jobs:
         with:
           path: |
             ./RestWs/node_modules
-            ./RestWs/pnpm-lock.yaml
           key: ${{ runner.os }}-restws-dependencies-${{ hashFiles('./RestWs/pnpm-lock.yaml') }}
 
       - name: Install dependencies and Run ESLint in RestWs folder

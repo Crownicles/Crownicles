@@ -32,7 +32,6 @@ jobs:
         with:
           path: |
             ./Core/node_modules
-            ./Core/pnpm-lock.yaml
           key: ${{ runner.os }}-core-dependencies-${{ hashFiles('./Core/pnpm-lock.yaml') }}
 
       - name: Install dependencies and Run ESLint in Core folder
