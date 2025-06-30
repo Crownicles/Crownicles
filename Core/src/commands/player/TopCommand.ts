@@ -1,10 +1,6 @@
-import {
-	commandRequires, CommandUtils
-} from "../../core/utils/CommandUtils";
-import {
-	CrowniclesPacket, makePacket
-} from "../../../../Lib/src/packets/CrowniclesPacket";
-import Player, { Players } from "../../core/database/game/models/Player";
+import {commandRequires, CommandUtils} from "../../core/utils/CommandUtils";
+import {CrowniclesPacket, makePacket} from "../../../../Lib/src/packets/CrowniclesPacket";
+import Player, {Players} from "../../core/database/game/models/Player";
 import {
 	CommandTopGuildsEmptyPacket,
 	CommandTopInvalidPagePacket,
@@ -14,14 +10,14 @@ import {
 	CommandTopPacketResScore,
 	CommandTopPlayersEmptyPacket
 } from "../../../../Lib/src/packets/commands/CommandTopPacket";
-import { TopTiming } from "../../../../Lib/src/types/TopTimings";
-import { TopConstants } from "../../../../Lib/src/constants/TopConstants";
-import { Constants } from "../../../../Lib/src/constants/Constants";
-import { TopDataType } from "../../../../Lib/src/types/TopDataType";
-import { ErrorPacket } from "../../../../Lib/src/packets/commands/ErrorPacket";
-import { FightConstants } from "../../../../Lib/src/constants/FightConstants";
-import { Guilds } from "../../core/database/game/models/Guild";
-import { TravelTime } from "../../core/maps/TravelTime";
+import {TopTiming} from "../../../../Lib/src/types/TopTimings";
+import {TopConstants} from "../../../../Lib/src/constants/TopConstants";
+import {Constants} from "../../../../Lib/src/constants/Constants";
+import {TopDataType} from "../../../../Lib/src/types/TopDataType";
+import {ErrorPacket} from "../../../../Lib/src/packets/commands/ErrorPacket";
+import {FightConstants} from "../../../../Lib/src/constants/FightConstants";
+import {Guilds} from "../../core/database/game/models/Guild";
+import {TravelTime} from "../../core/maps/TravelTime";
 
 async function getTopScore(initiator: Player, page: number, timing: TopTiming): Promise<CrowniclesPacket> {
 	const totalElements = await Players.getNumberOfPlayingPlayers(timing === TopTiming.WEEK);
@@ -153,7 +149,7 @@ async function getTopGuild(initiator: Player, page: number): Promise<CrowniclesP
 			attributes: {
 				1: guild.score,
 				2: guild.level,
-				3: undefined
+				3: undefined as undefined
 			}
 		})),
 		elementsPerPage: TopConstants.PLAYERS_PER_PAGE
@@ -172,17 +168,17 @@ export default class TopCommand {
 		packet: CommandTopPacketReq
 	): Promise<void> {
 		switch (packet.dataType) {
-			case TopDataType.SCORE:
-				response.push(await getTopScore(player, packet.page ?? 1, packet.timing));
-				break;
-			case TopDataType.GLORY:
-				response.push(await getTopGlory(player, packet.page ?? 1));
-				break;
-			case TopDataType.GUILD:
-				response.push(await getTopGuild(player, packet.page ?? 1));
-				break;
-			default:
-				response.push(makePacket(ErrorPacket, { message: "Invalid top data type. This error shouldn't happen. If it does, please report it." }));
+		case TopDataType.SCORE:
+			response.push(await getTopScore(player, packet.page ?? 1, packet.timing));
+			break;
+		case TopDataType.GLORY:
+			response.push(await getTopGlory(player, packet.page ?? 1));
+			break;
+		case TopDataType.GUILD:
+			response.push(await getTopGuild(player, packet.page ?? 1));
+			break;
+		default:
+			response.push(makePacket(ErrorPacket, {message: "Invalid top data type. This error shouldn't happen. If it does, please report it."}));
 		}
 	}
 }
