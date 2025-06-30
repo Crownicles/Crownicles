@@ -12,7 +12,6 @@ import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import i18n from "../../translations/i18n";
 import { MapConstants } from "../../../../Lib/src/constants/MapConstants";
 import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
-import { EmoteUtils } from "../../utils/EmoteUtils";
 import { escapeUsername } from "../../utils/StringUtils";
 
 function getPacket(interaction: CrowniclesInteraction): CommandMapPacketReq {

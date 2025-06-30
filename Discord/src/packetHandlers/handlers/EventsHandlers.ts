@@ -17,7 +17,6 @@ import { PlayerDeathPacket } from "../../../../Lib/src/packets/events/PlayerDeat
 import { PlayerLeavePveIslandPacket } from "../../../../Lib/src/packets/events/PlayerLeavePveIslandPacket";
 import { PlayerLevelUpPacket } from "../../../../Lib/src/packets/events/PlayerLevelUpPacket";
 import { PlayerReceivePetPacket } from "../../../../Lib/src/packets/events/PlayerReceivePetPacket";
-import { EmoteUtils } from "../../utils/EmoteUtils";
 import { GiveFoodToGuildPacket } from "../../../../Lib/src/packets/utils/GiveFoodToGuildPacket";
 import { NoFoodSpaceInGuildPacket } from "../../../../Lib/src/packets/utils/NoFoodSpaceInGuildPacket";
 import { MissionUtils } from "../../utils/MissionUtils";

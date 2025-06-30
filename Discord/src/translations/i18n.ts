@@ -6,7 +6,6 @@ import {
 import { readdirSync } from "fs";
 import { resolve } from "path";
 import { BotUtils } from "../utils/BotUtils";
-import { EmoteUtils } from "../utils/EmoteUtils";
 import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 import { CrowniclesLogger } from "../../../Lib/src/logs/CrowniclesLogger";
 

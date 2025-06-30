@@ -7,7 +7,6 @@ import { Language } from "../../../Lib/src/Language";
 import { ItemWithDetails } from "../../../Lib/src/types/ItemWithDetails";
 import { minutesDisplay } from "../../../Lib/src/utils/TimeUtils";
 import { Item } from "../../../Lib/src/types/Item";
-import { EmoteUtils } from "./EmoteUtils";
 import {
 	SexTypeShort, StringConstants
 } from "../../../Lib/src/constants/StringConstants";

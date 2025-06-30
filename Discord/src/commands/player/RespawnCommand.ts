@@ -10,7 +10,6 @@ import {
 import { DiscordCache } from "../../bot/DiscordCache";
 import i18n from "../../translations/i18n";
 import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
-import { EmoteUtils } from "../../utils/EmoteUtils";
 import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
 import { escapeUsername } from "../../utils/StringUtils";
 

@@ -6,7 +6,6 @@ import i18n from "../translations/i18n";
 import {
 	ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, parseEmoji
 } from "discord.js";
-import { EmoteUtils } from "../utils/EmoteUtils";
 import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 import {
 	DiscordCollectorUtils,

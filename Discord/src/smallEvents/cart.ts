@@ -5,7 +5,6 @@ import { DiscordCollectorUtils } from "../utils/DiscordCollectorUtils";
 import { SmallEventCartPacket } from "../../../Lib/src/packets/smallEvents/SmallEventCartPacket";
 import { CrowniclesSmallEventEmbed } from "../messages/CrowniclesSmallEventEmbed";
 import { StringUtils } from "../utils/StringUtils";
-import { EmoteUtils } from "../utils/EmoteUtils";
 import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 import i18n from "../translations/i18n";
 import { getRandomSmallEventIntro } from "../packetHandlers/handlers/SmallEventsHandler";

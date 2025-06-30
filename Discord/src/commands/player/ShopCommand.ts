@@ -34,7 +34,6 @@ import { PacketUtils } from "../../utils/PacketUtils";
 import { ChangeBlockingReasonPacket } from "../../../../Lib/src/packets/utils/ChangeBlockingReasonPacket";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
 import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
-import { EmoteUtils } from "../../utils/EmoteUtils";
 import { Language } from "../../../../Lib/src/Language";
 import {
 	disableRows, DiscordCollectorUtils
