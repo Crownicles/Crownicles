@@ -39,7 +39,6 @@ import {
 	DiscordCollectorUtils,
 	disableRows
 } from "../../utils/DiscordCollectorUtils";
-import { EmoteUtils } from "../../utils/EmoteUtils";
 import { ReportConstants } from "../../../../Lib/src/constants/ReportConstants";
 import { ReactionCollectorReturnTypeOrNull } from "../../packetHandlers/handlers/ReactionCollectorHandlers";
 import { DiscordConstants } from "../../DiscordConstants";

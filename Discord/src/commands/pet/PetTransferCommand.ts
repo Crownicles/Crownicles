@@ -47,7 +47,6 @@ import {
 	DiscordCollectorUtils,
 	disableRows
 } from "../../utils/DiscordCollectorUtils";
-import { EmoteUtils } from "../../utils/EmoteUtils";
 import { MessagesUtils } from "../../utils/MessagesUtils";
 import { escapeUsername } from "../../utils/StringUtils";
 
@@ -256,9 +255,9 @@ async function handlePetTransferCollect(
 	},
 	currentComponents: ActionRowBuilder<MessageActionRowComponentBuilder>[]
 ): Promise<{
-		inMainMenu: boolean;
-		currentComponents: ActionRowBuilder<MessageActionRowComponentBuilder>[];
-	}> {
+	inMainMenu: boolean;
+	currentComponents: ActionRowBuilder<MessageActionRowComponentBuilder>[];
+}> {
 	let updatedComponents: ActionRowBuilder<MessageActionRowComponentBuilder>[] = currentComponents;
 
 	if (inMainMenu) {

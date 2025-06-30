@@ -20,7 +20,6 @@ import { ProfileConstants } from "../../../../Lib/src/constants/ProfileConstants
 import { Language } from "../../../../Lib/src/Language";
 import { KeycloakUser } from "../../../../Lib/src/keycloak/KeycloakUser";
 import { PacketUtils } from "../../utils/PacketUtils";
-import { EmoteUtils } from "../../utils/EmoteUtils";
 import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 import {
 	millisecondsToMinutes, minutesDisplay

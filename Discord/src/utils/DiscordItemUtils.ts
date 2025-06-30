@@ -10,7 +10,6 @@ import {
 } from "../../../Lib/src/constants/ItemConstants";
 import { minutesDisplay } from "../../../Lib/src/utils/TimeUtils";
 import { StatValues } from "../../../Lib/src/types/StatValues";
-import { EmoteUtils } from "./EmoteUtils";
 import { DisplayUtils } from "./DisplayUtils";
 
 

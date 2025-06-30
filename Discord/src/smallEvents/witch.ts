@@ -15,7 +15,6 @@ import { StringUtils } from "../utils/StringUtils";
 import { SmallEventWitchResultPacket } from "../../../Lib/src/packets/smallEvents/SmallEventWitchPacket";
 import { Effect } from "../../../Lib/src/types/Effect";
 import { WitchActionOutcomeType } from "../../../Lib/src/types/WitchActionOutcomeType";
-import { EmoteUtils } from "../utils/EmoteUtils";
 import { ReactionCollectorReturnTypeOrNull } from "../packetHandlers/handlers/ReactionCollectorHandlers";
 import { MessagesUtils } from "../utils/MessagesUtils";
 

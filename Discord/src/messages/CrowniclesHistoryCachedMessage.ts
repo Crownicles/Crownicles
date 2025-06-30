@@ -5,7 +5,6 @@ import { PacketContext } from "../../../Lib/src/packets/CrowniclesPacket";
 import { DiscordCache } from "../bot/DiscordCache";
 import i18n from "../translations/i18n";
 import { CommandFightHistoryItemPacket } from "../../../Lib/src/packets/fights/FightHistoryItemPacket";
-import { EmoteUtils } from "../utils/EmoteUtils";
 import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 import { FightAlterationState } from "../../../Lib/src/types/FightAlterationResult";
 import { FightConstants } from "../../../Lib/src/constants/FightConstants";

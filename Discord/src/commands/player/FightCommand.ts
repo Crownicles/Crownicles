@@ -9,7 +9,6 @@ import {
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { DiscordCache } from "../../bot/DiscordCache";
 import { DiscordCollectorUtils } from "../../utils/DiscordCollectorUtils";
-import { EmoteUtils } from "../../utils/EmoteUtils";
 import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 import { PacketUtils } from "../../utils/PacketUtils";
 import { CommandFightPacketReq } from "../../../../Lib/src/packets/commands/CommandFightPacket";
