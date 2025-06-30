@@ -1,13 +1,17 @@
-import {FastifyInstance, FastifyRequest} from "fastify";
-import {CrowniclesLogger} from "../../../../Lib/src/logs/CrowniclesLogger";
-import {DiscordSsoConfig} from "../../config/DiscordSsoConfig";
-import {KeycloakUtils} from "../../../../Lib/src/keycloak/KeycloakUtils";
-import {keycloakConfig} from "../../index";
-import {Language, LANGUAGE} from "../../../../Lib/src/Language";
-import {betaLoginVerifyGroup} from "./LoginRoute";
-import {KeycloakUser} from "../../../../Lib/src/keycloak/KeycloakUser";
-import {KeycloakOAuth2Token} from "../../../../Lib/src/keycloak/KeycloakOAuth2Token";
-import {getRequestLoggerMetadata} from "../RestApi";
+import {
+	FastifyInstance, FastifyRequest
+} from "fastify";
+import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
+import { DiscordSsoConfig } from "../../config/DiscordSsoConfig";
+import { KeycloakUtils } from "../../../../Lib/src/keycloak/KeycloakUtils";
+import { keycloakConfig } from "../../index";
+import {
+	Language, LANGUAGE
+} from "../../../../Lib/src/Language";
+import { betaLoginVerifyGroup } from "./LoginRoute";
+import { KeycloakUser } from "../../../../Lib/src/keycloak/KeycloakUser";
+import { KeycloakOAuth2Token } from "../../../../Lib/src/keycloak/KeycloakOAuth2Token";
+import { getRequestLoggerMetadata } from "../RestApi";
 
 /**
  * Fetches the access token from Discord using the provided code.

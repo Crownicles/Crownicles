@@ -32,7 +32,6 @@ jobs:
         with:
           path: |
             ./Lib/node_modules
-            ./Lib/pnpm-lock.yaml
           key: ${{ runner.os }}-lib-dependencies-${{ hashFiles('./Lib/pnpm-lock.yaml') }}
 
       - name: Install dependencies and Run ESLint in Lib folder
