@@ -45,7 +45,7 @@ function convertCommandFormat(str: string): string {
  * @param str
  */
 function convertEmoteFormat(str: string): string {
-	return str.replace(/{emote:(.*?)}/g, (_match, emote) => EmoteUtils.translateEmojiToDiscord(getEmote(emote) ?? `EMOTE NOT FOUND : ${emote}`));
+	return str.replace(/{emote:(.*?)}/g, (_match, emote) => getEmote(emote) ?? `EMOTE NOT FOUND : ${emote}`);
 }
 
 type EmotePathFolder = Record<string, unknown> | string[];

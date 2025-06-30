@@ -48,7 +48,7 @@ export async function interactOtherPlayersCollector(context: PacketContext, pack
 		context,
 		{
 			emojis: {
-				accept: EmoteUtils.translateEmojiToDiscord(CrowniclesIcons.collectors.interactPoorCoin),
+				accept: CrowniclesIcons.collectors.interactPoorCoin,
 				refuse: CrowniclesIcons.collectors.refuse
 			}
 		}

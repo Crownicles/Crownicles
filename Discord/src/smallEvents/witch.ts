@@ -27,7 +27,7 @@ export async function witchCollector(context: PacketContext, packet: ReactionCol
 	const reactions: [string, string][] = [];
 	for (const reaction of packet.reactions) {
 		const ingredientId = (reaction.data as ReactionCollectorWitchReaction).id;
-		const emoji = EmoteUtils.translateEmojiToDiscord(CrowniclesIcons.witchSmallEvent[ingredientId]);
+		const emoji = CrowniclesIcons.witchSmallEvent[ingredientId];
 		witchIngredients += `${emoji} ${i18n.t(`smallEvents:witch.witchEventNames.${ingredientId}`, { lng })}\n`;
 		reactions.push([ingredientId, emoji]);
 	}

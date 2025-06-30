@@ -16,6 +16,6 @@ export class CrowniclesSmallEventEmbed extends CrowniclesEmbed {
 			}),
 			iconURL: user.displayAvatarURL()
 		});
-		this.setDescription(`${EmoteUtils.translateEmojiToDiscord(CrowniclesIcons.smallEvents[smallEventId])} ${description}`);
+		this.setDescription(`${CrowniclesIcons.smallEvents[smallEventId]} ${description}`);
 	}
 }

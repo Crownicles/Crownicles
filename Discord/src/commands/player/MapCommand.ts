@@ -88,7 +88,7 @@ export async function handleCommandMapDisplayRes(packet: CommandMapDisplayRes, c
 		lng,
 		destination: mapName,
 		particle: mapParticle,
-		emote: EmoteUtils.translateEmojiToDiscord(CrowniclesIcons.mapTypes[packet.mapType]),
+		emote: CrowniclesIcons.mapTypes[packet.mapType],
 		description: mapDescription
 	}));
 	await interaction.reply({ embeds: [embed] });

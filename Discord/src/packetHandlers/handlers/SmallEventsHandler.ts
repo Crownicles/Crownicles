@@ -833,7 +833,7 @@ export default class SmallEventsHandler {
 					+ StringUtils.getRandomTranslation("smallEvents:ultimateFoodMerchant.stories", lng)
 					+ StringUtils.getRandomTranslation(`smallEvents:ultimateFoodMerchant.rewards.${packet.interactionName}`, lng, {
 						count: packet.amount,
-						moneyEmote: EmoteUtils.translateEmojiToDiscord(CrowniclesIcons.unitValues.money)
+						moneyEmote: CrowniclesIcons.unitValues.money
 					}),
 					interaction.user,
 					lng

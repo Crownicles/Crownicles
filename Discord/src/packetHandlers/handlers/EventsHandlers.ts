@@ -56,7 +56,7 @@ export default class EventsHandlers {
 			lng,
 			mapPrefix: i18n.t(`models:map_types.${packet.mapTypeId}.prefix`, { lng }),
 			mapType: (i18n.t(`models:map_types.${packet.mapTypeId}.name`, { lng }) as string).toLowerCase(),
-			mapEmote: EmoteUtils.translateEmojiToDiscord(CrowniclesIcons.mapTypes[packet.mapTypeId]),
+			mapEmote: CrowniclesIcons.mapTypes[packet.mapTypeId],
 			mapName: i18n.t(`models:map_locations.${packet.mapId}.name`, { lng }),
 			time
 		}));

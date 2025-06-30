@@ -183,7 +183,7 @@ export class DiscordItemUtils {
 			name: i18n.t(`models:${model}.${displayPacket.id}`, {
 				lng
 			}),
-			emote: EmoteUtils.translateEmojiToDiscord(emote),
+			emote: emote,
 			rarity: i18n.t(`items:rarities.${displayPacket.rarity}`, { lng }),
 			values
 		});

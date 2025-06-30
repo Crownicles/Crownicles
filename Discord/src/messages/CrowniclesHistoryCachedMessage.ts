@@ -47,9 +47,9 @@ export class CrowniclesHistoryCachedMessage extends CrowniclesCachedMessage<Comm
 
 		let newLine = i18n.t("commands:fight.actions.intro", {
 			lng,
-			emote: EmoteUtils.translateEmojiToDiscord(packet.pet
+			emote: packet.pet
 				? CrowniclesIcons.pets[packet.pet.typeId][packet.pet.sex === StringConstants.SEX.FEMALE.short ? "emoteFemale" : "emoteMale"]
-				: CrowniclesIcons.fightActions[packet.fightActionId]),
+				: CrowniclesIcons.fightActions[packet.fightActionId],
 			fighter: packet.fighterKeycloakId ? this.usernamesCachePlayer?.get(packet.fighterKeycloakId) : this.usernamesCacheMonster?.get(packet.monsterId!)
 		}) + this.manageMainMessage(packet, lng);
 
