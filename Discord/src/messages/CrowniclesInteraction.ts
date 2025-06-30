@@ -16,14 +16,18 @@ import {
 	MessagePayload,
 	StringSelectMenuInteraction
 } from "discord.js";
-import {RawInteractionData, RawWebhookData} from "discord.js/typings/rawDataTypes";
+import {
+	RawInteractionData, RawWebhookData
+} from "discord.js/typings/rawDataTypes";
 import i18n from "../translations/i18n";
-import {LANGUAGE, Language} from "../../../Lib/src/Language";
-import {CommandInteractionOptionResolver} from "discord.js/typings";
-import {CrowniclesEmbed} from "./CrowniclesEmbed";
-import {CrowniclesLogger} from "../../../Lib/src/logs/CrowniclesLogger";
-import {MessageFlags} from "discord-api-types/v10";
-import {DiscordConstants} from "../DiscordConstants";
+import {
+	LANGUAGE, Language
+} from "../../../Lib/src/Language";
+import { CommandInteractionOptionResolver } from "discord.js/typings";
+import { CrowniclesEmbed } from "./CrowniclesEmbed";
+import { CrowniclesLogger } from "../../../Lib/src/logs/CrowniclesLogger";
+import { MessageFlags } from "discord-api-types/v10";
+import { DiscordConstants } from "../DiscordConstants";
 
 type CrowniclesInteractionWithoutSendCommands = new(client: Client<true>, data: RawInteractionData) => Omit<CommandInteraction, "reply" | "followUp" | "channel" | "editReply">;
 const CrowniclesInteractionWithoutSendCommands: CrowniclesInteractionWithoutSendCommands = CommandInteraction as unknown as CrowniclesInteractionWithoutSendCommands;
@@ -195,12 +199,12 @@ export class CrowniclesInteraction extends CrowniclesInteractionWithoutSendComma
 	}
 
 	public async reply(options: InteractionReplyOptions & {
-		withResponse: true
+		withResponse: true;
 	}, fallback?: () => void | Promise<void>): Promise<InteractionCallbackResponse | null>;
 
 	// Yes, we need to omit createMessageComponentCollector because the response is not a message and so the collectors are created on the interaction and not the message, and it mixes everything up
 	public async reply(options: string | MessagePayload | InteractionReplyOptions & {
-		withResponse?: false
+		withResponse?: false;
 	}, fallback?: () => void | Promise<void>): Promise<Omit<InteractionResponse, "createMessageComponentCollector"> | null>;
 
 	/**
@@ -300,14 +304,14 @@ export class CrowniclesInteraction extends CrowniclesInteractionWithoutSendComma
 			toSendProp = {
 				embeds: [
 					new CrowniclesEmbed()
-						.formatAuthor(i18n.t("error:errorOccurredTitle", {lng}), this.user)
-						.setDescription(i18n.t("error:aDevMessedUp", {lng}))
+						.formatAuthor(i18n.t("error:errorOccurredTitle", { lng }), this.user)
+						.setDescription(i18n.t("error:aDevMessedUp", { lng }))
 						.setErrorColor()
 				]
 			};
 		}
 		else {
-			toSendProp = {content: i18n.t("bot:noSpeakPermission", {lng})};
+			toSendProp = { content: i18n.t("bot:noSpeakPermission", { lng }) };
 		}
 		try {
 			// @ts-expect-error - We consider that the functionPrototype is a function that can be called with these parameters (i.e, accepts a InteractionReplyOptions)
@@ -325,7 +329,7 @@ export class CrowniclesInteraction extends CrowniclesInteractionWithoutSendComma
 
 			// We can't send ephemeral message, so we send the message in DM
 			try {
-				await CommandInteraction.prototype.user.send.bind(this.user)({...toSendProp});
+				await CommandInteraction.prototype.user.send.bind(this.user)({ ...toSendProp });
 			}
 			catch (e) {
 				CrowniclesLogger.errorWithObj(`Unable to alert user of no speak permission : c:${this.channel?.id} / u:${this.user?.id}`, e);

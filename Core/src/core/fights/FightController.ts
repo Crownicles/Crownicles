@@ -275,8 +275,8 @@ export class FightController {
 		fightAction: FightAction,
 		defender: PlayerFighter | MonsterFighter | AiPlayerFighter
 	): {
-			fightAction: FightAction; result: FightActionResult | FightAlterationResult;
-		} {
+		fightAction: FightAction; result: FightActionResult | FightAlterationResult;
+	} {
 		// Check if the attacker has enough breath
 		const enoughBreath = attacker.useBreath(fightAction.breath);
 		let result: FightActionResult | FightAlterationResult;

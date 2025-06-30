@@ -75,8 +75,8 @@ export class CommandsTest {
 		commandTest: ITestCommand,
 		args: string[]
 	): {
-			good: boolean; description: string;
-		} {
+		good: boolean; description: string;
+	} {
 		const ret = {
 			good: true,
 			description: ""
