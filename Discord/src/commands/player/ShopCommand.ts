@@ -342,7 +342,7 @@ async function manageBuyoutConfirmation(packet: ReactionCollectorCreationPacket,
 				}), interaction.user)
 				.setDescription(`${
 					getShopItemDisplay(data, reaction, lng, shopItemNames, amounts)
-				}\n${EmoteUtils.translateEmojiToDiscord(CrowniclesIcons.collectors.warning)} ${
+				}\n${CrowniclesIcons.collectors.warning} ${
 					i18n.t(`commands:shop.shopItems.${shopItemTypeToId(shopItemId)}.info`, {
 						lng,
 						kingsMoneyAmount: data.additionalShopData?.gemToMoneyRatio,

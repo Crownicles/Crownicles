@@ -181,7 +181,7 @@ function getShelterPetSelectMenu(
 			const shelterPet = data.shelterPets.find(pet => pet.petEntityId === reactionData.petEntityId)!;
 			return new StringSelectMenuOptionBuilder()
 				.setLabel(DisplayUtils.getPetNicknameOrTypeName(shelterPet.pet.nickname, shelterPet.pet.typeId, shelterPet.pet.sex, lng))
-				.setEmoji(parseEmoji(EmoteUtils.translateEmojiForSelectMenus(DisplayUtils.getPetIcon(shelterPet.pet.typeId, shelterPet.pet.sex)))!)
+				.setEmoji(parseEmoji(DisplayUtils.getPetIcon(shelterPet.pet.typeId, shelterPet.pet.sex))!)
 				.setValue(reaction.index.toString())
 				.setDescription(i18n.t("commands:petTransfer.selectMenuPetDetails", {
 					lng,

@@ -70,7 +70,7 @@ export async function createBigEventCollector(context: PacketContext, packet: Re
 	})}\n\n`;
 	for (const possibility of reactions) {
 		if (possibility.name !== ReportConstants.END_POSSIBILITY_ID) {
-			const emoji = EmoteUtils.translateEmojiToDiscord(CrowniclesIcons.events[data.eventId.toString()][possibility.name] as string);
+			const emoji = CrowniclesIcons.events[data.eventId.toString()][possibility.name] as string;
 
 			const button = new ButtonBuilder()
 				.setEmoji(parseEmoji(emoji)!)
@@ -217,10 +217,10 @@ export async function reportResult(packet: CommandReportBigEventResultRes, conte
 		pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng),
 		result,
 		event: i18n.t(`events:${packet.eventId}.possibilities.${packet.possibilityId}.outcomes.${packet.outcomeId}`, { lng }),
-		emoji: EmoteUtils.translateEmojiToDiscord(packet.possibilityId === ReportConstants.END_POSSIBILITY_ID
+		emoji: packet.possibilityId === ReportConstants.END_POSSIBILITY_ID
 			? CrowniclesIcons.events[packet.eventId].end[packet.outcomeId]
-			: CrowniclesIcons.events[packet.eventId][packet.possibilityId] as string),
-		alte: EmoteUtils.translateEmojiToDiscord(packet.effect && packet.effect.name !== Effect.OCCUPIED.id ? CrowniclesIcons.effects[packet.effect.name] : "")
+			: CrowniclesIcons.events[packet.eventId][packet.possibilityId] as string,
+		alte: packet.effect && packet.effect.name !== Effect.OCCUPIED.id ? CrowniclesIcons.effects[packet.effect.name] : ""
 	});
 
 	const buttonInteraction = context.discord?.buttonInteraction ? DiscordCache.getButtonInteraction(context.discord?.buttonInteraction) : null;
@@ -263,7 +263,7 @@ export async function chooseDestinationCollector(context: PacketContext, packet:
 				: minutesDisplay(120, lng)
 					.replace("2", "?");
 			return `${
-				EmoteUtils.translateEmojiToDiscord(CrowniclesIcons.mapTypes[destinationReaction.mapTypeId])
+				CrowniclesIcons.mapTypes[destinationReaction.mapTypeId]
 			} ${
 				i18n.t(`models:map_locations.${destinationReaction.mapId}.name`, { lng })} (${duration})`;
 		})
@@ -320,7 +320,7 @@ function generateTravelPathString(packet: CommandReportTravelSummaryRes, now: nu
 
 	index = Math.floor(index);
 
-	let str = `${EmoteUtils.translateEmojiToDiscord(CrowniclesIcons.mapTypes[packet.startMap.type])} `;
+	let str = `${CrowniclesIcons.mapTypes[packet.startMap.type]} `;
 
 	for (let j = 0; j < Constants.REPORT.PATH_SQUARE_COUNT; ++j) {
 		if (j === index) {
@@ -328,7 +328,7 @@ function generateTravelPathString(packet: CommandReportTravelSummaryRes, now: nu
 				str += packet.isOnBoat ? "🚢" : "🧍";
 			}
 			else {
-				str += EmoteUtils.translateEmojiToDiscord(CrowniclesIcons.effects[packet.effect!]);
+				str += CrowniclesIcons.effects[packet.effect!];
 			}
 		}
 		else {
@@ -339,7 +339,7 @@ function generateTravelPathString(packet: CommandReportTravelSummaryRes, now: nu
 		}
 	}
 
-	return `${str} ${EmoteUtils.translateEmojiToDiscord(CrowniclesIcons.mapTypes[packet.endMap.type])}`;
+	return `${str} ${CrowniclesIcons.mapTypes[packet.endMap.type]}`;
 }
 
 /**
@@ -486,7 +486,7 @@ function manageMainSummaryText({
 		value: packet.lastSmallEventId
 			? i18n.t("commands:report.travellingDescription", {
 				lng,
-				smallEventEmoji: EmoteUtils.translateEmojiToDiscord(CrowniclesIcons.smallEvents[packet.lastSmallEventId]),
+				smallEventEmoji: CrowniclesIcons.smallEvents[packet.lastSmallEventId],
 				time: timeBeforeSmallEvent
 			})
 			: i18n.t("commands:report.travellingDescriptionWithoutSmallEvent", {
@@ -509,12 +509,12 @@ function manageEndPathDescriptions({
 }: FieldsArguments): void {
 	travelEmbed.addFields({
 		name: i18n.t("commands:report.startPoint", { lng }),
-		value: `${EmoteUtils.translateEmojiToDiscord(CrowniclesIcons.mapTypes[packet.startMap.type])} ${i18n.t(`models:map_locations.${packet.startMap.id}.name`, { lng })}`,
+		value: `${CrowniclesIcons.mapTypes[packet.startMap.type]} ${i18n.t(`models:map_locations.${packet.startMap.id}.name`, { lng })}`,
 		inline: true
 	});
 	travelEmbed.addFields({
 		name: i18n.t("commands:report.endPoint", { lng }),
-		value: `${EmoteUtils.translateEmojiToDiscord(CrowniclesIcons.mapTypes[packet.endMap.type])} ${i18n.t(`models:map_locations.${packet.endMap.id}.name`, { lng })}`,
+		value: `${CrowniclesIcons.mapTypes[packet.endMap.type]} ${i18n.t(`models:map_locations.${packet.endMap.id}.name`, { lng })}`,
 		inline: true
 	});
 }

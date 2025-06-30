@@ -130,7 +130,7 @@ export class CrowniclesButtonReactionMessage {
 			emote,
 			description
 		}) =>
-			`${EmoteUtils.translateEmojiToDiscord(emote)} ${description}`)
+			`${emote} ${description}`)
 			.join("\n")
 		}`;
 	}

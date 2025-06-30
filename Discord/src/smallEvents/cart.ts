@@ -23,7 +23,7 @@ export async function cartCollector(context: PacketContext, packet: ReactionColl
 		getRandomSmallEventIntro(lng)
 		+ StringUtils.getRandomTranslation(`smallEvents:cart.${story}`, lng, {
 			price: data.price,
-			moneyEmote: EmoteUtils.translateEmojiToDiscord(CrowniclesIcons.unitValues.money),
+			moneyEmote: CrowniclesIcons.unitValues.money,
 			destination:
 				`${CrowniclesIcons.mapTypes[data.displayedDestination.type!]} ${
 					i18n.t(`models:map_locations.${data.displayedDestination.id}.name`, { lng })
@@ -36,8 +36,8 @@ export async function cartCollector(context: PacketContext, packet: ReactionColl
 
 	return await DiscordCollectorUtils.createAcceptRefuseCollector(interaction, embed, packet, context, {
 		emojis: {
-			accept: EmoteUtils.translateEmojiToDiscord(CrowniclesIcons.cartSmallEvent.accept),
-			refuse: EmoteUtils.translateEmojiToDiscord(CrowniclesIcons.cartSmallEvent.refuse)
+			accept: CrowniclesIcons.cartSmallEvent.accept,
+			refuse: CrowniclesIcons.cartSmallEvent.refuse
 		}
 	});
 }
