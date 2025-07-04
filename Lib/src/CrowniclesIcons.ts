@@ -251,7 +251,7 @@ export const CrowniclesIcons: {
 				0: "🚶"
 			},
 			help: "🎣",
-			push: "🖐",
+			push: "🖐️",
 			skip: "🏃"
 		},
 		11: {
@@ -286,7 +286,7 @@ export const CrowniclesIcons: {
 				0: "🚶"
 			},
 			goAway: "🚶",
-			stayNight: "🛏"
+			stayNight: "🛏️"
 		},
 		15: {
 			end: {
@@ -302,7 +302,7 @@ export const CrowniclesIcons: {
 				1: "🚶"
 			},
 			enterCastle: "🔎",
-			skip: "➡",
+			skip: "➡️",
 			walkAround: "🔁"
 		},
 		17: {
@@ -320,13 +320,13 @@ export const CrowniclesIcons: {
 			end: {
 				0: "🚶"
 			},
-			searchScaffolding: "⛓",
+			searchScaffolding: "⛓️",
 			searchSite: "🔎",
 			skip: "🚶"
 		},
 		19: {
 			butch: "🔪",
-			cook: "🍽",
+			cook: "🍽️",
 			end: {
 				0: "👀"
 			},
@@ -388,7 +388,7 @@ export const CrowniclesIcons: {
 				1: "👀"
 			},
 			help: "🤝",
-			steal: "🕵"
+			steal: "🕵️"
 		},
 		26: {
 			end: {
@@ -424,11 +424,11 @@ export const CrowniclesIcons: {
 			searchWater: "🔍"
 		},
 		3: {
-			abandon: "▶",
+			abandon: "▶️",
 			end: {
-				0: "▶"
+				0: "▶️"
 			},
-			mineIt: "⛏",
+			mineIt: "⛏️",
 			searchKey: "🔑"
 		},
 		30: {
@@ -458,7 +458,7 @@ export const CrowniclesIcons: {
 			},
 			heal: "💉",
 			kill: "🔪",
-			yell: "🗣"
+			yell: "🗣️"
 		},
 		33: {
 			chat: "👄",
@@ -468,7 +468,7 @@ export const CrowniclesIcons: {
 				1: "🫕"
 			},
 			skip: "🚶",
-			steal: "🕵"
+			steal: "🕵️"
 		},
 		34: {
 			end: {
@@ -497,7 +497,7 @@ export const CrowniclesIcons: {
 			goAway: "🚶",
 			goInn: "🏡",
 			stealJeweler: "💸",
-			talkJeweler: "🗣"
+			talkJeweler: "🗣️"
 		},
 		37: {
 			end: {
@@ -516,13 +516,13 @@ export const CrowniclesIcons: {
 				1: "👥",
 				2: "👥"
 			},
-			steal: "🕵"
+			steal: "🕵️"
 		},
 		39: {
 			convoy: "🚶",
 			end: {
-				0: "🗣",
-				1: "🗣"
+				0: "🗣️",
+				1: "🗣️"
 			},
 			meal: "🍖",
 			steal: "🤑"
@@ -532,10 +532,10 @@ export const CrowniclesIcons: {
 				0: "🏃"
 			},
 			skip: "🏃",
-			wish: "🗣"
+			wish: "🗣️"
 		},
 		40: {
-			askAdvices: "🗣",
+			askAdvices: "🗣️",
 			breakIn: "🔎",
 			end: {
 				0: "🚶",
@@ -544,14 +544,14 @@ export const CrowniclesIcons: {
 			goBack: "🚶"
 		},
 		41: {
-			corrupt: "🕵",
+			corrupt: "🕵️",
 			end: {
-				0: "🗣",
+				0: "🗣️",
 				1: "🕑",
 				2: "🚶"
 			},
 			escape: "🔓",
-			explain: "🗣",
+			explain: "🗣️",
 			playDead: "💀",
 			wait: "🕑"
 		},
@@ -565,14 +565,14 @@ export const CrowniclesIcons: {
 			help: "🏹"
 		},
 		43: {
-			continue: "⬆",
+			continue: "⬆️",
 			end: {
 				0: "🚶",
 				1: "🚶",
 				2: "🚶"
 			},
-			fight: "⚔",
-			goBack: "⬇",
+			fight: "⚔️",
+			goBack: "⬇️",
 			shelter: "⛪"
 		},
 		44: {
@@ -584,13 +584,13 @@ export const CrowniclesIcons: {
 			watch: "😐"
 		},
 		45: {
-			askJoin: "⤴",
+			askJoin: "⤴️",
 			end: {
-				0: "🕵",
+				0: "🕵️",
 				1: "🚶"
 			},
 			goAlone: "🚶",
-			skip: "▶",
+			skip: "▶️",
 			talk: "🔊"
 		},
 		46: {
@@ -600,7 +600,7 @@ export const CrowniclesIcons: {
 				2: "💊"
 			},
 			singCrazyLove: "🤪",
-			singHero: "⚔",
+			singHero: "⚔️",
 			singLove: "🥰",
 			singRoyalty: "👑",
 			singWork: "🪕"
@@ -609,11 +609,11 @@ export const CrowniclesIcons: {
 			end: {
 				0: "🚶",
 				1: "🏃",
-				2: "🕵"
+				2: "🕵️"
 			},
 			goAway: "🚶",
 			help: "⚔",
-			tell: "🗣"
+			tell: "🗣️"
 		},
 		48: {
 			end: {
@@ -623,7 +623,7 @@ export const CrowniclesIcons: {
 				3: "🫂",
 				4: "😕"
 			},
-			fight: "⚔",
+			fight: "⚔️",
 			meetHim: "🤝"
 		},
 		49: {
@@ -644,7 +644,7 @@ export const CrowniclesIcons: {
 			rest: "💦"
 		},
 		50: {
-			ask: "🗣",
+			ask: "🗣️",
 			end: {
 				0: "Vous",
 				1: "L'un"
@@ -658,9 +658,9 @@ export const CrowniclesIcons: {
 				1: "💥",
 				2: "🦊"
 			},
-			goBack: "🚶‍♂",
+			goBack: "🚶‍♂️",
 			search: "🔎",
-			stairs: "↗"
+			stairs: "↗️"
 		},
 		52: {
 			deny: "❌",
@@ -670,7 +670,7 @@ export const CrowniclesIcons: {
 				2: "💸"
 			},
 			play: "👥",
-			playFight: "⚔",
+			playFight: "⚔️",
 			teach: "🏹"
 		},
 		53: {
@@ -681,7 +681,7 @@ export const CrowniclesIcons: {
 				1: "🚶",
 				2: "🚶"
 			},
-			steal: "🕵"
+			steal: "🕵️"
 		},
 		54: {
 			bet: "🪙",
@@ -758,7 +758,7 @@ export const CrowniclesIcons: {
 			observe: "👀"
 		},
 		62: {
-			deny: "✖",
+			deny: "✖️",
 			end: {
 				0: "🥓",
 				1: "🐕",
@@ -772,10 +772,10 @@ export const CrowniclesIcons: {
 			end: {
 				0: "🎆",
 				1: "🍺",
-				2: "🗯",
+				2: "🗯️",
 				3: "💡"
 			},
-			faceThem: "⚔",
+			faceThem: "⚔️",
 			goAway: "🏃",
 			helpThem: "😈",
 			warnEveryone: "🔊"
@@ -790,22 +790,22 @@ export const CrowniclesIcons: {
 		65: {
 			end: {
 				0: "💰",
-				1: "❤",
+				1: "❤️",
 				2: "💎",
 				3: "⭐",
 				4: "🏅",
-				5: "⚔",
-				6: "🛡",
+				5: "⚔️",
+				6: "🛡️",
 				7: "📦"
 			},
-			hopeArmor: "🛡",
+			hopeArmor: "🛡️",
 			hopeGems: "💎",
 			hopeGlory: "🏅",
-			hopeHealthy: "❤",
+			hopeHealthy: "❤️",
 			hopeItem: "📦",
 			hopeMoney: "💰",
 			hopePet: "🐕‍🦺",
-			hopeWeapon: "⚔",
+			hopeWeapon: "⚔️",
 			hopeXP: "⭐"
 		},
 		66: {
@@ -813,8 +813,8 @@ export const CrowniclesIcons: {
 				0: "😖",
 				1: "😖"
 			},
-			hints: "ℹ",
-			run: "🏝"
+			hints: "ℹ️",
+			run: "🏝️"
 		},
 		67: {
 			accept: "🍺",
@@ -824,7 +824,7 @@ export const CrowniclesIcons: {
 			}
 		},
 		68: {
-			checkDate: "🗓",
+			checkDate: "🗓️",
 			end: {
 				0: "🚶‍",
 				1: "👀",
@@ -838,7 +838,7 @@ export const CrowniclesIcons: {
 			compromise: "🤝",
 			deny: "👿",
 			end: {
-				0: "👁"
+				0: "👁️"
 			}
 		},
 		7: {
@@ -851,7 +851,7 @@ export const CrowniclesIcons: {
 		70: {
 			end: {
 				0: "💤",
-				1: "🌪",
+				1: "🌪️",
 				2: "🏹"
 			},
 			explore: "🔍",
@@ -868,22 +868,22 @@ export const CrowniclesIcons: {
 		},
 		72: {
 			end: {
-				0: "🗣",
+				0: "🗣️",
 				1: "🧠"
 			},
 			joinArchery: "🎯",
 			joinJoust: "🐴",
-			joinMelee: "⚔",
+			joinMelee: "⚔️",
 			joinPoetry: "📜",
 			searchFood: "🍴"
 		},
 		73: {
 			end: {
 				0: "👤",
-				1: "🖌",
+				1: "🖌️",
 				2: "💼"
 			},
-			goAway: "🚶‍♂",
+			goAway: "🚶‍♂️",
 			look: "👀",
 			shame: "🗯"
 		},
@@ -891,7 +891,7 @@ export const CrowniclesIcons: {
 			end: {
 				0: "🐟"
 			},
-			eat: "🍽",
+			eat: "🍽️",
 			run: "🏃",
 			smell: "👃"
 		},
@@ -899,15 +899,15 @@ export const CrowniclesIcons: {
 			accept: "⚓",
 			refuse: "⛔",
 			end: {
-				0: "🏝",
-				1: "🏝",
-				2: "🏝",
+				0: "🏝️",
+				1: "🏝️",
+				2: "🏝️",
 				3: "🏏"
 			}
 		},
 		76: {
 			end: {
-				0: "🚶‍♂"
+				0: "🚶‍♂️"
 			},
 			help: "🤝",
 			explore: "🔍",
@@ -918,24 +918,24 @@ export const CrowniclesIcons: {
 				0: "🌲"
 			},
 			approach: "👋",
-			hide: "👁",
-			flee: "🏃‍♂"
+			hide: "👁️",
+			flee: "🏃‍♂️"
 		},
 		78: {
 			end: {
 				0: "⏳"
 			},
-			prudent: "🚶‍♂",
-			wait: "⏸",
+			prudent: "🚶‍♂️",
+			wait: "⏸️",
 			call: "📢",
-			goDown: "⬇"
+			goDown: "⬇️"
 		},
 		79: {
 			end: {
 				0: "👀"
 			},
 			follow: "🐐",
-			overtake: "🏃‍♂",
+			overtake: "🏃‍♂️",
 			ask: "❓",
 			stepAside: "👋",
 			help: "🤝"
@@ -945,14 +945,14 @@ export const CrowniclesIcons: {
 				0: "🚶"
 			},
 			forest: "🌲",
-			plains: "🏞"
+			plains: "🏞️"
 		},
 		9: {
 			end: {
 				0: "🚶"
 			},
 			help: "🔎",
-			skip: "▶"
+			skip: "▶️"
 		}
 	},
 	mapTypes: {
@@ -978,28 +978,28 @@ export const CrowniclesIcons: {
 		vi: "🛖",
 		volcano: "🌋",
 		icePeak: "🏔",
-		blessedDoors: "⛩",
+		blessedDoors: "⛩️",
 		undergroundLake: "💧",
 		dragonsNest: "🪹"
 	},
 	smallEvents: {
 		advanceTime: "⌛",
 		bigBad: "😱",
-		boatAdvice: "⛴",
+		boatAdvice: "⛴️",
 		bonusGuildPVEIsland: "😱",
 		botFacts: "💮",
-		botVote: "🗳",
+		botVote: "🗳️",
 		cart: "🚗",
 		class: "🔖",
 		doNothing: "🚶",
-		dwarfPetFan: "⛏",
+		dwarfPetFan: "⛏️",
 		epicItemShop: "🌟",
 		fightPet: "😾",
 		findItem: "❕",
 		findMission: "📜",
 		findPet: "🐕",
-		findPotion: "⚗",
-		goToPVEIsland: "⛴",
+		findPotion: "⚗️",
+		goToPVEIsland: "⛴️",
 		gobletsGame: "🥛",
 		interactOtherPlayers: "💬",
 		leagueReward: "✨",
@@ -1013,7 +1013,7 @@ export const CrowniclesIcons: {
 		winEnergy: "⚡",
 		winEnergyOnIsland: "🔋",
 		winGuildXP: "⭐",
-		winHealth: "❤",
+		winHealth: "❤️",
 		winPersonalXP: "⭐",
 		witch: "🧹",
 		infoFight: "🏰"
@@ -1160,16 +1160,16 @@ export const CrowniclesIcons: {
 			emoteMale: "🐈‍⬛"
 		},
 		40: {
-			emoteFemale: "🐿",
-			emoteMale: "🐿"
+			emoteFemale: "🐿️",
+			emoteMale: "🐿️"
 		},
 		41: {
-			emoteFemale: "🦔",
+			emoteFemale: "🦔️",
 			emoteMale: "🦔"
 		},
 		42: {
-			emoteFemale: "🐻‍❄",
-			emoteMale: "🐻‍❄"
+			emoteFemale: "🐻‍❄️",
+			emoteMale: "🐻‍❄️"
 		},
 		43: {
 			emoteFemale: "🐼",
@@ -1256,20 +1256,20 @@ export const CrowniclesIcons: {
 			emoteMale: "🦣"
 		},
 		62: {
-			emoteFemale: "🕊",
-			emoteMale: "🕊"
+			emoteFemale: "🕊️",
+			emoteMale: "🕊️"
 		},
 		63: {
-			emoteFemale: "🦄",
-			emoteMale: "🦄"
+			emoteFemale: "🦄️",
+			emoteMale: "🦄️"
 		},
 		64: {
-			emoteFemale: "🐉",
-			emoteMale: "🐉"
+			emoteFemale: "🐉️",
+			emoteMale: "🐉️"
 		},
 		65: {
-			emoteFemale: "🦖",
-			emoteMale: "🦖"
+			emoteFemale: "🦖️",
+			emoteMale: "🦖️"
 		},
 		66: {
 			emoteFemale: "🟣",
@@ -1284,8 +1284,8 @@ export const CrowniclesIcons: {
 			emoteMale: "🦆"
 		},
 		69: {
-			emoteFemale: "☃",
-			emoteMale: "☃"
+			emoteFemale: "☃️",
+			emoteMale: "☃️"
 		},
 		7: {
 			emoteFemale: "🐇",
@@ -1405,7 +1405,7 @@ export const CrowniclesIcons: {
 		}
 	},
 	monsters: {
-		spider: "🕷",
+		spider: "🕷️",
 		slimyMutant: "🦠",
 		skeleton: "💀",
 		rockGolem: "🗿",
@@ -1414,62 +1414,62 @@ export const CrowniclesIcons: {
 		whiteWolf: "🐺",
 		shinyElementary: "✨",
 		crocodile: "🐊",
-		yukiOnna: "❄",
+		yukiOnna: "❄️",
 		celestialGuardian: "🌌",
 		maleIceDragon: "🐲",
 		femaleIceDragon: "🐉"
 	},
 	armors: {
 		0: "⬛",
-		1: "👁",
-		10: "🛡",
-		11: "🛡",
-		12: "🛡",
-		13: "🛡",
-		14: "🛡",
-		15: "🛡",
-		16: "🛡",
+		1: "👁️",
+		10: "🛡️",
+		11: "🛡️",
+		12: "🛡️",
+		13: "🛡️",
+		14: "🛡️",
+		15: "🛡️",
+		16: "🛡️",
 		17: "🔆",
 		18: "🥋",
 		19: "🦺",
-		2: "⛑",
+		2: "⛑️",
 		20: "👨‍👩‍👧‍👦",
 		21: "🦾",
 		22: "🤖",
 		23: "🌂",
-		24: "🛡",
-		25: "🛡",
+		24: "🛡️",
+		25: "🛡️",
 		26: "🏉",
 		27: "✨",
-		28: "🛡",
-		29: "🛡",
-		3: "🛡",
-		30: "🛡",
-		31: "🛡",
-		32: "🛡",
-		33: "🛡",
-		34: "🛡",
-		35: "🛡",
-		36: "🛡",
-		37: "🛡",
-		38: "🛡",
+		28: "🛡️",
+		29: "🛡️",
+		3: "🛡️",
+		30: "🛡️",
+		31: "🛡️",
+		32: "🛡️",
+		33: "🛡️",
+		34: "🛡️",
+		35: "🛡️",
+		36: "🛡️",
+		37: "🛡️",
+		38: "🛡️",
 		39: "🪖",
-		4: "🛡",
+		4: "🛡️",
 		40: "🐢",
 		41: "🪙",
 		42: "🪖",
 		43: "🪣",
 		44: "🧱",
-		45: "♟",
+		45: "♟️",
 		46: "🪟",
 		47: "🏯",
 		48: "🧥",
 		49: "🧥",
-		5: "🛡",
+		5: "🛡️",
 		50: "🥼",
 		51: "⛺",
-		52: "🛡",
-		53: "🛡",
+		52: "🛡️",
+		53: "🛡️",
 		54: "🗿",
 		55: "🤡",
 		56: "🥱",
@@ -1479,16 +1479,16 @@ export const CrowniclesIcons: {
 		6: "🤺",
 		60: "🧔🏻",
 		61: "✨",
-		62: "🛡",
+		62: "🛡️",
 		63: "🍃",
-		64: "🛡",
+		64: "🛡️",
 		7: "👘",
-		8: "🛡",
-		9: "🛡"
+		8: "🛡️",
+		9: "🛡️"
 	},
 	objects: {
 		0: "⬛",
-		1: "🏳",
+		1: "🏳️",
 		10: "👞",
 		11: "👼🏽",
 		12: "🌑",
@@ -1503,9 +1503,9 @@ export const CrowniclesIcons: {
 		20: "📗",
 		21: "📿",
 		22: "🏴",
-		23: "⚜",
-		24: "🛢",
-		25: "🕯",
+		23: "⚜️",
+		24: "🛢️",
+		25: "🕯️",
 		26: "🏺",
 		27: "🎷",
 		28: "🎸",
@@ -1518,10 +1518,10 @@ export const CrowniclesIcons: {
 		34: "🧸",
 		35: "🧲",
 		36: "🩹",
-		37: "⛷",
+		37: "⛷️",
 		38: "🌀",
 		39: "💠",
-		4: "🏵",
+		4: "🏵️",
 		40: "👼",
 		41: "🏺",
 		42: "🕝",
@@ -1536,7 +1536,7 @@ export const CrowniclesIcons: {
 		50: "🥾",
 		51: "🧹",
 		52: "🧼",
-		53: "🎖",
+		53: "🎖️",
 		54: "📯",
 		55: "💰",
 		56: "🎰",
@@ -1545,25 +1545,25 @@ export const CrowniclesIcons: {
 		59: "🍫",
 		6: "🔮",
 		60: "🏢",
-		61: "🕵",
-		62: "👁",
-		63: "⛏",
+		61: "🕵️",
+		62: "👁️",
+		63: "⛏️",
 		64: "🧱",
 		65: "🎶",
 		66: "🌐",
 		67: "🚗",
 		68: "🟦",
 		69: "🎧",
-		7: "⛓",
-		70: "🛏",
+		7: "⛓️",
+		70: "🛏️",
 		71: "🤖",
-		72: "☀",
+		72: "☀️",
 		73: "🎢",
-		74: "🌶",
+		74: "🌶️",
 		75: "🔌",
 		76: "🍖",
-		77: "🧑‍⚕",
-		78: "❤‍🩹",
+		77: "🧑‍⚕️",
+		78: "❤️‍🩹",
 		79: "🧬",
 		8: "🍀",
 		80: "🔋",
@@ -1576,19 +1576,19 @@ export const CrowniclesIcons: {
 		87: "🎸",
 		88: "💾",
 		89: "🐟",
-		9: "🗝",
+		9: "🗝️",
 		90: "🐸",
-		91: "🛰"
+		91: "🛰️"
 	},
 	potions: {
 		0: "⬛",
 		1: "🍷",
 		10: "🍇",
 		11: "🍇",
-		12: "⚗",
-		13: "⚗",
-		14: "⚗",
-		15: "⚗",
+		12: "⚗️",
+		13: "⚗️",
+		14: "⚗️",
+		15: "⚗️",
 		16: "🧃",
 		17: "🧃",
 		18: "🍸",
@@ -1596,9 +1596,9 @@ export const CrowniclesIcons: {
 		2: "🍷",
 		20: "🍸",
 		21: "🍸",
-		22: "❤",
-		23: "❤",
-		24: "❤",
+		22: "❤️",
+		23: "❤️",
+		24: "❤️",
 		25: "🍹",
 		26: "🥛",
 		27: "🍼",
@@ -1618,7 +1618,7 @@ export const CrowniclesIcons: {
 		4: "🍷",
 		40: "🍾",
 		41: "🧪",
-		42: "❤",
+		42: "❤️",
 		43: "🥤",
 		44: "🐺",
 		45: "🌱",
@@ -1667,7 +1667,7 @@ export const CrowniclesIcons: {
 		84: "🪶",
 		85: "💉",
 		86: "🍸",
-		87: "🏴‍☠",
+		87: "🏴‍☠️",
 		88: "🐌",
 		89: "♨",
 		9: "🧪",
@@ -1680,25 +1680,25 @@ export const CrowniclesIcons: {
 	weapons: {
 		0: "👊",
 		1: "⚡",
-		10: "⚔",
+		10: "⚔️",
 		11: "🔫",
 		12: "💉",
 		13: "💣",
 		14: "🎸",
-		15: "⚔",
-		16: "⛏",
+		15: "⚔️",
+		16: "⛏️",
 		17: "🔧",
 		18: "🪵",
 		19: "🔪",
-		2: "🛠",
+		2: "🛠️",
 		20: "🌿",
-		21: "⛏",
+		21: "⛏️",
 		22: "🏹",
 		23: "🍳",
-		24: "✂",
-		25: "🗡",
+		24: "✂️",
+		25: "🗡️",
 		26: "🏑",
-		27: "🗡",
+		27: "🗡️",
 		28: "🔨",
 		29: "🔪",
 		3: "🏏",
@@ -1708,19 +1708,19 @@ export const CrowniclesIcons: {
 		33: "🔪",
 		34: "🎣",
 		35: "🎣",
-		36: "⚔",
-		37: "⚔",
-		38: "⚔",
-		39: "⚔",
+		36: "⚔️",
+		37: "⚔️",
+		38: "⚔️",
+		39: "⚔️",
 		4: "🏹",
-		40: "⚔",
-		41: "⚔",
+		40: "⚔️",
+		41: "⚔️",
 		42: "🔫",
 		43: "🥒",
 		44: "💐",
 		45: "🍌",
 		46: "🔖",
-		47: "❄",
+		47: "❄️",
 		48: "🏹",
 		49: "🏹",
 		5: "🔨",
@@ -1730,7 +1730,7 @@ export const CrowniclesIcons: {
 		53: "🪑",
 		54: "🧱",
 		55: "🍴",
-		56: "🗡",
+		56: "🗡️",
 		57: "🧯",
 		58: "🔖",
 		59: "💉",
@@ -1739,18 +1739,18 @@ export const CrowniclesIcons: {
 		61: "💉",
 		62: "🦠",
 		63: "💣",
-		64: "🕯",
+		64: "🕯️",
 		65: "🥢",
-		66: "⚔",
-		67: "⚔",
+		66: "⚔️",
+		67: "⚔️",
 		68: "🤛",
-		69: "⚔",
-		7: "🗡",
+		69: "⚔️",
+		7: "🗡️",
 		70: "🔫",
-		71: "⚔",
+		71: "⚔️",
 		72: "⚽",
 		73: "🪓",
-		74: "☄",
+		74: "☄️",
 		75: "🪃",
 		76: "⚡",
 		77: "🤿",
@@ -1758,13 +1758,13 @@ export const CrowniclesIcons: {
 		79: "🌂",
 		8: "📌",
 		80: "🎆",
-		81: "🗡",
+		81: "🗡️",
 		82: "🦶",
 		83: "🤬",
 		84: "🪛",
-		85: "❤",
+		85: "❤️",
 		86: "🎭",
-		87: "⚠",
+		87: "⚠️",
 		88: "🪶",
 		89: "🐉",
 		9: "🔧",
@@ -1773,10 +1773,10 @@ export const CrowniclesIcons: {
 		92: "🎮",
 		93: "🍴",
 		94: "💀",
-		95: "🗯",
-		96: "⚛",
+		95: "🗯️",
+		96: "⚛️",
 		97: "🐦‍🔥",
-		98: "❄"
+		98: "❄️"
 	},
 	classes: {
 		0: "🌿",
@@ -1787,21 +1787,21 @@ export const CrowniclesIcons: {
 		13: "🏇",
 		14: "🦯",
 		15: "🤺",
-		16: "⚜",
+		16: "⚜️",
 		17: "🔱",
-		18: "⚔",
-		19: "🛡",
-		2: "🗡",
+		18: "⚔️",
+		19: "🛡️",
+		2: "🗡️",
 		20: "🔫",
 		21: "🤺",
-		22: "⚜",
+		22: "⚜️",
 		23: "🔱",
 		24: "🧙",
-		3: "⚔",
+		3: "⚔️",
 		4: "🥊",
 		5: "🪖",
-		6: "⛓",
-		7: "🛡",
+		6: "⛓️",
+		7: "🛡️",
 		8: "🪨",
 		9: "🦾"
 	},
@@ -1813,12 +1813,12 @@ export const CrowniclesIcons: {
 		blood: "🩸",
 		bone: "🦴",
 		book: "📖",
-		cobweb: "🕸",
+		cobweb: "🕸️",
 		chicken: "🐔",
-		cool: "❄",
+		cool: "❄️",
 		crystalBall: "🔮",
-		distiller: "⚗",
-		eye: "👁",
+		distiller: "⚗️",
+		eye: "👁️",
 		frog: "🐸",
 		greenApple: "🍏",
 		heart: "🫀",
@@ -1830,9 +1830,9 @@ export const CrowniclesIcons: {
 		rose: "🌹",
 		scorpion: "🦂",
 		smallWait: "⏳",
-		smallWarm: "🌡",
+		smallWarm: "🌡️",
 		snake: "🐍",
-		spider: "🕷",
+		spider: "🕷️",
 		stir: "🥄",
 		teeth: "🦷",
 		testTube: "🧪",
@@ -1849,8 +1849,8 @@ export const CrowniclesIcons: {
 		accept: "🔍",
 		aiThinking: "🧠",
 		clipboard: "📋",
-		crossedSwords: "⚔",
-		shield: "🛡",
+		crossedSwords: "⚔️",
+		shield: "🛡️",
 		fighterStats: "👤",
 		gameStats: "📊",
 		gloryChange: "📯",
@@ -1863,7 +1863,7 @@ export const CrowniclesIcons: {
 	},
 	pveFights: {
 		waitABit: "⏳",
-		startFight: "⚔"
+		startFight: "⚔️"
 	},
 	foods: {
 		herbivorousFood: "🥬",
@@ -1880,32 +1880,32 @@ export const CrowniclesIcons: {
 			hard: "💰"
 		},
 		interactPoorCoin: "🪙",
-		warning: "⚠",
+		warning: "⚠️",
 		question: "❓",
-		back: "↩",
+		back: "↩️",
 		switch: "🔄",
-		previousPage: "⬅",
-		nextPage: "➡"
+		previousPage: "⬅️",
+		nextPage: "➡️"
 	},
 	fightActions: {
 		aerialDiveAttack: "🦅",
 		alliesArePresent: "💀",
-		ambush: "😶‍🌫",
+		ambush: "😶‍🌫️",
 		benediction: "👼",
 		bleeding: "🩸",
 		blind: "🫣",
-		blizzardRageAttack: "🌨",
+		blizzardRageAttack: "🌨️",
 		boomerangAttack: "🪃",
 		boulderTossAttack: "🪨",
 		breathTakingAttack: "💨",
 		burned: "🥵",
 		callPack: "🐺",
 		canonAttack: "🔫",
-		chargeChargeRadiantBlastAttack: "☀",
+		chargeChargeRadiantBlastAttack: "☀️",
 		chargeChargingAttack: "🧲",
 		chargeClubSmashAttack: "🏏",
-		chargeRadiantBlastAttack: "☀",
-		chargeUltimateAttack: "☄",
+		chargeRadiantBlastAttack: "☀️",
+		chargeUltimateAttack: "☄️",
 		chargingAttack: "🧲",
 		clawAttack: "🐾",
 		clubSmashAttack: "🏏",
@@ -1917,13 +1917,13 @@ export const CrowniclesIcons: {
 		crystallineArmorAttack: "🧊",
 		cursed: "👻",
 		cursedAttack: "😈",
-		darkAttack: "✴",
+		darkAttack: "✴️",
 		defenseBuff: "🧘",
-		dirty: "🗑",
+		dirty: "🗑️",
 		divineAttack: "🙏",
 		energeticAttack: "⚡",
 		eruptionAttack: "🌋",
-		familyMealAttack: "🍽",
+		familyMealAttack: "🍽️",
 		fireAttack: "🔥",
 		frozen: "🥶",
 		frozenKissAttack: "💋",
@@ -1932,17 +1932,17 @@ export const CrowniclesIcons: {
 		glacialBreathAttack: "🐉",
 		glacialCaveCollapseAttack: "💥",
 		grabAndThrowAttack: "🥋",
-		guildAttack: "🏟",
+		guildAttack: "🏟️",
 		hammerQuakeAttack: "🔨",
 		hardBiteAttack: "🦷",
-		heatDrainAttack: "🌡",
+		heatDrainAttack: "🌡️",
 		heatMudAttack: "🏺",
-		heavyAttack: "🏋",
+		heavyAttack: "🏋️",
 		howlAttack: "🌕",
-		icySeductionAttack: "❄",
+		icySeductionAttack: "❄️",
 		intenseAttack: "😤",
 		isStuckInPolarEmbrace: "🤍",
-		lavaWaveAttack: "♨",
+		lavaWaveAttack: "♨️",
 		lightRayAttack: "🔆",
 		magicMimicAttack: "🎭",
 		magmaBathAttack: "🛀",
@@ -1961,37 +1961,37 @@ export const CrowniclesIcons: {
 		powerfulAttack: "🪓",
 		protected: "💞",
 		protection: "🙅",
-		quickAttack: "🗡",
-		radiantBlastAttack: "☀",
+		quickAttack: "🗡️",
+		radiantBlastAttack: "☀️",
 		rageExplosion: "🤬",
 		ramAttack: "🐏",
-		resting: "🛏",
+		resting: "🛏️",
 		roarAttack: "📢",
-		rockShieldAttack: "⛰",
-		sabotageAttack: "🛠",
-		shieldAttack: "🛡",
-		simpleAttack: "⚔",
+		rockShieldAttack: "⛰️",
+		sabotageAttack: "🛠️",
+		shieldAttack: "🛡️",
+		simpleAttack: "⚔️",
 		slamAttack: "🦶",
 		slowed: "🦥",
 		spectralRevengeAttack: "👻",
 		startPolarEmbraceAttack: "🤍",
-		stealth: "😶‍🌫",
+		stealth: "😶‍🌫️",
 		stoneSkinAttack: "🧱",
 		stunned: "😖",
 		summonAttack: "🧑‍🤝‍🧑",
 		swallowed: "👄",
 		tailWhipAttack: "🐊",
-		targeted: "↩",
-		ultimateAttack: "☄",
+		targeted: "↩️",
+		ultimateAttack: "☄️",
 		weak: "🤧",
-		webShotAttack: "🕸"
+		webShotAttack: "🕸️"
 
 	},
 	classKinds: {
-		basic: "⚖",
-		attack: "🗡",
-		defense: "🛡",
-		other: "⚗"
+		basic: "⚖️",
+		attack: "🗡️",
+		defense: "🛡️",
+		other: "⚗️"
 	},
 	announcements: {
 		trophy: "🏆"
@@ -2005,8 +2005,8 @@ export const CrowniclesIcons: {
 		language: "🌍",
 		report: "📰",
 		rarity: "🎰",
-		vote: "🗳",
-		badges: "🎖",
+		vote: "🗳️",
+		badges: "🎖️",
 		inventory: "💼",
 		ping: "🏓"
 	},
@@ -2017,15 +2017,15 @@ export const CrowniclesIcons: {
 		xp: "⭐",
 		gem: "💎",
 		guildPoint: "🪩",
-		health: "❤",
+		health: "❤️",
 		lostHealth: "💔",
 		energy: "⚡",
 		rage: "💢",
 		time: "🕜",
-		attack: "🗡",
-		defense: "🛡",
+		attack: "🗡️",
+		defense: "🛡️",
 		speed: "🚀",
-		breath: "🌬",
+		breath: "🌬️",
 		breathRegen: "🫁",
 		petRarity: "⭐",
 		glory: "✨",
@@ -2041,55 +2041,55 @@ export const CrowniclesIcons: {
 		smallGuildXp: "⭐",
 		bigGuildXp: "🌟",
 		skipMission: "🧾",
-		lovePointsValue: "🧑‍⚕",
+		lovePointsValue: "🧑‍⚕️",
 		treasure: "👑"
 	},
 	badges: {
 		[Badge.BEST_V1_PLAYER]: "🏆",
 		[Badge.TOP_10_V1]: "🏅",
 		[Badge.BOT_OWNER]: "👑",
-		[Badge.TECHNICAL_TEAM]: "⚙",
+		[Badge.TECHNICAL_TEAM]: "⚙️",
 		[Badge.TOP_GLORY]: "✨",
-		[Badge.SUPPORT]: "❤",
+		[Badge.SUPPORT]: "❤️",
 		[Badge.CONTEST]: "🍀",
 		[Badge.DONOR]: "💸",
 		[Badge.MAJOR_BUG_REPORTER]: "🐞",
 		[Badge.RANDOM]: "🎰",
-		[Badge.FIRST_20_MEMBERS]: "⛑",
+		[Badge.FIRST_20_MEMBERS]: "⛑️",
 		[Badge.TOP_1_BEFORE_RESET]: "🥇",
 		[Badge.RICH]: "🤑",
 		[Badge.ADVERTISER]: "🌟",
-		[Badge.REDACTOR]: "🖋",
+		[Badge.REDACTOR]: "🖋️",
 		[Badge.TRANSLATOR]: "🌍",
-		[Badge.TOP_WEEK]: "🎗",
+		[Badge.TOP_WEEK]: "🎗️",
 		[Badge.CHRISTMAS]: "🎄",
 		[Badge.FUNNY]: "😂",
 		[Badge.POWERFUL_GUILD]: "💎",
 		[Badge.VERY_POWERFUL_GUILD]: "🪩",
-		[Badge.TOURNAMENT_WINNER]: "⚔",
+		[Badge.TOURNAMENT_WINNER]: "⚔️",
 		[Badge.EARLY_CLASS_ADOPTER]: "🔖",
 		[Badge.LEGENDARY_PET]: "💞",
 		[Badge.MISSION_COMPLETER]: "💍",
-		[Badge.GOOD_BUG_REPORTER]: "🕊",
-		[Badge.VOTER]: "🗳",
+		[Badge.GOOD_BUG_REPORTER]: "🕊️",
+		[Badge.VOTER]: "🗳️",
 		[Badge.ANIMAL_LOVER]: "🐾"
 	},
 	itemKinds: [
-		"⚔",
-		"🛡",
-		"⚗",
+		"⚔️",
+		"🛡️",
+		"⚗️",
 		"🧸"
 	],
 	notifications: {
 		bell: "🔔",
 		sendLocation: "📩",
-		back: "↩",
+		back: "↩️",
 		types: {
 			report: "📰",
-			guildDaily: "🏟",
+			guildDaily: "🏟️",
 			guildKick: "🚪",
 			playerFreedFromJail: "🔓",
-			fightChallenge: "⚔",
+			fightChallenge: "⚔️",
 			guildStatusChange: "📜"
 		}
 	},
@@ -2107,8 +2107,8 @@ export const CrowniclesIcons: {
 		notReplied: "🔚",
 		dm: "💌",
 		description: "📜",
-		item: "▶",
-		info: "ℹ"
+		item: "▶️",
+		info: "ℹ️"
 	},
 	fightPetActions: {
 		fistHit: "👊",
@@ -2120,14 +2120,14 @@ export const CrowniclesIcons: {
 		baitWithVegetables: "🥕",
 		doNothing: "🤷",
 		lastEffort: "🔥",
-		protect: "🛡",
+		protect: "🛡️",
 		usePlayerPet: "🐾",
 		playDead: "💀",
 		scream: "😱",
 		prayGod: "🙏",
 		attackLeft: "🤛",
 		attackRight: "🤜",
-		helpFromMates: "🏟"
+		helpFromMates: "🏟️"
 	},
 	rewards: {
 		item: "🎁",
@@ -2139,8 +2139,8 @@ export const CrowniclesIcons: {
 		sparkling: "✨"
 	},
 	sex: {
-		male: "♂",
-		female: "♀"
+		male: "♂️",
+		female: "♀️"
 	},
 	diet: {
 		omnivorous: "🥪",
@@ -2149,19 +2149,19 @@ export const CrowniclesIcons: {
 	},
 	petInformation: {
 		loveScore: "💖",
-		diet: "🍽",
+		diet: "🍽️",
 		nextFeed: "🕙",
-		fightEffect: "⚔",
+		fightEffect: "⚔️",
 		age: "👶"
 	},
 	petCommand: {
-		petButton: "🖐",
+		petButton: "🖐️",
 		pet: "😻"
 	},
 	leagues: {
 		0: "🌲",
 		1: "🗿",
-		2: "⚔",
+		2: "⚔️",
 		3: "🥉",
 		4: "🥈",
 		5: "🥇",
@@ -2182,11 +2182,11 @@ export const CrowniclesIcons: {
 			default: "⚫"
 		},
 		afk: "👻",
-		allTime: "🗓",
+		allTime: "🗓️️",
 		weekly: "🕤",
 		congrats: "🏆",
 		error: "❌",
-		guild: "🏟"
+		guild: "🏟️"
 	},
 	petTransfer: {
 		deposit: "📥",
@@ -2194,45 +2194,45 @@ export const CrowniclesIcons: {
 		withdraw: "📤"
 	},
 	other: {
-		trash: "🗑",
+		trash: "🗑️",
 		tada: "🎉",
-		guild: "🏟",
-		island: "🏝",
+		guild: "🏟️",
+		island: "🏝️",
 		increase: "🔼",
 		advice: "💡",
 		why: "🤔",
 		crown: "👑",
 		incoming: "📥",
 		outgoing: "📤",
-		right: "➡",
+		right: "➡️",
 		look: "👀",
 		paperclip: "📎",
 		folder: "📁",
 		cantSpeak: "🤐",
 		expressionless: "😑",
 		wink: "😉",
-		gear: "⚙",
+		gear: "⚙️",
 		singing: "🎵",
 		telescope: "🔭",
 		car: "🚗",
 		walking: "🚶",
-		leagueUp: "↗",
-		leagueDown: "↘"
+		leagueUp: "↗️️",
+		leagueDown: "↘️"
 	},
 	guild: {
-		icon: "🏟",
+		icon: "🏟️",
 		chief: "👑",
-		elder: "🎖",
+		elder: "🎖️",
 		member: "⚫",
-		isOnPveIsland: "🏝",
-		isOnBoat: "⛴",
+		isOnPveIsland: "🏝️",
+		isOnBoat: "⛴️",
 		countAsAnAlly: "🤝",
 		cannotBeJoinedOnBoat: "👻",
 		membersCount: "🙎"
 	},
 	networks: {
 		website: "🌐",
-		discord: "🗣"
+		discord: "🗣️"
 	},
 	languages: {
 		de: "🇩🇪",
@@ -2255,7 +2255,7 @@ export const CrowniclesIcons: {
 		"🔶",
 		"🔥",
 		"🔱",
-		"☄",
+		"☄️",
 		"💫",
 		"⭐",
 		"🌟",
@@ -2280,22 +2280,22 @@ export const CrowniclesIcons: {
 	},
 	itemNatures: [
 		"❌",
-		"❤",
+		"❤️",
 		"🚀",
-		"⚔",
-		"🛡",
+		"⚔️",
+		"🛡️",
 		"🕥",
 		"💰",
 		"⚡"
 	],
 	itemCategories: [
-		"⚔",
-		"🛡",
-		"⚗",
+		"⚔️",
+		"🛡️",
+		"⚗️",
 		"🧸"
 	],
 	profile: {
-		displayAllBadgeEmote: "🎖"
+		displayAllBadgeEmote: "🎖️"
 	},
 	fightHistory: {
 		won: "🟢",

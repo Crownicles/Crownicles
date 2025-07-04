@@ -5,6 +5,7 @@ import { DiscordCollectorUtils } from "../utils/DiscordCollectorUtils";
 import { SmallEventCartPacket } from "../../../Lib/src/packets/smallEvents/SmallEventCartPacket";
 import { CrowniclesSmallEventEmbed } from "../messages/CrowniclesSmallEventEmbed";
 import { StringUtils } from "../utils/StringUtils";
+import { EmoteUtils } from "../utils/EmoteUtils";
 import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 import i18n from "../translations/i18n";
 import { getRandomSmallEventIntro } from "../packetHandlers/handlers/SmallEventsHandler";
@@ -22,7 +23,7 @@ export async function cartCollector(context: PacketContext, packet: ReactionColl
 		getRandomSmallEventIntro(lng)
 		+ StringUtils.getRandomTranslation(`smallEvents:cart.${story}`, lng, {
 			price: data.price,
-			moneyEmote: CrowniclesIcons.unitValues.money,
+			moneyEmote: EmoteUtils.translateEmojiToDiscord(CrowniclesIcons.unitValues.money),
 			destination:
 				`${CrowniclesIcons.mapTypes[data.displayedDestination.type!]} ${
 					i18n.t(`models:map_locations.${data.displayedDestination.id}.name`, { lng })
@@ -35,8 +36,8 @@ export async function cartCollector(context: PacketContext, packet: ReactionColl
 
 	return await DiscordCollectorUtils.createAcceptRefuseCollector(interaction, embed, packet, context, {
 		emojis: {
-			accept: CrowniclesIcons.cartSmallEvent.accept,
-			refuse: CrowniclesIcons.cartSmallEvent.refuse
+			accept: EmoteUtils.translateEmojiToDiscord(CrowniclesIcons.cartSmallEvent.accept),
+			refuse: EmoteUtils.translateEmojiToDiscord(CrowniclesIcons.cartSmallEvent.refuse)
 		}
 	});
 }

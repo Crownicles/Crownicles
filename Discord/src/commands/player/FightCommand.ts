@@ -9,6 +9,7 @@ import {
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { DiscordCache } from "../../bot/DiscordCache";
 import { DiscordCollectorUtils } from "../../utils/DiscordCollectorUtils";
+import { EmoteUtils } from "../../utils/EmoteUtils";
 import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 import { PacketUtils } from "../../utils/PacketUtils";
 import { CommandFightPacketReq } from "../../../../Lib/src/packets/commands/CommandFightPacket";
@@ -91,8 +92,8 @@ export async function createFightCollector(context: PacketContext, packet: React
 
 	return await DiscordCollectorUtils.createAcceptRefuseCollector(interaction, embed, packet, context, {
 		emojis: {
-			accept: CrowniclesIcons.fightCommand.accept,
-			refuse: CrowniclesIcons.fightCommand.refuse
+			accept: EmoteUtils.translateEmojiToDiscord(CrowniclesIcons.fightCommand.accept),
+			refuse: EmoteUtils.translateEmojiToDiscord(CrowniclesIcons.fightCommand.refuse)
 		}
 	});
 }
@@ -132,7 +133,7 @@ export async function handleCommandFightRefusePacketRes(context: PacketContext):
 function addFightProfileFor(introEmbed: CrowniclesEmbed, lng: Language, fighterName: string, fightActions: Array<[string, number]>, opponentFightActionsCount: number, pet?: OwnedPet): void {
 	let fightActionsDisplay = fightActions.map(([actionId, breathCost]) => i18n.t("commands:fight.fightActionNameDisplay", {
 		lng,
-		fightActionEmote: CrowniclesIcons.fightActions[actionId],
+		fightActionEmote: EmoteUtils.translateEmojiToDiscord(CrowniclesIcons.fightActions[actionId]),
 		fightActionName: i18n.t(`models:fight_actions.${actionId}.name`, {
 			lng,
 			count: 1
@@ -367,7 +368,7 @@ export async function handleEndOfFight(context: PacketContext, packet: CommandFi
 		.setDescription(description);
 
 	const message = await interaction.channel?.send({ embeds: [embed] });
-	await message?.react(CrowniclesIcons.fightCommand.handshake);
+	await message?.react(EmoteUtils.translateEmojiToDiscord(CrowniclesIcons.fightCommand.handshake));
 }
 
 /**
@@ -459,8 +460,8 @@ function displayLeagueChangesIfNeeded(embed: CrowniclesEmbed, packet: FightRewar
 				i18n.t(`commands:fight.fightReward.leagueChange${packet.player1.newLeagueId > packet.player1.oldLeagueId ? "Up" : "Down"}`, {
 					lng,
 					player: player1Username,
-					oldLeagueEmoji: CrowniclesIcons.leagues[packet.player1.oldLeagueId],
-					newLeagueEmoji: CrowniclesIcons.leagues[packet.player1.newLeagueId],
+					oldLeagueEmoji: EmoteUtils.translateEmojiToDiscord(CrowniclesIcons.leagues[packet.player1.oldLeagueId]),
+					newLeagueEmoji: EmoteUtils.translateEmojiToDiscord(CrowniclesIcons.leagues[packet.player1.newLeagueId]),
 					oldLeague: i18n.t(`models:leagues.${packet.player1.oldLeagueId}`, { lng }),
 					newLeague: i18n.t(`models:leagues.${packet.player1.newLeagueId}`, { lng })
 				})
@@ -471,8 +472,8 @@ function displayLeagueChangesIfNeeded(embed: CrowniclesEmbed, packet: FightRewar
 				i18n.t(`commands:fight.fightReward.leagueChange${packet.player2.newLeagueId > packet.player2.oldLeagueId ? "Up" : "Down"}`, {
 					lng,
 					player: player2Username,
-					oldLeagueEmoji: CrowniclesIcons.leagues[packet.player2.oldLeagueId],
-					newLeagueEmoji: CrowniclesIcons.leagues[packet.player2.newLeagueId],
+					oldLeagueEmoji: EmoteUtils.translateEmojiToDiscord(CrowniclesIcons.leagues[packet.player2.oldLeagueId]),
+					newLeagueEmoji: EmoteUtils.translateEmojiToDiscord(CrowniclesIcons.leagues[packet.player2.newLeagueId]),
 					oldLeague: i18n.t(`models:leagues.${packet.player2.oldLeagueId}`, { lng }),
 					newLeague: i18n.t(`models:leagues.${packet.player2.newLeagueId}`, { lng })
 				})

@@ -6,6 +6,7 @@ import {
 import { readdirSync } from "fs";
 import { resolve } from "path";
 import { BotUtils } from "../utils/BotUtils";
+import { EmoteUtils } from "../utils/EmoteUtils";
 import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 import { CrowniclesLogger } from "../../../Lib/src/logs/CrowniclesLogger";
 
@@ -44,7 +45,7 @@ function convertCommandFormat(str: string): string {
  * @param str
  */
 function convertEmoteFormat(str: string): string {
-	return str.replace(/{emote:(.*?)}/g, (_match, emote) => getEmote(emote) ?? `EMOTE NOT FOUND : ${emote}`);
+	return str.replace(/{emote:(.*?)}/g, (_match, emote) => EmoteUtils.translateEmojiToDiscord(getEmote(emote) ?? `EMOTE NOT FOUND : ${emote}`));
 }
 
 type EmotePathFolder = Record<string, unknown> | string[];

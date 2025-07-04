@@ -7,6 +7,50 @@ import { CrowniclesInteraction } from "../messages/CrowniclesInteraction";
 import { CrowniclesLogger } from "../../../Lib/src/logs/CrowniclesLogger";
 
 export class EmoteUtils {
+	/**
+	 * Map of emojis to their Discord equivalent
+	 * TODO : ADD EMOJI TRANSLATION WHEN YOU SEE A DISCREPANCY PLEASE, THANKS, DON'T BE FOOLS
+	 */
+	private static emojiUnicodeMap: Record<string, string> = {
+		"⛰": ":mountain:",
+		"♨": ":hotsprings:",
+		"✒": ":black_nib:",
+		"⛴": ":ferry:"
+	};
+
+	/**
+	 * Map of emojis to their fallback for emotes not supported by Discord
+	 */
+	private static emojiSelectMenuMap: Record<string, string> = {
+		"👁️‍🗨️": "👁️",
+		"🦄️": "❓",
+		"🐉️": "❓",
+		"🦖️": "❓",
+		"🦔️": "❓"
+	};
+
+	/**
+	 * Translates an emoji to its Discord equivalent when necessary
+	 * @param emoji
+	 */
+	static translateEmojiToDiscord(emoji: string): string {
+		if (this.emojiUnicodeMap[emoji]) {
+			return this.emojiUnicodeMap[emoji];
+		}
+		return emoji;
+	}
+
+	/**
+	 * Translates an emoji to its select menu equivalent when necessary
+	 * @param emoji
+	 */
+	static translateEmojiForSelectMenus(emoji: string): string {
+		if (this.emojiSelectMenuMap[emoji]) {
+			return this.emojiSelectMenuMap[emoji];
+		}
+		return emoji;
+	}
+
 	static async testAllEmotesInSelectMenu(interaction: CrowniclesInteraction): Promise<void> {
 		let emojis = Object.values(CrowniclesIcons.weapons).concat(
 			Object.values(CrowniclesIcons.armors),
@@ -17,6 +61,13 @@ export class EmoteUtils {
 
 		// Remove duplicates
 		emojis = emojis.filter((value, index, self) => self.indexOf(value) === index);
+
+		// Remove some emojis that are not supported by Discord
+		emojis.splice(emojis.indexOf("👁️‍🗨️"), 1);
+		emojis.splice(emojis.indexOf("🦄️"), 1);
+		emojis.splice(emojis.indexOf("🐉️"), 1);
+		emojis.splice(emojis.indexOf("🦖️"), 1);
+		emojis.splice(emojis.indexOf("🦔️"), 1);
 
 		const embed = new CrowniclesEmbed()
 			.setTitle("Test select menu")
