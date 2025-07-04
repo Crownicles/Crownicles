@@ -10,8 +10,8 @@ import {
 } from "../../../FightController";
 
 const use: FightAlterationFunc = (affected, _fightAlteration, opponent, turn) => {
-	// 50 % chance to be healed from the cursed (except for the first two turns) and 100 % after 5 turns of being cursed
-	if ((Math.random() < 0.25 && affected.alterationTurn > 2) || affected.alterationTurn > 4) {
+	// 50 % chance to be healed from the cursed (except for the first two turns) and 100 % on 5th turn of being cursed
+	if ((Math.random() < 0.5 && affected.alterationTurn > 2) || affected.alterationTurn > 4) {
 		const result = defaultHealFightAlterationResult(affected);
 		let damageDealt = FightActionController.getAttackDamage(getStatsInfo(affected, opponent), affected, getAttackInfo(), true);
 		damageDealt += MathUtils.getIntervalValue(0, damageDealt * 2, (affected.alterationTurn - 2) / 3);
