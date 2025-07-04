@@ -50,8 +50,8 @@ export class PlayerMissionsInfo extends Model {
 
 	public async spendGems(amount: number, response: CrowniclesPacket[], reason: NumberChangeReason): Promise<void> {
 		const player = await Players.getById(this.playerId);
-		await MissionsController.update(player, response, { missionId: "spendGems" });
 		await this.addGems(-amount, player.keycloakId, reason);
+		await MissionsController.update(player, response, { missionId: "spendGems" });
 	}
 }
 
