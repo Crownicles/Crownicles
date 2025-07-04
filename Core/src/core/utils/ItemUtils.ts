@@ -261,6 +261,11 @@ async function sellOrKeepItem(
 	let money = 0;
 	if (item.getCategory() !== ItemCategory.POTION) {
 		money = Math.round(getItemValue(item) * resaleMultiplier);
+
+		// For auto-sell scenarios, ensure we reload again before adding money to prevent race conditions
+		if (autoSell) {
+			await player.reload();
+		}
 		await manageMoneyPayment(response, player, item, money);
 	}
 	await manageItemRefusal(response, whoIsConcerned, item, money, autoSell);
