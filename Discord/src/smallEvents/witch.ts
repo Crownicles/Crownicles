@@ -15,6 +15,7 @@ import { StringUtils } from "../utils/StringUtils";
 import { SmallEventWitchResultPacket } from "../../../Lib/src/packets/smallEvents/SmallEventWitchPacket";
 import { Effect } from "../../../Lib/src/types/Effect";
 import { WitchActionOutcomeType } from "../../../Lib/src/types/WitchActionOutcomeType";
+import { EmoteUtils } from "../utils/EmoteUtils";
 import { ReactionCollectorReturnTypeOrNull } from "../packetHandlers/handlers/ReactionCollectorHandlers";
 import { MessagesUtils } from "../utils/MessagesUtils";
 
@@ -26,7 +27,7 @@ export async function witchCollector(context: PacketContext, packet: ReactionCol
 	const reactions: [string, string][] = [];
 	for (const reaction of packet.reactions) {
 		const ingredientId = (reaction.data as ReactionCollectorWitchReaction).id;
-		const emoji = CrowniclesIcons.witchSmallEvent[ingredientId];
+		const emoji = EmoteUtils.translateEmojiToDiscord(CrowniclesIcons.witchSmallEvent[ingredientId]);
 		witchIngredients += `${emoji} ${i18n.t(`smallEvents:witch.witchEventNames.${ingredientId}`, { lng })}\n`;
 		reactions.push([ingredientId, emoji]);
 	}

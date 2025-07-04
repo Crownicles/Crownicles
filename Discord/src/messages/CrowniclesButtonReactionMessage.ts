@@ -3,6 +3,7 @@ import {
 } from "discord.js";
 import { CrowniclesInteraction } from "./CrowniclesInteraction";
 import { CrowniclesEmbed } from "./CrowniclesEmbed";
+import { EmoteUtils } from "../utils/EmoteUtils";
 import { sendInteractionNotForYou } from "../utils/ErrorUtils";
 import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 import { DiscordCollectorUtils } from "../utils/DiscordCollectorUtils";
@@ -129,7 +130,7 @@ export class CrowniclesButtonReactionMessage {
 			emote,
 			description
 		}) =>
-			`${emote} ${description}`)
+			`${EmoteUtils.translateEmojiToDiscord(emote)} ${description}`)
 			.join("\n")
 		}`;
 	}

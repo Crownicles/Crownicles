@@ -3,6 +3,7 @@ import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 import i18n from "../translations/i18n";
 import { Language } from "../../../Lib/src/Language";
 import { User } from "discord.js";
+import { EmoteUtils } from "../utils/EmoteUtils";
 import { escapeUsername } from "../utils/StringUtils";
 
 export class CrowniclesSmallEventEmbed extends CrowniclesEmbed {
@@ -15,6 +16,6 @@ export class CrowniclesSmallEventEmbed extends CrowniclesEmbed {
 			}),
 			iconURL: user.displayAvatarURL()
 		});
-		this.setDescription(`${CrowniclesIcons.smallEvents[smallEventId]} ${description}`);
+		this.setDescription(`${EmoteUtils.translateEmojiToDiscord(CrowniclesIcons.smallEvents[smallEventId])} ${description}`);
 	}
 }

@@ -6,6 +6,7 @@ import i18n from "../translations/i18n";
 import {
 	ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, parseEmoji
 } from "discord.js";
+import { EmoteUtils } from "../utils/EmoteUtils";
 import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 import {
 	DiscordCollectorUtils,
@@ -48,7 +49,7 @@ export class CrowniclesActionChooseCachedMessage extends CrowniclesCachedMessage
 		}[];
 		reactions.forEach(action => {
 			const react = action.data as ReactionCollectorFightChooseActionReaction;
-			const emoji = CrowniclesIcons.fightActions[react.id];
+			const emoji = EmoteUtils.translateEmojiToDiscord(CrowniclesIcons.fightActions[react.id]);
 
 			const button = new ButtonBuilder()
 				.setEmoji(parseEmoji(emoji)!)
