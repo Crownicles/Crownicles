@@ -23,10 +23,10 @@ export class EmoteUtils {
 	 */
 	private static emojiSelectMenuMap: Record<string, string> = {
 		"👁️‍🗨️": "👁️",
-		"🦄️": "❓",
-		"🐉️": "❓",
-		"🦖️": "❓",
-		"🦔️": "❓"
+		"🦄️": "🦄", // Note: Discord does not support the "unicorn" emoji with variation selector
+		"🐉️": "🐉", // Note: Discord does not support the "dragon" emoji with variation selector
+		"🦖️": "🦖", // Note: Discord does not support the "t-rex" emoji with variation selector
+		"🦔️": "🦔" // Note: Discord does not support the "hedgehog" emoji with variation selector
 	};
 
 	/**
