@@ -44,8 +44,7 @@ import {
 import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 import { sendInteractionNotForYou } from "../../utils/ErrorUtils";
 import {
-	DiscordCollectorUtils,
-	disableRows
+	disableRows, DiscordCollectorUtils
 } from "../../utils/DiscordCollectorUtils";
 import { EmoteUtils } from "../../utils/EmoteUtils";
 import { MessagesUtils } from "../../utils/MessagesUtils";
@@ -256,9 +255,9 @@ async function handlePetTransferCollect(
 	},
 	currentComponents: ActionRowBuilder<MessageActionRowComponentBuilder>[]
 ): Promise<{
-		inMainMenu: boolean;
-		currentComponents: ActionRowBuilder<MessageActionRowComponentBuilder>[];
-	}> {
+	inMainMenu: boolean;
+	currentComponents: ActionRowBuilder<MessageActionRowComponentBuilder>[];
+}> {
 	let updatedComponents: ActionRowBuilder<MessageActionRowComponentBuilder>[] = currentComponents;
 
 	if (inMainMenu) {
