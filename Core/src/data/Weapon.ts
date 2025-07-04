@@ -14,11 +14,7 @@ export class Weapon extends MainItem {
 	}
 
 	public getDefense(): number {
-		let before = 0;
-		if (this.rawDefense > 0) {
-			before = 1.15053 * Math.pow(this.multiplier(), 2.3617) * Math.pow(1.0569 + 0.1448 / this.multiplier(), this.rawDefense);
-		}
-		return Math.round(before * 0.75) + (this.defense ?? 0);
+		return this.defense ?? 0;
 	}
 
 	public getItemAddedValue(): number {
