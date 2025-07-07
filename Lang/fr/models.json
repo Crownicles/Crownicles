@@ -62,9 +62,37 @@
     "62": "Bouclier de givre",
     "63": "Bouclier du vent",
     "64": "Bouclier gigantesque",
+    "65": "Armure banane",
+    "66": "Bouclier du gardien",
+    "67": "Protège dent",
+    "68": "Protego",
+    "69": "Rhinoshield",
     "7": "Kimono renforcé",
+    "70": "Pare-feu",
+    "71": "Chapeau",
+    "72": "Masque à gaz",
+    "73": "Roque",
+    "74": "Grand Roque",
+    "75": "Vaccin",
+    "76": "Bouclier maudit",
+    "77": "Bouclier épineux",
+    "78": "Casquette",
+    "79": "Armure légère",
     "8": "Bouclier simple",
-    "9": "Bouclier résistant"
+    "80": "Bouclier magique",
+    "81": "Armée de robots défensifs",
+    "82": "Bouclier rond",
+    "83": "Scutum",
+    "84": "Targe",
+    "85": "Pavise",
+    "86": "Écu normand",
+    "87": "Bouclier hoplite",
+    "88": "Bouclier zoulou",
+    "89": "Bouclier bosselé",
+    "9": "Bouclier résistant",
+    "90": "Parma",
+    "91": "Adarga",
+    "92": "Château de Himeji"
   },
   "classes": {
     "0": "Recrue",
@@ -595,7 +623,6 @@
       "name_one": "Attaque armure cristalline",
       "name_other": "Attaques armures cristallines"
     },
-
     "icySeductionAttack": {
       "name_one": "Attaque séduction glaciale",
       "name_other": "Attaque séductions glaciales"
@@ -1834,4 +1861,3 @@
     }
   }
 }
-
