@@ -8,7 +8,7 @@ import { MqttManager } from "../mqtt/MqttManager";
 import { IncomingMessage } from "http";
 import { WebSocketConstants } from "../constants/WebSocketConstants";
 import { getClientTranslator } from "../protobuf/fromClient/FromClientTranslator";
-import WebSocket, { Server } from "ws";
+import * as WebSocket from "ws";
 
 /**
  * Handle the message received from the client
@@ -69,7 +69,7 @@ export class WebSocketServer {
 	/**
 	 * WebSocket server instance
 	 */
-	private static server: Server;
+	private static server: WebSocket.Server;
 
 	/**
 	 * Map of keycloakId to WebSocket client
@@ -86,7 +86,9 @@ export class WebSocketServer {
 			return;
 		}
 
-		WebSocketServer.server = new Server({ port });
+		WebSocketServer.server = new WebSocket.Server({
+			port, host: "0.0.0.0"
+		});
 
 		WebSocketServer.handleListening(port);
 		WebSocketServer.handleConnection();
@@ -197,7 +199,7 @@ export class WebSocketServer {
 	private static programClosedConnectionsPurge(): void {
 		setInterval(() => {
 			WebSocketServer.keycloakIdToClients.forEach((client, keycloakId) => {
-				if (client.readyState === WebSocket.CLOSED) {
+				if (!client || client.readyState === WebSocket.CLOSED) {
 					WebSocketServer.keycloakIdToClients.delete(keycloakId);
 				}
 			});
