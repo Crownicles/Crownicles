@@ -2,6 +2,7 @@
   "name": "Crownicles",
   "version": "0.0.1",
   "private": true,
+  "main": "expo-router/entry",
   "scripts": {
     "android-dev": "pnpm run build:protobuf && react-native run-android --mode=developmentDebug --appId=com.crownicles.development",
     "android": "react-native run-android",

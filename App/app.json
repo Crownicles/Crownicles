@@ -1,0 +1,8 @@
+{
+  "name": "Crownicles",
+  "displayName": "Crownicles",
+  "scheme": "crownicles",
+  "web": {
+    "bundler": "metro"
+  }
+}
