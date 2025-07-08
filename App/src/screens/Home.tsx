@@ -5,6 +5,7 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 import {WebSocketClient, WebSocketClientState} from "../networking/WebSocketClient.ts";
 import {PingReq} from "../@types/protobufs-client";
 import {AuthTokenManager} from "../networking/authentication/AuthTokenManager.ts";
+import {IPingRes, PingRes} from "../@types/protobufs-server";
 
 const Home = () => {
 	const [wsState, setWsState] = useState<WebSocketClientState>(WebSocketClient.getInstance().getState());
@@ -35,7 +36,11 @@ const Home = () => {
 	connectWs().then();
 
 	const handlePing = () => {
-		WebSocketClient.getInstance().sendPacket(new PingReq({}));
+		WebSocketClient.getInstance().sendPacket(new PingReq({}), {
+			[PingRes.name]: (packet: IPingRes) => {
+				Alert.alert("Ping Response", `Ping successful! Response time: ${packet.time} ms`);
+			}
+		});
 	};
 
 	const handleLogout = async () => {

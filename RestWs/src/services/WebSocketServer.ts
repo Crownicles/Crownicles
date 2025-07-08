@@ -42,6 +42,7 @@ function handleClientMessage(ws: WebSocket, keycloakId: string, groups: string[]
 		// Create the context for the message and send it to the back end
 		try {
 			const context: PacketContext = {
+				packetId: parsedMessage.id,
 				frontEndOrigin: ContextConstants.FRONT_END_ORIGIN,
 				frontEndSubOrigin: ContextConstants.FRONT_END_SUB_ORIGIN,
 				keycloakId,

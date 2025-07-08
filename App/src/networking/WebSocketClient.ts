@@ -1,7 +1,10 @@
 import { AuthTokenManager } from "./authentication/AuthTokenManager.ts";
 import Config from "react-native-config";
 import { FromClientPacket } from "../@types/protobufs-client";
-import { Alert } from "react-native";
+import { FromServerPacket } from "../@types/protobufs-server";
+import uuid from "react-native-uuid";
+
+export type WebSocketPacketResponseHandler<T extends FromServerPacket> = (packet: T) => void;
 
 export enum WebSocketClientState {
 	OPEN = "OPEN",
@@ -24,7 +27,22 @@ export class WebSocketClient {
 
 	private authFailed = false;
 
-	private packetQueue: FromClientPacket[] = [];
+	private packetQueue: {
+		id?: string; packet: FromClientPacket;
+	}[] = [];
+
+	private responseHandlers: {
+		[packetId: string]: {
+			[packetName: string]: {
+				cleanTime: Date;
+				callback: WebSocketPacketResponseHandler<never>;
+			};
+		};
+	} = {};
+
+	private globalPacketHandlers: {
+		[packetName: string]: WebSocketPacketResponseHandler<never>;
+	} = {};
 
 	private constructor() {}
 
@@ -43,12 +61,20 @@ export class WebSocketClient {
 		this.connectionFailedCallback = callback;
 	}
 
+	public setGlobalPacketHandler(packetName: string, callback: WebSocketPacketResponseHandler<never>): void {
+		this.globalPacketHandlers[packetName] = callback;
+	}
+
 	public async init(): Promise<void> {
 		await this.connect();
 
 		setInterval((): void => {
 			this.processPacketQueue();
 		}, 1000);
+
+		setInterval((): void => {
+			this.cleanResponseHandlers();
+		}, 60 * 1000); // Clean response handlers every minute
 	}
 
 	public getState(): WebSocketClientState {
@@ -68,8 +94,26 @@ export class WebSocketClient {
 		}
 	}
 
-	public sendPacket(packet: FromClientPacket): void {
-		this.packetQueue.push(packet);
+	public sendPacket(packet: FromClientPacket, responseHandlers: {
+		[packetName: string]: WebSocketPacketResponseHandler<never>;
+	}): void {
+		if (Object.keys(responseHandlers).length > 0) {
+			const packetId = uuid.v4(); // Generate a unique ID for the packet
+			this.responseHandlers[packetId] = {};
+			for (const [packetName, callback] of Object.entries(responseHandlers)) {
+				this.responseHandlers[packetId][packetName] = {
+					cleanTime: new Date(Date.now() + 10 * 60 * 60 * 1000), // Set a timeout of 10 minutes
+					callback
+				};
+			}
+
+			this.packetQueue.push({
+				packet, id: packetId
+			});
+		}
+		else {
+			this.packetQueue.push({ packet });
+		}
 		this.processPacketQueue();
 	}
 
@@ -91,9 +135,37 @@ export class WebSocketClient {
 		};
 
 		this.socket.onmessage = (event): void => {
-			// todo
-			console.log("Message received:", event.data);
-			Alert.alert("Message received", event.data);
+			try {
+				const packets = JSON.parse(event.data);
+				if (!Array.isArray(packets)) {
+					console.warn("Received non-array packet data:", packets);
+					return;
+				}
+
+				for (const packet of packets) {
+					if (!packet.name || !packet.packet) {
+						console.warn("Received malformed packet:", packet);
+						continue;
+					}
+
+					const packetId = packet.id;
+					const packetName = packet.name;
+					const packetData = packet.packet;
+
+					if (packetId && this.responseHandlers[packetId] && this.responseHandlers[packetId][packetName]) {
+						this.handleResponse(packetId, packetName, packetData);
+					}
+					else if (this.globalPacketHandlers[packetName]) {
+						this.globalPacketHandlers[packetName](packetData as never);
+					}
+					else {
+						console.warn(`No response handler for packet ID: ${packetId}, Name: ${packetName}`);
+					}
+				}
+			}
+			catch (error) {
+				console.error("Error processing WebSocket message:", error);
+			}
 		};
 
 		this.socket.onerror = (error): void => {
@@ -137,17 +209,47 @@ export class WebSocketClient {
 	private processPacketQueue(): void {
 		if (this.socket && this.socket.readyState === WebSocket.OPEN) {
 			while (this.packetQueue.length > 0) {
-				const packet = this.packetQueue.shift();
-				if (packet) {
+				const queuedPacket = this.packetQueue.shift();
+				if (queuedPacket) {
 					this.socket.send(JSON.stringify({
-						name: packet.constructor.name,
-						data: packet
+						id: queuedPacket.id,
+						name: queuedPacket.packet.constructor.name,
+						data: queuedPacket.packet
 					}));
 				}
 			}
 		}
 		else {
 			console.warn("WebSocket is not open. Queueing packets.");
+		}
+	}
+
+	private cleanResponseHandlers(): void {
+		const now = new Date();
+		for (const packetId of Object.keys(this.responseHandlers)) {
+			for (const packetName of Object.keys(this.responseHandlers[packetId])) {
+				const handler = this.responseHandlers[packetId][packetName];
+				if (handler.cleanTime < now) {
+					delete this.responseHandlers[packetId][packetName];
+				}
+			}
+			if (Object.keys(this.responseHandlers[packetId]).length === 0) {
+				delete this.responseHandlers[packetId];
+			}
+		}
+	}
+
+	private handleResponse(packetId: string, packetName: string, packet: FromServerPacket): void {
+		if (this.responseHandlers[packetId] && this.responseHandlers[packetId][packetName]) {
+			const handler = this.responseHandlers[packetId][packetName];
+			handler.callback(packet as never);
+			delete this.responseHandlers[packetId][packetName]; // Clean up after handling
+			if (Object.keys(this.responseHandlers[packetId]).length === 0) {
+				delete this.responseHandlers[packetId]; // Clean up empty packetId
+			}
+		}
+		else {
+			console.warn(`No response handler found for packet ID: ${packetId}, Name: ${packetName}`);
 		}
 	}
 }

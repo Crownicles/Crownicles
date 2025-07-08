@@ -35,6 +35,9 @@ importers:
       react-native-popup-menu:
         specifier: ^0.18.0
         version: 0.18.0
+      react-native-uuid:
+        specifier: ^2.0.3
+        version: 2.0.3
       react-native-vector-icons:
         specifier: ^10.2.0
         version: 10.2.0
@@ -3339,6 +3342,10 @@ packages:
 
   react-native-popup-menu@0.18.0:
     resolution: {integrity: sha512-XD3gyp/hwL5YWw2J034DerfvbJ6S2YHqAzvqAFRU+UGnFD4JyTqggfm4UyynBD26O1PDoRb45Loil+NZCGfCnA==}
+
+  react-native-uuid@2.0.3:
+    resolution: {integrity: sha512-f/YfIS2f5UB+gut7t/9BKGSCYbRA9/74A5R1MDp+FLYsuS+OSWoiM/D8Jko6OJB6Jcu3v6ONuddvZKHdIGpeiw==}
+    engines: {node: '>=10.0.0', npm: '>=6.0.0'}
 
   react-native-vector-icons@10.2.0:
     resolution: {integrity: sha512-n5HGcxUuVaTf9QJPs/W22xQpC2Z9u0nb0KgLPnVltP8vdUvOp6+R26gF55kilP/fV4eL4vsAHUqUjewppJMBOQ==}
@@ -8240,6 +8247,8 @@ snapshots:
   react-native-keychain@10.0.0: {}
 
   react-native-popup-menu@0.18.0: {}
+
+  react-native-uuid@2.0.3: {}
 
   react-native-vector-icons@10.2.0:
     dependencies:
