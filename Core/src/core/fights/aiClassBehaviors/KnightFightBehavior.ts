@@ -47,20 +47,16 @@ class KnightFightBehavior implements ClassBehavior {
 		const shouldTryBless =
 			!this.blessUsed && getUsedGodMoves(me, opponent) < 1 && (
 				(currentRound >= this.blessRoundChosen)
-				|| (opponentIsPaladin && me.player.class === ClassConstants.CLASSES_ID.KNIGHT && RandomUtils.crowniclesRandom.bool(0.3))
+				|| (opponentIsPaladin && RandomUtils.crowniclesRandom.bool(0.3))
 			);
 
 		if (shouldTryBless) {
 			// Not enough breath for benediction? Rest first (only if we haven't rested 4 times)
 			if (me.getBreath() < 8) {
 				if (this.restCount < 4) {
-					this.blessRoundChosen += 2;
 					this.restCount++;
 					return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.RESTING);
 				}
-
-				// Otherwise, delay benediction but don't rest
-				this.blessRoundChosen += 1;
 			}
 
 			this.blessUsed = true;
