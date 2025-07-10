@@ -13,8 +13,10 @@ import { RandomUtils } from "../../../../../../../Lib/src/utils/RandomUtils";
 import { FightConstants } from "../../../../../../../Lib/src/constants/FightConstants";
 
 const use: FightAlterationFunc = (affected, fightAlteration, opponent) => {
-	// Automatically heal being frozen if the player used fire attack
-	if (affected.getLastFightActionUsed()?.id === FightConstants.FIGHT_ACTIONS.PLAYER.FIRE_ATTACK) {
+	if (
+		affected.getLastFightActionUsed()?.id === FightConstants.FIGHT_ACTIONS.PLAYER.FIRE_ATTACK
+		&& affected.alterationTurn > 1
+	) {
 		return defaultHealFightAlterationResult(affected);
 	}
 
