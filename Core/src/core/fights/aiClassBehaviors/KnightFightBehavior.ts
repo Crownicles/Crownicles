@@ -8,20 +8,25 @@ import { FightConstants } from "../../../../../Lib/src/constants/FightConstants"
 import { RandomUtils } from "../../../../../Lib/src/utils/RandomUtils";
 import { getUsedGodMoves } from "../FightController";
 import { simpleOrQuickAttack } from "./EsquireFightBehavior";
+import { ClassConstants } from "../../../../../Lib/src/constants/ClassConstants";
+import { PlayerFighter } from "../fighter/PlayerFighter";
 
 class KnightFightBehavior implements ClassBehavior {
 	private blessRoundChosen: number | null = null;
 
-	private restCount = 0; // Track how many times we've rested
+	private blessUsed = false;
+
+	private restCount = 0;
 
 	chooseAction(me: AiPlayerFighter, fightView: FightView): FightAction {
-		const opponent = fightView.fightController.getDefendingFighter();
+		const opponent = fightView.fightController.getDefendingFighter() as AiPlayerFighter | PlayerFighter;
 		const currentRound = fightView.fightController.turn;
 
 		// Initialize defense tracking on first round
 		if (currentRound <= 2) {
 			this.blessRoundChosen = RandomUtils.randInt(8, 14); // Choose when to use benediction
 			this.restCount = 0; // Reset rest counter at the beginning of a fight
+			this.blessUsed = false;
 		}
 
 		/*
@@ -33,8 +38,19 @@ class KnightFightBehavior implements ClassBehavior {
 			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.RESTING);
 		}
 
-		// BENEDICTION STRATEGY: Use benediction at the chosen round
-		if (getUsedGodMoves(me, opponent) < 1 && (currentRound === this.blessRoundChosen || currentRound === this.blessRoundChosen + 1)) {
+		// BENEDICTION STRATEGY
+		const opponentIsPaladin = [
+			ClassConstants.CLASSES_ID.PALADIN,
+			ClassConstants.CLASSES_ID.LUMINOUS_PALADIN
+		].includes(opponent.player.class);
+
+		const shouldTryBless =
+			!this.blessUsed && getUsedGodMoves(me, opponent) < 1 && (
+				(currentRound >= this.blessRoundChosen)
+				|| (opponentIsPaladin && me.player.class === ClassConstants.CLASSES_ID.KNIGHT && RandomUtils.crowniclesRandom.bool(0.3))
+			);
+
+		if (shouldTryBless) {
 			// Not enough breath for benediction? Rest first (only if we haven't rested 4 times)
 			if (me.getBreath() < 8) {
 				if (this.restCount < 4) {
@@ -47,6 +63,7 @@ class KnightFightBehavior implements ClassBehavior {
 				this.blessRoundChosen += 1;
 			}
 
+			this.blessUsed = true;
 			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.BENEDICTION);
 		}
 
