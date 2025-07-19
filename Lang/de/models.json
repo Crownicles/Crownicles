@@ -134,10 +134,10 @@
     "3": "Fußsoldat",
     "4": "Behandschuht",
     "5": "Behelmt",
-    "6": "Mass",
-    "7": "Tank",
-    "8": "Steinhacker",
-    "9": "Fronch"
+    "6": "Kettenrüstungsträger",
+    "7": "Panzer",
+    "8": "Steinwerfer",
+    "9": "Schleuder"
   },
   "classFormat": "{emote:classes.{{id}}} $t(models:classes.{{id}})",
   "classWithStatsFormat": "{emote:classes.{{id}}} $t(models:classes.{{id}}) :\n{emote:unitValues.energy} {{energy}} | {emote:unitValues.attack} {{attack}} | {emote:unitValues.defense} {{defense}} | {emote:unitValues.speed} {{speed}} | {emote:unitValues.breath} {{initialBreath}} / {{maxBreath}} | {emote:unitValues.health} {{health}}",
