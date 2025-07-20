@@ -47,6 +47,7 @@ export class GlobalMqttClient extends RestWsMqttClient {
 				continue;
 			}
 			translatedPackets.push({
+				id: context.packetId,
 				name: translator.protoName,
 				packet: await translator.translatorFunc(context, packet.packet)
 			});

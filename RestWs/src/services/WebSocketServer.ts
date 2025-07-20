@@ -8,7 +8,7 @@ import { MqttManager } from "../mqtt/MqttManager";
 import { IncomingMessage } from "http";
 import { WebSocketConstants } from "../constants/WebSocketConstants";
 import { getClientTranslator } from "../protobuf/fromClient/FromClientTranslator";
-import WebSocket, { Server } from "ws";
+import * as WebSocket from "ws";
 
 /**
  * Handle the message received from the client
@@ -42,6 +42,7 @@ function handleClientMessage(ws: WebSocket, keycloakId: string, groups: string[]
 		// Create the context for the message and send it to the back end
 		try {
 			const context: PacketContext = {
+				packetId: parsedMessage.id,
 				frontEndOrigin: ContextConstants.FRONT_END_ORIGIN,
 				frontEndSubOrigin: ContextConstants.FRONT_END_SUB_ORIGIN,
 				keycloakId,
@@ -69,7 +70,7 @@ export class WebSocketServer {
 	/**
 	 * WebSocket server instance
 	 */
-	private static server: Server;
+	private static server: WebSocket.Server;
 
 	/**
 	 * Map of keycloakId to WebSocket client
@@ -86,7 +87,9 @@ export class WebSocketServer {
 			return;
 		}
 
-		WebSocketServer.server = new Server({ port });
+		WebSocketServer.server = new WebSocket.Server({
+			port, host: "0.0.0.0"
+		});
 
 		WebSocketServer.handleListening(port);
 		WebSocketServer.handleConnection();
@@ -197,7 +200,7 @@ export class WebSocketServer {
 	private static programClosedConnectionsPurge(): void {
 		setInterval(() => {
 			WebSocketServer.keycloakIdToClients.forEach((client, keycloakId) => {
-				if (client.readyState === WebSocket.CLOSED) {
+				if (!client || client.readyState === WebSocket.CLOSED) {
 					WebSocketServer.keycloakIdToClients.delete(keycloakId);
 				}
 			});

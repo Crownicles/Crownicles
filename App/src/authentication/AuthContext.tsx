@@ -56,10 +56,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
 	const setStateInternal = (newState: AuthStateEnum) => {
 		setState(newState);
-
-		if (state !== AuthStateEnum.NOT_READY && state !== AuthStateEnum.CONNECTING) {
-			SplashScreen.hideAsync(); // Hide the splash screen once the auth state is determined
-		}
+		console.log("Auth state changed to:", newState);
 
 		if (newState === AuthStateEnum.LOGGED_IN) {
 			router.replace("/");
@@ -88,6 +85,12 @@ export function AuthProvider({ children }: PropsWithChildren) {
 	useEffect(() => {
 		startAuthenticationFlow();
 	}, []);
+
+	useEffect(() => {
+		if (state !== AuthStateEnum.NOT_READY && state !== AuthStateEnum.CONNECTING) {
+			SplashScreen.hideAsync(); // Hide the splash screen once the auth state is determined
+		}
+	}, [state]);
 
 	return (
 			<AuthContext.Provider value={{ state, setState: setStateInternal, saveToken, clearToken }}>
