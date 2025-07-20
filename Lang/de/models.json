@@ -150,15 +150,15 @@
     "13": "Eine starke, aber ausgeglichene Klasse. Eher vielseitig.",
     "14": "Eine starke, aber ausgeglichene Klasse. Eher vielseitig.",
     "15": "Eine starke, aber ausgeglichene Klasse. Eher vielseitig.",
-    "16": "Eine defensiv ausgerichtete Klasse ohne Lebenspunktebonus, aber mit einem Angriff, der größer ist als der eines Tanks.",
-    "17": "Eine Klasse mit sehr guten Werten, aber mit einem hohen Malus auf die Lebenspunkte.",
+    "16": "Eine defensiv ausgerichtete Klasse ohne Lebenspunktebonus, aber mit einem Angriff, der größer ist als der einem Panzer.",
+    "17": "Eine Klasse mit sehr guten Statistiken, aber mit einem erheblichen Malus auf die Lebenspunkte.",
     "18": "Eine einfache Klasse. Ziemlich ausgeglichen.",
     "19": "Eine Klasse, die sich auf die Verteidigung konzentriert. Schwache Leistung im Kampf, aber zusätzliches Leben für das Abenteuer.",
     "2": "Eine einfache Klasse. Ziemlich ausgeglichen.",
     "20": "Eine auf Geschwindigkeit ausgerichtete Klasse. Wenig Lebens- und Energiepunkte, aber hohe Geschwindigkeit und Angriffsstärke.",
     "21": "Eine starke, aber ausgeglichene Klasse. Eher vielseitig.",
-    "22": "Eine defensiv ausgerichtete Klasse ohne Lebenspunktebonus, aber mit einem Angriff, der größer ist als der eines Tanks.",
-    "23": "Eine Klasse mit sehr guten Werten, aber mit einem hohen Malus auf die Lebenspunkte.",
+    "22": "Eine defensiv ausgerichtete Klasse ohne Lebenspunktebonus, aber mit einem Angriff, der größer ist als der einem Panzer.",
+    "23": "Eine Klasse mit sehr guten Statistiken, aber mit einem erheblichen Malus auf die Lebenspunkte.",
     "24": "Eine vielseitige Klasse, die sich auf eine einzigartige Kampfmechanik konzentriert.",
     "3": "Eine einfache Klasse. Ziemlich ausgeglichen.",
     "4": "Eine Klasse, die sich auf die Verteidigung konzentriert. Schwache Leistung im Kampf, aber zusätzliches Leben für das Abenteuer.",
@@ -172,7 +172,7 @@
     "alliesArePresent": {
       "name": "Opfer der Verbündeten",
       "new": "wird Opfer der Verbündeten seines Gegners.",
-      "active": "erleidet die Angriffe der Verbündeten seines Gegners."
+      "active": "erleidet die Angriffe von den Verbündeten seines Gegners."
     },
     "benediction": {
       "description": "Gehört zur Gruppe der \"Aktionen der Götter\". Scheitert, wenn im Kampf bereits 1 Aktion der Götter ausgeführt wurde. Erhöht alle Statistiken des Werfers. Je später im Kampf der Segen eingesetzt wird, desto höher ist die Erhöhung der Statistiken.",
@@ -185,14 +185,14 @@
     "blind": {
       "name": "blind",
       "new": "ist geblendet.",
-      "active": "ist geblendet und schlägt wahllos um sich herum zu.",
-      "noAction": "wird geblendet und verfehlt sein Ziel vollständig.",
+      "active": "ist geblendet und schlägt zufällig alles um ihn herum.",
+      "noAction": "wird geblendet und verfehlt sein Ziel völlig.",
       "stop": "wieder sehen kann."
     },
     "boomerangAttack": {
       "description": "Dieser Angriff kann bis zu 2 Returns of Damage verursachen.",
-      "name_one": "Bumerang-Attacke",
-      "name_other": "Boomerang-Attacken"
+      "name_one": "Bumerang-Angriff",
+      "name_other": "Bumerang-Angriffe"
     },
     "boostDefense": {
       "success": "wird hinter dem robusten Bollwerk **{{petNickname}}** gestärkt und gewinnt auf Kosten ihrer Schnelligkeit einen großartigen Schutz."
@@ -205,7 +205,7 @@
       "name_other": "Felsangriffe"
     },
     "breathTakingAttack": {
-      "description": "Inflikte eine kleine Menge Schaden, kann aber den Atem des Gegners stehlen oder ihn verlangsamen.",
+      "description": "Verursacht eine kleine Menge Schaden, kann aber den Atem des Gegners stehlen oder ihn verlangsamen.",
       "name_one": "Atemraub Angriff",
       "name_other": "Atemraub Angriffe"
     },
@@ -220,7 +220,7 @@
     },
     "canonAttack": {
       "description": "Die Genauigkeit dieses Angriffs sinkt bei schnellen Gegnern. Ein Schadensbonus wird auf diesen Angriff angewendet, wenn der Gegner sehr langsam ist. Der Gegner kann durch den Angriff verlangsamt werden. Verursacht mehr Schaden, wenn er mehrmals hintereinander eingesetzt wird.",
-      "name_one": "Kanonenschlag",
+      "name_one": "Kanonenangriff",
       "name_other": "Kanonenschläge"
     },
     "chargeChargingAttack": {
@@ -233,8 +233,8 @@
       "name_other": "Keulen Angriffe"
     },
     "chargeUltimateAttack": {
-      "description": "Benötigt eine Runde, um den Angriff aufzuladen. Wenn der Angreifer über weniger als 45% seiner Energie verfügt, kann dieser Angriff nicht fehlschlagen. Dieser Angriff kann nur einmal pro Spieler und Kampf eingesetzt werden.",
-      "name_one": "Letzter Angriff",
+      "description": "Benötigt eine Runde, um den Angriff aufzuladen. Wenn der Angreifer weniger als 45% seiner Energie verfügt, kann dieser Angriff nicht fehlschlagen. Dieser Angriff kann nur einmal pro Spieler und Kampf eingesetzt werden.",
+      "name_one": "Ultimativer Angriff",
       "name_other": "Letzter Attacken"
     },
     "chargingAttack": {
