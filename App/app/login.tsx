@@ -1,6 +1,7 @@
 import {Button, StyleSheet, Text, View} from "react-native";
 import React from "react";
 import {AuthContext, AuthStateEnum} from "@/src/authentication/AuthContext";
+import {RestApi} from "@/src/networking/RestApi";
 
 export default function LoginScreen() {
 	const authState = React.useContext(AuthContext);
@@ -16,10 +17,26 @@ export default function LoginScreen() {
 			<Text style={styles.text}>Login screen</Text>
 			<View style={{ height: 24 }} />
 			<Button title="Log In" onPress={() => {
-				authState.setState(AuthStateEnum.LOGGED_IN);
-				authState.saveToken("dummy-token").then().catch((err) => {
-					console.error("Failed to save token:", err);
-				}); // todo: replace with actual token logic
+				RestApi.loginWithDiscord().then((result) => {
+					if (result.type === "success") {
+						let token = result.url.split('token=')[1];
+						if (!token) {
+							alert("Login failed. No token received.");
+							return;
+						}
+
+						// Handle successful login, e.g., save token and update auth state
+						authState.setState(AuthStateEnum.LOGGED_IN);
+						authState.saveToken(token).then().catch((err) => {
+							console.error("Failed to save token:", err);
+						});
+					} else {
+						alert("Login failed. Please try again.");
+					}
+				}).catch((error) => {
+					console.error("Login error:", error);
+					alert("An error occurred during login. Please try again.");
+				});
 			}} />
 		</View>
 	);
