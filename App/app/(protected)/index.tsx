@@ -1,6 +1,6 @@
 import {Button, Text, View} from "react-native";
 import {useContext} from "react";
-import {AuthContext} from "@/src/authentication/AuthContext";
+import {AuthContext, AuthStateEnum} from "@/src/authentication/AuthContext";
 
 export default function Index() {
   const authState = useContext(AuthContext);
@@ -15,7 +15,12 @@ export default function Index() {
     >
       <Text>Edit app/index.tsx to edit this screen.</Text>
       <View style={{ height: 24 }} />
-      <Button title="Logout" onPress={authState.logOut} />
+      <Button title="Logout" onPress={() => {
+		  authState.setState(AuthStateEnum.NO_TOKEN);
+		  authState.clearToken().then().catch((err) => {
+			  console.error("Failed to clear token:", err);
+		  });
+	  }} />
     </View>
   );
 }
