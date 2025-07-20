@@ -9,3 +9,5 @@ In terms of performances, it is better to use a reverse proxy than integrate SSL
 For being able to log in Discord user:
 - Add the following feature to keycloak using this environment variable: `KC_FEATURES: token-exchange`
 - the client must have the role "impersonation"
+
+In keycloak client scopes, add "openid" and inside it enable "Include in token scope"

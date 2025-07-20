@@ -93,7 +93,9 @@ export class RestApi {
 	 * @param port
 	 */
 	public start(port: number): void {
-		this.server.listen({ port }, (err, address) => {
+		this.server.listen({
+			port, host: "0.0.0.0"
+		}, (err, address) => {
 			if (err) {
 				CrowniclesLogger.errorWithObj("Failed to start Rest API", err);
 				process.exit(1);
