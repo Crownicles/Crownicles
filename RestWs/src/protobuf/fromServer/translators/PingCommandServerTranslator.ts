@@ -7,7 +7,7 @@ export default class PingCommandServerTranslator {
 	@fromServerTranslator(CommandPingPacketRes, PingRes)
 	public static translate(_context: PacketContext, packet: CommandPingPacketRes): Promise<PingRes> {
 		return Promise.resolve(PingRes.create({
-			time: Date.now() - packet.clientTime
+			time: packet.clientTime
 		}));
 	}
 }
