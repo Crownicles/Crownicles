@@ -121,6 +121,12 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
 		console.debug("Loaded token:", token);
 
+	if (!token || token.length === 0) {
+			console.log("No token found, setting state to NO_TOKEN");
+			setStateInternal(AuthStateEnum.NO_TOKEN);
+			return;
+		}
+
 		let authToken = AuthToken.fromJsonString(token);
 		if (await authToken.refreshIfNeeded()) {
 			console.debug("Token refreshed successfully:", authToken);

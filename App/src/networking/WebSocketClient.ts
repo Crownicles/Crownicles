@@ -170,6 +170,7 @@ export class WebSocketClient {
 			if (error.reason === "Unauthorized") {
 				console.error("WebSocket authentication failed.");
 				this.setState(AuthStateEnum.TOKEN_INVALID_OR_EXPIRED);
+				return;
 			}
 			const instance = WebSocketClient.getInstance();
 			instance.socket = null; // Reset socket on close
