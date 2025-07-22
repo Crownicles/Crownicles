@@ -1,8 +1,9 @@
 import {Redirect, Stack} from "expo-router";
 import React from "react";
-import {AuthContext, AuthStateEnum} from "@/src/authentication/AuthContext";
+import {AuthContext} from "@/src/authentication/AuthContext";
 import {SafeAreaProvider} from "react-native-safe-area-context";
 import {ActivityIndicator, StyleSheet, View} from "react-native";
+import {AuthStateEnum} from "@/src/authentication/AuthStateEnum";
 
 export default function RootLayout() {
 	const authState = React.useContext(AuthContext);
@@ -32,7 +33,9 @@ export default function RootLayout() {
 	return (
 			<SafeAreaProvider>
 				<View style={{ flex: 1 }}>
-					<Stack />
+					<Stack>
+						<Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+					</Stack>
 					{authState.state === AuthStateEnum.RECONNECTING_PACKET_QUEUE && (
 							<View style={styles.overlay} pointerEvents="auto">
 								<View style={styles.indicatorContainer}>

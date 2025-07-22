@@ -3,19 +3,9 @@ import {SplashScreen, useRouter} from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import {WebSocketClient} from "@/src/networking/WebSocketClient";
 import {AuthToken} from "@/src/authentication/AuthToken";
+import {AuthStateEnum} from "@/src/authentication/AuthStateEnum";
 
 SplashScreen.preventAutoHideAsync(); // Prevent the splash screen from hiding until the auth state is determined
-
-export enum AuthStateEnum {
-	NOT_READY,
-	NO_TOKEN,
-	TOKEN_INVALID_OR_EXPIRED,
-	CONNECTING,
-	RECONNECTING_NO_PACKET_QUEUE,
-	RECONNECTING_PACKET_QUEUE,
-	CONNECTION_ERROR,
-	LOGGED_IN,
-}
 
 type AuthState = {
 	state: AuthStateEnum;
