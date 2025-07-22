@@ -1,6 +1,7 @@
 import {Button, Text, View} from "react-native";
 import {useContext} from "react";
-import {AuthContext, AuthStateEnum} from "@/src/authentication/AuthContext";
+import {AuthContext} from "@/src/authentication/AuthContext";
+import {AuthStateEnum} from "@/src/authentication/AuthStateEnum";
 
 export default function Index() {
   const authState = useContext(AuthContext);
