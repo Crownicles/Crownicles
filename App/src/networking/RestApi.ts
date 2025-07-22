@@ -1,5 +1,6 @@
 import * as WebBrowser from 'expo-web-browser';
 import {WebBrowserAuthSessionResult} from 'expo-web-browser';
+import {KeycloakOAuth2Token} from "../../../Lib/src/keycloak/KeycloakOAuth2Token";
 
 export class RestApi {
 	private static getBaseUrl(): string {
@@ -45,5 +46,18 @@ export class RestApi {
 
 	public static loginWithDiscord(): Promise<WebBrowserAuthSessionResult> {
 		return WebBrowser.openAuthSessionAsync(`${RestApi.getBaseUrl()}/discord`, "crownicles://discord");
+	}
+
+	public static async refreshToken(refreshToken: string): Promise<KeycloakOAuth2Token> {
+		const response = await RestApi.post<KeycloakOAuth2Token>("/refresh-token", {
+			// Naming convention
+			refresh_token: refreshToken
+		});
+
+		if (!response || !response.access_token || !response.refresh_token) {
+			throw new Error("Failed to refresh token: Invalid response from server.");
+		}
+
+		return response;
 	}
 }
