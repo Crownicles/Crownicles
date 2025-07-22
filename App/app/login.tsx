@@ -1,12 +1,13 @@
 import {ActivityIndicator, Button, StyleSheet, Text, View} from "react-native";
 import React from "react";
-import {AuthContext, AuthStateEnum} from "@/src/authentication/AuthContext";
+import {AuthContext} from "@/src/authentication/AuthContext";
 import {RestApi} from "@/src/networking/RestApi";
 import {WebSocketClient} from "@/src/networking/WebSocketClient";
 import {AuthToken} from "@/src/authentication/AuthToken";
 import {KeycloakOAuth2Token} from "../../Lib/src/keycloak/KeycloakOAuth2Token";
 import {useRouter} from "expo-router";
 import {Buffer} from "buffer";
+import {AuthStateEnum} from "@/src/authentication/AuthStateEnum";
 
 export default function LoginScreen() {
 	const authState = React.useContext(AuthContext);

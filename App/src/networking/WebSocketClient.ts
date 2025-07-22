@@ -1,7 +1,7 @@
 import {FromClientPacket} from "../@types/protobufs-client";
 import {FromServerPacket} from "../@types/protobufs-server";
 import uuid from "react-native-uuid";
-import {AuthStateEnum} from "@/src/authentication/AuthContext";
+import {AuthStateEnum} from "@/src/authentication/AuthStateEnum";
 import {AuthToken} from "@/src/authentication/AuthToken";
 
 export type WebSocketPacketResponseHandler<T extends FromServerPacket> = (packet: T) => void;
