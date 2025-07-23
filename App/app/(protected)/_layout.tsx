@@ -45,7 +45,9 @@ export default function RootLayout() {
 	return (
 			<SafeAreaProvider>
 				<View style={{ flex: 1 }}>
-					<Stack>
+					<Stack screenOptions={{
+						headerShown: false,
+					}}>
 						<Stack.Screen name="(tabs)" options={{ headerShown: false }} />
 					</Stack>
 					{authState.state === AuthStateEnum.RECONNECTING_PACKET_QUEUE && (
