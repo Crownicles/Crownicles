@@ -161,6 +161,11 @@ function parseBadges(badgesString: string | null): Badge[] {
 	return badgesString.split(",") as Badge[];
 }
 
+/**
+ * This command can return the following packets:
+ * - CommandProfilePacketRes
+ * - CommandProfilePlayerNotFound
+ */
 export default class ProfileCommand {
 	@commandRequires(CommandProfilePacketReq, {
 		notBlocked: false,
