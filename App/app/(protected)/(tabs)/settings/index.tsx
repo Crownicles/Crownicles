@@ -13,7 +13,7 @@ const ListItem = ({ children }: PropsWithChildren) => (
   </View>
 );
 
-export default function Settings() {
+export default function Index() {
 	const preferences = React.useContext(PreferencesContext);
 	const authState = React.useContext(AuthContext);
 	const [pingLoading, setPingLoading] = React.useState(false);

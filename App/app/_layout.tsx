@@ -7,7 +7,7 @@ import {PreferencesProvider} from "@/src/preferences/PreferencesContext";
 export default function RootLayout() {
 	return <AuthProvider>
 		<PreferencesProvider>
-			<StatusBar style="auto" />
+			<StatusBar hidden />
 			<Stack
 				screenOptions={{
 					headerShown: false,

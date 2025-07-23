@@ -12,7 +12,12 @@
     "build:protobuf": "mkdir -p src/@types && pbjs -t static-module -p protobufs --force-number -o src/@types/protobufs-client.js ../RestWs/protobufs/from_client/**/*.proto && pbts -o src/@types/protobufs-client.d.ts src/@types/protobufs-client.js && pbjs -t static-module -p protobufs --force-number -o src/@types/protobufs-server.js ../RestWs/protobufs/from_server/**/*.proto && pbts -o src/@types/protobufs-server.d.ts src/@types/protobufs-server.js && sed -i 's/export interface \\([A-Za-z0-9]\\+\\) {/export interface \\1 extends FromClientPacket {/g' src/@types/protobufs-client.d.ts && sed -i 's/export interface \\([A-Za-z0-9]\\+\\) {/export interface \\1 extends FromServerPacket {/g' src/@types/protobufs-server.d.ts && sed -i '1s/^/export interface FromClientPacket {}\\n/' src/@types/protobufs-client.d.ts && sed -i '1s/^/export interface FromServerPacket {}\\n/' src/@types/protobufs-server.d.ts"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
     "@expo/vector-icons": "^14.1.0",
+    "@mui/icons-material": "^7.2.0",
+    "@mui/material": "^7.2.0",
+    "@react-native-async-storage/async-storage": "2.1.2",
     "@react-navigation/bottom-tabs": "^7.3.10",
     "@react-navigation/elements": "^2.3.8",
     "@react-navigation/native": "^7.1.6",
@@ -39,8 +44,7 @@
     "react-native-screens": "~4.11.1",
     "react-native-uuid": "^2.0.3",
     "react-native-web": "~0.20.0",
-    "react-native-webview": "13.13.5",
-    "@react-native-async-storage/async-storage": "2.1.2"
+    "react-native-webview": "13.13.5"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
