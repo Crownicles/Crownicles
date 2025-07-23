@@ -2,7 +2,7 @@ import {Redirect, Stack} from "expo-router";
 import React from "react";
 import {AuthContext} from "@/src/authentication/AuthContext";
 import {SafeAreaProvider} from "react-native-safe-area-context";
-import {ActivityIndicator, StyleSheet, View} from "react-native";
+import {ActivityIndicator, Button, Modal, StyleSheet, Text, View} from "react-native";
 import {AuthStateEnum} from "@/src/authentication/AuthStateEnum";
 
 export default function RootLayout() {
@@ -16,9 +16,21 @@ export default function RootLayout() {
 	}
 
 	if (authState.state === AuthStateEnum.CONNECTION_ERROR) {
-		alert("Connection error. Please check your internet connection and try again.");
-		authState.setState(AuthStateEnum.NOT_READY);
-		return null;
+		return (
+			<Modal visible={true} transparent animationType="fade">
+				<View style={styles.overlay} pointerEvents="auto">
+					<View style={styles.indicatorContainer}>
+						<Text style={{ marginBottom: 16, textAlign: "center" }}>
+							Connection error. Please check your internet connection and try again.
+						</Text>
+						<Button
+							title="Reconnect"
+							onPress={() => authState.setState(AuthStateEnum.NOT_READY)}
+						/>
+					</View>
+				</View>
+			</Modal>
+		);
 	}
 
 	const allowedStates = [
