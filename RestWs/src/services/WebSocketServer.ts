@@ -33,6 +33,15 @@ function handleClientMessage(ws: WebSocket, keycloakId: string, groups: string[]
 			return;
 		}
 
+		// Log the received message
+		CrowniclesLogger.debug("Received message from client", {
+			keycloakId,
+			packet: {
+				name: parsedMessage.name,
+				data: parsedMessage.data
+			}
+		});
+
 		const translator = getClientTranslator(parsedMessage.name);
 		if (!translator) {
 			CrowniclesLogger.debug("No translator found for message", { parsedMessage });

@@ -36,6 +36,10 @@ export class WebSocketClient {
 
 	private saveToken: (token: AuthToken) => Promise<void> = async () => {};
 
+	private processPacketQueueIntervalId: number | null = null;
+
+	private cleanResponseHandlersIntervalId: number | null = null;
+
 	private constructor() {}
 
 	public static getInstance(): WebSocketClient {
@@ -53,13 +57,14 @@ export class WebSocketClient {
 		this.setState = setState;
 		this.saveToken = saveToken;
 
-		await this.connect(authToken);
+		this.setState(AuthStateEnum.CONNECTING);
+		await this.connect(authToken, true);
 
-		setInterval((): void => {
+		this.processPacketQueueIntervalId = setInterval((): void => {
 			this.processPacketQueue();
 		}, 1000);
 
-		setInterval((): void => {
+		this.cleanResponseHandlersIntervalId = setInterval((): void => {
 			this.cleanResponseHandlers();
 		}, 60 * 1000); // Clean response handlers every minute
 	}
@@ -67,6 +72,7 @@ export class WebSocketClient {
 	public sendPacket(packet: FromClientPacket, responseHandlers: {
 		[packetName: string]: WebSocketPacketResponseHandler<never>;
 	}): void {
+		console.debug("Sending packet:", packet);
 		if (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
 			console.warn("WebSocket is not open. Packet will be queued.");
 			this.packetQueue.push({ packet });
@@ -93,11 +99,13 @@ export class WebSocketClient {
 		this.processPacketQueue();
 	}
 
-	private async connect(authToken: AuthToken): Promise<void> {
+	private async connect(authToken: AuthToken, firstConnection: boolean): Promise<void> {
 		if (this.socket && this.socket.readyState === WebSocket.OPEN) {
 			this.setState(AuthStateEnum.LOGGED_IN);
 			return; // Already connected
 		}
+
+		let firstConnectionFlag = firstConnection;
 
 		const webSocketUrl = process.env.EXPO_PUBLIC_WEBSOCKET_URL;
 		if (!webSocketUrl) {
@@ -117,12 +125,12 @@ export class WebSocketClient {
 		}
 
 		this.socket = new WebSocket(`${webSocketUrl}?token=${accessToken}`);
-		this.setState(AuthStateEnum.CONNECTING);
 
 		this.socket.onopen = (): void => {
 			console.log("WebSocket connection established.");
 			this.connectionAttempts = 0; // Reset connection attempts on successful connection
 			this.setState(AuthStateEnum.LOGGED_IN);
+			firstConnectionFlag = false; // Reset first connection flag after successful connection
 		};
 
 		this.socket.onmessage = (event): void => {
@@ -138,6 +146,8 @@ export class WebSocketClient {
 						console.warn("Received malformed packet:", packet);
 						continue;
 					}
+
+					console.debug("Received packet:", packet);
 
 					const packetId = packet.id;
 					const packetName = packet.name;
@@ -160,9 +170,10 @@ export class WebSocketClient {
 		};
 
 		this.socket.onerror = (error): void => {
-			console.error("WebSocket error:", error);
+			console.info("WebSocket error:", error);
 			this.socket?.close();
 			this.setState(AuthStateEnum.CONNECTION_ERROR);
+			this.clearIntervals();
 		};
 
 		this.socket.onclose = (error): void => {
@@ -170,16 +181,20 @@ export class WebSocketClient {
 			if (error.reason === "Unauthorized") {
 				console.error("WebSocket authentication failed.");
 				this.setState(AuthStateEnum.TOKEN_INVALID_OR_EXPIRED);
+				this.clearIntervals();
 				return;
 			}
 			const instance = WebSocketClient.getInstance();
 			instance.socket = null; // Reset socket on close
-			if (instance.connectionAttempts >= instance.maxConnectionAttempts) {
-				console.error("Max connection attempts reached. Stopping reconnection attempts.");
+			if (firstConnectionFlag || instance.connectionAttempts >= instance.maxConnectionAttempts) {
+				if (!firstConnectionFlag) {
+					console.error("Max connection attempts reached. Stopping reconnection attempts.");
+				}
 				instance.connectionAttempts = 0; // Reset attempts
 				instance.socket = null; // Clear socket
 				instance.packetQueue = []; // Clear packet queue
 				this.setState(AuthStateEnum.CONNECTION_ERROR);
+				this.clearIntervals();
 				return;
 			}
 			else if (this.packetQueue.length > 0) {
@@ -191,14 +206,14 @@ export class WebSocketClient {
 			setTimeout(function() {
 				console.log("Attempting to reconnect WebSocket...");
 				instance.connectionAttempts++;
-				instance.connect.bind(instance)(authToken); // Attempt to reconnect after 1 second
+				instance.connect.bind(instance)(authToken, false); // Attempt to reconnect after 1 second
 			}, 1000);
 		};
 	}
 
 	private processPacketQueue(): void {
-		if (this.socket && this.socket.readyState === WebSocket.OPEN) {
-			while (this.packetQueue.length > 0) {
+		while (this.packetQueue.length > 0) {
+			if (this.socket && this.socket.readyState === WebSocket.OPEN) {
 				const queuedPacket = this.packetQueue.shift();
 				if (queuedPacket) {
 					this.socket.send(JSON.stringify({
@@ -208,9 +223,10 @@ export class WebSocketClient {
 					}));
 				}
 			}
-		}
-		else {
-			console.warn("WebSocket is not open. Cannot process packet queue.");
+			else {
+				console.warn("WebSocket is not open. Cannot process packet queue.");
+				break;
+			}
 		}
 	}
 
@@ -240,6 +256,17 @@ export class WebSocketClient {
 		}
 		else {
 			console.warn(`No response handler found for packet ID: ${packetId}, Name: ${packetName}`);
+		}
+	}
+
+	private clearIntervals(): void {
+		if (this.processPacketQueueIntervalId !== null) {
+			clearInterval(this.processPacketQueueIntervalId);
+			this.processPacketQueueIntervalId = null;
+		}
+		if (this.cleanResponseHandlersIntervalId !== null) {
+			clearInterval(this.cleanResponseHandlersIntervalId);
+			this.cleanResponseHandlersIntervalId = null;
 		}
 	}
 }

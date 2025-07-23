@@ -34,10 +34,12 @@ export function AuthProvider({ children }: PropsWithChildren) {
 	const router = useRouter();
 
 	const setStateInternal = (newState: AuthStateEnum) => {
-		setState(newState);
-		console.log("Auth state changed to:", newState);
+		const previousState = state;
 
-		if (newState === AuthStateEnum.LOGGED_IN) {
+		setState(newState);
+		console.log("Auth state changed from", previousState, "to", newState);
+
+		if (newState === AuthStateEnum.LOGGED_IN && previousState !== AuthStateEnum.LOGGED_IN && previousState !== AuthStateEnum.RECONNECTING_NO_PACKET_QUEUE && previousState !== AuthStateEnum.RECONNECTING_PACKET_QUEUE) {
 			router.replace("/");
 		}
 		else if (newState === AuthStateEnum.NO_TOKEN || newState === AuthStateEnum.TOKEN_INVALID_OR_EXPIRED) {
