@@ -7,9 +7,9 @@ import {
 
 export default class PingCommandClientTranslator {
 	@fromClientTranslator(PingReq)
-	public static translate(_context: PacketContext, _proto: PingReq): Promise<CommandPingPacketReq> {
+	public static translate(_context: PacketContext, proto: PingReq): Promise<CommandPingPacketReq> {
 		return asyncMakePacket(CommandPingPacketReq, {
-			time: Date.now()
+			time: proto.time
 		});
 	}
 }

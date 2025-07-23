@@ -22,6 +22,7 @@
          * Properties of a PingReq.
          * @exports IPingReq
          * @interface IPingReq
+         * @property {number} time PingReq time
          */
     
         /**
@@ -38,6 +39,14 @@
                     if (properties[keys[i]] != null)
                         this[keys[i]] = properties[keys[i]];
         }
+    
+        /**
+         * PingReq time.
+         * @member {number} time
+         * @memberof PingReq
+         * @instance
+         */
+        PingReq.prototype.time = 0;
     
         /**
          * Creates a new PingReq instance using the specified properties.
@@ -63,6 +72,7 @@
         PingReq.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
+            writer.uint32(/* id 1, wireType 0 =*/8).int32(message.time);
             return writer;
         };
     
@@ -99,11 +109,17 @@
                 if (tag === error)
                     break;
                 switch (tag >>> 3) {
+                case 1: {
+                        message.time = reader.int32();
+                        break;
+                    }
                 default:
                     reader.skipType(tag & 7);
                     break;
                 }
             }
+            if (!message.hasOwnProperty("time"))
+                throw $util.ProtocolError("missing required 'time'", { instance: message });
             return message;
         };
     
@@ -134,6 +150,8 @@
         PingReq.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            if (!$util.isInteger(message.time))
+                return "time: integer expected";
             return null;
         };
     
@@ -148,7 +166,10 @@
         PingReq.fromObject = function fromObject(object) {
             if (object instanceof $root.PingReq)
                 return object;
-            return new $root.PingReq();
+            var message = new $root.PingReq();
+            if (object.time != null)
+                message.time = object.time | 0;
+            return message;
         };
     
         /**
@@ -160,8 +181,15 @@
          * @param {$protobuf.IConversionOptions} [options] Conversion options
          * @returns {Object.<string,*>} Plain object
          */
-        PingReq.toObject = function toObject() {
-            return {};
+        PingReq.toObject = function toObject(message, options) {
+            if (!options)
+                options = {};
+            var object = {};
+            if (options.defaults)
+                object.time = 0;
+            if (message.time != null && message.hasOwnProperty("time"))
+                object.time = message.time;
+            return object;
         };
     
         /**

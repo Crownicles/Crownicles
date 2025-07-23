@@ -3,6 +3,9 @@ import * as $protobuf from "protobufjs";
 import Long = require("long");
 /** Properties of a PingReq. */
 export interface IPingReq extends FromClientPacket {
+
+    /** PingReq time */
+    time: number;
 }
 
 /** Represents a PingReq. */
@@ -13,6 +16,9 @@ export class PingReq implements IPingReq {
      * @param [properties] Properties to set
      */
     constructor(properties?: IPingReq);
+
+    /** PingReq time. */
+    public time: number;
 
     /**
      * Creates a new PingReq instance using the specified properties.

@@ -54,7 +54,7 @@ export class RestApi {
 			refresh_token: refreshToken
 		});
 
-		if (!response || !response.access_token || !response.refresh_token) {
+		if (!response || !response.access_token || !response.refresh_token || !response.expires_in || !response.refresh_expires_in) {
 			throw new Error("Failed to refresh token: Invalid response from server.");
 		}
 
