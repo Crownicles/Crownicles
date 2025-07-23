@@ -33,6 +33,11 @@ function getCampaignProgression(missionsInfo: PlayerMissionsInfo): number {
 	return missionsInfo.campaignProgression === 0 ? 100 : Math.round(Campaign.getAmountOfCampaignCompleted(missionsInfo.campaignBlob) / Campaign.getMaxCampaignNumber() * 100);
 }
 
+/**
+ * This command can return the following packets:
+ * - CommandProfilePacketRes
+ * - CommandProfilePlayerNotFound
+ */
 export default class ProfileCommand {
 	@commandRequires(CommandProfilePacketReq, {
 		notBlocked: false,
