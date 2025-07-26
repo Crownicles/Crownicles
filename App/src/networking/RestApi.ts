@@ -1,6 +1,6 @@
 import * as WebBrowser from 'expo-web-browser';
 import {WebBrowserAuthSessionResult} from 'expo-web-browser';
-import {KeycloakOAuth2Token} from "../../../Lib/src/keycloak/KeycloakOAuth2Token";
+import {KeycloakOAuth2Token} from "crownicles_lib/src/keycloak/KeycloakOAuth2Token";
 
 export class RestApi {
 	private static getBaseUrl(): string {
