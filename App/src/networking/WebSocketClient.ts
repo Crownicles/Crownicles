@@ -254,7 +254,7 @@ export class WebSocketClient {
 		for (const packetId of Object.keys(this.responseHandlers)) {
 			for (const packetName of Object.keys(this.responseHandlers[packetId])) {
 				const handler = this.responseHandlers[packetId].handlers[packetName];
-				if (handler.cleanTime < now) {
+				if (handler && handler.cleanTime < now) {
 					delete this.responseHandlers[packetId].handlers[packetName];
 				}
 			}
