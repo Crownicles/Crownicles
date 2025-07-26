@@ -1,24 +1,41 @@
-import {useFocusEffect, useRouter} from "expo-router";
-import {StyleSheet, Text, TouchableOpacity, View} from "react-native";
-import {Ionicons} from "@expo/vector-icons";
+import {useFocusEffect, useNavigation} from "expo-router";
+import {StyleSheet, View} from "react-native";
 import {WebSocketClient} from "@/src/networking/WebSocketClient";
 import {ProfileReq} from "@/src/@types/protobufs-client";
 import {ProfileNotFound, ProfileRes} from "@/src/@types/protobufs-server";
-import {useCallback} from "react";
+import {useCallback, useEffect} from "react";
+import {AppConstants} from "@/src/AppConstants";
+import {useProfile} from "@/src/contexts/ProfileContext";
 
 export default function Profile() {
-	const router = useRouter();
+	const navigation = useNavigation();
+	const { profileData, setProfileData } = useProfile();
 
 	const loadProfile = () => {
 		WebSocketClient.getInstance().sendPacket(ProfileReq.create({ askedPlayer: {} }), {
 			[ProfileRes.name]: (packet: ProfileRes) => {
-				// TODO
+				setProfileData({
+					pseudo: packet.pseudo,
+					classId: packet.classId
+				});
 			},
 			[ProfileNotFound.name]: (packet: ProfileNotFound) => {
 				// TODO
 			}
+		}, {
+			time: AppConstants.PACKET_TIMEOUT,
+			callback: () => {
+				// TODO
+			}
 		});
 	}
+
+	// Update header title when profile data changes
+	useEffect(() => {
+		navigation.setOptions({
+			title: profileData.pseudo
+		});
+	}, [navigation, profileData.pseudo]);
 
 	// todo: verify that it does not run twice in production mode
 	useFocusEffect(useCallback(() => {
@@ -29,28 +46,21 @@ export default function Profile() {
 
 	return (
 		<View style={styles.container}>
-			<TouchableOpacity style={styles.button} onPress={() => router.push("/settings")}>
-				<Ionicons name="settings" size={24} color="black" style={{ marginRight: 8 }} />
-				<Text style={styles.text}>Settings</Text>
-			</TouchableOpacity>
+			{/* Main content goes here */}
+			<View style={styles.content}>
+				{/* Add your profile content here */}
+			</View>
 		</View>
 	);
 }
 
 const styles = StyleSheet.create({
 	container: {
-		justifyContent: "center",
+		flex: 1,
+		backgroundColor: '#fff',
+	},
+	content: {
+		flex: 1,
 		marginTop: 25,
-	},
-	button: {
-		flexDirection: "row",
-		alignItems: "center",
-		backgroundColor: "#eee",
-		padding: 10,
-		borderRadius: 8,
-	},
-	text: {
-		fontSize: 18,
-		fontWeight: "bold",
 	},
 });
