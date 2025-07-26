@@ -71,6 +71,9 @@ export class WebSocketClient {
 
 	public sendPacket(packet: FromClientPacket, responseHandlers: {
 		[packetName: string]: WebSocketPacketResponseHandler<never>;
+	}, timeout?: {
+		time: number; // Timeout in milliseconds
+		callback?: () => void;
 	}): void {
 		console.debug("Sending packet:", packet);
 		if (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
@@ -84,7 +87,7 @@ export class WebSocketClient {
 			this.responseHandlers[packetId] = {};
 			for (const [packetName, callback] of Object.entries(responseHandlers)) {
 				this.responseHandlers[packetId][packetName] = {
-					cleanTime: new Date(Date.now() + 10 * 60 * 60 * 1000), // Set a timeout of 10 minutes
+					cleanTime: new Date(Date.now() + 10 * 60 * 60 * 1000), // Set a default timeout of 10 minutes
 					callback
 				};
 			}
@@ -97,6 +100,23 @@ export class WebSocketClient {
 			this.packetQueue.push({ packet });
 		}
 		this.processPacketQueue();
+
+		if (timeout) {
+			setTimeout(() => {
+				// Clean up response handlers after timeout
+				for (const packetId of Object.keys(this.responseHandlers)) {
+					if (this.responseHandlers[packetId]) {
+						for (const packetName of Object.keys(this.responseHandlers[packetId])) {
+							delete this.responseHandlers[packetId][packetName];
+						}
+						delete this.responseHandlers[packetId];
+					}
+				}
+				if (timeout.callback) {
+					timeout.callback();
+				}
+			}, timeout.time);
+		}
 	}
 
 	private async connect(authToken: AuthToken, firstConnection: boolean): Promise<void> {

@@ -1,5 +1,5 @@
 import {RestApi} from "@/src/networking/RestApi";
-import {KeycloakOAuth2Token} from "../../../Lib/src/keycloak/KeycloakOAuth2Token";
+import {KeycloakOAuth2Token} from "crownicles_lib/src/keycloak/KeycloakOAuth2Token";
 
 export interface AuthTokenData {
 	accessToken: string;
