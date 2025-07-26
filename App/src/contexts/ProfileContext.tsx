@@ -3,6 +3,7 @@ import React, {createContext, ReactNode, useContext, useState} from "react";
 interface ProfileData {
   pseudo: string;
   classId?: number;
+  level?: number;
 }
 
 interface ProfileContextType {

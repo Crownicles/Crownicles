@@ -1,6 +1,6 @@
 import {Tabs, useRouter} from "expo-router";
 import {Ionicons, MaterialCommunityIcons, MaterialIcons} from "@expo/vector-icons";
-import {Alert, Text, TouchableOpacity} from "react-native";
+import {Alert, Text, TouchableOpacity, View} from "react-native";
 import {ProfileProvider, useProfile} from "@/src/contexts/ProfileContext";
 import {AppIcons} from "@/src/AppIcons";
 
@@ -23,12 +23,19 @@ const ProfileHeader = ({ children }: { children?: string }) => {
 			onPress={showClassInfo}
 			style={{ flexDirection: 'row', alignItems: 'center' }}
 		>
-			<Text style={{ fontSize: 25, marginRight: 20 }}>
+			<Text style={{ fontSize: 25, marginRight: 8 }}>
 				{getClassIcon()}
 			</Text>
-			<Text style={{ fontSize: 20, fontWeight: '600' }}>
-				{children || profileData.pseudo}
-			</Text>
+			<View style={{ flexDirection: 'column', alignItems: 'center' }}>
+				<Text style={{ fontSize: 17, fontWeight: '600', textAlign: 'center' }}>
+					{children || profileData.pseudo}
+				</Text>
+				{profileData.level !== undefined && (
+					<Text style={{ fontSize: 12, color: '#666', textAlign: 'center' }}>
+						Level {profileData.level}
+					</Text>
+				)}
+			</View>
 		</TouchableOpacity>
 	);
 };
