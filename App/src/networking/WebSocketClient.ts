@@ -21,11 +21,14 @@ export class WebSocketClient {
 
 	private responseHandlers: {
 		[packetId: string]: {
-			[packetName: string]: {
-				cleanTime: Date;
-				callback: WebSocketPacketResponseHandler<never>;
+			handlers: {
+				[packetName: string]: {
+					cleanTime: Date;
+					callback: WebSocketPacketResponseHandler<never>;
+				};
 			};
-		};
+			received?: boolean; // Track if the packet has been received
+		}
 	} = {};
 
 	private globalPacketHandlers: {
@@ -84,9 +87,9 @@ export class WebSocketClient {
 		}
 		if (Object.keys(responseHandlers).length > 0) {
 			const packetId = uuid.v4(); // Generate a unique ID for the packet
-			this.responseHandlers[packetId] = {};
+			this.responseHandlers[packetId] = { handlers: {} };
 			for (const [packetName, callback] of Object.entries(responseHandlers)) {
-				this.responseHandlers[packetId][packetName] = {
+				this.responseHandlers[packetId].handlers[packetName] = {
 					cleanTime: new Date(Date.now() + 10 * 60 * 60 * 1000), // Set a default timeout of 10 minutes
 					callback
 				};
@@ -95,28 +98,24 @@ export class WebSocketClient {
 			this.packetQueue.push({
 				packet, id: packetId
 			});
+
+			if (timeout) {
+				setTimeout(() => {
+					// Clean up response handlers after timeout
+					for (const packetName of Object.keys(this.responseHandlers[packetId].handlers)) {
+						delete this.responseHandlers[packetId].handlers[packetName];
+					}
+					if (timeout.callback && !this.responseHandlers[packetId].received) {
+						timeout.callback();
+					}
+					delete this.responseHandlers[packetId]; // Clean up the packetId entry
+				}, timeout.time);
+			}
 		}
 		else {
 			this.packetQueue.push({ packet });
 		}
 		this.processPacketQueue();
-
-		if (timeout) {
-			setTimeout(() => {
-				// Clean up response handlers after timeout
-				for (const packetId of Object.keys(this.responseHandlers)) {
-					if (this.responseHandlers[packetId]) {
-						for (const packetName of Object.keys(this.responseHandlers[packetId])) {
-							delete this.responseHandlers[packetId][packetName];
-						}
-						delete this.responseHandlers[packetId];
-					}
-				}
-				if (timeout.callback) {
-					timeout.callback();
-				}
-			}, timeout.time);
-		}
 	}
 
 	private async connect(authToken: AuthToken, firstConnection: boolean): Promise<void> {
@@ -173,7 +172,7 @@ export class WebSocketClient {
 					const packetName = packet.name;
 					const packetData = packet.packet;
 
-					if (packetId && this.responseHandlers[packetId] && this.responseHandlers[packetId][packetName]) {
+					if (packetId && this.responseHandlers[packetId] && this.responseHandlers[packetId].handlers[packetName]) {
 						this.handleResponse(packetId, packetName, packetData);
 					}
 					else if (this.globalPacketHandlers[packetName]) {
@@ -254,9 +253,9 @@ export class WebSocketClient {
 		const now = new Date();
 		for (const packetId of Object.keys(this.responseHandlers)) {
 			for (const packetName of Object.keys(this.responseHandlers[packetId])) {
-				const handler = this.responseHandlers[packetId][packetName];
+				const handler = this.responseHandlers[packetId].handlers[packetName];
 				if (handler.cleanTime < now) {
-					delete this.responseHandlers[packetId][packetName];
+					delete this.responseHandlers[packetId].handlers[packetName];
 				}
 			}
 			if (Object.keys(this.responseHandlers[packetId]).length === 0) {
@@ -266,16 +265,22 @@ export class WebSocketClient {
 	}
 
 	private handleResponse(packetId: string, packetName: string, packet: FromServerPacket): void {
-		if (this.responseHandlers[packetId] && this.responseHandlers[packetId][packetName]) {
-			const handler = this.responseHandlers[packetId][packetName];
-			handler.callback(packet as never);
-			delete this.responseHandlers[packetId][packetName]; // Clean up after handling
-			if (Object.keys(this.responseHandlers[packetId]).length === 0) {
-				delete this.responseHandlers[packetId]; // Clean up empty packetId
+		if (this.responseHandlers[packetId]) {
+			this.responseHandlers[packetId].received = true; // Mark the packet as received
+			if (this.responseHandlers[packetId].handlers[packetName]) {
+				const handler = this.responseHandlers[packetId].handlers[packetName];
+				handler.callback(packet as never);
+				delete this.responseHandlers[packetId].handlers[packetName]; // Clean up after handling
+				if (Object.keys(this.responseHandlers[packetId]).length === 0) {
+					delete this.responseHandlers[packetId]; // Clean up empty packetId
+				}
+			}
+			else {
+				console.warn(`No response handler found for packet ID: ${packetId}, Name: ${packetName}`);
 			}
 		}
 		else {
-			console.warn(`No response handler found for packet ID: ${packetId}, Name: ${packetName}`);
+			console.warn(`No response handlers found for packet ID: ${packetId}`);
 		}
 	}
 
