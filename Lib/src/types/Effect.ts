@@ -15,21 +15,21 @@ export class Effect {
 
 	public static readonly FEET_HURT = new Effect("feetHurt", ":foot:", 110);
 
-	public static readonly HURT = new Effect("hurt", ":head_bandage:", 360);
+	public static readonly HURT = new Effect("hurt", ":head_bandage:", 300);
 
-	public static readonly SICK = new Effect("sick", ":sick:", 360);
+	public static readonly SICK = new Effect("sick", ":sick:", 330);
 
 	public static readonly JAILED = new Effect("jailed", ":lock:", 1440);
 
-	public static readonly INJURED = new Effect("injured", ":dizzy_face:", 720);
+	public static readonly INJURED = new Effect("injured", ":dizzy_face:", 660);
 
 	public static readonly OCCUPIED = new Effect("occupied", ":clock2:", 0);
 
-	public static readonly STARVING = new Effect("starving", ":drooling_face:", 80);
+	public static readonly STARVING = new Effect("starving", ":drooling_face:", 50);
 
 	public static readonly CONFOUNDED = new Effect("confounded", ":confounded:", 40);
 
-	public static readonly SCARED = new Effect("scared", ":scream:", 10);
+	public static readonly SCARED = new Effect("scared", ":scream:", 15);
 
 	public static readonly LOST = new Effect("lost", ":face_with_monocle:", 270);
 
