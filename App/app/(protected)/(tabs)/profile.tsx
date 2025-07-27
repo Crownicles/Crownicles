@@ -246,11 +246,11 @@ export default function Profile() {
 				<Text style={styles.statsTitle}>Statistics</Text>
 				<View style={styles.statsGrid}>
 					{renderStatItem("⚡", `${stats.energy.value} / ${stats.energy.max}`, "Energy")}
+					{renderStatItem("🌬️", `${stats.breath.base} / ${stats.breath.max}`, "Breath")}
+					{renderStatItem("🫁", `${stats.breath.regen}`, "Breath Regen")}
 					{renderStatItem("⚔️", `${stats.attack}`, "Attack")}
 					{renderStatItem("🛡️", `${stats.defense}`, "Defense")}
 					{renderStatItem("🚀", `${stats.speed}`, "Speed")}
-					{renderStatItem("🌬️", `${stats.breath.base} / ${stats.breath.max}`, "Breath")}
-					{renderStatItem("🫁", `${stats.breath.regen}`, "Breath Regen")}
 				</View>
 			</View>
 		);
@@ -277,37 +277,39 @@ export default function Profile() {
 					<View style={styles.profileContent}>
 						{playerStats && (
 							<>
-								{/* Health Bar */}
-								{renderProgressBar(
-									playerStats.health.value,
-									playerStats.health.max,
-									'#ff4444',
-									'Health'
-								)}
-
-								{/* Experience Bar with Level */}
-								<View style={styles.experienceContainer}>
-									<Text style={styles.progressLabel}>Experience</Text>
-									<View style={styles.progressBarWrapper}>
-										<View style={styles.progressBarBackground}>
-											<View
-												style={[
-													styles.progressBarFill,
-													{ width: `${Math.min((playerStats.experience.value / playerStats.experience.max) * 100, 100)}%`, backgroundColor: '#FFDF00' }
-												]}
-											/>
+								{/* Health and Experience Bars Row */}
+								<View style={styles.barsContainer}>
+									<View style={styles.barItem}>
+										{renderProgressBar(
+											playerStats.health.value,
+											playerStats.health.max,
+											'#ff4444',
+											'Health'
+										)}
+									</View>
+									<View style={styles.barItem}>
+										<View style={styles.experienceBarContainer}>
+											<Text style={styles.progressLabel}>Experience</Text>
+											<View style={styles.progressBarWrapper}>
+												<View style={styles.progressBarBackground}>
+													<View
+														style={[
+															styles.progressBarFill,
+															{ width: `${Math.min((playerStats.experience.value / playerStats.experience.max) * 100, 100)}%`, backgroundColor: '#FFDF00' }
+														]}
+													/>
+												</View>
+												<Text style={styles.progressText}>
+													{playerStats.experience.value} / {playerStats.experience.max}
+												</Text>
+											</View>
 										</View>
-										<Text style={styles.progressText}>
-											{playerStats.experience.value} / {playerStats.experience.max}
-										</Text>
-										<Text style={styles.levelTextLeft}>{playerStats.level}</Text>
-										<Text style={styles.levelTextRight}>{playerStats.level + 1}</Text>
 									</View>
 								</View>
 
 								{/* Currency Section */}
 								<View style={styles.currencyContainer}>
-									<Text style={styles.currencyTitle}>Currency</Text>
+									<Text style={styles.currencyTitle}>Currencies</Text>
 									<View style={styles.currencyGrid}>
 										<TouchableOpacity
 												style={styles.currencyItem}
@@ -524,38 +526,8 @@ const styles = StyleSheet.create({
 		textShadowOffset: { width: 1, height: 1 },
 		textShadowRadius: 1,
 	},
-	experienceContainer: {
-		marginTop: 20,
-	},
-	levelTextLeft: {
-		position: 'absolute',
-		left: 8,
-		top: 0,
-		bottom: 0,
-		textAlign: 'left',
-		lineHeight: 20,
-		fontSize: 12,
-		fontWeight: '600',
-		color: '#333',
-		textShadowColor: 'rgba(255, 255, 255, 0.8)',
-		textShadowOffset: { width: 1, height: 1 },
-		textShadowRadius: 1,
-		zIndex: 1,
-	},
-	levelTextRight: {
-		position: 'absolute',
-		right: 8,
-		top: 0,
-		bottom: 0,
-		textAlign: 'right',
-		lineHeight: 20,
-		fontSize: 12,
-		fontWeight: '600',
-		color: '#333',
-		textShadowColor: 'rgba(255, 255, 255, 0.8)',
-		textShadowOffset: { width: 1, height: 1 },
-		textShadowRadius: 1,
-		zIndex: 1,
+	experienceBarContainer: {
+		// Removed marginTop to align with health bar
 	},
 	statsContainer: {
 		marginTop: 20,
@@ -711,5 +683,14 @@ const styles = StyleSheet.create({
 		color: '#333',
 		marginTop: 5,
 		textAlign: 'center',
+	},
+	barsContainer: {
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		width: '100%',
+	},
+	barItem: {
+		flex: 1,
+		marginHorizontal: 5,
 	},
 });
