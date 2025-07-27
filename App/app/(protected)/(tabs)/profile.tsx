@@ -13,6 +13,8 @@ interface PlayerStats {
 	level: number;
 	health: { value: number; max: number };
 	experience: { value: number; max: number };
+	money: number;
+	gems: number;
 	stats?: {
 		energy: { value: number; max: number };
 		attack: number;
@@ -53,6 +55,8 @@ export default function Profile() {
 					level: packet.level,
 					health: packet.health,
 					experience: packet.experience,
+					money: packet.money,
+					gems: packet.missions.gems,
 					stats: packet.stats ? {
 						energy: packet.stats.energy,
 						attack: packet.stats.attack,
@@ -143,6 +147,32 @@ export default function Profile() {
 		setTooltipTimeout(newTimeout);
 	};
 
+	const showCurrencyTooltip = (currencyType: 'money' | 'gems', x: number, y: number, width: number) => {
+		// Clear any existing timeout
+		if (tooltipTimeout) {
+			clearTimeout(tooltipTimeout);
+		}
+
+		const tooltipText = currencyType === 'money'
+			? 'Money'
+			: 'Gems.\nCan be acquired by finishing missions.';
+
+		setTooltip({
+			visible: true,
+			text: tooltipText,
+			x: currencyType === 'money' ? x + width / 2 + 60 : x + width / 2 - 50,
+			y: y - 150
+		});
+
+		// Set new timeout and store its reference
+		const newTimeout = setTimeout(() => {
+			setTooltip(prev => ({ ...prev, visible: false }));
+			setTooltipTimeout(null);
+		}, 3000);
+
+		setTooltipTimeout(newTimeout);
+	};
+
 	const renderStatItem = (emoji: string, value: string, statName: string) => {
 		return (
 			<TouchableOpacity
@@ -209,6 +239,36 @@ export default function Profile() {
 					<View style={styles.profileContent}>
 						{playerStats && (
 							<>
+								{/* Currency Section */}
+								<View style={styles.currencyContainer}>
+									<Text style={styles.currencyTitle}>Currency</Text>
+									<View style={styles.currencyGrid}>
+										<TouchableOpacity
+											style={styles.currencyItem}
+											onPress={(event) => {
+												event.currentTarget.measure((fx, fy, width, height, px, py) => {
+													showCurrencyTooltip('money', px, py, width);
+												});
+											}}
+										>
+											<Text style={styles.currencyEmoji}>💰</Text>
+											<Text style={styles.currencyValue}>{playerStats.money}</Text>
+										</TouchableOpacity>
+
+										<TouchableOpacity
+											style={styles.currencyItem}
+											onPress={(event) => {
+												event.currentTarget.measure((fx, fy, width, height, px, py) => {
+													showCurrencyTooltip('gems', px, py, width);
+												});
+											}}
+										>
+											<Text style={styles.currencyEmoji}>💎</Text>
+											<Text style={styles.currencyValue}>{playerStats.gems}</Text>
+										</TouchableOpacity>
+									</View>
+								</View>
+
 								{/* Health Bar */}
 								{renderProgressBar(
 									playerStats.health.value,
@@ -219,10 +279,7 @@ export default function Profile() {
 
 								{/* Experience Bar with Level */}
 								<View style={styles.experienceContainer}>
-									<View style={styles.experienceLabelContainer}>
-										<Text style={styles.progressLabel}>Experience</Text>
-										<Text style={styles.levelText}>Level {playerStats.level}</Text>
-									</View>
+									<Text style={styles.progressLabel}>Experience</Text>
 									<View style={styles.progressBarWrapper}>
 										<View style={styles.progressBarBackground}>
 											<View
@@ -235,6 +292,8 @@ export default function Profile() {
 										<Text style={styles.progressText}>
 											{playerStats.experience.value} / {playerStats.experience.max}
 										</Text>
+										<Text style={styles.levelTextLeft}>{playerStats.level}</Text>
+										<Text style={styles.levelTextRight}>{playerStats.level + 1}</Text>
 									</View>
 								</View>
 
@@ -404,11 +463,35 @@ const styles = StyleSheet.create({
 	experienceContainer: {
 		marginTop: 5,
 	},
-	experienceLabelContainer: {
-		flexDirection: 'row',
-		justifyContent: 'space-between',
-		alignItems: 'center',
-		marginBottom: 8,
+	levelTextLeft: {
+		position: 'absolute',
+		left: 8,
+		top: 0,
+		bottom: 0,
+		textAlign: 'left',
+		lineHeight: 20,
+		fontSize: 12,
+		fontWeight: '600',
+		color: '#333',
+		textShadowColor: 'rgba(255, 255, 255, 0.8)',
+		textShadowOffset: { width: 1, height: 1 },
+		textShadowRadius: 1,
+		zIndex: 1,
+	},
+	levelTextRight: {
+		position: 'absolute',
+		right: 8,
+		top: 0,
+		bottom: 0,
+		textAlign: 'right',
+		lineHeight: 20,
+		fontSize: 12,
+		fontWeight: '600',
+		color: '#333',
+		textShadowColor: 'rgba(255, 255, 255, 0.8)',
+		textShadowOffset: { width: 1, height: 1 },
+		textShadowRadius: 1,
+		zIndex: 1,
 	},
 	statsContainer: {
 		marginTop: 20,
@@ -474,5 +557,55 @@ const styles = StyleSheet.create({
 		fontSize: 14,
 		fontWeight: '600',
 		textAlign: 'center',
+	},
+	currencyContainer: {
+		marginBottom: 20,
+	},
+	currencyTitle: {
+		fontSize: 16,
+		fontWeight: '700',
+		color: '#333',
+		marginBottom: 10,
+	},
+	currencyGrid: {
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+	},
+	currencyItem: {
+		flex: 1,
+		backgroundColor: '#f9f9f9',
+		borderRadius: 10,
+		padding: 12,
+		marginHorizontal: 5,
+		alignItems: 'center',
+		justifyContent: 'center',
+		shadowColor: '#000',
+		shadowOffset: {
+			width: 0,
+			height: 2,
+		},
+		shadowOpacity: 0.1,
+		shadowRadius: 4,
+		elevation: 2,
+	},
+	currencyEmoji: {
+		fontSize: 24,
+	},
+	currencyValue: {
+		fontSize: 16,
+		fontWeight: '500',
+		color: '#333',
+		marginTop: 5,
+	},
+	moneyContainer: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'center',
+		marginBottom: 10,
+	},
+	moneyText: {
+		fontSize: 18,
+		fontWeight: '700',
+		color: '#333',
 	},
 });
