@@ -674,6 +674,11 @@ async function executeSmallEvent(response: CrowniclesPacket[], player: Player, c
 			const smallEvent: SmallEventFuncs = require(smallEventModule).smallEventFuncs;
 			crowniclesInstance.logsDatabase.logSmallEvent(player.keycloakId, event)
 				.then();
+
+			// Save the small event BEFORE execution so it gets affected by timeTravel() if the event succeeds
+			const smallEventRecord = PlayerSmallEvents.createPlayerSmallEvent(player.id, event, Date.now());
+			await smallEventRecord.save();
+
 			await smallEvent.executeSmallEvent(response, player, context);
 			await MissionsController.update(player, response, { missionId: "doReports" });
 		}
@@ -685,8 +690,4 @@ async function executeSmallEvent(response: CrowniclesPacket[], player: Player, c
 	catch {
 		response.push(makePacket(ErrorPacket, { message: `${filename} doesn't exist` }));
 	}
-
-	// Save
-	await PlayerSmallEvents.createPlayerSmallEvent(player.id, event, Date.now())
-		.save();
 }
