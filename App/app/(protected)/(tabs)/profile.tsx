@@ -15,6 +15,12 @@ interface PlayerStats {
 	experience: { value: number; max: number };
 	money: number;
 	gems: number;
+	score: number;
+	rank: {
+		unranked: boolean;
+		rank: number;
+		numberOfPlayers: number;
+	};
 	stats?: {
 		energy: { value: number; max: number };
 		attack: number;
@@ -57,6 +63,12 @@ export default function Profile() {
 					experience: packet.experience,
 					money: packet.money,
 					gems: packet.missions.gems,
+					score: packet.rank.score,
+					rank: {
+						unranked: packet.rank.unranked,
+						rank: packet.rank.rank,
+						numberOfPlayers: packet.rank.numberOfPlayers
+					},
 					stats: packet.stats ? {
 						energy: packet.stats.energy,
 						attack: packet.stats.attack,
@@ -155,13 +167,39 @@ export default function Profile() {
 
 		const tooltipText = currencyType === 'money'
 			? 'Money'
-			: 'Gems.\nCan be acquired by finishing missions.';
+			: 'Gems. Can be acquired by finishing missions.';
 
 		setTooltip({
 			visible: true,
 			text: tooltipText,
 			x: currencyType === 'money' ? x + width / 2 + 60 : x + width / 2 - 50,
 			y: y - 150
+		});
+
+		// Set new timeout and store its reference
+		const newTimeout = setTimeout(() => {
+			setTooltip(prev => ({ ...prev, visible: false }));
+			setTooltipTimeout(null);
+		}, 3000);
+
+		setTooltipTimeout(newTimeout);
+	};
+
+	const showScoreRankTooltip = (type: 'score' | 'rank', x: number, y: number) => {
+		// Clear any existing timeout
+		if (tooltipTimeout) {
+			clearTimeout(tooltipTimeout);
+		}
+
+		const tooltipText = type === 'score'
+			? 'Score. Represents your overall performance.'
+			: 'Rank. Your position among all players.';
+
+		setTooltip({
+			visible: true,
+			text: tooltipText,
+			x: x,
+			y: y - 50
 		});
 
 		// Set new timeout and store its reference
@@ -239,36 +277,6 @@ export default function Profile() {
 					<View style={styles.profileContent}>
 						{playerStats && (
 							<>
-								{/* Currency Section */}
-								<View style={styles.currencyContainer}>
-									<Text style={styles.currencyTitle}>Currency</Text>
-									<View style={styles.currencyGrid}>
-										<TouchableOpacity
-											style={styles.currencyItem}
-											onPress={(event) => {
-												event.currentTarget.measure((fx, fy, width, height, px, py) => {
-													showCurrencyTooltip('money', px, py, width);
-												});
-											}}
-										>
-											<Text style={styles.currencyEmoji}>💰</Text>
-											<Text style={styles.currencyValue}>{playerStats.money}</Text>
-										</TouchableOpacity>
-
-										<TouchableOpacity
-											style={styles.currencyItem}
-											onPress={(event) => {
-												event.currentTarget.measure((fx, fy, width, height, px, py) => {
-													showCurrencyTooltip('gems', px, py, width);
-												});
-											}}
-										>
-											<Text style={styles.currencyEmoji}>💎</Text>
-											<Text style={styles.currencyValue}>{playerStats.gems}</Text>
-										</TouchableOpacity>
-									</View>
-								</View>
-
 								{/* Health Bar */}
 								{renderProgressBar(
 									playerStats.health.value,
@@ -297,6 +305,68 @@ export default function Profile() {
 									</View>
 								</View>
 
+								{/* Currency Section */}
+								<View style={styles.currencyContainer}>
+									<Text style={styles.currencyTitle}>Currency</Text>
+									<View style={styles.currencyGrid}>
+										<TouchableOpacity
+												style={styles.currencyItem}
+												onPress={(event) => {
+													event.currentTarget.measure((fx, fy, width, height, px, py) => {
+														showCurrencyTooltip('money', px, py, width);
+													});
+												}}
+										>
+											<Text style={styles.currencyEmoji}>💰</Text>
+											<Text style={styles.currencyValue}>{playerStats.money}</Text>
+										</TouchableOpacity>
+
+										<TouchableOpacity
+												style={styles.currencyItem}
+												onPress={(event) => {
+													event.currentTarget.measure((fx, fy, width, height, px, py) => {
+														showCurrencyTooltip('gems', px, py, width);
+													});
+												}}
+										>
+											<Text style={styles.currencyEmoji}>💎</Text>
+											<Text style={styles.currencyValue}>{playerStats.gems}</Text>
+										</TouchableOpacity>
+									</View>
+								</View>
+
+								{/* Score and Rank Section */}
+								<View style={styles.scoreRankContainer}>
+									<Text style={styles.scoreRankTitle}>Score and rank</Text>
+									<View style={styles.scoreRankGrid}>
+										<TouchableOpacity
+											style={styles.scoreRankItem}
+											onPress={(event) => {
+												event.currentTarget.measure((fx, fy, width, height, px, py) => {
+													showScoreRankTooltip('score', px + width / 2, py);
+												});
+											}}
+										>
+											<Text style={styles.scoreRankEmoji}>🏅</Text>
+											<Text style={styles.scoreRankValue}>{playerStats.score}</Text>
+										</TouchableOpacity>
+
+										<TouchableOpacity
+											style={styles.scoreRankItem}
+											onPress={(event) => {
+												event.currentTarget.measure((fx, fy, width, height, px, py) => {
+													showScoreRankTooltip('rank', px + width / 2, py);
+												});
+											}}
+										>
+											<Text style={styles.scoreRankEmoji}>🏆</Text>
+											<Text style={styles.scoreRankValue}>
+												{playerStats.rank.unranked ? 'Unranked' : `${playerStats.rank.rank} / ${playerStats.rank.numberOfPlayers}`}
+											</Text>
+										</TouchableOpacity>
+									</View>
+								</View>
+
 								{/* Statistics Container */}
 								{renderStatsContainer()}
 							</>
@@ -318,32 +388,27 @@ export default function Profile() {
 
 	return (
 		<View style={styles.container}>
-			<TouchableOpacity
-				style={styles.scrollContainer}
-				activeOpacity={1}
-				onPress={hideTooltip}
+			<ScrollView
+				style={{ flex: 1 }}
+				contentContainerStyle={styles.scrollContent}
+				showsVerticalScrollIndicator={false}
+				onTouchStart={hideTooltip}
 			>
-				<ScrollView
-					style={{ flex: 1 }}
-					contentContainerStyle={styles.scrollContent}
-					showsVerticalScrollIndicator={false}
-				>
-					{/* Profile Section */}
-					<View style={styles.section}>
-						{renderProfileSection()}
-					</View>
+				{/* Profile Section */}
+				<View style={styles.section}>
+					{renderProfileSection()}
+				</View>
 
-					{/* Separator Line */}
-					<View style={styles.separator} />
+				{/* Separator Line */}
+				<View style={styles.separator} />
 
-					{/* Inventory Section */}
-					<View style={styles.section}>
-						<View style={styles.centerContent}>
-							<Text style={styles.placeholderText}>Inventory will be implemented here</Text>
-						</View>
+				{/* Inventory Section */}
+				<View style={styles.section}>
+					<View style={styles.centerContent}>
+						<Text style={styles.placeholderText}>Inventory will be implemented here</Text>
 					</View>
-				</ScrollView>
-			</TouchableOpacity>
+				</View>
+			</ScrollView>
 
 			{/* Tooltip Overlay */}
 			{tooltip.visible && (
@@ -423,7 +488,6 @@ const styles = StyleSheet.create({
 		color: '#666',
 	},
 	progressBarContainer: {
-		marginVertical: 15,
 		width: '100%',
 	},
 	progressLabel: {
@@ -461,7 +525,7 @@ const styles = StyleSheet.create({
 		textShadowRadius: 1,
 	},
 	experienceContainer: {
-		marginTop: 5,
+		marginTop: 20,
 	},
 	levelTextLeft: {
 		position: 'absolute',
@@ -559,7 +623,7 @@ const styles = StyleSheet.create({
 		textAlign: 'center',
 	},
 	currencyContainer: {
-		marginBottom: 20,
+		marginTop: 20,
 	},
 	currencyTitle: {
 		fontSize: 16,
@@ -607,5 +671,45 @@ const styles = StyleSheet.create({
 		fontSize: 18,
 		fontWeight: '700',
 		color: '#333',
+	},
+	scoreRankContainer: {
+		marginTop: 20,
+	},
+	scoreRankTitle: {
+		fontSize: 16,
+		fontWeight: '700',
+		color: '#333',
+		marginBottom: 10,
+	},
+	scoreRankGrid: {
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+	},
+	scoreRankItem: {
+		flex: 1,
+		backgroundColor: '#f9f9f9',
+		borderRadius: 10,
+		padding: 12,
+		marginHorizontal: 5,
+		alignItems: 'center',
+		justifyContent: 'center',
+		shadowColor: '#000',
+		shadowOffset: {
+			width: 0,
+			height: 2,
+		},
+		shadowOpacity: 0.1,
+		shadowRadius: 4,
+		elevation: 2,
+	},
+	scoreRankEmoji: {
+		fontSize: 24,
+	},
+	scoreRankValue: {
+		fontSize: 16,
+		fontWeight: '500',
+		color: '#333',
+		marginTop: 5,
+		textAlign: 'center',
 	},
 });
