@@ -359,7 +359,10 @@ export abstract class PetConstants {
 		CHICK: 92,
 		RAT: 93,
 		BLACK_BIRD: 94,
-		RAVEN: 95
+		RAVEN: 95,
+		DONKEY: 96,
+		GOOSE: 97,
+		MOOSE: 98
 	};
 
 	static readonly PET_BEHAVIORS = [
@@ -439,7 +442,8 @@ export abstract class PetConstants {
 				PetConstants.PETS.BIRD,
 				PetConstants.PETS.DODO,
 				PetConstants.PETS.PARROT,
-				PetConstants.PETS.BLACK_BIRD
+				PetConstants.PETS.BLACK_BIRD,
+				PetConstants.PETS.GOOSE
 			],
 			behaviorId: FightConstants.FIGHT_ACTIONS.PET.PECK
 		},
@@ -491,7 +495,9 @@ export abstract class PetConstants {
 				PetConstants.PETS.HORSE,
 				PetConstants.PETS.ZEBRA,
 				PetConstants.PETS.DROMEDARY,
-				PetConstants.PETS.CAMEL
+				PetConstants.PETS.CAMEL,
+				PetConstants.PETS.DONKEY,
+				PetConstants.PETS.MOOSE
 			],
 			behaviorId: FightConstants.FIGHT_ACTIONS.PET.BOOST_SPEED
 		},

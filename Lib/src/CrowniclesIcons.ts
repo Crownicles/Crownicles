@@ -1402,6 +1402,18 @@ export const CrowniclesIcons: {
 		95: {
 			emoteFemale: "🐦‍⬛",
 			emoteMale: "🐦‍⬛"
+		},
+		96: {
+			emoteFemale: "🫏",
+			emoteMale: "🫏"
+		},
+		97: {
+			emoteFemale: "🪿",
+			emoteMale: "🪿"
+		},
+		98: {
+			emoteFemale: "🦌",
+			emoteMale: "🦌"
 		}
 	},
 	monsters: {
