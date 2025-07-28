@@ -11,7 +11,7 @@ import { FightConstants } from "../../../../../../../Lib/src/constants/FightCons
 const use: FightActionFunc = (sender, receiver) => {
 	// This attack will miss more if the opponent is fast
 	const initialDamage = FightActionController.getAttackDamage(getStatsInfo(sender, receiver), sender, getAttackInfo());
-	const damageDealt = FightActionController.applySecondaryEffects(initialDamage, 10, MathUtils.getIntervalValue(1, 15, (receiver.getSpeed() + 20) / 320));
+	const damageDealt = FightActionController.applySecondaryEffects(initialDamage, 10, MathUtils.getIntervalValue(1, 15, (receiver.getSpeed() + 20) / (4.2 * sender.level)));
 
 	// If the attack was used two times in a row, the damage is multiplied by 1.5
 	const lastFightAction = sender.getLastFightActionUsed();
