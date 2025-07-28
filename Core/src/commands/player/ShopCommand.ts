@@ -13,6 +13,7 @@ import {
 	CommandShopBadgeBought,
 	CommandShopBoughtTooMuchDailyPotions,
 	CommandShopClosed,
+	CommandShopEnergyHeal,
 	CommandShopFullRegen,
 	CommandShopHealAlterationDone,
 	CommandShopNoAlterationToHeal,
@@ -150,6 +151,9 @@ function getHealEnergyShopItem(healEnergyAlreadyPurchased: number): ShopItem {
 			}
 			player.setEnergyLost(0, NumberChangeReason.SHOP);
 			await player.save();
+			response.push(makePacket(CommandShopEnergyHeal, {}));
+			crowniclesInstance.logsDatabase.logClassicalShopBuyout(player.keycloakId, ShopItemType.ENERGY_HEAL)
+				.then();
 			return true;
 		}
 	};

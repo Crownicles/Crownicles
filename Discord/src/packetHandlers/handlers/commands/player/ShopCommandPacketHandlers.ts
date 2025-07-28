@@ -4,6 +4,7 @@ import {
 	CommandShopBadgeBought,
 	CommandShopBoughtTooMuchDailyPotions,
 	CommandShopClosed,
+	CommandShopEnergyHeal,
 	CommandShopFullRegen,
 	CommandShopHealAlterationDone,
 	CommandShopNoAlterationToHeal,
@@ -17,6 +18,7 @@ import {
 	handleCommandShopBadgeBought,
 	handleCommandShopBoughtTooMuchDailyPotions,
 	handleCommandShopClosed,
+	handleCommandShopEnergyHeal,
 	handleCommandShopFullRegen,
 	handleCommandShopHealAlterationDone,
 	handleCommandShopNoAlterationToHeal,
@@ -80,5 +82,10 @@ export default class ShopCommandPacketHandlers {
 	@packetHandler(ReactionCollectorBuyCategorySlotBuySuccess)
 	async buyCategorySlotBuySuccess(context: PacketContext, _packet: ReactionCollectorBuyCategorySlotBuySuccess): Promise<void> {
 		await handleReactionCollectorBuyCategorySlotBuySuccess(context);
+	}
+
+	@packetHandler(CommandShopEnergyHeal)
+	async shopEnergyHeal(context: PacketContext, _packet: CommandShopEnergyHeal): Promise<void> {
+		await handleCommandShopEnergyHeal(context);
 	}
 }
