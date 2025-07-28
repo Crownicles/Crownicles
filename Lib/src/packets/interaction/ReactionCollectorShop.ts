@@ -45,6 +45,10 @@ export class CommandShopNoEnergyToHeal extends CrowniclesPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandShopEnergyHeal extends CrowniclesPacket {
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandShopFullRegen extends CrowniclesPacket {
 }
 
