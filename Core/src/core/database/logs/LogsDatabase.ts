@@ -945,9 +945,9 @@ export class LogsDatabase extends Database {
 			const player2Id = (await LogsDatabase.findOrCreatePlayer(player2.player.keycloakId)).id;
 			const winner = fight.getWinnerFighter() === fightInitiator ? 1 : 2;
 
-			// Get pet IDs if pets exist
-			const fightInitiatorPetId = fightInitiator.pet ? (await LogsDatabase.findOrCreatePetEntity(fightInitiator.pet)).id : null;
-			const player2PetId = player2.pet ? (await LogsDatabase.findOrCreatePetEntity(player2.pet)).id : null;
+			// Get pet type IDs if pets exist
+			const fightInitiatorPetId = fightInitiator.pet ? fightInitiator.pet.typeId : null;
+			const player2PetId = player2.pet ? player2.pet.typeId : null;
 
 			const fightResult = await LogsFightsResults.create({
 				fightInitiatorId,
