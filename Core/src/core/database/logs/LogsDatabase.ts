@@ -944,6 +944,11 @@ export class LogsDatabase extends Database {
 			const player2 = fight.fighters[0] === fightInitiator ? fight.fighters[1] : fight.fighters[0];
 			const player2Id = (await LogsDatabase.findOrCreatePlayer(player2.player.keycloakId)).id;
 			const winner = fight.getWinnerFighter() === fightInitiator ? 1 : 2;
+
+			// Get pet IDs if pets exist
+			const fightInitiatorPetId = fightInitiator.pet ? (await LogsDatabase.findOrCreatePetEntity(fightInitiator.pet)).id : null;
+			const player2PetId = player2.pet ? (await LogsDatabase.findOrCreatePetEntity(player2.pet)).id : null;
+
 			const fightResult = await LogsFightsResults.create({
 				fightInitiatorId,
 				fightInitiatorPoints: fightInitiator.player.score,
@@ -958,6 +963,8 @@ export class LogsDatabase extends Database {
 				player2InitialDefenseGlory: player2.player.defenseGloryPoints,
 				player2InitialAttackGlory: player2.player.attackGloryPoints,
 				player2ClassId: player2.player.class,
+				fightInitiatorPetId,
+				player2PetId,
 				date: getDateLogs()
 			});
 			for (const player of [fightInitiator, player2]) {
