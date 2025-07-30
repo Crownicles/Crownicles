@@ -5,4 +5,8 @@ import { SmallEventPacket } from "./SmallEventPacket";
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class SmallEventInfoFightPacket extends SmallEventPacket {
+	isLeftHanded?: boolean;
+
+	showHandednessInfo?: boolean;
 }
+
