@@ -27,8 +27,8 @@
         },
         "3": {
           "requirements": {
-            "level": {
-              "max": 40
+            "defense": {
+              "min": 250
             }
           },
           "health": -25,
@@ -54,12 +54,12 @@
             }
           },
           "health": -15,
-          "effect": "wet"
+          "effect": "sleeping"
         },
         "1": {
           "requirements": {
-            "speed": {
-              "max": 250
+            "defense": {
+              "max": 400
             }
           },
           "health": -25,
@@ -72,6 +72,29 @@
             }
           },
           "karma": 2
+        },
+        "3": {
+          "requirements": {
+            "petTypeId": 77
+          }
+        },
+        "4": {
+          "requirements": {
+            "petTypeId": 82
+          }
+        },
+        "5": {
+          "requirements": {
+            "petTypeId": 13
+          }
+        },
+        "6": {
+          "requirements": {
+            "defense": {
+              "min": 400
+            }
+          },
+          "effect": "lost"
         }
       }
     },
@@ -82,28 +105,19 @@
           "lostTime": 180
         },
         "1": {
-          "requirements": {
-            "level": {
-              "min": 40
-            }
-          },
-          "mapTypesDestination": ["vi"]
+          "mapTypesDestination": [
+            "vi"
+          ]
         },
         "2": {
-          "requirements": {
-            "level": {
-              "min": 50
-            }
-          },
-          "mapTypesDestination": ["be"]
+          "mapTypesDestination": [
+            "be"
+          ]
         },
         "3": {
-          "requirements": {
-            "level": {
-              "min": 60
-            }
-          },
-          "mapTypesDestination": ["fo"]
+          "mapTypesDestination": [
+            "fo"
+          ]
         },
         "4": {
           "requirements": {
@@ -121,11 +135,9 @@
         "0": {
           "requirements": {
             "level": {
-              "max": 50
+              "max": 70
             }
-          },
-          "health": -10,
-          "effect": "wet"
+          }
         },
         "1": {
           "requirements": {
@@ -137,13 +149,21 @@
           "karma": 3
         },
         "2": {
+          "health": -5,
+          "effect": "sleeping"
+        },
+        "3": {
           "requirements": {
-            "level": {
-              "max": 40
+            "petTypeId": 90
+          }
+        },
+        "4": {
+          "requirements": {
+            "karma": {
+              "min": 70
             }
           },
-          "health": -20,
-          "effect": "wet"
+          "karma": 15
         }
       }
     },
@@ -153,6 +173,15 @@
           "effect": "occupied",
           "lostTime": 150,
           "karma": -1
+        },
+        "1": {
+          "requirements": {
+            "petRarity": {
+              "min": 3
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 10
         }
       }
     }
