@@ -996,7 +996,7 @@ export default class SmallEventsHandler {
 	}
 
 	@packetHandler(SmallEventInfoFightPacket)
-	async smallEventInfoFight(context: PacketContext, _packet: SmallEventInfoFightPacket): Promise<void> {
-		await infoFightResult(context);
+	async smallEventInfoFight(context: PacketContext, packet: SmallEventInfoFightPacket): Promise<void> {
+		await infoFightResult(context, packet);
 	}
 }
