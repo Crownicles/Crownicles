@@ -980,7 +980,7 @@
       "new": "est submergé.",
       "active": "est submergé et a du mal à respirer.",
       "stop": "a réussi à s'extraire de l'eau mais en sort complètement trempé."
-      },
+    },
     "summonAttack": {
       "name_one": "Invocation d'alliés",
       "name_other": "Invocations d'alliés"
@@ -1252,7 +1252,7 @@
       "atParticle": "à la"
     },
     "19": {
-      "description": "Plage créée par les forts vents de la Vallée des Rois. La Dune protège les terres voisines de la chaleur et amène l'eau de la rivière Vacarme.",
+      "description": "Plage créée par les forts vents de la Vallée des Rois. La Dune protège les Plaines du Contre Bois de la chaleur et amène l'eau de la rivière Vacarme jusqu'à la mer.",
       "name": "La Dune",
       "particle": "vers",
       "atParticle": "à"
