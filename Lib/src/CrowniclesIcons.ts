@@ -48,6 +48,9 @@ export const CrowniclesIcons: {
 		accept: string;
 		refuse: string;
 	};
+	infoFightSmallEvent: {
+		showHandednessInfo: string;
+	};
 	fightCommand: {
 		accept: string;
 		aiThinking: string;
@@ -1903,6 +1906,9 @@ export const CrowniclesIcons: {
 	cartSmallEvent: {
 		accept: "🚗",
 		refuse: "🚶"
+	},
+	infoFightSmallEvent: {
+		showHandednessInfo: "✋"
 	},
 	fightCommand: {
 		accept: "🔍",
