@@ -372,7 +372,8 @@ export const CrowniclesIcons: {
 		scared: "😱",
 		lost: "🧐",
 		healed: "🏥",
-		fished: "🐟"
+		fished: "🐟",
+		working: "🔨"
 	},
 	events: {
 		1: {

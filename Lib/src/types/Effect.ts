@@ -35,6 +35,8 @@ export class Effect {
 
 	public static readonly FISHED = new Effect("fished", ":fish:", 5);
 
+	public static readonly WORKING = new Effect("working", ":hammer:", 75);
+
 
 	public static getById(id: string): Effect | null {
 		return effects.get(id) ?? null;
