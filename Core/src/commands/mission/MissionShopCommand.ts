@@ -261,7 +261,7 @@ function getBadgeShopItem(): ShopItem {
 export default class MissionShopCommand {
 	@commandRequires(CommandMissionShopPacketReq, {
 		notBlocked: true,
-		disallowedEffects: CommandUtils.DISALLOWED_EFFECTS.NOT_STARTED_OR_DEAD_OR_JAILED,
+		disallowedEffects: CommandUtils.DISALLOWED_EFFECTS.NOT_STARTED_OR_DEAD_OR_JAILED_OR_WORKING,
 		whereAllowed: [WhereAllowed.CONTINENT]
 	})
 	static async execute(
