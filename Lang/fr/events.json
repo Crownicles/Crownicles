@@ -190,46 +190,84 @@
   },
   "13": {
     "possibilities": {
+      "visitForge": {
+        "outcomes": {
+          "0": "Le forgeron, un homme robuste aux mains expertes, vous accueille chaleureusement dans sa forge rougeoyante. Impressionné par votre réputation de voyageur honorable, il vous fait découvrir ses créations les plus raffinées et vous offre même un petit objet de son cru en guise de bienvenue.",
+          "1": "Le maître-forgeron reconnaît immédiatement votre expérience de combattant aguerri. Il vous propose de tester ses dernières créations et, satisfait de vos commentaires éclairés, vous remet une de ses œuvres comme témoignage de respect mutuel.",
+          "2": "Le forgeron vous toise d'un œil méfiant en reconnaissant votre sinistre réputation. Malgré votre or sonnant et trébuchant, il refuse de vous vendre quoi que ce soit et vous demande fermement de quitter sa forge.",
+          "3": "L'atmosphère se tend rapidement dans la forge. Le forgeron, ayant entendu parler de vos méfaits, refuse de vous servir. Votre tentative d'intimidation échoue face à sa détermination, et vous devez battre en retraite, humilié.",
+          "4": "En examinant une épée particulièrement bien forgée, votre inexpérience vous joue des tours. L'arme vous échappe et brise une précieuse vitrine d'exposition. Le forgeron, rouge de colère, exige réparation immédiate !",
+          "5": "Votre œil exercé repère immédiatement la qualité médiocre du travail exposé. Le forgeron, gêné par votre expertise évidente, vous avoue ses difficultés récentes et vous laisse repartir sans transaction.",
+          "6": "La forge résonne du martèlement rhythmé sur l'enclume, mais le forgeron semble trop occupé pour vous accorder attention. Vous patientez un moment avant de repartir, bredouille mais patient."
+        },
+        "text": "Visiter la forge réputée de Claire de Ville."
+      },
+      "visitInn": {
+        "outcomes": {
+          "0": "L'aubergiste vous reconnaît comme un voyageur de bonne réputation ! Il vous offre gracieusement sa meilleure chambre pour la nuit, accompagnée d'un repas copieux. Vous récupérez parfaitement de vos fatigues.",
+          "1": "L'auberge 'La Halte Dorée' vous accueille chaleureusement. Vous négociez un prix raisonnable pour une chambre confortable et profitez d'une nuit réparatrice bien méritée.",
+          "2": "Votre réputation sulfureuse vous précède... L'aubergiste, nerveux, vous propose une chambre mais à un prix exorbitant, estimant que votre présence pourrait faire fuir d'autres clients.",
+          "3": "L'auberge affiche complet ! Tous les lits sont occupés par une caravane de marchands arrivée avant vous. Déçu, vous devez chercher un autre endroit où passer la nuit.",
+          "4": "L'aubergiste, impressionné par votre allure de voyageur expérimenté, vous confie des informations précieuses sur les routes environnantes en échange d'une modeste contribution.",
+          "5": "L'établissement semble avoir connu des jours meilleurs. L'aubergiste, désabusé, vous propose une chambre basique à prix réduit, s'excusant pour le manque de confort.",
+          "6": "Votre compagnon à quatre pattes attire l'attention bienveillante de l'aubergiste, qui s'avère être un grand amoureux des animaux. Ému par votre fidèle ami, il vous offre le gîte et le couvert."
+        },
+        "text": "Chercher refuge à l'auberge 'La Halte Dorée'."
+      },
+      "exploreMarket": {
+        "outcomes": {
+          "0": "Votre réputation de voyageur honnête vous ouvre toutes les portes ! Les marchands vous font visiter leurs meilleures marchandises et l'un d'eux vous offre même un objet rare en gage d'amitié.",
+          "1": "Le marché de Claire de Ville grouille d'activité. Vos talents de négociateur vous permettent de dénicher quelques bonnes affaires parmi les étals colorés.",
+          "2": "Les marchands vous observent avec méfiance, ayant entendu parler de votre réputation douteuse. Les prix grimpent mystérieusement dès que vous approchez, et certains refusent même de vous servir.",
+          "3": "Un pickpocket novice tente de vous dérober votre bourse ! Grâce à vos réflexes aiguisés, vous l'attrapez facilement et récupérez même quelques pièces qu'il avait dérobées à d'autres victimes.",
+          "4": "Malheureusement, votre garde baissée sur le marché animé vous coûte cher. Un voleur expérimenté parvient à vous soulager d'une partie de votre bourse dans la cohue.",
+          "5": "Vous subissez une embuscade de la part de brigands qui ont apparemment des comptes à régler avec vous ! Le combat est rude, mais vous parvenez à les repousser, non sans quelques blessures.",
+          "6": "Votre allure imposante dissuade les trouble-fêtes habituels du marché. Vous déambulez tranquillement entre les étals, profitant de l'atmosphère commerciale sans incident.",
+          "7": "En aidant spontanément un marchand âgé à porter ses marchandises, vous gagnez sa reconnaissance. Il partage avec vous quelques pièces et des informations utiles sur la région."
+        },
+        "text": "Explorer le marché animé de la ville."
+      },
+      "seekInformation": {
+        "outcomes": {
+          "0": "Votre réputation de héros local vous précède ! Les habitants se bousculent pour vous informer des dangers récents sur les routes et vous offrent leurs conseils les plus précieux.",
+          "1": "Grâce à votre expérience de voyageur, vous savez poser les bonnes questions. Les habitants vous révèlent l'existence d'un passage secret vers le Mont Célestrum, évitant les brigands du Grand Axe.",
+          "2": "Votre approche diplomatique porte ses fruits. Un vieux sage de la ville vous révèle l'emplacement d'une cache d'objets précieux abandonnée par d'anciens aventuriers.",
+          "3": "Les habitants restent méfiants face à votre réputation sulfureuse. Ils vous donnent quelques informations basiques mais gardent leurs secrets les plus précieux.",
+          "4": "Votre mauvaise réputation ferme toutes les bouches ! Les habitants refusent catégoriquement de vous adresser la parole et certains appellent même les gardes.",
+          "5": "Un informateur louche vous aborde dans une ruelle sombre. Il prétend avoir des informations précieuses mais exige un prix élevé pour ses révélations.",
+          "6": "Votre patience et votre écoute touchent une veuve âgée qui vous raconte l'histoire tragique du Bois Hurlant et vous met en garde contre ses dangers actuels."
+        },
+        "text": "Chercher des informations auprès des habitants."
+      },
+      "helpCityGuards": {
+        "outcomes": {
+          "0": "Votre réputation irréprochable impressionne le capitaine de la garde ! Il vous confie une mission de patrouille rémunérée et vous remet un équipement de qualité en remerciement.",
+          "1": "Votre aide précieuse pour maintenir l'ordre dans Claire de Ville est récompensée par une gratification généreuse et la reconnaissance officielle des autorités locales.",
+          "2": "En patrouillant avec les gardes, vous aidez à arrêter un voleur récidiviste. Votre intervention courageuse vous vaut les félicitations et une prime de la municipalité.",
+          "3": "Votre offre d'assistance est poliment déclinée. Les gardes, bien qu'appréciant votre bonne volonté, estiment pouvoir gérer seuls la sécurité de leur ville.",
+          "4": "Les gardes vous regardent avec suspicion, ayant eu vent de votre réputation sulfureuse. Ils vous conseillent fermement de ne pas vous mêler de leurs affaires.",
+          "5": "Votre tentative d'approche des forces de l'ordre tourne au vinaigre ! Reconnaissant votre visage sur un avis de recherche, ils tentent de vous arrêter. Vous devez prendre la fuite !"
+        },
+        "text": "Proposer votre aide aux gardes de la ville."
+      },
+      "restAndObserve": {
+        "outcomes": {
+          "0": "Vous trouvez un banc paisible sur la place centrale et observez la vie trépidante de Claire de Ville. Cette pause contemplative vous permet de récupérer un peu d'énergie.",
+          "1": "En observant attentivement les allées et venues, votre expérience vous permet de repérer des détails intéressants sur les habitudes locales et les opportunités commerciales.",
+          "2": "Votre repos sur la place publique attire l'attention d'un mendiant qui partage avec vous ses observations sur les personnalités importantes de la ville.",
+          "3": "Pendant votre pause, vous assistez à un spectacle de rue divertissant qui vous remonte le moral et vous donne envie de continuer votre aventure.",
+          "4": "Votre animal de compagnie attire l'attention admirative des enfants du coin, créant un moment de joie partagée qui réchauffe votre cœur."
+        },
+        "text": "Se reposer et observer l'animation de la ville."
+      },
       "end": {
         "outcomes": {
-          "0": "Vous visitez la ville pendant plusieurs heures avant de continuer votre route."
+          "0": "Vous décidez de faire rapidement le tour de Claire de Ville sans vous attarder. La ville est effectivement prospère, mais vous préférez reprendre rapidement votre route vers de nouveaux horizons.",
+          "1": "Intimidé par l'agitation de cette grande ville marchande, vous préférez ne pas vous mêler aux habitants et repartez discrètement après une visite superficielle."
         }
-      },
-      "goAway": {
-        "outcomes": {
-          "0": "Vous traversez le petit bourg en une petite demi-heure et continuez votre route.",
-          "1": "Vous perdez une bonne heure à contourner la ville mais reprenez votre route tranquillement."
-        },
-        "text": "Repartir."
-      },
-      "goForge": {
-        "outcomes": {
-          "0": "Il n'y a rien d'intéressant dans cette forge... Vous quittez rapidement les lieux et reprenez votre route.",
-          "1": "En essayant une épée, vous brisez la fenêtre de la forge, le forgeron demande remboursement !",
-          "2": "Personne n'est présent dans la forge qui semble abandonnée depuis des années. Avant de partir vous remarquez cependant un objet qui pourrait vous servir pour la suite de votre aventure...",
-          "3": "La forge semble abandonnée depuis des années. Vous reprenez donc votre route.",
-          "4": "Vous entrez et saluez le forgeron. Après une rapide inspection de son travail vous comprenez que vous ne trouverez rien d'intéressant ici. Vous reprenez votre route."
-        },
-        "text": "Aller à la forge."
-      },
-      "goInn": {
-        "outcomes": {
-          "0": "Après avoir discuté pendant 2 heures avec l'aubergiste, vous finissez par apprendre qu'il n'y a aucune chambre disponible pour la nuit ! Vous reprenez la route, frustré de ne pas avoir pu profiter d'une bonne nuit de repos.",
-          "1": "Vous payez une chambre pour la nuit et tombez effondré sur le lit. Il faudra dormir avant de reprendre l'aventure.",
-          "2": "L'auberge semble abandonnée depuis plusieurs années... Vous continuez votre route sans vous poser plus de questions."
-        },
-        "text": "Aller à l'auberge."
-      },
-      "goMarket": {
-        "outcomes": {
-          "0": "Vous explorez le marché en 30 minutes avant de découvrir un petit objet au sol qui pourrait vous être utile...",
-          "1": "Après avoir perdu 60 minutes à vous balader dans les étals, vous finissez par quitter la ville sans avoir pu trouver quoi que ce soit d'intéressant.",
-          "2": "Alors que votre vigilance était au plus bas sur le marché, vous recevez un coup violent derrière la tête et vous vous effondrez à terre... Après ce moment, plus aucun souvenir. Il faudra vous soigner avant de pouvoir continuer à avancer !"
-        },
-        "text": "Aller au marché."
       }
     },
-    "text": "Après avoir passé plusieurs semaines à marcher sans effectuer la moindre rencontre humaine, vous entrez finalement dans une petite bourgade qui semble plutôt animée."
+    "text": "Vous voici aux portes de Claire de Ville, cette grande cité marchande qui se dresse majestueusement devant vous. Carrefour économique réputé dans toute la région, la ville bourdonne d'une activité constante. Des caravanes de marchands franchissent les portes fortifiées dans un ballet incessant, tandis que l'écho des marteaux résonne depuis les forges renommées. L'odeur alléchante des auberges se mélange aux parfums d'épices du grand marché central. Cette métropole commerçante vous offre de multiples possibilités d'exploration..."
   },
   "14": {
     "possibilities": {
