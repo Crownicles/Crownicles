@@ -96,7 +96,7 @@ async function applyOutcomeHealth(outcome: PossibilityOutcome, player: Player, r
 	return 0;
 }
 
-async function applyOutcomeKarma(outcome: PossibilityOutcome, player: Player, response: DraftBotPacket[]): Promise<number> {
+async function applyOutcomeKarma(outcome: PossibilityOutcome, player: Player, response: CrowniclesPacket[]): Promise<number> {
 	if (outcome.karma && outcome.karma !== 0) {
 		await player.addKarma(outcome.karma, response, NumberChangeReason.BIG_EVENT);
 		return outcome.karma;
@@ -104,8 +104,8 @@ async function applyOutcomeKarma(outcome: PossibilityOutcome, player: Player, re
 	return 0;
 }
 
-async function applyOutcomeMoney(outcome: PossibilityOutcome, time: number, player: Player, response: DraftBotPacket[]): Promise<number> {
-	let moneyChange = (outcome.money ?? 0) + Math.round(time / 10 + RandomUtils.draftbotRandom.integer(0, time / 10 + player.level / 5 - 1));
+async function applyOutcomeMoney(outcome: PossibilityOutcome, time: number, player: Player, response: CrowniclesPacket[]): Promise<number> {
+	let moneyChange = (outcome.money ?? 0) + Math.round(time / 10 + RandomUtils.crowniclesRandom.integer(0, time / 10 + player.level / 5 - 1));
 	if (outcome.money && outcome.money < 0 && moneyChange > 0) {
 		moneyChange = Math.floor(outcome.money / 2);
 	}
