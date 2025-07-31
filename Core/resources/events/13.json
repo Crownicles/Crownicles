@@ -128,6 +128,13 @@
           },
           "health": 15,
           "karma": 8
+        },
+        "7": {
+          "requirements": {
+            "petTypeId": 65
+          },
+          "money": 400,
+          "karma": -40
         }
       }
     },
@@ -204,6 +211,28 @@
           },
           "money": 30,
           "karma": 8
+        },
+        "8": {
+          "requirements": {
+            "karma": {
+              "min": 100
+            },
+            "speed": {
+              "max": 199
+            }
+          },
+          "money": -250
+        },
+        "9": {
+          "requirements": {
+            "karma": {
+              "min": 100
+            },
+            "speed": {
+              "min": 200
+            }
+          },
+          "karma": -10
         }
       }
     },
@@ -216,7 +245,7 @@
             }
           },
           "karma": 15,
-          "mapTypesDestination": ["mo"]
+          "mapTypesDestination": ["ro"]
         },
         "1": {
           "requirements": {
@@ -225,7 +254,7 @@
             }
           },
           "karma": 5,
-          "mapTypesDestination": ["ro"]
+          "mapTypesDestination": ["mo"]
         },
         "2": {
           "requirements": {
@@ -266,6 +295,17 @@
         },
         "6": {
           "karma": 8
+        },
+        "7": {
+          "requirements": {
+            "karma": {
+              "max": -50
+            },
+            "level": {
+              "min": 80
+            }
+          },
+          "karma": 20
         }
       }
     },
@@ -325,12 +365,40 @@
         "5": {
           "requirements": {
             "karma": {
-              "max": -500
+              "max": -50
+            },
+            "speed": {
+              "min": 250
             }
           },
           "effect": "occupied",
           "lostTime": 120,
           "karma": -20
+        },
+        "6": {
+          "requirements": {
+            "karma": {
+              "max": -50
+            },
+            "speed": {
+              "max": 249
+            }
+          },
+          "karma": -20,
+          "health": -20,
+          "effect": "confounded"
+        },
+        "7": {
+          "requirements": {
+            "karma": {
+              "max": -30
+            },
+            "level": {
+              "max": 50
+            }
+          },
+          "effect": "working",
+          "karma": 20
         }
       }
     },
