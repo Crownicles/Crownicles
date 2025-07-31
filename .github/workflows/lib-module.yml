@@ -5,6 +5,7 @@ on:
       - '**'
     paths:
       - Lib/**
+      - .github/workflows/**
   workflow_dispatch:
 
 jobs:

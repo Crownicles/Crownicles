@@ -5,6 +5,7 @@ on:
       - '**'
     paths:
       - Core/**
+      - .github/workflows/**
   workflow_dispatch:
 
 jobs:

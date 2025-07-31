@@ -5,6 +5,7 @@ on:
       - '**'
     paths:
       - Discord/**
+      - .github/workflows/**
   workflow_dispatch:
 
 jobs:
