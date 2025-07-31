@@ -1486,7 +1486,7 @@ export class Player extends Model {
 	 * @param reason
 	 * @param _response
 	 */
-	public async addKarma(karmas: number, _response: DraftBotPacket[], reason: NumberChangeReason): Promise<void> {
+	public async addKarma(karmas: number, _response: CrowniclesPacket[], reason: NumberChangeReason): Promise<void> {
 		await this.setKarma(this.karma + karmas, reason);
 	}
 
@@ -1497,7 +1497,7 @@ export class Player extends Model {
 	 */
 	public async setKarma(karmas: number, reason: NumberChangeReason): Promise<void> {
 		this.karma = karmas;
-		draftBotInstance.logsDatabase.logKarmaChange(this.keycloakId, this.karma, reason)
+		crowniclesInstance.logsDatabase.logKarmaChange(this.keycloakId, this.karma, reason)
 			.then();
 		await this.save();
 	}
