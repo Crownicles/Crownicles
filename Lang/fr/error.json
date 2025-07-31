@@ -140,6 +140,10 @@
       "self": "Vous êtes actuellement empoissonné !",
       "other": "{{pseudo}} est actuellement empoissonné !"
     },
+    "working": {
+      "self": "Vous êtes actuellement au travail !",
+      "other": "{{pseudo}} est actuellement au travail !"
+    },
     "notStartedHint": {
       "self": "Utilisez la commande {command:report} pour commencer votre aventure !",
       "other": "Impossible d'effectuer cette action."

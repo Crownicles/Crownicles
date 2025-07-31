@@ -41,6 +41,12 @@ export abstract class CommandUtils {
 			Effect.NOT_STARTED,
 			Effect.DEAD,
 			Effect.JAILED
+		],
+		NOT_STARTED_OR_DEAD_OR_JAILED_OR_WORKING: [
+			Effect.NOT_STARTED,
+			Effect.DEAD,
+			Effect.JAILED,
+			Effect.WORKING
 		]
 	};
 

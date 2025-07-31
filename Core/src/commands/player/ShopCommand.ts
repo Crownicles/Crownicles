@@ -302,7 +302,7 @@ async function getSlotExtensionShopItem(player: Player): Promise<ShopItem | null
 export default class ShopCommand {
 	@commandRequires(CommandShopPacketReq, {
 		notBlocked: true,
-		disallowedEffects: CommandUtils.DISALLOWED_EFFECTS.NOT_STARTED_OR_DEAD_OR_JAILED,
+		disallowedEffects: CommandUtils.DISALLOWED_EFFECTS.NOT_STARTED_OR_DEAD_OR_JAILED_OR_WORKING,
 		whereAllowed: [WhereAllowed.CONTINENT]
 	})
 	static async execute(
