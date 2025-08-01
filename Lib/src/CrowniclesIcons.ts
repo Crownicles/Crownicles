@@ -261,30 +261,36 @@ export const CrowniclesIcons: {
 			skip: "🏃"
 		},
 		11: {
+			followHint: "🧭",
+			questionStranger: "🕵️",
+			forest: "🌲",
+			oppositeSide: "🚶",
 			end: {
-				0: "🚶"
-			},
-			followHint: "👈",
-			forest: "🌳",
-			oppositeSide: "👉"
+				0: "🕑",
+				1: "🕑"
+			}
 		},
 		12: {
-			craftBoat: "🚣",
+			useBridge: "🌉",
+			crossRiver: "🏊",
+			searchAlternative: "🚶",
+			makeRaft: "🚣",
 			end: {
-				0: "🕑"
-			},
-			otherWay: "🚶",
-			searchBridge: "🌉",
-			swim: "🏊"
+				0: "🕑",
+				1: "🕑"
+			}
 		},
 		13: {
 			end: {
-				0: "🚶"
+				0: "🚶",
+				1: "🚶"
 			},
-			goAway: "🚶",
-			goForge: "🔨",
-			goInn: "🏠",
-			goMarket: "🎪"
+			visitForge: "🔨",
+			visitInn: "🏠",
+			exploreMarket: "🎪",
+			seekInformation: "🕵️",
+			helpCityGuards: "🛡️",
+			restAndObserve: "🛏️"
 		},
 		14: {
 			chatWorker: "🔨",
