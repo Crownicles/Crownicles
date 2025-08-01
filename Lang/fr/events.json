@@ -279,38 +279,57 @@
     "possibilities": {
       "chatWorker": {
         "outcomes": {
-          "0": "L'homme vous aperçoit et vous propose de vous fabriquer un objet avec lui. Après près d'une heure, votre création est terminée. L'homme vous l'offre en récompense !",
-          "1": "Vous regardez l'ouvrier fabriquer une hache pendant une dizaine de minutes avant de vous décider à reprendre la route.",
-          "2": "L'ouvrier vous aperçoit et vous propose de vous fabriquer une épée avec lui. Enthousiasmé à l'idée d'obtenir une nouvelle arme, vous acceptez. Maladroit, vous ne mettez pas longtemps à échapper votre lourde création sur le pied. Gravement blessé, vous abandonnez l'idée de créer votre propre arme."
+          "0": "Le maître-forgeron reconnaît immédiatement en vous un héros de légende ! Ému par votre présence, il partage avec vous les secrets de son art ancestral. Ensemble, vous forgez une pièce extraordinaire qu'il vous offre avec une bourse, bénissant votre noble quête.",
+          "1": "Vos cicatrices de bataille et votre port d'armes impressionnent le forgeron. Il vous défie dans un concours de forge, créant ensemble une arme digne de votre réputation. Respectueux de votre expertise martiale, il vous remet son œuvre.",
+          "2": "Votre aura sombre intrigue le forgeron qui, après quelques échanges, vous révèle connaître des techniques... particulières. Il vous propose de forger ensemble une lame aux propriétés uniques, moyennant une généreuse rétribution pour ce service discret.",
+          "3": "Votre tigre majestueux fascine le forgeron ! Ancien dresseur, il partage avec vous ses souvenirs de la faune sauvage tout en créant un objet unique inspiré par votre compagnon félin.",
+          "4": "Votre enthousiasme de novice amuse le forgeron, mais votre maladresse près du feu et des outils chauds vous vaut quelques brûlures. Il vous soigne en grondant gentiment sur les dangers de la forge.",
+          "5": "Votre expérience de vétéran des batailles impressionne l'artisan. Il vous consulte sur l'équilibrage d'une arme et, satisfait de vos conseils experts, vous récompense généreusement pour cette collaboration inattendue.",
+          "6": "Vous passez un moment agréable avec le forgeron, échangeant sur vos voyages respectifs. Sa compagnie réchauffe votre cœur autant que sa forge réchauffe vos membres fatigués."
         },
-        "text": "Discuter avec l'ouvrier."
-      },
-      "end": {
-        "outcomes": {
-          "0": "Vous contournez la maison et continuez votre route."
-        }
-      },
-      "goAway": {
-        "outcomes": {
-          "0": "Vous partez sans perdre de temps.",
-          "1": "Vous continuez votre route en contournant la prairie.",
-          "2": "Vous décidez de continuer à marcher malgré la fatigue. Après quelques kilomètres, vous vous écroulez au bord du chemin."
-        },
-        "text": "Pas de temps à perdre ! Il faut continuer votre route !"
+        "text": "Engager la conversation avec le forgeron."
       },
       "stayNight": {
         "outcomes": {
-          "0": "Après avoir discuté rapidement avec l'homme, ce dernier accepte de vous héberger pour la nuit. Épuisé, vous vous écroulez de fatigue sur le lit.",
-          "1": "L'homme vous avoue rapidement ne pas pouvoir vous héberger pour la nuit mais vous propose de partager son repas. Vous refusez poliment et reprenez votre route.",
-          "2": "Vous n'obtenez en réponse qu'un simple grognement. Les habitants de la région semblent ne pas apprécier les étrangers.",
-          "3": "L'homme vous refuse rapidement le partage de sa couche mais vous propose de partager son souper. Affamé et épuisé, vous acceptez son offre."
+          "0": "Votre réputation de saint homme vous précède ! Le forgeron insiste pour vous accueillir dans sa demeure, vous offrant son propre lit et un festin digne d'un roi. Cette nuit bénie restaure complètement vos forces.",
+          "1": "Le forgeron accepte de vous héberger contre une contribution équitable. Sa maison rustique mais chaleureuse vous offre un repos bien mérité, loin des vents glacés de L'Étendue.",
+          "2": "Votre sinistre réputation effraie le forgeron qui refuse catégoriquement de vous laisser approcher de sa demeure. Il menace même d'alerter les autorités si vous insistez.",
+          "3": "Votre fidèle chien attendrit immédiatement le forgeron, ancien propriétaire d'un molosse ! Ému par cette rencontre, il vous accueille tous les deux avec joie, partageant même ses meilleures provisions avec votre compagnon.",
+          "4": "Impressionné par votre allure de guerrier aguerri, le forgeron vous propose un échange : une nuit au chaud contre quelques pièces et la promesse de défendre sa maison si des bandits apparaissent.",
+          "5": "Touché par votre jeunesse et votre apparent épuisement, le forgeron accepte de vous laisser dormir dans son atelier. Il vous raconte des histoires de forge en préparant une paillasse de fortune.",
+          "6": "Bien que réticent, le forgeron finit par céder à vos demandes répétées. Il vous installe dans un coin de son atelier, près de la chaleur rassurante de la forge qui se refroidit."
         },
-        "text": "Demander à rester là durant la nuit pour vous reposer et reprendre des forces."
+        "text": "Demander l'hospitalité pour la nuit."
+      },
+      "inspectForge": {
+        "outcomes": {
+          "0": "Votre œil expert reconnaît immédiatement la qualité exceptionnelle du travail ! Le forgeron, flatté par votre expertise, vous fait découvrir ses techniques secrètes et vous offre une de ses créations les plus abouties.",
+          "1": "Profitant de l'inattention du forgeron absorbé par son travail, vous dérobez discrètement quelques outils précieux et des pièces achevées. Votre rapidité vous permet de disparaître avant qu'il ne remarque le vol.",
+          "2": "Votre curiosité vous joue des tours ! En touchant sans permission les outils encore chauds, vous vous brûlez douloureusement. Le forgeron vous soigne en secouant la tête devant votre imprudence.",
+          "3": "Votre connaissance des armes et armures impressionne le forgeron ! Il sollicite votre avis sur plusieurs pièces et, satisfait de vos commentaires pertinents, vous récompense pour cette consultation improvisée.",
+          "4": "Votre chauve-souris, paniquée par les étincelles et le bruit, sème la pagaille dans l'atelier ! Le temps de rattraper votre compagnon affolé, vous avez mis un joyeux désordre dans la forge organisée.",
+          "5": "Vous observez avec fascination le travail minutieux du forgeron, apprenant quelques techniques par observation. Cette contemplation enrichit vos connaissances."
+        },
+        "text": "Examiner de plus près la forge et les créations."
+      },
+      "goAway": {
+        "outcomes": {
+          "0": "Plein d'énergie, vous saluez poliment le forgeron et reprenez votre route d'un pas assuré à travers L'Étendue, profitant de cette belle journée.",
+          "1": "Épuisé mais déterminé, vous forcez le passage. Malheureusement, vos forces vous abandonnent quelques kilomètres plus loin et vous vous effondrez au bord du chemin.",
+          "2": "Bien que tentés de vous arrêter, votre conscience vous pousse à ne pas déranger ce travailleur. Ce choix altruiste vous pèse légèrement sur le cœur.",
+          "3": "Votre agilité vous permet de traverser rapidement les terrains accidentés de L'Étendue, mais vous prenez tout de même le temps d'observer discrètement le forgeron au travail.",
+          "4": "Vous hésitez longuement devant cette scène paisible avant de finalement reprendre votre route. Cette indécision vous fait perdre un temps précieux."
+        },
+        "text": "Continuer votre chemin sans vous arrêter."
+      },
+      "end": {
+        "outcomes": {
+          "0": "Intimidé par cette rencontre inattendue au milieu de nulle part, vous préférez observer de loin avant de contourner discrètement la propriété, vous demandant ce qu'un forgeron peut bien faire seul dans ces plaines désolées."
+        }
       }
     },
-    "text": "Alors que la fatigue commence à vous assaillir, vous découvrez une petite prairie où se tient une petite maison. Vous vous en approchez et découvrez un homme occupé à travailler une pièce métallique incandescente."
-  },
-  "15": {
+    "text": "L'immensité désolée de L'Étendue s'étire à perte de vue sous vos pas fatigués, quand soudain une vision inespérée rompt la monotonie du paysage. Au creux d'un vallon protégé des vents, une maisonnette de pierre se dresse comme un phare dans cette mer d'herbes folles. L'écho cristallin du marteau sur l'enclume danse dans l'air, ponctué par le souffle régulier du soufflet et les crépitements de la forge. Un homme trapu aux avant-bras marqués par les étincelles façonne méthodiquement une pièce incandescente, totalement absorbé par son art. Des flammes orangées léchent les parois de pierre noircie tandis qu'une fumée odorante s'élève vers le ciel. Cette oasis d'activité humaine au cœur de l'immensité sauvage éveille en vous mille possibilités..."
+  },"15": {
     "possibilities": {
       "end": {
         "outcomes": {
