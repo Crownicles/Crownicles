@@ -3,17 +3,242 @@
     "chatWorker": {
       "outcomes": {
         "0": {
-          "effect": "occupied",
-          "lostTime": 60,
-          "randomItem": {}
+          "requirements": {
+            "karma": {
+              "min": 50
+            },
+            "level": {
+              "min": 130
+            }
+          },
+          "effect": "working",
+          "randomItem": {
+            "rarity": {
+              "min": 4
+            }
+          },
+          "karma": 6,
+          "money": 75
         },
         "1": {
-          "effect": "occupied",
-          "lostTime": 10
+          "requirements": {
+            "attack": {
+              "min": 350
+            }
+          },
+          "effect": "working",
+          "randomItem": {},
+          "karma": 3
         },
         "2": {
-          "effect": "injured",
-          "health": -70
+          "requirements": {
+            "karma": {
+              "max": -30
+            },
+            "level": {
+              "min": 40
+            }
+          },
+          "effect": "working",
+          "randomItem": {},
+          "money": 150,
+          "karma": -15
+        },
+        "3": {
+          "requirements": {
+            "petTypeId": 56
+          },
+          "randomItem": {},
+          "karma": 8
+        },
+        "4": {
+          "requirements": {
+            "level": {
+              "max": 50
+            }
+          },
+          "effect": "burned",
+          "health": -5,
+          "karma": -5
+        },
+        "5": {
+          "requirements": {
+            "validClassIds": [17, 18, 19, 20, 21, 22, 23, 24]
+          },
+          "effect": "occupied",
+          "lostTime": 75,
+          "randomItem": {},
+          "money": 100
+        },
+        "6": {
+          "effect": "occupied",
+          "lostTime": 45,
+          "karma": 2
+        }
+      }
+    },
+    "stayNight": {
+      "outcomes": {
+        "0": {
+          "requirements": {
+            "karma": {
+              "min": 80
+            }
+          },
+          "effect": "sleeping",
+          "health": 25,
+          "karma": 8
+        },
+        "1": {
+          "requirements": {
+            "money": {
+              "min": 150
+            },
+            "karma": {
+              "min": 0
+            }
+          },
+          "effect": "sleeping",
+          "health": 20,
+          "money": -120
+        },
+        "2": {
+          "requirements": {
+            "karma": {
+              "max": -40
+            }
+          },
+          "karma": -8
+        },
+        "3": {
+          "requirements": {
+            "petTypeId": 1
+          },
+          "effect": "sleeping",
+          "health": 30,
+          "karma": 12
+        },
+        "4": {
+          "requirements": {
+            "defense": {
+              "min": 200
+            }
+          },
+          "effect": "sleeping",
+          "health": 15,
+          "money": -80
+        },
+        "5": {
+          "requirements": {
+            "level": {
+              "max": 30
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 180,
+          "health": 10
+        },
+        "6": {
+          "effect": "occupied",
+          "lostTime": 60,
+          "health": 8
+        }
+      }
+    },
+    "inspectForge": {
+      "outcomes": {
+        "0": {
+          "requirements": {
+            "attack": {
+              "min": 300
+            },
+            "karma": {
+              "min": 10
+            }
+          },
+          "randomItem": {},
+          "karma": 5
+        },
+        "1": {
+          "requirements": {
+            "speed": {
+              "min": 250
+            },
+            "karma": {
+              "max": -20
+            }
+          },
+          "randomItem": {},
+          "money": 80,
+          "karma": -20
+        },
+        "2": {
+          "requirements": {
+            "level": {
+              "max": 25
+            }
+          },
+          "effect": "hurt",
+          "health": -20
+        },
+        "3": {
+          "requirements": {
+            "validClassIds": [12, 13, 14, 15, 16]
+          },
+          "money": 60,
+          "karma": 3
+        },
+        "4": {
+          "requirements": {
+            "petTypeId": 27
+          },
+          "effect": "confused",
+          "lostTime": 30
+        },
+        "5": {
+          "effect": "occupied",
+          "lostTime": 20
+        }
+      }
+    },
+    "goAway": {
+      "outcomes": {
+        "0": {
+          "requirements": {
+            "health": {
+              "min": 80
+            }
+          }
+        },
+        "1": {
+          "requirements": {
+            "health": {
+              "max": 40
+            }
+          },
+          "effect": "sleeping",
+          "health": -25
+        },
+        "2": {
+          "requirements": {
+            "karma": {
+              "min": 20
+            }
+          },
+          "karma": -3
+        },
+        "3": {
+          "requirements": {
+            "speed": {
+              "min": 200
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 15
+        },
+        "4": {
+          "effect": "occupied",
+          "lostTime": 45
         }
       }
     },
@@ -21,45 +246,25 @@
       "outcomes": {
         "0": {
           "effect": "occupied",
-          "lostTime": 30
-        }
-      }
-    },
-    "goAway": {
-      "outcomes": {
-        "0": {},
-        "1": {
-          "effect": "occupied",
-          "lostTime": 20
-        },
-        "2": {
-          "effect": "sleeping",
-          "health": -20
-        }
-      }
-    },
-    "stayNight": {
-      "outcomes": {
-        "0": {
-          "effect": "sleeping",
-          "health": 10
-        },
-        "1": {
-          "effect": "occupied",
-          "lostTime": 5
-        },
-        "2": {},
-        "3": {
-          "effect": "occupied",
-          "health": 5,
-          "lostTime": 100
+          "lostTime": 30,
+          "karma": -2
         }
       }
     }
   },
   "triggers": [
     {
-      "mapId": 12
+      "mapId": 12,
+      "level": {
+        "min": 10
+      },
+      "date": {
+        "hour": {
+          "from": 8,
+          "to": 19
+        }
+      },
+      "oncePer": "day"
     }
   ]
 }
