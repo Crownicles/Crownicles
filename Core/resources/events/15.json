@@ -8,8 +8,6 @@
               "min": 30
             }
           },
-          "effect": "occupied",
-          "lostTime": 45,
           "money": -120,
           "randomItem": {},
           "karma": 5
@@ -17,35 +15,25 @@
         "1": {
           "requirements": {
             "karma": {
-              "max": -20
+              "max": -20,
+              "min": -100
             },
             "level": {
               "min": 40
             }
           },
-          "effect": "occupied",
-          "lostTime": 20,
           "money": -80,
-          "randomItem": {
-            "rarity": {
-              "max": 2
-            }
-          },
-          "karma": -8
+          "randomItem": {},
+          "karma": -9
         },
         "2": {
           "requirements": {
             "karma": {
-              "max": -50
-            },
-            "speed": {
-              "max": 200
+              "max": -100
             }
           },
           "money": -150,
-          "health": -10,
-          "karma": -12,
-          "effect": "hurt"
+          "karma": -12
         },
         "3": {
           "requirements": {
@@ -63,6 +51,39 @@
             }
           },
           "karma": 10
+        },
+        "4": {
+          "requirements": {
+            "level": {
+              "max": 30
+            }
+          },
+          "money": -60,
+          "randomItem": {},
+          "karma": 3
+        },
+        "5": {
+          "requirements": {
+            "validPetTypeIds": [
+              21,
+              43,
+              42,
+              31,
+              46,
+              48,
+              49,
+              50,
+              51,
+              61,
+              64,
+              65,
+              84,
+              88,
+              89,
+              98
+            ]
+          },
+          "karma": -2
         }
       }
     },
@@ -77,13 +98,13 @@
               "max": 10
             }
           },
-          "money": 120,
+          "money": 220,
           "karma": -15
         },
         "1": {
           "requirements": {
             "karma": {
-              "max": -80
+              "max": -150
             },
             "attack": {
               "min": 300
@@ -95,7 +116,7 @@
         "2": {
           "requirements": {
             "speed": {
-              "max": 200
+              "max": 300
             }
           },
           "money": -150,
@@ -110,23 +131,34 @@
             }
           },
           "money": -100,
-          "karma": -10,
-          "effect": "occupied",
-          "lostTime": 20
+          "karma": -30
         },
         "4": {
           "requirements": {
             "karma": {
-              "max": -30
+              "min": -30
             },
             "level": {
-              "max": 50
+              "max": 80
             }
           },
           "money": -200,
           "health": -25,
-          "karma": -30,
+          "karma": -10,
           "effect": "confounded"
+        },
+        "5": {
+          "requirements": {
+            "karma": {
+              "min": -30
+            },
+            "validPetTypeIds": [
+              24
+            ]
+          },
+          "money": 80,
+          "randomItem": {},
+          "karma": -3
         }
       }
     },
@@ -227,17 +259,7 @@
   },
   "triggers": [
     {
-      "mapId": 23,
-      "level": {
-        "min": 15
-      },
-      "date": {
-        "hour": {
-          "from": 10,
-          "to": 18
-        }
-      },
-      "oncePer": "day"
+      "mapId": 23
     }
   ]
 }
