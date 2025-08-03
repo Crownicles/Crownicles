@@ -27,6 +27,7 @@ import {
 	asMinutes, minutesToMilliseconds
 } from "../../../../Lib/src/utils/TimeUtils";
 import { Locked } from "../../../../Lib/src/locks/withLockedEntities";
+import { PetDataController } from "../Pet";
 
 async function applyOutcomeScore(outcome: PossibilityOutcome, time: number, player: Player, response: CrowniclesPacket[]): Promise<number> {
 	const scoreChange = TravelTime.timeTravelledToScore(minutesToMilliseconds(asMinutes(time)))
@@ -354,7 +355,7 @@ export interface PossibilityOutcome {
 	condition?: PossibilityOutcomeCondition;
 
 	requirements?: {
-		level: {
+		level?: {
 			min?: number;
 			max?: number;
 		};
@@ -515,8 +516,15 @@ export async function getValidOutcomesForPlayer(
 	player: Player
 ): Promise<[string, PossibilityOutcome][]> {
 	const playerActiveObjects: PlayerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
-	return Object.entries(outcomes).filter(([_, outcome]) =>
-		isOutcomeValidForPlayer(outcome, player, playerActiveObjects));
+	const validOutcomes: [string, PossibilityOutcome][] = [];
+
+	for (const [key, outcome] of Object.entries(outcomes)) {
+		if (await isOutcomeValidForPlayer(outcome, player, playerActiveObjects)) {
+			validOutcomes.push([key, outcome]);
+		}
+	}
+
+	return validOutcomes;
 }
 
 /**
@@ -525,11 +533,11 @@ export async function getValidOutcomesForPlayer(
  * @param player - The player to check the outcome against
  * @param playerActiveObjects - The player's active objects, used to calculate stats
  */
-function isOutcomeValidForPlayer(
+async function isOutcomeValidForPlayer(
 	outcome: PossibilityOutcome,
 	player: Player,
 	playerActiveObjects: PlayerActiveObjects
-): boolean {
+): Promise<boolean> {
 	const req = outcome.requirements;
 	if (!req) {
 		return true;
@@ -544,6 +552,9 @@ function isOutcomeValidForPlayer(
 		&& isRangeValid(req.attack, player.getCumulativeAttack(playerActiveObjects))
 		&& isRangeValid(req.speed, player.getCumulativeSpeed(playerActiveObjects))
 		&& isClassValid(req.validClassIds, player.class)
+		&& await isCampaignMissionValid(req.campaignCurrentMissionId, player)
+		&& await isPetTypeValid(req.petTypeId, player)
+		&& await isPetRarityValid(req.petRarity, player)
 	);
 }
 
@@ -577,5 +588,66 @@ function isClassValid(validClassIds: number[] | undefined, playerClass: number):
 		return true;
 	}
 	return validClassIds.includes(playerClass);
+}
+
+/**
+ * Check if the player's current campaign mission matches the requirement
+ * @param requiredCampaignMissionId - The required campaign mission ID
+ * @param player - The player to check
+ */
+async function isCampaignMissionValid(requiredCampaignMissionId: number | undefined, player: Player): Promise<boolean> {
+	if (requiredCampaignMissionId === undefined) {
+		return true;
+	}
+
+	// Get the player's mission info to check their current campaign progression
+	const missionInfo = await PlayerMissionsInfos.getOfPlayer(player.id);
+	return missionInfo.campaignProgression === requiredCampaignMissionId;
+}
+
+/**
+ * Check if the player's pet type matches the requirement
+ * @param requiredPetTypeId - The required pet type ID
+ * @param player - The player to check
+ */
+async function isPetTypeValid(requiredPetTypeId: number | undefined, player: Player): Promise<boolean> {
+	if (requiredPetTypeId === undefined) {
+		return true;
+	}
+
+	// Check if player has a pet
+	if (!player.petId) {
+		return false;
+	}
+
+	// Get the player's pet and check its type
+	const petEntity = await PetEntities.getById(player.petId);
+	return petEntity.typeId === requiredPetTypeId;
+}
+
+/**
+ * Check if the player's pet rarity matches the requirement
+ * @param petRarityRange - The required pet rarity range
+ * @param player - The player to check
+ */
+async function isPetRarityValid(
+	petRarityRange: {
+		min?: number; max?: number;
+	} | undefined,
+	player: Player
+): Promise<boolean> {
+	if (!petRarityRange) {
+		return true;
+	}
+
+	// Check if player has a pet
+	if (!player.petId) {
+		return false;
+	}
+
+	// Get the player's pet and its rarity from the pet data
+	const petEntity = await PetEntities.getById(player.petId);
+	const petData = PetDataController.instance.getById(petEntity.typeId);
+	return isRangeValid(petRarityRange, petData.rarity);
 }
 
