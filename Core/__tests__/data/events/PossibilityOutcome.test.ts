@@ -53,7 +53,7 @@ describe("PossibilityOutcome Requirements", () => {
 			},
 			petTypeRequirement: {
 				requirements: {
-					petTypeId: 42
+					validPetTypeIds: [42]
 				},
 				gems: 5
 			},
@@ -65,7 +65,7 @@ describe("PossibilityOutcome Requirements", () => {
 			},
 			noPetRequirement: {
 				requirements: {
-					petTypeId: 1
+					validPetTypeIds: [1]
 				},
 				health: -10
 			}
@@ -104,7 +104,7 @@ describe("PossibilityOutcome Requirements", () => {
 	});
 
 	describe("Pet Type Requirements", () => {
-		it("should pass when pet type matches", async () => {
+		it("should pass when pet type matches (single type)", async () => {
 			// Mock pet entity avec le bon type
 			vi.mocked(PetEntities.getById).mockResolvedValue({
 				typeId: 42
@@ -119,14 +119,57 @@ describe("PossibilityOutcome Requirements", () => {
 			expect(validOutcomes[0][0]).toBe("petTypeRequirement");
 		});
 
-		it("should fail when pet type doesn't match", async () => {
-			// Mock pet entity avec un type différent
+		it("should pass when pet type matches (multiple valid types)", async () => {
+			// Mock pet entity avec un type dans la liste
 			vi.mocked(PetEntities.getById).mockResolvedValue({
 				typeId: 99
 			} as any);
 
+			const multiTypesOutcome = {
+				requirements: {
+					validPetTypeIds: [42, 99, 123]
+				},
+				gems: 10
+			};
+
+			const validOutcomes = await getValidOutcomesForPlayer(
+				{ multiTypes: multiTypesOutcome },
+				mockPlayer as Player
+			);
+
+			expect(validOutcomes).toHaveLength(1);
+			expect(validOutcomes[0][0]).toBe("multiTypes");
+		});
+
+		it("should fail when pet type doesn't match", async () => {
+			// Mock pet entity avec un type différent
+			vi.mocked(PetEntities.getById).mockResolvedValue({
+				typeId: 999
+			} as any);
+
 			const validOutcomes = await getValidOutcomesForPlayer(
 				{ petTypeRequirement: outcomes.petTypeRequirement },
+				mockPlayer as Player
+			);
+
+			expect(validOutcomes).toHaveLength(0);
+		});
+
+		it("should fail when pet type not in list (multiple valid types)", async () => {
+			// Mock pet entity avec un type non présent dans la liste
+			vi.mocked(PetEntities.getById).mockResolvedValue({
+				typeId: 999
+			} as any);
+
+			const multiTypesOutcome = {
+				requirements: {
+					validPetTypeIds: [42, 99, 123]
+				},
+				gems: 10
+			};
+
+			const validOutcomes = await getValidOutcomesForPlayer(
+				{ multiTypes: multiTypesOutcome },
 				mockPlayer as Player
 			);
 
@@ -227,7 +270,7 @@ describe("PossibilityOutcome Requirements", () => {
 				requirements: {
 					level: { min: 5, max: 15 },
 					campaignCurrentMissionId: 3,
-					petTypeId: 42,
+					validPetTypeIds: [42],
 					petRarity: { min: 2, max: 4 }
 				},
 				money: 200
