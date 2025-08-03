@@ -57,7 +57,7 @@
               "max": 50
             }
           },
-          "effect": "burned",
+          "effect": "burning",
           "health": -5,
           "karma": -5
         },
@@ -181,7 +181,7 @@
               "max": 110
             }
           },
-          "effect": "burned",
+          "effect": "burning",
           "health": -20
         },
         "3": {
