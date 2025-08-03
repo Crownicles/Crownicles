@@ -3,7 +3,9 @@ import { PacketContext } from "../../../Lib/src/packets/CrowniclesPacket";
 import { DiscordCache } from "../bot/DiscordCache";
 import { CrowniclesSmallEventEmbed } from "../messages/CrowniclesSmallEventEmbed";
 import i18n from "../translations/i18n";
-import { DiscordCollectorUtils } from "../utils/DiscordCollectorUtils";
+import {
+	disableRows, DiscordCollectorUtils
+} from "../utils/DiscordCollectorUtils";
 import {
 	ReactionCollectorLotteryEasyReaction,
 	ReactionCollectorLotteryHardReaction,
@@ -101,9 +103,7 @@ export async function lotteryCollector(context: PacketContext, packet: ReactionC
 
 	buttonCollector.on("end", async () => {
 		// Disable buttons instead of removing them
-		easyButton.setDisabled(true);
-		mediumButton.setDisabled(true);
-		hardButton.setDisabled(true);
+		disableRows([row]);
 
 		await msg.edit({
 			components: [row]
