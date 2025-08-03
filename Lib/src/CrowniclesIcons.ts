@@ -297,12 +297,13 @@ export const CrowniclesIcons: {
 			restAndObserve: "🛏️"
 		},
 		14: {
-			chatWorker: "🔨",
-			end: {
-				0: "🚶"
-			},
+			chatWorker: "🤝",
+			stayNight: "🛏️",
+			inspectForge: "🧐",
 			goAway: "🚶",
-			stayNight: "🛏️"
+			end: {
+				0: "🌾"
+			}
 		},
 		15: {
 			end: {
