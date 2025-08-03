@@ -1,53 +1,324 @@
 {
   "possibilities": {
-    "end": {
-      "outcomes": {
-        "0": {
-          "effect": "occupied",
-          "lostTime": 15
-        },
-        "1": {
-          "effect": "occupied",
-          "lostTime": 30
-        }
-      }
-    },
     "enterCastle": {
       "outcomes": {
         "0": {
-          "effect": "hurt",
-          "health": -35
+          "requirements": {
+            "level": {
+              "min": 70
+            }
+          },
+          "randomItem": {},
+          "money": 200,
+          "karma": 5
         },
         "1": {
-          "effect": "occupied",
-          "lostTime": 25,
-          "randomItem": {}
+          "requirements": {
+            "speed": {
+              "min": 250
+            }
+          },
+          "randomItem": {},
+          "karma": 2
         },
         "2": {
+          "requirements": {
+            "level": {
+              "max": 40
+            }
+          },
+          "health": -30,
+          "effect": "hurt"
+        },
+        "3": {
+          "requirements": {
+            "attack": {
+              "min": 300
+            }
+          },
+          "health": -15,
+          "effect": "hurt"
+        },
+        "4": {
+          "requirements": {
+            "karma": {
+              "max": -30
+            }
+          },
+          "money": 150,
+          "randomItem": {},
+          "karma": -5
+        },
+        "5": {
+          "requirements": {
+            "karma": {
+              "max": -280
+            },
+            "level": {
+              "min": 50
+            }
+          },
+          "money": 300,
+          "karma": -5
+        },
+        "6": {
+          "requirements": {
+            "karma": {
+              "min": 50
+            }
+          },
+          "randomItem": {},
+          "karma": 6
+        },
+        "7": {
+          "requirements": {
+            "karma": {
+              "max": -100
+            },
+            "speed": {
+              "min": 200
+            }
+          },
           "effect": "occupied",
-          "lostTime": 10
+          "lostTime": 35,
+          "karma": -5
+        },
+        "8": {
+          "requirements": {
+            "validPetTypeIds": [64]
+          },
+          "randomItem": {
+            "rarity": {
+              "min": 2,
+              "max": 7
+            }
+          },
+          "money": 150,
+          "karma": 1
+        },
+        "9": {
+          "requirements": {
+            "validPetTypeIds": [15]
+          },
+          "money": 280,
+          "karma": 3
+        },
+        "10": {
+          "requirements": {
+            "validPetTypeIds": [84]
+          },
+          "randomItem": {
+            "rarity": {
+              "min": 3,
+              "max": 7
+            }
+          },
+          "money": 400,
+          "health": -10
+        },
+        "11": {
+          "requirements": {
+            "level": {
+              "max": 30
+            }
+          },
+          "effect": "scared"
+        },
+        "12": {
+          "requirements": {
+            "validClassIds": [12, 13, 14, 15, 21]
+          },
+          "randomItem": {
+            "rarity": {
+              "min": 2
+            }
+          },
+          "karma": 5
         }
-      }
-    },
-    "skip": {
-      "outcomes": {
-        "0": {}
       }
     },
     "walkAround": {
       "outcomes": {
         "0": {
+          "requirements": {
+            "level": {
+              "min": 60
+            }
+          },
           "effect": "occupied",
-          "lostTime": 80
+          "lostTime": 45,
+          "karma": 3
+        },
+        "1": {
+          "requirements": {
+            "level": {
+              "min": 42
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 60,
+          "money": 350
+        },
+        "2": {
+          "requirements": {
+            "speed": {
+              "max": 500
+            }
+          },
+          "health": -20,
+          "effect": "hurt"
+        },
+        "3": {
+          "requirements": {
+            "validPetTypeIds": [1]
+          },
+          "effect": "occupied",
+          "lostTime": 10,
+          "money": 180,
+          "karma": 3
+        },
+        "4": {
+          "requirements": {
+            "validPetTypeIds": [15, 16]
+          },
+          "effect": "occupied",
+          "lostTime": 40,
+          "randomItem": {},
+          "karma": 2
+        },
+        "5": {
+          "randomItem": {
+            "rarity": {
+              "max": 2
+            }
+          },
+          "money": 120
+        },
+        "6": {}
+      }
+    },
+    "searchRiver": {
+      "outcomes": {
+        "0": {
+          "requirements": {
+            "level": {
+              "min": 50
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 80,
+          "randomItem": {},
+          "money": 100
         },
         "1": {
           "effect": "occupied",
-          "lostTime": 80,
-          "money": 450
+          "lostTime": 60,
+          "money": 80
         },
         "2": {
-          "effect": "hurt",
-          "health": -20
+          "requirements": {
+            "karma": {
+              "min": 20
+            }
+          },
+          "randomItem": {},
+          "karma": 1
+        },
+        "3": {
+          "requirements": {
+            "speed": {
+              "max": 150
+            }
+          },
+          "health": -10,
+          "effect": "freezing"
+        },
+        "4": {
+          "requirements": {
+            "validPetTypeIds": [31]
+          },
+          "health": 10,
+          "randomItem": {},
+          "karma": 2
+        }
+      }
+    },
+    "restAndObserve": {
+      "outcomes": {
+        "0": {
+          "health": 5,
+          "effect": "occupied",
+          "lostTime": 45
+        },
+        "1": {
+          "requirements": {
+            "level": {
+              "min": 60
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 30,
+          "karma": 1
+        },
+        "2": {
+          "requirements": {
+            "karma": {
+              "min": 80
+            }
+          },
+          "randomItem": {},
+          "karma": 8,
+          "effect": "occupied",
+          "lostTime": 25
+        },
+        "3": {
+          "requirements": {
+            "karma": {
+              "min": 0
+            }
+          },
+          "money": 50,
+          "health": 3,
+          "karma": 5,
+          "effect": "occupied",
+          "lostTime": 40
+        },
+        "4": {
+          "requirements": {
+            "petRarity": {
+              "min": 2
+            }
+          },
+          "karma": 1,
+          "effect": "occupied",
+          "lostTime": 20
+        }
+      }
+    },
+    "skip": {
+      "outcomes": {
+        "0": {},
+        "1": {}
+      }
+    },
+    "end": {
+      "outcomes": {
+        "0": {
+          "effect": "occupied",
+          "lostTime": 40
+        },
+        "1": {
+          "effect": "occupied",
+          "lostTime": 60
+        },
+        "2": {
+          "requirements": {
+            "validPetTypeIds": [70]
+          },
+          "money": 700,
+          "karma": 15,
+          "effect": "occupied",
+          "lostTime": 25
         }
       }
     }
