@@ -1384,7 +1384,8 @@
     "9": "Chave enferrujada",
     "90": "Talismã de sapo",
     "91": "Sputnik",
-    "92": "Chamada do corvo"
+    "92": "Chamada do corvo",
+    "93": "Carte Kiwi"
   },
   "pets": {
     "0_female": "Sem animais de estimação",
@@ -1782,7 +1783,8 @@
     "95": "Lâmina de aura prateada",
     "96": "Electektron",
     "97": "Lâmina de Fénix",
-    "98": "Espada de gelo"
+    "98": "Espada de gelo",
+    "99": "Serre d'Aigle"
   },
   "foods": {
     "herbivorousFood_one": "salada",
