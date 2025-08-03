@@ -248,17 +248,7 @@
   },
   "triggers": [
     {
-      "mapId": 12,
-      "level": {
-        "min": 10
-      },
-      "date": {
-        "hour": {
-          "from": 8,
-          "to": 19
-        }
-      },
-      "oncePer": "day"
+      "mapId": 12
     }
   ]
 }
