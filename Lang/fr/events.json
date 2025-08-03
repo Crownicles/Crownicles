@@ -381,36 +381,72 @@
   },
   "16": {
     "possibilities": {
-      "end": {
-        "outcomes": {
-          "0": "Après avoir admiré le bâtiment pendant une quinzaine de minute, vous reprenez votre route.",
-          "1": "Vous vous délectez de la vue du château... Puis finissez par vous souvenir de votre quête et reprenez votre route."
-        }
-      },
       "enterCastle": {
         "outcomes": {
-          "0": "Peu après être rentré dans le château, vous vous rendez compte de l'insalubrité des lieux. Abandonnée depuis des années, la bâtisse est totalement délabrée. Après quelques minutes d'exploration, alors que vous entrez dans une grande salle délabrée, un immense morceau du plafond se décroche sur vous ! Avec beaucoup de difficultés, vous parvenez à ressortir du bâtiment, blessé.",
-          "1": "Vous entrez dans le château et parcourez rapidement les lieux. Au bout de quelques minutes, vous trouvez une pièce qui semble être l'ancienne armurerie. Pressé de ressortir du bâtiment, vous ramassez le premier objet qui vous tombe sous la main et ressortez en pressant le pas.",
-          "2": "Il semblerait que ce château soit moins abandonné qu'il en a l'air ! Peu après votre entrée, vous entendez de nombreux bruits en provenance de différentes salles. Peu rassuré, vous préférez reprendre votre route."
+          "0": "Votre expérience de vétéran aventurier vous permet de détecter immédiatement les zones dangereuses du château. Vous progressez avec prudence, testant chaque plancher avant d'y poser le pied. Dans l'ancienne armurerie, vous découvrez une cache secrète contenant des trésors oubliés depuis des décennies.",
+          "1": "Malgré l'état délabré des lieux, votre agilité vous permet d'éviter les pièges naturels du château en ruine. Vous explorez méthodiquement les salles et découvrez dans les anciens quartiers des gardes un objet de valeur miraculeusement préservé.",
+          "2": "Votre progression dans le château décrépit révèle rapidement votre inexpérience des lieux dangereux. Un plancher vermoulu cède sous votre poids et vous chutez lourdement dans les caves humides. Vous parvenez à remonter, mais vous êtes blessé et secoué par cette mésaventure.",
+          "3": "Alors que vous explorez prudemment les couloirs sombres, un pan entier du plafond s'effondre ! Heureusement, vos réflexes de combattant aguerri vous permettent d'esquiver le pire, mais des gravats vous blessent tout de même. Vous battez en retraite, meurtri.",
+          "4": "En pénétrant dans le château, vous découvrez avec stupeur qu'il n'est pas si abandonné que cela... Des brigands en ont fait leur repaire ! Reconnaissant en vous un compagnon potentiel de par votre réputation sulfureuse, ils vous accueillent chaleureusement et partagent une partie de leur butin récent.",
+          "5": "Les brigands qui ont élu domicile dans le château vous reconnaissent immédiatement ! Votre sinistre réputation les impressionne et leur chef vous propose même de rejoindre leur bande. Vous déclinez poliment mais repartez avec quelques pièces d'or en gage de respect mutuel.",
+          "6": "Vous découvrez que le château abrite une famille de réfugiés qui a fui la guerre. Touché par leur sort et mû par votre bon cœur, vous partagez vos provisions avec eux. En retour, ils vous révèlent l'emplacement d'une cache d'objets précieux qu'ils ont découverte mais n'osaient pas toucher.",
+          "7": "À peine avez-vous franchi le seuil que des gardes loyalistes surgissent de leur cachette ! Ils ont reconnu votre visage et tentent de vous capturer. Votre réputation de hors-la-loi vous précède, et une course-poursuite épique s'engage dans les couloirs en ruine. Vous parvenez à semer vos poursuivants après de longues minutes à déambuler dans les différents étages du château.",
+          "8": "Votre dragon fidèle ouvre la marche, ses flammes éclairant parfaitement les couloirs sombres du château ! Cette lumière naturelle vous révèle tous les dangers potentiels et vous guide vers les salles les plus intéressantes. Grâce à votre compagnon lumineux, vous explorez en toute sécurité et découvrez plusieurs objets précieux dissimulés dans l'obscurité.",
+          "9": "Votre serpent, attiré par les recoins sombres du château, disparaît rapidement dans une fissure du mur. Quelques minutes plus tard, il ressort fièrement avec une pièce d'or ancienne entre les crocs ! Son instinct l'a mené vers une cache oubliée depuis des siècles.",
+          "10": "Votre imposant diplodocus pénètre dans le château avec enthousiasme, mais son poids colossal fait trembler toute la structure ! Un pan entier du plafond s'effondre dans un fracas épouvantable. Heureusement, les débris révèlent une chambre secrète où vous découvrez un trésor caché. Votre compagnon géant a involontairement ouvert la voie vers les richesses et vous vous en sortez plutôt bien car un unique petit rocher vous a légèrement accroché l'épaule durant l'effondrement.",
+          "11": "En franchissant le seuil du château, vous êtes saisi d'une terreur inexplicable. Chaque craquement, chaque ombre vous fait sursauter. Votre inexpérience des lieux hantés prend le dessus et vous fuyez précipitamment vers la sortie, le cœur battant la chamade.",
+          "12": "Votre formation de chevalier vous a appris à reconnaître l'architecture des forteresses ! Vous naviguez instinctivement dans les dédales du château, retrouvant sans peine l'ancienne armurerie. Parmi les armes rouillées, vous dénichez une pièce d'équipement encore en parfait état, digne de votre rang."
         },
-        "text": "Entrer pour fouiller le château."
-      },
-      "skip": {
-        "outcomes": {
-          "0": "Vous continuez votre route sans prêter plus d'attention à ce château."
-        },
-        "text": "Continuer votre route."
+        "text": "Pénétrer dans le château en ruine pour l'explorer."
       },
       "walkAround": {
         "outcomes": {
-          "0": "Vous faites le tour du château mais vous ne trouvez rien. Estimant avoir perdu suffisamment de temps, vous continuez votre chemin.",
-          "1": "Cette ronde ne vous en apprendra pas beaucoup sur la grande bâtisse. Cependant, vous découvrez tout au long de celle-ci un grand nombre de petites pièces d'or disséminées autour du château. Heureux de votre découverte, vous reprenez votre route.",
-          "2": "Alors que vous commenciez à faire le tour du château, vous tombez par accident dans un trou. Blessé à la jambe, il faudra vous soigner avant de continuer !"
+          "0": "Votre inspection minutieuse du périmètre révèle que le château a été le théâtre de batailles sanglantes. Votre expérience vous permet de reconnaître les traces d'un ancien siège. Bien que vous ne trouviez rien de valeur, cette découverte historique enrichit vos connaissances.",
+          "1": "En faisant le tour du château, votre œil exercé repère plusieurs cachettes dissimulées dans les fondations. D'anciens défenseurs y avaient caché en urgence des bourses d'or que le temps a oubliées. Votre patience et votre perspicacité sont récompensées !",
+          "2": "Votre exploration externe vous mène vers les anciennes écuries effondrées. En fouillant les décombres, vous tombez dans une fosse dissimulée, probablement un ancien piège défensif. La chute est douloureuse et vous vous entaillez la jambe sur les pierres tranchantes.",
+          "3": "Alors que vous contournez prudemment le château, votre fidèle chien déterre près des remparts un coffret enterré contenant des pièces d'or ! Votre compagnon à quatre pattes vous a encore une fois rendu un fier service.",
+          "4": "Votre reptile, attiré par les lézardes chaudes des murs exposés au soleil, découvre une fissure cachée menant à une petite réserve secrète. Les anciens habitants y avaient dissimulé quelques objets de valeur que vous récupérez avec reconnaissance.",
+          "5": "Les douves asséchées du château révèlent les restes d'un ancien pont-levis. Votre inspection révèle que le mécanisme contenait une cache d'outils et de pièces que vous récupérez avant de poursuivre votre chemin.",
+          "6": "Votre exploration du périmètre attire l'attention de corneilles qui nichent dans les tours. Leurs cris perçants alertent d'éventuels occupants de votre présence. Par précaution, vous décidez de quitter les lieux rapidement avant d'attirer des ennuis."
         },
-        "text": "Faire le tour du château par l'extérieur."
+        "text": "Contourner le château pour l'examiner depuis l'extérieur."
+      },
+      "searchRiver": {
+        "outcomes": {
+          "0": "Votre intuition vous mène vers les berges de la rivière. Votre expérience des cours d'eau vous révèle que l'ancien embarcadère du château cache encore les restes d'une barge coulée. En plongeant, vous récupérez quelques objets de valeur dans l'épave.",
+          "1": "En longeant la rivière près du château, vous découvrez les vestiges d'un ancien moulin à eau. Les mécanismes rouillés recèlent encore quelques pièces coincées dans les engrenages que vous parvenez à extraire.",
+          "2": "Votre exploration des berges vous fait découvrir une grotte naturelle dissimulée sous les fondations du château. Elle servait probablement d'issue de secours aux anciens seigneurs. Vous y trouvez quelques anciennes provisions encore comestibles et un objet oublié.",
+          "3": "En vous penchant vers la rivière pour boire, vous glissez sur les pierres humides et tombez à l'eau ! Le courant vous emporte quelques mètres plus loin. Vous parvenez à regagner la berge, trempé et frigorifié.",
+          "4": "Votre hippopotame se jette avec bonheur dans la rivière ! Sa joie est contagieuse et vous décidez de le rejoindre pour une baignade rafraîchissante. Votre compagnon, excellent nageur, découvre au fond de l'eau un objet brillant qu'il vous rapporte fièrement."
+        },
+        "text": "Explorer les berges de la rivière près du château."
+      },
+      "restAndObserve": {
+        "outcomes": {
+          "0": "Vous vous installez confortablement face au château et laissez votre esprit vagabonder. Cette pause contemplative vous permet d'imaginer la grandeur passée de cette forteresse et de récupérer un peu de votre énergie spirituelle.",
+          "1": "Votre observation patiente du château révèle des détails architecturaux fascinants. En tant qu'aventurier expérimenté, vous reconnaissez le style de construction et datez approximativement l'édifice, enrichissant vos connaissances historiques.",
+          "2": "Pendant votre méditation face aux ruines, un vieil ermite sort des buissons proches. Impressionné par votre aura bienveillante, il partage avec vous des légendes locales sur le château et vous offre un petit objet béni en guise d'amitié.",
+          "3": "Votre repos près du château attire l'attention d'un groupe de pèlerins qui passaient par là. Reconnaissant en vous un voyageur expérimenté, ils sollicitent vos conseils sur la route à suivre et vous offrent quelques provisions en remerciement.",
+          "4": "Alors que vous contemplez paisiblement les ruines, votre animal de compagnie se met à jouer avec les reflets du soleil sur les pierres humides. Ce moment de pure joie réchauffe votre cœur et vous redonne de l'entrain pour continuer votre périple."
+        },
+        "text": "S'arrêter pour contempler et se reposer face au château."
+      },
+      "skip": {
+        "outcomes": {
+          "0": "Pressé par votre quête, vous décidez de ne pas vous attarder devant ces ruines. Votre détermination vous pousse à poursuivre votre route sans un regard en arrière.",
+          "1": "Méfiant envers les lieux abandonnés qui peuvent cacher des dangers, vous préférez éviter le château et continuer votre chemin en longeant prudemment la rivière."
+        },
+        "text": "Ignorer le château et poursuivre votre route."
+      },
+      "end": {
+        "outcomes": {
+          "0": "Fasciné par l'architecture gothique du château, vous passez de longues minutes à en admirer les détails sculptés. Les gargouilles semblent vous observer tandis que vous tentez d'imaginer la vie qui animait autrefois ces murs. Quand vous reprenez finalement votre route, vous emportez avec vous l'image majestueuse de cette forteresse oubliée.",
+          "1": "L'imposante silhouette du château réveille en vous des rêves de grandeur et d'aventure. Vous vous perdez dans vos pensées, imaginant les banquets fastueux et les tournois chevaleresques qui se déroulaient autrefois entre ces murs. Cette rêverie vous fait perdre la notion du temps, mais elle nourrit votre âme d'aventurier.",
+          "2": "Alors que vous contemplez le château, votre alien, poussé par sa curiosité insatiable pour la culture humaine, s'éclipse discrètement. Inquiet, vous le cherchez et le retrouvez dans l'ancienne salle du trône, fasciné par les symboles royaux ! Dans son exploration, il a découvert une cache royale remplie de pièces d'or que vous partagez, amusé par sa soif de connaissance."
+        }
       }
     },
-    "text": "Après avoir suivi pendant de longues heures une rivière, vous découvrez un vieux château qui semble abandonné au bord de l'eau."
+    "text": "Au détour d'un méandre de la Rivière aux Crabes, une vision saisissante s'offre à vous : les ruines majestueuses d'un ancien château se dressent sur un promontoire rocheux, ses tours déchiquetées se reflétant dans les eaux tumultueuses. Les murs de pierre grise, rongés par les intempéries et le lierre, témoignent d'un passé glorieux révolu. Des corneilles nichent dans les créneaux brisés, et le vent qui s'engouffre dans les ouvertures béantes produit une mélopée mélancolique. Cette forteresse abandonnée semble garder jalousement ses secrets..."
   },
   "17": {
     "possibilities": {
