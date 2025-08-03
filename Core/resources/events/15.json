@@ -187,13 +187,14 @@
         },
         "2": {
           "requirements": {
-            "karma": {
-              "max": -50
-            }
+            "validClassIds": [
+              14,
+              15,
+              21
+            ]
           },
           "karma": 5,
-          "effect": "occupied",
-          "lostTime": 45
+          "money": 130
         },
         "3": {
           "effect": "occupied",
@@ -213,27 +214,13 @@
         },
         "2": {
           "requirements": {
-            "karma": {
-              "max": 0
-            },
             "speed": {
               "max": 250
             }
           },
           "health": -8,
           "money": -30,
-          "effect": "confounded"
-        },
-        "3": {
-          "requirements": {
-            "speed": {
-              "min": 200
-            },
-            "karma": {
-              "min": 20
-            }
-          },
-          "karma": 2
+          "effect": "feetHurt"
         }
       }
     },
@@ -241,13 +228,13 @@
       "outcomes": {
         "0": {
           "effect": "occupied",
-          "lostTime": 40,
+          "lostTime": 3,
           "karma": -1
         },
         "1": {
           "requirements": {
             "petRarity": {
-              "min": 3
+              "min": 4
             }
           },
           "effect": "occupied",
