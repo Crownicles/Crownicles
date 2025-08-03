@@ -1384,7 +1384,8 @@
     "9": "Clé rouillée",
     "90": "Talisman de Grenouille",
     "91": "Spoutnik",
-    "92": "Appeau à corbeau"
+    "92": "Appeau à corbeau",
+    "93": "Carte Kiwi"
   },
   "pets": {
     "0_female": "Aucun familier",
@@ -1782,7 +1783,8 @@
     "95": "Lame de l'aura argentée",
     "96": "Electektron",
     "97": "Lame du Phénix",
-    "98": "Épée de givre"
+    "98": "Épée de givre",
+    "99": "Serre d'Aigle"
   },
   "foods": {
     "herbivorousFood_one": "salade",
