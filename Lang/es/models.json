@@ -1384,7 +1384,8 @@
     "9": "Llave oxidada",
     "90": "Talismán de rana",
     "91": "Sputnik",
-    "92": "Llamada del cuervo"
+    "92": "Llamada del cuervo",
+    "93": "Tarjeta Kiwi"
   },
   "pets": {
     "0_female": "No se admiten animales",
@@ -1782,7 +1783,8 @@
     "95": "Hoja de aura plateada",
     "96": "Electektron",
     "97": "Cuchilla Fénix",
-    "98": "Espada de escarcha"
+    "98": "Espada de escarcha",
+    "99": "Serre d'Aigle"
   },
   "foods": {
     "herbivorousFood_one": "ensalada",
