@@ -143,7 +143,7 @@
       "self": "Vous êtes actuellement en train de travailler !",
       "other": "{{pseudo}} est actuellement en train de travailler !"
     },
-    "burned": {
+    "burning": {
       "self": "Vous êtes actuellement brûlé !",
       "other": "{{pseudo}} est actuellement brûlé !"
     },
