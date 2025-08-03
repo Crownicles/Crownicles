@@ -1384,7 +1384,8 @@
     "9": "Rusty key",
     "90": "Frog Talisman",
     "91": "Sputnik",
-    "92": "Crow call"
+    "92": "Crow call",
+    "93": "Kiwi card"
   },
   "pets": {
     "0_female": "No pet",
@@ -1782,7 +1783,8 @@
     "95": "Silver aura blade",
     "96": "Electektron",
     "97": "Phoenix Blade",
-    "98": "Frost sword"
+    "98": "Frost sword",
+    "99": "Serre d'Aigle"
   },
   "foods": {
     "herbivorousFood_one": "salad",
