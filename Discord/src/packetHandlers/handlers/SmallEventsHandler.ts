@@ -215,7 +215,7 @@ export default class SmallEventsHandler {
 			return;
 		}
 		const lng = interaction.userLanguage;
-		await interaction.editReply({
+		await interaction.followUp({
 			embeds: [new CrowniclesSmallEventEmbed("lottery", i18n.t("smallEvents:lottery.end", { lng }), interaction.user, lng)]
 		});
 	}
@@ -875,7 +875,7 @@ export default class SmallEventsHandler {
 			return;
 		}
 		const lng = interaction.userLanguage;
-		await interaction.channel.send({
+		await interaction.followUp({
 			embeds: [
 				new CrowniclesSmallEventEmbed(
 					"fightPet",
@@ -900,7 +900,7 @@ export default class SmallEventsHandler {
 			return;
 		}
 		const lng = interaction.userLanguage;
-		await interaction.channel.send({
+		await interaction.followUp({
 			embeds: [
 				new CrowniclesEmbed()
 					.formatAuthor(
