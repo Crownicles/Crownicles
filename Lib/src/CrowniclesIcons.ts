@@ -440,13 +440,16 @@ export const CrowniclesIcons: {
 			}
 		},
 		16: {
+			enterCastle: "🏰",
+			walkAround: "🚶",
+			searchRiver: "🌊",
+			restAndObserve: "🪑",
+			skip: "🏃",
 			end: {
-				0: "🚶",
-				1: "🚶"
-			},
-			enterCastle: "🔎",
-			skip: "➡️",
-			walkAround: "🔁"
+				0: "👁️",
+				1: "⏳",
+				2: "👽"
+			}
 		},
 		17: {
 			end: {
