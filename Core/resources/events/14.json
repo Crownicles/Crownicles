@@ -46,7 +46,7 @@
         },
         "3": {
           "requirements": {
-            "petTypeId": 56
+            "validPetTypeIds": [56]
           },
           "randomItem": {},
           "karma": 8
@@ -110,7 +110,7 @@
         },
         "3": {
           "requirements": {
-            "petTypeId": 1
+            "validPetTypeIds": [1]
           },
           "effect": "sleeping",
           "health": 30,
@@ -196,7 +196,7 @@
         },
         "4": {
           "requirements": {
-            "petTypeId": 27
+            "validPetTypeIds": [27]
           },
           "karma": -4
         },
