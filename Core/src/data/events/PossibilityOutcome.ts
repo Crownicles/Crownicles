@@ -307,7 +307,7 @@ export interface PossibilityOutcome {
 			max?: number;
 		};
 		campaignCurrentMissionId?: number;
-		petTypeId?: number;
+		validPetTypeIds?: number[];
 		petRarity?: {
 			min?: number;
 			max?: number;
@@ -459,7 +459,7 @@ async function isOutcomeValidForPlayer(
 		&& isRangeValid(req.speed, player.getCumulativeSpeed(playerActiveObjects))
 		&& isClassValid(req.validClassIds, player.class)
 		&& await isCampaignMissionValid(req.campaignCurrentMissionId, player)
-		&& await isPetTypeValid(req.petTypeId, player)
+		&& await isPetTypeValid(req.validPetTypeIds, player)
 		&& await isPetRarityValid(req.petRarity, player)
 	);
 }
@@ -513,11 +513,11 @@ async function isCampaignMissionValid(requiredCampaignMissionId: number | undefi
 
 /**
  * Check if the player's pet type matches the requirement
- * @param requiredPetTypeId - The required pet type ID
+ * @param validPetTypeIds - The list of valid pet type IDs
  * @param player - The player to check
  */
-async function isPetTypeValid(requiredPetTypeId: number | undefined, player: Player): Promise<boolean> {
-	if (requiredPetTypeId === undefined) {
+async function isPetTypeValid(validPetTypeIds: number[] | undefined, player: Player): Promise<boolean> {
+	if (!validPetTypeIds) {
 		return true;
 	}
 
@@ -526,9 +526,9 @@ async function isPetTypeValid(requiredPetTypeId: number | undefined, player: Pla
 		return false;
 	}
 
-	// Get the player's pet and check its type
+	// Get the player's pet and check if its type is in the valid list
 	const petEntity = await PetEntities.getById(player.petId);
-	return petEntity.typeId === requiredPetTypeId;
+	return validPetTypeIds.includes(petEntity.typeId);
 }
 
 /**
