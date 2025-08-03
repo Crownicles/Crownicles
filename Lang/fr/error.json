@@ -140,8 +140,12 @@
       "other": "{{pseudo}} est actuellement empoissonné !"
     },
     "working": {
-      "self": "Vous êtes actuellement au travail !",
-      "other": "{{pseudo}} est actuellement au travail !"
+      "self": "Vous êtes actuellement en train de travailler !",
+      "other": "{{pseudo}} est actuellement en train de travailler !"
+    },
+    "burned": {
+      "self": "Vous êtes actuellement brûlé !",
+      "other": "{{pseudo}} est actuellement brûlé !"
     },
     "notStartedHint": {
       "self": "Utilisez la commande {command:report} pour commencer votre aventure !",
