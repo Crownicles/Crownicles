@@ -355,7 +355,7 @@
       },
       "observe": {
         "outcomes": {
-          "0": "En voyageur expérimenté, vous analysez discrètement les techniques de vente et l'organisation de cette boutique. Votre patience vous permet de repérer le meilleur moment pour acquérir un objet peu cher qui vous intéressait",
+          "0": "En voyageur expérimenté, vous analysez discrètement les techniques de vente et l'organisation de cette boutique. Votre patience vous permet de repérer le meilleur moment pour acquérir un objet peu cher qui vous intéressait.",
           "1": "Votre réputation de saint homme attire l'attention bienveillante d'un marchand pieux ! Touché par votre aura spirituelle, il partage avec vous quelques pièces et ses bénédictions pour votre noble quête, vous encourageant à poursuivre votre mission divine.",
           "2": "Étonnamment, votre simple présence silencieuse semble apaiser l'atmosphère tendue de cette boutique. Les marchands, peu habitués à tant de calme, ralentissent leurs négociations agressives. Quand vous repartez, l'un d'eux vous glisse quelques pièces en vous remerciant d'avoir apporté la paix dans son commerce.",
           "3": "Vous observez patiemment les allées et venues de cette boutique animée. Le ballet incessant des clients et des marchandises vous hypnotise quelque peu, et vous perdez la notion du temps à contempler cette fourmilière commerciale. Quand vous émergez de votre contemplation, l'activité a repris son cours normal."
@@ -366,8 +366,7 @@
         "outcomes": {
           "0": "Pressé par votre quête, vous traversez rapidement la boutique sans vous attarder. Les marchands vous saluent poliment tandis que vous poursuivez votre chemin à travers les ruelles de Claire de Ville.",
           "1": "Votre agilité remarquable vous permet de traverser la boutique bondée sans ralentir votre allure. Vous vous faufilez habilement entre les clients et les marchandises, disparaissant dans les ruelles avant même que les commerçants aient eu le temps de vous interpeller.",
-          "2": "En tentant de traverser rapidement la boutique, votre précipitation vous joue des tours ! Vous trébuchez sur une caisse mal placée, renversez quelques objets et vous retrouvez empêtré dans une dispute avec un marchand mécontent qui exige réparation. Cette mésaventure vous coûte du temps et de l'argent, et vous laisse confus et désorganisé.",
-          "3": "Votre passage pressé mais respectueux laisse une impression positive aux marchands. L'un d'eux vous rattrape même à la sortie pour vous offrir ses encouragements et quelques pièces de bon augure pour votre voyage, touché par votre courtoisie malgré votre hâte."
+          "2": "En tentant de traverser rapidement la boutique, votre précipitation vous joue des tours ! Vous trébuchez sur une caisse mal placée, renversez quelques objets et vous retrouvez empêtré dans une dispute avec un marchand mécontent qui exige réparation. Vous repartez en en boitant, le pied encore endoloris par le choc."
         },
         "text": "Continuer votre route sans perdre de temps."
       },
