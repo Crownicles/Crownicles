@@ -303,12 +303,14 @@ export const CrowniclesIcons: {
 			}
 		},
 		15: {
-			end: {
-				0: "🚶"
-			},
+			trade: "💰",
+			steal: "🕵️",
+			observe: "🔎",
 			skip: "🏃",
-			steal: "💰",
-			trade: "👥"
+			end: {
+				0: "🕑",
+				1: "🕑"
+			}
 		},
 		16: {
 			end: {
