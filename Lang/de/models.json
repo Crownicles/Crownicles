@@ -1384,7 +1384,8 @@
     "9": "Rostschlüssel",
     "90": "Frosch-Talisman",
     "91": "Sputnik",
-    "92": "Krähenlockvogel"
+    "92": "Krähenlockvogel",
+    "93": "Carte Kiwi"
   },
   "pets": {
     "0_female": "Keine Vertrauten",
@@ -1782,7 +1783,8 @@
     "95": "Klinge der silbernen Aura",
     "96": "Electektron",
     "97": "Klinge des Phönix",
-    "98": "Frostschwert"
+    "98": "Frostschwert",
+    "99": "Serre d'Aigle"
   },
   "foods": {
     "herbivorousFood_one": "Salat",
