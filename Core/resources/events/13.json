@@ -27,9 +27,6 @@
           "requirements": {
             "karma": {
               "max": -30
-            },
-            "money": {
-              "min": 200
             }
           },
           "karma": -5
@@ -79,11 +76,6 @@
           "karma": 5
         },
         "1": {
-          "requirements": {
-            "money": {
-              "min": 100
-            }
-          },
           "health": 15,
           "money": -80,
           "effect": "sleeping"
@@ -113,11 +105,6 @@
           "karma": 2
         },
         "5": {
-          "requirements": {
-            "money": {
-              "max": 50
-            }
-          },
           "health": 8,
           "money": -30,
           "effect": "sleeping"
@@ -285,11 +272,6 @@
           "karma": -15
         },
         "5": {
-          "requirements": {
-            "money": {
-              "min": 200
-            }
-          },
           "money": -150,
           "karma": 3
         },
