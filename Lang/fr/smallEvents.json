@@ -404,6 +404,11 @@
         "{{playerDisplay}} est absorbé par ses responsabilités et ne peut s'attarder. Vous poursuivez votre route sans le déranger.",
         "{{playerDisplay}} est en plein travail, manches retroussées et suant sous l'effort. Il vous fait un signe de la main mais ne peut s'arrêter, visiblement pris par une tâche urgente."
       ],
+      "burning": [
+        "Vous croisez {{playerDisplay}} qui est entouré de flammes ! Il court dans tous les sens en criant, essayant d'éteindre le feu qui le consume.",
+        "{{playerDisplay}} passe près de vous en hurlant de douleur, des flammes dansant autour de son corps. Vous reculez prudemment pour éviter d'être touché par le feu.",
+        "Vous remarquez {{playerDisplay}} qui se roule par terre, tentant désespérément d'éteindre les flammes qui l'entourent. La situation semble critique !"
+      ],
       "burned": [
         "Vous croisez {{playerDisplay}} qui porte des marques de brûlures visibles sur ses vêtements et sa peau. Il avance d'un pas prudent, visiblement encore affecté par un récent accident avec le feu.",
         "{{playerDisplay}} passe près de vous en grimaçant de douleur. Ses habits sont noircis et fumants, il semble avoir eu maille à partir avec des flammes récemment.",
