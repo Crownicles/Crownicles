@@ -96,6 +96,16 @@ export class CrowniclesButtonReactionMessage {
 				return;
 			}
 
+			// Disable buttons and acknowledge the interaction to prevent Discord's "interaction failed" message
+			this._buttonRow.components.forEach(component => {
+				component.setDisabled(true);
+			});
+
+			await i.update({
+				embeds: [this._embed],
+				components: [this._buttonRow]
+			});
+
 			this.sendReaction(i.customId);
 		});
 
