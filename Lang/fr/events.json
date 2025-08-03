@@ -273,7 +273,7 @@
         }
       }
     },
-    "text": "Vous voici aux portes de Claire de Ville, cette grande cité marchande qui se dresse majestueusement devant vous. Carrefour économique réputé dans toute la région, la ville bourdonne d'une activité constante. Des caravanes de marchands franchissent les portes fortifiées dans un ballet incessant, tandis que l'écho des marteaux résonne depuis les forges renommées. L'odeur alléchante des auberges se mélange aux parfums d'épices du grand marché central. Cette métropole commerçante vous offre de multiples possibilités d'exploration..."
+    "text": "Vous voici aux portes de Claire de Ville, cette grande cité marchande qui se dresse majestueusement devant vous. Carrefour économique réputé dans toute la région, la ville bourdonne d'une activité constante. Des caravanes de marchands franchissent les portes fortifiées dans un ballet incessant, tandis que l'écho des marteaux résonne depuis les forges renommées. L'odeur alléchante des auberges se mélange aux parfums d'épices du grand marché central."
   },
   "14": {
     "possibilities": {
@@ -327,7 +327,7 @@
         }
       }
     },
-    "text": "L'immensité désolée de L'Étendue s'étire à perte de vue sous vos pas fatigués, quand soudain une vision inespérée rompt la monotonie du paysage. Au creux d'un vallon protégé des vents, une maisonnette de pierre se dresse comme un phare dans cette mer d'herbes folles. L'écho cristallin du marteau sur l'enclume danse dans l'air, ponctué par le souffle régulier du soufflet et les crépitements de la forge. Un homme trapu aux avant-bras marqués par les étincelles façonne méthodiquement une pièce incandescente, totalement absorbé par son art. Des flammes orangées léchent les parois de pierre noircie tandis qu'une fumée odorante s'élève vers le ciel. Cette oasis d'activité humaine au cœur de l'immensité sauvage éveille en vous mille possibilités..."
+    "text": "L'immensité désolée de L'Étendue s'étire à perte de vue sous vos pas fatigués, quand soudain une vision inespérée rompt la monotonie du paysage. Au creux d'un vallon protégé des vents, une maisonnette de pierre se dresse comme un phare dans cette mer d'herbes folles. L'écho cristallin du marteau sur l'enclume danse dans l'air, ponctué par le souffle régulier du soufflet et les crépitements de la forge. Un homme trapu aux avant-bras marqués par les étincelles façonne méthodiquement une pièce incandescente, totalement absorbé par son art. Des flammes orangées léchent les parois de pierre noircie tandis qu'une fumée odorante s'élève vers le ciel."
   },
   "15": {
     "possibilities": {
@@ -335,30 +335,30 @@
         "outcomes": {
           "0": "Votre réputation de voyageur honorable vous précède ! Les marchands vous accueillent chaleureusement et vous proposent leurs meilleures marchandises à des prix équitables. Après une négociation cordiale, vous repartez satisfait de votre acquisition et enrichi de nouvelles relations commerciales.",
           "1": "Votre réputation sulfureuse intrigue ces marchands peu scrupuleux. Ils vous proposent discrètement des marchandises 'tombées du chariot' à prix bradé. L'affaire conclue dans l'ombre vous rapporte un objet d'origine douteuse, mais vous savez qu'il vaut mieux ne pas poser de questions.",
-          "2": "Votre réputation de malfrat effraie ces commerçants qui ne souhaitent pas attirer les gens tels que vous ! Tandis que l'on vous menace de vous dénoncer aux gardes, vous ne parvenez à vous échapper en achetant le silence des marchands.",
-          "3": "Impressionnés par votre stature de héros légendaire, les marchands sortent leurs articles les plus précieux ! Ils vous font une démonstration passionnée de leurs créations d'exception et, conquis par votre noblesse d'âme, vous cèdent l'une de leurs pièces maîtresses.",
-          "4": "Vous essayez d'utiliser vos moyens limités pour obtenir un objet que vous convoitez depuis longtemps. Les marchands, amusés par votre enthousiasme et votre jeune âge, acceptent de vous le céder contre une somme modique. Vous repartez avec un sourire satisfait, conscient que vous avez fait une bonne affaire.",
-          "5": "Vous tentez de rentrer dans la boutique avant de vous rappeler que votre familier gigantesque ne passera pas la porte. Vous repartez donc déçu."
+          "2": "Votre réputation de malfrat effraie ces commerçants qui ne souhaitent pas attirer l'attention des autorités ! Tandis que l'on vous menace de vous dénoncer aux gardes, vous ne parvenez à vous échapper qu'en achetant le silence des marchands à prix fort. Votre transaction forcée vous laisse meurtri dans votre fierté et votre bourse.",
+          "3": "Impressionnés par votre stature de héros légendaire, les marchands sortent leurs articles les plus précieux ! Ils vous font une démonstration passionnée de leurs créations d'exception et, conquis par votre noblesse d'âme, vous cèdent l'une de leurs pièces maîtresses à un prix raisonnable.",
+          "4": "Votre jeunesse et votre enthousiasme touchent ces marchands expérimentés. Amusés par votre naïveté commerciale mais charmés par votre sincérité, ils acceptent de vous céder un objet que vous convoitiez contre une somme modique. Vous repartez avec un sourire satisfait, conscient d'avoir fait une excellente affaire.",
+          "5": "Vous tentez d'entrer dans la boutique avant de vous rappeler que votre familier gigantesque ne passera jamais la porte ! Embarrassé par cette situation cocasse, vous ressortez sous les regards amusés des marchands. Votre compagnon imposant attire tous les regards."
         },
         "text": "Tenter de négocier avec les marchands."
       },
       "steal": {
         "outcomes": {
-          "0": "Vos reflexes d'ombre vous permettent de subtiliser discrètement quelques pièces dans la caisse pendant que les marchands sont distraits. Vous vous éclipsez rapidement dans les ruelles de Claire de Ville, votre larcin passant totalement inaperçu.",
+          "0": "Vos réflexes vous permettent de subtiliser discrètement quelques pièces dans la caisse pendant que les marchands sont distraits. Vous vous éclipsez rapidement dans les ruelles de Claire de Ville, votre larcin passant totalement inaperçu.",
           "1": "Votre réputation de brigand redoutable et votre allure menaçante paralysent les marchands de terreur ! Vous vous servez généreusement dans leur caisse sans rencontrer la moindre résistance, laissant ces pauvres commerçants tremblants dans votre sillage.",
           "2": "Votre tentative de vol échoue lamentablement ! Pris en flagrant délit par les marchands alertes, vous subissez leurs coups et devez rembourser bien plus que ce que vous espériez dérober. Une leçon douloureuse qui vous laisse pantois et appauvri.",
-          "3": "Votre geste déshonorant choque profondément ces honnêtes commerçants ! Bien que vous ne soyez pas un criminel endurci, votre acte vous vaut leur mépris et une amende salée. Vous repartez la tête basse, rongé par la culpabilité.",
+          "3": "Vous tentez de subtiliser quelques pièces mais vous êtes immédiatement attrapé. Votre geste déshonorant choque profondément ces honnêtes commerçants ! Bien que vous ne soyez pas un criminel endurci, votre acte vous vaut leur mépris et une amende salée. Vous repartez la tête basse, rongé par la culpabilité.",
           "4": "Votre inexpérience du vol se retourne contre vous ! Non seulement vous êtes immédiatement démasqué, mais les marchands, furieux de cette trahison, vous infligent une correction exemplaire. Votre naïveté criminelle vous coûte cher en pièces et en dignité.",
-          "5": "Vous n'êtes pas un voleur aguerri, mais votre singe est lui un expert en la matière ! Il se faufile entre les étals et subtilise quelques pièces ainsi qu'un objet sans que personne ne s'en aperçoive. Vous le retrouvez plus loin, fier de son larcin."
+          "5": "Vous n'êtes pas un voleur aguerri, mais votre singe complice est lui un expert en la matière ! Il se faufile entre les étals et subtilise quelques pièces ainsi qu'un objet sans que personne ne s'en aperçoive. Vous le retrouvez plus loin, fier de son larcin qu'il partage généreusement avec vous."
         },
         "text": "Tenter discrètement de dérober quelques pièces."
       },
       "observe": {
         "outcomes": {
-          "0": "A CHANGER ya pas de mécanique d'apprentissage donc ce genre de texte n'apporte rien Votre expérience de voyageur vous permet d'analyser finement cette boutique. Vous identifiez la qualité des marchandises et les habitudes commerciales locales, enrichissant vos connaissances sur les pratiques marchandes de Claire de Ville.",
-          "1": "Votre réputation de saint homme attire l'attention bienveillante d'un marchand pieux ! Touché par votre aura spirituelle, il partage avec vous quelques pièces et ses bénédictions pour votre noble quête.",
-          "2": "Étonnamment, votre simple présence silencieuse semble apaiser l'atmosphère tendue de cette boutique. Les marchands, peu habitués à tant de calme, vous regardent avec un respect nouveau, comme si votre patience leur rappelait des valeurs oubliées. RAJOUTER CE QU'il se passe après ",
-          "3": "A CHANGER ya pas de mécanique d'apprentissage donc ce genre de texte n'apporte rien (faut soit du lore soit qu'il se passe un truc ou que yai une conclusion Vous observez discrètement les allées et venues de cette boutique animée. L'activité commerciale de Claire de Ville se révèle fascinante, et vous apprenez beaucoup sur les us et coutumes des marchands locaux."
+          "0": "En voyageur expérimenté, vous analysez discrètement les techniques de vente et l'organisation de cette boutique. Votre patience vous permet de repérer le meilleur moment pour acquérir un objet peu cher qui vous intéressait",
+          "1": "Votre réputation de saint homme attire l'attention bienveillante d'un marchand pieux ! Touché par votre aura spirituelle, il partage avec vous quelques pièces et ses bénédictions pour votre noble quête, vous encourageant à poursuivre votre mission divine.",
+          "2": "Étonnamment, votre simple présence silencieuse semble apaiser l'atmosphère tendue de cette boutique. Les marchands, peu habitués à tant de calme, ralentissent leurs négociations agressives. Quand vous repartez, l'un d'eux vous glisse quelques pièces en vous remerciant d'avoir apporté la paix dans son commerce.",
+          "3": "Vous observez patiemment les allées et venues de cette boutique animée. Le ballet incessant des clients et des marchandises vous hypnotise quelque peu, et vous perdez la notion du temps à contempler cette fourmilière commerciale. Quand vous émergez de votre contemplation, l'activité a repris son cours normal."
         },
         "text": "Observer discrètement l'activité de la boutique."
       },
@@ -366,19 +366,19 @@
         "outcomes": {
           "0": "Pressé par votre quête, vous traversez rapidement la boutique sans vous attarder. Les marchands vous saluent poliment tandis que vous poursuivez votre chemin à travers les ruelles de Claire de Ville.",
           "1": "Votre agilité remarquable vous permet de traverser la boutique bondée sans ralentir votre allure. Vous vous faufilez habilement entre les clients et les marchandises, disparaissant dans les ruelles avant même que les commerçants aient eu le temps de vous interpeller.",
-          "2": "En tentant de traverser rapidement la boutique, votre précipitation vous joue des tours ! Vous bousculez maladroitement un étal, renversez quelques objets et vous retrouvez empêtré dans une dispute avec un marchand mécontent qui exige réparation. Vous parvenez à vous sortir de cette situation en vous excusant et en lui offrant quelques pièces, mais vous avez perdu un temps précieux.",
-          "3": "A remplacer par un texte ou le joueur se prend un truc sur le pied | Votre passage  pressé laisse une impression positive aux marchands. L'un d'eux vous rattrape même à la sortie pour vous offrir ses encouragements et quelques pièces de bon augure pour votre voyage."
+          "2": "En tentant de traverser rapidement la boutique, votre précipitation vous joue des tours ! Vous trébuchez sur une caisse mal placée, renversez quelques objets et vous retrouvez empêtré dans une dispute avec un marchand mécontent qui exige réparation. Cette mésaventure vous coûte du temps et de l'argent, et vous laisse confus et désorganisé.",
+          "3": "Votre passage pressé mais respectueux laisse une impression positive aux marchands. L'un d'eux vous rattrape même à la sortie pour vous offrir ses encouragements et quelques pièces de bon augure pour votre voyage, touché par votre courtoisie malgré votre hâte."
         },
         "text": "Continuer votre route sans perdre de temps."
       },
       "end": {
         "outcomes": {
-          "0": "A ameliorer un peu et rendre pas rentable pr les joeuurs Intimidé par l'activité commerciale intense de la boutique, vous restez planté près de l'entrée sans oser vous avancer. Les marchands finissent par vous remarquer et vous questionnent sur vos intentions. Timide, vous parvenez à bafouiller quelques mots qui ne sont pas compris. Vous finissez par quitter la boutique sans rien acheter, déçu de ne pas avoir osé vous impliquer davantage.",
-          "1": "Votre magnifique compagnon attire immédiatement l'attention admirative des marchands ! Fascinés par sa beauté et sa rareté, ils interrompent leurs affaires pour l'observer et vous poser mille questions. Cette rencontre inattendue égaye votre journée et celle des commerçants."
+          "0": "Intimidé par l'activité commerciale intense de la boutique, vous restez planté près de l'entrée sans oser vous avancer. Les marchands finissent par vous remarquer et vous questionnent sur vos intentions. Embarrassé par votre indécision, vous bredouillez quelques excuses avant de quitter précipitamment la boutique, laissant derrière vous des commerçants perplexes.",
+          "1": "Votre magnifique compagnon attire immédiatement l'attention admirative des marchands ! Fascinés par sa beauté et sa rareté, ils interrompent leurs affaires pour l'observer et vous poser mille questions. Cette rencontre inattendue égaye votre journée et celle des commerçants, créant un moment de joie partagée qui vous réchauffe le cœur."
         }
       }
     },
-    "text": "En explorant les ruelles animées de Claire de Ville, vous pénétrez dans une petite boutique où règne une atmosphère de commerce intense. Plusieurs marchands aux allures diverses négocient âprement autour d'étals chargés de marchandises hétéroclites : armes d'occasion, bijoux clinquants, provisions de voyage et objets d'artisanat local. L'odeur du cuir et des épices flotte dans l'air tandis que les pièces d'or tintent dans les bourses. Les commerçants vous jaugent du regard, évaluant votre potentiel en tant que client... ou partenaire commercial."
+    "text": "En explorant les ruelles animées de Claire de Ville, vous pénétrez dans une petite boutique où règne une atmosphère de commerce intense. Plusieurs marchands aux allures diverses négocient âprement autour d'étals chargés de marchandises hétéroclites : armes d'occasion, bijoux clinquants, provisions de voyage et objets d'artisanat local. L'odeur du cuir et des épices flotte dans l'air tandis que les pièces d'or tintent dans les bourses. Les commerçants vous jaugent du regard, évaluant votre potentiel en tant que client... ou victime potentielle."
   },
   "16": {
     "possibilities": {
