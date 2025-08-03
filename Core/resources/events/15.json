@@ -6,9 +6,6 @@
           "requirements": {
             "karma": {
               "min": 30
-            },
-            "money": {
-              "min": 150
             }
           },
           "effect": "occupied",
