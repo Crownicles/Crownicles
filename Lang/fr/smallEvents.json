@@ -398,6 +398,16 @@
         "Vous croisez {{playerDisplay}}, qui semble perdu et s'empresse de vous demander quel chemin emprunter pour arriver à destination. Malheureusement, vous ne pouvez pas l'aider, et le réconfortez un peu avant de reprendre votre route.",
         "Vous croisez {{playerDisplay}}, qui semble s'être égaré, visiblement désorienté. Il vous regarde avec espoir, cherchant de l'aide pour retrouver son chemin.",
         "Vous remarquez que {{playerDisplay}} tourne en rond, après l'avoir croisé plusieurs fois en chemin. Vous vous approchez de lui et lui demandez s'il a besoin d'aide. Il vous explique qu'il est perdu et vous demande de l'accompagner vers sa destination."
+      ],
+      "working": [
+        "Vous croisez {{playerDisplay}} occupé à son travail. Il vous adresse un bref salut avant de reprendre ses tâches.",
+        "{{playerDisplay}} est absorbé par ses responsabilités et ne peut s'attarder. Vous poursuivez votre route sans le déranger.",
+        "{{playerDisplay}} est en plein travail, manches retroussées et suant sous l'effort. Il vous fait un signe de la main mais ne peut s'arrêter, visiblement pris par une tâche urgente."
+      ],
+      "burned": [
+        "Vous croisez {{playerDisplay}} qui porte des marques de brûlures visibles sur ses vêtements et sa peau. Il avance d'un pas prudent, visiblement encore affecté par un récent accident avec le feu.",
+        "{{playerDisplay}} passe près de vous en grimaçant de douleur. Ses habits sont noircis et fumants, il semble avoir eu maille à partir avec des flammes récemment.",
+        "Vous remarquez {{playerDisplay}} qui se déplace lentement, ses cheveux roussis et sa peau rougie témoignant d'une récente exposition à une chaleur intense. Il vous salue faiblement avant de poursuivre son chemin."
       ]
     }
   },
