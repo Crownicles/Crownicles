@@ -366,18 +366,18 @@
         "outcomes": {
           "0": "Pressé par votre quête, vous traversez rapidement la boutique sans vous attarder. Les marchands vous saluent poliment tandis que vous poursuivez votre chemin à travers les ruelles de Claire de Ville.",
           "1": "Votre agilité remarquable vous permet de traverser la boutique bondée sans ralentir votre allure. Vous vous faufilez habilement entre les clients et les marchandises, disparaissant dans les ruelles avant même que les commerçants aient eu le temps de vous interpeller.",
-          "2": "En tentant de traverser rapidement la boutique, votre précipitation vous joue des tours ! Vous trébuchez sur une caisse mal placée, renversez quelques objets et vous retrouvez empêtré dans une dispute avec un marchand mécontent qui exige réparation. Vous repartez en en boitant, le pied encore endoloris par le choc."
+          "2": "En tentant de traverser rapidement la boutique, votre précipitation vous joue des tours ! Vous trébuchez sur une caisse mal placée, renversez quelques objets et vous retrouvez empêtré dans une dispute avec un marchand mécontent qui exige réparation. Vous repartez en boitant, le pied encore endolori par le choc."
         },
         "text": "Continuer votre route sans perdre de temps."
       },
       "end": {
         "outcomes": {
           "0": "Intimidé par l'activité commerciale intense de la boutique, vous restez planté près de l'entrée sans oser vous avancer. Les marchands finissent par vous remarquer et vous questionnent sur vos intentions. Embarrassé par votre indécision, vous bredouillez quelques excuses avant de quitter précipitamment la boutique, laissant derrière vous des commerçants perplexes.",
-          "1": "Votre magnifique compagnon attire immédiatement l'attention admirative des marchands ! Fascinés par sa beauté et sa rareté, ils interrompent leurs affaires pour l'observer et vous poser mille questions. Cette rencontre inattendue égaye votre journée et celle des commerçants, créant un moment de joie partagée qui vous réchauffe le cœur."
+          "1": "Votre magnifique compagnon attire immédiatement l'attention admirative des marchands ! Fascinés par sa beauté et sa rareté, ils interrompent leurs affaires pour l'observer et vous poser mille questions. Cette rencontre inattendue égaye votre journée et celle des commerçants, mais ne vous aide pas vraiment à faire des affaires. Après un moment de discussion, vous reprenez votre route, le cœur léger."
         }
       }
     },
-    "text": "En explorant les ruelles animées de Claire de Ville, vous pénétrez dans une petite boutique où règne une atmosphère de commerce intense. Plusieurs marchands aux allures diverses négocient âprement autour d'étals chargés de marchandises hétéroclites : armes d'occasion, bijoux clinquants, provisions de voyage et objets d'artisanat local. L'odeur du cuir et des épices flotte dans l'air tandis que les pièces d'or tintent dans les bourses. Les commerçants vous jaugent du regard, évaluant votre potentiel en tant que client... ou victime potentielle."
+    "text": "En explorant les ruelles animées de Claire de Ville, vous pénétrez dans une petite boutique où règne une atmosphère de commerce intense. Plusieurs marchands aux allures diverses négocient âprement autour d'étals chargés de marchandises hétéroclites : armes d'occasion, bijoux clinquants, provisions de voyage et objets d'artisanat local. L'odeur du cuir et des épices flotte dans l'air tandis que les pièces d'or tintent dans les bourses. Les commerçants vous jaugent du regard..."
   },
   "16": {
     "possibilities": {
