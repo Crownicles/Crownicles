@@ -124,14 +124,14 @@
         },
         "6": {
           "requirements": {
-            "petTypeId": 1
+            "validPetTypeIds": [1]
           },
           "health": 15,
           "karma": 8
         },
         "7": {
           "requirements": {
-            "petTypeId": 65
+            "validPetTypeIds": [65]
           },
           "money": 400,
           "karma": -40
