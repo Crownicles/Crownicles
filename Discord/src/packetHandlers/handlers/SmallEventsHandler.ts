@@ -871,8 +871,11 @@ export default class SmallEventsHandler {
 	@packetHandler(SmallEventFightPetPacket)
 	async smallEventFightPet(context: PacketContext, packet: SmallEventFightPetPacket): Promise<void> {
 		const interaction = DiscordCache.getInteraction(context.discord!.interaction);
-		const lng = interaction!.userLanguage;
-		await interaction?.channel.send({
+		if (!interaction) {
+			return;
+		}
+		const lng = interaction.userLanguage;
+		await interaction.channel.send({
 			embeds: [
 				new CrowniclesSmallEventEmbed(
 					"fightPet",
