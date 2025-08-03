@@ -177,8 +177,10 @@
         "2": {
           "requirements": {
             "level": {
-              "min": 25,
-              "max": 110
+              "min": 25
+            },
+            "speed": {
+              "max": 530
             }
           },
           "effect": "burning",
@@ -189,6 +191,7 @@
             "validClassIds": [8,9,10,11,20]
           },
           "money": 60,
+          "randomItem": {},
           "karma": 3
         },
         "4": {
