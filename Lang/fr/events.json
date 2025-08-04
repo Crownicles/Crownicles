@@ -450,53 +450,83 @@
   },
   "17": {
     "possibilities": {
-      "end": {
-        "outcomes": {
-          "0": "Après quelques instants de reflexion vous décidez de reprendre la route promptement.",
-          "1": "Vous cherchez une autre source de nourriture pendant quelques instants mais vous vous rendez compte au bout de longues recherches que ces dernières sont vaines. Pas convaincu par les options qui s'offrent à vous, vous reprenez votre route."
-        }
-      },
       "fruits": {
         "outcomes": {
-          "0": "Vous grimpez le plus haut possible et décrochez un fruit. Vous comblez rapidement votre faim et sentez vos forces se restaurer grâce à cet apport en sucre.",
-          "1": "Alors que vous vous apprêtiez à cueillir un fruit au sommet de l'arbre, la branche qui vous soutenait s'effondre sous votre poids ! Sonné par votre chute, vous décidez d'abandonner votre repas et reprenez votre route.",
-          "2": "Vous cueillez rapidement un fruit et croquez vigoureusement dedans... Ce n'est que quelques heures plus tard que vous prendrez mesure de votre erreur."
+          "0": "Votre agilité vous permet de grimper avec aisance jusqu'aux branches les plus hautes. Les fruits dorés que vous cueillez regorgent de suc sucré et vous redonnent instantanément des forces. Cette pause revigorante dans la canopée vous offre même une vue panoramique sur les environs.",
+          "1": "Votre ascension laborieuse vous mène vers des fruits prometteurs, mais la branche fragile cède sous votre poids ! La chute brutale vous laisse étourdi et meurtri au pied de l'arbre. Vous abandonnez l'idée de ce repas aérien, préférant reprendre la route en claudiquant.",
+          "2": "Dans votre inexpérience, vous croquez avec appétit dans des fruits qui semblent appétissantes. Hélas, quelques heures plus tard, des crampes violentes vous rappellent cruellement que toutes les fruits colorées ne sont pas comestibles.",
+          "3": "Votre expérience de voyageur vous permet d'identifier les meilleurs fruits parmi la diversité de l'arbre. Non seulement vous vous nourrissez sainement, mais vous découvrez également un objet de valeur niché dans un creux du tronc, probablement oublié par un autre aventurier.",
+          "4": "Alors que vous vous apprêtiez à grimper, votre singe compagnon bondit avec enthousiasme dans les branches, sélectionnant avec expertise les fruits les plus nutritifs qu'il partage généreusement avec vous.",
+          "5": "Votre corpulence imposante joue contre vous ! En vous hissant vers les branches hautes, votre poids fait craquer dangereusement le bois. Soudain, la branche maîtresse se brise net et vous chutez lourdement, meurtri par cette tentative malheureuse.",
+          "6": "Votre majestueuse girafe étend gracieusement son long cou vers les fruits les plus hauts, ceux que même les singes ne peuvent atteindre ! Elle cueille délicatement les spécimens les plus juteux et vous les apporte avec une élégance naturelle. Ce festin de fruits d'exception vous régale comme jamais.",
+          "7": "Votre majestueux diplodocus étend gracieusement son long cou vers les fruits les plus hauts, ceux que même les singes ne peuvent atteindre ! Il attrape délicatement les spécimens les plus juteux et vous les apporte avec une élégance naturelle. Ce festin de fruits d'exception vous régale comme jamais."
         },
-        "text": "Escalader l'immense arbre qui vous fait face afin d'en récupérer les fruits."
+        "text": "Escalader l'arbre aux fruits dorés."
       },
       "hunt": {
         "outcomes": {
-          "0": "Aucun animal en vue, vous reprenez donc votre route sans plus attendre.",
-          "1": "Après une course poursuite effrénée avec un animal sauvage, celui-ci cesse de vous fuir et vous charge furieusement. Abasourdi par la violence de l'attaque, vous ne parvenez pas à l'éviter et subissez la totale colère de la bête. Gravement blessé, il vous faudra du temps avant de reprendre votre aventure.",
-          "2": "Vous transpercez rapidement quelques petits animaux de votre lame et dévorez vos proies avec grand appétit avant de reprendre la route, repu."
+          "0": "Malgré vos efforts pour traquer le gibier dans les fourrés, votre manque d'expérience de la chasse vous joue des tours. Les animaux détectent votre présence de loin et s'enfuient, vous laissant bredouille après de longues heures de traque infructueuse.",
+          "1": "Vous parvenez à blesser un sanglier mais sous-estimez sa rage ! La bête furieuse charge avec une violence inouïe, ses défenses lacérant votre chair avant que vous ne parveniez à l'achever. Ce repas vous aura coûté très cher, mais vous vous consolez en fabriquant un petit objet à partir de la carcasse de l'animal.",
+          "2": "Votre maîtrise du combat vous permet d'abattre proprement plusieurs lapins sauvages. Avec l'habileté d'un chasseur expérimenté, vous préparez un festin roboratif qui vous redonne toute votre vigueur pour la suite du voyage.",
+          "3": "Votre réputation de brigand vous sert dans cette chasse impitoyable. Vous traquez une biche avec une efficacité redoutable, puis dépouillez sa carcasse de tout ce qui a de la valeur, y compris ses bois qui se vendront bien au marché noir.",
+          "4": "Votre compagnon prédateur prend naturellement les devants de la chasse ! Sa puissance instinctive vous assure un repas copieux sans effort de votre part. La nature reprend ses droits.",
+          "5": "Vos talents d'archer vous permettent d'abattre plusieurs petits gibiers d'une main sûre. Cette chasse efficace et sans gaspillage vous nourrit convenablement tout en respectant l'équilibre de la forêt.",
+          "6": "Votre familier disparaît dans les fourrés avec un grognement déterminé. Quelques minutes plus tard, il reparaît en rabattant habilement un cerf dans votre direction ! Cette coordination parfaite vous offre un festin digne des meutes sauvages.",
+          "7": "Votre vitesse exceptionnelle vous permet de poursuivre le gibier avec l'agilité d'un félin ! Vous rattrapez aisément lapins et perdrix, transformant cette chasse en véritable démonstration de célérité. Le repas qui s'ensuit récompense dignement vos prouesses.",
+          "8": "Concentré sur un lièvre, vous ne voyez pas le cerf qui charge ! L'impact brutal du bois sur votre torse vous projette au sol. Sonné et meurtri, vous abandonnez toute velléité de chasse, remerciant les dieux d'être encore vivant après cette rencontre malheureuse.",
+          "9": "Votre maladresse de novice vous fait tomber nez à nez avec un autre chasseur expérimenté ! Amusé par votre technique approximative, ce vétéran bienveillant partage généreusement le fruit de sa propre chasse. Votre inexpérience vous vaut finalement un excellent repas et une leçon d'humilité."
         },
-        "text": "Tenter de chasser un animal sauvage."
+        "text": "Partir chasser dans les fourrés."
       },
       "mushrooms": {
         "outcomes": {
-          "0": "Alors que vous vous penchez pour ramasser les champignons, vous apercevez un étrange objet briller sur le sol...",
-          "1": "Vous ramassez quelques champignons avant de remarquer que vous n'avez rien pour les cuisiner. Abandonnant votre cueillette, vous reprenez la route.",
-          "2": "Vous croquez à pleine dents dans un champignon rouge avec des petits points blancs... et regrettez rapidement cette action !"
+          "0": "Votre œil exercé distingue les champignons comestibles des variétés toxiques. En fouillant sous un champignon particulièrement gros, vous découvrez même un objet précieux enterré par quelque créature ou ancien voyageur.",
+          "1": "Votre inexpérience mycologique vous fait hésiter longuement devant chaque spécimen. Vous passez un temps considérable à essayer d'identifier les espèces comestibles, mais votre prudence excessive vous fait finalement abandonner sans rien récolter.",
+          "2": "Votre sombre personnalité vous pousse vers les champignons les plus toxiques ! Attiré par leurs couleurs vives, vous en consommez plusieurs avant de réaliser votre erreur. Les hallucinations et les convulsions qui suivent vous rappellent douloureusement que vos mauvaises actions attirent le malheur.",
+          "3": "Votre bienveillance naturelle vous guide vers les champignons les plus sains. Comme si la nature elle-même récompensait votre bonté, vous trouvez une variété particulièrement nutritive qui apaise votre faim tout en purifiant votre esprit.",
+          "4": "Vos compétences de mage vous ont permis d'acquérir des savoirs très utile pour identifier les meilleurs espèces de champignons. Rapidement vous remarquez quelques spécimens d'une variété rarissime de champignons aux propriétés exceptionnelles. Non seulement ils vous nourrissent, mais leurs vertus vous procurent également un bien-être durable.",
+          "5": "Votre cochon compagnon grogne d'excitation en reniflant le sol ! Son flair exceptionnel lui permet de dénicher les truffes les plus précieuses enfouies sous les feuilles mortes. Ces délices gastronomiques vous nourrissent parfaitement, et vous en conservez quelques-unes pour les revendre plus tard.",
+          "6": "Votre expérience considérable vous permet d'éviter instinctivement les champignons vénéneux. Même les plus tentants et colorés ne vous trompent pas - vous sélectionnez uniquement les variétés nutritives et savoureuses qui vous sustentent sainement."
         },
-        "text": "Cueillir les champignons."
+        "text": "Cueillir les champignons des sous-bois."
       },
       "salad": {
         "outcomes": {
-          "0": "Vous effectuez une petite cueillette et avalez votre préparation. Fort de l'énergie apportée par ce repas, vous reprenez votre route.",
-          "1": "Après quelques recherches, vous ne trouvez pas vraiment de plantes satisfaisant votre faim et reprenez donc votre route sans rien manger.",
-          "2": "Vous changez rapidement d'avis en regardant autour de vous et en découvrant l'épaisse végétation qui vous empêcherait de cueillir quoi que ce soit. Sans perdre plus de temps, vous reprenez votre route."
+          "0": "Vous composez une salade simple mais nourrissante avec les herbes sauvages que vous reconnaissez. Ce repas frugal mais sain vous redonne quelques forces tout en respectant la nature environnante.",
+          "1": "Votre mauvaise réputation semble vous poursuivre jusque dans vos choix alimentaires ! Les plantes que vous sélectionnez s'avèrent amères et peu nutritives, vous laissant plus affamé qu'avant. Même la nature semble vous bouder.",
+          "2": "Votre inexpérience vous fait confondre plusieurs plantes. Vous perdez un temps précieux à essayer de distinguer les espèces comestibles des nuisibles, renonçant finalement à ce repas végétal par peur d'empoisonnement.",
+          "3": "Votre compagnon herbivore vous guide instinctivement vers les meilleures plantes comestibles. Sa connaissance naturelle de la flore vous offre un repas végétarien parfaitement équilibré et savoureux.",
+          "4": "Catastrophe ! Votre vache gourmande se jette sur votre cueillette et dévore goulûment toutes les herbes que vous aviez soigneusement sélectionnées ! Elle mastique béatement votre repas sous vos yeux dépités, vous laissant le ventre vide et l'amertume au cœur.",
+          "5": "Votre aura maléfique corrompt littéralement la nature autour de vous ! Les plantes se flétrissent à votre approche, les feuilles noircissent et les herbes pourrissent entre vos doigts. Contraint de consommer cette bouillie infecte, vous vous empoisonnez avec les fruits de vos propres mauvaises actions."
         },
-        "text": "Concocter une salade avec les plantes que vous trouvez."
+        "text": "Concocter une salade sauvage."
+      },
+      "scavenge": {
+        "outcomes": {
+          "0": "Votre nature de brigand et votre rapidité vous permettent de fouiller efficacement les restes d'anciens campements le long du Grand Axe. Vous déterrez des provisions encore bonnes et quelques pièces oubliées par d'anciens voyageurs.",
+          "1": "Votre long passé de brigand vous mène naturellement vers les cachettes des bandits de la région. Vous découvrez un garde-manger secret contenant des vivres volés et même un objet de valeur abandonné lors d'une fuite précipitée.",
+          "2": "Poussé par votre faim, vous vous résolvez à fouiller les détritus. Cette action contre votre nature vous pèse moralement, mais la survie l'emporte sur les principes dans cette situation désespérée. Vous parvenez à trouver quelques vivres encore comestibles, et reprenez rapidement votre route.",
+          "3": "Les restes que vous déterrez s'avèrent avariés et infestés de parasites. Cette nourriture de dernier recours vous rend malade, et vous devez vous arrêter pour vous soigner avant de pouvoir continuer votre route."
+        },
+        "text": "Fouiller les restes d'anciens campements."
       },
       "skip": {
         "outcomes": {
-          "0": "Vous continuez votre route sans perdre plus de temps.",
-          "1": "Vous décidez de ne pas vous repaître, mais finissez par regretter cette décision quelques heures plus tard. Affamé, vous décidez de prendre un peu de repos avant de reprendre la route."
+          "0": "Vous décidez stoïquement de poursuivre votre route le ventre vide, considérant que la faim forge le caractère. Cette austérité volontaire vous endurcit, même si elle ne nourrit pas votre corps. Vous continuez votre chemin tiraillé par la faim.",
+          "1": "Votre inexpérience vous fait sous-estimer les besoins de votre organisme. En refusant de vous nourrir, vous vous affaiblissez dangereusement et devrez bientôt faire face aux conséquences de cette négligence.",
+          "2": "Votre sagesse de voyageur expérimenté vous dicte de préserver vos forces pour des défis plus importants. Vous acceptez temporairement la faim, sachant qu'une meilleure occasion de vous nourrir se présentera bientôt."
         },
-        "text": "Abandonner l'idée de manger ici et repartir dans l'espoir de trouver un meilleur lieu pour vous repaître."
+        "text": "Poursuivre la route sans vous nourrir."
+      },
+      "end": {
+        "outcomes": {
+          "0": "L'indécision vous paralyse face à ces multiples options alimentaires. Vous passez de longues minutes à peser le pour et le contre de chaque choix, laissant finalement le temps filer sans prendre de décision définitive.",
+          "1": "Votre état de faiblesse vous fait hésiter longuement entre toutes ces possibilités. Cette hésitation prolongée vous épuise encore davantage, et vous devez finalement vous reposer longuement avant de pouvoir reprendre la route, le ventre toujours vide.",
+          "2": "Alors que vous réfléchissez aux différentes options, votre fidèle félin disparaît silencieusement dans les fourrés. Il revient fièrement quelques minutes plus tard en traînant une proie imposante ! Ensemble, vous partagez ce festin royal qui vous redonne toute votre vigueur et renforce vos liens avec votre noble compagnon."
+        }
       }
     },
-    "text": "Affamé par votre journée de voyage, vous décidez de faire une halte et de rechercher de quoi vous nourrir autour de vous."
+    "text": "Sur la périlleuse route du Grand Axe, connue pour ses brigands et ses dangers, une faim tenaillante vous oblige à faire halte. Autour de vous, la nature offre plusieurs possibilités pour vous sustenter, mais sur cette route maudite, même les choix les plus simples peuvent receler des pièges mortels. Un grand chêne aux fruits dorés se dresse majestueusement, tandis que des champignons colorés parsèment les sous-bois. Des traces d'animaux sauvages marquent le sol boueux, et vous apercevez les vestiges d'anciens campements de voyageurs moins chanceux que vous..."
   },
   "18": {
     "possibilities": {
