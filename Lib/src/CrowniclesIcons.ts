@@ -325,15 +325,17 @@ export const CrowniclesIcons: {
 			}
 		},
 		17: {
-			end: {
-				0: "🚶",
-				1: "🚶"
-			},
-			fruits: "🍎",
+			fruits: "🍏",
 			hunt: "🦌",
 			mushrooms: "🍄",
 			salad: "🥗",
-			skip: "🚶"
+			scavenge: "🧺",
+			skip: "🏃",
+			end: {
+				0: "🕑",
+				1: "🕑",
+				2: "🐅"
+			}
 		},
 		18: {
 			end: {
