@@ -193,7 +193,6 @@
         "1": {
           "requirements": {
             "level": {
-              "min": 40,
               "max": 90
             }
           },
