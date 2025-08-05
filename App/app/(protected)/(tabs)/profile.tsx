@@ -10,6 +10,11 @@ import {makeFromClientPacket} from "ws-packets/src/MakePackets";
 import {PlayerNotFound} from "ws-packets/src/fromServer/common/PlayerNotFound";
 import {InventoryReq} from "ws-packets/src/fromClient/InventoryReq";
 import {InventoryRes} from "ws-packets/src/fromServer/inventory/InventoryRes";
+import {MainItem} from "ws-packets/src/objects/MainItem";
+import {SupportItem} from "ws-packets/src/objects/SupportItem";
+import {ItemRarity} from "ws-packets/src/objects/ItemRarity";
+import {ItemNature} from "ws-packets/src/objects/ItemNature";
+import {AppIcons} from "@/src/AppIcons";
 
 type LoadingState = 'loading' | 'success' | 'error' | 'timeout';
 
@@ -41,18 +46,24 @@ interface TooltipState {
 	y: number;
 }
 
+interface InventoryData {
+	weapon?: MainItem;
+	armor?: MainItem;
+	potion?: SupportItem;
+	object?: SupportItem;
+}
+
 export default function Profile() {
 	const { profileData, setProfileData } = useProfile();
 	const [profileState, setProfileState] = useState<LoadingState>('loading');
-	const [errorMessage, setErrorMessage] = useState<string>('');
 	const [playerStats, setPlayerStats] = useState<PlayerStats | null>(null);
+	const [inventoryData, setInventoryData] = useState<InventoryData | null>(null);
 	const [tooltip, setTooltip] = useState<TooltipState>({ visible: false, text: '', x: 0, y: 0 });
 	const [tooltipTimeout, setTooltipTimeout] = useState<number | null>(null);
 	const navigation = useNavigation();
 
-	const loadProfile = () => {
+	const loadProfile = useCallback(() => {
 		setProfileState('loading');
-		setErrorMessage('');
 
 		WebSocketClient.getInstance().sendPacket(makeFromClientPacket(ProfileReq, { askedPlayer: {} }), {
 			[ProfileRes.name]: (packet: ProfileRes) => {
@@ -87,38 +98,42 @@ export default function Profile() {
 					title: `${packet.pseudo} · Level ${packet.level}`
 				});
 			},
-			[PlayerNotFound.name]: (packet: PlayerNotFound) => {
-				setErrorMessage('Profile not found');
+			[PlayerNotFound.name]: () => {
 				setProfileState('error');
 			}
 		}, {
 			time: AppConstants.PACKET_TIMEOUT,
 			callback: () => {
-				setErrorMessage('Request timed out. Please try again.');
 				setProfileState('timeout');
 			}
 		});
 
 		WebSocketClient.getInstance().sendPacket(makeFromClientPacket(InventoryReq, { askedPlayer: {} }), {
 			[InventoryRes.name]: (packet: InventoryRes) => {
-				console.log('Inventory data received:', JSON.stringify(packet));
-				// todo
+				if (packet.foundPlayer && packet.data) {
+					setInventoryData({
+						weapon: packet.data.weapon,
+						armor: packet.data.armor,
+						potion: packet.data.potion,
+						object: packet.data.object
+					});
+				}
 			},
-			[PlayerNotFound.name]: (packet: PlayerNotFound) => {
-				// todo
+			[PlayerNotFound.name]: () => {
+				// Inventory not found, but this is handled by the main profile request
 			}
 		}, {
 			time: AppConstants.PACKET_TIMEOUT,
 			callback: () => {
-				// todo
+				// Inventory request timeout, but this is not critical
 			}
 		});
-	}
+	}, [setProfileData, navigation]);
 
 	// todo: verify that it does not run twice in production mode
 	useFocusEffect(useCallback(() => {
 		loadProfile();
-		}, [])
+		}, [loadProfile])
 	);
 
 	useEffect(() => {
@@ -234,19 +249,11 @@ export default function Profile() {
 		return (
 			<TouchableOpacity
 				style={styles.statItem}
-				onLayout={(event) => {
-					const { x, y, width, height } = event.nativeEvent.layout;
-					// Store layout info for this stat item
-					event.currentTarget._layoutInfo = { x, y, width, height };
-				}}
 				onPress={(event) => {
-					const layoutInfo = event.currentTarget._layoutInfo;
-					if (layoutInfo) {
-						// Convert relative coordinates to absolute screen coordinates
-						event.currentTarget.measure((fx, fy, width, height, px, py) => {
-							showStatTooltip(statName, px, py, width);
-						});
-					}
+					// Convert relative coordinates to absolute screen coordinates
+					event.currentTarget.measure((fx, fy, width, height, px, py) => {
+						showStatTooltip(statName, px, py, width);
+					});
 				}}
 			>
 				<Text style={styles.statEmoji}>{emoji}</Text>
@@ -288,7 +295,9 @@ export default function Profile() {
 			case 'timeout':
 				return (
 					<View style={styles.centerContent}>
-						<Text style={styles.errorText}>{errorMessage}</Text>
+						<Text style={styles.errorText}>
+							{profileState === 'error' ? 'Profile not found' : 'Request timed out. Please try again.'}
+						</Text>
 					</View>
 				);
 			case 'success':
@@ -399,6 +408,169 @@ export default function Profile() {
 		}
 	};
 
+	// Helper functions for inventory
+	const getItemIcon = (itemType: 'weapon' | 'armor' | 'potion' | 'object', itemId: number): string => {
+		const icons = AppIcons.lib;
+		switch (itemType) {
+			case 'weapon':
+				return icons.weapons[itemId] || icons.inventory.empty;
+			case 'armor':
+				return icons.armors[itemId] || icons.inventory.empty;
+			case 'potion':
+				return icons.potions[itemId] || icons.inventory.empty;
+			case 'object':
+				return icons.objects[itemId] || icons.inventory.empty;
+			default:
+				return icons.inventory.empty;
+		}
+	};
+
+	const getRarityIcon = (rarity: ItemRarity): string => {
+		return AppIcons.lib.rarity[rarity] || AppIcons.lib.rarity[ItemRarity.BASIC];
+	};
+
+	const getItemNatureEffect = (nature: ItemNature): string => {
+		return AppIcons.lib.itemNatures[nature] || AppIcons.lib.itemNatures[ItemNature.NONE];
+	};
+
+	const formatStatValue = (value: number, max: number): { text: string; isNerfed: boolean } => {
+		if (value > max) {
+			return { text: max.toString(), isNerfed: true };
+		}
+		return { text: value.toString(), isNerfed: false };
+	};
+
+	const renderMainItemStats = (item: MainItem) => {
+		const stats = [];
+
+		// Attack stat
+		if (item.attack.value > 0) {
+			const { text, isNerfed } = formatStatValue(item.attack.value, item.attack.max);
+			stats.push(
+				<Text key="attack" style={styles.itemStatText}>
+					<Text style={styles.itemStatIcon}>⚔️</Text>
+					<Text style={[styles.itemStatValue, isNerfed && styles.nerfedStat]}>
+						{isNerfed && <Text style={styles.strikethrough}>{item.attack.value}</Text>} {text}
+					</Text>
+				</Text>
+			);
+		}
+
+		// Defense stat
+		if (item.defense.value > 0) {
+			const { text, isNerfed } = formatStatValue(item.defense.value, item.defense.max);
+			stats.push(
+				<Text key="defense" style={styles.itemStatText}>
+					<Text style={styles.itemStatIcon}>🛡️</Text>
+					<Text style={[styles.itemStatValue, isNerfed && styles.nerfedStat]}>
+						{isNerfed && <Text style={styles.strikethrough}>{item.defense.value}</Text>} {text}
+					</Text>
+				</Text>
+			);
+		}
+
+		// Speed stat
+		if (item.speed.value > 0) {
+			const { text, isNerfed } = formatStatValue(item.speed.value, item.speed.max);
+			stats.push(
+				<Text key="speed" style={styles.itemStatText}>
+					<Text style={styles.itemStatIcon}>🚀</Text>
+					<Text style={[styles.itemStatValue, isNerfed && styles.nerfedStat]}>
+						{isNerfed && <Text style={styles.strikethrough}>{item.speed.value}</Text>} {text}
+					</Text>
+				</Text>
+			);
+		}
+
+		if (stats.length === 0) return null;
+
+		return (
+			<Text style={styles.itemStatsLine}>
+				{stats.map((stat, index) => (
+					<Text key={index}>
+						{stat}
+						{index < stats.length - 1 && <Text style={styles.statSeparator}> • </Text>}
+					</Text>
+				))}
+			</Text>
+		);
+	};
+
+	const renderSupportItemEffect = (item: SupportItem) => {
+		const effectIcon = getItemNatureEffect(item.nature);
+		return (
+			<View style={styles.itemEffect}>
+				<Text style={styles.itemEffectIcon}>{effectIcon}</Text>
+				<Text style={styles.itemEffectText}>Power: {item.power}/{item.maxPower}</Text>
+			</View>
+		);
+	};
+
+	const renderEquippedItem = (
+		itemType: 'weapon' | 'armor' | 'potion' | 'object',
+		item: MainItem | SupportItem | undefined
+	) => {
+		if (!item || item.id === 0) {
+			return (
+				<View key={itemType} style={styles.inventoryItem}>
+					<Text style={styles.itemIcon}>❌</Text>
+					<View style={styles.itemDetails}>
+						<Text style={styles.itemName}>No {itemType} equipped</Text>
+					</View>
+				</View>
+			);
+		}
+
+		const itemIcon = getItemIcon(itemType, item.id);
+		const rarityIcon = getRarityIcon(item.rarity);
+		const itemName = `${itemType.charAt(0).toUpperCase() + itemType.slice(1)} #${item.id}`; // Placeholder name
+
+		return (
+			<View key={itemType} style={styles.inventoryItem}>
+				<Text style={styles.itemIcon}>{itemIcon}</Text>
+				<View style={styles.itemDetails}>
+					<Text style={styles.itemName}>{itemName}</Text>
+					<View style={styles.itemRarity}>
+						<Text style={styles.rarityIcon}>{rarityIcon}</Text>
+						<Text style={styles.rarityText}>
+							{ItemRarity[item.rarity].charAt(0) + ItemRarity[item.rarity].slice(1).toLowerCase()}
+						</Text>
+					</View>
+					{/* Stats for weapons and armors */}
+					{'attack' in item && (
+						<View style={styles.itemStatsContainer}>
+							{renderMainItemStats(item)}
+						</View>
+					)}
+					{/* Effect for potions and objects */}
+					{'nature' in item && renderSupportItemEffect(item)}
+				</View>
+			</View>
+		);
+	};
+
+	const renderInventorySection = () => {
+		if (!inventoryData) {
+			return (
+				<View style={styles.centerContent}>
+					<Text style={styles.placeholderText}>Loading inventory...</Text>
+				</View>
+			);
+		}
+
+		return (
+			<View style={styles.inventoryContent}>
+				<Text style={styles.inventoryTitle}>Equipped Items</Text>
+				<View style={styles.inventoryList}>
+					{renderEquippedItem('weapon', inventoryData.weapon)}
+					{renderEquippedItem('armor', inventoryData.armor)}
+					{renderEquippedItem('potion', inventoryData.potion)}
+					{renderEquippedItem('object', inventoryData.object)}
+				</View>
+			</View>
+		);
+	};
+
 	const hideTooltip = () => {
 		if (tooltipTimeout) {
 			clearTimeout(tooltipTimeout);
@@ -425,9 +597,7 @@ export default function Profile() {
 
 				{/* Inventory Section */}
 				<View style={styles.section}>
-					<View style={styles.centerContent}>
-						<Text style={styles.placeholderText}>Inventory will be implemented here</Text>
-					</View>
+					{renderInventorySection()}
 				</View>
 			</ScrollView>
 
@@ -711,5 +881,110 @@ const styles = StyleSheet.create({
 	barItem: {
 		flex: 1,
 		marginHorizontal: 5,
+	},
+	itemStat: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		marginBottom: 8,
+	},
+	itemStatIcon: {
+		fontSize: 18,
+		color: '#333',
+		marginRight: 6,
+	},
+	itemStatValue: {
+		fontSize: 16,
+		color: '#333',
+	},
+	nerfedStat: {
+		color: '#ff4444',
+	},
+	strikethrough: {
+		textDecorationLine: 'line-through',
+	},
+	itemEffect: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		marginTop: 4,
+	},
+	itemEffectIcon: {
+		fontSize: 18,
+		color: '#333',
+		marginRight: 6,
+	},
+	itemEffectText: {
+		fontSize: 14,
+		color: '#666',
+	},
+	inventoryContent: {
+		flex: 1,
+	},
+	inventoryTitle: {
+		fontSize: 16,
+		fontWeight: '700',
+		color: '#333',
+		marginBottom: 10,
+	},
+	inventoryList: {
+		flexDirection: 'column',
+		gap: 10,
+	},
+	inventoryItem: {
+		backgroundColor: '#f9f9f9',
+		borderRadius: 10,
+		padding: 15,
+		flexDirection: 'row',
+		alignItems: 'center',
+		shadowColor: '#000',
+		shadowOffset: {
+			width: 0,
+			height: 2,
+		},
+		shadowOpacity: 0.1,
+		shadowRadius: 4,
+		elevation: 2,
+	},
+	itemIcon: {
+		fontSize: 32,
+		marginRight: 15,
+	},
+	itemDetails: {
+		flex: 1,
+	},
+	itemName: {
+		fontSize: 16,
+		fontWeight: '600',
+		color: '#333',
+		marginBottom: 4,
+	},
+	itemRarity: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		marginBottom: 6,
+	},
+	rarityIcon: {
+		fontSize: 14,
+		marginRight: 4,
+	},
+	rarityText: {
+		fontSize: 12,
+		color: '#666',
+		textTransform: 'capitalize',
+	},
+	itemStatsContainer: {
+		flexDirection: 'column',
+		marginTop: 4,
+	},
+	itemStatText: {
+		flexDirection: 'row',
+		alignItems: 'center',
+	},
+	itemStatsLine: {
+		flexDirection: 'row',
+		flexWrap: 'wrap',
+		justifyContent: 'flex-start',
+	},
+	statSeparator: {
+		color: '#999',
 	},
 });
