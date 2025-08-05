@@ -4,8 +4,8 @@ import "source-map-support/register";
 import { RestApi } from "./services/RestApi";
 import { WebSocketServer } from "./services/WebSocketServer";
 import { MqttManager } from "./mqtt/MqttManager";
-import { registerAllClientTranslators } from "./protobuf/fromClient/FromClientTranslator";
-import { registerAllServerTranslators } from "./protobuf/fromServer/FromServerTranslator";
+import { registerAllClientTranslators } from "./packets/fromClient/FromClientTranslator";
+import { registerAllServerTranslators } from "./packets/fromServer/FromServerTranslator";
 
 process.on("uncaughtException", error => {
 	console.error(`Uncaught exception: ${error}`);

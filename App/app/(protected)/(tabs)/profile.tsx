@@ -1,11 +1,15 @@
 import {useFocusEffect, useNavigation} from "expo-router";
 import {ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {WebSocketClient} from "@/src/networking/WebSocketClient";
-import {ProfileReq} from "@/src/@types/protobufs-client";
-import {ProfileNotFound, ProfileRes} from "@/src/@types/protobufs-server";
 import {useCallback, useEffect, useState} from "react";
 import {AppConstants} from "@/src/AppConstants";
 import {useProfile} from "@/src/contexts/ProfileContext";
+import {ProfileRes} from "ws-packets/src/fromServer/profile/ProfileRes";
+import {ProfileReq} from "ws-packets/src/fromClient/ProfileReq";
+import {makeFromClientPacket} from "ws-packets/src/MakePackets";
+import {PlayerNotFound} from "ws-packets/src/fromServer/common/PlayerNotFound";
+import {InventoryReq} from "ws-packets/src/fromClient/InventoryReq";
+import {InventoryRes} from "ws-packets/src/fromServer/inventory/InventoryRes";
 
 type LoadingState = 'loading' | 'success' | 'error' | 'timeout';
 
@@ -50,7 +54,7 @@ export default function Profile() {
 		setProfileState('loading');
 		setErrorMessage('');
 
-		WebSocketClient.getInstance().sendPacket(ProfileReq.create({ askedPlayer: {} }), {
+		WebSocketClient.getInstance().sendPacket(makeFromClientPacket(ProfileReq, { askedPlayer: {} }), {
 			[ProfileRes.name]: (packet: ProfileRes) => {
 				setProfileData({
 					pseudo: packet.pseudo,
@@ -83,7 +87,7 @@ export default function Profile() {
 					title: `${packet.pseudo} · Level ${packet.level}`
 				});
 			},
-			[ProfileNotFound.name]: (packet: ProfileNotFound) => {
+			[PlayerNotFound.name]: (packet: PlayerNotFound) => {
 				setErrorMessage('Profile not found');
 				setProfileState('error');
 			}
@@ -92,6 +96,21 @@ export default function Profile() {
 			callback: () => {
 				setErrorMessage('Request timed out. Please try again.');
 				setProfileState('timeout');
+			}
+		});
+
+		WebSocketClient.getInstance().sendPacket(makeFromClientPacket(InventoryReq, { askedPlayer: {} }), {
+			[InventoryRes.name]: (packet: InventoryRes) => {
+				console.log('Inventory data received:', JSON.stringify(packet));
+				// todo
+			},
+			[PlayerNotFound.name]: (packet: PlayerNotFound) => {
+				// todo
+			}
+		}, {
+			time: AppConstants.PACKET_TIMEOUT,
+			callback: () => {
+				// todo
 			}
 		});
 	}

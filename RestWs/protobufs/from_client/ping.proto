@@ -1,5 +1,0 @@
-syntax = "proto2";
-
-message PingReq {
-	required int32 time = 1;
-}

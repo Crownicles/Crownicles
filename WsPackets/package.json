@@ -1,0 +1,18 @@
+{
+  "name": "ws-packets",
+  "version": "1.0.0",
+  "description": "WebSocket packets for Crownicles",
+  "scripts": {
+    "pack": "pnpm pack"
+  },
+  "packageManager": "pnpm@10.9.0",
+  "devDependencies": {
+    "@stylistic/eslint-plugin": "5.1.0",
+    "@typescript-eslint/eslint-plugin": "8.35.1",
+    "@typescript-eslint/parser": "8.35.1",
+    "eslint": "9.30.0",
+    "eslint-plugin-jsdoc": "51.3.1",
+    "typescript": "5.8.3",
+    "typescript-eslint": "8.35.1"
+  }
+}

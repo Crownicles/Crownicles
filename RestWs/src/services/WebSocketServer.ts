@@ -7,7 +7,7 @@ import { RightGroup } from "../../../Lib/src/types/RightGroup";
 import { MqttManager } from "../mqtt/MqttManager";
 import { IncomingMessage } from "http";
 import { WebSocketConstants } from "../constants/WebSocketConstants";
-import { getClientTranslator } from "../protobuf/fromClient/FromClientTranslator";
+import { getClientTranslator } from "../packets/fromClient/FromClientTranslator";
 import * as WebSocket from "ws";
 
 /**
