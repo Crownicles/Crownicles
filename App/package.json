@@ -8,8 +8,7 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "lint": "expo lint",
-    "build:protobuf": "mkdir -p src/@types && pbjs -t static-module -p protobufs --force-number -o src/@types/protobufs-client.js ../RestWs/protobufs/from_client/**/*.proto && pbts -o src/@types/protobufs-client.d.ts src/@types/protobufs-client.js && pbjs -t static-module -p protobufs --force-number -o src/@types/protobufs-server.js ../RestWs/protobufs/from_server/**/*.proto && pbts -o src/@types/protobufs-server.d.ts src/@types/protobufs-server.js && sed -i 's/export interface \\([A-Za-z0-9]\\+\\) {/export interface \\1 extends FromClientPacket {/g' src/@types/protobufs-client.d.ts && sed -i 's/export interface \\([A-Za-z0-9]\\+\\) {/export interface \\1 extends FromServerPacket {/g' src/@types/protobufs-server.d.ts && sed -i '1s/^/export interface FromClientPacket {}\\n/' src/@types/protobufs-client.d.ts && sed -i '1s/^/export interface FromServerPacket {}\\n/' src/@types/protobufs-server.d.ts"
+    "lint": "expo lint"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -21,7 +20,7 @@
     "@react-navigation/bottom-tabs": "^7.3.10",
     "@react-navigation/elements": "^2.3.8",
     "@react-navigation/native": "^7.1.6",
-    "crownicles_lib": "file:../Lib/crownicles_lib-5.1.2.tgz",
+    "crownicles-lib": "file:../Lib/crownicles-lib-5.1.2.tgz",
     "expo": "~53.0.17",
     "expo-blur": "~14.1.5",
     "expo-constants": "~17.1.7",
@@ -45,15 +44,14 @@
     "react-native-screens": "~4.11.1",
     "react-native-uuid": "^2.0.3",
     "react-native-web": "~0.20.0",
-    "react-native-webview": "13.13.5"
+    "react-native-webview": "13.13.5",
+    "ws-packets": "file:../WsPackets/ws-packets-1.0.0.tgz"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
     "@types/react": "~19.0.10",
     "eslint": "^9.25.0",
     "eslint-config-expo": "~9.2.0",
-    "protobufjs": "^7.5.3",
-    "protobufjs-cli": "^1.1.3",
     "typescript": "~5.8.3"
   },
   "private": true,

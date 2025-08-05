@@ -89,9 +89,9 @@ export class DiscordItemUtils {
 				displayPacket.speed.value,
 				lng,
 				{
-					attack: displayPacket.attack.maxValue,
-					defense: displayPacket.defense.maxValue,
-					speed: displayPacket.speed.maxValue
+					attack: displayPacket.attack.max,
+					defense: displayPacket.defense.max,
+					speed: displayPacket.speed.max
 				}
 			),
 			displayPacket,
@@ -111,9 +111,9 @@ export class DiscordItemUtils {
 				displayPacket.speed.value,
 				lng,
 				{
-					attack: displayPacket.attack.maxValue,
-					defense: displayPacket.defense.maxValue,
-					speed: displayPacket.speed.maxValue
+					attack: displayPacket.attack.max,
+					defense: displayPacket.defense.max,
+					speed: displayPacket.speed.max
 				}
 			),
 			displayPacket,

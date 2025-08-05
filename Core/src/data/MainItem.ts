@@ -28,15 +28,15 @@ export abstract class MainItem extends GenericItem {
 			itemCategory: this.getCategory(),
 			attack: {
 				value: this.getAttack(),
-				maxValue: maxStatsValue.attack
+				max: maxStatsValue.attack
 			},
 			defense: {
 				value: this.getDefense(),
-				maxValue: maxStatsValue.defense
+				max: maxStatsValue.defense
 			},
 			speed: {
 				value: this.getSpeed(),
-				maxValue: maxStatsValue.speed
+				max: maxStatsValue.speed
 			},
 			rarity: this.rarity,
 			id: this.id

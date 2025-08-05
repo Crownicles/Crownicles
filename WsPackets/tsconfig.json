@@ -1,0 +1,34 @@
+{
+	"compilerOptions": {
+		"module": "commonjs",
+		"noImplicitAny": true,
+		"removeComments": true,
+		"preserveConstEnums": true,
+		"sourceMap": true,
+		"allowJs": true,
+		"outDir": "dist",
+		"checkJs": false,
+		"emitDecoratorMetadata": true,
+		"experimentalDecorators": true,
+		"incremental": true,
+		"noResolve": false,
+		"noEmitOnError": false,
+		"moduleResolution": "node",
+		"skipLibCheck": true,
+		"resolveJsonModule": true,
+		"target": "es6",
+		"allowSyntheticDefaultImports": true,
+		"lib": [
+			"ES2022",
+			"dom"
+		],
+		"strict": true
+	},
+	"include": [
+		"src/**/*",
+	],
+	"exclude": [
+		"node_modules",
+		"**/*.spec.ts"
+	]
+}

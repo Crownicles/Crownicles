@@ -1,8 +1,6 @@
 import React, {PropsWithChildren} from "react";
 import {ActivityIndicator, Button, ScrollView, StyleSheet, Switch, Text, View} from "react-native";
 import {WebSocketClient} from "@/src/networking/WebSocketClient";
-import {PingReq} from "@/src/@types/protobufs-client";
-import {PingRes} from "@/src/@types/protobufs-server";
 import {AuthStateEnum} from "@/src/authentication/AuthStateEnum";
 import {AuthContext} from "@/src/authentication/AuthContext";
 import {PreferencesContext} from "@/src/preferences/PreferencesContext";

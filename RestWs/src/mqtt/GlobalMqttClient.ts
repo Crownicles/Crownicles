@@ -6,7 +6,7 @@ import {
 	CrowniclesPacket, PacketContext
 } from "../../../Lib/src/packets/CrowniclesPacket";
 import { WebSocketServer } from "../services/WebSocketServer";
-import { getServerTranslator } from "../protobuf/fromServer/FromServerTranslator";
+import { getServerTranslator } from "../packets/fromServer/FromServerTranslator";
 
 /**
  * Global MQTT client class for communication with the backend
