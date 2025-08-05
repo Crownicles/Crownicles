@@ -532,61 +532,61 @@
     "possibilities": {
       "searchScaffolding": {
         "outcomes": {
-          "0": "Votre agilité vous permet de grimper souplement jusqu'au sommet de l'échafaudage de bois. La vue panoramique sur Mergagnan et la Plage Sentinelle vous récompense de vos efforts, et cette pause contemplative vous apaise l'esprit.",
-          "1": "Grâce à votre expérience et votre dextérité, vous explorez méthodiquement l'échafaudage. Votre persévérance paye : vous découvrez un objet dissimulé dans une poutre creuse qui pourra vous être utile plus tard, probablement caché par un artisan prévoyant.",
-          "2": "Votre manque d'agilité vous joue des tours ! En tentant l'ascension, un barreau vermoulu cède sous votre poids et vous chutez lourdement. La douleur qui irradie dans tout votre corps vous rappelle cruellement vos limites physiques.",
-          "3": "Votre œil expert de vétéran repère immédiatement les points faibles et les cachettes potentielles de cette construction. Votre exploration méthodique vous mène vers un objet rare et précieux, soigneusement dissimulé par quelqu'un qui s'y connaissait.",
-          "4": "Votre compagnon primate - singe ou orang-outan - bondit avec enthousiasme dans cette jungle de poutres ! Ses talents naturels d'escalade lui permettent d'atteindre des recoins inaccessibles où il déniche un trésor oublié qu'il vous rapporte fièrement.",
-          "5": "Votre robuste constitution vous permet de gravir l'échafaudage malgré son instabilité. Même quand une planche craque dangereusement sous vos pas, votre résistance vous évite la chute et vous atteignez le sommet sans dommage.",
-          "6": "Votre nature cupide vous pousse à arracher et emporter tout ce qui a de la valeur sur cet échafaudage ! Clous, outils, planches... vous dépouillez méthodiquement la structure, ne laissant que l'ossature de bois derrière vous.",
-          "7": "Votre corpulence imposante fait craquer dangereusement les barreaux sous votre poids ! Heureusement, votre force considérable vous permet de vous agripper fermement à une poutre maîtresse et de vous hisser jusqu'au sommet où vous découvrez un objet de valeur.",
-          "8": "Votre poids fait céder successivement tous les barreaux sur votre passage ! Sans la force nécessaire pour vous rattraper, vous chutez comme une pierre dans un fracas assourdissant de bois brisé. La douleur de cette chute brutale vous laisse sonné et meurtri.",
-          "9": "Votre prudence de novice vous sauve la vie ! Après avoir gravi péniblement le premier étage, vous sentez que la structure devient dangereuse et redescendez sagement. En rangeant vos affaires, vous trouvez un petit objet utile abandonné près de l'échafaudage.",
-          "10": "Votre prudence de novice vous fait redescendre après le premier étage, mais la malchance vous poursuit ! Une pierre se détache du sommet et vous heurte douloureusement à la tête. Vous apprenez à vos dépens qu'même la prudence n'évite pas tous les dangers.",
-          "11": "Votre expérience légendaire vous permet de grimper avec l'aisance d'un vétéran ! Vous identifiez immédiatement les meilleurs points d'appui et atteignez sans effort le sommet où vous découvrez un objet exceptionnel, probablement la pièce maîtresse du projet abandonné."
+          "0": "Votre agilité vous permet de grimper souplement le long des perches branlantes et des cordes grossières. Depuis le sommet de l'échafaudage, la vue sur les toits de chaume de Mergagnan et les eaux scintillantes de la Plage Sentinelle apaise votre esprit las du voyage.",
+          "1": "Grâce à votre expérience et votre dextérité, vous explorez méthodiquement les palans et poutrelles. Votre persévérance paye : dans une anfractuosité dissimulée par la mousse, vous découvrez un objet qui devrait vous être utile et qui a certainement été oublié là avant l'abandon des lieux.",
+          "2": "Votre manque d'agilité vous joue des tours ! En tentant de gravir l'échelle de corde, un morceau de la structure pourri cède sous votre poids et vous chutez lourdement sur les pavés inégaux. La douleur qui irradie dans tout votre corps vous rappelle cruellement vos limites.",
+          "3": "Votre œil expert de vétéran repère immédiatement les cachettes d'ouvriers et les points stratégiques de cette construction abandonnée. Votre exploration méthodique vous mène vers un objet de maître, soigneusement dissimulé par quelqu'un qui connaissait son métier.",
+          "4": "Votre primate bondit avec enthousiasme dans cette jungle de poutres vermoulues ! Ses talents naturels d'escalade lui permettent d'atteindre des recoins inaccessibles où il déniche un trésor oublié par les anciens bâtisseurs, qu'il vous rapporte fièrement.",
+          "5": "Votre robuste constitution vous permet de gravir l'échafaudage malgré ses grincements inquiétants. Même quand une planche craque dangereusement sous vos pas, votre résistance vous évite la chute et vous atteignez le faîte sans dommage.",
+          "6": "Votre nature cupide vous pousse à arracher et emporter tout ce qui a de la valeur sur cet ouvrage délaissé ! Malheureusement pour vous il ne reste pas grand chose d'utile sur le terrain vague, les clous et outils ont rouillé, même l'ossature de bois n'est pas récupérable. Vous repartez déçu, laissant tout cela derrière vous.",
+          "7": "Votre corpulence imposante fait craquer dangereusement les barreaux sous votre poids ! Heureusement, votre force considérable vous permet de vous agripper à une poutre maîtresse et de vous hisser jusqu'au sommet où vous découvrez un objet de valeur abandonné par les anciens maîtres d'œuvre.",
+          "8": "Votre poids massif fait céder successivement tous les barreaux sur votre passage ! Sans la force nécessaire pour vous rattraper aux cordes, vous chutez comme une pierre dans un fracas de bois brisé. Cette chute brutale sur les pavés vous laisse sonné et meurtri.",
+          "9": "Votre prudence de novice vous préserve ! Après avoir gravi péniblement le premier niveau, vous sentez l'instabilité de la structure et redescendez sagement. En rangeant vos affaires, vous découvrez un petit objet qu'un artisan a abandonné près de l'ouvrage.",
+          "10": "Votre prudence de novice vous fait rebrousser chemin, mais la malchance vous poursuit ! Une tuile descellée se détache du sommet et vous heurte douloureusement au crâne. Vous apprenez à vos dépens que même la prudence n'évite pas tous les dangers.",
+          "11": "Votre expérience légendaire vous permet de gravir ces échafaudages avec l'aisance d'un maître-bâtisseur ! Vous identifiez sans peine les meilleurs appuis et atteignez aisément le sommet où vous découvrez une petite statuette dorée que vous pourrez revendre à bon prix. Sans vergogne, vous dérobez l'objet et reprenez votre route."
         },
-        "text": "Explorer les hauts échafaudages de bois."
+        "text": "Escalader les échafauds encore en place."
       },
       "searchSite": {
         "outcomes": {
-          "0": "Vous fouillez consciencieusement le chantier pendant de longues minutes, retournant chaque planche et inspectant chaque recoin, mais cette exploration méthodique ne révèle aucun trésor caché. Seuls la poussière et l'abandon règnent ici.",
-          "1": "Votre expérience des lieux abandonnés guide vos recherches vers les endroits les plus prometteurs. Dans un coffre d'outils oublié, vous découvrez un objet qui pourra vous être utile dans votre périple.",
-          "2": "Votre empressement vous fait négliger les précautions élémentaires ! En fouillant sans regarder dans une caisse métallique, vous vous tailladez profondément la main sur une lame rouillée. Le sang coule abondamment de cette blessure douloureuse.",
-          "3": "Votre moralité douteuse vous mène directement vers ce qui a de la valeur ! Vous pillez systématiquement le chantier, emportant outils, matériaux et même la petite cassette d'urgence des artisans. Votre butin est conséquent, mais votre âme s'assombrit encore.",
-          "4": "Votre fidèle chien renifle avec enthousiasme les recoins du chantier ! Son flair exceptionnel le guide vers une cache enterrée contenant un objet précieux que les artisans avaient probablement dissimulé avant leur départ mystérieux.",
-          "5": "Votre force brutale vous permet de forcer les coffres et de déplacer les lourds équipements ! Cette approche peu subtile mais efficace vous donne accès à des ressources bien cachées, même si vos méthodes attirent l'attention.",
-          "6": "Votre expertise d'artisan vous fait immédiatement repérer les dysfonctionnements du chantier. Spontanément, vous remettez en ordre les outils éparpillés et réparez quelques équipements. Ce geste généreux vous vaut une récompense inattendue : une bourse oubliée par un maître-artisan reconnaissant.",
-          "7": "Votre castor ou votre orang-outan se révèle dans son élément sur ce chantier ! Avec un enthousiasme débordant, il sélectionne les meilleurs outils, rassemble des matériaux de qualité et vous construit en un temps record un abri confortable. Vous passez une nuit excellente dans cette construction improvisée, vous réveillant parfaitement reposé et en pleine forme."
+          "0": "Vous fouillez consciencieusement l'ouvrage pendant de longues minutes, retournant chaque madrier et inspectant chaque recoin, mais cette exploration méthodique ne révèle aucun trésor. Seuls la mousse et l'abandon règnent en ces lieux délaissés.",
+          "1": "Votre expérience des lieux abandonnés guide vos recherches vers les endroits les plus prometteurs. Dans un coffre de charpentier oublié sous une bâche moisie, vous découvrez un objet qui pourra vous servir dans votre périple.",
+          "2": "Votre empressement vous fait négliger les précautions ! En fouillant à l'aveuglette dans une huche métallique, vous vous tailladez profondément la main sur une lame de rabot rouillée. Le sang coule abondamment de cette plaie douloureuse.",
+          "3": "Votre moralité douteuse vous mène droit vers ce qui a de la valeur ! Vous pillez systématiquement l'ouvrage délaissé : outils de maître, clous forgés, et même la bourse d'urgence cachée par les compagnons. Votre butin est conséquent, mais votre âme s'assombrit encore.",
+          "4": "Votre fidèle chien renifle avec enthousiasme les recoins de l'ouvrage ! Son flair exceptionnel le guide vers une cache enterrée sous les gravats, contenant un objet précieux que les artisans avaient dissimulé avant leur départ mystérieux.",
+          "5": "Votre force brutale vous permet de forcer les coffres verrouillés et de déplacer les lourdes pierres taillées ! Cette approche peu subtile mais efficace vous donne accès à des ressources bien cachées, même si vos méthodes font du vacarme.",
+          "6": "Votre expertise d'artisan vous fait immédiatement repérer le désordre de ce chantier abandonné. Spontanément, vous remettez en ordre les outils éparpillés et réparez quelques équipements. Ce geste généreux vous vaut une trouvaille inattendue : une bourse oubliée par un maître reconnaissant.",
+          "7": "Votre castor ou orang-outan se révèle dans son élément parmi ces bois et ces pierres ! Avec un enthousiasme débordant, il sélectionne les meilleurs matériaux et vous construit en un temps record un abri confortable dans les ruines. Vous passez une nuit excellente, vous réveillant parfaitement reposé."
         },
-        "text": "Fouiller minutieusement le chantier."
+        "text": "Fouiller minutieusement l'ouvrage délaissé."
       },
       "investigate": {
         "outcomes": {
-          "0": "Votre expérience vous pousse à enquêter sur les causes de cet abandon mystérieux. Vous examinez les indices, les traces, les objets laissés sur place. Cette investigation approfondie vous éclaire sur les événements qui ont mené à cette désertion soudaine.",
-          "1": "Votre karma exemplaire vous guide vers la vérité ! En enquêtant avec bienveillance, vous découvrez que les artisans ont fui une épidémie mais ont laissé leur solde dans une cache secrète. Votre honnêteté légendaire vous permet de récupérer cette fortune abandonnée en toute conscience.",
-          "2": "Votre nature sombre vous fait immédiatement soupçonner le pire. Vos investigations révèlent effectivement des activités suspectes : ce chantier servait de façade à des trafics illégaux ! Vous vous emparez sans scrupule des bénéfices cachés de ces activités criminelles.",
-          "3": "Votre enquête minutieuse vous mène sur de fausses pistes et dans des impasses. Vous passez un temps considérable à analyser chaque détail sans parvenir à percer le mystère de cette désertion soudaine.",
-          "4": "Votre compagnon canin détecte des odeurs suspectes qui vous mènent vers un passage secret ! En suivant sa truffe experte, vous découvrez un tunnel qui relie le chantier au centre-ville, révélant peut-être la cause de l'abandon précipité des lieux."
+          "0": "Votre expérience vous pousse à enquêter sur les causes de cet abandon mystérieux. Vous examinez les traces, les outils abandonnés, les indices laissés par les anciens bâtisseurs. Cette investigation vous éclaire sur les événements qui ont mené à cette désertion soudaine.",
+          "1": "Votre karma exemplaire vous guide vers la vérité ! En enquêtant avec bienveillance, vous découvrez que les artisans ont fui une épidémie de fièvre des marais mais ont laissé leur solde dans une cache secrète. Votre honnêteté légendaire vous permet de récupérer cette bourse en toute conscience.",
+          "2": "Votre nature sombre vous fait immédiatement soupçonner le pire. Vos investigations révèlent effectivement des activités suspectes : cet ouvrage servait de façade à des trafics de contrebande ! Vous vous emparez sans scrupule des bénéfices cachés de ces activités criminelles.",
+          "3": "Votre enquête minutieuse vous mène sur de fausses pistes et dans des impasses. Vous passez un temps considérable à analyser chaque indice sans parvenir à percer le mystère de cette désertion soudaine.",
+          "4": "Votre compagnon canin détecte des odeurs suspectes qui vous mènent vers un passage secret ! En suivant sa truffe experte, vous découvrez un tunnel qui relie l'ouvrage au cœur de Mergagnan, révélant peut-être la cause de l'abandon précipité des lieux."
         },
         "text": "Enquêter sur les causes de l'abandon."
       },
       "skip": {
         "outcomes": {
-          "0": "Vous décidez prudemment de ne pas vous mêler de cette affaire mystérieuse. Parfois, la sagesse consiste à passer son chemin sans poser de questions sur les secrets que recèlent les lieux abandonnés.",
-          "1": "Votre inattention vous coûte cher ! En traversant négligemment le chantier, vous ne remarquez pas la pioche abandonnée au sol et vous y entaillez douloureusement le pied. Cette blessure vous rappelle qu'il faut toujours rester vigilant.",
-          "2": "Votre nature bienveillante vous fait culpabiliser de passer sans aider. Même si vous continuez votre route, le spectacle de ce chantier délaissé pèse sur votre conscience généreuse."
+          "0": "Vous décidez sagement de ne pas vous mêler de cette affaire mystérieuse. Parfois, la prudence consiste à passer son chemin sans poser de questions sur les secrets que recèlent les ouvrages abandonnés.",
+          "1": "Votre inattention vous coûte cher ! En traversant négligemment le chantier, vous ne remarquez pas la doloire abandonnée au sol et vous y entaillez douloureusement le pied. Cette blessure vous rappelle qu'il faut toujours rester vigilant.",
+          "2": "Votre nature bienveillante vous fait culpabiliser de passer sans chercher à comprendre. Même si vous continuez votre route, le spectacle de cet ouvrage délaissé pèse sur votre conscience généreuse."
         },
-        "text": "Poursuivre votre route sans s'attarder."
+        "text": "Poursuivre votre route sans vous attarder."
       },
       "end": {
         "outcomes": {
-          "0": "L'atmosphère mystérieuse de ce chantier fantôme vous intrigue profondément. Vous restez un long moment à observer les lieux, tentant de percer le secret de cette désertion soudaine, avant de reprendre finalement votre route vers la Plage Sentinelle.",
-          "1": "Votre rapace compagnon - aigle ou corbeau - survole le chantier avec ses yeux perçants et repère quelque chose qui vous a échappé ! Il plonge vers un recoin dissimulé et vous rapporte un objet brillant dans ses serres, prouvant une fois de plus la valeur de votre alliance avec les créatures des airs.",
+          "0": "L'atmosphère mystérieuse de cet ouvrage fantôme vous intrigue profondément. Vous restez un long moment à observer les lieux, tentant de percer le secret de cette désertion soudaine, avant de reprendre finalement votre route vers la Plage Sentinelle.",
+          "1": "Votre rapace compagnon - aigle ou corbeau - survole l'ouvrage de ses yeux perçants et repère quelque chose qui vous a échappé ! Il plonge vers un recoin dissimulé et vous rapporte un objet brillant dans ses serres, prouvant une fois de plus la valeur de votre alliance avec les créatures des airs.",
           "2": "Pour une raison totalement incompréhensible, votre gorille décide soudainement de frapper un mur de pierre de toutes ses forces ! L'impact de ses poings puissants fait s'effondrer une partie de la maçonnerie et une pierre vous tombe directement sur la tête. Sonné par ce coup inattendu, vous fustigez votre compagnon pour son comportement inexplicable."
         }
       }
     },
-    "text": "En traversant les rues paisibles de Mergagnan, vous découvrez avec surprise un vaste chantier de construction qui semble avoir été totalement abandonné il y a des mois. Échafaudages de bois, poulies immobiles, outils d'artisan éparpillés et matériaux délaissés créent un spectacle désolant au cœur de cette ville habituellement si accueillante. Aucun maçon, charpentier ou tailleur de pierre en vue, aucun bruit de marteau ou de scie - seul le silence règne sur ce projet mystérieusement interrompu."
+    "text": "En traversant les ruelles paisibles de Mergagnan, vous tombez sur un chantier laissé à l’abandon. Poutres noircies, échafaudages grinçants et outils rouillés témoignent d’un labeur interrompu. D’après les rumeurs locales, le projet, financé par le baron Almerac, visait l’érection d’une halle de pierre. Mais depuis sa mort soudaine, sans héritier ni repreneur, les travaux ont cessé, et les artisans ont déserté les lieux sans même démonter leur ouvrage."
   },
   "19": {
     "possibilities": {
