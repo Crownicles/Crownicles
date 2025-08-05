@@ -38,7 +38,7 @@ export const fromClientTranslator = <T extends FromClientPacket, U extends Crown
  * decorated with @fromClientTranslator
  */
 export async function registerAllClientTranslators(): Promise<void> {
-	for (const file of readdirSync("dist/RestWs/src/protobuf/fromClient/translators", {
+	for (const file of readdirSync("dist/RestWs/src/packets/fromClient/translators", {
 		recursive: true
 	})) {
 		if (file.toString().endsWith(".js")) {

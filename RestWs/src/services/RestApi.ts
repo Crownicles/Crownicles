@@ -7,6 +7,7 @@ import { setupLoginRoute } from "./routes/LoginRoute";
 import { setupRefreshTokenRoute } from "./routes/RefreshTokenRoute";
 import { DiscordSsoConfig } from "../config/DiscordSsoConfig";
 import { setupDiscordRoutes } from "./routes/DiscordRoutes";
+import { setupAssetsRoutes } from "./routes/AssetsRoute";
 
 // todo add anti spam mechanism and registering with a captcha
 
@@ -71,17 +72,16 @@ export class RestApi {
 		this.allowNewUsersRegistering = options.allowNewUsersRegistering;
 		this.discordSso = options.discordSso;
 		this.betaLogin = options.betaLogin;
-
-		this.setupRoutes();
 	}
 
 	/**
 	 * Sets up the routes for the API.
 	 */
-	private setupRoutes(): void {
+	private async setupRoutes(): Promise<void> {
 		setupRegisterRoute(this.server, this.allowNewUsersRegistering);
 		setupLoginRoute(this.server, this.betaLogin);
 		setupRefreshTokenRoute(this.server);
+		await setupAssetsRoutes(this.server);
 
 		if (this.discordSso) {
 			setupDiscordRoutes(this.server, this.discordSso, this.betaLogin);
@@ -92,7 +92,9 @@ export class RestApi {
 	 * Starts the server on the specified port.
 	 * @param port
 	 */
-	public start(port: number): void {
+	public async start(port: number): Promise<void> {
+		await this.setupRoutes();
+
 		this.server.listen({
 			port, host: "0.0.0.0"
 		}, (err, address) => {

@@ -48,7 +48,7 @@ async function main(): Promise<void> {
 	MqttManager.connectClients();
 
 	// Initialize and start the Rest API server
-	new RestApi({
+	await new RestApi({
 		allowNewUsersRegistering: restWsConfig.REST_API_ALLOW_NEW_USERS_REGISTERING,
 		discordSso: restWsConfig.REST_API_DISCORD_SSO,
 		betaLogin: restWsConfig.REST_API_BETA_LOGIN
