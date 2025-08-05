@@ -3,8 +3,6 @@ import * as i18next from "i18next";
 import {Language, LANGUAGE} from "../../../Lib/src/Language";
 import {readdirSync} from "fs";
 import {resolve} from "path";
-import {CrowniclesIcons} from "crownicles-lib/src/CrowniclesIcons";
-import {CrowniclesLogger} from "crownicles-lib/src/logs/CrowniclesLogger";
 
 function getI18nOptions(): i18next.InitOptions<unknown> {
 	const resources: i18next.Resource = {};
@@ -59,7 +57,7 @@ function getEmote(emote: string): string | null {
 		return typeof basePath === "string" ? basePath : null;
 	}
 	catch (e) {
-		CrowniclesLogger.errorWithObj(`Error while getting emote ${emote}`, e);
+		console.error(`Error while getting emote ${emote}:`, e);
 		return null;
 	}
 }

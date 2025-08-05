@@ -1,12 +1,42 @@
 import {Redirect, Stack} from "expo-router";
-import React from "react";
+import React, {useEffect} from "react";
 import {AuthContext} from "@/src/authentication/AuthContext";
 import {SafeAreaProvider} from "react-native-safe-area-context";
 import {ActivityIndicator, Button, Modal, StyleSheet, Text, View} from "react-native";
 import {AuthStateEnum} from "@/src/authentication/AuthStateEnum";
+import {AssetsManager} from "@/src/assets/AssetsManager";
 
 export default function RootLayout() {
 	const authState = React.useContext(AuthContext);
+	const [assetUpdateError, setAssetUpdateError] = React.useState(false);
+	const [assetsReady, setAssetsReady] = React.useState(AssetsManager.areAssetsReady());
+
+	useEffect(() => {
+		if (!assetsReady) {
+			const updateAssets = async () => {
+				try {
+					await AssetsManager.updateAssets();
+					setAssetsReady(true);
+				} catch (error) {
+					console.error("Failed to update assets:", error);
+					setAssetUpdateError(true);
+				}
+			};
+			updateAssets()
+					.then();
+		}
+	}, [assetsReady]);
+
+	const retryAssetUpdate = async () => {
+		setAssetUpdateError(false);
+		try {
+			await AssetsManager.updateAssets();
+			setAssetsReady(true);
+		} catch (error) {
+			console.error("Failed to update assets:", error);
+			setAssetUpdateError(true);
+		}
+	};
 
 	if (
 			authState.state === AuthStateEnum.NOT_READY ||
@@ -27,6 +57,39 @@ export default function RootLayout() {
 							title="Reconnect"
 							onPress={() => authState.setState(AuthStateEnum.NOT_READY)}
 						/>
+					</View>
+				</View>
+			</Modal>
+		);
+	}
+
+	if (assetUpdateError) {
+		return (
+			<Modal visible={true} transparent animationType="fade">
+				<View style={styles.overlay} pointerEvents="auto">
+					<View style={styles.indicatorContainer}>
+						<Text style={{ marginBottom: 16, textAlign: "center" }}>
+							Failed to update assets. Please check your internet connection and try again.
+						</Text>
+						<Button
+							title="Retry"
+							onPress={retryAssetUpdate}
+						/>
+					</View>
+				</View>
+			</Modal>
+		);
+	}
+
+	if (!assetsReady) {
+		return (
+			<Modal visible={true} transparent animationType="fade">
+				<View style={styles.overlay} pointerEvents="auto">
+					<View style={styles.indicatorContainer}>
+						<Text style={{ marginBottom: 16, textAlign: "center" }}>
+							Updating assets. Please wait...
+						</Text>
+						<ActivityIndicator size="large" color="#00ff00" />
 					</View>
 				</View>
 			</Modal>
