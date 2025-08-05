@@ -7,6 +7,8 @@ import {
 } from "node:fs/promises";
 import { createHash } from "node:crypto";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
+import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
+import { getRequestLoggerMetadata } from "../RestApi";
 
 const assets: Map<string, string> = new Map();
 const assetsHashes: Map<string, string> = new Map();
@@ -16,15 +18,15 @@ const assetsHashes: Map<string, string> = new Map();
  * @param fileContent
  */
 function computeFileHash(fileContent: string): string {
-	const hash = createHash("sha256");
+	const hash = createHash("md5");
 	hash.update(fileContent);
 	return hash.digest("hex");
 }
 
 /**
- * Computes the assets with their hashes and stores them in the `assets` and `assetsHashes` maps.
+ * Computes the assets for the languages and stores them in the `assets` and `assetsHashes` maps.
  */
-async function computeAssets(): Promise<void> {
+async function computeLanguagesAssets(): Promise<void> {
 	const languages = (await readdir(`dist/Lang`, {
 		withFileTypes: true
 	}))
@@ -49,6 +51,23 @@ async function computeAssets(): Promise<void> {
 }
 
 /**
+ * Computes the assets for the icons and stores them in the `assets` and `assetsHashes` maps.
+ */
+function computeIconsAssets(): void {
+	const icons = JSON.stringify(CrowniclesIcons);
+	assets.set("icons.json", icons);
+	assetsHashes.set("icons.json", computeFileHash(icons));
+}
+
+/**
+ * Computes the assets with their hashes and stores them in the `assets` and `assetsHashes` maps.
+ */
+async function computeAssets(): Promise<void> {
+	await computeLanguagesAssets();
+	computeIconsAssets();
+}
+
+/**
  * Sets up the assets routes for the Fastify server.
  * @param server
  */
@@ -60,7 +79,11 @@ export async function setupAssetsRoutes(server: FastifyInstance): Promise<void> 
 		hashesCount: assetsHashes.size
 	});
 
-	server.get("/assets/hashes", (_request, reply) => {
+	server.get("/assets/hashes", (request, reply) => {
+		CrowniclesLogger.info("Assets hashes requested", {
+			...getRequestLoggerMetadata(request)
+		});
+
 		reply.type("application/json")
 			.status(200)
 			.send(JSON.stringify(Object.fromEntries(assetsHashes)));
@@ -69,16 +92,28 @@ export async function setupAssetsRoutes(server: FastifyInstance): Promise<void> 
 	server.get("/assets/download", (request, reply) => {
 		const file = (request.query as { file?: string }).file as string;
 		if (!file) {
+			CrowniclesLogger.warn("Download asset request without file parameter", {
+				...getRequestLoggerMetadata(request)
+			});
 			reply.status(400).send({ error: "File parameter is required" });
 			return;
 		}
 		if (!assets.has(file)) {
+			CrowniclesLogger.warn("Download asset request for non-existing file", {
+				file,
+				...getRequestLoggerMetadata(request)
+			});
 			reply.status(404).send({ error: "Asset not found" });
 			return;
 		}
 
+		CrowniclesLogger.info("Download asset request", {
+			file,
+			...getRequestLoggerMetadata(request)
+		});
+
 		const assetContent = assets.get(file)!;
-		reply.type("application/octet-stream")
+		reply.type("application/text")
 			.status(200)
 			.send(assetContent);
 	});

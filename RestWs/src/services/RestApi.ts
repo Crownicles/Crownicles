@@ -78,6 +78,13 @@ export class RestApi {
 	 * Sets up the routes for the API.
 	 */
 	private async setupRoutes(): Promise<void> {
+		this.server.setNotFoundHandler((request, reply) => {
+			CrowniclesLogger.warn("Not found request", {
+				...getRequestLoggerMetadata(request)
+			});
+			reply.status(404).send({ error: "Not Found" });
+		});
+
 		setupRegisterRoute(this.server, this.allowNewUsersRegistering);
 		setupLoginRoute(this.server, this.betaLogin);
 		setupRefreshTokenRoute(this.server);
