@@ -19,15 +19,15 @@ export interface MainItemDisplayPacket {
 	itemCategory: number;
 	attack: {
 		value: number;
-		maxValue: number;
+		max: number;
 	};
 	defense: {
 		value: number;
-		maxValue: number;
+		max: number;
 	};
 	speed: {
 		value: number;
-		maxValue: number;
+		max: number;
 	};
 }
 

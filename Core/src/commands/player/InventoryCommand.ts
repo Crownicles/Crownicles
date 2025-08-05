@@ -19,6 +19,11 @@ import {
 	commandRequires, CommandUtils
 } from "../../core/utils/CommandUtils";
 
+/**
+ * This command can return the following packets:
+ * - CommandInventoryPacketRes
+ * - CommandInventoryPlayerNotFound
+ */
 export default class InventoryCommand {
 	@commandRequires(CommandInventoryPacketReq, {
 		notBlocked: false,
