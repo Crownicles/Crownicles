@@ -26,7 +26,8 @@
 	},
 	"include": [
 		"src/**/*",
-		"test/**/*"
+		"test/**/*",
+    "../Lang/**/*.json"
 	],
 	"exclude": [
 		"node_modules",
