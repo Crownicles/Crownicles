@@ -2,10 +2,12 @@
   "armorsFieldName": "Armure/Bouclier :",
   "stat": "{{value}}",
   "statNerf": "~~{{oldDisplay}}~~ {{max}}",
+  "armor": "Armure",
   "attack": "{emote:unitValues.attack} {{value, number}}",
   "defense": "{emote:unitValues.defense} {{value, number}}",
   "nameDisplay": "{emote:{{itemCategory}}.{{itemId}}} **$t(models:{{itemCategory}}.{{itemId}})**",
   "objectsFieldName": "Objet :",
+  "object": "Objet",
   "objectsNatures": [
     "{emote:itemNatures.0} Aucun effet",
     "{emote:itemNatures.1} Vie + {{power, number}} par jour",
@@ -16,7 +18,18 @@
     "{emote:itemNatures.6} Argent + {{power, number}} par jour",
     "{emote:itemNatures.7} Énergie + {{power, number}} par jour"
   ],
+  "objectsNaturesWithoutEmote": [
+    "Aucun effet",
+    "Vie + {{power}} par jour",
+    "Vitesse + {{power}} pendant les combats",
+    "Attaque + {{power}} pendant les combats",
+    "Défense + {{power}} pendant les combats",
+    "Avance le temps de {{power}} chaque jour",
+    "Argent + {{power}} par jour",
+    "Énergie + {{power}} par jour"
+  ],
   "potionsFieldName": "Potion :",
+  "potion": "Potion",
   "potionsNatures": [
     "{emote:itemNatures.0} Aucun effet",
     "{emote:itemNatures.1} Vie + {{power, number}}",
@@ -26,6 +39,16 @@
     "{emote:itemNatures.5} Avance le temps de {{power}}",
     "{emote:itemNatures.6} Argent + {{power, number}}",
     "{emote:itemNatures.7} Énergie + {{power, number}}"
+  ],
+  "potionsNaturesWithoutEmote": [
+    "Aucun effet",
+    "Vie + {{power}}",
+    "Vitesse + {{power}} pendant le prochain combat",
+    "Attaque + {{power}} pendant le prochain combat",
+    "Défense + {{power}} pendant le prochain combat",
+    "Avance le temps de {{power}}",
+    "Argent + {{power}}",
+    "Énergie + {{power}}"
   ],
   "rarities": [
     "{emote:rarity.0} Basique",
@@ -51,6 +74,7 @@
   ],
   "speed": "{emote:unitValues.speed} {{value, number}}",
   "weaponsFieldName": "Arme :",
+  "weapon": "Arme",
   "mainItemsFieldNoUpgradeNoEnchant": "**{{emote}} {{name}}** | {{rarity}} | {{values}}",
   "mainItemsFieldNoUpgradeEnchant": "**{{emote}} {{name}}** | {{rarity}} | {{values}} | {{enchantEmote}} {{enchant}}",
   "mainItemsFieldUpgrade": "**{{emote}} {{name}} (niv. {{level}})** | {{rarity}} | {{values}}",

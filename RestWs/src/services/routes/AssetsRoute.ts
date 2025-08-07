@@ -26,7 +26,7 @@ function computeFileHash(fileContent: string): string {
 /**
  * Computes the assets for the languages and stores them in the `assets` and `assetsHashes` maps.
  */
-async function computeLanguagesAssets(): Promise<void> {
+async function computeLanguagesAssets(debugMode: boolean): Promise<void> {
 	const languages = (await readdir(`dist/Lang`, {
 		withFileTypes: true
 	}))
@@ -35,12 +35,13 @@ async function computeLanguagesAssets(): Promise<void> {
 		.filter(name => LANGUAGE.LANGUAGES.includes(name as Language));
 
 	for (const language of languages) {
-		const files = await readdir(`dist/Lang/${language}`, {
+		const dirRoot = debugMode ? `../Lang/${language}` : `dist/Lang/${language}`;
+		const files = await readdir(dirRoot, {
 			withFileTypes: true
 		});
 		for (const file of files) {
 			if (file.isFile() && file.name.endsWith(".json")) {
-				const filePath = `dist/Lang/${language}/${file.name}`;
+				const filePath = `${dirRoot}/${file.name}`;
 				const fileContent = await readFile(filePath, "utf8");
 				const hash = computeFileHash(fileContent);
 				assets.set(`Lang/${language}/${file.name}`, fileContent);
@@ -62,8 +63,8 @@ function computeIconsAssets(): void {
 /**
  * Computes the assets with their hashes and stores them in the `assets` and `assetsHashes` maps.
  */
-async function computeAssets(): Promise<void> {
-	await computeLanguagesAssets();
+async function computeAssets(debugMode: boolean): Promise<void> {
+	await computeLanguagesAssets(debugMode);
 	computeIconsAssets();
 }
 
@@ -73,7 +74,7 @@ async function computeAssets(): Promise<void> {
  * @param debugMode - If true, assets will be recomputed on each request to ensure they are up-to-date.
  */
 export async function setupAssetsRoutes(server: FastifyInstance, debugMode: boolean): Promise<void> {
-	await computeAssets();
+	await computeAssets(debugMode);
 
 	CrowniclesLogger.info("Assets and their hashes computed successfully", {
 		assetsCount: assets.size,
@@ -83,7 +84,7 @@ export async function setupAssetsRoutes(server: FastifyInstance, debugMode: bool
 	server.get("/assets/hashes", async (request, reply) => {
 		if (debugMode) {
 			// In debug mode, we recompute the assets to ensure they are up-to-date without restarting the server.
-			await computeAssets();
+			await computeAssets(debugMode);
 		}
 		CrowniclesLogger.info("Assets hashes requested", {
 			...getRequestLoggerMetadata(request)
