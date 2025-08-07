@@ -1,6 +1,8 @@
 import * as FileSystem from 'expo-file-system';
 import {EncodingType} from 'expo-file-system';
 import {RestApi} from "@/src/networking/RestApi";
+import {AppIcons} from "@/src/AppIcons";
+import {reloadI18n} from "@/src/translations/i18nLoader";
 
 export class AssetsManager {
 	private static assets: Map<string, string> | null = null;
@@ -90,6 +92,9 @@ export class AssetsManager {
 			});
 			this.assets.set(asset.file, assetContent);
 		}
+
+		await reloadI18n(AssetsManager.getAssets((asset) => asset.startsWith("Lang/")));
+		AppIcons.reloadAppIcons(AssetsManager.getAssets((asset) => asset === "icons.json"));
 	}
 
 	static getAssets(filter: (file: string) => boolean = () => true): Map<string, string> {

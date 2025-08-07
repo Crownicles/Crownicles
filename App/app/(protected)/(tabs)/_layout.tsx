@@ -12,8 +12,11 @@ const ProfileHeader = ({ children }: { children?: string }) => {
 	};
 
 	const getClassIcon = () => {
-		if (profileData.classId !== undefined && AppIcons.lib.classes[profileData.classId]) {
-			return AppIcons.lib.classes[profileData.classId];
+		if (profileData.classId !== undefined) {
+			const icon = AppIcons.getIconOrNull(`classes.${profileData.classId}`);
+			if (icon) {
+				return icon;
+			}
 		}
 		return "";
 	};
