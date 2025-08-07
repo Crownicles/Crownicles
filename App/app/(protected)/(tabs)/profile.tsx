@@ -485,12 +485,15 @@ export default function Profile() {
 		);
 	};
 
-	const renderSupportItemEffect = (item: SupportItem) => {
+	const renderSupportItemEffect = (item: SupportItem, itemType: "potion" | "object") => {
 		const effectIcon = getItemNatureEffect(item.nature);
 		return (
 			<View style={styles.itemEffect}>
 				<Text style={styles.itemEffectIcon}>{effectIcon}</Text>
-				<Text style={styles.itemEffectText}>TODO</Text>
+				<Text style={styles.itemEffectText}>
+					{itemType === "potion" ? i18n.t(`items:potionsNaturesWithoutEmote.${item.nature}`, { power: item.power })
+							: i18n.t(`items:objectsNaturesWithoutEmote.${item.nature}`, { power: item.power })}
+				</Text>
 			</View>
 		);
 	};
@@ -502,6 +505,7 @@ export default function Profile() {
 		if (!item || item.id === 0) {
 			return (
 				<View key={itemType} style={styles.inventoryItem}>
+					<Text style={styles.itemCategory}>{i18n.t(`items:${itemType}`)}</Text>
 					<Text style={styles.itemIcon}>❌</Text>
 					<View style={styles.itemDetails}>
 						<Text style={styles.itemName}>{i18n.t(`models:${itemType}s.0`)}</Text>
@@ -516,6 +520,7 @@ export default function Profile() {
 
 		return (
 			<View key={itemType} style={styles.inventoryItem}>
+				<Text style={styles.itemCategory}>{i18n.t(`items:${itemType}`)}</Text>
 				<Text style={styles.itemIcon}>{itemIcon}</Text>
 				<View style={styles.itemDetails}>
 					<Text style={styles.itemName}>{itemName}</Text>
@@ -532,7 +537,7 @@ export default function Profile() {
 						</View>
 					)}
 					{/* Effect for potions and objects */}
-					{'nature' in item && renderSupportItemEffect(item)}
+					{'nature' in item && renderSupportItemEffect(item, itemType as "potion" | "object")}
 				</View>
 			</View>
 		);
@@ -932,6 +937,7 @@ const styles = StyleSheet.create({
 		shadowOpacity: 0.1,
 		shadowRadius: 4,
 		elevation: 2,
+		position: 'relative',
 	},
 	itemIcon: {
 		fontSize: 32,
@@ -945,6 +951,14 @@ const styles = StyleSheet.create({
 		fontWeight: '600',
 		color: '#333',
 		marginBottom: 4,
+	},
+	itemCategory: {
+		position: 'absolute',
+		top: 5,
+		right: 5,
+		fontSize: 10,
+		color: '#999',
+		fontWeight: '500'
 	},
 	itemRarity: {
 		flexDirection: 'row',
