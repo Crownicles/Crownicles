@@ -70,8 +70,9 @@ async function computeAssets(): Promise<void> {
 /**
  * Sets up the assets routes for the Fastify server.
  * @param server
+ * @param debugMode - If true, assets will be recomputed on each request to ensure they are up-to-date.
  */
-export async function setupAssetsRoutes(server: FastifyInstance): Promise<void> {
+export async function setupAssetsRoutes(server: FastifyInstance, debugMode: boolean): Promise<void> {
 	await computeAssets();
 
 	CrowniclesLogger.info("Assets and their hashes computed successfully", {
@@ -79,7 +80,11 @@ export async function setupAssetsRoutes(server: FastifyInstance): Promise<void> 
 		hashesCount: assetsHashes.size
 	});
 
-	server.get("/assets/hashes", (request, reply) => {
+	server.get("/assets/hashes", async (request, reply) => {
+		if (debugMode) {
+			// In debug mode, we recompute the assets to ensure they are up-to-date without restarting the server.
+			await computeAssets();
+		}
 		CrowniclesLogger.info("Assets hashes requested", {
 			...getRequestLoggerMetadata(request)
 		});

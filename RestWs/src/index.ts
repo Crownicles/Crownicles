@@ -51,7 +51,8 @@ async function main(): Promise<void> {
 	await new RestApi({
 		allowNewUsersRegistering: restWsConfig.REST_API_ALLOW_NEW_USERS_REGISTERING,
 		discordSso: restWsConfig.REST_API_DISCORD_SSO,
-		betaLogin: restWsConfig.REST_API_BETA_LOGIN
+		betaLogin: restWsConfig.REST_API_BETA_LOGIN,
+		debugMode: restWsConfig.DEBUG
 	}).start(restWsConfig.REST_API_PORT);
 
 	// Initialize and start the WebSocket server
