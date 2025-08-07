@@ -3,6 +3,7 @@ import {Ionicons, MaterialCommunityIcons, MaterialIcons} from "@expo/vector-icon
 import {Alert, Text, TouchableOpacity, View} from "react-native";
 import {ProfileProvider, useProfile} from "@/src/contexts/ProfileContext";
 import {AppIcons} from "@/src/AppIcons";
+import {i18n} from "@/src/translations/i18n";
 
 const ProfileHeader = ({ children }: { children?: string }) => {
 	const { profileData } = useProfile();
@@ -35,7 +36,7 @@ const ProfileHeader = ({ children }: { children?: string }) => {
 				</Text>
 				{profileData.level !== undefined && (
 					<Text style={{ fontSize: 12, color: '#666', textAlign: 'center' }}>
-						Level {profileData.level}
+						{i18n.t("app:profile.level", { level: profileData.level })}
 					</Text>
 				)}
 			</View>
@@ -49,25 +50,25 @@ function TabLayoutContent() {
 	return (
 		<Tabs>
 			<Tabs.Screen name="arena" options={{
-				title: "Arena",
+				title: i18n.t("app:tabs.arena"),
 				tabBarIcon: ({ color }) => (
 						<MaterialCommunityIcons name="shield-sword" size={28} color={color} />
 				),
 			}} />
 			<Tabs.Screen name="guild" options={{
-				title: "Guild",
+				title: i18n.t("app:tabs.guild"),
 				tabBarIcon: ({ color }) => (
 						<MaterialIcons name="stadium" size={28} color={color} />
 				),
 			}} />
 			<Tabs.Screen name="index" options={{
-				title: "Adventure",
+				title: i18n.t("app:tabs.adventure"),
 				tabBarIcon: ({ color }) => (
 						<MaterialCommunityIcons name="book-open-page-variant" size={28} color={color} />
 				),
 			}} />
 			<Tabs.Screen name="profile" options={{
-				title: "Profile",
+				title: i18n.t("app:tabs.profile"),
 				tabBarIcon: ({ color }) => (
 						<MaterialCommunityIcons name="account" size={28} color={color} />
 				),
@@ -90,7 +91,7 @@ function TabLayoutContent() {
 				),
 			}} />
 			<Tabs.Screen name="pet" options={{
-				title: "Pet",
+				title: i18n.t("app:tabs.pet"),
 				tabBarIcon: ({ color }) => (
 						<MaterialCommunityIcons name="paw" size={28} color={color} />
 				),

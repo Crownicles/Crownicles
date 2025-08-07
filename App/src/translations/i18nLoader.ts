@@ -25,10 +25,10 @@ export async function reloadI18n(languagesAssets = new Map<string, string>()): P
 		i18next.addResourceBundle(language, namespace, translations);
 	}
 
-	i18next.addResourceBundle(LANGUAGE.ENGLISH, "app", require("./lang/en/app.json"));
-	i18next.addResourceBundle(LANGUAGE.FRENCH, "app", require("./lang/fr/app.json"));
-	i18next.addResourceBundle(LANGUAGE.ITALIAN, "app", require("./lang/it/app.json"));
-	i18next.addResourceBundle(LANGUAGE.SPANISH, "app", require("./lang/es/app.json"));
-	i18next.addResourceBundle(LANGUAGE.PORTUGUESE, "app", require("./lang/pt/app.json"));
-	i18next.addResourceBundle(LANGUAGE.GERMAN, "app", require("./lang/de/app.json"));
+	i18next.addResourceBundle(LANGUAGE.ENGLISH, "native", require("./lang/en/native.json"));
+	i18next.addResourceBundle(LANGUAGE.FRENCH, "native", require("./lang/fr/native.json"));
+	i18next.addResourceBundle(LANGUAGE.ITALIAN, "native", require("./lang/it/native.json"));
+	i18next.addResourceBundle(LANGUAGE.SPANISH, "native", require("./lang/es/native.json"));
+	i18next.addResourceBundle(LANGUAGE.PORTUGUESE, "native", require("./lang/pt/native.json"));
+	i18next.addResourceBundle(LANGUAGE.GERMAN, "native", require("./lang/de/native.json"));
 }

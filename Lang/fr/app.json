@@ -1,0 +1,35 @@
+{
+  "tabs": {
+    "arena": "Arène",
+    "guild": "Guilde",
+    "adventure": "Aventure",
+    "profile": "Profil",
+    "pet": "Familier"
+  },
+  "profile": {
+    "level": "Niveau {{level}}",
+    "titles": {
+      "health": "Santé",
+      "experience": "Expérience",
+      "currencies": "Monnaies",
+      "scoreAndRank": "Score et Rang",
+      "statistics": "Statistiques"
+    },
+    "tooltips": {
+      "money": "Argent",
+      "gems": "Gemmes.\nPeuvent être gagnées en faisant des missions.",
+      "score": "Score.\nVotre performance dans le jeu.",
+      "rank": "Rang.\nVotre position par rapport aux autres joueurs.",
+      "energy": "Énergie.\nUtilisée dans les combats.\nSe recharge avec le temps.",
+      "breath": "Souffle.\nUtilisé pour attaquer dans les combats.",
+      "breathRegen": "Régénération de Souffle.\nNombre de points de souffle récupérés par tour de combat.",
+      "attack": "Attaque.\nUtilisée dans les combats et les événements.",
+      "defense": "Défense.\nUtilisée dans les combats et les événements.",
+      "speed": "Vitesse.\nUtilisée dans les combats et les événements."
+    },
+    "inventory": {
+      "equippedItems": "Équipements équipés"
+
+    }
+  }
+}

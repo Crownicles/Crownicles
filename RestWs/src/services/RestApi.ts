@@ -60,6 +60,11 @@ export class RestApi {
 	private readonly betaLogin: boolean;
 
 	/**
+	 * Debug mode for the server.
+	 */
+	private readonly debugMode: boolean;
+
+	/**
 	 * Constructor for the RestApi class.
 	 * @param options
 	 */
@@ -67,11 +72,13 @@ export class RestApi {
 		allowNewUsersRegistering: boolean;
 		discordSso?: DiscordSsoConfig;
 		betaLogin: boolean;
+		debugMode: boolean;
 	}) {
 		this.server = fastify();
 		this.allowNewUsersRegistering = options.allowNewUsersRegistering;
 		this.discordSso = options.discordSso;
 		this.betaLogin = options.betaLogin;
+		this.debugMode = options.debugMode;
 	}
 
 	/**
@@ -88,7 +95,7 @@ export class RestApi {
 		setupRegisterRoute(this.server, this.allowNewUsersRegistering);
 		setupLoginRoute(this.server, this.betaLogin);
 		setupRefreshTokenRoute(this.server);
-		await setupAssetsRoutes(this.server);
+		await setupAssetsRoutes(this.server, this.debugMode);
 
 		if (this.discordSso) {
 			setupDiscordRoutes(this.server, this.discordSso, this.betaLogin);

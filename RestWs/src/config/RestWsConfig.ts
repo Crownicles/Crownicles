@@ -22,13 +22,17 @@ export interface RestWsConfig {
 	REST_API_BETA_LOGIN: boolean;
 	WEB_SOCKET_PORT: number;
 	PREFIX: string;
+	DEBUG: boolean;
 }
 
 /**
  * Represents the structure of the config file
  */
 type ConfigStructure = {
-	global: { prefix: string };
+	global: {
+		prefix: string;
+		debug: boolean;
+	};
 	restApi: {
 		allowRegister: boolean;
 		port: number;
@@ -82,7 +86,8 @@ export function loadConfig(): RestWsConfig {
 			: undefined,
 		REST_API_BETA_LOGIN: config.restApi.betaLogin,
 		WEB_SOCKET_PORT: config.webSocket.port,
-		PREFIX: config.global.prefix
+		PREFIX: config.global.prefix,
+		DEBUG: config.global.debug
 	};
 }
 

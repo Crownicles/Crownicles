@@ -37,6 +37,17 @@
     "{emote:rarity.7} Légendaire",
     "{emote:rarity.8} Mythique"
   ],
+  "raritiesWithoutEmote": [
+    "Basique",
+    "Commun",
+    "Peu commun",
+    "Exotique",
+    "Rare",
+    "Spécial",
+    "Épique",
+    "Légendaire",
+    "Mythique"
+  ],
   "speed": "{emote:unitValues.speed} {{value, number}}",
   "weaponsFieldName": "Arme :",
   "itemsField": "**{{emote}} {{name}}** | {{rarity}} | {{values}}"

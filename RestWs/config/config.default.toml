@@ -1,6 +1,8 @@
 [global]
 # Prefix used to prefix the MQTT topics and the databases
 prefix = "crownicles"
+# Debug mode
+debug = false
 
 [restApi]
 # Allow registering of new users
