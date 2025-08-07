@@ -166,7 +166,7 @@ export class WebSocketClient {
 						continue;
 					}
 
-					console.debug("Received packet:", packet);
+					console.debug("Received packet:", JSON.stringify(packet));
 
 					const packetId = packet.id;
 					const packetName = packet.name;

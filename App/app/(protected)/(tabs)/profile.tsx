@@ -15,6 +15,7 @@ import {SupportItem} from "ws-packets/src/objects/SupportItem";
 import {ItemRarity} from "ws-packets/src/objects/ItemRarity";
 import {ItemNature} from "ws-packets/src/objects/ItemNature";
 import {AppIcons} from "@/src/AppIcons";
+import {i18n} from "@/src/translations/i18n";
 
 type LoadingState = 'loading' | 'success' | 'error' | 'timeout';
 
@@ -410,27 +411,15 @@ export default function Profile() {
 
 	// Helper functions for inventory
 	const getItemIcon = (itemType: 'weapon' | 'armor' | 'potion' | 'object', itemId: number): string => {
-		const icons = AppIcons.lib;
-		switch (itemType) {
-			case 'weapon':
-				return icons.weapons[itemId] || icons.inventory.empty;
-			case 'armor':
-				return icons.armors[itemId] || icons.inventory.empty;
-			case 'potion':
-				return icons.potions[itemId] || icons.inventory.empty;
-			case 'object':
-				return icons.objects[itemId] || icons.inventory.empty;
-			default:
-				return icons.inventory.empty;
-		}
+		return AppIcons.getIconOrNull(`${itemType}s.${itemId}`) || AppIcons.getIcon("inventory.empty");
 	};
 
 	const getRarityIcon = (rarity: ItemRarity): string => {
-		return AppIcons.lib.rarity[rarity] || AppIcons.lib.rarity[ItemRarity.BASIC];
+		return AppIcons.getIcon(`rarity.${rarity}`);
 	};
 
 	const getItemNatureEffect = (nature: ItemNature): string => {
-		return AppIcons.lib.itemNatures[nature] || AppIcons.lib.itemNatures[ItemNature.NONE];
+		return AppIcons.getIcon(`itemNatures.${nature}`);
 	};
 
 	const formatStatValue = (value: number, max: number): { text: string; isNerfed: boolean } => {
@@ -523,7 +512,7 @@ export default function Profile() {
 
 		const itemIcon = getItemIcon(itemType, item.id);
 		const rarityIcon = getRarityIcon(item.rarity);
-		const itemName = `${itemType.charAt(0).toUpperCase() + itemType.slice(1)} #${item.id}`; // Placeholder name
+		const itemName = i18n.t(`models:${itemType}s.${item.id}`);
 
 		return (
 			<View key={itemType} style={styles.inventoryItem}>
