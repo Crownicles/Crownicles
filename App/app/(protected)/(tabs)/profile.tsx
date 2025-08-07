@@ -96,7 +96,7 @@ export default function Profile() {
 				setProfileState('success');
 				// Update navigation title with pseudo and level
 				navigation.setOptions({
-					title: `${packet.pseudo} · Level ${packet.level}`
+					title: packet.pseudo
 				});
 			},
 			[PlayerNotFound.name]: () => {
@@ -201,8 +201,8 @@ export default function Profile() {
 		}
 
 		const tooltipText = currencyType === 'money'
-			? 'Money'
-			: 'Gems. Can be acquired by finishing missions.';
+			? i18n.t("app:profile.tooltips.money")
+			: i18n.t("app:profile.tooltips.gems");
 
 		setTooltip({
 			visible: true,
@@ -227,8 +227,8 @@ export default function Profile() {
 		}
 
 		const tooltipText = type === 'score'
-			? 'Score. Represents your overall performance.'
-			: 'Rank. Your position among all players.';
+			? i18n.t("app:profile.tooltips.score")
+			: i18n.t("app:profile.tooltips.rank");
 
 		setTooltip({
 			visible: true,
@@ -270,14 +270,14 @@ export default function Profile() {
 
 		return (
 			<View style={styles.statsContainer}>
-				<Text style={styles.statsTitle}>Statistics</Text>
+				<Text style={styles.statsTitle}>{i18n.t("app:profile.titles.statistics")}</Text>
 				<View style={styles.statsGrid}>
-					{renderStatItem("⚡", `${stats.energy.value} / ${stats.energy.max}`, "Energy")}
-					{renderStatItem("🌬️", `${stats.breath.base} / ${stats.breath.max}`, "Breath")}
-					{renderStatItem("🫁", `${stats.breath.regen}`, "Breath Regen")}
-					{renderStatItem("⚔️", `${stats.attack}`, "Attack")}
-					{renderStatItem("🛡️", `${stats.defense}`, "Defense")}
-					{renderStatItem("🚀", `${stats.speed}`, "Speed")}
+					{renderStatItem("⚡", `${stats.energy.value} / ${stats.energy.max}`, i18n.t("app:profile.tooltips.energy"))}
+					{renderStatItem("🌬️", `${stats.breath.base} / ${stats.breath.max}`, i18n.t("app:profile.tooltips.breath"))}
+					{renderStatItem("🫁", `${stats.breath.regen}`, i18n.t("app:profile.tooltips.breathRegen"))}
+					{renderStatItem("⚔️", `${stats.attack}`, i18n.t("app:profile.tooltips.attack"))}
+					{renderStatItem("🛡️", `${stats.defense}`, i18n.t("app:profile.tooltips.defense"))}
+					{renderStatItem("🚀", `${stats.speed}`, i18n.t("app:profile.tooltips.speed"))}
 				</View>
 			</View>
 		);
@@ -313,12 +313,12 @@ export default function Profile() {
 											playerStats.health.value,
 											playerStats.health.max,
 											'#ff4444',
-											'Health'
+											i18n.t("app:profile.titles.health")
 										)}
 									</View>
 									<View style={styles.barItem}>
 										<View style={styles.experienceBarContainer}>
-											<Text style={styles.progressLabel}>Experience</Text>
+											<Text style={styles.progressLabel}>{i18n.t("app:profile.titles.experience")}</Text>
 											<View style={styles.progressBarWrapper}>
 												<View style={styles.progressBarBackground}>
 													<View
@@ -338,7 +338,7 @@ export default function Profile() {
 
 								{/* Currency Section */}
 								<View style={styles.currencyContainer}>
-									<Text style={styles.currencyTitle}>Currencies</Text>
+									<Text style={styles.currencyTitle}>{i18n.t("app:profile.titles.currencies")}</Text>
 									<View style={styles.currencyGrid}>
 										<TouchableOpacity
 												style={styles.currencyItem}
@@ -368,7 +368,7 @@ export default function Profile() {
 
 								{/* Score and Rank Section */}
 								<View style={styles.scoreRankContainer}>
-									<Text style={styles.scoreRankTitle}>Score and rank</Text>
+									<Text style={styles.scoreRankTitle}>{i18n.t("app:profile.titles.scoreAndRank")}</Text>
 									<View style={styles.scoreRankGrid}>
 										<TouchableOpacity
 											style={styles.scoreRankItem}
@@ -490,7 +490,7 @@ export default function Profile() {
 		return (
 			<View style={styles.itemEffect}>
 				<Text style={styles.itemEffectIcon}>{effectIcon}</Text>
-				<Text style={styles.itemEffectText}>Power: {item.power}/{item.maxPower}</Text>
+				<Text style={styles.itemEffectText}>TODO</Text>
 			</View>
 		);
 	};
@@ -504,7 +504,7 @@ export default function Profile() {
 				<View key={itemType} style={styles.inventoryItem}>
 					<Text style={styles.itemIcon}>❌</Text>
 					<View style={styles.itemDetails}>
-						<Text style={styles.itemName}>No {itemType} equipped</Text>
+						<Text style={styles.itemName}>{i18n.t(`models:${itemType}s.0`)}</Text>
 					</View>
 				</View>
 			);
@@ -522,7 +522,7 @@ export default function Profile() {
 					<View style={styles.itemRarity}>
 						<Text style={styles.rarityIcon}>{rarityIcon}</Text>
 						<Text style={styles.rarityText}>
-							{ItemRarity[item.rarity].charAt(0) + ItemRarity[item.rarity].slice(1).toLowerCase()}
+							{i18n.t(`items:raritiesWithoutEmote.${item.rarity}`)}
 						</Text>
 					</View>
 					{/* Stats for weapons and armors */}
@@ -549,7 +549,7 @@ export default function Profile() {
 
 		return (
 			<View style={styles.inventoryContent}>
-				<Text style={styles.inventoryTitle}>Equipped Items</Text>
+				<Text style={styles.inventoryTitle}>{i18n.t("app:profile.inventory.equippedItems")}</Text>
 				<View style={styles.inventoryList}>
 					{renderEquippedItem('weapon', inventoryData.weapon)}
 					{renderEquippedItem('armor', inventoryData.armor)}

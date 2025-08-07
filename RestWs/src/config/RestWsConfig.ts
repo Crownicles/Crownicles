@@ -25,13 +25,17 @@ export interface RestWsConfig {
 	REST_API_BETA_LOGIN: boolean;
 	WEB_SOCKET_PORT: number;
 	PREFIX: MqttPrefix;
+	DEBUG: boolean;
 }
 
 /**
  * Represents the structure of the config file
  */
 type ConfigStructure = {
-	global: { prefix: string };
+	global: {
+		prefix: string;
+		debug: boolean;
+	};
 	restApi: {
 		allowRegister: boolean;
 		port: number;
@@ -85,7 +89,8 @@ export function loadConfig(): RestWsConfig {
 			: undefined,
 		REST_API_BETA_LOGIN: config.restApi.betaLogin,
 		WEB_SOCKET_PORT: config.webSocket.port,
-		PREFIX: createMqttPrefix(config.global.prefix)
+		PREFIX: createMqttPrefix(config.global.prefix),
+		DEBUG: config.global.debug
 	};
 }
 
