@@ -59,7 +59,9 @@ import {
 	ReactionCollectorBigEventPossibilityReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorBigEvent";
 import { Possibility } from "../../data/events/Possibility";
-import { applyPossibilityOutcome } from "../../data/events/PossibilityOutcome";
+import {
+	applyPossibilityOutcome, getValidOutcomesForPlayer
+} from "../../data/events/PossibilityOutcome";
 import { ErrorPacket } from "../../../../Lib/src/packets/commands/ErrorPacket";
 import { MapLocationDataController } from "../../data/MapLocation";
 import {
@@ -216,7 +218,8 @@ async function doPossibility(
 		return;
 	}
 
-	const randomOutcome = RandomUtils.crowniclesRandom.pick(Object.entries(possibility[1].outcomes));
+	const validOutcomes = await getValidOutcomesForPlayer(possibility[1].outcomes, player);
+	const randomOutcome = RandomUtils.crowniclesRandom.pick(validOutcomes);
 
 	crowniclesInstance.logsDatabase.logBigEvent(player.keycloakId, event.id, possibility[0], randomOutcome[0])
 		.then();
