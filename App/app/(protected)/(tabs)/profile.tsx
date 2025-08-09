@@ -52,6 +52,16 @@ interface InventoryData {
 	armor?: MainItem;
 	potion?: SupportItem;
 	object?: SupportItem;
+	backupWeapons?: { display: MainItem; slot: number }[];
+	backupArmors?: { display: MainItem; slot: number }[];
+	backupPotions?: { display: SupportItem; slot: number }[];
+	backupObjects?: { display: SupportItem; slot: number }[];
+	slots?: {
+		weapons: number;
+		armors: number;
+		potions: number;
+		objects: number;
+	};
 }
 
 export default function Profile() {
@@ -59,6 +69,7 @@ export default function Profile() {
 	const [profileState, setProfileState] = useState<LoadingState>('loading');
 	const [playerStats, setPlayerStats] = useState<PlayerStats | null>(null);
 	const [inventoryData, setInventoryData] = useState<InventoryData | null>(null);
+	const [showBackupItems, setShowBackupItems] = useState<boolean>(false);
 	const [tooltip, setTooltip] = useState<TooltipState>({ visible: false, text: '', x: 0, y: 0 });
 	const [tooltipTimeout, setTooltipTimeout] = useState<number | null>(null);
 	const navigation = useNavigation();
@@ -116,7 +127,12 @@ export default function Profile() {
 						weapon: packet.data.weapon,
 						armor: packet.data.armor,
 						potion: packet.data.potion,
-						object: packet.data.object
+						object: packet.data.object,
+						backupWeapons: packet.data.backupWeapons,
+						backupArmors: packet.data.backupArmors,
+						backupPotions: packet.data.backupPotions,
+						backupObjects: packet.data.backupObjects,
+						slots: packet.data.slots
 					});
 				}
 			},
@@ -505,10 +521,9 @@ export default function Profile() {
 		if (!item || item.id === 0) {
 			return (
 				<View key={itemType} style={styles.inventoryItem}>
-					<Text style={styles.itemCategory}>{i18n.t(`items:${itemType}`)}</Text>
-					<Text style={styles.itemIcon}>❌</Text>
+					<Text style={styles.itemIcon}>⬜</Text>
 					<View style={styles.itemDetails}>
-						<Text style={styles.itemName}>{i18n.t(`models:${itemType}s.0`)}</Text>
+						<Text style={styles.itemName}>{i18n.t("app:profile.inventory.emptySlot")}</Text>
 					</View>
 				</View>
 			);
@@ -520,7 +535,6 @@ export default function Profile() {
 
 		return (
 			<View key={itemType} style={styles.inventoryItem}>
-				<Text style={styles.itemCategory}>{i18n.t(`items:${itemType}`)}</Text>
 				<Text style={styles.itemIcon}>{itemIcon}</Text>
 				<View style={styles.itemDetails}>
 					<Text style={styles.itemName}>{itemName}</Text>
@@ -543,6 +557,159 @@ export default function Profile() {
 		);
 	};
 
+	const renderBackupItem = (
+		itemType: 'weapon' | 'armor' | 'potion' | 'object',
+		backupItem: { display: MainItem | SupportItem; slot: number }
+	) => {
+		const item = backupItem.display;
+		const itemIcon = getItemIcon(itemType, item.id);
+		const rarityIcon = getRarityIcon(item.rarity);
+		const itemName = i18n.t(`models:${itemType}s.${item.id}`);
+
+		return (
+			<View key={`${itemType}-${backupItem.slot}`} style={styles.inventoryItem}>
+				<Text style={styles.itemIcon}>{itemIcon}</Text>
+				<View style={styles.itemDetails}>
+					<Text style={styles.itemName}>{itemName}</Text>
+					<View style={styles.itemRarity}>
+						<Text style={styles.rarityIcon}>{rarityIcon}</Text>
+						<Text style={styles.rarityText}>
+							{i18n.t(`items:raritiesWithoutEmote.${item.rarity}`)}
+						</Text>
+					</View>
+					{/* Stats for weapons and armors */}
+					{'attack' in item && (
+						<View style={styles.itemStatsContainer}>
+							{renderMainItemStats(item)}
+						</View>
+					)}
+					{/* Effect for potions and objects */}
+					{'nature' in item && renderSupportItemEffect(item, itemType as "potion" | "object")}
+				</View>
+			</View>
+		);
+	};
+
+	const renderEmptySlot = (itemType: 'weapon' | 'armor' | 'potion' | 'object') => {
+		return (
+			<View style={styles.inventoryItem}>
+				<Text style={styles.itemIcon}>⬜</Text>
+				<View style={styles.itemDetails}>
+					<Text style={styles.itemName}>{i18n.t("app:profile.inventory.emptySlot")}</Text>
+					<Text style={styles.itemCategory}>{i18n.t(`items:${itemType}`)}</Text>
+				</View>
+			</View>
+		);
+	};
+
+	const renderItemTypeHeader = (itemType: 'weapon' | 'armor' | 'potion' | 'object', currentCount?: number, maxSlots?: number) => {
+		const typeNames = {
+			weapon: i18n.t("items:weapon", { count: maxSlots ?? 1 }),
+			armor: i18n.t("items:armor", { count: maxSlots ?? 1 }),
+			potion: i18n.t("items:potion", { count: maxSlots ?? 1 }),
+			object: i18n.t("items:object", { count: maxSlots ?? 1 })
+		};
+
+		const headerText = currentCount !== undefined && maxSlots !== undefined
+			? `${typeNames[itemType]} (${currentCount}/${maxSlots})`
+			: typeNames[itemType];
+
+		return (
+			<View style={styles.itemTypeHeader}>
+				<Text style={styles.itemTypeHeaderText}>{headerText}</Text>
+			</View>
+		);
+	};
+
+	const renderEquippedItemsByType = () => {
+		if (!inventoryData) return null;
+
+		const itemTypes: ('weapon' | 'armor' | 'potion' | 'object')[] = ['weapon', 'armor', 'potion', 'object'];
+
+		return (
+			<View style={styles.inventoryList}>
+				{itemTypes.map(itemType => (
+					<View key={itemType}>
+						{renderItemTypeHeader(itemType)}
+						{renderEquippedItem(itemType, inventoryData[itemType])}
+					</View>
+				))}
+			</View>
+		);
+	};
+
+	const renderBackupItemsByType = () => {
+		if (!inventoryData || !inventoryData.slots) return null;
+
+		const itemTypes: { type: 'weapon' | 'armor' | 'potion' | 'object', backupKey: keyof InventoryData }[] = [
+			{ type: 'weapon', backupKey: 'backupWeapons' },
+			{ type: 'armor', backupKey: 'backupArmors' },
+			{ type: 'potion', backupKey: 'backupPotions' },
+			{ type: 'object', backupKey: 'backupObjects' }
+		];
+
+		return (
+			<View style={styles.inventoryList}>
+				{itemTypes.map(({ type, backupKey }) => {
+					const backupItems = inventoryData[backupKey] as { display: MainItem | SupportItem; slot: number }[] | undefined;
+					const maxSlots = inventoryData.slots![`${type}s` as keyof typeof inventoryData.slots];
+					const currentCount = backupItems?.length || 0;
+
+					// Create array of all slots (filled and empty)
+					const allSlots = [];
+					const filledSlots = new Set(backupItems?.map(item => item.slot) || []);
+
+					// Add filled slots
+					if (backupItems) {
+						backupItems.forEach(item => {
+							allSlots.push(renderBackupItem(type, item));
+						});
+					}
+
+					// Add empty slots
+					for (let slot = 1; slot <= maxSlots; slot++) {
+						if (!filledSlots.has(slot)) {
+							allSlots.push(
+								<View key={`${type}-empty-${slot}`} style={styles.inventoryItem}>
+									<Text style={styles.itemIcon}>⬜</Text>
+									<View style={styles.itemDetails}>
+										<Text style={styles.itemName}>{i18n.t("app:profile.inventory.emptySlot")}</Text>
+									</View>
+								</View>
+							);
+						}
+					}
+
+					// Sort slots by slot number
+					allSlots.sort((a, b) => {
+						const aSlot = a.key?.toString().includes('empty') ?
+							parseInt(a.key.toString().split('-')[2]) :
+							parseInt(a.key?.toString().split('-')[1] || '0');
+						const bSlot = b.key?.toString().includes('empty') ?
+							parseInt(b.key.toString().split('-')[2]) :
+							parseInt(b.key?.toString().split('-')[1] || '0');
+						return aSlot - bSlot;
+					});
+
+					return (
+						<View key={type}>
+							{renderItemTypeHeader(type, currentCount, maxSlots)}
+							{allSlots}
+						</View>
+					);
+				})}
+			</View>
+		);
+	};
+
+	const hideTooltip = () => {
+		if (tooltipTimeout) {
+			clearTimeout(tooltipTimeout);
+			setTooltipTimeout(null);
+		}
+		setTooltip(prev => ({ ...prev, visible: false }));
+	};
+
 	const renderInventorySection = () => {
 		if (!inventoryData) {
 			return (
@@ -554,23 +721,28 @@ export default function Profile() {
 
 		return (
 			<View style={styles.inventoryContent}>
-				<Text style={styles.inventoryTitle}>{i18n.t("app:profile.inventory.equippedItems")}</Text>
-				<View style={styles.inventoryList}>
-					{renderEquippedItem('weapon', inventoryData.weapon)}
-					{renderEquippedItem('armor', inventoryData.armor)}
-					{renderEquippedItem('potion', inventoryData.potion)}
-					{renderEquippedItem('object', inventoryData.object)}
+				<View style={styles.inventoryHeader}>
+					<Text style={styles.inventoryTitle}>
+						{showBackupItems
+							? i18n.t("app:profile.inventory.backupItems")
+							: i18n.t("app:profile.inventory.equippedItems")
+						}
+					</Text>
+					<TouchableOpacity
+						style={styles.toggleButton}
+						onPress={() => setShowBackupItems(!showBackupItems)}
+					>
+						<Text style={styles.toggleButtonText}>
+							{showBackupItems
+								? i18n.t("app:profile.inventory.seeEquippedItems")
+								: i18n.t("app:profile.inventory.seeBackupItems")
+							}
+						</Text>
+					</TouchableOpacity>
 				</View>
+				{showBackupItems ? renderBackupItemsByType() : renderEquippedItemsByType()}
 			</View>
 		);
-	};
-
-	const hideTooltip = () => {
-		if (tooltipTimeout) {
-			clearTimeout(tooltipTimeout);
-			setTooltipTimeout(null);
-		}
-		setTooltip(prev => ({ ...prev, visible: false }));
 	};
 
 	return (
@@ -919,6 +1091,23 @@ const styles = StyleSheet.create({
 		color: '#333',
 		marginBottom: 10,
 	},
+	inventoryHeader: {
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		alignItems: 'center',
+		marginBottom: 10,
+	},
+	toggleButton: {
+		backgroundColor: '#007AFF',
+		borderRadius: 10,
+		paddingVertical: 8,
+		paddingHorizontal: 12,
+	},
+	toggleButtonText: {
+		color: '#fff',
+		fontSize: 14,
+		fontWeight: '500',
+	},
 	inventoryList: {
 		flexDirection: 'column',
 		gap: 10,
@@ -952,14 +1141,6 @@ const styles = StyleSheet.create({
 		color: '#333',
 		marginBottom: 4,
 	},
-	itemCategory: {
-		position: 'absolute',
-		top: 5,
-		right: 5,
-		fontSize: 10,
-		color: '#999',
-		fontWeight: '500'
-	},
 	itemRarity: {
 		flexDirection: 'row',
 		alignItems: 'center',
@@ -989,5 +1170,17 @@ const styles = StyleSheet.create({
 	},
 	statSeparator: {
 		color: '#999',
+	},
+	itemTypeHeader: {
+		backgroundColor: '#f1f1f1',
+		padding: 10,
+		borderTopLeftRadius: 10,
+		borderTopRightRadius: 10,
+		marginBottom: 5,
+	},
+	itemTypeHeaderText: {
+		fontSize: 14,
+		fontWeight: '600',
+		color: '#333',
 	},
 });

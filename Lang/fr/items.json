@@ -1,12 +1,14 @@
 {
   "armorsFieldName": "Armure/Bouclier :",
-  "armor": "Armure",
+  "armor_one": "Armure",
+  "armor_other": "Armures",
   "attack": "{emote:unitValues.attack} {{value, number}}",
   "defense": "{emote:unitValues.defense} {{value, number}}",
   "nameDisplay": "{emote:{{itemCategory}}.{{itemId}}} **$t(models:{{itemCategory}}.{{itemId}})**",
   "nerfDisplay": "~~{{old}}~~ {{max}}",
   "objectsFieldName": "Objet :",
-  "object": "Objet",
+  "object_one": "Objet",
+  "object_other": "Objets",
   "objectsNatures": [
     "{emote:itemNatures.0} Aucun effet",
     "{emote:itemNatures.1} Vie + {{power, number}} par jour",
@@ -28,7 +30,8 @@
     "Énergie + {{power}} par jour"
   ],
   "potionsFieldName": "Potion :",
-  "potion": "Potion",
+  "potion_one": "Potion",
+  "potion_other": "Potions",
   "potionsNatures": [
     "{emote:itemNatures.0} Aucun effet",
     "{emote:itemNatures.1} Vie + {{power, number}}",
@@ -73,6 +76,7 @@
   ],
   "speed": "{emote:unitValues.speed} {{value, number}}",
   "weaponsFieldName": "Arme :",
-  "weapon": "Arme",
+  "weapon_one": "Arme",
+  "weapon_other": "Armes",
   "itemsField": "**{{emote}} {{name}}** | {{rarity}} | {{values}}"
 }
