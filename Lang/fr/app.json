@@ -28,8 +28,11 @@
       "speed": "Vitesse.\nUtilisée dans les combats et les événements."
     },
     "inventory": {
-      "equippedItems": "Équipements équipés"
-
+      "equippedItems": "Objets équipés",
+      "backupItems": "Reserve d'objets",
+      "seeBackupItems": "Voir la réserve d'objets",
+      "seeEquippedItems": "Voir les objets équipés",
+      "emptySlot": "Emplacement vide"
     }
   }
 }
