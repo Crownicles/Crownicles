@@ -588,35 +588,74 @@
     "possibilities": {
       "butch": {
         "outcomes": {
-          "0": "Vous vous approchez du cadavre, et le dépecez. Vous vendez sa fourrure au premier marchand itinérant que vous croisez.",
-          "1": "Vous dépecez le renard et partez en quête d'un moyen de vendre sa peau. Quelques minutes plus tard vous croisez un marchand qui vous propose de la troquer contre un de ses objets de qualité, et vous acceptez.",
-          "2": "Vous dépecez le renard et cherchez un endroit où revendre sa fourrure. Malheureusement, elle pourrit bien vite et des mouches s'accumulent autour de vous. Vous finissez par l'abandonner sur le bord du chemin, un peu tard puisque vous vous sentez rapidement mal en point !"
+          "0": "Votre faim et votre absence totale de scrupules triomphent : en geste précis mais froid, vous arrachez peau et parties revendables. Vous repartez lesté d'un butin sonnant mais moralement alourdi.",
+          "1": "Habileté et coups assurés : en quelques instants la peau est nette, roulée et prête à la vente. Vous perdez peu de temps et optimisez le profit.",
+          "2": "Votre chien gémit doucement tandis que vous travaillez. Sa présence vous ralentit et vous culpabilise ; vous terminez malgré tout mais plus lentement, empochant un gain honnête.",
+          "3": "Votre propre renard apprivoisé fixe la dépouille avec une hostilité muette. Le malaise vous déconcentre : la chair exhale un souffle malsain qui finit par vous indisposer.",
+          "4": "Votre droiture vous empêche d'exploiter cyniquement l’animal. Vous récupérez seulement ce qui ne se gâchera pas et appliquez quelques gestes respectueux avant de partir.",
+          "5": "Mal préparé et mal outillé, vous imprimez plus de dégâts à la carcasse qu’autre chose. L’odeur vire rapidement : un malaise vous prend.",
+          "6": "Rodé aux travaux sanglants, vous isolez soigneusement des pièces précieuses et une pochette oubliée coincée sous le flanc. Un joli supplément pour la route.",
+          "7": "Vous vous appliquez tant bien que mal. L’opération est grossière et longue ; vous gagnez un peu, au prix d’un détour laborieux.",
+          "8": "Avec l'assurance d'un voyageur chevronné et une conscience apaisée, vous dépecez proprement la dépouille, saluant brièvement l'animal. Votre probité n'empêche pas une vente très profitable.",
+          "9": "Vous vous acharnez, maladroit : incisions trop profondes, peau arrachée, chair déchirée. La fourrure est irrécupérable. Vous n'emportez que l'odeur tenace de l'échec.",
+          "10": "Vous entamez la découpe quand votre renard apprivoisé pousse un cri plaintif et se couche près de la dépouille. La tristesse vous prend : vous renoncez, refermez la chair et enterrez l'animal avec un minimum de dignité."
         },
-        "text": "Dépecer le renard pour revendre sa peau."
+        "text": "Dépecer la carcasse et récupérer ce qui peut l'être."
       },
       "cook": {
         "outcomes": {
-          "0": "Vu vos piètres compétences en cuisine, vous auriez pu vous y attendre, vous tombez malade peu de temps après avoir goûté votre préparation.",
-          "1": "Malgré vos compétences réduites en cuisine, votre renard à la broche a le mérite de vous avoir nourri.",
-          "2": "Vous vous approchez du renard afin de le ramasser, quand tout à coup, il se lève et vous mord ! Vous fuyez, blessé et l'estomac dans les talons.",
-          "3": "Vous avez étonnamment bien cuisiné ce renard, après l'avoir mangé, vous vous sentez requinqué."
+          "0": "Feu vif, découpe propre, cuisson maîtrisée : la chair grillée vous redonne des forces et vous réchauffe l’âme.",
+          "1": "Alors que vous approchez pour le saisir, l’animal sursaute dans un sursaut nerveux et vous lacère avant de retomber inerte. Blessé, vous abandonnez toute idée de repas.",
+          "2": "Vous bousillez la cuisson ; la viande noircie et malodorante vous rend franchement malade après quelques bouchées.",
+          "3": "Votre compagnon s’invite au repas, partageant proprement la viande rôtie. Ce moment simple vous revigore.",
+          "4": "Par scrupule, vous ne mangez qu’une portion soigneusement rôtie et jetez le reste loin de la route, satisfait de n’avoir gaspillé ni abusé.",
+          "5": "Vous improvisez un foyer rapide. Le repas est modeste mais suffisant pour calmer votre estomac.",
+          "6": "Sans vraie méthode vous jetez au hasard herbes, racines et une pincée de sel oublié au fond de votre sac. Contre toute attente la chair s'attendrit et le goût est étonnamment acceptable : la chance du débutant.",
+          "7": "Votre technique irréprochable ne suffit pas : la viande, trop vieille, libère à la chaleur une odeur fétide. Quelques bouchées plus tard, des crampes vous plient en deux."
         },
-        "text": "Tenter de cuisiner le renard."
+        "text": "Tenter de préparer la viande du renard."
       },
-      "end": {
+      "inspectCarcass": {
+        "text": "Examiner minutieusement la dépouille avant toute décision.",
         "outcomes": {
-          "0": "Vous regardez un moment la bête étendue au sol, hésitant. Finalement, vous reprenez votre chemin."
+          "0": "Inspection rapide et précise : aucune trace de fièvre ni d’infection. Vous repartez rassuré.",
+          "1": "En manipulant lourdement le corps, une patte tordue glisse et vous fait trébucher ; vous vous blessez sur les graviers.",
+          "2": "Votre serpent détecte un parfum d’herbes rances près de la gueule : sans doute un appât empoisonné. Vous notez prudemment l’information.",
+          "3": "Sous la carcasse, coincée dans l’herbe humide, vous découvrez un petit paquet oublié. Vous le récupérez avant de replacer le corps.",
+          "4": "Vous murmurez une courte bénédiction pour l’animal avant de recouvrir sa tête d’herbes. Un acte de respect qui apaise votre conscience.",
+          "5": "Vous perdez du temps à retourner chaque détail sans résultat supplémentaire. Rien d’autre à apprendre ici."
+        }
+      },
+      "buryCarcass": {
+        "text": "Enterrer dignement la dépouille.",
+        "outcomes": {
+          "0": "Vous creusez avec méthode, ménageant un petit tertre. Le geste vous emplit d’une sérénité tranquille.",
+          "1": "Armure luisante et attitude pieuse : vous officiez presque comme un chapelain, laissant derrière vous un carrefour plus propre.",
+          "2": "Vous bâclez un trou superficiel. La terre retombe mal, et une odeur persistante demeure ; votre geste semble vain.",
+          "3": "Votre renard apprivoisé observe la scène, finit par pousser un petit cri plaintif ; vous redoublez de soin et achevez la besogne avec douceur.",
+          "4": "Faute d’outils, vous traînez simplement le corps hors du passage et recouvrez de branchages. Sommaire, mais utile."
         }
       },
       "skip": {
+        "text": "Ignorer la scène et repartir sans détour.",
         "outcomes": {
-          "0": "Vous choisissez d'ignorer ce cadavre et de ne pas perdre de temps.",
-          "1": "Vous choisissez d'ignorer ce cadavre et de ne pas perdre de temps.... A peine l'avez-vous dépassé que le renard se lève et vous mord violemment !"
-        },
-        "text": "Ignorer simplement cela et vous dépêcher de rejoindre l'auberge la plus proche."
+          "0": "Vous détournez le regard et passez d’un pas indifférent, rationalisant votre choix.",
+          "1": "Au moment où vous passez, des spasmes post-mortem vous surprennent ; vous sursautez et vous cognez en reculant.",
+          "2": "Votre chien aboie, vous faisant ralentir juste assez pour éviter de glisser sur une flaque sanguinolente. Vous repartez indemne.",
+          "3": "Votre renard familier renifle la dépouille et refuse d’avancer un instant. L’agacement vous fait maugréer contre lui.",
+          "4": "Vous filez sans un regard en arrière, décidé à ne pas perdre une minute de plus."
+        }
+      },
+      "end": {
+        "outcomes": {
+          "0": "Vous restez figé, indécis, jusqu’à ce que la logique du voyage reprenne le dessus. Vous repartez, l’esprit encore légèrement troublé.",
+          "1": "Votre loup jette un long regard au corps avant de se remettre en marche. Ce mutuel silence scelle votre décision de poursuivre.",
+          "2": "Un bref élan de cynisme balaie toute empathie ; vous haussez les épaules et vous éloignez.",
+          "3": "Votre T-Rex se rue sur la carcasse et l'engloutit d'une seule bouchée sous vos yeux ébahis. Repus, il trottine comme si de rien n'était."
+        }
       }
     },
-    "text": "Après de longs jours sans avoir pu vous sustenter, vous voyez sur le bord du chemin un cadavre de renard, semblant tout frais."
+    "text": "Au Croisement des Destins, là où convergent tant de pas pressés, une vision inattendue vous arrête : le corps encore tiède d’un renard gît à demi dissimulé par des herbes couchées. Aucune trace de lutte évidente, pas de flèches, pas de morsure sanglante nette. La chair exhale déjà une odeur métallique mêlée à un relent plus âcre. Quelques mouches isolées tournent, hésitantes à coloniser la dépouille. Faim, prudence, scrupules ou opportunisme se disputent votre esprit."
   },
   "2": {
     "possibilities": {
