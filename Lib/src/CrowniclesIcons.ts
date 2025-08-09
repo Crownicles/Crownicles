@@ -465,10 +465,15 @@ export const CrowniclesIcons: {
 			}
 		},
 		18: {
-			end: { 0: "🚶" },
-			searchScaffolding: "⛓️",
-			searchSite: "🔎",
-			skip: "🚶"
+			searchScaffolding: "🧗",
+			searchSite: "🗺️",
+			investigate: "🕵️",
+			skip: "🏃",
+			end: {
+				0: "🕑",
+				1: "🕑",
+				2: "🕑"
+			}
 		},
 		19: {
 			butch: "🔪",
