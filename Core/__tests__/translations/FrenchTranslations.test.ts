@@ -5,7 +5,7 @@ import * as path from 'path';
 describe('French Translations', () => {
 	const frenchTranslationsPath = path.join(__dirname, '../../..', 'Lang', 'fr');
 
-	// Récupère tous les fichiers JSON de traduction française
+	// Gets all French translation JSON files
 	const getTranslationFiles = (): string[] => {
 		if (!fs.existsSync(frenchTranslationsPath)) {
 			return [];
@@ -15,7 +15,7 @@ describe('French Translations', () => {
 			.map(file => path.join(frenchTranslationsPath, file));
 	};
 
-	// Fonction récursive pour extraire toutes les valeurs string d'un objet JSON
+	// Recursively extracts all string values from a JSON object
 	const extractStringValues = (obj: any): string[] => {
 		const strings: string[] = [];
 
