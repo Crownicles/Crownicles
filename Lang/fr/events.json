@@ -599,51 +599,51 @@
           "8": "Avec l'assurance d'un voyageur chevronné, vous dépecez proprement la dépouille, prélevant la fourrure et les morceaux de viande avec soin. Vous laissez le reste à la nature et reprenez la route, satisfait de votre labeur.",
           "9": "Vous vous acharnez, maladroit : incisions trop profondes, peau arrachée, chair déchirée. La fourrure est irrécupérable. Vous n'emportez que l'odeur tenace de l'échec."
         },
-        "text": "Dépecer la carcasse et récupérer ce qui peut l'être."
+        "text": "Dépecer la carcasse."
       },
       "cook": {
         "outcomes": {
           "0": "Feu vif, découpe propre, cuisson maîtrisée : la chair grillée vous redonne des forces et vous réchauffe l'âme.",
           "1": "Alors que vous approchez pour le saisir, l'animal est pris d'un sursaut nerveux et vous lacère avant de retomber inerte. Blessé, vous abandonnez toute idée de repas.",
           "2": "Vous ratez complètement la cuisson, la viande noircie et malodorante vous rend malade après quelques bouchées. Vous repartez en vous demandant si vous n'auriez pas mieux fait de laisser le renard en paix.",
-          "3": "Votre fidèle compagnon s'approche prudemment du foyer que vous avez allumé. Ensemble, vous partagez ce repas frugal mais réconfortant. La chaleur des flammes et la présence rassurante de votre animal vous redonnent courage pour la suite du voyage.",
-          "4": "Votre conscience vous dicte de ne prendre que le strict nécessaire. Vous cuisez délicatement quelques morceaux choisis et dispersez respectueusement les restes loin du chemin. Ce geste mesuré vous apporte une paix intérieure bienvenue.",
-          "5": "Vous rassemblez quelques brindilles et allumez un feu modeste. La cuisson est simple mais efficace : la chair rôtie calme votre faim sans fioriture. Vous éteignez soigneusement les braises avant de reprendre la route.",
+          "3": "Votre fidèle compagnon s'approche prudemment du foyer que vous avez allumé. Ensemble, vous partagez ce repas frugal mais réconfortant. La chaleur des flammes et la présence rassurante de votre animal vous redonnent du courage pour la suite du voyage.",
+          "4": "Vous cuisez délicatement quelques morceaux choisis et enterrez respectueusement les restes loin du chemin. A la fin de votre repas, vous remerciez le Loup Fenrir pour cette nourriture et reprenez votre route.",
+          "5": "Vous rassemblez quelques brindilles et allumez un petit feu. La cuisson est simple mais efficace et la chair rôtie calme votre faim. Vous éteignez soigneusement les braises avant de reprendre la route.",
           "6": "Par instinct plus que par science, vous mélangez herbes sauvages, racines croquantes et cette pincée de sel oubliée au fond de votre besace. Miracle ! La préparation rustique révèle des saveurs étonnamment harmonieuses qui égayent ce repas improbable.",
-          "7": "Malgré votre maîtrise habituelle des arts culinaires de campagne, cette viande trop longtemps exposée aux éléments dégage une puanteur infecte dès les premiers instants de cuisson. Les quelques bouchées que vous tentez de déglutir vous tordent l'estomac de crampes douloureuses."
+          "7": "Malgré votre maîtrise habituelle des arts culinaires, cette viande trop longtemps exposée aux éléments dégage une puanteur infecte dès les premiers instants de cuisson. Les quelques bouchées que vous avez le courage d'avaler vous tordent l'estomac de crampes douloureuses."
         },
         "text": "Tenter de préparer la viande du renard."
       },
       "inspectCarcass": {
-        "text": "Examiner minutieusement la dépouille avant toute décision.",
         "outcomes": {
           "0": "Votre inspection méthodique révèle une mort récente et naturelle, sans trace de maladie ou d'empoisonnement. Rassuré par cette constatation, vous pouvez envisager la suite de vos actions en toute sécurité.",
-          "1": "En manipulant maladroitement la dépouille pour l'examiner, vous perdez l'équilibre quand une patte rigide glisse entre vos mains. Votre chute sur les pierres du chemin vous laisse meurtri et penaud.",
-          "2": "Votre serpent familier dresse soudain sa tête et siffle d'alarme : il perçoit un relent d'herbes vénéneuses près de la gueule entrouverte. L'animal a sans doute succombé à un appât empoisonné destiné aux nuisibles. Vous notez cette précieuse information.",
-          "3": "En soulevant délicatement le corps pour l'examiner, vous découvrez un petit paquet de cuir coincé sous la carcasse, dissimulé dans les herbes humides. Un voyageur l'aura perdu sans s'en apercevoir. Vous le récupérez avant de remettre respectueusement l'animal en place.",
-          "4": "Ému par ce spectacle de mort prématurée, vous murmurez une courte bénédiction pour l'âme du renard et disposez tendrement quelques brins d'herbe sur sa tête. Ce geste de compassion apaise les troubles de votre conscience.",
-          "5": "Vous scrutez chaque détail avec une minutie excessive, retournant la dépouille sous tous les angles. Hélas, cette inspection prolongée ne vous apprend rien de plus et vous fait perdre un temps précieux."
-        }
+          "1": "En manipulant la dépouille pour l'examiner, le renard lève soudainement sa tête. Surpris, vous n'avez pas le temps de réagir et l'animal vous mord violemment avant de prendre la fuite.",
+          "2": "En manipulant la dépouille pour l'examiner, le renard lève soudainement sa tête. L'animal tente de vous mordre mais vous parvenez à esquiver son attaque. Vous vous préparez à un combat sanglant mais la bête s'enfuit vers la montagne. Il vous faut calmer les battements de votre coeur avant de reprendre votre route.",
+          "3": "Votre serpent familier dresse soudain sa tête et siffle d'alarme : il perçoit un relent d'herbes vénéneuses près de la gueule entrouverte. L'animal a sans doute succombé à un appât empoisonné destiné aux nuisibles. Vous notez cette précieuse information.",
+          "4": "En soulevant délicatement le corps pour l'examiner, vous découvrez un petit paquet de cuir coincé sous la carcasse, dissimulé dans les herbes humides. Un voyageur l'aura perdu sans s'en apercevoir. Vous le récupérez avant de remettre respectueusement l'animal en place.",
+          "5": "Ému par ce spectacle de mort prématurée, vous murmurez une courte bénédiction pour l'âme du renard et disposez tendrement quelques brins d'herbe sur sa tête. Ce geste de compassion apaise les troubles de votre conscience.",
+          "6": "Vous scrutez chaque détail avec une minutie excessive, retournant la dépouille sous tous les angles. Hélas, cette inspection prolongée ne vous apprend rien de plus et vous fait perdre un temps précieux."
+        },
+        "text": "Examiner minutieusement la dépouille."
       },
       "buryCarcass": {
-        "text": "Enterrer dignement la dépouille.",
         "outcomes": {
           "0": "Armé de vos mains et d'une pierre plate, vous creusez avec patience une sépulture convenable. Le petit tertre que vous érigez ensuite transforme ce coin de route en un lieu de paix qui réchauffe votre cœur.",
-          "1": "Votre noble prestance et votre attitude recueillie transforment cet humble enterrement en véritable cérémonie. Tel un chapelain bénissant un défunt, vous officiez avec solennité, laissant derrière vous un carrefour plus propre et plus sacré.",
+          "1": "Votre noble prestance et votre recueillement transforment cet humble enterrement en véritable cérémonie. Tel un chapelain bénissant un défunt, vous honorez la dépouille d'une cérémonie simple mais digne et reprenez votre route.",
           "2": "Pressé d'en finir, vous creusez à la hâte un trou trop superficiel. La terre mal tassée s'effrite déjà, et une odeur désagréable persiste malgré vos efforts. Votre geste, bien qu'animé de bonnes intentions, semble avoir été vain.",
-          "3": "Votre renard apprivoisé observe la scène avec une attention bouleversante, puis pousse un petit gémissement plaintif qui vous va droit au cœur. Touché par l'émotion de votre compagnon, vous redoublez de soin et achevez cette tâche funèbre avec une douceur infinie.",
+          "3": "Votre propre renard observe la scène avec une attention bouleversante, puis pousse un petit gémissement plaintif qui vous va droit au cœur. Touché par l'émotion de votre compagnon, vous redoublez de soin et achevez cette tâche funèbre avec douceur.",
           "4": "Dépourvu d'outils de terrassement, vous improvisez en traînant le corps hors du passage principal et en le recouvrant d'un amas de branchages et de feuilles mortes. Cette sépulture de fortune, bien que sommaire, rend le lieu plus accueillant pour les autres voyageurs."
-        }
+        },
+        "text": "Enterrer dignement le renard."
       },
       "skip": {
-        "text": "Ignorer la scène et repartir sans détour.",
         "outcomes": {
           "0": "Vous détournez délibérément le regard de cette vision macabre et poursuivez votre route d'un pas ferme. Après tout, la mort fait partie du cycle naturel, et vous avez des préoccupations plus urgentes que le sort d'un animal sauvage.",
-          "1": "Au moment précis où vous passez près de la dépouille, d'ultimes spasmes post-mortem agitent le corps du renard. Surpris par ce sursaut inattendu, vous reculez brusquement et vous cognez douloureusement contre un arbre proche.",
-          "2": "Votre chien fidèle aboie soudain avec insistance, vous forçant à ralentir juste à temps pour éviter de glisser sur une flaque de sang coagulé qui s'étendait traîtreusement sur le chemin. Vous le remerciez d'un geste avant de reprendre votre route, indemne grâce à sa vigilance.",
-          "3": "Votre renard familier s'arrête net pour renifler longuement la dépouille de son congénère, refusant obstinément d'avancer malgré vos encouragements. Cette attitude vous agace profondément, et vous le tirez par sa laisse en maugréant contre sa sensibilité déplacée.",
-          "4": "Déterminé à ne pas perdre une seule minute de votre temps précieux, vous accélérez le pas et filez sans accorder un regard à cette scène morbide. Votre esprit pratique l'emporte sur toute forme de curiosité ou de compassion."
-        }
+          "1": "Au moment précis où vous passez près de la dépouille, celle-ci est prises de spasmes. Surpris par ces sursauts inattendus, vous reculez brusquement et vous cognez douloureusement contre un arbre proche.",
+          "2": "Votre renard s'arrête net pour renifler longuement la dépouille de son congénère, refusant obstinément d'avancer malgré vos encouragements. Cette attitude vous agace profondément, et vous le tirez à vous en maugréant contre sa sensibilité déplacée.",
+          "3": "Déterminé à ne pas perdre une seule minute de votre temps précieux, vous accélérez le pas et filez sans accorder un regard à cette scène morbide."
+        },
+        "text": "Ignorer la scène."
       },
       "end": {
         "outcomes": {
