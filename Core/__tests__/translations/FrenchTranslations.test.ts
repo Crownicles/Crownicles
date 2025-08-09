@@ -44,7 +44,7 @@ describe('French Translations', () => {
 				const strings = extractStringValues(translations);
 
 				strings.forEach(text => {
-					const curlyApostropheIndex = text.indexOf("'");
+					const curlyApostropheIndex = text.indexOf("’");
 					if (curlyApostropheIndex !== -1) {
 						violations.push({
 							file: fileName,
