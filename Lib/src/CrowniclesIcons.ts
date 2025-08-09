@@ -477,9 +477,16 @@ export const CrowniclesIcons: {
 		},
 		19: {
 			butch: "🔪",
-			cook: "🍽️",
-			end: { 0: "👀" },
-			skip: "🚶"
+			cook: "🔥",
+			inspectCarcass: "🔍",
+			buryCarcass: "⚰️",
+			skip: "🏃",
+			end: {
+				0: "🤔",
+				1: "🐺",
+				2: "😑",
+				3: "🦖"
+			}
 		},
 		2: {
 			end: { 0: "🐶" },
