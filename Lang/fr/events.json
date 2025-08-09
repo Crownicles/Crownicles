@@ -588,26 +588,25 @@
     "possibilities": {
       "butch": {
         "outcomes": {
-          "0": "Votre faim et votre absence totale de scrupules triomphent : en geste précis mais froid, vous arrachez peau et parties revendables. Vous repartez lesté d'un butin sonnant mais moralement alourdi.",
-          "1": "Habileté et coups assurés : en quelques instants la peau est nette, roulée et prête à la vente. Vous perdez peu de temps et optimisez le profit.",
-          "2": "Votre chien gémit doucement tandis que vous travaillez. Sa présence vous ralentit et vous culpabilise ; vous terminez malgré tout mais plus lentement, empochant un gain honnête.",
-          "3": "Votre propre renard apprivoisé fixe la dépouille avec une hostilité muette. Le malaise vous déconcentre : la chair exhale un souffle malsain qui finit par vous indisposer.",
-          "4": "Votre droiture vous empêche d'exploiter cyniquement l’animal. Vous récupérez seulement ce qui ne se gâchera pas et appliquez quelques gestes respectueux avant de partir.",
-          "5": "Mal préparé et mal outillé, vous imprimez plus de dégâts à la carcasse qu’autre chose. L’odeur vire rapidement : un malaise vous prend.",
-          "6": "Rodé aux travaux sanglants, vous isolez soigneusement des pièces précieuses et une pochette oubliée coincée sous le flanc. Un joli supplément pour la route.",
-          "7": "Vous vous appliquez tant bien que mal. L’opération est grossière et longue ; vous gagnez un peu, au prix d’un détour laborieux.",
-          "8": "Avec l'assurance d'un voyageur chevronné et une conscience apaisée, vous dépecez proprement la dépouille, saluant brièvement l'animal. Votre probité n'empêche pas une vente très profitable.",
-          "9": "Vous vous acharnez, maladroit : incisions trop profondes, peau arrachée, chair déchirée. La fourrure est irrécupérable. Vous n'emportez que l'odeur tenace de l'échec.",
-          "10": "Vous entamez la découpe quand votre renard apprivoisé pousse un cri plaintif et se couche près de la dépouille. La tristesse vous prend : vous renoncez, refermez la chair et enterrez l'animal avec un minimum de dignité."
+          "0": "Votre faim et votre absence totale de scrupules triomphent : en geste précis mais froid, vous arrachez peau et parties revendables. Vous repartez lesté d'un butin conséquent.",
+          "1": "Habileté et coups assurés : en quelques instants la peau est nette, roulée et prête à la vente. Vous reprenez la route satisfait de votre travail.",
+          "2": "Votre chien gémit doucement tandis que vous travaillez. Sa présence vous ralentit et vous culpabilise. Vous vous dépêchez de terminer pensant aux gains que vous aller empocher.",
+          "3": "Vous entamez la découpe quand votre renard apprivoisé pousse un cri plaintif et se couche près de la dépouille. La tristesse vous prend : vous renoncez, refermez la chair et enterrez l'animal avec un minimum de dignité.",
+          "4": "Votre droiture vous empêche d'exploiter l’animal. Vous décidez de le respecter et créez une petite tombe dans les herbes hautes, en murmurant une prière pour son âme. Vous repartez le cœur léger, mais le ventre vide.",
+          "5": "Mal préparé et mal outillé, vous ne parvenez pas à recueillir quoi que ce soit sur la carcasse. L’odeur vire rapidement : un malaise vous prend.",
+          "6": "Rodé aux travaux sanglants, vous mettez rapidement de coté les meilleurs morceaux et trouvez même un objet surprenant dans l'estomac de l'animal... Un joli supplément pour la route qui a surement causé la mort du renard.",
+          "7": "Vous vous appliquez tant bien que mal. L’opération est grossière et longue mais après de longues minutes vous parvenez à récupérer la fourrure et quelques morceaux de viande. Vous n'êtes pas fier de ce travail, mais au moins vous ne repartez pas les mains vides.",
+          "8": "Avec l'assurance d'un voyageur chevronné, vous dépecez proprement la dépouille, prélevant la fourrure et les morceaux de viande avec soin. Vous laissez le reste à la nature et reprenez la route, satisfait de votre labeur.",
+          "9": "Vous vous acharnez, maladroit : incisions trop profondes, peau arrachée, chair déchirée. La fourrure est irrécupérable. Vous n'emportez que l'odeur tenace de l'échec."
         },
         "text": "Dépecer la carcasse et récupérer ce qui peut l'être."
       },
       "cook": {
         "outcomes": {
           "0": "Feu vif, découpe propre, cuisson maîtrisée : la chair grillée vous redonne des forces et vous réchauffe l’âme.",
-          "1": "Alors que vous approchez pour le saisir, l’animal sursaute dans un sursaut nerveux et vous lacère avant de retomber inerte. Blessé, vous abandonnez toute idée de repas.",
-          "2": "Vous bousillez la cuisson ; la viande noircie et malodorante vous rend franchement malade après quelques bouchées.",
-          "3": "Votre compagnon s’invite au repas, partageant proprement la viande rôtie. Ce moment simple vous revigore.",
+          "1": "Alors que vous approchez pour le saisir, l’animal est pris d'un sursaut nerveux et vous lacère avant de retomber inerte. Blessé, vous abandonnez toute idée de repas.",
+          "2": "Vous ratez complètement la cuisson, la viande noircie et malodorante vous rend malade après quelques bouchées. Vous repartez en vous demandant si vous n'auriez pas mieux fait de laisser le renard en paix.",
+          "3": "Votre compagnon s’invite au repas, partageant la viande rôtie. Ce moment simple vous revigore.",
           "4": "Par scrupule, vous ne mangez qu’une portion soigneusement rôtie et jetez le reste loin de la route, satisfait de n’avoir gaspillé ni abusé.",
           "5": "Vous improvisez un foyer rapide. Le repas est modeste mais suffisant pour calmer votre estomac.",
           "6": "Sans vraie méthode vous jetez au hasard herbes, racines et une pincée de sel oublié au fond de votre sac. Contre toute attente la chair s'attendrit et le goût est étonnamment acceptable : la chance du débutant.",
@@ -655,7 +654,7 @@
         }
       }
     },
-    "text": "Au Croisement des Destins, là où convergent tant de pas pressés, une vision inattendue vous arrête : le corps encore tiède d’un renard gît à demi dissimulé par des herbes couchées. Aucune trace de lutte évidente, pas de flèches, pas de morsure sanglante nette. La chair exhale déjà une odeur métallique mêlée à un relent plus âcre. Quelques mouches isolées tournent, hésitantes à coloniser la dépouille. Faim, prudence, scrupules ou opportunisme se disputent votre esprit."
+    "text": "Tandis que vous traversez le Croisement des Destins, une vision inattendue vous arrête : le corps encore tiède d’un renard gît à demi dissimulé par des herbes. Aucune trace de lutte évidente, pas de flèches, pas de morsure sanglante nette. La chair exhale une odeur métallique mêlée à un relent plus âcre. Quelques mouches tournent déjà, prête à coloniser la dépouille."
   },
   "2": {
     "possibilities": {
