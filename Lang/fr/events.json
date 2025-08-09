@@ -532,37 +532,37 @@
     "possibilities": {
       "searchScaffolding": {
         "outcomes": {
-          "0": "Votre agilité vous permet de vous hissez par les perches branlantes et les cordes rêches. De là-haut, Mergagnan s'étale en toits de chaume, et la lueur de la Plage Sentinelle calme vos pensées harassées. Vous vous reposez quelques instants, profitant de la vue apaisante sur la mer agitée avant de redescendre.",
-          "1": "Votre œil et votre main, exercés par la route, passent chaque palan et chaque entraite au crible. Dans une fente garnie de mousse, vous mettez la main sur un objet utile, sans doute délaissé lors de la fuite précipitée des compagnons.",
-          "2": "La corde pourrie cède sous votre prise ! Vous heurtez les pavés inégaux dans un craquement sinistre. La douleur qui vous traverse jusqu'au reins vous rappelle qu'on ne brave pas impunément les échafauds vermoulus quand on est aussi peu agile que vous.",
+          "0": "Votre agilité vous permet de vous hisser par les perches branlantes et les cordes rêches. De là-haut, Mergagnan s'étale en toits de chaume, et la lueur de la Plage Sentinelle calme vos pensées tumultueuses. Vous vous reposez quelques instants, profitant de la vue apaisante sur la mer agitée avant de redescendre.",
+          "1": "Votre œil et votre main exercés par la route, passent chaque palan et chaque poutre au crible. Dans une fente garnie de mousse, vous mettez la main sur un objet utile, sans doute délaissé lors de la fuite précipitée des travailleurs.",
+          "2": "La corde pourrie cède sous votre prise ! Vous heurtez les pavés inégaux dans un craquement sinistre. La douleur qui vous traverse jusqu'aux reins vous rappelle qu'on ne brave pas impunément les échafauds vermoulus quand on est aussi peu agile que vous.",
           "3": "Grâce à votre expérience de vétéran, vous repérez d'instinct les caches et renforts d'ouvriers. Derrière une solive chevillée, vous découvrez une pièce d'atelier de maître, soigneusement dissimulée, elle a certainement été cachée là afin d'éviter un vol avant la fin de la construction. Raisonnant qu'elle ne sera plus d'utilité à personne maintenant que la construction a été abandonnée, vous la récupérez avec précaution, conscient de sa valeur.",
           "4": "Votre primate bondit de perche en perche avec une joie espiègle. De ses doigts habiles, il extirpe d'un recoin inaccessible une trouvaille oubliée par les bâtisseurs, qu'il vous dépose fièrement dans la paume.",
-          "5": "Votre robuste constitution fait grincer les vielles planches de la construction que vous sentez plier sous vos pieds. Une latte craque, mais vous vous rattrapez de justesse, Le reste de l'ascension se fait sans encombre. Vous ne trouvez rien de valeur en haut des échafauds et redescendez soulagé de n'avoir pas chuté.",
+          "5": "Votre robuste constitution fait grincer les vieilles planches de la construction que vous sentez plier sous vos pieds. Une latte craque, mais vous vous rattrapez de justesse. Le reste de l'ascension se fait sans encombre. Vous ne trouvez rien en haut des échafauds et redescendez soulagé de n'avoir pas chuté.",
           "6": "Piqué par la cupidité, vous arrachez clous et pièces de bois, fouillez les poches de cuir. Hélas, tout n'est plus que rouille et pourriture : le chantier a déjà été débarrassé du peu qui valait encore. Vous repartez, l'âme en peine et les mains vides.",
           "7": "Votre carrure fait geindre l'ouvrage, mais vos bras puissants vous hissent jusqu’à la panne faîtière. Là, blotti sous une bavette de tuiles, vous trouvez un objet de valeur oublié des maîtres d'œuvre.",
           "8": "À mesure que vous grimpez, barreaux et nœuds cèdent en chaîne. Sans assez d'élan pour vous rattraper, vous chutez lourdement dans un vacarme de bois brisé. Vous restez étourdi, le souffle coupé.",
           "9": "Prudent car vous manquez encore d'expérience, vous n'osez guère dépasser le premier niveau. En remettant votre besace, vous remarquez un petit outil gravé, abandonné tout près de vos pieds. Vous décidez de le prendre, pensant qu'il pourrait vous être utile plus tard.",
           "10": "Votre prudence vous fait rebrousser chemin, mais le mauvais sort s'acharne : une tuile descellée dégringole et vous heurte au crâne. Même la sagesse n'écarte pas tous les périls.",
-          "11": "Avec l'aisance d'un maître-bâtisseur, vous domptez les madriers et atteignez la pointe. Miraculeusement, vous découvrez une petite cache que vous n'aviez pas remarqué auparavant, plusieurs objets brillent entre deux planches. Vous subtilisez ce que vous pouvez, certain d'en tirer quelques pièces chez un brocanteur peu regardant ou encore d'en trouver un usage pour dans vos aventures futures."
+          "11": "Avec l'aisance d'un maître-bâtisseur, vous domptez les madriers et atteignez la pointe. Miraculeusement, vous découvrez une petite cache que vous n'aviez pas remarquée auparavant, et plusieurs objets brillent entre deux planches. Vous subtilisez ce que vous pouvez, certain d'en tirer quelques pièces chez un brocanteur peu regardant ou encore d'en trouver un usage pour vos aventures futures."
         },
         "text": "Gravir les échafauds et fouiller la charpente."
       },
       "searchSite": {
         "outcomes": {
-          "0": "Vous retournez madriers et caisses, grattez la mousse, levez les bâches moisies : rien que poussière, humidité et silence. Les hommes sont partis en hâte, sans prendre le temps de ranger.",
+          "0": "Vous retournez madriers et caisses, grattez la mousse, levez les bâches moisies : rien que poussière, humidité et silence. Les hommes sont partis en hâte, mais ont tout de même emporté les objets de valeur.",
           "1": "Connaisseur des lieux délaissés, vous fouillez les zones où l'on cache l'outillage. Un coffre de charpentier gît sous une bâche : à l'intérieur, un objet préservé, oublié depuis l'arrêt brutal des travaux.",
           "2": "À trop vous presser, vous plongez la main dans une huche sans regarder. Une lame de rabot rouillée vous entaille profondément. Le sang perle, et vos doigts tremblent. Il vous faudra un moment pour panser cette blessure.",
-          "3": "L'œil attiré par tout ce qui ressemble à de l'argent, vous pillez tout ce qui ressemble à des objets de valeurs encore présent sur le site, clous forgés, racloirs, tout est récupérable ! Le butin est honnête, et vous vous réjouissez déjà du profit que vous tirerez de ce larcin.",
+          "3": "L'œil attiré par tout ce qui ressemble à de l'argent, vous pillez les objets de valeur encore présents sur le site : clous forgés, racloirs, tout est récupérable ! Le butin est honnête, et vous vous réjouissez déjà du profit que vous tirerez de ce larcin.",
           "4": "Votre chien renifle longuement le sol battu. Sous un amas de gravats, il met à jour une cache contenant un objet précieux mis à l'abri avant la débâcle.",
-          "5": "Vos bras forcent verrous et soulèvent pierres taillées. Le vacarme attire le regard de plusieurs passants, mais vos efforts débusquent du matériel bien dissimulé et quelques pièces sonnantes.",
+          "5": "Vos bras forcent les verrous et soulèvent les pierres taillées. Le vacarme attire le regard de plusieurs passants, mais vos efforts vous permettent de débusquer du matériel bien dissimulé et quelques pièces scintillantes.",
           "6": "Tandis que vous fouillez le site sans rien découvrir d'intéressant, votre familier s'en donne à cœur-joie parmi bois et pierres. En un clin d'œil, un abri propre et sec se dresse : vous y passez une nuit paisible qui vous permet de reprendre des forces."
         },
         "text": "Fouiller méthodiquement le chantier déserté."
       },
       "investigate": {
         "outcomes": {
-          "0": "Vous relevez marques de craie, numéros de travées, comptes griffonnés à la hâte. Entre deux notes, un nom revient : baron Almerac. À côté, la mention d'une « coupe de deniers » et d'intérêts impayés : l'argent se serait tari avant la pierre.",
-          "1": "Avec patience, vous interrogez les indices. Dans une niche, vous trouvez un billet froissé et déchiré. Vous parvenez tout de même à déchiffrer quelque mots « Fièvre des marais — que Dieu nous garde ». Il semblerait que le manque d'argent n'ai pas été la seule épreuve qui soit venu à bout de cette construction.",
+          "0": "Vous relevez marques de craie, numéros de travées, comptes griffonnés à la hâte, et entre deux notes, un nom revient : baron Almerac. À côté, la mention d'une « coupe de deniers » et d'intérêts impayés : l'argent se serait tari avant la pierre.",
+          "1": "Avec patience, vous fouillez le chantier à la recherche d'indices. Dans une niche, vous trouvez un billet froissé et déchiré. Vous parvenez tout de même à déchiffrer quelques mots : « Fièvre des marais — que Dieu nous garde ». Il semblerait que le manque d'argent n'ait pas été la seule épreuve qui soit venue à bout de cette construction.",
           "2": "Vous épluchez les indices jusqu'à l'égarement. Les pistes se contredisent, les marques effacées ne livrent rien. Vous perdez un temps précieux sans rien apprendre sur l'histoire de ces lieux."
         },
         "text": "Enquêter sur les raisons de l'abandon."
@@ -578,7 +578,7 @@
         "outcomes": {
           "0": "Vous demeurez un long moment à contempler cet ouvrage fantôme : solives qui grincent, toiles d'araignée et registres oubliés. Puis, le cœur songeur, vous vous décidez à reprendre la route.",
           "1": "Votre familier, haut dans le ciel, vrille subitement et se pose près d'un renfoncement. Il en retire un objet brillant et vous le dépose dans la main avec un petit cri satisfait. Vous le félicitez pour cette trouvaille, la chance sourit souvent à ceux qui prennent le temps de chercher.",
-          "2": "Sans prévenir, votre gorille tambourine de ses poings un pan de mur ! La maçonnerie cède et une pierre vous heurte le crâne. Vous le rabrouez en massant votre tête, cet incident aurait dû être évité."
+          "2": "Sans prévenir, votre gorille tambourine de ses poings un pan de mur ! La maçonnerie cède et une pierre vous heurte le crâne. Vous le rabrouez en massant votre tête, car cet incident aurait dû être évité."
         }
       }
     },
