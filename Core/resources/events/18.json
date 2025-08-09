@@ -5,7 +5,7 @@
         "0": {
           "requirements": {
             "speed": { "min": 490 }
-          }
+          },
           "health": 9
         },
         "1": {
@@ -55,7 +55,7 @@
         "7": {
           "requirements": {
             "attack": { "min": 344 },
-            "defense": { "min": 217 },
+            "defense": { "min": 217 }
           },
           "randomItem": {},
           "money": 50
@@ -129,7 +129,7 @@
             "attack": { "min": 300 }
           },
           "randomItem": {},
-          "karma": -7
+          "karma": -7,
           "money": 80
         },
         "6": {
@@ -157,7 +157,7 @@
           },
           "karma": 1,
           "effect": "occupied",
-          "lostTime": 35,
+          "lostTime": 35
         },
         "2": {
           "effect": "occupied",
