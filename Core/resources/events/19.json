@@ -41,7 +41,6 @@
           "requirements": {
             "karma": { "min": 80 }
           },
-          "money": 90,
           "karma": 3,
           "effect": "occupied",
           "lostTime": 35
@@ -88,15 +87,6 @@
           "karma": -5,
           "effect": "occupied",
           "lostTime": 25
-        },
-        "10": {
-          "requirements": {
-            "validPetTypeIds": [20],
-            "karma": { "min": 40 }
-          },
-          "karma": 5,
-          "effect": "occupied",
-          "lostTime": 40
         }
       }
     },
