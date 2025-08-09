@@ -42,10 +42,10 @@
         },
         "5": {
           "requirements": {
-            "defense": { "min": 250 },
-            "effect": "occupied",
-            "lostTime": 20
-          }
+            "defense": { "min": 250 }
+          },
+          "effect": "occupied",
+          "lostTime": 20
         },
         "6": {
           "effect": "occupied",
