@@ -539,7 +539,7 @@
           "4": "Votre primate bondit de perche en perche avec une joie espiègle. De ses doigts habiles, il extirpe d'un recoin inaccessible une trouvaille oubliée par les bâtisseurs, qu'il vous dépose fièrement dans la paume.",
           "5": "Votre robuste constitution fait grincer les vieilles planches de la construction que vous sentez plier sous vos pieds. Une latte craque, mais vous vous rattrapez de justesse. Le reste de l'ascension se fait sans encombre. Vous ne trouvez rien en haut des échafauds et redescendez soulagé de n'avoir pas chuté.",
           "6": "Piqué par la cupidité, vous arrachez clous et pièces de bois, fouillez les poches de cuir. Hélas, tout n'est plus que rouille et pourriture : le chantier a déjà été débarrassé du peu qui valait encore. Vous repartez, l'âme en peine et les mains vides.",
-          "7": "Votre carrure fait geindre l'ouvrage, mais vos bras puissants vous hissent jusqu’à la panne faîtière. Là, blotti sous une bavette de tuiles, vous trouvez un objet de valeur oublié des maîtres d'œuvre.",
+          "7": "Votre carrure fait geindre l'ouvrage, mais vos bras puissants vous hissent jusqu'à la panne faîtière. Là, blotti sous une bavette de tuiles, vous trouvez un objet de valeur oublié des maîtres d'œuvre.",
           "8": "À mesure que vous grimpez, barreaux et nœuds cèdent en chaîne. Sans assez d'élan pour vous rattraper, vous chutez lourdement dans un vacarme de bois brisé. Vous restez étourdi, le souffle coupé.",
           "9": "Prudent car vous manquez encore d'expérience, vous n'osez guère dépasser le premier niveau. En remettant votre besace, vous remarquez un petit outil gravé, abandonné tout près de vos pieds. Vous décidez de le prendre, pensant qu'il pourrait vous être utile plus tard.",
           "10": "Votre prudence vous fait rebrousser chemin, mais le mauvais sort s'acharne : une tuile descellée dégringole et vous heurte au crâne. Même la sagesse n'écarte pas tous les périls.",
@@ -562,7 +562,7 @@
       "investigate": {
         "outcomes": {
           "0": "Vous relevez marques de craie, numéros de travées, comptes griffonnés à la hâte, et entre deux notes, un nom revient : baron Almerac. À côté, la mention d'une « coupe de deniers » et d'intérêts impayés : l'argent se serait tari avant la pierre.",
-          "1": "Avec patience, vous fouillez le chantier à la recherche d'indices. Dans une niche, vous trouvez un billet froissé et déchiré. Vous parvenez tout de même à déchiffrer quelques mots : « Fièvre des marais — que Dieu nous garde ». Il semblerait que le manque d'argent n'ait pas été la seule épreuve qui soit venue à bout de cette construction.",
+          "1": "Avec patience, vous fouillez le chantier à la recherche d'indices. Dans une niche, vous trouvez un billet froissé et déchiré. Vous parvenez tout de même à déchiffrer quelques mots : « Fièvre des marais - que Dieu nous garde ». Il semblerait que le manque d'argent n'ait pas été la seule épreuve qui soit venue à bout de cette construction.",
           "2": "Vous épluchez les indices jusqu'à l'égarement. Les pistes se contredisent, les marques effacées ne livrent rien. Vous perdez un temps précieux sans rien apprendre sur l'histoire de ces lieux."
         },
         "text": "Enquêter sur les raisons de l'abandon."
@@ -582,7 +582,7 @@
         }
       }
     },
-    "text": "Au détour des ruelles paisibles de Mergagnan, vous tombez sur un chantier figé comme par un sort. Poutres noircies, échafauds grinçants et outils rouillés témoignent d’un labeur rompu net. On disait que le baron Almerac, riche bienfaiteur sans héritier, finançait l’édification d’une halle de pierre. Depuis sa mort soudaine, les deniers auraient cessé d’affluer, les maîtres d’œuvre se seraient querellés avec la guilde, et les compagnons auraient déserté, laissant tout en l’état, jusqu’aux registres tachés d’encre et aux dalles mal scellées."
+    "text": "Au détour des ruelles paisibles de Mergagnan, vous tombez sur un chantier figé comme par un sort. Poutres noircies, échafauds grinçants et outils rouillés témoignent d'un labeur rompu net. On disait que le baron Almerac, riche bienfaiteur sans héritier, finançait l'édification d'une halle de pierre. Depuis sa mort soudaine, les deniers auraient cessé d'affluer, les maîtres d'œuvre se seraient querellés avec la guilde, et les compagnons auraient déserté, laissant tout en l'état, jusqu'aux registres tachés d'encre et aux dalles mal scellées."
   },
   "19": {
     "possibilities": {
@@ -592,10 +592,10 @@
           "1": "Habileté et coups assurés : en quelques instants la peau est nette, roulée et prête à la vente. Vous reprenez la route satisfait de votre travail.",
           "2": "Votre chien gémit doucement tandis que vous travaillez. Sa présence vous ralentit et vous culpabilise. Vous vous dépêchez de terminer pensant aux gains que vous aller empocher.",
           "3": "Vous entamez la découpe quand votre renard apprivoisé pousse un cri plaintif et se couche près de la dépouille. La tristesse vous prend : vous renoncez, refermez la chair et enterrez l'animal avec un minimum de dignité.",
-          "4": "Votre droiture vous empêche d'exploiter l’animal. Vous décidez de le respecter et créez une petite tombe dans les herbes hautes, en murmurant une prière pour son âme. Vous repartez le cœur léger, mais le ventre vide.",
-          "5": "Mal préparé et mal outillé, vous ne parvenez pas à recueillir quoi que ce soit sur la carcasse. L’odeur vire rapidement : un malaise vous prend.",
+          "4": "Votre droiture vous empêche d'exploiter l'animal. Vous décidez de le respecter et créez une petite tombe dans les herbes hautes, en murmurant une prière pour son âme. Vous repartez le cœur léger, mais le ventre vide.",
+          "5": "Mal préparé et mal outillé, vous ne parvenez pas à recueillir quoi que ce soit sur la carcasse. L'odeur vire rapidement : un malaise vous prend.",
           "6": "Rodé aux travaux sanglants, vous mettez rapidement de coté les meilleurs morceaux et trouvez même un objet surprenant dans l'estomac de l'animal... Un joli supplément pour la route qui a surement causé la mort du renard.",
-          "7": "Vous vous appliquez tant bien que mal. L’opération est grossière et longue mais après de longues minutes vous parvenez à récupérer la fourrure et quelques morceaux de viande. Vous n'êtes pas fier de ce travail, mais au moins vous ne repartez pas les mains vides.",
+          "7": "Vous vous appliquez tant bien que mal. L'opération est grossière et longue mais après de longues minutes vous parvenez à récupérer la fourrure et quelques morceaux de viande. Vous n'êtes pas fier de ce travail, mais au moins vous ne repartez pas les mains vides.",
           "8": "Avec l'assurance d'un voyageur chevronné, vous dépecez proprement la dépouille, prélevant la fourrure et les morceaux de viande avec soin. Vous laissez le reste à la nature et reprenez la route, satisfait de votre labeur.",
           "9": "Vous vous acharnez, maladroit : incisions trop profondes, peau arrachée, chair déchirée. La fourrure est irrécupérable. Vous n'emportez que l'odeur tenace de l'échec."
         },
@@ -603,58 +603,58 @@
       },
       "cook": {
         "outcomes": {
-          "0": "Feu vif, découpe propre, cuisson maîtrisée : la chair grillée vous redonne des forces et vous réchauffe l’âme.",
-          "1": "Alors que vous approchez pour le saisir, l’animal est pris d'un sursaut nerveux et vous lacère avant de retomber inerte. Blessé, vous abandonnez toute idée de repas.",
+          "0": "Feu vif, découpe propre, cuisson maîtrisée : la chair grillée vous redonne des forces et vous réchauffe l'âme.",
+          "1": "Alors que vous approchez pour le saisir, l'animal est pris d'un sursaut nerveux et vous lacère avant de retomber inerte. Blessé, vous abandonnez toute idée de repas.",
           "2": "Vous ratez complètement la cuisson, la viande noircie et malodorante vous rend malade après quelques bouchées. Vous repartez en vous demandant si vous n'auriez pas mieux fait de laisser le renard en paix.",
-          "3": "Votre compagnon s’invite au repas, partageant la viande rôtie. Ce moment simple vous revigore.",
-          "4": "Par scrupule, vous ne mangez qu’une portion soigneusement rôtie et jetez le reste loin de la route, satisfait de n’avoir gaspillé ni abusé.",
-          "5": "Vous improvisez un foyer rapide. Le repas est modeste mais suffisant pour calmer votre estomac.",
-          "6": "Sans vraie méthode vous jetez au hasard herbes, racines et une pincée de sel oublié au fond de votre sac. Contre toute attente la chair s'attendrit et le goût est étonnamment acceptable : la chance du débutant.",
-          "7": "Votre technique irréprochable ne suffit pas : la viande, trop vieille, libère à la chaleur une odeur fétide. Quelques bouchées plus tard, des crampes vous plient en deux."
+          "3": "Votre fidèle compagnon s'approche prudemment du foyer que vous avez allumé. Ensemble, vous partagez ce repas frugal mais réconfortant. La chaleur des flammes et la présence rassurante de votre animal vous redonnent courage pour la suite du voyage.",
+          "4": "Votre conscience vous dicte de ne prendre que le strict nécessaire. Vous cuisez délicatement quelques morceaux choisis et dispersez respectueusement les restes loin du chemin. Ce geste mesuré vous apporte une paix intérieure bienvenue.",
+          "5": "Vous rassemblez quelques brindilles et allumez un feu modeste. La cuisson est simple mais efficace : la chair rôtie calme votre faim sans fioriture. Vous éteignez soigneusement les braises avant de reprendre la route.",
+          "6": "Par instinct plus que par science, vous mélangez herbes sauvages, racines croquantes et cette pincée de sel oubliée au fond de votre besace. Miracle ! La préparation rustique révèle des saveurs étonnamment harmonieuses qui égayent ce repas improbable.",
+          "7": "Malgré votre maîtrise habituelle des arts culinaires de campagne, cette viande trop longtemps exposée aux éléments dégage une puanteur infecte dès les premiers instants de cuisson. Les quelques bouchées que vous tentez de déglutir vous tordent l'estomac de crampes douloureuses."
         },
         "text": "Tenter de préparer la viande du renard."
       },
       "inspectCarcass": {
         "text": "Examiner minutieusement la dépouille avant toute décision.",
         "outcomes": {
-          "0": "Inspection rapide et précise : aucune trace de fièvre ni d’infection. Vous repartez rassuré.",
-          "1": "En manipulant lourdement le corps, une patte tordue glisse et vous fait trébucher ; vous vous blessez sur les graviers.",
-          "2": "Votre serpent détecte un parfum d’herbes rances près de la gueule : sans doute un appât empoisonné. Vous notez prudemment l’information.",
-          "3": "Sous la carcasse, coincée dans l’herbe humide, vous découvrez un petit paquet oublié. Vous le récupérez avant de replacer le corps.",
-          "4": "Vous murmurez une courte bénédiction pour l’animal avant de recouvrir sa tête d’herbes. Un acte de respect qui apaise votre conscience.",
-          "5": "Vous perdez du temps à retourner chaque détail sans résultat supplémentaire. Rien d’autre à apprendre ici."
+          "0": "Votre inspection méthodique révèle une mort récente et naturelle, sans trace de maladie ou d'empoisonnement. Rassuré par cette constatation, vous pouvez envisager la suite de vos actions en toute sécurité.",
+          "1": "En manipulant maladroitement la dépouille pour l'examiner, vous perdez l'équilibre quand une patte rigide glisse entre vos mains. Votre chute sur les pierres du chemin vous laisse meurtri et penaud.",
+          "2": "Votre serpent familier dresse soudain sa tête et siffle d'alarme : il perçoit un relent d'herbes vénéneuses près de la gueule entrouverte. L'animal a sans doute succombé à un appât empoisonné destiné aux nuisibles. Vous notez cette précieuse information.",
+          "3": "En soulevant délicatement le corps pour l'examiner, vous découvrez un petit paquet de cuir coincé sous la carcasse, dissimulé dans les herbes humides. Un voyageur l'aura perdu sans s'en apercevoir. Vous le récupérez avant de remettre respectueusement l'animal en place.",
+          "4": "Ému par ce spectacle de mort prématurée, vous murmurez une courte bénédiction pour l'âme du renard et disposez tendrement quelques brins d'herbe sur sa tête. Ce geste de compassion apaise les troubles de votre conscience.",
+          "5": "Vous scrutez chaque détail avec une minutie excessive, retournant la dépouille sous tous les angles. Hélas, cette inspection prolongée ne vous apprend rien de plus et vous fait perdre un temps précieux."
         }
       },
       "buryCarcass": {
         "text": "Enterrer dignement la dépouille.",
         "outcomes": {
-          "0": "Vous creusez avec méthode, ménageant un petit tertre. Le geste vous emplit d’une sérénité tranquille.",
-          "1": "Armure luisante et attitude pieuse : vous officiez presque comme un chapelain, laissant derrière vous un carrefour plus propre.",
-          "2": "Vous bâclez un trou superficiel. La terre retombe mal, et une odeur persistante demeure ; votre geste semble vain.",
-          "3": "Votre renard apprivoisé observe la scène, finit par pousser un petit cri plaintif ; vous redoublez de soin et achevez la besogne avec douceur.",
-          "4": "Faute d’outils, vous traînez simplement le corps hors du passage et recouvrez de branchages. Sommaire, mais utile."
+          "0": "Armé de vos mains et d'une pierre plate, vous creusez avec patience une sépulture convenable. Le petit tertre que vous érigez ensuite transforme ce coin de route en un lieu de paix qui réchauffe votre cœur.",
+          "1": "Votre noble prestance et votre attitude recueillie transforment cet humble enterrement en véritable cérémonie. Tel un chapelain bénissant un défunt, vous officiez avec solennité, laissant derrière vous un carrefour plus propre et plus sacré.",
+          "2": "Pressé d'en finir, vous creusez à la hâte un trou trop superficiel. La terre mal tassée s'effrite déjà, et une odeur désagréable persiste malgré vos efforts. Votre geste, bien qu'animé de bonnes intentions, semble avoir été vain.",
+          "3": "Votre renard apprivoisé observe la scène avec une attention bouleversante, puis pousse un petit gémissement plaintif qui vous va droit au cœur. Touché par l'émotion de votre compagnon, vous redoublez de soin et achevez cette tâche funèbre avec une douceur infinie.",
+          "4": "Dépourvu d'outils de terrassement, vous improvisez en traînant le corps hors du passage principal et en le recouvrant d'un amas de branchages et de feuilles mortes. Cette sépulture de fortune, bien que sommaire, rend le lieu plus accueillant pour les autres voyageurs."
         }
       },
       "skip": {
         "text": "Ignorer la scène et repartir sans détour.",
         "outcomes": {
-          "0": "Vous détournez le regard et passez d’un pas indifférent, rationalisant votre choix.",
-          "1": "Au moment où vous passez, des spasmes post-mortem vous surprennent ; vous sursautez et vous cognez en reculant.",
-          "2": "Votre chien aboie, vous faisant ralentir juste assez pour éviter de glisser sur une flaque sanguinolente. Vous repartez indemne.",
-          "3": "Votre renard familier renifle la dépouille et refuse d’avancer un instant. L’agacement vous fait maugréer contre lui.",
-          "4": "Vous filez sans un regard en arrière, décidé à ne pas perdre une minute de plus."
+          "0": "Vous détournez délibérément le regard de cette vision macabre et poursuivez votre route d'un pas ferme. Après tout, la mort fait partie du cycle naturel, et vous avez des préoccupations plus urgentes que le sort d'un animal sauvage.",
+          "1": "Au moment précis où vous passez près de la dépouille, d'ultimes spasmes post-mortem agitent le corps du renard. Surpris par ce sursaut inattendu, vous reculez brusquement et vous cognez douloureusement contre un arbre proche.",
+          "2": "Votre chien fidèle aboie soudain avec insistance, vous forçant à ralentir juste à temps pour éviter de glisser sur une flaque de sang coagulé qui s'étendait traîtreusement sur le chemin. Vous le remerciez d'un geste avant de reprendre votre route, indemne grâce à sa vigilance.",
+          "3": "Votre renard familier s'arrête net pour renifler longuement la dépouille de son congénère, refusant obstinément d'avancer malgré vos encouragements. Cette attitude vous agace profondément, et vous le tirez par sa laisse en maugréant contre sa sensibilité déplacée.",
+          "4": "Déterminé à ne pas perdre une seule minute de votre temps précieux, vous accélérez le pas et filez sans accorder un regard à cette scène morbide. Votre esprit pratique l'emporte sur toute forme de curiosité ou de compassion."
         }
       },
       "end": {
         "outcomes": {
-          "0": "Vous restez figé, indécis, jusqu’à ce que la logique du voyage reprenne le dessus. Vous repartez, l’esprit encore légèrement troublé.",
-          "1": "Votre loup jette un long regard au corps avant de se remettre en marche. Ce mutuel silence scelle votre décision de poursuivre.",
-          "2": "Un bref élan de cynisme balaie toute empathie ; vous haussez les épaules et vous éloignez.",
-          "3": "Votre T-Rex se rue sur la carcasse et l'engloutit d'une seule bouchée sous vos yeux ébahis. Repus, il trottine comme si de rien n'était."
+          "0": "Vous demeurez immobile un long moment, partagé entre diverses émotions contradictoires. Finalement, la logique implacable du voyage reprend le dessus sur vos hésitations. Vous reprenez votre route, l'esprit encore légèrement troublé par cette rencontre inattendue avec la mort.",
+          "1": "Votre loup fidèle jette un regard long et silencieux vers le corps inerte, comme s'il rendait un dernier hommage à ce frère des bois. Puis, sans un bruit, il se remet en marche à vos côtés. Ce mutuel silence scelle tacitement votre décision de poursuivre votre périple.",
+          "2": "Un bref élan de cynisme balaie toute trace d'empathie dans votre cœur endurci. La mort fait partie de la vie, point final. Vous haussez les épaules avec indifférence et vous éloignez sans un regard en arrière pour cette banale scène de mortalité.",
+          "3": "Sans que vous ayez le temps de réagir, votre T-Rex se rue sur la carcasse avec un rugissement de satisfaction et l'engloutit d'une seule bouchée monstrueuse sous vos yeux ébahis. Repus et satisfait, il trottine ensuite gaiement à vos côtés comme si de rien n'était, léchant encore ses babines tachées de sang."
         }
       }
     },
-    "text": "Tandis que vous traversez le Croisement des Destins, une vision inattendue vous arrête : le corps encore tiède d’un renard gît à demi dissimulé par des herbes. Aucune trace de lutte évidente, pas de flèches, pas de morsure sanglante nette. La chair exhale une odeur métallique mêlée à un relent plus âcre. Quelques mouches tournent déjà, prête à coloniser la dépouille."
+    "text": "Tandis que vous traversez le Croisement des Destins, une vision inattendue vous arrête : le corps encore tiède d'un renard gît à demi dissimulé par des herbes. Aucune trace de lutte évidente, pas de flèches, pas de morsure sanglante nette. La chair exhale une odeur métallique mêlée à un relent plus âcre. Quelques mouches tournent déjà, prête à coloniser la dépouille."
   },
   "2": {
     "possibilities": {
@@ -2836,24 +2836,24 @@
       "accept": {
         "text": "Accepter l'invitation",
         "outcomes": {
-          "0": "Vous grimpez à bord du navire, attiré par les rires et la lumière vacillante des lanternes. La fête bat son plein, les flots de rhum circulent sans retenue, et bientôt, vos sens se brouillent dans une brume douce et traîtresse. Le réveil est brutal : dans l'obscurité de la cale, un mal de crâne sourd vous tient compagnie. L’air marin vous gifle le visage lorsque, chancelant, vous regagnez le quai, sans le moindre souvenir de la nuit passée.",
-          "1": "À peine votre pied posé sur le pont, une tension sourde vous étreint. Les visages de l’équipage sont crispés, les regards fuyants. Puis, comme un éclair, la fureur éclate : deux hommes s’empoignent, la querelle dégénère en une mêlée confuse. Ballotté entre les coups, vous échappez de peu à une blessure grave. C’est le cœur battant et les mains tremblantes que vous regagnez la terre ferme, l’esprit ébranlé par cette violence soudaine.",
-          "2": "Le capitaine, un sourire en coin, vous invite à prendre part à un jeu dont les règles semblent aussi floues que douteuses. Vous acceptez, le souffle suspendu, et vous laissez guider par le hasard. Contre toute attente, la chance vous sourit : une bourse d’or et un objet énigmatique, serti de symboles oubliés, vous sont remis à contrecœur par un capitaine visiblement contrarié par votre victoire."
+          "0": "Vous grimpez à bord du navire, attiré par les rires et la lumière vacillante des lanternes. La fête bat son plein, les flots de rhum circulent sans retenue, et bientôt, vos sens se brouillent dans une brume douce et traîtresse. Le réveil est brutal : dans l'obscurité de la cale, un mal de crâne sourd vous tient compagnie. L'air marin vous gifle le visage lorsque, chancelant, vous regagnez le quai, sans le moindre souvenir de la nuit passée.",
+          "1": "À peine votre pied posé sur le pont, une tension sourde vous étreint. Les visages de l'équipage sont crispés, les regards fuyants. Puis, comme un éclair, la fureur éclate : deux hommes s'empoignent, la querelle dégénère en une mêlée confuse. Ballotté entre les coups, vous échappez de peu à une blessure grave. C'est le cœur battant et les mains tremblantes que vous regagnez la terre ferme, l'esprit ébranlé par cette violence soudaine.",
+          "2": "Le capitaine, un sourire en coin, vous invite à prendre part à un jeu dont les règles semblent aussi floues que douteuses. Vous acceptez, le souffle suspendu, et vous laissez guider par le hasard. Contre toute attente, la chance vous sourit : une bourse d'or et un objet énigmatique, serti de symboles oubliés, vous sont remis à contrecœur par un capitaine visiblement contrarié par votre victoire."
         }
       },
       "refuse": {
         "text": "Refuser l'invitation",
         "outcomes": {
-          "0": "Vous déclinez poliment, le regard posé sur les voiles noires qui battent au vent. Le capitaine vous observe un instant, puis hausse les épaules avec un sourire narquois. Sans un mot de plus, il fait signe à son équipage de lever l’ancre. Vous restez là, silencieux, tandis que le navire s’éloigne lentement, avalé par l’horizon brumeux. Vous reprenez alors votre route, le cœur serein, loin des aventures maritimes.",
-          "1": "Votre refus franchit vos lèvres avec fermeté. Mais le regard du capitaine se durcit, son sourire s’efface. D’un geste sec, il ordonne à ses hommes de viser. Le tonnerre d’un canon résonne, projetant sable et éclats tout autour de vous. Pris de panique, vous fuyez à travers la crique, le souffle court, poursuivi par l’écho grinçant d’un rire cruel."
+          "0": "Vous déclinez poliment, le regard posé sur les voiles noires qui battent au vent. Le capitaine vous observe un instant, puis hausse les épaules avec un sourire narquois. Sans un mot de plus, il fait signe à son équipage de lever l'ancre. Vous restez là, silencieux, tandis que le navire s'éloigne lentement, avalé par l'horizon brumeux. Vous reprenez alors votre route, le cœur serein, loin des aventures maritimes.",
+          "1": "Votre refus franchit vos lèvres avec fermeté. Mais le regard du capitaine se durcit, son sourire s'efface. D'un geste sec, il ordonne à ses hommes de viser. Le tonnerre d'un canon résonne, projetant sable et éclats tout autour de vous. Pris de panique, vous fuyez à travers la crique, le souffle court, poursuivi par l'écho grinçant d'un rire cruel."
         }
       },
       "end": {
         "outcomes": {
-          "0": "Vous tournez le dos au capitaine et allez vous asseoir sur le sable, laissant votre regard suivre le vaisseau pirate qui, toutes voiles dehors, quitte lentement la baie. Le grondement sourd des flots accompagne son départ, jusqu’à ce qu’il ne soit plus qu’un point à l’horizon. Enfin, vous vous relevez, époussetez le sable de vos vêtements, et reprenez votre route, seul sur le sentier battu par les vents.",
-          "1": "Vous détournez votre regard du capitaine et laissez vos pensées voguer au rythme des flots. Là, sur le rivage balayé par les vents, votre œil est attiré par une antique bouteille, à demi enfouie dans le sable. Intrigué, vous la saisissez et y découvrez un vieux parchemin jauni par le temps. Les signes tracés d'une main tremblante y révèlent l'emplacement d'un lieu secret, dissimulé non loin. Guidé par ces énigmes, vous arpentez la lande durant longuement, jusqu’à ce que vos pas vous mènent à un coffre ancien, enfoui sous les ronces. En l’ouvrant, vous découvrez un objet aux allures mystérieuses...",
-          "2": "Vous tournez le dos au capitaine et laissez vos pas vous guider sur la plage battue par les vents. Une bouteille à demi enfouie dans le sable attire votre regard. Vous la déterrez avec précaution, espérant quelque secret oublié. À l’intérieur, un parchemin froissé, rongé par l’humidité et le sel. Vous le déroulez lentement, mais hélas… les lettres sont effacées, les mots n’étant plus que tâches informes et filigranes éteints. Aucun sens ne s’en dégage, si ce n’est un pressentiment : ce message a surement un jour été important, il est désormais perdu à jamais dans les replis du temps.",
-          "3": "Vous tournez le dos au capitaine sans un mot, ce qui semble attiser sa colère. D’un pas vif, il vous rejoint et, sans sommation, vous assène un violent coup sur l’arrière du crâne. Étourdi, vous vous affaissez sur le sable, les étoiles dansant devant vos yeux. Il repart aussitôt, regagne le pont en ricanant, puis ordonne de lever l’ancre."
+          "0": "Vous tournez le dos au capitaine et allez vous asseoir sur le sable, laissant votre regard suivre le vaisseau pirate qui, toutes voiles dehors, quitte lentement la baie. Le grondement sourd des flots accompagne son départ, jusqu'à ce qu'il ne soit plus qu'un point à l'horizon. Enfin, vous vous relevez, époussetez le sable de vos vêtements, et reprenez votre route, seul sur le sentier battu par les vents.",
+          "1": "Vous détournez votre regard du capitaine et laissez vos pensées voguer au rythme des flots. Là, sur le rivage balayé par les vents, votre œil est attiré par une antique bouteille, à demi enfouie dans le sable. Intrigué, vous la saisissez et y découvrez un vieux parchemin jauni par le temps. Les signes tracés d'une main tremblante y révèlent l'emplacement d'un lieu secret, dissimulé non loin. Guidé par ces énigmes, vous arpentez la lande durant longuement, jusqu'à ce que vos pas vous mènent à un coffre ancien, enfoui sous les ronces. En l'ouvrant, vous découvrez un objet aux allures mystérieuses...",
+          "2": "Vous tournez le dos au capitaine et laissez vos pas vous guider sur la plage battue par les vents. Une bouteille à demi enfouie dans le sable attire votre regard. Vous la déterrez avec précaution, espérant quelque secret oublié. À l'intérieur, un parchemin froissé, rongé par l'humidité et le sel. Vous le déroulez lentement, mais hélas… les lettres sont effacées, les mots n'étant plus que tâches informes et filigranes éteints. Aucun sens ne s'en dégage, si ce n'est un pressentiment : ce message a surement un jour été important, il est désormais perdu à jamais dans les replis du temps.",
+          "3": "Vous tournez le dos au capitaine sans un mot, ce qui semble attiser sa colère. D'un pas vif, il vous rejoint et, sans sommation, vous assène un violent coup sur l'arrière du crâne. Étourdi, vous vous affaissez sur le sable, les étoiles dansant devant vos yeux. Il repart aussitôt, regagne le pont en ricanant, puis ordonne de lever l'ancre."
         }
       }
     },
