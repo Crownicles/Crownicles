@@ -1,5 +1,5 @@
-import React from "react";
-import {StyleSheet, Text, View} from "react-native";
+import React, {useState} from "react";
+import {Animated, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {MainItem} from "ws-packets/src/objects/MainItem";
 import {SupportItem} from "ws-packets/src/objects/SupportItem";
 import {ItemRarity} from "ws-packets/src/objects/ItemRarity";
@@ -12,9 +12,28 @@ export interface InventoryItemProps {
 	itemType: 'weapon' | 'armor' | 'potion' | 'object';
 	isEmpty?: boolean;
 	customKey?: string;
+	onDrink?: () => void;
+	onSwitch?: () => void;
+	onSell?: () => void;
+	isBackupItem?: boolean;
 }
 
-export function Item({ item, itemType, isEmpty = false, customKey }: InventoryItemProps) {
+export function Item({ item, itemType, isEmpty = false, customKey, onDrink, onSwitch, onSell, isBackupItem = false }: InventoryItemProps) {
+	const [isFlipped, setIsFlipped] = useState<boolean>(false);
+	const [flipAnim] = useState(new Animated.Value(0));
+
+	const handleFlip = () => {
+		const toValue = isFlipped ? 0 : 1;
+
+		Animated.timing(flipAnim, {
+			toValue,
+			duration: 300,
+			useNativeDriver: true,
+		}).start();
+
+		setIsFlipped(!isFlipped);
+	};
+
 	// Helper functions
 	const getItemIcon = (itemType: 'weapon' | 'armor' | 'potion' | 'object', itemId: number): string => {
 		return AppIcons.getIconOrNull(`${itemType}s.${itemId}`) || AppIcons.getIcon("inventory.empty");
@@ -104,6 +123,39 @@ export function Item({ item, itemType, isEmpty = false, customKey }: InventoryIt
 		);
 	};
 
+	const renderActionButtons = () => {
+		if (!item || item.id === 0) return null;
+
+		return (
+			<View style={styles.actionButtons}>
+				{itemType === 'potion' && onDrink && (
+					<TouchableOpacity style={styles.actionButton} onPress={onDrink}>
+						<Text style={styles.actionButtonIcon}>🍺</Text>
+						<Text style={styles.actionButtonText}>{i18n.t("app:profile.inventory.actions.drink")}</Text>
+					</TouchableOpacity>
+				)}
+				{onSwitch && (
+					<TouchableOpacity style={styles.actionButton} onPress={onSwitch}>
+						<Text style={styles.actionButtonIcon}>🔄</Text>
+						<Text style={styles.actionButtonText}>
+							{i18n.t(isBackupItem ? "app:profile.inventory.actions.equip" : "app:profile.inventory.actions.switch")}
+						</Text>
+					</TouchableOpacity>
+				)}
+				{onSell && (
+					<TouchableOpacity style={styles.actionButton} onPress={onSell}>
+						<Text style={styles.actionButtonIcon}>💰</Text>
+						<Text style={styles.actionButtonText}>{i18n.t("app:profile.inventory.actions.sell")}</Text>
+					</TouchableOpacity>
+				)}
+				<TouchableOpacity style={styles.actionButton} onPress={handleFlip}>
+					<Text style={styles.actionButtonIcon}>❌</Text>
+					<Text style={styles.actionButtonText}>{i18n.t("app:profile.inventory.actions.close")}</Text>
+				</TouchableOpacity>
+			</View>
+		);
+	};
+
 	// Handle empty slot
 	if (isEmpty || !item || item.id === 0) {
 		return (
@@ -121,31 +173,72 @@ export function Item({ item, itemType, isEmpty = false, customKey }: InventoryIt
 	const rarityIcon = getRarityIcon(item.rarity);
 	const itemName = i18n.t(`models:${itemType}s.${item.id}`);
 
+	const frontRotateY = flipAnim.interpolate({
+		inputRange: [0, 1],
+		outputRange: ['0deg', '180deg'],
+	});
+
+	const backRotateY = flipAnim.interpolate({
+		inputRange: [0, 1],
+		outputRange: ['180deg', '360deg'],
+	});
+
 	return (
-		<View key={customKey || itemType} style={styles.inventoryItem}>
-			<Text style={styles.itemIcon}>{itemIcon}</Text>
-			<View style={styles.itemDetails}>
-				<Text style={styles.itemName}>{itemName}</Text>
-				<View style={styles.itemRarity}>
-					<Text style={styles.rarityIcon}>{rarityIcon}</Text>
-					<Text style={styles.rarityText}>
-						{i18n.t(`items:raritiesWithoutEmote.${item.rarity}`)}
-					</Text>
-				</View>
-				{/* Stats for weapons and armors */}
-				{'attack' in item && (
-					<View style={styles.itemStatsContainer}>
-						{renderMainItemStats(item)}
+		<View key={customKey || itemType} style={styles.itemContainer}>
+			{/* Front side - Item display */}
+			<Animated.View
+				style={[
+					styles.inventoryItem,
+					styles.flipSide,
+					{ transform: [{ rotateY: frontRotateY }] },
+					isFlipped && styles.hiddenSide
+				]}
+			>
+				<TouchableOpacity style={styles.itemTouchable} onPress={handleFlip}>
+					<Text style={styles.itemIcon}>{itemIcon}</Text>
+					<View style={styles.itemDetails}>
+						<Text style={styles.itemName}>{itemName}</Text>
+						<View style={styles.itemRarity}>
+							<Text style={styles.rarityIcon}>{rarityIcon}</Text>
+							<Text style={styles.rarityText}>
+								{i18n.t(`items:raritiesWithoutEmote.${item.rarity}`)}
+							</Text>
+						</View>
+						{/* Stats for weapons and armors */}
+						{'attack' in item && (
+							<View style={styles.itemStatsContainer}>
+								{renderMainItemStats(item)}
+							</View>
+						)}
+						{/* Effect for potions and objects */}
+						{'nature' in item && renderSupportItemEffect(item, itemType as "potion" | "object")}
 					</View>
-				)}
-				{/* Effect for potions and objects */}
-				{'nature' in item && renderSupportItemEffect(item, itemType as "potion" | "object")}
-			</View>
+					<Text style={styles.clickIndicator}>👆</Text>
+				</TouchableOpacity>
+			</Animated.View>
+
+			{/* Back side - Action buttons */}
+			<Animated.View
+				style={[
+					styles.inventoryItem,
+					styles.flipSide,
+					styles.backSide,
+					{ transform: [{ rotateY: backRotateY }] },
+					!isFlipped && styles.hiddenSide
+				]}
+			>
+				{renderActionButtons()}
+			</Animated.View>
 		</View>
 	);
 }
 
 const styles = StyleSheet.create({
+	itemContainer: {
+		position: 'relative',
+		height: 80,
+		marginBottom: 8,
+	},
 	inventoryItem: {
 		flexDirection: 'row',
 		alignItems: 'center',
@@ -161,6 +254,7 @@ const styles = StyleSheet.create({
 		shadowOpacity: 0.1,
 		shadowRadius: 4,
 		elevation: 2,
+		minHeight: 68,
 	},
 	itemIcon: {
 		fontSize: 24,
@@ -228,5 +322,61 @@ const styles = StyleSheet.create({
 	itemEffectText: {
 		fontSize: 12,
 		color: '#666',
+	},
+	flipSide: {
+		position: 'absolute',
+		top: 0,
+		left: 0,
+		right: 0,
+		bottom: 0,
+		backfaceVisibility: 'hidden',
+	},
+	backSide: {
+		backgroundColor: '#fff',
+		borderColor: '#ddd',
+		borderWidth: 1,
+		borderRadius: 10,
+		justifyContent: 'center',
+	},
+	hiddenSide: {
+		opacity: 0,
+		pointerEvents: 'none',
+	},
+	itemTouchable: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		flex: 1,
+	},
+	clickIndicator: {
+		fontSize: 16,
+		marginLeft: 8,
+		color: '#007AFF',
+		opacity: 0.8,
+	},
+	actionButtons: {
+		flexDirection: 'row',
+		justifyContent: 'space-around',
+		alignItems: 'center',
+		width: '100%',
+		paddingHorizontal: 8,
+	},
+	actionButton: {
+		alignItems: 'center',
+		justifyContent: 'center',
+		paddingVertical: 8,
+		paddingHorizontal: 12,
+		borderRadius: 8,
+		backgroundColor: '#f0f0f0',
+		minWidth: 60,
+	},
+	actionButtonIcon: {
+		fontSize: 20,
+		marginBottom: 2,
+	},
+	actionButtonText: {
+		fontSize: 10,
+		color: '#333',
+		textAlign: 'center',
+		fontWeight: '500',
 	},
 });
