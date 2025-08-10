@@ -29,6 +29,22 @@ interface InventoryProps {
 export function Inventory({ inventoryData }: InventoryProps) {
 	const [showBackupItems, setShowBackupItems] = useState<boolean>(false);
 
+	// Action handlers for item interactions
+	const handleDrink = (item: SupportItem, itemType: string) => {
+		console.log(`Drinking ${itemType}:`, item);
+		// TODO: Implement drink action
+	};
+
+	const handleSwitch = (item: MainItem | SupportItem, itemType: string) => {
+		console.log(`Switching ${itemType}:`, item);
+		// TODO: Implement switch action
+	};
+
+	const handleSell = (item: MainItem | SupportItem, itemType: string) => {
+		console.log(`Selling ${itemType}:`, item);
+		// TODO: Implement sell action
+	};
+
 	const renderItemTypeHeader = (itemType: 'weapon' | 'armor' | 'potion' | 'object', currentCount?: number, maxSlots?: number) => {
 		const typeNames = {
 			weapon: i18n.t("items:weapon", { count: maxSlots ?? 1 }),
@@ -55,16 +71,24 @@ export function Inventory({ inventoryData }: InventoryProps) {
 
 		return (
 			<View style={styles.inventoryList}>
-				{itemTypes.map(itemType => (
-					<View key={itemType}>
-						{renderItemTypeHeader(itemType)}
-						<Item
-							item={inventoryData[itemType]}
-							itemType={itemType}
-							isEmpty={!inventoryData[itemType] || inventoryData[itemType]?.id === 0}
-						/>
-					</View>
-				))}
+				{itemTypes.map(itemType => {
+					const item = inventoryData[itemType];
+					const isEmpty = !item || item.id === 0;
+
+					return (
+						<View key={itemType}>
+							{renderItemTypeHeader(itemType)}
+							<Item
+								item={item}
+								itemType={itemType}
+								isEmpty={isEmpty}
+								onDrink={!isEmpty && itemType === 'potion' ? () => handleDrink(item as SupportItem, itemType) : undefined}
+								onSwitch={!isEmpty ? () => handleSwitch(item, itemType) : undefined}
+								onSell={!isEmpty ? () => handleSell(item, itemType) : undefined}
+							/>
+						</View>
+					);
+				})}
 			</View>
 		);
 	};
@@ -93,12 +117,17 @@ export function Inventory({ inventoryData }: InventoryProps) {
 					// Add filled slots
 					if (backupItems) {
 						backupItems.forEach(item => {
+							const isEmpty = !item.display || item.display.id === 0;
 							allSlots.push(
 								<Item
 									key={`${type}-${item.slot}`}
 									item={item.display}
 									itemType={type}
 									customKey={`${type}-${item.slot}`}
+									isBackupItem={true}
+									onDrink={!isEmpty && type === 'potion' ? () => handleDrink(item.display as SupportItem, type) : undefined}
+									onSwitch={!isEmpty ? () => handleSwitch(item.display, type) : undefined}
+									onSell={!isEmpty ? () => handleSell(item.display, type) : undefined}
 								/>
 							);
 						});

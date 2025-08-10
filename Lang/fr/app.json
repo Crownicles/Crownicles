@@ -32,7 +32,14 @@
       "backupItems": "Reserve d'objets",
       "seeBackupItems": "Voir la réserve d'objets",
       "seeEquippedItems": "Voir les objets équipés",
-      "emptySlot": "Emplacement vide"
+      "emptySlot": "Emplacement vide",
+      "actions": {
+        "drink": "Boire",
+        "switch": "Échanger",
+        "sell": "Vendre",
+        "close": "Fermer",
+        "equip": "Équiper"
+      }
     }
   }
 }
