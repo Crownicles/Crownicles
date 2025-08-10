@@ -658,28 +658,51 @@
   },
   "2": {
     "possibilities": {
-      "end": {
-        "outcomes": {
-          "0": "Vous avez pris la décision de ne pas bouger, cela ne semble pas plaire au chien puisque celui-ci mord sauvagement avant de s'enfuir !"
-        }
-      },
       "followDog": {
         "outcomes": {
-          "0": "Vous perdez la trace du chien au bout de quelques minutes, il allait trop vite ! Vous décidez de reprendre votre chemin mais vous rendez vite compte que vous n'aviez pas fait attention à votre orientation... Vous voilà perdu !",
-          "1": "Vous perdez la trace du chien au bout de quelques minutes à côté d'un arbre. En regardant autour de vous vous découvrez plein de petites pièces disséminées un peu partout !"
+          "0": "Malgré votre empressement à suivre l'animal, vos jambes ne parviennent pas à maintenir le rythme effréné du chien. Après quelques minutes d'une course essoufflante sur les pavés inégaux de la Grande Rue, vous perdez sa trace dans un dédale de ruines. Désorienté et pantelant, vous réalisez que vous ne savez plus du tout où vous vous trouvez.",
+          "1": "Votre agilité vous permet de suivre le chien bondissant à travers les décombres de l'ancienne route commerciale. Il vous mène jusqu'à une cache dissimulée sous une dalle brisée, où scintillent quelques pièces d'or oubliées par d'anciens marchands. L'animal vous observe avec intelligence avant de disparaître, comme s'il avait accompli sa mission.",
+          "2": "Votre expérience de voyageur vous permet de décrypter le comportement de l'animal : ce n'est pas un chien errant ordinaire, mais un guide dressé ! Vous le suivez avec assurance à travers les ruines, et il vous conduit vers un ancien relais de poste où vous découvrez un trésor abandonné et un objet précieux caché dans les fondations.",
+          "3": "Votre réputation bienveillante semble avoir précédé votre passage ! Le chien, visiblement habitué aux voyageurs généreux, vous guide avec une confiance totale vers une cache secrète. Non seulement vous y trouvez une belle somme, mais l'animal partage également avec vous un point d'eau claire qui restaure vos forces.",
+          "4": "Votre propre compagnon à quatre pattes établit immédiatement une connexion avec le chien mystérieux ! Ensemble, ils vous guident dans un joyeux ballet canin vers une cache exceptionnelle, fruit de la complicité entre animaux. Vous découvrez un véritable trésor accompagné d'un objet rare, récompense de cette alliance inattendue.",
+          "5": "Votre aura sombre effraie visiblement l'animal, mais votre curiosité malsaine vous pousse à le traquer malgré tout. Malheureusement, cette poursuite agressive vous égare complètement dans les méandres délabrés de la Grande Rue. Vous voilà perdu, avec en prime une réputation encore plus ternie par votre comportement inquiétant."
         },
         "text": "Suivre le chien."
       },
+      "intimidateDog": {
+        "outcomes": {
+          "0": "Votre allure menaçante et votre port d'arme impressionnent immédiatement l'animal qui recule, les oreilles basses. Il disparaît rapidement dans les ruines, vous laissant libre de continuer votre route sans être importuné.",
+          "1": "Votre tentative d'intimidation se retourne contre vous ! Le chien, loin d'être impressionné par votre faible prestance, vous mord sauvagement la jambe avant de s'enfuir. La blessure est douloureuse et votre échec humiliant témoigne de votre manque d'autorité naturelle.",
+          "2": "Votre réputation de brute et votre attitude agressive terrorisent l'animal... mais aussi un voyageur caché qui observait la scène ! Tremblant de peur, il vous jette quelques pièces pour acheter votre clémence avant de fuir précipitamment. Votre sinistre réputation vous précède décidément partout."
+        },
+        "text": "Intimider le chien pour qu'il s'en aille."
+      },
+      "approachCautiously": {
+        "outcomes": {
+          "0": "Votre expérience vous dicte la prudence. Vous approchez lentement, main tendue, et gagnez la confiance de l'animal. Il vous guide alors calmement vers une cache d'anciens marchands, récompensant votre patience et votre sagesse.",
+          "1": "Votre aura de bonté rassure immédiatement l'animal qui s'approche en remuant la queue. Il vous guide vers une source d'eau pure cachée dans les ruines, où vous découvrez non seulement des pièces d'or mais aussi un objet précieux. Votre réputation de voyageur bienveillant vous ouvre décidément toutes les portes.",
+          "2": "Votre approche prudente mais un peu lente permet au chien de s'habituer à votre présence, mais il finit par perdre patience. Dans son impatience, il vous mordille légèrement la main avant de vous entraîner vers sa découverte, un geste qui témoigne plus de son enthousiasme que d'une réelle agressivité.",
+          "3": "Votre approche mesurée intrigue l'animal qui semble évaluer vos intentions. Après un long moment d'observation mutuelle sur les pavés brisés de la Grande Rue, il finit par vous accepter et vous guide posément vers sa trouvaille, bien que cette négociation ait pris un temps considérable."
+        },
+        "text": "Approcher prudemment l'animal."
+      },
       "skip": {
         "outcomes": {
-          "0": "Après 15 minutes de poursuite vous parvenez à semer le chien, il ne semblait pas très amical !",
-          "1": "Vous continuez sans vous soucier du chien. Celui-ci n'insiste pas.",
-          "2": "En voulant fuir, vous tombez brutalement dans un fossé, la blessure est profonde... Il faudra vous soigner avant de continuer !"
+          "0": "Votre vitesse légendaire vous permet d'éviter aisément l'animal insistant ! Vous sprintez entre les ruines de la Grande Rue et semez rapidement le chien qui abandonne rapidement sa poursuite face à vos foulées impressionnantes.",
+          "1": "Votre fuite précipitée vous fait trébucher sur les pavés inégaux de l'ancienne route commerciale ! Heureusement, votre robuste constitution encaisse le choc sans dommage majeur, mais vous voilà tout de même écorché et meurtri par cette chute malheureuse.",
+          "2": "Votre tentative de fuite se solde par une chute catastrophique dans les décombres ! Non seulement vous vous blessez gravement en heurtant les pierres brisées, mais votre comportement fuyant face à un simple chien ternit également votre réputation. Une double humiliation que vous n'êtes pas près d'oublier.",
+          "3": "Votre réputation de personne bienveillante semble rassurer l'animal qui, après vous avoir observé quelques instants, s'éloigne de lui-même sans insister. Votre aura positive agit décidément comme un charme naturel."
         },
-        "text": "Continuer sans se préoccuper du chien."
+        "text": "Continuer votre route en ignorant l'animal."
+      },
+      "end": {
+        "outcomes": {
+          "0": "Votre immobilité face à l'animal qui tourne autour de vous finit par l'agacer. Malgré votre robuste constitution, ses crocs trouvent leur marque à travers vos défenses. La morsure est douloureuse et votre passivité vous coûte cher, tant physiquement qu'en termes de réputation.",
+          "1": "Votre inaction face au chien de plus en plus insistant se révèle être une grave erreur ! L'animal, frustré par votre manque de réaction, vous attaque sauvagement. N'ayant ni la prestance pour l'impressionner ni l'agilité pour l'éviter, vous subissez une morsure particulièrement vicieuse qui vous laisse pantelant et humilié."
+        }
       }
     },
-    "text": "Devant vous, un chien arrive et tourne autour de vous. Il semble vouloir que vous le suiviez !"
+    "text": "Sur les pavés brisés de la Grande Rue, vestiges d'une époque de prospérité commerciale désormais révolue, un chien au pelage tacheté surgit d'entre les ruines d'un ancien comptoir. L'animal vous fixe de ses yeux vifs et intelligents, puis se met à tourner autour de vous avec une insistance troublante. Il aboie brièvement, s'éloigne de quelques pas vers les décombres d'une ancienne auberge, puis revient vers vous en gémissant doucement. Ses allées et venues répétées et son regard perçant ne laissent aucun doute : cette créature semble vouloir vous guider quelque part..."
   },
   "20": {
     "possibilities": {
