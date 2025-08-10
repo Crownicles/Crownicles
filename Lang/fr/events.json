@@ -669,7 +669,7 @@
           "6": "Votre compagnon félin observe la scène avec cette curiosité typique des chats. Après un moment d'évaluation mutuelle entre prédateurs, votre chat et le chien trouvent un terrain d'entente respectueuse. Le chien, rassuré par la présence de votre familier, vous guide vers une cache cachée dans les ruines d'un ancien atelier d'orfèvre, où brillent encore quelques pièces oubliées.",
           "7": "Votre petit rongeur familier sort timidement de votre besace, attirant l'attention amusée du chien. Cette rencontre improbable entre le petit animal et le chien crée une atmosphère attendrissante au milieu des ruines. Touché par cette scène, le chien vous mène vers une modeste cache où vous trouvez quelques pièces et un objet utile, récompense de cette interaction touchante."
         },
-        "text": "Suivre le chien à travers les ruines."
+        "text": "Suivre le chien."
       },
       "intimidateDog": {
         "outcomes": {
@@ -679,7 +679,7 @@
           "3": "Votre imposant compagnon prédateur émerge à vos côtés, et sa seule présence suffit à faire comprendre au chien qu'il vaut mieux ne pas insister. L'animal des rues, reconnaissant la hiérarchie naturelle, s'incline respectueusement avant de s'éloigner dignement dans les ruines, sans pour autant perdre la face.",
           "4": "Le spectacle de votre propre chien obéissant docilement à vos ordres d'intimidation impressionne doublement l'animal errant. Non seulement il bat en retraite, mais cette démonstration de domination ternit gravement votre réputation auprès des témoins cachés dans les ruines, qui murmurent déjà sur votre cruauté envers les créatures innocentes."
         },
-        "text": "Intimider le chien pour qu'il s'éloigne."
+        "text": "Essayer de faire fuir le chien."
       },
       "approachCautiously": {
         "outcomes": {
@@ -690,7 +690,7 @@
           "4": "Votre compagnon ailé volette au-dessus de vous, créant une ambiance particulière qui semble fasciner le chien. Celui-ci, intrigué par ces évolutions aériennes entre les poutres brisées de l'ancienne halle, établit rapidement un lien de confiance avec vous. Cette complicité à trois vous mène vers une cache remarquable, dissimulée dans ce qui fut autrefois le bureau du maître-marchand.",
           "5": "Votre petit compagnon à carapace ou coquille sort prudemment, attirant la curiosité bienveillante du chien qui n'a visiblement jamais vu pareille créature. Cette rencontre insolite au milieu des pavés brisés crée une atmosphère presque magique. Touché par cette interaction unique, le chien prend tout son temps pour vous mener vers un trésor caché, prolongeant ce moment d'émerveillement mutuel."
         },
-        "text": "Approcher prudemment l'animal."
+        "text": "Approcher prudemment."
       },
       "offerFood": {
         "outcomes": {
@@ -700,7 +700,7 @@
           "3": "Votre compagnon félin observe cette interaction avec un détachement amusé typique de son espèce. Le chien, appréciant autant la nourriture que la présence rassurante de votre chat, vous témoigne sa gratitude en vous guidant vers une modeste mais honnête cache, probablement constituée par un ancien garde-manger d'auberge.",
           "4": "L'animal accepte vos provisions avec reconnaissance, mais sans l'enthousiasme escompté. Il vous guide néanmoins vers une cache modeste dans les ruines, témoignant d'une certaine courtoisie malgré sa réserve. Votre générosité est récompensée, bien que modestement."
         },
-        "text": "Offrir de la nourriture au chien."
+        "text": "Offrir de la nourriture."
       },
       "skip": {
         "outcomes": {
@@ -710,7 +710,7 @@
           "3": "Votre réputation de personne bienveillante semble rassurer l'animal qui, après vous avoir observé quelques instants de ses yeux intelligents, comprend que vous n'êtes pas celui qu'il cherchait. Il s'éloigne de lui-même sans insister, disparaissant dignement entre les décombres de l'ancienne halle marchande. Votre aura positive agit décidément comme un charme naturel.",
           "4": "Votre compagnon ailé volette au-dessus de la scène, créant une diversion qui permet au chien de comprendre que vous avez d'autres préoccupations. Dans un geste de respect mutuel entre créatures de voyage, l'animal s'incline légèrement avant de retourner à ses propres affaires dans les ruines, laissant votre réputation intacte."
         },
-        "text": "Continuer votre route en ignorant l'animal."
+        "text": "Continuer votre route."
       },
       "end": {
         "outcomes": {
@@ -720,7 +720,7 @@
         }
       }
     },
-    "text": "Sur les pavés brisés de la Grande Rue, vestiges d'une époque de prospérité commerciale désormais révolue, un chien au pelage tacheté surgit d'entre les ruines d'un ancien comptoir. Ses côtes saillantes témoignent des difficultés de la vie sauvage, mais ses yeux brillent d'une intelligence remarquable. L'animal vous fixe intensément, puis se met à tourner autour de vous avec une insistance troublante, ses pattes claquant sur les pierres disjointes. Il aboie brièvement puis s'éloigne de quelques pas vers les restes effondrés d'une ancienne auberge, avant de revenir vers vous en gémissant doucement. Ses allées et venues répétées entre vous et les ruines, accompagnées de regards perçants et de petits jappements, ne laissent aucun doute : l'animal semble vouloir vous guider vers quelque chose d'important, caché quelque part dans ce cimetière de l'ancienne prospérité marchande..."
+    "text": "Sur les pavés brisés de la Grande Rue, vestiges d'une époque de prospérité commerciale désormais révolue, un chien au pelage tacheté surgit d'entre les ruines d'un ancien comptoir. Ses côtes saillantes témoignent des difficultés de la vie sauvage, mais ses yeux brillent d'une intelligence remarquable. L'animal vous fixe intensément, puis se met à tourner autour de vous avec une insistance troublante. Il aboie brièvement puis s'éloigne de quelques pas vers les restes effondrés d'une ancienne auberge, avant de revenir vers vous en gémissant doucement. Ses allées et venues répétées entre vous et les ruines, accompagnées de regards perçants et de petits jappements, ne laissent aucun doute : l'animal semble vouloir vous guider quelque part..."
   },
   "20": {
     "possibilities": {
