@@ -34,13 +34,14 @@ import {
 	commandRequires, CommandUtils
 } from "../../core/utils/CommandUtils.js";
 import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
+import { GuildRole } from "../../../../Lib/src/types/GuildRole";
 
 export default class GuildInviteCommand {
 	@commandRequires(CommandGuildInvitePacketReq, {
 		notBlocked: false,
 		guildNeeded: true,
 		disallowedEffects: CommandUtils.DISALLOWED_EFFECTS.NOT_STARTED_OR_DEAD,
-		guildRoleNeeded: GuildConstants.PERMISSION_LEVEL.ELDER,
+		guildRoleNeeded: GuildRole.ELDER,
 		whereAllowed: [WhereAllowed.CONTINENT]
 	})
 	async execute(response: CrowniclesPacket[], player: Player, packet: CommandGuildInvitePacketReq, context: PacketContext): Promise<void> {
