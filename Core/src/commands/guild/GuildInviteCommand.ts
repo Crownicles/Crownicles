@@ -34,7 +34,7 @@ import {
 	commandRequires, CommandUtils
 } from "../../core/utils/CommandUtils.js";
 import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
-import { GuildRole } from "../../../../Lib/src/types/GuildRole.js";
+import { GuildRole } from "../../../../Lib/src/types/GuildRole";
 
 export default class GuildInviteCommand {
 	@commandRequires(CommandGuildInvitePacketReq, {
