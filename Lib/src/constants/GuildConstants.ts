@@ -49,12 +49,6 @@ export abstract class GuildConstants {
 		5 // Ultimate food
 	];
 
-	static readonly PERMISSION_LEVEL = {
-		MEMBER: 1,
-		ELDER: 2,
-		CHIEF: 3
-	};
-
 	static GOLDEN_GUILD_LEVEL = 100;
 
 	static SUPER_BADGE_MAX_RANK = 25;
