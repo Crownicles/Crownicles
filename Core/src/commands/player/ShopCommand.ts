@@ -152,8 +152,6 @@ function getHealEnergyShopItem(healEnergyAlreadyPurchased: number): ShopItem {
 			player.setEnergyLost(0, NumberChangeReason.SHOP);
 			await player.save();
 			response.push(makePacket(CommandShopEnergyHeal, {}));
-			crowniclesInstance.logsDatabase.logClassicalShopBuyout(player.keycloakId, ShopItemType.ENERGY_HEAL)
-				.then();
 			return true;
 		}
 	};
@@ -175,8 +173,6 @@ function getRegenShopItem(): ShopItem {
 			});
 			await player.save();
 			response.push(makePacket(CommandShopFullRegen, {}));
-			crowniclesInstance.logsDatabase.logClassicalShopBuyout(player.keycloakId, ShopItemType.FULL_REGEN)
-				.then();
 			return true;
 		}
 	};
