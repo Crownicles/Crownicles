@@ -221,8 +221,12 @@ async function updatePlayersEloAndCooldowns(
  * Code that will be executed when a fight ends (except if the fight has a bug)
  * @param fight
  * @param response
+ * @param initialGloryPoints Optional pre-captured glory points to prevent concurrent fight issues
  */
-async function fightEndCallback(fight: FightController, response: CrowniclesPacket[]): Promise<void> {
+async function fightEndCallback(fight: FightController, response: CrowniclesPacket[], initialGloryPoints?: {
+	player1: number;
+	player2: number;
+}): Promise<void> {
 	const defendingFighter = fight.getNonFightInitiatorFighter();
 	if (defendingFighter instanceof AiPlayerFighter) {
 		PacketUtils.sendNotifications([
@@ -279,9 +283,9 @@ async function fightEndCallback(fight: FightController, response: CrowniclesPack
 		response
 	);
 
-	// Save glory before changing it
-	const player1OldGlory = player1.getGloryPoints();
-	const player2OldGlory = player2.getGloryPoints();
+	// Save glory before changing it - use pre-captured values if available to prevent concurrent fight issues
+	const player1OldGlory = initialGloryPoints?.player1 ?? player1.getGloryPoints();
+	const player2OldGlory = initialGloryPoints?.player2 ?? player2.getGloryPoints();
 	await updatePlayersEloAndCooldowns(attacker, defender, initiatorGameResult, defenderGameResult, response, fightLogId);
 
 	response.push(makePacket(FightRewardPacket, {
@@ -439,6 +443,12 @@ function fightValidationEndCallback(player: Player, context: PacketContext): End
 			const incomingFighter = new AiPlayerFighter(opponent, ClassDataController.instance.getById(opponent.class));
 			await incomingFighter.loadStats();
 
+			// Capture glory points at fight start to prevent concurrent fight conflicts
+			const initialGloryPoints = {
+				player1: player.getGloryPoints(),
+				player2: opponent.getGloryPoints()
+			};
+
 			// Start fight
 			const fightController = new FightController(
 				{
@@ -447,7 +457,7 @@ function fightValidationEndCallback(player: Player, context: PacketContext): End
 				FightOvertimeBehavior.END_FIGHT_DRAW,
 				context
 			);
-			fightController.setEndCallback(fightEndCallback);
+			fightController.setEndCallback((fight, response) => fightEndCallback(fight, response, initialGloryPoints));
 			fightsDefenderCooldowns.set(opponent.keycloakId, Date.now() + minutesToMilliseconds(FightConstants.DEFENDER_COOLDOWN_MINUTES));
 			await fightController.startFight(response);
 		}
