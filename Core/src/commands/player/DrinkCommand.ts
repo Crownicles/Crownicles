@@ -88,6 +88,15 @@ function drinkPotionCallback(
 	};
 }
 
+/**
+ * This command can return the following packets:
+ * - CommandDrinkNoActiveObjectError
+ * - CommandDrinkObjectIsActiveDuringFights
+ * - CommandDrinkCancelDrink
+ * - CommandDrinkConsumePotionRes
+ * - ReactionCollectorCreationPacket
+ * - Missions packets
+ */
 export default class DrinkCommand {
 	@commandRequires(CommandDrinkPacketReq, {
 		notBlocked: true,
@@ -95,7 +104,10 @@ export default class DrinkCommand {
 		whereAllowed: [WhereAllowed.CONTINENT]
 	})
 	async execute(response: CrowniclesPacket[], player: Player, packet: CommandDrinkPacketReq, context: PacketContext): Promise<void> {
-		const potion = (await InventorySlots.getMainPotionSlot(player.id))?.getItem() as Potion;
+		const potion = (packet.slot
+			? (await InventorySlots.getMainPotionSlot(player.id))?.getItem()
+			: (await InventorySlots.getOfPlayer(player.id)).find(item => item.isPotion() && item.slot === packet.slot)
+		) as Potion | null | undefined;
 
 		if (!potion || potion.id === InventoryConstants.POTION_DEFAULT_ID) {
 			response.push(makePacket(CommandDrinkNoActiveObjectError, {}));

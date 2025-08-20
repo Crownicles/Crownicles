@@ -5,6 +5,8 @@ import {
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandDrinkPacketReq extends CrowniclesPacket {
 	force!: boolean;
+
+	slot?: number;
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
