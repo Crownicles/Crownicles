@@ -1,20 +1,20 @@
 import { ICommand } from "../ICommand";
 import {
 	makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
-import { DraftbotInteraction } from "../../messages/DraftbotInteraction";
+} from "../../../../Lib/src/packets/CrowniclesPacket";
+import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
 import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
 import {
 	CommandTestPacketReq, CommandTestPacketRes
 } from "../../../../Lib/src/packets/commands/CommandTestPacket";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { DiscordCache } from "../../bot/DiscordCache";
-import { DraftBotEmbed } from "../../messages/DraftBotEmbed";
+import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import { HexColorString } from "discord.js";
 import { KeycloakUser } from "../../../../Lib/src/keycloak/KeycloakUser";
 import { ColorConstants } from "../../../../Lib/src/constants/ColorConstants";
 
-async function getPacket(interaction: DraftbotInteraction, user: KeycloakUser): Promise<CommandTestPacketReq> {
+async function getPacket(interaction: CrowniclesInteraction, user: KeycloakUser): Promise<CommandTestPacketReq> {
 	const commandName = interaction.options.get("command");
 	await interaction.deferReply();
 	return makePacket(CommandTestPacketReq, {
@@ -36,7 +36,7 @@ export async function handleCommandTestPacketRes(packet: CommandTestPacketRes, c
 			}
 		}
 		else {
-			const embedTestSuccessful = new DraftBotEmbed()
+			const embedTestSuccessful = new CrowniclesEmbed()
 				.setAuthor({
 					name: `Commande test ${packet.commandName} exécutée :`,
 					iconURL: interaction.user.displayAvatarURL()

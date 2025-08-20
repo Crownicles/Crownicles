@@ -1,9 +1,9 @@
 import {
-	DraftBotPacket, PacketDirection, PacketLike, sendablePacket
-} from "../DraftBotPacket";
+	CrowniclesPacket, PacketDirection, PacketLike, sendablePacket
+} from "../CrowniclesPacket";
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
-export class ReactionCollectorReactPacket extends DraftBotPacket {
+export class ReactionCollectorReactPacket extends CrowniclesPacket {
 	id!: string;
 
 	keycloakId!: string;
@@ -12,7 +12,7 @@ export class ReactionCollectorReactPacket extends DraftBotPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class ReactionCollectorEnded extends DraftBotPacket {
+export class ReactionCollectorEnded extends CrowniclesPacket {
 
 }
 
@@ -33,7 +33,7 @@ export class ReactionCollectorRefuseReaction extends ReactionCollectorReaction {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class ReactionCollectorCreationPacket extends DraftBotPacket {
+export class ReactionCollectorCreationPacket extends CrowniclesPacket {
 	id!: string;
 
 	data!: {

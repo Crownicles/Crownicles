@@ -57,7 +57,7 @@ export class ObjectItemDataController extends ItemDataController<ObjectItem> {
 	}
 
 	public randomItem(nature: number, rarity: number): ObjectItem {
-		return RandomUtils.draftbotRandom.pick(this.getValuesArray()
+		return RandomUtils.crowniclesRandom.pick(this.getValuesArray()
 			.filter(item => item.nature === nature && item.rarity === rarity));
 	}
 }

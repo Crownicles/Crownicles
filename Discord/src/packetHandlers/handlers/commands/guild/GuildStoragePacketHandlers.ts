@@ -1,5 +1,5 @@
 import { packetHandler } from "../../../PacketHandler";
-import { PacketContext } from "../../../../../../Lib/src/packets/DraftBotPacket";
+import { PacketContext } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import { CommandGuildStoragePacketRes } from "../../../../../../Lib/src/packets/commands/CommandGuildStoragePacket";
 import { handleSuccess } from "../../../../commands/guild/GuildStorageCommand";
 

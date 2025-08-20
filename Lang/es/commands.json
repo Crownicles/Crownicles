@@ -27,7 +27,31 @@
     },
     "sexDisplay_f": "{emote:sex.female}Mujer",
     "sexDisplay_m": "{emote:sex.male}Hombre",
-    "shortPetField": "{{emote}} {{name}}"
+    "shortPetField": "{{emote}} {{name}}",
+    "petButton": "Caricia",
+    "defaultPetName": "su mascota",
+    "petPhrases": [
+      "{emote:petCommand.pet} Tu mano acaricia **{{petName}}** que se frota contra ti con el mayor cariño.",
+      "{emote:petCommand.pet} Bajo tu toque benevolente, **{{petName}}** parece lleno de satisfacción.",
+      "{emote:petCommand.pet} Tus caricias calman **{{petName}}** que ronronea como un suave susurro.",
+      "{emote:petCommand.pet} Con gran fervor, **{{petName}}** lame tu mano en señal de devoción.",
+      "{emote:petCommand.pet} La cola de **{{petName}}** se mueve de pura alegría ante tus atenciones.",
+      "{emote:petCommand.pet} Con los ojos cerrados de felicidad, **{{petName}}** saborea tus tiernas caricias.",
+      "{emote:petCommand.pet} Un alegre rebote cobra vida **{{petName}}** cuando tu mano lo toca.",
+      "{emote:petCommand.pet} Sobre su espalda se revuelca **{{petName}}**, rogando que le rasques la barriga.",
+      "{emote:petCommand.pet} Un suave sonido de satisfacción se escapa de **{{petName}}** mientras se acurruca contra tu mano.",
+      "{emote:petCommand.pet} Con una mirada de afecto, **{{petName}}** te contempla con devoción.",
+      "{emote:petCommand.pet} Se frota contra tu pierna **{{petName}}** con la más suave ternura.",
+      "{emote:petCommand.pet} Con tus dedos rascándole las orejas, **{{petName}}** se estremece de pura felicidad.",
+      "{emote:petCommand.pet} A tu alrededor salta **{{petName}}** en una danza de alegría.",
+      "{emote:petCommand.pet} Bajo tus suaves caricias,{{petName}}** se relaja con deleite.",
+      "{emote:petCommand.pet} El aire mismo vibra alrededor de **{{petName}}** tan grande es su placer.",
+      "{emote:petCommand.pet} Con satisfacción, **{{petName}}** se estira bajo la suavidad de tu mano.",
+      "{emote:petCommand.pet} Se le escapa un bostezo de felicidad **{{petName}}** durante sus mimos.",
+      "{emote:petCommand.pet} Con una mirada de agradecimiento, **{{petName}}** le honra con su gratitud.",
+      "{emote:petCommand.pet} Excitada, se estremece **{{petName}}** al contacto de tu amable mano.",
+      "{emote:petCommand.pet} Bajo sus dedos expertos, **{{petName}}** se relaja en total tranquilidad."
+    ]
   },
   "guild": {
     "embedTitle": "Gremio {{guildName}} | Nivel {{level}}",
@@ -198,9 +222,6 @@
       "INVENTORY": {
         "description": "Muestra el contenido de tu inventario, que puede contener 4 tipos de objetos:\n```\n-armas\n-armaduras\n-pociones\n-objetos\n```\nEl comando también muestra el contenido de la reserva, que tiene almacenamiento adicional."
       },
-      "INVITE_DRAFTBOT": {
-        "description": "Este comando proporciona un enlace al servidor de ayuda."
-      },
       "JOIN_BOAT": {
         "description": "Únete a un miembro del Gremio en un barco rumbo a una isla misteriosa."
       },
@@ -275,6 +296,9 @@
       },
       "VOTE": {
         "description": "Proporciona el enlace para votar por el bot."
+      },
+      "INVITE_CROWNICLES": {
+        "description": "Este comando proporciona un enlace al servidor de ayuda."
       }
     },
     "forMoreHelp": ":arrow_forward: Para más ayuda : ",
@@ -359,7 +383,7 @@
       "contest": "Insignia que puede ganarse de vez en cuando en competiciones en el servidor de bots.",
       "christmas": "Insignia que se gana cada Navidad en un concurso",
       "top_week": ":reminder_ribbon: Persona que ha dominado una clasificación de la semana`.",
-      "random": ":slot_machine: Insignia entregada completamente al azar",
+      "random": "Una insignia misteriosa, nadie sabe cómo conseguirla",
       "top_10_v1": ":medal: Jugador Top 10 en el reinicio de 1.0",
       "top_v1_player": ":trophy: Mejor jugador en el momento del reinicio 1.0",
       "major_bug_reporter": ":lady_beetle: Personas que han informado de errores importantes",
@@ -891,7 +915,33 @@
             "parece quererte por completo. ¡Ni siquiera tienes que cuidar a tu mascota para que te siga queriendo!",
             "parece compartir un fuerte vínculo contigo. Vuestro vínculo es irrompible, así que mientras no os separéis, ¡seguirás disfrutando del amor de tu mascota!"
           ]
-        }
+        },
+        "dwarf": [
+          "{emote:smallEvents.dwarfPetFan} Por cierto, Talvar no ha dejado de escribirme sobre {{pet}} últimamente... No estoy seguro de lo que le pasa en este momento, ¡pero parece completamente obsesionado! De todos modos, según mis notas, aún le quedan criaturas por descubrir en {{numberOfPetsNotSeen}} , por si te interesa.",
+          "{emote:smallEvents.dwarfPetFan} Ayer recibí otra carta del querido Talvar. Me dice que vio un {{pet}} y que desde entonces es imposible conseguir que hable de otra cosa. Ese enano realmente se está volviendo extraño en su vejez... Ah, y por cierto, la especie {{numberOfPetsNotSeen}} sigue eludiéndole según mis registros.",
+          "{emote:smallEvents.dwarfPetFan} Dime, ¿conoces a Talvar de las Montañas? ¡Este valiente enano me envía cartas elogiosas sobre un {{pet}} que encontró! Francamente, nunca lo he visto en tal estado... ¡Si me preguntas, hay {{numberOfPetsNotSeen}} otras criaturas que podrían ponerlo en el mismo estado!",
+          "{emote:smallEvents.dwarfPetFan} Ah, eso me recuerda... Mi amigo Talvar des cimes se ha vuelto completamente loco por un {{pet}} recientemente. Me está escribiendo poemas enteros sobre él, ¿te lo puedes creer? De todos modos, si alguna vez quieres hacer negocios con él, mis archivos muestran {{numberOfPetsNotSeen}} ¡especies que nunca ha visto!",
+          "{emote:smallEvents.dwarfPetFan} No sé si conoces a Talvar, ¡pero este enano coleccionista es cada vez más excéntrico! ¿Su último capricho? Un {{pet}} que ha visto y que no para de describirme con todo lujo de detalles... Entre tú y yo, {{numberOfPetsNotSeen}} otras criaturas aún esperan ser descubiertas.",
+          "{emote:smallEvents.dwarfPetFan} Hablando de cosas extrañas... Talvar de las Alturas me ha enviado tres cartas esta semana, ¡todas sobre el mismo {{pet}} ! Empiezo a preocuparme por su salud mental... Dicho esto, si quieres complacerle, aún desconoce la existencia de la especie {{numberOfPetsNotSeen}} en nuestro país.",
+          "{emote:smallEvents.dwarfPetFan} ¡Tengo una anécdota divertida! El viejo Talvar me escribió diciendo que había soñado con un {{pet}} tres noches seguidas después de conocerle. Francamente, ¡ya no sé qué pensar de él! Bueno, si te sirve de algo, mis cálculos muestran que todavía tiene {{numberOfPetsNotSeen}} descubrimientos que hacer.",
+          "{emote:smallEvents.dwarfPetFan} Nunca adivinarías... Talvar de las Montañas me ha enviado un boceto detallado de un {{pet}} ¡con una carta de quince páginas para acompañarlo! Ese enano realmente tiene demasiado tiempo libre... De hecho, según mi inventario, ¡las criaturas de {{numberOfPetsNotSeen}} nunca han recibido un tratamiento tan artístico por su parte!",
+          "{emote:smallEvents.dwarfPetFan} Últimamente he recibido noticias muy interesantes de Talvar. Parece que ha empezado a imitar los gritos de un {{pet}} que conoció. Los otros enanos de la montaña están empezando a mirarle de forma extraña... Si quieres hacerle cambiar de opinión, ¡ {{numberOfPetsNotSeen}} otras especies podrían ocupar su mente!",
+          "{emote:smallEvents.dwarfPetFan} Oh, antes de que se me olvide... Mi corresponsal Talvar está pasando por algo bastante... peculiar. Ha nombrado un {{pet}} que ha visto y ¡le está escribiendo cartas! Realmente no sé qué decirle... Bueno, si alguna vez estás por la zona, ¡las criaturas de {{numberOfPetsNotSeen}} permanecen inexploradas en su pequeño mundo!",
+          "{emote:smallEvents.dwarfPetFan} Hace unos días recibí una carta de mi amigo Talvar. Este enano me ha transmitido su pasión por los animales, pero a veces es un poco descuidado... así que a menudo me pide consejo sobre ciertas especies. Esta vez, me ha preguntado cuál es la mejor manera de acercarse a un {{pet}} : me pregunto qué se habrá sacado de la manga. Recopilando toda nuestra correspondencia, pude hacer una lista de los animales que le gustaría ver, y son muchos: ¡todavía quedan por descubrir {{numberOfPetsNotSeen}} criaturas!",
+          "{emote:smallEvents.dwarfPetFan} ¡Una historia graciosa! Talvar trató de entrenar a un salvaje {{pet}} la semana pasada... ¡Terminó con tres chichones en la cabeza y una sonrisa en la cara! Este enano es incorregible. ¡Estoy preocupado por él porque me habló de al menos {{numberOfPetsNotSeen}} otras especies que espera domar!",
+          "{emote:smallEvents.dwarfPetFan} ¿Sabes lo que me dijo un mercader cuando volvía de las montañas? ¡Vio a Talvar construyendo una casita para un {{pet}} ! Al parecer, incluso le tejió una bufanda... Ya no sé qué pensar de este enano. ¡Según mis registros, las criaturas de {{numberOfPetsNotSeen}} podrían beneficiarse del mismo trato de favor!",
+          "{emote:smallEvents.dwarfPetFan} Me he enterado de que Talvar se ha aficionado recientemente a la cocina... ¡para preparar platos especiales para un {{pet}} que ha conocido! Al parecer, su sopa de setas de la cueva está de moda entre esta especie. Entre tú y yo, {{numberOfPetsNotSeen}} ¡otros animales podrían merecer un menú personalizado!",
+          "{emote:smallEvents.dwarfPetFan} Mi primo, el herrero, me dice que Talvar le ha encargado una armadura en miniatura... ¡para proteger un {{pet}} de los elementos! Su amor por las criaturas realmente no tiene límites. Si esto sigue así, ¡tendremos que equipar a las especies de {{numberOfPetsNotSeen}} que aún no ha conocido!",
+          "{emote:smallEvents.dwarfPetFan} ¡Increíbles noticias desde las alturas! Talvar ha organizado una fiesta de cumpleaños para un {{pet}} con tarta de bayas y todos los adornos. Los otros enanos piensan que ha perdido la cabeza, pero a mí me parece conmovedor. Imagínate si descubriera las {{numberOfPetsNotSeen}} otras criaturas que andan por aquí.",
+          "{emote:smallEvents.dwarfPetFan} No te lo vas a creer... ¡Talvar escribe baladas sobre un {{pet}} que conoció! Algunos lloran de emoción, otros ríen... ¡Quizás {{numberOfPetsNotSeen}} más criaturas inspiren su genio artístico!",
+          "{emote:smallEvents.dwarfPetFan} Las noticias del clan de Talvar son... peculiares. Parece que ha pintado un retrato gigante de un {{pet}} en la pared de su casa. A su mujer no le hace mucha gracia, pero él está radiante de orgullo porque es su animal favorito en este momento. En mi opinión, tener otros modelos de animales en {{numberOfPetsNotSeen}} le ayudaría a perfeccionar su técnica.",
+          "{emote:smallEvents.dwarfPetFan} He oído que Talvar ha empezado a meditar con un {{pet}} en la cima de la montaña... ¡Se dice que se sientan juntos durante horas! Los ancianos del pueblo hablan de una extraordinaria conexión espiritual. Quién sabe, ¡quizás {{numberOfPetsNotSeen}} otros guías espirituales le estén esperando!",
+          "{emote:smallEvents.dwarfPetFan} El último rumor es que Talvar ha aprendido el lenguaje de un {{pet}} ¡y mantiene largas conversaciones con él! Los demás enanos pueden oírle hablar solo en su fragua... ¡bueno, no solo, al parecer! {{numberOfPetsNotSeen}} ¡los posibles interlocutores podrían ampliar su vocabulario animal!",
+          "{emote:smallEvents.dwarfPetFan} Según mis últimos cálculos, Talvar aún tiene que descubrir {{numberOfPetsNotSeen}} especies... ¡Este enano está cada vez más obsesionado con un {{pet}} que encontró! Lleva semanas escribiéndome apasionadas cartas sobre él.",
+          "{emote:smallEvents.dwarfPetFan} Mis archivos muestran que las criaturas de {{numberOfPetsNotSeen}} siguen eludiendo a Talvar... ¿y adivina qué? ¡Acaba de caer bajo el hechizo de un {{pet}} ! Desde entonces, es imposible conseguir que hable de otra cosa en sus cartas.",
+          "{emote:smallEvents.dwarfPetFan} Según mis registros, los animales de {{numberOfPetsNotSeen}} aún esperan ser descubiertos por Talvar... Pero mientras tanto, ¡está completamente fascinado por un {{pet}} que ha conocido! Este enano nunca deja de sorprenderme.",
+          "{emote:smallEvents.dwarfPetFan} Si quieres saberlo todo, {{numberOfPetsNotSeen}} especies siguen siendo desconocidas para Talvar según mis notas... Sin embargo, ¡no para de hablarme de un {{pet}} que ha visto! Su entusiasmo es realmente contagioso."
+        ]
       },
       "questMasterBadge": {
         "name": "{emote:badges.mission_completer} Insignia de maestro de misiones",
@@ -926,7 +976,9 @@
       "report": "Informes",
       "guildDaily": "Recompensas del gremio",
       "playerFreedFromJail": "Puesta en libertad",
-      "fightChallenge": "Atacado por otro jugador"
+      "fightChallenge": "Atacado por otro jugador",
+      "guildKick": "Exclusión del gremio",
+      "guildStatusChange": "Cambio de estatus dentro del gremio"
     },
     "enableDisable": "Activar/Desactivar",
     "sendLocationField": "Dirección de entrega :",
@@ -937,7 +989,8 @@
     "inChannel": "{{channel}}En el salón",
     "footerEnableDisable": "Utilice los botones siguientes para activar o desactivar las notificaciones.",
     "back": "Volver",
-    "footerSendLocation": "Utilice los botones siguientes para elegir dónde desea recibir las notificaciones."
+    "footerSendLocation": "Utilice los botones siguientes para elegir dónde desea recibir las notificaciones.",
+    "selectPlaceholder": "Seleccione la notificación que desea modificar"
   },
   "maintenance": {
     "title": "Mantenimiento",

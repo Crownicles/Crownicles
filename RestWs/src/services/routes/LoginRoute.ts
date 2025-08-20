@@ -3,7 +3,7 @@ import {
 } from "fastify";
 import { KeycloakUtils } from "../../../../Lib/src/keycloak/KeycloakUtils";
 import { keycloakConfig } from "../../index";
-import { DraftBotLogger } from "../../../../Lib/src/logs/DraftBotLogger";
+import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { RegisteringConstants } from "../../constants/RegisteringConstants";
 import { getRequestLoggerMetadata } from "../RestApi";
 
@@ -16,7 +16,7 @@ import { getRequestLoggerMetadata } from "../RestApi";
 export async function betaLoginVerifyGroup(req: FastifyRequest, keycloakId: string, reply: FastifyReply): Promise<boolean> {
 	const groups = await KeycloakUtils.getUserGroups(keycloakConfig, keycloakId);
 	if (groups.isError) {
-		DraftBotLogger.error("Failed to get user groups", {
+		CrowniclesLogger.error("Failed to get user groups", {
 			apiReturn: groups,
 			keycloakId,
 			...getRequestLoggerMetadata(req)
@@ -26,7 +26,7 @@ export async function betaLoginVerifyGroup(req: FastifyRequest, keycloakId: stri
 	}
 
 	if (!groups.payload.groups.includes(RegisteringConstants.BETA_GROUP)) {
-		DraftBotLogger.error("User is not in the beta group", {
+		CrowniclesLogger.error("User is not in the beta group", {
 			apiReturn: groups,
 			keycloakId,
 			...getRequestLoggerMetadata(req)
@@ -46,7 +46,7 @@ export async function betaLoginVerifyGroup(req: FastifyRequest, keycloakId: stri
 export function setupLoginRoute(server: FastifyInstance, betaLogin: boolean): void {
 	server.post("/login", async (request, reply) => {
 		try {
-			DraftBotLogger.debug("Login request received", {
+			CrowniclesLogger.debug("Login request received", {
 				...getRequestLoggerMetadata(request)
 			});
 
@@ -70,7 +70,7 @@ export function setupLoginRoute(server: FastifyInstance, betaLogin: boolean): vo
 
 			// An error occurred during login
 			if (res.isError) {
-				DraftBotLogger.warn("Failed to login user", {
+				CrowniclesLogger.warn("Failed to login user", {
 					apiReturn: res,
 					username,
 					...getRequestLoggerMetadata(request)
@@ -83,7 +83,7 @@ export function setupLoginRoute(server: FastifyInstance, betaLogin: boolean): vo
 			if (betaLogin) {
 				const user = await KeycloakUtils.checkTokenAndGetKeycloakId(keycloakConfig, res.payload.access_token);
 				if (user.isError) {
-					DraftBotLogger.error("Failed to get user info", {
+					CrowniclesLogger.error("Failed to get user info", {
 						apiReturn: user,
 						username,
 						...getRequestLoggerMetadata(request)
@@ -93,7 +93,7 @@ export function setupLoginRoute(server: FastifyInstance, betaLogin: boolean): vo
 				}
 
 				if (await betaLoginVerifyGroup(request, user.payload.keycloakId, reply)) {
-					DraftBotLogger.info("Beta user logged in", {
+					CrowniclesLogger.info("Beta user logged in", {
 						apiReturn: user,
 						username,
 						...getRequestLoggerMetadata(request)
@@ -105,14 +105,14 @@ export function setupLoginRoute(server: FastifyInstance, betaLogin: boolean): vo
 			}
 
 			// The login was successful and the user is not in the beta group, so just send the response
-			DraftBotLogger.info("User logged in", {
+			CrowniclesLogger.info("User logged in", {
 				apiReturn: res,
 				username
 			});
 			reply.send(res.payload);
 		}
 		catch (error) {
-			DraftBotLogger.errorWithObj("Error during login", {
+			CrowniclesLogger.errorWithObj("Error during login", {
 				error,
 				...getRequestLoggerMetadata(request)
 			});

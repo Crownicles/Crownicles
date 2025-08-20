@@ -1,7 +1,7 @@
 import {
 	connect, IClientOptions, MqttClient
 } from "mqtt";
-import { DraftBotLogger } from "../../../Lib/src/logs/DraftBotLogger";
+import { CrowniclesLogger } from "../../../Lib/src/logs/CrowniclesLogger";
 
 /**
  * Abstract class for a MQTT client
@@ -21,7 +21,7 @@ export abstract class RestWsMqttClient {
 		this.mqttClient = connect(host, options);
 
 		this.mqttClient.on("connect", () => {
-			DraftBotLogger.info("Connected to MQTT broker");
+			CrowniclesLogger.info("Connected to MQTT broker");
 			this.onConnect();
 		});
 
@@ -35,7 +35,7 @@ export abstract class RestWsMqttClient {
 				await this.onMessage(messageString);
 			}
 			catch (e) {
-				DraftBotLogger.errorWithObj("Error while processing MQTT message", e);
+				CrowniclesLogger.errorWithObj("Error while processing MQTT message", e);
 			}
 		});
 	}
@@ -53,11 +53,11 @@ export abstract class RestWsMqttClient {
 
 		mqttClient.subscribe(topic, err => {
 			if (err) {
-				DraftBotLogger.errorWithObj(`Error while subscribing to topic ${topic}`, err);
+				CrowniclesLogger.errorWithObj(`Error while subscribing to topic ${topic}`, err);
 				process.exit(1);
 			}
 			else {
-				DraftBotLogger.info(`Subscribed to topic ${topic}`);
+				CrowniclesLogger.info(`Subscribed to topic ${topic}`);
 			}
 		});
 	}

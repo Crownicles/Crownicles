@@ -43,7 +43,7 @@ export class MapLinkDataController extends DataControllerNumber<MapLink> {
 				const endMap = MapLocationDataController.instance.getById(mapLink.endMap);
 				return startMap.attribute === MapConstants.MAP_ATTRIBUTES.CONTINENT1 && endMap.attribute === MapConstants.MAP_ATTRIBUTES.CONTINENT1;
 			});
-		return RandomUtils.draftbotRandom.pick(mapLinks);
+		return RandomUtils.crowniclesRandom.pick(mapLinks);
 	}
 
 	/**

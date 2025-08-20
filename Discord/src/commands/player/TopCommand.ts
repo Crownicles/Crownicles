@@ -10,31 +10,31 @@ import {
 import i18n from "../../translations/i18n";
 import {
 	makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	TopElement, TopElementScoreFirstType
 } from "../../../../Lib/src/types/TopElement";
-import { DraftBotIcons } from "../../../../Lib/src/DraftBotIcons";
+import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 import {
 	LANGUAGE, Language
 } from "../../../../Lib/src/Language";
 import { KeycloakUtils } from "../../../../Lib/src/keycloak/KeycloakUtils";
-import { keycloakConfig } from "../../bot/DraftBotShard";
+import { keycloakConfig } from "../../bot/CrowniclesShard";
 import { DiscordCache } from "../../bot/DiscordCache";
-import { DraftBotEmbed } from "../../messages/DraftBotEmbed";
+import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import { TopTiming } from "../../../../Lib/src/types/TopTimings";
-import { DraftbotInteraction } from "../../messages/DraftbotInteraction";
+import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
 import { ICommand } from "../ICommand";
 import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
 import { TopDataType } from "../../../../Lib/src/types/TopDataType";
 import {
 	SlashCommandBuilder, SlashCommandSubcommandBuilder
 } from "@discordjs/builders";
-import { DraftBotErrorEmbed } from "../../messages/DraftBotErrorEmbed";
+import { CrowniclesErrorEmbed } from "../../messages/CrowniclesErrorEmbed";
 import { escapeUsername } from "../../utils/StringUtils";
 import { DisplayUtils } from "../../utils/DisplayUtils";
 
-async function getPacket(interaction: DraftbotInteraction): Promise<CommandTopPacketReq> {
+async function getPacket(interaction: CrowniclesInteraction): Promise<CommandTopPacketReq> {
 	await interaction.deferReply();
 
 	const subCommand = interaction.options.getSubcommand();
@@ -115,21 +115,21 @@ export const commandInfo: ICommand = {
 function getBadgeForPosition(rank: number, sameContext: boolean, contextElementPosition?: number): string {
 	switch (rank) {
 		case 1:
-			return DraftBotIcons.top.badges.first;
+			return CrowniclesIcons.top.badges.first;
 		case 2:
-			return DraftBotIcons.top.badges.second;
+			return CrowniclesIcons.top.badges.second;
 		case 3:
-			return DraftBotIcons.top.badges.third;
+			return CrowniclesIcons.top.badges.third;
 		case 4:
-			return DraftBotIcons.top.badges.fourth;
+			return CrowniclesIcons.top.badges.fourth;
 		case 5:
-			return DraftBotIcons.top.badges.fifth;
+			return CrowniclesIcons.top.badges.fifth;
 		default:
 			return sameContext
 				? contextElementPosition === rank
-					? DraftBotIcons.top.badges.self
-					: DraftBotIcons.top.badges.sameContext
-				: DraftBotIcons.top.badges.default;
+					? CrowniclesIcons.top.badges.self
+					: CrowniclesIcons.top.badges.sameContext
+				: CrowniclesIcons.top.badges.default;
 	}
 }
 
@@ -137,13 +137,13 @@ function formatScoreAttributes(element: TopElement<TopElementScoreFirstType, num
 	let attributes = "";
 
 	if (element.attributes["1"].afk) {
-		attributes += `${DraftBotIcons.top.afk} | `;
+		attributes += `${CrowniclesIcons.top.afk} | `;
 	}
 	else if (element.attributes["1"].effectId) {
-		attributes += `${DraftBotIcons.effects[element.attributes["1"].effectId]} | `;
+		attributes += `${CrowniclesIcons.effects[element.attributes["1"].effectId]} | `;
 	}
 	else if (element.attributes["1"].mapType) {
-		attributes += `${DraftBotIcons.mapTypes[element.attributes["1"].mapType]} | `;
+		attributes += `${CrowniclesIcons.mapTypes[element.attributes["1"].mapType]} | `;
 	}
 
 	attributes += `\`${element.attributes["2"]}\` | \`${i18n.t("commands:top.level", {
@@ -156,7 +156,7 @@ function formatScoreAttributes(element: TopElement<TopElementScoreFirstType, num
 
 function formatGloryAttributes(element: TopElement<number, number, number>, lng: Language): string {
 	return `${
-		DraftBotIcons.leagues[element.attributes["1"].toString(10)]
+		CrowniclesIcons.leagues[element.attributes["1"].toString(10)]
 	} | \`${
 		element.attributes["2"]
 	}\` | \`${
@@ -259,7 +259,7 @@ async function handleGenericTopPacketRes<TopElementKind extends TopElement<T, U,
 
 	await interaction.editReply({
 		embeds: [
-			new DraftBotEmbed()
+			new CrowniclesEmbed()
 				.setTitle(title)
 				.setDescription(getTopDescription(packet, textKeys, formatAttributes, lng, await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)))
 		]
@@ -341,7 +341,7 @@ export async function handleCommandTopInvalidPagePacket(context: PacketContext, 
 
 	await interaction.editReply({
 		embeds: [
-			new DraftBotErrorEmbed(
+			new CrowniclesErrorEmbed(
 				interaction.user,
 				context, interaction,
 				i18n.t("commands:top.invalidPage", {
@@ -359,7 +359,7 @@ export async function handleCommandTopPlayersEmptyPacket(context: PacketContext,
 
 	await interaction.editReply({
 		embeds: [
-			new DraftBotErrorEmbed(interaction.user, context, interaction,
+			new CrowniclesErrorEmbed(interaction.user, context, interaction,
 				i18n.t(packet.needFight ? "commands:top.nobodyInTopGlory" : "commands:top.nobodyInTopPlayers", {
 					lng: interaction.userLanguage, needFight: packet.needFight ? packet.needFight : 0
 				}))
@@ -371,6 +371,6 @@ export async function handleCommandTopGuildsEmptyPacket(context: PacketContext):
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction!)!;
 
 	await interaction.editReply({
-		embeds: [new DraftBotErrorEmbed(interaction.user, context, interaction, i18n.t("commands:top.nobodyInTopGuilds", { lng: interaction.userLanguage }))]
+		embeds: [new CrowniclesErrorEmbed(interaction.user, context, interaction, i18n.t("commands:top.nobodyInTopGuilds", { lng: interaction.userLanguage }))]
 	});
 }

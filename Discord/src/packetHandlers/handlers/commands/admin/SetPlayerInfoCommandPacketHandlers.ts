@@ -1,11 +1,11 @@
 import { packetHandler } from "../../../PacketHandler";
-import { PacketContext } from "../../../../../../Lib/src/packets/DraftBotPacket";
+import { PacketContext } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	CommandSetPlayerInfoDoesntExistError,
 	CommandSetPlayerInfoRes
 } from "../../../../../../Lib/src/packets/commands/CommandSetPlayerInfo";
 import { DiscordCache } from "../../../../bot/DiscordCache";
-import { DraftBotEmbed } from "../../../../messages/DraftBotEmbed";
+import { CrowniclesEmbed } from "../../../../messages/CrowniclesEmbed";
 import i18n from "../../../../translations/i18n";
 import { handleClassicError } from "../../../../utils/ErrorUtils";
 import { escapeUsername } from "../../../../utils/StringUtils";
@@ -24,7 +24,7 @@ export default class SetPlayerInfoCommandPacketHandlers {
 
 		await interaction.editReply({
 			embeds: [
-				new DraftBotEmbed()
+				new CrowniclesEmbed()
 					.setTitle(i18n.t("commands:setPlayerInfo.playerModifiedTitle", {
 						lng,
 						pseudo: escapeUsername(interaction.user.displayName)

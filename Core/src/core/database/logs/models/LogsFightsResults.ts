@@ -31,6 +31,10 @@ export class LogsFightsResults extends Model {
 
 	declare readonly player2ClassId?: number;
 
+	declare readonly fightInitiatorPetTypeId?: number;
+
+	declare readonly player2PetTypeId?: number;
+
 	declare readonly date: number;
 }
 
@@ -91,6 +95,14 @@ export function initModel(sequelize: Sequelize): void {
 		},
 		player2ClassId: {
 			type: DataTypes.INTEGER.UNSIGNED,
+			allowNull: true
+		},
+		fightInitiatorPetTypeId: {
+			type: DataTypes.INTEGER,
+			allowNull: true
+		},
+		player2PetTypeId: {
+			type: DataTypes.INTEGER,
 			allowNull: true
 		},
 		date: {

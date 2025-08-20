@@ -1,21 +1,21 @@
 import {
-	DraftBotPacket, PacketDirection, sendablePacket
-} from "../DraftBotPacket.js";
+	CrowniclesPacket, PacketDirection, sendablePacket
+} from "../CrowniclesPacket.js";
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
-export class CommandGuildInvitePacketReq extends DraftBotPacket {
+export class CommandGuildInvitePacketReq extends CrowniclesPacket {
 	invitedPlayerKeycloakId!: string;
 }
 
 @sendablePacket(PacketDirection.NONE)
-export class CommandGuildInviteErrorPacket extends DraftBotPacket {
+export class CommandGuildInviteErrorPacket extends CrowniclesPacket {
 	invitedPlayerKeycloakId!: string;
 
 	guildName!: string;
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandGuildInvitePlayerNotFound extends DraftBotPacket {
+export class CommandGuildInvitePlayerNotFound extends CrowniclesPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
@@ -43,14 +43,14 @@ export class CommandGuildInviteAlreadyInAGuild extends CommandGuildInviteErrorPa
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandGuildInviteAcceptPacketRes extends DraftBotPacket {
+export class CommandGuildInviteAcceptPacketRes extends CrowniclesPacket {
 	invitedPlayerKeycloakId!: string;
 
 	guildName!: string;
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandGuildInviteRefusePacketRes extends DraftBotPacket {
+export class CommandGuildInviteRefusePacketRes extends CrowniclesPacket {
 	invitedPlayerKeycloakId!: string;
 
 	guildName!: string;

@@ -42,10 +42,10 @@ export class Monster extends Data<string> {
 		guildXp: number;
 	} {
 		return {
-			money: Math.round(this.rewardFactor * (level * PVEConstants.FIGHT_REWARDS.MONEY_FACTOR + RandomUtils.draftbotRandom.integer(0, PVEConstants.FIGHT_REWARDS.RANDOM_MAX_REWARD))),
-			xp: Math.round(this.rewardFactor * (level * PVEConstants.FIGHT_REWARDS.XP_FACTOR + RandomUtils.draftbotRandom.integer(0, PVEConstants.FIGHT_REWARDS.RANDOM_MAX_REWARD))),
-			guildScore: Math.round(this.rewardFactor * (level * PVEConstants.FIGHT_REWARDS.GUILD_SCORE_FACTOR + RandomUtils.draftbotRandom.integer(0, PVEConstants.FIGHT_REWARDS.RANDOM_MAX_REWARD))),
-			guildXp: Math.round(this.rewardFactor * (level * PVEConstants.FIGHT_REWARDS.GUILD_XP_FACTOR + RandomUtils.draftbotRandom.integer(0, PVEConstants.FIGHT_REWARDS.RANDOM_MAX_REWARD)))
+			money: Math.round(this.rewardFactor * (level * PVEConstants.FIGHT_REWARDS.MONEY_FACTOR + RandomUtils.crowniclesRandom.integer(0, PVEConstants.FIGHT_REWARDS.RANDOM_MAX_REWARD))),
+			xp: Math.round(this.rewardFactor * (level * PVEConstants.FIGHT_REWARDS.XP_FACTOR + RandomUtils.crowniclesRandom.integer(0, PVEConstants.FIGHT_REWARDS.RANDOM_MAX_REWARD))),
+			guildScore: Math.round(this.rewardFactor * (level * PVEConstants.FIGHT_REWARDS.GUILD_SCORE_FACTOR + RandomUtils.crowniclesRandom.integer(0, PVEConstants.FIGHT_REWARDS.RANDOM_MAX_REWARD))),
+			guildXp: Math.round(this.rewardFactor * (level * PVEConstants.FIGHT_REWARDS.GUILD_XP_FACTOR + RandomUtils.crowniclesRandom.integer(0, PVEConstants.FIGHT_REWARDS.RANDOM_MAX_REWARD)))
 		};
 	}
 }
@@ -57,7 +57,7 @@ export class MonsterDataController extends DataControllerString<Monster> {
 		return new Monster();
 	}
 
-	public getRandomMonster(mapId = -1, seed = RandomUtils.draftbotRandom.integer(1, 9999)): Monster {
+	public getRandomMonster(mapId = -1, seed = RandomUtils.crowniclesRandom.integer(1, 9999)): Monster {
 		let availableMonsters = this.getValuesArray();
 
 		if (mapId !== -1) {

@@ -14,11 +14,11 @@
     "drinkBlack": {
       "outcomes": {
         "0": {
-          "effect": ":confounded:",
+          "effect": "confounded",
           "health": -70
         },
         "1": {
-          "effect": ":sleeping:",
+          "effect": "sleeping",
           "money": 400
         }
       }
@@ -26,7 +26,7 @@
     "drinkRandom": {
       "outcomes": {
         "0": {
-          "effect": ":zany_face:",
+          "effect": "drunk",
           "money": 200,
           "tags": [
             "drinkAlcohol"
@@ -36,11 +36,11 @@
           "health": 10
         },
         "2": {
-          "effect": ":clock2:",
+          "effect": "occupied",
           "lostTime": 20
         },
         "3": {
-          "effect": ":cold_face:",
+          "effect": "freezing",
           "health": -20
         }
       }
@@ -48,13 +48,13 @@
     "end": {
       "outcomes": {
         "0": {
-          "effect": ":confounded:"
+          "effect": "confounded"
         },
         "1": {
           "money": -225
         },
         "2": {
-          "effect": ":clock2:",
+          "effect": "occupied",
           "health": 5,
           "lostTime": 20
         }
@@ -63,14 +63,14 @@
     "refuse": {
       "outcomes": {
         "0": {
-          "effect": ":sleeping:",
+          "effect": "sleeping",
           "health": 15
         },
         "1": {
-          "effect": ":confounded:"
+          "effect": "confounded"
         },
         "2": {
-          "effect": ":clock2:",
+          "effect": "occupied",
           "lostTime": 10
         }
       }

@@ -20,9 +20,9 @@ class TankFightBehavior implements ClassBehavior {
 
 		if (
 			(me.getDefense() < 600
-				|| RandomUtils.draftbotRandom.bool(0.1))
+				|| RandomUtils.crowniclesRandom.bool(0.1))
 			&& (turn < 3
-				|| RandomUtils.draftbotRandom.bool(0.1))
+				|| RandomUtils.crowniclesRandom.bool(0.1))
 			&& ![
 				ClassConstants.CLASSES_ID.KNIGHT,
 				ClassConstants.CLASSES_ID.VALIANT_KNIGHT,
@@ -45,7 +45,7 @@ class TankFightBehavior implements ClassBehavior {
 				&& lastOpponentAction.id !== FightConstants.FIGHT_ACTIONS.PLAYER.HEAVY_ATTACK
 				&& FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.COUNTER_ATTACK)
 				&& lastOpponentAction.breath > 4 // Don't copy attacks that cost a small amount of breath
-				&& RandomUtils.draftbotRandom.bool(0.95)
+				&& RandomUtils.crowniclesRandom.bool(0.95)
 		) {
 			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.COUNTER_ATTACK);
 		}

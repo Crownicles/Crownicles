@@ -1,12 +1,12 @@
 import { ReactionCollectorCreationPacket } from "../../../Lib/src/packets/interaction/ReactionCollectorPacket";
-import { PacketContext } from "../../../Lib/src/packets/DraftBotPacket";
+import { PacketContext } from "../../../Lib/src/packets/CrowniclesPacket";
 import { DiscordCache } from "../bot/DiscordCache";
 import { DiscordCollectorUtils } from "../utils/DiscordCollectorUtils";
 import { SmallEventCartPacket } from "../../../Lib/src/packets/smallEvents/SmallEventCartPacket";
-import { DraftbotSmallEventEmbed } from "../messages/DraftbotSmallEventEmbed";
+import { CrowniclesSmallEventEmbed } from "../messages/CrowniclesSmallEventEmbed";
 import { StringUtils } from "../utils/StringUtils";
 import { EmoteUtils } from "../utils/EmoteUtils";
-import { DraftBotIcons } from "../../../Lib/src/DraftBotIcons";
+import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 import i18n from "../translations/i18n";
 import { getRandomSmallEventIntro } from "../packetHandlers/handlers/SmallEventsHandler";
 import { ReactionCollectorCartData } from "../../../Lib/src/packets/interaction/ReactionCollectorCart";
@@ -18,14 +18,14 @@ export async function cartCollector(context: PacketContext, packet: ReactionColl
 	const story = data.displayedDestination.isDisplayed ? "knownDestination" : "unknownDestination";
 	const lng = interaction!.userLanguage;
 
-	const embed = new DraftbotSmallEventEmbed(
+	const embed = new CrowniclesSmallEventEmbed(
 		"cart",
 		getRandomSmallEventIntro(lng)
 		+ StringUtils.getRandomTranslation(`smallEvents:cart.${story}`, lng, {
 			price: data.price,
-			moneyEmote: EmoteUtils.translateEmojiToDiscord(DraftBotIcons.unitValues.money),
+			moneyEmote: EmoteUtils.translateEmojiToDiscord(CrowniclesIcons.unitValues.money),
 			destination:
-				`${DraftBotIcons.mapTypes[data.displayedDestination.type!]} ${
+				`${CrowniclesIcons.mapTypes[data.displayedDestination.type!]} ${
 					i18n.t(`models:map_locations.${data.displayedDestination.id}.name`, { lng })
 				}`
 		})
@@ -36,8 +36,8 @@ export async function cartCollector(context: PacketContext, packet: ReactionColl
 
 	return await DiscordCollectorUtils.createAcceptRefuseCollector(interaction, embed, packet, context, {
 		emojis: {
-			accept: EmoteUtils.translateEmojiToDiscord(DraftBotIcons.cartSmallEvent.accept),
-			refuse: EmoteUtils.translateEmojiToDiscord(DraftBotIcons.cartSmallEvent.refuse)
+			accept: EmoteUtils.translateEmojiToDiscord(CrowniclesIcons.cartSmallEvent.accept),
+			refuse: EmoteUtils.translateEmojiToDiscord(CrowniclesIcons.cartSmallEvent.refuse)
 		}
 	});
 }
@@ -63,7 +63,7 @@ export async function cartResult(packet: SmallEventCartPacket, context: PacketCo
 
 	await interaction.editReply({
 		embeds: [
-			new DraftbotSmallEventEmbed(
+			new CrowniclesSmallEventEmbed(
 				"cart",
 				StringUtils.getRandomTranslation(`smallEvents:cart.${story}`, lng),
 				interaction.user,

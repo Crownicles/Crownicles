@@ -1,16 +1,16 @@
 import { ICommand } from "../ICommand";
 import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
-import { DraftbotInteraction } from "../../messages/DraftbotInteraction";
+import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
 import {
 	makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	CommandPetFeedPacketReq,
 	CommandPetFeedSuccessPacket
 } from "../../../../Lib/src/packets/commands/CommandPetFeedPacket";
 import { DiscordCache } from "../../bot/DiscordCache";
 import i18n from "../../translations/i18n";
-import { DraftBotEmbed } from "../../messages/DraftBotEmbed";
+import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import {
 	ReactionCollectorCreationPacket,
 	ReactionCollectorRefuseReaction
@@ -20,7 +20,7 @@ import {
 	ReactionCollectorPetFeedWithGuildData,
 	ReactionCollectorPetFeedWithGuildFoodReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorPetFeedWithGuild";
-import { DraftBotIcons } from "../../../../Lib/src/DraftBotIcons";
+import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 import {
 	escapeUsername, StringUtils
 } from "../../utils/StringUtils";
@@ -32,7 +32,7 @@ import { sendInteractionNotForYou } from "../../utils/ErrorUtils";
 import { DiscordCollectorUtils } from "../../utils/DiscordCollectorUtils";
 import { ReactionCollectorPetFeedWithoutGuildData } from "../../../../Lib/src/packets/interaction/ReactionCollectorPetFeedWithoutGuild";
 
-async function getPacket(interaction: DraftbotInteraction): Promise<CommandPetFeedPacketReq> {
+async function getPacket(interaction: CrowniclesInteraction): Promise<CommandPetFeedPacketReq> {
 	await interaction.deferReply();
 	return makePacket(CommandPetFeedPacketReq, {});
 }
@@ -53,7 +53,7 @@ export async function handleCommandPetFeedSuccessPacket(packet: CommandPetFeedSu
 
 	await interaction.editReply({
 		embeds: [
-			new DraftBotEmbed()
+			new CrowniclesEmbed()
 				.formatAuthor(title, interaction.user)
 				.setDescription(description)
 		]
@@ -90,7 +90,7 @@ export async function handleCommandPetFeedWithGuildCollector(context: PacketCont
 		rowFood.addComponents(new ButtonBuilder()
 			.setCustomId(foodReaction.index.toString())
 			.setStyle(ButtonStyle.Secondary)
-			.setEmoji(DraftBotIcons.foods[foodData.food]));
+			.setEmoji(CrowniclesIcons.foods[foodData.food]));
 	}
 
 	const refuseCustomId = "refuse";
@@ -99,9 +99,9 @@ export async function handleCommandPetFeedWithGuildCollector(context: PacketCont
 		.setCustomId(refuseCustomId)
 		.setStyle(ButtonStyle.Secondary)
 		.setLabel(i18n.t("commands:petFeed.cancelButton", { lng }))
-		.setEmoji(DraftBotIcons.collectors.refuse));
+		.setEmoji(CrowniclesIcons.collectors.refuse));
 
-	const embed = new DraftBotEmbed()
+	const embed = new CrowniclesEmbed()
 		.formatAuthor(i18n.t("commands:petFeed.feedTitle", {
 			lng,
 			pseudo: escapeUsername(interaction.user.displayName)
@@ -149,8 +149,16 @@ export async function handleCommandPetFeedWithGuildCollector(context: PacketCont
 	});
 
 	msgCollector.on("end", async () => {
+		rowFood.components.forEach(component => {
+			component.setDisabled(true);
+		});
+
+		rowRefuse.components.forEach(component => {
+			component.setDisabled(true);
+		});
+
 		await msg.edit({
-			components: []
+			components: [rowFood, rowRefuse]
 		});
 	});
 
@@ -167,7 +175,7 @@ export async function handleCommandPetFeedWithoutGuildCollector(context: PacketC
 
 	const data = packet.data.data as ReactionCollectorPetFeedWithoutGuildData;
 
-	const embed = new DraftBotEmbed().formatAuthor(i18n.t("commands:petFeed.feedTitle", {
+	const embed = new CrowniclesEmbed().formatAuthor(i18n.t("commands:petFeed.feedTitle", {
 		lng,
 		pseudo: escapeUsername(interaction.user.displayName)
 	}), interaction.user)

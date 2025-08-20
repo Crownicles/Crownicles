@@ -1,12 +1,13 @@
 import {
-	DraftBotPacket, makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, makePacket, PacketContext
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	Player, Players
 } from "../../core/database/game/models/Player";
 import { Guilds } from "../../core/database/game/models/Guild";
 import {
-	CommandGuildKickAcceptPacketRes, CommandGuildKickBlockedErrorPacket,
+	CommandGuildKickAcceptPacketRes,
+	CommandGuildKickBlockedErrorPacket,
 	CommandGuildKickPacketReq,
 	CommandGuildKickPacketRes,
 	CommandGuildKickRefusePacketRes
@@ -23,7 +24,9 @@ import {
 } from "../../core/utils/CommandUtils";
 import { GuildRole } from "../../../../Lib/src/types/GuildRole";
 import { ReactionCollectorGuildKick } from "../../../../Lib/src/packets/interaction/ReactionCollectorGuildKick";
-import { draftBotInstance } from "../../index";
+import { crowniclesInstance } from "../../index";
+import { GuildKickNotificationPacket } from "../../../../Lib/src/packets/notifications/GuildKickNotificationPacket";
+import { PacketUtils } from "../../core/utils/PacketUtils";
 
 /**
  * Check if the kicked player is only blocked by this command
@@ -34,7 +37,7 @@ function isOnlyBlockedByGuildKick(kickedPlayer: Player): boolean {
 	return blockingReasons.length === 1 && blockingReasons[0] === BlockingConstants.REASONS.GUILD_KICK;
 }
 
-async function acceptGuildKick(player: Player, kickedPlayer: Player, response: DraftBotPacket[]): Promise<void> {
+async function acceptGuildKick(player: Player, kickedPlayer: Player, response: CrowniclesPacket[]): Promise<void> {
 	await player.reload();
 
 	// Do all necessary checks again just in case something changed during the menu
@@ -46,19 +49,26 @@ async function acceptGuildKick(player: Player, kickedPlayer: Player, response: D
 	kickedPlayer.guildId = null;
 
 	if (guild.elderId === kickedPlayer.id) {
-		draftBotInstance.logsDatabase.logGuildElderRemove(guild, guild.elderId).then();
+		crowniclesInstance.logsDatabase.logGuildElderRemove(guild, guild.elderId).then();
 		guild.elderId = null;
 	}
 	await Promise.all([
 		kickedPlayer.save(),
 		guild.save()
 	]);
-	draftBotInstance.logsDatabase.logGuildKick(player.keycloakId, guild).then();
+	crowniclesInstance.logsDatabase.logGuildKick(player.keycloakId, guild).then();
 
 	response.push(makePacket(CommandGuildKickAcceptPacketRes, {
 		kickedKeycloakId: kickedPlayer.keycloakId,
 		guildName: guild.name
 	}));
+	const notifications: GuildKickNotificationPacket[] = [];
+	notifications.push(makePacket(GuildKickNotificationPacket, {
+		keycloakId: kickedPlayer.keycloakId,
+		keycloakIdOfExecutor: player.keycloakId,
+		guildName: guild.name
+	}));
+	PacketUtils.sendNotifications(notifications);
 }
 
 /**
@@ -67,7 +77,7 @@ async function acceptGuildKick(player: Player, kickedPlayer: Player, response: D
  * @param kickedPlayer The player to kick
  * @param response The response to send
  */
-async function isNotEligible(player: Player, kickedPlayer: Player, response: DraftBotPacket[]): Promise<boolean> {
+async function isNotEligible(player: Player, kickedPlayer: Player, response: CrowniclesPacket[]): Promise<boolean> {
 	if (kickedPlayer === null) {
 		// No user provided
 		response.push(makePacket(CommandGuildKickPacketRes, {
@@ -125,7 +135,7 @@ export default class GuildKickCommand {
 		guildRoleNeeded: GuildRole.CHIEF,
 		whereAllowed: CommandUtils.WHERE.EVERYWHERE
 	})
-	async execute(response: DraftBotPacket[], player: Player, packet: CommandGuildKickPacketReq, context: PacketContext): Promise<void> {
+	async execute(response: CrowniclesPacket[], player: Player, packet: CommandGuildKickPacketReq, context: PacketContext): Promise<void> {
 		const kickedPlayer = await Players.getAskedPlayer(packet.askedPlayer, player);
 
 		if (await isNotEligible(player, kickedPlayer, response)) {
@@ -142,7 +152,7 @@ export default class GuildKickCommand {
 			kickedPlayer.keycloakId
 		);
 
-		const endCallback: EndCallback = async (collector: ReactionCollectorInstance, response: DraftBotPacket[]): Promise<void> => {
+		const endCallback: EndCallback = async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
 			const reaction = collector.getFirstReaction();
 			if (reaction && reaction.reaction.type === ReactionCollectorAcceptReaction.name) {
 				await acceptGuildKick(player, kickedPlayer, response);

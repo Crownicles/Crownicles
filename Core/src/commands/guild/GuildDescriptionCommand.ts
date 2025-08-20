@@ -4,8 +4,8 @@ import {
 import { GuildConstants } from "../../../../Lib/src/constants/GuildConstants";
 import { GuildRole } from "../../../../Lib/src/types/GuildRole";
 import {
-	DraftBotPacket, makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, makePacket, PacketContext
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import Player from "../../core/database/game/models/Player";
 import {
 	EndCallback, ReactionCollectorInstance
@@ -14,7 +14,7 @@ import { ReactionCollectorAcceptReaction } from "../../../../Lib/src/packets/int
 import { BlockingUtils } from "../../core/utils/BlockingUtils";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
 import { Guilds } from "../../core/database/game/models/Guild";
-import { draftBotInstance } from "../../index";
+import { crowniclesInstance } from "../../index";
 import { ReactionCollectorGuildDescription } from "../../../../Lib/src/packets/interaction/ReactionCollectorGuildDescription";
 import {
 	CommandGuildDescriptionAcceptPacketRes,
@@ -26,7 +26,7 @@ import {
 } from "../../../../Lib/src/packets/commands/CommandGuildDescriptionPacket";
 import { checkNameString } from "../../../../Lib/src/utils/StringUtils";
 
-async function acceptGuildDescription(player: Player, description: string, response: DraftBotPacket[]): Promise<void> {
+async function acceptGuildDescription(player: Player, description: string, response: CrowniclesPacket[]): Promise<void> {
 	await player.reload();
 	if (!player.guildId) {
 		response.push(makePacket(CommandGuildDescriptionNoGuildPacket, {}));
@@ -40,7 +40,7 @@ async function acceptGuildDescription(player: Player, description: string, respo
 	guild.guildDescription = description;
 	response.push(makePacket(CommandGuildDescriptionAcceptPacketRes, {}));
 	await guild.save();
-	draftBotInstance.logsDatabase.logGuildDescriptionChange(player.keycloakId, guild).then();
+	crowniclesInstance.logsDatabase.logGuildDescriptionChange(player.keycloakId, guild).then();
 }
 
 function endCallback(player: Player, description: string): EndCallback {
@@ -65,7 +65,7 @@ export default class GuildDescriptionCommand {
 		guildRoleNeeded: GuildRole.ELDER,
 		whereAllowed: CommandUtils.WHERE.EVERYWHERE
 	})
-	async execute(response: DraftBotPacket[], player: Player, packet: CommandGuildDescriptionPacketReq, context: PacketContext): Promise<void> {
+	async execute(response: CrowniclesPacket[], player: Player, packet: CommandGuildDescriptionPacketReq, context: PacketContext): Promise<void> {
 		if (!player.guildId) {
 			response.push(makePacket(CommandGuildDescriptionNoGuildPacket, {}));
 			return;

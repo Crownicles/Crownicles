@@ -1,6 +1,6 @@
 import {
-	DraftBotPacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, PacketContext
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	botConfig, mqttClient
 } from "../../index";
@@ -8,10 +8,10 @@ import { AnnouncementPacket } from "../../../../Lib/src/packets/announcements/An
 import { NotificationPacket } from "../../../../Lib/src/packets/notifications/NotificationPacket";
 import { NotificationsSerializedPacket } from "../../../../Lib/src/packets/notifications/NotificationsSerializedPacket";
 import { MqttTopicUtils } from "../../../../Lib/src/utils/MqttTopicUtils";
-import { DraftBotLogger } from "../../../../Lib/src/logs/DraftBotLogger";
+import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 
 export abstract class PacketUtils {
-	static sendPackets(context: PacketContext, packets: DraftBotPacket[]): void {
+	static sendPackets(context: PacketContext, packets: CrowniclesPacket[]): void {
 		const responsePacket = {
 			context,
 			packets: packets.map(responsePacket => ({
@@ -23,11 +23,11 @@ export abstract class PacketUtils {
 		const response = JSON.stringify(responsePacket);
 		if (context.discord) {
 			mqttClient.publish(MqttTopicUtils.getDiscordTopic(botConfig.PREFIX, context.discord.shardId), response);
-			DraftBotLogger.debug("Sent response to discord front", { response: responsePacket });
+			CrowniclesLogger.debug("Sent response to discord front", { response: responsePacket });
 		}
 		else if (context.webSocket) {
 			mqttClient.publish(MqttTopicUtils.getWebSocketTopic(botConfig.PREFIX), response);
-			DraftBotLogger.debug("Sent response to web socket front", { response: responsePacket });
+			CrowniclesLogger.debug("Sent response to web socket front", { response: responsePacket });
 		}
 		else {
 			throw new Error("Unsupported platform");
@@ -42,7 +42,7 @@ export abstract class PacketUtils {
 		 * And if the MQTT server goes down, the announcement will still be available when it comes back up.
 		 */
 		mqttClient.publish(topic, json, { retain: true });
-		DraftBotLogger.debug("Sent Discord announcement", { json });
+		CrowniclesLogger.debug("Sent Discord announcement", { json });
 	}
 
 	static isMqttConnected(): boolean {
@@ -61,6 +61,6 @@ export abstract class PacketUtils {
 			retain: true,
 			qos: 2
 		});
-		DraftBotLogger.debug("Sent notifications", { json });
+		CrowniclesLogger.debug("Sent notifications", { json });
 	}
 }

@@ -8,7 +8,7 @@ const use: FightActionFunc = (sender, _receiver, _fightAction) => {
 	const result = customMessageActionResult();
 
 	// 85% chance to be dirty
-	if (RandomUtils.draftbotRandom.bool(0.85)) {
+	if (RandomUtils.crowniclesRandom.bool(0.85)) {
 		FightActionController.applyAlteration(result, {
 			selfTarget: true,
 			alteration: FightAlterations.DIRTY

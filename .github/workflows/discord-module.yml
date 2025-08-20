@@ -5,6 +5,7 @@ on:
       - '**'
     paths:
       - Discord/**
+      - .github/workflows/**
   workflow_dispatch:
 
 jobs:
@@ -32,7 +33,6 @@ jobs:
         with:
           path: |
             ./Discord/node_modules
-            ./Discord/pnpm-lock.yaml
           key: ${{ runner.os }}-discord-dependencies-${{ hashFiles('./Discord/pnpm-lock.yaml') }}
 
       - name: Install dependencies and Run ESLint in Discord folder

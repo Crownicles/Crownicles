@@ -4,7 +4,7 @@ import {
 	CommandGuildElderRemoveNoElderPacket,
 	CommandGuildElderRemoveRefusePacketRes
 } from "../../../../../../Lib/src/packets/commands/CommandGuildElderRemovePacket";
-import { PacketContext } from "../../../../../../Lib/src/packets/DraftBotPacket";
+import { PacketContext } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import { handleClassicError } from "../../../../utils/ErrorUtils";
 import {
 	handleCommandGuildElderRemoveAcceptPacketRes,

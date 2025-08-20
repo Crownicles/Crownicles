@@ -29,7 +29,7 @@ const use: FightActionFunc = (sender, receiver) => {
 	);
 
 	// The receiver has a 50% chance to be stunned
-	if (RandomUtils.draftbotRandom.bool()) {
+	if (RandomUtils.crowniclesRandom.bool()) {
 		FightActionController.applyAlteration(result, {
 			selfTarget: false,
 			alteration: FightAlterations.STUNNED

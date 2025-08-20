@@ -1,4 +1,4 @@
-import { DraftbotInteraction } from "../messages/DraftbotInteraction";
+import { CrowniclesInteraction } from "../messages/CrowniclesInteraction";
 import { Constants } from "../../../Lib/src/constants/Constants";
 import {
 	ButtonInteraction, StringSelectMenuInteraction
@@ -8,7 +8,7 @@ export class DiscordCache {
 	private static initialized = false;
 
 	private static interactionsCache: Map<string, {
-		interaction: DraftbotInteraction; time: number;
+		interaction: CrowniclesInteraction; time: number;
 	}> = new Map();
 
 	private static buttonInteractionsCache: Map<string, {
@@ -35,7 +35,7 @@ export class DiscordCache {
 		});
 	}
 
-	public static cacheInteraction(interaction: DraftbotInteraction): void {
+	public static cacheInteraction(interaction: CrowniclesInteraction): void {
 		DiscordCache.init();
 		DiscordCache.interactionsCache.set(interaction.id, {
 			interaction, time: Date.now() + Constants.CACHE_TIME.INTERACTIONS
@@ -56,7 +56,7 @@ export class DiscordCache {
 		});
 	}
 
-	public static getInteraction(id: string): DraftbotInteraction | null {
+	public static getInteraction(id: string): CrowniclesInteraction | null {
 		const entry = DiscordCache.interactionsCache.get(id);
 		return entry?.interaction ?? null;
 	}

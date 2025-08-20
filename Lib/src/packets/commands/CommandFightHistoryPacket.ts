@@ -1,6 +1,6 @@
 import {
-	DraftBotPacket, PacketDirection, sendablePacket
-} from "../DraftBotPacket";
+	CrowniclesPacket, PacketDirection, sendablePacket
+} from "../CrowniclesPacket";
 import { EloGameResult } from "../../types/EloGameResult";
 
 export type FightHistoryItem = {
@@ -40,9 +40,9 @@ export type FightHistoryItem = {
 };
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
-export class CommandFightHistoryPacketReq extends DraftBotPacket {}
+export class CommandFightHistoryPacketReq extends CrowniclesPacket {}
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandFightHistoryPacketRes extends DraftBotPacket {
+export class CommandFightHistoryPacketRes extends CrowniclesPacket {
 	history!: FightHistoryItem[];
 }

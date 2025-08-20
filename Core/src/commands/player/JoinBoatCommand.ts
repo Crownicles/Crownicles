@@ -2,8 +2,8 @@ import {
 	commandRequires, CommandUtils
 } from "../../core/utils/CommandUtils";
 import {
-	DraftBotPacket, makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, makePacket, PacketContext
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import Player from "../../core/database/game/models/Player";
 import {
 	CommandJoinBoatAcceptPacketRes,
@@ -39,7 +39,7 @@ import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
  * @param player
  * @param response
  */
-async function canJoinBoat(player: Player, response: DraftBotPacket[]): Promise<boolean> {
+async function canJoinBoat(player: Player, response: CrowniclesPacket[]): Promise<boolean> {
 	// Check if the player is still part of a guild
 	if (!player.guildId) {
 		response.push(makePacket(CommandJoinBoatNoGuildPacketRes, {}));
@@ -72,7 +72,7 @@ async function canJoinBoat(player: Player, response: DraftBotPacket[]): Promise<
  * @param player
  * @param response
  */
-async function acceptJoinBoat(player: Player, response: DraftBotPacket[]): Promise<void> {
+async function acceptJoinBoat(player: Player, response: CrowniclesPacket[]): Promise<void> {
 	await player.reload();
 	if (!await canJoinBoat(player, response)) {
 		return;
@@ -131,7 +131,7 @@ export default class JoinBoatCommand {
 		guildNeeded: true,
 		whereAllowed: [WhereAllowed.CONTINENT]
 	})
-	async execute(response: DraftBotPacket[], player: Player, _packet: CommandJoinBoatPacketReq, context: PacketContext): Promise<void> {
+	async execute(response: CrowniclesPacket[], player: Player, _packet: CommandJoinBoatPacketReq, context: PacketContext): Promise<void> {
 		if (!await canJoinBoat(player, response)) {
 			return;
 		}

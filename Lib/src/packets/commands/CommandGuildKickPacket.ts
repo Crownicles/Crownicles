@@ -1,9 +1,9 @@
 import {
-	DraftBotPacket, PacketDirection, sendablePacket
-} from "../DraftBotPacket";
+	CrowniclesPacket, PacketDirection, sendablePacket
+} from "../CrowniclesPacket";
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
-export class CommandGuildKickPacketReq extends DraftBotPacket {
+export class CommandGuildKickPacketReq extends CrowniclesPacket {
 	askedPlayer!: {
 		rank?: number;
 		keycloakId?: string;
@@ -11,7 +11,7 @@ export class CommandGuildKickPacketReq extends DraftBotPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandGuildKickPacketRes extends DraftBotPacket {
+export class CommandGuildKickPacketRes extends CrowniclesPacket {
 	foundPlayer!: boolean;
 
 	sameGuild!: boolean;
@@ -20,16 +20,16 @@ export class CommandGuildKickPacketRes extends DraftBotPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandGuildKickBlockedErrorPacket extends DraftBotPacket {
+export class CommandGuildKickBlockedErrorPacket extends CrowniclesPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandGuildKickRefusePacketRes extends DraftBotPacket {
+export class CommandGuildKickRefusePacketRes extends CrowniclesPacket {
 	kickedKeycloakId!: string;
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandGuildKickAcceptPacketRes extends DraftBotPacket {
+export class CommandGuildKickAcceptPacketRes extends CrowniclesPacket {
 	kickedKeycloakId!: string;
 
 	guildName!: string;

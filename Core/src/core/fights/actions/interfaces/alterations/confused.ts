@@ -11,15 +11,15 @@ import { RandomUtils } from "../../../../../../../Lib/src/utils/RandomUtils";
 
 const use: FightAlterationFunc = (affected, _fightAlteration, opponent) => {
 	// Heal the confusion after 3 turns
-	if (affected.alterationTurn > 3 || RandomUtils.draftbotRandom.bool() && affected.alterationTurn === 3) {
+	if (affected.alterationTurn > 3 || RandomUtils.crowniclesRandom.bool() && affected.alterationTurn === 3) {
 		return defaultHealFightAlterationResult(affected);
 	}
 
-	if (RandomUtils.draftbotRandom.bool(0.6)) {
+	if (RandomUtils.crowniclesRandom.bool(0.6)) {
 		return defaultRandomActionFightAlterationResult(affected);
 	}
 
-	if (RandomUtils.draftbotRandom.bool(0.5)) {
+	if (RandomUtils.crowniclesRandom.bool(0.5)) {
 		affected.nextFightAction = FightActionDataController.instance.getNone();
 		return defaultDamageFightAlterationResult(affected, getStatsInfo(affected, opponent), getAttackInfo());
 	}

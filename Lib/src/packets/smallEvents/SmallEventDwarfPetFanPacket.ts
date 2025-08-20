@@ -1,7 +1,7 @@
 import {
 	PacketDirection,
 	sendablePacket
-} from "../DraftBotPacket";
+} from "../CrowniclesPacket";
 import { SmallEventPacket } from "./SmallEventPacket";
 import { SexTypeShort } from "../../constants/StringConstants";
 

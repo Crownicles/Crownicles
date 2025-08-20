@@ -1,7 +1,7 @@
 import {
-	DraftBotPacket, PacketDirection, sendablePacket
-} from "../DraftBotPacket";
+	CrowniclesPacket, PacketDirection, sendablePacket
+} from "../CrowniclesPacket";
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
-export class CommandShopPacketReq extends DraftBotPacket {
+export class CommandShopPacketReq extends CrowniclesPacket {
 }

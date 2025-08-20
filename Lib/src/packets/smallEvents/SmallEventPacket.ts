@@ -1,9 +1,9 @@
 import {
-	DraftBotPacket, PacketDirection, sendablePacket
-} from "../DraftBotPacket";
+	CrowniclesPacket, PacketDirection, sendablePacket
+} from "../CrowniclesPacket";
 
 @sendablePacket(PacketDirection.NONE)
-export class SmallEventPacket extends DraftBotPacket {}
+export class SmallEventPacket extends CrowniclesPacket {}
 
 @sendablePacket(PacketDirection.NONE)
 export class SmallEventAddSomething extends SmallEventPacket {

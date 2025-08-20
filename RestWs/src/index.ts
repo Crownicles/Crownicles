@@ -1,5 +1,5 @@
 import { loadConfig } from "./config/RestWsConfig";
-import { DraftBotLogger } from "../../Lib/src/logs/DraftBotLogger";
+import { CrowniclesLogger } from "../../Lib/src/logs/CrowniclesLogger";
 import "source-map-support/register";
 import { RestApi } from "./services/RestApi";
 import { WebSocketServer } from "./services/WebSocketServer";
@@ -9,15 +9,15 @@ import { registerAllServerTranslators } from "./protobuf/fromServer/FromServerTr
 
 process.on("uncaughtException", error => {
 	console.error(`Uncaught exception: ${error}`);
-	if (DraftBotLogger.isInitialized()) {
-		DraftBotLogger.errorWithObj("Uncaught exception", error);
+	if (CrowniclesLogger.isInitialized()) {
+		CrowniclesLogger.errorWithObj("Uncaught exception", error);
 	}
 });
 
 process.on("unhandledRejection", error => {
 	console.error(`Unhandled rejection: ${error}`);
-	if (DraftBotLogger.isInitialized()) {
-		DraftBotLogger.errorWithObj("Unhandled rejection", error);
+	if (CrowniclesLogger.isInitialized()) {
+		CrowniclesLogger.errorWithObj("Unhandled rejection", error);
 	}
 });
 
@@ -32,7 +32,7 @@ export const keycloakConfig = {
 
 async function main(): Promise<void> {
 	// Initialize the logger
-	DraftBotLogger.init(restWsConfig.LOGGER_LEVEL, restWsConfig.LOGGER_LOCATIONS, { app: "RestWs" }, restWsConfig.LOKI_HOST
+	CrowniclesLogger.init(restWsConfig.LOGGER_LEVEL, restWsConfig.LOGGER_LOCATIONS, { app: "RestWs" }, restWsConfig.LOKI_HOST
 		? {
 			host: restWsConfig.LOKI_HOST,
 			username: restWsConfig.LOKI_USERNAME,
@@ -58,7 +58,7 @@ async function main(): Promise<void> {
 	WebSocketServer.start(restWsConfig.WEB_SOCKET_PORT);
 
 	// Log the version of the application
-	DraftBotLogger.info(`DraftBot RestWs ${process.env.npm_package_version}`);
+	CrowniclesLogger.info(`Crownicles RestWs ${process.env.npm_package_version}`);
 }
 
 main().then();

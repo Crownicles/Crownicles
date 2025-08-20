@@ -2,7 +2,7 @@ import {
 	ExecuteTestCommandLike, ITestCommand, TypeKey
 } from "../../../../core/CommandsTest";
 import { ClassDataController } from "../../../../data/Class";
-import { draftBotInstance } from "../../../../index";
+import { crowniclesInstance } from "../../../../index";
 
 export const commandInfo: ITestCommand = {
 	name: "changeClass",
@@ -22,7 +22,7 @@ const changeClassTestCommand: ExecuteTestCommandLike = async (player, args) => {
 		throw new Error("Erreur class : choisissez une classe qui existe !");
 	}
 	player.class = newClassId;
-	draftBotInstance.logsDatabase.logPlayerClassChange(player.keycloakId, newClassId).then();
+	crowniclesInstance.logsDatabase.logPlayerClassChange(player.keycloakId, newClassId).then();
 	await player.save();
 	return `Vous avez maintenant la classe d'id : ${newClassId} !`;
 };

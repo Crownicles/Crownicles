@@ -8,8 +8,6 @@ export abstract class MainItem extends GenericItem {
 
 	public readonly rawDefense?: number;
 
-	public readonly rawSpeed?: number;
-
 	public readonly attack?: number;
 
 	public readonly defense?: number;
@@ -18,11 +16,7 @@ export abstract class MainItem extends GenericItem {
 
 
 	public getSpeed(): number {
-		let before = 0;
-		if (this.rawSpeed > 0) {
-			before = 1.15053 * Math.pow(this.multiplier(), 2.3617) * Math.pow(1.0569 + 0.1448 / this.multiplier(), this.rawSpeed);
-		}
-		return Math.round(before * 0.5) + (this.speed ?? 0);
+		return this.speed ?? 0;
 	}
 
 	public getDisplayPacket(maxStatsValue: StatValues = {

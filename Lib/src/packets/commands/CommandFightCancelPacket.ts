@@ -1,8 +1,8 @@
 import {
-	DraftBotPacket, PacketDirection, sendablePacket
-} from "../DraftBotPacket";
+	CrowniclesPacket, PacketDirection, sendablePacket
+} from "../CrowniclesPacket";
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
-export class CommandFightCancelPacketReq extends DraftBotPacket {
+export class CommandFightCancelPacketReq extends CrowniclesPacket {
 	fightId!: string;
 }

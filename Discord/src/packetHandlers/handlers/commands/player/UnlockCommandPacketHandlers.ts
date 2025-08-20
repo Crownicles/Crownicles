@@ -7,7 +7,7 @@ import {
 	CommandUnlockNotInJail,
 	CommandUnlockRefusePacketRes
 } from "../../../../../../Lib/src/packets/commands/CommandUnlockPacket";
-import { PacketContext } from "../../../../../../Lib/src/packets/DraftBotPacket";
+import { PacketContext } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import { handleClassicError } from "../../../../utils/ErrorUtils";
 import {
 	handleCommandUnlockAcceptPacketRes,

@@ -1,8 +1,8 @@
 import { ICommand } from "../ICommand";
 import {
 	makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
-import { DraftbotInteraction } from "../../messages/DraftbotInteraction";
+} from "../../../../Lib/src/packets/CrowniclesPacket";
+import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
 import i18n from "../../translations/i18n";
 import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
 import {
@@ -11,12 +11,12 @@ import {
 	CommandPetFreePacketRes
 } from "../../../../Lib/src/packets/commands/CommandPetFreePacket";
 import { DiscordCache } from "../../bot/DiscordCache";
-import { DraftBotErrorEmbed } from "../../messages/DraftBotErrorEmbed";
+import { CrowniclesErrorEmbed } from "../../messages/CrowniclesErrorEmbed";
 import { KeycloakUser } from "../../../../Lib/src/keycloak/KeycloakUser";
 import { printTimeBeforeDate } from "../../../../Lib/src/utils/TimeUtils";
 import { ReactionCollectorCreationPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { DiscordCollectorUtils } from "../../utils/DiscordCollectorUtils";
-import { DraftBotEmbed } from "../../messages/DraftBotEmbed";
+import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import { ReactionCollectorPetFreeData } from "../../../../Lib/src/packets/interaction/ReactionCollectorPetFree";
 import { PetUtils } from "../../utils/PetUtils";
 import { ReactionCollectorReturnTypeOrNull } from "../../packetHandlers/handlers/ReactionCollectorHandlers";
@@ -25,7 +25,7 @@ import { escapeUsername } from "../../utils/StringUtils";
 /**
  * Destroy a pet forever... RIP
  */
-function getPacket(_interaction: DraftbotInteraction, keycloakUser: KeycloakUser): CommandPetFreePacketReq {
+function getPacket(_interaction: CrowniclesInteraction, keycloakUser: KeycloakUser): CommandPetFreePacketReq {
 	return makePacket(CommandPetFreePacketReq, { keycloakId: keycloakUser.id });
 }
 
@@ -41,7 +41,7 @@ export async function handleCommandPetFreePacketRes(packet: CommandPetFreePacket
 	if (!packet.foundPet) {
 		await interaction.reply({
 			embeds: [
-				new DraftBotErrorEmbed(
+				new CrowniclesErrorEmbed(
 					interaction.user,
 					context,
 					interaction,
@@ -57,7 +57,7 @@ export async function handleCommandPetFreePacketRes(packet: CommandPetFreePacket
 	if (packet.missingMoney! > 0) {
 		await interaction.reply({
 			embeds: [
-				new DraftBotErrorEmbed(
+				new CrowniclesErrorEmbed(
 					interaction.user,
 					context,
 					interaction,
@@ -72,7 +72,7 @@ export async function handleCommandPetFreePacketRes(packet: CommandPetFreePacket
 	if (packet.cooldownRemainingTimeMs! > 0) {
 		await interaction.reply({
 			embeds: [
-				new DraftBotErrorEmbed(
+				new CrowniclesErrorEmbed(
 					interaction.user,
 					context,
 					interaction,
@@ -92,7 +92,7 @@ export async function createPetFreeCollector(context: PacketContext, packet: Rea
 	const data = packet.data.data as ReactionCollectorPetFreeData;
 	const lng = interaction.userLanguage;
 
-	const embed = new DraftBotEmbed().formatAuthor(i18n.t("commands:petFree.title", {
+	const embed = new CrowniclesEmbed().formatAuthor(i18n.t("commands:petFree.title", {
 		lng,
 		pseudo: escapeUsername(interaction.user.displayName)
 	}), interaction.user)
@@ -122,7 +122,7 @@ export async function handleCommandPetFreeRefusePacketRes(context: PacketContext
 		const lng = originalInteraction.userLanguage;
 		await buttonInteraction.editReply({
 			embeds: [
-				new DraftBotEmbed().formatAuthor(i18n.t("commands:petFree.canceledTitle", {
+				new CrowniclesEmbed().formatAuthor(i18n.t("commands:petFree.canceledTitle", {
 					lng,
 					pseudo: escapeUsername(originalInteraction.user.displayName)
 				}), originalInteraction.user)
@@ -142,7 +142,7 @@ export async function handleCommandPetFreeAcceptPacketRes(packet: CommandPetFree
 		const lng = originalInteraction.userLanguage;
 		await buttonInteraction.editReply({
 			embeds: [
-				new DraftBotEmbed().formatAuthor(i18n.t("commands:petFree.title", {
+				new CrowniclesEmbed().formatAuthor(i18n.t("commands:petFree.title", {
 					lng,
 					pseudo: escapeUsername(originalInteraction.user.displayName)
 				}), originalInteraction.user)

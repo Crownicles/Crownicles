@@ -1,10 +1,10 @@
 import {
-	DraftBotPacket, PacketDirection, sendablePacket
-} from "../DraftBotPacket";
+	CrowniclesPacket, PacketDirection, sendablePacket
+} from "../CrowniclesPacket";
 import { BlockingReason } from "../../constants/BlockingConstants";
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
-export class ChangeBlockingReasonPacket extends DraftBotPacket {
+export class ChangeBlockingReasonPacket extends CrowniclesPacket {
 	oldReason!: BlockingReason;
 
 	newReason!: BlockingReason;

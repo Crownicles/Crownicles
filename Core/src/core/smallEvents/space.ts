@@ -10,7 +10,7 @@ import {
 } from "../utils/Astronomy";
 import {
 	makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	SmallEventSpaceInitialPacket, SmallEventSpaceResultPacket, SpaceFunctionResult
 } from "../../../../Lib/src/packets/smallEvents/SmallEventSpacePacket";
@@ -34,7 +34,7 @@ async function neoWS(): Promise<SpaceFunctionResult> {
 
 	// Check if the list contains an object
 	if (neoWSFeed.length > 0) {
-		const randomObject: NearEarthObject = RandomUtils.draftbotRandom.pick(neoWSFeed);
+		const randomObject: NearEarthObject = RandomUtils.crowniclesRandom.pick(neoWSFeed);
 		return {
 			mainValue: neoWSFeed.length,
 			randomObjectName: randomObject.name,
@@ -46,7 +46,7 @@ async function neoWS(): Promise<SpaceFunctionResult> {
 	// If the list is empty, return a random invented object
 	return {
 		mainValue: 1,
-		randomObjectName: RandomUtils.draftbotRandom.pick(SpaceConstants.INVENTED_ASTEROIDS_NAMES),
+		randomObjectName: RandomUtils.crowniclesRandom.pick(SpaceConstants.INVENTED_ASTEROIDS_NAMES),
 		randomObjectDistance: RandomUtils.rangedInt(SpaceConstants.DISTANCE_RANGE),
 		randomObjectDiameter: RandomUtils.rangedInt(SpaceConstants.DIAMETER_RANGE)
 	};
@@ -119,7 +119,7 @@ async function astronomyEvent(context: PacketContext): Promise<void> {
 	if (nextFullMoon().mainValue === 0) {
 		availableSpaceFunctions = availableSpaceFunctions.filter(e => e !== SpaceConstants.FUNCTIONS.nextFullMoon);
 	}
-	const specificEvent = RandomUtils.draftbotRandom.pick(availableSpaceFunctions) as keyof typeof spaceFunctions;
+	const specificEvent = RandomUtils.crowniclesRandom.pick(availableSpaceFunctions) as keyof typeof spaceFunctions;
 	const t0 = performance.now();
 	const result = await spaceFunctions[specificEvent]();
 	const timeLeft = Math.max(SpaceConstants.WAIT_TIME_BEFORE_SEARCH - (performance.now() - t0), 0);

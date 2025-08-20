@@ -2,8 +2,8 @@ import {
 	commandRequires, CommandUtils
 } from "../../core/utils/CommandUtils";
 import {
-	DraftBotPacket, makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, makePacket, PacketContext
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import Player from "../../core/database/game/models/Player";
 import {
 	CommandSellCancelErrorPacket,
@@ -25,13 +25,13 @@ import {
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorSell";
 import { BlockingUtils } from "../../core/utils/BlockingUtils";
 import { ReactionCollectorRefuseReaction } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
-import { draftBotInstance } from "../../index";
+import { crowniclesInstance } from "../../index";
 import { ItemCategory } from "../../../../Lib/src/constants/ItemConstants";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { MissionsController } from "../../core/missions/MissionsController";
 
 function getEndCallback(player: Player) {
-	return async (collector: ReactionCollectorInstance, response: DraftBotPacket[]): Promise<void> => {
+	return async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
 		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.SELL);
 
 		const firstReaction = collector.getFirstReaction();
@@ -43,7 +43,7 @@ function getEndCallback(player: Player) {
 		const sellItem = firstReaction.reaction.data as ReactionCollectorSellItemReaction;
 		const itemInstance = getItemByIdAndCategory(sellItem.item.id, sellItem.item.category);
 
-		draftBotInstance.logsDatabase.logItemSell(player.keycloakId, itemInstance).then();
+		crowniclesInstance.logsDatabase.logItemSell(player.keycloakId, itemInstance).then();
 
 		await player.reload();
 
@@ -87,7 +87,7 @@ export default class SellCommand {
 		whereAllowed: CommandUtils.WHERE.EVERYWHERE,
 		disallowedEffects: CommandUtils.DISALLOWED_EFFECTS.NOT_STARTED_OR_DEAD_OR_JAILED
 	})
-	async execute(response: DraftBotPacket[], player: Player, _packet: CommandSellPacketReq, context: PacketContext): Promise<void> {
+	async execute(response: CrowniclesPacket[], player: Player, _packet: CommandSellPacketReq, context: PacketContext): Promise<void> {
 		const invSlots = await InventorySlots.getOfPlayer(player.id);
 
 		let toSellItems = invSlots.filter(slot => !slot.isEquipped() && slot.itemId !== 0);

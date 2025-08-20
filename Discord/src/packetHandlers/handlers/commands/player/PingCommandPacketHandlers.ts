@@ -1,11 +1,11 @@
 import { packetHandler } from "../../../PacketHandler";
 import { CommandPingPacketRes } from "../../../../../../Lib/src/packets/commands/CommandPingPacket";
-import { PacketContext } from "../../../../../../Lib/src/packets/DraftBotPacket";
+import { PacketContext } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import { DiscordCache } from "../../../../bot/DiscordCache";
 import i18n from "../../../../translations/i18n";
 import {
-	draftBotClient, shardId
-} from "../../../../bot/DraftBotShard";
+	crowniclesClient, shardId
+} from "../../../../bot/CrowniclesShard";
 
 export default class PingCommandPacketHandlers {
 	@packetHandler(CommandPingPacketRes)
@@ -15,9 +15,9 @@ export default class PingCommandPacketHandlers {
 			content: i18n.t("commands:ping.discord.edit", {
 				lng: interaction?.userLanguage,
 				totalLatency: Date.now() - packet.clientTime,
-				discordApiLatency: draftBotClient!.ws.ping,
+				discordApiLatency: crowniclesClient!.ws.ping,
 				shardId,
-				totalShards: draftBotClient!.shard!.count - 1
+				totalShards: crowniclesClient!.shard!.count - 1
 			})
 		});
 	}

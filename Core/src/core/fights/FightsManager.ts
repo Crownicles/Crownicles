@@ -1,6 +1,6 @@
 import { FightController } from "./FightController";
 import { FightConstants } from "../../../../Lib/src/constants/FightConstants";
-import { DraftBotLogger } from "../../../../Lib/src/logs/DraftBotLogger";
+import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 
 export class FightsManager {
 	private static fights = new Map<string, FightController>();
@@ -31,7 +31,7 @@ export class FightsManager {
 				}
 			}
 			catch (e) {
-				DraftBotLogger.error("Error while purging fights", e);
+				CrowniclesLogger.error("Error while purging fights", e);
 			}
 		}
 	}

@@ -1,19 +1,19 @@
 import {
-	DraftBotPacket, PacketDirection, sendablePacket
-} from "../DraftBotPacket";
+	CrowniclesPacket, PacketDirection, sendablePacket
+} from "../CrowniclesPacket";
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandFightRefusePacketRes extends DraftBotPacket {
+export class CommandFightRefusePacketRes extends CrowniclesPacket {
 }
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
-export class CommandFightPacketReq extends DraftBotPacket {
+export class CommandFightPacketReq extends CrowniclesPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandFightNotEnoughEnergyPacketRes extends DraftBotPacket {
+export class CommandFightNotEnoughEnergyPacketRes extends CrowniclesPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandFightOpponentsNotFoundPacket extends DraftBotPacket {
+export class CommandFightOpponentsNotFoundPacket extends CrowniclesPacket {
 }

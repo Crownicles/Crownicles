@@ -27,7 +27,31 @@
     },
     "sexDisplay_f": "Weiblich {emote:sex.female}",
     "sexDisplay_m": "Männlich {emote:sex.male}",
-    "shortPetField": "{{emote}} {{name}}"
+    "shortPetField": "{{emote}} {{name}}",
+    "petButton": "Streicheln",
+    "defaultPetName": "Ihr Vertrauter",
+    "petPhrases": [
+      "{emote:petCommand.pet} Ihre Hand streichelt **{{petName}}**, die sich mit größter Zuneigung an Ihnen reibt.",
+      "{emote:petCommand.pet} Unter Ihrer wohlwollenden Berührung scheint **{{petName}}** von Zufriedenheit erfüllt zu sein.",
+      "{emote:petCommand.pet} Ihre Berührungen beruhigen **{{petName}}**, die wie ein sanftes Flüstern schnurrt.",
+      "{emote:petCommand.pet} Mit großer Inbrunst leckt **{{petName}}** Ihnen die Hand als Zeichen der Ergebenheit.",
+      "{emote:petCommand.pet} Der Schwanz von **{{petName}}** zappelt vor lauter purer Freude unter Ihrer Aufmerksamkeit.",
+      "{emote:petCommand.pet} Mit vor Glückseligkeit geschlossenen Augen genießt **{{petName}}** Ihre zärtlichen Liebkosungen.",
+      "{emote:petCommand.pet} Ein freudiger Sprung animiert **{{petName}}**, wenn Ihre Hand ihn berührt.",
+      "{emote:petCommand.pet} Auf dem Rücken rollt sich **{{petName}}** zusammen und bettelt darum, dass Sie ihm den Bauch kraulen.",
+      "{emote:petCommand.pet} Ein süßer, zufriedener Laut entweicht **{{petName}}**, der sich an Ihre Hand schmiegt.",
+      "{emote:petCommand.pet} Mit einem Blick voller Zuneigung betrachtet **{{petName}}** Sie voller Hingabe.",
+      "{emote:petCommand.pet} An Ihrem Bein reibt sich **{{petName}}** mit der süßesten Zärtlichkeit.",
+      "{emote:petCommand.pet} Unter Ihren Fingern, die seine Ohren kraulen, zittert **{{petName}}** vor purem Glück.",
+      "{emote:petCommand.pet} Um Sie herum hüpft **{{petName}}** in einem Tanz der Freude.",
+      "{emote:petCommand.pet} Unter Ihren wohltuenden Berührungen räkelt sich **{{petName}}** genüsslich.",
+      "{emote:petCommand.pet} Die Luft selbst vibriert um **{{petName}}** herum, so groß ist seine Freude.",
+      "{emote:petCommand.pet} Zufrieden dehnt sich **{{petName}}** unter der sanften Berührung Ihrer Hand.",
+      "{emote:petCommand.pet} Ein glückseliges Gähnen entgeht **{{petName}}** während Ihrer Umarmungen.",
+      "{emote:petCommand.pet} Mit einem Blick voller Dankbarkeit ehrt **{{petName}}** Sie mit ihrer Dankbarkeit.",
+      "{emote:petCommand.pet} Vor Aufregung zuckt **{{petName}}** bei der Berührung Ihrer wohlwollenden Hand.",
+      "{emote:petCommand.pet} Unter Ihren fachkundigen Fingern entspannt sich **{{petName}}** in aller Ruhe."
+    ]
   },
   "guild": {
     "embedTitle": "Gilde {{guildName}} | Ebene {{level}}",
@@ -198,9 +222,6 @@
       "INVENTORY": {
         "description": "Zeigt den Inhalt des Inventars an, der vier Arten von Objekten enthalten kann:\n` ` `\n-waffen\n-armide\n-potions\n-items\n` ` `\n. Der Befehl zeigt auch den Inhalt der Reserve an, die über zusätzliche Speicher verfügt."
       },
-      "INVITE_DRAFTBOT": {
-        "description": "Mit diesem Befehl erhalten Sie einen Link zum Hilf-und Hilf-Server!"
-      },
       "JOIN_BOAT": {
         "description": "Ermöglicht es, sich einem Gildenmitglied auf einem Schiff anzuschließen, das zu einer geheimnisvollen Insel fährt."
       },
@@ -275,6 +296,9 @@
       },
       "VOTE": {
         "description": "Ruft die Verbindung ab, um für den Bot zu stimmen."
+      },
+      "INVITE_CROWNICLES": {
+        "description": "Mit diesem Befehl erhalten Sie einen Link, über den Sie den Helpserver erreichen können!"
       }
     },
     "forMoreHelp": ":arrow_forward: Für weitere Hilfe: ",
@@ -359,7 +383,7 @@
       "contest": "Abzeichen, das von Zeit zu Zeit in Wettbewerben auf dem Bot-Server gewonnen werden kann.",
       "christmas": "Abzeichen, das jedes Weihnachten bei einem Wettbewerb gewonnen werden kann",
       "top_week": "Person, die eine Rangliste der Woche dominiert hat.",
-      "random": "Badge auf völlig wandern",
+      "random": "Ein geheimnisvolles Abzeichen, niemand weiß, wie man es bekommt",
       "top_10_v1": "Spieler in den Top 10 beim Reset-up 1.0",
       "top_v1_player": "Bester Spieler zum Zeitpunkt des Reset von 1.0",
       "major_bug_reporter": ":lady_beetle: Personen, die große Bugs gemeldet haben.",
@@ -376,7 +400,7 @@
       "rich": ":money_mouth: ` Badge, gekauft im Shop `",
       "top_1_before_reset": "Personen, die nach dem Reset den ersten Platz in der Rangfolge erreicht haben.",
       "very_powerful_guild": "Mitglied einer sehr mächtigen Gilde",
-      "animal_lover": "Personne ayant montré tous les familiers à Talvar le nain"
+      "animal_lover": "Person, die Talvar dem Zwerg alle Vertrauten gezeigt hat"
     },
     "fightRanking": {
       "fieldName": "Gloire und Liga:",
@@ -891,7 +915,33 @@
             "scheint Sie vollkommen zu mögen. Sie müssen sich nicht einmal mehr um Ihren Vertrauten kümmern, damit er Sie weiterhin liebt!",
             "scheint eine starke Bindung mit Ihnen zu teilen. Ihre Bindung ist unerschütterlich, solange Sie nicht getrennt werden, werden Sie weiterhin die Liebe Ihres Vertrauten genießen!"
           ]
-        }
+        },
+        "dwarf": [
+          "{emote:smallEvents.dwarfPetFan} Übrigens schreibt mir Talvar in letzter Zeit immer wieder über eine {{pet}} ... Ich weiß nicht genau, was er im Moment hat, aber er scheint total besessen zu sein! Wie auch immer, meinen Notizen zufolge hat er noch {{numberOfPetsNotSeen}} Kreaturen zu entdecken, falls Sie das interessieren sollte.",
+          "{emote:smallEvents.dwarfPetFan} Wissen Sie, ich habe gestern wieder einen Brief von dem lieben Talvar bekommen. Er erzählt mir, dass er einen {{pet}} gesehen hat und seitdem ist es unmöglich, ihn dazu zu bringen, über etwas anderes zu reden! Dieser Zwerg wird mit zunehmendem Alter wirklich seltsam... Ah, und nebenbei bemerkt: {{numberOfPetsNotSeen}} Arten entgehen ihm laut meinem Register immer noch.",
+          "{emote:smallEvents.dwarfPetFan} Sagt mal, kennt ihr Talvar von den Bergen? Dieser tapfere Zwerg schickt mir Briefe, in denen er von einem {{pet}} schwärmt, der ihm über den Weg gelaufen ist! Ehrlich gesagt habe ich ihn noch nie in diesem Zustand gesehen... Wenn Sie mich fragen, gibt es {{numberOfPetsNotSeen}} andere Kreaturen, die ihn in die gleiche Aufregung versetzen könnten!",
+          "{emote:smallEvents.dwarfPetFan} Ah, da fällt mir ein... Mein Freund Talvar von den Gipfeln ist in letzter Zeit völlig verrückt nach einer {{pet}} . Er schreibt mir ganze Gedichte darüber, können Sie sich das vorstellen? Ich meine, falls Sie jemals versuchen sollten, mit ihm Geschäfte zu machen, mein Archiv zeigt {{numberOfPetsNotSeen}} Arten an, die er noch nie gesehen hat!",
+          "{emote:smallEvents.dwarfPetFan} Ich weiß nicht, ob Sie Talvar schon einmal begegnet sind, aber dieser Sammlerzwerg wird immer exzentrischer! Was ist seine neueste Marotte? Ein {{pet}} , den er gesichtet hat und den er mir immer wieder in allen Einzelheiten beschreibt... Unter uns: {{numberOfPetsNotSeen}} andere Kreaturen warten noch auf seine Entdeckung.",
+          "{emote:smallEvents.dwarfPetFan} Wo wir gerade von seltsamen Dingen sprechen... Talvar aus den Höhen hat mir diese Woche drei Briefe geschickt, alle über denselben {{pet}} ! Ich fange an, mir Sorgen um seine geistige Gesundheit zu machen... Abgesehen davon, wenn Sie ihm eine Freude machen wollen, weiß er noch nichts von der Existenz von {{numberOfPetsNotSeen}} Arten in unseren Breitengraden.",
+          "{emote:smallEvents.dwarfPetFan} Oh, ich habe eine lustige Anekdote! Der alte Talvar hat mir geschrieben, dass er drei Nächte hintereinander von einem {{pet}} geträumt hat, nachdem er ihm begegnet war. Ehrlich gesagt weiß ich nicht mehr, was ich von ihm halten soll! Jedenfalls, wenn es Ihnen nützt, meine Berechnungen zeigen, dass er noch {{numberOfPetsNotSeen}} Entdeckungen machen muss.",
+          "{emote:smallEvents.dwarfPetFan} Sie werden es nie erraten... Talvar aus den Bergen hat mir eine detaillierte Skizze eines {{pet}} mit einem fünfzehnseitigen Begleitbrief geschickt! Dieser Zwerg hat wirklich zu viel Freizeit ... Übrigens, laut meiner Bestandsaufnahme haben {{numberOfPetsNotSeen}} Kreaturen noch nie eine solche künstlerische Behandlung von ihm erhalten!",
+          "{emote:smallEvents.dwarfPetFan} Ich erhalte in letzter Zeit sehr kuriose Nachrichten von Talvar. Angeblich hat er angefangen, die Schreie eines {{pet}} nachzuahmen, den er getroffen hat! Die anderen Zwerge in den Bergen fangen an, ihn seltsam anzusehen... Wenn Sie seine Gedanken ändern wollen, könnten {{numberOfPetsNotSeen}} andere Spezies seinen Geist beschäftigen!",
+          "{emote:smallEvents.dwarfPetFan} Ah, bevor ich es vergesse... Mein Brieffreund Talvar macht gerade eine gelinde gesagt ... besondere Phase durch. Er hat einen {{pet}} benannt, den er gesehen hat, und schreibt ihm Briefe! Ich weiß wirklich nicht, was ich ihm antworten soll... Nun, falls Sie jemals in der Nähe sind: {{numberOfPetsNotSeen}} Kreaturen sind in seiner kleinen persönlichen Welt noch unerforscht!",
+          "{emote:smallEvents.dwarfPetFan} Vor ein paar Tagen habe ich einen Brief von meinem Freund Talvar erhalten. Dieser Zwerg hat mich mit seiner Leidenschaft für Tiere angesteckt, aber manchmal fehlt es ihm an Gründlichkeit ... deshalb fragt er mich oft nach Ratschlägen zu bestimmten Tierarten. Dieses Mal fragt er mich nach dem besten Weg, sich einem {{pet}} zu nähern: Ich frage mich, was er sich wieder dabei gedacht hat. Durch das Zusammenstellen all unserer Briefe konnte ich eine Liste der Tiere erstellen, die er gerne beobachten würde, und das sind viele: {{numberOfPetsNotSeen}} Kreaturen, die es noch zu entdecken gilt!",
+          "{emote:smallEvents.dwarfPetFan} Oh, lustige Geschichte! Talvar hat letzte Woche versucht, einen wilden {{pet}} zu dressieren... Er endete mit drei Beulen auf seinem Schädel und einem seligen Lächeln! Dieser Zwerg ist unverbesserlich. Ich mache mir Sorgen um ihn, denn er hat mir von mindestens {{numberOfPetsNotSeen}} anderen Arten erzählt, die er hofft zu zähmen!",
+          "{emote:smallEvents.dwarfPetFan} Wissen Sie, was mir ein Händler erzählt hat, der gerade aus den Bergen zurückkam? Er hat gesehen, wie Talvar ein kleines Haus für einen {{pet}} gebaut hat! Anscheinend hat er ihm sogar einen Schal gestrickt.... Ich weiß nicht mehr, was ich von diesem Zwerg halten soll. Laut meinen Aufzeichnungen könnte {{numberOfPetsNotSeen}} Kreaturen die gleiche Vorzugsbehandlung genießen!",
+          "{emote:smallEvents.dwarfPetFan} Ich habe erfahren, dass Talvar sich kürzlich in die Küche gewagt hat ... um einem {{pet}} , den er getroffen hat, etwas Besonderes zuzubereiten! Angeblich ist seine Höhlenpilzsuppe bei dieser Spezies der Renner. Unter uns: {{numberOfPetsNotSeen}} andere Tiere hätten vielleicht auch ein individuelles Menü verdient!",
+          "{emote:smallEvents.dwarfPetFan} Mein Cousin, der Schmied, hat mir erzählt, dass Talvar bei ihm eine Miniaturrüstung bestellt hat... um einen {{pet}} vor dem Wetter zu schützen! Seine Liebe zu den Kreaturen kennt wirklich keine Grenzen mehr. Wenn das so weitergeht, wird er die {{numberOfPetsNotSeen}} Arten, die er noch nicht kennengelernt hat, ausrüsten müssen!",
+          "{emote:smallEvents.dwarfPetFan} Unglaubliche Neuigkeiten aus den Höhen! Talvar soll für einen {{pet}} eine Geburtstagsparty mit Beerenkuchen und allem Drum und Dran organisiert haben. Die anderen Zwerge glauben, dass er den Verstand verloren hat, aber ich finde das rührend. Stell dir vor, er würde die {{numberOfPetsNotSeen}} anderen Kreaturen entdecken, die sich hier herumtreiben!",
+          "{emote:smallEvents.dwarfPetFan} Also, jetzt werden Sie mir nicht glauben ... Talvar schreibt Balladen über eine {{pet}} , die ihm über den Weg gelaufen ist! Manche weinen vor Rührung, andere vor Lachen... Vielleicht würde {{numberOfPetsNotSeen}} weitere Kreaturen sein künstlerisches Genie inspirieren!",
+          "{emote:smallEvents.dwarfPetFan} Die Nachrichten aus Talvars Clan sind ... besonders. Es scheint, dass er ein riesiges Porträt eines {{pet}} an die Wand seines Hauses gemalt hat! Seine Frau ist nicht begeistert, aber er strahlt vor Stolz, da es sich dabei um sein derzeitiges Lieblingstier handelt. Wenn Sie mich fragen, vielleicht würde ihm {{numberOfPetsNotSeen}} andere Tiermodelle helfen, seine Technik zu perfektionieren!",
+          "{emote:smallEvents.dwarfPetFan} Ich habe gehört, dass Talvar auf dem Gipfel des Berges mit einem {{pet}} zu meditieren begonnen hat... Angeblich sitzen sie stundenlang zusammen! Die Dorfältesten sprechen von einer außergewöhnlichen spirituellen Verbindung. Wer weiß, vielleicht warten {{numberOfPetsNotSeen}} andere spirituelle Führer auf ihn!",
+          "{emote:smallEvents.dwarfPetFan} Das neueste Gerücht ist, dass Talvar die Sprache eines {{pet}} gelernt hat und lange Gespräche mit ihm führt! Die anderen Zwerge hören ihn in seiner Schmiede Selbstgespräche führen... na ja, anscheinend nicht ganz allein! {{numberOfPetsNotSeen}} potenzielle Gesprächspartner könnten seinen tierischen Wortschatz erweitern!",
+          "{emote:smallEvents.dwarfPetFan} Nach meinen letzten Berechnungen sind {{numberOfPetsNotSeen}} Arten für Talvar noch zu entdecken... Dieser Zwerg wird immer besessener von einer {{pet}} , die ihm über den Weg gelaufen ist! Er schreibt mir nun schon seit Wochen flammende Briefe über ihn.",
+          "{emote:smallEvents.dwarfPetFan} Meine Aufzeichnungen zeigen, dass {{numberOfPetsNotSeen}} Kreaturen Talvar noch immer entgehen... und raten Sie mal, was? Er hat sich gerade in einen {{pet}} verliebt! Seitdem ist es unmöglich, ihn dazu zu bringen, in seinen Briefen über etwas anderes zu sprechen.",
+          "{emote:smallEvents.dwarfPetFan} Meinen Aufzeichnungen zufolge warten {{numberOfPetsNotSeen}} Tiere noch darauf, von Talvar entdeckt zu werden ... Aber in der Zwischenzeit ist er völlig fasziniert von einem {{pet}} , den er getroffen hat! Dieser Zwerg wird mich immer wieder überraschen.",
+          "{emote:smallEvents.dwarfPetFan} Wenn Sie alles wissen wollen: {{numberOfPetsNotSeen}} Arten sind Talvar laut meinen Aufzeichnungen noch unbekannt... Trotzdem kann er nicht mehr aufhören, mir von einem {{pet}} zu erzählen, den er gesichtet hat! Seine Begeisterung ist wirklich ansteckend."
+        ]
       },
       "questMasterBadge": {
         "name": "{emote:badges.mission_completer} Abzeichen \"Meister der Quests",
@@ -926,7 +976,9 @@
       "report": "Berichte",
       "guildDaily": "Gildenbelohnungen",
       "playerFreedFromJail": "Entlassung aus dem Gefängnis",
-      "fightChallenge": "Von einem anderen Spieler angegriffen"
+      "fightChallenge": "Von einem anderen Spieler angegriffen",
+      "guildKick": "Ausschluss aus der Gilde",
+      "guildStatusChange": "Änderung des Status innerhalb der Gilde"
     },
     "enableDisable": "Aktivieren/Deaktivieren",
     "sendLocationField": "Ort der Versendung :",
@@ -937,7 +989,8 @@
     "inChannel": "Im Wohnzimmer {{channel}}",
     "footerEnableDisable": "Verwenden Sie die untenstehenden Schaltflächen, um Benachrichtigungen zu aktivieren oder zu deaktivieren.",
     "back": "Zurück",
-    "footerSendLocation": "Verwenden Sie die untenstehenden Schaltflächen, um auszuwählen, wo Sie Benachrichtigungen erhalten möchten."
+    "footerSendLocation": "Verwenden Sie die untenstehenden Schaltflächen, um auszuwählen, wo Sie Benachrichtigungen erhalten möchten.",
+    "selectPlaceholder": "Wählen Sie eine zu bearbeitende Benachrichtigung aus"
   },
   "maintenance": {
     "title": "Wartung",

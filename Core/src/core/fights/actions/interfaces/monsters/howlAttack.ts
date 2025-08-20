@@ -6,7 +6,7 @@ import { FightStatModifierOperation } from "../../../../../../../Lib/src/types/F
 
 
 const use: FightActionFunc = (sender, _, fightAction) => {
-	const randomStat = RandomUtils.draftbotRandom.pick([
+	const randomStat = RandomUtils.crowniclesRandom.pick([
 		FightStatBuffed.ATTACK,
 		FightStatBuffed.DEFENSE,
 		FightStatBuffed.SPEED
@@ -16,7 +16,7 @@ const use: FightActionFunc = (sender, _, fightAction) => {
 		...simpleBuffFightAction(sender, {
 			selfTarget: true,
 			stat: randomStat,
-			value: RandomUtils.draftbotRandom.real(1.1, 1.4),
+			value: RandomUtils.crowniclesRandom.real(1.1, 1.4),
 			operator: FightStatModifierOperation.MULTIPLIER
 		}, fightAction),
 		customMessage: true

@@ -5,7 +5,7 @@ import { LANGUAGE } from "../../../../Lib/src/Language";
 import {
 	FastifyInstance, FastifyReply
 } from "fastify";
-import { DraftBotLogger } from "../../../../Lib/src/logs/DraftBotLogger";
+import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { getRequestLoggerMetadata } from "../RestApi";
 
 /**
@@ -93,7 +93,7 @@ async function checkProvidedInformation(
 export function setupRegisterRoute(server: FastifyInstance, allowNewUsersRegistering: boolean): void {
 	server.post("/register", async (request, reply) => {
 		try {
-			DraftBotLogger.debug("Register request received", {
+			CrowniclesLogger.debug("Register request received", {
 				...getRequestLoggerMetadata(request)
 			});
 
@@ -129,7 +129,7 @@ export function setupRegisterRoute(server: FastifyInstance, allowNewUsersRegiste
 			if (user.isError) {
 				// Log only if the error is not a bad request
 				if (user.status !== 400) {
-					DraftBotLogger.error("Failed to register user", {
+					CrowniclesLogger.error("Failed to register user", {
 						apiReturn: user,
 						username,
 						...getRequestLoggerMetadata(request)
@@ -140,14 +140,14 @@ export function setupRegisterRoute(server: FastifyInstance, allowNewUsersRegiste
 			}
 
 			// The registration was successful
-			DraftBotLogger.info("User registered successfully", {
+			CrowniclesLogger.info("User registered successfully", {
 				apiReturn: user,
 				username
 			});
 			reply.send({ message: "User registered successfully" });
 		}
 		catch (error) {
-			DraftBotLogger.errorWithObj("Error during user registration", {
+			CrowniclesLogger.errorWithObj("Error during user registration", {
 				error,
 				...getRequestLoggerMetadata(request)
 			});

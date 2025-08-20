@@ -1,12 +1,12 @@
 import {
 	makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	CommandRarityPacketReq, CommandRarityPacketRes
 } from "../../../../Lib/src/packets/commands/CommandRarityPacket";
 import { DiscordCache } from "../../bot/DiscordCache";
 import i18n from "../../translations/i18n";
-import { DraftBotEmbed } from "../../messages/DraftBotEmbed";
+import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
 import { ICommand } from "../ICommand";
 
@@ -22,7 +22,7 @@ export async function handleCommandRarityPacketRes(packet: CommandRarityPacketRe
 	const lng = interaction.userLanguage;
 	await interaction.reply({
 		embeds: [
-			new DraftBotEmbed()
+			new CrowniclesEmbed()
 				.setTitle(i18n.t("commands:rarity.title", { lng }))
 				.setDescription(packet.rarities.map((r, i) => i18n.t("commands:rarity.rarityTemplate", {
 					lng,

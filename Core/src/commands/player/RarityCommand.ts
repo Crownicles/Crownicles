@@ -2,8 +2,8 @@ import {
 	CommandRarityPacketReq, CommandRarityPacketRes
 } from "../../../../Lib/src/packets/commands/CommandRarityPacket";
 import {
-	DraftBotPacket, makePacket
-} from "../../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, makePacket
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import { ItemConstants } from "../../../../Lib/src/constants/ItemConstants";
 import {
 	commandRequires, CommandUtils
@@ -14,7 +14,7 @@ export default class RarityCommand {
 		notBlocked: false,
 		whereAllowed: CommandUtils.WHERE.EVERYWHERE
 	})
-	execute(response: DraftBotPacket[]): void {
+	execute(response: CrowniclesPacket[]): void {
 		const maxValue = ItemConstants.RARITY.GENERATOR.MAX_VALUE;
 		const raritiesGenerator = ItemConstants.RARITY.GENERATOR.VALUES;
 		response.push(makePacket(CommandRarityPacketRes, {

@@ -7,7 +7,7 @@ import {
 	CommandMissionShopPetInformation,
 	CommandMissionShopSkipMissionResult
 } from "../../../../../../Lib/src/packets/commands/CommandMissionShopPacket";
-import { PacketContext } from "../../../../../../Lib/src/packets/DraftBotPacket";
+import { PacketContext } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import { handleClassicError } from "../../../../utils/ErrorUtils";
 import {
 	handleLovePointsValueShopItem, handleMissionShopBadge, handleMissionShopKingsFavor,

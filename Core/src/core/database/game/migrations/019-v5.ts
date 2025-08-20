@@ -14,7 +14,7 @@ import { KeycloakConfig } from "../../../../../../Lib/src/keycloak/KeycloakConfi
 import { logsV5NewIds } from "../../logs/migrations/007-v5";
 import { LANGUAGE } from "../../../../../../Lib/src/Language";
 import { Effect } from "../../../../../../Lib/src/types/Effect";
-import { DraftBotLogger } from "../../../../../../Lib/src/logs/DraftBotLogger";
+import { CrowniclesLogger } from "../../../../../../Lib/src/logs/CrowniclesLogger";
 import { KeycloakUser } from "../../../../../../Lib/src/keycloak/KeycloakUser";
 
 export async function up({ context }: { context: QueryInterface }): Promise<void> {
@@ -33,7 +33,7 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 	if (players.length !== 0) {
 		const configPath = `${process.cwd()}/config/keycloak.toml`;
 		if (!existsSync(configPath)) {
-			DraftBotLogger.error(`Please first backup your database. Then, in order to migrate from v4 to v5, please create a file at '${configPath}' with the following format:\n[keycloak]\nrealm = "DraftBot"\nurl = "http://127.0.0.1:8080"\nclientId = "discord"\nclientSecret = "secret"`);
+			CrowniclesLogger.error(`Please first backup your database. Then, in order to migrate from v4 to v5, please create a file at '${configPath}' with the following format:\n[keycloak]\nrealm = "Crownicles"\nurl = "http://127.0.0.1:8080"\nclientId = "discord"\nclientSecret = "secret"`);
 			process.exit(1);
 		}
 
@@ -45,7 +45,7 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 			const player = players[i];
 			const getUser = await KeycloakUtils.getOrRegisterDiscordUser(config.keycloak, player.discordUserId as string, "Pseudo 404", LANGUAGE.DEFAULT_LANGUAGE);
 			if (getUser.isError) {
-				DraftBotLogger.errorWithObj("Error while migrating user", getUser);
+				CrowniclesLogger.errorWithObj("Error while migrating user", getUser);
 				process.exit(1);
 			}
 			const { user } = getUser.payload as { user: KeycloakUser };

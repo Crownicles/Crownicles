@@ -12,8 +12,8 @@ import {
 	ReactionCollectorLottery, ReactionCollectorLotteryHardReaction, ReactionCollectorLotteryMediumReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorLottery";
 import {
-	DraftBotPacket, makePacket
-} from "../../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, makePacket
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	SmallEventLotteryLosePacket, SmallEventLotteryNoAnswerPacket, SmallEventLotteryPoorPacket, SmallEventLotteryWinPacket
 } from "../../../../Lib/src/packets/smallEvents/SmallEventLotteryPacket";
@@ -65,7 +65,7 @@ type RewardParams = {
 };
 
 async function giveRewardToPlayer(
-	response: DraftBotPacket[],
+	response: CrowniclesPacket[],
 	{
 		player,
 		guild
@@ -175,9 +175,9 @@ export const smallEventFuncs: SmallEventFuncs = {
 
 				const lostTime = await effectIfGoodRisk(levelKey, player, dataLottery);
 
-				const rewardType = RandomUtils.draftbotRandom.pick(rewardTypes);
+				const rewardType = RandomUtils.crowniclesRandom.pick(rewardTypes);
 
-				if (RandomUtils.draftbotRandom.bool(dataLottery.successRate[levelKey]) && (guild || rewardType !== SmallEventConstants.LOTTERY.REWARD_TYPES.GUILD_XP)) {
+				if (RandomUtils.crowniclesRandom.bool(dataLottery.successRate[levelKey]) && (guild || rewardType !== SmallEventConstants.LOTTERY.REWARD_TYPES.GUILD_XP)) {
 					const coefficient = dataLottery.coefficients[levelKey];
 					await giveRewardToPlayer(response, {
 						player,
@@ -190,7 +190,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 
 					await player.save();
 				}
-				else if (levelKey === "hard" && RandomUtils.draftbotRandom.bool(dataLottery.successRate[levelKey])) {
+				else if (levelKey === "hard" && RandomUtils.crowniclesRandom.bool(dataLottery.successRate[levelKey])) {
 					await player.addMoney({
 						amount: -SmallEventConstants.LOTTERY.MONEY_MALUS,
 						response,

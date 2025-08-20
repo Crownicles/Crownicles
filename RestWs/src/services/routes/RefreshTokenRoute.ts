@@ -1,5 +1,5 @@
 import { FastifyInstance } from "fastify";
-import { DraftBotLogger } from "../../../../Lib/src/logs/DraftBotLogger";
+import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { keycloakConfig } from "../../index";
 import { KeycloakUtils } from "../../../../Lib/src/keycloak/KeycloakUtils";
 import { getRequestLoggerMetadata } from "../RestApi";
@@ -11,7 +11,7 @@ import { getRequestLoggerMetadata } from "../RestApi";
 export function setupRefreshTokenRoute(server: FastifyInstance): void {
 	server.post("/refresh-token", async (request, reply) => {
 		try {
-			DraftBotLogger.debug("Refresh token request received", {
+			CrowniclesLogger.debug("Refresh token request received", {
 				...getRequestLoggerMetadata(request)
 			});
 
@@ -31,7 +31,7 @@ export function setupRefreshTokenRoute(server: FastifyInstance): void {
 			// Check if the refresh was successful
 			if (resRefresh.isError) {
 				// As it can be caused by a user trying to refresh a token manually, we log it as a warning instead of an error
-				DraftBotLogger.warn("Failed to refresh token", {
+				CrowniclesLogger.warn("Failed to refresh token", {
 					apiReturn: resRefresh,
 					...getRequestLoggerMetadata(request)
 				});
@@ -43,7 +43,7 @@ export function setupRefreshTokenRoute(server: FastifyInstance): void {
 			reply.send(resRefresh.payload);
 		}
 		catch (error) {
-			DraftBotLogger.errorWithObj("Error during refresh token", {
+			CrowniclesLogger.errorWithObj("Error during refresh token", {
 				error,
 				...getRequestLoggerMetadata(request)
 			});

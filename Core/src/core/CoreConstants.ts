@@ -11,5 +11,5 @@ export abstract class CoreConstants {
 		CommandPingPacketReq.name
 	];
 
-	static OPENING_LINE = "DraftBot Core";
+	static OPENING_LINE = "Crownicles Core";
 }

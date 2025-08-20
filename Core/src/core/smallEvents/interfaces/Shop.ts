@@ -17,7 +17,7 @@ import {
 } from "../../../../../Lib/src/packets/smallEvents/SmallEventAnyShopPacket";
 import { SmallEventConstants } from "../../../../../Lib/src/constants/SmallEventConstants";
 import { NumberChangeReason } from "../../../../../Lib/src/constants/LogsConstants";
-import { DraftBotPacket } from "../../../../../Lib/src/packets/DraftBotPacket";
+import { CrowniclesPacket } from "../../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	ReactionCollector,
 	ReactionCollectorAcceptReaction
@@ -80,7 +80,7 @@ export abstract class Shop<
 	};
 
 	private callbackShopSmallEvent(player: Player, shopItem: ShopSmallEventItem): EndCallback {
-		return async (collector: ReactionCollectorInstance, response: DraftBotPacket[]) => {
+		return async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]) => {
 			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.MERCHANT);
 			const reaction = collector.getFirstReaction();
 			const isValidated = reaction && reaction.reaction.type === ReactionCollectorAcceptReaction.name;

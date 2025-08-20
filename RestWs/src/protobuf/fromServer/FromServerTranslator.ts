@@ -1,15 +1,15 @@
 import { FromServerPacket } from "../../@types/protobufs-server";
 import {
-	DraftBotPacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
-import { DraftBotLogger } from "../../../../Lib/src/logs/DraftBotLogger";
+	CrowniclesPacket, PacketContext
+} from "../../../../Lib/src/packets/CrowniclesPacket";
+import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { readdirSync } from "fs";
 
 /**
  * Properties saved for each server translator
  */
 type ServerTranslatorProperties = {
-	translatorFunc: ServerTranslatorFunction<DraftBotPacket, FromServerPacket>;
+	translatorFunc: ServerTranslatorFunction<CrowniclesPacket, FromServerPacket>;
 	protoName: string;
 };
 
@@ -28,20 +28,20 @@ interface FromServerPacketLike<Packet extends FromServerPacket> {
 /**
  * Function type of server translator
  */
-type ServerTranslatorFunction<T extends DraftBotPacket, U extends FromServerPacket> = (context: PacketContext, packet: T) => Promise<U>;
+type ServerTranslatorFunction<T extends CrowniclesPacket, U extends FromServerPacket> = (context: PacketContext, packet: T) => Promise<U>;
 
 /**
  * Decorator to register a server translator
  * @param packet The packet type to translate from
  * @param proto The protobuf type to translate to
  */
-export const fromServerTranslator = <T extends DraftBotPacket, U extends FromServerPacket>(packet: FromServerPacketLike<T>, proto: FromServerPacketLike<U>) =>
+export const fromServerTranslator = <T extends CrowniclesPacket, U extends FromServerPacket>(packet: FromServerPacketLike<T>, proto: FromServerPacketLike<U>) =>
 	<V>(_target: V, _prop: string, descriptor: TypedPropertyDescriptor<ServerTranslatorFunction<T, U>>): void => {
 		serverTranslators.set(packet.name, {
-			translatorFunc: descriptor.value! as unknown as ServerTranslatorFunction<DraftBotPacket, FromServerPacket>,
+			translatorFunc: descriptor.value! as unknown as ServerTranslatorFunction<CrowniclesPacket, FromServerPacket>,
 			protoName: proto.name
 		});
-		DraftBotLogger.info(`[ServerTranslator] Registered ${packet.name}`);
+		CrowniclesLogger.info(`[ServerTranslator] Registered ${packet.name}`);
 	};
 
 /**

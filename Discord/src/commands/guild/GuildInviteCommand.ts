@@ -1,4 +1,4 @@
-import { DraftbotInteraction } from "../../messages/DraftbotInteraction.js";
+import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction.js";
 import {
 	CommandGuildInviteAcceptPacketRes,
 	CommandGuildInviteErrorPacket,
@@ -7,16 +7,16 @@ import {
 } from "../../../../Lib/src/packets/commands/CommandGuildInvitePacket.js";
 import { KeycloakUtils } from "../../../../Lib/src/keycloak/KeycloakUtils.js";
 import {
-	draftBotClient, keycloakConfig
-} from "../../bot/DraftBotShard.js";
-import { DraftBotErrorEmbed } from "../../messages/DraftBotErrorEmbed.js";
+	crowniclesClient, keycloakConfig
+} from "../../bot/CrowniclesShard.js";
+import { CrowniclesErrorEmbed } from "../../messages/CrowniclesErrorEmbed.js";
 import i18n from "../../translations/i18n.js";
 import {
 	makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket.js";
+} from "../../../../Lib/src/packets/CrowniclesPacket.js";
 import { DiscordCache } from "../../bot/DiscordCache.js";
 import { ReactionCollectorCreationPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket.js";
-import { DraftBotEmbed } from "../../messages/DraftBotEmbed.js";
+import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed.js";
 import { DiscordCollectorUtils } from "../../utils/DiscordCollectorUtils.js";
 import { ReactionCollectorGuildInviteData } from "../../../../Lib/src/packets/interaction/ReactionCollectorGuildInvite.js";
 import { ICommand } from "../ICommand.js";
@@ -29,7 +29,7 @@ import { KeycloakUser } from "../../../../Lib/src/keycloak/KeycloakUser";
 import { escapeUsername } from "../../../../Lib/src/utils/StringUtils";
 import { DisplayUtils } from "../../utils/DisplayUtils";
 
-async function getPacket(interaction: DraftbotInteraction, keycloakUser: KeycloakUser): Promise<CommandGuildInvitePacketReq | null> {
+async function getPacket(interaction: CrowniclesInteraction, keycloakUser: KeycloakUser): Promise<CommandGuildInvitePacketReq | null> {
 	const invitedUser = await PacketUtils.prepareAskedPlayer(interaction, keycloakUser);
 	if (!invitedUser || !invitedUser.keycloakId) {
 		return null;
@@ -47,7 +47,7 @@ export async function handleCommandGuildInviteError(packet: CommandGuildInviteEr
 	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
 	const params = {
 		embeds: [
-			new DraftBotErrorEmbed(
+			new CrowniclesErrorEmbed(
 				interaction.user,
 				context,
 				interaction,
@@ -78,7 +78,7 @@ export async function createGuildInviteCollector(context: PacketContext, packet:
 	}
 
 	const lng = interaction.userLanguage;
-	const embed = new DraftBotEmbed().formatAuthor(i18n.t("commands:guildInvite.title", {
+	const embed = new CrowniclesEmbed().formatAuthor(i18n.t("commands:guildInvite.title", {
 		lng,
 		pseudo: escapeUsername(invitedUser.displayName)
 	}), invitedUser)
@@ -102,13 +102,13 @@ export async function handleCommandGuildInviteRefusePacketRes(packet: CommandGui
 	if (getInvitedPlayer.isError) {
 		return;
 	}
-	const invitedUser = await draftBotClient!.users.fetch(getInvitedPlayer!.payload.user.attributes.discordId![0]);
+	const invitedUser = await crowniclesClient!.users.fetch(getInvitedPlayer!.payload.user.attributes.discordId![0]);
 
 
 	if (buttonInteraction && originalInteraction) {
 		await buttonInteraction.editReply({
 			embeds: [
-				new DraftBotEmbed().formatAuthor(i18n.t("commands:guildInvite.refusedTitle", {
+				new CrowniclesEmbed().formatAuthor(i18n.t("commands:guildInvite.refusedTitle", {
 					lng: originalInteraction.userLanguage,
 					guildName: packet.guildName
 				}), invitedUser)
@@ -125,13 +125,13 @@ export async function handleCommandGuildInviteAcceptPacketRes(packet: CommandGui
 	if (getInvitedPlayer.isError) {
 		return;
 	}
-	const invitedUser = await draftBotClient!.users.fetch(getInvitedPlayer.payload.user.attributes.discordId![0]);
+	const invitedUser = await crowniclesClient!.users.fetch(getInvitedPlayer.payload.user.attributes.discordId![0]);
 
 	if (buttonInteraction && originalInteraction) {
 		const lng = originalInteraction.userLanguage;
 		await buttonInteraction.editReply({
 			embeds: [
-				new DraftBotEmbed().formatAuthor(i18n.t("commands:guildInvite.successTitle", {
+				new CrowniclesEmbed().formatAuthor(i18n.t("commands:guildInvite.successTitle", {
 					lng,
 					pseudo: escapeUsername(invitedUser.displayName),
 					guildName: packet.guildName

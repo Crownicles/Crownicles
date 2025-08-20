@@ -2,13 +2,13 @@ import { ICommand } from "../ICommand";
 import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
 import {
 	makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import { DiscordCache } from "../../bot/DiscordCache";
 import {
 	CommandGuildStoragePacketReq,
 	CommandGuildStoragePacketRes
 } from "../../../../Lib/src/packets/commands/CommandGuildStoragePacket";
-import { DraftBotEmbed } from "../../messages/DraftBotEmbed";
+import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import i18n from "../../translations/i18n";
 import { GuildConstants } from "../../../../Lib/src/constants/GuildConstants";
 
@@ -22,7 +22,7 @@ export async function handleSuccess(packet: CommandGuildStoragePacketRes, contex
 		return;
 	}
 	const lng = interaction.userLanguage;
-	const embed = new DraftBotEmbed()
+	const embed = new CrowniclesEmbed()
 		.setTitle(i18n.t("commands:guildStorage.embed.title", {
 			lng,
 			guildName: packet.guildName

@@ -1,5 +1,5 @@
 import { NotificationSendTypeEnum } from "./NotificationSendType";
-import { DraftBotIcons } from "../../../Lib/src/DraftBotIcons";
+import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 import NotificationsConfiguration from "../database/discord/models/NotificationsConfiguration";
 
 export type NotificationType = {
@@ -17,7 +17,7 @@ export type NotificationType = {
 
 export abstract class NotificationsTypes {
 	static REPORT: NotificationType = {
-		emote: DraftBotIcons.notifications.types.report,
+		emote: CrowniclesIcons.notifications.types.report,
 		customId: "report",
 		i18nKey: "commands:notifications.types.report",
 		value: notificationsConfiguration => ({
@@ -35,7 +35,7 @@ export abstract class NotificationsTypes {
 	};
 
 	static GUILD_DAILY: NotificationType = {
-		emote: DraftBotIcons.notifications.types.guildDaily,
+		emote: CrowniclesIcons.notifications.types.guildDaily,
 		customId: "guildDaily",
 		i18nKey: "commands:notifications.types.guildDaily",
 		value: notificationsConfiguration => ({
@@ -52,8 +52,44 @@ export abstract class NotificationsTypes {
 		}
 	};
 
+	static GUILD_KICK: NotificationType = {
+		emote: CrowniclesIcons.notifications.types.guildKick,
+		customId: "guildKick",
+		i18nKey: "commands:notifications.types.guildKick",
+		value: notificationsConfiguration => ({
+			enabled: notificationsConfiguration.guildKickEnabled,
+			sendType: notificationsConfiguration.guildKickSendType,
+			channelId: notificationsConfiguration.guildKickChannelId
+		}),
+		toggleCallback: (notificationsConfiguration): void => {
+			notificationsConfiguration.guildKickEnabled = !notificationsConfiguration.guildKickEnabled;
+		},
+		changeSendTypeCallback: (notificationsConfiguration, sendType, channelId): void => {
+			notificationsConfiguration.guildKickSendType = sendType;
+			notificationsConfiguration.guildKickChannelId = channelId;
+		}
+	};
+
+	static GUILD_STATUS_CHANGE: NotificationType = {
+		emote: CrowniclesIcons.notifications.types.guildStatusChange,
+		customId: "guildStatusChange",
+		i18nKey: "commands:notifications.types.guildStatusChange",
+		value: notificationsConfiguration => ({
+			enabled: notificationsConfiguration.guildStatusChangeEnabled,
+			sendType: notificationsConfiguration.guildStatusChangeSendType,
+			channelId: notificationsConfiguration.guildStatusChangeChannelId
+		}),
+		toggleCallback: (notificationsConfiguration): void => {
+			notificationsConfiguration.guildStatusChangeEnabled = !notificationsConfiguration.guildStatusChangeEnabled;
+		},
+		changeSendTypeCallback: (notificationsConfiguration, sendType, channelId): void => {
+			notificationsConfiguration.guildStatusChangeSendType = sendType;
+			notificationsConfiguration.guildStatusChangeChannelId = channelId;
+		}
+	};
+
 	static PLAYER_FREED_FROM_JAIL: NotificationType = {
-		emote: DraftBotIcons.notifications.types.playerFreedFromJail,
+		emote: CrowniclesIcons.notifications.types.playerFreedFromJail,
 		customId: "playerFreedFromJail",
 		i18nKey: "commands:notifications.types.playerFreedFromJail",
 		value: notificationsConfiguration => ({
@@ -71,7 +107,7 @@ export abstract class NotificationsTypes {
 	};
 
 	static FIGHT_CHALLENGE: NotificationType = {
-		emote: DraftBotIcons.notifications.types.fightChallenge,
+		emote: CrowniclesIcons.notifications.types.fightChallenge,
 		customId: "fightChallenge",
 		i18nKey: "commands:notifications.types.fightChallenge",
 		value: notificationsConfiguration => ({
@@ -92,6 +128,8 @@ export abstract class NotificationsTypes {
 		NotificationsTypes.REPORT,
 		NotificationsTypes.GUILD_DAILY,
 		NotificationsTypes.PLAYER_FREED_FROM_JAIL,
-		NotificationsTypes.FIGHT_CHALLENGE
+		NotificationsTypes.FIGHT_CHALLENGE,
+		NotificationsTypes.GUILD_KICK,
+		NotificationsTypes.GUILD_STATUS_CHANGE
 	];
 }

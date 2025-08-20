@@ -96,7 +96,7 @@ import { FightController } from "../../fights/FightController";
 import { PlayerFighter } from "../../fights/fighter/PlayerFighter";
 import { MonsterFighter } from "../../fights/fighter/MonsterFighter";
 import { Effect } from "../../../../../Lib/src/types/Effect";
-import { getDatabaseConfiguration } from "../../bot/DraftBotConfig";
+import { getDatabaseConfiguration } from "../../bot/CrowniclesConfig";
 import { botConfig } from "../../../index";
 import { GuildLikeType } from "../../types/GuildLikeType";
 import { LogsCommandOrigins } from "./models/LogsCommandOrigins";
@@ -944,6 +944,11 @@ export class LogsDatabase extends Database {
 			const player2 = fight.fighters[0] === fightInitiator ? fight.fighters[1] : fight.fighters[0];
 			const player2Id = (await LogsDatabase.findOrCreatePlayer(player2.player.keycloakId)).id;
 			const winner = fight.getWinnerFighter() === fightInitiator ? 1 : 2;
+
+			// Get pet type IDs if pets exist
+			const fightInitiatorPetTypeId = fightInitiator.pet ? fightInitiator.pet.typeId : null;
+			const player2PetTypeId = player2.pet ? player2.pet.typeId : null;
+
 			const fightResult = await LogsFightsResults.create({
 				fightInitiatorId,
 				fightInitiatorPoints: fightInitiator.player.score,
@@ -958,6 +963,8 @@ export class LogsDatabase extends Database {
 				player2InitialDefenseGlory: player2.player.defenseGloryPoints,
 				player2InitialAttackGlory: player2.player.attackGloryPoints,
 				player2ClassId: player2.player.class,
+				fightInitiatorPetTypeId,
+				player2PetTypeId,
 				date: getDateLogs()
 			});
 			for (const player of [fightInitiator, player2]) {

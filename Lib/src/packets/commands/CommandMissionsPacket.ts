@@ -1,10 +1,10 @@
 import {
-	DraftBotPacket, PacketDirection, sendablePacket
-} from "../DraftBotPacket";
+	CrowniclesPacket, PacketDirection, sendablePacket
+} from "../CrowniclesPacket";
 import { BaseMission } from "../../types/CompletedMission";
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
-export class CommandMissionsPacketReq extends DraftBotPacket {
+export class CommandMissionsPacketReq extends CrowniclesPacket {
 	askedPlayer!: {
 		rank?: number;
 		keycloakId?: string;
@@ -12,7 +12,7 @@ export class CommandMissionsPacketReq extends DraftBotPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandMissionsPacketRes extends DraftBotPacket {
+export class CommandMissionsPacketRes extends CrowniclesPacket {
 	keycloakId!: string;
 
 	missions!: BaseMission[];
@@ -25,4 +25,4 @@ export class CommandMissionsPacketRes extends DraftBotPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandMissionPlayerNotFoundPacket extends DraftBotPacket {}
+export class CommandMissionPlayerNotFoundPacket extends CrowniclesPacket {}

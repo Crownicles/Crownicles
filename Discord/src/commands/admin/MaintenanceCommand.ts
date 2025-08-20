@@ -1,18 +1,19 @@
-import { DraftbotInteraction } from "../../messages/DraftbotInteraction";
+import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
 import { ICommand } from "../ICommand";
 import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
 import {
 	makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
-	CommandMaintenancePacketReq, CommandMaintenancePacketRes
+	CommandMaintenancePacketReq,
+	CommandMaintenancePacketRes
 } from "../../../../Lib/src/packets/commands/CommandMaintenancePacket";
-import { DraftBotEmbed } from "../../messages/DraftBotEmbed";
+import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import i18n from "../../translations/i18n";
 import { DiscordCache } from "../../bot/DiscordCache";
 import { SlashCommandBuilder } from "@discordjs/builders";
 
-function getPacket(interaction: DraftbotInteraction): CommandMaintenancePacketReq {
+function getPacket(interaction: CrowniclesInteraction): CommandMaintenancePacketReq {
 	const enable = interaction.options.getBoolean("enable");
 	const save = interaction.options.getBoolean("save");
 
@@ -30,7 +31,7 @@ export async function handleCommandMaintenancePacketRes(packet: CommandMaintenan
 	const lng = interaction.userLanguage;
 	await interaction.reply({
 		embeds: [
-			new DraftBotEmbed()
+			new CrowniclesEmbed()
 				.formatAuthor(i18n.t("commands:maintenance.title", { lng }), interaction.user)
 				.setDescription(i18n.t(packet.enabled ? "commands:maintenance.on" : "commands:maintenance.off", { lng }))
 		]

@@ -41,7 +41,7 @@ export class FightPetActionDataController extends DataControllerString<FightPetA
 	}
 
 	public getRandomFightPetAction(excludedFightPetActions: FightPetAction[]): FightPetAction {
-		return RandomUtils.draftbotRandom.pick(Array.from(this.data.values()).filter(fightPetAction => !excludedFightPetActions.includes(fightPetAction)));
+		return RandomUtils.crowniclesRandom.pick(Array.from(this.data.values()).filter(fightPetAction => !excludedFightPetActions.includes(fightPetAction)));
 	}
 
 	newInstance(): FightPetAction {

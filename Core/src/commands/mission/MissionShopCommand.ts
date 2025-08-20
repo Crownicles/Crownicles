@@ -1,6 +1,6 @@
 import {
-	DraftBotPacket, makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, makePacket, PacketContext
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	Player, Players
 } from "../../core/database/game/models/Player";
@@ -30,7 +30,7 @@ import {
 	NumberChangeReason, ShopItemType
 } from "../../../../Lib/src/constants/LogsConstants";
 import { MissionsController } from "../../core/missions/MissionsController";
-import { draftBotInstance } from "../../index";
+import { crowniclesInstance } from "../../index";
 import {
 	generateRandomItem, giveItemToPlayer
 } from "../../core/utils/ItemUtils";
@@ -49,12 +49,15 @@ import {
 	ReactionCollectorSkipMissionShopItemCloseReaction,
 	ReactionCollectorSkipMissionShopItemReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorSkipMissionShopItem";
-import { PetDiet } from "../../../../Lib/src/constants/PetConstants";
+import {
+	PetConstants, PetDiet
+} from "../../../../Lib/src/constants/PetConstants";
 import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
 import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
 import { getAiPetBehavior } from "../../core/fights/PetAssistManager";
 import { PetUtils } from "../../core/utils/PetUtils";
 import { Badge } from "../../../../Lib/src/types/Badge";
+import { DwarfPetsSeen } from "../../core/database/game/models/DwarfPetsSeen";
 
 /**
  * Calculate the amount of money the player will have if he buys some with gems
@@ -79,7 +82,7 @@ function getMoneyShopItem(): ShopItem {
 		id: ShopItemType.MONEY,
 		price: Constants.MISSION_SHOP.PRICES.MONEY,
 		amounts: [1],
-		buyCallback: async (response: DraftBotPacket[], playerId: number): Promise<boolean> => {
+		buyCallback: async (response: CrowniclesPacket[], playerId: number): Promise<boolean> => {
 			const player = await Players.getById(playerId);
 			const amount = calculateGemsToMoneyRatio();
 			await player.addMoney({
@@ -104,7 +107,7 @@ function getValuableItemShopItem(): ShopItem {
 		id: ShopItemType.TREASURE,
 		price: Constants.MISSION_SHOP.PRICES.VALUABLE_ITEM,
 		amounts: [1],
-		buyCallback: async (response: DraftBotPacket[], playerId: number, context: PacketContext): Promise<boolean> => {
+		buyCallback: async (response: CrowniclesPacket[], playerId: number, context: PacketContext): Promise<boolean> => {
 			const player = await Players.getById(playerId);
 			const item = generateRandomItem({
 				minRarity: ItemRarity.SPECIAL
@@ -120,7 +123,7 @@ function getAThousandPointsShopItem(): ShopItem {
 		id: ShopItemType.KINGS_FAVOR,
 		price: Constants.MISSION_SHOP.PRICES.THOUSAND_POINTS,
 		amounts: [1],
-		buyCallback: async (response: DraftBotPacket[], playerId: number): Promise<boolean> => {
+		buyCallback: async (response: CrowniclesPacket[], playerId: number): Promise<boolean> => {
 			const player = await Players.getById(playerId);
 			const missionsInfo = await PlayerMissionsInfos.getOfPlayer(player.id);
 			if (missionsInfo.hasBoughtPointsThisWeek) {
@@ -145,7 +148,7 @@ function getValueLovePointsPetShopItem(): ShopItem {
 		id: ShopItemType.LOVE_POINTS_VALUE,
 		price: Constants.MISSION_SHOP.PRICES.PET_INFORMATION,
 		amounts: [1],
-		buyCallback: async (response: DraftBotPacket[], playerId: number): Promise<boolean> => {
+		buyCallback: async (response: CrowniclesPacket[], playerId: number): Promise<boolean> => {
 			const player = await Players.getById(playerId);
 			if (player.petId === null) {
 				response.push(makePacket(CommandMissionShopNoPet, {}));
@@ -153,6 +156,8 @@ function getValueLovePointsPetShopItem(): ShopItem {
 			}
 			const pet = await PetEntities.getById(player.petId);
 			const petModel = PetDataController.instance.getById(pet.typeId);
+			const randomPetNotShownToDwarfId = await DwarfPetsSeen.getRandomPetNotSeenId(player);
+			const randomPetDwarfModel = randomPetNotShownToDwarfId !== 0 ? PetDataController.instance.getById(randomPetNotShownToDwarfId) : null;
 			response.push(makePacket(CommandMissionShopPetInformation, {
 				nickname: pet.nickname,
 				petId: pet.id,
@@ -163,15 +168,22 @@ function getValueLovePointsPetShopItem(): ShopItem {
 				diet: petModel.diet as PetDiet,
 				nextFeed: pet.getFeedCooldown(petModel),
 				fightAssistId: getAiPetBehavior(petModel.id).id,
-				ageCategory: PetUtils.getAgeCategory(pet.id)
+				ageCategory: PetUtils.getAgeCategory(pet.id),
+				...randomPetDwarfModel && {
+					randomPetDwarf: {
+						typeId: randomPetDwarfModel.id,
+						sex: PetConstants.SEX.MALE as SexTypeShort,
+						numberOfPetsNotSeen: await DwarfPetsSeen.getNumberOfPetsNotSeen(player)
+					}
+				}
 			}));
 			return true;
 		}
 	};
 }
 
-function getEndCallbackSkipMissionShopItem(player: Player, missionList: MissionSlot[]): (collector: ReactionCollectorInstance, response: DraftBotPacket[]) => Promise<void> {
-	return async (collector: ReactionCollectorInstance, response: DraftBotPacket[]) => {
+function getEndCallbackSkipMissionShopItem(player: Player, missionList: MissionSlot[]): (collector: ReactionCollectorInstance, response: CrowniclesPacket[]) => Promise<void> {
+	return async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]) => {
 		const firstReaction = collector.getFirstReaction();
 		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.SKIP_MISSION);
 		if (!firstReaction || firstReaction.reaction.type === ReactionCollectorSkipMissionShopItemCloseReaction.name) {
@@ -196,7 +208,7 @@ function getSkipMapMissionShopItem(): ShopItem {
 		id: ShopItemType.SKIP_MISSION,
 		price: Constants.MISSION_SHOP.PRICES.MISSION_SKIP,
 		amounts: [1],
-		buyCallback: async (response: DraftBotPacket[], playerId: number, context: PacketContext): Promise<boolean> => {
+		buyCallback: async (response: CrowniclesPacket[], playerId: number, context: PacketContext): Promise<boolean> => {
 			const player = await Players.getById(playerId);
 			const missionSlots = await MissionSlots.getOfPlayer(player.id);
 			const allMissions = missionSlots.filter(slot => !slot.isCampaign());
@@ -232,7 +244,7 @@ function getBadgeShopItem(): ShopItem {
 		id: ShopItemType.QUEST_MASTER_BADGE,
 		price: Constants.MISSION_SHOP.PRICES.BADGE,
 		amounts: [1],
-		buyCallback: async (response: DraftBotPacket[], playerId: number): Promise<boolean> => {
+		buyCallback: async (response: CrowniclesPacket[], playerId: number): Promise<boolean> => {
 			const player = await Players.getById(playerId);
 			if (player.hasBadge(Badge.MISSION_COMPLETER)) {
 				response.push(makePacket(CommandMissionShopAlreadyHadBadge, {}));
@@ -253,7 +265,7 @@ export default class MissionShopCommand {
 		whereAllowed: [WhereAllowed.CONTINENT]
 	})
 	static async execute(
-		response: DraftBotPacket[],
+		response: CrowniclesPacket[],
 		player: Player,
 		_packet: CommandMissionShopPacketReq,
 		context: PacketContext
@@ -285,8 +297,8 @@ export default class MissionShopCommand {
 		await ShopUtils.createAndSendShopCollector(context, response, {
 			shopCategories,
 			player,
-			logger: draftBotInstance.logsDatabase.logMissionShopBuyout,
-			additionnalShopData: {
+			logger: crowniclesInstance.logsDatabase.logMissionShopBuyout,
+			additionalShopData: {
 				currency: ShopCurrency.GEM,
 				gemToMoneyRatio: calculateGemsToMoneyRatio()
 			}

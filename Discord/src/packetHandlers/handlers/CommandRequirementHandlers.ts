@@ -1,6 +1,6 @@
 import { packetHandler } from "../PacketHandler";
 import { RequirementEffectPacket } from "../../../../Lib/src/packets/commands/requirements/RequirementEffectPacket";
-import { PacketContext } from "../../../../Lib/src/packets/DraftBotPacket";
+import { PacketContext } from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	effectsErrorTextValue, replyEphemeralErrorMessage
 } from "../../utils/ErrorUtils";
@@ -10,7 +10,7 @@ import i18n from "../../translations/i18n";
 import { RequirementGuildRolePacket } from "../../../../Lib/src/packets/commands/requirements/RequirementGuildRolePacket";
 import { RequirementLevelPacket } from "../../../../Lib/src/packets/commands/requirements/RequirementLevelPacket";
 import { RequirementRightPacket } from "../../../../Lib/src/packets/commands/requirements/RequirementRightPacket";
-import { DraftBotEmbed } from "../../messages/DraftBotEmbed";
+import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import { RequirementWherePacket } from "../../../../Lib/src/packets/commands/requirements/RequirementWherePacket";
 import { MessagesUtils } from "../../utils/MessagesUtils";
 import { MessageFlags } from "discord-api-types/v10";
@@ -33,7 +33,7 @@ export default class CommandRequirementHandlers {
 		// Without a bind, context is lost for "this"
 		await (interaction.replied || interaction.deferred ? interaction.followUp.bind(interaction) : interaction.reply.bind(interaction))({
 			embeds: [
-				new DraftBotEmbed()
+				new CrowniclesEmbed()
 					.setErrorColor()
 					.formatAuthor(effectsText.title, interaction.user)
 					.setDescription(effectsText.description)

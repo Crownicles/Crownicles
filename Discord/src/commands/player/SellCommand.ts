@@ -1,12 +1,12 @@
 import {
 	makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import { ICommand } from "../ICommand";
 import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
 import { DiscordCache } from "../../bot/DiscordCache";
 import i18n from "../../translations/i18n";
-import { DraftBotEmbed } from "../../messages/DraftBotEmbed";
-import { DraftbotInteraction } from "../../messages/DraftbotInteraction";
+import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
+import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
 import {
 	CommandSellItemSuccessPacket,
 	CommandSellPacketReq
@@ -19,7 +19,7 @@ import {
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { ReactionCollectorReturnTypeOrNull } from "../../packetHandlers/handlers/ReactionCollectorHandlers";
 import { ReactionCollectorSellItemReaction } from "../../../../Lib/src/packets/interaction/ReactionCollectorSell";
-import { DraftBotIcons } from "../../../../Lib/src/DraftBotIcons";
+import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 import {
 	ActionRowBuilder,
 	ButtonBuilder,
@@ -33,7 +33,10 @@ import {
 	StringSelectMenuOptionBuilder
 } from "discord.js";
 import { sendInteractionNotForYou } from "../../utils/ErrorUtils";
-import { DiscordCollectorUtils } from "../../utils/DiscordCollectorUtils";
+import {
+	DiscordCollectorUtils,
+	disableRows
+} from "../../utils/DiscordCollectorUtils";
 import { PacketUtils } from "../../utils/PacketUtils";
 import { ReactionCollectorResetTimerPacketReq } from "../../../../Lib/src/packets/interaction/ReactionCollectorResetTimer";
 import { escapeUsername } from "../../utils/StringUtils";
@@ -41,7 +44,7 @@ import { escapeUsername } from "../../utils/StringUtils";
 /**
  * Get the packet
  */
-async function getPacket(interaction: DraftbotInteraction): Promise<CommandSellPacketReq> {
+async function getPacket(interaction: CrowniclesInteraction): Promise<CommandSellPacketReq> {
 	await interaction.deferReply();
 	return makePacket(CommandSellPacketReq, {});
 }
@@ -71,7 +74,7 @@ export async function handleCommandSellSuccessPacket(packet: CommandSellItemSucc
 
 	await interaction.editReply({
 		embeds: [
-			new DraftBotEmbed()
+			new CrowniclesEmbed()
 				.formatAuthor(title, interaction.user)
 				.setDescription(description)
 		]
@@ -81,13 +84,13 @@ export async function handleCommandSellSuccessPacket(packet: CommandSellItemSucc
 async function validateSell(
 	packet: ReactionCollectorCreationPacket,
 	context: PacketContext,
-	interaction: DraftbotInteraction | StringSelectMenuInteraction,
+	interaction: CrowniclesInteraction | StringSelectMenuInteraction,
 	reactionsInfo: {
 		reaction: ReactionCollectorSellItemReaction; reactionIndex: number; refuseReactionIndex: number;
 	}
 ): Promise<ReactionCollectorReturnTypeOrNull> {
 	const lng = context.discord!.language;
-	const validateClassChangeEmbed = new DraftBotEmbed()
+	const validateClassChangeEmbed = new CrowniclesEmbed()
 		.formatAuthor(i18n.t("commands:sell.sellTitle", {
 			lng,
 			pseudo: escapeUsername(interaction.user.displayName)
@@ -103,11 +106,11 @@ async function validateSell(
 
 	const validateRow = new ActionRowBuilder<ButtonBuilder>()
 		.addComponents(new ButtonBuilder()
-			.setEmoji(parseEmoji(DraftBotIcons.collectors.accept)!)
+			.setEmoji(parseEmoji(CrowniclesIcons.collectors.accept)!)
 			.setCustomId(acceptCustomId)
 			.setStyle(ButtonStyle.Secondary))
 		.addComponents(new ButtonBuilder()
-			.setEmoji(parseEmoji(DraftBotIcons.collectors.refuse)!)
+			.setEmoji(parseEmoji(CrowniclesIcons.collectors.refuse)!)
 			.setCustomId(refuseCustomId)
 			.setStyle(ButtonStyle.Secondary));
 
@@ -147,8 +150,11 @@ async function validateSell(
 	});
 
 	validateCollector.on("end", async () => {
+		// Disable buttons instead of removing them
+		disableRows([validateRow]);
+
 		await validateMsg.edit({
-			components: []
+			components: [validateRow]
 		});
 	});
 
@@ -180,7 +186,7 @@ export async function handleSellReactionCollector(context: PacketContext, packet
 		);
 	}
 
-	const mainEmbed = new DraftBotEmbed()
+	const mainEmbed = new CrowniclesEmbed()
 		.formatAuthor(i18n.t("commands:sell.titleChoiceEmbed", {
 			lng,
 			pseudo: escapeUsername(interaction.user.displayName)
@@ -213,7 +219,7 @@ export async function handleSellReactionCollector(context: PacketContext, packet
 	selectMenu.addOptions(new StringSelectMenuOptionBuilder()
 		.setLabel(i18n.t("commands:sell.cancel", { lng }))
 		.setValue(refuseCustomId)
-		.setEmoji(parseEmoji(DraftBotIcons.collectors.refuse)!));
+		.setEmoji(parseEmoji(CrowniclesIcons.collectors.refuse)!));
 
 	mainEmbedRow.addComponents(selectMenu);
 
@@ -235,9 +241,14 @@ export async function handleSellReactionCollector(context: PacketContext, packet
 		}
 
 		await selectMenuInteraction.deferReply();
+
+		mainEmbedRow.components.forEach(component => {
+			component.setDisabled(true);
+		});
+
 		await msg.edit({
 			embeds: [mainEmbed],
-			components: []
+			components: [mainEmbedRow]
 		});
 
 		const selectedOption = selectMenuInteraction.values[0];
@@ -272,8 +283,12 @@ export async function handleSellReactionCollector(context: PacketContext, packet
 	});
 
 	selectCollector.on("end", async () => {
+		mainEmbedRow.components.forEach(component => {
+			component.setDisabled(true);
+		});
+
 		await msg.edit({
-			components: []
+			components: [mainEmbedRow]
 		});
 		if (validateCollector && !validateCollector.ended) {
 			validateCollector.stop();

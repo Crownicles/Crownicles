@@ -1,4 +1,4 @@
-import { vi } from 'vitest';
+import {vi} from 'vitest';
 
 vi.mock('mqtt', () => ({
 	connect: () => ({
@@ -7,9 +7,9 @@ vi.mock('mqtt', () => ({
 	}),
 }));
 
-vi.mock('./src/core/bot/DraftBot', () => {
+vi.mock('./src/core/bot/Crownicles', () => {
 	return {
-		DraftBot: class {
+		Crownicles: class {
 			init = () => Promise.resolve();
 			packetListener = { getListener: () => null };
 			logsDatabase = { logTimeWarp: () => Promise.resolve(), logAlteration: () => Promise.resolve() };

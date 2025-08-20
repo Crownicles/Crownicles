@@ -2,8 +2,8 @@ import {
 	commandRequires, CommandUtils
 } from "../../core/utils/CommandUtils";
 import {
-	DraftBotPacket, makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, makePacket, PacketContext
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import Player from "../../core/database/game/models/Player";
 import {
 	CommandPetFeedCancelErrorPacket,
@@ -39,7 +39,7 @@ import {
 import { GuildConstants } from "../../../../Lib/src/constants/GuildConstants";
 
 function getWithoutGuildPetFeedEndCallback(player: Player, authorPet: PetEntity) {
-	return async (collector: ReactionCollectorInstance, response: DraftBotPacket[]): Promise<void> => {
+	return async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
 		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.PET_FEED);
 
 		const firstReaction = collector.getFirstReaction();
@@ -92,7 +92,7 @@ function getWithoutGuildPetFeedEndCallback(player: Player, authorPet: PetEntity)
  * @param authorPet
  * @returns
  */
-function withoutGuildPetFeed(context: PacketContext, response: DraftBotPacket[], player: Player, authorPet: PetEntity): void {
+function withoutGuildPetFeed(context: PacketContext, response: CrowniclesPacket[], player: Player, authorPet: PetEntity): void {
 	const collector = new ReactionCollectorPetFeedWithoutGuild(
 		authorPet.asOwnedPet(),
 		PetFood.CANDY,
@@ -115,7 +115,7 @@ function withoutGuildPetFeed(context: PacketContext, response: DraftBotPacket[],
 }
 
 function getWithGuildPetFeedEndCallback(player: Player, authorPet: PetEntity, guild: Guild) {
-	return async (collector: ReactionCollectorInstance, response: DraftBotPacket[]): Promise<void> => {
+	return async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
 		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.PET_FEED);
 
 		const firstReaction = collector.getFirstReaction();
@@ -178,7 +178,7 @@ function getWithGuildPetFeedEndCallback(player: Player, authorPet: PetEntity, gu
  * @param authorPet
  * @returns
  */
-async function withGuildPetFeed(context: PacketContext, response: DraftBotPacket[], player: Player, authorPet: PetEntity): Promise<void> {
+async function withGuildPetFeed(context: PacketContext, response: CrowniclesPacket[], player: Player, authorPet: PetEntity): Promise<void> {
 	const guild = await Guilds.getById(player.guildId);
 	const reactions = [];
 
@@ -225,7 +225,7 @@ export default class PetFeedCommand {
 		allowedEffects: CommandUtils.ALLOWED_EFFECTS.NO_EFFECT,
 		whereAllowed: CommandUtils.WHERE.EVERYWHERE
 	})
-	async execute(response: DraftBotPacket[], player: Player, _packet: CommandPetFeedPacketReq, context: PacketContext): Promise<void> {
+	async execute(response: CrowniclesPacket[], player: Player, _packet: CommandPetFeedPacketReq, context: PacketContext): Promise<void> {
 		const authorPet = await PetEntities.getById(player.petId);
 		if (!authorPet) {
 			response.push(makePacket(CommandPetFeedNoPetErrorPacket, {}));

@@ -4,7 +4,7 @@ import {
 	CommandGuildLeaveNotInAGuildPacketRes,
 	CommandGuildLeaveRefusePacketRes
 } from "../../../../../../Lib/src/packets/commands/CommandGuildLeavePacket";
-import { PacketContext } from "../../../../../../Lib/src/packets/DraftBotPacket";
+import { PacketContext } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import { handleClassicError } from "../../../../utils/ErrorUtils";
 import {
 	handleCommandGuildLeaveAcceptPacketRes,

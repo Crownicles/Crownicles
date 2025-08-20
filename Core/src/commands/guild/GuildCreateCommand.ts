@@ -1,6 +1,6 @@
 import {
-	DraftBotPacket, makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, makePacket, PacketContext
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import { Player } from "../../core/database/game/models/Player";
 import {
 	Guild, Guilds
@@ -35,7 +35,7 @@ import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
  * @param guildName
  * @param response
  */
-async function canCreateGuild(player: Player, guildName: string, response: DraftBotPacket[]): Promise<boolean> {
+async function canCreateGuild(player: Player, guildName: string, response: CrowniclesPacket[]): Promise<boolean> {
 	const guild = player.guildId ? await Guilds.getById(player.guildId) : null;
 	const playerMoney = player.money;
 	if (guild) {
@@ -87,7 +87,7 @@ async function canCreateGuild(player: Player, guildName: string, response: Draft
 	return true;
 }
 
-async function acceptGuildCreate(player: Player, guildName: string, response: DraftBotPacket[]): Promise<void> {
+async function acceptGuildCreate(player: Player, guildName: string, response: CrowniclesPacket[]): Promise<void> {
 	await player.reload();
 
 	// Do all necessary checks again just in case something changed during the menu
@@ -127,7 +127,7 @@ export default class GuildCreateCommand {
 		level: GuildConstants.REQUIRED_LEVEL,
 		whereAllowed: [WhereAllowed.CONTINENT]
 	})
-	async execute(response: DraftBotPacket[], player: Player, packet: CommandGuildCreatePacketReq, context: PacketContext): Promise<void> {
+	async execute(response: CrowniclesPacket[], player: Player, packet: CommandGuildCreatePacketReq, context: PacketContext): Promise<void> {
 		if (!await canCreateGuild(player, packet.askedGuildName, response)) {
 			return;
 		}
@@ -137,7 +137,7 @@ export default class GuildCreateCommand {
 			packet.askedGuildName
 		);
 
-		const endCallback: EndCallback = async (collector: ReactionCollectorInstance, response: DraftBotPacket[]): Promise<void> => {
+		const endCallback: EndCallback = async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
 			const reaction = collector.getFirstReaction();
 			if (reaction && reaction.reaction.type === ReactionCollectorAcceptReaction.name) {
 				await acceptGuildCreate(player, packet.askedGuildName, response);

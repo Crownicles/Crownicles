@@ -1,7 +1,7 @@
 import { ICommand } from "../ICommand";
 import {
 	makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
 import {
 	CommandMissionShopMoney,
@@ -10,7 +10,7 @@ import {
 	CommandMissionShopSkipMissionResult
 } from "../../../../Lib/src/packets/commands/CommandMissionShopPacket";
 import { DiscordCache } from "../../bot/DiscordCache";
-import { DraftBotEmbed } from "../../messages/DraftBotEmbed";
+import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import i18n from "../../translations/i18n";
 import { PetUtils } from "../../utils/PetUtils";
 import {
@@ -18,7 +18,8 @@ import {
 } from "../../utils/StringUtils";
 import { MissionUtils } from "../../utils/MissionUtils";
 import {
-	ReactionCollectorSkipMissionShopItemCloseReaction, ReactionCollectorSkipMissionShopItemReaction
+	ReactionCollectorSkipMissionShopItemCloseReaction,
+	ReactionCollectorSkipMissionShopItemReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorSkipMissionShopItem";
 import {
 	DiscordCollectorUtils, SEND_POLITICS
@@ -45,7 +46,7 @@ async function handleBasicMissionShopItem(context: PacketContext, descriptionStr
 	const lng = interaction.userLanguage;
 	await interaction.followUp({
 		embeds: [
-			new DraftBotEmbed()
+			new CrowniclesEmbed()
 				.formatAuthor(i18n.t("commands:missionsshop.success", {
 					lng,
 					pseudo: escapeUsername(interaction.user.displayName)
@@ -78,7 +79,7 @@ export async function handleLovePointsValueShopItem(packet: CommandMissionShopPe
 	const lng = interaction.userLanguage;
 	await interaction.followUp({
 		embeds: [
-			new DraftBotEmbed()
+			new CrowniclesEmbed()
 				.formatAuthor(i18n.t("commands:shop.shopItems.lovePointsValue.giveTitle", {
 					lng,
 					pseudo: escapeUsername(interaction.user.displayName)
@@ -95,7 +96,13 @@ export async function handleLovePointsValueShopItem(packet: CommandMissionShopPe
 					diet: PetUtils.getDietDisplay(packet.diet, lng),
 					nextFeed: PetUtils.getFeedCooldownDisplay(packet.nextFeed, lng),
 					commentOnFightEffect: StringUtils.getRandomTranslation(`commands:shop.shopItems.lovePointsValue.commentOnFightEffect.${packet.fightAssistId}`, lng),
-					commentOnResult: StringUtils.getRandomTranslation(`commands:shop.shopItems.lovePointsValue.advice.${packet.loveLevel}`, lng)
+					commentOnResult: StringUtils.getRandomTranslation(`commands:shop.shopItems.lovePointsValue.advice.${packet.loveLevel}`, lng),
+					dwarfPet: packet.randomPetDwarf
+						? StringUtils.getRandomTranslation("commands:shop.shopItems.lovePointsValue.dwarf", lng, {
+							pet: PetUtils.petToShortString(lng, undefined, packet.randomPetDwarf.typeId, packet.randomPetDwarf.sex),
+							numberOfPetsNotSeen: packet.randomPetDwarf.numberOfPetsNotSeen
+						})
+						: ""
 				}))
 		]
 	});
@@ -107,7 +114,7 @@ export async function skipMissionShopItemCollector(context: PacketContext, packe
 		return null;
 	}
 	const lng = interaction.userLanguage;
-	const embed = new DraftBotEmbed()
+	const embed = new CrowniclesEmbed()
 		.formatAuthor(i18n.t("commands:shop.shopItems.skipMission.giveTitle", {
 			lng,
 			pseudo: escapeUsername(interaction.user.displayName)
@@ -142,7 +149,7 @@ export async function skipMissionShopResult(packet: CommandMissionShopSkipMissio
 	const lng = interaction.userLanguage;
 	await buttonInteraction?.editReply({
 		embeds: [
-			new DraftBotEmbed()
+			new CrowniclesEmbed()
 				.formatAuthor(i18n.t("commands:shop.shopItems.skipMission.successTitle", {
 					lng,
 					pseudo: escapeUsername(interaction.user.displayName)

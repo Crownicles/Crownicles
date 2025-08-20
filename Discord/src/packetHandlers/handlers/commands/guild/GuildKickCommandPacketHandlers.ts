@@ -4,7 +4,7 @@ import {
 	CommandGuildKickPacketRes,
 	CommandGuildKickRefusePacketRes
 } from "../../../../../../Lib/src/packets/commands/CommandGuildKickPacket";
-import { PacketContext } from "../../../../../../Lib/src/packets/DraftBotPacket";
+import { PacketContext } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	handleCommandGuildKickAcceptPacketRes,
 	handleCommandGuildKickPacketRes,

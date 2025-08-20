@@ -1,10 +1,10 @@
 import {
-	DraftBotPacket, PacketDirection, sendablePacket
-} from "../DraftBotPacket";
+	CrowniclesPacket, PacketDirection, sendablePacket
+} from "../CrowniclesPacket";
 import { OwnedPet } from "../../types/OwnedPet";
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandFightHistoryItemPacket extends DraftBotPacket {
+export class CommandFightHistoryItemPacket extends CrowniclesPacket {
 	fightId!: string;
 
 	fighterKeycloakId?: string;

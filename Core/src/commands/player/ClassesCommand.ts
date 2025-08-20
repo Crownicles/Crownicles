@@ -2,8 +2,8 @@ import {
 	commandRequires, CommandUtils
 } from "../../core/utils/CommandUtils";
 import {
-	DraftBotPacket, makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, makePacket, PacketContext
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import Player from "../../core/database/game/models/Player";
 import {
 	CommandClassesCancelErrorPacket,
@@ -16,19 +16,21 @@ import { LogsReadRequests } from "../../core/database/logs/LogsReadRequests";
 import { ReactionCollectorInstance } from "../../core/utils/ReactionsCollector";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
 import {
-	ReactionCollectorChangeClass, ReactionCollectorChangeClassDetails, ReactionCollectorChangeClassReaction
+	ReactionCollectorChangeClass,
+	ReactionCollectorChangeClassDetails,
+	ReactionCollectorChangeClassReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorChangeClass";
 import { BlockingUtils } from "../../core/utils/BlockingUtils";
 import { ReactionCollectorRefuseReaction } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { MissionsController } from "../../core/missions/MissionsController";
-import { draftBotInstance } from "../../index";
+import { crowniclesInstance } from "../../index";
 import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
 import { ClassConstants } from "../../../../Lib/src/constants/ClassConstants";
 import { secondsToMilliseconds } from "../../../../Lib/src/utils/TimeUtils";
 
 function getEndCallback(player: Player) {
-	return async (collector: ReactionCollectorInstance, response: DraftBotPacket[]): Promise<void> => {
+	return async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
 		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.CLASS);
 
 		const firstReaction = collector.getFirstReaction();
@@ -59,7 +61,7 @@ function getEndCallback(player: Player) {
 			params: { tier: newClass.classGroup }
 		});
 		await player.save();
-		draftBotInstance.logsDatabase.logPlayerClassChange(player.keycloakId, newClass.id)
+		crowniclesInstance.logsDatabase.logPlayerClassChange(player.keycloakId, newClass.id)
 			.then();
 
 		response.push(makePacket(CommandClassesChangeSuccessPacket, {
@@ -75,7 +77,7 @@ export default class ClassesCommand {
 		level: ClassConstants.REQUIRED_LEVEL,
 		whereAllowed: [WhereAllowed.CONTINENT]
 	})
-	async execute(response: DraftBotPacket[], player: Player, _packet: CommandClassesPacketReq, context: PacketContext): Promise<void> {
+	async execute(response: CrowniclesPacket[], player: Player, _packet: CommandClassesPacketReq, context: PacketContext): Promise<void> {
 		const allClasses = ClassDataController.instance.getByGroup(player.getClassGroup())
 			.filter(c => c.id !== player.class);
 		const currentClassGroup = ClassDataController.instance.getById(player.class).classGroup;

@@ -2,7 +2,7 @@ import {describe, expect, it} from "vitest";
 import {FightConstants} from "../../src/constants/FightConstants";
 import * as path from "node:path";
 import * as fs from "node:fs";
-import { DraftBotIcons } from "../../src/DraftBotIcons";
+import {CrowniclesIcons} from "../../src/CrowniclesIcons";
 
 describe("FightConstants fight_actions models.json validation", () => {
 	const modelsPath = path.join(__dirname, "../../../Lang/fr/models.json");
@@ -140,8 +140,8 @@ describe("FightConstants fight_actions models.json validation", () => {
 		});
 	});
 
-	describe("All fight actions (except PET) have an associated icon in DraftBotIcons.fightActions", () => {
-		const iconKeys = Object.keys(DraftBotIcons.fightActions);
+	describe("All fight actions (except PET) have an associated icon in CrowniclesIcons.fightActions", () => {
+		const iconKeys = Object.keys(CrowniclesIcons.fightActions);
 
 		const allFightActionIds = [
 			...Object.values(FightConstants.FIGHT_ACTIONS.MONSTER),
@@ -150,7 +150,7 @@ describe("FightConstants fight_actions models.json validation", () => {
 		];
 
 		for (const id of allFightActionIds) {
-			it(`${id} should have an icon in DraftBotIcons.fightActions`, () => {
+			it(`${id} should have an icon in CrowniclesIcons.fightActions`, () => {
 				expect(iconKeys).toContain(id);
 			});
 		}

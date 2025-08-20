@@ -1,11 +1,11 @@
 import {
 	makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import { ICommand } from "../ICommand";
 import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
 import { CommandShopPacketReq } from "../../../../Lib/src/packets/commands/CommandShopPacket";
 import { DiscordCache } from "../../bot/DiscordCache";
-import { DraftBotEmbed } from "../../messages/DraftBotEmbed";
+import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import i18n from "../../translations/i18n";
 import {
 	sendErrorMessage, sendInteractionNotForYou, SendManner
@@ -33,10 +33,12 @@ import { Constants } from "../../../../Lib/src/constants/Constants";
 import { PacketUtils } from "../../utils/PacketUtils";
 import { ChangeBlockingReasonPacket } from "../../../../Lib/src/packets/utils/ChangeBlockingReasonPacket";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
-import { DraftBotIcons } from "../../../../Lib/src/DraftBotIcons";
+import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 import { EmoteUtils } from "../../utils/EmoteUtils";
 import { Language } from "../../../../Lib/src/Language";
-import { DiscordCollectorUtils } from "../../utils/DiscordCollectorUtils";
+import {
+	disableRows, DiscordCollectorUtils
+} from "../../utils/DiscordCollectorUtils";
 import {
 	ReactionCollectorBuyCategorySlotCancelReaction,
 	ReactionCollectorBuyCategorySlotReaction
@@ -67,6 +69,23 @@ export async function handleCommandShopNoEnergyToHeal(context: PacketContext): P
 
 	if (interaction) {
 		await sendErrorMessage(interaction.user, context, interaction, i18n.t("commands:shop.noEnergyToHeal", { lng: interaction.userLanguage }), { sendManner: SendManner.FOLLOWUP });
+	}
+}
+
+export async function handleCommandShopEnergyHeal(context: PacketContext): Promise<void> {
+	const interaction = DiscordCache.getInteraction(context.discord!.interaction!);
+
+	if (interaction) {
+		await interaction.followUp({
+			embeds: [
+				new CrowniclesEmbed()
+					.formatAuthor(i18n.t("commands:shop.success", {
+						lng: interaction.userLanguage,
+						pseudo: escapeUsername(interaction.user.displayName)
+					}), interaction.user)
+					.setDescription(i18n.t("commands:shop.shopItems.energyHeal.give", { lng: interaction.userLanguage }))
+			]
+		});
 	}
 }
 
@@ -115,7 +134,7 @@ export async function handleCommandShopHealAlterationDone(context: PacketContext
 
 	await interaction.followUp({
 		embeds: [
-			new DraftBotEmbed()
+			new CrowniclesEmbed()
 				.formatAuthor(i18n.t("commands:shop.success", {
 					lng,
 					pseudo: escapeUsername(interaction.user.displayName)
@@ -133,7 +152,7 @@ export async function handleCommandShopFullRegen(context: PacketContext): Promis
 	const lng = interaction.userLanguage;
 	await interaction.followUp({
 		embeds: [
-			new DraftBotEmbed()
+			new CrowniclesEmbed()
 				.formatAuthor(i18n.t("commands:shop.success", {
 					lng,
 					pseudo: escapeUsername(interaction.user.displayName)
@@ -152,7 +171,7 @@ export async function handleCommandShopBadgeBought(context: PacketContext): Prom
 
 	await interaction.followUp({
 		embeds: [
-			new DraftBotEmbed()
+			new CrowniclesEmbed()
 				.formatAuthor(i18n.t("commands:shop.success", {
 					lng,
 					pseudo: escapeUsername(interaction.user.displayName)
@@ -174,7 +193,7 @@ export async function shopInventoryExtensionCollector(context: PacketContext, pa
 		.map(r => r.data) as ReactionCollectorBuyCategorySlotReaction[])) {
 		const button = new ButtonBuilder()
 			.setCustomId(category.categoryId.toString(10))
-			.setEmoji(parseEmoji(DraftBotIcons.itemKinds[category.categoryId])!)
+			.setEmoji(parseEmoji(CrowniclesIcons.itemKinds[category.categoryId])!)
 			.setStyle(ButtonStyle.Secondary);
 		row.addComponents(button);
 		slotExtensionText += i18n.t("commands:shop.shopCategoryFormat", {
@@ -194,7 +213,7 @@ export async function shopInventoryExtensionCollector(context: PacketContext, pa
 
 	const msg = await interaction.followUp({
 		embeds: [
-			new DraftBotEmbed()
+			new CrowniclesEmbed()
 				.formatAuthor(i18n.t("commands:shop.chooseSlotTitle", {
 					lng,
 					pseudo: escapeUsername(interaction.user.displayName)
@@ -217,7 +236,11 @@ export async function shopInventoryExtensionCollector(context: PacketContext, pa
 			await sendInteractionNotForYou(buttonInteraction.user, buttonInteraction, lng);
 			return;
 		}
-		await buttonInteraction.update({ components: [] });
+
+		// Disable buttons instead of removing them
+		disableRows([row]);
+
+		await buttonInteraction.update({ components: [row] });
 
 		if (buttonInteraction.customId === "closeShop") {
 			DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, null, packet.reactions.findIndex(r =>
@@ -231,8 +254,11 @@ export async function shopInventoryExtensionCollector(context: PacketContext, pa
 	});
 
 	buttonCollector.on("end", async () => {
+		// Disable buttons instead of removing them
+		disableRows([row]);
+
 		await msg.edit({
-			components: []
+			components: [row]
 		});
 	});
 
@@ -247,7 +273,7 @@ export async function handleReactionCollectorBuyCategorySlotBuySuccess(context: 
 	const lng = interaction.userLanguage;
 	await interaction.followUp({
 		embeds: [
-			new DraftBotEmbed()
+			new CrowniclesEmbed()
 				.formatAuthor(i18n.t("commands:shop.success", {
 					lng,
 					pseudo: escapeUsername(interaction.user.displayName)
@@ -266,7 +292,7 @@ export async function handleCommandShopClosed(context: PacketContext): Promise<v
 
 	const args = {
 		embeds: [
-			new DraftBotEmbed()
+			new CrowniclesEmbed()
 				.formatAuthor(i18n.t("commands:shop.closeShopTitle", {
 					lng,
 					pseudo: escapeUsername(interaction.user.displayName)
@@ -301,7 +327,7 @@ async function manageBuyoutConfirmation(packet: ReactionCollectorCreationPacket,
 
 	if (amounts.length === 1 && amounts[0] === 1) {
 		const buttonAccept = new ButtonBuilder()
-			.setEmoji(parseEmoji(DraftBotIcons.collectors.accept)!)
+			.setEmoji(parseEmoji(CrowniclesIcons.collectors.accept)!)
 			.setCustomId("accept")
 			.setStyle(ButtonStyle.Secondary);
 		row.addComponents(buttonAccept);
@@ -317,7 +343,7 @@ async function manageBuyoutConfirmation(packet: ReactionCollectorCreationPacket,
 	}
 
 	const buttonRefuse = new ButtonBuilder()
-		.setEmoji(parseEmoji(DraftBotIcons.collectors.refuse)!)
+		.setEmoji(parseEmoji(CrowniclesIcons.collectors.refuse)!)
 		.setCustomId("refuse")
 		.setStyle(ButtonStyle.Secondary);
 	row.addComponents(buttonRefuse);
@@ -326,17 +352,17 @@ async function manageBuyoutConfirmation(packet: ReactionCollectorCreationPacket,
 
 	const msg = await interaction.followUp({
 		embeds: [
-			new DraftBotEmbed()
+			new CrowniclesEmbed()
 				.formatAuthor(i18n.t(amounts.length === 1 && amounts[0] === 1 ? "commands:shop.shopConfirmationTitle" : "commands:shop.shopConfirmationTitleMultiple", {
 					lng,
 					pseudo: escapeUsername(interaction.user.displayName)
 				}), interaction.user)
 				.setDescription(`${
 					getShopItemDisplay(data, reaction, lng, shopItemNames, amounts)
-				}\n${EmoteUtils.translateEmojiToDiscord(DraftBotIcons.collectors.warning)} ${
+				}\n${EmoteUtils.translateEmojiToDiscord(CrowniclesIcons.collectors.warning)} ${
 					i18n.t(`commands:shop.shopItems.${shopItemTypeToId(shopItemId)}.info`, {
 						lng,
-						kingsMoneyAmount: data.additionnalShopData?.gemToMoneyRatio,
+						kingsMoneyAmount: data.additionalShopData?.gemToMoneyRatio,
 						thousandPoints: Constants.MISSION_SHOP.THOUSAND_POINTS
 					})
 				}`)
@@ -357,7 +383,11 @@ async function manageBuyoutConfirmation(packet: ReactionCollectorCreationPacket,
 			await sendInteractionNotForYou(buttonInteraction.user, buttonInteraction, lng);
 			return;
 		}
-		await buttonInteraction.update({ components: [] });
+
+		// Disable buttons instead of removing them
+		disableRows([row]);
+
+		await buttonInteraction.update({ components: [row] });
 
 		if (buttonInteraction.customId === "refuse") {
 			DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, buttonInteraction, packet.reactions.findIndex(r =>
@@ -372,8 +402,11 @@ async function manageBuyoutConfirmation(packet: ReactionCollectorCreationPacket,
 	});
 
 	buttonCollector.on("end", async () => {
+		// Disable buttons instead of removing them
+		disableRows([row]);
+
 		await msg.edit({
-			components: []
+			components: [row]
 		});
 	});
 }
@@ -386,10 +419,10 @@ type ShopItemNames = {
 function getShopItemNames(data: ReactionCollectorShopData, shopItemId: ShopItemType, lng: Language): ShopItemNames {
 	if (shopItemId === ShopItemType.DAILY_POTION) {
 		return {
-			normal: DisplayUtils.getItemDisplayWithStats(data.additionnalShopData!.dailyPotion!, lng),
+			normal: DisplayUtils.getItemDisplayWithStats(data.additionalShopData!.dailyPotion!, lng),
 			short: DisplayUtils.getItemDisplay({
-				id: data.additionnalShopData!.dailyPotion!.id,
-				category: data.additionnalShopData!.dailyPotion!.category
+				id: data.additionalShopData!.dailyPotion!.id,
+				category: data.additionalShopData!.dailyPotion!.category
 			}, lng)
 		};
 	}
@@ -409,7 +442,7 @@ function getShopItemDisplay(data: ReactionCollectorShopData, reaction: ReactionC
 			name: shopItemNames.normal,
 			price: reaction.price,
 			currency: data.currency,
-			remainingPotions: data.additionnalShopData!.remainingPotions
+			remainingPotions: data.additionalShopData!.remainingPotions
 		})}\n`;
 	}
 
@@ -453,7 +486,7 @@ export async function shopCollector(context: PacketContext, packet: ReactionColl
 
 		shopText += `${`**${i18n.t(`commands:shop.shopCategories.${categoryId}`, {
 			lng,
-			count: data.additionnalShopData!.remainingPotions
+			count: data.additionalShopData!.remainingPotions
 		})}** :\n`
 			.concat(...categoryItemsIds.map(id => {
 				const reaction = packet.reactions.find(reaction => (reaction.data as ReactionCollectorShopItemReaction).shopItemId === id)!.data as ReactionCollectorShopItemReaction;
@@ -479,7 +512,7 @@ export async function shopCollector(context: PacketContext, packet: ReactionColl
 	const buttonRow = new ActionRowBuilder<ButtonBuilder>().addComponents(closeShopButton);
 	const selectRow = new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(select);
 
-	const embed = new DraftBotEmbed()
+	const embed = new CrowniclesEmbed()
 		.setTitle(i18n.t("commands:shop.title", { lng }))
 		.setDescription(shopText + i18n.t("commands:shop.currentMoney", {
 			lng,
@@ -516,7 +549,14 @@ export async function shopCollector(context: PacketContext, packet: ReactionColl
 		}
 
 		hasEnded = true;
-		await msgComponentInteraction.update({ components: [] });
+
+		selectRow.components[0].setDisabled(true);
+
+		buttonRow.components.forEach(component => {
+			component.setDisabled(true);
+		});
+
+		await msgComponentInteraction.update({ components: [selectRow, buttonRow] });
 
 		if (msgComponentInteraction.customId === "closeShop") {
 			DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, msgComponentInteraction, packet.reactions.findIndex(r =>
@@ -537,8 +577,14 @@ export async function shopCollector(context: PacketContext, packet: ReactionColl
 	});
 
 	buttonCollector.on("end", async () => {
+		selectRow.components[0].setDisabled(true);
+
+		buttonRow.components.forEach(component => {
+			component.setDisabled(true);
+		});
+
 		await msg.edit({
-			components: []
+			components: [selectRow, buttonRow]
 		});
 	});
 

@@ -1,7 +1,7 @@
 import { SmallEventPacket } from "./SmallEventPacket";
 import {
 	PacketDirection, sendablePacket
-} from "../DraftBotPacket";
+} from "../CrowniclesPacket";
 import { BaseMission } from "../../types/CompletedMission";
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)

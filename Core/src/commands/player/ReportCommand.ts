@@ -1,6 +1,6 @@
 import {
-	DraftBotPacket, makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, makePacket, PacketContext
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	CommandReportBigEventResultRes,
 	CommandReportChooseDestinationCityRes,
@@ -33,7 +33,7 @@ import { PlayerFighter } from "../../core/fights/fighter/PlayerFighter";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { Guilds } from "../../core/database/game/models/Guild";
 import { GuildConstants } from "../../../../Lib/src/constants/GuildConstants";
-import { draftBotInstance } from "../../index";
+import { crowniclesInstance } from "../../index";
 import { MonsterFighter } from "../../core/fights/fighter/MonsterFighter";
 import {
 	EndCallback, ReactionCollectorInstance
@@ -69,13 +69,13 @@ import {
 } from "../../core/utils/CommandUtils";
 import { Effect } from "../../../../Lib/src/types/Effect";
 import { ReactionCollectorRefuseReaction } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
-import { DraftBotLogger } from "../../../../Lib/src/logs/DraftBotLogger";
 import { CityDataController } from "../../data/City";
 import {
 	ReactionCollectorCity,
 	ReactionCollectorExitCityReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorCity";
 import { RequirementEffectPacket } from "../../../../Lib/src/packets/commands/requirements/RequirementEffectPacket";
+import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 
 export default class ReportCommand {
 	@commandRequires(CommandReportPacketReq, {
@@ -84,7 +84,7 @@ export default class ReportCommand {
 		whereAllowed: CommandUtils.WHERE.EVERYWHERE
 	})
 	static async execute(
-		response: DraftBotPacket[],
+		response: CrowniclesPacket[],
 		player: Player,
 		_packet: CommandReportPacketReq,
 		context: PacketContext,
@@ -161,7 +161,7 @@ export default class ReportCommand {
 }
 
 function cityCollectorEndCallback(context: PacketContext, player: Player, forceSpecificEvent: number): EndCallback {
-	return async (collector: ReactionCollectorInstance, response: DraftBotPacket[]): Promise<void> => {
+	return async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
 		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.REPORT_COMMAND);
 		const firstReaction = collector.getFirstReaction();
 		if (!firstReaction || firstReaction.reaction.type === ReactionCollectorRefuseReaction.name) {
@@ -173,7 +173,7 @@ function cityCollectorEndCallback(context: PacketContext, player: Player, forceS
 	};
 }
 
-function sendCityCollector(context: PacketContext, response: DraftBotPacket[], player: Player, currentDate: Date, forceSpecificEvent: number): void {
+function sendCityCollector(context: PacketContext, response: CrowniclesPacket[], player: Player, currentDate: Date, forceSpecificEvent: number): void {
 	const collector = new ReactionCollectorCity({
 		timeInCity: TravelTime.getTravelDataSimplified(player, currentDate).playerTravelledTime,
 		mapTypeId: MapLocationDataController.instance.getById(player.getDestinationId()).type,
@@ -214,7 +214,7 @@ async function initiateNewPlayerOnTheAdventure(player: Player): Promise<void> {
  * @param player
  * @param response
  */
-async function completeMissionsBigEvent(player: Player, response: DraftBotPacket[]): Promise<void> {
+async function completeMissionsBigEvent(player: Player, response: CrowniclesPacket[]): Promise<void> {
 	await MissionsController.update(player, response, {
 		missionId: "travelHours",
 		params: {
@@ -250,13 +250,13 @@ async function doPossibility(
 	player: Player,
 	time: number,
 	context: PacketContext,
-	response: DraftBotPacket[]
+	response: CrowniclesPacket[]
 ): Promise<void> {
 	player = await Players.getOrRegister(player.keycloakId);
 	player.nextEvent = null;
 
 	if (event.id === 0 && possibility[0] === "end") { // Don't do anything if the player ends the first report
-		draftBotInstance.logsDatabase.logBigEvent(player.keycloakId, event.id, possibility[0], "0")
+		crowniclesInstance.logsDatabase.logBigEvent(player.keycloakId, event.id, possibility[0], "0")
 			.then();
 		response.push(makePacket(CommandReportBigEventResultRes, {
 			eventId: event.id,
@@ -274,9 +274,9 @@ async function doPossibility(
 		return;
 	}
 
-	const randomOutcome = RandomUtils.draftbotRandom.pick(Object.entries(possibility[1].outcomes));
+	const randomOutcome = RandomUtils.crowniclesRandom.pick(Object.entries(possibility[1].outcomes));
 
-	draftBotInstance.logsDatabase.logBigEvent(player.keycloakId, event.id, possibility[0], randomOutcome[0])
+	crowniclesInstance.logsDatabase.logBigEvent(player.keycloakId, event.id, possibility[0], randomOutcome[0])
 		.then();
 
 	const newMapLink = await applyPossibilityOutcome({
@@ -316,7 +316,7 @@ async function doPossibility(
  * @param response
  * @returns
  */
-async function doEvent(event: BigEvent, player: Player, time: number, context: PacketContext, response: DraftBotPacket[]): Promise<void> {
+async function doEvent(event: BigEvent, player: Player, time: number, context: PacketContext, response: CrowniclesPacket[]): Promise<void> {
 	const possibilities = await event.getPossibilities(player);
 
 	const collector = new ReactionCollectorBigEvent(
@@ -359,7 +359,7 @@ async function doEvent(event: BigEvent, player: Player, time: number, context: P
  */
 async function doRandomBigEvent(
 	context: PacketContext,
-	response: DraftBotPacket[],
+	response: CrowniclesPacket[],
 	player: Player,
 	forceSpecificEvent = -1
 ): Promise<void> {
@@ -381,7 +381,7 @@ async function doRandomBigEvent(
 		const mapId = player.getDestinationId();
 		event = await BigEventDataController.instance.getRandomEvent(mapId, player);
 		if (!event) {
-			response.push(makePacket(ErrorPacket, { message: "It seems that there is no event here... It's a bug, please report it to the DraftBot staff." }));
+			response.push(makePacket(ErrorPacket, { message: "It seems that there is no event here... It's a bug, please report it to the Crownicles staff." }));
 			return;
 		}
 	}
@@ -393,7 +393,7 @@ async function doRandomBigEvent(
 }
 
 function addDestinationResToResponse(
-	response: DraftBotPacket[],
+	response: CrowniclesPacket[],
 	mapLink: MapLink,
 	mapTypeId: string,
 	tripDuration: number
@@ -420,7 +420,7 @@ function addDestinationResToResponse(
  * @param destinationMaps
  * @param response
  */
-async function automaticChooseDestination(forcedLink: MapLink, player: Player, destinationMaps: number[], response: DraftBotPacket[]): Promise<void> {
+async function automaticChooseDestination(forcedLink: MapLink, player: Player, destinationMaps: number[], response: CrowniclesPacket[]): Promise<void> {
 	const newLink = forcedLink && forcedLink.id !== -1 ? forcedLink : MapLinkDataController.instance.getLinkByLocations(player.getDestinationId(), destinationMaps[0]);
 	const endMap = MapLocationDataController.instance.getById(newLink.endMap);
 	await Maps.startTravel(player, newLink, Date.now());
@@ -439,14 +439,14 @@ async function chooseDestination(
 	context: PacketContext,
 	player: Player,
 	forcedLink: MapLink,
-	response: DraftBotPacket[],
+	response: CrowniclesPacket[],
 	mainPacket = true
 ): Promise<void> {
 	await PlayerSmallEvents.removeSmallEventsOfPlayer(player.id);
 	const destinationMaps = Maps.getNextPlayerAvailableMaps(player);
 
 	if (destinationMaps.length === 0) {
-		DraftBotLogger.error(`Player ${player.id} hasn't any destination map (current map: ${player.getDestinationId()})`);
+		CrowniclesLogger.error(`Player ${player.id} hasn't any destination map (current map: ${player.getDestinationId()})`);
 		return;
 	}
 
@@ -465,7 +465,7 @@ async function chooseDestination(
 		return {
 			mapId,
 			mapTypeId,
-			tripDuration: isPveMap || RandomUtils.draftbotRandom.bool() ? mapLink.tripDuration : null,
+			tripDuration: isPveMap || RandomUtils.crowniclesRandom.bool() ? mapLink.tripDuration : null,
 			enterInCity: Boolean(CityDataController.instance.getCityByMapLinkId(mapLink.id))
 		};
 	});
@@ -476,10 +476,12 @@ async function chooseDestination(
 		const firstReaction = collector.getFirstReaction();
 		const mapId = firstReaction
 			? (firstReaction.reaction.data as ReactionCollectorChooseDestinationReaction).mapId
-			: (RandomUtils.draftbotRandom.pick(collector.creationPacket.reactions).data as ReactionCollectorChooseDestinationReaction).mapId;
+			: (RandomUtils.crowniclesRandom.pick(collector.creationPacket.reactions).data as ReactionCollectorChooseDestinationReaction).mapId;
 		const newLink = MapLinkDataController.instance.getLinkByLocations(player.getDestinationId(), mapId);
 		const endMap = MapLocationDataController.instance.getById(mapId);
+
 		await Maps.startTravel(player, newLink, Date.now());
+
 		addDestinationResToResponse(response, newLink, endMap.type, newLink.tripDuration);
 		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.CHOOSE_DESTINATION);
 	};
@@ -489,7 +491,8 @@ async function chooseDestination(
 		context,
 		{
 			allowedPlayerKeycloakIds: [player.keycloakId],
-			mainPacket
+			mainPacket,
+			time: Math.min(Constants.MESSAGES.COLLECTOR_TIME, player.effectRemainingTime() || Constants.MESSAGES.COLLECTOR_TIME)
 		},
 		endCallback
 	)
@@ -516,7 +519,7 @@ async function needSmallEvent(player: Player, date: Date): Promise<boolean> {
  * @param date
  * @param effectId
  */
-async function sendTravelPath(player: Player, response: DraftBotPacket[], date: Date, effectId: string = null): Promise<void> {
+async function sendTravelPath(player: Player, response: CrowniclesPacket[], date: Date, effectId: string = null): Promise<void> {
 	const timeData = await TravelTime.getTravelData(player, date);
 	const showEnergy = Maps.isOnPveIsland(player) || Maps.isOnBoat(player);
 	const lastMiniEvent = await PlayerSmallEvents.getLastOfPlayer(player.id);
@@ -559,14 +562,14 @@ async function sendTravelPath(player: Player, response: DraftBotPacket[], date: 
  */
 async function doPVEBoss(
 	player: Player,
-	response: DraftBotPacket[],
+	response: CrowniclesPacket[],
 	context: PacketContext
 ): Promise<void> {
 	const seed = player.id + millisecondsToSeconds(player.startTravelDate.valueOf());
 	const mapId = player.getDestination().id;
 	const monsterObj = MonsterDataController.instance.getRandomMonster(mapId, seed);
 	const randomLevel = player.level - PVEConstants.MONSTER_LEVEL_RANDOM_RANGE / 2 + seed % PVEConstants.MONSTER_LEVEL_RANDOM_RANGE;
-	const fightCallback = async (fight: FightController, endFightResponse: DraftBotPacket[]): Promise<void> => {
+	const fightCallback = async (fight: FightController, endFightResponse: CrowniclesPacket[]): Promise<void> => {
 		if (fight) {
 			const rewards = monsterObj.getRewards(randomLevel);
 			let guildXp = 0;
@@ -611,7 +614,7 @@ async function doPVEBoss(
 
 			await player.save();
 
-			draftBotInstance.logsDatabase.logPveFight(fight)
+			crowniclesInstance.logsDatabase.logPveFight(fight)
 				.then();
 		}
 
@@ -649,7 +652,7 @@ async function doPVEBoss(
 		mapId
 	});
 
-	const endCallback: EndCallback = async (collector: ReactionCollectorInstance, response: DraftBotPacket[]) => {
+	const endCallback: EndCallback = async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]) => {
 		const firstReaction = collector.getFirstReaction();
 		if (!firstReaction || firstReaction.reaction.type === ReactionCollectorRefuseReaction.name) {
 			response.push(makePacket(CommandReportRefusePveFightRes, {}));
@@ -694,7 +697,7 @@ async function doPVEBoss(
  * @param response
  * @param player
  */
-async function getRandomSmallEvent(response: DraftBotPacket[], player: Player): Promise<string> {
+async function getRandomSmallEvent(response: CrowniclesPacket[], player: Player): Promise<string> {
 	const keys = SmallEventDataController.instance.getKeys();
 	let totalSmallEventsRarity = 0;
 	const updatedKeys = [];
@@ -727,7 +730,7 @@ async function getRandomSmallEvent(response: DraftBotPacket[], player: Player): 
  * @param context
  * @param forced
  */
-async function executeSmallEvent(response: DraftBotPacket[], player: Player, context: PacketContext, forced: string): Promise<void> {
+async function executeSmallEvent(response: CrowniclesPacket[], player: Player, context: PacketContext, forced: string): Promise<void> {
 	// Pick random event
 	const event: string = forced ? forced : await getRandomSmallEvent(response, player);
 	if (!event) {
@@ -741,21 +744,22 @@ async function executeSmallEvent(response: DraftBotPacket[], player: Player, con
 		const smallEventModule = require.resolve(`../../core/smallEvents/${filename}`);
 		try {
 			const smallEvent: SmallEventFuncs = require(smallEventModule).smallEventFuncs;
-			draftBotInstance.logsDatabase.logSmallEvent(player.keycloakId, event)
+			crowniclesInstance.logsDatabase.logSmallEvent(player.keycloakId, event)
 				.then();
+
+			// Save the small event BEFORE execution so it gets affected by timeTravel() if the event succeeds
+			const smallEventRecord = PlayerSmallEvents.createPlayerSmallEvent(player.id, event, Date.now());
+			await smallEventRecord.save();
+
 			await smallEvent.executeSmallEvent(response, player, context);
 			await MissionsController.update(player, response, { missionId: "doReports" });
 		}
 		catch (e) {
-			DraftBotLogger.errorWithObj(`Error while executing ${filename} small event`, e);
+			CrowniclesLogger.errorWithObj(`Error while executing ${filename} small event`, e);
 			response.push(makePacket(ErrorPacket, { message: `${e}` }));
 		}
 	}
 	catch {
 		response.push(makePacket(ErrorPacket, { message: `${filename} doesn't exist` }));
 	}
-
-	// Save
-	await PlayerSmallEvents.createPlayerSmallEvent(player.id, event, Date.now())
-		.save();
 }

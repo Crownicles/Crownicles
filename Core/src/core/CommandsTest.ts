@@ -2,8 +2,8 @@ import { readdir } from "fs/promises";
 import { readdirSync } from "fs";
 import { isAnId } from "../../../Lib/src/utils/StringUtils";
 import {
-	DraftBotPacket, PacketContext
-} from "../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, PacketContext
+} from "../../../Lib/src/packets/CrowniclesPacket";
 import Player from "./database/game/models/Player";
 
 type Checker = (v: string) => boolean;
@@ -44,7 +44,7 @@ export interface ITestCommand {
 	category?: string;
 }
 
-export type ExecuteTestCommandLike = (player: Player, args: string[], response: DraftBotPacket[], context: PacketContext) => string | Promise<string>;
+export type ExecuteTestCommandLike = (player: Player, args: string[], response: CrowniclesPacket[], context: PacketContext) => string | Promise<string>;
 
 export class CommandsTest {
 	static testCommandsArray: { [commandName: string]: ITestCommand };
@@ -75,8 +75,8 @@ export class CommandsTest {
 		commandTest: ITestCommand,
 		args: string[]
 	): {
-			good: boolean; description: string;
-		} {
+		good: boolean; description: string;
+	} {
 		const ret = {
 			good: true,
 			description: ""

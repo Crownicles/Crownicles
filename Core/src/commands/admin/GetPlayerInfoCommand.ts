@@ -1,7 +1,7 @@
 import { adminCommand } from "../../core/utils/CommandUtils";
 import {
-	DraftBotPacket, makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, makePacket, PacketContext
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import { Players } from "../../core/database/game/models/Player";
 import {
 	CommandGetPlayerInfoReq,
@@ -25,7 +25,7 @@ export default class GetPlayerInfoCommand {
 	}
 
 	@adminCommand(CommandGetPlayerInfoReq, GetPlayerInfoCommand.verifyRights)
-	async execute(response: DraftBotPacket[], packet: CommandGetPlayerInfoReq): Promise<void> {
+	async execute(response: CrowniclesPacket[], packet: CommandGetPlayerInfoReq): Promise<void> {
 		const player = await Players.getByKeycloakId(packet.keycloakId);
 
 		const res = makePacket(CommandGetPlayerInfoRes, {

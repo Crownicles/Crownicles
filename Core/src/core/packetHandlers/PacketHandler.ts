@@ -1,15 +1,15 @@
 import { readdirSync } from "fs";
 import { PacketListenerCallbackServer } from "../../../../Lib/src/packets/PacketListener";
 import {
-	DraftBotPacket, PacketLike
-} from "../../../../Lib/src/packets/DraftBotPacket";
-import { draftBotInstance } from "../../index";
-import { DraftBotLogger } from "../../../../Lib/src/logs/DraftBotLogger";
+	CrowniclesPacket, PacketLike
+} from "../../../../Lib/src/packets/CrowniclesPacket";
+import { crowniclesInstance } from "../../index";
+import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 
-export const packetHandler = <T extends DraftBotPacket>(val: PacketLike<T>) =>
+export const packetHandler = <T extends CrowniclesPacket>(val: PacketLike<T>) =>
 	<V>(target: V, prop: string, descriptor: TypedPropertyDescriptor<PacketListenerCallbackServer<T>>): void => {
-		draftBotInstance.packetListener.addPacketListener<T>(val, descriptor.value! as unknown as PacketListenerCallbackServer<T>);
-		DraftBotLogger.info(`[${val.name}] Registered packet handler (function '${prop}' in class '${target!.constructor.name}')`);
+		crowniclesInstance.packetListener.addPacketListener<T>(val, descriptor.value! as unknown as PacketListenerCallbackServer<T>);
+		CrowniclesLogger.info(`[${val.name}] Registered packet handler (function '${prop}' in class '${target!.constructor.name}')`);
 	};
 
 export async function registerAllPacketHandlers(): Promise<void> {

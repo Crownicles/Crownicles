@@ -7,7 +7,7 @@ import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { SmallEventConstants } from "../../../../Lib/src/constants/SmallEventConstants";
 import { generateRandomItem } from "../utils/ItemUtils";
 import { ItemRarity } from "../../../../Lib/src/constants/ItemConstants";
-import { makePacket } from "../../../../Lib/src/packets/DraftBotPacket";
+import { makePacket } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { SmallEventFuncs } from "../../data/SmallEvent";
 import {
 	ReactionCollectorShopSmallEvent, ReactionCollectorShopSmallEventData
@@ -15,7 +15,7 @@ import {
 
 class ShopSmallEvent extends Shop<SmallEventShopAcceptPacket, SmallEventShopRefusePacket, SmallEventShopCannotBuyPacket, ReactionCollectorShopSmallEvent> {
 	getPriceMultiplier(): number | Promise<number> {
-		return RandomUtils.draftbotRandom.bool(SmallEventConstants.SHOP.SCAM_PROBABILITY) ? SmallEventConstants.SHOP.SCAM_MULTIPLIER : SmallEventConstants.SHOP.BASE_MULTIPLIER;
+		return RandomUtils.crowniclesRandom.bool(SmallEventConstants.SHOP.SCAM_PROBABILITY) ? SmallEventConstants.SHOP.SCAM_MULTIPLIER : SmallEventConstants.SHOP.BASE_MULTIPLIER;
 	}
 
 	getRandomItem(): GenericItem {

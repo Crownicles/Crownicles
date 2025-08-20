@@ -2,7 +2,7 @@ import {
 	ExecuteTestCommandLike, ITestCommand, TypeKey
 } from "../../../../core/CommandsTest";
 import { PacketUtils } from "../../../../core/utils/PacketUtils";
-import { makePacket } from "../../../../../../Lib/src/packets/DraftBotPacket";
+import { makePacket } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import { ReachDestinationNotificationPacket } from "../../../../../../Lib/src/packets/notifications/ReachDestinationNotificationPacket";
 import { MapLocationDataController } from "../../../../data/MapLocation";
 import { GuildDailyNotificationPacket } from "../../../../../../Lib/src/packets/notifications/GuildDailyNotificationPacket";

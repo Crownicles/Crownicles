@@ -142,7 +142,7 @@ export abstract class HelpConstants {
 			"dailybonus",
 			"bonusdaily"
 		],
-		INVITE_DRAFTBOT: [
+		INVITE_CROWNICLES: [
 			"invite",
 			"addbot",
 			"inviter",
@@ -150,7 +150,10 @@ export abstract class HelpConstants {
 			"ajouterbot",
 			"invitedraftbot",
 			"adddraftbot",
-			"invitdraftbot"
+			"invitdraftbot",
+			"invitecrownicles",
+			"addcrownicles",
+			"invitcrownicles"
 		],
 		BADGES: ["badges", "badge"],
 		DRINK: [
@@ -687,10 +690,10 @@ export abstract class HelpConstants {
 				NAME: "dailybonus",
 				CATEGORY: "player"
 			},
-		INVITE_DRAFTBOT:
+		INVITE_CROWNICLES:
 			{
 				EMOTE: ":inbox_tray:",
-				NAME: "invitedraftbot",
+				NAME: "invitecrownicles",
 				CATEGORY: "util"
 			},
 		BADGES:

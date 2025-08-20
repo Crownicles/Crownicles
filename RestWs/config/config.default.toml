@@ -1,6 +1,6 @@
 [global]
 # Prefix used to prefix the MQTT topics and the databases
-prefix = "draftbot"
+prefix = "crownicles"
 
 [restApi]
 # Allow registering of new users
@@ -29,7 +29,7 @@ host = "mqtt://127.0.0.1"
 
 [keycloak]
 # Keycloak realm
-realm = "DraftBot"
+realm = "Crownicles"
 # Keycloak URL
 url = "http://127.0.0.1:8080"
 # Keycloak client ID

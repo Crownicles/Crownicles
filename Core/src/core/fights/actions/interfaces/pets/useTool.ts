@@ -8,7 +8,7 @@ import { PetAssistanceFunc } from "../../../../../data/PetAssistance";
 import { FightActionController } from "../../FightActionController";
 
 const use: PetAssistanceFunc = (fighter, _opponent, _turn, _fightController): Promise<PetAssistanceResult | null> => {
-	if (RandomUtils.draftbotRandom.bool(0.66)) {
+	if (RandomUtils.crowniclesRandom.bool(0.66)) {
 		return Promise.resolve(null);
 	}
 	const possibleStatsToBuff: FightStatBuffed[] = [
@@ -16,7 +16,7 @@ const use: PetAssistanceFunc = (fighter, _opponent, _turn, _fightController): Pr
 		FightStatBuffed.DEFENSE,
 		FightStatBuffed.SPEED
 	];
-	const statToBuff = RandomUtils.draftbotRandom.pick(possibleStatsToBuff);
+	const statToBuff = RandomUtils.crowniclesRandom.pick(possibleStatsToBuff);
 
 	const result: PetAssistanceResult = {
 		assistanceStatus: PetAssistanceState.SUCCESS
@@ -26,7 +26,7 @@ const use: PetAssistanceFunc = (fighter, _opponent, _turn, _fightController): Pr
 		selfTarget: true,
 		stat: statToBuff,
 		operator: FightStatModifierOperation.MULTIPLIER,
-		value: 1 + RandomUtils.draftbotRandom.integer(1, 10) / 100 // 1-10 random % increase
+		value: 1 + RandomUtils.crowniclesRandom.integer(1, 10) / 100 // 1-10 random % increase
 	}, fighter, this);
 
 	return Promise.resolve(result);

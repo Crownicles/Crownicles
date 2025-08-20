@@ -4,7 +4,7 @@ import {
 import { Maps } from "../../../../core/maps/Maps";
 import { BigEventDataController } from "../../../../data/BigEvent";
 import { Player } from "../../../../core/database/game/models/Player";
-import { DraftBotIcons } from "../../../../../../Lib/src/DraftBotIcons";
+import { CrowniclesIcons } from "../../../../../../Lib/src/CrowniclesIcons";
 
 export const commandInfo: ITestCommand = {
 	name: "listevents",
@@ -25,7 +25,7 @@ const listEventsTestCommand: ExecuteTestCommandLike = async (player: Player) => 
 		for (const event of events) {
 			eventsString += `${event.id}\n`;
 		}
-		str += `${DraftBotIcons.mapTypes[map.type]} **${map.id}**\n${eventsString}\n`;
+		str += `${CrowniclesIcons.mapTypes[map.type]} **${map.id}**\n${eventsString}\n`;
 	}
 	return `${str}\n\nLa liste des évents pour chaque lieu a été envoyée !`;
 };

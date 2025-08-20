@@ -2,8 +2,8 @@ import { SmallEventFuncs } from "../../data/SmallEvent";
 import Player from "../database/game/models/Player";
 import { PlayerMissionsInfos } from "../database/game/models/PlayerMissionsInfo";
 import {
-	DraftBotPacket, makePacket
-} from "../../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, makePacket
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	SmallEventGoToPVEIslandAcceptPacket,
 	SmallEventGoToPVEIslandNotEnoughGemsPacket,
@@ -45,7 +45,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 			player.getMaxCumulativeEnergy()
 		);
 
-		const endCallback: EndCallback = async (collector: ReactionCollectorInstance, response: DraftBotPacket[]): Promise<void> => {
+		const endCallback: EndCallback = async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
 			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.PVE_ISLAND);
 
 			const reaction = collector.getFirstReaction();

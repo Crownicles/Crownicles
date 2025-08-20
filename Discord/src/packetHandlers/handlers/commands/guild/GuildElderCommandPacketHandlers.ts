@@ -5,7 +5,7 @@ import {
 	CommandGuildElderHimselfPacketRes, CommandGuildElderRefusePacketRes,
 	CommandGuildElderSameGuildPacketRes
 } from "../../../../../../Lib/src/packets/commands/CommandGuildElderPacket";
-import { PacketContext } from "../../../../../../Lib/src/packets/DraftBotPacket";
+import { PacketContext } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import { handleClassicError } from "../../../../utils/ErrorUtils";
 import {
 	handleCommandGuildElderAcceptPacketRes,

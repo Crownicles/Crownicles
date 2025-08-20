@@ -3,15 +3,15 @@ import { Data } from "./Data";
 import { readdirSync } from "fs";
 import Player from "../core/database/game/models/Player";
 import {
-	DraftBotPacket, PacketContext
-} from "../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, PacketContext
+} from "../../../Lib/src/packets/CrowniclesPacket";
 
 export class SmallEvent extends Data<string> {
 	public readonly rarity: number;
 
 	private readonly properties: { [key: string]: unknown };
 
-	async execute(context: PacketContext, response: DraftBotPacket[], player: Player): Promise<void> {
+	async execute(context: PacketContext, response: CrowniclesPacket[], player: Player): Promise<void> {
 		const smallEventFunction = SmallEventDataController.getSmallEventFunction(this.id);
 		await smallEventFunction.executeSmallEvent(response, player, context);
 	}
@@ -22,7 +22,7 @@ export class SmallEvent extends Data<string> {
 }
 
 export type CanBeExecutedLike = (player: Player) => boolean | Promise<boolean>;
-export type ExecuteSmallEventLike = (response: DraftBotPacket[], player: Player, context: PacketContext, testArgs?: string[]) => void | Promise<void>;
+export type ExecuteSmallEventLike = (response: CrowniclesPacket[], player: Player, context: PacketContext, testArgs?: string[]) => void | Promise<void>;
 
 export type SmallEventFuncs = {
 	canBeExecuted: CanBeExecutedLike;

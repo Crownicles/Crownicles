@@ -4,7 +4,7 @@ maintenance = false
 # Boolean to tell if the bot is under test mode
 test_mode = false
 # Prefix used to prefix the MQTT topics and the databases. It must be the same for all the services.
-prefix = "draftbot"
+prefix = "crownicles"
 
 [mqtt]
 # The MQTT server host
@@ -16,7 +16,7 @@ host = "127.0.0.1"
 # The port of the database
 port = 3306
 # The user of the database
-user = "draftbot"
+user = "crownicles"
 # The password of a database user.
 password = "secret_password"
 # The root password, used to create the databases. Use this only in development. In production, leave the field empty and create the databases manually

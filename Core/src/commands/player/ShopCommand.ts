@@ -1,6 +1,6 @@
 import {
-	DraftBotPacket, makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, makePacket, PacketContext
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import { CommandShopPacketReq } from "../../../../Lib/src/packets/commands/CommandShopPacket";
 import { BlockingUtils } from "../../core/utils/BlockingUtils";
 import {
@@ -13,6 +13,7 @@ import {
 	CommandShopBadgeBought,
 	CommandShopBoughtTooMuchDailyPotions,
 	CommandShopClosed,
+	CommandShopEnergyHeal,
 	CommandShopFullRegen,
 	CommandShopHealAlterationDone,
 	CommandShopNoAlterationToHeal,
@@ -25,7 +26,7 @@ import { ShopConstants } from "../../../../Lib/src/constants/ShopConstants";
 import {
 	getItemValue, giveItemToPlayer, giveRandomItem, toItemWithDetails
 } from "../../core/utils/ItemUtils";
-import { draftBotInstance } from "../../index";
+import { crowniclesInstance } from "../../index";
 import {
 	NumberChangeReason, ShopItemType
 } from "../../../../Lib/src/constants/LogsConstants";
@@ -150,6 +151,7 @@ function getHealEnergyShopItem(healEnergyAlreadyPurchased: number): ShopItem {
 			}
 			player.setEnergyLost(0, NumberChangeReason.SHOP);
 			await player.save();
+			response.push(makePacket(CommandShopEnergyHeal, {}));
 			return true;
 		}
 	};
@@ -171,8 +173,6 @@ function getRegenShopItem(): ShopItem {
 			});
 			await player.save();
 			response.push(makePacket(CommandShopFullRegen, {}));
-			draftBotInstance.logsDatabase.logClassicalShopBuyout(player.keycloakId, ShopItemType.FULL_REGEN)
-				.then();
 			return true;
 		}
 	};
@@ -244,7 +244,7 @@ function getBuySlotExtensionShopItemCallback(playerId: number, price: number): E
 			response,
 			reason: NumberChangeReason.SHOP
 		});
-		draftBotInstance.logsDatabase.logClassicalShopBuyout(player.keycloakId, ShopItemType.SLOT_EXTENSION)
+		crowniclesInstance.logsDatabase.logClassicalShopBuyout(player.keycloakId, ShopItemType.SLOT_EXTENSION)
 			.then();
 		invInfo.addSlotForCategory(category);
 		await Promise.all([player.save(), invInfo.save()]);
@@ -306,7 +306,7 @@ export default class ShopCommand {
 		whereAllowed: [WhereAllowed.CONTINENT]
 	})
 	static async execute(
-		response: DraftBotPacket[],
+		response: CrowniclesPacket[],
 		player: Player,
 		_packet: CommandShopPacketReq,
 		context: PacketContext
@@ -341,11 +341,11 @@ export default class ShopCommand {
 		await ShopUtils.createAndSendShopCollector(context, response, {
 			shopCategories,
 			player,
-			additionnalShopData: {
+			additionalShopData: {
 				remainingPotions: ShopConstants.MAX_DAILY_POTION_BUYOUTS - await LogsReadRequests.getAmountOfDailyPotionsBoughtByPlayer(player.keycloakId),
 				dailyPotion: toItemWithDetails(potion)
 			},
-			logger: draftBotInstance.logsDatabase.logClassicalShopBuyout
+			logger: crowniclesInstance.logsDatabase.logClassicalShopBuyout
 		});
 	}
 }

@@ -1,6 +1,6 @@
 import { Database } from "../../../../Lib/src/database/Database";
 import { getDatabaseConfiguration } from "../../config/DiscordConfig";
-import { discordConfig } from "../../bot/DraftBotShard";
+import { discordConfig } from "../../bot/CrowniclesShard";
 
 export class DiscordDatabase extends Database {
 	constructor() {

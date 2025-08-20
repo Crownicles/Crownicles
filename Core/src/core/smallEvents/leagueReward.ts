@@ -1,5 +1,5 @@
 import { SmallEventFuncs } from "../../data/SmallEvent";
-import { makePacket } from "../../../../Lib/src/packets/DraftBotPacket";
+import { makePacket } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { Maps } from "../maps/Maps";
 import { FightConstants } from "../../../../Lib/src/constants/FightConstants";
 import { SmallEventLeagueRewardPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventLeagueReward";

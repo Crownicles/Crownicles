@@ -8,11 +8,11 @@ export const missionInterface: IMission = {
 	generateRandomVariant: difficulty => {
 		switch (difficulty) {
 			case MissionDifficulty.MEDIUM:
-				return RandomUtils.draftbotRandom.integer(5, 7);
+				return RandomUtils.crowniclesRandom.integer(5, 7);
 			case MissionDifficulty.HARD:
 				return 9;
 			default:
-				return RandomUtils.draftbotRandom.integer(2, 3);
+				return RandomUtils.crowniclesRandom.integer(2, 3);
 		}
 	},
 

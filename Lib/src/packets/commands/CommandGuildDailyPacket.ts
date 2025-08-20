@@ -1,12 +1,12 @@
 import {
-	DraftBotPacket, PacketDirection, sendablePacket
-} from "../DraftBotPacket";
+	CrowniclesPacket, PacketDirection, sendablePacket
+} from "../CrowniclesPacket";
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
-export class CommandGuildDailyPacketReq extends DraftBotPacket {}
+export class CommandGuildDailyPacketReq extends CrowniclesPacket {}
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandGuildDailyRewardPacket extends DraftBotPacket {
+export class CommandGuildDailyRewardPacket extends CrowniclesPacket {
 	guildName!: string;
 
 	pet?: {
@@ -38,11 +38,11 @@ export class CommandGuildDailyRewardPacket extends DraftBotPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandGuildDailyCooldownErrorPacket extends DraftBotPacket {
+export class CommandGuildDailyCooldownErrorPacket extends CrowniclesPacket {
 	totalTime!: number;
 
 	remainingTime!: number;
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandGuildDailyPveIslandErrorPacket extends DraftBotPacket {}
+export class CommandGuildDailyPveIslandErrorPacket extends CrowniclesPacket {}

@@ -1,7 +1,7 @@
 import { FightController } from "./FightController";
 import {
-	DraftBotPacket, makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, makePacket, PacketContext
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import { PlayerFighter } from "./fighter/PlayerFighter";
 import { MonsterFighter } from "./fighter/MonsterFighter";
 import { FightConstants } from "../../../../Lib/src/constants/FightConstants";
@@ -28,7 +28,6 @@ import { CommandFightEndOfFightPacket } from "../../../../Lib/src/packets/fights
 import { BuggedFightPacket } from "../../../../Lib/src/packets/fights/BuggedFightPacket";
 import { PetAssistanceResult } from "../../../../Lib/src/types/PetAssistanceResult";
 import { OwnedPet } from "../../../../Lib/src/types/OwnedPet";
-import { PetEntities } from "../database/game/models/PetEntity";
 
 export class FightView {
 	public context: PacketContext;
@@ -46,7 +45,7 @@ export class FightView {
 	 * @param opponent
 	 * @param response
 	 */
-	introduceFight(response: DraftBotPacket[], fighter: PlayerFighter, opponent: MonsterFighter | AiPlayerFighter): void {
+	introduceFight(response: CrowniclesPacket[], fighter: PlayerFighter, opponent: MonsterFighter | AiPlayerFighter): void {
 		const fightInitiatorActions = new Array<[string, number]>();
 		for (const action of fighter.availableFightActions) {
 			fightInitiatorActions.push([action[0], action[1].breath]);
@@ -71,7 +70,7 @@ export class FightView {
 	/**
 	 * Summarize current fight status, displaying fighter's stats
 	 */
-	displayFightStatus(response: DraftBotPacket[]): void {
+	displayFightStatus(response: CrowniclesPacket[]): void {
 		const playingFighter = this.fightController.getPlayingFighter();
 		const defendingFighter = this.fightController.getDefendingFighter();
 		response.push(makePacket(CommandFightStatusPacket, {
@@ -116,12 +115,12 @@ export class FightView {
 	 * @param fightAction - the action made by the fighter
 	 * @param fightActionResult - the result of the action
 	 */
-	async addActionToHistory(
-		response: DraftBotPacket[],
+	addActionToHistory(
+		response: CrowniclesPacket[],
 		fighter: PlayerFighter | MonsterFighter | AiPlayerFighter,
 		fightAction: FightAction,
 		fightActionResult: FightActionResult | FightAlterationResult | PetAssistanceResult
-	): Promise<void> {
+	): void {
 		const buildStatsChange = (selfTarget: boolean): {
 			attack?: number;
 			defense?: number;
@@ -172,15 +171,14 @@ export class FightView {
 		 * @param fighter
 		 * @param fightActionResult
 		 */
-		const getPetIfRelevant = async (
+		const getPetIfRelevant = (
 			fighter: PlayerFighter | MonsterFighter | AiPlayerFighter,
 			fightActionResult: FightActionResult | FightAlterationResult | PetAssistanceResult
-		): Promise<OwnedPet | null> => {
-			// Check if the fighter is a player (not a monster) and has a pet
-			if (!(fighter instanceof MonsterFighter) && fighter.player.petId) {
-				// Check if the action result is pet assistance (has assistanceStatus property)
+		): OwnedPet | null => {
+			// Check if the fighter is a player (not a monster) and has a cached pet
+			if (!(fighter instanceof MonsterFighter) && fighter.pet) {
 				if ("assistanceStatus" in fightActionResult) {
-					return (await PetEntities.getById(fighter.player.petId)).asOwnedPet();
+					return fighter.pet.asOwnedPet();
 				}
 			}
 			return null;
@@ -206,7 +204,7 @@ export class FightView {
 					: "state" in fightActionResult
 						? fightActionResult.state // FightAction is an alteration, so we have a state
 						: fightActionResult.assistanceStatus, // FightAction is pet assistance, so we have an assistanceStatus
-			pet: await getPetIfRelevant(fighter, fightActionResult),
+			pet: getPetIfRelevant(fighter, fightActionResult),
 			fightActionEffectDealt:
 				{
 					...buildStatsChange(false),
@@ -228,10 +226,10 @@ export class FightView {
 	/**
 	 * Display the fight action menu
 	 * @param response
-	 * @param playerFighter - the player fighter - This cannot be a monster: they do not use a front-end to play draftbot :p
+	 * @param playerFighter - the player fighter - This cannot be a monster: they do not use a front-end to play crownicles :p
 	 * @param actions - the actions available for the player
 	 */
-	displayFightActionMenu(response: DraftBotPacket[], playerFighter: PlayerFighter, actions: Map<string, FightAction>): void {
+	displayFightActionMenu(response: CrowniclesPacket[], playerFighter: PlayerFighter, actions: Map<string, FightAction>): void {
 		const collector = new ReactionCollectorFightChooseAction(
 			this.fightController.id,
 			playerFighter.player.keycloakId,
@@ -267,7 +265,7 @@ export class FightView {
 	 * @param response
 	 * @param waitTimeMs
 	 */
-	displayAiChooseAction(response: DraftBotPacket[], waitTimeMs: number): void {
+	displayAiChooseAction(response: CrowniclesPacket[], waitTimeMs: number): void {
 		response.push(makePacket(AIFightActionChoosePacket, {
 			fightId: this.fightController.id,
 			ms: waitTimeMs
@@ -282,7 +280,7 @@ export class FightView {
 	 * @param draw
 	 */
 	outroFight(
-		response: DraftBotPacket[],
+		response: CrowniclesPacket[],
 		loser: PlayerFighter | MonsterFighter | AiPlayerFighter,
 		winner: PlayerFighter | MonsterFighter | AiPlayerFighter,
 		draw: boolean
@@ -310,7 +308,7 @@ export class FightView {
 	 * Send a bugged end-of-fight packet
 	 * @param response
 	 */
-	displayBugFight(response: DraftBotPacket[]): void {
+	displayBugFight(response: CrowniclesPacket[]): void {
 		response.push(makePacket(BuggedFightPacket, {}));
 	}
 }

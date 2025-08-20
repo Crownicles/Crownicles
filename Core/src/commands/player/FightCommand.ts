@@ -1,6 +1,6 @@
 import {
-	DraftBotPacket, makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, makePacket, PacketContext
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import Player, { Players } from "../../core/database/game/models/Player";
 import {
 	commandRequires, CommandUtils
@@ -28,7 +28,7 @@ import { FightController } from "../../core/fights/FightController";
 import { FightOvertimeBehavior } from "../../core/fights/FightOvertimeBehavior";
 import { PlayerFighter } from "../../core/fights/fighter/PlayerFighter";
 import { ClassDataController } from "../../data/Class";
-import { draftBotInstance } from "../../index";
+import { crowniclesInstance } from "../../index";
 import { EloUtils } from "../../core/utils/EloUtils";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { AiPlayerFighter } from "../../core/fights/fighter/AiPlayerFighter";
@@ -107,7 +107,7 @@ async function calculateMoneyReward(
 	fightInitiatorInformation: FightInitiatorInformation,
 	player1: Player,
 	player2: Player,
-	response: DraftBotPacket[]
+	response: CrowniclesPacket[]
 ): Promise<number> {
 	// Determine the bonus to reward based on a game result
 	const bonusByResult = {
@@ -153,7 +153,7 @@ async function calculateMoneyReward(
  * @param player2 - the other player in the fight (not necessary the defender)
  * @param response
  */
-async function calculateScoreReward(fightInitiatorInformation: FightInitiatorInformation, player1: Player, player2: Player, response: DraftBotPacket[]): Promise<number> {
+async function calculateScoreReward(fightInitiatorInformation: FightInitiatorInformation, player1: Player, player2: Player, response: CrowniclesPacket[]): Promise<number> {
 	let scoreBonus = 0;
 
 	// Award extra score points only to the initiator for one of his first wins of the day.
@@ -191,7 +191,7 @@ async function updatePlayersEloAndCooldowns(
 	defender: Player,
 	attackerGameResult: EloGameResult,
 	defenderGameResult: EloGameResult,
-	response: DraftBotPacket[],
+	response: CrowniclesPacket[],
 	fightLogId: number
 ): Promise<void> {
 	// Calculate elo
@@ -222,7 +222,7 @@ async function updatePlayersEloAndCooldowns(
  * @param fight
  * @param response
  */
-async function fightEndCallback(fight: FightController, response: DraftBotPacket[]): Promise<void> {
+async function fightEndCallback(fight: FightController, response: CrowniclesPacket[]): Promise<void> {
 	const defendingFighter = fight.getNonFightInitiatorFighter();
 	if (defendingFighter instanceof AiPlayerFighter) {
 		PacketUtils.sendNotifications([
@@ -232,7 +232,7 @@ async function fightEndCallback(fight: FightController, response: DraftBotPacket
 			})
 		]);
 	}
-	const fightLogId = await draftBotInstance.logsDatabase.logFight(fight);
+	const fightLogId = await crowniclesInstance.logsDatabase.logFight(fight);
 
 	const player1GameResult = fight.isADraw() ? EloGameResult.DRAW : fight.getWinner() === 0 ? EloGameResult.WIN : EloGameResult.LOSS;
 	const player2GameResult = player1GameResult === EloGameResult.DRAW ? EloGameResult.DRAW : player1GameResult === EloGameResult.WIN ? EloGameResult.LOSS : EloGameResult.WIN;
@@ -465,7 +465,7 @@ export default class FightCommand {
 		allowedEffects: CommandUtils.ALLOWED_EFFECTS.NO_EFFECT,
 		level: FightConstants.REQUIRED_LEVEL
 	})
-	async execute(response: DraftBotPacket[], player: Player, _packet: CommandFightPacketReq, context: PacketContext): Promise<void> {
+	async execute(response: CrowniclesPacket[], player: Player, _packet: CommandFightPacketReq, context: PacketContext): Promise<void> {
 		if (!player.hasEnoughEnergyToFight()) {
 			response.push(makePacket(CommandFightNotEnoughEnergyPacketRes, {}));
 			return;

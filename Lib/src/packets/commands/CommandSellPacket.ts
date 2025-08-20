@@ -1,19 +1,19 @@
 import {
-	DraftBotPacket, PacketDirection, sendablePacket
-} from "../DraftBotPacket";
+	CrowniclesPacket, PacketDirection, sendablePacket
+} from "../CrowniclesPacket";
 import { Item } from "../../types/Item";
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
-export class CommandSellPacketReq extends DraftBotPacket {}
+export class CommandSellPacketReq extends CrowniclesPacket {}
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandSellNoItemErrorPacket extends DraftBotPacket {}
+export class CommandSellNoItemErrorPacket extends CrowniclesPacket {}
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandSellCancelErrorPacket extends DraftBotPacket {}
+export class CommandSellCancelErrorPacket extends CrowniclesPacket {}
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandSellItemSuccessPacket extends DraftBotPacket {
+export class CommandSellItemSuccessPacket extends CrowniclesPacket {
 	item!: Item;
 
 	price!: number;

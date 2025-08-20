@@ -3,7 +3,7 @@ import { PingReq } from "../../../@types/protobufs-client";
 import { CommandPingPacketReq } from "../../../../../Lib/src/packets/commands/CommandPingPacket";
 import {
 	asyncMakePacket, PacketContext
-} from "../../../../../Lib/src/packets/DraftBotPacket";
+} from "../../../../../Lib/src/packets/CrowniclesPacket";
 
 export default class PingCommandClientTranslator {
 	@fromClientTranslator(PingReq)

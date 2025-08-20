@@ -1,7 +1,7 @@
 import { SmallEventPacket } from "./SmallEventPacket";
 import {
 	PacketDirection, sendablePacket
-} from "../DraftBotPacket";
+} from "../CrowniclesPacket";
 import { SexTypeShort } from "../../constants/StringConstants";
 
 export enum InteractOtherPlayerInteraction {

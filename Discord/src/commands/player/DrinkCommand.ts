@@ -1,16 +1,16 @@
 import { ICommand } from "../ICommand";
 import {
 	makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
-import { DraftbotInteraction } from "../../messages/DraftbotInteraction";
+import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
 import {
 	CommandDrinkConsumePotionRes,
 	CommandDrinkPacketReq
 } from "../../../../Lib/src/packets/commands/CommandDrinkPacket";
 import { DiscordCache } from "../../bot/DiscordCache";
 import i18n from "../../translations/i18n";
-import { DraftBotEmbed } from "../../messages/DraftBotEmbed";
+import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import { ReactionCollectorCreationPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { DisplayUtils } from "../../utils/DisplayUtils";
 import { DiscordCollectorUtils } from "../../utils/DiscordCollectorUtils";
@@ -24,7 +24,7 @@ import { SlashCommandBuilder } from "@discordjs/builders";
  * Get the daily bonus packet to send to the server
  * @param interaction
  */
-async function getPacket(interaction: DraftbotInteraction): Promise<CommandDrinkPacketReq> {
+async function getPacket(interaction: CrowniclesInteraction): Promise<CommandDrinkPacketReq> {
 	const forceOption = interaction.options.get("force");
 
 	let force = false;
@@ -40,7 +40,7 @@ export async function drinkAcceptCollector(context: PacketContext, packet: React
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
 	const data = packet.data.data as ReactionCollectorDrinkData;
 	const lng = interaction.userLanguage;
-	const embed = new DraftBotEmbed()
+	const embed = new CrowniclesEmbed()
 		.formatAuthor(
 			i18n.t("commands:drink.confirmationTitle", {
 				pseudo: escapeUsername(interaction.user.displayName),
@@ -91,7 +91,7 @@ export async function handleDrinkConsumePotion(context: PacketContext, packet: C
 
 	await mainInteraction.followUp({
 		embeds: [
-			new DraftBotEmbed()
+			new CrowniclesEmbed()
 				.formatAuthor(i18n.t("commands:drink.drinkSuccessTitle", {
 					pseudo: escapeUsername(interaction.user.displayName),
 					lng
@@ -110,7 +110,7 @@ export async function handleDrinkCancellation(context: PacketContext): Promise<v
 
 	await interaction.editReply({
 		embeds: [
-			new DraftBotEmbed()
+			new CrowniclesEmbed()
 				.formatAuthor(i18n.t("commands:drink.cancelledTitle", {
 					lng,
 					pseudo: escapeUsername(interaction.user.displayName)

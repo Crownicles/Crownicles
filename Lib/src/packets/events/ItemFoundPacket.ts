@@ -1,9 +1,9 @@
 import {
-	DraftBotPacket, PacketDirection, sendablePacket
-} from "../DraftBotPacket";
+	CrowniclesPacket, PacketDirection, sendablePacket
+} from "../CrowniclesPacket";
 import { ItemWithDetails } from "../../types/ItemWithDetails";
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class ItemFoundPacket extends DraftBotPacket {
+export class ItemFoundPacket extends CrowniclesPacket {
 	itemWithDetails!: ItemWithDetails;
 }

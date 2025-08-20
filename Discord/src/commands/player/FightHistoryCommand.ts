@@ -1,4 +1,4 @@
-import { DraftbotInteraction } from "../../messages/DraftbotInteraction";
+import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
 import { ICommand } from "../ICommand";
 import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
 import {
@@ -9,7 +9,7 @@ import {
 import { KeycloakUser } from "../../../../Lib/src/keycloak/KeycloakUser";
 import {
 	makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import { DiscordCache } from "../../bot/DiscordCache";
 import i18n from "../../translations/i18n";
 import { escapeUsername } from "../../utils/StringUtils";
@@ -19,7 +19,7 @@ import { DisplayUtils } from "../../utils/DisplayUtils";
 import { handleClassicError } from "../../utils/ErrorUtils";
 import { EloGameResult } from "../../../../Lib/src/types/EloGameResult";
 import { FightConstants } from "../../../../Lib/src/constants/FightConstants";
-import { DraftBotPaginatedEmbed } from "../../messages/DraftBotPaginatedEmbed";
+import { CrowniclesPaginatedEmbed } from "../../messages/CrowniclesPaginatedEmbed";
 
 /**
  * Get the league change string
@@ -131,7 +131,7 @@ export async function handlePacketHistoryRes(packet: CommandFightHistoryPacketRe
 
 	const pages = await getFightHistoryPages(packet, lng);
 
-	await new DraftBotPaginatedEmbed({
+	await new CrowniclesPaginatedEmbed({
 		lng,
 		pages,
 		selectedPageIndex: pages.length - 1
@@ -146,7 +146,7 @@ export async function handlePacketHistoryRes(packet: CommandFightHistoryPacketRe
  * @param interaction
  * @param _user
  */
-async function getPacket(interaction: DraftbotInteraction, _user: KeycloakUser): Promise<CommandFightHistoryPacketReq> {
+async function getPacket(interaction: CrowniclesInteraction, _user: KeycloakUser): Promise<CommandFightHistoryPacketReq> {
 	await interaction.deferReply();
 	return makePacket(CommandFightHistoryPacketReq, {});
 }

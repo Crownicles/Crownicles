@@ -8,7 +8,7 @@ import {
 	CommandReportStayInCity,
 	CommandReportTravelSummaryRes
 } from "../../../../../../Lib/src/packets/commands/CommandReportPacket";
-import { PacketContext } from "../../../../../../Lib/src/packets/DraftBotPacket";
+import { PacketContext } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	displayMonsterReward,
 	handleChooseDestinationCity,

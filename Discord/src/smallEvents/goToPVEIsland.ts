@@ -1,9 +1,9 @@
 import { ReactionCollectorCreationPacket } from "../../../Lib/src/packets/interaction/ReactionCollectorPacket";
-import { PacketContext } from "../../../Lib/src/packets/DraftBotPacket";
+import { PacketContext } from "../../../Lib/src/packets/CrowniclesPacket";
 import { DiscordCache } from "../bot/DiscordCache";
 import { ReactionCollectorGoToPVEIslandData } from "../../../Lib/src/packets/interaction/ReactionCollectorGoToPVEIsland";
 import i18n from "../translations/i18n";
-import { DraftbotSmallEventEmbed } from "../messages/DraftbotSmallEventEmbed";
+import { CrowniclesSmallEventEmbed } from "../messages/CrowniclesSmallEventEmbed";
 import { getRandomSmallEventIntro } from "../packetHandlers/handlers/SmallEventsHandler";
 import { StringUtils } from "../utils/StringUtils";
 import { DiscordCollectorUtils } from "../utils/DiscordCollectorUtils";
@@ -14,7 +14,7 @@ export async function goToPVEIslandCollector(context: PacketContext, packet: Rea
 	const data = packet.data.data as ReactionCollectorGoToPVEIslandData;
 	const lng = interaction!.userLanguage;
 
-	const embed = new DraftbotSmallEventEmbed(
+	const embed = new CrowniclesSmallEventEmbed(
 		"goToPVEIsland",
 		`${getRandomSmallEventIntro(lng)
 		+ StringUtils.getRandomTranslation(

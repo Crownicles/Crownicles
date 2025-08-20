@@ -1,14 +1,14 @@
 import {
-	DraftBotPacket, PacketContext
-} from "../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, PacketContext
+} from "../../../Lib/src/packets/CrowniclesPacket";
 import { DiscordMQTT } from "../bot/DiscordMQTT";
 import { KeycloakUtils } from "../../../Lib/src/keycloak/KeycloakUtils";
 import {
 	discordConfig, keycloakConfig, shardId
-} from "../bot/DraftBotShard";
-import { DraftBotErrorEmbed } from "../messages/DraftBotErrorEmbed";
+} from "../bot/CrowniclesShard";
+import { CrowniclesErrorEmbed } from "../messages/CrowniclesErrorEmbed";
 import i18n from "../translations/i18n";
-import { DraftbotInteraction } from "../messages/DraftbotInteraction";
+import { CrowniclesInteraction } from "../messages/CrowniclesInteraction";
 import { KeycloakUser } from "../../../Lib/src/keycloak/KeycloakUser";
 import { MqttTopicUtils } from "../../../Lib/src/utils/MqttTopicUtils";
 import { MessageFlags } from "discord-api-types/v10";
@@ -21,7 +21,7 @@ export type AskedPlayer = {
 };
 
 export abstract class PacketUtils {
-	static sendPacketToBackend(context: PacketContext, packet: DraftBotPacket): void {
+	static sendPacketToBackend(context: PacketContext, packet: CrowniclesPacket): void {
 		DiscordMQTT.globalMqttClient!.publish(MqttTopicUtils.getCoreTopic(discordConfig.PREFIX), JSON.stringify({
 			packet: {
 				name: packet.constructor.name,
@@ -32,11 +32,11 @@ export abstract class PacketUtils {
 	}
 
 	/**
-	 * Prepare the asked player from the draftbot interaction
+	 * Prepare the asked player from the crownicles interaction
 	 * @param interaction
 	 * @param keycloakUser
 	 */
-	static async prepareAskedPlayer(interaction: DraftbotInteraction, keycloakUser: KeycloakUser): Promise<AskedPlayer | null> {
+	static async prepareAskedPlayer(interaction: CrowniclesInteraction, keycloakUser: KeycloakUser): Promise<AskedPlayer | null> {
 		let askedPlayer: AskedPlayer = { keycloakId: keycloakUser.id };
 
 		const user = interaction.options.getUser("user");
@@ -44,7 +44,7 @@ export abstract class PacketUtils {
 			const getUser = await KeycloakUtils.getKeycloakIdFromDiscordId(keycloakConfig, user.id, user.displayName);
 			if (!getUser || getUser.isError || !getUser.payload.keycloakId) {
 				await interaction.reply({
-					embeds: [new DraftBotErrorEmbed(interaction.user, null, interaction, i18n.t("error:playerDoesntExist", { lng: interaction.userLanguage }))],
+					embeds: [new CrowniclesErrorEmbed(interaction.user, null, interaction, i18n.t("error:playerDoesntExist", { lng: interaction.userLanguage }))],
 					flags: MessageFlags.Ephemeral
 				});
 				return null;
@@ -58,7 +58,7 @@ export abstract class PacketUtils {
 		return askedPlayer;
 	}
 
-	static async createPacketContext(interaction: DraftbotInteraction, user: KeycloakUser): Promise<PacketContext> {
+	static async createPacketContext(interaction: CrowniclesInteraction, user: KeycloakUser): Promise<PacketContext> {
 		const groups = await KeycloakUtils.getUserGroups(keycloakConfig, user.id);
 		if (groups.isError) {
 			throw new Error("Error while getting user groups");

@@ -1,6 +1,6 @@
 import { SmallEventFuncs } from "../../data/SmallEvent";
 import { SmallEventConstants } from "../../../../Lib/src/constants/SmallEventConstants";
-import { makePacket } from "../../../../Lib/src/packets/DraftBotPacket";
+import { makePacket } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { Guilds } from "../database/game/models/Guild";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
@@ -17,7 +17,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 	},
 	executeSmallEvent: async (response, player): Promise<void> => {
 		const guild = await Guilds.getById(player.guildId);
-		const xpWon = RandomUtils.draftbotRandom.integer(
+		const xpWon = RandomUtils.crowniclesRandom.integer(
 			SmallEventConstants.GUILD_EXPERIENCE.MIN + guild.level,
 			SmallEventConstants.GUILD_EXPERIENCE.MAX + guild.level * 2
 		);

@@ -11,7 +11,7 @@ export const commandInfo: ITestCommand = {
 };
 
 const markAllPetsSeenDwarfCommand: ExecuteTestCommandLike = async player => {
-	for (let i = 0; i < PetDataController.instance.getPetsCount(); i++) {
+	for (let i = 1; i < PetDataController.instance.getPetsCount(); i++) {
 		try {
 			await DwarfPetsSeen.create({
 				playerId: player.id,

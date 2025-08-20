@@ -34,5 +34,5 @@ export const fightPetAction: FightPetActionFunc = async (player, pet) => {
 	// Ensure the success probability is within a reasonable range
 	const clampedSuccessProbability = Math.max(SmallEventConstants.FIGHT_PET.MIN_PROBABILITY_PET_VS_PET, Math.min(SmallEventConstants.FIGHT_PET.MAX_PROBABILITY_PET_VS_PET, successProbability));
 
-	return RandomUtils.draftbotRandom.bool(clampedSuccessProbability);
+	return RandomUtils.crowniclesRandom.bool(clampedSuccessProbability);
 };

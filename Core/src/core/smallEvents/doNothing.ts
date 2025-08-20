@@ -1,5 +1,5 @@
 import { SmallEventFuncs } from "../../data/SmallEvent";
-import { makePacket } from "../../../../Lib/src/packets/DraftBotPacket";
+import { makePacket } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { SmallEventDoNothingPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventDoNothingPacket";
 import { Maps } from "../maps/Maps";
 

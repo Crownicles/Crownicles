@@ -9,8 +9,8 @@ import {
 	CommandDrinkPacketReq
 } from "../../../../Lib/src/packets/commands/CommandDrinkPacket";
 import {
-	DraftBotPacket, makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, makePacket, PacketContext
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import Player from "../../core/database/game/models/Player";
 import { InventorySlots } from "../../core/database/game/models/InventorySlot";
 import { Potion } from "../../data/Potion";
@@ -36,7 +36,7 @@ import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
  * @param potion
  * @param player
  */
-async function consumePotion(response: DraftBotPacket[], potion: Potion, player: Player): Promise<void> {
+async function consumePotion(response: CrowniclesPacket[], potion: Potion, player: Player): Promise<void> {
 	switch (potion.nature) {
 		case ItemNature.HEALTH:
 			response.push(makePacket(CommandDrinkConsumePotionRes, { health: potion.power }));
@@ -67,8 +67,8 @@ async function consumePotion(response: DraftBotPacket[], potion: Potion, player:
  */
 function drinkPotionCallback(
 	force: boolean
-): (collector: ReactionCollectorInstance, response: DraftBotPacket[], player: Player, potion: Potion) => Promise<void> {
-	return async (collector: ReactionCollectorInstance, response: DraftBotPacket[], player: Player, potion: Potion): Promise<void> => {
+): (collector: ReactionCollectorInstance, response: CrowniclesPacket[], player: Player, potion: Potion) => Promise<void> {
+	return async (collector: ReactionCollectorInstance, response: CrowniclesPacket[], player: Player, potion: Potion): Promise<void> => {
 		if (!force) {
 			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.DRINK);
 			const firstReaction = collector.getFirstReaction();
@@ -91,10 +91,10 @@ function drinkPotionCallback(
 export default class DrinkCommand {
 	@commandRequires(CommandDrinkPacketReq, {
 		notBlocked: true,
-		disallowedEffects: CommandUtils.DISALLOWED_EFFECTS.NOT_STARTED_OR_DEAD,
+		disallowedEffects: CommandUtils.DISALLOWED_EFFECTS.NOT_STARTED_OR_DEAD_OR_JAILED,
 		whereAllowed: [WhereAllowed.CONTINENT]
 	})
-	async execute(response: DraftBotPacket[], player: Player, packet: CommandDrinkPacketReq, context: PacketContext): Promise<void> {
+	async execute(response: CrowniclesPacket[], player: Player, packet: CommandDrinkPacketReq, context: PacketContext): Promise<void> {
 		const potion = (await InventorySlots.getMainPotionSlot(player.id))?.getItem() as Potion;
 
 		if (!potion || potion.id === InventoryConstants.POTION_DEFAULT_ID) {
@@ -117,7 +117,7 @@ export default class DrinkCommand {
 
 		const collector = new ReactionCollectorDrink(toItemWithDetails(potion));
 
-		const endCallback: EndCallback = async (collector: ReactionCollectorInstance, response: DraftBotPacket[]): Promise<void> => {
+		const endCallback: EndCallback = async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
 			await drinkPotion(collector, response, await player.reload(), potion);
 		};
 

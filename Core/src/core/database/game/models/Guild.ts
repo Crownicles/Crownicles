@@ -8,10 +8,10 @@ import {
 	GuildPet, GuildPets
 } from "./GuildPet";
 import PetEntity, { PetEntities } from "./PetEntity";
-import { draftBotInstance } from "../../../../index";
+import { crowniclesInstance } from "../../../../index";
 import {
-	DraftBotPacket, makePacket
-} from "../../../../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, makePacket
+} from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import { GuildLevelUpPacket } from "../../../../../../Lib/src/packets/events/GuildLevelUpPacket";
 import { TopConstants } from "../../../../../../Lib/src/constants/TopConstants";
 import { Constants } from "../../../../../../Lib/src/constants/Constants";
@@ -85,7 +85,7 @@ export class Guild extends Model {
 			guildPetsEntities.push(await PetEntities.getById(guildPet.petEntityId));
 		}
 
-		draftBotInstance.logsDatabase.logGuildDestroy(this, await Players.getByGuild(this.id), guildPetsEntities)
+		crowniclesInstance.logsDatabase.logGuildDestroy(this, await Players.getByGuild(this.id), guildPetsEntities)
 			.then();
 		const guildPetsToDestroy: Promise<void>[] = [];
 		const petsEntitiesToDestroy: Promise<number>[] = [];
@@ -118,7 +118,7 @@ export class Guild extends Model {
 	 * @param response the response packets
 	 * @param reason The reason of the experience change
 	 */
-	public async addExperience(experience: number, response: DraftBotPacket[], reason: NumberChangeReason): Promise<void> {
+	public async addExperience(experience: number, response: CrowniclesPacket[], reason: NumberChangeReason): Promise<void> {
 		if (this.isAtMaxLevel()) {
 			return;
 		}
@@ -132,7 +132,7 @@ export class Guild extends Model {
 		}
 		this.experience += experience;
 		this.setExperience(this.experience);
-		draftBotInstance.logsDatabase.logGuildExperienceChange(this, reason)
+		crowniclesInstance.logsDatabase.logGuildExperienceChange(this, reason)
 			.then();
 		await this.levelUpIfNeeded(response);
 	}
@@ -148,15 +148,15 @@ export class Guild extends Model {
 	 * Level up the guild if needed
 	 * @param response the response packets
 	 */
-	public async levelUpIfNeeded(response: DraftBotPacket[]): Promise<void> {
+	public async levelUpIfNeeded(response: CrowniclesPacket[]): Promise<void> {
 		if (!this.needLevelUp()) {
 			return;
 		}
 		this.experience -= this.getExperienceNeededToLevelUp();
 		this.level++;
-		draftBotInstance.logsDatabase.logGuildLevelUp(this)
+		crowniclesInstance.logsDatabase.logGuildLevelUp(this)
 			.then();
-		draftBotInstance.logsDatabase.logGuildExperienceChange(this, NumberChangeReason.LEVEL_UP)
+		crowniclesInstance.logsDatabase.logGuildExperienceChange(this, NumberChangeReason.LEVEL_UP)
 			.then();
 		response.push(makePacket(GuildLevelUpPacket, {
 			guildName: this.name,
@@ -224,7 +224,7 @@ export class Guild extends Model {
 		if (this.isStorageFullFor(selectedItemType, 0)) {
 			this.setDataValue(selectedItemType, GuildConstants.MAX_PET_FOOD[getFoodIndexOf(selectedItemType)]);
 		}
-		draftBotInstance.logsDatabase.logGuildsFoodChanges(this, getFoodIndexOf(selectedItemType), this.getDataValue(selectedItemType), reason)
+		crowniclesInstance.logsDatabase.logGuildsFoodChanges(this, getFoodIndexOf(selectedItemType), this.getDataValue(selectedItemType), reason)
 			.then();
 	}
 
@@ -236,7 +236,7 @@ export class Guild extends Model {
 	 */
 	public removeFood(item: string, quantity: number, reason: NumberChangeReason): void {
 		this.setDataValue(item, this.getDataValue(item) - quantity);
-		draftBotInstance.logsDatabase.logGuildsFoodChanges(this, getFoodIndexOf(item), this.getDataValue(item), reason)
+		crowniclesInstance.logsDatabase.logGuildsFoodChanges(this, getFoodIndexOf(item), this.getDataValue(item), reason)
 			.then();
 	}
 
@@ -246,7 +246,7 @@ export class Guild extends Model {
 	 * @param response
 	 * @param reason
 	 */
-	public async addScore(points: number, response: DraftBotPacket[], reason: NumberChangeReason): Promise<void> {
+	public async addScore(points: number, response: CrowniclesPacket[], reason: NumberChangeReason): Promise<void> {
 		this.score += points;
 		if (points > 0) {
 			for (const member of await Players.getByGuild(this.id)) {
@@ -257,7 +257,7 @@ export class Guild extends Model {
 				});
 			}
 		}
-		draftBotInstance.logsDatabase.logGuildPointsChange(this, reason)
+		crowniclesInstance.logsDatabase.logGuildPointsChange(this, reason)
 			.then();
 	}
 

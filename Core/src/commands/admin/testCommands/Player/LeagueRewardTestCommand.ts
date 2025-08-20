@@ -3,8 +3,8 @@ import {
 } from "../../../../core/CommandsTest";
 import LeagueRewardCommand from "../../../player/LeagueRewardCommand";
 import {
-	DraftBotPacket, makePacket, PacketContext
-} from "../../../../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, makePacket, PacketContext
+} from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import { CommandLeagueRewardPacketReq } from "../../../../../../Lib/src/packets/commands/CommandLeagueRewardPacket";
 
 export const commandInfo: ITestCommand = {
@@ -12,7 +12,7 @@ export const commandInfo: ITestCommand = {
 	description: "Exécute la commande leaguereward sans tenir compte de la date"
 };
 
-const leagueRewardTestCommand: ExecuteTestCommandLike = async (player, _args, response: DraftBotPacket[], context: PacketContext) => {
+const leagueRewardTestCommand: ExecuteTestCommandLike = async (player, _args, response: CrowniclesPacket[], context: PacketContext) => {
 	await LeagueRewardCommand.execute(response, player, makePacket(CommandLeagueRewardPacketReq, {}), context, true);
 
 	return "Vous avez exécuté la commande leaguereward !";

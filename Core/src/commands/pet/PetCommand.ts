@@ -1,6 +1,6 @@
 import {
-	DraftBotPacket, makePacket
-} from "../../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, makePacket
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	Player, Players
 } from "../../core/database/game/models/Player";
@@ -20,7 +20,7 @@ export default class PetCommand {
 		disallowedEffects: CommandUtils.DISALLOWED_EFFECTS.NOT_STARTED_OR_DEAD,
 		whereAllowed: CommandUtils.WHERE.EVERYWHERE
 	})
-	async execute(response: DraftBotPacket[], player: Player, packet: CommandPetPacketReq): Promise<void> {
+	async execute(response: CrowniclesPacket[], player: Player, packet: CommandPetPacketReq): Promise<void> {
 		const toCheckPlayer = await Players.getAskedPlayer(packet.askedPlayer, player);
 		const pet = await PetEntities.getById(toCheckPlayer.petId);
 		if (!pet) {

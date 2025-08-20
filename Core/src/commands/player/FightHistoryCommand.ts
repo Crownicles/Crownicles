@@ -7,8 +7,8 @@ import {
 } from "../../../../Lib/src/packets/commands/CommandFightHistoryPacket";
 import { FightConstants } from "../../../../Lib/src/constants/FightConstants";
 import {
-	DraftBotPacket, makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, makePacket, PacketContext
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import Player from "../../core/database/game/models/Player";
 import { LogsFightHistoryRequests } from "../../core/database/logs/requests/LogsFightHistoryRequests";
 
@@ -19,7 +19,7 @@ export default class FightHistoryCommand {
 		whereAllowed: CommandUtils.WHERE.EVERYWHERE,
 		level: FightConstants.REQUIRED_LEVEL
 	})
-	async execute(response: DraftBotPacket[], player: Player, _packet: CommandFightHistoryPacketRes, _context: PacketContext): Promise<void> {
+	async execute(response: CrowniclesPacket[], player: Player, _packet: CommandFightHistoryPacketRes, _context: PacketContext): Promise<void> {
 		response.push(makePacket(CommandFightHistoryPacketRes, {
 			history: await LogsFightHistoryRequests.getFightHistory(player.keycloakId, FightConstants.HISTORY_LIMIT)
 		}));

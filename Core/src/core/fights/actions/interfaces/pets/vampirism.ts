@@ -37,7 +37,7 @@ function getStatsInfo(_sender: Fighter, receiver: Fighter): statsInfo {
 
 const use: PetAssistanceFunc = (fighter, opponent, _turn, _fightController): Promise<PetAssistanceResult | null> => {
 	// 75% chance of doing nothing
-	if (RandomUtils.draftbotRandom.bool(0.75)) {
+	if (RandomUtils.crowniclesRandom.bool(0.75)) {
 		return Promise.resolve(null);
 	}
 

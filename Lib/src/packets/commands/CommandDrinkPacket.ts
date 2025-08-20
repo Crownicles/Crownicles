@@ -1,23 +1,23 @@
 import {
-	DraftBotPacket, PacketDirection, sendablePacket
-} from "../DraftBotPacket";
+	CrowniclesPacket, PacketDirection, sendablePacket
+} from "../CrowniclesPacket";
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
-export class CommandDrinkPacketReq extends DraftBotPacket {
+export class CommandDrinkPacketReq extends CrowniclesPacket {
 	force!: boolean;
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandDrinkNoActiveObjectError extends DraftBotPacket {}
+export class CommandDrinkNoActiveObjectError extends CrowniclesPacket {}
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandDrinkObjectIsActiveDuringFights extends DraftBotPacket {}
+export class CommandDrinkObjectIsActiveDuringFights extends CrowniclesPacket {}
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandDrinkCancelDrink extends DraftBotPacket {}
+export class CommandDrinkCancelDrink extends CrowniclesPacket {}
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandDrinkConsumePotionRes extends DraftBotPacket {
+export class CommandDrinkConsumePotionRes extends CrowniclesPacket {
 	health?: number;
 
 	energy?: number;

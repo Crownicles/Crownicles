@@ -43,7 +43,7 @@ export class PotionDataController extends ItemDataController<Potion> {
 	}
 
 	public randomItem(nature: number, rarity: number): ObjectItem {
-		return RandomUtils.draftbotRandom.pick(this.getValuesArray()
+		return RandomUtils.crowniclesRandom.pick(this.getValuesArray()
 			.filter(item => item.nature === nature && item.rarity === rarity));
 	}
 
@@ -52,7 +52,7 @@ export class PotionDataController extends ItemDataController<Potion> {
 	 * @param excludeId Prevent the potion to be with this id
 	 */
 	public randomShopPotion(excludeId = -1): Potion {
-		return RandomUtils.draftbotRandom.pick(
+		return RandomUtils.crowniclesRandom.pick(
 			this.getValuesArray()
 				.filter(item =>
 					item.nature !== ItemNature.NONE

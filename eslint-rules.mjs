@@ -144,7 +144,7 @@ export default {
 		"error",
 		"always"
 	],
-	"@stylistic/func-call-spacing": [
+	"@stylistic/function-call-spacing": [
 		"error",
 		"never"
 	],

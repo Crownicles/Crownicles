@@ -18,7 +18,7 @@ const use: FightActionFunc = (sender, receiver) => {
 
 	FightActionController.applyAlteration(result, {
 		selfTarget: false,
-		alteration: RandomUtils.draftbotRandom.bool(0.1) ? FightAlterations.BURNED : FightAlterations.BLIND
+		alteration: RandomUtils.crowniclesRandom.bool(0.1) ? FightAlterations.BURNED : FightAlterations.BLIND
 	}, receiver);
 
 	return result;

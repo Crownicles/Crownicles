@@ -2,8 +2,8 @@ import {
 	ReactionCollector, ReactionCollectorCreationPacket, ReactionCollectorData, ReactionCollectorReaction
 } from "./ReactionCollectorPacket";
 import {
-	DraftBotPacket, PacketContext, PacketDirection, sendablePacket
-} from "../DraftBotPacket";
+	CrowniclesPacket, PacketContext, PacketDirection, sendablePacket
+} from "../CrowniclesPacket";
 import { ItemWithDetails } from "../../types/ItemWithDetails";
 import { ShopCurrency } from "../../constants/ShopConstants";
 import { ShopItemType } from "../../constants/LogsConstants";
@@ -15,7 +15,7 @@ export interface ShopItem {
 
 	amounts: number[];
 
-	buyCallback: (response: DraftBotPacket[], player: number, context: PacketContext, amount: number) => boolean | Promise<boolean>;
+	buyCallback: (response: CrowniclesPacket[], player: number, context: PacketContext, amount: number) => boolean | Promise<boolean>;
 }
 
 export interface ShopCategory {
@@ -25,43 +25,47 @@ export interface ShopCategory {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandShopClosed extends DraftBotPacket {
+export class CommandShopClosed extends CrowniclesPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandShopNoAlterationToHeal extends DraftBotPacket {
+export class CommandShopNoAlterationToHeal extends CrowniclesPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandShopHealAlterationDone extends DraftBotPacket {
+export class CommandShopHealAlterationDone extends CrowniclesPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandShopTooManyEnergyBought extends DraftBotPacket {
+export class CommandShopTooManyEnergyBought extends CrowniclesPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandShopNoEnergyToHeal extends DraftBotPacket {
+export class CommandShopNoEnergyToHeal extends CrowniclesPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandShopFullRegen extends DraftBotPacket {
+export class CommandShopEnergyHeal extends CrowniclesPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandShopAlreadyHaveBadge extends DraftBotPacket {
+export class CommandShopFullRegen extends CrowniclesPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandShopBadgeBought extends DraftBotPacket {
+export class CommandShopAlreadyHaveBadge extends CrowniclesPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandShopBoughtTooMuchDailyPotions extends DraftBotPacket {
+export class CommandShopBadgeBought extends CrowniclesPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandShopNotEnoughCurrency extends DraftBotPacket {
+export class CommandShopBoughtTooMuchDailyPotions extends CrowniclesPacket {
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandShopNotEnoughCurrency extends CrowniclesPacket {
 	missingCurrency!: number;
 
 	currency!: ShopCurrency;
@@ -72,7 +76,7 @@ export class ReactionCollectorShopData extends ReactionCollectorData {
 
 	currency!: ShopCurrency;
 
-	additionnalShopData?: AdditionnalShopData;
+	additionalShopData?: additionalShopData;
 }
 
 export class ReactionCollectorShopItemReaction extends ReactionCollectorReaction {
@@ -89,7 +93,7 @@ export class ReactionCollectorShopCloseReaction extends ReactionCollectorReactio
 
 }
 
-export type AdditionnalShopData = {
+export type additionalShopData = {
 	remainingPotions?: number;
 	dailyPotion?: ItemWithDetails;
 	gemToMoneyRatio?: number;
@@ -102,20 +106,20 @@ export class ReactionCollectorShop extends ReactionCollector {
 
 	private readonly availableCurrency!: number;
 
-	private readonly additionnalShopData!: AdditionnalShopData;
+	private readonly additionalShopData!: additionalShopData;
 
 	constructor(
 		shopCategories: ShopCategory[],
 		availableCurrency: number,
-		additionnalShopData: AdditionnalShopData & {
+		additionalShopData: additionalShopData & {
 			currency?: ShopCurrency;
 		} = {}
 	) {
 		super();
 		this.shopCategories = shopCategories;
 		this.availableCurrency = availableCurrency;
-		this.currency = additionnalShopData.currency ?? ShopCurrency.MONEY;
-		this.additionnalShopData = additionnalShopData;
+		this.currency = additionalShopData.currency ?? ShopCurrency.MONEY;
+		this.additionalShopData = additionalShopData;
 	}
 
 	creationPacket(id: string, endTime: number): ReactionCollectorCreationPacket {
@@ -142,7 +146,7 @@ export class ReactionCollectorShop extends ReactionCollector {
 			data: this.buildData(ReactionCollectorShopData, {
 				availableCurrency: this.availableCurrency,
 				currency: this.currency,
-				additionnalShopData: this.additionnalShopData
+				additionalShopData: this.additionalShopData
 			})
 		};
 	}

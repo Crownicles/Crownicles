@@ -1,13 +1,13 @@
 import { ReactionCollectorCreationPacket } from "../../../Lib/src/packets/interaction/ReactionCollectorPacket";
-import { PacketContext } from "../../../Lib/src/packets/DraftBotPacket";
+import { PacketContext } from "../../../Lib/src/packets/CrowniclesPacket";
 import { DiscordCache } from "../bot/DiscordCache";
-import { DraftbotSmallEventEmbed } from "../messages/DraftbotSmallEventEmbed";
+import { CrowniclesSmallEventEmbed } from "../messages/CrowniclesSmallEventEmbed";
 import { getRandomSmallEventIntro } from "../packetHandlers/handlers/SmallEventsHandler";
 import i18n from "../translations/i18n";
-import { DraftBotIcons } from "../../../Lib/src/DraftBotIcons";
+import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 import {
-	DraftbotButtonReaction, DraftbotButtonReactionMessage
-} from "../messages/DraftbotButtonReactionMessage";
+	CrowniclesButtonReaction, CrowniclesButtonReactionMessage
+} from "../messages/CrowniclesButtonReactionMessage";
 import { ReactionCollectorReturnTypeOrNull } from "../packetHandlers/handlers/ReactionCollectorHandlers";
 import { Language } from "../../../Lib/src/Language";
 
@@ -15,9 +15,9 @@ import { Language } from "../../../Lib/src/Language";
  * Get the reactions for the goblet game
  * @param lng
  */
-function getGobletsGameReactions(lng: Language): DraftbotButtonReaction[] {
-	const reactions: DraftbotButtonReaction[] = [];
-	for (const [customId, emote] of Object.entries(DraftBotIcons.goblets)) {
+function getGobletsGameReactions(lng: Language): CrowniclesButtonReaction[] {
+	const reactions: CrowniclesButtonReaction[] = [];
+	for (const [customId, emote] of Object.entries(CrowniclesIcons.goblets)) {
 		reactions.push({
 			customId,
 			emote,
@@ -36,9 +36,9 @@ export async function gobletsGameCollector(context: PacketContext, packet: React
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
 	const lng = interaction.userLanguage;
 
-	return await new DraftbotButtonReactionMessage(interaction, {
+	return await new CrowniclesButtonReactionMessage(interaction, {
 		reactions: getGobletsGameReactions(lng),
-		embed: new DraftbotSmallEventEmbed(
+		embed: new CrowniclesSmallEventEmbed(
 			"gobletsGame",
 			`${getRandomSmallEventIntro(lng)}${i18n.t("smallEvents:gobletsGame.intro", { lng })}`,
 			interaction.user,

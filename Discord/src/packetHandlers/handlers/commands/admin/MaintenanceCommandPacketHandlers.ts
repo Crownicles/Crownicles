@@ -1,6 +1,6 @@
 import { packetHandler } from "../../../PacketHandler";
 import { CommandMaintenancePacketRes } from "../../../../../../Lib/src/packets/commands/CommandMaintenancePacket";
-import { PacketContext } from "../../../../../../Lib/src/packets/DraftBotPacket";
+import { PacketContext } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import { handleCommandMaintenancePacketRes } from "../../../../commands/admin/MaintenanceCommand";
 
 export default class MaintenanceCommandPacketHandlers {

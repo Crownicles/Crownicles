@@ -1,9 +1,9 @@
 export abstract class MapConstants {
-	static readonly MAP_URL = "https://draftbot.com/public/ressources/map.jpg"; // Unused, but useful
+	static readonly MAP_URL = "https://crownicles.com/public/ressources/map.jpg"; // Unused, but useful
 
-	static readonly MAP_URL_WITH_CURSOR = "https://draftbot.com/public/ressources/mapsCursed/{mapLink}map.jpg";
+	static readonly MAP_URL_WITH_CURSOR = "https://crownicles.com/public/ressources/mapsCursed/{mapLink}map.jpg";
 
-	static readonly FORCED_MAPS_URL = "https://draftbot.com/public/ressources/maps/{name}.jpg";
+	static readonly FORCED_MAPS_URL = "https://crownicles.com/public/ressources/maps/{name}.jpg";
 
 	static readonly WATER_MAP_LINKS = [
 		1,

@@ -1,6 +1,6 @@
 import {
-	DraftBotPacket, makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, makePacket, PacketContext
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	Player, Players
 } from "../../core/database/game/models/Player";
@@ -23,7 +23,7 @@ import {
 	commandRequires, CommandUtils
 } from "../../core/utils/CommandUtils";
 import { ReactionCollectorUnlock } from "../../../../Lib/src/packets/interaction/ReactionCollectorUnlock";
-import { draftBotInstance } from "../../index";
+import { crowniclesInstance } from "../../index";
 import { UnlockConstants } from "../../../../Lib/src/constants/UnlockConstants";
 import { TravelTime } from "../../core/maps/TravelTime";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
@@ -39,7 +39,7 @@ import { PacketUtils } from "../../core/utils/PacketUtils";
  * @param freedPlayer
  * @param response
  */
-async function acceptUnlock(player: Player, freedPlayer: Player, response: DraftBotPacket[]): Promise<void> {
+async function acceptUnlock(player: Player, freedPlayer: Player, response: CrowniclesPacket[]): Promise<void> {
 	await player.reload();
 
 	// Do all necessary checks again just in case something changed during the menu
@@ -59,7 +59,7 @@ async function acceptUnlock(player: Player, freedPlayer: Player, response: Draft
 		freedPlayer.save()
 	]);
 
-	draftBotInstance.logsDatabase.logUnlock(player.keycloakId, freedPlayer.keycloakId).then();
+	crowniclesInstance.logsDatabase.logUnlock(player.keycloakId, freedPlayer.keycloakId).then();
 
 	response.push(makePacket(CommandUnlockAcceptPacketRes, {
 		unlockedKeycloakId: freedPlayer.keycloakId
@@ -81,7 +81,7 @@ async function acceptUnlock(player: Player, freedPlayer: Player, response: Draft
  * @param freedPlayer The player who will be freed from the prison
  * @param response The response to send
  */
-function unlockCannotBeDone(player: Player, freedPlayer: Player, response: DraftBotPacket[]): boolean {
+function unlockCannotBeDone(player: Player, freedPlayer: Player, response: CrowniclesPacket[]): boolean {
 	if (freedPlayer === null || !freedPlayer.hasStartedToPlay()) {
 		response.push(makePacket(CommandUnlockNoPlayerFound, {}));
 		return true;
@@ -109,7 +109,7 @@ export default class UnlockCommand {
 		allowedEffects: CommandUtils.ALLOWED_EFFECTS.NO_EFFECT,
 		whereAllowed: [WhereAllowed.CONTINENT]
 	})
-	async execute(response: DraftBotPacket[], player: Player, packet: CommandUnlockPacketReq, context: PacketContext): Promise<void> {
+	async execute(response: CrowniclesPacket[], player: Player, packet: CommandUnlockPacketReq, context: PacketContext): Promise<void> {
 		const freedPlayer = await Players.getAskedPlayer(packet.askedPlayer, player);
 
 		if (unlockCannotBeDone(player, freedPlayer, response)) {
@@ -121,7 +121,7 @@ export default class UnlockCommand {
 			freedPlayer.keycloakId
 		);
 
-		const endCallback: EndCallback = async (collector: ReactionCollectorInstance, response: DraftBotPacket[]): Promise<void> => {
+		const endCallback: EndCallback = async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
 			const reaction = collector.getFirstReaction();
 			if (reaction && reaction.reaction.type === ReactionCollectorAcceptReaction.name) {
 				await acceptUnlock(player, freedPlayer, response);

@@ -1,6 +1,6 @@
 import {
-	DraftBotPacket, makePacket
-} from "../../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, makePacket
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import { BlockedPacket } from "../../../../Lib/src/packets/commands/BlockedPacket";
 import {
 	BlockingConstants, BlockingReason
@@ -93,7 +93,7 @@ export class BlockingUtils {
 	 * @param keycloakId
 	 * @param packets
 	 */
-	static appendBlockedPacket(keycloakId: string, packets: DraftBotPacket[]): boolean {
+	static appendBlockedPacket(keycloakId: string, packets: CrowniclesPacket[]): boolean {
 		const blockingReason = BlockingUtils.getPlayerBlockingReason(keycloakId);
 		if (blockingReason.length !== 0) {
 			packets.push(makePacket(BlockedPacket, {

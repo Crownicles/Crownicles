@@ -1,16 +1,16 @@
 import {
-	DraftBotPacket, PacketDirection, sendablePacket
-} from "../DraftBotPacket";
+	CrowniclesPacket, PacketDirection, sendablePacket
+} from "../CrowniclesPacket";
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
-export class CommandPetNickPacketReq extends DraftBotPacket {
+export class CommandPetNickPacketReq extends CrowniclesPacket {
 	keycloakId!: string;
 
 	newNickname?: string;
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandPetNickPacketRes extends DraftBotPacket {
+export class CommandPetNickPacketRes extends CrowniclesPacket {
 	foundPet!: boolean;
 
 	newNickname?: string;

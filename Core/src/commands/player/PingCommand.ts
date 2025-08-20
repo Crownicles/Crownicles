@@ -2,8 +2,8 @@ import {
 	CommandPingPacketReq, CommandPingPacketRes
 } from "../../../../Lib/src/packets/commands/CommandPingPacket";
 import {
-	DraftBotPacket, makePacket
-} from "../../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, makePacket
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import Player from "../../core/database/game/models/Player";
 import {
 	commandRequires, CommandUtils
@@ -14,7 +14,7 @@ export default class PingCommand {
 		notBlocked: false,
 		whereAllowed: CommandUtils.WHERE.EVERYWHERE
 	})
-	execute(response: DraftBotPacket[], _player: Player, packet: CommandPingPacketReq): void {
+	execute(response: CrowniclesPacket[], _player: Player, packet: CommandPingPacketReq): void {
 		response.push(makePacket(CommandPingPacketRes, {
 			clientTime: packet.time
 		}));

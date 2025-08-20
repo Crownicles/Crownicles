@@ -8,7 +8,7 @@ import { Class } from "../../../data/Class";
 import {
 	FightAction, FightActionDataController
 } from "../../../data/FightAction";
-import { DraftBotPacket } from "../../../../../Lib/src/packets/DraftBotPacket";
+import { CrowniclesPacket } from "../../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	ClassBehavior, getAiClassBehavior
 } from "../AiBehaviorController";
@@ -54,9 +54,9 @@ export class AiPlayerFighter extends Fighter {
 	 * Delete the potion from the inventory of the player if needed
 	 * @param response
 	 */
-	public async consumePotionIfNeeded(response: DraftBotPacket[]): Promise<void> {
+	public async consumePotionIfNeeded(response: CrowniclesPacket[]): Promise<void> {
 		// Potions have a chance of not being consumed
-		if (RandomUtils.draftbotRandom.realZeroToOneInclusive() < FightConstants.POTION_NO_DRINK_PROBABILITY.AI) {
+		if (RandomUtils.crowniclesRandom.realZeroToOneInclusive() < FightConstants.POTION_NO_DRINK_PROBABILITY.AI) {
 			return;
 		}
 		const inventorySlots = await InventorySlots.getOfPlayer(this.player.id);
@@ -95,7 +95,7 @@ export class AiPlayerFighter extends Fighter {
 	 * @param fightView
 	 * @param response
 	 */
-	async chooseAction(fightView: FightView, response: DraftBotPacket[]): Promise<void> {
+	async chooseAction(fightView: FightView, response: CrowniclesPacket[]): Promise<void> {
 		fightView.displayAiChooseAction(response, RandomUtils.randInt(800, 2500));
 
 		const classBehavior = this.classBehavior;

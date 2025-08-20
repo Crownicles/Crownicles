@@ -2,7 +2,7 @@ import { packetHandler } from "../../../PacketHandler";
 import {
 	CommandPetPacketRes, CommandPetPetNotFound
 } from "../../../../../../Lib/src/packets/commands/CommandPetPacket";
-import { PacketContext } from "../../../../../../Lib/src/packets/DraftBotPacket";
+import { PacketContext } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import { handleCommandPetPacketRes } from "../../../../commands/pet/PetCommand";
 import { handleClassicError } from "../../../../utils/ErrorUtils";
 

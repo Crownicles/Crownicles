@@ -16,16 +16,16 @@ import { GuildPets } from "./GuildPet";
 import {
 	Pet, PetDataController
 } from "../../../../data/Pet";
-import { draftBotInstance } from "../../../../index";
+import { crowniclesInstance } from "../../../../index";
 import {
-	DraftBotPacket, makePacket
-} from "../../../../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, makePacket
+} from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import { PlayerReceivePetPacket } from "../../../../../../Lib/src/packets/events/PlayerReceivePetPacket";
 import {
 	SexTypeShort, StringConstants
 } from "../../../../../../Lib/src/constants/StringConstants";
 import { OwnedPet } from "../../../../../../Lib/src/types/OwnedPet";
-import { DraftBotLogger } from "../../../../../../Lib/src/logs/DraftBotLogger";
+import { CrowniclesLogger } from "../../../../../../Lib/src/logs/CrowniclesLogger";
 
 // skipcq: JS-C1003 - moment does not expose itself as an ES Module.
 import * as moment from "moment";
@@ -78,7 +78,7 @@ export class PetEntity extends Model {
 		else if (this.lovePoints < 0) {
 			this.lovePoints = 0;
 		}
-		draftBotInstance.logsDatabase.logPetLoveChange(this, parameters.reason)
+		crowniclesInstance.logsDatabase.logPetLoveChange(this, parameters.reason)
 			.then();
 		await MissionsController.update(parameters.player, parameters.response, {
 			missionId: "tamedPet",
@@ -100,7 +100,7 @@ export class PetEntity extends Model {
 	 * @param player The player
 	 * @param response
 	 */
-	public async giveToPlayer(player: Player, response: DraftBotPacket[]): Promise<PET_ENTITY_GIVE_RETURN> {
+	public async giveToPlayer(player: Player, response: CrowniclesPacket[]): Promise<PET_ENTITY_GIVE_RETURN> {
 		let guild: Guild;
 		let returnValue: PET_ENTITY_GIVE_RETURN;
 		const packet = makePacket(PlayerReceivePetPacket, {
@@ -180,7 +180,7 @@ export class PetEntities {
 	}
 
 	static generateRandomPetEntity(level: number, minRarity = 1, maxRarity = 5): PetEntity {
-		const sex = RandomUtils.draftbotRandom.bool() ? "m" : "f";
+		const sex = RandomUtils.crowniclesRandom.bool() ? "m" : "f";
 		let levelTier = Math.floor(level / 10);
 		if (levelTier > PetConstants.PROBABILITIES.length - 1) {
 			levelTier = PetConstants.PROBABILITIES.length - 1;
@@ -194,7 +194,7 @@ export class PetEntities {
 			totalProbabilities += PetConstants.PROBABILITIES[levelTier][rarity - 1];
 		}
 
-		let randomTier = RandomUtils.draftbotRandom.real(0, totalProbabilities, true);
+		let randomTier = RandomUtils.crowniclesRandom.real(0, totalProbabilities, true);
 
 		// Remove the rarity probabilities and stop when going under 0 to pick a rarity
 		for (rarity = minRarity; rarity <= maxRarity; ++rarity) {
@@ -206,7 +206,7 @@ export class PetEntities {
 		if (rarity === maxRarity + 1) {
 			// Case that should never be reached if the probabilities are 1
 			rarity = 1;
-			DraftBotLogger.warn(`Warning ! Pet probabilities are not equal to 1 for level tier ${levelTier}`);
+			CrowniclesLogger.warn(`Warning ! Pet probabilities are not equal to 1 for level tier ${levelTier}`);
 		}
 		const pet = PetDataController.instance.getRandom(rarity);
 		return PetEntity.build({

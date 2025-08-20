@@ -194,6 +194,10 @@ export abstract class SmallEventConstants {
 
 	};
 
+	static readonly INFO_FIGHT = {
+		HANDEDNESS_INFO_CHANCE: 0.01
+	};
+
 	static readonly PET = {
 		MONEY: {
 			MIN: 20,

@@ -1,8 +1,8 @@
 import { ICommand } from "../ICommand";
 import {
 	makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
-import { DraftbotInteraction } from "../../messages/DraftbotInteraction";
+} from "../../../../Lib/src/packets/CrowniclesPacket";
+import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
 import i18n from "../../translations/i18n";
 import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
 import { SlashCommandBuilder } from "@discordjs/builders";
@@ -15,7 +15,7 @@ import {
 	CommandGuildKickRefusePacketRes
 } from "../../../../Lib/src/packets/commands/CommandGuildKickPacket";
 import { ReactionCollectorCreationPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
-import { DraftBotEmbed } from "../../messages/DraftBotEmbed";
+import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import { DiscordCollectorUtils } from "../../utils/DiscordCollectorUtils";
 import { ReactionCollectorGuildKickData } from "../../../../Lib/src/packets/interaction/ReactionCollectorGuildKick";
 import { PacketUtils } from "../../utils/PacketUtils";
@@ -23,7 +23,7 @@ import {
 	sendErrorMessage, SendManner
 } from "../../utils/ErrorUtils";
 import { KeycloakUtils } from "../../../../Lib/src/keycloak/KeycloakUtils";
-import { keycloakConfig } from "../../bot/DraftBotShard";
+import { keycloakConfig } from "../../bot/CrowniclesShard";
 import { ReactionCollectorReturnTypeOrNull } from "../../packetHandlers/handlers/ReactionCollectorHandlers";
 import { escapeUsername } from "../../utils/StringUtils";
 import { DisplayUtils } from "../../utils/DisplayUtils";
@@ -31,7 +31,7 @@ import { DisplayUtils } from "../../utils/DisplayUtils";
 /**
  * Kick a player from a guild
  */
-async function getPacket(interaction: DraftbotInteraction, user: KeycloakUser): Promise<CommandGuildKickPacketReq | null> {
+async function getPacket(interaction: CrowniclesInteraction, user: KeycloakUser): Promise<CommandGuildKickPacketReq | null> {
 	const askedPlayer = await PacketUtils.prepareAskedPlayer(interaction, user);
 	if (!askedPlayer) {
 		return null;
@@ -92,7 +92,7 @@ export async function createGuildKickCollector(context: PacketContext, packet: R
 	await interaction.deferReply();
 	const data = packet.data.data as ReactionCollectorGuildKickData;
 	const lng = interaction.userLanguage;
-	const embed = new DraftBotEmbed().formatAuthor(i18n.t("commands:guildKick.title", {
+	const embed = new CrowniclesEmbed().formatAuthor(i18n.t("commands:guildKick.title", {
 		lng,
 		pseudo: escapeUsername(interaction.user.displayName)
 	}), interaction.user)
@@ -122,7 +122,7 @@ export async function handleCommandGuildKickRefusePacketRes(packet: CommandGuild
 	const lng = originalInteraction.userLanguage;
 	await buttonInteraction?.editReply({
 		embeds: [
-			new DraftBotEmbed().formatAuthor(i18n.t("commands:guildKick.canceledTitle", {
+			new CrowniclesEmbed().formatAuthor(i18n.t("commands:guildKick.canceledTitle", {
 				lng,
 				pseudo: escapeUsername(originalInteraction.user.displayName)
 			}), originalInteraction.user)
@@ -154,7 +154,7 @@ export async function handleCommandGuildKickAcceptPacketRes(packet: CommandGuild
 		const lng = originalInteraction.userLanguage;
 		await buttonInteraction.editReply({
 			embeds: [
-				new DraftBotEmbed().formatAuthor(i18n.t("commands:guildKick.title", {
+				new CrowniclesEmbed().formatAuthor(i18n.t("commands:guildKick.title", {
 					lng,
 					pseudo: escapeUsername(originalInteraction.user.displayName)
 				}), originalInteraction.user)

@@ -5,7 +5,7 @@ import { SmallEventConstants } from "../../../../Lib/src/constants/SmallEventCon
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { TravelTime } from "../maps/TravelTime";
 import { Effect } from "../../../../Lib/src/types/Effect";
-import { makePacket } from "../../../../Lib/src/packets/DraftBotPacket";
+import { makePacket } from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	SmallEventBadIssue,
 	SmallEventSmallBadPacket
@@ -15,7 +15,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 	canBeExecuted: Maps.isOnContinent,
 	executeSmallEvent: async (response, player): Promise<void> => {
 		const packet: SmallEventSmallBadPacket = new SmallEventSmallBadPacket();
-		packet.issue = RandomUtils.draftbotRandom.pick(Object.values(SmallEventBadIssue)) as SmallEventBadIssue;
+		packet.issue = RandomUtils.crowniclesRandom.pick(Object.values(SmallEventBadIssue)) as SmallEventBadIssue;
 
 		switch (packet.issue) {
 			case SmallEventBadIssue.HEALTH:

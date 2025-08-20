@@ -3,7 +3,7 @@ import {
 	CommandRespawnErrorAlreadyAlive,
 	CommandRespawnPacketRes
 } from "../../../../../../Lib/src/packets/commands/CommandRespawnPacket";
-import { PacketContext } from "../../../../../../Lib/src/packets/DraftBotPacket";
+import { PacketContext } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import { handleCommandRespawnPacketRes } from "../../../../commands/player/RespawnCommand";
 import { handleClassicError } from "../../../../utils/ErrorUtils";
 

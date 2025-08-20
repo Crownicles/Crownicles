@@ -1,13 +1,13 @@
 import { ICommand } from "../ICommand";
 import {
 	makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
-import { DraftbotInteraction } from "../../messages/DraftbotInteraction";
+} from "../../../../Lib/src/packets/CrowniclesPacket";
+import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
 import i18n from "../../translations/i18n";
 import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { DiscordCache } from "../../bot/DiscordCache";
-import { DraftBotErrorEmbed } from "../../messages/DraftBotErrorEmbed";
+import { CrowniclesErrorEmbed } from "../../messages/CrowniclesErrorEmbed";
 import { KeycloakUser } from "../../../../Lib/src/keycloak/KeycloakUser";
 import {
 	CommandGuildCreateAcceptPacketRes,
@@ -16,7 +16,7 @@ import {
 } from "../../../../Lib/src/packets/commands/CommandGuildCreatePacket";
 import { GuildConstants } from "../../../../Lib/src/constants/GuildConstants";
 import { ReactionCollectorCreationPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
-import { DraftBotEmbed } from "../../messages/DraftBotEmbed";
+import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import { DiscordCollectorUtils } from "../../utils/DiscordCollectorUtils";
 import { ReactionCollectorGuildCreateData } from "../../../../Lib/src/packets/interaction/ReactionCollectorGuildCreate";
 import { GuildCreateConstants } from "../../../../Lib/src/constants/GuildCreateConstants";
@@ -27,7 +27,7 @@ import { escapeUsername } from "../../utils/StringUtils";
 /**
  * Create a new guild
  */
-function getPacket(interaction: DraftbotInteraction, user: KeycloakUser): CommandGuildCreatePacketReq {
+function getPacket(interaction: CrowniclesInteraction, user: KeycloakUser): CommandGuildCreatePacketReq {
 	const askedGuildName = <string>interaction.options.get("name", true).value;
 	return makePacket(CommandGuildCreatePacketReq, {
 		keycloakId: user.id,
@@ -44,7 +44,7 @@ async function replyErrorEmbed(context: PacketContext, errorKey: string, formatP
 	};
 	const params = {
 		embeds: [
-			new DraftBotErrorEmbed(
+			new CrowniclesErrorEmbed(
 				interaction!.user,
 				context,
 				interaction!,
@@ -94,7 +94,7 @@ export async function createGuildCreateCollector(context: PacketContext, packet:
 	const data = packet.data.data as ReactionCollectorGuildCreateData;
 	const lng = interaction.userLanguage;
 
-	const embed = new DraftBotEmbed().formatAuthor(i18n.t("commands:guildCreate.title", {
+	const embed = new CrowniclesEmbed().formatAuthor(i18n.t("commands:guildCreate.title", {
 		lng,
 		pseudo: escapeUsername(interaction.user.displayName)
 	}), interaction.user)
@@ -116,7 +116,7 @@ export async function handleCommandGuildCreateRefusePacketRes(context: PacketCon
 		const lng = originalInteraction.userLanguage;
 		await buttonInteraction.editReply({
 			embeds: [
-				new DraftBotEmbed().formatAuthor(i18n.t("commands:guildCreate.canceledTitle", {
+				new CrowniclesEmbed().formatAuthor(i18n.t("commands:guildCreate.canceledTitle", {
 					lng,
 					pseudo: escapeUsername(originalInteraction.user.displayName)
 				}), originalInteraction.user)
@@ -136,7 +136,7 @@ export async function handleCommandGuildCreateAcceptPacketRes(packet: CommandGui
 		const lng = originalInteraction.userLanguage;
 		await buttonInteraction.editReply({
 			embeds: [
-				new DraftBotEmbed().formatAuthor(i18n.t("commands:guildCreate.title", {
+				new CrowniclesEmbed().formatAuthor(i18n.t("commands:guildCreate.title", {
 					lng,
 					pseudo: escapeUsername(originalInteraction.user.displayName)
 				}), originalInteraction.user)

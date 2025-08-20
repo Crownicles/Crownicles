@@ -2,8 +2,8 @@ import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants"
 import { Guilds } from "../database/game/models/Guild";
 import Player from "../database/game/models/Player";
 import {
-	DraftBotPacket, makePacket
-} from "../../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, makePacket
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import { NoFoodSpaceInGuildPacket } from "../../../../Lib/src/packets/utils/NoFoodSpaceInGuildPacket";
 import { GiveFoodToGuildPacket } from "../../../../Lib/src/packets/utils/GiveFoodToGuildPacket";
 import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
@@ -17,7 +17,7 @@ export function getFoodIndexOf(food: string): number {
 	return PetConstants.PET_FOOD_BY_ID.indexOf(food);
 }
 
-export async function giveFoodToGuild(response: DraftBotPacket[], player: Player, selectedFood: string, quantity: number, reason: NumberChangeReason): Promise<void> {
+export async function giveFoodToGuild(response: CrowniclesPacket[], player: Player, selectedFood: string, quantity: number, reason: NumberChangeReason): Promise<void> {
 	const guild = await Guilds.getById(player.guildId);
 	const selectedFoodIndex = getFoodIndexOf(selectedFood);
 	if (guild.isStorageFullFor(selectedFood, quantity)) {

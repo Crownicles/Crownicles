@@ -1,14 +1,14 @@
 import { packetHandler } from "../PacketHandler";
-import { PacketContext } from "../../../../Lib/src/packets/DraftBotPacket";
+import { PacketContext } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { DiscordCache } from "../../bot/DiscordCache";
 import i18n from "../../translations/i18n";
-import { DraftBotEmbed } from "../../messages/DraftBotEmbed";
+import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import { CommandReportChooseDestinationRes } from "../../../../Lib/src/packets/commands/CommandReportPacket";
 import { KeycloakUtils } from "../../../../Lib/src/keycloak/KeycloakUtils";
 import {
-	draftBotClient, keycloakConfig
-} from "../../bot/DraftBotShard";
-import { DraftBotIcons } from "../../../../Lib/src/DraftBotIcons";
+	crowniclesClient, keycloakConfig
+} from "../../bot/CrowniclesShard";
+import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 import { minutesToHours } from "../../../../Lib/src/utils/TimeUtils";
 import { GuildLevelUpPacket } from "../../../../Lib/src/packets/events/GuildLevelUpPacket";
 import { MissionsCompletedPacket } from "../../../../Lib/src/packets/events/MissionsCompletedPacket";
@@ -24,7 +24,7 @@ import { MissionUtils } from "../../utils/MissionUtils";
 import { MissionType } from "../../../../Lib/src/types/CompletedMission";
 import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
 import { DisplayUtils } from "../../utils/DisplayUtils";
-import { DraftBotErrorEmbed } from "../../messages/DraftBotErrorEmbed";
+import { CrowniclesErrorEmbed } from "../../messages/CrowniclesErrorEmbed";
 import { escapeUsername } from "../../../../Lib/src/utils/StringUtils";
 
 export default class EventsHandlers {
@@ -37,7 +37,7 @@ export default class EventsHandlers {
 		}
 
 		const lng = interaction.userLanguage;
-		const embed = new DraftBotEmbed();
+		const embed = new CrowniclesEmbed();
 		embed.formatAuthor(i18n.t("commands:report.destinationTitle", {
 			lng,
 			pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
@@ -56,7 +56,7 @@ export default class EventsHandlers {
 			lng,
 			mapPrefix: i18n.t(`models:map_types.${packet.mapTypeId}.prefix`, { lng }),
 			mapType: (i18n.t(`models:map_types.${packet.mapTypeId}.name`, { lng }) as string).toLowerCase(),
-			mapEmote: EmoteUtils.translateEmojiToDiscord(DraftBotIcons.mapTypes[packet.mapTypeId]),
+			mapEmote: EmoteUtils.translateEmojiToDiscord(CrowniclesIcons.mapTypes[packet.mapTypeId]),
 			mapName: i18n.t(`models:map_locations.${packet.mapId}.name`, { lng }),
 			time
 		}));
@@ -85,7 +85,7 @@ export default class EventsHandlers {
 
 		await interaction.channel.send({
 			embeds: [
-				new DraftBotEmbed()
+				new CrowniclesEmbed()
 					.setTitle(i18n.t("models:guilds.levelUpTitle", {
 						lng,
 						guild: packet.guildName
@@ -110,7 +110,7 @@ export default class EventsHandlers {
 		}
 		const user = getUser.payload.user;
 		const discordId = user.attributes.discordId?.[0] ? user.attributes.discordId[0] : null;
-		const discordUser = discordId ? draftBotClient.users.cache.get(discordId) : null;
+		const discordUser = discordId ? crowniclesClient.users.cache.get(discordId) : null;
 
 		const lng = interaction.userLanguage;
 		const titleText = i18n.t("notifications:missions.completed.title", {
@@ -119,8 +119,8 @@ export default class EventsHandlers {
 			pseudo: escapeUsername(user.attributes.gameUsername[0])
 		});
 		const completedMissionsEmbed = discordUser
-			? new DraftBotEmbed().formatAuthor(titleText, discordUser)
-			: new DraftBotEmbed().setTitle(titleText);
+			? new CrowniclesEmbed().formatAuthor(titleText, discordUser)
+			: new CrowniclesEmbed().setTitle(titleText);
 
 		const missionLists: Record<MissionType, string[]> = {
 			[MissionType.CAMPAIGN]: [],
@@ -169,7 +169,7 @@ export default class EventsHandlers {
 		}
 		const user = getUser.payload.user;
 		const discordId = user.attributes.discordId?.[0] ? user.attributes.discordId[0] : null;
-		const discordUser = discordId ? draftBotClient.users.cache.get(discordId) : null;
+		const discordUser = discordId ? crowniclesClient.users.cache.get(discordId) : null;
 
 		const lng = interaction.userLanguage;
 		let missionsExpiredDescription = "";
@@ -183,8 +183,8 @@ export default class EventsHandlers {
 			pseudo: escapeUsername(user.attributes.gameUsername[0])
 		});
 		const embed = discordUser
-			? new DraftBotEmbed().formatAuthor(titleText, discordUser)
-			: new DraftBotEmbed().setTitle(titleText);
+			? new CrowniclesEmbed().formatAuthor(titleText, discordUser)
+			: new CrowniclesEmbed().setTitle(titleText);
 		embed.setDescription(i18n.t("notifications:missions.expired.description", {
 			lng,
 			count: packet.missions.length,
@@ -208,7 +208,7 @@ export default class EventsHandlers {
 
 		await interaction.channel.send({
 			embeds: [
-				new DraftBotEmbed()
+				new CrowniclesEmbed()
 					.formatAuthor(i18n.t("models:players.koTitle", {
 						lng,
 						pseudo: escapeUsername(interaction.user.displayName)
@@ -220,7 +220,7 @@ export default class EventsHandlers {
 
 		await interaction.user.send({
 			embeds: [
-				new DraftBotEmbed()
+				new CrowniclesEmbed()
 					.formatAuthor(i18n.t("models:players.koDmTitle", { lng }), interaction.user)
 					.setDescription(i18n.t("models:players.koDmDesc", { lng }))
 			]
@@ -252,7 +252,7 @@ export default class EventsHandlers {
 
 		await interaction.channel.send({
 			embeds: [
-				new DraftBotEmbed()
+				new CrowniclesEmbed()
 					.formatAuthor(i18n.t("models:players.leavePVEIslandTitle", {
 						lng,
 						pseudo: escapeUsername(interaction.user.displayName)
@@ -275,7 +275,7 @@ export default class EventsHandlers {
 		}
 		const user = getUser.payload.user;
 		const discordId = user.attributes.discordId?.[0] ? user.attributes.discordId[0] : null;
-		const discordUser = discordId ? draftBotClient.users.cache.get(discordId) : null;
+		const discordUser = discordId ? crowniclesClient.users.cache.get(discordId) : null;
 
 		const lng = interaction.userLanguage;
 
@@ -331,8 +331,8 @@ export default class EventsHandlers {
 			pseudo: escapeUsername(user.attributes.gameUsername[0])
 		});
 		const embed = discordUser
-			? new DraftBotEmbed().formatAuthor(titleText, discordUser)
-			: new DraftBotEmbed().setTitle(titleText);
+			? new CrowniclesEmbed().formatAuthor(titleText, discordUser)
+			: new CrowniclesEmbed().setTitle(titleText);
 		embed.setDescription(desc);
 
 		await interaction.channel.send({
@@ -355,7 +355,7 @@ export default class EventsHandlers {
 				? "models:petReceived.genericGivePlayer"
 				: "models:petReceived.genericGiveNoSlot";
 
-		const embed = new DraftBotEmbed()
+		const embed = new CrowniclesEmbed()
 			.formatAuthor(i18n.t("models:petReceived.genericGiveTitle", {
 				lng,
 				pseudo: escapeUsername(interaction.user.displayName)
@@ -382,7 +382,7 @@ export default class EventsHandlers {
 
 		await interaction?.channel.send({
 			embeds: [
-				new DraftBotEmbed()
+				new CrowniclesEmbed()
 					.formatAuthor(i18n.t("notifications:guildFood.receivedFoodTitle", { lng }), interaction.user)
 					.setDescription(
 						i18n.t("notifications:guildFood.receivedFoodDescription", {
@@ -410,7 +410,7 @@ export default class EventsHandlers {
 
 		await interaction.channel.send({
 			embeds: [
-				new DraftBotErrorEmbed(
+				new CrowniclesErrorEmbed(
 					interaction.user,
 					context,
 					interaction,

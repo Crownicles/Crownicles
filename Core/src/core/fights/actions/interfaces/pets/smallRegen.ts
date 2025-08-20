@@ -22,7 +22,7 @@ const use: PetAssistanceFunc = (fighter, _opponent, turn, _fightController): Pro
 		selfTarget: true,
 		stat: FightStatBuffed.ENERGY,
 		operator: FightStatModifierOperation.ADDITION,
-		value: RandomUtils.draftbotRandom.integer(18, 30)
+		value: RandomUtils.crowniclesRandom.integer(18, 30)
 	}, fighter, this);
 
 	return Promise.resolve(result);

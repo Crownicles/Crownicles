@@ -1,6 +1,6 @@
 import {
-	DraftBotPacket, makePacket
-} from "../../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, makePacket
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import { Player } from "../../core/database/game/models/Player";
 import {
 	commandRequires, CommandUtils
@@ -14,7 +14,7 @@ import {
 	CommandDailyBonusPacketRes
 } from "../../../../Lib/src/packets/commands/CommandDailyBonusPacket";
 import { InventorySlots } from "../../core/database/game/models/InventorySlot";
-import { draftBotInstance } from "../../index";
+import { crowniclesInstance } from "../../index";
 import { ObjectItem } from "../../data/ObjectItem";
 import { ItemNature } from "../../../../Lib/src/constants/ItemConstants";
 import { InventoryConstants } from "../../../../Lib/src/constants/InventoryConstants";
@@ -30,7 +30,7 @@ import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
  * @param activeObject
  * @param response
  */
-function isWrongObjectForDaily(activeObject: ObjectItem, response: DraftBotPacket[]): boolean {
+function isWrongObjectForDaily(activeObject: ObjectItem, response: CrowniclesPacket[]): boolean {
 	if (activeObject.nature === ItemNature.NONE) {
 		response.push(makePacket(activeObject.id === InventoryConstants.OBJECT_DEFAULT_ID ? CommandDailyBonusNoActiveObject : CommandDailyBonusObjectDoNothing, {}));
 		return true;
@@ -51,7 +51,7 @@ function isWrongObjectForDaily(activeObject: ObjectItem, response: DraftBotPacke
  * @param player
  * @param response
  */
-async function dailyNotReady(player: Player, response: DraftBotPacket[]): Promise<boolean> {
+async function dailyNotReady(player: Player, response: CrowniclesPacket[]): Promise<boolean> {
 	const inventoryInfo = await InventoryInfos.getOfPlayer(player.id);
 	const lastDailyTimestamp = inventoryInfo.getLastDailyAtTimestamp();
 	if (millisecondsToHours(Date.now() - inventoryInfo.getLastDailyAtTimestamp()) < DailyConstants.TIME_BETWEEN_DAILIES) {
@@ -70,7 +70,7 @@ async function dailyNotReady(player: Player, response: DraftBotPacket[]): Promis
  * @param activeObject
  * @param response
  */
-async function activateDailyItem(player: Player, activeObject: ObjectItem, response: DraftBotPacket[]): Promise<void> {
+async function activateDailyItem(player: Player, activeObject: ObjectItem, response: CrowniclesPacket[]): Promise<void> {
 	const packet = makePacket(CommandDailyBonusPacketRes, {
 		value: activeObject.power,
 		itemNature: activeObject.nature
@@ -113,7 +113,7 @@ export default class DailyBonusCommand {
 		notBlocked: true,
 		whereAllowed: [WhereAllowed.CONTINENT]
 	})
-	async execute(response: DraftBotPacket[], player: Player): Promise<void> {
+	async execute(response: CrowniclesPacket[], player: Player): Promise<void> {
 		const activeObjectSlot = await InventorySlots.getMainObjectSlot(player.id);
 		if (!activeObjectSlot) {
 			response.push(makePacket(CommandDailyBonusNoActiveObject, {}));
@@ -127,7 +127,7 @@ export default class DailyBonusCommand {
 		}
 
 		await activateDailyItem(player, activeObject, response);
-		draftBotInstance.logsDatabase.logPlayerDaily(player.keycloakId, activeObject)
+		crowniclesInstance.logsDatabase.logPlayerDaily(player.keycloakId, activeObject)
 			.then();
 	}
 }

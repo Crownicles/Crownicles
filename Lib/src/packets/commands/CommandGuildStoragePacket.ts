@@ -1,9 +1,9 @@
 import {
-	DraftBotPacket, PacketDirection, sendablePacket
-} from "../DraftBotPacket";
+	CrowniclesPacket, PacketDirection, sendablePacket
+} from "../CrowniclesPacket";
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
-export class CommandGuildStoragePacketReq extends DraftBotPacket {
+export class CommandGuildStoragePacketReq extends CrowniclesPacket {
 }
 
 export class FoodStorage {
@@ -15,7 +15,7 @@ export class FoodStorage {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandGuildStoragePacketRes extends DraftBotPacket {
+export class CommandGuildStoragePacketRes extends CrowniclesPacket {
 	foods!: FoodStorage[];
 
 	guildName!: string;

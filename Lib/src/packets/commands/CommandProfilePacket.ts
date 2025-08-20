@@ -1,11 +1,11 @@
 import {
-	DraftBotPacket, PacketDirection, sendablePacket
-} from "../DraftBotPacket";
+	CrowniclesPacket, PacketDirection, sendablePacket
+} from "../CrowniclesPacket";
 import { SexTypeShort } from "../../constants/StringConstants";
 import { Badge } from "../../types/Badge";
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
-export class CommandProfilePacketReq extends DraftBotPacket {
+export class CommandProfilePacketReq extends CrowniclesPacket {
 	askedPlayer!: {
 		rank?: number;
 		keycloakId?: string;
@@ -13,11 +13,11 @@ export class CommandProfilePacketReq extends DraftBotPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandProfilePlayerNotFound extends DraftBotPacket {
+export class CommandProfilePlayerNotFound extends CrowniclesPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandProfilePacketRes extends DraftBotPacket {
+export class CommandProfilePacketRes extends CrowniclesPacket {
 	keycloakId!: string;
 
 	playerData!: {

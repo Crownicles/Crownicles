@@ -1,33 +1,33 @@
 import {
-	DraftBotPacket, PacketDirection, sendablePacket
-} from "../DraftBotPacket.js";
+	CrowniclesPacket, PacketDirection, sendablePacket
+} from "../CrowniclesPacket.js";
 import { ItemNature } from "../../constants/ItemConstants";
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
-export class CommandDailyBonusPacketReq extends DraftBotPacket {
+export class CommandDailyBonusPacketReq extends CrowniclesPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandDailyBonusNoActiveObject extends DraftBotPacket {
+export class CommandDailyBonusNoActiveObject extends CrowniclesPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandDailyBonusInCooldown extends DraftBotPacket {
+export class CommandDailyBonusInCooldown extends CrowniclesPacket {
 	timeBetweenDailies!: number;
 
 	lastDailyTimestamp!: number;
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandDailyBonusObjectIsActiveDuringFights extends DraftBotPacket {
+export class CommandDailyBonusObjectIsActiveDuringFights extends CrowniclesPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandDailyBonusObjectDoNothing extends DraftBotPacket {
+export class CommandDailyBonusObjectDoNothing extends CrowniclesPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandDailyBonusPacketRes extends DraftBotPacket {
+export class CommandDailyBonusPacketRes extends CrowniclesPacket {
 	value!: number;
 
 	itemNature!: ItemNature;

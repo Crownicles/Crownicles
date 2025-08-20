@@ -2,7 +2,7 @@ import Guild from "../../../../core/database/game/models/Guild";
 import {
 	ExecuteTestCommandLike, ITestCommand
 } from "../../../../core/CommandsTest";
-import { draftBotInstance } from "../../../../index";
+import { crowniclesInstance } from "../../../../index";
 
 export const commandInfo: ITestCommand = {
 	name: "forceguildowner",
@@ -18,7 +18,7 @@ const forceGuildOwnerTestCommand: ExecuteTestCommandLike = async player => {
 	if (!guild) {
 		throw new Error("Erreur forceguildowner : vous n'êtes pas dans une guilde !");
 	}
-	draftBotInstance.logsDatabase.logGuildChiefChange(guild, player.id).then();
+	crowniclesInstance.logsDatabase.logGuildChiefChange(guild, player.id).then();
 	guild.chiefId = player.id;
 	await guild.save();
 	return `Vous êtes maintenant chef de votre guilde (Guilde ${guild.name}) !`;

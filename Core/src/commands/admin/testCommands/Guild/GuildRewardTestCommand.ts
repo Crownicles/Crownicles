@@ -4,7 +4,7 @@ import {
 	ExecuteTestCommandLike, ITestCommand, TypeKey
 } from "../../../../core/CommandsTest";
 import { CommandGuildDailyPacketReq } from "../../../../../../Lib/src/packets/commands/CommandGuildDailyPacket";
-import { makePacket } from "../../../../../../Lib/src/packets/DraftBotPacket";
+import { makePacket } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import GuildDailyCommand from "../../../guild/GuildDailyCommand";
 
 let stringDesc = "Force un gd avec une sortie donnée. Liste des sorties possibles : ";

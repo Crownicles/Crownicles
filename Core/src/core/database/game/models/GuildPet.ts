@@ -3,7 +3,7 @@ import {
 } from "sequelize";
 import PetEntity from "./PetEntity";
 import Guild from "./Guild";
-import { draftBotInstance } from "../../../../index";
+import { crowniclesInstance } from "../../../../index";
 
 // skipcq: JS-C1003 - moment does not expose itself as an ES Module.
 import * as moment from "moment";
@@ -32,7 +32,7 @@ export class GuildPets {
 	 */
 	static addPet(guild: Guild, petEntity: PetEntity, logInDatabase: boolean): GuildPet {
 		if (logInDatabase) {
-			draftBotInstance.logsDatabase.logGuildNewPet(guild, petEntity)
+			crowniclesInstance.logsDatabase.logGuildNewPet(guild, petEntity)
 				.then();
 		}
 		return GuildPet.build({

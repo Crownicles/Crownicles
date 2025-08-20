@@ -4,12 +4,12 @@ import {
 } from "../../../../Lib/src/packets/commands/CommandClassesPacket";
 import {
 	makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import { ICommand } from "../ICommand";
 import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
 import { DiscordCache } from "../../bot/DiscordCache";
 import i18n from "../../translations/i18n";
-import { DraftBotEmbed } from "../../messages/DraftBotEmbed";
+import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import {
 	ReactionCollectorCreationPacket,
 	ReactionCollectorRefuseReaction
@@ -32,19 +32,22 @@ import {
 	StringSelectMenuInteraction,
 	StringSelectMenuOptionBuilder
 } from "discord.js";
-import { DraftBotIcons } from "../../../../Lib/src/DraftBotIcons";
-import { DraftbotInteraction } from "../../messages/DraftbotInteraction";
+import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
+import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
 import { sendInteractionNotForYou } from "../../utils/ErrorUtils";
 import { dateDisplay } from "../../../../Lib/src/utils/TimeUtils";
 import { PacketUtils } from "../../utils/PacketUtils";
 import { ReactionCollectorResetTimerPacketReq } from "../../../../Lib/src/packets/interaction/ReactionCollectorResetTimer";
-import { DiscordCollectorUtils } from "../../utils/DiscordCollectorUtils";
+import {
+	DiscordCollectorUtils,
+	disableRows
+} from "../../utils/DiscordCollectorUtils";
 import { escapeUsername } from "../../utils/StringUtils";
 
 /**
  * Get the packet
  */
-async function getPacket(interaction: DraftbotInteraction): Promise<CommandClassesPacketReq> {
+async function getPacket(interaction: CrowniclesInteraction): Promise<CommandClassesPacketReq> {
 	await interaction.deferReply();
 	return makePacket(CommandClassesPacketReq, {});
 }
@@ -68,7 +71,7 @@ export async function handleCommandClassesChangeSuccessPacket(packet: CommandCla
 
 	await interaction.editReply({
 		embeds: [
-			new DraftBotEmbed()
+			new CrowniclesEmbed()
 				.formatAuthor(title, interaction.user)
 				.setDescription(description)
 		]
@@ -87,7 +90,7 @@ export async function handleChangeClassReactionCollector(context: PacketContext,
 	const classesReactions = packet.reactions.filter(reaction => reaction.type === ReactionCollectorChangeClassReaction.name)
 		.map(reaction => reaction.data) as ReactionCollectorChangeClassReaction[];
 
-	const mainEmbed = new DraftBotEmbed()
+	const mainEmbed = new CrowniclesEmbed()
 		.setTitle(i18n.t("commands:classes.title", { lng }))
 		.setDescription(i18n.t("commands:classes.desc", { lng }))
 		.addFields(classesReactions.map(reaction => ({
@@ -106,13 +109,13 @@ export async function handleChangeClassReactionCollector(context: PacketContext,
 		selectMenu.addOptions(new StringSelectMenuOptionBuilder()
 			.setLabel(i18n.t(`models:classes.${reaction.classId}`, { lng }))
 			.setValue(reaction.classId.toString())
-			.setEmoji(parseEmoji(DraftBotIcons.classes[reaction.classId])!));
+			.setEmoji(parseEmoji(CrowniclesIcons.classes[reaction.classId])!));
 	}
 
 	selectMenu.addOptions(new StringSelectMenuOptionBuilder()
 		.setLabel(i18n.t("commands:classes.refuse", { lng }))
 		.setValue(refuseCustomId)
-		.setEmoji(parseEmoji(DraftBotIcons.collectors.refuse)!));
+		.setEmoji(parseEmoji(CrowniclesIcons.collectors.refuse)!));
 
 	mainEmbedRow.addComponents(selectMenu);
 
@@ -134,9 +137,12 @@ export async function handleChangeClassReactionCollector(context: PacketContext,
 		}
 
 		await selectMenuInteraction.deferReply();
+
+		disableRows([mainEmbedRow]);
+
 		await msg.edit({
 			embeds: [mainEmbed],
-			components: []
+			components: [mainEmbedRow]
 		});
 
 		const selectedOption = selectMenuInteraction.values[0];
@@ -157,7 +163,7 @@ export async function handleChangeClassReactionCollector(context: PacketContext,
 
 		const classDetails = data.classesDetails.find(details => details.id === parseInt(selectedOption, 10))!;
 
-		const validateClassChangeEmbed = new DraftBotEmbed()
+		const validateClassChangeEmbed = new CrowniclesEmbed()
 			.formatAuthor(i18n.t("commands:classes.confirm", {
 				lng,
 				pseudo: escapeUsername(interaction.user.displayName)
@@ -184,11 +190,11 @@ export async function handleChangeClassReactionCollector(context: PacketContext,
 
 		const validateRow = new ActionRowBuilder<ButtonBuilder>()
 			.addComponents(new ButtonBuilder()
-				.setEmoji(parseEmoji(DraftBotIcons.collectors.accept)!)
+				.setEmoji(parseEmoji(CrowniclesIcons.collectors.accept)!)
 				.setCustomId(acceptCustomId)
 				.setStyle(ButtonStyle.Secondary))
 			.addComponents(new ButtonBuilder()
-				.setEmoji(parseEmoji(DraftBotIcons.collectors.refuse)!)
+				.setEmoji(parseEmoji(CrowniclesIcons.collectors.refuse)!)
 				.setCustomId(refuseCustomId)
 				.setStyle(ButtonStyle.Secondary));
 
@@ -228,15 +234,27 @@ export async function handleChangeClassReactionCollector(context: PacketContext,
 		});
 
 		validateCollector.on("end", async () => {
+			const disabledRow = new ActionRowBuilder<ButtonBuilder>();
+			validateRow.components.forEach(component => {
+				const button = ButtonBuilder.from(component).setDisabled(true);
+				disabledRow.addComponents(button);
+			});
+
 			await validateMsg.edit({
-				components: []
+				components: [disabledRow]
 			});
 		});
 	});
 
 	selectCollector.on("end", async () => {
+		const disabledRow = new ActionRowBuilder<StringSelectMenuBuilder>();
+		mainEmbedRow.components.forEach(component => {
+			const selectMenu = StringSelectMenuBuilder.from(component).setDisabled(true);
+			disabledRow.addComponents(selectMenu);
+		});
+
 		await msg.edit({
-			components: []
+			components: [disabledRow]
 		});
 		if (validateCollector && !validateCollector.ended) {
 			validateCollector.stop();

@@ -1,10 +1,10 @@
 import { packetHandler } from "../PacketHandler";
 import { ItemAcceptPacket } from "../../../../Lib/src/packets/events/ItemAcceptPacket";
-import { PacketContext } from "../../../../Lib/src/packets/DraftBotPacket";
+import { PacketContext } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { ItemFoundPacket } from "../../../../Lib/src/packets/events/ItemFoundPacket";
 import { ItemRefusePacket } from "../../../../Lib/src/packets/events/ItemRefusePacket";
 import { DiscordCache } from "../../bot/DiscordCache";
-import { DraftBotEmbed } from "../../messages/DraftBotEmbed";
+import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import i18n from "../../translations/i18n";
 import { DisplayUtils } from "../../utils/DisplayUtils";
 import { ItemCategory } from "../../../../Lib/src/constants/ItemConstants";
@@ -18,7 +18,7 @@ export default class ItemHandler {
 			return;
 		}
 		const lng = interaction.userLanguage;
-		const menuEmbed = new DraftBotEmbed()
+		const menuEmbed = new CrowniclesEmbed()
 			.formatAuthor(i18n.t("commands:inventory.acceptedTitle", {
 				lng,
 				pseudo: escapeUsername(interaction.user.displayName)
@@ -36,7 +36,7 @@ export default class ItemHandler {
 		const lng = interaction.userLanguage;
 		await interaction.channel.send({
 			embeds: [
-				new DraftBotEmbed()
+				new CrowniclesEmbed()
 					.formatAuthor(i18n.t("commands:inventory.randomItemTitle", {
 						lng,
 						pseudo: escapeUsername(interaction.user.displayName)
@@ -54,7 +54,7 @@ export default class ItemHandler {
 			return;
 		}
 
-		const menuEmbed = new DraftBotEmbed();
+		const menuEmbed = new CrowniclesEmbed();
 		const lng = interaction.userLanguage;
 		if (packet.item.category !== ItemCategory.POTION) {
 			menuEmbed

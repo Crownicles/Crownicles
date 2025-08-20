@@ -1,7 +1,7 @@
-import { DraftBotLogger } from "../../../Lib/src/logs/DraftBotLogger";
+import { CrowniclesLogger } from "../../../Lib/src/logs/CrowniclesLogger";
 import { KeycloakUtils } from "../../../Lib/src/keycloak/KeycloakUtils";
 import { keycloakConfig } from "../index";
-import { PacketContext } from "../../../Lib/src/packets/DraftBotPacket";
+import { PacketContext } from "../../../Lib/src/packets/CrowniclesPacket";
 import { ContextConstants } from "../constants/ContextConstants";
 import { RightGroup } from "../../../Lib/src/types/RightGroup";
 import { MqttManager } from "../mqtt/MqttManager";
@@ -29,13 +29,13 @@ function handleClientMessage(ws: WebSocket, keycloakId: string, groups: string[]
 		}
 
 		if (!parsedMessage.name || !parsedMessage.data) {
-			DraftBotLogger.debug("Invalid message format", { parsedMessage });
+			CrowniclesLogger.debug("Invalid message format", { parsedMessage });
 			return;
 		}
 
 		const translator = getClientTranslator(parsedMessage.name);
 		if (!translator) {
-			DraftBotLogger.debug("No translator found for message", { parsedMessage });
+			CrowniclesLogger.debug("No translator found for message", { parsedMessage });
 			return;
 		}
 
@@ -53,7 +53,7 @@ function handleClientMessage(ws: WebSocket, keycloakId: string, groups: string[]
 			MqttManager.globalMqttClient.sendToBackEnd(context, await translator(context, parsedMessage.data));
 		}
 		catch (error) {
-			DraftBotLogger.errorWithObj("Error while sending MQTT message", error);
+			CrowniclesLogger.errorWithObj("Error while sending MQTT message", error);
 		}
 	});
 }
@@ -82,7 +82,7 @@ export class WebSocketServer {
 	 */
 	static start(port: number): void {
 		if (WebSocketServer.server) {
-			DraftBotLogger.warn("WebSocket server already started");
+			CrowniclesLogger.warn("WebSocket server already started");
 			return;
 		}
 
@@ -99,7 +99,7 @@ export class WebSocketServer {
 	 */
 	private static handleListening(port: number): void {
 		WebSocketServer.server.on("listening", () => {
-			DraftBotLogger.info("WebSocket server started", {
+			CrowniclesLogger.info("WebSocket server started", {
 				port
 			});
 		});
@@ -133,7 +133,7 @@ export class WebSocketServer {
 
 				// Handle the close event
 				ws.on("close", () => {
-					DraftBotLogger.info("Client disconnected", {
+					CrowniclesLogger.info("Client disconnected", {
 						ip: req.socket.remoteAddress,
 						port: req.socket.remotePort,
 						keycloakId
@@ -142,7 +142,7 @@ export class WebSocketServer {
 				});
 			}
 			catch (error) {
-				DraftBotLogger.errorWithObj("Error during WebSocket connection", error);
+				CrowniclesLogger.errorWithObj("Error during WebSocket connection", error);
 			}
 		});
 	}
@@ -179,7 +179,7 @@ export class WebSocketServer {
 		}
 
 		// Log the connection
-		DraftBotLogger.info("New client connected", {
+		CrowniclesLogger.info("New client connected", {
 			ip: req.socket.remoteAddress,
 			port: req.socket.remotePort,
 			keycloakId
@@ -218,7 +218,7 @@ export class WebSocketServer {
 			client.send(JSON.stringify(packets));
 		}
 		else {
-			DraftBotLogger.warn("Client not found", { keycloakId });
+			CrowniclesLogger.warn("Client not found", { keycloakId });
 		}
 	}
 }

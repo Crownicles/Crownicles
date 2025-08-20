@@ -7,8 +7,8 @@ import {
 	ReactionCollectorReactPacket
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import {
-	DraftBotPacket, makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, makePacket, PacketContext
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import { BlockingUtils } from "./BlockingUtils";
 import { Constants } from "../../../../Lib/src/constants/Constants";
 import { PacketUtils } from "./PacketUtils";
@@ -18,11 +18,11 @@ import {
 	ReactionCollectorResetTimerPacketReq,
 	ReactionCollectorResetTimerPacketRes
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorResetTimer";
-import { DraftBotLogger } from "../../../../Lib/src/logs/DraftBotLogger";
+import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 
-export type CollectCallback = (collector: ReactionCollectorInstance, reaction: ReactionCollectorReaction, keycloakId: string, response: DraftBotPacket[]) => void | Promise<void>;
+export type CollectCallback = (collector: ReactionCollectorInstance, reaction: ReactionCollectorReaction, keycloakId: string, response: CrowniclesPacket[]) => void | Promise<void>;
 
-export type EndCallback = (collector: ReactionCollectorInstance, response: DraftBotPacket[]) => void | Promise<void>;
+export type EndCallback = (collector: ReactionCollectorInstance, response: CrowniclesPacket[]) => void | Promise<void>;
 
 type FilterFunction = (collector: ReactionCollectorInstance, keycloakId: string, reactionIndex: number) => boolean | Promise<boolean>;
 
@@ -110,13 +110,13 @@ export class ReactionCollectorInstance {
 		return this._context;
 	}
 
-	public async react(keycloakId: string, index: number, response: DraftBotPacket[]): Promise<void> {
+	public async react(keycloakId: string, index: number, response: CrowniclesPacket[]): Promise<void> {
 		if (!this._creationPacket) {
 			throw "Reaction collector has not been built yet";
 		}
 
 		if (this.hasEnded) {
-			DraftBotLogger.warn("Reaction received after the collector has ended");
+			CrowniclesLogger.warn("Reaction received after the collector has ended");
 			return;
 		}
 
@@ -141,7 +141,7 @@ export class ReactionCollectorInstance {
 		await this.end();
 	}
 
-	public async end(response: DraftBotPacket[] = null): Promise<void> {
+	public async end(response: CrowniclesPacket[] = null): Promise<void> {
 		const isResponseProvided = response !== null;
 		if (this.hasEnded) {
 			return;
@@ -183,7 +183,7 @@ export class ReactionCollectorInstance {
 		}
 
 		// Register
-		this.id = RandomUtils.draftbotRandom.uuid4();
+		this.id = RandomUtils.crowniclesRandom.uuid4();
 		collectors.set(this.id, this);
 		this.endTimeout = setTimeout(this.endByTime.bind(this), this.endTime - Date.now());
 
@@ -203,7 +203,7 @@ export class ReactionCollectorInstance {
 }
 
 export class ReactionCollectorController {
-	public static async reactPacket(response: DraftBotPacket[], packet: ReactionCollectorReactPacket): Promise<void> {
+	public static async reactPacket(response: CrowniclesPacket[], packet: ReactionCollectorReactPacket): Promise<void> {
 		const collector: ReactionCollectorInstance = collectors.get(packet.id);
 		if (!collector || collector.hasEnded) {
 			const packet: ReactionCollectorEnded = makePacket(ReactionCollectorEnded, {});
@@ -214,7 +214,7 @@ export class ReactionCollectorController {
 		}
 	}
 
-	public static resetTimer(response: DraftBotPacket[], packet: ReactionCollectorResetTimerPacketReq): void {
+	public static resetTimer(response: CrowniclesPacket[], packet: ReactionCollectorResetTimerPacketReq): void {
 		const collector: ReactionCollectorInstance = collectors.get(packet.reactionCollectorId);
 		if (collector && !collector.hasEnded) {
 			collector.resetTimer();

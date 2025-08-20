@@ -1,0 +1,83 @@
+name: TypeScript Compilation Check
+
+on:
+  pull_request:
+    branches: [ '**' ]
+    paths: [ Lib/**, Discord/**, Core/**, RestWs/**, .github/workflows/** ]
+  push:
+    branches: [ develop, master ]
+    paths: [ Lib/**, Discord/**, Core/**, RestWs/**, .github/workflows/** ]
+  workflow_dispatch:
+
+jobs:
+  typescript-compilation:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup PNPM
+        run: |
+          npm install --global corepack@latest
+          corepack enable
+          corepack use pnpm@latest-10
+
+      - name: Cache PNPM dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            **/node_modules
+          key: ${{ runner.os }}-compilation-deps-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-compilation-deps-
+
+      - name: Install dependencies for all modules
+        run: |
+          echo "Installing Lib dependencies..."
+          pnpm --dir ./Lib install
+          echo "Installing Discord dependencies..."
+          pnpm --dir ./Discord install
+          echo "Installing Core dependencies..."
+          pnpm --dir ./Core install
+          echo "Installing RestWs dependencies..."
+          pnpm --dir ./RestWs install
+
+      - name: TypeScript compilation check for Lib
+        run: |
+          echo "Checking TypeScript compilation for Lib module..."
+          pnpm --dir ./Lib tsc --noEmit
+        continue-on-error: false
+
+      - name: TypeScript compilation check for Discord
+        run: |
+          cd Discord
+          pnpm run interface
+          echo "Checking TypeScript compilation for Discord module..."
+          pnpm tsc --noEmit
+        continue-on-error: false
+
+      - name: TypeScript compilation check for Core
+        run: |
+          echo "Checking TypeScript compilation for Core module..."
+          pnpm --dir ./Core tsc --noEmit
+        continue-on-error: false
+
+      - name: TypeScript compilation check for RestWs
+        run: |
+          echo "Checking TypeScript compilation for RestWs module..."
+          pnpm --dir ./RestWs tsc --noEmit
+        continue-on-error: false
+
+      - name: Summary
+        if: success()
+        run: |
+          echo "✅ All modules compiled successfully!"
+          echo "- Lib: ✅"
+          echo "- Discord: ✅"
+          echo "- Core: ✅"
+          echo "- RestWs: ✅"

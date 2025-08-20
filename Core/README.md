@@ -1,2 +1,3 @@
 # Core
-Repository for the core of draftbot
+
+Repository for the core of Crownicles

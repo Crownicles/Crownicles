@@ -1,21 +1,21 @@
-import { DraftbotInteraction } from "../../messages/DraftbotInteraction";
+import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
 import {
 	CommandMapDisplayRes, CommandMapPacketReq
 } from "../../../../Lib/src/packets/commands/CommandMapPacket";
 import {
 	makePacket, PacketContext
-} from "../../../../Lib/src/packets/DraftBotPacket";
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import { ICommand } from "../ICommand";
 import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
 import { DiscordCache } from "../../bot/DiscordCache";
-import { DraftBotEmbed } from "../../messages/DraftBotEmbed";
+import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import i18n from "../../translations/i18n";
 import { MapConstants } from "../../../../Lib/src/constants/MapConstants";
-import { DraftBotIcons } from "../../../../Lib/src/DraftBotIcons";
+import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 import { EmoteUtils } from "../../utils/EmoteUtils";
 import { escapeUsername } from "../../utils/StringUtils";
 
-function getPacket(interaction: DraftbotInteraction): CommandMapPacketReq {
+function getPacket(interaction: CrowniclesInteraction): CommandMapPacketReq {
 	return makePacket(CommandMapPacketReq, { language: interaction.userLanguage });
 }
 
@@ -24,7 +24,7 @@ function getPacket(interaction: DraftbotInteraction): CommandMapPacketReq {
  * @param embed
  * @param mapLink
  */
-async function setEmbedMap(embed: DraftBotEmbed, mapLink: {
+async function setEmbedMap(embed: CrowniclesEmbed, mapLink: {
 	name: string;
 	fallback?: string;
 	forced: boolean;
@@ -70,7 +70,7 @@ export async function handleCommandMapDisplayRes(packet: CommandMapDisplayRes, c
 		return;
 	}
 	const lng = interaction.userLanguage;
-	const embed = new DraftBotEmbed().formatAuthor(i18n.t("commands:map.title", {
+	const embed = new CrowniclesEmbed().formatAuthor(i18n.t("commands:map.title", {
 		lng,
 		pseudo: escapeUsername(interaction.user.displayName)
 	}), interaction.user);
@@ -88,7 +88,7 @@ export async function handleCommandMapDisplayRes(packet: CommandMapDisplayRes, c
 		lng,
 		destination: mapName,
 		particle: mapParticle,
-		emote: EmoteUtils.translateEmojiToDiscord(DraftBotIcons.mapTypes[packet.mapType]),
+		emote: EmoteUtils.translateEmojiToDiscord(CrowniclesIcons.mapTypes[packet.mapType]),
 		description: mapDescription
 	}));
 	await interaction.reply({ embeds: [embed] });

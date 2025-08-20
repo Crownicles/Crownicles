@@ -3,7 +3,7 @@ import {
 	CommandMissionPlayerNotFoundPacket,
 	CommandMissionsPacketRes
 } from "../../../../../../Lib/src/packets/commands/CommandMissionsPacket";
-import { PacketContext } from "../../../../../../Lib/src/packets/DraftBotPacket";
+import { PacketContext } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	handleCommandMissionPlayerNotFoundPacket,
 	handleCommandMissionsPacketRes

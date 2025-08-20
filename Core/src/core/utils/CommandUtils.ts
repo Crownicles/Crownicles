@@ -1,7 +1,7 @@
 import Player, { Players } from "../database/game/models/Player";
 import {
-	DraftBotPacket, makePacket, PacketContext, PacketLike
-} from "../../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, makePacket, PacketContext, PacketLike
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import { Effect } from "../../../../Lib/src/types/Effect";
 import { RightGroup } from "../../../../Lib/src/types/RightGroup";
 import { RequirementEffectPacket } from "../../../../Lib/src/packets/commands/requirements/RequirementEffectPacket";
@@ -12,12 +12,12 @@ import { RequirementGuildNeededPacket } from "../../../../Lib/src/packets/comman
 import { RequirementGuildRolePacket } from "../../../../Lib/src/packets/commands/requirements/RequirementGuildRolePacket";
 import { RequirementRightPacket } from "../../../../Lib/src/packets/commands/requirements/RequirementRightPacket";
 import { BlockingUtils } from "./BlockingUtils";
-import { draftBotInstance } from "../../index";
+import { crowniclesInstance } from "../../index";
 import { ErrorBannedPacket } from "../../../../Lib/src/packets/commands/ErrorPacket";
 import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
 import { MapCache } from "../maps/MapCache";
 import { RequirementWherePacket } from "../../../../Lib/src/packets/commands/requirements/RequirementWherePacket";
-import { DraftBotLogger } from "../../../../Lib/src/logs/DraftBotLogger";
+import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 
 type Requirements = {
 	disallowedEffects?: Effect[];
@@ -64,7 +64,7 @@ export abstract class CommandUtils {
 	 * @param allowedEffects
 	 * @param disallowedEffects
 	 */
-	static checkEffects(player: Player, response: DraftBotPacket[], allowedEffects: Effect[], disallowedEffects: Effect[]): boolean {
+	static checkEffects(player: Player, response: CrowniclesPacket[], allowedEffects: Effect[], disallowedEffects: Effect[]): boolean {
 		const playerEffect = player.effectId === Effect.NOT_STARTED.id || player.effectRemainingTime() > 0 ? Effect.getById(player.effectId) : Effect.NO_EFFECT;
 
 		if (disallowedEffects.includes(playerEffect)) {
@@ -92,7 +92,7 @@ export abstract class CommandUtils {
 	 * @param response
 	 * @param guildRoleNeeded
 	 */
-	static async verifyGuildRequirements(player: Player, response: DraftBotPacket[], guildRoleNeeded: GuildRole): Promise<boolean> {
+	static async verifyGuildRequirements(player: Player, response: CrowniclesPacket[], guildRoleNeeded: GuildRole): Promise<boolean> {
 		let guild;
 		try {
 			guild = await Guilds.getById(player.guildId);
@@ -131,7 +131,7 @@ export abstract class CommandUtils {
 	 * @param response
 	 * @param requirements
 	 */
-	static async verifyCommandRequirements(player: Player, context: PacketContext, response: DraftBotPacket[], requirements: RequirementsWithoutBlocked): Promise<boolean> {
+	static async verifyCommandRequirements(player: Player, context: PacketContext, response: CrowniclesPacket[], requirements: RequirementsWithoutBlocked): Promise<boolean> {
 		if (!CommandUtils.checkEffects(player, response, requirements.allowedEffects ?? [], requirements.disallowedEffects ?? [])) {
 			return false;
 		}
@@ -166,7 +166,7 @@ export abstract class CommandUtils {
 	 * @param player
 	 * @param response
 	 */
-	static verifyStartedAndNotDead(player: Player, response: DraftBotPacket[]): Promise<boolean> {
+	static verifyStartedAndNotDead(player: Player, response: CrowniclesPacket[]): Promise<boolean> {
 		return CommandUtils.verifyCommandRequirements(player, {
 			frontEndOrigin: "", frontEndSubOrigin: ""
 		}, response, {
@@ -180,7 +180,7 @@ export abstract class CommandUtils {
 	 * @param player
 	 * @param response
 	 */
-	static verifyNoEffect(player: Player, response: DraftBotPacket[]): Promise<boolean> {
+	static verifyNoEffect(player: Player, response: CrowniclesPacket[]): Promise<boolean> {
 		return CommandUtils.verifyCommandRequirements(player, {
 			frontEndOrigin: "", frontEndSubOrigin: ""
 		}, response, {
@@ -194,7 +194,7 @@ export abstract class CommandUtils {
 	 * @param player
 	 * @param response
 	 */
-	static verifyStarted(player: Player, response: DraftBotPacket[]): Promise<boolean> {
+	static verifyStarted(player: Player, response: CrowniclesPacket[]): Promise<boolean> {
 		return CommandUtils.verifyCommandRequirements(player, {
 			frontEndOrigin: "", frontEndSubOrigin: ""
 		}, response, {
@@ -206,7 +206,7 @@ export abstract class CommandUtils {
 	/**
 	 * Verify if the player is not dead (but can be not started)
 	 */
-	static verifyNotDead(player: Player, response: DraftBotPacket[]): Promise<boolean> {
+	static verifyNotDead(player: Player, response: CrowniclesPacket[]): Promise<boolean> {
 		return CommandUtils.verifyCommandRequirements(player, {
 			frontEndOrigin: "", frontEndSubOrigin: ""
 		}, response, {
@@ -218,7 +218,7 @@ export abstract class CommandUtils {
 	/**
 	 * Verify if the command is allowed at the given location
 	 */
-	static verifyWhereAllowed(mapLinkId: number, response: DraftBotPacket[], whereAllowed: WhereAllowed[]): boolean {
+	static verifyWhereAllowed(mapLinkId: number, response: CrowniclesPacket[], whereAllowed: WhereAllowed[]): boolean {
 		if (!mapLinkId || whereAllowed === CommandUtils.WHERE.EVERYWHERE) {
 			return true;
 		}
@@ -251,7 +251,7 @@ export abstract class CommandUtils {
 		return allowed;
 	}
 
-	static verifyNotStartedWithoutPlayerInstance(requirements: Requirements, response: DraftBotPacket[]): boolean {
+	static verifyNotStartedWithoutPlayerInstance(requirements: Requirements, response: CrowniclesPacket[]): boolean {
 		if (requirements.disallowedEffects?.includes(Effect.NOT_STARTED) || (requirements.allowedEffects && !requirements.allowedEffects.includes(Effect.NOT_STARTED))
 		) {
 			response.push(makePacket(RequirementEffectPacket, {
@@ -265,18 +265,18 @@ export abstract class CommandUtils {
 	}
 }
 
-type WithPlayerPacketListenerCallbackServer<T extends DraftBotPacket> = (response: DraftBotPacket[], player: Player, packet: T, context: PacketContext) => void | Promise<void>;
+type WithPlayerPacketListenerCallbackServer<T extends CrowniclesPacket> = (response: CrowniclesPacket[], player: Player, packet: T, context: PacketContext) => void | Promise<void>;
 
-type WithoutPlayerPacketListenerCallbackServer<T extends DraftBotPacket> = (response: DraftBotPacket[], packet: T, context: PacketContext) => void | Promise<void>;
+type WithoutPlayerPacketListenerCallbackServer<T extends CrowniclesPacket> = (response: CrowniclesPacket[], packet: T, context: PacketContext) => void | Promise<void>;
 
 /**
  * Core command decorator to register a command handler with its requirements
  * @param packet
  * @param requirements
  */
-export const commandRequires = <T extends DraftBotPacket>(packet: PacketLike<T>, requirements: Requirements) =>
+export const commandRequires = <T extends CrowniclesPacket>(packet: PacketLike<T>, requirements: Requirements) =>
 	(target: unknown, prop: string, descriptor: TypedPropertyDescriptor<WithPlayerPacketListenerCallbackServer<T>>): void => {
-		draftBotInstance.packetListener.addPacketListener<T>(packet, async (response: DraftBotPacket[], context: PacketContext, packet: T): Promise<void> => {
+		crowniclesInstance.packetListener.addPacketListener<T>(packet, async (response: CrowniclesPacket[], context: PacketContext, packet: T): Promise<void> => {
 			let player = await Players.getByKeycloakId(context.keycloakId);
 
 			// If the player is not registered, verify if the command is allowed to be executed and register the player if it is
@@ -303,12 +303,12 @@ export const commandRequires = <T extends DraftBotPacket>(packet: PacketLike<T>,
 			}
 			await descriptor.value(response, player, packet, context);
 		});
-		DraftBotLogger.info(`[${packet.name}] Registered packet handler (function '${prop}' in class '${target!.constructor.name}')`);
+		CrowniclesLogger.info(`[${packet.name}] Registered packet handler (function '${prop}' in class '${target!.constructor.name}')`);
 	};
 
-export const adminCommand = <T extends DraftBotPacket>(packet: PacketLike<T>, verifyRightGroups: (context: PacketContext, packet: T) => boolean) =>
+export const adminCommand = <T extends CrowniclesPacket>(packet: PacketLike<T>, verifyRightGroups: (context: PacketContext, packet: T) => boolean) =>
 	(target: unknown, prop: string, descriptor: TypedPropertyDescriptor<WithoutPlayerPacketListenerCallbackServer<T>>): void => {
-		draftBotInstance.packetListener.addPacketListener<T>(packet, async (response: DraftBotPacket[], context: PacketContext, packet: T): Promise<void> => {
+		crowniclesInstance.packetListener.addPacketListener<T>(packet, async (response: CrowniclesPacket[], context: PacketContext, packet: T): Promise<void> => {
 			if (!verifyRightGroups(context, packet)) {
 				response.push(makePacket(RequirementRightPacket, {}));
 				return;
@@ -316,5 +316,5 @@ export const adminCommand = <T extends DraftBotPacket>(packet: PacketLike<T>, ve
 
 			await descriptor.value(response, packet, context);
 		});
-		DraftBotLogger.info(`[${packet.name}] Registered admin packet handler (function '${prop}' in class '${target!.constructor.name}')`);
+		CrowniclesLogger.info(`[${packet.name}] Registered admin packet handler (function '${prop}' in class '${target!.constructor.name}')`);
 	};

@@ -8,7 +8,7 @@ import {
 	CommandJoinBoatRefusePacketRes,
 	CommandJoinBoatTooManyRunsPacketRes
 } from "../../../../../../Lib/src/packets/commands/CommandJoinBoatPacket";
-import { PacketContext } from "../../../../../../Lib/src/packets/DraftBotPacket";
+import { PacketContext } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	handleClassicError, replyEphemeralErrorMessage
 } from "../../../../utils/ErrorUtils";

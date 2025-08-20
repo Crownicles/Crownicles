@@ -33,7 +33,7 @@
   },
   "invite": {
     "description": "Ajouter le bot sur votre serveur.",
-    "name": "invitationdraftbot"
+    "name": "invitationcrownicles"
   },
   "language": {
     "description": "Changer la langue du bot pour vos prochaines intéractions.",

@@ -2,8 +2,8 @@ import {
 	CommandMapDisplayRes, CommandMapPacketReq
 } from "../../../../Lib/src/packets/commands/CommandMapPacket";
 import {
-	DraftBotPacket, makePacket
-} from "../../../../Lib/src/packets/DraftBotPacket";
+	CrowniclesPacket, makePacket
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import { Player } from "../../core/database/game/models/Player";
 import { MapLocation } from "../../data/MapLocation";
 import { Language } from "../../../../Lib/src/Language";
@@ -65,7 +65,7 @@ export class MapCommand {
 		disallowedEffects: CommandUtils.DISALLOWED_EFFECTS.NOT_STARTED_OR_DEAD,
 		whereAllowed: CommandUtils.WHERE.EVERYWHERE
 	})
-	execute(response: DraftBotPacket[], player: Player, packet: CommandMapPacketReq): void {
+	execute(response: CrowniclesPacket[], player: Player, packet: CommandMapPacketReq): void {
 		const hasArrived = Maps.isArrived(player, new Date());
 		const destinationMap = player.getDestination();
 
