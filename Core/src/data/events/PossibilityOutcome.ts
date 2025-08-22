@@ -528,7 +528,7 @@ async function isPetTypeValid(validPetTypeIds: number[] | undefined, player: Pla
 
 	// Get the player's pet and check if its type is in the valid list
 	const petEntity = await PetEntities.getById(player.petId);
-	return validPetTypeIds.includes(petEntity.typeId);
+	return petEntity && validPetTypeIds.includes(petEntity.typeId);
 }
 
 /**
