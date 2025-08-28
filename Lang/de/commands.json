@@ -241,7 +241,7 @@
         "description": "Zeigt den Lagerort für die Missionen an."
       },
       "NOTIFICATIONS": {
-        "description": "Ermöglicht Ihnen, den Empfang von Bot-Benachrichtigungen einzustellen. Sie können festlegen, ob Sie Benachrichtigungen (und wo sie angezeigt werden) für Berichte und/oder Gildenbelohnungen erhalten möchten."
+        "description": "Ermöglicht Ihnen, den Empfang von Bot-Benachrichtigungen einzustellen. Sie können festlegen, ob Sie Benachrichtigungen (und wo sie angezeigt werden) für Berichte, Gildenbelohnungen, Entlassungen aus dem Gefängnis, Angriffe anderer Spieler, Gildenausschlüsse und Statusänderungen innerhalb der Gilde erhalten möchten."
       },
       "PET": {
         "description": "Zeigt Informationen zu Ihrem Begleiter an."

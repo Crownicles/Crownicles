@@ -241,7 +241,7 @@
         "description": "Display the mission's shop."
       },
       "NOTIFICATIONS": {
-        "description": "Allows you to set up the reception of bot notifications. You can choose to receive notifications (and determine where to display them) for reports and/or guild rewards."
+        "description": "Allows you to set up the reception of bot notifications. You can choose to receive notifications (and determine where to display them) for reports, guild rewards, prison releases, attacks by other players, guild exclusions, and guild status changes."
       },
       "PET": {
         "description": "Show information about your pet."

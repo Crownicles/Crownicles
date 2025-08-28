@@ -241,7 +241,7 @@
         "description": "Muestra la tienda de la misión."
       },
       "NOTIFICATIONS": {
-        "description": "Te permite configurar cómo quieres recibir las notificaciones de los bots. Puedes elegir si quieres recibir notificaciones (y dónde mostrarlas) de informes y/o recompensas del gremio."
+        "description": "Te permite configurar cómo quieres recibir las notificaciones de los bots. Puedes elegir si quieres recibir notificaciones (y dónde mostrarlas) de informes, recompensas del gremio, puestas en libertad, ataques de otros jugadores, exclusiones del gremio y cambios de estatus dentro del gremio."
       },
       "PET": {
         "description": "Muestra información sobre su mascota."
