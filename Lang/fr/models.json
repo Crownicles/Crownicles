@@ -390,7 +390,7 @@
       "name_other": "Attaques boue brûlante"
     },
     "heavyAttack": {
-      "description": "Échoue si le défenseur dispose de moins de défense que l'attaquant. La défense de l'ennemi est réduite de 25%.",
+      "description": "Fonctionne mieux si le lanceur est reposé. La défense de l'ennemi est réduite lors des premières utilisations.",
       "name_one": "Attaque lourde",
       "name_other": "Attaques lourdes"
     },
