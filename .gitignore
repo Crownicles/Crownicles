@@ -8,6 +8,7 @@
 **/coverage
 **/config/config.toml
 **/test-results.xml
+**/package-lock.json
 .run
 mqtt5
 bdd

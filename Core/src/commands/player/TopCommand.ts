@@ -40,7 +40,7 @@ async function getTopScore(initiator: Player, page: number, timing: TopTiming): 
 	const minRank = (page - 1) * TopConstants.PLAYERS_PER_PAGE + 1;
 	const maxRank = Math.min(page * TopConstants.PLAYERS_PER_PAGE, totalElements);
 	const rank = timing === TopTiming.WEEK
-		? initiator.weeklyScore > 0
+		? initiator.weeklyScore > Constants.MINIMAL_PLAYER_SCORE
 			? await Players.getWeeklyRankById(initiator.id)
 			: -1
 		: initiator.score <= Constants.MINIMAL_PLAYER_SCORE
