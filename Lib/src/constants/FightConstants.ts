@@ -1,7 +1,7 @@
 export abstract class FightConstants {
 	static readonly RARE_SUB_TEXT_INTRO = 0.001; // Chance of having a rare subtext in the fight intro message (1=100%)
 
-	static readonly MAX_TURNS = 24;
+	static readonly MAX_TURNS = 26;
 
 	static readonly REQUIRED_LEVEL = 8;
 
