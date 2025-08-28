@@ -27,12 +27,12 @@ class PaladinFightBehavior implements ClassBehavior {
 		const usedUltimateAttacks = me.fightActionsHistory.filter(action => action.id === FightConstants.FIGHT_ACTIONS.PLAYER.ULTIMATE_ATTACK).length;
 		const divineAndUltimateAttacksUsed = usedGodMoves >= 2 && usedUltimateAttacks > 0;
 
-		if (this.shouldUseDivineAttack(me, fightView, opponent, usedGodMoves, usedUltimateAttacks)) {
-			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.DIVINE_ATTACK);
-		}
-
 		if (this.shouldUseUltimateAttack(me, usedUltimateAttacks)) {
 			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.CHARGE_ULTIMATE_ATTACK);
+		}
+
+		if (this.shouldUseDivineAttack(me, fightView, opponent, usedGodMoves, usedUltimateAttacks)) {
+			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.DIVINE_ATTACK);
 		}
 
 		if (this.shouldUseShieldAttack(me, opponent, divineAndUltimateAttacksUsed)) {
@@ -75,7 +75,7 @@ class PaladinFightBehavior implements ClassBehavior {
 		}
 
 		const opponentLastActionId = opponent.getLastFightActionUsed() ? opponent.getLastFightActionUsed().id : null;
-		const isOpponentDivine = opponentLastActionId === FightConstants.FIGHT_ACTIONS.PLAYER.DIVINE_ATTACK;
+		const isLastOpponentAttackIsDivineAttack = opponentLastActionId === FightConstants.FIGHT_ACTIONS.PLAYER.DIVINE_ATTACK;
 		const isOpponentPaladinType = opponent.player.class === ClassConstants.CLASSES_ID.PALADIN
 			|| opponent.player.class === ClassConstants.CLASSES_ID.LUMINOUS_PALADIN;
 		const isOpponentKnightType = opponent.player.class === ClassConstants.CLASSES_ID.KNIGHT
@@ -85,11 +85,15 @@ class PaladinFightBehavior implements ClassBehavior {
 			|| opponent.player.class === ClassConstants.CLASSES_ID.ESQUIRE;
 
 		return (
-			isOpponentDivine && usedGodMoves < 2
-			|| usedUltimateAttacks === 1 && usedGodMoves < 2
-			|| isOpponentKnightType && RandomUtils.crowniclesRandom.bool(0.2) && usedGodMoves === 0
+			(usedUltimateAttacks === 1
+				|| (RandomUtils.crowniclesRandom.bool(0.4)
+					&& fightView.fightController.turn > 13)
+			)
+			|| (isOpponentKnightType && RandomUtils.crowniclesRandom.bool(0.2)
+				&& usedGodMoves === 0
+				&& fightView.fightController.turn > 3)
 			|| isOpponentPaladinType
-			&& (isOpponentDivine || RandomUtils.crowniclesRandom.bool(0.2))
+			&& (isLastOpponentAttackIsDivineAttack || RandomUtils.crowniclesRandom.bool(0.2))
 			&& usedGodMoves < 2
 			&& fightView.fightController.turn >= 8
 		);
@@ -107,6 +111,7 @@ class PaladinFightBehavior implements ClassBehavior {
 		const ultimateAttackBreathCost = FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.CHARGE_ULTIMATE_ATTACK);
 		return me.getEnergy() < me.getMaxEnergy() * 0.45
 			&& me.getBreath() >= ultimateAttackBreathCost
+			&& RandomUtils.crowniclesRandom.bool(0.80)
 			&& usedUltimateAttacks === 0;
 	}
 
@@ -125,12 +130,19 @@ class PaladinFightBehavior implements ClassBehavior {
 		opponent: PlayerFighter | AiPlayerFighter,
 		divineAndUltimateAttacksUsed: boolean
 	): boolean {
-		const breathRange = Math.round(opponent.getBreath() / opponent.getMaxBreath() * 5 / 3);
+		const breathRange = Math.round(opponent.getBreath() / opponent.getMaxBreath() * 3);
 		return (
 			!opponent.hasFightAlteration()
 			&& (me.getBreath() > 18 || divineAndUltimateAttacksUsed)
+			&& me.getBreath() >= FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.SHIELD_ATTACK)
 			&& (
-				opponent.getLastFightActionUsed()?.id === FightConstants.FIGHT_ACTIONS.PLAYER.CHARGE_CHARGING_ATTACK
+				opponent.getLastFightActionUsed()?.id === FightConstants.FIGHT_ACTIONS.PLAYER.RESTING && (
+					opponent.player.class === ClassConstants.CLASSES_ID.KNIGHT
+					|| opponent.player.class === ClassConstants.CLASSES_ID.VALIANT_KNIGHT
+					|| opponent.player.class === ClassConstants.CLASSES_ID.HORSE_RIDER
+					|| opponent.player.class === ClassConstants.CLASSES_ID.PIKEMAN
+				)
+				|| opponent.getLastFightActionUsed()?.id === FightConstants.FIGHT_ACTIONS.PLAYER.CHARGE_CHARGING_ATTACK
 				|| opponent.getLastFightActionUsed()?.id === FightConstants.FIGHT_ACTIONS.PLAYER.CHARGE_ULTIMATE_ATTACK
 				|| opponent.getDefense() > me.getDefense() * 0.9 && RandomUtils.crowniclesRandom.bool([
 					0.05,

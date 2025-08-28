@@ -116,8 +116,17 @@ class VeteranFightBehavior implements ClassBehavior {
 
 			if (
 				actionId === FightConstants.FIGHT_ACTIONS.PLAYER.CHARGE_ULTIMATE_ATTACK
-				|| (actionId === FightConstants.FIGHT_ACTIONS.PLAYER.CANON_ATTACK && opponent.getBreath() >= 2)
+				|| (actionId === FightConstants.FIGHT_ACTIONS.PLAYER.CANON_ATTACK
+					&& opponent.getBreath() >= 2)
 				|| actionId === FightConstants.FIGHT_ACTIONS.PLAYER.CHARGE_CHARGING_ATTACK
+				|| (actionId === FightConstants.FIGHT_ACTIONS.PLAYER.RESTING
+					&& (
+						opponent.player.class === ClassConstants.CLASSES_ID.KNIGHT
+						|| opponent.player.class === ClassConstants.CLASSES_ID.VALIANT_KNIGHT
+						|| opponent.player.class === ClassConstants.CLASSES_ID.HORSE_RIDER
+						|| opponent.player.class === ClassConstants.CLASSES_ID.PIKEMAN
+					)
+					&& RandomUtils.crowniclesRandom.bool(0.6))
 			) {
 				return true;
 			}

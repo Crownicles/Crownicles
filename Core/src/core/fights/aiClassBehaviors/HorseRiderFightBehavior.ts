@@ -6,6 +6,7 @@ import {
 } from "../../../data/FightAction";
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
 import { simpleOrQuickAttack } from "./EsquireFightBehavior";
+import { RandomUtils } from "../../../../../Lib/src/utils/RandomUtils";
 
 class HorseRiderFightBehavior implements ClassBehavior {
 	private restCount = 0; // Track how many times we've rested
@@ -28,15 +29,19 @@ class HorseRiderFightBehavior implements ClassBehavior {
 			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.RESTING);
 		}
 
-		// REST WHEN NEEDED: Not enough breath for actions (only if we haven't rested 4 times)
-		if (me.getBreath() < 2 && this.restCount < 4) {
-			this.restCount++;
-			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.RESTING);
+		// Heavy attacks if the opponent has more defense and we have enough breath
+		if ((me.getLastFightActionUsed() && me.getLastFightActionUsed().id === FightConstants.FIGHT_ACTIONS.PLAYER.RESTING
+				|| RandomUtils.crowniclesRandom.bool(0.1))
+			&& me.getBreath() >= 7) {
+			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.HEAVY_ATTACK);
 		}
 
-		// Heavy attacks if the opponent has more defense and we have enough breath
-		if (opponent.getDefense() > me.getDefense() && me.getBreath() >= 7) {
-			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.HEAVY_ATTACK);
+		if (me.getBreath() > 4
+			&& me.getEnergy() < (me.getMaxEnergy() * 0.9)
+			&& RandomUtils.crowniclesRandom.bool(0.9)
+			&& this.restCount < 4) {
+			this.restCount++;
+			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.RESTING);
 		}
 
 		return simpleOrQuickAttack(me, opponent);

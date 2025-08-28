@@ -18,14 +18,16 @@ class KnightFightBehavior implements ClassBehavior {
 
 	private restCount = 0;
 
+	private heavyAttackCount = 0;
+
 	chooseAction(me: AiPlayerFighter, fightView: FightView): FightAction {
 		const opponent = fightView.fightController.getDefendingFighter() as AiPlayerFighter | PlayerFighter;
 		const currentRound = fightView.fightController.turn;
 
-		// Initialize defense tracking on first round
 		if (currentRound <= 2) {
 			this.blessRoundChosen = RandomUtils.randInt(8, 14); // Choose when to use benediction
-			this.restCount = 0; // Reset rest counter at the beginning of a fight
+			this.restCount = 0;
+			this.heavyAttackCount = 0;
 			this.blessUsed = false;
 		}
 
@@ -47,7 +49,7 @@ class KnightFightBehavior implements ClassBehavior {
 		const shouldTryBless =
 			!this.blessUsed && getUsedGodMoves(me, opponent) < 1 && (
 				(currentRound >= this.blessRoundChosen)
-				|| (opponentIsPaladin && RandomUtils.crowniclesRandom.bool(0.3))
+				|| (opponentIsPaladin && RandomUtils.crowniclesRandom.bool(0.2))
 			);
 
 		if (shouldTryBless) {
@@ -63,15 +65,26 @@ class KnightFightBehavior implements ClassBehavior {
 			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.BENEDICTION);
 		}
 
-		// REST WHEN NEEDED: Not enough breath for actions (only if we haven't rested 4 times)
-		if (me.getBreath() < 2 && this.restCount < 4) {
-			this.restCount++;
-			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.RESTING);
+		// HEAVY ATTACK STRATEGY: Use after resting or randomly (10% chance) if we have enough breath and haven't used it too often
+		if ((me.getLastFightActionUsed() && me.getLastFightActionUsed().id === FightConstants.FIGHT_ACTIONS.PLAYER.RESTING
+				|| RandomUtils.crowniclesRandom.bool(0.1))
+			|| (this.restCount > 4 && this.heavyAttackCount < 3)
+			&& me.getBreath() >= 7) {
+			this.heavyAttackCount++;
+			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.HEAVY_ATTACK);
 		}
 
-		// Heavy attacks if the opponent has more defense and we have enough breath
-		if (opponent.getDefense() > me.getDefense() && me.getBreath() >= 7) {
-			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.HEAVY_ATTACK);
+		// REST STRATEGY: Rest if breath is above 4 but energy is below 90%, and we haven't rested too often
+		if ((me.getBreath() > 10 || RandomUtils.crowniclesRandom.bool(0.2) || this.blessUsed)
+			&& me.getBreath() >= 4
+			&& opponent.getEnergy() > 250
+			&& this.blessRoundChosen - 2 !== currentRound
+			&& this.blessRoundChosen - 1 !== currentRound
+			&& me.getEnergy() < (me.getMaxEnergy() * 0.9)
+			&& RandomUtils.crowniclesRandom.bool(0.9)
+			&& this.restCount < 4) {
+			this.restCount++;
+			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.RESTING);
 		}
 
 		return simpleOrQuickAttack(me, opponent);
