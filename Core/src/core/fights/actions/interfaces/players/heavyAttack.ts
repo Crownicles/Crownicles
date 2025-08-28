@@ -26,7 +26,7 @@ const use: FightActionFunc = (sender, receiver, fightAction) => {
 	const heavyAttackUsageCount = sender.fightActionsHistory.filter(action =>
 		action.id === FightConstants.FIGHT_ACTIONS.PLAYER.HEAVY_ATTACK).length;
 
-	// Apply defense reduction based on usage count (0.8, 0.85, 0.9, 0.95, then 1.0)
+	// Apply defense reduction based on usage count (0.8, 0.9, 0.95, then 1.0)
 	const defenseMultipliers = [
 		0.8,
 		0.9,
