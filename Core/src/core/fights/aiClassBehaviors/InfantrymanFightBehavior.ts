@@ -18,7 +18,10 @@ class InfantryManFightBehavior implements ClassBehavior {
 	private isOpponentCharging(opponent: PlayerFighter | AiPlayerFighter): boolean {
 		const opponentLastAction = opponent.getLastFightActionUsed();
 		return opponentLastAction && (
-			opponentLastAction.id === FightConstants.FIGHT_ACTIONS.PLAYER.CHARGE_ULTIMATE_ATTACK
+			(opponentLastAction.id === FightConstants.FIGHT_ACTIONS.PLAYER.RESTING
+				&& this.isOpponentKnightLike(opponent)
+				&& RandomUtils.crowniclesRandom.bool(0.6))
+			|| opponentLastAction.id === FightConstants.FIGHT_ACTIONS.PLAYER.CHARGE_ULTIMATE_ATTACK
 			|| (opponentLastAction.id === FightConstants.FIGHT_ACTIONS.PLAYER.CANON_ATTACK && opponent.getBreath() >= 2)
 			|| opponentLastAction.id === FightConstants.FIGHT_ACTIONS.PLAYER.CHARGE_CHARGING_ATTACK
 		);
@@ -42,7 +45,7 @@ class InfantryManFightBehavior implements ClassBehavior {
 	 * Determines if the opponent is not a knight-like class.
 	 * @param opponent
 	 */
-	private isOpponentNotKnightLike(opponent: PlayerFighter | AiPlayerFighter): boolean {
+	private isOpponentKnightLike(opponent: PlayerFighter | AiPlayerFighter): boolean {
 		const knightLikeClasses = [
 			ClassConstants.CLASSES_ID.KNIGHT,
 			ClassConstants.CLASSES_ID.VALIANT_KNIGHT,
@@ -50,13 +53,13 @@ class InfantryManFightBehavior implements ClassBehavior {
 			ClassConstants.CLASSES_ID.PIKEMAN,
 			ClassConstants.CLASSES_ID.ESQUIRE
 		];
-		return !knightLikeClasses.includes(opponent.player.class);
+		return knightLikeClasses.includes(opponent.player.class);
 	}
 
 	private shouldUseChargingAttack(me: AiPlayerFighter, opponent: PlayerFighter | AiPlayerFighter, fightView: FightView, powerfulAttacksUsed: number): boolean {
 		return this.isOpponentCharging(opponent)
 			|| (this.hasTacticalAdvantage(me, opponent, fightView, powerfulAttacksUsed)
-				&& this.isOpponentNotKnightLike(opponent));
+				&& !this.isOpponentKnightLike(opponent));
 	}
 
 	chooseAction(me: AiPlayerFighter, fightView: FightView): FightAction {

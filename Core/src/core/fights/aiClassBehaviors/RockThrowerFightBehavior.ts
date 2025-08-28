@@ -6,6 +6,9 @@ import {
 } from "../../../data/FightAction";
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
 import { Fighter } from "../fighter/Fighter";
+import { RandomUtils } from "../../../../../Lib/src/utils/RandomUtils";
+import { ClassConstants } from "../../../../../Lib/src/constants/ClassConstants";
+import { PlayerFighter } from "../fighter/PlayerFighter";
 
 /**
  * Determines whether the AI should use a boomerang attack
@@ -20,6 +23,8 @@ export function shouldUseBoomerang(
 	isGoingForChainedCanonAttack: boolean
 ): boolean {
 	return !opponent.hasFightAlteration()
+		&& (opponent.getSpeed() > me.getSpeed() * 0.6
+			|| RandomUtils.crowniclesRandom.bool(0.22))
 		&& !isGoingForChainedCanonAttack
 		&& me.getBreath() >= FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.BOOMERANG_ATTACK);
 }
@@ -33,7 +38,7 @@ export function shouldUseBoomerang(
  * @returns True if fighter should start a canon attack sequence, false otherwise
  */
 export function shouldStartCanonSequence(
-	opponent: Fighter,
+	opponent: PlayerFighter,
 	me: AiPlayerFighter,
 	canonAttackUsed: number,
 	isGoingForChainedCanonAttack: boolean
@@ -41,11 +46,16 @@ export function shouldStartCanonSequence(
 	return !isGoingForChainedCanonAttack
 		&& canonAttackUsed === 0
 		&& opponent.getEnergy() > 400
-		&& me.getSpeed() * 0.75 > opponent.getSpeed()
-		&& opponent.hasFightAlteration()
+		&& (me.getSpeed() * 0.75 > opponent.getSpeed()
+			|| (me.getBreath() >= 10 // If ai is not able to use boomerang, be more lenient on speed requirement
+				&& opponent.hasFightAlteration()
+				&& opponent.alteration.id !== FightConstants.FIGHT_ACTIONS.ALTERATION.TARGETED))
+		&& (opponent.player.class !== ClassConstants.CLASSES_ID.MYSTIC_MAGE
+			|| (opponent.player.class === ClassConstants.CLASSES_ID.MYSTIC_MAGE
+				&& me.hasFightAlteration()))
 
-		// Need enough breath for at least two consecutive canon attacks
-		&& me.getBreath() >= FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.CANON_ATTACK) + 2;
+		// Need enough breath for at least three consecutive canon attacks
+		&& me.getBreath() >= FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.CANON_ATTACK) + 4;
 }
 
 /**
@@ -74,7 +84,7 @@ class RockThrowerFightBehavior implements ClassBehavior {
 	private canonAttackUsed = 0;
 
 	chooseAction(me: AiPlayerFighter, fightView: FightView): FightAction {
-		const opponent = fightView.fightController.getDefendingFighter();
+		const opponent = fightView.fightController.getDefendingFighter() as PlayerFighter;
 		const turn = fightView.fightController.turn;
 
 		// Continue a canon attack sequence if appropriate
@@ -93,15 +103,9 @@ class RockThrowerFightBehavior implements ClassBehavior {
 			this.isGoingForChainedCanonAttack = false;
 		}
 
-		// If opponent is very low health, finish them with any attack
+		// If opponent is very low health, finish them
 		if (opponent.getEnergy() <= opponent.getMaxEnergy() * 0.06) {
-			// Quick Attack is good for finishing off enemies if we have enough breath
-			if (me.getBreath() >= FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.QUICK_ATTACK)) {
-				return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.QUICK_ATTACK);
-			}
-
-			// Otherwise use canon attack as fallback
-			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.CANON_ATTACK);
+			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.QUICK_ATTACK);
 		}
 
 		// Play boomerang when possible if the opponent has no alteration

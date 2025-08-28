@@ -9,6 +9,7 @@ import {
 	shouldUseBoomerang, shouldStartCanonSequence, shouldContinueCanonSequence
 } from "./RockThrowerFightBehavior";
 import { Fighter } from "../fighter/Fighter";
+import { PlayerFighter } from "../fighter/PlayerFighter";
 
 /**
  * Determines if the AI should use sabotage attack based on speed comparison
@@ -27,7 +28,7 @@ class SlingerFightBehavior implements ClassBehavior {
 	private canonAttackUsed = 0;
 
 	chooseAction(me: AiPlayerFighter, fightView: FightView): FightAction {
-		const opponent = fightView.fightController.getDefendingFighter();
+		const opponent = fightView.fightController.getDefendingFighter() as PlayerFighter;
 		const turn = fightView.fightController.turn;
 
 		// Continue a canon attack sequence if appropriate
