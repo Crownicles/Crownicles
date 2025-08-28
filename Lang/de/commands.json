@@ -169,7 +169,7 @@
       },
       "FIGHT": {
         "description": "Verwenden Sie diesen Befehl, um andere Spieler, die sich auf demselben Server wie Sie befinden, zu detrieren.\nDie Kämpfe werden um die Reihe umgeleitet. In jeder Runde können Sie eine Aktion auswählen, die ausgeführt werden soll.\n\nFür weitere Informationen können Sie die Seite \"Guide\" auf der Seite \"https://guide.draftbot.com/notions-principale/combats\" anzeigen.",
-        "image": "https://draftbot.com/public/ressources/fighthelp/en/5.0.2.png"
+        "image": "https://draftbot.com/public/ressources/fighthelp/en/5.1.5.png"
       },
       "GLORY_TOP": {
         "description": "Zeigt die ruhmige Rangfolge des Spiels pro Schicht von 15 Spielern an. Die Liga der Spieler wird ebenfalls angezeigt. Spieler auf dem gleichen Server, die Sie mit einem blauen Pellet markiert haben."

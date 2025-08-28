@@ -169,7 +169,7 @@
       },
       "FIGHT": {
         "description": "Utiliza este comando para retar a otros jugadores que estén en el mismo servidor que tú.\nLas batallas tienen lugar turno a turno. En cada turno, puedes elegir una acción a realizar.\n\nPara más información, consulta la página de la guía: https://guide.draftbot.com/notions-principale/combats",
-        "image": "https://draftbot.com/public/ressources/fighthelp/en/5.0.2.png"
+        "image": "https://draftbot.com/public/ressources/fighthelp/en/5.1.5.png"
       },
       "GLORY_TOP": {
         "description": "Muestra la clasificación gloriosa del partido para cada 15 jugadores. También se muestra la liga de los jugadores. Los jugadores que están en el mismo servidor que tú aparecen marcados con un punto azul."
