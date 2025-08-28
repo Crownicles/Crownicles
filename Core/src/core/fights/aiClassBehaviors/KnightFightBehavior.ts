@@ -49,16 +49,19 @@ class KnightFightBehavior implements ClassBehavior {
 		const shouldTryBless =
 			!this.blessUsed && getUsedGodMoves(me, opponent) < 1 && (
 				(currentRound >= this.blessRoundChosen)
-				|| (opponentIsPaladin && RandomUtils.crowniclesRandom.bool(0.2))
+				|| (opponentIsPaladin
+					&& me.getLastFightActionUsed()?.id !== FightConstants.FIGHT_ACTIONS.PLAYER.RESTING // we don't want to break a resting + heavy combo
+					&& RandomUtils.crowniclesRandom.bool(0.22))
 			);
 
 		if (shouldTryBless) {
-			// Not enough breath for benediction? Rest first (only if we haven't rested 4 times)
+			// Not enough breath for benediction? Rest instead
 			if (me.getBreath() < 8) {
 				if (this.restCount < 4) {
 					this.restCount++;
 					return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.RESTING);
 				}
+				return simpleOrQuickAttack(me, opponent);
 			}
 
 			this.blessUsed = true;
@@ -66,10 +69,14 @@ class KnightFightBehavior implements ClassBehavior {
 		}
 
 		// HEAVY ATTACK STRATEGY: Use after resting or randomly (10% chance) if we have enough breath and haven't used it too often
-		if ((me.getLastFightActionUsed() && me.getLastFightActionUsed().id === FightConstants.FIGHT_ACTIONS.PLAYER.RESTING
-				|| RandomUtils.crowniclesRandom.bool(0.1))
-			|| (this.restCount > 4 && this.heavyAttackCount < 3)
-			&& me.getBreath() >= 7) {
+		if (
+			(
+				(me.getLastFightActionUsed()?.id === FightConstants.FIGHT_ACTIONS.PLAYER.RESTING
+					|| RandomUtils.crowniclesRandom.bool(0.1))
+				|| (this.restCount > 4 && this.heavyAttackCount < 3)
+			)
+			&& me.getBreath() >= 7
+		) {
 			this.heavyAttackCount++;
 			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.HEAVY_ATTACK);
 		}
