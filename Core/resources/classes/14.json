@@ -1,9 +1,9 @@
 {
   "attack": 65,
-  "defense": 55,
+  "defense": 40,
   "speed": 45,
   "health": 80,
-  "fightPoint": 130,
+  "fightPoint": 35,
   "baseBreath": 14,
   "maxBreath": 14,
   "breathRegen": 3,
