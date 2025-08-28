@@ -29,12 +29,11 @@ const use: FightActionFunc = (sender, receiver, fightAction) => {
 	// Apply defense reduction based on usage count (0.8, 0.85, 0.9, 0.95, then 1.0)
 	const defenseMultipliers = [
 		0.8,
-		0.85,
 		0.9,
 		0.95,
 		1.0
 	];
-	const defenseMultiplier = defenseMultipliers[Math.min(heavyAttackUsageCount, 4)];
+	const defenseMultiplier = defenseMultipliers[Math.min(heavyAttackUsageCount, 3)];
 
 	if (defenseMultiplier < 1.0) {
 		FightActionController.applyBuff(result, {

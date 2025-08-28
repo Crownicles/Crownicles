@@ -11,6 +11,8 @@ import { RandomUtils } from "../../../../../Lib/src/utils/RandomUtils";
 class HorseRiderFightBehavior implements ClassBehavior {
 	private restCount = 0; // Track how many times we've rested
 
+	private heavyAttackCount = 0;
+
 	chooseAction(me: AiPlayerFighter, fightView: FightView): FightAction {
 		const opponent = fightView.fightController.getDefendingFighter();
 		const currentRound = fightView.fightController.turn;
@@ -29,10 +31,16 @@ class HorseRiderFightBehavior implements ClassBehavior {
 			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.RESTING);
 		}
 
-		// Heavy attacks if the opponent has more defense and we have enough breath
-		if ((me.getLastFightActionUsed() && me.getLastFightActionUsed().id === FightConstants.FIGHT_ACTIONS.PLAYER.RESTING
-				|| RandomUtils.crowniclesRandom.bool(0.1))
-			&& me.getBreath() >= 7) {
+		// HEAVY ATTACK STRATEGY: Use after resting or randomly (10% chance) if we have enough breath and haven't used it too often
+		if (
+			(
+				(me.getLastFightActionUsed()?.id === FightConstants.FIGHT_ACTIONS.PLAYER.RESTING
+					|| RandomUtils.crowniclesRandom.bool(0.1))
+				|| (this.restCount > 4 && this.heavyAttackCount < 3)
+			)
+			&& me.getBreath() >= 7
+		) {
+			this.heavyAttackCount++;
 			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.HEAVY_ATTACK);
 		}
 
