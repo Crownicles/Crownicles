@@ -15,7 +15,7 @@ const use: FightActionFunc = (sender, receiver, fightAction) => {
 			receiver
 		},
 		{
-			critical: 35,
+			critical: 20,
 			failure: 8
 		},
 		{
@@ -30,7 +30,7 @@ const use: FightActionFunc = (sender, receiver, fightAction) => {
 			selfTarget: true,
 			stat: FightStatBuffed.BREATH,
 			operator: FightStatModifierOperation.ADDITION,
-			value: 2
+			value: 3
 		}, sender, fightAction);
 	}
 
@@ -46,9 +46,9 @@ export default use;
 
 function getAttackInfo(): attackInfo {
 	return {
-		minDamage: 30,
-		averageDamage: 50,
-		maxDamage: 110
+		minDamage: 40,
+		averageDamage: 60,
+		maxDamage: 130
 	};
 }
 
@@ -59,8 +59,8 @@ function getStatsInfo(sender: Fighter, receiver: Fighter): statsInfo {
 			receiver.getAttack()
 		],
 		defenderStats: [
-			0,
-			0
+			receiver.getDefense() * 0.15,
+			receiver.getDefense() * 0.05
 		],
 		statsEffect: [
 			0.5,
