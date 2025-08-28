@@ -8,10 +8,15 @@ import {
 	FightActionResult, FightStatBuffed
 } from "../../../../../../../Lib/src/types/FightActionResult";
 import { FightStatModifierOperation } from "../../../../../../../Lib/src/types/FightStatModifierOperation";
+import { MathUtils } from "../../../../utils/MathUtils";
 
 const use: FightActionFunc = (sender, receiver, fightAction) => {
 	const initialDamage = FightActionController.getAttackDamage(getStatsInfo(sender, receiver), sender, getAttackInfo());
-	const damageDealt = FightActionController.applySecondaryEffects(initialDamage, 0, 12);
+	const damageDealt = FightActionController.applySecondaryEffects(
+		initialDamage,
+		0,
+		MathUtils.getIntervalValue(2, 12, Math.max(0, Math.min(1, (sender.level - 90) / 40)))
+	);
 
 	/*
 	 * Check how many times the attack appears in the fight action history of the sender
