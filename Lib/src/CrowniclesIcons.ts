@@ -1641,7 +1641,8 @@ export const CrowniclesIcons: {
 		90: "🐸",
 		91: "🛰️",
 		92: "🪈",
-		93: "🥝"
+		93: "🥝",
+		94: "🧯"
 	},
 	potions: {
 		0: "⬛",
