@@ -5,7 +5,7 @@
     "10": "Heavy shield",
     "100": "Plot armor",
     "101": "Heat shield",
-    "102": "mythril armor",
+    "102": "Mythril armor",
     "103": "Faceplate",
     "104": "Faceplate protection 4",
     "105": "Cuirass",
@@ -390,7 +390,7 @@
       "name_other": "Burning mud attacks"
     },
     "heavyAttack": {
-      "description": "Fails if the defender has less defense than the attacker. The enemy's defense is reduced by 25%.",
+      "description": "Fonctionne mieux si le lanceur est reposé. La défense de l'ennemi est réduite lors des premières utilisations.",
       "name_one": "Heavy attack",
       "name_other": "Heavy attacks"
     },
