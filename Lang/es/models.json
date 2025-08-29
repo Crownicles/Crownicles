@@ -390,7 +390,7 @@
       "name_other": "Ataques de barro ardiente"
     },
     "heavyAttack": {
-      "description": "Falla si el defensor tiene menos defensa que el atacante. La defensa del enemigo se reduce un 25%.",
+      "description": "Fonctionne mieux si le lanceur est reposé. La défense de l'ennemi est réduite lors des premières utilisations.",
       "name_one": "Ataque pesado",
       "name_other": "Ataques fuertes"
     },
@@ -1385,7 +1385,8 @@
     "90": "Talismán de rana",
     "91": "Sputnik",
     "92": "Llamada del cuervo",
-    "93": "Tarjeta Kiwi"
+    "93": "Tarjeta Kiwi",
+    "94": "911"
   },
   "pets": {
     "0_female": "No se admiten animales",

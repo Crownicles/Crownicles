@@ -390,7 +390,7 @@
       "name_other": "Ataques de lama ardente"
     },
     "heavyAttack": {
-      "description": "Falha se o defensor tiver menos defesa do que o atacante. A defesa do inimigo é reduzida em 25%.",
+      "description": "Fonctionne mieux si le lanceur est reposé. La défense de l'ennemi est réduite lors des premières utilisations.",
       "name_one": "Ataque pesado",
       "name_other": "Ataques pesados"
     },
@@ -1385,7 +1385,8 @@
     "90": "Talismã de sapo",
     "91": "Sputnik",
     "92": "Chamada do corvo",
-    "93": "Cartão Kiwi"
+    "93": "Cartão Kiwi",
+    "94": "911"
   },
   "pets": {
     "0_female": "Sem animais de estimação",
