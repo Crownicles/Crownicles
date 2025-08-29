@@ -390,7 +390,7 @@
       "name_other": "Attacchi di fango bruciante"
     },
     "heavyAttack": {
-      "description": "Fallisce se il difensore ha meno difesa dell'attaccante. La difesa del nemico viene ridotta del 25%.",
+      "description": "Fonctionne mieux si le lanceur est reposé. La défense de l'ennemi est réduite lors des premières utilisations.",
       "name_one": "Attacco lordo",
       "name_other": "Attacchi lorde"
     },
