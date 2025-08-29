@@ -1,5 +1,5 @@
 {
-  "armorsFieldName": "Armadura/Escudo :",
+  "armorsFieldName": "Armadura/Escudo:",
   "attack": "{emote:unitValues.attack} {{value}}",
   "defense": "{emote:unitValues.defense} {{value}}",
   "nameDisplay": "{{itemCategory}}{emote: .{{itemId}}}$t(models:{{itemCategory}}.{{itemId}})** **",
