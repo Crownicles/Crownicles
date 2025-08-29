@@ -390,7 +390,7 @@
       "name_other": "Ataques de lama ardente"
     },
     "heavyAttack": {
-      "description": "Falha se o defensor tiver menos defesa do que o atacante. A defesa do inimigo é reduzida em 25%.",
+      "description": "Fonctionne mieux si le lanceur est reposé. La défense de l'ennemi est réduite lors des premières utilisations.",
       "name_one": "Ataque pesado",
       "name_other": "Ataques pesados"
     },
