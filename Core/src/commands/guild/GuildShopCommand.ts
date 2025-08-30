@@ -118,7 +118,7 @@ function getFoodShopItem(name: string, amounts: number[]): ShopItem {
 export default class GuildShopCommand {
 	@commandRequires(CommandGuildShopPacketReq, {
 		notBlocked: true,
-		disallowedEffects: CommandUtils.DISALLOWED_EFFECTS.NOT_STARTED_OR_DEAD_OR_JAILED,
+		disallowedEffects: CommandUtils.DISALLOWED_EFFECTS.NOT_STARTED_OR_DEAD_OR_JAILED_OR_WORKING,
 		guildNeeded: true,
 		whereAllowed: [WhereAllowed.CONTINENT]
 	})
