@@ -34,7 +34,7 @@
         }
       }
     },
-    "text": "Dans la pénombre de la Forêt Du Vieillard, vous progressez prudemment sur le sentier sinueux quand votre route est soudainement bloquée par un énorme chêne déraciné. L'arbre ancestral, dont le tronc fait bien deux mètres de diamètre et barre complètement le passage. Ses branches emmêlées forment un véritable mur végétal, et ses racines imposantes, encore chargées de terre, témoignent de la violence de sa chute récente."
+    "text": "Dans la pénombre de la Forêt Du Vieillard, vous progressez prudemment sur le sentier sinueux quand votre route est soudainement bloquée par un énorme chêne déraciné. L'arbre ancestral, dont le tronc fait bien deux mètres de diamètre barre complètement le passage. Ses branches emmêlées forment un véritable mur végétal, et ses racines imposantes, encore chargées de terre, témoignent de la violence de sa chute récente."
   },
   "10": {
     "possibilities": {
@@ -82,7 +82,7 @@
         }
       }
     },
-    "text": "Le grondement assourdissant de la Rivière Vacarme emplit l'air tandis que vous approchez de ses berges tumultueuses. Les eaux bouillonnantes charrient des branches et de l'écume, témoignant de la violence du cours d'eau. Sur un rocher instable au bord des rapides, un pêcheur âgé lutte désespérément contre son matériel : sa ligne semble prise dans un courant particulièrement fort, et l'homme peine visiblement à maintenir son équilibre face à la puissance de la rivière..."
+    "text": "Le grondement assourdissant de la Rivière Vacarme résonne dans l'atmosphère tandis que vous approchez de ses berges tumultueuses. Les eaux bouillonnantes charrient des branches et de l'écume, témoignant de la violence du cours d'eau. Sur un rocher instable au bord des rapides, un pêcheur âgé lutte désespérément contre son matériel : sa ligne semble prise dans un courant particulièrement fort, et l'homme peine visiblement à maintenir son équilibre face à la puissance de la rivière..."
   },
   "11": {
     "possibilities": {
@@ -715,8 +715,8 @@
       "end": {
         "outcomes": {
           "0": "Votre immobilité prolongée face à l'animal de plus en plus insistant près des ruines de l'auberge finit par l'agacer considérablement. Le chien, frustré par votre manque de réaction dans ce lieu chargé de souvenirs, vous mordille les jambes avec une insistance croissante près du seuil brisé. Votre passivité vous coûte cher : quelques blessures superficielles et une réputation ternie dans ces ruines qui semblent elles-mêmes témoigner de votre inaction.",
-          "1": "Votre inaction face au chien de plus en plus agité se révèle être une grave erreur de jugement dans les ruines de l'auberge ! L'animal, exaspéré par votre indifférence totale dans ce lieu chargé d'histoire et de nostalgie, vous attaque avec une sauvagerie inattendue près des décombres de la salle commune. N'ayant ni la prestance pour l'impressionner ni l'agilité pour l'éviter, vous subissez une morsure particulièrement vicieuse qui vous laisse pantelant au milieu des pavés brisés de l'ancienne cour.",
-          "2": "Votre propre compagnon canin observe la scène avec une gêne palpable depuis les ruines de l'auberge, visiblement honteux de votre inaction face à son congénère gardien de ces lieux abandonnés. Cette attitude passive ternit non seulement votre réputation, mais semble aussi décevoir profondément votre fidèle ami à quatre pattes qui détourne le regard vers les décombres, refusant de cautionner votre comportement dans ce lieu qui méritait plus de respect."
+          "1": "Votre inaction face au chien de plus en plus agité se révèle être une grave erreur de jugement ! L'animal, exaspéré par votre indifférence totale dans ce lieu chargé d'histoire et de nostalgie, vous attaque avec une sauvagerie inattendue près des décombres de la salle commune. N'ayant ni le charisme pour l'impressionner ni l'agilité pour l'éviter, vous subissez une morsure particulièrement vicieuse qui vous laisse pantelant au milieu des pavés.",
+          "2": "Votre chien observe la scène avec une gêne palpable, visiblement honteux de votre inaction face à son congénère gardien de ces lieux abandonnés. Il décide alors de le rejoindre, attiré par son énergie communicative, vous laissant seul au milieu de la rue. Pendant quelques minutes, vous entendez leur récréation d'une oreille, perdu dans vos pensées, lorsqu'un concert d'aboiements vous sort de votre torpeur. En jouant dans l'herbe parsemée de roches, les deux canidés ont déterré un bibelot qui attire votre attention. "
         }
       }
     },
