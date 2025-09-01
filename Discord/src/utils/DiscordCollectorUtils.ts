@@ -146,6 +146,10 @@ export class DiscordCollectorUtils {
 				refuse?: string;
 			};
 			notDeferReply?: boolean;
+			indexes?: {
+				accept?: number;
+				refuse?: number;
+			};
 		}
 	): Promise<ReactionCollectorReturnTypeOrNull> {
 		const emojis = {
@@ -231,15 +235,17 @@ export class DiscordCollectorUtils {
 						components: [row]
 					});
 				}
+
+				const reactionIndex = buttonInteraction.customId === acceptCustomId
+					? options?.indexes?.accept ?? reactionCollectorCreationPacket.reactions.findIndex(reaction => reaction.type === ReactionCollectorAcceptReaction.name)
+					: options?.indexes?.refuse ?? reactionCollectorCreationPacket.reactions.findIndex(reaction => reaction.type === ReactionCollectorRefuseReaction.name);
+
 				DiscordCollectorUtils.sendReaction(
 					reactionCollectorCreationPacket,
 					context,
 					getReactingPlayer.payload.keycloakId,
 					buttonInteraction,
-					reactionCollectorCreationPacket.reactions.findIndex(reaction =>
-						reaction.type === (buttonInteraction.customId === acceptCustomId
-							? ReactionCollectorAcceptReaction.name
-							: ReactionCollectorRefuseReaction.name))
+					reactionIndex
 				);
 			}
 			else {
