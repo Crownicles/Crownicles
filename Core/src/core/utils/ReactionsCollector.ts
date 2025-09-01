@@ -224,4 +224,14 @@ export class ReactionCollectorController {
 			}));
 		}
 	}
+
+	public static getCollectorsOfPlayer(keycloakId: string): ReactionCollectorInstance[] {
+		const result: ReactionCollectorInstance[] = [];
+		for (const collector of collectors.values()) {
+			if (!collector.hasEnded && collector.context.keycloakId === keycloakId) {
+				result.push(collector);
+			}
+		}
+		return result;
+	}
 }
