@@ -105,10 +105,10 @@ export class CommandReportBigEventResultRes extends CrowniclesPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandReportStayInCity extends DraftBotPacket {}
+export class CommandReportStayInCity extends CrowniclesPacket {}
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandReportChooseDestinationCityRes extends DraftBotPacket {
+export class CommandReportChooseDestinationCityRes extends CrowniclesPacket {
 	mapId!: number;
 
 	mapTypeId!: string;
