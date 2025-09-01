@@ -70,7 +70,7 @@ class PaladinFightBehavior implements ClassBehavior {
 		usedUltimateAttacks: number
 	): boolean {
 		const divineAttackBreathCost = FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.DIVINE_ATTACK);
-		if (me.getBreath() < divineAttackBreathCost) {
+		if (me.getBreath() < divineAttackBreathCost || usedGodMoves >= 2) {
 			return false;
 		}
 
@@ -94,7 +94,6 @@ class PaladinFightBehavior implements ClassBehavior {
 				&& fightView.fightController.turn > 3)
 			|| isOpponentPaladinType
 			&& (isLastOpponentAttackIsDivineAttack || RandomUtils.crowniclesRandom.bool(0.2))
-			&& usedGodMoves < 2
 			&& fightView.fightController.turn >= 8
 		);
 	}
