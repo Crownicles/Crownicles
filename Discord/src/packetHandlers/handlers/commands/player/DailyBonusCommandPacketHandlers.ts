@@ -1,8 +1,8 @@
 import { packetHandler } from "../../../PacketHandler";
 import {
+	CommandDailyBonusCancelPacket,
 	CommandDailyBonusInCooldown,
-	CommandDailyBonusNoActiveObject,
-	CommandDailyBonusObjectDoNothing, CommandDailyBonusObjectIsActiveDuringFights,
+	CommandDailyBonusNoAvailableObject,
 	CommandDailyBonusPacketRes
 } from "../../../../../../Lib/src/packets/commands/CommandDailyBonusPacket";
 import { PacketContext } from "../../../../../../Lib/src/packets/CrowniclesPacket";
@@ -17,19 +17,14 @@ export default class DailyBonusCommandPacketHandlers {
 		await handleDailyBonusRes(context, packet);
 	}
 
-	@packetHandler(CommandDailyBonusObjectDoNothing)
-	async dailyBonusObjectDoNothing(context: PacketContext, _packet: CommandDailyBonusObjectDoNothing): Promise<void> {
-		await handleClassicError(context, "commands:daily.errors.objectDoNothingError");
+	@packetHandler(CommandDailyBonusNoAvailableObject)
+	async dailyBonusObjectDoNothing(context: PacketContext, _packet: CommandDailyBonusNoAvailableObject): Promise<void> {
+		await handleClassicError(context, "commands:daily.errors.noAvailableObject");
 	}
 
-	@packetHandler(CommandDailyBonusObjectIsActiveDuringFights)
-	async dailyBonusObjectIsActiveDuringFights(context: PacketContext, _packet: CommandDailyBonusObjectIsActiveDuringFights): Promise<void> {
-		await handleClassicError(context, "commands:daily.errors.objectIsActiveDuringFights");
-	}
-
-	@packetHandler(CommandDailyBonusNoActiveObject)
-	async dailyBonusNoActiveObject(context: PacketContext, _packet: CommandDailyBonusNoActiveObject): Promise<void> {
-		await handleClassicError(context, "commands:daily.errors.noActiveObject");
+	@packetHandler(CommandDailyBonusCancelPacket)
+	async dailyBonusObjectIsActiveDuringFights(context: PacketContext, _packet: CommandDailyBonusCancelPacket): Promise<void> {
+		await handleClassicError(context, "commands:daily.errors.cancel");
 	}
 
 	@packetHandler(CommandDailyBonusInCooldown)

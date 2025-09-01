@@ -4,6 +4,7 @@ export abstract class BlockingConstants {
 		CHIEF_GUILD_LEAVE: "chiefGuildLeave",
 		CHOOSE_DESTINATION: "chooseDestination",
 		CLASS: "class",
+		DAILY_BONUS: "dailyBonus",
 		DRINK: "drink",
 		FIGHT: "fight",
 		FIGHT_CONFIRMATION: "fightConfirmation",

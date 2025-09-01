@@ -1,15 +1,14 @@
 import {
-	CrowniclesPacket, makePacket
+	CrowniclesPacket, makePacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { Player } from "../../core/database/game/models/Player";
 import {
 	commandRequires, CommandUtils
 } from "../../core/utils/CommandUtils";
 import {
+	CommandDailyBonusCancelPacket,
 	CommandDailyBonusInCooldown,
-	CommandDailyBonusNoActiveObject,
-	CommandDailyBonusObjectDoNothing,
-	CommandDailyBonusObjectIsActiveDuringFights,
+	CommandDailyBonusNoAvailableObject,
 	CommandDailyBonusPacketReq,
 	CommandDailyBonusPacketRes
 } from "../../../../Lib/src/packets/commands/CommandDailyBonusPacket";
@@ -17,33 +16,38 @@ import { InventorySlots } from "../../core/database/game/models/InventorySlot";
 import { crowniclesInstance } from "../../index";
 import { ObjectItem } from "../../data/ObjectItem";
 import { ItemNature } from "../../../../Lib/src/constants/ItemConstants";
-import { InventoryConstants } from "../../../../Lib/src/constants/InventoryConstants";
 import { InventoryInfos } from "../../core/database/game/models/InventoryInfo";
 import { millisecondsToHours } from "../../../../Lib/src/utils/TimeUtils";
 import { DailyConstants } from "../../../../Lib/src/constants/DailyConstants";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { TravelTime } from "../../core/maps/TravelTime";
 import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
+import { toItemWithDetails } from "../../core/utils/ItemUtils";
+import {
+	EndCallback, ReactionCollectorInstance
+} from "../../core/utils/ReactionsCollector";
+import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
+import {
+	ReactionCollectorDailyBonus,
+	ReactionCollectorDailyBonusReaction
+} from "../../../../Lib/src/packets/interaction/ReactionCollectorDailyBonus";
+import { ReactionCollectorRefuseReaction } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
+import { BlockingUtils } from "../../core/utils/BlockingUtils";
 
 /**
  * Check if the active object is wrong for the daily bonus
  * @param activeObject
- * @param response
  */
-function isWrongObjectForDaily(activeObject: ObjectItem, response: CrowniclesPacket[]): boolean {
+function isWrongObjectForDaily(activeObject: ObjectItem): boolean {
 	if (activeObject.nature === ItemNature.NONE) {
-		response.push(makePacket(activeObject.id === InventoryConstants.OBJECT_DEFAULT_ID ? CommandDailyBonusNoActiveObject : CommandDailyBonusObjectDoNothing, {}));
 		return true;
 	}
-	if ([
+
+	return [
 		ItemNature.SPEED,
 		ItemNature.DEFENSE,
 		ItemNature.ATTACK
-	].includes(activeObject.nature)) {
-		response.push(makePacket(CommandDailyBonusObjectIsActiveDuringFights, {}));
-		return true;
-	}
-	return false;
+	].includes(activeObject.nature);
 }
 
 /**
@@ -107,28 +111,70 @@ export default class DailyBonusCommand {
 	 * Handle the daily bonus command
 	 * @param response
 	 * @param player
+	 * @param _packet
+	 * @param context
 	 */
 	@commandRequires(CommandDailyBonusPacketReq, {
 		disallowedEffects: CommandUtils.DISALLOWED_EFFECTS.NOT_STARTED_OR_DEAD,
 		notBlocked: true,
 		whereAllowed: [WhereAllowed.CONTINENT]
 	})
-	async execute(response: CrowniclesPacket[], player: Player): Promise<void> {
-		const activeObjectSlot = await InventorySlots.getMainObjectSlot(player.id);
-		if (!activeObjectSlot) {
-			response.push(makePacket(CommandDailyBonusNoActiveObject, {}));
+	async execute(response: CrowniclesPacket[], player: Player, _packet: CrowniclesPacket, context: PacketContext): Promise<void> {
+		if (await dailyNotReady(player, response)) {
 			return;
 		}
 
-		const activeObject: ObjectItem = activeObjectSlot.getItem() as ObjectItem;
+		const usableObjects = (await InventorySlots.getOfPlayer(player.id)).filter(item => item.isObject() && !isWrongObjectForDaily(item.getItem() as ObjectItem));
 
-		if (isWrongObjectForDaily(activeObject, response) || await dailyNotReady(player, response)) {
+		if (usableObjects.length === 0) {
+			response.push(makePacket(CommandDailyBonusNoAvailableObject, {}));
 			return;
 		}
 
-		await activateDailyItem(player, activeObject, response);
-		crowniclesInstance.logsDatabase.logPlayerDaily(player.keycloakId, activeObject)
-			.then();
+		const equippedUsableObject = usableObjects.find(uo => uo.isEquipped());
+		if (equippedUsableObject) {
+			const item = equippedUsableObject.getItem() as ObjectItem;
+			await activateDailyItem(player, item, response);
+			crowniclesInstance.logsDatabase.logPlayerDaily(player.keycloakId, item)
+				.then();
+			return;
+		}
+
+		const collector = new ReactionCollectorDailyBonus(usableObjects.map(i => toItemWithDetails(i.getItem())));
+
+		const endCallback: EndCallback = async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
+			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.DAILY_BONUS);
+
+			const reaction = collector.getFirstReaction();
+			if (!reaction || reaction.reaction.type === ReactionCollectorRefuseReaction.name) {
+				response.push(makePacket(CommandDailyBonusCancelPacket, {}));
+				return;
+			}
+
+			const objectDetails = (reaction.reaction.data as ReactionCollectorDailyBonusReaction).object;
+			const objectItem = usableObjects.find(uo => uo.itemId === objectDetails.id && uo.itemCategory === objectDetails.category).getItem() as ObjectItem;
+			await activateDailyItem(
+				await player.reload(),
+				objectItem,
+				response
+			);
+			crowniclesInstance.logsDatabase.logPlayerDaily(player.keycloakId, objectItem)
+				.then();
+		};
+
+		const collectorPacket = new ReactionCollectorInstance(
+			collector,
+			context,
+			{
+				allowedPlayerKeycloakIds: [player.keycloakId],
+				reactionLimit: 1
+			},
+			endCallback
+		)
+			.block(player.keycloakId, BlockingConstants.REASONS.DAILY_BONUS)
+			.build();
+
+		response.push(collectorPacket);
 	}
 }
 

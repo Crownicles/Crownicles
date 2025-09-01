@@ -8,7 +8,7 @@ export class CommandDailyBonusPacketReq extends CrowniclesPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandDailyBonusNoActiveObject extends CrowniclesPacket {
+export class CommandDailyBonusNoAvailableObject extends CrowniclesPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
@@ -19,12 +19,7 @@ export class CommandDailyBonusInCooldown extends CrowniclesPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandDailyBonusObjectIsActiveDuringFights extends CrowniclesPacket {
-}
-
-@sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandDailyBonusObjectDoNothing extends CrowniclesPacket {
-}
+export class CommandDailyBonusCancelPacket extends CrowniclesPacket {}
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandDailyBonusPacketRes extends CrowniclesPacket {
