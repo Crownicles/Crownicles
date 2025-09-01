@@ -1039,19 +1039,24 @@
   },
   "daily": {
     "errors": {
-      "objectDoNothingError": "Vous tentez d'utiliser le pouvoir de l'objet que vous transportez... Mais cela n'a aucun effet !",
-      "objectIsActiveDuringFights": "Le pouvoir de l'objet que vous transportez est actif automatiquement durant les combats !",
-      "noActiveObject": "Vous n'avez malheureusement aucun objet actif dans votre inventaire !",
-      "cooldown": "Vous ne pouvez utiliser votre objet quotidien que toutes les {{cooldownTime}} heures. Revenez {{time}}."
+      "noAvailableObject": "Vous n'avez malheureusement aucun objet utilisable quotidiennement dans votre inventaire ! Les objects de combats ne peuvent pas être utilisés via cette commande.",
+      "cooldown": "Vous ne pouvez utiliser votre objet quotidien que toutes les {{cooldownTime}} heures. Revenez {{time}}.",
+      "cancel": "Vous avez annulé l'utilisation de votre objet quotidien."
     },
     "title": "{{pseudo}}, vous avez reçu votre récompense journalière !",
-    "description": "{emote:unitValues.{{nature}}} $t(commands:daily.natureText.{{nature}}) **{{value}}**!",
+    "description": "{emote:unitValues.{{nature}}} $t(commands:daily.natureText.{{nature}}) **{{value}}** !",
     "natureText": {
       "health": "Vie gagnée :",
       "energy": "Énergie gagnée :",
       "money": "Argent gagné :",
       "time": "Vous avez avancé de"
-    }
+    },
+    "collectorTitleOneObject": "{{pseudo}}, confirmation de votre récompense journalière !",
+    "collectorDescOneObject": "Voulez-vous utiliser votre objet quotidien ?\n\n{{object}}",
+    "collectorTitle": "{{pseudo}}, choix de votre récompense journalière !",
+    "collectorDesc": "Choisissez un objet à utiliser dans la liste ci-dessous :",
+    "collectorRefuseOption": "Annuler",
+    "menuPlaceholder": "Sélectionnez un objet"
   },
   "unlock": {
     "himself": "Vous ne pouvez pas vous libérer vous-même, demandez à un ami de le faire.",
