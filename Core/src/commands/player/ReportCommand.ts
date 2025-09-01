@@ -73,7 +73,9 @@ import { Effect } from "../../../../Lib/src/types/Effect";
 import { ReactionCollectorRefuseReaction } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { verifyPossibilityOutcomeCondition } from "../../data/events/PossibilityOutcomeCondition";
-import { CityDataController } from "../../data/City";
+import {
+	City, CityDataController
+} from "../../data/City";
 import {
 	ReactionCollectorCity,
 	ReactionCollectorExitCityReaction
@@ -111,7 +113,7 @@ export default class ReportCommand {
 
 		const city = CityDataController.instance.getCityByMapLinkId(player.mapLinkId);
 		if (city && currentEffectFinished) {
-			sendCityCollector(context, response, player, currentDate, forceSpecificEvent);
+			sendCityCollector(context, response, player, currentDate, city, forceSpecificEvent);
 			return;
 		}
 
@@ -176,11 +178,19 @@ function cityCollectorEndCallback(context: PacketContext, player: Player, forceS
 	};
 }
 
-function sendCityCollector(context: PacketContext, response: CrowniclesPacket[], player: Player, currentDate: Date, forceSpecificEvent: number): void {
+function sendCityCollector(context: PacketContext, response: CrowniclesPacket[], player: Player, currentDate: Date, city: City, forceSpecificEvent: number): void {
 	const collector = new ReactionCollectorCity({
 		timeInCity: TravelTime.getTravelDataSimplified(player, currentDate).playerTravelledTime,
 		mapTypeId: MapLocationDataController.instance.getById(player.getDestinationId()).type,
-		mapLocationId: player.getDestinationId()
+		mapLocationId: player.getDestinationId(),
+		inns: city.inns.map(inn => ({
+			innId: inn.id,
+			meals: city.getTodayInnMeals(inn).map(meal => ({
+				mealId: meal.id,
+				price: meal.price,
+				healthRestored: meal.healthRestored
+			}))
+		}))
 	});
 
 	const collectorPacket = new ReactionCollectorInstance(

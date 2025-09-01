@@ -12,6 +12,15 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 	mapLocationId!: number;
 
 	timeInCity!: number;
+
+	inns?: {
+		innId: string;
+		meals: {
+			mealId: string;
+			price: number;
+			healthRestored: number;
+		}[];
+	}[];
 }
 
 export class ReactionCollectorExitCityReaction extends ReactionCollectorReaction {}
