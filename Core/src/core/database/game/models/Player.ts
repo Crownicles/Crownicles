@@ -61,6 +61,7 @@ import { Badge } from "../../../../../../Lib/src/types/Badge";
 import * as moment from "moment";
 import { ClassConstants } from "../../../../../../Lib/src/constants/ClassConstants";
 import { ScheduledEnergyNotifications } from "./ScheduledEnergyNotification";
+import { EnergyFullNotificationPacket } from "../../../../../../Lib/src/packets/notifications/EnergyFullNotificationPacket";
 
 export type PlayerEditValueParameters = {
 	player: Player;
@@ -1662,13 +1663,16 @@ export function initModel(sequelize: Sequelize): void {
 				await ScheduledEnergyNotifications.bulkDelete([pendingEnergyNotification]);
 			}
 
-			if (instance.fightPointsLost > 0) {
+			if (pendingEnergyNotification && instance.fightPointsLost === 0) {
+				PacketUtils.sendNotifications([
+					makePacket(EnergyFullNotificationPacket, {
+						keycloakId: instance.keycloakId
+					})
+				]);
+			}
+			else if (instance.fightPointsLost > 0) {
 				const restoreEnergyEndDate = new Date(Date.now() + instance.getRestoreEnergyEndTime());
-				await ScheduledEnergyNotifications.scheduleNotification(
-					instance.id,
-					instance.keycloakId,
-					restoreEnergyEndDate
-				);
+				await ScheduledEnergyNotifications.scheduleNotification(instance.id, instance.keycloakId, restoreEnergyEndDate);
 			}
 		};
 

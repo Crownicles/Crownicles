@@ -148,6 +148,7 @@ export abstract class NotificationsTypes {
 		NotificationsTypes.PLAYER_FREED_FROM_JAIL,
 		NotificationsTypes.FIGHT_CHALLENGE,
 		NotificationsTypes.GUILD_KICK,
-		NotificationsTypes.GUILD_STATUS_CHANGE
+		NotificationsTypes.GUILD_STATUS_CHANGE,
+		NotificationsTypes.ENERGY
 	];
 }
