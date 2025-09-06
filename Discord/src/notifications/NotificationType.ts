@@ -34,6 +34,24 @@ export abstract class NotificationsTypes {
 		}
 	};
 
+	static ENERGY: NotificationType = {
+		emote: CrowniclesIcons.notifications.types.energy,
+		customId: "energy",
+		i18nKey: "commands:notifications.types.energy",
+		value: notificationsConfiguration => ({
+			enabled: notificationsConfiguration.energyEnabled,
+			sendType: notificationsConfiguration.energySendType,
+			channelId: notificationsConfiguration.energyChannelId
+		}),
+		toggleCallback: (notificationsConfiguration): void => {
+			notificationsConfiguration.energyEnabled = !notificationsConfiguration.energyEnabled;
+		},
+		changeSendTypeCallback: (notificationsConfiguration, sendType, channelId): void => {
+			notificationsConfiguration.energySendType = sendType;
+			notificationsConfiguration.energyChannelId = channelId;
+		}
+	};
+
 	static GUILD_DAILY: NotificationType = {
 		emote: CrowniclesIcons.notifications.types.guildDaily,
 		customId: "guildDaily",

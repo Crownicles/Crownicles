@@ -11,7 +11,7 @@ import {
 	daysToMilliseconds,
 	getOneDayAgo,
 	millisecondsToSeconds,
-	minutesToHours
+	minutesToHours, minutesToMilliseconds
 } from "../../../../../../Lib/src/utils/TimeUtils";
 import { TravelTime } from "../../../maps/TravelTime";
 import { ItemCategory } from "../../../../../../Lib/src/constants/ItemConstants";
@@ -60,6 +60,7 @@ import { Badge } from "../../../../../../Lib/src/types/Badge";
 // skipcq: JS-C1003 - moment does not expose itself as an ES Module.
 import * as moment from "moment";
 import { ClassConstants } from "../../../../../../Lib/src/constants/ClassConstants";
+import { ScheduledEnergyNotifications } from "./ScheduledEnergyNotification";
 
 export type PlayerEditValueParameters = {
 	player: Player;
@@ -731,6 +732,15 @@ export class Player extends Model {
 	public getMaxCumulativeEnergy(): number {
 		const playerClass = ClassDataController.instance.getById(this.class);
 		return playerClass.getMaxCumulativeEnergyValue(this.level);
+	}
+
+	public getRestoreEnergyEndTime(): number {
+		const missingEnergy = this.fightPointsLost;
+		if (missingEnergy > 0) {
+			const ticksNeeded = Math.ceil(missingEnergy / FightConstants.POINTS_REGEN_AMOUNT);
+			return minutesToMilliseconds(ticksNeeded * FightConstants.POINTS_REGEN_MINUTES);
+		}
+		return 0;
 	}
 
 	/**
@@ -1622,12 +1632,13 @@ export function initModel(sequelize: Sequelize): void {
 		}
 
 		const handleNotifications = async (): Promise<void> => {
+			// Report Notification
 			const now = new Date();
 			const travelEndDate = new Date(TravelTime.getTravelDataSimplified(instance, now).travelEndTime);
 			const destinationId = instance.getDestinationId();
-			const pendingNotification = await ScheduledReportNotifications.getPendingNotification(instance.id);
-			if (pendingNotification) {
-				await ScheduledReportNotifications.bulkDelete([pendingNotification]);
+			const pendingReportNotification = await ScheduledReportNotifications.getPendingNotification(instance.id);
+			if (pendingReportNotification) {
+				await ScheduledReportNotifications.bulkDelete([pendingReportNotification]);
 			}
 
 			if (travelEndDate > now) {
@@ -1635,14 +1646,29 @@ export function initModel(sequelize: Sequelize): void {
 				return;
 			}
 
-			if (pendingNotification && destinationId === pendingNotification.mapId) {
+			if (pendingReportNotification && destinationId === pendingReportNotification.mapId) {
 				PacketUtils.sendNotifications([
 					makePacket(ReachDestinationNotificationPacket, {
-						keycloakId: pendingNotification.keycloakId,
-						mapType: MapLocationDataController.instance.getById(pendingNotification.mapId).type,
-						mapId: pendingNotification.mapId
+						keycloakId: pendingReportNotification.keycloakId,
+						mapType: MapLocationDataController.instance.getById(pendingReportNotification.mapId).type,
+						mapId: pendingReportNotification.mapId
 					})
 				]);
+			}
+
+			// Energy Notification
+			const pendingEnergyNotification = await ScheduledEnergyNotifications.getPendingNotification(instance.id);
+			if (pendingEnergyNotification) {
+				await ScheduledEnergyNotifications.bulkDelete([pendingEnergyNotification]);
+			}
+
+			if (instance.fightPointsLost > 0) {
+				const restoreEnergyEndDate = new Date(Date.now() + instance.getRestoreEnergyEndTime());
+				await ScheduledEnergyNotifications.scheduleNotification(
+					instance.id,
+					instance.keycloakId,
+					restoreEnergyEndDate
+				);
 			}
 		};
 

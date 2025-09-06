@@ -40,6 +40,8 @@ import { FightsManager } from "../fights/FightsManager";
 import {
 	DayOfTheWeek, setDailyCronJob, setWeeklyCronJob
 } from "../utils/CronInterface";
+import { ScheduledEnergyNotifications } from "../database/game/models/ScheduledEnergyNotification";
+import { EnergyFullNotificationPacket } from "../../../../Lib/src/packets/notifications/EnergyFullNotificationPacket";
 
 export class Crownicles {
 	public readonly packetListener: PacketListenerServer;
@@ -306,23 +308,31 @@ export class Crownicles {
 			.then();
 	}
 
-	static async reportNotifications(): Promise<void> {
+	static async reportAndEnergyNotifications(): Promise<void> {
 		if (PacketUtils.isMqttConnected()) {
-			const notifications = await ScheduledReportNotifications.getNotificationsBeforeDate(new Date());
-			if (notifications.length !== 0) {
-				PacketUtils.sendNotifications(notifications.map(notification => makePacket(ReachDestinationNotificationPacket, {
+			const reportNotifications = await ScheduledReportNotifications.getNotificationsBeforeDate(new Date());
+			if (reportNotifications.length !== 0) {
+				PacketUtils.sendNotifications(reportNotifications.map(notification => makePacket(ReachDestinationNotificationPacket, {
 					keycloakId: notification.keycloakId,
 					mapType: MapLocationDataController.instance.getById(notification.mapId).type,
 					mapId: notification.mapId
 				})));
-				await ScheduledReportNotifications.bulkDelete(notifications);
+				await ScheduledReportNotifications.bulkDelete(reportNotifications);
+			}
+
+			const energyNotifications = await ScheduledEnergyNotifications.getNotificationsBeforeDate(new Date());
+			if (energyNotifications.length !== 0) {
+				PacketUtils.sendNotifications(energyNotifications.map(notification => makePacket(EnergyFullNotificationPacket, {
+					keycloakId: notification.keycloakId
+				})));
+				await ScheduledEnergyNotifications.bulkDelete(energyNotifications);
 			}
 		}
 		else {
-			CrowniclesLogger.error(`MQTT is not connected, can't do report notifications. Trying again in ${TimeoutFunctionsConstants.REPORT_NOTIFICATIONS} ms`);
+			CrowniclesLogger.error(`MQTT is not connected, can't do report and energy notifications. Trying again in ${TimeoutFunctionsConstants.REPORT_AND_ENERGY_NOTIFICATIONS} ms`);
 		}
 
-		setTimeout(Crownicles.reportNotifications, TimeoutFunctionsConstants.REPORT_NOTIFICATIONS);
+		setTimeout(Crownicles.reportAndEnergyNotifications, TimeoutFunctionsConstants.REPORT_AND_ENERGY_NOTIFICATIONS);
 	}
 
 	/**
@@ -369,7 +379,7 @@ export class Crownicles {
 
 		await Crownicles.programTimeouts();
 
-		Crownicles.reportNotifications()
+		Crownicles.reportAndEnergyNotifications()
 			.then();
 
 		setTimeout(
