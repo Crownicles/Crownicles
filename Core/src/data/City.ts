@@ -8,7 +8,7 @@ export class InnMeal {
 
 	public readonly price: number;
 
-	public readonly healthRestored: number;
+	public readonly health: number;
 }
 
 export class CityInn {
@@ -24,8 +24,8 @@ export class City extends Data<string> {
 
 	public readonly inns: CityInn[];
 
-	public getTodayInnMeals(inn: CityInn): InnMeal[] {
-		let seed = new Date().getDate();
+	public getTodayInnMeals(inn: CityInn, date: Date): InnMeal[] {
+		let seed = date.getDate();
 		seed += new Date().getMonth() * 100;
 		seed += new Date().getFullYear() * 10000;
 

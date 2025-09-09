@@ -8,7 +8,6 @@ import { ReactionCollectorBigEventData } from "../../../../Lib/src/packets/inter
 import {
 	chooseDestinationCollector,
 	createBigEventCollector,
-	handleCityCollector,
 	handleStartPveFight
 } from "../../commands/player/ReportCommand";
 import { ReactionCollectorChooseDestinationData } from "../../../../Lib/src/packets/interaction/ReactionCollectorChooseDestination";
@@ -91,9 +90,10 @@ import { ReactionCollectorJoinBoatData } from "../../../../Lib/src/packets/inter
 import { ReactionCollectorPveFightData } from "../../../../Lib/src/packets/interaction/ReactionCollectorPveFight";
 import { handleClassicError } from "../../utils/ErrorUtils";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
+import { ReactionCollectorCityData } from "../../../../Lib/src/packets/interaction/ReactionCollectorCity";
+import { ReportCityMenu } from "../../commands/player/report/ReportCityMenu";
 import { ReactionCollectorDailyBonusData } from "../../../../Lib/src/packets/interaction/ReactionCollectorDailyBonus";
 import { handleDailyBonusCollector } from "../../commands/player/DailyBonusCommand";
-import { ReactionCollectorCityData } from "../../../../Lib/src/packets/interaction/ReactionCollectorCity";
 
 // Needed because we need to accept any parameter
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -145,8 +145,8 @@ export default class ReactionCollectorHandler {
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorPetFeedWithGuildData.name, handleCommandPetFeedWithGuildCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorPetFeedWithoutGuildData.name, handleCommandPetFeedWithoutGuildCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorPveFightData.name, handleStartPveFight);
+		ReactionCollectorHandler.collectorMap.set(ReactionCollectorCityData.name, ReportCityMenu.handleCityCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorDailyBonusData.name, handleDailyBonusCollector);
-		ReactionCollectorHandler.collectorMap.set(ReactionCollectorCityData.name, handleCityCollector);
 	}
 
 	@packetHandler(ReactionCollectorCreationPacket)
