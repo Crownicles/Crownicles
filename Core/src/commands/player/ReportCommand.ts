@@ -78,7 +78,8 @@ import {
 } from "../../data/City";
 import {
 	ReactionCollectorCity,
-	ReactionCollectorExitCityReaction
+	ReactionCollectorExitCityReaction,
+	ReactionCollectorInnMealReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorCity";
 import { RequirementEffectPacket } from "../../../../Lib/src/packets/commands/requirements/RequirementEffectPacket";
 
@@ -172,8 +173,18 @@ function cityCollectorEndCallback(context: PacketContext, player: Player, forceS
 		if (!firstReaction || firstReaction.reaction.type === ReactionCollectorRefuseReaction.name) {
 			response.push(makePacket(CommandReportStayInCity, {}));
 		}
-		else if (firstReaction.reaction.type === ReactionCollectorExitCityReaction.name) {
-			await doRandomBigEvent(context, response, player, forceSpecificEvent);
+		else {
+			switch (firstReaction.reaction.type) {
+				case ReactionCollectorExitCityReaction.name:
+					await doRandomBigEvent(context, response, player, forceSpecificEvent);
+					break;
+				case ReactionCollectorInnMealReaction.name:
+					// todo
+					break;
+				default:
+					CrowniclesLogger.error("Unknown city reaction: " + firstReaction.reaction.type);
+					break;
+			}
 		}
 	};
 }
@@ -185,10 +196,10 @@ function sendCityCollector(context: PacketContext, response: CrowniclesPacket[],
 		mapLocationId: player.getDestinationId(),
 		inns: city.inns.map(inn => ({
 			innId: inn.id,
-			meals: city.getTodayInnMeals(inn).map(meal => ({
+			meals: city.getTodayInnMeals(inn, new Date()).map(meal => ({
 				mealId: meal.id,
 				price: meal.price,
-				healthRestored: meal.healthRestored
+				health: meal.health
 			}))
 		}))
 	});
