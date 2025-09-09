@@ -18,12 +18,18 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 		meals: {
 			mealId: string;
 			price: number;
-			healthRestored: number;
+			health: number;
 		}[];
 	}[];
 }
 
 export class ReactionCollectorExitCityReaction extends ReactionCollectorReaction {}
+
+export class ReactionCollectorInnMealReaction extends ReactionCollectorReaction {
+	innId!: string;
+
+	mealId!: string;
+}
 
 export class ReactionCollectorCity extends ReactionCollector {
 	private readonly data!: ReactionCollectorCityData;
@@ -34,12 +40,19 @@ export class ReactionCollectorCity extends ReactionCollector {
 	}
 
 	creationPacket(id: string, endTime: number): ReactionCollectorCreationPacket {
+		const mealsReactions = this.data.inns?.flatMap(inn =>
+			inn.meals.map(meal =>
+				this.buildReaction(ReactionCollectorInnMealReaction, {
+					innId: inn.innId, mealId: meal.mealId
+				}))) || [];
+
 		return {
 			id,
 			endTime,
 			reactions: [
 				this.buildReaction(ReactionCollectorExitCityReaction, {}),
-				this.buildReaction(ReactionCollectorRefuseReaction, {})
+				this.buildReaction(ReactionCollectorRefuseReaction, {}),
+				...mealsReactions
 			],
 			data: this.buildData(ReactionCollectorCityData, {
 				...this.data

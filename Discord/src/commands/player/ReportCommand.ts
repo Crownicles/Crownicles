@@ -12,23 +12,14 @@ import {
 	CommandReportRefusePveFightRes,
 	CommandReportTravelSummaryRes
 } from "../../../../Lib/src/packets/commands/CommandReportPacket";
-import {
-	ReactionCollectorCreationPacket,
-	ReactionCollectorRefuseReaction
-} from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
+import { ReactionCollectorCreationPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import {
 	ReactionCollectorBigEventData,
 	ReactionCollectorBigEventPossibilityReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorBigEvent";
 import i18n, { TranslationOption } from "../../translations/i18n";
 import {
-	ActionRowBuilder,
-	ButtonBuilder,
-	ButtonInteraction,
-	ButtonStyle,
-	parseEmoji,
-	StringSelectMenuBuilder,
-	StringSelectMenuInteraction
+	ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, parseEmoji
 } from "discord.js";
 import { DiscordCache } from "../../bot/DiscordCache";
 import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
@@ -55,10 +46,9 @@ import { ReactionCollectorPveFightData } from "../../../../Lib/src/packets/inter
 import { escapeUsername } from "../../utils/StringUtils";
 import { Language } from "../../../../Lib/src/Language";
 import { DisplayUtils } from "../../utils/DisplayUtils";
-import {
-	ReactionCollectorCityData,
-	ReactionCollectorExitCityReaction
-} from "../../../../Lib/src/packets/interaction/ReactionCollectorCity";
+import { ReactionCollectorCity } from "../../../../Lib/src/packets/interaction/ReactionCollectorCity";
+import { PacketUtils } from "../../utils/PacketUtils";
+import { ReportCityMenu } from "./report/ReportCityMenu";
 
 async function getPacket(interaction: CrowniclesInteraction): Promise<CommandReportPacketReq> {
 	await interaction.deferReply();
@@ -602,88 +592,6 @@ export async function stayInCity(context: PacketContext): Promise<void> {
 	await interaction.followUp({
 		embeds: [embed]
 	});
-}
-
-export async function handleCityCollector(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
-	const interaction = DiscordCache.getInteraction(context.discord!.interaction);
-	if (!interaction) {
-		return null;
-	}
-	const lng = interaction.userLanguage;
-	const data = packet.data.data as ReactionCollectorCityData;
-
-	const embed = new CrowniclesEmbed();
-	embed.formatAuthor(i18n.t("commands:report.city.title", {
-		lng,
-		pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
-	}), interaction.user);
-	embed.setDescription(i18n.t("commands:report.city.description", {
-		lng,
-		mapLocationId: data.mapLocationId,
-		mapTypeId: data.mapTypeId,
-		timeInCity: data.timeInCity < 60000 ? i18n.t("commands:report.city.shortTime", { lng }) : minutesDisplay(millisecondsToMinutes(data.timeInCity), lng)
-	}));
-
-	const selectMenu = new StringSelectMenuBuilder()
-		.setCustomId(ReactionCollectorExitCityReaction.name)
-		.setPlaceholder(i18n.t("commands:report.city.placeholder", { lng }));
-	for (const reaction of packet.reactions) {
-		switch (reaction.type) {
-			case ReactionCollectorExitCityReaction.name:
-				selectMenu.addOptions({
-					label: i18n.t("commands:report.city.reactions.exit.label", { lng }),
-					description: i18n.t("commands:report.city.reactions.exit.description", { lng }),
-					value: ReactionCollectorExitCityReaction.name,
-					emoji: CrowniclesIcons.city.exit
-				});
-				break;
-			case ReactionCollectorRefuseReaction.name:
-				selectMenu.addOptions({
-					label: i18n.t("commands:report.city.reactions.stay.label", { lng }),
-					description: i18n.t("commands:report.city.reactions.stay.description", { lng }),
-					value: ReactionCollectorRefuseReaction.name,
-					emoji: CrowniclesIcons.city.stay
-				});
-				break;
-			default:
-				break;
-		}
-	}
-
-	const msg = await interaction.editReply({
-		embeds: [embed],
-		components: [new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(selectMenu)]
-	});
-
-	if (!msg) {
-		return null;
-	}
-
-	const selectMenuCollector = msg.createMessageComponentCollector({
-		time: packet.endTime - Date.now()
-	});
-
-	selectMenuCollector.on("collect", async (selectInteraction: StringSelectMenuInteraction) => {
-		if (selectInteraction.user.id !== interaction.user.id) {
-			await sendInteractionNotForYou(selectInteraction.user, selectInteraction, lng);
-			return;
-		}
-
-		await selectInteraction.deferUpdate();
-		const selectedValue = selectInteraction.values[0];
-		const reactionIndex = packet.reactions.findIndex(reaction => reaction.type === selectedValue);
-		if (reactionIndex !== -1) {
-			DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, selectInteraction, reactionIndex);
-		}
-	});
-
-	selectMenuCollector.on("end", async () => {
-		await msg.edit({
-			components: []
-		});
-	});
-
-	return [selectMenuCollector];
 }
 
 export async function handleChooseDestinationCity(packet: CommandReportChooseDestinationCityRes, context: PacketContext): Promise<void> {
