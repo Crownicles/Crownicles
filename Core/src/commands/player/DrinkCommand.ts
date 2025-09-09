@@ -3,7 +3,6 @@ import {
 } from "../../core/utils/CommandUtils";
 import {
 	CommandDrinkCancelDrink,
-	CommandDrinkConsumePotionRes,
 	CommandDrinkNoActiveObjectError,
 	CommandDrinkObjectIsActiveDuringFights,
 	CommandDrinkPacketReq
@@ -16,8 +15,6 @@ import { InventorySlots } from "../../core/database/game/models/InventorySlot";
 import { Potion } from "../../data/Potion";
 import { InventoryConstants } from "../../../../Lib/src/constants/InventoryConstants";
 import { ItemNature } from "../../../../Lib/src/constants/ItemConstants";
-import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
-import { TravelTime } from "../../core/maps/TravelTime";
 import {
 	EndCallback, ReactionCollectorInstance
 } from "../../core/utils/ReactionsCollector";
@@ -25,41 +22,10 @@ import { BlockingUtils } from "../../core/utils/BlockingUtils";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
 import { ReactionCollectorRefuseReaction } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import {
-	checkDrinkPotionMissions, toItemWithDetails
+	checkDrinkPotionMissions, consumePotion, toItemWithDetails
 } from "../../core/utils/ItemUtils";
 import { ReactionCollectorDrink } from "../../../../Lib/src/packets/interaction/ReactionCollectorDrink";
 import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
-
-/**
- * Consumes the given potion
- * @param response
- * @param potion
- * @param player
- */
-async function consumePotion(response: CrowniclesPacket[], potion: Potion, player: Player): Promise<void> {
-	switch (potion.nature) {
-		case ItemNature.HEALTH:
-			response.push(makePacket(CommandDrinkConsumePotionRes, { health: potion.power }));
-			await player.addHealth(potion.power, response, NumberChangeReason.DRINK);
-			break;
-		case ItemNature.ENERGY:
-			response.push(makePacket(CommandDrinkConsumePotionRes, { energy: potion.power }));
-			player.addEnergy(potion.power, NumberChangeReason.DRINK);
-			break;
-		case ItemNature.TIME_SPEEDUP:
-			await TravelTime.timeTravel(player, potion.power, NumberChangeReason.DRINK);
-			response.push(makePacket(CommandDrinkConsumePotionRes, { time: potion.power }));
-			break;
-		case ItemNature.NONE:
-			response.push(makePacket(CommandDrinkConsumePotionRes, {}));
-			break;
-		default:
-			break;
-	}
-	await player.drinkPotion();
-
-	await player.save();
-}
 
 /**
  * Returns the callback for the drink command
@@ -84,6 +50,8 @@ function drinkPotionCallback(
 		}
 
 		await consumePotion(response, potion, player);
+		await player.drinkPotion();
+		await player.save();
 		await checkDrinkPotionMissions(response, player, potion, await InventorySlots.getOfPlayer(player.id));
 	};
 }

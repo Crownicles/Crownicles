@@ -15,9 +15,9 @@ import {
 	ButtonStyle,
 	InteractionCallbackResponse,
 	Message,
+	MessageActionRowComponentBuilder,
 	MessageComponentInteraction,
-	parseEmoji,
-	MessageActionRowComponentBuilder
+	parseEmoji
 } from "discord.js";
 import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 import { CrowniclesEmbed } from "../messages/CrowniclesEmbed";
@@ -278,6 +278,11 @@ export class DiscordCollectorUtils {
 			refuse: {
 				can: boolean; reactionIndex?: number;
 			};
+			additionalButtons?: {
+				button: ButtonBuilder;
+				text?: string;
+				emoji?: string;
+			}[];
 			sendManners?: SendManner[];
 		}
 	): Promise<ReactionCollectorReturnTypeOrNull> {
@@ -301,6 +306,18 @@ export class DiscordCollectorUtils {
 			rows[rows.length - 1].addComponents(button);
 
 			choiceDesc += `${DiscordCollectorUtils.choiceListEmotes[i]} - ${items[i]}\n`;
+		}
+
+		if (options.additionalButtons) {
+			for (const additionalButton of options.additionalButtons) {
+				if (rows[rows.length - 1].components.length >= DiscordConstants.MAX_BUTTONS_PER_ROW) {
+					rows.push(new ActionRowBuilder<ButtonBuilder>());
+				}
+				rows[rows.length - 1].addComponents(additionalButton.button);
+				if (additionalButton.text && additionalButton.emoji) {
+					choiceDesc += `${additionalButton.emoji} - ${additionalButton.text}\n`;
+				}
+			}
 		}
 
 		if (options.refuse.can) {
