@@ -220,6 +220,9 @@ export const CrowniclesIcons: {
 		lost: string;
 		draw: string;
 	};
+	items: {
+		drinkPotion: string;
+	};
 } = {
 	effects: {
 		notStarted: "👶",
@@ -2369,5 +2372,8 @@ export const CrowniclesIcons: {
 		won: "🟢",
 		lost: "🔴",
 		draw: "🟡"
+	},
+	items: {
+		drinkPotion: "🥤"
 	}
 };

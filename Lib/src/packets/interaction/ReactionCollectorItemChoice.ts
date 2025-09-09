@@ -17,6 +17,8 @@ export class ReactionCollectorItemChoiceItemReaction extends ReactionCollectorRe
 	itemWithDetails!: ItemWithDetails;
 }
 
+export class ReactionCollectorItemChoiceDrinkPotionReaction extends ReactionCollectorReaction {}
+
 export class ReactionCollectorItemChoiceRefuseReaction extends ReactionCollectorReaction {
 
 }
@@ -26,10 +28,13 @@ export class ReactionCollectorItemChoice extends ReactionCollector {
 
 	private readonly items: ReactionCollectorItemChoiceItemReaction[];
 
-	constructor(data: ReactionCollectorItemChoiceData, items: ReactionCollectorItemChoiceItemReaction[]) {
+	private readonly canDrink: boolean;
+
+	constructor(data: ReactionCollectorItemChoiceData, items: ReactionCollectorItemChoiceItemReaction[], canDrink: boolean) {
 		super();
 		this.data = data;
 		this.items = items;
+		this.canDrink = canDrink;
 	}
 
 	creationPacket(id: string, endTime: number, mainPacket = true): ReactionCollectorCreationPacket {
@@ -37,6 +42,11 @@ export class ReactionCollectorItemChoice extends ReactionCollector {
 		for (const item of this.items) {
 			reactions.push(this.buildReaction(ReactionCollectorItemChoiceItemReaction, item));
 		}
+
+		if (this.canDrink) {
+			reactions.push(this.buildReaction(ReactionCollectorItemChoiceDrinkPotionReaction, {}));
+		}
+
 		reactions.push(this.buildReaction(ReactionCollectorItemChoiceRefuseReaction, {}));
 
 		return {

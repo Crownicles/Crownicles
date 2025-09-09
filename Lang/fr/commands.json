@@ -335,8 +335,10 @@
     "weapons_one": "Arme ({{count}}/{{max}}) :",
     "weapons_other": "Armes ({{count}}/{{max}}) :",
     "randomItemTitle": "{{pseudo}}, vous avez trouvé quelque chose !",
-    "randomItemFooter": "Vous avez déjà un équipement, souhaitez-vous le vendre ?",
-    "randomItemFooterPotion": "Souhaitez-vous détruire votre potion actuelle ?",
+    "randomItemAcceptTitle": "Vous avez déjà un équipement, souhaitez-vous le vendre ?",
+    "randomItemAcceptTitlePotion": "Vous avez déjà une potion, que souhaitez-vous faire ?",
+    "randomItemFooterPotion": "Utilisez {emote:collectors.accept} pour garder la potion trouvée et remplacer votre potion actuelle, {emote:items.drinkPotion} pour consommer la potion trouvée, {emote:collectors.refuse} pour jeter la potion trouvée.",
+    "randomItemFooterPotionChoice": "Utilisez un numéro pour remplacer une potion par la potion trouvée, {emote:items.drinkPotion} pour consommer la potion trouvée, {emote:collectors.refuse} pour jeter la potion trouvée.",
     "acceptedTitle": "{{pseudo}}, vous avez reçu un équipement !",
     "chooseItemToReplaceTitle": "Choisissez un objet à remplacer"
   },
@@ -1296,8 +1298,8 @@
     "healthBonus": "{emote:unitValues.health} Vie gagnée : {{value}} !",
     "energyBonus": "{emote:unitValues.energy} Énergie gagnée : {{value}} !",
     "timeBonus": "{emote:unitValues.time} Vous avez avancé de {{value}} !",
-    "noBonus": "{emote:messages.refuse} Vous consommez le breuvage que vous transportiez... Ça ne semble pas très efficace !",
-    "drinkSuccessTitle": "{{pseudo}}, vous buvez le breuvage que vous transportiez !",
+    "noBonus": "{emote:messages.refuse} Vous consommez une potion... Ça ne semble pas très efficace !",
+    "drinkSuccessTitle": "{{pseudo}}, vous consommez une potion !",
     "confirmationTitle": "{{pseudo}}, confirmation :",
     "confirmation": "Êtes-vous sûr de vouloir boire votre {{potion}} ?",
     "confirmationFooter": "Il est possible d'éviter cette étape en utilisant le paramètre forcer !"
