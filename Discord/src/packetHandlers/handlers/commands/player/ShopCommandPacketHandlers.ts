@@ -4,13 +4,10 @@ import {
 	CommandShopBadgeBought,
 	CommandShopBoughtTooMuchDailyPotions,
 	CommandShopClosed,
-	CommandShopEnergyHeal,
 	CommandShopFullRegen,
 	CommandShopHealAlterationDone,
 	CommandShopNoAlterationToHeal,
-	CommandShopNoEnergyToHeal,
-	CommandShopNotEnoughCurrency,
-	CommandShopTooManyEnergyBought
+	CommandShopNotEnoughCurrency
 } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorShop";
 import { PacketContext } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import {
@@ -18,13 +15,11 @@ import {
 	handleCommandShopBadgeBought,
 	handleCommandShopBoughtTooMuchDailyPotions,
 	handleCommandShopClosed,
-	handleCommandShopEnergyHeal,
 	handleCommandShopFullRegen,
 	handleCommandShopHealAlterationDone,
 	handleCommandShopNoAlterationToHeal,
-	handleCommandShopNoEnergyToHeal,
 	handleCommandShopNotEnoughMoney,
-	handleCommandShopTooManyEnergyBought, handleReactionCollectorBuyCategorySlotBuySuccess
+	handleReactionCollectorBuyCategorySlotBuySuccess
 } from "../../../../commands/player/ShopCommand";
 import { ReactionCollectorBuyCategorySlotBuySuccess } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorBuyCategorySlot";
 
@@ -42,16 +37,6 @@ export default class ShopCommandPacketHandlers {
 	@packetHandler(CommandShopHealAlterationDone)
 	async shopHealAlterationDone(context: PacketContext, _packet: CommandShopHealAlterationDone): Promise<void> {
 		await handleCommandShopHealAlterationDone(context);
-	}
-
-	@packetHandler(CommandShopTooManyEnergyBought)
-	async shopTooManyEnergyBought(context: PacketContext, _packet: CommandShopTooManyEnergyBought): Promise<void> {
-		await handleCommandShopTooManyEnergyBought(context);
-	}
-
-	@packetHandler(CommandShopNoEnergyToHeal)
-	async shopNoEnergyToHeal(context: PacketContext, _packet: CommandShopNoEnergyToHeal): Promise<void> {
-		await handleCommandShopNoEnergyToHeal(context);
 	}
 
 	@packetHandler(CommandShopFullRegen)
@@ -82,10 +67,5 @@ export default class ShopCommandPacketHandlers {
 	@packetHandler(ReactionCollectorBuyCategorySlotBuySuccess)
 	async buyCategorySlotBuySuccess(context: PacketContext, _packet: ReactionCollectorBuyCategorySlotBuySuccess): Promise<void> {
 		await handleReactionCollectorBuyCategorySlotBuySuccess(context);
-	}
-
-	@packetHandler(CommandShopEnergyHeal)
-	async shopEnergyHeal(context: PacketContext, _packet: CommandShopEnergyHeal): Promise<void> {
-		await handleCommandShopEnergyHeal(context);
 	}
 }
