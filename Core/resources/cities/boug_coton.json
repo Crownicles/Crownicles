@@ -6,28 +6,23 @@
     "meals": [{
       "id": "breadAndCheese",
       "price": 100,
-      "health": 5,
-      "quality": 1
+      "energy": 350
     }, {
       "id": "roastedFowl",
       "price": 200,
-      "health": 10,
-      "quality": 3
+      "energy": 700
     }, {
       "id": "roastedBeef",
       "price": 300,
-      "health": 15,
-      "quality": 4
+      "energy": 900
     }, {
       "id": "stew",
       "price": 140,
-      "health": 7,
-      "quality": 2
+      "energy": 520
     }, {
       "id": "lordPie",
       "price": 600,
-      "health": 30,
-      "quality": 5
+      "energy": 1300
     }]
   }]
 }

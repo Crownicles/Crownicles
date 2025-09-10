@@ -63,39 +63,6 @@ export async function handleCommandShopNoAlterationToHeal(context: PacketContext
 	}
 }
 
-export async function handleCommandShopNoEnergyToHeal(context: PacketContext): Promise<void> {
-	const interaction = DiscordCache.getInteraction(context.discord!.interaction!);
-
-	if (interaction) {
-		await sendErrorMessage(interaction.user, context, interaction, i18n.t("commands:shop.noEnergyToHeal", { lng: interaction.userLanguage }), { sendManner: SendManner.FOLLOWUP });
-	}
-}
-
-export async function handleCommandShopEnergyHeal(context: PacketContext): Promise<void> {
-	const interaction = DiscordCache.getInteraction(context.discord!.interaction!);
-
-	if (interaction) {
-		await interaction.followUp({
-			embeds: [
-				new CrowniclesEmbed()
-					.formatAuthor(i18n.t("commands:shop.success", {
-						lng: interaction.userLanguage,
-						pseudo: escapeUsername(interaction.user.displayName)
-					}), interaction.user)
-					.setDescription(i18n.t("commands:shop.shopItems.energyHeal.give", { lng: interaction.userLanguage }))
-			]
-		});
-	}
-}
-
-export async function handleCommandShopTooManyEnergyBought(context: PacketContext): Promise<void> {
-	const interaction = DiscordCache.getInteraction(context.discord!.interaction!);
-
-	if (interaction) {
-		await sendErrorMessage(interaction.user, context, interaction, i18n.t("commands:shop.tooManyEnergyBought", { lng: interaction.userLanguage }), { sendManner: SendManner.FOLLOWUP });
-	}
-}
-
 export async function handleCommandShopAlreadyHaveBadge(context: PacketContext): Promise<void> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction!);
 

@@ -7,6 +7,7 @@ import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
 import {
 	CommandReportBigEventResultRes,
 	CommandReportChooseDestinationCityRes,
+	CommandReportEatInnMealRes,
 	CommandReportMonsterRewardRes,
 	CommandReportPacketReq,
 	CommandReportRefusePveFightRes,
@@ -49,6 +50,7 @@ import { DisplayUtils } from "../../utils/DisplayUtils";
 import { ReactionCollectorCity } from "../../../../Lib/src/packets/interaction/ReactionCollectorCity";
 import { PacketUtils } from "../../utils/PacketUtils";
 import { ReportCityMenu } from "./report/ReportCityMenu";
+import { MessagesUtils } from "../../utils/MessagesUtils";
 
 async function getPacket(interaction: CrowniclesInteraction): Promise<CommandReportPacketReq> {
 	await interaction.deferReply();
@@ -615,6 +617,29 @@ export async function handleChooseDestinationCity(packet: CommandReportChooseDes
 	}));
 
 	await interaction.followUp({
+		embeds: [embed]
+	});
+}
+
+export async function handleEatInnMeal(packet: CommandReportEatInnMealRes, context: PacketContext): Promise<void> {
+	const interaction = MessagesUtils.getCurrentInteraction(context);
+	if (!interaction) {
+		return;
+	}
+	const lng = context.discord!.language;
+
+	const embed = new CrowniclesEmbed()
+		.formatAuthor(i18n.t("commands:report.city.inns.eatMealTitle", {
+			lng,
+			pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
+		}), interaction.user)
+		.setDescription(i18n.t("commands:report.city.inns.eatMealDescription", {
+			lng,
+			energy: packet.energy,
+			price: packet.moneySpent
+		}));
+
+	await interaction.editReply({
 		embeds: [embed]
 	});
 }

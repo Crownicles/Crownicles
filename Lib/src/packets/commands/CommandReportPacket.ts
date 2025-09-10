@@ -113,3 +113,13 @@ export class CommandReportChooseDestinationCityRes extends CrowniclesPacket {
 
 	mapTypeId!: string;
 }
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportEatInnMealRes extends CrowniclesPacket {
+	energy!: number;
+
+	moneySpent!: number;
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportEatInnMealCooldownRes extends CrowniclesPacket {}
