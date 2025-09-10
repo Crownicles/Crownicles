@@ -335,8 +335,10 @@
     "weapons_one": "Arma ({{count}}/{{max}}) :",
     "weapons_other": "Armi ({{count}}/{{max}}) :",
     "randomItemTitle": "{{pseudo}}, avete trovato qualcosa !",
-    "randomItemFooter": "Possedete già un'attrezzatura e volete venderla?",
-    "randomItemFooterPotion": "Volete distruggere la vostra pozione attuale?",
+    "randomItemAcceptTitle": "Vous avez déjà un équipement, souhaitez-vous le vendre ?",
+    "randomItemAcceptTitlePotion": "Vous avez déjà une potion, que souhaitez-vous faire ?",
+    "randomItemFooterPotion": "Utilisez {emote:collectors.accept} pour garder la potion trouvée et remplacer votre potion actuelle, {emote:items.drinkPotion} pour consommer la potion trouvée, {emote:collectors.refuse} pour jeter la potion trouvée.",
+    "randomItemFooterPotionChoice": "Utilisez un numéro pour remplacer une potion par la potion trouvée, {emote:items.drinkPotion} pour consommer la potion trouvée, {emote:collectors.refuse} pour jeter la potion trouvée.",
     "acceptedTitle": "{{pseudo}}, avete ricevuto un equipaggiamento !",
     "chooseItemToReplaceTitle": "Scegliete un oggetto da sostituire"
   },
@@ -1039,19 +1041,24 @@
   },
   "daily": {
     "errors": {
-      "objectDoNothingError": "Cerchi di usare il potere dell'oggetto che stai trasportando... Ma non ha alcun effetto!",
-      "objectIsActiveDuringFights": "Il potere dell'oggetto che si porta con sé si attiva automaticamente durante il combattimento!",
-      "noActiveObject": "Purtroppo non hai nessun oggetto attivo nell'inventario!",
-      "cooldown": "{{cooldownTime}} È possibile utilizzare l'oggetto giornaliero solo ogni ora. {{time}}Torna a ."
+      "noAvailableObject": "Vous n'avez malheureusement aucun objet utilisable quotidiennement dans votre inventaire ! Les objects de combats ne peuvent pas être utilisés via cette commande.",
+      "cooldown": "{{cooldownTime}} È possibile utilizzare l'oggetto giornaliero solo ogni ora. {{time}}Torna a .",
+      "cancel": "Vous avez annulé l'utilisation de votre objet quotidien."
     },
     "title": "{{pseudo}}Avete ricevuto la vostra ricompensa giornaliera!",
-    "description": "{emote:unitValues.{{nature}}} $t(commands:daily.natureText.{{nature}}){{value}}** **!",
+    "description": "{emote:unitValues.{{nature}}} $t(commands:daily.natureText.{{nature}}) **{{value}}** !",
     "natureText": {
       "health": "Vita guadagnata :",
       "energy": "Energia risparmiata :",
       "money": "Soldi guadagnati :",
       "time": "Siete avanzati di"
-    }
+    },
+    "collectorTitleOneObject": "{{pseudo}}, confirmation de votre récompense journalière !",
+    "collectorDescOneObject": "Voulez-vous utiliser votre objet quotidien ?\n\n{{object}}",
+    "collectorTitle": "{{pseudo}}, choix de votre récompense journalière !",
+    "collectorDesc": "Choisissez un objet à utiliser dans la liste ci-dessous :",
+    "collectorRefuseOption": "Annuler",
+    "menuPlaceholder": "Sélectionnez un objet"
   },
   "unlock": {
     "himself": "Se non riuscite a liberarvi da soli, chiedete a un amico di farlo per voi.",
@@ -1296,8 +1303,8 @@
     "healthBonus": "{emote:unitValues.health} Vita guadagnata: {{value}} !",
     "energyBonus": "{emote:unitValues.energy} Energia risparmiata: {{value}} .",
     "timeBonus": "{emote:unitValues.time} Sei andato avanti {{value}} !",
-    "noBonus": "{emote:messages.refuse} Consumate la bevanda che stavate trasportando... Non sembra molto efficace!",
-    "drinkSuccessTitle": "{{pseudo}}bevete la bevanda che stavate trasportando!",
+    "noBonus": "{emote:messages.refuse} Vous consommez une potion... Ça ne semble pas très efficace !",
+    "drinkSuccessTitle": "{{pseudo}}, vous consommez une potion !",
     "confirmationTitle": "{{pseudo}}conferma :",
     "confirmation": "Sei sicuro di voler bere il tuo {{potion}} ?",
     "confirmationFooter": "È possibile evitare questo passaggio utilizzando il parametro force!"
