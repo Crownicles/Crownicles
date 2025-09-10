@@ -23,6 +23,19 @@
       "id": "bravesPanOfFood",
       "price": 700,
       "energy": 1750
+    }],
+    "rooms": [{
+      "id": "simpleRoom",
+      "price": 550,
+      "health": 50
+    }, {
+      "id": "comfortableRoom",
+      "price": 1050,
+      "health": 100
+    }, {
+      "id": "luxuryRoom",
+      "price": 1550,
+      "health": 200
     }]
   }]
 }

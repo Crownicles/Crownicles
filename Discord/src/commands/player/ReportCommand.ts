@@ -11,6 +11,7 @@ import {
 	CommandReportMonsterRewardRes,
 	CommandReportPacketReq,
 	CommandReportRefusePveFightRes,
+	CommandReportSleepRoomRes,
 	CommandReportTravelSummaryRes
 } from "../../../../Lib/src/packets/commands/CommandReportPacket";
 import { ReactionCollectorCreationPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
@@ -636,6 +637,31 @@ export async function handleEatInnMeal(packet: CommandReportEatInnMealRes, conte
 			energy: packet.energy,
 			price: packet.moneySpent
 		}));
+
+	await interaction.editReply({
+		embeds: [embed]
+	});
+}
+
+export async function handleInnRoom(packet: CommandReportSleepRoomRes, context: PacketContext): Promise<void> {
+	const interaction = MessagesUtils.getCurrentInteraction(context);
+	if (!interaction) {
+		return;
+	}
+	const lng = context.discord!.language;
+
+	const embed = new CrowniclesEmbed()
+		.formatAuthor(i18n.t("commands:report.city.inns.roomTitle", {
+			lng,
+			pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
+		}), interaction.user)
+		.setDescription(`${i18n.t(`commands:report.city.inns.roomsStories.${packet.roomId}`, {
+			lng
+		})}\n\n${i18n.t("commands:report.city.inns.roomEndStory", {
+			lng,
+			health: packet.health,
+			price: packet.moneySpent
+		})}`);
 
 	await interaction.editReply({
 		embeds: [embed]
