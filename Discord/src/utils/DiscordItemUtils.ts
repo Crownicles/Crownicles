@@ -6,7 +6,7 @@ import {
 } from "../../../Lib/src/packets/commands/CommandInventoryPacket";
 import { EmbedField } from "discord.js";
 import {
-	itemCategoryToString, ItemNature
+	FightItemNatures, itemCategoryToString, ItemNature
 } from "../../../Lib/src/constants/ItemConstants";
 import { minutesDisplay } from "../../../Lib/src/utils/TimeUtils";
 import { StatValues } from "../../../Lib/src/types/StatValues";
@@ -153,11 +153,7 @@ export class DiscordItemUtils {
 			lng,
 			power: nature === ItemNature.TIME_SPEEDUP
 				? minutesDisplay(power, lng)
-				: [
-					ItemNature.SPEED,
-					ItemNature.DEFENSE,
-					ItemNature.ATTACK
-				].includes(nature) && maxPower < power
+				: FightItemNatures.includes(nature) && maxPower < power
 					? i18n.t("items:nerfDisplay", {
 						lng,
 						old: power,

@@ -114,3 +114,9 @@ export enum ItemNature {
 	MONEY,
 	ENERGY
 }
+
+export const FightItemNatures = [
+	ItemNature.ATTACK,
+	ItemNature.DEFENSE,
+	ItemNature.SPEED
+];
