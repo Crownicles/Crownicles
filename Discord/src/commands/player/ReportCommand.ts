@@ -48,9 +48,6 @@ import { ReactionCollectorPveFightData } from "../../../../Lib/src/packets/inter
 import { escapeUsername } from "../../utils/StringUtils";
 import { Language } from "../../../../Lib/src/Language";
 import { DisplayUtils } from "../../utils/DisplayUtils";
-import { ReactionCollectorCity } from "../../../../Lib/src/packets/interaction/ReactionCollectorCity";
-import { PacketUtils } from "../../utils/PacketUtils";
-import { ReportCityMenu } from "./report/ReportCityMenu";
 import { MessagesUtils } from "../../utils/MessagesUtils";
 
 async function getPacket(interaction: CrowniclesInteraction): Promise<CommandReportPacketReq> {

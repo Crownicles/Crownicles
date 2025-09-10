@@ -197,15 +197,15 @@ function getInnMenu(
 				lng,
 				pseudo
 			}), interaction.user)
-			.setDescription(i18n.t(`commands:report.city.inns.stories.${innId}`, {
+			.setDescription(`${i18n.t(`commands:report.city.inns.stories.${innId}`, {
 				lng
-			}) + "\n\n" + i18n.t("commands:report.city.inns.storiesEnergyAndHealth", {
+			})}\n\n${i18n.t("commands:report.city.inns.storiesEnergyAndHealth", {
 				lng,
 				currentEnergy: data.energy.current,
 				maxEnergy: data.energy.max,
 				currentHealth: data.health.current,
 				maxHealth: data.health.max
-			})),
+			})}`),
 		components: [new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(selectMenu)],
 		createCollector: (nestedMenus, message): CrowniclesNestedMenuCollector => {
 			const selectMenuCollector = message.createMessageComponentCollector({ time: collectorTime });
