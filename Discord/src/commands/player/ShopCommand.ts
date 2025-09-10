@@ -110,24 +110,6 @@ export async function handleCommandShopHealAlterationDone(context: PacketContext
 	});
 }
 
-export async function handleCommandShopFullRegen(context: PacketContext): Promise<void> {
-	const interaction = DiscordCache.getInteraction(context.discord!.interaction!);
-	if (!interaction) {
-		return;
-	}
-	const lng = interaction.userLanguage;
-	await interaction.followUp({
-		embeds: [
-			new CrowniclesEmbed()
-				.formatAuthor(i18n.t("commands:shop.success", {
-					lng,
-					pseudo: escapeUsername(interaction.user.displayName)
-				}), interaction.user)
-				.setDescription(i18n.t("commands:shop.fullRegen", { lng }))
-		]
-	});
-}
-
 export async function handleCommandShopBadgeBought(context: PacketContext): Promise<void> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction!);
 	if (!interaction) {
