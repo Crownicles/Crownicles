@@ -73,14 +73,14 @@ export class ReactionCollectorCity extends ReactionCollector {
 			inn.meals.map(meal =>
 				this.buildReaction(ReactionCollectorInnMealReaction, {
 					innId: inn.innId,
-					meal: meal
+					meal
 				}))) || [];
 
 		const roomsReactions = this.data.inns?.flatMap(inn =>
 			inn.rooms.map(room =>
 				this.buildReaction(ReactionCollectorInnRoomReaction, {
 					innId: inn.innId,
-					room: room
+					room
 				}))) || [];
 
 		return {
