@@ -5,6 +5,8 @@ import {
 	CommandReportBigEventResultRes,
 	CommandReportChooseDestinationCityRes,
 	CommandReportChooseDestinationRes,
+	CommandReportEatInnMealCooldownRes,
+	CommandReportEatInnMealRes,
 	CommandReportErrorNoMonsterRes,
 	CommandReportMonsterRewardRes,
 	CommandReportPacketReq,
@@ -174,12 +176,30 @@ function cityCollectorEndCallback(context: PacketContext, player: Player, forceS
 			response.push(makePacket(CommandReportStayInCity, {}));
 		}
 		else {
+			await player.reload();
 			switch (firstReaction.reaction.type) {
 				case ReactionCollectorExitCityReaction.name:
 					await doRandomBigEvent(context, response, player, forceSpecificEvent);
 					break;
 				case ReactionCollectorInnMealReaction.name:
-					// todo
+					if (player.canEat()) {
+						const reaction = firstReaction.reaction.data as ReactionCollectorInnMealReaction;
+						player.addEnergy(reaction.meal.energy, NumberChangeReason.INN_MEAL);
+						player.eatMeal();
+						await player.spendMoney({
+							response,
+							amount: reaction.meal.price,
+							reason: NumberChangeReason.INN_MEAL
+						});
+						await player.save();
+						response.push(makePacket(CommandReportEatInnMealRes, {
+							energy: reaction.meal.energy,
+							moneySpent: reaction.meal.price
+						}));
+					}
+					else {
+						response.push(makePacket(CommandReportEatInnMealCooldownRes, {}));
+					}
 					break;
 				default:
 					CrowniclesLogger.error("Unknown city reaction: " + firstReaction.reaction.type);
@@ -199,9 +219,17 @@ function sendCityCollector(context: PacketContext, response: CrowniclesPacket[],
 			meals: city.getTodayInnMeals(inn, new Date()).map(meal => ({
 				mealId: meal.id,
 				price: meal.price,
-				health: meal.health
+				energy: meal.energy
 			}))
-		}))
+		})),
+		energy: {
+			current: player.getCumulativeEnergy(),
+			max: player.getMaxCumulativeEnergy()
+		},
+		health: {
+			current: player.health,
+			max: player.getMaxHealth()
+		}
 	});
 
 	const collectorPacket = new ReactionCollectorInstance(

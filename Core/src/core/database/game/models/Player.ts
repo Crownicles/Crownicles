@@ -138,6 +138,8 @@ export class Player extends Model {
 
 	declare banned: boolean;
 
+	declare lastMealAt: Date;
+
 	declare updatedAt: Date;
 
 	declare createdAt: Date;
@@ -1053,6 +1055,20 @@ export class Player extends Model {
 	public hasStartedToPlay(): boolean {
 		return this.effectId !== Effect.NOT_STARTED.id;
 	}
+
+	/**
+	 * Mark that the player has eaten a meal now
+	 */
+	public eatMeal(): void {
+		this.lastMealAt = new Date();
+	}
+
+	/**
+	 * Check if the player can eat a meal now
+	 */
+	public canEat(): boolean {
+		return !this.lastMealAt || this.lastMealAt.valueOf() + PlayersConstants.MEAL_COOLDOWN < Date.now();
+	}
 }
 
 /**
@@ -1584,6 +1600,11 @@ export function initModel(sequelize: Sequelize): void {
 		banned: {
 			type: DataTypes.BOOLEAN,
 			defaultValue: false
+		},
+		lastMealAt: {
+			type: DataTypes.DATE,
+			allowNull: true,
+			defaultValue: null
 		},
 		updatedAt: {
 			type: DataTypes.DATE,

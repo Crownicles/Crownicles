@@ -13,12 +13,9 @@ import {
 	CommandShopBadgeBought,
 	CommandShopBoughtTooMuchDailyPotions,
 	CommandShopClosed,
-	CommandShopEnergyHeal,
 	CommandShopFullRegen,
 	CommandShopHealAlterationDone,
 	CommandShopNoAlterationToHeal,
-	CommandShopNoEnergyToHeal,
-	CommandShopTooManyEnergyBought,
 	ShopCategory,
 	ShopItem
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorShop";
@@ -34,7 +31,6 @@ import { millisecondsToMinutes } from "../../../../Lib/src/utils/TimeUtils";
 import { Effect } from "../../../../Lib/src/types/Effect";
 import { TravelTime } from "../../core/maps/TravelTime";
 import { MissionsController } from "../../core/missions/MissionsController";
-import { EntityConstants } from "../../../../Lib/src/constants/EntityConstants";
 import {
 	Potion, PotionDataController
 } from "../../data/Potion";
@@ -125,33 +121,6 @@ function getHealAlterationShopItem(player: Player): ShopItem {
 			}
 			await MissionsController.update(player, response, { missionId: "recoverAlteration" });
 			response.push(makePacket(CommandShopHealAlterationDone, {}));
-			return true;
-		}
-	};
-}
-
-/**
- * Get the shop item for recovering energy
- * @param healEnergyAlreadyPurchased
- */
-function getHealEnergyShopItem(healEnergyAlreadyPurchased: number): ShopItem {
-	return {
-		id: ShopItemType.ENERGY_HEAL,
-		price: EntityConstants.HEAL_ENERGY_PRICE[healEnergyAlreadyPurchased > EntityConstants.HEAL_ENERGY_PRICE.length - 1 ? EntityConstants.HEAL_ENERGY_PRICE.length - 1 : healEnergyAlreadyPurchased],
-		amounts: [1],
-		buyCallback: async (response, playerId): Promise<boolean> => {
-			const player = await Players.getById(playerId);
-			if (healEnergyAlreadyPurchased > EntityConstants.HEAL_ENERGY_PRICE.length - 1) {
-				response.push(makePacket(CommandShopTooManyEnergyBought, {}));
-				return false;
-			}
-			if (player.fightPointsLost === 0) {
-				response.push(makePacket(CommandShopNoEnergyToHeal, {}));
-				return false;
-			}
-			player.setEnergyLost(0, NumberChangeReason.SHOP);
-			await player.save();
-			response.push(makePacket(CommandShopEnergyHeal, {}));
 			return true;
 		}
 	};
@@ -311,7 +280,6 @@ export default class ShopCommand {
 		_packet: CommandShopPacketReq,
 		context: PacketContext
 	): Promise<void> {
-		const healEnergyAlreadyPurchased = await LogsReadRequests.getAmountOfHealEnergyBoughtByPlayerThisWeek(player.keycloakId);
 		const potion = PotionDataController.instance.getById(await Settings.SHOP_POTION.getValue());
 
 		const shopCategories: ShopCategory[] = [
@@ -320,7 +288,6 @@ export default class ShopCommand {
 				items: [
 					getRandomItemShopItem(),
 					getHealAlterationShopItem(player),
-					getHealEnergyShopItem(healEnergyAlreadyPurchased),
 					getRegenShopItem(),
 					getBadgeShopItem()
 				]

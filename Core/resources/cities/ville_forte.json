@@ -6,18 +6,15 @@
     "meals": [{
       "id": "bread",
       "price": 50,
-      "health": 5,
-      "quality": 1
+      "energy": 200
     }, {
       "id": "pretzels",
       "price": 60,
-      "health": 6,
-      "quality": 2
+      "energy": 300
     }, {
       "id": "simpleSalad",
       "price": 60,
-      "health": 5,
-      "quality": 2
+      "energy": 250
     }]
   }]
 }
