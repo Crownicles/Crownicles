@@ -6,28 +6,23 @@
     "meals": [{
       "id": "potatoSoup",
       "price": 75,
-      "health": 8,
-      "quality": 2
+      "energy": 210
     }, {
       "id": "friedEggs",
       "price": 50,
-      "health": 5,
-      "quality": 1
+      "energy": 150
     }, {
       "id": "curryRice",
       "price": 120,
-      "health": 11,
-      "quality": 3
+      "energy": 330
     }, {
       "id": "sushi",
       "price": 200,
-      "health": 20,
-      "quality": 4
+      "energy": 500
     }, {
       "id": "bravesPanOfFood",
       "price": 700,
-      "health": 50,
-      "quality": 5
+      "energy": 1750
     }]
   }]
 }

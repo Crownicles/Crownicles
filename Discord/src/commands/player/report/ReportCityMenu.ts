@@ -156,7 +156,7 @@ function getInnMenu(
 				description: i18n.t("commands:report.city.inns.mealDescription", {
 					lng,
 					price: meal.price,
-					health: meal.health
+					energy: meal.energy
 				}),
 				value: `MEAL_${meal.mealId}`,
 				emoji: CrowniclesIcons.meals[meal.mealId]
@@ -176,10 +176,17 @@ function getInnMenu(
 		embed: new CrowniclesEmbed()
 			.formatAuthor(i18n.t("commands:report.city.inns.embedTitle", {
 				lng,
-				pseudo,
-				innId
+				pseudo
 			}), interaction.user)
-			.setDescription(i18n.t(`commands:report.city.inns.stories.${innId}`, { lng })),
+			.setDescription(i18n.t(`commands:report.city.inns.stories.${innId}`, {
+				lng
+			}) + "\n\n" + i18n.t("commands:report.city.inns.storiesEnergyAndHealth", {
+				lng,
+				currentEnergy: data.energy.current,
+				maxEnergy: data.energy.max,
+				currentHealth: data.health.current,
+				maxHealth: data.health.max
+			})),
 		components: [new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(selectMenu)],
 		createCollector: (nestedMenus, message): CrowniclesNestedMenuCollector => {
 			const selectMenuCollector = message.createMessageComponentCollector({ time: collectorTime });
@@ -190,14 +197,14 @@ function getInnMenu(
 					return;
 				}
 
-				await selectInteraction.deferUpdate();
+				await selectInteraction.deferReply();
 				const selectedValue = selectInteraction.values[0];
 
 				if (selectedValue.startsWith("MEAL_")) {
 					const mealId = selectedValue.replace("MEAL_", "");
 					const reactionIndex = packet.reactions.findIndex(
 						reaction => reaction.type === ReactionCollectorInnMealReaction.name
-							&& (reaction.data as ReactionCollectorInnMealReaction).mealId === mealId
+							&& (reaction.data as ReactionCollectorInnMealReaction).meal.mealId === mealId
 							&& (reaction.data as ReactionCollectorInnMealReaction).innId === innId
 					);
 					if (reactionIndex !== -1) {

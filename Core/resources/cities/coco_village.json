@@ -6,28 +6,23 @@
     "meals": [{
       "id": "fishAndChips",
       "price": 80,
-      "health": 8,
-      "quality": 2
+      "energy": 200
     }, {
       "id": "coldVegetableStew",
       "price": 40,
-      "health": 4,
-      "quality": 1
+      "energy": 100
     }, {
       "id": "roastedPork",
       "price": 150,
-      "health": 15,
-      "quality": 3
+      "energy": 320
     }, {
       "id": "oysterPlatter",
       "price": 250,
-      "health": 10,
-      "quality": 4
+      "energy": 600
     }, {
       "id": "tamale",
       "price": 300,
-      "health": 20,
-      "quality": 5
+      "energy": 900
     }]
   }]
 }

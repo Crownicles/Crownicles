@@ -1,15 +1,10 @@
 import { CrowniclesEmbed } from "./CrowniclesEmbed";
-import { APIMessageTopLevelComponent } from "discord-api-types/v10";
 import { MessageActionRowComponentBuilder } from "@discordjs/builders";
 import {
-	ActionRowData,
-	Collector,
-	JSONEncodable,
-	Message,
-	MessageActionRowComponentData,
-	TopLevelComponentData
+	ActionRowBuilder, Collector, Message
 } from "discord.js";
 import { CrowniclesInteraction } from "./CrowniclesInteraction";
+import { disableRows } from "../utils/DiscordCollectorUtils";
 
 // Needed because we need to accept any parameter
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -17,12 +12,7 @@ export type CrowniclesNestedMenuCollector = Collector<any, any, any>;
 
 export type CrowniclesNestedMenu = {
 	embed: CrowniclesEmbed;
-	components: readonly (
-		| JSONEncodable<APIMessageTopLevelComponent>
-		| TopLevelComponentData
-		| ActionRowData<MessageActionRowComponentData | MessageActionRowComponentBuilder>
-		| APIMessageTopLevelComponent
-	)[];
+	components: ActionRowBuilder<MessageActionRowComponentBuilder>[];
 	createCollector?: (nestedMenus: CrowniclesNestedMenus, message: Message) => CrowniclesNestedMenuCollector;
 };
 
@@ -35,11 +25,14 @@ export class CrowniclesNestedMenus {
 
 	private _currentCollector: CrowniclesNestedMenuCollector | undefined;
 
-	private _onChangeMenu: (() => void) | undefined;
+	private readonly _onChangeMenu: (() => void) | undefined;
+
+	private _currentMenu: CrowniclesNestedMenu;
 
 	constructor(mainMenu: CrowniclesNestedMenu, menus: Map<string, CrowniclesNestedMenu>, _onChangeMenu: (() => void) | undefined = undefined) {
 		this._menus = menus;
 		this._mainMenu = mainMenu;
+		this._currentMenu = mainMenu;
 		this._onChangeMenu = _onChangeMenu;
 	}
 
@@ -82,8 +75,10 @@ export class CrowniclesNestedMenus {
 			this._currentCollector = undefined;
 		}
 		if (this._message) {
+			const components = this._currentMenu.components;
+			disableRows(components);
 			await this._message.edit({
-				components: []
+				components
 			});
 		}
 	}
@@ -96,6 +91,7 @@ export class CrowniclesNestedMenus {
 			embeds: [menu.embed],
 			components: menu.components
 		});
+		this._currentMenu = menu;
 		if (this._currentCollector) {
 			this._currentCollector.stop();
 			this._currentCollector = undefined;
