@@ -576,10 +576,25 @@
           "pretzels": "Bretzels",
           "simpleSalad": "Salade simple"
         },
+        "rooms": {
+          "horribleRoom": "Chambre Horrible",
+          "simpleRoom": "Chambre Simple",
+          "comfortableRoom": "Chambre Confortable",
+          "luxuryRoom": "Chambre de Luxe"
+        },
+        "roomsStories": {
+          "horribleRoom": "{emote:city.inn} Vous entrez dans une chambre minable, avec un lit grinçant et des murs sales. L'odeur de moisi est omniprésente, et vous avez du mal à imaginer comment quelqu'un pourrait y dormir.",
+          "simpleRoom": "{emote:city.inn} Vous entrez dans une chambre simple mais propre. Le lit est confortable, et la décoration est basique mais agréable. C'est l'endroit idéal pour se reposer après une longue journée d'aventure.",
+          "comfortableRoom": "{emote:city.inn} Vous entrez dans une chambre confortable, avec un grand lit douillet et des meubles en bois massif. La décoration est chaleureuse, avec des tapis et des rideaux en tissus épais. Vous vous sentez déjà plus reposé.",
+          "luxuryRoom": "{emote:city.inn} Vous entrez dans une chambre luxueuse, digne d'un noble. Le lit est immense, avec des draps en soie et des oreillers moelleux. La décoration est somptueuse, avec des tapisseries et des meubles en bois sculpté. Vous vous sentez comme un roi."
+        },
+        "roomTitle": "{{pseudo}}, vous louez une chambre !",
+        "roomEndStory": "😴 Vous vous endormez et vous récupérez **{{health}}** {emote:unitValues.health}. Vous avez dépensé **{{price}}** {emote:unitValues.lostMoney} pour la nuit.",
+        "roomDescription": "Vie + {{health}} {emote:unitValues.health} | Prix : {{price}} {emote:unitValues.money}",
         "mealDescription": "Énergie + {{energy}} {emote:unitValues.energy} | Prix : {{price}} {emote:unitValues.money}",
         "embedTitle": "{{pseudo}}, vous êtes à l'auberge !",
         "eatMealTitle": "{{pseudo}}, vous mangez à l'auberge !",
-        "eatMealDescription": "Vous mangez le plat qui a vous a été servi avec appétit ! Cela vous rend **{{energy}}** {emote:unitValues.energy}. Vous n'oubliez pas de payer la note de **{{price}}** {emote:unitValues.lostMoney}.",
+        "eatMealDescription": "{emote:city.inn} Vous mangez le plat qui a vous a été servi avec appétit ! Cela vous rend **{{energy}}** {emote:unitValues.energy}. Vous n'oubliez pas de payer la note de **{{price}}** {emote:unitValues.lostMoney}.",
         "eatMealCooldown": "Vous digérez encore le dernier repas que vous avez pris à l'auberge et vous n'avez pas vraiment faim pour le moment. Attendez une demi-journée entre chaque repas."
       }
     }

@@ -23,6 +23,19 @@
       "id": "tamale",
       "price": 300,
       "energy": 900
+    }],
+    "rooms": [{
+      "id": "simpleRoom",
+      "price": 450,
+      "health": 50
+    }, {
+      "id": "comfortableRoom",
+      "price": 950,
+      "health": 100
+    }, {
+      "id": "luxuryRoom",
+      "price": 1450,
+      "health": 200
     }]
   }]
 }

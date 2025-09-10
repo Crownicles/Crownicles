@@ -6,7 +6,9 @@ import {
 	CommandReportEatInnMealRes,
 	CommandReportErrorNoMonsterRes,
 	CommandReportMonsterRewardRes,
+	CommandReportNotEnoughMoneyRes,
 	CommandReportRefusePveFightRes,
+	CommandReportSleepRoomRes,
 	CommandReportStayInCity,
 	CommandReportTravelSummaryRes
 } from "../../../../../../Lib/src/packets/commands/CommandReportPacket";
@@ -15,6 +17,7 @@ import {
 	displayMonsterReward,
 	handleChooseDestinationCity,
 	handleEatInnMeal,
+	handleInnRoom,
 	refusePveFight,
 	reportResult,
 	reportTravelSummary,
@@ -66,5 +69,15 @@ export default class ReportCommandPacketHandlers {
 	@packetHandler(CommandReportEatInnMealCooldownRes)
 	async reportEatInnMealCooldownRes(context: PacketContext, _packet: CommandReportEatInnMealCooldownRes): Promise<void> {
 		await handleClassicError(context, "commands:report.city.inns.eatMealCooldown");
+	}
+
+	@packetHandler(CommandReportSleepRoomRes)
+	async reportSleepRoomRes(context: PacketContext, packet: CommandReportSleepRoomRes): Promise<void> {
+		await handleInnRoom(packet, context);
+	}
+
+	@packetHandler(CommandReportNotEnoughMoneyRes)
+	async reportNotEnoughMoneyRes(context: PacketContext, packet: CommandReportNotEnoughMoneyRes): Promise<void> {
+		await handleClassicError(context, "error:notEnoughMoney", { money: packet.missingMoney });
 	}
 }

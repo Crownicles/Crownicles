@@ -123,3 +123,17 @@ export class CommandReportEatInnMealRes extends CrowniclesPacket {
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandReportEatInnMealCooldownRes extends CrowniclesPacket {}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportSleepRoomRes extends CrowniclesPacket {
+	roomId!: string;
+
+	health!: number;
+
+	moneySpent!: number;
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportNotEnoughMoneyRes extends CrowniclesPacket {
+	missingMoney!: number;
+}

@@ -9,10 +9,20 @@ export class InnMeal {
 	public readonly energy: number;
 }
 
+export class InnRoom {
+	public readonly id: string;
+
+	public readonly price: number;
+
+	public readonly health: number;
+}
+
 export class CityInn {
 	public readonly id: string;
 
 	public readonly meals: InnMeal[];
+
+	public readonly rooms: InnRoom[];
 }
 
 export class City extends Data<string> {

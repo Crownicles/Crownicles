@@ -9,8 +9,10 @@ import {
 	CommandReportEatInnMealRes,
 	CommandReportErrorNoMonsterRes,
 	CommandReportMonsterRewardRes,
+	CommandReportNotEnoughMoneyRes,
 	CommandReportPacketReq,
 	CommandReportRefusePveFightRes,
+	CommandReportSleepRoomRes,
 	CommandReportStayInCity,
 	CommandReportTravelSummaryRes
 } from "../../../../Lib/src/packets/commands/CommandReportPacket";
@@ -81,7 +83,8 @@ import {
 import {
 	ReactionCollectorCity,
 	ReactionCollectorExitCityReaction,
-	ReactionCollectorInnMealReaction
+	ReactionCollectorInnMealReaction,
+	ReactionCollectorInnRoomReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorCity";
 import { RequirementEffectPacket } from "../../../../Lib/src/packets/commands/requirements/RequirementEffectPacket";
 
@@ -184,6 +187,12 @@ function cityCollectorEndCallback(context: PacketContext, player: Player, forceS
 				case ReactionCollectorInnMealReaction.name:
 					if (player.canEat()) {
 						const reaction = firstReaction.reaction.data as ReactionCollectorInnMealReaction;
+
+						if (reaction.meal.price > player.money) {
+							response.push(makePacket(CommandReportNotEnoughMoneyRes, { missingMoney: reaction.meal.price - player.money }));
+							return;
+						}
+
 						player.addEnergy(reaction.meal.energy, NumberChangeReason.INN_MEAL);
 						player.eatMeal();
 						await player.spendMoney({
@@ -200,6 +209,28 @@ function cityCollectorEndCallback(context: PacketContext, player: Player, forceS
 					else {
 						response.push(makePacket(CommandReportEatInnMealCooldownRes, {}));
 					}
+					break;
+				case ReactionCollectorInnRoomReaction.name:
+					const reaction = firstReaction.reaction.data as ReactionCollectorInnRoomReaction;
+
+					if (reaction.room.price > player.money) {
+						response.push(makePacket(CommandReportNotEnoughMoneyRes, { missingMoney: reaction.room.price - player.money }));
+						return;
+					}
+
+					await player.addHealth(reaction.room.health, response, NumberChangeReason.INN_ROOM);
+					await player.spendMoney({
+						response,
+						amount: reaction.room.price,
+						reason: NumberChangeReason.INN_ROOM
+					});
+					await TravelTime.applyEffect(player, Effect.SLEEPING, 0, new Date(), NumberChangeReason.INN_ROOM);
+					await player.save();
+					response.push(makePacket(CommandReportSleepRoomRes, {
+						roomId: reaction.room.roomId,
+						health: reaction.room.health,
+						moneySpent: reaction.room.price
+					}));
 					break;
 				default:
 					CrowniclesLogger.error("Unknown city reaction: " + firstReaction.reaction.type);
@@ -220,6 +251,11 @@ function sendCityCollector(context: PacketContext, response: CrowniclesPacket[],
 				mealId: meal.id,
 				price: meal.price,
 				energy: meal.energy
+			})),
+			rooms: inn.rooms.map(room => ({
+				roomId: room.id,
+				price: room.price,
+				health: room.health
 			}))
 		})),
 		energy: {

@@ -23,6 +23,19 @@
       "id": "jellyfishCarpaccio",
       "price": 500,
       "energy": 2000
+    }],
+    "rooms": [{
+      "id": "simpleRoom",
+      "price": 500,
+      "health": 50
+    }, {
+      "id": "comfortableRoom",
+      "price": 1000,
+      "health": 100
+    }, {
+      "id": "luxuryRoom",
+      "price": 1500,
+      "health": 200
     }]
   }]
 }
