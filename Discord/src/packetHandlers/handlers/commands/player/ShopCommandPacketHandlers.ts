@@ -4,7 +4,6 @@ import {
 	CommandShopBadgeBought,
 	CommandShopBoughtTooMuchDailyPotions,
 	CommandShopClosed,
-	CommandShopFullRegen,
 	CommandShopHealAlterationDone,
 	CommandShopNoAlterationToHeal,
 	CommandShopNotEnoughCurrency
@@ -15,7 +14,6 @@ import {
 	handleCommandShopBadgeBought,
 	handleCommandShopBoughtTooMuchDailyPotions,
 	handleCommandShopClosed,
-	handleCommandShopFullRegen,
 	handleCommandShopHealAlterationDone,
 	handleCommandShopNoAlterationToHeal,
 	handleCommandShopNotEnoughMoney,
@@ -37,11 +35,6 @@ export default class ShopCommandPacketHandlers {
 	@packetHandler(CommandShopHealAlterationDone)
 	async shopHealAlterationDone(context: PacketContext, _packet: CommandShopHealAlterationDone): Promise<void> {
 		await handleCommandShopHealAlterationDone(context);
-	}
-
-	@packetHandler(CommandShopFullRegen)
-	async shopFullRegen(context: PacketContext, _packet: CommandShopFullRegen): Promise<void> {
-		await handleCommandShopFullRegen(context);
 	}
 
 	@packetHandler(CommandShopAlreadyHaveBadge)

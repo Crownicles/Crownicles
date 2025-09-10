@@ -13,7 +13,6 @@ import {
 	CommandShopBadgeBought,
 	CommandShopBoughtTooMuchDailyPotions,
 	CommandShopClosed,
-	CommandShopFullRegen,
 	CommandShopHealAlterationDone,
 	CommandShopNoAlterationToHeal,
 	ShopCategory,
@@ -125,28 +124,6 @@ function getHealAlterationShopItem(player: Player): ShopItem {
 		}
 	};
 }
-
-/**
- * Get the shop item for regenerating to full life
- */
-function getRegenShopItem(): ShopItem {
-	return {
-		id: ShopItemType.FULL_REGEN,
-		price: ShopConstants.FULL_REGEN_PRICE,
-		amounts: [1],
-		buyCallback: async (response, playerId): Promise<boolean> => {
-			const player = await Players.getById(playerId);
-			await player.addHealth(player.getMaxHealth() - player.health, response, NumberChangeReason.SHOP, {
-				shouldPokeMission: true,
-				overHealCountsForMission: false
-			});
-			await player.save();
-			response.push(makePacket(CommandShopFullRegen, {}));
-			return true;
-		}
-	};
-}
-
 
 /**
  * Get the shop item for the money mouth badge
@@ -288,7 +265,6 @@ export default class ShopCommand {
 				items: [
 					getRandomItemShopItem(),
 					getHealAlterationShopItem(player),
-					getRegenShopItem(),
 					getBadgeShopItem()
 				]
 			}, {
