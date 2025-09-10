@@ -171,6 +171,60 @@ export default class ReportCommand {
 	}
 }
 
+async function handleInnMealReaction(
+	player: Player,
+	reaction: ReactionCollectorInnMealReaction,
+	response: CrowniclesPacket[]
+): Promise<void> {
+	if (player.canEat()) {
+		if (reaction.meal.price > player.money) {
+			response.push(makePacket(CommandReportNotEnoughMoneyRes, { missingMoney: reaction.meal.price - player.money }));
+			return;
+		}
+
+		player.addEnergy(reaction.meal.energy, NumberChangeReason.INN_MEAL);
+		player.eatMeal();
+		await player.spendMoney({
+			response,
+			amount: reaction.meal.price,
+			reason: NumberChangeReason.INN_MEAL
+		});
+		await player.save();
+		response.push(makePacket(CommandReportEatInnMealRes, {
+			energy: reaction.meal.energy,
+			moneySpent: reaction.meal.price
+		}));
+	}
+	else {
+		response.push(makePacket(CommandReportEatInnMealCooldownRes, {}));
+	}
+}
+
+async function handleInnRoomReaction(
+	player: Player,
+	reaction: ReactionCollectorInnRoomReaction,
+	response: CrowniclesPacket[]
+): Promise<void> {
+	if (reaction.room.price > player.money) {
+		response.push(makePacket(CommandReportNotEnoughMoneyRes, { missingMoney: reaction.room.price - player.money }));
+		return;
+	}
+
+	await player.addHealth(reaction.room.health, response, NumberChangeReason.INN_ROOM);
+	await player.spendMoney({
+		response,
+		amount: reaction.room.price,
+		reason: NumberChangeReason.INN_ROOM
+	});
+	await TravelTime.applyEffect(player, Effect.SLEEPING, 0, new Date(), NumberChangeReason.INN_ROOM);
+	await player.save();
+	response.push(makePacket(CommandReportSleepRoomRes, {
+		roomId: reaction.room.roomId,
+		health: reaction.room.health,
+		moneySpent: reaction.room.price
+	}));
+}
+
 function cityCollectorEndCallback(context: PacketContext, player: Player, forceSpecificEvent: number): EndCallback {
 	return async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
 		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.REPORT_COMMAND);
@@ -180,56 +234,15 @@ function cityCollectorEndCallback(context: PacketContext, player: Player, forceS
 		}
 		else {
 			await player.reload();
-			const innMealReaction = firstReaction.reaction.data as ReactionCollectorInnMealReaction;
-			const innRoomReaction = firstReaction.reaction.data as ReactionCollectorInnRoomReaction;
-
 			switch (firstReaction.reaction.type) {
 				case ReactionCollectorExitCityReaction.name:
 					await doRandomBigEvent(context, response, player, forceSpecificEvent);
 					break;
 				case ReactionCollectorInnMealReaction.name:
-					if (player.canEat()) {
-						if (innMealReaction.meal.price > player.money) {
-							response.push(makePacket(CommandReportNotEnoughMoneyRes, { missingMoney: innMealReaction.meal.price - player.money }));
-							return;
-						}
-
-						player.addEnergy(innMealReaction.meal.energy, NumberChangeReason.INN_MEAL);
-						player.eatMeal();
-						await player.spendMoney({
-							response,
-							amount: innMealReaction.meal.price,
-							reason: NumberChangeReason.INN_MEAL
-						});
-						await player.save();
-						response.push(makePacket(CommandReportEatInnMealRes, {
-							energy: innMealReaction.meal.energy,
-							moneySpent: innMealReaction.meal.price
-						}));
-					}
-					else {
-						response.push(makePacket(CommandReportEatInnMealCooldownRes, {}));
-					}
+					await handleInnMealReaction(player, firstReaction.reaction.data as ReactionCollectorInnMealReaction, response);
 					break;
 				case ReactionCollectorInnRoomReaction.name:
-					if (innRoomReaction.room.price > player.money) {
-						response.push(makePacket(CommandReportNotEnoughMoneyRes, { missingMoney: innRoomReaction.room.price - player.money }));
-						return;
-					}
-
-					await player.addHealth(innRoomReaction.room.health, response, NumberChangeReason.INN_ROOM);
-					await player.spendMoney({
-						response,
-						amount: innRoomReaction.room.price,
-						reason: NumberChangeReason.INN_ROOM
-					});
-					await TravelTime.applyEffect(player, Effect.SLEEPING, 0, new Date(), NumberChangeReason.INN_ROOM);
-					await player.save();
-					response.push(makePacket(CommandReportSleepRoomRes, {
-						roomId: innRoomReaction.room.roomId,
-						health: innRoomReaction.room.health,
-						moneySpent: innRoomReaction.room.price
-					}));
+					await handleInnRoomReaction(player, firstReaction.reaction.data as ReactionCollectorInnRoomReaction, response);
 					break;
 				default:
 					CrowniclesLogger.error(`Unknown city reaction: ${firstReaction.reaction.type}`);
