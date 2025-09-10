@@ -335,8 +335,10 @@
     "weapons_one": "Waffe ({{count}}/{{max}}):",
     "weapons_other": "Waffen ({{count}}/{{max}}):",
     "randomItemTitle": "{{pseudo}}Sie haben etwas gefunden!",
-    "randomItemFooter": "Sie haben bereits eine Ausrüstung, möchten Sie diese verkaufen?",
-    "randomItemFooterPotion": "Möchten Sie Ihren aktuellen Trank vernichten?",
+    "randomItemAcceptTitle": "Vous avez déjà un équipement, souhaitez-vous le vendre ?",
+    "randomItemAcceptTitlePotion": "Vous avez déjà une potion, que souhaitez-vous faire ?",
+    "randomItemFooterPotion": "Utilisez {emote:collectors.accept} pour garder la potion trouvée et remplacer votre potion actuelle, {emote:items.drinkPotion} pour consommer la potion trouvée, {emote:collectors.refuse} pour jeter la potion trouvée.",
+    "randomItemFooterPotionChoice": "Utilisez un numéro pour remplacer une potion par la potion trouvée, {emote:items.drinkPotion} pour consommer la potion trouvée, {emote:collectors.refuse} pour jeter la potion trouvée.",
     "acceptedTitle": "{{pseudo}}Sie haben eine Ausrüstung erhalten!",
     "chooseItemToReplaceTitle": "Wählen Sie ein zu ersetzendes Objekt"
   },
@@ -1039,19 +1041,24 @@
   },
   "daily": {
     "errors": {
-      "objectDoNothingError": "Du versuchst, die Kraft des Gegenstandes, den du mit dir herumträgst, zu nutzen... Aber es hat keine Wirkung!",
-      "objectIsActiveDuringFights": "Die Kraft des Gegenstandes, den Sie mit sich führen, ist während der Kämpfe automatisch aktiv!",
-      "noActiveObject": "Sie haben leider keine aktiven Gegenstände in Ihrem Inventar!",
-      "cooldown": "Sie können Ihren Alltagsgegenstand nur alle {{cooldownTime}} Stunden verwenden. Besuchen Sie wieder {{time}}."
+      "noAvailableObject": "Vous n'avez malheureusement aucun objet utilisable quotidiennement dans votre inventaire ! Les objects de combats ne peuvent pas être utilisés via cette commande.",
+      "cooldown": "Sie können Ihren Alltagsgegenstand nur alle {{cooldownTime}} Stunden verwenden. Besuchen Sie wieder {{time}}.",
+      "cancel": "Vous avez annulé l'utilisation de votre objet quotidien."
     },
     "title": "{{pseudo}}Sie haben Ihre tägliche Belohnung erhalten!",
-    "description": "{emote:unitValues.{{nature}}} $t(commands:daily.natureText.{{nature}}) **{{value}}**!",
+    "description": "{emote:unitValues.{{nature}}} $t(commands:daily.natureText.{{nature}}) **{{value}}** !",
     "natureText": {
       "health": "Gewonnenes Leben :",
       "energy": "Gewonnene Energie :",
       "money": "Verdientes Geld :",
       "time": "Sie haben sich um"
-    }
+    },
+    "collectorTitleOneObject": "{{pseudo}}, confirmation de votre récompense journalière !",
+    "collectorDescOneObject": "Voulez-vous utiliser votre objet quotidien ?\n\n{{object}}",
+    "collectorTitle": "{{pseudo}}, choix de votre récompense journalière !",
+    "collectorDesc": "Choisissez un objet à utiliser dans la liste ci-dessous :",
+    "collectorRefuseOption": "Annuler",
+    "menuPlaceholder": "Sélectionnez un objet"
   },
   "unlock": {
     "himself": "Wenn Sie sich nicht selbst befreien können, bitten Sie einen Freund, dies zu tun.",
@@ -1296,8 +1303,8 @@
     "healthBonus": "{emote:unitValues.health} Gewonnenes Leben: {{value}} !",
     "energyBonus": "{emote:unitValues.energy} Gewonnene Energie: {{value}} !",
     "timeBonus": "{emote:unitValues.time} Sie sind weitergekommen von {{value}} !",
-    "noBonus": "{emote:messages.refuse} Sie konsumieren das Getränk, das Sie transportiert haben... Das scheint nicht sehr effektiv zu sein!",
-    "drinkSuccessTitle": "{{pseudo}}Wenn Sie das Getränk trinken, das Sie transportiert haben, dann trinken Sie es!",
+    "noBonus": "{emote:messages.refuse} Vous consommez une potion... Ça ne semble pas très efficace !",
+    "drinkSuccessTitle": "{{pseudo}}, vous consommez une potion !",
     "confirmationTitle": "{{pseudo}}Bestätigung :",
     "confirmation": "Sind Sie sicher, dass Sie Ihre {{potion}} trinken möchten?",
     "confirmationFooter": "Diesen Schritt kann man umgehen, indem man den Parameter erzwingen!"
