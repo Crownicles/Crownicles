@@ -231,6 +231,9 @@ export const CrowniclesIcons: {
 	meals: {
 		[mealId: string]: string;
 	};
+	rooms: {
+		[roomId: string]: string;
+	};
 } = {
 	effects: {
 		notStarted: "👶",
@@ -2414,5 +2417,11 @@ export const CrowniclesIcons: {
 		bread: "🍞",
 		pretzels: "🥨",
 		simpleSalad: "🥗"
+	},
+	rooms: {
+		horribleRoom: "🕸️",
+		simpleRoom: "🛋️",
+		comfortableRoom: "🛏️",
+		luxuryRoom: "👑"
 	}
 };

@@ -16,7 +16,8 @@ import {
 import {
 	ReactionCollectorCityData,
 	ReactionCollectorExitCityReaction,
-	ReactionCollectorInnMealReaction
+	ReactionCollectorInnMealReaction,
+	ReactionCollectorInnRoomReaction
 } from "../../../../../Lib/src/packets/interaction/ReactionCollectorCity";
 import {
 	ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuInteraction
@@ -163,6 +164,24 @@ function getInnMenu(
 			});
 	}
 
+	// Rooms
+	for (const room of data.inns?.find(i => i.innId === innId)?.rooms || []) {
+		selectMenu.setCustomId(`ROOM_${room.roomId}`)
+			.setPlaceholder(i18n.t("commands:report.city.placeholder", { lng }))
+			.addOptions({
+				label: i18n.t(`commands:report.city.inns.rooms.${room.roomId}`, {
+					lng
+				}),
+				description: i18n.t("commands:report.city.inns.roomDescription", {
+					lng,
+					price: room.price,
+					health: room.health
+				}),
+				value: `ROOM_${room.roomId}`,
+				emoji: CrowniclesIcons.rooms[room.roomId]
+			});
+	}
+
 	// Exit inn reaction
 	selectMenu.setCustomId("BACK_TO_CITY")
 		.setPlaceholder(i18n.t("commands:report.city.placeholder", { lng }))
@@ -210,10 +229,19 @@ function getInnMenu(
 					if (reactionIndex !== -1) {
 						DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, selectInteraction, reactionIndex);
 					}
-					return;
 				}
-
-				if (selectedValue === "BACK_TO_CITY") {
+				else if (selectedValue.startsWith("ROOM_")) {
+					const roomId = selectedValue.replace("ROOM_", "");
+					const reactionIndex = packet.reactions.findIndex(
+						reaction => reaction.type === ReactionCollectorInnRoomReaction.name
+							&& (reaction.data as ReactionCollectorInnRoomReaction).room.roomId === roomId
+							&& (reaction.data as ReactionCollectorInnRoomReaction).innId === innId
+					);
+					if (reactionIndex !== -1) {
+						DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, selectInteraction, reactionIndex);
+					}
+				}
+				else if (selectedValue === "BACK_TO_CITY") {
 					await nestedMenus.changeToMainMenu();
 				}
 			});
