@@ -15,6 +15,16 @@
       "id": "simpleSalad",
       "price": 60,
       "energy": 250
+    }],
+    "rooms": [{
+      "id": "horribleRoom",
+      "price": 200,
+      "health": 20
+    },
+    {
+      "id": "commonRoom",
+      "price": 500,
+      "health": 50
     }]
   }]
 }

@@ -51,7 +51,8 @@ export enum NumberChangeReason {
 	FIGHT_PET_SMALL_EVENT,
 	RAGE_EXPLOSION_ACTION,
 	JOIN_BOAT,
-	INN_MEAL
+	INN_MEAL,
+	INN_ROOM
 }
 
 export enum ShopItemType {

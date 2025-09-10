@@ -20,6 +20,11 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 			price: number;
 			energy: number;
 		}[];
+		rooms: {
+			roomId: string;
+			price: number;
+			health: number;
+		}[];
 	}[];
 
 	energy!: {
@@ -45,6 +50,16 @@ export class ReactionCollectorInnMealReaction extends ReactionCollectorReaction 
 	};
 }
 
+export class ReactionCollectorInnRoomReaction extends ReactionCollectorReaction {
+	innId!: string;
+
+	room!: {
+		roomId: string;
+		price: number;
+		health: number;
+	};
+}
+
 export class ReactionCollectorCity extends ReactionCollector {
 	private readonly data!: ReactionCollectorCityData;
 
@@ -57,7 +72,15 @@ export class ReactionCollectorCity extends ReactionCollector {
 		const mealsReactions = this.data.inns?.flatMap(inn =>
 			inn.meals.map(meal =>
 				this.buildReaction(ReactionCollectorInnMealReaction, {
-					innId: inn.innId, meal: meal
+					innId: inn.innId,
+					meal: meal
+				}))) || [];
+
+		const roomsReactions = this.data.inns?.flatMap(inn =>
+			inn.rooms.map(room =>
+				this.buildReaction(ReactionCollectorInnRoomReaction, {
+					innId: inn.innId,
+					room: room
 				}))) || [];
 
 		return {
@@ -66,7 +89,8 @@ export class ReactionCollectorCity extends ReactionCollector {
 			reactions: [
 				this.buildReaction(ReactionCollectorExitCityReaction, {}),
 				this.buildReaction(ReactionCollectorRefuseReaction, {}),
-				...mealsReactions
+				...mealsReactions,
+				...roomsReactions
 			],
 			data: this.buildData(ReactionCollectorCityData, {
 				...this.data
