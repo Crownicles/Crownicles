@@ -40,10 +40,6 @@ export class CommandShopHealAlterationDone extends CrowniclesPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandShopFullRegen extends CrowniclesPacket {
-}
-
-@sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandShopAlreadyHaveBadge extends CrowniclesPacket {
 }
 
