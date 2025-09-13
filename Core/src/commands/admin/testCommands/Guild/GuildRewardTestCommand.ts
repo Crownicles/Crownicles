@@ -7,7 +7,7 @@ import { CommandGuildDailyPacketReq } from "../../../../../../Lib/src/packets/co
 import { makePacket } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import GuildDailyCommand from "../../../guild/GuildDailyCommand";
 
-let stringDesc = "Force l'exécution d'une mission quotidienne de guilde avec un type de récompense spécifique. Permet de tester tous les types de récompenses. Types disponibles : ";
+let stringDesc = "Permet de déclencher une récompense de guilde sans passer par les vérifications du cooldown. Liste des sorties disponibles : ";
 Object.entries(GuildDailyConstants.REWARD_TYPES)
 	.forEach(v => {
 		stringDesc += `\n - ${v[1]}`;

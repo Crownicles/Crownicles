@@ -6,7 +6,7 @@ import { DwarfPetsSeen } from "../../../../core/database/game/models/DwarfPetsSe
 export const commandInfo: ITestCommand = {
 	name: "resetpetseendwarf",
 	aliases: ["rpsd"],
-	description: "Remet à zéro la liste des familiers montrés au nain forgeron. Permet de retester les interactions avec le nain et ses récompenses"
+	description: "Remet à zéro la liste des familiers montrés au nain Talvar. (Le nain qui donne une gemme chaque fois qu'il voit un animal dans un small event)."
 };
 
 const resetPetSeenDwarfCommand: ExecuteTestCommandLike = async player => {
