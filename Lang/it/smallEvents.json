@@ -266,9 +266,9 @@
       "Il braccio destro della Gilda **{{guildName}}**, {{playerDisplay}}, vi saluta e prosegue per la sua strada."
     ],
     "class": [
-      "Si sfiora {{playerDisplay}}. Vi rendete conto che è uno dei **{{class}}s**. Parlate con lui per un po' e continuate per la vostra strada.",
-      "{{playerDisplay}}, di classe **{{class}}**, ti passa accanto, lo saluti e continui per la tua strada.",
-      "Si urta accidentalmente il braccio di {{playerDisplay}}, onorevole **{{class}}**. Entrambi vi scusate e continuate per la vostra strada."
+      "Vi sfiorate con {{playerDisplay}}. Vi rendete conto che fa parte del cerchio dei **{{classPlural}}**. Parlate con lui per un po' e continuate per la vostra strada.",
+      "{{playerDisplay}}, di classe **{{class}}**, vi passa accanto, lo salutate e continuate per la vostra strada.",
+      "Urtate accidentalmente il braccio di {{playerDisplay}}, onorevole **{{class}}**. Entrambi vi scusate e continuate per la vostra strada."
     ],
     "weapon": [
       "Incontri chi {{playerDisplay}} ti mostra la sua arma \"**{{weapon}}**\".",

@@ -266,9 +266,9 @@
       "{{guildName}} {{playerDisplay}}O braço direito do Grémio ** **, cumprimenta-o e continua o seu caminho."
     ],
     "class": [
-      "{{playerDisplay}}Esbarra com .{{class}}Apercebe-se de que ele é um dos ** s**. Fala com ele durante algum tempo e depois continua o seu caminho.",
-      "{{playerDisplay}}uma classe **{{class}}**, passa por si, acena-lhe e continua o seu caminho.",
-      "{{playerDisplay}}{{class}}Esbarra acidentalmente no braço de , o ilustre ** **. Ambos pedem desculpa e continuam o seu caminho."
+      "Esbarra com {{playerDisplay}}. Apercebe-se de que ele faz parte do círculo dos **{{classPlural}}**. Fala com ele durante algum tempo e depois continua o seu caminho.",
+      "{{playerDisplay}}, de classe **{{class}}**, passa por si, acena-lhe e continua o seu caminho.",
+      "Esbarra acidentalmente no braço de {{playerDisplay}}, o ilustre **{{class}}**. Ambos pedem desculpa e continuam o seu caminho."
     ],
     "weapon": [
       "{{playerDisplay}}{{weapon}} Encontra um homem que lhe mostra a sua arma \"** **\".",

@@ -266,8 +266,8 @@
       "The **{{guildName}}** guild's right-hand man, {{playerDisplay}}, greets you and continues on his way."
     ],
     "class": [
-      "You brush up against {{playerDisplay}}. You notice that he is part of the circle of **{{class}}s**. You talk to him for a while and then continue on your way.",
-      "{{playerDisplay}}class **{{class}}**, passes by you, you greet him and continue on your way.",
+      "You brush up against {{playerDisplay}}. You notice that he is part of the circle of **{{classPlural}}**. You talk to him for a while and then continue on your way.",
+      "{{playerDisplay}}, class **{{class}}**, passes by you, you greet him and continue on your way.",
       "You accidentally bump into the arm of {{playerDisplay}}, an honorable **{{class}}**. You both apologize and continue on your way."
     ],
     "weapon": [
