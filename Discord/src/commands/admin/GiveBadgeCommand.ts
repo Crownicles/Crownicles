@@ -72,7 +72,7 @@ async function handleGetPlayerInfoResponse(
 				if (rows.length === 0 || rows[rows.length - 1].components[0].options.length >= DiscordConstants.MAX_SELECT_MENU_OPTIONS) {
 					rows.push(new ActionRowBuilder<StringSelectMenuBuilder>());
 					rows[rows.length - 1].addComponents(new StringSelectMenuBuilder()
-						.setPlaceholder(i18n.t("commands:giveBadge.selectBadge", { lng: interaction.userLanguage }))
+						.setPlaceholder(i18n.t("commands:giveBadge.selectBadgePlaceholder", { lng: interaction.userLanguage }))
 						.setCustomId(`giveBadge-${interaction.user.id}-${badge}`));
 				}
 				rows[rows.length - 1].components[0].addOptions(new StringSelectMenuOptionBuilder()
