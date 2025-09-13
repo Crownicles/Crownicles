@@ -11,7 +11,7 @@ export const commandInfo: ITestCommand = {
 		"category [0-3]": TypeKey.INTEGER,
 		"number": TypeKey.INTEGER
 	},
-	description: "Modifie le nombre d'emplacements d'inventaire pour une catégorie d'objets. Catégories : 0=armes, 1=armures, 2=potions, 3=objets. Maximum 5 slots par catégorie"
+	description: "Modifie le nombre d'emplacements d'inventaire pour une catégorie d'objets. Catégories : 0=armes, 1=armures, 2=potions, 3=objets."
 };
 
 /**

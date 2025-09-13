@@ -17,7 +17,7 @@ import { LogsMapLinks } from "../../../../core/database/logs/models/LogsMapLinks
 export const commandInfo: ITestCommand = {
 	name: "resetjoinboat",
 	aliases: ["rjb"],
-	description: "Remet à zéro le compteur de voyages vers l'île de guilde du joueur testeur, permettant de retester les mécaniques de voyage insulaire"
+	description: "Remet à zéro le compteur de voyages vers l'île de guilde du joueur testeur."
 };
 
 const resetJoinBoatTestCommand: ExecuteTestCommandLike = async player => {
