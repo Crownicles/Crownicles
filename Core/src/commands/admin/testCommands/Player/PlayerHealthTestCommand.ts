@@ -10,7 +10,7 @@ export const commandInfo: ITestCommand = {
 	typeWaited: {
 		health: TypeKey.INTEGER
 	},
-	description: "Mets la vie de votre joueur à la valeur donnée"
+	description: "Définit les points de vie actuels du joueur testeur. Ne peut pas dépasser les points de vie maximum. Utilisez 0 pour tuer le joueur"
 };
 
 /**

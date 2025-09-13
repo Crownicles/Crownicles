@@ -13,7 +13,7 @@ export const commandInfo: ITestCommand = {
 	typeWaited: {
 		id: TypeKey.ID
 	},
-	description: "Enferme le joueur donné"
+	description: "Applique l'effet 'emprisonné' au joueur spécifié par son ID. Bloque le joueur et l'empêche d'effectuer des actions"
 };
 
 /**

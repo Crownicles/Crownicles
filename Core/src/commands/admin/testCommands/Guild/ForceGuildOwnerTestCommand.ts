@@ -7,7 +7,7 @@ import { crowniclesInstance } from "../../../../index";
 export const commandInfo: ITestCommand = {
 	name: "forceguildowner",
 	aliases: ["fgo"],
-	description: "Vous passe chef de guilde de force"
+	description: "Force le joueur testeur à devenir chef de sa guilde. Utile pour tester les fonctionnalités de leadership et de gestion de guilde"
 };
 
 /**

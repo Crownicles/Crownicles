@@ -7,7 +7,7 @@ import { Campaign } from "../../../../core/missions/Campaign";
 
 export const commandInfo: ITestCommand = {
 	name: "resetCampaign",
-	description: "Remets à 0 la campagne"
+	description: "Remet à zéro la progression de la campagne et repositionne le joueur à la mission 1. Utile pour tester le début du scénario principal"
 };
 
 /**

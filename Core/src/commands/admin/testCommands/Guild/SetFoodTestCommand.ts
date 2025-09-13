@@ -13,7 +13,7 @@ export const commandInfo: ITestCommand = {
 		foodType: TypeKey.STRING,
 		amount: TypeKey.INTEGER
 	},
-	description: "Set le montant d'une ressource de nourriture de la guilde à un montant donné"
+	description: "Définit la quantité d'un type de nourriture spécifique dans le stockage de la guilde. Types disponibles : voir les constantes de nourriture"
 };
 
 /**

@@ -10,7 +10,7 @@ export const commandInfo: ITestCommand = {
 		"weektlyimeout",
 		"weektimeout"
 	],
-	description: "Effectue une fin de semaine (actions hebdomadaires)"
+	description: "Déclenche manuellement les actions hebdomadaires du serveur : calculs des classements, récompenses de fin de semaine, renouvellement des contenus. ATTENTION : affecte tous les joueurs"
 };
 
 /**

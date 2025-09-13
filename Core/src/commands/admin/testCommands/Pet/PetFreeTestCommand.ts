@@ -7,7 +7,7 @@ import { PetEntities } from "../../../../core/database/game/models/PetEntity";
 export const commandInfo: ITestCommand = {
 	name: "petfree",
 	aliases: ["pf"],
-	description: "Libère votre pet de force, sans prendre en compte le cooldown"
+	description: "Libère immédiatement le familier actuel sans attendre le cooldown normal. Le familier est retiré de l'inventaire du joueur"
 };
 
 /**

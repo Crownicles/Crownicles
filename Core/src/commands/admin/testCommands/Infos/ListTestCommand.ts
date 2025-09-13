@@ -4,7 +4,7 @@ import {
 
 export const commandInfo: ITestCommand = {
 	name: "list",
-	description: "Affiche la liste des commandes tests"
+	description: "Affiche la liste complète des commandes de test organisées par catégories avec leurs noms et aliases. Utilisez 'test help <command>' pour plus de détails"
 };
 
 /**

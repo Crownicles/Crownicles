@@ -10,7 +10,7 @@ export const commandInfo: ITestCommand = {
 	typeWaited: {
 		gem: TypeKey.INTEGER
 	},
-	description: "Ajoute la valeur donnée de gemmes à votre joueur"
+	description: "Ajoute un nombre spécifique de gemmes au joueur testeur. Les gemmes permettent d'améliorer les missions actives"
 };
 
 /**

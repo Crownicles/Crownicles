@@ -9,7 +9,7 @@ export const commandInfo: ITestCommand = {
 	typeWaited: {
 		badge: TypeKey.STRING
 	},
-	description: "Donne un badge à votre joueur"
+	description: "Attribue un badge spécifique au joueur. Utilisez '*' pour tous les badges. La commande affiche la liste des badges disponibles en cas d'erreur"
 };
 
 /**

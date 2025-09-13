@@ -13,7 +13,7 @@ export const commandInfo: ITestCommand = {
 	typeWaited: {
 		command: TypeKey.STRING
 	},
-	description: "Affiche l'aide pour une commande"
+	description: "Affiche l'aide détaillée pour une commande de test spécifiée : description, format, paramètres et aliases disponibles"
 };
 
 /**

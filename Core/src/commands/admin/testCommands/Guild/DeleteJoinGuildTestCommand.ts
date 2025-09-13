@@ -8,7 +8,7 @@ import { LogsGuilds } from "../../../../core/database/logs/models/LogsGuilds";
 export const commandInfo: ITestCommand = {
 	name: "deletejoinguild",
 	aliases: ["djg"],
-	description: "Efface la date à laquelle vous avez rejoint la guilde"
+	description: "Supprime l'historique de la date d'adhésion à la guilde du joueur testeur. Utile pour tester les mécaniques liées à l'ancienneté en guilde"
 };
 
 const deleteJoinGuildTestCommand: ExecuteTestCommandLike = async player => {

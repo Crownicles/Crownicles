@@ -10,7 +10,7 @@ export const commandInfo: ITestCommand = {
 		"category [0-3]": TypeKey.INTEGER,
 		"item id": TypeKey.INTEGER
 	},
-	description: "Permet de se donner un objet"
+	description: "Donne un objet spécifique au joueur. Catégories : 0=armes, 1=armures, 2=potions, 3=objets. Voir Core/resources/[category]/ pour les IDs"
 };
 
 /**

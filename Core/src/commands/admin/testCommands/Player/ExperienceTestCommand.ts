@@ -10,7 +10,7 @@ export const commandInfo: ITestCommand = {
 	typeWaited: {
 		experience: TypeKey.INTEGER
 	},
-	description: "Mets l'expérience votre joueur à la valeur donnée"
+	description: "Définit l'expérience du joueur testeur. L'expérience permet de monter de niveau. Maximum limité à 2x l'XP nécessaire pour le prochain niveau"
 };
 
 /**

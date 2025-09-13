@@ -6,7 +6,7 @@ import ReportCommand from "../../../player/ReportCommand";
 
 const smallEventsKeys = SmallEventDataController.instance.getKeys();
 
-const strings = ["Force un type de mini event parmis ceux-ci :"];
+const strings = ["Force le déclenchement d'un mini-événement spécifique pendant le voyage. Permet de tester tous les types de mini-événements disponibles :"];
 smallEventsKeys
 	.forEach(seName => {
 		strings.push(`- ${seName}`);

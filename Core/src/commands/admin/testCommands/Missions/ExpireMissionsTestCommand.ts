@@ -5,7 +5,7 @@ import { MissionSlots } from "../../../../core/database/game/models/MissionSlot"
 
 export const commandInfo: ITestCommand = {
 	name: "expireMissions",
-	description: "Expire toutes les missions"
+	description: "Force l'expiration immédiate de toutes les missions non-campagne du joueur. Utile pour tester les mécaniques de renouvellement des missions"
 };
 
 /**

@@ -11,7 +11,7 @@ export const commandInfo: ITestCommand = {
 	typeWaited: {
 		blob: TypeKey.INTEGER
 	},
-	description: "Change le blob de la campagne à la valeur donnée"
+	description: "Modifie le blob de progression de campagne (chaîne binaire). Format requis : séquence de 0 et 1 correspondant au nombre max de campagnes"
 };
 
 const setCampaignBlobTestCommand: ExecuteTestCommandLike = async (player, args) => {

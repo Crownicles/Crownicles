@@ -14,7 +14,7 @@ export const commandInfo: ITestCommand = {
 		id: TypeKey.INTEGER,
 		sex: TypeKey.STRING
 	},
-	description: "Ajoute un pet à votre shelter de guilde avec un id et un sexe donnés"
+	description: "Ajoute un familier au refuge de guilde avec l'ID et le sexe spécifiés. Voir Core/resources/pets/ pour les IDs valides. Sexe: m=mâle, f=femelle"
 };
 
 /**

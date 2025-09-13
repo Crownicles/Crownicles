@@ -20,7 +20,7 @@ export const commandInfo: ITestCommand = {
 		action2: TypeKey.STRING,
 		action3: TypeKey.STRING
 	},
-	description: `Force le mini-event de la sorcière avec les actions données. Liste des actions :\n${strings.join("\n")}`
+	description: `Force le déclenchement du mini-événement de la sorcière avec 3 actions spécifiées. Permet de tester les différents choix et leurs conséquences. Liste des actions :\n${strings.join("\n")}`
 };
 
 const witchActionsLower = witchActions.map(action => action.id.toLowerCase());

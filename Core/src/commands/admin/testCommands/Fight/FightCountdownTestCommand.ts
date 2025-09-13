@@ -9,7 +9,7 @@ export const commandInfo: ITestCommand = {
 	typeWaited: {
 		countdown: TypeKey.INTEGER
 	},
-	description: "Mets le fightcountdown de votre joueur à la valeur donnée"
+	description: "Définit le cooldown avant de pouvoir relancer un combat. Utile pour tester les restrictions de timing entre combats consécutifs"
 };
 
 /**

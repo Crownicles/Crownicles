@@ -6,7 +6,7 @@ import {
 export const commandInfo: ITestCommand = {
 	name: "forceseasonend",
 	aliases: ["forcesea"],
-	description: "Effectue une fin de saison (action hebdomadaire qui réinitialise le classement glorieux, et qui annonce le gagnant de la semaine)"
+	description: "Force la fin de saison complète : réinitialise le classement glorieux, annonce le gagnant, distribue les récompenses et archive les résultats. ATTENTION : affecte tous les joueurs"
 };
 
 /**

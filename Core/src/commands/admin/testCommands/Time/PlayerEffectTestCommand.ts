@@ -23,7 +23,7 @@ export const commandInfo: ITestCommand = {
 	typeWaited: {
 		effect: TypeKey.STRING
 	},
-	description: `Met l'effet donné à votre joueur\nListe des effets :\n${printableEffects}`
+	description: `Applique l'effet spécifié au joueur testeur. Permet de tester les différents états de jeu et leurs conséquences\nListe des effets :\n${printableEffects}`
 };
 
 /**

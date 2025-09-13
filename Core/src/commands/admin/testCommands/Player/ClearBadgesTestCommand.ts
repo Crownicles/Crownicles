@@ -4,7 +4,7 @@ import {
 
 export const commandInfo: ITestCommand = {
 	name: "clearbadges",
-	description: "Supprime les badges de votre joueur"
+	description: "Supprime tous les badges du joueur testeur. Utile pour tester les mécaniques d'obtention de badges et repartir à zéro"
 };
 
 /**

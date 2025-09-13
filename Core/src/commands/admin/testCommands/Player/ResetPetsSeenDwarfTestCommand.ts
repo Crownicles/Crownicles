@@ -6,7 +6,7 @@ import { DwarfPetsSeen } from "../../../../core/database/game/models/DwarfPetsSe
 export const commandInfo: ITestCommand = {
 	name: "resetpetseendwarf",
 	aliases: ["rpsd"],
-	description: "Réinitialise à 0 les pets que vous avez montré au nain."
+	description: "Remet à zéro la liste des familiers montrés au nain forgeron. Permet de retester les interactions avec le nain et ses récompenses"
 };
 
 const resetPetSeenDwarfCommand: ExecuteTestCommandLike = async player => {

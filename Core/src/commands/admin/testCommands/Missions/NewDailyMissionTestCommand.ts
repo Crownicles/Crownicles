@@ -7,7 +7,7 @@ import PlayerMissionsInfo from "../../../../core/database/game/models/PlayerMiss
 export const commandInfo: ITestCommand = {
 	name: "newDailyMissions",
 	aliases: ["ndm"],
-	description: "Permet d'obtenir une nouvelle mission quotidienne"
+	description: "Génère une nouvelle mission quotidienne pour tous les joueurs et remet à zéro les compteurs de progression. Utile pour tester le système de missions quotidiennes"
 };
 
 /**

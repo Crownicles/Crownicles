@@ -10,7 +10,7 @@ export const commandInfo: ITestCommand = {
 	typeWaited: {
 		time: TypeKey.INTEGER
 	},
-	description: "Avance le daily de votre joueur d'une durée en minutes donnée"
+	description: "Avance la date de la dernière récompense quotidienne du joueur de X minutes, permettant de récupérer la récompense quotidienne plus tôt"
 };
 
 /**

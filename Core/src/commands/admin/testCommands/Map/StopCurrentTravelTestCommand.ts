@@ -6,7 +6,7 @@ import {
 export const commandInfo: ITestCommand = {
 	name: "stopcurrenttravel",
 	aliases: ["stravel", "stoptravel"],
-	description: "Stoppe le voyage en cours"
+	description: "Interrompt immédiatement le voyage en cours et place le joueur à sa destination finale"
 };
 
 /**

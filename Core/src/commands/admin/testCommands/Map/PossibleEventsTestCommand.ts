@@ -6,7 +6,7 @@ import { verifyTrigger } from "../../../../data/events/BigEventTrigger";
 
 export const commandInfo: ITestCommand = {
 	name: "possibleEvents",
-	description: "Affiche les évents possibles"
+	description: "Affiche la liste des événements pouvant se déclencher sur la carte actuelle avec leurs conditions et leur statut de validation"
 };
 
 /**

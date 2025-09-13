@@ -15,7 +15,7 @@ export const commandInfo: ITestCommand = {
 	typeWaited: {
 		type: TypeKey.STRING
 	},
-	description: "Envoie une notification de type donné"
+	description: "Envoie une notification de test au joueur. Types disponibles : 'report' (destination atteinte), 'guildDaily' (mission de guilde). Utile pour tester l'affichage des notifications"
 };
 
 /**

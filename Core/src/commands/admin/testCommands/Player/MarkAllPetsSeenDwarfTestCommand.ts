@@ -7,7 +7,7 @@ import { PetDataController } from "../../../../data/Pet";
 export const commandInfo: ITestCommand = {
 	name: "markallpetsseendwarf",
 	aliases: ["mapsd"],
-	description: "Mettre au complet les pets montrés au nain."
+	description: "Marque tous les familiers comme ayant été montrés au nain forgeron. Permet de tester les interactions avancées avec le nain sans collecter tous les pets"
 };
 
 const markAllPetsSeenDwarfCommand: ExecuteTestCommandLike = async player => {

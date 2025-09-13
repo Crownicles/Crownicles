@@ -9,7 +9,7 @@ import { CommandLeagueRewardPacketReq } from "../../../../../../Lib/src/packets/
 
 export const commandInfo: ITestCommand = {
 	name: "leaguereward",
-	description: "Exécute la commande leaguereward sans tenir compte de la date"
+	description: "Force l'exécution de la commande de récompense de ligue en ignorant les restrictions de date. Permet de tester les récompenses de classement"
 };
 
 const leagueRewardTestCommand: ExecuteTestCommandLike = async (player, _args, response: CrowniclesPacket[], context: PacketContext) => {

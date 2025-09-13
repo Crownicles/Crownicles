@@ -13,7 +13,7 @@ export const commandInfo: ITestCommand = {
 		"mission id": TypeKey.STRING,
 		"difficulty": TypeKey.STRING
 	},
-	description: "Permet de se donner une mission spécifique"
+	description: "Permet de se donner une mission spécifique. Voir Core/resources/missions/ pour la liste des IDs disponibles. Difficultés : easy (e), medium (m), hard (h)"
 };
 
 /**

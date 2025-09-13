@@ -5,7 +5,7 @@ import {
 
 export const commandInfo: ITestCommand = {
 	name: "mapinfo",
-	description: "Donne des informations pratiques sur la map sur laquelle vous êtes"
+	description: "Affiche des informations de debug sur la position actuelle : cartes précédente et actuelle, statut de voyage, IDs et noms des lieux"
 };
 
 /**
