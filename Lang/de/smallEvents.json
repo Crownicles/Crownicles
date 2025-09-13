@@ -266,8 +266,8 @@
       "Die rechte Hand der Gilde **{{guildName}}**, {{playerDisplay}}, grüßt Sie und setzt seinen Weg fort."
     ],
     "class": [
-      "Sie streifen {{playerDisplay}}. Sie stellen fest, dass er zum Kreis der **{{class}}s** gehört. Sie unterhalten sich kurz mit ihm und setzen dann Ihren Weg friedlich fort.",
-      "{{playerDisplay}}{{class}}Sie grüßen ihn und setzen Ihren Weg fort.",
+      "Sie streifen {{playerDisplay}}. Sie stellen fest, dass er zum Kreis der **{{classPlural}}** gehört. Sie unterhalten sich kurz mit ihm und setzen dann Ihren Weg friedlich fort.",
+      "{{playerDisplay}}, Klasse **{{class}}**, kommt an Ihnen vorbei, Sie grüßen ihn und setzen Ihren Weg fort.",
       "Sie stoßen versehentlich gegen den Arm von {{playerDisplay}}, ehrenwerte **{{class}}**. Sie entschuldigen sich beide und setzen Ihren Weg fort."
     ],
     "weapon": [

@@ -266,9 +266,9 @@
       "{{guildName}} {{playerDisplay}}La mano derecha del Gremio ** **, , te saluda y sigue su camino."
     ],
     "class": [
-      "{{playerDisplay}}Te rozas con .{{class}}Te das cuenta de que es uno de los ** s**. Hablas un rato con él y sigues tu camino.",
-      "{{playerDisplay}}una clase **{{class}}**, pasa a tu lado, le saludas y continúas tu camino.",
-      "{{playerDisplay}}{{class}}Chocas accidentalmente con el brazo del honorable ** **. Ambos se disculpan y continúan su camino."
+      "Te rozas con {{playerDisplay}}. Te das cuenta de que es parte del círculo de **{{classPlural}}**. Hablas un rato con él y sigues tu camino.",
+      "{{playerDisplay}}, de clase **{{class}}**, pasa a tu lado, le saludas y continúas tu camino.",
+      "Chocas accidentalmente con el brazo de {{playerDisplay}}, honorable **{{class}}**. Ambos se disculpan y continúan su camino."
     ],
     "weapon": [
       "{{playerDisplay}}{{weapon}} Te encuentras con quien te muestra su arma \"** **\".",

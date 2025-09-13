@@ -336,6 +336,7 @@ export default class SmallEventsHandler {
 							playerDisplay,
 							level: packet.data!.level,
 							class: `${CrowniclesIcons.classes[packet.data!.classId]} ${i18n.t(`models:classes.${packet.data!.classId}`, { lng })}`,
+							classId: packet.data!.classId,
 							advice: StringUtils.getRandomTranslation("advices:advices", lng),
 							petEmote: hasPetInfo ? DisplayUtils.getPetIcon(packet.data!.petId!, packet.data!.petSex!) : "",
 							petName: hasPetInfo ? DisplayUtils.getPetNicknameOrTypeName(packet.data!.petName ?? null, packet.data!.petId!, packet.data!.petSex!, lng) : "",
