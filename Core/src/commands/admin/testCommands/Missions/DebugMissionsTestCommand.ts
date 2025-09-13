@@ -8,7 +8,7 @@ import { MissionDataController } from "../../../../data/Mission";
 export const commandInfo: ITestCommand = {
 	name: "debugMissions",
 	aliases: ["debugm", "debm"],
-	description: "Affiche des informations sur vos missions"
+	description: "Affiche un rapport détaillé des missions du joueur : slots actifs, gemmes, progression de campagne et informations de debug"
 };
 
 /**

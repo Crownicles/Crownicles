@@ -5,7 +5,7 @@ import { Crownicles } from "../../../../core/bot/Crownicles";
 
 export const commandInfo: ITestCommand = {
 	name: "dailytimeout",
-	description: "Effectue un dailytimeout (action journalière qui actualise la potion du jour et retire des lovePoints des pets)"
+	description: "Déclenche manuellement les actions quotidiennes du serveur : actualise la potion du jour, retire des points d'amour des pets, etc. ATTENTION : affecte tous les joueurs"
 };
 
 /**

@@ -15,7 +15,7 @@ export const commandInfo: ITestCommand = {
 		idStart: TypeKey.INTEGER,
 		idEnd: TypeKey.INTEGER
 	},
-	description: "Vous téléporte sur un chemin donné"
+	description: "Téléporte le joueur sur un chemin spécifique entre deux lieux. Voir Core/resources/mapLinks/ pour les chemins valides ou /test mapinfo pour votre position"
 };
 
 /**

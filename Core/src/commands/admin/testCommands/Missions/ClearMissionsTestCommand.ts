@@ -5,7 +5,7 @@ import { MissionSlots } from "../../../../core/database/game/models/MissionSlot"
 
 export const commandInfo: ITestCommand = {
 	name: "clearMissions",
-	description: "Permet de supprimer toutes ses missions"
+	description: "Supprime toutes les missions secondaires du joueur (préserve la mission de campagne). Utile pour nettoyer l'inventaire de missions avant de nouveaux tests"
 };
 
 /**

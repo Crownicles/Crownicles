@@ -9,7 +9,7 @@ import { MapLinkDataController } from "../../../../data/MapLink";
 export const commandInfo: ITestCommand = {
 	name: "skiptutorial",
 	aliases: ["skiptuto", "init"],
-	description: "Initialise votre joueur pour des tests"
+	description: "Alternative aux premiers /report. Permet de sauter le tutoriel et d'initialiser votre joueur au niveau 1 avec 2000 points"
 };
 
 /**

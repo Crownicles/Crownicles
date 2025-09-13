@@ -12,7 +12,7 @@ export const commandInfo: ITestCommand = {
 		id: TypeKey.INTEGER,
 		sex: TypeKey.STRING
 	},
-	description: "Vous donne un pet avec un id et un sexe donnés"
+	description: "Donne un familier spécifique avec l'ID et le sexe choisis. Utilisez ID 0 pour supprimer le pet actuel. Sexe: m=mâle, f=femelle. Voir Core/resources/pets/ pour les IDs"
 };
 
 /**

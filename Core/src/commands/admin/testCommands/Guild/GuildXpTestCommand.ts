@@ -11,7 +11,7 @@ export const commandInfo: ITestCommand = {
 	typeWaited: {
 		experience: TypeKey.INTEGER
 	},
-	description: "Mets l'expérience de votre guilde au niveau donné"
+	description: "Définit l'expérience de la guilde du joueur testeur. L'expérience de guilde permet de faire monter le niveau de la guilde et débloquer de nouvelles fonctionnalités"
 };
 
 /**

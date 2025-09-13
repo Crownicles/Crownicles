@@ -9,7 +9,7 @@ export const commandInfo: ITestCommand = {
 	typeWaited: {
 		weeklyscore: TypeKey.INTEGER
 	},
-	description: "Mets le score de la semaine de votre joueur à la valeur donnée"
+	description: "Définit le score hebdomadaire du joueur testeur. Le score hebdomadaire détermine le classement glorieux et se remet à zéro chaque semaine"
 };
 
 /**

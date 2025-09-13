@@ -12,7 +12,7 @@ export const commandInfo: ITestCommand = {
 	typeWaited: {
 		id: TypeKey.INTEGER
 	},
-	description: "Force un rapport donné"
+	description: "Force un événement spécifique lors du prochain /report. Utile pour tester des événements précis. Utilisez -1 pour un événement aléatoire. Voir /test listevents pour les IDs"
 };
 
 /**

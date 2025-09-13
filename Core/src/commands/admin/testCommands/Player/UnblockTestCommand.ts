@@ -5,7 +5,7 @@ import { BlockingUtils } from "../../../../core/utils/BlockingUtils";
 
 export const commandInfo: ITestCommand = {
 	name: "unblock",
-	description: "Vous permet de vous débloquer lorsqu'une commande vous bloque (ATTENTION: si vous obtenez un exploit avec cette commande, ce n'en est pas un)"
+	description: "Retire tous les blocages actifs de votre joueur. Utilisé quand une commande de test ou un bug vous a bloqué. Note : cette commande est prévue pour les tests"
 };
 
 /**

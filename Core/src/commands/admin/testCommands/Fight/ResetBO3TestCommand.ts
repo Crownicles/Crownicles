@@ -15,7 +15,7 @@ export const commandInfo: ITestCommand = {
 	typeWaited: {
 		keycloakId: TypeKey.ID
 	},
-	description: "Reset le BO3 contre un joueur"
+	description: "Remet à zéro le Best of 3 (série de combats PvP) contre un joueur spécifique. Utile pour tester à nouveau les mécaniques de combat répétées"
 };
 
 /**

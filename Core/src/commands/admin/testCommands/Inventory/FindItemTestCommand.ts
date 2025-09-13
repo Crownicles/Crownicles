@@ -12,7 +12,7 @@ export const commandInfo: ITestCommand = {
 		"category [0-3]": TypeKey.INTEGER,
 		"item id": TypeKey.INTEGER
 	},
-	description: "Permet de trouver un objet défini"
+	description: "Fait découvrir et ajouter un objet spécifique à l'inventaire du joueur. Catégories : 0=armes, 1=armures, 2=potions, 3=objets. Voir Core/resources/[category]/ pour les IDs"
 };
 
 /**

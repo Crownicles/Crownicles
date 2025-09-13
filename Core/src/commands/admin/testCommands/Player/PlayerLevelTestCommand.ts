@@ -10,7 +10,7 @@ export const commandInfo: ITestCommand = {
 	typeWaited: {
 		niveau: TypeKey.INTEGER
 	},
-	description: "Mets votre joueur au niveau donné"
+	description: "Définit le niveau du joueur testeur. Le niveau influence les points de vie, de puissance, et débloque de nouvelles fonctionnalités"
 };
 
 /**

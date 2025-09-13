@@ -9,7 +9,7 @@ export const commandInfo: ITestCommand = {
 	typeWaited: {
 		lostPoints: TypeKey.INTEGER
 	},
-	description: "Mets les fightpointslost de votre joueur à la valeur donnée"
+	description: "Définit les points de vie perdus lors de combats. Utile pour tester la mécanique de récupération d'énergie et les malus liés aux défaites"
 };
 
 /**

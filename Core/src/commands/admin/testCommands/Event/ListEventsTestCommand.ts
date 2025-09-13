@@ -9,7 +9,7 @@ import { CrowniclesIcons } from "../../../../../../Lib/src/CrowniclesIcons";
 export const commandInfo: ITestCommand = {
 	name: "listevents",
 	aliases: ["listevent", "le"],
-	description: "Liste tous les évènements disponibles pour chaque lieu"
+	description: "Affiche tous les événements disponibles par lieu avec leurs IDs. Essentiel pour utiliser /test forcereport avec un ID spécifique"
 };
 
 /**

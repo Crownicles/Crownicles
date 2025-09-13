@@ -9,7 +9,7 @@ export const commandInfo: ITestCommand = {
 	typeWaited: {
 		time: TypeKey.INTEGER
 	},
-	description: "Avance le dernier petfree de votre joueur d'une durée en minutes donnée"
+	description: "Avance la date du dernier 'pet free' de X minutes, permettant de libérer un animal plus tôt que prévu"
 };
 
 /**

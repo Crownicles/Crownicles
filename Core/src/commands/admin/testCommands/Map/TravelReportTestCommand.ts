@@ -6,7 +6,7 @@ import {
 export const commandInfo: ITestCommand = {
 	name: "travelreport",
 	aliases: ["tr"],
-	description: "Réinitialise le parcours que vous effectuez"
+	description: "Remet à zéro la date de début du voyage actuel, permettant de déclencher immédiatement un nouvel événement via /report"
 };
 
 /**

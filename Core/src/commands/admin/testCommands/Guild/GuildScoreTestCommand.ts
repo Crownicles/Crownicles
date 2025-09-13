@@ -16,7 +16,7 @@ export const commandInfo: ITestCommand = {
 	typeWaited: {
 		points: TypeKey.INTEGER
 	},
-	description: "Mets le score de la guilde au nombre donné"
+	description: "Définit le score total de la guilde du joueur testeur. Le score de guilde influence le classement des guildes et détermine les récompenses collectives"
 };
 
 /**

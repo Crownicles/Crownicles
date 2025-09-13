@@ -4,7 +4,7 @@ import {
 
 export const commandInfo: ITestCommand = {
 	name: "myids",
-	description: "Montre votre ID de joueur"
+	description: "Affiche vos identifiants de joueur (ID interne et Keycloak). Utile pour les commandes nécessitant un ID joueur comme resetbo3"
 };
 
 /**

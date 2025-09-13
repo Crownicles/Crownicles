@@ -10,7 +10,7 @@ export const commandInfo: ITestCommand = {
 	typeWaited: {
 		money: TypeKey.INTEGER
 	},
-	description: "Mets l'argent votre joueur à la valeur donnée"
+	description: "Définit l'argent du joueur testeur à la valeur spécifiée. L'argent sert aux achats d'objets, d'améliorations et aux services de guilde"
 };
 
 /**

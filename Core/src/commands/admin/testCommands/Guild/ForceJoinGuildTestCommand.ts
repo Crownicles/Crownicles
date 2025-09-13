@@ -12,7 +12,7 @@ export const commandInfo: ITestCommand = {
 	typeWaited: {
 		guildToJoin: TypeKey.STRING
 	},
-	description: "Vous fait changer de guilde de force. Votre nouvelle guilde sera la guilde passée en paramètre"
+	description: "Force l'adhésion à une guilde spécifique (par nom de guilde). Quitte automatiquement l'ancienne guilde. Utile pour tester les mécaniques de guilde"
 };
 
 /**

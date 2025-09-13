@@ -12,7 +12,7 @@ export const commandInfo: ITestCommand = {
 		"mission id": TypeKey.STRING,
 		"count": TypeKey.INTEGER
 	},
-	description: "Avance les missions"
+	description: "Met à jour le progrès d'une mission spécifique avec le nombre d'unités donné. Voir Core/resources/missions/ pour les IDs valides"
 };
 
 /**

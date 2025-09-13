@@ -6,7 +6,7 @@ import { PlayerMissionsInfos } from "../../../../core/database/game/models/Playe
 export const commandInfo: ITestCommand = {
 	name: "resetDailyMission",
 	aliases: ["rdm"],
-	description: "Permet de réinitialiser la mission quootidienne"
+	description: "Remet à zéro le compteur de missions quotidiennes du joueur testeur, permettant de refaire la mission quotidienne actuelle"
 };
 
 /**

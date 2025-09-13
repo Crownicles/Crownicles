@@ -11,7 +11,7 @@ export const commandInfo: ITestCommand = {
 	typeWaited: {
 		time: TypeKey.INTEGER
 	},
-	description: "Avance votre voyage d'une durée en minutes donnée"
+	description: "Fait avancer le temps de voyage du joueur de X minutes. Permet de simuler la fin d'un déplacement sans attendre"
 };
 
 /**

@@ -7,7 +7,7 @@ import { TravelTime } from "../../../../core/maps/TravelTime";
 export const commandInfo: ITestCommand = {
 	name: "removeplayereffect",
 	aliases: ["rmeffect"],
-	description: "Enlève votre effet actuel"
+	description: "Retire immédiatement l'effet actuel du joueur testeur et le remet dans l'état normal"
 };
 
 /**

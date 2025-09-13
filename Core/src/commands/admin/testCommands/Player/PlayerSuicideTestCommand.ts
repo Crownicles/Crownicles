@@ -6,7 +6,7 @@ import { NumberChangeReason } from "../../../../../../Lib/src/constants/LogsCons
 export const commandInfo: ITestCommand = {
 	name: "playerkill",
 	aliases: ["kill", "suicide"],
-	description: "Vous permet de vous kill dans le plus grand des calmes"
+	description: "Met instantanément la vie du joueur à 0 et le tue. Utile pour tester les mécaniques de mort, respawn et pénalités associées"
 };
 
 /**

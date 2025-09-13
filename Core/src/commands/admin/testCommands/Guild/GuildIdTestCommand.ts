@@ -6,7 +6,7 @@ import {
 export const commandInfo: ITestCommand = {
 	name: "guildid",
 	aliases: ["gid", "mygid"],
-	description: "Renvoie l'id de votre guilde"
+	description: "Affiche l'ID de la guilde du joueur testeur ainsi que des informations de debug sur la guilde (nom, niveau, membres). Utile pour les commandes nécessitant un ID de guilde"
 };
 
 /**

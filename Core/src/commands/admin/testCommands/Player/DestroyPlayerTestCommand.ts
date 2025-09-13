@@ -11,7 +11,7 @@ import { DwarfPetsSeen } from "../../../../core/database/game/models/DwarfPetsSe
 export const commandInfo: ITestCommand = {
 	name: "destroyplayer",
 	aliases: ["destroy"],
-	description: "Réinitialise votre joueur"
+	description: "Détruit la session actuelle du joueur. Il sera requis de réaliser /report ou /test skiptuto pour continuer les tests nécessitant un joueur initialisé"
 };
 
 /**

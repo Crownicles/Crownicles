@@ -6,7 +6,7 @@ import { PetEntities } from "../../../../core/database/game/models/PetEntity";
 export const commandInfo: ITestCommand = {
 	name: "pethungry",
 	aliases: ["hungry"],
-	description: "Rend un pet affamé"
+	description: "Met le familier actuel dans l'état 'affamé', ce qui réduit ses performances jusqu'à ce qu'il soit nourri"
 };
 
 /**

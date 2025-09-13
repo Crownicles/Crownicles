@@ -11,7 +11,7 @@ export const commandInfo: ITestCommand = {
 	typeWaited: {
 		level: TypeKey.INTEGER
 	},
-	description: "Mets le niveau de votre guilde au niveau donné"
+	description: "Définit le niveau de la guilde du joueur testeur. Le niveau de guilde débloque de nouvelles fonctionnalités et augmente les capacités collectives"
 };
 
 /**
