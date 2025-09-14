@@ -10,7 +10,7 @@ export const commandInfo: ITestCommand = {
 	typeWaited: {
 		score: TypeKey.INTEGER
 	},
-	description: "Définit le score total du joueur testeur. Le score influence le classement général et détermine les récompenses de fin de semaine"
+	description: "Définit le score total du joueur testeur."
 };
 
 /**
