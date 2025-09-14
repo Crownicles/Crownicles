@@ -273,9 +273,11 @@ export class DisplayUtils {
 	 * Return the string of a class
 	 * @param classId
 	 * @param lng
+	 * @param plural - If true, returns the plural form of the class
 	 */
-	static getClassDisplay(classId: number, lng: Language): string {
-		return i18n.t("models:classFormat", {
+	static getClassDisplay(classId: number, lng: Language, plural = false): string {
+		const format = plural ? "classPluralFormat" : "classFormat";
+		return i18n.t(`models:${format}`, {
 			lng,
 			id: classId
 		});

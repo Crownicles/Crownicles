@@ -266,7 +266,7 @@
       "Le bras droit de la guilde **{{guildName}}**, {{playerDisplay}}, vous salue et continue son chemin."
     ],
     "class": [
-      "Vous frôlez {{playerDisplay}}. Vous constatez qu'il fait partie du cercle des **$t(models:classes_plural.{{classId}}, { \"count\": 2 })**. Vous parlez un peu avec lui et reprenez votre route paisiblement.",
+      "Vous frôlez {{playerDisplay}}. Vous constatez qu'il fait partie du cercle des **{{classPlural}}**. Vous parlez un peu avec lui et reprenez votre route paisiblement.",
       "{{playerDisplay}}, de classe **{{class}}**, passe près de vous, vous le saluez et poursuivez votre route.",
       "Vous heurtez malencontreusement le bras de {{playerDisplay}}, honorable **{{class}}**. Vous vous excusez tous les deux et continuez votre route."
     ],

@@ -167,6 +167,7 @@
     "9": "Fronde"
   },
   "classFormat": "{emote:classes.{{id}} $t(models:classes.{{id}})}",
+  "classPluralFormat": "{emote:classes.{{id}}} $t(models:classes_plural.{{id}})",
   "classWithStatsFormat": "{emote:classes.{{id}}} $t(models:classes.{{id}}) :\n{emote:unitValues.energy} {{energy}} | {emote:unitValues.attack} {{attack}} | {emote:unitValues.defense} {{defense}} | {emote:unitValues.speed} {{speed}} | {emote:unitValues.breath} {{initialBreath}} / {{maxBreath}} | {emote:unitValues.health} {{health}}",
   "class_descriptions": {
     "0": "Una classe semplice. Abbastanza equilibrata.",

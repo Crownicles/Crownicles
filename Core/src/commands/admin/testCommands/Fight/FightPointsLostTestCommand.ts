@@ -9,7 +9,7 @@ export const commandInfo: ITestCommand = {
 	typeWaited: {
 		lostPoints: TypeKey.INTEGER
 	},
-	description: "Permet de configurer le nombre de point d'énergie manquant au joueur. ex si un valeur a 100 d'énergie au max et execute cette commande avec la valeur 10 il aura 90/100 énergie"
+	description: "Permet de configurer le nombre de point d'énergie manquant au joueur. ex si un joueur a 100 d'énergie au max et execute cette commande avec la valeur 10 il aura 90/100 énergie"
 };
 
 /**

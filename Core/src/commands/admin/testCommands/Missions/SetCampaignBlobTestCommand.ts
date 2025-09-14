@@ -11,7 +11,7 @@ export const commandInfo: ITestCommand = {
 	typeWaited: {
 		blob: TypeKey.INTEGER
 	},
-	description: "Modifie le blob de progression de campagne (chaîne binaire). Format requis : séquence de 0 et 1 correspondant chacun a une mission de la campagne, 0 = mission pas encore terminée et 1 = mission validée. Ex: sur une campagne de 5 mission, un joueur qui a terminé les 3 premières aura 11100."
+	description: "Modifie le blob de progression de campagne (chaîne binaire). Format requis : séquence de 0 et 1 correspondant chacun a une mission de la campagne, 0 = mission pas encore terminée et 1 = mission validée. Ex: sur une campagne de 5 missions, un joueur qui a terminé les 3 premières aura 11100."
 };
 
 const setCampaignBlobTestCommand: ExecuteTestCommandLike = async (player, args) => {
