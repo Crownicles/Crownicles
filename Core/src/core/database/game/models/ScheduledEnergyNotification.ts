@@ -17,7 +17,7 @@ export class ScheduledEnergyNotification extends Model {
 	declare createdAt: Date;
 }
 
-export class ScheduledEnergyNotifications {
+export class ScheduledEnergyNotifications extends Model {
 	static async scheduleNotification(playerId: number, keycloakId: string, scheduledAt: Date): Promise<void> {
 		await ScheduledEnergyNotification.upsert({
 			playerId,

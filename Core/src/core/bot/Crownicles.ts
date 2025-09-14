@@ -7,7 +7,7 @@ import {
 import { Settings } from "../database/game/models/Setting";
 import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
 import {
-	literal, Op, Sequelize
+	literal, Op, QueryTypes, Sequelize
 } from "sequelize";
 import PetEntity from "../database/game/models/PetEntity";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
@@ -335,6 +335,22 @@ export class Crownicles {
 		setTimeout(Crownicles.reportAndEnergyNotifications, TimeoutFunctionsConstants.REPORT_AND_ENERGY_NOTIFICATIONS);
 	}
 
+	static async updateEnergyNotifications(): Promise<void> {
+		const query = `UPDATE scheduled_energy_notifications JOIN players
+		               ON scheduled_energy_notifications.playerId = players.playerId 
+		                   SET scheduled_energy_notifications.scheduledAt = 
+		                   DATE_ADD(NOW(), INTERVAL CEIL(players.fightPointsLost / :regenAmount) * :regenMinutes MINUTE)`;
+
+		await ScheduledEnergyNotifications.sequelize.query(query, {
+			replacements: {
+				regenAmount: FightConstants.POINTS_REGEN_AMOUNT,
+				regenMinutes: FightConstants.POINTS_REGEN_MINUTES
+			},
+			type: QueryTypes.UPDATE
+		});
+	}
+
+
 	/**
 	 * Sets the maintenance mode of the bot
 	 * @param enable
@@ -378,6 +394,8 @@ export class Crownicles {
 		}
 
 		await Crownicles.programTimeouts();
+
+		await Crownicles.updateEnergyNotifications();
 
 		Crownicles.reportAndEnergyNotifications()
 			.then();
