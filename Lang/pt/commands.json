@@ -980,7 +980,8 @@
       "playerFreedFromJail": "Libertação da prisão",
       "fightChallenge": "Atacado por outro jogador",
       "guildKick": "Exclusão do grémio",
-      "guildStatusChange": "Mudança de estatuto no seio da guilda"
+      "guildStatusChange": "Mudança de estatuto no seio da guilda",
+      "energy": "Énergie régénérée"
     },
     "enableDisable": "Ativar/Desativar",
     "sendLocationField": "Endereço de entrega :",
