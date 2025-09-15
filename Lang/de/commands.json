@@ -980,7 +980,8 @@
       "playerFreedFromJail": "Entlassung aus dem Gefängnis",
       "fightChallenge": "Von einem anderen Spieler angegriffen",
       "guildKick": "Ausschluss aus der Gilde",
-      "guildStatusChange": "Änderung des Status innerhalb der Gilde"
+      "guildStatusChange": "Änderung des Status innerhalb der Gilde",
+      "energy": "Énergie régénérée"
     },
     "enableDisable": "Aktivieren/Deaktivieren",
     "sendLocationField": "Ort der Versendung :",
