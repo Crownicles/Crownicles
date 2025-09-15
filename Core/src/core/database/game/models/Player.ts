@@ -1622,12 +1622,13 @@ export function initModel(sequelize: Sequelize): void {
 		}
 
 		const handleNotifications = async (): Promise<void> => {
+			// Report Notification
 			const now = new Date();
 			const travelEndDate = new Date(TravelTime.getTravelDataSimplified(instance, now).travelEndTime);
 			const destinationId = instance.getDestinationId();
-			const pendingNotification = await ScheduledReportNotifications.getPendingNotification(instance.id);
-			if (pendingNotification) {
-				await ScheduledReportNotifications.bulkDelete([pendingNotification]);
+			const pendingReportNotification = await ScheduledReportNotifications.getPendingNotification(instance.id);
+			if (pendingReportNotification) {
+				await ScheduledReportNotifications.bulkDelete([pendingReportNotification]);
 			}
 
 			if (travelEndDate > now) {
@@ -1635,12 +1636,12 @@ export function initModel(sequelize: Sequelize): void {
 				return;
 			}
 
-			if (pendingNotification && destinationId === pendingNotification.mapId) {
+			if (pendingReportNotification && destinationId === pendingReportNotification.mapId) {
 				PacketUtils.sendNotifications([
 					makePacket(ReachDestinationNotificationPacket, {
-						keycloakId: pendingNotification.keycloakId,
-						mapType: MapLocationDataController.instance.getById(pendingNotification.mapId).type,
-						mapId: pendingNotification.mapId
+						keycloakId: pendingReportNotification.keycloakId,
+						mapType: MapLocationDataController.instance.getById(pendingReportNotification.mapId).type,
+						mapId: pendingReportNotification.mapId
 					})
 				]);
 			}

@@ -40,6 +40,7 @@ import { FightsManager } from "../fights/FightsManager";
 import {
 	DayOfTheWeek, setDailyCronJob, setWeeklyCronJob
 } from "../utils/CronInterface";
+import { EnergyFullNotificationPacket } from "../../../../Lib/src/packets/notifications/EnergyFullNotificationPacket";
 
 export class Crownicles {
 	public readonly packetListener: PacketListenerServer;
@@ -262,7 +263,21 @@ export class Crownicles {
 	/**
 	 * Update the fight points of the entities that lost some
 	 */
-	static fightPowerRegenerationLoop(): void {
+	static async fightPowerRegenerationLoop(): Promise<void> {
+		const notifications = await Player.findAll(
+			{
+				where: {
+					fightPointsLost: { [Op.lte]: FightConstants.POINTS_REGEN_AMOUNT }
+				}
+			}
+		);
+
+		if (notifications.length > 0) {
+			PacketUtils.sendNotifications(notifications.map(notification => makePacket(EnergyFullNotificationPacket, {
+				keycloakId: notification.keycloakId
+			})));
+		}
+
 		Player.update(
 			{
 				fightPointsLost: Sequelize.literal(
@@ -324,6 +339,7 @@ export class Crownicles {
 
 		setTimeout(Crownicles.reportNotifications, TimeoutFunctionsConstants.REPORT_NOTIFICATIONS);
 	}
+
 
 	/**
 	 * Sets the maintenance mode of the bot

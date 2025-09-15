@@ -45,6 +45,12 @@ export class NotificationsConfiguration extends Model {
 
 	declare fightChallengeChannelId?: string;
 
+	declare energyEnabled: boolean;
+
+	declare energySendType: number;
+
+	declare energyChannelId?: string;
+
 	declare updatedAt: Date;
 
 	declare createdAt: Date;
@@ -138,6 +144,18 @@ export function initModel(sequelize: Sequelize): void {
 			defaultValue: NotificationSendTypeEnum.DM
 		},
 		fightChallengeChannelId: {
+			// eslint-disable-next-line new-cap
+			type: DataTypes.STRING(32)
+		},
+		energyEnabled: {
+			type: DataTypes.BOOLEAN,
+			defaultValue: true
+		},
+		energySendType: {
+			type: DataTypes.INTEGER,
+			defaultValue: NotificationSendTypeEnum.DM
+		},
+		energyChannelId: {
 			// eslint-disable-next-line new-cap
 			type: DataTypes.STRING(32)
 		},
