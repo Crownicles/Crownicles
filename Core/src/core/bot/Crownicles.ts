@@ -41,6 +41,8 @@ import {
 	DayOfTheWeek, setDailyCronJob, setWeeklyCronJob
 } from "../utils/CronInterface";
 import { EnergyFullNotificationPacket } from "../../../../Lib/src/packets/notifications/EnergyFullNotificationPacket";
+import { DailyBonusNotificationPacket } from "../../../../Lib/src/packets/notifications/DailyBonusNotificationPacket";
+import { ScheduledDailyBonusNotifications } from "../database/game/models/ScheduledDailyBonusNotification";
 
 export class Crownicles {
 	public readonly packetListener: PacketListenerServer;
@@ -340,6 +342,23 @@ export class Crownicles {
 		setTimeout(Crownicles.reportNotifications, TimeoutFunctionsConstants.REPORT_NOTIFICATIONS);
 	}
 
+	static async dailyBonusNotifications(): Promise<void> {
+		if (PacketUtils.isMqttConnected()) {
+			const notifications = await ScheduledDailyBonusNotifications.getNotificationsBeforeDate(new Date());
+			if (notifications.length !== 0) {
+				PacketUtils.sendNotifications(notifications.map(notification => makePacket(DailyBonusNotificationPacket, {
+					keycloakId: notification.keycloakId
+				})));
+				await ScheduledDailyBonusNotifications.bulkDelete(notifications);
+			}
+		}
+		else {
+			CrowniclesLogger.error(`MQTT is not connected, can't do daily bonus notifications. Trying again in ${TimeoutFunctionsConstants.DAILY_TIMEOUT} ms`);
+		}
+
+		setTimeout(Crownicles.reportNotifications, TimeoutFunctionsConstants.DAILY_TIMEOUT);
+	}
+
 
 	/**
 	 * Sets the maintenance mode of the bot
@@ -386,6 +405,9 @@ export class Crownicles {
 		await Crownicles.programTimeouts();
 
 		Crownicles.reportNotifications()
+			.then();
+
+		Crownicles.dailyBonusNotifications()
 			.then();
 
 		setTimeout(
