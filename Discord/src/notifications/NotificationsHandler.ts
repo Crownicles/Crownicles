@@ -25,6 +25,7 @@ import { PlayerWasAttackedNotificationPacket } from "../../../Lib/src/packets/no
 import { GuildKickNotificationPacket } from "../../../Lib/src/packets/notifications/GuildKickNotificationPacket";
 import { GuildStatusChangeNotificationPacket } from "../../../Lib/src/packets/notifications/GuildStatusChangeNotificationPacket";
 import { EnergyFullNotificationPacket } from "../../../Lib/src/packets/notifications/EnergyFullNotificationPacket";
+import { DailyBonusNotificationPacket } from "../../../Lib/src/packets/notifications/DailyBonusNotificationPacket";
 
 export abstract class NotificationsHandler {
 	/**
@@ -62,6 +63,13 @@ export abstract class NotificationsHandler {
 					destination: DisplayUtils.getMapLocationDisplay(packet.mapType, packet.mapId, lng)
 				});
 				notificationType = NotificationsTypes.REPORT;
+				break;
+			}
+			case DailyBonusNotificationPacket.name: {
+				notificationContent = i18n.t("bot:notificationDailyBonus", {
+					lng
+				});
+				notificationType = NotificationsTypes.DAILY_BONUS;
 				break;
 			}
 			case EnergyFullNotificationPacket.name: {

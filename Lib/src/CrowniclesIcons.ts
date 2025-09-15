@@ -2163,7 +2163,8 @@ export const CrowniclesIcons: {
 			playerFreedFromJail: "🔓",
 			fightChallenge: "⚔️",
 			guildStatusChange: "📜",
-			energy: "⚡"
+			energy: "⚡",
+			dailybonus: "📅"
 		}
 	},
 	missions: {
