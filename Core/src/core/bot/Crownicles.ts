@@ -7,7 +7,7 @@ import {
 import { Settings } from "../database/game/models/Setting";
 import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
 import {
-	literal, Op, QueryTypes, Sequelize
+	literal, Op, Sequelize
 } from "sequelize";
 import PetEntity from "../database/game/models/PetEntity";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
@@ -40,7 +40,6 @@ import { FightsManager } from "../fights/FightsManager";
 import {
 	DayOfTheWeek, setDailyCronJob, setWeeklyCronJob
 } from "../utils/CronInterface";
-import { ScheduledEnergyNotifications } from "../database/game/models/ScheduledEnergyNotification";
 import { EnergyFullNotificationPacket } from "../../../../Lib/src/packets/notifications/EnergyFullNotificationPacket";
 
 export class Crownicles {
@@ -264,7 +263,21 @@ export class Crownicles {
 	/**
 	 * Update the fight points of the entities that lost some
 	 */
-	static fightPowerRegenerationLoop(): void {
+	static async fightPowerRegenerationLoop(): Promise<void> {
+		const notifications = await Player.findAll(
+			{
+				where: {
+					fightPointsLost: { [Op.lte]: FightConstants.POINTS_REGEN_AMOUNT }
+				}
+			}
+		);
+
+		if (notifications.length > 0) {
+			PacketUtils.sendNotifications(notifications.map(notification => makePacket(EnergyFullNotificationPacket, {
+				keycloakId: notification.keycloakId
+			})));
+		}
+
 		Player.update(
 			{
 				fightPointsLost: Sequelize.literal(
@@ -308,7 +321,7 @@ export class Crownicles {
 			.then();
 	}
 
-	static async reportAndEnergyNotifications(): Promise<void> {
+	static async reportNotifications(): Promise<void> {
 		if (PacketUtils.isMqttConnected()) {
 			const reportNotifications = await ScheduledReportNotifications.getNotificationsBeforeDate(new Date());
 			if (reportNotifications.length !== 0) {
@@ -319,35 +332,12 @@ export class Crownicles {
 				})));
 				await ScheduledReportNotifications.bulkDelete(reportNotifications);
 			}
-
-			const energyNotifications = await ScheduledEnergyNotifications.getNotificationsBeforeDate(new Date());
-			if (energyNotifications.length !== 0) {
-				PacketUtils.sendNotifications(energyNotifications.map(notification => makePacket(EnergyFullNotificationPacket, {
-					keycloakId: notification.keycloakId
-				})));
-				await ScheduledEnergyNotifications.bulkDelete(energyNotifications);
+			else {
+				CrowniclesLogger.error(`MQTT is not connected, can't do report and energy notifications. Trying again in ${TimeoutFunctionsConstants.REPORT_NOTIFICATIONS} ms`);
 			}
+
+			setTimeout(Crownicles.reportNotifications, TimeoutFunctionsConstants.REPORT_NOTIFICATIONS);
 		}
-		else {
-			CrowniclesLogger.error(`MQTT is not connected, can't do report and energy notifications. Trying again in ${TimeoutFunctionsConstants.REPORT_AND_ENERGY_NOTIFICATIONS} ms`);
-		}
-
-		setTimeout(Crownicles.reportAndEnergyNotifications, TimeoutFunctionsConstants.REPORT_AND_ENERGY_NOTIFICATIONS);
-	}
-
-	static async updateEnergyNotifications(): Promise<void> {
-		const query = `UPDATE scheduled_energy_notifications JOIN players
-		               ON scheduled_energy_notifications.playerId = players.playerId 
-		                   SET scheduled_energy_notifications.scheduledAt = 
-		                   DATE_ADD(NOW(), INTERVAL CEIL(players.fightPointsLost / :regenAmount) * :regenMinutes MINUTE)`;
-
-		await ScheduledEnergyNotifications.sequelize.query(query, {
-			replacements: {
-				regenAmount: FightConstants.POINTS_REGEN_AMOUNT,
-				regenMinutes: FightConstants.POINTS_REGEN_MINUTES
-			},
-			type: QueryTypes.UPDATE
-		});
 	}
 
 
@@ -395,9 +385,7 @@ export class Crownicles {
 
 		await Crownicles.programTimeouts();
 
-		await Crownicles.updateEnergyNotifications();
-
-		Crownicles.reportAndEnergyNotifications()
+		Crownicles.reportNotifications()
 			.then();
 
 		setTimeout(

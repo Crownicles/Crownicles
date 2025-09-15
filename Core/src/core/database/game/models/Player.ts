@@ -11,7 +11,7 @@ import {
 	daysToMilliseconds,
 	getOneDayAgo,
 	millisecondsToSeconds,
-	minutesToHours, minutesToMilliseconds
+	minutesToHours
 } from "../../../../../../Lib/src/utils/TimeUtils";
 import { TravelTime } from "../../../maps/TravelTime";
 import { ItemCategory } from "../../../../../../Lib/src/constants/ItemConstants";
@@ -60,8 +60,6 @@ import { Badge } from "../../../../../../Lib/src/types/Badge";
 // skipcq: JS-C1003 - moment does not expose itself as an ES Module.
 import * as moment from "moment";
 import { ClassConstants } from "../../../../../../Lib/src/constants/ClassConstants";
-import { ScheduledEnergyNotifications } from "./ScheduledEnergyNotification";
-import { EnergyFullNotificationPacket } from "../../../../../../Lib/src/packets/notifications/EnergyFullNotificationPacket";
 
 export type PlayerEditValueParameters = {
 	player: Player;
@@ -733,15 +731,6 @@ export class Player extends Model {
 	public getMaxCumulativeEnergy(): number {
 		const playerClass = ClassDataController.instance.getById(this.class);
 		return playerClass.getMaxCumulativeEnergyValue(this.level);
-	}
-
-	public getRestoreEnergyEndTime(): number {
-		const missingEnergy = this.fightPointsLost;
-		if (missingEnergy > 0) {
-			const ticksNeeded = Math.ceil(missingEnergy / FightConstants.POINTS_REGEN_AMOUNT);
-			return minutesToMilliseconds(ticksNeeded * FightConstants.POINTS_REGEN_MINUTES);
-		}
-		return 0;
 	}
 
 	/**
@@ -1655,24 +1644,6 @@ export function initModel(sequelize: Sequelize): void {
 						mapId: pendingReportNotification.mapId
 					})
 				]);
-			}
-
-			// Energy Notification
-			const pendingEnergyNotification = await ScheduledEnergyNotifications.getPendingNotification(instance.id);
-			if (pendingEnergyNotification) {
-				await ScheduledEnergyNotifications.bulkDelete([pendingEnergyNotification]);
-			}
-
-			if (pendingEnergyNotification && instance.fightPointsLost === 0) {
-				PacketUtils.sendNotifications([
-					makePacket(EnergyFullNotificationPacket, {
-						keycloakId: instance.keycloakId
-					})
-				]);
-			}
-			else if (instance.fightPointsLost > 0) {
-				const restoreEnergyEndDate = new Date(Date.now() + instance.getRestoreEnergyEndTime());
-				await ScheduledEnergyNotifications.scheduleNotification(instance.id, instance.keycloakId, restoreEnergyEndDate);
 			}
 		};
 
