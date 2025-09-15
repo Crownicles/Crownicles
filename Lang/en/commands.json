@@ -980,7 +980,8 @@
       "playerFreedFromJail": "Release from prison",
       "fightChallenge": "Attacked by another player",
       "guildKick": "Guild exclusion",
-      "guildStatusChange": "Change of guild status"
+      "guildStatusChange": "Change of guild status",
+      "energy": "Énergie régénérée"
     },
     "enableDisable": "Enable/Disable",
     "sendLocationField": "Sending place:",
