@@ -980,7 +980,8 @@
       "playerFreedFromJail": "Rilascio dal carcere",
       "fightChallenge": "Attaccato da un altro giocatore",
       "guildKick": "Esclusione della gilda",
-      "guildStatusChange": "Cambio di status all'interno della gilda"
+      "guildStatusChange": "Cambio di status all'interno della gilda",
+      "energy": "Énergie régénérée"
     },
     "enableDisable": "Abilitazione/Disabilitazione",
     "sendLocationField": "Indirizzo di consegna :",
