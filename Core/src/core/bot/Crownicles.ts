@@ -356,7 +356,7 @@ export class Crownicles {
 			CrowniclesLogger.error(`MQTT is not connected, can't do daily bonus notifications. Trying again in ${TimeoutFunctionsConstants.DAILY_TIMEOUT} ms`);
 		}
 
-		setTimeout(Crownicles.reportNotifications, TimeoutFunctionsConstants.DAILY_TIMEOUT);
+		setTimeout(Crownicles.dailyBonusNotifications, TimeoutFunctionsConstants.DAILY_TIMEOUT);
 	}
 
 
