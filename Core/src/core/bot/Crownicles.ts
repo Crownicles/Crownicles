@@ -323,21 +323,21 @@ export class Crownicles {
 
 	static async reportNotifications(): Promise<void> {
 		if (PacketUtils.isMqttConnected()) {
-			const reportNotifications = await ScheduledReportNotifications.getNotificationsBeforeDate(new Date());
-			if (reportNotifications.length !== 0) {
-				PacketUtils.sendNotifications(reportNotifications.map(notification => makePacket(ReachDestinationNotificationPacket, {
+			const notifications = await ScheduledReportNotifications.getNotificationsBeforeDate(new Date());
+			if (notifications.length !== 0) {
+				PacketUtils.sendNotifications(notifications.map(notification => makePacket(ReachDestinationNotificationPacket, {
 					keycloakId: notification.keycloakId,
 					mapType: MapLocationDataController.instance.getById(notification.mapId).type,
 					mapId: notification.mapId
 				})));
-				await ScheduledReportNotifications.bulkDelete(reportNotifications);
+				await ScheduledReportNotifications.bulkDelete(notifications);
 			}
-			else {
-				CrowniclesLogger.error(`MQTT is not connected, can't do report and energy notifications. Trying again in ${TimeoutFunctionsConstants.REPORT_NOTIFICATIONS} ms`);
-			}
-
-			setTimeout(Crownicles.reportNotifications, TimeoutFunctionsConstants.REPORT_NOTIFICATIONS);
 		}
+		else {
+			CrowniclesLogger.error(`MQTT is not connected, can't do report notifications. Trying again in ${TimeoutFunctionsConstants.REPORT_NOTIFICATIONS} ms`);
+		}
+
+		setTimeout(Crownicles.reportNotifications, TimeoutFunctionsConstants.REPORT_NOTIFICATIONS);
 	}
 
 
