@@ -980,7 +980,8 @@
       "playerFreedFromJail": "Puesta en libertad",
       "fightChallenge": "Atacado por otro jugador",
       "guildKick": "Exclusión del gremio",
-      "guildStatusChange": "Cambio de estatus dentro del gremio"
+      "guildStatusChange": "Cambio de estatus dentro del gremio",
+      "energy": "Énergie régénérée"
     },
     "enableDisable": "Activar/Desactivar",
     "sendLocationField": "Dirección de entrega :",
