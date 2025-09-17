@@ -58,7 +58,7 @@ function isWrongObjectForDaily(activeObject: ObjectItem): boolean {
 async function dailyNotReady(player: Player, response: CrowniclesPacket[]): Promise<boolean> {
 	const inventoryInfo = await InventoryInfos.getOfPlayer(player.id);
 	const lastDailyTimestamp = inventoryInfo.getLastDailyAtTimestamp();
-	if (millisecondsToHours(Date.now() - inventoryInfo.getLastDailyAtTimestamp()) < DailyConstants.TIME_BETWEEN_DAILIES) {
+	if (millisecondsToHours(Date.now() - lastDailyTimestamp) < DailyConstants.TIME_BETWEEN_DAILIES) {
 		response.push(makePacket(CommandDailyBonusInCooldown, {
 			timeBetweenDailies: DailyConstants.TIME_BETWEEN_DAILIES,
 			lastDailyTimestamp

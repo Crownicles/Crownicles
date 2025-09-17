@@ -9,7 +9,7 @@ import { MissionsController } from "../../../missions/MissionsController";
 import { PlayerActiveObjects } from "./PlayerActiveObjects";
 import {
 	daysToMilliseconds,
-	getOneDayAgo, hoursToMilliseconds, millisecondsToHours,
+	getOneDayAgo,
 	millisecondsToSeconds,
 	minutesToHours
 } from "../../../../../../Lib/src/utils/TimeUtils";
@@ -60,8 +60,6 @@ import { Badge } from "../../../../../../Lib/src/types/Badge";
 // skipcq: JS-C1003 - moment does not expose itself as an ES Module.
 import * as moment from "moment";
 import { ClassConstants } from "../../../../../../Lib/src/constants/ClassConstants";
-import { ScheduledDailyBonusNotifications } from "./ScheduledDailyBonusNotification";
-import { DailyConstants } from "../../../../../../Lib/src/constants/DailyConstants";
 
 export type PlayerEditValueParameters = {
 	player: Player;
@@ -1646,23 +1644,6 @@ export function initModel(sequelize: Sequelize): void {
 						mapId: pendingReportNotification.mapId
 					})
 				]);
-			}
-
-			// DailyBonus Notification
-			const pendingDailyBonusNotification = await ScheduledDailyBonusNotifications.getPendingNotification(instance.id);
-			if (pendingDailyBonusNotification) {
-				await ScheduledDailyBonusNotifications.bulkDelete([pendingDailyBonusNotification]);
-			}
-
-			const inventoryInfo = await InventoryInfos.getOfPlayer(instance.id);
-			const lastDailyTimestamp = inventoryInfo.getLastDailyAtTimestamp();
-
-			if (millisecondsToHours(Date.now() - lastDailyTimestamp) < DailyConstants.TIME_BETWEEN_DAILIES) {
-				await ScheduledDailyBonusNotifications.scheduleNotification(
-					instance.id,
-					instance.keycloakId,
-					new Date(lastDailyTimestamp + hoursToMilliseconds(DailyConstants.TIME_BETWEEN_DAILIES))
-				);
 			}
 		};
 

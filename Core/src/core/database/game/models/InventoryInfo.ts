@@ -5,6 +5,14 @@ import { ItemCategory } from "../../../../../../Lib/src/constants/ItemConstants"
 
 // skipcq: JS-C1003 - moment does not expose itself as an ES Module.
 import * as moment from "moment";
+import { ScheduledDailyBonusNotifications } from "./ScheduledDailyBonusNotification";
+import {
+	hoursToMilliseconds,
+	millisecondsToHours
+} from "../../../../../../Lib/src/utils/TimeUtils";
+import { DailyConstants } from "../../../../../../Lib/src/constants/DailyConstants";
+import { CrowniclesLogger } from "../../../../../../Lib/src/logs/CrowniclesLogger";
+import { Players } from "./Player";
 
 export class InventoryInfo extends Model {
 	declare readonly playerId: number;
@@ -131,6 +139,35 @@ export function initModel(sequelize: Sequelize): void {
 	InventoryInfo.beforeSave(instance => {
 		instance.updatedAt = moment()
 			.toDate();
+	});
+
+	InventoryInfo.afterSave(instance => {
+		const handleNotifications = async (): Promise<void> => {
+			// DailyBonus Notification
+			const pendingDailyBonusNotification = await ScheduledDailyBonusNotifications.getPendingNotification(instance.playerId);
+			if (pendingDailyBonusNotification) {
+				await ScheduledDailyBonusNotifications.bulkDelete([pendingDailyBonusNotification]);
+			}
+
+			const lastDailyTimestamp = instance.getLastDailyAtTimestamp();
+			const player = await Players.getById(instance.playerId);
+
+			if (millisecondsToHours(Date.now() - lastDailyTimestamp) < DailyConstants.TIME_BETWEEN_DAILIES) {
+				console.log("update notif");
+				console.log("\n\n\nChanger la notif\n\n");
+				await ScheduledDailyBonusNotifications.scheduleNotification(
+					instance.playerId,
+					player.keycloakId,
+					new Date(lastDailyTimestamp + hoursToMilliseconds(DailyConstants.TIME_BETWEEN_DAILIES))
+				);
+			}
+		};
+
+		handleNotifications()
+			.then()
+			.catch(error => {
+				CrowniclesLogger.errorWithObj("Error while handling notifications", error);
+			});
 	});
 }
 
