@@ -153,8 +153,6 @@ export function initModel(sequelize: Sequelize): void {
 			const player = await Players.getById(instance.playerId);
 
 			if (millisecondsToHours(Date.now() - lastDailyTimestamp) < DailyConstants.TIME_BETWEEN_DAILIES) {
-				console.log("update notif");
-				console.log("\n\n\nChanger la notif\n\n");
 				await ScheduledDailyBonusNotifications.scheduleNotification(
 					instance.playerId,
 					player.keycloakId,
