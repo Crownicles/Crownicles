@@ -15,6 +15,7 @@
     "109": "Armatura",
     "11": "Scudo di principiante",
     "110": "Armatura per clorofite",
+    "111": "Forte Roque",
     "12": "Scudo di maestro",
     "13": "Scudo ultimo",
     "14": "Scudo potente",
@@ -418,7 +419,7 @@
       "name_other": "Attacchi di fango bruciante"
     },
     "heavyAttack": {
-      "description": "Fonctionne mieux si le lanceur est reposé. La défense de l'ennemi est réduite lors des premières utilisations.",
+      "description": "Funziona meglio quando il lanciatore è riposato. La difesa dei nemici viene ridotta per i primi utilizzi.",
       "name_one": "Attacco lordo",
       "name_other": "Attacchi lorde"
     },

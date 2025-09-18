@@ -335,8 +335,10 @@
     "weapons_one": "Arma ({{count}}/{{max}}):",
     "weapons_other": "Armas ({{count}}/{{max}}) :",
     "randomItemTitle": "{{pseudo}}¡has encontrado algo!",
-    "randomItemFooter": "¿Ya posee un equipo? ¿Le gustaría venderlo?",
-    "randomItemFooterPotion": "¿Quieres destruir tu poción actual?",
+    "randomItemAcceptTitle": "¿Ya posee un equipo? ¿Le gustaría venderlo?",
+    "randomItemAcceptTitlePotion": "Ya tienes una poción, ¿qué te gustaría hacer?",
+    "randomItemFooterPotion": "Usa {emote:collectors.accept} para conservar la poción encontrada y reemplazar tu poción actual, {emote:items.drinkPotion} para consumir la poción encontrada, {emote:collectors.refuse} para descartar la poción encontrada.",
+    "randomItemFooterPotionChoice": "Utiliza un número para sustituir una poción por la poción encontrada, {emote:items.drinkPotion} para consumir la poción encontrada, {emote:collectors.refuse} para descartar la poción encontrada.",
     "acceptedTitle": "{{pseudo}}¡Te han equipado!",
     "chooseItemToReplaceTitle": "Elija un objeto para sustituir"
   },
@@ -978,7 +980,9 @@
       "playerFreedFromJail": "Puesta en libertad",
       "fightChallenge": "Atacado por otro jugador",
       "guildKick": "Exclusión del gremio",
-      "guildStatusChange": "Cambio de estatus dentro del gremio"
+      "guildStatusChange": "Cambio de estatus dentro del gremio",
+      "energy": "Energía regenerada",
+      "dailyBonus": "Bonificación diaria"
     },
     "enableDisable": "Activar/Desactivar",
     "sendLocationField": "Dirección de entrega :",
@@ -1039,19 +1043,24 @@
   },
   "daily": {
     "errors": {
-      "objectDoNothingError": "Intentas usar el poder del objeto que llevas... ¡Pero no tiene ningún efecto!",
-      "objectIsActiveDuringFights": "¡El poder del objeto que llevas se activa automáticamente durante el combate!",
-      "noActiveObject": "Lamentablemente, ¡no tienes ningún objeto activo en tu inventario!",
-      "cooldown": "{{cooldownTime}} Sólo puedes usar tu objeto diario cada hora. {{time}}Volver a ."
+      "noAvailableObject": "Desafortunadamente, ¡no tienes ningún objeto en tu inventario que se pueda usar a diario! Los objetos de batalla no se pueden utilizar a través de este comando.",
+      "cooldown": "{{cooldownTime}} Sólo puedes usar tu objeto diario cada hora. {{time}}Volver a .",
+      "cancel": "Has anulado el uso de tu objeto cotidiano."
     },
     "title": "{{pseudo}}Has recibido tu recompensa diaria.",
-    "description": "{emote:unitValues.{{nature}}} $t(commands:daily.natureText.{{nature}}){{value}}¡** **!",
+    "description": "{emote:unitValues.{{nature}}} $t(commands:daily.natureText.{{nature}}) ¡**{{value}}** !",
     "natureText": {
       "health": "Vida ganada :",
       "energy": "Energía ahorrada :",
       "money": "Dinero ganado :",
       "time": "Has avanzado por"
-    }
+    },
+    "collectorTitleOneObject": "{{pseudo}}Confirmación de su recompensa diaria",
+    "collectorDescOneObject": "¿Quiere utilizar su objeto cotidiano?\n\n{{object}}",
+    "collectorTitle": "{{pseudo}}Elige tu recompensa diaria",
+    "collectorDesc": "Elige un objeto de la siguiente lista:",
+    "collectorRefuseOption": "Cancelar",
+    "menuPlaceholder": "Seleccionar un objeto"
   },
   "unlock": {
     "himself": "Si no puedes liberarte tú mismo, pide a un amigo que lo haga por ti.",
@@ -1296,8 +1305,8 @@
     "healthBonus": "{emote:unitValues.health} ¡Vida ganada: {{value}} !",
     "energyBonus": "{emote:unitValues.energy} Energía ahorrada: {{value}} .",
     "timeBonus": "{emote:unitValues.time} ¡Has avanzado {{value}} !",
-    "noBonus": "{emote:messages.refuse} Consumes la bebida que llevabas... ¡Eso no suena muy efectivo!",
-    "drinkSuccessTitle": "{{pseudo}}¡te bebes la bebida que llevabas!",
+    "noBonus": "{emote:messages.refuse} Consumes una poción... ¡No parece ser muy efectiva!",
+    "drinkSuccessTitle": "{{pseudo}}¡Estás bebiendo una poción!",
     "confirmationTitle": "{{pseudo}}confirmación :",
     "confirmation": "¿Seguro que quieres beber tu {{potion}} ?",
     "confirmationFooter": "Puede evitar este paso utilizando el parámetro de fuerza."

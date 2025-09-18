@@ -335,8 +335,10 @@
     "weapons_one": "Waffe ({{count}}/{{max}}):",
     "weapons_other": "Waffen ({{count}}/{{max}}):",
     "randomItemTitle": "{{pseudo}}Sie haben etwas gefunden!",
-    "randomItemFooter": "Sie haben bereits eine Ausrüstung, möchten Sie diese verkaufen?",
-    "randomItemFooterPotion": "Möchten Sie Ihren aktuellen Trank vernichten?",
+    "randomItemAcceptTitle": "Sie haben bereits eine Ausrüstung, möchten Sie diese verkaufen?",
+    "randomItemAcceptTitlePotion": "Sie haben bereits einen Trank, was möchten Sie tun?",
+    "randomItemFooterPotion": "Verwende {emote:collectors.accept} , um den gefundenen Trank zu behalten und deinen aktuellen Trank zu ersetzen, {emote:items.drinkPotion} , um den gefundenen Trank zu konsumieren, {emote:collectors.refuse} , um den gefundenen Trank wegzuwerfen.",
+    "randomItemFooterPotionChoice": "Benutze eine Zahl, um einen Trank durch den gefundenen Trank zu ersetzen, {emote:items.drinkPotion} , um den gefundenen Trank zu konsumieren, {emote:collectors.refuse} , um den gefundenen Trank wegzuwerfen.",
     "acceptedTitle": "{{pseudo}}Sie haben eine Ausrüstung erhalten!",
     "chooseItemToReplaceTitle": "Wählen Sie ein zu ersetzendes Objekt"
   },
@@ -978,7 +980,9 @@
       "playerFreedFromJail": "Entlassung aus dem Gefängnis",
       "fightChallenge": "Von einem anderen Spieler angegriffen",
       "guildKick": "Ausschluss aus der Gilde",
-      "guildStatusChange": "Änderung des Status innerhalb der Gilde"
+      "guildStatusChange": "Änderung des Status innerhalb der Gilde",
+      "energy": "Regenerierte Energie",
+      "dailyBonus": "Täglicher Bonus"
     },
     "enableDisable": "Aktivieren/Deaktivieren",
     "sendLocationField": "Ort der Versendung :",
@@ -1039,10 +1043,9 @@
   },
   "daily": {
     "errors": {
-      "objectDoNothingError": "Du versuchst, die Kraft des Gegenstandes, den du mit dir herumträgst, zu nutzen... Aber es hat keine Wirkung!",
-      "objectIsActiveDuringFights": "Die Kraft des Gegenstandes, den Sie mit sich führen, ist während der Kämpfe automatisch aktiv!",
-      "noActiveObject": "Sie haben leider keine aktiven Gegenstände in Ihrem Inventar!",
-      "cooldown": "Sie können Ihren Alltagsgegenstand nur alle {{cooldownTime}} Stunden verwenden. Besuchen Sie wieder {{time}}."
+      "noAvailableObject": "Sie haben leider keine täglich verwendbaren Gegenstände in Ihrem Inventar! Kampfgegenstände können über diesen Befehl nicht verwendet werden.",
+      "cooldown": "Sie können Ihren Alltagsgegenstand nur alle {{cooldownTime}} Stunden verwenden. Besuchen Sie wieder {{time}}.",
+      "cancel": "Sie haben die Nutzung Ihres Alltagsgegenstands abgebrochen."
     },
     "title": "{{pseudo}}Sie haben Ihre tägliche Belohnung erhalten!",
     "description": "{emote:unitValues.{{nature}}} $t(commands:daily.natureText.{{nature}}) **{{value}}**!",
@@ -1051,7 +1054,13 @@
       "energy": "Gewonnene Energie :",
       "money": "Verdientes Geld :",
       "time": "Sie haben sich um"
-    }
+    },
+    "collectorTitleOneObject": "{{pseudo}}Wenn Sie Ihre tägliche Belohnung bestätigt haben",
+    "collectorDescOneObject": "Möchten Sie Ihren Alltagsgegenstand verwenden?\n\n{{object}}",
+    "collectorTitle": "{{pseudo}}Wählen Sie Ihre tägliche Belohnung aus!",
+    "collectorDesc": "Wählen Sie aus der folgenden Liste einen Gegenstand aus, den Sie verwenden möchten:",
+    "collectorRefuseOption": "Abbrechen",
+    "menuPlaceholder": "Wählen Sie ein Objekt aus"
   },
   "unlock": {
     "himself": "Wenn Sie sich nicht selbst befreien können, bitten Sie einen Freund, dies zu tun.",
@@ -1296,8 +1305,8 @@
     "healthBonus": "{emote:unitValues.health} Gewonnenes Leben: {{value}} !",
     "energyBonus": "{emote:unitValues.energy} Gewonnene Energie: {{value}} !",
     "timeBonus": "{emote:unitValues.time} Sie sind weitergekommen von {{value}} !",
-    "noBonus": "{emote:messages.refuse} Sie konsumieren das Getränk, das Sie transportiert haben... Das scheint nicht sehr effektiv zu sein!",
-    "drinkSuccessTitle": "{{pseudo}}Wenn Sie das Getränk trinken, das Sie transportiert haben, dann trinken Sie es!",
+    "noBonus": "{emote:messages.refuse} Sie konsumieren einen Trank... Der scheint nicht sehr wirksam zu sein!",
+    "drinkSuccessTitle": "{{pseudo}}Sie nehmen einen Trank zu sich!",
     "confirmationTitle": "{{pseudo}}Bestätigung :",
     "confirmation": "Sind Sie sicher, dass Sie Ihre {{potion}} trinken möchten?",
     "confirmationFooter": "Diesen Schritt kann man umgehen, indem man den Parameter erzwingen!"

@@ -335,8 +335,10 @@
     "weapons_one": "Weapon ({{count}}/{{max}}):",
     "weapons_other": "Weapons ({{count}}/{{max}}):",
     "randomItemTitle": "{{pseudo}}, you found something!",
-    "randomItemFooter": "You already have an equipment, would you like to sell it?",
-    "randomItemFooterPotion": "Would you like to destroy your current potion?",
+    "randomItemAcceptTitle": "You already have an equipment, would you like to sell it?",
+    "randomItemAcceptTitlePotion": "You already have a potion, what would you like to do?",
+    "randomItemFooterPotion": "Use {emote:collectors.accept} to keep the found potion and replace your current one, {emote:items.drinkPotion} to consume the found potion, {emote:collectors.refuse} to discard the found potion.",
+    "randomItemFooterPotionChoice": "Use a number to replace a potion with the found potion, {emote:items.drinkPotion} to consume the found potion, {emote:collectors.refuse} to discard the found potion.",
     "acceptedTitle": "{{pseudo}}, you have received an item!",
     "chooseItemToReplaceTitle": "Choose an item to replace"
   },
@@ -978,7 +980,9 @@
       "playerFreedFromJail": "Release from prison",
       "fightChallenge": "Attacked by another player",
       "guildKick": "Guild exclusion",
-      "guildStatusChange": "Change of guild status"
+      "guildStatusChange": "Change of guild status",
+      "energy": "Regenerated energy",
+      "dailyBonus": "Daily bonus"
     },
     "enableDisable": "Enable/Disable",
     "sendLocationField": "Sending place:",
@@ -1039,19 +1043,24 @@
   },
   "daily": {
     "errors": {
-      "objectDoNothingError": "You are trying to use the power of the item you are carrying... but it has no effect!",
-      "objectIsActiveDuringFights": "The power of the item you transport is automatically active during battles!",
-      "noActiveObject": "Unfortunately, you don't have any active items in your inventory!",
-      "cooldown": "You can only use your daily item every {{cooldownTime}} hours. Check back {{time}}."
+      "noAvailableObject": "Unfortunately, you have no daily-use items in your inventory! Battle items cannot be used via this command.",
+      "cooldown": "You can only use your daily item every {{cooldownTime}} hours. Check back {{time}}.",
+      "cancel": "You've cancelled the use of your daily object."
     },
     "title": "{{pseudo}}, you received your daily reward!",
-    "description": "{emote:unitValues.{{nature}}} $t(commands:daily.natureText.{{nature}}) **{{value}}**!",
+    "description": "{emote:unitValues.{{nature}}} $t(commands:daily.natureText.{{nature}}) **{{value}}** !",
     "natureText": {
       "health": "Health gained:",
       "energy": "Energy earned:",
       "money": "Money won:",
       "time": "You have moved forward"
-    }
+    },
+    "collectorTitleOneObject": "{{pseudo}}confirmation of your daily reward!",
+    "collectorDescOneObject": "Would you like to use your everyday object?\n\n{{object}}",
+    "collectorTitle": "{{pseudo}}Choose your daily reward!",
+    "collectorDesc": "Choose an object to use from the list below:",
+    "collectorRefuseOption": "Cancel",
+    "menuPlaceholder": "Select an object"
   },
   "unlock": {
     "himself": "You cannot set yourself free, ask a friend to do so.",
@@ -1296,8 +1305,8 @@
     "healthBonus": "{emote:unitValues.health} Health gained: {{value}}!",
     "energyBonus": "{emote:unitValues.energy} Energy gained: {{value}}!",
     "timeBonus": "{emote:unitValues.time} You moved forward by {{value}}!",
-    "noBonus": "{emote:messages.refuse} You consume the beverage you were carrying... It wasn't very effective!",
-    "drinkSuccessTitle": "{{pseudo}}, you drink the beverage you were carrying!",
+    "noBonus": "{emote:messages.refuse} You consume a potion... It doesn't seem very effective!",
+    "drinkSuccessTitle": "{{pseudo}}you consume a potion!",
     "confirmationTitle": "{{pseudo}}, confirmation:",
     "confirmation": "Are you sure you want to drink your {{potion}}?",
     "confirmationFooter": "You can skip this prompt by using the `force` option!"

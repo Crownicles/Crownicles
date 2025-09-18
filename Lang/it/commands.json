@@ -335,8 +335,10 @@
     "weapons_one": "Arma ({{count}}/{{max}}) :",
     "weapons_other": "Armi ({{count}}/{{max}}) :",
     "randomItemTitle": "{{pseudo}}, avete trovato qualcosa !",
-    "randomItemFooter": "Possedete già un'attrezzatura e volete venderla?",
-    "randomItemFooterPotion": "Volete distruggere la vostra pozione attuale?",
+    "randomItemAcceptTitle": "Possedete già un'attrezzatura e volete venderla?",
+    "randomItemAcceptTitlePotion": "Hai già una pozione, cosa vorresti fare?",
+    "randomItemFooterPotion": "Utilizzare {emote:collectors.accept} per conservare la pozione trovata e sostituire quella attuale, {emote:items.drinkPotion} per consumare la pozione trovata, {emote:collectors.refuse} per scartare la pozione trovata.",
+    "randomItemFooterPotionChoice": "Utilizzare un numero per sostituire una pozione con la pozione trovata, {emote:items.drinkPotion} per consumare la pozione trovata, {emote:collectors.refuse} per scartare la pozione trovata.",
     "acceptedTitle": "{{pseudo}}, avete ricevuto un equipaggiamento !",
     "chooseItemToReplaceTitle": "Scegliete un oggetto da sostituire"
   },
@@ -978,7 +980,9 @@
       "playerFreedFromJail": "Rilascio dal carcere",
       "fightChallenge": "Attaccato da un altro giocatore",
       "guildKick": "Esclusione della gilda",
-      "guildStatusChange": "Cambio di status all'interno della gilda"
+      "guildStatusChange": "Cambio di status all'interno della gilda",
+      "energy": "Energia rigenerata",
+      "dailyBonus": "Bonus giornaliero"
     },
     "enableDisable": "Abilitazione/Disabilitazione",
     "sendLocationField": "Indirizzo di consegna :",
@@ -1039,19 +1043,24 @@
   },
   "daily": {
     "errors": {
-      "objectDoNothingError": "Cerchi di usare il potere dell'oggetto che stai trasportando... Ma non ha alcun effetto!",
-      "objectIsActiveDuringFights": "Il potere dell'oggetto che si porta con sé si attiva automaticamente durante il combattimento!",
-      "noActiveObject": "Purtroppo non hai nessun oggetto attivo nell'inventario!",
-      "cooldown": "{{cooldownTime}} È possibile utilizzare l'oggetto giornaliero solo ogni ora. {{time}}Torna a ."
+      "noAvailableObject": "Purtroppo, nel tuo inventario non ci sono oggetti che possono essere utilizzati quotidianamente! Gli oggetti da battaglia non possono essere utilizzati con questo comando.",
+      "cooldown": "{{cooldownTime}} È possibile utilizzare l'oggetto giornaliero solo ogni ora. {{time}}Torna a .",
+      "cancel": "Avete annullato l'uso del vostro oggetto quotidiano."
     },
     "title": "{{pseudo}}Avete ricevuto la vostra ricompensa giornaliera!",
-    "description": "{emote:unitValues.{{nature}}} $t(commands:daily.natureText.{{nature}}){{value}}** **!",
+    "description": "{emote:unitValues.{{nature}}} $t(commands:daily.natureText.{{nature}}) **{{value}}** !",
     "natureText": {
       "health": "Vita guadagnata :",
       "energy": "Energia risparmiata :",
       "money": "Soldi guadagnati :",
       "time": "Siete avanzati di"
-    }
+    },
+    "collectorTitleOneObject": "{{pseudo}}Conferma della vostra ricompensa giornaliera!",
+    "collectorDescOneObject": "Volete utilizzare il vostro oggetto quotidiano?\n\n{{object}}",
+    "collectorTitle": "{{pseudo}}Scegliete la vostra ricompensa giornaliera!",
+    "collectorDesc": "Scegliete un oggetto da utilizzare dall'elenco sottostante:",
+    "collectorRefuseOption": "Annullamento",
+    "menuPlaceholder": "Selezionare un oggetto"
   },
   "unlock": {
     "himself": "Se non riuscite a liberarvi da soli, chiedete a un amico di farlo per voi.",
@@ -1296,8 +1305,8 @@
     "healthBonus": "{emote:unitValues.health} Vita guadagnata: {{value}} !",
     "energyBonus": "{emote:unitValues.energy} Energia risparmiata: {{value}} .",
     "timeBonus": "{emote:unitValues.time} Sei andato avanti {{value}} !",
-    "noBonus": "{emote:messages.refuse} Consumate la bevanda che stavate trasportando... Non sembra molto efficace!",
-    "drinkSuccessTitle": "{{pseudo}}bevete la bevanda che stavate trasportando!",
+    "noBonus": "{emote:messages.refuse} Assumi una pozione... Non sembra essere molto efficace!",
+    "drinkSuccessTitle": "{{pseudo}}Stai bevendo una pozione!",
     "confirmationTitle": "{{pseudo}}conferma :",
     "confirmation": "Sei sicuro di voler bere il tuo {{potion}} ?",
     "confirmationFooter": "È possibile evitare questo passaggio utilizzando il parametro force!"

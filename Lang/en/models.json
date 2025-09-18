@@ -15,6 +15,7 @@
     "109": "Armour",
     "11": "Beginner's shield",
     "110": "Chlorophyte armor",
+    "111": "Roque fort",
     "12": "Master shield",
     "13": "Ultimate shield",
     "14": "Powerful shield",
@@ -418,7 +419,7 @@
       "name_other": "Burning mud attacks"
     },
     "heavyAttack": {
-      "description": "Fonctionne mieux si le lanceur est reposé. La défense de l'ennemi est réduite lors des premières utilisations.",
+      "description": "Works best when the caster is rested. Enemy defense is reduced on first use.",
       "name_one": "Heavy attack",
       "name_other": "Heavy attacks"
     },

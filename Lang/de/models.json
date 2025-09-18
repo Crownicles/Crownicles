@@ -15,6 +15,7 @@
     "109": "Rüstung",
     "11": "Anfängerschild",
     "110": "Rüstung aus Chlorophyll",
+    "111": "Starker Roque",
     "12": "Meisterschild",
     "13": "Ultimativer Schild",
     "14": "Mächtiger Schild",
@@ -418,7 +419,7 @@
       "name_other": "Angriffe Brennender Schlamm"
     },
     "heavyAttack": {
-      "description": "Fonctionne mieux si le lanceur est reposé. La défense de l'ennemi est réduite lors des premières utilisations.",
+      "description": "Funktioniert am besten, wenn der Werfer ausgeruht ist. Die Verteidigung des Gegners wird bei den ersten Einsätzen verringert.",
       "name_one": "Schwerter Angriff",
       "name_other": "Schwerter Angriff"
     },
