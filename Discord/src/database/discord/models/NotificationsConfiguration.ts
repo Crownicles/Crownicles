@@ -51,6 +51,12 @@ export class NotificationsConfiguration extends Model {
 
 	declare energyChannelId?: string;
 
+	declare dailyBonusEnabled: boolean;
+
+	declare dailyBonusSendType: number;
+
+	declare dailyBonusChannelId?: string;
+
 	declare updatedAt: Date;
 
 	declare createdAt: Date;
@@ -156,6 +162,18 @@ export function initModel(sequelize: Sequelize): void {
 			defaultValue: NotificationSendTypeEnum.DM
 		},
 		energyChannelId: {
+			// eslint-disable-next-line new-cap
+			type: DataTypes.STRING(32)
+		},
+		dailyBonusEnabled: {
+			type: DataTypes.BOOLEAN,
+			defaultValue: true
+		},
+		dailyBonusSendType: {
+			type: DataTypes.INTEGER,
+			defaultValue: NotificationSendTypeEnum.DM
+		},
+		dailyBonusChannelId: {
 			// eslint-disable-next-line new-cap
 			type: DataTypes.STRING(32)
 		},

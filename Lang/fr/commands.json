@@ -981,7 +981,8 @@
       "fightChallenge": "Attaqué par un autre joueur",
       "guildKick": "Exclusion de guilde",
       "guildStatusChange": "Changement de statut au sein de la guilde",
-      "energy": "Énergie régénérée"
+      "energy": "Énergie régénérée",
+      "dailyBonus": "Bonus journalier"
     },
     "enableDisable": "Activer/Désactiver",
     "sendLocationField": "Endroit d'envoi :",

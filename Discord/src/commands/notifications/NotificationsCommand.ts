@@ -291,22 +291,31 @@ async function chooseSendType(buttonInteraction: ButtonInteraction, notification
 	});
 }
 function getNotificationsEmbed(notificationsConfiguration: NotificationsConfiguration, user: User, lng: Language, footer?: string): CrowniclesEmbed {
-	let description = "";
+	const embed = new CrowniclesEmbed()
+		.formatAuthor(i18n.t("commands:notifications.embedTitle", { lng }), user);
+
 	NotificationsTypes.ALL.forEach(notificationType => {
 		const notificationTypeValue = notificationType.value(notificationsConfiguration);
-		const sendLocation = NotificationSendType.toString(notificationTypeValue.sendType, lng, notificationTypeValue.channelId);
-		description
-			+= `${notificationType.emote} **__${i18n.t(notificationType.i18nKey, { lng })}__**
-- **${i18n.t("commands:notifications.enabledField", { lng })}** ${notificationTypeValue.enabled ? CrowniclesIcons.collectors.accept : CrowniclesIcons.collectors.refuse}`;
+		const sendLocation = NotificationSendType.toString(
+			notificationTypeValue.sendType,
+			lng,
+			notificationTypeValue.channelId
+		);
+
+		let fieldValue = `**${i18n.t("commands:notifications.enabledField", { lng })}** `
+			+ `${notificationTypeValue.enabled ? CrowniclesIcons.collectors.accept : CrowniclesIcons.collectors.refuse}`;
+
 		if (notificationTypeValue.enabled) {
-			description += `\n- **${i18n.t("commands:notifications.sendLocationField", { lng })}** ${sendLocation}`;
+			fieldValue += `\n**${i18n.t("commands:notifications.sendLocationField", { lng })}** ${sendLocation}`;
 		}
-		description += "\n\n";
+
+		embed.addFields({
+			name: `${notificationType.emote} __${i18n.t(notificationType.i18nKey, { lng })}__`,
+			value: fieldValue,
+			inline: true
+		});
 	});
 
-	const embed = new CrowniclesEmbed()
-		.formatAuthor(i18n.t("commands:notifications.embedTitle", { lng }), user)
-		.setDescription(description);
 	if (footer) {
 		embed.setFooter({ text: footer });
 	}
