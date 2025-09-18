@@ -419,7 +419,7 @@
       "name_other": "Burning mud attacks"
     },
     "heavyAttack": {
-      "description": "Fonctionne mieux si le lanceur est reposé. La défense de l'ennemi est réduite lors des premières utilisations.",
+      "description": "Works best when the caster is rested. Enemy defense is reduced on first use.",
       "name_one": "Heavy attack",
       "name_other": "Heavy attacks"
     },
