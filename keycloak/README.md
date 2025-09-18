@@ -1,8 +1,28 @@
 # Keycloak
 
 Keycloak is the project used to authenticate users on Crownicles
+## Setup the folder
 
+Create the necessary folder for Keycloak data:
+```sh
+mkdir -p PROJECT_ROOT/keycloak/data/h2
+```
+### Linux 🐧  
+You may need to adjust folder permissions to allow Keycloak to read and write the data:
+```sh
+chmod -R 755 PROJECT_ROOT/keycloak/data/h2 # May require sudo
+```
+If you still encounter permission issues, try:
+```sh 
+chmod -R 775 PROJECT_ROOT/keycloak/data/h2  # Less restrictive
+```
+or, as a last resort (not recommended for security reasons):
+```sh 
+chmod -R 777 PROJECT_ROOT/keycloak/data/h2  
+```
 ## Start with docker
+
+Before starting, **make sure** you are in the folder `src/keycloak/`.  
 
 You can start Keycloak with docker using the following command:
 

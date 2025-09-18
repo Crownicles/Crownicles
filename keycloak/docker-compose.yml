@@ -3,7 +3,7 @@ services:
     image: mariadb
     container_name: mariadb_keycloak
     volumes:
-      - ~/Documents/projects/keycloak/mariadb:/var/lib/mysql
+      - ../../keycloak/mariadb:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: keycloak
