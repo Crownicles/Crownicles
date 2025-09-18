@@ -6,10 +6,11 @@ export abstract class LeagueInfoConstants {
 		600, // Bronze
 		800, // Silver
 		1000, // Gold
-		1250, // Diamond
-		1400, // Elite
-		1500, // Infinite
-		2000 // Legendary
+		1300, // Diamond
+		1500, // Elite
+		1700, // Infinite
+		2000, // Legendary
+		2025 // Royal
 	];
 
 	static readonly XP_TO_AWARD = [
@@ -20,9 +21,10 @@ export abstract class LeagueInfoConstants {
 		750, // Silver
 		1000, // Gold
 		1300, // Diamond
-		1350, // Elite
+		1450, // Elite
 		1750, // Infinite
-		2000 // Legendary
+		2000, // Legendary
+		2050 // Royal
 	];
 
 	static readonly ITEM_MINIMAL_RARITY = [
@@ -35,7 +37,8 @@ export abstract class LeagueInfoConstants {
 		4, // Diamond
 		4, // Elite
 		5, // Infinite
-		5 // Legendary
+		5, // Legendary
+		5 // Royal
 	];
 
 	static readonly ITEM_MAXIMAL_RARITY = [
@@ -48,12 +51,7 @@ export abstract class LeagueInfoConstants {
 		7, // Diamond
 		8, // Elite
 		8, // Infinite
-		8 // Legendary
+		8, // Legendary
+		8 // Royal
 	];
-
-	// If the minimal glory of a league is higher than this value, the player will lose glory points at the end of the season
-	static readonly GLORY_RESET_THRESHOLD = 500;
-
-	// % of glory points lost at the end of the season (only points above the glory reset threshold are considered)
-	static readonly SEASON_END_LOSS_PERCENTAGE = 0.04;
 }
