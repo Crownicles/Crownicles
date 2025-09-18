@@ -241,7 +241,7 @@
         "description": "Muestra la tienda de la misión."
       },
       "NOTIFICATIONS": {
-        "description": "Permet de paramétrer la réception des notifications du bot. Vous pouvez choisir de recevoir des notifications (et déterminer où les afficher) pour l'arrivée à un lieu dit, les récompenses de guilde, la libération de prison, les attaques d'autres joueurs, les exclusions de guilde, les changements de statut au sein de la guilde, la régénération totale de l'énergie et la disponibilité de votre bonus journalier."
+        "description": "Te permite configurar cómo quieres recibir las notificaciones de los bots. Puedes elegir si quieres recibir notificaciones (y dónde mostrarlas) por la llegada a un lugar específico, las recompensas de gremio, la liberación de prisión, los ataques de otros jugadores, las exclusiones de gremio, los cambios de estado dentro del gremio, la regeneración total de energía y la disponibilidad de tu bonificación diaria."
       },
       "PET": {
         "description": "Muestra información sobre su mascota."
