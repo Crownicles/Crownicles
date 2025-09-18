@@ -20,7 +20,7 @@ services:
     ports:
       - 8080:8080
     volumes:
-      -  ~/Documents/projects/keycloak/data:/opt/keycloak/data
+      -  ../../keycloak/data:/opt/keycloak/data
     environment:
       # JAVA_OPTS: -XX:UseSVE=0 # Uncomment for macOS due to a keycloak bug https://github.com/keycloak/keycloak/issues/36008
       KEYCLOAK_ADMIN: admin
