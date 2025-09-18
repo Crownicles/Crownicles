@@ -269,7 +269,10 @@ export class Crownicles {
 		const notifications = await Player.findAll(
 			{
 				where: {
-					fightPointsLost: { [Op.lte]: FightConstants.POINTS_REGEN_AMOUNT }
+					[Op.and]: [
+						{ fightPointsLost: { [Op.lte]: FightConstants.POINTS_REGEN_AMOUNT } },
+						{ fightPointsLost: { [Op.ne]: 0 } }
+					]
 				}
 			}
 		);
