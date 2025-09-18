@@ -15,7 +15,7 @@
     "109": "Armadura",
     "11": "Escudo para principiantes",
     "110": "Armadura de clorófitos",
-    "111": "Roque fort",
+    "111": "Forte do Roque",
     "12": "Escudo mestre",
     "13": "Escudo definitivo",
     "14": "Escudo poderoso",
@@ -147,8 +147,8 @@
     "11": "Artilheiros",
     "12": "Escudeiros",
     "13": "Cavaleiros",
-    "14": "Piquiers",
-    "15": "Chevaliers",
+    "14": "Piqueiros",
+    "15": "Cavaleiros",
     "16": "Paladinos",
     "17": "Veteranos",
     "18": "Poderosos soldados de infantaria",
@@ -162,7 +162,7 @@
     "3": "Soldados de infantaria",
     "4": "Luvas",
     "5": "Capacetes",
-    "6": "Maillés",
+    "6": "Malha",
     "7": "Tanques",
     "8": "Lançadores de pedras",
     "9": "Aparadores"
@@ -419,7 +419,7 @@
       "name_other": "Ataques de lama ardente"
     },
     "heavyAttack": {
-      "description": "Fonctionne mieux si le lanceur est reposé. La défense de l'ennemi est réduite lors des premières utilisations.",
+      "description": "Funciona melhor quando o lançador está a descansar. A defesa do inimigo é reduzida durante as primeiras utilizações.",
       "name_one": "Ataque pesado",
       "name_other": "Ataques pesados"
     },
