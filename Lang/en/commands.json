@@ -336,9 +336,9 @@
     "weapons_other": "Weapons ({{count}}/{{max}}):",
     "randomItemTitle": "{{pseudo}}, you found something!",
     "randomItemAcceptTitle": "You already have an equipment, would you like to sell it?",
-    "randomItemAcceptTitlePotion": "Vous avez déjà une potion, que souhaitez-vous faire ?",
-    "randomItemFooterPotion": "Utilisez {emote:collectors.accept} pour garder la potion trouvée et remplacer votre potion actuelle, {emote:items.drinkPotion} pour consommer la potion trouvée, {emote:collectors.refuse} pour jeter la potion trouvée.",
-    "randomItemFooterPotionChoice": "Utilisez un numéro pour remplacer une potion par la potion trouvée, {emote:items.drinkPotion} pour consommer la potion trouvée, {emote:collectors.refuse} pour jeter la potion trouvée.",
+    "randomItemAcceptTitlePotion": "You already have a potion, what would you like to do?",
+    "randomItemFooterPotion": "Use {emote:collectors.accept} to keep the found potion and replace your current one, {emote:items.drinkPotion} to consume the found potion, {emote:collectors.refuse} to discard the found potion.",
+    "randomItemFooterPotionChoice": "Use a number to replace a potion with the found potion, {emote:items.drinkPotion} to consume the found potion, {emote:collectors.refuse} to discard the found potion.",
     "acceptedTitle": "{{pseudo}}, you have received an item!",
     "chooseItemToReplaceTitle": "Choose an item to replace"
   },
@@ -981,8 +981,8 @@
       "fightChallenge": "Attacked by another player",
       "guildKick": "Guild exclusion",
       "guildStatusChange": "Change of guild status",
-      "energy": "Énergie régénérée",
-      "dailyBonus": "Bonus journalier"
+      "energy": "Regenerated energy",
+      "dailyBonus": "Daily bonus"
     },
     "enableDisable": "Enable/Disable",
     "sendLocationField": "Sending place:",
@@ -1043,9 +1043,9 @@
   },
   "daily": {
     "errors": {
-      "noAvailableObject": "Vous n'avez malheureusement aucun objet utilisable quotidiennement dans votre inventaire ! Les objects de combats ne peuvent pas être utilisés via cette commande.",
+      "noAvailableObject": "Unfortunately, you have no daily-use items in your inventory! Battle items cannot be used via this command.",
       "cooldown": "You can only use your daily item every {{cooldownTime}} hours. Check back {{time}}.",
-      "cancel": "Vous avez annulé l'utilisation de votre objet quotidien."
+      "cancel": "You've cancelled the use of your daily object."
     },
     "title": "{{pseudo}}, you received your daily reward!",
     "description": "{emote:unitValues.{{nature}}} $t(commands:daily.natureText.{{nature}}) **{{value}}** !",
@@ -1055,12 +1055,12 @@
       "money": "Money won:",
       "time": "You have moved forward"
     },
-    "collectorTitleOneObject": "{{pseudo}}, confirmation de votre récompense journalière !",
-    "collectorDescOneObject": "Voulez-vous utiliser votre objet quotidien ?\n\n{{object}}",
-    "collectorTitle": "{{pseudo}}, choix de votre récompense journalière !",
-    "collectorDesc": "Choisissez un objet à utiliser dans la liste ci-dessous :",
+    "collectorTitleOneObject": "{{pseudo}}confirmation of your daily reward!",
+    "collectorDescOneObject": "Would you like to use your everyday object?\n\n{{object}}",
+    "collectorTitle": "{{pseudo}}Choose your daily reward!",
+    "collectorDesc": "Choose an object to use from the list below:",
     "collectorRefuseOption": "Cancel",
-    "menuPlaceholder": "Sélectionnez un objet"
+    "menuPlaceholder": "Select an object"
   },
   "unlock": {
     "himself": "You cannot set yourself free, ask a friend to do so.",
@@ -1305,8 +1305,8 @@
     "healthBonus": "{emote:unitValues.health} Health gained: {{value}}!",
     "energyBonus": "{emote:unitValues.energy} Energy gained: {{value}}!",
     "timeBonus": "{emote:unitValues.time} You moved forward by {{value}}!",
-    "noBonus": "{emote:messages.refuse} Vous consommez une potion... Ça ne semble pas très efficace !",
-    "drinkSuccessTitle": "{{pseudo}}, vous consommez une potion !",
+    "noBonus": "{emote:messages.refuse} You consume a potion... It doesn't seem very effective!",
+    "drinkSuccessTitle": "{{pseudo}}you consume a potion!",
     "confirmationTitle": "{{pseudo}}, confirmation:",
     "confirmation": "Are you sure you want to drink your {{potion}}?",
     "confirmationFooter": "You can skip this prompt by using the `force` option!"
