@@ -33,6 +33,7 @@
     "becomeChief": "Tornaste-te o líder do grémio{{guildName}}."
   },
   "notificationEnergyFull": "Vous avez récupéré toute votre énergie.",
+  "notificationDailyBonus": "Votre bonus journalier est disponible.",
   "supportMessage": "{{langFlag}} Se precisar de ajuda, seleccione o seu idioma através dos botões abaixo. Se não precisar de ajuda, ignore esta mensagem. \n{emote:collectors.warning} **Todas as mensagens aqui enviadas podem ser lidas por um ser humano!**\n",
   "commandDisabledInDM": "{{langFlag}} Olá, os comandos estão desativados em mensagens privadas. Por favor, vá para um servidor para jogar!\nSe quiser ajuda, clique no botão correspondente ao seu idioma abaixo. \n"
 }
