@@ -15,7 +15,7 @@
     "109": "Armadura",
     "11": "Escudo para principiantes",
     "110": "Blindaje clorofítico",
-    "111": "Roque fort",
+    "111": "Fuerte Roque",
     "12": "Escudo Maestro",
     "13": "Escudo definitivo",
     "14": "Escudo potente",
@@ -147,8 +147,8 @@
     "11": "Artilleros",
     "12": "Escuderos",
     "13": "Riders",
-    "14": "Piquiers",
-    "15": "Chevaliers",
+    "14": "Piqueros",
+    "15": "Caballeros",
     "16": "Paladines",
     "17": "Veteranos",
     "18": "Poderosos soldados de infantería",
@@ -162,7 +162,7 @@
     "3": "Soldados de Infantería",
     "4": "Guantes",
     "5": "Cascos",
-    "6": "Maillés",
+    "6": "Malla",
     "7": "Depósitos",
     "8": "Lanzapiedras",
     "9": "Recortadoras"
@@ -419,7 +419,7 @@
       "name_other": "Ataques de barro ardiente"
     },
     "heavyAttack": {
-      "description": "Fonctionne mieux si le lanceur est reposé. La défense de l'ennemi est réduite lors des premières utilisations.",
+      "description": "Funciona mejor cuando el lanzador está descansado. La defensa enemiga se reduce durante los primeros usos.",
       "name_one": "Ataque pesado",
       "name_other": "Ataques fuertes"
     },
