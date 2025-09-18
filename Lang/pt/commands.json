@@ -335,10 +335,10 @@
     "weapons_one": "{{count}}{{max}}Arma ( / ):",
     "weapons_other": "{{count}}{{max}}Armas ( / ) :",
     "randomItemTitle": "{{pseudo}}encontraste alguma coisa!",
-    "randomItemAcceptTitle": "Vous avez déjà un équipement, souhaitez-vous le vendre ?",
-    "randomItemAcceptTitlePotion": "Vous avez déjà une potion, que souhaitez-vous faire ?",
-    "randomItemFooterPotion": "Utilisez {emote:collectors.accept} pour garder la potion trouvée et remplacer votre potion actuelle, {emote:items.drinkPotion} pour consommer la potion trouvée, {emote:collectors.refuse} pour jeter la potion trouvée.",
-    "randomItemFooterPotionChoice": "Utilisez un numéro pour remplacer une potion par la potion trouvée, {emote:items.drinkPotion} pour consommer la potion trouvée, {emote:collectors.refuse} pour jeter la potion trouvée.",
+    "randomItemAcceptTitle": "Já possui um equipamento e gostaria de o vender?",
+    "randomItemAcceptTitlePotion": "Já tens uma poção, o que gostarias de fazer?",
+    "randomItemFooterPotion": "Usa {emote:collectors.accept} para guardar a poção encontrada e substituir a tua poção atual, {emote:items.drinkPotion} para consumir a poção encontrada, {emote:collectors.refuse} para descartar a poção encontrada.",
+    "randomItemFooterPotionChoice": "Usa um número para substituir uma poção pela poção encontrada, {emote:items.drinkPotion} para consumir a poção encontrada, {emote:collectors.refuse} para descartar a poção encontrada.",
     "acceptedTitle": "{{pseudo}}Foste equipado!",
     "chooseItemToReplaceTitle": "Escolher um objeto para substituir"
   },
@@ -981,8 +981,8 @@
       "fightChallenge": "Atacado por outro jogador",
       "guildKick": "Exclusão do grémio",
       "guildStatusChange": "Mudança de estatuto no seio da guilda",
-      "energy": "Énergie régénérée",
-      "dailyBonus": "Bonus journalier"
+      "energy": "Energia regenerada",
+      "dailyBonus": "Bónus diário"
     },
     "enableDisable": "Ativar/Desativar",
     "sendLocationField": "Endereço de entrega :",
@@ -1043,9 +1043,9 @@
   },
   "daily": {
     "errors": {
-      "noAvailableObject": "Vous n'avez malheureusement aucun objet utilisable quotidiennement dans votre inventaire ! Les objects de combats ne peuvent pas être utilisés via cette commande.",
+      "noAvailableObject": "Infelizmente, não tens nenhum item no teu inventário que possa ser usado diariamente! Os objectos de batalha não podem ser utilizados através deste comando.",
       "cooldown": "{{cooldownTime}} Só pode utilizar o seu item diário a cada hora. {{time}}Regressar a .",
-      "cancel": "Vous avez annulé l'utilisation de votre objet quotidien."
+      "cancel": "Cancelou a utilização do seu objeto de uso diário."
     },
     "title": "{{pseudo}}Recebeu a sua recompensa diária!",
     "description": "{emote:unitValues.{{nature}}} $t(commands:daily.natureText.{{nature}}) **{{value}}** !",
@@ -1055,12 +1055,12 @@
       "money": "Dinheiro ganho :",
       "time": "Avançou por"
     },
-    "collectorTitleOneObject": "{{pseudo}}, confirmation de votre récompense journalière !",
-    "collectorDescOneObject": "Voulez-vous utiliser votre objet quotidien ?\n\n{{object}}",
-    "collectorTitle": "{{pseudo}}, choix de votre récompense journalière !",
-    "collectorDesc": "Choisissez un objet à utiliser dans la liste ci-dessous :",
-    "collectorRefuseOption": "Annuler",
-    "menuPlaceholder": "Sélectionnez un objet"
+    "collectorTitleOneObject": "{{pseudo}}Confirmação da sua recompensa diária!",
+    "collectorDescOneObject": "Quer utilizar o seu objeto do dia a dia?\n\n{{object}}",
+    "collectorTitle": "{{pseudo}}Escolha a sua recompensa diária!",
+    "collectorDesc": "Escolhe um objeto a utilizar da lista abaixo:",
+    "collectorRefuseOption": "Cancelar",
+    "menuPlaceholder": "Selecionar um objeto"
   },
   "unlock": {
     "himself": "Se não se conseguir libertar sozinho, peça a um amigo que o faça por si.",
@@ -1305,8 +1305,8 @@
     "healthBonus": "{emote:unitValues.health} Vida ganha: {{value}} !",
     "energyBonus": "{emote:unitValues.energy} Energia poupada: {{value}} .",
     "timeBonus": "{emote:unitValues.time} Seguiste em frente {{value}} !",
-    "noBonus": "{emote:messages.refuse} Vous consommez une potion... Ça ne semble pas très efficace !",
-    "drinkSuccessTitle": "{{pseudo}}, vous consommez une potion !",
+    "noBonus": "{emote:messages.refuse} Consomes uma poção... Não parece ser muito eficaz!",
+    "drinkSuccessTitle": "{{pseudo}}Estás a beber uma poção!",
     "confirmationTitle": "{{pseudo}}confirmação :",
     "confirmation": "Tens a certeza que queres beber o teu {{potion}} ?",
     "confirmationFooter": "É possível evitar este passo utilizando o parâmetro force!"
