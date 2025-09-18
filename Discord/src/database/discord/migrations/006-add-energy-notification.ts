@@ -16,6 +16,12 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 		// eslint-disable-next-line new-cap
 		type: DataTypes.STRING(32)
 	});
+
+	await context.bulkUpdate(
+		"notifications",
+		{ energyEnabled: false },
+		{ fightChallengeEnabled: false }
+	);
 }
 
 export async function down({ context }: { context: QueryInterface }): Promise<void> {

@@ -155,7 +155,7 @@ export function initModel(sequelize: Sequelize): void {
 		},
 		energyEnabled: {
 			type: DataTypes.BOOLEAN,
-			defaultValue: false
+			defaultValue: true
 		},
 		energySendType: {
 			type: DataTypes.INTEGER,
