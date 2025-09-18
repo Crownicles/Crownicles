@@ -241,7 +241,7 @@
         "description": "Visualizza il negozio di missioni."
       },
       "NOTIFICATIONS": {
-        "description": "Permette di impostare la modalità di ricezione delle notifiche dei bot. Si può scegliere se ricevere le notifiche (e dove visualizzarle) per le segnalazioni e/o le ricompense della gilda."
+        "description": "Permette di impostare la modalità di ricezione delle notifiche dei bot. Si può scegliere se ricevere le notifiche (e dove visualizzarle) per l'arrivo in una località, le ricompense della gilda, il rilascio dalla prigione, gli attacchi da altri giocatori, le esclusioni dalla gilda, i cambiamenti di stato all'interno della gilda, la rigenerazione totale dell'energia e la disponibilità del tuo bonus giornaliero."
       },
       "PET": {
         "description": "Visualizza le informazioni sull'animale domestico."
