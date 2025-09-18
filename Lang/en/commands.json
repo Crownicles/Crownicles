@@ -241,7 +241,7 @@
         "description": "Display the mission's shop."
       },
       "NOTIFICATIONS": {
-        "description": "Permet de paramétrer la réception des notifications du bot. Vous pouvez choisir de recevoir des notifications (et déterminer où les afficher) pour l'arrivée à un lieu dit, les récompenses de guilde, la libération de prison, les attaques d'autres joueurs, les exclusions de guilde, les changements de statut au sein de la guilde, la régénération totale de l'énergie et la disponibilité de votre bonus journalier."
+        "description": "Allows you to set up the reception of bot notifications. You can choose to receive notifications (and determine where to display them) for arrival at a specific location, guild rewards, prison release, attacks from other players, guild expulsions, changes in guild status, full energy regeneration, and the availability of your daily bonus."
       },
       "PET": {
         "description": "Show information about your pet."
