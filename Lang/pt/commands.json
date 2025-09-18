@@ -241,7 +241,7 @@
         "description": "Apresenta a loja da missão."
       },
       "NOTIFICATIONS": {
-        "description": "Permite-te definir como queres receber as notificações do bot. Podes escolher se queres receber notificações (e onde as mostrar) para relatórios e/ou recompensas de guildas."
+        "description": "Permet de paramétrer la réception des notifications du bot. Vous pouvez choisir de recevoir des notifications (et déterminer où les afficher) pour l'arrivée à un lieu dit, les récompenses de guilde, la libération de prison, les attaques d'autres joueurs, les exclusions de guilde, les changements de statut au sein de la guilde, la régénération totale de l'énergie et la disponibilité de votre bonus journalier."
       },
       "PET": {
         "description": "Apresenta informações sobre o seu animal de estimação."
