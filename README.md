@@ -65,6 +65,28 @@ This guide will help you run Crownicles on your computer. We provide instruction
 not specified, the command is the same for all OS.
 Please do not skip any step of this guide; otherwise, the following commands will not work.
 
+To keep your project well organized, we recommend the following folder structure:
+```
+projetct_root/
+├── src             # The main source code
+├── keycloak        # Keycloak related configuration 
+    ├── mariadb/    
+    ├── data/
+        ├── h2/
+├── database/       # The database
+├── mqtt5/          # Mqtt broker
+```
+To get started, create a project folder and enter it:
+```sh
+mkdir crownicles
+cd crownicles
+```
+
+Clone the main source code:
+```sh
+git clone https://github.com/Crownicles/Crownicles.git src
+```
+
 > For step 1 and 2, you can either do it manually or use [this script](./launchScripts/firstConfig.sh) to do it (Linux and MacOS only)
 
 1. Install Pnpm
@@ -93,14 +115,21 @@ For Keycloak, follow instructions in [README.md](./keycloak/README.md) in the ke
 For the database, you can use a mariadb container with the following command:
 
 ```sh
+# Create the directory
+mkdir -p PROJECT_ROOT/database/mariadb
+
 # Run mariadb database with docker
-docker run -d --name mariadb -e MARIADB_USER=crownicles -e MARIADB_PASSWORD=secret_password -e MARIADB_ROOT_PASSWORD=super_secret_password -v /path/to/volumes/mariadb:/var/lib/mysql -p 3306:3306 mariadb:latest
+docker run -d --name mariadb -e MARIADB_USER=crownicles -e MARIADB_PASSWORD=secret_password -e MARIADB_ROOT_PASSWORD=super_secret_password -v PROJECT_ROOT/database/mariadb:/var/lib/mysql -p 3306:3306 mariadb:latest
 ```
 
 #### MQTT broker
 
-You can use any MQTT broker, but we recommend using Mosquitto.
+You can use any MQTT broker, but we recommend using Mosquitto.  
 
+Before proceeding, please create a `mqtt5/` folder at the project root to store Mosquitto’s data and configuration:
+```sh
+mkdir -p PROJECT_ROOT/mqtt5
+```
 You can use [this guide](https://github.com/sukesh-ak/setup-mosquitto-with-docker) to install it with docker. Step 1, 2,
 3, and 5 are enough to have a working MQTT broker.
 
