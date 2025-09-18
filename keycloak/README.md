@@ -16,10 +16,6 @@ If you still encounter permission issues, try:
 ```sh 
 chmod -R 775 PROJECT_ROOT/keycloak/data/h2  # Less restrictive
 ```
-or, as a last resort (not recommended for security reasons):
-```sh 
-chmod -R 777 PROJECT_ROOT/keycloak/data/h2  
-```
 ## Start with docker
 
 Before starting, **make sure** you are in the folder `src/keycloak/`.  
