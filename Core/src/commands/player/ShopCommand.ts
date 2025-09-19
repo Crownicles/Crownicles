@@ -286,7 +286,7 @@ export default class ShopCommand {
 			player,
 			additionalShopData: {
 				remainingPotions: ShopConstants.MAX_DAILY_POTION_BUYOUTS - await LogsReadRequests.getAmountOfDailyPotionsBoughtByPlayer(player.keycloakId),
-				dailyPotion: toItemWithDetails(potion)
+				dailyPotion: toItemWithDetails(player, potion, 0, null)
 			},
 			logger: crowniclesInstance.logsDatabase.logClassicalShopBuyout
 		});

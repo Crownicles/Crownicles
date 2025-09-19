@@ -38,27 +38,36 @@ export default class InventoryCommand {
 		const items = await InventorySlots.getOfPlayer(toCheckPlayer.id);
 		const invInfo = await InventoryInfos.getOfPlayer(toCheckPlayer.id);
 
+		const weapon = items.find(item => item.isWeapon() && item.isEquipped());
+		const armor = items.find(item => item.isArmor() && item.isEquipped());
+		const potion = items.find(item => item.isPotion() && item.isEquipped());
+		const object = items.find(item => item.isObject() && item.isEquipped());
+		const backupWeapons = items.filter(item => item.isWeapon() && !item.isEquipped());
+		const backupArmors = items.filter(item => item.isArmor() && !item.isEquipped());
+		const backupPotions = items.filter(item => item.isPotion() && !item.isEquipped());
+		const backupObjects = items.filter(item => item.isObject() && !item.isEquipped());
+
 		response.push(makePacket(CommandInventoryPacketRes, {
 			foundPlayer: true,
 			keycloakId: toCheckPlayer.keycloakId,
 			data: {
-				weapon: (items.find(item => item.isWeapon() && item.isEquipped()).getItem() as MainItem).getDisplayPacket(maxStatsValues),
-				armor: (items.find(item => item.isArmor() && item.isEquipped()).getItem() as MainItem).getDisplayPacket(maxStatsValues),
-				potion: (items.find(item => item.isPotion() && item.isEquipped()).getItem() as ObjectItem).getDisplayPacket(maxStatsValues),
-				object: (items.find(item => item.isObject() && item.isEquipped()).getItem() as ObjectItem).getDisplayPacket(maxStatsValues),
-				backupWeapons: items.filter(item => item.isWeapon() && !item.isEquipped()).map(item =>
+				weapon: (weapon.getItem() as MainItem).getDisplayPacket(weapon.itemLevel, weapon.itemEnchantmentId, maxStatsValues),
+				armor: (armor.getItem() as MainItem).getDisplayPacket(armor.itemLevel, armor.itemEnchantmentId, maxStatsValues),
+				potion: (potion.getItem() as Potion).getDisplayPacket(),
+				object: (object.getItem() as ObjectItem).getDisplayPacket(maxStatsValues),
+				backupWeapons: backupWeapons.map(item =>
 					({
-						display: (item.getItem() as Weapon).getDisplayPacket(maxStatsValues), slot: item.slot
+						display: (item.getItem() as Weapon).getDisplayPacket(item.itemLevel, item.itemEnchantmentId, maxStatsValues), slot: item.slot
 					})),
-				backupArmors: items.filter(item => item.isArmor() && !item.isEquipped()).map(item =>
+				backupArmors: backupArmors.map(item =>
 					({
-						display: (item.getItem() as Armor).getDisplayPacket(maxStatsValues), slot: item.slot
+						display: (item.getItem() as Armor).getDisplayPacket(item.itemLevel, item.itemEnchantmentId, maxStatsValues), slot: item.slot
 					})),
-				backupPotions: items.filter(item => item.isPotion() && !item.isEquipped()).map(item =>
+				backupPotions: backupPotions.map(item =>
 					({
 						display: (item.getItem() as Potion).getDisplayPacket(), slot: item.slot
 					})),
-				backupObjects: items.filter(item => item.isObject() && !item.isEquipped()).map(item =>
+				backupObjects: backupObjects.map(item =>
 					({
 						display: (item.getItem() as ObjectItem).getDisplayPacket(maxStatsValues), slot: item.slot
 					})),

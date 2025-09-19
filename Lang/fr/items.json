@@ -1,9 +1,8 @@
 {
   "armorsFieldName": "Armure/Bouclier :",
-  "attack": "{emote:unitValues.attack} {{value}}",
-  "defense": "{emote:unitValues.defense} {{value}}",
+  "stat": "{{value}}",
+  "statNerf": "~~{{oldDisplay}}~~ {{max}}",
   "nameDisplay": "{emote:{{itemCategory}}.{{itemId}}} **$t(models:{{itemCategory}}.{{itemId}})**",
-  "nerfDisplay": "~~{{old}}~~ {{max}}",
   "objectsFieldName": "Objet :",
   "objectsNatures": [
     "{emote:itemNatures.0} Aucun effet",
@@ -37,7 +36,38 @@
     "{emote:rarity.7} Légendaire",
     "{emote:rarity.8} Mythique"
   ],
-  "speed": "{emote:unitValues.speed} {{value}}",
   "weaponsFieldName": "Arme :",
-  "itemsField": "**{{emote}} {{name}}** | {{rarity}} | {{values}}"
+  "mainItemsFieldNoUpgradeNoEnchant": "**{{emote}} {{name}}** | {{rarity}} | {{values}}",
+  "mainItemsFieldNoUpgradeEnchant": "**{{emote}} {{name}}** | {{rarity}} | {{values}} | {{enchantEmote}} {{enchant}}",
+  "mainItemsFieldUpgrade": "**{{emote}} {{name}} (+{{level}})** | {{rarity}} | {{values}}",
+  "mainItemsFieldUpgradeEnchant": "**{{emote}} {{name}} (+{{level}})** | {{rarity}} | {{values}} | {{enchantEmote}} {{enchant}}",
+  "supportItemsField": "**{{emote}} {{name}}** | {{rarity}} | {{values}}",
+  "enchantments": {
+    "pvpAttack1": "Attaque PvP I",
+    "pvpAttack2": "Attaque PvP II",
+    "pvpAttack3": "Attaque PvP III",
+    "pvpDefense1": "Attaque PvE I",
+    "pvpDefense2": "Attaque PvE II",
+    "pvpDefense3": "Attaque PvE III",
+    "allAttack1": "Attaque I",
+    "allAttack2": "Attaque II",
+    "allAttack3": "Attaque III",
+    "defense1": "Défense I",
+    "defense2": "Défense II",
+    "defense3": "Défense III",
+    "speed1": "Vitesse I",
+    "speed2": "Vitesse II",
+    "speed3": "Vitesse III",
+    "maxEnergy1": "Énergie max I",
+    "maxEnergy2": "Énergie max II",
+    "maxEnergy3": "Énergie max III",
+    "maxHealth1": "Vie max I",
+    "maxHealth2": "Vie max II",
+    "maxHealth3": "Vie max III",
+    "baseBreath1": "Souffle de base",
+    "maxBreath1": "Souffle max",
+    "burnedDamage1": "Dégâts de brûlure",
+    "frozenDamage1": "Dégâts de gel",
+    "poisonedDamage1": "Dégâts de poison"
+  }
 }
