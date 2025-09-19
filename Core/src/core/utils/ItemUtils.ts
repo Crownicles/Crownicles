@@ -38,7 +38,6 @@ import { ReactionCollectorAcceptReaction } from "../../../../Lib/src/packets/int
 import { ItemWithDetails } from "../../../../Lib/src/types/ItemWithDetails";
 import { MainItem } from "../../data/MainItem";
 import { SupportItem } from "../../data/SupportItem";
-import { StatValues } from "../../../../Lib/src/types/StatValues";
 import { CommandDrinkConsumePotionRes } from "../../../../Lib/src/packets/commands/CommandDrinkPacket";
 import { TravelTime } from "../maps/TravelTime";
 
@@ -96,43 +95,10 @@ export async function checkDrinkPotionMissions(response: CrowniclesPacket[], pla
 	});
 }
 
-function getSupportItemDetails(item: SupportItem): {
-	nature: ItemNature; power: number;
-} {
-	return {
-		nature: item.nature,
-		power: item.power
-	};
-}
-
-function getMainItemDetails(item: MainItem): { stats: StatValues } {
-	return {
-		stats: {
-			attack: item.getAttack(),
-			defense: item.getDefense(),
-			speed: item.getSpeed()
-		}
-	};
-}
-
-export function toItemWithDetails(item: GenericItem): ItemWithDetails {
-	const category = item.getCategory();
-	return {
-		id: item.id,
-		category,
-		rarity: item.rarity,
-		detailsSupportItem: category === ItemCategory.POTION
-			? getSupportItemDetails(PotionDataController.instance.getById(item.id))
-			: category === ItemCategory.OBJECT
-				? getSupportItemDetails(ObjectItemDataController.instance.getById(item.id))
-				: null,
-		detailsMainItem: category === ItemCategory.WEAPON
-			? getMainItemDetails(WeaponDataController.instance.getById(item.id))
-			: category === ItemCategory.ARMOR
-				? getMainItemDetails(ArmorDataController.instance.getById(item.id))
-				: null,
-		maxStats: null
-	};
+export function toItemWithDetails(player: Player, item: GenericItem, itemLevel: number, itemEnchantmentId: string | null): ItemWithDetails {
+	return item instanceof MainItem
+		? (item as MainItem).getDisplayPacket(itemLevel, itemEnchantmentId, player.getMaxStatsValue())
+		: (item as SupportItem).getDisplayPacket(player.getMaxStatsValue());
 }
 
 type WhoIsConcerned = {
@@ -161,7 +127,7 @@ type SellKeepItemOptions = {
  */
 async function dontKeepOriginalItem(response: CrowniclesPacket[], player: Player, item: GenericItem, itemToReplace: InventorySlot): Promise<void> {
 	response.push(makePacket(ItemAcceptPacket, {
-		itemWithDetails: toItemWithDetails(item)
+		itemWithDetails: toItemWithDetails(player, item, 0, null)
 	}));
 	await InventorySlot.update({
 		itemId: item.id
@@ -351,7 +317,7 @@ function manageMoreThan2ItemsSwitching(
 	},
 	tradableItems.map(i => ({
 		slot: i.slot,
-		itemWithDetails: toItemWithDetails(i.getItem())
+		itemWithDetails: toItemWithDetails(whoIsConcerned.player, i.getItem(), i.itemLevel, i.itemEnchantmentId)
 	})),
 	toTradeItem instanceof Potion && !(toTradeItem as Potion).isFightPotion());
 
@@ -428,7 +394,7 @@ export async function giveItemToPlayer(
 	};
 
 	response.push(makePacket(ItemFoundPacket, {
-		itemWithDetails: toItemWithDetails(item)
+		itemWithDetails: toItemWithDetails(player, item, 0, null)
 	}));
 
 	if (await player.giveItem(item) === true) {
@@ -442,8 +408,8 @@ export async function giveItemToPlayer(
 	const itemToReplace = inventorySlots.filter((slot: InventorySlot) => (maxSlots === 1 ? slot.isEquipped() : slot.slot === 1) && slot.itemCategory === category)[0];
 	const autoSell = item.getCategory() !== ItemCategory.POTION || (item as Potion).isFightPotion()
 		? maxSlots >= 3
-			? items.length === items.filter((slot: InventorySlot) => slot.itemId === item.id).length
-			: itemToReplace.itemId === item.id
+			? items.length === items.filter((slot: InventorySlot) => slot.itemId === item.id && slot.itemLevel === 0 && !slot.itemEnchantmentId).length
+			: itemToReplace.itemId === item.id && itemToReplace.itemLevel === 0 && !itemToReplace.itemEnchantmentId
 		: false;
 
 	if (autoSell) {
@@ -469,7 +435,7 @@ export async function giveItemToPlayer(
 
 	response.push(new ReactionCollectorInstance(
 		new ReactionCollectorItemAccept(
-			toItemWithDetails(itemToReplaceInstance),
+			toItemWithDetails(player, itemToReplaceInstance, itemToReplace.itemLevel, itemToReplace.itemEnchantmentId),
 			item instanceof Potion && !(item as Potion).isFightPotion()
 		),
 		context,

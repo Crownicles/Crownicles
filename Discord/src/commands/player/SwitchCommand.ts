@@ -19,14 +19,12 @@ import {
 	ReactionCollectorSwitchItemReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorSwitchItem";
 import { DiscordItemUtils } from "../../utils/DiscordItemUtils";
-import {
-	MainItemDisplayPacket,
-	SupportItemDisplayPacket
-} from "../../../../Lib/src/packets/commands/CommandInventoryPacket";
 import { Language } from "../../../../Lib/src/Language";
 import { EmbedField } from "discord.js";
 import { ReactionCollectorReturnTypeOrNull } from "../../packetHandlers/handlers/ReactionCollectorHandlers";
 import { escapeUsername } from "../../utils/StringUtils";
+import { MainItemDetails } from "../../../../Lib/src/types/MainItemDetails";
+import { SupportItemDetails } from "../../../../Lib/src/types/SupportItemDetails";
 
 /**
  * Get the switch command packet
@@ -69,7 +67,7 @@ export async function handleItemSwitch(packet: CommandSwitchSuccess, context: Pa
  * Get the fielder for the item category
  * @param itemCategory
  */
-function getFielder(itemCategory: number): ((displayPacket: MainItemDisplayPacket, lng: Language) => EmbedField) | ((displayPacket: SupportItemDisplayPacket, lng: Language) => EmbedField) {
+function getFielder(itemCategory: number): ((displayPacket: MainItemDetails, lng: Language) => EmbedField) | ((displayPacket: SupportItemDetails, lng: Language) => EmbedField) {
 	switch (itemCategory) {
 		case 0:
 			return DiscordItemUtils.getWeaponField;
@@ -102,7 +100,7 @@ export async function switchItemCollector(context: PacketContext, packet: Reacti
 		context
 	}, {
 		embed,
-		items: reactions.map(reaction => getFielder(reaction.item.itemCategory)(reaction.item as MainItemDisplayPacket & SupportItemDisplayPacket, lng).value)
+		items: reactions.map(reaction => getFielder(reaction.item.itemCategory)(reaction.item as MainItemDetails & SupportItemDetails, lng).value)
 	}, {
 		refuse: {
 			can: true,
