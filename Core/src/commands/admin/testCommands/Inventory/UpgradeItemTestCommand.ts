@@ -1,7 +1,6 @@
 import {
 	ExecuteTestCommandLike, ITestCommand, TypeKey
 } from "../../../../core/CommandsTest";
-import { ItemEnchantment } from "../../../../../../Lib/src/types/ItemEnchantment";
 import {
 	InventorySlot, InventorySlots
 } from "../../../../core/database/game/models/InventorySlot";
