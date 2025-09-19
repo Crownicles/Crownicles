@@ -39,8 +39,8 @@
   "weaponsFieldName": "Arme :",
   "mainItemsFieldNoUpgradeNoEnchant": "**{{emote}} {{name}}** | {{rarity}} | {{values}}",
   "mainItemsFieldNoUpgradeEnchant": "**{{emote}} {{name}}** | {{rarity}} | {{values}} | {{enchantEmote}} {{enchant}}",
-  "mainItemsFieldUpgrade": "**{{emote}} {{name}} (+{{level}})** | {{rarity}} | {{values}}",
-  "mainItemsFieldUpgradeEnchant": "**{{emote}} {{name}} (+{{level}})** | {{rarity}} | {{values}} | {{enchantEmote}} {{enchant}}",
+  "mainItemsFieldUpgrade": "**{{emote}} {{name}} (niv. {{level}})** | {{rarity}} | {{values}}",
+  "mainItemsFieldUpgradeEnchant": "**{{emote}} {{name}} (niv. {{level}})** | {{rarity}} | {{values}} | {{enchantEmote}} {{enchant}}",
   "supportItemsField": "**{{emote}} {{name}}** | {{rarity}} | {{values}}",
   "enchantments": {
     "pvpAttack1": "Attaque PvP I",
