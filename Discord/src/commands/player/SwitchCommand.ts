@@ -19,12 +19,10 @@ import {
 	ReactionCollectorSwitchItemReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorSwitchItem";
 import { DiscordItemUtils } from "../../utils/DiscordItemUtils";
-import {
-	MainItemDisplayPacket,
-	SupportItemDisplayPacket
-} from "../../../../Lib/src/packets/commands/CommandInventoryPacket";
 import { ReactionCollectorReturnTypeOrNull } from "../../packetHandlers/handlers/ReactionCollectorHandlers";
 import { escapeUsername } from "../../utils/StringUtils";
+import { MainItemDetails } from "../../../../Lib/src/types/MainItemDetails";
+import { SupportItemDetails } from "../../../../Lib/src/types/SupportItemDetails";
 
 /**
  * Get the switch command packet
@@ -83,7 +81,7 @@ export async function switchItemCollector(context: PacketContext, packet: Reacti
 		context
 	}, {
 		embed,
-		items: reactions.map(reaction => DiscordItemUtils.getFielder(reaction.item.itemCategory)(reaction.item as MainItemDisplayPacket & SupportItemDisplayPacket, lng).value)
+		items: reactions.map(reaction => DiscordItemUtils.getFielder(reaction.item.itemCategory)(reaction.item as MainItemDetails & SupportItemDetails, lng).value)
 	}, {
 		refuse: {
 			can: true,

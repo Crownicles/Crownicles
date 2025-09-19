@@ -5,7 +5,7 @@ import { ItemDataController } from "./DataController";
 import { SupportItem } from "./SupportItem";
 import { RandomUtils } from "../../../Lib/src/utils/RandomUtils";
 import { ObjectItem } from "./ObjectItem";
-import { SupportItemDisplayPacket } from "../../../Lib/src/packets/commands/CommandInventoryPacket";
+import { SupportItemDetails } from "../../../Lib/src/types/SupportItemDetails";
 
 export class Potion extends SupportItem {
 	categoryName = "potions";
@@ -23,7 +23,7 @@ export class Potion extends SupportItem {
 		return this.power;
 	}
 
-	public getDisplayPacket(): SupportItemDisplayPacket {
+	public getDisplayPacket(): SupportItemDetails {
 		return {
 			itemCategory: this.getCategory(),
 			maxPower: this.power,

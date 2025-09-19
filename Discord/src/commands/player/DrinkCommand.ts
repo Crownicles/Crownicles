@@ -16,24 +16,25 @@ import {
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { DisplayUtils } from "../../utils/DisplayUtils";
 import { DiscordCollectorUtils } from "../../utils/DiscordCollectorUtils";
-import {
-	ReactionCollectorDrinkReaction
-} from "../../../../Lib/src/packets/interaction/ReactionCollectorDrink";
+import { ReactionCollectorDrinkReaction } from "../../../../Lib/src/packets/interaction/ReactionCollectorDrink";
 import { minutesDisplay } from "../../../../Lib/src/utils/TimeUtils";
 import { ReactionCollectorReturnTypeOrNull } from "../../packetHandlers/handlers/ReactionCollectorHandlers";
 import { escapeUsername } from "../../utils/StringUtils";
 import {
-	ActionRowBuilder, parseEmoji, StringSelectMenuBuilder,
-	StringSelectMenuInteraction, StringSelectMenuOptionBuilder
+	ActionRowBuilder,
+	parseEmoji,
+	StringSelectMenuBuilder,
+	StringSelectMenuInteraction,
+	StringSelectMenuOptionBuilder
 } from "discord.js";
 import { DiscordItemUtils } from "../../utils/DiscordItemUtils";
 import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 import { sendInteractionNotForYou } from "../../utils/ErrorUtils";
 import { MessagesUtils } from "../../utils/MessagesUtils";
 import {
-	ItemConstants,
-	ItemNature
+	ItemConstants, ItemNature
 } from "../../../../Lib/src/constants/ItemConstants";
+import { SupportItemDetails } from "../../../../Lib/src/types/SupportItemDetails";
 
 /**
  * Get the daily bonus packet to send to the server
@@ -93,13 +94,16 @@ export async function drinkAcceptCollector(context: PacketContext, packet: React
 			...potions.map((reaction, i) => new StringSelectMenuOptionBuilder()
 				.setEmoji(DisplayUtils.getItemIcon({
 					id: reaction.potion.id,
-					category: reaction.potion.category
+					category: reaction.potion.itemCategory
 				}))
-				.setLabel(DisplayUtils.getSimpleItemName(reaction.potion, lng))
+				.setLabel(DisplayUtils.getSimpleItemName({
+					id: reaction.potion.id,
+					category: reaction.potion.itemCategory
+				}, lng))
 				.setValue(i.toString(10))
 				.setDescription(DiscordItemUtils.getPotionNatureDisplay(
-					reaction.potion.detailsSupportItem!.nature,
-					reaction.potion.detailsSupportItem!.power,
+					(reaction.potion as SupportItemDetails)!.nature,
+					(reaction.potion as SupportItemDetails)!.power,
 					lng
 				))),
 			new StringSelectMenuOptionBuilder()

@@ -234,6 +234,14 @@ export const CrowniclesIcons: {
 	rooms: {
 		[roomId: string]: string;
 	};
+	enchantmentTypes: {
+		damage: string;
+		health: string;
+		defense: string;
+		speed: string;
+		magic: string;
+		other: string;
+	};
 } = {
 	effects: {
 		notStarted: "👶",
@@ -2458,5 +2466,13 @@ export const CrowniclesIcons: {
 		simpleRoom: "🛋️",
 		comfortableRoom: "🛏️",
 		luxuryRoom: "👑"
+	},
+	enchantmentTypes: {
+		damage: "📕",
+		health: "📗",
+		defense: "📘",
+		speed: "📓",
+		magic: "📔",
+		other: "📒"
 	}
 };

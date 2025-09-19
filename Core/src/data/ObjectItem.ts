@@ -4,8 +4,8 @@ import {
 import { ItemDataController } from "./DataController";
 import { SupportItem } from "./SupportItem";
 import { RandomUtils } from "../../../Lib/src/utils/RandomUtils";
-import { SupportItemDisplayPacket } from "../../../Lib/src/packets/commands/CommandInventoryPacket";
 import { StatValues } from "../../../Lib/src/types/StatValues";
+import { SupportItemDetails } from "../../../Lib/src/types/SupportItemDetails";
 
 export class ObjectItem extends SupportItem {
 	categoryName = "objects";
@@ -22,7 +22,7 @@ export class ObjectItem extends SupportItem {
 		attack: Infinity,
 		defense: Infinity,
 		speed: Infinity
-	}): SupportItemDisplayPacket {
+	}): SupportItemDetails {
 		let maxPower: number;
 		switch (this.nature) {
 			case ItemNature.ATTACK:

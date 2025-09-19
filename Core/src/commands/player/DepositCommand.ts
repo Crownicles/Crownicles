@@ -1,22 +1,19 @@
 import {
-	commandRequires,
-	CommandUtils
+	commandRequires, CommandUtils
 } from "../../core/utils/CommandUtils";
 import {
-	CrowniclesPacket,
-	makePacket,
-	PacketContext
+	CrowniclesPacket, makePacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import Player from "../../core/database/game/models/Player";
 import {
 	CommandDepositCancelPacket,
 	CommandDepositCannotDepositPacket,
 	CommandDepositNoItemPacket,
-	CommandDepositPacketReq, CommandDepositSuccessPacket
+	CommandDepositPacketReq,
+	CommandDepositSuccessPacket
 } from "../../../../Lib/src/packets/commands/CommandDepositPacket";
 import {
-	InventorySlot,
-	InventorySlots
+	InventorySlot, InventorySlots
 } from "../../core/database/game/models/InventorySlot";
 import { MainItem } from "../../data/MainItem";
 import { ObjectItem } from "../../data/ObjectItem";
@@ -29,6 +26,7 @@ import {
 	ReactionCollectorDeposeItemReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorDeposeItem";
 import { InventoryInfos } from "../../core/database/game/models/InventoryInfo";
+import { ItemCategory } from "../../../../Lib/src/constants/ItemConstants";
 
 type DepositCandidate = {
 	slot: InventorySlot;
@@ -86,8 +84,12 @@ async function getDepositCandidates(
  */
 async function deposeItem(response: CrowniclesPacket[], player: Player, itemToDeposit: DepositCandidate): Promise<void> {
 	await InventorySlots.deposeItem(player, itemToDeposit);
+	const item = itemToDeposit.slot.getItem();
+	const category = item.getCategory();
 	response.push(makePacket(CommandDepositSuccessPacket, {
-		item: (itemToDeposit.slot.getItem() as MainItem | ObjectItem).getDisplayPacket()
+		item: category === ItemCategory.WEAPON || category === ItemCategory.ARMOR
+			? (item as MainItem).getDisplayPacket(itemToDeposit.slot.itemLevel, itemToDeposit.slot.itemEnchantmentId)
+			: (item as ObjectItem).getDisplayPacket()
 	}));
 }
 
@@ -117,8 +119,12 @@ function manageMoreThanOneItemToDepositEndCallback(player: Player, depositCandid
  * @param depositCandidates
  */
 function manageMoreThanOneItemToDeposit(response: CrowniclesPacket[], context: PacketContext, player: Player, depositCandidates: DepositCandidate[]): void {
-	const collector = new ReactionCollectorDeposeItem(depositCandidates.map((item: DepositCandidate) => (item.slot.getItem() as MainItem | ObjectItem).getDisplayPacket()));
-
+	const collector = new ReactionCollectorDeposeItem(depositCandidates.map((item: DepositCandidate) => {
+		const itemInstance = item.slot.getItem();
+		return itemInstance instanceof MainItem
+			? (itemInstance as MainItem).getDisplayPacket(item.slot.itemLevel, item.slot.itemEnchantmentId)
+			: (itemInstance as ObjectItem).getDisplayPacket();
+	}));
 
 	response.push(new ReactionCollectorInstance(
 		collector,
