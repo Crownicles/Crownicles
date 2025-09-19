@@ -28,7 +28,7 @@ export abstract class MainItem extends GenericItem {
 		return this.speed ?? 0;
 	}
 
-	public getSpeed(itemLevel: number = 0): number {
+	public getSpeed(itemLevel: number): number {
 		const baseSpeed = this.getBaseSpeed();
 		if (baseSpeed > 0) {
 			return Math.round(this.getBaseSpeed() * MainItem.getStatMultiplier(itemLevel));
