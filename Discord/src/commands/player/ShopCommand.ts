@@ -364,9 +364,9 @@ function getShopItemNames(data: ReactionCollectorShopData, shopItemId: ShopItemT
 	if (shopItemId === ShopItemType.DAILY_POTION) {
 		return {
 			normal: DisplayUtils.getItemDisplayWithStats(data.additionalShopData!.dailyPotion!, lng),
-			short: DisplayUtils.getItemDisplay({
+			short: DisplayUtils.getSimpleItemDisplay({
 				id: data.additionalShopData!.dailyPotion!.id,
-				category: data.additionalShopData!.dailyPotion!.category
+				category: data.additionalShopData!.dailyPotion!.itemCategory
 			}, lng)
 		};
 	}

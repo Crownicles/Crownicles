@@ -355,10 +355,10 @@ export default class SmallEventsHandler {
 							petEmote: hasPetInfo ? DisplayUtils.getPetIcon(packet.data!.petId!, packet.data!.petSex!) : "",
 							petName: hasPetInfo ? DisplayUtils.getPetNicknameOrTypeName(packet.data!.petName ?? null, packet.data!.petId!, packet.data!.petSex!, lng) : "",
 							guildName: packet.data!.guildName,
-							weapon: DisplayUtils.getWeaponDisplay(packet.data!.weaponId, lng),
-							armor: DisplayUtils.getArmorDisplay(packet.data!.armorId, lng),
-							object: DisplayUtils.getObjectDisplay(packet.data!.objectId, lng),
-							potion: DisplayUtils.getPotionDisplay(packet.data!.potionId, lng)
+							weapon: DisplayUtils.getSimpleWeaponDisplay(packet.data!.weaponId, lng),
+							armor: DisplayUtils.getSimpleArmorDisplay(packet.data!.armorId, lng),
+							object: DisplayUtils.getSimpleObjectDisplay(packet.data!.objectId, lng),
+							potion: DisplayUtils.getSimplePotionDisplay(packet.data!.potionId, lng)
 						}
 					),
 					interaction.user,

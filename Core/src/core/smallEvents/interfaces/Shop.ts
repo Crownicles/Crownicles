@@ -71,7 +71,7 @@ export abstract class Shop<
 		};
 
 		const collector = this.getPopulatedReactionCollector({
-			item: toItemWithDetails(randomItem),
+			item: toItemWithDetails(player, randomItem, 0, null),
 			price: itemPrice
 		}, shopItem);
 

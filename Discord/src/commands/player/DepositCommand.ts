@@ -1,7 +1,6 @@
 import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
 import {
-	makePacket,
-	PacketContext
+	makePacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	CommandDepositPacketReq,
@@ -16,19 +15,16 @@ import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import i18n from "../../translations/i18n";
 import { escapeUsername } from "../../utils/StringUtils";
 import {
-	DiscordCollectorUtils,
-	SEND_POLITICS
+	DiscordCollectorUtils, SEND_POLITICS
 } from "../../utils/DiscordCollectorUtils";
-import {
-	MainItemDisplayPacket,
-	SupportItemDisplayPacket
-} from "../../../../Lib/src/packets/commands/CommandInventoryPacket";
 import { DiscordItemUtils } from "../../utils/DiscordItemUtils";
 import {
 	ReactionCollectorDeposeItemCloseReaction,
 	ReactionCollectorDeposeItemReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorDeposeItem";
 import { MessagesUtils } from "../../utils/MessagesUtils";
+import { MainItemDetails } from "../../../../Lib/src/types/MainItemDetails";
+import { SupportItemDetails } from "../../../../Lib/src/types/SupportItemDetails";
 
 /**
  * Get the deposit command packet
@@ -86,7 +82,7 @@ export async function deposeItemCollector(context: PacketContext, packet: Reacti
 		context
 	}, {
 		embed,
-		items: reactions.map(reaction => DiscordItemUtils.getFielder(reaction.item.itemCategory)(reaction.item as MainItemDisplayPacket & SupportItemDisplayPacket, lng).value)
+		items: reactions.map(reaction => DiscordItemUtils.getFielder(reaction.item.itemCategory)(reaction.item as MainItemDetails & SupportItemDetails, lng).value)
 	}, {
 		refuse: {
 			can: true,

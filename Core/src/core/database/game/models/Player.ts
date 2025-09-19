@@ -661,19 +661,21 @@ export class Player extends Model {
 	 * @param playerActiveObjects
 	 */
 	public getCumulativeAttack(playerActiveObjects: PlayerActiveObjects): number {
-		const playerAttack = ClassDataController.instance.getById(this.class)
-			.getAttackValue(this.level);
+		const playerAttack = this.getMaxStatsValue().attack;
+		const weaponAttack = playerActiveObjects.weapon.item.getAttack(playerActiveObjects.weapon.itemLevel);
+		const armorAttack = playerActiveObjects.armor.item.getAttack(playerActiveObjects.armor.itemLevel);
+		const objectAttack = playerActiveObjects.object.item.getAttack();
 		const attack = playerAttack
-			+ (playerActiveObjects.weapon.getAttack() < playerAttack
-				? playerActiveObjects.weapon.getAttack()
+			+ (weaponAttack < playerAttack
+				? weaponAttack
 				: playerAttack)
-			+ (playerActiveObjects.armor.getAttack() < playerAttack
-				? playerActiveObjects.armor.getAttack()
+			+ (armorAttack < playerAttack
+				? armorAttack
 				: playerAttack)
-			+ (playerActiveObjects.object.getAttack() / 2 < playerAttack
-				? playerActiveObjects.object.getAttack()
+			+ (objectAttack / 2 < playerAttack
+				? objectAttack
 				: playerAttack * 2)
-			+ playerActiveObjects.potion.getAttack();
+			+ playerActiveObjects.potion.item.getAttack();
 		return attack > 0 ? attack : 0;
 	}
 
@@ -682,19 +684,18 @@ export class Player extends Model {
 	 * @param playerActiveObjects
 	 */
 	public getCumulativeDefense(playerActiveObjects: PlayerActiveObjects): number {
-		const playerDefense = ClassDataController.instance.getById(this.class)
-			.getDefenseValue(this.level);
+		const playerDefense = this.getMaxStatsValue().defense;
 		const defense = playerDefense
-			+ (playerActiveObjects.weapon.getDefense() < playerDefense
-				? playerActiveObjects.weapon.getDefense()
+			+ (playerActiveObjects.weapon.item.getDefense(playerActiveObjects.weapon.itemLevel) < playerDefense
+				? playerActiveObjects.weapon.item.getDefense(playerActiveObjects.weapon.itemLevel)
 				: playerDefense)
-			+ (playerActiveObjects.armor.getDefense() < playerDefense
-				? playerActiveObjects.armor.getDefense()
+			+ (playerActiveObjects.armor.item.getDefense(playerActiveObjects.armor.itemLevel) < playerDefense
+				? playerActiveObjects.armor.item.getDefense(playerActiveObjects.armor.itemLevel)
 				: playerDefense)
-			+ (playerActiveObjects.object.getDefense() / 2 < playerDefense
-				? playerActiveObjects.object.getDefense()
+			+ (playerActiveObjects.object.item.getDefense() / 2 < playerDefense
+				? playerActiveObjects.object.item.getDefense()
 				: playerDefense * 2)
-			+ playerActiveObjects.potion.getDefense();
+			+ playerActiveObjects.potion.item.getDefense();
 		return defense > 0 ? defense : 0;
 	}
 
@@ -703,19 +704,18 @@ export class Player extends Model {
 	 * @param playerActiveObjects
 	 */
 	public getCumulativeSpeed(playerActiveObjects: PlayerActiveObjects): number {
-		const playerSpeed = ClassDataController.instance.getById(this.class)
-			.getSpeedValue(this.level);
+		const playerSpeed = this.getMaxStatsValue().speed;
 		const speed = playerSpeed
-			+ (playerActiveObjects.weapon.getSpeed() < playerSpeed
-				? playerActiveObjects.weapon.getSpeed()
+			+ (playerActiveObjects.weapon.item.getSpeed(playerActiveObjects.weapon.itemLevel) < playerSpeed
+				? playerActiveObjects.weapon.item.getSpeed(playerActiveObjects.weapon.itemLevel)
 				: playerSpeed)
-			+ (playerActiveObjects.armor.getSpeed() < playerSpeed
-				? playerActiveObjects.armor.getSpeed()
+			+ (playerActiveObjects.armor.item.getSpeed(playerActiveObjects.armor.itemLevel) < playerSpeed
+				? playerActiveObjects.armor.item.getSpeed(playerActiveObjects.armor.itemLevel)
 				: playerSpeed)
-			+ (playerActiveObjects.object.getSpeed() / 2 < playerSpeed
-				? playerActiveObjects.object.getSpeed()
+			+ (playerActiveObjects.object.item.getSpeed() / 2 < playerSpeed
+				? playerActiveObjects.object.item.getSpeed()
 				: playerSpeed * 2)
-			+ playerActiveObjects.potion.getSpeed();
+			+ playerActiveObjects.potion.item.getSpeed();
 		return speed > 0 ? speed : 0;
 	}
 
