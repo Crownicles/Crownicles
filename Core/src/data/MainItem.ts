@@ -85,7 +85,7 @@ export abstract class MainItem extends GenericItem {
 		if (itemLevel < 0) {
 			itemLevel = 0;
 		}
-		if (itemLevel > ItemConstants.UPGRADE_LEVEL_STATS_MULTIPLIER.length) {
+		if (itemLevel >= ItemConstants.UPGRADE_LEVEL_STATS_MULTIPLIER.length) {
 			itemLevel = ItemConstants.UPGRADE_LEVEL_STATS_MULTIPLIER.length - 1;
 		}
 		return ItemConstants.UPGRADE_LEVEL_STATS_MULTIPLIER[itemLevel];
