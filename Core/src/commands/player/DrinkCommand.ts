@@ -22,7 +22,7 @@ import { BlockingUtils } from "../../core/utils/BlockingUtils";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
 import { ReactionCollectorRefuseReaction } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import {
-	checkDrinkPotionMissions, consumePotion, toItemWithDetails
+	checkDrinkPotionMissions, consumePotion
 } from "../../core/utils/ItemUtils";
 import { ReactionCollectorDrink } from "../../../../Lib/src/packets/interaction/ReactionCollectorDrink";
 import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
@@ -63,7 +63,8 @@ export default class DrinkCommand {
 		whereAllowed: [WhereAllowed.CONTINENT]
 	})
 	async execute(response: CrowniclesPacket[], player: Player, packet: CommandDrinkPacketReq, context: PacketContext): Promise<void> {
-		const potion = (await InventorySlots.getMainPotionSlot(player.id))?.getItem() as Potion;
+		const potionSlot = await InventorySlots.getMainPotionSlot(player.id);
+		const potion = potionSlot.getItem() as Potion;
 
 		if (!potion || potion.id === InventoryConstants.POTION_DEFAULT_ID) {
 			response.push(makePacket(CommandDrinkNoActiveObjectError, {}));
@@ -83,7 +84,7 @@ export default class DrinkCommand {
 			return;
 		}
 
-		const collector = new ReactionCollectorDrink(toItemWithDetails(potion));
+		const collector = new ReactionCollectorDrink(potionSlot.itemWithDetails(player));
 
 		const endCallback: EndCallback = async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
 			await drinkPotion(collector, response, await player.reload(), potion);

@@ -1,9 +1,8 @@
 import {
 	CrowniclesPacket, PacketDirection, sendablePacket
 } from "../CrowniclesPacket";
-import {
-	ItemNature, ItemRarity
-} from "../../constants/ItemConstants";
+import { MainItemDetails } from "../../types/MainItemDetails";
+import { SupportItemDetails } from "../../types/SupportItemDetails";
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandInventoryPacketReq extends CrowniclesPacket {
@@ -13,33 +12,6 @@ export class CommandInventoryPacketReq extends CrowniclesPacket {
 	};
 }
 
-export interface MainItemDisplayPacket {
-	id: number;
-	rarity: ItemRarity;
-	itemCategory: number;
-	attack: {
-		value: number;
-		maxValue: number;
-	};
-	defense: {
-		value: number;
-		maxValue: number;
-	};
-	speed: {
-		value: number;
-		maxValue: number;
-	};
-}
-
-export interface SupportItemDisplayPacket {
-	id: number;
-	rarity: number;
-	nature: ItemNature;
-	power: number;
-	maxPower: number;
-	itemCategory: number;
-}
-
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandInventoryPacketRes extends CrowniclesPacket {
 	foundPlayer!: boolean;
@@ -47,21 +19,21 @@ export class CommandInventoryPacketRes extends CrowniclesPacket {
 	keycloakId?: string;
 
 	data?: {
-		weapon: MainItemDisplayPacket;
-		armor: MainItemDisplayPacket;
-		potion: SupportItemDisplayPacket;
-		object: SupportItemDisplayPacket;
+		weapon: MainItemDetails;
+		armor: MainItemDetails;
+		potion: SupportItemDetails;
+		object: SupportItemDetails;
 		backupWeapons: {
-			display: MainItemDisplayPacket; slot: number;
+			display: MainItemDetails; slot: number;
 		}[];
 		backupArmors: {
-			display: MainItemDisplayPacket; slot: number;
+			display: MainItemDetails; slot: number;
 		}[];
 		backupPotions: {
-			display: SupportItemDisplayPacket; slot: number;
+			display: SupportItemDetails; slot: number;
 		}[];
 		backupObjects: {
-			display: SupportItemDisplayPacket; slot: number;
+			display: SupportItemDetails; slot: number;
 		}[];
 		slots: {
 			weapons: number;

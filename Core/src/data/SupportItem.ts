@@ -1,7 +1,7 @@
 import { GenericItem } from "./GenericItem";
 import { ItemNature } from "../../../Lib/src/constants/ItemConstants";
-import { SupportItemDisplayPacket } from "../../../Lib/src/packets/commands/CommandInventoryPacket";
 import { StatValues } from "../../../Lib/src/types/StatValues";
+import { SupportItemDetails } from "../../../Lib/src/types/SupportItemDetails";
 
 export abstract class SupportItem extends GenericItem {
 	declare readonly power: number;
@@ -20,5 +20,5 @@ export abstract class SupportItem extends GenericItem {
 		return this.nature === ItemNature.SPEED ? this.power : 0;
 	}
 
-	public abstract getDisplayPacket(maxStatsValue: StatValues): SupportItemDisplayPacket;
+	public abstract getDisplayPacket(maxStatsValue: StatValues): SupportItemDetails;
 }

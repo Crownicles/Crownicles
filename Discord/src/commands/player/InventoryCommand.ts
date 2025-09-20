@@ -17,9 +17,7 @@ import { Language } from "../../../../Lib/src/Language";
 import { KeycloakUser } from "../../../../Lib/src/keycloak/KeycloakUser";
 import {
 	CommandInventoryPacketReq,
-	CommandInventoryPacketRes,
-	MainItemDisplayPacket,
-	SupportItemDisplayPacket
+	CommandInventoryPacketRes
 } from "../../../../Lib/src/packets/commands/CommandInventoryPacket";
 import { DiscordItemUtils } from "../../utils/DiscordItemUtils";
 import { sendInteractionNotForYou } from "../../utils/ErrorUtils";
@@ -27,6 +25,7 @@ import { PacketUtils } from "../../utils/PacketUtils";
 import { MessageFlags } from "discord-api-types/v10";
 import { DisplayUtils } from "../../utils/DisplayUtils";
 import { disableRows } from "../../utils/DiscordCollectorUtils";
+import { ItemWithDetails } from "../../../../Lib/src/types/ItemWithDetails";
 
 async function getPacket(interaction: CrowniclesInteraction, keycloakUser: KeycloakUser): Promise<CommandInventoryPacketReq | null> {
 	const askedPlayer = await PacketUtils.prepareAskedPlayer(interaction, keycloakUser);
@@ -37,7 +36,7 @@ async function getPacket(interaction: CrowniclesInteraction, keycloakUser: Keycl
 	return makePacket(CommandInventoryPacketReq, { askedPlayer });
 }
 
-function getBackupField<T = MainItemDisplayPacket | SupportItemDisplayPacket>(
+function getBackupField<T = ItemWithDetails>(
 	lng: Language,
 	items: {
 		display: T;
