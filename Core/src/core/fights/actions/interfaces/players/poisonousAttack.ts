@@ -14,7 +14,7 @@ const use: FightActionFunc = (sender, receiver, _fightAction, turn) => {
 		},
 		{
 			critical: turn < 3 ? 90 : 5, // 90% chance of critical hit for the first 2 turns, then 5%
-			failure: turn < 3 ? 0 : 10 // 0% chance of failure for the first 2 turns, then 10%
+			failure: turn < 7 ? 0 : 20 // 0% chance of failure for the first 6 turns, then 20%
 		},
 		{
 			attackInfo: getAttackInfo(),
@@ -43,7 +43,7 @@ function getStatsInfo(sender: Fighter, receiver: Fighter): statsInfo {
 		attackerStats:
 			[sender.getAttack()],
 		defenderStats:
-			[receiver.getDefense()],
+			[receiver.getDefense() * 0.5],
 		statsEffect: [1]
 	};
 }
