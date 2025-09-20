@@ -11,7 +11,7 @@ import { MonsterFighter } from "../../../fighter/MonsterFighter";
 import { RandomUtils } from "../../../../../../../Lib/src/utils/RandomUtils";
 
 const use: FightActionFunc = (sender, receiver, fightAction) => {
-	// Check the number of ultimate attacks the sender already used, some behaviors are different depending on this.
+	// Check the number of energetic attacks the sender already used
 	const timeAttackWasUsed = sender.fightActionsHistory.filter(action => action.id === FightConstants.FIGHT_ACTIONS.PLAYER.ENERGETIC_ATTACK).length;
 
 	const result = simpleDamageFightAction(
@@ -23,8 +23,8 @@ const use: FightActionFunc = (sender, receiver, fightAction) => {
 			critical: 35,
 			failure: [
 				0,
-				5,
-				15,
+				3,
+				7,
 				60
 			][Math.min(timeAttackWasUsed, 3)]
 		},
@@ -36,10 +36,10 @@ const use: FightActionFunc = (sender, receiver, fightAction) => {
 
 	/*
 	 * Recovered energy is reduced after the third use of this action
-	 * Recovered energy is divided by 4 if the opponent is a monster
+	 * Recovered energy is divided by 2.5 if the opponent is a monster
 	 */
 	// calculate total division factor including monster penalty
-	const divisionFactor = (timeAttackWasUsed <= 2 ? 2 : 20) * (receiver instanceof MonsterFighter ? 4 : 1);
+	const divisionFactor = (timeAttackWasUsed <= 2 ? 2 : 20) * (receiver instanceof MonsterFighter ? 2.5 : 1);
 	const recoveredEnergy = Math.round(result.damages / divisionFactor);
 	const cappedRecoveredEnergy = Math.min(recoveredEnergy, 200 + RandomUtils.variationInt(10));
 
