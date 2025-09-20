@@ -9,7 +9,7 @@ import { FightConstants } from "../../../../../../../Lib/src/constants/FightCons
 
 const use: FightActionFunc = (sender, receiver, fightAction) => {
 	const initialDamage = FightActionController.getAttackDamage(getStatsInfo(sender, receiver), sender, getAttackInfo());
-	const damageDealt = FightActionController.applySecondaryEffects(initialDamage, 5, 8);
+	const damageDealt = FightActionController.applySecondaryEffects(initialDamage, 5, 4);
 
 	// This attack will do less damage if the player's last action was not resting
 	const lastFightAction = sender.getLastFightActionUsed();
@@ -26,16 +26,16 @@ const use: FightActionFunc = (sender, receiver, fightAction) => {
 	const heavyAttackUsageCount = sender.fightActionsHistory.filter(action =>
 		action.id === FightConstants.FIGHT_ACTIONS.PLAYER.HEAVY_ATTACK).length;
 
-	// Apply defense reduction based on usage count (0.8, 0.9, 0.95, then 1.0)
+	// Apply defense reduction based on usage count (0.8, 0.9, 0.95, then no reduction)
 	const defenseMultipliers = [
 		0.8,
 		0.9,
 		0.95,
-		1.0
+		1
 	];
 	const defenseMultiplier = defenseMultipliers[Math.min(heavyAttackUsageCount, 3)];
 
-	if (defenseMultiplier < 1.0) {
+	if (defenseMultiplier < 1) {
 		FightActionController.applyBuff(result, {
 			selfTarget: false,
 			stat: FightStatBuffed.DEFENSE,
@@ -52,8 +52,8 @@ export default use;
 function getAttackInfo(): attackInfo {
 	return {
 		minDamage: 60,
-		averageDamage: 180,
-		maxDamage: 250
+		averageDamage: 210,
+		maxDamage: 285
 	};
 }
 
@@ -64,8 +64,8 @@ function getStatsInfo(sender: Fighter, receiver: Fighter): statsInfo {
 			sender.getSpeed()
 		],
 		defenderStats: [
-			receiver.getDefense() * 0.5,
-			receiver.getSpeed() * 1.5
+			receiver.getDefense() * 0.4,
+			receiver.getSpeed() * 1.7
 		],
 		statsEffect: [
 			0.6,
