@@ -61,16 +61,17 @@ export const smallEventFuncs: SmallEventFuncs = {
 					anotherMemberOnBoat: anotherMemberOnBoat[0],
 					price
 				};
-				await Maps.startBoatTravel(player, options, NumberChangeReason.SMALL_EVENT, response);
-				await MissionsController.update(player, response, {
-					missionId: "joinPVEIsland",
-					set: true
-				});
 				const gainScore = await TravelTime.joinBoatScore(player);
 				await player.addScore({
 					amount: gainScore,
 					response,
 					reason: NumberChangeReason.SMALL_EVENT
+				});
+
+				await Maps.startBoatTravel(player, options, NumberChangeReason.SMALL_EVENT, response);
+				await MissionsController.update(player, response, {
+					missionId: "joinPVEIsland",
+					set: true
 				});
 				response.push(makePacket(SmallEventGoToPVEIslandAcceptPacket, {
 					alone: !anotherMemberOnBoat.length, pointsWon: gainScore
