@@ -438,12 +438,10 @@ export async function giveItemToPlayer(
 
 	const category = item.getCategory();
 	const maxSlots = (await InventoryInfos.getOfPlayer(player.id)).slotLimitForCategory(category);
-	const items = inventorySlots.filter((slot: InventorySlot) => slot.itemCategory === category && !slot.isEquipped());
+	const items = inventorySlots.filter((slot: InventorySlot) => slot.itemCategory === category);
 	const itemToReplace = inventorySlots.filter((slot: InventorySlot) => (maxSlots === 1 ? slot.isEquipped() : slot.slot === 1) && slot.itemCategory === category)[0];
-	const autoSell = item.getCategory() !== ItemCategory.POTION || (item as Potion).isFightPotion()
-		? maxSlots >= 3
-			? items.length === items.filter((slot: InventorySlot) => slot.itemId === item.id).length
-			: itemToReplace.itemId === item.id
+	const autoSell = item.getCategory() !== ItemCategory.POTION
+		? items.length === items.filter((slot: InventorySlot) => slot.itemId === item.id).length
 		: false;
 
 	if (autoSell) {
@@ -457,7 +455,7 @@ export async function giveItemToPlayer(
 		return;
 	}
 
-	if (maxSlots >= 3) {
+	if (maxSlots >= 2) {
 		manageMoreThan2ItemsSwitching(response, context, whoIsConcerned, {
 			toTradeItem: item,
 			tradableItems: items
