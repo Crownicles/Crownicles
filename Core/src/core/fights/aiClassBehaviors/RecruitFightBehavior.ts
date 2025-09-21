@@ -54,7 +54,7 @@ export function shouldProtect(opponent: PlayerFighter | AiPlayerFighter, me: AiP
 		|| turn === 1 // First turn, use protection to protect against pets
 	)
 		&& !me.hasFightAlteration()
-		&& opponent.getEnergy() > opponent.getMaxEnergy() * 0.07; // Don't use this if the opponent is about to die
+		&& opponent.getEnergy() > opponent.getMaxEnergy() * 0.14; // Don't use this if the opponent is about to die
 }
 
 class RecruitFightBehavior implements ClassBehavior {
