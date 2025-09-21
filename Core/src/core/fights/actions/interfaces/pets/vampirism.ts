@@ -9,6 +9,7 @@ import { Fighter } from "../../../fighter/Fighter";
 import { FightStatBuffed } from "../../../../../../../Lib/src/types/FightActionResult";
 import { FightStatModifierOperation } from "../../../../../../../Lib/src/types/FightStatModifierOperation";
 import { RandomUtils } from "../../../../../../../Lib/src/utils/RandomUtils";
+import { FightUtils } from "../../../../utils/FightUtils";
 
 function getAttackInfo(): attackInfo {
 	return {
@@ -18,11 +19,11 @@ function getAttackInfo(): attackInfo {
 	};
 }
 
-function getStatsInfo(_sender: Fighter, receiver: Fighter): statsInfo {
+function getStatsInfo(sender: Fighter, receiver: Fighter): statsInfo {
 	return {
 		attackerStats: [
-			55,
-			55
+			FightUtils.calculatePetStatFromRawPower(0.9, sender.level),
+			FightUtils.calculatePetStatFromRawPower(0.8, sender.level)
 		],
 		defenderStats: [
 			0,
