@@ -76,7 +76,7 @@ class VeteranFightBehavior implements ClassBehavior {
 				ClassConstants.CLASSES_ID.FORMIDABLE_GUNNER
 			];
 
-			if (concentrationClasses.includes(opponent.player.class) || me.getBreath() === 7 || me.getBreath() === 8) {
+			if (concentrationClasses.includes(opponent.player.class) || me.getBreath() >= 6 || me.getBreath() <= 8) {
 				return true;
 			}
 		}
