@@ -442,7 +442,7 @@ export async function giveItemToPlayer(
 	const maxSlots = (await InventoryInfos.getOfPlayer(player.id)).slotLimitForCategory(category);
 	const items = inventorySlots.filter((slot: InventorySlot) => slot.itemCategory === category);
 	const itemToReplace = inventorySlots.filter((slot: InventorySlot) => (maxSlots === 1 ? slot.isEquipped() : slot.slot === 1) && slot.itemCategory === category)[0];
-	const autoSell = item.getCategory() !== ItemCategory.POTION
+	const autoSell = item.getCategory() !== ItemCategory.POTION || (item as Potion).isFightPotion() // Because we can't drink immediately these potions
 		? items.length === items.filter((slot: InventorySlot) => slot.itemId === item.id).length
 		: false;
 
