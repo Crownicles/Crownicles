@@ -4,9 +4,10 @@ import {
 	PetAssistanceResult, PetAssistanceState
 } from "../../../../../../../Lib/src/types/PetAssistanceResult";
 import { FightAlterations } from "../../FightAlterations";
+import { shouldSkipPetEffect } from "../../../../utils/fightUtils";
 
 const use: PetAssistanceFunc = (_fighter, opponent, turn, _fightController): Promise<PetAssistanceResult | null> => {
-	if (turn > 2 || opponent.hasFightAlteration()) {
+	if (shouldSkipPetEffect(turn, opponent)) {
 		return null;
 	}
 
