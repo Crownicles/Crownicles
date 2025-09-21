@@ -7,6 +7,7 @@ import {
 	PetAssistanceResult, PetAssistanceState
 } from "../../../../../../../Lib/src/types/PetAssistanceResult";
 import { FightAlterations } from "../../FightAlterations";
+import { FightUtils } from "../../../../utils/FightUtils";
 
 function getAttackInfo(): attackInfo {
 	return {
@@ -16,11 +17,11 @@ function getAttackInfo(): attackInfo {
 	};
 }
 
-function getStatsInfo(_sender: Fighter, receiver: Fighter): statsInfo {
+function getStatsInfo(sender: Fighter, receiver: Fighter): statsInfo {
 	return {
 		attackerStats: [
-			350,
-			250
+			FightUtils.calculatePetStatFromRawPower(5.1, sender.level),
+			FightUtils.calculatePetStatFromRawPower(3.3, sender.level)
 		],
 		defenderStats: [
 			receiver.getDefense(),

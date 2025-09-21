@@ -304,7 +304,7 @@
     },
     "createBomb": {
       "generalEffect": "est soutenu dans son combat par **{{petNickname}}** qui fait mine de harceler férocement l'adversaire de coups de bec précis et douloureux.",
-      "failure": "a manqué de recevoir l'aide de **{{petNickname}}** qui, par prudence, s'est abstenu d'agir, conscient que son intervention risquait davantage de blesser son maître que l'adversaire. Il aurait fallu être plus rapide !",
+      "failure": "a manqué de recevoir l'aide de **{{petNickname}}** qui, par prudence, s'est abstenu d'agir, conscient que son intervention risquait davantage de blesser son maître que l'adversaire ! Peut-être aurait-il eu moins de scrupule s'il vous avait senti en danger...",
       "success": "profite du talent de **{{petNickname}}** qui a discrètement préparé une bombe puissante. Après avoir activé le détonateur, vous vous mettez à l'écart en courant de toutes vos forces !"
     },
     "crush": {

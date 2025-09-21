@@ -6,6 +6,7 @@ import { PetAssistanceFunc } from "../../../../../data/PetAssistance";
 import {
 	PetAssistanceResult, PetAssistanceState
 } from "../../../../../../../Lib/src/types/PetAssistanceResult";
+import { FightUtils } from "../../../../utils/FightUtils";
 
 function getAttackInfo(): attackInfo {
 	return {
@@ -15,9 +16,9 @@ function getAttackInfo(): attackInfo {
 	};
 }
 
-function getStatsInfo(_sender: Fighter, receiver: Fighter): statsInfo {
+function getStatsInfo(sender: Fighter, receiver: Fighter): statsInfo {
 	return {
-		attackerStats: [1200],
+		attackerStats: [FightUtils.calculatePetStatFromRawPower(11, sender.level)],
 		defenderStats: [receiver.getDefense()],
 		statsEffect: [1]
 	};
@@ -30,9 +31,9 @@ const use: PetAssistanceFunc = (fighter, opponent, turn, _fightController): Prom
 		});
 	}
 
-	// Last turn of the fight, bomb explodes?
+	// turn 23/24, bomb explodes?
 	if (turn === 23 || turn === 24) {
-		if (fighter.getSpeed() < opponent.getSpeed()) {
+		if (opponent.getEnergy() < fighter.getEnergy()) {
 			return Promise.resolve({
 				assistanceStatus: PetAssistanceState.FAILURE
 			});

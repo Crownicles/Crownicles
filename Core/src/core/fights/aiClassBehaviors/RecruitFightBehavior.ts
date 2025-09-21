@@ -51,7 +51,7 @@ export function shouldProtect(opponent: PlayerFighter | AiPlayerFighter, me: AiP
 				|| opponent.player.class === ClassConstants.CLASSES_ID.SLINGER
 				|| opponent.player.class === ClassConstants.CLASSES_ID.ROCK_THROWER)
 			&& opponent.getBreath() > 4
-		|| turn === 1 // First turn, use protection to protect against pets
+			|| (turn <= 2 && RandomUtils.crowniclesRandom.bool(0.7)) // First turns, use protection to protect against pets with 70% chance
 	)
 		&& !me.hasFightAlteration()
 		&& opponent.getEnergy() > opponent.getMaxEnergy() * 0.14; // Don't use this if the opponent is about to die
