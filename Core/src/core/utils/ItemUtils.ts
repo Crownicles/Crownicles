@@ -308,6 +308,7 @@ function getMoreThan2ItemsSwitchingEndCallback(whoIsConcerned: WhoIsConcerned, t
 		if (reaction.reaction.type === ReactionCollectorItemChoiceDrinkPotionReaction.name) {
 			await consumePotion(response, toTradeItem as Potion, whoIsConcerned.player);
 			await whoIsConcerned.player.save();
+			await checkDrinkPotionMissions(response, whoIsConcerned.player, toTradeItem as Potion, await InventorySlots.getOfPlayer(whoIsConcerned.player.id));
 		}
 		else {
 			await sellOrKeepItem(response, whoIsConcerned, concernedItems, sellKeepOptions);
