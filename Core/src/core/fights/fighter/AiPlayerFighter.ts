@@ -65,7 +65,7 @@ export class AiPlayerFighter extends Fighter {
 		if (!drankPotion.isFightPotion()) {
 			return;
 		}
-		await this.player.drinkPotion();
+		await this.player.drinkPotion(0);
 		await this.player.save();
 		await checkDrinkPotionMissions(response, this.player, drankPotion, await InventorySlots.getOfPlayer(this.player.id));
 	}

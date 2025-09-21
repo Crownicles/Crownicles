@@ -35,7 +35,7 @@ export default class DrinkCommand {
 		whereAllowed: [WhereAllowed.CONTINENT]
 	})
 	async execute(response: CrowniclesPacket[], player: Player, _packet: CommandDrinkPacketReq, context: PacketContext): Promise<void> {
-		const potions = (await InventorySlots.getOfPlayer(player.id)).filter(item => item.isPotion() && !(item.getItem() as Potion).isFightPotion());
+		const potions = (await InventorySlots.getOfPlayer(player.id)).filter(item => item.itemId !== 0 && item.isPotion() && !(item.getItem() as Potion).isFightPotion());
 
 		if (potions.length === 0) {
 			response.push(makePacket(CommandDrinkNoAvailablePotion, {}));
@@ -54,9 +54,10 @@ export default class DrinkCommand {
 			}
 
 			const potionDetails = (reaction.reaction.data as ReactionCollectorDrinkReaction).potion;
-			const potion = potions.find(p => p.itemId === potionDetails.id && p.itemCategory === potionDetails.category).getItem() as Potion;
+			const potionSlot = potions.find(p => p.itemId === potionDetails.id && p.itemCategory === potionDetails.category);
+			const potion = potionSlot.getItem() as Potion;
 			await consumePotion(response, potion, player);
-			await player.drinkPotion();
+			await player.drinkPotion(potionSlot.slot);
 			await player.save();
 			await checkDrinkPotionMissions(response, player, potion, await InventorySlots.getOfPlayer(player.id));
 		};

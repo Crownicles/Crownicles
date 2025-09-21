@@ -561,27 +561,38 @@ export class Player extends Model {
 	/**
 	 * Drink a potion
 	 */
-	public async drinkPotion(): Promise<void> {
+	public async drinkPotion(itemSlot: number): Promise<void> {
 		InventorySlot.findOne({
 			where: {
 				playerId: this.id,
-				slot: 0,
+				slot: itemSlot,
 				itemCategory: ItemCategory.POTION
 			}
 		})
 			.then(async item => await crowniclesInstance.logsDatabase.logItemSell(this.keycloakId, await item.getItem()));
-		await InventorySlot.update(
-			{
-				itemId: InventoryConstants.POTION_DEFAULT_ID
-			},
-			{
-				where: {
-					slot: 0,
-					itemCategory: ItemCategory.POTION,
-					playerId: this.id
+		if (itemSlot === 0) {
+			await InventorySlot.update(
+				{
+					itemId: InventoryConstants.POTION_DEFAULT_ID
+				},
+				{
+					where: {
+						slot: 0,
+						itemCategory: ItemCategory.POTION,
+						playerId: this.id
+					}
 				}
+			);
+			return;
+		}
+
+		await InventorySlot.destroy({
+			where: {
+				playerId: this.id,
+				slot: itemSlot,
+				itemCategory: ItemCategory.POTION
 			}
-		);
+		});
 	}
 
 	public getMaxStatsValue(): StatValues {
