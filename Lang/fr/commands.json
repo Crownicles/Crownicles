@@ -1303,9 +1303,9 @@
       "cancel": "Vous ne buvez pas de potion."
     },
     "title": "{{pseudo}}, vous avez bu une potion !",
+    "descriptionNoBonus": "{emote:unitValues.{{nature}}} Vous consommez une potion... Ça ne semble pas très efficace",
     "description": "{emote:unitValues.{{nature}}} $t(commands:drink.natureText.{{nature}}) **{{value}}** !",
     "natureText": {
-      "none": "Vous consommez une potion... Ça ne semble pas très efficace !",
       "health": "Vie gagnée :",
       "energy": "Énergie gagnée :",
       "time": "Vous avez avancé de"

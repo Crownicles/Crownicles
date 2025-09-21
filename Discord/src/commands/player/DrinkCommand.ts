@@ -159,6 +159,7 @@ export async function handleDrinkConsumePotion(context: PacketContext, packet: C
 	}
 	const lng = context.discord!.language;
 
+	const keyDesc = packet.value === ItemNature.NONE ? "descriptionNoBonus" : "description";
 	await interaction.editReply({
 		embeds: [
 			new CrowniclesEmbed()
@@ -167,7 +168,7 @@ export async function handleDrinkConsumePotion(context: PacketContext, packet: C
 					lng
 				}), interaction.user)
 				.setDescription(
-					i18n.t("commands:drink.description", {
+					i18n.t(`commands:drink.${keyDesc}`, {
 						value: packet.itemNature === ItemNature.TIME_SPEEDUP ? minutesDisplay(packet.value, lng) : packet.value,
 						nature: ItemConstants.NATURE_ID_TO_NAME[packet.itemNature],
 						lng
