@@ -39,7 +39,9 @@ import { ItemWithDetails } from "../../../../Lib/src/types/ItemWithDetails";
 import { MainItem } from "../../data/MainItem";
 import { SupportItem } from "../../data/SupportItem";
 import { StatValues } from "../../../../Lib/src/types/StatValues";
-import { CommandDrinkConsumePotionRes } from "../../../../Lib/src/packets/commands/CommandDrinkPacket";
+import {
+	CommandDrinkPacketRes
+} from "../../../../Lib/src/packets/commands/CommandDrinkPacket";
 import { TravelTime } from "../maps/TravelTime";
 
 
@@ -644,21 +646,20 @@ export function getItemByIdAndCategory(itemId: number, category: ItemCategory): 
  * @param player
  */
 export async function consumePotion(response: CrowniclesPacket[], potion: Potion, player: Player): Promise<void> {
+	const packet = makePacket(CommandDrinkPacketRes, {
+		value: potion.power,
+		itemNature: potion.nature
+	});
+	response.push(packet);
 	switch (potion.nature) {
 		case ItemNature.HEALTH:
-			response.push(makePacket(CommandDrinkConsumePotionRes, { health: potion.power }));
 			await player.addHealth(potion.power, response, NumberChangeReason.DRINK);
 			break;
 		case ItemNature.ENERGY:
-			response.push(makePacket(CommandDrinkConsumePotionRes, { energy: potion.power }));
 			player.addEnergy(potion.power, NumberChangeReason.DRINK);
 			break;
 		case ItemNature.TIME_SPEEDUP:
 			await TravelTime.timeTravel(player, potion.power, NumberChangeReason.DRINK);
-			response.push(makePacket(CommandDrinkConsumePotionRes, { time: potion.power }));
-			break;
-		case ItemNature.NONE:
-			response.push(makePacket(CommandDrinkConsumePotionRes, {}));
 			break;
 		default:
 			break;

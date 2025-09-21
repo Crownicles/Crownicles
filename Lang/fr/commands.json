@@ -1298,18 +1298,24 @@
     "switchSelectionDescription": "Choisissez un objet à équiper dans la liste ci-dessous :"
   },
   "drink": {
-    "cancelledTitle": "{{pseudo}}, vous avez annulé l'action",
-    "cancelled": "Vous n'avez pas bu votre potion !",
-    "noActiveObject": "Vous n'avez malheureusement rien à boire dans votre inventaire !",
-    "objectIsActiveDuringFights": "Ce breuvage ne peut pas être bu maintenant. Il sera utilisé automatiquement lors de votre prochain combat !",
-    "healthBonus": "{emote:unitValues.health} Vie gagnée : {{value}} !",
-    "energyBonus": "{emote:unitValues.energy} Énergie gagnée : {{value}} !",
-    "timeBonus": "{emote:unitValues.time} Vous avez avancé de {{value}} !",
-    "noBonus": "{emote:messages.refuse} Vous consommez une potion... Ça ne semble pas très efficace !",
-    "drinkSuccessTitle": "{{pseudo}}, vous consommez une potion !",
-    "confirmationTitle": "{{pseudo}}, confirmation :",
-    "confirmation": "Êtes-vous sûr de vouloir boire votre {{potion}} ?",
-    "confirmationFooter": "Il est possible d'éviter cette étape en utilisant le paramètre forcer !"
+    "errors": {
+      "noAvailablePotions": "Vous n'avez malheureusement aucune potion consommable dans votre inventaire ! Les potions de combats ne peuvent pas être consommées via cette commande.",
+      "cancel": "Vous ne buvez pas de potion."
+    },
+    "title": "{{pseudo}}, vous avez bu une potion !",
+    "description": "{emote:unitValues.{{nature}}} $t(commands:drink.natureText.{{nature}}) **{{value}}** !",
+    "natureText": {
+      "none": "Vous consommez une potion... Ça ne semble pas très efficace !",
+      "health": "Vie gagnée :",
+      "energy": "Énergie gagnée :",
+      "time": "Vous avez avancé de"
+    },
+    "collectorTitleOneObject": "{{pseudo}}, confirmation :",
+    "collectorDescOneObject": "Voulez-vous boire votre potion ?\n\n{{object}}",
+    "collectorTitle": "{{pseudo}}, choix de votre potion !",
+    "collectorDesc": "Choisissez une potion à boire dans la liste ci-dessous :",
+    "collectorRefuseOption": "Annuler",
+    "menuPlaceholder": "Sélectionnez une potion"
   },
   "petSell": {
     "noPet": "Vous n'avez aucun familier à vendre !",

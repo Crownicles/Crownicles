@@ -1,22 +1,24 @@
 import {
 	ReactionCollector,
-	ReactionCollectorAcceptReaction,
 	ReactionCollectorCreationPacket,
 	ReactionCollectorData,
+	ReactionCollectorReaction,
 	ReactionCollectorRefuseReaction
 } from "./ReactionCollectorPacket";
 import { ItemWithDetails } from "../../types/ItemWithDetails";
 
-export class ReactionCollectorDrinkData extends ReactionCollectorData {
+export class ReactionCollectorDrinkData extends ReactionCollectorData {}
+
+export class ReactionCollectorDrinkReaction extends ReactionCollectorReaction {
 	potion!: ItemWithDetails;
 }
 
 export class ReactionCollectorDrink extends ReactionCollector {
-	private readonly potion!: ItemWithDetails;
+	private readonly potions!: ItemWithDetails[];
 
-	constructor(potion: ItemWithDetails) {
+	constructor(potions: ItemWithDetails[]) {
 		super();
-		this.potion = potion;
+		this.potions = potions;
 	}
 
 	creationPacket(id: string, endTime: number): ReactionCollectorCreationPacket {
@@ -24,12 +26,10 @@ export class ReactionCollectorDrink extends ReactionCollector {
 			id,
 			endTime,
 			reactions: [
-				this.buildReaction(ReactionCollectorAcceptReaction, {}),
+				...this.potions.map(potion => this.buildReaction(ReactionCollectorDrinkReaction, { potion })),
 				this.buildReaction(ReactionCollectorRefuseReaction, {})
 			],
-			data: this.buildData(ReactionCollectorDrinkData, {
-				potion: this.potion
-			})
+			data: this.buildData(ReactionCollectorDrinkData, {})
 		};
 	}
 }
