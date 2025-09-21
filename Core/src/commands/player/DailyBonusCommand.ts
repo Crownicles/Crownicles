@@ -124,7 +124,7 @@ export default class DailyBonusCommand {
 			return;
 		}
 
-		const usableObjects = (await InventorySlots.getOfPlayer(player.id)).filter(item => item.isObject() && !isWrongObjectForDaily(item.getItem() as ObjectItem));
+		const usableObjects = (await InventorySlots.getOfPlayer(player.id)).filter(item => item.itemId !== 0 && item.isObject() && !isWrongObjectForDaily(item.getItem() as ObjectItem));
 
 		if (usableObjects.length === 0) {
 			response.push(makePacket(CommandDailyBonusNoAvailableObject, {}));
