@@ -317,13 +317,7 @@
   },
   "drink": {
     "name": "drink",
-    "description": "Drink the equipped potion.",
-    "options": {
-      "force": {
-        "name": "force",
-        "description": "If true, skips the validation phase if you are really sure you want to drink the potion."
-      }
-    }
+    "description": "Boire une potion."
   },
   "petSell": {
     "name": "petsell",
