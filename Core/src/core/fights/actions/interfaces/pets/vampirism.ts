@@ -13,9 +13,9 @@ import { FightUtils } from "../../../../utils/FightUtils";
 
 function getAttackInfo(): attackInfo {
 	return {
-		minDamage: 3,
-		averageDamage: 12,
-		maxDamage: 25
+		minDamage: 7,
+		averageDamage: 33,
+		maxDamage: 65
 	};
 }
 

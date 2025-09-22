@@ -128,6 +128,7 @@ export abstract class FightConstants {
 				BITE: "bite",
 				BOOST_DEFENSE: "boostDefense",
 				BOOST_SPEED: "boostSpeed",
+				BREAK_ARMOR: "breakArmor",
 				BUILD_BARRAGE: "buildBarrage",
 				CLAWS: "claws",
 				CREATE_BOMB: "createBomb",

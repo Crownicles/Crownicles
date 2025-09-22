@@ -681,6 +681,11 @@
             "Ses réflexes sont exceptionnels. Il partagera son incroyable vivacité avec vous lors des combats, vous rendant bien plus rapide.",
             "Ce familier possède des glandes spéciales qui sécrètent une hormone d'accélération. À vos côtés, vous vous déplacerez comme l'éclair !"
           ],
+          "breakArmor": [
+            "Dès le coup d'envoi du combat, il fonce en trombe sur l'adversaire et tente d'arracher son armure ou son bouclier, cela réussit très souvent, laissant l'ennemi démuni.",
+            "Ce puissant animal charge frontalement dès le début ; s'il atteint sa cible, casque, plastron ou bouclier sont délogés et emportés loin du champ de bataille.",
+            "Votre familier effectue une charge impressionnante visant à dépouiller l'ennemi : la plupart du temps, l'armure ou le bouclier finit coincé entre ses cornes, et devient son butin."
+          ],
           "claws": [
             "Les griffes de votre animal sont plus tranchantes que bien des lames ! Il les utilisera pour lacérer vos ennemis avec une efficacité terrifiante.",
             "La structure kératinisée de ses griffes est unique. En combat, il pourra infliger des entailles profondes à vos adversaires.",
@@ -1512,7 +1517,7 @@
     "historyLine": "{{date}}\n{{attackSentence}}\n**Résultat :** {{resultSentence}}\n**Votre gloire :** {emote:unitValues.glory} {{meInitialGlory}} -> {{meFinalGlory}}{{meLeagueChange}}\n**Gloire adverse :** {emote:unitValues.glory} {{opponentInitialGlory}} -> {{opponentFinalGlory}}",
     "attackSentence": {
       "attacker": "{emote:fightCommand.crossedSwords} Vous avez attaqué **{{opponent}}** ({emote:classes.{{opponentClassId}}} $t(models:classes.{{opponentClassId}}))",
-      "defender": "{emote:fightCommand.shield} Vous avez été attaqué par **{{opponent}}** ({emote:classes.{{opponentClassId}}} $t(models:classes.{{opponentClassId}}))"
+      "defender": "{emote:fightCommand.armor} Vous avez été attaqué par **{{opponent}}** ({emote:classes.{{opponentClassId}}} $t(models:classes.{{opponentClassId}}))"
     },
     "resultSentence": {
       "won": "{emote:fightHistory.won} Gagné !",

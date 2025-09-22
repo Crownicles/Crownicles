@@ -229,6 +229,10 @@
     "boostSpeed": {
       "success": "monte sur le dos de **{{petNickname}}** pour se déplacer plus rapidement."
     },
+    "breakArmor": {
+      "failure": "fait appel à **{{petNickname}}** qui charge l'adversaire. Malheureusement, il rate complètement sa cible.",
+      "success": "demande l'aide de son familier qui charge l'adversaire lourdement. Ce dernier se protège de l'attaque mais son équipement est emporté au loin par **{{petNickname}}** !"
+    },
     "boulderTossAttack": {
       "name_one": "Attaque rocheuse",
       "name_other": "Attaques rocheuses"
