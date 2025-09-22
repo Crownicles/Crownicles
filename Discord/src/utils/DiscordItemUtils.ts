@@ -163,6 +163,15 @@ export class DiscordItemUtils {
 		});
 	}
 
+	static getPotionNatureDisplay(nature: ItemNature, power: number, lng: Language): string {
+		return i18n.t(`items:potionsNatures.${nature}`, {
+			lng,
+			power: nature === ItemNature.TIME_SPEEDUP
+				? minutesDisplay(power, lng)
+				: power
+		});
+	}
+
 	static getShortDisplay(item: MainItemDisplayPacket | SupportItemDisplayPacket, lng: Language): string {
 		return i18n.t("items:nameDisplay", {
 			lng,

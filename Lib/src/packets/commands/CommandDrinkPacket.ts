@@ -1,26 +1,21 @@
 import {
 	CrowniclesPacket, PacketDirection, sendablePacket
 } from "../CrowniclesPacket";
+import { ItemNature } from "../../constants/ItemConstants";
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandDrinkPacketReq extends CrowniclesPacket {
-	force!: boolean;
 }
-
-@sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandDrinkNoActiveObjectError extends CrowniclesPacket {}
-
-@sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandDrinkObjectIsActiveDuringFights extends CrowniclesPacket {}
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandDrinkCancelDrink extends CrowniclesPacket {}
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandDrinkConsumePotionRes extends CrowniclesPacket {
-	health?: number;
+export class CommandDrinkPacketRes extends CrowniclesPacket {
+	value!: number;
 
-	energy?: number;
-
-	time?: number;
+	itemNature!: ItemNature;
 }
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandDrinkNoAvailablePotion extends CrowniclesPacket {}

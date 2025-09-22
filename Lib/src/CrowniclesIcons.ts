@@ -2101,7 +2101,8 @@ export const CrowniclesIcons: {
 		breathRegen: "🫁",
 		petRarity: "⭐",
 		glory: "✨",
-		timeGain: "⌛"
+		timeGain: "⌛",
+		none: "❌"
 	},
 	shopItems: {
 		randomItem: "❓",
