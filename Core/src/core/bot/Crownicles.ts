@@ -271,7 +271,8 @@ export class Crownicles {
 				where: {
 					[Op.and]: [
 						{ fightPointsLost: { [Op.lte]: FightConstants.POINTS_REGEN_AMOUNT } },
-						{ fightPointsLost: { [Op.ne]: 0 } }
+						{ fightPointsLost: { [Op.ne]: 0 } },
+						{ mapLinkId: { [Op.in]: MapCache.regenEnergyMapLinks } }
 					]
 				}
 			}
