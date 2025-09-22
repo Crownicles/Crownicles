@@ -218,13 +218,14 @@ export default class EventsHandlers {
 			]
 		});
 
-		await interaction.user.send({
+		interaction.user.send({
 			embeds: [
 				new CrowniclesEmbed()
 					.formatAuthor(i18n.t("models:players.koDmTitle", { lng }), interaction.user)
 					.setDescription(i18n.t("models:players.koDmDesc", { lng }))
 			]
-		});
+		}).then()
+			.catch();
 	}
 
 	@packetHandler(PlayerLeavePveIslandPacket)
