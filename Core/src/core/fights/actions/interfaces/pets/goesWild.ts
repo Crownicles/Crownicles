@@ -14,14 +14,14 @@ function getAttackInfo(): attackInfo {
 	return {
 		minDamage: 15,
 		averageDamage: 110,
-		maxDamage: 195
+		maxDamage: 170
 	};
 }
 
 function getStatsInfo(sender: Fighter, receiver: Fighter): statsInfo {
 	return {
 		attackerStats: [
-			FightUtils.calculatePetStatFromRawPower(8.4, sender.level),
+			FightUtils.calculatePetStatFromRawPower(7.4, sender.level),
 			FightUtils.calculatePetStatFromRawPower(2.2, sender.level)
 		],
 		defenderStats: [

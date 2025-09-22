@@ -496,10 +496,13 @@ export abstract class PetConstants {
 				PetConstants.PETS.ZEBRA,
 				PetConstants.PETS.DROMEDARY,
 				PetConstants.PETS.CAMEL,
-				PetConstants.PETS.DONKEY,
-				PetConstants.PETS.MOOSE
+				PetConstants.PETS.DONKEY
 			],
 			behaviorId: FightConstants.FIGHT_ACTIONS.PET.BOOST_SPEED
+		},
+		{
+			petIds: [PetConstants.PETS.MOOSE],
+			behaviorId: FightConstants.FIGHT_ACTIONS.PET.BREAK_ARMOR
 		},
 		{
 			petIds: [PetConstants.PETS.TURTLE],
