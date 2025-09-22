@@ -30,8 +30,8 @@ const use: PetAssistanceFunc = async (_fighter, opponent, turn, _fightController
 		armorSpeed = memberActiveObjects.armor.getSpeed();
 	}
 
-	// 10% chance to fail to break the armor
-	if (RandomUtils.crowniclesRandom.bool(0.1) || armorDefense === 0) {
+	// 15% chance to fail to break the armor
+	if (RandomUtils.crowniclesRandom.bool(0.15) || armorDefense === 0) {
 		return Promise.resolve({
 			assistanceStatus: PetAssistanceState.FAILURE
 		});
@@ -46,11 +46,11 @@ const use: PetAssistanceFunc = async (_fighter, opponent, turn, _fightController
 		selfTarget: false,
 		stat: FightStatBuffed.DEFENSE,
 		operator: FightStatModifierOperation.MULTIPLIER,
-		value: (totalDefense - armorDefense) / totalDamage
+		value: (totalDefense - armorDefense) / totalDefense
 	}, opponent, this);
 
 	// If the opponent had an armor that impacts attack or speed, update the stats accordingly
-	if (armorDefense !== 0) {
+	if (armorDamages !== 0) {
 		FightActionController.applyBuff(result, {
 			selfTarget: false,
 			stat: FightStatBuffed.ATTACK,

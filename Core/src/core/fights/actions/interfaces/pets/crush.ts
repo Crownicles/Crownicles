@@ -12,7 +12,7 @@ function getAttackInfo(): attackInfo {
 	return {
 		minDamage: 10,
 		averageDamage: 150,
-		maxDamage: 280
+		maxDamage: 235
 	};
 }
 
