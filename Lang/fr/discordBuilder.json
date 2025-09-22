@@ -317,13 +317,7 @@
   },
   "drink": {
     "name": "boire",
-    "description": "Boire la potion équipée.",
-    "options": {
-      "force": {
-        "name": "forcer",
-        "description": "Si vrai, passe la phase de validation si vous êtes sûr de vouloir boire la potion."
-      }
-    }
+    "description": "Boire une potion."
   },
   "petSell": {
     "name": "vendrefamilier",
