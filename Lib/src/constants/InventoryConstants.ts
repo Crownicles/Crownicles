@@ -14,4 +14,6 @@ export abstract class InventoryConstants {
 		6.6,
 		6.7
 	];
+
+	static readonly DEFAULT_SLOT_VALUE = 0;
 }

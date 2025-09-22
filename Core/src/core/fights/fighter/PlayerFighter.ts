@@ -22,6 +22,7 @@ import { CrowniclesPacket } from "../../../../../Lib/src/packets/CrowniclesPacke
 import { Potion } from "../../../data/Potion";
 import PetEntity, { PetEntities } from "../../database/game/models/PetEntity";
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
+import { InventoryConstants } from "../../../../../Lib/src/constants/InventoryConstants";
 
 /**
  * Fighter
@@ -126,7 +127,7 @@ export class PlayerFighter extends Fighter {
 		if (!drankPotion.isFightPotion()) {
 			return;
 		}
-		await this.player.drinkPotion(0);
+		await this.player.drinkPotion(InventoryConstants.DEFAULT_SLOT_VALUE);
 		await this.player.save();
 		await checkDrinkPotionMissions(response, this.player, drankPotion, await InventorySlots.getOfPlayer(this.player.id));
 	}
