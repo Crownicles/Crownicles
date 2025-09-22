@@ -1298,18 +1298,24 @@
     "switchSelectionDescription": "Escolhe um item para equipar da lista abaixo:"
   },
   "drink": {
-    "cancelledTitle": "{{pseudo}}anulou a ação",
-    "cancelled": "Não bebeste a tua poção!",
-    "noActiveObject": "Infelizmente, não tens nada para beber no teu inventário!",
-    "objectIsActiveDuringFights": "Esta bebida não pode ser bebida agora. Será usada automaticamente na próxima vez que lutares!",
-    "healthBonus": "{emote:unitValues.health} Vida ganha: {{value}} !",
-    "energyBonus": "{emote:unitValues.energy} Energia poupada: {{value}} .",
-    "timeBonus": "{emote:unitValues.time} Seguiste em frente {{value}} !",
-    "noBonus": "{emote:messages.refuse} Consomes uma poção... Não parece ser muito eficaz!",
-    "drinkSuccessTitle": "{{pseudo}}Estás a beber uma poção!",
-    "confirmationTitle": "{{pseudo}}confirmação :",
-    "confirmation": "Tens a certeza que queres beber o teu {{potion}} ?",
-    "confirmationFooter": "É possível evitar este passo utilizando o parâmetro force!"
+    "errors": {
+      "noAvailablePotions": "Vous n'avez malheureusement aucune potion consommable dans votre inventaire ! Les potions de combats ne peuvent pas être consommées via cette commande.",
+      "cancel": "Vous ne buvez pas de potion."
+    },
+    "title": "{{pseudo}}, vous avez bu une potion !",
+    "descriptionNoBonus": "{emote:unitValues.{{nature}}} Vous consommez une potion... Ça ne semble pas très efficace",
+    "description": "{emote:unitValues.{{nature}}} $t(commands:drink.natureText.{{nature}}) **{{value}}** !",
+    "natureText": {
+      "health": "Vie gagnée :",
+      "energy": "Énergie gagnée :",
+      "time": "Vous avez avancé de"
+    },
+    "collectorTitleOneObject": "{{pseudo}}, confirmation :",
+    "collectorDescOneObject": "Voulez-vous boire votre potion ?\n\n{{object}}",
+    "collectorTitle": "{{pseudo}}, choix de votre potion !",
+    "collectorDesc": "Choisissez une potion à boire dans la liste ci-dessous :",
+    "collectorRefuseOption": "Annuler",
+    "menuPlaceholder": "Sélectionnez une potion"
   },
   "petSell": {
     "noPet": "Não tem nenhum animal de estimação para vender!",
