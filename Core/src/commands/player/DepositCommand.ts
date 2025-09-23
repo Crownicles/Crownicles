@@ -19,8 +19,13 @@ import {
 } from "../../core/database/game/models/InventorySlot";
 import { MainItem } from "../../data/MainItem";
 import { ObjectItem } from "../../data/ObjectItem";
+import {ReactionCollectorItemChoice} from "../../../../Lib/src/packets/interaction/ReactionCollectorItemChoice";
+import {Potion} from "../../data/Potion";
+import {ReactionCollectorInstance} from "../../core/utils/ReactionsCollector";
+import {BlockingConstants} from "../../../../Lib/src/constants/BlockingConstants";
+import {toItemWithDetails} from "../../core/utils/ItemUtils";
 
-export type DepositCandidate = {
+type DepositCandidate = {
 	slot: InventorySlot;
 	freeSlot: number;
 };
@@ -57,6 +62,30 @@ async function deposeItem(response: CrowniclesPacket[], player: Player, itemToDe
 	}));
 }
 
+async function manageMoreThanOneItemToDeposit(response: CrowniclesPacket[], context: PacketContext, player: Player, depositCandidates: DepositCandidate[]): Promise<void> {
+	const collector = new ReactionCollectorItemChoice({
+			item: {
+			}
+		},
+		depositCandidates.map(i => ({
+			slot: i.slot.slot,
+			itemWithDetails: toItemWithDetails(i.slot.getItem())
+		})),
+		false);
+
+	response.push(new ReactionCollectorInstance(
+		collector,
+		context,
+		{
+			allowedPlayerKeycloakIds: [player.keycloakId],
+			reactionLimit: 1,
+		},
+		manageMoreThanOneItemToDepositEndCallback()
+	)
+		.block(player.keycloakId, BlockingConstants.REASONS.DEPOSIT)
+		.build());
+}
+
 export default class DepositCommand {
 	/**
 	 * Deposit an equipped item in the item's stock.
@@ -79,16 +108,18 @@ export default class DepositCommand {
 			return;
 		}
 
-		const itemsThatCanBeDeposited = await getDepositCandidates(player, equippedItems);
+		const depositCandidates = await getDepositCandidates(player, equippedItems);
 
-		if (itemsThatCanBeDeposited.length === 0) {
+		if (depositCandidates.length === 0) {
 			response.push(makePacket(CommandDepositCannotDepositPacket, {}));
 			return;
 		}
 
-		if (itemsThatCanBeDeposited.length === 1) {
-			await deposeItem(response, player, itemsThatCanBeDeposited[0]);
+		if (depositCandidates.length === 1) {
+			await deposeItem(response, player, depositCandidates[0]);
 			return;
 		}
+
+		await manageMoreThanOneItemToDeposit(response, context,  player, depositCandidates);
 	}
 }

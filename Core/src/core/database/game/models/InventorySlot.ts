@@ -22,7 +22,11 @@ import Player from "./Player";
 import * as moment from "moment";
 import { InventoryConstants } from "../../../../../../Lib/src/constants/InventoryConstants";
 import { InventoryInfos } from "./InventoryInfo";
-import { DepositCandidate } from "../../../../commands/player/DepositCommand";
+
+type DepositCandidate = {
+	slot: InventorySlot;
+	freeSlot: number;
+};
 
 export class InventorySlot extends Model {
 	declare readonly playerId: number;
