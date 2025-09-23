@@ -70,6 +70,15 @@ export abstract class ItemConstants {
 		"money",
 		"energy"
 	];
+
+	static readonly UPGRADE_LEVEL_STATS_MULTIPLIER = [
+		1,
+		1.05,
+		1.1,
+		1.16,
+		1.23,
+		1.32
+	];
 }
 
 export enum ItemCategory {

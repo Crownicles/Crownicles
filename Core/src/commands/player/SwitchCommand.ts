@@ -6,7 +6,10 @@ import {
 	commandRequires, CommandUtils
 } from "../../core/utils/CommandUtils";
 import {
-	CommandSwitchCancelled, CommandSwitchErrorNoItemToSwitch, CommandSwitchPacketReq, CommandSwitchSuccess
+	CommandSwitchCancelled,
+	CommandSwitchErrorNoItemToSwitch,
+	CommandSwitchPacketReq,
+	CommandSwitchSuccess
 } from "../../../../Lib/src/packets/commands/CommandSwitchPacket";
 import {
 	InventorySlot, InventorySlots
@@ -15,11 +18,13 @@ import { sortPlayerItemList } from "../../core/utils/ItemUtils";
 import { ReactionCollectorInstance } from "../../core/utils/ReactionsCollector";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
 import {
-	ReactionCollectorSwitchItem, ReactionCollectorSwitchItemCloseReaction, ReactionCollectorSwitchItemReaction
+	ReactionCollectorSwitchItem,
+	ReactionCollectorSwitchItemCloseReaction,
+	ReactionCollectorSwitchItemReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorSwitchItem";
-import { ObjectItem } from "../../data/ObjectItem";
 import { MainItem } from "../../data/MainItem";
 import { BlockingUtils } from "../../core/utils/BlockingUtils";
+import { SupportItem } from "../../data/SupportItem";
 
 
 /**
@@ -37,9 +42,17 @@ async function switchItems(
 ): Promise<void> {
 	const toBackItem = inventorySlots.filter(slot => slot.isEquipped() && slot.itemCategory === toEquipItem.itemCategory)[0];
 	await InventorySlots.switchItemSlots(player, toEquipItem, toBackItem);
+
+	const toBackItemInstance = toBackItem.getItem();
+	const toEquipItemInstance = toEquipItem.getItem();
+
 	response.push(makePacket(CommandSwitchSuccess, {
-		itemBackedUp: (toBackItem.getItem() as MainItem | ObjectItem).getDisplayPacket(),
-		itemEquipped: (toEquipItem.getItem() as MainItem | ObjectItem).getDisplayPacket()
+		itemBackedUp: toBackItemInstance instanceof MainItem
+			? toBackItemInstance.getDisplayPacket(toBackItem.itemLevel, toBackItem.itemEnchantmentId, player.getMaxStatsValue())
+			: (toBackItemInstance as SupportItem).getDisplayPacket(player.getMaxStatsValue()),
+		itemEquipped: toEquipItemInstance instanceof MainItem
+			? toEquipItemInstance.getDisplayPacket(toEquipItem.itemLevel, toEquipItem.itemEnchantmentId, player.getMaxStatsValue())
+			: (toEquipItemInstance as SupportItem).getDisplayPacket(player.getMaxStatsValue())
 	}));
 }
 
@@ -86,7 +99,16 @@ export default class SwitchCommand {
 
 		toSwitchItems = sortPlayerItemList(toSwitchItems);
 
-		const collector = new ReactionCollectorSwitchItem(toSwitchItems.map((item: InventorySlot) => (item.getItem() as MainItem | ObjectItem).getDisplayPacket()));
+		const collector = new ReactionCollectorSwitchItem(toSwitchItems.map((item: InventorySlot) => {
+			const itemInstance = item.getItem();
+			if (itemInstance instanceof MainItem) {
+				return itemInstance.getDisplayPacket(item.itemLevel, item.itemEnchantmentId, player.getMaxStatsValue());
+			}
+			else if (itemInstance instanceof SupportItem) {
+				return itemInstance.getDisplayPacket(player.getMaxStatsValue());
+			}
+			throw new Error("Item instance is null");
+		}));
 
 		// Create a reaction collector which will let the player choose the mission he wants to skip
 		const packet = new ReactionCollectorInstance(

@@ -72,7 +72,7 @@ export default class ItemHandler {
 				)
 				.setDescription(i18n.t("commands:sell.soldMessage", {
 					lng,
-					item: DisplayUtils.getItemDisplay(packet.item, lng),
+					item: DisplayUtils.getSimpleItemDisplay(packet.item, lng),
 					value: packet.soldMoney
 				}));
 		}
@@ -92,7 +92,7 @@ export default class ItemHandler {
 				)
 				.setDescription(i18n.t("commands:sell.potionDestroyedMessage", {
 					lng,
-					item: DisplayUtils.getItemDisplay(packet.item, lng)
+					item: DisplayUtils.getSimpleItemDisplay(packet.item, lng)
 				}));
 		}
 
