@@ -11,9 +11,21 @@ import Player from "../../core/database/game/models/Player";
 import {
 	CommandDepositCannotDepositPacket,
 	CommandDepositNoItemPacket,
-	CommandDepositPacketReq
+	CommandDepositPacketReq, CommandDepositSuccessPacket
 } from "../../../../Lib/src/packets/commands/CommandDepositPacket";
-import { InventorySlots } from "../../core/database/game/models/InventorySlot";
+import {
+	InventorySlot,
+	InventorySlots
+} from "../../core/database/game/models/InventorySlot";
+import { MainItem } from "../../data/MainItem";
+import { ObjectItem } from "../../data/ObjectItem";
+
+async function deposeItem(response: CrowniclesPacket[], player: Player, itemToDeposit: InventorySlot): Promise<void> {
+	await InventorySlot.deposeItem(player, itemToDeposit);
+	response.push(makePacket(CommandDepositSuccessPacket, {
+		item: (itemToDeposit.getItem() as MainItem | ObjectItem).getDisplayPacket()
+	}));
+}
 
 export default class DepositCommand {
 	/**
@@ -37,13 +49,15 @@ export default class DepositCommand {
 			return;
 		}
 
-		const itemsThatCanBeDeposited = equippedItems.filter(equippedItem =>
-			invSlots.some(slot =>
-				!slot.isEquipped()
-				&& slot.itemCategory === equippedItem.itemCategory));
+
 
 		if (itemsThatCanBeDeposited.length === 0) {
 			response.push(makePacket(CommandDepositCannotDepositPacket, {}));
+			return;
+		}
+
+		if (itemsThatCanBeDeposited.length === 1) {
+			await deposeItem(response, player, itemsThatCanBeDeposited[0], invSlots);
 			return;
 		}
 	}
