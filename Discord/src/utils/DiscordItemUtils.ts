@@ -147,7 +147,7 @@ export class DiscordItemUtils {
 				return "items:mainItemsFieldUpgrade";
 			}
 			else if (mainPacket.itemEnchantmentId) {
-				return "items:mainItemsFieldNoUpgrade";
+				return "items:mainItemsFieldNoUpgradeEnchant";
 			}
 
 			return "items:mainItemsFieldNoUpgradeNoEnchant";
