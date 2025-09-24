@@ -6,14 +6,14 @@ import {
 } from "../../../data/FightAction";
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
 import { RandomUtils } from "../../../../../Lib/src/utils/RandomUtils";
-import { PlayerFighter } from "../fighter/PlayerFighter";
+import { RealPlayerFighter } from "../fighter/RealPlayerFighter";
 import { ClassConstants } from "../../../../../Lib/src/constants/ClassConstants";
 import { intenseOrSimpleAttack } from "./GlovedFightBehavior";
 import { shouldUseShieldAttack } from "./HelmetedFightBehavior";
 
 class TankFightBehavior implements ClassBehavior {
 	chooseAction(me: AiPlayerFighter, fightView: FightView): FightAction {
-		const opponent = fightView.fightController.getDefendingFighter() as AiPlayerFighter | PlayerFighter;
+		const opponent = fightView.fightController.getDefendingFighter() as AiPlayerFighter | RealPlayerFighter;
 		const turn = fightView.fightController.turn;
 
 		const lastOpponentAction = opponent.getLastFightActionUsed();

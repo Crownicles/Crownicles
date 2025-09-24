@@ -6,7 +6,7 @@ import {
 } from "../../../data/FightAction";
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
 import { RandomUtils } from "../../../../../Lib/src/utils/RandomUtils";
-import { PlayerFighter } from "../fighter/PlayerFighter";
+import { RealPlayerFighter } from "../fighter/RealPlayerFighter";
 import { ClassConstants } from "../../../../../Lib/src/constants/ClassConstants";
 import { intenseOrSimpleAttack } from "./GlovedFightBehavior";
 
@@ -15,7 +15,7 @@ import { intenseOrSimpleAttack } from "./GlovedFightBehavior";
  * @param opponent
  * @param me
  */
-export function shouldUseShieldAttack(opponent: AiPlayerFighter | PlayerFighter, me: AiPlayerFighter): boolean {
+export function shouldUseShieldAttack(opponent: AiPlayerFighter | RealPlayerFighter, me: AiPlayerFighter): boolean {
 	return ([
 		FightConstants.FIGHT_ACTIONS.PLAYER.CHARGE_ULTIMATE_ATTACK,
 		FightConstants.FIGHT_ACTIONS.PLAYER.CHARGE_CHARGING_ATTACK,
@@ -29,7 +29,7 @@ export function shouldUseShieldAttack(opponent: AiPlayerFighter | PlayerFighter,
 
 class TankFightBehavior implements ClassBehavior {
 	chooseAction(me: AiPlayerFighter, fightView: FightView): FightAction {
-		const opponent = fightView.fightController.getDefendingFighter() as AiPlayerFighter | PlayerFighter;
+		const opponent = fightView.fightController.getDefendingFighter() as AiPlayerFighter | RealPlayerFighter;
 		const turn = fightView.fightController.turn;
 
 		if (

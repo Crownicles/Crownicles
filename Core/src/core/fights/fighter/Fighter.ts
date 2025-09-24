@@ -53,9 +53,9 @@ export abstract class Fighter {
 
 	private speedModifiers: FightStatModifier[];
 
-	private ready: boolean;
-
 	private damageMultipliers: FightDamageMultiplier[];
+
+	private alterationsMultipliers: Map<string, number>;
 
 	protected constructor(level: number, availableFightActions: FightAction[]) {
 		this.stats = {
@@ -71,7 +71,6 @@ export abstract class Fighter {
 		this.attackModifiers = [];
 		this.defenseModifiers = [];
 		this.speedModifiers = [];
-		this.ready = false;
 		this.nextFightAction = null;
 		this.fightActionsHistory = [];
 		this.status = FighterStatus.NOT_STARTED_PLAYER;
@@ -79,6 +78,7 @@ export abstract class Fighter {
 		this.alterationTurn = 0;
 		this.level = level;
 		this.damageMultipliers = [];
+		this.alterationsMultipliers = new Map();
 
 		this.availableFightActions = new Map();
 		for (const fightAction of availableFightActions) {
@@ -512,5 +512,22 @@ export abstract class Fighter {
 		}
 
 		return Math.round(value);
+	}
+
+	/**
+	 * Set the alteration multiplier for an alteration id. The multiplier is applied on the opponents damage
+	 * @param alterationId
+	 * @param multiplier
+	 */
+	protected setAlterationMultiplier(alterationId: string, multiplier: number): void {
+		this.alterationsMultipliers.set(alterationId, multiplier);
+	}
+
+	/**
+	 * Get the alteration multiplier for an alteration id. If no multiplier is set, return 1. The multiplier is applied on the opponents damage
+	 * @param alterationId
+	 */
+	public getAlterationMultiplier(alterationId: string): number {
+		return this.alterationsMultipliers.get(alterationId) ?? 1;
 	}
 }
