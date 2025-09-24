@@ -2,7 +2,7 @@ import {
 	PetAssistanceResult, PetAssistanceState
 } from "../../../../../../../Lib/src/types/PetAssistanceResult";
 import { PetAssistanceFunc } from "../../../../../data/PetAssistance";
-import { PlayerFighter } from "../../../fighter/PlayerFighter";
+import { RealPlayerFighter } from "../../../fighter/RealPlayerFighter";
 import { AiPlayerFighter } from "../../../fighter/AiPlayerFighter";
 import { PetEntities } from "../../../../database/game/models/PetEntity";
 import { PetConstants } from "../../../../../../../Lib/src/constants/PetConstants";
@@ -23,7 +23,7 @@ const use: PetAssistanceFunc = async (fighter, opponent, turn, _fightController)
 	}
 
 
-	if (opponent instanceof PlayerFighter || opponent instanceof AiPlayerFighter) {
+	if (opponent instanceof RealPlayerFighter || opponent instanceof AiPlayerFighter) {
 		// Test if the opponent has a mouse
 		const pet = await PetEntities.getById(opponent.player.petId);
 		if (pet?.typeId === PetConstants.PETS.MOUSE) {

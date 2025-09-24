@@ -33,7 +33,7 @@ import { MissionsController } from "../../core/missions/MissionsController";
 import { FightController } from "../../core/fights/FightController";
 import { PVEConstants } from "../../../../Lib/src/constants/PVEConstants";
 import { MonsterDataController } from "../../data/Monster";
-import { PlayerFighter } from "../../core/fights/fighter/PlayerFighter";
+import { RealPlayerFighter } from "../../core/fights/fighter/RealPlayerFighter";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { Guilds } from "../../core/database/game/models/Guild";
 import { GuildConstants } from "../../../../Lib/src/constants/GuildConstants";
@@ -87,6 +87,8 @@ import {
 	ReactionCollectorInnRoomReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorCity";
 import { RequirementEffectPacket } from "../../../../Lib/src/packets/commands/requirements/RequirementEffectPacket";
+import { InventorySlots } from "../../core/database/game/models/InventorySlot";
+import { PlayerActiveObjects } from "../../core/database/game/models/PlayerActiveObjects";
 
 export default class ReportCommand {
 	@commandRequires(CommandReportPacketReq, {
@@ -119,7 +121,7 @@ export default class ReportCommand {
 
 		const city = CityDataController.instance.getCityByMapLinkId(player.mapLinkId);
 		if (city && currentEffectFinished) {
-			sendCityCollector(context, response, player, currentDate, city, forceSpecificEvent);
+			await sendCityCollector(context, response, player, currentDate, city, forceSpecificEvent);
 			return;
 		}
 
@@ -182,7 +184,7 @@ async function handleInnMealReaction(
 			return;
 		}
 
-		player.addEnergy(reaction.meal.energy, NumberChangeReason.INN_MEAL);
+		player.addEnergy(reaction.meal.energy, NumberChangeReason.INN_MEAL, await InventorySlots.getPlayerActiveObjects(player.id));
 		player.eatMeal();
 		await player.spendMoney({
 			response,
@@ -210,7 +212,7 @@ async function handleInnRoomReaction(
 		return;
 	}
 
-	await player.addHealth(reaction.room.health, response, NumberChangeReason.INN_ROOM);
+	await player.addHealth(reaction.room.health, response, NumberChangeReason.INN_ROOM, await InventorySlots.getPlayerActiveObjects(player.id));
 	await player.spendMoney({
 		response,
 		amount: reaction.room.price,
@@ -252,7 +254,8 @@ function cityCollectorEndCallback(context: PacketContext, player: Player, forceS
 	};
 }
 
-function sendCityCollector(context: PacketContext, response: CrowniclesPacket[], player: Player, currentDate: Date, city: City, forceSpecificEvent: number): void {
+async function sendCityCollector(context: PacketContext, response: CrowniclesPacket[], player: Player, currentDate: Date, city: City, forceSpecificEvent: number): Promise<void> {
+	const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
 	const collector = new ReactionCollectorCity({
 		timeInCity: TravelTime.getTravelDataSimplified(player, currentDate).playerTravelledTime,
 		mapTypeId: MapLocationDataController.instance.getById(player.getDestinationId()).type,
@@ -271,12 +274,12 @@ function sendCityCollector(context: PacketContext, response: CrowniclesPacket[],
 			}))
 		})),
 		energy: {
-			current: player.getCumulativeEnergy(),
-			max: player.getMaxCumulativeEnergy()
+			current: player.getCumulativeEnergy(playerActiveObjects),
+			max: player.getMaxCumulativeEnergy(playerActiveObjects)
 		},
 		health: {
-			current: player.health,
-			max: player.getMaxHealth()
+			current: player.getHealth(playerActiveObjects),
+			max: player.getMaxHealth(playerActiveObjects)
 		}
 	});
 
@@ -642,6 +645,7 @@ async function sendTravelPath(player: Player, response: CrowniclesPacket[], date
 	const lastMiniEvent = await PlayerSmallEvents.getLastOfPlayer(player.id);
 	const endMap = player.getDestination();
 	const startMap = player.getPreviousMap();
+	const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
 	response.push(makePacket(CommandReportTravelSummaryRes, {
 		effect: effectId,
 		startTime: timeData.travelStartTime,
@@ -654,8 +658,8 @@ async function sendTravelPath(player: Player, response: CrowniclesPacket[], date
 		},
 		energy: {
 			show: showEnergy,
-			current: showEnergy ? player.getCumulativeEnergy() : 0,
-			max: showEnergy ? player.getMaxCumulativeEnergy() : 0
+			current: showEnergy ? player.getCumulativeEnergy(playerActiveObjects) : 0,
+			max: showEnergy ? player.getMaxCumulativeEnergy(playerActiveObjects) : 0
 		},
 		endMap: {
 			id: endMap.id,
@@ -687,6 +691,7 @@ async function doPVEBoss(
 	const monsterObj = MonsterDataController.instance.getRandomMonster(mapId, seed);
 	const randomLevel = player.level - PVEConstants.MONSTER_LEVEL_RANDOM_RANGE / 2 + seed % PVEConstants.MONSTER_LEVEL_RANDOM_RANGE;
 	const fightCallback = async (fight: FightController, endFightResponse: CrowniclesPacket[]): Promise<void> => {
+		const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
 		if (fight) {
 			const rewards = monsterObj.getRewards(randomLevel);
 			let guildXp = 0;
@@ -695,7 +700,7 @@ async function doPVEBoss(
 			player.fightPointsLost = fight.fightInitiator.getMaxEnergy() - fight.fightInitiator.getEnergy();
 
 			// Only give reward if draw or win
-			if (fight.isADraw() || fight.getWinnerFighter() instanceof PlayerFighter) {
+			if (fight.isADraw() || fight.getWinnerFighter() instanceof RealPlayerFighter) {
 				await player.addMoney({
 					amount: rewards.money,
 					reason: NumberChangeReason.PVE_FIGHT,
@@ -705,7 +710,7 @@ async function doPVEBoss(
 					amount: rewards.xp,
 					reason: NumberChangeReason.PVE_FIGHT,
 					response: endFightResponse
-				});
+				}, playerActiveObjects);
 				if (player.guildId) {
 					const guild = await Guilds.getById(player.guildId);
 					await guild.addScore(rewards.guildScore, endFightResponse, NumberChangeReason.PVE_FIGHT);
@@ -726,7 +731,7 @@ async function doPVEBoss(
 			}
 			else {
 				// Make sure the player has no energy left after a loss even if he leveled up
-				player.setEnergyLost(player.getMaxCumulativeEnergy(), NumberChangeReason.PVE_FIGHT);
+				player.setEnergyLost(player.getMaxCumulativeEnergy(playerActiveObjects), NumberChangeReason.PVE_FIGHT, playerActiveObjects);
 			}
 
 			await player.save();
@@ -735,7 +740,7 @@ async function doPVEBoss(
 				.then();
 		}
 
-		if (!await player.leavePVEIslandIfNoEnergy(endFightResponse)) {
+		if (!await player.leavePVEIslandIfNoEnergy(endFightResponse, playerActiveObjects)) {
 			await Maps.stopTravel(player);
 			await player.setLastReportWithEffect(
 				0,
@@ -777,8 +782,8 @@ async function doPVEBoss(
 			return;
 		}
 
-		const playerFighter = new PlayerFighter(player, ClassDataController.instance.getById(player.class));
-		await playerFighter.loadStats();
+		const playerFighter = new RealPlayerFighter(player, ClassDataController.instance.getById(player.class));
+		await playerFighter.loadStats("MonsterFighter");
 		playerFighter.setBaseEnergy(playerFighter.getMaxEnergy() - player.fightPointsLost);
 
 		const fight = new FightController(
@@ -813,8 +818,9 @@ async function doPVEBoss(
  * Get a random small event
  * @param response
  * @param player
+ * @param playerActiveObjects
  */
-async function getRandomSmallEvent(response: CrowniclesPacket[], player: Player): Promise<string> {
+async function getRandomSmallEvent(response: CrowniclesPacket[], player: Player, playerActiveObjects: PlayerActiveObjects): Promise<string> {
 	const keys = SmallEventDataController.instance.getKeys();
 	let totalSmallEventsRarity = 0;
 	const updatedKeys = [];
@@ -824,7 +830,7 @@ async function getRandomSmallEvent(response: CrowniclesPacket[], player: Player)
 			response.push(makePacket(ErrorPacket, { message: `${key} doesn't contain a canBeExecuted function` }));
 			return null;
 		}
-		if (await file.smallEventFuncs.canBeExecuted(player)) {
+		if (await (file.smallEventFuncs as SmallEventFuncs).canBeExecuted(player, playerActiveObjects)) {
 			updatedKeys.push(key);
 			totalSmallEventsRarity += SmallEventDataController.instance.getById(key).rarity;
 		}
@@ -848,8 +854,10 @@ async function getRandomSmallEvent(response: CrowniclesPacket[], player: Player)
  * @param forced
  */
 async function executeSmallEvent(response: CrowniclesPacket[], player: Player, context: PacketContext, forced: string): Promise<void> {
+	const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
+
 	// Pick a random event
-	const event: string = forced ? forced : await getRandomSmallEvent(response, player);
+	const event: string = forced ? forced : await getRandomSmallEvent(response, player, playerActiveObjects);
 	if (!event) {
 		response.push(makePacket(ErrorPacket, { message: "No small event can be executed..." }));
 		return;
@@ -868,7 +876,7 @@ async function executeSmallEvent(response: CrowniclesPacket[], player: Player, c
 			const smallEventRecord = PlayerSmallEvents.createPlayerSmallEvent(player.id, event, Date.now());
 			await smallEventRecord.save();
 
-			await smallEvent.executeSmallEvent(response, player, context);
+			await smallEvent.executeSmallEvent(response, player, context, playerActiveObjects);
 			await MissionsController.update(player, response, { missionId: "doReports" });
 		}
 		catch (e) {

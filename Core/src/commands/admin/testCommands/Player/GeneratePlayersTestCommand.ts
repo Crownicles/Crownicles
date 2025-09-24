@@ -1,13 +1,9 @@
 import {
 	ExecuteTestCommandLike, ITestCommand, TypeKey
 } from "../../../../core/CommandsTest";
-import {
-	Players
-} from "../../../../core/database/game/models/Player";
+import { Players } from "../../../../core/database/game/models/Player";
 import { InventorySlot } from "../../../../core/database/game/models/InventorySlot";
-import {
-	PetEntity
-} from "../../../../core/database/game/models/PetEntity";
+import { PetEntity } from "../../../../core/database/game/models/PetEntity";
 import { ClassDataController } from "../../../../data/Class";
 import { ClassConstants } from "../../../../../../Lib/src/constants/ClassConstants";
 import { generateRandomItem } from "../../../../core/utils/ItemUtils";
@@ -487,7 +483,7 @@ async function createPlayer(params: {
 	newPlayer.level = params.level;
 	newPlayer.class = params.classData.id;
 	newPlayer.petId = params.petId;
-	newPlayer.health = params.classData.getMaxHealthValue(params.level);
+	newPlayer.setHealthNoCheck(params.classData.getMaxHealthValue(params.level));
 	newPlayer.experience = 0;
 	newPlayer.money = 1000;
 	newPlayer.score = 0;

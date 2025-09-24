@@ -5,9 +5,10 @@ import {
 	FightAction, FightActionDataController
 } from "../../../data/FightAction";
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
-import { PlayerFighter } from "../fighter/PlayerFighter";
+import { RealPlayerFighter } from "../fighter/RealPlayerFighter";
 import { MonsterFighter } from "../fighter/MonsterFighter";
 import { RandomUtils } from "../../../../../Lib/src/utils/RandomUtils";
+import { PlayerFighter } from "../fighter/PlayerFighter";
 
 class EsquireFightBehavior implements ClassBehavior {
 	private restCount = 0; // Track how many times we've rested
@@ -45,7 +46,7 @@ class EsquireFightBehavior implements ClassBehavior {
  * @param me
  * @param opponent
  */
-export function simpleOrQuickAttack(me: AiPlayerFighter, opponent: PlayerFighter | MonsterFighter | AiPlayerFighter): FightAction {
+export function simpleOrQuickAttack(me: AiPlayerFighter, opponent: PlayerFighter | MonsterFighter): FightAction {
 	// Other attacks based on speed comparison
 	const mySpeed = me.getSpeed();
 	const opponentSpeed = opponent.getSpeed();

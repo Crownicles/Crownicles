@@ -27,7 +27,7 @@ const use: PetAssistanceFunc = async (_fighter, opponent, turn, _fightController
 		const memberActiveObjects = await InventorySlots.getMainSlotsItems(opponent.player.id);
 		armorDamages = memberActiveObjects.armor.item.getAttack(memberActiveObjects.armor.itemLevel);
 		armorDefense = memberActiveObjects.armor.item.getDefense(memberActiveObjects.armor.itemLevel);
-		armorSpeed = memberActiveObjects.armor.item.getSpeed();
+		armorSpeed = memberActiveObjects.armor.item.getSpeed(memberActiveObjects.armor.itemLevel);
 	}
 
 	// 15% chance to fail to break the armor

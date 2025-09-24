@@ -19,6 +19,8 @@ import { Effect } from "../../../../Lib/src/types/Effect";
 import { TravelTime } from "../../core/maps/TravelTime";
 import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
 import { PossibilityOutcomeCondition } from "./PossibilityOutcomeCondition";
+import { PlayerActiveObjects } from "../../core/database/game/models/PlayerActiveObjects";
+import { InventorySlots } from "../../core/database/game/models/InventorySlot";
 
 async function applyOutcomeScore(outcome: PossibilityOutcome, time: number, player: Player, response: CrowniclesPacket[]): Promise<number> {
 	const scoreChange = TravelTime.timeTravelledToScore(time)
@@ -32,7 +34,7 @@ async function applyOutcomeScore(outcome: PossibilityOutcome, time: number, play
 	return scoreChange;
 }
 
-async function applyOutcomeExperience(outcome: PossibilityOutcome, player: Player, response: CrowniclesPacket[]): Promise<number> {
+async function applyOutcomeExperience(outcome: PossibilityOutcome, player: Player, playerActiveObjects: PlayerActiveObjects, response: CrowniclesPacket[]): Promise<number> {
 	let experienceChange = 150
 		+ (outcome.health > 0 ? 200 : 0)
 		+ (outcome.randomItem ? 300 : 0)
@@ -62,7 +64,7 @@ async function applyOutcomeExperience(outcome: PossibilityOutcome, player: Playe
 			amount: experienceChange,
 			reason: NumberChangeReason.BIG_EVENT,
 			response
-		});
+		}, playerActiveObjects);
 		return experienceChange;
 	}
 	return 0;
@@ -88,9 +90,9 @@ async function applyOutcomeEffect(outcome: PossibilityOutcome, player: Player): 
 	return undefined;
 }
 
-async function applyOutcomeHealth(outcome: PossibilityOutcome, player: Player, response: CrowniclesPacket[]): Promise<number> {
+async function applyOutcomeHealth(outcome: PossibilityOutcome, player: Player, playerActiveObjects: PlayerActiveObjects, response: CrowniclesPacket[]): Promise<number> {
 	if (outcome.health && outcome.health !== 0) {
-		await player.addHealth(outcome.health, response, NumberChangeReason.BIG_EVENT);
+		await player.addHealth(outcome.health, response, NumberChangeReason.BIG_EVENT, playerActiveObjects);
 		return outcome.health;
 	}
 	return 0;
@@ -123,9 +125,9 @@ async function applyOutcomeMoney(outcome: PossibilityOutcome, time: number, play
 	return moneyChange;
 }
 
-function applyOutcomeEnergy(outcome: PossibilityOutcome, player: Player): number {
+function applyOutcomeEnergy(outcome: PossibilityOutcome, player: Player, playerActiveObjects: PlayerActiveObjects): number {
 	if (outcome.energy && outcome.energy !== 0) {
-		player.addEnergy(outcome.energy, NumberChangeReason.BIG_EVENT);
+		player.addEnergy(outcome.energy, NumberChangeReason.BIG_EVENT, playerActiveObjects);
 		return outcome.energy;
 	}
 	return 0;
@@ -170,9 +172,9 @@ async function applyOutcomeGivePet(outcome: PossibilityOutcome, player: Player, 
 	}
 }
 
-async function applyOutcomeOneshot(outcome: PossibilityOutcome, player: Player, response: CrowniclesPacket[]): Promise<void> {
+async function applyOutcomeOneshot(outcome: PossibilityOutcome, player: Player, playerActiveObjects: PlayerActiveObjects, response: CrowniclesPacket[]): Promise<void> {
 	if (outcome.oneshot === true) {
-		await player.addHealth(-player.health, response, NumberChangeReason.BIG_EVENT);
+		await player.addHealth(-player.getHealth(playerActiveObjects), response, NumberChangeReason.BIG_EVENT, playerActiveObjects);
 	}
 }
 
@@ -223,6 +225,8 @@ type ApplyOutcome = {
  * @param response
  */
 export async function applyPossibilityOutcome(possibilityOutcome: ApplyOutcome, player: Player, context: PacketContext, response: CrowniclesPacket[]): Promise<MapLink> {
+	const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
+
 	// Score
 	const score = await applyOutcomeScore(possibilityOutcome.outcome[1], possibilityOutcome.time, player, response);
 
@@ -230,16 +234,16 @@ export async function applyPossibilityOutcome(possibilityOutcome: ApplyOutcome, 
 	const money = await applyOutcomeMoney(possibilityOutcome.outcome[1], possibilityOutcome.time, player, response);
 
 	// Health
-	const health = await applyOutcomeHealth(possibilityOutcome.outcome[1], player, response);
+	const health = await applyOutcomeHealth(possibilityOutcome.outcome[1], player, playerActiveObjects, response);
 
 	// Energy
-	const energy = applyOutcomeEnergy(possibilityOutcome.outcome[1], player);
+	const energy = applyOutcomeEnergy(possibilityOutcome.outcome[1], player, playerActiveObjects);
 
 	// Gems
 	const gems = await applyOutcomeGems(possibilityOutcome.outcome[1], player);
 
 	// Experience
-	const experience = await applyOutcomeExperience(possibilityOutcome.outcome[1], player, response);
+	const experience = await applyOutcomeExperience(possibilityOutcome.outcome[1], player, playerActiveObjects, response);
 
 	// Effect + lost time
 	const effect = await applyOutcomeEffect(possibilityOutcome.outcome[1], player);
@@ -273,7 +277,7 @@ export async function applyPossibilityOutcome(possibilityOutcome: ApplyOutcome, 
 	applyOutcomeNextEvent(possibilityOutcome.outcome[1], player);
 
 	// Oneshot
-	await applyOutcomeOneshot(possibilityOutcome.outcome[1], player, response);
+	await applyOutcomeOneshot(possibilityOutcome.outcome[1], player, playerActiveObjects, response);
 
 	// Forced link
 	return getNextMapLink(possibilityOutcome.outcome[1], player);

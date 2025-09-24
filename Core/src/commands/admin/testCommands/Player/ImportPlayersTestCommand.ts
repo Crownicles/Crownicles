@@ -1,17 +1,11 @@
 import {
 	ExecuteTestCommandLike, ITestCommand, TypeKey
 } from "../../../../core/CommandsTest";
+import { Players } from "../../../../core/database/game/models/Player";
+import { InventorySlot } from "../../../../core/database/game/models/InventorySlot";
+import { PetEntities } from "../../../../core/database/game/models/PetEntity";
 import {
-	Players
-} from "../../../../core/database/game/models/Player";
-import {
-	InventorySlot
-} from "../../../../core/database/game/models/InventorySlot";
-import {
-	PetEntities
-} from "../../../../core/database/game/models/PetEntity";
-import {
-	readFileSync, existsSync
+	existsSync, readFileSync
 } from "fs";
 
 export const commandInfo: ITestCommand = {
@@ -126,7 +120,7 @@ async function importSinglePlayer(playerData: ImportedPlayer): Promise<{
 	// Update player properties
 	player.level = playerData.level;
 	player.class = playerData.class;
-	player.health = playerData.health;
+	player.setHealthNoCheck(playerData.health);
 	player.experience = playerData.experience;
 	player.money = playerData.money;
 	player.score = playerData.score;

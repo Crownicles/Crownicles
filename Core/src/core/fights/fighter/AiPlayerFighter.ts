@@ -1,7 +1,4 @@
-import { Fighter } from "./Fighter";
 import { Player } from "../../database/game/models/Player";
-import { InventorySlots } from "../../database/game/models/InventorySlot";
-import { PlayerActiveObjects } from "../../database/game/models/PlayerActiveObjects";
 import { FightView } from "../FightView";
 import { RandomUtils } from "../../../../../Lib/src/utils/RandomUtils";
 import { Class } from "../../../data/Class";
@@ -14,10 +11,9 @@ import {
 } from "../AiBehaviorController";
 import PetEntity, { PetEntities } from "../../database/game/models/PetEntity";
 import { FighterStatus } from "../FighterStatus";
-import { Potion } from "../../../data/Potion";
-import { checkDrinkPotionMissions } from "../../utils/ItemUtils";
-import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
-import { InventoryConstants } from "../../../../../Lib/src/constants/InventoryConstants";
+import { PlayerFighter } from "./PlayerFighter";
+import { PlayerActiveObjects } from "../../database/game/models/PlayerActiveObjects";
+import { InventorySlots } from "../../database/game/models/InventorySlot";
 
 type AiPlayerFighterOptions = {
 	allowPotionConsumption?: boolean;
@@ -29,16 +25,8 @@ type AiPlayerFighterOptions = {
  * Fighter
  * Class representing a player in a fight
  */
-export class AiPlayerFighter extends Fighter {
-	public player: Player;
-
-	public pet?: PetEntity;
-
-	private class: Class;
-
+export class AiPlayerFighter extends PlayerFighter {
 	private readonly classBehavior: ClassBehavior;
-
-	private glory: number;
 
 	private readonly allowPotionConsumption: boolean;
 
@@ -47,9 +35,7 @@ export class AiPlayerFighter extends Fighter {
 	private readonly preloadedPetEntity?: PetEntity | null;
 
 	public constructor(player: Player, playerClass: Class, options: AiPlayerFighterOptions = {}) {
-		super(player.level, FightActionDataController.instance.getListById(playerClass.fightActionsIds));
-		this.player = player;
-		this.class = playerClass;
+		super(player, playerClass);
 		this.classBehavior = getAiClassBehavior(playerClass.id);
 		this.allowPotionConsumption = options.allowPotionConsumption ?? true;
 		this.preloadedActiveObjects = options.preloadedActiveObjects;
@@ -57,6 +43,7 @@ export class AiPlayerFighter extends Fighter {
 	}
 
 	/**
+	 * <<<<<<< HEAD
 	 * Function called when the fight starts
 	 * @param fightView The fight view
 	 * @param startStatus The first status of a player
@@ -75,19 +62,7 @@ export class AiPlayerFighter extends Fighter {
 			return;
 		}
 
-		// Potions have a chance of not being consumed
-		if (RandomUtils.crowniclesRandom.realZeroToOneInclusive() < FightConstants.POTION_NO_DRINK_PROBABILITY.AI) {
-			return;
-		}
-		const inventorySlots = await InventorySlots.getOfPlayer(this.player.id);
-		const drankPotion = inventorySlots.find(slot => slot.isPotion() && slot.isEquipped())
-			.getItem() as Potion;
-		if (!drankPotion.isFightPotion()) {
-			return;
-		}
-		await this.player.drinkPotion(InventoryConstants.DEFAULT_SLOT_VALUE);
-		await this.player.save();
-		await checkDrinkPotionMissions(response, this.player, drankPotion, await InventorySlots.getOfPlayer(this.player.id));
+		await super.consumePotionIfNeeded(response);
 	}
 
 
@@ -96,15 +71,14 @@ export class AiPlayerFighter extends Fighter {
 	 */
 	public async loadStats(): Promise<void> {
 		const playerActiveObjects: PlayerActiveObjects = this.preloadedActiveObjects ?? await InventorySlots.getPlayerActiveObjects(this.player.id);
-		this.stats.energy = this.player.getMaxCumulativeEnergy();
-		this.stats.maxEnergy = this.player.getMaxCumulativeEnergy();
+		this.stats.energy = this.player.getMaxCumulativeEnergy(playerActiveObjects);
+		this.stats.maxEnergy = this.player.getMaxCumulativeEnergy(playerActiveObjects);
 		this.stats.attack = this.player.getCumulativeAttack(playerActiveObjects);
 		this.stats.defense = this.player.getCumulativeDefense(playerActiveObjects);
 		this.stats.speed = this.player.getCumulativeSpeed(playerActiveObjects);
 		this.stats.breath = this.player.getBaseBreath();
 		this.stats.maxBreath = this.player.getMaxBreath();
 		this.stats.breathRegen = this.player.getBreathRegen();
-		this.glory = this.player.getGloryPoints();
 		if (this.player.petId) {
 			if (this.preloadedPetEntity !== undefined) {
 				this.pet = this.preloadedPetEntity;
@@ -119,6 +93,8 @@ export class AiPlayerFighter extends Fighter {
 	}
 
 	/**
+	 * =======
+	 * >>>>>>> b48bf566a (Implement items enchantments effects #3598)
 	 * Send the embed to choose an action
 	 * @param fightView
 	 * @param response

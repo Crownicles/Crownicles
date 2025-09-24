@@ -12,16 +12,19 @@ import {
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { TravelTime } from "../maps/TravelTime";
 import {
-	SmallEventGobletsGameMalus, SmallEventGobletsGamePacket
+	SmallEventGobletsGameMalus,
+	SmallEventGobletsGamePacket
 } from "../../../../Lib/src/packets/smallEvents/SmallEventGobletsGamePacket";
 import {
 	EndCallback, ReactionCollectorInstance
 } from "../utils/ReactionsCollector";
 import {
-	ReactionCollectorGobletsGame, ReactionCollectorGobletsGameReaction
+	ReactionCollectorGobletsGame,
+	ReactionCollectorGobletsGameReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorGobletsGame";
 import { ReactionCollectorReaction } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { Effect } from "../../../../Lib/src/types/Effect";
+import { PlayerActiveObjects } from "../database/game/models/PlayerActiveObjects";
 
 function computeLostValue(level: number, modifiers: {
 	LEVEL_MULTIPLIER: number;
@@ -33,18 +36,20 @@ function computeLostValue(level: number, modifiers: {
 
 async function manageHealthLost(
 	packet: SmallEventGobletsGamePacket,
-	player: Player, malus: SmallEventGobletsGameMalus.LIFE | SmallEventGobletsGameMalus.END,
+	player: Player,
+	playerActiveObjects: PlayerActiveObjects,
+	malus: SmallEventGobletsGameMalus.LIFE | SmallEventGobletsGameMalus.END,
 	response: CrowniclesPacket[]
 ): Promise<void> {
 	packet.value = computeLostValue(player.level, SmallEventConstants.GOBLETS_GAME.HEALTH_LOST);
 	if (malus === SmallEventGobletsGameMalus.END) {
 		packet.value = Math.round(packet.value * SmallEventConstants.GOBLETS_GAME.HEALTH_LOST.END_INTENSIFIER - SmallEventConstants.GOBLETS_GAME.HEALTH_LOST.END_ADJUSTER);
 	}
-	await player.addHealth(-packet.value, response, NumberChangeReason.SMALL_EVENT);
+	await player.addHealth(-packet.value, response, NumberChangeReason.SMALL_EVENT, playerActiveObjects);
 	await player.killIfNeeded(response, NumberChangeReason.SMALL_EVENT);
 }
 
-async function applyMalus(response: CrowniclesPacket[], player: Player, reaction: ReactionCollectorReaction): Promise<void> {
+async function applyMalus(response: CrowniclesPacket[], player: Player, playerActiveObjects: PlayerActiveObjects, reaction: ReactionCollectorReaction): Promise<void> {
 	const malus = !reaction
 		? SmallEventGobletsGameMalus.END
 		: RandomUtils.crowniclesRandom.pick(Object.values(SmallEventGobletsGameMalus)
@@ -57,7 +62,7 @@ async function applyMalus(response: CrowniclesPacket[], player: Player, reaction
 	switch (malus) {
 		case SmallEventGobletsGameMalus.LIFE:
 		case SmallEventGobletsGameMalus.END:
-			await manageHealthLost(packet, player, malus, response);
+			await manageHealthLost(packet, player, playerActiveObjects, malus, response);
 			break;
 		case SmallEventGobletsGameMalus.TIME:
 			packet.value = computeLostValue(player.level, SmallEventConstants.GOBLETS_GAME.TIME_LOST);
@@ -84,11 +89,11 @@ export const smallEventFuncs: SmallEventFuncs = {
 					MapConstants.LOCATIONS_IDS.MOUNT_CELESTRUM
 				].includes(mapId));
 	},
-	executeSmallEvent: (response, player, context) => {
+	executeSmallEvent: (response, player, context, playerActiveObjects) => {
 		const collector = new ReactionCollectorGobletsGame();
 
 		const endCallback: EndCallback = async (collector, response) => {
-			await applyMalus(response, player, collector.getFirstReaction()?.reaction);
+			await applyMalus(response, player, playerActiveObjects, collector.getFirstReaction()?.reaction);
 			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.GOBLET_CHOOSE);
 		};
 
