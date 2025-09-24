@@ -169,7 +169,7 @@
       },
       "FIGHT": {
         "description": "Verwenden Sie diesen Befehl, um andere Spieler, die sich auf demselben Server wie Sie befinden, zu detrieren.\nDie Kämpfe werden um die Reihe umgeleitet. In jeder Runde können Sie eine Aktion auswählen, die ausgeführt werden soll.\n\nFür weitere Informationen können Sie die Seite \"Guide\" auf der Seite \"https://guide.draftbot.com/notions-principale/combats\" anzeigen.",
-        "image": "https://draftbot.com/public/ressources/fighthelp/en/5.1.5.png"
+        "image": "https://draftbot.com/public/ressources/fighthelp/en/5.1.7.png"
       },
       "GLORY_TOP": {
         "description": "Zeigt die ruhmige Rangfolge des Spiels pro Schicht von 15 Spielern an. Die Liga der Spieler wird ebenfalls angezeigt. Spieler auf dem gleichen Server, die Sie mit einem blauen Pellet markiert haben."
@@ -680,6 +680,11 @@
             "Seine Morphologie ist auf Geschwindigkeit ausgelegt! Im Kampf kann er dich auf seinem Rücken tragen, was deine Beweglichkeit auf dem Schlachtfeld um ein Vielfaches steigert.",
             "Seine Reflexe sind außergewöhnlich. Er wird seine unglaubliche Schnelligkeit im Kampf mit dir teilen und dich so viel schneller machen.",
             "Dieses Haustier besitzt spezielle Drüsen, die ein Beschleunigungshormon absondern. An Ihrer Seite werden Sie sich wie der Blitz bewegen!"
+          ],
+          "breakArmor": [
+            "Dès le coup d'envoi du combat, il fonce en trombe sur l'adversaire et tente d'arracher son armure ou son bouclier, cela réussit très souvent, laissant l'ennemi démuni.",
+            "Ce puissant animal charge frontalement dès le début ; s'il atteint sa cible, casque, plastron ou bouclier sont délogés et emportés loin du champ de bataille.",
+            "Votre familier effectue une charge impressionnante visant à dépouiller l'ennemi : la plupart du temps, l'armure ou le bouclier finit coincé entre ses cornes, et devient son butin."
           ],
           "claws": [
             "Die Krallen Ihres Tieres sind schärfer als jede Klinge! Es wird sie einsetzen, um Ihre Feinde mit erschreckender Effizienz zu zerfetzen.",
