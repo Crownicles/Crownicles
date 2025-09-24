@@ -682,9 +682,9 @@
             "Esta mascota tiene unas glándulas especiales que segregan una hormona de aceleración. A su lado, ¡se moverá como un rayo!"
           ],
           "breakArmor": [
-            "Dès le coup d'envoi du combat, il fonce en trombe sur l'adversaire et tente d'arracher son armure ou son bouclier, cela réussit très souvent, laissant l'ennemi démuni.",
-            "Ce puissant animal charge frontalement dès le début ; s'il atteint sa cible, casque, plastron ou bouclier sont délogés et emportés loin du champ de bataille.",
-            "Votre familier effectue une charge impressionnante visant à dépouiller l'ennemi : la plupart du temps, l'armure ou le bouclier finit coincé entre ses cornes, et devient son butin."
+            "En cuanto comienza el combate, se abalanza sobre su oponente e intenta arrancarle la armadura o el escudo, a menudo con éxito, dejando al enemigo indefenso.",
+            "Este poderoso animal carga de frente desde el principio; si alcanza su objetivo, el yelmo, la coraza o el escudo se desprenden y son arrastrados fuera del campo de batalla.",
+            "Tu mascota realiza una impresionante carga para desnudar al enemigo: la mayoría de las veces, la armadura o el escudo acaban encajados entre sus cuernos, convirtiéndose en su botín."
           ],
           "claws": [
             "¡Las garras de tu mascota son más afiladas que muchas espadas! Las usará para acuchillar a tus enemigos con una eficacia aterradora.",
@@ -1304,23 +1304,23 @@
   },
   "drink": {
     "errors": {
-      "noAvailablePotions": "Vous n'avez malheureusement aucune potion consommable dans votre inventaire ! Les potions de combats ne peuvent pas être consommées via cette commande.",
-      "cancel": "Vous ne buvez pas de potion."
+      "noAvailablePotions": "Desafortunadamente, ¡no tienes pociones consumibles en tu inventario! Las pociones de combate no se pueden consumir con este comando.",
+      "cancel": "No bebes pociones."
     },
-    "title": "{{pseudo}}, vous avez bu une potion !",
-    "descriptionNoBonus": "{emote:unitValues.{{nature}}} Vous consommez une potion... Ça ne semble pas très efficace",
-    "description": "{emote:unitValues.{{nature}}} $t(commands:drink.natureText.{{nature}}) **{{value}}** !",
+    "title": "{{pseudo}}¡te has bebido una poción!",
+    "descriptionNoBonus": "{emote:unitValues.{{nature}}} Consumes una poción... No parece muy efectiva",
+    "description": "{emote:unitValues.{{nature}}} $t(commands:drink.natureText.{{nature}}) ¡**{{value}}** !",
     "natureText": {
-      "health": "Vie gagnée :",
-      "energy": "Énergie gagnée :",
-      "time": "Vous avez avancé de"
+      "health": "Vida ganada :",
+      "energy": "Energía ahorrada :",
+      "time": "Has avanzado por"
     },
-    "collectorTitleOneObject": "{{pseudo}}, confirmation :",
-    "collectorDescOneObject": "Voulez-vous boire votre potion ?\n\n{{object}}",
-    "collectorTitle": "{{pseudo}}, choix de votre potion !",
-    "collectorDesc": "Choisissez une potion à boire dans la liste ci-dessous :",
-    "collectorRefuseOption": "Annuler",
-    "menuPlaceholder": "Sélectionnez une potion"
+    "collectorTitleOneObject": "{{pseudo}}confirmación :",
+    "collectorDescOneObject": "¿Quieres beber tu poción?\n\n{{object}}",
+    "collectorTitle": "{{pseudo}}¡Elige tu poción!",
+    "collectorDesc": "Elige una poción para beber de la siguiente lista:",
+    "collectorRefuseOption": "Cancelar",
+    "menuPlaceholder": "Seleccione una poción"
   },
   "petSell": {
     "noPet": "¡No tienes mascotas que vender!",
