@@ -64,14 +64,15 @@ class MysticMageFightBehavior implements ClassBehavior {
 			return FightActionDataController.instance.getById(actions.POISONOUS_ATTACK);
 		}
 
-		if (
-			fightView.fightController.turn === 2 || (
-				opponent.getEnergy() < 120 || (
-					opponent.getEnergy() > 500
-					&& (!this.cursedAttackUsed || RandomUtils.crowniclesRandom.bool(0.2))
-					&& me.getBreath() >= FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.CURSED_ATTACK)
-					&& !opponent.hasFightAlteration()
-					&& fightView.fightController.turn > this.cursedAttackTurn))
+		if (!opponent.hasFightAlteration() && (
+			fightView.fightController.turn === 2
+			|| (
+				(opponent.getEnergy() < 120 || opponent.getEnergy() > 500)
+				&& (!this.cursedAttackUsed || RandomUtils.crowniclesRandom.bool(0.2))
+				&& me.getBreath() >= FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.CURSED_ATTACK)
+				&& fightView.fightController.turn > this.cursedAttackTurn
+			)
+		)
 		) {
 			this.cursedAttackUsed = true;
 			return FightActionDataController.instance.getById(actions.CURSED_ATTACK);
