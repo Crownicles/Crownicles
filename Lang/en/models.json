@@ -229,6 +229,10 @@
     "boostSpeed": {
       "success": "rides on the back of **{{petNickname}}** to move faster."
     },
+    "breakArmor": {
+      "failure": "fait appel à **{{petNickname}}** qui charge l'adversaire. Malheureusement, il rate complètement sa cible.",
+      "success": "demande l'aide de son familier qui charge l'adversaire lourdement. Ce dernier se protège de l'attaque mais son équipement est emporté au loin par **{{petNickname}}** !"
+    },
     "boulderTossAttack": {
       "name_one": "Boulder toss",
       "name_other": "Boulder tosses"
@@ -304,7 +308,7 @@
     },
     "createBomb": {
       "generalEffect": "is supported in his fight by **{{petNickname}}** who pretends to ferociously harass his opponent with precise and painful pecking blows.",
-      "failure": "failed to receive help from **{{petNickname}}** who, out of an abundance of caution, refrained from acting, aware that his intervention was more likely to injure his master than his adversary. We should have been quicker!",
+      "failure": "a manqué de recevoir l'aide de **{{petNickname}}** qui, par prudence, s'est abstenu d'agir, conscient que son intervention risquait davantage de blesser son maître que l'adversaire ! Peut-être aurait-il eu moins de scrupule s'il vous avait senti en danger...",
       "success": "takes advantage of the talent of **{{petNickname}}** who has discreetly prepared a powerful bomb. After activating the detonator, you take off running with all your might!"
     },
     "crush": {
