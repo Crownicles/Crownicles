@@ -7,10 +7,12 @@ export interface PlayerActiveObjects {
 	weapon: {
 		item: Weapon;
 		itemLevel: number;
+		itemEnchantmentId: string | null;
 	};
 	armor: {
 		item: Armor;
 		itemLevel: number;
+		itemEnchantmentId: string | null;
 	};
 	potion: {
 		item: Potion;

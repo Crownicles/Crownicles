@@ -23,14 +23,14 @@ type BigBadProperties = {
 
 export const smallEventFuncs: SmallEventFuncs = {
 	canBeExecuted: Maps.isOnContinent,
-	executeSmallEvent: async (response, player): Promise<void> => {
+	executeSmallEvent: async (response, player, _context, playerActiveObjects): Promise<void> => {
 		const outRand: SmallEventBigBadKind = RandomUtils.crowniclesRandom.integer(0, 2);
 		let lifeLoss, seFallen, moneyLoss, effect;
 		const bigBadProperties = SmallEventDataController.instance.getById("bigBad").getProperties<BigBadProperties>();
 		switch (outRand) {
 			case SmallEventBigBadKind.LIFE_LOSS:
 				lifeLoss = RandomUtils.rangedInt(SmallEventConstants.BIG_BAD.HEALTH);
-				await player.addHealth(-lifeLoss, response, NumberChangeReason.SMALL_EVENT);
+				await player.addHealth(-lifeLoss, response, NumberChangeReason.SMALL_EVENT, playerActiveObjects);
 				break;
 			case SmallEventBigBadKind.ALTERATION:
 				seFallen = RandomUtils.crowniclesRandom.pick(Object.keys(bigBadProperties.alterationStories));

@@ -26,7 +26,7 @@ import {
 } from "../../core/database/logs/LogsReadRequests";
 import { FightController } from "../../core/fights/FightController";
 import { FightOvertimeBehavior } from "../../core/fights/FightOvertimeBehavior";
-import { PlayerFighter } from "../../core/fights/fighter/PlayerFighter";
+import { RealPlayerFighter } from "../../core/fights/fighter/RealPlayerFighter";
 import { ClassDataController } from "../../data/Class";
 import { crowniclesInstance } from "../../index";
 import { EloUtils } from "../../core/utils/EloUtils";
@@ -81,8 +81,8 @@ async function getPlayerStats(player: Player): Promise<PlayerStats> {
 			glory: player.getGloryPoints()
 		},
 		energy: {
-			value: player.getCumulativeEnergy(),
-			max: player.getMaxCumulativeEnergy()
+			value: player.getCumulativeEnergy(playerActiveObjects),
+			max: player.getMaxCumulativeEnergy(playerActiveObjects)
 		},
 		attack: player.getCumulativeAttack(playerActiveObjects),
 		defense: player.getCumulativeDefense(playerActiveObjects),
@@ -238,16 +238,16 @@ async function fightEndCallback(fight: FightController, response: CrowniclesPack
 	const player2GameResult = player1GameResult === EloGameResult.DRAW ? EloGameResult.DRAW : player1GameResult === EloGameResult.WIN ? EloGameResult.LOSS : EloGameResult.WIN;
 
 	// Get the fight initiator reference (0 if the initiator is player1, 1 if the initiator is player2)
-	const initiatorReference = fight.fightInitiator.player.keycloakId === (fight.fighters[0] as PlayerFighter).player.keycloakId ? 0 : 1;
-	const initiatorGameResult = fight.fighters[0] instanceof PlayerFighter
+	const initiatorReference = fight.fightInitiator.player.keycloakId === (fight.fighters[0] as RealPlayerFighter).player.keycloakId ? 0 : 1;
+	const initiatorGameResult = fight.fighters[0] instanceof RealPlayerFighter
 	&& fight.fightInitiator.player.keycloakId === fight.fighters[0].player.keycloakId
 		? player1GameResult
 		: player2GameResult;
 	const defenderGameResult = initiatorGameResult === player1GameResult ? player2GameResult : player1GameResult;
 
 	// Player variables
-	const player1 = await Players.getById((fight.fighters[0] as PlayerFighter).player.id);
-	const player2 = await Players.getById((fight.fighters[1] as PlayerFighter).player.id);
+	const player1 = await Players.getById((fight.fighters[0] as RealPlayerFighter).player.id);
+	const player2 = await Players.getById((fight.fighters[1] as RealPlayerFighter).player.id);
 
 	// Attacker and defender players
 	const attacker = initiatorReference === 0 ? player1 : player2;
@@ -434,10 +434,10 @@ function fightValidationEndCallback(player: Player, context: PacketContext): End
 				BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.FIGHT_CONFIRMATION);
 				return;
 			}
-			const askingFighter = new PlayerFighter(player, ClassDataController.instance.getById(player.class));
-			await askingFighter.loadStats();
+			const askingFighter = new RealPlayerFighter(player, ClassDataController.instance.getById(player.class));
+			await askingFighter.loadStats("PlayerFighter");
 			const incomingFighter = new AiPlayerFighter(opponent, ClassDataController.instance.getById(opponent.class));
-			await incomingFighter.loadStats();
+			await incomingFighter.loadStats("PlayerFighter");
 
 			// Start fight
 			const fightController = new FightController(
@@ -466,7 +466,7 @@ export default class FightCommand {
 		level: FightConstants.REQUIRED_LEVEL
 	})
 	async execute(response: CrowniclesPacket[], player: Player, _packet: CommandFightPacketReq, context: PacketContext): Promise<void> {
-		if (!player.hasEnoughEnergyToFight()) {
+		if (!player.hasEnoughEnergyToFight(await InventorySlots.getPlayerActiveObjects(player.id))) {
 			response.push(makePacket(CommandFightNotEnoughEnergyPacketRes, {}));
 			return;
 		}

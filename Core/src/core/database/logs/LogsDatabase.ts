@@ -93,7 +93,7 @@ import { LogsPlayersRage } from "./models/LogsPlayersRage";
 import { GenericItem } from "../../../data/GenericItem";
 import { MapLink } from "../../../data/MapLink";
 import { FightController } from "../../fights/FightController";
-import { PlayerFighter } from "../../fights/fighter/PlayerFighter";
+import { RealPlayerFighter } from "../../fights/fighter/RealPlayerFighter";
 import { MonsterFighter } from "../../fights/fighter/MonsterFighter";
 import { Effect } from "../../../../../Lib/src/types/Effect";
 import { getDatabaseConfiguration } from "../../bot/CrowniclesConfig";
@@ -1002,15 +1002,15 @@ export class LogsDatabase extends Database {
 	 * @param fight
 	 */
 	public async logPveFight(fight: FightController): Promise<void> {
-		let player: PlayerFighter;
+		let player: RealPlayerFighter;
 		let monster: MonsterFighter;
 
-		if (fight.fighters[0] instanceof PlayerFighter && fight.fighters[1] instanceof MonsterFighter) {
-			player = fight.fighters[0] as PlayerFighter;
+		if (fight.fighters[0] instanceof RealPlayerFighter && fight.fighters[1] instanceof MonsterFighter) {
+			player = fight.fighters[0] as RealPlayerFighter;
 			monster = fight.fighters[1] as MonsterFighter;
 		}
-		else if (fight.fighters[0] instanceof MonsterFighter && fight.fighters[1] instanceof PlayerFighter) {
-			player = fight.fighters[1] as PlayerFighter;
+		else if (fight.fighters[0] instanceof MonsterFighter && fight.fighters[1] instanceof RealPlayerFighter) {
+			player = fight.fighters[1] as RealPlayerFighter;
 			monster = fight.fighters[0] as MonsterFighter;
 		}
 

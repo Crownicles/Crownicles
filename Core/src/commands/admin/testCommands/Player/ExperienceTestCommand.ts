@@ -2,6 +2,7 @@ import { NumberChangeReason } from "../../../../../../Lib/src/constants/LogsCons
 import {
 	ExecuteTestCommandLike, ITestCommand, TypeKey
 } from "../../../../core/CommandsTest";
+import { InventorySlots } from "../../../../core/database/game/models/InventorySlot";
 
 export const commandInfo: ITestCommand = {
 	name: "experience",
@@ -26,7 +27,7 @@ const experienceTestCommand: ExecuteTestCommandLike = async (player, args, respo
 		amount: xp - player.experience,
 		response,
 		reason: NumberChangeReason.TEST
-	});
+	}, await InventorySlots.getPlayerActiveObjects(player.id));
 	await player.save();
 
 	return `Vous avez maintenant ${player.experience} :star: !`;

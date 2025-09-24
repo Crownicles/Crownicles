@@ -25,24 +25,25 @@ import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstan
 import { ReactionCollectorGoToPVEIsland } from "../../../../Lib/src/packets/interaction/ReactionCollectorGoToPVEIsland";
 import { ReactionCollectorAcceptReaction } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { TravelTime } from "../maps/TravelTime";
+import { PlayerActiveObjects } from "../database/game/models/PlayerActiveObjects";
 
 export const smallEventFuncs: SmallEventFuncs = {
-	async canBeExecuted(player: Player): Promise<boolean> {
+	async canBeExecuted(player: Player, playerActiveObjects: PlayerActiveObjects): Promise<boolean> {
 		return player.level >= PVEConstants.MIN_LEVEL
 			&& Maps.isNearWater(player)
-			&& player.hasEnoughEnergyToFight()
+			&& player.hasEnoughEnergyToFight(playerActiveObjects)
 			&& await PlayerSmallEvents.playerSmallEventCount(player.id, "goToPVEIsland") === 0
 			&& await LogsReadRequests.getCountPVEIslandThisWeek(player.keycloakId, player.guildId) < PVEConstants.TRAVEL_COST.length;
 	},
 
-	async executeSmallEvent(response, player, context): Promise<void> {
+	async executeSmallEvent(response, player, context, playerActiveObjects): Promise<void> {
 		const price = await player.getTravelCostThisWeek();
 		const anotherMemberOnBoat = await Maps.getGuildMembersOnBoat(player);
 
 		const collector = new ReactionCollectorGoToPVEIsland(
 			price,
-			player.getCumulativeEnergy(),
-			player.getMaxCumulativeEnergy()
+			player.getCumulativeEnergy(playerActiveObjects),
+			player.getMaxCumulativeEnergy(playerActiveObjects)
 		);
 
 		const endCallback: EndCallback = async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {

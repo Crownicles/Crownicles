@@ -9,7 +9,7 @@ import { RandomUtils } from "../../../../../Lib/src/utils/RandomUtils";
 import { getUsedGodMoves } from "../FightController";
 import { simpleOrQuickAttack } from "./EsquireFightBehavior";
 import { ClassConstants } from "../../../../../Lib/src/constants/ClassConstants";
-import { PlayerFighter } from "../fighter/PlayerFighter";
+import { RealPlayerFighter } from "../fighter/RealPlayerFighter";
 
 class KnightFightBehavior implements ClassBehavior {
 	private blessRoundChosen: number | null = null;
@@ -21,7 +21,7 @@ class KnightFightBehavior implements ClassBehavior {
 	private heavyAttackCount = 0;
 
 	chooseAction(me: AiPlayerFighter, fightView: FightView): FightAction {
-		const opponent = fightView.fightController.getDefendingFighter() as AiPlayerFighter | PlayerFighter;
+		const opponent = fightView.fightController.getDefendingFighter() as AiPlayerFighter | RealPlayerFighter;
 		const currentRound = fightView.fightController.turn;
 
 		if (currentRound <= 2) {

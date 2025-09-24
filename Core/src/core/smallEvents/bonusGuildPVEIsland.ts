@@ -15,6 +15,7 @@ import Player from "../database/game/models/Player";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { Guilds } from "../database/game/models/Guild";
+import { PlayerActiveObjects } from "../database/game/models/PlayerActiveObjects";
 
 enum Outcome {
 	EXPERIENCE = "experience",
@@ -58,7 +59,7 @@ async function manageGuildReward(response: CrowniclesPacket[], player: Player, r
 	await guild.save();
 }
 
-async function manageClassicReward(response: CrowniclesPacket[], player: Player, result: Winnings, rewardKind: Outcome): Promise<void> {
+async function manageClassicReward(response: CrowniclesPacket[], player: Player, playerActiveObjects: PlayerActiveObjects, result: Winnings, rewardKind: Outcome): Promise<void> {
 	const reason = NumberChangeReason.SMALL_EVENT;
 	switch (rewardKind) {
 		case Outcome.MONEY:
@@ -69,13 +70,13 @@ async function manageClassicReward(response: CrowniclesPacket[], player: Player,
 			});
 			break;
 		case Outcome.LIFE:
-			await player.addHealth(-result.amount, response, reason);
+			await player.addHealth(-result.amount, response, reason, playerActiveObjects);
 			await player.killIfNeeded(response, reason);
 			break;
 		case Outcome.ENERGY:
-			player.addEnergy(-result.amount, reason);
-			if (player.getCumulativeEnergy() <= 0) {
-				await player.leavePVEIslandIfNoEnergy(response);
+			player.addEnergy(-result.amount, reason, playerActiveObjects);
+			if (player.getCumulativeEnergy(playerActiveObjects) <= 0) {
+				await player.leavePVEIslandIfNoEnergy(response, playerActiveObjects);
 			}
 			break;
 		case Outcome.EXPERIENCE:
@@ -83,7 +84,7 @@ async function manageClassicReward(response: CrowniclesPacket[], player: Player,
 				amount: result.amount,
 				response,
 				reason
-			});
+			}, playerActiveObjects);
 			break;
 		default:
 			break;
@@ -92,6 +93,7 @@ async function manageClassicReward(response: CrowniclesPacket[], player: Player,
 
 async function applyPossibility(
 	player: Player,
+	playerActiveObjects: PlayerActiveObjects,
 	response: CrowniclesPacket[],
 	issue: SmallEventBonusGuildPVEIslandResultType,
 	rewardKind: Outcome
@@ -106,14 +108,14 @@ async function applyPossibility(
 		await manageGuildReward(response, player, result);
 		return result;
 	}
-	await manageClassicReward(response, player, result, rewardKind);
+	await manageClassicReward(response, player, playerActiveObjects, result, rewardKind);
 	await player.save();
 	return result;
 }
 
 export const smallEventFuncs: SmallEventFuncs = {
 	canBeExecuted: Maps.isOnPveIsland,
-	executeSmallEvent: async (response, player): Promise<void> => {
+	executeSmallEvent: async (response, player, _context, playerActiveObjects): Promise<void> => {
 		const bonusGuildPVEIslandProperties = SmallEventDataController.instance.getById("bonusGuildPVEIsland")
 			.getProperties<BonusGuildPVEIslandProperties>();
 		const event: number = RandomUtils.randInt(0, bonusGuildPVEIslandProperties.events.length);
@@ -138,7 +140,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 					amount: 0,
 					isExperienceGain: false
 				}
-				: await applyPossibility(player, response, issue, bonusGuildPVEIslandProperties.events[event][issue][
+				: await applyPossibility(player, playerActiveObjects, response, issue, bonusGuildPVEIslandProperties.events[event][issue][
 					player.hasAGuild()
 						? SmallEventBonusGuildPVEIslandOutcomeSurrounding.WITH_GUILD
 						: SmallEventBonusGuildPVEIslandOutcomeSurrounding.SOLO

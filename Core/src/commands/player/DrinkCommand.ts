@@ -49,7 +49,7 @@ function drinkPotionCallback(
 			return;
 		}
 
-		await consumePotion(response, potion, player);
+		await consumePotion(response, potion, player, await InventorySlots.getPlayerActiveObjects(player.id));
 		await player.drinkPotion();
 		await player.save();
 		await checkDrinkPotionMissions(response, player, potion, await InventorySlots.getOfPlayer(player.id));

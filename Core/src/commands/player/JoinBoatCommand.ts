@@ -32,14 +32,17 @@ import { BlockingUtils } from "../../core/utils/BlockingUtils";
 import { PlayerMissionsInfos } from "../../core/database/game/models/PlayerMissionsInfo";
 import { TravelTime } from "../../core/maps/TravelTime";
 import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
+import { PlayerActiveObjects } from "../../core/database/game/models/PlayerActiveObjects";
+import { InventorySlots } from "../../core/database/game/models/InventorySlot";
 
 
 /**
  * Check if the player can join the boat
  * @param player
  * @param response
+ * @param playerActiveObjects
  */
-async function canJoinBoat(player: Player, response: CrowniclesPacket[]): Promise<boolean> {
+async function canJoinBoat(player: Player, response: CrowniclesPacket[], playerActiveObjects: PlayerActiveObjects): Promise<boolean> {
 	// Check if the player is still part of a guild
 	if (!player.guildId) {
 		response.push(makePacket(CommandJoinBoatNoGuildPacketRes, {}));
@@ -60,7 +63,7 @@ async function canJoinBoat(player: Player, response: CrowniclesPacket[]): Promis
 	}
 
 	// The player doesn't have enough energy
-	if (!player.hasEnoughEnergyToFight()) {
+	if (!player.hasEnoughEnergyToFight(playerActiveObjects)) {
 		response.push(makePacket(CommandJoinBoatNotEnoughEnergyPacketRes, {}));
 		return false;
 	}
@@ -71,10 +74,11 @@ async function canJoinBoat(player: Player, response: CrowniclesPacket[]): Promis
  * Handle the acceptation
  * @param player
  * @param response
+ * @param playerActiveObjects
  */
-async function acceptJoinBoat(player: Player, response: CrowniclesPacket[]): Promise<void> {
+async function acceptJoinBoat(player: Player, response: CrowniclesPacket[], playerActiveObjects: PlayerActiveObjects): Promise<void> {
 	await player.reload();
-	if (!await canJoinBoat(player, response)) {
+	if (!await canJoinBoat(player, response, playerActiveObjects)) {
 		return;
 	}
 
@@ -110,12 +114,12 @@ async function acceptJoinBoat(player: Player, response: CrowniclesPacket[]): Pro
 	await player.save();
 }
 
-function endCallback(player: Player): EndCallback {
+function endCallback(player: Player, playerActiveObjects: PlayerActiveObjects): EndCallback {
 	return async (collector, response): Promise<void> => {
 		const reaction = collector.getFirstReaction();
 		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.PVE_ISLAND);
 		if (reaction && reaction.reaction.type === ReactionCollectorAcceptReaction.name) {
-			await acceptJoinBoat(player, response);
+			await acceptJoinBoat(player, response, playerActiveObjects);
 		}
 		else {
 			response.push(makePacket(CommandJoinBoatRefusePacketRes, {}));
@@ -132,15 +136,16 @@ export default class JoinBoatCommand {
 		whereAllowed: [WhereAllowed.CONTINENT]
 	})
 	async execute(response: CrowniclesPacket[], player: Player, _packet: CommandJoinBoatPacketReq, context: PacketContext): Promise<void> {
-		if (!await canJoinBoat(player, response)) {
+		const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
+		if (!await canJoinBoat(player, response, playerActiveObjects)) {
 			return;
 		}
 		const price = await player.getTravelCostThisWeek();
 
 		const collector = new ReactionCollectorJoinBoat(
 			price,
-			player.getCumulativeEnergy(),
-			player.getMaxCumulativeEnergy()
+			player.getCumulativeEnergy(playerActiveObjects),
+			player.getMaxCumulativeEnergy(playerActiveObjects)
 		);
 
 		const collectorPacket = new ReactionCollectorInstance(
@@ -150,7 +155,7 @@ export default class JoinBoatCommand {
 				allowedPlayerKeycloakIds: [player.keycloakId],
 				reactionLimit: 1
 			},
-			endCallback(player)
+			endCallback(player, playerActiveObjects)
 		)
 			.block(player.keycloakId, BlockingConstants.REASONS.PVE_ISLAND)
 			.build();

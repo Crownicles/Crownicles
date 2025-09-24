@@ -5,6 +5,7 @@ import {
 } from "../../../../core/CommandsTest";
 import { TravelTime } from "../../../../core/maps/TravelTime";
 import { MapLinkDataController } from "../../../../data/MapLink";
+import { InventorySlots } from "../../../../core/database/game/models/InventorySlot";
 
 export const commandInfo: ITestCommand = {
 	name: "skiptutorial",
@@ -26,7 +27,7 @@ const skipTutorialTestCommand: ExecuteTestCommandLike = async player => {
 	player.badges = null;
 	player.effectEndDate = new Date();
 	player.effectDuration = 0;
-	player.health = player.getMaxHealth();
+	await player.addHealth(player.getMaxHealth(await InventorySlots.getPlayerActiveObjects(player.id)), [], NumberChangeReason.TEST, await InventorySlots.getPlayerActiveObjects(player.id));
 	await Maps.startTravel(player, MapLinkDataController.instance.getRandomLinkOnMainContinent(), 0);
 	await TravelTime.removeEffect(player, NumberChangeReason.TEST);
 	await player.save();

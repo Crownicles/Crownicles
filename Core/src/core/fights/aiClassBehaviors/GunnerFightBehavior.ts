@@ -10,7 +10,7 @@ import {
 } from "./RockThrowerFightBehavior";
 import { shouldUseSabotage } from "./SlingerFightBehavior";
 import { Fighter } from "../fighter/Fighter";
-import { PlayerFighter } from "../fighter/PlayerFighter";
+import { RealPlayerFighter } from "../fighter/RealPlayerFighter";
 
 /**
  * Determines if the AI should use intense attack based on speed comparison and remaining health
@@ -36,7 +36,7 @@ function shouldUseIntenseAttack(
  * @param opponent - The opponent fighter in the current battle
  * @returns The selected finishing attack
  */
-function chooseFinishingMove(me: AiPlayerFighter, opponent: PlayerFighter): FightAction {
+function chooseFinishingMove(me: AiPlayerFighter, opponent: RealPlayerFighter): FightAction {
 	if (me.getBreath() >= FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.QUICK_ATTACK)
 		&& me.getSpeed() > opponent.getSpeed()) {
 		return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.QUICK_ATTACK);
@@ -50,7 +50,7 @@ class GunnerFightBehavior implements ClassBehavior {
 	private canonAttackUsed = 0;
 
 	chooseAction(me: AiPlayerFighter, fightView: FightView): FightAction {
-		const opponent = fightView.fightController.getDefendingFighter() as PlayerFighter;
+		const opponent = fightView.fightController.getDefendingFighter() as RealPlayerFighter;
 		const turn = fightView.fightController.turn;
 
 		// Use canon attack again if used last turn to get 1.5x damage

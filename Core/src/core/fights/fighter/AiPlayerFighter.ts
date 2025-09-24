@@ -1,7 +1,4 @@
-import { Fighter } from "./Fighter";
 import { Player } from "../../database/game/models/Player";
-import { InventorySlots } from "../../database/game/models/InventorySlot";
-import { PlayerActiveObjects } from "../../database/game/models/PlayerActiveObjects";
 import { FightView } from "../FightView";
 import { RandomUtils } from "../../../../../Lib/src/utils/RandomUtils";
 import { Class } from "../../../data/Class";
@@ -12,82 +9,18 @@ import { CrowniclesPacket } from "../../../../../Lib/src/packets/CrowniclesPacke
 import {
 	ClassBehavior, getAiClassBehavior
 } from "../AiBehaviorController";
-import PetEntity, { PetEntities } from "../../database/game/models/PetEntity";
-import { FighterStatus } from "../FighterStatus";
-import { Potion } from "../../../data/Potion";
-import { checkDrinkPotionMissions } from "../../utils/ItemUtils";
-import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
+import { PlayerFighter } from "./PlayerFighter";
 
 /**
  * Fighter
  * Class representing a player in a fight
  */
-export class AiPlayerFighter extends Fighter {
-	public player: Player;
-
-	public pet?: PetEntity;
-
-	private class: Class;
-
+export class AiPlayerFighter extends PlayerFighter {
 	private readonly classBehavior: ClassBehavior;
 
-	private glory: number;
-
 	public constructor(player: Player, playerClass: Class) {
-		super(player.level, FightActionDataController.instance.getListById(playerClass.fightActionsIds));
-		this.player = player;
-		this.class = playerClass;
+		super(player, playerClass);
 		this.classBehavior = getAiClassBehavior(playerClass.id);
-	}
-
-	/**
-	 * Function called when the fight starts
-	 * @param fightView The fight view
-	 * @param startStatus The first status of a player
-	 */
-	async startFight(fightView: FightView, startStatus: FighterStatus): Promise<void> {
-		this.status = startStatus;
-		await this.consumePotionIfNeeded([fightView.context]);
-	}
-
-	/**
-	 * Delete the potion from the inventory of the player if needed
-	 * @param response
-	 */
-	public async consumePotionIfNeeded(response: CrowniclesPacket[]): Promise<void> {
-		// Potions have a chance of not being consumed
-		if (RandomUtils.crowniclesRandom.realZeroToOneInclusive() < FightConstants.POTION_NO_DRINK_PROBABILITY.AI) {
-			return;
-		}
-		const inventorySlots = await InventorySlots.getOfPlayer(this.player.id);
-		const drankPotion = inventorySlots.find(slot => slot.isPotion() && slot.isEquipped())
-			.getItem() as Potion;
-		if (!drankPotion.isFightPotion()) {
-			return;
-		}
-		await this.player.drinkPotion();
-		await this.player.save();
-		await checkDrinkPotionMissions(response, this.player, drankPotion, await InventorySlots.getOfPlayer(this.player.id));
-	}
-
-
-	/**
-	 * The fighter loads its various stats
-	 */
-	public async loadStats(): Promise<void> {
-		const playerActiveObjects: PlayerActiveObjects = await InventorySlots.getPlayerActiveObjects(this.player.id);
-		this.stats.energy = this.player.getMaxCumulativeEnergy();
-		this.stats.maxEnergy = this.player.getMaxCumulativeEnergy();
-		this.stats.attack = this.player.getCumulativeAttack(playerActiveObjects);
-		this.stats.defense = this.player.getCumulativeDefense(playerActiveObjects);
-		this.stats.speed = this.player.getCumulativeSpeed(playerActiveObjects);
-		this.stats.breath = this.player.getBaseBreath();
-		this.stats.maxBreath = this.player.getMaxBreath();
-		this.stats.breathRegen = this.player.getBreathRegen();
-		this.glory = this.player.getGloryPoints();
-		if (this.player.petId) {
-			this.pet = await PetEntities.getById(this.player.petId);
-		}
 	}
 
 	/**

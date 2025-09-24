@@ -40,6 +40,7 @@ import { MainItem } from "../../data/MainItem";
 import { SupportItem } from "../../data/SupportItem";
 import { CommandDrinkConsumePotionRes } from "../../../../Lib/src/packets/commands/CommandDrinkPacket";
 import { TravelTime } from "../maps/TravelTime";
+import { PlayerActiveObjects } from "../database/game/models/PlayerActiveObjects";
 
 
 /**
@@ -272,7 +273,7 @@ function getMoreThan2ItemsSwitchingEndCallback(whoIsConcerned: WhoIsConcerned, t
 		BlockingUtils.unblockPlayer(whoIsConcerned.player.keycloakId, BlockingConstants.REASONS.ACCEPT_ITEM);
 
 		if (reaction.reaction.type === ReactionCollectorItemChoiceDrinkPotionReaction.name) {
-			await consumePotion(response, toTradeItem as Potion, whoIsConcerned.player);
+			await consumePotion(response, toTradeItem as Potion, whoIsConcerned.player, InventorySlots.slotsToActiveObjects(whoIsConcerned.inventorySlots));
 			await whoIsConcerned.player.save();
 		}
 		else {
@@ -360,7 +361,7 @@ function getGiveItemToPlayerEndCallback(whoIsConcerned: WhoIsConcerned, concerne
 		BlockingUtils.unblockPlayer(whoIsConcerned.player.keycloakId, BlockingConstants.REASONS.ACCEPT_ITEM);
 
 		if (reaction?.reaction.type === ReactionCollectorItemAcceptDrinkPotionReaction.name) {
-			await consumePotion(response, concernedItems.item as Potion, whoIsConcerned.player);
+			await consumePotion(response, concernedItems.item as Potion, whoIsConcerned.player, InventorySlots.slotsToActiveObjects(whoIsConcerned.inventorySlots));
 			await whoIsConcerned.player.save();
 		}
 		else {
@@ -608,16 +609,17 @@ export function getItemByIdAndCategory(itemId: number, category: ItemCategory): 
  * @param response
  * @param potion
  * @param player
+ * @param playerActiveObjects
  */
-export async function consumePotion(response: CrowniclesPacket[], potion: Potion, player: Player): Promise<void> {
+export async function consumePotion(response: CrowniclesPacket[], potion: Potion, player: Player, playerActiveObjects: PlayerActiveObjects): Promise<void> {
 	switch (potion.nature) {
 		case ItemNature.HEALTH:
 			response.push(makePacket(CommandDrinkConsumePotionRes, { health: potion.power }));
-			await player.addHealth(potion.power, response, NumberChangeReason.DRINK);
+			await player.addHealth(potion.power, response, NumberChangeReason.DRINK, playerActiveObjects);
 			break;
 		case ItemNature.ENERGY:
 			response.push(makePacket(CommandDrinkConsumePotionRes, { energy: potion.power }));
-			player.addEnergy(potion.power, NumberChangeReason.DRINK);
+			player.addEnergy(potion.power, NumberChangeReason.DRINK, playerActiveObjects);
 			break;
 		case ItemNature.TIME_SPEEDUP:
 			await TravelTime.timeTravel(player, potion.power, NumberChangeReason.DRINK);
