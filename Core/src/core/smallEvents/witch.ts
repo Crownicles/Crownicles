@@ -30,6 +30,7 @@ import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants"
 import { WitchActionOutcomeType } from "../../../../Lib/src/types/WitchActionOutcomeType";
 import { Effect } from "../../../../Lib/src/types/Effect";
 import { ClassConstants } from "../../../../Lib/src/constants/ClassConstants";
+import { PlayerActiveObjects } from "../database/game/models/PlayerActiveObjects";
 
 
 type WitchEventSelection = {
@@ -89,9 +90,17 @@ async function givePotion(context: PacketContext, player: Player, potionToGive: 
  * @param selectedEvent
  * @param context
  * @param player
+ * @param playerActiveObjects
  * @param response
  */
-async function applyOutcome(outcome: WitchActionOutcomeType, selectedEvent: WitchAction, context: PacketContext, player: Player, response: CrowniclesPacket[]): Promise<void> {
+async function applyOutcome(
+	outcome: WitchActionOutcomeType,
+	selectedEvent: WitchAction,
+	context: PacketContext,
+	player: Player,
+	playerActiveObjects: PlayerActiveObjects,
+	response: CrowniclesPacket[]
+): Promise<void> {
 	if (selectedEvent.forceEffect || outcome === WitchActionOutcomeType.EFFECT) {
 		await selectedEvent.giveEffect(player);
 	}
@@ -99,7 +108,8 @@ async function applyOutcome(outcome: WitchActionOutcomeType, selectedEvent: Witc
 		await player.addHealth(
 			-SmallEventConstants.WITCH.BASE_LIFE_POINTS_REMOVED_AMOUNT,
 			response,
-			NumberChangeReason.SMALL_EVENT
+			NumberChangeReason.SMALL_EVENT,
+			playerActiveObjects
 		);
 	}
 	else if (outcome === WitchActionOutcomeType.POTION) {
@@ -115,7 +125,7 @@ async function applyOutcome(outcome: WitchActionOutcomeType, selectedEvent: Witc
 	await player.save();
 }
 
-function getEndCallback(player: Player): EndCallback {
+function getEndCallback(player: Player, playerActiveObjects: PlayerActiveObjects): EndCallback {
 	return async (collector, response) => {
 		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.WITCH_CHOOSE);
 
@@ -153,7 +163,7 @@ function getEndCallback(player: Player): EndCallback {
 
 		response.push(resultPacket);
 
-		await applyOutcome(outcome, selectedEvent, collector.context, player, response);
+		await applyOutcome(outcome, selectedEvent, collector.context, player, playerActiveObjects, response);
 
 		await player.killIfNeeded(response, NumberChangeReason.SMALL_EVENT);
 
@@ -164,7 +174,7 @@ function getEndCallback(player: Player): EndCallback {
 export const smallEventFuncs: SmallEventFuncs = {
 	canBeExecuted: Maps.isOnContinent,
 
-	executeSmallEvent: (response, player, context, testArgs?: string[]) => {
+	executeSmallEvent: (response, player, context, playerActiveObjects, testArgs?: string[]) => {
 		const events: WitchEventSelection = testArgs
 			? {
 				randomAdvice: WitchActionDataController.instance.getById(testArgs[0]),
@@ -184,7 +194,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 			{
 				allowedPlayerKeycloakIds: [player.keycloakId]
 			},
-			getEndCallback(player)
+			getEndCallback(player, playerActiveObjects)
 		)
 			.block(player.keycloakId, BlockingConstants.REASONS.WITCH_CHOOSE)
 			.build();

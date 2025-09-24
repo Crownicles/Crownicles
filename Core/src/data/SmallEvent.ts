@@ -5,24 +5,20 @@ import Player from "../core/database/game/models/Player";
 import {
 	CrowniclesPacket, PacketContext
 } from "../../../Lib/src/packets/CrowniclesPacket";
+import { PlayerActiveObjects } from "../core/database/game/models/PlayerActiveObjects";
 
 export class SmallEvent extends Data<string> {
 	public readonly rarity: number;
 
 	private readonly properties: { [key: string]: unknown };
 
-	async execute(context: PacketContext, response: CrowniclesPacket[], player: Player): Promise<void> {
-		const smallEventFunction = SmallEventDataController.getSmallEventFunction(this.id);
-		await smallEventFunction.executeSmallEvent(response, player, context);
-	}
-
 	getProperties<T>(): T {
 		return <T> this.properties;
 	}
 }
 
-export type CanBeExecutedLike = (player: Player) => boolean | Promise<boolean>;
-export type ExecuteSmallEventLike = (response: CrowniclesPacket[], player: Player, context: PacketContext, testArgs?: string[]) => void | Promise<void>;
+export type CanBeExecutedLike = (player: Player, playerActiveObjects: PlayerActiveObjects) => boolean | Promise<boolean>;
+export type ExecuteSmallEventLike = (response: CrowniclesPacket[], player: Player, context: PacketContext, playerActiveObjects: PlayerActiveObjects, testArgs?: string[]) => void | Promise<void>;
 
 export type SmallEventFuncs = {
 	canBeExecuted: CanBeExecutedLike;

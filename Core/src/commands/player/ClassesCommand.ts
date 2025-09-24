@@ -28,6 +28,7 @@ import { crowniclesInstance } from "../../index";
 import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
 import { ClassConstants } from "../../../../Lib/src/constants/ClassConstants";
 import { secondsToMilliseconds } from "../../../../Lib/src/utils/TimeUtils";
+import { InventorySlots } from "../../core/database/game/models/InventorySlot";
 
 function getEndCallback(player: Player) {
 	return async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
@@ -44,17 +45,19 @@ function getEndCallback(player: Player) {
 		const oldClass = ClassDataController.instance.getById(player.class);
 		const newClass = ClassDataController.instance.getById(selectedClass);
 		const level = player.level;
+		const activeObjects = await InventorySlots.getPlayerActiveObjects(player.id);
+		const healthBefore = player.getHealth(activeObjects);
 
 		player.class = selectedClass;
 		await player.addHealth(Math.ceil(
-			player.health / oldClass.getMaxHealthValue(level) * newClass.getMaxHealthValue(level)
-		) - player.health, response, NumberChangeReason.CLASS, {
+			healthBefore / oldClass.getMaxHealthValue(level) * newClass.getMaxHealthValue(level)
+		) - healthBefore, response, NumberChangeReason.CLASS, activeObjects, {
 			shouldPokeMission: false,
 			overHealCountsForMission: false
 		});
 		player.setEnergyLost(Math.ceil(
 			player.fightPointsLost / oldClass.getMaxCumulativeEnergyValue(level) * newClass.getMaxCumulativeEnergyValue(level)
-		), NumberChangeReason.CLASS);
+		), NumberChangeReason.CLASS, activeObjects);
 		await MissionsController.update(player, response, { missionId: "chooseClass" });
 		await MissionsController.update(player, response, {
 			missionId: "chooseClassTier",

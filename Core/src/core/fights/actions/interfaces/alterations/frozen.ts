@@ -11,6 +11,7 @@ import {
 import { Fighter } from "../../../fighter/Fighter";
 import { RandomUtils } from "../../../../../../../Lib/src/utils/RandomUtils";
 import { FightConstants } from "../../../../../../../Lib/src/constants/FightConstants";
+import { FightAlterations } from "../../FightAlterations";
 
 const use: FightAlterationFunc = (affected, fightAlteration, opponent) => {
 	if (
@@ -37,6 +38,11 @@ const use: FightAlterationFunc = (affected, fightAlteration, opponent) => {
 		}, affected, fightAlteration);
 	}
 	result.damages = FightActionController.getAttackDamage(getStatsInfo(affected, opponent), affected, getAttackInfo(), true);
+
+	if (result.damages) {
+		result.damages *= opponent.getAlterationMultiplier(FightAlterations.FROZEN); // Apply alteration multiplier
+	}
+
 	return result;
 };
 

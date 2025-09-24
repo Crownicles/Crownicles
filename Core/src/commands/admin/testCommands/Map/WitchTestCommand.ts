@@ -3,6 +3,7 @@ import {
 } from "../../../../core/CommandsTest";
 import { WitchActionDataController } from "../../../../data/WitchAction";
 import { smallEventFuncs } from "../../../../core/smallEvents/witch";
+import { InventorySlots } from "../../../../core/database/game/models/InventorySlot";
 
 const witchActions = WitchActionDataController.instance.getAll();
 
@@ -36,7 +37,7 @@ const smallEventTestCommand: ExecuteTestCommandLike = async (player, args, respo
 		}
 	});
 
-	await smallEventFuncs.executeSmallEvent(response, player, context, args);
+	await smallEventFuncs.executeSmallEvent(response, player, context, await InventorySlots.getPlayerActiveObjects(player.id), args);
 	return "Mini event forcé !";
 };
 

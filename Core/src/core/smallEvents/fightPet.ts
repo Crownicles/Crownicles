@@ -22,6 +22,7 @@ import {
 	ReactionCollectorFightPetReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorFightPet";
 import { SmallEventFightPetPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventFightPetPacket";
+import { PlayerActiveObjects } from "../database/game/models/PlayerActiveObjects";
 
 /**
  * Returns an object composed of three random witch events
@@ -65,7 +66,7 @@ function retrieveSelectedEvent(collector: ReactionCollectorInstance): FightPetAc
 
 export const smallEventFuncs: SmallEventFuncs = {
 	canBeExecuted: Maps.isOnPveIsland,
-	executeSmallEvent: (response, player, context: PacketContext) => {
+	executeSmallEvent: (response, player, context: PacketContext, playerActiveObjects: PlayerActiveObjects) => {
 		const pet = PetDataController.instance.getRandom();
 		const isFemale = RandomUtils.crowniclesRandom.bool();
 
@@ -78,7 +79,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 		const endCallback: EndCallback = async (collector, response) => {
 			const selectedFightPetAction = retrieveSelectedEvent(collector);
 			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.FIGHT_PET_CHOOSE);
-			const outcomeIsSuccess = await selectedFightPetAction.applyOutcomeFightPetAction(player, pet, isFemale);
+			const outcomeIsSuccess = await selectedFightPetAction.applyOutcomeFightPetAction(player, pet, isFemale, playerActiveObjects);
 			await player.addRage(outcomeIsSuccess ? 1 : 0, NumberChangeReason.FIGHT_PET_SMALL_EVENT, response);
 			await player.save();
 			response.push(makePacket(SmallEventFightPetPacket, {

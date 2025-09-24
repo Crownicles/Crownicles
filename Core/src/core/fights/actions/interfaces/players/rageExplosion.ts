@@ -2,14 +2,14 @@ import { Fighter } from "../../../fighter/Fighter";
 import {
 	attackInfo, FightActionController, statsInfo
 } from "../../FightActionController";
-import { PlayerFighter } from "../../../fighter/PlayerFighter";
+import { RealPlayerFighter } from "../../../fighter/RealPlayerFighter";
 import { NumberChangeReason } from "../../../../../../../Lib/src/constants/LogsConstants";
 import { PVEConstants } from "../../../../../../../Lib/src/constants/PVEConstants";
 import { FightActionFunc } from "../../../../../data/FightAction";
 import { FightActionStatus } from "../../../../../../../Lib/src/types/FightActionStatus";
 
 const use: FightActionFunc = (sender, receiver) => {
-	const playerSender = <PlayerFighter>sender;
+	const playerSender = <RealPlayerFighter>sender;
 	const damages = Math.round(
 		FightActionController.getAttackDamage(getStatsInfo(sender, receiver), sender, getAttackInfo())
 		* Math.min(Math.max(playerSender.player.rage, PVEConstants.RAGE_MIN_MULTIPLIER), PVEConstants.RAGE_MAX_DAMAGE + playerSender.player.level)
