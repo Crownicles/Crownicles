@@ -230,8 +230,8 @@
       "success": "steigt auf den Rücken von **{{petNickname}}**, um sich schneller fortzubewegen."
     },
     "breakArmor": {
-      "failure": "fait appel à **{{petNickname}}** qui charge l'adversaire. Malheureusement, il rate complètement sa cible.",
-      "success": "demande l'aide de son familier qui charge l'adversaire lourdement. Ce dernier se protège de l'attaque mais son équipement est emporté au loin par **{{petNickname}}** !"
+      "failure": "ruft **{{petNickname}}** an, der den Gegner angreift. Leider verfehlt er sein Ziel völlig.",
+      "success": "bittet seinen Vertrauten um Hilfe, der den Gegner schwer belastet. Dieser schützt sich vor dem Angriff, aber seine Ausrüstung wird von **{{petNickname}}** weggetragen!"
     },
     "boulderTossAttack": {
       "name_one": "Felsangriff",
@@ -308,7 +308,7 @@
     },
     "createBomb": {
       "generalEffect": "wird in seinem Kampf von **{{petNickname}}** unterstützt, der so tut, als würde er den Gegner mit präzisen und schmerzhaften Schnabelhieben heftig bedrängen.",
-      "failure": "a manqué de recevoir l'aide de **{{petNickname}}** qui, par prudence, s'est abstenu d'agir, conscient que son intervention risquait davantage de blesser son maître que l'adversaire ! Peut-être aurait-il eu moins de scrupule s'il vous avait senti en danger...",
+      "failure": "verpasste die Hilfe von **{{petNickname}}**, der vorsichtshalber nicht handelte, weil er sich bewusst war, dass sein Eingreifen eher seinen Herrn als den Gegner verletzen würde! Vielleicht hätte er weniger Skrupel gehabt, wenn er Sie in Gefahr gewittert hätte...",
       "success": "macht sich das Talent von **{{petNickname}}** zunutze, der unauffällig eine starke Bombe vorbereitet hat. Nachdem Sie den Zünder aktiviert haben, rennen Sie mit aller Kraft zur Seite!"
     },
     "crush": {
