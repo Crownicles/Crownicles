@@ -681,6 +681,11 @@
             "Os seus reflexos são excepcionais. Ele partilhará a sua incrível velocidade contigo em combate, tornando-te muito mais rápido.",
             "Este animal de estimação tem glândulas especiais que segregam uma hormona de aceleração. Ao seu lado, vai mover-se como um relâmpago!"
           ],
+          "breakArmor": [
+            "Assim que o combate começa, ele avança sobre o adversário e tenta arrancar-lhe a armadura ou o escudo, conseguindo-o muitas vezes, deixando-o indefeso.",
+            "Este animal poderoso ataca de frente desde o início; se atingir o seu alvo, o elmo, a couraça ou o escudo são deslocados e levados para fora do campo de batalha.",
+            "O teu animal de estimação faz uma investida impressionante para despir o inimigo: na maior parte das vezes, a armadura ou o escudo acabam por ficar presos entre os seus chifres, tornando-se o seu espólio."
+          ],
           "claws": [
             "As garras do teu animal de estimação são mais afiadas do que muitas lâminas! Ele usá-las-á para cortar os teus inimigos com uma eficiência aterradora.",
             "A estrutura queratinizada das suas garras é única. Em combate, pode infligir cortes profundos nos seus adversários.",
@@ -1298,18 +1303,24 @@
     "switchSelectionDescription": "Escolhe um item para equipar da lista abaixo:"
   },
   "drink": {
-    "cancelledTitle": "{{pseudo}}anulou a ação",
-    "cancelled": "Não bebeste a tua poção!",
-    "noActiveObject": "Infelizmente, não tens nada para beber no teu inventário!",
-    "objectIsActiveDuringFights": "Esta bebida não pode ser bebida agora. Será usada automaticamente na próxima vez que lutares!",
-    "healthBonus": "{emote:unitValues.health} Vida ganha: {{value}} !",
-    "energyBonus": "{emote:unitValues.energy} Energia poupada: {{value}} .",
-    "timeBonus": "{emote:unitValues.time} Seguiste em frente {{value}} !",
-    "noBonus": "{emote:messages.refuse} Consomes uma poção... Não parece ser muito eficaz!",
-    "drinkSuccessTitle": "{{pseudo}}Estás a beber uma poção!",
-    "confirmationTitle": "{{pseudo}}confirmação :",
-    "confirmation": "Tens a certeza que queres beber o teu {{potion}} ?",
-    "confirmationFooter": "É possível evitar este passo utilizando o parâmetro force!"
+    "errors": {
+      "noAvailablePotions": "Infelizmente, não tens nenhuma poção consumível no teu inventário! As poções de combate não podem ser consumidas com este comando.",
+      "cancel": "Não se bebe poções."
+    },
+    "title": "{{pseudo}}bebeste uma poção!",
+    "descriptionNoBonus": "{emote:unitValues.{{nature}}} Consome uma poção... Não parece muito eficaz",
+    "description": "{emote:unitValues.{{nature}}} $t(commands:drink.natureText.{{nature}}) **{{value}}** !",
+    "natureText": {
+      "health": "Vida ganha :",
+      "energy": "Poupança de energia :",
+      "time": "Avançou por"
+    },
+    "collectorTitleOneObject": "{{pseudo}}confirmação :",
+    "collectorDescOneObject": "Queres beber a tua poção?\n\n{{object}}",
+    "collectorTitle": "{{pseudo}}Escolhe a tua poção!",
+    "collectorDesc": "Escolhe uma poção para beber da lista abaixo:",
+    "collectorRefuseOption": "Cancelar",
+    "menuPlaceholder": "Selecionar uma poção"
   },
   "petSell": {
     "noPet": "Não tem nenhum animal de estimação para vender!",

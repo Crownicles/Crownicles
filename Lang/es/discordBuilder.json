@@ -317,13 +317,7 @@
   },
   "drink": {
     "name": "beber",
-    "description": "Bebe la poción.",
-    "options": {
-      "force": {
-        "name": "fuerza",
-        "description": "Si es cierto, sáltate la fase de validación si estás seguro de que quieres beber la poción."
-      }
-    }
+    "description": "Bebe una poción."
   },
   "petSell": {
     "name": "vender casa familiar",

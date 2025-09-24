@@ -317,13 +317,7 @@
   },
   "drink": {
     "name": "trinken",
-    "description": "Trinke den ausgerüsteten Trank.",
-    "options": {
-      "force": {
-        "name": "erzwingen",
-        "description": "Wenn ja, überspringe die Bestätigungsphase, wenn du dir sicher bist, dass du den Trank trinken willst."
-      }
-    }
+    "description": "Einen Trank trinken."
   },
   "petSell": {
     "name": "verkaufenfamiliär",

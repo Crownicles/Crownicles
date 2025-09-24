@@ -229,6 +229,10 @@
     "boostSpeed": {
       "success": "se monta a lomos de **{{petNickname}}** para moverse más rápido."
     },
+    "breakArmor": {
+      "failure": "llama a **{{petNickname}}** que carga contra su oponente. Desgraciadamente, falla por completo.",
+      "success": "pide ayuda a su familiar, que carga contra su adversario. ¡Éste se protege del ataque, pero su equipo es arrastrado por **{{petNickname}}** !"
+    },
     "boulderTossAttack": {
       "name_one": "Ataque con piedras",
       "name_other": "Ataques con piedras"
@@ -304,7 +308,7 @@
     },
     "createBomb": {
       "generalEffect": "es apoyado en su lucha por **{{petNickname}}** que pretende acosar ferozmente a su adversario con precisos y dolorosos picotazos.",
-      "failure": "no recibió ayuda de **{{petNickname}}** que, por precaución, se abstuvo de actuar, consciente de que su intervención tenía más probabilidades de herir a su amo que a su oponente. ¡Deberíamos haber sido más rápidos!",
+      "failure": "no recibió ayuda de **{{petNickname}}** que, por precaución, se abstuvo de actuar, ¡consciente de que su intervención tenía más probabilidades de herir a su amo que al adversario! Tal vez habría sido menos escrupuloso si hubiera intuido que estabas en peligro...",
       "success": "aprovecha el talento de **{{petNickname}}** que ha preparado discretamente una potente bomba. Tras activar el detonador, ¡sal a correr con todas tus fuerzas!"
     },
     "crush": {

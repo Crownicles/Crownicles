@@ -681,6 +681,11 @@
             "Its reflexes are exceptional. It'll share his incredible alertness with you in battle, making you that much faster.",
             "This pet has special glands that secrete an acceleration hormone. By your side, you'll be moving like lightning!"
           ],
+          "breakArmor": [
+            "As soon as the fight kicks off, he rushes at his opponent and tries to tear off his armor or shield, often succeeding, leaving the enemy helpless.",
+            "This powerful animal charges head-on from the outset; if it hits its target, helmet, breastplate or shield are dislodged and carried away from the battlefield.",
+            "Your pet makes an impressive charge to strip the enemy bare: most of the time, the armor or shield ends up wedged between its horns, becoming its booty."
+          ],
           "claws": [
             "Your pet's claws are sharper than many blades! It'll use them to slash your enemies with terrifying efficiency.",
             "The keratinized structure of its claws is unique. In combat, it can inflict deep cuts on your opponents.",
@@ -1298,18 +1303,24 @@
     "switchSelectionDescription": "Choose an item from the list below:"
   },
   "drink": {
-    "cancelledTitle": "{{pseudo}}, action cancelled",
-    "cancelled": "You didn't drink your potion!",
-    "noActiveObject": "Unfortunately, you don't have anything to drink in your inventory!",
-    "objectIsActiveDuringFights": "This beverage can't be drunk right now. It'll be automatically consumed during your next fight!",
-    "healthBonus": "{emote:unitValues.health} Health gained: {{value}}!",
-    "energyBonus": "{emote:unitValues.energy} Energy gained: {{value}}!",
-    "timeBonus": "{emote:unitValues.time} You moved forward by {{value}}!",
-    "noBonus": "{emote:messages.refuse} You consume a potion... It doesn't seem very effective!",
-    "drinkSuccessTitle": "{{pseudo}}you consume a potion!",
-    "confirmationTitle": "{{pseudo}}, confirmation:",
-    "confirmation": "Are you sure you want to drink your {{potion}}?",
-    "confirmationFooter": "You can skip this prompt by using the `force` option!"
+    "errors": {
+      "noAvailablePotions": "Unfortunately, you have no consumable potions in your inventory! Combat potions cannot be consumed via this command.",
+      "cancel": "You don't drink potions."
+    },
+    "title": "{{pseudo}}you drank a potion!",
+    "descriptionNoBonus": "{emote:unitValues.{{nature}}} You consume a potion... It doesn't seem very effective",
+    "description": "{emote:unitValues.{{nature}}} $t(commands:drink.natureText.{{nature}}) **{{value}}** !",
+    "natureText": {
+      "health": "Health gained:",
+      "energy": "Energy earned:",
+      "time": "You have moved forward"
+    },
+    "collectorTitleOneObject": "{{pseudo}}, confirmation:",
+    "collectorDescOneObject": "Would you like to drink your potion?\n\n{{object}}",
+    "collectorTitle": "{{pseudo}}Choose your potion!",
+    "collectorDesc": "Choose a potion to drink from the list below:",
+    "collectorRefuseOption": "Cancel",
+    "menuPlaceholder": "Select a potion"
   },
   "petSell": {
     "noPet": "You don't have any pet to sell!",

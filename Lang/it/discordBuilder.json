@@ -317,13 +317,7 @@
   },
   "drink": {
     "name": "bevanda",
-    "description": "Bevete la pozione.",
-    "options": {
-      "force": {
-        "name": "forza",
-        "description": "Se è vero, saltate la fase di convalida se siete sicuri di voler bere la pozione."
-      }
-    }
+    "description": "Bevete una pozione."
   },
   "petSell": {
     "name": "vendere casa famiglia",
