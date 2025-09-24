@@ -21,6 +21,7 @@ import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants"
 import { TravelTime } from "../maps/TravelTime";
 import { Effect } from "../../../../Lib/src/types/Effect";
 import Player from "../database/game/models/Player";
+import { PlayerActiveObjects } from "../database/game/models/PlayerActiveObjects";
 
 const PENALTY_TYPES: SmallEventLimogesPenaltyType[] = [
 	SmallEventLimogesPenaltyType.HEALTH,
@@ -62,7 +63,8 @@ function createCollector(question: LimogesQuestion): ReactionCollectorLimoges {
 async function applyFavorableOutcome(
 	player: Player,
 	response: CrowniclesPacket[],
-	properties: LimogesProperties
+	properties: LimogesProperties,
+	playerActiveObjects: PlayerActiveObjects
 ): Promise<Required<SmallEventLimogesPacket>["reward"]> {
 	const experience = RandomUtils.rangedInt(properties.reward.experience);
 	const score = RandomUtils.rangedInt(properties.reward.score);
@@ -71,7 +73,7 @@ async function applyFavorableOutcome(
 		amount: experience,
 		response,
 		reason: NumberChangeReason.SMALL_EVENT
-	});
+	}, playerActiveObjects);
 	await player.addScore({
 		amount: score,
 		response,
@@ -89,7 +91,8 @@ async function applyFavorableOutcome(
 async function applyUnfavorableOutcome(
 	player: Player,
 	response: CrowniclesPacket[],
-	properties: LimogesProperties
+	properties: LimogesProperties,
+	playerActiveObjects: PlayerActiveObjects
 ): Promise<Required<SmallEventLimogesPacket>["penalty"]> {
 	const filteredPenaltyTypes = PENALTY_TYPES.filter(type => {
 		if (type !== SmallEventLimogesPenaltyType.MONEY) {
@@ -110,7 +113,7 @@ async function applyUnfavorableOutcome(
 	switch (penaltyType) {
 		case SmallEventLimogesPenaltyType.HEALTH: {
 			amount = RandomUtils.rangedInt(properties.penalty.health);
-			await player.addHealth(-amount, response, NumberChangeReason.SMALL_EVENT);
+			await player.addHealth(-amount, response, NumberChangeReason.SMALL_EVENT, playerActiveObjects);
 			await player.killIfNeeded(response, NumberChangeReason.SMALL_EVENT);
 			await player.save();
 			break;
@@ -149,7 +152,8 @@ async function applyUnfavorableOutcome(
 function getEndCallback(
 	player: Player,
 	question: LimogesQuestion,
-	properties: LimogesProperties
+	properties: LimogesProperties,
+	playerActiveObjects: PlayerActiveObjects
 ): EndCallback {
 	return async (collector, response): Promise<void> => {
 		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.LIMOGES_SMALL_EVENT);
@@ -165,10 +169,10 @@ function getEndCallback(
 		};
 
 		if (isFavorable) {
-			packet.reward = await applyFavorableOutcome(player, response, properties);
+			packet.reward = await applyFavorableOutcome(player, response, properties, playerActiveObjects);
 		}
 		else {
-			packet.penalty = await applyUnfavorableOutcome(player, response, properties);
+			packet.penalty = await applyUnfavorableOutcome(player, response, properties, playerActiveObjects);
 		}
 
 		response.push(makePacket(SmallEventLimogesPacket, packet));
@@ -178,7 +182,7 @@ function getEndCallback(
 export const smallEventFuncs: SmallEventFuncs = {
 	canBeExecuted: Maps.isOnContinent,
 
-	executeSmallEvent(response, player, context): void {
+	executeSmallEvent(response, player, context, playerActiveObjects): void {
 		const properties = SmallEventDataController.instance.getById("limoges")
 			.getProperties<LimogesProperties>();
 		const question = getRandomQuestion(properties);
@@ -190,7 +194,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 				allowedPlayerKeycloakIds: [player.keycloakId],
 				reactionLimit: 1
 			},
-			getEndCallback(player, question, properties)
+			getEndCallback(player, question, properties, playerActiveObjects)
 		)
 			.block(player.keycloakId, BlockingConstants.REASONS.LIMOGES_SMALL_EVENT)
 			.build();

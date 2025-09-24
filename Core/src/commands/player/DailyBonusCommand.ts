@@ -81,10 +81,10 @@ async function activateDailyItem(player: Player, activeObject: ObjectItem, respo
 	response.push(packet);
 	switch (packet.itemNature) {
 		case ItemNature.ENERGY:
-			player.addEnergy(activeObject.power, NumberChangeReason.DAILY);
+			player.addEnergy(activeObject.power, NumberChangeReason.DAILY, await InventorySlots.getPlayerActiveObjects(player.id));
 			break;
 		case ItemNature.HEALTH:
-			await player.addHealth(activeObject.power, response, NumberChangeReason.DAILY);
+			await player.addHealth(activeObject.power, response, NumberChangeReason.DAILY, await InventorySlots.getPlayerActiveObjects(player.id));
 			break;
 		case ItemNature.TIME_SPEEDUP:
 			await TravelTime.timeTravel(player, activeObject.power, NumberChangeReason.DAILY);

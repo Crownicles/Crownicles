@@ -20,6 +20,7 @@ import {
 } from "../../../../Lib/src/utils/TimeUtils";
 import { FightConstants } from "../../../../Lib/src/constants/FightConstants";
 import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
+import { InventorySlots } from "../../core/database/game/models/InventorySlot";
 
 export default class LeagueRewardCommand {
 	@commandRequires(CommandLeagueRewardPacketReq, {
@@ -62,7 +63,7 @@ export default class LeagueRewardCommand {
 			response,
 			amount: xpToAward,
 			reason: NumberChangeReason.LEAGUE_REWARD
-		});
+		}, await InventorySlots.getPlayerActiveObjects(player.id));
 		const item = leagueLastSeason.generateRewardItem();
 		await giveItemToPlayer(response, context, player, item);
 		crowniclesInstance.logsDatabase.logPlayerLeagueReward(player.keycloakId, leagueLastSeason.id)

@@ -1,55 +1,37 @@
 import { Fighter } from "./Fighter";
-import Player from "../../database/game/models/Player";
+import { Player } from "../../database/game/models/Player";
 import { InventorySlots } from "../../database/game/models/InventorySlot";
 import { PlayerActiveObjects } from "../../database/game/models/PlayerActiveObjects";
-import { checkDrinkPotionMissions } from "../../utils/ItemUtils";
-import { BlockingUtils } from "../../utils/BlockingUtils";
-import { BlockingConstants } from "../../../../../Lib/src/constants/BlockingConstants";
 import { FightView } from "../FightView";
-import { MissionsController } from "../../missions/MissionsController";
-import { MissionSlots } from "../../database/game/models/MissionSlot";
-import { getDayNumber } from "../../../../../Lib/src/utils/TimeUtils";
-import { NumberChangeReason } from "../../../../../Lib/src/constants/LogsConstants";
-import { FighterStatus } from "../FighterStatus";
-import { Maps } from "../../maps/Maps";
 import { RandomUtils } from "../../../../../Lib/src/utils/RandomUtils";
-import { PVEConstants } from "../../../../../Lib/src/constants/PVEConstants";
 import { Class } from "../../../data/Class";
-import {
-	FightAction, FightActionDataController
-} from "../../../data/FightAction";
+import { FightActionDataController } from "../../../data/FightAction";
 import { CrowniclesPacket } from "../../../../../Lib/src/packets/CrowniclesPacket";
-import { Potion } from "../../../data/Potion";
 import PetEntity, { PetEntities } from "../../database/game/models/PetEntity";
+import { FighterStatus } from "../FighterStatus";
+import { Potion } from "../../../data/Potion";
+import { checkDrinkPotionMissions } from "../../utils/ItemUtils";
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
 import { InventoryConstants } from "../../../../../Lib/src/constants/InventoryConstants";
+import {
+	ItemEnchantment, ItemEnchantmentKind
+} from "../../../../../Lib/src/types/ItemEnchantment";
+import { EnchantmentConstants } from "../../../../../Lib/src/constants/EnchantmentConstants";
+
+type OpponentType = "MonsterFighter" | "PlayerFighter";
 
 /**
  * Fighter
  * Class representing a player in a fight
  */
-export class PlayerFighter extends Fighter {
+export abstract class PlayerFighter extends Fighter {
 	public player: Player;
 
 	public pet?: PetEntity;
 
-	private pveMembers: {
-		attack: number; speed: number;
-	}[];
-
-	private petAssisted: boolean;
-
-	public constructor(player: Player, playerClass: Class) {
+	protected constructor(player: Player, playerClass: Class) {
 		super(player.level, FightActionDataController.instance.getListById(playerClass.fightActionsIds));
 		this.player = player;
-		this.petAssisted = false;
-	}
-
-	/**
-	 * Mark that the pet has assisted during the fight
-	 */
-	public markPetAssisted(): void {
-		this.petAssisted = true;
 	}
 
 	/**
@@ -59,9 +41,7 @@ export class PlayerFighter extends Fighter {
 	 */
 	async startFight(fightView: FightView, startStatus: FighterStatus): Promise<void> {
 		this.status = startStatus;
-
 		await this.consumePotionIfNeeded([fightView.context]);
-		this.block();
 	}
 
 	/**
@@ -139,7 +119,7 @@ export class PlayerFighter extends Fighter {
 	 */
 	public async consumePotionIfNeeded(response: CrowniclesPacket[]): Promise<void> {
 		// Potions have a chance of not being consumed
-		if (RandomUtils.crowniclesRandom.realZeroToOneInclusive() < FightConstants.POTION_NO_DRINK_PROBABILITY.PLAYER) {
+		if (RandomUtils.crowniclesRandom.realZeroToOneInclusive() < FightConstants.POTION_NO_DRINK_PROBABILITY.AI) {
 			return;
 		}
 		const inventorySlots = await InventorySlots.getOfPlayer(this.player.id);
@@ -153,93 +133,98 @@ export class PlayerFighter extends Fighter {
 		await checkDrinkPotionMissions(response, this.player, drankPotion, await InventorySlots.getOfPlayer(this.player.id));
 	}
 
-	/**
-	 * Allow a fighter to block itself
-	 */
-	public block(): void {
-		BlockingUtils.blockPlayer(this.player.keycloakId, BlockingConstants.REASONS.FIGHT);
-	}
+	private getItemAttackMultiplier(itemEnchantment: ItemEnchantment | null, opponentType: OpponentType): number {
+		let multiplier = 1;
 
-	/**
-	 * Send the embed to choose an action
-	 * @param fightView
-	 * @param response
-	 */
-	async chooseAction(fightView: FightView, response: CrowniclesPacket[]): Promise<void> {
-		const actions: Map<string, FightAction> = new Map(this.availableFightActions);
-
-		// Add guild attack if on PVE island and members are here
-		if (Maps.isOnPveIsland(this.player)) {
-			if (!this.pveMembers) {
-				const members = await Maps.getGuildMembersOnPveIsland(this.player);
-				this.pveMembers = [];
-				for (const member of members) {
-					const memberActiveObjects = await InventorySlots.getMainSlotsItems(member.id);
-					this.pveMembers.push({
-						attack: member.getCumulativeAttack(memberActiveObjects),
-						speed: member.getCumulativeSpeed(memberActiveObjects)
-					});
-				}
-			}
-
-			if (this.pveMembers.length !== 0 && RandomUtils.crowniclesRandom.realZeroToOneInclusive() < PVEConstants.GUILD_ATTACK_PROBABILITY) {
-				actions.set("guildAttack", FightActionDataController.instance.getById("guildAttack"));
-			}
+		if (opponentType === "PlayerFighter" && itemEnchantment?.kind === ItemEnchantmentKind.PVP_ATTACK) {
+			multiplier *= EnchantmentConstants.PVP_ATTACK_MULTIPLIER[itemEnchantment.level - 1];
 		}
-		fightView.displayFightActionMenu(response, this, actions);
-	}
-
-	/**
-	 * Get the members of the player's guild on the island of the fighter
-	 */
-	public getPveMembersOnIsland(): {
-		attack: number; speed: number;
-	}[] {
-		return this.pveMembers;
-	}
-
-	/**
-	 * Check the fight action history of a fighter
-	 * @param response
-	 */
-	private async checkFightActionHistory(response: CrowniclesPacket[]): Promise<void> {
-		const playerFightActionsHistory: Map<string, number> = this.getFightActionCount();
-
-		// Iterate on each action in the history
-		for (const [action, count] of playerFightActionsHistory) {
-			await MissionsController.update(this.player, response, {
-				missionId: "fightAttacks",
-				count,
-				params: { attackType: action }
-			});
+		else if (opponentType === "MonsterFighter" && itemEnchantment?.kind === ItemEnchantmentKind.PVE_ATTACK) {
+			multiplier *= EnchantmentConstants.PVE_ATTACK_MULTIPLIER[itemEnchantment.level - 1];
 		}
+		if (itemEnchantment?.kind === ItemEnchantmentKind.ALL_ATTACK) {
+			multiplier *= EnchantmentConstants.ALL_ATTACK_MULTIPLIER[itemEnchantment.level - 1];
+		}
+
+		return multiplier;
+	}
+
+	private getAttackMultiplier(weaponEnchantment: ItemEnchantment | null, armorEnchantment: ItemEnchantment | null, opponentType: OpponentType): number {
+		return this.getItemAttackMultiplier(weaponEnchantment, opponentType)
+			* this.getItemAttackMultiplier(armorEnchantment, opponentType);
+	}
+
+	private getItemOtherStatMultiplier(itemEnchantment: ItemEnchantment | null, enchantmentKind: ItemEnchantmentKind, multipliers: [number, number, number]): number {
+		let multiplier = 1;
+
+		if (itemEnchantment?.kind === enchantmentKind) {
+			multiplier *= multipliers[itemEnchantment.level - 1];
+		}
+
+		return multiplier;
+	}
+
+	private getDefenseMultiplier(weaponEnchantment: ItemEnchantment | null, armorEnchantment: ItemEnchantment | null): number {
+		return this.getItemOtherStatMultiplier(weaponEnchantment, ItemEnchantmentKind.DEFENSE, EnchantmentConstants.DEFENSE_MULTIPLIER)
+			* this.getItemOtherStatMultiplier(armorEnchantment, ItemEnchantmentKind.DEFENSE, EnchantmentConstants.DEFENSE_MULTIPLIER);
+	}
+
+	private getSpeedMultiplier(weaponEnchantment: ItemEnchantment | null, armorEnchantment: ItemEnchantment | null): number {
+		return this.getItemOtherStatMultiplier(weaponEnchantment, ItemEnchantmentKind.SPEED, EnchantmentConstants.SPEED_MULTIPLIER)
+			* this.getItemOtherStatMultiplier(armorEnchantment, ItemEnchantmentKind.SPEED, EnchantmentConstants.SPEED_MULTIPLIER);
+	}
+
+	private getBaseBreathBonus(weaponEnchantment: ItemEnchantment | null, armorEnchantment: ItemEnchantment | null): number {
+		return (weaponEnchantment?.kind === ItemEnchantmentKind.BASE_BREATH ? EnchantmentConstants.BASE_BREATH_BONUS : 0)
+			+ (armorEnchantment?.kind === ItemEnchantmentKind.BASE_BREATH ? EnchantmentConstants.BASE_BREATH_BONUS : 0);
+	}
+
+	private getMaxBreathBonus(weaponEnchantment: ItemEnchantment | null, armorEnchantment: ItemEnchantment | null): number {
+		return (weaponEnchantment?.kind === ItemEnchantmentKind.MAX_BREATH ? EnchantmentConstants.MAX_BREATH_BONUS : 0)
+			+ (armorEnchantment?.kind === ItemEnchantmentKind.MAX_BREATH ? EnchantmentConstants.MAX_BREATH_BONUS : 0);
+	}
+
+	private getAlterationBonusMultiplier(
+		weaponEnchantment: ItemEnchantment | null,
+		armorEnchantment: ItemEnchantment | null,
+		alterationKind: ItemEnchantmentKind,
+		alterationMultiplier: number
+	): number {
+		let multiplier = 1;
+
+		if (weaponEnchantment?.kind === alterationKind) {
+			multiplier *= alterationMultiplier;
+		}
+		if (armorEnchantment?.kind === alterationKind) {
+			multiplier *= alterationMultiplier;
+		}
+
+		return multiplier;
 	}
 
 	/**
-	 * Manage the mission of a fighter
-	 * @param response
+	 * The fighter loads its various stats
 	 */
-	private async manageMissionsOf(response: CrowniclesPacket[]): Promise<void> {
-		await this.checkFightActionHistory(response);
+	public async loadStats(opponentType: OpponentType): Promise<void> {
+		const playerActiveObjects: PlayerActiveObjects = await InventorySlots.getPlayerActiveObjects(this.player.id);
+		const weaponEnchantment: ItemEnchantment | null = ItemEnchantment.getById(playerActiveObjects.weapon.itemEnchantmentId);
+		const armorEnchantment: ItemEnchantment | null = ItemEnchantment.getById(playerActiveObjects.armor.itemEnchantmentId);
 
-		await MissionsController.update(this.player, response, { missionId: "anyFight" });
-
-		const slots = await MissionSlots.getOfPlayer(this.player.id);
-		for (const slot of slots) {
-			if (slot.missionId === "fightStreak") {
-				const lastDay = slot.saveBlob ? slot.saveBlob.readInt32LE() : 0;
-				const currDay = getDayNumber();
-				if (lastDay === currDay - 1) {
-					await MissionsController.update(this.player, response, { missionId: "fightStreak" });
-				}
-				else if (lastDay !== currDay) {
-					await MissionsController.update(this.player, response, {
-						missionId: "fightStreak",
-						count: 1,
-						set: true
-					});
-				}
-			}
+		this.stats.energy = this.player.getMaxCumulativeEnergy(playerActiveObjects);
+		this.stats.maxEnergy = this.player.getMaxCumulativeEnergy(playerActiveObjects);
+		this.stats.attack = this.player.getCumulativeAttack(playerActiveObjects) * this.getAttackMultiplier(weaponEnchantment, armorEnchantment, opponentType);
+		this.stats.defense = this.player.getCumulativeDefense(playerActiveObjects) * this.getDefenseMultiplier(weaponEnchantment, armorEnchantment);
+		this.stats.speed = this.player.getCumulativeSpeed(playerActiveObjects) * this.getSpeedMultiplier(weaponEnchantment, armorEnchantment);
+		this.stats.breath = this.player.getBaseBreath() + this.getBaseBreathBonus(weaponEnchantment, armorEnchantment);
+		this.stats.maxBreath = this.player.getMaxBreath() + this.getMaxBreathBonus(weaponEnchantment, armorEnchantment);
+		this.stats.breathRegen = this.player.getBreathRegen();
+		if (this.player.petId) {
+			this.pet = await PetEntities.getById(this.player.petId);
 		}
+
+		// Load alterations enchantments
+		this.getAlterationBonusMultiplier(weaponEnchantment, armorEnchantment, ItemEnchantmentKind.BURNED_DAMAGE, EnchantmentConstants.BURNED_DAMAGE_BONUS_MULTIPLIER);
+		this.getAlterationBonusMultiplier(weaponEnchantment, armorEnchantment, ItemEnchantmentKind.POISONED_DAMAGE, EnchantmentConstants.POISONED_DAMAGE_BONUS_MULTIPLIER);
+		this.getAlterationBonusMultiplier(weaponEnchantment, armorEnchantment, ItemEnchantmentKind.FROZEN_DAMAGE, EnchantmentConstants.FROZEN_DAMAGE_BONUS_MULTIPLIER);
 	}
 }

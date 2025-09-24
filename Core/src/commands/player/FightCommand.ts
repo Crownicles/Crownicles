@@ -26,7 +26,7 @@ import {
 } from "../../core/database/logs/LogsReadRequests";
 import { FightController } from "../../core/fights/FightController";
 import { FightOvertimeBehavior } from "../../core/fights/FightOvertimeBehavior";
-import { PlayerFighter } from "../../core/fights/fighter/PlayerFighter";
+import { RealPlayerFighter } from "../../core/fights/fighter/RealPlayerFighter";
 import { ClassDataController } from "../../data/Class";
 import { crowniclesInstance } from "../../index";
 import { EloUtils } from "../../core/utils/EloUtils";
@@ -42,6 +42,7 @@ import { PacketUtils } from "../../core/utils/PacketUtils";
 import { PlayerWasAttackedNotificationPacket } from "../../../../Lib/src/packets/notifications/PlayerWasAttackedNotificationPacket";
 import { PetEntities } from "../../core/database/game/models/PetEntity";
 import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
+import { PlayerFighter } from "../../core/fights/fighter/PlayerFighter";
 
 type PlayerStats = {
 	pet: {
@@ -92,8 +93,8 @@ async function getPlayerStats(player: Player): Promise<PlayerStats> {
 			glory: player.getGloryPoints()
 		},
 		energy: {
-			value: player.getCumulativeEnergy(),
-			max: player.getMaxCumulativeEnergy()
+			value: player.getCumulativeEnergy(playerActiveObjects),
+			max: player.getMaxCumulativeEnergy(playerActiveObjects)
 		},
 		attack: player.getCumulativeAttack(playerActiveObjects),
 		defense: player.getCumulativeDefense(playerActiveObjects),
@@ -240,10 +241,10 @@ async function fightEndCallback(fight: FightController, response: CrowniclesPack
 	const fightInitiator = fight.fightInitiator;
 	const nonFightInitiator = fight.getNonFightInitiatorFighter();
 
-	const initiatorPlayer = fightInitiator instanceof PlayerFighter || fightInitiator instanceof AiPlayerFighter
+	const initiatorPlayer = fightInitiator instanceof PlayerFighter
 		? await Players.getById(fightInitiator.player.id)
 		: null;
-	const opponentPlayer = nonFightInitiator instanceof PlayerFighter || nonFightInitiator instanceof AiPlayerFighter
+	const opponentPlayer = nonFightInitiator instanceof PlayerFighter
 		? await Players.getById(nonFightInitiator.player.id)
 		: null;
 
@@ -427,8 +428,8 @@ function fightValidationEndCallback(player: Player, context: PacketContext): End
 				BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.FIGHT_CONFIRMATION);
 				return;
 			}
-			const askingFighter = new PlayerFighter(player, ClassDataController.instance.getById(player.class));
-			await askingFighter.loadStats();
+			const askingFighter = new RealPlayerFighter(player, ClassDataController.instance.getById(player.class));
+			await askingFighter.loadStats("PlayerFighter");
 			const incomingFighter = new AiPlayerFighter(opponent, ClassDataController.instance.getById(opponent.class));
 			await incomingFighter.loadStats();
 
@@ -459,7 +460,7 @@ export default class FightCommand {
 		level: FightConstants.REQUIRED_LEVEL
 	})
 	async execute(response: CrowniclesPacket[], player: Player, _packet: CommandFightPacketReq, context: PacketContext): Promise<void> {
-		if (!player.hasEnoughEnergyToFight()) {
+		if (!player.hasEnoughEnergyToFight(await InventorySlots.getPlayerActiveObjects(player.id))) {
 			response.push(makePacket(CommandFightNotEnoughEnergyPacketRes, {}));
 			return;
 		}

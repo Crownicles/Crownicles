@@ -203,11 +203,13 @@ export class InventorySlots {
 		return {
 			weapon: {
 				item: <Weapon>weaponSlot.getItem(),
-				itemLevel: weaponSlot.itemLevel
+				itemLevel: weaponSlot.itemLevel,
+				itemEnchantmentId: weaponSlot.itemEnchantmentId
 			},
 			armor: {
 				item: <Armor>armorSlot.getItem(),
-				itemLevel: armorSlot.itemLevel
+				itemLevel: armorSlot.itemLevel,
+				itemEnchantmentId: armorSlot.itemEnchantmentId
 			},
 			potion: {
 				item: <Potion>potionSlot.getItem()
@@ -320,6 +322,40 @@ export class InventorySlots {
 				slot: InventoryConstants.DEFAULT_SLOT_VALUE
 			}
 		});
+	}
+
+	static slotsToActiveObjects(slots: InventorySlot[]): PlayerActiveObjects {
+		const weaponSlot = slots.find(s => s.itemCategory === ItemCategory.WEAPON && s.isEquipped());
+		const armorSlot = slots.find(s => s.itemCategory === ItemCategory.ARMOR && s.isEquipped());
+		const potionSlot = slots.find(s => s.itemCategory === ItemCategory.POTION && s.isEquipped());
+		const objectSlot = slots.find(s => s.itemCategory === ItemCategory.OBJECT && s.isEquipped());
+
+		return {
+			weapon: weaponSlot
+				? {
+					item: <Weapon>weaponSlot.getItem(),
+					itemLevel: weaponSlot.itemLevel,
+					itemEnchantmentId: weaponSlot.itemEnchantmentId
+				}
+				: null,
+			armor: armorSlot
+				? {
+					item: <Armor>armorSlot.getItem(),
+					itemLevel: armorSlot.itemLevel,
+					itemEnchantmentId: armorSlot.itemEnchantmentId
+				}
+				: null,
+			potion: potionSlot
+				? {
+					item: <Potion>potionSlot.getItem()
+				}
+				: null,
+			object: objectSlot
+				? {
+					item: <ObjectItem>objectSlot.getItem()
+				}
+				: null
+		};
 	}
 }
 

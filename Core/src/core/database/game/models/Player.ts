@@ -61,6 +61,10 @@ import { Badge } from "../../../../../../Lib/src/types/Badge";
 import * as moment from "moment";
 import { ClassConstants } from "../../../../../../Lib/src/constants/ClassConstants";
 import { CityDataController } from "../../../../data/City";
+import {
+	ItemEnchantment, ItemEnchantmentKind
+} from "../../../../../../Lib/src/types/ItemEnchantment";
+import { EnchantmentConstants } from "../../../../../../Lib/src/constants/EnchantmentConstants";
 
 export type PlayerEditValueParameters = {
 	player: Player;
@@ -90,7 +94,7 @@ export class Player extends Model {
 
 	declare keycloakId: string;
 
-	declare health: number;
+	declare private health: number;
 
 	declare fightPointsLost: number;
 
@@ -325,8 +329,9 @@ export class Player extends Model {
 	 * Check if a player has to receive a reward for a level up
 	 * @param response
 	 * @param newLevel
+	 * @param playerActiveObjects
 	 */
-	public async addLevelUpPacket(response: CrowniclesPacket[], newLevel: number): Promise<void> {
+	public async addLevelUpPacket(response: CrowniclesPacket[], newLevel: number, playerActiveObjects: PlayerActiveObjects): Promise<void> {
 		const healthRestored = newLevel % 10 === 0;
 
 		const packet = makePacket(PlayerLevelUpPacket, {
@@ -346,7 +351,7 @@ export class Player extends Model {
 		});
 
 		if (healthRestored) {
-			await this.addHealth(this.getMaxHealth() - this.health, response, NumberChangeReason.LEVEL_UP, {
+			await this.addHealth(this.getMaxHealth(playerActiveObjects) - this.getHealth(playerActiveObjects), response, NumberChangeReason.LEVEL_UP, playerActiveObjects, {
 				shouldPokeMission: true,
 				overHealCountsForMission: false
 			});
@@ -358,8 +363,9 @@ export class Player extends Model {
 	/**
 	 * Level up a player if he has enough experience
 	 * @param response
+	 * @param playerActiveObjects
 	 */
-	public async levelUpIfNeeded(response: CrowniclesPacket[]): Promise<void> {
+	public async levelUpIfNeeded(response: CrowniclesPacket[], playerActiveObjects: PlayerActiveObjects): Promise<void> {
 		if (!this.needLevelUp()) {
 			return;
 		}
@@ -377,9 +383,9 @@ export class Player extends Model {
 			set: true
 		}));
 
-		await this.addLevelUpPacket(response, newLevel);
+		await this.addLevelUpPacket(response, newLevel, playerActiveObjects);
 
-		await this.levelUpIfNeeded(response);
+		await this.levelUpIfNeeded(response, playerActiveObjects);
 	}
 
 	/**
@@ -617,8 +623,9 @@ export class Player extends Model {
 	/**
 	 * Give experience to a player
 	 * @param parameters
+	 * @param playerActiveObjects
 	 */
-	public async addExperience(parameters: EditValueParameters): Promise<Player> {
+	public async addExperience(parameters: EditValueParameters, playerActiveObjects: PlayerActiveObjects): Promise<Player> {
 		this.experience += parameters.amount;
 		crowniclesInstance.logsDatabase.logExperienceChange(this.keycloakId, this.experience, parameters.reason)
 			.then();
@@ -635,7 +642,7 @@ export class Player extends Model {
 			Object.assign(this, newPlayer);
 		}
 
-		await this.levelUpIfNeeded(parameters.response);
+		await this.levelUpIfNeeded(parameters.response, playerActiveObjects);
 		return this;
 	}
 
@@ -722,29 +729,43 @@ export class Player extends Model {
 	/**
 	 * Get the player cumulative energy
 	 */
-	public getCumulativeEnergy(): number {
-		const maxEnergy = this.getMaxCumulativeEnergy();
+	public getCumulativeEnergy(playerActiveObjects: PlayerActiveObjects): number {
+		const maxEnergy = this.getMaxCumulativeEnergy(playerActiveObjects);
 		return Math.max(0, Math.min(maxEnergy - this.fightPointsLost, maxEnergy));
 	}
 
-	public getRatioCumulativeEnergy(): number {
-		return this.getCumulativeEnergy() / this.getMaxCumulativeEnergy();
+	public getRatioCumulativeEnergy(playerActiveObjects: PlayerActiveObjects): number {
+		return this.getCumulativeEnergy(playerActiveObjects) / this.getMaxCumulativeEnergy(playerActiveObjects);
 	}
 
 	/**
 	 * Return the player max health
 	 */
-	public getMaxHealth(): number {
+	public getMaxHealth(playerActiveObjects: PlayerActiveObjects): number {
 		const playerClass = ClassDataController.instance.getById(this.class);
-		return playerClass.getMaxHealthValue(this.level);
+
+		const weaponEnchant = ItemEnchantment.getById(playerActiveObjects.weapon.itemEnchantmentId);
+		const armorEnchant = ItemEnchantment.getById(playerActiveObjects.armor.itemEnchantmentId);
+		const multiplier = (weaponEnchant?.kind === ItemEnchantmentKind.MAX_HEALTH ? EnchantmentConstants.MAX_HEALTH_MULTIPLIER[weaponEnchant.level - 1] ?? 1 : 1)
+			* (armorEnchant?.kind === ItemEnchantmentKind.MAX_HEALTH ? EnchantmentConstants.MAX_HEALTH_MULTIPLIER[armorEnchant.level - 1] ?? 1 : 1);
+
+		return Math.round(playerClass.getMaxHealthValue(this.level) * multiplier);
 	}
 
 	/**
 	 * Get the player max cumulative energy
 	 */
-	public getMaxCumulativeEnergy(): number {
+	public getMaxCumulativeEnergy(playerActiveObjects: PlayerActiveObjects): number {
 		const playerClass = ClassDataController.instance.getById(this.class);
-		return playerClass.getMaxCumulativeEnergyValue(this.level);
+
+		const weaponEnchant = ItemEnchantment.getById(playerActiveObjects.weapon.itemEnchantmentId);
+		const armorEnchant = ItemEnchantment.getById(playerActiveObjects.armor.itemEnchantmentId);
+		const multiplier = (weaponEnchant?.kind === ItemEnchantmentKind.MAX_ENERGY
+			? EnchantmentConstants.MAX_ENERGY_MULTIPLIER[weaponEnchant.level - 1] ?? 1
+			: 1)
+			* (armorEnchant?.kind === ItemEnchantmentKind.MAX_ENERGY ? EnchantmentConstants.MAX_ENERGY_MULTIPLIER[armorEnchant.level - 1] ?? 1 : 1);
+
+		return Math.round(playerClass.getMaxCumulativeEnergyValue(this.level) * multiplier);
 	}
 
 	/**
@@ -752,33 +773,50 @@ export class Player extends Model {
 	 * @param health
 	 * @param response
 	 * @param reason
+	 * @param playerActiveObjects
 	 * @param missionHealthParameter
 	 */
-	public async addHealth(health: number, response: CrowniclesPacket[], reason: NumberChangeReason, missionHealthParameter: MissionHealthParameter = {
+	public async addHealth(health: number, response: CrowniclesPacket[], reason: NumberChangeReason, playerActiveObjects: PlayerActiveObjects, missionHealthParameter: MissionHealthParameter = {
 		overHealCountsForMission: true,
 		shouldPokeMission: true
 	}): Promise<void> {
-		await this.setHealth(this.health + health, response, missionHealthParameter);
+		if (this.health > this.getMaxHealth(playerActiveObjects)) {
+			this.health = this.getMaxHealth(playerActiveObjects);
+		}
+		await this.setHealth(this.health + health, response, playerActiveObjects, missionHealthParameter);
 		crowniclesInstance.logsDatabase.logHealthChange(this.keycloakId, this.health, reason)
 			.then();
+	}
+
+	/**
+	 * Get the health of the player
+	 * @param playerActiveObjects
+	 */
+	public getHealth(playerActiveObjects: PlayerActiveObjects): number {
+		if (this.health > this.getMaxHealth(playerActiveObjects)) {
+			this.health = this.getMaxHealth(playerActiveObjects);
+		}
+		return this.health;
 	}
 
 	/**
 	 * Add and logs energy gain
 	 * @param energy
 	 * @param reason
+	 * @param playerActiveObjects
 	 */
-	public addEnergy(energy: number, reason: NumberChangeReason): void {
-		this.setEnergyLost(Math.max(0, this.fightPointsLost - energy), reason);
+	public addEnergy(energy: number, reason: NumberChangeReason, playerActiveObjects: PlayerActiveObjects): void {
+		this.setEnergyLost(Math.max(0, this.fightPointsLost - energy), reason, playerActiveObjects);
 	}
 
 	/**
 	 * Set the energy lost of the player to a specific value
 	 * @param energy
 	 * @param reason
+	 * @param playerActiveObjects
 	 */
-	public setEnergyLost(energy: number, reason: NumberChangeReason): void {
-		this.fightPointsLost = Math.min(energy, this.getMaxCumulativeEnergy());
+	public setEnergyLost(energy: number, reason: NumberChangeReason, playerActiveObjects: PlayerActiveObjects): void {
+		this.fightPointsLost = Math.min(energy, this.getMaxCumulativeEnergy(playerActiveObjects));
 		crowniclesInstance.logsDatabase.logEnergyChange(this.keycloakId, this.fightPointsLost, reason)
 			.then();
 	}
@@ -786,9 +824,10 @@ export class Player extends Model {
 	/**
 	 * Leave the PVE island if no energy left
 	 * @param response
+	 * @param playerActiveObjects
 	 */
-	public async leavePVEIslandIfNoEnergy(response: CrowniclesPacket[]): Promise<boolean> {
-		if (!(Maps.isOnPveIsland(this) && this.fightPointsLost >= this.getMaxCumulativeEnergy())) {
+	public async leavePVEIslandIfNoEnergy(response: CrowniclesPacket[], playerActiveObjects: PlayerActiveObjects): Promise<boolean> {
+		if (!(Maps.isOnPveIsland(this) && this.fightPointsLost >= this.getMaxCumulativeEnergy(playerActiveObjects))) {
 			return false;
 		}
 		const {
@@ -928,8 +967,8 @@ export class Player extends Model {
 	/**
 	 * Check if the player has enough energy to join the island or fight
 	 */
-	hasEnoughEnergyToFight(): boolean {
-		return this.getCumulativeEnergy() / this.getMaxCumulativeEnergy() >= PVEConstants.MINIMAL_ENERGY_RATIO;
+	hasEnoughEnergyToFight(playerActiveObjects: PlayerActiveObjects): boolean {
+		return this.getCumulativeEnergy(playerActiveObjects) / this.getMaxCumulativeEnergy(playerActiveObjects) >= PVEConstants.MINIMAL_ENERGY_RATIO;
 	}
 
 	/**
@@ -1023,13 +1062,14 @@ export class Player extends Model {
 	 * Set the player health
 	 * @param health
 	 * @param response
+	 * @param playerActiveObjects
 	 * @param missionHealthParameter
 	 */
-	private async setHealth(health: number, response: CrowniclesPacket[], missionHealthParameter: MissionHealthParameter = {
+	private async setHealth(health: number, response: CrowniclesPacket[], playerActiveObjects: PlayerActiveObjects, missionHealthParameter: MissionHealthParameter = {
 		overHealCountsForMission: true,
 		shouldPokeMission: true
 	}): Promise<void> {
-		const difference = (health > this.getMaxHealth() && !missionHealthParameter.overHealCountsForMission ? this.getMaxHealth() : health < 0 ? 0 : health)
+		const difference = (health > this.getMaxHealth(playerActiveObjects) && !missionHealthParameter.overHealCountsForMission ? this.getMaxHealth(playerActiveObjects) : health < 0 ? 0 : health)
 			- this.health;
 		if (difference > 0 && missionHealthParameter.shouldPokeMission) {
 			await MissionsController.update(this, response, {
@@ -1040,8 +1080,8 @@ export class Player extends Model {
 		if (health < 0) {
 			this.health = 0;
 		}
-		else if (health > this.getMaxHealth()) {
-			this.health = this.getMaxHealth();
+		else if (health > this.getMaxHealth(playerActiveObjects)) {
+			this.health = this.getMaxHealth(playerActiveObjects);
 		}
 		else {
 			this.health = health;
@@ -1068,6 +1108,14 @@ export class Player extends Model {
 	 */
 	public canEat(): boolean {
 		return !this.lastMealAt || this.lastMealAt.valueOf() + PlayersConstants.MEAL_COOLDOWN < Date.now();
+	}
+
+	/**
+	 * Set the health of the player without any check or other operation
+	 * @param health
+	 */
+	public setHealthNoCheck(health: number): void {
+		this.health = health;
 	}
 }
 

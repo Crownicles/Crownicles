@@ -9,13 +9,18 @@ import {
 import { BlockingUtils } from "../utils/BlockingUtils";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
 import {
-	ReactionCollectorLottery, ReactionCollectorLotteryHardReaction, ReactionCollectorLotteryMediumReaction
+	ReactionCollectorLottery,
+	ReactionCollectorLotteryHardReaction,
+	ReactionCollectorLotteryMediumReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorLottery";
 import {
 	CrowniclesPacket, makePacket
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
-	SmallEventLotteryLosePacket, SmallEventLotteryNoAnswerPacket, SmallEventLotteryPoorPacket, SmallEventLotteryWinPacket
+	SmallEventLotteryLosePacket,
+	SmallEventLotteryNoAnswerPacket,
+	SmallEventLotteryPoorPacket,
+	SmallEventLotteryWinPacket
 } from "../../../../Lib/src/packets/smallEvents/SmallEventLotteryPacket";
 import { SmallEventConstants } from "../../../../Lib/src/constants/SmallEventConstants";
 import {
@@ -25,6 +30,7 @@ import { TravelTime } from "../maps/TravelTime";
 import { Effect } from "../../../../Lib/src/types/Effect";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
+import { PlayerActiveObjects } from "../database/game/models/PlayerActiveObjects";
 
 type LotteryProperties = {
 	successRate: {
@@ -55,6 +61,7 @@ async function effectIfGoodRisk(levelKey: LotteryLevelKey, player: Player, dataL
 
 type WhoToGive = {
 	player: Player;
+	playerActiveObjects: PlayerActiveObjects;
 	guild: Guild;
 };
 
@@ -68,6 +75,7 @@ async function giveRewardToPlayer(
 	response: CrowniclesPacket[],
 	{
 		player,
+		playerActiveObjects,
 		guild
 	}: WhoToGive,
 	rewardType: string,
@@ -83,7 +91,7 @@ async function giveRewardToPlayer(
 				amount: SmallEventConstants.LOTTERY.REWARDS.EXPERIENCE * coefficient,
 				response,
 				reason: NumberChangeReason.SMALL_EVENT
-			});
+			}, playerActiveObjects);
 			response.push(makePacket(SmallEventLotteryWinPacket, {
 				winAmount: SmallEventConstants.LOTTERY.REWARDS.EXPERIENCE * coefficient,
 				lostTime,
@@ -135,7 +143,7 @@ async function giveRewardToPlayer(
 export const smallEventFuncs: SmallEventFuncs = {
 	canBeExecuted: Maps.isOnContinent,
 
-	executeSmallEvent(response, player, context): void {
+	executeSmallEvent(response, player, context, playerActiveObjects): void {
 		const dataLottery = SmallEventDataController.instance.getById("lottery")
 			.getProperties<LotteryProperties>();
 
@@ -181,6 +189,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 					const coefficient = dataLottery.coefficients[levelKey];
 					await giveRewardToPlayer(response, {
 						player,
+						playerActiveObjects,
 						guild
 					}, rewardType, {
 						coefficient,
