@@ -682,9 +682,9 @@
             "Dieses Haustier besitzt spezielle Drüsen, die ein Beschleunigungshormon absondern. An Ihrer Seite werden Sie sich wie der Blitz bewegen!"
           ],
           "breakArmor": [
-            "Dès le coup d'envoi du combat, il fonce en trombe sur l'adversaire et tente d'arracher son armure ou son bouclier, cela réussit très souvent, laissant l'ennemi démuni.",
-            "Ce puissant animal charge frontalement dès le début ; s'il atteint sa cible, casque, plastron ou bouclier sont délogés et emportés loin du champ de bataille.",
-            "Votre familier effectue une charge impressionnante visant à dépouiller l'ennemi : la plupart du temps, l'armure ou le bouclier finit coincé entre ses cornes, et devient son butin."
+            "Sobald der Kampf beginnt, stürmt er auf den Gegner zu und versucht, ihm die Rüstung oder den Schild abzureißen. Dies gelingt sehr oft, sodass der Gegner hilflos zurückbleibt.",
+            "Dieses mächtige Tier greift von Anfang an frontal an; wenn es sein Ziel trifft, werden Helm, Brustpanzer oder Schild verdrängt und vom Schlachtfeld weggetragen.",
+            "Ihr Begleiter führt einen beeindruckenden Angriff aus, um den Feind zu berauben: Meistens landet die Rüstung oder der Schild zwischen seinen Hörnern und wird zu seiner Beute."
           ],
           "claws": [
             "Die Krallen Ihres Tieres sind schärfer als jede Klinge! Es wird sie einsetzen, um Ihre Feinde mit erschreckender Effizienz zu zerfetzen.",
@@ -1304,23 +1304,23 @@
   },
   "drink": {
     "errors": {
-      "noAvailablePotions": "Vous n'avez malheureusement aucune potion consommable dans votre inventaire ! Les potions de combats ne peuvent pas être consommées via cette commande.",
-      "cancel": "Vous ne buvez pas de potion."
+      "noAvailablePotions": "Sie haben leider keine verbrauchbaren Tränke in Ihrem Inventar! Kampftränke können über diesen Befehl nicht konsumiert werden.",
+      "cancel": "Sie trinken keinen Zaubertrank."
     },
-    "title": "{{pseudo}}, vous avez bu une potion !",
-    "descriptionNoBonus": "{emote:unitValues.{{nature}}} Vous consommez une potion... Ça ne semble pas très efficace",
-    "description": "{emote:unitValues.{{nature}}} $t(commands:drink.natureText.{{nature}}) **{{value}}** !",
+    "title": "{{pseudo}}Sie haben einen Trank getrunken!",
+    "descriptionNoBonus": "{emote:unitValues.{{nature}}} Sie konsumieren einen Trank... Er scheint nicht sehr wirksam zu sein",
+    "description": "{emote:unitValues.{{nature}}} $t(commands:drink.natureText.{{nature}}) **{{value}}**!",
     "natureText": {
-      "health": "Vie gagnée :",
-      "energy": "Énergie gagnée :",
-      "time": "Vous avez avancé de"
+      "health": "Gewonnenes Leben :",
+      "energy": "Gewonnene Energie :",
+      "time": "Sie haben sich um"
     },
     "collectorTitleOneObject": "{{pseudo}} Bestätigung :",
-    "collectorDescOneObject": "Voulez-vous boire votre potion ?\n\n{{object}}",
-    "collectorTitle": "{{pseudo}}, choix de votre potion !",
-    "collectorDesc": "Choisissez une potion à boire dans la liste ci-dessous :",
-    "collectorRefuseOption": "Annuler",
-    "menuPlaceholder": "Sélectionnez une potion"
+    "collectorDescOneObject": "Möchten Sie Ihren Trank trinken?\n\n{{object}}",
+    "collectorTitle": "{{pseudo}}Wählen Sie Ihren Trank aus!",
+    "collectorDesc": "Wählen Sie aus der folgenden Liste einen Trank zum Trinken aus:",
+    "collectorRefuseOption": "Abbrechen",
+    "menuPlaceholder": "Wählen Sie einen Trank aus"
   },
   "petSell": {
     "noPet": "Sie haben keine Vertrauten zu verkaufen!",
