@@ -230,8 +230,8 @@
       "success": "cavalga nas costas de **{{petNickname}}** para andar mais depressa."
     },
     "breakArmor": {
-      "failure": "fait appel à **{{petNickname}}** qui charge l'adversaire. Malheureusement, il rate complètement sa cible.",
-      "success": "demande l'aide de son familier qui charge l'adversaire lourdement. Ce dernier se protège de l'attaque mais son équipement est emporté au loin par **{{petNickname}}** !"
+      "failure": "chama **{{petNickname}}** que ataca o seu adversário. Infelizmente, falha completamente o alvo.",
+      "success": "pede ajuda ao seu familiar, que ataca o seu adversário. Este último protege-se do ataque, mas o seu equipamento é levado por **{{petNickname}}** !"
     },
     "boulderTossAttack": {
       "name_one": "Ataque com pedras",
@@ -308,7 +308,7 @@
     },
     "createBomb": {
       "generalEffect": "é apoiado na sua luta por **{{petNickname}}** que finge assediar ferozmente o seu adversário com bicadas precisas e dolorosas.",
-      "failure": "a manqué de recevoir l'aide de **{{petNickname}}** qui, par prudence, s'est abstenu d'agir, conscient que son intervention risquait davantage de blesser son maître que l'adversaire ! Peut-être aurait-il eu moins de scrupule s'il vous avait senti en danger...",
+      "failure": "não recebeu a ajuda de **{{petNickname}}** que, por prudência, se absteve de atuar, consciente de que a sua intervenção era mais suscetível de ferir o seu amo do que o adversário! Talvez ele tivesse sido menos escrupuloso se tivesse sentido que estavas em perigo...",
       "success": "tira partido do talento de **{{petNickname}}** que preparou discretamente uma bomba potente. Depois de ativar o detonador, sai a correr com todas as suas forças!"
     },
     "crush": {
