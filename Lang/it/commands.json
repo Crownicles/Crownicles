@@ -169,7 +169,7 @@
       },
       "FIGHT": {
         "description": "Usate questo comando per sfidare altri giocatori sullo stesso server.\nLe battaglie si svolgono turno per turno. A ogni turno si può scegliere un'azione da eseguire.\n\nPer ulteriori informazioni, consultare la pagina della guida: https://guide.draftbot.com/notions-principale/combats",
-        "image": "https://draftbot.com/public/ressources/fighthelp/en/5.1.5.png"
+        "image": "https://draftbot.com/public/ressources/fighthelp/en/5.1.7.png"
       },
       "GLORY_TOP": {
         "description": "Visualizza la classifica gloriosa della partita per ogni 15 giocatori. Viene visualizzato anche il campionato dei giocatori. I giocatori sullo stesso server che voi sono contrassegnati da un punto blu."
@@ -680,6 +680,11 @@
             "È costruito per la velocità! In combattimento, può trasportarvi sulla schiena, decuplicando la vostra agilità sul campo di battaglia.",
             "I suoi riflessi sono eccezionali. In battaglia condividerà con voi la sua incredibile velocità, rendendovi ancora più veloci.",
             "Questo animale è dotato di speciali ghiandole che secernono un ormone dell'accelerazione. Al suo fianco, si muoverà come un fulmine!"
+          ],
+          "breakArmor": [
+            "Dès le coup d'envoi du combat, il fonce en trombe sur l'adversaire et tente d'arracher son armure ou son bouclier, cela réussit très souvent, laissant l'ennemi démuni.",
+            "Ce puissant animal charge frontalement dès le début ; s'il atteint sa cible, casque, plastron ou bouclier sont délogés et emportés loin du champ de bataille.",
+            "Votre familier effectue une charge impressionnante visant à dépouiller l'ennemi : la plupart du temps, l'armure ou le bouclier finit coincé entre ses cornes, et devient son butin."
           ],
           "claws": [
             "Gli artigli del vostro animale sono più affilati di molte lame! Li userà per colpire i nemici con un'efficacia terrificante.",
