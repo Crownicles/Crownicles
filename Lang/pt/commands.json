@@ -169,7 +169,7 @@
       },
       "FIGHT": {
         "description": "Utiliza este comando para desafiar outros jogadores no mesmo servidor que tu.\nAs batalhas têm lugar numa base de turno a turno. Em cada turno, podes escolher uma ação para executar.\n\nPara mais informações, consulta a página do guia: https://guide.draftbot.com/notions-principale/combats",
-        "image": "https://draftbot.com/public/ressources/fighthelp/en/5.1.5.png"
+        "image": "https://draftbot.com/public/ressources/fighthelp/en/5.1.7.png"
       },
       "GLORY_TOP": {
         "description": "Apresenta a classificação gloriosa do jogo para cada 15 jogadores. A liga dos jogadores também é apresentada. Os jogadores no mesmo servidor que tu estão marcados com um ponto azul."
