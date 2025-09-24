@@ -229,6 +229,10 @@
     "boostSpeed": {
       "success": "steigt auf den Rücken von **{{petNickname}}**, um sich schneller fortzubewegen."
     },
+    "breakArmor": {
+      "failure": "fait appel à **{{petNickname}}** qui charge l'adversaire. Malheureusement, il rate complètement sa cible.",
+      "success": "demande l'aide de son familier qui charge l'adversaire lourdement. Ce dernier se protège de l'attaque mais son équipement est emporté au loin par **{{petNickname}}** !"
+    },
     "boulderTossAttack": {
       "name_one": "Felsangriff",
       "name_other": "Felsangriffe"
@@ -304,7 +308,7 @@
     },
     "createBomb": {
       "generalEffect": "wird in seinem Kampf von **{{petNickname}}** unterstützt, der so tut, als würde er den Gegner mit präzisen und schmerzhaften Schnabelhieben heftig bedrängen.",
-      "failure": "verpasste es, Hilfe von **{{petNickname}}** zu erhalten, der vorsichtshalber nicht handelte, da er wusste, dass sein Eingreifen eher seinen Herrn als den Gegner verletzen würde. Sie hätten schneller sein müssen!",
+      "failure": "a manqué de recevoir l'aide de **{{petNickname}}** qui, par prudence, s'est abstenu d'agir, conscient que son intervention risquait davantage de blesser son maître que l'adversaire ! Peut-être aurait-il eu moins de scrupule s'il vous avait senti en danger...",
       "success": "macht sich das Talent von **{{petNickname}}** zunutze, der unauffällig eine starke Bombe vorbereitet hat. Nachdem Sie den Zünder aktiviert haben, rennen Sie mit aller Kraft zur Seite!"
     },
     "crush": {
