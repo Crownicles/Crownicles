@@ -17,6 +17,7 @@ import {
 import {
 	commandRequires, CommandUtils
 } from "../../core/utils/CommandUtils";
+import { InventorySlots } from "../../core/database/game/models/InventorySlot";
 
 export default class RespawnCommand {
 	/**
@@ -35,7 +36,8 @@ export default class RespawnCommand {
 			return;
 		}
 		const lostScore = Math.round(player.score * RespawnConstants.SCORE_REMOVAL_MULTIPLIER);
-		await player.addHealth(player.getMaxHealth() - player.health, response, NumberChangeReason.RESPAWN, {
+		const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
+		await player.addHealth(player.getMaxHealth(playerActiveObjects) - player.getHealth(playerActiveObjects), response, NumberChangeReason.RESPAWN, playerActiveObjects, {
 			shouldPokeMission: false,
 			overHealCountsForMission: false
 		});

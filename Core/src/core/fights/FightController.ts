@@ -6,7 +6,7 @@ import { FightConstants } from "../../../../Lib/src/constants/FightConstants";
 import { FighterStatus } from "./FighterStatus";
 import { FightOvertimeBehavior } from "./FightOvertimeBehavior";
 import { MonsterFighter } from "./fighter/MonsterFighter";
-import { PlayerFighter } from "./fighter/PlayerFighter";
+import { RealPlayerFighter } from "./fighter/RealPlayerFighter";
 import { PVEConstants } from "../../../../Lib/src/constants/PVEConstants";
 import {
 	CrowniclesPacket, PacketContext
@@ -36,9 +36,9 @@ export class FightController {
 
 	public readonly id: string;
 
-	public readonly fighters: (PlayerFighter | MonsterFighter | AiPlayerFighter)[];
+	public readonly fighters: (RealPlayerFighter | MonsterFighter | AiPlayerFighter)[];
 
-	public readonly fightInitiator: PlayerFighter;
+	public readonly fightInitiator: RealPlayerFighter;
 
 	private readonly _fightView: FightView;
 
@@ -50,7 +50,7 @@ export class FightController {
 
 	public constructor(
 		fighters: {
-			fighter1: PlayerFighter;
+			fighter1: RealPlayerFighter;
 			fighter2: (MonsterFighter | AiPlayerFighter);
 		},
 		overtimeBehavior: FightOvertimeBehavior,
@@ -74,7 +74,7 @@ export class FightController {
 			await this.fighters[i].startFight(this._fightView, i === 0 ? FighterStatus.ATTACKER : FighterStatus.DEFENDER);
 		}
 
-		this._fightView.introduceFight(response, this.fighters[0] as PlayerFighter, this.fighters[1] as MonsterFighter | AiPlayerFighter);
+		this._fightView.introduceFight(response, this.fighters[0] as RealPlayerFighter, this.fighters[1] as MonsterFighter | AiPlayerFighter);
 
 		// The player with the highest speed starts the fight
 		if (this.fighters[1].getSpeed() > this.fighters[0].getSpeed() || RandomUtils.crowniclesRandom.bool() && this.fighters[1].getSpeed() === this.fighters[0].getSpeed()) {
@@ -88,7 +88,7 @@ export class FightController {
 	 * Get the playing fighter or null if the fight is not running
 	 * @returns
 	 */
-	public getPlayingFighter(): PlayerFighter | MonsterFighter | AiPlayerFighter {
+	public getPlayingFighter(): RealPlayerFighter | MonsterFighter | AiPlayerFighter {
 		return this.state === FightState.RUNNING ? this.fighters[0] : null;
 	}
 
@@ -96,7 +96,7 @@ export class FightController {
 	 * Get the defending fighter or null if the fight is not running
 	 * @returns
 	 */
-	public getDefendingFighter(): PlayerFighter | MonsterFighter | AiPlayerFighter {
+	public getDefendingFighter(): RealPlayerFighter | MonsterFighter | AiPlayerFighter {
 		return this.state === FightState.RUNNING ? this.fighters[1] : null;
 	}
 
@@ -139,7 +139,7 @@ export class FightController {
 	public async endBugFight(response: CrowniclesPacket[]): Promise<void> {
 		for (const fighter of this.fighters) {
 			fighter.unblock();
-			if (fighter instanceof PlayerFighter) {
+			if (fighter instanceof RealPlayerFighter) {
 				fighter.kill();
 			}
 		}
@@ -271,9 +271,9 @@ export class FightController {
 	 * @param defender
 	 */
 	private handleOutOfBreathScenarios(
-		attacker: PlayerFighter | MonsterFighter | AiPlayerFighter,
+		attacker: RealPlayerFighter | MonsterFighter | AiPlayerFighter,
 		fightAction: FightAction,
-		defender: PlayerFighter | MonsterFighter | AiPlayerFighter
+		defender: RealPlayerFighter | MonsterFighter | AiPlayerFighter
 	): {
 		fightAction: FightAction; result: FightActionResult | FightAlterationResult;
 	} {
@@ -324,7 +324,7 @@ export class FightController {
 		}
 
 		const currentFighter = this.getPlayingFighter();
-		if ((currentFighter instanceof AiPlayerFighter || currentFighter instanceof PlayerFighter) && currentFighter.pet) {
+		if ((currentFighter instanceof AiPlayerFighter || currentFighter instanceof RealPlayerFighter) && currentFighter.pet) {
 			const petAction = getAiPetBehavior(currentFighter.pet.typeId);
 			if (petAction) {
 				await this.executePetAssistance(petAction, response);
@@ -351,7 +351,7 @@ export class FightController {
 			.reduceCounters();
 
 		// If the player is fighting a monster, and it's his first turn, then use the "rage explosion" action without changing turns
-		if (this.turn < 3 && this.getDefendingFighter() instanceof MonsterFighter && (this.getPlayingFighter() as PlayerFighter).player.rage > 0) {
+		if (this.turn < 3 && this.getDefendingFighter() instanceof MonsterFighter && (this.getPlayingFighter() as RealPlayerFighter).player.rage > 0) {
 			await this.executeFightAction(FightActionDataController.instance.getById("rageExplosion"), false, response);
 			if (this.hadEnded()) {
 				return;

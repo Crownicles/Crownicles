@@ -13,14 +13,14 @@ import {
 
 export const smallEventFuncs: SmallEventFuncs = {
 	canBeExecuted: Maps.isOnContinent,
-	executeSmallEvent: async (response, player): Promise<void> => {
+	executeSmallEvent: async (response, player, _context, playerActiveObjects): Promise<void> => {
 		const packet: SmallEventSmallBadPacket = new SmallEventSmallBadPacket();
 		packet.issue = RandomUtils.crowniclesRandom.pick(Object.values(SmallEventBadIssue)) as SmallEventBadIssue;
 
 		switch (packet.issue) {
 			case SmallEventBadIssue.HEALTH:
 				packet.amount = RandomUtils.rangedInt(SmallEventConstants.SMALL_BAD.HEALTH);
-				await player.addHealth(-packet.amount, response, NumberChangeReason.SMALL_EVENT);
+				await player.addHealth(-packet.amount, response, NumberChangeReason.SMALL_EVENT, playerActiveObjects);
 				break;
 
 			case SmallEventBadIssue.MONEY:

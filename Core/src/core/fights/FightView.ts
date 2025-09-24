@@ -2,7 +2,7 @@ import { FightController } from "./FightController";
 import {
 	CrowniclesPacket, makePacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
-import { PlayerFighter } from "./fighter/PlayerFighter";
+import { RealPlayerFighter } from "./fighter/RealPlayerFighter";
 import { MonsterFighter } from "./fighter/MonsterFighter";
 import { FightConstants } from "../../../../Lib/src/constants/FightConstants";
 import { CommandFightIntroduceFightersPacket } from "../../../../Lib/src/packets/fights/FightIntroductionPacket";
@@ -45,7 +45,7 @@ export class FightView {
 	 * @param opponent
 	 * @param response
 	 */
-	introduceFight(response: CrowniclesPacket[], fighter: PlayerFighter, opponent: MonsterFighter | AiPlayerFighter): void {
+	introduceFight(response: CrowniclesPacket[], fighter: RealPlayerFighter, opponent: MonsterFighter | AiPlayerFighter): void {
 		const fightInitiatorActions = new Array<[string, number]>();
 		for (const action of fighter.availableFightActions) {
 			fightInitiatorActions.push([action[0], action[1].breath]);
@@ -117,7 +117,7 @@ export class FightView {
 	 */
 	addActionToHistory(
 		response: CrowniclesPacket[],
-		fighter: PlayerFighter | MonsterFighter | AiPlayerFighter,
+		fighter: RealPlayerFighter | MonsterFighter | AiPlayerFighter,
 		fightAction: FightAction,
 		fightActionResult: FightActionResult | FightAlterationResult | PetAssistanceResult
 	): void {
@@ -172,7 +172,7 @@ export class FightView {
 		 * @param fightActionResult
 		 */
 		const getPetIfRelevant = (
-			fighter: PlayerFighter | MonsterFighter | AiPlayerFighter,
+			fighter: RealPlayerFighter | MonsterFighter | AiPlayerFighter,
 			fightActionResult: FightActionResult | FightAlterationResult | PetAssistanceResult
 		): OwnedPet | null => {
 			// Check if the fighter is a player (not a monster) and has a cached pet
@@ -229,7 +229,7 @@ export class FightView {
 	 * @param playerFighter - the player fighter - This cannot be a monster: they do not use a front-end to play crownicles :p
 	 * @param actions - the actions available for the player
 	 */
-	displayFightActionMenu(response: CrowniclesPacket[], playerFighter: PlayerFighter, actions: Map<string, FightAction>): void {
+	displayFightActionMenu(response: CrowniclesPacket[], playerFighter: RealPlayerFighter, actions: Map<string, FightAction>): void {
 		const collector = new ReactionCollectorFightChooseAction(
 			this.fightController.id,
 			playerFighter.player.keycloakId,
@@ -281,8 +281,8 @@ export class FightView {
 	 */
 	outroFight(
 		response: CrowniclesPacket[],
-		loser: PlayerFighter | MonsterFighter | AiPlayerFighter,
-		winner: PlayerFighter | MonsterFighter | AiPlayerFighter,
+		loser: RealPlayerFighter | MonsterFighter | AiPlayerFighter,
+		winner: RealPlayerFighter | MonsterFighter | AiPlayerFighter,
 		draw: boolean
 	): void {
 		response.push(makePacket(CommandFightEndOfFightPacket, {
