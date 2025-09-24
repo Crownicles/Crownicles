@@ -229,6 +229,10 @@
     "boostSpeed": {
       "success": "cavalga nas costas de **{{petNickname}}** para andar mais depressa."
     },
+    "breakArmor": {
+      "failure": "fait appel à **{{petNickname}}** qui charge l'adversaire. Malheureusement, il rate complètement sa cible.",
+      "success": "demande l'aide de son familier qui charge l'adversaire lourdement. Ce dernier se protège de l'attaque mais son équipement est emporté au loin par **{{petNickname}}** !"
+    },
     "boulderTossAttack": {
       "name_one": "Ataque com pedras",
       "name_other": "Ataques com pedras"
@@ -304,7 +308,7 @@
     },
     "createBomb": {
       "generalEffect": "é apoiado na sua luta por **{{petNickname}}** que finge assediar ferozmente o seu adversário com bicadas precisas e dolorosas.",
-      "failure": "não recebeu a ajuda de **{{petNickname}}** que, por prudência, se absteve de atuar, consciente de que a sua intervenção era mais suscetível de ferir o seu mestre do que o seu adversário. Devíamos ter sido mais rápidos!",
+      "failure": "a manqué de recevoir l'aide de **{{petNickname}}** qui, par prudence, s'est abstenu d'agir, conscient que son intervention risquait davantage de blesser son maître que l'adversaire ! Peut-être aurait-il eu moins de scrupule s'il vous avait senti en danger...",
       "success": "tira partido do talento de **{{petNickname}}** que preparou discretamente uma bomba potente. Depois de ativar o detonador, sai a correr com todas as suas forças!"
     },
     "crush": {
