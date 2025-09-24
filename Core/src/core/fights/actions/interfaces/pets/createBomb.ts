@@ -31,7 +31,7 @@ const use: PetAssistanceFunc = (fighter, opponent, turn, _fightController): Prom
 		});
 	}
 
-	// turn 23/24, bomb explodes?
+	// On turn 23/24, bomb explodes if opponent's energy >= fighter's; otherwise, it fails.
 	if (turn === 23 || turn === 24) {
 		if (opponent.getEnergy() < fighter.getEnergy()) {
 			return Promise.resolve({
