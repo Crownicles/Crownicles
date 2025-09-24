@@ -681,6 +681,11 @@
             "Seine Reflexe sind außergewöhnlich. Er wird seine unglaubliche Schnelligkeit im Kampf mit dir teilen und dich so viel schneller machen.",
             "Dieses Haustier besitzt spezielle Drüsen, die ein Beschleunigungshormon absondern. An Ihrer Seite werden Sie sich wie der Blitz bewegen!"
           ],
+          "breakArmor": [
+            "Dès le coup d'envoi du combat, il fonce en trombe sur l'adversaire et tente d'arracher son armure ou son bouclier, cela réussit très souvent, laissant l'ennemi démuni.",
+            "Ce puissant animal charge frontalement dès le début ; s'il atteint sa cible, casque, plastron ou bouclier sont délogés et emportés loin du champ de bataille.",
+            "Votre familier effectue une charge impressionnante visant à dépouiller l'ennemi : la plupart du temps, l'armure ou le bouclier finit coincé entre ses cornes, et devient son butin."
+          ],
           "claws": [
             "Die Krallen Ihres Tieres sind schärfer als jede Klinge! Es wird sie einsetzen, um Ihre Feinde mit erschreckender Effizienz zu zerfetzen.",
             "Die keratinisierte Struktur seiner Krallen ist einzigartig. Im Kampf kann er Ihren Gegnern tiefe Schnitte zufügen.",
@@ -1298,18 +1303,24 @@
     "switchSelectionDescription": "Wählen Sie aus der folgenden Liste einen Gegenstand zum Ausrüsten aus:"
   },
   "drink": {
-    "cancelledTitle": "{{pseudo}} Sie haben die Aktion abgebrochen",
-    "cancelled": "Sie haben Ihren Trank nicht getrunken!",
-    "noActiveObject": "Sie haben leider nichts zu trinken in Ihrem Inventar!",
-    "objectIsActiveDuringFights": "Dieses Getränk kann jetzt nicht getrunken werden. Es wird automatisch bei Ihrem nächsten Kampf verwendet!",
-    "healthBonus": "{emote:unitValues.health} Gewonnenes Leben: {{value}} !",
-    "energyBonus": "{emote:unitValues.energy} Gewonnene Energie: {{value}} !",
-    "timeBonus": "{emote:unitValues.time} Sie sind weitergekommen von {{value}} !",
-    "noBonus": "{emote:messages.refuse} Sie konsumieren einen Trank... Der scheint nicht sehr wirksam zu sein!",
-    "drinkSuccessTitle": "{{pseudo}}Sie nehmen einen Trank zu sich!",
-    "confirmationTitle": "{{pseudo}}Bestätigung :",
-    "confirmation": "Sind Sie sicher, dass Sie Ihre {{potion}} trinken möchten?",
-    "confirmationFooter": "Diesen Schritt kann man umgehen, indem man den Parameter erzwingen!"
+    "errors": {
+      "noAvailablePotions": "Vous n'avez malheureusement aucune potion consommable dans votre inventaire ! Les potions de combats ne peuvent pas être consommées via cette commande.",
+      "cancel": "Vous ne buvez pas de potion."
+    },
+    "title": "{{pseudo}}, vous avez bu une potion !",
+    "descriptionNoBonus": "{emote:unitValues.{{nature}}} Vous consommez une potion... Ça ne semble pas très efficace",
+    "description": "{emote:unitValues.{{nature}}} $t(commands:drink.natureText.{{nature}}) **{{value}}** !",
+    "natureText": {
+      "health": "Vie gagnée :",
+      "energy": "Énergie gagnée :",
+      "time": "Vous avez avancé de"
+    },
+    "collectorTitleOneObject": "{{pseudo}} Bestätigung :",
+    "collectorDescOneObject": "Voulez-vous boire votre potion ?\n\n{{object}}",
+    "collectorTitle": "{{pseudo}}, choix de votre potion !",
+    "collectorDesc": "Choisissez une potion à boire dans la liste ci-dessous :",
+    "collectorRefuseOption": "Annuler",
+    "menuPlaceholder": "Sélectionnez une potion"
   },
   "petSell": {
     "noPet": "Sie haben keine Vertrauten zu verkaufen!",
