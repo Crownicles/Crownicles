@@ -1,43 +1,211 @@
 {
   "possibilities": {
-    "end": {
-      "outcomes": {
-        "0": {
-          "effect": "occupied",
-          "lostTime": 45
-        }
-      }
-    },
     "followHint": {
       "outcomes": {
-        "0": {},
+        "0": {
+          "requirements": {
+            "speed": {
+              "min": 200
+            }
+          }
+        },
         "1": {
+          "requirements": {
+            "karma": {
+              "min": -50
+            }
+          },
           "effect": "hurt",
           "health": -40,
           "money": -200
+        },
+        "2": {
+          "requirements": {
+            "karma": {
+              "max": -50
+            }
+          }
+        },
+        "3": {
+          "requirements": {
+            "attack": {
+              "max": 250
+            }
+          },
+          "effect": "hurt",
+          "health": -15,
+          "money": -100
+        },
+        "4": {
+          "requirements": {
+            "attack": {
+              "max": 400
+            }
+          },
+          "effect": "hurt",
+          "health": -10,
+          "money": -50
+        },
+        "5": {
+          "requirements": {
+            "attack": {
+              "min": 450
+            },
+            "defense": {
+              "min": 200
+            }
+          },
+          "money": 150,
+          "karma": 20
+        },
+        "6": {
+          "requirements": {
+            "level": {
+              "min": 50
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 20
+        },
+        "7": {
+          "requirements": {
+            "level": {
+              "min": 40
+            }
+          },
+          "randomItem": {},
+          "money": 75
+        }
+      }
+    },
+    "questionStranger": {
+      "outcomes": {
+        "0": {
+          "requirements": {
+            "karma": {
+              "min": 150
+            }
+          },
+          "health": 3,
+          "randomItem": {},
+          "karma": 1
+        },
+        "1": {
+          "requirements": {
+            "karma": {
+              "max": -150
+            },
+            "attack": {
+              "min": 300
+            }
+          },
+          "money": 200,
+          "karma": -8
+        },
+        "2": {
+          "requirements": {
+            "level": {
+              "min": 60
+            }
+          }
+        },
+        "3": {
+          "requirements": {
+            "level": {
+              "min": 100
+            }
+          },
+          "randomItem": {},
+          "karma": -15
         }
       }
     },
     "forest": {
       "outcomes": {
         "0": {
-          "effect": "lost"
+          "requirements": {
+            "level": {
+              "min": 70
+            }
+          }
         },
         "1": {
-          "effect": "occupied",
-          "lostTime": 130,
-          "randomItem": {}
+          "requirements": {
+            "level": {
+              "max": 45
+            }
+          }
         },
         "2": {
+          "requirements": {
+            "level": {
+              "max": 70
+            }
+          },
           "effect": "hurt",
-          "health": -20
+          "health": -25
+        },
+        "3": {
+          "requirements": {
+            "karma": {
+              "min": 50
+            }
+          },
+          "money": 100,
+          "karma": 12
+        },
+        "4": {
+          "requirements": {
+            "karma": {
+              "max": -25
+            },
+            "level": {
+              "min": 30
+            }
+          },
+          "money": 80,
+          "karma": -35
         }
       }
     },
     "oppositeSide": {
       "outcomes": {
         "0": {
-          "effect": "lost"
+          "effect": "occupied",
+          "lostTime": 240
+        },
+        "1": {
+          "requirements": {
+            "karma": {
+              "min": 5
+            }
+          },
+          "health": 5
+        },
+        "2": {
+          "requirements": {
+            "level": {
+              "min": 90
+            }
+          },
+          "randomItem": {}
+        }
+      }
+    },
+    "end": {
+      "outcomes": {
+        "0": {
+          "requirements": {
+            "level": {
+              "min": 50
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 45
+        },
+        "1": {
+          "effect": "occupied",
+          "lostTime": 60
         }
       }
     }

@@ -50,7 +50,7 @@ export abstract class DataController<T extends string | number, U extends Data<n
 		// We actually need to walk through the keys of the json manually, so for-in is preferred
 		// eslint-disable-next-line guard-for-in
 		for (const propName in jsonObj) {
-			// @ts-expect-error - we expect accessing object properties like an array here
+			// @ts-expect-error - we expect to access object properties like an array here
 			obj[propName] = jsonObj[propName];
 		}
 		obj.id = id;
