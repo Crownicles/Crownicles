@@ -317,7 +317,7 @@
   },
   "drink": {
     "name": "trinken",
-    "description": "Boire une potion."
+    "description": "Einen Trank trinken."
   },
   "petSell": {
     "name": "verkaufenfamiliär",
