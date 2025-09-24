@@ -230,8 +230,8 @@
       "success": "cavalca il dorso di **{{petNickname}}** per muoversi più velocemente."
     },
     "breakArmor": {
-      "failure": "fait appel à **{{petNickname}}** qui charge l'adversaire. Malheureusement, il rate complètement sa cible.",
-      "success": "demande l'aide de son familier qui charge l'adversaire lourdement. Ce dernier se protège de l'attaque mais son équipement est emporté au loin par **{{petNickname}}** !"
+      "failure": "chiama **{{petNickname}}** che carica l'avversario. Purtroppo, manca completamente il bersaglio.",
+      "success": "chiede aiuto al suo famiglio, che carica l'avversario. Quest'ultimo si protegge dall'attacco, ma il suo equipaggiamento viene portato via da **{{petNickname}}** !"
     },
     "boulderTossAttack": {
       "name_one": "Attacco roccioso",
@@ -308,7 +308,7 @@
     },
     "createBomb": {
       "generalEffect": "è supportato nella sua lotta da **{{petNickname}}** che finge di tormentare ferocemente l'avversario con beccate precise e dolorose.",
-      "failure": "a manqué de recevoir l'aide de **{{petNickname}}** qui, par prudence, s'est abstenu d'agir, conscient que son intervention risquait davantage de blesser son maître que l'adversaire ! Peut-être aurait-il eu moins de scrupule s'il vous avait senti en danger...",
+      "failure": "non ha ricevuto aiuto da **{{petNickname}}** che, per prudenza, si è astenuto dall'agire, consapevole che il suo intervento aveva più probabilità di ferire il padrone che l'avversario! Forse sarebbe stato meno scrupoloso se avesse percepito che eravate in pericolo...",
       "success": "sfrutta il talento di **{{petNickname}}** che ha preparato con discrezione una potente bomba. Dopo aver attivato il detonatore, si parte di corsa con tutte le forze!"
     },
     "crush": {
