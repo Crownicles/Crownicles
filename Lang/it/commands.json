@@ -681,6 +681,11 @@
             "I suoi riflessi sono eccezionali. In battaglia condividerà con voi la sua incredibile velocità, rendendovi ancora più veloci.",
             "Questo animale è dotato di speciali ghiandole che secernono un ormone dell'accelerazione. Al suo fianco, si muoverà come un fulmine!"
           ],
+          "breakArmor": [
+            "Dès le coup d'envoi du combat, il fonce en trombe sur l'adversaire et tente d'arracher son armure ou son bouclier, cela réussit très souvent, laissant l'ennemi démuni.",
+            "Ce puissant animal charge frontalement dès le début ; s'il atteint sa cible, casque, plastron ou bouclier sont délogés et emportés loin du champ de bataille.",
+            "Votre familier effectue une charge impressionnante visant à dépouiller l'ennemi : la plupart du temps, l'armure ou le bouclier finit coincé entre ses cornes, et devient son butin."
+          ],
           "claws": [
             "Gli artigli del vostro animale sono più affilati di molte lame! Li userà per colpire i nemici con un'efficacia terrificante.",
             "La struttura cheratinizzata dei suoi artigli è unica. In combattimento, può infliggere tagli profondi agli avversari.",
@@ -1298,18 +1303,24 @@
     "switchSelectionDescription": "Scegliere un oggetto da equipaggiare dall'elenco sottostante:"
   },
   "drink": {
-    "cancelledTitle": "{{pseudo}}avete annullato l'azione",
-    "cancelled": "Non hai bevuto la tua pozione!",
-    "noActiveObject": "Purtroppo non avete nulla da bere nel vostro inventario!",
-    "objectIsActiveDuringFights": "Questa bevanda non può essere bevuta ora. Verrà utilizzata automaticamente al prossimo combattimento!",
-    "healthBonus": "{emote:unitValues.health} Vita guadagnata: {{value}} !",
-    "energyBonus": "{emote:unitValues.energy} Energia risparmiata: {{value}} .",
-    "timeBonus": "{emote:unitValues.time} Sei andato avanti {{value}} !",
-    "noBonus": "{emote:messages.refuse} Assumi una pozione... Non sembra essere molto efficace!",
-    "drinkSuccessTitle": "{{pseudo}}Stai bevendo una pozione!",
-    "confirmationTitle": "{{pseudo}}conferma :",
-    "confirmation": "Sei sicuro di voler bere il tuo {{potion}} ?",
-    "confirmationFooter": "È possibile evitare questo passaggio utilizzando il parametro force!"
+    "errors": {
+      "noAvailablePotions": "Vous n'avez malheureusement aucune potion consommable dans votre inventaire ! Les potions de combats ne peuvent pas être consommées via cette commande.",
+      "cancel": "Vous ne buvez pas de potion."
+    },
+    "title": "{{pseudo}}, vous avez bu une potion !",
+    "descriptionNoBonus": "{emote:unitValues.{{nature}}} Vous consommez une potion... Ça ne semble pas très efficace",
+    "description": "{emote:unitValues.{{nature}}} $t(commands:drink.natureText.{{nature}}) **{{value}}** !",
+    "natureText": {
+      "health": "Vie gagnée :",
+      "energy": "Énergie gagnée :",
+      "time": "Vous avez avancé de"
+    },
+    "collectorTitleOneObject": "{{pseudo}}, confirmation :",
+    "collectorDescOneObject": "Voulez-vous boire votre potion ?\n\n{{object}}",
+    "collectorTitle": "{{pseudo}}, choix de votre potion !",
+    "collectorDesc": "Choisissez une potion à boire dans la liste ci-dessous :",
+    "collectorRefuseOption": "Annuler",
+    "menuPlaceholder": "Sélectionnez une potion"
   },
   "petSell": {
     "noPet": "Non avete animali da vendere!",
