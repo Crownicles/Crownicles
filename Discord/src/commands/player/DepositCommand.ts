@@ -59,7 +59,7 @@ export async function handleItemDeposit(packet: CommandDepositSuccessPacket, con
 					lng,
 					pseudo: escapeUsername(interaction.user.displayName)
 				}), interaction.user)
-				.setDescription(i18n.t(`commands:deposit.deposeSuccess`, {
+				.setDescription(i18n.t("commands:deposit.deposeSuccess", {
 					lng,
 					item: DiscordItemUtils.getShortDisplay(packet.item, lng)
 				}))
