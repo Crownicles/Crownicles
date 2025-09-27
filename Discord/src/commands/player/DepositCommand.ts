@@ -31,11 +31,20 @@ import {
 	ReactionCollectorDeposeItemReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorDeposeItem";
 
+/**
+ * Get the deposit command packet
+ * @param interaction
+ */
 async function getPacket(interaction: CrowniclesInteraction): Promise<CommandDepositPacketReq> {
 	await interaction.deferReply();
 	return makePacket(CommandDepositPacketReq, {});
 }
 
+/**
+ * Handle an item deposit
+ * @param packet
+ * @param context
+ */
 export async function handleItemDeposit(packet: CommandDepositSuccessPacket, context: PacketContext): Promise<void> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction);
 	if (!interaction) {
@@ -58,6 +67,10 @@ export async function handleItemDeposit(packet: CommandDepositSuccessPacket, con
 	});
 }
 
+/**
+ * Get the fielder for the item category
+ * @param itemCategory
+ */
 function getFielder(itemCategory: number): ((displayPacket: MainItemDisplayPacket, lng: Language) => EmbedField) | ((displayPacket: SupportItemDisplayPacket, lng: Language) => EmbedField) {
 	switch (itemCategory) {
 		case 0:

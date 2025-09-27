@@ -34,6 +34,11 @@ type DepositCandidate = {
 	freeSlot: number;
 };
 
+/**
+ * Return an array of items that can be deposed in the player's stock
+ * @param player
+ * @param equippedItems
+ */
 async function getDepositCandidates(
 	player: Player,
 	equippedItems: InventorySlot[]
@@ -59,6 +64,12 @@ async function getDepositCandidates(
 	);
 }
 
+/**
+ * Depose the item into the player's stock
+ * @param response
+ * @param player
+ * @param itemToDeposit
+ */
 async function deposeItem(response: CrowniclesPacket[], player: Player, itemToDeposit: DepositCandidate): Promise<void> {
 	await InventorySlots.deposeItem(player, itemToDeposit);
 	response.push(makePacket(CommandDepositSuccessPacket, {
@@ -66,6 +77,11 @@ async function deposeItem(response: CrowniclesPacket[], player: Player, itemToDe
 	}));
 }
 
+/**
+ * Manage the callback when the player has more than 1 item to depose
+ * @param player
+ * @param depositCandidates
+ */
 function manageMoreThanOneItemToDepositEndCallback(player: Player, depositCandidates: DepositCandidate[]) {
 	return async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
 		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.DEPOSIT);
@@ -79,6 +95,13 @@ function manageMoreThanOneItemToDepositEndCallback(player: Player, depositCandid
 	};
 }
 
+/**
+ * Manage when the player has more than 1 item to depose
+ * @param response
+ * @param context
+ * @param player
+ * @param depositCandidates
+ */
 function manageMoreThanOneItemToDeposit(response: CrowniclesPacket[], context: PacketContext, player: Player, depositCandidates: DepositCandidate[]): void {
 	const collector = new ReactionCollectorDeposeItem(depositCandidates.map((item: DepositCandidate) => (item.slot.getItem() as MainItem | ObjectItem).getDisplayPacket()));
 
