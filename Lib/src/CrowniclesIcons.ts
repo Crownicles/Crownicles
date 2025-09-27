@@ -479,8 +479,8 @@ export const CrowniclesIcons: {
 		34: {
 			end: {
 				0: "🚶",
-				1: "🚶‍",
-				2: "🚶‍"
+				1: "🚶",
+				2: "🚶"
 			},
 			food: "🥗",
 			health: "😇",
@@ -497,7 +497,7 @@ export const CrowniclesIcons: {
 		},
 		36: {
 			end: {
-				0: "🚶‍",
+				0: "🚶",
 				1: "🚶"
 			},
 			goAway: "🚶",
@@ -652,8 +652,8 @@ export const CrowniclesIcons: {
 		50: {
 			ask: "🗣️",
 			end: {
-				0: "Vous",
-				1: "L'un"
+				0: "☀️",
+				1: "🥥"
 			},
 			leave: "🚶",
 			nap: "😴"
@@ -726,9 +726,9 @@ export const CrowniclesIcons: {
 		57: {
 			continue: "🌊",
 			end: {
-				0: "Vous",
-				1: "Vous",
-				2: "Vous"
+				0: "🦀",
+				1: "🤤",
+				2: "🌊"
 			},
 			findMeal: "🦀",
 			settle: "🌞"
@@ -736,8 +736,8 @@ export const CrowniclesIcons: {
 		58: {
 			continue: "🚶",
 			end: {
-				0: "Vous",
-				1: "Épuisé,"
+				0: "🤔",
+				1: "⛺"
 			},
 			goAlchemist: "🍵",
 			shortcut: "🏃"
@@ -752,13 +752,13 @@ export const CrowniclesIcons: {
 		},
 		60: {
 			end: {
-				0: "Vous"
+				0: "📜"
 			},
 			start: "📖"
 		},
 		61: {
 			end: {
-				0: "Vous"
+				0: "ℹ️"
 			},
 			follow: "🚶",
 			observe: "👀"
@@ -832,9 +832,9 @@ export const CrowniclesIcons: {
 		68: {
 			checkDate: "🗓️",
 			end: {
-				0: "🚶‍",
+				0: "🚶",
 				1: "👀",
-				2: "📓‍"
+				2: "📓"
 			},
 			read: "📖",
 			steal: "📔"
@@ -1170,7 +1170,7 @@ export const CrowniclesIcons: {
 			emoteMale: "🐿️"
 		},
 		41: {
-			emoteFemale: "🦔️",
+			emoteFemale: "🦔",
 			emoteMale: "🦔"
 		},
 		42: {
@@ -1266,16 +1266,16 @@ export const CrowniclesIcons: {
 			emoteMale: "🕊️"
 		},
 		63: {
-			emoteFemale: "🦄️",
-			emoteMale: "🦄️"
+			emoteFemale: "🦄",
+			emoteMale: "🦄"
 		},
 		64: {
-			emoteFemale: "🐉️",
-			emoteMale: "🐉️"
+			emoteFemale: "🐉",
+			emoteMale: "🐉"
 		},
 		65: {
-			emoteFemale: "🦖️",
-			emoteMale: "🦖️"
+			emoteFemale: "🦖",
+			emoteMale: "🦖"
 		},
 		66: {
 			emoteFemale: "🟣",
@@ -2258,7 +2258,7 @@ export const CrowniclesIcons: {
 			default: "⚫"
 		},
 		afk: "👻",
-		allTime: "🗓️️",
+		allTime: "🗓️",
 		weekly: "🕤",
 		congrats: "🏆",
 		error: "❌",
@@ -2292,7 +2292,7 @@ export const CrowniclesIcons: {
 		telescope: "🔭",
 		car: "🚗",
 		walking: "🚶",
-		leagueUp: "↗️️",
+		leagueUp: "↗️",
 		leagueDown: "↘️"
 	},
 	guild: {
@@ -2338,7 +2338,6 @@ export const CrowniclesIcons: {
 		"💎"
 	],
 	loveLevels: [
-		"NOT_A_LEVEL",
 		"😼",
 		"😾",
 		"🙀",
