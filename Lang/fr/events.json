@@ -1951,7 +1951,7 @@
       "end": {
         "outcomes": {
           "0": "Vous réfléchissez pendant de longues minutes puis, ne sachant quoi faire, continuez votre chemin.",
-          "1": "Vous décidez d'établir votre campement ici et de continuer le trajet plus tard."
+          "1": "Épuisé, vous décidez d'établir votre campement ici et de continuer le trajet plus tard."
         }
       },
       "goAlchemist": {

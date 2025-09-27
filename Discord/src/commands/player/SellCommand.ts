@@ -213,7 +213,7 @@ export async function handleSellReactionCollector(context: PacketContext, packet
 					}
 				)
 			)
-			.setEmoji(parseEmoji(DisplayUtils.getItemIcon(reaction.item, false))!));
+			.setEmoji(parseEmoji(DisplayUtils.getItemIcon(reaction.item))!));
 	}
 
 	selectMenu.addOptions(new StringSelectMenuOptionBuilder()

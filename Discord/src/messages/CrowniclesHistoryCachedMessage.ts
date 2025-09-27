@@ -5,7 +5,6 @@ import { PacketContext } from "../../../Lib/src/packets/CrowniclesPacket";
 import { DiscordCache } from "../bot/DiscordCache";
 import i18n from "../translations/i18n";
 import { CommandFightHistoryItemPacket } from "../../../Lib/src/packets/fights/FightHistoryItemPacket";
-import { EmoteUtils } from "../utils/EmoteUtils";
 import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 import { FightAlterationState } from "../../../Lib/src/types/FightAlterationResult";
 import { FightConstants } from "../../../Lib/src/constants/FightConstants";
@@ -47,9 +46,9 @@ export class CrowniclesHistoryCachedMessage extends CrowniclesCachedMessage<Comm
 
 		let newLine = i18n.t("commands:fight.actions.intro", {
 			lng,
-			emote: EmoteUtils.translateEmojiToDiscord(packet.pet
+			emote: packet.pet
 				? CrowniclesIcons.pets[packet.pet.typeId][packet.pet.sex === StringConstants.SEX.FEMALE.short ? "emoteFemale" : "emoteMale"]
-				: CrowniclesIcons.fightActions[packet.fightActionId]),
+				: CrowniclesIcons.fightActions[packet.fightActionId],
 			fighter: packet.fighterKeycloakId ? this.usernamesCachePlayer?.get(packet.fighterKeycloakId) : this.usernamesCacheMonster?.get(packet.monsterId!)
 		}) + this.manageMainMessage(packet, lng);
 

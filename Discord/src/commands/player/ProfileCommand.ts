@@ -20,7 +20,6 @@ import { ProfileConstants } from "../../../../Lib/src/constants/ProfileConstants
 import { Language } from "../../../../Lib/src/Language";
 import { KeycloakUser } from "../../../../Lib/src/keycloak/KeycloakUser";
 import { PacketUtils } from "../../utils/PacketUtils";
-import { EmoteUtils } from "../../utils/EmoteUtils";
 import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 import {
 	millisecondsToMinutes, minutesDisplay
@@ -178,7 +177,7 @@ function generateFields(packet: CommandProfilePacketRes, lng: Language): EmbedFi
 
 	addField(fields, "pet", Boolean(packet.playerData.pet), {
 		lng,
-		rarity: EmoteUtils.translateEmojiToDiscord(CrowniclesIcons.unitValues.petRarity)
+		rarity: CrowniclesIcons.unitValues.petRarity
 			.repeat(packet.playerData.pet?.rarity ?? 0),
 		emote: packet.playerData.pet ? DisplayUtils.getPetIcon(packet.playerData.pet?.typeId, packet.playerData.pet?.sex) : "",
 		name: packet.playerData.pet ? packet.playerData.pet?.nickname ?? DisplayUtils.getPetTypeName(lng, packet.playerData.pet?.typeId, packet.playerData.pet?.sex) : ""
@@ -233,7 +232,7 @@ export async function handleCommandProfilePacketRes(packet: CommandProfilePacket
 		else {
 			const badge = Object.entries(CrowniclesIcons.badges).find(badgeEntry => badgeEntry[1] === reaction.emoji.name);
 			if (badge) {
-				interaction.channel.send({ content: `\`${EmoteUtils.translateEmojiToDiscord(reaction.emoji.name!)} ${i18n.t(`commands:profile.badges.${badge[0]}`, { lng })}\`` })
+				interaction.channel.send({ content: `\`${reaction.emoji.name!} ${i18n.t(`commands:profile.badges.${badge[0]}`, { lng })}\`` })
 					.then((msg: Message | null) => {
 						setTimeout(() => msg?.delete(), ProfileConstants.BADGE_DESCRIPTION_TIMEOUT);
 					});

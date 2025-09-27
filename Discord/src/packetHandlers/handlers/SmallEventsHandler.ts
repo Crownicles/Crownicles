@@ -72,7 +72,6 @@ import { SmallEventFindItemPacket } from "../../../../Lib/src/packets/smallEvent
 import { SmallEventPetPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventPetPacket";
 import { SmallEventClassPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventClassPacket";
 import { SmallEventUltimateFoodMerchantPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventUltimateFoodMerchantPacket";
-import { EmoteUtils } from "../../utils/EmoteUtils";
 import { SmallEventCartPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventCartPacket";
 import { cartResult } from "../../smallEvents/cart";
 import { SmallEventFindMissionPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventFindMissionPacket";
@@ -834,7 +833,7 @@ export default class SmallEventsHandler {
 					+ StringUtils.getRandomTranslation("smallEvents:ultimateFoodMerchant.stories", lng)
 					+ StringUtils.getRandomTranslation(`smallEvents:ultimateFoodMerchant.rewards.${packet.interactionName}`, lng, {
 						count: packet.amount,
-						moneyEmote: EmoteUtils.translateEmojiToDiscord(CrowniclesIcons.unitValues.money)
+						moneyEmote: CrowniclesIcons.unitValues.money
 					}),
 					interaction.user,
 					lng

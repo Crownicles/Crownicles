@@ -10,7 +10,6 @@ import {
 } from "../../../Lib/src/constants/ItemConstants";
 import { minutesDisplay } from "../../../Lib/src/utils/TimeUtils";
 import { StatValues } from "../../../Lib/src/types/StatValues";
-import { EmoteUtils } from "./EmoteUtils";
 import { DisplayUtils } from "./DisplayUtils";
 
 
@@ -192,7 +191,7 @@ export class DiscordItemUtils {
 			name: i18n.t(`models:${model}.${displayPacket.id}`, {
 				lng
 			}),
-			emote: EmoteUtils.translateEmojiToDiscord(emote),
+			emote,
 			rarity: i18n.t(`items:rarities.${displayPacket.rarity}`, { lng }),
 			values
 		});

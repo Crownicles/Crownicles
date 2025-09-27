@@ -20,6 +20,6 @@ export default class DrinkCommandPacketHandlers {
 
 	@packetHandler(CommandDrinkNoAvailablePotion)
 	async dailyBonusObjectDoNothing(context: PacketContext, _packet: CommandDrinkNoAvailablePotion): Promise<void> {
-		await handleClassicError(context, "commands:drink.errors.noAvailablePotion");
+		await handleClassicError(context, "commands:drink.errors.noAvailablePotions");
 	}
 }

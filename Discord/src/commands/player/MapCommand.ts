@@ -12,7 +12,6 @@ import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import i18n from "../../translations/i18n";
 import { MapConstants } from "../../../../Lib/src/constants/MapConstants";
 import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
-import { EmoteUtils } from "../../utils/EmoteUtils";
 import { escapeUsername } from "../../utils/StringUtils";
 
 function getPacket(interaction: CrowniclesInteraction): CommandMapPacketReq {
@@ -88,7 +87,7 @@ export async function handleCommandMapDisplayRes(packet: CommandMapDisplayRes, c
 		lng,
 		destination: mapName,
 		particle: mapParticle,
-		emote: EmoteUtils.translateEmojiToDiscord(CrowniclesIcons.mapTypes[packet.mapType]),
+		emote: CrowniclesIcons.mapTypes[packet.mapType],
 		description: mapDescription
 	}));
 	await interaction.reply({ embeds: [embed] });

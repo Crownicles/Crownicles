@@ -7,7 +7,6 @@ import { Language } from "../../../Lib/src/Language";
 import { ItemWithDetails } from "../../../Lib/src/types/ItemWithDetails";
 import { minutesDisplay } from "../../../Lib/src/utils/TimeUtils";
 import { Item } from "../../../Lib/src/types/Item";
-import { EmoteUtils } from "./EmoteUtils";
 import {
 	SexTypeShort, StringConstants
 } from "../../../Lib/src/constants/StringConstants";
@@ -44,7 +43,7 @@ export class DisplayUtils {
 		return i18n.t(`models:${itemCategoryToString(item.category)}.${item.id}`, { lng });
 	}
 
-	static getItemIcon(item: Item, translateEmote = true): string {
+	static getItemIcon(item: Item): string {
 		let emote;
 		switch (item.category) {
 			case ItemCategory.WEAPON:
@@ -63,7 +62,7 @@ export class DisplayUtils {
 				return "Missing no";
 		}
 
-		return translateEmote ? EmoteUtils.translateEmojiToDiscord(emote) : emote;
+		return emote;
 	}
 
 	/**
@@ -335,7 +334,7 @@ export class DisplayUtils {
 			name: i18n.t(`models:${itemType}.${itemWithDetails.id}`, {
 				lng
 			}),
-			emote: EmoteUtils.translateEmojiToDiscord(CrowniclesIcons[itemType][itemWithDetails.id]),
+			emote: CrowniclesIcons[itemType][itemWithDetails.id],
 			rarity: i18n.t(`items:rarities.${itemWithDetails.rarity}`, { lng }),
 			values: values.join(" ")
 		});
@@ -346,10 +345,10 @@ export class DisplayUtils {
 			name: i18n.t(`models:potions.${itemWithDetails.id}`, {
 				lng
 			}),
-			emote: EmoteUtils.translateEmojiToDiscord(DisplayUtils.getItemIcon({
+			emote: DisplayUtils.getItemIcon({
 				category: itemWithDetails.category,
 				id: itemWithDetails.id
-			})),
+			}),
 			rarity: i18n.t(`items:rarities.${itemWithDetails.rarity}`, { lng }),
 			values: i18n.t(`items:potionsNatures.${itemWithDetails.detailsSupportItem!.nature}`, {
 				power: itemWithDetails.detailsSupportItem!.nature === ItemNature.TIME_SPEEDUP
@@ -429,7 +428,7 @@ export class DisplayUtils {
 			name: i18n.t(`models:objects.${itemWithDetails.id}`, {
 				lng
 			}),
-			emote: EmoteUtils.translateEmojiToDiscord(CrowniclesIcons.objects[itemWithDetails.id]),
+			emote: CrowniclesIcons.objects[itemWithDetails.id],
 			rarity: i18n.t(`items:rarities.${itemWithDetails.rarity}`, { lng }),
 			values: DisplayUtils.getObjectNatureTranslation(itemWithDetails, lng),
 			lng

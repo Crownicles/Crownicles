@@ -34,7 +34,6 @@ import { PacketUtils } from "../../utils/PacketUtils";
 import { ChangeBlockingReasonPacket } from "../../../../Lib/src/packets/utils/ChangeBlockingReasonPacket";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
 import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
-import { EmoteUtils } from "../../utils/EmoteUtils";
 import { Language } from "../../../../Lib/src/Language";
 import {
 	disableRows, DiscordCollectorUtils
@@ -359,7 +358,7 @@ async function manageBuyoutConfirmation(packet: ReactionCollectorCreationPacket,
 				}), interaction.user)
 				.setDescription(`${
 					getShopItemDisplay(data, reaction, lng, shopItemNames, amounts)
-				}\n${EmoteUtils.translateEmojiToDiscord(CrowniclesIcons.collectors.warning)} ${
+				}\n${CrowniclesIcons.collectors.warning} ${
 					i18n.t(`commands:shop.shopItems.${shopItemTypeToId(shopItemId)}.info`, {
 						lng,
 						kingsMoneyAmount: data.additionalShopData?.gemToMoneyRatio,

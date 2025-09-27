@@ -17,7 +17,6 @@ import { PlayerDeathPacket } from "../../../../Lib/src/packets/events/PlayerDeat
 import { PlayerLeavePveIslandPacket } from "../../../../Lib/src/packets/events/PlayerLeavePveIslandPacket";
 import { PlayerLevelUpPacket } from "../../../../Lib/src/packets/events/PlayerLevelUpPacket";
 import { PlayerReceivePetPacket } from "../../../../Lib/src/packets/events/PlayerReceivePetPacket";
-import { EmoteUtils } from "../../utils/EmoteUtils";
 import { GiveFoodToGuildPacket } from "../../../../Lib/src/packets/utils/GiveFoodToGuildPacket";
 import { NoFoodSpaceInGuildPacket } from "../../../../Lib/src/packets/utils/NoFoodSpaceInGuildPacket";
 import { MissionUtils } from "../../utils/MissionUtils";
@@ -56,7 +55,7 @@ export default class EventsHandlers {
 			lng,
 			mapPrefix: i18n.t(`models:map_types.${packet.mapTypeId}.prefix`, { lng }),
 			mapType: (i18n.t(`models:map_types.${packet.mapTypeId}.name`, { lng }) as string).toLowerCase(),
-			mapEmote: EmoteUtils.translateEmojiToDiscord(CrowniclesIcons.mapTypes[packet.mapTypeId]),
+			mapEmote: CrowniclesIcons.mapTypes[packet.mapTypeId],
 			mapName: i18n.t(`models:map_locations.${packet.mapId}.name`, { lng }),
 			time
 		}));
