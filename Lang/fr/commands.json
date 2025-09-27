@@ -1297,6 +1297,15 @@
     "switchSelectionTitle": "{{pseudo}}, équipement d'un objet",
     "switchSelectionDescription": "Choisissez un objet à équiper dans la liste ci-dessous :"
   },
+  "deposit": {
+    "titleSuccess": "{{pseudo}}, commande effectuée !",
+    "deposeSuccess": "{{item}} a été déposé dans votre réserve !",
+    "noItemToDeposit": "Vous n'avez aucun équipement à déposer !",
+    "cannotDeposit": "Votre réserve est pleine.",
+    "cancelled": "Action annulée !",
+    "depositSelectionTitle": "{{pseudo}}, dépose d'un objet",
+    "depositSelectionDescription": "Choisissez un objet à déposer dans la liste ci-dessous :"
+  },
   "drink": {
     "errors": {
       "noAvailablePotions": "Vous n'avez malheureusement aucune potion consommable dans votre inventaire ! Les potions de combats ne peuvent pas être consommées via cette commande.",

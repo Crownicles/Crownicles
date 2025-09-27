@@ -24,3 +24,7 @@ export class CommandDepositCannotDepositPacket extends CrowniclesPacket {
 export class CommandDepositSuccessPacket extends CrowniclesPacket {
 	item!: MainItemDisplayPacket | SupportItemDisplayPacket;
 }
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandDepositCancelPacket extends CrowniclesPacket {
+}

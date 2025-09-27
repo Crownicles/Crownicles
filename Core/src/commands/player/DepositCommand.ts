@@ -9,6 +9,7 @@ import {
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import Player from "../../core/database/game/models/Player";
 import {
+	CommandDepositCancelPacket,
 	CommandDepositCannotDepositPacket,
 	CommandDepositNoItemPacket,
 	CommandDepositPacketReq, CommandDepositSuccessPacket
@@ -19,11 +20,14 @@ import {
 } from "../../core/database/game/models/InventorySlot";
 import { MainItem } from "../../data/MainItem";
 import { ObjectItem } from "../../data/ObjectItem";
-import {ReactionCollectorItemChoice} from "../../../../Lib/src/packets/interaction/ReactionCollectorItemChoice";
-import {Potion} from "../../data/Potion";
-import {ReactionCollectorInstance} from "../../core/utils/ReactionsCollector";
-import {BlockingConstants} from "../../../../Lib/src/constants/BlockingConstants";
-import {toItemWithDetails} from "../../core/utils/ItemUtils";
+import { ReactionCollectorInstance } from "../../core/utils/ReactionsCollector";
+import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
+import { BlockingUtils } from "../../core/utils/BlockingUtils";
+import {
+	ReactionCollectorDeposeItem,
+	ReactionCollectorDeposeItemCloseReaction,
+	ReactionCollectorDeposeItemReaction
+} from "../../../../Lib/src/packets/interaction/ReactionCollectorDeposeItem";
 
 type DepositCandidate = {
 	slot: InventorySlot;
@@ -62,25 +66,31 @@ async function deposeItem(response: CrowniclesPacket[], player: Player, itemToDe
 	}));
 }
 
-async function manageMoreThanOneItemToDeposit(response: CrowniclesPacket[], context: PacketContext, player: Player, depositCandidates: DepositCandidate[]): Promise<void> {
-	const collector = new ReactionCollectorItemChoice({
-			item: {
-			}
-		},
-		depositCandidates.map(i => ({
-			slot: i.slot.slot,
-			itemWithDetails: toItemWithDetails(i.slot.getItem())
-		})),
-		false);
+function manageMoreThanOneItemToDepositEndCallback(player: Player, depositCandidates: DepositCandidate[]) {
+	return async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
+		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.DEPOSIT);
+		const selectedEmote = collector.getFirstReaction();
+		if (!selectedEmote || selectedEmote.reaction.type === ReactionCollectorDeposeItemCloseReaction.name) {
+			response.push(makePacket(CommandDepositCancelPacket, {}));
+			return;
+		}
+		const toDeposeItem = depositCandidates[(selectedEmote.reaction.data as ReactionCollectorDeposeItemReaction).itemIndex];
+		await deposeItem(response, player, toDeposeItem);
+	};
+}
+
+function manageMoreThanOneItemToDeposit(response: CrowniclesPacket[], context: PacketContext, player: Player, depositCandidates: DepositCandidate[]): void {
+	const collector = new ReactionCollectorDeposeItem(depositCandidates.map((item: DepositCandidate) => (item.slot.getItem() as MainItem | ObjectItem).getDisplayPacket()));
+
 
 	response.push(new ReactionCollectorInstance(
 		collector,
 		context,
 		{
 			allowedPlayerKeycloakIds: [player.keycloakId],
-			reactionLimit: 1,
+			reactionLimit: 1
 		},
-		manageMoreThanOneItemToDepositEndCallback()
+		manageMoreThanOneItemToDepositEndCallback(player, depositCandidates)
 	)
 		.block(player.keycloakId, BlockingConstants.REASONS.DEPOSIT)
 		.build());
@@ -120,6 +130,6 @@ export default class DepositCommand {
 			return;
 		}
 
-		await manageMoreThanOneItemToDeposit(response, context,  player, depositCandidates);
+		manageMoreThanOneItemToDeposit(response, context, player, depositCandidates);
 	}
 }

@@ -92,6 +92,8 @@ import { handleClassicError } from "../../utils/ErrorUtils";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { ReactionCollectorDailyBonusData } from "../../../../Lib/src/packets/interaction/ReactionCollectorDailyBonus";
 import { handleDailyBonusCollector } from "../../commands/player/DailyBonusCommand";
+import { ReactionCollectorDeposeItemData } from "../../../../Lib/src/packets/interaction/ReactionCollectorDeposeItem";
+import { deposeItemCollector } from "../../commands/player/DepositCommand";
 
 // Needed because we need to accept any parameter
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -134,6 +136,7 @@ export default class ReactionCollectorHandler {
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorSkipMissionShopItemData.name, skipMissionShopItemCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorFightData.name, createFightCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorSwitchItemData.name, switchItemCollector);
+		ReactionCollectorHandler.collectorMap.set(ReactionCollectorDeposeItemData.name, deposeItemCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorDrinkData.name, drinkAcceptCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorPetSellData.name, createPetSellCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorChangeClassData.name, handleChangeClassReactionCollector);
