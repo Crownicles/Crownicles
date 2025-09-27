@@ -315,6 +315,10 @@
     "name": "intervertir",
     "description": "Intervertir l'objet actif avec l'un des objets présent dans votre réserve."
   },
+  "deposit": {
+    "name": "deposer",
+    "description": "Déposer un de vos objets actifs."
+  },
   "drink": {
     "name": "boire",
     "description": "Boire une potion."

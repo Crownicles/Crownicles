@@ -315,6 +315,10 @@
     "name": "switch",
     "description": "Switch the active item with one of the items in your item stock."
   },
+  "deposit": {
+    "name": "deposit",
+    "description": "Deposit one of your active items."
+  },
   "drink": {
     "name": "drink",
     "description": "Drink a potion."
