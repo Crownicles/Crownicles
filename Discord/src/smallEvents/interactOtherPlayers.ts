@@ -12,7 +12,6 @@ import { KeycloakUtils } from "../../../Lib/src/keycloak/KeycloakUtils";
 import { keycloakConfig } from "../bot/CrowniclesShard";
 import { Language } from "../../../Lib/src/Language";
 import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
-import { EmoteUtils } from "../utils/EmoteUtils";
 import { ReactionCollectorReturnTypeOrNull } from "../packetHandlers/handlers/ReactionCollectorHandlers";
 
 export async function interactOtherPlayerGetPlayerDisplay(keycloakId: string, rank: number | undefined, lng: Language): Promise<string> {
@@ -48,7 +47,7 @@ export async function interactOtherPlayersCollector(context: PacketContext, pack
 		context,
 		{
 			emojis: {
-				accept: EmoteUtils.translateEmojiToDiscord(CrowniclesIcons.collectors.interactPoorCoin),
+				accept: CrowniclesIcons.collectors.interactPoorCoin,
 				refuse: CrowniclesIcons.collectors.refuse
 			}
 		}

@@ -62,13 +62,6 @@ export class EmoteUtils {
 		// Remove duplicates
 		emojis = emojis.filter((value, index, self) => self.indexOf(value) === index);
 
-		// Remove some emojis that are not supported by Discord
-		emojis.splice(emojis.indexOf("👁️‍🗨️"), 1);
-		emojis.splice(emojis.indexOf("🦄️"), 1);
-		emojis.splice(emojis.indexOf("🐉️"), 1);
-		emojis.splice(emojis.indexOf("🦖️"), 1);
-		emojis.splice(emojis.indexOf("🦔️"), 1);
-
 		const embed = new CrowniclesEmbed()
 			.setTitle("Test select menu")
 			.setDescription("Test select menu");
