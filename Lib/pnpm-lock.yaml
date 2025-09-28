@@ -55,7 +55,7 @@ importers:
         specifier: 3.2.4
         version: 3.2.4(vitest@3.2.4(@types/debug@4.1.12)(@types/node@24.0.8))
       emoji-regex:
-        specifier: ^10.5.0
+        specifier: 10.5.0
         version: 10.5.0
       eslint:
         specifier: 9.30.0
