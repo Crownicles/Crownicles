@@ -8,16 +8,16 @@
     "petField": "**Type :** {{emote}} {{typeName}}\n**Surnom :** {{nickname}}\n**Rareté :** {{rarity}}\n**Sexe :** {{sex}}\n**Mentalité :** {{loveLevel}}",
     "noNickname": "Aucun surnom",
     "loveLevels": {
-      "1_male": "{emote:loveLevels.1} Fielleux",
-      "1_female": "{emote:loveLevels.1} Fielleuse",
-      "2_male": "{emote:loveLevels.2} Sauvage",
-      "2_female": "{emote:loveLevels.2} Sauvage",
-      "3_male": "{emote:loveLevels.3} Craintif",
-      "3_female": "{emote:loveLevels.3} Craintive",
-      "4_male": "{emote:loveLevels.4} Apprivoisé",
-      "4_female": "{emote:loveLevels.4} Apprivoisée",
-      "5_male": "{emote:loveLevels.5} Dressé",
-      "5_female": "{emote:loveLevels.5} Dressée"
+      "1_male": "{emote:loveLevels.0} Fielleux",
+      "1_female": "{emote:loveLevels.0} Fielleuse",
+      "2_male": "{emote:loveLevels.1} Sauvage",
+      "2_female": "{emote:loveLevels.1} Sauvage",
+      "3_male": "{emote:loveLevels.2} Craintif",
+      "3_female": "{emote:loveLevels.2} Craintive",
+      "4_male": "{emote:loveLevels.3} Apprivoisé",
+      "4_female": "{emote:loveLevels.3} Apprivoisée",
+      "5_male": "{emote:loveLevels.4} Dressé",
+      "5_female": "{emote:loveLevels.4} Dressée"
     },
     "hungry": "{emote:effects.starving} affamé",
     "diet": {
