@@ -8,16 +8,16 @@
     "petField": "**Type:** {{emote}} {{typeName}}\n**Nickname:** {{nickname}}\n\n**Rarity:** {{rarity}}\n**Gender:** {{sex}}\n**Moral:** {{loveLevel}}",
     "noNickname": "No nickname",
     "loveLevels": {
-      "1_male": "{emote:loveLevels.1} Spiteful",
-      "1_female": "{emote:loveLevels.1} Spiteful",
-      "2_male": "{emote:loveLevels.2} Wild",
-      "2_female": "{emote:loveLevels.2} Wild",
-      "3_male": "{emote:loveLevels.3} Fearful",
-      "3_female": "{emote:loveLevels.3} Fearful",
-      "4_male": "{emote:loveLevels.4} Tamed",
-      "4_female": "{emote:loveLevels.4} Tamed",
-      "5_male": "{emote:loveLevels.5} Trained",
-      "5_female": "{emote:loveLevels.5} Trained"
+      "1_male": "{emote:loveLevels.0} Spiteful",
+      "1_female": "{emote:loveLevels.0} Spiteful",
+      "2_male": "{emote:loveLevels.1} Wild",
+      "2_female": "{emote:loveLevels.1} Wild",
+      "3_male": "{emote:loveLevels.2} Fearful",
+      "3_female": "{emote:loveLevels.2} Fearful",
+      "4_male": "{emote:loveLevels.3} Tamed",
+      "4_female": "{emote:loveLevels.3} Tamed",
+      "5_male": "{emote:loveLevels.4} Trained",
+      "5_female": "{emote:loveLevels.4} Trained"
     },
     "hungry": "{emote:effects.starving} hungry",
     "diet": {
