@@ -8,16 +8,16 @@
     "petField": "**Tipo:** {{emote}} {{typeName}}\n**Nombre:** {{nickname}}\n**Rareza:** {{rarity}}\n**Género:** {{sex}}\n**Mentalidad:** {{loveLevel}}",
     "noNickname": "Sin apodo",
     "loveLevels": {
-      "1_male": ":smirk_cat: Fiable",
-      "1_female": ":smirk_cat: Fielleuse",
-      "2_male": ":pouting_cat: Sauvage",
-      "2_female": ":pouting_cat: Sauvage",
-      "3_male": ":scream_cat: Temeroso",
-      "3_female": ":scream_cat: Temeroso",
-      "4_male": ":smiley_cat: Domado",
-      "4_female": ":smiley_cat: Domado",
-      "5_male": ":heart_eyes_cat: Vestido",
-      "5_female": ":heart_eyes_cat: Vestido"
+      "1_male": "{emote:loveLevels.0} Fielleux",
+      "1_female": "{emote:loveLevels.0} Fielleuse",
+      "2_male": "{emote:loveLevels.1} Sauvage",
+      "2_female": "{emote:loveLevels.1} Sauvage",
+      "3_male": "{emote:loveLevels.2} Craintif",
+      "3_female": "{emote:loveLevels.2} Craintive",
+      "4_male": "{emote:loveLevels.3} Apprivoisé",
+      "4_female": "{emote:loveLevels.3} Apprivoisée",
+      "5_male": "{emote:loveLevels.4} Dressé",
+      "5_female": "{emote:loveLevels.4} Dressée"
     },
     "hungry": "🤤 hambre",
     "diet": {
