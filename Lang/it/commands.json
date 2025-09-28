@@ -8,16 +8,16 @@
     "petField": "**Tipo:** {{emote}} {{typeName}}\n**Sopranome:** {{nickname}}\n**Rarità:** {{rarity}}\n**Sesso:** {{sex}}\n**Mentalità:** {{loveLevel}}",
     "noNickname": "Nessun soprannome",
     "loveLevels": {
-      "1_male": "{emote:loveLevels.1} Ribelle",
-      "1_female": "{emote:loveLevels.1} Ribelle",
-      "2_male": "{emote:loveLevels.2} Selvaggio",
-      "2_female": "{emote:loveLevels.2} Selvaggio",
-      "3_male": "{emote:loveLevels.3} Pauroso",
-      "3_female": "{emote:loveLevels.3} Pauroso",
-      "4_male": "{emote:loveLevels.4} Addomesticato",
-      "4_female": "{emote:loveLevels.4} Addomesticato",
-      "5_male": "{emote:loveLevels.5} Addestrato",
-      "5_female": "{emote:loveLevels.5} Addestrato"
+      "1_male": "{emote:loveLevels.0} Ribelle",
+      "1_female": "{emote:loveLevels.0} Ribelle",
+      "2_male": "{emote:loveLevels.1} Selvaggio",
+      "2_female": "{emote:loveLevels.1} Selvaggio",
+      "3_male": "{emote:loveLevels.2} Pauroso",
+      "3_female": "{emote:loveLevels.2} Pauroso",
+      "4_male": "{emote:loveLevels.3} Addomesticato",
+      "4_female": "{emote:loveLevels.3} Addomesticato",
+      "5_male": "{emote:loveLevels.4} Addestrato",
+      "5_female": "{emote:loveLevels.4} Addestrato"
     },
     "hungry": "{emote:effects.starving} Affamato",
     "diet": {
