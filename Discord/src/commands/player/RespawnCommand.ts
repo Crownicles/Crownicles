@@ -10,7 +10,6 @@ import {
 import { DiscordCache } from "../../bot/DiscordCache";
 import i18n from "../../translations/i18n";
 import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
-import { EmoteUtils } from "../../utils/EmoteUtils";
 import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
 import { escapeUsername } from "../../utils/StringUtils";
 
@@ -34,8 +33,8 @@ export async function handleCommandRespawnPacketRes(packet: CommandRespawnPacket
 	await interaction?.editReply({
 		content: i18n.t("commands:respawn.response", {
 			lng: interaction.userLanguage,
-			respawnEmote: EmoteUtils.translateEmojiToDiscord(CrowniclesIcons.commands.respawn),
-			scoreEmote: EmoteUtils.translateEmojiToDiscord(CrowniclesIcons.unitValues.score),
+			respawnEmote: CrowniclesIcons.commands.respawn,
+			scoreEmote: CrowniclesIcons.unitValues.score,
 			pseudo: escapeUsername(interaction.user.displayName),
 			count: packet.lostScore
 		})

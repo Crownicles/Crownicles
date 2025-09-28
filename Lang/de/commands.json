@@ -8,16 +8,16 @@
     "petField": "**Typ:** {{emote}} {{typeName}}\n**Spitzname:** {{nickname}}\n**Rarität:** {{rarity}}\n**Geschlecht:** {{sex}}\n**Mentalität:** {{loveLevel}}",
     "noNickname": "Keine Spitznamen",
     "loveLevels": {
-      "1_male": "{emote:loveLevels.1} Boshaft",
-      "1_female": "{emote:loveLevels.1} Boshaft",
-      "2_male": "{emote:loveLevels.2} Wild",
-      "2_female": "{emote:loveLevels.2} Wild",
-      "3_male": "{emote:loveLevels.3} Ängstlich",
-      "3_female": "{emote:loveLevels.3} Ängstlich",
-      "4_male": "{emote:loveLevels.4} Gezähmt",
-      "4_female": "{emote:loveLevels.4} Gezähmt",
-      "5_male": "{emote:loveLevels.5} Aufgerichtet",
-      "5_female": "{emote:loveLevels.5} Aufgerichtet"
+      "1_male": "{emote:loveLevels.0} Boshaft",
+      "1_female": "{emote:loveLevels.0} Boshaft",
+      "2_male": "{emote:loveLevels.1} Wild",
+      "2_female": "{emote:loveLevels.1} Wild",
+      "3_male": "{emote:loveLevels.2} Ängstlich",
+      "3_female": "{emote:loveLevels.2} Ängstlich",
+      "4_male": "{emote:loveLevels.3} Gezähmt",
+      "4_female": "{emote:loveLevels.3} Gezähmt",
+      "5_male": "{emote:loveLevels.4} Aufgerichtet",
+      "5_female": "{emote:loveLevels.4} Aufgerichtet"
     },
     "hungry": "{emote:effects.starving} Hungrig",
     "diet": {
