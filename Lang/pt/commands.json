@@ -8,16 +8,16 @@
     "petField": "**Tipo:** {{emote}} {{typeName}}\n**Nome:** {{nickname}}\n**Raridade:** {{rarity}}\n**Género:** {{sex}}\n**Mentalidade:** {{loveLevel}}",
     "noNickname": "Sem alcunha",
     "loveLevels": {
-      "1_male": "{emote:loveLevels.0} Fielleux",
+      "1_male": "{emote:loveLevels.0} Fiável",
       "1_female": "{emote:loveLevels.0} Fielleuse",
       "2_male": "{emote:loveLevels.1} Sauvage",
       "2_female": "{emote:loveLevels.1} Sauvage",
-      "3_male": "{emote:loveLevels.2} Craintif",
-      "3_female": "{emote:loveLevels.2} Craintive",
-      "4_male": "{emote:loveLevels.3} Apprivoisé",
-      "4_female": "{emote:loveLevels.3} Apprivoisée",
-      "5_male": "{emote:loveLevels.4} Dressé",
-      "5_female": "{emote:loveLevels.4} Dressée"
+      "3_male": "{emote:loveLevels.2} Medo",
+      "3_female": "{emote:loveLevels.2} Medo",
+      "4_male": "{emote:loveLevels.3} Domesticado",
+      "4_female": "{emote:loveLevels.3} Domesticado",
+      "5_male": "{emote:loveLevels.4} Vestido",
+      "5_female": "{emote:loveLevels.4} Vestido"
     },
     "hungry": "🤤 com fome",
     "diet": {
