@@ -877,7 +877,7 @@ export default class SmallEventsHandler {
 
 		const recapKey = `smallEvents:limoges.recap.${packet.outcome}.${packet.expectedAnswer}`;
 		const recap = i18n.t(recapKey, { lng });
-		const description = `${recap}\n\n${outcome}\n\n${StringUtils.getRandomTranslation("smallEvents:end", lng)}`;
+		const description = `${recap}\n\n${outcome}`;
 
 		await interaction.editReply({
 			embeds: [new CrowniclesSmallEventEmbed("limoges", description, interaction.user, lng)]
