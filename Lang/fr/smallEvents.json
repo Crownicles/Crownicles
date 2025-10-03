@@ -144,19 +144,19 @@
     "stories": {
       "porcelainKilns": "un voyageur encapuchonné vous parle d'une cité bâtie autour de fours qui façonnent une porcelaine blanche si fine qu'elle semble chanter à la lumière des ateliers. On raconte que les artisans y tracent des décors bleus avec une patience monacale, et que chaque cuisson est accompagnée d'un rituel secret pour éviter les fissures.",
       "enameledLight": "le mystérieux personnage décrit une ville perchée sur un plateau où l'on suspend des lampes d'émail translucide au-dessus des ruelles. À la nuit tombée, ces plaques iridescentes diffusent une lueur couleur cuivre qui guide les voyageurs comme des lucioles apprivoisées.",
-      "domeStation": "on vous conte l'existence d'une gare dont la coupole se dresse au-dessus des rails comme un phare de verre et de cuivre. À l'intérieur, un carillon rythme les départs et des vitraux verdoyants peignent le sol de reflets aquatiques.",
+      "domeStation": "on vous conte l'existence d'une gare dont la coupole se dresse au-dessus des rails comme un phare de verre et de cuivre. À l'intérieur, un carillon rythme les départs et des vitraux verdoyants peignent le sol de reflets aquatiques."
     },
     "questions": {
-      "journeyInvitation": "Accepteriez-vous, un jour, de le suivre jusqu'à cette cité suspendue entre lumière et argile ?",
-      "seenBetterCity": "Connaissez-vous une ville plus attirante que celle qu'il murmure ?",
-      "keepEnameledSecret": "Promettriez-vous de garder pour vous un secret d'émail qu'il souhaite partager ?",
-      "believeExaggerated": "Pensez-vous que ses descriptions flamboyantes sont exagérées ?",
-      "carryPorcelain": "Porteriez-vous sa porcelaine sacrée avec révérence ?",
-      "tooTiredToDream": "Êtes-vous trop fatigué pour rêver d'un détour vers ce plateau lumineux ?",
-      "promiseSouvenir": "Rapporteriez-vous un jour une étincelle de cette ville à la cour ?",
-      "callItMyth": "Croyez-vous que sa cité n'est qu'une légende enjolivée ?",
-      "followWhispers": "Tendriez-vous l'oreille pour suivre certains sifflements de vent jusqu'aux ateliers ?",
-      "dismissFountains": "Pensez-vous que ces fontaines cachées sont surévaluées ?"
+      "journeyInvitation": "Après quelques minutes de récit passionné, il vous demande : accepteriez-vous, un jour, de le suivre jusqu'à cette cité suspendue entre lumière et kaolin ?",
+      "seenBetterCity": "Il s'interrompt soudain, penche la tête et vous défie : connaissez-vous une ville plus attirante que celle qu'il murmure ?",
+      "enameledJewel": "Son récit achevé, il se rapproche et murmure : aimeriez-vous découvrir les bijoux des artistes émailleurs de cette cité ?",
+      "believeExaggerated": "Guettant votre réaction, il scrute votre regard : pensez-vous que ses descriptions flamboyantes sont exagérées ?",
+      "carryPorcelain": "Alors qu'il conclut son récit, il mime le geste de vous tendre une boîte imaginaire : porteriez-vous sa porcelaine sacrée avec révérence ?",
+      "tooTiredToDream": "Voyant vos bottes couvertes de poussière, il marque une pause et vous demande : êtes-vous trop fatigué pour rêver d'un détour vers ce plateau lumineux ?",
+      "promiseSouvenir": "Au terme de son récit, son regard se fait rêveur : mettriez-vous en valeur cette ville à la cour ?",
+      "callItMyth": "Après vous avoir longuement conté ses merveilles, il sourit finement : croyez-vous que sa cité n'est qu'une légende enjolivée ?",
+      "followWhispers": "Baissant la voix comme pour partager un secret, il chuchote : tendriez-vous l'oreille pour suivre certains sifflements de vent jusqu'aux ateliers ?",
+      "dismissFountains": "Après quelques minutes à continuer de présenter la ville, il s'interroge : pensez-vous que ces légendes sont surévaluées ?"
     },
     "recap": {
       "success": {
