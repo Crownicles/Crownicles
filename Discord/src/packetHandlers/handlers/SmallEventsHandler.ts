@@ -853,11 +853,14 @@ export default class SmallEventsHandler {
 
 	@packetHandler(SmallEventLimogesPacket)
 	async smallEventLimoges(context: PacketContext, packet: SmallEventLimogesPacket): Promise<void> {
-		const interaction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
-		if (!interaction) {
+		const buttonInteraction = context.discord!.buttonInteraction
+			? DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!)
+			: null;
+		const commandInteraction = DiscordCache.getInteraction(context.discord!.interaction);
+		if (!buttonInteraction && !commandInteraction) {
 			return;
 		}
-		const lng = context.discord!.language;
+		const lng = buttonInteraction ? context.discord!.language : commandInteraction!.userLanguage;
 		let outcome: string;
 		switch (packet.outcome) {
 			case SmallEventLimogesOutcome.SUCCESS: {
@@ -889,10 +892,15 @@ export default class SmallEventsHandler {
 		const recapKey = `smallEvents:limoges.recap.${packet.outcome}.${packet.expectedAnswer}`;
 		const recap = i18n.t(recapKey, { lng });
 		const description = `${recap}\n\n${outcome}`;
+		const embedUser = buttonInteraction?.user ?? commandInteraction!.user;
+		const embed = new CrowniclesSmallEventEmbed("limoges", description, embedUser, lng);
 
-		await interaction.editReply({
-			embeds: [new CrowniclesSmallEventEmbed("limoges", description, interaction.user, lng)]
-		});
+		if (buttonInteraction) {
+			await buttonInteraction.editReply({ embeds: [embed] });
+		}
+		else if (commandInteraction) {
+			await commandInteraction.followUp({ embeds: [embed] });
+		}
 	}
 
 	@packetHandler(SmallEventBonusGuildPVEIslandPacket)
