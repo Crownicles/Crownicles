@@ -55,7 +55,7 @@ type LimogesProperties = {
 	};
 };
 
-async function handleAcceptance(
+async function applyFavorableOutcome(
 	player: Player,
 	response: CrowniclesPacket[],
 	properties: LimogesProperties
@@ -81,7 +81,7 @@ async function handleAcceptance(
 	};
 }
 
-async function handleRefusal(
+async function applyUnfavorableOutcome(
 	player: Player,
 	response: CrowniclesPacket[],
 	properties: LimogesProperties
@@ -152,10 +152,10 @@ export const smallEventFuncs: SmallEventFuncs = {
 			};
 
 			if (isFavorable) {
-				packet.reward = await handleAcceptance(player, packets, properties);
+				packet.reward = await applyFavorableOutcome(player, packets, properties);
 			}
 			else {
-				packet.penalty = await handleRefusal(player, packets, properties);
+				packet.penalty = await applyUnfavorableOutcome(player, packets, properties);
 			}
 
 			packets.push(makePacket(SmallEventLimogesPacket, packet));

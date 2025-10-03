@@ -859,20 +859,31 @@ export default class SmallEventsHandler {
 		}
 		const lng = context.discord!.language;
 		let outcome: string;
-		if (packet.outcome === SmallEventLimogesOutcome.SUCCESS && packet.reward) {
-			outcome = StringUtils.getRandomTranslation("smallEvents:limoges.successStories", lng, {
-				experience: packet.reward.experience,
-				score: packet.reward.score
-			});
-		}
-		else if (packet.penalty) {
-			outcome = i18n.t(`smallEvents:limoges.penalties.${packet.penalty.type}`, {
-				lng,
-				amount: packet.penalty.amount
-			});
-		}
-		else {
-			outcome = i18n.t("smallEvents:limoges.failureFallback", { lng });
+		switch (packet.outcome) {
+			case SmallEventLimogesOutcome.SUCCESS: {
+				if (!packet.reward) {
+					throw new Error("Missing reward for successful Limoges small event outcome");
+				}
+				outcome = StringUtils.getRandomTranslation("smallEvents:limoges.successStories", lng, {
+					experience: packet.reward.experience,
+					score: packet.reward.score
+				});
+				break;
+			}
+			case SmallEventLimogesOutcome.FAILURE: {
+				if (!packet.penalty) {
+					outcome = i18n.t("smallEvents:limoges.failureFallback", { lng });
+					break;
+				}
+				outcome = i18n.t(`smallEvents:limoges.penalties.${packet.penalty.type}`, {
+					lng,
+					amount: packet.penalty.amount
+				});
+				break;
+			}
+			default: {
+				outcome = i18n.t("smallEvents:limoges.failureFallback", { lng });
+			}
 		}
 
 		const recapKey = `smallEvents:limoges.recap.${packet.outcome}.${packet.expectedAnswer}`;
