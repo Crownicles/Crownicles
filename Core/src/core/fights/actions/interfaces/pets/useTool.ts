@@ -8,7 +8,7 @@ import { PetAssistanceFunc } from "../../../../../data/PetAssistance";
 import { FightActionController } from "../../FightActionController";
 
 const use: PetAssistanceFunc = (fighter, _opponent, _turn, _fightController): Promise<PetAssistanceResult | null> => {
-	if (RandomUtils.crowniclesRandom.bool(0.70)) {
+	if (RandomUtils.crowniclesRandom.bool(0.60)) {
 		return Promise.resolve(null);
 	}
 	const possibleStatsToBuff: FightStatBuffed[] = [
