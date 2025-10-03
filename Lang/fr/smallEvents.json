@@ -141,6 +141,22 @@
       "points": " Vous avez gagné **{{reward}} {emote:unitValues.score}**."
     }
   },
+  "limoges": {
+    "stories": {
+      "porcelainKilns": "un voyageur encapuchonné vous parle d'une cité bâtie autour de fours qui façonnent une porcelaine blanche si fine qu'elle semble chanter à la lumière des ateliers. On raconte que les artisans y tracent des décors bleus avec une patience monacale, et que chaque cuisson est accompagnée d'un rituel secret pour éviter les fissures.",
+      "enameledLight": "le mystérieux personnage décrit une ville perchée sur un plateau où l'on suspend des lampes d'émail translucide au-dessus des ruelles. À la nuit tombée, ces plaques iridescentes diffusent une lueur couleur cuivre qui guide les voyageurs comme des lucioles apprivoisées.",
+      "domeStation": "on vous conte l'existence d'une gare dont la coupole se dresse au-dessus des rails comme un phare de verre et de cuivre. À l'intérieur, un carillon rythme les départs et des vitraux verdoyants peignent le sol de reflets aquatiques.",
+      "hiddenRivers": "le conteur évoque des galeries souterraines où coulent des sources tièdes. Les marchands y faisaient jadis glisser leurs cargaisons dans de longues barques, à l'abri des regards, avant de surgir au cœur des marchés parfumés."
+    },
+    "question": "L'étranger vous propose de l'accompagner vers cette cité d'artisans au charme lointain. Voulez-vous le suivre ?",
+    "accept": "Séduit par ces images, vous emboîtez le pas de l'étranger. Ses récits achèvent de vous galvaniser et vous repartez avec **{{experience}} {emote:unitValues.xp}** et **{{score}} {emote:unitValues.score}** en plus.",
+    "penalties": {
+      "health": "Vous refusez sèchement. L'étranger hausse les épaules, mais en voulant l'éviter vous glissez sur un pavé humide et perdez **{{amount}} {emote:unitValues.lostHealth}**.",
+      "money": "Vous déclinez l'invitation. Vexé, le conteur vous facture ses indiscrétions et vous soutire **{{amount}} {emote:unitValues.lostMoney}** avant de disparaître dans la foule.",
+      "time": "Vous refusez d'un geste. L'inconnu s'entête pourtant à décrire chaque atelier ; votre halte forcée vous fait perdre **{{amount}} Min :clock2:**."
+    },
+    "defaultRefusal": "L'étranger comprend votre hésitation et repart seul, en fredonnant ses histoires."
+  },
   "interactOtherPlayers": {
     "playerDisplayRanked": "**{{pseudo}}** ({{rank}} {emote:top.congrats})",
     "playerDisplayUnranked": "**{{pseudo}}** (Non classé)",

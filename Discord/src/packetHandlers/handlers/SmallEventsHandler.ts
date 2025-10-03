@@ -76,6 +76,10 @@ import { SmallEventCartPacket } from "../../../../Lib/src/packets/smallEvents/Sm
 import { cartResult } from "../../smallEvents/cart";
 import { SmallEventFindMissionPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventFindMissionPacket";
 import { MissionUtils } from "../../utils/MissionUtils";
+import {
+	SmallEventLimogesOutcome,
+	SmallEventLimogesPacket
+} from "../../../../Lib/src/packets/smallEvents/SmallEventLimogesPacket";
 import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import { baseFunctionHandler } from "../../smallEvents/shop";
 import { epicItemShopHandler } from "../../smallEvents/epicItemShop";
@@ -845,6 +849,41 @@ export default class SmallEventsHandler {
 	@packetHandler(SmallEventCartPacket)
 	async smallEventCart(context: PacketContext, packet: SmallEventCartPacket): Promise<void> {
 		await cartResult(packet, context);
+	}
+
+	@packetHandler(SmallEventLimogesPacket)
+	async smallEventLimoges(context: PacketContext, packet: SmallEventLimogesPacket): Promise<void> {
+		const interaction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
+		if (!interaction) {
+			return;
+		}
+		const lng = context.discord!.language;
+		const intro = getRandomSmallEventIntro(lng);
+		const story = i18n.t(`smallEvents:limoges.stories.${packet.factKey}`, { lng });
+
+		let outcome: string;
+		if (packet.outcome === SmallEventLimogesOutcome.ACCEPT && packet.reward) {
+			outcome = i18n.t("smallEvents:limoges.accept", {
+				lng,
+				experience: packet.reward.experience,
+				score: packet.reward.score
+			});
+		}
+		else if (packet.penalty) {
+			outcome = i18n.t(`smallEvents:limoges.penalties.${packet.penalty.type}`, {
+				lng,
+				amount: packet.penalty.amount
+			});
+		}
+		else {
+			outcome = i18n.t("smallEvents:limoges.defaultRefusal", { lng });
+		}
+
+		const description = `${intro}${story}\n\n${outcome}\n\n${StringUtils.getRandomTranslation("smallEvents:end", lng)}`;
+
+		await interaction.editReply({
+			embeds: [new CrowniclesSmallEventEmbed("limoges", description, interaction.user, lng)]
+		});
 	}
 
 	@packetHandler(SmallEventBonusGuildPVEIslandPacket)

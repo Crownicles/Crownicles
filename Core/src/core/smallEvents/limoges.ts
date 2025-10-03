@@ -1,0 +1,164 @@
+import {
+	SmallEventDataController, SmallEventFuncs
+} from "../../data/SmallEvent";
+import { Maps } from "../maps/Maps";
+import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
+import { ReactionCollectorLimoges } from "../../../../Lib/src/packets/interaction/ReactionCollectorLimoges";
+import {
+	EndCallback, ReactionCollectorInstance
+} from "../utils/ReactionsCollector";
+import { BlockingUtils } from "../utils/BlockingUtils";
+import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
+import { ReactionCollectorAcceptReaction } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
+import {
+	SmallEventLimogesOutcome,
+	SmallEventLimogesPacket,
+	SmallEventLimogesPenaltyType
+} from "../../../../Lib/src/packets/smallEvents/SmallEventLimogesPacket";
+import {
+	CrowniclesPacket, makePacket
+} from "../../../../Lib/src/packets/CrowniclesPacket";
+import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
+import { TravelTime } from "../maps/TravelTime";
+import { Effect } from "../../../../Lib/src/types/Effect";
+import Player from "../database/game/models/Player";
+
+const PENALTY_TYPES: SmallEventLimogesPenaltyType[] = [
+	"health",
+	"money",
+	"time"
+];
+
+type Range = {
+	MIN: number;
+	MAX: number;
+};
+
+type LimogesProperties = {
+	factKeys: string[];
+	reward: {
+		experience: Range;
+		score: Range;
+	};
+	penalty: {
+		health: Range;
+		money: Range;
+		time: Range;
+	};
+};
+
+async function handleAcceptance(
+	player: Player,
+	response: CrowniclesPacket[],
+	properties: LimogesProperties
+): Promise<SmallEventLimogesPacket["reward"]> {
+	const experience = RandomUtils.rangedInt(properties.reward.experience);
+	const score = RandomUtils.rangedInt(properties.reward.score);
+
+	await player.addExperience({
+		amount: experience,
+		response,
+		reason: NumberChangeReason.SMALL_EVENT
+	});
+	await player.addScore({
+		amount: score,
+		response,
+		reason: NumberChangeReason.SMALL_EVENT
+	});
+	await player.save();
+
+	return {
+		experience,
+		score
+	};
+}
+
+async function handleRefusal(
+	player: Player,
+	response: CrowniclesPacket[],
+	properties: LimogesProperties
+): Promise<Required<SmallEventLimogesPacket>["penalty"]> {
+	const penaltyType = RandomUtils.crowniclesRandom.pick(PENALTY_TYPES);
+	let amount = 0;
+
+	switch (penaltyType) {
+		case "health": {
+			amount = RandomUtils.rangedInt(properties.penalty.health);
+			await player.addHealth(-amount, response, NumberChangeReason.SMALL_EVENT);
+			await player.killIfNeeded(response, NumberChangeReason.SMALL_EVENT);
+			await player.save();
+			break;
+		}
+		case "money": {
+			amount = RandomUtils.rangedInt(properties.penalty.money);
+			await player.addMoney({
+				amount: -amount,
+				response,
+				reason: NumberChangeReason.SMALL_EVENT
+			});
+			await player.save();
+			break;
+		}
+		default: {
+			amount = RandomUtils.rangedInt(properties.penalty.time);
+			await TravelTime.applyEffect(
+				player,
+				Effect.OCCUPIED,
+				amount,
+				new Date(),
+				NumberChangeReason.SMALL_EVENT
+			);
+		}
+	}
+
+	return {
+		type: penaltyType,
+		amount
+	};
+}
+
+export const smallEventFuncs: SmallEventFuncs = {
+	canBeExecuted: Maps.isOnContinent,
+
+	executeSmallEvent(response, player, context): void {
+		const properties = SmallEventDataController.instance.getById("limoges")
+			.getProperties<LimogesProperties>();
+		const factKey = RandomUtils.crowniclesRandom.pick(properties.factKeys);
+
+		const collector = new ReactionCollectorLimoges(factKey);
+
+		const endCallback: EndCallback = async (collector, packets): Promise<void> => {
+			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.LIMOGES_SMALL_EVENT);
+
+			const reaction = collector.getFirstReaction();
+			const packet: SmallEventLimogesPacket = {
+				factKey,
+				outcome: SmallEventLimogesOutcome.REFUSE
+			};
+
+			if (reaction && reaction.reaction.type === ReactionCollectorAcceptReaction.name) {
+				packet.outcome = SmallEventLimogesOutcome.ACCEPT;
+				packet.reward = await handleAcceptance(player, packets, properties);
+			}
+			else {
+				packet.penalty = await handleRefusal(player, packets, properties);
+			}
+
+			packets.push(makePacket(SmallEventLimogesPacket, packet));
+		};
+
+		const packet = new ReactionCollectorInstance(
+			collector,
+			context,
+			{
+				allowedPlayerKeycloakIds: [player.keycloakId],
+				reactionLimit: 1
+			},
+			endCallback
+		)
+			.block(player.keycloakId, BlockingConstants.REASONS.LIMOGES_SMALL_EVENT)
+			.build();
+
+		response.push(packet);
+	}
+};
