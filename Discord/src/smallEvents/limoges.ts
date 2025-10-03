@@ -16,7 +16,10 @@ export async function limogesCollector(context: PacketContext, packet: ReactionC
 	const data = packet.data.data as ReactionCollectorLimogesData;
 	const lng = interaction.userLanguage;
 
-	const description = `${getRandomSmallEventIntro(lng)}${i18n.t(`smallEvents:limoges.stories.${data.factKey}`, { lng })}\n\n${i18n.t("smallEvents:limoges.question", { lng })}`;
+	const intro = getRandomSmallEventIntro(lng);
+	const story = i18n.t(`smallEvents:limoges.stories.${data.factKey}`, { lng });
+	const question = i18n.t(`smallEvents:limoges.questions.${data.questionId}`, { lng });
+	const description = `${intro}${story}\n\n${question}`;
 
 	const embed = new CrowniclesSmallEventEmbed(
 		"limoges",

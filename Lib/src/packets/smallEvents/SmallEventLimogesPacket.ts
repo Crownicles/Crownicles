@@ -4,15 +4,21 @@ import {
 import { SmallEventPacket } from "./SmallEventPacket";
 
 export enum SmallEventLimogesOutcome {
-	ACCEPT = "accept",
-	REFUSE = "refuse"
+	SUCCESS = "success",
+	FAILURE = "failure"
 }
 
 export type SmallEventLimogesPenaltyType = "health" | "money" | "time";
 
+export type SmallEventLimogesAnswer = "accept" | "refuse";
+
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class SmallEventLimogesPacket extends SmallEventPacket {
 	factKey!: string;
+
+	questionId!: string;
+
+	expectedAnswer!: SmallEventLimogesAnswer;
 
 	outcome!: SmallEventLimogesOutcome;
 

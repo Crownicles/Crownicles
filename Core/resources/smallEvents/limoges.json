@@ -6,6 +6,48 @@
       "domeStation",
       "hiddenRivers"
     ],
+    "questions": [
+      {
+        "id": "journeyInvitation",
+        "favorableAnswer": "accept"
+      },
+      {
+        "id": "seenBetterCity",
+        "favorableAnswer": "refuse"
+      },
+      {
+        "id": "keepEnameledSecret",
+        "favorableAnswer": "accept"
+      },
+      {
+        "id": "believeExaggerated",
+        "favorableAnswer": "refuse"
+      },
+      {
+        "id": "carryPorcelain",
+        "favorableAnswer": "accept"
+      },
+      {
+        "id": "tooTiredToDream",
+        "favorableAnswer": "refuse"
+      },
+      {
+        "id": "promiseSouvenir",
+        "favorableAnswer": "accept"
+      },
+      {
+        "id": "callItMyth",
+        "favorableAnswer": "refuse"
+      },
+      {
+        "id": "followWhispers",
+        "favorableAnswer": "accept"
+      },
+      {
+        "id": "dismissFountains",
+        "favorableAnswer": "refuse"
+      }
+    ],
     "reward": {
       "experience": {
         "MIN": 30,
