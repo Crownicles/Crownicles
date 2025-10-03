@@ -160,6 +160,16 @@
       "followWhispers": "Il chuchote qu'en suivant certains sifflements de vent on finit par entendre les ateliers. Le feriez-vous ? {emote:collectors.accept} pour promettre de tendre l'oreille, {emote:collectors.refuse} pour ignorer ces murmures.",
       "dismissFountains": "Il raconte les galeries d'eau tiède et vous demande si vous pensez que ces fontaines cachées sont surévaluées. {emote:collectors.accept} pour hausser les épaules, {emote:collectors.refuse} pour défendre leur magie."
     },
+    "recap": {
+      "success": {
+        "accept": "Votre réponse enthousiaste illumine le regard de l'étranger : vous avez su embrasser l'esprit de Limoges.",
+        "refuse": "Votre défense ardente de Limoges fait scintiller ses yeux : il sait qu'aucune autre cité ne saura détrôner son joyau grâce à vous."
+      },
+      "failure": {
+        "accept": "Votre hésitation à embrasser Limoges fait chanceler le sourire de votre guide improvisé.",
+        "refuse": "En laissant entendre qu'une autre cité pourrait rivaliser, vous brisez l'enchantement qu'il tissait."
+      }
+    },
     "successStories": [
       "L'étranger éclate d'un rire feutré : il comprend votre attirance mais admet qu'il ne peut vous guider dès aujourd'hui. Il vous laisse toutefois une étincelle d'inspiration, ce qui vous vaut **{{experience}} {emote:unitValues.xp}** et **{{score}} {emote:unitValues.score}**.",
       "Ravi de votre enthousiasme, l'inconnu incline son chapeau. Il promet de vous envoyer un signe quand la route s'ouvrira et glisse discrètement un petit bonus : **{{experience}} {emote:unitValues.xp}** et **{{score}} {emote:unitValues.score}**.",
