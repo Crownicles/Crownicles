@@ -1,0 +1,35 @@
+{
+  "properties": {
+    "factKeys": [
+      "porcelainKilns",
+      "enameledLight",
+      "domeStation",
+      "hiddenRivers"
+    ],
+    "reward": {
+      "experience": {
+        "MIN": 30,
+        "MAX": 70
+      },
+      "score": {
+        "MIN": 10,
+        "MAX": 28
+      }
+    },
+    "penalty": {
+      "health": {
+        "MIN": 3,
+        "MAX": 7
+      },
+      "money": {
+        "MIN": 45,
+        "MAX": 120
+      },
+      "time": {
+        "MIN": 8,
+        "MAX": 20
+      }
+    }
+  },
+  "rarity": 2
+}

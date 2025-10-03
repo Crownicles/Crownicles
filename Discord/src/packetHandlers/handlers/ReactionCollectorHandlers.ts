@@ -19,6 +19,8 @@ import { ReactionCollectorPetFreeData } from "../../../../Lib/src/packets/intera
 import { createPetFreeCollector } from "../../commands/pet/PetFreeCommand";
 import { ReactionCollectorInteractOtherPlayersPoorData } from "../../../../Lib/src/packets/interaction/ReactionCollectorInteractOtherPlayers";
 import { interactOtherPlayersCollector } from "../../smallEvents/interactOtherPlayers";
+import { ReactionCollectorLimogesData } from "../../../../Lib/src/packets/interaction/ReactionCollectorLimoges";
+import { limogesCollector } from "../../smallEvents/limoges";
 import { ReactionCollectorWitchData } from "../../../../Lib/src/packets/interaction/ReactionCollectorWitch";
 import { witchCollector } from "../../smallEvents/witch";
 import { ReactionCollectorItemChoiceData } from "../../../../Lib/src/packets/interaction/ReactionCollectorItemChoice";
@@ -144,6 +146,7 @@ export default class ReactionCollectorHandler {
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorPetFeedWithoutGuildData.name, handleCommandPetFeedWithoutGuildCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorPveFightData.name, handleStartPveFight);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorDailyBonusData.name, handleDailyBonusCollector);
+		ReactionCollectorHandler.collectorMap.set(ReactionCollectorLimogesData.name, limogesCollector);
 	}
 
 	@packetHandler(ReactionCollectorCreationPacket)

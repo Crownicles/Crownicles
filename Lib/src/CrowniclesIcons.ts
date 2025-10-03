@@ -1010,6 +1010,7 @@ export const CrowniclesIcons: {
 		interactOtherPlayers: "💬",
 		leagueReward: "✨",
 		lottery: "🎰",
+		limoges: "🏺",
 		pet: "🐕‍🦺",
 		shop: "🛒",
 		smallBad: "😖",
