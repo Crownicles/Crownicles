@@ -18,8 +18,7 @@
   "end": [
     "Vous continuez votre chemin.",
     "Vous reprenez votre route.",
-    "Vous poursuivez votre route.",
-    "Vous repartez dans votre direction."
+    "Vous poursuivez votre route."
   ],
   "advanceTime": {
     "stories": [
@@ -146,28 +145,27 @@
       "porcelainKilns": "un voyageur encapuchonné vous parle d'une cité bâtie autour de fours qui façonnent une porcelaine blanche si fine qu'elle semble chanter à la lumière des ateliers. On raconte que les artisans y tracent des décors bleus avec une patience monacale, et que chaque cuisson est accompagnée d'un rituel secret pour éviter les fissures.",
       "enameledLight": "le mystérieux personnage décrit une ville perchée sur un plateau où l'on suspend des lampes d'émail translucide au-dessus des ruelles. À la nuit tombée, ces plaques iridescentes diffusent une lueur couleur cuivre qui guide les voyageurs comme des lucioles apprivoisées.",
       "domeStation": "on vous conte l'existence d'une gare dont la coupole se dresse au-dessus des rails comme un phare de verre et de cuivre. À l'intérieur, un carillon rythme les départs et des vitraux verdoyants peignent le sol de reflets aquatiques.",
-      "hiddenRivers": "le conteur évoque des galeries souterraines où coulent des sources tièdes. Les marchands y faisaient jadis glisser leurs cargaisons dans de longues barques, à l'abri des regards, avant de surgir au cœur des marchés parfumés."
     },
     "questions": {
-      "journeyInvitation": "Il vous demande si, un jour, vous accepteriez de le suivre jusqu'à cette cité suspendue entre lumière et argile. {emote:collectors.accept} pour promettre de le rejoindre, {emote:collectors.refuse} pour refuser poliment.",
-      "seenBetterCity": "Il penche la tête et vous défie de citer une ville plus attirante que celle qu'il murmure. {emote:collectors.accept} pour prétendre en connaître une, {emote:collectors.refuse} pour le détromper et louer son joyau.",
-      "keepEnameledSecret": "Il propose de vous confier un secret d'émail si vous promettez de le garder pour vous. {emote:collectors.accept} pour sceller le serment, {emote:collectors.refuse} pour décliner.",
-      "believeExaggerated": "Il vous demande si ses descriptions flamboyantes vous paraissent exagérées. {emote:collectors.accept} pour l'accuser d'en faire trop, {emote:collectors.refuse} pour confirmer que la ville mérite tant d'éloges.",
-      "carryPorcelain": "Il vous tend une boîte imaginaire et vous demande si vous en porteriez la porcelaine sacrée avec révérence. {emote:collectors.accept} pour accepter cette mission, {emote:collectors.refuse} pour la refuser.",
-      "tooTiredToDream": "Voyant vos bottes couvertes de poussière, il vous demande si vous êtes trop fatigué pour rêver d'un détour vers ce plateau lumineux. {emote:collectors.accept} pour avouer votre lassitude, {emote:collectors.refuse} pour affirmer que l'envie brûle encore.",
-      "promiseSouvenir": "Il s'interroge : rapporteriez-vous un jour une étincelle de cette ville à la cour ? {emote:collectors.accept} pour promettre d'offrir ce souvenir, {emote:collectors.refuse} pour refuser l'engagement.",
-      "callItMyth": "Il sourit et demande si vous croyez que sa cité n'est qu'une légende enjolivée. {emote:collectors.accept} pour traiter l'histoire de mythe, {emote:collectors.refuse} pour affirmer qu'elle doit exister quelque part.",
-      "followWhispers": "Il chuchote qu'en suivant certains sifflements de vent on finit par entendre les ateliers. Le feriez-vous ? {emote:collectors.accept} pour promettre de tendre l'oreille, {emote:collectors.refuse} pour ignorer ces murmures.",
-      "dismissFountains": "Il raconte les galeries d'eau tiède et vous demande si vous pensez que ces fontaines cachées sont surévaluées. {emote:collectors.accept} pour hausser les épaules, {emote:collectors.refuse} pour défendre leur magie."
+      "journeyInvitation": "Accepteriez-vous, un jour, de le suivre jusqu'à cette cité suspendue entre lumière et argile ?",
+      "seenBetterCity": "Connaissez-vous une ville plus attirante que celle qu'il murmure ?",
+      "keepEnameledSecret": "Promettriez-vous de garder pour vous un secret d'émail qu'il souhaite partager ?",
+      "believeExaggerated": "Pensez-vous que ses descriptions flamboyantes sont exagérées ?",
+      "carryPorcelain": "Porteriez-vous sa porcelaine sacrée avec révérence ?",
+      "tooTiredToDream": "Êtes-vous trop fatigué pour rêver d'un détour vers ce plateau lumineux ?",
+      "promiseSouvenir": "Rapporteriez-vous un jour une étincelle de cette ville à la cour ?",
+      "callItMyth": "Croyez-vous que sa cité n'est qu'une légende enjolivée ?",
+      "followWhispers": "Tendriez-vous l'oreille pour suivre certains sifflements de vent jusqu'aux ateliers ?",
+      "dismissFountains": "Pensez-vous que ces fontaines cachées sont surévaluées ?"
     },
     "recap": {
       "success": {
-        "accept": "Votre réponse enthousiaste illumine le regard de l'étranger : vous avez su embrasser l'esprit de Limoges.",
-        "refuse": "Votre défense ardente de Limoges fait scintiller ses yeux : il sait qu'aucune autre cité ne saura détrôner son joyau grâce à vous."
+        "accept": "Votre réponse enthousiaste illumine le regard de l'étranger : vous avez su embrasser l'esprit de cette cité lumineuse.",
+        "refuse": "Votre défense ardente de ce joyau fait scintiller ses yeux : il sait qu'aucune autre cité ne saura le détrôner grâce à vous."
       },
       "failure": {
-        "accept": "Votre hésitation à embrasser Limoges fait chanceler le sourire de votre guide improvisé.",
-        "refuse": "En laissant entendre qu'une autre cité pourrait rivaliser, vous brisez l'enchantement qu'il tissait."
+        "accept": "Votre hésitation à partager l'amour de votre interlocuteur pour cette cité fait chanceler son sourire.",
+        "refuse": "En laissant entendre qu'une autre cité pourrait rivaliser, vous brisez la bonne humeur de l'homme en face de vous."
       }
     },
     "successStories": [
