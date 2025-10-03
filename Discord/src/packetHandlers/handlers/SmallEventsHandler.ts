@@ -858,13 +858,14 @@ export default class SmallEventsHandler {
 			return;
 		}
 		const lng = context.discord!.language;
-		const intro = getRandomSmallEventIntro(lng);
+		const existingDescription = interaction.message.embeds[0]?.description;
 		const story = i18n.t(`smallEvents:limoges.stories.${packet.factKey}`, { lng });
+		const question = i18n.t(`smallEvents:limoges.questions.${packet.questionId}`, { lng });
+		const baseDescription = existingDescription ?? `${story}\n\n${question}`;
 
 		let outcome: string;
-		if (packet.outcome === SmallEventLimogesOutcome.ACCEPT && packet.reward) {
-			outcome = i18n.t("smallEvents:limoges.accept", {
-				lng,
+		if (packet.outcome === SmallEventLimogesOutcome.SUCCESS && packet.reward) {
+			outcome = StringUtils.getRandomTranslation("smallEvents:limoges.successStories", lng, {
 				experience: packet.reward.experience,
 				score: packet.reward.score
 			});
@@ -876,10 +877,10 @@ export default class SmallEventsHandler {
 			});
 		}
 		else {
-			outcome = i18n.t("smallEvents:limoges.defaultRefusal", { lng });
+			outcome = i18n.t("smallEvents:limoges.failureFallback", { lng });
 		}
 
-		const description = `${intro}${story}\n\n${outcome}\n\n${StringUtils.getRandomTranslation("smallEvents:end", lng)}`;
+		const description = `${baseDescription}\n\n${outcome}\n\n${StringUtils.getRandomTranslation("smallEvents:end", lng)}`;
 
 		await interaction.editReply({
 			embeds: [new CrowniclesSmallEventEmbed("limoges", description, interaction.user, lng)]

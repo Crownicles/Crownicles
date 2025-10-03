@@ -34,8 +34,16 @@ type Range = {
 	MAX: number;
 };
 
+type FavorableAnswer = "accept" | "refuse";
+
+type LimogesQuestion = {
+	id: string;
+	favorableAnswer: FavorableAnswer;
+};
+
 type LimogesProperties = {
 	factKeys: string[];
+	questions: LimogesQuestion[];
 	reward: {
 		experience: Range;
 		score: Range;
@@ -124,20 +132,26 @@ export const smallEventFuncs: SmallEventFuncs = {
 		const properties = SmallEventDataController.instance.getById("limoges")
 			.getProperties<LimogesProperties>();
 		const factKey = RandomUtils.crowniclesRandom.pick(properties.factKeys);
+		const question = RandomUtils.crowniclesRandom.pick(properties.questions);
 
-		const collector = new ReactionCollectorLimoges(factKey);
+		const collector = new ReactionCollectorLimoges(factKey, question.id);
 
 		const endCallback: EndCallback = async (collector, packets): Promise<void> => {
 			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.LIMOGES_SMALL_EVENT);
 
 			const reaction = collector.getFirstReaction();
+			const playerAnswer: FavorableAnswer | "none" = reaction
+				? reaction.reaction.type === ReactionCollectorAcceptReaction.name ? "accept" : "refuse"
+				: "none";
+			const isFavorable = playerAnswer !== "none" && playerAnswer === question.favorableAnswer;
 			const packet: SmallEventLimogesPacket = {
 				factKey,
-				outcome: SmallEventLimogesOutcome.REFUSE
+				questionId: question.id,
+				expectedAnswer: question.favorableAnswer,
+				outcome: isFavorable ? SmallEventLimogesOutcome.SUCCESS : SmallEventLimogesOutcome.FAILURE
 			};
 
-			if (reaction && reaction.reaction.type === ReactionCollectorAcceptReaction.name) {
-				packet.outcome = SmallEventLimogesOutcome.ACCEPT;
+			if (isFavorable) {
 				packet.reward = await handleAcceptance(player, packets, properties);
 			}
 			else {
