@@ -30,6 +30,7 @@ import {
 	ReactionCollectorDeposeItemCloseReaction,
 	ReactionCollectorDeposeItemReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorDeposeItem";
+import { MessagesUtils } from "../../utils/MessagesUtils";
 
 /**
  * Get the deposit command packet
@@ -50,7 +51,7 @@ export async function handleItemDeposit(packet: CommandDepositSuccessPacket, con
 	if (!interaction) {
 		return;
 	}
-	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
+	const buttonInteraction = MessagesUtils.getCurrentInteraction(context);
 	const lng = interaction.userLanguage;
 	await (buttonInteraction ?? interaction)?.editReply({
 		embeds: [

@@ -28,6 +28,7 @@ import {
 	ReactionCollectorDeposeItemCloseReaction,
 	ReactionCollectorDeposeItemReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorDeposeItem";
+import { InventoryInfos } from "../../core/database/game/models/InventoryInfo";
 
 type DepositCandidate = {
 	slot: InventorySlot;
@@ -38,26 +39,39 @@ type DepositCandidate = {
  * Return an array of items that can be deposed in the player's stock
  * @param player
  * @param equippedItems
+ * @param playerSlots
  */
 async function getDepositCandidates(
 	player: Player,
-	equippedItems: InventorySlot[]
+	equippedItems: InventorySlot[],
+	playerSlots: InventorySlot[]
 ): Promise<DepositCandidate[]> {
-	const slotChecks = await Promise.all(
-		equippedItems.map(async slot => {
-			const freeSlot = await InventorySlots.getNextFreeSlotForItemCategory(
-				player,
-				slot.itemCategory
-			);
-			if (!freeSlot) {
-				return null;
+	const playerInvInfo = await InventoryInfos.getOfPlayer(player.id);
+
+	const slotChecks = equippedItems.map(slot => {
+		const limits = playerInvInfo.slotLimitForCategory(slot.itemCategory);
+		const sameCategoryItems = playerSlots.filter(
+			s => s.itemCategory === slot.itemCategory && s.slot < limits
+		);
+
+		let freeSlot: number | null = null;
+		for (let i = 0; i < limits; ++i) {
+			const occupied = sameCategoryItems.some(s => s.slot === i);
+			if (!occupied) {
+				freeSlot = i;
+				break;
 			}
-			return {
-				slot,
-				freeSlot
-			};
-		})
-	);
+		}
+
+		if (!freeSlot) {
+			return null;
+		}
+
+		return {
+			slot,
+			freeSlot
+		};
+	});
 
 	return slotChecks.filter(
 		(entry): entry is DepositCandidate => entry !== null
@@ -141,7 +155,7 @@ export default class DepositCommand {
 			return;
 		}
 
-		const depositCandidates = await getDepositCandidates(player, equippedItems);
+		const depositCandidates = await getDepositCandidates(player, equippedItems, invSlots);
 
 		if (depositCandidates.length === 0) {
 			response.push(makePacket(CommandDepositCannotDepositPacket, {}));
