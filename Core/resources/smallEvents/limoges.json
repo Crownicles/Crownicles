@@ -3,7 +3,12 @@
     "factKeys": [
       "porcelainKilns",
       "enameledLight",
-      "domeStation"
+      "domeStation",
+      "whiteGoldSecrets",
+      "monkArtisans",
+      "glowingWorkshops",
+      "riverKaolin",
+      "copperBells"
     ],
     "questions": [
       {
