@@ -42,7 +42,6 @@ type LimogesQuestion = {
 };
 
 type LimogesProperties = {
-	factKeys: string[];
 	questions: LimogesQuestion[];
 	reward: {
 		experience: Range;
@@ -145,10 +144,9 @@ export const smallEventFuncs: SmallEventFuncs = {
 	executeSmallEvent(response, player, context): void {
 		const properties = SmallEventDataController.instance.getById("limoges")
 			.getProperties<LimogesProperties>();
-		const factKey = RandomUtils.crowniclesRandom.pick(properties.factKeys);
 		const question = RandomUtils.crowniclesRandom.pick(properties.questions);
 
-		const collector = new ReactionCollectorLimoges(factKey, question.id);
+		const collector = new ReactionCollectorLimoges(question.id);
 
 		const endCallback: EndCallback = async (collector, packets): Promise<void> => {
 			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.LIMOGES_SMALL_EVENT);
@@ -159,7 +157,6 @@ export const smallEventFuncs: SmallEventFuncs = {
 				: "none";
 			const isFavorable = playerAnswer !== "none" && playerAnswer === question.favorableAnswer;
 			const packet: SmallEventLimogesPacket = {
-				factKey,
 				questionId: question.id,
 				expectedAnswer: question.favorableAnswer,
 				outcome: isFavorable ? SmallEventLimogesOutcome.SUCCESS : SmallEventLimogesOutcome.FAILURE

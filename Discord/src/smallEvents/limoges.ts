@@ -7,6 +7,7 @@ import { CrowniclesSmallEventEmbed } from "../messages/CrowniclesSmallEventEmbed
 import { getRandomSmallEventIntro } from "../packetHandlers/handlers/SmallEventsHandler";
 import { DiscordCollectorUtils } from "../utils/DiscordCollectorUtils";
 import { ReactionCollectorReturnTypeOrNull } from "../packetHandlers/handlers/ReactionCollectorHandlers";
+import { StringUtils } from "../utils/StringUtils";
 
 export async function limogesCollector(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction);
@@ -17,7 +18,7 @@ export async function limogesCollector(context: PacketContext, packet: ReactionC
 	const lng = interaction.userLanguage;
 
 	const intro = getRandomSmallEventIntro(lng);
-	const story = i18n.t(`smallEvents:limoges.stories.${data.factKey}`, { lng });
+	const story = StringUtils.getRandomTranslation("smallEvents:limoges.stories", lng);
 	const question = i18n.t(`smallEvents:limoges.questions.${data.questionId}`, { lng });
 	const description = `${intro}${story}\n\n${question}`;
 
