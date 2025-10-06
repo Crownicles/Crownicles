@@ -14,8 +14,6 @@ export type SmallEventLimogesAnswer = "accept" | "refuse";
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class SmallEventLimogesPacket extends SmallEventPacket {
-	factKey!: string;
-
 	questionId!: string;
 
 	expectedAnswer!: SmallEventLimogesAnswer;

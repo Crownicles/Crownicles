@@ -1,15 +1,5 @@
 {
   "properties": {
-    "factKeys": [
-      "porcelainKilns",
-      "enameledLight",
-      "domeStation",
-      "whiteGoldSecrets",
-      "monkArtisans",
-      "glowingWorkshops",
-      "riverKaolin",
-      "copperBells"
-    ],
     "questions": [
       {
         "id": "journeyInvitation",
