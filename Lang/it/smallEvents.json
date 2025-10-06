@@ -18,8 +18,7 @@
   "end": [
     "Continuate per la vostra strada.",
     "Siete di nuovo in viaggio.",
-    "Continuate per la vostra strada.",
-    "Stai tornando nella tua direzione."
+    "Continuate per la vostra strada."
   ],
   "advanceTime": {
     "stories": [
@@ -140,6 +139,51 @@
       "guildXp": " La tua gilda vince **{{reward}} {emote:unitValues.xp}**.",
       "points": " Avete vinto **{{reward}} {emote:unitValues.score}**."
     }
+  },
+  "limoges": {
+    "stories": [
+      "un voyageur encapuchonné vous décrit une cité lointaine bâtie autour de fours sacrés où l'on façonne une porcelaine d'un blanc si pur qu'elle semble capturer la lumière des chandelles. Il murmure que les maîtres-artisans y tracent des motifs d'azur avec la précision d'enlumineurs, et que chaque cuisson exige des prières ancestrales pour prévenir toute fêlure.",
+      "vous rencontrez un mystérieux personnage qui évoque une ville perchée sur un plateau rocheux où pendent aux façades des plaques d'émail translucides. À la tombée de la nuit, ces ornements irisés diffusent une clarté cuivrée qui guide les voyageurs égarés tel un vol de lucioles apprivoisées par quelque enchantement.",
+      "vous faites la rencontre d'un homme étrange qui vous narre l'existence d'un édifice dont la coupole majestueuse surplombe des voies métalliques comme un phare de verre et de bronze. À l'intérieur, raconte-t-il, un carillon cadence les départs des équipages tandis que des vitraux verdoyants projettent sur les dalles des reflets semblables aux profondeurs d'un lac.",
+      "vous tombez nez à nez avec un mystérieux personnage qui vous parle d'une cité où l'on façonne ce que certains appellent l'or blanc. Il raconte que les artisans y gardent jalousement le secret d'une argile si pure qu'elle rivalise avec les trésors des rois, et que des espions de royaumes lointains tentent sans cesse de dérober leurs techniques ancestrales.",
+      "vous faites connaissance avec un étranger encapuchonné qui vous décrit une ville où les artisans travaillent dans un silence monacal, traçant des motifs d'une finesse inouïe sur des surfaces blanches comme neige. Il murmure qu'ils jeûnent avant chaque cuisson importante et que leurs ateliers résonnent de prières autant que de marteaux.",
+      "vous vous faites alpaguer par un homme qui vous conte l'existence d'une cité où, la nuit venue, les lueurs rougeoyantes des fours percent l'obscurité comme des étoiles tombées du ciel. Le voyageur affirme que l'on peut voir cette constellation terrestre depuis les collines environnantes, guidant les égarés vers la civilisation.",
+      "vous rencontrez un conteur qui évoque une ville bâtie au bord d'une rivière où l'on extrait une terre blanche miraculeuse. Il raconte que les carrières ressemblent à des grottes de craie, et que les ouvriers qui en remontent sont couverts d'une poussière fantomatique qui les fait paraître comme des spectres.",
+      "vous découvrez un homme masqué qui s'approche de vous et engage la conversation. Il vous décrit une cité où résonnent des cloches de cuivre dont le son est si pur qu'on prétend qu'elles ont été coulées avec le même métal que les lampes émaillées. Il affirme que leur tintement guide les voyageurs à travers les brumes matinales du plateau."
+    ],
+    "questions": {
+      "journeyInvitation": "Après quelques minutes de récit passionné, ses yeux brillent d'une lueur étrange et il vous interroge : accepteriez-vous, si le destin le permettait, de cheminer un jour jusqu'à cette cité suspendue entre lumière et kaolin ?",
+      "seenBetterCity": "Il s'interrompt soudain, penche la tête avec un sourire énigmatique et vous lance ce défi : auriez-vous déjà foulé les pavés d'une ville plus magnifique que celle dont il vous entretient ?",
+      "enameledJewel": "Son récit achevé, il se rapproche d'un pas feutré et murmure d'une voix basse : aimeriez-vous un jour contempler de vos propres yeux les joyaux émaillés que créent les orfèvres de cette cité bénie ?",
+      "believeExaggerated": "Guettant votre réaction avec une attention presque inquiétante, il scrute votre regard : pensez-vous que ses descriptions flamboyantes ne sont que vantardises de conteur ?",
+      "carryPorcelain": "Tandis qu'il conclut son récit, il mime le geste solennel de vous tendre un coffret imaginaire : porteriez-vous la porcelaine sacrée de cette ville avec la révérence qu'elle mérite ?",
+      "tooTiredToDream": "Remarquant vos bottes crottées et votre allure fatiguée, il marque une pause empreinte de compassion : seriez-vous trop las pour rêver d'un détour vers cette magnifique ville ?",
+      "promiseSouvenir": "Au terme de son récit, son regard se perd dans le lointain comme s'il contemplait déjà la cité : feriez-vous l'éloge de cette merveille devant la cour et les grands de ce royaume ?",
+      "callItMyth": "Après vous avoir longuement conté ces prodiges, un sourire fin étire ses lèvres : croyez-vous que cette cité merveilleuse n'est qu'une légende enjolivée par les trouvères ?",
+      "followWhispers": "Baissant soudain la voix comme pour partager un secret millénaire, il vous demande en chuchotant si vous accepteriez de suivre les murmures qui vous mèneraient jusqu'à cette ville enchantée ?",
+      "dismissFountains": "Après avoir continué de dépeindre les splendeurs de cette ville pendant de longues minutes, il vous fixe avec gravité : estimez-vous que ces récits merveilleux sont surfaits ?"
+    },
+    "recap": {
+      "success": {
+        "accept": "Votre enthousiasme sincère illumine le visage de l'étranger comme une lanterne dans la nuit : vous avez su embrasser l'esprit de cette cité lumineuse.",
+        "refuse": "Votre défense ardente et passionnée du joyau qui vous a été décrit fait scintiller ses yeux de fierté : il sait désormais qu'aucune autre cité ne saurait détrôner celle-ci dans votre cœur."
+      },
+      "failure": {
+        "accept": "Votre hésitation à partager l'admiration de votre interlocuteur pour cette cité fait vaciller son sourire comme une flamme sous le vent.",
+        "refuse": "En laissant entendre qu'une autre cité pourrait rivaliser avec celle qu'il chérit, vous brisez la lueur de joie qui habitait le regard de l'homme en face de vous."
+      }
+    },
+    "successStories": [
+      "L'étranger éclate d'un rire cristallin et complice : il comprend votre attirance mais confesse avec regret qu'il ne peut vous y mener dès ce jour. Néanmoins, il vous laisse une étincelle d'inspiration qui vous vaut **{{experience}} {emote:unitValues.xp}** et **{{score}} {emote:unitValues.score}**.",
+      "Ravi de votre ferveur, l'inconnu incline courtoisement son chapeau à large bord. Il vous promet de vous faire parvenir un signe quand la route s'ouvrira enfin, puis glisse discrètement dans votre escarcelle une récompense bien méritée : **{{experience}} {emote:unitValues.xp}** et **{{score}} {emote:unitValues.score}**.",
+      "Touché par l'ardeur de votre conviction, l'étranger murmure qu'il espère vous croiser un jour sous les verrières majestueuses de la grande halle. Sa bénédiction vous galvanise et vous fait gagner : **{{experience}} {emote:unitValues.xp}** et **{{score}} {emote:unitValues.score}**."
+    ],
+    "penalties": {
+      "health": "Votre réponse tiède comme eau de puits refroidit aussitôt son enthousiasme. Déçu, il vous tourne le dos d'un geste brusque. En vous détournant vous-même, vous trébuchez sur un pavé luisant et vous blessez **{{amount}} {emote:unitValues.lostHealth}**.",
+      "money": "Vexé par votre manque d'émerveillement, il vous réclame une obole \"pour l'entretien des fours sacrés et la gloire des artisans\". Afin de vous débarrasser de cet importun, vous finissez par lui céder à contrecœur **{{amount}} {emote:unitValues.lostMoney}**.",
+      "time": "L'étranger refuse obstinément de vous laisser partir sans vous avoir fait revivre en détail chaque merveille de la cité. Sa déblatération interminable vous retarde de **{{amount}} Min :clock2:**."
+    },
+    "failureFallback": "L'étranger s'incline avec une raideur déçue avant de disparaître dans la cohue des passants, vous laissant méditer amèrement sur votre manque d'enthousiasme."
   },
   "interactOtherPlayers": {
     "playerDisplayRanked": "**{{pseudo}}** ({{rank}} {emote:top.congrats})",
@@ -1820,4 +1864,3 @@
     ]
   }
 }
-
