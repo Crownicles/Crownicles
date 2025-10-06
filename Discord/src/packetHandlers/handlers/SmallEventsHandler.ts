@@ -96,6 +96,13 @@ export function getRandomSmallEventIntro(language: Language): string {
 	return StringUtils.getRandomTranslation("smallEvents:intro", language);
 }
 
+const PET_TIME_INTERACTIONS = new Set([
+	"gainTime_m",
+	"gainTime_f",
+	"loseTime_m",
+	"loseTime_f"
+]);
+
 export default class SmallEventsHandler {
 	@packetHandler(SmallEventAdvanceTimePacket)
 	async smallEventAdvanceTime(context: PacketContext, packet: SmallEventAdvanceTimePacket): Promise<void> {
@@ -104,8 +111,12 @@ export default class SmallEventsHandler {
 			return;
 		}
 		const lng = interaction.userLanguage;
+		const timeDisplay = minutesDisplay(packet.amount, lng);
 		const description = getRandomSmallEventIntro(lng)
-			+ StringUtils.getRandomTranslation("smallEvents:advanceTime.stories", lng, { time: packet.amount });
+			+ StringUtils.getRandomTranslation("smallEvents:advanceTime.stories", lng, {
+				time: packet.amount,
+				timeDisplay
+			});
 		await interaction.editReply({ embeds: [new CrowniclesSmallEventEmbed("advanceTime", description, interaction.user, lng)] });
 	}
 
@@ -240,6 +251,7 @@ export default class SmallEventsHandler {
 	async smallEventLotteryLose(context: PacketContext, packet: SmallEventLotteryLosePacket): Promise<void> {
 		const interaction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
 		const lng = context.discord!.language;
+		const lostTimeDisplay = minutesDisplay(packet.lostTime, lng);
 		await interaction?.editReply({
 			embeds: [
 				new CrowniclesSmallEventEmbed(
@@ -247,6 +259,7 @@ export default class SmallEventsHandler {
 					i18n.t(`smallEvents:lottery.${packet.level}.${packet.moneyLost > 0 ? "failWithMalus" : "fail"}`, {
 						lng,
 						lostTime: packet.lostTime,
+						lostTimeDisplay,
 						money: packet.moneyLost
 					}),
 					interaction.user,
@@ -260,13 +273,15 @@ export default class SmallEventsHandler {
 	async smallEventLotteryWin(context: PacketContext, packet: SmallEventLotteryWinPacket): Promise<void> {
 		const interaction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
 		const lng = context.discord!.language;
+		const lostTimeDisplay = minutesDisplay(packet.lostTime, lng);
 		await interaction?.editReply({
 			embeds: [
 				new CrowniclesSmallEventEmbed(
 					"lottery",
 					i18n.t(`smallEvents:lottery.${packet.level}.success`, {
 						lng,
-						lostTime: packet.lostTime
+						lostTime: packet.lostTime,
+						lostTimeDisplay
 					}) + i18n.t(`smallEvents:lottery.rewardTypeText.${packet.winReward}`, {
 						lng,
 						reward: packet.winAmount
@@ -776,6 +791,9 @@ export default class SmallEventsHandler {
 	async smallEventPet(context: PacketContext, packet: SmallEventPetPacket): Promise<void> {
 		const interaction = DiscordCache.getInteraction(context.discord!.interaction);
 		const lng = interaction!.userLanguage;
+		const amountDisplay = typeof packet.amount === "number" && PET_TIME_INTERACTIONS.has(packet.interactionName)
+			? minutesDisplay(packet.amount, lng)
+			: packet.amount;
 		await interaction?.editReply({
 			embeds: [
 				new CrowniclesSmallEventEmbed(
@@ -787,6 +805,7 @@ export default class SmallEventsHandler {
 							context: packet.petSex,
 							pet: PetUtils.petToShortString(lng, packet.petNickname, packet.petTypeId, packet.petSex),
 							amount: packet.amount,
+							amountDisplay,
 							food: packet.food ? DisplayUtils.getFoodDisplay(packet.food, 1, lng, false) : null,
 							badge: CrowniclesIcons.badges[Badge.LEGENDARY_PET],
 							randomAnimal: i18n.t("smallEvents:pet.randomAnimal", {
