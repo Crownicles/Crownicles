@@ -81,12 +81,26 @@ async function applyFavorableOutcome(
 	};
 }
 
+
 async function applyUnfavorableOutcome(
 	player: Player,
 	response: CrowniclesPacket[],
 	properties: LimogesProperties
 ): Promise<Required<SmallEventLimogesPacket>["penalty"]> {
-	const penaltyType = RandomUtils.crowniclesRandom.pick(PENALTY_TYPES);
+	const filteredPenaltyTypes = PENALTY_TYPES.filter((type) => {
+		if (type !== "money") {
+			return true;
+		}
+
+		// Avoid selecting a money penalty when the player cannot afford the maximum loss.
+		return (player.money ?? 0) >= properties.penalty.money.MAX;
+	});
+	const penaltyPool = filteredPenaltyTypes.length > 0
+		? filteredPenaltyTypes
+		: PENALTY_TYPES.filter((type) => type !== "money");
+	const penaltyType = RandomUtils.crowniclesRandom.pick(
+		penaltyPool.length > 0 ? penaltyPool : PENALTY_TYPES
+	);
 	let amount = 0;
 
 	switch (penaltyType) {
