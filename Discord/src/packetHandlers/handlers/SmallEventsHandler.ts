@@ -76,10 +76,7 @@ import { SmallEventCartPacket } from "../../../../Lib/src/packets/smallEvents/Sm
 import { cartResult } from "../../smallEvents/cart";
 import { SmallEventFindMissionPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventFindMissionPacket";
 import { MissionUtils } from "../../utils/MissionUtils";
-import {
-	SmallEventLimogesOutcome,
-	SmallEventLimogesPacket
-} from "../../../../Lib/src/packets/smallEvents/SmallEventLimogesPacket";
+import { SmallEventLimogesPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventLimogesPacket";
 import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import { baseFunctionHandler } from "../../smallEvents/shop";
 import { epicItemShopHandler } from "../../smallEvents/epicItemShop";
@@ -93,7 +90,7 @@ import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
 import { SmallEventDwarfPetFanPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventDwarfPetFanPacket";
 import { SmallEventInfoFightPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventInfoFightPacket";
 import { infoFightResult } from "../../smallEvents/infoFight";
-
+import { limogesResult } from "../../smallEvents/limoges";
 
 export function getRandomSmallEventIntro(language: Language): string {
 	return StringUtils.getRandomTranslation("smallEvents:intro", language);
@@ -853,54 +850,7 @@ export default class SmallEventsHandler {
 
 	@packetHandler(SmallEventLimogesPacket)
 	async smallEventLimoges(context: PacketContext, packet: SmallEventLimogesPacket): Promise<void> {
-		const buttonInteraction = context.discord!.buttonInteraction
-			? DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!)
-			: null;
-		const commandInteraction = DiscordCache.getInteraction(context.discord!.interaction);
-		if (!buttonInteraction && !commandInteraction) {
-			return;
-		}
-		const lng = buttonInteraction ? context.discord!.language : commandInteraction!.userLanguage;
-		let outcome: string;
-		switch (packet.outcome) {
-			case SmallEventLimogesOutcome.SUCCESS: {
-				if (!packet.reward) {
-					throw new Error("Missing reward for successful Limoges small event outcome");
-				}
-				outcome = StringUtils.getRandomTranslation("smallEvents:limoges.successStories", lng, {
-					experience: packet.reward.experience,
-					score: packet.reward.score
-				});
-				break;
-			}
-			case SmallEventLimogesOutcome.FAILURE: {
-				if (!packet.penalty) {
-					outcome = i18n.t("smallEvents:limoges.failureFallback", { lng });
-					break;
-				}
-				outcome = i18n.t(`smallEvents:limoges.penalties.${packet.penalty.type}`, {
-					lng,
-					amount: packet.penalty.amount
-				});
-				break;
-			}
-			default: {
-				outcome = i18n.t("smallEvents:limoges.failureFallback", { lng });
-			}
-		}
-
-		const recapKey = `smallEvents:limoges.recap.${packet.outcome}.${packet.expectedAnswer}`;
-		const recap = i18n.t(recapKey, { lng });
-		const description = `${recap}\n\n${outcome}`;
-		const embedUser = buttonInteraction?.user ?? commandInteraction!.user;
-		const embed = new CrowniclesSmallEventEmbed("limoges", description, embedUser, lng);
-
-		if (buttonInteraction) {
-			await buttonInteraction.editReply({ embeds: [embed] });
-		}
-		else if (commandInteraction) {
-			await commandInteraction.followUp({ embeds: [embed] });
-		}
+		await limogesResult(packet, context);
 	}
 
 	@packetHandler(SmallEventBonusGuildPVEIslandPacket)

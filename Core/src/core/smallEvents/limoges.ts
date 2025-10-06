@@ -11,7 +11,6 @@ import { BlockingUtils } from "../utils/BlockingUtils";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
 import { ReactionCollectorAcceptReaction } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import {
-	SmallEventLimogesOutcome,
 	SmallEventLimogesPacket,
 	SmallEventLimogesPenaltyType
 } from "../../../../Lib/src/packets/smallEvents/SmallEventLimogesPacket";
@@ -24,9 +23,9 @@ import { Effect } from "../../../../Lib/src/types/Effect";
 import Player from "../database/game/models/Player";
 
 const PENALTY_TYPES: SmallEventLimogesPenaltyType[] = [
-	"health",
-	"money",
-	"time"
+	SmallEventLimogesPenaltyType.HEALTH,
+	SmallEventLimogesPenaltyType.MONEY,
+	SmallEventLimogesPenaltyType.TIME
 ];
 
 type Range = {
@@ -34,11 +33,9 @@ type Range = {
 	MAX: number;
 };
 
-type FavorableAnswer = "accept" | "refuse";
-
 type LimogesQuestion = {
 	id: string;
-	favorableAnswer: FavorableAnswer;
+	shouldAccept: boolean;
 };
 
 type LimogesProperties = {
@@ -54,11 +51,19 @@ type LimogesProperties = {
 	};
 };
 
+function getRandomQuestion(properties: LimogesProperties): LimogesQuestion {
+	return RandomUtils.crowniclesRandom.pick(properties.questions);
+}
+
+function createCollector(question: LimogesQuestion): ReactionCollectorLimoges {
+	return new ReactionCollectorLimoges(question.id);
+}
+
 async function applyFavorableOutcome(
 	player: Player,
 	response: CrowniclesPacket[],
 	properties: LimogesProperties
-): Promise<SmallEventLimogesPacket["reward"]> {
+): Promise<Required<SmallEventLimogesPacket>["reward"]> {
 	const experience = RandomUtils.rangedInt(properties.reward.experience);
 	const score = RandomUtils.rangedInt(properties.reward.score);
 
@@ -86,8 +91,8 @@ async function applyUnfavorableOutcome(
 	response: CrowniclesPacket[],
 	properties: LimogesProperties
 ): Promise<Required<SmallEventLimogesPacket>["penalty"]> {
-	const filteredPenaltyTypes = PENALTY_TYPES.filter((type) => {
-		if (type !== "money") {
+	const filteredPenaltyTypes = PENALTY_TYPES.filter(type => {
+		if (type !== SmallEventLimogesPenaltyType.MONEY) {
 			return true;
 		}
 
@@ -96,21 +101,21 @@ async function applyUnfavorableOutcome(
 	});
 	const penaltyPool = filteredPenaltyTypes.length > 0
 		? filteredPenaltyTypes
-		: PENALTY_TYPES.filter((type) => type !== "money");
+		: PENALTY_TYPES.filter(type => type !== SmallEventLimogesPenaltyType.MONEY);
 	const penaltyType = RandomUtils.crowniclesRandom.pick(
 		penaltyPool.length > 0 ? penaltyPool : PENALTY_TYPES
 	);
 	let amount = 0;
 
 	switch (penaltyType) {
-		case "health": {
+		case SmallEventLimogesPenaltyType.HEALTH: {
 			amount = RandomUtils.rangedInt(properties.penalty.health);
 			await player.addHealth(-amount, response, NumberChangeReason.SMALL_EVENT);
 			await player.killIfNeeded(response, NumberChangeReason.SMALL_EVENT);
 			await player.save();
 			break;
 		}
-		case "money": {
+		case SmallEventLimogesPenaltyType.MONEY: {
 			amount = RandomUtils.rangedInt(properties.penalty.money);
 			await player.addMoney({
 				amount: -amount,
@@ -120,7 +125,7 @@ async function applyUnfavorableOutcome(
 			await player.save();
 			break;
 		}
-		default: {
+		case SmallEventLimogesPenaltyType.TIME: {
 			amount = RandomUtils.rangedInt(properties.penalty.time);
 			await TravelTime.applyEffect(
 				player,
@@ -129,12 +134,44 @@ async function applyUnfavorableOutcome(
 				new Date(),
 				NumberChangeReason.SMALL_EVENT
 			);
+			break;
 		}
+		default:
+			break;
 	}
 
 	return {
 		type: penaltyType,
 		amount
+	};
+}
+
+function getEndCallback(
+	player: Player,
+	question: LimogesQuestion,
+	properties: LimogesProperties
+): EndCallback {
+	return async (collector, response): Promise<void> => {
+		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.LIMOGES_SMALL_EVENT);
+
+		const reaction = collector.getFirstReaction();
+		const playerAccepted = reaction?.reaction.type === ReactionCollectorAcceptReaction.name;
+		const hasAnswered = Boolean(reaction);
+		const isFavorable = hasAnswered && playerAccepted === question.shouldAccept;
+		const packet: SmallEventLimogesPacket = {
+			questionId: question.id,
+			shouldHaveAccepted: question.shouldAccept,
+			isSuccess: isFavorable
+		};
+
+		if (isFavorable) {
+			packet.reward = await applyFavorableOutcome(player, response, properties);
+		}
+		else {
+			packet.penalty = await applyUnfavorableOutcome(player, response, properties);
+		}
+
+		response.push(makePacket(SmallEventLimogesPacket, packet));
 	};
 }
 
@@ -144,34 +181,8 @@ export const smallEventFuncs: SmallEventFuncs = {
 	executeSmallEvent(response, player, context): void {
 		const properties = SmallEventDataController.instance.getById("limoges")
 			.getProperties<LimogesProperties>();
-		const question = RandomUtils.crowniclesRandom.pick(properties.questions);
-
-		const collector = new ReactionCollectorLimoges(question.id);
-
-		const endCallback: EndCallback = async (collector, packets): Promise<void> => {
-			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.LIMOGES_SMALL_EVENT);
-
-			const reaction = collector.getFirstReaction();
-			const playerAnswer: FavorableAnswer | "none" = reaction
-				? reaction.reaction.type === ReactionCollectorAcceptReaction.name ? "accept" : "refuse"
-				: "none";
-			const isFavorable = playerAnswer !== "none" && playerAnswer === question.favorableAnswer;
-			const packet: SmallEventLimogesPacket = {
-				questionId: question.id,
-				expectedAnswer: question.favorableAnswer,
-				outcome: isFavorable ? SmallEventLimogesOutcome.SUCCESS : SmallEventLimogesOutcome.FAILURE
-			};
-
-			if (isFavorable) {
-				packet.reward = await applyFavorableOutcome(player, packets, properties);
-			}
-			else {
-				packet.penalty = await applyUnfavorableOutcome(player, packets, properties);
-			}
-
-			packets.push(makePacket(SmallEventLimogesPacket, packet));
-		};
-
+		const question = getRandomQuestion(properties);
+		const collector = createCollector(question);
 		const packet = new ReactionCollectorInstance(
 			collector,
 			context,
@@ -179,7 +190,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 				allowedPlayerKeycloakIds: [player.keycloakId],
 				reactionLimit: 1
 			},
-			endCallback
+			getEndCallback(player, question, properties)
 		)
 			.block(player.keycloakId, BlockingConstants.REASONS.LIMOGES_SMALL_EVENT)
 			.build();

@@ -3,22 +3,19 @@ import {
 } from "../CrowniclesPacket";
 import { SmallEventPacket } from "./SmallEventPacket";
 
-export enum SmallEventLimogesOutcome {
-	SUCCESS = "success",
-	FAILURE = "failure"
+export enum SmallEventLimogesPenaltyType {
+	HEALTH = "health",
+	MONEY = "money",
+	TIME = "time"
 }
-
-export type SmallEventLimogesPenaltyType = "health" | "money" | "time";
-
-export type SmallEventLimogesAnswer = "accept" | "refuse";
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class SmallEventLimogesPacket extends SmallEventPacket {
 	questionId!: string;
 
-	expectedAnswer!: SmallEventLimogesAnswer;
+	shouldHaveAccepted!: boolean;
 
-	outcome!: SmallEventLimogesOutcome;
+	isSuccess!: boolean;
 
 	reward?: {
 		experience: number;

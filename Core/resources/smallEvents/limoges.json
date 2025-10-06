@@ -3,43 +3,43 @@
     "questions": [
       {
         "id": "journeyInvitation",
-        "favorableAnswer": "accept"
+        "shouldAccept": true
       },
       {
         "id": "seenBetterCity",
-        "favorableAnswer": "refuse"
+        "shouldAccept": false
       },
       {
         "id": "enameledJewel",
-        "favorableAnswer": "accept"
+        "shouldAccept": true
       },
       {
         "id": "believeExaggerated",
-        "favorableAnswer": "refuse"
+        "shouldAccept": false
       },
       {
         "id": "carryPorcelain",
-        "favorableAnswer": "accept"
+        "shouldAccept": true
       },
       {
         "id": "tooTiredToDream",
-        "favorableAnswer": "refuse"
+        "shouldAccept": false
       },
       {
         "id": "promiseSouvenir",
-        "favorableAnswer": "accept"
+        "shouldAccept": true
       },
       {
         "id": "callItMyth",
-        "favorableAnswer": "refuse"
+        "shouldAccept": false
       },
       {
         "id": "followWhispers",
-        "favorableAnswer": "accept"
+        "shouldAccept": true
       },
       {
         "id": "dismissFountains",
-        "favorableAnswer": "refuse"
+        "shouldAccept": false
       }
     ],
     "reward": {
