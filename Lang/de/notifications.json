@@ -17,12 +17,17 @@
         "sideMission_other": "{emote:missions.sideMission} **Nebenmissionen**"
       },
       "totalRewards": "{emote:missions.total} Summe der Auszeichnungen",
-      "totalDisplay": "Verdiente Edelsteine: {{gems}} {emote:unitValues.gem}\nVerdiente Erfahrung: {{xp}} {emote:unitValues.xp}",
       "missionDisplay": "- {{missionDescription}}{{missionsReward}}",
       "pointsDisplay": "+{{count}} {emote:unitValues.score}",
       "gemsDisplay": "+{{count}} {emote:unitValues.gem}",
       "moneyDisplay": "+{{count}} {emote:unitValues.money}",
-      "xpDisplay": "+{{count}} {emote:unitValues.xp}"
+      "xpDisplay": "+{{count}} {emote:unitValues.xp}",
+      "totalDisplay": {
+        "gems": "Verdiente Gemmen: {{count}} {emote:unitValues.gem}",
+        "points": "Gewonnene Punkte: {{count}} {emote:unitValues.score}",
+        "money": "Verdientes Geld: {{count}} {emote:unitValues.money}",
+        "xp": "Gewonnene Erfahrung: {{count}} {emote:unitValues.xp}"
+      }
     }
   },
   "guildFood": {
