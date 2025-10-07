@@ -14,6 +14,7 @@ import { FighterStatus } from "../FighterStatus";
 import { PlayerFighter } from "./PlayerFighter";
 import { PlayerActiveObjects } from "../../database/game/models/PlayerActiveObjects";
 import { InventorySlots } from "../../database/game/models/InventorySlot";
+import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
 
 type AiPlayerFighterOptions = {
 	allowPotionConsumption?: boolean;
@@ -26,6 +27,8 @@ type AiPlayerFighterOptions = {
  * Class representing a player in a fight
  */
 export class AiPlayerFighter extends PlayerFighter {
+	public consumePotionProbability = FightConstants.POTION_NO_DRINK_PROBABILITY.AI;
+
 	private readonly classBehavior: ClassBehavior;
 
 	private readonly allowPotionConsumption: boolean;
