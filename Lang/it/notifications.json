@@ -23,7 +23,7 @@
         "money": "Soldi guadagnati: {{count}} {emote:unitValues.money}",
         "xp": "Esperienza acquisita: {{count}} {emote:unitValues.xp}"
       },
-      "noRewards": "Aucune récompense.",
+      "noRewards": "Nessuna ricompensa.",
       "missionDisplay": "- {{missionDescription}}{{missionsReward}}",
       "pointsDisplay": "+ {{count}} {emote:unitValues.score}",
       "gemsDisplay": "+ {{count}} {emote:unitValues.gem}",
