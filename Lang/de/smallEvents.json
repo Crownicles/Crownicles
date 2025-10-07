@@ -22,18 +22,18 @@
   ],
   "advanceTime": {
     "stories": [
-      "sehen Sie eine Person, die Perotin verblüffend ähnlich sieht. Sie rennen auf ihn zu, aber er beschleunigt ebenfalls, wahrscheinlich aus Angst. Sie schaffen es, ihn einzuholen und merken, dass Sie sich in der Person geirrt haben. Sie entschuldigen sich schnell. Sie haben jedoch auf Ihrem Weg **{{time}} Min {emote:unitValues.timeGain}** gewonnen.",
-      "hören Sie einen Karren hinter sich. Der Mann in dem Wagen bietet Ihnen an, Sie an einem beliebigen Ort abzusetzen. Sie nehmen das Angebot an und nennen ihm Ihr Ziel. Nachdem Sie einige Kilometer gefahren sind, sagt Ihnen der Mann, dass er in eine andere Richtung als Sie fahren muss, also setzt er Sie ab und Sie bedanken sich. Sie verdienen **{{time}} Min {emote:unitValues.timeGain}** auf Ihrer Fahrt.",
-      "erblicken Sie in der Ferne eine Kutsche. Vielleicht ist die Prinzessin an Bord! Du beschließt, mit ihr zu sprechen und rennst so schnell du kannst. Als Sie nahe genug herangekommen sind, müssen Sie enttäuscht feststellen, dass Sie sich ihr nicht nähern können, da die Kutsche von einem Reiterzug beschützt wird. Sie haben jedoch **{{time}} Min {emote:unitValues.timeGain}** über Ihr Ziel gewonnen.",
-      "Sie nehmen einen kleinen Snack zu sich, als plötzlich ein Schatten auf Sie zukommt und ihn entwendet. Sie verfolgen ihn sofort, aber Sie können ihn nicht einholen und geben auf. Dieses Missgeschick hat Ihnen jedoch **{{time}} Min {emote:unitValues.timeGain}** auf Ihrer Reise eingebracht.",
-      "sehen Sie eine Person, die Gruffo verblüffend ähnlich sieht. Sie rennen auf ihn zu, aber er beschleunigt ebenfalls, wahrscheinlich aus Angst. Nachdem Sie ihn eingeholt haben, stellen Sie fest, dass es sich gar nicht um die Person handelt, die Sie erwartet hatten. Sie haben jedoch auf Ihrer Fahrt **{{time}} Min {emote:unitValues.timeGain}** gewonnen.",
-      "ein heller Punkt zieht Ihre Aufmerksamkeit auf sich. Ihre Neugier treibt Sie dazu, zu der leuchtenden Quelle zu laufen. Es ist zwar nur eine gewöhnliche Kupfermünze, aber sie hat Ihnen **{{time}} Min {emote:unitValues.timeGain}** auf Ihrer Reise erspart.",
-      "ein massiver, falbfarbener Hund springt aus einem breiten Gehölz. Er knurrt, zeigt seine scharfen Eckzähne und scheint Ihnen in die Beine beißen zu wollen. Während Sie die Vorstellung genießen, in einem Stück zu bleiben, treiben sie Sie dazu, so schnell wie möglich zu rennen und **{{time}} Min {emote:unitValues.timeGain}** auf Ihrem Weg zu sparen!",
-      "ein großes Wespennest löst sich aus dem Baum, unter dem du gestanden hast, und fällt dir vor die Füße. Sie rennen, bis Ihre Lunge Sie anfleht, wieder zu laufen. Nicht eine Wespe hat es geschafft, Sie zu stechen. Durch dieses Missgeschick haben Sie **{{time}} Min {emote:unitValues.timeGain}** auf Ihrer Route gewonnen!",
-      "genießen Sie das angenehme Frühlingswetter. Ihre Pause ist jedoch nur von kurzer Dauer: Banditen mit Knüppeln und zerbrochenen Schwertern zerreißen die Büsche zu Ihrer Linken und kichern, während sie gemächlich auf Sie zugehen. Noch bevor Sie darüber nachdenken können, reißt Sie Ihr Körper mit in die Flucht nach vorne, so dass Sie dadurch **{{time}} Min {emote:unitValues.timeGain}** auf Ihrem Weg gewinnen.",
-      "Ein junger Mann drängelt sich an Ihnen vorbei und überholt Sie. Sie haben ein ungutes Gefühl und schauen in Ihre Taschen: Ihr Geldbeutel ist weg! Als Sie den Jungen nach einer rasanten Fahrt einholen, holen Sie sich, was Ihnen zusteht, und lassen den Ungläubigen in einem Graben zurück, nicht ohne ihn zu bestrafen, wie er es verdient hat. Sie stellen fest, dass Sie durch dieses Ereignis **{{time}} Min {emote:unitValues.timeGain}** auf Ihrer Route gewonnen haben.",
-      "Sie werden von einem Kaninchen mit makellosem Fell überrascht, das sich durch Ihre Beine schlängelt. Sie sind zunächst verblüfft und versuchen, es einzuholen. Es dauert nicht lange, bis das Tier Sie abgehängt hat. Diese Abenteuer haben Ihnen **{{time}} Min {emote:unitValues.timeGain}** eingebracht.",
-      "hören Sie den Ruf einer Frau hinter sich. Als Sie sich umdrehen, bemerken Sie sofort den metallisch glänzenden Gegenstand in ihrer Hand. In Panik ergreifen Sie die Flucht. Nachdem Sie an einem sichereren Ort angekommen sind, bemerken Sie, dass Sie **{{time}} Min {emote:unitValues.timeGain}** Ihrer Reisezeit voraus sind."
+      "vous voyez une personne ressemblant étrangement à Pérotin. Vous accourez vers lui, mais celui-ci accélère également, sûrement de peur. Vous réussissez à le rattraper, et réalisez alors que vous vous êtes trompé de personne. Vous vous excusez promptement. Vous avez cependant gagné **{{timeDisplay}} {emote:unitValues.timeGain}** sur votre chemin.",
+      "vous entendez une charrette derrière vous. L'homme dans le véhicule vous propose de vous déposer là où vous le souhaitez. Vous acceptez et lui indiquez votre destination. Après avoir parcouru quelques kilomètres, l'homme vous dit qu'il doit aller dans une autre direction que la vôtre, il vous dépose donc et vous le remerciez. Vous gagnez **{{timeDisplay}} {emote:unitValues.timeGain}** sur votre trajet.",
+      "vous apercevez un carrosse au loin. La princesse est peut-être à bord ! Vous décidez d'aller lui parler et courez donc aussi vite que possible. Une fois assez proche, vous découvrez avec dépit que vous ne pouvez l'approcher car le véhicule est protégé par un cortège de cavaliers. Vous avez cependant gagné **{{timeDisplay}} {emote:unitValues.timeGain}** sur votre destination.",
+      "vous prenez une petite collation, quand soudain, une ombre se précipite sur vous et la dérobe. Vous la poursuivez aussitôt mais incapable de la rattraper vous abandonnez. Cette mésaventure vous a néanmoins fait gagner **{{timeDisplay}} {emote:unitValues.timeGain}** sur votre trajet.",
+      "vous voyez une personne ressemblant étrangement à Gruffo. Vous accourez vers lui, mais celui-ci accélère également, sûrement de peur. Après l'avoir rattrapé, vous vous rendez compte qu'il ne s'agit pas du tout de la personne à laquelle vous pensiez. Vous avez cependant gagné **{{timeDisplay}} {emote:unitValues.timeGain}** sur votre trajet.",
+      "un point brillant attire votre attention. Votre curiosité vous pousse à courir vers la source lumineuse. Ce n'est qu'une vulgaire pièce de cuivre mais elle vous a fait gagner **{{timeDisplay}} {emote:unitValues.timeGain}** sur votre trajet.",
+      "un chien massif de couleur fauve surgit d'un large bosquet. Il grogne, montre des canines acérées, et semble vouloir vous mordre les jambes. Appréciant l'idée de rester en un seul morceau, voilà qu'elles vous poussent à courir à toute vitesse et vous font gagner **{{timeDisplay}} {emote:unitValues.timeGain}** sur votre trajet !",
+      "un volumineux nid de guêpes se détache de l'arbre sous lequel vous étiez et tombe à vos pieds. Vous courez jusqu'à ce que vos poumons vous supplient de vous remettre à marcher. Pas une guêpe n'a réussi à vous piquer. Cette mésaventure vous a fait gagner **{{timeDisplay}} {emote:unitValues.timeGain}** sur votre itinéraire !",
+      "vous savourez un agréable temps printanier. Votre pause est cependant de courte durée : des bandits armés de gourdins et d'épées ébréchées déchirent les buissons à votre gauche et ricanent en avançant tranquillement vers vous. Avant même que vous n'ayez le temps de réfléchir, votre corps vous emporte dans une fuite vers l'avant, si bien que cela vous fait gagner **{{timeDisplay}} {emote:unitValues.timeGain}** sur votre parcours.",
+      "un jeune garçon vous bouscule en vous doublant. Envahi d'un mauvais pressentiment, vous vérifiez le contenu de vos poches : votre bourse a disparu ! Parvenant à le rattraper après une course effrénée, vous récupérez ce qui vous revient de droit et laissez le mécréant dans un fossé non sans l'avoir puni comme il le méritait. Vous vous rendez compte que cet événement vous aura permis de gagner **{{timeDisplay}} {emote:unitValues.timeGain}** sur votre itinéraire.",
+      "vous êtes surpris par le passage d'un lapin au pelage immaculé, qui se faufile entre vos jambes. Interloqué tout d'abord, vous tentez de le rattraper. C'est peine perdue, il ne faut pas longtemps au petit animal pour vous semer. Ces péripéties vous auront fait gagner **{{timeDisplay}} {emote:unitValues.timeGain}**.",
+      "vous entendez l'appel d'une femme derrière vous. Quand vous vous retournez, vous remarquez immédiatement l'objet aux reflets métalliques dans sa main. Paniqué, vous prenez la fuite. Après être arrivé dans un endroit plus sûr, vous remarquez que vous avez pris **{{timeDisplay}} {emote:unitValues.timeGain}** d'avance sur votre temps de voyage."
     ]
   },
   "bigBad": {
@@ -123,13 +123,13 @@
       "fail": "Sie verlieren beim Mensch-ärgere-dich-nicht-Spiel. Die Teilnahme war jedoch kostenlos. Sie beschließen daher, Ihre Reise fortzusetzen."
     },
     "medium": {
-      "success": "Sie versuchen Ihr Glück und gewinnen das Spiel. Der Mann belohnt Sie angemessen. Allerdings verlieren Sie **{{lostTime}} Min :clock2:**.",
-      "fail": "Sie nehmen am Spiel des Mannes teil. Sie gewinnen jedoch nicht und gehen daher mit der Hoffnung, beim nächsten Mal mehr Glück zu haben, nach Hause. Durch die Teilnahme an der Lotterie haben Sie **{{lostTime}} Min :clock2:** verloren."
+      "success": "Vous tentez votre chance et gagnez au jeu. L'homme vous récompense comme il se doit. Cependant, vous perdez **{{lostTimeDisplay}} :clock2:**.",
+      "fail": "Vous participez au jeu de l'homme. Cependant, vous ne gagnez pas et repartez donc en espérant avoir plus de chance la prochaine fois. Participer à la loterie vous aura fait perdre **{{lostTimeDisplay}} :clock2:**."
     },
     "hard": {
-      "success": "Sie gewinnen im Spiel des Menschen. Daraufhin belohnt er Sie gnädig. Sie verlieren jedoch **{{lostTime}} Min :clock2:**.",
-      "fail": "Sie nutzen Ihre Chance. Leider gewinnen Sie nicht, vielleicht haben Sie beim nächsten Mal mehr Glück. Durch die Teilnahme an der Lotterie haben Sie **{{lostTime}} Min :clock2:** verloren.",
-      "failWithMalus": "Sie setzen beim Mensch-ärgere-dich-nicht-Spiel 100 Münzen ein. Sie verlieren jedoch und verlassen das Spiel entnervt, weil Sie **{{money}}** {emote:unitValues.lostMoney}verloren haben. Durch die Teilnahme an der Lotterie haben Sie außerdem **{{lostTime}} Min :clock2:** verloren."
+      "success": "Vous gagnez au jeu de l'homme. En conséquence, celui-ci vous récompense gracieusement. Cependant, vous perdez **{{lostTimeDisplay}} :clock2:**.",
+      "fail": "Vous saisissez votre chance. Malheureusement, vous ne gagnez pas, vous aurez peut-être plus de chance la prochaine fois. Participer à la loterie vous aura fait perdre **{{lostTimeDisplay}} :clock2:**.",
+      "failWithMalus": "Vous misez une centaine de pièces au jeu de l'homme. Vous perdez cependant et repartez, dépité d'avoir perdu **{{money}}** {emote:unitValues.lostMoney}. Participer à la loterie vous aura de plus fait perdre **{{lostTimeDisplay}} :clock2:**."
     },
     "poor": "Sie versuchen, die Aufmerksamkeit des Mannes auf sich zu lenken und setzen eine hohe Summe. Zu Ihrem Pech zweifelt der Händler an Ihrem guten Glauben und Sie können keinen Reichtum nachweisen.",
     "end": "Ohne der Person weitere Beachtung zu schenken, setzen Sie Ihren Weg fort.",
@@ -181,7 +181,7 @@
     "penalties": {
       "health": "Votre réponse tiède comme eau de puits refroidit aussitôt son enthousiasme. Déçu, il vous tourne le dos d'un geste brusque. En vous détournant vous-même, vous trébuchez sur un pavé luisant et vous blessez **{{amount}} {emote:unitValues.lostHealth}**.",
       "money": "Vexé par votre manque d'émerveillement, il vous réclame une obole \"pour l'entretien des fours sacrés et la gloire des artisans\". Afin de vous débarrasser de cet importun, vous finissez par lui céder à contrecœur **{{amount}} {emote:unitValues.lostMoney}**.",
-      "time": "L'étranger refuse obstinément de vous laisser partir sans vous avoir fait revivre en détail chaque merveille de la cité. Sa déblatération interminable vous retarde de **{{amount}} Min :clock2:**."
+      "time": "L'étranger refuse obstinément de vous laisser partir sans vous avoir fait revivre en détail chaque merveille de la cité. Sa déblatération interminable vous retarde de **{{amountDisplay}} :clock2:**."
     },
     "failureFallback": "L'étranger s'incline avec une raideur déçue avant de disparaître dans la cohue des passants, vous laissant méditer amèrement sur votre manque d'enthousiasme."
   },
@@ -586,9 +586,9 @@
         ],
         "2": {
           "time": [
-            "Als Sie Ihre Fahrt fortsetzen, stellen Sie fest, dass dieser Stopp länger gedauert hat, als Sie erwartet hatten. Sie verlieren **{{lostTime}} Min :clock2:**.",
-            "Während Sie sich auf den Weg machen, fällt Ihnen auf, wie viel Zeit Sie mit der Vorbereitung verschwendet haben. Sie verlieren **{{lostTime}} Min :clock2:**",
-            "Wenn Sie zurückgehen, beginnen Sie die Zeit zu bereuen, die Sie mit dem Warten auf diese Vorbereitung verschwendet haben. Sie verlieren **{{lostTime}} Min :clock2:**"
+            "En reprenant votre route, vous vous rendez compte que cet arrêt a été plus long que vous ne l'aviez anticipé. Vous perdez **{{lostTimeDisplay}} :clock2:**",
+            "Alors que vous repartez, vous vous rendez compte de tout le temps perdu à cette préparation. Vous perdez **{{lostTimeDisplay}} :clock2:**",
+            "En retournant sur vos pas, vous commencez à regretter le temps perdu à attendre cette préparation. Vous perdez **{{lostTimeDisplay}} :clock2:**"
           ],
           "scared": [
             "Nachdem der Trank fertig ist, beschließen Sie, einen kleinen Schluck zu trinken. Sofort werden Sie durch eine intensive Halluzination transportiert. Ihre Zukunft scheint nicht sehr vielversprechend zu sein... {emote:effects.scared}",
@@ -989,18 +989,18 @@
         "Nachdem du auf deiner Reise eine kleine Pause gemacht hast, siehst du **{{pet}}** mit einer **{{food}}** zurückkehren. Es sieht ganz so aus, als hätte sie es von einem Händler gestohlen. Sie beschließen zu gehen, bevor er etwas merkt."
       ],
       "gainTime_m": [
-        "Trotz der vielen Kilometer ist **{{pet}}** in guter Form. Sie reiten ein paar Minuten auf seinem Rücken und gewinnen **{{amount}} Min** {emote:unitValues.timeGain}.",
-        "In einer Kurve beginnt **{{pet}}** plötzlich zu rennen. Sie werden an der Leine mitgeschleift, aber Sie haben gewonnen **{{amount}} Min** {emote:unitValues.timeGain}.",
-        "Was für ein Elan! **{{pet}}** scheint es eilig zu haben, trotzdem können Sie ihm folgen, so gut es geht. Dank ihm gewinnen Sie **{{amount}} Min** {emote:unitValues.timeGain}.",
-        "Der Spürsinn von **{{pet}}** hat Ihnen geholfen, eine Abkürzung zu finden. Dank ihm haben Sie **{{amount}} Min** {emote:unitValues.timeGain}gewonnen.",
-        "Die Verteidigung von **{{pet}}** gegen {{randomAnimal}} wild war keine leichte Aufgabe, und dieses Mal haben Sie einen Stärkeren als sich selbst gefunden. Sie beschließen, die Flucht zu ergreifen, und rennen so schnell Sie können. Durch dieses Missgeschick verdienen Sie **{{amount}} Min** {emote:unitValues.timeGain} auf Ihrer Reise."
+        "Malgré tous les kilomètres, **{{pet}}** est en forme. Vous montez sur son dos quelques minutes et vous gagnez **{{amountDisplay}}** {emote:unitValues.timeGain}.",
+        "Dans un virage, **{{pet}}** se met tout à coup à courir. Vous finissez traîné au bout de sa laisse mais vous avez gagné **{{amountDisplay}}** {emote:unitValues.timeGain}.",
+        "Quel entrain ! **{{pet}}** semble être pressé, malgré cela, vous arrivez à le suivre tant bien que mal. Grâce à lui vous gagnez **{{amountDisplay}}** {emote:unitValues.timeGain}.",
+        "Le flair de **{{pet}}** vous a permis de trouver un raccourci. Grâce à lui, vous avez gagné **{{amountDisplay}}** {emote:unitValues.timeGain}.",
+        "Défendre **{{pet}}** contre {{randomAnimal}} sauvage n'a pas été une mince affaire, et cette fois, vous avez trouvé plus fort que vous. Vous décidez de prendre la fuite, et courez à toute vitesse. Grâce à cette mésaventure vous gagnez **{{amountDisplay}}** {emote:unitValues.timeGain} sur votre trajet."
       ],
       "gainTime_f": [
-        "Es ist schön anzusehen, **{{pet}}** ist in Form. Sie reiten ein paar Minuten auf seinem Rücken und gewinnen **{{amount}} Min** {emote:unitValues.timeGain}.",
-        "In einer Kurve beginnt **{{pet}}** plötzlich zu rennen. Sie werden an der Leine mitgeschleift, aber Sie haben gewonnen **{{amount}} Min** {emote:unitValues.timeGain}.",
-        "Sie bemerken, dass **{{pet}}** es eilig zu haben scheint, trotzdem schaffen Sie es, ihr so gut wie möglich zu folgen. Dank ihr gewinnen Sie **{{amount}} Min** {emote:unitValues.timeGain}.",
-        "Der Spürsinn von **{{pet}}** hat Ihnen geholfen, eine Abkürzung zu finden. Dank ihr haben Sie **{{amount}} Min** {emote:unitValues.timeGain}gewonnen.",
-        "Die Verteidigung von **{{pet}}** gegen {{randomAnimal}} wild war keine leichte Aufgabe, und dieses Mal haben Sie einen Stärkeren als sich selbst gefunden. Sie beschließen, die Flucht zu ergreifen, und rennen so schnell Sie können. Durch dieses Missgeschick verdienen Sie **{{amount}} Min** {emote:unitValues.timeGain} auf Ihrer Reise."
+        "C'est beau à voir, **{{pet}}** est en forme. Vous montez sur son dos quelques minutes et vous gagnez **{{amountDisplay}}** {emote:unitValues.timeGain}.",
+        "Dans un virage, **{{pet}}** se met tout à coup à courir. Vous finissez traîné au bout de sa laisse mais vous avez gagné **{{amountDisplay}}** {emote:unitValues.timeGain}.",
+        "Vous remarquez que **{{pet}}** semble être pressée, malgré cela, vous arrivez à la suivre tant bien que mal. Grâce à elle vous gagnez **{{amountDisplay}}** {emote:unitValues.timeGain}.",
+        "Le flair de **{{pet}}** vous a permis de trouver un raccourci. Grâce à elle, vous avez gagné **{{amountDisplay}}** {emote:unitValues.timeGain}.",
+        "Défendre **{{pet}}** contre {{randomAnimal}} sauvage n'a pas été une mince affaire, et cette fois, vous avez trouvé plus fort que vous. Vous décidez de prendre la fuite, et courez à toute vitesse. Grâce à cette mésaventure vous gagnez **{{amountDisplay}}** {emote:unitValues.timeGain} sur votre trajet."
       ],
       "points": [
         "Menschen, die Ihnen mit **{{pet}}** begegnen, werden Sie unweigerlich bemerken. Das steigert Ihren Ruf und Sie verdienen daher **{{amount}}** {emote:unitValues.score}.",
@@ -1038,18 +1038,18 @@
         "Als du mit **{{pet}}** spielen willst, versetzst du ihr einen Schlag. Sie wird verletzt und Sie bringen sie zu einem Heiler, um sie zu heilen. Nachdem der Heiler sie geheilt hat, nimmt er Ihnen **{{amount}}** {emote:unitValues.lostMoney}ab."
       ],
       "loseTime_m": [
-        "Wenn du immer wieder **{{pet}}** anrufst, damit er in deiner Nähe bleibt, verlierst du **{{amount}} Min** :clock2:.",
-        "Sie spüren, dass **{{pet}}** sich anscheinend nicht bewegen will. Sie beschließen dennoch, ihn mit Gewalt zu ziehen. Durch seine Schuld verlieren Sie **{{amount}} Min** :clock2:.",
-        "Sie sehen **{{pet}}** auf Sie zugerannt kommen, verfolgt von {{randomAnimal}} wild! Sie ergreifen mit ihm die Flucht. Durch diese Verfolgungsjagd haben Sie **{{amount}} Min** :clock2: auf Ihrem Weg verloren.",
-        "Als Sie in ein Dorf kommen, hören Sie ein Gerücht über einen Vertrauten, der wie **{{pet}}** aussieht und Dorfbewohner angreifen soll. Als die Bewohner Sie sehen, bekommen sie Angst vor Ihnen und Ihrem Vertrauten und Sie werden sofort aus dem Dorf vertrieben. Durch dieses Missgeschick haben Sie auf Ihrer Reise **{{amount}} Min** :clock2: verloren.",
-        "Sie entdecken, dass **{{pet}}** eindringlich auf den Boden schaut und beschließt, ein Loch zu graben. Daraus kommt eine verschlossene Truhe zum Vorschein. Nach mehreren Versuchen gelingt es Ihnen, die Truhe zu öffnen, aber sie ist leer. Dieses Missgeschick hat Sie **{{amount}} Min** :clock2:."
+        "À force de rappeler **{{pet}}** afin qu'il reste près de vous, vous perdez **{{amountDisplay}}** :clock2:.",
+        "Vous sentez que **{{pet}}** ne semble pas vouloir bouger. Vous décidez tout de même de le tirer de force. Par sa faute, vous perdez **{{amountDisplay}}** :clock2:.",
+        "Vous voyez **{{pet}}** venir vers vous en courant poursuivi par {{randomAnimal}} sauvage ! Vous prenez la fuite avec lui. Cette course poursuite vous a fait perdre **{{amountDisplay}}** :clock2: sur votre trajet.",
+        "En entrant dans un village, vous entendez une rumeur portant sur un familier ressemblant à **{{pet}}** qui attaquerait des villageois. En vous voyant, les habitants prennent peur de vous et de votre familier, et vous êtes alors immédiatement chassé du village. Cette mésaventure vous a fait perdre **{{amountDisplay}}** :clock2: sur votre trajet.",
+        "Vous découvrez que **{{pet}}** regarde avec insistance le sol et décide d'y creuser un trou. Il en ressort un coffre fermé. Après plusieurs tentatives, vous réussissez à l'ouvrir, mais celui-ci est vide. Cette mésaventure vous a bien fait perdre **{{amountDisplay}}** :clock2:."
       ],
       "loseTime_f": [
-        "Wenn du immer wieder **{{pet}}** anrufst, damit sie in deiner Nähe bleibt, verlierst du **{{amount}} Min** :clock2:.",
-        "Sie spüren, dass **{{pet}}** sich anscheinend nicht bewegen will. Sie beschließen dennoch, sie mit Gewalt zu ziehen. Durch ihre Schuld verlieren Sie **{{amount}} Min** :clock2:.",
-        "Sie sehen **{{pet}}** auf Sie zugerannt kommen, verfolgt von {{randomAnimal}} wild! Sie ergreifen mit ihr die Flucht. Durch diese Verfolgungsjagd haben Sie **{{amount}} Min** :clock2: auf Ihrem Weg verloren.",
-        "Als Sie in ein Dorf kommen, hören Sie ein Gerücht über einen Vertrauten, der wie **{{pet}}** aussieht und Dorfbewohner angreifen soll. Als die Bewohner Sie sehen, bekommen sie Angst vor Ihnen und Ihrem Vertrauten und Sie werden sofort aus dem Dorf vertrieben. Durch dieses Missgeschick haben Sie auf Ihrer Reise **{{amount}} Min** :clock2: verloren.",
-        "Sie entdecken, dass **{{pet}}** eindringlich auf den Boden schaut und beschließt, ein Loch zu graben. Sie holt eine verschlossene Truhe heraus. Nach mehreren Versuchen gelingt es Ihnen, die Truhe zu öffnen, aber sie ist leer. Dieses Missgeschick hat Sie **{{amount}} Min** :clock2:."
+        "À force de rappeler **{{pet}}** afin qu'elle reste près de vous, vous perdez **{{amountDisplay}}** :clock2:.",
+        "Vous sentez que **{{pet}}** ne semble pas vouloir bouger. Vous décidez tout de même de la tirer de force. Par sa faute, vous perdez **{{amountDisplay}}** :clock2:.",
+        "Vous voyez **{{pet}}** venir vers vous en courant poursuivie par {{randomAnimal}} sauvage ! Vous prenez la fuite avec elle. Cette course poursuite vous a fait perdre **{{amountDisplay}}** :clock2: sur votre trajet.",
+        "En entrant dans un village, vous entendez une rumeur portant sur un familier ressemblant à **{{pet}}** qui attaquerait des villageois. En vous voyant, les habitants prennent peur de vous et de votre familier, et vous êtes alors immédiatement chassé du village. Cette mésaventure vous a fait perdre **{{amountDisplay}}** :clock2: sur votre trajet.",
+        "Vous découvrez que **{{pet}}** regarde avec insistance le sol et décide d'y creuser un trou. Elle en ressort un coffre fermé. Après plusieurs tentatives, vous réussissez à l'ouvrir, mais celui-ci est vide. Cette mésaventure vous a bien fait perdre **{{amountDisplay}}** :clock2:."
       ],
       "petFlee_m": [
         "Nach so vielen Misshandlungen war das unvermeidlich.**{{pet}}** respektiert Sie nicht und rennt deshalb in die Ferne. Sie können ihn nicht finden und verlieren ihn für immer...",
@@ -1556,7 +1556,7 @@
     },
     "results": {
       "life": "Sie heben den Becher $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) vorsichtig an und bemerken, dass sich darunter nichts befindet. Enttäuscht und als schlechter Verlierer schlagen Sie gegen die restlichen Becher, die durch die Luft fliegen. Als Sie bemerken, dass sich auch in den anderen Bechern nichts befindet, wenden Sie sich wieder dem Betrüger zu. Leider schlägt dieser zuerst zu. Sie verlieren **{{quantity}} {emote:unitValues.lostHealth}**.",
-      "time": "Sie heben den Becher $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) vorsichtig an und entdecken mit Freude eine kleine Münze! Leider scheint der Mann hinter Ihnen nicht gewillt zu sein, Sie mit Ihrer Belohnung gehen zu lassen. Sie verlieren **{{quantity}} Min {emote:unitValues.time}** dabei, mit ihm zu verhandeln, bevor Sie aufgeben und Ihren Weg fortsetzen.",
+      "time": "Vous soulevez doucement le gobelet $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) et découvrez avec plaisir une petite pièce ! Malheureusement, l'homme derrière vous ne semble pas vouloir vous laisser partir avec votre récompense. Vous perdez **{{quantity}} {emote:unitValues.time}** à négocier avec lui avant d'abandonner et de reprendre votre route.",
       "nothing": "Sie heben den Becher $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) vorsichtig an und bemerken, dass sich darunter nichts befindet. Enttäuscht machen Sie sich traurig auf den Weg und sagen sich, dass Sie vielleicht ein anderes Mal mehr Glück haben werden.",
       "end": "Als Sie nicht reagieren, kommt der Mann auf die schlechte Idee, Sie ausrauben zu wollen. Sie bemerken sein Manöver und greifen ein, werden aber schnell von der Stärke des Mannes überrascht, der sich mit einer plötzlichen Bewegung losreißen kann und dann wegläuft. Sie kommen mit einer leichten Verletzung davon. Sie verlieren **{{quantity}} {emote:unitValues.lostHealth}**."
     }
