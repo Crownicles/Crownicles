@@ -1951,7 +1951,7 @@
       "end": {
         "outcomes": {
           "0": "Sie denken viele Minuten lang nach und setzen dann, weil Sie nicht wissen, was Sie tun sollen, Ihren Weg fort.",
-          "1": "Sie beschließen, hier Ihr Lager aufzuschlagen und die Reise später fortzusetzen."
+          "1": "Erschöpft beschließen Sie, hier Ihr Lager aufzuschlagen und die Reise später fortzusetzen."
         }
       },
       "goAlchemist": {
