@@ -132,9 +132,13 @@ export default class EventsHandlers {
 			[MissionType.NORMAL]: []
 		};
 		let totalGems = 0;
+		let totalPoints = 0;
+		let totalMoney = 0;
 		let totalXP = 0;
 		for (const mission of packet.missions) {
 			totalGems += mission.gemsToWin;
+			totalPoints += mission.pointsToWin;
+			totalMoney += mission.moneyToWin;
 			totalXP += mission.xpToWin;
 			missionLists[mission.missionType].push(MissionUtils.formatCompletedMission(mission, lng));
 		}
@@ -149,13 +153,37 @@ export default class EventsHandlers {
 			});
 		}
 		if (packet.missions.length > 1) {
+			const totalRewardsLines: string[] = [];
+			if (totalGems > 0) {
+				totalRewardsLines.push(i18n.t("notifications:missions.completed.totalDisplay.gems", {
+					count: totalGems,
+					lng
+				}));
+			}
+			if (totalPoints > 0) {
+				totalRewardsLines.push(i18n.t("notifications:missions.completed.totalDisplay.points", {
+					count: totalPoints,
+					lng
+				}));
+			}
+			if (totalMoney > 0) {
+				totalRewardsLines.push(i18n.t("notifications:missions.completed.totalDisplay.money", {
+					count: totalMoney,
+					lng
+				}));
+			}
+			if (totalXP > 0) {
+				totalRewardsLines.push(i18n.t("notifications:missions.completed.totalDisplay.xp", {
+					count: totalXP,
+					lng
+				}));
+			}
+			if (totalRewardsLines.length === 0) {
+				totalRewardsLines.push(i18n.t("notifications:missions.completed.noRewards", { lng }));
+			}
 			completedMissionsEmbed.addFields({
 				name: i18n.t("notifications:missions.completed.totalRewards", { lng }),
-				value: i18n.t("notifications:missions.completed.totalDisplay", {
-					lng,
-					gems: totalGems,
-					xp: totalXP
-				})
+				value: totalRewardsLines.join("\n")
 			});
 		}
 		await interaction.channel.send({ embeds: [completedMissionsEmbed] });
