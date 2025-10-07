@@ -1,6 +1,3 @@
-// Armor tests mirroring Weapon tests style.
-// NOTE: Replace all -1 placeholders with real expected values once known.
-
 import {describe, expect, it} from 'vitest';
 import {Armor} from '../../../src/data/Armor';
 import {InventoryConstants} from '../../../../Lib/src/constants/InventoryConstants';
