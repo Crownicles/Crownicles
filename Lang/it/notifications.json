@@ -17,7 +17,13 @@
         "sideMission_other": "{emote:missions.sideMission} **Missioni secondarie**"
       },
       "totalRewards": "{emote:missions.total} Premi totali",
-      "totalDisplay": "Gemme vinte: {{gems}} {emote:unitValues.gem}\n Esperienza acquisita: {{xp}} {emote:unitValues.xp}",
+      "totalDisplay": {
+        "gems": "Gemmes gagnées : {{count}} {emote:unitValues.gem}",
+        "points": "Points gagnés : {{count}} {emote:unitValues.score}",
+        "money": "Argent gagné : {{count}} {emote:unitValues.money}",
+        "xp": "Expérience gagnée : {{count}} {emote:unitValues.xp}"
+      },
+      "noRewards": "Aucune récompense.",
       "missionDisplay": "- {{missionDescription}}{{missionsReward}}",
       "pointsDisplay": "+ {{count}} {emote:unitValues.score}",
       "gemsDisplay": "+ {{count}} {emote:unitValues.gem}",
