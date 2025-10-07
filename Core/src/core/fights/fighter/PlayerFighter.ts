@@ -11,12 +11,12 @@ import PetEntity, { PetEntities } from "../../database/game/models/PetEntity";
 import { FighterStatus } from "../FighterStatus";
 import { Potion } from "../../../data/Potion";
 import { checkDrinkPotionMissions } from "../../utils/ItemUtils";
-import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
 import { InventoryConstants } from "../../../../../Lib/src/constants/InventoryConstants";
 import {
 	ItemEnchantment, ItemEnchantmentKind
 } from "../../../../../Lib/src/types/ItemEnchantment";
 import { EnchantmentConstants } from "../../../../../Lib/src/constants/EnchantmentConstants";
+import { FightAlterations } from "../actions/FightAlterations";
 
 type OpponentType = "MonsterFighter" | "PlayerFighter";
 
@@ -28,6 +28,8 @@ export abstract class PlayerFighter extends Fighter {
 	public player: Player;
 
 	public pet?: PetEntity;
+
+	public abstract consumePotionProbability: number;
 
 	protected constructor(player: Player, playerClass: Class) {
 		super(player.level, FightActionDataController.instance.getListById(playerClass.fightActionsIds));
@@ -119,7 +121,7 @@ export abstract class PlayerFighter extends Fighter {
 	 */
 	public async consumePotionIfNeeded(response: CrowniclesPacket[]): Promise<void> {
 		// Potions have a chance of not being consumed
-		if (RandomUtils.crowniclesRandom.realZeroToOneInclusive() < FightConstants.POTION_NO_DRINK_PROBABILITY.AI) {
+		if (RandomUtils.crowniclesRandom.realZeroToOneInclusive() < this.consumePotionProbability) {
 			return;
 		}
 		const inventorySlots = await InventorySlots.getOfPlayer(this.player.id);
@@ -223,8 +225,17 @@ export abstract class PlayerFighter extends Fighter {
 		}
 
 		// Load alterations enchantments
-		this.getAlterationBonusMultiplier(weaponEnchantment, armorEnchantment, ItemEnchantmentKind.BURNED_DAMAGE, EnchantmentConstants.BURNED_DAMAGE_BONUS_MULTIPLIER);
-		this.getAlterationBonusMultiplier(weaponEnchantment, armorEnchantment, ItemEnchantmentKind.POISONED_DAMAGE, EnchantmentConstants.POISONED_DAMAGE_BONUS_MULTIPLIER);
-		this.getAlterationBonusMultiplier(weaponEnchantment, armorEnchantment, ItemEnchantmentKind.FROZEN_DAMAGE, EnchantmentConstants.FROZEN_DAMAGE_BONUS_MULTIPLIER);
+		this.setAlterationMultiplier(
+			FightAlterations.BURNED,
+			this.getAlterationBonusMultiplier(weaponEnchantment, armorEnchantment, ItemEnchantmentKind.BURNED_DAMAGE, EnchantmentConstants.BURNED_DAMAGE_BONUS_MULTIPLIER)
+		);
+		this.setAlterationMultiplier(
+			FightAlterations.POISONED,
+			this.getAlterationBonusMultiplier(weaponEnchantment, armorEnchantment, ItemEnchantmentKind.POISONED_DAMAGE, EnchantmentConstants.POISONED_DAMAGE_BONUS_MULTIPLIER)
+		);
+		this.setAlterationMultiplier(
+			FightAlterations.FROZEN,
+			this.getAlterationBonusMultiplier(weaponEnchantment, armorEnchantment, ItemEnchantmentKind.FROZEN_DAMAGE, EnchantmentConstants.FROZEN_DAMAGE_BONUS_MULTIPLIER)
+		);
 	}
 }
