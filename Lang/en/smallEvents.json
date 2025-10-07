@@ -18,23 +18,22 @@
   "end": [
     "You continue on your way.",
     "You get back on your way.",
-    "You continue on your way.",
-    "You're heading back in your direction."
+    "You continue on your way."
   ],
   "advanceTime": {
     "stories": [
-      "You see someone who looks strangely like Pérotin. You run towards him, but he also accelerates, probably out of fear. You manage to catch up with him, and realize that you've come to the wrong person. You quickly apologize. You did, however, win **{{time}} Min {emote:unitValues.timeGain}** on your way.",
-      "you hear a cart behind you. The man in the vehicle offers to drop you off wherever you wish. You accept and tell him your destination. After driving a few kilometers, the man tells you he has to go in another direction than yours, so he drops you off and you thank him. You earn **{{time}} Min {emote:unitValues.timeGain}** on your journey.",
-      "you see a carriage in the distance. The princess may be on board! You decide to go and talk to her, and run as fast as you can. Once you're close enough, you discover to your chagrin that you can't approach her because the vehicle is protected by cavalrymen. You have, however, gained **{{time}} Min {emote:unitValues.timeGain}** on your destination.",
-      "you're having a snack, when suddenly a shadow rushes in and snatches it away. You give chase, but are unable to catch up and give up. This mishap has nevertheless earned you **{{time}} Min {emote:unitValues.timeGain}** on your journey.",
-      "you see someone who looks strangely like Gruffo. You run towards him, but he also accelerates, probably out of fear. Once you've caught up with him, you realize that it's not at all the person you thought it was. You have, however, gained **{{time}} Min {emote:unitValues.timeGain}** on your journey.",
-      "a bright spot catches your eye. Your curiosity prompts you to run to the source of the light. It's just a copper coin, but it's saved you **{{time}} Min {emote:unitValues.timeGain}** on your journey.",
-      "a massive fawn-colored dog emerges from a large grove. It snarls, flashes sharp canines and seems intent on biting your legs. Appreciating the idea of being left in one piece, they prompt you to run at full speed, gaining **{{time}} Min {emote:unitValues.timeGain}** on your journey!",
-      "a large wasp's nest detaches itself from the tree under which you were standing and falls at your feet. You run until your lungs beg you to start walking again. Not a wasp has managed to sting you. This mishap has earned you **{{time}} Min {emote:unitValues.timeGain}** on your itinerary!",
-      "you enjoy the pleasant spring weather. Your break is short-lived, however: bandits armed with clubs and chipped swords tear through the bushes to your left, cackling as they quietly advance towards you. Before you even have time to think, your body takes you on a forward flight, so that you gain **{{time}} Min {emote:unitValues.timeGain}** on your course.",
-      "a young boy jostles you as he passes you. With a bad feeling in your gut, you check your pockets: your purse is gone! Catching up with him after a frantic race, you recover what is rightfully yours and leave the miscreant in a ditch, having punished him as he deserved. You realize that this event will have earned you **{{time}} Min {emote:unitValues.timeGain}** on your route.",
-      "you're startled by a rabbit with immaculate fur, which slips between your legs. Initially taken aback, you try to catch up with it. But it doesn't take long for the little animal to lose you. These adventures have earned you **{{time}} Min {emote:unitValues.timeGain}**.",
-      "you hear a woman calling behind you. When you turn around, you immediately notice the metallic-looking object in her hand. Panicked, you flee. Once you've reached a safer place, you notice that you're **{{time}} Min {emote:unitValues.timeGain}** ahead of your travel time."
+      "you see someone who looks strangely like Pérotin. You run towards him, but he also accelerates, probably out of fear. You manage to catch up with him, and then realize you've got the wrong person. You promptly apologize. You have, however, gained **{{timeDisplay}} {emote:unitValues.timeGain}** on your way.",
+      "you hear a cart behind you. The man in the vehicle offers to drop you off wherever you wish. You accept and tell him your destination. After driving a few kilometers, the man tells you he has to go in another direction than yours, so he drops you off and you thank him. You earn **{{timeDisplay}} {emote:unitValues.timeGain}** on your journey.",
+      "you see a carriage in the distance. The princess may be on board! You decide to go and talk to her, and run as fast as you can. Once you're close enough, you discover to your chagrin that you can't approach her as the vehicle is protected by a cavalcade. You have, however, gained **{{timeDisplay}} {emote:unitValues.timeGain}** on your destination.",
+      "you're having a snack, when suddenly a shadow rushes in and snatches it away. You give chase, but are unable to catch up and give up. This mishap has nevertheless saved you **{{timeDisplay}} {emote:unitValues.timeGain}** on your journey.",
+      "you see someone who looks strangely like Gruffo. You run towards him, but he also accelerates, probably out of fear. Once you've caught up with him, you realize that he's not at all the person you thought he was. You have, however, gained **{{timeDisplay}} {emote:unitValues.timeGain}** on your journey.",
+      "a bright spot catches your eye. Your curiosity prompts you to run to the source of the light. It's just a copper coin, but it's saved you **{{timeDisplay}} {emote:unitValues.timeGain}** on your journey.",
+      "a massive fawn-colored dog emerges from a large grove. It snarls, flashes sharp canines, and seems intent on biting your legs. Appreciating the idea of staying in one piece, they send you running at full speed, gaining you **{{timeDisplay}} {emote:unitValues.timeGain}** on your journey!",
+      "a large wasp's nest detaches itself from the tree under which you were standing and falls at your feet. You run until your lungs beg you to start walking again. Not a wasp has managed to sting you. This mishap has saved you **{{timeDisplay}} {emote:unitValues.timeGain}** on your itinerary!",
+      "you enjoy the pleasant spring weather. Your break is short-lived, however: bandits armed with clubs and chipped swords tear through the bushes to your left, cackling as they quietly advance towards you. Before you even have time to think, your body takes you on a forward flight, so that you gain **{{timeDisplay}} {emote:unitValues.timeGain}** on your route.",
+      "a young boy jostles you as he passes you. With a bad feeling in your gut, you check your pockets: your purse is gone! Catching up with him after a frantic race, you recover what is rightfully yours and leave the miscreant in a ditch, having punished him as he deserved. You realize that this event has enabled you to gain **{{timeDisplay}} {emote:unitValues.timeGain}** on your itinerary.",
+      "you're startled when an immaculately-coated rabbit slips between your legs. Initially taken aback, you try to catch up with it. But it doesn't take long for the little animal to lose you. These adventures have earned you **{{timeDisplay}} {emote:unitValues.timeGain}**.",
+      "you hear a woman calling behind you. When you turn around, you immediately notice the metallic-looking object in her hand. Panicked, you flee. Once you've reached a safer place, you notice that you're **{{timeDisplay}} {emote:unitValues.timeGain}** ahead of schedule."
     ]
   },
   "bigBad": {
@@ -124,13 +123,13 @@
       "fail": "You lose at the man's game. However, participation was free. So you decide to continue on your way."
     },
     "medium": {
-      "success": "You try your luck and win the game. The man rewards you appropriately. However, you lose **{{lostTime}} Min :clock2:**.",
-      "fail": "You take part in the man's game. However, you don't win, so you leave hoping for better luck next time. Taking part in the lottery will have cost you **{{lostTime}} Min :clock2:**."
+      "success": "You try your luck and win the game. The man rewards you appropriately. However, you lose **{{lostTimeDisplay}} :clock2:**.",
+      "fail": "You take part in the man's game. However, you don't win, so you leave hoping for better luck next time. Taking part in the lottery will have cost you **{{lostTimeDisplay}} :clock2:**."
     },
     "hard": {
-      "success": "You win the man's game. As a result, he rewards you graciously. However, you lose **{{lostTime}} Min :clock2:**.",
-      "fail": "You seize your chance. Unfortunately, you don't win. Maybe you'll be luckier next time. Taking part in the lottery will have cost you **{{lostTime}} Min :clock2:**.",
-      "failWithMalus": "You bet a hundred coins on the man's game. You lose, however, and leave, dejected at having lost **{{money}}** {emote:unitValues.lostMoney}. Taking part in the lottery will also have cost you **{{lostTime}} Min :clock2:**."
+      "success": "You win the man's game. As a result, he rewards you graciously. However, you lose **{{lostTimeDisplay}} :clock2:**.",
+      "fail": "You seize your chance. Unfortunately, you don't win. Maybe you'll be luckier next time. Taking part in the lottery will have cost you **{{lostTimeDisplay}} :clock2:**.",
+      "failWithMalus": "You bet a hundred coins on the man's game. You lose, however, and leave, dejected at having lost **{{money}}** {emote:unitValues.lostMoney}. Taking part in the lottery will also have cost you **{{lostTimeDisplay}} :clock2:**."
     },
     "poor": "You try to trick the man into paying you a large sum of money. Unfortunately for you, the shopkeeper doubts your good faith, and unable to prove any wealth, you are ruthlessly rejected.",
     "end": "Without paying any further attention to the individual, you continue on your way.",
@@ -140,6 +139,51 @@
       "guildXp": " Your guild wins **{{reward}} {emote:unitValues.xp}**.",
       "points": " You have won **{{reward}} {emote:unitValues.score}**."
     }
+  },
+  "limoges": {
+    "stories": [
+      "a hooded traveler describes a faraway city built around sacred kilns where porcelain so pure white that it seems to capture candlelight is fashioned. It is whispered that master craftsmen trace azure patterns with the precision of illuminators, and that each firing requires ancestral prayers to prevent cracking.",
+      "you meet a mysterious figure who evokes a town perched on a rocky plateau, where translucent enamel panels hang from the facades. As night falls, these iridescent ornaments emit a coppery glow that guides lost travelers like a flight of fireflies tamed by some enchantment.",
+      "you meet a strange man who tells you about a building whose majestic dome towers over metal tracks like a lighthouse of glass and bronze. Inside, he tells you, a chime cadences the departures of the crews, while verdant stained-glass windows cast reflections on the flagstones that resemble the depths of a lake.",
+      "you come face to face with a mysterious figure who tells you of a city where what some call white gold is fashioned. He tells you that the craftsmen jealously guard the secret of a clay so pure it rivals the treasures of kings, and that spies from faraway kingdoms are constantly trying to steal their ancestral techniques.",
+      "you meet a hooded stranger who describes a town where craftsmen work in monastic silence, tracing incredibly fine patterns on snow-white surfaces. He whispers that they fast before each important firing and that their workshops resound with prayers as much as hammers.",
+      "you are approached by a man who tells you of a city where, when night falls, the glowing lights of the furnaces pierce the darkness like stars falling from the sky. The traveler claims that this earthly constellation can be seen from the surrounding hills, guiding the lost back to civilization.",
+      "you meet a storyteller who tells of a town built on the banks of a river from which miraculous white earth is extracted. He tells how the quarries resemble chalk caves, and the workers who come up from them are covered in a ghostly dust that makes them seem like spectres.",
+      "you discover a masked man who approaches you and strikes up a conversation. He describes a city where copper bells resonate with a sound so pure it's said they were cast from the same metal as enameled lamps. He claims that their tinkling guides travelers through the morning mists of the plateau."
+    ],
+    "questions": {
+      "journeyInvitation": "After a few minutes of impassioned storytelling, his eyes shine with a strange gleam and he asks you: would you agree, if fate permitted, to one day walk to this city suspended between light and kaolin?",
+      "seenBetterCity": "He suddenly pauses, tilts his head with an enigmatic smile and challenges you: have you ever trodden the cobblestones of a more magnificent city than the one he's talking about?",
+      "enameledJewel": "Once he's finished telling his tale, he takes a quiet step closer and murmurs in a low voice: would you like to one day contemplate with your own eyes the enamelled jewels created by the goldsmiths of this blessed city?",
+      "believeExaggerated": "Watching your reaction with almost alarming attention, he scrutinizes your gaze: do you think his flamboyant descriptions are nothing more than a storyteller's boast?",
+      "carryPorcelain": "As he concludes his tale, he mimes the solemn gesture of handing you an imaginary casket: would you wear this city's sacred porcelain with the reverence it deserves?",
+      "tooTiredToDream": "Noticing your shod boots and tired appearance, he pauses with compassion: would you be too weary to dream of a detour to this magnificent city?",
+      "promiseSouvenir": "At the end of his tale, his gaze wanders off into the distance, as if he's already contemplating the city: would you praise this marvel in front of the court and grandees of this kingdom?",
+      "callItMyth": "After recounting these wonders at length, a thin smile stretches his lips: do you think this marvellous city is just a legend embellished by the trouvères?",
+      "followWhispers": "Suddenly lowering his voice as if to share an age-old secret, he whispers a question to you: would you follow the whispers to this enchanted city?",
+      "dismissFountains": "After continuing to depict the splendours of this city for many minutes, he stares at you with gravity: do you think these wonderful tales are overrated?"
+    },
+    "recap": {
+      "success": {
+        "accept": "Your sincere enthusiasm lights up the stranger's face like a lantern in the night: you've embraced the spirit of this luminous city.",
+        "refuse": "Your ardent and passionate defense of the jewel described to you makes his eyes sparkle with pride: he now knows that no other city can dethrone this one in your heart."
+      },
+      "failure": {
+        "accept": "Your reluctance to share your interlocutor's admiration for this city makes his smile flicker like a flame in the wind.",
+        "refuse": "By suggesting that another city could rival the one he cherishes, you shatter the gleam of joy in the eyes of the man in front of you."
+      }
+    },
+    "successStories": [
+      "The stranger bursts into a crystalline, knowing laugh: he understands your attraction but regretfully confesses that he can't take you there right now. Nevertheless, he leaves you with a spark of inspiration that earns you **{{experience}} {emote:unitValues.xp}** and **{{score}} {emote:unitValues.score}**.",
+      "Pleased by your fervor, the stranger courteously tips his wide-brimmed hat. He promises to send you a sign when the road finally opens, then discreetly slips a well-deserved reward into your pocket: **{{experience}} {emote:unitValues.xp}** and{{score}} {emote:unitValues.score}**.",
+      "Touched by the ardor of your conviction, the stranger murmurs that he hopes to cross paths with you one day under the majestic glass roofs of the Great Hall. His blessing galvanizes you and earns you: **{{experience}} {emote:unitValues.xp}** and{{score}} {emote:unitValues.score}**."
+    ],
+    "penalties": {
+      "health": "Your lukewarm response immediately cools his enthusiasm. Disappointed, he abruptly turns his back on you. Turning away yourself, you trip on a shiny paving stone and injure yourself **{{amount}} {emote:unitValues.lostHealth}**.",
+      "money": "Vexed by your lack of wonder, he demands an obeisance \"for the upkeep of the sacred kilns and the glory of the craftsmen\". To get rid of this nuisance, you reluctantly give in **{{amount}} {emote:unitValues.lostMoney}**.",
+      "time": "The stranger stubbornly refuses to let you leave without reliving every marvel of the city in detail. His interminable ranting delays you by **{{amountDisplay}} :clock2:**."
+    },
+    "failureFallback": "The stranger bows with disappointed stiffness before disappearing into the throng of passers-by, leaving you to meditate bitterly on your lack of enthusiasm."
   },
   "interactOtherPlayers": {
     "playerDisplayRanked": "**{{pseudo}}** ({{rank}} {emote:top.congrats})",
@@ -542,9 +586,9 @@
         ],
         "2": {
           "time": [
-            "By taking your route, you realize that this stop was longer than you had anticipated. You lose **{{lostTime}} Min :clock2:**",
-            "As you leave, you realize all the time wasted on this preparation. You lose **{{lostTime}} Min :clock2:**",
-            "By going back on your steps, you start regretting the lost time to wait for this preparation. You lose **{{lostTime}} Min :clock2:**"
+            "As you resume your journey, you realize that this stop was longer than you had anticipated. You lose **{{lostTimeDisplay}} :clock2:**",
+            "As you leave, you realize just how much time you've wasted on this preparation. You lose **{{lostTimeDisplay}} :clock2:**",
+            "As you retrace your steps, you begin to regret the time you wasted waiting for this preparation. You lose **{{lostTimeDisplay}} :clock2:**"
           ],
           "scared": [
             "Once the potion is finished, you decide to take a sip. Immediately, you are transported through an intense hallucination. Your future doesn't look too promising... {emote:effects.scared}",
@@ -945,18 +989,18 @@
         "After taking a short break on your ride, you notice **{{pet}}** coming back with a **{{food}}**. It looks like she stole it from a merchant. You decided to leave before he notices it."
       ],
       "gainTime_m": [
-        "Despite all the miles, **{{pet}}** is in great shape. You ride on his back for a few minutes and you win **{{amount}} Min** {emote:unitValues.timeGain}.",
-        "At a bend in the road, **{{pet}}** suddenly starts running. You end up being dragged along on his leash, but you've won **{{amount}} Min** {emote:unitValues.timeGain}.",
-        "What a spirit! **{{pet}}** seems to be in a hurry, but you manage to keep up with him. Thanks to him, you win **{{amount}} Min** {emote:unitValues.timeGain}.",
-        "**{{pet}}**'s flair allowed you to find a shortcut. Thanks to him, you gained **{{amount}} Min** {emote:unitValues.timeGain}.",
-        "Defending **{{pet}}** against {{randomAnimal}} has been no mean feat, and this time you've found something stronger than you. You decide to flee, and run at full speed. Thanks to this misadventure, you earn **{{amount}} Min** {emote:unitValues.timeGain} along the way."
+        "Despite all the miles, **{{pet}}** is in great shape. You ride on his back for a few minutes and you win **{{amountDisplay}}** {emote:unitValues.timeGain}.",
+        "At a bend in the road, **{{pet}}** suddenly starts running. You end up being dragged along at the end of his leash, but you've won **{{amountDisplay}}** {emote:unitValues.timeGain}.",
+        "What spirit! **{{pet}}** seems to be in a hurry, but you manage to keep up with him. Thanks to him, you win **{{amountDisplay}}** {emote:unitValues.timeGain}.",
+        "The flair of **{{pet}}** has enabled you to find a shortcut. Thanks to him, you've won **{{amountDisplay}}** {emote:unitValues.timeGain}.",
+        "Defending **{{pet}}** against {{randomAnimal}} sauvage has been no mean feat, and this time you've found something stronger than yourself. You decide to flee, and run at full speed. Thanks to this misadventure, you now earn **{{amountDisplay}}** {emote:unitValues.timeGain} along the way."
       ],
       "gainTime_f": [
-        "It's nice to see **{{pet}}** in great shape. You ride on her back for a few minutes and you win **{{amount}} Min** {emote:unitValues.timeGain}.",
-        "At a bend in the road, **{{pet}}** suddenly starts running. You end up being dragged along on her leash, but you've won **{{amount}} Min** {emote:unitValues.timeGain}.",
-        "You notice that **{{pet}}** seems to be in a hurry, and despite that, you manage to follow her the best you can. Thanks to her, you gained **{{amount}} Min** {emote:unitValues.timeGain}.",
-        "**{{pet}}**'s flair allowed you to find a shortcut. Thanks to her, you gained **{{amount}} Min** {emote:unitValues.timeGain}.",
-        "Defending **{{pet}}** against {{randomAnimal}} has been no mean feat, and this time you've found something stronger than you. You decide to flee, and run at full speed. Thanks to this misadventure, you earn **{{amount}} Min** {emote:unitValues.timeGain} along the way."
+        "Nice to see, **{{pet}}** is in great shape. You ride on his back for a few minutes and you win **{{amountDisplay}}** {emote:unitValues.timeGain}.",
+        "At a bend in the road, **{{pet}}** suddenly starts running. You end up being dragged along at the end of his leash, but you've won **{{amountDisplay}}** {emote:unitValues.timeGain}.",
+        "You notice that **{{pet}}** seems to be in a hurry, yet you manage to keep up with her. Thanks to her, you win **{{amountDisplay}}** {emote:unitValues.timeGain}.",
+        "The flair of **{{pet}}** has enabled you to find a shortcut. Thanks to her, you've won **{{amountDisplay}}** {emote:unitValues.timeGain}.",
+        "Defending **{{pet}}** against {{randomAnimal}} sauvage has been no mean feat, and this time you've found something stronger than yourself. You decide to flee, and run at full speed. Thanks to this misadventure, you now earn **{{amountDisplay}}** {emote:unitValues.timeGain} along the way."
       ],
       "points": [
         "People who come across you with **{{pet}}** are sure to take notice. This improves your reputation and earns you **{{amount}}** {emote:unitValues.score}.",
@@ -994,18 +1038,18 @@
         "While wanting to play with **{{pet}}**, you strike her with a blow. Injured, you take her to a vet so she can be healed. After her recovery, the healer charges you **{{amount}}** {emote:unitValues.lostMoney}."
       ],
       "loseTime_m": [
-        "With all that effort calling out **{{pet}}** to make him stay near you, you lose **{{amount}} Min** :clock2:.",
-        "You feel **{{pet}}** doesn't seem to want to move. You nonetheless decide to forcefully pull him. Due to him, you lose **{{amount}} Min** :clock2:.",
-        "You see **{{pet}}** coming to you while running pursued by {{randomAnimal}}! You flee with him. This pursuit has made you lose **{{amount}} Min** :clock2: on your ride.",
-        "While entering a village, you hear a rumor about a pet that looks like **{{pet}}** that would attack villagers. Upon seeing you, the inhabitants are afraid of you and your pet, and you were immediately hunted out of the village. This experience has made you lose **{{amount}} Min** :clock2: on your ride.",
-        "You find out that **{{pet}}** is watching the ground and decides to dig a hole into it. A closed chest emerges out of it. After several attempts, you have successfully opened it, but it is empty. This experience has made you lose **{{amount}} Min** :clock2:."
+        "By calling back **{{pet}}** so that he stays close to you, you lose **{{amountDisplay}}** :clock2:.",
+        "You feel that **{{pet}}** doesn't seem to want to move. You decide to pull him by force. Because of him, you lose **{{amountDisplay}}** :clock2:.",
+        "You see **{{pet}}** running towards you, pursued by {{randomAnimal}} sauvage! You flee with him. The chase has cost you **{{amountDisplay}}** :clock2: along the way.",
+        "As you enter a village, you hear a rumor that a pet resembling **{{pet}}** is attacking villagers. On seeing you, the villagers take fright of you and your pet, and you are immediately chased out of the village. As a result of this mishap, you lost **{{amountDisplay}}** :clock2: along the way.",
+        "You discover that **{{pet}}** is staring at the ground and decides to dig a hole. What emerges is a closed chest. After several attempts, you manage to open it, but it's empty. This mishap has cost you **{{amountDisplay}}** :clock2:."
       ],
       "loseTime_f": [
-        "With all that effort calling out **{{pet}}** to make her stay near you, you lose **{{amount}} Min** :clock2:.",
-        "You feel **{{pet}}** doesn't seem to want to move. You nonetheless decide to forcefully pull her. Due to her, you lose **{{amount}} Min** :clock2:.",
-        "You see **{{pet}}** coming to you while running pursued by {{randomAnimal}}! You flee with her. This pursuit has made you lose **{{amount}} Min** :clock2: on your ride.",
-        "While entering a village, you hear a rumor about a pet that looks like **{{pet}}** that would attack villagers. Upon seeing you, the inhabitants are afraid of you and your pet, and you were immediately hunted out of the village. This experience has made you lose **{{amount}} Min** :clock2: on your ride.",
-        "You find out that **{{pet}}** is watching the ground and decides to dig a hole into it. A closed chest emerges out of it. After several attempts, you have successfully opened it, but it is empty. This experience has made you lose **{{amount}} Min** :clock2:."
+        "If you keep calling **{{pet}}** so that she stays close to you, you lose **{{amountDisplay}}** :clock2:.",
+        "You feel that **{{pet}}** doesn't seem to want to move. Nevertheless, you decide to pull her by force. Because of her, you lose **{{amountDisplay}}** :clock2:.",
+        "You see **{{pet}}** running towards you, pursued by {{randomAnimal}} sauvage! You flee with her. This chase has caused you to lose **{{amountDisplay}}** :clock2: along the way.",
+        "As you enter a village, you hear a rumor that a pet resembling **{{pet}}** is attacking villagers. On seeing you, the villagers take fright of you and your pet, and you are immediately chased out of the village. As a result of this mishap, you lost **{{amountDisplay}}** :clock2: along the way.",
+        "You discover that **{{pet}}** is staring at the ground and decides to dig a hole. She pulls out a closed chest. After several attempts, you manage to open it, but it's empty. This mishap has cost you **{{amountDisplay}}** :clock2:."
       ],
       "petFlee_m": [
         "This was unavoidable, after all of this mistreatment. **{{pet}}** doesn't respect you and runs away from you. You can't find him and lose him forever...",
@@ -1512,7 +1556,7 @@
     },
     "results": {
       "life": "You gently lift the $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) cup and notice that there's nothing underneath. Disappointed, and a sore loser, you strike the remaining cups, which fly into the air. Noticing that there was nothing in the other cups either, you turn back to the hustler. Unfortunately, he strikes first. You lose **{{quantity}} {emote:unitValues.lostHealth}**.",
-      "time": "You gently raise the $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) cup and gladly discover a little piece! Unfortunately, the man behind you does not seem to want to let you leave with your reward. You lose **{{quantity}} Min {emote:unitValues.time}** negociating with him before giving up and getting back on your way.",
+      "time": "You gently lift the cup $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) and are delighted to discover a small coin! Unfortunately, the man behind you doesn't seem to want to let you leave with your reward. You waste **{{quantity}} {emote:unitValues.time}** negotiating with him before giving up and continuing on your way.",
       "nothing": "You gently raise the $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) cup and notice that there is nothing below. Disappointed, you are sadly getting back on your tracks, hoping you may have more luck another time.",
       "end": "Seeing your lack of reaction, the man has the bad idea of trying to rob you. Noticing his maneuver, you intervene, but you're quickly surprised by the man's strength, as he manages to get out of the way with a sudden movement, before fleeing. You escape with a slight wound. You lose **{{quantity}} {emote:unitValues.lostHealth}**."
     }
@@ -1820,4 +1864,3 @@
     ]
   }
 }
-
