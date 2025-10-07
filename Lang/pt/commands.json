@@ -8,16 +8,16 @@
     "petField": "**Tipo:** {{emote}} {{typeName}}\n**Nome:** {{nickname}}\n**Raridade:** {{rarity}}\n**Género:** {{sex}}\n**Mentalidade:** {{loveLevel}}",
     "noNickname": "Sem alcunha",
     "loveLevels": {
-      "1_male": ":smirk_cat: Fiável",
-      "1_female": ":smirk_cat: Fielleuse",
-      "2_male": ":pouting_cat: Sauvage",
-      "2_female": ":pouting_cat: Sauvage",
-      "3_male": ":scream_cat: Medo",
-      "3_female": ":scream_cat: Medo",
-      "4_male": ":smiley_cat: Domesticado",
-      "4_female": ":smiley_cat: Domesticado",
-      "5_male": ":heart_eyes_cat: Vestido",
-      "5_female": ":heart_eyes_cat: Vestido"
+      "1_male": "{emote:loveLevels.0} Fiável",
+      "1_female": "{emote:loveLevels.0} Fielleuse",
+      "2_male": "{emote:loveLevels.1} Sauvage",
+      "2_female": "{emote:loveLevels.1} Sauvage",
+      "3_male": "{emote:loveLevels.2} Medo",
+      "3_female": "{emote:loveLevels.2} Medo",
+      "4_male": "{emote:loveLevels.3} Domesticado",
+      "4_female": "{emote:loveLevels.3} Domesticado",
+      "5_male": "{emote:loveLevels.4} Vestido",
+      "5_female": "{emote:loveLevels.4} Vestido"
     },
     "hungry": "🤤 com fome",
     "diet": {
@@ -462,8 +462,8 @@
   "report": {
     "adviceTitle": "Conselhos :",
     "chooseDestinationIndications": "Escolha um destino para a sua viagem:",
-    "choseMapMinutes_one": "{{mapPrefix}} {{mapType}} {{mapEmote}}{{mapName}}Decidiu dirigir-se para ** **.{{time}} Esta viagem demorará aproximadamente ** minuto**.",
-    "choseMapMinutes_other": "{{mapPrefix}} {{mapType}} {{mapEmote}}{{mapName}}Decidiu dirigir-se para ** **.{{time}} Esta viagem demorará aproximadamente ** minutos**.",
+    "choseMapMinutes_one": "Decidiu ir para {{mapPrefix}} {{mapType}} {{mapEmote}} **{{mapName}}**. Esta viagem demorará aproximadamente **{{timeDisplay}}**.",
+    "choseMapMinutes_other": "Decidiu ir para {{mapPrefix}} {{mapType}} {{mapEmote}} **{{mapName}}**. Esta viagem demorará aproximadamente **{{timeDisplay}}**.",
     "choseMap_one": "{{mapPrefix}} {{mapType}} {{mapEmote}}{{mapName}}Decidiu dirigir-se para ** **.{{time}} Esta viagem demorará aproximadamente ** hora**.",
     "choseMap_other": "{{mapPrefix}} {{mapType}} {{mapEmote}}{{mapName}}Decidiu dirigir-se para ** **.{{time}} A viagem demorará aproximadamente ** horas**.",
     "collectedPointsTitle": "Pontos recolhidos :",
