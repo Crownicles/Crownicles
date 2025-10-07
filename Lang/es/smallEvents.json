@@ -18,23 +18,22 @@
   "end": [
     "Continúa tu camino.",
     "Vuelves a la carretera.",
-    "Continúa tu camino.",
-    "Vuelves en tu dirección."
+    "Continúa tu camino."
   ],
   "advanceTime": {
     "stories": [
-      "ves a alguien que se parece extrañamente a Pérotin. Corres hacia él, pero él también acelera, probablemente por miedo. Logras alcanzarle y te das cuenta de que te has equivocado de persona. Rápidamente te disculpas. Sin embargo, has ganado **{{time}} Min {emote:unitValues.timeGain}** en tu camino.",
-      "oyes un carro detrás de ti. El hombre del vehículo se ofrece a llevarte a donde quieras. Aceptas y le indicas tu destino. Después de conducir unos kilómetros, el hombre te dice que tiene que ir en una dirección diferente a la tuya, así que te lleva y le das las gracias. Ganas **{{time}} Min {emote:unitValues.timeGain}** en tu viaje.",
-      "ves un carruaje a lo lejos. Puede que la princesa esté a bordo. Decides ir a hablar con ella y corres tan rápido como puedes. Una vez que estás lo suficientemente cerca, te decepciona descubrir que no puedes acercarte a ella porque el vehículo está protegido por una procesión de jinetes. Sin embargo, has ganado **{{time}} Min {emote:unitValues.timeGain}** sobre tu destino.",
-      "Estás tomando un tentempié cuando, de repente, una sombra se precipita hacia ti y te lo roba. La persigues, pero no consigues alcanzarla y te rindes. Sin embargo, este percance te ha salvado **{{time}} Min {emote:unitValues.timeGain}** en tu viaje.",
-      "ves a alguien que se parece sospechosamente a Gruffo. Corres hacia él, pero él también acelera, probablemente por miedo. Una vez que le has alcanzado, te das cuenta de que no es en absoluto la persona que pensabas. Sin embargo, has ganado **{{time}} Min {emote:unitValues.timeGain}** por el camino.",
-      "Un punto brillante te llama la atención. Tu curiosidad te impulsa a correr hacia la fuente de la luz. No es más que una moneda de cobre corriente, pero te ha salvado **{{time}} Min {emote:unitValues.timeGain}** en tu viaje.",
-      "un enorme perro de color leonado emerge de una gran arboleda. Gruñe, mostrando afilados caninos, y parece como si quisiera morderte las piernas. Apreciando la idea de que te dejen de una pieza, te envían corriendo a toda velocidad, ¡ganándote **{{time}} Min {emote:unitValues.timeGain}** por el camino!",
-      "un gran nido de avispas se desprende del árbol bajo el que estabas y cae a tus pies. Corres hasta que tus pulmones te ruegan que reanudes la marcha. Ni una sola avispa ha conseguido picarte. Este percance te ha ahorrado **{{time}} Min {emote:unitValues.timeGain}** ¡en tu ruta!",
-      "disfrutas del agradable tiempo primaveral. Sin embargo, tu descanso dura poco: unos bandidos armados con garrotes y espadas astilladas surcan los arbustos a tu izquierda, cacareando mientras avanzan tranquilamente hacia ti. Antes incluso de que tengas tiempo de pensar, tu cuerpo te lleva a una carrera precipitada, que te hace ganar **{{time}} Min {emote:unitValues.timeGain}** por el camino.",
-      "un niño te empuja al pasar. Con un mal presentimiento en las tripas, compruebas el contenido de tus bolsillos: ¡tu monedero ha desaparecido! Al alcanzarle tras una frenética carrera, recuperas lo que te pertenece y dejas al malhechor en una cuneta, habiéndole castigado como se merecía. Te das cuenta de que este suceso te habrá valido **{{time}} Min {emote:unitValues.timeGain}** en tu ruta.",
-      "te sobresalta un conejo de pelaje inmaculado, que se cuela entre tus piernas. Desconcertado al principio, intentas alcanzarlo. Pero el animalito no tarda en perderte. Estas aventuras te habrán valido **{{time}} Min {emote:unitValues.timeGain}**.",
-      "oyes a una mujer que llama detrás de ti. Cuando te das la vuelta, te fijas inmediatamente en el objeto metálico que lleva en la mano. Presa del pánico, huyes. Cuando llegas a un lugar más seguro, te das cuenta de que estás **{{time}} Min {emote:unitValues.timeGain}** adelantado."
+      "ves a alguien que se parece extrañamente a Pérotin. Corres hacia él, pero él también acelera, probablemente por miedo. Logras alcanzarle y te das cuenta de que te has equivocado de persona. Rápidamente te disculpas. Sin embargo, has ganado **{{timeDisplay}} {emote:unitValues.timeGain}** en tu camino.",
+      "oyes un carro detrás de ti. El hombre del vehículo se ofrece a llevarte a donde quieras. Aceptas y le indicas tu destino. Después de conducir unos kilómetros, el hombre te dice que tiene que ir en una dirección diferente a la tuya, así que te lleva y le das las gracias. Ganas **{{timeDisplay}} {emote:unitValues.timeGain}** en tu viaje.",
+      "ves un carruaje a lo lejos. Puede que la princesa esté a bordo. Decides ir a hablar con ella y corres tan rápido como puedes. Una vez que estás lo suficientemente cerca, te decepciona descubrir que no puedes acercarte a ella porque el vehículo está protegido por una procesión de jinetes. Sin embargo, has ganado **{{timeDisplay}} {emote:unitValues.timeGain}** sobre tu destino.",
+      "Estás tomando un tentempié cuando, de repente, una sombra se precipita y te lo arrebata. La persigues, pero no consigues alcanzarla y te rindes. Sin embargo, este percance te ha salvado **{{timeDisplay}} {emote:unitValues.timeGain}** en tu viaje.",
+      "ves a alguien que se parece sospechosamente a Gruffo. Corres hacia él, pero él también acelera, probablemente por miedo. Una vez que le has alcanzado, te das cuenta de que no es en absoluto la persona que creías. Sin embargo, has ganado **{{timeDisplay}} {emote:unitValues.timeGain}** en tu viaje.",
+      "Un punto brillante te llama la atención. Tu curiosidad te impulsa a correr hacia la fuente de la luz. Es sólo una moneda de cobre, pero te ha salvado **{{timeDisplay}} {emote:unitValues.timeGain}** en tu viaje.",
+      "un enorme perro de color leonado emerge de una gran arboleda. Gruñe, mostrando unos afilados caninos, y parece como si quisiera morderte las piernas. Apreciando la idea de que te quedes de una pieza, ¡te hacen correr a toda velocidad y te hacen ganar **{{timeDisplay}} {emote:unitValues.timeGain}** por el camino!",
+      "un gran nido de avispas se desprende del árbol bajo el que estabas y cae a tus pies. Corres hasta que tus pulmones te ruegan que reanudes la marcha. Ni una sola avispa ha conseguido picarte. ¡Este percance te ha ahorrado **{{timeDisplay}} {emote:unitValues.timeGain}** en tu ruta!",
+      "disfrutas del agradable tiempo primaveral. Sin embargo, tu descanso dura poco, ya que unos bandidos armados con garrotes y espadas astilladas surcan los arbustos a tu izquierda, cacareando mientras avanzan silenciosamente hacia ti. Antes de que te dé tiempo a pensar, tu cuerpo te lanza a la carrera, lo que te ahorra **{{timeDisplay}} {emote:unitValues.timeGain}** en tu ruta.",
+      "un chico te empuja al pasar. Con un mal presentimiento en las tripas, compruebas tus bolsillos: ¡tu monedero ha desaparecido! Al alcanzarle tras una frenética carrera, recuperas lo que te pertenece y dejas al malhechor en una cuneta, después de haberle castigado como se merecía. Te das cuenta de que este suceso te ha permitido ganar **{{timeDisplay}} {emote:unitValues.timeGain}** en tu ruta.",
+      "te sobresalta un conejo de pelaje inmaculado, que se cuela entre tus piernas. Desconcertado al principio, intentas alcanzarlo. Pero el animalito no tarda en perderte. Estas aventuras te habrán hecho ganar **{{timeDisplay}} {emote:unitValues.timeGain}**.",
+      "oyes a una mujer que llama detrás de ti. Cuando te das la vuelta, te fijas inmediatamente en el objeto metálico que lleva en la mano. Presa del pánico, huyes. Una vez que has llegado a un lugar más seguro, te das cuenta de que estás **{{timeDisplay}} {emote:unitValues.timeGain}** adelantado."
     ]
   },
   "bigBad": {
@@ -124,13 +123,13 @@
       "fail": "Se pierde en el juego de los hombres. Sin embargo, la participación era gratuita. Así que decides continuar tu camino."
     },
     "medium": {
-      "success": "Pruebas suerte y ganas la partida. El hombre te recompensa adecuadamente. Sin embargo, pierdes **{{lostTime}} Min :clock2:**.",
-      "fail": "Participas en el juego del hombre. Sin embargo, no ganas, así que te vas con la esperanza de tener más suerte la próxima vez. Participar en la lotería te habrá costado **{{lostTime}} Min :clock2:**."
+      "success": "Pruebas suerte y ganas la partida. El hombre te recompensa adecuadamente. Sin embargo, pierdes **{{lostTimeDisplay}} :clock2:**.",
+      "fail": "Participas en el juego del hombre. Sin embargo, no ganas, así que te vas con la esperanza de tener más suerte la próxima vez. Participar en la lotería te habrá costado **{{lostTimeDisplay}} :clock2:**."
     },
     "hard": {
-      "success": "Ganas el juego del hombre. Como resultado, él te recompensa generosamente.{{lostTime}} :clock2:Sin embargo, pierdes ** Min **.",
-      "fail": "Te arriesgas. Por desgracia, no ganas. Quizá tengas más suerte la próxima vez. Participar en la lotería te habrá costado **{{lostTime}} Min :clock2:**.",
-      "failWithMalus": "Apuestas cien monedas en el juego del hombre. Sin embargo, pierdes y te marchas abatido por haber perdido **{{money}}** {emote:unitValues.lostMoney}. Participar en la lotería también te habrá costado **{{lostTime}} Min :clock2:**."
+      "success": "Ganas el juego del hombre. Como resultado, él te recompensa generosamente. Sin embargo, pierdes **{{lostTimeDisplay}} :clock2:**.",
+      "fail": "Te arriesgas. Por desgracia, no ganas. Quizá tengas más suerte la próxima vez. Participar en la lotería te habrá costado **{{lostTimeDisplay}} :clock2:**.",
+      "failWithMalus": "Apuestas cien monedas al juego del hombre. Sin embargo, pierdes y te vas, decepcionado por haber perdido **{{money}}** {emote:unitValues.lostMoney}. Participar en la lotería también te habrá costado **{{lostTimeDisplay}} :clock2:**."
     },
     "poor": "Intentas engañar al hombre para que te pague una gran suma de dinero. Por desgracia para ti, el tendero duda de tu buena fe y, al no poder demostrar ninguna riqueza, te rechaza sin contemplaciones.",
     "end": "Sin prestar más atención al individuo, continúa su camino.",
@@ -140,6 +139,51 @@
       "guildXp": " Tu gremio gana **{{reward}} {emote:unitValues.xp}**.",
       "points": " Has ganado **{{reward}} {emote:unitValues.score}**."
     }
+  },
+  "limoges": {
+    "stories": [
+      "un viajero encapuchado describe una ciudad lejana construida alrededor de hornos sagrados donde se fabrica porcelana de un blanco tan puro que parece captar la luz de las velas. Se rumorea que los maestros artesanos trazan patrones azules con la precisión de los iluminadores, y que cada cocción requiere plegarias ancestrales para evitar grietas.",
+      "se encuentra con una figura misteriosa que evoca una ciudad encaramada en una meseta rocosa donde cuelgan de las fachadas paneles de esmalte translúcido. Al caer la noche, estos ornamentos iridiscentes irradian una luz cobriza que guía a los viajeros perdidos como un vuelo de luciérnagas domadas por algún encantamiento.",
+      "conoces a un extraño hombre que te habla de un edificio cuya majestuosa cúpula se eleva sobre las vías metálicas como un faro de cristal y bronce. Dentro, te dice, un carillón cadencia las salidas de las tripulaciones, mientras unas vidrieras verdes proyectan sobre las losas reflejos que recuerdan las profundidades de un lago.",
+      "te encuentras cara a cara con un misterioso personaje que te habla de una ciudad donde se fabrica lo que algunos llaman oro blanco. Te cuenta que los artesanos guardan celosamente el secreto de una arcilla tan pura que rivaliza con los tesoros de los reyes, y que espías de reinos lejanos intentan constantemente robarles sus técnicas ancestrales.",
+      "conoces a un forastero encapuchado que te describe una ciudad donde los artesanos trabajan en silencio monacal, trazando patrones increíblemente finos sobre superficies blancas como la nieve. Susurra que ayunan antes de cada cocción importante y que en sus talleres resuenan las plegarias tanto como los martillazos.",
+      "se te acerca un hombre que te habla de una ciudad en la que, cuando cae la noche, las luces resplandecientes de los hornos atraviesan la oscuridad como estrellas que caen del cielo. El viajero afirma que esta constelación terrestre puede verse desde las colinas circundantes, guiando a los perdidos de vuelta a la civilización.",
+      "te encuentras con un cuentacuentos que te habla de una ciudad construida a orillas de un río del que se extrae una tierra blanca milagrosa. Dice que las canteras parecen cuevas de tiza y que los trabajadores que suben de ellas están cubiertos de un polvo fantasmal que les hace parecer espectros.",
+      "descubres a un hombre enmascarado que se acerca a ti y entabla conversación. Describe una ciudad donde el sonido de las campanas de cobre es tan puro que se dice que fueron fundidas con el mismo metal que las lámparas esmaltadas. Afirma que su tintineo guía a los viajeros a través de las brumas matinales de la meseta."
+    ],
+    "questions": {
+      "journeyInvitation": "Tras unos minutos de apasionado relato, sus ojos brillan con un extraño fulgor y te pregunta: ¿aceptarías, si el destino te lo permitiera, viajar un día a esta ciudad suspendida entre la luz y el caolín?",
+      "seenBetterCity": "De repente hace una pausa, ladea la cabeza con una sonrisa enigmática y le desafía: ¿ha caminado alguna vez por los adoquines de una ciudad más magnífica que aquella de la que habla?",
+      "enameledJewel": "Cuando terminó, se acercó un paso en silencio y murmuró en voz baja: ¿te gustaría ver por ti mismo algún día las joyas esmaltadas creadas por los orfebres de esta bendita ciudad?",
+      "believeExaggerated": "Observando tu reacción con una atención casi alarmante, escruta tu mirada: ¿crees que sus extravagantes descripciones no son más que los alardes de un cuentista?",
+      "carryPorcelain": "Al concluir su relato, imita el gesto solemne de entregarte una caja imaginaria: ¿llevarías la porcelana sagrada de esta ciudad con la reverencia que se merece?",
+      "tooTiredToDream": "Al notar tus botas desaliñadas y tu aspecto cansado, se detiene un momento, compasivo: ¿estás demasiado cansado para soñar con una diversión en esta magnífica ciudad?",
+      "promiseSouvenir": "Al final de su relato, su mirada se desvió hacia la lejanía, como si ya estuviera contemplando la ciudad: ¿alabarías esta maravilla delante de la corte y de los grandes hombres de este reino?",
+      "callItMyth": "Tras relatar largamente estas maravillas, una fina sonrisa estira sus labios: ¿cree que esta maravillosa ciudad es sólo una leyenda embellecida por los trouvères?",
+      "followWhispers": "De repente, baja la voz como si fuera a compartir un secreto milenario y te pregunta en un susurro si seguirías los susurros que te conducirán a esta ciudad encantada...",
+      "dismissFountains": "Después de seguir describiendo los esplendores de esta ciudad durante varios largos minutos, te mira seriamente: ¿crees que estas maravillosas historias están sobrevaloradas?"
+    },
+    "recap": {
+      "success": {
+        "accept": "Tu sincero entusiasmo ilumina el rostro de un desconocido como una linterna en la noche: has abrazado el espíritu de esta luminosa ciudad.",
+        "refuse": "Tu ardiente y apasionada defensa de la joya que te ha descrito hace que sus ojos brillen de orgullo: ahora sabe que ninguna otra ciudad puede destronar a ésta en tu corazón."
+      },
+      "failure": {
+        "accept": "Su reticencia a compartir la admiración de su entrevistador por esta ciudad hace que su sonrisa parpadee como una llama en el viento.",
+        "refuse": "Al sugerir que otra ciudad podría rivalizar con la que él aprecia, destrozas el brillo de alegría en los ojos del hombre que tienes delante."
+      }
+    },
+    "successStories": [
+      "El desconocido suelta una carcajada cristalina y cómplice: comprende tu atracción, pero confiesa con pesar que hoy no puede llevarte allí. Sin embargo, te deja con una chispa de inspiración que te hace ganar **{{experience}} {emote:unitValues.xp}** y **{{score}} {emote:unitValues.score}**.",
+      "Encantado por tu fervor, el desconocido inclina cortésmente su sombrero de ala ancha. Promete enviarte una señal cuando el camino se abra por fin y, discretamente, te mete en el bolsillo una merecida recompensa: **{{experience}} {emote:unitValues.xp}y{{score}} {emote:unitValues.score}.",
+      "Conmovido por el ardor de tu convicción, el desconocido murmura que espera toparse contigo algún día bajo los majestuosos techos de cristal del Gran Salón. Su bendición te galvaniza y te hace ganar: **{{experience}} {emote:unitValues.xp}y{{score}} {emote:unitValues.score}."
+    ],
+    "penalties": {
+      "health": "Tu tibia respuesta frena de inmediato su entusiasmo. Decepcionado, te da la espalda bruscamente. Al darle la espalda, tropiezas con un adoquín brillante y te haces daño **{{amount}} {emote:unitValues.lostHealth}**.",
+      "money": "Enfadado por tu falta de asombro, exige un donativo \"para el mantenimiento de los hornos sagrados y la gloria de los artesanos\". Para librarte de esta molestia, cedes a regañadientes **{{amount}} {emote:unitValues.lostMoney}**.",
+      "time": "El forastero se niega obstinadamente a dejarle marchar sin relatarle detalladamente todas las maravillas de la ciudad. Su interminable perorata te retrasa **{{amountDisplay}} :clock2:**."
+    },
+    "failureFallback": "El desconocido se inclina con decepcionada rigidez antes de desaparecer entre la multitud de transeúntes, dejándote reflexionando amargamente sobre tu falta de entusiasmo."
   },
   "interactOtherPlayers": {
     "playerDisplayRanked": "**{{pseudo}}** ({{rank}} {emote:top.congrats})",
@@ -542,9 +586,9 @@
         ],
         "2": {
           "time": [
-            "Al reanudar el viaje, te das cuenta de que esta parada ha sido más larga de lo que habías previsto.{{lostTime}} :clock2:Pierdes ** Min **",
-            "Cuando te pones de nuevo en marcha, te das cuenta del tiempo que has perdido con esta preparación.{{lostTime}} :clock2:Pierdes ** Min **",
-            "Mientras vuelves sobre tus pasos, empiezas a lamentar el tiempo que has perdido esperando esta preparación.{{lostTime}} :clock2:Pierdes ** Min **"
+            "Al reanudar el viaje, te das cuenta de que esta parada ha sido más larga de lo que habías previsto. Pierdes **{{lostTimeDisplay}} :clock2:**",
+            "Cuando vuelves a ponerte en marcha, te das cuenta del tiempo que has perdido con esta preparación. Pierdes **{{lostTimeDisplay}} :clock2:**",
+            "Mientras vuelves sobre tus pasos, empiezas a lamentar el tiempo que has perdido esperando esta preparación. Pierdes **{{lostTimeDisplay}} :clock2:**"
           ],
           "scared": [
             "Una vez terminada la poción, decides dar un sorbo. Inmediatamente, eres transportado a través de una intensa alucinación. Tu futuro no parece muy prometedor... {emote:effects.scared}",
@@ -945,18 +989,18 @@
         "{{pet}}{{food}}Después de hacer un breve descanso en tu viaje, ves a ** ** regresando con un ** **. Parece habérselo robado a un mercader. Decides marcharte antes de que se dé cuenta."
       ],
       "gainTime_m": [
-        "A pesar de todos los kilómetros, **{{pet}}** está en plena forma. Te subes a su espalda durante unos minutos y ganas **{{amount}} Min** {emote:unitValues.timeGain}.",
-        "En una curva del camino, **{{pet}}** empieza a correr de repente. Acabas siendo arrastrado al final de su ventaja, pero has ganado **{{amount}} Min** {emote:unitValues.timeGain}.",
-        "¡Qué energía! **{{pet}}** parece tener prisa, pero aun así consigues seguirle el ritmo. Gracias a él ganas **{{amount}} Min** {emote:unitValues.timeGain}.",
-        "El talento de **{{pet}}** te ha permitido encontrar un atajo. Gracias a él, has ganado **{{amount}} Min** {emote:unitValues.timeGain}.",
-        "Defender **{{pet}}** contra {{randomAnimal}} sauvage no ha sido tarea fácil, y esta vez te has encontrado con algo más fuerte que tú. Decides huir, y corres a toda velocidad. Gracias a este percance, has ganado **{{amount}} Min** {emote:unitValues.timeGain} por el camino."
+        "A pesar de todos los kilómetros, **{{pet}}** está en plena forma. Súbete a su espalda durante unos minutos y ganarás **{{amountDisplay}}** {emote:unitValues.timeGain}.",
+        "En una curva del camino, **{{pet}}** empieza a correr de repente. Acabas siendo arrastrado al final de su ventaja, pero has ganado **{{amountDisplay}}** {emote:unitValues.timeGain}.",
+        "¡Qué energía! **{{pet}}** parece tener prisa, pero consigues seguirle el ritmo de alguna manera. Gracias a él ganas **{{amountDisplay}}** {emote:unitValues.timeGain}.",
+        "El talento de **{{pet}}** te ha permitido encontrar un atajo. Gracias a él, has ganado **{{amountDisplay}}** {emote:unitValues.timeGain}.",
+        "Defender **{{pet}}** contra {{randomAnimal}} sauvage no ha sido tarea fácil, y esta vez te has encontrado con algo más fuerte que tú. Decides huir, y corres a toda velocidad. Gracias a esta desventura, has ganado **{{amountDisplay}}** {emote:unitValues.timeGain} por el camino."
       ],
       "gainTime_f": [
-        "Es bueno ver, **{{pet}}** está en gran forma. Te montas en su espalda durante unos minutos y ganas **{{amount}} Min** {emote:unitValues.timeGain}.",
-        "En una curva del camino, **{{pet}}** empieza a correr de repente. Acabas siendo arrastrado al final de su ventaja, pero has ganado **{{amount}} Min** {emote:unitValues.timeGain}.",
-        "Te das cuenta de que **{{pet}}** parece tener prisa, pero consigues seguirle el ritmo. Gracias a ella ganas **{{amount}} Min** {emote:unitValues.timeGain}.",
-        "El talento de **{{pet}}** te ha permitido encontrar un atajo. Gracias a ella, has ganado **{{amount}} Min** {emote:unitValues.timeGain}.",
-        "Defender **{{pet}}** contra {{randomAnimal}} sauvage no ha sido tarea fácil, y esta vez te has encontrado con algo más fuerte que tú. Decides huir, y corres a toda velocidad. Gracias a este percance, has ganado **{{amount}} Min** {emote:unitValues.timeGain} por el camino."
+        "Es un espectáculo para la vista, **{{pet}}** está en plena forma. Te montas en su espalda durante unos minutos y ganas **{{amountDisplay}}** {emote:unitValues.timeGain}.",
+        "En una curva del camino, **{{pet}}** empieza a correr de repente. Acabas siendo arrastrado al final de su ventaja, pero has ganado **{{amountDisplay}}** {emote:unitValues.timeGain}.",
+        "Te das cuenta de que **{{pet}}** parece tener prisa, pero consigues seguirle el ritmo. Gracias a ella ganas **{{amountDisplay}}** {emote:unitValues.timeGain}.",
+        "El talento de **{{pet}}** te ha permitido encontrar un atajo. Gracias a ella, has ganado **{{amountDisplay}}** {emote:unitValues.timeGain}.",
+        "Defender **{{pet}}** contra {{randomAnimal}} sauvage no ha sido tarea fácil, y esta vez te has encontrado con algo más fuerte que tú. Decides huir, y corres a toda velocidad. Gracias a esta desventura, has ganado **{{amountDisplay}}** {emote:unitValues.timeGain} por el camino."
       ],
       "points": [
         "Las personas que se cruzan contigo con **{{pet}}** seguro que se fijan en ti. Esto mejora tu reputación y, por tanto, ganas **{{amount}}** {emote:unitValues.score}.",
@@ -994,18 +1038,18 @@
         "{{pet}}Intentando jugar con ** **, la golpeas. Herida, la llevas a un sanador para que la cure.{{amount}} {emote:unitValues.lostMoney}Después de curarla, el curandero te libera de ** ** ."
       ],
       "loseTime_m": [
-        "{{pet}}{{amount}} :clock2:Si sigues llamando a ** ** para que se quede cerca de ti, perderás a ** Min** .",
-        "{{pet}}Sientes que ** ** no parece querer moverse. Decides tirar de él a la fuerza de todos modos.{{amount}} :clock2:Por su culpa, pierdes a ** Min** .",
-        "{{pet}} {{randomAnimal}} Ves a ** ** corriendo hacia ti, ¡perseguido por sauvage! Huyes con él.{{amount}} :clock2: Esta persecución te ha hecho perder a ** Min** por el camino.",
-        "{{pet}}Al entrar en un pueblo, oyes el rumor de que una mascota parecida a ** ** está atacando a los aldeanos. Al verte, los aldeanos se asustan de ti y de tu mascota, e inmediatamente te echan del pueblo.{{amount}} :clock2: Como resultado de este percance, pierdes a ** Min** por el camino.",
-        "{{pet}}Descubres que ** ** está mirando al suelo y decide cavar un agujero. Sale un cofre cerrado. Tras varios intentos, consigues abrirlo, pero está vacío.{{amount}} :clock2:Este percance te ha costado ** Min** ."
+        "Si sigues llamando **{{pet}}** para que se quede cerca de ti, perderás **{{amountDisplay}}** :clock2:.",
+        "Sientes que **{{pet}}** no parece querer moverse. De todos modos, decides tirar de él a la fuerza. Por su culpa, pierdes **{{amountDisplay}}** :clock2:.",
+        "Ves a **{{pet}}** corriendo hacia ti, ¡perseguido por {{randomAnimal}} sauvage! Huyes con él. La persecución te ha hecho perder a **{{amountDisplay}}** :clock2: por el camino.",
+        "Al entrar en un pueblo, oyes el rumor de que una mascota parecida a **{{pet}}** está atacando a los aldeanos. Al verte, los aldeanos se asustan de ti y de tu mascota, e inmediatamente te echan del pueblo. Como consecuencia de este percance, pierdes a **{{amountDisplay}}** :clock2: por el camino.",
+        "Descubres que **{{pet}}** está mirando al suelo y decide cavar un agujero. Sale un cofre cerrado. Tras varios intentos, consigues abrirlo, pero está vacío. Este percance te ha costado **{{amountDisplay}}** :clock2:."
       ],
       "loseTime_f": [
-        "{{pet}}{{amount}} :clock2:Si sigues llamando a ** ** para mantenerla cerca de ti, perderás a ** Min** .",
-        "{{pet}}Sientes que ** ** no parece querer moverse. Decides tirar de ella a la fuerza de todos modos.{{amount}} :clock2:Por su culpa, pierdes a ** Min** .",
-        "{{pet}} {{randomAnimal}} Ves a ** ** corriendo hacia ti, ¡perseguido por sauvage! Huyes con ella.{{amount}} :clock2: Esta persecución te ha hecho perder a ** Min** por el camino.",
-        "{{pet}}Al entrar en un pueblo, oyes el rumor de que una mascota parecida a ** ** está atacando a los aldeanos. Al verte, los aldeanos se asustan de ti y de tu mascota, e inmediatamente te echan del pueblo.{{amount}} :clock2: Como consecuencia de este percance, pierdes a ** Min** por el camino.",
-        "{{pet}}Descubres que ** ** está mirando el suelo y decide cavar un agujero. Saca un cofre cerrado. Tras varios intentos, consigues abrirlo, pero está vacío.{{amount}} :clock2:Este percance te ha costado ** Min** ."
+        "Si sigues llamando **{{pet}}** para que se quede cerca de ti, perderás **{{amountDisplay}}** :clock2:.",
+        "Sientes que **{{pet}}** no parece querer moverse. De todos modos, decides tirar de ella a la fuerza. Por su culpa, pierdes **{{amountDisplay}}** :clock2:.",
+        "Ves a **{{pet}}** corriendo hacia ti, ¡perseguido por {{randomAnimal}} sauvage! Huyes con ella. Esta persecución te ha hecho perder a **{{amountDisplay}}** :clock2: por el camino.",
+        "Al entrar en un pueblo, oyes el rumor de que una mascota parecida a **{{pet}}** está atacando a los aldeanos. Al verte, los aldeanos se asustan de ti y de tu mascota, e inmediatamente te echan del pueblo. Como consecuencia de este percance, pierdes a **{{amountDisplay}}** :clock2: por el camino.",
+        "Descubres que **{{pet}}** está mirando el suelo y decide cavar un agujero. Saca un cofre cerrado. Tras varios intentos, consigues abrirlo, pero está vacío. Este percance te ha costado **{{amountDisplay}}** :clock2:."
       ],
       "petFlee_m": [
         "{{pet}}Después de tanto maltrato, era inevitable. ** no te respeta y huye en la distancia. No puedes encontrarlo y lo pierdes para siempre...",
@@ -1512,7 +1556,7 @@
     },
     "results": {
       "life": "Levantas suavemente la taza de $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) y observas que no hay nada debajo. Decepcionado y mal perdedor, patea las demás tazas, que vuelan por los aires. Al darse cuenta de que tampoco había nada en las otras tazas, se vuelve hacia el estafador. Por desgracia, él golpea primero. Pierdes **{{quantity}} {emote:unitValues.lostHealth}**.",
-      "time": "$t(smallEvents:gobletsGame.goblets.{{goblet}}.name) Levanta la taza con cuidado y descubre una pequeña moneda. Por desgracia, el hombre que te sigue no parece querer dejarte marchar con tu recompensa.{{quantity}} {emote:unitValues.time}Pasas ** Min ** negociando con él antes de darte por vencido y continuar tu camino.",
+      "time": "Levanta suavemente la taza $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) y descubre encantado una pequeña moneda. Desgraciadamente, el hombre que está detrás de ti no parece querer dejarte marchar con tu recompensa. Pasas **{{quantity}} {emote:unitValues.time}** negociando con él antes de darte por vencido y continuar tu camino.",
       "nothing": "$t(smallEvents:gobletsGame.goblets.{{goblet}}.name) Levanta suavemente la taza y comprueba que no hay nada debajo. Decepcionado, te marchas con tristeza, pensando que tal vez tengas más suerte en otra ocasión.",
       "end": "Al ver tu falta de reacción, el hombre tiene la mala idea de intentar robarte. Al percatarte de su maniobra, intervienes, pero rápidamente te sorprende la fuerza del hombre, que consigue zafarse con un brusco movimiento, antes de huir. Escapas con una herida leve. Pierdes **{{quantity}} {emote:unitValues.lostHealth}**."
     }
@@ -1820,4 +1864,3 @@
     ]
   }
 }
-
