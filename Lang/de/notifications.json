@@ -23,7 +23,7 @@
         "money": "Verdientes Geld: {{count}} {emote:unitValues.money}",
         "xp": "Gewonnene Erfahrung: {{count}} {emote:unitValues.xp}"
       },
-      "noRewards": "Aucune récompense.",
+      "noRewards": "Keine Belohnung.",
       "missionDisplay": "- {{missionDescription}}{{missionsReward}}",
       "pointsDisplay": "+{{count}} {emote:unitValues.score}",
       "gemsDisplay": "+{{count}} {emote:unitValues.gem}",
