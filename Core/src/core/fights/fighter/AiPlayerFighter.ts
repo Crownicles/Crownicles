@@ -10,12 +10,15 @@ import {
 	ClassBehavior, getAiClassBehavior
 } from "../AiBehaviorController";
 import { PlayerFighter } from "./PlayerFighter";
+import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
 
 /**
  * Fighter
  * Class representing a player in a fight
  */
 export class AiPlayerFighter extends PlayerFighter {
+	public consumePotionProbability = FightConstants.POTION_NO_DRINK_PROBABILITY.AI;
+
 	private readonly classBehavior: ClassBehavior;
 
 	public constructor(player: Player, playerClass: Class) {

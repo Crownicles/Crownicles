@@ -17,12 +17,15 @@ import { CrowniclesPacket } from "../../../../../Lib/src/packets/CrowniclesPacke
 import { PlayerFighter } from "./PlayerFighter";
 import { Class } from "../../../data/Class";
 import Player from "../../database/game/models/Player";
+import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
 
 /**
  * Fighter
  * Class representing a real player in a fight
  */
 export class RealPlayerFighter extends PlayerFighter {
+	public consumePotionProbability = FightConstants.POTION_NO_DRINK_PROBABILITY.PLAYER;
+
 	private pveMembers: {
 		attack: number; speed: number;
 	}[];
