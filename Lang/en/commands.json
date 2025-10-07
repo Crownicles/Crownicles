@@ -462,8 +462,8 @@
   "report": {
     "adviceTitle": "Advice:",
     "chooseDestinationIndications": "Choose the destination of your travel:",
-    "choseMapMinutes_one": "You chose to go in the direction {{mapPrefix}} {{mapEmote}} **{{mapName}}** {{mapType}}. You'll travel for about **{{time}} minute**.",
-    "choseMapMinutes_other": "You chose to go in the direction {{mapPrefix}} {{mapEmote}} **{{mapName}}** {{mapType}}. You'll travel for about **{{time}} minutes**.",
+    "choseMapMinutes_one": "You have decided to head for {{mapPrefix}} {{mapType}} {{mapEmote}} **{{mapName}}**. This journey will take approximately **{{timeDisplay}}**.",
+    "choseMapMinutes_other": "You have decided to head for {{mapPrefix}} {{mapType}} {{mapEmote}} **{{mapName}}**. This journey will take approximately **{{timeDisplay}}**.",
     "choseMap_one": "You chose to go in the direction {{mapPrefix}} {{mapEmote}} **{{mapName}}** {{mapType}}. You'll travel for about **{{time}} hour**.",
     "choseMap_other": "You chose to go in the direction {{mapPrefix}} {{mapEmote}} **{{mapName}}** {{mapType}}. You'll travel for about **{{time}} hours**.",
     "collectedPointsTitle": "Collected points:",
