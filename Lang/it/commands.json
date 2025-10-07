@@ -462,8 +462,8 @@
   "report": {
     "adviceTitle": "Avviso :",
     "chooseDestinationIndications": "Scegliete una destinazione per il vostro viaggio:",
-    "choseMapMinutes_one": "Avete deciso di dirigervi verso {{mapPrefix}} {{mapType}} {{mapEmote}} **{{mapName}}**. Questo viaggio durerà circa **{{time}} minuti**.",
-    "choseMapMinutes_other": "Avete deciso di dirigervi verso {{mapPrefix}} {{mapType}} {{mapEmote}} **{{mapName}}**. Il viaggio durerà circa **{{time}} minuti**.",
+    "choseMapMinutes_one": "Vous avez décidé de partir en direction {{mapPrefix}} {{mapType}} {{mapEmote}} **{{mapName}}**. Ce trajet durera environ **{{timeDisplay}}**.",
+    "choseMapMinutes_other": "Vous avez décidé de partir en direction {{mapPrefix}} {{mapType}} {{mapEmote}} **{{mapName}}**. Ce trajet durera environ **{{timeDisplay}}**.",
     "choseMap_one": "Avete deciso di dirigervi verso {{mapPrefix}} {{mapType}} {{mapEmote}} **{{mapName}}**. Il viaggio durerà circa **{{time}} ora**.",
     "choseMap_other": "Avete deciso di partire per {{mapPrefix}} {{mapType}} {{mapEmote}} **{{mapName}}**. Il viaggio durerà circa **{{time}} ore**.",
     "collectedPointsTitle": "Punti raccolti :",
