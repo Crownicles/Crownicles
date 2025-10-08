@@ -16,13 +16,12 @@
               "min": 250
             }
           },
-          "randomItem": {},
           "money": 120
         },
         "2": {
           "requirements": {
             "level": {
-              "min": 50
+              "min": 110
             }
           },
           "randomItem": {
@@ -31,7 +30,7 @@
             }
           },
           "money": 200,
-          "karma": 8
+          "karma": 4
         },
         "3": {
           "requirements": {
@@ -40,12 +39,16 @@
             }
           },
           "health": 15,
-          "money": 180,
-          "karma": 5
+          "money": 65,
+          "karma": 1
         },
         "4": {
           "requirements": {
-            "validPetTypeIds": [1, 2, 28]
+            "validPetTypeIds": [
+              1,
+              2,
+              28
+            ]
           },
           "randomItem": {
             "rarity": {
@@ -53,7 +56,7 @@
             }
           },
           "money": 300,
-          "karma": 12
+          "karma": 6
         },
         "5": {
           "requirements": {
@@ -62,21 +65,26 @@
             }
           },
           "effect": "lost",
-          "karma": -8
+          "karma": -3
         },
         "6": {
           "requirements": {
-            "validPetTypeIds": [3, 4]
+            "validPetTypeIds": [
+              3,
+              4
+            ]
           },
           "money": 150,
-          "karma": 15
+          "karma": 5
         },
         "7": {
           "requirements": {
-            "validPetTypeIds": [5, 6]
+            "validPetTypeIds": [
+              5,
+              6,
+              93
+            ]
           },
-          "randomItem": {},
-          "money": 90,
           "karma": 3
         }
       }
@@ -112,77 +120,23 @@
         },
         "3": {
           "requirements": {
-            "validPetTypeIds": [21, 28, 56, 57]
+            "validPetTypeIds": [
+              21,
+              28,
+              56,
+              57
+            ]
           },
           "karma": -3
         },
         "4": {
           "requirements": {
-            "validPetTypeIds": [1, 2]
+            "validPetTypeIds": [
+              1,
+              2
+            ]
           },
           "karma": -20
-        }
-      }
-    },
-    "approachCautiously": {
-      "outcomes": {
-        "0": {
-          "requirements": {
-            "level": {
-              "min": 40
-            }
-          },
-          "randomItem": {},
-          "money": 100,
-          "karma": 5
-        },
-        "1": {
-          "requirements": {
-            "karma": {
-              "min": 80
-            }
-          },
-          "health": 10,
-          "randomItem": {
-            "rarity": {
-              "min": 3
-            }
-          },
-          "money": 150,
-          "karma": 8
-        },
-        "2": {
-          "requirements": {
-            "speed": {
-              "max": 180
-            }
-          },
-          "health": -5,
-          "money": 60,
-          "karma": 2
-        },
-        "3": {
-          "effect": "occupied",
-          "lostTime": 45,
-          "money": 70,
-          "karma": 3
-        },
-        "4": {
-          "requirements": {
-            "validPetTypeIds": [11, 54, 58, 62, 94, 95]
-          },
-          "randomItem": {},
-          "money": 130,
-          "karma": 10
-        },
-        "5": {
-          "requirements": {
-            "validPetTypeIds": [23, 85, 86]
-          },
-          "effect": "occupied",
-          "lostTime": 20,
-          "money": 200,
-          "karma": 6
         }
       }
     },
@@ -200,7 +154,11 @@
         },
         "1": {
           "requirements": {
-            "validPetTypeIds": [1, 2, 28]
+            "validPetTypeIds": [
+              1,
+              2,
+              28
+            ]
           },
           "money": -30,
           "randomItem": {
@@ -221,7 +179,10 @@
         },
         "3": {
           "requirements": {
-            "validPetTypeIds": [3, 4]
+            "validPetTypeIds": [
+              3,
+              4
+            ]
           },
           "money": -40,
           "karma": 8
@@ -269,7 +230,10 @@
         },
         "4": {
           "requirements": {
-            "validPetTypeIds": [58, 95]
+            "validPetTypeIds": [
+              58,
+              95
+            ]
           },
           "karma": 5
         }
@@ -302,7 +266,11 @@
         },
         "2": {
           "requirements": {
-            "validPetTypeIds": [1, 2, 28]
+            "validPetTypeIds": [
+              1,
+              2,
+              28
+            ]
           },
           "karma": -15
         }
