@@ -47,7 +47,7 @@ function collectAllStrings(
 }
 
 describe('CrowniclesIcons Unicode validation', () => {
-	it('should contains only fully qualified emojis', () => {
+	it('should contain only fully qualified emojis', () => {
 		const allStrings = collectAllStrings(CrowniclesIcons);
 		const failed: { value: string; path: string; codePoints: string }[] = [];
 
