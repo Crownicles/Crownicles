@@ -180,6 +180,23 @@ export class DiscordItemUtils {
 		});
 	}
 
+	/**
+	 * Get the fielder for the item category
+	 * @param itemCategory
+	 */
+	static getFielder(itemCategory: number): ((displayPacket: MainItemDisplayPacket, lng: Language) => EmbedField) | ((displayPacket: SupportItemDisplayPacket, lng: Language) => EmbedField) {
+		switch (itemCategory) {
+			case 0:
+				return DiscordItemUtils.getWeaponField;
+			case 1:
+				return DiscordItemUtils.getArmorField;
+			case 2:
+				return DiscordItemUtils.getPotionField;
+			default:
+				return DiscordItemUtils.getObjectField;
+		}
+	}
+
 	private static getClassicItemField(
 		model: "weapons" | "armors" | "potions" | "objects",
 		emote: string,
