@@ -33,7 +33,7 @@
   },
   "invite": {
     "description": "Aggiungere il bot al server.",
-    "name": "invitoDraftBot"
+    "name": "invitocrownicles"
   },
   "language": {
     "description": "Modificare la lingua del bot per le interazioni future.",
@@ -93,7 +93,7 @@
   },
   "guildInvite": {
     "description": "Recluta un nuovo membro nella tua gilda.",
-    "name": "invitoguilde",
+    "name": "invitoallagilda",
     "options": {
       "user": {
         "description": "L'utente da reclutare.",
@@ -255,7 +255,7 @@
   },
   "daily": {
     "description": "Usa l'oggetto equipaggiato per ottenere un bonus giornaliero.",
-    "name": "bonus giornaliero"
+    "name": "bonusgiornaliero"
   },
   "unlock": {
     "description": "Liberare un altro giocatore dalla prigione.",
