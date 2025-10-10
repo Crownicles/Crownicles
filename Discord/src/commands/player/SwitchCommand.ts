@@ -23,8 +23,6 @@ import {
 	MainItemDisplayPacket,
 	SupportItemDisplayPacket
 } from "../../../../Lib/src/packets/commands/CommandInventoryPacket";
-import { Language } from "../../../../Lib/src/Language";
-import { EmbedField } from "discord.js";
 import { ReactionCollectorReturnTypeOrNull } from "../../packetHandlers/handlers/ReactionCollectorHandlers";
 import { escapeUsername } from "../../utils/StringUtils";
 
@@ -65,23 +63,6 @@ export async function handleItemSwitch(packet: CommandSwitchSuccess, context: Pa
 	});
 }
 
-/**
- * Get the fielder for the item category
- * @param itemCategory
- */
-function getFielder(itemCategory: number): ((displayPacket: MainItemDisplayPacket, lng: Language) => EmbedField) | ((displayPacket: SupportItemDisplayPacket, lng: Language) => EmbedField) {
-	switch (itemCategory) {
-		case 0:
-			return DiscordItemUtils.getWeaponField;
-		case 1:
-			return DiscordItemUtils.getArmorField;
-		case 2:
-			return DiscordItemUtils.getPotionField;
-		default:
-			return DiscordItemUtils.getObjectField;
-	}
-}
-
 export async function switchItemCollector(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction!);
 	if (!interaction) {
@@ -102,7 +83,7 @@ export async function switchItemCollector(context: PacketContext, packet: Reacti
 		context
 	}, {
 		embed,
-		items: reactions.map(reaction => getFielder(reaction.item.itemCategory)(reaction.item as MainItemDisplayPacket & SupportItemDisplayPacket, lng).value)
+		items: reactions.map(reaction => DiscordItemUtils.getFielder(reaction.item.itemCategory)(reaction.item as MainItemDisplayPacket & SupportItemDisplayPacket, lng).value)
 	}, {
 		refuse: {
 			can: true,

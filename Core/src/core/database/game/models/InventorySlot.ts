@@ -20,6 +20,12 @@ import Player from "./Player";
 
 // skipcq: JS-C1003 - moment does not expose itself as an ES Module.
 import * as moment from "moment";
+import { InventoryConstants } from "../../../../../../Lib/src/constants/InventoryConstants";
+
+type DepositCandidate = {
+	slot: InventorySlot;
+	freeSlot: number;
+};
 
 export class InventorySlot extends Model {
 	declare readonly playerId: number;
@@ -260,6 +266,24 @@ export class InventorySlots {
 				playerId: player.id,
 				itemCategory: itemToPutInReserve.itemCategory,
 				slot: itemToPutInReserve.slot
+			}
+		});
+	}
+
+	static async deposeItem(player: Player, itemToDeposit: DepositCandidate): Promise<void> {
+		await InventorySlot.create({
+			playerId: player.id,
+			itemCategory: itemToDeposit.slot.itemCategory,
+			itemId: itemToDeposit.slot.itemId,
+			slot: itemToDeposit.freeSlot
+		});
+		await InventorySlot.update({
+			itemId: 0
+		}, {
+			where: {
+				playerId: player.id,
+				itemCategory: itemToDeposit.slot.itemCategory,
+				slot: InventoryConstants.DEFAULT_SLOT_VALUE
 			}
 		});
 	}
