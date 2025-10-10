@@ -315,6 +315,10 @@
     "name": "interruttore",
     "description": "Scambiate l'oggetto attivo con uno degli oggetti della vostra riserva."
   },
+  "deposit": {
+    "name": "deposer",
+    "description": "Déposer un de vos objets actifs."
+  },
   "drink": {
     "name": "bevanda",
     "description": "Bevete una pozione."
