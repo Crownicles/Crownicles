@@ -9,4 +9,8 @@ export class SmallEventClassOriginalityPacket extends SmallEventPacket {
 	isSuccess?: boolean;
 
 	score?: number;
+
+	playerClassId!: number;
+
+	leastCommonClassId!: number;
 }

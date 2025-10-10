@@ -272,4 +272,8 @@ export abstract class SmallEventConstants {
 			FEISTY_PET: "petIsFeisty"
 		}
 	};
+
+	static readonly CLASS_ORIGINALITY = {
+		POINTS_TO_REWARD: 1000
+	};
 }
