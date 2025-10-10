@@ -1,65 +1,55 @@
-import {
-	DataTypes, Model, Op, QueryTypes, Sequelize
-} from "sequelize";
-import InventorySlot, { InventorySlots } from "./InventorySlot";
+import {DataTypes, Model, Op, QueryTypes, Sequelize} from "sequelize";
+import InventorySlot, {InventorySlots} from "./InventorySlot";
 import PetEntity from "./PetEntity";
 import MissionSlot from "./MissionSlot";
-import { InventoryInfos } from "./InventoryInfo";
-import { MissionsController } from "../../../missions/MissionsController";
-import { PlayerActiveObjects } from "./PlayerActiveObjects";
+import {InventoryInfos} from "./InventoryInfo";
+import {MissionsController} from "../../../missions/MissionsController";
+import {PlayerActiveObjects} from "./PlayerActiveObjects";
 import {
 	daysToMilliseconds,
 	getOneDayAgo,
 	millisecondsToSeconds,
 	minutesToHours
 } from "../../../../../../Lib/src/utils/TimeUtils";
-import { TravelTime } from "../../../maps/TravelTime";
-import { ItemCategory } from "../../../../../../Lib/src/constants/ItemConstants";
-import { Maps } from "../../../maps/Maps";
-import { RandomUtils } from "../../../../../../Lib/src/utils/RandomUtils";
-import { LogsReadRequests } from "../../logs/LogsReadRequests";
-import { PlayerSmallEvents } from "./PlayerSmallEvent";
-import { Guilds } from "./Guild";
-import {
-	CrowniclesPacket, makePacket
-} from "../../../../../../Lib/src/packets/CrowniclesPacket";
-import { PlayerDeathPacket } from "../../../../../../Lib/src/packets/events/PlayerDeathPacket";
-import { PlayerLeavePveIslandPacket } from "../../../../../../Lib/src/packets/events/PlayerLeavePveIslandPacket";
-import { PlayerLevelUpPacket } from "../../../../../../Lib/src/packets/events/PlayerLevelUpPacket";
-import { MapLinkDataController } from "../../../../data/MapLink";
-import {
-	MapLocation, MapLocationDataController
-} from "../../../../data/MapLocation";
-import { crowniclesInstance } from "../../../../index";
-import { GenericItem } from "../../../../data/GenericItem";
-import {
-	Class, ClassDataController
-} from "../../../../data/Class";
-import {
-	League, LeagueDataController
-} from "../../../../data/League";
-import { TopConstants } from "../../../../../../Lib/src/constants/TopConstants";
-import { NumberChangeReason } from "../../../../../../Lib/src/constants/LogsConstants";
-import { InventoryConstants } from "../../../../../../Lib/src/constants/InventoryConstants";
-import { Constants } from "../../../../../../Lib/src/constants/Constants";
-import { FightConstants } from "../../../../../../Lib/src/constants/FightConstants";
-import { PVEConstants } from "../../../../../../Lib/src/constants/PVEConstants";
-import { PlayersConstants } from "../../../../../../Lib/src/constants/PlayersConstants";
-import { EntityConstants } from "../../../../../../Lib/src/constants/EntityConstants";
-import { ClassInfoConstants } from "../../../../../../Lib/src/constants/ClassInfoConstants";
-import { GuildConstants } from "../../../../../../Lib/src/constants/GuildConstants";
-import { MapConstants } from "../../../../../../Lib/src/constants/MapConstants";
-import { Effect } from "../../../../../../Lib/src/types/Effect";
-import { ScheduledReportNotifications } from "./ScheduledReportNotification";
-import { PacketUtils } from "../../../utils/PacketUtils";
-import { StatValues } from "../../../../../../Lib/src/types/StatValues";
-import { ReachDestinationNotificationPacket } from "../../../../../../Lib/src/packets/notifications/ReachDestinationNotificationPacket";
-import { CrowniclesLogger } from "../../../../../../Lib/src/logs/CrowniclesLogger";
-import { Badge } from "../../../../../../Lib/src/types/Badge";
+import {TravelTime} from "../../../maps/TravelTime";
+import {ItemCategory} from "../../../../../../Lib/src/constants/ItemConstants";
+import {Maps} from "../../../maps/Maps";
+import {RandomUtils} from "../../../../../../Lib/src/utils/RandomUtils";
+import {LogsReadRequests} from "../../logs/LogsReadRequests";
+import {PlayerSmallEvents} from "./PlayerSmallEvent";
+import {Guilds} from "./Guild";
+import {CrowniclesPacket, makePacket} from "../../../../../../Lib/src/packets/CrowniclesPacket";
+import {PlayerDeathPacket} from "../../../../../../Lib/src/packets/events/PlayerDeathPacket";
+import {PlayerLeavePveIslandPacket} from "../../../../../../Lib/src/packets/events/PlayerLeavePveIslandPacket";
+import {PlayerLevelUpPacket} from "../../../../../../Lib/src/packets/events/PlayerLevelUpPacket";
+import {MapLinkDataController} from "../../../../data/MapLink";
+import {MapLocation, MapLocationDataController} from "../../../../data/MapLocation";
+import {crowniclesInstance} from "../../../../index";
+import {GenericItem} from "../../../../data/GenericItem";
+import {Class, ClassDataController} from "../../../../data/Class";
+import {League, LeagueDataController} from "../../../../data/League";
+import {TopConstants} from "../../../../../../Lib/src/constants/TopConstants";
+import {NumberChangeReason} from "../../../../../../Lib/src/constants/LogsConstants";
+import {InventoryConstants} from "../../../../../../Lib/src/constants/InventoryConstants";
+import {Constants} from "../../../../../../Lib/src/constants/Constants";
+import {FightConstants} from "../../../../../../Lib/src/constants/FightConstants";
+import {PVEConstants} from "../../../../../../Lib/src/constants/PVEConstants";
+import {PlayersConstants} from "../../../../../../Lib/src/constants/PlayersConstants";
+import {EntityConstants} from "../../../../../../Lib/src/constants/EntityConstants";
+import {ClassInfoConstants} from "../../../../../../Lib/src/constants/ClassInfoConstants";
+import {GuildConstants} from "../../../../../../Lib/src/constants/GuildConstants";
+import {MapConstants} from "../../../../../../Lib/src/constants/MapConstants";
+import {Effect} from "../../../../../../Lib/src/types/Effect";
+import {ScheduledReportNotifications} from "./ScheduledReportNotification";
+import {PacketUtils} from "../../../utils/PacketUtils";
+import {StatValues} from "../../../../../../Lib/src/types/StatValues";
+import {ReachDestinationNotificationPacket} from "../../../../../../Lib/src/packets/notifications/ReachDestinationNotificationPacket";
+import {CrowniclesLogger} from "../../../../../../Lib/src/logs/CrowniclesLogger";
+import {Badge} from "../../../../../../Lib/src/types/Badge";
 
 // skipcq: JS-C1003 - moment does not expose itself as an ES Module.
 import * as moment from "moment";
-import { ClassConstants } from "../../../../../../Lib/src/constants/ClassConstants";
+import {ClassConstants} from "../../../../../../Lib/src/constants/ClassConstants";
 
 export type PlayerEditValueParameters = {
 	player: Player;
@@ -82,6 +72,10 @@ type MissionHealthParameter = {
 type ressourcesLostOnPveFaint = {
 	moneyLost: number;
 	guildPointsLost: number;
+};
+
+type GroupedCountResult = {
+	class: string; count: number;
 };
 
 export class Player extends Model {
@@ -1496,6 +1490,21 @@ export class Players {
 			limit: amountOfPlayersToRetrieve,
 			offset
 		});
+	}
+
+	static async getLeastCommonClassIdForTier(classGroup: number): Promise<number[]> {
+		const classes = ClassDataController.instance.getByGroup(classGroup);
+		const activityRange = new Date(Date.now() - daysToMilliseconds(TopConstants.FIFTEEN_DAYS));
+		const countClass = await Player.count({
+			group: "class",
+			where: {
+				class: classes.map(c => c.id),
+				startTravelDate: { [Op.gte]: activityRange }
+			}
+		}) as GroupedCountResult[];
+
+		const minCount = Math.min(...countClass.map(c => c.count));
+		return countClass.filter(c => c.count === minCount).map(c => Number(c.class));
 	}
 }
 
