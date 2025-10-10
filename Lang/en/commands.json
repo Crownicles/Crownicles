@@ -1306,11 +1306,11 @@
     "switchSelectionDescription": "Choose an item from the list below:"
   },
   "deposit": {
-    "titleSuccess": "{{pseudo}}, commande effectuée !",
+    "titleSuccess": "{{pseudo}}, command completed!",
     "deposeSuccess": "{{item}} a été déposé dans votre réserve !",
     "noItemToDeposit": "Vous n'avez aucun équipement à déposer !",
     "cannotDeposit": "Votre réserve est pleine.",
-    "cancelled": "Action annulée !",
+    "cancelled": "Action cancelled!",
     "depositSelectionTitle": "{{pseudo}}, dépose d'un objet",
     "depositSelectionDescription": "Choisissez un objet à déposer dans la liste ci-dessous :"
   },
