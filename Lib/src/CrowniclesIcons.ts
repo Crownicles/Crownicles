@@ -1023,7 +1023,8 @@ export const CrowniclesIcons: {
 		winHealth: "❤️",
 		winPersonalXP: "⭐",
 		witch: "🧹",
-		infoFight: "🏰"
+		infoFight: "🏰",
+		classOriginality: "📉"
 	},
 	pets: {
 		0: {
