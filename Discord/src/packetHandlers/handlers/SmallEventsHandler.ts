@@ -1061,7 +1061,9 @@ export default class SmallEventsHandler {
 				new CrowniclesSmallEventEmbed(
 					"classOriginality",
 					StringUtils.getRandomTranslation("smallEvents:classOriginality.story", lng, {
-						originality: StringUtils.getRandomTranslation(`smallEvents:classOriginality.${packet.isSuccess ? "original" : "notOriginal"}`, lng)
+						originality: StringUtils.getRandomTranslation(`smallEvents:classOriginality.${packet.isSuccess ? "original" : "notOriginal"}`, lng, {
+							score: packet.score
+						})
 					}),
 					interaction.user,
 					lng

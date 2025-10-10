@@ -8,6 +8,7 @@ import {
 import { makePacket } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { SmallEventClassOriginalityPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventClassOriginalityPacket";
 import { PlayerSmallEvents } from "../database/game/models/PlayerSmallEvent";
+import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 
 export const smallEventFuncs: SmallEventFuncs = {
 	async canBeExecuted(player: Player): Promise<boolean> {
@@ -22,6 +23,13 @@ export const smallEventFuncs: SmallEventFuncs = {
 			response.push(makePacket(SmallEventClassOriginalityPacket, {}));
 			return;
 		}
-		response.push(makePacket(SmallEventClassOriginalityPacket, { isSuccess: true }));
+		await player.addScore({
+			amount: 1000,
+			response,
+			reason: NumberChangeReason.SMALL_EVENT
+		});
+		response.push(makePacket(SmallEventClassOriginalityPacket, {
+			isSuccess: true, score: 1000
+		}));
 	}
 };

@@ -7,4 +7,6 @@ import { SmallEventPacket } from "./SmallEventPacket";
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class SmallEventClassOriginalityPacket extends SmallEventPacket {
 	isSuccess?: boolean;
+
+	score?: number;
 }
