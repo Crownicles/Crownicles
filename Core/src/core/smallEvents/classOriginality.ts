@@ -17,7 +17,8 @@ export const smallEventFuncs: SmallEventFuncs = {
 	executeSmallEvent: async (response, player, _context): Promise<void> => {
 		const currentClassGroup = ClassDataController.instance.getById(player.class).classGroup;
 		const leastCommonClassId = await Players.getLeastCommonClassIdForTier(currentClassGroup);
-		if (!leastCommonClassId.includes(currentClassGroup)) {
+		console.log(leastCommonClassId);
+		if (!leastCommonClassId.includes(player.class)) {
 			response.push(makePacket(SmallEventClassOriginalityPacket, {}));
 			return;
 		}

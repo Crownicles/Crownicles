@@ -1862,5 +1862,10 @@
       "{emote:fightActions.aerialDiveAttack} La plongée aérienne, attaque venue du ciel pour attaquer à distance ! Elle consiste à fondre sur l'adversaire depuis les airs, mais échoue si la cible vient d'attaquer à distance. J'ai toujours dit qu'il fallait surveiller ses arrières... et le ciel aussi !",
       "{emote:fightActions.crystallineArmorAttack} L'armure cristalline, technique défensive offensive ! Elle utilise l'armure du combattant pour infliger des dégâts au corps à corps, mais ne fonctionne que si l'adversaire vient de faire une attaque physique. Transformer sa protection en arme de riposte, voilà de l'ingéniosité tactique !"
     ]
+  },
+  "classOriginality": {
+    "story": ["blabla {{originality}}"],
+    "original": ["trop original"],
+    "notOriginal": ["trop pas original"]
   }
 }

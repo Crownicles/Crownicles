@@ -9,5 +9,5 @@ export abstract class TopConstants {
 	static readonly GUILDS_PER_PAGE = 15;
 
 
-	static readonly FIFTEEN_DAYS = 1296000000;
+	static readonly FIFTEEN_DAYS = 15;
 }

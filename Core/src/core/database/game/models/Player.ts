@@ -74,10 +74,6 @@ type ressourcesLostOnPveFaint = {
 	guildPointsLost: number;
 };
 
-type GroupedCountResult = {
-	class: string; count: number;
-};
-
 export class Player extends Model {
 	declare readonly id: number;
 
@@ -403,7 +399,7 @@ export class Player extends Model {
 	 * Check if the player has played recently
 	 */
 	public isInactive(): boolean {
-		return this.startTravelDate.valueOf() + TopConstants.FIFTEEN_DAYS < Date.now();
+		return this.startTravelDate.valueOf() + daysToMilliseconds(TopConstants.FIFTEEN_DAYS) < Date.now();
 	}
 
 	/**
@@ -1493,18 +1489,30 @@ export class Players {
 	}
 
 	static async getLeastCommonClassIdForTier(classGroup: number): Promise<number[]> {
-		const classes = ClassDataController.instance.getByGroup(classGroup);
+		const classes = ClassDataController.instance.getByGroup(classGroup).map(c => c.id);
 		const activityRange = new Date(Date.now() - daysToMilliseconds(TopConstants.FIFTEEN_DAYS));
-		const countClass = await Player.count({
-			group: "class",
-			where: {
-				class: classes.map(c => c.id),
-				startTravelDate: { [Op.gte]: activityRange }
-			}
-		}) as GroupedCountResult[];
+		const query = `SELECT class, COUNT(*) as count
+		               FROM players
+		               WHERE class in (:classes)
+			             AND score
+			               > ${Constants.MINIMAL_PLAYER_SCORE}
+			               AND startTravelDate >= :activityRange
+			               GROUP BY class`;
+
+		const countClass = <{
+			class: number;
+			count: number;
+		}[]>(await Player.sequelize.query(query, {
+			replacements: {
+				classes: classes,
+				activityRange: activityRange
+			},
+			type: QueryTypes.SELECT
+		}));
 
 		const minCount = Math.min(...countClass.map(c => c.count));
-		return countClass.filter(c => c.count === minCount).map(c => Number(c.class));
+		console.log(countClass);
+		return countClass.filter(c => c.count === minCount).map(c => c.class);
 	}
 }
 

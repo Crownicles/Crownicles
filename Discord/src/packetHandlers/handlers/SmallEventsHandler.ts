@@ -89,8 +89,8 @@ import { Badge } from "../../../../Lib/src/types/Badge";
 import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
 import { SmallEventDwarfPetFanPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventDwarfPetFanPacket";
 import { SmallEventInfoFightPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventInfoFightPacket";
-import { infoFightResult } from "../../smallEvents/infoFight";
 import { limogesResult } from "../../smallEvents/limoges";
+import { SmallEventClassOriginalityPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventClassOriginalityPacket";
 
 export function getRandomSmallEventIntro(language: Language): string {
 	return StringUtils.getRandomTranslation("smallEvents:intro", language);
@@ -1025,6 +1025,48 @@ export default class SmallEventsHandler {
 
 	@packetHandler(SmallEventInfoFightPacket)
 	async smallEventInfoFight(context: PacketContext, packet: SmallEventInfoFightPacket): Promise<void> {
-		await infoFightResult(context, packet);
+		const interaction = DiscordCache.getInteraction(context.discord!.interaction);
+		const lng = interaction!.userLanguage;
+		const intro = StringUtils.getRandomTranslation("smallEvents:infoFight.intro", lng);
+
+		let description: string;
+
+		if (packet.showHandednessInfo) {
+			const handednessKey = packet.isLeftHanded ? "leftHanded" : "rightHanded";
+			description = i18n.t(`smallEvents:infoFight.handednessDescription.${handednessKey}`, { lng });
+		}
+		else {
+			description = StringUtils.getRandomTranslation("smallEvents:infoFight.fightActions", lng);
+		}
+
+		await interaction?.editReply({
+			embeds: [
+				new CrowniclesSmallEventEmbed(
+					"infoFight",
+					intro + description,
+					interaction.user,
+					lng
+				)
+			]
+		});
+	}
+
+	@packetHandler(SmallEventClassOriginalityPacket)
+	async smallEventClassOriginality(context: PacketContext, packet: SmallEventClassOriginalityPacket): Promise<void> {
+		const interaction = DiscordCache.getInteraction(context.discord!.interaction);
+		const lng = interaction!.userLanguage;
+
+		await interaction?.editReply({
+			embeds: [
+				new CrowniclesSmallEventEmbed(
+					"classOriginality",
+					StringUtils.getRandomTranslation("smallEvents:classOriginality.story", lng, {
+						originality: StringUtils.getRandomTranslation(`smallEvents:classOriginality.${packet.isSuccess ? "original" : "notOriginal"}`, lng)
+					}),
+					interaction.user,
+					lng
+				)
+			]
+		});
 	}
 }
