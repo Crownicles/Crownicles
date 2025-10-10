@@ -93,6 +93,9 @@
       "outcomes": {
         "0": {
           "requirements": {
+            "karma": {
+              "max": -30
+            },
             "attack": {
               "min": 300
             }
