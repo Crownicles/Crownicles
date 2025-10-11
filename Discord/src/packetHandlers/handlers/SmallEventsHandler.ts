@@ -1062,7 +1062,9 @@ export default class SmallEventsHandler {
 					"classOriginality",
 					StringUtils.getRandomTranslation("smallEvents:classOriginality.story", lng, {
 						originality: StringUtils.getRandomTranslation(`smallEvents:classOriginality.${packet.isSuccess ? "original" : "notOriginal"}`, lng, {
-							score: packet.score
+							score: packet.score,
+							playerClass: DisplayUtils.getClassDisplay(packet.playerClassId, lng),
+							leastCommonClass: DisplayUtils.getClassDisplay(packet.leastCommonClassId!, lng)
 						})
 					}),
 					interaction.user,

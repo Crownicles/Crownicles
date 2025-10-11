@@ -12,5 +12,5 @@ export class SmallEventClassOriginalityPacket extends SmallEventPacket {
 
 	playerClassId!: number;
 
-	leastCommonClassId!: number;
+	leastCommonClassId?: number;
 }

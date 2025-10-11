@@ -1864,8 +1864,8 @@
     ]
   },
   "classOriginality": {
-    "story": ["blabla {{originality}}"],
-    "original": ["trop original"],
-    "notOriginal": ["trop pas original"]
+    "story": ["Tandis que vous continuez votre route, vous entendez quelqu'un crier après vous. Il ne s'agit d'autre que de Sieur Numérion, l'intendant aux statistiques de la cour, souhaitant tenir compte de votre classe.\n\n {{originality}}"],
+    "original": ["Vous êtes **{{playerClass}}**, une classe peu représentée parmi vos compères aventuriers selon ses statistiques.  Surpris par votre originalité, il vous félicite et vous offre {emote:unitValues.score} **{{score}}** en guide de récompense."],
+    "notOriginal": ["Vous êtes **{{playerClass}}**, peu surpris par votre manque d'originalité, il vous ajoute à ses comptes tout en murmurant qu'il aimerait enfin voir un **{{leastCommonClass}}**."]
   }
 }
