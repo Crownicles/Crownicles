@@ -50,4 +50,33 @@ export abstract class EnchantmentConstants {
 	static POISONED_DAMAGE_BONUS_MULTIPLIER = 1.1;
 
 	static FROZEN_DAMAGE_BONUS_MULTIPLIER = 1.1;
+
+	static PROBABILITY_WEIGHT_TO_COST = {
+		MONEY: [
+			20000,
+			18000,
+			16000,
+			14000,
+			12000,
+			10000,
+			8000,
+			6000,
+			4000,
+			2000
+		],
+		GEMS: [
+			100,
+			90,
+			80,
+			70,
+			60,
+			50,
+			30,
+			15,
+			0,
+			0
+		]
+	};
+
+	static ENCHANTMENT_MAGE_REDUCTION = 0.8;
 }
