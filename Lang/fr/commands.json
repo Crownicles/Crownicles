@@ -596,6 +596,20 @@
         "eatMealTitle": "{{pseudo}}, vous mangez à l'auberge !",
         "eatMealDescription": "{emote:city.inn} Vous mangez le plat qui a vous a été servi avec appétit ! Cela vous rend **{{energy}}** {emote:unitValues.energy}. Vous n'oubliez pas de payer la note de **{{price}}** {emote:unitValues.lostMoney}.",
         "eatMealCooldown": "Vous digérez encore le dernier repas que vous avez pris à l'auberge et vous n'avez pas vraiment faim pour le moment. Attendez une demi-journée entre chaque repas."
+      },
+      "enchanter": {
+        "title": "{{pseudo}}, vous rencontrez l'enchanteur",
+        "emptyInventoryStory": "Bonjour aventurier, je me nomme Mernil et je suis un echanteur itinérant. Que dis-je, je suis le seul et unique enchanteur de ces contrées !\nJe pourrais vous aider à améliorer vos armes et armures, mais il faudrait que vous m'en rameniez d'abord. Revenez me voir quand vous en aurez ! Je ne sais pas si je serai encore dans cette ville demain cela dit...",
+        "story": "Bonjour aventurier, je me nomme Mernil et je suis un echanteur itinérant. Que dis-je, je suis le seul et unique enchanteur de ces contrées !\nJe vois que vous avez des objets qui pourraient être améliorés. Voulez-vous que j'y mette un peu de magie ?",
+        "enchantmentNoReduction": "Je peux vous mettre l'enchantement **$t(items:enchantments.{{enchantmentId}})** pour **{{price}}**. Qu'en dites-vous ?\nMais si ça ne convient pas, vous pouvez toujours revenir me voir demain, j'aurai d'autres runes à ma disposition. Cependant, je ne garantis pas que je serai toujours dans cette ville...",
+        "enchantmentWithReduction": "Je peux vous mettre l'enchantement **$t(items:enchantments.{{enchantmentId}})** pour seulement **{{price}}**. Je vous ai fait une réduction car j'apprécie les personnes qui s'intéresse à la magie ! Qu'en dites-vous ?\nMais si ça ne convient pas, vous pouvez toujours revenir me voir demain, j'aurai d'autres runes à ma disposition. Cependant, je ne garantis pas que je serai toujours dans cette ville...",
+        "hasAtLeastOneEnchantedItem": "D'ailleurs, je vois que vous avez déjà des objets enchantés, je n'y toucherai pas'. C'est le travail des forgerons de les désenchanter, pas le mien !",
+        "acceptStory": "Parfait ! Je m'occupe de ça tout de suite.\n\n*Mernil murmure quelques incantations en agitant une rune au-dessus de votre équipement...*\n\nVoilà, c'est fait ! Votre équipement est maintenant enchanté avec **$t(items:enchantments.{{enchantmentId}})**. Faites-en bon usage !",
+        "priceMoneyOnly": "{{money}} {emote:unitValues.money}",
+        "priceMoneyAndGems": "{{money}} {emote:unitValues.money} et {{gems}} {emote:unitValues.gem}",
+        "notEnoughMoney": "Vous n'avez pas assez d'argent pour payer l'enchantement ! Il vous manque **{{missingMoney}}** {emote:unitValues.money}.",
+        "notEnoughGems": "Vous n'avez pas assez de gemmes pour payer l'enchantement ! Il vous manque **{{missingGems}}** {emote:unitValues.gem}.",
+        "notEnoughMoneyAndGems": "Vous n'avez pas assez d'argent et de gemmes pour payer l'enchantement ! Il vous manque **{{missingMoney}}** {emote:unitValues.money} et **{{missingGems}}** {emote:unitValues.gem}."
       }
     }
   },

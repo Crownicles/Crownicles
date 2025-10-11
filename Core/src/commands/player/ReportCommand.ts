@@ -89,6 +89,10 @@ import {
 import { RequirementEffectPacket } from "../../../../Lib/src/packets/commands/requirements/RequirementEffectPacket";
 import { InventorySlots } from "../../core/database/game/models/InventorySlot";
 import { PlayerActiveObjects } from "../../core/database/game/models/PlayerActiveObjects";
+import { Settings } from "../../core/database/game/models/Setting";
+import { ItemEnchantment } from "../../../../Lib/src/types/ItemEnchantment";
+import { MainItemDetails } from "../../../../Lib/src/types/MainItemDetails";
+import { ClassConstants } from "../../../../Lib/src/constants/ClassConstants";
 
 export default class ReportCommand {
 	@commandRequires(CommandReportPacketReq, {
@@ -255,7 +259,12 @@ function cityCollectorEndCallback(context: PacketContext, player: Player, forceS
 }
 
 async function sendCityCollector(context: PacketContext, response: CrowniclesPacket[], player: Player, currentDate: Date, city: City, forceSpecificEvent: number): Promise<void> {
-	const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
+	const playerInventory = await InventorySlots.getOfPlayer(player.id);
+	const playerActiveObjects = InventorySlots.slotsToActiveObjects(playerInventory);
+	const isEnchanterHere = await Settings.ENCHANTER_CITY.getValue() === city.id;
+	const enchantmentId = isEnchanterHere ? await Settings.ENCHANTER_ENCHANTMENT_ID.getValue() : null;
+	const isPlayerMage = player.class === ClassConstants.CLASSES_ID.MYSTIC_MAGE;
+
 	const collector = new ReactionCollectorCity({
 		timeInCity: TravelTime.getTravelDataSimplified(player, currentDate).playerTravelledTime,
 		mapTypeId: MapLocationDataController.instance.getById(player.getDestinationId()).type,
@@ -280,7 +289,17 @@ async function sendCityCollector(context: PacketContext, response: CrowniclesPac
 		health: {
 			current: player.getHealth(playerActiveObjects),
 			max: player.getMaxHealth(playerActiveObjects)
-		}
+		},
+		enchanter: isEnchanterHere
+			? {
+				enchantableItems: playerInventory.filter(i => (i.isWeapon() || i.isArmor()) && !i.itemEnchantmentId).map(i => i.itemWithDetails(player) as MainItemDetails),
+				isInventoryEmpty: playerInventory.filter(i => i.isWeapon() || i.isArmor() && i.itemId !== 0).length === 0,
+				hasAtLeastOneEnchantedItem: playerInventory.filter(i => (i.isWeapon() || i.isArmor()) && Boolean(i.itemEnchantmentId)).length > 0,
+				enchantmentId,
+				enchantmentCost: ItemEnchantment.getById(enchantmentId).getEnchantmentCost(isPlayerMage),
+				mageReduction: isPlayerMage
+			}
+			: null
 	});
 
 	const collectorPacket = new ReactionCollectorInstance(

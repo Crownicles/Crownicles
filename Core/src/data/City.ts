@@ -1,5 +1,6 @@
 import { DataControllerString } from "./DataController";
 import { Data } from "./Data";
+import { RandomUtils } from "../../../Lib/src/utils/RandomUtils";
 
 export class InnMeal {
 	public readonly id: string;
@@ -74,6 +75,13 @@ export class CityDataController extends DataControllerString<City> {
 			this.initMapCache();
 		}
 		return CityDataController.mapCache.get(mapId);
+	}
+
+	getRandomCity(): City {
+		if (!CityDataController.mapCache) {
+			this.initMapCache();
+		}
+		return RandomUtils.crowniclesRandom.pick(Array.from(CityDataController.mapCache.values()));
 	}
 
 	private initMapLinksCache(): void {

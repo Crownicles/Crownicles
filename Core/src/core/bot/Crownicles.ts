@@ -1,17 +1,10 @@
 import { PacketListenerServer } from "../../../../Lib/src/packets/PacketListener";
 import { GameDatabase } from "../database/game/GameDatabase";
 import { LogsDatabase } from "../database/logs/LogsDatabase";
+import { botConfig } from "../../index";
 import {
-	botConfig, crowniclesInstance
-} from "../../index";
-import { Settings } from "../database/game/models/Setting";
-import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
-import {
-	literal, Op, Sequelize
+	Op, Sequelize
 } from "sequelize";
-import PetEntity from "../database/game/models/PetEntity";
-import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
-import { PotionDataController } from "../../data/Potion";
 import { minutesToMilliseconds } from "../../../../Lib/src/utils/TimeUtils";
 import { TimeoutFunctionsConstants } from "../../../../Lib/src/constants/TimeoutFunctionsConstants";
 import { MapCache } from "../maps/MapCache";
@@ -21,28 +14,23 @@ import Player from "../database/game/models/Player";
 import { FightConstants } from "../../../../Lib/src/constants/FightConstants";
 import { PacketUtils } from "../utils/PacketUtils";
 import { makePacket } from "../../../../Lib/src/packets/CrowniclesPacket";
-import { TopWeekAnnouncementPacket } from "../../../../Lib/src/packets/announcements/TopWeekAnnouncementPacket";
-import { TopWeekFightAnnouncementPacket } from "../../../../Lib/src/packets/announcements/TopWeekFightAnnouncementPacket";
-import PlayerMissionsInfo from "../database/game/models/PlayerMissionsInfo";
 import { ScheduledReportNotifications } from "../database/game/models/ScheduledReportNotification";
 import { ReachDestinationNotificationPacket } from "../../../../Lib/src/packets/notifications/ReachDestinationNotificationPacket";
 import { MapLocationDataController } from "../../data/MapLocation";
 
 // skipcq: JS-C1003 - fs does not expose itself as an ES Module.
 import * as fs from "fs";
-import { MqttTopicUtils } from "../../../../Lib/src/utils/MqttTopicUtils";
 import { initializeAllClassBehaviors } from "../fights/AiBehaviorController";
 import { initializeAllPetBehaviors } from "../fights/PetAssistManager";
 import { CrowniclesCoreWebServer } from "./CrowniclesCoreWebServer";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
-import { Badge } from "../../../../Lib/src/types/Badge";
 import { FightsManager } from "../fights/FightsManager";
-import {
-	DayOfTheWeek, setDailyCronJob, setWeeklyCronJob
-} from "../utils/CronInterface";
 import { EnergyFullNotificationPacket } from "../../../../Lib/src/packets/notifications/EnergyFullNotificationPacket";
 import { DailyBonusNotificationPacket } from "../../../../Lib/src/packets/notifications/DailyBonusNotificationPacket";
 import { ScheduledDailyBonusNotifications } from "../database/game/models/ScheduledDailyBonusNotification";
+import { CrowniclesDaily } from "./cronJobs/CrowniclesDaily";
+import { CrowniclesSunday } from "./cronJobs/CrowniclesSunday";
+import { CrowniclesMonday } from "./cronJobs/CrowniclesMonday";
 
 export class Crownicles {
 	public readonly packetListener: PacketListenerServer;
@@ -58,208 +46,6 @@ export class Crownicles {
 		// Databases
 		this.gameDatabase = new GameDatabase();
 		this.logsDatabase = new LogsDatabase();
-	}
-
-	/**
-	 * Execute all the daily tasks
-	 */
-	static async dailyTimeout(): Promise<void> {
-		/*
-		 * First program the daily immediately at +1 day
-		 * Then wait a bit before setting the next date, so we are sure to be past the date
-		 *
-		 * The first one is set immediately so if the bot crashes before programming the next one, it will be set anyway to approximately a valid date (at 1s max of difference)
-		 */
-		await Settings.NEXT_DAILY_RESET.setValue(await Settings.NEXT_DAILY_RESET.getValue() + 24 * 60 * 60 * 1000);
-
-		Crownicles.randomPotion()
-			.finally(() => null);
-		Crownicles.randomLovePointsLoose()
-			.then(petLoveChange => crowniclesInstance.logsDatabase.logDailyTimeout(petLoveChange)
-				.then());
-		crowniclesInstance.logsDatabase.log15BestTopWeek()
-			.then();
-	}
-
-	/**
-	 * Update the random potion sold in the shop
-	 */
-	static async randomPotion(): Promise<void> {
-		CrowniclesLogger.info("Daily timeout");
-		const previousPotionId = await Settings.SHOP_POTION.getValue();
-		const newPotionId = PotionDataController.instance.randomShopPotion(previousPotionId).id;
-		await Settings.SHOP_POTION.setValue(newPotionId);
-		CrowniclesLogger.info("New potion in shop", { newPotionId });
-		crowniclesInstance.logsDatabase.logDailyPotion(newPotionId)
-			.then();
-	}
-
-	/**
-	 * Make some pet lose some love points
-	 */
-	static async randomLovePointsLoose(): Promise<boolean> {
-		if (RandomUtils.crowniclesRandom.bool()) {
-			CrowniclesLogger.info("All pets lost 4 loves point");
-			await PetEntity.update(
-				{
-					lovePoints: literal(
-						"CASE WHEN lovePoints - 4 < 0 THEN 0 ELSE lovePoints - 4 END"
-					)
-				},
-				{
-					where: {
-						lovePoints: {
-							[Op.notIn]: [PetConstants.MAX_LOVE_POINTS, 0]
-						}
-					}
-				}
-			);
-			return true;
-		}
-		return false;
-	}
-
-	/**
-	 * End the fight season
-	 */
-	static async seasonEnd(): Promise<void> {
-		if (!PacketUtils.isMqttConnected()) {
-			CrowniclesLogger.error("MQTT is not connected, can't announce the end of the season. Trying again in 1 minute");
-			setTimeout(Crownicles.seasonEnd, 60000);
-			return;
-		}
-
-		/*
-		 * First program the next season ends immediately at +7 days
-		 * Then wait a bit before setting the next date, so we are sure to be past the date
-		 *
-		 * The first one is set immediately,
-		 * so if the bot crashes before programming the next one, it will be set anyway to approximately a valid date
-		 * (at 1 s max of difference)
-		 */
-		await Settings.NEXT_SEASON_RESET.setValue(await Settings.NEXT_SEASON_RESET.getValue() + 7 * 24 * 60 * 60 * 1000);
-
-		crowniclesInstance.logsDatabase.log15BestSeason()
-			.then();
-		const winner = await Crownicles.findSeasonWinner();
-		if (winner !== null) {
-			PacketUtils.announce(makePacket(TopWeekFightAnnouncementPacket, { winnerKeycloakId: winner.keycloakId }), MqttTopicUtils.getDiscordTopWeekFightAnnouncementTopic(botConfig.PREFIX));
-			winner.addBadge(Badge.TOP_GLORY);
-			await winner.save();
-		}
-		else {
-			PacketUtils.announce(makePacket(TopWeekFightAnnouncementPacket, {}), MqttTopicUtils.getDiscordTopWeekFightAnnouncementTopic(botConfig.PREFIX));
-		}
-		await Crownicles.seasonEndQueries();
-
-		CrowniclesLogger.info("Season has been ended !");
-		crowniclesInstance.logsDatabase.logSeasonEnd()
-			.then();
-	}
-
-	/**
-	 * End the top week
-	 */
-	static async topWeekEnd(): Promise<void> {
-		crowniclesInstance.logsDatabase.log15BestTopWeek()
-			.then();
-		const winner = await Player.findOne({
-			where: {
-				weeklyScore: {
-					[Op.gt]: 100
-				}
-			},
-			order: [
-				["weeklyScore", "DESC"],
-				["level", "DESC"]
-			],
-			limit: 1
-		});
-		if (winner !== null) {
-			PacketUtils.announce(makePacket(TopWeekAnnouncementPacket, { winnerKeycloakId: winner.keycloakId }), MqttTopicUtils.getDiscordTopWeekAnnouncementTopic(botConfig.PREFIX));
-			winner.addBadge(Badge.TOP_WEEK);
-			await winner.save();
-		}
-		else {
-			PacketUtils.announce(makePacket(TopWeekAnnouncementPacket, {}), MqttTopicUtils.getDiscordTopWeekAnnouncementTopic(botConfig.PREFIX));
-		}
-		await Player.update({ weeklyScore: 0 }, { where: {} });
-		CrowniclesLogger.info("Weekly leaderboard has been reset !");
-		await PlayerMissionsInfo.resetShopBuyout();
-		CrowniclesLogger.info("All players can now buy again points from the mission shop !");
-		crowniclesInstance.logsDatabase.logTopWeekEnd()
-			.then();
-	}
-
-	/**
-	 * Database queries to execute at the end of the season
-	 */
-	private static async seasonEndQueries(): Promise<void> {
-		// We set the gloryPointsLastSeason to 0 if the fightCountdown is above the limit because the player was inactive
-		await Player.update(
-			{
-				gloryPointsLastSeason: Sequelize.literal(
-					`CASE WHEN fightCountdown <= ${FightConstants.FIGHT_COUNTDOWN_MAXIMAL_VALUE} THEN attackGloryPoints + defenseGloryPoints ELSE 0 END`
-				)
-			},
-			{ where: {} }
-		);
-
-		// We add one to the fightCountdown
-		await Player.update(
-			{
-				fightCountdown: Sequelize.literal(
-					"fightCountdown + 1"
-				)
-			},
-			{ where: { fightCountdown: { [Op.lt]: FightConstants.FIGHT_COUNTDOWN_REGEN_LIMIT } } }
-		);
-
-		// Transform a part of the defense glory into attack glory
-		await Player.update(
-			{
-				defenseGloryPoints: Sequelize.literal(
-					`defenseGloryPoints + LEAST(${FightConstants.ATTACK_GLORY_TO_DEFENSE_GLORY_EACH_WEEK}, attackGloryPoints)`
-				),
-				attackGloryPoints: Sequelize.literal(
-					`attackGloryPoints - LEAST(${FightConstants.ATTACK_GLORY_TO_DEFENSE_GLORY_EACH_WEEK}, attackGloryPoints)`
-				)
-			},
-			{
-				where: {
-					attackGloryPoints: { [Op.gt]: 0 },
-					defenseGloryPoints: { [Op.lte]: FightConstants.MAX_DEFENSE_GLORY_FOR_TRANSFER }
-				}
-			}
-		);
-	}
-
-	/**
-	 * Find the winner of the season
-	 */
-	private static async findSeasonWinner(): Promise<Player> {
-		return await Player.findOne({
-			where: {
-				fightCountdown: {
-					[Op.lte]: FightConstants.FIGHT_COUNTDOWN_MAXIMAL_VALUE
-				}
-			},
-			order: [
-				[Sequelize.literal("(attackGloryPoints + defenseGloryPoints)"), "DESC"],
-				["level", "DESC"],
-				["score", "DESC"]
-			],
-			limit: 1
-		});
-	}
-
-	/**
-	 * Choose a new pve island
-	 */
-	static async newPveIsland(): Promise<void> {
-		const newMapLink = MapCache.randomPveBoatLinkId(await Settings.PVE_ISLAND.getValue());
-		CrowniclesLogger.info("New pve island map link of the week", { newMapLink });
-		await Settings.PVE_ISLAND.setValue(newMapLink);
 	}
 
 	/**
@@ -302,29 +88,6 @@ export class Crownicles {
 			Crownicles.fightPowerRegenerationLoop,
 			minutesToMilliseconds(FightConstants.POINTS_REGEN_MINUTES)
 		);
-	}
-
-	/**
-	 * Execute all the daily tasks
-	 */
-	static async weeklyTimeout(): Promise<void> {
-		if (!PacketUtils.isMqttConnected()) {
-			CrowniclesLogger.error("MQTT is not connected, can't announce the end of the week. Trying again in 1 minute");
-			setTimeout(Crownicles.weeklyTimeout, 60000);
-			return;
-		}
-
-		/*
-		 * First program the next weekly end immediately at +7 days
-		 * Then wait a bit before setting the next date, so we are sure to be past the date
-		 *
-		 * The first one is set immediately so if the bot crashes before programming the next one, it will be set anyway to approximately a valid date (at 1s max of difference)
-		 */
-		await Settings.NEXT_WEEKLY_RESET.setValue(await Settings.NEXT_WEEKLY_RESET.getValue() + 7 * 24 * 60 * 60 * 1000);
-		Crownicles.topWeekEnd()
-			.then();
-		Crownicles.newPveIsland()
-			.then();
 	}
 
 	static async reportNotifications(): Promise<void> {
@@ -406,7 +169,9 @@ export class Crownicles {
 			await CommandsTest.init();
 		}
 
-		await Crownicles.programTimeouts();
+		await CrowniclesDaily.programCronJob();
+		await CrowniclesSunday.programCronJob();
+		await CrowniclesMonday.programCronJob();
 
 		Crownicles.reportNotifications()
 			.then();
@@ -418,11 +183,5 @@ export class Crownicles {
 			Crownicles.fightPowerRegenerationLoop,
 			minutesToMilliseconds(FightConstants.POINTS_REGEN_MINUTES)
 		);
-	}
-
-	private static async programTimeouts(): Promise<void> {
-		await setDailyCronJob(Crownicles.dailyTimeout, await Settings.NEXT_DAILY_RESET.getValue() < Date.now());
-		await setWeeklyCronJob(Crownicles.seasonEnd, await Settings.NEXT_SEASON_RESET.getValue() < Date.now(), DayOfTheWeek.SUNDAY);
-		await setWeeklyCronJob(Crownicles.weeklyTimeout, await Settings.NEXT_WEEKLY_RESET.getValue() < Date.now(), DayOfTheWeek.MONDAY);
 	}
 }
