@@ -5,6 +5,7 @@ import {
 	ReactionCollectorReaction,
 	ReactionCollectorRefuseReaction
 } from "./ReactionCollectorPacket";
+import { MainItemDetails } from "../../types/MainItemDetails";
 
 export class ReactionCollectorCityData extends ReactionCollectorData {
 	mapTypeId!: string;
@@ -36,6 +37,18 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 		current: number;
 		max: number;
 	};
+
+	enchanter?: {
+		enchantableItems: MainItemDetails[];
+		isInventoryEmpty: boolean; // If true, the inventory is empty, and we can't enchant anything. It is used to display the right message.
+		hasAtLeastOneEnchantedItem: boolean; // If true, the player has at least one enchanted item, so the enchanter must say that it cannot remove enchantments.
+		enchantmentId: string;
+		enchantmentCost: {
+			money: number;
+			gems: number;
+		};
+		mageReduction: boolean;
+	};
 }
 
 export class ReactionCollectorExitCityReaction extends ReactionCollectorReaction {}
@@ -58,6 +71,12 @@ export class ReactionCollectorInnRoomReaction extends ReactionCollectorReaction 
 		price: number;
 		health: number;
 	};
+}
+
+export class ReactionCollectorEnchantReaction extends ReactionCollectorReaction {
+	itemId!: number;
+
+	itemCategory!: number;
 }
 
 export class ReactionCollectorCity extends ReactionCollector {
@@ -83,6 +102,12 @@ export class ReactionCollectorCity extends ReactionCollector {
 					room
 				}))) || [];
 
+		const enchantReactions = this.data.enchanter?.enchantableItems.map(item =>
+			this.buildReaction(ReactionCollectorEnchantReaction, {
+				itemId: item.id,
+				itemCategory: item.itemCategory
+			})) || [];
+
 		return {
 			id,
 			endTime,
@@ -90,7 +115,8 @@ export class ReactionCollectorCity extends ReactionCollector {
 				this.buildReaction(ReactionCollectorExitCityReaction, {}),
 				this.buildReaction(ReactionCollectorRefuseReaction, {}),
 				...mealsReactions,
-				...roomsReactions
+				...roomsReactions,
+				...enchantReactions
 			],
 			data: this.buildData(ReactionCollectorCityData, {
 				...this.data
