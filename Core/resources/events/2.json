@@ -105,12 +105,12 @@
         "1": {
           "requirements": {
             "attack": {
-              "max": 150
+              "max": 250
             }
           },
           "health": -20,
           "effect": "hurt",
-          "karma": -12
+          "karma": -6
         },
         "2": {
           "requirements": {
@@ -118,7 +118,7 @@
               "max": -50
             }
           },
-          "money": 80,
+          "money": 13,
           "karma": -15
         },
         "3": {
@@ -127,19 +127,25 @@
               21,
               28,
               56,
-              57
+              57,
+              60,
+              64,
+              65,
+              42,
+              77
             ]
           },
-          "karma": -3
+          "karma": -1
         },
         "4": {
           "requirements": {
-            "validPetTypeIds": [
-              1,
-              2
-            ]
+            "karma": {
+              "min": -50
+            }
           },
-          "karma": -20
+          "effect": "occupied",
+          "lostTime": 10,
+          "karma": -2
         }
       }
     },
