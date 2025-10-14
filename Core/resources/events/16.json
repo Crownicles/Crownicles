@@ -85,7 +85,9 @@
         },
         "8": {
           "requirements": {
-            "validPetTypeIds": [64]
+            "validPetTypeIds": [
+              64
+            ]
           },
           "randomItem": {
             "rarity": {
@@ -98,14 +100,18 @@
         },
         "9": {
           "requirements": {
-            "validPetTypeIds": [15]
+            "validPetTypeIds": [
+              15
+            ]
           },
           "money": 280,
           "karma": 3
         },
         "10": {
           "requirements": {
-            "validPetTypeIds": [84]
+            "validPetTypeIds": [
+              84
+            ]
           },
           "randomItem": {
             "rarity": {
@@ -126,7 +132,13 @@
         },
         "12": {
           "requirements": {
-            "validClassIds": [12, 13, 14, 15, 21]
+            "validClassIds": [
+              12,
+              13,
+              14,
+              15,
+              21
+            ]
           },
           "randomItem": {
             "rarity": {
@@ -170,7 +182,9 @@
         },
         "3": {
           "requirements": {
-            "validPetTypeIds": [1]
+            "validPetTypeIds": [
+              1
+            ]
           },
           "effect": "occupied",
           "lostTime": 10,
@@ -179,7 +193,10 @@
         },
         "4": {
           "requirements": {
-            "validPetTypeIds": [15, 16]
+            "validPetTypeIds": [
+              15,
+              16
+            ]
           },
           "effect": "occupied",
           "lostTime": 40,
@@ -235,7 +252,9 @@
         },
         "4": {
           "requirements": {
-            "validPetTypeIds": [31]
+            "validPetTypeIds": [
+              31
+            ]
           },
           "health": 10,
           "randomItem": {},
@@ -313,7 +332,9 @@
         },
         "2": {
           "requirements": {
-            "validPetTypeIds": [70]
+            "validPetTypeIds": [
+              70
+            ]
           },
           "money": 700,
           "karma": 15,
