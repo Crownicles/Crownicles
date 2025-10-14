@@ -1,75 +1,433 @@
 {
   "possibilities": {
-    "end": {
-      "outcomes": {
-        "0": {
-          "effect": "occupied",
-          "lostTime": 10
-        },
-        "1": {
-          "effect": "occupied",
-          "lostTime": 260
-        }
-      }
-    },
     "fruits": {
       "outcomes": {
         "0": {
-          "health": 15
+          "requirements": {
+            "speed": {
+              "min": 300
+            },
+            "defense": {
+              "max": 419
+            }
+          },
+          "health": 20,
+          "karma": 1
         },
         "1": {
-          "effect": "confounded",
-          "health": -10
+          "requirements": {
+            "speed": {
+              "max": 400
+            }
+          },
+          "health": -7,
+          "effect": "confounded"
         },
         "2": {
-          "effect": "sick",
-          "health": -15
+          "requirements": {
+            "level": {
+              "max": 30
+            }
+          },
+          "health": -20,
+          "effect": "sick"
+        },
+        "3": {
+          "requirements": {
+            "level": {
+              "min": 120
+            }
+          },
+          "health": 15,
+          "randomItem": {},
+          "karma": 1
+        },
+        "4": {
+          "requirements": {
+            "validPetTypeIds": [
+              24,
+              90
+            ]
+          },
+          "health": 25,
+          "karma": 3
+        },
+        "5": {
+          "requirements": {
+            "defense": {
+              "min": 350
+            }
+          },
+          "health": -25,
+          "effect": "hurt"
+        },
+        "6": {
+          "requirements": {
+            "validPetTypeIds": [
+              51
+            ]
+          },
+          "health": 30,
+          "karma": 4
+        },
+        "7": {
+          "requirements": {
+            "validPetTypeIds": [
+              84
+            ]
+          },
+          "health": 30,
+          "karma": 4
         }
       }
     },
     "hunt": {
       "outcomes": {
-        "0": {},
+        "0": {
+          "requirements": {
+            "attack": {
+              "max": 150
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 120
+        },
         "1": {
-          "effect": "injured",
-          "health": -60
+          "requirements": {
+            "attack": {
+              "min": 200
+            },
+            "defense": {
+              "max": 250
+            }
+          },
+          "health": -35,
+          "randomItem": {},
+          "effect": "injured"
         },
         "2": {
-          "health": 20
+          "requirements": {
+            "attack": {
+              "min": 300
+            },
+            "defense": {
+              "min": 150
+            },
+            "speed": {
+              "min": 200
+            }
+          },
+          "health": 25,
+          "karma": 1
+        },
+        "3": {
+          "requirements": {
+            "karma": {
+              "max": -50
+            },
+            "attack": {
+              "min": 200
+            }
+          },
+          "health": 20,
+          "money": 420,
+          "karma": -10
+        },
+        "4": {
+          "requirements": {
+            "validPetTypeIds": [
+              20,
+              28,
+              21,
+              56,
+              65,
+              42,
+              45,
+              57,
+              60,
+              77
+            ]
+          },
+          "health": 30,
+          "karma": 2
+        },
+        "5": {
+          "requirements": {
+            "validClassIds": [
+              8,
+              9,
+              10,
+              11,
+              20
+            ]
+          },
+          "health": 22,
+          "karma": 3
+        },
+        "6": {
+          "requirements": {
+            "validPetTypeIds": [
+              28,
+              1
+            ]
+          },
+          "health": 35,
+          "karma": 6
+        },
+        "7": {
+          "requirements": {
+            "speed": {
+              "min": 600
+            }
+          },
+          "health": 28,
+          "karma": 1
+        },
+        "8": {
+          "requirements": {
+            "defense": {
+              "max": 520
+            }
+          },
+          "health": -20,
+          "effect": "hurt"
+        },
+        "9": {
+          "requirements": {
+            "level": {
+              "max": 35
+            },
+            "karma": {
+              "min": 0
+            }
+          },
+          "health": 18,
+          "karma": 3
         }
       }
     },
     "mushrooms": {
       "outcomes": {
         "0": {
-          "randomItem": {}
+          "requirements": {
+            "level": {
+              "min": 90
+            }
+          },
+          "randomItem": {},
+          "health": 9
         },
         "1": {
+          "requirements": {
+            "level": {
+              "max": 90
+            }
+          },
           "effect": "occupied",
-          "lostTime": 55
+          "lostTime": 80
         },
         "2": {
-          "effect": "injured",
-          "health": -40
+          "requirements": {
+            "karma": {
+              "max": 0
+            }
+          },
+          "health": -25,
+          "effect": "sick"
+        },
+        "3": {
+          "requirements": {
+            "karma": {
+              "min": 130
+            }
+          },
+          "health": 10
+        },
+        "4": {
+          "requirements": {
+            "validClassIds": [
+              24
+            ]
+          },
+          "health": 21
+        },
+        "5": {
+          "requirements": {
+            "validPetTypeIds": [
+              9
+            ]
+          },
+          "health": 12,
+          "money": 200,
+          "karma": 6
+        },
+        "6": {
+          "requirements": {
+            "level": {
+              "min": 69
+            }
+          },
+          "health": 8
         }
       }
     },
     "salad": {
       "outcomes": {
         "0": {
-          "health": 5
+          "health": 8,
+          "karma": 1
         },
         "1": {
+          "requirements": {
+            "karma": {
+              "max": -80
+            }
+          },
           "effect": "starving"
         },
-        "2": {}
+        "2": {
+          "requirements": {
+            "level": {
+              "max": 28
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 45
+        },
+        "3": {
+          "requirements": {
+            "validPetTypeIds": [
+              8,
+              7,
+              13,
+              14,
+              17,
+              18,
+              32,
+              46,
+              47,
+              87,
+              48,
+              49,
+              50,
+              51,
+              52,
+              61,
+              84,
+              88,
+              89,
+              96,
+              98
+            ]
+          },
+          "health": 30,
+          "karma": 2
+        },
+        "4": {
+          "requirements": {
+            "validPetTypeIds": [
+              8
+            ]
+          },
+          "effect": "starving"
+        },
+        "5": {
+          "requirements": {
+            "karma": {
+              "max": -230
+            }
+          },
+          "health": -5,
+          "effect": "sick"
+        }
+      }
+    },
+    "scavenge": {
+      "outcomes": {
+        "0": {
+          "requirements": {
+            "karma": {
+              "max": -20
+            },
+            "speed": {
+              "min": 200
+            }
+          },
+          "health": 10,
+          "money": 200,
+          "karma": -1
+        },
+        "1": {
+          "requirements": {
+            "karma": {
+              "max": -250
+            }
+          },
+          "health": 5,
+          "randomItem": {},
+          "karma": -2
+        },
+        "2": {
+          "requirements": {
+            "karma": {
+              "min": 20
+            }
+          },
+          "karma": -1
+        },
+        "3": {
+          "health": -10,
+          "effect": "sick"
+        }
       }
     },
     "skip": {
       "outcomes": {
-        "0": {},
+        "0": {
+          "effect": "starving"
+        },
         "1": {
-          "effect": "sleeping"
+          "requirements": {
+            "level": {
+              "max": 55
+            }
+          },
+          "health": -5,
+          "effect": "starving"
+        },
+        "2": {
+          "requirements": {
+            "level": {
+              "min": 60
+            }
+          }
+        }
+      }
+    },
+    "end": {
+      "outcomes": {
+        "0": {
+          "effect": "occupied",
+          "lostTime": 15
+        },
+        "1": {
+          "requirements": {
+            "health": {
+              "max": 30
+            }
+          },
+          "effect": "sleeping",
+          "health": -10
+        },
+        "2": {
+          "requirements": {
+            "validPetTypeIds": [
+              56,
+              57,
+              60
+            ]
+          },
+          "health": 40
         }
       }
     }

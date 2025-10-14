@@ -5,7 +5,7 @@
     "10": "Bouclier lourd",
     "100": "Plot armor",
     "101": "Bouclier thermique",
-    "102": "armure en mythril",
+    "102": "Armure en mythril",
     "103": "Plastron",
     "104": "Plastron protection 4",
     "105": "Cuirasse",
@@ -108,7 +108,7 @@
     "93": "Caravane",
     "94": "Armure électrifiée",
     "95": "Exosquelette",
-    "96": "Tenue de l’Archimage",
+    "96": "Tenue de l'Archimage",
     "97": "Armure en diamant",
     "98": "Bouclier en Beskar",
     "99": "Armure en Beskar"
@@ -266,7 +266,7 @@
       "name_other": "Attaques gourdin"
     },
     "chargeUltimateAttack": {
-      "description": "Nécessite un tour pour charger l’attaque. Si l’attaquant dispose de moins de 45% de son énergie, cette attaque ne peut pas échouer. Cette attaque ne peut être utilisée qu’une fois par joueur et par combat.",
+      "description": "Nécessite un tour pour charger l'attaque. Si l'attaquant dispose de moins de 45% de son énergie, cette attaque ne peut pas échouer. Cette attaque ne peut être utilisée qu'une fois par joueur et par combat.",
       "name_one": "Attaque ultime",
       "name_other": "Attaques ultimes"
     },
@@ -558,7 +558,7 @@
       "stop": "n'est plus protégé."
     },
     "protection": {
-      "description": "Échoue si vous utilisez cette action alors que vous avez une altération d’état. L’altération \"protégé\" dure 3 tours et vous empêche d’être victime d’une autre altération tout en vous offrant un boost de 30% de votre défense.",
+      "description": "Échoue si vous utilisez cette action alors que vous avez une altération d'état. L'altération \"protégé\" dure 3 tours et vous empêche d'être victime d'une autre altération tout en vous offrant un boost de 30% de votre défense.",
       "customMessage": "se protège.",
       "name_one": "Protection",
       "name_other": "Protections"
@@ -583,7 +583,7 @@
       "name_other": "Attaques béliers"
     },
     "resting": {
-      "description": "S’applique sous forme de soin au lanceur. La quantité d'énergie récupérée est divisée par 4 au bout de 4 utilisations.",
+      "description": "S'applique sous forme de soin au lanceur. La quantité d'énergie récupérée est divisée par 4 au bout de 4 utilisations.",
       "customMessage": "se repose...",
       "name_one": "Repos",
       "name_other": "Repos"
@@ -612,7 +612,7 @@
       "generalEffect": "est assisté par **{{petNickname}}** qui fait fuir les poissons."
     },
     "shieldAttack": {
-      "description": "Utilise la défense de l’attaquant pour attaquer, affaiblissant l'adversaire, ce qui réduit son attaque de 70% durant 2 tours.",
+      "description": "Utilise la défense de l'attaquant pour attaquer, affaiblissant l'adversaire, ce qui réduit son attaque de 70% durant 2 tours.",
       "name_one": "Attaque bouclier",
       "name_other": "Attaques boucliers"
     },
@@ -899,32 +899,32 @@
       "particle": "vers le"
     },
     "1101": {
-      "description": "Une étendue de terre gelée où le climat est sans pitié. Une tempête permanente de neige rend difficile la progression et la cartographie du lieu. On peut y croiser tous types d’animaux arctiques.",
+      "description": "Une étendue de terre gelée où le climat est sans pitié. Une tempête permanente de neige rend difficile la progression et la cartographie du lieu. On peut y croiser tous types d'animaux arctiques.",
       "name": "Toundra",
       "particle": "vers la"
     },
     "1102": {
-      "description": "Une grande caverne dans laquelle le moindre rayon de soleil qui rentre est démultiplié par les cristaux rendant celle-ci très lumineuse. Des stalactites pointus et des stalagmites tranchantes, synonymes de blessures graves voir mortelles si l’une d’elle nous tombe dessus ou que l’on fait un pas de travers, forment le décor de la caverne. Si vous osez vous aventurez plus loin, vous devrez choisir entre sortir vers le sommet du pic enneigée ou vous enfoncer encore plus profond.",
+      "description": "Une grande caverne dans laquelle le moindre rayon de soleil qui rentre est démultiplié par les cristaux rendant celle-ci très lumineuse. Des stalactites pointus et des stalagmites tranchantes, synonymes de blessures graves voir mortelles si l'une d'elle nous tombe dessus ou que l'on fait un pas de travers, forment le décor de la caverne. Si vous osez vous aventurez plus loin, vous devrez choisir entre sortir vers le sommet du pic enneigée ou vous enfoncer encore plus profond.",
       "name": "Caverne de cristal",
       "particle": "vers la"
     },
     "1103": {
-      "description": "Deux majestueuses portes se dressent en haut d’une longue série de marches. Les monter ne sera pas de tout repos. On raconte qu’elles ont été construites par une civilisation ancienne en l’honneur d’une divinité.",
+      "description": "Deux majestueuses portes se dressent en haut d'une longue série de marches. Les monter ne sera pas de tout repos. On raconte qu'elles ont été construites par une civilisation ancienne en l'honneur d'une divinité.",
       "name": "Portes sacrées",
       "particle": "vers les"
     },
     "1104": {
-      "description": "Dans la chaîne de montagnes, ce pic se démarque par la violence de ses tempêtes de neige et la vitesse de ses vents. Il est si haut que l’oxygène y est rare et que le risque de mourir de froid est élevé si vous n’avez pas déjà succombé aux animaux sauvages…",
+      "description": "Dans la chaîne de montagnes, ce pic se démarque par la violence de ses tempêtes de neige et la vitesse de ses vents. Il est si haut que l'oxygène y est rare et que le risque de mourir de froid est élevé si vous n'avez pas déjà succombé aux animaux sauvages…",
       "name": "Pic enneigé",
       "particle": "vers le"
     },
     "1105": {
-      "description": "Un grand lac au cœur de la montagne dont la traversée n’est pas sans risque. Comme la température est glaciale, le fait qu’il ne soit pas gelé reste un mystère. Nul n’en connait sa profondeur ni sa faune.",
+      "description": "Un grand lac au cœur de la montagne dont la traversée n'est pas sans risque. Comme la température est glaciale, le fait qu'il ne soit pas gelé reste un mystère. Nul n'en connait sa profondeur ni sa faune.",
       "name": "Lac souterrain",
       "particle": "vers le"
     },
     "1106": {
-      "description": "Un village riche abandonné dont il ne reste que ruines et désolations. On peut y voir le toit d’un manoir qui a plié sous le poids de la cloche de l’église effondrée. Il y règne un silence pesant parfois interrompu par les cris de souffrance des âmes égarés.",
+      "description": "Un village riche abandonné dont il ne reste que ruines et désolations. On peut y voir le toit d'un manoir qui a plié sous le poids de la cloche de l'église effondrée. Il y règne un silence pesant parfois interrompu par les cris de souffrance des âmes égarés.",
       "name": "Village dévasté",
       "particle": "vers le"
     },
@@ -969,7 +969,7 @@
       "particle": "vers la"
     },
     "19": {
-      "description": "Plage créée par les forts vents de la Vallée des Rois. La Dune protège les Plaines du Contre Bois de la chaleur et amène l'eau de la rivière Vacarme.",
+      "description": "Plage créée par les forts vents de la Vallée des Rois. La Dune protège les Plaines du Contre Bois de la chaleur et amène l'eau de la rivière Vacarme jusqu'à la mer.",
       "name": "La Dune",
       "particle": "vers"
     },
@@ -1079,7 +1079,7 @@
       "particle": "vers le"
     },
     "9": {
-      "description": "Ancienne grande route commerciale reliant le Berceau et Ville forte, il ne reste de la Grande Rue que de vieux pavés ébréchés.",
+      "description": "La Grande Rue était autrefois une artère vitale du commerce, permettant aux marchands, voyageurs et caravanes de relier rapidement le Berceau à Ville Forte. Cette route a vu passer des générations de négociants, de soldats et d’aventuriers. Mais aujourd’hui, elle n’est plus que l’ombre d’elle-même : les guerres, le temps et l’abandon l’ont laissée à l’état de vestige. Il ne subsiste que quelques vieux pavés ébréchés, témoins silencieux d’un passé prospère.",
       "name": "Grande Rue",
       "particle": "vers la"
     }
@@ -1888,7 +1888,7 @@
       "slimyMutant": "Plus vous progressez dans la Forêt de la pénombre, plus l'atmosphère devient oppressante. Les cendres volcaniques semblent absorber tous les sons, créant un silence presque surnaturel. C'est alors que vous remarquez quelque chose d'étrange : votre propre ombre semble bouger indépendamment de vos mouvements. Vous vous retournez brusquement et découvrez avec horreur une masse gélatineuse et verdâtre qui ondule lentement vers vous. Mais le plus troublant, c'est qu'elle commence à prendre votre apparence, copiant vos traits, vos vêtements, même vos armes. Le Mutant Vaseux vous observe avec vos propres yeux, un sourire malveillant déformant ce qui devrait être votre visage. Ce mimétisme parfait rend le combat à venir d'autant plus déstabilisant..."
     },
     "1002": {
-      "skeleton": "Alors que vous progressez sur le sentier, les ruines d’un ancien village apparaissent à l’horizon. À première vue, les lieux semblent paisibles malgré les toits effondrés. Vous avancez prudemment entre les maisons délabrées, scrutant les moindres recoins dans l’espoir de trouver un signe de vie. Soudain, au détour d’une ruelle, vous vous figez. Un craquement sec résonne sur les pavés. Devant vous se dresse un squelette au regard vide, armé jusqu'aux dents, semblant prêt à en découdre..."
+      "skeleton": "Alors que vous progressez sur le sentier, les ruines d'un ancien village apparaissent à l'horizon. À première vue, les lieux semblent paisibles malgré les toits effondrés. Vous avancez prudemment entre les maisons délabrées, scrutant les moindres recoins dans l'espoir de trouver un signe de vie. Soudain, au détour d'une ruelle, vous vous figez. Un craquement sec résonne sur les pavés. Devant vous se dresse un squelette au regard vide, armé jusqu'aux dents, semblant prêt à en découdre..."
     },
     "1003": {
       "spider": "Vous arrivez à l'entrée d'une mine abandonnée, le cadre en bois vieilli empêche les parois de s'effondrer. Vous entrez, nettoyant les nombreuses toiles au passage, et explorez les galeries. Plus vous avancez, plus de minuscules araignées se massent autour de vos pieds. Obligé de les piétiner, les cris d'effroi de ces petites créatures résonnent dans la caverne. Vous sentez le sol vibré, quelque chose de gros approchez à grande vitesse, ce n'est autre qu'une abominale araignée d'une taille immense, voyant les cadavres de ses enfants à vos pieds, celle-ci crie de rage et vous fonce dessus."
@@ -1897,7 +1897,7 @@
       "rockGolem": "Alors que vous avancez péniblement sur le sentier escarpé, vous décidez de faire une pause. Le souffle court, vous vous laissez tomber sur un rocher pensant enfin pouvoir vous reposer après avoir combattu tous ces monstres. C'est alors que vous entendez un bruit semblable à celui d'un éboulement lointain. Vous vous levez précipitamment et sous vos yeux ébahi un immense golem de roche émerge du flanc de la montagne. Il semble lent mais sachant qu'il ne faut jamais sous-estimer son adversaire vous dégainez votre arme prêt à affronter cette nouvelle menace..."
     },
     "1005": {
-      "magmaTitan": "Rassemblant vos forces les plus profondes, vous escaladez courageusement le volcan. La chaleur du sol vous transperce, mais votre vaillance vous tient debout. L’air étouffant, chargé des remontées magmatiques, vous fait tourner la tête. À chaque inspiration, la nausée vous gagne. Vos blessures passées se réveillent, chaque pas est plus lourd que le précédent, mais vous avancez coûte que coûte. Alors que vous pensez toucher le bout de vos peines, le sol tremble. Le magma se fige, la lave s’écoule et ensemble ils prennent forme. Une entité s’élève. Un colosse se dresse devant vous. Le sang, brûlant comme ce volcan, pulse en vous. Vous vous préparez pour l’ultime bataille."
+      "magmaTitan": "Rassemblant vos forces les plus profondes, vous escaladez courageusement le volcan. La chaleur du sol vous transperce, mais votre vaillance vous tient debout. L'air étouffant, chargé des remontées magmatiques, vous fait tourner la tête. À chaque inspiration, la nausée vous gagne. Vos blessures passées se réveillent, chaque pas est plus lourd que le précédent, mais vous avancez coûte que coûte. Alors que vous pensez toucher le bout de vos peines, le sol tremble. Le magma se fige, la lave s'écoule et ensemble ils prennent forme. Une entité s'élève. Un colosse se dresse devant vous. Le sang, brûlant comme ce volcan, pulse en vous. Vous vous préparez pour l'ultime bataille."
     },
     "1101": {
       "whiteWolf": "Dans cette toundra impitoyable, chaque pas que vous faites s'enfonce profondément dans la neige fraîche. Le vent glacial fouette votre visage tandis que la tempête perpétuelle réduit votre visibilité à quelques mètres. Vos membres s'engourdissent progressivement malgré vos efforts pour maintenir votre circulation sanguine. Soudain, vous distinguez une forme sombre qui se déplace silencieusement à travers le rideau de neige. Vous vous figez, tous vos sens en alerte. Un grondement sourd perce le hurlement du vent. Émergent alors de la tempête deux yeux d'un bleu glacial, brillant d'une intelligence sauvage. Un loup blanc, majestueux et imposant, se dresse devant vous. Sa fourrure immaculée se confond parfaitement avec son environnement, et ses crocs acérés luisent dans la pénombre. Ce prédateur arctique vous juge, évaluant si vous êtes une proie ou une menace. Son regard perçant semble lire dans votre âme tandis qu'il se prépare à bondir..."
