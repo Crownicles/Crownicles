@@ -149,59 +149,6 @@
         }
       }
     },
-    "offerFood": {
-      "outcomes": {
-        "0": {
-          "requirements": {
-            "karma": {
-              "min": 20
-            }
-          },
-          "money": -50,
-          "randomItem": {},
-          "karma": 12
-        },
-        "1": {
-          "requirements": {
-            "validPetTypeIds": [
-              1,
-              2,
-              28
-            ]
-          },
-          "money": -30,
-          "randomItem": {
-            "rarity": {
-              "min": 3
-            }
-          },
-          "karma": 18
-        },
-        "2": {
-          "requirements": {
-            "karma": {
-              "max": -20
-            }
-          },
-          "money": -80,
-          "karma": -5
-        },
-        "3": {
-          "requirements": {
-            "validPetTypeIds": [
-              3,
-              4
-            ]
-          },
-          "money": -40,
-          "karma": 8
-        },
-        "4": {
-          "money": -60,
-          "karma": 5
-        }
-      }
-    },
     "skip": {
       "outcomes": {
         "0": {
@@ -214,7 +161,7 @@
         "1": {
           "requirements": {
             "defense": {
-              "min": 200
+              "min": 400
             }
           },
           "health": -8
@@ -222,12 +169,12 @@
         "2": {
           "requirements": {
             "speed": {
-              "max": 150
+              "max": 200
             }
           },
           "health": -25,
           "effect": "hurt",
-          "karma": -8
+          "karma": -3
         },
         "3": {
           "requirements": {
@@ -251,37 +198,26 @@
     "end": {
       "outcomes": {
         "0": {
-          "requirements": {
-            "defense": {
-              "max": 200
-            }
-          },
           "health": -15,
-          "effect": "hurt",
-          "karma": -5
+          "effect": "hurt"
         },
         "1": {
           "requirements": {
-            "attack": {
-              "max": 150
-            },
-            "speed": {
-              "max": 150
+            "defense": {
+              "max": 300
             }
           },
           "health": -30,
-          "effect": "hurt",
-          "karma": -10
+          "effect": "hurt"
         },
         "2": {
           "requirements": {
             "validPetTypeIds": [
               1,
-              2,
-              28
+              2
             ]
           },
-          "karma": -15
+          "randomItem": {}
         }
       }
     }
