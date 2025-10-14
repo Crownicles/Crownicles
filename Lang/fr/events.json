@@ -705,34 +705,64 @@
     "possibilities": {
       "alert": {
         "outcomes": {
-          "0": "Les gardes vous suivent et appréhendent le garde véreux, la femme vous offre un objet en gage de remerciements.",
-          "1": "Malheureusement, les gardes que vous tentez d'alerter n'ont que faire des agissements malfaisant de leur collègue. Devant votre insistance, ils engagent le combat contre vous. Vous remportez la bataille malgré quelques blessures mais il est trop tard. La femme gît sur le sol ainsi que deux gardes."
+          "0": "Votre cri d'alarme résonne entre les façades de Claire de Ville ! Deux gardes en patrouille accourent immédiatement et reconnaissent avec stupeur leur collègue corrompu. La victime, soulagée par votre intervention courageuse, vous remet discrètement un objet précieux qu'elle gardait sur elle, murmurant des remerciements émus tandis que le garde véreux est emmené vers les geôles de la ville.",
+          "1": "Votre appel à l'aide attire l'attention de deux gardes de patrouille... qui se révèlent être les complices du voleur ! Face à votre insistance et votre refus de détourner le regard de cette injustice, ils n'ont d'autre choix que de vous faire taire. Le combat est brutal et inégal : malgré votre vaillance, vous êtes sévèrement blessé. Lorsque vous reprenez vos esprits, étourdi et meurtri, la rue est déserte. Seules quelques taches de sang témoignent du drame qui s'est déroulé ici.",
+          "2": "Votre voix puissante et votre prestance attirent immédiatement l'attention ! Le garde corrompu, reconnaissant en vous un adversaire de taille, lâche sa victime et disparaît dans les ruelles avant l'arrivée de ses collègues. La femme, tremblante mais reconnaissante, vous offre quelques pièces en guise de remerciement.",
+          "3": "Votre réputation de héros précède votre cri ! Les gardes honnêtes accourent avec zèle et appréhendent leur collègue indigne. Le capitaine de la garde, impressionné par votre sens de la justice, vous remet personnellement une récompense substantielle et un objet d'équipement de qualité.",
+          "4": "Malheureusement, votre faible prestance et votre voix incertaine n'attirent pas l'attention des autorités. Le garde corrompu vous lance un regard menaçant qui vous glace le sang, et vous vous éloignez précipitamment, honteux de votre lâcheté."
         },
-        "text": "Alerter d'autres gardes sur les agissements de leur collègue."
+        "text": "Alerter la garde sur les agissements de ce renégat."
       },
-      "end": {
+      "intimidate": {
         "outcomes": {
-          "0": "Vous continuez votre chemin sans prêter attention au garde.",
-          "1": "Abasourdi, vous regardez la scène, tétanisé, pendant cinq minutes. Le garde finit par vous remarquer, vous vous hâtez donc de passer votre chemin."
-        }
-      },
-      "skip": {
-        "outcomes": {
-          "0": "Vous ne prêtez donc pas attention à la situation et poursuivez votre route.",
-          "1": "En passant votre chemin, vous trébuchez et tombez par terre."
+          "0": "Votre seule présence imposante et votre main posée sur la garde de votre arme suffisent à faire comprendre vos intentions. Le garde corrompu, évaluant rapidement la situation, lâche sa victime et s'enfuit dans les ruelles sombres de Claire de Ville. La femme, encore tremblante, vous remercie chaleureusement pour votre intervention.",
+          "1": "Votre aura menaçante et votre sinistre réputation font pâlir le garde véreux ! Il abandonne immédiatement sa victime et détale comme un lapin. La femme vous regarde avec un mélange de gratitude et de crainte, avant de s'éloigner rapidement elle aussi, vous laissant seul au milieu de la ruelle.",
+          "2": "Votre tentative d'intimidation échoue lamentablement face au garde aguerri. Il éclate de rire devant votre posture peu convaincante et vous menace de son autorité. Humilié, vous battez en retraite sous ses moqueries.",
+          "3": "Votre imposant familier surgit à vos côtés avec un grondement menaçant ! Le garde corrompu, terrorisé par cette démonstration de force, lâche sa victime et s'enfuit en trébuchant. La femme vous offre quelques pièces en remerciement.",
+          "4": "Votre intervention musclée attire l'attention d'autres gardes qui, malheureusement, prennent le parti de leur collègue. Vous devez fuir précipitamment pour éviter l'arrestation, laissant la pauvre femme à son triste sort."
         },
-        "text": "Passer votre chemin."
+        "text": "Intimider le garde pour qu'il cesse ses méfaits."
       },
       "surpriseAttack": {
         "outcomes": {
-          "0": "Vous parvenez à assommer le garde et récupérez un objet précieux qu'il portait.",
-          "1": "Au dernier moment, le garde se retourne et vous attaque. Après un féroce combat durant lequel la femme s'est enfuie, vous échouez à dévier une de ses attaques. Victorieux, le garde vous laisse néanmoins en vie et prend également la fuite.",
-          "2": "Le garde esquive et la femme parvient à s'enfuir. Après avoir fait fuir le garde, vous la retrouvez hors de danger. Pour vous remercier, elle vous offre quelques pièces d'or."
+          "0": "Profitant de l'effet de surprise, vous assénez un coup précis qui met le garde hors d'état de nuire ! Alors qu'il s'effondre, un objet de valeur tombe de sa ceinture : le produit de ses rapines précédentes. La femme vous remercie avec effusion avant de s'évanouir dans la foule.",
+          "1": "Au dernier instant, le garde perçoit votre mouvement ! Il pivote avec une rapidité surprenante et dégaine son arme. Le combat est féroce et brutal : ses coups disciplinés trouvent vos défenses trop faibles. Vous vous effondrez, grièvement blessé, tandis que votre adversaire s'enfuit en jurant. La femme a également disparu dans la confusion.",
+          "2": "Votre attaque permet à la femme de s'échapper, mais le garde esquive habilement et riposte ! Le duel qui s'ensuit dans les rues de Claire de Ville attire l'attention. Finalement, le garde corrompu prend la fuite. Vous retrouvez la femme un peu plus loin : reconnaissante mais pauvre, elle ne peut vous offrir que quelques maigres pièces.",
+          "3": "Votre rapidité fulgurante ne lui laisse aucune chance ! En un éclair, le garde est au sol et la femme libérée. Impressionnée par votre prouesse martiale, elle vous révèle être une marchande déguisée et vous offre un objet de grande valeur en guise de gratitude.",
+          "4": "Votre attaque vicieuse et brutale met rapidement le garde à terre ! Alors qu'il gémit de douleur, vous fouillez sans vergogne ses poches et récupérez le butin de ses méfaits. La femme, choquée par votre violence excessive, s'enfuit elle aussi, vous laissant avec votre conscience et vos gains mal acquis.",
+          "5": "Malheureusement, vous manquez cruellement d'expérience au combat ! Votre attaque mal coordonnée est facilement contrée. Le garde vous inflige une correction humiliante sous les yeux de témoins avant de s'enfuir avec son butin.",
+          "6": "Votre familier bondit aux côtés de votre attaque ! Ensemble, vous maîtrisez rapidement le garde sans lui causer de blessures graves. Les autres gardes arrivent et, reconnaissant votre légitimité, vous remercient pour avoir démasqué ce renégat. Vous recevez une belle récompense."
         },
-        "text": "Attaquer le garde par surprise dans l'optique d'aider la femme."
+        "text": "Attaquer le garde par surprise pour sauver la victime."
+      },
+      "negotiateBribe": {
+        "outcomes": {
+          "0": "Vous approchez discrètement et glissez quelques pièces au garde en murmurant : 'Laisse-la partir.' Le corrompu, reconnaissant un confrère dans la malveillance, empoche l'argent avec un sourire entendu et libère la femme. Elle vous lance un regard reconnaissant mêlé de dégoût avant de disparaître.",
+          "1": "Votre réputation de personne honorable vous précède ! Lorsque vous tentez de corrompre le garde, celui-ci éclate de rire : 'Vous ? Un pot-de-vin ?' Il libère la femme de lui-même, amusé par votre tentative maladroite de négociation.",
+          "2": "Le garde accepte votre argent... puis exige davantage ! Coincé dans ce chantage, vous devez payer une somme exorbitante pour libérer la pauvre femme. Vous repartez la bourse vide mais la conscience légèrement apaisée.",
+          "3": "Votre offre de corruption attire l'attention d'autres gardes honnêtes ! Réalisant votre erreur, vous devez fuir précipitamment, laissant votre argent derrière vous dans votre fuite chaotique."
+        },
+        "text": "Payer le garde pour qu'il libère sa victime."
+      },
+      "skip": {
+        "outcomes": {
+          "0": "Vous détournez délibérément le regard de cette scène déplaisante et poursuivez votre route d'un pas pressé. Après tout, ce ne sont pas vos affaires, et Claire de Ville a assez de problèmes sans que vous vous en mêliez.",
+          "1": "Alors que vous passez votre chemin sans un regard, votre pied heurte une pierre mal placée ! Vous vous étalez de tout votre long sur les pavés inégaux de Claire de Ville, sous les regards moqueurs des passants. Votre chute attire l'attention sur la scène du vol, et le garde corrompu s'enfuit précipitamment.",
+          "2": "Votre indifférence face à l'injustice ne passe pas inaperçue. Plusieurs citoyens vous observent avec mépris tandis que vous continuez votre route sans intervenir. Votre réputation en souffre légèrement.",
+          "3": "Vous passez votre chemin, mais votre compagnon animal semble troublé par la scène. Il tire sur sa laisse ou pousse des gémissements plaintifs, vous retardant légèrement dans votre progression.",
+          "4": "Absorbé par vos propres pensées, vous ne remarquez même pas vraiment la scène et continuez naturellement votre route à travers les rues de Claire de Ville."
+        },
+        "text": "Poursuivre votre route sans vous impliquer."
+      },
+      "end": {
+        "outcomes": {
+          "0": "Vous demeurez figé, observant la scène avec une fascination morbide. Faut-il intervenir ? Appeler à l'aide ? Votre indécision vous paralyse jusqu'à ce que le garde, ayant achevé son méfait, remarque votre présence. Il vous fixe d'un regard menaçant avant de disparaître dans les ruelles. Vous reprenez finalement votre route, troublé par votre propre passivité.",
+          "1": "Tétanisé par cette démonstration flagrante de corruption au cœur même de Claire de Ville, vous restez bouche bée pendant de longues minutes. Lorsque le garde finit par vous remarquer, son regard noir vous glace le sang. Vous vous hâtez de dégager, le cœur battant, ayant perdu un temps précieux dans cette observation stérile.",
+          "2": "Votre familier observe également la scène avec curiosité, mais contrairement à vous, il agit ! Il bondit vers le garde en aboyant/sifflant/criant, créant une diversion qui permet à la femme de s'échapper. Le garde, surpris, s'enfuit également. Vous récupérez votre compagnon et reprenez votre route."
+        }
       }
     },
-    "text": "En vous baladant tranquillement dans un village, vous remarquez du coin de l'œil un garde volant une pauvre femme."
+    "text": "Dans une ruelle étroite de Claire de Ville, à l'écart de l'agitation du grand marché, une scène troublante attire votre attention : un garde de la cité, reconnaissable à son tabard aux armes de la ville, a acculé une femme terrorisée contre un mur de pierre. Ses mains tremblantes tiennent maladroitement sa bourse, tentant vainement de la soustraire à l'emprise du garde qui use de son autorité pour la dépouiller. 'Taxe municipale impayée', gronde-t-il d'une voix qui ne trompe personne. Les quelques passants qui aperçoivent la scène détournent prudemment le regard : dénoncer un garde, même corrompu, peut s'avérer dangereux dans cette ville marchande où l'ordre règne en maître..."
   },
   "21": {
     "possibilities": {
