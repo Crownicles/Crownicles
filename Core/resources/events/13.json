@@ -111,14 +111,18 @@
         },
         "6": {
           "requirements": {
-            "validPetTypeIds": [1]
+            "validPetTypeIds": [
+              1
+            ]
           },
           "health": 15,
           "karma": 8
         },
         "7": {
           "requirements": {
-            "validPetTypeIds": [65]
+            "validPetTypeIds": [
+              65
+            ]
           },
           "money": 400,
           "karma": -40
@@ -232,7 +236,9 @@
             }
           },
           "karma": 15,
-          "mapTypesDestination": ["ro"]
+          "mapTypesDestination": [
+            "ro"
+          ]
         },
         "1": {
           "requirements": {
@@ -241,7 +247,9 @@
             }
           },
           "karma": 5,
-          "mapTypesDestination": ["mo"]
+          "mapTypesDestination": [
+            "mo"
+          ]
         },
         "2": {
           "requirements": {
