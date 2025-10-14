@@ -737,8 +737,8 @@
       },
       "negotiateBribe": {
         "outcomes": {
-          "0": "Vous approchez discrètement et glissez quelques pièces au garde en murmurant : 'Laisse-la partir.' Le corrompu, reconnaissant un confrère dans la malveillance, empoche l'argent avec un sourire entendu et libère la femme. Elle vous lance un regard reconnaissant mêlé de dégoût avant de disparaître.",
-          "1": "Votre réputation de personne honorable vous précède ! Lorsque vous tentez de corrompre le garde, celui-ci éclate de rire : 'Vous ? Un pot-de-vin ?' Il libère la femme de lui-même, amusé par votre tentative maladroite de négociation.",
+          "0": "Vous approchez discrètement et glissez quelques pièces au garde en murmurant que vous souhaitez qu'il la laisse partir. Le corrompu, reconnaissant un confrère dans la malveillance, empoche l'argent avec un sourire entendu et libère la femme. Elle vous lance un regard reconnaissant mêlé de dégoût avant de disparaître.",
+          "1": "Votre réputation de personne honorable vous précède ! Lorsque vous tentez de corrompre le garde, celui-ci éclate de rire en s'étonnant que ce soit vous qui lui offriez un pot-de-vin. Il libère la femme de lui-même, amusé par votre tentative maladroite de négociation.",
           "2": "Le garde accepte votre argent... puis exige davantage ! Coincé dans ce chantage, vous devez payer une somme exorbitante pour libérer la pauvre femme. Vous repartez la bourse vide mais la conscience légèrement apaisée.",
           "3": "Votre offre de corruption attire l'attention d'autres gardes honnêtes ! Réalisant votre erreur, vous devez fuir précipitamment, laissant votre argent derrière vous dans votre fuite chaotique."
         },
@@ -762,7 +762,7 @@
         }
       }
     },
-    "text": "Dans une ruelle étroite de Claire de Ville, à l'écart de l'agitation du grand marché, une scène troublante attire votre attention : un garde de la cité, reconnaissable à son tabard aux armes de la ville, a acculé une femme terrorisée contre un mur de pierre. Ses mains tremblantes tiennent maladroitement sa bourse, tentant vainement de la soustraire à l'emprise du garde qui use de son autorité pour la dépouiller. 'Taxe municipale impayée', gronde-t-il d'une voix qui ne trompe personne. Les quelques passants qui aperçoivent la scène détournent prudemment le regard : dénoncer un garde, même corrompu, peut s'avérer dangereux dans cette ville marchande où l'ordre règne en maître..."
+    "text": "Dans une ruelle étroite de Claire de Ville, à l'écart de l'agitation du grand marché, une scène troublante attire votre attention : un garde de la cité, reconnaissable à son tabard aux armes de la ville, a acculé une femme terrorisée contre un mur de pierre. Ses mains tremblantes tiennent maladroitement sa bourse, tentant vainement de la soustraire à l'emprise du garde qui use de son autorité pour la dépouiller. Il gronde qu'il s'agit d'une taxe municipale impayée, d'une voix qui ne trompe personne. Les quelques passants qui aperçoivent la scène détournent prudemment le regard : dénoncer un garde, même corrompu, peut s'avérer dangereux dans cette ville marchande où l'ordre règne en maître..."
   },
   "21": {
     "possibilities": {
