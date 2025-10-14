@@ -1,15 +1,30 @@
 import {CrowniclesIcons} from "../../../Lib/src/CrowniclesIcons";
-import {describe, expect, it} from 'vitest';
+import {describe, expect, it, beforeAll} from 'vitest';
 import {StringSelectMenuOptionBuilder} from "discord.js";
-import emojiRegex from 'emoji-regex';
 
+let fullyQualifiedEmojis: Set<string>;
 
-const regex = emojiRegex();
-
-function isFullyQualifiedEmoji(str: string): boolean {
-	const match = str.match(regex);
-	return match !== null && match[0] === str;
-}
+beforeAll(async () => {
+	const response = await fetch('https://unicode.org/Public/emoji/15.1/emoji-test.txt');
+	const text = await response.text();
+	
+	fullyQualifiedEmojis = new Set<string>();
+	
+	const lines = text.split('\n');
+	for (const line of lines) {
+		if (line.startsWith('#') || line.trim() === '') {
+			continue;
+		}
+		
+		const match = line.match(/^([0-9A-F\s]+)\s*;\s*fully-qualified\s*#\s*(.+)$/);
+		if (match) {
+			const emojiMatch = match[2].match(/^\s*(\S+)/);
+			if (emojiMatch) {
+				fullyQualifiedEmojis.add(emojiMatch[1]);
+			}
+		}
+	}
+});
 
 function collectAllStrings(
 	obj: unknown,
@@ -38,7 +53,7 @@ describe('CrowniclesIcons Unicode validation', () => {
 
 		for (let index = 0; index < allStrings.length; index++) {
 			const entry = allStrings[index];
-			if (isFullyQualifiedEmoji(entry.value)) {
+			if (fullyQualifiedEmojis.has(entry.value)) {
 				expect(() => {
 					new StringSelectMenuOptionBuilder()
 						.setLabel('Test')

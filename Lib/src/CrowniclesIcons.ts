@@ -618,7 +618,7 @@ export const CrowniclesIcons: {
 				2: "🕵️"
 			},
 			goAway: "🚶",
-			help: "⚔",
+			help: "⚔️",
 			tell: "🗣️"
 		},
 		48: {
@@ -692,7 +692,7 @@ export const CrowniclesIcons: {
 		54: {
 			bet: "🪙",
 			end: {
-				0: "🗣",
+				0: "🗣️",
 				1: "😵‍💫",
 				2: "🚶",
 				3: "🪙",
@@ -713,7 +713,7 @@ export const CrowniclesIcons: {
 			otherWay: "🚶"
 		},
 		56: {
-			beach: "🏖",
+			beach: "🏖️",
 			drinkBlack: "⚫",
 			drinkRandom: "🍸",
 			end: {
@@ -891,7 +891,7 @@ export const CrowniclesIcons: {
 			},
 			goAway: "🚶‍♂️",
 			look: "👀",
-			shame: "🗯"
+			shame: "🗯️"
 		},
 		74: {
 			end: {
@@ -962,28 +962,28 @@ export const CrowniclesIcons: {
 		}
 	},
 	mapTypes: {
-		be: "🏖",
+		be: "🏖️",
 		castleEntrance: "🏰",
 		castleThrone: "🪑",
-		ci: "🏘",
-		continent: "🏞",
+		ci: "🏘️",
+		continent: "🏞️",
 		crystalCavern: "💎",
-		de: "🏜",
+		de: "🏜️",
 		fo: "🌳",
-		iceBeach: "🌨",
-		la: "🚣‍♂",
+		iceBeach: "🌨️",
+		la: "🚣‍♂️",
 		mine: "🪨",
-		mo: "⛰",
+		mo: "⛰️",
 		pl: "🌺",
-		pveExit: "⛴",
-		ri: "🏞",
-		ro: "🛣",
-		ruins: "🏚",
+		pveExit: "⛴️",
+		ri: "🏞️",
+		ro: "🛣️",
+		ruins: "🏚️",
 		testZone: "👾",
 		tundra: "🌲",
 		vi: "🛖",
 		volcano: "🌋",
-		icePeak: "🏔",
+		icePeak: "🏔️",
 		blessedDoors: "⛩️",
 		undergroundLake: "💧",
 		dragonsNest: "🪹"
@@ -1691,7 +1691,7 @@ export const CrowniclesIcons: {
 		43: "🥤",
 		44: "🐺",
 		45: "🌱",
-		46: "🌶",
+		46: "🌶️",
 		47: "☠️",
 		48: "🔋",
 		49: "🥜",
@@ -1731,7 +1731,7 @@ export const CrowniclesIcons: {
 		8: "🧪",
 		80: "🥶",
 		81: "✒️",
-		82: "🛏",
+		82: "🛏️",
 		83: "🌂",
 		84: "🪶",
 		85: "💉",
