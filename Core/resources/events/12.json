@@ -75,17 +75,23 @@
         },
         "3": {
           "requirements": {
-            "validPetTypeIds": [77]
+            "validPetTypeIds": [
+              77
+            ]
           }
         },
         "4": {
           "requirements": {
-            "validPetTypeIds": [82]
+            "validPetTypeIds": [
+              82
+            ]
           }
         },
         "5": {
           "requirements": {
-            "validPetTypeIds": [13]
+            "validPetTypeIds": [
+              13
+            ]
           }
         },
         "6": {
@@ -154,7 +160,9 @@
         },
         "3": {
           "requirements": {
-            "validPetTypeIds": [90]
+            "validPetTypeIds": [
+              90
+            ]
           }
         },
         "4": {

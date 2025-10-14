@@ -46,7 +46,9 @@
         },
         "3": {
           "requirements": {
-            "validPetTypeIds": [56]
+            "validPetTypeIds": [
+              56
+            ]
           },
           "randomItem": {},
           "karma": 8
@@ -63,7 +65,10 @@
         },
         "5": {
           "requirements": {
-            "validClassIds": [17, 23]
+            "validClassIds": [
+              17,
+              23
+            ]
           },
           "effect": "occupied",
           "lostTime": 15,
@@ -110,7 +115,9 @@
         },
         "3": {
           "requirements": {
-            "validPetTypeIds": [1]
+            "validPetTypeIds": [
+              1
+            ]
           },
           "effect": "sleeping",
           "health": 30,
@@ -188,7 +195,13 @@
         },
         "3": {
           "requirements": {
-            "validClassIds": [8,9,10,11,20]
+            "validClassIds": [
+              8,
+              9,
+              10,
+              11,
+              20
+            ]
           },
           "money": 60,
           "randomItem": {},
@@ -196,7 +209,9 @@
         },
         "4": {
           "requirements": {
-            "validPetTypeIds": [27]
+            "validPetTypeIds": [
+              27
+            ]
           },
           "karma": -4
         },
