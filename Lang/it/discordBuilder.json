@@ -1,6 +1,6 @@
 {
   "badges": {
-    "description": "Mostrare informazioni sui badge e sul loro funzionamento.",
+    "description": "Visualizza informazioni sui badge e su come funzionano.",
     "name": "badge"
   },
   "help": {
@@ -33,7 +33,7 @@
   },
   "invite": {
     "description": "Aggiungere il bot al server.",
-    "name": "invitoDraftBot"
+    "name": "invitocrownicles"
   },
   "language": {
     "description": "Modificare la lingua del bot per le interazioni future.",
@@ -63,7 +63,7 @@
   },
   "petNick": {
     "description": "Date un nome al vostro animale.",
-    "name": "nicknamefamiliare",
+    "name": "nomefamiliare",
     "options": {
       "nickname": {
         "description": "Il soprannome che si vuole dare al proprio animale domestico. (Lasciare in bianco per eliminare il soprannome)",
@@ -93,7 +93,7 @@
   },
   "guildInvite": {
     "description": "Recluta un nuovo membro nella tua gilda.",
-    "name": "invitoguilde",
+    "name": "invitoallagilda",
     "options": {
       "user": {
         "description": "L'utente da reclutare.",
@@ -169,7 +169,7 @@
   },
   "classesInfo": {
     "description": "Visualizza le informazioni sulle classi selezionabili per il personaggio.",
-    "name": "classi informative"
+    "name": "classiinformative"
   },
   "respawn": {
     "description": "Riprendere l'avventura dopo... \"un incidente\".",
@@ -255,7 +255,7 @@
   },
   "daily": {
     "description": "Usa l'oggetto equipaggiato per ottenere un bonus giornaliero.",
-    "name": "bonus giornaliero"
+    "name": "bonusgiornaliero"
   },
   "unlock": {
     "description": "Liberare un altro giocatore dalla prigione.",
@@ -315,12 +315,16 @@
     "name": "interruttore",
     "description": "Scambiate l'oggetto attivo con uno degli oggetti della vostra riserva."
   },
+  "deposit": {
+    "name": "depositare",
+    "description": "Deposita uno dei tuoi oggetti attivi."
+  },
   "drink": {
     "name": "bevanda",
     "description": "Bevete una pozione."
   },
   "petSell": {
-    "name": "vendere casa famiglia",
+    "name": "vendere famiglia",
     "description": "Vendere un animale domestico a un altro giocatore.",
     "options": {
       "price": {

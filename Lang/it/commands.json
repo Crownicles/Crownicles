@@ -1,6 +1,6 @@
 {
   "badges": {
-    "description": "I badge sono distinzione difficile a ottenere che sono state create per ricompensare le persone che hanno il più sostenuti il sviluppo del bot. La lista dei badge e disponibile sulla guida del bot.\n(link : https://guide.draftbot.com/notions-avancees/badges)",
+    "description": "I badge sono riconoscimenti difficili da ottenere, creati per premiare le persone che hanno maggiormente sostenuto lo sviluppo del bot.\nL’elenco dei badge è disponibile nella guida del bot.\n(via questo link: https://guide.crownicles.com/notions-avancees/badges\n)",
     "title": "{emote:commands.badges} Informazioni dettagliate:"
   },
   "pet": {
@@ -284,6 +284,9 @@
       },
       "SWITCH": {
         "description": "Scambia un pezzo di equipaggiamento dalla propria scorta con quello che si possiede attualmente, a condizione che sia della stessa categoria. Se non si possiede alcun equipaggiamento della stessa categoria dell'oggetto che si vuole equipaggiare, questo verrà semplicemente spostato nell'inventario."
+      },
+      "DEPOSIT": {
+        "description": "Deposita un equipaggiamento dalla tua mano principale nella tua riserva.\nSe hai un solo equipaggiamento da depositare, questo verrà riposto automaticamente."
       },
       "TOP": {
         "description": "Mostra la classifica generale della partita per ogni 15 giocatori. I giocatori sullo stesso server che voi sono contrassegnati da un punto blu."
@@ -1301,6 +1304,15 @@
     "cancelled": "Azione annullata!",
     "switchSelectionTitle": "{{pseudo}}equipaggiare un oggetto",
     "switchSelectionDescription": "Scegliere un oggetto da equipaggiare dall'elenco sottostante:"
+  },
+  "deposit": {
+    "titleSuccess": "{{pseudo}}, comando eseguito!",
+    "deposeSuccess": "{{item}} è stato depositato nella tua riserva!",
+    "noItemToDeposit": "Non hai nessun equipaggiamento da depositare!",
+    "cannotDeposit": "La tua riserva è piena.",
+    "cancelled": "Azione annullata !",
+    "depositSelectionTitle": "{{pseudo}}, deposito di un oggetto",
+    "depositSelectionDescription": "Scegli un oggetto da depositare nell’elenco qui sotto:"
   },
   "drink": {
     "errors": {
