@@ -267,19 +267,21 @@ const aiTournamentTestCommand: ExecuteTestCommandLike = async (_player, args, re
 						stats1.draws++;
 						stats2.draws++;
 					}
-					else if (winner === 0) {
-						p1Wins++;
-						stats1.wins++;
-						stats2.losses++;
-						stats1.opponentsBeaten.add(player2.id);
-						stats2.opponentsLostTo.add(player1.id);
-					}
-					else {
+					else if (winner === 1) {
+						// winner === 1 signifie que fighter1 est mort, donc fighter2 gagne
 						p2Wins++;
 						stats2.wins++;
 						stats1.losses++;
 						stats2.opponentsBeaten.add(player1.id);
 						stats1.opponentsLostTo.add(player2.id);
+					}
+					else {
+						// winner === 0 signifie que fighter1 est vivant, donc fighter1 gagne
+						p1Wins++;
+						stats1.wins++;
+						stats2.losses++;
+						stats1.opponentsBeaten.add(player2.id);
+						stats2.opponentsLostTo.add(player1.id);
 					}
 
 					return Promise.resolve();
