@@ -4,13 +4,25 @@ import {
 import {
 	Player
 } from "../../../../core/database/game/models/Player";
-import { ClassDataController } from "../../../../data/Class";
+import {
+	InventorySlots
+} from "../../../../core/database/game/models/InventorySlot";
+import {
+	PlayerActiveObjects
+} from "../../../../core/database/game/models/PlayerActiveObjects";
+import {
+	Class,
+	ClassDataController
+} from "../../../../data/Class";
 import { AiPlayerFighter } from "../../../../core/fights/fighter/AiPlayerFighter";
 import { FightController } from "../../../../core/fights/FightController";
 import { FightOvertimeBehavior } from "../../../../core/fights/FightOvertimeBehavior";
 import { FightConstants } from "../../../../../../Lib/src/constants/FightConstants";
 import { PetDataController } from "../../../../data/Pet";
-import { PetEntities } from "../../../../core/database/game/models/PetEntity";
+import {
+	PetEntity,
+	PetEntities
+} from "../../../../core/database/game/models/PetEntity";
 import { Op } from "sequelize";
 import * as fs from "fs";
 import * as path from "path";
@@ -86,6 +98,12 @@ function calculateMedian(values: number[]): number {
 	}
 
 	return sorted[middle];
+}
+
+interface TournamentFighterResources {
+	classData: Class;
+	activeObjects: PlayerActiveObjects;
+	petEntity: PetEntity | null;
 }
 
 interface PlayerStats {
@@ -220,16 +238,29 @@ const aiTournamentTestCommand: ExecuteTestCommandLike = async (_player, args, re
 
 	// 2. Initialiser les statistiques pour chaque joueur
 	const playerStatsMap = new Map<number, PlayerStats>();
+	const fighterResources = new Map<number, TournamentFighterResources>();
 
 	for (const player of eligiblePlayers) {
 		const classData = ClassDataController.instance.getById(player.class);
+		const activeObjects: PlayerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
 		const petEntity = player.petId ? await PetEntities.getById(player.petId) : null;
 		const petData = petEntity ? PetDataController.instance.getById(petEntity.typeId) : null;
+
+		fighterResources.set(player.id, {
+			classData,
+			activeObjects,
+			petEntity
+		});
 
 		// Créer un fighter temporaire pour obtenir les vraies stats (avec équipements, buffs, etc.)
 		const tempFighter = new AiPlayerFighter(
 			player,
-			classData
+			classData,
+			{
+				allowPotionConsumption: false,
+				preloadedActiveObjects: activeObjects,
+				preloadedPetEntity: petEntity
+			}
 		);
 		await tempFighter.loadStats();
 
@@ -292,6 +323,8 @@ const aiTournamentTestCommand: ExecuteTestCommandLike = async (_player, args, re
 			const player2 = eligiblePlayers[j];
 			const stats1 = playerStatsMap.get(player1.id)!;
 			const stats2 = playerStatsMap.get(player2.id)!;
+			const resources1 = fighterResources.get(player1.id)!;
+			const resources2 = fighterResources.get(player2.id)!;
 
 			// Statistiques pour cette paire
 			let p1Wins = 0;
@@ -302,13 +335,23 @@ const aiTournamentTestCommand: ExecuteTestCommandLike = async (_player, args, re
 			for (let fight = 0; fight < fightsPerPair; fight++) {
 				const fighter1 = new AiPlayerFighter(
 					player1,
-					ClassDataController.instance.getById(player1.class)
+					resources1.classData,
+					{
+						allowPotionConsumption: false,
+						preloadedActiveObjects: resources1.activeObjects,
+						preloadedPetEntity: resources1.petEntity
+					}
 				);
 				await fighter1.loadStats();
 
 				const fighter2 = new AiPlayerFighter(
 					player2,
-					ClassDataController.instance.getById(player2.class)
+					resources2.classData,
+					{
+						allowPotionConsumption: false,
+						preloadedActiveObjects: resources2.activeObjects,
+						preloadedPetEntity: resources2.petEntity
+					}
 				);
 				await fighter2.loadStats();
 
