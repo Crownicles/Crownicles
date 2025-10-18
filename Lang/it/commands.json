@@ -168,7 +168,7 @@
         "description": "Questo comando permette di consumare la pozione che avete con voi. Alcune pozioni non possono essere bevute e vengono consumate automaticamente durante il combattimento."
       },
       "FIGHT": {
-        "description": "Usate questo comando per sfidare altri giocatori sullo stesso server.\nLe battaglie si svolgono turno per turno. A ogni turno si può scegliere un'azione da eseguire.\n\nPer ulteriori informazioni, consultare la pagina della guida: https://guide.draftbot.com/notions-principale/combats",
+        "description": "Utilisez cette commande pour défier les autres joueurs.\nLes combats se déroulent tour par tour. À chaque tour, vous pouvez choisir une action à effectuer.\n\nPour plus d'informations vous pouvez aller voir la page du guide : https://guide.crownicles.com/notions-principale/combats",
         "image": "https://draftbot.com/public/ressources/fighthelp/en/5.1.7.png"
       },
       "GLORY_TOP": {
