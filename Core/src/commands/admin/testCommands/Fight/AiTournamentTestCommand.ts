@@ -116,12 +116,44 @@ interface PlayerStats {
 	opponentsSeriesLost: Set<number>;
 }
 
-interface ClassPairMatchup {
+interface PairMatchup {
+	entityAId: number;
+	entityBId: number;
+	entityAWins: number;
+	entityBWins: number;
+	draws: number;
+}
+
+/**
+ * Generic function to get or create a matchup entry in a map
+ */
+function getOrCreateMatchup(
+	matchups: Map<string, PairMatchup>,
+	entityId1: number,
+	entityId2: number
+): PairMatchup {
+	const entityAId = Math.min(entityId1, entityId2);
+	const entityBId = Math.max(entityId1, entityId2);
+	const key = `${entityAId}-${entityBId}`;
+	let matchup = matchups.get(key);
+	if (!matchup) {
+		matchup = {
+			entityAId,
+			entityBId,
+			entityAWins: 0,
+			entityBWins: 0,
+			draws: 0
+		};
+		matchups.set(key, matchup);
+	}
+	return matchup;
+}
+
+interface ClassPairMatchup extends PairMatchup {
 	classAId: number;
 	classBId: number;
 	classAWins: number;
 	classBWins: number;
-	draws: number;
 }
 
 function getOrCreateClassMatchup(
@@ -129,29 +161,22 @@ function getOrCreateClassMatchup(
 	classId1: number,
 	classId2: number
 ): ClassPairMatchup {
-	const classAId = Math.min(classId1, classId2);
-	const classBId = Math.max(classId1, classId2);
-	const key = `${classAId}-${classBId}`;
-	let matchup = classMatchups.get(key);
-	if (!matchup) {
-		matchup = {
-			classAId,
-			classBId,
-			classAWins: 0,
-			classBWins: 0,
-			draws: 0
-		};
-		classMatchups.set(key, matchup);
-	}
-	return matchup;
+	return getOrCreateMatchup(classMatchups, classId1, classId2) as ClassPairMatchup;
 }
 
-interface PetPairMatchup {
+interface PetPairMatchup extends PairMatchup {
 	petAId: number;
 	petBId: number;
 	petAWins: number;
 	petBWins: number;
-	draws: number;
+}
+
+function getOrCreatePetMatchup(
+	petMatchups: Map<string, PetPairMatchup>,
+	petId1: number,
+	petId2: number
+): PetPairMatchup {
+	return getOrCreateMatchup(petMatchups, petId1, petId2) as PetPairMatchup;
 }
 
 interface MatchupCsvRowInput {
@@ -164,28 +189,6 @@ interface MatchupCsvRowInput {
 	draws: number;
 	winsA: number;
 	winsB: number;
-}
-
-function getOrCreatePetMatchup(
-	petMatchups: Map<string, PetPairMatchup>,
-	petId1: number,
-	petId2: number
-): PetPairMatchup {
-	const petAId = Math.min(petId1, petId2);
-	const petBId = Math.max(petId1, petId2);
-	const key = `${petAId}-${petBId}`;
-	let matchup = petMatchups.get(key);
-	if (!matchup) {
-		matchup = {
-			petAId,
-			petBId,
-			petAWins: 0,
-			petBWins: 0,
-			draws: 0
-		};
-		petMatchups.set(key, matchup);
-	}
-	return matchup;
 }
 
 export const commandInfo: ITestCommand = {

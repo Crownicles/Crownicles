@@ -37,42 +37,60 @@ export async function handleCommandTestPacketRes(packet: CommandTestPacketRes, c
 		return;
 	}
 
-	if (interaction) {
-		if (packet.isError) {
-			if (interaction.replied) {
-				await interaction.channel.send({ content: packet.result });
-			}
-			else {
-				await interaction.editReply({ content: packet.result });
-			}
+	if (packet.isError) {
+		const content = { content: packet.result };
+		if (interaction.replied) {
+			await interaction.channel.send(content);
 		}
 		else {
-			const attachments = packet.fileName && packet.fileContentBase64 ? [new AttachmentBuilder(Buffer.from(packet.fileContentBase64, "base64")).setName(packet.fileName)] : [];
-			const embedTestSuccessful = new CrowniclesEmbed()
-				.setAuthor({
-					name: `Commande test ${packet.commandName} exécutée :`,
-					iconURL: interaction.user.displayAvatarURL()
-				})
-				.setDescription(packet.result)
-				.setColor(<HexColorString> ColorConstants.SUCCESSFUL);
-
-			const payload = attachments.length > 0
-				? {
-					embeds: [embedTestSuccessful],
-					files: attachments
-				}
-				: {
-					embeds: [embedTestSuccessful]
-				};
-
-			if (interaction.replied) {
-				await interaction.channel.send(payload);
-			}
-			else {
-				await interaction.editReply(payload);
-			}
+			await interaction.editReply(content);
 		}
+		return;
 	}
+
+	const embed = buildTestResultEmbed(packet.commandName, packet.result, interaction.user.displayAvatarURL());
+	const payload = buildPayloadWithAttachments(embed, packet.fileName, packet.fileContentBase64);
+
+	if (interaction.replied) {
+		await interaction.channel.send(payload);
+	}
+	else {
+		await interaction.editReply(payload);
+	}
+}
+
+/**
+ * Build test command result embed
+ */
+function buildTestResultEmbed(commandName: string, result: string, userAvatarUrl?: string): CrowniclesEmbed {
+	return new CrowniclesEmbed()
+		.setAuthor({
+			name: `Commande test ${commandName} exécutée :`,
+			iconURL: userAvatarUrl
+		})
+		.setDescription(result)
+		.setColor(<HexColorString> ColorConstants.SUCCESSFUL);
+}
+
+/**
+ * Build payload with optional file attachments
+ */
+function buildPayloadWithAttachments(embed: CrowniclesEmbed, fileName?: string, fileContentBase64?: string): {
+	embeds: CrowniclesEmbed[];
+	files?: AttachmentBuilder[];
+} {
+	const attachments = fileName && fileContentBase64
+		? [new AttachmentBuilder(Buffer.from(fileContentBase64, "base64")).setName(fileName)]
+		: [];
+
+	return attachments.length > 0
+		? {
+			embeds: [embed],
+			files: attachments
+		}
+		: {
+			embeds: [embed]
+		};
 }
 
 async function sendResultWithoutInteraction(packet: CommandTestPacketRes, context: PacketContext): Promise<void> {
@@ -111,26 +129,8 @@ async function sendResultWithoutInteraction(packet: CommandTestPacketRes, contex
 		? await crowniclesClient.users.fetch(userId).catch(() => null)
 		: null;
 
-	const attachments = packet.fileName && packet.fileContentBase64
-		? [new AttachmentBuilder(Buffer.from(packet.fileContentBase64, "base64")).setName(packet.fileName)]
-		: [];
-
-	const embedTestSuccessful = new CrowniclesEmbed()
-		.setAuthor({
-			name: `Commande test ${packet.commandName} exécutée :`,
-			iconURL: user?.displayAvatarURL()
-		})
-		.setDescription(packet.result)
-		.setColor(<HexColorString> ColorConstants.SUCCESSFUL);
-
-	const payload = attachments.length > 0
-		? {
-			embeds: [embedTestSuccessful],
-			files: attachments
-		}
-		: {
-			embeds: [embedTestSuccessful]
-		};
+	const embed = buildTestResultEmbed(packet.commandName, packet.result, user?.displayAvatarURL());
+	const payload = buildPayloadWithAttachments(embed, packet.fileName, packet.fileContentBase64);
 
 	await textChannel.send(payload).catch((e: unknown) => {
 		CrowniclesLogger.errorWithObj("Failed to deliver test command result in fallback", e);
