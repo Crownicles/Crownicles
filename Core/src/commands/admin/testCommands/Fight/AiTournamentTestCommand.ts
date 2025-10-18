@@ -28,16 +28,12 @@ import { makePacket } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import { CommandTestPacketRes } from "../../../../../../Lib/src/packets/commands/CommandTestPacket";
 import { PacketUtils } from "../../../../core/utils/PacketUtils";
 import { CrowniclesIcons } from "../../../../../../Lib/src/CrowniclesIcons";
-import { loadFrenchModels } from "./loadFrenchModels";
-
-// Charger les traductions françaises
-const frModels = loadFrenchModels();
 
 /**
- * Get the name of a class from translations
+ * Get a readable class label from its id
  */
 function getClassName(classId: number): string {
-	return (frModels.classes as Record<string, string>)[classId.toString()] || `Classe #${classId}`;
+	return `Class #${classId}`;
 }
 
 function getClassEmoji(classId: number): string {
@@ -65,12 +61,10 @@ function escapeCsvValue(value: string | number): string {
 }
 
 /**
- * Get the name of a pet from translations
- * Uses male variant by default
+ * Get a readable pet label from its id
  */
 function getPetName(petId: number): string {
-	const maleKey = `${petId}_male`;
-	return (frModels.pets as Record<string, string>)[maleKey] || `Familier #${petId}`;
+	return `Pet #${petId}`;
 }
 
 /**

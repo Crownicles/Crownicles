@@ -9,16 +9,12 @@ import { FightOvertimeBehavior } from "../../../../core/fights/FightOvertimeBeha
 import { FightConstants } from "../../../../../../Lib/src/constants/FightConstants";
 import { PetDataController } from "../../../../data/Pet";
 import { PetEntities } from "../../../../core/database/game/models/PetEntity";
-import { loadFrenchModels } from "./loadFrenchModels";
-
-// Charger les traductions françaises
-const frModels = loadFrenchModels();
 
 /**
  * Get the name of a class from translations
  */
 function getClassName(classId: number): string {
-	return (frModels.classes as Record<string, string>)[classId.toString()] || `Classe #${classId}`;
+	return `Class #${classId}`;
 }
 
 /**
@@ -26,8 +22,7 @@ function getClassName(classId: number): string {
  * Uses male variant by default
  */
 function getPetName(petId: number): string {
-	const maleKey = `${petId}_male`;
-	return (frModels.pets as Record<string, string>)[maleKey] || `Familier #${petId}`;
+	return `Pet #${petId}`;
 }
 
 /**
