@@ -11,14 +11,13 @@ import { FightConstants } from "../../../../../../Lib/src/constants/FightConstan
 export const commandInfo: ITestCommand = {
 	name: "aifight",
 	aliases: ["aif", "aivs"],
-	commandFormat: "<player1Id> <player2Id> [amount:1-500] [silent:0|1]",
+	commandFormat: "<player1Id> <player2Id> [amount:1-10000]",
 	typeWaited: {
 		player1Id: TypeKey.INTEGER,
 		player2Id: TypeKey.INTEGER,
-		amount: TypeKey.INTEGER,
-		silent: TypeKey.INTEGER
+		amount: TypeKey.INTEGER
 	},
-	description: "Lance un ou plusieurs combats entre deux joueurs contrôlés par l'IA. Les IDs sont les IDs de la table Player (nombres). Paramètres optionnels : amount (1-500, défaut 1) = nombre de combats, silent (0|1, défaut 0) = mode silencieux."
+	description: "Lance un ou plusieurs combats entre deux joueurs contrôlés par l'IA (mode silencieux). Les IDs sont les IDs de la table Player (nombres). Paramètre optionnel : amount (1-10000, défaut 1) = nombre de combats."
 };
 
 /**
@@ -27,8 +26,8 @@ export const commandInfo: ITestCommand = {
 const aiFightTestCommand: ExecuteTestCommandLike = async (_player, args, response, context) => {
 	const player1Id = parseInt(args[0], 10);
 	const player2Id = parseInt(args[1], 10);
-	const amount = args.length > 2 ? Math.min(Math.max(parseInt(args[2], 10), 1), 500) : 1;
-	const silentMode = args.length > 3 ? parseInt(args[3], 10) === 1 : amount > 1;
+	const amount = args.length > 2 ? Math.min(Math.max(parseInt(args[2], 10), 1), 10000) : 1;
+	const silentMode = true; // Les combats IA sont toujours silencieux
 
 	// 1. Récupérer les deux joueurs
 	const player1 = await Players.getById(player1Id);
