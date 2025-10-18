@@ -168,7 +168,7 @@
         "description": "Cette commande permet de consommer la potion que vous transportez. Certaines potions ne peuvent pas être bues et sont consommées automatiquement lors d'un combat."
       },
       "FIGHT": {
-        "description": "Utilisez cette commande pour défier les autres joueurs qui se trouvent sur le même serveur que vous.\nLes combats se déroulent tour par tour. À chaque tour, vous pouvez choisir une action à effectuer.\n\nPour plus d'informations vous pouvez aller voir la page du guide : https://guide.crownicles.com/notions-principale/combats",
+        "description": "Utilisez cette commande pour défier les autres joueurs.\nLes combats se déroulent tour par tour. À chaque tour, vous pouvez choisir une action à effectuer.\n\nPour plus d'informations vous pouvez aller voir la page du guide : https://guide.crownicles.com/notions-principale/combats",
         "image": "https://crownicles.com/public/ressources/fighthelp/fr/5.1.7.png"
       },
       "GLORY_TOP": {
