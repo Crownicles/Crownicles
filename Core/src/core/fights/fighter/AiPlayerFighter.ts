@@ -107,7 +107,7 @@ export class AiPlayerFighter extends Fighter {
 		this.glory = this.player.getGloryPoints();
 		if (this.player.petId) {
 			if (this.preloadedPetEntity !== undefined) {
-				this.pet = this.preloadedPetEntity ?? undefined;
+				this.pet = this.preloadedPetEntity;
 			}
 			else {
 				this.pet = await PetEntities.getById(this.player.petId);
