@@ -16,6 +16,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { makePacket } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import { CommandTestPacketRes } from "../../../../../../Lib/src/packets/commands/CommandTestPacket";
+import { PacketUtils } from "../../../../core/utils/PacketUtils";
 
 // Charger les traductions françaises
 const frModels = JSON.parse(
@@ -170,16 +171,19 @@ const aiTournamentTestCommand: ExecuteTestCommandLike = async (_player, args, re
 	const totalPairs = (eligiblePlayers.length * (eligiblePlayers.length - 1)) / 2;
 	const totalFights = totalPairs * fightsPerPair;
 
-	response.push(makePacket(CommandTestPacketRes, {
-		commandName: "aitournament",
-		result: `🏆 **Démarrage du tournoi IA**\n\n`
+	// Message initial envoyé immédiatement
+	PacketUtils.sendPackets(context, [
+		makePacket(CommandTestPacketRes, {
+			commandName: "aitournament",
+			result: `🏆 **Démarrage du tournoi IA**\n\n`
 			+ `👥 Participants : ${eligiblePlayers.length} joueurs (niveau ${minLevel}+)\n`
 			+ `⚔️ Combats par paire : ${fightsPerPair}\n`
 			+ `📊 Total de paires : ${totalPairs}\n`
 			+ `🎯 Total de combats : ${totalFights.toLocaleString()}\n\n`
 			+ `⏳ Simulation en cours...`,
-		isError: false
-	}));
+			isError: false
+		})
+	]);
 
 	let completedFights = 0;
 	const startTime = Date.now();
@@ -281,13 +285,16 @@ const aiTournamentTestCommand: ExecuteTestCommandLike = async (_player, args, re
 					const fightsPerSecond = completedFights / ((now - startTime) / 1000);
 					const estimatedTimeRemaining = Math.ceil((totalFights - completedFights) / fightsPerSecond);
 
-					response.push(makePacket(CommandTestPacketRes, {
-						commandName: "aitournament",
-						result: `⏳ Progression : ${completedFights.toLocaleString()}/${totalFights.toLocaleString()} (${progress}%)\n`
-							+ `⚡ Vitesse : ${fightsPerSecond.toFixed(1)} combats/s\n`
-							+ `⏱️ Temps restant estimé : ${Math.floor(estimatedTimeRemaining / 60)}m ${estimatedTimeRemaining % 60}s`,
-						isError: false
-					}));
+					// Envoyer message de progression immédiatement
+					PacketUtils.sendPackets(context, [
+						makePacket(CommandTestPacketRes, {
+							commandName: "aitournament",
+							result: `⏳ Progression : ${completedFights.toLocaleString()}/${totalFights.toLocaleString()} (${progress}%)\n`
+								+ `⚡ Vitesse : ${fightsPerSecond.toFixed(1)} combats/s\n`
+								+ `⏱️ Temps restant estimé : ${Math.floor(estimatedTimeRemaining / 60)}m ${estimatedTimeRemaining % 60}s`,
+							isError: false
+						})
+					]);
 
 					lastProgressUpdate = now;
 				}
@@ -482,7 +489,7 @@ const aiTournamentTestCommand: ExecuteTestCommandLike = async (_player, args, re
 		isError: false
 	}));
 
-	return "";
+	return "✅ Tournoi terminé ! Consultez les résultats ci-dessus.";
 };
 
 commandInfo.execute = aiTournamentTestCommand;
