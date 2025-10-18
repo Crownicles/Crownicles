@@ -45,6 +45,22 @@ function formatClassLabel(classId: number): string {
 	return `${getClassEmoji(classId)} ${getClassName(classId)}`;
 }
 
+function getPetEmoji(petId: number): string {
+	return CrowniclesIcons.pets[petId]?.emoteMale || "❔";
+}
+
+function formatPetLabel(petId: number): string {
+	return `${getPetEmoji(petId)} ${getPetName(petId)}`;
+}
+
+function escapeCsvValue(value: string | number): string {
+	const stringValue = value === null || value === undefined ? "" : String(value);
+	if ((/[",\n\r]/u).test(stringValue)) {
+		return `"${stringValue.replace(/"/gu, '""')}"`;
+	}
+	return stringValue;
+}
+
 /**
  * Get the name of a pet from translations
  * Uses male variant by default
@@ -93,6 +109,8 @@ interface PlayerStats {
 	damagePerTurnList: number[];
 	opponentsBeaten: Set<number>;
 	opponentsLostTo: Set<number>;
+	opponentsSeriesWon: Set<number>;
+	opponentsSeriesLost: Set<number>;
 }
 
 interface ClassPairMatchup {
@@ -125,27 +143,63 @@ function getOrCreateClassMatchup(
 	return matchup;
 }
 
-interface PetMatchup {
-	wins: number;
-	losses: number;
+interface PetPairMatchup {
+	petAId: number;
+	petBId: number;
+	petAWins: number;
+	petBWins: number;
 	draws: number;
+}
+
+interface MatchupCsvRowInput {
+	category: string;
+	entityAId: number;
+	entityALabel: string;
+	entityBId: number;
+	entityBLabel: string;
+	totalCombats: number;
+	draws: number;
+	winsA: number;
+	winsB: number;
+}
+
+function getOrCreatePetMatchup(
+	petMatchups: Map<string, PetPairMatchup>,
+	petId1: number,
+	petId2: number
+): PetPairMatchup {
+	const petAId = Math.min(petId1, petId2);
+	const petBId = Math.max(petId1, petId2);
+	const key = `${petAId}-${petBId}`;
+	let matchup = petMatchups.get(key);
+	if (!matchup) {
+		matchup = {
+			petAId,
+			petBId,
+			petAWins: 0,
+			petBWins: 0,
+			draws: 0
+		};
+		petMatchups.set(key, matchup);
+	}
+	return matchup;
 }
 
 export const commandInfo: ITestCommand = {
 	name: "aitournament",
 	aliases: ["ait", "tournament"],
-	commandFormat: "[fightsPerPair:100-10000]",
+	commandFormat: "[fightsPerPair:3-10000]",
 	typeWaited: {
 		fightsPerPair: TypeKey.INTEGER
 	},
-	description: "Lance un tournoi IA entre tous les joueurs niveau 8+ de la base de données. Paramètre optionnel : fightsPerPair (100-10000, défaut 5000) = nombre de combats par paire."
+	description: "Lance un tournoi IA entre tous les joueurs niveau 8+ de la base de données. Paramètre optionnel : fightsPerPair (3-10000, défaut 5000) = nombre de combats par paire."
 };
 
 /**
  * Execute an AI tournament
  */
 const aiTournamentTestCommand: ExecuteTestCommandLike = async (_player, args, response, context) => {
-	const fightsPerPair = args.length > 0 ? Math.min(Math.max(parseInt(args[0], 10), 100), 10000) : 5000;
+	const fightsPerPair = args.length > 0 ? Math.min(Math.max(parseInt(args[0], 10), 3), 10000) : 5000;
 	const minLevel = FightConstants.REQUIRED_LEVEL;
 
 	// 1. Récupérer tous les joueurs éligibles (niveau 8+)
@@ -199,13 +253,15 @@ const aiTournamentTestCommand: ExecuteTestCommandLike = async (_player, args, re
 			totalTurns: 0,
 			damagePerTurnList: [],
 			opponentsBeaten: new Set(),
-			opponentsLostTo: new Set()
+			opponentsLostTo: new Set(),
+			opponentsSeriesWon: new Set(),
+			opponentsSeriesLost: new Set()
 		});
 	}
 
 	// 3. Statistiques de matchups classe vs classe et pet vs pet
 	const classMatchups = new Map<string, ClassPairMatchup>();
-	const petMatchups = new Map<string, PetMatchup>();
+	const petMatchups = new Map<string, PetPairMatchup>();
 
 	// 4. Simuler tous les combats
 	const totalPairs = (eligiblePlayers.length * (eligiblePlayers.length - 1)) / 2;
@@ -305,15 +361,11 @@ const aiTournamentTestCommand: ExecuteTestCommandLike = async (_player, args, re
 						p2Wins++;
 						stats2.wins++;
 						stats1.losses++;
-						stats2.opponentsBeaten.add(player1.id);
-						stats1.opponentsLostTo.add(player2.id);
 					}
 					else if (winnerFighter === fighter1) {
 						p1Wins++;
 						stats1.wins++;
 						stats2.losses++;
-						stats1.opponentsBeaten.add(player2.id);
-						stats2.opponentsLostTo.add(player1.id);
 					}
 					else {
 						draws++;
@@ -353,10 +405,8 @@ const aiTournamentTestCommand: ExecuteTestCommandLike = async (_player, args, re
 			// Enregistrer les matchups classe vs classe
 			const classMatchup = getOrCreateClassMatchup(classMatchups, stats1.classId, stats2.classId);
 			classMatchup.draws += draws;
-			if (classMatchup.classAId === classMatchup.classBId) {
-				classMatchup.classAWins += p1Wins + p2Wins;
-			}
-			else if (stats1.classId === classMatchup.classAId) {
+			const isDirectClassOrder = stats1.classId === classMatchup.classAId && stats2.classId === classMatchup.classBId;
+			if (isDirectClassOrder) {
 				classMatchup.classAWins += p1Wins;
 				classMatchup.classBWins += p2Wins;
 			}
@@ -365,32 +415,36 @@ const aiTournamentTestCommand: ExecuteTestCommandLike = async (_player, args, re
 				classMatchup.classBWins += p1Wins;
 			}
 
+			if (p1Wins > 0) {
+				stats1.opponentsBeaten.add(player2.id);
+				stats2.opponentsLostTo.add(player1.id);
+			}
+			if (p2Wins > 0) {
+				stats2.opponentsBeaten.add(player1.id);
+				stats1.opponentsLostTo.add(player2.id);
+			}
+			if (p1Wins > p2Wins) {
+				stats1.opponentsSeriesWon.add(player2.id);
+				stats2.opponentsSeriesLost.add(player1.id);
+			}
+			else if (p2Wins > p1Wins) {
+				stats2.opponentsSeriesWon.add(player1.id);
+				stats1.opponentsSeriesLost.add(player2.id);
+			}
+
 			// Enregistrer les matchups pet vs pet (si les deux ont un pet)
 			if (stats1.petTypeId !== null && stats2.petTypeId !== null) {
-				const petKey = `${stats1.petTypeId}-${stats2.petTypeId}`;
-				const reversePetKey = `${stats2.petTypeId}-${stats1.petTypeId}`;
-
-				if (!petMatchups.has(petKey)) {
-					petMatchups.set(petKey, {
-						wins: 0, losses: 0, draws: 0
-					});
+				const petMatchup = getOrCreatePetMatchup(petMatchups, stats1.petTypeId, stats2.petTypeId);
+				petMatchup.draws += draws;
+				const isDirectPetOrder = stats1.petTypeId === petMatchup.petAId && stats2.petTypeId === petMatchup.petBId;
+				if (isDirectPetOrder) {
+					petMatchup.petAWins += p1Wins;
+					petMatchup.petBWins += p2Wins;
 				}
-				if (!petMatchups.has(reversePetKey)) {
-					petMatchups.set(reversePetKey, {
-						wins: 0, losses: 0, draws: 0
-					});
+				else {
+					petMatchup.petAWins += p2Wins;
+					petMatchup.petBWins += p1Wins;
 				}
-
-				const petMatchup1 = petMatchups.get(petKey)!;
-				const petMatchup2 = petMatchups.get(reversePetKey)!;
-
-				petMatchup1.wins += p1Wins;
-				petMatchup1.losses += p2Wins;
-				petMatchup1.draws += draws;
-
-				petMatchup2.wins += p2Wins;
-				petMatchup2.losses += p1Wins;
-				petMatchup2.draws += draws;
 			}
 		}
 	}	// 5. Générer le rapport final en plusieurs messages
@@ -452,7 +506,8 @@ const aiTournamentTestCommand: ExecuteTestCommandLike = async (_player, args, re
 			report += `• Résultats : ${player.wins}V / ${player.losses}D / ${player.draws}N (${winRate}% WR)\n`;
 			report += `• Dégâts infligés : ${avgDamagePerFight} par combat | ${avgDamagePerTurn} par tour (médiane: ${medianDamagePerTurn})\n`;
 			report += `• Dégâts subis : ${avgDamageTaken} par combat\n`;
-			report += `• Adversaires battus : ${player.opponentsBeaten.size}/${eligiblePlayers.length - 1}\n\n`;
+			const totalOpponents = Math.max(eligiblePlayers.length - 1, 0);
+			report += `• Adversaires battus : ${player.opponentsSeriesWon.size} séries | ${player.opponentsBeaten.size} au moins un combat (/${totalOpponents})\n\n`;
 		}
 
 		response.push(makePacket(CommandTestPacketRes, {
@@ -462,7 +517,60 @@ const aiTournamentTestCommand: ExecuteTestCommandLike = async (_player, args, re
 		}));
 	}
 
-	// MESSAGE FINAL : Matchups classe vs classe
+	// MESSAGE FINAL : Matchups + export CSV
+	const csvRows: string[][] = [
+		[
+			"category",
+			"entity_a_id",
+			"entity_a_label",
+			"entity_b_id",
+			"entity_b_label",
+			"total_fights",
+			"draws",
+			"draw_rate_percent",
+			"decisions",
+			"decisions_rate_percent",
+			"entity_a_wins",
+			"entity_a_win_rate_percent",
+			"entity_b_wins",
+			"entity_b_win_rate_percent"
+		]
+	];
+
+	const addCsvRow = ({
+		category,
+		entityAId,
+		entityALabel,
+		entityBId,
+		entityBLabel,
+		totalCombats,
+		draws,
+		winsA,
+		winsB
+	}: MatchupCsvRowInput): void => {
+		const decisions = totalCombats - draws;
+		const drawRate = totalCombats > 0 ? (draws / totalCombats) * 100 : 0;
+		const decisionsRate = totalCombats > 0 ? (decisions / totalCombats) * 100 : 0;
+		const winRateA = totalCombats > 0 ? (winsA / totalCombats) * 100 : 0;
+		const winRateB = totalCombats > 0 ? (winsB / totalCombats) * 100 : 0;
+		csvRows.push([
+			category,
+			entityAId.toString(),
+			entityALabel,
+			entityBId.toString(),
+			entityBLabel,
+			totalCombats.toString(),
+			draws.toString(),
+			drawRate.toFixed(2),
+			decisions.toString(),
+			decisionsRate.toFixed(2),
+			winsA.toString(),
+			winRateA.toFixed(2),
+			winsB.toString(),
+			winRateB.toFixed(2)
+		]);
+	};
+
 	let reportMatchups = `⚔️ **MATCHUPS CLASSE vs CLASSE :**\n\n`;
 
 	const sortedClassMatchups = Array.from(classMatchups.values()).sort((a, b) => {
@@ -482,52 +590,75 @@ const aiTournamentTestCommand: ExecuteTestCommandLike = async (_player, args, re
 				continue;
 			}
 
-			if (matchup.classAId === matchup.classBId) {
-				const decisions = totalCombats - matchup.draws;
-				const drawRate = totalCombats > 0 ? ((matchup.draws / totalCombats) * 100).toFixed(1) : "0.0";
-				const decisionRate = totalCombats > 0 ? ((decisions / totalCombats) * 100).toFixed(1) : "0.0";
-				reportMatchups += `• ${formatClassLabel(matchup.classAId)} vs ${formatClassLabel(matchup.classBId)} : ${totalCombats.toLocaleString()} combats | ${decisions.toLocaleString()} décisions (${decisionRate}%) | ${matchup.draws.toLocaleString()} nuls (${drawRate}%)\n\n`;
-				continue;
-			}
+			addCsvRow({
+				category: "class",
+				entityAId: matchup.classAId,
+				entityALabel: formatClassLabel(matchup.classAId),
+				entityBId: matchup.classBId,
+				entityBLabel: formatClassLabel(matchup.classBId),
+				totalCombats,
+				draws: matchup.draws,
+				winsA: matchup.classAWins,
+				winsB: matchup.classBWins
+			});
 
 			const drawRate = totalCombats > 0 ? ((matchup.draws / totalCombats) * 100).toFixed(1) : "0.0";
 			const classAWinRate = totalCombats > 0 ? ((matchup.classAWins / totalCombats) * 100).toFixed(1) : "0.0";
 			const classBWinRate = totalCombats > 0 ? ((matchup.classBWins / totalCombats) * 100).toFixed(1) : "0.0";
 
-			reportMatchups += `• ${formatClassLabel(matchup.classAId)} vs ${formatClassLabel(matchup.classBId)} : ${totalCombats.toLocaleString()} combats | ${matchup.draws.toLocaleString()} nuls (${drawRate}%)\n`;
-			reportMatchups += `  -> ${formatClassLabel(matchup.classAId)} : ${matchup.classAWins.toLocaleString()}V (${classAWinRate}%) | ${formatClassLabel(matchup.classBId)} : ${matchup.classBWins.toLocaleString()}V (${classBWinRate}%)\n\n`;
+			if (matchup.classAId === matchup.classBId) {
+				const decisions = matchup.classAWins + matchup.classBWins;
+				const decisionsRate = totalCombats > 0 ? ((decisions / totalCombats) * 100).toFixed(1) : "0.0";
+				reportMatchups += `• ${formatClassLabel(matchup.classAId)} (miroir) : ${totalCombats.toLocaleString()} combats | ${matchup.draws.toLocaleString()} nuls (${drawRate}%) | décisions : ${decisions.toLocaleString()} (${decisionsRate}%)\n`;
+				reportMatchups += `  -> Position A : ${matchup.classAWins.toLocaleString()}V (${classAWinRate}%) | Position B : ${matchup.classBWins.toLocaleString()}V (${classBWinRate}%)\n\n`;
+			}
+			else {
+				reportMatchups += `• ${formatClassLabel(matchup.classAId)} vs ${formatClassLabel(matchup.classBId)} : ${totalCombats.toLocaleString()} combats | ${matchup.draws.toLocaleString()} nuls (${drawRate}%)\n`;
+				reportMatchups += `  -> ${formatClassLabel(matchup.classAId)} : ${matchup.classAWins.toLocaleString()}V (${classAWinRate}%) | ${formatClassLabel(matchup.classBId)} : ${matchup.classBWins.toLocaleString()}V (${classBWinRate}%)\n\n`;
+			}
 		}
 	}
 
-	// Statistiques de matchups pet vs pet
-	if (petMatchups.size > 0) {
+	const sortedPetMatchups = Array.from(petMatchups.values()).sort((a, b) => {
+		if (a.petAId !== b.petAId) {
+			return a.petAId - b.petAId;
+		}
+		return a.petBId - b.petBId;
+	});
+
+	if (sortedPetMatchups.length > 0) {
 		reportMatchups += `\n🐾 **MATCHUPS FAMILIER vs FAMILIER :**\n\n`;
-
-		const uniquePets = new Set<number>();
-		playerStatsList.forEach(p => {
-			if (p.petTypeId !== null) {
-				uniquePets.add(p.petTypeId);
+		for (const matchup of sortedPetMatchups) {
+			const totalCombats = matchup.petAWins + matchup.petBWins + matchup.draws;
+			if (totalCombats === 0) {
+				continue;
 			}
-		});
-		const petsList = Array.from(uniquePets).sort((a, b) => a - b);
 
-		for (const petId1 of petsList) {
-			for (const petId2 of petsList) {
-				if (petId1 >= petId2) {
-					continue;
-				}
+			addCsvRow({
+				category: "pet",
+				entityAId: matchup.petAId,
+				entityALabel: formatPetLabel(matchup.petAId),
+				entityBId: matchup.petBId,
+				entityBLabel: formatPetLabel(matchup.petBId),
+				totalCombats,
+				draws: matchup.draws,
+				winsA: matchup.petAWins,
+				winsB: matchup.petBWins
+			});
 
-				const key = `${petId1}-${petId2}`;
-				const matchup = petMatchups.get(key);
+			const drawRate = totalCombats > 0 ? ((matchup.draws / totalCombats) * 100).toFixed(1) : "0.0";
+			const petAWinRate = totalCombats > 0 ? ((matchup.petAWins / totalCombats) * 100).toFixed(1) : "0.0";
+			const petBWinRate = totalCombats > 0 ? ((matchup.petBWins / totalCombats) * 100).toFixed(1) : "0.0";
 
-				if (matchup) {
-					const total = matchup.wins + matchup.losses + matchup.draws;
-					const wr1 = total > 0 ? ((matchup.wins / total) * 100).toFixed(1) : "0";
-					const wr2 = total > 0 ? ((matchup.losses / total) * 100).toFixed(1) : "0";
-
-					reportMatchups += `• **${getPetName(petId1)}** vs **${getPetName(petId2)}**\n`;
-					reportMatchups += `  ${getPetName(petId1)} : ${matchup.wins}V (${wr1}%) | ${getPetName(petId2)} : ${matchup.losses}V (${wr2}%) | Nuls : ${matchup.draws}\n`;
-				}
+			if (matchup.petAId === matchup.petBId) {
+				const decisions = matchup.petAWins + matchup.petBWins;
+				const decisionsRate = totalCombats > 0 ? ((decisions / totalCombats) * 100).toFixed(1) : "0.0";
+				reportMatchups += `• ${formatPetLabel(matchup.petAId)} (miroir) : ${totalCombats.toLocaleString()} combats | ${matchup.draws.toLocaleString()} nuls (${drawRate}%) | décisions : ${decisions.toLocaleString()} (${decisionsRate}%)\n`;
+				reportMatchups += `  -> Position A : ${matchup.petAWins.toLocaleString()}V (${petAWinRate}%) | Position B : ${matchup.petBWins.toLocaleString()}V (${petBWinRate}%)\n\n`;
+			}
+			else {
+				reportMatchups += `• ${formatPetLabel(matchup.petAId)} vs ${formatPetLabel(matchup.petBId)} : ${totalCombats.toLocaleString()} combats | ${matchup.draws.toLocaleString()} nuls (${drawRate}%)\n`;
+				reportMatchups += `  -> ${formatPetLabel(matchup.petAId)} : ${matchup.petAWins.toLocaleString()}V (${petAWinRate}%) | ${formatPetLabel(matchup.petBId)} : ${matchup.petBWins.toLocaleString()}V (${petBWinRate}%)\n\n`;
 			}
 		}
 	}
@@ -537,6 +668,20 @@ const aiTournamentTestCommand: ExecuteTestCommandLike = async (_player, args, re
 		result: reportMatchups,
 		isError: false
 	}));
+
+	if (csvRows.length > 1) {
+		const csvContent = csvRows.map(row => row.map(escapeCsvValue).join(",")).join("\n");
+		const csvFileName = `ai_tournament_matchups_${new Date()
+			.toISOString()
+			.replace(/[:.]/gu, "-")}.csv`;
+		response.push(makePacket(CommandTestPacketRes, {
+			commandName: "aitournament",
+			result: `📄 Export CSV généré : ${csvFileName}`,
+			isError: false,
+			fileName: csvFileName,
+			fileContentBase64: Buffer.from(csvContent, "utf8").toString("base64")
+		}));
+	}
 
 	return "✅ Tournoi terminé ! Consultez les résultats ci-dessus.";
 };

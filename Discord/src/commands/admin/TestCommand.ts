@@ -10,7 +10,10 @@ import {
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { DiscordCache } from "../../bot/DiscordCache";
 import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
-import { HexColorString } from "discord.js";
+import {
+	AttachmentBuilder,
+	HexColorString
+} from "discord.js";
 import { KeycloakUser } from "../../../../Lib/src/keycloak/KeycloakUser";
 import { ColorConstants } from "../../../../Lib/src/constants/ColorConstants";
 
@@ -36,6 +39,7 @@ export async function handleCommandTestPacketRes(packet: CommandTestPacketRes, c
 			}
 		}
 		else {
+			const attachments = packet.fileName && packet.fileContentBase64 ? [new AttachmentBuilder(Buffer.from(packet.fileContentBase64, "base64")).setName(packet.fileName)] : [];
 			const embedTestSuccessful = new CrowniclesEmbed()
 				.setAuthor({
 					name: `Commande test ${packet.commandName} exécutée :`,
@@ -44,11 +48,20 @@ export async function handleCommandTestPacketRes(packet: CommandTestPacketRes, c
 				.setDescription(packet.result)
 				.setColor(<HexColorString> ColorConstants.SUCCESSFUL);
 
+			const payload = attachments.length > 0
+				? {
+					embeds: [embedTestSuccessful],
+					files: attachments
+				}
+				: {
+					embeds: [embedTestSuccessful]
+				};
+
 			if (interaction.replied) {
-				await interaction.channel.send({ embeds: [embedTestSuccessful] });
+				await interaction.channel.send(payload);
 			}
 			else {
-				await interaction.editReply({ embeds: [embedTestSuccessful] });
+				await interaction.editReply(payload);
 			}
 		}
 	}
