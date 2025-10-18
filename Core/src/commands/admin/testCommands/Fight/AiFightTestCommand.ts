@@ -9,19 +9,10 @@ import { FightOvertimeBehavior } from "../../../../core/fights/FightOvertimeBeha
 import { FightConstants } from "../../../../../../Lib/src/constants/FightConstants";
 import { PetDataController } from "../../../../data/Pet";
 import { PetEntities } from "../../../../core/database/game/models/PetEntity";
-import * as fs from "fs";
-import * as path from "path";
+import { loadFrenchModels } from "./loadFrenchModels";
 
 // Charger les traductions françaises
-const frModels = JSON.parse(
-	fs.readFileSync(
-		path.join(__dirname, "../../../../../../Lang/fr/models.json"),
-		"utf-8"
-	)
-) as {
-	classes: Record<string, string>;
-	pets: Record<string, string>;
-};
+const frModels = loadFrenchModels();
 
 /**
  * Get the name of a class from translations

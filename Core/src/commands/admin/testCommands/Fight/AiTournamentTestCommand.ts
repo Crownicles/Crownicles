@@ -24,23 +24,14 @@ import {
 	PetEntities
 } from "../../../../core/database/game/models/PetEntity";
 import { Op } from "sequelize";
-import * as fs from "fs";
-import * as path from "path";
 import { makePacket } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import { CommandTestPacketRes } from "../../../../../../Lib/src/packets/commands/CommandTestPacket";
 import { PacketUtils } from "../../../../core/utils/PacketUtils";
 import { CrowniclesIcons } from "../../../../../../Lib/src/CrowniclesIcons";
+import { loadFrenchModels } from "./loadFrenchModels";
 
 // Charger les traductions françaises
-const frModels = JSON.parse(
-	fs.readFileSync(
-		path.join(__dirname, "../../../../../../Lang/fr/models.json"),
-		"utf-8"
-	)
-) as {
-	classes: Record<string, string>;
-	pets: Record<string, string>;
-};
+const frModels = loadFrenchModels();
 
 /**
  * Get the name of a class from translations
