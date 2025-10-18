@@ -16,4 +16,8 @@ export class CommandTestPacketRes extends CrowniclesPacket {
 	result!: string;
 
 	isError!: boolean;
+
+	fileName?: string;
+
+	fileContentBase64?: string;
 }
