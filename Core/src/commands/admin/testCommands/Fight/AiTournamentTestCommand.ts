@@ -17,6 +17,7 @@ import * as path from "path";
 import { makePacket } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import { CommandTestPacketRes } from "../../../../../../Lib/src/packets/commands/CommandTestPacket";
 import { PacketUtils } from "../../../../core/utils/PacketUtils";
+import { CrowniclesIcons } from "../../../../../../Lib/src/CrowniclesIcons";
 
 // Charger les traductions françaises
 const frModels = JSON.parse(
@@ -34,6 +35,14 @@ const frModels = JSON.parse(
  */
 function getClassName(classId: number): string {
 	return (frModels.classes as Record<string, string>)[classId.toString()] || `Classe #${classId}`;
+}
+
+function getClassEmoji(classId: number): string {
+	return CrowniclesIcons.classes[classId.toString()] || "❔";
+}
+
+function formatClassLabel(classId: number): string {
+	return `${getClassEmoji(classId)} ${getClassName(classId)}`;
 }
 
 /**
@@ -86,10 +95,34 @@ interface PlayerStats {
 	opponentsLostTo: Set<number>;
 }
 
-interface ClassMatchup {
-	wins: number;
-	losses: number;
+interface ClassPairMatchup {
+	classAId: number;
+	classBId: number;
+	classAWins: number;
+	classBWins: number;
 	draws: number;
+}
+
+function getOrCreateClassMatchup(
+	classMatchups: Map<string, ClassPairMatchup>,
+	classId1: number,
+	classId2: number
+): ClassPairMatchup {
+	const classAId = Math.min(classId1, classId2);
+	const classBId = Math.max(classId1, classId2);
+	const key = `${classAId}-${classBId}`;
+	let matchup = classMatchups.get(key);
+	if (!matchup) {
+		matchup = {
+			classAId,
+			classBId,
+			classAWins: 0,
+			classBWins: 0,
+			draws: 0
+		};
+		classMatchups.set(key, matchup);
+	}
+	return matchup;
 }
 
 interface PetMatchup {
@@ -171,7 +204,7 @@ const aiTournamentTestCommand: ExecuteTestCommandLike = async (_player, args, re
 	}
 
 	// 3. Statistiques de matchups classe vs classe et pet vs pet
-	const classMatchups = new Map<string, ClassMatchup>();
+	const classMatchups = new Map<string, ClassPairMatchup>();
 	const petMatchups = new Map<string, PetMatchup>();
 
 	// 4. Simuler tous les combats
@@ -318,30 +351,19 @@ const aiTournamentTestCommand: ExecuteTestCommandLike = async (_player, args, re
 			}
 
 			// Enregistrer les matchups classe vs classe
-			const classKey = `${stats1.classId}-${stats2.classId}`;
-			const reverseClassKey = `${stats2.classId}-${stats1.classId}`;
-
-			if (!classMatchups.has(classKey)) {
-				classMatchups.set(classKey, {
-					wins: 0, losses: 0, draws: 0
-				});
+			const classMatchup = getOrCreateClassMatchup(classMatchups, stats1.classId, stats2.classId);
+			classMatchup.draws += draws;
+			if (classMatchup.classAId === classMatchup.classBId) {
+				classMatchup.classAWins += p1Wins + p2Wins;
 			}
-			if (!classMatchups.has(reverseClassKey)) {
-				classMatchups.set(reverseClassKey, {
-					wins: 0, losses: 0, draws: 0
-				});
+			else if (stats1.classId === classMatchup.classAId) {
+				classMatchup.classAWins += p1Wins;
+				classMatchup.classBWins += p2Wins;
 			}
-
-			const classMatchup1 = classMatchups.get(classKey)!;
-			const classMatchup2 = classMatchups.get(reverseClassKey)!;
-
-			classMatchup1.wins += p1Wins;
-			classMatchup1.losses += p2Wins;
-			classMatchup1.draws += draws;
-
-			classMatchup2.wins += p2Wins;
-			classMatchup2.losses += p1Wins;
-			classMatchup2.draws += draws;
+			else {
+				classMatchup.classAWins += p2Wins;
+				classMatchup.classBWins += p1Wins;
+			}
 
 			// Enregistrer les matchups pet vs pet (si les deux ont un pet)
 			if (stats1.petTypeId !== null && stats2.petTypeId !== null) {
@@ -443,27 +465,37 @@ const aiTournamentTestCommand: ExecuteTestCommandLike = async (_player, args, re
 	// MESSAGE FINAL : Matchups classe vs classe
 	let reportMatchups = `⚔️ **MATCHUPS CLASSE vs CLASSE :**\n\n`;
 
-	const uniqueClasses = new Set<number>();
-	playerStatsList.forEach(p => uniqueClasses.add(p.classId));
-	const classesList = Array.from(uniqueClasses).sort((a, b) => a - b);
+	const sortedClassMatchups = Array.from(classMatchups.values()).sort((a, b) => {
+		if (a.classAId !== b.classAId) {
+			return a.classAId - b.classAId;
+		}
+		return a.classBId - b.classBId;
+	});
 
-	for (const classId1 of classesList) {
-		for (const classId2 of classesList) {
-			if (classId1 >= classId2) {
+	if (sortedClassMatchups.length === 0) {
+		reportMatchups += "Aucun combat enregistré entre classes.\n";
+	}
+	else {
+		for (const matchup of sortedClassMatchups) {
+			const totalCombats = matchup.classAWins + matchup.classBWins + matchup.draws;
+			if (totalCombats === 0) {
 				continue;
 			}
 
-			const key = `${classId1}-${classId2}`;
-			const matchup = classMatchups.get(key);
-
-			if (matchup) {
-				const total = matchup.wins + matchup.losses + matchup.draws;
-				const wr1 = total > 0 ? ((matchup.wins / total) * 100).toFixed(1) : "0";
-				const wr2 = total > 0 ? ((matchup.losses / total) * 100).toFixed(1) : "0";
-
-				reportMatchups += `• **${getClassName(classId1)}** vs **${getClassName(classId2)}**\n`;
-				reportMatchups += `  ${getClassName(classId1)} : ${matchup.wins}V (${wr1}%) | ${getClassName(classId2)} : ${matchup.losses}V (${wr2}%) | Nuls : ${matchup.draws}\n`;
+			if (matchup.classAId === matchup.classBId) {
+				const decisions = totalCombats - matchup.draws;
+				const drawRate = totalCombats > 0 ? ((matchup.draws / totalCombats) * 100).toFixed(1) : "0.0";
+				const decisionRate = totalCombats > 0 ? ((decisions / totalCombats) * 100).toFixed(1) : "0.0";
+				reportMatchups += `• ${formatClassLabel(matchup.classAId)} vs ${formatClassLabel(matchup.classBId)} : ${totalCombats.toLocaleString()} combats | ${decisions.toLocaleString()} décisions (${decisionRate}%) | ${matchup.draws.toLocaleString()} nuls (${drawRate}%)\n\n`;
+				continue;
 			}
+
+			const drawRate = totalCombats > 0 ? ((matchup.draws / totalCombats) * 100).toFixed(1) : "0.0";
+			const classAWinRate = totalCombats > 0 ? ((matchup.classAWins / totalCombats) * 100).toFixed(1) : "0.0";
+			const classBWinRate = totalCombats > 0 ? ((matchup.classBWins / totalCombats) * 100).toFixed(1) : "0.0";
+
+			reportMatchups += `• ${formatClassLabel(matchup.classAId)} vs ${formatClassLabel(matchup.classBId)} : ${totalCombats.toLocaleString()} combats | ${matchup.draws.toLocaleString()} nuls (${drawRate}%)\n`;
+			reportMatchups += `  -> ${formatClassLabel(matchup.classAId)} : ${matchup.classAWins.toLocaleString()}V (${classAWinRate}%) | ${formatClassLabel(matchup.classBId)} : ${matchup.classBWins.toLocaleString()}V (${classBWinRate}%)\n\n`;
 		}
 	}
 
