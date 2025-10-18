@@ -14,7 +14,9 @@ export const commandInfo: ITestCommand = {
 	commandFormat: "<player1Id> <player2Id> [amount:1-500] [silent:0|1]",
 	typeWaited: {
 		player1Id: TypeKey.INTEGER,
-		player2Id: TypeKey.INTEGER
+		player2Id: TypeKey.INTEGER,
+		amount: TypeKey.INTEGER,
+		silent: TypeKey.INTEGER
 	},
 	description: "Lance un ou plusieurs combats entre deux joueurs contrôlés par l'IA. Les IDs sont les IDs de la table Player (nombres). Paramètres optionnels : amount (1-500, défaut 1) = nombre de combats, silent (0|1, défaut 0) = mode silencieux."
 };
