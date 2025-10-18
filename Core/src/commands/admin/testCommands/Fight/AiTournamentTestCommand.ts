@@ -14,6 +14,8 @@ import { PetEntities } from "../../../../core/database/game/models/PetEntity";
 import { Op } from "sequelize";
 import * as fs from "fs";
 import * as path from "path";
+import { makePacket } from "../../../../../../Lib/src/packets/CrowniclesPacket";
+import { CommandTestPacketRes } from "../../../../../../Lib/src/packets/commands/CommandTestPacket";
 
 // Charger les traductions françaises
 const frModels = JSON.parse(
@@ -168,7 +170,7 @@ const aiTournamentTestCommand: ExecuteTestCommandLike = async (_player, args, re
 	const totalPairs = (eligiblePlayers.length * (eligiblePlayers.length - 1)) / 2;
 	const totalFights = totalPairs * fightsPerPair;
 
-	response.push({
+	response.push(makePacket(CommandTestPacketRes, {
 		commandName: "aitournament",
 		result: `🏆 **Démarrage du tournoi IA**\n\n`
 			+ `👥 Participants : ${eligiblePlayers.length} joueurs (niveau ${minLevel}+)\n`
@@ -177,7 +179,7 @@ const aiTournamentTestCommand: ExecuteTestCommandLike = async (_player, args, re
 			+ `🎯 Total de combats : ${totalFights.toLocaleString()}\n\n`
 			+ `⏳ Simulation en cours...`,
 		isError: false
-	});
+	}));
 
 	let completedFights = 0;
 	const startTime = Date.now();
@@ -279,13 +281,13 @@ const aiTournamentTestCommand: ExecuteTestCommandLike = async (_player, args, re
 					const fightsPerSecond = completedFights / ((now - startTime) / 1000);
 					const estimatedTimeRemaining = Math.ceil((totalFights - completedFights) / fightsPerSecond);
 
-					response.push({
+					response.push(makePacket(CommandTestPacketRes, {
 						commandName: "aitournament",
 						result: `⏳ Progression : ${completedFights.toLocaleString()}/${totalFights.toLocaleString()} (${progress}%)\n`
 							+ `⚡ Vitesse : ${fightsPerSecond.toFixed(1)} combats/s\n`
 							+ `⏱️ Temps restant estimé : ${Math.floor(estimatedTimeRemaining / 60)}m ${estimatedTimeRemaining % 60}s`,
 						isError: false
-					});
+					}));
 
 					lastProgressUpdate = now;
 				}
@@ -375,11 +377,11 @@ const aiTournamentTestCommand: ExecuteTestCommandLike = async (_player, args, re
 		}
 	}
 
-	response.push({
+	response.push(makePacket(CommandTestPacketRes, {
 		commandName: "aitournament",
 		result: report1,
 		isError: false
-	});
+	}));
 
 	// MESSAGE 2+ : Statistiques détaillées par joueur (max 3 joueurs par message pour rester sous 4096 caractères)
 	const playersPerMessage = 3;
@@ -407,11 +409,11 @@ const aiTournamentTestCommand: ExecuteTestCommandLike = async (_player, args, re
 			report += `• Adversaires battus : ${player.opponentsBeaten.size}/${eligiblePlayers.length - 1}\n\n`;
 		}
 
-		response.push({
+		response.push(makePacket(CommandTestPacketRes, {
 			commandName: "aitournament",
 			result: report,
 			isError: false
-		});
+		}));
 	}
 
 	// MESSAGE FINAL : Matchups classe vs classe
@@ -474,11 +476,11 @@ const aiTournamentTestCommand: ExecuteTestCommandLike = async (_player, args, re
 		}
 	}
 
-	response.push({
+	response.push(makePacket(CommandTestPacketRes, {
 		commandName: "aitournament",
 		result: reportMatchups,
 		isError: false
-	});
+	}));
 
 	return "";
 };
