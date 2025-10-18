@@ -239,7 +239,7 @@ const aiTournamentTestCommand: ExecuteTestCommandLike = async (_player, args, re
 
 				// Définir un callback pour collecter les statistiques
 				fightController.setEndCallback(fightResult => {
-					const winner = fightResult.getWinner();
+					const winnerFighter = fightResult.getWinnerFighter();
 					const isDraw = fightResult.isADraw();
 
 					const p1Energy = Math.round(fighter1.getEnergy());
@@ -262,26 +262,30 @@ const aiTournamentTestCommand: ExecuteTestCommandLike = async (_player, args, re
 						stats2.damagePerTurnList.push(p2Damage / fightResult.turn);
 					}
 
-					if (isDraw) {
+
+					if (isDraw || !winnerFighter) {
 						draws++;
 						stats1.draws++;
 						stats2.draws++;
 					}
-					else if (winner === 1) {
-						// winner === 1 signifie que fighter1 est mort, donc fighter2 gagne
+					else if (winnerFighter === fighter2) {
 						p2Wins++;
 						stats2.wins++;
 						stats1.losses++;
 						stats2.opponentsBeaten.add(player1.id);
 						stats1.opponentsLostTo.add(player2.id);
 					}
-					else {
-						// winner === 0 signifie que fighter1 est vivant, donc fighter1 gagne
+					else if (winnerFighter === fighter1) {
 						p1Wins++;
 						stats1.wins++;
 						stats2.losses++;
 						stats1.opponentsBeaten.add(player2.id);
 						stats2.opponentsLostTo.add(player1.id);
+					}
+					else {
+						draws++;
+						stats1.draws++;
+						stats2.draws++;
 					}
 
 					return Promise.resolve();
