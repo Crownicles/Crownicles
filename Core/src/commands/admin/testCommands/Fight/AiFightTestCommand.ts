@@ -112,7 +112,7 @@ function buildSingleFightResult(params: FightResultParams): string {
 		resultMessage = `🏆 **Joueur #${player2.id}** a vaincu **Joueur #${player1.id}** !`;
 	}
 
-	resultMessage += `\n\n**Informations des joueurs :**`;
+	resultMessage += "\n\n**Informations des joueurs :**";
 	resultMessage += `\n👤 **Joueur #${player1.id}** - Niveau ${player1.level} - ${getClassName(class1.id)}`;
 	resultMessage += `\n   ⚡ PV: ${stats.player1TotalEnergy}/${stats.player1MaxEnergy} | ⚔️ ATK: ${class1.getAttackValue(player1.level)} | 🛡️ DEF: ${class1.getDefenseValue(player1.level)} | 🚀 SPD: ${class1.getSpeedValue(player1.level)}`;
 	if (pet1) {
@@ -123,7 +123,7 @@ function buildSingleFightResult(params: FightResultParams): string {
 	if (pet2) {
 		resultMessage += ` | 🐾 ${getPetName(pet2.id)}`;
 	}
-	resultMessage += `\n\n**Statistiques du combat :**`;
+	resultMessage += "\n\n**Statistiques du combat :**";
 	resultMessage += `\n🗡️ Dégâts infligés par Joueur #${player1.id} : ${stats.player1TotalDamageDealt}`;
 	resultMessage += `\n🗡️ Dégâts infligés par Joueur #${player2.id} : ${stats.player2TotalDamageDealt}`;
 	resultMessage += `\n⏱️ Nombre de tours : ${stats.totalTurns}`;
@@ -154,7 +154,7 @@ function buildMultipleFightsSummary(amount: number, params: FightResultParams): 
 	const player2SurvivalRate = ((stats.player2TotalEnergy / (stats.player2MaxEnergy * amount)) * 100).toFixed(1);
 
 	let summary = `⚔️ **Résumé de ${amount} combats IA**\n\n`;
-	summary += `**👥 Combattants :**\n`;
+	summary += "**👥 Combattants :**\n";
 	summary += `• **Joueur #${player1.id}** - Niveau ${player1.level} - ${getClassName(class1.id)}\n`;
 	summary += `  ⚡ ${stats.player1MaxEnergy} PV | ⚔️ ${class1.getAttackValue(player1.level)} ATK | 🛡️ ${class1.getDefenseValue(player1.level)} DEF | 🚀 ${class1.getSpeedValue(player1.level)} SPD`;
 	if (pet1) {
@@ -165,22 +165,22 @@ function buildMultipleFightsSummary(amount: number, params: FightResultParams): 
 	if (pet2) {
 		summary += ` | 🐾 ${getPetName(pet2.id)}`;
 	}
-	summary += `\n\n`;
-	summary += `**🏆 Résultats globaux :**\n`;
+	summary += "\n\n";
+	summary += "**🏆 Résultats globaux :**\n";
 	summary += `• Joueur #${player1.id} : ${stats.player1Wins} victoires (${player1WinRate}%)\n`;
 	summary += `• Joueur #${player2.id} : ${stats.player2Wins} victoires (${player2WinRate}%)\n`;
 	summary += `• Matchs nuls : ${stats.draws} (${drawRate}%)\n\n`;
-	summary += `**📊 Statistiques moyennes par combat :**\n`;
+	summary += "**📊 Statistiques moyennes par combat :**\n";
 	summary += `• Tours : ${avgTurns} (min: ${stats.minTurns}, max: ${stats.maxTurns})\n`;
 	summary += `• PV restants Joueur #${player1.id} : ${avgPlayer1Energy}/${stats.player1MaxEnergy} (${player1SurvivalRate}%)\n`;
 	summary += `• PV restants Joueur #${player2.id} : ${avgPlayer2Energy}/${stats.player2MaxEnergy} (${player2SurvivalRate}%)\n\n`;
-	summary += `**🗡️ Dégâts moyens par combat :**\n`;
+	summary += "**🗡️ Dégâts moyens par combat :**\n";
 	summary += `• Joueur #${player1.id} : ${avgPlayer1Damage} dégâts totaux\n`;
 	summary += `• Joueur #${player2.id} : ${avgPlayer2Damage} dégâts totaux\n\n`;
-	summary += `**⚔️ Dégâts par tour :**\n`;
+	summary += "**⚔️ Dégâts par tour :**\n";
 	summary += `• Joueur #${player1.id} - Moyenne : ${avgPlayer1DamagePerTurn} DPT | Médiane : ${medianPlayer1DamagePerTurn} DPT\n`;
 	summary += `• Joueur #${player2.id} - Moyenne : ${avgPlayer2DamagePerTurn} DPT | Médiane : ${medianPlayer2DamagePerTurn} DPT\n\n`;
-	summary += `**⚖️ Analyse d'équilibre :**\n`;
+	summary += "**⚖️ Analyse d'équilibre :**\n";
 	const winDiff = Math.abs(stats.player1Wins - stats.player2Wins);
 	const winDiffPercent = parseFloat(((winDiff / amount) * 100).toFixed(1));
 	if (winDiffPercent < 5) {
@@ -260,8 +260,8 @@ const aiFightTestCommand: ExecuteTestCommandLike = async (_player, args, respons
 
 		const fightController = new FightController(
 			{
-				fighter1: fighter1,
-				fighter2: fighter2
+				fighter1,
+				fighter2
 			},
 			FightOvertimeBehavior.END_FIGHT_DRAW,
 			context,

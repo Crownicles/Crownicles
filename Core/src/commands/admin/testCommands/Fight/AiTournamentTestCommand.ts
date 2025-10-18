@@ -290,12 +290,12 @@ const aiTournamentTestCommand: ExecuteTestCommandLike = async (_player, args, re
 	PacketUtils.sendPackets(context, [
 		makePacket(CommandTestPacketRes, {
 			commandName: "aitournament",
-			result: `🏆 **Démarrage du tournoi IA**\n\n`
+			result: "🏆 **Démarrage du tournoi IA**\n\n"
 			+ `👥 Participants : ${eligiblePlayers.length} joueurs (niveau ${minLevel}+)\n`
 			+ `⚔️ Combats par paire : ${fightsPerPair}\n`
 			+ `📊 Total de paires : ${totalPairs}\n`
 			+ `🎯 Total de combats : ${totalFights.toLocaleString()}\n\n`
-			+ `⏳ Simulation en cours...`,
+			+ "⏳ Simulation en cours...",
 			isError: false
 		})
 	]);
@@ -349,8 +349,8 @@ const aiTournamentTestCommand: ExecuteTestCommandLike = async (_player, args, re
 
 				const fightController = new FightController(
 					{
-						fighter1: fighter1,
-						fighter2: fighter2
+						fighter1,
+						fighter2
 					},
 					FightOvertimeBehavior.END_FIGHT_DRAW,
 					context,
@@ -485,14 +485,14 @@ const aiTournamentTestCommand: ExecuteTestCommandLike = async (_player, args, re
 	playerStatsList.sort((a, b) => b.wins - a.wins);
 
 	// MESSAGE 1 : En-tête et statistiques globales
-	let report1 = `🏆 **RÉSULTATS DU TOURNOI IA**\n\n`;
-	report1 += `📊 **Statistiques globales :**\n`;
+	let report1 = "🏆 **RÉSULTATS DU TOURNOI IA**\n\n";
+	report1 += "📊 **Statistiques globales :**\n";
 	report1 += `• Participants : ${eligiblePlayers.length} joueurs\n`;
 	report1 += `• Combats simulés : ${totalFights.toLocaleString()}\n`;
 	report1 += `• Combats par paire : ${fightsPerPair}\n\n`;
 
 	// Top 10 des joueurs
-	report1 += `🥇 **TOP 10 des joueurs :**\n`;
+	report1 += "🥇 **TOP 10 des joueurs :**\n";
 	for (let i = 0; i < Math.min(10, playerStatsList.length); i++) {
 		const player = playerStatsList[i];
 		const totalMatches = player.wins + player.losses + player.draws;
@@ -602,7 +602,7 @@ const aiTournamentTestCommand: ExecuteTestCommandLike = async (_player, args, re
 		]);
 	};
 
-	let reportMatchups = `⚔️ **MATCHUPS CLASSE vs CLASSE :**\n\n`;
+	let reportMatchups = "⚔️ **MATCHUPS CLASSE vs CLASSE :**\n\n";
 
 	const sortedClassMatchups = Array.from(classMatchups.values()).sort((a, b) => {
 		if (a.classAId !== b.classAId) {
@@ -658,7 +658,7 @@ const aiTournamentTestCommand: ExecuteTestCommandLike = async (_player, args, re
 	});
 
 	if (sortedPetMatchups.length > 0) {
-		reportMatchups += `\n🐾 **MATCHUPS FAMILIER vs FAMILIER :**\n\n`;
+		reportMatchups += "\n🐾 **MATCHUPS FAMILIER vs FAMILIER :**\n\n";
 		for (const matchup of sortedPetMatchups) {
 			const totalCombats = matchup.petAWins + matchup.petBWins + matchup.draws;
 			if (totalCombats === 0) {
