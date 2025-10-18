@@ -9,7 +9,6 @@ import { FightOvertimeBehavior } from "../../../../core/fights/FightOvertimeBeha
 import { makePacket } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import { CommandTestPacketRes } from "../../../../../../Lib/src/packets/commands/CommandTestPacket";
 import { FightConstants } from "../../../../../../Lib/src/constants/FightConstants";
-import { PlayerFighter } from "../../../../core/fights/fighter/PlayerFighter";
 
 export const commandInfo: ITestCommand = {
 	name: "aifight",
@@ -52,9 +51,9 @@ const aiFightTestCommand: ExecuteTestCommandLike = async (_player, args, respons
 
 	/*
 	 * 3. Créer les combattants IA
-	 * On utilise PlayerFighter pour le premier joueur car FightController attend que fighter1 soit un PlayerFighter
+	 * Les deux joueurs utilisent AiPlayerFighter pour qu'ils soient contrôlés par l'IA
 	 */
-	const fighter1 = new PlayerFighter(
+	const fighter1 = new AiPlayerFighter(
 		player1,
 		ClassDataController.instance.getById(player1.class)
 	);

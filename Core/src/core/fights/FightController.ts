@@ -38,7 +38,7 @@ export class FightController {
 
 	public readonly fighters: (PlayerFighter | MonsterFighter | AiPlayerFighter)[];
 
-	public readonly fightInitiator: PlayerFighter;
+	public readonly fightInitiator: PlayerFighter | AiPlayerFighter;
 
 	private readonly _fightView: FightView;
 
@@ -50,7 +50,7 @@ export class FightController {
 
 	public constructor(
 		fighters: {
-			fighter1: PlayerFighter;
+			fighter1: PlayerFighter | AiPlayerFighter;
 			fighter2: (MonsterFighter | AiPlayerFighter);
 		},
 		overtimeBehavior: FightOvertimeBehavior,
@@ -74,7 +74,7 @@ export class FightController {
 			await this.fighters[i].startFight(this._fightView, i === 0 ? FighterStatus.ATTACKER : FighterStatus.DEFENDER);
 		}
 
-		this._fightView.introduceFight(response, this.fighters[0] as PlayerFighter, this.fighters[1] as MonsterFighter | AiPlayerFighter);
+		this._fightView.introduceFight(response, this.fighters[0] as PlayerFighter | AiPlayerFighter, this.fighters[1] as MonsterFighter | AiPlayerFighter);
 
 		// The player with the highest speed starts the fight
 		if (this.fighters[1].getSpeed() > this.fighters[0].getSpeed() || RandomUtils.crowniclesRandom.bool() && this.fighters[1].getSpeed() === this.fighters[0].getSpeed()) {

@@ -39,8 +39,8 @@ La commande `aifight` permet de lancer un combat entre deux joueurs contrôlés 
 1. **Récupération des joueurs** : La commande récupère les deux joueurs depuis la base de données
 2. **Validation** : Vérifie que les joueurs existent et ont le niveau minimum requis
 3. **Création des combattants** :
-   - Joueur 1 : `PlayerFighter` (car `FightController` nécessite que `fighter1` soit un `PlayerFighter`)
-   - Joueur 2 : `AiPlayerFighter`
+   - Joueur 1 : `AiPlayerFighter` (contrôlé par l'IA)
+   - Joueur 2 : `AiPlayerFighter` (contrôlé par l'IA)
 4. **Chargement des stats** : Les statistiques des combattants sont chargées (PV, attaque, défense, vitesse, etc.)
 5. **Démarrage du combat** : Le combat est lancé avec le comportement `END_FIGHT_DRAW` (match nul après 40 tours)
 6. **Déroulement** : Les deux IA choisissent automatiquement leurs actions en fonction de leur comportement de classe
@@ -103,11 +103,19 @@ Chaque joueur utilise le comportement IA défini pour sa classe dans `Core/src/c
 
 ## Notes techniques
 
-- Le premier joueur est créé en tant que `PlayerFighter` car l'architecture nécessite que `fighter1` soit toujours un `PlayerFighter` dans `FightController`
-- Le deuxième joueur est créé en tant que `AiPlayerFighter`
-- Les deux combattants utilisent leur comportement IA pour choisir leurs actions
+- Les deux joueurs sont créés en tant que `AiPlayerFighter`
+- Les deux combattants utilisent leur comportement IA pour choisir leurs actions automatiquement
 - Aucune récompense n'est distribuée (pas de changement d'ELO, d'argent ou de score)
 - Le combat se termine en match nul après 40 tours (`FightConstants.MAX_TURNS`)
+- Les joueurs ne sont pas bloqués pendant le combat (aucune interaction Discord requise)
+
+## Modifications du système de combat
+
+Pour supporter les combats IA vs IA, les modifications suivantes ont été apportées au système :
+
+1. **FightController** : Le constructeur accepte maintenant `AiPlayerFighter` comme `fighter1`
+2. **FightView** : La méthode `introduceFight` accepte `AiPlayerFighter` pour les deux combattants
+3. **Compatibilité** : Les combats normaux (joueur vs IA, joueur vs monstre) fonctionnent toujours de la même manière
 
 ## Utilisation pour le débogage
 

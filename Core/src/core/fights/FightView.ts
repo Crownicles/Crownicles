@@ -45,7 +45,7 @@ export class FightView {
 	 * @param opponent
 	 * @param response
 	 */
-	introduceFight(response: CrowniclesPacket[], fighter: PlayerFighter, opponent: MonsterFighter | AiPlayerFighter): void {
+	introduceFight(response: CrowniclesPacket[], fighter: PlayerFighter | AiPlayerFighter, opponent: MonsterFighter | AiPlayerFighter): void {
 		const fightInitiatorActions = new Array<[string, number]>();
 		for (const action of fighter.availableFightActions) {
 			fightInitiatorActions.push([action[0], action[1].breath]);
