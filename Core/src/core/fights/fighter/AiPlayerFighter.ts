@@ -19,6 +19,12 @@ import { checkDrinkPotionMissions } from "../../utils/ItemUtils";
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
 import { InventoryConstants } from "../../../../../Lib/src/constants/InventoryConstants";
 
+type AiPlayerFighterOptions = {
+	allowPotionConsumption?: boolean;
+	preloadedActiveObjects?: PlayerActiveObjects;
+	preloadedPetEntity?: PetEntity | null;
+};
+
 /**
  * Fighter
  * Class representing a player in a fight
@@ -34,11 +40,20 @@ export class AiPlayerFighter extends Fighter {
 
 	private glory: number;
 
-	public constructor(player: Player, playerClass: Class) {
+	private readonly allowPotionConsumption: boolean;
+
+	private readonly preloadedActiveObjects?: PlayerActiveObjects;
+
+	private readonly preloadedPetEntity?: PetEntity | null;
+
+	public constructor(player: Player, playerClass: Class, options: AiPlayerFighterOptions = {}) {
 		super(player.level, FightActionDataController.instance.getListById(playerClass.fightActionsIds));
 		this.player = player;
 		this.class = playerClass;
 		this.classBehavior = getAiClassBehavior(playerClass.id);
+		this.allowPotionConsumption = options.allowPotionConsumption ?? true;
+		this.preloadedActiveObjects = options.preloadedActiveObjects;
+		this.preloadedPetEntity = options.preloadedPetEntity;
 	}
 
 	/**
@@ -56,6 +71,10 @@ export class AiPlayerFighter extends Fighter {
 	 * @param response
 	 */
 	public async consumePotionIfNeeded(response: CrowniclesPacket[]): Promise<void> {
+		if (!this.allowPotionConsumption) {
+			return;
+		}
+
 		// Potions have a chance of not being consumed
 		if (RandomUtils.crowniclesRandom.realZeroToOneInclusive() < FightConstants.POTION_NO_DRINK_PROBABILITY.AI) {
 			return;
@@ -76,7 +95,7 @@ export class AiPlayerFighter extends Fighter {
 	 * The fighter loads its various stats
 	 */
 	public async loadStats(): Promise<void> {
-		const playerActiveObjects: PlayerActiveObjects = await InventorySlots.getPlayerActiveObjects(this.player.id);
+		const playerActiveObjects: PlayerActiveObjects = this.preloadedActiveObjects ?? await InventorySlots.getPlayerActiveObjects(this.player.id);
 		this.stats.energy = this.player.getMaxCumulativeEnergy();
 		this.stats.maxEnergy = this.player.getMaxCumulativeEnergy();
 		this.stats.attack = this.player.getCumulativeAttack(playerActiveObjects);
@@ -87,7 +106,15 @@ export class AiPlayerFighter extends Fighter {
 		this.stats.breathRegen = this.player.getBreathRegen();
 		this.glory = this.player.getGloryPoints();
 		if (this.player.petId) {
-			this.pet = await PetEntities.getById(this.player.petId);
+			if (this.preloadedPetEntity !== undefined) {
+				this.pet = this.preloadedPetEntity;
+			}
+			else {
+				this.pet = await PetEntities.getById(this.player.petId);
+			}
+		}
+		else {
+			this.pet = undefined;
 		}
 	}
 

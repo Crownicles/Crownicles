@@ -45,7 +45,7 @@ export class FightView {
 	 * @param opponent
 	 * @param response
 	 */
-	introduceFight(response: CrowniclesPacket[], fighter: PlayerFighter, opponent: MonsterFighter | AiPlayerFighter): void {
+	introduceFight(response: CrowniclesPacket[], fighter: PlayerFighter | AiPlayerFighter, opponent: MonsterFighter | AiPlayerFighter): void {
 		const fightInitiatorActions = new Array<[string, number]>();
 		for (const action of fighter.availableFightActions) {
 			fightInitiatorActions.push([action[0], action[1].breath]);
@@ -71,6 +71,9 @@ export class FightView {
 	 * Summarize current fight status, displaying fighter's stats
 	 */
 	displayFightStatus(response: CrowniclesPacket[]): void {
+		if (this.fightController.isSilentMode()) {
+			return;
+		}
 		const playingFighter = this.fightController.getPlayingFighter();
 		const defendingFighter = this.fightController.getDefendingFighter();
 		response.push(makePacket(CommandFightStatusPacket, {
@@ -121,6 +124,9 @@ export class FightView {
 		fightAction: FightAction,
 		fightActionResult: FightActionResult | FightAlterationResult | PetAssistanceResult
 	): void {
+		if (this.fightController.isSilentMode()) {
+			return;
+		}
 		const buildStatsChange = (selfTarget: boolean): {
 			attack?: number;
 			defense?: number;
@@ -266,6 +272,9 @@ export class FightView {
 	 * @param waitTimeMs
 	 */
 	displayAiChooseAction(response: CrowniclesPacket[], waitTimeMs: number): void {
+		if (this.fightController.isSilentMode()) {
+			return;
+		}
 		response.push(makePacket(AIFightActionChoosePacket, {
 			fightId: this.fightController.id,
 			ms: waitTimeMs
@@ -285,6 +294,9 @@ export class FightView {
 		winner: PlayerFighter | MonsterFighter | AiPlayerFighter,
 		draw: boolean
 	): void {
+		if (this.fightController.isSilentMode()) {
+			return;
+		}
 		response.push(makePacket(CommandFightEndOfFightPacket, {
 			winner: {
 				keycloakId: winner instanceof MonsterFighter ? null : winner.player.keycloakId,

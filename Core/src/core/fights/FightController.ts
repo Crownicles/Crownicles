@@ -38,7 +38,7 @@ export class FightController {
 
 	public readonly fighters: (PlayerFighter | MonsterFighter | AiPlayerFighter)[];
 
-	public readonly fightInitiator: PlayerFighter;
+	public readonly fightInitiator: PlayerFighter | AiPlayerFighter;
 
 	private readonly _fightView: FightView;
 
@@ -48,13 +48,16 @@ export class FightController {
 
 	private readonly overtimeBehavior: FightOvertimeBehavior;
 
+	private readonly silentMode: boolean;
+
 	public constructor(
 		fighters: {
-			fighter1: PlayerFighter;
+			fighter1: PlayerFighter | AiPlayerFighter;
 			fighter2: (MonsterFighter | AiPlayerFighter);
 		},
 		overtimeBehavior: FightOvertimeBehavior,
-		context: PacketContext
+		context: PacketContext,
+		silentMode = false
 	) {
 		this.id = FightsManager.registerFight(this);
 		this.fighters = [fighters.fighter1, fighters.fighter2];
@@ -63,6 +66,7 @@ export class FightController {
 		this.turn = 1;
 		this._fightView = new FightView(context, this);
 		this.overtimeBehavior = overtimeBehavior;
+		this.silentMode = silentMode;
 	}
 
 	/**
@@ -74,7 +78,9 @@ export class FightController {
 			await this.fighters[i].startFight(this._fightView, i === 0 ? FighterStatus.ATTACKER : FighterStatus.DEFENDER);
 		}
 
-		this._fightView.introduceFight(response, this.fighters[0] as PlayerFighter, this.fighters[1] as MonsterFighter | AiPlayerFighter);
+		if (!this.silentMode) {
+			this._fightView.introduceFight(response, this.fighters[0] as PlayerFighter | AiPlayerFighter, this.fighters[1] as MonsterFighter | AiPlayerFighter);
+		}
 
 		// The player with the highest speed starts the fight
 		if (this.fighters[1].getSpeed() > this.fighters[0].getSpeed() || RandomUtils.crowniclesRandom.bool() && this.fighters[1].getSpeed() === this.fighters[0].getSpeed()) {
@@ -82,6 +88,13 @@ export class FightController {
 		}
 		this.state = FightState.RUNNING;
 		await this.prepareNextTurn(response);
+	}
+
+	/**
+	 * Check if the fight is in silent mode
+	 */
+	public isSilentMode(): boolean {
+		return this.silentMode;
 	}
 
 	/**
