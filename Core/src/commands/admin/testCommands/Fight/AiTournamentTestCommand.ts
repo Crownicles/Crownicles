@@ -344,20 +344,21 @@ const aiTournamentTestCommand: ExecuteTestCommandLike = async (_player, args, re
 				petMatchup2.draws += draws;
 			}
 		}
-	}	// 5. Générer le rapport final
+	}	// 5. Générer le rapport final en plusieurs messages
 	const playerStatsList = Array.from(playerStatsMap.values());
 
 	// Trier par nombre de victoires (descendant)
 	playerStatsList.sort((a, b) => b.wins - a.wins);
 
-	let report = `\n\n🏆 **RÉSULTATS DU TOURNOI IA**\n\n`;
-	report += `📊 **Statistiques globales :**\n`;
-	report += `• Participants : ${eligiblePlayers.length} joueurs\n`;
-	report += `• Combats simulés : ${totalFights.toLocaleString()}\n`;
-	report += `• Combats par paire : ${fightsPerPair}\n\n`;
+	// MESSAGE 1 : En-tête et statistiques globales
+	let report1 = `🏆 **RÉSULTATS DU TOURNOI IA**\n\n`;
+	report1 += `📊 **Statistiques globales :**\n`;
+	report1 += `• Participants : ${eligiblePlayers.length} joueurs\n`;
+	report1 += `• Combats simulés : ${totalFights.toLocaleString()}\n`;
+	report1 += `• Combats par paire : ${fightsPerPair}\n\n`;
 
 	// Top 10 des joueurs
-	report += `🥇 **TOP 10 des joueurs :**\n`;
+	report1 += `🥇 **TOP 10 des joueurs :**\n`;
 	for (let i = 0; i < Math.min(10, playerStatsList.length); i++) {
 		const player = playerStatsList[i];
 		const totalMatches = player.wins + player.losses + player.draws;
@@ -365,38 +366,55 @@ const aiTournamentTestCommand: ExecuteTestCommandLike = async (_player, args, re
 		const avgDamagePerFight = totalMatches > 0 ? (player.totalDamageDealt / totalMatches).toFixed(1) : "0";
 		const avgDamagePerTurn = player.totalTurns > 0 ? (player.totalDamageDealt / player.totalTurns).toFixed(2) : "0";
 
-		report += `${i + 1}. **${player.playerName}** (Niv. ${player.level}) - ${player.className}\n`;
-		report += `   📈 ${player.wins}V/${player.losses}D/${player.draws}N (${winRate}% WR)\n`;
-		report += `   ⚔️ ${avgDamagePerFight} DPF | ${avgDamagePerTurn} DPT\n`;
+		report1 += `${i + 1}. **${player.playerName}** (Niv. ${player.level}) - ${player.className}\n`;
+		report1 += `   📈 ${player.wins}V/${player.losses}D/${player.draws}N (${winRate}% WR)\n`;
+		report1 += `   ⚔️ ${avgDamagePerFight} DPF | ${avgDamagePerTurn} DPT\n`;
 		if (player.petName) {
-			report += `   🐾 ${player.petName}\n`;
+			report1 += `   🐾 ${player.petName}\n`;
 		}
 	}
 
-	report += `\n📊 **Statistiques détaillées par joueur :**\n\n`;
+	response.push({
+		commandName: "aitournament",
+		result: report1,
+		isError: false
+	});
 
-	for (const player of playerStatsList) {
-		const totalMatches = player.wins + player.losses + player.draws;
-		const winRate = totalMatches > 0 ? ((player.wins / totalMatches) * 100).toFixed(1) : "0.0";
-		const avgDamagePerFight = totalMatches > 0 ? (player.totalDamageDealt / totalMatches).toFixed(1) : "0";
-		const avgDamagePerTurn = player.totalTurns > 0 ? (player.totalDamageDealt / player.totalTurns).toFixed(2) : "0";
-		const medianDamagePerTurn = calculateMedian(player.damagePerTurnList).toFixed(2);
-		const avgDamageTaken = totalMatches > 0 ? (player.totalDamageTaken / totalMatches).toFixed(1) : "0";
+	// MESSAGE 2+ : Statistiques détaillées par joueur (max 3 joueurs par message pour rester sous 4096 caractères)
+	const playersPerMessage = 3;
+	for (let i = 0; i < playerStatsList.length; i += playersPerMessage) {
+		let report = `📊 **Statistiques détaillées (${i + 1}-${Math.min(i + playersPerMessage, playerStatsList.length)}/${playerStatsList.length}) :**\n\n`;
 
-		report += `**${player.playerName}** (Niv. ${player.level})\n`;
-		report += `• Classe : ${player.className}\n`;
-		report += `• Stats : ⚡ ${player.maxEnergy} PV | ⚔️ ${player.attack} ATK | 🛡️ ${player.defense} DEF | 🚀 ${player.speed} SPD\n`;
-		if (player.petName) {
-			report += `• Familier : 🐾 ${player.petName}\n`;
+		for (let j = i; j < Math.min(i + playersPerMessage, playerStatsList.length); j++) {
+			const player = playerStatsList[j];
+			const totalMatches = player.wins + player.losses + player.draws;
+			const winRate = totalMatches > 0 ? ((player.wins / totalMatches) * 100).toFixed(1) : "0.0";
+			const avgDamagePerFight = totalMatches > 0 ? (player.totalDamageDealt / totalMatches).toFixed(1) : "0";
+			const avgDamagePerTurn = player.totalTurns > 0 ? (player.totalDamageDealt / player.totalTurns).toFixed(2) : "0";
+			const medianDamagePerTurn = calculateMedian(player.damagePerTurnList).toFixed(2);
+			const avgDamageTaken = totalMatches > 0 ? (player.totalDamageTaken / totalMatches).toFixed(1) : "0";
+
+			report += `**${player.playerName}** (Niv. ${player.level})\n`;
+			report += `• Classe : ${player.className}\n`;
+			report += `• Stats : ⚡ ${player.maxEnergy} PV | ⚔️ ${player.attack} ATK | 🛡️ ${player.defense} DEF | 🚀 ${player.speed} SPD\n`;
+			if (player.petName) {
+				report += `• Familier : 🐾 ${player.petName}\n`;
+			}
+			report += `• Résultats : ${player.wins}V / ${player.losses}D / ${player.draws}N (${winRate}% WR)\n`;
+			report += `• Dégâts infligés : ${avgDamagePerFight} par combat | ${avgDamagePerTurn} par tour (médiane: ${medianDamagePerTurn})\n`;
+			report += `• Dégâts subis : ${avgDamageTaken} par combat\n`;
+			report += `• Adversaires battus : ${player.opponentsBeaten.size}/${eligiblePlayers.length - 1}\n\n`;
 		}
-		report += `• Résultats : ${player.wins}V / ${player.losses}D / ${player.draws}N (${winRate}% WR)\n`;
-		report += `• Dégâts infligés : ${avgDamagePerFight} par combat | ${avgDamagePerTurn} par tour (médiane: ${medianDamagePerTurn})\n`;
-		report += `• Dégâts subis : ${avgDamageTaken} par combat\n`;
-		report += `• Adversaires battus : ${player.opponentsBeaten.size}/${eligiblePlayers.length - 1}\n\n`;
+
+		response.push({
+			commandName: "aitournament",
+			result: report,
+			isError: false
+		});
 	}
 
-	// Statistiques de matchups classe vs classe
-	report += `\n⚔️ **MATCHUPS CLASSE vs CLASSE :**\n\n`;
+	// MESSAGE FINAL : Matchups classe vs classe
+	let reportMatchups = `⚔️ **MATCHUPS CLASSE vs CLASSE :**\n\n`;
 
 	const uniqueClasses = new Set<number>();
 	playerStatsList.forEach(p => uniqueClasses.add(p.classId));
@@ -416,15 +434,15 @@ const aiTournamentTestCommand: ExecuteTestCommandLike = async (_player, args, re
 				const wr1 = total > 0 ? ((matchup.wins / total) * 100).toFixed(1) : "0";
 				const wr2 = total > 0 ? ((matchup.losses / total) * 100).toFixed(1) : "0";
 
-				report += `• **${getClassName(classId1)}** vs **${getClassName(classId2)}**\n`;
-				report += `  ${getClassName(classId1)} : ${matchup.wins}V (${wr1}%) | ${getClassName(classId2)} : ${matchup.losses}V (${wr2}%) | Nuls : ${matchup.draws}\n`;
+				reportMatchups += `• **${getClassName(classId1)}** vs **${getClassName(classId2)}**\n`;
+				reportMatchups += `  ${getClassName(classId1)} : ${matchup.wins}V (${wr1}%) | ${getClassName(classId2)} : ${matchup.losses}V (${wr2}%) | Nuls : ${matchup.draws}\n`;
 			}
 		}
 	}
 
 	// Statistiques de matchups pet vs pet
 	if (petMatchups.size > 0) {
-		report += `\n🐾 **MATCHUPS FAMILIER vs FAMILIER :**\n\n`;
+		reportMatchups += `\n🐾 **MATCHUPS FAMILIER vs FAMILIER :**\n\n`;
 
 		const uniquePets = new Set<number>();
 		playerStatsList.forEach(p => {
@@ -448,14 +466,20 @@ const aiTournamentTestCommand: ExecuteTestCommandLike = async (_player, args, re
 					const wr1 = total > 0 ? ((matchup.wins / total) * 100).toFixed(1) : "0";
 					const wr2 = total > 0 ? ((matchup.losses / total) * 100).toFixed(1) : "0";
 
-					report += `• **${getPetName(petId1)}** vs **${getPetName(petId2)}**\n`;
-					report += `  ${getPetName(petId1)} : ${matchup.wins}V (${wr1}%) | ${getPetName(petId2)} : ${matchup.losses}V (${wr2}%) | Nuls : ${matchup.draws}\n`;
+					reportMatchups += `• **${getPetName(petId1)}** vs **${getPetName(petId2)}**\n`;
+					reportMatchups += `  ${getPetName(petId1)} : ${matchup.wins}V (${wr1}%) | ${getPetName(petId2)} : ${matchup.losses}V (${wr2}%) | Nuls : ${matchup.draws}\n`;
 				}
 			}
 		}
 	}
 
-	return report;
+	response.push({
+		commandName: "aitournament",
+		result: reportMatchups,
+		isError: false
+	});
+
+	return "";
 };
 
 commandInfo.execute = aiTournamentTestCommand;
