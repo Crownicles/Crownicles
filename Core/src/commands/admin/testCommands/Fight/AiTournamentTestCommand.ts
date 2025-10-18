@@ -139,6 +139,13 @@ const aiTournamentTestCommand: ExecuteTestCommandLike = async (_player, args, re
 		const petEntity = player.petId ? await PetEntities.getById(player.petId) : null;
 		const petData = petEntity ? PetDataController.instance.getById(petEntity.typeId) : null;
 
+		// Créer un fighter temporaire pour obtenir les vraies stats (avec équipements, buffs, etc.)
+		const tempFighter = new AiPlayerFighter(
+			player,
+			classData
+		);
+		await tempFighter.loadStats();
+
 		playerStatsMap.set(player.id, {
 			playerId: player.id,
 			playerName: `Joueur #${player.id}`,
@@ -147,10 +154,10 @@ const aiTournamentTestCommand: ExecuteTestCommandLike = async (_player, args, re
 			className: getClassName(player.class),
 			petTypeId: petEntity?.typeId || null,
 			petName: petData ? getPetName(petData.id) : null,
-			maxEnergy: classData.getMaxHealthValue(player.level),
-			attack: classData.getAttackValue(player.level),
-			defense: classData.getDefenseValue(player.level),
-			speed: classData.getSpeedValue(player.level),
+			maxEnergy: Math.round(tempFighter.getMaxEnergy()), // Vraies PV max avec équipements
+			attack: Math.round(tempFighter.getAttack()),
+			defense: Math.round(tempFighter.getDefense()),
+			speed: Math.round(tempFighter.getSpeed()),
 			wins: 0,
 			losses: 0,
 			draws: 0,
@@ -216,6 +223,10 @@ const aiTournamentTestCommand: ExecuteTestCommandLike = async (_player, args, re
 				);
 				await fighter2.loadStats();
 
+				// Sauvegarder les PV max au DÉBUT du combat (avant buffs/altérations)
+				const p1MaxEnergyStart = Math.round(fighter1.getMaxEnergy());
+				const p2MaxEnergyStart = Math.round(fighter2.getMaxEnergy());
+
 				const fightController = new FightController(
 					{
 						fighter1: fighter1,
@@ -233,12 +244,10 @@ const aiTournamentTestCommand: ExecuteTestCommandLike = async (_player, args, re
 
 					const p1Energy = Math.round(fighter1.getEnergy());
 					const p2Energy = Math.round(fighter2.getEnergy());
-					const p1MaxEnergy = Math.round(fighter1.getMaxEnergy());
-					const p2MaxEnergy = Math.round(fighter2.getMaxEnergy());
 
-					// Dégâts infligés = PV max de l'adversaire - PV restants de l'adversaire
-					const p1Damage = p2MaxEnergy - p2Energy; // Joueur 1 inflige des dégâts au joueur 2
-					const p2Damage = p1MaxEnergy - p1Energy; // Joueur 2 inflige des dégâts au joueur 1
+					// Dégâts infligés = PV max de l'adversaire (au début) - PV restants de l'adversaire
+					const p1Damage = p2MaxEnergyStart - p2Energy; // Joueur 1 inflige des dégâts au joueur 2
+					const p2Damage = p1MaxEnergyStart - p1Energy; // Joueur 2 inflige des dégâts au joueur 1
 
 					stats1.totalDamageDealt += p1Damage;
 					stats1.totalDamageTaken += p2Damage;
