@@ -168,7 +168,7 @@
         "description": "Dieser Befehl wird verwendet, um den von Ihnen zu transmitenden Trank zu konsumieren. Einige Potionen können nicht bucht werden und werden automatisch in einem Kampf verbraucht."
       },
       "FIGHT": {
-        "description": "Verwenden Sie diesen Befehl, um andere Spieler, die sich auf demselben Server wie Sie befinden, zu detrieren.\nDie Kämpfe werden um die Reihe umgeleitet. In jeder Runde können Sie eine Aktion auswählen, die ausgeführt werden soll.\n\nFür weitere Informationen können Sie die Seite \"Guide\" auf der Seite \"https://guide.draftbot.com/notions-principale/combats\" anzeigen.",
+        "description": "Utilisez cette commande pour défier les autres joueurs.\nLes combats se déroulent tour par tour. À chaque tour, vous pouvez choisir une action à effectuer.\n\nPour plus d'informations vous pouvez aller voir la page du guide : https://guide.crownicles.com/notions-principale/combats",
         "image": "https://draftbot.com/public/ressources/fighthelp/en/5.1.7.png"
       },
       "GLORY_TOP": {
