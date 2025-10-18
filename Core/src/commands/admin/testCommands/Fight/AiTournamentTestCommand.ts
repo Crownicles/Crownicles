@@ -85,6 +85,185 @@ function calculateMedian(values: number[]): number {
 	return sorted[middle];
 }
 
+/**
+ * Generate a report for the top 10 players
+ */
+function generateTop10Report(
+	playerStatsList: PlayerStats[],
+	eligiblePlayers: Player[],
+	totalFights: number,
+	fightsPerPair: number
+): string {
+	let report = "🏆 **RÉSULTATS DU TOURNOI IA**\n\n";
+	report += "📊 **Statistiques globales :**\n";
+	report += `• Participants : ${eligiblePlayers.length} joueurs\n`;
+	report += `• Combats simulés : ${totalFights.toLocaleString()}\n`;
+	report += `• Combats par paire : ${fightsPerPair}\n\n`;
+
+	// Top 10 des joueurs
+	report += "🥇 **TOP 10 des joueurs :**\n";
+	for (let i = 0; i < Math.min(10, playerStatsList.length); i++) {
+		const player = playerStatsList[i];
+		const totalMatches = player.wins + player.losses + player.draws;
+		const winRate = totalMatches > 0 ? ((player.wins / totalMatches) * 100).toFixed(1) : "0.0";
+		const avgDamagePerFight = totalMatches > 0 ? (player.totalDamageDealt / totalMatches).toFixed(1) : "0";
+		const avgDamagePerTurn = player.totalTurns > 0 ? (player.totalDamageDealt / player.totalTurns).toFixed(2) : "0";
+
+		report += `${i + 1}. **${player.playerName}** (Niv. ${player.level}) - ${player.className}\n`;
+		report += `   📈 ${player.wins}V/${player.losses}D/${player.draws}N (${winRate}% WR)\n`;
+		report += `   ⚔️ ${avgDamagePerFight} DPF | ${avgDamagePerTurn} DPT\n`;
+		if (player.petName) {
+			report += `   🐾 ${player.petName}\n`;
+		}
+	}
+
+	return report;
+}
+
+/**
+ * Generate detailed player stats reports (paginated)
+ */
+function generateDetailedStatsReports(
+	playerStatsList: PlayerStats[],
+	eligiblePlayers: Player[]
+): string[] {
+	const reports: string[] = [];
+	const playersPerMessage = 3;
+
+	for (let i = 0; i < playerStatsList.length; i += playersPerMessage) {
+		let report = `📊 **Statistiques détaillées (${i + 1}-${Math.min(i + playersPerMessage, playerStatsList.length)}/${playerStatsList.length}) :**\n\n`;
+
+		for (let j = i; j < Math.min(i + playersPerMessage, playerStatsList.length); j++) {
+			const player = playerStatsList[j];
+			const totalMatches = player.wins + player.losses + player.draws;
+			const winRate = totalMatches > 0 ? ((player.wins / totalMatches) * 100).toFixed(1) : "0.0";
+			const avgDamagePerFight = totalMatches > 0 ? (player.totalDamageDealt / totalMatches).toFixed(1) : "0";
+			const avgDamagePerTurn = player.totalTurns > 0 ? (player.totalDamageDealt / player.totalTurns).toFixed(2) : "0";
+			const medianDamagePerTurn = calculateMedian(player.damagePerTurnList).toFixed(2);
+			const avgDamageTaken = totalMatches > 0 ? (player.totalDamageTaken / totalMatches).toFixed(1) : "0";
+
+			report += `**${player.playerName}** (Niv. ${player.level})\n`;
+			report += `• Classe : ${player.className}\n`;
+			report += `• Stats : ⚡ ${player.maxEnergy} PV | ⚔️ ${player.attack} ATK | 🛡️ ${player.defense} DEF | 🚀 ${player.speed} SPD\n`;
+			if (player.petName) {
+				report += `• Familier : 🐾 ${player.petName}\n`;
+			}
+			report += `• Résultats : ${player.wins}V / ${player.losses}D / ${player.draws}N (${winRate}% WR)\n`;
+			report += `• Dégâts infligés : ${avgDamagePerFight} par combat | ${avgDamagePerTurn} par tour (médiane: ${medianDamagePerTurn})\n`;
+			report += `• Dégâts subis : ${avgDamageTaken} par combat\n`;
+			const totalOpponents = Math.max(eligiblePlayers.length - 1, 0);
+			report += `• Adversaires battus : ${player.opponentsSeriesWon.size} séries | ${player.opponentsBeaten.size} au moins un combat (/${totalOpponents})\n\n`;
+		}
+
+		reports.push(report);
+	}
+
+	return reports;
+}
+
+/**
+ * Generate matchup reports for classes and pets
+ */
+function generateMatchupReports(
+	classMatchups: Map<string, ClassPairMatchup>,
+	petMatchups: Map<string, PetPairMatchup>,
+	addCsvRow: (input: MatchupCsvRowInput) => void
+): string {
+	let reportMatchups = "⚔️ **MATCHUPS CLASSE vs CLASSE :**\n\n";
+
+	const sortedClassMatchups = Array.from(classMatchups.values()).sort((a, b) => {
+		if (a.classAId !== b.classAId) {
+			return a.classAId - b.classAId;
+		}
+		return a.classBId - b.classBId;
+	});
+
+	if (sortedClassMatchups.length === 0) {
+		reportMatchups += "Aucun combat enregistré entre classes.\n";
+	}
+	else {
+		for (const matchup of sortedClassMatchups) {
+			const totalCombats = matchup.classAWins + matchup.classBWins + matchup.draws;
+			if (totalCombats === 0) {
+				continue;
+			}
+
+			addCsvRow({
+				category: "class",
+				entityAId: matchup.classAId,
+				entityALabel: formatClassLabel(matchup.classAId),
+				entityBId: matchup.classBId,
+				entityBLabel: formatClassLabel(matchup.classBId),
+				totalCombats,
+				draws: matchup.draws,
+				winsA: matchup.classAWins,
+				winsB: matchup.classBWins
+			});
+
+			const drawRate = totalCombats > 0 ? ((matchup.draws / totalCombats) * 100).toFixed(1) : "0.0";
+			const classAWinRate = totalCombats > 0 ? ((matchup.classAWins / totalCombats) * 100).toFixed(1) : "0.0";
+			const classBWinRate = totalCombats > 0 ? ((matchup.classBWins / totalCombats) * 100).toFixed(1) : "0.0";
+
+			if (matchup.classAId === matchup.classBId) {
+				const decisions = matchup.classAWins + matchup.classBWins;
+				const decisionsRate = totalCombats > 0 ? ((decisions / totalCombats) * 100).toFixed(1) : "0.0";
+				reportMatchups += `• ${formatClassLabel(matchup.classAId)} (miroir) : ${totalCombats.toLocaleString()} combats | ${matchup.draws.toLocaleString()} nuls (${drawRate}%) | décisions : ${decisions.toLocaleString()} (${decisionsRate}%)\n`;
+				reportMatchups += `  -> Position A : ${matchup.classAWins.toLocaleString()}V (${classAWinRate}%) | Position B : ${matchup.classBWins.toLocaleString()}V (${classBWinRate}%)\n\n`;
+			}
+			else {
+				reportMatchups += `• ${formatClassLabel(matchup.classAId)} vs ${formatClassLabel(matchup.classBId)} : ${totalCombats.toLocaleString()} combats | ${matchup.draws.toLocaleString()} nuls (${drawRate}%)\n`;
+				reportMatchups += `  -> ${formatClassLabel(matchup.classAId)} : ${matchup.classAWins.toLocaleString()}V (${classAWinRate}%) | ${formatClassLabel(matchup.classBId)} : ${matchup.classBWins.toLocaleString()}V (${classBWinRate}%)\n\n`;
+			}
+		}
+	}
+
+	const sortedPetMatchups = Array.from(petMatchups.values()).sort((a, b) => {
+		if (a.petAId !== b.petAId) {
+			return a.petAId - b.petAId;
+		}
+		return a.petBId - b.petBId;
+	});
+
+	if (sortedPetMatchups.length > 0) {
+		reportMatchups += "\n🐾 **MATCHUPS FAMILIER vs FAMILIER :**\n\n";
+		for (const matchup of sortedPetMatchups) {
+			const totalCombats = matchup.petAWins + matchup.petBWins + matchup.draws;
+			if (totalCombats === 0) {
+				continue;
+			}
+
+			addCsvRow({
+				category: "pet",
+				entityAId: matchup.petAId,
+				entityALabel: formatPetLabel(matchup.petAId),
+				entityBId: matchup.petBId,
+				entityBLabel: formatPetLabel(matchup.petBId),
+				totalCombats,
+				draws: matchup.draws,
+				winsA: matchup.petAWins,
+				winsB: matchup.petBWins
+			});
+
+			const drawRate = totalCombats > 0 ? ((matchup.draws / totalCombats) * 100).toFixed(1) : "0.0";
+			const petAWinRate = totalCombats > 0 ? ((matchup.petAWins / totalCombats) * 100).toFixed(1) : "0.0";
+			const petBWinRate = totalCombats > 0 ? ((matchup.petBWins / totalCombats) * 100).toFixed(1) : "0.0";
+
+			if (matchup.petAId === matchup.petBId) {
+				const decisions = matchup.petAWins + matchup.petBWins;
+				const decisionsRate = totalCombats > 0 ? ((decisions / totalCombats) * 100).toFixed(1) : "0.0";
+				reportMatchups += `• ${formatPetLabel(matchup.petAId)} (miroir) : ${totalCombats.toLocaleString()} combats | ${matchup.draws.toLocaleString()} nuls (${drawRate}%) | décisions : ${decisions.toLocaleString()} (${decisionsRate}%)\n`;
+				reportMatchups += `  -> Position A : ${matchup.petAWins.toLocaleString()}V (${petAWinRate}%) | Position B : ${matchup.petBWins.toLocaleString()}V (${petBWinRate}%)\n\n`;
+			}
+			else {
+				reportMatchups += `• ${formatPetLabel(matchup.petAId)} vs ${formatPetLabel(matchup.petBId)} : ${totalCombats.toLocaleString()} combats | ${matchup.draws.toLocaleString()} nuls (${drawRate}%)\n`;
+				reportMatchups += `  -> ${formatPetLabel(matchup.petAId)} : ${matchup.petAWins.toLocaleString()}V (${petAWinRate}%) | ${formatPetLabel(matchup.petBId)} : ${matchup.petBWins.toLocaleString()}V (${petBWinRate}%)\n\n`;
+			}
+		}
+	}
+
+	return reportMatchups;
+}
+
 interface TournamentFighterResources {
 	classData: Class;
 	activeObjects: PlayerActiveObjects;
@@ -484,29 +663,8 @@ const aiTournamentTestCommand: ExecuteTestCommandLike = async (_player, args, re
 	// Trier par nombre de victoires (descendant)
 	playerStatsList.sort((a, b) => b.wins - a.wins);
 
-	// MESSAGE 1 : En-tête et statistiques globales
-	let report1 = "🏆 **RÉSULTATS DU TOURNOI IA**\n\n";
-	report1 += "📊 **Statistiques globales :**\n";
-	report1 += `• Participants : ${eligiblePlayers.length} joueurs\n`;
-	report1 += `• Combats simulés : ${totalFights.toLocaleString()}\n`;
-	report1 += `• Combats par paire : ${fightsPerPair}\n\n`;
-
-	// Top 10 des joueurs
-	report1 += "🥇 **TOP 10 des joueurs :**\n";
-	for (let i = 0; i < Math.min(10, playerStatsList.length); i++) {
-		const player = playerStatsList[i];
-		const totalMatches = player.wins + player.losses + player.draws;
-		const winRate = totalMatches > 0 ? ((player.wins / totalMatches) * 100).toFixed(1) : "0.0";
-		const avgDamagePerFight = totalMatches > 0 ? (player.totalDamageDealt / totalMatches).toFixed(1) : "0";
-		const avgDamagePerTurn = player.totalTurns > 0 ? (player.totalDamageDealt / player.totalTurns).toFixed(2) : "0";
-
-		report1 += `${i + 1}. **${player.playerName}** (Niv. ${player.level}) - ${player.className}\n`;
-		report1 += `   📈 ${player.wins}V/${player.losses}D/${player.draws}N (${winRate}% WR)\n`;
-		report1 += `   ⚔️ ${avgDamagePerFight} DPF | ${avgDamagePerTurn} DPT\n`;
-		if (player.petName) {
-			report1 += `   🐾 ${player.petName}\n`;
-		}
-	}
+	// MESSAGE 1 : En-tête et statistiques globales + Top 10
+	const report1 = generateTop10Report(playerStatsList, eligiblePlayers, totalFights, fightsPerPair);
 
 	response.push(makePacket(CommandTestPacketRes, {
 		commandName: "aitournament",
@@ -514,33 +672,9 @@ const aiTournamentTestCommand: ExecuteTestCommandLike = async (_player, args, re
 		isError: false
 	}));
 
-	// MESSAGE 2+ : Statistiques détaillées par joueur (max 3 joueurs par message pour rester sous 4096 caractères)
-	const playersPerMessage = 3;
-	for (let i = 0; i < playerStatsList.length; i += playersPerMessage) {
-		let report = `📊 **Statistiques détaillées (${i + 1}-${Math.min(i + playersPerMessage, playerStatsList.length)}/${playerStatsList.length}) :**\n\n`;
-
-		for (let j = i; j < Math.min(i + playersPerMessage, playerStatsList.length); j++) {
-			const player = playerStatsList[j];
-			const totalMatches = player.wins + player.losses + player.draws;
-			const winRate = totalMatches > 0 ? ((player.wins / totalMatches) * 100).toFixed(1) : "0.0";
-			const avgDamagePerFight = totalMatches > 0 ? (player.totalDamageDealt / totalMatches).toFixed(1) : "0";
-			const avgDamagePerTurn = player.totalTurns > 0 ? (player.totalDamageDealt / player.totalTurns).toFixed(2) : "0";
-			const medianDamagePerTurn = calculateMedian(player.damagePerTurnList).toFixed(2);
-			const avgDamageTaken = totalMatches > 0 ? (player.totalDamageTaken / totalMatches).toFixed(1) : "0";
-
-			report += `**${player.playerName}** (Niv. ${player.level})\n`;
-			report += `• Classe : ${player.className}\n`;
-			report += `• Stats : ⚡ ${player.maxEnergy} PV | ⚔️ ${player.attack} ATK | 🛡️ ${player.defense} DEF | 🚀 ${player.speed} SPD\n`;
-			if (player.petName) {
-				report += `• Familier : 🐾 ${player.petName}\n`;
-			}
-			report += `• Résultats : ${player.wins}V / ${player.losses}D / ${player.draws}N (${winRate}% WR)\n`;
-			report += `• Dégâts infligés : ${avgDamagePerFight} par combat | ${avgDamagePerTurn} par tour (médiane: ${medianDamagePerTurn})\n`;
-			report += `• Dégâts subis : ${avgDamageTaken} par combat\n`;
-			const totalOpponents = Math.max(eligiblePlayers.length - 1, 0);
-			report += `• Adversaires battus : ${player.opponentsSeriesWon.size} séries | ${player.opponentsBeaten.size} au moins un combat (/${totalOpponents})\n\n`;
-		}
-
+	// MESSAGE 2+ : Statistiques détaillées par joueur
+	const detailedReports = generateDetailedStatsReports(playerStatsList, eligiblePlayers);
+	for (const report of detailedReports) {
 		response.push(makePacket(CommandTestPacketRes, {
 			commandName: "aitournament",
 			result: report,
@@ -602,97 +736,8 @@ const aiTournamentTestCommand: ExecuteTestCommandLike = async (_player, args, re
 		]);
 	};
 
-	let reportMatchups = "⚔️ **MATCHUPS CLASSE vs CLASSE :**\n\n";
-
-	const sortedClassMatchups = Array.from(classMatchups.values()).sort((a, b) => {
-		if (a.classAId !== b.classAId) {
-			return a.classAId - b.classAId;
-		}
-		return a.classBId - b.classBId;
-	});
-
-	if (sortedClassMatchups.length === 0) {
-		reportMatchups += "Aucun combat enregistré entre classes.\n";
-	}
-	else {
-		for (const matchup of sortedClassMatchups) {
-			const totalCombats = matchup.classAWins + matchup.classBWins + matchup.draws;
-			if (totalCombats === 0) {
-				continue;
-			}
-
-			addCsvRow({
-				category: "class",
-				entityAId: matchup.classAId,
-				entityALabel: formatClassLabel(matchup.classAId),
-				entityBId: matchup.classBId,
-				entityBLabel: formatClassLabel(matchup.classBId),
-				totalCombats,
-				draws: matchup.draws,
-				winsA: matchup.classAWins,
-				winsB: matchup.classBWins
-			});
-
-			const drawRate = totalCombats > 0 ? ((matchup.draws / totalCombats) * 100).toFixed(1) : "0.0";
-			const classAWinRate = totalCombats > 0 ? ((matchup.classAWins / totalCombats) * 100).toFixed(1) : "0.0";
-			const classBWinRate = totalCombats > 0 ? ((matchup.classBWins / totalCombats) * 100).toFixed(1) : "0.0";
-
-			if (matchup.classAId === matchup.classBId) {
-				const decisions = matchup.classAWins + matchup.classBWins;
-				const decisionsRate = totalCombats > 0 ? ((decisions / totalCombats) * 100).toFixed(1) : "0.0";
-				reportMatchups += `• ${formatClassLabel(matchup.classAId)} (miroir) : ${totalCombats.toLocaleString()} combats | ${matchup.draws.toLocaleString()} nuls (${drawRate}%) | décisions : ${decisions.toLocaleString()} (${decisionsRate}%)\n`;
-				reportMatchups += `  -> Position A : ${matchup.classAWins.toLocaleString()}V (${classAWinRate}%) | Position B : ${matchup.classBWins.toLocaleString()}V (${classBWinRate}%)\n\n`;
-			}
-			else {
-				reportMatchups += `• ${formatClassLabel(matchup.classAId)} vs ${formatClassLabel(matchup.classBId)} : ${totalCombats.toLocaleString()} combats | ${matchup.draws.toLocaleString()} nuls (${drawRate}%)\n`;
-				reportMatchups += `  -> ${formatClassLabel(matchup.classAId)} : ${matchup.classAWins.toLocaleString()}V (${classAWinRate}%) | ${formatClassLabel(matchup.classBId)} : ${matchup.classBWins.toLocaleString()}V (${classBWinRate}%)\n\n`;
-			}
-		}
-	}
-
-	const sortedPetMatchups = Array.from(petMatchups.values()).sort((a, b) => {
-		if (a.petAId !== b.petAId) {
-			return a.petAId - b.petAId;
-		}
-		return a.petBId - b.petBId;
-	});
-
-	if (sortedPetMatchups.length > 0) {
-		reportMatchups += "\n🐾 **MATCHUPS FAMILIER vs FAMILIER :**\n\n";
-		for (const matchup of sortedPetMatchups) {
-			const totalCombats = matchup.petAWins + matchup.petBWins + matchup.draws;
-			if (totalCombats === 0) {
-				continue;
-			}
-
-			addCsvRow({
-				category: "pet",
-				entityAId: matchup.petAId,
-				entityALabel: formatPetLabel(matchup.petAId),
-				entityBId: matchup.petBId,
-				entityBLabel: formatPetLabel(matchup.petBId),
-				totalCombats,
-				draws: matchup.draws,
-				winsA: matchup.petAWins,
-				winsB: matchup.petBWins
-			});
-
-			const drawRate = totalCombats > 0 ? ((matchup.draws / totalCombats) * 100).toFixed(1) : "0.0";
-			const petAWinRate = totalCombats > 0 ? ((matchup.petAWins / totalCombats) * 100).toFixed(1) : "0.0";
-			const petBWinRate = totalCombats > 0 ? ((matchup.petBWins / totalCombats) * 100).toFixed(1) : "0.0";
-
-			if (matchup.petAId === matchup.petBId) {
-				const decisions = matchup.petAWins + matchup.petBWins;
-				const decisionsRate = totalCombats > 0 ? ((decisions / totalCombats) * 100).toFixed(1) : "0.0";
-				reportMatchups += `• ${formatPetLabel(matchup.petAId)} (miroir) : ${totalCombats.toLocaleString()} combats | ${matchup.draws.toLocaleString()} nuls (${drawRate}%) | décisions : ${decisions.toLocaleString()} (${decisionsRate}%)\n`;
-				reportMatchups += `  -> Position A : ${matchup.petAWins.toLocaleString()}V (${petAWinRate}%) | Position B : ${matchup.petBWins.toLocaleString()}V (${petBWinRate}%)\n\n`;
-			}
-			else {
-				reportMatchups += `• ${formatPetLabel(matchup.petAId)} vs ${formatPetLabel(matchup.petBId)} : ${totalCombats.toLocaleString()} combats | ${matchup.draws.toLocaleString()} nuls (${drawRate}%)\n`;
-				reportMatchups += `  -> ${formatPetLabel(matchup.petAId)} : ${matchup.petAWins.toLocaleString()}V (${petAWinRate}%) | ${formatPetLabel(matchup.petBId)} : ${matchup.petBWins.toLocaleString()}V (${petBWinRate}%)\n\n`;
-			}
-		}
-	}
+	// Générer le rapport des matchups
+	const reportMatchups = generateMatchupReports(classMatchups, petMatchups, addCsvRow);
 
 	response.push(makePacket(CommandTestPacketRes, {
 		commandName: "aitournament",
