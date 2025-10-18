@@ -59,7 +59,11 @@ const aiFightTestCommand: ExecuteTestCommandLike = async (_player, args, respons
 		minTurns: Infinity,
 		maxTurns: 0,
 		player1TotalEnergy: 0,
-		player2TotalEnergy: 0
+		player2TotalEnergy: 0,
+		player1TotalDamageDealt: 0,
+		player2TotalDamageDealt: 0,
+		player1MaxEnergy: 0,
+		player2MaxEnergy: 0
 	};
 
 	// 4. Exécuter les combats
@@ -111,6 +115,16 @@ const aiFightTestCommand: ExecuteTestCommandLike = async (_player, args, respons
 			stats.maxTurns = Math.max(stats.maxTurns, fight.turn);
 			stats.player1TotalEnergy += Math.round(fighter1.getEnergy());
 			stats.player2TotalEnergy += Math.round(fighter2.getEnergy());
+			
+			// Stocker les PV max pour les statistiques (première itération seulement)
+			if (stats.player1MaxEnergy === 0) {
+				stats.player1MaxEnergy = fighter1.getMaxEnergy();
+				stats.player2MaxEnergy = fighter2.getMaxEnergy();
+			}
+			
+			// Calculer les dégâts infligés (PV max - PV restants de l'adversaire)
+			stats.player1TotalDamageDealt += stats.player2MaxEnergy - Math.round(fighter2.getEnergy());
+			stats.player2TotalDamageDealt += stats.player1MaxEnergy - Math.round(fighter1.getEnergy());
 
 			return Promise.resolve();
 		});
@@ -121,43 +135,74 @@ const aiFightTestCommand: ExecuteTestCommandLike = async (_player, args, respons
 
 	// 5. Afficher les résultats
 	if (amount === 1) {
-		// Pour un seul combat, afficher le résultat classique
+		// Pour un seul combat, afficher le résultat classique avec détails des joueurs
 		let resultMessage = "";
 		if (stats.draws > 0) {
-			resultMessage = `⚔️ Match nul entre Joueur ${player1.id} et Joueur ${player2.id} !`;
+			resultMessage = `⚔️ Match nul entre **Joueur #${player1.id}** et **Joueur #${player2.id}** !`;
 		}
 		else if (stats.player1Wins > 0) {
-			resultMessage = `🏆 Joueur ${player1.id} a vaincu Joueur ${player2.id} !`;
+			resultMessage = `🏆 **Joueur #${player1.id}** a vaincu **Joueur #${player2.id}** !`;
 		}
 		else {
-			resultMessage = `🏆 Joueur ${player2.id} a vaincu Joueur ${player1.id} !`;
+			resultMessage = `🏆 **Joueur #${player2.id}** a vaincu **Joueur #${player1.id}** !`;
 		}
 
-		resultMessage += `\n\n**Statistiques finales :**`;
-		resultMessage += `\nJoueur ${player1.id} : ${stats.player1TotalEnergy} PV`;
-		resultMessage += `\nJoueur ${player2.id} : ${stats.player2TotalEnergy} PV`;
-		resultMessage += `\n\nNombre de tours : ${stats.totalTurns}`;
+		resultMessage += `\n\n**Informations des joueurs :**`;
+		resultMessage += `\n👤 Joueur #${player1.id} (Niveau ${player1.level}, Classe ${player1.class}) : ${stats.player1TotalEnergy}/${stats.player1MaxEnergy} PV`;
+		resultMessage += `\n👤 Joueur #${player2.id} (Niveau ${player2.level}, Classe ${player2.class}) : ${stats.player2TotalEnergy}/${stats.player2MaxEnergy} PV`;
+		resultMessage += `\n\n**Statistiques du combat :**`;
+		resultMessage += `\n🗡️ Dégâts infligés par Joueur #${player1.id} : ${stats.player1TotalDamageDealt}`;
+		resultMessage += `\n🗡️ Dégâts infligés par Joueur #${player2.id} : ${stats.player2TotalDamageDealt}`;
+		resultMessage += `\n⏱️ Nombre de tours : ${stats.totalTurns}`;
 
 		return resultMessage;
 	}
 
-	// Pour plusieurs combats, afficher un résumé
+	// Pour plusieurs combats, afficher un résumé détaillé
 	const avgTurns = (stats.totalTurns / amount).toFixed(1);
 	const avgPlayer1Energy = (stats.player1TotalEnergy / amount).toFixed(1);
 	const avgPlayer2Energy = (stats.player2TotalEnergy / amount).toFixed(1);
+	const avgPlayer1Damage = (stats.player1TotalDamageDealt / amount).toFixed(1);
+	const avgPlayer2Damage = (stats.player2TotalDamageDealt / amount).toFixed(1);
 	const player1WinRate = ((stats.player1Wins / amount) * 100).toFixed(1);
 	const player2WinRate = ((stats.player2Wins / amount) * 100).toFixed(1);
 	const drawRate = ((stats.draws / amount) * 100).toFixed(1);
+	const player1SurvivalRate = ((stats.player1TotalEnergy / (stats.player1MaxEnergy * amount)) * 100).toFixed(1);
+	const player2SurvivalRate = ((stats.player2TotalEnergy / (stats.player2MaxEnergy * amount)) * 100).toFixed(1);
 
-	let summary = `⚔️ **Résumé de ${amount} combats entre Joueur ${player1.id} et Joueur ${player2.id}**\n\n`;
-	summary += `**Résultats :**\n`;
-	summary += `🏆 Joueur ${player1.id} : ${stats.player1Wins} victoires (${player1WinRate}%)\n`;
-	summary += `🏆 Joueur ${player2.id} : ${stats.player2Wins} victoires (${player2WinRate}%)\n`;
-	summary += `⚖️ Matchs nuls : ${stats.draws} (${drawRate}%)\n\n`;
-	summary += `**Statistiques :**\n`;
-	summary += `📊 Tours moyens : ${avgTurns} (min: ${stats.minTurns}, max: ${stats.maxTurns})\n`;
-	summary += `❤️ PV moyens Joueur ${player1.id} : ${avgPlayer1Energy}\n`;
-	summary += `❤️ PV moyens Joueur ${player2.id} : ${avgPlayer2Energy}`;
+	let summary = `⚔️ **Résumé de ${amount} combats IA**\n\n`;
+	
+	summary += `**👥 Combattants :**\n`;
+	summary += `• **Joueur #${player1.id}** - Niveau ${player1.level} - Classe ${player1.class} - ${stats.player1MaxEnergy} PV max\n`;
+	summary += `• **Joueur #${player2.id}** - Niveau ${player2.level} - Classe ${player2.class} - ${stats.player2MaxEnergy} PV max\n\n`;
+	
+	summary += `**🏆 Résultats globaux :**\n`;
+	summary += `• Joueur #${player1.id} : ${stats.player1Wins} victoires (${player1WinRate}%)\n`;
+	summary += `• Joueur #${player2.id} : ${stats.player2Wins} victoires (${player2WinRate}%)\n`;
+	summary += `• Matchs nuls : ${stats.draws} (${drawRate}%)\n\n`;
+	
+	summary += `**📊 Statistiques moyennes :**\n`;
+	summary += `• Tours par combat : ${avgTurns} (min: ${stats.minTurns}, max: ${stats.maxTurns})\n`;
+	summary += `• PV restants Joueur #${player1.id} : ${avgPlayer1Energy}/${stats.player1MaxEnergy} (${player1SurvivalRate}%)\n`;
+	summary += `• PV restants Joueur #${player2.id} : ${avgPlayer2Energy}/${stats.player2MaxEnergy} (${player2SurvivalRate}%)\n\n`;
+	
+	summary += `**🗡️ Dégâts moyens infligés :**\n`;
+	summary += `• Joueur #${player1.id} : ${avgPlayer1Damage} DPS\n`;
+	summary += `• Joueur #${player2.id} : ${avgPlayer2Damage} DPS\n\n`;
+	
+	summary += `**⚖️ Analyse d'équilibre :**\n`;
+	const winDiff = Math.abs(stats.player1Wins - stats.player2Wins);
+	const winDiffPercent = parseFloat(((winDiff / amount) * 100).toFixed(1));
+	if (winDiffPercent < 5) {
+		summary += `✅ Équilibrage excellent (différence: ${winDiffPercent}%)`;
+	}
+	else if (winDiffPercent < 10) {
+		summary += `⚠️ Équilibrage acceptable (différence: ${winDiffPercent}%)`;
+	}
+	else {
+		const stronger = stats.player1Wins > stats.player2Wins ? `Joueur #${player1.id}` : `Joueur #${player2.id}`;
+		summary += `❌ Déséquilibre détecté (différence: ${winDiffPercent}%) - ${stronger} est avantagé(e)`;
+	}
 
 	return summary;
 };
