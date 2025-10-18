@@ -228,8 +228,9 @@ const aiTournamentTestCommand: ExecuteTestCommandLike = async (_player, args, re
 					const p1Energy = Math.round(fighter1.getEnergy());
 					const p2Energy = Math.round(fighter2.getEnergy());
 
-					const p1Damage = stats1.maxEnergy - p2Energy;
-					const p2Damage = stats2.maxEnergy - p1Energy;
+					// Dégâts infligés = PV max de l'adversaire - PV restants de l'adversaire
+					const p1Damage = stats2.maxEnergy - p2Energy; // Joueur 1 inflige des dégâts au joueur 2
+					const p2Damage = stats1.maxEnergy - p1Energy; // Joueur 2 inflige des dégâts au joueur 1
 
 					stats1.totalDamageDealt += p1Damage;
 					stats1.totalDamageTaken += p2Damage;
