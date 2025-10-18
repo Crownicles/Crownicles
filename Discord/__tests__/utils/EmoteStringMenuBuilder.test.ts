@@ -1,21 +1,21 @@
 import {CrowniclesIcons} from "../../../Lib/src/CrowniclesIcons";
 import {describe, expect, it, beforeAll} from 'vitest';
 import {StringSelectMenuOptionBuilder} from "discord.js";
+import { readFile } from 'fs/promises';
+import { join } from 'path';
 
 let fullyQualifiedEmojis: Set<string>;
 
 beforeAll(async () => {
-	const response = await fetch('https://unicode.org/Public/emoji/15.1/emoji-test.txt');
-	const text = await response.text();
-	
+	const emojiTestData = await readFile(join(__dirname, '..', '..', '..', 'Lib', 'tests', 'fixtures', 'emoji-test.txt'), 'utf-8');
 	fullyQualifiedEmojis = new Set<string>();
-	
-	const lines = text.split('\n');
+
+	const lines = emojiTestData.split('\n');
 	for (const line of lines) {
 		if (line.startsWith('#') || line.trim() === '') {
 			continue;
 		}
-		
+
 		const match = line.match(/^([0-9A-F\s]+)\s*;\s*fully-qualified\s*#\s*(.+)$/);
 		if (match) {
 			const emojiMatch = match[2].match(/^\s*(\S+)/);

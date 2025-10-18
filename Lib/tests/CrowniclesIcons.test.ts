@@ -1,15 +1,15 @@
 import { describe, it, expect, beforeAll } from 'vitest';
 import {CrowniclesIcons} from "../src/CrowniclesIcons";
+import { readFile } from 'fs/promises';
+import { join } from 'path';
 
 let fullyQualifiedEmojis: Set<string>;
 
 beforeAll(async () => {
-	const response = await fetch('https://unicode.org/Public/emoji/15.1/emoji-test.txt');
-	const text = await response.text();
-
+	const emojiTestData = await readFile(join(__dirname, 'fixtures', 'emoji-test.txt'), 'utf-8');
 	fullyQualifiedEmojis = new Set<string>();
 
-	const lines = text.split('\n');
+	const lines = emojiTestData.split('\n');
 	for (const line of lines) {
 		if (line.startsWith('#') || line.trim() === '') {
 			continue;
