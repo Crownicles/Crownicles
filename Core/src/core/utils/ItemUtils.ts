@@ -333,6 +333,7 @@ type ItemsToManage = {
  * @param toTradeItem
  * @param tradableItems
  * @param sellKeepOptions
+ * @param canDrinkThisPotion
  */
 function manageMoreThan2ItemsSwitching(
 	response: CrowniclesPacket[],
@@ -342,7 +343,8 @@ function manageMoreThan2ItemsSwitching(
 		toTradeItem,
 		tradableItems
 	}: ItemsToManage,
-	sellKeepOptions: SellKeepItemOptions
+	sellKeepOptions: SellKeepItemOptions,
+	canDrinkThisPotion: boolean
 ): void {
 	const keycloakId = whoIsConcerned.player.keycloakId;
 	tradableItems.sort((a: InventorySlot, b: InventorySlot) => (a.slot > b.slot ? 1 : b.slot > a.slot ? -1 : 0));
@@ -357,7 +359,7 @@ function manageMoreThan2ItemsSwitching(
 		slot: i.slot,
 		itemWithDetails: toItemWithDetails(i.getItem())
 	})),
-	toTradeItem instanceof Potion && !(toTradeItem as Potion).isFightPotion());
+	canDrinkThisPotion);
 
 	response.push(new ReactionCollectorInstance(
 		collector,
@@ -419,13 +421,15 @@ function getGiveItemToPlayerEndCallback(whoIsConcerned: WhoIsConcerned, concerne
  * @param player
  * @param item
  * @param resaleMultiplier
+ * @param canDrinkImmediately
  */
 export async function giveItemToPlayer(
 	response: CrowniclesPacket[],
 	context: PacketContext,
 	player: Player,
 	item: GenericItem,
-	resaleMultiplier = 1
+	resaleMultiplier = 1,
+	canDrinkImmediately = true
 ): Promise<void> {
 	const inventorySlots = await InventorySlots.getOfPlayer(player.id);
 	const whoIsConcerned = {
@@ -446,6 +450,9 @@ export async function giveItemToPlayer(
 	const maxSlots = (await InventoryInfos.getOfPlayer(player.id)).slotLimitForCategory(category);
 	const items = inventorySlots.filter((slot: InventorySlot) => slot.itemCategory === category);
 	const itemToReplace = inventorySlots.filter((slot: InventorySlot) => (maxSlots === 1 ? slot.isEquipped() : slot.slot === 1) && slot.itemCategory === category)[0];
+	const canDrinkThisPotion = item instanceof Potion
+		&& !(item as Potion).isFightPotion()
+		&& (canDrinkImmediately || (item as Potion).nature !== ItemNature.TIME_SPEEDUP);
 	const autoSell = item.getCategory() !== ItemCategory.POTION || (item as Potion).isFightPotion() // Because we can't drink immediately these potions
 		? items.length === items.filter((slot: InventorySlot) => slot.itemId === item.id).length
 		: false;
@@ -465,7 +472,7 @@ export async function giveItemToPlayer(
 		manageMoreThan2ItemsSwitching(response, context, whoIsConcerned, {
 			toTradeItem: item,
 			tradableItems: items
-		}, { resaleMultiplier });
+		}, { resaleMultiplier }, canDrinkThisPotion);
 		return;
 	}
 
@@ -474,7 +481,7 @@ export async function giveItemToPlayer(
 	response.push(new ReactionCollectorInstance(
 		new ReactionCollectorItemAccept(
 			toItemWithDetails(itemToReplaceInstance),
-			item instanceof Potion && !(item as Potion).isFightPotion()
+			canDrinkThisPotion
 		),
 		context,
 		{

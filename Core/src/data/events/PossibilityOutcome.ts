@@ -146,7 +146,7 @@ async function applyOutcomeRandomItem(outcome: PossibilityOutcome, player: Playe
 		itemCategory: outcome.randomItem.category,
 		minRarity: outcome.randomItem.rarity?.min,
 		maxRarity: outcome.randomItem.rarity?.max
-	}));
+	}), 1, false);
 }
 
 async function applyOutcomeRandomPet(outcome: PossibilityOutcome, player: Player, response: CrowniclesPacket[]): Promise<void> {
