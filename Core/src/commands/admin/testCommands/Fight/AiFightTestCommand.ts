@@ -206,6 +206,7 @@ export const commandInfo: ITestCommand = {
 		player2Id: TypeKey.INTEGER,
 		amount: TypeKey.INTEGER
 	},
+	minArgs: 2, // Only the first 2 parameters are required
 	description: "Lance un ou plusieurs combats entre deux joueurs contrôlés par l'IA (mode silencieux). Les IDs sont les IDs de la table Player (nombres). Paramètre optionnel : amount (1-10000, défaut 1) = nombre de combats."
 };
 

@@ -39,6 +39,7 @@ export interface ITestCommand {
 	aliases?: string[];
 	commandFormat?: string;
 	typeWaited?: { [argName: string]: TypeKey };
+	minArgs?: number; // Minimum number of arguments required (for optional params)
 	description: string;
 	execute?: ExecuteTestCommandLike;
 	category?: string;
@@ -88,13 +89,15 @@ export class CommandsTest {
 		}
 		const commandTypeKeys = Object.keys(commandTest.typeWaited);
 		const nbArgsWaited = commandTypeKeys.length;
-		if (nbArgsWaited !== args.length) {
+		const minArgsRequired = commandTest.minArgs ?? nbArgsWaited; // Use minArgs if specified, otherwise all args are required
+		
+		if (args.length < minArgsRequired || args.length > nbArgsWaited) {
 			return {
 				good: false,
 				description: `❌ Mauvais nombre d'arguments pour la commande test ${commandTest.name}\n\n**Format attendu :** \`test ${commandTest.name} ${commandTest.commandFormat}\``
 			};
 		}
-		for (let i = 0; i < nbArgsWaited; i++) {
+		for (let i = 0; i < args.length; i++) {
 			if (commandTest.typeWaited[commandTypeKeys[i]] !== CommandsTest.getTypeOf(args[i])) {
 				return {
 					good: false,

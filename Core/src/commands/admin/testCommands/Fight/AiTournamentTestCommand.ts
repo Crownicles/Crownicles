@@ -351,11 +351,13 @@ interface MatchupCsvRowInput {
 export const commandInfo: ITestCommand = {
 	name: "aitournament",
 	aliases: ["ait", "tournament"],
-	commandFormat: "[fightsPerPair:3-10000]",
+	commandFormat: "[fightsPerPair:3-10000] [showDetails:true/false]",
 	typeWaited: {
-		fightsPerPair: TypeKey.INTEGER
+		fightsPerPair: TypeKey.INTEGER,
+		showDetails: TypeKey.STRING
 	},
-	description: "Lance un tournoi IA entre tous les joueurs niveau 8+ de la base de données. Paramètre optionnel : fightsPerPair (3-10000, défaut 5000) = nombre de combats par paire."
+	minArgs: 0, // Both parameters are optional
+	description: "Lance un tournoi IA entre tous les joueurs niveau 8+ de la base de données. Paramètres optionnels : fightsPerPair (3-10000, défaut 5000), showDetails (true/false, défaut false)."
 };
 
 /**
@@ -363,6 +365,7 @@ export const commandInfo: ITestCommand = {
  */
 const aiTournamentTestCommand: ExecuteTestCommandLike = async (_player, args, response, context) => {
 	const fightsPerPair = args.length > 0 ? Math.min(Math.max(parseInt(args[0], 10), 3), 10000) : 5000;
+	const showDetails = args.length > 1 ? args[1].toLowerCase() === "true" : false;
 	const minLevel = FightConstants.REQUIRED_LEVEL;
 
 	// 1. Récupérer tous les joueurs éligibles (niveau 8+)
@@ -647,14 +650,16 @@ const aiTournamentTestCommand: ExecuteTestCommandLike = async (_player, args, re
 		isError: false
 	}));
 
-	// MESSAGE 2+ : Statistiques détaillées par joueur
-	const detailedReports = generateDetailedStatsReports(playerStatsList, eligiblePlayers);
-	for (const report of detailedReports) {
-		response.push(makePacket(CommandTestPacketRes, {
-			commandName: "aitournament",
-			result: report,
-			isError: false
-		}));
+	// MESSAGE 2+ : Statistiques détaillées par joueur (seulement si showDetails est true)
+	if (showDetails) {
+		const detailedReports = generateDetailedStatsReports(playerStatsList, eligiblePlayers);
+		for (const report of detailedReports) {
+			response.push(makePacket(CommandTestPacketRes, {
+				commandName: "aitournament",
+				result: report,
+				isError: false
+			}));
+		}
 	}
 
 	// MESSAGE FINAL : Matchups + export CSV
