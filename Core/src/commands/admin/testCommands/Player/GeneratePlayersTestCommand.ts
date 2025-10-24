@@ -79,11 +79,21 @@ const generatePlayersTestCommand: ExecuteTestCommandLike = async (_player, args)
 		throw new Error(`Erreur generatePlayers : aucune classe disponible pour le niveau ${level} !`);
 	}
 
-	// Generate 20 random pets
+	// Generate 20 random pets (without duplicates)
 	const pets: PetEntity[] = [];
-	for (let i = 0; i < 20; i++) {
+	const usedPetTypeIds = new Set<number>();
+
+	while (pets.length < 20) {
 		const pet = PetEntities.generateRandomPetEntity(level);
-		pet.nickname = `TestPet_${i + 1}`;
+
+		// Skip if we already have this pet type
+		if (usedPetTypeIds.has(pet.typeId)) {
+			continue;
+		}
+
+		pet.sex = "m";
+		pet.nickname = `TestPet_${pets.length + 1}`;
+		usedPetTypeIds.add(pet.typeId);
 		pets.push(await pet.save());
 	}
 
