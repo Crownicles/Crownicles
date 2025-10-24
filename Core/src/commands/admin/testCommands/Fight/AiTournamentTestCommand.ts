@@ -18,7 +18,6 @@ import { AiPlayerFighter } from "../../../../core/fights/fighter/AiPlayerFighter
 import { FightController } from "../../../../core/fights/FightController";
 import { FightOvertimeBehavior } from "../../../../core/fights/FightOvertimeBehavior";
 import { FightConstants } from "../../../../../../Lib/src/constants/FightConstants";
-import { PetDataController } from "../../../../data/Pet";
 import {
 	PetEntity,
 	PetEntities
@@ -27,30 +26,6 @@ import { Op } from "sequelize";
 import { makePacket } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import { CommandTestPacketRes } from "../../../../../../Lib/src/packets/commands/CommandTestPacket";
 import { PacketUtils } from "../../../../core/utils/PacketUtils";
-import { CrowniclesIcons } from "../../../../../../Lib/src/CrowniclesIcons";
-
-/**
- * Get a readable class label from its id
- */
-function getClassName(classId: number): string {
-	return `Class #${classId}`;
-}
-
-function getClassEmoji(classId: number): string {
-	return CrowniclesIcons.classes[classId.toString()] || "❔";
-}
-
-function formatClassLabel(classId: number): string {
-	return `${getClassEmoji(classId)} ${getClassName(classId)}`;
-}
-
-function getPetEmoji(petId: number): string {
-	return CrowniclesIcons.pets[petId]?.emoteMale || "❔";
-}
-
-function formatPetLabel(petId: number): string {
-	return `${getPetEmoji(petId)} ${getPetName(petId)}`;
-}
 
 function escapeCsvValue(value: string | number): string {
 	const stringValue = value === null || value === undefined ? "" : String(value);
@@ -58,13 +33,6 @@ function escapeCsvValue(value: string | number): string {
 		return `"${stringValue.replace(/"/gu, '""')}"`;
 	}
 	return stringValue;
-}
-
-/**
- * Get a readable pet label from its id
- */
-function getPetName(petId: number): string {
-	return `Pet #${petId}`;
 }
 
 /**
@@ -108,12 +76,13 @@ function generateTop10Report(
 		const winRate = totalMatches > 0 ? ((player.wins / totalMatches) * 100).toFixed(1) : "0.0";
 		const avgDamagePerFight = totalMatches > 0 ? (player.totalDamageDealt / totalMatches).toFixed(1) : "0";
 		const avgDamagePerTurn = player.totalTurns > 0 ? (player.totalDamageDealt / player.totalTurns).toFixed(2) : "0";
+		const petLabel = player.petTypeId !== null ? `Pet ${player.petTypeId}` : null;
 
-		report += `${i + 1}. **${player.playerName}** (Niv. ${player.level}) - ${player.className}\n`;
+		report += `${i + 1}. **${player.playerName}** (Niv. ${player.level}) - Classe ${player.classId}\n`;
 		report += `   📈 ${player.wins}V/${player.losses}D/${player.draws}N (${winRate}% WR)\n`;
 		report += `   ⚔️ ${avgDamagePerFight} DPF | ${avgDamagePerTurn} DPT\n`;
-		if (player.petName) {
-			report += `   🐾 ${player.petName}\n`;
+		if (petLabel) {
+			report += `   🐾 ${petLabel}\n`;
 		}
 	}
 
@@ -143,10 +112,10 @@ function generateDetailedStatsReports(
 			const avgDamageTaken = totalMatches > 0 ? (player.totalDamageTaken / totalMatches).toFixed(1) : "0";
 
 			report += `**${player.playerName}** (Niv. ${player.level})\n`;
-			report += `• Classe : ${player.className}\n`;
+			report += `• Classe : ${player.classId}\n`;
 			report += `• Stats : ⚡ ${player.maxEnergy} PV | ⚔️ ${player.attack} ATK | 🛡️ ${player.defense} DEF | 🚀 ${player.speed} SPD\n`;
-			if (player.petName) {
-				report += `• Familier : 🐾 ${player.petName}\n`;
+			if (player.petTypeId !== null) {
+				report += `• Familier : 🐾 Pet ${player.petTypeId}\n`;
 			}
 			report += `• Résultats : ${player.wins}V / ${player.losses}D / ${player.draws}N (${winRate}% WR)\n`;
 			report += `• Dégâts infligés : ${avgDamagePerFight} par combat | ${avgDamagePerTurn} par tour (médiane: ${medianDamagePerTurn})\n`;
@@ -191,9 +160,9 @@ function generateMatchupReports(
 			addCsvRow({
 				category: "class",
 				entityAId: matchup.classAId,
-				entityALabel: formatClassLabel(matchup.classAId),
+				entityALabel: matchup.classAId.toString(),
 				entityBId: matchup.classBId,
-				entityBLabel: formatClassLabel(matchup.classBId),
+				entityBLabel: matchup.classBId.toString(),
 				totalCombats,
 				draws: matchup.draws,
 				winsA: matchup.classAWins,
@@ -207,12 +176,12 @@ function generateMatchupReports(
 			if (matchup.classAId === matchup.classBId) {
 				const decisions = matchup.classAWins + matchup.classBWins;
 				const decisionsRate = totalCombats > 0 ? ((decisions / totalCombats) * 100).toFixed(1) : "0.0";
-				reportMatchups += `• ${formatClassLabel(matchup.classAId)} (miroir) : ${totalCombats.toLocaleString()} combats | ${matchup.draws.toLocaleString()} nuls (${drawRate}%) | décisions : ${decisions.toLocaleString()} (${decisionsRate}%)\n`;
+				reportMatchups += `• Classe ${matchup.classAId} (miroir) : ${totalCombats.toLocaleString()} combats | ${matchup.draws.toLocaleString()} nuls (${drawRate}%) | décisions : ${decisions.toLocaleString()} (${decisionsRate}%)\n`;
 				reportMatchups += `  -> Position A : ${matchup.classAWins.toLocaleString()}V (${classAWinRate}%) | Position B : ${matchup.classBWins.toLocaleString()}V (${classBWinRate}%)\n\n`;
 			}
 			else {
-				reportMatchups += `• ${formatClassLabel(matchup.classAId)} vs ${formatClassLabel(matchup.classBId)} : ${totalCombats.toLocaleString()} combats | ${matchup.draws.toLocaleString()} nuls (${drawRate}%)\n`;
-				reportMatchups += `  -> ${formatClassLabel(matchup.classAId)} : ${matchup.classAWins.toLocaleString()}V (${classAWinRate}%) | ${formatClassLabel(matchup.classBId)} : ${matchup.classBWins.toLocaleString()}V (${classBWinRate}%)\n\n`;
+				reportMatchups += `• Classe ${matchup.classAId} vs Classe ${matchup.classBId} : ${totalCombats.toLocaleString()} combats | ${matchup.draws.toLocaleString()} nuls (${drawRate}%)\n`;
+				reportMatchups += `  -> Classe ${matchup.classAId} : ${matchup.classAWins.toLocaleString()}V (${classAWinRate}%) | Classe ${matchup.classBId} : ${matchup.classBWins.toLocaleString()}V (${classBWinRate}%)\n\n`;
 			}
 		}
 	}
@@ -235,9 +204,9 @@ function generateMatchupReports(
 			addCsvRow({
 				category: "pet",
 				entityAId: matchup.petAId,
-				entityALabel: formatPetLabel(matchup.petAId),
+				entityALabel: matchup.petAId.toString(),
 				entityBId: matchup.petBId,
-				entityBLabel: formatPetLabel(matchup.petBId),
+				entityBLabel: matchup.petBId.toString(),
 				totalCombats,
 				draws: matchup.draws,
 				winsA: matchup.petAWins,
@@ -251,12 +220,12 @@ function generateMatchupReports(
 			if (matchup.petAId === matchup.petBId) {
 				const decisions = matchup.petAWins + matchup.petBWins;
 				const decisionsRate = totalCombats > 0 ? ((decisions / totalCombats) * 100).toFixed(1) : "0.0";
-				reportMatchups += `• ${formatPetLabel(matchup.petAId)} (miroir) : ${totalCombats.toLocaleString()} combats | ${matchup.draws.toLocaleString()} nuls (${drawRate}%) | décisions : ${decisions.toLocaleString()} (${decisionsRate}%)\n`;
+				reportMatchups += `• Pet ${matchup.petAId} (miroir) : ${totalCombats.toLocaleString()} combats | ${matchup.draws.toLocaleString()} nuls (${drawRate}%) | décisions : ${decisions.toLocaleString()} (${decisionsRate}%)\n`;
 				reportMatchups += `  -> Position A : ${matchup.petAWins.toLocaleString()}V (${petAWinRate}%) | Position B : ${matchup.petBWins.toLocaleString()}V (${petBWinRate}%)\n\n`;
 			}
 			else {
-				reportMatchups += `• ${formatPetLabel(matchup.petAId)} vs ${formatPetLabel(matchup.petBId)} : ${totalCombats.toLocaleString()} combats | ${matchup.draws.toLocaleString()} nuls (${drawRate}%)\n`;
-				reportMatchups += `  -> ${formatPetLabel(matchup.petAId)} : ${matchup.petAWins.toLocaleString()}V (${petAWinRate}%) | ${formatPetLabel(matchup.petBId)} : ${matchup.petBWins.toLocaleString()}V (${petBWinRate}%)\n\n`;
+				reportMatchups += `• Pet ${matchup.petAId} vs Pet ${matchup.petBId} : ${totalCombats.toLocaleString()} combats | ${matchup.draws.toLocaleString()} nuls (${drawRate}%)\n`;
+				reportMatchups += `  -> Pet ${matchup.petAId} : ${matchup.petAWins.toLocaleString()}V (${petAWinRate}%) | Pet ${matchup.petBId} : ${matchup.petBWins.toLocaleString()}V (${petBWinRate}%)\n\n`;
 			}
 		}
 	}
@@ -275,9 +244,7 @@ interface PlayerStats {
 	playerName: string;
 	level: number;
 	classId: number;
-	className: string;
 	petTypeId: number | null;
-	petName: string | null;
 	maxEnergy: number;
 	attack: number;
 	defense: number;
@@ -303,31 +270,6 @@ interface PairMatchup {
 	draws: number;
 }
 
-/**
- * Generic function to get or create a matchup entry in a map
- */
-function getOrCreateMatchup(
-	matchups: Map<string, PairMatchup>,
-	entityId1: number,
-	entityId2: number
-): PairMatchup {
-	const entityAId = Math.min(entityId1, entityId2);
-	const entityBId = Math.max(entityId1, entityId2);
-	const key = `${entityAId}-${entityBId}`;
-	let matchup = matchups.get(key);
-	if (!matchup) {
-		matchup = {
-			entityAId,
-			entityBId,
-			entityAWins: 0,
-			entityBWins: 0,
-			draws: 0
-		};
-		matchups.set(key, matchup);
-	}
-	return matchup;
-}
-
 interface ClassPairMatchup extends PairMatchup {
 	classAId: number;
 	classBId: number;
@@ -340,7 +282,25 @@ function getOrCreateClassMatchup(
 	classId1: number,
 	classId2: number
 ): ClassPairMatchup {
-	return getOrCreateMatchup(classMatchups, classId1, classId2) as ClassPairMatchup;
+	const classAId = Math.min(classId1, classId2);
+	const classBId = Math.max(classId1, classId2);
+	const key = `${classAId}-${classBId}`;
+	let matchup = classMatchups.get(key);
+	if (!matchup) {
+		matchup = {
+			entityAId: classAId,
+			entityBId: classBId,
+			classAId,
+			classBId,
+			entityAWins: 0,
+			entityBWins: 0,
+			classAWins: 0,
+			classBWins: 0,
+			draws: 0
+		};
+		classMatchups.set(key, matchup);
+	}
+	return matchup;
 }
 
 interface PetPairMatchup extends PairMatchup {
@@ -355,7 +315,25 @@ function getOrCreatePetMatchup(
 	petId1: number,
 	petId2: number
 ): PetPairMatchup {
-	return getOrCreateMatchup(petMatchups, petId1, petId2) as PetPairMatchup;
+	const petAId = Math.min(petId1, petId2);
+	const petBId = Math.max(petId1, petId2);
+	const key = `${petAId}-${petBId}`;
+	let matchup = petMatchups.get(key);
+	if (!matchup) {
+		matchup = {
+			entityAId: petAId,
+			entityBId: petBId,
+			petAId,
+			petBId,
+			entityAWins: 0,
+			entityBWins: 0,
+			petAWins: 0,
+			petBWins: 0,
+			draws: 0
+		};
+		petMatchups.set(key, matchup);
+	}
+	return matchup;
 }
 
 interface MatchupCsvRowInput {
@@ -411,7 +389,6 @@ const aiTournamentTestCommand: ExecuteTestCommandLike = async (_player, args, re
 		const classData = ClassDataController.instance.getById(player.class);
 		const activeObjects: PlayerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
 		const petEntity = player.petId ? await PetEntities.getById(player.petId) : null;
-		const petData = petEntity ? PetDataController.instance.getById(petEntity.typeId) : null;
 
 		fighterResources.set(player.id, {
 			classData,
@@ -436,9 +413,7 @@ const aiTournamentTestCommand: ExecuteTestCommandLike = async (_player, args, re
 			playerName: `Joueur #${player.id}`,
 			level: player.level,
 			classId: player.class,
-			className: getClassName(player.class),
-			petTypeId: petEntity?.typeId || null,
-			petName: petData ? getPetName(petData.id) : null,
+			petTypeId: petEntity?.typeId ?? null,
 			maxEnergy: Math.round(tempFighter.getMaxEnergy()), // Vraies PV max avec équipements
 			attack: Math.round(tempFighter.getAttack()),
 			defense: Math.round(tempFighter.getDefense()),
