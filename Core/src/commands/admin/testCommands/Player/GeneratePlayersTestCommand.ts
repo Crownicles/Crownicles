@@ -24,14 +24,15 @@ import { ObjectItemDataController } from "../../../../data/ObjectItem";
 
 export const commandInfo: ITestCommand = {
 	name: "generatePlayers",
-	commandFormat: "<level> [playersPerClass:number] [fixedItems:true/false]",
+	commandFormat: "<level> [playersPerClass:number] [fixedItems:true/false] [generatePets:true/false]",
 	typeWaited: {
 		level: TypeKey.INTEGER,
 		playersPerClass: TypeKey.INTEGER,
-		fixedItems: TypeKey.STRING
+		fixedItems: TypeKey.STRING,
+		generatePets: TypeKey.STRING
 	},
 	minArgs: 1,
-	description: "Génère un ensemble de joueurs dans la base de données pour chaque classe disponible au niveau donné. Par défaut crée 20 joueurs par classe. Si playersPerClass est spécifié, crée ce nombre de joueurs par classe (limité au nombre de pets uniques disponibles). Si fixedItems=true, utilise des items prédéfinis par groupe de classe."
+	description: "Génère un ensemble de joueurs dans la base de données pour chaque classe disponible au niveau donné. Par défaut crée 20 joueurs par classe. Si playersPerClass est spécifié, crée ce nombre de joueurs par classe (limité au nombre de pets uniques disponibles). Si fixedItems=true, utilise des items prédéfinis par groupe de classe. Si generatePets=false, les joueurs sont créés sans pets."
 };
 
 /**
@@ -287,6 +288,7 @@ const generatePlayersTestCommand: ExecuteTestCommandLike = async (_player, args)
 	const level = parseInt(args[0], 10);
 	const playersPerClass = args.length > 1 ? parseInt(args[1], 10) : 20;
 	const useFixedItems = args.length > 2 ? args[2].toLowerCase() === "true" : false;
+	const generatePets = args.length > 3 ? args[3].toLowerCase() === "true" : true;
 
 	if (level < ClassConstants.REQUIRED_LEVEL) {
 		throw new Error(`Erreur generatePlayers : le niveau doit être au moins ${ClassConstants.REQUIRED_LEVEL} (niveau requis pour débloquer les classes) !`);
@@ -308,31 +310,38 @@ const generatePlayersTestCommand: ExecuteTestCommandLike = async (_player, args)
 		throw new Error(`Erreur generatePlayers : aucune classe disponible pour le niveau ${level} !`);
 	}
 
-	// Get all unique pet types
-	const maxPetId = PetDataController.instance.getMaxId();
-	const allPetTypes: Pet[] = [];
-
-	for (let petId = 1; petId <= maxPetId; petId++) {
-		const petType = PetDataController.instance.getById(petId);
-		if (petType && petType.rarity !== 0) {
-			allPetTypes.push(petType);
-		}
-	}
-
-	// Limit players per class to the number of unique pets
-	const actualPlayersPerClass = Math.min(playersPerClass, allPetTypes.length);
-
-	// Generate pets (one per unique pet type, up to actualPlayersPerClass)
 	const pets: PetEntity[] = [];
-	for (let i = 0; i < actualPlayersPerClass; i++) {
-		const petType = allPetTypes[i];
-		const pet = PetEntity.build({
-			typeId: petType.id,
-			sex: "m",
-			nickname: `Pet_${petType.id}`,
-			lovePoints: 100
-		});
-		pets.push(await pet.save());
+	let actualPlayersPerClass = playersPerClass;
+	let maxUniquePets = 0;
+
+	if (generatePets) {
+		// Get all unique pet types
+		const maxPetId = PetDataController.instance.getMaxId();
+		const allPetTypes: Pet[] = [];
+
+		for (let petId = 1; petId <= maxPetId; petId++) {
+			const petType = PetDataController.instance.getById(petId);
+			if (petType && petType.rarity !== 0) {
+				allPetTypes.push(petType);
+			}
+		}
+
+		maxUniquePets = allPetTypes.length;
+
+		// Limit players per class to the number of unique pets
+		actualPlayersPerClass = Math.min(playersPerClass, allPetTypes.length);
+
+		// Generate pets (one per unique pet type, up to actualPlayersPerClass)
+		for (let i = 0; i < actualPlayersPerClass; i++) {
+			const petType = allPetTypes[i];
+			const pet = PetEntity.build({
+				typeId: petType.id,
+				sex: "m",
+				nickname: `Pet_${petType.id}`,
+				lovePoints: 100
+			});
+			pets.push(await pet.save());
+		}
 	}
 
 	// Create players for each class
@@ -348,7 +357,7 @@ const generatePlayersTestCommand: ExecuteTestCommandLike = async (_player, args)
 			// Set player properties
 			newPlayer.level = level;
 			newPlayer.class = classData.id;
-			newPlayer.petId = pets[i].id;
+			newPlayer.petId = generatePets ? pets[i].id : null;
 			newPlayer.health = classData.getMaxHealthValue(level);
 			newPlayer.experience = 0;
 			newPlayer.money = 1000; // Give them some starting money
@@ -399,8 +408,8 @@ const generatePlayersTestCommand: ExecuteTestCommandLike = async (_player, args)
 	const classIds = availableClasses.map(c => `${c.id}`).join(", ");
 	const classesDisplay = classIds.length > 100 ? `${availableClasses.length} classes` : classIds;
 
-	const limitMessage = actualPlayersPerClass < playersPerClass
-		? ` (limité à ${allPetTypes.length} pets uniques)`
+	const limitMessage = generatePets && actualPlayersPerClass < playersPerClass
+		? ` (limité à ${maxUniquePets} pets uniques)`
 		: "";
 
 	return `✅ Génération terminée !\n`
@@ -408,10 +417,10 @@ const generatePlayersTestCommand: ExecuteTestCommandLike = async (_player, args)
 		+ `• Niveau : ${level}\n`
 		+ `• Joueurs par classe : ${actualPlayersPerClass}${limitMessage}\n`
 		+ `• Items : ${useFixedItems ? "Fixes par groupe de classe" : "Aléatoires par niveau"}\n`
+		+ `• Pets : ${generatePets ? `${pets.length} générés` : "Aucun"}\n`
 		+ `• Groupe de classes : ${classGroup}\n`
 		+ `• Classes disponibles : ${availableClasses.length}\n`
-		+ `• Joueurs créés : ${totalPlayersCreated} (${actualPlayersPerClass} par classe)\n`
-		+ `• Pets générés : ${pets.length}\n\n`
+		+ `• Joueurs créés : ${totalPlayersCreated} (${actualPlayersPerClass} par classe)\n\n`
 		+ `Classes concernées : ${classesDisplay}`;
 };
 
