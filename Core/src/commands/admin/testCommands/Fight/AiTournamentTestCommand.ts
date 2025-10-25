@@ -27,6 +27,11 @@ import { makePacket } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import { CommandTestPacketRes } from "../../../../../../Lib/src/packets/commands/CommandTestPacket";
 import { PacketUtils } from "../../../../core/utils/PacketUtils";
 
+/**
+ * Escape a value for CSV export by wrapping it in quotes if it contains special characters
+ * @param value - The value to escape
+ * @returns The escaped value
+ */
 function escapeCsvValue(value: string | number): string {
 	const stringValue = value === null || value === undefined ? "" : String(value);
 	if ((/[",\n\r]/u).test(stringValue)) {
@@ -277,6 +282,13 @@ interface ClassPairMatchup extends PairMatchup {
 	classBWins: number;
 }
 
+/**
+ * Get or create a class matchup entry for tracking wins/losses between two classes
+ * @param classMatchups - Map of class matchups
+ * @param classId1 - First class ID
+ * @param classId2 - Second class ID
+ * @returns The class matchup object
+ */
 function getOrCreateClassMatchup(
 	classMatchups: Map<string, ClassPairMatchup>,
 	classId1: number,
@@ -310,6 +322,13 @@ interface PetPairMatchup extends PairMatchup {
 	petBWins: number;
 }
 
+/**
+ * Get or create a pet matchup entry for tracking wins/losses between two pet types
+ * @param petMatchups - Map of pet matchups
+ * @param petId1 - First pet type ID
+ * @param petId2 - Second pet type ID
+ * @returns The pet matchup object
+ */
 function getOrCreatePetMatchup(
 	petMatchups: Map<string, PetPairMatchup>,
 	petId1: number,
@@ -682,6 +701,10 @@ const aiTournamentTestCommand: ExecuteTestCommandLike = async (_player, args, re
 		]
 	];
 
+	/**
+	 * Add a row to the CSV export with matchup statistics
+	 * @param params - The matchup data to add
+	 */
 	const addCsvRow = ({
 		category,
 		entityAId,

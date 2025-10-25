@@ -146,8 +146,8 @@ const importPlayersTestCommand: ExecuteTestCommandLike = async (_player, args) =
 		}
 	}
 
-	return `✅ Import terminé !\n`
-		+ `📊 Résumé :\n`
+	return "✅ Import terminé !\n"
+		+ "📊 Résumé :\n"
 		+ `• Fichier : ${filename}\n`
 		+ `• Date d'export : ${importData.exportDate}\n`
 		+ `• Pattern d'origine : "${importData.pattern}"\n`

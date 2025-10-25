@@ -90,7 +90,7 @@ export class CommandsTest {
 		const commandTypeKeys = Object.keys(commandTest.typeWaited);
 		const nbArgsWaited = commandTypeKeys.length;
 		const minArgsRequired = commandTest.minArgs ?? nbArgsWaited; // Use minArgs if specified, otherwise all args are required
-		
+
 		if (args.length < minArgsRequired || args.length > nbArgsWaited) {
 			return {
 				good: false,

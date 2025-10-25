@@ -412,8 +412,8 @@ const generatePlayersTestCommand: ExecuteTestCommandLike = async (_player, args)
 		? ` (limité à ${maxUniquePets} pets uniques)`
 		: "";
 
-	return `✅ Génération terminée !\n`
-		+ `📊 Résumé :\n`
+	return "✅ Génération terminée !\n"
+		+ "📊 Résumé :\n"
 		+ `• Niveau : ${level}\n`
 		+ `• Joueurs par classe : ${actualPlayersPerClass}${limitMessage}\n`
 		+ `• Items : ${useFixedItems ? "Fixes par groupe de classe" : "Aléatoires par niveau"}\n`
