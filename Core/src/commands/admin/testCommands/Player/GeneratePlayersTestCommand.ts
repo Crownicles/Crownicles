@@ -11,7 +11,9 @@ import {
 import { ClassDataController } from "../../../../data/Class";
 import { ClassConstants } from "../../../../../../Lib/src/constants/ClassConstants";
 import { generateRandomItem } from "../../../../core/utils/ItemUtils";
-import { ItemCategory } from "../../../../../../Lib/src/constants/ItemConstants";
+import {
+	FightItemNatures, ItemCategory
+} from "../../../../../../Lib/src/constants/ItemConstants";
 import { RandomUtils } from "../../../../../../Lib/src/utils/RandomUtils";
 import {
 	Pet, PetDataController
@@ -44,16 +46,51 @@ function getClassGroupByLevel(level: number): number {
 }
 
 /**
- * Generate a random inventory setup (one armor, one weapon, one object, no potion)
+ * Get item rarity based on player level
+ * @param level
  */
-function generateRandomInventory(): {
+function getRarityByLevel(level: number): number {
+	if (level >= 100) {
+		return 6;
+	}
+	if (level >= 50) {
+		return 5;
+	}
+	return 4;
+}
+
+/**
+ * Generate a random inventory setup (one armor, one weapon, one object, no potion)
+ * Objects will only have fight-related effects (attack, defense, speed)
+ * @param level - Player level to determine item rarity
+ */
+function generateRandomInventory(level: number): {
 	weaponId: number;
 	armorId: number;
 	objectId: number;
 } {
-	const weapon = generateRandomItem({ itemCategory: ItemCategory.WEAPON });
-	const armor = generateRandomItem({ itemCategory: ItemCategory.ARMOR });
-	const object = generateRandomItem({ itemCategory: ItemCategory.OBJECT });
+	const rarity = getRarityByLevel(level);
+
+	const weapon = generateRandomItem({
+		itemCategory: ItemCategory.WEAPON,
+		minRarity: rarity,
+		maxRarity: rarity
+	});
+
+	const armor = generateRandomItem({
+		itemCategory: ItemCategory.ARMOR,
+		minRarity: rarity,
+		maxRarity: rarity
+	});
+
+	// For objects, pick a random fight-related nature (attack, defense, or speed)
+	const fightNature = RandomUtils.crowniclesRandom.pick(FightItemNatures);
+	const object = generateRandomItem({
+		itemCategory: ItemCategory.OBJECT,
+		minRarity: rarity,
+		maxRarity: rarity,
+		subType: fightNature
+	});
 
 	return {
 		weaponId: weapon.id,
@@ -96,14 +133,14 @@ const generatePlayersTestCommand: ExecuteTestCommandLike = async (_player, args)
 		// Generate one player per unique pet type
 		const maxPetId = PetDataController.instance.getMaxId();
 		const allPetTypes: Pet[] = [];
-		
+
 		for (let petId = 1; petId <= maxPetId; petId++) {
 			const petType = PetDataController.instance.getById(petId);
 			if (petType && petType.rarity !== 0) {
 				allPetTypes.push(petType);
 			}
 		}
-		
+
 		pets = [];
 		for (const petType of allPetTypes) {
 			const pet = PetEntity.build({
@@ -118,7 +155,7 @@ const generatePlayersTestCommand: ExecuteTestCommandLike = async (_player, args)
 		// Generate as many inventories as pets
 		inventories = [];
 		for (let i = 0; i < pets.length; i++) {
-			inventories.push(generateRandomInventory());
+			inventories.push(generateRandomInventory(level));
 		}
 	}
 	else {
@@ -143,7 +180,7 @@ const generatePlayersTestCommand: ExecuteTestCommandLike = async (_player, args)
 		// Generate 20 random inventories
 		inventories = [];
 		for (let i = 0; i < 20; i++) {
-			inventories.push(generateRandomInventory());
+			inventories.push(generateRandomInventory(level));
 		}
 	}
 
