@@ -18,16 +18,20 @@ import { RandomUtils } from "../../../../../../Lib/src/utils/RandomUtils";
 import {
 	Pet, PetDataController
 } from "../../../../data/Pet";
+import { WeaponDataController } from "../../../../data/Weapon";
+import { ArmorDataController } from "../../../../data/Armor";
+import { ObjectItemDataController } from "../../../../data/ObjectItem";
 
 export const commandInfo: ITestCommand = {
 	name: "generatePlayers",
-	commandFormat: "<level> [allPets:true/false]",
+	commandFormat: "<level> [allPets:true/false] [fixedItems:true/false]",
 	typeWaited: {
 		level: TypeKey.INTEGER,
-		allPets: TypeKey.STRING
+		allPets: TypeKey.STRING,
+		fixedItems: TypeKey.STRING
 	},
 	minArgs: 1,
-	description: "Génère un ensemble de joueurs dans la base de données pour chaque classe disponible au niveau donné. Par défaut crée 20 joueurs par classe. Si allPets=true, crée un joueur pour chaque pet différent disponible par classe."
+	description: "Génère un ensemble de joueurs dans la base de données pour chaque classe disponible au niveau donné. Par défaut crée 20 joueurs par classe. Si allPets=true, crée un joueur pour chaque pet différent disponible par classe. Si fixedItems=true, utilise des items prédéfinis par groupe de classe."
 };
 
 /**
@@ -60,15 +64,187 @@ function getRarityByLevel(level: number): number {
 }
 
 /**
+ * Fixed items configuration by class behavior group
+ * Format: [weaponId, armorId, objectId]
+ */
+const FIXED_ITEMS_BY_CLASS_GROUP: Record<string, [
+	number,
+	number,
+	number
+]> = {
+	// Canonnier group (GunnerFightBehavior): FORMIDABLE_GUNNER, GUNNER, ARCHER, SLINGER, ROCK_THROWER
+	gunner: [
+		85,
+		46,
+		5
+	],
+
+	// Paladin group (PaladinFightBehavior): PALADIN, LUMINOUS_PALADIN
+	paladin: [
+		70,
+		18,
+		37
+	],
+
+	// Chevalier group (KnightFightBehavior): KNIGHT, VALIANT_KNIGHT, PIKEMAN, HORSE_RIDER, ESQUIRE
+	knight: [
+		46,
+		62,
+		23
+	],
+
+	// Fantassin group (InfantryManFightBehavior): POWERFUL_INFANTRYMAN, INFANTRYMAN, SOLDIER, FIGHTER, RECRUIT
+	infantryman: [
+		46,
+		12,
+		37
+	],
+
+	// Vétéran group (VeteranFightBehavior): VETERAN, EXPERIENCED_VETERAN
+	veteran: [
+		84,
+		58,
+		5
+	],
+
+	// Mage group (MysticMageFightBehavior): MYSTIC_MAGE
+	mage: [
+		81,
+		32,
+		67
+	],
+
+	// Tank group (TankFightBehavior): TANK, IMPENETRABLE_TANK, ENMESHED, HELMETED, GLOVED
+	tank: [
+		70,
+		32,
+		37
+	]
+};
+
+/**
+ * Get the class behavior group for a given class ID
+ * @param classId
+ */
+function getClassBehaviorGroup(classId: number): string {
+	// Gunner group (5 classes)
+	if ([
+		ClassConstants.CLASSES_ID.FORMIDABLE_GUNNER,
+		ClassConstants.CLASSES_ID.GUNNER,
+		ClassConstants.CLASSES_ID.ARCHER,
+		ClassConstants.CLASSES_ID.SLINGER,
+		ClassConstants.CLASSES_ID.ROCK_THROWER
+	].includes(classId)) {
+		return "gunner";
+	}
+
+	// Paladin group (2 classes)
+	if ([
+		ClassConstants.CLASSES_ID.PALADIN,
+		ClassConstants.CLASSES_ID.LUMINOUS_PALADIN
+	].includes(classId)) {
+		return "paladin";
+	}
+
+	// Knight group (5 classes)
+	if ([
+		ClassConstants.CLASSES_ID.KNIGHT,
+		ClassConstants.CLASSES_ID.VALIANT_KNIGHT,
+		ClassConstants.CLASSES_ID.PIKEMAN,
+		ClassConstants.CLASSES_ID.HORSE_RIDER,
+		ClassConstants.CLASSES_ID.ESQUIRE
+	].includes(classId)) {
+		return "knight";
+	}
+
+	// Infantryman group (5 classes)
+	if ([
+		ClassConstants.CLASSES_ID.POWERFUL_INFANTRYMAN,
+		ClassConstants.CLASSES_ID.INFANTRYMAN,
+		ClassConstants.CLASSES_ID.SOLDIER,
+		ClassConstants.CLASSES_ID.FIGHTER,
+		ClassConstants.CLASSES_ID.RECRUIT
+	].includes(classId)) {
+		return "infantryman";
+	}
+
+	// Veteran group (2 classes)
+	if ([
+		ClassConstants.CLASSES_ID.VETERAN,
+		ClassConstants.CLASSES_ID.EXPERIENCED_VETERAN
+	].includes(classId)) {
+		return "veteran";
+	}
+
+	// Tank group (5 classes)
+	if ([
+		ClassConstants.CLASSES_ID.TANK,
+		ClassConstants.CLASSES_ID.IMPENETRABLE_TANK,
+		ClassConstants.CLASSES_ID.ENMESHED,
+		ClassConstants.CLASSES_ID.HELMETED,
+		ClassConstants.CLASSES_ID.GLOVED
+	].includes(classId)) {
+		return "tank";
+	}
+
+	// Mage group (1 class)
+	if (classId === ClassConstants.CLASSES_ID.MYSTIC_MAGE) {
+		return "mage";
+	}
+
+	// Default to random items if class not recognized
+	return null;
+}
+
+/**
  * Generate a random inventory setup (one armor, one weapon, one object, no potion)
  * Objects will only have fight-related effects (attack, defense, speed)
  * @param level - Player level to determine item rarity
+ * @param classId - Class ID to determine fixed items (optional)
+ * @param useFixedItems - Whether to use fixed items for this class group
  */
-function generateRandomInventory(level: number): {
+function generateRandomInventory(level: number, classId?: number, useFixedItems = false): {
 	weaponId: number;
 	armorId: number;
 	objectId: number;
 } {
+	// Use fixed items if requested and class has a defined group
+	if (useFixedItems && classId) {
+		const classGroup = getClassBehaviorGroup(classId);
+		if (classGroup && FIXED_ITEMS_BY_CLASS_GROUP[classGroup]) {
+			const [
+				weaponId,
+				armorId,
+				objectId
+			] = FIXED_ITEMS_BY_CLASS_GROUP[classGroup];
+
+			// Validate that items exist
+			const weapon = WeaponDataController.instance.getById(weaponId);
+			const armor = ArmorDataController.instance.getById(armorId);
+			const object = ObjectItemDataController.instance.getById(objectId);
+
+			if (!weapon) {
+				throw new Error(`Erreur generatePlayers : Arme ${weaponId} introuvable pour le groupe ${classGroup} (classId: ${classId})`);
+			}
+			if (!armor) {
+				throw new Error(`Erreur generatePlayers : Armure ${armorId} introuvable pour le groupe ${classGroup} (classId: ${classId})`);
+			}
+			if (!object) {
+				throw new Error(`Erreur generatePlayers : Objet ${objectId} introuvable pour le groupe ${classGroup} (classId: ${classId})`);
+			}
+
+			return {
+				weaponId,
+				armorId,
+				objectId
+			};
+		}
+
+		// If no fixed items defined for this class, throw error
+		throw new Error(`Erreur generatePlayers : Aucun item fixe défini pour la classe ${classId} (groupe: ${classGroup || "non trouvé"})`);
+	}
+
+	// Otherwise generate random items based on level
 	const rarity = getRarityByLevel(level);
 
 	const weapon = generateRandomItem({
@@ -92,6 +268,11 @@ function generateRandomInventory(level: number): {
 		subType: fightNature
 	});
 
+	// Validate generated items
+	if (!weapon || !armor || !object) {
+		throw new Error(`Erreur generatePlayers : Impossible de générer des items aléatoires de rareté ${rarity} (weapon:${weapon?.id}, armor:${armor?.id}, object:${object?.id})`);
+	}
+
 	return {
 		weaponId: weapon.id,
 		armorId: armor.id,
@@ -105,6 +286,7 @@ function generateRandomInventory(level: number): {
 const generatePlayersTestCommand: ExecuteTestCommandLike = async (_player, args) => {
 	const level = parseInt(args[0], 10);
 	const allPets = args.length > 1 ? args[1].toLowerCase() === "true" : false;
+	const useFixedItems = args.length > 2 ? args[2].toLowerCase() === "true" : false;
 
 	if (level < ClassConstants.REQUIRED_LEVEL) {
 		throw new Error(`Erreur generatePlayers : le niveau doit être au moins ${ClassConstants.REQUIRED_LEVEL} (niveau requis pour débloquer les classes) !`);
@@ -123,11 +305,6 @@ const generatePlayersTestCommand: ExecuteTestCommandLike = async (_player, args)
 	}
 
 	let pets: PetEntity[];
-	let inventories: {
-		weaponId: number;
-		armorId: number;
-		objectId: number;
-	}[];
 
 	if (allPets) {
 		// Generate one player per unique pet type
@@ -151,12 +328,6 @@ const generatePlayersTestCommand: ExecuteTestCommandLike = async (_player, args)
 			});
 			pets.push(await pet.save());
 		}
-
-		// Generate as many inventories as pets
-		inventories = [];
-		for (let i = 0; i < pets.length; i++) {
-			inventories.push(generateRandomInventory(level));
-		}
 	}
 	else {
 		// Generate 20 random pets (without duplicates)
@@ -175,12 +346,6 @@ const generatePlayersTestCommand: ExecuteTestCommandLike = async (_player, args)
 			pet.nickname = `TestPet_${pets.length + 1}`;
 			usedPetTypeIds.add(pet.typeId);
 			pets.push(await pet.save());
-		}
-
-		// Generate 20 random inventories
-		inventories = [];
-		for (let i = 0; i < 20; i++) {
-			inventories.push(generateRandomInventory(level));
 		}
 	}
 
@@ -207,8 +372,8 @@ const generatePlayersTestCommand: ExecuteTestCommandLike = async (_player, args)
 
 			await newPlayer.save();
 
-			// Create inventory slots for the player
-			const inventory = inventories[i];
+			// Generate inventory for this player (based on class if using fixed items)
+			const inventory = generateRandomInventory(level, classData.id, useFixedItems);
 
 			// Weapon slot (equipped)
 			await InventorySlot.create({
@@ -246,16 +411,19 @@ const generatePlayersTestCommand: ExecuteTestCommandLike = async (_player, args)
 		}
 	}
 
+	const classIds = availableClasses.map(c => `${c.id}`).join(", ");
+	const classesDisplay = classIds.length > 100 ? `${availableClasses.length} classes` : classIds;
+
 	return `✅ Génération terminée !\n`
 		+ `📊 Résumé :\n`
 		+ `• Niveau : ${level}\n`
 		+ `• Mode : ${allPets ? "Tous les pets" : "20 pets aléatoires"}\n`
+		+ `• Items : ${useFixedItems ? "Fixes par groupe de classe" : "Aléatoires par niveau"}\n`
 		+ `• Groupe de classes : ${classGroup}\n`
 		+ `• Classes disponibles : ${availableClasses.length}\n`
 		+ `• Joueurs créés : ${totalPlayersCreated} (${playersPerClass} par classe)\n`
-		+ `• Pets générés : ${pets.length}\n`
-		+ `• Inventaires générés : ${inventories.length}\n\n`
-		+ `Classes concernées : ${availableClasses.map(c => `${c.id}`).join(", ")}`;
+		+ `• Pets générés : ${pets.length}\n\n`
+		+ `Classes concernées : ${classesDisplay}`;
 };
 
 commandInfo.execute = generatePlayersTestCommand;
