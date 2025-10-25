@@ -6,7 +6,7 @@ import {
 } from "../../../../core/database/game/models/Player";
 import { InventorySlot } from "../../../../core/database/game/models/InventorySlot";
 import {
-	PetEntity, PetEntities
+	PetEntity
 } from "../../../../core/database/game/models/PetEntity";
 import { ClassDataController } from "../../../../data/Class";
 import { ClassConstants } from "../../../../../../Lib/src/constants/ClassConstants";
@@ -24,14 +24,14 @@ import { ObjectItemDataController } from "../../../../data/ObjectItem";
 
 export const commandInfo: ITestCommand = {
 	name: "generatePlayers",
-	commandFormat: "<level> [allPets:true/false] [fixedItems:true/false]",
+	commandFormat: "<level> [playersPerClass:number] [fixedItems:true/false]",
 	typeWaited: {
 		level: TypeKey.INTEGER,
-		allPets: TypeKey.STRING,
+		playersPerClass: TypeKey.INTEGER,
 		fixedItems: TypeKey.STRING
 	},
 	minArgs: 1,
-	description: "Génère un ensemble de joueurs dans la base de données pour chaque classe disponible au niveau donné. Par défaut crée 20 joueurs par classe. Si allPets=true, crée un joueur pour chaque pet différent disponible par classe. Si fixedItems=true, utilise des items prédéfinis par groupe de classe."
+	description: "Génère un ensemble de joueurs dans la base de données pour chaque classe disponible au niveau donné. Par défaut crée 20 joueurs par classe. Si playersPerClass est spécifié, crée ce nombre de joueurs par classe (limité au nombre de pets uniques disponibles). Si fixedItems=true, utilise des items prédéfinis par groupe de classe."
 };
 
 /**
@@ -285,7 +285,7 @@ function generateRandomInventory(level: number, classId?: number, useFixedItems 
  */
 const generatePlayersTestCommand: ExecuteTestCommandLike = async (_player, args) => {
 	const level = parseInt(args[0], 10);
-	const allPets = args.length > 1 ? args[1].toLowerCase() === "true" : false;
+	const playersPerClass = args.length > 1 ? parseInt(args[1], 10) : 20;
 	const useFixedItems = args.length > 2 ? args[2].toLowerCase() === "true" : false;
 
 	if (level < ClassConstants.REQUIRED_LEVEL) {
@@ -296,6 +296,10 @@ const generatePlayersTestCommand: ExecuteTestCommandLike = async (_player, args)
 		throw new Error("Erreur generatePlayers : le niveau ne peut pas dépasser 200 !");
 	}
 
+	if (playersPerClass < 1) {
+		throw new Error("Erreur generatePlayers : le nombre de joueurs par classe doit être au moins 1 !");
+	}
+
 	// Get available classes at this level
 	const classGroup = getClassGroupByLevel(level);
 	const availableClasses = ClassDataController.instance.getByGroup(classGroup);
@@ -304,56 +308,37 @@ const generatePlayersTestCommand: ExecuteTestCommandLike = async (_player, args)
 		throw new Error(`Erreur generatePlayers : aucune classe disponible pour le niveau ${level} !`);
 	}
 
-	let pets: PetEntity[];
+	// Get all unique pet types
+	const maxPetId = PetDataController.instance.getMaxId();
+	const allPetTypes: Pet[] = [];
 
-	if (allPets) {
-		// Generate one player per unique pet type
-		const maxPetId = PetDataController.instance.getMaxId();
-		const allPetTypes: Pet[] = [];
-
-		for (let petId = 1; petId <= maxPetId; petId++) {
-			const petType = PetDataController.instance.getById(petId);
-			if (petType && petType.rarity !== 0) {
-				allPetTypes.push(petType);
-			}
-		}
-
-		pets = [];
-		for (const petType of allPetTypes) {
-			const pet = PetEntity.build({
-				typeId: petType.id,
-				sex: "m",
-				nickname: `Pet_${petType.id}`,
-				lovePoints: 100
-			});
-			pets.push(await pet.save());
+	for (let petId = 1; petId <= maxPetId; petId++) {
+		const petType = PetDataController.instance.getById(petId);
+		if (petType && petType.rarity !== 0) {
+			allPetTypes.push(petType);
 		}
 	}
-	else {
-		// Generate 20 random pets (without duplicates)
-		pets = [];
-		const usedPetTypeIds = new Set<number>();
 
-		while (pets.length < 20) {
-			const pet = PetEntities.generateRandomPetEntity(level);
+	// Limit players per class to the number of unique pets
+	const actualPlayersPerClass = Math.min(playersPerClass, allPetTypes.length);
 
-			// Skip if we already have this pet type
-			if (usedPetTypeIds.has(pet.typeId)) {
-				continue;
-			}
-
-			pet.sex = "m";
-			pet.nickname = `TestPet_${pets.length + 1}`;
-			usedPetTypeIds.add(pet.typeId);
-			pets.push(await pet.save());
-		}
+	// Generate pets (one per unique pet type, up to actualPlayersPerClass)
+	const pets: PetEntity[] = [];
+	for (let i = 0; i < actualPlayersPerClass; i++) {
+		const petType = allPetTypes[i];
+		const pet = PetEntity.build({
+			typeId: petType.id,
+			sex: "m",
+			nickname: `Pet_${petType.id}`,
+			lovePoints: 100
+		});
+		pets.push(await pet.save());
 	}
 
 	// Create players for each class
-	const playersPerClass = pets.length;
 	let totalPlayersCreated = 0;
 	for (const classData of availableClasses) {
-		for (let i = 0; i < playersPerClass; i++) {
+		for (let i = 0; i < actualPlayersPerClass; i++) {
 			// Generate unique keycloak ID
 			const keycloakId = `test-player-${classData.id}-${i + 1}-${Date.now()}-${RandomUtils.crowniclesRandom.integer(1000, 9999)}`;
 
@@ -414,14 +399,18 @@ const generatePlayersTestCommand: ExecuteTestCommandLike = async (_player, args)
 	const classIds = availableClasses.map(c => `${c.id}`).join(", ");
 	const classesDisplay = classIds.length > 100 ? `${availableClasses.length} classes` : classIds;
 
+	const limitMessage = actualPlayersPerClass < playersPerClass
+		? ` (limité à ${allPetTypes.length} pets uniques)`
+		: "";
+
 	return `✅ Génération terminée !\n`
 		+ `📊 Résumé :\n`
 		+ `• Niveau : ${level}\n`
-		+ `• Mode : ${allPets ? "Tous les pets" : "20 pets aléatoires"}\n`
+		+ `• Joueurs par classe : ${actualPlayersPerClass}${limitMessage}\n`
 		+ `• Items : ${useFixedItems ? "Fixes par groupe de classe" : "Aléatoires par niveau"}\n`
 		+ `• Groupe de classes : ${classGroup}\n`
 		+ `• Classes disponibles : ${availableClasses.length}\n`
-		+ `• Joueurs créés : ${totalPlayersCreated} (${playersPerClass} par classe)\n`
+		+ `• Joueurs créés : ${totalPlayersCreated} (${actualPlayersPerClass} par classe)\n`
 		+ `• Pets générés : ${pets.length}\n\n`
 		+ `Classes concernées : ${classesDisplay}`;
 };
