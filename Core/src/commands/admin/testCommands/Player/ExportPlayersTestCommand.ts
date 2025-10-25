@@ -159,4 +159,3 @@ const exportPlayersTestCommand: ExecuteTestCommandLike = async (_player, args, r
 commandInfo.execute = exportPlayersTestCommand;
 
 
-commandInfo.execute = exportPlayersTestCommand;
