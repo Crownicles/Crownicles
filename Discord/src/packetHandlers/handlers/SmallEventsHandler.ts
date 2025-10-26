@@ -91,6 +91,7 @@ import { SmallEventDwarfPetFanPacket } from "../../../../Lib/src/packets/smallEv
 import { SmallEventInfoFightPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventInfoFightPacket";
 import { infoFightResult } from "../../smallEvents/infoFight";
 import { limogesResult } from "../../smallEvents/limoges";
+import { SmallEventHauntedPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventHauntedPacket";
 
 export function getRandomSmallEventIntro(language: Language): string {
 	return StringUtils.getRandomTranslation("smallEvents:intro", language);
@@ -1026,5 +1027,16 @@ export default class SmallEventsHandler {
 	@packetHandler(SmallEventInfoFightPacket)
 	async smallEventInfoFight(context: PacketContext, packet: SmallEventInfoFightPacket): Promise<void> {
 		await infoFightResult(context, packet);
+	}
+
+	@packetHandler(SmallEventHauntedPacket)
+	async smallEventHaunted(context: PacketContext, _packet: SmallEventHauntedPacket): Promise<void> {
+		const interaction = DiscordCache.getInteraction(context.discord!.interaction);
+		if (!interaction) {
+			return;
+		}
+		const lng = interaction.userLanguage;
+		const description = StringUtils.getRandomTranslation("smallEvents:haunted", lng);
+		await interaction.editReply({ embeds: [new CrowniclesSmallEventEmbed("haunted", description, interaction.user, lng)] });
 	}
 }
