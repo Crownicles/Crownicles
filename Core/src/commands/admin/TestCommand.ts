@@ -17,13 +17,17 @@ import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 /**
  * Execute a single test command
  */
-async function executeSingleTestCommand(
-	testCommand: string,
-	argsTest: string[],
-	player: Player,
-	response: CrowniclesPacket[],
-	context: PacketContext
-): Promise<void> {
+async function executeSingleTestCommand(params: {
+	testCommand: string;
+	argsTest: string[];
+	player: Player;
+	response: CrowniclesPacket[];
+	context: PacketContext;
+}): Promise<void> {
+	const {
+		testCommand, argsTest, player, response, context
+	} = params;
+
 	let commandTestCurrent: ITestCommand;
 	try {
 		commandTestCurrent = CommandsTest.getTestCommand(testCommand);
@@ -121,7 +125,13 @@ export default class TestCommand {
 			const {
 				command, args
 			} = parseTestCommand(testCommandStr);
-			await executeSingleTestCommand(command, args, player, response, context);
+			await executeSingleTestCommand({
+				testCommand: command,
+				argsTest: args,
+				player,
+				response,
+				context
+			});
 		}
 	}
 }
