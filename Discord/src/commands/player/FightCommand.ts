@@ -41,6 +41,7 @@ import { CommandFightCancelPacketReq } from "../../../../Lib/src/packets/command
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { ReactionCollectorFightChooseActionData } from "../../../../Lib/src/packets/interaction/ReactionCollectorFightChooseAction";
 import { DiscordConstants } from "../../DiscordConstants";
+import { PetUtils } from "../../utils/PetUtils";
 
 const buggedFights = new Set<string>();
 
@@ -75,6 +76,12 @@ export async function createFightCollector(context: PacketContext, packet: React
 					lng,
 					id: data.playerStats.classId
 				}),
+				pet: data.playerStats.pet.petTypeId
+					? i18n.t("commands:fight.pet", {
+						lng,
+						petInfo: PetUtils.petToShortString(lng, data.playerStats.pet.petNickname, data.playerStats.pet.petTypeId, data.playerStats.pet.petSex)
+					})
+					: "",
 				stats: i18n.t("commands:fight:information.stats", {
 					lng,
 					baseBreath: data.playerStats.breath.base,
