@@ -415,6 +415,33 @@ function getGiveItemToPlayerEndCallback(whoIsConcerned: WhoIsConcerned, concerne
 }
 
 /**
+ * Determines if a potion can be drunk immediately based on its type and context
+ * @param item - The item to check
+ * @param canDrinkImmediately - Whether the context allows immediate drinking
+ * @returns true if the potion can be drunk immediately, false otherwise
+ */
+function canPotionBeDrunkImmediately(item: GenericItem, canDrinkImmediately: boolean): boolean {
+	if (!(item instanceof Potion)) {
+		return false;
+	}
+
+	const potion = item as Potion;
+
+	// Fight potions cannot be drunk immediately
+	if (potion.isFightPotion()) {
+		return false;
+	}
+
+	// If context doesn't allow immediate drinking, check if it's a time speedup potion
+	if (!canDrinkImmediately) {
+		return false;
+	}
+
+	// TIME_SPEEDUP potions cannot be drunk immediately
+	return potion.nature !== ItemNature.TIME_SPEEDUP;
+}
+
+/**
  * Gives an item to a player
  * @param response
  * @param context
@@ -450,10 +477,7 @@ export async function giveItemToPlayer(
 	const maxSlots = (await InventoryInfos.getOfPlayer(player.id)).slotLimitForCategory(category);
 	const items = inventorySlots.filter((slot: InventorySlot) => slot.itemCategory === category);
 	const itemToReplace = inventorySlots.filter((slot: InventorySlot) => (maxSlots === 1 ? slot.isEquipped() : slot.slot === 1) && slot.itemCategory === category)[0];
-	const canDrinkThisPotion = item instanceof Potion
-		&& !(item as Potion).isFightPotion()
-		&& canDrinkImmediately
-		&& (item as Potion).nature !== ItemNature.TIME_SPEEDUP;
+	const canDrinkThisPotion = canPotionBeDrunkImmediately(item, canDrinkImmediately);
 	const autoSell = item.getCategory() !== ItemCategory.POTION || (item as Potion).isFightPotion() // Because we can't drink immediately these potions
 		? items.length === items.filter((slot: InventorySlot) => slot.itemId === item.id).length
 		: false;
