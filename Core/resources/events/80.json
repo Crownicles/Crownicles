@@ -1,0 +1,52 @@
+{
+  "possibilities": {
+    "followPath": {
+      "outcomes": {
+        "0": {
+          "mapLink": 100
+        }
+      }
+    },
+    "turnAround": {
+      "outcomes": {
+        "0": {
+          "mapTypesExcludeDestination": [
+            "hauntedHouse"
+          ]
+        },
+        "1": {
+          "effect": "scared",
+          "mapTypesExcludeDestination": [
+            "hauntedHouse"
+          ]
+        }
+      }
+    },
+    "end": {
+      "outcomes": {
+        "0": {
+          "mapLink": 100
+        }
+      }
+    }
+  },
+  "triggers": [
+    {
+      "date": {
+        "day": {
+          "from": 31,
+          "to": 14
+        },
+        "month": {
+          "from": 10,
+          "to": 11
+        }
+      },
+      "level": 3,
+      "oncePer": "week",
+      "mapAttributes": [
+        "continent1"
+      ]
+    }
+  ]
+}
