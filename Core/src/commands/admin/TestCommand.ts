@@ -74,11 +74,14 @@ export default class TestCommand {
 
 					const messageToDisplay = await commandTestCurrent.execute(player, parsedArgs, response, context);
 
-					response.push(makePacket(CommandTestPacketRes, {
-						commandName: testCommand,
-						result: messageToDisplay,
-						isError: false
-					}));
+					// Only send response if there's a message to display
+					if (messageToDisplay) {
+						response.push(makePacket(CommandTestPacketRes, {
+							commandName: testCommand,
+							result: messageToDisplay,
+							isError: false
+						}));
+					}
 				}
 				catch (e) {
 					CrowniclesLogger.errorWithObj(`Error while executing test command ${testCommand}`, e);

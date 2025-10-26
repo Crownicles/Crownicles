@@ -390,8 +390,7 @@ const aiTournamentTestCommand: ExecuteTestCommandLike = async (_player, args, re
 		CrowniclesLogger.error(`Erreur lors de l'exécution du tournoi : ${error}`);
 	});
 
-	// Retourner immédiatement pour ne pas bloquer l'interaction
-	return undefined;
+	return "";
 };
 
 /**
@@ -759,7 +758,7 @@ async function runTournamentInBackground(params: {
 		.toISOString()
 		.replace(/[:.]/gu, "-");
 	const outputDir = path.join(process.cwd(), "tournament_results");
-	
+
 	// Créer le dossier s'il n'existe pas
 	if (!fs.existsSync(outputDir)) {
 		fs.mkdirSync(outputDir, { recursive: true });
