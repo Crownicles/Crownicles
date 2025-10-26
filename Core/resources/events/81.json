@@ -21,6 +21,13 @@
         "3": {
           "health": -15,
           "effect": "hurt"
+        },
+        "4": {
+          "condition": {
+            "canAcceptPet": true
+          },
+          "health": -120,
+          "effect": "injured"
         }
       }
     },
