@@ -17,6 +17,8 @@ import {
 } from "../MapLink";
 import { Effect } from "../../../../Lib/src/types/Effect";
 import { TravelTime } from "../../core/maps/TravelTime";
+import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
+import {PossibilityOutcomeCondition} from "./PossibilityOutcomeCondition";
 
 async function applyOutcomeScore(outcome: PossibilityOutcome, time: number, player: Player, response: CrowniclesPacket[]): Promise<number> {
 	const scoreChange = TravelTime.timeTravelledToScore(time)
@@ -159,6 +161,15 @@ async function applyOutcomeRandomPet(outcome: PossibilityOutcome, player: Player
 	}
 }
 
+async function applyOutcomeGivePet(outcome: PossibilityOutcome, player: Player, response: CrowniclesPacket[]): Promise<void> {
+	if (outcome.givePet) {
+		const petId = RandomUtils.crowniclesRandom.pick(outcome.givePet.petIds);
+		const sex = RandomUtils.crowniclesRandom.bool() ? PetConstants.SEX.MALE : PetConstants.SEX.FEMALE;
+		const pet = PetEntities.createPet(petId, sex, null);
+		await pet.giveToPlayer(player, response);
+	}
+}
+
 async function applyOutcomeOneshot(outcome: PossibilityOutcome, player: Player, response: CrowniclesPacket[]): Promise<void> {
 	if (outcome.oneshot === true) {
 		await player.addHealth(-player.health, response, NumberChangeReason.BIG_EVENT);
@@ -255,6 +266,9 @@ export async function applyPossibilityOutcome(possibilityOutcome: ApplyOutcome, 
 	// Random pet
 	await applyOutcomeRandomPet(possibilityOutcome.outcome[1], player, response);
 
+	// Give pet
+	await applyOutcomeGivePet(possibilityOutcome.outcome[1], player, response);
+
 	// Next event
 	applyOutcomeNextEvent(possibilityOutcome.outcome[1], player);
 
@@ -266,6 +280,8 @@ export async function applyPossibilityOutcome(possibilityOutcome: ApplyOutcome, 
 }
 
 export interface PossibilityOutcome {
+
+	condition?: PossibilityOutcomeCondition;
 
 	/**
 	 * Time lost for the lost time effect
@@ -326,6 +342,10 @@ export interface PossibilityOutcome {
 			min?: number;
 			max?: number;
 		};
+	};
+
+	givePet?: {
+		petIds: number[];
 	};
 
 	/**

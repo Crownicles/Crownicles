@@ -59,7 +59,10 @@ import {
 	ReactionCollectorBigEventPossibilityReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorBigEvent";
 import { Possibility } from "../../data/events/Possibility";
-import { applyPossibilityOutcome } from "../../data/events/PossibilityOutcome";
+import {
+	applyPossibilityOutcome,
+	PossibilityOutcome
+} from "../../data/events/PossibilityOutcome";
 import { ErrorPacket } from "../../../../Lib/src/packets/commands/ErrorPacket";
 import { MapLocationDataController } from "../../data/MapLocation";
 import {
@@ -68,6 +71,7 @@ import {
 import { Effect } from "../../../../Lib/src/types/Effect";
 import { ReactionCollectorRefuseReaction } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
+import { verifyPossibilityOutcomeCondition } from "../../data/events/PossibilityOutcomeCondition";
 
 export default class ReportCommand {
 	@commandRequires(CommandReportPacketReq, {
@@ -216,7 +220,17 @@ async function doPossibility(
 		return;
 	}
 
-	const randomOutcome = RandomUtils.crowniclesRandom.pick(Object.entries(possibility[1].outcomes));
+	// Filter the outcomes that are valid
+	const entries = Object.entries(possibility[1].outcomes);
+
+	const validOutcomes: [string, PossibilityOutcome][] = [];
+	for (const [key, outcome] of entries) {
+		if (!outcome.condition || await verifyPossibilityOutcomeCondition(outcome.condition, player)) {
+			validOutcomes.push([key, outcome]);
+		}
+	}
+
+	const randomOutcome = RandomUtils.crowniclesRandom.pick(validOutcomes);
 
 	crowniclesInstance.logsDatabase.logBigEvent(player.keycloakId, event.id, possibility[0], randomOutcome[0])
 		.then();
@@ -536,7 +550,7 @@ async function doPVEBoss(
 				await MissionsController.update(player, endFightResponse, { missionId: "winBoss" });
 			}
 			else {
-				// Make sure the player has no energy left after a loss even if he levelled up
+				// Make sure the player has no energy left after a loss even if he leveled up
 				player.setEnergyLost(player.getMaxCumulativeEnergy(), NumberChangeReason.PVE_FIGHT);
 			}
 
@@ -659,7 +673,7 @@ async function getRandomSmallEvent(response: CrowniclesPacket[], player: Player)
  * @param forced
  */
 async function executeSmallEvent(response: CrowniclesPacket[], player: Player, context: PacketContext, forced: string): Promise<void> {
-	// Pick random event
+	// Pick a random event
 	const event: string = forced ? forced : await getRandomSmallEvent(response, player);
 	if (!event) {
 		response.push(makePacket(ErrorPacket, { message: "No small event can be executed..." }));
