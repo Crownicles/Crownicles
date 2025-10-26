@@ -4,11 +4,10 @@ import {
 	PetAssistanceResult, PetAssistanceState
 } from "../../../../../../../Lib/src/types/PetAssistanceResult";
 import { FightAlterations } from "../../FightAlterations";
-import { FightUtils } from "../../../../utils/FightUtils";
-import {FightStatBuffed} from "../../../../../../../Lib/src/types/FightActionResult";
-import {FightStatModifierOperation} from "../../../../../../../Lib/src/types/FightStatModifierOperation";
-import {RandomUtils} from "../../../../../../../Lib/src/utils/RandomUtils";
-import {Fighter} from "../../../fighter/Fighter";
+import { FightStatBuffed } from "../../../../../../../Lib/src/types/FightActionResult";
+import { FightStatModifierOperation } from "../../../../../../../Lib/src/types/FightStatModifierOperation";
+import { RandomUtils } from "../../../../../../../Lib/src/utils/RandomUtils";
+import { Fighter } from "../../../fighter/Fighter";
 
 function makeBleed(opponent: Fighter, result: PetAssistanceResult): void {
 	// Make bleed the opponent
@@ -19,7 +18,7 @@ function makeBleed(opponent: Fighter, result: PetAssistanceResult): void {
 }
 
 const use: PetAssistanceFunc = (fighter, opponent, turn, _fightController): Promise<PetAssistanceResult | null> => {
-	if (turn % 3 !== 0) {
+	if ((turn + 4) % 7 <= 1) {
 		return null;
 	}
 	const result: PetAssistanceResult = {
@@ -32,7 +31,7 @@ const use: PetAssistanceFunc = (fighter, opponent, turn, _fightController): Prom
 
 	const pointsToHealFighter = fighter.getMaxEnergy() - fighter.getEnergy();
 
-	if (pointsToHealFighter > 0) {
+	if (pointsToHealFighter > 0 && opponent.hasFightAlteration() && opponent.alteration.id === FightAlterations.BLEEDING) {
 		FightActionController.applyBuff(result, {
 			selfTarget: true,
 			stat: FightStatBuffed.ENERGY,
