@@ -1,0 +1,5 @@
+{
+  "type": "mistyPath",
+  "canBeGoToPlaceMissionDestination": false,
+  "attribute": "haunted"
+}
