@@ -18,7 +18,7 @@ import {
 import { Effect } from "../../../../Lib/src/types/Effect";
 import { TravelTime } from "../../core/maps/TravelTime";
 import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
-import {PossibilityOutcomeCondition} from "./PossibilityOutcomeCondition";
+import { PossibilityOutcomeCondition } from "./PossibilityOutcomeCondition";
 
 async function applyOutcomeScore(outcome: PossibilityOutcome, time: number, player: Player, response: CrowniclesPacket[]): Promise<number> {
 	const scoreChange = TravelTime.timeTravelledToScore(time)
