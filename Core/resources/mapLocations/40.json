@@ -1,0 +1,5 @@
+{
+  "type": "hauntedHouse",
+  "canBeGoToPlaceMissionDestination": false,
+  "attribute": "haunted"
+}
