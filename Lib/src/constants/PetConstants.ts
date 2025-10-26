@@ -151,14 +151,14 @@ export abstract class PetConstants {
 
 	/*
 	 *This array defines the probability of looting a pet based on two factors:
-	 *   - The rarity of the pet (represented by each column in the sub-arrays)
-	 *   - The level of the guild (represented by each sub-array, with each sub-array corresponding to a range of 10 guild levels)
+	 *   - The rarity of the pet (represented by each column in the subarrays)
+	 *   - The level of the guild (represented by each subarray, with each subarray corresponding to a range of 10 guild levels)
 	 *
-	 *   Each sub-array contains probabilities for 5 different rarities of pets (from most common to most rare).
-	 *   The probabilities are designed to sum up to 1 for each sub-array, ensuring that a pet will be looted.
+	 *   Each subarray contains probabilities for 5 different rarities of pets (from most common to most rare).
+	 *   The probabilities are designed to sum up to 1 for each subarray, ensuring that a pet will be looted.
 	 *
 	 *   The array is structured as follows:
-	 *   - The first element of each sub-array represents the probability of looting the most common pet.
+	 *   - The first element of each subarray represents the probability of looting the most common pet.
 	 *   - The second element represents the probability of the next rarer pet, and so on.
 	 *   - The last element represents the probability of looting the rarest pet.
 	 *
@@ -362,7 +362,10 @@ export abstract class PetConstants {
 		RAVEN: 95,
 		DONKEY: 96,
 		GOOSE: 97,
-		MOOSE: 98
+		MOOSE: 98,
+		JACK_O_LANTERN: 99,
+		GHOST: 100,
+		VAMPIRE: 101
 	};
 
 	static readonly PET_BEHAVIORS = [
@@ -397,6 +400,14 @@ export abstract class PetConstants {
 		{
 			petIds: [PetConstants.PETS.DRAGON],
 			behaviorId: FightConstants.FIGHT_ACTIONS.PET.SPIT_FIRE
+		},
+		{
+			petIds: [PetConstants.PETS.VAMPIRE],
+			behaviorId: FightConstants.FIGHT_ACTIONS.PET.MAKE_BLEED
+		},
+		{
+			petIds: [PetConstants.PETS.JACK_O_LANTERN],
+			behaviorId: FightConstants.FIGHT_ACTIONS.PET.PET_PETRIFIED
 		},
 		{
 			petIds: [
@@ -486,7 +497,8 @@ export abstract class PetConstants {
 		{
 			petIds: [
 				PetConstants.PETS.BLACK_CAT,
-				PetConstants.PETS.RAVEN
+				PetConstants.PETS.RAVEN,
+				PetConstants.PETS.GHOST
 			],
 			behaviorId: FightConstants.FIGHT_ACTIONS.PET.PET_CURSE
 		},
