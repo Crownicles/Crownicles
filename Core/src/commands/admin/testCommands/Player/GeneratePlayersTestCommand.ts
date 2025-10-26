@@ -71,7 +71,7 @@ type PetGenerationConfig = {
 
 export const commandInfo: ITestCommand = {
 	name: "generatePlayers",
-	commandFormat: "<level> [playersPerClass:number] [fixedItems:true/false] [generatePets:true/false] [petId:number]",
+	commandFormat: "<level> [playersPerClass] [fixedItems] [generatePets] [petId]",
 	typeWaited: {
 		level: TypeKey.INTEGER,
 		playersPerClass: TypeKey.INTEGER,
@@ -80,7 +80,18 @@ export const commandInfo: ITestCommand = {
 		petId: TypeKey.INTEGER
 	},
 	minArgs: 1,
-	description: "Génère un ensemble de joueurs dans la base de données pour chaque classe disponible au niveau donné. Par défaut crée 20 joueurs par classe. Si playersPerClass est spécifié, crée ce nombre de joueurs par classe (limité au nombre de pets uniques disponibles). Si fixedItems=true, utilise des items prédéfinis par groupe de classe. Si generatePets=false, les joueurs sont créés sans pets. Si petId est spécifié, tous les joueurs auront ce pet spécifique au lieu de pets aléatoires."
+	description: "Génère un ensemble de joueurs dans la base de données pour chaque classe disponible au niveau donné.\n\n"
+		+ "**Paramètres:**\n"
+		+ "• `level` (requis) - Niveau des joueurs\n"
+		+ "• `playersPerClass` (optionnel, défaut: 20) - Nombre de joueurs par classe\n"
+		+ "• `fixedItems` (optionnel, défaut: false) - true/false - Items prédéfinis par groupe de classe\n"
+		+ "• `generatePets` (optionnel, défaut: true) - true/false - Générer des pets\n"
+		+ "• `petId` (optionnel) - ID du pet spécifique à donner à tous les joueurs\n\n"
+		+ "**Exemples:**\n"
+		+ "• Positionnels: `test generatePlayers 100`\n"
+		+ "• Positionnels: `test generatePlayers 100 10 true false`\n"
+		+ "• Nommés: `test generatePlayers --level=100 --playersPerClass=10`\n"
+		+ "• Mixte: `test generatePlayers 100 --petId=5 --fixedItems=true`"
 };
 
 /**

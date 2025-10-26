@@ -5,7 +5,9 @@ import {
 import {
 	CrowniclesPacket, makePacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
-import { CommandsTest } from "../../core/CommandsTest";
+import {
+	CommandsTest, parseTestCommandArgs
+} from "../../core/CommandsTest";
 import { Player } from "../../core/database/game/models/Player";
 import {
 	commandRequires, CommandUtils
@@ -65,7 +67,12 @@ export default class TestCommand {
 			else {
 				// Last, we execute the test command
 				try {
-					const messageToDisplay = await commandTestCurrent.execute(player, argsTest, response, context);
+					// Parse arguments to support named arguments
+					const parsedArgs = commandTestCurrent.typeWaited
+						? parseTestCommandArgs(argsTest, commandTestCurrent.typeWaited).parsedArgs
+						: argsTest;
+
+					const messageToDisplay = await commandTestCurrent.execute(player, parsedArgs, response, context);
 
 					response.push(makePacket(CommandTestPacketRes, {
 						commandName: testCommand,
