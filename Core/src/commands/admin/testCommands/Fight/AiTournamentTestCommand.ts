@@ -25,7 +25,9 @@ import {
 import { Op } from "sequelize";
 import { makePacket } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import { CommandTestPacketRes } from "../../../../../../Lib/src/packets/commands/CommandTestPacket";
-import { PacketUtils } from "../../../../core/utils/PacketUtils";
+import { CrowniclesLogger } from "../../../../../../Lib/src/logs/CrowniclesLogger";
+import * as fs from "fs";
+import * as path from "path";
 
 /**
  * Escape a value for CSV export by wrapping it in quotes if it contains special characters
@@ -63,18 +65,11 @@ function calculateMedian(values: number[]): number {
  */
 function generateTop10Report(
 	playerStatsList: PlayerStats[],
-	eligiblePlayers: Player[],
-	totalFights: number,
-	fightsPerPair: number
+	_eligiblePlayers: Player[],
+	_totalFights: number,
+	_fightsPerPair: number
 ): string {
-	let report = "🏆 **RÉSULTATS DU TOURNOI IA**\n\n";
-	report += "📊 **Statistiques globales :**\n";
-	report += `• Participants : ${eligiblePlayers.length} joueurs\n`;
-	report += `• Combats simulés : ${totalFights.toLocaleString()}\n`;
-	report += `• Combats par paire : ${fightsPerPair}\n\n`;
-
-	// Top 10 des joueurs
-	report += "🥇 **TOP 10 des joueurs :**\n";
+	let report = "🥇 **TOP 10 des joueurs :**\n";
 	for (let i = 0; i < Math.min(10, playerStatsList.length); i++) {
 		const player = playerStatsList[i];
 		const totalMatches = player.wins + player.losses + player.draws;
@@ -363,7 +358,18 @@ const aiTournamentTestCommand: ExecuteTestCommandLike = async (_player, args, re
 		return `❌ Pas assez de joueurs éligibles pour un tournoi (minimum 2 requis, ${eligiblePlayers.length} trouvé(s) avec niveau ${minLevel}+).`;
 	}
 
-	// 2. Initialiser les statistiques pour chaque joueur
+	// 2. Calculer les totaux
+	const totalPairs = (eligiblePlayers.length * (eligiblePlayers.length - 1)) / 2;
+	const totalFights = totalPairs * fightsPerPair;
+
+	CrowniclesLogger.info("🏆 **DÉMARRAGE DU TOURNOI IA**");
+	CrowniclesLogger.info(`👥 Participants : ${eligiblePlayers.length} joueurs (niveau ${minLevel}+)`);
+	CrowniclesLogger.info(`⚔️ Combats par paire : ${fightsPerPair}`);
+	CrowniclesLogger.info(`📊 Total de paires : ${totalPairs}`);
+	CrowniclesLogger.info(`🎯 Total de combats : ${totalFights.toLocaleString()}`);
+	CrowniclesLogger.info("⏳ Simulation en cours...\n");
+
+	// 3. Initialiser les statistiques pour chaque joueur
 	const playerStatsMap = new Map<number, PlayerStats>();
 	const fighterResources = new Map<number, TournamentFighterResources>();
 
@@ -414,30 +420,14 @@ const aiTournamentTestCommand: ExecuteTestCommandLike = async (_player, args, re
 		});
 	}
 
-	// 3. Statistiques de matchups classe vs classe et pet vs pet
+	// 4. Statistiques de matchups classe vs classe et pet vs pet
 	const classMatchups = new Map<string, ClassPairMatchup>();
 	const petMatchups = new Map<string, PetPairMatchup>();
 
-	// 4. Simuler tous les combats
-	const totalPairs = (eligiblePlayers.length * (eligiblePlayers.length - 1)) / 2;
-	const totalFights = totalPairs * fightsPerPair;
-
-	// Message initial envoyé immédiatement
-	PacketUtils.sendPackets(context, [
-		makePacket(CommandTestPacketRes, {
-			commandName: "aitournament",
-			result: "🏆 **Démarrage du tournoi IA**\n\n"
-			+ `👥 Participants : ${eligiblePlayers.length} joueurs (niveau ${minLevel}+)\n`
-			+ `⚔️ Combats par paire : ${fightsPerPair}\n`
-			+ `📊 Total de paires : ${totalPairs}\n`
-			+ `🎯 Total de combats : ${totalFights.toLocaleString()}\n\n`
-			+ "⏳ Simulation en cours...",
-			isError: false
-		})
-	]);
-
-	let completedFights = 0;
+	// 5. Simuler tous les combats
 	const startTime = Date.now();
+	let completedFights = 0;
+	let estimationSent = false;
 	let lastProgressUpdate = Date.now();
 	const progressUpdateIntervalMs = 5000; // Mise à jour toutes les 5 secondes
 
@@ -544,26 +534,50 @@ const aiTournamentTestCommand: ExecuteTestCommandLike = async (_player, args, re
 				});
 
 				await fightController.startFight(response);
-
-				// Incrémenter le compteur et afficher la progression
 				completedFights++;
 
+				// Après 100 combats (ou 3 secondes), calculer et envoyer l'estimation à Discord
+				if (!estimationSent && (completedFights >= 100 || (Date.now() - startTime) >= 3000)) {
+					const elapsed = (Date.now() - startTime) / 1000; // secondes écoulées
+					const fightsPerSecond = completedFights / elapsed;
+					const remainingFights = totalFights - completedFights;
+					const estimatedSeconds = Math.ceil(remainingFights / fightsPerSecond);
+					const estimatedMinutes = Math.floor(estimatedSeconds / 60);
+					const remainingSeconds = estimatedSeconds % 60;
+					const estimatedDuration = estimatedMinutes > 0
+						? `${estimatedMinutes}m ${remainingSeconds}s`
+						: `${remainingSeconds}s`;
+
+					CrowniclesLogger.info(`⚡ Vitesse actuelle : ${fightsPerSecond.toFixed(1)} combats/s`);
+					CrowniclesLogger.info(`⏱️ Durée estimée : ${estimatedDuration}\n`);
+
+					response.push(makePacket(CommandTestPacketRes, {
+						commandName: "aitournament",
+						result: `🏆 **Tournoi IA lancé !**\n\n`
+							+ `👥 Participants : ${eligiblePlayers.length} joueurs (niveau ${minLevel}+)\n`
+							+ `⚔️ Combats par paire : ${fightsPerPair}\n`
+							+ `📊 Total de paires : ${totalPairs}\n`
+							+ `🎯 Total de combats : ${totalFights.toLocaleString()}\n`
+							+ `⏱️ Durée estimée : ${estimatedDuration}\n\n`
+							+ `Les résultats seront sauvegardés dans le dossier \`tournament_results/\``,
+						isError: false
+					}));
+
+					estimationSent = true;
+				}
+
+				// Afficher la progression dans les logs toutes les 5 secondes
 				const now = Date.now();
 				if (now - lastProgressUpdate >= progressUpdateIntervalMs) {
 					const progress = (completedFights / totalFights * 100).toFixed(1);
 					const fightsPerSecond = completedFights / ((now - startTime) / 1000);
 					const estimatedTimeRemaining = Math.ceil((totalFights - completedFights) / fightsPerSecond);
 
-					// Envoyer message de progression immédiatement
-					PacketUtils.sendPackets(context, [
-						makePacket(CommandTestPacketRes, {
-							commandName: "aitournament",
-							result: `⏳ Progression : ${completedFights.toLocaleString()}/${totalFights.toLocaleString()} (${progress}%)\n`
-								+ `⚡ Vitesse : ${fightsPerSecond.toFixed(1)} combats/s\n`
-								+ `⏱️ Temps restant estimé : ${Math.floor(estimatedTimeRemaining / 60)}m ${estimatedTimeRemaining % 60}s`,
-							isError: false
-						})
-					]);
+					CrowniclesLogger.info(
+						`⏳ Progression : ${completedFights.toLocaleString()}/${totalFights.toLocaleString()} (${progress}%) | `
+						+ `⚡ ${fightsPerSecond.toFixed(1)} combats/s | `
+						+ `⏱️ Temps restant : ${Math.floor(estimatedTimeRemaining / 60)}m ${estimatedTimeRemaining % 60}s`
+					);
 
 					lastProgressUpdate = now;
 				}
@@ -634,34 +648,39 @@ const aiTournamentTestCommand: ExecuteTestCommandLike = async (_player, args, re
 				}
 			}
 		}
-	}	// 5. Générer le rapport final en plusieurs messages
-	const playerStatsList = Array.from(playerStatsMap.values());
-
-	// Trier par nombre de victoires (descendant)
-	playerStatsList.sort((a, b) => b.wins - a.wins);
-
-	// MESSAGE 1 : En-tête et statistiques globales + Top 10
-	const report1 = generateTop10Report(playerStatsList, eligiblePlayers, totalFights, fightsPerPair);
-
-	response.push(makePacket(CommandTestPacketRes, {
-		commandName: "aitournament",
-		result: report1,
-		isError: false
-	}));
-
-	// MESSAGE 2+ : Statistiques détaillées par joueur (seulement si showDetails est true)
-	if (showDetails) {
-		const detailedReports = generateDetailedStatsReports(playerStatsList, eligiblePlayers);
-		for (const report of detailedReports) {
-			response.push(makePacket(CommandTestPacketRes, {
-				commandName: "aitournament",
-				result: report,
-				isError: false
-			}));
-		}
 	}
 
-	// MESSAGE FINAL : Matchups + export CSV
+	// 6. Générer le rapport complet
+	const endTime = Date.now();
+	const actualDuration = Math.floor((endTime - startTime) / 1000);
+	const actualMinutes = Math.floor(actualDuration / 60);
+	const actualSeconds = actualDuration % 60;
+
+	const playerStatsList = Array.from(playerStatsMap.values());
+	playerStatsList.sort((a, b) => b.wins - a.wins);
+
+	// Générer le rapport texte complet
+	let fullReport = "🏆 **RÉSULTATS DU TOURNOI IA**\n\n";
+	fullReport += "📊 **Statistiques globales :**\n";
+	fullReport += `• Participants : ${eligiblePlayers.length} joueurs\n`;
+	fullReport += `• Combats simulés : ${totalFights.toLocaleString()}\n`;
+	fullReport += `• Combats par paire : ${fightsPerPair}\n`;
+	fullReport += `• Durée réelle : ${actualMinutes}m ${actualSeconds}s\n\n`;
+
+	// Top 10
+	fullReport += generateTop10Report(playerStatsList, eligiblePlayers, totalFights, fightsPerPair);
+
+	// Statistiques détaillées si demandé
+	if (showDetails) {
+		fullReport += "\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n";
+		const detailedReports = generateDetailedStatsReports(playerStatsList, eligiblePlayers);
+		fullReport += detailedReports.join("\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n");
+	}
+
+	// Matchups
+	fullReport += "\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n";
+
+	// Générer CSV
 	const csvRows: string[][] = [
 		[
 			"category",
@@ -681,10 +700,6 @@ const aiTournamentTestCommand: ExecuteTestCommandLike = async (_player, args, re
 		]
 	];
 
-	/**
-	 * Add a row to the CSV export with matchup statistics
-	 * @param params - The matchup data to add
-	 */
 	const addCsvRow = ({
 		category,
 		entityAId,
@@ -719,30 +734,37 @@ const aiTournamentTestCommand: ExecuteTestCommandLike = async (_player, args, re
 		]);
 	};
 
-	// Générer le rapport des matchups
-	const reportMatchups = generateMatchupReports(classMatchups, petMatchups, addCsvRow);
+	fullReport += generateMatchupReports(classMatchups, petMatchups, addCsvRow);
 
-	response.push(makePacket(CommandTestPacketRes, {
-		commandName: "aitournament",
-		result: reportMatchups,
-		isError: false
-	}));
-
-	if (csvRows.length > 1) {
-		const csvContent = csvRows.map(row => row.map(escapeCsvValue).join(",")).join("\n");
-		const csvFileName = `ai_tournament_matchups_${new Date()
-			.toISOString()
-			.replace(/[:.]/gu, "-")}.csv`;
-		response.push(makePacket(CommandTestPacketRes, {
-			commandName: "aitournament",
-			result: `📄 Export CSV généré : ${csvFileName}`,
-			isError: false,
-			fileName: csvFileName,
-			fileContentBase64: Buffer.from(csvContent, "utf8").toString("base64")
-		}));
+	// 7. Sauvegarder les fichiers localement
+	const timestamp = new Date()
+		.toISOString()
+		.replace(/[:.]/gu, "-");
+	const outputDir = path.join(process.cwd(), "tournament_results");
+	
+	// Créer le dossier s'il n'existe pas
+	if (!fs.existsSync(outputDir)) {
+		fs.mkdirSync(outputDir, { recursive: true });
 	}
 
-	return "✅ Tournoi terminé ! Consultez les résultats ci-dessus.";
+	const txtFileName = `ai_tournament_${timestamp}.txt`;
+	const csvFileName = `ai_tournament_matchups_${timestamp}.csv`;
+	const txtFilePath = path.join(outputDir, txtFileName);
+	const csvFilePath = path.join(outputDir, csvFileName);
+
+	// Sauvegarder le rapport texte
+	fs.writeFileSync(txtFilePath, fullReport, "utf8");
+	CrowniclesLogger.info(`📄 Rapport texte sauvegardé : ${txtFilePath}`);
+
+	// Sauvegarder le CSV
+	const csvContent = csvRows.map(row => row.map(escapeCsvValue).join(",")).join("\n");
+	fs.writeFileSync(csvFilePath, csvContent, "utf8");
+	CrowniclesLogger.info(`📊 Fichier CSV sauvegardé : ${csvFilePath}`);
+
+	CrowniclesLogger.info("\n✅ Tournoi terminé avec succès !\n");
+
+	// Ne pas envoyer de message final sur Discord, juste retourner pour le log local
+	return "";
 };
 
 commandInfo.execute = aiTournamentTestCommand;
