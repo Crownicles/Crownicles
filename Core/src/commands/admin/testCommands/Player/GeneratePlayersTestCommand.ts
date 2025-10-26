@@ -306,7 +306,11 @@ function generateRandomInventory(level: number, classId?: number, useFixedItems 
  * @param playersPerClass - Number of players per class
  * @param specificPetId - Specific pet ID if provided
  */
-function validateInputParameters(level: number, playersPerClass: number, specificPetId: number | null): void {
+/**
+ * Validate level parameter
+ * @param level - Player level
+ */
+function validateLevel(level: number): void {
 	if (level < ClassConstants.REQUIRED_LEVEL) {
 		throw new Error(`Erreur generatePlayers : le niveau doit être au moins ${ClassConstants.REQUIRED_LEVEL} (niveau requis pour débloquer les classes) !`);
 	}
@@ -314,20 +318,116 @@ function validateInputParameters(level: number, playersPerClass: number, specifi
 	if (level > 200) {
 		throw new Error("Erreur generatePlayers : le niveau ne peut pas dépasser 200 !");
 	}
+}
 
+/**
+ * Validate playersPerClass parameter
+ * @param playersPerClass - Number of players per class
+ */
+function validatePlayersPerClass(playersPerClass: number): void {
 	if (playersPerClass < 1) {
 		throw new Error("Erreur generatePlayers : le nombre de joueurs par classe doit être au moins 1 !");
 	}
+}
+
+/**
+ * Validate specific pet parameter
+ * @param specificPetId - Specific pet ID
+ */
+function validateSpecificPet(specificPetId: number): void {
+	const specificPetType = PetDataController.instance.getById(specificPetId);
+	if (!specificPetType) {
+		throw new Error(`Erreur generatePlayers : Le pet avec l'ID ${specificPetId} n'existe pas !`);
+	}
+	if (specificPetType.rarity === 0) {
+		throw new Error(`Erreur generatePlayers : Le pet avec l'ID ${specificPetId} a une rareté de 0 et ne peut pas être utilisé !`);
+	}
+}
+
+/**
+ * Validate input parameters
+ * @param level - Player level
+ * @param playersPerClass - Number of players per class
+ * @param specificPetId - Specific pet ID if provided
+ */
+function validateInputParameters(level: number, playersPerClass: number, specificPetId: number | null): void {
+	validateLevel(level);
+	validatePlayersPerClass(playersPerClass);
 
 	if (specificPetId !== null) {
-		const specificPetType = PetDataController.instance.getById(specificPetId);
-		if (!specificPetType) {
-			throw new Error(`Erreur generatePlayers : Le pet avec l'ID ${specificPetId} n'existe pas !`);
-		}
-		if (specificPetType.rarity === 0) {
-			throw new Error(`Erreur generatePlayers : Le pet avec l'ID ${specificPetId} a une rareté de 0 et ne peut pas être utilisé !`);
+		validateSpecificPet(specificPetId);
+	}
+}
+
+/**
+ * Get all valid pet types
+ */
+function getAllValidPetTypes(): Pet[] {
+	const maxPetId = PetDataController.instance.getMaxId();
+	const allPetTypes: Pet[] = [];
+
+	for (let petId = 1; petId <= maxPetId; petId++) {
+		const petType = PetDataController.instance.getById(petId);
+		if (petType && petType.rarity !== 0) {
+			allPetTypes.push(petType);
 		}
 	}
+
+	return allPetTypes;
+}
+
+/**
+ * Generate specific pet for all players
+ * @param specificPetId - Specific pet ID
+ * @param playersPerClass - Number of players per class
+ */
+async function generateSpecificPets(specificPetId: number, playersPerClass: number): Promise<PetEntity[]> {
+	const specificPetType = PetDataController.instance.getById(specificPetId);
+	const pets: PetEntity[] = [];
+
+	for (let i = 0; i < playersPerClass; i++) {
+		const pet = PetEntity.build({
+			typeId: specificPetType.id,
+			sex: "m",
+			nickname: `Pet_${specificPetType.id}_${i + 1}`,
+			lovePoints: 100
+		});
+		pets.push(await pet.save());
+	}
+
+	return pets;
+}
+
+/**
+ * Generate varied pets for players
+ * @param playersPerClass - Number of players per class
+ */
+async function generateVariedPets(playersPerClass: number): Promise<{
+	pets: PetEntity[];
+	actualPlayersPerClass: number;
+	maxUniquePets: number;
+}> {
+	const allPetTypes = getAllValidPetTypes();
+	const maxUniquePets = allPetTypes.length;
+	const actualPlayersPerClass = Math.min(playersPerClass, allPetTypes.length);
+	const pets: PetEntity[] = [];
+
+	for (let i = 0; i < actualPlayersPerClass; i++) {
+		const petType = allPetTypes[i];
+		const pet = PetEntity.build({
+			typeId: petType.id,
+			sex: "m",
+			nickname: `Pet_${petType.id}`,
+			lovePoints: 100
+		});
+		pets.push(await pet.save());
+	}
+
+	return {
+		pets,
+		actualPlayersPerClass,
+		maxUniquePets
+	};
 }
 
 /**
@@ -345,61 +445,24 @@ async function generatePetsForPlayers(
 	actualPlayersPerClass: number;
 	maxUniquePets: number;
 }> {
-	const pets: PetEntity[] = [];
-	let actualPlayersPerClass = playersPerClass;
-	let maxUniquePets = 0;
-
 	if (!generatePets) {
 		return {
-			pets,
-			actualPlayersPerClass,
-			maxUniquePets
+			pets: [],
+			actualPlayersPerClass: playersPerClass,
+			maxUniquePets: 0
 		};
 	}
 
 	if (specificPetId !== null) {
-		const specificPetType = PetDataController.instance.getById(specificPetId);
-		for (let i = 0; i < playersPerClass; i++) {
-			const pet = PetEntity.build({
-				typeId: specificPetType.id,
-				sex: "m",
-				nickname: `Pet_${specificPetType.id}_${i + 1}`,
-				lovePoints: 100
-			});
-			pets.push(await pet.save());
-		}
-	}
-	else {
-		const maxPetId = PetDataController.instance.getMaxId();
-		const allPetTypes: Pet[] = [];
-
-		for (let petId = 1; petId <= maxPetId; petId++) {
-			const petType = PetDataController.instance.getById(petId);
-			if (petType && petType.rarity !== 0) {
-				allPetTypes.push(petType);
-			}
-		}
-
-		maxUniquePets = allPetTypes.length;
-		actualPlayersPerClass = Math.min(playersPerClass, allPetTypes.length);
-
-		for (let i = 0; i < actualPlayersPerClass; i++) {
-			const petType = allPetTypes[i];
-			const pet = PetEntity.build({
-				typeId: petType.id,
-				sex: "m",
-				nickname: `Pet_${petType.id}`,
-				lovePoints: 100
-			});
-			pets.push(await pet.save());
-		}
+		const pets = await generateSpecificPets(specificPetId, playersPerClass);
+		return {
+			pets,
+			actualPlayersPerClass: playersPerClass,
+			maxUniquePets: 0
+		};
 	}
 
-	return {
-		pets,
-		actualPlayersPerClass,
-		maxUniquePets
-	};
+	return generateVariedPets(playersPerClass);
 }
 
 /**
@@ -446,29 +509,25 @@ async function createPlayerInventory(
 
 /**
  * Create a single player with inventory
- * @param classData - Class data
- * @param level - Player level
- * @param petId - Pet ID (if applicable)
- * @param index - Player index for unique ID generation
- * @param useFixedItems - Whether to use fixed items
+ * @param params - Player creation parameters
  */
-async function createPlayer(
+async function createPlayer(params: {
 	classData: {
 		id: number;
 		getMaxHealthValue: (level: number) => number;
-	},
-	level: number,
-	petId: number | null,
-	index: number,
-	useFixedItems: boolean
-): Promise<void> {
-	const keycloakId = `test-player-${classData.id}-${index + 1}-${Date.now()}-${RandomUtils.crowniclesRandom.integer(1000, 9999)}`;
+	};
+	level: number;
+	petId: number | null;
+	index: number;
+	useFixedItems: boolean;
+}): Promise<void> {
+	const keycloakId = `test-player-${params.classData.id}-${params.index + 1}-${Date.now()}-${RandomUtils.crowniclesRandom.integer(1000, 9999)}`;
 	const newPlayer = await Players.getOrRegister(keycloakId);
 
-	newPlayer.level = level;
-	newPlayer.class = classData.id;
-	newPlayer.petId = petId;
-	newPlayer.health = classData.getMaxHealthValue(level);
+	newPlayer.level = params.level;
+	newPlayer.class = params.classData.id;
+	newPlayer.petId = params.petId;
+	newPlayer.health = params.classData.getMaxHealthValue(params.level);
 	newPlayer.experience = 0;
 	newPlayer.money = 1000;
 	newPlayer.score = 0;
@@ -476,7 +535,7 @@ async function createPlayer(
 
 	await newPlayer.save();
 
-	const inventory = generateRandomInventory(level, classData.id, useFixedItems);
+	const inventory = generateRandomInventory(params.level, params.classData.id, params.useFixedItems);
 	await createPlayerInventory(newPlayer.id, inventory);
 }
 
@@ -524,14 +583,36 @@ function formatResultMessage(params: {
 }
 
 /**
+ * Parse command arguments
+ * @param args - Command arguments
+ */
+function parseCommandArguments(args: string[]): {
+	level: number;
+	playersPerClass: number;
+	useFixedItems: boolean;
+	generatePets: boolean;
+	specificPetId: number | null;
+} {
+	return {
+		level: parseInt(args[0], 10),
+		playersPerClass: args.length > 1 ? parseInt(args[1], 10) : 20,
+		useFixedItems: args.length > 2 ? args[2].toLowerCase() === "true" : false,
+		generatePets: args.length > 3 ? args[3].toLowerCase() === "true" : true,
+		specificPetId: args.length > 4 ? parseInt(args[4], 10) : null
+	};
+}
+
+/**
  * Generate players in the database
  */
 const generatePlayersTestCommand: ExecuteTestCommandLike = async (_player, args) => {
-	const level = parseInt(args[0], 10);
-	const playersPerClass = args.length > 1 ? parseInt(args[1], 10) : 20;
-	const useFixedItems = args.length > 2 ? args[2].toLowerCase() === "true" : false;
-	const generatePets = args.length > 3 ? args[3].toLowerCase() === "true" : true;
-	const specificPetId = args.length > 4 ? parseInt(args[4], 10) : null;
+	const {
+		level,
+		playersPerClass,
+		useFixedItems,
+		generatePets,
+		specificPetId
+	} = parseCommandArguments(args);
 
 	validateInputParameters(level, playersPerClass, specificPetId);
 
@@ -551,13 +632,13 @@ const generatePlayersTestCommand: ExecuteTestCommandLike = async (_player, args)
 	let totalPlayersCreated = 0;
 	for (const classData of availableClasses) {
 		for (let i = 0; i < actualPlayersPerClass; i++) {
-			await createPlayer(
+			await createPlayer({
 				classData,
 				level,
-				generatePets ? pets[i].id : null,
-				i,
+				petId: generatePets ? pets[i].id : null,
+				index: i,
 				useFixedItems
-			);
+			});
 			totalPlayersCreated++;
 		}
 	}
