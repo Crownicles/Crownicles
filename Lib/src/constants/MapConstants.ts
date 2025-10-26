@@ -1,5 +1,5 @@
 export abstract class MapConstants {
-	static readonly MAP_URL = "https://crownicles.com/public/ressources/map.jpg"; // Unused, but useful
+	static readonly MAP_URL = "https://crownicles.com/public/ressources/map.jpg";
 
 	static readonly MAP_URL_WITH_CURSOR = "https://crownicles.com/public/ressources/mapsCursed/{mapLink}map.jpg";
 
@@ -74,6 +74,7 @@ export abstract class MapConstants {
 		MAIN_CONTINENT: "main_continent",
 		PVE_EXIT: "pve_exit",
 		PVE_ISLAND_ENTRY: "pve_island_entry",
-		PVE_ISLAND: "pve_island"
+		PVE_ISLAND: "pve_island",
+		HAUNTED: "haunted"
 	};
 }
