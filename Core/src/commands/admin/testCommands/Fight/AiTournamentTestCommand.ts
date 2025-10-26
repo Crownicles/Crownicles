@@ -398,33 +398,13 @@ const aiTournamentTestCommand: ExecuteTestCommandLike = async (_player, args, re
 };
 
 /**
- * Execute the tournament in background
+ * Initialize player stats for the tournament
  */
-async function runTournamentInBackground(params: {
-	eligiblePlayers: Player[];
-	fightsPerPair: number;
-	showDetails: boolean;
-	minLevel: number;
-	totalPairs: number;
-	totalFights: number;
-	context: PacketContext;
-	response: CrowniclesPacket[];
-}): Promise<void> {
-	const {
-		eligiblePlayers, fightsPerPair, showDetails, minLevel, totalPairs, totalFights, context, response
-	} = params;
-
-	CrowniclesLogger.info("🏆 **DÉMARRAGE DU TOURNOI IA**");
-	CrowniclesLogger.info(`👥 Participants : ${eligiblePlayers.length} joueurs (niveau ${minLevel}+)`);
-	CrowniclesLogger.info(`⚔️ Combats par paire : ${fightsPerPair}`);
-	CrowniclesLogger.info(`📊 Total de paires : ${totalPairs}`);
-	CrowniclesLogger.info(`🎯 Total de combats : ${totalFights.toLocaleString()}`);
-	CrowniclesLogger.info("⏳ Simulation en cours...\n");
-
-	// 3. Initialiser les statistiques pour chaque joueur
-	const playerStatsMap = new Map<number, PlayerStats>();
-	const fighterResources = new Map<number, TournamentFighterResources>();
-
+async function initializePlayerStats(
+	eligiblePlayers: Player[],
+	playerStatsMap: Map<number, PlayerStats>,
+	fighterResources: Map<number, TournamentFighterResources>
+): Promise<void> {
 	for (const player of eligiblePlayers) {
 		const classData = ClassDataController.instance.getById(player.class);
 		const activeObjects: PlayerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
@@ -471,208 +451,298 @@ async function runTournamentInBackground(params: {
 			opponentsSeriesLost: new Set()
 		});
 	}
+}
 
-	// 4. Statistiques de matchups classe vs classe et pet vs pet
-	const classMatchups = new Map<string, ClassPairMatchup>();
-	const petMatchups = new Map<string, PetPairMatchup>();
+/**
+ * Update fight statistics after a fight
+ */
+function updateFightStats(params: {
+	fightResult: {
+		turn: number; getWinnerFighter: () => unknown; isADraw: () => boolean;
+	};
+	fighter1: AiPlayerFighter;
+	fighter2: AiPlayerFighter;
+	p1MaxEnergyStart: number;
+	p2MaxEnergyStart: number;
+	stats1: PlayerStats;
+	stats2: PlayerStats;
+}): {
+	p1Wins: number; p2Wins: number; draws: number;
+} {
+	const {
+		fightResult, fighter1, fighter2, p1MaxEnergyStart, p2MaxEnergyStart, stats1, stats2
+	} = params;
 
-	// 5. Simuler tous les combats
-	const startTime = Date.now();
-	let completedFights = 0;
-	let lastProgressUpdate = Date.now();
-	const progressUpdateIntervalMs = 5000; // Mise à jour toutes les 5 secondes
+	const winnerFighter = fightResult.getWinnerFighter();
+	const isDraw = fightResult.isADraw();
 
-	for (let i = 0; i < eligiblePlayers.length; i++) {
-		for (let j = i + 1; j < eligiblePlayers.length; j++) {
-			const player1 = eligiblePlayers[i];
-			const player2 = eligiblePlayers[j];
-			const stats1 = playerStatsMap.get(player1.id)!;
-			const stats2 = playerStatsMap.get(player2.id)!;
-			const resources1 = fighterResources.get(player1.id)!;
-			const resources2 = fighterResources.get(player2.id)!;
+	const p1Energy = Math.round(fighter1.getEnergy());
+	const p2Energy = Math.round(fighter2.getEnergy());
 
-			// Statistiques pour cette paire
-			let p1Wins = 0;
-			let p2Wins = 0;
-			let draws = 0;
+	// Dégâts infligés = PV max de l'adversaire (au début) - PV restants de l'adversaire
+	const p1Damage = p2MaxEnergyStart - p2Energy; // Joueur 1 inflige des dégâts au joueur 2
+	const p2Damage = p1MaxEnergyStart - p1Energy; // Joueur 2 inflige des dégâts au joueur 1
 
-			// Simuler les combats entre cette paire
-			for (let fight = 0; fight < fightsPerPair; fight++) {
-				const fighter1 = new AiPlayerFighter(
-					player1,
-					resources1.classData,
-					{
-						allowPotionConsumption: false,
-						preloadedActiveObjects: resources1.activeObjects,
-						preloadedPetEntity: resources1.petEntity
-					}
-				);
-				await fighter1.loadStats();
+	stats1.totalDamageDealt += p1Damage;
+	stats1.totalDamageTaken += p2Damage;
+	stats2.totalDamageDealt += p2Damage;
+	stats2.totalDamageTaken += p1Damage;
 
-				const fighter2 = new AiPlayerFighter(
-					player2,
-					resources2.classData,
-					{
-						allowPotionConsumption: false,
-						preloadedActiveObjects: resources2.activeObjects,
-						preloadedPetEntity: resources2.petEntity
-					}
-				);
-				await fighter2.loadStats();
+	stats1.totalTurns += fightResult.turn;
+	stats2.totalTurns += fightResult.turn;
 
-				// Sauvegarder les PV max au DÉBUT du combat (avant buffs/altérations)
-				const p1MaxEnergyStart = Math.round(fighter1.getMaxEnergy());
-				const p2MaxEnergyStart = Math.round(fighter2.getMaxEnergy());
-
-				const fightController = new FightController(
-					{
-						fighter1,
-						fighter2
-					},
-					FightOvertimeBehavior.END_FIGHT_DRAW,
-					context,
-					true // Silent mode
-				);
-
-				// Définir un callback pour collecter les statistiques
-				fightController.setEndCallback(fightResult => {
-					const winnerFighter = fightResult.getWinnerFighter();
-					const isDraw = fightResult.isADraw();
-
-					const p1Energy = Math.round(fighter1.getEnergy());
-					const p2Energy = Math.round(fighter2.getEnergy());
-
-					// Dégâts infligés = PV max de l'adversaire (au début) - PV restants de l'adversaire
-					const p1Damage = p2MaxEnergyStart - p2Energy; // Joueur 1 inflige des dégâts au joueur 2
-					const p2Damage = p1MaxEnergyStart - p1Energy; // Joueur 2 inflige des dégâts au joueur 1
-
-					stats1.totalDamageDealt += p1Damage;
-					stats1.totalDamageTaken += p2Damage;
-					stats2.totalDamageDealt += p2Damage;
-					stats2.totalDamageTaken += p1Damage;
-
-					stats1.totalTurns += fightResult.turn;
-					stats2.totalTurns += fightResult.turn;
-
-					if (fightResult.turn > 0) {
-						stats1.damagePerTurnList.push(p1Damage / fightResult.turn);
-						stats2.damagePerTurnList.push(p2Damage / fightResult.turn);
-					}
-
-
-					if (isDraw || !winnerFighter) {
-						draws++;
-						stats1.draws++;
-						stats2.draws++;
-					}
-					else if (winnerFighter === fighter2) {
-						p2Wins++;
-						stats2.wins++;
-						stats1.losses++;
-					}
-					else if (winnerFighter === fighter1) {
-						p1Wins++;
-						stats1.wins++;
-						stats2.losses++;
-					}
-					else {
-						draws++;
-						stats1.draws++;
-						stats2.draws++;
-					}
-
-					return Promise.resolve();
-				});
-
-				await fightController.startFight(response);
-				completedFights++;
-
-				// Afficher la progression dans les logs toutes les 5 secondes
-				const now = Date.now();
-				if (now - lastProgressUpdate >= progressUpdateIntervalMs) {
-					const progress = (completedFights / totalFights * 100).toFixed(1);
-					const fightsPerSecond = completedFights / ((now - startTime) / 1000);
-					const estimatedTimeRemaining = Math.ceil((totalFights - completedFights) / fightsPerSecond);
-
-					CrowniclesLogger.info(
-						`⏳ Progression : ${completedFights.toLocaleString()}/${totalFights.toLocaleString()} (${progress}%) | `
-						+ `⚡ ${fightsPerSecond.toFixed(1)} combats/s | `
-						+ `⏱️ Temps restant : ${Math.floor(estimatedTimeRemaining / 60)}m ${estimatedTimeRemaining % 60}s`
-					);
-
-					lastProgressUpdate = now;
-				}
-			}
-
-			// Enregistrer les matchups classe vs classe
-			const classMatchup = getOrCreateMatchup(classMatchups, stats1.classId, stats2.classId, (classAId, classBId) => ({
-				entityAId: classAId,
-				entityBId: classBId,
-				classAId,
-				classBId,
-				entityAWins: 0,
-				entityBWins: 0,
-				classAWins: 0,
-				classBWins: 0,
-				draws: 0
-			}));
-			classMatchup.draws += draws;
-			const isDirectClassOrder = stats1.classId === classMatchup.classAId && stats2.classId === classMatchup.classBId;
-			if (isDirectClassOrder) {
-				classMatchup.classAWins += p1Wins;
-				classMatchup.classBWins += p2Wins;
-			}
-			else {
-				classMatchup.classAWins += p2Wins;
-				classMatchup.classBWins += p1Wins;
-			}
-
-			if (p1Wins > 0) {
-				stats1.opponentsBeaten.add(player2.id);
-				stats2.opponentsLostTo.add(player1.id);
-			}
-			if (p2Wins > 0) {
-				stats2.opponentsBeaten.add(player1.id);
-				stats1.opponentsLostTo.add(player2.id);
-			}
-			if (p1Wins > p2Wins) {
-				stats1.opponentsSeriesWon.add(player2.id);
-				stats2.opponentsSeriesLost.add(player1.id);
-			}
-			else if (p2Wins > p1Wins) {
-				stats2.opponentsSeriesWon.add(player1.id);
-				stats1.opponentsSeriesLost.add(player2.id);
-			}
-
-			// Enregistrer les matchups pet vs pet (si les deux ont un pet)
-			if (stats1.petTypeId !== null && stats2.petTypeId !== null) {
-				const petMatchup = getOrCreateMatchup(petMatchups, stats1.petTypeId, stats2.petTypeId, (petAId, petBId) => ({
-					entityAId: petAId,
-					entityBId: petBId,
-					petAId,
-					petBId,
-					entityAWins: 0,
-					entityBWins: 0,
-					petAWins: 0,
-					petBWins: 0,
-					draws: 0
-				}));
-				petMatchup.draws += draws;
-				const isDirectPetOrder = stats1.petTypeId === petMatchup.petAId && stats2.petTypeId === petMatchup.petBId;
-				if (isDirectPetOrder) {
-					petMatchup.petAWins += p1Wins;
-					petMatchup.petBWins += p2Wins;
-				}
-				else {
-					petMatchup.petAWins += p2Wins;
-					petMatchup.petBWins += p1Wins;
-				}
-			}
-		}
+	if (fightResult.turn > 0) {
+		stats1.damagePerTurnList.push(p1Damage / fightResult.turn);
+		stats2.damagePerTurnList.push(p2Damage / fightResult.turn);
 	}
 
-	// 6. Générer le rapport complet
-	const endTime = Date.now();
+	let p1Wins = 0;
+	let p2Wins = 0;
+	let draws = 0;
+
+	if (isDraw || !winnerFighter) {
+		draws++;
+		stats1.draws++;
+		stats2.draws++;
+	}
+	else if (winnerFighter === fighter2) {
+		p2Wins++;
+		stats2.wins++;
+		stats1.losses++;
+	}
+	else if (winnerFighter === fighter1) {
+		p1Wins++;
+		stats1.wins++;
+		stats2.losses++;
+	}
+	else {
+		draws++;
+		stats1.draws++;
+		stats2.draws++;
+	}
+
+	return {
+		p1Wins, p2Wins, draws
+	};
+}
+
+/**
+ * Update matchup statistics
+ */
+function updateMatchupStats(params: {
+	player1: Player;
+	player2: Player;
+	stats1: PlayerStats;
+	stats2: PlayerStats;
+	p1Wins: number;
+	p2Wins: number;
+	draws: number;
+	classMatchups: Map<string, ClassPairMatchup>;
+	petMatchups: Map<string, PetPairMatchup>;
+}): void {
+	const {
+		player1, player2, stats1, stats2, p1Wins, p2Wins, draws, classMatchups, petMatchups
+	} = params;
+
+	// Enregistrer les matchups classe vs classe
+	const classMatchup = getOrCreateMatchup(classMatchups, stats1.classId, stats2.classId, (classAId, classBId) => ({
+		entityAId: classAId,
+		entityBId: classBId,
+		classAId,
+		classBId,
+		entityAWins: 0,
+		entityBWins: 0,
+		classAWins: 0,
+		classBWins: 0,
+		draws: 0
+	}));
+	classMatchup.draws += draws;
+	const isDirectClassOrder = stats1.classId === classMatchup.classAId && stats2.classId === classMatchup.classBId;
+	if (isDirectClassOrder) {
+		classMatchup.classAWins += p1Wins;
+		classMatchup.classBWins += p2Wins;
+	}
+	else {
+		classMatchup.classAWins += p2Wins;
+		classMatchup.classBWins += p1Wins;
+	}
+
+	if (p1Wins > 0) {
+		stats1.opponentsBeaten.add(player2.id);
+		stats2.opponentsLostTo.add(player1.id);
+	}
+	if (p2Wins > 0) {
+		stats2.opponentsBeaten.add(player1.id);
+		stats1.opponentsLostTo.add(player2.id);
+	}
+	if (p1Wins > p2Wins) {
+		stats1.opponentsSeriesWon.add(player2.id);
+		stats2.opponentsSeriesLost.add(player1.id);
+	}
+	else if (p2Wins > p1Wins) {
+		stats2.opponentsSeriesWon.add(player1.id);
+		stats1.opponentsSeriesLost.add(player2.id);
+	}
+
+	// Enregistrer les matchups pet vs pet (si les deux ont un pet)
+	if (stats1.petTypeId !== null && stats2.petTypeId !== null) {
+		const petMatchup = getOrCreateMatchup(petMatchups, stats1.petTypeId, stats2.petTypeId, (petAId, petBId) => ({
+			entityAId: petAId,
+			entityBId: petBId,
+			petAId,
+			petBId,
+			entityAWins: 0,
+			entityBWins: 0,
+			petAWins: 0,
+			petBWins: 0,
+			draws: 0
+		}));
+		petMatchup.draws += draws;
+		const isDirectPetOrder = stats1.petTypeId === petMatchup.petAId && stats2.petTypeId === petMatchup.petBId;
+		if (isDirectPetOrder) {
+			petMatchup.petAWins += p1Wins;
+			petMatchup.petBWins += p2Wins;
+		}
+		else {
+			petMatchup.petAWins += p2Wins;
+			petMatchup.petBWins += p1Wins;
+		}
+	}
+}
+
+/**
+ * Simulate fights between two players
+ */
+async function simulateFightsBetweenPlayers(params: {
+	player1: Player;
+	player2: Player;
+	stats1: PlayerStats;
+	stats2: PlayerStats;
+	resources1: TournamentFighterResources;
+	resources2: TournamentFighterResources;
+	fightsPerPair: number;
+	context: PacketContext;
+	response: CrowniclesPacket[];
+}): Promise<{
+	p1Wins: number; p2Wins: number; draws: number;
+}> {
+	const {
+		player1, player2, stats1, stats2, resources1, resources2, fightsPerPair, context, response
+	} = params;
+	let p1Wins = 0;
+	let p2Wins = 0;
+	let draws = 0;
+
+	// Simuler les combats entre cette paire
+	for (let fight = 0; fight < fightsPerPair; fight++) {
+		const fighter1 = new AiPlayerFighter(
+			player1,
+			resources1.classData,
+			{
+				allowPotionConsumption: false,
+				preloadedActiveObjects: resources1.activeObjects,
+				preloadedPetEntity: resources1.petEntity
+			}
+		);
+		await fighter1.loadStats();
+
+		const fighter2 = new AiPlayerFighter(
+			player2,
+			resources2.classData,
+			{
+				allowPotionConsumption: false,
+				preloadedActiveObjects: resources2.activeObjects,
+				preloadedPetEntity: resources2.petEntity
+			}
+		);
+		await fighter2.loadStats();
+
+		// Sauvegarder les PV max au DÉBUT du combat (avant buffs/altérations)
+		const p1MaxEnergyStart = Math.round(fighter1.getMaxEnergy());
+		const p2MaxEnergyStart = Math.round(fighter2.getMaxEnergy());
+
+		const fightController = new FightController(
+			{
+				fighter1,
+				fighter2
+			},
+			FightOvertimeBehavior.END_FIGHT_DRAW,
+			context,
+			true // Silent mode
+		);
+
+		// Définir un callback pour collecter les statistiques
+		fightController.setEndCallback(fightResult => {
+			const result = updateFightStats({
+				fightResult,
+				fighter1,
+				fighter2,
+				p1MaxEnergyStart,
+				p2MaxEnergyStart,
+				stats1,
+				stats2
+			});
+
+			p1Wins += result.p1Wins;
+			p2Wins += result.p2Wins;
+			draws += result.draws;
+
+			return Promise.resolve();
+		});
+
+		await fightController.startFight(response);
+	}
+
+	return {
+		p1Wins, p2Wins, draws
+	};
+}
+
+/**
+ * Log tournament progress
+ */
+function logTournamentProgress(
+	completedFights: number,
+	totalFights: number,
+	startTime: number,
+	now: number
+): void {
+	const progress = (completedFights / totalFights * 100).toFixed(1);
+	const fightsPerSecond = completedFights / ((now - startTime) / 1000);
+	const estimatedTimeRemaining = Math.ceil((totalFights - completedFights) / fightsPerSecond);
+
+	CrowniclesLogger.info(
+		`⏳ Progression : ${completedFights.toLocaleString()}/${totalFights.toLocaleString()} (${progress}%) | `
+		+ `⚡ ${fightsPerSecond.toFixed(1)} combats/s | `
+		+ `⏱️ Temps restant : ${Math.floor(estimatedTimeRemaining / 60)}m ${estimatedTimeRemaining % 60}s`
+	);
+}
+
+/**
+ * Generate and save tournament reports
+ */
+function generateAndSaveReports(params: {
+	playerStatsMap: Map<number, PlayerStats>;
+	eligiblePlayers: Player[];
+	totalFights: number;
+	fightsPerPair: number;
+	showDetails: boolean;
+	classMatchups: Map<string, ClassPairMatchup>;
+	petMatchups: Map<string, PetPairMatchup>;
+	startTime: number;
+	endTime: number;
+}): void {
+	const {
+		playerStatsMap,
+		eligiblePlayers,
+		totalFights,
+		fightsPerPair,
+		showDetails,
+		classMatchups,
+		petMatchups,
+		startTime,
+		endTime
+	} = params;
 	const actualDuration = Math.floor((endTime - startTime) / 1000);
 	const actualMinutes = Math.floor(actualDuration / 60);
 	const actualSeconds = actualDuration % 60;
@@ -781,6 +851,107 @@ async function runTournamentInBackground(params: {
 	const csvContent = csvRows.map(row => row.map(escapeCsvValue).join(",")).join("\n");
 	writeFileSync(csvFilePath, csvContent, "utf8");
 	CrowniclesLogger.info(`📊 Fichier CSV sauvegardé : ${csvFilePath}`);
+}
+
+/**
+ * Execute the tournament in background
+ */
+async function runTournamentInBackground(params: {
+	eligiblePlayers: Player[];
+	fightsPerPair: number;
+	showDetails: boolean;
+	minLevel: number;
+	totalPairs: number;
+	totalFights: number;
+	context: PacketContext;
+	response: CrowniclesPacket[];
+}): Promise<void> {
+	const {
+		eligiblePlayers, fightsPerPair, showDetails, minLevel, totalPairs, totalFights, context, response
+	} = params;
+
+	CrowniclesLogger.info("🏆 **DÉMARRAGE DU TOURNOI IA**");
+	CrowniclesLogger.info(`👥 Participants : ${eligiblePlayers.length} joueurs (niveau ${minLevel}+)`);
+	CrowniclesLogger.info(`⚔️ Combats par paire : ${fightsPerPair}`);
+	CrowniclesLogger.info(`📊 Total de paires : ${totalPairs}`);
+	CrowniclesLogger.info(`🎯 Total de combats : ${totalFights.toLocaleString()}`);
+	CrowniclesLogger.info("⏳ Simulation en cours...\n");
+
+	// 3. Initialiser les statistiques pour chaque joueur
+	const playerStatsMap = new Map<number, PlayerStats>();
+	const fighterResources = new Map<number, TournamentFighterResources>();
+
+	await initializePlayerStats(eligiblePlayers, playerStatsMap, fighterResources);
+
+	// 4. Statistiques de matchups classe vs classe et pet vs pet
+	const classMatchups = new Map<string, ClassPairMatchup>();
+	const petMatchups = new Map<string, PetPairMatchup>();
+
+	// 5. Simuler tous les combats
+	const startTime = Date.now();
+	let completedFights = 0;
+	let lastProgressUpdate = Date.now();
+	const progressUpdateIntervalMs = 5000; // Mise à jour toutes les 5 secondes
+
+	for (let i = 0; i < eligiblePlayers.length; i++) {
+		for (let j = i + 1; j < eligiblePlayers.length; j++) {
+			const player1 = eligiblePlayers[i];
+			const player2 = eligiblePlayers[j];
+			const stats1 = playerStatsMap.get(player1.id)!;
+			const stats2 = playerStatsMap.get(player2.id)!;
+			const resources1 = fighterResources.get(player1.id)!;
+			const resources2 = fighterResources.get(player2.id)!;
+
+			const {
+				p1Wins, p2Wins, draws
+			} = await simulateFightsBetweenPlayers({
+				player1,
+				player2,
+				stats1,
+				stats2,
+				resources1,
+				resources2,
+				fightsPerPair,
+				context,
+				response
+			});
+
+			completedFights += fightsPerPair;
+
+			// Afficher la progression dans les logs toutes les 5 secondes
+			const now = Date.now();
+			if (now - lastProgressUpdate >= progressUpdateIntervalMs) {
+				logTournamentProgress(completedFights, totalFights, startTime, now);
+				lastProgressUpdate = now;
+			}
+
+			updateMatchupStats({
+				player1,
+				player2,
+				stats1,
+				stats2,
+				p1Wins,
+				p2Wins,
+				draws,
+				classMatchups,
+				petMatchups
+			});
+		}
+	}
+
+	// 6. Générer le rapport complet
+	const endTime = Date.now();
+	generateAndSaveReports({
+		playerStatsMap,
+		eligiblePlayers,
+		totalFights,
+		fightsPerPair,
+		showDetails,
+		classMatchups,
+		petMatchups,
+		startTime,
+		endTime
+	});
 
 	CrowniclesLogger.info("\n✅ Tournoi terminé avec succès !\n");
 }
