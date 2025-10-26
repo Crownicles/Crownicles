@@ -51,6 +51,24 @@ type PetGenerationResult = {
 	maxUniquePets: number;
 };
 
+/**
+ * Inventory generation parameters
+ */
+type InventoryGenerationParams = {
+	level: number;
+	classId?: number;
+	useFixedItems: boolean;
+};
+
+/**
+ * Pet generation configuration
+ */
+type PetGenerationConfig = {
+	generatePets: boolean;
+	playersPerClass: number;
+	specificPetId: number | null;
+};
+
 export const commandInfo: ITestCommand = {
 	name: "generatePlayers",
 	commandFormat: "<level> [playersPerClass:number] [fixedItems:true/false] [generatePets:true/false] [petId:number]",
@@ -301,20 +319,18 @@ function generateRandomItemsByLevel(level: number): InventoryItems {
 /**
  * Generate a random inventory setup (one armor, one weapon, one object, no potion)
  * Objects will only have fight-related effects (attack, defense, speed)
- * @param level - Player level to determine item rarity
- * @param classId - Class ID to determine fixed items (optional)
- * @param useFixedItems - Whether to use fixed items for this class group
+ * @param params - Inventory generation parameters
  */
-function generateRandomInventory(level: number, classId?: number, useFixedItems = false): InventoryItems {
-	if (useFixedItems && classId) {
-		const classGroup = getClassBehaviorGroup(classId);
+function generateRandomInventory(params: InventoryGenerationParams): InventoryItems {
+	if (params.useFixedItems && params.classId) {
+		const classGroup = getClassBehaviorGroup(params.classId);
 		if (classGroup && FIXED_ITEMS_BY_CLASS_GROUP[classGroup]) {
-			return validateFixedItems(classId, classGroup);
+			return validateFixedItems(params.classId, classGroup);
 		}
-		throw new Error(`Erreur generatePlayers : Aucun item fixe défini pour la classe ${classId} (groupe: ${classGroup || "non trouvé"})`);
+		throw new Error(`Erreur generatePlayers : Aucun item fixe défini pour la classe ${params.classId} (groupe: ${classGroup || "non trouvé"})`);
 	}
 
-	return generateRandomItemsByLevel(level);
+	return generateRandomItemsByLevel(params.level);
 }
 
 /**
@@ -396,35 +412,42 @@ function getAllValidPetTypes(): Pet[] {
 }
 
 /**
- * Generate specific pet for all players
- * @param specificPetId - Specific pet ID
- * @param playersPerClass - Number of players per class
+ * Generate pets for players
+ * @param config - Pet generation configuration
  */
-async function generateSpecificPets(specificPetId: number, playersPerClass: number): Promise<PetEntity[]> {
-	const specificPetType = PetDataController.instance.getById(specificPetId);
-	const pets: PetEntity[] = [];
-
-	for (let i = 0; i < playersPerClass; i++) {
-		const pet = PetEntity.build({
-			typeId: specificPetType.id,
-			sex: "m",
-			nickname: `Pet_${specificPetType.id}_${i + 1}`,
-			lovePoints: 100
-		});
-		pets.push(await pet.save());
+async function generatePetsForPlayers(config: PetGenerationConfig): Promise<PetGenerationResult> {
+	if (!config.generatePets) {
+		return {
+			pets: [],
+			actualPlayersPerClass: config.playersPerClass,
+			maxUniquePets: 0
+		};
 	}
 
-	return pets;
-}
+	if (config.specificPetId !== null) {
+		const specificPetType = PetDataController.instance.getById(config.specificPetId);
+		const pets: PetEntity[] = [];
 
-/**
- * Generate varied pets for players
- * @param playersPerClass - Number of players per class
- */
-async function generateVariedPets(playersPerClass: number): Promise<PetGenerationResult> {
+		for (let i = 0; i < config.playersPerClass; i++) {
+			const pet = PetEntity.build({
+				typeId: specificPetType.id,
+				sex: "m",
+				nickname: `Pet_${specificPetType.id}_${i + 1}`,
+				lovePoints: 100
+			});
+			pets.push(await pet.save());
+		}
+
+		return {
+			pets,
+			actualPlayersPerClass: config.playersPerClass,
+			maxUniquePets: 0
+		};
+	}
+
 	const allPetTypes = getAllValidPetTypes();
 	const maxUniquePets = allPetTypes.length;
-	const actualPlayersPerClass = Math.min(playersPerClass, allPetTypes.length);
+	const actualPlayersPerClass = Math.min(config.playersPerClass, allPetTypes.length);
 	const pets: PetEntity[] = [];
 
 	for (let i = 0; i < actualPlayersPerClass; i++) {
@@ -443,37 +466,6 @@ async function generateVariedPets(playersPerClass: number): Promise<PetGeneratio
 		actualPlayersPerClass,
 		maxUniquePets
 	};
-}
-
-/**
- * Generate pets for players
- * @param generatePets - Whether to generate pets
- * @param playersPerClass - Number of players per class
- * @param specificPetId - Specific pet ID if provided
- */
-async function generatePetsForPlayers(
-	generatePets: boolean,
-	playersPerClass: number,
-	specificPetId: number | null
-): Promise<PetGenerationResult> {
-	if (!generatePets) {
-		return {
-			pets: [],
-			actualPlayersPerClass: playersPerClass,
-			maxUniquePets: 0
-		};
-	}
-
-	if (specificPetId !== null) {
-		const pets = await generateSpecificPets(specificPetId, playersPerClass);
-		return {
-			pets,
-			actualPlayersPerClass: playersPerClass,
-			maxUniquePets: 0
-		};
-	}
-
-	return generateVariedPets(playersPerClass);
 }
 
 /**
@@ -539,7 +531,11 @@ async function createPlayer(params: {
 
 	await newPlayer.save();
 
-	const inventory = generateRandomInventory(params.level, params.classData.id, params.useFixedItems);
+	const inventory = generateRandomInventory({
+		level: params.level,
+		classId: params.classData.id,
+		useFixedItems: params.useFixedItems
+	});
 	await createPlayerInventory(newPlayer.id, inventory);
 }
 
@@ -619,7 +615,11 @@ const generatePlayersTestCommand: ExecuteTestCommandLike = async (_player, args)
 		pets,
 		actualPlayersPerClass,
 		maxUniquePets
-	} = await generatePetsForPlayers(config.generatePets, config.playersPerClass, config.specificPetId);
+	} = await generatePetsForPlayers({
+		generatePets: config.generatePets,
+		playersPerClass: config.playersPerClass,
+		specificPetId: config.specificPetId
+	});
 
 	let totalPlayersCreated = 0;
 	for (const classData of availableClasses) {
