@@ -953,6 +953,22 @@ export const CrowniclesIcons: {
 			forest: "🌲",
 			plains: "🏞️"
 		},
+		80: {
+			followPath: "🚶",
+			turnAround: "⤵️",
+			end: {
+				0: "🦇"
+			}
+		},
+		81: {
+			visitLobby: "🔍",
+			visitFloor: "↗️",
+			visitBasement: "🕸️",
+			randomRoom: "🚪",
+			end: {
+				0: "🚶"
+			}
+		},
 		9: {
 			end: {
 				0: "🚶"
@@ -986,7 +1002,9 @@ export const CrowniclesIcons: {
 		icePeak: "🏔️",
 		blessedDoors: "⛩️",
 		undergroundLake: "💧",
-		dragonsNest: "🪹"
+		dragonsNest: "🪹",
+		mistyPath: "🌫️",
+		hauntedHouse: "🏚️"
 	},
 	smallEvents: {
 		advanceTime: "⌛",
@@ -1023,7 +1041,8 @@ export const CrowniclesIcons: {
 		winHealth: "❤️",
 		winPersonalXP: "⭐",
 		witch: "🧹",
-		infoFight: "🏰"
+		infoFight: "🏰",
+		haunted: "🦴"
 	},
 	pets: {
 		0: {
@@ -1037,6 +1056,14 @@ export const CrowniclesIcons: {
 		10: {
 			emoteFemale: "🐔",
 			emoteMale: "🐓"
+		},
+		100: {
+			emoteFemale: "👻",
+			emoteMale: "👻"
+		},
+		101: {
+			emoteFemale: "🧛‍♀️",
+			emoteMale: "🧛‍♂️"
 		},
 		11: {
 			emoteFemale: "🐦",
@@ -1421,6 +1448,10 @@ export const CrowniclesIcons: {
 		98: {
 			emoteFemale: "🦌",
 			emoteMale: "🦌"
+		},
+		99: {
+			emoteFemale: "🎃",
+			emoteMale: "🎃"
 		}
 	},
 	monsters: {
