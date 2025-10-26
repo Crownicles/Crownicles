@@ -23,7 +23,9 @@ import {
 	PetEntities
 } from "../../../../core/database/game/models/PetEntity";
 import { Op } from "sequelize";
-import { makePacket } from "../../../../../../Lib/src/packets/CrowniclesPacket";
+import {
+	CrowniclesPacket, makePacket, PacketContext
+} from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import { CommandTestPacketRes } from "../../../../../../Lib/src/packets/commands/CommandTestPacket";
 import { CrowniclesLogger } from "../../../../../../Lib/src/logs/CrowniclesLogger";
 import * as fs from "fs";
@@ -358,9 +360,56 @@ const aiTournamentTestCommand: ExecuteTestCommandLike = async (_player, args, re
 		return `❌ Pas assez de joueurs éligibles pour un tournoi (minimum 2 requis, ${eligiblePlayers.length} trouvé(s) avec niveau ${minLevel}+).`;
 	}
 
-	// 2. Calculer les totaux
+	// 2. Calculer les totaux et envoyer la réponse immédiate
 	const totalPairs = (eligiblePlayers.length * (eligiblePlayers.length - 1)) / 2;
 	const totalFights = totalPairs * fightsPerPair;
+
+	// Réponse immédiate à l'interaction Discord
+	response.push(makePacket(CommandTestPacketRes, {
+		commandName: "aitournament",
+		result: `🏆 **Tournoi IA lancé !**\n\n`
+			+ `👥 Participants : ${eligiblePlayers.length} joueurs (niveau ${minLevel}+)\n`
+			+ `⚔️ Combats par paire : ${fightsPerPair}\n`
+			+ `📊 Total de paires : ${totalPairs}\n`
+			+ `🎯 Total de combats : ${totalFights.toLocaleString()}\n\n`
+			+ `Les résultats seront sauvegardés dans le dossier \`tournament_results/\``,
+		isError: false
+	}));
+
+	// Lancer le tournoi en arrière-plan
+	runTournamentInBackground({
+		eligiblePlayers,
+		fightsPerPair,
+		showDetails,
+		minLevel,
+		totalPairs,
+		totalFights,
+		context,
+		response
+	}).catch(error => {
+		CrowniclesLogger.error(`Erreur lors de l'exécution du tournoi : ${error}`);
+	});
+
+	// Retourner immédiatement pour ne pas bloquer l'interaction
+	return undefined;
+};
+
+/**
+ * Execute the tournament in background
+ */
+async function runTournamentInBackground(params: {
+	eligiblePlayers: Player[];
+	fightsPerPair: number;
+	showDetails: boolean;
+	minLevel: number;
+	totalPairs: number;
+	totalFights: number;
+	context: PacketContext;
+	response: CrowniclesPacket[];
+}): Promise<void> {
+	const {
+		eligiblePlayers, fightsPerPair, showDetails, minLevel, totalPairs, totalFights, context, response
+	} = params;
 
 	CrowniclesLogger.info("🏆 **DÉMARRAGE DU TOURNOI IA**");
 	CrowniclesLogger.info(`👥 Participants : ${eligiblePlayers.length} joueurs (niveau ${minLevel}+)`);
@@ -427,7 +476,6 @@ const aiTournamentTestCommand: ExecuteTestCommandLike = async (_player, args, re
 	// 5. Simuler tous les combats
 	const startTime = Date.now();
 	let completedFights = 0;
-	let estimationSent = false;
 	let lastProgressUpdate = Date.now();
 	const progressUpdateIntervalMs = 5000; // Mise à jour toutes les 5 secondes
 
@@ -535,36 +583,6 @@ const aiTournamentTestCommand: ExecuteTestCommandLike = async (_player, args, re
 
 				await fightController.startFight(response);
 				completedFights++;
-
-				// Après 100 combats (ou 3 secondes), calculer et envoyer l'estimation à Discord
-				if (!estimationSent && (completedFights >= 100 || (Date.now() - startTime) >= 3000)) {
-					const elapsed = (Date.now() - startTime) / 1000; // secondes écoulées
-					const fightsPerSecond = completedFights / elapsed;
-					const remainingFights = totalFights - completedFights;
-					const estimatedSeconds = Math.ceil(remainingFights / fightsPerSecond);
-					const estimatedMinutes = Math.floor(estimatedSeconds / 60);
-					const remainingSeconds = estimatedSeconds % 60;
-					const estimatedDuration = estimatedMinutes > 0
-						? `${estimatedMinutes}m ${remainingSeconds}s`
-						: `${remainingSeconds}s`;
-
-					CrowniclesLogger.info(`⚡ Vitesse actuelle : ${fightsPerSecond.toFixed(1)} combats/s`);
-					CrowniclesLogger.info(`⏱️ Durée estimée : ${estimatedDuration}\n`);
-
-					response.push(makePacket(CommandTestPacketRes, {
-						commandName: "aitournament",
-						result: `🏆 **Tournoi IA lancé !**\n\n`
-							+ `👥 Participants : ${eligiblePlayers.length} joueurs (niveau ${minLevel}+)\n`
-							+ `⚔️ Combats par paire : ${fightsPerPair}\n`
-							+ `📊 Total de paires : ${totalPairs}\n`
-							+ `🎯 Total de combats : ${totalFights.toLocaleString()}\n`
-							+ `⏱️ Durée estimée : ${estimatedDuration}\n\n`
-							+ `Les résultats seront sauvegardés dans le dossier \`tournament_results/\``,
-						isError: false
-					}));
-
-					estimationSent = true;
-				}
 
 				// Afficher la progression dans les logs toutes les 5 secondes
 				const now = Date.now();
@@ -762,9 +780,6 @@ const aiTournamentTestCommand: ExecuteTestCommandLike = async (_player, args, re
 	CrowniclesLogger.info(`📊 Fichier CSV sauvegardé : ${csvFilePath}`);
 
 	CrowniclesLogger.info("\n✅ Tournoi terminé avec succès !\n");
-
-	// Ne pas envoyer de message final sur Discord, juste retourner pour le log local
-	return "";
-};
+}
 
 commandInfo.execute = aiTournamentTestCommand;
