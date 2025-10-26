@@ -25,9 +25,9 @@ describe('Pet powers veterinarian descriptions', () => {
 
 		// Assert that no descriptions are missing
 		if (missingDescriptions.length > 0) {
-			const errorMessage = `Les descriptions vétérinaire suivantes sont manquantes dans Lang/fr/commands.json:\n` +
+			const errorMessage = `The following veterinarian descriptions are missing in Lang/fr/commands.json:\n` +
 				missingDescriptions.map(action => `  - shop.shopItems.lovePointsValue.commentOnFightEffect.${action}`).join('\n') +
-				`\n\nNombre total: ${missingDescriptions.length}/${petActionFiles.length}`;
+				`\n\nTotal missing: ${missingDescriptions.length}/${petActionFiles.length}`;
 			
 			expect(missingDescriptions, errorMessage).toHaveLength(0);
 		}
@@ -57,7 +57,7 @@ describe('Pet powers veterinarian descriptions', () => {
 		}
 
 		if (invalidDescriptions.length > 0) {
-			const errorMessage = `Les descriptions vétérinaire suivantes sont invalides (vides ou non-string/array):\n` +
+			const errorMessage = `The following veterinarian descriptions are invalid (empty or not string/array):\n` +
 				invalidDescriptions.map(action => `  - shop.shopItems.lovePointsValue.commentOnFightEffect.${action}`).join('\n');
 			
 			expect(invalidDescriptions, errorMessage).toHaveLength(0);
@@ -87,9 +87,9 @@ describe('Pet powers veterinarian descriptions', () => {
 		// This is a warning, not a failure - extra descriptions might be for deprecated actions
 		if (extraDescriptions.length > 0) {
 			console.warn(
-				`⚠️  Les descriptions vétérinaire suivantes n'ont pas de fichier d'action correspondant:\n` +
+				`⚠️  The following veterinarian descriptions don't have a corresponding action file:\n` +
 				extraDescriptions.map(action => `  - shop.shopItems.lovePointsValue.commentOnFightEffect.${action}`).join('\n') +
-				`\n(Cela peut être normal si les actions ont été renommées ou supprimées)`
+				`\n(This may be normal if actions were renamed or removed)`
 			);
 		}
 	});
