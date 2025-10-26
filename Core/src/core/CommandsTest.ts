@@ -276,6 +276,32 @@ class ValidationResult {
 }
 
 /**
+ * Represents argument type validation context
+ */
+class ArgumentTypeValidationContext {
+	constructor(
+		public readonly commandName: CommandName,
+		public readonly format: FormattedCommandFormat,
+		public readonly argName: ArgumentName,
+		public readonly expectedType: TypeKey,
+		public readonly receivedType: TypeKey
+	) {}
+
+	/**
+	 * Create error message for this validation context
+	 */
+	toErrorMessage(): string {
+		return `❌ Mauvais argument pour la commande test ${this.commandName.value}
+
+**Format attendu** : \`test ${this.commandName.value} ${this.format}\`
+**Format de l'argument** \`<${this.argName.value}>\` : ${formatTypeWaited(this.expectedType)}
+**Format reçu** : ${formatTypeWaited(this.receivedType)}
+
+**Astuce :** Vous pouvez utiliser des arguments nommés : \`--${this.argName.value}=value\``;
+	}
+}
+
+/**
  * Represents an error message with formatting
  */
 class ErrorMessage {
@@ -293,21 +319,8 @@ class ErrorMessage {
 		return new ErrorMessage(`❌ Mauvais nombre d'arguments pour la commande test ${cmdName.value}\n\n**Format attendu :** \`test ${cmdName.value} ${format}\`\n\n**Astuce :** Vous pouvez utiliser des arguments nommés : \`--argName=value\` ou \`--argName value\``);
 	}
 
-	static invalidArgumentType(
-		cmdName: CommandName,
-		format: FormattedCommandFormat,
-		argName: ArgumentName,
-		expectedType: TypeKey,
-		receivedType: TypeKey
-	): ErrorMessage {
-		const message = `❌ Mauvais argument pour la commande test ${cmdName.value}
-
-**Format attendu** : \`test ${cmdName.value} ${format}\`
-**Format de l'argument** \`<${argName.value}>\` : ${formatTypeWaited(expectedType)}
-**Format reçu** : ${formatTypeWaited(receivedType)}
-
-**Astuce :** Vous pouvez utiliser des arguments nommés : \`--${argName.value}=value\``;
-		return new ErrorMessage(message);
+	static invalidArgumentType(context: ArgumentTypeValidationContext): ErrorMessage {
+		return new ErrorMessage(context.toErrorMessage());
 	}
 }
 
@@ -558,13 +571,14 @@ export class CommandsTest {
 			if (!argValue.matchesType(expectedType)) {
 				const formattedFormat = FormattedCommandFormat.fromRaw(commandTest.commandFormat);
 				const argName = new ArgumentName(commandTypeKeys[i]);
-				const errorMsg = ErrorMessage.invalidArgumentType(
+				const validationContext = new ArgumentTypeValidationContext(
 					commandName,
 					formattedFormat,
 					argName,
 					expectedType,
 					argValue.getType()
 				);
+				const errorMsg = ErrorMessage.invalidArgumentType(validationContext);
 				return ValidationResult.failure(errorMsg).toObject();
 			}
 		}
