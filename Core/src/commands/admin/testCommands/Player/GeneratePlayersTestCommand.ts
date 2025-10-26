@@ -370,6 +370,55 @@ function getAllValidPetTypes(): Pet[] {
 }
 
 /**
+ * Create specific pets (all the same type)
+ */
+async function createSpecificPets(specificPetId: number, count: number): Promise<PetEntity[]> {
+	const specificPetType = PetDataController.instance.getById(specificPetId);
+	const pets: PetEntity[] = [];
+
+	for (let i = 0; i < count; i++) {
+		const pet = PetEntity.build({
+			typeId: specificPetType.id,
+			sex: "m",
+			nickname: `Pet_${specificPetType.id}_${i + 1}`,
+			lovePoints: 100
+		});
+		pets.push(await pet.save());
+	}
+
+	return pets;
+}
+
+/**
+ * Create varied pets (one of each type)
+ */
+async function createVariedPets(count: number): Promise<{
+	pets: PetEntity[];
+	maxUniquePets: number;
+}> {
+	const allPetTypes = getAllValidPetTypes();
+	const maxUniquePets = allPetTypes.length;
+	const actualCount = Math.min(count, allPetTypes.length);
+	const pets: PetEntity[] = [];
+
+	for (let i = 0; i < actualCount; i++) {
+		const petType = allPetTypes[i];
+		const pet = PetEntity.build({
+			typeId: petType.id,
+			sex: "m",
+			nickname: `Pet_${petType.id}`,
+			lovePoints: 100
+		});
+		pets.push(await pet.save());
+	}
+
+	return {
+		pets,
+		maxUniquePets
+	};
+}
+
+/**
  * Generate pets for players
  * @param config - Pet generation configuration
  */
@@ -383,19 +432,7 @@ async function generatePetsForPlayers(config: PetGenerationConfig): Promise<PetG
 	}
 
 	if (config.specificPetId !== null) {
-		const specificPetType = PetDataController.instance.getById(config.specificPetId);
-		const pets: PetEntity[] = [];
-
-		for (let i = 0; i < config.playersPerClass; i++) {
-			const pet = PetEntity.build({
-				typeId: specificPetType.id,
-				sex: "m",
-				nickname: `Pet_${specificPetType.id}_${i + 1}`,
-				lovePoints: 100
-			});
-			pets.push(await pet.save());
-		}
-
+		const pets = await createSpecificPets(config.specificPetId, config.playersPerClass);
 		return {
 			pets,
 			actualPlayersPerClass: config.playersPerClass,
@@ -403,25 +440,13 @@ async function generatePetsForPlayers(config: PetGenerationConfig): Promise<PetG
 		};
 	}
 
-	const allPetTypes = getAllValidPetTypes();
-	const maxUniquePets = allPetTypes.length;
-	const actualPlayersPerClass = Math.min(config.playersPerClass, allPetTypes.length);
-	const pets: PetEntity[] = [];
-
-	for (let i = 0; i < actualPlayersPerClass; i++) {
-		const petType = allPetTypes[i];
-		const pet = PetEntity.build({
-			typeId: petType.id,
-			sex: "m",
-			nickname: `Pet_${petType.id}`,
-			lovePoints: 100
-		});
-		pets.push(await pet.save());
-	}
-
+	const {
+		pets,
+		maxUniquePets
+	} = await createVariedPets(config.playersPerClass);
 	return {
 		pets,
-		actualPlayersPerClass,
+		actualPlayersPerClass: pets.length,
 		maxUniquePets
 	};
 }

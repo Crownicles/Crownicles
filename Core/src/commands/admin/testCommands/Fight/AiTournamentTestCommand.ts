@@ -308,61 +308,11 @@ function getOrCreateMatchup<T extends PairMatchup>(
 	return matchup;
 }
 
-/**
- * Get or create a class matchup entry for tracking wins/losses between two classes
- * @param classMatchups - Map of class matchups
- * @param classId1 - First class ID
- * @param classId2 - Second class ID
- * @returns The class matchup object
- */
-function getOrCreateClassMatchup(
-	classMatchups: Map<string, ClassPairMatchup>,
-	classId1: number,
-	classId2: number
-): ClassPairMatchup {
-	return getOrCreateMatchup(classMatchups, classId1, classId2, (classAId, classBId) => ({
-		entityAId: classAId,
-		entityBId: classBId,
-		classAId,
-		classBId,
-		entityAWins: 0,
-		entityBWins: 0,
-		classAWins: 0,
-		classBWins: 0,
-		draws: 0
-	}));
-}
-
 interface PetPairMatchup extends PairMatchup {
 	petAId: number;
 	petBId: number;
 	petAWins: number;
 	petBWins: number;
-}
-
-/**
- * Get or create a pet matchup entry for tracking wins/losses between two pet types
- * @param petMatchups - Map of pet matchups
- * @param petId1 - First pet type ID
- * @param petId2 - Second pet type ID
- * @returns The pet matchup object
- */
-function getOrCreatePetMatchup(
-	petMatchups: Map<string, PetPairMatchup>,
-	petId1: number,
-	petId2: number
-): PetPairMatchup {
-	return getOrCreateMatchup(petMatchups, petId1, petId2, (petAId, petBId) => ({
-		entityAId: petAId,
-		entityBId: petBId,
-		petAId,
-		petBId,
-		entityAWins: 0,
-		entityBWins: 0,
-		petAWins: 0,
-		petBWins: 0,
-		draws: 0
-	}));
 }
 
 interface MatchupCsvRowInput {
@@ -620,7 +570,17 @@ const aiTournamentTestCommand: ExecuteTestCommandLike = async (_player, args, re
 			}
 
 			// Enregistrer les matchups classe vs classe
-			const classMatchup = getOrCreateClassMatchup(classMatchups, stats1.classId, stats2.classId);
+			const classMatchup = getOrCreateMatchup(classMatchups, stats1.classId, stats2.classId, (classAId, classBId) => ({
+				entityAId: classAId,
+				entityBId: classBId,
+				classAId,
+				classBId,
+				entityAWins: 0,
+				entityBWins: 0,
+				classAWins: 0,
+				classBWins: 0,
+				draws: 0
+			}));
 			classMatchup.draws += draws;
 			const isDirectClassOrder = stats1.classId === classMatchup.classAId && stats2.classId === classMatchup.classBId;
 			if (isDirectClassOrder) {
@@ -651,7 +611,17 @@ const aiTournamentTestCommand: ExecuteTestCommandLike = async (_player, args, re
 
 			// Enregistrer les matchups pet vs pet (si les deux ont un pet)
 			if (stats1.petTypeId !== null && stats2.petTypeId !== null) {
-				const petMatchup = getOrCreatePetMatchup(petMatchups, stats1.petTypeId, stats2.petTypeId);
+				const petMatchup = getOrCreateMatchup(petMatchups, stats1.petTypeId, stats2.petTypeId, (petAId, petBId) => ({
+					entityAId: petAId,
+					entityBId: petBId,
+					petAId,
+					petBId,
+					entityAWins: 0,
+					entityBWins: 0,
+					petAWins: 0,
+					petBWins: 0,
+					draws: 0
+				}));
 				petMatchup.draws += draws;
 				const isDirectPetOrder = stats1.petTypeId === petMatchup.petAId && stats2.petTypeId === petMatchup.petBId;
 				if (isDirectPetOrder) {
