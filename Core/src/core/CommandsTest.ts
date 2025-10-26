@@ -46,105 +46,150 @@ export interface ITestCommand {
 }
 
 /**
- * Parse a named argument and extract its value
- * @param arg - Current argument
- * @param nextArg - Next argument (for --name value format)
- * @returns Object with name, value, and whether to skip next arg
+ * Represents raw command line arguments
  */
-function parseNamedArgument(arg: string, nextArg: string | undefined): {
-	name: string;
-	value: string | undefined;
-	skipNext: boolean;
-} {
-	const equalIndex = arg.indexOf("=");
+class CommandArguments {
+	constructor(public readonly args: string[]) {}
 
-	if (equalIndex !== -1) {
-		// Format: --name=value
-		return {
-			name: arg.substring(2, equalIndex),
-			value: arg.substring(equalIndex + 1),
-			skipNext: false
-		};
+	get length(): number {
+		return this.args.length;
 	}
 
-	// Format: --name value (value is next arg)
-	return {
-		name: arg.substring(2),
-		value: nextArg,
-		skipNext: nextArg !== undefined
-	};
+	get firstArg(): string | undefined {
+		return this.args[0];
+	}
+
+	isNamedFormat(): boolean {
+		return this.length > 0 && this.firstArg?.startsWith("--") === true;
+	}
+}
+
+/**
+ * Represents parsed argument with its metadata
+ */
+class ParsedArgument {
+	constructor(
+		public readonly name: string,
+		public readonly value: string | undefined,
+		public readonly skipNext: boolean
+	) {}
+
+	static fromNamedArg(arg: string, nextArg: string | undefined): ParsedArgument {
+		const equalIndex = arg.indexOf("=");
+
+		if (equalIndex !== -1) {
+			// Format: --name=value
+			return new ParsedArgument(
+				arg.substring(2, equalIndex),
+				arg.substring(equalIndex + 1),
+				false
+			);
+		}
+
+		// Format: --name value (value is next arg)
+		return new ParsedArgument(
+			arg.substring(2),
+			nextArg,
+			nextArg !== undefined
+		);
+	}
+}
+
+/**
+ * Represents the schema of expected arguments for a command
+ */
+class ArgumentSchema {
+	public readonly argNames: string[];
+
+	constructor(public readonly typeWaited: { [argName: string]: TypeKey }) {
+		this.argNames = Object.keys(typeWaited);
+	}
+
+	get length(): number {
+		return this.argNames.length;
+	}
+
+	findArgIndex(name: string): number {
+		return this.argNames.indexOf(name);
+	}
+
+	getTypeAt(index: number): TypeKey {
+		return this.typeWaited[this.argNames[index]];
+	}
+
+	getArgNameAt(index: number): string {
+		return this.argNames[index];
+	}
+}
+
+/**
+ * Result of argument parsing
+ */
+class ParsedArguments {
+	constructor(
+		public readonly values: string[],
+		public readonly usedNamedArgs: boolean
+	) {}
+
+	get length(): number {
+		return this.values.length;
+	}
 }
 
 /**
  * Process named arguments and populate the parsed array
- * @param args - Raw arguments
- * @param argNames - Expected argument names in order
- * @param parsedArgs - Array to populate with parsed values
- * @returns Number of arguments consumed
  */
 function processNamedArguments(
-	args: string[],
-	argNames: string[],
-	parsedArgs: string[]
-): number {
-	let consumed = 0;
+	cmdArgs: CommandArguments,
+	schema: ArgumentSchema
+): string[] {
+	const parsedArgs: string[] = new Array(schema.length).fill(undefined);
 
-	for (let i = 0; i < args.length; i++) {
-		const arg = args[i];
-		const nextArg = i + 1 < args.length ? args[i + 1] : undefined;
-		const {
-			name, value, skipNext
-		} = parseNamedArgument(arg, nextArg);
-		const argIndex = argNames.indexOf(name);
+	for (let i = 0; i < cmdArgs.length; i++) {
+		const arg = cmdArgs.args[i];
+		const nextArg = i + 1 < cmdArgs.length ? cmdArgs.args[i + 1] : undefined;
+		const parsed = ParsedArgument.fromNamedArg(arg, nextArg);
+		const argIndex = schema.findArgIndex(parsed.name);
 
-		if (argIndex !== -1 && value !== undefined) {
-			parsedArgs[argIndex] = value;
+		if (argIndex !== -1 && parsed.value !== undefined) {
+			parsedArgs[argIndex] = parsed.value;
 		}
 
-		consumed++;
-		if (skipNext) {
+		if (parsed.skipNext) {
 			i++; // Skip next arg as it's the value
-			consumed++;
 		}
 	}
 
-	return consumed;
+	return parsedArgs;
 }
 
 /**
  * Parse arguments supporting both positional and named formats
  * Named format: --argName=value or --argName value
- * @param args - Raw arguments
- * @param typeWaited - Expected argument types
- * @returns Parsed arguments in order
  */
 export function parseTestCommandArgs(
 	args: string[],
 	typeWaited: { [argName: string]: TypeKey }
-): {
-	parsedArgs: string[];
-	usedNamedArgs: boolean;
-} {
-	const argNames = Object.keys(typeWaited);
-	const parsedArgs: string[] = new Array(argNames.length).fill(undefined);
+): ParsedArguments {
+	const cmdArgs = new CommandArguments(args);
+	const schema = new ArgumentSchema(typeWaited);
+	let parsedValues: string[];
 
-	// Check if first arg is named
-	const usesNamedArgs = args.length > 0 && args[0].startsWith("--");
-
-	if (usesNamedArgs) {
-		processNamedArguments(args, argNames, parsedArgs);
+	if (cmdArgs.isNamedFormat()) {
+		parsedValues = processNamedArguments(cmdArgs, schema);
 	}
 	else {
 		// Positional arguments
-		for (let i = 0; i < args.length && i < parsedArgs.length; i++) {
-			parsedArgs[i] = args[i];
+		parsedValues = new Array(schema.length).fill(undefined);
+		for (let i = 0; i < cmdArgs.length && i < parsedValues.length; i++) {
+			parsedValues[i] = cmdArgs.args[i];
 		}
 	}
 
-	return {
-		parsedArgs: parsedArgs.filter(arg => arg !== undefined),
-		usedNamedArgs: usesNamedArgs
-	};
+	return new ParsedArguments(
+		parsedValues.filter(arg => arg !== undefined),
+		cmdArgs.isNamedFormat()
+	);
 }
 
 /**
@@ -209,9 +254,9 @@ export class CommandsTest {
 		const minArgsRequired = commandTest.minArgs ?? nbArgsWaited;
 
 		// Parse arguments (supports both positional and named formats)
-		const { parsedArgs } = parseTestCommandArgs(args, commandTest.typeWaited);
+		const parsedResult = parseTestCommandArgs(args, commandTest.typeWaited);
 
-		if (parsedArgs.length < minArgsRequired || parsedArgs.length > nbArgsWaited) {
+		if (parsedResult.length < minArgsRequired || parsedResult.length > nbArgsWaited) {
 			const formattedFormat = formatCommandFormat(commandTest.commandFormat);
 			return {
 				good: false,
@@ -219,8 +264,8 @@ export class CommandsTest {
 			};
 		}
 
-		for (let i = 0; i < parsedArgs.length; i++) {
-			if (commandTest.typeWaited[commandTypeKeys[i]] !== CommandsTest.getTypeOf(parsedArgs[i])) {
+		for (let i = 0; i < parsedResult.length; i++) {
+			if (commandTest.typeWaited[commandTypeKeys[i]] !== CommandsTest.getTypeOf(parsedResult.values[i])) {
 				const formattedFormat = formatCommandFormat(commandTest.commandFormat);
 				return {
 					good: false,
@@ -228,7 +273,7 @@ export class CommandsTest {
 
 **Format attendu** : \`test ${commandTest.name} ${formattedFormat}\`
 **Format de l'argument** \`<${commandTypeKeys[i]}>\` : ${formatTypeWaited(commandTest.typeWaited[commandTypeKeys[i]])}
-**Format reçu** : ${formatTypeWaited(CommandsTest.getTypeOf(parsedArgs[i]))}
+**Format reçu** : ${formatTypeWaited(CommandsTest.getTypeOf(parsedResult.values[i]))}
 
 **Astuce :** Vous pouvez utiliser des arguments nommés : \`--${commandTypeKeys[i]}=value\``
 				};

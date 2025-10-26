@@ -69,7 +69,7 @@ export default class TestCommand {
 				try {
 					// Parse arguments to support named arguments
 					const parsedArgs = commandTestCurrent.typeWaited
-						? parseTestCommandArgs(argsTest, commandTestCurrent.typeWaited).parsedArgs
+						? parseTestCommandArgs(argsTest, commandTestCurrent.typeWaited).values
 						: argsTest;
 
 					const messageToDisplay = await commandTestCurrent.execute(player, parsedArgs, response, context);
