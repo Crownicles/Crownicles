@@ -11,14 +11,15 @@ async function verifyConditionCanAcceptPet(condition: PossibilityOutcomeConditio
 		return true;
 	}
 
-	let guild: Guild;
+	let guild: Guild | null = null;
 
 	// Search for a user's guild
+
 	try {
 		guild = await Guilds.getById(player.guildId);
 	}
 	catch {
-		guild = null;
+		// guild remains null
 	}
 
 	const noRoomInGuild = !guild ? true : guild.isPetShelterFull(await GuildPets.getOfGuild(guild.id));
