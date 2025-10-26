@@ -5,8 +5,14 @@ import {
 	ReactionCollectorData,
 	ReactionCollectorRefuseReaction
 } from "./ReactionCollectorPacket";
+import { SexTypeShort } from "../../constants/StringConstants";
 
 type PlayerStats = {
+	pet: {
+		petTypeId: number;
+		petSex: SexTypeShort;
+		petNickname: string;
+	};
 	classId: number;
 	fightRanking: {
 		glory: number;

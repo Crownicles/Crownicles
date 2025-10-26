@@ -40,8 +40,15 @@ import { minutesToMilliseconds } from "../../../../Lib/src/utils/TimeUtils";
 import { EloGameResult } from "../../../../Lib/src/types/EloGameResult";
 import { PacketUtils } from "../../core/utils/PacketUtils";
 import { PlayerWasAttackedNotificationPacket } from "../../../../Lib/src/packets/notifications/PlayerWasAttackedNotificationPacket";
+import { PetEntities } from "../../core/database/game/models/PetEntity";
+import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
 
 type PlayerStats = {
+	pet: {
+		petTypeId: number;
+		petSex: SexTypeShort;
+		petNickname: string;
+	};
 	classId: number;
 	fightRanking: {
 		glory: number;
@@ -75,7 +82,13 @@ const fightsDefenderCooldowns = new Map<string, number>();
 
 async function getPlayerStats(player: Player): Promise<PlayerStats> {
 	const playerActiveObjects = await InventorySlots.getMainSlotsItems(player.id);
+	const petEntity = await PetEntities.getById(player.petId);
 	return {
+		pet: {
+			petTypeId: petEntity ? petEntity.typeId! : null,
+			petSex: petEntity ? petEntity.sex as SexTypeShort : null,
+			petNickname: petEntity ? petEntity.nickname : null
+		},
 		classId: player.class,
 		fightRanking: {
 			glory: player.getGloryPoints()
