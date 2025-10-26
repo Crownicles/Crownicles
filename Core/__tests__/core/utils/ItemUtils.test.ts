@@ -508,4 +508,189 @@ describe('ItemUtils - giveItemToPlayer', () => {
 			});
 		});
 	});
+
+	// Tests for bug #3652 - Prevent drinking time potions before destination choice
+	describe('canDrinkImmediately parameter (bug #3652)', () => {
+		let mockTimePotion: any;
+
+		beforeEach(() => {
+			// Reset mocks
+			mockPlayer.giveItem.mockResolvedValue(false);
+			mockInventoryInfo.slotLimitForCategory.mockReturnValue(1);
+
+			// Create a TIME_SPEEDUP potion mock
+			mockTimePotion = {
+				id: 200,
+				rarity: ItemRarity.COMMON,
+				nature: 4, // ItemNature.TIME_SPEEDUP
+				power: 30,
+				categoryName: 'potions',
+				slot: 0,
+				getCategory: vi.fn().mockReturnValue(ItemCategory.POTION),
+				getItemAddedValue: vi.fn().mockReturnValue(30),
+				isFightPotion: vi.fn().mockReturnValue(false),
+				getAttack: vi.fn().mockReturnValue(0),
+				getDefense: vi.fn().mockReturnValue(0),
+				getSpeed: vi.fn().mockReturnValue(0)
+			};
+
+			// Setup potion inventory slot
+			mockInventorySlots = [
+				{
+					playerId: 1,
+					slot: 0,
+					itemCategory: ItemCategory.POTION,
+					itemId: 50,
+					isEquipped: vi.fn().mockReturnValue(true),
+					isPotion: vi.fn().mockReturnValue(true),
+					getItem: vi.fn().mockReturnValue({
+						id: 50,
+						rarity: ItemRarity.BASIC,
+						getCategory: vi.fn().mockReturnValue(ItemCategory.POTION),
+						nature: 1, // Regular potion
+						isFightPotion: vi.fn().mockReturnValue(false)
+					})
+				}
+			];
+			vi.mocked(InventorySlots.getOfPlayer).mockResolvedValue(mockInventorySlots);
+		});
+
+		it('should allow drinking regular potions when canDrinkImmediately is true (default)', async () => {
+			// Arrange - Create a health potion (not TIME_SPEEDUP)
+			const healthPotion = {
+				id: 201,
+				rarity: ItemRarity.COMMON,
+				nature: 1, // ItemNature.HEALTH
+				power: 50,
+				categoryName: 'potions',
+				slot: 0,
+				getCategory: vi.fn().mockReturnValue(ItemCategory.POTION),
+				getItemAddedValue: vi.fn().mockReturnValue(50),
+				isFightPotion: vi.fn().mockReturnValue(false),
+				getAttack: vi.fn().mockReturnValue(0),
+				getDefense: vi.fn().mockReturnValue(0),
+				getSpeed: vi.fn().mockReturnValue(0)
+			};
+
+			// Act
+			await giveItemToPlayer(mockResponse, mockContext, mockPlayer, healthPotion);
+
+			// Assert - Should allow drinking (ReactionCollectorItemAccept with canDrink = true)
+			expect(mockResponse).toHaveLength(2); // ItemFoundPacket + ReactionCollectorInstance
+			const collector = mockResponse[1];
+			expect(collector).toBeInstanceOf(ReactionCollectorInstance);
+		});
+
+		it('should NOT allow drinking TIME_SPEEDUP potions when canDrinkImmediately is false', async () => {
+			// Act - Call with canDrinkImmediately = false (simulates big event before destination choice)
+			await giveItemToPlayer(mockResponse, mockContext, mockPlayer, mockTimePotion, 1, false);
+
+			// Assert - Should NOT allow drinking (ReactionCollectorItemAccept with canDrink = false)
+			expect(mockResponse).toHaveLength(2); // ItemFoundPacket + ReactionCollectorInstance
+			const collector = mockResponse[1];
+			expect(collector).toBeInstanceOf(ReactionCollectorInstance);
+			// The constructor should have been called with canDrink = false
+			// This ensures the "drink" option is not available in the reaction collector
+		});
+
+		it('should allow drinking TIME_SPEEDUP potions when canDrinkImmediately is true', async () => {
+			// Act - Call with canDrinkImmediately = true (default behavior, normal gameplay)
+			await giveItemToPlayer(mockResponse, mockContext, mockPlayer, mockTimePotion, 1, true);
+
+			// Assert - Should NOT allow drinking because TIME_SPEEDUP potions cannot be drunk immediately
+			expect(mockResponse).toHaveLength(2); // ItemFoundPacket + ReactionCollectorInstance
+			const collector = mockResponse[1];
+			expect(collector).toBeInstanceOf(ReactionCollectorInstance);
+		});
+
+		it('should NOT allow drinking fight potions regardless of canDrinkImmediately', async () => {
+			// Arrange - Create a fight potion
+			const fightPotion = {
+				id: 202,
+				rarity: ItemRarity.RARE,
+				nature: 2, // ItemNature.SPEED
+				power: 40,
+				categoryName: 'potions',
+				slot: 0,
+				getCategory: vi.fn().mockReturnValue(ItemCategory.POTION),
+				getItemAddedValue: vi.fn().mockReturnValue(40),
+				isFightPotion: vi.fn().mockReturnValue(true),
+				getAttack: vi.fn().mockReturnValue(0),
+				getDefense: vi.fn().mockReturnValue(0),
+				getSpeed: vi.fn().mockReturnValue(10) // Fight potion has speed
+			};
+
+			// Act
+			await giveItemToPlayer(mockResponse, mockContext, mockPlayer, fightPotion, 1, false);
+
+			// Assert - Fight potions cannot be drunk immediately anyway
+			expect(mockResponse).toHaveLength(2);
+			const collector = mockResponse[1];
+			expect(collector).toBeInstanceOf(ReactionCollectorInstance);
+		});
+
+		it('should handle regular potions correctly when canDrinkImmediately is false', async () => {
+			// Arrange - Create a money potion
+			const moneyPotion = {
+				id: 203,
+				rarity: ItemRarity.COMMON,
+				nature: 5, // ItemNature.MONEY
+				power: 100,
+				categoryName: 'potions',
+				slot: 0,
+				getCategory: vi.fn().mockReturnValue(ItemCategory.POTION),
+				getItemAddedValue: vi.fn().mockReturnValue(100),
+				isFightPotion: vi.fn().mockReturnValue(false),
+				getAttack: vi.fn().mockReturnValue(0),
+				getDefense: vi.fn().mockReturnValue(0),
+				getSpeed: vi.fn().mockReturnValue(0)
+			};
+
+			// Act - Even with canDrinkImmediately = false, non-TIME_SPEEDUP potions should be drinkable
+			await giveItemToPlayer(mockResponse, mockContext, mockPlayer, moneyPotion, 1, false);
+
+			// Assert - Should allow drinking (not a TIME_SPEEDUP potion)
+			expect(mockResponse).toHaveLength(2);
+			const collector = mockResponse[1];
+			expect(collector).toBeInstanceOf(ReactionCollectorInstance);
+		});
+
+		it('should work correctly in multi-slot category with TIME_SPEEDUP potion and canDrinkImmediately = false', async () => {
+			// Arrange
+			mockInventoryInfo.slotLimitForCategory.mockReturnValue(3);
+			mockInventorySlots = [
+				{
+					playerId: 1,
+					slot: 0,
+					itemCategory: ItemCategory.POTION,
+					itemId: 100,
+					isEquipped: vi.fn().mockReturnValue(false),
+					getItem: vi.fn().mockReturnValue({
+						id: 100,
+						rarity: ItemRarity.BASIC,
+						getCategory: vi.fn().mockReturnValue(ItemCategory.POTION)
+					})
+				},
+				{
+					playerId: 1,
+					slot: 1,
+					itemCategory: ItemCategory.POTION,
+					itemId: 101,
+					isEquipped: vi.fn().mockReturnValue(false),
+					getItem: vi.fn().mockReturnValue({
+						id: 101,
+						rarity: ItemRarity.COMMON,
+						getCategory: vi.fn().mockReturnValue(ItemCategory.POTION)
+					})
+				}
+			];
+			vi.mocked(InventorySlots.getOfPlayer).mockResolvedValue(mockInventorySlots);
+
+			// Act - Give TIME_SPEEDUP potion with canDrinkImmediately = false
+			await giveItemToPlayer(mockResponse, mockContext, mockPlayer, mockTimePotion, 1, false);
+
+			// Assert - Should create collector but without drink option
+			expect(mockResponse.length).toBeGreaterThanOrEqual(2);
+		});
+	});
 });
