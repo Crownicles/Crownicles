@@ -1,6 +1,6 @@
 {
   "badges": {
-    "description": "I badge sono distinzione difficile a ottenere che sono state create per ricompensare le persone che hanno il più sostenuti il sviluppo del bot. La lista dei badge e disponibile sulla guida del bot.\n(link : https://guide.draftbot.com/notions-avancees/badges)",
+    "description": "I badge sono riconoscimenti difficili da ottenere, creati per premiare le persone che hanno maggiormente sostenuto lo sviluppo del bot.\nL’elenco dei badge è disponibile nella guida del bot.\n(via questo link: https://guide.crownicles.com/notions-avancees/badges\n)",
     "title": "{emote:commands.badges} Informazioni dettagliate:"
   },
   "pet": {
@@ -168,7 +168,7 @@
         "description": "Questo comando permette di consumare la pozione che avete con voi. Alcune pozioni non possono essere bevute e vengono consumate automaticamente durante il combattimento."
       },
       "FIGHT": {
-        "description": "Usate questo comando per sfidare altri giocatori sullo stesso server.\nLe battaglie si svolgono turno per turno. A ogni turno si può scegliere un'azione da eseguire.\n\nPer ulteriori informazioni, consultare la pagina della guida: https://guide.draftbot.com/notions-principale/combats",
+        "description": "Utilisez cette commande pour défier les autres joueurs.\nLes combats se déroulent tour par tour. À chaque tour, vous pouvez choisir une action à effectuer.\n\nPour plus d'informations vous pouvez aller voir la page du guide : https://guide.crownicles.com/notions-principale/combats",
         "image": "https://draftbot.com/public/ressources/fighthelp/en/5.1.7.png"
       },
       "GLORY_TOP": {
@@ -284,6 +284,9 @@
       },
       "SWITCH": {
         "description": "Scambia un pezzo di equipaggiamento dalla propria scorta con quello che si possiede attualmente, a condizione che sia della stessa categoria. Se non si possiede alcun equipaggiamento della stessa categoria dell'oggetto che si vuole equipaggiare, questo verrà semplicemente spostato nell'inventario."
+      },
+      "DEPOSIT": {
+        "description": "Deposita un equipaggiamento dalla tua mano principale nella tua riserva.\nSe hai un solo equipaggiamento da depositare, questo verrà riposto automaticamente."
       },
       "TOP": {
         "description": "Mostra la classifica generale della partita per ogni 15 giocatori. I giocatori sullo stesso server che voi sono contrassegnati da un punto blu."
@@ -1120,7 +1123,8 @@
   "fight": {
     "title": "{{pseudo}}stai per iniziare una rissa",
     "canceledTitle": "{{pseudo}}avete annullato la ricerca",
-    "confirmDesc": "{emote:fightCommand.crossedSwords} | **{{pseudo}}**{{confirmSubText}}\n\n{emote:fightCommand.crossedSwords} | **Combattente : {{pseudo}}| {{glory}} | {{className}}\n\n{{stats}}",
+    "confirmDesc": "{emote:fightCommand.crossedSwords} | **{{pseudo}}**{{confirmSubText}}\n\n{emote:fightCommand.crossedSwords} | **Combattant : {{pseudo}}** | {{glory}} | {{className}} {{pet}}\n\n{{stats}}",
+    "pet": "| {{petInfo}}",
     "confirmSubTexts": {
       "common": "Volete iniziare una ricerca di combattimento?",
       "rare": "Volete partecipare alla ricerca di un combattente della vostra forza per il successivo duello?"
@@ -1301,6 +1305,15 @@
     "cancelled": "Azione annullata!",
     "switchSelectionTitle": "{{pseudo}}equipaggiare un oggetto",
     "switchSelectionDescription": "Scegliere un oggetto da equipaggiare dall'elenco sottostante:"
+  },
+  "deposit": {
+    "titleSuccess": "{{pseudo}}, comando eseguito!",
+    "deposeSuccess": "{{item}} è stato depositato nella tua riserva!",
+    "noItemToDeposit": "Non hai nessun equipaggiamento da depositare!",
+    "cannotDeposit": "La tua riserva è piena.",
+    "cancelled": "Azione annullata !",
+    "depositSelectionTitle": "{{pseudo}}, deposito di un oggetto",
+    "depositSelectionDescription": "Scegli un oggetto da depositare nell’elenco qui sotto:"
   },
   "drink": {
     "errors": {
