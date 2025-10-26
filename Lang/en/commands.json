@@ -168,7 +168,7 @@
         "description": "This command allows you to drink the potion you have. Some potions cannot be drunk and are consumed automatically during a fight."
       },
       "FIGHT": {
-        "description": "Use this command to challenge other players on the same server as you.\nBattles take place on a turn-by-turn basis. Each turn, you can choose an action to perform.\n\nFor more information, please visit the guide page: https://guide.draftbot.com/v/en/notions-principale/combats",
+        "description": "Utilisez cette commande pour défier les autres joueurs.\nLes combats se déroulent tour par tour. À chaque tour, vous pouvez choisir une action à effectuer.\n\nPour plus d'informations vous pouvez aller voir la page du guide : https://guide.crownicles.com/notions-principale/combats",
         "image": "https://draftbot.com/public/ressources/fighthelp/en/5.1.7.png"
       },
       "GLORY_TOP": {
@@ -284,6 +284,9 @@
       },
       "SWITCH": {
         "description": "Exchanges a piece of equipment from your stockpile with what you currently own, provided it is of the same category. If no equipment in the category of the item to be equipped is owned before the order is executed, it will simply move it into the inventory."
+      },
+      "DEPOSIT": {
+        "description": "Dépose un équipement de votre main principale dans votre réserve. Si vous n'avez qu'un seul équipement à déposer, celui-ci sera rangé automatiquement."
       },
       "TOP": {
         "description": "Displays the general ranking of the game in 15 player intervals. Players in the same server as you are shown by a blue dot."
@@ -1120,7 +1123,8 @@
   "fight": {
     "title": "{{pseudo}}, you're about to start a fight",
     "canceledTitle": "{{pseudo}}, search cancelled",
-    "confirmDesc": "{emote:fightCommand.crossedSwords} | **{{pseudo}}**{{confirmSubText}}\n\n{emote:fightCommand.crossedSwords} | **Fighter: {{pseudo}}** | {{glory}} | {{className}}\n\n{{stats}}",
+    "confirmDesc": "{emote:fightCommand.crossedSwords} | **{{pseudo}}**{{confirmSubText}}\n\n{emote:fightCommand.crossedSwords} | **Combattant : {{pseudo}}** | {{glory}} | {{className}} {{pet}}\n\n{{stats}}",
+    "pet": "| {{petInfo}}",
     "confirmSubTexts": {
       "common": ", would you like to search for a fight?",
       "rare": ", would you like to participate in the search for a fighter of your personal strength for the subsequent duel?"
@@ -1301,6 +1305,15 @@
     "cancelled": "Action cancelled!",
     "switchSelectionTitle": "{{pseudo}}, equipping an item",
     "switchSelectionDescription": "Choose an item from the list below:"
+  },
+  "deposit": {
+    "titleSuccess": "{{pseudo}}, command completed!",
+    "deposeSuccess": "{{item}} a été déposé dans votre réserve !",
+    "noItemToDeposit": "Vous n'avez aucun équipement à déposer !",
+    "cannotDeposit": "Votre réserve est pleine.",
+    "cancelled": "Action cancelled!",
+    "depositSelectionTitle": "{{pseudo}}, dépose d'un objet",
+    "depositSelectionDescription": "Choisissez un objet à déposer dans la liste ci-dessous :"
   },
   "drink": {
     "errors": {
