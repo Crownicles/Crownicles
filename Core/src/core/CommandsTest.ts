@@ -35,20 +35,45 @@ export function formatTypeWaited(typeWaited: TypeKey): string {
 }
 
 /**
+ * Represents a file name for command files
+ */
+class CommandFileName {
+	constructor(public readonly value: string) {}
+
+	withoutExtension(): string {
+		return this.value.substring(0, this.value.length - 3);
+	}
+
+	isJavaScriptFile(): boolean {
+		return this.value.endsWith(".js");
+	}
+}
+
+/**
+ * Represents a type/category name for commands
+ */
+class CommandTypeName {
+	constructor(public readonly value: string) {}
+
+	toString(): string {
+		return this.value;
+	}
+}
+
+/**
  * Represents a file path for command loading
  */
 class CommandFilePath {
 	constructor(
-		private readonly type: string,
-		private readonly fileName: string
+		private readonly type: CommandTypeName,
+		private readonly fileName: CommandFileName
 	) {}
 
 	getRequirePath(): string {
-		const fileNameWithoutExtension = this.fileName.substring(0, this.fileName.length - 3);
-		return `../commands/admin/testCommands/${this.type}/${fileNameWithoutExtension}`;
+		return `../commands/admin/testCommands/${this.type.value}/${this.fileName.withoutExtension()}`;
 	}
 
-	static fromFileName(type: string, fileName: string): CommandFilePath {
+	static fromFileName(type: CommandTypeName, fileName: CommandFileName): CommandFilePath {
 		return new CommandFilePath(type, fileName);
 	}
 }
@@ -173,8 +198,8 @@ class ValidationResult {
 		return new ValidationResult(true, "");
 	}
 
-	static failure(message: string): ValidationResult {
-		return new ValidationResult(false, message);
+	static failure(message: ErrorMessage): ValidationResult {
+		return new ValidationResult(false, message.toString());
 	}
 
 	toObject(): {
@@ -185,6 +210,42 @@ class ValidationResult {
 			good: this.isValid,
 			description: this.errorMessage
 		};
+	}
+}
+
+/**
+ * Represents an error message with formatting
+ */
+class ErrorMessage {
+	constructor(private readonly message: string) {}
+
+	toString(): string {
+		return this.message;
+	}
+
+	static invalidCommandFormat(cmdName: CommandName): ErrorMessage {
+		return new ErrorMessage(`❌ Mauvais format pour la commande test ${cmdName.value}\n\n**Format attendu :** \`test ${cmdName.value}\``);
+	}
+
+	static invalidArgumentCount(cmdName: CommandName, format: FormattedCommandFormat): ErrorMessage {
+		return new ErrorMessage(`❌ Mauvais nombre d'arguments pour la commande test ${cmdName.value}\n\n**Format attendu :** \`test ${cmdName.value} ${format}\`\n\n**Astuce :** Vous pouvez utiliser des arguments nommés : \`--argName=value\` ou \`--argName value\``);
+	}
+
+	static invalidArgumentType(
+		cmdName: CommandName,
+		format: FormattedCommandFormat,
+		argName: ArgumentName,
+		expectedType: TypeKey,
+		receivedType: TypeKey
+	): ErrorMessage {
+		const message = `❌ Mauvais argument pour la commande test ${cmdName.value}
+
+**Format attendu** : \`test ${cmdName.value} ${format}\`
+**Format de l'argument** \`<${argName.value}>\` : ${formatTypeWaited(expectedType)}
+**Format reçu** : ${formatTypeWaited(receivedType)}
+
+**Astuce :** Vous pouvez utiliser des arguments nommés : \`--${argName.value}=value\``;
+		return new ErrorMessage(message);
 	}
 }
 
@@ -359,10 +420,13 @@ export class CommandsTest {
 		const dirPath = CommandDirectoryPath.fromDistPath();
 		CommandsTest.testCommType = await readdir("dist/Core/src/commands/admin/testCommands");
 		for (const type of CommandsTest.testCommType) {
-			const commandsFiles = readdirSync(dirPath.getPath(type)).filter((command: string) => command.endsWith(".js"));
+			const typeName = new CommandTypeName(type);
+			const commandsFiles = readdirSync(dirPath.getPath(type))
+				.filter((command: string) => new CommandFileName(command).isJavaScriptFile());
 			for (const commandFile of commandsFiles) {
-				const filePath = CommandFilePath.fromFileName(type, commandFile);
-				this.initCommandTestFromCommandFile(filePath, type);
+				const fileName = new CommandFileName(commandFile);
+				const filePath = CommandFilePath.fromFileName(typeName, fileName);
+				this.initCommandTestFromCommandFile(filePath, typeName);
 			}
 		}
 	}
@@ -380,9 +444,10 @@ export class CommandsTest {
 		good: boolean; description: string;
 	} {
 		if (!commandTest.typeWaited) {
+			const commandName = new CommandName(commandTest.name);
 			return args.length === 0
 				? ValidationResult.success().toObject()
-				: ValidationResult.failure(`❌ Mauvais format pour la commande test ${commandTest.name}\n\n**Format attendu :** \`test ${commandTest.name}\``).toObject();
+				: ValidationResult.failure(ErrorMessage.invalidCommandFormat(commandName)).toObject();
 		}
 
 		const commandName = new CommandName(commandTest.name);
@@ -396,7 +461,7 @@ export class CommandsTest {
 		if (parsedResult.length < minArgsRequired || parsedResult.length > nbArgsWaited) {
 			const formattedFormat = FormattedCommandFormat.fromRaw(commandTest.commandFormat);
 			return ValidationResult.failure(
-				`❌ Mauvais nombre d'arguments pour la commande test ${commandName.value}\n\n**Format attendu :** \`test ${commandName.value} ${formattedFormat}\`\n\n**Astuce :** Vous pouvez utiliser des arguments nommés : \`--argName=value\` ou \`--argName value\``
+				ErrorMessage.invalidArgumentCount(commandName, formattedFormat)
 			).toObject();
 		}
 
@@ -407,14 +472,14 @@ export class CommandsTest {
 			if (!argValue.matchesType(expectedType)) {
 				const formattedFormat = FormattedCommandFormat.fromRaw(commandTest.commandFormat);
 				const argName = new ArgumentName(commandTypeKeys[i]);
-				const errorMessage = `❌ Mauvais argument pour la commande test ${commandName.value}
-
-**Format attendu** : \`test ${commandName.value} ${formattedFormat}\`
-**Format de l'argument** \`<${argName.value}>\` : ${formatTypeWaited(expectedType)}
-**Format reçu** : ${formatTypeWaited(argValue.getType())}
-
-**Astuce :** Vous pouvez utiliser des arguments nommés : \`--${argName.value}=value\``;
-				return ValidationResult.failure(errorMessage).toObject();
+				const errorMsg = ErrorMessage.invalidArgumentType(
+					commandName,
+					formattedFormat,
+					argName,
+					expectedType,
+					argValue.getType()
+				);
+				return ValidationResult.failure(errorMsg).toObject();
 			}
 		}
 		return ValidationResult.success().toObject();
@@ -445,10 +510,10 @@ export class CommandsTest {
 	/**
 	 * Initialize a test command from its file
 	 * @param filePath - Path to the command file
-	 * @param type - Command category type
+	 * @param typeName - Command category type
 	 */
-	private static initCommandTestFromCommandFile(filePath: CommandFilePath, type: string): void {
-		const category = new CommandCategory(type);
+	private static initCommandTestFromCommandFile(filePath: CommandFilePath, typeName: CommandTypeName): void {
+		const category = new CommandCategory(typeName.value);
 		const testCommand: ITestCommand = require(filePath.getRequirePath()).commandInfo;
 		testCommand.category = category.value;
 		const commandName = new CommandName(testCommand.name);
