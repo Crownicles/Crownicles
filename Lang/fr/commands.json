@@ -1123,7 +1123,8 @@
   "fight": {
     "title": "{{pseudo}}, vous êtes sur le point de démarrer un combat",
     "canceledTitle": "{{pseudo}}, vous avez annulé la recherche",
-    "confirmDesc": "{emote:fightCommand.crossedSwords} | **{{pseudo}}**{{confirmSubText}}\n\n{emote:fightCommand.crossedSwords} | **Combattant : {{pseudo}}** | {{glory}} | {{className}}\n\n{{stats}}",
+    "confirmDesc": "{emote:fightCommand.crossedSwords} | **{{pseudo}}**{{confirmSubText}}\n\n{emote:fightCommand.crossedSwords} | **Combattant : {{pseudo}}** | {{glory}} | {{className}} {{pet}}\n\n{{stats}}",
+    "pet": "| {{petInfo}}",
     "confirmSubTexts": {
       "common": ", souhaitez-vous lancer une recherche de combat ?",
       "rare": ", voudriez-vous participer à la recherche d'un combattant adéquat à votre puissance personnelle afin d'effectuer le duel subséquent ?"
