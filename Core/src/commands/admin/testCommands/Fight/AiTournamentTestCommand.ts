@@ -283,6 +283,32 @@ interface ClassPairMatchup extends PairMatchup {
 }
 
 /**
+ * Generic function to get or create a matchup entry for tracking wins/losses between two entities
+ * @param matchups - Map of matchups
+ * @param id1 - First entity ID
+ * @param id2 - Second entity ID
+ * @param createMatchup - Factory function to create a new matchup object
+ * @returns The matchup object
+ */
+function getOrCreateMatchup<T extends PairMatchup>(
+	matchups: Map<string, T>,
+	id1: number,
+	id2: number,
+	createMatchup: (entityAId: number, entityBId: number) => T
+): T {
+	const entityAId = Math.min(id1, id2);
+	const entityBId = Math.max(id1, id2);
+	const key = `${entityAId}-${entityBId}`;
+
+	let matchup = matchups.get(key);
+	if (!matchup) {
+		matchup = createMatchup(entityAId, entityBId);
+		matchups.set(key, matchup);
+	}
+	return matchup;
+}
+
+/**
  * Get or create a class matchup entry for tracking wins/losses between two classes
  * @param classMatchups - Map of class matchups
  * @param classId1 - First class ID
@@ -294,25 +320,17 @@ function getOrCreateClassMatchup(
 	classId1: number,
 	classId2: number
 ): ClassPairMatchup {
-	const classAId = Math.min(classId1, classId2);
-	const classBId = Math.max(classId1, classId2);
-	const key = `${classAId}-${classBId}`;
-	let matchup = classMatchups.get(key);
-	if (!matchup) {
-		matchup = {
-			entityAId: classAId,
-			entityBId: classBId,
-			classAId,
-			classBId,
-			entityAWins: 0,
-			entityBWins: 0,
-			classAWins: 0,
-			classBWins: 0,
-			draws: 0
-		};
-		classMatchups.set(key, matchup);
-	}
-	return matchup;
+	return getOrCreateMatchup(classMatchups, classId1, classId2, (classAId, classBId) => ({
+		entityAId: classAId,
+		entityBId: classBId,
+		classAId,
+		classBId,
+		entityAWins: 0,
+		entityBWins: 0,
+		classAWins: 0,
+		classBWins: 0,
+		draws: 0
+	}));
 }
 
 interface PetPairMatchup extends PairMatchup {
@@ -334,25 +352,17 @@ function getOrCreatePetMatchup(
 	petId1: number,
 	petId2: number
 ): PetPairMatchup {
-	const petAId = Math.min(petId1, petId2);
-	const petBId = Math.max(petId1, petId2);
-	const key = `${petAId}-${petBId}`;
-	let matchup = petMatchups.get(key);
-	if (!matchup) {
-		matchup = {
-			entityAId: petAId,
-			entityBId: petBId,
-			petAId,
-			petBId,
-			entityAWins: 0,
-			entityBWins: 0,
-			petAWins: 0,
-			petBWins: 0,
-			draws: 0
-		};
-		petMatchups.set(key, matchup);
-	}
-	return matchup;
+	return getOrCreateMatchup(petMatchups, petId1, petId2, (petAId, petBId) => ({
+		entityAId: petAId,
+		entityBId: petBId,
+		petAId,
+		petBId,
+		entityAWins: 0,
+		entityBWins: 0,
+		petAWins: 0,
+		petBWins: 0,
+		draws: 0
+	}));
 }
 
 interface MatchupCsvRowInput {

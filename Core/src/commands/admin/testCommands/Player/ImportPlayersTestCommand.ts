@@ -150,6 +150,51 @@ async function importSinglePlayer(playerData: ImportedPlayer): Promise<{
 	};
 }
 
+type ImportStats = {
+	playersCreated: number;
+	playersUpdated: number;
+	petsCreated: number;
+	inventoriesCreated: number;
+};
+
+/**
+ * Process all players import and collect statistics
+ */
+async function processPlayersImport(players: ImportedPlayer[]): Promise<ImportStats> {
+	const stats: ImportStats = {
+		playersCreated: 0,
+		playersUpdated: 0,
+		petsCreated: 0,
+		inventoriesCreated: 0
+	};
+
+	for (const playerData of players) {
+		const result = await importSinglePlayer(playerData);
+
+		stats.playersCreated += result.isNew ? 1 : 0;
+		stats.playersUpdated += result.isNew ? 0 : 1;
+		stats.petsCreated += result.petCreated ? 1 : 0;
+		stats.inventoriesCreated += result.inventoryCreated ? 1 : 0;
+	}
+
+	return stats;
+}
+
+/**
+ * Format import result message
+ */
+function formatImportResult(filename: string, importData: ImportData, stats: ImportStats): string {
+	return "✅ Import terminé !\n"
+		+ "📊 Résumé :\n"
+		+ `• Fichier : ${filename}\n`
+		+ `• Date d'export : ${importData.exportDate}\n`
+		+ `• Pattern d'origine : "${importData.pattern}"\n`
+		+ `• Joueurs créés : ${stats.playersCreated}\n`
+		+ `• Joueurs mis à jour : ${stats.playersUpdated}\n`
+		+ `• Pets créés : ${stats.petsCreated}\n`
+		+ `• Inventaires créés : ${stats.inventoriesCreated}`;
+}
+
 /**
  * Import players from a JSON file
  */
@@ -162,45 +207,13 @@ const importPlayersTestCommand: ExecuteTestCommandLike = async (_player, args) =
 
 	const importData = readImportFile(filename);
 
-	// Validate data structure
 	if (!importData.players || !Array.isArray(importData.players)) {
 		throw new Error("Erreur importPlayers : le fichier ne contient pas de données de joueurs valides !");
 	}
 
-	let playersCreated = 0;
-	let playersUpdated = 0;
-	let petsCreated = 0;
-	let inventoriesCreated = 0;
+	const stats = await processPlayersImport(importData.players);
 
-	// Import each player
-	for (const playerData of importData.players) {
-		const result = await importSinglePlayer(playerData);
-
-		if (result.isNew) {
-			playersCreated++;
-		}
-		else {
-			playersUpdated++;
-		}
-
-		if (result.petCreated) {
-			petsCreated++;
-		}
-
-		if (result.inventoryCreated) {
-			inventoriesCreated++;
-		}
-	}
-
-	return "✅ Import terminé !\n"
-		+ "📊 Résumé :\n"
-		+ `• Fichier : ${filename}\n`
-		+ `• Date d'export : ${importData.exportDate}\n`
-		+ `• Pattern d'origine : "${importData.pattern}"\n`
-		+ `• Joueurs créés : ${playersCreated}\n`
-		+ `• Joueurs mis à jour : ${playersUpdated}\n`
-		+ `• Pets créés : ${petsCreated}\n`
-		+ `• Inventaires créés : ${inventoriesCreated}`;
+	return formatImportResult(filename, importData, stats);
 };
 
 commandInfo.execute = importPlayersTestCommand;

@@ -146,77 +146,62 @@ const FIXED_ITEMS_BY_CLASS_GROUP: Record<string, [
  * Get the class behavior group for a given class ID
  * @param classId
  */
+/**
+ * Mapping of class IDs to behavior groups
+ */
+const CLASS_TO_GROUP_MAP: Record<number, string> = {
+	// Gunner group
+	[ClassConstants.CLASSES_ID.FORMIDABLE_GUNNER]: "gunner",
+	[ClassConstants.CLASSES_ID.GUNNER]: "gunner",
+	[ClassConstants.CLASSES_ID.ARCHER]: "gunner",
+	[ClassConstants.CLASSES_ID.SLINGER]: "gunner",
+	[ClassConstants.CLASSES_ID.ROCK_THROWER]: "gunner",
+
+	// Paladin group
+	[ClassConstants.CLASSES_ID.PALADIN]: "paladin",
+	[ClassConstants.CLASSES_ID.LUMINOUS_PALADIN]: "paladin",
+
+	// Knight group
+	[ClassConstants.CLASSES_ID.KNIGHT]: "knight",
+	[ClassConstants.CLASSES_ID.VALIANT_KNIGHT]: "knight",
+	[ClassConstants.CLASSES_ID.PIKEMAN]: "knight",
+	[ClassConstants.CLASSES_ID.HORSE_RIDER]: "knight",
+	[ClassConstants.CLASSES_ID.ESQUIRE]: "knight",
+
+	// Infantryman group
+	[ClassConstants.CLASSES_ID.POWERFUL_INFANTRYMAN]: "infantryman",
+	[ClassConstants.CLASSES_ID.INFANTRYMAN]: "infantryman",
+	[ClassConstants.CLASSES_ID.SOLDIER]: "infantryman",
+	[ClassConstants.CLASSES_ID.FIGHTER]: "infantryman",
+	[ClassConstants.CLASSES_ID.RECRUIT]: "infantryman",
+
+	// Veteran group
+	[ClassConstants.CLASSES_ID.VETERAN]: "veteran",
+	[ClassConstants.CLASSES_ID.EXPERIENCED_VETERAN]: "veteran",
+
+	// Tank group
+	[ClassConstants.CLASSES_ID.TANK]: "tank",
+	[ClassConstants.CLASSES_ID.IMPENETRABLE_TANK]: "tank",
+	[ClassConstants.CLASSES_ID.ENMESHED]: "tank",
+	[ClassConstants.CLASSES_ID.HELMETED]: "tank",
+	[ClassConstants.CLASSES_ID.GLOVED]: "tank",
+
+	// Mage group
+	[ClassConstants.CLASSES_ID.MYSTIC_MAGE]: "mage"
+};
+
+/**
+ * Get the class behavior group for a given class ID
+ */
 function getClassBehaviorGroup(classId: number): string {
-	// Gunner group (5 classes)
-	if ([
-		ClassConstants.CLASSES_ID.FORMIDABLE_GUNNER,
-		ClassConstants.CLASSES_ID.GUNNER,
-		ClassConstants.CLASSES_ID.ARCHER,
-		ClassConstants.CLASSES_ID.SLINGER,
-		ClassConstants.CLASSES_ID.ROCK_THROWER
-	].includes(classId)) {
-		return "gunner";
-	}
-
-	// Paladin group (2 classes)
-	if ([
-		ClassConstants.CLASSES_ID.PALADIN,
-		ClassConstants.CLASSES_ID.LUMINOUS_PALADIN
-	].includes(classId)) {
-		return "paladin";
-	}
-
-	// Knight group (5 classes)
-	if ([
-		ClassConstants.CLASSES_ID.KNIGHT,
-		ClassConstants.CLASSES_ID.VALIANT_KNIGHT,
-		ClassConstants.CLASSES_ID.PIKEMAN,
-		ClassConstants.CLASSES_ID.HORSE_RIDER,
-		ClassConstants.CLASSES_ID.ESQUIRE
-	].includes(classId)) {
-		return "knight";
-	}
-
-	// Infantryman group (5 classes)
-	if ([
-		ClassConstants.CLASSES_ID.POWERFUL_INFANTRYMAN,
-		ClassConstants.CLASSES_ID.INFANTRYMAN,
-		ClassConstants.CLASSES_ID.SOLDIER,
-		ClassConstants.CLASSES_ID.FIGHTER,
-		ClassConstants.CLASSES_ID.RECRUIT
-	].includes(classId)) {
-		return "infantryman";
-	}
-
-	// Veteran group (2 classes)
-	if ([
-		ClassConstants.CLASSES_ID.VETERAN,
-		ClassConstants.CLASSES_ID.EXPERIENCED_VETERAN
-	].includes(classId)) {
-		return "veteran";
-	}
-
-	// Tank group (5 classes)
-	if ([
-		ClassConstants.CLASSES_ID.TANK,
-		ClassConstants.CLASSES_ID.IMPENETRABLE_TANK,
-		ClassConstants.CLASSES_ID.ENMESHED,
-		ClassConstants.CLASSES_ID.HELMETED,
-		ClassConstants.CLASSES_ID.GLOVED
-	].includes(classId)) {
-		return "tank";
-	}
-
-	// Mage group (1 class)
-	if (classId === ClassConstants.CLASSES_ID.MYSTIC_MAGE) {
-		return "mage";
-	}
-
-	// Default to random items if class not recognized
-	return null;
+	return CLASS_TO_GROUP_MAP[classId] || null;
 }
 
 /**
+ * Validate that all fixed items exist in the database
+ * ```
+ *
+ * /**
  * Validate that all fixed items exist in the database
  */
 function ensureFixedItemsExist(params: {
