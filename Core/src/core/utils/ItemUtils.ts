@@ -432,7 +432,7 @@ function canPotionBeDrunkImmediately(item: GenericItem, canDrinkImmediately: boo
 		return false;
 	}
 
-	// If context doesn't allow immediate drinking, check if it's a time speedup potion
+	// If context doesn't allow immediate drinking, prevent drinking regardless of potion type
 	if (!canDrinkImmediately) {
 		return false;
 	}
