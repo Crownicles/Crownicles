@@ -40,10 +40,16 @@ export function formatTypeWaited(typeWaited: TypeKey): string {
 class CommandFileName {
 	constructor(public readonly value: string) {}
 
+	/**
+	 * Get the filename without extension
+	 */
 	withoutExtension(): string {
 		return this.value.substring(0, this.value.length - 3);
 	}
 
+	/**
+	 * Check if this is a JavaScript file
+	 */
 	isJavaScriptFile(): boolean {
 		return this.value.endsWith(".js");
 	}
@@ -55,6 +61,9 @@ class CommandFileName {
 class CommandTypeName {
 	constructor(public readonly value: string) {}
 
+	/**
+	 * Convert to string representation
+	 */
 	toString(): string {
 		return this.value;
 	}
@@ -69,10 +78,24 @@ class CommandFilePath {
 		private readonly fileName: CommandFileName
 	) {}
 
+	/**
+	 * Get the require path for the command file
+	 */
 	getRequirePath(): string {
 		return `../commands/admin/testCommands/${this.type.value}/${this.fileName.withoutExtension()}`;
 	}
 
+	/**
+	 * Load the command info from the file
+	 */
+	loadCommandInfo(): ITestCommand {
+		// Dynamic import is required here as commands are loaded at runtime
+		return require(this.getRequirePath()).commandInfo as ITestCommand;
+	}
+
+	/**
+	 * Create a CommandFilePath from type and filename
+	 */
 	static fromFileName(type: CommandTypeName, fileName: CommandFileName): CommandFilePath {
 		return new CommandFilePath(type, fileName);
 	}
@@ -84,10 +107,16 @@ class CommandFilePath {
 class CommandDirectoryPath {
 	constructor(private readonly basePath: string) {}
 
+	/**
+	 * Get the full path for a command type
+	 */
 	getPath(type: string): string {
 		return `${this.basePath}/${type}`;
 	}
 
+	/**
+	 * Create a CommandDirectoryPath for the distribution folder
+	 */
 	static fromDistPath(): CommandDirectoryPath {
 		return new CommandDirectoryPath("dist/Core/src/commands/admin/testCommands");
 	}
@@ -99,6 +128,9 @@ class CommandDirectoryPath {
 class ArgumentName {
 	constructor(public readonly value: string) {}
 
+	/**
+	 * Check equality with another ArgumentName or string
+	 */
 	equals(other: ArgumentName | string): boolean {
 		const otherValue = typeof other === "string" ? other : other.value;
 		return this.value === otherValue;
@@ -111,6 +143,9 @@ class ArgumentName {
 class ArgumentValue {
 	constructor(public readonly value: string) {}
 
+	/**
+	 * Get the type of this argument value
+	 */
 	getType(): TypeKey {
 		for (const typeIn of typeVariableChecks.keys()) {
 			if (typeVariableChecks.get(typeIn)(this.value)) {
@@ -120,6 +155,9 @@ class ArgumentValue {
 		return TypeKey.STRING;
 	}
 
+	/**
+	 * Check if this value matches the expected type
+	 */
 	matchesType(expectedType: TypeKey): boolean {
 		return this.getType() === expectedType;
 	}
@@ -142,10 +180,16 @@ export interface ITestCommand {
 class CommandName {
 	constructor(public readonly value: string) {}
 
+	/**
+	 * Convert to lowercase
+	 */
 	toLowerCase(): string {
 		return this.value.toLowerCase();
 	}
 
+	/**
+	 * Check equality with another CommandName or string (case-insensitive)
+	 */
 	equals(other: CommandName | string): boolean {
 		const otherValue = typeof other === "string" ? other : other.value;
 		return this.toLowerCase() === otherValue.toLowerCase();
@@ -158,6 +202,9 @@ class CommandName {
 class CommandCategory {
 	constructor(public readonly value: string) {}
 
+	/**
+	 * Check equality with another CommandCategory or string
+	 */
 	equals(other: CommandCategory | string): boolean {
 		const otherValue = typeof other === "string" ? other : other.value;
 		return this.value === otherValue;
@@ -170,6 +217,9 @@ class CommandCategory {
 class FormattedCommandFormat {
 	constructor(public readonly value: string) {}
 
+	/**
+	 * Create a FormattedCommandFormat from raw string
+	 */
 	static fromRaw(commandFormat: string | undefined): FormattedCommandFormat {
 		if (!commandFormat) {
 			return new FormattedCommandFormat("");
@@ -180,6 +230,9 @@ class FormattedCommandFormat {
 		return new FormattedCommandFormat(formatted);
 	}
 
+	/**
+	 * Convert to string representation
+	 */
 	toString(): string {
 		return this.value;
 	}
@@ -194,14 +247,23 @@ class ValidationResult {
 		public readonly errorMessage: string
 	) {}
 
+	/**
+	 * Create a successful validation result
+	 */
 	static success(): ValidationResult {
 		return new ValidationResult(true, "");
 	}
 
+	/**
+	 * Create a failed validation result
+	 */
 	static failure(message: ErrorMessage): ValidationResult {
 		return new ValidationResult(false, message.toString());
 	}
 
+	/**
+	 * Convert to object format expected by command system
+	 */
 	toObject(): {
 		good: boolean;
 		description: string;
@@ -255,14 +317,23 @@ class ErrorMessage {
 class CommandArguments {
 	constructor(public readonly args: string[]) {}
 
+	/**
+	 * Get the number of arguments
+	 */
 	get length(): number {
 		return this.args.length;
 	}
 
+	/**
+	 * Get the first argument
+	 */
 	get firstArg(): string | undefined {
 		return this.args[0];
 	}
 
+	/**
+	 * Check if arguments use named format (--name=value)
+	 */
 	isNamedFormat(): boolean {
 		return this.length > 0 && this.firstArg?.startsWith("--") === true;
 	}
@@ -278,6 +349,9 @@ class ParsedArgument {
 		public readonly skipNext: boolean
 	) {}
 
+	/**
+	 * Parse a named argument from command line
+	 */
 	static fromNamedArg(arg: string, nextArg: string | undefined): ParsedArgument {
 		const equalIndex = arg.indexOf("=");
 
@@ -309,18 +383,30 @@ class ArgumentSchema {
 		this.argNames = Object.keys(typeWaited);
 	}
 
+	/**
+	 * Get the number of expected arguments
+	 */
 	get length(): number {
 		return this.argNames.length;
 	}
 
+	/**
+	 * Find the index of an argument by name
+	 */
 	findArgIndex(name: string): number {
 		return this.argNames.indexOf(name);
 	}
 
+	/**
+	 * Get the expected type at a given index
+	 */
 	getTypeAt(index: number): TypeKey {
 		return this.typeWaited[this.argNames[index]];
 	}
 
+	/**
+	 * Get the argument name at a given index
+	 */
 	getArgNameAt(index: number): string {
 		return this.argNames[index];
 	}
@@ -514,7 +600,7 @@ export class CommandsTest {
 	 */
 	private static initCommandTestFromCommandFile(filePath: CommandFilePath, typeName: CommandTypeName): void {
 		const category = new CommandCategory(typeName.value);
-		const testCommand: ITestCommand = require(filePath.getRequirePath()).commandInfo;
+		const testCommand = filePath.loadCommandInfo();
 		testCommand.category = category.value;
 		const commandName = new CommandName(testCommand.name);
 		CommandsTest.testCommandsArray[commandName.toLowerCase()] = testCommand;
