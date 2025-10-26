@@ -34,6 +34,72 @@ export function formatTypeWaited(typeWaited: TypeKey): string {
 	return `\`${typeWaited}\`(${typeVariableFormatLike.get(typeWaited)})`;
 }
 
+/**
+ * Represents a file path for command loading
+ */
+class CommandFilePath {
+	constructor(
+		private readonly type: string,
+		private readonly fileName: string
+	) {}
+
+	getRequirePath(): string {
+		const fileNameWithoutExtension = this.fileName.substring(0, this.fileName.length - 3);
+		return `../commands/admin/testCommands/${this.type}/${fileNameWithoutExtension}`;
+	}
+
+	static fromFileName(type: string, fileName: string): CommandFilePath {
+		return new CommandFilePath(type, fileName);
+	}
+}
+
+/**
+ * Represents a directory path for command scanning
+ */
+class CommandDirectoryPath {
+	constructor(private readonly basePath: string) {}
+
+	getPath(type: string): string {
+		return `${this.basePath}/${type}`;
+	}
+
+	static fromDistPath(): CommandDirectoryPath {
+		return new CommandDirectoryPath("dist/Core/src/commands/admin/testCommands");
+	}
+}
+
+/**
+ * Represents an argument name in a command schema
+ */
+class ArgumentName {
+	constructor(public readonly value: string) {}
+
+	equals(other: ArgumentName | string): boolean {
+		const otherValue = typeof other === "string" ? other : other.value;
+		return this.value === otherValue;
+	}
+}
+
+/**
+ * Represents an argument value with type validation
+ */
+class ArgumentValue {
+	constructor(public readonly value: string) {}
+
+	getType(): TypeKey {
+		for (const typeIn of typeVariableChecks.keys()) {
+			if (typeVariableChecks.get(typeIn)(this.value)) {
+				return typeIn;
+			}
+		}
+		return TypeKey.STRING;
+	}
+
+	matchesType(expectedType: TypeKey): boolean {
+		return this.getType() === expectedType;
+	}
+}
+
 export interface ITestCommand {
 	name: string;
 	aliases?: string[];
@@ -290,11 +356,13 @@ export class CommandsTest {
 	 */
 	static async init(): Promise<void> {
 		CommandsTest.testCommandsArray = {};
+		const dirPath = CommandDirectoryPath.fromDistPath();
 		CommandsTest.testCommType = await readdir("dist/Core/src/commands/admin/testCommands");
 		for (const type of CommandsTest.testCommType) {
-			const commandsFiles = readdirSync(`dist/Core/src/commands/admin/testCommands/${type}`).filter((command: string) => command.endsWith(".js"));
+			const commandsFiles = readdirSync(dirPath.getPath(type)).filter((command: string) => command.endsWith(".js"));
 			for (const commandFile of commandsFiles) {
-				this.initCommandTestFromCommandFile(type, commandFile);
+				const filePath = CommandFilePath.fromFileName(type, commandFile);
+				this.initCommandTestFromCommandFile(filePath, type);
 			}
 		}
 	}
@@ -333,28 +401,23 @@ export class CommandsTest {
 		}
 
 		for (let i = 0; i < parsedResult.length; i++) {
-			if (commandTest.typeWaited[commandTypeKeys[i]] !== CommandsTest.getTypeOf(parsedResult.values[i])) {
+			const argValue = new ArgumentValue(parsedResult.values[i]);
+			const expectedType = commandTest.typeWaited[commandTypeKeys[i]];
+
+			if (!argValue.matchesType(expectedType)) {
 				const formattedFormat = FormattedCommandFormat.fromRaw(commandTest.commandFormat);
+				const argName = new ArgumentName(commandTypeKeys[i]);
 				const errorMessage = `❌ Mauvais argument pour la commande test ${commandName.value}
 
 **Format attendu** : \`test ${commandName.value} ${formattedFormat}\`
-**Format de l'argument** \`<${commandTypeKeys[i]}>\` : ${formatTypeWaited(commandTest.typeWaited[commandTypeKeys[i]])}
-**Format reçu** : ${formatTypeWaited(CommandsTest.getTypeOf(parsedResult.values[i]))}
+**Format de l'argument** \`<${argName.value}>\` : ${formatTypeWaited(expectedType)}
+**Format reçu** : ${formatTypeWaited(argValue.getType())}
 
-**Astuce :** Vous pouvez utiliser des arguments nommés : \`--${commandTypeKeys[i]}=value\``;
+**Astuce :** Vous pouvez utiliser des arguments nommés : \`--${argName.value}=value\``;
 				return ValidationResult.failure(errorMessage).toObject();
 			}
 		}
 		return ValidationResult.success().toObject();
-	}
-
-	static getTypeOf(variable: string): TypeKey {
-		for (const typeIn of typeVariableChecks.keys()) {
-			if (typeVariableChecks.get(typeIn)(variable)) {
-				return typeIn;
-			}
-		}
-		return TypeKey.STRING;
 	}
 
 	static getTestCommand(commandName: string): ITestCommand {
@@ -381,12 +444,12 @@ export class CommandsTest {
 
 	/**
 	 * Initialize a test command from its file
-	 * @param type
-	 * @param commandFile
+	 * @param filePath - Path to the command file
+	 * @param type - Command category type
 	 */
-	private static initCommandTestFromCommandFile(type: string, commandFile: string): void {
+	private static initCommandTestFromCommandFile(filePath: CommandFilePath, type: string): void {
 		const category = new CommandCategory(type);
-		const testCommand: ITestCommand = require(`../commands/admin/testCommands/${type}/${commandFile.substring(0, commandFile.length - 3)}`).commandInfo;
+		const testCommand: ITestCommand = require(filePath.getRequirePath()).commandInfo;
 		testCommand.category = category.value;
 		const commandName = new CommandName(testCommand.name);
 		CommandsTest.testCommandsArray[commandName.toLowerCase()] = testCommand;
