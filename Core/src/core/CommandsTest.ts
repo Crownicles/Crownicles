@@ -46,6 +46,83 @@ export interface ITestCommand {
 }
 
 /**
+ * Represents a command name with validation
+ */
+class CommandName {
+	constructor(public readonly value: string) {}
+
+	toLowerCase(): string {
+		return this.value.toLowerCase();
+	}
+
+	equals(other: CommandName | string): boolean {
+		const otherValue = typeof other === "string" ? other : other.value;
+		return this.toLowerCase() === otherValue.toLowerCase();
+	}
+}
+
+/**
+ * Represents a command category
+ */
+class CommandCategory {
+	constructor(public readonly value: string) {}
+
+	equals(other: CommandCategory | string): boolean {
+		const otherValue = typeof other === "string" ? other : other.value;
+		return this.value === otherValue;
+	}
+}
+
+/**
+ * Represents a formatted command format string
+ */
+class FormattedCommandFormat {
+	constructor(public readonly value: string) {}
+
+	static fromRaw(commandFormat: string | undefined): FormattedCommandFormat {
+		if (!commandFormat) {
+			return new FormattedCommandFormat("");
+		}
+
+		// Replace [param] with *[param]* to make optional params italic in markdown
+		const formatted = commandFormat.replace(/\[([^\]]+)\]/g, "*[$1]*");
+		return new FormattedCommandFormat(formatted);
+	}
+
+	toString(): string {
+		return this.value;
+	}
+}
+
+/**
+ * Represents validation result for command arguments
+ */
+class ValidationResult {
+	constructor(
+		public readonly isValid: boolean,
+		public readonly errorMessage: string
+	) {}
+
+	static success(): ValidationResult {
+		return new ValidationResult(true, "");
+	}
+
+	static failure(message: string): ValidationResult {
+		return new ValidationResult(false, message);
+	}
+
+	toObject(): {
+		good: boolean;
+		description: string;
+	} {
+		return {
+			good: this.isValid,
+			description: this.errorMessage
+		};
+	}
+}
+
+/**
  * Represents raw command line arguments
  */
 class CommandArguments {
@@ -198,12 +275,7 @@ export function parseTestCommandArgs(
  * @returns Formatted string with italics for optional params
  */
 export function formatCommandFormat(commandFormat: string): string {
-	if (!commandFormat) {
-		return "";
-	}
-
-	// Replace [param] with *[param]* to make optional params italic in markdown
-	return commandFormat.replace(/\[([^\]]+)\]/g, "*[$1]*");
+	return FormattedCommandFormat.fromRaw(commandFormat).toString();
 }
 
 export type ExecuteTestCommandLike = (player: Player, args: string[], response: CrowniclesPacket[], context: PacketContext) => string | Promise<string>;
@@ -239,16 +311,13 @@ export class CommandsTest {
 	): {
 		good: boolean; description: string;
 	} {
-		const ret = {
-			good: true,
-			description: ""
-		};
 		if (!commandTest.typeWaited) {
-			ret.good = args.length === 0;
-			ret.description = ret.good ? "" : `❌ Mauvais format pour la commande test ${commandTest.name}\n\n**Format attendu :** \`test ${commandTest.name}\``;
-			return ret;
+			return args.length === 0
+				? ValidationResult.success().toObject()
+				: ValidationResult.failure(`❌ Mauvais format pour la commande test ${commandTest.name}\n\n**Format attendu :** \`test ${commandTest.name}\``).toObject();
 		}
 
+		const commandName = new CommandName(commandTest.name);
 		const commandTypeKeys = Object.keys(commandTest.typeWaited);
 		const nbArgsWaited = commandTypeKeys.length;
 		const minArgsRequired = commandTest.minArgs ?? nbArgsWaited;
@@ -257,29 +326,26 @@ export class CommandsTest {
 		const parsedResult = parseTestCommandArgs(args, commandTest.typeWaited);
 
 		if (parsedResult.length < minArgsRequired || parsedResult.length > nbArgsWaited) {
-			const formattedFormat = formatCommandFormat(commandTest.commandFormat);
-			return {
-				good: false,
-				description: `❌ Mauvais nombre d'arguments pour la commande test ${commandTest.name}\n\n**Format attendu :** \`test ${commandTest.name} ${formattedFormat}\`\n\n**Astuce :** Vous pouvez utiliser des arguments nommés : \`--argName=value\` ou \`--argName value\``
-			};
+			const formattedFormat = FormattedCommandFormat.fromRaw(commandTest.commandFormat);
+			return ValidationResult.failure(
+				`❌ Mauvais nombre d'arguments pour la commande test ${commandName.value}\n\n**Format attendu :** \`test ${commandName.value} ${formattedFormat}\`\n\n**Astuce :** Vous pouvez utiliser des arguments nommés : \`--argName=value\` ou \`--argName value\``
+			).toObject();
 		}
 
 		for (let i = 0; i < parsedResult.length; i++) {
 			if (commandTest.typeWaited[commandTypeKeys[i]] !== CommandsTest.getTypeOf(parsedResult.values[i])) {
-				const formattedFormat = formatCommandFormat(commandTest.commandFormat);
-				return {
-					good: false,
-					description: `❌ Mauvais argument pour la commande test ${commandTest.name}
+				const formattedFormat = FormattedCommandFormat.fromRaw(commandTest.commandFormat);
+				const errorMessage = `❌ Mauvais argument pour la commande test ${commandName.value}
 
-**Format attendu** : \`test ${commandTest.name} ${formattedFormat}\`
+**Format attendu** : \`test ${commandName.value} ${formattedFormat}\`
 **Format de l'argument** \`<${commandTypeKeys[i]}>\` : ${formatTypeWaited(commandTest.typeWaited[commandTypeKeys[i]])}
 **Format reçu** : ${formatTypeWaited(CommandsTest.getTypeOf(parsedResult.values[i]))}
 
-**Astuce :** Vous pouvez utiliser des arguments nommés : \`--${commandTypeKeys[i]}=value\``
-				};
+**Astuce :** Vous pouvez utiliser des arguments nommés : \`--${commandTypeKeys[i]}=value\``;
+				return ValidationResult.failure(errorMessage).toObject();
 			}
 		}
-		return ret;
+		return ValidationResult.success().toObject();
 	}
 
 	static getTypeOf(variable: string): TypeKey {
@@ -292,17 +358,19 @@ export class CommandsTest {
 	}
 
 	static getTestCommand(commandName: string): ITestCommand {
-		const commandTestCurrent = CommandsTest.testCommandsArray[commandName.toLowerCase()];
+		const name = new CommandName(commandName);
+		const commandTestCurrent = CommandsTest.testCommandsArray[name.toLowerCase()];
 		if (!commandTestCurrent) {
-			throw new Error(`Commande Test non définie : ${commandName}`);
+			throw new Error(`Commande Test non définie : ${name.value}`);
 		}
 		return commandTestCurrent;
 	}
 
 	static getAllCommandsFromCategory(category: string): ITestCommand[] {
+		const searchCategory = new CommandCategory(category);
 		const tabCommandReturn: ITestCommand[] = [];
 		for (const testCommand of Object.values(CommandsTest.testCommandsArray)) {
-			if (testCommand.category === category) {
+			if (testCommand.category && searchCategory.equals(testCommand.category)) {
 				tabCommandReturn.push(testCommand);
 			}
 		}
@@ -317,12 +385,15 @@ export class CommandsTest {
 	 * @param commandFile
 	 */
 	private static initCommandTestFromCommandFile(type: string, commandFile: string): void {
+		const category = new CommandCategory(type);
 		const testCommand: ITestCommand = require(`../commands/admin/testCommands/${type}/${commandFile.substring(0, commandFile.length - 3)}`).commandInfo;
-		testCommand.category = type;
-		CommandsTest.testCommandsArray[testCommand.name.toLowerCase()] = testCommand;
+		testCommand.category = category.value;
+		const commandName = new CommandName(testCommand.name);
+		CommandsTest.testCommandsArray[commandName.toLowerCase()] = testCommand;
 		if (testCommand.aliases) {
 			for (const alias of testCommand.aliases) {
-				this.testCommandsArray[alias.toLowerCase()] = testCommand;
+				const aliasName = new CommandName(alias);
+				this.testCommandsArray[aliasName.toLowerCase()] = testCommand;
 			}
 		}
 	}
