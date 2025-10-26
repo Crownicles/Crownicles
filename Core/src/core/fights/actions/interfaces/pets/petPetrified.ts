@@ -7,7 +7,7 @@ import { FightAlterations } from "../../FightAlterations";
 import { Fighter } from "../../../fighter/Fighter";
 
 const shouldSkipPetPetrified = (turn: number, opponent: Fighter): boolean => {
-	return (turn !== 10 && turn !== 11) || opponent.hasFightAlteration();
+	return (turn !== 17 && turn !== 18) || opponent.hasFightAlteration();
 };
 
 const use: PetAssistanceFunc = (_fighter, opponent, turn, _fightController): Promise<PetAssistanceResult | null> => {
