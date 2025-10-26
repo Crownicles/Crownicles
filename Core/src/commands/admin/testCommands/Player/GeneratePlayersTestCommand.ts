@@ -199,54 +199,51 @@ function getClassBehaviorGroup(classId: number): string {
 }
 
 /**
- * Generate a random inventory setup (one armor, one weapon, one object, no potion)
- * Objects will only have fight-related effects (attack, defense, speed)
- * @param level - Player level to determine item rarity
- * @param classId - Class ID to determine fixed items (optional)
- * @param useFixedItems - Whether to use fixed items for this class group
+ * Validate and retrieve fixed items for a class
+ * @param classId - Class ID
+ * @param classGroup - Class group name
  */
-function generateRandomInventory(level: number, classId?: number, useFixedItems = false): {
+function validateFixedItems(classId: number, classGroup: string): {
 	weaponId: number;
 	armorId: number;
 	objectId: number;
 } {
-	// Use fixed items if requested and class has a defined group
-	if (useFixedItems && classId) {
-		const classGroup = getClassBehaviorGroup(classId);
-		if (classGroup && FIXED_ITEMS_BY_CLASS_GROUP[classGroup]) {
-			const [
-				weaponId,
-				armorId,
-				objectId
-			] = FIXED_ITEMS_BY_CLASS_GROUP[classGroup];
+	const [
+		weaponId,
+		armorId,
+		objectId
+	] = FIXED_ITEMS_BY_CLASS_GROUP[classGroup];
 
-			// Validate that items exist
-			const weapon = WeaponDataController.instance.getById(weaponId);
-			const armor = ArmorDataController.instance.getById(armorId);
-			const object = ObjectItemDataController.instance.getById(objectId);
+	const weapon = WeaponDataController.instance.getById(weaponId);
+	const armor = ArmorDataController.instance.getById(armorId);
+	const object = ObjectItemDataController.instance.getById(objectId);
 
-			if (!weapon) {
-				throw new Error(`Erreur generatePlayers : Arme ${weaponId} introuvable pour le groupe ${classGroup} (classId: ${classId})`);
-			}
-			if (!armor) {
-				throw new Error(`Erreur generatePlayers : Armure ${armorId} introuvable pour le groupe ${classGroup} (classId: ${classId})`);
-			}
-			if (!object) {
-				throw new Error(`Erreur generatePlayers : Objet ${objectId} introuvable pour le groupe ${classGroup} (classId: ${classId})`);
-			}
-
-			return {
-				weaponId,
-				armorId,
-				objectId
-			};
-		}
-
-		// If no fixed items defined for this class, throw error
-		throw new Error(`Erreur generatePlayers : Aucun item fixe défini pour la classe ${classId} (groupe: ${classGroup || "non trouvé"})`);
+	if (!weapon) {
+		throw new Error(`Erreur generatePlayers : Arme ${weaponId} introuvable pour le groupe ${classGroup} (classId: ${classId})`);
+	}
+	if (!armor) {
+		throw new Error(`Erreur generatePlayers : Armure ${armorId} introuvable pour le groupe ${classGroup} (classId: ${classId})`);
+	}
+	if (!object) {
+		throw new Error(`Erreur generatePlayers : Objet ${objectId} introuvable pour le groupe ${classGroup} (classId: ${classId})`);
 	}
 
-	// Otherwise generate random items based on level
+	return {
+		weaponId,
+		armorId,
+		objectId
+	};
+}
+
+/**
+ * Generate random items based on level
+ * @param level - Player level
+ */
+function generateRandomItemsByLevel(level: number): {
+	weaponId: number;
+	armorId: number;
+	objectId: number;
+} {
 	const rarity = getRarityByLevel(level);
 
 	const weapon = generateRandomItem({
@@ -261,7 +258,6 @@ function generateRandomInventory(level: number, classId?: number, useFixedItems 
 		maxRarity: rarity
 	});
 
-	// For objects, pick a random fight-related nature (attack, defense, or speed)
 	const fightNature = RandomUtils.crowniclesRandom.pick(FightItemNatures);
 	const object = generateRandomItem({
 		itemCategory: ItemCategory.OBJECT,
@@ -270,7 +266,6 @@ function generateRandomInventory(level: number, classId?: number, useFixedItems 
 		subType: fightNature
 	});
 
-	// Validate generated items
 	if (!weapon || !armor || !object) {
 		throw new Error(`Erreur generatePlayers : Impossible de générer des items aléatoires de rareté ${rarity} (weapon:${weapon?.id}, armor:${armor?.id}, object:${object?.id})`);
 	}
@@ -283,15 +278,35 @@ function generateRandomInventory(level: number, classId?: number, useFixedItems 
 }
 
 /**
- * Generate players in the database
+ * Generate a random inventory setup (one armor, one weapon, one object, no potion)
+ * Objects will only have fight-related effects (attack, defense, speed)
+ * @param level - Player level to determine item rarity
+ * @param classId - Class ID to determine fixed items (optional)
+ * @param useFixedItems - Whether to use fixed items for this class group
  */
-const generatePlayersTestCommand: ExecuteTestCommandLike = async (_player, args) => {
-	const level = parseInt(args[0], 10);
-	const playersPerClass = args.length > 1 ? parseInt(args[1], 10) : 20;
-	const useFixedItems = args.length > 2 ? args[2].toLowerCase() === "true" : false;
-	const generatePets = args.length > 3 ? args[3].toLowerCase() === "true" : true;
-	const specificPetId = args.length > 4 ? parseInt(args[4], 10) : null;
+function generateRandomInventory(level: number, classId?: number, useFixedItems = false): {
+	weaponId: number;
+	armorId: number;
+	objectId: number;
+} {
+	if (useFixedItems && classId) {
+		const classGroup = getClassBehaviorGroup(classId);
+		if (classGroup && FIXED_ITEMS_BY_CLASS_GROUP[classGroup]) {
+			return validateFixedItems(classId, classGroup);
+		}
+		throw new Error(`Erreur generatePlayers : Aucun item fixe défini pour la classe ${classId} (groupe: ${classGroup || "non trouvé"})`);
+	}
 
+	return generateRandomItemsByLevel(level);
+}
+
+/**
+ * Validate input parameters
+ * @param level - Player level
+ * @param playersPerClass - Number of players per class
+ * @param specificPetId - Specific pet ID if provided
+ */
+function validateInputParameters(level: number, playersPerClass: number, specificPetId: number | null): void {
 	if (level < ClassConstants.REQUIRED_LEVEL) {
 		throw new Error(`Erreur generatePlayers : le niveau doit être au moins ${ClassConstants.REQUIRED_LEVEL} (niveau requis pour débloquer les classes) !`);
 	}
@@ -304,7 +319,6 @@ const generatePlayersTestCommand: ExecuteTestCommandLike = async (_player, args)
 		throw new Error("Erreur generatePlayers : le nombre de joueurs par classe doit être au moins 1 !");
 	}
 
-	// Validate specific pet if provided
 	if (specificPetId !== null) {
 		const specificPetType = PetDataController.instance.getById(specificPetId);
 		if (!specificPetType) {
@@ -314,8 +328,213 @@ const generatePlayersTestCommand: ExecuteTestCommandLike = async (_player, args)
 			throw new Error(`Erreur generatePlayers : Le pet avec l'ID ${specificPetId} a une rareté de 0 et ne peut pas être utilisé !`);
 		}
 	}
+}
 
-	// Get available classes at this level
+/**
+ * Generate pets for players
+ * @param generatePets - Whether to generate pets
+ * @param playersPerClass - Number of players per class
+ * @param specificPetId - Specific pet ID if provided
+ */
+async function generatePetsForPlayers(
+	generatePets: boolean,
+	playersPerClass: number,
+	specificPetId: number | null
+): Promise<{
+	pets: PetEntity[];
+	actualPlayersPerClass: number;
+	maxUniquePets: number;
+}> {
+	const pets: PetEntity[] = [];
+	let actualPlayersPerClass = playersPerClass;
+	let maxUniquePets = 0;
+
+	if (!generatePets) {
+		return {
+			pets,
+			actualPlayersPerClass,
+			maxUniquePets
+		};
+	}
+
+	if (specificPetId !== null) {
+		const specificPetType = PetDataController.instance.getById(specificPetId);
+		for (let i = 0; i < playersPerClass; i++) {
+			const pet = PetEntity.build({
+				typeId: specificPetType.id,
+				sex: "m",
+				nickname: `Pet_${specificPetType.id}_${i + 1}`,
+				lovePoints: 100
+			});
+			pets.push(await pet.save());
+		}
+	}
+	else {
+		const maxPetId = PetDataController.instance.getMaxId();
+		const allPetTypes: Pet[] = [];
+
+		for (let petId = 1; petId <= maxPetId; petId++) {
+			const petType = PetDataController.instance.getById(petId);
+			if (petType && petType.rarity !== 0) {
+				allPetTypes.push(petType);
+			}
+		}
+
+		maxUniquePets = allPetTypes.length;
+		actualPlayersPerClass = Math.min(playersPerClass, allPetTypes.length);
+
+		for (let i = 0; i < actualPlayersPerClass; i++) {
+			const petType = allPetTypes[i];
+			const pet = PetEntity.build({
+				typeId: petType.id,
+				sex: "m",
+				nickname: `Pet_${petType.id}`,
+				lovePoints: 100
+			});
+			pets.push(await pet.save());
+		}
+	}
+
+	return {
+		pets,
+		actualPlayersPerClass,
+		maxUniquePets
+	};
+}
+
+/**
+ * Create inventory slots for a player
+ * @param playerId - Player ID
+ * @param inventory - Inventory items
+ */
+async function createPlayerInventory(
+	playerId: number,
+	inventory: {
+		weaponId: number;
+		armorId: number;
+		objectId: number;
+	}
+): Promise<void> {
+	await InventorySlot.create({
+		playerId,
+		itemCategory: ItemCategory.WEAPON,
+		itemId: inventory.weaponId,
+		slot: 0
+	});
+
+	await InventorySlot.create({
+		playerId,
+		itemCategory: ItemCategory.ARMOR,
+		itemId: inventory.armorId,
+		slot: 0
+	});
+
+	await InventorySlot.create({
+		playerId,
+		itemCategory: ItemCategory.POTION,
+		itemId: 0,
+		slot: 0
+	});
+
+	await InventorySlot.create({
+		playerId,
+		itemCategory: ItemCategory.OBJECT,
+		itemId: inventory.objectId,
+		slot: 0
+	});
+}
+
+/**
+ * Create a single player with inventory
+ * @param classData - Class data
+ * @param level - Player level
+ * @param petId - Pet ID (if applicable)
+ * @param index - Player index for unique ID generation
+ * @param useFixedItems - Whether to use fixed items
+ */
+async function createPlayer(
+	classData: {
+		id: number;
+		getMaxHealthValue: (level: number) => number;
+	},
+	level: number,
+	petId: number | null,
+	index: number,
+	useFixedItems: boolean
+): Promise<void> {
+	const keycloakId = `test-player-${classData.id}-${index + 1}-${Date.now()}-${RandomUtils.crowniclesRandom.integer(1000, 9999)}`;
+	const newPlayer = await Players.getOrRegister(keycloakId);
+
+	newPlayer.level = level;
+	newPlayer.class = classData.id;
+	newPlayer.petId = petId;
+	newPlayer.health = classData.getMaxHealthValue(level);
+	newPlayer.experience = 0;
+	newPlayer.money = 1000;
+	newPlayer.score = 0;
+	newPlayer.weeklyScore = 0;
+
+	await newPlayer.save();
+
+	const inventory = generateRandomInventory(level, classData.id, useFixedItems);
+	await createPlayerInventory(newPlayer.id, inventory);
+}
+
+/**
+ * Format the result message
+ */
+function formatResultMessage(params: {
+	level: number;
+	actualPlayersPerClass: number;
+	playersPerClass: number;
+	useFixedItems: boolean;
+	generatePets: boolean;
+	specificPetId: number | null;
+	pets: PetEntity[];
+	maxUniquePets: number;
+	classGroup: number;
+	availableClasses: unknown[];
+	totalPlayersCreated: number;
+}): string {
+	const classIds = (params.availableClasses as Array<{
+		id: number;
+	}>).map(c => `${c.id}`).join(", ");
+	const classesDisplay = classIds.length > 100 ? `${params.availableClasses.length} classes` : classIds;
+
+	const limitMessage = params.generatePets && params.actualPlayersPerClass < params.playersPerClass && params.specificPetId === null
+		? ` (limité à ${params.maxUniquePets} pets uniques)`
+		: "";
+
+	const petInfo = params.generatePets
+		? params.specificPetId !== null
+			? `${params.pets.length} générés (pet ID ${params.specificPetId})`
+			: `${params.pets.length} générés (variés)`
+		: "Aucun";
+
+	return "✅ Génération terminée !\n"
+		+ "📊 Résumé :\n"
+		+ `• Niveau : ${params.level}\n`
+		+ `• Joueurs par classe : ${params.actualPlayersPerClass}${limitMessage}\n`
+		+ `• Items : ${params.useFixedItems ? "Fixes par groupe de classe" : "Aléatoires par niveau"}\n`
+		+ `• Pets : ${petInfo}\n`
+		+ `• Groupe de classes : ${params.classGroup}\n`
+		+ `• Classes disponibles : ${params.availableClasses.length}\n`
+		+ `• Joueurs créés : ${params.totalPlayersCreated} (${params.actualPlayersPerClass} par classe)\n\n`
+		+ `Classes concernées : ${classesDisplay}`;
+}
+
+/**
+ * Generate players in the database
+ */
+const generatePlayersTestCommand: ExecuteTestCommandLike = async (_player, args) => {
+	const level = parseInt(args[0], 10);
+	const playersPerClass = args.length > 1 ? parseInt(args[1], 10) : 20;
+	const useFixedItems = args.length > 2 ? args[2].toLowerCase() === "true" : false;
+	const generatePets = args.length > 3 ? args[3].toLowerCase() === "true" : true;
+	const specificPetId = args.length > 4 ? parseInt(args[4], 10) : null;
+
+	validateInputParameters(level, playersPerClass, specificPetId);
+
 	const classGroup = getClassGroupByLevel(level);
 	const availableClasses = ClassDataController.instance.getByGroup(classGroup);
 
@@ -323,140 +542,39 @@ const generatePlayersTestCommand: ExecuteTestCommandLike = async (_player, args)
 		throw new Error(`Erreur generatePlayers : aucune classe disponible pour le niveau ${level} !`);
 	}
 
-	const pets: PetEntity[] = [];
-	let actualPlayersPerClass = playersPerClass;
-	let maxUniquePets = 0;
+	const {
+		pets,
+		actualPlayersPerClass,
+		maxUniquePets
+	} = await generatePetsForPlayers(generatePets, playersPerClass, specificPetId);
 
-	if (generatePets) {
-		if (specificPetId !== null) {
-			// Generate the specific pet for all players
-			const specificPetType = PetDataController.instance.getById(specificPetId);
-			for (let i = 0; i < playersPerClass; i++) {
-				const pet = PetEntity.build({
-					typeId: specificPetType.id,
-					sex: "m",
-					nickname: `Pet_${specificPetType.id}_${i + 1}`,
-					lovePoints: 100
-				});
-				pets.push(await pet.save());
-			}
-			actualPlayersPerClass = playersPerClass;
-		}
-		else {
-			// Get all unique pet types
-			const maxPetId = PetDataController.instance.getMaxId();
-			const allPetTypes: Pet[] = [];
-
-			for (let petId = 1; petId <= maxPetId; petId++) {
-				const petType = PetDataController.instance.getById(petId);
-				if (petType && petType.rarity !== 0) {
-					allPetTypes.push(petType);
-				}
-			}
-
-			maxUniquePets = allPetTypes.length;
-
-			// Limit players per class to the number of unique pets
-			actualPlayersPerClass = Math.min(playersPerClass, allPetTypes.length);
-
-			// Generate pets (one per unique pet type, up to actualPlayersPerClass)
-			for (let i = 0; i < actualPlayersPerClass; i++) {
-				const petType = allPetTypes[i];
-				const pet = PetEntity.build({
-					typeId: petType.id,
-					sex: "m",
-					nickname: `Pet_${petType.id}`,
-					lovePoints: 100
-				});
-				pets.push(await pet.save());
-			}
-		}
-	}
-
-	// Create players for each class
 	let totalPlayersCreated = 0;
 	for (const classData of availableClasses) {
 		for (let i = 0; i < actualPlayersPerClass; i++) {
-			// Generate unique keycloak ID
-			const keycloakId = `test-player-${classData.id}-${i + 1}-${Date.now()}-${RandomUtils.crowniclesRandom.integer(1000, 9999)}`;
-
-			// Create player
-			const newPlayer = await Players.getOrRegister(keycloakId);
-
-			// Set player properties
-			newPlayer.level = level;
-			newPlayer.class = classData.id;
-			newPlayer.petId = generatePets ? pets[i].id : null;
-			newPlayer.health = classData.getMaxHealthValue(level);
-			newPlayer.experience = 0;
-			newPlayer.money = 1000; // Give them some starting money
-			newPlayer.score = 0;
-			newPlayer.weeklyScore = 0;
-
-			await newPlayer.save();
-
-			// Generate inventory for this player (based on class if using fixed items)
-			const inventory = generateRandomInventory(level, classData.id, useFixedItems);
-
-			// Weapon slot (equipped)
-			await InventorySlot.create({
-				playerId: newPlayer.id,
-				itemCategory: ItemCategory.WEAPON,
-				itemId: inventory.weaponId,
-				slot: 0 // slot 0 means equipped
-			});
-
-			// Armor slot (equipped)
-			await InventorySlot.create({
-				playerId: newPlayer.id,
-				itemCategory: ItemCategory.ARMOR,
-				itemId: inventory.armorId,
-				slot: 0 // slot 0 means equipped
-			});
-
-			// Potion slot (empty, default potion)
-			await InventorySlot.create({
-				playerId: newPlayer.id,
-				itemCategory: ItemCategory.POTION,
-				itemId: 0, // No potion
-				slot: 0
-			});
-
-			// Object slot (equipped)
-			await InventorySlot.create({
-				playerId: newPlayer.id,
-				itemCategory: ItemCategory.OBJECT,
-				itemId: inventory.objectId,
-				slot: 0 // slot 0 means equipped
-			});
-
+			await createPlayer(
+				classData,
+				level,
+				generatePets ? pets[i].id : null,
+				i,
+				useFixedItems
+			);
 			totalPlayersCreated++;
 		}
 	}
 
-	const classIds = availableClasses.map(c => `${c.id}`).join(", ");
-	const classesDisplay = classIds.length > 100 ? `${availableClasses.length} classes` : classIds;
-
-	const limitMessage = generatePets && actualPlayersPerClass < playersPerClass && specificPetId === null
-		? ` (limité à ${maxUniquePets} pets uniques)`
-		: "";
-
-	const petInfo = generatePets
-		? specificPetId !== null
-			? `${pets.length} générés (pet ID ${specificPetId})`
-			: `${pets.length} générés (variés)`
-		: "Aucun";
-
-	return "✅ Génération terminée !\n"
-		+ "📊 Résumé :\n"
-		+ `• Niveau : ${level}\n`
-		+ `• Joueurs par classe : ${actualPlayersPerClass}${limitMessage}\n`
-		+ `• Items : ${useFixedItems ? "Fixes par groupe de classe" : "Aléatoires par niveau"}\n`
-		+ `• Pets : ${petInfo}\n`
-		+ `• Groupe de classes : ${classGroup}\n`
-		+ `• Classes disponibles : ${availableClasses.length}\n`
-		+ `• Joueurs créés : ${totalPlayersCreated} (${actualPlayersPerClass} par classe)\n\n`
-		+ `Classes concernées : ${classesDisplay}`;
+	return formatResultMessage({
+		level,
+		actualPlayersPerClass,
+		playersPerClass,
+		useFixedItems,
+		generatePets,
+		specificPetId,
+		pets,
+		maxUniquePets,
+		classGroup,
+		availableClasses,
+		totalPlayersCreated
+	});
 };
 
 commandInfo.execute = generatePlayersTestCommand;
