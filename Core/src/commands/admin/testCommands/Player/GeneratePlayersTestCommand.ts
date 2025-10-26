@@ -84,35 +84,6 @@ export const commandInfo: ITestCommand = {
 };
 
 /**
- * Get the class group based on level
- * @param level
- */
-function getClassGroupByLevel(level: number): number {
-	const ranges = [
-		[ClassConstants.REQUIRED_LEVEL, ClassConstants.GROUP1LEVEL],
-		[ClassConstants.GROUP1LEVEL, ClassConstants.GROUP2LEVEL],
-		[ClassConstants.GROUP2LEVEL, ClassConstants.GROUP3LEVEL],
-		[ClassConstants.GROUP3LEVEL, ClassConstants.GROUP4LEVEL]
-	];
-	const index = ranges.findIndex(([min, max]) => level >= min && level < max);
-	return index >= 0 ? index : ranges.length;
-}
-
-/**
- * Get item rarity based on player level
- * @param level
- */
-function getRarityByLevel(level: number): number {
-	if (level >= 100) {
-		return 6;
-	}
-	if (level >= 50) {
-		return 5;
-	}
-	return 4;
-}
-
-/**
  * Fixed items configuration by class behavior group
  * Format: [weaponId, armorId, objectId]
  */
@@ -248,9 +219,14 @@ function getClassBehaviorGroup(classId: number): string {
 /**
  * Validate and retrieve fixed items for a class
  * @param classId - Class ID
- * @param classGroup - Class group name
  */
-function validateFixedItems(classId: number, classGroup: string): InventoryItems {
+function getFixedItemsForClass(classId: number): InventoryItems {
+	const classGroup = getClassBehaviorGroup(classId);
+
+	if (!classGroup || !FIXED_ITEMS_BY_CLASS_GROUP[classGroup]) {
+		throw new Error(`Erreur generatePlayers : Aucun item fixe défini pour la classe ${classId} (groupe: ${classGroup || "non trouvé"})`);
+	}
+
 	const [
 		weaponId,
 		armorId,
@@ -283,7 +259,8 @@ function validateFixedItems(classId: number, classGroup: string): InventoryItems
  * @param level - Player level
  */
 function generateRandomItemsByLevel(level: number): InventoryItems {
-	const rarity = getRarityByLevel(level);
+	// Get item rarity based on player level
+	const rarity = level >= 100 ? 6 : level >= 50 ? 5 : 4;
 
 	const weapon = generateRandomItem({
 		itemCategory: ItemCategory.WEAPON,
@@ -305,7 +282,8 @@ function generateRandomItemsByLevel(level: number): InventoryItems {
 		subType: fightNature
 	});
 
-	if (!weapon || !armor || !object) {
+	const allItemsGenerated = weapon && armor && object;
+	if (!allItemsGenerated) {
 		throw new Error(`Erreur generatePlayers : Impossible de générer des items aléatoires de rareté ${rarity} (weapon:${weapon?.id}, armor:${armor?.id}, object:${object?.id})`);
 	}
 
@@ -323,11 +301,7 @@ function generateRandomItemsByLevel(level: number): InventoryItems {
  */
 function generateRandomInventory(params: InventoryGenerationParams): InventoryItems {
 	if (params.useFixedItems && params.classId) {
-		const classGroup = getClassBehaviorGroup(params.classId);
-		if (classGroup && FIXED_ITEMS_BY_CLASS_GROUP[classGroup]) {
-			return validateFixedItems(params.classId, classGroup);
-		}
-		throw new Error(`Erreur generatePlayers : Aucun item fixe défini pour la classe ${params.classId} (groupe: ${classGroup || "non trouvé"})`);
+		return getFixedItemsForClass(params.classId);
 	}
 
 	return generateRandomItemsByLevel(params.level);
@@ -340,57 +314,32 @@ function generateRandomInventory(params: InventoryGenerationParams): InventoryIt
  * @param specificPetId - Specific pet ID if provided
  */
 /**
- * Validate level parameter
- * @param level - Player level
- */
-/**
- * Validate level parameter
- * @param level - Player level
- */
-function validateLevel(level: number): void {
-	if (level < ClassConstants.REQUIRED_LEVEL) {
-		throw new Error(`Erreur generatePlayers : le niveau doit être au moins ${ClassConstants.REQUIRED_LEVEL} (niveau requis pour débloquer les classes) !`);
-	}
-
-	if (level > 200) {
-		throw new Error("Erreur generatePlayers : le niveau ne peut pas dépasser 200 !");
-	}
-}
-
-/**
- * Validate playersPerClass parameter
- * @param playersPerClass - Number of players per class
- */
-function validatePlayersPerClass(playersPerClass: number): void {
-	if (playersPerClass < 1) {
-		throw new Error("Erreur generatePlayers : le nombre de joueurs par classe doit être au moins 1 !");
-	}
-}
-
-/**
- * Validate specific pet parameter
- * @param specificPetId - Specific pet ID
- */
-function validateSpecificPet(specificPetId: number): void {
-	const specificPetType = PetDataController.instance.getById(specificPetId);
-	if (!specificPetType) {
-		throw new Error(`Erreur generatePlayers : Le pet avec l'ID ${specificPetId} n'existe pas !`);
-	}
-	if (specificPetType.rarity === 0) {
-		throw new Error(`Erreur generatePlayers : Le pet avec l'ID ${specificPetId} a une rareté de 0 et ne peut pas être utilisé !`);
-	}
-}
-
-/**
  * Validate command configuration
  * @param config - Command configuration
  */
 function validateCommandConfig(config: CommandConfig): void {
-	validateLevel(config.level);
-	validatePlayersPerClass(config.playersPerClass);
+	// Validate level
+	if (config.level < ClassConstants.REQUIRED_LEVEL) {
+		throw new Error(`Erreur generatePlayers : le niveau doit être au moins ${ClassConstants.REQUIRED_LEVEL} (niveau requis pour débloquer les classes) !`);
+	}
+	if (config.level > 200) {
+		throw new Error("Erreur generatePlayers : le niveau ne peut pas dépasser 200 !");
+	}
 
+	// Validate playersPerClass
+	if (config.playersPerClass < 1) {
+		throw new Error("Erreur generatePlayers : le nombre de joueurs par classe doit être au moins 1 !");
+	}
+
+	// Validate specific pet if provided
 	if (config.specificPetId !== null) {
-		validateSpecificPet(config.specificPetId);
+		const specificPetType = PetDataController.instance.getById(config.specificPetId);
+		if (!specificPetType) {
+			throw new Error(`Erreur generatePlayers : Le pet avec l'ID ${config.specificPetId} n'existe pas !`);
+		}
+		if (specificPetType.rarity === 0) {
+			throw new Error(`Erreur generatePlayers : Le pet avec l'ID ${config.specificPetId} a une rareté de 0 et ne peut pas être utilisé !`);
+		}
 	}
 }
 
@@ -473,36 +422,6 @@ async function generatePetsForPlayers(config: PetGenerationConfig): Promise<PetG
  * @param playerId - Player ID
  * @param inventory - Inventory items
  */
-async function createPlayerInventory(playerId: number, inventory: InventoryItems): Promise<void> {
-	await InventorySlot.create({
-		playerId,
-		itemCategory: ItemCategory.WEAPON,
-		itemId: inventory.weaponId,
-		slot: 0
-	});
-
-	await InventorySlot.create({
-		playerId,
-		itemCategory: ItemCategory.ARMOR,
-		itemId: inventory.armorId,
-		slot: 0
-	});
-
-	await InventorySlot.create({
-		playerId,
-		itemCategory: ItemCategory.POTION,
-		itemId: 0,
-		slot: 0
-	});
-
-	await InventorySlot.create({
-		playerId,
-		itemCategory: ItemCategory.OBJECT,
-		itemId: inventory.objectId,
-		slot: 0
-	});
-}
-
 /**
  * Create a single player with inventory
  * @param params - Player creation parameters
@@ -536,7 +455,35 @@ async function createPlayer(params: {
 		classId: params.classData.id,
 		useFixedItems: params.useFixedItems
 	});
-	await createPlayerInventory(newPlayer.id, inventory);
+
+	// Create player inventory
+	await InventorySlot.create({
+		playerId: newPlayer.id,
+		itemCategory: ItemCategory.WEAPON,
+		itemId: inventory.weaponId,
+		slot: 0
+	});
+
+	await InventorySlot.create({
+		playerId: newPlayer.id,
+		itemCategory: ItemCategory.ARMOR,
+		itemId: inventory.armorId,
+		slot: 0
+	});
+
+	await InventorySlot.create({
+		playerId: newPlayer.id,
+		itemCategory: ItemCategory.POTION,
+		itemId: 0,
+		slot: 0
+	});
+
+	await InventorySlot.create({
+		playerId: newPlayer.id,
+		itemCategory: ItemCategory.OBJECT,
+		itemId: inventory.objectId,
+		slot: 0
+	});
 }
 
 /**
@@ -604,7 +551,16 @@ const generatePlayersTestCommand: ExecuteTestCommandLike = async (_player, args)
 
 	validateCommandConfig(config);
 
-	const classGroup = getClassGroupByLevel(config.level);
+	// Get the class group based on level
+	const ranges = [
+		[ClassConstants.REQUIRED_LEVEL, ClassConstants.GROUP1LEVEL],
+		[ClassConstants.GROUP1LEVEL, ClassConstants.GROUP2LEVEL],
+		[ClassConstants.GROUP2LEVEL, ClassConstants.GROUP3LEVEL],
+		[ClassConstants.GROUP3LEVEL, ClassConstants.GROUP4LEVEL]
+	];
+	const index = ranges.findIndex(([min, max]) => config.level >= min && config.level < max);
+	const classGroup = index >= 0 ? index : ranges.length;
+
 	const availableClasses = ClassDataController.instance.getByGroup(classGroup);
 
 	if (availableClasses.length === 0) {
