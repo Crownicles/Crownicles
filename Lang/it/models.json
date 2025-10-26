@@ -3,10 +3,10 @@
     "0": "Nessuno scudo e armatura",
     "1": "Scudo deflettore Engi",
     "10": "Scudo pesante",
-    "100": "Armatura della trama",
+    "100": "Tramarmor",
     "101": "Scudo termico",
-    "102": "armatura in mitrile",
-    "103": "Frontale",
+    "102": "Armatura in mithril",
+    "103": "Pettorale",
     "104": "Protezione della piastra 4",
     "105": "Cuirass",
     "106": "Scudo 3 in 1",
@@ -167,7 +167,7 @@
     "8": "Lanciatori di pietre",
     "9": "Fronde"
   },
-  "classFormat": "{emote:classes.{{id}}} $t(models:classes.{{id}})",
+  "classFormat": "{emote:classes.{{id}} $t(models:classes.{{id}})}",
   "classPluralFormat": "{emote:classes.{{id}}} $t(models:classes_plural.{{id}})",
   "classWithStatsFormat": "{emote:classes.{{id}}} $t(models:classes.{{id}}) :\n{emote:unitValues.energy} {{energy}} | {emote:unitValues.attack} {{attack}} | {emote:unitValues.defense} {{defense}} | {emote:unitValues.speed} {{speed}} | {emote:unitValues.breath} {{initialBreath}} / {{maxBreath}} | {emote:unitValues.health} {{health}}",
   "class_descriptions": {
