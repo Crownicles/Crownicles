@@ -46,6 +46,72 @@ export interface ITestCommand {
 }
 
 /**
+ * Parse a named argument and extract its value
+ * @param arg - Current argument
+ * @param nextArg - Next argument (for --name value format)
+ * @returns Object with name, value, and whether to skip next arg
+ */
+function parseNamedArgument(arg: string, nextArg: string | undefined): {
+	name: string;
+	value: string | undefined;
+	skipNext: boolean;
+} {
+	const equalIndex = arg.indexOf("=");
+
+	if (equalIndex !== -1) {
+		// Format: --name=value
+		return {
+			name: arg.substring(2, equalIndex),
+			value: arg.substring(equalIndex + 1),
+			skipNext: false
+		};
+	}
+
+	// Format: --name value (value is next arg)
+	return {
+		name: arg.substring(2),
+		value: nextArg,
+		skipNext: nextArg !== undefined
+	};
+}
+
+/**
+ * Process named arguments and populate the parsed array
+ * @param args - Raw arguments
+ * @param argNames - Expected argument names in order
+ * @param parsedArgs - Array to populate with parsed values
+ * @returns Number of arguments consumed
+ */
+function processNamedArguments(
+	args: string[],
+	argNames: string[],
+	parsedArgs: string[]
+): number {
+	let consumed = 0;
+
+	for (let i = 0; i < args.length; i++) {
+		const arg = args[i];
+		const nextArg = i + 1 < args.length ? args[i + 1] : undefined;
+		const {
+			name, value, skipNext
+		} = parseNamedArgument(arg, nextArg);
+		const argIndex = argNames.indexOf(name);
+
+		if (argIndex !== -1 && value !== undefined) {
+			parsedArgs[argIndex] = value;
+		}
+
+		consumed++;
+		if (skipNext) {
+			i++; // Skip next arg as it's the value
+			consumed++;
+		}
+	}
+
+	return consumed;
+}
+
+/**
  * Parse arguments supporting both positional and named formats
  * Named format: --argName=value or --argName value
  * @param args - Raw arguments
@@ -61,47 +127,23 @@ export function parseTestCommandArgs(
 } {
 	const argNames = Object.keys(typeWaited);
 	const parsedArgs: string[] = new Array(argNames.length).fill(undefined);
-	let usedNamedArgs = false;
 
-	for (let i = 0; i < args.length; i++) {
-		const arg = args[i];
+	// Check if first arg is named
+	const usesNamedArgs = args.length > 0 && args[0].startsWith("--");
 
-		// Check if it's a named argument (--name=value or --name value)
-		if (arg.startsWith("--")) {
-			usedNamedArgs = true;
-			const equalIndex = arg.indexOf("=");
-
-			if (equalIndex !== -1) {
-				// Format: --name=value
-				const name = arg.substring(2, equalIndex);
-				const value = arg.substring(equalIndex + 1);
-				const argIndex = argNames.indexOf(name);
-
-				if (argIndex !== -1) {
-					parsedArgs[argIndex] = value;
-				}
-			}
-			else {
-				// Format: --name value (value is next arg)
-				const name = arg.substring(2);
-				const argIndex = argNames.indexOf(name);
-
-				if (argIndex !== -1 && i + 1 < args.length) {
-					parsedArgs[argIndex] = args[i + 1];
-					i++; // Skip next arg as it's the value
-				}
-			}
-		}
-		else if (!usedNamedArgs) {
-			// Positional argument (only if we haven't started using named args)
-			parsedArgs[i] = arg;
+	if (usesNamedArgs) {
+		processNamedArguments(args, argNames, parsedArgs);
+	}
+	else {
+		// Positional arguments
+		for (let i = 0; i < args.length && i < parsedArgs.length; i++) {
+			parsedArgs[i] = args[i];
 		}
 	}
 
-	// Filter out undefined values
 	return {
 		parsedArgs: parsedArgs.filter(arg => arg !== undefined),
-		usedNamedArgs
+		usedNamedArgs: usesNamedArgs
 	};
 }
 
