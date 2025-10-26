@@ -28,8 +28,12 @@ import {
 } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import { CommandTestPacketRes } from "../../../../../../Lib/src/packets/commands/CommandTestPacket";
 import { CrowniclesLogger } from "../../../../../../Lib/src/logs/CrowniclesLogger";
-import * as fs from "fs";
-import * as path from "path";
+import {
+	existsSync, mkdirSync, writeFileSync
+} from "fs";
+import {
+	join
+} from "path";
 
 /**
  * Escape a value for CSV export by wrapping it in quotes if it contains special characters
@@ -367,12 +371,12 @@ const aiTournamentTestCommand: ExecuteTestCommandLike = async (_player, args, re
 	// Réponse immédiate à l'interaction Discord
 	response.push(makePacket(CommandTestPacketRes, {
 		commandName: "aitournament",
-		result: `🏆 **Tournoi IA lancé !**\n\n`
+		result: "🏆 **Tournoi IA lancé !**\n\n"
 			+ `👥 Participants : ${eligiblePlayers.length} joueurs (niveau ${minLevel}+)\n`
 			+ `⚔️ Combats par paire : ${fightsPerPair}\n`
 			+ `📊 Total de paires : ${totalPairs}\n`
 			+ `🎯 Total de combats : ${totalFights.toLocaleString()}\n\n`
-			+ `Les résultats seront sauvegardés dans le dossier \`tournament_results/\``,
+			+ "Les résultats seront sauvegardés dans le dossier `tournament_results/`",
 		isError: false
 	}));
 
@@ -757,25 +761,25 @@ async function runTournamentInBackground(params: {
 	const timestamp = new Date()
 		.toISOString()
 		.replace(/[:.]/gu, "-");
-	const outputDir = path.join(process.cwd(), "tournament_results");
+	const outputDir = join(process.cwd(), "tournament_results");
 
 	// Créer le dossier s'il n'existe pas
-	if (!fs.existsSync(outputDir)) {
-		fs.mkdirSync(outputDir, { recursive: true });
+	if (!existsSync(outputDir)) {
+		mkdirSync(outputDir, { recursive: true });
 	}
 
 	const txtFileName = `ai_tournament_${timestamp}.txt`;
 	const csvFileName = `ai_tournament_matchups_${timestamp}.csv`;
-	const txtFilePath = path.join(outputDir, txtFileName);
-	const csvFilePath = path.join(outputDir, csvFileName);
+	const txtFilePath = join(outputDir, txtFileName);
+	const csvFilePath = join(outputDir, csvFileName);
 
 	// Sauvegarder le rapport texte
-	fs.writeFileSync(txtFilePath, fullReport, "utf8");
+	writeFileSync(txtFilePath, fullReport, "utf8");
 	CrowniclesLogger.info(`📄 Rapport texte sauvegardé : ${txtFilePath}`);
 
 	// Sauvegarder le CSV
 	const csvContent = csvRows.map(row => row.map(escapeCsvValue).join(",")).join("\n");
-	fs.writeFileSync(csvFilePath, csvContent, "utf8");
+	writeFileSync(csvFilePath, csvContent, "utf8");
 	CrowniclesLogger.info(`📊 Fichier CSV sauvegardé : ${csvFilePath}`);
 
 	CrowniclesLogger.info("\n✅ Tournoi terminé avec succès !\n");
