@@ -521,6 +521,52 @@ async function createPlayer(params: {
 }
 
 /**
+ * Format class display for result message
+ */
+function formatClassDisplay(availableClasses: unknown[]): string {
+	const classIds = (availableClasses as Array<{
+		id: number;
+	}>).map(c => `${c.id}`).join(", ");
+	return classIds.length > 100 ? `${availableClasses.length} classes` : classIds;
+}
+
+/**
+ * Get pet limit message
+ */
+function getPetLimitMessage(params: {
+	generatePets: boolean;
+	actualPlayersPerClass: number;
+	playersPerClass: number;
+	specificPetId: number | null;
+	maxUniquePets: number;
+}): string {
+	const isLimited = params.generatePets
+		&& params.actualPlayersPerClass < params.playersPerClass
+		&& params.specificPetId === null;
+
+	return isLimited ? ` (limité à ${params.maxUniquePets} pets uniques)` : "";
+}
+
+/**
+ * Get pet information summary
+ */
+function getPetInfoSummary(params: {
+	generatePets: boolean;
+	specificPetId: number | null;
+	petsCount: number;
+}): string {
+	if (!params.generatePets) {
+		return "Aucun";
+	}
+
+	if (params.specificPetId !== null) {
+		return `${params.petsCount} générés (pet ID ${params.specificPetId})`;
+	}
+
+	return `${params.petsCount} générés (variés)`;
+}
+
+/**
  * Format the result message
  */
 function formatResultMessage(params: {
@@ -536,20 +582,19 @@ function formatResultMessage(params: {
 	availableClasses: unknown[];
 	totalPlayersCreated: number;
 }): string {
-	const classIds = (params.availableClasses as Array<{
-		id: number;
-	}>).map(c => `${c.id}`).join(", ");
-	const classesDisplay = classIds.length > 100 ? `${params.availableClasses.length} classes` : classIds;
-
-	const limitMessage = params.generatePets && params.actualPlayersPerClass < params.playersPerClass && params.specificPetId === null
-		? ` (limité à ${params.maxUniquePets} pets uniques)`
-		: "";
-
-	const petInfo = params.generatePets
-		? params.specificPetId !== null
-			? `${params.pets.length} générés (pet ID ${params.specificPetId})`
-			: `${params.pets.length} générés (variés)`
-		: "Aucun";
+	const classesDisplay = formatClassDisplay(params.availableClasses);
+	const limitMessage = getPetLimitMessage({
+		generatePets: params.generatePets,
+		actualPlayersPerClass: params.actualPlayersPerClass,
+		playersPerClass: params.playersPerClass,
+		specificPetId: params.specificPetId,
+		maxUniquePets: params.maxUniquePets
+	});
+	const petInfo = getPetInfoSummary({
+		generatePets: params.generatePets,
+		specificPetId: params.specificPetId,
+		petsCount: params.pets.length
+	});
 
 	return "✅ Génération terminée !\n"
 		+ "📊 Résumé :\n"
@@ -561,6 +606,50 @@ function formatResultMessage(params: {
 		+ `• Classes disponibles : ${params.availableClasses.length}\n`
 		+ `• Joueurs créés : ${params.totalPlayersCreated} (${params.actualPlayersPerClass} par classe)\n\n`
 		+ `Classes concernées : ${classesDisplay}`;
+}
+
+/**
+ * Calculate class group based on level
+ */
+function calculateClassGroup(level: number): number {
+	const ranges = [
+		[ClassConstants.REQUIRED_LEVEL, ClassConstants.GROUP1LEVEL],
+		[ClassConstants.GROUP1LEVEL, ClassConstants.GROUP2LEVEL],
+		[ClassConstants.GROUP2LEVEL, ClassConstants.GROUP3LEVEL],
+		[ClassConstants.GROUP3LEVEL, ClassConstants.GROUP4LEVEL]
+	];
+	const index = ranges.findIndex(([min, max]) => level >= min && level < max);
+	return index >= 0 ? index : ranges.length;
+}
+
+/**
+ * Create all players for all classes
+ */
+async function createAllPlayers(params: {
+	availableClasses: Array<{
+		id: number;
+		getMaxHealthValue: (level: number) => number;
+	}>;
+	actualPlayersPerClass: number;
+	level: number;
+	generatePets: boolean;
+	pets: PetEntity[];
+	useFixedItems: boolean;
+}): Promise<number> {
+	let totalPlayersCreated = 0;
+	for (const classData of params.availableClasses) {
+		for (let i = 0; i < params.actualPlayersPerClass; i++) {
+			await createPlayer({
+				classData,
+				level: params.level,
+				petId: params.generatePets ? params.pets[i].id : null,
+				index: i,
+				useFixedItems: params.useFixedItems
+			});
+			totalPlayersCreated++;
+		}
+	}
+	return totalPlayersCreated;
 }
 
 /**
@@ -585,16 +674,7 @@ const generatePlayersTestCommand: ExecuteTestCommandLike = async (_player, args)
 
 	validateCommandConfig(config);
 
-	// Get the class group based on level
-	const ranges = [
-		[ClassConstants.REQUIRED_LEVEL, ClassConstants.GROUP1LEVEL],
-		[ClassConstants.GROUP1LEVEL, ClassConstants.GROUP2LEVEL],
-		[ClassConstants.GROUP2LEVEL, ClassConstants.GROUP3LEVEL],
-		[ClassConstants.GROUP3LEVEL, ClassConstants.GROUP4LEVEL]
-	];
-	const index = ranges.findIndex(([min, max]) => config.level >= min && config.level < max);
-	const classGroup = index >= 0 ? index : ranges.length;
-
+	const classGroup = calculateClassGroup(config.level);
 	const availableClasses = ClassDataController.instance.getByGroup(classGroup);
 
 	if (availableClasses.length === 0) {
@@ -611,19 +691,14 @@ const generatePlayersTestCommand: ExecuteTestCommandLike = async (_player, args)
 		specificPetId: config.specificPetId
 	});
 
-	let totalPlayersCreated = 0;
-	for (const classData of availableClasses) {
-		for (let i = 0; i < actualPlayersPerClass; i++) {
-			await createPlayer({
-				classData,
-				level: config.level,
-				petId: config.generatePets ? pets[i].id : null,
-				index: i,
-				useFixedItems: config.useFixedItems
-			});
-			totalPlayersCreated++;
-		}
-	}
+	const totalPlayersCreated = await createAllPlayers({
+		availableClasses,
+		actualPlayersPerClass,
+		level: config.level,
+		generatePets: config.generatePets,
+		pets,
+		useFixedItems: config.useFixedItems
+	});
 
 	return formatResultMessage({
 		level: config.level,
