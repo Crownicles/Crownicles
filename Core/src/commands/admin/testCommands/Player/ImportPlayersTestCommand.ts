@@ -53,6 +53,104 @@ type ImportData = {
 };
 
 /**
+ * Read and parse import file
+ */
+function readImportFile(filename: string): ImportData {
+	if (!existsSync(filename)) {
+		throw new Error(`Erreur importPlayers : le fichier "${filename}" n'existe pas !`);
+	}
+
+	try {
+		const fileContent = readFileSync(filename, "utf-8");
+		return JSON.parse(fileContent) as ImportData;
+	}
+	catch (error) {
+		throw new Error(`Erreur importPlayers : impossible de lire ou parser le fichier "${filename}" ! ${error.message}`);
+	}
+}
+
+/**
+ * Create pet from import data
+ */
+async function createPetFromData(petData: ImportedPlayer["pet"]): Promise<number | null> {
+	if (!petData) {
+		return null;
+	}
+
+	const pet = PetEntities.createPet(
+		petData.typeId,
+		petData.sex,
+		petData.nickname
+	);
+	pet.lovePoints = petData.lovePoints;
+	await pet.save();
+
+	return pet.id;
+}
+
+/**
+ * Import player inventory
+ */
+async function importPlayerInventory(playerId: number, inventory: ImportedPlayer["inventory"]): Promise<void> {
+	// Clear existing inventory
+	await InventorySlot.destroy({
+		where: {
+			playerId
+		}
+	});
+
+	// Import inventory slots
+	if (inventory && inventory.length > 0) {
+		for (const invSlot of inventory) {
+			await InventorySlot.create({
+				playerId,
+				itemCategory: invSlot.itemCategory,
+				itemId: invSlot.itemId,
+				slot: invSlot.slot
+			});
+		}
+	}
+}
+
+/**
+ * Import a single player
+ */
+async function importSinglePlayer(playerData: ImportedPlayer): Promise<{
+	isNew: boolean;
+	petCreated: boolean;
+	inventoryCreated: boolean;
+}> {
+	const player = await Players.getOrRegister(playerData.keycloakId);
+	const isNew = player.level === 0; // New players have level 0 by default
+
+	// Update player properties
+	player.level = playerData.level;
+	player.class = playerData.class;
+	player.health = playerData.health;
+	player.experience = playerData.experience;
+	player.money = playerData.money;
+	player.score = playerData.score;
+	player.weeklyScore = playerData.weeklyScore;
+
+	// Handle pet
+	const petId = await createPetFromData(playerData.pet);
+	if (petId !== null) {
+		player.petId = petId;
+	}
+
+	await player.save();
+
+	// Import inventory
+	await importPlayerInventory(player.id, playerData.inventory);
+
+	return {
+		isNew,
+		petCreated: playerData.pet !== null,
+		inventoryCreated: playerData.inventory && playerData.inventory.length > 0
+	};
+}
+
+/**
  * Import players from a JSON file
  */
 const importPlayersTestCommand: ExecuteTestCommandLike = async (_player, args) => {
@@ -62,20 +160,7 @@ const importPlayersTestCommand: ExecuteTestCommandLike = async (_player, args) =
 		throw new Error("Erreur importPlayers : le nom du fichier ne peut pas être vide !");
 	}
 
-	// Check if file exists
-	if (!existsSync(filename)) {
-		throw new Error(`Erreur importPlayers : le fichier "${filename}" n'existe pas !`);
-	}
-
-	// Read and parse file
-	let importData: ImportData;
-	try {
-		const fileContent = readFileSync(filename, "utf-8");
-		importData = JSON.parse(fileContent) as ImportData;
-	}
-	catch (error) {
-		throw new Error(`Erreur importPlayers : impossible de lire ou parser le fichier "${filename}" ! ${error.message}`);
-	}
+	const importData = readImportFile(filename);
 
 	// Validate data structure
 	if (!importData.players || !Array.isArray(importData.players)) {
@@ -89,59 +174,20 @@ const importPlayersTestCommand: ExecuteTestCommandLike = async (_player, args) =
 
 	// Import each player
 	for (const playerData of importData.players) {
-		// Get or create player
-		const player = await Players.getOrRegister(playerData.keycloakId);
-		const isNew = player.level === 0; // New players have level 0 by default
+		const result = await importSinglePlayer(playerData);
 
-		// Update player properties
-		player.level = playerData.level;
-		player.class = playerData.class;
-		player.health = playerData.health;
-		player.experience = playerData.experience;
-		player.money = playerData.money;
-		player.score = playerData.score;
-		player.weeklyScore = playerData.weeklyScore;
-
-		// Handle pet
-		if (playerData.pet) {
-			const pet = PetEntities.createPet(
-				playerData.pet.typeId,
-				playerData.pet.sex,
-				playerData.pet.nickname
-			);
-			pet.lovePoints = playerData.pet.lovePoints;
-			await pet.save();
-
-			player.petId = pet.id;
-			petsCreated++;
-		}
-
-		await player.save();
-
-		if (isNew) {
+		if (result.isNew) {
 			playersCreated++;
 		}
 		else {
 			playersUpdated++;
 		}
 
-		// Clear existing inventory
-		await InventorySlot.destroy({
-			where: {
-				playerId: player.id
-			}
-		});
+		if (result.petCreated) {
+			petsCreated++;
+		}
 
-		// Import inventory
-		if (playerData.inventory && playerData.inventory.length > 0) {
-			for (const invSlot of playerData.inventory) {
-				await InventorySlot.create({
-					playerId: player.id,
-					itemCategory: invSlot.itemCategory,
-					itemId: invSlot.itemId,
-					slot: invSlot.slot
-				});
-			}
+		if (result.inventoryCreated) {
 			inventoriesCreated++;
 		}
 	}

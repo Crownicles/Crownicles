@@ -217,6 +217,31 @@ function getClassBehaviorGroup(classId: number): string {
 }
 
 /**
+ * Validate that all fixed items exist in the database
+ */
+function ensureFixedItemsExist(params: {
+	weaponId: number;
+	armorId: number;
+	objectId: number;
+	classGroup: string;
+	classId: number;
+}): void {
+	const weapon = WeaponDataController.instance.getById(params.weaponId);
+	const armor = ArmorDataController.instance.getById(params.armorId);
+	const object = ObjectItemDataController.instance.getById(params.objectId);
+
+	if (!weapon) {
+		throw new Error(`Erreur generatePlayers : Arme ${params.weaponId} introuvable pour le groupe ${params.classGroup} (classId: ${params.classId})`);
+	}
+	if (!armor) {
+		throw new Error(`Erreur generatePlayers : Armure ${params.armorId} introuvable pour le groupe ${params.classGroup} (classId: ${params.classId})`);
+	}
+	if (!object) {
+		throw new Error(`Erreur generatePlayers : Objet ${params.objectId} introuvable pour le groupe ${params.classGroup} (classId: ${params.classId})`);
+	}
+}
+
+/**
  * Validate and retrieve fixed items for a class
  * @param classId - Class ID
  */
@@ -233,19 +258,13 @@ function getFixedItemsForClass(classId: number): InventoryItems {
 		objectId
 	] = FIXED_ITEMS_BY_CLASS_GROUP[classGroup];
 
-	const weapon = WeaponDataController.instance.getById(weaponId);
-	const armor = ArmorDataController.instance.getById(armorId);
-	const object = ObjectItemDataController.instance.getById(objectId);
-
-	if (!weapon) {
-		throw new Error(`Erreur generatePlayers : Arme ${weaponId} introuvable pour le groupe ${classGroup} (classId: ${classId})`);
-	}
-	if (!armor) {
-		throw new Error(`Erreur generatePlayers : Armure ${armorId} introuvable pour le groupe ${classGroup} (classId: ${classId})`);
-	}
-	if (!object) {
-		throw new Error(`Erreur generatePlayers : Objet ${objectId} introuvable pour le groupe ${classGroup} (classId: ${classId})`);
-	}
+	ensureFixedItemsExist({
+		weaponId,
+		armorId,
+		objectId,
+		classGroup,
+		classId
+	});
 
 	return {
 		weaponId,
@@ -308,38 +327,43 @@ function generateRandomInventory(params: InventoryGenerationParams): InventoryIt
 }
 
 /**
- * Validate input parameters
- * @param level - Player level
- * @param playersPerClass - Number of players per class
- * @param specificPetId - Specific pet ID if provided
+ * Validate level range
  */
+function ensureLevelIsValid(level: number): void {
+	if (level < ClassConstants.REQUIRED_LEVEL) {
+		throw new Error(`Erreur generatePlayers : le niveau doit être au moins ${ClassConstants.REQUIRED_LEVEL} (niveau requis pour débloquer les classes) !`);
+	}
+	if (level > 200) {
+		throw new Error("Erreur generatePlayers : le niveau ne peut pas dépasser 200 !");
+	}
+}
+
+/**
+ * Validate specific pet existence and rarity
+ */
+function ensurePetIsValid(specificPetId: number): void {
+	const specificPetType = PetDataController.instance.getById(specificPetId);
+	if (!specificPetType) {
+		throw new Error(`Erreur generatePlayers : Le pet avec l'ID ${specificPetId} n'existe pas !`);
+	}
+	if (specificPetType.rarity === 0) {
+		throw new Error(`Erreur generatePlayers : Le pet avec l'ID ${specificPetId} a une rareté de 0 et ne peut pas être utilisé !`);
+	}
+}
+
 /**
  * Validate command configuration
  * @param config - Command configuration
  */
 function validateCommandConfig(config: CommandConfig): void {
-	// Validate level
-	if (config.level < ClassConstants.REQUIRED_LEVEL) {
-		throw new Error(`Erreur generatePlayers : le niveau doit être au moins ${ClassConstants.REQUIRED_LEVEL} (niveau requis pour débloquer les classes) !`);
-	}
-	if (config.level > 200) {
-		throw new Error("Erreur generatePlayers : le niveau ne peut pas dépasser 200 !");
-	}
+	ensureLevelIsValid(config.level);
 
-	// Validate playersPerClass
 	if (config.playersPerClass < 1) {
 		throw new Error("Erreur generatePlayers : le nombre de joueurs par classe doit être au moins 1 !");
 	}
 
-	// Validate specific pet if provided
 	if (config.specificPetId !== null) {
-		const specificPetType = PetDataController.instance.getById(config.specificPetId);
-		if (!specificPetType) {
-			throw new Error(`Erreur generatePlayers : Le pet avec l'ID ${config.specificPetId} n'existe pas !`);
-		}
-		if (specificPetType.rarity === 0) {
-			throw new Error(`Erreur generatePlayers : Le pet avec l'ID ${config.specificPetId} a une rareté de 0 et ne peut pas être utilisé !`);
-		}
+		ensurePetIsValid(config.specificPetId);
 	}
 }
 

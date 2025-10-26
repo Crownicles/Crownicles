@@ -26,6 +26,72 @@ export const commandInfo: ITestCommand = {
 	description: "Exporte les joueurs dont le keycloakId correspond au pattern (supporte les wildcards %), leurs pets et inventaires dans un fichier JSON."
 };
 
+type ExportPlayerData = {
+	keycloakId: string;
+	level: number;
+	class: number;
+	health: number;
+	experience: number;
+	money: number;
+	score: number;
+	weeklyScore: number;
+	pet: unknown;
+	inventory: unknown[];
+};
+
+/**
+ * Export player pet data
+ */
+async function exportPlayerPet(petId: number | null): Promise<unknown> {
+	if (!petId) {
+		return null;
+	}
+
+	const pet = await PetEntities.getById(petId);
+	if (!pet) {
+		return null;
+	}
+
+	return {
+		typeId: pet.typeId,
+		sex: pet.sex,
+		nickname: pet.nickname,
+		lovePoints: pet.lovePoints
+	};
+}
+
+/**
+ * Export player inventory data
+ */
+async function exportPlayerInventory(playerId: number): Promise<unknown[]> {
+	const inventorySlots = await InventorySlots.getOfPlayer(playerId);
+	return inventorySlots.map(slot => ({
+		itemCategory: slot.itemCategory,
+		itemId: slot.itemId,
+		slot: slot.slot
+	}));
+}
+
+/**
+ * Export single player with their data
+ */
+async function exportSinglePlayer(player: Player): Promise<ExportPlayerData> {
+	const playerData: ExportPlayerData = {
+		keycloakId: player.keycloakId,
+		level: player.level,
+		class: player.class,
+		health: player.health,
+		experience: player.experience,
+		money: player.money,
+		score: player.score,
+		weeklyScore: player.weeklyScore,
+		pet: await exportPlayerPet(player.petId),
+		inventory: await exportPlayerInventory(player.id)
+	};
+
+	return playerData;
+}
+
 /**
  * Export players matching a pattern to a JSON file
  */
@@ -49,83 +115,13 @@ const exportPlayersTestCommand: ExecuteTestCommandLike = async (_player, args, r
 		throw new Error(`Erreur exportPlayers : aucun joueur trouvé avec le pattern "${pattern}" !`);
 	}
 
-	type ExportPlayerData = {
-		keycloakId: string;
-		level: number;
-		class: number;
-		health: number;
-		experience: number;
-		money: number;
-		score: number;
-		weeklyScore: number;
-		pet: unknown;
-		inventory: unknown[];
-	};
-
 	// Prepare export data
-	const exportData: {
-		exportDate: string;
-		pattern: string;
-		totalPlayers: number;
-		players: ExportPlayerData[];
-	} = {
+	const exportData = {
 		exportDate: new Date().toISOString(),
 		pattern,
 		totalPlayers: players.length,
-		players: []
+		players: await Promise.all(players.map(exportSinglePlayer))
 	};
-
-	// Export each player with their pet and inventory
-	for (const player of players) {
-		const playerData: {
-			keycloakId: string;
-			level: number;
-			class: number;
-			health: number;
-			experience: number;
-			money: number;
-			score: number;
-			weeklyScore: number;
-			pet: unknown;
-			inventory: unknown[];
-		} = {
-			keycloakId: player.keycloakId,
-			level: player.level,
-			class: player.class,
-			health: player.health,
-			experience: player.experience,
-			money: player.money,
-			score: player.score,
-			weeklyScore: player.weeklyScore,
-			pet: null,
-			inventory: []
-		};
-
-		// Get pet if exists
-		if (player.petId) {
-			const pet = await PetEntities.getById(player.petId);
-			if (pet) {
-				playerData.pet = {
-					typeId: pet.typeId,
-					sex: pet.sex,
-					nickname: pet.nickname,
-					lovePoints: pet.lovePoints
-				};
-			}
-		}
-
-		// Get inventory
-		const inventorySlots = await InventorySlots.getOfPlayer(player.id);
-		for (const slot of inventorySlots) {
-			playerData.inventory.push({
-				itemCategory: slot.itemCategory,
-				itemId: slot.itemId,
-				slot: slot.slot
-			});
-		}
-
-		exportData.players.push(playerData);
-	}
 
 	// Generate filename
 	const timestamp = new Date().toISOString()
