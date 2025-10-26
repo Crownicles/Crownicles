@@ -12,6 +12,7 @@ import {
 	commandRequires, CommandUtils
 } from "../../core/utils/CommandUtils";
 import { Maps } from "../../core/maps/Maps";
+import { MapConstants } from "../../../../Lib/src/constants/MapConstants";
 
 /**
  * Get the map information for the player
@@ -26,19 +27,21 @@ function getMapInformation(player: Player, destination: MapLocation, hasArrived:
 	forced: boolean;
 } {
 	const mapLink = MapLinkDataController.instance.getById(player.mapLinkId);
+	const departure = player.getPreviousMap();
 
 	if (!hasArrived && mapLink.forcedImage) {
 		return {
-			name: mapLink.forcedImage,
+			name: departure.attribute === MapConstants.MAP_ATTRIBUTES.HAUNTED ? `${mapLink.forcedImage!}_${language}` : mapLink.forcedImage!,
 			forced: true
 		};
 	}
 
-	const departure = player.getPreviousMap();
-
 	if (hasArrived) {
 		return {
-			name: mapLink.forcedImage ?? `${language}_${destination.id}_`,
+			name: mapLink.forcedImage && departure.attribute === MapConstants.MAP_ATTRIBUTES.HAUNTED
+				? `${mapLink.forcedImage!}_${language}`
+				: `${language}_${destination.id}_`,
+
 			fallback: mapLink.forcedImage ? null : `en_${destination.id}_`,
 			forced: Boolean(destination.forcedImage)
 		};

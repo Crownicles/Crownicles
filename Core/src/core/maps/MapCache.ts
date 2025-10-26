@@ -23,6 +23,8 @@ export abstract class MapCache {
 
 	static logsPveIslandMapLinks: number[];
 
+	static hauntedMapLinks: number[];
+
 	static async init(): Promise<void> {
 		// Boat links entry only
 		const boatEntryMapLinksObjects = MapLinkDataController.instance.getFromAttributeToAttribute(MapConstants.MAP_ATTRIBUTES.MAIN_CONTINENT, MapConstants.MAP_ATTRIBUTES.PVE_ISLAND_ENTRY);
@@ -64,13 +66,16 @@ export abstract class MapCache {
 			.map(pveLink => pveLink.id)
 			.concat(this.pveIslandMapLinks);
 
+		this.hauntedMapLinks = MapLinkDataController.instance.getFromAttributeToAttribute(MapConstants.MAP_ATTRIBUTES.HAUNTED, MapConstants.MAP_ATTRIBUTES.HAUNTED)
+			.map(mapLink => mapLink.id);
+
 		// Fight regen list
 		this.regenEnergyMapLinks = MapLinkDataController.instance.getAll()
 			.map(mapLink => mapLink.id)
 			.filter(mapLinkId => !this.allPveMapLinks.includes(mapLinkId));
 
 		// Continent maps (for now it's the same as fight regen maps, but later it may evolve, so we do this granularity
-		this.continentMapLinks = this.regenEnergyMapLinks;
+		this.continentMapLinks = this.regenEnergyMapLinks.filter(mapLinkId => !this.hauntedMapLinks.includes(mapLinkId));
 	}
 
 	/**

@@ -133,6 +133,14 @@ export class Maps {
 	}
 
 	/**
+	 * Check if the player is on a haunted path
+	 * @param player
+	 */
+	static isOnHauntedPath(player: Player): boolean {
+		return MapCache.hauntedMapLinks.includes(player.mapLinkId);
+	}
+
+	/**
 	 * Check if the player is on a continent
 	 * @param player
 	 */
