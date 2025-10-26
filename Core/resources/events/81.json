@@ -1,0 +1,154 @@
+{
+  "possibilities": {
+    "visitLobby": {
+      "outcomes": {
+        "0": {},
+        "1": {
+          "condition": {
+            "canAcceptPet": true
+          },
+          "givePet": {
+            "petIds" : [
+              99
+            ]
+          }
+        },
+        "2": {
+          "randomItem": {},
+          "effect": "occupied",
+          "lostTime": 45
+        },
+        "3": {
+          "health": -15,
+          "effect": "hurt"
+        }
+      }
+    },
+    "visitFloor": {
+      "outcomes": {
+        "0": {
+          "condition": {
+            "canAcceptPet": true
+          },
+          "givePet": {
+            "petIds": [
+              100
+            ]
+          },
+          "money": 1000
+        },
+        "1": {
+          "condition": {
+            "canAcceptPet": true
+          },
+          "effect": "scared",
+          "money": -1000
+        },
+        "2": {
+          "money": 100,
+          "randomItem": {
+          },
+          "health": 5,
+          "effect": "occupied",
+          "lostTime": 45
+        }
+      }
+    },
+    "visitBasement": {
+      "outcomes": {
+        "0": {
+          "condition": {
+            "canAcceptPet": true
+          },
+          "givePet": {
+            "petIds": [
+              27
+            ]
+          }
+        },
+        "1": {
+          "condition": {
+            "canAcceptPet": true
+          },
+          "givePet": {
+            "petIds": [
+              100
+            ]
+          },
+          "health": -20
+        },
+        "2": {
+          "health": -55,
+          "effect": "injured",
+          "money": -200
+        },
+        "3": {
+          "randomItem": {
+            "rarity": {
+              "min": 3
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 120
+        }
+      }
+    },
+    "randomRoom": {
+      "outcomes": {
+        "0": {
+          "condition": {
+            "canAcceptPet": true
+          },
+          "givePet": {
+            "petIds": [
+              99
+            ]
+          },
+          "effect": "lost",
+          "health": -80
+        },
+        "1": {
+          "condition" : {
+            "canAcceptPet": true
+          },
+          "randomItem": {
+            "rarity": {
+              "min": 6
+            }
+          }
+        },
+        "2": {},
+        "3": {
+          "condition": {
+            "canAcceptPet": true
+          },
+          "givePet": {
+            "petIds": [
+              101
+            ]
+          },
+          "effect": "freezing",
+          "health": -80
+        },
+        "4": {
+          "condition": {
+            "canAcceptPet": true
+          },
+          "effect": "dead"
+        }
+      }
+    },
+    "end": {
+      "outcomes": {
+        "0": {
+          "health": -5
+        }
+      }
+    }
+  },
+  "triggers": [
+    {
+      "mapId": 40
+    }
+  ]
+}
