@@ -452,7 +452,7 @@ export async function giveItemToPlayer(
 	const itemToReplace = inventorySlots.filter((slot: InventorySlot) => (maxSlots === 1 ? slot.isEquipped() : slot.slot === 1) && slot.itemCategory === category)[0];
 	const canDrinkThisPotion = item instanceof Potion
 		&& !(item as Potion).isFightPotion()
-		&& (canDrinkImmediately || (item as Potion).nature !== ItemNature.TIME_SPEEDUP);
+		&& (canDrinkImmediately && (item as Potion).nature !== ItemNature.TIME_SPEEDUP);
 	const autoSell = item.getCategory() !== ItemCategory.POTION || (item as Potion).isFightPotion() // Because we can't drink immediately these potions
 		? items.length === items.filter((slot: InventorySlot) => slot.itemId === item.id).length
 		: false;
