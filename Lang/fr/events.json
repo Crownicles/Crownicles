@@ -2782,24 +2782,24 @@
     "possibilities": {
       "end": {
         "outcomes": {
-          "0": "Une chauve-souris surgit et tourne autour de vous avant de disparaître dans le brouillard. Intrigué, vous décidez de la suivre."
+          "0": "Une chauve-souris jaillit des volutes brumeuses et virevolte autour de vous avec une grâce hypnotique avant de se fondre dans l'épaisseur laiteuse du brouillard. Cette apparition énigmatique éveille votre curiosité : sans réfléchir davantage, vous décidez de la suivre."
         }
       },
       "followPath": {
         "outcomes": {
-          "0": "Poussé par la curiosité, vous vous engagez sur le chemin plongé dans la brume."
+          "0": "La curiosité l'emporte sur la prudence. Vous vous engagez sur le chemin mystérieux qui serpente dans les entrailles de la brume..."
         },
-        "text": "Suivre le chemin"
+        "text": "S'engager sur le chemin brumeux."
       },
       "turnAround": {
         "outcomes": {
-          "0": "Un mauvais pressentiment vous fait rebrousser chemin, sans un regard en arrière.",
-          "1": "Alors que vous pivotez sur vos talons, une nuée de petites araignées surgit et se faufile entre vos pieds. Pris de panique, vous bondissez en arrière. Plus de peur que de mal, mais il vous faut quelques instants pour calmer votre cœur affolé."
+          "0": "Un frisson glacé remonte le long de votre échine, instinct primitif vous hurlant de fuir ce lieu maudit. Sans demander votre reste, vous pivotez brusquement et vous éloignez à grands pas de cette route fantomatique, refusant de jeter un regard en arrière.",
+          "1": "Au moment précis où vous amorcez votre demi-tour salvateur, une marée grouillante de minuscules araignées déferle du brouillard et envahit le sol autour de vos pieds ! Pris d'une panique incontrôlable, vous bondissez en arrière dans un cri étouffé. Les arachnides disparaissent aussi vite qu'elles sont apparues, mais votre cœur tambourine encore follement dans votre poitrine plusieurs minutes après cette rencontre cauchemardesque."
         },
-        "text": "Faire demi-tour"
+        "text": "Rebrousser chemin immédiatement."
       }
     },
-    "text": "Un brouillard dense surgit soudainement, enveloppant le paysage d’une atmosphère irréelle. En quelques instants, tout disparaît : les arbres, la terre, jusqu’à la ligne d’horizon. Le silence s’installe, presque étouffant, seulement troublé par le battement régulier de votre cœur. L’air est froid, chargé d’humidité, et chaque respiration vous semble plus lourde que la précédente. Puis, au cœur de cette blancheur mouvante, un chemin bien tracé se dessine, s’étirant vers l’inconnu. Immobile, au milieu du néant, comme pour vous inviter à s'y aventurer."
+    "text": "Sans le moindre avertissement, un brouillard dense se répand autour de vous, engloutissant la totalité du paysage dans une chape cotonneuse et oppressante. En l'espace de quelques battements de cœur, la réalité elle-même semble s'effacer : les silhouettes des arbres se dissolvent, l'horizon disparaît entièrement dans cette blancheur laiteuse. Un silence pesant s'abat sur ce monde fantomatique et l'air glacial et saturé d'humidité rend chaque inspiration laborieuse, comme si le brouillard lui-même cherchait à pénétrer vos poumons. Après quelques instants à errer au hasard, vous remarquer un chemin pavé qui se dessine peu à peu devant vous..."
   },
   "81": {
     "possibilities": {
