@@ -407,9 +407,13 @@
       "very_powerful_guild": ":mirror_ball: `Membro di una gilda molto potente`",
       "animal_lover": "Persona che ha mostrato tutti gli animali domestici a Talvar il nano"
     },
-    "fightRanking": {
+    "fightRanked": {
       "fieldName": "Gloria e lega :",
-      "fieldValue": "{emote:unitValues.glory} {{gloryPoints}} | {emote:leghe.{{leagueId}}} $t(models:leagues.{{leagueId}})"
+      "fieldValue": "{emote:announcements.trophy} {{rank}} / {{numberOfPlayers}} | {emote:unitValues.glory} {{gloryPoints}} | {emote:leagues.{{leagueId}}} $t(models:leagues.{{leagueId}})"
+    },
+    "fightUnranked": {
+      "fieldName": "Gloria e lega :",
+      "fieldValue": "{emote:announcements.trophy} Non classé | {emote:unitValues.glory} {{gloryPoints}} | {emote:leagues.{{leagueId}}} $t(models:leagues.{{leagueId}})"
     },
     "guild": {
       "fieldName": "Gilda :",
