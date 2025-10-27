@@ -17,9 +17,7 @@
             "petIds": [
               99
             ]
-          },
-          "effect": "lost",
-          "health": -80
+          }
         },
         "1": {
           "condition": {
