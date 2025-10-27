@@ -48,6 +48,7 @@ export default class ProfileCommand {
 		}
 		const guild = toCheckPlayer.guildId ? await Guilds.getById(toCheckPlayer.guildId) : null;
 		const rank = await Players.getRankById(toCheckPlayer.id);
+		const gloryRank = toCheckPlayer.fightCountdown > FightConstants.FIGHT_COUNTDOWN_MAXIMAL_VALUE ? -1 : await Players.getGloryRankById(toCheckPlayer.id);
 		const numberOfPlayers = await Players.getNbPlayersHaveStartedTheAdventure();
 		const isUnranked = rank > numberOfPlayers;
 		const petEntity = toCheckPlayer.petId ? await PetEntities.getById(toCheckPlayer.petId) : null;
@@ -90,6 +91,8 @@ export default class ProfileCommand {
 				fightRanking: toCheckPlayer.level >= FightConstants.REQUIRED_LEVEL
 					? {
 						glory: toCheckPlayer.getGloryPoints(),
+						gloryRank,
+						numberOfFighters: await Players.getNumberOfFightingPlayers(),
 						league: toCheckPlayer.getLeague().id
 					}
 					: null,
