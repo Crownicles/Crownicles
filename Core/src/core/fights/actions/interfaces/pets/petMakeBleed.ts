@@ -18,7 +18,7 @@ function makeBleed(opponent: Fighter, result: PetAssistanceResult): void {
 }
 
 const use: PetAssistanceFunc = (fighter, opponent, turn, _fightController): Promise<PetAssistanceResult | null> => {
-	if ((turn + 4) % 7 <= 1) {
+	if ((turn + 1) % 7 <= 1) {
 		return null;
 	}
 	const result: PetAssistanceResult = {
@@ -36,7 +36,7 @@ const use: PetAssistanceFunc = (fighter, opponent, turn, _fightController): Prom
 			selfTarget: true,
 			stat: FightStatBuffed.ENERGY,
 			operator: FightStatModifierOperation.ADDITION,
-			value: RandomUtils.crowniclesRandom.integer(15, Math.max(fighter.getMaxEnergy() * 0.07, 20))
+			value: RandomUtils.crowniclesRandom.integer(5, Math.max(fighter.getMaxEnergy() * 0.06, 15))
 		}, fighter, this);
 	}
 
