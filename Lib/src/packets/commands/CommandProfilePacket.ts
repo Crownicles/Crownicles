@@ -54,6 +54,8 @@ export class CommandProfilePacketRes extends CrowniclesPacket {
 		classId?: number;
 		fightRanking?: {
 			glory: number;
+			gloryRank: number;
+			numberOfFighters: number;
 			league: number;
 		};
 		guild?: string;
