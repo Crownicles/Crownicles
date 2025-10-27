@@ -407,9 +407,13 @@
       "very_powerful_guild": "Membre d'une guilde très puissante",
       "animal_lover": "Personne ayant montré tous les familiers à Talvar le nain"
     },
-    "fightRanking": {
+    "fightRanked": {
       "fieldName": "Gloire et ligue :",
-      "fieldValue": "{emote:unitValues.glory} {{gloryPoints}} | {emote:leagues.{{leagueId}}} $t(models:leagues.{{leagueId}})"
+      "fieldValue": "{emote:announcements.trophy} {{rank}} / {{numberOfPlayers}} | {emote:unitValues.glory} {{gloryPoints}} | {emote:leagues.{{leagueId}}} $t(models:leagues.{{leagueId}})"
+    },
+    "fightUnranked": {
+      "fieldName": "Gloire et ligue :",
+      "fieldValue": "{emote:announcements.trophy} Non classé | {emote:unitValues.glory} {{gloryPoints}} | {emote:leagues.{{leagueId}}} $t(models:leagues.{{leagueId}})"
     },
     "guild": {
       "fieldName": "Guilde :",
