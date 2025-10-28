@@ -454,12 +454,19 @@ async function initializePlayerStats(
 }
 
 /**
+ * Represents the summary of a fight result for tournament statistics.
+ */
+type FightResultSummary = {
+	turn: number;
+	getWinnerFighter: () => unknown;
+	isADraw: () => boolean;
+};
+
+/**
  * Update fight statistics after a fight
  */
 function updateFightStats(params: {
-	fightResult: {
-		turn: number; getWinnerFighter: () => unknown; isADraw: () => boolean;
-	};
+	fightResult: FightResultSummary;
 	fighter1: AiPlayerFighter;
 	fighter2: AiPlayerFighter;
 	p1MaxEnergyStart: number;
