@@ -535,7 +535,8 @@
       "Ntalcme": "Ein unermüdlicher Reisender, der von einem Ideal getrieben wird, das größer ist als er selbst, durchstreift unermüdlich die Länder dieses Königreichs auf der Suche nach dem, was seiner Seele zu fehlen scheint. Niemand weiß, was er am Ende seiner Reise zu finden hofft, doch er marschiert auf einen schwer fassbaren Traum zu.",
       "BananePlantain": "eine einfache Banane, die durch die verschiedenen Begegnungen und Abenteuer, die sie in dieser Welt erlebt hat, gereift ist. Sie liebt Herausforderungen, Kämpfe und ist immer hilfsbereit und führt ihre kleine Truppe ruhig an.",
       "aureochocob0n": "Ein reicher Kaufmann, der den Worten eines bekannten Alchemisten Glauben schenkte, tauchte in ein Bad aus geschmolzenem Gold ein, um sich zu vergolden. Nur seine neu vergoldeten Knochen blieben unversehrt",
-      "Ravenclaw": "ein unauffälliger Wächter, der immer von einem Raben begleitet wird. Man erzählt sich, dass er auftaucht, wenn man Hilfe braucht, und dann mit dem Wind verschwindet."
+      "Ravenclaw": "ein unauffälliger Wächter, der immer von einem Raben begleitet wird. Man erzählt sich, dass er auftaucht, wenn man Hilfe braucht, und dann mit dem Wind verschwindet.",
+      "GabrieLre": "Ein wissbegieriger Krieger, der sein gesamtes Wissen aufgezeichnet hat, um jedem zu helfen, der sich weiterentwickeln möchte. Es heißt, er wisse so viel über diese Welt wie der Schöpfer selbst."
     }
   },
   "witch": {
@@ -1862,5 +1863,17 @@
       "{emote:fightActions.aerialDiveAttack} Der Lufttauchgang ist ein Angriff aus der Luft, um aus der Ferne anzugreifen! Sie besteht darin, sich aus der Luft auf den Gegner zu stürzen, scheitert aber, wenn das Ziel gerade aus der Ferne angegriffen hat. Ich habe schon immer gesagt, dass man auf seinen Rücken achten soll ... und auch auf den Himmel!",
       "{emote:fightActions.crystallineArmorAttack} Die kristalline Rüstung, eine offensive Defensivtechnik! Sie nutzt die Rüstung des Kämpfers, um im Nahkampf Schaden zu verursachen, funktioniert aber nur, wenn der Gegner gerade einen physischen Angriff durchgeführt hat. Den eigenen Schutz in eine Waffe des Gegenangriffs zu verwandeln, das ist taktischer Einfallsreichtum!"
     ]
-  }
+  },
+  "haunted": [
+    "Der Nebel ist so dicht, dass die Welt wie ausgelöscht erscheint. Jeder Schritt auf dem Pfad hallt wie in einem Traum wider, ohne Echo, ohne Ende. Sie wissen nicht mehr, ob Sie sich vorwärts bewegen oder ob es der Nebel ist, der Sie langsam in sich aufnimmt.",
+    "Um Sie herum verschluckt das Weiß alles. Der Boden ist kaum noch zu erkennen, die Bäume verschmelzen mit dem Nebel und selbst Ihr Schatten verschwindet. Eine unwirkliche Stille liegt über Ihnen, eine Stille, die auf etwas zu warten scheint.",
+    "Der Pfad zieht sich in eine Richtung, die Sie nicht mehr erkennen können. Ab und zu durchdringt eine dunkle Gestalt den Nebel in der Ferne - eine unsichere Bewegung, vielleicht ein Tier, vielleicht eine Erinnerung. Sie spüren, wie sich Ihre Orientierungspunkte auflösen.",
+    "Der Geruch von kalter Erde und feuchtem Holz liegt in der Luft. Der Wind hat aufgehört zu wehen, und doch bewegt sich der Nebel, wie von einem unsichtbaren Atem angetrieben. Sie haben das Gefühl, dass der Pfad selbst Sie beobachtet.",
+    "Das Licht scheint aus dem Nichts zu kommen. Keine Sonne, kein Mond - nur diese graue Helligkeit, die nie nachlässt. Sie strecken Ihre Hand vor sich aus, aber Ihre Finger verschwinden sofort in dem milchigen Nichts.",
+    "Ein Schauer läuft Ihnen über den Rücken. Hinter Ihnen ist ein gedämpftes Knacken zu hören, zerbrechlich wie ein zerquetschtes Blatt. Sie drehen sich abrupt um, aber da ist nur der Nebel, regungslos, still und unbeweglich.",
+    "Der Pfad teilt sich plötzlich, ohne dass Sie sagen können, wie lange es her ist. Beide Wege verlieren sich sofort im Nebel, gleich und unentschlossen. Sie spüren, dass es vielleicht gar nicht so wichtig ist, ob Sie sich für den einen oder den anderen Weg entscheiden.",
+    "Sie bleiben einen Moment lang stehen. Selbst Ihr Atem scheint in der kalten Luft zu ersticken. In dieser völligen Bewegungslosigkeit meinen Sie, einen Schlag zu hören - schwach, regelmäßig - wie ein Herz, das unter der Erde begraben ist.",
+    "Der Nebel wird noch dichter und Sie können Ihre eigenen Füße schon fast nicht mehr erkennen. Mit jedem Atemzug kriecht die eisige Feuchtigkeit in Ihre Kehle und die ganze Welt schrumpft auf ein paar Meter um Sie herum.",
+    "Ein fernes Flüstern dringt plötzlich durch den Nebel, getragen von nirgendwo. Eine Stimme? Ein Wind? Unmöglich zu sagen. Sie stehen still, lauschen und sind sich bewusst, dass dieser Ort weder ein Ende noch einen Anfang hat, sondern nur eine atmende Stille."
+  ]
 }
