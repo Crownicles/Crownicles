@@ -168,7 +168,7 @@
         "description": "Este comando te permite consumir la poción que llevas. Algunas pociones no se pueden beber y se consumen automáticamente durante el combate."
       },
       "FIGHT": {
-        "description": "Utiliza este comando para retar a otros jugadores que estén en el mismo servidor que tú.\nLas batallas tienen lugar turno a turno. En cada turno, puedes elegir una acción a realizar.\n\nPara más información, consulta la página de la guía: https://guide.draftbot.com/notions-principale/combats",
+        "description": "Utilisez cette commande pour défier les autres joueurs.\nLes combats se déroulent tour par tour. À chaque tour, vous pouvez choisir une action à effectuer.\n\nPour plus d'informations vous pouvez aller voir la page du guide : https://guide.crownicles.com/notions-principale/combats",
         "image": "https://draftbot.com/public/ressources/fighthelp/en/5.1.7.png"
       },
       "GLORY_TOP": {
@@ -284,6 +284,9 @@
       },
       "SWITCH": {
         "description": "Intercambia una pieza de equipo de tus reservas con la que posees actualmente, siempre que sea de la misma categoría. Si no posees ningún equipo de la misma categoría que el objeto que quieres equipar, simplemente lo moverá a tu inventario."
+      },
+      "DEPOSIT": {
+        "description": "Dépose un équipement de votre main principale dans votre réserve. Si vous n'avez qu'un seul équipement à déposer, celui-ci sera rangé automatiquement."
       },
       "TOP": {
         "description": "Muestra la clasificación general de la partida para cada 15 jugadores. Los jugadores que están en el mismo servidor que tú aparecen marcados con un punto azul."
@@ -404,9 +407,13 @@
       "very_powerful_guild": ":mirror_ball: Miembro de un gremio muy poderoso",
       "animal_lover": "Persona que mostró todas las mascotas a Talvar el enano"
     },
-    "fightRanking": {
-      "fieldName": "Gloria y liga :",
-      "fieldValue": "{emote:unitValues.glory} {{gloryPoints}} | {emote:leagues.{{leagueId}}} $t(models:leagues.{{leagueId}})"
+    "fightRanked": {
+      "fieldName": "Gloire et ligue :",
+      "fieldValue": "{emote:announcements.trophy} {{rank}} / {{numberOfPlayers}} | {emote:unitValues.glory} {{gloryPoints}} | {emote:leagues.{{leagueId}}} $t(models:leagues.{{leagueId}})"
+    },
+    "fightUnranked": {
+      "fieldName": "Gloire et ligue :",
+      "fieldValue": "{emote:announcements.trophy} Non classé | {emote:unitValues.glory} {{gloryPoints}} | {emote:leagues.{{leagueId}}} $t(models:leagues.{{leagueId}})"
     },
     "guild": {
       "fieldName": "Gremio :",
@@ -890,6 +897,16 @@
             "Ingenioso y lleno de recursos, utiliza los materiales que le rodean para crear herramientas de combate improvisadas.",
             "Esta mascota tiene un instinto creativo asombroso. Producirá rápidamente objetos útiles en medio de un combate.",
             "Su inteligencia táctica es fascinante. Explotará cada elemento del terreno para construir algo que te ayude."
+          ],
+          "petMakeBleed": [
+            "Les analyses hématologiques révèlent que ses canines possèdent des propriétés anticoagulantes remarquables. En mordant l'adversaire, il provoque une hémorragie continue tout en s'abreuvant du sang, ce qui lui permet de transférer cette énergie vitale à son maître.",
+            "Les examens montrent que ce spécimen maîtrise une technique vampirique sophistiquée : ses morsures infligent des saignements persistants à l'ennemi, pendant qu'il absorbe l'essence vitale pour revigorer son propriétaire.",
+            "Les observations vétérinaires confirment une capacité d'hémophagie contrôlée. Il fait saigner ses adversaires de manière continue et convertit cette perte sanguine en énergie curative pour vous soutenir pendant le combat."
+          ],
+          "petPetrified": [
+            "Les tests psychiques indiquent que ce familier émet une aura terrifiante aux moments critiques du combat. Lors des derniers instants de l'affrontement, son regard pétrifiant peut littéralement figer l'adversaire sur place, le rendant totalement vulnérable.",
+            "Les analyses comportementales révèlent une capacité de paralysie mentale activée en fin de combat. Votre familier dégage alors une présence si intimidante qu'elle peut pétrifier l'ennemi, l'empêchant de bouger ou de riposter.",
+            "Les observations cliniques attestent d'un pouvoir de pétrification temporaire qui se manifeste dans les phases finales du combat. Son aura surnaturelle peut figer l'adversaire dans un état de paralysie totale, le laissant sans défense."
           ]
         },
         "ageComment_ancestor": "¡INCREÍBLE! exclama el veterinario, con los ojos muy abiertos. ¡Su mascota es un espécimen excepcionalmente raro! Es uno de los más antiguos jamás registrados en nuestros archivos - ¡sólo se han encontrado otras mascotas más antiguas en {{age}} ! ¡Una auténtica reliquia viviente!",
@@ -1120,7 +1137,8 @@
   "fight": {
     "title": "{{pseudo}}estás a punto de empezar una pelea",
     "canceledTitle": "{{pseudo}}ha cancelado la búsqueda",
-    "confirmDesc": "{emote:fightCommand.crossedSwords} | **{{pseudo}}**{{confirmSubText}}\n\n{emote:fightCommand.crossedSwords} | **Fighter : {{pseudo}}| {{glory}} {{className}}\n\n{{stats}}",
+    "confirmDesc": "{emote:fightCommand.crossedSwords} | **{{pseudo}}**{{confirmSubText}}\n\n{emote:fightCommand.crossedSwords} | **Combattant : {{pseudo}}** | {{glory}} | {{className}} {{pet}}\n\n{{stats}}",
+    "pet": "| {{petInfo}}",
     "confirmSubTexts": {
       "common": "¿Quieres iniciar una búsqueda de pelea?",
       "rare": "¿Te gustaría participar en la búsqueda de un luchador de tu fuerza personal para el duelo posterior?"
@@ -1301,6 +1319,15 @@
     "cancelled": "¡Acción cancelada!",
     "switchSelectionTitle": "{{pseudo}}equipar un objeto",
     "switchSelectionDescription": "Elige un objeto para equipar de la siguiente lista:"
+  },
+  "deposit": {
+    "titleSuccess": "{{pseudo}}, commande effectuée !",
+    "deposeSuccess": "{{item}} a été déposé dans votre réserve !",
+    "noItemToDeposit": "Vous n'avez aucun équipement à déposer !",
+    "cannotDeposit": "Votre réserve est pleine.",
+    "cancelled": "Action annulée !",
+    "depositSelectionTitle": "{{pseudo}}, dépose d'un objet",
+    "depositSelectionDescription": "Choisissez un objet à déposer dans la liste ci-dessous :"
   },
   "drink": {
     "errors": {
