@@ -17,6 +17,9 @@ import {
 } from "../MapLink";
 import { Effect } from "../../../../Lib/src/types/Effect";
 import { TravelTime } from "../../core/maps/TravelTime";
+import { PlayerActiveObjects } from "../../core/database/game/models/PlayerActiveObjects";
+import { InventorySlots } from "../../core/database/game/models/InventorySlot";
+import { PetDataController } from "../Pet";
 
 async function applyOutcomeScore(outcome: PossibilityOutcome, time: number, player: Player, response: CrowniclesPacket[]): Promise<number> {
 	const scoreChange = TravelTime.timeTravelledToScore(time)
@@ -90,6 +93,14 @@ async function applyOutcomeHealth(outcome: PossibilityOutcome, player: Player, r
 	if (outcome.health && outcome.health !== 0) {
 		await player.addHealth(outcome.health, response, NumberChangeReason.BIG_EVENT);
 		return outcome.health;
+	}
+	return 0;
+}
+
+async function applyOutcomeKarma(outcome: PossibilityOutcome, player: Player, response: CrowniclesPacket[]): Promise<number> {
+	if (outcome.karma && outcome.karma !== 0) {
+		await player.addKarma(outcome.karma, response, NumberChangeReason.BIG_EVENT);
+		return outcome.karma;
 	}
 	return 0;
 }
@@ -221,6 +232,9 @@ export async function applyPossibilityOutcome(possibilityOutcome: ApplyOutcome, 
 	// Health
 	const health = await applyOutcomeHealth(possibilityOutcome.outcome[1], player, response);
 
+	// Karma
+	await applyOutcomeKarma(possibilityOutcome.outcome[1], player, response);
+
 	// Energy
 	const energy = applyOutcomeEnergy(possibilityOutcome.outcome[1], player);
 
@@ -267,6 +281,40 @@ export async function applyPossibilityOutcome(possibilityOutcome: ApplyOutcome, 
 
 export interface PossibilityOutcome {
 
+	requirements?: {
+		level?: {
+			min?: number;
+			max?: number;
+		};
+		karma?: {
+			min?: number;
+			max?: number;
+		};
+		health?: {
+			min?: number;
+			max?: number;
+		};
+		defense?: {
+			min?: number;
+			max?: number;
+		};
+		attack?: {
+			min?: number;
+			max?: number;
+		};
+		speed?: {
+			min?: number;
+			max?: number;
+		};
+		campaignCurrentMissionId?: number;
+		validPetTypeIds?: number[];
+		petRarity?: {
+			min?: number;
+			max?: number;
+		};
+		validClassIds?: number[];
+	};
+
 	/**
 	 * Time lost for the lost time effect
 	 */
@@ -276,6 +324,11 @@ export interface PossibilityOutcome {
 	 * Health lost or won
 	 */
 	health?: number;
+
+	/**
+	 * Karma lost or won
+	 */
+	karma?: number;
 
 	/**
 	 * Effect to apply
@@ -358,3 +411,149 @@ export interface PossibilityOutcome {
 	 */
 	tags?: string[];
 }
+
+/**
+ * Get the valid outcomes for a player based on their requirements and the player state
+ * @param outcomes - The outcomes to filter
+ * @param player - The player to check the outcomes against
+ */
+export async function getValidOutcomesForPlayer(
+	outcomes: { [key: string]: PossibilityOutcome },
+	player: Player
+): Promise<[string, PossibilityOutcome][]> {
+	const playerActiveObjects: PlayerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
+	const validOutcomes: [string, PossibilityOutcome][] = [];
+
+	for (const [key, outcome] of Object.entries(outcomes)) {
+		if (await isOutcomeValidForPlayer(outcome, player, playerActiveObjects)) {
+			validOutcomes.push([key, outcome]);
+		}
+	}
+
+	return validOutcomes;
+}
+
+/**
+ * Check if a specific outcome is valid for the given player
+ * @param outcome - The outcome to check
+ * @param player - The player to check the outcome against
+ * @param playerActiveObjects - The player's active objects, used to calculate stats
+ */
+async function isOutcomeValidForPlayer(
+	outcome: PossibilityOutcome,
+	player: Player,
+	playerActiveObjects: PlayerActiveObjects
+): Promise<boolean> {
+	const req = outcome.requirements;
+	if (!req) {
+		return true;
+	}
+
+	// Check all requirement types
+	return (
+		isRangeValid(req.level, player.level)
+		&& isRangeValid(req.health, player.health)
+		&& isRangeValid(req.karma, player.karma)
+		&& isRangeValid(req.defense, player.getCumulativeDefense(playerActiveObjects))
+		&& isRangeValid(req.attack, player.getCumulativeAttack(playerActiveObjects))
+		&& isRangeValid(req.speed, player.getCumulativeSpeed(playerActiveObjects))
+		&& isClassValid(req.validClassIds, player.class)
+		&& await isCampaignMissionValid(req.campaignCurrentMissionId, player)
+		&& await isPetTypeValid(req.validPetTypeIds, player)
+		&& await isPetRarityValid(req.petRarity, player)
+	);
+}
+
+/**
+ * Check if a value falls within the specified range requirements
+ */
+function isRangeValid(
+	range: {
+		min?: number; max?: number;
+	} | undefined,
+	value: number
+): boolean {
+	if (!range) {
+		return true;
+	}
+
+	if (range.min !== undefined && value < range.min) {
+		return false;
+	}
+
+	return !(range.max !== undefined && value > range.max);
+}
+
+/**
+ * Check if the player's class is valid, according to the requirements
+ * @param validClassIds - The list of valid class IDs
+ * @param playerClass - The player's class ID
+ */
+function isClassValid(validClassIds: number[] | undefined, playerClass: number): boolean {
+	if (!validClassIds) {
+		return true;
+	}
+	return validClassIds.includes(playerClass);
+}
+
+/**
+ * Check if the player's current campaign mission matches the requirement
+ * @param requiredCampaignMissionId - The required campaign mission ID
+ * @param player - The player to check
+ */
+async function isCampaignMissionValid(requiredCampaignMissionId: number | undefined, player: Player): Promise<boolean> {
+	if (requiredCampaignMissionId === undefined) {
+		return true;
+	}
+
+	// Get the player's mission info to check their current campaign progression
+	const missionInfo = await PlayerMissionsInfos.getOfPlayer(player.id);
+	return missionInfo.campaignProgression === requiredCampaignMissionId;
+}
+
+/**
+ * Check if the player's pet type matches the requirement
+ * @param validPetTypeIds - The list of valid pet type IDs
+ * @param player - The player to check
+ */
+async function isPetTypeValid(validPetTypeIds: number[] | undefined, player: Player): Promise<boolean> {
+	if (!validPetTypeIds) {
+		return true;
+	}
+
+	// Check if player has a pet
+	if (!player.petId) {
+		return false;
+	}
+
+	// Get the player's pet and check if its type is in the valid list
+	const petEntity = await PetEntities.getById(player.petId);
+	return petEntity && validPetTypeIds.includes(petEntity.typeId);
+}
+
+/**
+ * Check if the player's pet rarity matches the requirement
+ * @param petRarityRange - The required pet rarity range
+ * @param player - The player to check
+ */
+async function isPetRarityValid(
+	petRarityRange: {
+		min?: number; max?: number;
+	} | undefined,
+	player: Player
+): Promise<boolean> {
+	if (!petRarityRange) {
+		return true;
+	}
+
+	// Check if player has a pet
+	if (!player.petId) {
+		return false;
+	}
+
+	// Get the player's pet and its rarity from the pet data
+	const petEntity = await PetEntities.getById(player.petId);
+	const petData = PetDataController.instance.getById(petEntity.typeId);
+	return isRangeValid(petRarityRange, petData.rarity);
+}
+

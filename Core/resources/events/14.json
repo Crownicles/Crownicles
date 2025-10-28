@@ -3,17 +3,252 @@
     "chatWorker": {
       "outcomes": {
         "0": {
-          "effect": "occupied",
-          "lostTime": 60,
-          "randomItem": {}
+          "requirements": {
+            "karma": {
+              "min": 50
+            },
+            "level": {
+              "min": 130
+            }
+          },
+          "effect": "working",
+          "randomItem": {
+            "rarity": {
+              "min": 4
+            }
+          },
+          "karma": 6,
+          "money": 75
         },
         "1": {
-          "effect": "occupied",
-          "lostTime": 10
+          "requirements": {
+            "attack": {
+              "min": 350
+            }
+          },
+          "effect": "working",
+          "randomItem": {},
+          "karma": 3
         },
         "2": {
-          "effect": "injured",
-          "health": -70
+          "requirements": {
+            "karma": {
+              "max": -30
+            },
+            "level": {
+              "min": 40
+            }
+          },
+          "effect": "working",
+          "randomItem": {},
+          "money": 150,
+          "karma": -15
+        },
+        "3": {
+          "requirements": {
+            "validPetTypeIds": [
+              56
+            ]
+          },
+          "randomItem": {},
+          "karma": 8
+        },
+        "4": {
+          "requirements": {
+            "level": {
+              "max": 50
+            }
+          },
+          "effect": "burning",
+          "health": -5,
+          "karma": -5
+        },
+        "5": {
+          "requirements": {
+            "validClassIds": [
+              17,
+              23
+            ]
+          },
+          "effect": "occupied",
+          "lostTime": 15,
+          "karma": 5,
+          "randomItem": {},
+          "money": 100
+        },
+        "6": {
+          "effect": "occupied",
+          "lostTime": 45,
+          "karma": 2
+        }
+      }
+    },
+    "stayNight": {
+      "outcomes": {
+        "0": {
+          "requirements": {
+            "karma": {
+              "min": 80
+            }
+          },
+          "effect": "sleeping",
+          "health": 25,
+          "karma": 2
+        },
+        "1": {
+          "requirements": {
+            "karma": {
+              "min": 0
+            }
+          },
+          "effect": "sleeping",
+          "health": 20,
+          "money": -120
+        },
+        "2": {
+          "requirements": {
+            "karma": {
+              "max": -40
+            }
+          },
+          "karma": -8
+        },
+        "3": {
+          "requirements": {
+            "validPetTypeIds": [
+              1
+            ]
+          },
+          "effect": "sleeping",
+          "health": 30,
+          "karma": 4
+        },
+        "4": {
+          "requirements": {
+            "defense": {
+              "min": 250
+            }
+          },
+          "effect": "sleeping",
+          "health": 15,
+          "money": -80
+        },
+        "5": {
+          "requirements": {
+            "level": {
+              "max": 40
+            }
+          },
+          "effect": "sleeping",
+          "karma": 2,
+          "health": 10
+        },
+        "6": {
+          "effect": "sleeping",
+          "karma": -1,
+          "health": 8
+        }
+      }
+    },
+    "inspectForge": {
+      "outcomes": {
+        "0": {
+          "requirements": {
+            "attack": {
+              "min": 300
+            },
+            "karma": {
+              "min": 10
+            }
+          },
+          "randomItem": {
+            "rarity": {
+              "min": 3
+            }
+          },
+          "karma": 5
+        },
+        "1": {
+          "requirements": {
+            "speed": {
+              "min": 350
+            },
+            "karma": {
+              "max": 10
+            }
+          },
+          "randomItem": {},
+          "money": 80,
+          "karma": -20
+        },
+        "2": {
+          "requirements": {
+            "level": {
+              "min": 25
+            },
+            "speed": {
+              "max": 530
+            }
+          },
+          "effect": "burning",
+          "health": -20
+        },
+        "3": {
+          "requirements": {
+            "validClassIds": [
+              8,
+              9,
+              10,
+              11,
+              20
+            ]
+          },
+          "money": 60,
+          "randomItem": {},
+          "karma": 3
+        },
+        "4": {
+          "requirements": {
+            "validPetTypeIds": [
+              27
+            ]
+          },
+          "karma": -4
+        },
+        "5": {
+          "effect": "occupied",
+          "lostTime": 20
+        }
+      }
+    },
+    "goAway": {
+      "outcomes": {
+        "0": {},
+        "1": {
+          "requirements": {
+            "health": {
+              "max": 40
+            }
+          },
+          "effect": "sleeping",
+          "health": -25
+        },
+        "2": {
+          "requirements": {
+            "karma": {
+              "min": 60
+            }
+          },
+          "karma": 1
+        },
+        "3": {
+          "requirements": {
+            "speed": {
+              "min": 200
+            }
+          },
+          "effect": "occupied",
+          "lostTime": 15
         }
       }
     },
@@ -22,37 +257,6 @@
         "0": {
           "effect": "occupied",
           "lostTime": 30
-        }
-      }
-    },
-    "goAway": {
-      "outcomes": {
-        "0": {},
-        "1": {
-          "effect": "occupied",
-          "lostTime": 20
-        },
-        "2": {
-          "effect": "sleeping",
-          "health": -20
-        }
-      }
-    },
-    "stayNight": {
-      "outcomes": {
-        "0": {
-          "effect": "sleeping",
-          "health": 10
-        },
-        "1": {
-          "effect": "occupied",
-          "lostTime": 5
-        },
-        "2": {},
-        "3": {
-          "effect": "occupied",
-          "health": 5,
-          "lostTime": 100
         }
       }
     }

@@ -242,101 +242,127 @@ export const CrowniclesIcons: {
 		scared: "😱",
 		lost: "🧐",
 		healed: "🏥",
-		fished: "🐟"
+		fished: "🐟",
+		working: "👨‍🔧",
+		burning: "🥵"
 	},
 	events: {
 		1: {
-			cutTree: "🪓",
+			chopTree: "🪓",
+			climbOver: "🧗",
+			findPath: "🗺️",
 			end: {
 				0: "🪓"
-			},
-			otherWay: "🚶"
+			}
 		},
 		10: {
 			end: {
 				0: "🚶"
 			},
 			help: "🎣",
+			advice: "🗣️",
 			push: "🖐️",
 			skip: "🏃"
 		},
 		11: {
+			followHint: "🧭",
+			questionStranger: "🕵️",
+			forest: "🌲",
+			oppositeSide: "🚶",
 			end: {
-				0: "🚶"
-			},
-			followHint: "👈",
-			forest: "🌳",
-			oppositeSide: "👉"
+				0: "🕑",
+				1: "🕑"
+			}
 		},
 		12: {
-			craftBoat: "🚣",
+			useBridge: "🌉",
+			crossRiver: "🏊",
+			searchAlternative: "🚶",
+			makeRaft: "🚣",
 			end: {
-				0: "🕑"
-			},
-			otherWay: "🚶",
-			searchBridge: "🌉",
-			swim: "🏊"
+				0: "🕑",
+				1: "🕑"
+			}
 		},
 		13: {
 			end: {
-				0: "🚶"
+				0: "🚶",
+				1: "🚶"
 			},
-			goAway: "🚶",
-			goForge: "🔨",
-			goInn: "🏠",
-			goMarket: "🎪"
+			visitForge: "🔨",
+			visitInn: "🏠",
+			exploreMarket: "🎪",
+			seekInformation: "🕵️",
+			helpCityGuards: "🛡️",
+			restAndObserve: "🛏️"
 		},
 		14: {
-			chatWorker: "🔨",
-			end: {
-				0: "🚶"
-			},
+			chatWorker: "🤝",
+			stayNight: "🛏️",
+			inspectForge: "🧐",
 			goAway: "🚶",
-			stayNight: "🛏️"
+			end: {
+				0: "🌾"
+			}
 		},
 		15: {
-			end: {
-				0: "🚶"
-			},
+			trade: "💰",
+			steal: "🕵️",
+			observe: "🔎",
 			skip: "🏃",
-			steal: "💰",
-			trade: "👥"
+			end: {
+				0: "🕑",
+				1: "🕑"
+			}
 		},
 		16: {
+			enterCastle: "🏰",
+			walkAround: "🚶",
+			searchRiver: "🌊",
+			restAndObserve: "🪑",
+			skip: "🏃",
 			end: {
-				0: "🚶",
-				1: "🚶"
-			},
-			enterCastle: "🔎",
-			skip: "➡️",
-			walkAround: "🔁"
+				0: "👁️",
+				1: "⏳",
+				2: "👽"
+			}
 		},
 		17: {
-			end: {
-				0: "🚶",
-				1: "🚶"
-			},
-			fruits: "🍎",
+			fruits: "🍏",
 			hunt: "🦌",
 			mushrooms: "🍄",
 			salad: "🥗",
-			skip: "🚶"
+			scavenge: "🧺",
+			skip: "🏃",
+			end: {
+				0: "🕑",
+				1: "🕑",
+				2: "🐅"
+			}
 		},
 		18: {
+			searchScaffolding: "🧗",
+			searchSite: "🗺️",
+			investigate: "🕵️",
+			skip: "🏃",
 			end: {
-				0: "🚶"
-			},
-			searchScaffolding: "⛓️",
-			searchSite: "🔎",
-			skip: "🚶"
+				0: "🕑",
+				1: "🕑",
+				2: "🕑"
+			}
 		},
 		19: {
 			butch: "🔪",
-			cook: "🍽️",
+			cook: "🔥",
+			inspectCarcass: "🔍",
+			buryCarcass: "⚰️",
+			skip: "🏃",
 			end: {
-				0: "👀"
-			},
-			skip: "🚶"
+				0: "🤔",
+				1: "🐺",
+				2: "😑",
+				3: "🦖"
+			}
 		},
 		2: {
 			end: {

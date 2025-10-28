@@ -1,450 +1,768 @@
 {
   "1": {
     "possibilities": {
-      "cutTree": {
+      "chopTree": {
         "outcomes": {
-          "0": "Couper cet arbre aura pris 30 minutes !"
+          "0": "Après de longs efforts, vous parvenez à couper l'arbre avec vos outils de fortune. Les copeaux de bois sentent bon la résine, et vous dégagez enfin le passage. Votre persévérance a payé !",
+          "1": "En coupant l'arbre, vous découvrez qu'il était creux et abritait une petite cache laissée par un autre voyageur. Vous y trouvez un objet qui vous sera utile pour votre périple.",
+          "2": "L'arbre est plus coriace que prévu. Vos efforts acharnés finissent par porter leurs fruits, mais vous vous êtes épuisé dans l'opération. Il faudra vous reposer avant de continuer.",
+          "3": "Vous décidez d'utiliser votre arme pour couper l'arbre mais la lame n'est pas assez aiguisée. Après plusieurs tentatives infructueuses, vous finissez par abandonner et vous reposez un moment pour reprendre des forces.",
+          "4": "Vous décidez d'utiliser votre arme pour couper l'arbre, cette dernière ne fait qu'une bouchée de l'arbre ! L'obstacle est rapidement dégagé et vous reprenez votre aventure."
         },
-        "text": "Couper l'arbre et continuer."
+        "text": "Couper l'arbre pour dégager le passage."
+      },
+      "climbOver": {
+        "outcomes": {
+          "0": "Avec agilité, vous escaladez le tronc imposant. La vue depuis le sommet de l'arbre vous permet d'apercevoir la suite du sentier au loin.",
+          "1": "Vous grimpez prudemment sur l'arbre. En redescendant de l'autre côté, vous glissez sur l'écorce humide et vous égratignez les mains, mais rien de grave.",
+          "2": "Votre tentative d'escalade se solde par une chute douloureuse. Vous vous relevez tant bien que mal, meurtri mais déterminé à continuer."
+        },
+        "text": "Escalader le tronc pour passer par-dessus."
+      },
+      "findPath": {
+        "outcomes": {
+          "0": "En explorant les alentours, vous découvrez un ancien sentier de bûcherons qui contourne l'obstacle. Ce chemin discret vous mène rapidement de l'autre côté.",
+          "1": "Vous trouvez un passage entre les racines de l'arbre déraciné. C'est étroit, mais vous parvenez à vous faufiler sans trop de difficultés.",
+          "2": "Votre recherche d'un chemin alternatif vous égare dans les fourrés. Après avoir tourné en rond, vous finissez par retrouver le sentier principal, mais vous avez perdu un temps précieux.",
+          "3": "En cherchant un passage, vous vous enfoncez dans les sous-bois où des ronces vous griffent et ralentissent votre progression. Vous décidez de les contourner également et vous rendez rapidement compte que vous n'êtes plus capable de retrouver votre chemin. Perdu, il vous faudra du temps pour retrouver le sentier principal."
+        },
+        "text": "Chercher un chemin pour contourner l'obstacle."
       },
       "end": {
         "outcomes": {
-          "0": "L'arbre a bien été coupé et la route est dégagée, mais malheureusement, des pillards ont volé quasiment tout ce que vous aviez récolté depuis votre dernier voyage !"
+          "0": "Découragé par l'obstacle et l'atmosphère sinistre de la Forêt Du Vieillard, vous décidez d'établir un campement temporaire. Très vite, vous entendez des bruits suspects dans les fourrés. Vous regardez autour de vous et découvrez que votre sac a été fouillé et plusieurs objets de valeur ont disparu."
         }
-      },
-      "otherWay": {
-        "outcomes": {
-          "0": "Passer par un autre chemin semblait être une bonne solution, vous n'avez pas perdu de temps !",
-          "1": "Passer par un autre chemin semblait être une bonne solution, mais malheureusement, vous vous êtes blessé en marchant."
-        },
-        "text": "Passer par un autre chemin."
       }
     },
-    "text": "Un arbre est tombé sur le chemin et bloque le passage !"
+    "text": "Dans la pénombre de la Forêt Du Vieillard, vous progressez prudemment sur le sentier sinueux quand votre route est soudainement bloquée par un énorme chêne déraciné. L'arbre ancestral, dont le tronc fait bien deux mètres de diamètre barre complètement le passage. Ses branches emmêlées forment un véritable mur végétal, et ses racines imposantes, encore chargées de terre, témoignent de la violence de sa chute récente."
   },
   "10": {
     "possibilities": {
-      "end": {
-        "outcomes": {
-          "0": "Vous finissez par passer votre chemin sans prêter plus d'attention à cette situation somme toute assez banale !"
-        }
-      },
       "help": {
         "outcomes": {
-          "0": "L'homme refuse gentiment votre aide, vous poursuivez votre route.",
-          "1": "Grâce à vous, l'homme attrape un superbe poisson de 3 kg ! Pour vous remercier, il vous offre quelque chose qui pourrait vous être utile...",
-          "2": "Vous aidez l'homme à attraper une superbe prise de plus d'un kilo ! Le pêcheur vous offre quelques pièces pour vous remercier.",
-          "3": "Le poisson au bout de la ligne devait vraiment être énorme ! Vous vous retrouvez rapidement emporté au fond de l'eau ! Vous êtes sauvé juste à temps par le pêcheur. Tout étourdi après cette aventure, il faudra vous soigner !"
+          "0": "Malgré vos efforts conjugués, le courant puissant de la Rivière Vacarme emporte la ligne. Le pêcheur vous remercie chaleureusement pour votre tentative et partage quelques pièces de monnaie qu'il avait dans sa poche.",
+          "1": "Ensemble, vous parvenez à remonter une prise exceptionnelle ! Le vieux pêcheur, ravi de ce succès inattendu, vous offre un objet précieux qu'il gardait depuis des années en guise de porte-bonheur.",
+          "2": "Votre aide permet au pêcheur de capturer un poisson de belle taille. Reconnaissant, il vous donne quelques pièces et vous met en garde contre les zones les plus dangereuses de la rivière.",
+          "3": "Le poisson que vous tentez d'aider à remonter s'avère être d'une force redoutable ! Vous glissez sur les rochers humides et tombez dans les eaux tumultueuses. Le pêcheur vous repêche in extremis, mais vous êtes sonnés et trempés jusqu'aux os.",
+          "4": "En unissant vos forces, vous réussissez à sortir de l'eau une vieille botte remplie de vase. Le pêcheur éclate de rire devant cette 'prise' et vous laisse repartir en vous remerciant de vos efforts."
         },
-        "text": "Proposer son aide."
+        "text": "Prêter main-forte au pêcheur en difficulté."
+      },
+      "advice": {
+        "outcomes": {
+          "0": "Vos conseils avisés permettent au pêcheur de changer de technique. Il attrape rapidement un beau poisson et vous remercie avec quelques pièces qui traînaient au fond de ses poches.",
+          "1": "Le pêcheur suit vos recommandations mais sans succès. Il apprécie néanmoins votre bienveillance. Vous repartez avec un léger sourire, heureux d'avoir tenté d'aider.",
+          "2": "Vous tentez de donner des conseils au pêcheur, mais il vous ignore complètement, trop concentré sur sa tâche. Vous finissez par vous lasser et décidez de continuer votre route.",
+          "3": "Le pêcheur, amusé par vos tentatives de conseils, vous écoute poliment mais ne change pas sa technique. Il finit par attraper un poisson malgré tout et vous offre un sourire en guise de remerciement.",
+          "4": "Il semblerait que votre mauvaise réputation vous ai précédé ! Le pêcheur vous regarde d'un air méfiant et refuse vos conseils, vous demandant de partir immédiatement. Déçu, car pour une fois vous étiez animé de bonnes intentions, vous reprenez votre route."
+        },
+        "text": "Donner des conseils depuis la berge."
       },
       "push": {
         "outcomes": {
-          "0": "Mais pourquoi avoir fait cela ? {emote:other.why} Pris de remords, vous secourez le pauvre homme et lui offrez quelques pièces pour vous faire pardonner."
+          "0": "Votre geste impulsif pousse le pêcheur dans les eaux tumultueuses ! Horrifié par votre propre action, vous plongez immédiatement pour le secourir. Vous parvenez à le ramener sur la berge après une lutte épuisante contre le courant. Le vieil homme, choqué mais reconnaissant d'être en vie, accepte vos excuses et quelques pièces de dédommagement.",
+          "1": "Votre poussée envoie le pêcheur directement dans un remous violent ! Paniqué, vous tentez de le sauver mais le courant vous emporte tous les deux. Par miracle, vous échouez plus loin sur un banc de sable, trempés et meurtris. Le pêcheur, furieux, exige une compensation substantielle pour ce 'petit jeu' qui a failli vous coûter la vie à tous deux.",
+          "2": "Le pêcheur, surpris par votre geste, tombe dans l'eau en lâchant tout son matériel ! Vous le repêchez rapidement, mais sa canne à pêche et son équipement ont été emportés par les flots. Rongé par les remords, vous lui offrez une généreuse compensation, mais l'homme reste amer de cette perte. Ironiquement, vous retrouvez un objet lui appartenant quelques minutes après vous être séparé de lui. Vous décidez de le garder pour vous et continuez votre route.",
+          "3": "Votre poussée fait perdre l'équilibre au pêcheur qui s'agrippe instinctivement à vous ! Vous basculez tous les deux dans la rivière tumultueuse. Après une chute chaotique et quelques mètres emportés par le courant, vous parvenez à vous extraire de l'eau, mais vous êtes tous deux blessés par cette mésaventure.",
+          "4": "Le pêcheur, plus agile que vous ne le pensiez, évite votre poussée au dernier moment ! Déséquilibré par votre propre élan, c'est vous qui tombez dans les eaux glacées de la Rivière Vacarme. Le vieil homme vous aide à sortir de l'eau, mais vous êtes trempé, frigorifié, et profondément humilié par votre geste raté.",
+          "5": "Votre geste malveillant propulse le pêcheur dans les rapides les plus dangereux ! Vous réalisez immédiatement la gravité de la situation et vous lancez à son secours. Après de longues minutes angoissantes, vous parvenez à le sortir de l'eau, inconscient mais vivant. Quand il revient à lui, terrorisé et en colère, vous devez lui verser une compensation importante et promettre de ne plus jamais remettre les pieds dans la région."
         },
-        "text": "Pousser le pêcheur dans l'eau !"
+        "text": "Pousser le pêcheur dans l'eau."
       },
       "skip": {
         "outcomes": {
-          "0": "Vous n'avez pas une minute à perdre pour aider un simple pêcheur ! Vous passez votre chemin."
+          "0": "Vous passez votre chemin sans vous attarder. Le bruit assourdissant de la Rivière Vacarme couvre vos pas tandis que vous poursuivez votre route.",
+          "1": "Vous décidez de ne pas vous mêler des affaires du pêcheur et de continuer votre route. Le bruit de la rivière s'estompe derrière vous tandis que vous avancez dans la forêt."
         },
-        "text": "Continuer votre route, pas de temps à perdre !"
+        "text": "Poursuivre votre route sans vous arrêter."
+      },
+      "end": {
+        "outcomes": {
+          "0": "Vous décidez de rester un moment sur la berge pour vous reposer et observer les flots tumultueux. Le bruit hypnotique de la Rivière Vacarme et le spectacle du pêcheur luttant contre les éléments vous plongent dans une méditation profonde. Quand vous reprenez finalement votre route, vous vous sentez apaisé malgré le vacarme environnant, mais le temps a filé sans que vous vous en rendiez compte."
+        }
       }
     },
-    "text": "Alors que vous passiez près d'un plan d'eau, vous remarquez un homme qui semble en difficulté sur sa partie de pêche !"
+    "text": "Le grondement assourdissant de la Rivière Vacarme résonne dans l'atmosphère tandis que vous approchez de ses berges tumultueuses. Les eaux bouillonnantes charrient des branches et de l'écume, témoignant de la violence du cours d'eau. Sur un rocher instable au bord des rapides, un pêcheur âgé lutte désespérément contre son matériel : sa ligne semble prise dans un courant particulièrement fort, et l'homme peine visiblement à maintenir son équilibre face à la puissance de la rivière..."
   },
   "11": {
     "possibilities": {
-      "end": {
-        "outcomes": {
-          "0": "Après avoir passé de longues minutes à discuter avec l'inconnue, vous finissez par repartir ! En suivant ses indications, vous arrivez rapidement à bon port."
-        }
-      },
       "followHint": {
         "outcomes": {
-          "0": "C'était en effet un raccourci !",
-          "1": "Vous tombez dans une embuscade ! Après vous avoir volé tous vos biens, les brigands s'enfuient lâchement. Gravement blessé, vous tombez, évanoui."
+          "0": "Contre toute attente, l'inconnue disait vrai ! Le sentier de l'ouest contourne effectivement les zones les plus dangereuses du Bois Hurlant. Vous évitez les repaires de bandits et atteignez Claire de Ville sans encombre, reconnaissant envers cette voyageuse qui connaissait visiblement bien les pièges de cette forêt maudite.",
+          "1": "Le piège se referme ! À peine avez-vous emprunté le chemin de l'ouest que des brigands du Bois Hurlant surgissent des fourrés et vous dépouillent facilement. Vous êtes dépouillé de vos biens et laissé pour mort dans cette forêt sinistre. Les légendes sur ce lieu maudit ne mentaient pas...",
+          "2": "Le piège se referme ! À peine avez-vous emprunté le chemin de l'ouest que des brigands du Bois Hurlant surgissent des fourrés et... s'inclinent devant vous en vous reconnaissant. Votre réputation vous a précédé et les brigands ne sauraient se résoudre à dépouiller l'un des leurs.",
+          "3": "Le piège se referme ! À peine avez-vous emprunté le chemin de l'ouest que des brigands du Bois Hurlant surgissent des fourrés. La bataille s'engage et vous parvenez initialement à les repousser, mais vous êtes blessé dans l'affrontement. Vous finissez par laisser votre bourse au sol et prenez la fuite en boitant.",
+          "4": "Le piège se referme ! À peine avez-vous emprunté le chemin de l'ouest que des brigands surgissent des fourrés. La bataille s'engage et vous parvenez initialement à les repousser, mais, sentant que vous ne parviendrez pas à les vaincre, vous finissez par laisser votre bourse au sol et prenez la fuite en boitant.",
+          "5": "Le piège se referme ! À peine avez-vous emprunté le chemin de l'ouest que des brigands surgissent des fourrés. Le fer s'entrechoque, et par votre vaillance, vous les repoussez aisément. Tandis que la plupart des gredins prennent leurs jambes à leur cou, votre poigne se referme sur quelques fuyards. Pour prix de leur liberté, ils vous cèdent une part de leurs rapines.",
+          "6": "Le chemin conseillé vous mène dans les profondeurs les plus sombres du Bois Hurlant. Bien qu'il soit effectivement plus court, vous devez progresser en silence pour éviter d'attirer l'attention des nombreux hors-la-loi qui hantent ces bois.",
+          "7": "En suivant les indications de l'inconnue, vous découvrez une cache abandonnée par d'anciens bandits du Bois Hurlant. Parmi les restes de leur butin, vous trouvez quelques objets de valeur qu'ils avaient oubliés dans leur fuite."
         },
-        "text": "Suivre les conseils de l'inconnue."
+        "text": "Faire confiance à l'inconnue et suivre ses conseils vers l'ouest."
+      },
+      "questionStranger": {
+        "outcomes": {
+          "0": "Votre réputation de voyageur bienveillant précède votre passage. L'inconnue, rassurée par votre aura positive, vous révèle qu'elle est une ancienne habitante de Claire de Ville. Elle vous guide personnellement par les chemins les plus sûrs et partage généreusement ses provisions.",
+          "1": "Votre réputation sombre et votre regard intimidant font craquer l'inconnue sous la pression. Elle avoue tremblante qu'elle travaille pour une bande de brigands et vous supplie de l'épargner. Impressionnée par votre aura menaçante, elle vous révèle l'emplacement de leur trésor.",
+          "2": "Face à vos questions insistantes, l'inconnue devient nerveuse et ses réponses contradictoires trahissent ses véritables intentions. Vous réalisez qu'elle tentait de vous attirer dans un guet-apens ! Méfiant, vous refusez catégoriquement de la suivre.",
+          "3": "Votre expérience des situations délicates vous permet de mener un interrogatoire subtil. Vous découvrez que l'inconnue est une informatrice qui travaille à la fois pour les autorités de Claire de Ville et les bandits du Bois Hurlant. Elle vous propose un marché : des informations contre votre silence."
+        },
+        "text": "Interroger l'inconnue."
       },
       "forest": {
         "outcomes": {
-          "0": "Vous vous perdez pendant plusieurs heures dans la forêt mais finissez par en sortir sans dégâts.",
-          "1": "Vous perdez beaucoup de temps à avancer dans la forêt mais vous finissez par parvenir à la traverser ! En sortant, vous ramassez un objet qui pourra peut être vous être utile !",
-          "2": "En traversant la forêt, vous faites une grosse chute dans un fossé. La blessure est profonde, il faut absolument vous soigner !"
+          "0": "Votre expérience des terres dangereuses vous permet de traverser le Bois Hurlant avec l'assurance d'un vétéran. Vous reconnaissez les signes de présence de bandits et les évitez habilement, progressant comme une ombre entre les arbres maudits.",
+          "1": "Votre inexpérience vous joue des tours dans cette forêt sinistre. Vous faites craquer des branches, suivez de fausses pistes et vous perdez plusieurs fois. Heureusement, votre maladresse même vous fait passer pour inoffensif aux yeux des bandits qui vous observent.",
+          "2": "Votre obstination à ignorer l'avertissement vous coûte cher. Vous tombez dans un piège à loups abandonné par d'anciens braconniers du Bois Hurlant. La blessure est profonde et vous devez panser vos plaies tout en restant vigilant.",
+          "3": "En progressant dans le Bois Hurlant, vous entendez des cris de détresse. Votre nature altruiste vous pousse à secourir des voyageurs attaqués par des bandits. Votre intervention courageuse met les brigands en fuite et vous gagnez la gratitude éternelle des victimes qui vous offrent une récompense.",
+          "4": "Traversant le Bois Hurlant, vous tombez sur une embuscade en cours contre d'autres voyageurs. Votre nature peu scrupuleuse vous pousse à attendre la fin du combat pour détrousser les victimes déjà dépouillées. Les bandits, amusés par votre audace, vous proposent de vous joindre à eux."
         },
-        "text": "Traverser quand même la forêt."
+        "text": "Ignorer les conseils et traverser le Bois Hurlant comme initialement prévu."
       },
       "oppositeSide": {
         "outcomes": {
-          "0": "Vous ne savez pas trop pourquoi vous avez pris un chemin 10 fois plus long que celui que vous aviez prévu au départ mais vous avez fini par arriver à bon port."
+          "0": "Votre méfiance vous pousse à contourner entièrement le Bois Hurlant par l'est. Ce détour considérable vous fait perdre beaucoup de temps, mais vous atteignez Claire de Ville sans avoir risqué votre vie.",
+          "1": "En contournant par l'est, vous croisez une patrouille de gardes de Claire de Ville. Votre réputation de voyageur honorable les rassure et ils vous escortent gratuitement, partageant même leurs rations avec vous.",
+          "2": "Votre expérience vous fait remarquer des détails que d'autres auraient manqués : des ruines d'un ancien poste de garde. Votre connaissance de l'histoire vous permet de localiser une cache d'armes et d'équipements anciens mais encore utilisables."
         },
-        "text": "Éviter la forêt en partant du côté opposé à celui qu'on vous a indiqué."
+        "text": "Contourner entièrement le Bois Hurlant par l'est, loin de ses dangers."
+      },
+      "end": {
+        "outcomes": {
+          "0": "En voyageur expérimenté, vous reconnaissez en l'inconnue une conteuse professionnelle. Elle vous régale avec des récits authentiques sur l'histoire sombre du Bois Hurlant, vous apprenant des détails précieux sur la géographie secrète de cette forêt maudite.",
+          "1": "L'inconnue se révèle être une conteuse qui collecte les légendes du Bois Hurlant. Ses récits terrifiants résonnent dans votre esprit quand vous reprenez la route à la tombée de la nuit."
+        }
       }
     },
-    "text": "Alors que vous vous apprêtez à rentrer dans une forêt, une inconnue vous explique qu'il existe un chemin plus court en passant par l'ouest."
+    "text": "Aux abords du sinistre Bois Hurlant, là où les légendes noires de Claire de Ville prennent racine, une silhouette encapuchonnée émerge des ombres menaçantes. Cette femme aux vêtements sombres vous aborde avec un sourire qui ne parvient pas à masquer l'inquiétude dans son regard. 'Vous n'allez tout de même pas entrer dans le Bois Hurlant par le sentier principal ?' murmure-t-elle en jetant des coups d'œil nerveux vers les profondeurs de la forêt maudite. 'Ces bois grouillent de bandits et de coupe-jarrets ! Je connais un passage par l'ouest, bien plus sûr...' Ses mots sont emplis d'une urgence troublante, mais dans cette région où la confiance peut coûter la vie, chaque conseil peut être soit un salut, soit un piège mortel..."
   },
   "12": {
     "possibilities": {
-      "craftBoat": {
+      "useBridge": {
         "outcomes": {
-          "0": "En tentant de fabriquer votre embarcation, vous vous blessez légèrement ! Vous décidez donc d'abandonner la construction après avoir passé plusieurs heures dessus et vous repartez dans une autre direction.",
-          "1": "Après avoir passé plusieurs heures à fabriquer votre bateau, vous vous élancez sur la rivière... puis vous coulez lamentablement au milieu. L'eau est gelée, mais vous parvenez tant bien que mal à atteindre l'autre rive, gelé et affaibli. Il faudra vous soigner avant de continuer !",
-          "2": "Vous fabriquez une petite barque en quelques heures et vous atteignez l'autre côté facilement. En sortant de votre bateau, vous ramassez un objet qui, à défaut de vous servir, sera facile à revendre !"
+          "0": "Malgré son état délabré, le vieux pont tient bon sous votre poids. Vous traversez prudemment, testant chaque planche avant d'y poser le pied. La traversée est lente mais sûre, votre expérience vous a appris à ne pas sous-estimer les dangers de ce genre d'acrobatie et votre prudence est récompensée.",
+          "1": "À mi-chemin, une planche vermoule cède sous votre poids ! Vous parvenez de justesse à vous rattraper aux poutres, mais la frayeur et l'effort vous laissent secoué. Vous terminez la traversée avec plus de prudence.",
+          "2": "Vous décidez d'utiliser votre vitesse à votre avantage. Cela fonctionne bien et le pont s'avère plus solide qu'il n'y paraît. Votre traversée se déroule sans encombre, et vous atteignez l'autre rive rapidement.",
+          "3": "Alors que vous êtes presque arrivé de l'autre côté, plusieurs planches s'effondrent d'un coup sous votre poid ! Vous chutez lourdement mais parvenez à vous hisser sur la berge opposée, meurtri mais vivant.",
+          "4": "En inspectant le pont de plus près, vous découvrez qu'un voyageur précédent y a caché quelques objets sous une planche descellée. Votre traversée vous rapporte plus que prévu !"
         },
-        "text": "Tenter de bricoler un petit bateau."
+        "text": "Emprunter le vieux pont délabré."
+      },
+      "crossRiver": {
+        "outcomes": {
+          "0": "Vous vous élancez dans les eaux tumultueuses de la Rivière Vacarme. Le courant puissant vous emporte plus loin que prévu, mais vous parvenez à atteindre l'autre rive, trempé et épuisé.",
+          "1": "La traversée à la nage se révèle plus ardue que prévu. L'eau glacée saisit vos membres et vous devez lutter contre le courant pour ne pas être emporté. Vous atteignez finalement la berge opposée, mais vous êtes transi de froid.",
+          "2": "Vos talents de nageur vous permettent de traverser aisément la Rivière Vacarme. Une fois de l'autre côté, vous reprenez votre route avec satisfaction.",
+          "3": "Alors que vous peinez contre le courant, votre fidèle requin plonge à vos côtés dans les eaux tumultueuses  ! Ses nageoires puissantes fendent les flots et vous permettent de traverser la rivière avec une aisance surprenante. Ensemble, vous atteignez l'autre rive, votre compagnon ayant une fois de plus prouvé sa valeur.",
+          "4": "Votre dauphin bondit joyeusement dans la rivière à vos côtés ! Il connaît parfaitement ces eaux et vous entraine vers les courants les plus favorables. Guidé par son instinct et son énergie, vous traversez la rivière sans difficulté, votre compagnon émettant de petits cris de satisfaction.",
+          "5": "Votre cheval entre courageusement dans l'eau à vos côtés, refusant de vous laisser affronter seul ce passage périlleux. Vous vous agrippez à sa crinière tandis qu'il nage contre le courant avec puissance. Sa force et sa détermination vous permettent de traverser ensemble la rivière tumultueuse, renforçant encore les liens qui vous unissent.",
+          "6": "Votre corps léger comme une plume est immédiatement saisi par le courant violent ! Malgré vos efforts vous êtes emportés sur plusieurs kilomètres. Heureusement, vous parvenez à vous hisser sur une berge rocheuse sans blessure, mais il vous faut de longues heures de marche pour retrouver votre chemin."
+        },
+        "text": "Tenter la traversé à la nage."
+      },
+      "searchAlternative": {
+        "outcomes": {
+          "0": "Vous longez la berge à la recherche d'un passage plus sûr. Après de longues heures de marche, vous finissez par trouver un passage sûr. Cela vous a pris beaucoup de temps, mais vous êtes soulagé d'avoir évité le vieux pont délabré.",
+          "1": "Votre exploration vous mène vers l'amont où vous découvrez un chemin qui ne semble pas avoir été emprunté depuis longtemps. Vous avancez prudemment et finissez par reconnaitre les abords du Village Coco.",
+          "2": "En descendant vers l'aval, vous trouvez un passage rocheux qui vous permet de rejoindre la Dune.",
+          "3": "Votre recherche vous mène vers un sentier qui s'éloigne de la rivière pour rejoindre les abords du Bois Hurlant.",
+          "4": "En explorant les berges, vous découvrez une cache abandonnée contenant quelques objets de valeur, probablement oubliés par un ancien voyageur."
+        },
+        "text": "Chercher un autre passage plus sûr."
+      },
+      "makeRaft": {
+        "outcomes": {
+          "0": "Vos efforts de construction aboutissent à un radeau de fortune. Malgré sa fragilité, il vous permet de traverser.",
+          "1": "Le radeau que vous assemblez avec les matériaux trouvés sur place tient bon. Vous traversez avec succès et récupérez même quelques objets flottants en chemin.",
+          "2": "Votre construction se révèle trop fragile. À mi-parcours, votre radeau se disloque et vous devez regagner la rive à la nage, vous parvenez à vous en sortir, épuisé.",
+          "3": "Vous êtes assisté par votre fidèle orang-outan qui vous aide à rassembler les matériaux nécessaires. Ensemble, vous construisez un radeau solide qui vous permet de traverser la rivière sans encombre.",
+          "4": "Vous fabriquez un radeau de fortune et vous lancez à l'eau. C'est alors que vous remarquez un autre voyageur qui tente également de faire la traversée. Vous décidez de lui proposer de partager votre radeau. Ensemble, vous parvenez à traverser la rivière en toute sécurité."
+        },
+        "text": "Construire un radeau de fortune."
       },
       "end": {
         "outcomes": {
-          "0": "Au bout de quelques heures au bord de la rivière, vous finissez par repartir dans une direction aléatoire."
+          "0": "Vous décidez de faire une pause sur les berges de la Rivière Vacarme pour réfléchir à votre prochaine destination. Le grondement des eaux et la vue du pont délabré vous plongent dans une méditation profonde, mais le temps s'écoule sans que vous trouviez de solution satisfaisante. Vous finissez par tenter une traversé hasardeuse. Par chance vous parvenez à traverser la rivière, mais votre méditation vous a fait perdre un temps précieux.",
+          "1": "Vous décidez de vous reposer un moment sur les berges de la Rivière. Après quelques minutes de contemplation, vous êtes dérangé par votre fidèle compagnon qui semble vouloir reprendre la route. À contrecoeur, vous vous relevez et décidez de continuer votre périple. Vous trouvez rapidement un passage a gué qui semble sûr que vous empruntez."
         }
-      },
-      "otherWay": {
-        "outcomes": {
-          "0": "Vous décidez de partir dans un autre sens, mais vous mettez une bonne heure avant de trouver une direction qui vous convienne !"
-        },
-        "text": "Partir dans une autre direction."
-      },
-      "searchBridge": {
-        "outcomes": {
-          "0": "Au bout de 30 minutes, vous finissez par abandonner et vous reprenez votre route dans une autre direction...",
-          "1": "Au bout de 60 minutes, vous finissez par trouver un passage à gué. Vous décidez alors de ne pas rejoindre le village qui est maintenant trop loin et vous reprenez votre route.",
-          "2": "Au bout de quelques minutes, vous trouvez un petit pont en bois. Vous arrivez rapidement au village où les habitants, heureux de rencontrer un étranger pour la première fois depuis des années, vous offrent quelques pièces.",
-          "3": "Au bout de quelques minutes, vous trouvez un petit pont en bois. Malheureusement, il est délabré car personne ne l'a emprunté depuis des années. Après quelques pas, une planche s'effondre sous votre poids ! Vous parvenez à vous accrocher au garde-fou de justesse et retrouvez la terre ferme. Sonné, il faudra cependant aller vous soigner !"
-        },
-        "text": "Chercher un pont plus loin."
-      },
-      "swim": {
-        "outcomes": {
-          "0": "L'eau est gelée ! Vous prenez votre courage à deux mains et plongez. Une fois de l'autre coté, vous vous rendez compte de votre erreur. Vous êtes gelé et affaibli. Il faudra vous soigner avant de continuer !",
-          "1": "Vous atteignez l'autre côté facilement, arrivé au village, les gens vous accueillent et vous donnent à manger."
-        },
-        "text": "Traverser la rivière en nageant."
       }
     },
-    "text": "Vous voyez une rivière devant vous. De l'autre côté du rivage, vous apercevez un village."
+    "text": "Vous voici face à la tumultueuse Rivière Vacarme, dont le grondement assourdissant emplit l'air de sa puissance. Les eaux bouillonnantes charrient branches et écume, témoignant de la violence du cours d'eau. Un vieux pont de bois enjambe les flots, mais son état délabré inspire peu confiance : plusieurs planches manquent, d'autres pendent dangereusement, et la structure grince sous les assauts du vent. De part et d'autre des berges, différents chemins s'offrent à vous..."
   },
   "13": {
     "possibilities": {
+      "visitForge": {
+        "outcomes": {
+          "0": "Le forgeron, un homme robuste aux mains expertes, vous accueille chaleureusement dans sa forge rougeoyante. Impressionné par votre réputation de voyageur honorable, il vous fait découvrir ses créations les plus raffinées et vous offre même un petit objet de son cru en guise de bienvenue.",
+          "1": "Le maître-forgeron reconnaît immédiatement votre expérience de combattant aguerri. Il vous propose de tester ses dernières créations et, satisfait de vos commentaires éclairés, vous remet une de ses œuvres comme témoignage de respect mutuel.",
+          "2": "Le forgeron vous toise d'un œil méfiant en reconnaissant votre sinistre réputation. Malgré votre or sonnant et trébuchant, il refuse de vous vendre quoi que ce soit et vous demande fermement de quitter sa forge.",
+          "3": "L'atmosphère se tend rapidement dans la forge. Le forgeron, ayant entendu parler de vos méfaits, refuse de vous servir. Votre tentative d'intimidation échoue face à sa détermination, et vous devez battre en retraite, humilié.",
+          "4": "En examinant une épée particulièrement bien forgée, votre inexpérience vous joue des tours. L'arme vous échappe et brise une précieuse vitrine d'exposition. Le forgeron, rouge de colère, exige réparation immédiate !",
+          "5": "Votre œil exercé repère immédiatement la qualité médiocre du travail exposé. Le forgeron, gêné par votre expertise évidente, vous avoue ses difficultés récentes et, agacé, vous quittez la forge.",
+          "6": "La forge résonne du martèlement rhythmé sur l'enclume, mais le forgeron semble trop occupé pour vous accorder attention. Vous patientez un moment avant de repartir, bredouille."
+        },
+        "text": "Visiter la forge réputée."
+      },
+      "visitInn": {
+        "outcomes": {
+          "0": "L'aubergiste vous reconnaît comme un voyageur de bonne réputation ! Il vous offre gracieusement sa meilleure chambre pour la nuit, accompagnée d'un repas copieux. Vous récupérez parfaitement de vos fatigues.",
+          "1": "L'aubergiste de 'La Halte Dorée' vous accueille chaleureusement. Vous négociez un prix raisonnable pour une chambre confortable et profitez d'une nuit réparatrice bien méritée.",
+          "2": "Votre réputation sulfureuse vous précède... L'aubergiste, nerveux, vous propose une chambre mais à un prix exorbitant, estimant que votre présence pourrait faire fuir d'autres clients.",
+          "3": "L'auberge affiche complet ! Tous les lits sont occupés par une caravane de marchands arrivée avant vous. Déçu, vous devez chercher un autre endroit où passer la nuit.",
+          "4": "L'aubergiste, impressionné par votre allure de voyageur expérimenté, vous confie des informations précieuses sur les routes environnantes en échange d'une modeste contribution.",
+          "5": "L'établissement semble avoir connu des jours meilleurs. L'aubergiste, désabusé, vous propose une chambre basique à prix réduit, s'excusant pour le manque de confort.",
+          "6": "Votre compagnon à quatre pattes attire l'attention bienveillante de l'aubergiste, qui s'avère être un grand amoureux des animaux. Ému par votre fidèle ami, il vous offre le gîte et le couvert.",
+          "7": "Vous entrez dans la Halte Dorée et votre T-Rex, en bon compagnon, entre à votre suite... ce qui provoque une panique générale dans toute l'auberge. Effrayé, pensant à une attaque, l'aubergiste s'empresse de vous apporter la caisse et vous supplie de quitter les lieux."
+        },
+        "text": "Chercher refuge à l'auberge 'La Halte Dorée'."
+      },
+      "exploreMarket": {
+        "outcomes": {
+          "0": "Votre réputation de voyageur honnête vous ouvre toutes les portes ! Les marchands vous font visiter leurs meilleures marchandises et l'un d'eux vous offre même un objet rare en gage d'amitié.",
+          "1": "Le marché de Claire de Ville grouille d'activité. Vos talents de négociateur vous permettent de dénicher quelques bonnes affaires parmi les étals colorés.",
+          "2": "Les marchands vous observent avec méfiance, ayant entendu parler de votre réputation douteuse. Les prix grimpent mystérieusement dès que vous approchez, et certains refusent même de vous servir.",
+          "3": "Un pickpocket novice tente de vous dérober votre bourse ! Grâce à vos réflexes aiguisés, vous l'attrapez facilement et récupérez même quelques pièces qu'il avait dérobées à d'autres victimes.",
+          "4": "Malheureusement, votre garde baissée sur le marché vous coûte cher. Un voleur expérimenté parvient à vous soulager d'une partie de votre bourse dans la cohue.",
+          "5": "Vous subissez une embuscade de la part de brigands qui ont apparemment des comptes à régler avec vous ! Le combat est rude, mais vous parvenez à les repousser, non sans quelques blessures.",
+          "6": "Votre allure imposante dissuade les trouble-fêtes habituels du marché. Vous déambulez tranquillement entre les étals, profitant de l'atmosphère commerciale sans incident.",
+          "7": "En aidant spontanément un marchand âgé à porter ses marchandises, vous gagnez sa reconnaissance. Il partage avec vous quelques pièces et des informations utiles sur la région.",
+          "8": "Le marché de Claire de Ville grouille d'activité : marchands, aventuriers, fermiers, bourgeois... mais aussi de nombreux mendiants. L'un d'eux, repérant votre air bienveillant, vous demande justement une pièce... mais à peine avez-vous sorti votre bourse qu'il vous la dérobe et disparaît entre les étals.",
+          "9": "Le marché de Claire de Ville grouille d'activité : marchands, aventuriers, fermiers, bourgeois... mais aussi de nombreux mendiants. L'un d'eux, repérant votre air bienveillant, vous demande justement une pièce... mais à peine avez-vous sorti votre bourse qu'il vous la dérobe et prend ses jambes à son cou. Vous partez à sa poursuite, parvenez à le rattraper et lui flanquez la correction qu'il mérite."
+        },
+        "text": "Explorer le marché."
+      },
+      "seekInformation": {
+        "outcomes": {
+          "0": "Votre réputation de héros local vous précède ! Les habitants se bousculent pour vous informer des récents dangers sur les routes et vous offrent leurs conseils les plus précieux.",
+          "1": "Grâce à votre expérience de voyageur, vous savez poser les bonnes questions. Les habitants vous révèlent l'existence d'un passage secret vers les routes commerciales, évitant les brigands du Grand Axe.",
+          "2": "Votre approche diplomatique porte ses fruits. Un vieux sage vous révèle l'emplacement d'une cache d'objets précieux abandonnée par d'anciens aventuriers.",
+          "3": "Les habitants restent méfiants face à votre réputation sulfureuse. Ils vous donnent quelques informations basiques mais gardent leurs secrets les plus précieux.",
+          "4": "Votre mauvaise réputation ferme toutes les bouches ! Les habitants refusent catégoriquement de vous adresser la parole et certains appellent même les gardes.",
+          "5": "Un informateur louche vous aborde dans une ruelle sombre. Il prétend avoir des informations précieuses mais exige un prix élevé pour ses révélations.",
+          "6": "Votre patience et votre écoute touchent une veuve âgée qui vous raconte l'histoire tragique du Bois Hurlant et vous met en garde contre ses dangers actuels.",
+          "7": "Vous vous approchez d'un attroupement lorsqu'un homme encapuchonné vous tire dans une ruelle. Il vous révèle posséder des informations qu'un brigand comme vous pourrait apprécier à leur juste valeur. Mais, grâce à votre expérience des milieux mal famés, vous flairez l'arnaque et le dénoncez aux autorités. Le vaurien étant recherché, les gardes vous remercient pour votre aide, malgré leur suspicion à votre égard."
+        },
+        "text": "Chercher des informations auprès des habitants."
+      },
+      "helpCityGuards": {
+        "outcomes": {
+          "0": "Votre réputation irréprochable impressionne le capitaine de la garde ! Il vous confie une mission de patrouille rémunérée et vous remet un équipement de qualité en remerciement.",
+          "1": "Votre aide précieuse pour maintenir l'ordre dans Claire de Ville est récompensée par une gratification généreuse et la reconnaissance officielle des autorités locales.",
+          "2": "En patrouillant avec les gardes, vous aidez à arrêter un voleur récidiviste. Votre intervention courageuse vous vaut les félicitations et une prime de la municipalité.",
+          "3": "Votre offre d'assistance est poliment déclinée. Les gardes, bien qu'appréciant votre bonne volonté, estiment pouvoir gérer seuls la sécurité de leur ville.",
+          "4": "Les gardes vous regardent avec suspicion, ayant entendu parler de votre réputation sulfureuse. Ils vous conseillent fermement de ne pas vous mêler de leurs affaires.",
+          "5": "Votre tentative d'approche des forces de l'ordre tourne au vinaigre ! Reconnaissant votre visage sur un avis de recherche, ils tentent de vous arrêter. S'en suit une épique course poursuite dans les rues de Claire de Ville, et vous parvenez à les semer.",
+          "6": "Votre tentative d'approche des forces de l'ordre tourne au vinaigre ! Reconnaissant votre visage sur un avis de recherche, ils tentent de vous arrêter. S'en suit une épique course poursuite dans les rues de Claire de Ville, et vous sentez le bout de leurs dagues entailler votre dos, provoquant une poussée d'adrénaline qui vous permet de les semer.",
+          "7": "Les gardes vous regardent avec suspicion, ayant entendu parler de vos activités douteuses, mais l'un d'eux, pris de pitié à votre égard, décide de vous laisser une chance de vous racheter. Vous travaillez donc à ses côtés, et malgré vos maladresses, parvenez à rendre service à ce garde, qui vous révèle être un fervent adorateur d'Iatneh. Vous reprenez votre route, fier de ce progrès."
+        },
+        "text": "Proposer votre aide aux gardes."
+      },
+      "restAndObserve": {
+        "outcomes": {
+          "0": "Vous trouvez un banc paisible sur la place centrale et observez la vie trépidante de Claire de Ville. Cette pause contemplative vous permet de récupérer un peu d'énergie.",
+          "1": "Votre expérience des villes attise votre curiosité sur les habitudes locales de Claire de Ville, et vous remarquez avec intérêt les différentes traditions de ses habitants.",
+          "2": "Votre repos sur la place publique attire l'attention d'un mendiant qui partage avec vous ses observations sur les personnalités importantes de la ville.",
+          "3": "Pendant votre pause, vous assistez à un spectacle de rue divertissant qui vous remonte le moral et vous donne envie de continuer votre aventure.",
+          "4": "Votre animal de compagnie attire l'attention admirative des enfants du coin, créant un moment de joie partagée qui réchauffe votre cœur."
+        },
+        "text": "Se reposer et observer l'animation."
+      },
       "end": {
         "outcomes": {
-          "0": "Vous visitez la ville pendant plusieurs heures avant de continuer votre route."
+          "0": "Vous décidez de faire rapidement le tour de Claire de Ville sans vous attarder. La ville est effectivement prospère, mais vous préférez reprendre rapidement votre route vers de nouveaux horizons.",
+          "1": "Intimidé par l'agitation de cette grande ville marchande, vous préférez ne pas vous mêler aux habitants et repartez discrètement après une visite superficielle."
         }
-      },
-      "goAway": {
-        "outcomes": {
-          "0": "Vous traversez le petit bourg en une petite demi-heure et continuez votre route.",
-          "1": "Vous perdez une bonne heure à contourner la ville mais reprenez votre route tranquillement."
-        },
-        "text": "Repartir."
-      },
-      "goForge": {
-        "outcomes": {
-          "0": "Il n'y a rien d'intéressant dans cette forge... Vous quittez rapidement les lieux et reprenez votre route.",
-          "1": "En essayant une épée, vous brisez la fenêtre de la forge, le forgeron demande remboursement !",
-          "2": "Personne n'est présent dans la forge qui semble abandonnée depuis des années. Avant de partir vous remarquez cependant un objet qui pourrait vous servir pour la suite de votre aventure...",
-          "3": "La forge semble abandonnée depuis des années. Vous reprenez donc votre route.",
-          "4": "Vous entrez et saluez le forgeron. Après une rapide inspection de son travail vous comprenez que vous ne trouverez rien d'intéressant ici. Vous reprenez votre route."
-        },
-        "text": "Aller à la forge."
-      },
-      "goInn": {
-        "outcomes": {
-          "0": "Après avoir discuté pendant 2 heures avec l'aubergiste, vous finissez par apprendre qu'il n'y a aucune chambre disponible pour la nuit ! Vous reprenez la route, frustré de ne pas avoir pu profiter d'une bonne nuit de repos.",
-          "1": "Vous payez une chambre pour la nuit et tombez effondré sur le lit. Il faudra dormir avant de reprendre l'aventure.",
-          "2": "L'auberge semble abandonnée depuis plusieurs années... Vous continuez votre route sans vous poser plus de questions."
-        },
-        "text": "Aller à l'auberge."
-      },
-      "goMarket": {
-        "outcomes": {
-          "0": "Vous explorez le marché en 30 minutes avant de découvrir un petit objet au sol qui pourrait vous être utile...",
-          "1": "Après avoir perdu 60 minutes à vous balader dans les étals, vous finissez par quitter la ville sans avoir pu trouver quoi que ce soit d'intéressant.",
-          "2": "Alors que votre vigilance était au plus bas sur le marché, vous recevez un coup violent derrière la tête et vous vous effondrez à terre... Après ce moment, plus aucun souvenir. Il faudra vous soigner avant de pouvoir continuer à avancer !"
-        },
-        "text": "Aller au marché."
       }
     },
-    "text": "Après avoir passé plusieurs semaines à marcher sans effectuer la moindre rencontre humaine, vous entrez finalement dans une petite bourgade qui semble plutôt animée."
+    "text": "Vous voici aux portes de Claire de Ville, cette grande cité marchande qui se dresse majestueusement devant vous. Carrefour économique réputé dans toute la région, la ville bourdonne d'une activité constante. Des caravanes de marchands franchissent les portes fortifiées dans un ballet incessant, tandis que l'écho des marteaux résonne depuis les forges renommées. L'odeur alléchante des auberges se mélange aux parfums d'épices du grand marché central."
   },
   "14": {
     "possibilities": {
       "chatWorker": {
         "outcomes": {
-          "0": "L'homme vous aperçoit et vous propose de vous fabriquer un objet avec lui. Après près d'une heure, votre création est terminée. L'homme vous l'offre en récompense !",
-          "1": "Vous regardez l'ouvrier fabriquer une hache pendant une dizaine de minutes avant de vous décider à reprendre la route.",
-          "2": "L'ouvrier vous aperçoit et vous propose de vous fabriquer une épée avec lui. Enthousiasmé à l'idée d'obtenir une nouvelle arme, vous acceptez. Maladroit, vous ne mettez pas longtemps à échapper votre lourde création sur le pied. Gravement blessé, vous abandonnez l'idée de créer votre propre arme."
+          "0": "Le maître-forgeron reconnaît immédiatement en vous un héros de légende ! Ému par votre présence, il partage avec vous les secrets de son art ancestral. Ensemble, vous forgez une pièce extraordinaire qu'il vous offre avec une bourse, bénissant votre noble quête.",
+          "1": "Vos cicatrices de bataille et votre port d'armes impressionnent le forgeron. Il vous défie dans un concours de forge, créant ensemble une arme digne de votre réputation. Respectueux de votre expertise martiale, il vous remet son œuvre.",
+          "2": "Votre aura sombre intrigue le forgeron qui, après quelques échanges, vous révèle connaître des techniques... particulières. Il vous propose de forger ensemble une lame aux propriétés uniques, moyennant une généreuse rétribution pour ce service discret.",
+          "3": "Votre tigre majestueux fascine le forgeron ! Ancien dresseur, il partage avec vous ses souvenirs de la faune sauvage tout en créant un objet unique inspiré par votre compagnon félin.",
+          "4": "Votre enthousiasme de novice amuse le forgeron, mais votre maladresse près du feu et des outils chauds vous vaut quelques brûlures. Il vous soigne en grondant gentiment sur les dangers de la forge.",
+          "5": "Découvrant que vous vous êtes spécialisé en vétéran, le forgeron est impressionné. Il vous consulte sur l'équilibrage d'une arme et, satisfait de vos conseils experts, vous récompense généreusement pour cette collaboration inattendue.",
+          "6": "Vous passez un moment agréable avec le forgeron, échangeant sur vos voyages respectifs. Sa compagnie réchauffe votre cœur autant que sa forge réchauffe vos membres fatigués."
         },
-        "text": "Discuter avec l'ouvrier."
-      },
-      "end": {
-        "outcomes": {
-          "0": "Vous contournez la maison et continuez votre route."
-        }
-      },
-      "goAway": {
-        "outcomes": {
-          "0": "Vous partez sans perdre de temps.",
-          "1": "Vous continuez votre route en contournant la prairie.",
-          "2": "Vous décidez de continuer à marcher malgré la fatigue. Après quelques kilomètres, vous vous écroulez au bord du chemin."
-        },
-        "text": "Pas de temps à perdre ! Il faut continuer votre route !"
+        "text": "Engager la conversation avec le forgeron."
       },
       "stayNight": {
         "outcomes": {
-          "0": "Après avoir discuté rapidement avec l'homme, ce dernier accepte de vous héberger pour la nuit. Épuisé, vous vous écroulez de fatigue sur le lit.",
-          "1": "L'homme vous avoue rapidement ne pas pouvoir vous héberger pour la nuit mais vous propose de partager son repas. Vous refusez poliment et reprenez votre route.",
-          "2": "Vous n'obtenez en réponse qu'un simple grognement. Les habitants de la région semblent ne pas apprécier les étrangers.",
-          "3": "L'homme vous refuse rapidement le partage de sa couche mais vous propose de partager son souper. Affamé et épuisé, vous acceptez son offre."
+          "0": "Votre réputation de saint homme vous précède ! Le forgeron insiste pour vous accueillir dans sa demeure, vous offrant son propre lit et un festin digne d'un roi. Cette nuit bénie restaure complètement vos forces.",
+          "1": "Le forgeron accepte de vous héberger contre une contribution équitable. Sa maison rustique mais chaleureuse vous offre un repos bien mérité, loin des vents glacés de L'Étendue.",
+          "2": "Votre sinistre réputation effraie le forgeron qui refuse catégoriquement de vous laisser approcher de sa demeure. Il menace même d'alerter les autorités si vous insistez.",
+          "3": "Votre fidèle chien attendrit immédiatement le forgeron, ancien propriétaire d'un molosse ! Ému par cette rencontre, il vous accueille tous les deux avec joie, partageant même ses meilleures provisions avec votre compagnon.",
+          "4": "Impressionné par votre allure de guerrier aguerri, le forgeron vous propose un échange : une nuit au chaud contre quelques pièces et la promesse de défendre sa maison si des bandits apparaissent.",
+          "5": "Touché par votre jeunesse et votre apparent épuisement, le forgeron accepte de vous laisser dormir dans son atelier. Il vous raconte l'histoire de différents objets qu'il a forgé en préparant une paillasse de fortune.",
+          "6": "Bien que réticent, le forgeron finit par céder à vos demandes répétées. Il vous installe dans un coin de son atelier, près de la chaleur rassurante de la forge qui se refroidit."
         },
-        "text": "Demander à rester là durant la nuit pour vous reposer et reprendre des forces."
+        "text": "Demander l'hospitalité pour la nuit."
+      },
+      "inspectForge": {
+        "outcomes": {
+          "0": "Votre œil expert reconnaît immédiatement la qualité exceptionnelle du travail ! Le forgeron, flatté par votre expertise, vous fait découvrir ses techniques secrètes et vous offre une de ses créations les plus abouties.",
+          "1": "Profitant de l'inattention du forgeron absorbé par son travail, vous dérobez discrètement un objet qui traine à côté de vous. Votre rapidité vous permet de disparaître avant qu'il ne remarque le vol.",
+          "2": "Votre curiosité vous joue des tours ! En touchant sans permission les outils encore chauds, vous vous brûlez douloureusement. Le forgeron vous soigne en secouant la tête devant votre imprudence.",
+          "3": "Votre connaissance des armes à distance impressionne le forgeron ! Il sollicite votre avis sur plusieurs pièces et, satisfait de vos commentaires pertinents, vous récompense pour cette consultation improvisée.",
+          "4": "Votre chauve-souris, paniquée par les étincelles et le bruit, sème la pagaille dans l'atelier ! Le temps de rattraper votre compagnon affolé, vous avez mis un joyeux désordre dans la forge organisée. Le forgeron, n'a pas l'air amusé par la scène et vous demande de partir.",
+          "5": "Vous observez avec fascination le travail minutieux du forgeron, impressionné par sa dextérité et son savoir-faire. Il vous explique les différentes étapes de la fabrication d'une arme. Vous prenez congé après cette leçon riche en enseignements."
+        },
+        "text": "Examiner de plus près la forge et les créations."
+      },
+      "goAway": {
+        "outcomes": {
+          "0": "Plein d'énergie, vous saluez poliment le forgeron et reprenez votre route d'un pas assuré à travers L'Étendue, profitant de cette belle journée.",
+          "1": "Épuisé mais déterminé, vous forcez le passage. Malheureusement, vos forces vous abandonnent quelques kilomètres plus loin et vous vous effondrez au bord du chemin.",
+          "2": "Bien que tentés de vous arrêter, votre conscience vous pousse à ne pas déranger le forgeron qui semble actuellement trés occupé. Vous continuez votre route en vous promettant de revenir plus tard.",
+          "3": "Votre agilité vous permet de traverser rapidement les terrains accidentés de L'Étendue, mais vous prenez tout de même le temps d'observer discrètement le forgeron au travail."
+        },
+        "text": "Continuer votre chemin sans vous arrêter."
+      },
+      "end": {
+        "outcomes": {
+          "0": "Intimidé par cette rencontre inattendue au milieu de nulle part, vous préférez observer de loin avant de contourner discrètement la propriété, vous demandant ce qu'un forgeron peut bien faire seul dans ces plaines désolées."
+        }
       }
     },
-    "text": "Alors que la fatigue commence à vous assaillir, vous découvrez une petite prairie où se tient une petite maison. Vous vous en approchez et découvrez un homme occupé à travailler une pièce métallique incandescente."
+    "text": "L'immensité désolée de L'Étendue s'étire à perte de vue sous vos pas fatigués, quand soudain une vision inespérée rompt la monotonie du paysage. Au creux d'un vallon protégé des vents, une maisonnette de pierre se dresse comme un phare dans cette mer d'herbes folles. L'écho cristallin du marteau sur l'enclume danse dans l'air, ponctué par le souffle régulier du soufflet et les crépitements de la forge. Un homme trapu aux avant-bras marqués par les étincelles façonne méthodiquement une pièce incandescente, totalement absorbé par son art. Des flammes orangées léchent les parois de pierre noircie tandis qu'une fumée odorante s'élève vers le ciel."
   },
   "15": {
     "possibilities": {
-      "end": {
+      "trade": {
         "outcomes": {
-          "0": "Vous passez de longues minutes à bêtement les regarder installer leur bivouac, avant de reprendre vos esprits et continuer votre route."
-        }
-      },
-      "skip": {
-        "outcomes": {
-          "0": "Le chemin est encore long, pas le temps de s'arrêter !",
-          "1": "Vous continuez votre route sans perdre plus de temps !",
-          "2": "Vous continuez votre route sans vous arrêter.",
-          "3": "Vous continuez sans vous arrêter en sillonnant à travers petites rues. Au coin de l'une d'entre elles, vous vous faites sauvagement bousculer par un homme qui prend rapidement la fuite."
+          "0": "Votre réputation de voyageur honorable vous précède ! Les marchands vous accueillent chaleureusement et vous proposent leurs meilleures marchandises à des prix équitables. Après une négociation cordiale, vous repartez satisfait de votre acquisition et enrichi de nouvelles relations commerciales.",
+          "1": "Votre réputation sulfureuse intrigue ces marchands peu scrupuleux. Ils vous proposent discrètement des marchandises 'tombées du chariot' à prix bradé. L'affaire conclue dans l'ombre vous rapporte un objet d'origine douteuse, mais vous savez qu'il vaut mieux ne pas poser de questions.",
+          "2": "Votre réputation de malfrat effraie ces commerçants qui ne souhaitent pas attirer l'attention des autorités ! Tandis que l'on vous menace de vous dénoncer aux gardes, vous ne parvenez à vous échapper qu'en achetant le silence des marchands à prix fort. Votre transaction forcée vous laisse meurtri dans votre fierté et votre bourse.",
+          "3": "Impressionnés par votre stature de héros légendaire, les marchands sortent leurs articles les plus précieux ! Ils vous font une démonstration passionnée de leurs créations d'exception et, conquis par votre noblesse d'âme, vous cèdent l'une de leurs pièces maîtresses à un prix raisonnable.",
+          "4": "Votre jeunesse et votre enthousiasme touchent ces marchands expérimentés. Amusés par votre naïveté commerciale mais charmés par votre sincérité, ils acceptent de vous céder un objet que vous convoitiez contre une somme modique. Vous repartez avec un sourire satisfait, conscient d'avoir fait une excellente affaire.",
+          "5": "Vous tentez d'entrer dans la boutique avant de vous rappeler que votre familier gigantesque ne passera jamais la porte ! Embarrassé par cette situation cocasse, vous ressortez sous les regards amusés des marchands. Votre compagnon imposant attire tous les regards."
         },
-        "text": "Continuer votre route sans perdre de temps."
+        "text": "Tenter de négocier avec les marchands."
       },
       "steal": {
         "outcomes": {
-          "0": "Vous ramassez quelques pièces et fuyez aussi vite que possible sans éprouver le moindre remord.",
-          "1": "Malheureusement, il n'y a rien à voler. Par contre, votre tentative n'est pas passée inaperçue ! Honteux, vous dédommagez les propriétaires et reprenez la route.",
-          "2": "Pris la main dans le sac ! Face aux 5 hommes à la carrure imposante qui vous entourent, vous regrettez amèrement votre geste malheureux. Vous repartez groggy après avoir versé un dédommagement."
+          "0": "Vos réflexes vous permettent de subtiliser discrètement quelques pièces dans la caisse pendant que les marchands sont distraits. Vous vous éclipsez rapidement dans les ruelles de Claire de Ville, votre larcin passant totalement inaperçu.",
+          "1": "Votre réputation de brigand redoutable et votre allure menaçante paralysent les marchands de terreur ! Vous vous servez généreusement dans leur caisse sans rencontrer la moindre résistance, laissant ces pauvres commerçants tremblants dans votre sillage.",
+          "2": "Votre tentative de vol échoue lamentablement ! Pris en flagrant délit par les marchands alertes, vous subissez leurs coups et devez rembourser bien plus que ce que vous espériez dérober. Une leçon douloureuse qui vous laisse pantois et appauvri.",
+          "3": "Vous tentez de subtiliser quelques pièces mais vous êtes immédiatement attrapé. Votre geste déshonorant choque profondément ces honnêtes commerçants ! Bien que vous ne soyez pas un criminel endurci, votre acte vous vaut leur mépris et une amende salée. Vous repartez la tête basse, rongé par la culpabilité.",
+          "4": "Votre inexpérience du vol se retourne contre vous ! Non seulement vous êtes immédiatement démasqué, mais les marchands, furieux de cette trahison, vous infligent une correction exemplaire. Votre naïveté criminelle vous coûte cher en pièces et en dignité.",
+          "5": "Vous n'êtes pas un voleur aguerri, mais votre singe complice est lui un expert en la matière ! Il se faufile entre les étals et subtilise quelques pièces ainsi qu'un objet sans que personne ne s'en aperçoive. Vous le retrouvez plus loin, fier de son larcin qu'il partage généreusement avec vous."
         },
-        "text": "Prendre discrètement quelques pièces dans la caisse."
+        "text": "Tenter discrètement de dérober quelques pièces."
       },
-      "trade": {
+      "observe": {
         "outcomes": {
-          "0": "Vous discutez un moment avec ces sympathiques marchands qui décident de commercer avec vous !",
-          "1": "Malheureusement pour vous, le groupe de marchands n'a rien à vendre, vous passez donc votre chemin.",
-          "2": "Moins accueillant que vous ne l'espériez, le groupe d'hommes vous encercle rapidement et sous menace de coups, vous soulage de quelques sous avant de prendre la fuite !",
-          "3": "Vous auriez dû vous fier à votre intuition et refuser cette \"bonne affaire\"... La magnifique épée sertie de diamants que l'on vous a promis semble plutôt faite de mousse molle. Vous revenez rapidement sur vos pas mais la porte de l'échoppe semble définitivement fermée ! Jurant de ne plus jamais vous faire avoir, vous reprenez votre route."
+          "0": "En voyageur expérimenté, vous analysez discrètement les techniques de vente et l'organisation de cette boutique. Votre patience vous permet de repérer le meilleur moment pour acquérir un objet peu cher qui vous intéressait.",
+          "1": "Votre réputation de saint homme attire l'attention bienveillante d'un marchand pieux ! Touché par votre aura spirituelle, il partage avec vous quelques pièces et ses bénédictions pour votre noble quête, vous encourageant à poursuivre votre mission divine.",
+          "2": "Étonnamment, votre simple présence silencieuse semble apaiser l'atmosphère tendue de cette boutique. Les marchands, peu habitués à tant de calme, ralentissent leurs négociations agressives. Quand vous repartez, l'un d'eux vous glisse quelques pièces en vous remerciant d'avoir apporté la paix dans son commerce.",
+          "3": "Vous observez patiemment les allées et venues de cette boutique animée. Le ballet incessant des clients et des marchandises vous hypnotise quelque peu, et vous perdez la notion du temps à contempler cette fourmilière commerciale. Quand vous émergez de votre contemplation, l'activité a repris son cours normal."
         },
-        "text": "Tenter de commercer avec eux."
+        "text": "Observer discrètement l'activité de la boutique."
+      },
+      "skip": {
+        "outcomes": {
+          "0": "Pressé par votre quête, vous traversez rapidement la boutique sans vous attarder. Les marchands vous saluent poliment tandis que vous poursuivez votre chemin à travers les ruelles de Claire de Ville.",
+          "1": "Votre agilité remarquable vous permet de traverser la boutique bondée sans ralentir votre allure. Vous vous faufilez habilement entre les clients et les marchandises, disparaissant dans les ruelles avant même que les commerçants aient eu le temps de vous interpeller.",
+          "2": "En tentant de traverser rapidement la boutique, votre précipitation vous joue des tours ! Vous trébuchez sur une caisse mal placée, renversez quelques objets et vous retrouvez empêtré dans une dispute avec un marchand mécontent qui exige réparation. Vous repartez en boitant, le pied encore endolori par le choc."
+        },
+        "text": "Continuer votre route sans perdre de temps."
+      },
+      "end": {
+        "outcomes": {
+          "0": "Intimidé par l'activité commerciale intense de la boutique, vous restez planté près de l'entrée sans oser vous avancer. Les marchands finissent par vous remarquer et vous questionnent sur vos intentions. Embarrassé par votre indécision, vous bredouillez quelques excuses avant de quitter précipitamment la boutique, laissant derrière vous des commerçants perplexes.",
+          "1": "Votre magnifique compagnon attire immédiatement l'attention admirative des marchands ! Fascinés par sa beauté et sa rareté, ils interrompent leurs affaires pour l'observer et vous poser mille questions. Cette rencontre inattendue égaye votre journée et celle des commerçants, mais ne vous aide pas vraiment à faire des affaires. Après un moment de discussion, vous reprenez votre route, le cœur léger."
+        }
       }
     },
-    "text": "Alors que vous traversez une ville en passant par des ruelles, vous entrez dans ce qui vous semble être une petite boutique où un groupe d'hommes discute tranquillement."
+    "text": "En explorant les ruelles animées de Claire de Ville, vous pénétrez dans une petite boutique où règne une atmosphère de commerce intense. Plusieurs marchands aux allures diverses négocient âprement autour d'étals chargés de marchandises hétéroclites : armes d'occasion, bijoux clinquants, provisions de voyage et objets d'artisanat local. L'odeur du cuir et des épices flotte dans l'air tandis que les pièces d'or tintent dans les bourses. Les commerçants vous jaugent du regard..."
   },
   "16": {
     "possibilities": {
-      "end": {
-        "outcomes": {
-          "0": "Après avoir admiré le bâtiment pendant une quinzaine de minute, vous reprenez votre route.",
-          "1": "Vous vous délectez de la vue du château... Puis finissez par vous souvenir de votre quête et reprenez votre route."
-        }
-      },
       "enterCastle": {
         "outcomes": {
-          "0": "Peu après être rentré dans le château, vous vous rendez compte de l'insalubrité des lieux. Abandonnée depuis des années, la bâtisse est totalement délabrée. Après quelques minutes d'exploration, alors que vous entrez dans une grande salle délabrée, un immense morceau du plafond se décroche sur vous ! Avec beaucoup de difficultés, vous parvenez à ressortir du bâtiment, blessé.",
-          "1": "Vous entrez dans le château et parcourez rapidement les lieux. Au bout de quelques minutes, vous trouvez une pièce qui semble être l'ancienne armurerie. Pressé de ressortir du bâtiment, vous ramassez le premier objet qui vous tombe sous la main et ressortez en pressant le pas.",
-          "2": "Il semblerait que ce château soit moins abandonné qu'il en a l'air ! Peu après votre entrée, vous entendez de nombreux bruits en provenance de différentes salles. Peu rassuré, vous préférez reprendre votre route."
+          "0": "Votre expérience de vétéran aventurier vous permet de détecter immédiatement les zones dangereuses du château. Vous progressez avec prudence, testant chaque plancher avant d'y poser le pied. Dans l'ancienne armurerie, vous découvrez une cache secrète contenant des trésors oubliés depuis des décennies.",
+          "1": "Malgré l'état délabré des lieux, votre agilité vous permet d'éviter les pièges naturels du château en ruine. Vous explorez méthodiquement les salles et découvrez dans les anciens quartiers des gardes un objet de valeur miraculeusement préservé.",
+          "2": "Votre progression dans le château décrépit révèle rapidement votre inexpérience des lieux dangereux. Un plancher vermoulu cède sous votre poids et vous chutez lourdement dans les caves humides. Vous parvenez à remonter, mais vous êtes blessé et secoué par cette mésaventure.",
+          "3": "Alors que vous explorez prudemment les couloirs sombres, un pan entier du plafond s'effondre ! Heureusement, vos réflexes de combattant aguerri vous permettent d'esquiver le pire, mais des gravats vous blessent tout de même. Vous battez en retraite, meurtri.",
+          "4": "En pénétrant dans le château, vous découvrez avec stupeur qu'il n'est pas si abandonné que cela... Des brigands en ont fait leur repaire ! Reconnaissant en vous un compagnon potentiel de par votre réputation sulfureuse, ils vous accueillent chaleureusement et partagent une partie de leur butin récent.",
+          "5": "Les brigands qui ont élu domicile dans le château vous reconnaissent immédiatement ! Votre sinistre réputation les impressionne et leur chef vous propose même de rejoindre leur bande. Vous déclinez poliment mais repartez avec quelques pièces d'or en gage de respect mutuel.",
+          "6": "Vous découvrez que le château abrite une famille de réfugiés qui a fui la guerre. Touché par leur sort et mû par votre bon cœur, vous partagez vos provisions avec eux. En retour, ils vous révèlent l'emplacement d'une cache d'objets précieux qu'ils ont découverte mais n'osaient pas toucher.",
+          "7": "À peine avez-vous franchi le seuil que des gardes loyalistes surgissent de leur cachette ! Ils ont reconnu votre visage et tentent de vous capturer. Votre réputation de hors-la-loi vous précède, et une course-poursuite épique s'engage dans les couloirs en ruine. Vous parvenez à semer vos poursuivants après de longues minutes à déambuler dans les différents étages du château.",
+          "8": "Votre dragon fidèle ouvre la marche, ses flammes éclairant parfaitement les couloirs sombres du château ! Cette lumière naturelle vous révèle tous les dangers potentiels et vous guide vers les salles les plus intéressantes. Grâce à votre compagnon lumineux, vous explorez en toute sécurité et découvrez plusieurs objets précieux dissimulés dans l'obscurité.",
+          "9": "Votre serpent, attiré par les recoins sombres du château, disparaît rapidement dans une fissure du mur. Quelques minutes plus tard, il ressort fièrement avec une pièce d'or ancienne entre les crocs ! Son instinct l'a mené vers une cache oubliée depuis des siècles.",
+          "10": "Votre imposant diplodocus pénètre dans le château avec enthousiasme, mais son poids colossal fait trembler toute la structure ! Un pan entier du plafond s'effondre dans un fracas épouvantable. Heureusement, les débris révèlent une chambre secrète où vous découvrez un trésor caché. Votre compagnon géant a involontairement ouvert la voie vers les richesses et vous vous en sortez plutôt bien car un unique petit rocher vous a légèrement accroché l'épaule durant l'effondrement.",
+          "11": "En franchissant le seuil du château, vous êtes saisi d'une terreur inexplicable. Chaque craquement, chaque ombre vous fait sursauter. Votre inexpérience des lieux hantés prend le dessus et vous fuyez précipitamment vers la sortie, le cœur battant la chamade.",
+          "12": "Votre formation de chevalier vous a appris à reconnaître l'architecture des forteresses ! Vous naviguez instinctivement dans les dédales du château, retrouvant sans peine l'ancienne armurerie. Parmi les armes rouillées, vous dénichez une pièce d'équipement encore en parfait état, digne de votre rang."
         },
-        "text": "Entrer pour fouiller le château."
-      },
-      "skip": {
-        "outcomes": {
-          "0": "Vous continuez votre route sans prêter plus d'attention à ce château."
-        },
-        "text": "Continuer votre route."
+        "text": "Pénétrer dans le château en ruine pour l'explorer."
       },
       "walkAround": {
         "outcomes": {
-          "0": "Vous faites le tour du château mais vous ne trouvez rien. Estimant avoir perdu suffisamment de temps, vous continuez votre chemin.",
-          "1": "Cette ronde ne vous en apprendra pas beaucoup sur la grande bâtisse. Cependant, vous découvrez tout au long de celle-ci un grand nombre de petites pièces d'or disséminées autour du château. Heureux de votre découverte, vous reprenez votre route.",
-          "2": "Alors que vous commenciez à faire le tour du château, vous tombez par accident dans un trou. Blessé à la jambe, il faudra vous soigner avant de continuer !"
+          "0": "Votre inspection minutieuse du périmètre révèle que le château a été le théâtre de batailles sanglantes. Votre expérience vous permet de reconnaître les traces d'un ancien siège. Bien que vous ne trouviez rien de valeur, cette découverte historique enrichit vos connaissances.",
+          "1": "En faisant le tour du château, votre œil exercé repère plusieurs cachettes dissimulées dans les fondations. D'anciens défenseurs y avaient caché en urgence des bourses d'or que le temps a oubliées. Votre patience et votre perspicacité sont récompensées !",
+          "2": "Votre exploration externe vous mène vers les anciennes écuries effondrées. En fouillant les décombres, vous tombez dans une fosse dissimulée, probablement un ancien piège défensif. La chute est douloureuse et vous vous entaillez la jambe sur les pierres tranchantes.",
+          "3": "Alors que vous contournez prudemment le château, votre fidèle chien déterre près des remparts un coffret enterré contenant des pièces d'or ! Votre compagnon à quatre pattes vous a encore une fois rendu un fier service.",
+          "4": "Votre reptile, attiré par les lézardes chaudes des murs exposés au soleil, découvre une fissure cachée menant à une petite réserve secrète. Les anciens habitants y avaient dissimulé quelques objets de valeur que vous récupérez avec reconnaissance.",
+          "5": "Les douves asséchées du château révèlent les restes d'un ancien pont-levis. Votre inspection révèle que le mécanisme contenait une cache d'outils et de pièces que vous récupérez avant de poursuivre votre chemin.",
+          "6": "Votre exploration du périmètre attire l'attention de corneilles qui nichent dans les tours. Leurs cris perçants alertent d'éventuels occupants de votre présence. Par précaution, vous décidez de quitter les lieux rapidement avant d'attirer des ennuis."
         },
-        "text": "Faire le tour du château par l'extérieur."
+        "text": "Contourner le château pour l'examiner depuis l'extérieur."
+      },
+      "searchRiver": {
+        "outcomes": {
+          "0": "Votre intuition vous mène vers les berges de la rivière. Votre expérience des cours d'eau vous révèle que l'ancien embarcadère du château cache encore les restes d'une barge coulée. En plongeant, vous récupérez quelques objets de valeur dans l'épave.",
+          "1": "En longeant la rivière près du château, vous découvrez les vestiges d'un ancien moulin à eau. Les mécanismes rouillés recèlent encore quelques pièces coincées dans les engrenages que vous parvenez à extraire.",
+          "2": "Votre exploration des berges vous fait découvrir une grotte naturelle dissimulée sous les fondations du château. Elle servait probablement d'issue de secours aux anciens seigneurs. Vous y trouvez quelques anciennes provisions encore comestibles et un objet oublié.",
+          "3": "En vous penchant vers la rivière pour boire, vous glissez sur les pierres humides et tombez à l'eau ! Le courant vous emporte quelques mètres plus loin. Vous parvenez à regagner la berge, trempé et frigorifié.",
+          "4": "Votre hippopotame se jette avec bonheur dans la rivière ! Sa joie est contagieuse et vous décidez de le rejoindre pour une baignade rafraîchissante. Votre compagnon, excellent nageur, découvre au fond de l'eau un objet brillant qu'il vous rapporte fièrement."
+        },
+        "text": "Explorer les berges de la rivière près du château."
+      },
+      "restAndObserve": {
+        "outcomes": {
+          "0": "Vous vous installez confortablement face au château et laissez votre esprit vagabonder. Cette pause contemplative vous permet d'imaginer la grandeur passée de cette forteresse et de récupérer un peu de votre énergie spirituelle.",
+          "1": "Votre observation patiente du château révèle des détails architecturaux fascinants. En tant qu'aventurier expérimenté, vous reconnaissez le style de construction et datez approximativement l'édifice, enrichissant vos connaissances historiques.",
+          "2": "Pendant votre méditation face aux ruines, un vieil ermite sort des buissons proches. Impressionné par votre aura bienveillante, il partage avec vous des légendes locales sur le château et vous offre un petit objet béni en guise d'amitié.",
+          "3": "Votre repos près du château attire l'attention d'un groupe de pèlerins qui passaient par là. Reconnaissant en vous un voyageur expérimenté, ils sollicitent vos conseils sur la route à suivre et vous offrent quelques provisions en remerciement.",
+          "4": "Alors que vous contemplez paisiblement les ruines, votre animal de compagnie se met à jouer avec les reflets du soleil sur les pierres humides. Ce moment de pure joie réchauffe votre cœur et vous redonne de l'entrain pour continuer votre périple."
+        },
+        "text": "S'arrêter pour contempler et se reposer face au château."
+      },
+      "skip": {
+        "outcomes": {
+          "0": "Pressé par votre quête, vous décidez de ne pas vous attarder devant ces ruines. Votre détermination vous pousse à poursuivre votre route sans un regard en arrière.",
+          "1": "Méfiant envers les lieux abandonnés qui peuvent cacher des dangers, vous préférez éviter le château et continuer votre chemin en longeant prudemment la rivière."
+        },
+        "text": "Ignorer le château et poursuivre votre route."
+      },
+      "end": {
+        "outcomes": {
+          "0": "Fasciné par l'architecture gothique du château, vous passez de longues minutes à en admirer les détails sculptés. Les gargouilles semblent vous observer tandis que vous tentez d'imaginer la vie qui animait autrefois ces murs. Quand vous reprenez finalement votre route, vous emportez avec vous l'image majestueuse de cette forteresse oubliée.",
+          "1": "L'imposante silhouette du château réveille en vous des rêves de grandeur et d'aventure. Vous vous perdez dans vos pensées, imaginant les banquets fastueux et les tournois chevaleresques qui se déroulaient autrefois entre ces murs. Cette rêverie vous fait perdre la notion du temps, mais elle nourrit votre âme d'aventurier.",
+          "2": "Alors que vous contemplez le château, votre alien, poussé par sa curiosité insatiable pour la culture humaine, s'éclipse discrètement. Inquiet, vous le cherchez et le retrouvez dans l'ancienne salle du trône, fasciné par les symboles royaux ! Dans son exploration, il a découvert une cache royale remplie de pièces d'or que vous partagez, amusé par sa soif de connaissance."
+        }
       }
     },
-    "text": "Après avoir suivi pendant de longues heures une rivière, vous découvrez un vieux château qui semble abandonné au bord de l'eau."
+    "text": "Au détour d'un méandre de la Rivière aux Crabes, une vision saisissante s'offre à vous : les ruines majestueuses d'un ancien château se dressent sur un promontoire rocheux, ses tours déchiquetées se reflétant dans les eaux tumultueuses. Les murs de pierre grise, rongés par les intempéries et le lierre, témoignent d'un passé glorieux révolu. Des corneilles nichent dans les créneaux brisés, et le vent qui s'engouffre dans les ouvertures béantes produit une mélopée mélancolique. Cette forteresse abandonnée semble garder jalousement ses secrets..."
   },
   "17": {
     "possibilities": {
-      "end": {
-        "outcomes": {
-          "0": "Après quelques instants de reflexion vous décidez de reprendre la route promptement.",
-          "1": "Vous cherchez une autre source de nourriture pendant quelques instants mais vous vous rendez compte au bout de longues recherches que ces dernières sont vaines. Pas convaincu par les options qui s'offrent à vous, vous reprenez votre route."
-        }
-      },
       "fruits": {
         "outcomes": {
-          "0": "Vous grimpez le plus haut possible et décrochez un fruit. Vous comblez rapidement votre faim et sentez vos forces se restaurer grâce à cet apport en sucre.",
-          "1": "Alors que vous vous apprêtiez à cueillir un fruit au sommet de l'arbre, la branche qui vous soutenait s'effondre sous votre poids ! Sonné par votre chute, vous décidez d'abandonner votre repas et reprenez votre route.",
-          "2": "Vous cueillez rapidement un fruit et croquez vigoureusement dedans... Ce n'est que quelques heures plus tard que vous prendrez mesure de votre erreur."
+          "0": "Votre agilité vous permet de grimper avec aisance jusqu'aux branches les plus hautes. Les fruits dorés que vous cueillez regorgent de suc sucré et vous redonnent instantanément des forces. Cette pause revigorante dans la canopée vous offre même une vue panoramique sur les environs.",
+          "1": "Votre ascension laborieuse vous mène vers des fruits prometteurs, mais la branche fragile cède sous votre poids ! La chute brutale vous laisse étourdi et meurtri au pied de l'arbre. Vous abandonnez l'idée de ce repas aérien, préférant reprendre la route en claudiquant.",
+          "2": "Dans votre inexpérience, vous croquez avec appétit dans des fruits qui semblent appétissantes. Hélas, quelques heures plus tard, des crampes violentes vous rappellent cruellement que toutes les fruits colorées ne sont pas comestibles.",
+          "3": "Votre expérience de voyageur vous permet d'identifier les meilleurs fruits parmi la diversité de l'arbre. Non seulement vous vous nourrissez sainement, mais vous découvrez également un objet de valeur niché dans un creux du tronc, probablement oublié par un autre aventurier.",
+          "4": "Alors que vous vous apprêtiez à grimper, votre singe compagnon bondit avec enthousiasme dans les branches, sélectionnant avec expertise les fruits les plus nutritifs qu'il partage généreusement avec vous.",
+          "5": "Votre corpulence imposante joue contre vous ! En vous hissant vers les branches hautes, votre poids fait craquer dangereusement le bois. Soudain, la branche maîtresse se brise net et vous chutez lourdement, meurtri par cette tentative malheureuse.",
+          "6": "Votre majestueuse girafe étend gracieusement son long cou vers les fruits les plus hauts, ceux que même les singes ne peuvent atteindre ! Elle cueille délicatement les spécimens les plus juteux et vous les apporte avec une élégance naturelle. Ce festin de fruits d'exception vous régale comme jamais.",
+          "7": "Votre majestueux diplodocus étend gracieusement son long cou vers les fruits les plus hauts, ceux que même les singes ne peuvent atteindre ! Il attrape délicatement les spécimens les plus juteux et vous les apporte avec une élégance naturelle. Ce festin de fruits d'exception vous régale comme jamais."
         },
-        "text": "Escalader l'immense arbre qui vous fait face afin d'en récupérer les fruits."
+        "text": "Escalader l'arbre aux fruits dorés."
       },
       "hunt": {
         "outcomes": {
-          "0": "Aucun animal en vue, vous reprenez donc votre route sans plus attendre.",
-          "1": "Après une course poursuite effrénée avec un animal sauvage, celui-ci cesse de vous fuir et vous charge furieusement. Abasourdi par la violence de l'attaque, vous ne parvenez pas à l'éviter et subissez la totale colère de la bête. Gravement blessé, il vous faudra du temps avant de reprendre votre aventure.",
-          "2": "Vous transpercez rapidement quelques petits animaux de votre lame et dévorez vos proies avec grand appétit avant de reprendre la route, repu."
+          "0": "Malgré vos efforts pour traquer le gibier dans les fourrés, votre manque d'expérience de la chasse vous joue des tours. Les animaux détectent votre présence de loin et s'enfuient, vous laissant bredouille après de longues heures de traque infructueuse.",
+          "1": "Vous parvenez à blesser un sanglier mais sous-estimez sa rage ! La bête furieuse charge avec une violence inouïe, ses défenses lacérant votre chair avant que vous ne parveniez à l'achever. Ce repas vous aura coûté très cher, mais vous vous consolez en fabriquant un petit objet à partir de la carcasse de l'animal.",
+          "2": "Votre maîtrise du combat vous permet d'abattre proprement plusieurs lapins sauvages. Avec l'habileté d'un chasseur expérimenté, vous préparez un festin roboratif qui vous redonne toute votre vigueur pour la suite du voyage.",
+          "3": "Votre réputation de brigand vous sert dans cette chasse impitoyable. Vous traquez une biche avec une efficacité redoutable, puis dépouillez sa carcasse de tout ce qui a de la valeur, y compris ses bois qui se vendront bien au marché noir.",
+          "4": "Votre compagnon prédateur prend naturellement les devants de la chasse ! Sa puissance instinctive vous assure un repas copieux sans effort de votre part. La nature reprend ses droits.",
+          "5": "Vos talents d'archer vous permettent d'abattre plusieurs petits gibiers d'une main sûre. Cette chasse efficace et sans gaspillage vous nourrit convenablement tout en respectant l'équilibre de la forêt.",
+          "6": "Votre familier disparaît dans les fourrés avec un grognement déterminé. Quelques minutes plus tard, il reparaît en rabattant habilement un cerf dans votre direction ! Cette coordination parfaite vous offre un festin digne des meutes sauvages.",
+          "7": "Votre vitesse exceptionnelle vous permet de poursuivre le gibier avec l'agilité d'un félin ! Vous rattrapez aisément lapins et perdrix, transformant cette chasse en véritable démonstration de célérité. Le repas qui s'ensuit récompense dignement vos prouesses.",
+          "8": "Concentré sur un lièvre, vous ne voyez pas le cerf qui charge ! L'impact brutal du bois sur votre torse vous projette au sol. Sonné et meurtri, vous abandonnez toute velléité de chasse, remerciant les dieux d'être encore vivant après cette rencontre malheureuse.",
+          "9": "Votre maladresse de novice vous fait tomber nez à nez avec un autre chasseur expérimenté ! Amusé par votre technique approximative, ce vétéran bienveillant partage généreusement le fruit de sa propre chasse. Votre inexpérience vous vaut finalement un excellent repas et une leçon d'humilité."
         },
-        "text": "Tenter de chasser un animal sauvage."
+        "text": "Partir chasser dans les fourrés."
       },
       "mushrooms": {
         "outcomes": {
-          "0": "Alors que vous vous penchez pour ramasser les champignons, vous apercevez un étrange objet briller sur le sol...",
-          "1": "Vous ramassez quelques champignons avant de remarquer que vous n'avez rien pour les cuisiner. Abandonnant votre cueillette, vous reprenez la route.",
-          "2": "Vous croquez à pleine dents dans un champignon rouge avec des petits points blancs... et regrettez rapidement cette action !"
+          "0": "Votre œil exercé distingue les champignons comestibles des variétés toxiques. En fouillant sous un champignon particulièrement gros, vous découvrez même un objet précieux enterré par quelque créature ou ancien voyageur.",
+          "1": "Votre inexpérience mycologique vous fait hésiter longuement devant chaque spécimen. Vous passez un temps considérable à essayer d'identifier les espèces comestibles, mais votre prudence excessive vous fait finalement abandonner sans rien récolter.",
+          "2": "Votre sombre personnalité vous pousse vers les champignons les plus toxiques ! Attiré par leurs couleurs vives, vous en consommez plusieurs avant de réaliser votre erreur. Les hallucinations et les convulsions qui suivent vous rappellent douloureusement que vos mauvaises actions attirent le malheur.",
+          "3": "Votre bienveillance naturelle vous guide vers les champignons les plus sains. Comme si la nature elle-même récompensait votre bonté, vous trouvez une variété particulièrement nutritive qui apaise votre faim tout en purifiant votre esprit.",
+          "4": "Vos compétences de mage vous ont permis d'acquérir des savoirs très utile pour identifier les meilleurs espèces de champignons. Rapidement vous remarquez quelques spécimens d'une variété rarissime de champignons aux propriétés exceptionnelles. Non seulement ils vous nourrissent, mais leurs vertus vous procurent également un bien-être durable.",
+          "5": "Votre cochon compagnon grogne d'excitation en reniflant le sol ! Son flair exceptionnel lui permet de dénicher les truffes les plus précieuses enfouies sous les feuilles mortes. Ces délices gastronomiques vous nourrissent parfaitement, et vous en conservez quelques-unes pour les revendre plus tard.",
+          "6": "Votre expérience considérable vous permet d'éviter instinctivement les champignons vénéneux. Même les plus tentants et colorés ne vous trompent pas - vous sélectionnez uniquement les variétés nutritives et savoureuses qui vous sustentent sainement."
         },
-        "text": "Cueillir les champignons."
+        "text": "Cueillir les champignons des sous-bois."
       },
       "salad": {
         "outcomes": {
-          "0": "Vous effectuez une petite cueillette et avalez votre préparation. Fort de l'énergie apportée par ce repas, vous reprenez votre route.",
-          "1": "Après quelques recherches, vous ne trouvez pas vraiment de plantes satisfaisant votre faim et reprenez donc votre route sans rien manger.",
-          "2": "Vous changez rapidement d'avis en regardant autour de vous et en découvrant l'épaisse végétation qui vous empêcherait de cueillir quoi que ce soit. Sans perdre plus de temps, vous reprenez votre route."
+          "0": "Vous composez une salade simple mais nourrissante avec les herbes sauvages que vous reconnaissez. Ce repas frugal mais sain vous redonne quelques forces tout en respectant la nature environnante.",
+          "1": "Votre mauvaise réputation semble vous poursuivre jusque dans vos choix alimentaires ! Les plantes que vous sélectionnez s'avèrent amères et peu nutritives, vous laissant plus affamé qu'avant. Même la nature semble vous bouder.",
+          "2": "Votre inexpérience vous fait confondre plusieurs plantes. Vous perdez un temps précieux à essayer de distinguer les espèces comestibles des nuisibles, renonçant finalement à ce repas végétal par peur d'empoisonnement.",
+          "3": "Votre compagnon herbivore vous guide instinctivement vers les meilleures plantes comestibles. Sa connaissance naturelle de la flore vous offre un repas végétarien parfaitement équilibré et savoureux.",
+          "4": "Catastrophe ! Votre vache gourmande se jette sur votre cueillette et dévore goulûment toutes les herbes que vous aviez soigneusement sélectionnées ! Elle mastique béatement votre repas sous vos yeux dépités, vous laissant le ventre vide et l'amertume au cœur.",
+          "5": "Votre aura maléfique corrompt littéralement la nature autour de vous ! Les plantes se flétrissent à votre approche, les feuilles noircissent et les herbes pourrissent entre vos doigts. Contraint de consommer cette bouillie infecte, vous vous empoisonnez avec les fruits de vos propres mauvaises actions."
         },
-        "text": "Concocter une salade avec les plantes que vous trouvez."
+        "text": "Concocter une salade sauvage."
+      },
+      "scavenge": {
+        "outcomes": {
+          "0": "Votre nature de brigand et votre rapidité vous permettent de fouiller efficacement les restes d'anciens campements le long du Grand Axe. Vous déterrez des provisions encore bonnes et quelques pièces oubliées par d'anciens voyageurs.",
+          "1": "Votre long passé de brigand vous mène naturellement vers les cachettes des bandits de la région. Vous découvrez un garde-manger secret contenant des vivres volés et même un objet de valeur abandonné lors d'une fuite précipitée.",
+          "2": "Poussé par votre faim, vous vous résolvez à fouiller les détritus. Cette action contre votre nature vous pèse moralement, mais la survie l'emporte sur les principes dans cette situation désespérée. Vous parvenez à trouver quelques vivres encore comestibles, et reprenez rapidement votre route.",
+          "3": "Les restes que vous déterrez s'avèrent avariés et infestés de parasites. Cette nourriture de dernier recours vous rend malade, et vous devez vous arrêter pour vous soigner avant de pouvoir continuer votre route."
+        },
+        "text": "Fouiller les restes d'anciens campements."
       },
       "skip": {
         "outcomes": {
-          "0": "Vous continuez votre route sans perdre plus de temps.",
-          "1": "Vous décidez de ne pas vous repaître, mais finissez par regretter cette décision quelques heures plus tard. Affamé, vous décidez de prendre un peu de repos avant de reprendre la route."
+          "0": "Vous décidez stoïquement de poursuivre votre route le ventre vide, considérant que la faim forge le caractère. Cette austérité volontaire vous endurcit, même si elle ne nourrit pas votre corps. Vous continuez votre chemin tiraillé par la faim.",
+          "1": "Votre inexpérience vous fait sous-estimer les besoins de votre organisme. En refusant de vous nourrir, vous vous affaiblissez dangereusement et devrez bientôt faire face aux conséquences de cette négligence.",
+          "2": "Votre sagesse de voyageur expérimenté vous dicte de préserver vos forces pour des défis plus importants. Vous acceptez temporairement la faim, sachant qu'une meilleure occasion de vous nourrir se présentera bientôt."
         },
-        "text": "Abandonner l'idée de manger ici et repartir dans l'espoir de trouver un meilleur lieu pour vous repaître."
+        "text": "Poursuivre la route sans vous nourrir."
+      },
+      "end": {
+        "outcomes": {
+          "0": "L'indécision vous paralyse face à ces multiples options alimentaires. Vous passez de longues minutes à peser le pour et le contre de chaque choix, laissant finalement le temps filer sans prendre de décision définitive.",
+          "1": "Votre état de faiblesse vous fait hésiter longuement entre toutes ces possibilités. Cette hésitation prolongée vous épuise encore davantage, et vous devez finalement vous reposer longuement avant de pouvoir reprendre la route, le ventre toujours vide.",
+          "2": "Alors que vous réfléchissez aux différentes options, votre fidèle félin disparaît silencieusement dans les fourrés. Il revient fièrement quelques minutes plus tard en traînant une proie imposante ! Ensemble, vous partagez ce festin royal qui vous redonne toute votre vigueur et renforce vos liens avec votre noble compagnon."
+        }
       }
     },
-    "text": "Affamé par votre journée de voyage, vous décidez de faire une halte et de rechercher de quoi vous nourrir autour de vous."
+    "text": "Sur la périlleuse route du Grand Axe, connue pour ses brigands et ses dangers, une faim tenaillante vous oblige à faire halte. Autour de vous, la nature offre plusieurs possibilités pour vous sustenter, mais sur cette route maudite, même les choix les plus simples peuvent receler des pièges mortels. Un grand chêne aux fruits dorés se dresse majestueusement, tandis que des champignons colorés parsèment les sous-bois. Des traces d'animaux sauvages marquent le sol boueux, et vous apercevez les vestiges d'anciens campements de voyageurs moins chanceux que vous..."
   },
   "18": {
     "possibilities": {
-      "end": {
-        "outcomes": {
-          "0": "Vous observez le chantier quelques minutes, puis réalisez qu'il est vraiment désert. Vous reprenez votre route."
-        }
-      },
       "searchScaffolding": {
         "outcomes": {
-          "0": "Vous grimpez jusqu'en haut des échafaudages, mais à l'exception d'un magnifique paysage, vous ne trouvez rien. Après avoir passé quelques minutes à l'admirer, vous repartez.",
-          "1": "En grimpant sur la structure instable, vous découvrez une vue imprenable sur la région ! Vous profitez du point de vue pour repérer un objet en contrebas.",
-          "2": "Vous montez sur l'échelle, mais arrivé a mi-chemin, un barreau casse et vous tombez au sol ! Étourdi par la chute, vous reprenez lentement vos esprits."
+          "0": "Votre agilité vous permet de vous hisser par les perches branlantes et les cordes rêches. De là-haut, Mergagnan s'étale en toits de chaume, et la lueur de la Plage Sentinelle calme vos pensées tumultueuses. Vous vous reposez quelques instants, profitant de la vue apaisante sur la mer agitée avant de redescendre.",
+          "1": "Votre œil et votre main exercés par la route, passent chaque palan et chaque poutre au crible. Dans une fente garnie de mousse, vous mettez la main sur un objet utile, sans doute délaissé lors de la fuite précipitée des travailleurs.",
+          "2": "La corde pourrie cède sous votre prise ! Vous heurtez les pavés inégaux dans un craquement sinistre. La douleur qui vous traverse jusqu'aux reins vous rappelle qu'on ne brave pas impunément les échafauds vermoulus quand on est aussi peu agile que vous.",
+          "3": "Grâce à votre expérience de vétéran, vous repérez d'instinct les caches et renforts d'ouvriers. Derrière une solive chevillée, vous découvrez une pièce d'atelier de maître, soigneusement dissimulée, elle a certainement été cachée là afin d'éviter un vol avant la fin de la construction. Raisonnant qu'elle ne sera plus d'utilité à personne maintenant que la construction a été abandonnée, vous la récupérez avec précaution, conscient de sa valeur.",
+          "4": "Votre primate bondit de perche en perche avec une joie espiègle. De ses doigts habiles, il extirpe d'un recoin inaccessible une trouvaille oubliée par les bâtisseurs, qu'il vous dépose fièrement dans la paume.",
+          "5": "Votre robuste constitution fait grincer les vieilles planches de la construction que vous sentez plier sous vos pieds. Une latte craque, mais vous vous rattrapez de justesse. Le reste de l'ascension se fait sans encombre. Vous ne trouvez rien en haut des échafauds et redescendez soulagé de n'avoir pas chuté.",
+          "6": "Piqué par la cupidité, vous arrachez clous et pièces de bois, fouillez les poches de cuir. Hélas, tout n'est plus que rouille et pourriture : le chantier a déjà été débarrassé du peu qui valait encore. Vous repartez, l'âme en peine et les mains vides.",
+          "7": "Votre carrure fait geindre l'ouvrage, mais vos bras puissants vous hissent jusqu'à la panne faîtière. Là, blotti sous une bavette de tuiles, vous trouvez un objet de valeur oublié des maîtres d'œuvre.",
+          "8": "À mesure que vous grimpez, barreaux et nœuds cèdent en chaîne. Sans assez d'élan pour vous rattraper, vous chutez lourdement dans un vacarme de bois brisé. Vous restez étourdi, le souffle coupé.",
+          "9": "Prudent car vous manquez encore d'expérience, vous n'osez guère dépasser le premier niveau. En remettant votre besace, vous remarquez un petit outil gravé, abandonné tout près de vos pieds. Vous décidez de le prendre, pensant qu'il pourrait vous être utile plus tard.",
+          "10": "Votre prudence vous fait rebrousser chemin, mais le mauvais sort s'acharne : une tuile descellée dégringole et vous heurte au crâne. Même la sagesse n'écarte pas tous les périls.",
+          "11": "Avec l'aisance d'un maître-bâtisseur, vous domptez les madriers et atteignez la pointe. Miraculeusement, vous découvrez une petite cache que vous n'aviez pas remarquée auparavant, et plusieurs objets brillent entre deux planches. Vous subtilisez ce que vous pouvez, certain d'en tirer quelques pièces chez un brocanteur peu regardant ou encore d'en trouver un usage pour vos aventures futures."
         },
-        "text": "Fouiller les échafaudages."
+        "text": "Gravir les échafauds et fouiller la charpente."
       },
       "searchSite": {
         "outcomes": {
-          "0": "Vous cherchez pendant 30 minutes, mais vous ne trouvez rien d'intéressant.",
-          "1": "Après avoir cherché 40 minutes, vous finissez par trouver quelque chose qui pourrait être utile !",
-          "2": "Alors que vous cherchiez dans une boîte a outils, vous vous entaillez la main sur une pince rouillée. La blessure est vraiment profonde !"
+          "0": "Vous retournez madriers et caisses, grattez la mousse, levez les bâches moisies : rien que poussière, humidité et silence. Les hommes sont partis en hâte, mais ont tout de même emporté les objets de valeur.",
+          "1": "Connaisseur des lieux délaissés, vous fouillez les zones où l'on cache l'outillage. Un coffre de charpentier gît sous une bâche : à l'intérieur, un objet préservé, oublié depuis l'arrêt brutal des travaux.",
+          "2": "À trop vous presser, vous plongez la main dans une huche sans regarder. Une lame de rabot rouillée vous entaille profondément. Le sang perle, et vos doigts tremblent. Il vous faudra un moment pour panser cette blessure.",
+          "3": "L'œil attiré par tout ce qui ressemble à de l'argent, vous pillez les objets de valeur encore présents sur le site : clous forgés, racloirs, tout est récupérable ! Le butin est honnête, et vous vous réjouissez déjà du profit que vous tirerez de ce larcin.",
+          "4": "Votre chien renifle longuement le sol battu. Sous un amas de gravats, il met à jour une cache contenant un objet précieux mis à l'abri avant la débâcle.",
+          "5": "Vos bras forcent les verrous et soulèvent les pierres taillées. Le vacarme attire le regard de plusieurs passants, mais vos efforts vous permettent de débusquer du matériel bien dissimulé et quelques pièces scintillantes.",
+          "6": "Tandis que vous fouillez le site sans rien découvrir d'intéressant, votre familier s'en donne à cœur-joie parmi bois et pierres. En un clin d'œil, un abri propre et sec se dresse : vous y passez une nuit paisible qui vous permet de reprendre des forces."
         },
-        "text": "Fouiller le chantier."
+        "text": "Fouiller méthodiquement le chantier déserté."
+      },
+      "investigate": {
+        "outcomes": {
+          "0": "Vous relevez marques de craie, numéros de travées, comptes griffonnés à la hâte, et entre deux notes, un nom revient : baron Almerac. À côté, la mention d'une « coupe de deniers » et d'intérêts impayés : l'argent se serait tari avant la pierre.",
+          "1": "Avec patience, vous fouillez le chantier à la recherche d'indices. Dans une niche, vous trouvez un billet froissé et déchiré. Vous parvenez tout de même à déchiffrer quelques mots : « Fièvre des marais - que Dieu nous garde ». Il semblerait que le manque d'argent n'ait pas été la seule épreuve qui soit venue à bout de cette construction.",
+          "2": "Vous épluchez les indices jusqu'à l'égarement. Les pistes se contredisent, les marques effacées ne livrent rien. Vous perdez un temps précieux sans rien apprendre sur l'histoire de ces lieux."
+        },
+        "text": "Enquêter sur les raisons de l'abandon."
       },
       "skip": {
         "outcomes": {
-          "0": "Vous décidez d'ignorer ce chantier et vous poursuivez votre route.",
-          "1": "Vous observez le chantier de loin, sans voir la pioche posée au sol. Vous vous entaillez le pied en repartant."
+          "0": "La prudence vous dicte de poursuivre votre route. Vous reprenez le chemin des ruelles, laissant derrière vous ce chantier figé dans le temps.",
+          "1": "En coupant au travers du chantier sans regarder, votre pied se heurte à un doloire laissée au sol. Une entaille vive vous arrache un juron."
         },
-        "text": "Poursuivre votre voyage sans y prêter attention."
+        "text": "Passer son chemin sans s'attarder."
+      },
+      "end": {
+        "outcomes": {
+          "0": "Vous demeurez un long moment à contempler cet ouvrage fantôme : solives qui grincent, toiles d'araignée et registres oubliés. Puis, le cœur songeur, vous vous décidez à reprendre la route.",
+          "1": "Votre familier, haut dans le ciel, vrille subitement et se pose près d'un renfoncement. Il en retire un objet brillant et vous le dépose dans la main avec un petit cri satisfait. Vous le félicitez pour cette trouvaille, la chance sourit souvent à ceux qui prennent le temps de chercher.",
+          "2": "Sans prévenir, votre gorille tambourine de ses poings un pan de mur ! La maçonnerie cède et une pierre vous heurte le crâne. Vous le rabrouez en massant votre tête, car cet incident aurait dû être évité."
+        }
       }
     },
-    "text": "Vous arrivez dans une ville, sans y trouver âme qui vive. En la traversant, vous apercevez un chantier qui semble tout aussi désert."
+    "text": "Au détour des ruelles paisibles de Mergagnan, vous tombez sur un chantier figé comme par un sort. Poutres noircies, échafauds grinçants et outils rouillés témoignent d'un labeur rompu net. On disait que le baron Almerac, riche bienfaiteur sans héritier, finançait l'édification d'une halle de pierre. Depuis sa mort soudaine, les deniers auraient cessé d'affluer, les maîtres d'œuvre se seraient querellés avec la guilde, et les compagnons auraient déserté, laissant tout en l'état, jusqu'aux registres tachés d'encre et aux dalles mal scellées."
   },
   "19": {
     "possibilities": {
       "butch": {
         "outcomes": {
-          "0": "Vous vous approchez du cadavre, et le dépecez. Vous vendez sa fourrure au premier marchand itinérant que vous croisez.",
-          "1": "Vous dépecez le renard et partez en quête d'un moyen de vendre sa peau. Quelques minutes plus tard vous croisez un marchand qui vous propose de la troquer contre un de ses objets de qualité, et vous acceptez.",
-          "2": "Vous dépecez le renard et cherchez un endroit où revendre sa fourrure. Malheureusement, elle pourrit bien vite et des mouches s'accumulent autour de vous. Vous finissez par l'abandonner sur le bord du chemin, un peu tard puisque vous vous sentez rapidement mal en point !"
+          "0": "Votre faim et votre absence totale de scrupules triomphent : en geste précis mais froid, vous arrachez peau et parties revendables. Vous repartez lesté d'un butin conséquent.",
+          "1": "Habileté et coups assurés : en quelques instants la peau est nette, roulée et prête à la vente. Vous reprenez la route satisfait de votre travail.",
+          "2": "Votre chien gémit doucement tandis que vous travaillez. Sa présence vous ralentit et vous culpabilise. Vous vous dépêchez de terminer pensant aux gains que vous aller empocher.",
+          "3": "Vous entamez la découpe quand votre renard apprivoisé pousse un cri plaintif et se couche près de la dépouille. La tristesse vous prend : vous renoncez, refermez la chair et enterrez l'animal avec un minimum de dignité.",
+          "4": "Votre droiture vous empêche d'exploiter l'animal. Vous décidez de le respecter et créez une petite tombe dans les herbes hautes, en murmurant une prière pour son âme. Vous repartez le cœur léger, mais le ventre vide.",
+          "5": "Mal préparé et mal outillé, vous ne parvenez pas à recueillir quoi que ce soit sur la carcasse. L'odeur vire rapidement : un malaise vous prend.",
+          "6": "Rodé aux travaux sanglants, vous mettez rapidement de coté les meilleurs morceaux et trouvez même un objet surprenant dans l'estomac qui est surement la cause de la mort du renard...",
+          "7": "Vous vous appliquez tant bien que mal. L'opération est grossière et longue mais après de nombreuses minutes vous parvenez à récupérer la fourrure et quelques morceaux de viande. Vous n'êtes pas fier de ce travail, mais au moins vous ne repartez pas les mains vides.",
+          "8": "Avec l'assurance d'un voyageur chevronné, vous dépecez proprement la dépouille, prélevant la fourrure et les morceaux de viande avec soin. Vous laissez le reste à la nature et reprenez la route, satisfait de votre labeur.",
+          "9": "Vous vous acharnez, maladroit : incisions trop profondes, peau arrachée, chair déchirée. La fourrure est irrécupérable. Vous n'emportez que l'odeur tenace de l'échec."
         },
-        "text": "Dépecer le renard pour revendre sa peau."
+        "text": "Dépecer la carcasse."
       },
       "cook": {
         "outcomes": {
-          "0": "Vu vos piètres compétences en cuisine, vous auriez pu vous y attendre, vous tombez malade peu de temps après avoir goûté votre préparation.",
-          "1": "Malgré vos compétences réduites en cuisine, votre renard à la broche a le mérite de vous avoir nourri.",
-          "2": "Vous vous approchez du renard afin de le ramasser, quand tout à coup, il se lève et vous mord ! Vous fuyez, blessé et l'estomac dans les talons.",
-          "3": "Vous avez étonnamment bien cuisiné ce renard, après l'avoir mangé, vous vous sentez requinqué."
+          "0": "Feu vif, découpe propre, cuisson maîtrisée : la chair grillée vous redonne des forces et vous réchauffe l'âme.",
+          "1": "Alors que vous approchez pour le saisir, l'animal est pris d'un sursaut nerveux et vous lacère avant de retomber inerte. Blessé, vous abandonnez toute idée de repas.",
+          "2": "Vous ratez complètement la cuisson, la viande noircie et malodorante vous rend malade après quelques bouchées. Vous repartez en vous demandant si vous n'auriez pas mieux fait de laisser le renard en paix.",
+          "3": "Votre fidèle compagnon s'approche prudemment du foyer que vous avez allumé. Ensemble, vous partagez ce repas frugal mais réconfortant. La chaleur des flammes et la présence rassurante de votre animal vous redonnent du courage pour la suite du voyage.",
+          "4": "Vous cuisez délicatement quelques morceaux choisis et enterrez respectueusement les restes loin du chemin. A la fin de votre repas, vous remerciez le Loup Fenrir pour cette nourriture et reprenez votre route.",
+          "5": "Vous rassemblez quelques brindilles et allumez un petit feu. La cuisson est simple mais efficace et la chair rôtie calme votre faim. Vous éteignez soigneusement les braises avant de reprendre la route.",
+          "6": "Par instinct plus que par science, vous mélangez herbes sauvages, racines croquantes et cette pincée de sel oubliée au fond de votre besace. Miracle ! La préparation rustique révèle des saveurs étonnamment harmonieuses qui égayent ce repas improbable.",
+          "7": "Malgré votre maîtrise habituelle des arts culinaires, cette viande trop longtemps exposée aux éléments dégage une puanteur infecte dès les premiers instants de cuisson. Les quelques bouchées que vous avez le courage d'avaler vous tordent l'estomac de crampes douloureuses."
         },
-        "text": "Tenter de cuisiner le renard."
+        "text": "Tenter de préparer la viande du renard."
       },
-      "end": {
+      "inspectCarcass": {
         "outcomes": {
-          "0": "Vous regardez un moment la bête étendue au sol, hésitant. Finalement, vous reprenez votre chemin."
-        }
+          "0": "Votre inspection méthodique révèle une mort récente et naturelle, sans trace de maladie ou d'empoisonnement. Rassuré par cette constatation, vous pouvez envisager la suite de vos actions en toute sécurité.",
+          "1": "En manipulant la dépouille pour l'examiner, le renard lève soudainement sa tête. Surpris, vous n'avez pas le temps de réagir et l'animal vous mord violemment avant de prendre la fuite.",
+          "2": "En manipulant la dépouille pour l'examiner, le renard lève soudainement sa tête. L'animal tente de vous mordre mais vous parvenez à esquiver son attaque. Vous vous préparez à un combat sanglant mais la bête s'enfuit vers la montagne. Il vous faut calmer les battements de votre coeur avant de reprendre votre route.",
+          "3": "Votre serpent familier dresse soudain sa tête et siffle d'alarme : il perçoit un relent d'herbes vénéneuses près de la gueule entrouverte. L'animal a sans doute succombé à un appât empoisonné destiné aux nuisibles. Vous notez cette précieuse information.",
+          "4": "En soulevant délicatement le corps pour l'examiner, vous découvrez un petit paquet de cuir coincé sous la carcasse, dissimulé dans les herbes humides. Un voyageur l'aura perdu sans s'en apercevoir. Vous le récupérez avant de remettre respectueusement l'animal en place.",
+          "5": "Ému par ce spectacle de mort prématurée, vous murmurez une courte bénédiction pour l'âme du renard et disposez tendrement quelques brins d'herbe sur sa tête. Ce geste de compassion apaise les troubles de votre conscience.",
+          "6": "Vous scrutez chaque détail avec une minutie excessive, retournant la dépouille sous tous les angles. Hélas, cette inspection prolongée ne vous apprend rien de plus et vous fait perdre un temps précieux."
+        },
+        "text": "Examiner minutieusement la dépouille."
+      },
+      "buryCarcass": {
+        "outcomes": {
+          "0": "Armé de vos mains et d'une pierre plate, vous creusez avec patience une sépulture convenable. Le petit tertre que vous érigez ensuite transforme ce coin de route en un lieu de paix qui réchauffe votre cœur.",
+          "1": "Votre noble prestance et votre recueillement transforment cet humble enterrement en véritable cérémonie. Tel un chapelain bénissant un défunt, vous honorez la dépouille d'une cérémonie simple mais digne et reprenez votre route.",
+          "2": "Pressé d'en finir, vous creusez à la hâte un trou trop superficiel. La terre mal tassée s'effrite déjà, et une odeur désagréable persiste malgré vos efforts. Votre geste, bien qu'animé de bonnes intentions, semble avoir été vain.",
+          "3": "Votre propre renard observe la scène avec une attention bouleversante, puis pousse un petit gémissement plaintif qui vous va droit au cœur. Touché par l'émotion de votre compagnon, vous redoublez de soin et achevez cette tâche funèbre avec douceur.",
+          "4": "Dépourvu d'outils de terrassement, vous improvisez en traînant le corps hors du passage principal et en le recouvrant d'un amas de branchages et de feuilles mortes. Cette sépulture de fortune, bien que sommaire, rend le lieu plus accueillant pour les autres voyageurs."
+        },
+        "text": "Enterrer dignement le renard."
       },
       "skip": {
         "outcomes": {
-          "0": "Vous choisissez d'ignorer ce cadavre et de ne pas perdre de temps.",
-          "1": "Vous choisissez d'ignorer ce cadavre et de ne pas perdre de temps.... A peine l'avez-vous dépassé que le renard se lève et vous mord violemment !"
+          "0": "Vous détournez délibérément le regard de cette vision macabre et poursuivez votre route d'un pas ferme. Après tout, la mort fait partie du cycle naturel, et vous avez des préoccupations plus urgentes que le sort d'un animal sauvage.",
+          "1": "Au moment précis où vous passez près de la dépouille, celle-ci est prises de spasmes. Surpris par ces sursauts inattendus, vous reculez brusquement et vous cognez douloureusement contre un arbre proche.",
+          "2": "Votre renard s'arrête net pour renifler longuement la dépouille de son congénère, refusant obstinément d'avancer malgré vos encouragements. Cette attitude vous agace profondément, et vous le tirez à vous en maugréant contre sa sensibilité déplacée.",
+          "3": "Déterminé à ne pas perdre une seule minute de votre temps précieux, vous accélérez le pas et filez sans accorder un regard à cette scène morbide."
         },
-        "text": "Ignorer simplement cela et vous dépêcher de rejoindre l'auberge la plus proche."
+        "text": "Ignorer la scène."
+      },
+      "end": {
+        "outcomes": {
+          "0": "Vous demeurez immobile un long moment, partagé entre diverses émotions contradictoires. Finalement, la logique implacable du voyage reprend le dessus sur vos hésitations. Vous reprenez votre route, l'esprit encore légèrement troublé par cette rencontre inattendue avec la mort.",
+          "1": "Votre loup fidèle jette un regard long et silencieux vers le corps inerte, comme s'il rendait un dernier hommage à ce frère des bois. Puis, sans un bruit, il se remet en marche à vos côtés. Ce mutuel silence scelle tacitement votre décision de poursuivre votre périple.",
+          "2": "Un bref élan de cynisme balaie toute trace d'empathie dans votre cœur endurci. La mort fait partie de la vie, point final. Vous haussez les épaules avec indifférence et vous éloignez sans un regard en arrière pour cette banale scène de mortalité.",
+          "3": "Sans que vous ayez le temps de réagir, votre T-Rex se rue sur la carcasse avec un rugissement de satisfaction et l'engloutit d'une seule bouchée monstrueuse sous vos yeux ébahis. Repus et satisfait, il trottine ensuite gaiement à vos côtés comme si de rien n'était, léchant encore ses babines tachées de sang."
+        }
       }
     },
-    "text": "Après de longs jours sans avoir pu vous sustenter, vous voyez sur le bord du chemin un cadavre de renard, semblant tout frais."
+    "text": "Tandis que vous traversez le Croisement des Destins, une vision inattendue vous arrête : le corps encore tiède d'un renard gît à demi dissimulé par des herbes. Aucune trace de lutte évidente, pas de flèches, pas de morsure sanglante nette. La chair exhale une odeur métallique mêlée à un relent plus âcre. Quelques mouches tournent déjà, prête à coloniser la dépouille."
   },
   "2": {
     "possibilities": {
-      "end": {
-        "outcomes": {
-          "0": "Vous avez pris la décision de ne pas bouger, cela ne semble pas plaire au chien puisque celui-ci mord sauvagement avant de s'enfuir !"
-        }
-      },
       "followDog": {
         "outcomes": {
-          "0": "Vous perdez la trace du chien au bout de quelques minutes, il allait trop vite ! Vous décidez de reprendre votre chemin mais vous rendez vite compte que vous n'aviez pas fait attention à votre orientation... Vous voilà perdu !",
-          "1": "Vous perdez la trace du chien au bout de quelques minutes à côté d'un arbre. En regardant autour de vous vous découvrez plein de petites pièces disséminées un peu partout !"
+          "0": "Malgré votre volonté de suivre l'animal, vos jambes ne parviennent pas à maintenir le rythme effréné du chien. Après quelques minutes de course à travers les vestiges de l'ancienne auberge, vous perdez sa trace dans un labyrinthe de poutres effondrées. Désorienté et essoufflé, vous réalisez que vous vous êtes égaré dans les ruines de l'établissement.",
+          "1": "Votre agilité vous permet de suivre le chien bondissant à travers les décombres de l'ancienne auberge. Il vous mène directement vers les caves effondrées de l'établissement, où scintillent quelques pièces d'or oubliées par les derniers clients. L'animal vous observe avec intelligence avant de disparaître entre les poutres calcinées, comme s'il avait accompli sa mission de guide.",
+          "2": "Votre expérience de voyageur vous permet de décrypter le comportement de l'animal : ce n'est pas un chien errant ordinaire, mais probablement l'ancien compagnon de l'aubergiste ! Vous le suivez avec assurance dans les ruines de l'établissement, et il vous conduit vers l'ancienne réserve où vous découvrez un coffre enfoui sous les décombres, contenant les économies cachées du tenancier et un objet précieux.",
+          "3": "Votre réputation bienveillante semble avoir précédé votre passage dans cette région ! Le chien, visiblement habitué aux anciens voyageurs généreux qui fréquentaient l'auberge, vous guide avec une confiance totale vers la vieille cuisine effondrée. Non seulement vous y trouvez une belle somme cachée dans l'âtre éteint, mais l'animal vous conduit également vers l'ancien puits de l'auberge où l'eau claire restaure vos forces.",
+          "4": "Votre propre compagnon canin établit immédiatement une connexion avec le chien mystérieux ! Dans un concert d'aboiements joyeux qui résonne entre les murs écroulés de l'auberge, ils vous guident vers le trésor du maître-aubergiste, dissimulé sous les fondations de la salle commune.",
+          "5": "Votre aura sombre effraie visiblement l'animal, mais votre curiosité vous pousse à le traquer dans les ruines de l'auberge malgré sa peur évidente. Cette poursuite agressive entre les chambres effondrées et la salle commune en ruines ne fait qu'alimenter les légendes sinistres qui entourent cet établissement jadis prospère. Après plusieurs minutes, vous finissez par perdre l'animal de vue, vous voilà perdu dans les décombres de l'auberge.",
+          "6": "Votre compagnon félin observe la scène avec curiosité, explorant déjà les recoins de l'ancienne auberge. Après un moment d'évaluation mutuelle, votre chat et le chien trouvent un terrain d'entente respectueuse près des restes de l'ancien foyer. Le chien, rassuré, vous guide vers une cache dissimulée derrière l'ancien comptoir de l'auberge, où brillent encore quelques pièces dans un pot de grès brisé.",
+          "7": "Attiré par le bruit du chien, votre rongeur sort timidement de votre besace, et s'enfuit à toute vitesse à travers les décombres de l'auberge. Vous décidez d'arrêter de suivre le chien pour ne pas perdre votre compagnon et parvenez à le récupérer sain et sauf entre les ruines de la salle commune."
         },
         "text": "Suivre le chien."
       },
+      "intimidateDog": {
+        "outcomes": {
+          "0": "Votre allure menaçante et votre arme bien visible impressionnent immédiatement l'animal qui recule vers les décombres de l'ancienne auberge, les oreilles basses et la queue entre les pattes. Il disparaît rapidement entre les poutres effondrées de la salle commune, vous laissant libre de continuer votre route sans être importuné.",
+          "1": "Votre tentative d'intimidation se retourne lamentablement contre vous ! Le chien, loin d'être impressionné par votre faible prestance, vous mord sauvagement la jambe avant de s'enfuir en aboyant vers les chambres écroulées de l'auberge. La blessure est douloureuse, vous manquez encore d'autorité face à l'ancien gardien des lieux.",
+          "2": "Votre réputation de brute et votre attitude agressive terrorisent non seulement l'animal mais aussi un pauvre mendiant caché dans les décombres de l'auberge qui observait la scène ! Tremblant de peur face à votre sinistre renommée dans ce lieu déjà hanté par les malheurs, il vous jette précipitamment les quelques pièces de sa maigre bourse pour acheter votre clémence avant de fuir vers les ruines de la cuisine.",
+          "3": "Votre imposant familier émerge à vos côtés près du seuil brisé de l'auberge, et sa seule présence suffit à faire comprendre au chien qu'il vaut mieux ne pas insister. L'animal, reconnaissant la hiérarchie naturelle, s'incline respectueusement avant de s'éloigner dignement vers les vestiges de l'écurie.",
+          "4": "Vous tentez de faire fuir l'animal avec des gestes brusques et des cris menaçants, mais votre maladresse ne fait qu'amuser le chien qui, loin d'être intimidé, vous tourne autour en aboyant joyeusement près des ruines de l'auberge. Après quelques minutes, l'animal, fatigué de ce jeu, s'éloigne finalement vers les décombres de la salle commune. Vous décidez de reprendre votre route sans perdre d'avantage de temps."
+        },
+        "text": "Essayer de faire fuir le chien."
+      },
       "skip": {
         "outcomes": {
-          "0": "Après 15 minutes de poursuite vous parvenez à semer le chien, il ne semblait pas très amical !",
-          "1": "Vous continuez sans vous soucier du chien. Celui-ci n'insiste pas.",
-          "2": "En voulant fuir, vous tombez brutalement dans un fossé, la blessure est profonde... Il faudra vous soigner avant de continuer !"
+          "0": "Votre vitesse et votre agilité vous permet d'éviter facilement l'animal insistant ! Vous traversez les ruines de l'auberge aisément sautant par-dessus les poutres effondrées et les décombres de la salle commune. Le chien, impressionné par cette démonstration athlétique, abandonne rapidement sa poursuite.",
+          "1": "Alors que vous tentez de passer sans prêter attention au chien, celui-ci se jette soudainement sur vous avec une agilité surprenante ! Heureusement, votre bouclier est solide et votre expérience vous permet de bloquer presque tous les assauts de la bête. Vous parvenez à vous extraire de cette situation après quelques minutes de lutte avec seulement quelques égratignures.",
+          "2": "Votre fuite précipitée se solde par une chute catastrophique dans les décombres de l'auberge ! Vos jambes peu agiles s'emmêlent dans les gravats et les poutres brisées de l'ancienne salle commune, vous envoyant rouler douloureusement sur les pavés de la cour effondrée.",
+          "3": "L'animal semble percevoir votre aura bienveillante et après vous avoir observé quelques instants près des vestiges de l'auberge, comprend que vous n'êtes pas celui qu'il cherchait. Il s'éloigne de lui-même sans insister, disparaissant dignement entre les décombres de l'ancienne écurie.",
+          "4": "Votre compagnon survole les ruines de l'auberge, créant une diversion et vous permettant de continuer votre route sans être dérangé par le chien. Fier de vous et de votre familier, vous reprenez votre chemin à travers la grande rue."
         },
-        "text": "Continuer sans se préoccuper du chien."
+        "text": "Continuer votre route. en ignorant le chien."
+      },
+      "end": {
+        "outcomes": {
+          "0": "Votre immobilité prolongée face à l'animal de plus en plus insistant finit par l'agacer. Le chien, frustré par votre manque de réaction vous mords les jambes avec une insistance croissante. Vous finissez par sursauter, repoussant l'animal avec difficulté avant qu'il ne vous inflige une blessure plus grave.",
+          "1": "Votre inaction face au chien de plus en plus agité se révèle être une grave erreur de jugement ! L'animal vous inflige une morsure particulièrement vicieuse qui vous laisse pantelant au milieu des pavés.",
+          "2": "Votre chien observe la scène avec une gêne palpable. Il décide alors de le rejoindre, attiré par son énergie communicative, vous laissant seul au milieu de la rue. Pendant quelques minutes, vous entendez leurs jeux d'une oreille, perdu dans vos pensées, lorsqu'un concert d'aboiements vous sort de votre torpeur. En jouant dans l'herbe, les deux canidés ont déterré un bibelot qui attire votre attention. "
+        }
       }
     },
-    "text": "Devant vous, un chien arrive et tourne autour de vous. Il semble vouloir que vous le suiviez !"
+    "text": "Sur les pavés brisés de la Grande Rue, vestiges d'une époque de prospérité commerciale désormais révolue, un chien au pelage tacheté surgit d'entre les ruines d'un ancien comptoir. Ses côtes saillantes témoignent des difficultés de la vie sauvage, mais ses yeux brillent d'une intelligence remarquable. L'animal vous fixe intensément, puis se met à tourner autour de vous avec une insistance troublante. Il aboie brièvement puis s'éloigne de quelques pas vers les restes effondrés d'une ancienne auberge, avant de revenir vers vous en gémissant doucement. Ses allées et venues répétées entre vous et les ruines, accompagnées de regards perçants et de petits jappements, ne laissent aucun doute : l'animal semble vouloir vous guider quelque part..."
   },
   "20": {
     "possibilities": {
       "alert": {
         "outcomes": {
-          "0": "Les gardes vous suivent et appréhendent le garde véreux, la femme vous offre un objet en gage de remerciements.",
-          "1": "Malheureusement, les gardes que vous tentez d'alerter n'ont que faire des agissements malfaisant de leur collègue. Devant votre insistance, ils engagent le combat contre vous. Vous remportez la bataille malgré quelques blessures mais il est trop tard. La femme gît sur le sol ainsi que deux gardes."
+          "0": "Votre cri d'alarme résonne entre les façades de Claire de Ville ! Deux gardes en patrouille accourent immédiatement et reconnaissent avec stupeur leur collègue corrompu. La victime, soulagée par votre intervention courageuse, vous remet discrètement un objet précieux qu'elle gardait sur elle, murmurant des remerciements émus tandis que le garde véreux est emmené vers les geôles de la ville.",
+          "1": "Votre appel à l'aide attire l'attention de deux gardes de patrouille... qui se révèlent être les complices du voleur ! Face à votre insistance et votre refus de détourner le regard de cette injustice, ils n'ont d'autre choix que de vous faire taire. Le combat est brutal et inégal : malgré votre vaillance, vous êtes sévèrement blessé. Lorsque vous reprenez vos esprits, étourdi et meurtri, la rue est déserte. Seules quelques taches de sang témoignent du drame qui s'est déroulé ici.",
+          "2": "Votre voix puissante et votre prestance attirent immédiatement l'attention ! Le garde corrompu, reconnaissant en vous un adversaire de taille, lâche sa victime et disparaît dans les ruelles avant l'arrivée de ses collègues. La femme, tremblante mais reconnaissante, vous offre quelques pièces en guise de remerciement.",
+          "3": "Votre réputation de héros précède votre cri ! Les gardes honnêtes accourent avec zèle et appréhendent leur collègue indigne. Le capitaine de la garde, impressionné par votre sens de la justice, vous remet personnellement une récompense substantielle et un objet d'équipement de qualité.",
+          "4": "Malheureusement, votre faible prestance et votre voix incertaine n'attirent pas l'attention des autorités. Le garde corrompu vous lance un regard menaçant qui vous glace le sang, et vous vous éloignez précipitamment, honteux de votre lâcheté."
         },
-        "text": "Alerter d'autres gardes sur les agissements de leur collègue."
+        "text": "Alerter la garde sur les agissements de ce renégat."
       },
-      "end": {
+      "intimidate": {
         "outcomes": {
-          "0": "Vous continuez votre chemin sans prêter attention au garde.",
-          "1": "Abasourdi, vous regardez la scène, tétanisé, pendant cinq minutes. Le garde finit par vous remarquer, vous vous hâtez donc de passer votre chemin."
-        }
-      },
-      "skip": {
-        "outcomes": {
-          "0": "Vous ne prêtez donc pas attention à la situation et poursuivez votre route.",
-          "1": "En passant votre chemin, vous trébuchez et tombez par terre."
+          "0": "Votre seule présence imposante et votre main posée sur la garde de votre arme suffisent à faire comprendre vos intentions. Le garde corrompu, évaluant rapidement la situation, lâche sa victime et s'enfuit dans les ruelles sombres de Claire de Ville. La femme, encore tremblante, vous remercie chaleureusement pour votre intervention.",
+          "1": "Votre aura menaçante et votre sinistre réputation font pâlir le garde véreux ! Il abandonne immédiatement sa victime et détale comme un lapin. La femme vous regarde avec un mélange de gratitude et de crainte, avant de s'éloigner rapidement elle aussi, vous laissant seul au milieu de la ruelle.",
+          "2": "Votre tentative d'intimidation échoue lamentablement face au garde aguerri. Il éclate de rire devant votre posture peu convaincante et vous menace de son autorité. Humilié, vous battez en retraite sous ses moqueries.",
+          "3": "Votre imposant familier surgit à vos côtés avec un grondement menaçant ! Le garde corrompu, terrorisé par cette démonstration de force, lâche sa victime et s'enfuit en trébuchant. La femme vous offre quelques pièces en remerciement.",
+          "4": "Votre intervention musclée attire l'attention d'autres gardes qui, malheureusement, prennent le parti de leur collègue. Vous devez fuir précipitamment pour éviter l'arrestation, laissant la pauvre femme à son triste sort."
         },
-        "text": "Passer votre chemin."
+        "text": "Intimider le garde pour qu'il cesse ses méfaits."
       },
       "surpriseAttack": {
         "outcomes": {
-          "0": "Vous parvenez à assommer le garde et récupérez un objet précieux qu'il portait.",
-          "1": "Au dernier moment, le garde se retourne et vous attaque. Après un féroce combat durant lequel la femme s'est enfuie, vous échouez à dévier une de ses attaques. Victorieux, le garde vous laisse néanmoins en vie et prend également la fuite.",
-          "2": "Le garde esquive et la femme parvient à s'enfuir. Après avoir fait fuir le garde, vous la retrouvez hors de danger. Pour vous remercier, elle vous offre quelques pièces d'or."
+          "0": "Profitant de l'effet de surprise, vous assénez un coup précis qui met le garde hors d'état de nuire ! Alors qu'il s'effondre, un objet de valeur tombe de sa ceinture : le produit de ses rapines précédentes. La femme vous remercie avec effusion avant de s'évanouir dans la foule.",
+          "1": "Au dernier instant, le garde perçoit votre mouvement ! Il pivote avec une rapidité surprenante et dégaine son arme. Le combat est féroce et brutal : ses coups disciplinés trouvent vos défenses trop faibles. Vous vous effondrez, grièvement blessé, tandis que votre adversaire s'enfuit en jurant. La femme a également disparu dans la confusion.",
+          "2": "Votre attaque permet à la femme de s'échapper, mais le garde esquive habilement et riposte ! Le duel qui s'ensuit dans les rues de Claire de Ville attire l'attention. Finalement, le garde corrompu prend la fuite. Vous retrouvez la femme un peu plus loin : reconnaissante mais pauvre, elle ne peut vous offrir que quelques maigres pièces.",
+          "3": "Votre rapidité fulgurante ne lui laisse aucune chance ! En un éclair, le garde est au sol et la femme libérée. Impressionnée par votre prouesse martiale, elle vous révèle être une marchande déguisée et vous offre un objet de grande valeur en guise de gratitude.",
+          "4": "Votre attaque vicieuse et brutale met rapidement le garde à terre ! Alors qu'il gémit de douleur, vous fouillez sans vergogne ses poches et récupérez le butin de ses méfaits. La femme, choquée par votre violence excessive, s'enfuit elle aussi, vous laissant avec votre conscience et vos gains mal acquis.",
+          "5": "Malheureusement, vous manquez cruellement d'expérience au combat ! Votre attaque mal coordonnée est facilement contrée. Le garde vous inflige une correction humiliante sous les yeux de témoins avant de s'enfuir avec son butin.",
+          "6": "Votre familier bondit aux côtés de votre attaque ! Ensemble, vous maîtrisez rapidement le garde sans lui causer de blessures graves. Les autres gardes arrivent et, reconnaissant votre légitimité, vous remercient pour avoir démasqué ce renégat. Vous recevez une belle récompense."
         },
-        "text": "Attaquer le garde par surprise dans l'optique d'aider la femme."
+        "text": "Attaquer le garde par surprise pour sauver la victime."
+      },
+      "negotiateBribe": {
+        "outcomes": {
+          "0": "Vous approchez discrètement et glissez quelques pièces au garde en murmurant que vous souhaitez qu'il la laisse partir. Le corrompu, reconnaissant un confrère dans la malveillance, empoche l'argent avec un sourire entendu et libère la femme. Elle vous lance un regard reconnaissant mêlé de dégoût avant de disparaître.",
+          "1": "Votre réputation de personne honorable vous précède ! Lorsque vous tentez de corrompre le garde, celui-ci éclate de rire en s'étonnant que ce soit vous qui lui offriez un pot-de-vin. Il libère la femme de lui-même, amusé par votre tentative maladroite de négociation.",
+          "2": "Le garde accepte votre argent... puis exige davantage ! Coincé dans ce chantage, vous devez payer une somme exorbitante pour libérer la pauvre femme. Vous repartez la bourse vide mais la conscience légèrement apaisée.",
+          "3": "Votre offre de corruption attire l'attention d'autres gardes honnêtes ! Réalisant votre erreur, vous devez fuir précipitamment, laissant votre argent derrière vous dans votre fuite chaotique."
+        },
+        "text": "Payer le garde pour qu'il libère sa victime."
+      },
+      "skip": {
+        "outcomes": {
+          "0": "Vous détournez délibérément le regard de cette scène déplaisante et poursuivez votre route d'un pas pressé. Après tout, ce ne sont pas vos affaires, et Claire de Ville a assez de problèmes sans que vous vous en mêliez.",
+          "1": "Alors que vous passez votre chemin sans un regard, votre pied heurte une pierre mal placée ! Vous vous étalez de tout votre long sur les pavés inégaux de Claire de Ville, sous les regards moqueurs des passants. Votre chute attire l'attention sur la scène du vol, et le garde corrompu s'enfuit précipitamment.",
+          "2": "Votre indifférence face à l'injustice ne passe pas inaperçue. Plusieurs citoyens vous observent avec mépris tandis que vous continuez votre route sans intervenir. Votre réputation en souffre légèrement.",
+          "3": "Vous passez votre chemin, mais votre compagnon animal semble troublé par la scène. Il tire sur sa laisse ou pousse des gémissements plaintifs, vous retardant légèrement dans votre progression.",
+          "4": "Absorbé par vos propres pensées, vous ne remarquez même pas vraiment la scène et continuez naturellement votre route à travers les rues de Claire de Ville."
+        },
+        "text": "Poursuivre votre route sans vous impliquer."
+      },
+      "end": {
+        "outcomes": {
+          "0": "Vous demeurez figé, observant la scène avec une fascination morbide. Faut-il intervenir ? Appeler à l'aide ? Votre indécision vous paralyse jusqu'à ce que le garde, ayant achevé son méfait, remarque votre présence. Il vous fixe d'un regard menaçant avant de disparaître dans les ruelles. Vous reprenez finalement votre route, troublé par votre propre passivité.",
+          "1": "Tétanisé par cette démonstration flagrante de corruption au cœur même de Claire de Ville, vous restez bouche bée pendant de longues minutes. Lorsque le garde finit par vous remarquer, son regard noir vous glace le sang. Vous vous hâtez de dégager, le cœur battant, ayant perdu un temps précieux dans cette observation stérile.",
+          "2": "Votre familier observe également la scène avec curiosité, mais contrairement à vous, il agit ! Il bondit vers le garde en aboyant/sifflant/criant, créant une diversion qui permet à la femme de s'échapper. Le garde, surpris, s'enfuit également. Vous récupérez votre compagnon et reprenez votre route."
+        }
       }
     },
-    "text": "En vous baladant tranquillement dans un village, vous remarquez du coin de l'œil un garde volant une pauvre femme."
+    "text": "Dans une ruelle étroite de Claire de Ville, à l'écart de l'agitation du grand marché, une scène troublante attire votre attention : un garde de la cité, reconnaissable à son tabard aux armes de la ville, a acculé une femme terrorisée contre un mur de pierre. Ses mains tremblantes tiennent maladroitement sa bourse, tentant vainement de la soustraire à l'emprise du garde qui use de son autorité pour la dépouiller. Il gronde qu'il s'agit d'une taxe municipale impayée, d'une voix qui ne trompe personne. Les quelques passants qui aperçoivent la scène détournent prudemment le regard : dénoncer un garde, même corrompu, peut s'avérer dangereux dans cette ville marchande où l'ordre règne en maître..."
   },
   "21": {
     "possibilities": {
@@ -2568,24 +2886,24 @@
       "accept": {
         "text": "Accepter l'invitation",
         "outcomes": {
-          "0": "Vous grimpez à bord du navire, attiré par les rires et la lumière vacillante des lanternes. La fête bat son plein, les flots de rhum circulent sans retenue, et bientôt, vos sens se brouillent dans une brume douce et traîtresse. Le réveil est brutal : dans l'obscurité de la cale, un mal de crâne sourd vous tient compagnie. L’air marin vous gifle le visage lorsque, chancelant, vous regagnez le quai, sans le moindre souvenir de la nuit passée.",
-          "1": "À peine votre pied posé sur le pont, une tension sourde vous étreint. Les visages de l’équipage sont crispés, les regards fuyants. Puis, comme un éclair, la fureur éclate : deux hommes s’empoignent, la querelle dégénère en une mêlée confuse. Ballotté entre les coups, vous échappez de peu à une blessure grave. C’est le cœur battant et les mains tremblantes que vous regagnez la terre ferme, l’esprit ébranlé par cette violence soudaine.",
-          "2": "Le capitaine, un sourire en coin, vous invite à prendre part à un jeu dont les règles semblent aussi floues que douteuses. Vous acceptez, le souffle suspendu, et vous laissez guider par le hasard. Contre toute attente, la chance vous sourit : une bourse d’or et un objet énigmatique, serti de symboles oubliés, vous sont remis à contrecœur par un capitaine visiblement contrarié par votre victoire."
+          "0": "Vous grimpez à bord du navire, attiré par les rires et la lumière vacillante des lanternes. La fête bat son plein, les flots de rhum circulent sans retenue, et bientôt, vos sens se brouillent dans une brume douce et traîtresse. Le réveil est brutal : dans l'obscurité de la cale, un mal de crâne sourd vous tient compagnie. L'air marin vous gifle le visage lorsque, chancelant, vous regagnez le quai, sans le moindre souvenir de la nuit passée.",
+          "1": "À peine votre pied posé sur le pont, une tension sourde vous étreint. Les visages de l'équipage sont crispés, les regards fuyants. Puis, comme un éclair, la fureur éclate : deux hommes s'empoignent, la querelle dégénère en une mêlée confuse. Ballotté entre les coups, vous échappez de peu à une blessure grave. C'est le cœur battant et les mains tremblantes que vous regagnez la terre ferme, l'esprit ébranlé par cette violence soudaine.",
+          "2": "Le capitaine, un sourire en coin, vous invite à prendre part à un jeu dont les règles semblent aussi floues que douteuses. Vous acceptez, le souffle suspendu, et vous laissez guider par le hasard. Contre toute attente, la chance vous sourit : une bourse d'or et un objet énigmatique, serti de symboles oubliés, vous sont remis à contrecœur par un capitaine visiblement contrarié par votre victoire."
         }
       },
       "refuse": {
         "text": "Refuser l'invitation",
         "outcomes": {
-          "0": "Vous déclinez poliment, le regard posé sur les voiles noires qui battent au vent. Le capitaine vous observe un instant, puis hausse les épaules avec un sourire narquois. Sans un mot de plus, il fait signe à son équipage de lever l’ancre. Vous restez là, silencieux, tandis que le navire s’éloigne lentement, avalé par l’horizon brumeux. Vous reprenez alors votre route, le cœur serein, loin des aventures maritimes.",
-          "1": "Votre refus franchit vos lèvres avec fermeté. Mais le regard du capitaine se durcit, son sourire s’efface. D’un geste sec, il ordonne à ses hommes de viser. Le tonnerre d’un canon résonne, projetant sable et éclats tout autour de vous. Pris de panique, vous fuyez à travers la crique, le souffle court, poursuivi par l’écho grinçant d’un rire cruel."
+          "0": "Vous déclinez poliment, le regard posé sur les voiles noires qui battent au vent. Le capitaine vous observe un instant, puis hausse les épaules avec un sourire narquois. Sans un mot de plus, il fait signe à son équipage de lever l'ancre. Vous restez là, silencieux, tandis que le navire s'éloigne lentement, avalé par l'horizon brumeux. Vous reprenez alors votre route, le cœur serein, loin des aventures maritimes.",
+          "1": "Votre refus franchit vos lèvres avec fermeté. Mais le regard du capitaine se durcit, son sourire s'efface. D'un geste sec, il ordonne à ses hommes de viser. Le tonnerre d'un canon résonne, projetant sable et éclats tout autour de vous. Pris de panique, vous fuyez à travers la crique, le souffle court, poursuivi par l'écho grinçant d'un rire cruel."
         }
       },
       "end": {
         "outcomes": {
-          "0": "Vous tournez le dos au capitaine et allez vous asseoir sur le sable, laissant votre regard suivre le vaisseau pirate qui, toutes voiles dehors, quitte lentement la baie. Le grondement sourd des flots accompagne son départ, jusqu’à ce qu’il ne soit plus qu’un point à l’horizon. Enfin, vous vous relevez, époussetez le sable de vos vêtements, et reprenez votre route, seul sur le sentier battu par les vents.",
-          "1": "Vous détournez votre regard du capitaine et laissez vos pensées voguer au rythme des flots. Là, sur le rivage balayé par les vents, votre œil est attiré par une antique bouteille, à demi enfouie dans le sable. Intrigué, vous la saisissez et y découvrez un vieux parchemin jauni par le temps. Les signes tracés d'une main tremblante y révèlent l'emplacement d'un lieu secret, dissimulé non loin. Guidé par ces énigmes, vous arpentez la lande durant longuement, jusqu’à ce que vos pas vous mènent à un coffre ancien, enfoui sous les ronces. En l’ouvrant, vous découvrez un objet aux allures mystérieuses...",
-          "2": "Vous tournez le dos au capitaine et laissez vos pas vous guider sur la plage battue par les vents. Une bouteille à demi enfouie dans le sable attire votre regard. Vous la déterrez avec précaution, espérant quelque secret oublié. À l’intérieur, un parchemin froissé, rongé par l’humidité et le sel. Vous le déroulez lentement, mais hélas… les lettres sont effacées, les mots n’étant plus que tâches informes et filigranes éteints. Aucun sens ne s’en dégage, si ce n’est un pressentiment : ce message a surement un jour été important, il est désormais perdu à jamais dans les replis du temps.",
-          "3": "Vous tournez le dos au capitaine sans un mot, ce qui semble attiser sa colère. D’un pas vif, il vous rejoint et, sans sommation, vous assène un violent coup sur l’arrière du crâne. Étourdi, vous vous affaissez sur le sable, les étoiles dansant devant vos yeux. Il repart aussitôt, regagne le pont en ricanant, puis ordonne de lever l’ancre."
+          "0": "Vous tournez le dos au capitaine et allez vous asseoir sur le sable, laissant votre regard suivre le vaisseau pirate qui, toutes voiles dehors, quitte lentement la baie. Le grondement sourd des flots accompagne son départ, jusqu'à ce qu'il ne soit plus qu'un point à l'horizon. Enfin, vous vous relevez, époussetez le sable de vos vêtements, et reprenez votre route, seul sur le sentier battu par les vents.",
+          "1": "Vous détournez votre regard du capitaine et laissez vos pensées voguer au rythme des flots. Là, sur le rivage balayé par les vents, votre œil est attiré par une antique bouteille, à demi enfouie dans le sable. Intrigué, vous la saisissez et y découvrez un vieux parchemin jauni par le temps. Les signes tracés d'une main tremblante y révèlent l'emplacement d'un lieu secret, dissimulé non loin. Guidé par ces énigmes, vous arpentez la lande durant longuement, jusqu'à ce que vos pas vous mènent à un coffre ancien, enfoui sous les ronces. En l'ouvrant, vous découvrez un objet aux allures mystérieuses...",
+          "2": "Vous tournez le dos au capitaine et laissez vos pas vous guider sur la plage battue par les vents. Une bouteille à demi enfouie dans le sable attire votre regard. Vous la déterrez avec précaution, espérant quelque secret oublié. À l'intérieur, un parchemin froissé, rongé par l'humidité et le sel. Vous le déroulez lentement, mais hélas… les lettres sont effacées, les mots n'étant plus que tâches informes et filigranes éteints. Aucun sens ne s'en dégage, si ce n'est un pressentiment : ce message a surement un jour été important, il est désormais perdu à jamais dans les replis du temps.",
+          "3": "Vous tournez le dos au capitaine sans un mot, ce qui semble attiser sa colère. D'un pas vif, il vous rejoint et, sans sommation, vous assène un violent coup sur l'arrière du crâne. Étourdi, vous vous affaissez sur le sable, les étoiles dansant devant vos yeux. Il repart aussitôt, regagne le pont en ricanant, puis ordonne de lever l'ancre."
         }
       }
     },
