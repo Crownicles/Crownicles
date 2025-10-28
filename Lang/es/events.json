@@ -2778,6 +2778,76 @@
     },
     "text": "Has decidido aprovechar el verano para ir a la montaña, siempre que los puertos no estén demasiado nevados. Sin embargo, la subida resulta ser más difícil de lo que esperabas..."
   },
+  "80": {
+    "possibilities": {
+      "end": {
+        "outcomes": {
+          "0": "Une chauve-souris jaillit des volutes brumeuses et virevolte autour de vous avec une grâce hypnotique avant de se fondre dans l'épaisseur laiteuse du brouillard. Cette apparition énigmatique éveille votre curiosité : sans réfléchir davantage, vous décidez de la suivre."
+        }
+      },
+      "followPath": {
+        "outcomes": {
+          "0": "La curiosité l'emporte sur la prudence. Vous vous engagez sur le chemin mystérieux qui serpente dans les entrailles de la brume..."
+        },
+        "text": "S'engager sur le chemin brumeux."
+      },
+      "turnAround": {
+        "outcomes": {
+          "0": "Un frisson glacé remonte le long de votre échine, instinct primitif vous hurlant de fuir ce lieu maudit. Sans demander votre reste, vous pivotez brusquement et vous éloignez à grands pas de cette route fantomatique, refusant de jeter un regard en arrière.",
+          "1": "Au moment précis où vous amorcez votre demi-tour salvateur, une marée grouillante de minuscules araignées déferle du brouillard et envahit le sol autour de vos pieds ! Pris d'une panique incontrôlable, vous bondissez en arrière dans un cri étouffé. Les arachnides disparaissent aussi vite qu'elles sont apparues, mais votre cœur tambourine encore follement dans votre poitrine plusieurs minutes après cette rencontre cauchemardesque."
+        },
+        "text": "Rebrousser chemin immédiatement."
+      }
+    },
+    "text": "Sans le moindre avertissement, un brouillard dense se répand autour de vous, engloutissant la totalité du paysage dans une chape cotonneuse et oppressante. En l'espace de quelques battements de cœur, la réalité elle-même semble s'effacer : les silhouettes des arbres se dissolvent, l'horizon disparaît entièrement dans cette blancheur laiteuse. Un silence pesant s'abat sur ce monde fantomatique et l'air glacial et saturé d'humidité rend chaque inspiration laborieuse, comme si le brouillard lui-même cherchait à pénétrer vos poumons. Après quelques instants à être resté immobile surpris par l'évènement, vous remarquez qu'un chemin se dessine peu à peu devant vous..."
+  },
+  "81": {
+    "possibilities": {
+      "end": {
+        "outcomes": {
+          "0": "Pris d'un mauvais pressentiment, vous quittez précipitamment le bâtiment. Dans l'escalier, votre pied glisse sur une planche disjointe. Vous tombez lourdement et vous écorchez la jambe. Rien de grave, mais la douleur vous rappelle que cette maison ne voulait peut-être pas de vous."
+        }
+      },
+      "randomRoom": {
+        "outcomes": {
+          "0": "Vous ouvrez une porte au hasard. Une chaleur soudaine vous enveloppe tandis que des flammes jaillissent des murs, dansant comme mues par une volonté propre. Le feu tourbillonne, se condense, puis prend lentement forme au centre de la pièce. Deux lueurs brûlantes vous fixent dans le tumulte, immobiles, presque conscientes. Puis, aussi brusquement qu’il est apparu, le brasier s’éteint, laissant derrière lui un air lourd et un silence oppressant. Au milieu des cendres, une silhouette intacte repose, faiblement tiède au toucher. Sans comprendre pourquoi, vous décidez de l’emporter avec vous.",
+          "1": "La pièce baigne dans une atmosphère étrange et une lumière douce émane des quatre coins de la pièce. Sur une table poussiéreuse, un objet ancien attire votre attention. Vous sentez sa qualité et décidez de l'emporter.",
+          "2": "Vous ouvrez une porte sur une pièce banale, sans rien de particulier. Vous repartez, déçu d'avoir perdu votre temps. Vous explorez quelques autres pièces sans intérêt particulier avant de quitter la maison et reprendre votre route.",
+          "3": "Un froid glacial vous frappe dès l'ouverture de la porte. L'air se solidifie, des cristaux de glace flottent en suspension. Votre corps se raidit, vos forces vous quittent. Au centre repose une créature étrange, endormie dans l'immensité froide. Décidé à ne pas repartir les mains vides, vous l'emportez avec vous.",
+          "4": "Le froid vous saisit instantanément. Des cristaux de glace flottent dans l'air figé. Au centre, une créature repose dans un halo de givre. Vous avancez... et commettez l'erreur fatale. Ses yeux glacés s'ouvrent. Elle bondit. Une morsure de froid absolu vous transperce. Tout devient blanc, puis plus rien."
+        },
+        "text": "Entrer dans une pièce au hasard"
+      },
+      "visitBasement": {
+        "outcomes": {
+          "0": "Vous descendez dans la cave. L'air lourd sent la pierre froide. À peine posez-vous le pied sur la première marche qu'un cri aigu retentit. Une nuée de chauves-souris jaillit des ténèbres dans un vacarme de battements d'ailes, vous frôlant avant de disparaître. Le silence retombe. Sur votre épaule, un poids léger : une chauve-souris s'y est accrochée, ses petits yeux brillant dans la pénombre. Sans comprendre pourquoi, vous décidez de l'emmener.",
+          "1": "Dans la cave glaciale, une présence surgit de l'ombre et vous attaque ! Après quelques instants de lutte, la créature recule, aussi effrayée que vous. Vous l'étudiez longuement sans comprendre exactement de quoi il s'agit, elle semble translucide et murmure sans que vous ne compreniez le moindre mot. Pris d'un élan de folie, vous décidez de l'emmener avec vous.",
+          "2": "À chaque marche descendue, vos jambes s'alourdissent, votre souffle se fait court. L'obscurité pulse comme si la cave respirait. Puis vous les voyez : des milliers d'araignées grouillant sur les murs. Elles s'élancent vers vous en une masse noire qui vous submerge, grimpe, s'infiltre. Vous étouffez... puis rouvrez les yeux, allongé au milieu d'un chemin, sonné et sans votre bourse. N'était-ce réellement qu'un rêve ?",
+          "3": "Vous descendez prudemment dans l'obscurité totale du sous-sol. Avançant à tâtons, trébuchant parfois, vos mains rencontrent un objet que vous saisissez. Vous continuez jusqu'à apercevoir enfin la sortie et ressortez haletant, l'objet toujours en main."
+        },
+        "text": "Descendre dans la cave"
+      },
+      "visitFloor": {
+        "outcomes": {
+          "0": "Vous montez les marches grinçantes. L'air devient glacial, chargé d'une odeur de cire et de poussière ancienne. En haut, une créature étrange aux traits flous glisse silencieusement dans le couloir et s'immobilise devant vous. Ses yeux vous implorent. Votre curiosité vous pousse à tendre la main et une petite bourse apparaît presque immédiatement. Un frisson vous traverse, sans comprendre ce qu'il vient de vous arriver, vous prenez la décision de reprendre votre route. La créature vous emboite le pas et continue de vous suivre discrètement.",
+          "1": "En gravissant l'escalier, le froid s'intensifie. Alors que vous arrivez sur le palier, un souffle glacial vous traverse. Votre vision se trouble : un spectre translucide se dresse devant vous, ses yeux vides brûlant d'une lueur blafarde. Il effleure votre front en murmurant une malédiction dans une langue que vous ne comprenez pas. Terrorisé par la scène, vous prenez la fuite aussi vite que vos jambes vous le permettent, laissant même dans la bâtisse l'une de vos bourse et son précieux contenu.",
+          "2": "À l'étage, une porte entrouverte attire votre attention. Vous découvrez une petite pièce baignée de lumière grise. Sur une table, un repas à moitié entamé semble attendre son convive depuis des décennies, vous le consommez et emportez quelques vieilles breloques avant de repartir."
+        },
+        "text": "Explorer l'étage"
+      },
+      "visitLobby": {
+        "outcomes": {
+          "0": "Vous explorez le rez-de-chaussée mais n'y trouvez rien d'intéressant. Jugeant que la maison ne vaut pas votre temps, vous reprenez votre route sans vous attarder davantage.",
+          "1": "Au rez-de-chaussée, une vieille citrouille sculptée attire votre regard. Son sourire tordu semble figé dans le temps. Soudain, une lueur vacille au fond de ses yeux creux. Fasciné malgré vous par cette étrange vitalité, vous décidez de l'emporter avant de quitter les lieux.",
+          "2": "Vous parcourez le rez-de-chaussée poussiéreux. Les meubles délabrés sont drapés de toiles d'araignée, mais au milieu du désordre, un petit objet attire votre attention. Vous le ramassez et reprenez votre route.",
+          "3": "Le silence pèse lourd dans cette pièce poussiéreuse. En marchant entre les meubles branlants et les toiles d'araignée, votre pied heurte un clou rouillé qui vous entaille le pied. Décidant qu'il est plus prudent de ne pas prendre plus de risque, vous quittez la maison en boitant.",
+          "4": "Au centre de la pièce, une citrouille sculptée vous fixe de son sourire tordu. Sans avertissement, la flamme dans ses yeux s'embrase et la créature bondit vers vous dans un claquement de dents ! Vous n'avez même pas le temps de réagir que vous subissez ses attaques. Après un combat acharné vous parvenez tout de même à la repousser hors de la maison, il vous faudra plus longtemps pour vous défaire de vos blessures."
+        },
+        "text": "Visiter le rez-de-chaussée"
+      }
+    },
+    "text": "Vous franchissez le seuil d'une vieille demeure à l'allure délabrée. La brume épaisse qui l'entoure semble avaler les contours monde extérieur, comme si la maison existait en dehors de toute réalité. L'air est froid et stagnant, chaque pas fait gémir le vieux plancher. Une étrange présence semble vous observer depuis l'ombre des couloirs."
+  },
   "9": {
     "possibilities": {
       "end": {
