@@ -1,6 +1,6 @@
 {
   "badges": {
-    "description": "I badge sono distinzione difficile a ottenere che sono state create per ricompensare le persone che hanno il più sostenuti il sviluppo del bot. La lista dei badge e disponibile sulla guida del bot.\n(link : https://guide.draftbot.com/notions-avancees/badges)",
+    "description": "I badge sono riconoscimenti difficili da ottenere, creati per premiare le persone che hanno maggiormente sostenuto lo sviluppo del bot.\nL’elenco dei badge è disponibile nella guida del bot.\n(via questo link: https://guide.crownicles.com/notions-avancees/badges\n)",
     "title": "{emote:commands.badges} Informazioni dettagliate:"
   },
   "pet": {
@@ -168,7 +168,7 @@
         "description": "Questo comando permette di consumare la pozione che avete con voi. Alcune pozioni non possono essere bevute e vengono consumate automaticamente durante il combattimento."
       },
       "FIGHT": {
-        "description": "Usate questo comando per sfidare altri giocatori sullo stesso server.\nLe battaglie si svolgono turno per turno. A ogni turno si può scegliere un'azione da eseguire.\n\nPer ulteriori informazioni, consultare la pagina della guida: https://guide.draftbot.com/notions-principale/combats",
+        "description": "Utilizzare questo comando per sfidare altri giocatori.\nLe battaglie si svolgono turno per turno. A ogni turno si può scegliere un'azione da eseguire.\n\nPer ulteriori informazioni, consultare la pagina della guida: https://guide.crownicles.com/notions-principale/combats.",
         "image": "https://draftbot.com/public/ressources/fighthelp/en/5.1.7.png"
       },
       "GLORY_TOP": {
@@ -284,6 +284,9 @@
       },
       "SWITCH": {
         "description": "Scambia un pezzo di equipaggiamento dalla propria scorta con quello che si possiede attualmente, a condizione che sia della stessa categoria. Se non si possiede alcun equipaggiamento della stessa categoria dell'oggetto che si vuole equipaggiare, questo verrà semplicemente spostato nell'inventario."
+      },
+      "DEPOSIT": {
+        "description": "Deposita un equipaggiamento dalla tua mano principale nella tua riserva.\nSe hai un solo equipaggiamento da depositare, questo verrà riposto automaticamente."
       },
       "TOP": {
         "description": "Mostra la classifica generale della partita per ogni 15 giocatori. I giocatori sullo stesso server che voi sono contrassegnati da un punto blu."
@@ -404,9 +407,13 @@
       "very_powerful_guild": ":mirror_ball: `Membro di una gilda molto potente`",
       "animal_lover": "Persona che ha mostrato tutti gli animali domestici a Talvar il nano"
     },
-    "fightRanking": {
+    "fightRanked": {
       "fieldName": "Gloria e lega :",
-      "fieldValue": "{emote:unitValues.glory} {{gloryPoints}} | {emote:leghe.{{leagueId}}} $t(models:leagues.{{leagueId}})"
+      "fieldValue": "{emote:announcements.trophy} {{rank}} / {{numberOfPlayers}} | {emote:unitValues.glory} {{gloryPoints}} | {emote:leghe.{{leagueId}}} $t(models:leagues.{{leagueId}})"
+    },
+    "fightUnranked": {
+      "fieldName": "Gloria e lega :",
+      "fieldValue": "{emote:announcements.trophy} Uncategorized | {emote:unitValues.glory} {{gloryPoints}} | {emote:leghe.{{leagueId}}} $t(models:leagues.{{leagueId}})"
     },
     "guild": {
       "fieldName": "Gilda :",
@@ -890,6 +897,16 @@
             "Ingegnoso e pieno di risorse, utilizza i materiali che lo circondano per creare strumenti di combattimento improvvisati.",
             "Questo animale ha un incredibile istinto creativo. Produce rapidamente oggetti utili nel bel mezzo di un combattimento.",
             "La sua intelligenza tattica è affascinante. Sfrutterà ogni elemento del terreno per costruire qualcosa che vi aiuterà."
+          ],
+          "petMakeBleed": [
+            "Le analisi ematologiche rivelano che i suoi canini hanno notevoli proprietà anticoagulanti. Mordendo l'avversario, provoca un'emorragia continua e beve il sangue, consentendogli di trasferire questa energia vitale al suo padrone.",
+            "Gli esami mostrano che questo esemplare ha imparato una sofisticata tecnica vampirica: i suoi morsi infliggono al nemico emorragie persistenti, mentre assorbe l'essenza vitale per rinvigorire il suo proprietario.",
+            "Le osservazioni veterinarie confermano una capacità di emofagia controllata. Fa sanguinare continuamente i suoi avversari e converte questa perdita di sangue in energia curativa per sostenervi durante il combattimento."
+          ],
+          "petPetrified": [
+            "I test psichici indicano che questo animale emette un'aura terrificante nei momenti critici del combattimento. Negli ultimi istanti di uno scontro, il suo sguardo pietrificante può letteralmente congelare un avversario sul posto, lasciandolo totalmente vulnerabile.",
+            "L'analisi comportamentale rivela un'abilità di paralisi mentale che si attiva alla fine del combattimento. Il vostro animale emana una presenza così intimidatoria che può pietrificare i nemici, impedendo loro di muoversi o di reagire.",
+            "Le osservazioni cliniche attestano un potere pietrificante temporaneo che si manifesta nelle fasi finali del combattimento. La sua aura soprannaturale può congelare gli avversari in uno stato di paralisi totale, lasciandoli indifesi."
           ]
         },
         "ageComment_ancestor": "INCREDIBILE! esclama il veterinario, con gli occhi spalancati. Il vostro animale è un esemplare eccezionalmente raro! È uno dei più vecchi mai registrati nei nostri archivi - solo {{age}} altri animali domestici sono stati trovati più vecchi! Una vera reliquia vivente!",
@@ -1120,7 +1137,8 @@
   "fight": {
     "title": "{{pseudo}}stai per iniziare una rissa",
     "canceledTitle": "{{pseudo}}avete annullato la ricerca",
-    "confirmDesc": "{emote:fightCommand.crossedSwords} | **{{pseudo}}**{{confirmSubText}}\n\n{emote:fightCommand.crossedSwords} | **Combattente : {{pseudo}}| {{glory}} | {{className}}\n\n{{stats}}",
+    "confirmDesc": "{emote:fightCommand.crossedSwords} | **{{pseudo}}**{{confirmSubText}}\n\n{emote:fightCommand.crossedSwords} | **Combattente : {{pseudo}}| {{glory}} | {{className}} {{pet}}\n\n{{stats}}",
+    "pet": "| {{petInfo}}",
     "confirmSubTexts": {
       "common": "Volete iniziare una ricerca di combattimento?",
       "rare": "Volete partecipare alla ricerca di un combattente della vostra forza per il successivo duello?"
@@ -1301,6 +1319,15 @@
     "cancelled": "Azione annullata!",
     "switchSelectionTitle": "{{pseudo}}equipaggiare un oggetto",
     "switchSelectionDescription": "Scegliere un oggetto da equipaggiare dall'elenco sottostante:"
+  },
+  "deposit": {
+    "titleSuccess": "{{pseudo}}, comando eseguito!",
+    "deposeSuccess": "{{item}} è stato depositato nella tua riserva!",
+    "noItemToDeposit": "Non hai nessun equipaggiamento da depositare!",
+    "cannotDeposit": "La tua riserva è piena.",
+    "cancelled": "Azione annullata !",
+    "depositSelectionTitle": "{{pseudo}}, deposito di un oggetto",
+    "depositSelectionDescription": "Scegli un oggetto da depositare nell’elenco qui sotto:"
   },
   "drink": {
     "errors": {
