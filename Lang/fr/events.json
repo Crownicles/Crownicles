@@ -2799,7 +2799,7 @@
         "text": "Rebrousser chemin immédiatement."
       }
     },
-    "text": "Sans le moindre avertissement, un brouillard dense se répand autour de vous, engloutissant la totalité du paysage dans une chape cotonneuse et oppressante. En l'espace de quelques battements de cœur, la réalité elle-même semble s'effacer : les silhouettes des arbres se dissolvent, l'horizon disparaît entièrement dans cette blancheur laiteuse. Un silence pesant s'abat sur ce monde fantomatique et l'air glacial et saturé d'humidité rend chaque inspiration laborieuse, comme si le brouillard lui-même cherchait à pénétrer vos poumons. Après quelques instants à errer au hasard, vous remarquer un chemin pavé qui se dessine peu à peu devant vous..."
+    "text": "Sans le moindre avertissement, un brouillard dense se répand autour de vous, engloutissant la totalité du paysage dans une chape cotonneuse et oppressante. En l'espace de quelques battements de cœur, la réalité elle-même semble s'effacer : les silhouettes des arbres se dissolvent, l'horizon disparaît entièrement dans cette blancheur laiteuse. Un silence pesant s'abat sur ce monde fantomatique et l'air glacial et saturé d'humidité rend chaque inspiration laborieuse, comme si le brouillard lui-même cherchait à pénétrer vos poumons. Après quelques instants à errer au hasard, vous remarquez un chemin pavé qui se dessine peu à peu devant vous..."
   },
   "81": {
     "possibilities": {
@@ -2837,7 +2837,7 @@
       },
       "visitLobby": {
         "outcomes": {
-          "0": "Vous explorez le rez-de-chaussée mais n'y trouvez rien d'intéressant. Jugeant que la maison ne vaut pas votre temps, vous reprenez votre route sans vous attarder d'avantage.",
+          "0": "Vous explorez le rez-de-chaussée mais n'y trouvez rien d'intéressant. Jugeant que la maison ne vaut pas votre temps, vous reprenez votre route sans vous attarder davantage.",
           "1": "Au rez-de-chaussée, une vieille citrouille sculptée attire votre regard. Son sourire tordu semble figé dans le temps. Soudain, une lueur vacille au fond de ses yeux creux. Fasciné malgré vous par cette étrange vitalité, vous décidez de l'emporter avant de quitter les lieux.",
           "2": "Vous parcourez le rez-de-chaussée poussiéreux. Les meubles délabrés sont drapés de toiles d'araignée, mais au milieu du désordre, un petit objet attire votre attention. Vous le ramassez et reprenez votre route.",
           "3": "Le silence pèse lourd dans cette pièce poussiéreuse. En marchant entre les meubles branlants et les toiles d'araignée, votre pied heurte un clou rouillé qui vous entaille le pied. Décidant qu'il est plus prudent de ne pas prendre plus de risque, vous quittez la maison en boitant.",
