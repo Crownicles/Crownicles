@@ -832,6 +832,12 @@
       "customMessage": "brüllt in den Himmel.",
       "name_one": "Schreien",
       "name_other": "Schreie"
+    },
+    "petMakeBleed": {
+      "success": "se fait aider par **{{petNickname}}** qui mord au cou son adversaire."
+    },
+    "petPetrified": {
+      "success": "se fait aider par **{{petNickname}}** qui regarde son adversaire et le pétrifie."
     }
   },
   "leagues": {
@@ -1053,6 +1059,16 @@
       "name": "Primäre Continent",
       "particle": "in"
     },
+    "39": {
+      "description": "Sentier noyé dans une brume épaisse, immobile et sans origine. Ni repère ni forme ne permet de situer cet endroit.",
+      "name": "Sentier brumeux",
+      "particle": "in Richtung"
+    },
+    "40": {
+      "description": "Une vieille demeure délabrée se dressant dans une brume épaisse, comme suspendue entre deux mondes. Impossible de dire d’où elle vient, ni même si elle appartient encore au nôtre. Ses fenêtres fissurées laissent danser des ombres indistinctes, tandis qu’un grincement sourd s’échappe de l’intérieur, écho d’une présence oubliée.",
+      "name": "Maison hantée",
+      "particle": "in Richtung"
+    },
     "4": {
       "description": "Ein riesiger Wald südlich der Wiege. Man sagt, dass viele Reisende verloren gegangen sind.",
       "name": "Der Wald des Alten Mannes",
@@ -1182,6 +1198,10 @@
       "prefix": "von"
     },
     "dragonsNest": {
+      "name": "",
+      "prefix": "von"
+    },
+    "hauntedHouse": {
       "name": "",
       "prefix": "von"
     }
@@ -1425,6 +1445,10 @@
   "pets": {
     "0_female": "Keine Vertrauten",
     "0_male": "Keine Vertrauten",
+    "100_male": "Fantôme",
+    "100_female": "Fantôme",
+    "101_male": "Vampire",
+    "101_female": "Vampiresse",
     "10_female": "Henne",
     "10_male": "Hahn",
     "11_female": "Vogel",
@@ -1619,6 +1643,8 @@
     "97_male": "Gans",
     "98_female": "Schwung",
     "98_male": "Schwung",
+    "99_male": "Jack-o'-lantern",
+    "99_female": "Jack-o'-lantern",
     "9_female": "Sau",
     "9_male": "Schwein"
   },
