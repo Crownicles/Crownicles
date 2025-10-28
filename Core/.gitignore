@@ -1,1 +1,4 @@
 config/keycloak.toml
+
+# Tournament results
+tournament_results/
