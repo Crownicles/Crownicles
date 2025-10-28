@@ -315,6 +315,10 @@
     "name": "vertauschen",
     "description": "Tausche den aktiven Gegenstand mit einem der Gegenstände in deinem Vorrat."
   },
+  "deposit": {
+    "name": "hinterlegen",
+    "description": "Einen Ihrer aktiven Gegenstände ablegen."
+  },
   "drink": {
     "name": "trinken",
     "description": "Einen Trank trinken."
