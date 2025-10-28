@@ -167,7 +167,7 @@
     "8": "Lançadores de pedras",
     "9": "Aparadores"
   },
-  "classFormat": "{emote:classes.{{id}}} $t(models:classes.{{id}})",
+  "classFormat": "{emote:classes.{{id}} $t(models:classes.{{id}})}",
   "classPluralFormat": "{emote:classes.{{id}}} $t(models:classes_plural.{{id}})",
   "classWithStatsFormat": "{emote:classes.{{id}}} $t(models:classes.{{id}}) :\n{emote:unitValues.energy} {{energy}} | {emote:unitValues.attack} {{attack}} | {emote:unitValues.defense} {{defense}} | {emote:unitValues.speed} {{speed}} | {emote:unitValues.breath} {{initialBreath}} / {{maxBreath}} | {emote:unitValues.health} {{health}}",
   "class_descriptions": {
@@ -832,6 +832,12 @@
       "customMessage": "grita para o céu.",
       "name_one": "Uivando",
       "name_other": "Uivando"
+    },
+    "petMakeBleed": {
+      "success": "se fait aider par **{{petNickname}}** qui mord au cou son adversaire."
+    },
+    "petPetrified": {
+      "success": "se fait aider par **{{petNickname}}** qui regarde son adversaire et le pétrifie."
     }
   },
   "leagues": {
@@ -1053,6 +1059,16 @@
       "name": "Continente principal",
       "particle": "para"
     },
+    "39": {
+      "description": "Sentier noyé dans une brume épaisse, immobile et sans origine. Ni repère ni forme ne permet de situer cet endroit.",
+      "name": "Sentier brumeux",
+      "particle": "vers le"
+    },
+    "40": {
+      "description": "Une vieille demeure délabrée se dressant dans une brume épaisse, comme suspendue entre deux mondes. Impossible de dire d’où elle vient, ni même si elle appartient encore au nôtre. Ses fenêtres fissurées laissent danser des ombres indistinctes, tandis qu’un grincement sourd s’échappe de l’intérieur, écho d’une présence oubliée.",
+      "name": "Maison hantée",
+      "particle": "vers la"
+    },
     "4": {
       "description": "Uma vasta floresta a sul do Berço. Diz-se que muitos viajantes se perderam aqui.",
       "name": "Floresta do Vieillard",
@@ -1184,6 +1200,10 @@
     "dragonsNest": {
       "name": "",
       "prefix": "de"
+    },
+    "hauntedHouse": {
+      "name": "",
+      "prefix": "do"
     }
   },
   "missions": {
@@ -1425,6 +1445,10 @@
   "pets": {
     "0_female": "Sem animais de estimação",
     "0_male": "Sem animais de estimação",
+    "100_male": "Fantôme",
+    "100_female": "Fantôme",
+    "101_male": "Vampire",
+    "101_female": "Vampiresse",
     "10_female": "Galinha",
     "10_male": "Coq",
     "11_female": "Ave",
@@ -1619,6 +1643,8 @@
     "97_male": "Ganso",
     "98_female": "Momento",
     "98_male": "Momento",
+    "99_male": "Jack-o'-lantern",
+    "99_female": "Jack-o'-lantern",
     "9_female": "Semear",
     "9_male": "Carne de porco"
   },
