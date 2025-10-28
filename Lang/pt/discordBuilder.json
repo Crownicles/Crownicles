@@ -315,6 +315,10 @@
     "name": "interrutor",
     "description": "Trocar o objeto ativo por um dos objectos na sua reserva."
   },
+  "deposit": {
+    "name": "deposer",
+    "description": "Déposer un de vos objets actifs."
+  },
   "drink": {
     "name": "bebida",
     "description": "Bebe uma poção."
