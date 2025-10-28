@@ -535,7 +535,8 @@
       "Ntalcme": "Um viajante incansável, movido por um ideal maior do que ele próprio, percorre incansavelmente as terras deste reino em busca do que parece faltar à sua alma. Ninguém sabe o que ele espera encontrar no final da sua viagem, mas ele caminha em direção a um sonho esquivo.",
       "BananePlantain": "uma simples banana que amadureceu com os vários encontros e aventuras que teve neste mundo. Apaixonada por desafios e batalhas, e sempre pronta a ajudar, lidera calmamente o seu pequeno grupo.",
       "aureochocob0n": "Um rico comerciante que, acreditando nas palavras de um alquimista de renome, mergulhou num banho de ouro derretido para sair dourado. Esta ação questionável não o deixou ileso: apenas os seus ossos recém-dourados foram poupados.",
-      "Ravenclaw": "uma sentinela discreta, sempre acompanhada por um corvo. Diz-se que ela aparece quando é preciso dar uma mãozinha e que depois desaparece com o vento."
+      "Ravenclaw": "uma sentinela discreta, sempre acompanhada por um corvo. Diz-se que ela aparece quando é preciso dar uma mãozinha e que depois desaparece com o vento.",
+      "GabrieLre": "Guerreiro com sede de conhecimento, escreveu todo o seu imenso saber para ajudar todos os que querem progredir. Diz-se que ele sabe tanto sobre este mundo como o próprio criador."
     }
   },
   "witch": {
@@ -1862,5 +1863,17 @@
       "{emote:fightActions.aerialDiveAttack} O mergulho aéreo, um ataque do céu para atacar à distância! Trata-se de um ataque aéreo contra o adversário, mas falha se o alvo tiver acabado de atacar à distância. Eu sempre disse que devias ter cuidado com as tuas costas... e com o céu também!",
       "{emote:fightActions.crystallineArmorAttack} Armadura cristalina, uma técnica ofensiva e defensiva! Esta técnica utiliza a armadura do lutador para infligir danos em combate próximo, mas só funciona se o adversário tiver acabado de efetuar um ataque físico. Transformar a tua proteção numa arma de retaliação é um engenho tático!"
     ]
-  }
+  },
+  "haunted": [
+    "A névoa é tão densa que o mundo parece ter desaparecido. Cada passo no caminho ecoa como um sonho, sem eco, sem fim. Não se sabe se se está a avançar ou se o nevoeiro o está a absorver lentamente.",
+    "À tua volta, a brancura engole tudo. O chão é pouco visível, as árvores desvanecem-se no nevoeiro, e até a tua sombra desaparece. Um silêncio irreal paira sobre si, um silêncio que parece estar à espera de alguma coisa.",
+    "O caminho estende-se numa direção que já não se consegue distinguir. Por vezes, uma forma escura perfura a névoa ao longe - um movimento incerto, talvez um animal, talvez uma memória. Sente a sua orientação a dissolver-se.",
+    "Um cheiro a terra fria e a madeira húmida paira no ar. O vento parou de soprar, mas a névoa move-se, como se fosse impulsionada por um sopro invisível. Tem-se a sensação de que o próprio caminho nos observa.",
+    "A luz parece vir do nada. Nem sol, nem lua - apenas esta luz cinzenta que nunca desaparece. Estende a mão à sua frente, mas os seus dedos desaparecem no nada leitoso.",
+    "Um arrepio percorre-te a espinha. Atrás de si, um rangido abafado, frágil como uma folha a ser esmagada. Vira-se bruscamente, mas apenas a névoa, impassível, silenciosa, imóvel.",
+    "O caminho divide-se de repente, e não se sabe por quanto tempo. Os dois caminhos perdem-se imediatamente na bruma, idênticos, indecisos. Sente-se que a escolha de um ou de outro pode ser indiferente.",
+    "Pára por um momento. Até a tua respiração parece sufocada pelo ar frio. Nesta quietude total, parece ouvir um batimento - ténue, regular - como um coração enterrado na terra.",
+    "O nevoeiro está a ficar mais espesso e mal se consegue ver os próprios pés. A cada respiração, a humidade gelada penetra na sua garganta, e o mundo inteiro encolhe-se a alguns metros à sua volta.",
+    "Um sussurro distante atravessa subitamente a névoa, vindo do nada. Uma voz? Um vento? Impossível de dizer. Fica-se parado, à escuta, consciente de que este lugar não tem fim nem princípio, apenas um silêncio que respira."
+  ]
 }

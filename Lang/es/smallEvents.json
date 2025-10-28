@@ -535,7 +535,8 @@
       "Ntalcme": "Un viajero incansable, impulsado por un ideal más grande que él mismo, recorre sin descanso las tierras de este reino en busca de lo que parece faltarle a su alma. Nadie sabe qué espera encontrar al final de su viaje, pero camina hacia un sueño esquivo.",
       "BananePlantain": "una simple banana que ha madurado a través de los diversos encuentros y aventuras que ha vivido en este mundo. Entusiasta de los retos y las batallas, y siempre dispuesta a ayudar, dirige en silencio a su pequeña tropa.",
       "aureochocob0n": "Un rico mercader que, creyendo en las palabras de un renombrado alquimista, se sumergió en un baño de oro fundido para salir dorado. Esta cuestionable acción no le dejó indemne: sólo se salvaron sus huesos recién dorados.",
-      "Ravenclaw": "una centinela discreta, siempre acompañada por un cuervo. Se dice que aparece cuando hay que echar una mano y luego se desvanece con el viento."
+      "Ravenclaw": "una centinela discreta, siempre acompañada por un cuervo. Se dice que aparece cuando hay que echar una mano y luego se desvanece con el viento.",
+      "GabrieLre": "Guerrero con sed de conocimiento, ha puesto por escrito todos sus inmensos conocimientos para ayudar a quien quiera progresar. Se dice que sabe tanto de este mundo como el propio creador."
     }
   },
   "witch": {
@@ -1862,5 +1863,17 @@
       "{emote:fightActions.aerialDiveAttack} El salto aéreo, ¡un ataque desde el cielo para atacar a distancia! Consiste en lanzarse en picado sobre el adversario desde el aire, pero falla si el objetivo acaba de atacar a distancia. Siempre he dicho que hay que vigilar la espalda... ¡y también el cielo!",
       "{emote:fightActions.crystallineArmorAttack} Armadura cristalina, ¡una técnica defensiva ofensiva! Esta técnica utiliza la armadura del luchador para infligir daño en combate cuerpo a cuerpo, pero sólo funciona si el adversario acaba de realizar un ataque físico. ¡Transformar tu protección en un arma de represalia es ingenio táctico!"
     ]
-  }
+  },
+  "haunted": [
+    "La niebla es tan densa que el mundo parece haber desaparecido. Cada paso en el camino resuena como un sueño, sin eco, sin fin. No sabes si avanzas o si la niebla te absorbe lentamente.",
+    "A tu alrededor, la blancura lo engulle todo. El suelo apenas es visible, los árboles se desvanecen en la niebla e incluso tu sombra desaparece. Un silencio irreal se cierne sobre ti, un silencio que parece estar esperando algo.",
+    "El camino se extiende en una dirección que ya no se distingue. A veces, una forma oscura atraviesa la niebla en la distancia: un movimiento incierto, tal vez un animal, tal vez un recuerdo. Sientes que tu orientación se desvanece.",
+    "En el aire flota un olor a tierra fría y madera húmeda. El viento ha dejado de soplar, pero la niebla se mueve, como impulsada por un aliento invisible. Tienes la sensación de que el propio camino te observa.",
+    "La luz parece no venir de ninguna parte. No hay sol, no hay luna, sólo esta luz gris que nunca se desvanece. Extiendes la mano hacia delante, pero tus dedos desaparecen en la nada lechosa.",
+    "Un escalofrío te recorre la espalda. Detrás de ti, un crujido sordo, tan frágil como el de una hoja al ser aplastada. Te giras bruscamente, pero sólo está la niebla, impasible, silenciosa, inmóvil.",
+    "El camino se divide de repente, y no se sabe por cuánto tiempo. Los dos caminos se pierden inmediatamente en la niebla, idénticos, indecisos. Sientes que elegir uno u otro puede no importar.",
+    "Te detienes un momento. Incluso tu respiración parece ahogada por el aire frío. En esta quietud total, te parece oír un latido, débil, regular, como un corazón enterrado en la tierra.",
+    "La niebla es cada vez más espesa y apenas puedes distinguir tus propios pies. Con cada respiración, la humedad helada se filtra por tu garganta y el mundo entero se reduce a unos metros a tu alrededor.",
+    "Un susurro lejano atraviesa de repente la niebla, traído de ninguna parte. ¿Una voz? ¿Un viento? Imposible saberlo. Te quedas quieto, escuchando, consciente de que este lugar no tiene fin ni principio, sólo un silencio que respira."
+  ]
 }

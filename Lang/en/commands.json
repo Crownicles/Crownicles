@@ -168,7 +168,7 @@
         "description": "This command allows you to drink the potion you have. Some potions cannot be drunk and are consumed automatically during a fight."
       },
       "FIGHT": {
-        "description": "Use this command to challenge other players on the same server as you.\nBattles take place on a turn-by-turn basis. Each turn, you can choose an action to perform.\n\nFor more information, please visit the guide page: https://guide.draftbot.com/v/en/notions-principale/combats",
+        "description": "Use this command to challenge other players.\nBattles take place on a turn-by-turn basis. Each turn, you can choose an action to perform.\n\nFor more information, please visit the guide page: https://guide.crownicles.com/notions-principale/combats",
         "image": "https://draftbot.com/public/ressources/fighthelp/en/5.1.7.png"
       },
       "GLORY_TOP": {
@@ -284,6 +284,9 @@
       },
       "SWITCH": {
         "description": "Exchanges a piece of equipment from your stockpile with what you currently own, provided it is of the same category. If no equipment in the category of the item to be equipped is owned before the order is executed, it will simply move it into the inventory."
+      },
+      "DEPOSIT": {
+        "description": "Place a piece of equipment from your main hand in your storeroom. If you only have one piece of equipment to deposit, it will be automatically put away."
       },
       "TOP": {
         "description": "Displays the general ranking of the game in 15 player intervals. Players in the same server as you are shown by a blue dot."
@@ -404,9 +407,13 @@
       "very_powerful_guild": "Member of a very powerful guild",
       "animal_lover": "Person who has shown all the pets to Talvar the dwarf"
     },
-    "fightRanking": {
+    "fightRanked": {
       "fieldName": "Glory points and league:",
-      "fieldValue": "{emote:unitValues.glory} {{gloryPoints}} | {emote:leagues.{{leagueId}}} $t(models:leagues.{{leagueId}})"
+      "fieldValue": "{emote:announcements.trophy} {{rank}} / {{numberOfPlayers}} | {emote:unitValues.glory} {{gloryPoints}} | {emote:leagues.{{leagueId}}} $t(models:leagues.{{leagueId}})"
+    },
+    "fightUnranked": {
+      "fieldName": "Glory points and league:",
+      "fieldValue": "{emote:announcements.trophy} Uncategorized | {emote:unitValues.glory} {{gloryPoints}} | {emote:leagues.{{leagueId}}} $t(models:leagues.{{leagueId}})"
     },
     "guild": {
       "fieldName": "Guild:",
@@ -890,6 +897,16 @@
             "Ingenious and resourceful, he uses the materials around him to create improvised fighting tools.",
             "This pet has an amazing creative instinct. It will quickly produce useful items in the midst of a confrontation.",
             "His tactical intelligence is fascinating. He'll exploit every element of the terrain to build something to help you."
+          ],
+          "petMakeBleed": [
+            "Hematological analyses reveal that its canines possess remarkable anticoagulant properties. By biting the opponent, they cause continuous hemorrhaging while drinking the blood, enabling them to transfer this vital energy to their master.",
+            "Examinations show that this specimen masters a sophisticated vampiric technique: its bites inflict persistent bleeding on the enemy, while it absorbs vital essence to reinvigorate its owner.",
+            "Veterinary observations confirm a capacity for controlled hemophagy. It makes its opponents bleed continuously and converts this blood loss into healing energy to sustain you during the fight."
+          ],
+          "petPetrified": [
+            "Psychic tests indicate that this pet emits a terrifying aura at critical moments in combat. In the final moments of a confrontation, its petrifying gaze can literally freeze the opponent in place, leaving him totally vulnerable.",
+            "Behavioral analysis reveals a mental paralysis ability activated at the end of combat. Your pet then exudes a presence so intimidating that it can petrify enemies, preventing them from moving or retaliating.",
+            "Clinical observations attest to a temporary petrifying power that manifests itself in the final stages of combat. His supernatural aura can freeze the opponent in a state of total paralysis, leaving him defenseless."
           ]
         },
         "ageComment_ancestor": "INCREDIBLE! Exclaims the wide-eyed vet. Your pet is an exceptionally rare specimen! It's one of the oldest ever recorded in our archives, with only {{age}} older pets ever found! A true living relic!",
@@ -1120,7 +1137,8 @@
   "fight": {
     "title": "{{pseudo}}, you're about to start a fight",
     "canceledTitle": "{{pseudo}}, search cancelled",
-    "confirmDesc": "{emote:fightCommand.crossedSwords} | **{{pseudo}}**{{confirmSubText}}\n\n{emote:fightCommand.crossedSwords} | **Fighter: {{pseudo}}** | {{glory}} | {{className}}\n\n{{stats}}",
+    "confirmDesc": "{emote:fightCommand.crossedSwords} | **{{pseudo}}**{{confirmSubText}}\n\n{emote:fightCommand.crossedSwords} | **Fighter : {{pseudo}}** | {{glory}} | {{className}} {{pet}}\n\n{{stats}}",
+    "pet": "| {{petInfo}}",
     "confirmSubTexts": {
       "common": ", would you like to search for a fight?",
       "rare": ", would you like to participate in the search for a fighter of your personal strength for the subsequent duel?"
@@ -1301,6 +1319,15 @@
     "cancelled": "Action cancelled!",
     "switchSelectionTitle": "{{pseudo}}, equipping an item",
     "switchSelectionDescription": "Choose an item from the list below:"
+  },
+  "deposit": {
+    "titleSuccess": "{{pseudo}}, command completed!",
+    "deposeSuccess": "{{item}} has been deposited in your reserve!",
+    "noItemToDeposit": "You don't need to drop off any equipment!",
+    "cannotDeposit": "Your reserve is full.",
+    "cancelled": "Action cancelled!",
+    "depositSelectionTitle": "{{pseudo}}object drop-off",
+    "depositSelectionDescription": "Choose an object to deposit from the list below:"
   },
   "drink": {
     "errors": {

@@ -2778,6 +2778,76 @@
     },
     "text": "Decidiu aproveitar o verão para ir para as montanhas, desde que os desfiladeiros não estejam demasiado nevados. No entanto, a subida revela-se mais difícil do que esperava..."
   },
+  "80": {
+    "possibilities": {
+      "end": {
+        "outcomes": {
+          "0": "Um morcego emerge das nuvens nebulosas e rodopia à sua volta com uma graça hipnótica, antes de se fundir no nevoeiro leitoso. Esta aparição enigmática desperta a sua curiosidade: sem pensar mais, decide segui-lo."
+        }
+      },
+      "followPath": {
+        "outcomes": {
+          "0": "A curiosidade vence a prudência. Começa a percorrer o caminho misterioso que serpenteia pelas entranhas da névoa..."
+        },
+        "text": "Apanhar o caminho nebuloso."
+      },
+      "turnAround": {
+        "outcomes": {
+          "0": "Um arrepio frio sobe-lhe pela espinha, um instinto primitivo grita-lhe para fugir deste lugar maldito. Sem pedir um segundo pensamento, vira-se abruptamente e afasta-se da estrada fantasmagórica, recusando-se a olhar para trás.",
+          "1": "No momento em que começa a fazer a inversão de marcha que lhe salvará a vida, uma maré de aranhas minúsculas sai do nevoeiro e invade o chão à volta dos seus pés! Num pânico incontrolável, salta para trás com um grito abafado. Os aracnídeos desaparecem tão rapidamente como apareceram, mas o teu coração continua a bater descontroladamente no peito vários minutos depois deste encontro de pesadelo."
+        },
+        "text": "Voltar imediatamente para trás."
+      }
+    },
+    "text": "Sem o menor aviso, um denso nevoeiro espalha-se à nossa volta, envolvendo toda a paisagem num cobertor opressivo e felpudo. No espaço de alguns batimentos cardíacos, a própria realidade parece desvanecer-se: as silhuetas das árvores dissolvem-se, o horizonte desaparece completamente nesta brancura leitosa. Um silêncio pesado abate-se sobre este mundo fantasmagórico e o ar gelado, saturado de humidade, torna cada respiração difícil, como se o próprio nevoeiro tentasse penetrar nos pulmões. Depois de ter permanecido imóvel durante alguns instantes, surpreendido pelo acontecimento, apercebe-se de que um caminho se vai formando pouco a pouco à sua frente..."
+  },
+  "81": {
+    "possibilities": {
+      "end": {
+        "outcomes": {
+          "0": "Com um mau pressentimento, sai do edifício à pressa. Nas escadas, o seu pé escorrega numa tábua solta. Cai com força e raspa a perna. Nada de grave, mas a dor lembra-lhe que talvez esta casa não o quisesse."
+        }
+      },
+      "randomRoom": {
+        "outcomes": {
+          "0": "Abre-se uma porta ao acaso. Um calor repentino envolve-te e as chamas saem das paredes, dançando como se fossem movidas por uma vontade própria. O fogo rodopia, condensa-se e, lentamente, toma forma no centro da sala. Duas luzes ardentes olham para ti através do tumulto, imóveis, quase conscientes. Depois, tão abruptamente como apareceu, o fogo extingue-se, deixando para trás um ar pesado e um silêncio opressivo. Entre as cinzas, jaz uma figura intocada, ligeiramente quente ao toque. Sem perceber porquê, decide levá-la consigo.",
+          "1": "A sala está banhada por uma atmosfera estranha, com uma luz suave que emana dos quatro cantos. Sobre uma mesa empoeirada, um objeto antigo chama a sua atenção. Sente a sua qualidade e decide levá-lo consigo.",
+          "2": "Abre-se a porta de um quarto que não tem nada de especial. Sai, desiludido por ter perdido o seu tempo. Explora mais algumas divisões sem qualquer interesse particular antes de sair de casa e voltar a pôr-se a caminho.",
+          "3": "Um frio intenso atinge-nos assim que abrimos a porta. O ar solidifica-se, cristais de gelo flutuam em suspensão. O teu corpo endurece, a tua força abandona-te. No centro, encontra-se uma estranha criatura, adormecida na imensidão fria. Determinado a não partir de mãos vazias, leva-a consigo.",
+          "4": "O frio apodera-se de nós instantaneamente. Cristais de gelo flutuam no ar gelado. No centro, uma criatura jaz numa auréola de gelo. Avança... e comete o erro fatal. Os seus olhos gelados abrem-se. Ele salta. Uma mordida de frio absoluto penetra-te. Tudo fica branco, depois nada."
+        },
+        "text": "Entrar numa sala ao acaso"
+      },
+      "visitBasement": {
+        "outcomes": {
+          "0": "Desce-se à cave. O ar é pesado e cheira a pedra fria. Assim que pões o pé no primeiro degrau, ouves um grito agudo. Um enxame de morcegos sai da escuridão com um ruído de asas a bater, passa por si e desaparece. O silêncio volta a cair. No seu ombro, um peso leve: um morcego agarrou-se a ele, com os seus pequenos olhos a brilhar à meia-luz. Sem perceber porquê, decide levá-lo consigo.",
+          "1": "Na cave gelada, uma presença surge das sombras e ataca-te! Após alguns momentos de luta, a criatura afasta-se, tão assustada como tu. Estuda-a durante muito tempo, sem perceber exatamente o que é; parece translúcida e sussurra sem que percebas uma única palavra. Num acesso de loucura, decides levá-la contigo.",
+          "2": "A cada passo que dás, as tuas pernas ficam mais pesadas e a tua respiração mais curta. A escuridão pulsa como se a cave estivesse a respirar. Depois, vê-as: milhares de aranhas que se aglomeram nas paredes. Elas precipitam-se para ti numa massa negra que te domina, sobe, penetra. Sufoca... depois volta a abrir os olhos, deitado no meio de um caminho, atordoado e sem a sua mala. Terá sido apenas um sonho?",
+          "3": "Desce cautelosamente para a escuridão total da cave. Avançando, por vezes tropeçando, as suas mãos encontram um objeto que agarra. Continua até que finalmente vê a saída e sai ofegante, com o objeto ainda na mão."
+        },
+        "text": "Descer à cave"
+      },
+      "visitFloor": {
+        "outcomes": {
+          "0": "Sobe-se os degraus rangentes. O ar torna-se gelado, carregado de um cheiro a cera e a pó antigo. No cimo, uma estranha criatura de feições esbatidas desliza silenciosamente pelo corredor e fica parada à tua frente. Os seus olhos imploram-lhe. A sua curiosidade leva-o a estender a mão e uma pequena bolsa aparece quase de imediato. Um arrepio percorre-te e, sem perceberes o que acabou de acontecer, decides continuar o teu caminho. A criatura segue os teus passos e continua a seguir-te discretamente.",
+          "1": "Ao subir as escadas, o frio intensifica-se. Ao chegar ao patamar, um sopro gelado atravessa-te. A tua visão torna-se turva: um espetro translúcido surge diante de ti, os seus olhos vazios ardem com um brilho pálido. Ele roça na tua testa, murmurando uma maldição numa língua que não compreendes. Aterrorizada com a cena, foges o mais depressa que as tuas pernas te podem levar, deixando mesmo uma das tuas bolsas e o seu precioso conteúdo no edifício.",
+          "2": "No andar de cima, uma porta entreaberta chama a sua atenção. Descobre uma pequena sala banhada por uma luz cinzenta. Em cima de uma mesa, uma refeição meio começada parece estar à espera do seu convidado há décadas. Come-a e leva consigo alguns amuletos antigos antes de partir."
+        },
+        "text": "Explorar o piso"
+      },
+      "visitLobby": {
+        "outcomes": {
+          "0": "Explora o rés do chão mas não encontra nada de interessante. Julgando que a casa não vale o seu tempo, continua o seu caminho sem se demorar mais.",
+          "1": "No rés do chão, uma velha abóbora esculpida chama a atenção. O seu sorriso retorcido parece congelado no tempo. De repente, um brilho cintila nos seus olhos ocos. Fascinado, apesar de tudo, por esta estranha vitalidade, decide levá-la consigo antes de deixar o local.",
+          "2": "Deambula pelo rés do chão poeirento. Os móveis em ruínas estão cobertos de teias de aranha, mas no meio da confusão um pequeno objeto chama a sua atenção. Apanha-o e segue em frente.",
+          "3": "O silêncio paira pesado nesta sala poeirenta. Enquanto caminha entre os móveis frágeis e as teias de aranha, o seu pé bate num prego ferrugento que o corta. Decidindo que é mais seguro não correr mais riscos, sai a coxear da casa.",
+          "4": "No centro da sala, uma abóbora esculpida olha para ti com um sorriso retorcido. Sem aviso prévio, a chama dos seus olhos acende-se e a criatura salta na tua direção com um estalar de dentes! Nem sequer tens tempo de reagir e ela ataca-te. Depois de uma luta feroz, consegues empurrá-la para fora de casa, mas vais demorar mais tempo a livrar-te das feridas."
+        },
+        "text": "Visitar o rés do chão"
+      }
+    },
+    "text": "Atravessa-se o limiar de uma casa velha e degradada. A névoa espessa que a envolve parece engolir os contornos do mundo exterior, como se a casa existisse fora de toda a realidade. O ar é frio e estagnado, e cada passo faz gemer as velhas tábuas do soalho. Uma estranha presença parece estar a observá-lo das sombras dos corredores."
+  },
   "9": {
     "possibilities": {
       "end": {

@@ -3,10 +3,10 @@
     "0": "Nessuno scudo e armatura",
     "1": "Scudo deflettore Engi",
     "10": "Scudo pesante",
-    "100": "Armatura della trama",
+    "100": "Tramarmor",
     "101": "Scudo termico",
-    "102": "armatura in mitrile",
-    "103": "Frontale",
+    "102": "Armatura in mithril",
+    "103": "Pettorale",
     "104": "Protezione della piastra 4",
     "105": "Cuirass",
     "106": "Scudo 3 in 1",
@@ -167,7 +167,7 @@
     "8": "Lanciatori di pietre",
     "9": "Fronde"
   },
-  "classFormat": "{emote:classes.{{id}}} $t(models:classes.{{id}})",
+  "classFormat": "{emote:classes.{{id}} $t(models:classes.{{id}})}",
   "classPluralFormat": "{emote:classes.{{id}}} $t(models:classes_plural.{{id}})",
   "classWithStatsFormat": "{emote:classes.{{id}}} $t(models:classes.{{id}}) :\n{emote:unitValues.energy} {{energy}} | {emote:unitValues.attack} {{attack}} | {emote:unitValues.defense} {{defense}} | {emote:unitValues.speed} {{speed}} | {emote:unitValues.breath} {{initialBreath}} / {{maxBreath}} | {emote:unitValues.health} {{health}}",
   "class_descriptions": {
@@ -832,6 +832,12 @@
       "customMessage": "urla al cielo.",
       "name_one": "L'ululato",
       "name_other": "L'ululato"
+    },
+    "petMakeBleed": {
+      "success": "è aiutato da **{{petNickname}}** che morde l'avversario sul collo."
+    },
+    "petPetrified": {
+      "success": "è aiutato da **{{petNickname}}** che guarda il suo avversario e lo pietrifica."
     }
   },
   "leagues": {
@@ -1053,6 +1059,16 @@
       "name": "Continente principale",
       "particle": "verso"
     },
+    "39": {
+      "description": "Un sentiero annegato in una fitta nebbia, immobile e senza origine. Non ci sono punti di riferimento o forme per identificare questo luogo.",
+      "name": "Sentiero nebbioso",
+      "particle": "verso lo"
+    },
+    "40": {
+      "description": "Una vecchia casa fatiscente immersa in una fitta nebbia, come sospesa tra due mondi. È impossibile dire da dove provenga, o addirittura se appartenga ancora al nostro. Le sue finestre incrinate lasciano danzare ombre indistinte, mentre dall'interno fuoriesce uno scricchiolio soffocato, eco di una presenza dimenticata.",
+      "name": "Casa stregata",
+      "particle": "verso la"
+    },
     "4": {
       "description": "Una vasta foresta a sud della Culla. Si dice che molti viaggiatori si siano persi qui.",
       "name": "Foresta di Vecchietto",
@@ -1184,6 +1200,10 @@
     "dragonsNest": {
       "name": "",
       "prefix": "di"
+    },
+    "hauntedHouse": {
+      "name": "",
+      "prefix": "della"
     }
   },
   "missions": {
@@ -1425,6 +1445,10 @@
   "pets": {
     "0_female": "Nessuno animale di compagnia",
     "0_male": "Nessuno animale di compagnia",
+    "100_male": "Fantasma",
+    "100_female": "Fantasma",
+    "101_male": "Vampiro",
+    "101_female": "Vampiressa",
     "10_female": "Gallina",
     "10_male": "Gallo",
     "11_female": "Uccello",
@@ -1619,6 +1643,8 @@
     "97_male": "Oca",
     "98_female": "Momento",
     "98_male": "Momento",
+    "99_male": "Jack-o'-lantern",
+    "99_female": "Jack-o'-lantern",
     "9_female": "Maiale",
     "9_male": "Maiale"
   },
