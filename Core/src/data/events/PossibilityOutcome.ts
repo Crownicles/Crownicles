@@ -187,10 +187,6 @@ function getNextMapLink(outcome: PossibilityOutcome, player: Player): MapLink {
 		return MapLinkDataController.instance.getById(outcome.mapLink);
 	}
 
-	if (outcome.randomMapLink) {
-		return MapLinkDataController.instance.getRandomLinkOnMainContinent();
-	}
-
 	if (outcome.mapTypesDestination || outcome.mapTypesExcludeDestination) {
 		let allowedMapTypes = Maps.getConnectedMapTypes(player, !outcome.mapTypesDestination);
 		if (outcome.mapTypesDestination) {
@@ -376,11 +372,6 @@ export interface PossibilityOutcome {
 	 * Forced map link
 	 */
 	mapLink?: number;
-
-	/**
-	 * Teleport to a random map link on the main continent
-	 */
-	randomMapLink?: boolean;
 
 	/**
 	 * Tags

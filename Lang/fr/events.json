@@ -2799,7 +2799,7 @@
         "text": "Rebrousser chemin immédiatement."
       }
     },
-    "text": "Sans le moindre avertissement, un brouillard dense se répand autour de vous, engloutissant la totalité du paysage dans une chape cotonneuse et oppressante. En l'espace de quelques battements de cœur, la réalité elle-même semble s'effacer : les silhouettes des arbres se dissolvent, l'horizon disparaît entièrement dans cette blancheur laiteuse. Un silence pesant s'abat sur ce monde fantomatique et l'air glacial et saturé d'humidité rend chaque inspiration laborieuse, comme si le brouillard lui-même cherchait à pénétrer vos poumons. Après quelques instants à errer au hasard, vous remarquez un chemin pavé qui se dessine peu à peu devant vous..."
+    "text": "Sans le moindre avertissement, un brouillard dense se répand autour de vous, engloutissant la totalité du paysage dans une chape cotonneuse et oppressante. En l'espace de quelques battements de cœur, la réalité elle-même semble s'effacer : les silhouettes des arbres se dissolvent, l'horizon disparaît entièrement dans cette blancheur laiteuse. Un silence pesant s'abat sur ce monde fantomatique et l'air glacial et saturé d'humidité rend chaque inspiration laborieuse, comme si le brouillard lui-même cherchait à pénétrer vos poumons. Après quelques instants à être resté immobile surpris par l'évènement, vous remarquez qu'un chemin se dessine peu à peu devant vous..."
   },
   "81": {
     "possibilities": {
@@ -2811,7 +2811,7 @@
       "randomRoom": {
         "outcomes": {
           "0": "Vous ouvrez une porte au hasard. Une chaleur soudaine vous enveloppe tandis que des flammes jaillissent des murs, dansant comme mues par une volonté propre. Le feu tourbillonne, se condense, puis prend lentement forme au centre de la pièce. Deux lueurs brûlantes vous fixent dans le tumulte, immobiles, presque conscientes. Puis, aussi brusquement qu’il est apparu, le brasier s’éteint, laissant derrière lui un air lourd et un silence oppressant. Au milieu des cendres, une silhouette intacte repose, faiblement tiède au toucher. Sans comprendre pourquoi, vous décidez de l’emporter avec vous.",
-          "1": "La pièce baigne dans une atmosphère étrange. Une lumière douce émane des coins sombres. Sur une table poussiéreuse, un objet ancien attire votre attention. Vous sentez sa qualité et décidez de l'emporter.",
+          "1": "La pièce baigne dans une atmosphère étrange et une lumière douce émane des quatre coins de la pièce. Sur une table poussiéreuse, un objet ancien attire votre attention. Vous sentez sa qualité et décidez de l'emporter.",
           "2": "Vous ouvrez une porte sur une pièce banale, sans rien de particulier. Vous repartez, déçu d'avoir perdu votre temps. Vous explorez quelques autres pièces sans intérêt particulier avant de quitter la maison et reprendre votre route.",
           "3": "Un froid glacial vous frappe dès l'ouverture de la porte. L'air se solidifie, des cristaux de glace flottent en suspension. Votre corps se raidit, vos forces vous quittent. Au centre repose une créature étrange, endormie dans l'immensité froide. Décidé à ne pas repartir les mains vides, vous l'emportez avec vous.",
           "4": "Le froid vous saisit instantanément. Des cristaux de glace flottent dans l'air figé. Au centre, une créature repose dans un halo de givre. Vous avancez... et commettez l'erreur fatale. Ses yeux glacés s'ouvrent. Elle bondit. Une morsure de froid absolu vous transperce. Tout devient blanc, puis plus rien."
@@ -2846,7 +2846,7 @@
         "text": "Visiter le rez-de-chaussée"
       }
     },
-    "text": "Vous franchissez le seuil d'une vieille demeure à l'allure délabrée. La brume épaisse qui l'entoure semble avaler le monde extérieur, comme si la maison existait hors du temps. L'air est froid et stagnant, chaque pas fait gémir le vieux plancher. Une étrange présence vous observe depuis l'ombre des couloirs."
+    "text": "Vous franchissez le seuil d'une vieille demeure à l'allure délabrée. La brume épaisse qui l'entoure semble avaler les contours monde extérieur, comme si la maison existait en dehors de toute réalité. L'air est froid et stagnant, chaque pas fait gémir le vieux plancher. Une étrange présence semble vous observer depuis l'ombre des couloirs."
   },
   "9": {
     "possibilities": {
