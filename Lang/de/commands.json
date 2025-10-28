@@ -168,7 +168,7 @@
         "description": "Dieser Befehl wird verwendet, um den von Ihnen zu transmitenden Trank zu konsumieren. Einige Potionen können nicht bucht werden und werden automatisch in einem Kampf verbraucht."
       },
       "FIGHT": {
-        "description": "Verwenden Sie diesen Befehl, um andere Spieler, die sich auf demselben Server wie Sie befinden, zu detrieren.\nDie Kämpfe werden um die Reihe umgeleitet. In jeder Runde können Sie eine Aktion auswählen, die ausgeführt werden soll.\n\nFür weitere Informationen können Sie die Seite \"Guide\" auf der Seite \"https://guide.draftbot.com/notions-principale/combats\" anzeigen.",
+        "description": "Verwenden Sie diesen Befehl, um andere Spieler herauszufordern.\nDie Kämpfe werden rundenweise ausgetragen. In jeder Runde können Sie eine Aktion auswählen, die Sie ausführen möchten.\n\nFür weitere Informationen können Sie die Seite des Guides besuchen: https://guide.crownicles.com/notions-principale/combats",
         "image": "https://draftbot.com/public/ressources/fighthelp/en/5.1.7.png"
       },
       "GLORY_TOP": {
@@ -284,6 +284,9 @@
       },
       "SWITCH": {
         "description": "Tauscht eine Ausrüstung aus deinem Vorrat gegen die Ausrüstung, die du derzeit besitzt, unter der Bedingung, dass sie der gleichen Kategorie angehört. Wenn du vor der Ausführung des Auftrags keine Ausrüstung in der Kategorie des auszurüstenden Gegenstands besitzt, verschiebt er ihn lediglich in dein Inventar."
+      },
+      "DEPOSIT": {
+        "description": "Lege eine Ausrüstung aus deiner Haupthand in deinem Vorrat ab. Wenn du nur eine Ausrüstung ablegst, wird diese automatisch einsortiert."
       },
       "TOP": {
         "description": "Zeigt die allgemeine Rangfolge des Spiels pro Schicht von 15 Spielern an. Spieler auf dem gleichen Server, die Sie mit einem blauen Pellet markiert haben."
@@ -404,9 +407,13 @@
       "very_powerful_guild": "Mitglied einer sehr mächtigen Gilde",
       "animal_lover": "Person, die Talvar dem Zwerg alle Vertrauten gezeigt hat"
     },
-    "fightRanking": {
-      "fieldName": "Gloire und Liga:",
-      "fieldValue": "{emote:unitValues.glory} {{gloryPoints}} | {emote:leagues.{{leagueId}}} $t(models:leagues.{{leagueId}})"
+    "fightRanked": {
+      "fieldName": "Ruhm und Liga :",
+      "fieldValue": "{emote:announcements.trophy} {{rank}} / {{numberOfPlayers}} | {emote:unitValues.glory} {{gloryPoints}} | {emote:leagues.{{leagueId}}} $t(models:leagues.{{leagueId}})"
+    },
+    "fightUnranked": {
+      "fieldName": "Ruhm und Liga :",
+      "fieldValue": "{emote:announcements.trophy} Uncategorized | {emote:unitValues.glory} {{gloryPoints}} | {emote:leagues.{{leagueId}}} $t(models:leagues.{{leagueId}})"
     },
     "guild": {
       "fieldName": "Gilde:",
@@ -890,6 +897,16 @@
             "Er ist erfinderisch und einfallsreich und nutzt die Materialien um ihn herum, um improvisierte Kampfwerkzeuge herzustellen.",
             "Dieses Haustier hat einen erstaunlichen kreativen Instinkt. Er wird inmitten einer Auseinandersetzung schnell nützliche Gegenstände herstellen.",
             "Seine taktische Intelligenz ist faszinierend. Er wird jedes Element auf dem Spielfeld ausnutzen, um etwas zu bauen, das Ihnen hilft."
+          ],
+          "petMakeBleed": [
+            "Hämatologische Untersuchungen zeigen, dass seine Eckzähne bemerkenswerte gerinnungshemmende Eigenschaften besitzen. Wenn er den Gegner beißt, verursacht er eine kontinuierliche Blutung, während er das Blut trinkt, wodurch er diese Lebensenergie auf seinen Herrn übertragen kann.",
+            "Untersuchungen zeigen, dass dieses Exemplar eine ausgeklügelte Vampirtechnik beherrscht: Seine Bisse fügen dem Feind anhaltende Blutungen zu, während er die Lebensessenz aufnimmt, um seinen Besitzer zu beleben.",
+            "Tierärztliche Beobachtungen bestätigen die Fähigkeit zur kontrollierten Hämophagie. Er lässt seine Gegner kontinuierlich bluten und wandelt diesen Blutverlust in heilende Energie um, die Sie während des Kampfes unterstützt."
+          ],
+          "petPetrified": [
+            "Psychische Tests zeigen, dass dieser Vertraute in kritischen Momenten des Kampfes eine furchterregende Aura ausstrahlt. In den letzten Augenblicken des Kampfes kann sein versteinernder Blick den Gegner buchstäblich an Ort und Stelle erstarren lassen und ihn völlig verwundbar machen.",
+            "Die Verhaltensanalyse zeigt eine Fähigkeit zur mentalen Lähmung, die am Ende eines Kampfes aktiviert wird. Ihr Vertrauter strahlt dann eine so einschüchternde Präsenz aus, dass er den Gegner versteinern kann, sodass er sich nicht mehr bewegen oder zurückschlagen kann.",
+            "Klinische Beobachtungen belegen eine vorübergehende versteinernde Kraft, die sich in der Endphase des Kampfes manifestiert. Seine übernatürliche Aura kann den Gegner in einem Zustand völliger Lähmung einfrieren und ihn hilflos zurücklassen."
           ]
         },
         "ageComment_ancestor": "INKROYABLE! Ruft der Tierarzt mit großen Augen aus. Ihr Vertrauter ist ein Exemplar von außergewöhnlicher Seltenheit! Er gehört zu den ältesten, die jemals in unseren Archiven aufgezeichnet wurden. Nur {{age}} andere Vertraute wurden älter entdeckt! Ein echtes lebendes Relikt!",
@@ -1120,7 +1137,8 @@
   "fight": {
     "title": "{{pseudo}}Sie sind im Begriff, einen Kampf zu beginnen.",
     "canceledTitle": "{{pseudo}}Sie haben die Suche abgebrochen.",
-    "confirmDesc": "{emote:fightCommand.crossedSwords} | **{{pseudo}}**{{confirmSubText}}\n\n{emote:fightCommand.crossedSwords} | ** Kämpfer : {{pseudo}}** | {{glory}} | {{className}}\n\n{{stats}}",
+    "confirmDesc": "{emote:fightCommand.crossedSwords} | **{{pseudo}}**{{confirmSubText}}\n\n{emote:fightCommand.crossedSwords} | ** Kämpfer : {{pseudo}}** | {{glory}} | {{className}} {{pet}}\n\n{{stats}}",
+    "pet": "| {{petInfo}}",
     "confirmSubTexts": {
       "common": "Möchten Sie eine Kampfsuche starten?",
       "rare": "Würden Sie sich an der Suche nach einem Kämpfer beteiligen, der Ihrer persönlichen Stärke entspricht, um das anschließende Duell zu bestreiten?"
@@ -1301,6 +1319,15 @@
     "cancelled": "Aktion abgebrochen!",
     "switchSelectionTitle": "{{pseudo}} Die Ausrüstung eines Objekts",
     "switchSelectionDescription": "Wählen Sie aus der folgenden Liste einen Gegenstand zum Ausrüsten aus:"
+  },
+  "deposit": {
+    "titleSuccess": "{{pseudo}} Die Bestellung wurde ausgeführt!",
+    "deposeSuccess": "{{item}} in Ihrem Vorratsraum abgelegt wurde!",
+    "noItemToDeposit": "Sie müssen keine Ausrüstung einreichen!",
+    "cannotDeposit": "Ihr Vorrat ist voll.",
+    "cancelled": "Aktion abgebrochen!",
+    "depositSelectionTitle": "{{pseudo}}Ablegen eines Objekts",
+    "depositSelectionDescription": "Wählen Sie aus der folgenden Liste ein Objekt aus, das Sie ablegen möchten:"
   },
   "drink": {
     "errors": {
