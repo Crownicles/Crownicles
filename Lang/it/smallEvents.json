@@ -535,7 +535,8 @@
       "Ntalcme": "Un viaggiatore instancabile, guidato da un ideale più grande di lui, che attraversa senza sosta le terre di questo regno alla ricerca di ciò che sembra mancare alla sua anima. Nessuno sa cosa spera di trovare alla fine del suo viaggio, ma sta camminando verso un sogno inafferrabile.",
       "BananePlantain": "una semplice banana che è maturata grazie ai vari incontri e alle avventure che ha vissuto in questo mondo. Appassionata di sfide e battaglie, e sempre pronta ad aiutare, guida tranquillamente il suo piccolo gruppo.",
       "aureochocob0n": "Un ricco mercante che, credendo alle parole di un famoso alchimista, si immerse in un bagno di oro fuso per uscirne dorato. Questa discutibile azione non lo lasciò indenne: solo le sue ossa appena dorate furono risparmiate.",
-      "Ravenclaw": "una sentinella discreta, sempre accompagnata da un corvo. Si dice che appaia quando si ha bisogno di dare una mano, poi svanisce con il vento."
+      "Ravenclaw": "una sentinella discreta, sempre accompagnata da un corvo. Si dice che appaia quando si ha bisogno di dare una mano, poi svanisce con il vento.",
+      "GabrieLre": "Un guerriero assetato di conoscenza, che ha annotato tutta la sua immensa sapienza per aiutare chiunque desideri progredire. Si dice che conosca questo mondo tanto quanto il creatore stesso."
     }
   },
   "witch": {
@@ -1862,5 +1863,17 @@
       "{emote:fightActions.aerialDiveAttack} La picchiata aerea, un attacco dal cielo per attaccare a distanza! Consiste nel lanciarsi in picchiata sull'avversario dall'alto, ma fallisce se il bersaglio ha appena attaccato a distanza. Ho sempre detto che bisogna guardarsi le spalle... e anche il cielo!",
       "{emote:fightActions.crystallineArmorAttack} Armatura cristallina, una tecnica difensiva offensiva! Questa tecnica utilizza l'armatura del combattente per infliggere danni nel combattimento ravvicinato, ma funziona solo se l'avversario ha appena effettuato un attacco fisico. Trasformare la propria protezione in un'arma di rappresaglia è un'opera di ingegno tattico!"
     ]
-  }
+  },
+  "haunted": [
+    "La nebbia è così fitta che il mondo sembra scomparso. Ogni passo sul sentiero risuona come un sogno, senza eco, senza fine. Non si sa se si sta avanzando o se la nebbia ci sta lentamente assorbendo.",
+    "Intorno a voi, il biancore inghiotte tutto. Il terreno è appena visibile, gli alberi svaniscono nella nebbia e persino la vostra ombra scompare. Un silenzio irreale incombe su di voi, un silenzio che sembra aspettare qualcosa.",
+    "Il sentiero si estende in una direzione che non si riesce più a distinguere. A volte, una forma scura trapassa la nebbia in lontananza: un movimento incerto, forse un animale, forse un ricordo. Sentite che i vostri punti di riferimento si stanno dissolvendo.",
+    "Nell'aria aleggia un odore di terra fredda e di legno umido. Il vento ha smesso di soffiare, ma la nebbia si muove, come spinta da un soffio invisibile. Si ha la sensazione che il sentiero stesso ci osservi.",
+    "La luce sembra provenire dal nulla. Non c'è il sole, non c'è la luna: solo questa luce grigia che non svanisce mai. Tendi la mano davanti a te, ma le tue dita scompaiono nel nulla lattiginoso.",
+    "Un brivido corre lungo la schiena. Dietro di voi, uno scricchiolio soffocato, fragile come una foglia che viene schiacciata. Vi girate bruscamente, ma c'è solo la nebbia, impassibile, silenziosa, immobile.",
+    "Il sentiero si divide improvvisamente, e non si sa per quanto tempo. I due sentieri si perdono immediatamente nella nebbia, identici, indecisi. Si ha la sensazione che scegliere l'uno o l'altro possa non avere importanza.",
+    "Vi fermate per un momento. Persino il vostro respiro sembra soffocato dall'aria fredda. In questa quiete totale, vi sembra di sentire un battito - debole, regolare - come un cuore sepolto nella terra.",
+    "La nebbia si fa più fitta e si riesce a malapena a distinguere i propri piedi. A ogni respiro, l'umidità gelida si insinua nella gola e il mondo intero si riduce a pochi metri intorno a voi.",
+    "Un sussurro lontano attraversa improvvisamente la nebbia, portato dal nulla. Una voce? Un vento? Impossibile dirlo. Rimanete fermi ad ascoltare, consapevoli che questo luogo non ha fine né inizio, ma solo un silenzio che respira."
+  ]
 }
