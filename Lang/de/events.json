@@ -2778,6 +2778,76 @@
     },
     "text": "Sie haben beschlossen, den Sommer zu nutzen, um über die Berge zu fahren, solange die Pässe nicht zu schneebedeckt sind. Der Aufstieg erweist sich jedoch als schwieriger als erwartet..."
   },
+  "80": {
+    "possibilities": {
+      "end": {
+        "outcomes": {
+          "0": "Eine Fledermaus taucht aus den Nebelschwaden auf und umkreist Sie mit hypnotischer Anmut, bevor sie in der milchigen Dicke des Nebels verschwindet. Diese rätselhafte Erscheinung weckt Ihre Neugier und Sie beschließen, ihr zu folgen, ohne weiter darüber nachzudenken."
+        }
+      },
+      "followPath": {
+        "outcomes": {
+          "0": "Die Neugier siegt über die Vorsicht. Sie begeben sich auf den geheimnisvollen Pfad, der sich durch die Eingeweide des Nebels schlängelt..."
+        },
+        "text": "Sich auf den nebligen Weg begeben."
+      },
+      "turnAround": {
+        "outcomes": {
+          "0": "Ein eiskalter Schauer läuft Ihnen den Rücken hinauf, ein primitiver Instinkt, der Ihnen sagt, dass Sie von diesem verfluchten Ort fliehen müssen. Ohne zu fragen, drehen Sie sich um und gehen mit großen Schritten von der Geisterstraße weg, ohne sich noch einmal umzusehen.",
+          "1": "Genau in dem Moment, als Sie sich umdrehen wollen, bricht eine Flut winziger Spinnen aus dem Nebel hervor und erobert den Boden um Ihre Füße herum! In unkontrollierbarer Panik springen Sie mit einem erstickten Schrei zurück. Die Spinnentiere verschwanden so schnell, wie sie aufgetaucht waren, aber Ihr Herz trommelte noch Minuten nach dieser alptraumhaften Begegnung wild in Ihrer Brust."
+        },
+        "text": "Kehren Sie sofort zurück."
+      }
+    },
+    "text": "Ohne die geringste Vorwarnung breitet sich ein dichter Nebel um Sie herum aus und verschluckt die gesamte Landschaft in einer bedrückenden, watteartigen Decke. Innerhalb weniger Herzschläge scheint die Realität selbst zu verblassen: Die Silhouetten der Bäume lösen sich auf, der Horizont verschwindet völlig in diesem milchigen Weiß. Eine bedrückende Stille liegt über dieser gespenstischen Welt und die eisige, feuchtigkeitsgesättigte Luft macht jeden Atemzug zu einer mühsamen Angelegenheit, als würde der Nebel selbst versuchen, in Ihre Lungen einzudringen. Nach einigen Augenblicken, in denen Sie überrascht stillstehen, bemerken Sie, dass sich vor Ihnen allmählich ein Weg abzeichnet..."
+  },
+  "81": {
+    "possibilities": {
+      "end": {
+        "outcomes": {
+          "0": "Mit einem unguten Gefühl im Bauch verlassen Sie eilig das Gebäude. Auf der Treppe rutscht Ihr Fuß auf einem losen Brett aus. Sie stürzen schwer und schürfen sich das Bein auf. Es ist nichts Ernstes, aber der Schmerz erinnert Sie daran, dass dieses Haus Sie vielleicht nicht haben wollte."
+        }
+      },
+      "randomRoom": {
+        "outcomes": {
+          "0": "Sie öffnen wahllos eine Tür. Plötzliche Hitze umgibt Sie, während Flammen aus den Wänden schießen und wie von einem eigenen Willen getrieben tanzen. Das Feuer wirbelt herum, kondensiert und nimmt dann langsam in der Mitte des Raumes Gestalt an. Zwei brennende Glühlichter starren Sie in dem Tumult an, regungslos, fast bei Bewusstsein. Dann, so abrupt wie sie aufgetaucht ist, erlischt die Glut und hinterlässt eine schwere Luft und bedrückende Stille. Inmitten der Asche liegt eine unversehrte Silhouette, die sich nur schwach warm anfühlt. Ohne zu verstehen, warum, beschließen Sie, ihn mitzunehmen.",
+          "1": "Der Raum ist in eine seltsame Atmosphäre getaucht und ein sanftes Licht strahlt aus allen vier Ecken des Zimmers. Auf einem staubigen Tisch liegt ein antiker Gegenstand, der Ihre Aufmerksamkeit erregt. Du spürst seine Qualität und beschließt, es mitzunehmen.",
+          "2": "Sie öffnen eine Tür zu einem unscheinbaren Raum, in dem es nichts Besonderes zu sehen gibt. Sie gehen zurück und sind enttäuscht, dass Sie Ihre Zeit verschwendet haben. Sie erkunden noch ein paar weitere unscheinbare Räume, bevor Sie das Haus verlassen und Ihren Weg fortsetzen.",
+          "3": "Eisige Kälte schlägt Ihnen entgegen, sobald Sie die Tür öffnen. Die Luft wird fest, Eiskristalle schweben in der Luft. Ihr Körper versteift sich, Ihre Kräfte verlassen Sie. In der Mitte liegt ein seltsames Wesen, das in der kalten Weite schläft. Sie sind entschlossen, nicht mit leeren Händen zurückzukehren, und nehmen es mit sich.",
+          "4": "Die Kälte erfasst Sie augenblicklich. Eiskristalle schweben in der erstarrten Luft. In der Mitte ruht eine Kreatur in einem frostigen Halo. Sie gehen weiter ... und machen einen fatalen Fehler. Ihre eisigen Augen öffnen sich. Sie springt auf. Ein Biss aus absoluter Kälte durchdringt Sie. Alles wird weiß, dann nichts mehr."
+        },
+        "text": "Einen Raum zufällig betreten"
+      },
+      "visitBasement": {
+        "outcomes": {
+          "0": "Sie gehen in den Keller hinunter. Die schwere Luft riecht nach kaltem Stein. Kaum haben Sie den Fuß auf die erste Stufe gesetzt, ertönt ein spitzer Schrei. Ein Schwarm Fledermäuse kommt mit lautem Flügelschlag aus der Dunkelheit geflogen, streift Sie und verschwindet wieder. Es wird wieder still. Auf deiner Schulter liegt ein leichtes Gewicht: Eine Fledermaus hat sich daran festgebissen und ihre kleinen Augen leuchten in der Dunkelheit. Ohne zu verstehen, warum, beschließen Sie, sie mitzunehmen.",
+          "1": "Im eiskalten Keller tritt eine Präsenz aus dem Schatten hervor und greift Sie an! Nach kurzem Kampf weicht die Kreatur zurück und ist genauso erschrocken wie Sie. Sie studieren es lange, ohne genau zu verstehen, worum es sich handelt. Es scheint durchsichtig zu sein und flüstert, ohne dass Sie auch nur ein einziges Wort verstehen. In einem Anfall von Wahnsinn beschließen Sie, das Wesen mitzunehmen.",
+          "2": "Mit jeder Stufe, die Sie hinuntergehen, werden Ihre Beine schwerer und Ihr Atem flacher. Die Dunkelheit pulsiert, als ob der Keller atmen würde. Dann sehen Sie sie: Tausende von Spinnen, die an den Wänden krabbeln. Sie kommen in einer schwarzen Masse auf Sie zu, die Sie überrollt, klettert und sich einnistet. Sie ersticken ... und öffnen dann die Augen wieder, liegen mitten auf einem Weg, betäubt und ohne Ihr Stipendium. War es wirklich nur ein Traum?",
+          "3": "Sie gehen vorsichtig in die völlige Dunkelheit des Kellers hinunter. Sie tasten sich vorwärts und stolpern manchmal, bis Ihre Hände einen Gegenstand berühren, den Sie ergreifen. Sie gehen weiter, bis Sie endlich den Ausgang sehen und kommen keuchend mit dem Gegenstand in der Hand wieder heraus."
+        },
+        "text": "In den Keller hinabsteigen"
+      },
+      "visitFloor": {
+        "outcomes": {
+          "0": "Sie steigen die knarrenden Stufen hinauf. Die Luft wird eiskalt, erfüllt von einem Geruch nach Wachs und altem Staub. Oben angekommen, gleitet eine seltsame Kreatur mit verschwommenen Gesichtszügen lautlos durch den Gang und bleibt vor Ihnen stehen. Seine Augen flehen Sie an. Ihre Neugier treibt Sie dazu, die Hand auszustrecken und fast sofort erscheint ein kleiner Geldbeutel. Ein Schauer läuft Ihnen über den Rücken und ohne zu verstehen, was gerade passiert ist, beschließen Sie, Ihren Weg fortzusetzen. Die Kreatur folgt Ihnen und setzt ihren Weg unauffällig fort.",
+          "1": "Als Sie die Treppe hinaufsteigen, wird die Kälte immer stärker. Als Sie den Treppenabsatz erreichen, durchfährt Sie ein eisiger Atem. Ihre Sicht wird getrübt: Ein durchsichtiges Gespenst steht vor Ihnen, seine leeren Augen glühen in einem fahlen Licht. Es berührt Ihre Stirn und flüstert einen Fluch in einer Sprache, die Sie nicht verstehen. Sie lassen sogar einen Ihrer Geldbeutel mitsamt seinem wertvollen Inhalt im Gebäude zurück.",
+          "2": "Im Obergeschoss zieht eine halb geöffnete Tür Ihre Aufmerksamkeit auf sich. Sie sehen einen kleinen Raum, der in graues Licht getaucht ist. Auf einem Tisch steht eine halbfertige Mahlzeit, die schon seit Jahrzehnten auf einen Gast zu warten scheint."
+        },
+        "text": "Den Stock erkunden"
+      },
+      "visitLobby": {
+        "outcomes": {
+          "0": "Sie erkunden das Erdgeschoss, finden dort aber nichts Interessantes. Sie finden, dass das Haus Ihre Zeit nicht wert ist und gehen weiter.",
+          "1": "Im Erdgeschoss zieht ein alter geschnitzter Kürbis Ihren Blick auf sich. Sein schiefes Lächeln scheint in der Zeit eingefroren zu sein. Plötzlich flackern seine hohlen Augen auf. Sie sind gegen Ihren Willen von dieser seltsamen Vitalität fasziniert und beschließen, ihn mitzunehmen, bevor Sie das Haus verlassen.",
+          "2": "Sie gehen durch das staubige Erdgeschoss. Die heruntergekommenen Möbel sind mit Spinnweben überzogen, aber inmitten des Durcheinanders fällt Ihnen ein kleiner Gegenstand auf. Sie heben ihn auf und setzen Ihren Weg fort.",
+          "3": "Die Stille wiegt schwer in diesem staubigen Raum. Als Sie zwischen den wackeligen Möbeln und Spinnweben hindurchgehen, stößt Ihr Fuß auf einen rostigen Nagel, der Ihnen den Fuß aufschlitzt. Sie beschließen, dass es klüger ist, kein weiteres Risiko einzugehen, und humpeln aus dem Haus.",
+          "4": "In der Mitte des Raumes steht ein geschnitzter Kürbis, der Sie mit seinem schiefen Lächeln anstarrt. Ohne Vorwarnung entflammt die Flamme in seinen Augen und die Kreatur springt mit einem Zähneklappern auf Sie zu! Sie haben nicht einmal Zeit zu reagieren, denn schon sind Sie seinen Angriffen ausgesetzt. Nach einem harten Kampf gelingt es Ihnen immerhin, die Kreatur aus dem Haus zu vertreiben."
+        },
+        "text": "Besuchen Sie das Erdgeschoss"
+      }
+    },
+    "text": "Sie treten über die Schwelle eines alten, verfallenen Hauses. Der dichte Nebel, der es umgibt, scheint die Konturen der Außenwelt zu verschlucken, als ob das Haus außerhalb der Realität existieren würde. Die Luft ist kalt und stickig und jeder Schritt lässt die alten Holzdielen ächzen. Eine seltsame Präsenz scheint Sie aus den Schatten der Korridore zu beobachten."
+  },
   "9": {
     "possibilities": {
       "end": {
