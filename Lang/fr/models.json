@@ -832,12 +832,6 @@
       "customMessage": "hurle au ciel.",
       "name_one": "Hurlement",
       "name_other": "Hurlements"
-    },
-    "petMakeBleed": {
-      "success": "se fait aider par **{{petNickname}}** qui mord au cou son adversaire."
-    },
-    "petPetrified": {
-      "success": "se fait aider par **{{petNickname}}** qui regarde son adversaire et le pétrifie."
     }
   },
   "leagues": {
@@ -1059,16 +1053,6 @@
       "name": "Continent principal",
       "particle": "vers"
     },
-    "39": {
-      "description": "Sentier noyé dans une brume épaisse, immobile et sans origine. Ni repère ni forme ne permet de situer cet endroit.",
-      "name": "Sentier brumeux",
-      "particle": "vers le"
-    },
-    "40": {
-      "description": "Une vieille demeure délabrée se dressant dans une brume épaisse, comme suspendue entre deux mondes. Impossible de dire d’où elle vient, ni même si elle appartient encore au nôtre. Ses fenêtres fissurées laissent danser des ombres indistinctes, tandis qu’un grincement sourd s’échappe de l’intérieur, écho d’une présence oubliée.",
-      "name": "Maison hantée",
-      "particle": "vers la"
-    },
     "4": {
       "description": "Immense forêt au sud du Berceau. On raconte que beaucoup de voyageurs s'y sont perdus.",
       "name": "Forêt Du Vieillard",
@@ -1200,10 +1184,6 @@
     "dragonsNest": {
       "name": "",
       "prefix": "du"
-    },
-    "hauntedHouse": {
-      "name": "",
-      "prefix": "de la"
     }
   },
   "missions": {
@@ -1445,10 +1425,6 @@
   "pets": {
     "0_female": "Aucun familier",
     "0_male": "Aucun familier",
-    "100_male": "Fantôme",
-    "100_female": "Fantôme",
-    "101_male": "Vampire",
-    "101_female": "Vampiresse",
     "10_female": "Poule",
     "10_male": "Coq",
     "11_female": "Oiseau",
@@ -1643,8 +1619,6 @@
     "97_male": "Oie",
     "98_female": "Élan",
     "98_male": "Élan",
-    "99_male": "Jack-o'-lantern",
-    "99_female": "Jack-o'-lantern",
     "9_female": "Truie",
     "9_male": "Porc"
   },
