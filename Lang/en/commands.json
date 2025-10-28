@@ -168,7 +168,7 @@
         "description": "This command allows you to drink the potion you have. Some potions cannot be drunk and are consumed automatically during a fight."
       },
       "FIGHT": {
-        "description": "Use this command to challenge other players on the same server as you.\nBattles take place on a turn-by-turn basis. Each turn, you can choose an action to perform.\n\nFor more information, please visit the guide page: https://guide.draftbot.com/v/en/notions-principale/combats",
+        "description": "Utilisez cette commande pour défier les autres joueurs.\nLes combats se déroulent tour par tour. À chaque tour, vous pouvez choisir une action à effectuer.\n\nPour plus d'informations vous pouvez aller voir la page du guide : https://guide.crownicles.com/notions-principale/combats",
         "image": "https://draftbot.com/public/ressources/fighthelp/en/5.1.7.png"
       },
       "GLORY_TOP": {
@@ -284,6 +284,9 @@
       },
       "SWITCH": {
         "description": "Exchanges a piece of equipment from your stockpile with what you currently own, provided it is of the same category. If no equipment in the category of the item to be equipped is owned before the order is executed, it will simply move it into the inventory."
+      },
+      "DEPOSIT": {
+        "description": "Dépose un équipement de votre main principale dans votre réserve. Si vous n'avez qu'un seul équipement à déposer, celui-ci sera rangé automatiquement."
       },
       "TOP": {
         "description": "Displays the general ranking of the game in 15 player intervals. Players in the same server as you are shown by a blue dot."
@@ -404,9 +407,13 @@
       "very_powerful_guild": "Member of a very powerful guild",
       "animal_lover": "Person who has shown all the pets to Talvar the dwarf"
     },
-    "fightRanking": {
+    "fightRanked": {
       "fieldName": "Glory points and league:",
-      "fieldValue": "{emote:unitValues.glory} {{gloryPoints}} | {emote:leagues.{{leagueId}}} $t(models:leagues.{{leagueId}})"
+      "fieldValue": "{emote:announcements.trophy} {{rank}} / {{numberOfPlayers}} | {emote:unitValues.glory} {{gloryPoints}} | {emote:leagues.{{leagueId}}} $t(models:leagues.{{leagueId}})"
+    },
+    "fightUnranked": {
+      "fieldName": "Glory points and league:",
+      "fieldValue": "{emote:announcements.trophy} Non classé | {emote:unitValues.glory} {{gloryPoints}} | {emote:leagues.{{leagueId}}} $t(models:leagues.{{leagueId}})"
     },
     "guild": {
       "fieldName": "Guild:",
@@ -890,6 +897,16 @@
             "Ingenious and resourceful, he uses the materials around him to create improvised fighting tools.",
             "This pet has an amazing creative instinct. It will quickly produce useful items in the midst of a confrontation.",
             "His tactical intelligence is fascinating. He'll exploit every element of the terrain to build something to help you."
+          ],
+          "petMakeBleed": [
+            "Les analyses hématologiques révèlent que ses canines possèdent des propriétés anticoagulantes remarquables. En mordant l'adversaire, il provoque une hémorragie continue tout en s'abreuvant du sang, ce qui lui permet de transférer cette énergie vitale à son maître.",
+            "Les examens montrent que ce spécimen maîtrise une technique vampirique sophistiquée : ses morsures infligent des saignements persistants à l'ennemi, pendant qu'il absorbe l'essence vitale pour revigorer son propriétaire.",
+            "Les observations vétérinaires confirment une capacité d'hémophagie contrôlée. Il fait saigner ses adversaires de manière continue et convertit cette perte sanguine en énergie curative pour vous soutenir pendant le combat."
+          ],
+          "petPetrified": [
+            "Les tests psychiques indiquent que ce familier émet une aura terrifiante aux moments critiques du combat. Lors des derniers instants de l'affrontement, son regard pétrifiant peut littéralement figer l'adversaire sur place, le rendant totalement vulnérable.",
+            "Les analyses comportementales révèlent une capacité de paralysie mentale activée en fin de combat. Votre familier dégage alors une présence si intimidante qu'elle peut pétrifier l'ennemi, l'empêchant de bouger ou de riposter.",
+            "Les observations cliniques attestent d'un pouvoir de pétrification temporaire qui se manifeste dans les phases finales du combat. Son aura surnaturelle peut figer l'adversaire dans un état de paralysie totale, le laissant sans défense."
           ]
         },
         "ageComment_ancestor": "INCREDIBLE! Exclaims the wide-eyed vet. Your pet is an exceptionally rare specimen! It's one of the oldest ever recorded in our archives, with only {{age}} older pets ever found! A true living relic!",
@@ -1120,7 +1137,8 @@
   "fight": {
     "title": "{{pseudo}}, you're about to start a fight",
     "canceledTitle": "{{pseudo}}, search cancelled",
-    "confirmDesc": "{emote:fightCommand.crossedSwords} | **{{pseudo}}**{{confirmSubText}}\n\n{emote:fightCommand.crossedSwords} | **Fighter: {{pseudo}}** | {{glory}} | {{className}}\n\n{{stats}}",
+    "confirmDesc": "{emote:fightCommand.crossedSwords} | **{{pseudo}}**{{confirmSubText}}\n\n{emote:fightCommand.crossedSwords} | **Combattant : {{pseudo}}** | {{glory}} | {{className}} {{pet}}\n\n{{stats}}",
+    "pet": "| {{petInfo}}",
     "confirmSubTexts": {
       "common": ", would you like to search for a fight?",
       "rare": ", would you like to participate in the search for a fighter of your personal strength for the subsequent duel?"
@@ -1301,6 +1319,15 @@
     "cancelled": "Action cancelled!",
     "switchSelectionTitle": "{{pseudo}}, equipping an item",
     "switchSelectionDescription": "Choose an item from the list below:"
+  },
+  "deposit": {
+    "titleSuccess": "{{pseudo}}, command completed!",
+    "deposeSuccess": "{{item}} a été déposé dans votre réserve !",
+    "noItemToDeposit": "Vous n'avez aucun équipement à déposer !",
+    "cannotDeposit": "Votre réserve est pleine.",
+    "cancelled": "Action cancelled!",
+    "depositSelectionTitle": "{{pseudo}}, dépose d'un objet",
+    "depositSelectionDescription": "Choisissez un objet à déposer dans la liste ci-dessous :"
   },
   "drink": {
     "errors": {
