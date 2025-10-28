@@ -242,7 +242,13 @@ async function doPossibility(
 		time
 	}, player, context, response);
 
-	if (!await player.killIfNeeded(response, NumberChangeReason.BIG_EVENT)) {
+	const isDead = await player.killIfNeeded(response, NumberChangeReason.BIG_EVENT);
+
+	/*
+	 * If the player is dead but a forced map link is provided, teleport them there
+	 * Otherwise, only choose destination if player is alive
+	 */
+	if (newMapLink || !isDead) {
 		await chooseDestination(context, player, newMapLink, response, false);
 	}
 
