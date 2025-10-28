@@ -2778,6 +2778,76 @@
     },
     "text": "Avete deciso di approfittare dell'estate per andare in montagna, a patto che i passi non siano troppo innevati. Tuttavia, la salita si rivela più difficile del previsto..."
   },
+  "80": {
+    "possibilities": {
+      "end": {
+        "outcomes": {
+          "0": "Un pipistrello emerge dalle nubi nebbiose e volteggia intorno a voi con grazia ipnotica, prima di sciogliersi nella nebbia lattiginosa. Questa apparizione enigmatica suscita la vostra curiosità: senza pensarci oltre, decidete di seguirla."
+        }
+      },
+      "followPath": {
+        "outcomes": {
+          "0": "La curiosità vince sulla prudenza. Vi incamminate lungo il misterioso sentiero che si snoda nelle viscere della nebbia..."
+        },
+        "text": "Prendete il sentiero nebbioso."
+      },
+      "turnAround": {
+        "outcomes": {
+          "0": "Un brivido freddo vi corre lungo la schiena, un istinto primitivo vi urla di fuggire da questo luogo maledetto. Senza pensarci due volte, vi voltate bruscamente e vi allontanate dalla strada spettrale, rifiutandovi di voltarvi indietro.",
+          "1": "Proprio mentre iniziate l'inversione a U che vi salva la vita, una marea brulicante di piccoli ragni esce dalla nebbia e invade il terreno intorno ai vostri piedi! In preda a un panico incontrollabile, balzate indietro con un urlo soffocato. Gli aracnidi scompaiono con la stessa rapidità con cui sono apparsi, ma il cuore batte ancora all'impazzata nel petto alcuni minuti dopo questo incontro da incubo."
+        },
+        "text": "Tornare immediatamente indietro."
+      }
+    },
+    "text": "Senza il minimo preavviso, una fitta nebbia si diffonde intorno a voi, avvolgendo l'intero paesaggio in una coltre ovattata e opprimente. Nello spazio di pochi battiti di cuore, la realtà stessa sembra svanire: le sagome degli alberi si dissolvono, l'orizzonte scompare completamente in questo biancore lattiginoso. Un silenzio pesante cala su questo mondo spettrale e l'aria gelida e satura di umidità rende ogni respiro affannoso, come se la nebbia stessa cercasse di penetrare nei polmoni. Dopo essere rimasti fermi per qualche istante, sorpresi dall'evento, notate che un sentiero sta gradualmente prendendo forma davanti a voi..."
+  },
+  "81": {
+    "possibilities": {
+      "end": {
+        "outcomes": {
+          "0": "Con un brutto presentimento nello stomaco, lasciate l'edificio in fretta e furia. Sulle scale, il piede scivola su un'asse pericolante. Cade pesantemente e si graffia la gamba. Niente di grave, ma il dolore vi ricorda che forse questa casa non vi voleva."
+        }
+      },
+      "randomRoom": {
+        "outcomes": {
+          "0": "Aprite una porta a caso. Un calore improvviso vi avvolge mentre le fiamme si sprigionano dalle pareti, danzando come spinte da una volontà propria. Il fuoco vortica, si condensa e poi prende lentamente forma al centro della stanza. Due luci ardenti vi guardano attraverso il tumulto, immobili, quasi coscienti. Poi, all'improvviso, la fiamma si spegne, lasciando dietro di sé un'aria pesante e un silenzio opprimente. Tra le ceneri giace una figura intatta, leggermente calda al tatto. Senza capire perché, decidete di portarla con voi.",
+          "1": "La stanza è immersa in una strana atmosfera, con una luce soffusa che emana da tutti e quattro gli angoli. Su un tavolo polveroso, un oggetto antico cattura la vostra attenzione. Ne percepite la qualità e decidete di portarlo con voi.",
+          "2": "Si apre la porta di una stanza insignificante. Uscite, delusi per aver sprecato il vostro tempo. Esplorate altre stanze senza particolare interesse prima di lasciare la casa e ripartire.",
+          "3": "Un freddo pungente vi colpisce non appena aprite la porta. L'aria si solidifica, i cristalli di ghiaccio fluttuano in sospensione. Il vostro corpo si irrigidisce, la forza vi abbandona. Al centro giace una strana creatura, addormentata nella fredda immensità. Decisi a non andarvene a mani vuote, la portate con voi.",
+          "4": "Il freddo vi coglie all'istante. Cristalli di ghiaccio fluttuano nell'aria gelata. Al centro, una creatura giace in un alone di gelo. Avanzate... e commettete l'errore fatale. I suoi occhi di ghiaccio si aprono. Salta. Un morso di freddo assoluto vi trafigge. Tutto diventa bianco, poi il nulla."
+        },
+        "text": "Entrare in una stanza a caso"
+      },
+      "visitBasement": {
+        "outcomes": {
+          "0": "Si scende in cantina. L'aria è pesante e puzza di pietra fredda. Non appena si mette piede sul primo gradino, si sente uno stridio acuto. Uno sciame di pipistrelli esce dall'oscurità con un fragore di ali e vi sfiora prima di scomparire. Cala di nuovo il silenzio. Sulla vostra spalla, un peso leggero: un pipistrello vi si è aggrappato, i suoi piccoli occhi brillano nella penombra. Senza capire perché, decidete di portarlo con voi.",
+          "1": "Nella gelida cantina, una presenza emerge dall'ombra e vi attacca! Dopo qualche istante di lotta, la creatura indietreggia, spaventata quanto voi. La studiate a lungo, senza capire esattamente cosa sia; sembra traslucida e sussurra senza che voi possiate capire una sola parola. In un impeto di follia, decidete di portarla con voi.",
+          "2": "A ogni passo le gambe diventano più pesanti e il respiro più corto. L'oscurità pulsa come se la cantina respirasse. Poi li vedete: migliaia di ragni che brulicano sulle pareti. Si precipitano verso di voi in una massa nera che vi travolge, si arrampica, si insinua. Soffocate... poi riaprite gli occhi, sdraiati in mezzo a un sentiero, storditi e senza la vostra borsa. Era davvero solo un sogno?",
+          "3": "Scendete con cautela nell'oscurità totale del seminterrato. Cercando di avanzare, a volte inciampando, le vostre mani si imbattono in un oggetto che afferrate. Continuate finché non vedete finalmente la via d'uscita e ne uscite ansimanti, con l'oggetto ancora in mano."
+        },
+        "text": "Scendere in cantina"
+      },
+      "visitFloor": {
+        "outcomes": {
+          "0": "Si salgono i gradini scricchiolanti. L'aria diventa gelida, carica di odore di cera e polvere antica. In cima, una strana creatura dai tratti confusi scivola silenziosamente lungo il corridoio e si ferma davanti a voi. I suoi occhi vi implorano. La curiosità vi spinge ad allungare la mano e quasi subito appare una piccola borsa. Un brivido vi attraversa e, senza capire cosa sia appena successo, decidete di proseguire per la vostra strada. La creatura segue i vostri passi e continua a seguirvi con discrezione.",
+          "1": "Mentre salite le scale, il freddo si intensifica. Quando arrivate al pianerottolo, una folata di ghiaccio vi attraversa. La vostra vista si offusca: uno spettro traslucido sta davanti a voi, con gli occhi vuoti che bruciano di un bagliore pallido. Vi sfiora la fronte, mormorando una maledizione in una lingua che non capite. Terrorizzati dalla scena, fuggite più velocemente che potete, lasciando nell'edificio una delle vostre borse e il suo prezioso contenuto.",
+          "2": "Al piano superiore, una porta socchiusa attira la vostra attenzione. Scoprite una piccola stanza immersa nella luce grigia. Su un tavolo, un pasto mezzo consumato sembra attendere il suo ospite da decenni. Lo mangiate e portate con voi alcuni vecchi incantesimi prima di andarvene."
+        },
+        "text": "Esplorare il pavimento"
+      },
+      "visitLobby": {
+        "outcomes": {
+          "0": "Esplorate il piano terra ma non trovate nulla di interessante. Giudicando che la casa non vale il vostro tempo, proseguite per la vostra strada senza indugiare oltre.",
+          "1": "Al piano terra, una vecchia zucca intagliata cattura lo sguardo. Il suo sorriso contorto sembra congelato nel tempo. Improvvisamente, nei suoi occhi vuoti si accende un bagliore. Affascinati loro malgrado da questa strana vitalità, decidete di portarla con voi prima di lasciare l'edificio.",
+          "2": "Vi aggirate per il pianterreno polveroso. I mobili fatiscenti sono avvolti dalle ragnatele, ma in mezzo al disordine un piccolo oggetto cattura la vostra attenzione. Lo raccogliete e proseguite.",
+          "3": "Il silenzio è pesante in questa stanza polverosa. Mentre cammina tra i mobili sgangherati e le ragnatele, il suo piede urta un chiodo arrugginito e si taglia. Decidendo che è più prudente non correre altri rischi, uscite zoppicando dalla casa.",
+          "4": "Al centro della stanza, una zucca intagliata vi fissa con un sorriso contorto. Senza preavviso, la fiamma nei suoi occhi si accende e la creatura balza verso di voi con uno schiocco di denti! Non avete nemmeno il tempo di reagire prima che vi attacchi. Dopo un'accanita battaglia riuscite a spingerla fuori dalla casa, ma vi ci vorrà più tempo per scrollarvi di dosso le ferite."
+        },
+        "text": "Visita al piano terra"
+      }
+    },
+    "text": "Si varca la soglia di una vecchia casa dall'aspetto fatiscente. La fitta nebbia che la circonda sembra inghiottire i contorni del mondo esterno, come se la casa esistesse al di fuori di ogni realtà. L'aria è fredda e stagnante e ogni passo fa gemere le vecchie assi del pavimento. Una strana presenza sembra osservarvi dalle ombre dei corridoi."
+  },
   "9": {
     "possibilities": {
       "end": {
