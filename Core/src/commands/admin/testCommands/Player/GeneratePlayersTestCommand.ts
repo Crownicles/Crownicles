@@ -204,7 +204,7 @@ const CLASS_TO_GROUP_MAP: Record<number, string> = {
 /**
  * Get the class behavior group for a given class ID
  */
-function getClassBehaviorGroup(classId: number): string {
+function getClassBehaviorGroup(classId: number): string | null {
 	return CLASS_TO_GROUP_MAP[classId] || null;
 }
 
