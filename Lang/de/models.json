@@ -832,6 +832,12 @@
       "customMessage": "brüllt in den Himmel.",
       "name_one": "Schreien",
       "name_other": "Schreie"
+    },
+    "petMakeBleed": {
+      "success": "bekommt Hilfe von **{{petNickname}}**, der seinen Gegner in den Hals beißt."
+    },
+    "petPetrified": {
+      "success": "bekommt Hilfe von **{{petNickname}}**, der seinen Gegner anschaut und ihn versteinern lässt."
     }
   },
   "leagues": {
@@ -1053,6 +1059,16 @@
       "name": "Primäre Continent",
       "particle": "in"
     },
+    "39": {
+      "description": "Ein in dichtem Nebel versunkener Pfad, der unbeweglich ist und keinen Ursprung hat. Weder Markierungen noch Formen erlauben es, diesen Ort zu lokalisieren.",
+      "name": "Nebliger Pfad",
+      "particle": "in Richtung"
+    },
+    "40": {
+      "description": "Ein altes, verfallenes Haus, das in einem dichten Nebel steht und wie zwischen zwei Welten schwebt. Es ist unmöglich zu sagen, woher es kommt oder ob es überhaupt noch zu unserer Welt gehört. Aus dem Inneren dringt ein dumpfes Knarren, das Echo einer vergessenen Präsenz.",
+      "name": "Spukhaus",
+      "particle": "in Richtung"
+    },
     "4": {
       "description": "Ein riesiger Wald südlich der Wiege. Man sagt, dass viele Reisende verloren gegangen sind.",
       "name": "Der Wald des Alten Mannes",
@@ -1182,6 +1198,10 @@
       "prefix": "von"
     },
     "dragonsNest": {
+      "name": "",
+      "prefix": "von"
+    },
+    "hauntedHouse": {
       "name": "",
       "prefix": "von"
     }
@@ -1425,6 +1445,10 @@
   "pets": {
     "0_female": "Keine Vertrauten",
     "0_male": "Keine Vertrauten",
+    "100_male": "Geist",
+    "100_female": "Geist",
+    "101_male": "Vampire",
+    "101_female": "Vampirin",
     "10_female": "Henne",
     "10_male": "Hahn",
     "11_female": "Vogel",
@@ -1619,6 +1643,8 @@
     "97_male": "Gans",
     "98_female": "Schwung",
     "98_male": "Schwung",
+    "99_male": "Jack-o'-Lantern",
+    "99_female": "Jack-o'-Lantern",
     "9_female": "Sau",
     "9_male": "Schwein"
   },
