@@ -2778,6 +2778,76 @@
     },
     "text": "You've decided to take advantage of the summer to head for the mountains, as long as the passes aren't too snow-covered. However, the climb turns out to be more difficult than you expected..."
   },
+  "80": {
+    "possibilities": {
+      "end": {
+        "outcomes": {
+          "0": "A bat emerges from the misty swirls and twirls around you with hypnotic grace, before melting into the milky thickness of the fog. This enigmatic apparition arouses your curiosity: without further thought, you decide to follow it."
+        }
+      },
+      "followPath": {
+        "outcomes": {
+          "0": "Curiosity outweighs caution. You set out on the mysterious path that winds through the bowels of the mist..."
+        },
+        "text": "Take the foggy path."
+      },
+      "turnAround": {
+        "outcomes": {
+          "0": "A cold shiver runs up your spine, a primitive instinct screaming at you to flee this cursed place. Without asking, you turn abruptly and stride away from the ghostly road, refusing to look back.",
+          "1": "Just as you begin your life-saving U-turn, a swarming tide of tiny spiders breaks out of the fog and invades the ground around your feet! Overcome with uncontrollable panic, you leap back with a muffled scream. The arachnids disappear as quickly as they appeared, but your heart is still pounding wildly in your chest several minutes after this nightmarish encounter."
+        },
+        "text": "Turn back immediately."
+      }
+    },
+    "text": "Without the slightest warning, a dense fog spreads around you, engulfing the entire landscape in a cottony, oppressive blanket. In the space of a few heartbeats, reality itself seems to fade away: the silhouettes of trees dissolve, the horizon disappears entirely in this milky whiteness. A heavy silence descends on this ghostly world, and the icy, moisture-saturated air makes each inhalation laborious, as if the fog itself were trying to penetrate your lungs. After a few moments of stunned motionlessness, you notice a path gradually taking shape before you..."
+  },
+  "81": {
+    "possibilities": {
+      "end": {
+        "outcomes": {
+          "0": "With a bad feeling in your gut, you leave the building in a hurry. On the stairs, your foot slips on a loose plank. You fall heavily and scrape your leg. Nothing serious, but the pain reminds you that maybe this house didn't want you."
+        }
+      },
+      "randomRoom": {
+        "outcomes": {
+          "0": "You open a door at random. A sudden warmth envelops you as flames shoot from the walls, dancing as if driven by a will of their own. The fire swirls, condenses, then slowly takes shape in the center of the room. Two burning lights stare at you through the tumult, motionless, almost conscious. Then, as abruptly as it appeared, the blaze goes out, leaving behind a heavy air and an oppressive silence. Amid the ashes, an untouched silhouette lies, faintly warm to the touch. Without understanding why, you decide to take it with you.",
+          "1": "The room is bathed in an eerie atmosphere, with soft light emanating from all four corners. On a dusty table, an antique object catches your eye. You sense its quality and decide to take it away.",
+          "2": "You open a door onto a plain, unremarkable room. You leave, disappointed at having wasted your time. You explore a few more rooms of no particular interest before leaving the house and heading on your way.",
+          "3": "A bitter chill hits you as soon as you open the door. The air solidifies, ice crystals float in suspension. Your body stiffens, your strength leaves you. In the center lies a strange creature, asleep in the cold immensity. Determined not to leave empty-handed, you take it with you.",
+          "4": "The cold grips you instantly. Ice crystals float in the frozen air. In the center, a creature lies in a halo of frost. You step forward... and make the fatal mistake. Its icy eyes open. It leaps. A bite of absolute cold pierces you. Everything goes white, then nothing."
+        },
+        "text": "Enter a room at random"
+      },
+      "visitBasement": {
+        "outcomes": {
+          "0": "You descend into the cellar. The heavy air smells of cold stone. No sooner do you set foot on the first step than you hear a high-pitched screech. A swarm of bats flies out of the darkness with a din of flapping wings, brushing past you before disappearing. Silence falls again. On your shoulder, a light weight: a bat has clung to it, its tiny eyes shining in the half-light. Without understanding why, you decide to take it away.",
+          "1": "In the icy cellar, a presence emerges from the shadows and attacks you! After a few moments of struggle, the creature backs away, as frightened as you are. You study it for a long time, but you can't make out exactly what it is. It seems translucent and whispers without you understanding a single word. In a fit of madness, you decide to take it with you.",
+          "2": "With each step down, your legs grow heavier, your breath shorter. The darkness pulses as if the cellar were breathing. Then you see them: thousands of spiders swarming the walls. They rush towards you in a black mass that overwhelms, climbs and seeps in. You suffocate... then open your eyes again, lying in the middle of a path, stunned and without your purse. Was it really just a dream?",
+          "3": "You descend cautiously into the total darkness of the basement. Feeling your way forward, sometimes stumbling, your hands come across an object which you grasp. You continue until you finally see the exit, and emerge panting, object still in hand."
+        },
+        "text": "Down into the cellar"
+      },
+      "visitFloor": {
+        "outcomes": {
+          "0": "You climb the creaky steps. The air becomes frigid, laden with the smell of wax and ancient dust. At the top, a strange creature with blurred features glides silently down the corridor and stands still in front of you. Its eyes implore you. Your curiosity prompts you to reach out and a small purse appears almost immediately. A shiver runs through you, and without understanding what has just happened, you decide to continue on your way. The creature follows in your footsteps and continues to follow discreetly.",
+          "1": "As you climb the stairs, the cold intensifies. As you reach the landing, a chill breath passes through you. Your vision blurs: a translucent specter stands before you, its empty eyes burning with a pallid glow. He brushes against your forehead, muttering a curse in a language you don't understand. Terrorized by the scene, you flee as fast as your legs can carry you, even leaving one of your purses and its precious contents in the building.",
+          "2": "Upstairs, a half-open door draws your attention. You discover a small room bathed in gray light. On a table, a half-begun meal seems to have been waiting for its guest for decades. You consume it and take away a few old charms before leaving."
+        },
+        "text": "Explore the floor"
+      },
+      "visitLobby": {
+        "outcomes": {
+          "0": "You explore the first floor but find nothing of interest. Judging that the house isn't worth your time, you continue on your way without lingering any longer.",
+          "1": "On the first floor, an old carved pumpkin catches your eye. Its twisted smile seems frozen in time. Suddenly, a gleam flickers in its hollow eyes. Fascinated despite yourself by this strange vitality, you decide to take it with you before leaving the premises.",
+          "2": "You wander through the dusty first floor. The dilapidated furniture is draped in cobwebs, but amidst the clutter, a small object catches your eye. You pick it up and move on.",
+          "3": "Silence hangs heavy in this dusty room. As you walk between the rickety furniture and cobwebs, your foot hits a rusty nail that cuts your foot. Deciding it's safer not to take any more risks, you limp out of the house.",
+          "4": "In the center of the room, a carved pumpkin fixes you with its twisted smile. Without warning, the flame in its eyes ignites and the creature leaps towards you with a snap of its teeth! You don't even have time to react before it attacks you. After a fierce fight, you manage to push it out of the house, but it will take you longer to shake off your wounds."
+        },
+        "text": "Visit the first floor"
+      }
+    },
+    "text": "You cross the threshold of a dilapidated-looking old mansion. The thick fog that surrounds it seems to swallow the contours of the outside world, as if the house existed outside all reality. The air is cold and stagnant, and every step makes the old floorboards groan. A strange presence seems to be watching you from the shadows of the corridors."
+  },
   "9": {
     "possibilities": {
       "end": {
