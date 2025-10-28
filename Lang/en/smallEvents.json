@@ -535,7 +535,8 @@
       "Ntalcme": "A tireless traveler, driven by an ideal greater than himself, tirelessly traversing the lands of this kingdom, in search of what seems to be missing from his soul. No one knows what he hopes to find at the end of his journey, yet he marches towards an elusive dream.",
       "BananePlantain": "a simple banana who has matured through the various encounters and adventures she has had in this world. A lover of challenges and battles, and always ready to help, she quietly leads her little troop.",
       "aureochocob0n": "A wealthy merchant who, believing a renowned alchemist, immersed himself in a bath of molten gold in order to emerge golden. This questionable action did not leave him unscathed: only his newly-gilded bones were spared.",
-      "Ravenclaw": "a discreet sentinel, always accompanied by a raven. It is said that she appears when help is needed, then fades away with the wind."
+      "Ravenclaw": "a discreet sentinel, always accompanied by a raven. It is said that she appears when help is needed, then fades away with the wind.",
+      "GabrieLre": "Un guerrier avide de connaissances, qui a consigné l’entièreté de son immense savoir afin d’aider quiconque désire progresser. On raconte qu’il en saurait autant sur ce monde que le créateur lui-même"
     }
   },
   "witch": {
@@ -1862,5 +1863,17 @@
       "{emote:fightActions.aerialDiveAttack} The aetheric dive, attack from the sky to attack at a distance! It consists of melting on the opponent from the air, but failed if the target just attacked at a distance. I have always said that we need to watch its backwards... and the sky too!",
       "{emote:fightActions.crystallineArmorAttack} Crystal Armor, offensive defensive technique! It uses the combatant's armor to inflict melee degae on the body, but only works if the opponent has just made a physical attack. Turning its protection into a weapon of response, this is tactical ingeniosity!"
     ]
-  }
+  },
+  "haunted": [
+    "La brume est si dense que le monde semble s’être effacé. Chaque pas sur le sentier résonne comme dans un rêve, sans écho, sans fin. Vous ne savez plus si vous avancez ou si c’est le brouillard qui vous absorbe lentement.",
+    "Autour de vous, la blancheur avale tout. Le sol se devine à peine, les arbres se fondent dans la brume, et même votre ombre disparaît. Un silence irréel plane, un silence qui semble attendre quelque chose.",
+    "Le sentier s’étire dans une direction que vous ne distinguez plus. Par moments, une forme sombre traverse la brume au loin — un mouvement incertain, peut-être un animal, peut-être un souvenir. Vous sentez vos repères se dissoudre.",
+    "Une odeur de terre froide et de bois humide flotte dans l’air. Le vent ne souffle plus, et pourtant, la brume bouge, comme mue par une respiration invisible. Vous avez la sensation que le sentier lui-même vous observe.",
+    "La lumière semble venir de nulle part. Aucun soleil, aucune lune — juste cette clarté grise qui ne faiblit jamais. Vous tendez la main devant vous, mais vos doigts disparaissent aussitôt dans le néant laiteux.",
+    "Un frisson parcourt votre dos. Derrière vous, un craquement étouffé, fragile comme une feuille qu’on écrase. Vous vous retournez brusquement, mais il n’y a que la brume, impassible, silencieuse, immobile.",
+    "Le sentier se divise soudain, sans que vous puissiez dire depuis combien de temps. Les deux chemins se perdent aussitôt dans la brume, identiques, indécis. Vous sentez que choisir l’un ou l’autre n’aura peut-être aucune importance.",
+    "Vous vous arrêtez un instant. Même votre souffle semble étouffé par l’air froid. Dans cette immobilité totale, il vous semble entendre un battement — faible, régulier — comme un cœur enfoui sous la terre.",
+    "Le brouillard s’épaissit encore et vous ne distinguez déjà presque plus vos propre pieds. À chaque inspiration, l’humidité glaciale s’infiltre dans votre gorge, et le monde entier se réduit à quelques mètres autour de vous.",
+    "Un murmure lointain traverse soudain la brume, porté par nulle part. Une voix ? Un vent ? Impossible à dire. Vous restez immobile, à écouter, conscient que ce lieu n’a ni fin ni commencement, seulement un silence qui respire."
+  ]
 }
