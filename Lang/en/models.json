@@ -832,6 +832,12 @@
       "customMessage": "Howls in the sky.",
       "name_one": "Howl",
       "name_other": "Howls"
+    },
+    "petMakeBleed": {
+      "success": "se fait aider par **{{petNickname}}** qui mord au cou son adversaire."
+    },
+    "petPetrified": {
+      "success": "se fait aider par **{{petNickname}}** qui regarde son adversaire et le pétrifie."
     }
   },
   "leagues": {
@@ -1053,6 +1059,16 @@
       "name": "Principal continent",
       "particle": "of"
     },
+    "39": {
+      "description": "Sentier noyé dans une brume épaisse, immobile et sans origine. Ni repère ni forme ne permet de situer cet endroit.",
+      "name": "Sentier brumeux",
+      "particle": "of"
+    },
+    "40": {
+      "description": "Une vieille demeure délabrée se dressant dans une brume épaisse, comme suspendue entre deux mondes. Impossible de dire d’où elle vient, ni même si elle appartient encore au nôtre. Ses fenêtres fissurées laissent danser des ombres indistinctes, tandis qu’un grincement sourd s’échappe de l’intérieur, écho d’une présence oubliée.",
+      "name": "Maison hantée",
+      "particle": "of the"
+    },
     "4": {
       "description": "Huge forest at the South of the Cradle. It is said that many travelers got lost there.",
       "name": "Oldster's Forest",
@@ -1182,6 +1198,10 @@
       "prefix": "of the"
     },
     "dragonsNest": {
+      "name": "",
+      "prefix": "of the"
+    },
+    "hauntedHouse": {
       "name": "",
       "prefix": "of the"
     }
@@ -1425,6 +1445,10 @@
   "pets": {
     "0_female": "No pet",
     "0_male": "No pet",
+    "100_male": "Fantôme",
+    "100_female": "Fantôme",
+    "101_male": "Vampire",
+    "101_female": "Vampiresse",
     "10_female": "Hen",
     "10_male": "Rooster",
     "11_female": "Bird",
@@ -1619,6 +1643,8 @@
     "97_male": "Goose",
     "98_female": "Momentum",
     "98_male": "Momentum",
+    "99_male": "Jack-o'-lantern",
+    "99_female": "Jack-o'-lantern",
     "9_female": "Sow",
     "9_male": "Boar"
   },
