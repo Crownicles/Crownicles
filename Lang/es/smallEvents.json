@@ -535,7 +535,8 @@
       "Ntalcme": "Un viajero incansable, impulsado por un ideal más grande que él mismo, recorre sin descanso las tierras de este reino en busca de lo que parece faltarle a su alma. Nadie sabe qué espera encontrar al final de su viaje, pero camina hacia un sueño esquivo.",
       "BananePlantain": "una simple banana que ha madurado a través de los diversos encuentros y aventuras que ha vivido en este mundo. Entusiasta de los retos y las batallas, y siempre dispuesta a ayudar, dirige en silencio a su pequeña tropa.",
       "aureochocob0n": "Un rico mercader que, creyendo en las palabras de un renombrado alquimista, se sumergió en un baño de oro fundido para salir dorado. Esta cuestionable acción no le dejó indemne: sólo se salvaron sus huesos recién dorados.",
-      "Ravenclaw": "una centinela discreta, siempre acompañada por un cuervo. Se dice que aparece cuando hay que echar una mano y luego se desvanece con el viento."
+      "Ravenclaw": "una centinela discreta, siempre acompañada por un cuervo. Se dice que aparece cuando hay que echar una mano y luego se desvanece con el viento.",
+      "GabrieLre": "Un guerrier avide de connaissances, qui a consigné l’entièreté de son immense savoir afin d’aider quiconque désire progresser. On raconte qu’il en saurait autant sur ce monde que le créateur lui-même"
     }
   },
   "witch": {
@@ -1862,5 +1863,17 @@
       "{emote:fightActions.aerialDiveAttack} El salto aéreo, ¡un ataque desde el cielo para atacar a distancia! Consiste en lanzarse en picado sobre el adversario desde el aire, pero falla si el objetivo acaba de atacar a distancia. Siempre he dicho que hay que vigilar la espalda... ¡y también el cielo!",
       "{emote:fightActions.crystallineArmorAttack} Armadura cristalina, ¡una técnica defensiva ofensiva! Esta técnica utiliza la armadura del luchador para infligir daño en combate cuerpo a cuerpo, pero sólo funciona si el adversario acaba de realizar un ataque físico. ¡Transformar tu protección en un arma de represalia es ingenio táctico!"
     ]
-  }
+  },
+  "haunted": [
+    "La brume est si dense que le monde semble s’être effacé. Chaque pas sur le sentier résonne comme dans un rêve, sans écho, sans fin. Vous ne savez plus si vous avancez ou si c’est le brouillard qui vous absorbe lentement.",
+    "Autour de vous, la blancheur avale tout. Le sol se devine à peine, les arbres se fondent dans la brume, et même votre ombre disparaît. Un silence irréel plane, un silence qui semble attendre quelque chose.",
+    "Le sentier s’étire dans une direction que vous ne distinguez plus. Par moments, une forme sombre traverse la brume au loin — un mouvement incertain, peut-être un animal, peut-être un souvenir. Vous sentez vos repères se dissoudre.",
+    "Une odeur de terre froide et de bois humide flotte dans l’air. Le vent ne souffle plus, et pourtant, la brume bouge, comme mue par une respiration invisible. Vous avez la sensation que le sentier lui-même vous observe.",
+    "La lumière semble venir de nulle part. Aucun soleil, aucune lune — juste cette clarté grise qui ne faiblit jamais. Vous tendez la main devant vous, mais vos doigts disparaissent aussitôt dans le néant laiteux.",
+    "Un frisson parcourt votre dos. Derrière vous, un craquement étouffé, fragile comme une feuille qu’on écrase. Vous vous retournez brusquement, mais il n’y a que la brume, impassible, silencieuse, immobile.",
+    "Le sentier se divise soudain, sans que vous puissiez dire depuis combien de temps. Les deux chemins se perdent aussitôt dans la brume, identiques, indécis. Vous sentez que choisir l’un ou l’autre n’aura peut-être aucune importance.",
+    "Vous vous arrêtez un instant. Même votre souffle semble étouffé par l’air froid. Dans cette immobilité totale, il vous semble entendre un battement — faible, régulier — comme un cœur enfoui sous la terre.",
+    "Le brouillard s’épaissit encore et vous ne distinguez déjà presque plus vos propre pieds. À chaque inspiration, l’humidité glaciale s’infiltre dans votre gorge, et le monde entier se réduit à quelques mètres autour de vous.",
+    "Un murmure lointain traverse soudain la brume, porté par nulle part. Une voix ? Un vent ? Impossible à dire. Vous restez immobile, à écouter, conscient que ce lieu n’a ni fin ni commencement, seulement un silence qui respire."
+  ]
 }
