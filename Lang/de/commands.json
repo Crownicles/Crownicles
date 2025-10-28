@@ -168,7 +168,7 @@
         "description": "Dieser Befehl wird verwendet, um den von Ihnen zu transmitenden Trank zu konsumieren. Einige Potionen können nicht bucht werden und werden automatisch in einem Kampf verbraucht."
       },
       "FIGHT": {
-        "description": "Verwenden Sie diesen Befehl, um andere Spieler, die sich auf demselben Server wie Sie befinden, zu detrieren.\nDie Kämpfe werden um die Reihe umgeleitet. In jeder Runde können Sie eine Aktion auswählen, die ausgeführt werden soll.\n\nFür weitere Informationen können Sie die Seite \"Guide\" auf der Seite \"https://guide.draftbot.com/notions-principale/combats\" anzeigen.",
+        "description": "Utilisez cette commande pour défier les autres joueurs.\nLes combats se déroulent tour par tour. À chaque tour, vous pouvez choisir une action à effectuer.\n\nPour plus d'informations vous pouvez aller voir la page du guide : https://guide.crownicles.com/notions-principale/combats",
         "image": "https://draftbot.com/public/ressources/fighthelp/en/5.1.7.png"
       },
       "GLORY_TOP": {
@@ -284,6 +284,9 @@
       },
       "SWITCH": {
         "description": "Tauscht eine Ausrüstung aus deinem Vorrat gegen die Ausrüstung, die du derzeit besitzt, unter der Bedingung, dass sie der gleichen Kategorie angehört. Wenn du vor der Ausführung des Auftrags keine Ausrüstung in der Kategorie des auszurüstenden Gegenstands besitzt, verschiebt er ihn lediglich in dein Inventar."
+      },
+      "DEPOSIT": {
+        "description": "Dépose un équipement de votre main principale dans votre réserve. Si vous n'avez qu'un seul équipement à déposer, celui-ci sera rangé automatiquement."
       },
       "TOP": {
         "description": "Zeigt die allgemeine Rangfolge des Spiels pro Schicht von 15 Spielern an. Spieler auf dem gleichen Server, die Sie mit einem blauen Pellet markiert haben."
@@ -404,9 +407,13 @@
       "very_powerful_guild": "Mitglied einer sehr mächtigen Gilde",
       "animal_lover": "Person, die Talvar dem Zwerg alle Vertrauten gezeigt hat"
     },
-    "fightRanking": {
-      "fieldName": "Gloire und Liga:",
-      "fieldValue": "{emote:unitValues.glory} {{gloryPoints}} | {emote:leagues.{{leagueId}}} $t(models:leagues.{{leagueId}})"
+    "fightRanked": {
+      "fieldName": "Gloire et ligue :",
+      "fieldValue": "{emote:announcements.trophy} {{rank}} / {{numberOfPlayers}} | {emote:unitValues.glory} {{gloryPoints}} | {emote:leagues.{{leagueId}}} $t(models:leagues.{{leagueId}})"
+    },
+    "fightUnranked": {
+      "fieldName": "Gloire et ligue :",
+      "fieldValue": "{emote:announcements.trophy} Non classé | {emote:unitValues.glory} {{gloryPoints}} | {emote:leagues.{{leagueId}}} $t(models:leagues.{{leagueId}})"
     },
     "guild": {
       "fieldName": "Gilde:",
@@ -890,6 +897,16 @@
             "Er ist erfinderisch und einfallsreich und nutzt die Materialien um ihn herum, um improvisierte Kampfwerkzeuge herzustellen.",
             "Dieses Haustier hat einen erstaunlichen kreativen Instinkt. Er wird inmitten einer Auseinandersetzung schnell nützliche Gegenstände herstellen.",
             "Seine taktische Intelligenz ist faszinierend. Er wird jedes Element auf dem Spielfeld ausnutzen, um etwas zu bauen, das Ihnen hilft."
+          ],
+          "petMakeBleed": [
+            "Les analyses hématologiques révèlent que ses canines possèdent des propriétés anticoagulantes remarquables. En mordant l'adversaire, il provoque une hémorragie continue tout en s'abreuvant du sang, ce qui lui permet de transférer cette énergie vitale à son maître.",
+            "Les examens montrent que ce spécimen maîtrise une technique vampirique sophistiquée : ses morsures infligent des saignements persistants à l'ennemi, pendant qu'il absorbe l'essence vitale pour revigorer son propriétaire.",
+            "Les observations vétérinaires confirment une capacité d'hémophagie contrôlée. Il fait saigner ses adversaires de manière continue et convertit cette perte sanguine en énergie curative pour vous soutenir pendant le combat."
+          ],
+          "petPetrified": [
+            "Les tests psychiques indiquent que ce familier émet une aura terrifiante aux moments critiques du combat. Lors des derniers instants de l'affrontement, son regard pétrifiant peut littéralement figer l'adversaire sur place, le rendant totalement vulnérable.",
+            "Les analyses comportementales révèlent une capacité de paralysie mentale activée en fin de combat. Votre familier dégage alors une présence si intimidante qu'elle peut pétrifier l'ennemi, l'empêchant de bouger ou de riposter.",
+            "Les observations cliniques attestent d'un pouvoir de pétrification temporaire qui se manifeste dans les phases finales du combat. Son aura surnaturelle peut figer l'adversaire dans un état de paralysie totale, le laissant sans défense."
           ]
         },
         "ageComment_ancestor": "INKROYABLE! Ruft der Tierarzt mit großen Augen aus. Ihr Vertrauter ist ein Exemplar von außergewöhnlicher Seltenheit! Er gehört zu den ältesten, die jemals in unseren Archiven aufgezeichnet wurden. Nur {{age}} andere Vertraute wurden älter entdeckt! Ein echtes lebendes Relikt!",
@@ -1120,7 +1137,8 @@
   "fight": {
     "title": "{{pseudo}}Sie sind im Begriff, einen Kampf zu beginnen.",
     "canceledTitle": "{{pseudo}}Sie haben die Suche abgebrochen.",
-    "confirmDesc": "{emote:fightCommand.crossedSwords} | **{{pseudo}}**{{confirmSubText}}\n\n{emote:fightCommand.crossedSwords} | ** Kämpfer : {{pseudo}}** | {{glory}} | {{className}}\n\n{{stats}}",
+    "confirmDesc": "{emote:fightCommand.crossedSwords} | **{{pseudo}}**{{confirmSubText}}\n\n{emote:fightCommand.crossedSwords} | **Combattant : {{pseudo}}** | {{glory}} | {{className}} {{pet}}\n\n{{stats}}",
+    "pet": "| {{petInfo}}",
     "confirmSubTexts": {
       "common": "Möchten Sie eine Kampfsuche starten?",
       "rare": "Würden Sie sich an der Suche nach einem Kämpfer beteiligen, der Ihrer persönlichen Stärke entspricht, um das anschließende Duell zu bestreiten?"
@@ -1301,6 +1319,15 @@
     "cancelled": "Aktion abgebrochen!",
     "switchSelectionTitle": "{{pseudo}} Die Ausrüstung eines Objekts",
     "switchSelectionDescription": "Wählen Sie aus der folgenden Liste einen Gegenstand zum Ausrüsten aus:"
+  },
+  "deposit": {
+    "titleSuccess": "{{pseudo}} Die Bestellung wurde ausgeführt!",
+    "deposeSuccess": "{{item}} a été déposé dans votre réserve !",
+    "noItemToDeposit": "Vous n'avez aucun équipement à déposer !",
+    "cannotDeposit": "Votre réserve est pleine.",
+    "cancelled": "Action annulée !",
+    "depositSelectionTitle": "{{pseudo}}, dépose d'un objet",
+    "depositSelectionDescription": "Choisissez un objet à déposer dans la liste ci-dessous :"
   },
   "drink": {
     "errors": {
