@@ -832,6 +832,12 @@
       "customMessage": "Howls in the sky.",
       "name_one": "Howl",
       "name_other": "Howls"
+    },
+    "petMakeBleed": {
+      "success": "is helped by **{{petNickname}}** who bites his opponent on the neck."
+    },
+    "petPetrified": {
+      "success": "is helped by **{{petNickname}}** who looks at his opponent and petrifies him."
     }
   },
   "leagues": {
@@ -1053,6 +1059,16 @@
       "name": "Principal continent",
       "particle": "of"
     },
+    "39": {
+      "description": "A path drowned in thick mist, motionless and without origin. There are no landmarks or shapes to locate this place.",
+      "name": "Misty trail",
+      "particle": "of"
+    },
+    "40": {
+      "description": "A dilapidated old house standing in a thick mist, as if suspended between two worlds. Impossible to say where it comes from, or even if it still belongs to ours. Its cracked windows let indistinct shadows dance, while a muffled creak escapes from inside, echoing a forgotten presence.",
+      "name": "Haunted house",
+      "particle": "of the"
+    },
     "4": {
       "description": "Huge forest at the South of the Cradle. It is said that many travelers got lost there.",
       "name": "Oldster's Forest",
@@ -1182,6 +1198,10 @@
       "prefix": "of the"
     },
     "dragonsNest": {
+      "name": "",
+      "prefix": "of the"
+    },
+    "hauntedHouse": {
       "name": "",
       "prefix": "of the"
     }
@@ -1425,6 +1445,10 @@
   "pets": {
     "0_female": "No pet",
     "0_male": "No pet",
+    "100_male": "Ghost",
+    "100_female": "Ghost",
+    "101_male": "Vampire",
+    "101_female": "Vampiresse",
     "10_female": "Hen",
     "10_male": "Rooster",
     "11_female": "Bird",
@@ -1619,6 +1643,8 @@
     "97_male": "Goose",
     "98_female": "Momentum",
     "98_male": "Momentum",
+    "99_male": "Jack-o'-lantern",
+    "99_female": "Jack-o'-lantern",
     "9_female": "Sow",
     "9_male": "Boar"
   },
