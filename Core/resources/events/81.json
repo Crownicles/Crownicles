@@ -3,7 +3,8 @@
     "end": {
       "outcomes": {
         "0": {
-          "health": -5
+          "health": -5,
+          "randomMapLink": true
         }
       }
     },
@@ -40,13 +41,15 @@
             ]
           },
           "effect": "freezing",
-          "health": -80
+          "health": -80,
+          "randomMapLink": true
         },
         "4": {
           "condition": {
             "canAcceptPet": true
           },
-          "oneshot": true
+          "oneshot": true,
+          "randomMapLink": true
         }
       }
     },
@@ -71,12 +74,14 @@
               100
             ]
           },
-          "health": -20
+          "health": -20,
+          "randomMapLink": true
         },
         "2": {
           "health": -35,
           "effect": "sleeping",
-          "money": -200
+          "money": -200,
+          "randomMapLink": true
         },
         "3": {
           "randomItem": {
@@ -138,14 +143,16 @@
         },
         "3": {
           "health": -15,
-          "effect": "feetHurt"
+          "effect": "feetHurt",
+          "randomMapLink": true
         },
         "4": {
           "condition": {
             "canAcceptPet": true
           },
           "health": -120,
-          "effect": "injured"
+          "effect": "injured",
+          "randomMapLink": true
         }
       }
     }
