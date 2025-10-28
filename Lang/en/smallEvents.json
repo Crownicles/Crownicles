@@ -535,7 +535,8 @@
       "Ntalcme": "A tireless traveler, driven by an ideal greater than himself, tirelessly traversing the lands of this kingdom, in search of what seems to be missing from his soul. No one knows what he hopes to find at the end of his journey, yet he marches towards an elusive dream.",
       "BananePlantain": "a simple banana who has matured through the various encounters and adventures she has had in this world. A lover of challenges and battles, and always ready to help, she quietly leads her little troop.",
       "aureochocob0n": "A wealthy merchant who, believing a renowned alchemist, immersed himself in a bath of molten gold in order to emerge golden. This questionable action did not leave him unscathed: only his newly-gilded bones were spared.",
-      "Ravenclaw": "a discreet sentinel, always accompanied by a raven. It is said that she appears when help is needed, then fades away with the wind."
+      "Ravenclaw": "a discreet sentinel, always accompanied by a raven. It is said that she appears when help is needed, then fades away with the wind.",
+      "GabrieLre": "A warrior with a thirst for knowledge, he has recorded all his immense knowledge to help anyone who wishes to progress. It is said that he knows as much about this world as the creator himself."
     }
   },
   "witch": {
@@ -1862,5 +1863,17 @@
       "{emote:fightActions.aerialDiveAttack} The aetheric dive, attack from the sky to attack at a distance! It consists of melting on the opponent from the air, but failed if the target just attacked at a distance. I have always said that we need to watch its backwards... and the sky too!",
       "{emote:fightActions.crystallineArmorAttack} Crystal Armor, offensive defensive technique! It uses the combatant's armor to inflict melee degae on the body, but only works if the opponent has just made a physical attack. Turning its protection into a weapon of response, this is tactical ingeniosity!"
     ]
-  }
+  },
+  "haunted": [
+    "The mist is so dense that the world seems to have faded away. Each step on the path echoes like a dream, without echo, without end. You don't know whether you're moving forward or whether the fog is slowly absorbing you.",
+    "All around you, the whiteness swallows everything. The ground is barely visible, the trees fade into the mist, and even your shadow disappears. An unreal silence hovers, a silence that seems to be waiting for something.",
+    "The trail stretches in a direction you can no longer make out. At times, a dark shape cuts through the distant mist - an uncertain movement, perhaps an animal, perhaps a memory. You feel your bearings dissolve.",
+    "A smell of cold earth and damp wood hangs in the air. The wind has stopped blowing, yet the mist moves, as if driven by invisible breath. You have the sensation that the trail itself is watching you.",
+    "The light seems to come from nowhere. No sun, no moon - just this gray clarity that never wavers. You hold out your hand, but your fingers disappear into the milky nothingness.",
+    "A shiver runs down your spine. Behind you, a muffled crunch, as fragile as a crushed leaf. You turn sharply, but there's only the mist, impassive, silent, motionless.",
+    "The trail suddenly splits, and you can't tell how long it's been going on. The two paths are immediately lost in the mist, identical, indecisive. You sense that choosing one or the other may not matter.",
+    "You stop for a moment. Even your breath seems choked by the cold air. In this total stillness, you seem to hear a beat - faint, regular - like a heart buried beneath the earth.",
+    "The fog thickens even further and you can barely make out your own feet. With each inhalation, the icy dampness seeps down your throat, and the whole world shrinks to a few meters around you.",
+    "A distant whisper suddenly cuts through the mist, carried from nowhere. A voice? A wind? Impossible to say. You stand still, listening, aware that this place has no end and no beginning, only a breathing silence."
+  ]
 }
