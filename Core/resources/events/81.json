@@ -79,7 +79,7 @@
         },
         "2": {
           "health": -35,
-          "effect": "sleeping",
+          "effect": "confounded",
           "money": -200,
           "randomMapLink": true
         },
