@@ -167,7 +167,7 @@
     "8": "Lanzapiedras",
     "9": "Recortadoras"
   },
-  "classFormat": "{emote:classes.{{id}}} $t(models:classes.{{id}})",
+  "classFormat": "{emote:classes.{{id}} $t(models:classes.{{id}})}",
   "classPluralFormat": "{emote:classes.{{id}}} $t(models:classes_plural.{{id}})",
   "classWithStatsFormat": "{emote:classes.{{id}}} $t(models:classes.{{id}}) :\n{emote:unitValues.energy} {{energy}} | {emote:unitValues.attack} {{attack}} | {emote:unitValues.defense} {{defense}} | {emote:unitValues.speed} {{speed}} | {emote:unitValues.breath} {{initialBreath}} / {{maxBreath}} | {emote:unitValues.health} {{health}}",
   "class_descriptions": {
@@ -832,6 +832,12 @@
       "customMessage": "grita al cielo.",
       "name_one": "Aullando",
       "name_other": "Aullando"
+    },
+    "petMakeBleed": {
+      "success": "es ayudado por **{{petNickname}}** que muerde a su oponente en el cuello."
+    },
+    "petPetrified": {
+      "success": "es ayudado por **{{petNickname}}** que mira a su oponente y lo petrifica."
     }
   },
   "leagues": {
@@ -1053,6 +1059,16 @@
       "name": "Continente principal",
       "particle": "a"
     },
+    "39": {
+      "description": "Un camino ahogado en niebla espesa, inmóvil y sin origen. No hay puntos de referencia ni formas que identifiquen este lugar.",
+      "name": "Sendero brumoso",
+      "particle": "a la"
+    },
+    "40": {
+      "description": "Una vieja casa en ruinas que se alza entre una espesa niebla, como suspendida entre dos mundos. Es imposible decir de dónde procede, o incluso si aún pertenece al nuestro. Sus ventanas agrietadas dejan bailar sombras indistintas, mientras un chirrido apagado se escapa de su interior, el eco de una presencia olvidada.",
+      "name": "Casa encantada",
+      "particle": "a la"
+    },
     "4": {
       "description": "Un vasto bosque al sur de la Cuna. Se dice que muchos viajeros se han perdido aquí.",
       "name": "Bosque de Vieillard",
@@ -1184,6 +1200,10 @@
     "dragonsNest": {
       "name": "",
       "prefix": "de"
+    },
+    "hauntedHouse": {
+      "name": "",
+      "prefix": "de la"
     }
   },
   "missions": {
@@ -1425,6 +1445,10 @@
   "pets": {
     "0_female": "No se admiten animales",
     "0_male": "No se admiten animales",
+    "100_male": "Fantasma",
+    "100_female": "Fantasma",
+    "101_male": "Vampiro",
+    "101_female": "Vampiresa",
     "10_female": "Gallina",
     "10_male": "Coq",
     "11_female": "Pájaro",
@@ -1619,6 +1643,8 @@
     "97_male": "Ganso",
     "98_female": "Impulso",
     "98_male": "Impulso",
+    "99_male": "Linterna",
+    "99_female": "Linterna",
     "9_female": "Siembre",
     "9_male": "Carne de cerdo"
   },
