@@ -2778,6 +2778,76 @@
     },
     "text": "Has decidido aprovechar el verano para ir a la montaña, siempre que los puertos no estén demasiado nevados. Sin embargo, la subida resulta ser más difícil de lo que esperabas..."
   },
+  "80": {
+    "possibilities": {
+      "end": {
+        "outcomes": {
+          "0": "Un murciélago emerge de las nubes brumosas y gira a tu alrededor con gracia hipnótica, antes de fundirse en la niebla lechosa. Esta enigmática aparición despierta tu curiosidad: sin pensarlo más, decides seguirlo."
+        }
+      },
+      "followPath": {
+        "outcomes": {
+          "0": "La curiosidad vence a la cautela. Emprendes el misterioso camino que serpentea por las entrañas de la niebla..."
+        },
+        "text": "Toma el camino de la niebla."
+      },
+      "turnAround": {
+        "outcomes": {
+          "0": "Un escalofrío te recorre la espina dorsal, un instinto primitivo te grita que huyas de este lugar maldito. Sin pensarlo dos veces, te giras bruscamente y te alejas a grandes zancadas del fantasmal camino, negándote a mirar atrás.",
+          "1": "Justo cuando inicias el giro en U que te salva la vida, una marea de arañas diminutas surge de la niebla e invade el suelo alrededor de tus pies. Presa de un pánico incontrolable, saltas hacia atrás con un grito ahogado. Los arácnidos desaparecen tan rápido como aparecieron, pero tu corazón sigue latiendo desbocado en tu pecho varios minutos después de este encuentro de pesadilla."
+        },
+        "text": "Vuelve inmediatamente."
+      }
+    },
+    "text": "Sin el menor aviso, una densa niebla se extiende a tu alrededor, envolviendo todo el paisaje en un manto algodonoso y opresivo. En el espacio de unos pocos latidos, la realidad misma parece desvanecerse: las siluetas de los árboles se disuelven, el horizonte desaparece por completo en esta blancura lechosa. Un pesado silencio se apodera de este mundo fantasmal y el aire helado, saturado de humedad, hace que cada respiración sea dificultosa, como si la propia niebla intentara penetrar en los pulmones. Tras permanecer inmóvil unos instantes, sorprendido por el acontecimiento, adviertes que un camino va tomando forma frente a ti..."
+  },
+  "81": {
+    "possibilities": {
+      "end": {
+        "outcomes": {
+          "0": "Con un mal presentimiento en las tripas, sales del edificio a toda prisa. En las escaleras, tu pie resbala en un tablón suelto. Caes pesadamente y te raspas la pierna. Nada grave, pero el dolor te recuerda que tal vez esta casa no te quería."
+        }
+      },
+      "randomRoom": {
+        "outcomes": {
+          "0": "Abres una puerta al azar. Un calor repentino te envuelve mientras las llamas brotan de las paredes, danzando como impulsadas por una voluntad propia. El fuego se arremolina, se condensa y toma forma lentamente en el centro de la habitación. Dos luces ardientes te miran a través del tumulto, inmóviles, casi conscientes. Luego, tan bruscamente como apareció, el fuego se apaga, dejando tras de sí un aire pesado y un silencio opresivo. Entre las cenizas, una figura intacta yace, débilmente caliente al tacto. Sin entender por qué, decides llevártela contigo.",
+          "1": "La habitación está bañada en una atmósfera extraña, con una suave luz que emana de los cuatro rincones. Sobre una mesa polvorienta, un objeto antiguo llama tu atención. Percibes su calidad y decides llevártelo contigo.",
+          "2": "Abres la puerta a una habitación anodina. Te marchas, decepcionado por haber perdido el tiempo. Exploras algunas habitaciones más sin interés particular antes de abandonar la casa y ponerte de nuevo en camino.",
+          "3": "Nada más abrir la puerta, un frío glacial te golpea. El aire se solidifica, cristales de hielo flotan en suspensión. Tu cuerpo se agarrota, las fuerzas te abandonan. En el centro yace una extraña criatura, dormida en la fría inmensidad. Decidido a no irte con las manos vacías, te la llevas contigo.",
+          "4": "El frío se apodera de ti al instante. Cristales de hielo flotan en el aire helado. En el centro, una criatura yace en un halo de escarcha. Avanzas... y cometes el error fatal. Sus ojos helados se abren. Salta. Un mordisco de frío absoluto te atraviesa. Todo se vuelve blanco, luego nada."
+        },
+        "text": "Entrar en una habitación al azar"
+      },
+      "visitBasement": {
+        "outcomes": {
+          "0": "Bajas al sótano. El aire es pesado y huele a piedra fría. Nada más pisar el primer escalón, oyes un chirrido agudo. Un enjambre de murciélagos sale volando de la oscuridad con un estruendo de aleteos, rozándote antes de desaparecer. Se hace de nuevo el silencio. Sobre tu hombro, un peso ligero: un murciélago se ha aferrado a él, sus diminutos ojos brillan en la penumbra. Sin entender por qué, decides llevártelo contigo.",
+          "1": "En el sótano helado, una presencia surge de las sombras y te ataca. Tras unos instantes de lucha, la criatura retrocede, tan asustada como tú. La estudias durante largo rato, sin comprender exactamente qué es; parece translúcida y susurra sin que entiendas una sola palabra. En un arrebato de locura, decides llevártela contigo.",
+          "2": "A cada paso que da, las piernas le pesan más y la respiración se le entrecorta. La oscuridad palpita como si el sótano respirara. Entonces las ves: miles de arañas pululando por las paredes. Se precipitan hacia ti en una masa negra que te abruma, trepa, se filtra. Te asfixias... y vuelves a abrir los ojos, tendido en medio de un camino, aturdido y sin tu bolso. ¿Realmente era sólo un sueño?",
+          "3": "Desciendes con cautela a la oscuridad total del sótano. Avanza a tientas, a veces a trompicones, hasta que encuentra un objeto que agarra. Continúas hasta que por fin ves la salida y sales jadeando, con el objeto aún en la mano."
+        },
+        "text": "Descendiendo al sótano"
+      },
+      "visitFloor": {
+        "outcomes": {
+          "0": "Subes los chirriantes escalones. El aire se vuelve gélido, cargado de olor a cera y polvo antiguo. En la cima, una extraña criatura de rasgos borrosos se desliza silenciosamente por el pasillo y se detiene frente a ti. Sus ojos te imploran. Tu curiosidad te impulsa a alargar la mano y casi de inmediato aparece un pequeño monedero. Un escalofrío te recorre y, sin comprender lo que acaba de ocurrir, decides continuar tu camino. La criatura sigue tus pasos y continúa siguiéndote discretamente.",
+          "1": "A medida que subes las escaleras, el frío se intensifica. Al llegar al rellano, una ráfaga helada te atraviesa. Tu visión se vuelve borrosa: un espectro translúcido se alza ante ti, sus ojos vacíos arden con un brillo pálido. Te roza la frente y murmura una maldición en un idioma que no comprendes. Aterrorizada por la escena, huyes tan rápido como te permiten tus piernas, dejando incluso uno de tus bolsos y su precioso contenido en el edificio.",
+          "2": "Arriba, una puerta entreabierta te llama la atención. Descubres una pequeña habitación bañada por una luz gris. Sobre una mesa, una comida a medio hacer parece llevar décadas esperando a su invitado. Te la comes y te llevas unos cuantos viejos amuletos antes de marcharte."
+        },
+        "text": "Explorar el suelo"
+      },
+      "visitLobby": {
+        "outcomes": {
+          "0": "Exploras la planta baja pero no encuentras nada de interés. Juzgando que la casa no merece tu tiempo, continúas tu camino sin demorarte más.",
+          "1": "En la planta baja, una vieja calabaza tallada llama la atención. Su sonrisa retorcida parece congelada en el tiempo. De repente, sus ojos huecos brillan. Fascinado a pesar tuyo por esta extraña vitalidad, decides llevártela contigo antes de abandonar el local.",
+          "2": "Deambulas por la polvorienta planta baja. Los muebles destartalados están cubiertos de telarañas, pero en medio del desorden un pequeño objeto llama tu atención. Lo recoges y sigues adelante.",
+          "3": "El silencio reina en esta habitación polvorienta. Mientras caminas entre los muebles desvencijados y las telarañas, tu pie golpea un clavo oxidado que te hace un corte. Decides que es más seguro no correr más riesgos y sales cojeando de la casa.",
+          "4": "En el centro de la sala, una calabaza tallada te mira con una sonrisa retorcida. Sin previo aviso, la llama de sus ojos se enciende y la criatura salta hacia ti con un chasquido de dientes. Ni siquiera tienes tiempo de reaccionar antes de que te ataque. Tras una feroz batalla, consigues empujarla fuera de la casa, pero te llevará más tiempo sacudirte las heridas."
+        },
+        "text": "Visite la planta baja"
+      }
+    },
+    "text": "Cruzas el umbral de una vieja casa de aspecto ruinoso. La espesa niebla que la rodea parece tragarse los contornos del mundo exterior, como si la casa existiera fuera de toda realidad. El aire es frío y estancado, y cada paso hace gemir las viejas tablas del suelo. Una extraña presencia parece observarte desde las sombras de los pasillos."
+  },
   "9": {
     "possibilities": {
       "end": {
