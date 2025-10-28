@@ -897,16 +897,6 @@
             "Ingénieux et débrouillard, il utilise les matériaux autour de lui pour créer des outils de combat improvisés.",
             "Ce familier possède un instinct créatif étonnant. Il fabriquera rapidement des objets utiles en plein affrontement.",
             "Son intelligence tactique est fascinante. Il exploitera chaque élément du terrain pour construire de quoi vous aider."
-          ],
-          "petMakeBleed": [
-            "Les analyses hématologiques révèlent que ses canines possèdent des propriétés anticoagulantes remarquables. En mordant l'adversaire, il provoque une hémorragie continue tout en s'abreuvant du sang, ce qui lui permet de transférer cette énergie vitale à son maître.",
-            "Les examens montrent que ce spécimen maîtrise une technique vampirique sophistiquée : ses morsures infligent des saignements persistants à l'ennemi, pendant qu'il absorbe l'essence vitale pour revigorer son propriétaire.",
-            "Les observations vétérinaires confirment une capacité d'hémophagie contrôlée. Il fait saigner ses adversaires de manière continue et convertit cette perte sanguine en énergie curative pour vous soutenir pendant le combat."
-          ],
-          "petPetrified": [
-            "Les tests psychiques indiquent que ce familier émet une aura terrifiante aux moments critiques du combat. Lors des derniers instants de l'affrontement, son regard pétrifiant peut littéralement figer l'adversaire sur place, le rendant totalement vulnérable.",
-            "Les analyses comportementales révèlent une capacité de paralysie mentale activée en fin de combat. Votre familier dégage alors une présence si intimidante qu'elle peut pétrifier l'ennemi, l'empêchant de bouger ou de riposter.",
-            "Les observations cliniques attestent d'un pouvoir de pétrification temporaire qui se manifeste dans les phases finales du combat. Son aura surnaturelle peut figer l'adversaire dans un état de paralysie totale, le laissant sans défense."
           ]
         },
         "ageComment_ancestor": "INCROYABLE ! S'exclame le vétérinaire les yeux écarquillés. Votre familier est un spécimen d'une rareté exceptionnelle ! Il compte parmi les plus anciens jamais répertoriés dans nos archives, seulement {{age}} autres familiers ont été découverts plus âgés ! Une véritable relique vivante !",
