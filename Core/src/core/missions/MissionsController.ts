@@ -378,13 +378,12 @@ export class MissionsController {
 	private static async checkMissionSlots(missionInterface: IMission, missionInformations: MissionInformations, missionSlots: MissionSlot[]): Promise<boolean> {
 		let completedCampaign = false;
 		for (const mission of missionSlots.filter(missionSlot => missionSlot.missionId === missionInformations.missionId)) {
-			if (missionInterface.areParamsMatchingVariantAndBlob(mission.missionVariant, missionInformations.params, mission.saveBlob)
-				&& !mission.hasExpired() && !mission.isCompleted()
-			) {
+			const paramsMatch = missionInterface.areParamsMatchingVariantAndBlob(mission.missionVariant, missionInformations.params, mission.saveBlob);
+			if (paramsMatch && !mission.hasExpired() && !mission.isCompleted()) {
 				await this.updateMission(mission, missionInformations);
 				completedCampaign = completedCampaign || mission.isCampaign() && mission.isCompleted();
 			}
-			if (!mission.isCompleted()) {
+			if (!mission.isCompleted() && paramsMatch) {
 				await this.updateBlob(missionInterface, mission, missionInformations);
 			}
 		}
