@@ -569,7 +569,7 @@ export class Player extends Model {
 				itemCategory: ItemCategory.POTION
 			}
 		})
-			.then(async item => await crowniclesInstance.logsDatabase.logItemSell(this.keycloakId, await item.getItem()));
+			.then(async item => await crowniclesInstance.logsDatabase.logItemSell(this.keycloakId, item.getItem()));
 		if (itemSlot === 0) {
 			await InventorySlot.update(
 				{
