@@ -157,14 +157,17 @@ function generateFields(packet: CommandProfilePacketRes, lng: Language): EmbedFi
 		id: packet.playerData.classId
 	});
 
-	addField(fields, packet.playerData.fightRanking?.gloryRank !== -1 ? "fightRanked" : "fightUnranked", Boolean(packet.playerData.fightRanking), {
-		lng,
-		rank: packet.playerData.fightRanking!.gloryRank,
-		numberOfPlayers: packet.playerData.fightRanking!.numberOfFighters,
-		leagueEmoji: packet.playerData.fightRanking ? CrowniclesIcons.leagues[packet.playerData.fightRanking.league] : "",
-		leagueId: packet.playerData.fightRanking ? packet.playerData.fightRanking.league : 0,
-		gloryPoints: packet.playerData.fightRanking ? packet.playerData.fightRanking.glory : 0
-	});
+	addField(fields,
+		packet.playerData.fightRanking
+			? packet.playerData.fightRanking.gloryRank !== -1 ? "fightRanked" : "fightUnranked"
+			: "fightUnranked", Boolean(packet.playerData.fightRanking), {
+			lng,
+			rank: packet.playerData.fightRanking!.gloryRank,
+			numberOfPlayers: packet.playerData.fightRanking!.numberOfFighters,
+			leagueEmoji: packet.playerData.fightRanking ? CrowniclesIcons.leagues[packet.playerData.fightRanking.league] : "",
+			leagueId: packet.playerData.fightRanking ? packet.playerData.fightRanking.league : 0,
+			gloryPoints: packet.playerData.fightRanking ? packet.playerData.fightRanking.glory : 0
+		});
 
 	addField(fields, "guild", Boolean(packet.playerData.guild), {
 		lng,
