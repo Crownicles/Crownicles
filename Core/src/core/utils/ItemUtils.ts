@@ -307,7 +307,7 @@ function getMoreThan2ItemsSwitchingEndCallback(whoIsConcerned: WhoIsConcerned, t
 
 		BlockingUtils.unblockPlayer(whoIsConcerned.player.keycloakId, BlockingConstants.REASONS.ACCEPT_ITEM);
 
-		if (reaction.reaction.type === ReactionCollectorItemChoiceDrinkPotionReaction.name) {
+		if (reaction?.reaction.type === ReactionCollectorItemChoiceDrinkPotionReaction.name) {
 			await consumePotion(response, toTradeItem as Potion, whoIsConcerned.player);
 			await whoIsConcerned.player.save();
 			await MissionsController.update(whoIsConcerned.player, response, { missionId: "findOrBuyItem" });
