@@ -834,10 +834,12 @@
       "name_other": "Uivando"
     },
     "petMakeBleed": {
-      "success": "é ajudado por **{{petNickname}}** que morde o pescoço do seu adversário."
+      "success": "é ajudado por **{{petNickname}}** que morde o pescoço do seu adversário.",
+      "failure": "appelle **{{petNickname}}** qui tente de mordre son adversaire, mais sa cible semble insensible à ce type d'attaque."
     },
     "petPetrified": {
-      "success": "é ajudado por **{{petNickname}}** que olha para o seu adversário e o petrifica."
+      "success": "é ajudado por **{{petNickname}}** que olha para o seu adversário e o petrifica.",
+      "failure": "est assisté par **{{petNickname}}** qui regarde son adversaire, mais cela n'a aucun effet contre cet adversaire."
     }
   },
   "leagues": {
