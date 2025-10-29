@@ -835,11 +835,11 @@
     },
     "petMakeBleed": {
       "success": "è aiutato da **{{petNickname}}** che morde l'avversario sul collo.",
-      "failure": "appelle **{{petNickname}}** qui tente de mordre son adversaire, mais sa cible semble insensible à ce type d'attaque."
+      "failure": "chiama **{{petNickname}}** che cerca di mordere l'avversario, ma il suo bersaglio sembra impermeabile a questo tipo di attacco."
     },
     "petPetrified": {
       "success": "è aiutato da **{{petNickname}}** che guarda il suo avversario e lo pietrifica.",
-      "failure": "est assisté par **{{petNickname}}** qui regarde son adversaire, mais cela n'a aucun effet contre cet adversaire."
+      "failure": "è assistito da **{{petNickname}}** che guarda l'avversario, ma non ha alcun effetto contro di lui."
     }
   },
   "leagues": {
