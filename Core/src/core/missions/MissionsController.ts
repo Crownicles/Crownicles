@@ -352,9 +352,12 @@ export class MissionsController {
 		}
 		const dailyMission = await DailyMissions.getOrGenerate();
 		if (dailyMission.missionId !== missionInformation.missionId
-			|| !missionInterface.areParamsMatchingVariantAndBlob(dailyMission.missionVariant, missionInformation.params, null)) {
+			|| !missionInterface.areParamsMatchingVariantAndBlob(dailyMission.missionVariant, missionInformation.params, missionInfo.dailyMissionBlob)) {
 			return specialMissionCompletion;
 		}
+
+		// Update the daily mission blob if the params match
+		missionInfo.dailyMissionBlob = missionInterface.updateSaveBlob(dailyMission.missionVariant, missionInfo.dailyMissionBlob, missionInformation.params);
 		missionInfo.dailyMissionNumberDone += missionInformation.count;
 		if (missionInfo.dailyMissionNumberDone > dailyMission.missionObjective) {
 			missionInfo.dailyMissionNumberDone = dailyMission.missionObjective;

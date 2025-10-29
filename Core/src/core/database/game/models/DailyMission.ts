@@ -46,7 +46,8 @@ export class DailyMissions {
 		let dailyMission = await DailyMissions.queryDailyMission();
 		if (!dailyMission || !datesAreOnSameDay(dailyMission.lastDate, new Date())) {
 			await PlayerMissionsInfo.update({
-				dailyMissionNumberDone: 0
+				dailyMissionNumberDone: 0,
+				dailyMissionBlob: null
 			}, { where: {} });
 			dailyMission = await DailyMissions.regenerateDailyMission();
 		}

@@ -23,6 +23,8 @@ export class PlayerMissionsInfo extends Model {
 
 	declare lastDailyMissionCompleted: Date;
 
+	declare dailyMissionBlob: Buffer;
+
 	declare campaignProgression: number;
 
 	declare campaignBlob: string;
@@ -97,6 +99,10 @@ export function initModel(sequelize: Sequelize): void {
 		lastDailyMissionCompleted: {
 			type: DataTypes.DATE,
 			defaultValue: null
+		},
+		dailyMissionBlob: {
+			type: DataTypes.BLOB,
+			allowNull: true
 		},
 		campaignProgression: {
 			type: DataTypes.INTEGER,
