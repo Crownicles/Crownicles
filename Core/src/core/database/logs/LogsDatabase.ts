@@ -103,7 +103,7 @@ import { LogsCommandOrigins } from "./models/LogsCommandOrigins";
 import { LogsCommandSubOrigins } from "./models/LogsCommandSubOrigins";
 import { ReactionCollectorReactPacket } from "../../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { LogsPlayersTeleportations } from "./models/LogsPlayersTeleportations";
-import {AiPlayerFighter} from "../../fights/fighter/AiPlayerFighter";
+import { AiPlayerFighter } from "../../fights/fighter/AiPlayerFighter";
 
 /**
  * This class is used to log all the changes in the game database

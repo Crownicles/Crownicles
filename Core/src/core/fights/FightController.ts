@@ -137,8 +137,7 @@ export class FightController {
 
 		this._fightView.outroFight(response, loserFighter, winnerFighter, isADraw);
 
-		for (const fighter of this.fighters)
-		{
+		for (const fighter of this.fighters) {
 			fighter.unblock();
 			await fighter.endFight(!isADraw && fighter === winnerFighter, response, bug);
 		}

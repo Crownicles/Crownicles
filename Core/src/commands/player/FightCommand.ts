@@ -160,21 +160,20 @@ async function calculateMoneyReward(
  * @param response
  */
 async function calculateScoreReward(fightInitiatorInformation: FightInitiatorInformation, response: CrowniclesPacket[]): Promise<number> {
-
-	if (fightInitiatorInformation.initiatorGameResult !== EloGameResult.WIN || fightInitiatorInformation.playerDailyFightSummary.won > FightConstants.REWARDS.NUMBER_OF_WIN_THAT_AWARD_SCORE_BONUS)
-	{
+	if (fightInitiatorInformation.initiatorGameResult !== EloGameResult.WIN || fightInitiatorInformation.playerDailyFightSummary.won > FightConstants.REWARDS.NUMBER_OF_WIN_THAT_AWARD_SCORE_BONUS) {
 		return 0;
 	}
 
 	// Award extra score points only to the initiator for one of his first wins of the day.
-	let scoreBonus = FightConstants.REWARDS.SCORE_BONUS_AWARD;
+	const scoreBonus = FightConstants.REWARDS.SCORE_BONUS_AWARD;
 
 	await fightInitiatorInformation.initiatorPlayer.addScore(
 		{
 			amount: scoreBonus,
 			response,
 			reason: NumberChangeReason.FIGHT
-		});
+		}
+	);
 
 	return scoreBonus;
 }
