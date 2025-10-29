@@ -834,10 +834,12 @@
       "name_other": "Hurlements"
     },
     "petMakeBleed": {
-      "success": "se fait aider par **{{petNickname}}** qui mord au cou son adversaire."
+      "success": "se fait aider par **{{petNickname}}** qui mord au cou son adversaire.",
+      "failure": "appelle **{{petNickname}}** qui tente de mordre son adversaire, mais sa cible semble insensible à ce type d'attaque."
     },
     "petPetrified": {
-      "success": "se fait aider par **{{petNickname}}** qui regarde son adversaire et le pétrifie."
+      "success": "se fait aider par **{{petNickname}}** qui regarde son adversaire et le pétrifie.",
+      "failure": "est assisté par **{{petNickname}}** qui regarde son adversaire, mais cela n'a aucun effet contre cet adversaire."
     }
   },
   "leagues": {

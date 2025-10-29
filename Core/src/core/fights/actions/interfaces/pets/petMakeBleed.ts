@@ -8,6 +8,9 @@ import { FightStatBuffed } from "../../../../../../../Lib/src/types/FightActionR
 import { FightStatModifierOperation } from "../../../../../../../Lib/src/types/FightStatModifierOperation";
 import { RandomUtils } from "../../../../../../../Lib/src/utils/RandomUtils";
 import { Fighter } from "../../../fighter/Fighter";
+import { PlayerFighter } from "../../../fighter/PlayerFighter";
+import { AiPlayerFighter } from "../../../fighter/AiPlayerFighter";
+import { ClassConstants } from "../../../../../../../Lib/src/constants/ClassConstants";
 
 function makeBleed(opponent: Fighter, result: PetAssistanceResult): void {
 	// Make bleed the opponent
@@ -18,9 +21,19 @@ function makeBleed(opponent: Fighter, result: PetAssistanceResult): void {
 }
 
 const use: PetAssistanceFunc = (fighter, opponent, turn, _fightController): Promise<PetAssistanceResult | null> => {
-	if ((turn + 1) % 7 <= 1) {
+	if ((turn + 3) % 7 === 0) {
 		return null;
 	}
+
+	// Check if opponent is a paladin (paladins are immune to vampires)
+	if ((opponent instanceof PlayerFighter || opponent instanceof AiPlayerFighter)
+		&& (opponent.player.class === ClassConstants.CLASSES_ID.PALADIN
+			|| opponent.player.class === ClassConstants.CLASSES_ID.LUMINOUS_PALADIN)) {
+		return Promise.resolve({
+			assistanceStatus: PetAssistanceState.FAILURE
+		});
+	}
+
 	const result: PetAssistanceResult = {
 		assistanceStatus: PetAssistanceState.SUCCESS
 	};
@@ -36,7 +49,7 @@ const use: PetAssistanceFunc = (fighter, opponent, turn, _fightController): Prom
 			selfTarget: true,
 			stat: FightStatBuffed.ENERGY,
 			operator: FightStatModifierOperation.ADDITION,
-			value: RandomUtils.crowniclesRandom.integer(5, Math.max(fighter.getMaxEnergy() * 0.06, 15))
+			value: RandomUtils.crowniclesRandom.integer(5, Math.max(fighter.getMaxEnergy() * 0.03, 15))
 		}, fighter, this);
 	}
 
