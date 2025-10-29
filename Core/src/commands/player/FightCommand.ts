@@ -70,7 +70,7 @@ type PlayerStats = {
 type FightInitiatorInformation = {
 	playerDailyFightSummary: PersonalFightDailySummary;
 	initiatorGameResult: number;
-	initiatorReference: number;
+	initiatorPlayer: Player;
 };
 
 /*
@@ -111,15 +111,11 @@ async function getPlayerStats(player: Player): Promise<PlayerStats> {
 /**
  * Calculate the money reward for the initiator of the fight
  * @param fightInitiatorInformation Information about the fight initiator
- * @param player1 First player in the fight not necessarily the initiator
- * @param player2 Second player in the fight not necessarily the defender
  * @param response Packet response array
  * @returns The amount of money rewarded
  */
 async function calculateMoneyReward(
 	fightInitiatorInformation: FightInitiatorInformation,
-	player1: Player,
-	player2: Player,
 	response: CrowniclesPacket[]
 ): Promise<number> {
 	// Determine the bonus to reward based on a game result
@@ -149,8 +145,7 @@ async function calculateMoneyReward(
 	}
 
 	// Add money to the appropriate player
-	const targetPlayer = fightInitiatorInformation.initiatorReference === 0 ? player1 : player2;
-	await targetPlayer.addMoney({
+	await fightInitiatorInformation.initiatorPlayer.addMoney({
 		amount: extraMoneyBonus,
 		response,
 		reason: NumberChangeReason.FIGHT
@@ -162,31 +157,25 @@ async function calculateMoneyReward(
 /**
  * Calculate the score reward for the initiator of the fight
  * @param fightInitiatorInformation
- * @param player1 - one of the players in the fight (not necessary the initiator)
- * @param player2 - the other player in the fight (not necessary the defender)
  * @param response
  */
-async function calculateScoreReward(fightInitiatorInformation: FightInitiatorInformation, player1: Player, player2: Player, response: CrowniclesPacket[]): Promise<number> {
-	let scoreBonus = 0;
+async function calculateScoreReward(fightInitiatorInformation: FightInitiatorInformation, response: CrowniclesPacket[]): Promise<number> {
+
+	if (fightInitiatorInformation.initiatorGameResult !== EloGameResult.WIN || fightInitiatorInformation.playerDailyFightSummary.won > FightConstants.REWARDS.NUMBER_OF_WIN_THAT_AWARD_SCORE_BONUS)
+	{
+		return 0;
+	}
 
 	// Award extra score points only to the initiator for one of his first wins of the day.
-	if (fightInitiatorInformation.initiatorGameResult === EloGameResult.WIN && fightInitiatorInformation.playerDailyFightSummary.won <= FightConstants.REWARDS.NUMBER_OF_WIN_THAT_AWARD_SCORE_BONUS) {
-		scoreBonus = FightConstants.REWARDS.SCORE_BONUS_AWARD;
-		if (fightInitiatorInformation.initiatorReference === 0) {
-			await player1.addScore({
-				amount: scoreBonus,
-				response,
-				reason: NumberChangeReason.FIGHT
-			});
-		}
-		else {
-			await player2.addScore({
-				amount: scoreBonus,
-				response,
-				reason: NumberChangeReason.FIGHT
-			});
-		}
-	}
+	let scoreBonus = FightConstants.REWARDS.SCORE_BONUS_AWARD;
+
+	await fightInitiatorInformation.initiatorPlayer.addScore(
+		{
+			amount: scoreBonus,
+			response,
+			reason: NumberChangeReason.FIGHT
+		});
+
 	return scoreBonus;
 }
 
@@ -247,24 +236,22 @@ async function fightEndCallback(fight: FightController, response: CrowniclesPack
 	}
 	const fightLogId = await crowniclesInstance.logsDatabase.logFight(fight);
 
-	const player1GameResult = fight.isADraw() ? EloGameResult.DRAW : fight.getWinner() === 0 ? EloGameResult.WIN : EloGameResult.LOSS;
-	const player2GameResult = player1GameResult === EloGameResult.DRAW ? EloGameResult.DRAW : player1GameResult === EloGameResult.WIN ? EloGameResult.LOSS : EloGameResult.WIN;
+	const isDraw = fight.isADraw();
 
-	// Get the fight initiator reference (0 if the initiator is player1, 1 if the initiator is player2)
-	const initiatorReference = fight.fightInitiator.player.keycloakId === (fight.fighters[0] as PlayerFighter).player.keycloakId ? 0 : 1;
-	const initiatorGameResult = fight.fighters[0] instanceof PlayerFighter
-	&& fight.fightInitiator.player.keycloakId === fight.fighters[0].player.keycloakId
-		? player1GameResult
-		: player2GameResult;
-	const defenderGameResult = initiatorGameResult === player1GameResult ? player2GameResult : player1GameResult;
+	const winnerFighter = fight.getWinnerFighter();
 
-	// Player variables
-	const player1 = await Players.getById((fight.fighters[0] as PlayerFighter).player.id);
-	const player2 = await Players.getById((fight.fighters[1] as PlayerFighter).player.id);
+	const fightInitiator = fight.fightInitiator;
+	const nonFightInitiator = fight.getNonFightInitiatorFighter();
 
-	// Attacker and defender players
-	const attacker = initiatorReference === 0 ? player1 : player2;
-	const defender = initiatorReference === 0 ? player2 : player1;
+	const initiatorPlayer = fightInitiator instanceof PlayerFighter
+		? await Players.getById(fightInitiator.player.id)
+		: null;
+	const opponentPlayer = nonFightInitiator instanceof PlayerFighter
+		? await Players.getById(nonFightInitiator.player.id)
+		: null;
+
+	const initiatorGameResult = isDraw ? EloGameResult.DRAW : winnerFighter === fight.fightInitiator ? EloGameResult.WIN : EloGameResult.LOSS;
+	const defenderGameResult = isDraw ? EloGameResult.DRAW : winnerFighter === fight.fightInitiator ? EloGameResult.LOSS : EloGameResult.WIN;
 
 	const playerDailyFightSummary = await LogsReadRequests.getPersonalInitiatedFightDailySummary(
 		fight.fightInitiator.player.keycloakId
@@ -274,10 +261,8 @@ async function fightEndCallback(fight: FightController, response: CrowniclesPack
 		{
 			playerDailyFightSummary,
 			initiatorGameResult,
-			initiatorReference
+			initiatorPlayer
 		},
-		player1,
-		player2,
 		response
 	);
 
@@ -285,36 +270,34 @@ async function fightEndCallback(fight: FightController, response: CrowniclesPack
 		{
 			playerDailyFightSummary,
 			initiatorGameResult,
-			initiatorReference
+			initiatorPlayer
 		},
-		player1,
-		player2,
 		response
 	);
 
 	// Save glory before changing it
-	const player1OldGlory = player1.getGloryPoints();
-	const player2OldGlory = player2.getGloryPoints();
-	await updatePlayersEloAndCooldowns(attacker, defender, initiatorGameResult, defenderGameResult, response, fightLogId);
+	const player1OldGlory = initiatorPlayer.getGloryPoints();
+	const player2OldGlory = opponentPlayer.getGloryPoints();
+	await updatePlayersEloAndCooldowns(initiatorPlayer, opponentPlayer, initiatorGameResult, defenderGameResult, response, fightLogId);
 
 	response.push(makePacket(FightRewardPacket, {
 		points: scoreBonus,
 		money: extraMoneyBonus,
 		player1: {
-			keycloakId: player1.keycloakId,
+			keycloakId: initiatorPlayer.keycloakId,
 			oldGlory: player1OldGlory,
-			newGlory: player1.getGloryPoints(),
+			newGlory: initiatorPlayer.getGloryPoints(),
 			oldLeagueId: LeagueDataController.instance.getByGlory(player1OldGlory).id,
-			newLeagueId: player1.getLeague().id
+			newLeagueId: initiatorPlayer.getLeague().id
 		},
 		player2: {
-			keycloakId: player2.keycloakId,
+			keycloakId: opponentPlayer.keycloakId,
 			oldGlory: player2OldGlory,
-			newGlory: player2.getGloryPoints(),
+			newGlory: opponentPlayer.getGloryPoints(),
 			oldLeagueId: LeagueDataController.instance.getByGlory(player2OldGlory).id,
-			newLeagueId: player2.getLeague().id
+			newLeagueId: opponentPlayer.getLeague().id
 		},
-		draw: player1GameResult === EloGameResult.DRAW && player2GameResult === EloGameResult.DRAW
+		draw: isDraw
 	}));
 }
 

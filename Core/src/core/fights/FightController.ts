@@ -36,7 +36,7 @@ export class FightController {
 
 	public readonly id: string;
 
-	public readonly fighters: (PlayerFighter | MonsterFighter | AiPlayerFighter)[];
+	private readonly fighters: (PlayerFighter | MonsterFighter | AiPlayerFighter)[];
 
 	public readonly fightInitiator: PlayerFighter | AiPlayerFighter;
 
@@ -117,7 +117,7 @@ export class FightController {
 	 * Get the fighter that is not the fight initiator
 	 * @returns
 	 */
-	public getNonFightInitiatorFighter(): Fighter {
+	public getNonFightInitiatorFighter(): PlayerFighter | MonsterFighter | AiPlayerFighter {
 		return this.fighters[1] === this.fightInitiator ? this.fighters[0] : this.fighters[1];
 	}
 
@@ -131,15 +131,18 @@ export class FightController {
 
 		this.checkNegativeEnergy();
 
-		const winner = this.getWinner(); // 1 for the fight initiator, 0 for the opponent
 		const isADraw = this.isADraw();
+		const winnerFighter = this.getWinnerFighter();
+		const loserFighter = this.getLooserFighter();
 
-		this._fightView.outroFight(response, this.fighters[(1 - winner) % 2], this.fighters[winner % 2], isADraw);
+		this._fightView.outroFight(response, loserFighter, winnerFighter, isADraw);
 
-		for (let i = 0; i < this.fighters.length; ++i) {
-			this.fighters[i].unblock();
-			await this.fighters[i].endFight(i === winner, response, bug);
+		for (const fighter of this.fighters)
+		{
+			fighter.unblock();
+			await fighter.endFight(!isADraw && fighter === winnerFighter, response, bug);
 		}
+
 		if (this.endCallback) {
 			await this.endCallback(this, response);
 		}
@@ -162,19 +165,18 @@ export class FightController {
 	}
 
 	/**
-	 * Get the winner of the fight does not check for draw
-	 * @returns 1 for the fight initiator, 0 for the opponent
-	 */
-	public getWinner(): number {
-		return this.fighters[0].isDead() ? 1 : 0;
-	}
-
-	/**
 	 * Get the winner fighter of the fight
 	 * @returns the winner fighter or null if there is no winner
 	 */
-	public getWinnerFighter(): Fighter {
+	public getWinnerFighter(): PlayerFighter | MonsterFighter | AiPlayerFighter {
 		return this.fighters[0].isDead() ? this.fighters[1].isDead() ? null : this.fighters[1] : this.fighters[0];
+	}
+
+	/**
+	 * Get the looser fighter of the fight
+	 */
+	public getLooserFighter(): PlayerFighter | MonsterFighter | AiPlayerFighter {
+		return this.fighters[0].isDead() ? this.fighters[0] : this.fighters[1].isDead() ? this.fighters[1]	: null;
 	}
 
 	/**

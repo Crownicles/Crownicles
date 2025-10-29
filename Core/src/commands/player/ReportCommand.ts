@@ -526,7 +526,7 @@ async function doPVEBoss(
 			player.fightPointsLost = fight.fightInitiator.getMaxEnergy() - fight.fightInitiator.getEnergy();
 
 			// Only give reward if draw or win
-			if (fight.fighters[fight.getWinner()] instanceof PlayerFighter) {
+			if (fight.isADraw() || fight.getWinnerFighter() instanceof PlayerFighter) {
 				await player.addMoney({
 					amount: rewards.money,
 					reason: NumberChangeReason.PVE_FIGHT,

@@ -103,6 +103,7 @@ import { LogsCommandOrigins } from "./models/LogsCommandOrigins";
 import { LogsCommandSubOrigins } from "./models/LogsCommandSubOrigins";
 import { ReactionCollectorReactPacket } from "../../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { LogsPlayersTeleportations } from "./models/LogsPlayersTeleportations";
+import {AiPlayerFighter} from "../../fights/fighter/AiPlayerFighter";
 
 /**
  * This class is used to log all the changes in the game database
@@ -938,36 +939,39 @@ export class LogsDatabase extends Database {
 	 * @param fight
 	 */
 	public async logFight(fight: FightController): Promise<number> {
-		if (!(fight.fighters[0] instanceof MonsterFighter) && !(fight.fighters[1] instanceof MonsterFighter)) {
-			const fightInitiator = fight.fightInitiator;
+		const fightInitiator = fight.fightInitiator;
+		const nonFightInitiator = fight.getNonFightInitiatorFighter() as PlayerFighter | AiPlayerFighter;
+
+		// Fight Initiator cannot be a monster fighter
+		if (nonFightInitiator) {
 			const fightInitiatorId = (await LogsDatabase.findOrCreatePlayer(fightInitiator.player.keycloakId)).id;
-			const player2 = fight.fighters[0] === fightInitiator ? fight.fighters[1] : fight.fighters[0];
-			const player2Id = (await LogsDatabase.findOrCreatePlayer(player2.player.keycloakId)).id;
+			const nonFightInitiatorId = (await LogsDatabase.findOrCreatePlayer(nonFightInitiator.player.keycloakId)).id;
+
 			const winner = fight.getWinnerFighter() === fightInitiator ? 1 : 2;
 
 			// Get pet type IDs if pets exist
 			const fightInitiatorPetTypeId = fightInitiator.pet ? fightInitiator.pet.typeId : null;
-			const player2PetTypeId = player2.pet ? player2.pet.typeId : null;
+			const nonFightInitiatorPetTypeId = nonFightInitiator.pet ? nonFightInitiator.pet.typeId : null;
 
 			const fightResult = await LogsFightsResults.create({
 				fightInitiatorId,
 				fightInitiatorPoints: fightInitiator.player.score,
-				player2Id,
-				player2Points: player2.player.score,
+				nonFightInitiatorId,
+				player2Points: nonFightInitiator.player.score,
 				turn: fight.turn,
 				winner: fight.isADraw() ? 0 : winner,
 				friendly: false,
 				fightInitiatorInitialDefenseGlory: fightInitiator.player.defenseGloryPoints,
 				fightInitiatorInitialAttackGlory: fightInitiator.player.attackGloryPoints,
 				fightInitiatorClassId: fightInitiator.player.class,
-				player2InitialDefenseGlory: player2.player.defenseGloryPoints,
-				player2InitialAttackGlory: player2.player.attackGloryPoints,
-				player2ClassId: player2.player.class,
+				player2InitialDefenseGlory: nonFightInitiator.player.defenseGloryPoints,
+				player2InitialAttackGlory: nonFightInitiator.player.attackGloryPoints,
+				player2ClassId: nonFightInitiator.player.class,
 				fightInitiatorPetTypeId,
-				player2PetTypeId,
+				nonFightInitiatorPetTypeId,
 				date: getDateLogs()
 			});
-			for (const player of [fightInitiator, player2]) {
+			for (const player of [fightInitiator, nonFightInitiator]) {
 				const fightActionsUsed: { [action: string]: number } = {};
 				for (const fightAction of player.fightActionsHistory) {
 					if (fightActionsUsed[fightAction.id]) {
@@ -1002,17 +1006,8 @@ export class LogsDatabase extends Database {
 	 * @param fight
 	 */
 	public async logPveFight(fight: FightController): Promise<void> {
-		let player: PlayerFighter;
-		let monster: MonsterFighter;
-
-		if (fight.fighters[0] instanceof PlayerFighter && fight.fighters[1] instanceof MonsterFighter) {
-			player = fight.fighters[0] as PlayerFighter;
-			monster = fight.fighters[1] as MonsterFighter;
-		}
-		else if (fight.fighters[0] instanceof MonsterFighter && fight.fighters[1] instanceof PlayerFighter) {
-			player = fight.fighters[1] as PlayerFighter;
-			monster = fight.fighters[0] as MonsterFighter;
-		}
+		const player = fight.fightInitiator as PlayerFighter | null;
+		const monster = fight.getNonFightInitiatorFighter() as MonsterFighter | null;
 
 		if (player && monster) {
 			const playerId = (await LogsDatabase.findOrCreatePlayer(player.player.keycloakId)).id;
