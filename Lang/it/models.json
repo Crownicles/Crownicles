@@ -834,10 +834,12 @@
       "name_other": "L'ululato"
     },
     "petMakeBleed": {
-      "success": "è aiutato da **{{petNickname}}** che morde l'avversario sul collo."
+      "success": "è aiutato da **{{petNickname}}** che morde l'avversario sul collo.",
+      "failure": "appelle **{{petNickname}}** qui tente de mordre son adversaire, mais sa cible semble insensible à ce type d'attaque."
     },
     "petPetrified": {
-      "success": "è aiutato da **{{petNickname}}** che guarda il suo avversario e lo pietrifica."
+      "success": "è aiutato da **{{petNickname}}** che guarda il suo avversario e lo pietrifica.",
+      "failure": "est assisté par **{{petNickname}}** qui regarde son adversaire, mais cela n'a aucun effet contre cet adversaire."
     }
   },
   "leagues": {
