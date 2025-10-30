@@ -297,7 +297,7 @@ export function getWeekNumber(date: Date): number {
 	const d = new Date(date);
 
 	const dayOfWeek = d.getDay();
-	const diff = dayOfWeek === DAYS.SUNDAY ? 6 : dayOfWeek - 1;
+	const diff = dayOfWeek === DAYS.JS_SUNDAY_INDEX ? 6 : dayOfWeek - 1;
 
 	d.setDate(d.getDate() - diff);
 
