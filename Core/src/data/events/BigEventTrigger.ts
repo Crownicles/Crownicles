@@ -1,6 +1,7 @@
 import Player from "../../core/database/game/models/Player";
 import { LogsReadRequests } from "../../core/database/logs/LogsReadRequests";
 import { BigEvent } from "../BigEvent";
+import { getWeekNumber } from "../../../../Lib/src/utils/TimeUtils";
 
 const dateFunctions: {
 	[Property in keyof DateFormat]: (date: Date) => number
@@ -48,7 +49,7 @@ async function verifyOncePer(bigEvent: BigEvent, trigger: BigEventTrigger, playe
 		case "month":
 			return lastDate.getFullYear() !== now.getFullYear() || lastDate.getMonth() !== now.getMonth();
 		case "week":
-			return lastDate.getFullYear() !== now.getFullYear() || lastDate.getMonth() !== now.getMonth() || lastDate.getDay() !== now.getDay();
+			return lastDate.getFullYear() !== now.getFullYear() || lastDate.getMonth() !== now.getMonth() || getWeekNumber(lastDate) !== getWeekNumber(now);
 		case "day":
 			return lastDate.getFullYear() !== now.getFullYear() || lastDate.getMonth() !== now.getMonth() || lastDate.getDate() !== now.getDate();
 		default:

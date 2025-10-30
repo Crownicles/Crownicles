@@ -1,6 +1,10 @@
 import {
 	Language, LANGUAGE
 } from "../Language";
+import {
+	DAYS,
+	TimeConstants
+} from "../constants/TimeConstants";
 
 /**
  * Get the elements to display the remaining time in the given language
@@ -42,7 +46,7 @@ function getMinutesDisplayStringConstants(language: string): {
  * Get the current date for logging purposes
  */
 export function getDateLogs(): number {
-	return Math.trunc(Date.now() / 1000);
+	return Math.trunc(Date.now() / TimeConstants.MS_TIME.SECOND);
 }
 
 /**
@@ -50,7 +54,7 @@ export function getDateLogs(): number {
  * @param date
  */
 export function dateToLogs(date: Date): number {
-	return Math.trunc(date.valueOf() / 1000);
+	return Math.trunc(date.valueOf() / TimeConstants.MS_TIME.SECOND);
 }
 
 /**
@@ -76,7 +80,7 @@ export function getTodayMidnight(): Date {
  * Get the day number
  */
 export function getDayNumber(): number {
-	return Math.floor(new Date().valueOf() / 8.64e7);
+	return Math.floor(new Date().valueOf() / TimeConstants.MS_TIME.DAY);
 }
 
 /**
@@ -84,7 +88,7 @@ export function getDayNumber(): number {
  * @param milliseconds
  */
 export function millisecondsToMinutes(milliseconds: number): number {
-	return Math.round(milliseconds / 60000);
+	return Math.round(milliseconds / TimeConstants.MS_TIME.MINUTE);
 }
 
 /**
@@ -92,7 +96,7 @@ export function millisecondsToMinutes(milliseconds: number): number {
  * @param minutes
  */
 export function minutesToMilliseconds(minutes: number): number {
-	return minutes * 60000;
+	return minutes * TimeConstants.MS_TIME.MINUTE;
 }
 
 /**
@@ -100,7 +104,7 @@ export function minutesToMilliseconds(minutes: number): number {
  * @param hours
  */
 export function hoursToMilliseconds(hours: number): number {
-	return hours * 3600000;
+	return hours * TimeConstants.MS_TIME.HOUR;
 }
 
 /**
@@ -108,7 +112,7 @@ export function hoursToMilliseconds(hours: number): number {
  * @param hours
  */
 export function hoursToMinutes(hours: number): number {
-	return hours * 60;
+	return hours * TimeConstants.S_TIME.MINUTE;
 }
 
 /**
@@ -116,7 +120,7 @@ export function hoursToMinutes(hours: number): number {
  * @param minutes
  */
 export function minutesToHours(minutes: number): number {
-	return minutes / 60;
+	return minutes / TimeConstants.S_TIME.MINUTE;
 }
 
 /**
@@ -124,7 +128,7 @@ export function minutesToHours(minutes: number): number {
  * @param milliseconds
  */
 export function millisecondsToHours(milliseconds: number): number {
-	return milliseconds / 3600000;
+	return milliseconds / TimeConstants.MS_TIME.HOUR;
 }
 
 /**
@@ -132,7 +136,7 @@ export function millisecondsToHours(milliseconds: number): number {
  * @param milliseconds
  */
 export function millisecondsToSeconds(milliseconds: number): number {
-	return milliseconds / 1000;
+	return milliseconds / TimeConstants.MS_TIME.SECOND;
 }
 
 /**
@@ -140,7 +144,7 @@ export function millisecondsToSeconds(milliseconds: number): number {
  * @param seconds
  */
 export function secondsToMilliseconds(seconds: number): number {
-	return seconds * 1000;
+	return seconds * TimeConstants.MS_TIME.SECOND;
 }
 
 /**
@@ -148,7 +152,7 @@ export function secondsToMilliseconds(seconds: number): number {
  * @param days
  */
 export function daysToMilliseconds(days: number): number {
-	return days * 24 * hoursToMilliseconds(1);
+	return days * TimeConstants.HOURS_IN_DAY * TimeConstants.MS_TIME.HOUR;
 }
 
 /**
@@ -156,7 +160,7 @@ export function daysToMilliseconds(days: number): number {
  * @param hours
  */
 export function hoursToSeconds(hours: number): number {
-	return hours * 3600;
+	return hours * TimeConstants.S_TIME.HOUR;
 }
 
 /**
@@ -207,7 +211,7 @@ export function getNextSundayMidnight(): number {
  * Get the date from one day ago as a timestamp
  */
 export function getOneDayAgo(): number {
-	return Date.now() - hoursToMilliseconds(24);
+	return Date.now() - TimeConstants.MS_TIME.DAY;
 }
 
 /**
@@ -228,7 +232,7 @@ export function getNextSaturdayMidnight(): number {
 	dateOfReset.setHours(23, 59, 59, 999);
 	let dateOfResetTimestamp = dateOfReset.valueOf();
 	while (dateOfResetTimestamp < now.valueOf()) {
-		dateOfResetTimestamp += 1000 * 60 * 60 * 24 * 7;
+		dateOfResetTimestamp += TimeConstants.MS_TIME.DAY * TimeConstants.DAYS_IN_WEEK;
 	}
 	return dateOfResetTimestamp;
 }
@@ -248,58 +252,14 @@ export function seasonEndIsNow(): boolean {
 }
 
 /**
- * Parse the time difference between two dates
- * @param date1 - first date
- * @param date2 - second date
- * @param language - the language to use
- */
-export function parseTimeDifferenceFooter(date1: number, date2: number, language: string): string {
-	if (date1 > date2) {
-		date1 = [date2, date2 = date1][0];
-	}
-	let seconds = Math.floor((date2.valueOf() - date1.valueOf()) / 1000);
-	let parsed = "";
-	const days = Math.floor(seconds / (24 * 60 * 60));
-	if (days > 0) {
-		parsed += days + (language === LANGUAGE.FRENCH ? " J " : " D ");
-		seconds -= days * 24 * 60 * 60;
-	}
-
-	const hours = Math.floor(seconds / (60 * 60));
-	const timeConstants = getMinutesDisplayStringConstants("");
-	if (hours !== 0) {
-		parsed += `${hours} ${timeConstants.hoursDisplay} `;
-	}
-	seconds -= hours * 60 * 60;
-	const minutes = Math.floor(seconds / 60);
-	parsed += `${minutes} ${timeConstants.minutesDisplay} `;
-	seconds -= minutes * 60;
-	parsed += `${seconds} ${timeConstants.secondsDisplay}`;
-	return parsed;
-}
-
-/**
  * Parse the time remaining before a date.
  * @param date
  */
 export function printTimeBeforeDate(date: number): string {
-	date /= 1000;
+	date /= TimeConstants.MS_TIME.SECOND;
 	return `<t:${Math.floor(date)
 		.valueOf()
 		.toString()}:R>`;
-}
-
-/**
- * Get the date of the next day at 2 am
- */
-export function getNextDay2AM(): Date {
-	const now = new Date();
-	const dateOfReset = new Date();
-	dateOfReset.setHours(1, 59, 59, 999);
-	if (dateOfReset < now) {
-		dateOfReset.setDate(dateOfReset.getDate() + 1);
-	}
-	return new Date(dateOfReset);
 }
 
 /**
@@ -319,7 +279,7 @@ export function getTimeFromXHoursAgo(hours: number): Date {
  */
 export function minutesDisplay(minutes: number, language: Language = LANGUAGE.DEFAULT_LANGUAGE): string {
 	const hours = Math.floor(minutesToHours(minutes));
-	minutes = Math.floor(minutes % 60);
+	minutes = Math.floor(minutes % TimeConstants.S_TIME.MINUTE);
 	const displayConstantValues = getMinutesDisplayStringConstants(language);
 	const display = [
 		hours > 0 ? `${hours} ${displayConstantValues.hoursDisplay}${hours > 1 ? displayConstantValues.plural : ""}` : "",
@@ -334,7 +294,16 @@ export function minutesDisplay(minutes: number, language: Language = LANGUAGE.DE
  * @param date
  */
 export function getWeekNumber(date: Date): number {
-	const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
-	const pastDaysOfYear = (date.valueOf() - firstDayOfYear.valueOf()) / 86400000;
+	const d = new Date(date);
+
+	const dayOfWeek = d.getDay();
+	const diff = dayOfWeek === DAYS.SUNDAY ? 6 : dayOfWeek - 1;
+
+	d.setDate(d.getDate() - diff);
+
+	const firstDayOfYear = new Date(d.getFullYear(), 0, 1);
+
+	const pastDaysOfYear = (d.valueOf() - firstDayOfYear.valueOf()) / TimeConstants.MS_TIME.DAY;
+
 	return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
 }
