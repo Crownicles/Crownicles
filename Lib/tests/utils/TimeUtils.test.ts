@@ -53,4 +53,26 @@ describe("getWeekNumber", () => {
 		getWeekNumber(date);
 		expect(date.getTime()).toBe(originalTime);
 	});
+
+	it("should give the same week number for all days in the same week (random date)", () => {
+		const randomYear = 2025;
+		const randomDayOfYear = Math.floor(Math.random() * 365);
+		const randomDate = new Date(randomYear, 0, 1 + randomDayOfYear);
+
+		const day = randomDate.getDay() || 7;
+		const monday = new Date(randomDate);
+		monday.setDate(randomDate.getDate() - day + 1);
+
+		const daysOfWeek = Array.from({length: 7}, (_, i) => {
+			const d = new Date(monday);
+			d.setDate(monday.getDate() + i);
+			return d;
+		});
+		const weekNumbers = daysOfWeek.map((d) => getWeekNumber(d));
+
+		// Vérifie que tous les jours ont le même numéro
+		const uniqueWeeks = new Set(weekNumbers);
+		expect(uniqueWeeks.size).toBe(1);
+
+	});
 });
