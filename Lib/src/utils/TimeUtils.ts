@@ -294,16 +294,16 @@ export function minutesDisplay(minutes: number, language: Language = LANGUAGE.DE
  * @param date
  */
 export function getWeekNumber(date: Date): number {
-	const d = new Date(date);
+	const copiedDate = new Date(date);
 
-	const dayOfWeek = d.getDay();
+	const dayOfWeek = copiedDate.getDay();
 	const diff = dayOfWeek === DAYS.JS_SUNDAY_INDEX ? 6 : dayOfWeek - 1;
 
-	d.setDate(d.getDate() - diff);
+	copiedDate.setDate(copiedDate.getDate() - diff);
 
-	const firstDayOfYear = new Date(d.getFullYear(), 0, 1);
+	const firstDayOfYear = new Date(copiedDate.getFullYear(), 0, 1);
 
-	const pastDaysOfYear = (d.valueOf() - firstDayOfYear.valueOf()) / TimeConstants.MS_TIME.DAY;
+	const pastDaysOfYear = (copiedDate.valueOf() - firstDayOfYear.valueOf()) / TimeConstants.MS_TIME.DAY;
 
 	return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
 }
