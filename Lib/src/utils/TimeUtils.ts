@@ -293,8 +293,8 @@ export function minutesDisplay(minutes: number, language: Language = LANGUAGE.DE
  */
 export function getWeekNumber(date: Date): number {
 	const dateCopied = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
-	const dayNum = dateCopied.getUTCDay() || 7; // dimanche = 7
-	dateCopied.setUTCDate(dateCopied.getUTCDate() + 4 - dayNum); // déplacer vers le jeudi de la semaine
+	const dayNum = dateCopied.getUTCDay() || 7;
+	dateCopied.setUTCDate(dateCopied.getUTCDate() + 4 - dayNum);
 	const yearStart = new Date(Date.UTC(dateCopied.getUTCFullYear(), 0, 1));
 	return Math.ceil(((dateCopied.getTime() - yearStart.getTime()) / TimeConstants.MS_TIME.DAY + 1) / 7);
 }
