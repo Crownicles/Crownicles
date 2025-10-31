@@ -291,7 +291,7 @@ export function minutesDisplay(minutes: number, language: Language = LANGUAGE.DE
 }
 
 /**
- * Get the week number of the year of the given date
+ * Get the iso week number of the year of the given date
  * @param date
  */
 export function getWeekNumber(date: Date): number {

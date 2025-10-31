@@ -10,7 +10,7 @@ describe("getWeekNumber", () => {
 
 	it("should return increasing week numbers throughout the year", () => {
 		const weekStart = getWeekNumber(new Date("2025-01-05"));
-		const weekEnd = getWeekNumber(new Date("2025-12-31"));
+		const weekEnd = getWeekNumber(new Date("2025-12-01"));
 		expect(weekEnd).toBeGreaterThan(weekStart);
 	});
 
