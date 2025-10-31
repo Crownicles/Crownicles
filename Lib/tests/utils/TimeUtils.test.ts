@@ -14,6 +14,13 @@ describe("getWeekNumber", () => {
 		expect(weekEnd).toBeGreaterThan(weekStart);
 	});
 
+	it("should show that some dates in the same ISO week can have the same week number", () => {
+		const weekStart = getWeekNumber(new Date("2025-01-05")); // first week of 2025
+		const weekEnd = getWeekNumber(new Date("2025-01-06"));   // first week of 2026
+		expect(weekEnd).toBe(weekStart);
+	});
+
+
 	it("should return same week number for two dates in the same week", () => {
 		const monday = new Date("2025-03-03");
 		const friday = new Date("2025-03-07");
