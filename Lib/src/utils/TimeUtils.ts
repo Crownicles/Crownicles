@@ -2,7 +2,10 @@ import {
 	Language,
 	LANGUAGE
 } from "../Language";
-import { TimeConstants } from "../constants/TimeConstants";
+import {
+	DAYS,
+	TimeConstants
+} from "../constants/TimeConstants";
 
 /**
  * Get the elements to display the remaining time in the given language
@@ -293,8 +296,11 @@ export function minutesDisplay(minutes: number, language: Language = LANGUAGE.DE
  */
 export function getWeekNumber(date: Date): number {
 	const dateCopied = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-	const dayNum = dateCopied.getDay() || 7;
-	dateCopied.setDate(dateCopied.getDate() + 4 - dayNum);
-	const yearStart = new Date(dateCopied.getUTCFullYear(), 0, 1);
-	return Math.ceil(((dateCopied.getTime() - yearStart.getTime()) / TimeConstants.MS_TIME.DAY + 1) / 7);
+	const dayNum = dateCopied.getDay() === DAYS.JS_SUNDAY_INDEX ? DAYS.SUNDAY : dateCopied.getDay();
+	dateCopied.setDate(dateCopied.getDate() + DAYS.THURSDAY - dayNum);
+	const isoYear = dateCopied.getFullYear();
+	const yearStart = new Date(isoYear, 0, 1);
+	const diffDays = Math.floor((dateCopied.getTime() - yearStart.getTime()) / TimeConstants.MS_TIME.DAY);
+	return Math.ceil((diffDays + 1) / 7);
 }
+
