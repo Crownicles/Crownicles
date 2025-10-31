@@ -33,7 +33,7 @@ describe("getWeekNumber", () => {
 		const sundayWeek = getWeekNumber(sunday);
 		const mondayWeek = getWeekNumber(monday);
 
-		expect(Math.abs(sundayWeek - mondayWeek)).toBeLessThanOrEqual(1);
+		expect(Math.abs(sundayWeek - mondayWeek)).toBe(1);
 	});
 
 	it("should return different week numbers for two dates in different weeks", () => {
@@ -43,7 +43,7 @@ describe("getWeekNumber", () => {
 		const week1 = getWeekNumber(mondayWeek1);
 		const week2 = getWeekNumber(nextMonday);
 
-		expect(week2).toBeGreaterThan(week1);
+		expect(week2).toBe(week1 + 1);
 		expect(week1).not.toBe(week2);
 	});
 
