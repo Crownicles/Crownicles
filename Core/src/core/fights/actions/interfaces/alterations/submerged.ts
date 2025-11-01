@@ -16,7 +16,6 @@ const turnsToHeal = 2;
 
 
 const use: FightAlterationFunc = (affected, fightAlteration, _opponent, _turn) => {
-
 	const result = defaultFightAlterationResult();
 
 	if (affected.alterationTurn > turnsToHeal) {
