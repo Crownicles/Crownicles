@@ -432,13 +432,12 @@ function canPotionBeDrunkImmediately(item: GenericItem, canDrinkImmediately: boo
 		return false;
 	}
 
-	// If context doesn't allow immediate drinking, prevent drinking regardless of potion type
-	if (!canDrinkImmediately) {
-		return false;
+	if (item.nature !== ItemNature.TIME_SPEEDUP) {
+		return true;
 	}
 
-	// TIME_SPEEDUP potions cannot be drunk immediately
-	return potion.nature !== ItemNature.TIME_SPEEDUP;
+	// TIME_SPEEDUP potions cannot be drunk immediately except if the context allows it
+	return canDrinkImmediately;
 }
 
 /**
