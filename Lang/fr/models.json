@@ -941,6 +941,41 @@
       "name": "Nid glacé",
       "particle": "vers le"
     },
+    "1108": {
+      "description": "",
+      "name": "Plage de coquillage",
+      "particle": "vers la"
+    },
+    "1109": {
+      "description": "",
+      "name": "Creux du Lagon",
+      "particle": "vers le"
+    },
+    "1110": {
+      "description": "",
+      "name": "Caverne Maritime",
+      "particle": "vers la"
+    },
+    "1111": {
+      "description": "",
+      "name": "Crique du Revenant",
+      "particle": "vers la"
+    },
+    "1112": {
+      "description": "",
+      "name": "Cave des murmures",
+      "particle": "vers la"
+    },
+    "1113": {
+      "description": "",
+      "name": "Gouffre des Profondeurs",
+      "particle": "vers le"
+    },
+    "1114": {
+      "description": "",
+      "name": "Gorge de l'ombre",
+      "particle": "vers la"
+    },
     "12": {
       "description": "Une grande plaine vide nordique sans grand intérêt.",
       "name": "L'Étendue",

@@ -907,11 +907,14 @@ export const CrowniclesIcons: {
 		}
 	},
 	mapTypes: {
+		abyss: "🕳️",
 		be: "🏖️",
 		castleEntrance: "🏰",
 		castleThrone: "🪑",
+		cavern: "🪨",
 		ci: "🏘️",
 		continent: "🏞️",
+		creek: "🌅",
 		crystalCavern: "💎",
 		de: "🏜️",
 		fo: "🌳",
