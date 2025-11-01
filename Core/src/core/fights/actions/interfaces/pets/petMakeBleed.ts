@@ -21,7 +21,12 @@ function makeBleed(opponent: Fighter, result: PetAssistanceResult): void {
 }
 
 const use: PetAssistanceFunc = (fighter, opponent, turn, _fightController): Promise<PetAssistanceResult | null> => {
-	if (![3, 4, 19, 20].includes(turn)) {
+	if (![
+		3,
+		4,
+		19,
+		20
+	].includes(turn)) {
 		return null;
 	}
 
