@@ -29,6 +29,7 @@ import { crowniclesInstance } from "../../index";
 import { ItemCategory } from "../../../../Lib/src/constants/ItemConstants";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { MissionsController } from "../../core/missions/MissionsController";
+import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
 
 function getEndCallback(player: Player) {
 	return async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
@@ -84,7 +85,7 @@ function getEndCallback(player: Player) {
 export default class SellCommand {
 	@commandRequires(CommandSellPacketReq, {
 		notBlocked: true,
-		whereAllowed: CommandUtils.WHERE.EVERYWHERE,
+		whereAllowed: [WhereAllowed.CONTINENT],
 		disallowedEffects: CommandUtils.DISALLOWED_EFFECTS.NOT_STARTED_OR_DEAD_OR_JAILED
 	})
 	async execute(response: CrowniclesPacket[], player: Player, _packet: CommandSellPacketReq, context: PacketContext): Promise<void> {
