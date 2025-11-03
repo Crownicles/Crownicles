@@ -270,13 +270,13 @@ const aiFightTestCommand: ExecuteTestCommandLike = async (_player, args, respons
 		);
 
 		fightController.setEndCallback(fight => {
-			const winner = fight.getWinner();
+			const winner = fight.getWinnerFighter();
 			const isDraw = fight.isADraw();
 
 			if (isDraw) {
 				stats.draws++;
 			}
-			else if (winner === 0) {
+			else if (winner === fighter1) {
 				stats.player1Wins++;
 			}
 			else {
