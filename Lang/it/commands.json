@@ -409,11 +409,11 @@
     },
     "fightRanked": {
       "fieldName": "Gloria e lega :",
-      "fieldValue": "{emote:announcements.trophy} {{rank}} / {{numberOfPlayers}} | {emote:unitValues.glory} {{gloryPoints}} | {emote:leghe.{{leagueId}}} $t(models:leagues.{{leagueId}})"
+      "fieldValue": "{emote:announcements.trophy} {{rank}} / {{numberOfPlayers}} | {emote:unitValues.glory} {{gloryPoints}} | {emote:leagues.{{leagueId}}} $t(models:leagues.{{leagueId}})"
     },
     "fightUnranked": {
       "fieldName": "Gloria e lega :",
-      "fieldValue": "{emote:announcements.trophy} Uncategorized | {emote:unitValues.glory} {{gloryPoints}} | {emote:leghe.{{leagueId}}} $t(models:leagues.{{leagueId}})"
+      "fieldValue": "{emote:announcements.trophy} Uncategorized | {emote:unitValues.glory} {{gloryPoints}} | {emote:leagues.{{leagueId}}} $t(models:leagues.{{leagueId}})"
     },
     "guild": {
       "fieldName": "Gilda :",
@@ -899,14 +899,14 @@
             "La sua intelligenza tattica è affascinante. Sfrutterà ogni elemento del terreno per costruire qualcosa che vi aiuterà."
           ],
           "petMakeBleed": [
-            "Le analisi ematologiche rivelano che i suoi canini hanno notevoli proprietà anticoagulanti. Mordendo l'avversario, provoca un'emorragia continua e beve il sangue, consentendogli di trasferire questa energia vitale al suo padrone.",
-            "Gli esami mostrano che questo esemplare ha imparato una sofisticata tecnica vampirica: i suoi morsi infliggono al nemico emorragie persistenti, mentre assorbe l'essenza vitale per rinvigorire il suo proprietario.",
-            "Le osservazioni veterinarie confermano una capacità di emofagia controllata. Fa sanguinare continuamente i suoi avversari e converte questa perdita di sangue in energia curativa per sostenervi durante il combattimento."
+            "Le analisi ematologiche rivelano che i suoi canini hanno notevoli proprietà anticoagulanti. In combattimento, morde un avversario sano per provocare un'emorragia continua. Se rileva che il suo bersaglio sta già sanguinando, beve il sangue per trasferire l'energia vitale al suo padrone. Attenzione: questa capacità è inefficace contro i paladini, la cui fede divina li protegge dai vampiri.",
+            "Gli esami mostrano che questo esemplare ha imparato una sofisticata tecnica vampirica: infligge emorragie ai nemici se non sono già feriti, poi assorbe l'essenza vitale degli avversari sanguinanti per rinvigorire il suo proprietario. I paladini, tuttavia, possiedono una protezione sacra che li rende immuni a questo potere vampirico.",
+            "Le osservazioni veterinarie confermano la capacità di emofagia strategica. Morde gli avversari sani per farli sanguinare, poi converte il sangue dei nemici già indeboliti in energia curativa per sostenervi. Nota importante: la benedizione divina dei paladini annulla completamente questa capacità vampirica."
           ],
           "petPetrified": [
-            "I test psichici indicano che questo animale emette un'aura terrificante nei momenti critici del combattimento. Negli ultimi istanti di uno scontro, il suo sguardo pietrificante può letteralmente congelare un avversario sul posto, lasciandolo totalmente vulnerabile.",
-            "L'analisi comportamentale rivela un'abilità di paralisi mentale che si attiva alla fine del combattimento. Il vostro animale emana una presenza così intimidatoria che può pietrificare i nemici, impedendo loro di muoversi o di reagire.",
-            "Le osservazioni cliniche attestano un potere pietrificante temporaneo che si manifesta nelle fasi finali del combattimento. La sua aura soprannaturale può congelare gli avversari in uno stato di paralisi totale, lasciandoli indifesi."
+            "I test psichici indicano che questo animale emette un'aura terrificante nei momenti critici del combattimento. Nei momenti finali di una battaglia, il suo sguardo pietrificante può letteralmente congelare un avversario sul posto, lasciandolo totalmente vulnerabile. Attenzione: questa capacità è inefficace contro i maghi, le cui menti disciplinate resistono alla pietrificazione mentale.",
+            "L'analisi comportamentale rivela un'abilità di paralisi mentale che si attiva alla fine del combattimento. L'animale emana una presenza così intimidatoria che può pietrificare i nemici, impedendo loro di muoversi o di reagire. Tuttavia, i maghi hanno una resistenza naturale a questo effetto e non possono essere pietrificati.",
+            "Le osservazioni cliniche attestano un potere pietrificante temporaneo che si manifesta nelle fasi finali del combattimento. La sua aura soprannaturale può congelare l'avversario in uno stato di paralisi totale, lasciandolo indifeso. Nota importante: l'allenamento mentale dei maghi li rende immuni a questa pietrificazione."
           ]
         },
         "ageComment_ancestor": "INCREDIBILE! esclama il veterinario, con gli occhi spalancati. Il vostro animale è un esemplare eccezionalmente raro! È uno dei più vecchi mai registrati nei nostri archivi - solo {{age}} altri animali domestici sono stati trovati più vecchi! Una vera reliquia vivente!",
@@ -1482,8 +1482,8 @@
     },
     "title": "{{pseudo}}Hai ricevuto il premio della lega!",
     "description": {
-      "first": "Hai terminato il campionato precedente con **{{glory}} gloria. {emote:unitValues.glory}**\n\n**Ti sei classificato in $t(models:ordinals.get, {\"count\": {{rank}}, \"context\":\"feminine\", \"ordinal\": true}) !**\nLa tua lega finale è : **{emote:leghe.{{leagueId}}} $t(models:leagues.{{leagueId}})**.\n\n{emote:unitValues.money} Soldi vinti : **{{money}}** !\n{emote:unitValues.xp} XP guadagnati: **{{xp}}** !\n{emote:unitValues.score} Punti guadagnati: **{{score}}** !\n{emote:unitValues.glory} Alla fine della stagione ti è stato consegnato un distintivo.\n{emote:rewards.item} Riceverai un equipaggiamento casuale!",
-      "other": "Hai terminato il campionato precedente con **{{glory}} gloria. {emote:unitValues.glory}**\n\n Hai finito in $t(models:ordinals.get, {\"count\": {{rank}}, \"ordinal\": true}) !\nLa tua lega finale è : **{emote:leghe.{{leagueId}}}$t(models:leagues.{{leagueId}})**.\n\n{emote:unitValues.money} Soldi guadagnati: **{{money}}** !\n{emote:unitValues.xp} XP guadagnati: **{{xp}}** !\n{emote:rewards.item} Ricevi un equipaggiamento casuale!"
+      "first": "Hai terminato il campionato precedente con **{{glory}} gloria. {emote:unitValues.glory}**\n\n**Ti sei classificato in $t(models:ordinals.get, {\"count\": {{rank}}, \"context\":\"feminine\", \"ordinal\": true}) !**\nLa tua lega finale è : **{emote:leagues.{{leagueId}}} $t(models:leagues.{{leagueId}})**.\n\n{emote:unitValues.money} Soldi vinti : **{{money}}** !\n{emote:unitValues.xp} XP guadagnati: **{{xp}}** !\n{emote:unitValues.score} Punti guadagnati: **{{score}}** !\n{emote:unitValues.glory} Alla fine della stagione ti è stato consegnato un distintivo.\n{emote:rewards.item} Riceverai un equipaggiamento casuale!",
+      "other": "Hai terminato il campionato precedente con **{{glory}} gloria. {emote:unitValues.glory}**\n\n Hai finito in $t(models:ordinals.get, {\"count\": {{rank}}, \"ordinal\": true}) !\nLa tua lega finale è : **{emote:leagues.{{leagueId}}}$t(models:leagues.{{leagueId}})**.\n\n{emote:unitValues.money} Soldi guadagnati: **{{money}}** !\n{emote:unitValues.xp} XP guadagnati: **{{xp}}** !\n{emote:unitValues.score} Punti guadagnati: **{{score}}** !\n{emote:rewards.item} Ricevi un equipaggiamento casuale!"
     }
   },
   "guildStorage": {
@@ -1552,8 +1552,8 @@
       "draw": "{emote:fightHistory.draw} Un pareggio..."
     },
     "leagueChanges": {
-      "up": " ({emote:other.leagueUp} {emote:leghe.{{oldLeagueId}}} $t(models:leagues.{{oldLeagueId}}) -> {emote:leghe.{{newLeagueId}}} $t(models:leagues.{{newLeagueId}}))",
-      "down": " ({emote:other.leagueDown} {emote:leghe.{{oldLeagueId}}} $t(models:leagues.{{oldLeagueId}}) -> {emote:leghe.{{newLeagueId}}} $t(models:leagues.{{newLeagueId}}))"
+      "up": " ({emote:other.leagueUp} {emote:leagues.{{oldLeagueId}}} $t(models:leagues.{{oldLeagueId}}) -> {emote:leagues.{{newLeagueId}}} $t(models:leagues.{{newLeagueId}}))",
+      "down": " ({emote:other.leagueDown} {emote:leagues.{{oldLeagueId}}} $t(models:leagues.{{oldLeagueId}}) -> {emote:leagues.{{newLeagueId}}} $t(models:leagues.{{newLeagueId}}))"
     }
   }
 }
