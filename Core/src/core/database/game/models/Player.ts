@@ -865,7 +865,7 @@ export class Player extends Model {
 	 * @param response
 	 * @param fightId
 	 */
-	public async setGloryPoints(gloryPoints: number, isDefense: boolean, reason: NumberChangeReason, response: CrowniclesPacket[], fightId: number = null): Promise<void> {
+	public async setGloryPoints(gloryPoints: number, isDefense: boolean, reason: NumberChangeReason, response: CrowniclesPacket[], fightId: number | null = null): Promise<void> {
 		if (isDefense) {
 			this.defenseGloryPoints = gloryPoints;
 			await crowniclesInstance.logsDatabase.logPlayersDefenseGloryPoints(this.keycloakId, gloryPoints, reason, fightId);

@@ -193,7 +193,7 @@ async function updatePlayersEloAndCooldowns(
 	attackerGameResult: EloGameResult,
 	defenderGameResult: EloGameResult,
 	response: CrowniclesPacket[],
-	fightLogId: number
+	fightLogId: number | null
 ): Promise<void> {
 	// Calculate elo
 	const player1KFactor = EloUtils.getKFactor(attacker);
