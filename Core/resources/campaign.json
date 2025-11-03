@@ -313,6 +313,14 @@
       "moneyToWin": 0
     },
     {
+      "missionId": "meetTalvar",
+      "missionVariant": 0,
+      "missionObjective": 1,
+      "gemsToWin": 1,
+      "xpToWin": 100,
+      "moneyToWin": 0
+    },
+    {
       "missionId": "joinMemberOnBoat",
       "missionVariant": 0,
       "missionObjective": 1,
