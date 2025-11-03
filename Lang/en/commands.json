@@ -899,14 +899,14 @@
             "His tactical intelligence is fascinating. He'll exploit every element of the terrain to build something to help you."
           ],
           "petMakeBleed": [
-            "Hematological analyses reveal that its canines possess remarkable anticoagulant properties. By biting the opponent, they cause continuous hemorrhaging while drinking the blood, enabling them to transfer this vital energy to their master.",
-            "Examinations show that this specimen masters a sophisticated vampiric technique: its bites inflict persistent bleeding on the enemy, while it absorbs vital essence to reinvigorate its owner.",
-            "Veterinary observations confirm a capacity for controlled hemophagy. It makes its opponents bleed continuously and converts this blood loss into healing energy to sustain you during the fight."
+            "Hematological analyses reveal that its canines have remarkable anticoagulant properties. In combat, it bites a healthy opponent to provoke continuous hemorrhaging. If it detects that its target is already bleeding, it drinks the blood to transfer this vital energy to its master. Warning: this ability is ineffective against paladins, whose divine faith protects them from vampires.",
+            "Examinations show that this specimen has mastered a sophisticated vampiric technique: it inflicts bleeding on the enemy if not already wounded, then absorbs the vital essence of bleeding opponents to reinvigorate its owner. Paladins, however, possess a sacred protection that makes them immune to this vampiric power.",
+            "Veterinary observations confirm a capacity for strategic hemophagy. It bites healthy opponents to make them bleed, then converts the blood of already weakened enemies into healing energy to sustain you. Important note: the divine blessing of paladins completely cancels out this vampiric ability."
           ],
           "petPetrified": [
-            "Psychic tests indicate that this pet emits a terrifying aura at critical moments in combat. In the final moments of a confrontation, its petrifying gaze can literally freeze the opponent in place, leaving him totally vulnerable.",
-            "Behavioral analysis reveals a mental paralysis ability activated at the end of combat. Your pet then exudes a presence so intimidating that it can petrify enemies, preventing them from moving or retaliating.",
-            "Clinical observations attest to a temporary petrifying power that manifests itself in the final stages of combat. His supernatural aura can freeze the opponent in a state of total paralysis, leaving him defenseless."
+            "Psychic tests indicate that this pet emits a terrifying aura at critical moments in combat. In the final moments of a confrontation, its petrifying gaze can literally freeze the opponent in place, leaving him totally vulnerable. Warning: this ability is ineffective against mages, whose disciplined minds resist mental petrification.",
+            "Behavioral analysis reveals a mental paralysis ability activated at the end of combat. Your pet then exudes a presence so intimidating that it can petrify enemies, preventing them from moving or retaliating. However, mages have a natural resistance to this effect and cannot be petrified.",
+            "Clinical observations attest to a temporary petrifying power that manifests itself in the final stages of combat. His supernatural aura can freeze the opponent in a state of total paralysis, leaving him defenseless. Important note: mages' mental training makes them immune to this petrification."
           ]
         },
         "ageComment_ancestor": "INCREDIBLE! Exclaims the wide-eyed vet. Your pet is an exceptionally rare specimen! It's one of the oldest ever recorded in our archives, with only {{age}} older pets ever found! A true living relic!",
