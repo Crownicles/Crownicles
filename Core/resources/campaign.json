@@ -201,6 +201,14 @@
       "moneyToWin": 0
     },
     {
+      "missionId": "petCaress",
+      "missionVariant": 0,
+      "missionObjective": 1,
+      "gemsToWin": 1,
+      "xpToWin": 75,
+      "moneyToWin": 0
+    },
+    {
       "missionId": "petAssistedFight",
       "missionVariant": 0,
       "missionObjective": 1,
