@@ -16,6 +16,7 @@ import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
 import { MapConstants } from "../../../../Lib/src/constants/MapConstants";
 import { Badge } from "../../../../Lib/src/types/Badge";
 import { SmallEventConstants } from "../../../../Lib/src/constants/SmallEventConstants";
+import { MissionsController } from "../missions/MissionsController";
 
 /**
  * Return true if the player has a pet AND the pet is not feisty AND the dwarf never saw this pet from it
@@ -148,6 +149,8 @@ export const smallEventFuncs: SmallEventFuncs = {
 				[MapConstants.LOCATIONS_IDS.MOUNT_CELESTRUM].includes(mapId));
 	},
 	executeSmallEvent: async (response, player, _context): Promise<void> => {
+		await MissionsController.update(player, response, { missionId: "meetTalvar" });
+
 		const petEntity = await PetEntities.getById(player.petId);
 		if (!await canContinueSmallEvent(response, player, petEntity)) {
 			return;
