@@ -201,6 +201,14 @@
       "moneyToWin": 0
     },
     {
+      "missionId": "petAssistedFight",
+      "missionVariant": 0,
+      "missionObjective": 1,
+      "gemsToWin": 2,
+      "xpToWin": 125,
+      "moneyToWin": 0
+    },
+    {
       "missionId": "joinPVEIsland",
       "missionVariant": 0,
       "missionObjective": 1,

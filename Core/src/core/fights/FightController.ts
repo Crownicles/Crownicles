@@ -30,6 +30,7 @@ import { PetAssistance } from "../../data/PetAssistance";
 import { getAiPetBehavior } from "./PetAssistManager";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { FightsManager } from "./FightsManager";
+import { MissionsController } from "../missions/MissionsController";
 
 export class FightController {
 	turn: number;
@@ -270,11 +271,16 @@ export class FightController {
 	 * @param response
 	 */
 	private async executePetAssistance(petAssistance: PetAssistance, response: CrowniclesPacket[]): Promise<void> {
-		const result = await petAssistance.execute(this.getPlayingFighter(), this.getDefendingFighter(), this.turn, this);
+		const attacker = this.getPlayingFighter();
+		const defender = this.getDefendingFighter();
+		const result = await petAssistance.execute(attacker, defender, this.turn, this);
 		if (!result) {
 			return;
 		}
-		this._fightView.addActionToHistory(response, this.getPlayingFighter(), petAssistance, result);
+		if (attacker instanceof PlayerFighter) {
+			await MissionsController.update(attacker.player, response, { missionId: "petAssistedFight" });
+		}
+		this._fightView.addActionToHistory(response, attacker, petAssistance, result);
 		if (this.hadEnded()) {
 			await this.endFight(response);
 			return;
