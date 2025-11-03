@@ -834,10 +834,12 @@
       "name_other": "Aullando"
     },
     "petMakeBleed": {
-      "success": "es ayudado por **{{petNickname}}** que muerde a su oponente en el cuello."
+      "success": "es ayudado por **{{petNickname}}** que muerde a su oponente en el cuello.",
+      "failure": "llama a **{{petNickname}}** que intenta morder a su oponente, pero su objetivo parece impermeable a este tipo de ataque."
     },
     "petPetrified": {
-      "success": "es ayudado por **{{petNickname}}** que mira a su oponente y lo petrifica."
+      "success": "es ayudado por **{{petNickname}}** que mira a su oponente y lo petrifica.",
+      "failure": "es asistido por **{{petNickname}}** que mira a su oponente, pero esto no tiene ningún efecto contra ese oponente."
     }
   },
   "leagues": {
