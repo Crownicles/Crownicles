@@ -834,10 +834,12 @@
       "name_other": "Howls"
     },
     "petMakeBleed": {
-      "success": "is helped by **{{petNickname}}** who bites his opponent on the neck."
+      "success": "is helped by **{{petNickname}}** who bites his opponent on the neck.",
+      "failure": "calls **{{petNickname}}** who tries to bite his opponent, but his target seems impervious to this type of attack."
     },
     "petPetrified": {
-      "success": "is helped by **{{petNickname}}** who looks at his opponent and petrifies him."
+      "success": "is helped by **{{petNickname}}** who looks at his opponent and petrifies him.",
+      "failure": "is assisted by **{{petNickname}}** who looks at his opponent, but this has no effect against that opponent."
     }
   },
   "leagues": {

@@ -834,10 +834,12 @@
       "name_other": "Schreie"
     },
     "petMakeBleed": {
-      "success": "bekommt Hilfe von **{{petNickname}}**, der seinen Gegner in den Hals beißt."
+      "success": "bekommt Hilfe von **{{petNickname}}**, der seinen Gegner in den Hals beißt.",
+      "failure": "ruft **{{petNickname}}** auf, der versucht, seinen Gegner zu beißen, aber sein Ziel scheint gegen diese Art von Angriff unempfindlich zu sein."
     },
     "petPetrified": {
-      "success": "bekommt Hilfe von **{{petNickname}}**, der seinen Gegner anschaut und ihn versteinern lässt."
+      "success": "bekommt Hilfe von **{{petNickname}}**, der seinen Gegner anschaut und ihn versteinern lässt.",
+      "failure": "wird von **{{petNickname}}** unterstützt, der seinen Gegner anschaut, aber das hat keine Wirkung gegen diesen Gegner."
     }
   },
   "leagues": {
