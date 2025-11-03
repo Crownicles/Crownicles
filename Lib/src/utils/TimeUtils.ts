@@ -220,7 +220,7 @@ export function getOneDayAgo(): number {
  */
 export function todayIsSunday(): boolean {
 	const now = new Date();
-	return now.getDay() === 0;
+	return now.getDay() === DAYS.JS_SUNDAY_INDEX;
 }
 
 /**
