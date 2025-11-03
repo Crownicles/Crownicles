@@ -938,67 +938,67 @@ export class LogsDatabase extends Database {
 	 * Log all the information about a fight, this is called at the end of a fight
 	 * @param fight
 	 */
-	public async logFight(fight: FightController): Promise<number> {
+	public async logFight(fight: FightController): Promise<number | null> {
 		const fightInitiator = fight.fightInitiator;
-		const nonFightInitiator = fight.getNonFightInitiatorFighter() as PlayerFighter | AiPlayerFighter;
+		const nonFightInitiator = fight.getNonFightInitiatorFighter();
 
-		// Fight Initiator cannot be a monster fighter
-		if (nonFightInitiator) {
-			const fightInitiatorId = (await LogsDatabase.findOrCreatePlayer(fightInitiator.player.keycloakId)).id;
-			const nonFightInitiatorId = (await LogsDatabase.findOrCreatePlayer(nonFightInitiator.player.keycloakId)).id;
+		if (!(nonFightInitiator instanceof PlayerFighter) && !(nonFightInitiator instanceof AiPlayerFighter)) {
+			return null;
+		}
 
-			const winner = fight.getWinnerFighter() === fightInitiator ? 1 : 2;
+		const fightInitiatorId = (await LogsDatabase.findOrCreatePlayer(fightInitiator.player.keycloakId)).id;
+		const nonFightInitiatorId = (await LogsDatabase.findOrCreatePlayer(nonFightInitiator.player.keycloakId)).id;
 
-			// Get pet type IDs if pets exist
-			const fightInitiatorPetTypeId = fightInitiator.pet ? fightInitiator.pet.typeId : null;
-			const nonFightInitiatorPetTypeId = nonFightInitiator.pet ? nonFightInitiator.pet.typeId : null;
+		const winner = fight.getWinnerFighter() === fightInitiator ? 1 : 2;
 
-			const fightResult = await LogsFightsResults.create({
-				fightInitiatorId,
-				fightInitiatorPoints: fightInitiator.player.score,
-				nonFightInitiatorId,
-				player2Points: nonFightInitiator.player.score,
-				turn: fight.turn,
-				winner: fight.isADraw() ? 0 : winner,
-				friendly: false,
-				fightInitiatorInitialDefenseGlory: fightInitiator.player.defenseGloryPoints,
-				fightInitiatorInitialAttackGlory: fightInitiator.player.attackGloryPoints,
-				fightInitiatorClassId: fightInitiator.player.class,
-				player2InitialDefenseGlory: nonFightInitiator.player.defenseGloryPoints,
-				player2InitialAttackGlory: nonFightInitiator.player.attackGloryPoints,
-				player2ClassId: nonFightInitiator.player.class,
-				fightInitiatorPetTypeId,
-				nonFightInitiatorPetTypeId,
-				date: getDateLogs()
-			});
-			for (const player of [fightInitiator, nonFightInitiator]) {
-				const fightActionsUsed: { [action: string]: number } = {};
-				for (const fightAction of player.fightActionsHistory) {
-					if (fightActionsUsed[fightAction.id]) {
-						fightActionsUsed[fightAction.id]++;
-					}
-					else {
-						fightActionsUsed[fightAction.id] = 1;
-					}
+		// Get pet type IDs if pets exist
+		const fightInitiatorPetTypeId = fightInitiator.pet ? fightInitiator.pet.typeId : null;
+		const nonFightInitiatorPetTypeId = nonFightInitiator.pet ? nonFightInitiator.pet.typeId : null;
+
+		const fightResult = await LogsFightsResults.create({
+			fightInitiatorId,
+			fightInitiatorPoints: fightInitiator.player.score,
+			player2Id: nonFightInitiatorId,
+			player2Points: nonFightInitiator.player.score,
+			turn: fight.turn,
+			winner: fight.isADraw() ? 0 : winner,
+			friendly: false,
+			fightInitiatorInitialDefenseGlory: fightInitiator.player.defenseGloryPoints,
+			fightInitiatorInitialAttackGlory: fightInitiator.player.attackGloryPoints,
+			fightInitiatorClassId: fightInitiator.player.class,
+			player2InitialDefenseGlory: nonFightInitiator.player.defenseGloryPoints,
+			player2InitialAttackGlory: nonFightInitiator.player.attackGloryPoints,
+			player2ClassId: nonFightInitiator.player.class,
+			fightInitiatorPetTypeId,
+			player2PetTypeId: nonFightInitiatorPetTypeId,
+			date: getDateLogs()
+		});
+		for (const player of [fightInitiator, nonFightInitiator]) {
+			const fightActionsUsed: { [action: string]: number } = {};
+			for (const fightAction of player.fightActionsHistory) {
+				if (fightActionsUsed[fightAction.id]) {
+					fightActionsUsed[fightAction.id]++;
 				}
-				for (const [action, count] of Object.entries(fightActionsUsed)) {
-					const [fightAction] = await LogsFightsActions.findOrCreate({
-						where: {
-							name: action,
-							classId: player.player.class
-						}
-					});
-					await LogsFightsActionsUsed.create({
-						fightId: fightResult.id,
-						player: player === fightInitiator ? 1 : 2,
-						actionId: fightAction.id,
-						count
-					});
+				else {
+					fightActionsUsed[fightAction.id] = 1;
 				}
 			}
-			return fightResult.id;
+			for (const [action, count] of Object.entries(fightActionsUsed)) {
+				const [fightAction] = await LogsFightsActions.findOrCreate({
+					where: {
+						name: action,
+						classId: player.player.class
+					}
+				});
+				await LogsFightsActionsUsed.create({
+					fightId: fightResult.id,
+					player: player === fightInitiator ? 1 : 2,
+					actionId: fightAction.id,
+					count
+				});
+			}
 		}
-		return null;
+		return fightResult.id;
 	}
 
 	/**
