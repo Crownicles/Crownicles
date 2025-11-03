@@ -6,9 +6,12 @@ import { SmallEventLeagueRewardPacket } from "../../../../Lib/src/packets/smallE
 import {
 	getNextSaturdayMidnight, todayIsSunday
 } from "../../../../Lib/src/utils/TimeUtils";
+import Player from "../database/game/models/Player";
 
 export const smallEventFuncs: SmallEventFuncs = {
-	canBeExecuted: player => Maps.isOnContinent(player) && player.level > FightConstants.REQUIRED_LEVEL,
+	canBeExecuted: async (player: Player) => {
+		return Maps.isOnContinent(player) && player.level > FightConstants.REQUIRED_LEVEL && (!todayIsSunday() || !await player.hasClaimedLeagueReward());
+	},
 
 	executeSmallEvent: (response, player): void => {
 		const league = player.getLeague();

@@ -901,7 +901,7 @@ export class Player extends Model {
 	async hasClaimedLeagueReward(): Promise<boolean> {
 		const dateOfLastLeagueReward = await LogsReadRequests.getDateOfLastLeagueReward(this.keycloakId);
 
-		// Beware, the date of last league reward is in seconds
+		// Beware, the date of the last league reward is in seconds
 		return dateOfLastLeagueReward && !(dateOfLastLeagueReward < millisecondsToSeconds(getOneDayAgo()));
 	}
 
