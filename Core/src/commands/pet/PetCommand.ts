@@ -13,6 +13,7 @@ import { PetEntities } from "../../core/database/game/models/PetEntity";
 import {
 	commandRequires, CommandUtils
 } from "../../core/utils/CommandUtils";
+import { MissionsController } from "../../core/missions/MissionsController";
 
 export default class PetCommand {
 	@commandRequires(CommandPetPacketReq, {
@@ -32,5 +33,9 @@ export default class PetCommand {
 			askedKeycloakId: toCheckPlayer?.keycloakId,
 			pet: pet.asOwnedPet()
 		}));
+
+		if (toCheckPlayer.id === player.id) {
+			await MissionsController.update(player, response, { missionId: "petCaress" });
+		}
 	}
 }
