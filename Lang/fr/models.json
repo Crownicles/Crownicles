@@ -1212,6 +1212,7 @@
     "anyFight_one": "Faire {{count}} combat",
     "anyFight_other": "Faire {{count}} combats",
     "bigFeast": "Assister à un grand festin",
+    "buyItemFromAlderic": "Acheter un objet à Aldéric",
     "buyUltimateSoups_one": "Acheter au moins {{count}} soupe ultime",
     "buyUltimateSoups_other": "Acheter au moins {{count}} soupes ultimes",
     "chooseClass": "Choisir une classe autre que {emote:classes.0} Recrue",

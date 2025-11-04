@@ -639,6 +639,14 @@
       "gemsToWin": 3,
       "xpToWin": 200,
       "moneyToWin": 0
+    },
+    {
+      "missionId": "buyItemFromAlderic",
+      "missionVariant": 0,
+      "missionObjective": 1,
+      "gemsToWin": 2,
+      "xpToWin": 150,
+      "moneyToWin": 0
     }
   ]
 }
