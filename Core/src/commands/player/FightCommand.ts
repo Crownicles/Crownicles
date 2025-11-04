@@ -242,10 +242,10 @@ async function fightEndCallback(fight: FightController, response: CrowniclesPack
 	const fightInitiator = fight.fightInitiator;
 	const nonFightInitiator = fight.getNonFightInitiatorFighter();
 
-	const initiatorPlayer = fightInitiator instanceof PlayerFighter
+	const initiatorPlayer = fightInitiator instanceof PlayerFighter || fightInitiator instanceof AiPlayerFighter
 		? await Players.getById(fightInitiator.player.id)
 		: null;
-	const opponentPlayer = nonFightInitiator instanceof PlayerFighter
+	const opponentPlayer = nonFightInitiator instanceof PlayerFighter || nonFightInitiator instanceof AiPlayerFighter
 		? await Players.getById(nonFightInitiator.player.id)
 		: null;
 
