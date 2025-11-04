@@ -138,6 +138,7 @@ async function manageNewPetSeen(response: CrowniclesPacket[], player: Player, pe
 		petTypeId: petEntity.typeId,
 		isGemReward: true
 	}));
+	await MissionsController.update(player, response, { missionId: "showPetsToTalvar" });
 }
 
 export const smallEventFuncs: SmallEventFuncs = {
