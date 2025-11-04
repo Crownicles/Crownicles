@@ -8,8 +8,11 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 		26,
 		27,
 		40,
+		45,
+		57,
 		70,
-		71
+		71,
+		75
 	]);
 }
 
@@ -18,8 +21,11 @@ export async function down({ context }: { context: QueryInterface }): Promise<vo
 		26,
 		27,
 		40,
+		45,
+		57,
 		70,
-		71
+		71,
+		75
 	]);
 }
  

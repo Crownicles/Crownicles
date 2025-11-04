@@ -59,8 +59,9 @@ export class PlayerFighter extends Fighter {
 	 * @param winner Indicate if the fighter is the winner
 	 * @param response
 	 * @param bug Indicate if the fight is bugged
+	 * @param turnCount The number of turns that the fight lasted
 	 */
-	async endFight(winner: boolean, response: CrowniclesPacket[], bug: boolean): Promise<void> {
+	async endFight(winner: boolean, response: CrowniclesPacket[], bug: boolean, turnCount: number): Promise<void> {
 		await this.player.reload();
 		this.player.setEnergyLost(this.stats.maxEnergy - this.stats.energy, NumberChangeReason.FIGHT);
 		await this.player.save();
@@ -82,6 +83,12 @@ export class PlayerFighter extends Fighter {
 				missionId: "finishWithAttack",
 				params: {
 					lastAttack: this.fightActionsHistory.at(-1)
+				}
+			});
+			await MissionsController.update(this.player, response, {
+				missionId: "fightMinTurns",
+				params: {
+					turnCount
 				}
 			});
 		}
