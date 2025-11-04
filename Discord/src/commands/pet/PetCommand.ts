@@ -6,7 +6,7 @@ import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
 import i18n from "../../translations/i18n";
 import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
 import {
-	CommandPetPacketReq, CommandPetPacketRes
+	CommandPetPacketReq, CommandPetPacketRes, CommandPetCaressPacketReq
 } from "../../../../Lib/src/packets/commands/CommandPetPacket";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
@@ -85,13 +85,15 @@ async function createPetEmbed(
  * @param interaction
  * @param petButton
  * @param row
+ * @param context
  */
 function setupPetButtonCollector(
 	message: Message,
 	packet: CommandPetPacketRes,
 	interaction: CrowniclesInteraction,
 	petButton: ButtonBuilder,
-	row: ActionRowBuilder<ButtonBuilder>
+	row: ActionRowBuilder<ButtonBuilder>,
+	context: PacketContext
 ): void {
 	const lng = interaction.userLanguage;
 	const collector = message.createMessageComponentCollector({
@@ -108,6 +110,8 @@ function setupPetButtonCollector(
 	});
 
 	collector.on("collect", async (i: ButtonInteraction) => {
+		PacketUtils.sendPacketToBackend(context, makePacket(CommandPetCaressPacketReq, {}));
+
 		await i.reply({
 			content: StringUtils.getRandomTranslation("commands:pet.petPhrases", lng, {
 				petName: packet.pet?.nickname || i18n.t("commands:pet.defaultPetName", { lng })
@@ -148,7 +152,7 @@ export async function handleCommandPetPacketRes(packet: CommandPetPacketRes, con
 	const message = reply.resource.message;
 
 	if (packet.pet && isOwnerViewingOwnPet) {
-		setupPetButtonCollector(message, packet, interaction, petButton, row);
+		setupPetButtonCollector(message, packet, interaction, petButton, row, context);
 	}
 }
 
