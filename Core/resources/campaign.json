@@ -81,6 +81,14 @@
       "moneyToWin": 0
     },
     {
+      "missionId": "sellItems",
+      "missionVariant": 0,
+      "missionObjective": 1,
+      "gemsToWin": 1,
+      "xpToWin": 25,
+      "moneyToWin": 0
+    },
+    {
       "missionId": "reachLevel",
       "missionVariant": 0,
       "missionObjective": 8,
@@ -281,6 +289,14 @@
       "moneyToWin": 0
     },
     {
+      "missionId": "sellItems",
+      "missionVariant": 0,
+      "missionObjective": 3,
+      "gemsToWin": 2,
+      "xpToWin": 50,
+      "moneyToWin": 0
+    },
+    {
       "missionId": "trainedPet",
       "missionVariant": 0,
       "missionObjective": 1,
@@ -470,6 +486,14 @@
       "missionObjective": 1,
       "gemsToWin": 6,
       "xpToWin": 120,
+      "moneyToWin": 0
+    },
+    {
+      "missionId": "sellItems",
+      "missionVariant": 0,
+      "missionObjective": 5,
+      "gemsToWin": 3,
+      "xpToWin": 75,
       "moneyToWin": 0
     },
     {
