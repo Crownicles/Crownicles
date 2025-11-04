@@ -69,6 +69,9 @@ function getEndCallback(player: Player) {
 				params: { itemCost: sellItem.price }
 			});
 			await MissionsController.update(player, response, {
+				missionId: "sellItems"
+			});
+			await MissionsController.update(player, response, {
 				missionId: "havePotions",
 				count: countNbOfPotions(await InventorySlots.getOfPlayer(player.id)),
 				set: true

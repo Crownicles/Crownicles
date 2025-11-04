@@ -199,6 +199,9 @@ async function manageMoneyPayment(response: CrowniclesPacket[], player: Player, 
 		missionId: "sellItemWithGivenCost",
 		params: { itemCost: money }
 	});
+	await MissionsController.update(player, response, {
+		missionId: "sellItems"
+	});
 	await player.save();
 	crowniclesInstance.logsDatabase.logItemSell(player.keycloakId, item)
 		.then();

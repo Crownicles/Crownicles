@@ -1279,6 +1279,8 @@
     "recoverAlteration_other": "Se remettre de {{count}} altérations d'état",
     "sellItemWithGivenCost_one": "Vendre {{count}} équipement pour plus de {{variantText}} {emote:unitValues.money}",
     "sellItemWithGivenCost_other": "Vendre {{count}} équipements pour plus de {{variantText}} {emote:unitValues.money}",
+    "sellItems_one": "Vendre {{count}} objet",
+    "sellItems_other": "Vendre {{count}} objets",
     "sellOrTradePet": "Vendre un familier à un autre joueur",
     "showPetsToTalvar_one": "Avoir montré {{count}} animal à Talvar",
     "showPetsToTalvar_other": "Avoir montré {{count}} animaux à Talvar",
