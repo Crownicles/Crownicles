@@ -144,7 +144,7 @@ export class FightController {
 
 		for (const fighter of this.fighters) {
 			fighter.unblock();
-			await fighter.endFight(!isADraw && fighter === winnerFighter, response, bug);
+			await fighter.endFight(!isADraw && fighter === winnerFighter, response, bug, this.turn);
 		}
 
 		if (this.endCallback) {

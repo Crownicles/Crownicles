@@ -51,7 +51,7 @@ export class MonsterFighter extends Fighter {
 		await fightView.fightController.executeFightAction(fightAction, true, response);
 	}
 
-	endFight(): Promise<void> {
+	endFight(_winner: boolean, _response: CrowniclesPacket[], _bug: boolean, _turnCount: number): Promise<void> {
 		return Promise.resolve();
 	}
 

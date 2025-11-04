@@ -1239,6 +1239,8 @@
     "fightAttacks": "Faire {{count}} {{variantText}} dans des combats",
     "fightHealthPercent_one": "Gagner {{count}} combat avec moins de {{variantText}}% de votre vie restante",
     "fightHealthPercent_other": "Gagner {{count}} combats avec moins de {{variantText}}% de votre vie restante",
+    "fightMinTurns_one": "Faire {{count}} combat d'au moins {{variantText}} tours",
+    "fightMinTurns_other": "Faire {{count}} combats d'au moins {{variantText}} tours",
     "fightStreak": "Faire un combat pendant {{count}} jours d'affilée",
     "findOrBuyItem_one": "Trouver ou acheter {{count}} objet",
     "findOrBuyItem_other": "Trouver ou acheter {{count}} objets",

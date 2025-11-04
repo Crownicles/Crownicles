@@ -104,7 +104,7 @@ export abstract class Fighter {
 	 * @param response
 	 * @param bug - Indicate if the fighter is buggy
 	 */
-	abstract endFight(winner: boolean, response: CrowniclesPacket[], bug: boolean): Promise<void>;
+	abstract endFight(winner: boolean, response: CrowniclesPacket[], bug: boolean, turnCount: number): Promise<void>;
 
 	/**
 	 * Allow the fighter to unblock himself
