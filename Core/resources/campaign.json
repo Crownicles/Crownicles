@@ -631,6 +631,14 @@
       "gemsToWin": 2,
       "xpToWin": 50,
       "moneyToWin": 0
+    },
+    {
+      "missionId": "showPetsToTalvar",
+      "missionVariant": 0,
+      "missionObjective": 10,
+      "gemsToWin": 3,
+      "xpToWin": 200,
+      "moneyToWin": 0
     }
   ]
 }
