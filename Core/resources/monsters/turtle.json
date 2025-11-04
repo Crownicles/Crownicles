@@ -1,0 +1,40 @@
+{
+  "baseEnergyValue": 550,
+  "attackRatio": 10,
+  "defenseRatio": 150,
+  "speedRatio": 5,
+  "breath": 9,
+  "maxBreath": 25,
+  "breathRegen": 4,
+  "rewardFactor": 0.2,
+  "attacks": [
+    {
+      "id": "retreat",
+      "minLevel": 0,
+      "weight": 3
+    },
+    {
+      "id": "earthquake",
+      "minLevel": 0,
+      "weight": 1
+    },
+    {
+      "id": "waterJet",
+      "minLevel": 0,
+      "weight": 4
+    },
+    {
+      "id": "solidification",
+      "minLevel": 0,
+      "weight": 3
+    },
+    {
+      "id": "outrageAttack",
+      "minLevel": 0,
+      "weight": 2
+    }
+  ],
+  "maps": [
+    1109
+  ]
+}
