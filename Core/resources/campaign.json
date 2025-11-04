@@ -177,6 +177,14 @@
       "moneyToWin": 0
     },
     {
+      "missionId": "commandFightHistory",
+      "missionVariant": 0,
+      "missionObjective": 1,
+      "gemsToWin": 1,
+      "xpToWin": 50,
+      "moneyToWin": 0
+    },
+    {
       "missionId": "chooseClassTier",
       "missionVariant": 1,
       "missionObjective": 1,

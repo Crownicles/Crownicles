@@ -1217,6 +1217,7 @@
     "buyUltimateSoups_other": "Acheter au moins {{count}} soupes ultimes",
     "chooseClass": "Choisir une classe autre que {emote:classes.0} Recrue",
     "chooseClassTier": "Avoir une classe de niveau {{variantText}} ou plus",
+    "commandFightHistory": "Consulter l'historique des personnes vous ayant attaqués",
     "commandMission": "Faire la commande {command:missions}",
     "commandReport": "Faire la commande {command:report}",
     "dailyPotionsStock": "Acheter tout le stock de potions du jour",

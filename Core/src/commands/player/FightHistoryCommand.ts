@@ -11,6 +11,7 @@ import {
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import Player from "../../core/database/game/models/Player";
 import { LogsFightHistoryRequests } from "../../core/database/logs/requests/LogsFightHistoryRequests";
+import { MissionsController } from "../../core/missions/MissionsController";
 
 export default class FightHistoryCommand {
 	@commandRequires(CommandFightHistoryPacketReq, {
@@ -23,5 +24,8 @@ export default class FightHistoryCommand {
 		response.push(makePacket(CommandFightHistoryPacketRes, {
 			history: await LogsFightHistoryRequests.getFightHistory(player.keycloakId, FightConstants.HISTORY_LIMIT)
 		}));
+
+		// Update the mission for using the fighthistory command
+		await MissionsController.update(player, response, { missionId: "commandFightHistory" });
 	}
 }
