@@ -7,6 +7,7 @@ import { FightAlteration } from "../../../data/FightAlteration";
 import { FightAction } from "../../../data/FightAction";
 import { CrowniclesPacket } from "../../../../../Lib/src/packets/CrowniclesPacket";
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
+import { FightActionType } from "../../../../../Lib/src/types/FightActionType";
 
 type FighterStats = {
 	energy: number;
@@ -23,6 +24,11 @@ export type FightStatModifier = {
 	origin: FightAction;
 	operation: FightStatModifierOperation;
 	value: number;
+};
+
+export type FightActionTypeResistance = {
+	origin: FightAction;
+	type: FightActionType;
 };
 
 type FightDamageMultiplier = {
@@ -52,6 +58,8 @@ export abstract class Fighter {
 	private defenseModifiers: FightStatModifier[];
 
 	private speedModifiers: FightStatModifier[];
+
+	private resistances: FightActionType[];
 
 	private ready: boolean;
 

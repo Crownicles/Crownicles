@@ -1,10 +1,10 @@
 {
-  "baseEnergyValue": 550,
-  "attackRatio": 10,
-  "defenseRatio": 150,
+  "baseEnergyValue": 450,
+  "attackRatio": 50,
+  "defenseRatio": 140,
   "speedRatio": 5,
   "breath": 9,
-  "maxBreath": 25,
+  "maxBreath": 20,
   "breathRegen": 4,
   "rewardFactor": 0.2,
   "attacks": [
@@ -16,7 +16,7 @@
     {
       "id": "earthquake",
       "minLevel": 0,
-      "weight": 1
+      "weight": 2
     },
     {
       "id": "waterJet",
@@ -26,12 +26,12 @@
     {
       "id": "solidification",
       "minLevel": 0,
-      "weight": 3
+      "weight": 2
     },
     {
       "id": "outrageAttack",
       "minLevel": 0,
-      "weight": 2
+      "weight": 1
     }
   ],
   "maps": [
