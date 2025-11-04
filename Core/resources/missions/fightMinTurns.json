@@ -4,12 +4,12 @@
     "medium": [1],
     "hard": [2]
   },
-  "objectives": [1, 1, 1],
+  "objectives": [20, 26, 30],
   "gems": [3, 4, 5],
   "xp": [150, 200, 250],
   "points": [500, 750, 1000],
   "money": [0, 0, 0],
   "expirations": [72, 72, 72],
   "campaignOnly": false,
-  "dailyIndexes": [0, 1]
+  "dailyIndexes": [0, 1, 2]
 }
