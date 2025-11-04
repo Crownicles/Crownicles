@@ -37,9 +37,19 @@ export class PlayerFighter extends Fighter {
 		attack: number; speed: number;
 	}[];
 
+	private petAssisted: boolean;
+
 	public constructor(player: Player, playerClass: Class) {
 		super(player.level, FightActionDataController.instance.getListById(playerClass.fightActionsIds));
 		this.player = player;
+		this.petAssisted = false;
+	}
+
+	/**
+	 * Mark that the pet has assisted during the fight
+	 */
+	public markPetAssisted(): void {
+		this.petAssisted = true;
 	}
 
 	/**
@@ -71,6 +81,12 @@ export class PlayerFighter extends Fighter {
 		}
 
 		await this.manageMissionsOf(response);
+
+		if (this.petAssisted) {
+			await MissionsController.update(this.player, response, {
+				missionId: "petAssistedFight"
+			});
+		}
 
 		if (winner) {
 			await MissionsController.update(this.player, response, {

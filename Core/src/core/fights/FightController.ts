@@ -30,7 +30,6 @@ import { PetAssistance } from "../../data/PetAssistance";
 import { getAiPetBehavior } from "./PetAssistManager";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { FightsManager } from "./FightsManager";
-import { MissionsController } from "../missions/MissionsController";
 
 export class FightController {
 	turn: number;
@@ -278,7 +277,7 @@ export class FightController {
 			return;
 		}
 		if (attacker instanceof PlayerFighter) {
-			await MissionsController.update(attacker.player, response, { missionId: "petAssistedFight" });
+			attacker.markPetAssisted();
 		}
 		this._fightView.addActionToHistory(response, attacker, petAssistance, result);
 		if (this.hadEnded()) {
