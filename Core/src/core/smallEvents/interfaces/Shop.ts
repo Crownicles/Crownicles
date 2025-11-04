@@ -50,6 +50,16 @@ export abstract class Shop<
 
 	abstract getPopulatedReactionCollector(basePacket: ReactionCollectorAnyShopSmallEventData, shopItem: ShopSmallEventItem): Collector;
 
+	/**
+	 * Called after a successful purchase. Override this method to add custom logic after buying an item.
+	 * @param player
+	 * @param shopItem
+	 * @param response
+	 */
+	async afterPurchase(_player: Player, _shopItem: ShopSmallEventItem, _response: CrowniclesPacket[]): Promise<void> {
+		// Default implementation does nothing
+	}
+
 	public executeSmallEvent: ExecuteSmallEventLike = async (response, player, context) => {
 		const itemMultiplier = await this.getPriceMultiplier(player);
 		const randomItem = await this.getRandomItem();
@@ -96,6 +106,7 @@ export abstract class Shop<
 				reason: NumberChangeReason.SMALL_EVENT
 			});
 			await player.save();
+			await this.afterPurchase(player, shopItem, response);
 		};
 	}
 }

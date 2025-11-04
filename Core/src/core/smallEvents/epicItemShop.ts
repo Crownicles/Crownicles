@@ -8,7 +8,9 @@ import { generateRandomItem } from "../utils/ItemUtils";
 import {
 	ItemCategory, ItemRarity
 } from "../../../../Lib/src/constants/ItemConstants";
-import { makePacket } from "../../../../Lib/src/packets/CrowniclesPacket";
+import {
+	CrowniclesPacket, makePacket
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import { SmallEventFuncs } from "../../data/SmallEvent";
 import { MapConstants } from "../../../../Lib/src/constants/MapConstants";
 import Player from "../database/game/models/Player";
@@ -21,6 +23,7 @@ import {
 	ReactionCollectorEpicShopSmallEvent,
 	ReactionCollectorEpicShopSmallEventData
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorEpicShopSmallEvent";
+import { MissionsController } from "../missions/MissionsController";
 
 class ShopSmallEvent extends Shop<
 	SmallEventEpicItemShopAcceptPacket,
@@ -70,6 +73,10 @@ class ShopSmallEvent extends Shop<
 			tip: RandomUtils.crowniclesRandom.bool(SmallEventConstants.EPIC_ITEM_SHOP.REDUCTION_TIP_PROBABILITY)
 				&& shopItem.multiplier > SmallEventConstants.EPIC_ITEM_SHOP.ROAD_OF_WONDERS_MULTIPLIER
 		});
+	}
+
+	async afterPurchase(player: Player, _shopItem: ShopSmallEventItem, response: CrowniclesPacket[]): Promise<void> {
+		await MissionsController.update(player, response, { missionId: "buyItemFromAlderic" });
 	}
 }
 
