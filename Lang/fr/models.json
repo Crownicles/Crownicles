@@ -743,6 +743,11 @@
     "snowBall": {
       "success": "est aidé par **{{petNickname}}** qui lance une boule de neige sur l'adversaire."
     },
+    "solidification": {
+      "customMessage": "se solidifie et renvoie une partie des dégâts physiques.",
+      "name_one": "Solidification",
+      "name_other": "Solidifications"
+    },
     "spit": {
       "failure": "est aidé par **{{petNickname}}** qui crache sur son adversaire.",
       "success": "est soutenu par **{{petNickname}}** qui crache sur son adversaire. Par chance, le crachat atterrit parfaitement dans les yeux de l'ennemi !"
@@ -808,6 +813,10 @@
     "vampirism": {
       "success": "est assisté par **{{petNickname}}** qui aspire un peu d'énergie à l'adversaire pour l'offrir en tribut à son maître."
     },
+    "waterJet": {
+      "name_one": "Attaque jet d'eau",
+      "name_other": "Attaques jet d'eau"
+    },
     "weak": {
       "name": "affaibli",
       "new": "est affaibli.",
@@ -838,9 +847,37 @@
       "failure": "appelle **{{petNickname}}** qui tente de mordre son adversaire, mais sa cible semble insensible à ce type d'attaque."
     },
     "petPetrified": {
-      "success": "se fait aider par **{{petNickname}}** qui regarde son adversaire et le pétrifie.",
+      "success": "se fait aider par **{{petNickname}}** qui regarde son adversaire les plus raet le pétrifie.",
       "failure": "est assisté par **{{petNickname}}** qui regarde son adversaire, mais cela n'a aucun effet contre cet adversaire."
-    }
+    },
+    "retreat": {
+      "customMessage": "se retire dans sa carapace.",
+      "name_one": "Repli",
+      "name_other": "Replis"
+    },
+    "earthquake": {
+      "customMessage": "fait trembler la terre, seul les adversaires les plus solides parviennent à y résister.",
+      "name_one": "Séisme",
+      "name_other": "Séismes"
+    },
+    "irradiated": {
+      "name": "irradié",
+      "new": "est irradié.",
+      "active": "subit les radiations.",
+      "stop": "n'est plus irradié."
+    },
+    "soaked": {
+      "name": "trempé",
+      "new": "est trempé.",
+      "active": "est trempé.",
+      "stop": "n'est plus trempé."
+    },
+    "submerged": {
+      "name": "submergé",
+      "new": "est submergé.",
+      "active": "est submergé et a du mal à respirer.",
+      "stop": "n'est plus submergé."
+}
   },
   "leagues": {
     "0": "Ligue bois",
@@ -1416,6 +1453,10 @@
     "femaleIceDragon": {
       "name": "Reine des glaces",
       "description": "Une redoutable dragonne qui protège férocement son trésor et sa progéniture dans les profondeurs glacées de son antre. Plus agressive que son compagnon, elle n'hésite pas à déchaîner sa fureur contre quiconque ose s'approcher de son nid. Ses écailles scintillent comme des diamants et sa queue peut briser la glace la plus épaisse d'un seul coup."
+    },
+    "turtle": {
+      "name": "Tortue Géante",
+      "description": "Une gigantesque tortue reposant paisiblement dans son lagon. Lorsqu’elle est menacée, elle se retranche dans sa carapace avant de libérer de puissants jets d’eau capables de renverser ses ennemis. Son âge ancestral lui confère une sagesse immuable et une force que peu d’aventuriers ont osé défier."
     }
   },
   "objects": {

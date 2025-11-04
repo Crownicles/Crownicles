@@ -1402,7 +1402,8 @@ export const CrowniclesIcons: {
 		yukiOnna: "❄️",
 		celestialGuardian: "🌌",
 		maleIceDragon: "🐲",
-		femaleIceDragon: "🐉"
+		femaleIceDragon: "🐉",
+		turtle: "🐢"
 	},
 	armors: {
 		0: "⬛",
@@ -1975,6 +1976,7 @@ export const CrowniclesIcons: {
 		defenseBuff: "🧘",
 		dirty: "🗑️",
 		divineAttack: "🙏",
+		earthquake: "🌎",
 		energeticAttack: "⚡",
 		eruptionAttack: "🌋",
 		familyMealAttack: "🍽️",
@@ -2021,6 +2023,7 @@ export const CrowniclesIcons: {
 		rageExplosion: "🤬",
 		ramAttack: "🐏",
 		resting: "🛏️",
+		retreat: "🐚",
 		roarAttack: "📢",
 		rockShieldAttack: "⛰️",
 		sabotageAttack: "🛠️",
@@ -2029,6 +2032,7 @@ export const CrowniclesIcons: {
 		slamAttack: "🦶",
 		slowed: "🦥",
 		soaked: "💧",
+		solidification: "🧱",
 		spectralRevengeAttack: "👻",
 		startPolarEmbraceAttack: "🤍",
 		stealth: "😶‍🌫️",
@@ -2040,6 +2044,7 @@ export const CrowniclesIcons: {
 		tailWhipAttack: "🐊",
 		targeted: "↩️",
 		ultimateAttack: "☄️",
+		waterJet: "💦",
 		weak: "🤧",
 		webShotAttack: "🕸️"
 
