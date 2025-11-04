@@ -409,6 +409,14 @@
       "moneyToWin": 0
     },
     {
+      "missionId": "meetSirRowan",
+      "missionVariant": 0,
+      "missionObjective": 10,
+      "gemsToWin": 3,
+      "xpToWin": 150,
+      "moneyToWin": 0
+    },
+    {
       "missionId": "fightHealthPercent",
       "missionVariant": 20,
       "missionObjective": 1,
