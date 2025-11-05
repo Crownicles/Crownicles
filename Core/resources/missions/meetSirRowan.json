@@ -38,7 +38,7 @@
   "expirations": [
     24,
     48,
-    72
+    48
   ],
   "dailyIndexes": [
     0
