@@ -13,11 +13,18 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 		42, // meetTalvar (objective: 1)
 		48, // fightMinTurns (objective: 20)
 		54, // meetSirRowan (objective: 10)
-		61, // sellItems (objective: 5)
-		62, // fightMinTurns (objective: 26)
-		80, // fightMinTurns (objective: 30)
-		87, // showPetsToTalvar (objective: 10)
-		88 // buyItemFromAlderic (objective: 1)
+		58, // reachLevel (objective: 60)
+		62, // sellItems (objective: 5)
+		63, // fightMinTurns (objective: 26)
+		77, // reachLevel (objective: 80)
+		82, // fightMinTurns (objective: 30)
+		84, // guildLevel (objective: 60)
+		90, // showPetsToTalvar (objective: 10)
+		91, // buyItemFromAlderic (objective: 1)
+		92, // sellItemWithGivenCost (objective: 1)
+		93, // fightHealthPercent (objective: 1)
+		94, // reachLevel (objective: 100)
+		95 // exploreDifferentPlaces (objective: 20)
 	]);
 }
 
@@ -31,10 +38,17 @@ export async function down({ context }: { context: QueryInterface }): Promise<vo
 		42,
 		48,
 		54,
-		61,
+		58,
 		62,
-		80,
-		87,
-		88
+		63,
+		77,
+		82,
+		84,
+		90,
+		91,
+		92,
+		93,
+		94,
+		95
 	]);
 }

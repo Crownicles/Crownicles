@@ -465,6 +465,14 @@
       "moneyToWin": 0
     },
     {
+      "missionId": "reachLevel",
+      "missionVariant": 0,
+      "missionObjective": 60,
+      "gemsToWin": 1,
+      "xpToWin": 50,
+      "moneyToWin": 0
+    },
+    {
       "missionId": "drinkPotionWithoutEffect",
       "missionVariant": 0,
       "missionObjective": 3,
@@ -609,6 +617,14 @@
       "moneyToWin": 0
     },
     {
+      "missionId": "reachLevel",
+      "missionVariant": 0,
+      "missionObjective": 80,
+      "gemsToWin": 1,
+      "xpToWin": 50,
+      "moneyToWin": 0
+    },
+    {
       "missionId": "reachGlory",
       "missionVariant": 0,
       "missionObjective": 1200,
@@ -657,6 +673,14 @@
       "moneyToWin": 0
     },
     {
+      "missionId": "guildLevel",
+      "missionVariant": 0,
+      "missionObjective": 60,
+      "gemsToWin": 1,
+      "xpToWin": 220,
+      "moneyToWin": 0
+    },
+    {
       "missionId": "haveItemRarity",
       "missionVariant": 6,
       "missionObjective": 1,
@@ -699,7 +723,7 @@
     {
       "missionId": "showPetsToTalvar",
       "missionVariant": 0,
-      "missionObjective": 10,
+      "missionObjective": 3,
       "gemsToWin": 3,
       "xpToWin": 200,
       "moneyToWin": 0
@@ -710,6 +734,38 @@
       "missionObjective": 1,
       "gemsToWin": 2,
       "xpToWin": 150,
+      "moneyToWin": 0
+    },
+    {
+      "missionId": "sellItemWithGivenCost",
+      "missionVariant": 1500,
+      "missionObjective": 1,
+      "gemsToWin": 4,
+      "xpToWin": 355,
+      "moneyToWin": 0
+    },
+    {
+      "missionId": "fightHealthPercent",
+      "missionVariant": 5,
+      "missionObjective": 1,
+      "gemsToWin": 12,
+      "xpToWin": 450,
+      "moneyToWin": 0
+    },
+    {
+      "missionId": "reachLevel",
+      "missionVariant": 0,
+      "missionObjective": 100,
+      "gemsToWin": 1,
+      "xpToWin": 50,
+      "moneyToWin": 0
+    },
+    {
+      "missionId": "exploreDifferentPlaces",
+      "missionVariant": 0,
+      "missionObjective": 20,
+      "gemsToWin": 10,
+      "xpToWin": 520,
       "moneyToWin": 0
     }
   ]
