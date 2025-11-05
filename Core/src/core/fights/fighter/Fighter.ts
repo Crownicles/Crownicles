@@ -518,7 +518,7 @@ export abstract class Fighter {
 	reduceCounters(): void {
 		this.damageMultipliers = this.damageMultipliers.filter(damageMultiplier => {
 			damageMultiplier.turns--;
-			return damageMultiplier.turns > 0;
+			return damageMultiplier.turns >= 0;
 		});
 
 		this.resistances = this.resistances.filter(resistance => {
