@@ -189,7 +189,7 @@
       "missionVariant": 0,
       "missionObjective": 1,
       "gemsToWin": 1,
-      "xpToWin": 50,
+      "xpToWin": 30,
       "moneyToWin": 0
     },
     {
@@ -229,7 +229,7 @@
       "missionVariant": 0,
       "missionObjective": 1,
       "gemsToWin": 2,
-      "xpToWin": 125,
+      "xpToWin": 225,
       "moneyToWin": 0
     },
     {
@@ -388,8 +388,8 @@
       "missionId": "fightMinTurns",
       "missionVariant": 20,
       "missionObjective": 20,
-      "gemsToWin": 3,
-      "xpToWin": 150,
+      "gemsToWin": 5,
+      "xpToWin": 250,
       "moneyToWin": 0
     },
     {
@@ -397,7 +397,7 @@
       "missionVariant": 0,
       "missionObjective": 800,
       "gemsToWin": 3,
-      "xpToWin": 150,
+      "xpToWin": 450,
       "moneyToWin": 0
     },
     {
@@ -660,7 +660,7 @@
       "missionId": "fightMinTurns",
       "missionVariant": 30,
       "missionObjective": 30,
-      "gemsToWin": 5,
+      "gemsToWin": 9,
       "xpToWin": 250,
       "moneyToWin": 0
     },
@@ -723,8 +723,8 @@
     {
       "missionId": "showPetsToTalvar",
       "missionVariant": 0,
-      "missionObjective": 3,
-      "gemsToWin": 3,
+      "missionObjective": 10,
+      "gemsToWin": 8,
       "xpToWin": 200,
       "moneyToWin": 0
     },
@@ -732,8 +732,8 @@
       "missionId": "buyItemFromAlderic",
       "missionVariant": 0,
       "missionObjective": 1,
-      "gemsToWin": 2,
-      "xpToWin": 150,
+      "gemsToWin": 4,
+      "xpToWin": 275,
       "moneyToWin": 0
     },
     {
@@ -764,7 +764,7 @@
       "missionId": "exploreDifferentPlaces",
       "missionVariant": 0,
       "missionObjective": 20,
-      "gemsToWin": 10,
+      "gemsToWin": 7,
       "xpToWin": 520,
       "moneyToWin": 0
     }
