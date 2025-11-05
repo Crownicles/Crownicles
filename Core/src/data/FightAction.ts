@@ -22,7 +22,14 @@ export class FightAction extends Data<string> {
 			throw new Error(`Fight action function not found for id: ${this.id}`);
 		}
 		const result = fightActionFunc(sender, receiver, this, turn, fight);
-		receiver.damage(result.damages ?? 0);
+		if (receiver.hasResistance(this.type)) {
+			const selfDamage = Math.floor(result.damages * 0.3);
+			sender.damage(selfDamage);
+			receiver.damage(result.damages - selfDamage);
+			receiver.removeResistance(this.type);
+			return result;
+		}
+		receiver.damage(result.damages);
 		if (result.usedAction) {
 			receiver.damage(result.usedAction.result.damages ?? 0);
 		}

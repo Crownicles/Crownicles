@@ -59,7 +59,7 @@ export abstract class Fighter {
 
 	private speedModifiers: FightStatModifier[];
 
-	private resistances: FightActionType[];
+	private resistances: FightActionTypeResistance[];
 
 	private ready: boolean;
 
@@ -242,6 +242,21 @@ export abstract class Fighter {
 	}
 
 	/**
+	 * Apply a resistance to a fight action type
+	 */
+	public applyResistance(resistance: FightActionTypeResistance): void {
+		this.resistances.push(resistance);
+	}
+
+	/**
+	 * Remove a resistance to a fight action type
+	 * @param type
+	 */
+	public removeResistance(type: FightActionType): void {
+		this.resistances = this.resistances.filter(modifier => modifier.type !== type);
+	}
+
+	/**
 	 * Remove all attack modifiers for an origin
 	 * @param origin
 	 */
@@ -271,6 +286,14 @@ export abstract class Fighter {
 	 */
 	public hasAttackModifier(origin: FightAction): boolean {
 		return this.attackModifiers.filter(modifier => modifier.origin === origin).length !== 0;
+	}
+
+	/**
+	 * Check if the fighter has a resistance to a fight action type
+	 * @param type
+	 */
+	public hasResistance(type: FightActionType): boolean {
+		return this.resistances.filter(modifier => modifier.type === type).length !== 0;
 	}
 
 	/**
