@@ -123,7 +123,8 @@ export class FightActionController {
 		target.applyResistance({
 			type: resistance.type,
 			value: resistance.value,
-			turns: resistance.duration
+			turns: resistance.duration,
+			reflectDamage: resistance.reflectDamage
 		});
 		if (result.resistances === undefined) {
 			result.resistances = [];
