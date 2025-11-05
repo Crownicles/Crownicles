@@ -335,7 +335,6 @@ export abstract class Fighter {
 		let reflectedDamage = 0;
 		for (const resistance of this.resistances) {
 			if (resistance.type === type && resistance.reflectDamage) {
-				// Renvoie la différence entre les dégâts originaux et les dégâts résistés
 				reflectedDamage += Math.round(originalDamage * resistance.value);
 			}
 		}
@@ -522,12 +521,12 @@ export abstract class Fighter {
 	reduceCounters(): void {
 		this.damageMultipliers = this.damageMultipliers.filter(damageMultiplier => {
 			damageMultiplier.turns--;
-			return damageMultiplier.turns >= 0;
+			return damageMultiplier.turns > 0;
 		});
 
 		this.resistances = this.resistances.filter(resistance => {
 			resistance.turns--;
-			return resistance.turns >= 0;
+			return resistance.turns > 0;
 		});
 	}
 
