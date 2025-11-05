@@ -387,7 +387,7 @@
     {
       "missionId": "fightMinTurns",
       "missionVariant": 20,
-      "missionObjective": 20,
+      "missionObjective": 1,
       "gemsToWin": 5,
       "xpToWin": 250,
       "moneyToWin": 0
@@ -507,7 +507,7 @@
     {
       "missionId": "fightMinTurns",
       "missionVariant": 26,
-      "missionObjective": 26,
+      "missionObjective": 1,
       "gemsToWin": 4,
       "xpToWin": 200,
       "moneyToWin": 0
@@ -659,7 +659,7 @@
     {
       "missionId": "fightMinTurns",
       "missionVariant": 30,
-      "missionObjective": 30,
+      "missionObjective": 1,
       "gemsToWin": 9,
       "xpToWin": 250,
       "moneyToWin": 0
