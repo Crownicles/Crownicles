@@ -1985,6 +1985,7 @@ export const CrowniclesIcons: {
 		frozenKissAttack: "💋",
 		full: "😴",
 		getDirty: "💩",
+		getSoaked: "💧",
 		glacialBreathAttack: "🐉",
 		glacialCaveCollapseAttack: "💥",
 		grabAndThrowAttack: "🥋",
