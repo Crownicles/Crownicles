@@ -125,7 +125,11 @@ export abstract class FightConstants {
 				STEALTH: "stealth",
 				STONE_SKIN_ATTACK: "stoneSkinAttack",
 				SUMMON_ATTACK: "summonAttack",
-				WEB_SHOT_ATTACK: "webShotAttack"
+				WEB_SHOT_ATTACK: "webShotAttack",
+				WATER_JET: "waterJet",
+				RETREAT: "retreat",
+				SOLIDIFICATION: "solidification",
+				EARTHQUAKE: "earthquake"
 			},
 			PET: {
 				BITE: "bite",
