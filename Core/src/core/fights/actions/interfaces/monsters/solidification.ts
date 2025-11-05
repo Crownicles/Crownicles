@@ -1,17 +1,21 @@
 import { FightActionFunc } from "../../../../../data/FightAction";
-import { FightStatBuffed } from "../../../../../../../Lib/src/types/FightActionResult";
-import { FightStatModifierOperation } from "../../../../../../../Lib/src/types/FightStatModifierOperation";
-import { simpleBuffFightAction } from "../../templates/SimpleBuffFightActionTemplate";
+import {
+	defaultFightActionResult
+} from "../../../../../../../Lib/src/types/FightActionResult";
+import { FightActionController } from "../../FightActionController";
+import { FightActionType } from "../../../../../../../Lib/src/types/FightActionType";
 
-const use: FightActionFunc = (_sender, receiver, fightAction) => ({
-	...simpleBuffFightAction(receiver, {
-		selfTarget: false,
-		stat: FightStatBuffed.DAMAGE_BOOST,
-		value: 0.5,
-		operator: FightStatModifierOperation.MULTIPLIER,
-		duration: 1
-	}, fightAction),
-	customMessage: true
-});
+
+const use: FightActionFunc = (sender, _receiver, fightAction) => {
+	const result = defaultFightActionResult();
+	FightActionController.applyResistance(result, {
+		origin: fightAction, type: FightActionType.PHYSICAL
+	}, sender);
+
+	return {
+		...result,
+		customMessage: true
+	};
+};
 
 export default use;
