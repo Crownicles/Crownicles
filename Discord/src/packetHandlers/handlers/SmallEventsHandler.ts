@@ -98,10 +98,8 @@ export function getRandomSmallEventIntro(language: Language): string {
 }
 
 const PET_TIME_INTERACTIONS = new Set([
-	"gainTime_m",
-	"gainTime_f",
-	"loseTime_m",
-	"loseTime_f"
+	"gainTime",
+	"loseTime"
 ]);
 
 export default class SmallEventsHandler {
@@ -806,7 +804,7 @@ export default class SmallEventsHandler {
 							context: packet.petSex,
 							pet: PetUtils.petToShortString(lng, packet.petNickname, packet.petTypeId, packet.petSex),
 							amount: packet.amount,
-							amountDisplay,
+							amountDisplay: amountDisplay,
 							food: packet.food ? DisplayUtils.getFoodDisplay(packet.food, 1, lng, false) : null,
 							badge: CrowniclesIcons.badges[Badge.LEGENDARY_PET],
 							randomAnimal: i18n.t("smallEvents:pet.randomAnimal", {
@@ -939,7 +937,7 @@ export default class SmallEventsHandler {
 					.setDescription(
 						i18n.t(`{emote:goblets.{{goblet}}} $t(smallEvents:gobletsGame.results.${packet.malus})`, {
 							lng,
-							quantity: packet.malus === SmallEventGobletsGameMalus.TIME ? minutesDisplay(packet.value) : packet.value,
+							quantity: packet.malus === SmallEventGobletsGameMalus.TIME ? minutesDisplay(packet.value, lng) : packet.value,
 							goblet: packet.goblet ?? RandomUtils.crowniclesRandom.pick(Object.keys(CrowniclesIcons.goblets))
 						})
 					)
