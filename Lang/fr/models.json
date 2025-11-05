@@ -394,6 +394,12 @@
       "name_one": "Salissure",
       "name_other": "Salissures"
     },
+    "getSoaked": {
+      "description": "S'exécute si l'attaquant s'est récemment retrouvé submergé d'eau.",
+      "customMessage": "a réussi à s'extraire de l'eau mais en finit complétement trempé.",
+      "name_one": "Trempé",
+      "name_other": "Trempés"
+    },
     "goesWild": {
       "success": "ordonne à **{{petNickname}}** d'attaquer. L'animal éclate de rage et se met à frapper tout ce qui passe à proximité de lui."
     },
