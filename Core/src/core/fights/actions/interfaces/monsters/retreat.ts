@@ -11,7 +11,7 @@ const use: FightActionFunc = (_sender, receiver, fightAction) => {
 	const receiverBuffDetails = {
 		selfTarget: false,
 		stat: FightStatBuffed.DAMAGE_BOOST,
-		value: 0.2,
+		value: 0.5,
 		operator: FightStatModifierOperation.MULTIPLIER,
 		duration: 1
 	};

@@ -8,9 +8,9 @@ import { Fighter } from "../../../fighter/Fighter";
 const use: FightActionFunc = (sender, receiver, _fightAction) => {
 	const defenseRatio = receiver.getDefense() / receiver.level;
 	const failureProbability =
-		defenseRatio < 1.5
+		defenseRatio < 2
 			? 0
-			: Math.min(70, (defenseRatio - 2) * 18);
+			: 5 + Math.min(65, Math.pow(defenseRatio - 2, 2) * 2);
 	const result = simpleDamageFightAction(
 		{
 			sender,

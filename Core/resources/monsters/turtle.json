@@ -1,7 +1,7 @@
 {
   "baseEnergyValue": 20,
   "attackRatio": 50,
-  "defenseRatio": 120,
+  "defenseRatio": 150,
   "speedRatio": 5,
   "breath": 9,
   "maxBreath": 20,
@@ -11,7 +11,7 @@
     {
       "id": "retreat",
       "minLevel": 0,
-      "weight": 3
+      "weight": 2
     },
     {
       "id": "earthquake",
@@ -21,12 +21,12 @@
     {
       "id": "waterJet",
       "minLevel": 0,
-      "weight": 4
+      "weight": 5
     },
     {
       "id": "solidification",
       "minLevel": 0,
-      "weight": 2
+      "weight": 4
     },
     {
       "id": "outrageAttack",
