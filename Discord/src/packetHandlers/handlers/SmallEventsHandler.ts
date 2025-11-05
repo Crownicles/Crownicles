@@ -790,7 +790,7 @@ export default class SmallEventsHandler {
 	async smallEventPet(context: PacketContext, packet: SmallEventPetPacket): Promise<void> {
 		const interaction = DiscordCache.getInteraction(context.discord!.interaction);
 		const lng = interaction!.userLanguage;
-		const amountDisplay = typeof packet.amount === "number" && PET_TIME_INTERACTIONS.has(packet.interactionName)
+		const amountToDisplay = typeof packet.amount === "number" && PET_TIME_INTERACTIONS.has(packet.interactionName)
 			? minutesDisplay(packet.amount, lng)
 			: packet.amount;
 		await interaction?.editReply({
@@ -804,7 +804,7 @@ export default class SmallEventsHandler {
 							context: packet.petSex,
 							pet: PetUtils.petToShortString(lng, packet.petNickname, packet.petTypeId, packet.petSex),
 							amount: packet.amount,
-							amountDisplay: amountDisplay,
+							amountDisplay: amountToDisplay,
 							food: packet.food ? DisplayUtils.getFoodDisplay(packet.food, 1, lng, false) : null,
 							badge: CrowniclesIcons.badges[Badge.LEGENDARY_PET],
 							randomAnimal: i18n.t("smallEvents:pet.randomAnimal", {
