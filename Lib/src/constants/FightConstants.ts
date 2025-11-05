@@ -129,7 +129,9 @@ export abstract class FightConstants {
 				WATER_JET: "waterJet",
 				RETREAT: "retreat",
 				SOLIDIFICATION: "solidification",
-				EARTHQUAKE: "earthquake"
+				EARTHQUAKE: "earthquake",
+				TIDAL_WAVE: "tidalWave",
+				HYDRAULIC_HEAL: "hydraulicHeal"
 			},
 			PET: {
 				BITE: "bite",

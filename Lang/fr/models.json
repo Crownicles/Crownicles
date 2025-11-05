@@ -665,6 +665,11 @@
       "name_one": "Attaque souffle glacial",
       "name_other": "Attaques souffles glacials"
     },
+    "hydraulicHeal": {
+      "customMessage": "fait appel aux forces de l'eau pour récupérer des forces.",
+      "name_one": "Soin hydraulique",
+      "name_other": "Soins hydrauliques"
+    },
     "blizzardRageAttack": {
       "customMessage": "invoque la rage du blizzard sur son adversaire, mais les vents glacés font déjà rage dans l'arène.",
       "name_one": "Attaque rage de blizzard",
@@ -1463,6 +1468,10 @@
     "turtle": {
       "name": "Tortue Géante",
       "description": "Une gigantesque tortue reposant paisiblement dans son lagon. Lorsqu’elle est menacée, elle se retranche dans sa carapace avant de libérer de puissants jets d’eau capables de renverser ses ennemis. Son âge ancestral lui confère une sagesse immuable et une force que peu d’aventuriers ont osé défier."
+    },
+    "waterSpirit": {
+      "name": "Esprit des mers",
+      "description": ""
     }
   },
   "objects": {
