@@ -1,7 +1,7 @@
 {
-  "baseEnergyValue": 450,
+  "baseEnergyValue": 10,
   "attackRatio": 50,
-  "defenseRatio": 140,
+  "defenseRatio": 100,
   "speedRatio": 5,
   "breath": 9,
   "maxBreath": 20,
@@ -11,12 +11,12 @@
     {
       "id": "retreat",
       "minLevel": 0,
-      "weight": 3
+      "weight": 2
     },
     {
       "id": "earthquake",
       "minLevel": 0,
-      "weight": 2
+      "weight": 3
     },
     {
       "id": "waterJet",
