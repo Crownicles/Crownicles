@@ -7,7 +7,7 @@ import { FightAlteration } from "../../../data/FightAlteration";
 import { FightAction } from "../../../data/FightAction";
 import { CrowniclesPacket } from "../../../../../Lib/src/packets/CrowniclesPacket";
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
-import {FightActionType} from "../../../../../Lib/src/types/FightActionType";
+import { FightActionType } from "../../../../../Lib/src/types/FightActionType";
 
 type FighterStats = {
 	energy: number;
@@ -35,6 +35,7 @@ type FightTypeResistance = {
 	type: FightActionType;
 	value: number;
 	turns: number;
+	reflectDamage?: boolean;
 };
 
 export abstract class Fighter {
@@ -329,6 +330,18 @@ export abstract class Fighter {
 		}
 		return multiplier;
 	}
+
+	public getReflectedDamage(type: FightActionType, originalDamage: number): number {
+		let reflectedDamage = 0;
+		for (const resistance of this.resistances) {
+			if (resistance.type === type && resistance.reflectDamage) {
+				// Renvoie la différence entre les dégâts originaux et les dégâts résistés
+				reflectedDamage += Math.round(originalDamage * resistance.value);
+			}
+		}
+		return reflectedDamage;
+	}
+
 
 	/**
 	 * Damage the fighter

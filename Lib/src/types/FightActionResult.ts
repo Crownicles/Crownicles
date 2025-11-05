@@ -26,6 +26,7 @@ export interface FightActionTypeResistance {
 	type: FightActionType;
 	value: number;
 	duration?: number;
+	reflectDamage?: boolean; // Si true, renvoie les dégâts résistés
 }
 
 export interface FightActionResult {
@@ -33,6 +34,7 @@ export interface FightActionResult {
 	buffs?: FightActionBuff[];
 	resistances?: FightActionTypeResistance[];
 	damages?: number;
+	reflectedDamages?: number; // Dégâts renvoyés à l'attaquant
 	attackStatus: FightActionStatus;
 	alterations?: FightAlterationApplied[];
 	customMessage?: boolean; // If true, the attack should be displayed with a custom message
