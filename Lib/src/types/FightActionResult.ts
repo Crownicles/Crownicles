@@ -1,5 +1,6 @@
 import { FightStatModifierOperation } from "./FightStatModifierOperation";
 import { FightActionStatus } from "./FightActionStatus";
+import { FightActionType } from "./FightActionType";
 
 export enum FightStatBuffed {
 	ATTACK,
@@ -20,9 +21,17 @@ export interface FightActionBuff {
 	duration?: number;
 }
 
+export interface FightActionTypeResistance {
+	selfTarget: boolean;
+	type: FightActionType;
+	value: number;
+	duration?: number;
+}
+
 export interface FightActionResult {
 	fail?: boolean;
 	buffs?: FightActionBuff[];
+	resistances?: FightActionTypeResistance[];
 	damages?: number;
 	attackStatus: FightActionStatus;
 	alterations?: FightAlterationApplied[];
