@@ -1,11 +1,11 @@
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
 import { RandomUtils } from "../../../../../Lib/src/utils/RandomUtils";
-import {FightActionTypeResistance, Fighter} from "../fighter/Fighter";
+import { Fighter } from "../fighter/Fighter";
 import { FightActionStatus } from "../../../../../Lib/src/types/FightActionStatus";
 import {
 	defaultFightActionResult,
 	FightActionBuff,
-	FightActionResult,
+	FightActionResult, FightActionTypeResistance,
 	FightAlterationApplied,
 	FightStatBuffed
 } from "../../../../../Lib/src/types/FightActionResult";
@@ -119,8 +119,16 @@ export class FightActionController {
 		result.alterations.push(fightAlteration);
 	}
 
-	static applyResistance(_result: FightActionResult, resistance: FightActionTypeResistance, target: Fighter): void {
-		target.applyResistance(resistance);
+	static applyResistance(result: FightActionResult, resistance: FightActionTypeResistance, target: Fighter): void {
+		target.applyResistance({
+			type: resistance.type,
+			value: resistance.value,
+			turns: resistance.duration
+		});
+		if (result.resistances === undefined) {
+			result.resistances = [];
+		}
+		result.resistances.push(resistance);
 	}
 
 	/**

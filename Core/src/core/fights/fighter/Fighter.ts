@@ -7,7 +7,7 @@ import { FightAlteration } from "../../../data/FightAlteration";
 import { FightAction } from "../../../data/FightAction";
 import { CrowniclesPacket } from "../../../../../Lib/src/packets/CrowniclesPacket";
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
-import { FightActionType } from "../../../../../Lib/src/types/FightActionType";
+import {FightActionType} from "../../../../../Lib/src/types/FightActionType";
 
 type FighterStats = {
 	energy: number;
@@ -26,12 +26,13 @@ export type FightStatModifier = {
 	value: number;
 };
 
-export type FightActionTypeResistance = {
-	origin: FightAction;
-	type: FightActionType;
+type FightDamageMultiplier = {
+	value: number;
+	turns: number;
 };
 
-type FightDamageMultiplier = {
+type FightTypeResistance = {
+	type: FightActionType;
 	value: number;
 	turns: number;
 };
@@ -59,7 +60,7 @@ export abstract class Fighter {
 
 	private speedModifiers: FightStatModifier[];
 
-	private resistances: FightActionTypeResistance[];
+	private resistances: FightTypeResistance[];
 
 	private ready: boolean;
 
@@ -87,6 +88,7 @@ export abstract class Fighter {
 		this.alterationTurn = 0;
 		this.level = level;
 		this.damageMultipliers = [];
+		this.resistances = [];
 
 		this.availableFightActions = new Map();
 		for (const fightAction of availableFightActions) {
@@ -241,19 +243,8 @@ export abstract class Fighter {
 		this.speedModifiers.push(modifier);
 	}
 
-	/**
-	 * Apply a resistance to a fight action type
-	 */
-	public applyResistance(resistance: FightActionTypeResistance): void {
+	public applyResistance(resistance: FightTypeResistance): void {
 		this.resistances.push(resistance);
-	}
-
-	/**
-	 * Remove a resistance to a fight action type
-	 * @param type
-	 */
-	public removeResistance(type: FightActionType): void {
-		this.resistances = this.resistances.filter(modifier => modifier.type !== type);
 	}
 
 	/**
@@ -286,14 +277,6 @@ export abstract class Fighter {
 	 */
 	public hasAttackModifier(origin: FightAction): boolean {
 		return this.attackModifiers.filter(modifier => modifier.origin === origin).length !== 0;
-	}
-
-	/**
-	 * Check if the fighter has a resistance to a fight action type
-	 * @param type
-	 */
-	public hasResistance(type: FightActionType): boolean {
-		return this.resistances.filter(modifier => modifier.type === type).length !== 0;
 	}
 
 	/**
@@ -334,6 +317,16 @@ export abstract class Fighter {
 			multiplier *= damageMultiplier.value;
 		}
 
+		return multiplier;
+	}
+
+	public getResistanceMultiplier(type: FightActionType): number {
+		let multiplier = 1;
+		for (const resistance of this.resistances) {
+			if (resistance.type === type) {
+				multiplier *= 1 - resistance.value;
+			}
+		}
 		return multiplier;
 	}
 
@@ -517,6 +510,11 @@ export abstract class Fighter {
 		this.damageMultipliers = this.damageMultipliers.filter(damageMultiplier => {
 			damageMultiplier.turns--;
 			return damageMultiplier.turns >= 0;
+		});
+
+		this.resistances = this.resistances.filter(resistance => {
+			resistance.turns--;
+			return resistance.turns >= 0;
 		});
 	}
 
