@@ -908,6 +908,10 @@
     "hellishScream": {
       "name_one": "Cri infernal",
       "name_other": "Cris infernaux"
+    },
+    "callOfTheSea": {
+      "name_one": "Appel de la mer",
+      "name_other": "Appels des mers"
     }
   },
   "leagues": {
