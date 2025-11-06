@@ -2052,7 +2052,8 @@ export const CrowniclesIcons: {
 		weak: "🤧",
 		webShotAttack: "🕸️",
 		hydraulicHeal: "🫧",
-		tidalWave: "🌊"
+		tidalWave: "🌊",
+		sing: "🗣️"
 
 	},
 	classKinds: {
