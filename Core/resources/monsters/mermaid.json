@@ -1,0 +1,40 @@
+{
+  "baseEnergyValue": 325,
+  "attackRatio": 100,
+  "defenseRatio": 50,
+  "speedRatio": 100,
+  "breath": 6,
+  "maxBreath": 20,
+  "breathRegen": 4,
+  "rewardFactor": 0.65,
+  "attacks": [
+    {
+      "id": "sing",
+      "minLevel": 50,
+      "weight": 4
+    },
+    {
+      "id": "hellishScream",
+      "minLevel": 0,
+      "weight": 4
+    },
+    {
+      "id": "frozenKissAttack",
+      "minLevel": 0,
+      "weight": 4
+    },
+    {
+      "id": "icySeductionAttack",
+      "minLevel": 100,
+      "weight": 1
+    },
+    {
+      "id": "callOfTheSea",
+      "minLevel": 60,
+      "weight": 3
+    }
+  ],
+  "maps": [
+    1112
+  ]
+}
