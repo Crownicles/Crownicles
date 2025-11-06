@@ -1,4 +1,3 @@
-import { Crownicles } from "../../../../core/bot/Crownicles";
 import {
 	ExecuteTestCommandLike, ITestCommand
 } from "../../../../core/CommandsTest";
