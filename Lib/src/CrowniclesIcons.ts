@@ -2106,7 +2106,8 @@ export const CrowniclesIcons: {
 		webShotAttack: "🕸️",
 		hydraulicHeal: "🫧",
 		tidalWave: "🌊",
-		sing: "🗣️"
+		sing: "🎶",
+		hellishScream: "🗣️"
 
 	},
 	classKinds: {

@@ -904,6 +904,10 @@
       "customMessage": "se met à chanter.",
       "name_one": "Chant de la mer",
       "name_other": "Chants de la mer"
+    },
+    "hellishScream": {
+      "name_one": "Cri infernal",
+      "name_other": "Cris infernaux"
     }
   },
   "leagues": {
