@@ -19,7 +19,7 @@ const use: FightActionFunc = (sender, receiver) => {
 		damages: damageDealt.damages
 	};
 
-	if (!receiver.hasFightAlteration() && RandomUtils.crowniclesRandom.bool(0.5)) {
+	if (!receiver.hasFightAlteration() && RandomUtils.crowniclesRandom.bool(0.3)) {
 		FightActionController.applyAlteration(result, {
 			selfTarget: false,
 			alteration: FightAlterations.PARALYZED
