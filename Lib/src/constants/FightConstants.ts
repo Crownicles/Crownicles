@@ -132,7 +132,9 @@ export abstract class FightConstants {
 				SOLIDIFICATION: "solidification",
 				EARTHQUAKE: "earthquake",
 				TIDAL_WAVE: "tidalWave",
-				HYDRAULIC_HEAL: "hydraulicHeal"
+				HYDRAULIC_HEAL: "hydraulicHeal",
+				SING: "sing",
+				HELLISH_SCREAM: "hellishScream"
 			},
 			PET: {
 				BITE: "bite",
