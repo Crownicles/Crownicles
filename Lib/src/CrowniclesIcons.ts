@@ -1430,7 +1430,8 @@ export const CrowniclesIcons: {
 		celestialGuardian: "🌌",
 		maleIceDragon: "🐲",
 		femaleIceDragon: "🐉",
-		turtle: "🐢"
+		turtle: "🐢",
+		waterSpirit: "✨"
 	},
 	armors: {
 		0: "⬛",
@@ -2092,7 +2093,9 @@ export const CrowniclesIcons: {
 		ultimateAttack: "☄️",
 		waterJet: "💦",
 		weak: "🤧",
-		webShotAttack: "🕸️"
+		webShotAttack: "🕸️",
+		hydraulicHeal: "🫧",
+		tidalWave: "🌊"
 
 	},
 	classKinds: {
