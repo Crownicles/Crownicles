@@ -357,6 +357,16 @@ export class InventorySlots {
 				: null
 		};
 	}
+
+	static async getItem(playerId: number, slot: number, category: number): Promise<InventorySlot> {
+		return await InventorySlot.findOne({
+			where: {
+				playerId,
+				slot,
+				itemCategory: category
+			}
+		});
+	}
 }
 
 export function initModel(sequelize: Sequelize): void {

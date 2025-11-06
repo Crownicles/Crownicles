@@ -137,3 +137,20 @@ export class CommandReportSleepRoomRes extends CrowniclesPacket {
 export class CommandReportNotEnoughMoneyRes extends CrowniclesPacket {
 	missingMoney!: number;
 }
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportEnchantNotEnoughCurrenciesRes extends CrowniclesPacket {
+	missingMoney!: number;
+
+	missingGems!: number;
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportItemCannotBeEnchantedRes extends CrowniclesPacket {}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportItemEnchantedRes extends CrowniclesPacket {
+	enchantmentId!: string;
+
+	enchantmentType!: string;
+}

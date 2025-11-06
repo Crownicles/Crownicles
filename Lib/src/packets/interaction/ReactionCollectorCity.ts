@@ -6,13 +6,14 @@ import {
 	ReactionCollectorRefuseReaction
 } from "./ReactionCollectorPacket";
 import { MainItemDetails } from "../../types/MainItemDetails";
+import { ItemCategory } from "../../constants/ItemConstants";
 
 export class ReactionCollectorCityData extends ReactionCollectorData {
 	mapTypeId!: string;
 
 	mapLocationId!: number;
 
-	timeInCity!: number;
+	enterCityTimestamp!: number;
 
 	inns?: {
 		innId: string;
@@ -39,10 +40,15 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 	};
 
 	enchanter?: {
-		enchantableItems: MainItemDetails[];
+		enchantableItems: {
+			slot: number;
+			category: ItemCategory;
+			details: MainItemDetails;
+		}[];
 		isInventoryEmpty: boolean; // If true, the inventory is empty, and we can't enchant anything. It is used to display the right message.
 		hasAtLeastOneEnchantedItem: boolean; // If true, the player has at least one enchanted item, so the enchanter must say that it cannot remove enchantments.
 		enchantmentId: string;
+		enchantmentType: string;
 		enchantmentCost: {
 			money: number;
 			gems: number;
@@ -74,9 +80,9 @@ export class ReactionCollectorInnRoomReaction extends ReactionCollectorReaction 
 }
 
 export class ReactionCollectorEnchantReaction extends ReactionCollectorReaction {
-	itemId!: number;
+	slot!: number;
 
-	itemCategory!: number;
+	itemCategory!: ItemCategory;
 }
 
 export class ReactionCollectorCity extends ReactionCollector {
@@ -104,8 +110,8 @@ export class ReactionCollectorCity extends ReactionCollector {
 
 		const enchantReactions = this.data.enchanter?.enchantableItems.map(item =>
 			this.buildReaction(ReactionCollectorEnchantReaction, {
-				itemId: item.id,
-				itemCategory: item.itemCategory
+				slot: item.slot,
+				itemCategory: item.category
 			})) || [];
 
 		return {
