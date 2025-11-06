@@ -7,7 +7,7 @@ import { FightActionFunc } from "../../../../../data/FightAction";
 import {
 	FightActionResult
 } from "../../../../../../../Lib/src/types/FightActionResult";
-import {RandomUtils} from "../../../../../../../Lib/src/utils/RandomUtils";
+import { RandomUtils } from "../../../../../../../Lib/src/utils/RandomUtils";
 
 
 const use: FightActionFunc = (sender, receiver) => {

@@ -5,7 +5,7 @@ import {
 import { FightActionFunc } from "../../../../../data/FightAction";
 import { simpleDamageFightAction } from "../../templates/SimpleDamageFightActionTemplate";
 import { RandomUtils } from "../../../../../../../Lib/src/utils/RandomUtils";
-import {FightAlterations} from "../../FightAlterations";
+import { FightAlterations } from "../../FightAlterations";
 
 const use: FightActionFunc = (sender: Fighter, receiver: Fighter) => {
 	const result = simpleDamageFightAction(
