@@ -8,6 +8,7 @@ import {
 	CommandReportBigEventResultRes,
 	CommandReportChooseDestinationCityRes,
 	CommandReportEatInnMealRes,
+	CommandReportItemEnchantedRes,
 	CommandReportMonsterRewardRes,
 	CommandReportPacketReq,
 	CommandReportRefusePveFightRes,
@@ -661,6 +662,29 @@ export async function handleInnRoom(packet: CommandReportSleepRoomRes, context: 
 			health: packet.health,
 			price: packet.moneySpent
 		})}`);
+
+	await interaction.editReply({
+		embeds: [embed]
+	});
+}
+
+export async function handleItemEnchanted(packet: CommandReportItemEnchantedRes, context: PacketContext): Promise<void> {
+	const interaction = MessagesUtils.getCurrentInteraction(context);
+	if (!interaction) {
+		return;
+	}
+	const lng = context.discord!.language;
+
+	const embed = new CrowniclesEmbed()
+		.formatAuthor(i18n.t("commands:report.city.enchanter.acceptTitle", {
+			lng,
+			pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
+		}), interaction.user)
+		.setDescription(i18n.t("commands:report.city.enchanter.acceptStory", {
+			lng,
+			enchantmentId: packet.enchantmentId,
+			enchantmentType: packet.enchantmentType
+		}));
 
 	await interaction.editReply({
 		embeds: [embed]

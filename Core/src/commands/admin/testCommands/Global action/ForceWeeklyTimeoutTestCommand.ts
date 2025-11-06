@@ -2,6 +2,7 @@ import { Crownicles } from "../../../../core/bot/Crownicles";
 import {
 	ExecuteTestCommandLike, ITestCommand
 } from "../../../../core/CommandsTest";
+import { CrowniclesMonday } from "../../../../core/bot/cronJobs/CrowniclesMonday";
 
 export const commandInfo: ITestCommand = {
 	name: "forceweeklytimeout",
@@ -17,7 +18,7 @@ export const commandInfo: ITestCommand = {
  * Force a weekly timeout
  */
 const forceWeeklyTimeoutTestCommand: ExecuteTestCommandLike = async () => {
-	await Crownicles.weeklyTimeout();
+	await CrowniclesMonday.job();
 	return "Vous avez effectué une fin de semaine !";
 };
 

@@ -514,8 +514,7 @@
     "city": {
       "placeholder": "Choisissez quelque chose à faire",
       "title": "{{pseudo}}, vous êtes en ville !",
-      "description": "{emote:commands.report} Vous vous trouvez $t(models:map_locations.{{mapLocationId}}.atParticle) **{emote:mapTypes.{{mapTypeId}}} $t(models:map_locations.{{mapLocationId}}.name)** depuis **{{timeInCity}}**.\n\nVous pouvez accéder à beaucoup de services ici, mais vous pouvez également choisir de partir pour continuer votre aventure.",
-      "shortTime": "peu de temps",
+      "description": "{emote:commands.report} Vous êtes entré $t(models:map_locations.{{mapLocationId}}.atParticle) **{emote:mapTypes.{{mapTypeId}}} $t(models:map_locations.{{mapLocationId}}.name)** <t:{{enterCityTimestamp}}:R>.\n\nVous pouvez accéder à beaucoup de services ici, mais vous pouvez également choisir de partir pour continuer votre aventure.",
       "stayTitle": "{{pseudo}}, vous avez décidé de rester en ville",
       "stayDescription": "Vous avez décidé de rester en ville pour profiter des services disponibles. Vous pouvez toujours partir plus tard en utilisant la commande {command:report}.",
       "destination": "Vous entrez $t(models:map_locations.{{mapLocationId}}.inParticle) {emote:mapTypes.{{mapTypeId}}} **$t(models:map_locations.{{mapLocationId}}.name)**. Vous pouvez y trouver de nombreux choses utiles pour votre aventure!\n\nFaites la commande {command:report} afin de voir les services disponibles.",
@@ -533,6 +532,10 @@
         "stay": {
           "label": "Rester en ville",
           "description": "Restez en ville et profitez des services disponibles."
+        },
+        "enchanter": {
+          "label": "Aller voir l'enchanteur",
+          "description": "Allez voir l'enchanteur itinérant pour améliorer vos équipements."
         }
       },
       "inns": {
@@ -599,17 +602,21 @@
       },
       "enchanter": {
         "title": "{{pseudo}}, vous rencontrez l'enchanteur",
-        "emptyInventoryStory": "Bonjour aventurier, je me nomme Mernil et je suis un echanteur itinérant. Que dis-je, je suis le seul et unique enchanteur de ces contrées !\nJe pourrais vous aider à améliorer vos armes et armures, mais il faudrait que vous m'en rameniez d'abord. Revenez me voir quand vous en aurez ! Je ne sais pas si je serai encore dans cette ville demain cela dit...",
-        "story": "Bonjour aventurier, je me nomme Mernil et je suis un echanteur itinérant. Que dis-je, je suis le seul et unique enchanteur de ces contrées !\nJe vois que vous avez des objets qui pourraient être améliorés. Voulez-vous que j'y mette un peu de magie ?",
-        "enchantmentNoReduction": "Je peux vous mettre l'enchantement **$t(items:enchantments.{{enchantmentId}})** pour **{{price}}**. Qu'en dites-vous ?\nMais si ça ne convient pas, vous pouvez toujours revenir me voir demain, j'aurai d'autres runes à ma disposition. Cependant, je ne garantis pas que je serai toujours dans cette ville...",
-        "enchantmentWithReduction": "Je peux vous mettre l'enchantement **$t(items:enchantments.{{enchantmentId}})** pour seulement **{{price}}**. Je vous ai fait une réduction car j'apprécie les personnes qui s'intéresse à la magie ! Qu'en dites-vous ?\nMais si ça ne convient pas, vous pouvez toujours revenir me voir demain, j'aurai d'autres runes à ma disposition. Cependant, je ne garantis pas que je serai toujours dans cette ville...",
-        "hasAtLeastOneEnchantedItem": "D'ailleurs, je vois que vous avez déjà des objets enchantés, je n'y toucherai pas'. C'est le travail des forgerons de les désenchanter, pas le mien !",
-        "acceptStory": "Parfait ! Je m'occupe de ça tout de suite.\n\n*Mernil murmure quelques incantations en agitant une rune au-dessus de votre équipement...*\n\nVoilà, c'est fait ! Votre équipement est maintenant enchanté avec **$t(items:enchantments.{{enchantmentId}})**. Faites-en bon usage !",
+        "emptyInventoryStory": "🔮 Vous rencontrez un enchanteur itinérant qui se présente sous le nom de Mernil. D'un air hautain, il vous explique qu'il est le seul et le meilleur enchanteur de toutes les contrées, et qu'il peut améliorer vos équipements grâce à la magie des runes. Malheureusement, il semble que vous n'ayez aucun équipement à lui montrer pour le moment, vous décidez donc de partir et de revenir plus tard. En partant, il vous dit cependant qu'il ne sait pas s'il sera encore dans cette ville demain.",
+        "story": "🔮 Vous rencontrez un enchanteur itinérant qui se présente sous le nom de Mernil. D'un air hautain, il vous explique qu'il est le seul et le meilleur enchanteur de toutes les contrées, et qu'il peut améliorer vos équipements grâce à la magie des runes.",
+        "enchantmentNoReduction": "En effet, il peut vous mettre l'enchantement {emote:enchantmentTypes.{{enchantmentType}}} **$t(items:enchantments.{{enchantmentId}})** pour **{{price}}**.\nVous prenez le temps de réfléchir à sa proposition, mais il précise que si ça ne convient pas, vous pouvez toujours revenir le voir demain car il aura d'autres runes à sa disposition. Cependant, il ne garantit pas qu'il sera toujours dans cette ville...",
+        "enchantmentWithReduction": "En effet, il peut vous mettre l'enchantement {emote:enchantmentTypes.{{enchantmentType}}} **$t(items:enchantments.{{enchantmentId}})** pour **{{price}}**. Il ajoute qu'il vous a fait une réduction car il apprécie les personnes qui s'intéressent à la magie !\nVous prenez le temps de réfléchir à sa proposition, mais il précise que si ça ne convient pas, vous pouvez toujours revenir le voir demain car il aura d'autres runes à sa disposition. Cependant, il ne garantit pas qu'il sera toujours dans cette ville...",
+        "hasAtLeastOneEnchantedItem": "De plus, en voyant vos équipements déjà enchantés, Mernil fronce les sourcils. Il dit que c'est le travail des forgerons de désenchanter les objets, pas le sien, et qu'il ne les touchera pas.",
+        "acceptStory": "Il prend de suite votre équipement et murmure quelques incantations en agitant une rune au-dessus... Après quelques instants, il vous rend l'objet en vous disant que c'est fait ! Votre équipement est maintenant enchanté avec {emote:enchantmentTypes.{{enchantmentType}}} **$t(items:enchantments.{{enchantmentId}})**. Faites-en bon usage !",
+        "acceptTitle": "{{pseudo}}, enchantement réussi !",
         "priceMoneyOnly": "{{money}} {emote:unitValues.money}",
         "priceMoneyAndGems": "{{money}} {emote:unitValues.money} et {{gems}} {emote:unitValues.gem}",
         "notEnoughMoney": "Vous n'avez pas assez d'argent pour payer l'enchantement ! Il vous manque **{{missingMoney}}** {emote:unitValues.money}.",
         "notEnoughGems": "Vous n'avez pas assez de gemmes pour payer l'enchantement ! Il vous manque **{{missingGems}}** {emote:unitValues.gem}.",
-        "notEnoughMoneyAndGems": "Vous n'avez pas assez d'argent et de gemmes pour payer l'enchantement ! Il vous manque **{{missingMoney}}** {emote:unitValues.money} et **{{missingGems}}** {emote:unitValues.gem}."
+        "notEnoughMoneyAndGems": "Vous n'avez pas assez d'argent et de gemmes pour payer l'enchantement ! Il vous manque **{{missingMoney}}** {emote:unitValues.money} et **{{missingGems}}** {emote:unitValues.gem}.",
+        "cantEnchant": "Mernil regarde votre équipement et secoue la tête. Il dit qu'il ne peut malheureusement pas enchanter cet objet. Peut-être devriez-vous essayer avec un autre équipement ?",
+        "placeholder": "Choisissez un objet à enchanter",
+        "leave": "Retourner en ville"
       }
     }
   },

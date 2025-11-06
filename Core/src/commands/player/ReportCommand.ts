@@ -7,7 +7,10 @@ import {
 	CommandReportChooseDestinationRes,
 	CommandReportEatInnMealCooldownRes,
 	CommandReportEatInnMealRes,
+	CommandReportEnchantNotEnoughCurrenciesRes,
 	CommandReportErrorNoMonsterRes,
+	CommandReportItemCannotBeEnchantedRes,
+	CommandReportItemEnchantedRes,
 	CommandReportMonsterRewardRes,
 	CommandReportNotEnoughMoneyRes,
 	CommandReportPacketReq,
@@ -82,6 +85,7 @@ import {
 } from "../../data/City";
 import {
 	ReactionCollectorCity,
+	ReactionCollectorEnchantReaction,
 	ReactionCollectorExitCityReaction,
 	ReactionCollectorInnMealReaction,
 	ReactionCollectorInnRoomReaction
@@ -93,6 +97,7 @@ import { Settings } from "../../core/database/game/models/Setting";
 import { ItemEnchantment } from "../../../../Lib/src/types/ItemEnchantment";
 import { MainItemDetails } from "../../../../Lib/src/types/MainItemDetails";
 import { ClassConstants } from "../../../../Lib/src/constants/ClassConstants";
+import { PlayerMissionsInfos } from "../../core/database/game/models/PlayerMissionsInfo";
 
 export default class ReportCommand {
 	@commandRequires(CommandReportPacketReq, {
@@ -231,6 +236,56 @@ async function handleInnRoomReaction(
 	}));
 }
 
+async function handleEnchantReaction(player: Player, reaction: ReactionCollectorEnchantReaction, response: CrowniclesPacket[]): Promise<void> {
+	const enchantment = ItemEnchantment.getById(await Settings.ENCHANTER_ENCHANTMENT_ID.getValue());
+	const isPlayerMage = player.class === ClassConstants.CLASSES_ID.MYSTIC_MAGE;
+	const price = enchantment.getEnchantmentCost(isPlayerMage);
+
+	const hasEnoughMoney = player.money >= price.money;
+	const playerMissionsInfo = price.gems !== 0 ? await PlayerMissionsInfos.getOfPlayer(player.id) : null;
+	const hasEnoughGems = playerMissionsInfo ? playerMissionsInfo.gems >= price.gems : true;
+
+	if (!hasEnoughMoney || !hasEnoughGems) {
+		response.push(makePacket(CommandReportEnchantNotEnoughCurrenciesRes, {
+			missingMoney: hasEnoughMoney ? 0 : price.money - player.money,
+			missingGems: hasEnoughGems ? 0 : price.gems - playerMissionsInfo.gems
+		}));
+		return;
+	}
+
+	const itemToEnchant = await InventorySlots.getItem(player.id, reaction.slot, reaction.itemCategory);
+	if (!itemToEnchant || !(itemToEnchant.isWeapon() || itemToEnchant.isArmor()) || itemToEnchant.itemEnchantmentId) {
+		CrowniclesLogger.error("Player tried to enchant an item that doesn't exist or cannot be enchanted. It shouldn't happen because the player must not be able to switch items while in the collector.");
+		response.push(makePacket(CommandReportItemCannotBeEnchantedRes, {}));
+		return;
+	}
+
+	await player.reload();
+
+	itemToEnchant.itemEnchantmentId = enchantment.id;
+	if (price.money > 0) {
+		await player.spendMoney({
+			response,
+			amount: price.money,
+			reason: NumberChangeReason.ENCHANT_ITEM
+		});
+	}
+	if (price.gems > 0) {
+		await playerMissionsInfo.spendGems(price.gems, response, NumberChangeReason.ENCHANT_ITEM);
+	}
+
+	await Promise.all([
+		itemToEnchant.save(),
+		player.save(),
+		playerMissionsInfo ? playerMissionsInfo.save() : Promise.resolve()
+	]);
+
+	response.push(makePacket(CommandReportItemEnchantedRes, {
+		enchantmentId: enchantment.id,
+		enchantmentType: enchantment.kind.type.id
+	}));
+}
+
 function cityCollectorEndCallback(context: PacketContext, player: Player, forceSpecificEvent: number): EndCallback {
 	return async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
 		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.REPORT_COMMAND);
@@ -250,6 +305,9 @@ function cityCollectorEndCallback(context: PacketContext, player: Player, forceS
 				case ReactionCollectorInnRoomReaction.name:
 					await handleInnRoomReaction(player, firstReaction.reaction.data as ReactionCollectorInnRoomReaction, response);
 					break;
+				case ReactionCollectorEnchantReaction.name:
+					await handleEnchantReaction(player, firstReaction.reaction.data as ReactionCollectorEnchantReaction, response);
+					break;
 				default:
 					CrowniclesLogger.error(`Unknown city reaction: ${firstReaction.reaction.type}`);
 					break;
@@ -264,9 +322,10 @@ async function sendCityCollector(context: PacketContext, response: CrowniclesPac
 	const isEnchanterHere = await Settings.ENCHANTER_CITY.getValue() === city.id;
 	const enchantmentId = isEnchanterHere ? await Settings.ENCHANTER_ENCHANTMENT_ID.getValue() : null;
 	const isPlayerMage = player.class === ClassConstants.CLASSES_ID.MYSTIC_MAGE;
+	const enchantment = ItemEnchantment.getById(enchantmentId);
 
 	const collector = new ReactionCollectorCity({
-		timeInCity: TravelTime.getTravelDataSimplified(player, currentDate).playerTravelledTime,
+		enterCityTimestamp: TravelTime.getTravelDataSimplified(player, currentDate).travelStartTime,
 		mapTypeId: MapLocationDataController.instance.getById(player.getDestinationId()).type,
 		mapLocationId: player.getDestinationId(),
 		inns: city.inns.map(inn => ({
@@ -292,11 +351,16 @@ async function sendCityCollector(context: PacketContext, response: CrowniclesPac
 		},
 		enchanter: isEnchanterHere
 			? {
-				enchantableItems: playerInventory.filter(i => (i.isWeapon() || i.isArmor()) && !i.itemEnchantmentId).map(i => i.itemWithDetails(player) as MainItemDetails),
+				enchantableItems: playerInventory.filter(i => (i.isWeapon() || i.isArmor()) && !i.itemEnchantmentId).map(i => ({
+					category: i.itemCategory,
+					slot: i.slot,
+					details: i.itemWithDetails(player) as MainItemDetails
+				})),
 				isInventoryEmpty: playerInventory.filter(i => i.isWeapon() || i.isArmor() && i.itemId !== 0).length === 0,
 				hasAtLeastOneEnchantedItem: playerInventory.filter(i => (i.isWeapon() || i.isArmor()) && Boolean(i.itemEnchantmentId)).length > 0,
 				enchantmentId,
-				enchantmentCost: ItemEnchantment.getById(enchantmentId).getEnchantmentCost(isPlayerMage),
+				enchantmentCost: enchantment.getEnchantmentCost(isPlayerMage),
+				enchantmentType: enchantment.kind.type.id,
 				mageReduction: isPlayerMage
 			}
 			: null

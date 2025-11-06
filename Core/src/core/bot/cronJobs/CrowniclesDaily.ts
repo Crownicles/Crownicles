@@ -27,7 +27,11 @@ export class CrowniclesDaily {
 		 *
 		 * The first one is set immediately so if the bot crashes before programming the next one, it will be set anyway to approximately a valid date (at 1s max of difference)
 		 */
-		await Settings.NEXT_DAILY_RESET.setValue(await Settings.NEXT_DAILY_RESET.getValue() + 24 * 60 * 60 * 1000);
+		let nextDaily = await Settings.NEXT_DAILY_RESET.getValue() + 24 * 60 * 60 * 1000;
+		while (nextDaily < Date.now()) {
+			nextDaily += 24 * 60 * 60 * 1000;
+		}
+		await Settings.NEXT_DAILY_RESET.setValue(nextDaily);
 
 		CrowniclesDaily.randomPotion()
 			.finally(() => null);
@@ -83,8 +87,16 @@ export class CrowniclesDaily {
 	 */
 	static async reloadEnchanter(): Promise<void> {
 		try {
-			await Settings.ENCHANTER_ENCHANTMENT_ID.setValue(ItemEnchantment.getRandomEnchantment().id);
-			await Settings.ENCHANTER_CITY.setValue(CityDataController.instance.getRandomCity().id);
+			const enchantmentId = ItemEnchantment.getRandomEnchantment().id;
+			await Settings.ENCHANTER_ENCHANTMENT_ID.setValue(enchantmentId);
+
+			const cityId = CityDataController.instance.getRandomCity().id;
+			await Settings.ENCHANTER_CITY.setValue(cityId);
+
+			CrowniclesLogger.info("Enchanter reloaded", {
+				enchantmentId,
+				cityId
+			});
 		}
 		catch (error) {
 			CrowniclesLogger.error(`Something went wrong when reloading the enchanter: ${error}`);

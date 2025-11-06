@@ -4,7 +4,10 @@ import {
 	CommandReportChooseDestinationCityRes,
 	CommandReportEatInnMealCooldownRes,
 	CommandReportEatInnMealRes,
+	CommandReportEnchantNotEnoughCurrenciesRes,
 	CommandReportErrorNoMonsterRes,
+	CommandReportItemCannotBeEnchantedRes,
+	CommandReportItemEnchantedRes,
 	CommandReportMonsterRewardRes,
 	CommandReportNotEnoughMoneyRes,
 	CommandReportRefusePveFightRes,
@@ -18,6 +21,7 @@ import {
 	handleChooseDestinationCity,
 	handleEatInnMeal,
 	handleInnRoom,
+	handleItemEnchanted,
 	refusePveFight,
 	reportResult,
 	reportTravelSummary,
@@ -79,5 +83,27 @@ export default class ReportCommandPacketHandlers {
 	@packetHandler(CommandReportNotEnoughMoneyRes)
 	async reportNotEnoughMoneyRes(context: PacketContext, packet: CommandReportNotEnoughMoneyRes): Promise<void> {
 		await handleClassicError(context, "error:notEnoughMoney", { money: packet.missingMoney });
+	}
+
+	@packetHandler(CommandReportEnchantNotEnoughCurrenciesRes)
+	async reportEnchantNotEnoughCurrenciesRes(context: PacketContext, packet: CommandReportEnchantNotEnoughCurrenciesRes): Promise<void> {
+		const tr = packet.missingMoney > 0
+			? packet.missingGems > 0
+				? "commands:report.city.enchanter.notEnoughMoneyAndGems"
+				: "commands:report.city.enchanter.notEnoughMoney"
+			: "commands:report.city.enchanter.notEnoughGems";
+		await handleClassicError(context, tr, {
+			missingMoney: packet.missingMoney, missingGems: packet.missingGems
+		});
+	}
+
+	@packetHandler(CommandReportItemEnchantedRes)
+	async reportItemEnchantedRes(context: PacketContext, packet: CommandReportItemEnchantedRes): Promise<void> {
+		await handleItemEnchanted(packet, context);
+	}
+
+	@packetHandler(CommandReportItemCannotBeEnchantedRes)
+	async reportItemCannotBeEnchantedRes(context: PacketContext, _packet: CommandReportItemCannotBeEnchantedRes): Promise<void> {
+		await handleClassicError(context, "commands:report.city.enchanter.cantEnchant");
 	}
 }
