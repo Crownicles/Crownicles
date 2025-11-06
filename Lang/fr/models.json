@@ -899,6 +899,11 @@
       "new": "est endormi.",
       "noAction": "dort profondément.",
       "stop": "s'est réveillé."
+    },
+    "sing": {
+      "customMessage": "se met à chanter.",
+      "name_one": "Chant de la mer",
+      "name_other": "Chants de la mer"
     }
   },
   "leagues": {
