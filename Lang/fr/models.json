@@ -893,7 +893,13 @@
       "new": "est submergé.",
       "active": "est submergé et a du mal à respirer.",
       "stop": "n'est plus submergé."
-}
+      },
+    "sleeping": {
+      "name": "endormi",
+      "new": "est endormi.",
+      "noAction": "dort profondément.",
+      "stop": "s'est réveillé."
+    }
   },
   "leagues": {
     "0": "Ligue bois",
