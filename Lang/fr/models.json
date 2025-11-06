@@ -1460,6 +1460,10 @@
     "waterSpirit": {
       "name": "Esprit des mers",
       "description": ""
+    },
+    "mermaid": {
+      "name": "Sirène",
+      "description": ""
     }
   },
   "objects": {
