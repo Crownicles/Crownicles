@@ -897,7 +897,7 @@
     "sleeping": {
       "name": "endormi",
       "new": "est endormi.",
-      "noAction": "dort profondément.",
+      "active": "dort profondément.",
       "stop": "s'est réveillé."
     },
     "sing": {
@@ -906,12 +906,12 @@
       "name_other": "Chants de la mer"
     },
     "hellishScream": {
-      "name_one": "Cri infernal",
-      "name_other": "Cris infernaux"
+      "name_one": "Attaque cri infernal",
+      "name_other": "Attaques cris infernaux"
     },
     "callOfTheSea": {
-      "name_one": "Appel de la mer",
-      "name_other": "Appels des mers"
+      "name_one": "Attaque appel de la mer",
+      "name_other": "Attaques appels des mers"
     }
   },
   "leagues": {
