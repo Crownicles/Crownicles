@@ -1431,7 +1431,8 @@ export const CrowniclesIcons: {
 		maleIceDragon: "🐲",
 		femaleIceDragon: "🐉",
 		turtle: "🐢",
-		waterSpirit: "✨"
+		waterSpirit: "✨",
+		mermaid: "🧜‍♀️"
 	},
 	armors: {
 		0: "⬛",
@@ -2077,6 +2078,7 @@ export const CrowniclesIcons: {
 		shieldAttack: "🛡️",
 		simpleAttack: "⚔️",
 		slamAttack: "🦶",
+		sleeping: "😴",
 		slowed: "🦥",
 		soaked: "💧",
 		solidification: "🧱",

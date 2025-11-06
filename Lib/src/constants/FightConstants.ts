@@ -81,6 +81,7 @@ export abstract class FightConstants {
 				PETRIFIED: "petrified",
 				POISONED: "poisoned",
 				PROTECTED: "protected",
+				SLEEPING: "sleeping",
 				SLOWED: "slowed",
 				SOAKED: "soaked",
 				STUNNED: "stunned",
