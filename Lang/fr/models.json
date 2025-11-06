@@ -369,6 +369,7 @@
       "name_other": "Repas de famille"
     },
     "fireAttack": {
+      "customMessage": "tente de brûler son adversaire mais celui-ci est insensible au feu.",
       "description": "Brûle l'adversaire. L'altération \"brûlé\" inflige des dégâts à votre adversaire sur la durée.",
       "name_one": "Attaque feu",
       "name_other": "Attaques feu"
@@ -827,6 +828,10 @@
     "waterJet": {
       "name_one": "Attaque jet d'eau",
       "name_other": "Attaques jet d'eau"
+    },
+    "tidalWave": {
+      "name_one": "Attaque raz-de-marée",
+      "name_other": "Attaques raz-de-marée"
     },
     "weak": {
       "name": "affaibli",
