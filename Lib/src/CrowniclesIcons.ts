@@ -2099,7 +2099,8 @@ export const CrowniclesIcons: {
 		hydraulicHeal: "🫧",
 		tidalWave: "🌊",
 		sing: "🎶",
-		hellishScream: "🗣️"
+		hellishScream: "🗣️",
+		callOfTheSea: "📲"
 
 	},
 	classKinds: {

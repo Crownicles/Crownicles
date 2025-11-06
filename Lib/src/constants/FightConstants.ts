@@ -134,7 +134,8 @@ export abstract class FightConstants {
 				TIDAL_WAVE: "tidalWave",
 				HYDRAULIC_HEAL: "hydraulicHeal",
 				SING: "sing",
-				HELLISH_SCREAM: "hellishScream"
+				HELLISH_SCREAM: "hellishScream",
+				CALL_OF_THE_SEA: "callOfTheSea"
 			},
 			PET: {
 				BITE: "bite",
