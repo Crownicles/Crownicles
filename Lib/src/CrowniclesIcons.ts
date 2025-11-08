@@ -2110,7 +2110,8 @@ export const CrowniclesIcons: {
 		sing: "🎶",
 		hellishScream: "🗣️",
 		callOfTheSea: "📲",
-		inkJet: "🖋️"
+		inkJet: "🖋️",
+		wateryGust: "🔘"
 
 	},
 	classKinds: {

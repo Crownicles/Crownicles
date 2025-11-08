@@ -917,6 +917,10 @@
       "customMessage": "jette de l'encre sur son adversaire.",
       "name_one": "Jet d'encre",
       "name_other": "Jet d'encre"
+    },
+    "wateryGust": {
+      "name_one": "Attaque rafale aqueuse",
+      "name_other": "Attaques rafales aqueuses"
     }
   },
   "leagues": {
