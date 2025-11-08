@@ -941,6 +941,11 @@
       "customMessage": "balance une tentacule sur son adversaire.",
       "name_one": "Attaque coup de tentacule",
       "name_other": "Attaques coups de tentacules"
+    },
+    "abyssalEmbraceAttack": {
+      "customMessage": "ne parvient pas à attraper son adversaire qui la tient à distance respectable grâce à ses attaques",
+      "name_one": "Attaque étreinte abyssale",
+      "name_other": "Attaques étreintes abyssales"
     }
   },
   "leagues": {
