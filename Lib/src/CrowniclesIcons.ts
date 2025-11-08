@@ -2058,7 +2058,10 @@ export const CrowniclesIcons: {
 		hellishScream: "🗣️",
 		callOfTheSea: "📲",
 		inkJet: "🖋️",
-		wateryGust: "🔘"
+		wateryGust: "🔘",
+		chargeChargeMaelstromAttack: "🌀",
+		chargeMaelstromAttack: "🌀",
+		maelstromAttack: "🌀"
 
 	},
 	classKinds: {
