@@ -136,7 +136,8 @@ export abstract class FightConstants {
 				SING: "sing",
 				HELLISH_SCREAM: "hellishScream",
 				CALL_OF_THE_SEA: "callOfTheSea",
-				INKJET: "inkJet"
+				INKJET: "inkJet",
+				WATERY_GUST: "wateryGust"
 			},
 			PET: {
 				BITE: "bite",
