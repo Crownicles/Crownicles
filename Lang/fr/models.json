@@ -1498,6 +1498,10 @@
     "mermaid": {
       "name": "Sirène",
       "description": ""
+    },
+    "kraken": {
+      "name": "Kraken",
+      "description": ""
     }
   },
   "objects": {
