@@ -1405,7 +1405,8 @@ export const CrowniclesIcons: {
 		femaleIceDragon: "🐉",
 		turtle: "🐢",
 		waterSpirit: "✨",
-		mermaid: "🧜‍♀️"
+		mermaid: "🧜‍♀️",
+		kraken: "🦑"
 	},
 	armors: {
 		0: "⬛",
@@ -2055,7 +2056,8 @@ export const CrowniclesIcons: {
 		tidalWave: "🌊",
 		sing: "🎶",
 		hellishScream: "🗣️",
-		callOfTheSea: "📲"
+		callOfTheSea: "📲",
+		inkJet: "🖋️"
 
 	},
 	classKinds: {
