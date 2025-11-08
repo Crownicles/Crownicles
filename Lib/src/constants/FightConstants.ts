@@ -137,7 +137,10 @@ export abstract class FightConstants {
 				HELLISH_SCREAM: "hellishScream",
 				CALL_OF_THE_SEA: "callOfTheSea",
 				INKJET: "inkJet",
-				WATERY_GUST: "wateryGust"
+				WATERY_GUST: "wateryGust",
+				CHARGE_CHARGE_MAELSTROM_ATTACK: "chargeChargeMaelstromAttack",
+				CHARGE_MAELSTROM_ATTACK: "chargeMaelstromAttack",
+				MAELSTROM_ATTACK: "maelstromAttack"
 			},
 			PET: {
 				BITE: "bite",

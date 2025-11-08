@@ -921,6 +921,21 @@
     "wateryGust": {
       "name_one": "Attaque rafale aqueuse",
       "name_other": "Attaques rafales aqueuses"
+    },
+    "chargeChargeMaelstromAttack": {
+      "customMessage": "s'immobilise et se prépare à déclencher un désastre.",
+      "name_one": "Attaque maelström",
+      "name_other": "Attaques maelströms"
+    },
+    "chargeMaelstromAttack": {
+      "customMessage": "continue de concentrer son énergie, prêt à libérer une puissance dévastatrice.",
+      "name_one": "Attaque maelström",
+      "name_other": "Attaques maelströms"
+    },
+    "maelstromAttack": {
+      "customMessage": "déchaîne un maelström, mêlant vents et courants dans un tourbillon ravageur.",
+      "name_one": "Attaque maelström",
+      "name_other": "Attaques maelströms"
     }
   },
   "leagues": {
