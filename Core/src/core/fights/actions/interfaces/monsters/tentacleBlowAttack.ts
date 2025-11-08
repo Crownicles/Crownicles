@@ -5,6 +5,7 @@ import {
 import { FightAlterations } from "../../FightAlterations";
 import { FightActionFunc } from "../../../../../data/FightAction";
 import { simpleDamageFightAction } from "../../templates/SimpleDamageFightActionTemplate";
+import {RandomUtils} from "../../../../../../../Lib/src/utils/RandomUtils";
 
 const use: FightActionFunc = (sender, receiver, _fightAction) => {
 	const result = simpleDamageFightAction(
@@ -23,7 +24,7 @@ const use: FightActionFunc = (sender, receiver, _fightAction) => {
 	);
 
 	// 30% chance to stun the defender
-	if (Math.random() < 0.30) {
+	if (RandomUtils.crowniclesRandom.bool(0.3)) {
 		FightActionController.applyAlteration(result, {
 			selfTarget: false,
 			alteration: FightAlterations.STUNNED
