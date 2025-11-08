@@ -1,0 +1,40 @@
+{
+  "baseEnergyValue": 360,
+  "attackRatio": 300,
+  "defenseRatio": 120,
+  "speedRatio": 35,
+  "breath": 15,
+  "maxBreath": 35,
+  "breathRegen": 7,
+  "rewardFactor": 1.5,
+  "attacks": [
+    {
+      "id": "inkJet",
+      "minLevel": 50,
+      "weight": 3
+    },
+    {
+      "id": "wateryGust",
+      "minLevel": 0,
+      "weight": 4
+    },
+    {
+      "id": "tentacleBlowAttack",
+      "minLevel": 0,
+      "weight": 3
+    },
+    {
+      "id": "chargeChargeMaelstromAttack",
+      "minLevel": 100,
+      "weight": 2
+    },
+    {
+      "id": "abyssalEmbraceAttack",
+      "minLevel": 50,
+      "weight": 3
+    }
+  ],
+  "maps": [
+    1113
+  ]
+}
