@@ -140,7 +140,8 @@ export abstract class FightConstants {
 				WATERY_GUST: "wateryGust",
 				CHARGE_CHARGE_MAELSTROM_ATTACK: "chargeChargeMaelstromAttack",
 				CHARGE_MAELSTROM_ATTACK: "chargeMaelstromAttack",
-				MAELSTROM_ATTACK: "maelstromAttack"
+				MAELSTROM_ATTACK: "maelstromAttack",
+				TENTACLE_BLOW_ATTACK: "tentacleBlowAttack"
 			},
 			PET: {
 				BITE: "bite",

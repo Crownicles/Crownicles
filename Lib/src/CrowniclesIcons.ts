@@ -2061,7 +2061,8 @@ export const CrowniclesIcons: {
 		wateryGust: "🔘",
 		chargeChargeMaelstromAttack: "🌀",
 		chargeMaelstromAttack: "🌀",
-		maelstromAttack: "🌀"
+		maelstromAttack: "🌀",
+		tentacleBlowAttack: "🪢"
 
 	},
 	classKinds: {

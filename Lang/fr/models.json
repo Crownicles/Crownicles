@@ -936,6 +936,11 @@
       "customMessage": "déchaîne un maelström, mêlant vents et courants dans un tourbillon ravageur.",
       "name_one": "Attaque maelström",
       "name_other": "Attaques maelströms"
+    },
+    "tentacleBlowAttack": {
+      "customMessage": "balance une tentacule sur son adversaire.",
+      "name_one": "Attaque coup de tentacule",
+      "name_other": "Attaques coups de tentacules"
     }
   },
   "leagues": {
