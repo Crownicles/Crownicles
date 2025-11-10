@@ -5,6 +5,8 @@ export abstract class HelpConstants {
 
 	static readonly COMMAND_SEPARATOR_FOR_GENERAL_DESCRIPTION = " • ";
 
+	static readonly POPULAR_COMMANDS = ["help", "profile", "report", "fight", "inventory", "shop", "guild", "pet", "daily"];
+
 	static readonly COMMAND_CATEGORY = {
 		UTIL: "util",
 		PLAYER: "player",
