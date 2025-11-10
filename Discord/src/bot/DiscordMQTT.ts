@@ -24,6 +24,8 @@ import { millisecondsToSeconds } from "../../../Lib/src/utils/TimeUtils";
 import { CrowniclesLogger } from "../../../Lib/src/logs/CrowniclesLogger";
 import { AsyncCorePacketSender } from "./AsyncCorePacketSender";
 import { DiscordConstants } from "../DiscordConstants";
+import { CommandTestListPacketReq } from "../../../Lib/src/packets/commands/CommandTestListPacket";
+import { PacketUtils } from "../utils/PacketUtils";
 
 const DEFAULT_MQTT_CLIENT_OPTIONS = {
 	connectTimeout: MqttConstants.CONNECTION_TIMEOUT
@@ -51,6 +53,32 @@ export class DiscordMQTT {
 
 		if (isMainShard) {
 			this.connectSubscribeAndHandleNotifications();
+			this.requestTestCommandsList();
+		}
+	}
+
+	/**
+	 * Request the list of test commands from Core for autocomplete
+	 */
+	private static requestTestCommandsList(): void {
+		try {
+			const packet = makePacket(CommandTestListPacketReq, {});
+			const context: PacketContext = {
+				frontEndOrigin: "discord",
+				frontEndSubOrigin: "system",
+				discord: {
+					shardId,
+					user: "",
+					interaction: "",
+					channel: "",
+					language: LANGUAGE.ENGLISH
+				}
+			};
+			PacketUtils.sendPacketToBackend(context, packet);
+			CrowniclesLogger.info("Requested test commands list from Core");
+		}
+		catch (error) {
+			CrowniclesLogger.errorWithObj("Failed to request test commands list", error);
 		}
 	}
 
