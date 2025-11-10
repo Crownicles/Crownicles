@@ -144,9 +144,7 @@ export async function drinkAcceptCollector(context: PacketContext, packet: React
 			component.setDisabled(true);
 		});
 
-		await msg.edit({
-			components: [row]
-		});
+		await msg.edit({ components: [row] });
 	});
 
 	return [selectCollector];

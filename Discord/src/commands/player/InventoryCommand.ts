@@ -176,9 +176,7 @@ export async function handleCommandInventoryPacketRes(packet: CommandInventoryPa
 		const row = new ActionRowBuilder<ButtonBuilder>().addComponents(switchItemsButton.setDisabled(true));
 		disableRows([row]);
 
-		await msg.edit({
-			components: [row]
-		});
+		await msg.edit({ components: [row] });
 	});
 }
 

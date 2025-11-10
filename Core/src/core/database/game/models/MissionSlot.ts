@@ -69,18 +69,14 @@ export class MissionSlots {
 		return Promise.resolve(MissionSlot.findOne(
 			{
 				rejectOnEmpty: true,
-				where: {
-					id
-				}
+				where: { id }
 			}
 		));
 	}
 
 	static async getOfPlayer(playerId: number): Promise<MissionSlot[]> {
 		const missionSlots = await MissionSlot.findAll({
-			where: {
-				playerId
-			}
+			where: { playerId }
 		});
 		if (missionSlots.length === 0) {
 			return [
@@ -111,12 +107,8 @@ export function initModel(sequelize: Sequelize): void {
 			primaryKey: true,
 			autoIncrement: true
 		},
-		playerId: {
-			type: DataTypes.INTEGER
-		},
-		missionId: {
-			type: DataTypes.TEXT
-		},
+		playerId: { type: DataTypes.INTEGER },
+		missionId: { type: DataTypes.TEXT },
 		missionVariant: {
 			type: DataTypes.INTEGER
 		},
@@ -134,15 +126,9 @@ export function initModel(sequelize: Sequelize): void {
 		pointsToWin: {
 			type: DataTypes.INTEGER
 		},
-		gemsToWin: {
-			type: DataTypes.INTEGER
-		},
-		xpToWin: {
-			type: DataTypes.INTEGER
-		},
-		moneyToWin: {
-			type: DataTypes.INTEGER
-		},
+		gemsToWin: { type: DataTypes.INTEGER },
+		xpToWin: { type: DataTypes.INTEGER },
+		moneyToWin: { type: DataTypes.INTEGER },
 		updatedAt: {
 			type: DataTypes.DATE,
 			defaultValue: moment()

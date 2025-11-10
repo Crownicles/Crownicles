@@ -40,9 +40,7 @@ type ConfigStructure = {
 		root_password: string;
 		port: number;
 	};
-	mqtt: {
-		host: string;
-	};
+	mqtt: { host: string };
 	logs: {
 		level: string;
 		locations: string[];

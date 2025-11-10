@@ -105,9 +105,7 @@ export async function lotteryCollector(context: PacketContext, packet: ReactionC
 		// Disable buttons instead of removing them
 		disableRows([row]);
 
-		await msg.edit({
-			components: [row]
-		});
+		await msg.edit({ components: [row] });
 	});
 
 	return [buttonCollector];

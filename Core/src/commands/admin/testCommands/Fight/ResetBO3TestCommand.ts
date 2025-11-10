@@ -12,9 +12,7 @@ import { Players } from "../../../../core/database/game/models/Player";
 export const commandInfo: ITestCommand = {
 	name: "resetbo3",
 	commandFormat: "<keycloakId>",
-	typeWaited: {
-		keycloakId: TypeKey.ID
-	},
+	typeWaited: { keycloakId: TypeKey.ID },
 	description: "Remet à zéro le Best of 3 (série de combats PvP) contre un joueur spécifique."
 };
 

@@ -202,9 +202,7 @@ export async function handleDailyBonusCollector(context: PacketContext, packet: 
 			component.setDisabled(true);
 		});
 
-		await msg.edit({
-			components: [row]
-		});
+		await msg.edit({ components: [row] });
 	});
 
 	return [selectCollector];

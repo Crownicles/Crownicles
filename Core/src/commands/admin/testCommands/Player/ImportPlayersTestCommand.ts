@@ -94,9 +94,7 @@ async function createPetFromData(petData: ImportedPlayer["pet"]): Promise<number
 async function importPlayerInventory(playerId: number, inventory: ImportedPlayer["inventory"]): Promise<void> {
 	// Clear existing inventory
 	await InventorySlot.destroy({
-		where: {
-			playerId
-		}
+		where: { playerId }
 	});
 
 	// Import inventory slots

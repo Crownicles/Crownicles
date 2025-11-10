@@ -8,9 +8,7 @@ export const commandInfo: ITestCommand = {
 	name: "advancetravel",
 	aliases: ["atravel"],
 	commandFormat: "<time>",
-	typeWaited: {
-		time: TypeKey.INTEGER
-	},
+	typeWaited: { time: TypeKey.INTEGER },
 	description: "Fait avancer le temps de voyage du joueur de X minutes. Permet de simuler la fin d'un déplacement sans attendre"
 };
 

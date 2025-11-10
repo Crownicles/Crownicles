@@ -6,9 +6,7 @@ import { Badge } from "../../../../../../Lib/src/types/Badge";
 export const commandInfo: ITestCommand = {
 	name: "givebadge",
 	commandFormat: "<badge>",
-	typeWaited: {
-		badge: TypeKey.STRING
-	},
+	typeWaited: { badge: TypeKey.STRING },
 	description: "Attribue un badge spécifique au joueur. Utilisez '*' pour tous les badges. La commande affiche la liste des badges disponibles en cas d'erreur"
 };
 

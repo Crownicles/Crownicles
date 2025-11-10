@@ -28,9 +28,7 @@ import { MapLocationDataController } from "../../data/MapLocation";
 type MissionInformations = {
 	missionId: string;
 	count?: number;
-	params?: {
-		[key: string]: unknown;
-	};
+	params?: { [key: string]: unknown };
 	set?: boolean;
 };
 

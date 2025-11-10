@@ -27,9 +27,7 @@ export interface EstimatedDiameterMinMax {
 }
 
 export interface NearEarthObject {
-	links: {
-		self: string;
-	};
+	links: { self: string };
 	id: string;
 	neo_reference_id: string;
 	name: string;

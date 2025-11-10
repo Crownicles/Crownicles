@@ -211,9 +211,7 @@ export const petAttributes001 = {
 		type: DataTypes.TEXT,
 		allowNull: false
 	},
-	diet: {
-		type: DataTypes.TEXT
-	},
+	diet: { type: DataTypes.TEXT },
 	updatedAt: DataTypes.DATE,
 	createdAt: DataTypes.DATE
 };
@@ -395,9 +393,7 @@ export const possibilitiesAttributes001 = {
 		type: DataTypes.INTEGER,
 		allowNull: false
 	},
-	nextEvent: {
-		type: DataTypes.INTEGER
-	},
+	nextEvent: { type: DataTypes.INTEGER },
 	restrictedMaps: {
 		type: DataTypes.TEXT
 	},

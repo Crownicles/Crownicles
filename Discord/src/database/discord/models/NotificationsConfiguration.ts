@@ -65,11 +65,7 @@ export class NotificationsConfiguration extends Model {
 export class NotificationsConfigurations {
 	static async getOrRegister(discordId: string): Promise<NotificationsConfiguration> {
 		return (await NotificationsConfiguration.findOrCreate(
-			{
-				where: {
-					discordId
-				}
-			}
+			{ where: { discordId } }
 		))[0]; // We don't care about the boolean that findOrCreate returns, so we strip it there
 	}
 }

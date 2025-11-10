@@ -36,9 +36,7 @@ const forceJoinGuildTestCommand: ExecuteTestCommandLike = async (player, args) =
 	if (guildToLeave && guildToLeave.chiefId === player.id) {
 		// The chief is leaving : destroy the guild
 		await Guild.destroy({
-			where: {
-				id: guildToLeave.id
-			}
+			where: { id: guildToLeave.id }
 		});
 	}
 

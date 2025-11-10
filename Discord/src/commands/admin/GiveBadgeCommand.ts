@@ -121,18 +121,14 @@ async function handleGetPlayerInfoResponse(
 			const newBadges = getPlayerInfoPacket.data.badges!.concat(selectedOption as Badge);
 			PacketUtils.sendPacketToBackend(context, makePacket(CommandSetPlayerInfoReq, {
 				keycloakId: targetKeycloakId,
-				dataToSet: {
-					badges: newBadges
-				}
+				dataToSet: { badges: newBadges }
 			}));
 		});
 
 		selectCollector.on("end", async () => {
 			disableRows(rows);
 
-			await msg.edit({
-				components: rows
-			});
+			await msg.edit({ components: rows });
 		});
 	}
 }
@@ -147,9 +143,7 @@ async function handleGetResourcesResponse(
 	if (resourcesPacketName === CommandGetResourcesRes.name) {
 		await DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse(resourcesContext, makePacket(CommandGetPlayerInfoReq, {
 			keycloakId: targetKeycloakId,
-			dataToGet: {
-				badges: true
-			}
+			dataToGet: { badges: true }
 		}), (playerInfoContext, playerInfoPacketName, playerInfoPacket) => {
 			handleGetPlayerInfoResponse(interaction, playerInfoContext, playerInfoPacketName, playerInfoPacket, resourcesPacket, targetKeycloakId);
 		});

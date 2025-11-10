@@ -12,9 +12,7 @@ export const commandInfo: ITestCommand = {
 	name: "sendnotification",
 	aliases: ["sendnotif"],
 	commandFormat: "<type>",
-	typeWaited: {
-		type: TypeKey.STRING
-	},
+	typeWaited: { type: TypeKey.STRING },
 	description: "Envoie une notification de test au joueur. Types disponibles : 'report' (destination atteinte), 'guildDaily' (mission de guilde). Utile pour tester l'affichage des notifications"
 };
 

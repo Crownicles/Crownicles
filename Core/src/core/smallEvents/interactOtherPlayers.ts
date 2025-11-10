@@ -300,11 +300,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 
 	async executeSmallEvent(response, player, context): Promise<void> {
 		const numberOfPlayers = await Player.count({
-			where: {
-				score: {
-					[Op.gt]: 100
-				}
-			}
+			where: { score: { [Op.gt]: 100 } }
 		});
 
 		const playersOnMap = await MapLocationDataController.instance.getPlayersOnMap(player.getDestinationId(), player.getPreviousMapId(), player.id);

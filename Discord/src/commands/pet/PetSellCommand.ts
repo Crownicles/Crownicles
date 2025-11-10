@@ -84,9 +84,7 @@ export async function createPetSellCollector(context: PacketContext, packet: Rea
 		? {
 			acceptedUsersId: [data.buyerKeycloakId, context.keycloakId!]
 		}
-		: {
-			anyoneCanReact: true
-		};
+		: { anyoneCanReact: true };
 
 	return await DiscordCollectorUtils.createAcceptRefuseCollector(interaction, embed, packet, context, opts);
 }

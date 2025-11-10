@@ -16,9 +16,7 @@ export const commandInfo: ITestCommand = {
 	name: "smallEvent",
 	aliases: ["se"],
 	commandFormat: "<seName>",
-	typeWaited: {
-		seName: TypeKey.STRING
-	},
+	typeWaited: { seName: TypeKey.STRING },
 	description: strings.join("\n")
 };
 

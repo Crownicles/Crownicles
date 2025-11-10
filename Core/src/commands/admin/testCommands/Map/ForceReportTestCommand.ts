@@ -9,9 +9,7 @@ export const commandInfo: ITestCommand = {
 	name: "forcereport",
 	aliases: ["fr", "forcer"],
 	commandFormat: "<id>",
-	typeWaited: {
-		id: TypeKey.INTEGER
-	},
+	typeWaited: { id: TypeKey.INTEGER },
 	description: "Force un événement spécifique lors du prochain /report. Utile pour tester des événements précis. Utilisez -1 pour un événement aléatoire. Voir /test listevents pour les IDs"
 };
 

@@ -89,9 +89,7 @@ export async function witchCollector(context: PacketContext, packet: ReactionCol
 			component.setDisabled(true);
 		});
 
-		await msg.edit({
-			components: [row]
-		});
+		await msg.edit({ components: [row] });
 	});
 
 	return [buttonCollector];

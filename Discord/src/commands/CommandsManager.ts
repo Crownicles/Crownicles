@@ -416,9 +416,7 @@ export class CommandsManager {
 		collector.on("end", async () => {
 			disableRows(row);
 
-			await msg.edit({
-				components: row
-			});
+			await msg.edit({ components: row });
 		});
 	}
 

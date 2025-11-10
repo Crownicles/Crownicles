@@ -20,9 +20,7 @@ export class CommandGuildDailyRewardPacket extends CrowniclesPacket {
 
 	heal?: number;
 
-	alteration?: {
-		healAmount?: number;
-	};
+	alteration?: { healAmount?: number };
 
 	personalXp?: number;
 

@@ -272,6 +272,8 @@ export default {
 	],
 	"@stylistic/no-trailing-spaces": "error",
 	"@stylistic/no-whitespace-before-property": "error",
+	// Objects with 1 property should be on a single line if <40 chars (enforced by code review)
+	// Objects with 2+ properties should have line breaks
 	"@stylistic/object-curly-newline": [
 		"error",
 		{

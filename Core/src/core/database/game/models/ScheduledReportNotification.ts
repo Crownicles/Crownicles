@@ -32,9 +32,7 @@ export class ScheduledReportNotifications {
 	static async getNotificationsBeforeDate(date: Date): Promise<ScheduledReportNotification[]> {
 		return await ScheduledReportNotification.findAll({
 			where: {
-				scheduledAt: {
-					[Op.lt]: date
-				}
+				scheduledAt: { [Op.lt]: date }
 			}
 		});
 	}
@@ -51,9 +49,7 @@ export class ScheduledReportNotifications {
 
 	static async getPendingNotification(playerId: number): Promise<ScheduledReportNotification | null> {
 		return await ScheduledReportNotification.findOne({
-			where: {
-				playerId
-			}
+			where: { playerId }
 		});
 	}
 }

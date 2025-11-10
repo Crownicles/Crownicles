@@ -17,12 +17,8 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 			type: DataTypes.DATE,
 			allowNull: false
 		},
-		updatedAt: {
-			type: DataTypes.DATE
-		},
-		createdAt: {
-			type: DataTypes.DATE
-		}
+		updatedAt: { type: DataTypes.DATE },
+		createdAt: { type: DataTypes.DATE }
 	});
 }
 

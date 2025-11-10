@@ -344,9 +344,7 @@ export interface PossibilityOutcome {
 		};
 	};
 
-	givePet?: {
-		petIds: number[];
-	};
+	givePet?: { petIds: number[] };
 
 	/**
 	 * One shot the player

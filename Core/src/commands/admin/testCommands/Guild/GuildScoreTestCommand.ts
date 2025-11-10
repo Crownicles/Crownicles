@@ -13,9 +13,7 @@ export const commandInfo: ITestCommand = {
 		"gscore"
 	],
 	commandFormat: "<points>",
-	typeWaited: {
-		points: TypeKey.INTEGER
-	},
+	typeWaited: { points: TypeKey.INTEGER },
 	description: "Définit le score total de la guilde du joueur testeur."
 };
 

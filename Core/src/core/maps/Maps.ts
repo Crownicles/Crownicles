@@ -166,9 +166,7 @@ export class Maps {
 				mapLinkId: {
 					[Op.in]: MapCache.pveIslandMapLinks
 				},
-				id: {
-					[Op.not]: player.id
-				}
+				id: { [Op.not]: player.id }
 			}
 		})).filter(player => !membersThatWereKeycloakIds.includes(player.keycloakId));
 		return [...membersThatWere, ...membersThatAre];
@@ -188,9 +186,7 @@ export class Maps {
 				mapLinkId: {
 					[Op.in]: MapCache.boatEntryMapLinks
 				},
-				id: {
-					[Op.not]: player.id
-				}
+				id: { [Op.not]: player.id }
 			}
 		});
 	}

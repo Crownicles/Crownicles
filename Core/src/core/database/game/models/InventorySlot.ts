@@ -80,9 +80,7 @@ export class InventorySlot extends Model {
 export class InventorySlots {
 	public static async getOfPlayer(playerId: number): Promise<InventorySlot[]> {
 		const slots: InventorySlot[] = await InventorySlot.findAll({
-			where: {
-				playerId
-			}
+			where: { playerId }
 		});
 		if (slots.length === 0) {
 			return await InventorySlot.bulkCreate(
@@ -217,9 +215,7 @@ export class InventorySlots {
 	 */
 	static async countObjectsOfPlayer(playerId: number, tag: string): Promise<number> {
 		const objs = await InventorySlot.findAll({
-			where: {
-				playerId
-			}
+			where: { playerId }
 		});
 		let count = 0;
 		for (const obj of objs) {

@@ -171,9 +171,7 @@ export async function handleCommandGuildPacketRes(packet: CommandGuildPacketRes,
 			experience: experienceInfo,
 			guildPoints: packet.data!.rank.score,
 			ranking: rankingInfo,
-			interpolation: {
-				escapeValue: false
-			}
+			interpolation: { escapeValue: false }
 		})}\n${packet.data!.isMaxLevel ? progressBar(1, 1) : progressBar(packet.data!.experience.value, packet.data!.experience.max)}`
 	});
 	await interaction.reply({

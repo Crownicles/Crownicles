@@ -45,9 +45,7 @@ export class PlayerSmallEvents {
 
 	static async calculateCurrentScore(player: Player): Promise<number> {
 		const numberOfSmallEventsDone = await PlayerSmallEvent.count({
-			where: {
-				playerId: player.id
-			}
+			where: { playerId: player.id }
 		});
 		const tripDuration = player.getCurrentTripDuration();
 		let somme = 0;
@@ -68,9 +66,7 @@ export class PlayerSmallEvents {
 
 	static async getSmallEventsOfPlayer(playerId: number): Promise<PlayerSmallEvent[]> {
 		return await PlayerSmallEvent.findAll({
-			where: {
-				playerId
-			}
+			where: { playerId }
 		});
 	}
 
@@ -91,15 +87,9 @@ export function initModel(sequelize: Sequelize): void {
 			primaryKey: true,
 			autoIncrement: true
 		},
-		playerId: {
-			type: DataTypes.INTEGER
-		},
-		eventType: {
-			type: DataTypes.TEXT
-		},
-		time: {
-			type: DataTypes.BIGINT
-		},
+		playerId: { type: DataTypes.INTEGER },
+		eventType: { type: DataTypes.TEXT },
+		time: { type: DataTypes.BIGINT },
 		updatedAt: {
 			type: DataTypes.DATE,
 			defaultValue: moment()

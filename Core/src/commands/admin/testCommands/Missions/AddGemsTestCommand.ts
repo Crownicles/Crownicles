@@ -7,9 +7,7 @@ import { PlayerMissionsInfos } from "../../../../core/database/game/models/Playe
 export const commandInfo: ITestCommand = {
 	name: "addgem",
 	commandFormat: "<gem>",
-	typeWaited: {
-		gem: TypeKey.INTEGER
-	},
+	typeWaited: { gem: TypeKey.INTEGER },
 	description: "Ajoute un nombre spécifique de gemmes au joueur testeur."
 };
 

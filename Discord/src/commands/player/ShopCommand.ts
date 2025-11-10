@@ -256,9 +256,7 @@ export async function shopInventoryExtensionCollector(context: PacketContext, pa
 		// Disable buttons instead of removing them
 		disableRows([row]);
 
-		await msg.edit({
-			components: [row]
-		});
+		await msg.edit({ components: [row] });
 	});
 
 	return [buttonCollector];
@@ -404,9 +402,7 @@ async function manageBuyoutConfirmation(packet: ReactionCollectorCreationPacket,
 		// Disable buttons instead of removing them
 		disableRows([row]);
 
-		await msg.edit({
-			components: [row]
-		});
+		await msg.edit({ components: [row] });
 	});
 }
 

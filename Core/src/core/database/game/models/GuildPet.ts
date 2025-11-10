@@ -47,9 +47,7 @@ export class GuildPets {
 	 */
 	static async getOfGuild(guildId: number): Promise<GuildPet[]> {
 		return await GuildPet.findAll({
-			where: {
-				guildId
-			}
+			where: { guildId }
 		});
 	}
 }
@@ -61,9 +59,7 @@ export function initModel(sequelize: Sequelize): void {
 			primaryKey: true,
 			autoIncrement: true
 		},
-		guildId: {
-			type: DataTypes.INTEGER
-		},
+		guildId: { type: DataTypes.INTEGER },
 		petEntityId: {
 			type: DataTypes.INTEGER
 		},

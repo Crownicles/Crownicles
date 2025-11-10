@@ -164,9 +164,7 @@ export class PetEntity extends Model {
 export class PetEntities {
 	static async getById(id: number): Promise<PetEntity> {
 		return await PetEntity.findOne({
-			where: {
-				id
-			}
+			where: { id }
 		});
 	}
 
@@ -273,18 +271,10 @@ export function initModel(sequelize: Sequelize): void {
 			primaryKey: true,
 			autoIncrement: true
 		},
-		typeId: {
-			type: DataTypes.INTEGER
-		},
-		sex: {
-			type: DataTypes.CHAR
-		},
-		nickname: {
-			type: DataTypes.TEXT
-		},
-		lovePoints: {
-			type: DataTypes.INTEGER
-		},
+		typeId: { type: DataTypes.INTEGER },
+		sex: { type: DataTypes.CHAR },
+		nickname: { type: DataTypes.TEXT },
+		lovePoints: { type: DataTypes.INTEGER },
 		hungrySince: {
 			type: DataTypes.DATE,
 			defaultValue: null

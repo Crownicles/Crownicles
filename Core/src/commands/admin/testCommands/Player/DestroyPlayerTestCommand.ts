@@ -19,39 +19,25 @@ export const commandInfo: ITestCommand = {
  */
 const destroyPlayerTestCommand: ExecuteTestCommandLike = async player => {
 	await MissionSlot.destroy({
-		where: {
-			playerId: player.id
-		}
+		where: { playerId: player.id }
 	});
 	await PlayerMissionsInfo.destroy({
-		where: {
-			playerId: player.id
-		}
+		where: { playerId: player.id }
 	});
 	await InventorySlot.destroy({
-		where: {
-			playerId: player.id
-		}
+		where: { playerId: player.id }
 	});
 	await InventoryInfo.destroy({
-		where: {
-			playerId: player.id
-		}
+		where: { playerId: player.id }
 	});
 	await MissionSlot.destroy({
-		where: {
-			playerId: player.id
-		}
+		where: { playerId: player.id }
 	});
 	await PlayerMissionsInfo.destroy({
-		where: {
-			playerId: player.id
-		}
+		where: { playerId: player.id }
 	});
 	await Player.destroy({
-		where: {
-			id: player.id
-		}
+		where: { id: player.id }
 	});
 	await DwarfPetsSeen.destroy({ where: {
 		playerId: player.id

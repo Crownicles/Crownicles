@@ -31,9 +31,7 @@ import { CrowniclesLogger } from "../../../../../../Lib/src/logs/CrowniclesLogge
 import {
 	existsSync, mkdirSync, writeFileSync
 } from "fs";
-import {
-	join
-} from "path";
+import { join } from "path";
 
 /**
  * Escape a value for CSV export by wrapping it in quotes if it contains special characters
@@ -351,9 +349,7 @@ const aiTournamentTestCommand: ExecuteTestCommandLike = async (_player, args, re
 	// 1. Récupérer tous les joueurs éligibles (niveau 8+)
 	const allPlayers = await Player.findAll({
 		where: {
-			level: {
-				[Op.gte]: minLevel
-			}
+			level: { [Op.gte]: minLevel }
 		}
 	});
 
