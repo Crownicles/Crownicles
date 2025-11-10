@@ -134,10 +134,10 @@ export class FightController {
 		const isADraw = this.isADraw();
 		const winnerFighter = this.getWinnerFighter();
 		const loserFighter = this.getLooserFighter();
-		const displayedWinner = winnerFighter ?? this.getNonFightInitiatorFighter();
-		const displayedLoser = loserFighter ?? (this.fightInitiator === displayedWinner
-			? this.getNonFightInitiatorFighter()
-			: this.fightInitiator);
+		const initiatorFighter = this.fightInitiator;
+		const opponentFighter = this.getNonFightInitiatorFighter();
+		const displayedWinner = winnerFighter ?? (loserFighter === initiatorFighter ? opponentFighter : initiatorFighter);
+		const displayedLoser = loserFighter ?? (displayedWinner === initiatorFighter ? opponentFighter : initiatorFighter);
 
 		this._fightView.outroFight(response, displayedLoser, displayedWinner, isADraw);
 
