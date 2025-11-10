@@ -78,7 +78,7 @@ type FightInitiatorInformation = {
  * It is updated just before starting a fight, so it prevents a single player to defend two players at the same time as
  * Fights are logged at the end of the fight
  */
-const fightsDefenderCooldowns = new Map<string, number>();
+export const fightsDefenderCooldowns = new Map<string, number>();
 
 async function getPlayerStats(player: Player): Promise<PlayerStats> {
 	const playerActiveObjects = await InventorySlots.getMainSlotsItems(player.id);
@@ -484,4 +484,14 @@ export default class FightCommand {
 
 		response.push(collectorPacket);
 	}
+}
+
+/**
+ * Clear the fights defender cooldowns cache (used for testing purposes)
+ * @returns The number of entries cleared
+ */
+export function clearFightsDefenderCooldowns(): number {
+	const size = fightsDefenderCooldowns.size;
+	fightsDefenderCooldowns.clear();
+	return size;
 }
