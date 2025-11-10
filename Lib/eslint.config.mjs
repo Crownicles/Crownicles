@@ -6,6 +6,7 @@ import typescriptEslintParser from "@typescript-eslint/parser";
 import jsdoc from "eslint-plugin-jsdoc";
 import stylistic from "@stylistic/eslint-plugin";
 import customRules from "../eslint-rules.mjs";
+import crowniclesCustomRules from "../eslint-custom-rules/index.mjs";
 
 export default defineConfig([
 	{
@@ -13,9 +14,7 @@ export default defineConfig([
 			ecmaVersion: 2022,
 			sourceType: "module",
 			parser: typescriptEslintParser,
-			parserOptions: {
-				ecmaVersion: 2022
-			}
+			parserOptions: { ecmaVersion: 2022 }
 		},
 		files: ["src/**/*.ts"]
 	},
@@ -26,8 +25,12 @@ export default defineConfig([
 		plugins: {
 			"@typescript-eslint": typescriptEslintPlugin,
 			jsdoc,
-			"@stylistic": stylistic
+			"@stylistic": stylistic,
+			"crownicles": crowniclesCustomRules
 		},
-		rules: customRules
+		rules: {
+			...customRules,
+			"crownicles/single-line-short-single-property-object": ["error", { maxLength: 40 }]
+		}
 	}
 ]);

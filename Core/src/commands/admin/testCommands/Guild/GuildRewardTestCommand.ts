@@ -17,9 +17,7 @@ export const commandInfo: ITestCommand = {
 	name: "guildreward",
 	aliases: ["greward"],
 	commandFormat: "<reward>",
-	typeWaited: {
-		reward: TypeKey.STRING
-	},
+	typeWaited: { reward: TypeKey.STRING },
 	description: stringDesc
 };
 

@@ -143,9 +143,7 @@ export async function itemAcceptCollector(context: PacketContext, packet: Reacti
 	collector.on("end", async () => {
 		disableRows([row]);
 
-		await msg.edit({
-			components: [row]
-		});
+		await msg.edit({ components: [row] });
 	});
 
 	return [collector];

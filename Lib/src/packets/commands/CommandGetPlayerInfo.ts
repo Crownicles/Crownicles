@@ -7,9 +7,7 @@ import { AdminPlayerInfoData } from "../../types/AdminPlayerInfoData";
 export class CommandGetPlayerInfoReq extends CrowniclesPacket {
 	keycloakId!: string;
 
-	dataToGet!: {
-		badges?: boolean;
-	};
+	dataToGet!: { badges?: boolean };
 }
 
 @sendablePacket(PacketDirection.NONE)

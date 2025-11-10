@@ -1064,11 +1064,7 @@ export class Players {
 	 */
 	static async getOrRegister(keycloakId: string): Promise<Player> {
 		return (await Player.findOrCreate(
-			{
-				where: {
-					keycloakId
-				}
-			}
+			{ where: { keycloakId } }
 		))[0]; // We don't care about the boolean that findOrCreate returns, so we strip it there
 	}
 
@@ -1079,9 +1075,7 @@ export class Players {
 	static getByGuild(guildId: number): Promise<Player[]> {
 		return Promise.resolve(Player.findAll(
 			{
-				where: {
-					guildId
-				},
+				where: { guildId },
 				order: [
 					["score", "DESC"],
 					["level", "DESC"]
@@ -1096,11 +1090,7 @@ export class Players {
 	 */
 	static getByKeycloakId(keycloakId: string): Promise<Player | null> {
 		return Promise.resolve(Player.findOne(
-			{
-				where: {
-					keycloakId
-				}
-			}
+			{ where: { keycloakId } }
 		));
 	}
 
@@ -1268,9 +1258,7 @@ export class Players {
 		                     FROM players) subquery
 		               WHERE subquery.rank = :rank`;
 		const res = await Player.sequelize.query(query, {
-			replacements: {
-				rank
-			},
+			replacements: { rank },
 			type: QueryTypes.SELECT,
 			mapToModel: true,
 			model: Player
@@ -1290,9 +1278,7 @@ export class Players {
 		                     FROM players) subquery
 		               WHERE subquery.id = :id`;
 		const playerToReturn = (await Player.sequelize.query<Player>(query, {
-			replacements: {
-				id
-			},
+			replacements: { id },
 			type: QueryTypes.SELECT
 		}))[0] as Player;
 		return await Players.getOrRegister(playerToReturn.keycloakId);
@@ -1431,9 +1417,7 @@ export class Players {
 			(<{
 				count: number;
 			}[]>(await Player.sequelize.query(query, {
-				replacements: {
-					class: classEntity.id
-				},
+				replacements: { class: classEntity.id },
 				type: QueryTypes.SELECT
 			})))[0].count
 		);
@@ -1553,12 +1537,8 @@ export function initModel(sequelize: Sequelize): void {
 			type: DataTypes.INTEGER,
 			defaultValue: PlayersConstants.PLAYER_DEFAULT_VALUES.GUILD_ID
 		},
-		nextEvent: {
-			type: DataTypes.INTEGER
-		},
-		petId: {
-			type: DataTypes.INTEGER
-		},
+		nextEvent: { type: DataTypes.INTEGER },
+		petId: { type: DataTypes.INTEGER },
 		lastPetFree: {
 			type: DataTypes.DATE,
 			defaultValue: PlayersConstants.PLAYER_DEFAULT_VALUES.LAST_PET_FREE
@@ -1575,9 +1555,7 @@ export function initModel(sequelize: Sequelize): void {
 			type: DataTypes.INTEGER,
 			defaultValue: PlayersConstants.PLAYER_DEFAULT_VALUES.EFFECT_DURATION
 		},
-		mapLinkId: {
-			type: DataTypes.INTEGER
-		},
+		mapLinkId: { type: DataTypes.INTEGER },
 		startTravelDate: {
 			type: DataTypes.DATE,
 			defaultValue: PlayersConstants.PLAYER_DEFAULT_VALUES.START_TRAVEL_DATE

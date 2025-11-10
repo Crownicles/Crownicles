@@ -20,9 +20,7 @@ import { KeycloakUser } from "../../../../../../Lib/src/keycloak/KeycloakUser";
 export async function up({ context }: { context: QueryInterface }): Promise<void> {
 	// Delete players with a score < 100 and that are not banned
 	await context.bulkDelete("players", {
-		score: {
-			[Op.lt]: 100
-		},
+		score: { [Op.lt]: 100 },
 		effectEndDate: {
 			[Op.lt]: new Date(2050, 0, 1)
 		}

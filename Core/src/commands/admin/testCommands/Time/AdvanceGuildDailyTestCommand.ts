@@ -7,9 +7,7 @@ export const commandInfo: ITestCommand = {
 	name: "advanceguilddaily",
 	aliases: ["agd"],
 	commandFormat: "<time>",
-	typeWaited: {
-		time: TypeKey.INTEGER
-	},
+	typeWaited: { time: TypeKey.INTEGER },
 	description: "Récule la date de la dernière récompense quotidienne de guilde de X minutes. Permet de récupérer la récompense suivante X minutes plus tôt."
 };
 

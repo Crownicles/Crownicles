@@ -96,16 +96,10 @@ export class Guild extends Model {
 		await Promise.all([
 			Player.update(
 				{ guildId: null },
-				{
-					where: {
-						guildId: this.id
-					}
-				}
+				{ where: { guildId: this.id } }
 			),
 			Guild.destroy({
-				where: {
-					id: this.id
-				}
+				where: { id: this.id }
 			}),
 			guildPetsToDestroy,
 			petsEntitiesToDestroy
@@ -274,9 +268,7 @@ export class Guild extends Model {
                              FROM guilds) subquery
                        WHERE subquery.id = :id`;
 		return ((await Guild.sequelize.query(query, {
-			replacements: {
-				id: this.id
-			}
+			replacements: { id: this.id }
 		}))[0][0] as {
 			ranking: number;
 		}).ranking;
@@ -307,17 +299,13 @@ export class Guild extends Model {
 export class Guilds {
 	static getById(id: number): Promise<Guild> {
 		return Promise.resolve(Guild.findOne({
-			where: {
-				id
-			}
+			where: { id }
 		}));
 	}
 
 	static getByName(name: string): Promise<Guild> {
 		return Promise.resolve(Guild.findOne({
-			where: {
-				name
-			}
+			where: { name }
 		}));
 	}
 
@@ -335,21 +323,13 @@ export class Guilds {
 
 	static getTotalRanked(): Promise<number> {
 		return Guild.count({
-			where: {
-				[Op.not]: {
-					score: 0
-				}
-			}
+			where: { [Op.not]: { score: 0 } }
 		});
 	}
 
 	static getRankedGuilds(minRank: number, maxRank: number): Promise<Guild[]> {
 		return Guild.findAll({
-			where: {
-				[Op.not]: {
-					score: 0
-				}
-			},
+			where: { [Op.not]: { score: 0 } },
 			order: [
 				["score", "DESC"],
 				["level", "DESC"]

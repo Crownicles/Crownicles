@@ -20,9 +20,7 @@ import {
 export const commandInfo: ITestCommand = {
 	name: "exportPlayers",
 	commandFormat: "<pattern>",
-	typeWaited: {
-		pattern: TypeKey.STRING
-	},
+	typeWaited: { pattern: TypeKey.STRING },
 	description: "Exporte les joueurs dont le keycloakId correspond au pattern (supporte les wildcards %), leurs pets et inventaires dans un fichier JSON."
 };
 
@@ -105,9 +103,7 @@ const exportPlayersTestCommand: ExecuteTestCommandLike = async (_player, args, r
 	// Find all players matching the pattern (SQL LIKE)
 	const players = await Player.findAll({
 		where: {
-			keycloakId: {
-				[Op.like]: pattern
-			}
+			keycloakId: { [Op.like]: pattern }
 		}
 	});
 

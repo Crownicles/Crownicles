@@ -10,9 +10,7 @@ export const commandInfo: ITestCommand = {
 	name: "help",
 	aliases: ["h"],
 	commandFormat: "<command>",
-	typeWaited: {
-		command: TypeKey.STRING
-	},
+	typeWaited: { command: TypeKey.STRING },
 	description: "Affiche l'aide détaillée pour une commande de test spécifiée : description, format, paramètres et aliases disponibles"
 };
 

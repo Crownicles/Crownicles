@@ -7,9 +7,7 @@ export const commandInfo: ITestCommand = {
 	name: "playermoney",
 	aliases: ["money"],
 	commandFormat: "<money>",
-	typeWaited: {
-		money: TypeKey.INTEGER
-	},
+	typeWaited: { money: TypeKey.INTEGER },
 	description: "Définit l'argent du joueur testeur à la valeur spécifiée. L'argent sert aux achats d'objets, d'améliorations et aux services de guilde"
 };
 

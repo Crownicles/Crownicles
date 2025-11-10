@@ -203,9 +203,7 @@ export async function handleCommandClassesInfoPacketRes(packet: CommandClassesIn
 			component.setDisabled(true);
 		});
 
-		await msg.edit({
-			components: [row]
-		});
+		await msg.edit({ components: [row] });
 	});
 }
 

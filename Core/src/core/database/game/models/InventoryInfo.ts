@@ -86,9 +86,7 @@ export class InventoryInfos {
 	 */
 	public static async getOfPlayer(playerId: number): Promise<InventoryInfo> {
 		return (await InventoryInfo.findOrCreate({
-			where: {
-				playerId
-			}
+			where: { playerId }
 		}))[0];
 	}
 }

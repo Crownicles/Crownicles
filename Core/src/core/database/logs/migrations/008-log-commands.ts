@@ -149,9 +149,7 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 	for (const [command, packetName] of commandsToPacketNames) {
 		await context.bulkUpdate("commands", {
 			commandName: packetName
-		}, {
-			commandName: command
-		});
+		}, { commandName: command });
 	}
 
 	// Create command_origins table
@@ -197,9 +195,7 @@ export async function down({ context }: { context: QueryInterface }): Promise<vo
 	for (const [command, packetName] of commandsToPacketNames) {
 		await context.bulkUpdate("commands", {
 			commandName: command
-		}, {
-			commandName: packetName
-		});
+		}, { commandName: packetName });
 	}
 
 	// Drop command_origins table

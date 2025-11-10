@@ -28,27 +28,21 @@ export interface RestWsConfig {
  * Represents the structure of the config file
  */
 type ConfigStructure = {
-	global: {
-		prefix: string;
-	};
+	global: { prefix: string };
 	restApi: {
 		allowRegister: boolean;
 		port: number;
 		discordSso?: DiscordSsoConfig;
 		betaLogin: boolean;
 	};
-	webSocket: {
-		port: number;
-	};
+	webSocket: { port: number };
 	keycloak: {
 		realm: string;
 		url: string;
 		clientId: string;
 		clientSecret: string;
 	};
-	mqtt: {
-		host: string;
-	};
+	mqtt: { host: string };
 	logs: {
 		level: string;
 		locations: string[];

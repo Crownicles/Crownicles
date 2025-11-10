@@ -94,30 +94,20 @@ export function initModel(sequelize: Sequelize): void {
 			type: DataTypes.INTEGER,
 			primaryKey: true
 		},
-		missionId: {
-			type: DataTypes.TEXT
-		},
+		missionId: { type: DataTypes.TEXT },
 		missionObjective: {
 			type: DataTypes.INTEGER
 		},
 		missionVariant: {
 			type: DataTypes.INTEGER
 		},
-		gemsToWin: {
-			type: DataTypes.INTEGER
-		},
+		gemsToWin: { type: DataTypes.INTEGER },
 		pointsToWin: {
 			type: DataTypes.INTEGER
 		},
-		xpToWin: {
-			type: DataTypes.INTEGER
-		},
-		moneyToWin: {
-			type: DataTypes.INTEGER
-		},
-		lastDate: {
-			type: DataTypes.DATE
-		},
+		xpToWin: { type: DataTypes.INTEGER },
+		moneyToWin: { type: DataTypes.INTEGER },
+		lastDate: { type: DataTypes.DATE },
 		updatedAt: {
 			type: DataTypes.DATE,
 			defaultValue: moment()

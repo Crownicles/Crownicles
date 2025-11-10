@@ -262,9 +262,7 @@ export class DiscordCollectorUtils {
 		buttonCollector.on("end", async () => {
 			disableRows([row]);
 
-			await msg.edit({
-				components: [row]
-			});
+			await msg.edit({ components: [row] });
 		});
 
 		return [buttonCollector];
@@ -397,9 +395,7 @@ export class DiscordCollectorUtils {
 		buttonCollector.on("end", async () => {
 			disableRows(rows);
 
-			await msg.edit({
-				components: rows
-			});
+			await msg.edit({ components: rows });
 		});
 
 		return [buttonCollector];

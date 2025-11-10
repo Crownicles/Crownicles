@@ -67,9 +67,7 @@ export class PlayerMissionsInfos {
 	 */
 	public static async getOfPlayer(playerId: number): Promise<PlayerMissionsInfo> {
 		const missionsInfo = (await PlayerMissionsInfo.findOrCreate({
-			where: {
-				playerId
-			}
+			where: { playerId }
 		}))[0];
 		if (!missionsInfo.campaignBlob) {
 			missionsInfo.campaignBlob = Campaign.getDefaultCampaignBlob();

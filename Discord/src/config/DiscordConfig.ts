@@ -63,9 +63,7 @@ type ConfigStructure = {
 		clientId: string;
 		clientSecret: string;
 	};
-	mqtt: {
-		host: string;
-	};
+	mqtt: { host: string };
 	database: {
 		host: string;
 		user: string;
@@ -73,12 +71,8 @@ type ConfigStructure = {
 		root_password: string;
 		port: number;
 	};
-	discord_bot_list: {
-		token: string;
-	};
-	others: {
-		webserver_port: number;
-	};
+	discord_bot_list: { token: string };
+	others: { webserver_port: number };
 	logs: {
 		level: string;
 		locations: string[];

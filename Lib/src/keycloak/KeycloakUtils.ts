@@ -367,9 +367,7 @@ export class KeycloakUtils {
 				"Authorization": `Bearer ${this.keycloakToken}`,
 				"Content-Type": "application/json"
 			},
-			body: JSON.stringify({
-				attributes
-			})
+			body: JSON.stringify({ attributes })
 		});
 
 		if (!res.ok) {
@@ -643,9 +641,7 @@ export class KeycloakUtils {
 				"Authorization": `Bearer ${this.keycloakToken}`,
 				"Content-Type": "application/json"
 			},
-			body: JSON.stringify({
-				attributes
-			})
+			body: JSON.stringify({ attributes })
 		});
 
 		if (!res.ok) {

@@ -10,9 +10,7 @@ export const commandInfo: ITestCommand = {
 	name: "jailplayer",
 	aliases: ["jail"],
 	commandFormat: "<id>",
-	typeWaited: {
-		id: TypeKey.ID
-	},
+	typeWaited: { id: TypeKey.ID },
 	description: "Applique l'effet 'emprisonné' au joueur spécifié par son ID. Bloque le joueur et l'empêche d'effectuer des actions"
 };
 

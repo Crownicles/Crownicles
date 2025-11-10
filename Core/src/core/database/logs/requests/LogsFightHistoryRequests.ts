@@ -34,9 +34,7 @@ export abstract class LogsFightHistoryRequests {
 		// Get the glory points changes of the fights
 		const logsFightsGloryPoints = await LogsPlayersGloryPoints.findAll({
 			where: {
-				fightId: {
-					[Op.in]: fightsIds
-				}
+				fightId: { [Op.in]: fightsIds }
 			}
 		});
 

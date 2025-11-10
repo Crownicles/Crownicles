@@ -166,9 +166,7 @@ export class LogsDatabase extends Database {
 	 */
 	static async findOrCreatePlayer(keycloakId: string): Promise<LogsPlayers> {
 		return (await LogsPlayers.findOrCreate({
-			where: {
-				keycloakId
-			}
+			where: { keycloakId }
 		}))[0];
 	}
 
@@ -228,9 +226,7 @@ export class LogsDatabase extends Database {
 				gameId: guild.id,
 				creationTimestamp: Math.floor(guild.creationDate.valueOf() / 1000.0)
 			},
-			defaults: {
-				name: guild.name
-			}
+			defaults: { name: guild.name }
 		}))[0];
 	}
 
@@ -317,9 +313,7 @@ export class LogsDatabase extends Database {
 		model: { create: (values?: unknown, options?: CreateOptions<unknown>) => Promise<Model<unknown, unknown>> }
 	): Promise<void> {
 		const [player] = await LogsPlayers.findOrCreate({
-			where: {
-				keycloakId
-			}
+			where: { keycloakId }
 		});
 		await model.create({
 			playerId: player.id,
@@ -421,19 +415,13 @@ export class LogsDatabase extends Database {
 
 		const player = await LogsDatabase.findOrCreatePlayer(keycloakId);
 		const [commandOrigin] = await LogsCommandOrigins.findOrCreate({
-			where: {
-				name: origin
-			}
+			where: { name: origin }
 		});
 		const [commandSubOrigin] = await LogsCommandSubOrigins.findOrCreate({
-			where: {
-				name: subOrigin
-			}
+			where: { name: subOrigin }
 		});
 		const [command] = await LogsCommands.findOrCreate({
-			where: {
-				commandName
-			}
+			where: { commandName }
 		});
 		await LogsPlayersCommands.create({
 			playerId: player.id,
@@ -452,9 +440,7 @@ export class LogsDatabase extends Database {
 	public async logSmallEvent(keycloakId: string, name: string): Promise<void> {
 		const player = await LogsDatabase.findOrCreatePlayer(keycloakId);
 		const [smallEvent] = await LogsSmallEvents.findOrCreate({
-			where: {
-				name
-			}
+			where: { name }
 		});
 		await LogsPlayersSmallEvents.create({
 			playerId: player.id,

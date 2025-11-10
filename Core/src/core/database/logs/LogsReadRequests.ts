@@ -50,9 +50,7 @@ export class LogsReadRequests {
 	static async getLastTimeThePlayerHasEditedHisClass(playerKeycloakId: string): Promise<Date> {
 		const logPlayer = await LogsDatabase.findOrCreatePlayer(playerKeycloakId);
 		return LogsPlayersClassChanges.findOne({
-			where: {
-				playerId: logPlayer.id
-			},
+			where: { playerId: logPlayer.id },
 			order: [["date", "DESC"]],
 			limit: 1
 		})
@@ -89,9 +87,7 @@ export class LogsReadRequests {
 		const playersInGuild = await Player.findAll({
 			where: {
 				guildId: player.guildId,
-				id: {
-					[Op.not]: player.id
-				}
+				id: { [Op.not]: player.id }
 			}
 		});
 
@@ -101,9 +97,7 @@ export class LogsReadRequests {
 		// Convert the players to log players
 		const logsPlayers = await LogsPlayers.findAll({
 			where: {
-				keycloakId: {
-					[Op.in]: ids
-				}
+				keycloakId: { [Op.in]: ids }
 			}
 		});
 
@@ -175,9 +169,7 @@ export class LogsReadRequests {
 		const logPlayer = await LogsDatabase.findOrCreatePlayer(playerKeycloakId);
 		return LogsPlayerLeagueReward.findOne({
 			order: [["date", "DESC"]],
-			where: {
-				playerId: logPlayer.id
-			}
+			where: { playerId: logPlayer.id }
 		}).then(result => result?.date ?? null);
 	}
 
@@ -189,16 +181,12 @@ export class LogsReadRequests {
 	static async getLastEventDate(keycloakId: string, eventId: number): Promise<Date | null> {
 		// Get all possibilities id for the big event
 		const possibilityIds = (await LogsPossibilities.findAll({
-			where: {
-				bigEventId: eventId
-			}
+			where: { bigEventId: eventId }
 		})).map(possibility => possibility.id);
 
 		// Get logs player id
 		const playerId = (await LogsPlayers.findOne({
-			where: {
-				keycloakId
-			}
+			where: { keycloakId }
 		})).id;
 
 		// Find the last one

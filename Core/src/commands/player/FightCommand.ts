@@ -50,9 +50,7 @@ type PlayerStats = {
 		petNickname: string;
 	};
 	classId: number;
-	fightRanking: {
-		glory: number;
-	};
+	fightRanking: { glory: number };
 	energy: {
 		value: number;
 		max: number;

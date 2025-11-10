@@ -132,9 +132,7 @@ export async function createBigEventCollector(context: PacketContext, packet: Re
 		// Disable buttons instead of removing them
 		disableRows(rows);
 
-		await msg.edit({
-			components: rows
-		});
+		await msg.edit({ components: rows });
 	});
 
 	return [buttonCollector, endCollector];
@@ -266,11 +264,7 @@ export async function chooseDestinationCollector(context: PacketContext, packet:
 			} ${
 				i18n.t(`models:map_locations.${destinationReaction.mapId}.name`, { lng })} (${duration})`;
 		})
-	}, {
-		refuse: {
-			can: false
-		}
-	});
+	}, { refuse: { can: false } });
 }
 
 function isCurrentlyInEffect(packet: CommandReportTravelSummaryRes, now: number): boolean {

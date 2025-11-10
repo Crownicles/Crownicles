@@ -43,9 +43,7 @@ export class DwarfPetsSeen extends Model {
 	 */
 	static async isAllPetSeen(player: Player): Promise<boolean> {
 		const petsSeen = await DwarfPetsSeen.count({
-			where: {
-				playerId: player.id
-			}
+			where: { playerId: player.id }
 		});
 
 		return petsSeen === PetDataController.instance.getPetsCount();
@@ -57,9 +55,7 @@ export class DwarfPetsSeen extends Model {
 	 */
 	static async getPetsSeenId(player: Player): Promise<number[]> {
 		const petsSeen = await DwarfPetsSeen.findAll({
-			where: {
-				playerId: player.id
-			}
+			where: { playerId: player.id }
 		});
 		return petsSeen.map(pet => pet.petTypeId);
 	}

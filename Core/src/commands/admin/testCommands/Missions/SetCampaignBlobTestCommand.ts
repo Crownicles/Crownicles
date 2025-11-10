@@ -8,9 +8,7 @@ export const commandInfo: ITestCommand = {
 	name: "setCampaignBlob",
 	aliases: ["scb"],
 	commandFormat: "<blob>",
-	typeWaited: {
-		blob: TypeKey.INTEGER
-	},
+	typeWaited: { blob: TypeKey.INTEGER },
 	description: "Modifie le blob de progression de campagne (chaîne binaire). Format requis : séquence de 0 et 1 correspondant chacun a une mission de la campagne, 0 = mission pas encore terminée et 1 = mission validée. Ex: sur une campagne de 5 missions, un joueur qui a terminé les 3 premières aura 11100."
 };
 

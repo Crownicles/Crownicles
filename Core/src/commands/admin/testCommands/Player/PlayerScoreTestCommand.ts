@@ -7,9 +7,7 @@ export const commandInfo: ITestCommand = {
 	name: "playerscore",
 	aliases: ["score"],
 	commandFormat: "<score>",
-	typeWaited: {
-		score: TypeKey.INTEGER
-	},
+	typeWaited: { score: TypeKey.INTEGER },
 	description: "Définit le score total du joueur testeur."
 };
 

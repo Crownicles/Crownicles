@@ -21,9 +21,7 @@ class SettingClassNumber {
 		let value: number;
 
 		const settingInstance = await Setting.findOne({
-			where: {
-				name: this.name
-			}
+			where: { name: this.name }
 		});
 
 		if (settingInstance) {
@@ -43,11 +41,7 @@ class SettingClassNumber {
 	public async setValue(value: number): Promise<void> {
 		await Setting.update({
 			dataNumber: value
-		}, {
-			where: {
-				name: this.name
-			}
-		});
+		}, { where: { name: this.name } });
 	}
 }
 
@@ -67,9 +61,7 @@ class SettingClassString {
 		let value: string;
 
 		const settingInstance = await Setting.findOne({
-			where: {
-				name: this.name
-			}
+			where: { name: this.name }
 		});
 
 		if (settingInstance) {
@@ -89,11 +81,7 @@ class SettingClassString {
 	public async setValue(value: string): Promise<void> {
 		await Setting.update({
 			dataString: value
-		}, {
-			where: {
-				name: this.name
-			}
-		});
+		}, { where: { name: this.name } });
 	}
 }
 

@@ -29,9 +29,7 @@ export class ScheduledDailyBonusNotifications {
 	static async getNotificationsBeforeDate(date: Date): Promise<ScheduledDailyBonusNotification[]> {
 		return await ScheduledDailyBonusNotification.findAll({
 			where: {
-				scheduledAt: {
-					[Op.lt]: date
-				}
+				scheduledAt: { [Op.lt]: date }
 			}
 		});
 	}
@@ -48,9 +46,7 @@ export class ScheduledDailyBonusNotifications {
 
 	static async getPendingNotification(playerId: number): Promise<ScheduledDailyBonusNotification | null> {
 		return await ScheduledDailyBonusNotification.findOne({
-			where: {
-				playerId
-			}
+			where: { playerId }
 		});
 	}
 }

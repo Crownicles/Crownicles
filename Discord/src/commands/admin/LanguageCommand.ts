@@ -88,9 +88,7 @@ async function getPacket(interaction: CrowniclesInteraction, keycloakUser: Keycl
 			component.setDisabled(true);
 		});
 
-		await msg.edit({
-			components: [row]
-		});
+		await msg.edit({ components: [row] });
 	});
 
 	return null;

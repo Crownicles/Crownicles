@@ -7,9 +7,7 @@ export const commandInfo: ITestCommand = {
 	name: "advanceplayerdaily",
 	aliases: ["adaily"],
 	commandFormat: "<time>",
-	typeWaited: {
-		time: TypeKey.INTEGER
-	},
+	typeWaited: { time: TypeKey.INTEGER },
 	description: "Avance la date de la dernière récompense quotidienne du joueur de X minutes, permettant de récupérer la récompense quotidienne plus tôt"
 };
 

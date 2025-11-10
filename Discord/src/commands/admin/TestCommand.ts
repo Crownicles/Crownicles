@@ -88,9 +88,7 @@ function buildPayloadWithAttachments(embed: CrowniclesEmbed, fileName?: string, 
 			embeds: [embed],
 			files: attachments
 		}
-		: {
-			embeds: [embed]
-		};
+		: { embeds: [embed] };
 }
 
 async function sendResultWithoutInteraction(packet: CommandTestPacketRes, context: PacketContext): Promise<void> {
