@@ -12,6 +12,7 @@ import { DiscordCache } from "../../bot/DiscordCache";
 import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import {
 	AttachmentBuilder,
+	AutocompleteInteraction,
 	GuildTextBasedChannel,
 	HexColorString
 } from "discord.js";
@@ -19,6 +20,10 @@ import { KeycloakUser } from "../../../../Lib/src/keycloak/KeycloakUser";
 import { ColorConstants } from "../../../../Lib/src/constants/ColorConstants";
 import { crowniclesClient } from "../../bot/CrowniclesShard";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
+import { TestCommandsCache } from "../../packetHandlers/handlers/commands/CommandTestListPacketHandler";
+import {
+	searchAutocomplete, toDiscordChoices
+} from "../../utils/AutocompleteUtils";
 
 async function getPacket(interaction: CrowniclesInteraction, user: KeycloakUser): Promise<CommandTestPacketReq> {
 	const commandName = interaction.options.get("command");
@@ -137,10 +142,35 @@ async function sendResultWithoutInteraction(packet: CommandTestPacketRes, contex
 	});
 }
 
+async function handleAutocomplete(interaction: AutocompleteInteraction): Promise<void> {
+	const focusedValue = interaction.options.getFocused();
+
+	// Check if we have test commands cached
+	if (!TestCommandsCache.hasCommands()) {
+		CrowniclesLogger.warn("Test commands not yet loaded for autocomplete");
+		await interaction.respond([]);
+		return;
+	}
+
+	// Convert cached test commands to searchable items
+	const testCommands = TestCommandsCache.getCommands().map(cmd => ({
+		key: cmd.name,
+		displayName: cmd.name,
+		aliases: cmd.aliases || []
+	}));
+
+	const results = searchAutocomplete(testCommands, focusedValue);
+	const choices = toDiscordChoices(results);
+
+	await interaction.respond(choices);
+}
+
 export const commandInfo: ICommand = {
 	slashCommandBuilder: SlashCommandBuilderGenerator.generateBaseCommand("test")
 		.addStringOption(option => SlashCommandBuilderGenerator.generateOption("test", "commandName", option)
-			.setRequired(false)) as SlashCommandBuilder,
+			.setRequired(false)
+			.setAutocomplete(true)) as SlashCommandBuilder,
 	getPacket,
-	mainGuildCommand: false
+	mainGuildCommand: false,
+	handleAutocomplete
 };
