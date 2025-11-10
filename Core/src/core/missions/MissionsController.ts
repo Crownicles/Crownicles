@@ -386,11 +386,22 @@ export class MissionsController {
 			}
 
 			// Update blob if mission is not completed AND either params match OR mission explicitly wants to always update blob
-			if (!mission.isCompleted() && (paramsMatch || missionInterface.alwaysUpdateBlob)) {
+			if (this.shouldUpdateBlob(mission, paramsMatch, missionInterface.alwaysUpdateBlob)) {
 				await this.updateBlob(missionInterface, mission, missionInformations);
 			}
 		}
 		return completedCampaign;
+	}
+
+	/**
+	 * Determines if the mission blob should be updated
+	 * @param mission The mission to check
+	 * @param paramsMatch Whether the params match
+	 * @param alwaysUpdateBlob Whether to always update the blob
+	 * @returns true if the blob should be updated
+	 */
+	private static shouldUpdateBlob(mission: MissionSlot, paramsMatch: boolean, alwaysUpdateBlob: boolean): boolean {
+		return !mission.isCompleted() && (paramsMatch || alwaysUpdateBlob);
 	}
 
 	/**
