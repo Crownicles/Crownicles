@@ -98,10 +98,8 @@ export function getRandomSmallEventIntro(language: Language): string {
 }
 
 const PET_TIME_INTERACTIONS = new Set([
-	"gainTime_m",
-	"gainTime_f",
-	"loseTime_m",
-	"loseTime_f"
+	"gainTime",
+	"loseTime"
 ]);
 
 export default class SmallEventsHandler {
@@ -792,7 +790,7 @@ export default class SmallEventsHandler {
 	async smallEventPet(context: PacketContext, packet: SmallEventPetPacket): Promise<void> {
 		const interaction = DiscordCache.getInteraction(context.discord!.interaction);
 		const lng = interaction!.userLanguage;
-		const amountDisplay = typeof packet.amount === "number" && PET_TIME_INTERACTIONS.has(packet.interactionName)
+		const amountDisplay = packet.amount && PET_TIME_INTERACTIONS.has(packet.interactionName)
 			? minutesDisplay(packet.amount, lng)
 			: packet.amount;
 		await interaction?.editReply({
@@ -939,7 +937,7 @@ export default class SmallEventsHandler {
 					.setDescription(
 						i18n.t(`{emote:goblets.{{goblet}}} $t(smallEvents:gobletsGame.results.${packet.malus})`, {
 							lng,
-							quantity: packet.malus === SmallEventGobletsGameMalus.TIME ? minutesDisplay(packet.value) : packet.value,
+							quantity: packet.malus === SmallEventGobletsGameMalus.TIME ? minutesDisplay(packet.value, lng) : packet.value,
 							goblet: packet.goblet ?? RandomUtils.crowniclesRandom.pick(Object.keys(CrowniclesIcons.goblets))
 						})
 					)
