@@ -39,6 +39,8 @@ export const missionInterface: IMission = {
 
 	initialNumberDone: () => 0,
 
+	alwaysUpdateBlob: true,
+
 	updateSaveBlob: (variant, saveBlob, params) => {
 		const variantParams = MissionUtils.fromPlaceToPlaceParamsFromVariant(variant);
 		if (!saveBlob) {

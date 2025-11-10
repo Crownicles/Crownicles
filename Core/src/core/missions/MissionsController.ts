@@ -384,7 +384,9 @@ export class MissionsController {
 				await this.updateMission(mission, missionInformations);
 				completedCampaign = completedCampaign || mission.isCampaign() && mission.isCompleted();
 			}
-			if (!mission.isCompleted() && paramsMatch) {
+
+			// Update blob if mission is not completed AND either params match OR mission explicitly wants to always update blob
+			if (!mission.isCompleted() && (paramsMatch || missionInterface.alwaysUpdateBlob)) {
 				await this.updateBlob(missionInterface, mission, missionInformations);
 			}
 		}
