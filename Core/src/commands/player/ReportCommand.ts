@@ -356,7 +356,7 @@ async function sendCityCollector(context: PacketContext, response: CrowniclesPac
 					slot: i.slot,
 					details: i.itemWithDetails(player) as MainItemDetails
 				})),
-				isInventoryEmpty: playerInventory.filter(i => i.isWeapon() || i.isArmor() && i.itemId !== 0).length === 0,
+				isInventoryEmpty: playerInventory.filter(i => (i.isWeapon() || i.isArmor()) && i.itemId !== 0).length === 0,
 				hasAtLeastOneEnchantedItem: playerInventory.filter(i => (i.isWeapon() || i.isArmor()) && Boolean(i.itemEnchantmentId)).length > 0,
 				enchantmentId,
 				enchantmentCost: enchantment.getEnchantmentCost(isPlayerMage),
