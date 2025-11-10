@@ -265,10 +265,69 @@ async function getPacket(interaction: CrowniclesInteraction): Promise<null> {
 	return null;
 }
 
+/**
+ * Handle autocomplete for the help command
+ * @param interaction
+ */
+async function handleAutocomplete(interaction: import("discord.js").AutocompleteInteraction): Promise<void> {
+	try {
+		const focusedValue = interaction.options.getFocused().toLowerCase();
+		
+		// If nothing is typed, show popular commands
+		if (!focusedValue) {
+			const choices = HelpConstants.POPULAR_COMMANDS.map(cmd => {
+				const commandData = HelpConstants.COMMANDS_DATA[cmd.toUpperCase() as keyof typeof HelpConstants.COMMANDS_DATA];
+				return {
+					name: commandData?.NAME || cmd,
+					value: cmd
+				};
+			});
+			await interaction.respond(choices);
+			return;
+		}
+		
+		// Find matching commands
+		const choices: { name: string; value: string }[] = [];
+		const seenCommands = new Set<string>();
+		
+		for (const [commandKey, aliases] of Object.entries(HelpConstants.ACCEPTED_SEARCH_WORDS)) {
+			if (seenCommands.has(commandKey)) {
+				continue;
+			}
+			
+			// Check if any alias matches
+			for (const alias of aliases) {
+				if (alias.toLowerCase().includes(focusedValue)) {
+					const commandData = HelpConstants.COMMANDS_DATA[commandKey as keyof typeof HelpConstants.COMMANDS_DATA];
+					choices.push({
+						name: commandData?.NAME || commandKey.toLowerCase(),
+						value: alias
+					});
+					seenCommands.add(commandKey);
+					break;
+				}
+			}
+			
+			if (choices.length >= 25) {
+				break;
+			}
+		}
+		
+		await interaction.respond(choices);
+	}
+	catch (error) {
+		CrowniclesLogger.errorWithObj("Error while handling help autocomplete", error);
+		// Respond with empty array to prevent Discord errors
+		await interaction.respond([]);
+	}
+}
+
 export const commandInfo: ICommand = {
 	slashCommandBuilder: SlashCommandBuilderGenerator.generateBaseCommand("help")
 		.addStringOption(option => SlashCommandBuilderGenerator.generateOption("help", "commandName", option)
-			.setRequired(false)) as SlashCommandBuilder,
+			.setRequired(false)
+			.setAutocomplete(true)) as SlashCommandBuilder,
 	getPacket,
+	handleAutocomplete,
 	mainGuildCommand: false
 };

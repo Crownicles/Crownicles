@@ -1,5 +1,7 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { ApplicationCommandPermissions } from "discord.js";
+import {
+	ApplicationCommandPermissions, AutocompleteInteraction
+} from "discord.js";
 import { KeycloakUser } from "../../../Lib/src/keycloak/KeycloakUser";
 import { CrowniclesPacket } from "../../../Lib/src/packets/CrowniclesPacket";
 import { CrowniclesInteraction } from "../messages/CrowniclesInteraction";
@@ -14,4 +16,9 @@ export interface ICommand {
 
 	mainGuildCommand: boolean;
 	slashCommandPermissions?: ApplicationCommandPermissions[];
+	
+	/**
+	 * Optional handler for autocomplete interactions
+	 */
+	handleAutocomplete?: (interaction: AutocompleteInteraction) => Promise<void>;
 }

@@ -269,11 +269,46 @@ export class CommandsManager {
 	}
 
 	/**
+	 * Handle autocomplete interactions for commands
+	 * @param interaction
+	 */
+	private static async handleAutocomplete(interaction: import("discord.js").AutocompleteInteraction): Promise<void> {
+		try {
+			const command = CommandsManager.commands.get(interaction.commandName);
+			
+			if (command?.handleAutocomplete) {
+				await command.handleAutocomplete(interaction);
+			}
+			else {
+				// No autocomplete handler defined, respond with empty array
+				await interaction.respond([]);
+			}
+		}
+		catch (error) {
+			CrowniclesLogger.errorWithObj(`Error while handling autocomplete for ${interaction.commandName}`, error);
+			// Try to respond with empty array to prevent Discord errors
+			try {
+				await interaction.respond([]);
+			}
+			catch {
+				// Interaction already responded or timed out
+			}
+		}
+	}
+
+	/**
 	 * Manage the slash commands from where the bot is asked
 	 * @param client
 	 */
 	private static manageInteractionCreate(client: Client): void {
 		client.on("interactionCreate", async discordInteraction => {
+			// Handle autocomplete interactions
+			if (discordInteraction.isAutocomplete()) {
+				CommandsManager.handleAutocomplete(discordInteraction)
+					.then();
+				return;
+			}
+			
 			if (!discordInteraction.isCommand() || discordInteraction.user.bot || discordInteraction.user.id === crowniclesClient!.user!.id) {
 				return;
 			}
