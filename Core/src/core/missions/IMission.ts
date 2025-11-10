@@ -36,4 +36,11 @@ export type IMission = {
 	 * @param params - identical to the update of the mission
 	 */
 	updateSaveBlob(variant: number, saveBlob: Buffer, params: MissionParams): Buffer;
+
+	/**
+	 * Whether to always update the saveBlob even when params don't match
+	 * Default is false (only update when params match)
+	 * Set to true for missions that need to initialize saveBlob on first relevant action
+	 */
+	alwaysUpdateBlob?: boolean;
 };
