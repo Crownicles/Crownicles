@@ -34,6 +34,6 @@ export default class CommandTestListPacketHandler {
 	@packetHandler(CommandTestListPacketRes)
 	async testListRes(_context: PacketContext, packet: CommandTestListPacketRes): Promise<void> {
 		TestCommandsCache.setCommands(packet.commands);
-		await Promise.resolve(); // Satisfy require-await rule
+		await Promise.resolve();
 	}
 }

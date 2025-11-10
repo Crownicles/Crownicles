@@ -143,26 +143,39 @@ async function sendResultWithoutInteraction(packet: CommandTestPacketRes, contex
 }
 
 async function handleAutocomplete(interaction: AutocompleteInteraction): Promise<void> {
-	const focusedValue = interaction.options.getFocused();
+	try {
+		const focusedValue = interaction.options.getFocused();
 
-	// Check if we have test commands cached
-	if (!TestCommandsCache.hasCommands()) {
-		CrowniclesLogger.warn("Test commands not yet loaded for autocomplete");
-		await interaction.respond([]);
-		return;
+		// Check if we have test commands cached
+		if (!TestCommandsCache.hasCommands()) {
+			CrowniclesLogger.warn("Test commands not yet loaded for autocomplete");
+			await interaction.respond([]);
+			return;
+		}
+
+		// Convert cached test commands to searchable items
+		const testCommands = TestCommandsCache.getCommands().map(cmd => ({
+			key: cmd.name,
+			displayName: cmd.name,
+			aliases: cmd.aliases && cmd.aliases.length > 0 ? cmd.aliases : [cmd.name]
+		}));
+
+		const results = searchAutocomplete(testCommands, focusedValue);
+		const choices = toDiscordChoices(results);
+
+		await interaction.respond(choices);
 	}
+	catch (error) {
+		CrowniclesLogger.errorWithObj("Error while handling test autocomplete", error);
 
-	// Convert cached test commands to searchable items
-	const testCommands = TestCommandsCache.getCommands().map(cmd => ({
-		key: cmd.name,
-		displayName: cmd.name,
-		aliases: cmd.aliases || []
-	}));
-
-	const results = searchAutocomplete(testCommands, focusedValue);
-	const choices = toDiscordChoices(results);
-
-	await interaction.respond(choices);
+		// Respond with empty array to prevent Discord errors
+		try {
+			await interaction.respond([]);
+		}
+		catch {
+			// Ignore errors from respond fallback
+		}
+	}
 }
 
 export const commandInfo: ICommand = {
