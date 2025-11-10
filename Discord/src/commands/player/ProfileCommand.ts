@@ -164,9 +164,9 @@ function generateFields(packet: CommandProfilePacketRes, lng: Language): EmbedFi
 			lng,
 			rank: packet.playerData.fightRanking?.gloryRank ?? 0,
 			numberOfPlayers: packet.playerData.fightRanking?.numberOfFighters ?? 0,
-			leagueEmoji: packet.playerData.fightRanking ? CrowniclesIcons.leagues[packet.playerData.fightRanking.league] : "",
-			leagueId: packet.playerData.fightRanking ? packet.playerData.fightRanking.league : 0,
-			gloryPoints: packet.playerData.fightRanking ? packet.playerData.fightRanking.glory : 0
+			leagueEmoji: packet.playerData.fightRanking?.league ? CrowniclesIcons.leagues[packet.playerData.fightRanking.league] : "",
+			leagueId: packet.playerData.fightRanking?.league ?? 0,
+			gloryPoints: packet.playerData.fightRanking?.glory ?? 0
 		});
 
 	addField(fields, "guild", Boolean(packet.playerData.guild), {
