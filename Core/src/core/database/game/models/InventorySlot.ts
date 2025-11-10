@@ -358,7 +358,7 @@ export class InventorySlots {
 		};
 	}
 
-	static async getItem(playerId: number, slot: number, category: number): Promise<InventorySlot> {
+	static async getItem(playerId: number, slot: number, category: number): Promise<InventorySlot | null> {
 		return await InventorySlot.findOne({
 			where: {
 				playerId,
