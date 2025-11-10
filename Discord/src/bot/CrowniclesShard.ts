@@ -14,11 +14,6 @@ import {
 import { DiscordDatabase } from "../database/discord/DiscordDatabase";
 import { CrowniclesDiscordWebServer } from "./CrowniclesDiscordWebServer";
 import { CrowniclesLogger } from "../../../Lib/src/logs/CrowniclesLogger";
-import {
-	makePacket, PacketContext
-} from "../../../Lib/src/packets/CrowniclesPacket";
-import { CommandTestListPacketReq } from "../../../Lib/src/packets/commands/CommandTestListPacket";
-import { PacketUtils } from "../utils/PacketUtils";
 import "source-map-support/register";
 
 process.on("uncaughtException", error => {
@@ -76,31 +71,6 @@ process.on("message", (message: {
 	}
 	return true;
 });
-
-/**
- * Request the list of test commands from Core for autocomplete
- */
-function requestTestCommandsList(): void {
-	try {
-		const packet = makePacket(CommandTestListPacketReq, {});
-		const context: PacketContext = {
-			frontEndOrigin: "discord",
-			frontEndSubOrigin: "system",
-			discord: {
-				shardId,
-				user: "",
-				interaction: "",
-				channel: "",
-				language: LANGUAGE.ENGLISH
-			}
-		};
-		PacketUtils.sendPacketToBackend(context, packet);
-		CrowniclesLogger.info("Requested test commands list from Core");
-	}
-	catch (error) {
-		CrowniclesLogger.errorWithObj("Failed to request test commands list", error);
-	}
-}
 
 export abstract class Intents {
 	static readonly LIST =
@@ -205,11 +175,6 @@ async function connectAndStartBot(): Promise<void> {
 	await CommandsManager.register(crowniclesClient, isMainShard);
 	await DiscordMQTT.init(isMainShard);
 	await discordDatabase.init(isMainShard);
-
-	// Request test commands list from Core for autocomplete
-	if (isMainShard) {
-		requestTestCommandsList();
-	}
 
 	const guild = crowniclesClient?.guilds.cache.get(discordConfig.MAIN_SERVER_ID);
 	if (guild?.shard) {
