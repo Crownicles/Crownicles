@@ -16,7 +16,7 @@ export interface ICommand {
 
 	mainGuildCommand: boolean;
 	slashCommandPermissions?: ApplicationCommandPermissions[];
-	
+
 	/**
 	 * Optional handler for autocomplete interactions
 	 */

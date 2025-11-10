@@ -275,7 +275,7 @@ export class CommandsManager {
 	private static async handleAutocomplete(interaction: import("discord.js").AutocompleteInteraction): Promise<void> {
 		try {
 			const command = CommandsManager.commands.get(interaction.commandName);
-			
+
 			if (command?.handleAutocomplete) {
 				await command.handleAutocomplete(interaction);
 			}
@@ -286,6 +286,7 @@ export class CommandsManager {
 		}
 		catch (error) {
 			CrowniclesLogger.errorWithObj(`Error while handling autocomplete for ${interaction.commandName}`, error);
+
 			// Try to respond with empty array to prevent Discord errors
 			try {
 				await interaction.respond([]);
@@ -308,7 +309,7 @@ export class CommandsManager {
 					.then();
 				return;
 			}
-			
+
 			if (!discordInteraction.isCommand() || discordInteraction.user.bot || discordInteraction.user.id === crowniclesClient!.user!.id) {
 				return;
 			}
