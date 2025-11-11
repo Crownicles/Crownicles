@@ -96,12 +96,6 @@ export default {
 				// Get the property text
 				const propertyText = sourceCode.getText(property);
 
-				// Check if there's a trailing comma
-				const tokenAfterProperty = sourceCode.getTokenAfter(property);
-				const hasTrailingComma = tokenAfterProperty && 
-					tokenAfterProperty.value === "," && 
-					tokenAfterProperty.range[0] < closeBrace.range[0];
-
 				// Get text after closing brace on the same line
 				const afterBraceLineEnd = sourceCode.getIndexFromLoc({
 					line: closeBrace.loc.end.line,
@@ -112,7 +106,7 @@ export default {
 					afterBraceLineEnd
 				);
 
-				// Construct the single-line version
+				// Construct the single-line version (without trailing comma per project style)
 				const singleLine = `${beforeBrace}{ ${propertyText} }${afterBrace}`;
 
 				// Check if it would fit within the max length
