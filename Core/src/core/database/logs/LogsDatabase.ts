@@ -93,7 +93,6 @@ import { LogsPlayersRage } from "./models/LogsPlayersRage";
 import { GenericItem } from "../../../data/GenericItem";
 import { MapLink } from "../../../data/MapLink";
 import { FightController } from "../../fights/FightController";
-import { RealPlayerFighter } from "../../fights/fighter/RealPlayerFighter";
 import { MonsterFighter } from "../../fights/fighter/MonsterFighter";
 import { Effect } from "../../../../../Lib/src/types/Effect";
 import { getDatabaseConfiguration } from "../../bot/CrowniclesConfig";
