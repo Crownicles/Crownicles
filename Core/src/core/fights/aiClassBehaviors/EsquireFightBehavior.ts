@@ -5,7 +5,6 @@ import {
 	FightAction, FightActionDataController
 } from "../../../data/FightAction";
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
-import { RealPlayerFighter } from "../fighter/RealPlayerFighter";
 import { MonsterFighter } from "../fighter/MonsterFighter";
 import { RandomUtils } from "../../../../../Lib/src/utils/RandomUtils";
 import { PlayerFighter } from "../fighter/PlayerFighter";
