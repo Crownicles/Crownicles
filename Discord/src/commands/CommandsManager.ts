@@ -6,6 +6,7 @@ import {
 	ApplicationCommandOptionType,
 	Attachment,
 	AttachmentBuilder,
+	AutocompleteInteraction,
 	ButtonBuilder,
 	ButtonInteraction,
 	ButtonStyle,
@@ -272,7 +273,7 @@ export class CommandsManager {
 	 * Handle autocomplete interactions for commands
 	 * @param interaction
 	 */
-	private static async handleAutocomplete(interaction: import("discord.js").AutocompleteInteraction): Promise<void> {
+	private static async handleAutocomplete(interaction: AutocompleteInteraction): Promise<void> {
 		try {
 			const command = CommandsManager.commands.get(interaction.commandName);
 

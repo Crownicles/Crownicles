@@ -53,7 +53,9 @@ export class DiscordMQTT {
 
 		if (isMainShard) {
 			this.connectSubscribeAndHandleNotifications();
-			this.requestTestCommandsList();
+			if (discordConfig.TEST_MODE) {
+				this.requestTestCommandsList();
+			}
 		}
 	}
 
