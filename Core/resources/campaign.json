@@ -435,9 +435,9 @@
     {
       "missionId": "meetSirRowan",
       "missionVariant": 0,
-      "missionObjective": 10,
-      "gemsToWin": 3,
-      "xpToWin": 150,
+      "missionObjective": 5,
+      "gemsToWin": 4,
+      "xpToWin": 450,
       "moneyToWin": 0
     },
     {
