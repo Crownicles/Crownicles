@@ -237,6 +237,21 @@
     "Il parait que le nain du mont Célestrum est un grand amateur d'animaux.",
     "Los paladines resisten los ataques de los vampiros.",
     "Los magos no pueden ser petrificados por un familiar.",
-    "Algunas criaturas no pueden sangrar."
+    "Algunas criaturas no pueden sangrar.",
+    "Les potions de combat sont automatiquement consommées au début d'un affrontement si elles sont équipées.",
+    "Contrairement aux potions classiques, les potions de combat ne peuvent pas être bues avec la commande {command:drink}.",
+    "Il existe trois types de potions de combat : les potions d'attaque, de défense et de vitesse.",
+    "Les potions de combat ont 70% de chance d'être consommées lors de l'utilisation de la commande {command:fight}. Avec un peu de chance, vous pourrez la réutiliser !",
+    "Équiper une potion de vitesse peut vous permettre d'attaquer en premier lors d'un combat.",
+    "Une bonne potion de défense peut faire toute la différence face à un adversaire puissant.",
+    "Les potions d'attaque sont idéales pour vaincre rapidement vos adversaires.",
+    "N'oubliez pas d'équiper une potion de combat avant de lancer la commande {command:fight}.",
+    "Vous pouvez équiper une potion de combat dans votre inventaire avec la commande {command:switch}.",
+    "Les potions de combat ne sont pas automatiquement consommées lors des rapports, seulement lors des combats.",
+    "Si votre potion de combat n'est pas consommée, vous aurez une chance de la réutiliser lors de votre prochain combat !",
+    "Si vous avez une potion équipée et que vous êtes attaqués, son effet sera appliqué même si vous n'avez pas initié le combat.",
+    "Si vous êtes attaqué et que vous avez une potion, elle a 15% de chance d'être consommée. Vous pourrez probablement la réutiliser !",
+    "Une potion de combat bien choisie peut compenser les faiblesses de votre classe actuelle.",
+    "Les potions de combat rares sont plus puissantes mais aussi plus difficiles à trouver."
   ]
 }
