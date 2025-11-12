@@ -237,6 +237,21 @@
     "Sembra che il nano del Mount Celestrum sia un grande amante degli animali.",
     "I paladini resistono agli attacchi dei vampiri.",
     "I maghi non possono essere pietrificati da un familiare.",
-    "Alcune creature non possono essere fatte sanguinare."
+    "Alcune creature non possono essere fatte sanguinare.",
+    "Le pozioni da combattimento vengono consumate automaticamente all'inizio di una battaglia se sono equipaggiate.",
+    "A differenza delle pozioni tradizionali, le pozioni da combattimento non possono essere bevute con il comando {command:drink}.",
+    "Esistono tre tipi di pozioni da combattimento: attacco, difesa e velocità.",
+    "Le pozioni da combattimento hanno una probabilità del 70% di essere consumate quando si usa il comando {command:fight}. Con un po' di fortuna, sarete in grado di usarle di nuovo!",
+    "L'equipaggiamento di una pozione di velocità può consentire di attaccare per primi in battaglia.",
+    "Una buona pozione di difesa può fare la differenza contro un avversario potente.",
+    "Le pozioni d'attacco sono ideali per sconfiggere rapidamente gli avversari.",
+    "Non dimenticate di equipaggiare una pozione da combattimento prima di impartire il comando {command:fight}.",
+    "È possibile equipaggiare una pozione da combattimento nel proprio inventario con il comando {command:switch}.",
+    "Le pozioni da combattimento non vengono consumate automaticamente durante i rapporti, ma solo durante il combattimento.",
+    "Se la pozione da combattimento non viene consumata, si avrà la possibilità di usarla di nuovo nel prossimo combattimento!",
+    "Se si possiede una pozione e si viene attaccati, il suo effetto verrà applicato anche se non si è iniziato il combattimento.",
+    "Se venite attaccati e avete una pozione, questa ha una probabilità del 15% di essere consumata. Probabilmente sarete in grado di usarla di nuovo!",
+    "Una pozione da combattimento ben scelta può compensare le debolezze della vostra classe attuale.",
+    "Le pozioni da combattimento rare sono più potenti ma anche più difficili da trovare."
   ]
 }

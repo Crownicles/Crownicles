@@ -237,6 +237,21 @@
     "It seems that the dwarf of Mount Ce�lestrum is a great animal lover.",
     "Paladins resist vampire attacks.",
     "Mages cannot be petrified by a pet.",
-    "Some creatures cannot be made to bleed."
+    "Some creatures cannot be made to bleed.",
+    "Combat potions are automatically consumed at the start of a battle if equipped.",
+    "Unlike classic potions, combat potions cannot be drunk with the command {command:drink}.",
+    "There are three types of combat potions: attack, defense and speed.",
+    "Combat potions have a 70% chance of being consumed when using the {command:fight}command. With a bit of luck, you'll be able to use it again!",
+    "Equipping a speed potion can allow you to attack first in battle.",
+    "A good defense potion can make all the difference against a powerful opponent.",
+    "Attack potions are ideal for quickly defeating your opponents.",
+    "Don't forget to equip a combat potion before issuing the command {command:fight}.",
+    "You can equip a combat potion in your inventory with the command {command:switch}.",
+    "Combat potions are not automatically consumed when reporting, only when fighting.",
+    "If your battle potion is not consumed, you'll have a chance to use it again in your next battle!",
+    "If you have an equipped potion and are attacked, its effect will be applied even if you didn't initiate the fight.",
+    "If you are attacked and have a potion, it has a 15% chance of being consumed. You'll probably be able to use it again!",
+    "A well-chosen combat potion can compensate for the weaknesses of your current class.",
+    "Rare combat potions are more powerful, but also harder to find."
   ]
 }
