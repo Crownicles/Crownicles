@@ -8,6 +8,7 @@ import { BotUtils } from "../../utils/BotUtils";
 import {
 	LANGUAGE, Language
 } from "../../../../Lib/src/Language";
+import { AutocompleteInteraction } from "discord.js";
 import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
 import { HelpConstants } from "../../../../Lib/src/constants/HelpConstants";
 import {
@@ -272,7 +273,7 @@ async function getPacket(interaction: CrowniclesInteraction): Promise<null> {
  * Handle autocomplete for the help command
  * @param interaction
  */
-async function handleAutocomplete(interaction: import("discord.js").AutocompleteInteraction): Promise<void> {
+async function handleAutocomplete(interaction: AutocompleteInteraction): Promise<void> {
 	try {
 		const focusedValue = interaction.options.getFocused();
 
