@@ -1015,14 +1015,14 @@
         "En una curva de la carretera, **{{pet}}** empieza a correr de repente. Te mantienes en cabeza lo mejor que puedes pero sales con algunos rasguños. Pierdes a **{{amount}}** {emote:unitValues.lostHealth}.",
         "{{pet}}Ve salir a ** **. Vuelve unos minutos después con algo de comida. Te la comes y te arrepientes amargamente unos minutos después. De repente se le revuelve el estómago...{{amount}} {emote:unitValues.lostHealth}Pierdes a ** ** .",
         "{{pet}} {{randomAnimal}} ** Parece que has desencadenado hostilidades con el sauvage. Decides defenderle pero desgraciadamente la criatura salvaje te hiere.{{amount}} {emote:unitValues.lostHealth}Pierdes ** ** .",
-        "{{pet}}** Parece que quiere jugar y se sube a un árbol. Desgraciadamente, su peso rompe la rama y cae encima de ti.{{amount}} {emote:unitValues.lostHealth}Pierdes a ** ** ."
+        "**{{pet}}** semble vouloir jouer et se jette du haut d'un arbre. Malheureusement, son poids brise la branche et il tombe sur vous. Vous perdez **{{amount}}** {emote:unitValues.lostHealth}."
       ],
       "loseLife_f": [
         "{{pet}}Cuando intentas acariciar a ** **, ella no te deja y te muerde la mano.{{amount}} {emote:unitValues.lostHealth}Pierdes ** ** .",
         "En una curva de la carretera, **{{pet}}** empieza a correr de repente. Te mantienes en cabeza lo mejor que puedes pero sales con algunos rasguños. Pierdes a **{{amount}}** {emote:unitValues.lostHealth}.",
         "{{pet}}Ves salir a ** **. Regresa unos minutos después con algo de comida. Te la comes y te arrepientes amargamente unos minutos después. De repente se le revuelve el estómago...{{amount}} {emote:unitValues.lostHealth}Pierdes a ** ** .",
         "{{pet}} {{randomAnimal}} **¡Parece que ha desencadenado hostilidades con sauvage! Decides defenderla pero desgraciadamente la criatura salvaje te hiere.{{amount}} {emote:unitValues.lostHealth}Pierdes ** ** .",
-        "{{pet}}** Parece que quiere jugar y se sube a un árbol. Desgraciadamente, su peso rompe la rama y cae encima de ti.{{amount}} {emote:unitValues.lostHealth}Pierdes a ** ** ."
+        "**{{pet}}** semble vouloir jouer et se jette du haut d'un arbre. Malheureusement, son poids brise la branche et elle tombe sur vous. Vous perdez **{{amount}}** {emote:unitValues.lostHealth}."
       ],
       "loseMoney_m": [
         "{{pet}}Sientes que ** ** está robando algunas monedas de tu monedero y las esconde más lejos. Por desgracia, no puedes encontrarlas.{{amount}} {emote:unitValues.lostMoney}Así que pierdes a ** ** .",
