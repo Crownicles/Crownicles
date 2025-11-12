@@ -1015,14 +1015,14 @@
         "In einer Kurve fängt **{{pet}}** plötzlich an zu rennen. Sie behalten die Leine so gut es geht in den Händen, kommen aber mit einigen Kratzern wieder heraus. Sie verlieren **{{amount}}** {emote:unitValues.lostHealth}.",
         "Sie sehen **{{pet}}** gehen. Nach ein paar Minuten kommt er mit Essen zurück. Sie essen es und bereuen es einige Minuten später bitterlich. Sie haben plötzlich Bauchschmerzen.... Sie verlieren **{{amount}}** {emote:unitValues.lostHealth}.",
         "**{{pet}}** scheint mit {{randomAnimal}} wild die Feindseligkeiten angezettelt zu haben! Du beschließt, ihn zu verteidigen, aber leider verletzt dich die wilde Kreatur. Sie verlieren **{{amount}}** {emote:unitValues.lostHealth}.",
-        "**{{pet}}** scheint spielen zu wollen und stürzt sich von einem Baum. Leider bricht sein Gewicht den Ast und er fällt auf Sie. Sie verlieren **{{amount}}** {emote:unitValues.lostHealth}."
+        "**{{pet}}** semble vouloir jouer et se jette du haut d'un arbre. Malheureusement, son poids brise la branche et il tombe sur vous. Vous perdez **{{amount}}** {emote:unitValues.lostHealth}."
       ],
       "loseLife_f": [
         "Während Sie versuchen, **{{pet}}** zu streicheln, lässt sie nicht locker und beißt Ihnen die Hand ab. Sie verlieren **{{amount}}** {emote:unitValues.lostHealth}.",
         "In einer Kurve fängt **{{pet}}** plötzlich an zu rennen. Sie behalten die Leine so gut es geht in den Händen, kommen aber mit einigen Kratzern wieder heraus. Sie verlieren **{{amount}}** {emote:unitValues.lostHealth}.",
         "Sie sehen **{{pet}}** gehen. Nach ein paar Minuten kommt sie mit etwas zu essen zurück. Sie essen es und bereuen es einige Minuten später bitterlich. Sie haben plötzlich Bauchschmerzen ... . Sie verlieren **{{amount}}** {emote:unitValues.lostHealth}.",
         "**{{pet}}** scheint mit {{randomAnimal}} wild die Feindseligkeiten angezettelt zu haben! Du beschließt, sie zu verteidigen, aber leider verletzt dich die wilde Kreatur. Sie verlieren **{{amount}}** {emote:unitValues.lostHealth}.",
-        "**{{pet}}** scheint spielen zu wollen und stürzt sich von einem Baum. Leider bricht ihr Gewicht den Ast und sie fällt auf Sie. Sie verlieren **{{amount}}** {emote:unitValues.lostHealth}."
+        "**{{pet}}** semble vouloir jouer et se jette du haut d'un arbre. Malheureusement, son poids brise la branche et elle tombe sur vous. Vous perdez **{{amount}}** {emote:unitValues.lostHealth}."
       ],
       "loseMoney_m": [
         "Du spürst, dass **{{pet}}** ein paar Münzen aus deinem Geldbeutel stiehlt und sie weiter weg versteckt. Leider gelingt es Ihnen nicht, sie zu finden. Sie verlieren also **{{amount}}** {emote:unitValues.lostMoney}.",
