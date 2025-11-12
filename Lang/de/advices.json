@@ -237,6 +237,21 @@
     "Il parait que le nain du mont Célestrum est un grand amateur d'animaux.",
     "Paladine widerstehen den Angriffen von Vampiren.",
     "Magier können nicht von einem Vertrauten versteinert werden.",
-    "Es ist nicht möglich, bestimmte Kreaturen bluten zu lassen."
+    "Es ist nicht möglich, bestimmte Kreaturen bluten zu lassen.",
+    "Kampftränke werden automatisch zu Beginn einer Auseinandersetzung verbraucht, wenn sie ausgerüstet sind.",
+    "Im Gegensatz zu herkömmlichen Tränken können Kampftränke nicht mit dem Befehl {command:drink}getrunken werden.",
+    "Es gibt drei Arten von Kampftränken: Angriffs-, Verteidigungs- und Geschwindigkeitstränke.",
+    "Kampftränke haben eine 70%ige Chance, bei der Verwendung des Befehls {command:fight}verbraucht zu werden. Mit etwas Glück können Sie sie wieder verwenden!",
+    "Einen Geschwindigkeitstrank auszurüsten kann es dir ermöglichen, in einem Kampf als Erster anzugreifen.",
+    "Ein guter Verteidigungstrank kann gegen einen starken Gegner den entscheidenden Unterschied ausmachen.",
+    "Angriffstränke sind ideal, um deine Gegner schnell zu besiegen.",
+    "Denken Sie daran, einen Kampftrank auszurüsten, bevor Sie den Befehl {command:fight}ausführen.",
+    "Du kannst einen Kampftrank in deinem Inventar mit dem Befehl {command:switch}ausrüsten.",
+    "Kampftränke werden nicht automatisch bei Berichten verbraucht, sondern nur bei Kämpfen.",
+    "Wenn Ihr Kampftrank nicht verbraucht wird, haben Sie die Chance, ihn im nächsten Kampf wieder einzusetzen!",
+    "Wenn du einen Trank ausgerüstet hast und angegriffen wirst, wird seine Wirkung auch dann angewendet, wenn du den Kampf nicht eingeleitet hast.",
+    "Wenn Sie angegriffen werden und einen Trank haben, besteht eine 15%ige Chance, dass er verbraucht wird. Sie können ihn wahrscheinlich wieder verwenden!",
+    "Ein gut gewählter Kampftrank kann die Schwächen deiner aktuellen Klasse ausgleichen.",
+    "Seltene Kampftränke sind stärker, aber auch schwerer zu finden."
   ]
 }
