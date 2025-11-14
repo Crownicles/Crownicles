@@ -369,6 +369,7 @@
       "name_other": "Repas de famille"
     },
     "fireAttack": {
+      "customMessage": "tente de brûler son adversaire mais celui-ci est insensible au feu.",
       "description": "Brûle l'adversaire. L'altération \"brûlé\" inflige des dégâts à votre adversaire sur la durée.",
       "name_one": "Attaque feu",
       "name_other": "Attaques feu"
@@ -393,6 +394,12 @@
       "customMessage": "a réussi à s'extraire d'une situation périlleuse sans trop de dommages, mais en sacrifiant sa dignité et sa propreté.",
       "name_one": "Salissure",
       "name_other": "Salissures"
+    },
+    "getSoaked": {
+      "description": "S'exécute si l'attaquant s'est récemment retrouvé submergé d'eau.",
+      "customMessage": "a réussi à s'extraire de l'eau mais en finit complétement trempé.",
+      "name_one": "Trempé",
+      "name_other": "Trempés"
     },
     "goesWild": {
       "success": "ordonne à **{{petNickname}}** d'attaquer. L'animal éclate de rage et se met à frapper tout ce qui passe à proximité de lui."
@@ -659,6 +666,11 @@
       "name_one": "Attaque souffle glacial",
       "name_other": "Attaques souffles glacials"
     },
+    "hydraulicHeal": {
+      "customMessage": "fait appel aux forces de l'eau pour récupérer des forces.",
+      "name_one": "Soin hydraulique",
+      "name_other": "Soins hydrauliques"
+    },
     "blizzardRageAttack": {
       "customMessage": "invoque la rage du blizzard sur son adversaire, mais les vents glacés font déjà rage dans l'arène.",
       "name_one": "Attaque rage de blizzard",
@@ -743,6 +755,11 @@
     "snowBall": {
       "success": "est aidé par **{{petNickname}}** qui lance une boule de neige sur l'adversaire."
     },
+    "solidification": {
+      "customMessage": "se solidifie et renvoie une partie des dégâts physiques.",
+      "name_one": "Solidification",
+      "name_other": "Solidifications"
+    },
     "spit": {
       "failure": "est aidé par **{{petNickname}}** qui crache sur son adversaire.",
       "success": "est soutenu par **{{petNickname}}** qui crache sur son adversaire. Par chance, le crachat atterrit parfaitement dans les yeux de l'ennemi !"
@@ -808,6 +825,14 @@
     "vampirism": {
       "success": "est assisté par **{{petNickname}}** qui aspire un peu d'énergie à l'adversaire pour l'offrir en tribut à son maître."
     },
+    "waterJet": {
+      "name_one": "Attaque jet d'eau",
+      "name_other": "Attaques jet d'eau"
+    },
+    "tidalWave": {
+      "name_one": "Attaque raz-de-marée",
+      "name_other": "Attaques raz-de-marée"
+    },
     "weak": {
       "name": "affaibli",
       "new": "est affaibli.",
@@ -838,8 +863,89 @@
       "failure": "appelle **{{petNickname}}** qui tente de mordre son adversaire, mais sa cible semble insensible à ce type d'attaque."
     },
     "petPetrified": {
-      "success": "se fait aider par **{{petNickname}}** qui regarde son adversaire et le pétrifie.",
+      "success": "se fait aider par **{{petNickname}}** qui regarde son adversaire les plus raet le pétrifie.",
       "failure": "est assisté par **{{petNickname}}** qui regarde son adversaire, mais cela n'a aucun effet contre cet adversaire."
+    },
+    "retreat": {
+      "customMessage": "se retire dans sa carapace.",
+      "name_one": "Repli",
+      "name_other": "Replis"
+    },
+    "earthquake": {
+      "customMessage": "fait trembler la terre, seul les adversaires les plus solides parviennent à y résister.",
+      "name_one": "Séisme",
+      "name_other": "Séismes"
+    },
+    "irradiated": {
+      "name": "irradié",
+      "new": "est irradié.",
+      "active": "subit les radiations.",
+      "stop": "n'est plus irradié."
+    },
+    "soaked": {
+      "name": "trempé",
+      "new": "est trempé.",
+      "active": "est trempé.",
+      "stop": "n'est plus trempé."
+    },
+    "submerged": {
+      "name": "submergé",
+      "new": "est submergé.",
+      "active": "est submergé et a du mal à respirer.",
+      "stop": "n'est plus submergé."
+      },
+    "sleeping": {
+      "name": "endormi",
+      "new": "est endormi.",
+      "active": "dort profondément.",
+      "stop": "s'est réveillé."
+    },
+    "sing": {
+      "customMessage": "se met à chanter.",
+      "name_one": "Chant de la mer",
+      "name_other": "Chants de la mer"
+    },
+    "hellishScream": {
+      "name_one": "Attaque cri infernal",
+      "name_other": "Attaques cris infernaux"
+    },
+    "callOfTheSea": {
+      "name_one": "Attaque appel de la mer",
+      "name_other": "Attaques appels des mers"
+    },
+    "inkJet": {
+      "customMessage": "jette de l'encre sur son adversaire.",
+      "name_one": "Jet d'encre",
+      "name_other": "Jet d'encre"
+    },
+    "wateryGust": {
+      "name_one": "Attaque rafale aqueuse",
+      "name_other": "Attaques rafales aqueuses"
+    },
+    "chargeChargeMaelstromAttack": {
+      "customMessage": "s'immobilise et se prépare à déclencher un désastre.",
+      "name_one": "Attaque maelström",
+      "name_other": "Attaques maelströms"
+    },
+    "chargeMaelstromAttack": {
+      "customMessage": "continue de concentrer son énergie, prêt à libérer une puissance dévastatrice.",
+      "name_one": "Attaque maelström",
+      "name_other": "Attaques maelströms"
+    },
+    "maelstromAttack": {
+      "customMessage": "déchaîne un maelström, mêlant vents et courants dans un tourbillon ravageur.",
+      "name_one": "Attaque maelström",
+      "name_other": "Attaques maelströms"
+    },
+    "tentacleBlowAttack": {
+      "customMessage": "balance une tentacule sur son adversaire.",
+      "name_one": "Attaque coup de tentacule",
+      "name_other": "Attaques coups de tentacules"
+    },
+    "abyssalEmbraceAttack": {
+      "customMessage": "ne parvient pas à attraper son adversaire qui la tient à distance respectable grâce à ses attaques",
+      "name_one": "Attaque étreinte abyssale",
+      "name_other": "Attaques étreintes abyssales"
     }
   },
   "leagues": {
@@ -940,6 +1046,41 @@
       "description": "Personne ne s'est encore aventuré jusque là. Au loin, vous voyez une gigantesque silhouette se réfléchir sur un mur de glace.",
       "name": "Nid glacé",
       "particle": "vers le"
+    },
+    "1108": {
+      "description": "",
+      "name": "Plage de coquillage",
+      "particle": "vers la"
+    },
+    "1109": {
+      "description": "",
+      "name": "Creux du Lagon",
+      "particle": "vers le"
+    },
+    "1110": {
+      "description": "",
+      "name": "Caverne Maritime",
+      "particle": "vers la"
+    },
+    "1111": {
+      "description": "",
+      "name": "Crique du Revenant",
+      "particle": "vers la"
+    },
+    "1112": {
+      "description": "",
+      "name": "Cave des murmures",
+      "particle": "vers la"
+    },
+    "1113": {
+      "description": "",
+      "name": "Gouffre des Profondeurs",
+      "particle": "vers le"
+    },
+    "1114": {
+      "description": "",
+      "name": "Gorge de l'ombre",
+      "particle": "vers la"
     },
     "12": {
       "description": "Une grande plaine vide nordique sans grand intérêt.",
@@ -1359,6 +1500,22 @@
     "femaleIceDragon": {
       "name": "Reine des glaces",
       "description": "Une redoutable dragonne qui protège férocement son trésor et sa progéniture dans les profondeurs glacées de son antre. Plus agressive que son compagnon, elle n'hésite pas à déchaîner sa fureur contre quiconque ose s'approcher de son nid. Ses écailles scintillent comme des diamants et sa queue peut briser la glace la plus épaisse d'un seul coup."
+    },
+    "turtle": {
+      "name": "Tortue Géante",
+      "description": "Une gigantesque tortue reposant paisiblement dans son lagon. Lorsqu’elle est menacée, elle se retranche dans sa carapace avant de libérer de puissants jets d’eau capables de renverser ses ennemis. Son âge ancestral lui confère une sagesse immuable et une force que peu d’aventuriers ont osé défier."
+    },
+    "waterSpirit": {
+      "name": "Esprit des mers",
+      "description": ""
+    },
+    "mermaid": {
+      "name": "Sirène",
+      "description": ""
+    },
+    "kraken": {
+      "name": "Kraken",
+      "description": ""
     }
   },
   "objects": {

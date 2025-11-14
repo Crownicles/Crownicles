@@ -74,14 +74,18 @@ export abstract class FightConstants {
 				DIRTY: "dirty",
 				FROZEN: "frozen",
 				FULL: "full",
+				IRRADIATED: "irradiated",
 				OUTRAGE: "outrage",
 				OUT_OF_BREATH: "outOfBreath",
 				PARALYZED: "paralyzed",
 				PETRIFIED: "petrified",
 				POISONED: "poisoned",
 				PROTECTED: "protected",
+				SLEEPING: "sleeping",
 				SLOWED: "slowed",
+				SOAKED: "soaked",
 				STUNNED: "stunned",
+				SUBMERGED: "submerged",
 				SWALLOWED: "swallowed",
 				TARGETED: "targeted",
 				WEAK: "weak"
@@ -122,7 +126,23 @@ export abstract class FightConstants {
 				STEALTH: "stealth",
 				STONE_SKIN_ATTACK: "stoneSkinAttack",
 				SUMMON_ATTACK: "summonAttack",
-				WEB_SHOT_ATTACK: "webShotAttack"
+				WEB_SHOT_ATTACK: "webShotAttack",
+				WATER_JET: "waterJet",
+				RETREAT: "retreat",
+				SOLIDIFICATION: "solidification",
+				EARTHQUAKE: "earthquake",
+				TIDAL_WAVE: "tidalWave",
+				HYDRAULIC_HEAL: "hydraulicHeal",
+				SING: "sing",
+				HELLISH_SCREAM: "hellishScream",
+				CALL_OF_THE_SEA: "callOfTheSea",
+				INKJET: "inkJet",
+				WATERY_GUST: "wateryGust",
+				CHARGE_CHARGE_MAELSTROM_ATTACK: "chargeChargeMaelstromAttack",
+				CHARGE_MAELSTROM_ATTACK: "chargeMaelstromAttack",
+				MAELSTROM_ATTACK: "maelstromAttack",
+				TENTACLE_BLOW_ATTACK: "tentacleBlowAttack",
+				ABYSSAL_EMBRACE_ATTACK: "abyssalEmbraceAttack"
 			},
 			PET: {
 				BITE: "bite",
@@ -190,6 +210,7 @@ export abstract class FightConstants {
 				ENERGETIC_ATTACK: "energeticAttack",
 				FIRE_ATTACK: "fireAttack",
 				GET_DIRTY: "getDirty",
+				GET_SOAKED: "getSoaked",
 				GUILD_ATTACK: "guildAttack",
 				HEAVY_ATTACK: "heavyAttack",
 				INTENSE_ATTACK: "intenseAttack",
@@ -234,7 +255,10 @@ export abstract class FightConstants {
 		FightConstants.FIGHT_ACTIONS.MONSTER.LAVA_WAVE_ATTACK,
 		FightConstants.FIGHT_ACTIONS.MONSTER.MUD_SHOT_ATTACK,
 		FightConstants.FIGHT_ACTIONS.MONSTER.HEAT_MUD_ATTACK,
-		FightConstants.FIGHT_ACTIONS.MONSTER.HEAT_DRAIN_ATTACK
+		FightConstants.FIGHT_ACTIONS.MONSTER.HEAT_DRAIN_ATTACK,
+		FightConstants.FIGHT_ACTIONS.MONSTER.CHARGE_CHARGE_MAELSTROM_ATTACK,
+		FightConstants.FIGHT_ACTIONS.MONSTER.CHARGE_MAELSTROM_ATTACK,
+		FightConstants.FIGHT_ACTIONS.MONSTER.MAELSTROM_ATTACK
 	];
 
 	static readonly GOD_MOVES = [

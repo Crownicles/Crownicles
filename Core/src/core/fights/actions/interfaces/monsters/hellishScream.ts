@@ -5,20 +5,12 @@ import {
 import { FightAlterations } from "../../FightAlterations";
 import { FightActionFunc } from "../../../../../data/FightAction";
 import {
-	customMessageActionResult,
 	FightActionResult
 } from "../../../../../../../Lib/src/types/FightActionResult";
-import { MonsterFighter } from "../../../fighter/MonsterFighter";
+import { RandomUtils } from "../../../../../../../Lib/src/utils/RandomUtils";
 
-const IMMUNE_MONSTERS = ["waterSpirit"];
 
 const use: FightActionFunc = (sender, receiver) => {
-	if (receiver instanceof MonsterFighter && IMMUNE_MONSTERS.includes(receiver.monster.id)) {
-		return {
-			...customMessageActionResult(),
-			damages: 0
-		};
-	}
 	const initialDamage = FightActionController.getAttackDamage(getStatsInfo(sender, receiver), sender, getAttackInfo());
 	const damageDealt = FightActionController.applySecondaryEffects(initialDamage, 12, 4);
 
@@ -27,10 +19,12 @@ const use: FightActionFunc = (sender, receiver) => {
 		damages: damageDealt.damages
 	};
 
-	FightActionController.applyAlteration(result, {
-		selfTarget: false,
-		alteration: FightAlterations.BURNED
-	}, receiver);
+	if (!receiver.hasFightAlteration() && RandomUtils.crowniclesRandom.bool(0.3)) {
+		FightActionController.applyAlteration(result, {
+			selfTarget: false,
+			alteration: FightAlterations.PARALYZED
+		}, receiver);
+	}
 
 	return result;
 };
@@ -40,7 +34,7 @@ export default use;
 function getAttackInfo(): attackInfo {
 	return {
 		minDamage: 20,
-		averageDamage: 110,
+		averageDamage: 70,
 		maxDamage: 150
 	};
 }

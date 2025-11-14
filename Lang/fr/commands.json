@@ -1236,6 +1236,7 @@
         "self": {
           "newAlteration": " `Vous êtes désormais {{effect}} !`",
           "damages": " `Dégâts reçus : {{amount}}`",
+          "reflectedDamages": " `Dégâts renvoyés : {{amount}}`",
           "defense": " `Défense : {{operator}} {{amount}} %`",
           "breath": " `Souffle : {{operator}} {{amount}}`",
           "speed": " `Vitesse : {{operator}} {{amount}} %`",
@@ -1245,6 +1246,7 @@
         "opponent": {
           "newAlteration": " `Votre adversaire est désormais {{effect}} !`",
           "damages": " `Dégâts infligés : {{amount}}`",
+          "reflectedDamages": " `Dégâts renvoyés : {{amount}}`",
           "defense": " `Défense de l'adversaire : {{operator}} {{amount}} %`",
           "breath": " `Souffle de l'adversaire : {{operator}} {{amount}}`",
           "speed": " `Vitesse de l'adversaire : {{operator}} {{amount}} %`",
