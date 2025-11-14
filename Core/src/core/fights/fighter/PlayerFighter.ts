@@ -13,7 +13,8 @@ import { Potion } from "../../../data/Potion";
 import { checkDrinkPotionMissions } from "../../utils/ItemUtils";
 import { InventoryConstants } from "../../../../../Lib/src/constants/InventoryConstants";
 import {
-	ItemEnchantment, ItemEnchantmentKind
+	ItemEnchantment,
+	ItemEnchantmentKind
 } from "../../../../../Lib/src/types/ItemEnchantment";
 import { EnchantmentConstants } from "../../../../../Lib/src/constants/EnchantmentConstants";
 import { FightAlterations } from "../actions/FightAlterations";
@@ -47,72 +48,41 @@ export abstract class PlayerFighter extends Fighter {
 	}
 
 	/**
-	 * Function called when the fight ends
-	 * @param winner Indicate if the fighter is the winner
-	 * @param response
-	 * @param bug Indicate if the fight is bugged
-	 * @param turnCount The number of turns that the fight lasted
+	 * Load and cache the player's fight stats, optionally factoring the opponent type for enchantment multipliers.
 	 */
-	async endFight(winner: boolean, response: CrowniclesPacket[], bug: boolean, turnCount: number): Promise<void> {
-		await this.player.reload();
-		this.player.setEnergyLost(this.stats.maxEnergy - this.stats.energy, NumberChangeReason.FIGHT);
-		await this.player.save();
-
-		if (bug) {
-			return;
-		}
-
-		await this.manageMissionsOf(response);
-
-		if (this.petAssisted) {
-			await MissionsController.update(this.player, response, {
-				missionId: "petAssistedFight"
-			});
-		}
-
-		if (winner) {
-			await MissionsController.update(this.player, response, {
-				missionId: "fightHealthPercent",
-				params: {
-					remainingPercent: this.stats.energy / this.stats.maxEnergy
-				}
-			});
-			await MissionsController.update(this.player, response, {
-				missionId: "finishWithAttack",
-				params: {
-					lastAttack: this.fightActionsHistory.at(-1)
-				}
-			});
-			await MissionsController.update(this.player, response, {
-				missionId: "fightMinTurns",
-				params: { turnCount }
-			});
-		}
-	}
-
-	/**
-	 * Allow a fighter to unblock itself
-	 */
-	unblock(): void {
-		BlockingUtils.unblockPlayer(this.player.keycloakId, BlockingConstants.REASONS.FIGHT);
-	}
-
-	/**
-	 * The fighter loads its various stats
-	 */
-	public async loadStats(): Promise<void> {
+	public async loadStats(opponentType: OpponentType = "PlayerFighter"): Promise<void> {
 		const playerActiveObjects: PlayerActiveObjects = await InventorySlots.getPlayerActiveObjects(this.player.id);
-		this.stats.energy = this.player.getCumulativeEnergy();
-		this.stats.maxEnergy = this.player.getMaxCumulativeEnergy();
-		this.stats.attack = this.player.getCumulativeAttack(playerActiveObjects);
-		this.stats.defense = this.player.getCumulativeDefense(playerActiveObjects);
-		this.stats.speed = this.player.getCumulativeSpeed(playerActiveObjects);
-		this.stats.breath = this.player.getBaseBreath();
-		this.stats.maxBreath = this.player.getMaxBreath();
+		const weaponEnchantment: ItemEnchantment | null = ItemEnchantment.getById(playerActiveObjects.weapon.itemEnchantmentId);
+		const armorEnchantment: ItemEnchantment | null = ItemEnchantment.getById(playerActiveObjects.armor.itemEnchantmentId);
+		const maxEnergy = this.player.getMaxCumulativeEnergy(playerActiveObjects);
+
+		this.stats.energy = this.player.getCumulativeEnergy(playerActiveObjects);
+		this.stats.maxEnergy = maxEnergy;
+		this.stats.attack = this.player.getCumulativeAttack(playerActiveObjects) * this.getAttackMultiplier(weaponEnchantment, armorEnchantment, opponentType);
+		this.stats.defense = this.player.getCumulativeDefense(playerActiveObjects) * this.getDefenseMultiplier(weaponEnchantment, armorEnchantment);
+		this.stats.speed = this.player.getCumulativeSpeed(playerActiveObjects) * this.getSpeedMultiplier(weaponEnchantment, armorEnchantment);
+		this.stats.breath = this.player.getBaseBreath() + this.getBaseBreathBonus(weaponEnchantment, armorEnchantment);
+		this.stats.maxBreath = this.player.getMaxBreath() + this.getMaxBreathBonus(weaponEnchantment, armorEnchantment);
 		this.stats.breathRegen = this.player.getBreathRegen();
 		if (this.player.petId) {
 			this.pet = await PetEntities.getById(this.player.petId);
 		}
+		else {
+			this.pet = undefined;
+		}
+
+		this.setAlterationMultiplier(
+			FightAlterations.BURNED,
+			this.getAlterationBonusMultiplier(weaponEnchantment, armorEnchantment, ItemEnchantmentKind.BURNED_DAMAGE, EnchantmentConstants.BURNED_DAMAGE_BONUS_MULTIPLIER)
+		);
+		this.setAlterationMultiplier(
+			FightAlterations.POISONED,
+			this.getAlterationBonusMultiplier(weaponEnchantment, armorEnchantment, ItemEnchantmentKind.POISONED_DAMAGE, EnchantmentConstants.POISONED_DAMAGE_BONUS_MULTIPLIER)
+		);
+		this.setAlterationMultiplier(
+			FightAlterations.FROZEN,
+			this.getAlterationBonusMultiplier(weaponEnchantment, armorEnchantment, ItemEnchantmentKind.FROZEN_DAMAGE, EnchantmentConstants.FROZEN_DAMAGE_BONUS_MULTIPLIER)
+		);
 	}
 
 	/**
@@ -202,40 +172,5 @@ export abstract class PlayerFighter extends Fighter {
 		}
 
 		return multiplier;
-	}
-
-	/**
-	 * The fighter loads its various stats
-	 */
-	public async loadStats(opponentType: OpponentType): Promise<void> {
-		const playerActiveObjects: PlayerActiveObjects = await InventorySlots.getPlayerActiveObjects(this.player.id);
-		const weaponEnchantment: ItemEnchantment | null = ItemEnchantment.getById(playerActiveObjects.weapon.itemEnchantmentId);
-		const armorEnchantment: ItemEnchantment | null = ItemEnchantment.getById(playerActiveObjects.armor.itemEnchantmentId);
-
-		this.stats.energy = this.player.getMaxCumulativeEnergy(playerActiveObjects);
-		this.stats.maxEnergy = this.player.getMaxCumulativeEnergy(playerActiveObjects);
-		this.stats.attack = this.player.getCumulativeAttack(playerActiveObjects) * this.getAttackMultiplier(weaponEnchantment, armorEnchantment, opponentType);
-		this.stats.defense = this.player.getCumulativeDefense(playerActiveObjects) * this.getDefenseMultiplier(weaponEnchantment, armorEnchantment);
-		this.stats.speed = this.player.getCumulativeSpeed(playerActiveObjects) * this.getSpeedMultiplier(weaponEnchantment, armorEnchantment);
-		this.stats.breath = this.player.getBaseBreath() + this.getBaseBreathBonus(weaponEnchantment, armorEnchantment);
-		this.stats.maxBreath = this.player.getMaxBreath() + this.getMaxBreathBonus(weaponEnchantment, armorEnchantment);
-		this.stats.breathRegen = this.player.getBreathRegen();
-		if (this.player.petId) {
-			this.pet = await PetEntities.getById(this.player.petId);
-		}
-
-		// Load alterations enchantments
-		this.setAlterationMultiplier(
-			FightAlterations.BURNED,
-			this.getAlterationBonusMultiplier(weaponEnchantment, armorEnchantment, ItemEnchantmentKind.BURNED_DAMAGE, EnchantmentConstants.BURNED_DAMAGE_BONUS_MULTIPLIER)
-		);
-		this.setAlterationMultiplier(
-			FightAlterations.POISONED,
-			this.getAlterationBonusMultiplier(weaponEnchantment, armorEnchantment, ItemEnchantmentKind.POISONED_DAMAGE, EnchantmentConstants.POISONED_DAMAGE_BONUS_MULTIPLIER)
-		);
-		this.setAlterationMultiplier(
-			FightAlterations.FROZEN,
-			this.getAlterationBonusMultiplier(weaponEnchantment, armorEnchantment, ItemEnchantmentKind.FROZEN_DAMAGE, EnchantmentConstants.FROZEN_DAMAGE_BONUS_MULTIPLIER)
-		);
 	}
 }

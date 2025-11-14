@@ -1,9 +1,9 @@
 import { PacketListenerServer } from "../../../../Lib/src/packets/PacketListener";
 import { GameDatabase } from "../database/game/GameDatabase";
 import { LogsDatabase } from "../database/logs/LogsDatabase";
-import { botConfig } from "../../index";
+import { botConfig, crowniclesInstance } from "../../index";
 import {
-	Op, Sequelize
+	literal, Op, Sequelize
 } from "sequelize";
 import { minutesToMilliseconds } from "../../../../Lib/src/utils/TimeUtils";
 import { TimeoutFunctionsConstants } from "../../../../Lib/src/constants/TimeoutFunctionsConstants";
@@ -17,6 +17,16 @@ import { makePacket } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { ScheduledReportNotifications } from "../database/game/models/ScheduledReportNotification";
 import { ReachDestinationNotificationPacket } from "../../../../Lib/src/packets/notifications/ReachDestinationNotificationPacket";
 import { MapLocationDataController } from "../../data/MapLocation";
+import { Settings } from "../database/game/models/Setting";
+import { PotionDataController } from "../../data/Potion";
+import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
+import PetEntity from "../database/game/models/PetEntity";
+import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
+import { TopWeekFightAnnouncementPacket } from "../../../../Lib/src/packets/announcements/TopWeekFightAnnouncementPacket";
+import { MqttTopicUtils } from "../../../../Lib/src/utils/MqttTopicUtils";
+import { Badge } from "../../../../Lib/src/types/Badge";
+import { TopWeekAnnouncementPacket } from "../../../../Lib/src/packets/announcements/TopWeekAnnouncementPacket";
+import { PlayerMissionsInfo } from "../database/game/models/PlayerMissionsInfo";
 
 // skipcq: JS-C1003 - fs does not expose itself as an ES Module.
 import * as fs from "fs";
