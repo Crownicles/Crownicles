@@ -110,8 +110,13 @@ mqttClient.on("message", async (topic, message) => {
 			response.push(makePacket(ErrorPacket, { message: errorMessage }));
 		}
 		else {
-			crowniclesInstance.logsDatabase.logCommandUsage(context.keycloakId, context.frontEndOrigin, context.frontEndSubOrigin, dataJson.packet.name)
-				.then();
+			if (context.keycloakId) {
+				crowniclesInstance.logsDatabase.logCommandUsage(context.keycloakId, context.frontEndOrigin, context.frontEndSubOrigin, dataJson.packet.name)
+					.then();
+			}
+			else {
+				CrowniclesLogger.debug(`Skipping command usage logging for packet '${dataJson.packet.name}' without keycloakId`, { context });
+			}
 			CrowniclesCoreMetrics.incrementPacketCount(dataJson.packet.name);
 			const startTime = Date.now();
 			try {
