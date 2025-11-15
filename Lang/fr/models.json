@@ -1116,6 +1116,20 @@
       "name": "Maison hantée",
       "particle": "vers la"
     },
+    "41": {
+      "description": "Esplanade pavée reliant Boug-Coton aux portes du château royal. Les messagers s’y croisent avant d’accéder aux appartements du roi.",
+      "name": "Cour du Château",
+      "particle": "vers la",
+      "atParticle": "à la",
+      "inParticle": "dans la"
+    },
+    "42": {
+      "description": "Esplanade pavée reliant Boug-Coton aux portes du château royal. Les messagers s’y croisent avant d’accéder aux appartements du roi.",
+      "name": "Cour du Château",
+      "particle": "vers la",
+      "atParticle": "à la",
+      "inParticle": "dans la"
+    },
     "4": {
       "description": "Immense forêt au sud du Berceau. On raconte que beaucoup de voyageurs s'y sont perdus.",
       "name": "Forêt Du Vieillard",

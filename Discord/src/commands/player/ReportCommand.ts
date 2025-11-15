@@ -279,9 +279,7 @@ export async function chooseDestinationCollector(context: PacketContext, packet:
 				i18n.t(`models:map_locations.${destinationReaction.mapId}.name`, { lng })} ${destinationReaction.enterInCity ? "" : `(${duration})`}`;
 		})
 	}, {
-		refuse: {
-			can: false
-		},
+		refuse: { can: false },
 		deferUpdate: true
 	});
 }

@@ -33,6 +33,8 @@ export class City extends Data<string> {
 
 	public readonly inns: CityInn[];
 
+	public readonly shops?: string[];
+
 	public getTodayInnMeals(inn: CityInn, date: Date): InnMeal[] {
 		let seed = date.getDate();
 		seed += new Date().getMonth() * 100;

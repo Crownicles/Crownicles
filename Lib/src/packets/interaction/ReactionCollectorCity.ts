@@ -29,6 +29,10 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 		}[];
 	}[];
 
+	shops?: {
+		shopId: string;
+	}[];
+
 	energy!: {
 		current: number;
 		max: number;
@@ -85,6 +89,10 @@ export class ReactionCollectorEnchantReaction extends ReactionCollectorReaction 
 	itemCategory!: ItemCategory;
 }
 
+export class ReactionCollectorCityShopReaction extends ReactionCollectorReaction {
+	shopId!: string;
+}
+
 export class ReactionCollectorCity extends ReactionCollector {
 	private readonly data!: ReactionCollectorCityData;
 
@@ -114,6 +122,11 @@ export class ReactionCollectorCity extends ReactionCollector {
 				itemCategory: item.category
 			})) || [];
 
+		const shopReactions = this.data.shops?.map(shop =>
+			this.buildReaction(ReactionCollectorCityShopReaction, {
+				shopId: shop.shopId
+			})) || [];
+
 		return {
 			id,
 			endTime,
@@ -122,7 +135,8 @@ export class ReactionCollectorCity extends ReactionCollector {
 				this.buildReaction(ReactionCollectorRefuseReaction, {}),
 				...mealsReactions,
 				...roomsReactions,
-				...enchantReactions
+				...enchantReactions,
+				...shopReactions
 			],
 			data: this.buildData(ReactionCollectorCityData, {
 				...this.data

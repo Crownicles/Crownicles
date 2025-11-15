@@ -206,6 +206,7 @@ export const CrowniclesIcons: {
 		stay: string;
 		inn: string;
 		enchanter: string;
+		shop: string;
 	};
 	meals: {
 		[mealId: string]: string;
@@ -897,6 +898,56 @@ export const CrowniclesIcons: {
 			visitFloor: "↗️",
 			visitBasement: "🕸️",
 			randomRoom: "🚪",
+			end: { 0: "🚶" }
+		},
+		82: {
+			takeLetter: "📩",
+			openLetter: "📜",
+			deliver: "📮",
+			end: { 0: "🚶" }
+		},
+		83: {
+			skip: "🚶",
+			buy: "💶",
+			steal: "🕵️",
+			haggle: "🤝",
+			end: { 0: "🚶" }
+		},
+		84: {
+			help: "🤝",
+			ask: "🗣️",
+			end: { 0: "🚶" }
+		},
+		85: {
+			report: "📰",
+			stealFromThief: "🕵️",
+			fight: "⚔️",
+			ignore: "🚶",
+			end: { 0: "🚶" }
+		},
+		86: {
+			dance: "💃",
+			drink: "🍺",
+			pickPocket: "🕵️",
+			end: { 0: "🚶" }
+		},
+		87: {
+			skip: "🚶",
+			buyHorse: "🐴",
+			trade: "👥",
+			stealHorse: "🕵️",
+			end: { 0: "🚶" }
+		},
+		88: {
+			touchStatue: "🤚",
+			pray: "🙏",
+			break: "🔨",
+			end: { 0: "🚶" }
+		},
+		89: {
+			listen: "👂",
+			followMelody: "🎵",
+			coverEars: "🙉",
 			end: { 0: "🚶" }
 		},
 		9: {
@@ -2342,7 +2393,8 @@ export const CrowniclesIcons: {
 		exit: "🏃‍➡️",
 		stay: "👀",
 		inn: "🏠",
-		enchanter: "🔮"
+		enchanter: "🔮",
+		shop: "💎"
 	},
 	meals: {
 		breadAndCheese: "🧀",
@@ -2373,7 +2425,9 @@ export const CrowniclesIcons: {
 		horribleRoom: "🕸️",
 		simpleRoom: "🛋️",
 		comfortableRoom: "🛏️",
-		luxuryRoom: "👑"
+		luxuryRoom: "👑",
+		royalSuite: "💠",
+		imperialSuite: "💎"
 	},
 	enchantmentTypes: {
 		damage: "📕",

@@ -538,20 +538,28 @@
           "description": "Allez voir l'enchanteur itinérant pour améliorer vos équipements."
         }
       },
+      "shops": {
+        "royalMarket": {
+          "label": "Marché royal",
+          "description": "Convertissez vos gemmes en or et trésors exclusifs dans la boutique privée du château."
+        }
+      },
       "inns": {
         "names": {
           "lordInn": "L'Auberge du Seigneur",
           "bravesStop": "L'Alte des Braves",
           "hotSwallow": "La Gorgée Brûlante",
           "fireside": "Au Coin du Feu",
-          "bloodyTankard": "La Chope Sanglante"
+          "bloodyTankard": "La Chope Sanglante",
+          "royalPavilion": "Le Pavillon Royal"
         },
         "stories": {
           "lordInn": "{emote:city.inn} Vous entrez dans l'Auberge du Seigneur. Ici, tout est luxueux, du mobilier aux boissons. Vous pouvez y trouver des aventuriers de renom et des nobles en quête de sensations fortes. Vous avez même déjà entendu dire que le Roi y avait séjourné lors de ses voyages.",
           "bravesStop": "{emote:city.inn} Qui n'a jamais entendu parler de l'Alte des Braves ? C'est la plus vieille et la plus célèbre auberge de la région. Vous entrez dans une salle bondée, remplie de rires et de chants. Les murs sont couverts de trophées de chasse et d'armes anciennes. C'est l'endroit idéal pour rencontrer d'autres aventuriers.",
           "hotSwallow": "{emote:city.inn} Vous entrez dans la Gorgée Brûlante, une petit auberge de village où il fait bon se rafraichir, contrairement à ce que laisse penser son nom. Sa désignation vient de la boisson phare de l'établissement, une bière épicée qui réchauffe le cœur et l'âme. Les murs sont décorés de souvenirs de voyageurs passés, et l'atmosphère est chaleureuse.",
           "fireside": "{emote:city.inn} Vous entrez dans l'auberge Au Coin du Feu, un endroit où les aventuriers se rassemblent pour partager des histoires autour d'un feu crépitant. L'odeur de poisson grillé flotte dans l'air, à côté des rires et des chants des clients. La décoration est simple mais rappelle la vie des marins et des pêcheurs.",
-          "bloodyTankard": "{emote:city.inn} Vous entrez dans la Chope Sanglante, une auberge réputée pour ses boissons fortes et son ambiance sombre. Vous y trouvez beaucoup de trophées de monstres chassés par les clients, et un air chargé de l'odeur de la bière et du tabac. La nourriture n'y est pas de grande qualité, et les lits non plus d'ailleurs."
+          "bloodyTankard": "{emote:city.inn} Vous entrez dans la Chope Sanglante, une auberge réputée pour ses boissons fortes et son ambiance sombre. Vous y trouvez beaucoup de trophées de monstres chassés par les clients, et un air chargé de l'odeur de la bière et du tabac. La nourriture n'y est pas de grande qualité, et les lits non plus d'ailleurs.",
+          "royalPavilion": "{emote:city.inn} Vous franchissez les portes du Pavillon Royal, un salon privé du château réservé aux invités de marque. Les plats sont servis sur de l'argenterie gravée et les domestiques veillent à ce que votre moindre désir soit comblé. Même le silence y est feutré, comme si les murs eux-mêmes respectaient l'étiquette."
         },
         "storiesEnergyAndHealth": "Vous avez actuellement **{{currentEnergy}}** / **{{maxEnergy}}** {emote:unitValues.energy} et **{{currentHealth}}** / **{{maxHealth}}** {emote:unitValues.health}.",
         "meals": {
@@ -583,13 +591,17 @@
           "horribleRoom": "Chambre Horrible",
           "simpleRoom": "Chambre Simple",
           "comfortableRoom": "Chambre Confortable",
-          "luxuryRoom": "Chambre de Luxe"
+          "luxuryRoom": "Chambre de Luxe",
+          "royalSuite": "Suite Royale",
+          "imperialSuite": "Appartement Impérial"
         },
         "roomsStories": {
           "horribleRoom": "{emote:city.inn} Vous entrez dans une chambre minable, avec un lit grinçant et des murs sales. L'odeur de moisi est omniprésente, et vous avez du mal à imaginer comment quelqu'un pourrait y dormir.",
           "simpleRoom": "{emote:city.inn} Vous entrez dans une chambre simple mais propre. Le lit est confortable, et la décoration est basique mais agréable. C'est l'endroit idéal pour se reposer après une longue journée d'aventure.",
           "comfortableRoom": "{emote:city.inn} Vous entrez dans une chambre confortable, avec un grand lit douillet et des meubles en bois massif. La décoration est chaleureuse, avec des tapis et des rideaux en tissus épais. Vous vous sentez déjà plus reposé.",
-          "luxuryRoom": "{emote:city.inn} Vous entrez dans une chambre luxueuse, digne d'un noble. Le lit est immense, avec des draps en soie et des oreillers moelleux. La décoration est somptueuse, avec des tapisseries et des meubles en bois sculpté. Vous vous sentez comme un roi."
+          "luxuryRoom": "{emote:city.inn} Vous entrez dans une chambre luxueuse, digne d'un noble. Le lit est immense, avec des draps en soie et des oreillers moelleux. La décoration est somptueuse, avec des tapisseries et des meubles en bois sculpté. Vous vous sentez comme un roi.",
+          "royalSuite": "{emote:city.inn} Cette suite privée donne sur les jardins du château. Un valet vous apporte une infusion chaude pendant qu'un autre prépare votre lit aux draps brodés de fils d'or.",
+          "imperialSuite": "{emote:city.inn} Les appartements impériaux sont décorés de pierres précieuses et disposent même d'un petit bain parfumé. Chaque détail respire l'opulence absolue."
         },
         "roomTitle": "{{pseudo}}, vous louez une chambre !",
         "roomEndStory": "😴 Vous vous endormez et vous récupérez **{{health}}** {emote:unitValues.health}. Vous avez dépensé **{{price}}** {emote:unitValues.lostMoney} pour la nuit.",

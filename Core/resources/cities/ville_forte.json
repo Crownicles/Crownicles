@@ -1,30 +1,44 @@
 {
-  "mapLinks": [89, 90],
-  "maps": [10, 36],
-  "inns": [{
-    "id": "bloodyTankard",
-    "meals": [{
-      "id": "bread",
-      "price": 50,
-      "energy": 200
-    }, {
-      "id": "pretzels",
-      "price": 60,
-      "energy": 300
-    }, {
-      "id": "simpleSalad",
-      "price": 60,
-      "energy": 250
-    }],
-    "rooms": [{
-      "id": "horribleRoom",
-      "price": 200,
-      "health": 20
-    },
+  "mapLinks": [
+    89,
+    90
+  ],
+  "maps": [
+    10,
+    36
+  ],
+  "inns": [
     {
-      "id": "commonRoom",
-      "price": 500,
-      "health": 50
-    }]
-  }]
+      "id": "bloodyTankard",
+      "meals": [
+        {
+          "id": "bread",
+          "price": 50,
+          "energy": 200
+        },
+        {
+          "id": "pretzels",
+          "price": 60,
+          "energy": 300
+        },
+        {
+          "id": "simpleSalad",
+          "price": 60,
+          "energy": 250
+        }
+      ],
+      "rooms": [
+        {
+          "id": "horribleRoom",
+          "price": 200,
+          "health": 20
+        },
+        {
+          "id": "commonRoom",
+          "price": 500,
+          "health": 50
+        }
+      ]
+    }
+  ]
 }

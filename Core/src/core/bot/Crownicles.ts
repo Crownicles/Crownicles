@@ -1,7 +1,9 @@
 import { PacketListenerServer } from "../../../../Lib/src/packets/PacketListener";
 import { GameDatabase } from "../database/game/GameDatabase";
 import { LogsDatabase } from "../database/logs/LogsDatabase";
-import { botConfig, crowniclesInstance } from "../../index";
+import {
+	botConfig, crowniclesInstance
+} from "../../index";
 import {
 	literal, Op, Sequelize
 } from "sequelize";
