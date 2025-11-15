@@ -900,6 +900,56 @@ export const CrowniclesIcons: {
 			randomRoom: "🚪",
 			end: { 0: "🚶" }
 		},
+		82: {
+			takeLetter: "📩",
+			openLetter: "📜",
+			deliver: "📮",
+			end: { 0: "🚶" }
+		},
+		83: {
+			skip: "🚶",
+			buy: "💶",
+			steal: "🕵️",
+			haggle: "🤝",
+			end: { 0: "🚶" }
+		},
+		84: {
+			help: "🤝",
+			ask: "🗣️",
+			end: { 0: "🚶" }
+		},
+		85: {
+			report: "📰",
+			stealFromThief: "🕵️",
+			fight: "⚔️",
+			ignore: "🚶",
+			end: { 0: "🚶" }
+		},
+		86: {
+			dance: "💃",
+			drink: "🍺",
+			pickPocket: "🕵️",
+			end: { 0: "🚶" }
+		},
+		87: {
+			skip: "🚶",
+			buyHorse: "🐴",
+			trade: "👥",
+			stealHorse: "🕵️",
+			end: { 0: "🚶" }
+		},
+		88: {
+			touchStatue: "🤚",
+			pray: "🙏",
+			break: "🔨",
+			end: { 0: "🚶" }
+		},
+		89: {
+			listen: "👂",
+			followMelody: "🎵",
+			coverEars: "🙉",
+			end: { 0: "🚶" }
+		},
 		9: {
 			end: { 0: "🚶" },
 			help: "🔎",
