@@ -1,41 +1,59 @@
 {
-  "mapLinks": [85, 86],
-  "maps": [26, 34],
-  "inns": [{
-    "id": "fireside",
-    "meals": [{
-      "id": "friedShrimp",
-      "price": 100,
-      "energy": 400
-    }, {
-      "id": "clamChowder",
-      "price": 80,
-      "energy": 300
-    }, {
-      "id": "grilledFish",
-      "price": 200,
-      "energy": 600
-    }, {
-      "id": "lobsterRoll",
-      "price": 300,
-      "energy": 900
-    }, {
-      "id": "jellyfishCarpaccio",
-      "price": 500,
-      "energy": 2000
-    }],
-    "rooms": [{
-      "id": "simpleRoom",
-      "price": 500,
-      "health": 50
-    }, {
-      "id": "comfortableRoom",
-      "price": 1000,
-      "health": 100
-    }, {
-      "id": "luxuryRoom",
-      "price": 1500,
-      "health": 200
-    }]
-  }]
+  "mapLinks": [
+    85,
+    86
+  ],
+  "maps": [
+    26,
+    34
+  ],
+  "inns": [
+    {
+      "id": "fireside",
+      "meals": [
+        {
+          "id": "friedShrimp",
+          "price": 100,
+          "energy": 400
+        },
+        {
+          "id": "clamChowder",
+          "price": 80,
+          "energy": 300
+        },
+        {
+          "id": "grilledFish",
+          "price": 200,
+          "energy": 600
+        },
+        {
+          "id": "lobsterRoll",
+          "price": 300,
+          "energy": 900
+        },
+        {
+          "id": "jellyfishCarpaccio",
+          "price": 500,
+          "energy": 2000
+        }
+      ],
+      "rooms": [
+        {
+          "id": "simpleRoom",
+          "price": 500,
+          "health": 50
+        },
+        {
+          "id": "comfortableRoom",
+          "price": 1000,
+          "health": 100
+        },
+        {
+          "id": "luxuryRoom",
+          "price": 1500,
+          "health": 200
+        }
+      ]
+    }
+  ]
 }

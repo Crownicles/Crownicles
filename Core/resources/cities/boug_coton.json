@@ -1,41 +1,59 @@
 {
-  "mapLinks": [87, 88],
-  "maps": [6, 35],
-  "inns": [{
-    "id": "lordInn",
-    "meals": [{
-      "id": "breadAndCheese",
-      "price": 100,
-      "energy": 350
-    }, {
-      "id": "roastedFowl",
-      "price": 200,
-      "energy": 700
-    }, {
-      "id": "roastedBeef",
-      "price": 300,
-      "energy": 900
-    }, {
-      "id": "stew",
-      "price": 140,
-      "energy": 520
-    }, {
-      "id": "lordPie",
-      "price": 600,
-      "energy": 1300
-    }],
-    "rooms": [{
-      "id": "simpleRoom",
-      "price": 500,
-      "health": 50
-    }, {
-      "id": "comfortableRoom",
-      "price": 1000,
-      "health": 100
-    }, {
-      "id": "luxuryRoom",
-      "price": 1500,
-      "health": 200
-    }]
-  }]
+  "mapLinks": [
+    87,
+    88
+  ],
+  "maps": [
+    6,
+    35
+  ],
+  "inns": [
+    {
+      "id": "lordInn",
+      "meals": [
+        {
+          "id": "breadAndCheese",
+          "price": 100,
+          "energy": 350
+        },
+        {
+          "id": "roastedFowl",
+          "price": 200,
+          "energy": 700
+        },
+        {
+          "id": "roastedBeef",
+          "price": 300,
+          "energy": 900
+        },
+        {
+          "id": "stew",
+          "price": 140,
+          "energy": 520
+        },
+        {
+          "id": "lordPie",
+          "price": 600,
+          "energy": 1300
+        }
+      ],
+      "rooms": [
+        {
+          "id": "simpleRoom",
+          "price": 500,
+          "health": 50
+        },
+        {
+          "id": "comfortableRoom",
+          "price": 1000,
+          "health": 100
+        },
+        {
+          "id": "luxuryRoom",
+          "price": 1500,
+          "health": 200
+        }
+      ]
+    }
+  ]
 }
