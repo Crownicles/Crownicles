@@ -85,6 +85,7 @@ import {
 } from "../../data/City";
 import {
 	ReactionCollectorCity,
+	ReactionCollectorCityShopReaction,
 	ReactionCollectorEnchantReaction,
 	ReactionCollectorExitCityReaction,
 	ReactionCollectorInnMealReaction,
@@ -98,6 +99,15 @@ import { ItemEnchantment } from "../../../../Lib/src/types/ItemEnchantment";
 import { MainItemDetails } from "../../../../Lib/src/types/MainItemDetails";
 import { ClassConstants } from "../../../../Lib/src/constants/ClassConstants";
 import { PlayerMissionsInfos } from "../../core/database/game/models/PlayerMissionsInfo";
+import { ShopUtils } from "../../core/utils/ShopUtils";
+import { ShopCurrency } from "../../../../Lib/src/constants/ShopConstants";
+import { ShopCategory } from "../../../../Lib/src/packets/interaction/ReactionCollectorShop";
+import {
+	calculateGemsToMoneyRatio,
+	getAThousandPointsShopItem,
+	getMoneyShopItem,
+	getValuableItemShopItem
+} from "../../core/utils/MissionShopItems";
 
 export default class ReportCommand {
 	@commandRequires(CommandReportPacketReq, {
@@ -286,7 +296,7 @@ async function handleEnchantReaction(player: Player, reaction: ReactionCollector
 	}));
 }
 
-function cityCollectorEndCallback(context: PacketContext, player: Player, forceSpecificEvent: number): EndCallback {
+function cityCollectorEndCallback(context: PacketContext, player: Player, forceSpecificEvent: number, city: City): EndCallback {
 	return async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
 		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.REPORT_COMMAND);
 		const firstReaction = collector.getFirstReaction();
@@ -308,12 +318,69 @@ function cityCollectorEndCallback(context: PacketContext, player: Player, forceS
 				case ReactionCollectorEnchantReaction.name:
 					await handleEnchantReaction(player, firstReaction.reaction.data as ReactionCollectorEnchantReaction, response);
 					break;
+				case ReactionCollectorCityShopReaction.name:
+					await handleCityShopReaction(
+						player,
+						city,
+						(firstReaction.reaction.data as ReactionCollectorCityShopReaction).shopId,
+						context,
+						response
+					);
+					break;
 				default:
 					CrowniclesLogger.error(`Unknown city reaction: ${firstReaction.reaction.type}`);
 					break;
 			}
 		}
 	};
+}
+
+async function handleCityShopReaction(
+	player: Player,
+	city: City,
+	shopId: string,
+	context: PacketContext,
+	response: CrowniclesPacket[]
+): Promise<void> {
+	if (!city.shops?.includes(shopId)) {
+		CrowniclesLogger.warn(`Player tried to access unknown shop ${shopId} in city ${city.id}`);
+		return;
+	}
+
+	switch (shopId) {
+		case "royalMarket":
+			await openRoyalMarket(player, context, response);
+			break;
+		default:
+			CrowniclesLogger.error(`Unhandled city shop ${shopId}`);
+			break;
+	}
+}
+
+async function openRoyalMarket(player: Player, context: PacketContext, response: CrowniclesPacket[]): Promise<void> {
+	const shopCategories: ShopCategory[] = [
+		{
+			id: "resources",
+			items: [
+				getMoneyShopItem(),
+				getValuableItemShopItem()
+			]
+		},
+		{
+			id: "prestige",
+			items: [getAThousandPointsShopItem()]
+		}
+	];
+
+	await ShopUtils.createAndSendShopCollector(context, response, {
+		shopCategories,
+		player,
+		logger: crowniclesInstance.logsDatabase.logMissionShopBuyout,
+		additionalShopData: {
+			currency: ShopCurrency.GEM,
+			gemToMoneyRatio: calculateGemsToMoneyRatio()
+		}
+	});
 }
 
 async function sendCityCollector(context: PacketContext, response: CrowniclesPacket[], player: Player, currentDate: Date, city: City, forceSpecificEvent: number): Promise<void> {
@@ -340,6 +407,9 @@ async function sendCityCollector(context: PacketContext, response: CrowniclesPac
 				price: room.price,
 				health: room.health
 			}))
+		})),
+		shops: (city.shops || []).map(shopId => ({
+			shopId
 		})),
 		energy: {
 			current: player.getCumulativeEnergy(playerActiveObjects),
@@ -373,7 +443,7 @@ async function sendCityCollector(context: PacketContext, response: CrowniclesPac
 			allowedPlayerKeycloakIds: [player.keycloakId],
 			reactionLimit: 1
 		},
-		cityCollectorEndCallback(context, player, forceSpecificEvent)
+		cityCollectorEndCallback(context, player, forceSpecificEvent, city)
 	)
 		.block(player.keycloakId, BlockingConstants.REASONS.REPORT_COMMAND)
 		.build();
