@@ -93,9 +93,7 @@ export class RealPlayerFighter extends PlayerFighter {
 			});
 			await MissionsController.update(this.player, response, {
 				missionId: "fightMinTurns",
-				params: {
-					turnCount
-				}
+				params: { turnCount }
 			});
 		}
 	}
