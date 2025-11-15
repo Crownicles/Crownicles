@@ -1,6 +1,5 @@
 {
-  "startMap": 40,
-  "endMap": 21,
-  "tripDuration": 60,
-  "forcedImage": "halloween_map"
+  "startMap": 35,
+  "endMap": 41,
+  "tripDuration": 120
 }
