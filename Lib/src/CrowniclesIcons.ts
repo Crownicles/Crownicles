@@ -206,6 +206,7 @@ export const CrowniclesIcons: {
 		stay: string;
 		inn: string;
 		enchanter: string;
+		shop: string;
 	};
 	meals: {
 		[mealId: string]: string;
@@ -2342,7 +2343,8 @@ export const CrowniclesIcons: {
 		exit: "🏃‍➡️",
 		stay: "👀",
 		inn: "🏠",
-		enchanter: "🔮"
+		enchanter: "🔮",
+		shop: "💎"
 	},
 	meals: {
 		breadAndCheese: "🧀",

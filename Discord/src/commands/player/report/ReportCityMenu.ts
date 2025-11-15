@@ -12,6 +12,7 @@ import {
 } from "../../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	ReactionCollectorCityData,
+	ReactionCollectorCityShopReaction,
 	ReactionCollectorEnchantReaction,
 	ReactionCollectorExitCityReaction,
 	ReactionCollectorInnMealReaction,
@@ -48,6 +49,16 @@ function getMainMenu(context: PacketContext, interaction: CrowniclesInteraction,
 			description: i18n.t("commands:report.city.reactions.enchanter.description", { lng }),
 			value: "ENCHANTER_MENU",
 			emoji: CrowniclesIcons.city.enchanter
+		});
+	}
+
+	// Shops
+	for (const shop of data.shops || []) {
+		selectMenu.addOptions({
+			label: i18n.t(`commands:report.city.shops.${shop.shopId}.label`, { lng }),
+			description: i18n.t(`commands:report.city.shops.${shop.shopId}.description`, { lng }),
+			value: `CITY_SHOP_${shop.shopId}`,
+			emoji: CrowniclesIcons.city.shop
 		});
 	}
 
@@ -117,6 +128,18 @@ function getMainMenu(context: PacketContext, interaction: CrowniclesInteraction,
 
 				if (selectedValue === "ENCHANTER_MENU") {
 					await nestedMenus.changeMenu("ENCHANTER_MENU");
+					return;
+				}
+
+				if (selectedValue.startsWith("CITY_SHOP_")) {
+					const shopId = selectedValue.replace("CITY_SHOP_", "");
+					const reactionIndex = packet.reactions.findIndex(
+						reaction => reaction.type === ReactionCollectorCityShopReaction.name
+							&& (reaction.data as ReactionCollectorCityShopReaction).shopId === shopId
+					);
+					if (reactionIndex !== -1) {
+						DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, selectInteraction, reactionIndex);
+					}
 					return;
 				}
 
