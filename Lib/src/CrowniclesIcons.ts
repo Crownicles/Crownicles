@@ -2375,7 +2375,9 @@ export const CrowniclesIcons: {
 		horribleRoom: "🕸️",
 		simpleRoom: "🛋️",
 		comfortableRoom: "🛏️",
-		luxuryRoom: "👑"
+		luxuryRoom: "👑",
+		royalSuite: "💠",
+		imperialSuite: "💎"
 	},
 	enchantmentTypes: {
 		damage: "📕",

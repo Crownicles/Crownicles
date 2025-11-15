@@ -22,6 +22,7 @@ import {
 	ButtonBuilder,
 	ButtonInteraction,
 	ButtonStyle,
+	Message,
 	MessageComponentInteraction,
 	parseEmoji,
 	SelectMenuInteraction,
@@ -464,17 +465,29 @@ export async function shopCollector(context: PacketContext, packet: ReactionColl
 			currency: data.currency
 		}));
 
-	const reply = await interaction.reply({
+	const messagePayload = {
 		embeds: [embed],
-		components: [selectRow, buttonRow],
-		withResponse: true
-	});
+		components: [selectRow, buttonRow]
+	};
 
-	if (!reply?.resource?.message) {
-		return null;
+	let msg: Message | null;
+	if (interaction.replied) {
+		msg = await interaction.followUp(messagePayload);
+	}
+	else if (interaction.deferred) {
+		msg = await interaction.editReply(messagePayload);
+	}
+	else {
+		const reply = await interaction.reply({
+			...messagePayload,
+			withResponse: true
+		});
+		msg = reply?.resource?.message ?? null;
 	}
 
-	const msg = reply.resource.message;
+	if (!msg) {
+		return null;
+	}
 
 	const buttonCollector = msg.createMessageComponentCollector({
 		time: packet.endTime - Date.now()

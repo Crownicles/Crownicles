@@ -538,6 +538,12 @@
           "description": "Allez voir l'enchanteur itinérant pour améliorer vos équipements."
         }
       },
+      "shops": {
+        "royalMarket": {
+          "label": "Marché royal",
+          "description": "Échangez vos gemmes contre l'or, les trésors et la ferveur du roi dans la boutique privée du château."
+        }
+      },
       "inns": {
         "names": {
           "lordInn": "L'Auberge du Seigneur",
