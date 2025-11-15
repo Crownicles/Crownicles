@@ -320,17 +320,32 @@ function getEnchanterMenu(context: PacketContext, interaction: CrowniclesInterac
 		const itemDisplay = DisplayUtils.getItemDisplayWithStats(item.details, lng);
 		const parts = itemDisplay.split(" | ");
 		const label = parts[0].split("**")[1];
-		const description = parts.slice(1).join(" | ");
-		selectMenu
-			.addOptions({
-				label,
-				description,
-				value: `ENCHANT_ITEM_${i}`,
-				emoji: DisplayUtils.getItemIcon({
-					id: item.details.id,
-					category: item.details.itemCategory
-				})
-			});
+		const rawDescription = parts.slice(1)
+			.join(" | ")
+			.trim();
+
+		// Only add description if non-empty and truncate if too long (100 char limit)
+		const option: {
+			label: string;
+			value: string;
+			emoji: string;
+			description?: string;
+		} = {
+			label,
+			value: `ENCHANT_ITEM_${i}`,
+			emoji: DisplayUtils.getItemIcon({
+				id: item.details.id,
+				category: item.details.itemCategory
+			})
+		};
+
+		if (rawDescription) {
+			option.description = rawDescription.length > 100
+				? `${rawDescription.slice(0, 99)}…`
+				: rawDescription;
+		}
+
+		selectMenu.addOptions(option);
 	}
 
 	// Go back option

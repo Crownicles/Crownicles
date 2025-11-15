@@ -6,9 +6,7 @@ export const commandInfo: ITestCommand = {
 	name: "advancelastmeal",
 	aliases: ["alm"],
 	commandFormat: "<time>",
-	typeWaited: {
-		time: TypeKey.INTEGER
-	},
+	typeWaited: { time: TypeKey.INTEGER },
 	description: "Avance l'heure du dernier repas de votre joueur d'une durée en minutes donnée"
 };
 
