@@ -49,9 +49,7 @@ export class CrowniclesMonday {
 			.then();
 		const winner = await Player.findOne({
 			where: {
-				weeklyScore: {
-					[Op.gt]: 100
-				}
+				weeklyScore: { [Op.gt]: 100 }
 			},
 			order: [
 				["weeklyScore", "DESC"],
