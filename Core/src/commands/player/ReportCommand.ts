@@ -351,7 +351,7 @@ async function sendCityCollector(context: PacketContext, response: CrowniclesPac
 		},
 		enchanter: isEnchanterHere
 			? {
-				enchantableItems: playerInventory.filter(i => (i.isWeapon() || i.isArmor()) && !i.itemEnchantmentId).map(i => ({
+				enchantableItems: playerInventory.filter(i => (i.isWeapon() || i.isArmor()) && i.itemId !== 0 && !i.itemEnchantmentId).map(i => ({
 					category: i.itemCategory,
 					slot: i.slot,
 					details: i.itemWithDetails(player) as MainItemDetails
