@@ -252,10 +252,10 @@ function getInnMenu(
 					return;
 				}
 
-				await selectInteraction.deferReply();
 				const selectedValue = selectInteraction.values[0];
 
 				if (selectedValue.startsWith("MEAL_")) {
+					await selectInteraction.deferReply();
 					const mealId = selectedValue.replace("MEAL_", "");
 					const reactionIndex = packet.reactions.findIndex(
 						reaction => reaction.type === ReactionCollectorInnMealReaction.name
@@ -267,6 +267,7 @@ function getInnMenu(
 					}
 				}
 				else if (selectedValue.startsWith("ROOM_")) {
+					await selectInteraction.deferReply();
 					const roomId = selectedValue.replace("ROOM_", "");
 					const reactionIndex = packet.reactions.findIndex(
 						reaction => reaction.type === ReactionCollectorInnRoomReaction.name
@@ -278,6 +279,7 @@ function getInnMenu(
 					}
 				}
 				else if (selectedValue === "BACK_TO_CITY") {
+					await selectInteraction.deferUpdate();
 					await nestedMenus.changeToMainMenu();
 				}
 			});
