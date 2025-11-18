@@ -103,32 +103,19 @@ export class Crownicles {
 			return false;
 		}
 
-		const pets = await PetEntity.findAll({
-			where: {
-				lovePoints: {
-					[Op.notIn]: [PetConstants.MAX_LOVE_POINTS, 0]
+		const [affectedCount] = await PetEntity.update(
+			{
+				lovePoints: Sequelize.literal(`GREATEST(0, lovePoints - ${PetConstants.DAILY_LOVE_LOSS})`)
+			},
+			{
+				where: {
+					lovePoints: { [Op.notIn]: [0] }
 				}
 			}
-		});
+		);
 
-		if (!pets.length) {
-			return true;
-		}
+		CrowniclesLogger.info("Applied daily love loss to pets", { affectedPets: affectedCount });
 
-		CrowniclesLogger.info("Applying force-scaled daily love loss to pets", { affectedPets: pets.length });
-
-		const updates: Promise<PetEntity>[] = [];
-		for (const petEntity of pets) {
-			const petModel = PetDataController.instance.getById(petEntity.typeId);
-			if (!petModel) {
-				continue;
-			}
-			const loveLoss = PetConstants.DAILY_LOVE_LOSS;
-			petEntity.lovePoints = Math.max(0, petEntity.lovePoints - loveLoss);
-			updates.push(petEntity.save({ fields: ["lovePoints"] }));
-		}
-
-		await Promise.all(updates);
 		return true;
 	}
 
