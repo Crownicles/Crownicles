@@ -45,6 +45,7 @@ import {
 	ReactionCollectorChooseDestination,
 	ReactionCollectorChooseDestinationReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorChooseDestination";
+import { CommandFightPetReactionPacket } from "../../../../Lib/src/packets/fights/FightPetReactionPacket";
 import { MapCache } from "../../core/maps/MapCache";
 import { TravelTime } from "../../core/maps/TravelTime";
 import {
@@ -527,6 +528,30 @@ async function doPVEBoss(
 
 			// Only give reward if draw or win
 			if (fight.isADraw() || fight.getWinnerFighter() instanceof PlayerFighter) {
+				if (!fight.isADraw()) {
+					const winner = fight.getWinnerFighter();
+					const petLoveResult = fight.getPostFightPetLoveChange(winner, "win");
+					if (petLoveResult && winner instanceof PlayerFighter) {
+						const petEntity = winner.pet;
+						if (petEntity) {
+							await petEntity.changeLovePoints({
+								player: winner.player,
+								response: endFightResponse,
+								amount: petLoveResult.loveChange,
+								reason: NumberChangeReason.FIGHT
+							});
+							await petEntity.save({ fields: ["lovePoints"] });
+							endFightResponse.push(makePacket(CommandFightPetReactionPacket, {
+								fightId: fight.id,
+								playerKeycloakId: winner.player.keycloakId,
+								reactionType: petLoveResult.reactionType,
+								loveDelta: petLoveResult.loveChange,
+								pet: petEntity.asOwnedPet()
+							}));
+						}
+					}
+				}
+
 				await player.addMoney({
 					amount: rewards.money,
 					reason: NumberChangeReason.PVE_FIGHT,

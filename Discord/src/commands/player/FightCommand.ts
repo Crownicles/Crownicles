@@ -442,6 +442,30 @@ function generateFightRewardField(embed: CrowniclesEmbed, packet: FightRewardPac
 	});
 }
 
+import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
+
+/**
+ * Generate the pet love change field
+ * @param embed
+ * @param packet
+ * @param lng
+ * @param player1Username
+ */
+function generatePetLoveChangeField(embed: CrowniclesEmbed, packet: FightRewardPacket, lng: Language, player1Username: string): void {
+	if (packet.petLoveChange && packet.petLoveChange.loveChange > 0) {
+		const petDisplay = PetUtils.petToShortString(lng, packet.petLoveChange.petNickname ?? undefined, packet.petLoveChange.petId, packet.petLoveChange.petSex as SexTypeShort);
+		embed.addFields({
+			name: i18n.t("commands:fight.fightReward.petLoveField", { lng }),
+			value: i18n.t(`commands:fight.petReactions.${packet.petLoveChange.reactionType}`, {
+				lng,
+				player: player1Username,
+				pet: petDisplay
+			}),
+			inline: false
+		});
+	}
+}
+
 /**
  * Generate the glory changes field displaying glory changes for both players (glory won or lost)
  * @param embed
@@ -599,6 +623,9 @@ export async function handleFightReward(context: PacketContext, packet: FightRew
 
 	// Add fight reward description
 	generateFightRewardField(embed, packet, lng, player1Username);
+
+	// Add pet love change
+	generatePetLoveChangeField(embed, packet, lng, player1Username);
 
 	// Add glory changes
 	generateGloryChangesField(embed, packet, lng, player1Username, player2Username);
