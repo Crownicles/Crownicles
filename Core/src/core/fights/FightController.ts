@@ -3,13 +3,17 @@ import { FightState } from "./FightState";
 import { FightView } from "./FightView";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { FightConstants } from "../../../../Lib/src/constants/FightConstants";
+import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
+import {
+	PetConstants, PostFightPetReactionType
+} from "../../../../Lib/src/constants/PetConstants";
 import { FighterStatus } from "./FighterStatus";
 import { FightOvertimeBehavior } from "./FightOvertimeBehavior";
 import { MonsterFighter } from "./fighter/MonsterFighter";
 import { PlayerFighter } from "./fighter/PlayerFighter";
 import { PVEConstants } from "../../../../Lib/src/constants/PVEConstants";
 import {
-	CrowniclesPacket, PacketContext
+	CrowniclesPacket, makePacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	attackInfo, FightActionController, statsInfo
@@ -30,6 +34,8 @@ import { PetAssistance } from "../../data/PetAssistance";
 import { getAiPetBehavior } from "./PetAssistManager";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { FightsManager } from "./FightsManager";
+import { CommandFightPetReactionPacket } from "../../../../Lib/src/packets/fights/FightPetReactionPacket";
+import { OwnedPet } from "../../../../Lib/src/types/OwnedPet";
 
 export class FightController {
 	turn: number;
@@ -144,6 +150,13 @@ export class FightController {
 		for (const fighter of this.fighters) {
 			fighter.unblock();
 			await fighter.endFight(!isADraw && fighter === winnerFighter, response, bug, this.turn);
+		}
+
+		if (!isADraw) {
+			await Promise.all([
+				this.applyPostFightPetLoveChange(winnerFighter, "win", response),
+				this.applyPostFightPetLoveChange(loserFighter, "loss", response)
+			]);
 		}
 
 		if (this.endCallback) {
@@ -394,6 +407,67 @@ export class FightController {
 		else {
 			await this.executeFightAction(this.getPlayingFighter().nextFightAction, true, response);
 		}
+	}
+
+	private async applyPostFightPetLoveChange(
+		fighter: PlayerFighter | AiPlayerFighter | MonsterFighter | null,
+		outcome: "win" | "loss",
+		response: CrowniclesPacket[]
+	): Promise<void> {
+		if (!fighter || fighter instanceof MonsterFighter) {
+			return;
+		}
+		const petEntity = fighter.pet;
+		if (!petEntity) {
+			return;
+		}
+		if (outcome === "win" && petEntity.getLoveLevelNumber() === PetConstants.LOVE_LEVEL.TRAINED) {
+			this.pushPetReactionPacket(
+				response,
+				fighter.player.keycloakId,
+				PetConstants.POST_FIGHT_REACTION_TYPES.TRAINED,
+				0,
+				petEntity.asOwnedPet()
+			);
+			return;
+		}
+		const probability = fighter instanceof PlayerFighter
+			? PetConstants.POST_FIGHT_LOVE_CHANCES.PLAYER_CONTROLLED
+			: PetConstants.POST_FIGHT_LOVE_CHANCES.AI_CONTROLLED;
+		if (!RandomUtils.crowniclesRandom.bool(probability)) {
+			return;
+		}
+		const loveDelta = outcome === "win" ? 1 : -1;
+		await petEntity.changeLovePoints({
+			player: fighter.player,
+			response,
+			amount: loveDelta,
+			reason: NumberChangeReason.FIGHT
+		});
+		await petEntity.save({ fields: ["lovePoints"] });
+		this.pushPetReactionPacket(
+			response,
+			fighter.player.keycloakId,
+			loveDelta > 0 ? PetConstants.POST_FIGHT_REACTION_TYPES.LOVE_GAIN : PetConstants.POST_FIGHT_REACTION_TYPES.LOVE_LOSS,
+			loveDelta,
+			petEntity.asOwnedPet()
+		);
+	}
+
+	private pushPetReactionPacket(
+		response: CrowniclesPacket[],
+		playerKeycloakId: string,
+		reactionType: PostFightPetReactionType,
+		loveDelta: number,
+		pet: OwnedPet
+	): void {
+		response.push(makePacket(CommandFightPetReactionPacket, {
+			fightId: this.id,
+			playerKeycloakId,
+			reactionType,
+			loveDelta,
+			pet
+		}));
 	}
 
 	private increaseDamagesPve(currentTurn: number): void {
