@@ -7,7 +7,7 @@ import {
 import { Settings } from "../database/game/models/Setting";
 import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
 import {
-	literal, Op, Sequelize
+	Op, Sequelize
 } from "sequelize";
 import PetEntity from "../database/game/models/PetEntity";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
