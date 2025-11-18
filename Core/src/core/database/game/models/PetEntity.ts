@@ -153,12 +153,15 @@ export class PetEntity extends Model {
 	}
 
 	public asOwnedPet(): OwnedPet {
+		const petModel = PetDataController.instance.getById(this.typeId);
 		return {
 			typeId: this.typeId,
 			nickname: this.nickname,
-			rarity: PetDataController.instance.getById(this.typeId).rarity,
+			rarity: petModel.rarity,
 			sex: this.sex as SexTypeShort,
-			loveLevel: this.getLoveLevelNumber()
+			loveLevel: this.getLoveLevelNumber(),
+			force: petModel.force,
+			feedDelay: petModel.feedDelay
 		};
 	}
 }

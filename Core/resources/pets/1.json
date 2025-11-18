@@ -1,6 +1,6 @@
 {
   "rarity": 1,
   "diet": "carnivorous",
-  "force": 0,
+  "force": 5,
   "feedDelay": 1
 }
