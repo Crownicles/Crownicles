@@ -124,7 +124,7 @@ export abstract class PetConstants {
 		}
 	};
 
-	static readonly BREED_COOLDOWN = 60 * 60 * 1000; // 1 hour
+	static readonly BREED_COOLDOWN = 30 * 60 * 1000; // 30 minutes
 
 	static readonly MAX_LOVE_POINTS = 100;
 
