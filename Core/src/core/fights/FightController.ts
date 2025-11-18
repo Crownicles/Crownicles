@@ -3,7 +3,6 @@ import { FightState } from "./FightState";
 import { FightView } from "./FightView";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { FightConstants } from "../../../../Lib/src/constants/FightConstants";
-import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import {
 	PetConstants, PostFightPetReactionType
 } from "../../../../Lib/src/constants/PetConstants";
