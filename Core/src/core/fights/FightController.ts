@@ -421,6 +421,10 @@ export class FightController {
 		if (!petEntity) {
 			return;
 		}
+		if (outcome === "loss" || fighter instanceof AiPlayerFighter) {
+			return;
+		}
+
 		if (outcome === "win" && petEntity.getLoveLevelNumber() === PetConstants.LOVE_LEVEL.TRAINED) {
 			this.pushPetReactionPacket(
 				response,
@@ -431,13 +435,19 @@ export class FightController {
 			);
 			return;
 		}
-		const probability = fighter instanceof PlayerFighter
-			? PetConstants.POST_FIGHT_LOVE_CHANCES.PLAYER_CONTROLLED
-			: PetConstants.POST_FIGHT_LOVE_CHANCES.AI_CONTROLLED;
-		if (!RandomUtils.crowniclesRandom.bool(probability)) {
+
+		if (fighter instanceof PlayerFighter && !fighter.hasPetAssisted()) {
 			return;
 		}
-		const loveDelta = outcome === "win" ? 1 : -1;
+
+		const loveDelta = RandomUtils.randInt(
+			PetConstants.POST_FIGHT_LOVE_GAIN_RANGE.MIN,
+			PetConstants.POST_FIGHT_LOVE_GAIN_RANGE.MAX + 1
+		);
+		if (loveDelta <= 0) {
+			return;
+		}
+
 		await petEntity.changeLovePoints({
 			player: fighter.player,
 			response,
@@ -448,7 +458,7 @@ export class FightController {
 		this.pushPetReactionPacket(
 			response,
 			fighter.player.keycloakId,
-			loveDelta > 0 ? PetConstants.POST_FIGHT_REACTION_TYPES.LOVE_GAIN : PetConstants.POST_FIGHT_REACTION_TYPES.LOVE_LOSS,
+			PetConstants.POST_FIGHT_REACTION_TYPES.LOVE_GAIN,
 			loveDelta,
 			petEntity.asOwnedPet()
 		);
