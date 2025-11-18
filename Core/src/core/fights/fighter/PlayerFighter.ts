@@ -53,6 +53,13 @@ export class PlayerFighter extends Fighter {
 	}
 
 	/**
+	 * Check if the pet has assisted during the fight
+	 */
+	public hasPetAssisted(): boolean {
+		return this.petAssisted;
+	}
+
+	/**
 	 * Function called when the fight starts
 	 * @param fightView The fight view
 	 * @param startStatus The first status of a player
