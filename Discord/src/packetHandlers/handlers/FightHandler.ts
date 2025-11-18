@@ -12,7 +12,8 @@ import {
 	handleCommandFightRefusePacketRes,
 	handleCommandFightUpdateStatusRes,
 	handleEndOfFight,
-	handleFightReward
+		handleFightPetReaction,
+		handleFightReward
 } from "../../commands/player/FightCommand";
 import { handleClassicError } from "../../utils/ErrorUtils";
 import { CommandFightIntroduceFightersPacket } from "../../../../Lib/src/packets/fights/FightIntroductionPacket";
@@ -22,6 +23,7 @@ import { AIFightActionChoosePacket } from "../../../../Lib/src/packets/fights/AI
 import { CommandFightEndOfFightPacket } from "../../../../Lib/src/packets/fights/EndOfFightPacket";
 import { BuggedFightPacket } from "../../../../Lib/src/packets/fights/BuggedFightPacket";
 import { FightRewardPacket } from "../../../../Lib/src/packets/fights/FightRewardPacket";
+import { CommandFightPetReactionPacket } from "../../../../Lib/src/packets/fights/FightPetReactionPacket";
 
 export default class FightHandler {
 	@packetHandler(CommandFightRefusePacketRes)
@@ -72,5 +74,10 @@ export default class FightHandler {
 	@packetHandler(FightRewardPacket)
 	async fightReward(context: PacketContext, packet: FightRewardPacket): Promise<void> {
 		await handleFightReward(context, packet);
+	}
+
+	@packetHandler(CommandFightPetReactionPacket)
+	async fightPetReaction(context: PacketContext, packet: CommandFightPetReactionPacket): Promise<void> {
+		await handleFightPetReaction(context, packet);
 	}
 }

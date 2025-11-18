@@ -31,6 +31,7 @@ import {
 	millisecondsToMinutes, minutesDisplay
 } from "../../../../Lib/src/utils/TimeUtils";
 import { FightRewardPacket } from "../../../../Lib/src/packets/fights/FightRewardPacket";
+import { CommandFightPetReactionPacket } from "../../../../Lib/src/packets/fights/FightPetReactionPacket";
 import { StringUtils } from "../../utils/StringUtils";
 import { ReactionCollectorReturnTypeOrNull } from "../../packetHandlers/handlers/ReactionCollectorHandlers";
 import { AIFightActionChoosePacket } from "../../../../Lib/src/packets/fights/AIFightActionChoosePacket";
@@ -375,6 +376,31 @@ export async function handleEndOfFight(context: PacketContext, packet: CommandFi
 
 	const message = await interaction.channel?.send({ embeds: [embed] });
 	await message?.react(CrowniclesIcons.fightCommand.handshake);
+}
+
+export async function handleFightPetReaction(context: PacketContext, packet: CommandFightPetReactionPacket): Promise<void> {
+	if (!context.discord?.interaction || buggedFights.has(packet.fightId)) {
+		return;
+	}
+
+	const interaction = DiscordCache.getInteraction(context.discord.interaction)!;
+	const lng = interaction.userLanguage;
+	const getUser = await KeycloakUtils.getUserByKeycloakId(keycloakConfig, packet.playerKeycloakId);
+	const playerName = getUser.isError
+		? i18n.t("error:unknownPlayer", { lng })
+		: escapeUsername(getUser.payload.user.attributes.gameUsername[0]);
+	const petDisplay = PetUtils.petToShortString(lng, packet.pet.nickname, packet.pet.typeId, packet.pet.sex);
+	const loveDeltaAbsolute = Math.abs(packet.loveDelta);
+	const loveDeltaSigned = packet.loveDelta > 0 ? `+${packet.loveDelta}` : packet.loveDelta.toString();
+	const loveDeltaPlural = loveDeltaAbsolute > 1 ? "s" : "";
+	const content = i18n.t(`commands:fight.petReactions.${packet.reactionType}`, {
+		lng,
+		player: playerName,
+		pet: petDisplay,
+		loveDeltaSigned,
+		loveDeltaPlural
+	});
+	await interaction.channel?.send({ content });
 }
 
 /**

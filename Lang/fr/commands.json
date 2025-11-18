@@ -670,7 +670,7 @@
         "name": "{emote:shopItems.lovePointsValue} Vétérinaire de la cour",
         "info": "Obtenir des informations détaillées sur votre familier.",
         "giveTitle": "{{pseudo}}, achat effectué !",
-        "giveDesc": "Après avoir longuement étudié votre animal et son état de santé, le vétérinaire vous donne son rapport :\n\n**{{petName}}** {{commentOnResult}}\n{emote:petInformation.loveScore} **Score d'amour** : {{actualLP}} / 100\n{emote:petInformation.diet} **Régime alimentaire** : {{diet}}\n{emote:petInformation.nextFeed} **Prochaine faim** : {{nextFeed}}\n{emote:petInformation.age} **Âge** : {{commentOnPetAge}}\n\n{emote:petInformation.fightEffect} **Effet de combat** : {{commentOnFightEffect}}\n\n {{dwarfPet}}",
+        "giveDesc": "Après avoir longuement étudié votre animal et son état de santé, le vétérinaire vous donne son rapport :\n\n**{{petName}}** {{commentOnResult}}\n{emote:petInformation.loveScore} **Score d'amour** : {{actualLP}} / 100\n{emote:petInformation.diet} **Régime alimentaire** : {{diet}}\n{emote:petInformation.force} **Force** : {{force}}\n{emote:petInformation.feedDelay} **Intervalle entre repas** : {{feedDelay}} h\n{emote:petInformation.nextFeed} **Prochaine faim** : {{nextFeed}}\n{emote:petInformation.age} **Âge** : {{commentOnPetAge}}\n\n{emote:petInformation.fightEffect} **Effet de combat** : {{commentOnFightEffect}}\n\n {{dwarfPet}}",
         "petIsHungry": "{emote:effects.starving} affamé",
         "commentOnFightEffect": {
           "bite": [
@@ -1173,6 +1173,11 @@
       "gameStats": "{emote:fightCommand.gameStats} | Statistiques du combat\n- **Tours** : {{turn}}/{{maxTurn}}\n- **Temps de combat** : {{time}}",
       "gameStatsProlongation": "{emote:fightCommand.gameStats} | Statistiques du combat\n- **Tours** : {{turn}}/{{maxTurn}} (prolongations)\n- **Temps de combat** : {{time}}",
       "fighterStats": "\n\n{emote:fightCommand.fighterStats} | Statistiques de {{pseudo}}\n- **Vie finale** : {{energy}}/{{maxEnergy}} {emote:unitValues.energy}"
+    },
+    "petReactions": {
+      "loveGain": "{{pet}} jubile après cette victoire et réclame encore des caresses auprès de {{player}}. Il gagne {{loveDeltaSigned}} point{{loveDeltaPlural}} d'amour.",
+      "loveLoss": "{{pet}} fait la moue après ce revers et semble en vouloir à {{player}}. Il perd {{loveDeltaSigned}} point{{loveDeltaPlural}} d'amour.",
+      "trained": "{{pet}} reste stoïque comme tout familier dressé, mais adresse un regard fier à {{player}}. Sa loyauté est déjà à son maximum."
     },
     "fightActionChoose": {
       "turnIndicationTitle": "C'est au tour de {{pseudo}} de jouer {emote:fightCommand.crossedSwords}",
