@@ -27,6 +27,7 @@ import PlayerMissionsInfo from "../database/game/models/PlayerMissionsInfo";
 import { ScheduledReportNotifications } from "../database/game/models/ScheduledReportNotification";
 import { ReachDestinationNotificationPacket } from "../../../../Lib/src/packets/notifications/ReachDestinationNotificationPacket";
 import { MapLocationDataController } from "../../data/MapLocation";
+import { PetDataController } from "../../data/Pet";
 
 // skipcq: JS-C1003 - fs does not expose itself as an ES Module.
 import * as fs from "fs";
@@ -98,25 +99,41 @@ export class Crownicles {
 	 * Make some pet lose some love points
 	 */
 	static async randomLovePointsLoose(): Promise<boolean> {
-		if (RandomUtils.crowniclesRandom.bool()) {
-			CrowniclesLogger.info("All pets lost 4 loves point");
-			await PetEntity.update(
-				{
-					lovePoints: literal(
-						"CASE WHEN lovePoints - 4 < 0 THEN 0 ELSE lovePoints - 4 END"
-					)
-				},
-				{
-					where: {
-						lovePoints: {
-							[Op.notIn]: [PetConstants.MAX_LOVE_POINTS, 0]
-						}
-					}
+		if (!RandomUtils.crowniclesRandom.bool()) {
+			return false;
+		}
+
+		const pets = await PetEntity.findAll({
+			where: {
+				lovePoints: {
+					[Op.notIn]: [PetConstants.MAX_LOVE_POINTS, 0]
 				}
-			);
+			}
+		});
+
+		if (!pets.length) {
 			return true;
 		}
-		return false;
+
+		CrowniclesLogger.info("Applying force-scaled daily love loss to pets", { affectedPets: pets.length });
+
+		const updates: Promise<PetEntity>[] = [];
+		for (const petEntity of pets) {
+			const petModel = PetDataController.instance.getById(petEntity.typeId);
+			if (!petModel) {
+				continue;
+			}
+			const maxLoss = Math.max(1, Math.floor((petModel.force ?? 0) / 5));
+			const loveLoss = RandomUtils.crowniclesRandom.integer(1, maxLoss);
+			if (loveLoss <= 0) {
+				continue;
+			}
+			petEntity.lovePoints = Math.max(0, petEntity.lovePoints - loveLoss);
+			updates.push(petEntity.save({ fields: ["lovePoints"] }));
+		}
+
+		await Promise.all(updates);
+		return true;
 	}
 
 	/**

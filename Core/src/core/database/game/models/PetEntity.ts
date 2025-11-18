@@ -16,6 +16,7 @@ import { GuildPets } from "./GuildPet";
 import {
 	Pet, PetDataController
 } from "../../../../data/Pet";
+import { PetUtils } from "../../../utils/PetUtils";
 import { crowniclesInstance } from "../../../../index";
 import {
 	CrowniclesPacket, makePacket
@@ -54,8 +55,9 @@ export class PetEntity extends Model {
 		if (!this.hungrySince) {
 			return 0;
 		}
-		return PetConstants.BREED_COOLDOWN * petModel.rarity
-			- (new Date().valueOf() - this.hungrySince.valueOf());
+		const feedDelayMultiplier = petModel.feedDelay ?? 1;
+		const cooldownDuration = PetConstants.BREED_COOLDOWN * feedDelayMultiplier;
+		return cooldownDuration - (Date.now() - this.hungrySince.valueOf());
 	}
 
 	public getLoveLevelNumber(): number {
@@ -177,36 +179,18 @@ export class PetEntities {
 		});
 	}
 
-	static generateRandomPetEntity(level: number, minRarity = 1, maxRarity = 5): PetEntity {
+	static generateRandomPetEntity(
+		_level: number,
+		minRarity = PetConstants.PET_RARITY_RANGE.MIN,
+		maxRarity = PetConstants.PET_RARITY_RANGE.MAX
+	): PetEntity {
 		const sex = RandomUtils.crowniclesRandom.bool() ? "m" : "f";
-		let levelTier = Math.floor(level / 10);
-		if (levelTier > PetConstants.PROBABILITIES.length - 1) {
-			levelTier = PetConstants.PROBABILITIES.length - 1;
+		const rarity = PetUtils.generateRandomPetRarity(minRarity, maxRarity);
+		let pet = PetDataController.instance.getRandom(rarity);
+		if (!pet) {
+			CrowniclesLogger.warn(`No pet found for rarity ${rarity}, defaulting to any rarity.`);
+			pet = PetDataController.instance.getRandom();
 		}
-
-		let rarity;
-		let totalProbabilities = 0;
-
-		// Calculate max probability value
-		for (rarity = minRarity; rarity <= maxRarity; ++rarity) {
-			totalProbabilities += PetConstants.PROBABILITIES[levelTier][rarity - 1];
-		}
-
-		let randomTier = RandomUtils.crowniclesRandom.real(0, totalProbabilities, true);
-
-		// Remove the rarity probabilities and stop when going under 0 to pick a rarity
-		for (rarity = minRarity; rarity <= maxRarity; ++rarity) {
-			randomTier -= PetConstants.PROBABILITIES[levelTier][rarity - 1];
-			if (randomTier <= 0) {
-				break;
-			}
-		}
-		if (rarity === maxRarity + 1) {
-			// Case that should never be reached if the probabilities are 1
-			rarity = 1;
-			CrowniclesLogger.warn(`Warning ! Pet probabilities are not equal to 1 for level tier ${levelTier}`);
-		}
-		const pet = PetDataController.instance.getRandom(rarity);
 		return PetEntity.build({
 			typeId: pet.id,
 			sex,
@@ -215,7 +199,10 @@ export class PetEntities {
 		});
 	}
 
-	static generateRandomPetEntityNotGuild(minRarity = 1, maxRarity = 5): PetEntity {
+	static generateRandomPetEntityNotGuild(
+		minRarity = PetConstants.PET_RARITY_RANGE.MIN,
+		maxRarity = PetConstants.PET_RARITY_RANGE.MAX
+	): PetEntity {
 		return PetEntities.generateRandomPetEntity(PetConstants.GUILD_LEVEL_USED_FOR_NO_GUILD_LOOT, minRarity, maxRarity);
 	}
 

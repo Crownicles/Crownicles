@@ -28,6 +28,7 @@ import { giveFoodToGuild } from "../utils/FoodUtils";
 import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
 import { PetFood } from "../../../../Lib/src/types/PetFood";
 import { Badge } from "../../../../Lib/src/types/Badge";
+import { PetUtils } from "../utils/PetUtils";
 
 /**
  * Return all possibilities the player can get on this small event.
@@ -38,9 +39,10 @@ function generatePossibleIssues(petEntity: PetEntity, pet: Pet): PetInteraction[
 	if (petEntity.isFeisty()) {
 		return Object.values(PetConstants.PET_INTERACTIONS.PET_FEISTY);
 	}
-	const petLevel = pet.rarity + (petEntity.getLoveLevelNumber() === 5 ? 1 : 0);
+	const petVigor = PetUtils.getPetVigor(pet, petEntity.lovePoints);
 	const interactions: PetInteraction[] = [];
-	for (let i = 0; i <= petLevel; i++) {
+	const unlockedTiers = Math.min(petVigor, PetConstants.PET_INTERACTIONS.PET_NORMAL.length - 1);
+	for (let i = 0; i <= unlockedTiers; i++) {
 		interactions.push(...Object.values(PetConstants.PET_INTERACTIONS.PET_NORMAL[i]));
 	}
 	return Object.values(interactions);
