@@ -51,6 +51,10 @@ export class PetEntity extends Model {
 	declare createdAt: Date;
 
 
+	/**
+	 * Get the amount of time before the pet can be fed again
+	 * @param petModel
+	 */
 	public getFeedCooldown(petModel: Pet): number {
 		if (!this.hungrySince) {
 			return 0;
@@ -60,6 +64,9 @@ export class PetEntity extends Model {
 		return cooldownDuration - (Date.now() - this.hungrySince.valueOf());
 	}
 
+	/**
+	 * Get the love level of the pet
+	 */
 	public getLoveLevelNumber(): number {
 		return this.lovePoints >= PetConstants.TRAINED_LOVE_THRESHOLD
 			? PetConstants.LOVE_LEVEL.TRAINED
@@ -152,6 +159,9 @@ export class PetEntity extends Model {
 		return this.sex === StringConstants.SEX.FEMALE.short;
 	}
 
+	/**
+	 * Get the pet as an OwnedPet object
+	 */
 	public asOwnedPet(): OwnedPet {
 		const petModel = PetDataController.instance.getById(this.typeId);
 		return {
@@ -182,8 +192,12 @@ export class PetEntities {
 		});
 	}
 
+	/**
+	 * Generate a random pet entity
+	 * @param minRarity
+	 * @param maxRarity
+	 */
 	static generateRandomPetEntity(
-		_level: number,
 		minRarity = PetConstants.PET_RARITY_RANGE.MIN,
 		maxRarity = PetConstants.PET_RARITY_RANGE.MAX
 	): PetEntity {
@@ -202,13 +216,21 @@ export class PetEntities {
 		});
 	}
 
+	/**
+	 * Generate a random pet entity for a player without guild
+	 * @param minRarity
+	 * @param maxRarity
+	 */
 	static generateRandomPetEntityNotGuild(
 		minRarity = PetConstants.PET_RARITY_RANGE.MIN,
 		maxRarity = PetConstants.PET_RARITY_RANGE.MAX
 	): PetEntity {
-		return PetEntities.generateRandomPetEntity(PetConstants.GUILD_LEVEL_USED_FOR_NO_GUILD_LOOT, minRarity, maxRarity);
+		return PetEntities.generateRandomPetEntity(minRarity, maxRarity);
 	}
 
+	/**
+	 * Get the number of trained pets
+	 */
 	static async getNbTrainedPets(): Promise<number> {
 		const query = `SELECT COUNT(*) as count
                        FROM pet_entities
