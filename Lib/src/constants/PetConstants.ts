@@ -151,14 +151,13 @@ export abstract class PetConstants {
 		MAX: 50000
 	};
 
-	static readonly POST_FIGHT_LOVE_CHANCES = {
-		PLAYER_CONTROLLED: 0.2,
-		AI_CONTROLLED: 0.05
+	static readonly POST_FIGHT_LOVE_GAIN_RANGE = {
+		MIN: 0,
+		MAX: 2
 	};
 
 	static readonly POST_FIGHT_REACTION_TYPES = {
 		LOVE_GAIN: "loveGain",
-		LOVE_LOSS: "loveLoss",
 		TRAINED: "trained"
 	} as const;
 

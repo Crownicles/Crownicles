@@ -437,7 +437,7 @@
     },
     "pet": {
       "fieldName": "Familier :",
-      "fieldValue": "Rareté: {{rarity}}\n$t(commands:pet.shortPetField)"
+      "fieldValue": "$t(commands:pet.shortPetField) | {{rarity}}"
     },
     "playerClass": {
       "fieldName": "Classe :",
