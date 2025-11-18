@@ -277,6 +277,32 @@ async function fightEndCallback(fight: FightController, response: CrowniclesPack
 	const player2OldGlory = opponentPlayer.getGloryPoints();
 	await updatePlayersEloAndCooldowns(initiatorPlayer, opponentPlayer, initiatorGameResult, defenderGameResult, response, fightLogId);
 
+	let petLoveChange;
+	if (!isDraw) {
+		const petLoveResult = fight.getPostFightPetLoveChange(winnerFighter, "win");
+		if (petLoveResult && winnerFighter instanceof PlayerFighter) {
+			const petEntity = winnerFighter.pet;
+			if (petEntity) {
+				await petEntity.changeLovePoints({
+					player: winnerFighter.player,
+					response,
+					amount: petLoveResult.loveChange,
+					reason: NumberChangeReason.FIGHT
+				});
+				await petEntity.save({ fields: ["lovePoints"] });
+
+				petLoveChange = {
+					keycloakId: winnerFighter.player.keycloakId,
+					loveChange: petLoveResult.loveChange,
+					reactionType: petLoveResult.reactionType,
+					petId: petEntity.typeId,
+					petSex: petEntity.sex,
+					petNickname: petEntity.nickname
+				};
+			}
+		}
+	}
+
 	response.push(makePacket(FightRewardPacket, {
 		points: scoreBonus,
 		money: extraMoneyBonus,
@@ -294,7 +320,8 @@ async function fightEndCallback(fight: FightController, response: CrowniclesPack
 			oldLeagueId: LeagueDataController.instance.getByGlory(player2OldGlory).id,
 			newLeagueId: opponentPlayer.getLeague().id
 		},
-		draw: isDraw
+		draw: isDraw,
+		petLoveChange
 	}));
 }
 
