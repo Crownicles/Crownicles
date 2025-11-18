@@ -1175,8 +1175,7 @@
       "fighterStats": "\n\n{emote:fightCommand.fighterStats} | Statistiques de {{pseudo}}\n- **Vie finale** : {{energy}}/{{maxEnergy}} {emote:unitValues.energy}"
     },
     "petReactions": {
-      "loveGain": "{{pet}} jubile après cette victoire et réclame encore des caresses auprès de {{player}}. Il gagne {{loveDeltaSigned}} point{{loveDeltaPlural}} d'amour.",
-      "loveLoss": "{{pet}} fait la moue après ce revers et semble en vouloir à {{player}}. Il perd {{loveDeltaSigned}} point{{loveDeltaPlural}} d'amour.",
+      "loveGain": "{{pet}} jubile après cette victoire et réclame encore des caresses auprès de {{player}}.",
       "trained": "{{pet}} reste stoïque comme tout familier dressé, mais adresse un regard fier à {{player}}. Sa loyauté est déjà à son maximum."
     },
     "fightActionChoose": {
@@ -1263,7 +1262,8 @@
     "fightReward": {
       "title": "{emote:fightCommand.gloryChange} Récompenses de combat",
       "scoreAndMoneyField": "Récompenses du combat",
-      "noReward": "Vous avez épuisé toutes les récompenses de combat, revenez demain.",
+      "petLoveField": "Relation avec le familier",
+      "noReward": "{{player}} a démontré pourquoi il est considéré comme l'un des meilleurs en remportant ce match facilement.",
       "points": "{emote:unitValues.score} Points gagnés : **{{count}}**",
       "money": "{emote:unitValues.money} Argent gagné : **{{count}}**",
       "gloryField": "Changements de gloire",

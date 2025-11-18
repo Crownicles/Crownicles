@@ -123,11 +123,7 @@ export class Crownicles {
 			if (!petModel) {
 				continue;
 			}
-			const maxLoss = Math.max(1, Math.floor((petModel.force ?? 0) / 5));
-			const loveLoss = RandomUtils.crowniclesRandom.integer(1, maxLoss);
-			if (loveLoss <= 0) {
-				continue;
-			}
+			const loveLoss = PetConstants.DAILY_LOVE_LOSS;
 			petEntity.lovePoints = Math.max(0, petEntity.lovePoints - loveLoss);
 			updates.push(petEntity.save({ fields: ["lovePoints"] }));
 		}

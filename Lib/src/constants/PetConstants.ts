@@ -126,9 +126,21 @@ export abstract class PetConstants {
 
 	static readonly BREED_COOLDOWN = 30 * 60 * 1000; // 30 minutes
 
-	static readonly MAX_LOVE_POINTS = 100;
+	static readonly MAX_LOVE_POINTS = 110;
+
+	static readonly TRAINED_LOVE_THRESHOLD = 100;
 
 	static readonly BASE_LOVE = 10;
+
+	static readonly DAILY_LOVE_LOSS = 2;
+
+	static readonly VIGOR = {
+		MAX: 6,
+		MIN: 0,
+		LOVE_DIVIDER: 3,
+		DIVIDER: 10,
+		ENRAGED_MULTIPLIER: 2
+	};
 
 	static readonly GUILD_LEVEL_USED_FOR_NO_GUILD_LOOT = 20;
 

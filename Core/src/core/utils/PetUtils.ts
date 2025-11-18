@@ -29,12 +29,11 @@ export abstract class PetUtils {
 	}
 
 	static getPetVigor(pet: { force: number }, lovePoints = 0, options?: { enraged?: boolean }): number {
-		const maxVigor = 6;
-		const minVigor = 0;
 		if (options?.enraged) {
-			return Math.max(minVigor, Math.min(maxVigor, Math.round((pet.force * 2) / 10)));
+			return Math.max(PetConstants.VIGOR.MIN, Math.min(PetConstants.VIGOR.MAX, Math.round((pet.force * PetConstants.VIGOR.ENRAGED_MULTIPLIER) / PetConstants.VIGOR.DIVIDER)));
 		}
-		const vigorSource = lovePoints / 3 + pet.force;
-		return Math.max(minVigor, Math.min(maxVigor, Math.round(vigorSource / 10)));
+		const effectiveLovePoints = Math.min(lovePoints, PetConstants.TRAINED_LOVE_THRESHOLD);
+		const vigorSource = effectiveLovePoints / PetConstants.VIGOR.LOVE_DIVIDER + pet.force;
+		return Math.max(PetConstants.VIGOR.MIN, Math.min(PetConstants.VIGOR.MAX, Math.round(vigorSource / PetConstants.VIGOR.DIVIDER)));
 	}
 }

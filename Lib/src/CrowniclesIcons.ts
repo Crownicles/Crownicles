@@ -2163,7 +2163,9 @@ export const CrowniclesIcons: {
 		diet: "🍽️",
 		nextFeed: "🕙",
 		fightEffect: "⚔️",
-		age: "👶"
+		age: "👶",
+		force: "💪",
+		feedDelay: "⏳"
 	},
 	petCommand: {
 		petButton: "🖐️",

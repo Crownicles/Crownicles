@@ -61,7 +61,7 @@ export class PetEntity extends Model {
 	}
 
 	public getLoveLevelNumber(): number {
-		return this.lovePoints === PetConstants.MAX_LOVE_POINTS
+		return this.lovePoints >= PetConstants.TRAINED_LOVE_THRESHOLD
 			? PetConstants.LOVE_LEVEL.TRAINED
 			: this.lovePoints >= PetConstants.LOVE_LEVELS[2]
 				? PetConstants.LOVE_LEVEL.TAMED
@@ -212,7 +212,7 @@ export class PetEntities {
 	static async getNbTrainedPets(): Promise<number> {
 		const query = `SELECT COUNT(*) as count
                        FROM pet_entities
-                       WHERE lovePoints = ${PetConstants.MAX_LOVE_POINTS}`;
+                       WHERE lovePoints >= ${PetConstants.TRAINED_LOVE_THRESHOLD}`;
 		return (<{
 			count: number;
 		}[]>(await PetEntity.sequelize.query(query, {

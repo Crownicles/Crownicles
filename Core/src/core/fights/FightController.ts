@@ -152,13 +152,6 @@ export class FightController {
 			await fighter.endFight(!isADraw && fighter === winnerFighter, response, bug, this.turn);
 		}
 
-		if (!isADraw) {
-			await Promise.all([
-				this.applyPostFightPetLoveChange(winnerFighter, "win", response),
-				this.applyPostFightPetLoveChange(loserFighter, "loss", response)
-			]);
-		}
-
 		if (this.endCallback) {
 			await this.endCallback(this, response);
 		}
@@ -409,35 +402,33 @@ export class FightController {
 		}
 	}
 
-	private async applyPostFightPetLoveChange(
+	public getPostFightPetLoveChange(
 		fighter: PlayerFighter | AiPlayerFighter | MonsterFighter | null,
-		outcome: "win" | "loss",
-		response: CrowniclesPacket[]
-	): Promise<void> {
+		outcome: "win" | "loss"
+	): {
+		loveChange: number;
+		reactionType: PostFightPetReactionType;
+	} | null {
 		if (!fighter || fighter instanceof MonsterFighter) {
-			return;
+			return null;
 		}
 		const petEntity = fighter.pet;
 		if (!petEntity) {
-			return;
+			return null;
 		}
 		if (outcome === "loss" || fighter instanceof AiPlayerFighter) {
-			return;
+			return null;
 		}
 
 		if (outcome === "win" && petEntity.getLoveLevelNumber() === PetConstants.LOVE_LEVEL.TRAINED) {
-			this.pushPetReactionPacket(
-				response,
-				fighter.player.keycloakId,
-				PetConstants.POST_FIGHT_REACTION_TYPES.TRAINED,
-				0,
-				petEntity.asOwnedPet()
-			);
-			return;
+			return {
+				loveChange: 0,
+				reactionType: PetConstants.POST_FIGHT_REACTION_TYPES.TRAINED
+			};
 		}
 
 		if (fighter instanceof PlayerFighter && !fighter.hasPetAssisted()) {
-			return;
+			return null;
 		}
 
 		const loveDelta = RandomUtils.randInt(
@@ -445,23 +436,13 @@ export class FightController {
 			PetConstants.POST_FIGHT_LOVE_GAIN_RANGE.MAX + 1
 		);
 		if (loveDelta <= 0) {
-			return;
+			return null;
 		}
 
-		await petEntity.changeLovePoints({
-			player: fighter.player,
-			response,
-			amount: loveDelta,
-			reason: NumberChangeReason.FIGHT
-		});
-		await petEntity.save({ fields: ["lovePoints"] });
-		this.pushPetReactionPacket(
-			response,
-			fighter.player.keycloakId,
-			PetConstants.POST_FIGHT_REACTION_TYPES.LOVE_GAIN,
-			loveDelta,
-			petEntity.asOwnedPet()
-		);
+		return {
+			loveChange: loveDelta,
+			reactionType: PetConstants.POST_FIGHT_REACTION_TYPES.LOVE_GAIN
+		};
 	}
 
 	private pushPetReactionPacket(
