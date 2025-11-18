@@ -45,7 +45,7 @@ type FunctionRewardType = (guildLike: GuildLike, response: CrowniclesPacket[], r
  * @param rewardPacket
  */
 async function awardGuildWithNewPet(guild: Guild, rewardPacket: CommandGuildDailyRewardPacket): Promise<void> {
-	const pet = PetEntities.generateRandomPetEntity(guild.level);
+	const pet = PetEntities.generateRandomPetEntity();
 	await pet.save();
 	await GuildPets.addPet(guild, pet, true).save();
 	rewardPacket.pet = {
