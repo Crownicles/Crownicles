@@ -43,6 +43,7 @@ import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { ReactionCollectorFightChooseActionData } from "../../../../Lib/src/packets/interaction/ReactionCollectorFightChooseAction";
 import { DiscordConstants } from "../../DiscordConstants";
 import { PetUtils } from "../../utils/PetUtils";
+import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
 
 const buggedFights = new Set<string>();
 
@@ -390,15 +391,10 @@ export async function handleFightPetReaction(context: PacketContext, packet: Com
 		? i18n.t("error:unknownPlayer", { lng })
 		: escapeUsername(getUser.payload.user.attributes.gameUsername[0]);
 	const petDisplay = PetUtils.petToShortString(lng, packet.pet.nickname, packet.pet.typeId, packet.pet.sex);
-	const loveDeltaAbsolute = Math.abs(packet.loveDelta);
-	const loveDeltaSigned = packet.loveDelta > 0 ? `+${packet.loveDelta}` : packet.loveDelta.toString();
-	const loveDeltaPlural = loveDeltaAbsolute > 1 ? "s" : "";
 	const content = i18n.t(`commands:fight.petReactions.${packet.reactionType}`, {
 		lng,
 		player: playerName,
-		pet: petDisplay,
-		loveDeltaSigned,
-		loveDeltaPlural
+		pet: petDisplay
 	});
 	await interaction.channel?.send({ content });
 }
@@ -441,8 +437,6 @@ function generateFightRewardField(embed: CrowniclesEmbed, packet: FightRewardPac
 		inline: false
 	});
 }
-
-import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
 
 /**
  * Generate the pet love change field
