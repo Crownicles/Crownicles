@@ -12,8 +12,8 @@ import {
 	handleCommandFightRefusePacketRes,
 	handleCommandFightUpdateStatusRes,
 	handleEndOfFight,
-		handleFightPetReaction,
-		handleFightReward
+	handleFightPetReaction,
+	handleFightReward
 } from "../../commands/player/FightCommand";
 import { handleClassicError } from "../../utils/ErrorUtils";
 import { CommandFightIntroduceFightersPacket } from "../../../../Lib/src/packets/fights/FightIntroductionPacket";
