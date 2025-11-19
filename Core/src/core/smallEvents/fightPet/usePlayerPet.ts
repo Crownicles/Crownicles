@@ -4,6 +4,7 @@ import { PetConstants } from "../../../../../Lib/src/constants/PetConstants";
 import { SmallEventConstants } from "../../../../../Lib/src/constants/SmallEventConstants";
 import { RandomUtils } from "../../../../../Lib/src/utils/RandomUtils";
 import { PetDataController } from "../../../data/Pet";
+import { PetUtils } from "../../utils/PetUtils";
 
 export const fightPetAction: FightPetActionFunc = async (player, pet) => {
 	const playerPetEntity = await PetEntities.getById(player.petId);
@@ -25,10 +26,13 @@ export const fightPetAction: FightPetActionFunc = async (player, pet) => {
 			? SmallEventConstants.FIGHT_PET.BONUS_FOR_RIGHT_DIET
 			: 0;
 
-	// Calculate the success probability using the rarity factors
+	const enemyPetVigor = PetUtils.getPetVigor(pet, 0, { enraged: true });
+	const playerPetVigor = PetUtils.getPetVigor(playerPet, playerPetEntity.lovePoints);
+
+	// Calculate the success probability using vigor difference and love/diet modifiers
 	const successProbability =
 		SmallEventConstants.FIGHT_PET.BASE_PET_FIGHTS_SUCCESS_RATE
-		+ (SmallEventConstants.FIGHT_PET.PLAYERS_RARITY_BONUS_BOOST + petLoveBonusOrMalus + dietBonusOrMalus + playerPet.rarity - pet.rarity)
+		+ (SmallEventConstants.FIGHT_PET.PLAYERS_RARITY_BONUS_BOOST + petLoveBonusOrMalus + dietBonusOrMalus + playerPetVigor - enemyPetVigor)
 		* SmallEventConstants.FIGHT_PET.SUCCESS_PROBABILITY_FOR_RARITY_DIFFERENCE;
 
 	// Ensure the success probability is within a reasonable range

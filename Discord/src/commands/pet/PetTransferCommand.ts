@@ -183,7 +183,7 @@ function getShelterPetSelectMenu(
 				.setValue(reaction.index.toString())
 				.setDescription(i18n.t("commands:petTransfer.selectMenuPetDetails", {
 					lng,
-					rarity: DisplayUtils.getPetRarityDisplay(shelterPet.pet.rarity),
+					rarity: DisplayUtils.getPetRarityDisplay(shelterPet.pet.rarity, lng),
 					sex: DisplayUtils.getPetSexName(shelterPet.pet.sex, lng),
 					loveLevel: DisplayUtils.getPetLoveLevelDisplay(shelterPet.pet.loveLevel, shelterPet.pet.sex, lng, false)
 				}));

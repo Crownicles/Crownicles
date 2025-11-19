@@ -31,6 +31,7 @@ import {
 	millisecondsToMinutes, minutesDisplay
 } from "../../../../Lib/src/utils/TimeUtils";
 import { FightRewardPacket } from "../../../../Lib/src/packets/fights/FightRewardPacket";
+import { CommandFightPetReactionPacket } from "../../../../Lib/src/packets/fights/FightPetReactionPacket";
 import { StringUtils } from "../../utils/StringUtils";
 import { ReactionCollectorReturnTypeOrNull } from "../../packetHandlers/handlers/ReactionCollectorHandlers";
 import { AIFightActionChoosePacket } from "../../../../Lib/src/packets/fights/AIFightActionChoosePacket";
@@ -42,6 +43,7 @@ import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { ReactionCollectorFightChooseActionData } from "../../../../Lib/src/packets/interaction/ReactionCollectorFightChooseAction";
 import { DiscordConstants } from "../../DiscordConstants";
 import { PetUtils } from "../../utils/PetUtils";
+import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
 
 const buggedFights = new Set<string>();
 
@@ -377,6 +379,26 @@ export async function handleEndOfFight(context: PacketContext, packet: CommandFi
 	await message?.react(CrowniclesIcons.fightCommand.handshake);
 }
 
+export async function handleFightPetReaction(context: PacketContext, packet: CommandFightPetReactionPacket): Promise<void> {
+	if (!context.discord?.interaction || buggedFights.has(packet.fightId)) {
+		return;
+	}
+
+	const interaction = DiscordCache.getInteraction(context.discord.interaction)!;
+	const lng = interaction.userLanguage;
+	const getUser = await KeycloakUtils.getUserByKeycloakId(keycloakConfig, packet.playerKeycloakId);
+	const playerName = getUser.isError
+		? i18n.t("error:unknownPlayer", { lng })
+		: escapeUsername(getUser.payload.user.attributes.gameUsername[0]);
+	const petDisplay = PetUtils.petToShortString(lng, packet.pet.nickname, packet.pet.typeId, packet.pet.sex);
+	const content = i18n.t(`commands:fight.petReactions.${packet.reactionType}`, {
+		lng,
+		player: playerName,
+		pet: petDisplay
+	});
+	await interaction.channel?.send({ content });
+}
+
 /**
  * Generate the fight reward field displaying money and points earned during the fight if needed
  * @param embed
@@ -414,6 +436,28 @@ function generateFightRewardField(embed: CrowniclesEmbed, packet: FightRewardPac
 		})(),
 		inline: false
 	});
+}
+
+/**
+ * Generate the pet love change field
+ * @param embed
+ * @param packet
+ * @param lng
+ * @param player1Username
+ */
+function generatePetLoveChangeField(embed: CrowniclesEmbed, packet: FightRewardPacket, lng: Language, player1Username: string): void {
+	if (packet.petLoveChange && packet.petLoveChange.loveChange > 0) {
+		const petDisplay = PetUtils.petToShortString(lng, packet.petLoveChange.petNickname ?? undefined, packet.petLoveChange.petId, packet.petLoveChange.petSex as SexTypeShort);
+		embed.addFields({
+			name: i18n.t("commands:fight.fightReward.petLoveField", { lng }),
+			value: i18n.t(`commands:fight.petReactions.${packet.petLoveChange.reactionType}`, {
+				lng,
+				player: player1Username,
+				pet: petDisplay
+			}),
+			inline: false
+		});
+	}
 }
 
 /**
@@ -573,6 +617,9 @@ export async function handleFightReward(context: PacketContext, packet: FightRew
 
 	// Add fight reward description
 	generateFightRewardField(embed, packet, lng, player1Username);
+
+	// Add pet love change
+	generatePetLoveChangeField(embed, packet, lng, player1Username);
 
 	// Add glory changes
 	generateGloryChangesField(embed, packet, lng, player1Username, player2Username);

@@ -44,6 +44,10 @@ export class CommandMissionShopPetInformation extends CrowniclesPacket {
 
 	ageCategory!: string;
 
+	force!: number;
+
+	feedDelay!: number;
+
 	randomPetDwarf?: {
 		typeId: number;
 		sex: SexTypeShort;

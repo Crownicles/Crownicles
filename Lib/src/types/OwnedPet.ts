@@ -10,4 +10,8 @@ export interface OwnedPet {
 	sex: SexTypeShort;
 
 	loveLevel: number;
+
+	force: number;
+
+	feedDelay: number;
 }

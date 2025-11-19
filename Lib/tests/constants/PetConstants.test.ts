@@ -2,31 +2,6 @@ import { describe, expect, it } from "vitest";
 import { PetConstants } from "../../src/constants/PetConstants";
 
 describe("PetConstants", () => {
-	describe("PROBABILITIES", () => {
-		it("should have each row sum to 1", () => {
-			for (const row of PetConstants.PROBABILITIES) {
-				const sum = row.reduce((acc, val) => acc + val, 0);
-				expect(sum).toBeCloseTo(1);
-			}
-		});
-
-		it("should have all rows with 5 columns", () => {
-			const expectedColumnCount = 5; // For now pets have 5 rarities each corresponding to a column
-			for (const row of PetConstants.PROBABILITIES) {
-				expect(row.length).toBe(expectedColumnCount);
-			}
-		});
-
-		it("should have all probability values between 0 and 1", () => {
-			for (const row of PetConstants.PROBABILITIES) {
-				for (const prob of row) {
-					expect(prob).toBeGreaterThanOrEqual(0);
-					expect(prob).toBeLessThanOrEqual(1);
-				}
-			}
-		});
-	});
-
 	describe("NICKNAME_LENGTH_RANGE", () => {
 		it("should have MIN less than or equal to MAX", () => {
 			expect(PetConstants.NICKNAME_LENGTH_RANGE.MIN).toBeLessThanOrEqual(PetConstants.NICKNAME_LENGTH_RANGE.MAX);
