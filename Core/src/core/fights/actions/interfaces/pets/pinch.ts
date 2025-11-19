@@ -8,20 +8,24 @@ import {
 } from "../../../../../../../Lib/src/types/PetAssistanceResult";
 import { RandomUtils } from "../../../../../../../Lib/src/utils/RandomUtils";
 import { FightUtils } from "../../../../utils/FightUtils";
+import { PlayerFighter } from "../../../fighter/PlayerFighter";
+import { PetDataController } from "../../../../../data/Pet";
 
 function getAttackInfo(): attackInfo {
 	return {
 		minDamage: 5,
-		averageDamage: 8,
-		maxDamage: 15
+		averageDamage: 20,
+		maxDamage: 40
 	};
 }
 
 function getStatsInfo(sender: Fighter, receiver: Fighter): statsInfo {
+	const petId = (sender as PlayerFighter).pet.typeId;
+	const force = PetDataController.instance.getById(petId).force;
 	return {
 		attackerStats: [
-			FightUtils.calculatePetStatFromRawPower(0.5, sender.level),
-			FightUtils.calculatePetStatFromRawPower(1.1, sender.level)
+			FightUtils.calculatePetStatFromForce(force, sender.level),
+			FightUtils.calculatePetStatFromForce(force, sender.level)
 		],
 		defenderStats: [
 			receiver.getDefense(),
