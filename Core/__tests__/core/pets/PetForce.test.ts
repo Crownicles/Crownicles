@@ -5,7 +5,7 @@ import { readdirSync, readFileSync } from "fs";
 import { resolve } from "path";
 
 describe("Pet force validation", () => {
-	it("should have force between 0 and 30 for all pets", () => {
+	it("should have force between 1 and 30 for all pets", () => {
 		const petsPath = resolve(__dirname, "../../../resources/pets");
 		const petFiles = readdirSync(petsPath).filter(file => file.endsWith(".json"));
 		const invalidPets: { id: string; force: number }[] = [];
@@ -14,7 +14,11 @@ describe("Pet force validation", () => {
 			const petData = JSON.parse(readFileSync(resolve(petsPath, file), "utf8"));
 			const petId = file.replace(".json", "");
 
-			if (petData.force < 0 || petData.force > 30) {
+			if (petId === "0") {
+				continue;
+			}
+
+			if (petData.force <= 0 || petData.force > 30) {
 				invalidPets.push({
 					id: petId,
 					force: petData.force
@@ -23,7 +27,7 @@ describe("Pet force validation", () => {
 		}
 
 		if (invalidPets.length > 0) {
-			const errorMessage = `The following pets have invalid force values (must be between 0 and 30):\n` +
+			const errorMessage = `The following pets have invalid force values (must be between 1 and 30):\n` +
 				invalidPets.map(p => `  Pet ${p.id}: force = ${p.force}`).join("\n");
 			expect.fail(errorMessage);
 		}
