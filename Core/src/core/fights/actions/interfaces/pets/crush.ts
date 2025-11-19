@@ -7,6 +7,8 @@ import {
 	PetAssistanceResult, PetAssistanceState
 } from "../../../../../../../Lib/src/types/PetAssistanceResult";
 import { FightUtils } from "../../../../utils/FightUtils";
+import { PlayerFighter } from "../../../fighter/PlayerFighter";
+import { PetDataController } from "../../../../../data/Pet";
 
 function getAttackInfo(): attackInfo {
 	return {
@@ -17,10 +19,12 @@ function getAttackInfo(): attackInfo {
 }
 
 function getStatsInfo(sender: Fighter, receiver: Fighter): statsInfo {
+	const petId = (sender as PlayerFighter).pet.typeId;
+	const force = PetDataController.instance.getById(petId).force;
 	return {
 		attackerStats: [
-			FightUtils.calculatePetStatFromRawPower(8, sender.level),
-			FightUtils.calculatePetStatFromRawPower(0.5, sender.level)
+			FightUtils.calculatePetStatFromForce(force, sender.level),
+			FightUtils.calculatePetStatFromForce(force, sender.level)
 		],
 		defenderStats: [
 			receiver.getDefense(),
@@ -43,7 +47,9 @@ const use: PetAssistanceFunc = (fighter, opponent, turn, _fightController): Prom
 
 	// On the following turn, the pet falls on the opponent except if the opponent is faster than the threshold
 	if (turn === 15 || turn === 16) {
-		if (opponent.getSpeed() > FightUtils.calculatePetStatFromRawPower(3.85, fighter.level)) {
+		const petId = (fighter as PlayerFighter).pet.typeId;
+		const force = PetDataController.instance.getById(petId).force;
+		if (opponent.getSpeed() > FightUtils.calculatePetStatFromForce(force, fighter.level)) {
 			return Promise.resolve({
 				assistanceStatus: PetAssistanceState.FAILURE
 			});
