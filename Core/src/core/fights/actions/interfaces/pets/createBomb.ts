@@ -12,9 +12,9 @@ import { PetDataController } from "../../../../../data/Pet";
 
 function getAttackInfo(): attackInfo {
 	return {
-		minDamage: 15,
-		averageDamage: 30,
-		maxDamage: 60
+		minDamage: 50,
+		averageDamage: 130,
+		maxDamage: 180
 	};
 }
 
