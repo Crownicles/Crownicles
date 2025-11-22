@@ -936,6 +936,7 @@ export const CrowniclesIcons: {
 		lottery: "🎰",
 		limoges: "🏺",
 		pet: "🐕‍🦺",
+		petFood: "🍖",
 		shop: "🛒",
 		smallBad: "😖",
 		space: "🪐",

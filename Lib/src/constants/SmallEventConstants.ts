@@ -272,4 +272,50 @@ export abstract class SmallEventConstants {
 			FEISTY_PET: "petIsFeisty"
 		}
 	};
+
+	static readonly PET_FOOD = {
+		BAD_SMELL_TYPES: ["de", "mo", "volcano", "mine", "ruins", "tundra", "icePeak", "iceBeach", "crystalCavern"],
+		VEGETARIAN_TYPES: ["fo", "pl", "ro"],
+		MEAT_TYPES: ["ri", "be", "la", "undergroundLake"],
+		GOOD_SMELL_TYPES: ["vi", "ci", "castleEntrance", "castleThrone", "blessedDoors"],
+		FOOD_TYPES: {
+			BAD_SMELL: "badSmell",
+			VEGETARIAN: "vegetarian",
+			MEAT: "meat",
+			GOOD_SMELL: "goodSmell",
+			SOUP: "soup"
+		},
+		PROBABILITIES: {
+			BAD_SMELL: {
+				badSmell: 0.6,
+				vegetarian: 0.2,
+				meat: 0.1,
+				goodSmell: 0.1
+			},
+			VEGETARIAN: {
+				badSmell: 0.1,
+				vegetarian: 0.6,
+				meat: 0.2,
+				goodSmell: 0.1
+			},
+			MEAT: {
+				badSmell: 0.1,
+				vegetarian: 0.2,
+				meat: 0.6,
+				goodSmell: 0.1
+			},
+			GOOD_SMELL: {
+				badSmell: 0.1,
+				vegetarian: 0.2,
+				meat: 0.1,
+				goodSmell: 0.6
+			},
+			DEFAULT: {
+				badSmell: 0.25,
+				vegetarian: 0.25,
+				meat: 0.25,
+				goodSmell: 0.25
+			}
+		}
+	};
 }

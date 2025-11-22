@@ -1875,6 +1875,67 @@
     "Vous vous arrêtez un instant. Même votre souffle semble étouffé par l’air froid. Dans cette immobilité totale, il vous semble entendre un battement — faible, régulier — comme un cœur enfoui sous la terre.",
     "Le brouillard s’épaissit encore et vous ne distinguez déjà presque plus vos propre pieds. À chaque inspiration, l’humidité glaciale s’infiltre dans votre gorge, et le monde entier se réduit à quelques mètres autour de vous.",
     "Un murmure lointain traverse soudain la brume, porté par nulle part. Une voix ? Un vent ? Impossible à dire. Vous restez immobile, à écouter, conscient que ce lieu n’a ni fin ni commencement, seulement un silence qui respire."
-  ]
-
+  ],
+  "petFood": {
+    "intro": {
+      "badSmell": "Votre familier s'arrête soudainement, la truffe au vent. Il semble avoir repéré une odeur particulièrement désagréable qui émane d'un buisson proche.",
+      "goodSmell": "Votre familier s'agite joyeusement, attiré par une odeur alléchante. Il semble avoir flairé quelque chose de délicieux à proximité.",
+      "vegetarian": "Votre familier s'intéresse à un amas de végétation. Il semble avoir repéré quelque chose de comestible parmi les plantes.",
+      "meat": "Votre familier fixe intensément un point d'eau ou un recoin sombre. Il semble avoir repéré une proie ou un reste de viande.",
+      "soup": "Une odeur familière et réconfortante flotte dans l'air. Votre familier semble très intéressé par un bol fumant abandonné sur le bord de la route."
+    },
+    "choices": {
+      "investigate": "Aller voir vous-même (5 min)",
+      "sendPet": "Envoyer votre familier",
+      "continue": "Continuer votre route"
+    },
+    "outcomes": {
+      "found_by_player": "Vous vous approchez et découvrez **{{foodName}}**. Vous le donnez à votre familier qui semble apprécier.",
+      "found_by_pet": "Votre familier revient vers vous, tenant fièrement **{{foodName}}** dans sa gueule. Il s'empresse de le manger.",
+      "found_anyway": "Alors que vous repreniez votre route, votre familier déniche **{{foodName}}** et l'engloutit rapidement.",
+      "player_failed": "Vous fouillez les environs pendant de longues minutes, mais ne trouvez rien d'intéressant. Vous avez perdu du temps pour rien.",
+      "pet_failed": "Votre familier revient bredouille, l'air déçu.",
+      "nothing": "Vous décidez de ne pas vous attarder et poursuivez votre chemin."
+    },
+    "foodNames": {
+      "badSmell": [
+        "une charogne puante",
+        "un reste de monstre",
+        "un œuf pourri",
+        "un fromage oublié",
+        "une chaussette de gobelin"
+      ],
+      "goodSmell": [
+        "une friandise perdue",
+        "un gâteau rassis",
+        "un morceau de viande séchée",
+        "un fruit juteux",
+        "un biscuit en forme d'os"
+      ],
+      "vegetarian": [
+        "des baies sauvages",
+        "une racine comestible",
+        "un champignon étrange",
+        "une fleur sucrée",
+        "une pomme tombée de l'arbre"
+      ],
+      "meat": [
+        "un poisson frétillant",
+        "un petit rongeur",
+        "un os à moelle",
+        "un reste de jambon",
+        "une saucisse égarée"
+      ],
+      "soup": [
+        "un bol de soupe abandonné",
+        "une marmite encore chaude",
+        "un reste de bouillon"
+      ]
+    },
+    "love": {
+      "plus": "Votre familier semble vous apprécier davantage !",
+      "minus": "Votre familier vous regarde d'un air mauvais...",
+      "neutral": "Votre familier ne semble pas plus affecté que ça."
+    }
+  }
 }
