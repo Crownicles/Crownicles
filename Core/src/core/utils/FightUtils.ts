@@ -5,11 +5,8 @@ import { Fighter } from "../fights/fighter/Fighter";
  */
 export class FightUtils {
 	private static readonly PET_FORCE_BALANCE = {
-		AVERAGE_FORCE: 10.068627450980392,
-		MAX_FORCE: 30,
-		MIN_MULTIPLIER: 0.92,
-		MAX_MULTIPLIER: 1.04,
-		SQRT_SLOPE: 0.025
+		COEFF_QUADRATIC: 0.005,
+		COEFF_LINEAR: 0.15
 	};
 
 	/**
@@ -26,23 +23,15 @@ export class FightUtils {
 	 * Calculates pet attack based on the force of the pet and level of the player
 	 * @param petForce Force of the pet
 	 * @param level The level multiplier
-	 * @returns stat = level * (0.8 + force / 150)
+	 * @returns stat = level * (0.005 * force^2 + 0.15 * force)
 	 */
 	static calculatePetStatFromForce(petForce: number, level: number): number {
 		const normalizedForce = Math.max(0, petForce);
 		const {
-			AVERAGE_FORCE,
-			MAX_FORCE,
-			MIN_MULTIPLIER,
-			MAX_MULTIPLIER,
-			SQRT_SLOPE
+			COEFF_QUADRATIC,
+			COEFF_LINEAR
 		} = FightUtils.PET_FORCE_BALANCE;
-		const sqrtDelta = Math.sqrt(normalizedForce) - Math.sqrt(AVERAGE_FORCE);
-		let multiplier = 1 + (sqrtDelta * SQRT_SLOPE);
-		if (normalizedForce >= MAX_FORCE) {
-			multiplier = Math.min(multiplier, 1);
-		}
-		multiplier = Math.min(MAX_MULTIPLIER, Math.max(MIN_MULTIPLIER, multiplier));
+		const multiplier = COEFF_QUADRATIC * normalizedForce * normalizedForce + COEFF_LINEAR * normalizedForce;
 		return level * multiplier;
 	}
 }
