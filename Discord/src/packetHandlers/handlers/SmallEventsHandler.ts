@@ -92,6 +92,7 @@ import { SmallEventInfoFightPacket } from "../../../../Lib/src/packets/smallEven
 import { infoFightResult } from "../../smallEvents/infoFight";
 import { limogesResult } from "../../smallEvents/limoges";
 import { SmallEventHauntedPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventHauntedPacket";
+import { SmallEventPetFoodPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventPetFoodPacket";
 
 export function getRandomSmallEventIntro(language: Language): string {
 	return StringUtils.getRandomTranslation("smallEvents:intro", language);
@@ -1036,5 +1037,41 @@ export default class SmallEventsHandler {
 		const lng = interaction.userLanguage;
 		const description = StringUtils.getRandomTranslation("smallEvents:haunted", lng);
 		await interaction.editReply({ embeds: [new CrowniclesSmallEventEmbed("haunted", description, interaction.user, lng)] });
+	}
+
+	@packetHandler(SmallEventPetFoodPacket)
+	async smallEventPetFood(context: PacketContext, packet: SmallEventPetFoodPacket): Promise<void> {
+		const interaction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
+		if (!interaction) {
+			return;
+		}
+		const lng = context.discord!.language;
+
+		let foodName = "";
+		if (["found_by_player", "found_by_pet", "found_anyway"].includes(packet.outcome)) {
+			const foodNames = i18n.t("smallEvents:petFood.foodNames." + packet.food, { lng, returnObjects: true }) as string[];
+			foodName = RandomUtils.crowniclesRandom.pick(foodNames);
+		}
+		
+		let description = i18n.t("smallEvents:petFood.outcomes." + packet.outcome, { lng, foodName });
+		
+		if (packet.outcome === "found_by_player" || packet.outcome === "found_by_pet" || packet.outcome === "found_anyway") {
+			if (packet.loveChange > 0) {
+				description += "\n" + i18n.t("smallEvents:petFood.love.plus", { lng });
+			} else if (packet.loveChange < 0) {
+				description += "\n" + i18n.t("smallEvents:petFood.love.minus", { lng });
+			} else {
+				description += "\n" + i18n.t("smallEvents:petFood.love.neutral", { lng });
+			}
+		}
+
+		const embed = new CrowniclesSmallEventEmbed(
+			"petFood",
+			description,
+			interaction.user,
+			lng
+		);
+
+		await interaction.editReply({ embeds: [embed], components: [] });
 	}
 }

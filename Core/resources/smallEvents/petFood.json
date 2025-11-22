@@ -1,0 +1,23 @@
+{
+	"properties": {
+		"probabilities": {
+			"badSmell": {
+				"plus": 0.3,
+				"minus": 0.1,
+				"nothing": 0.6
+			},
+			"continueFind": 0.1,
+			"investigateFind": 0.7
+		},
+		"love": {
+			"badSmell": {
+				"plus": 1,
+				"minus": -1
+			},
+			"goodSmell": 1,
+			"vegetarian": 3,
+			"meat": 3,
+			"soup": 5
+		}
+	}
+}
