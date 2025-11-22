@@ -14,8 +14,8 @@ import { PetDataController } from "../../../../../data/Pet";
 function getAttackInfo(): attackInfo {
 	return {
 		minDamage: 5,
-		averageDamage: 20,
-		maxDamage: 40
+		averageDamage: 12,
+		maxDamage: 25
 	};
 }
 
