@@ -55,6 +55,14 @@ export class CommandReportMonsterRewardRes extends CrowniclesPacket {
 	guildXp!: number;
 
 	guildPoints!: number;
+
+	petReaction?: {
+		reactionType: string;
+		loveDelta: number;
+		petId: number;
+		petSex: string;
+		petNickname: string | null;
+	};
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
