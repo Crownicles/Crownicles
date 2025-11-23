@@ -31,7 +31,6 @@ import {
 	millisecondsToMinutes, minutesDisplay
 } from "../../../../Lib/src/utils/TimeUtils";
 import { FightRewardPacket } from "../../../../Lib/src/packets/fights/FightRewardPacket";
-import { CommandFightPetReactionPacket } from "../../../../Lib/src/packets/fights/FightPetReactionPacket";
 import { StringUtils } from "../../utils/StringUtils";
 import { ReactionCollectorReturnTypeOrNull } from "../../packetHandlers/handlers/ReactionCollectorHandlers";
 import { AIFightActionChoosePacket } from "../../../../Lib/src/packets/fights/AIFightActionChoosePacket";
@@ -379,26 +378,6 @@ export async function handleEndOfFight(context: PacketContext, packet: CommandFi
 	await message?.react(CrowniclesIcons.fightCommand.handshake);
 }
 
-export async function handleFightPetReaction(context: PacketContext, packet: CommandFightPetReactionPacket): Promise<void> {
-	if (!context.discord?.interaction || buggedFights.has(packet.fightId)) {
-		return;
-	}
-
-	const interaction = DiscordCache.getInteraction(context.discord.interaction)!;
-	const lng = interaction.userLanguage;
-	const getUser = await KeycloakUtils.getUserByKeycloakId(keycloakConfig, packet.playerKeycloakId);
-	const playerName = getUser.isError
-		? i18n.t("error:unknownPlayer", { lng })
-		: escapeUsername(getUser.payload.user.attributes.gameUsername[0]);
-	const petDisplay = PetUtils.petToShortString(lng, packet.pet.nickname, packet.pet.typeId, packet.pet.sex);
-	const content = i18n.t(`commands:fight.petReactions.${packet.reactionType}`, {
-		lng,
-		player: playerName,
-		pet: petDisplay
-	});
-	await interaction.channel?.send({ content });
-}
-
 /**
  * Generate the fight reward field displaying money and points earned during the fight if needed
  * @param embed
@@ -450,8 +429,7 @@ function generatePetLoveChangeField(embed: CrowniclesEmbed, packet: FightRewardP
 		const petDisplay = PetUtils.petToShortString(lng, packet.petLoveChange.petNickname ?? undefined, packet.petLoveChange.petId, packet.petLoveChange.petSex as SexTypeShort);
 		embed.addFields({
 			name: i18n.t("commands:fight.fightReward.petLoveField", { lng }),
-			value: i18n.t(`commands:fight.petReactions.${packet.petLoveChange.reactionType}`, {
-				lng,
+			value: StringUtils.getRandomTranslation(`commands:fight.petReactions.${packet.petLoveChange.reactionType}`, lng, {
 				player: player1Username,
 				pet: petDisplay
 			}),
