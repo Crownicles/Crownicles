@@ -49,13 +49,21 @@ const use: PetAssistanceFunc = (fighter, opponent, turn, _fightController): Prom
 	if (turn === 15 || turn === 16) {
 		const petId = (fighter as PlayerFighter).pet.typeId;
 		const force = PetDataController.instance.getById(petId).force;
-		if (opponent.getSpeed() > FightUtils.calculatePetStatFromForce(force, fighter.level)) {
+		const centerSpeed = FightUtils.calculatePetStatFromForce(force * 0.75, fighter.level);
+		const startSpeed = FightUtils.calculatePetStatFromForce(force * 0.5, fighter.level);
+		const damageMultiplier = 0.5 - 0.5 * Math.tanh((opponent.getSpeed() - centerSpeed) / (centerSpeed - startSpeed));
+
+		const damages = Math.round(FightActionController.getAttackDamage(getStatsInfo(fighter, opponent), fighter, getAttackInfo(), true) * damageMultiplier);
+
+		// If the damages are below a certain threshold, the pet attack fails
+		if (damages < 30) {
 			return Promise.resolve({
 				assistanceStatus: PetAssistanceState.FAILURE
 			});
 		}
+
 		const result: PetAssistanceResult = {
-			damages: FightActionController.getAttackDamage(getStatsInfo(fighter, opponent), fighter, getAttackInfo(), true),
+			damages,
 			assistanceStatus: PetAssistanceState.SUCCESS
 		};
 
