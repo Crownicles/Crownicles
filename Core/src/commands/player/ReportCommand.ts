@@ -45,7 +45,6 @@ import {
 	ReactionCollectorChooseDestination,
 	ReactionCollectorChooseDestinationReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorChooseDestination";
-import { CommandFightPetReactionPacket } from "../../../../Lib/src/packets/fights/FightPetReactionPacket";
 import { MapCache } from "../../core/maps/MapCache";
 import { TravelTime } from "../../core/maps/TravelTime";
 import {
@@ -541,13 +540,14 @@ async function doPVEBoss(
 								reason: NumberChangeReason.FIGHT
 							});
 							await petEntity.save({ fields: ["lovePoints"] });
-							endFightResponse.push(makePacket(CommandFightPetReactionPacket, {
-								fightId: fight.id,
-								playerKeycloakId: winner.player.keycloakId,
+							fight.petReactionData = {
+								keycloakId: winner.player.keycloakId,
 								reactionType: petLoveResult.reactionType,
 								loveDelta: petLoveResult.loveChange,
-								pet: petEntity.asOwnedPet()
-							}));
+								petId: petEntity.typeId,
+								petSex: petEntity.sex,
+								petNickname: petEntity.nickname
+							};
 						}
 					}
 				}
@@ -576,7 +576,14 @@ async function doPVEBoss(
 					money: rewards.money,
 					experience: rewards.xp,
 					guildXp,
-					guildPoints
+					guildPoints,
+					petReaction: fight.petReactionData ? {
+						reactionType: fight.petReactionData.reactionType,
+						loveDelta: fight.petReactionData.loveDelta,
+						petId: fight.petReactionData.petId,
+						petSex: fight.petReactionData.petSex,
+						petNickname: fight.petReactionData.petNickname
+					} : undefined
 				}));
 				await MissionsController.update(player, endFightResponse, { missionId: "winBoss" });
 			}

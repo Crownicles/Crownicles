@@ -312,7 +312,8 @@ export class FightView {
 			},
 			draw,
 			turns: this.fightController.turn,
-			maxTurns: FightConstants.MAX_TURNS
+			maxTurns: FightConstants.MAX_TURNS,
+			petReaction: this.fightController.petReactionData
 		}));
 	}
 
