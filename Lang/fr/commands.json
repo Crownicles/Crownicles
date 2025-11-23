@@ -1175,8 +1175,50 @@
       "fighterStats": "\n\n{emote:fightCommand.fighterStats} | Statistiques de {{pseudo}}\n- **Vie finale** : {{energy}}/{{maxEnergy}} {emote:unitValues.energy}"
     },
     "petReactions": {
-      "loveGain": "{{pet}} jubile après cette victoire et réclame encore des caresses auprès de {{player}}.",
-      "trained": "{{pet}} reste stoïque comme tout familier dressé, mais adresse un regard fier à {{player}}. Sa loyauté est déjà à son maximum."
+      "loveGain": [
+        "{{pet}} exulte de joie après cette victoire ! Il sautille fièrement autour de {{player}}.",
+        "{{pet}} rayonne de fierté et bondit joyeusement autour de {{player}} !",
+        "{{pet}} jubile et affiche sa joie en tournoyant autour de {{player}}.",
+        "{{pet}} éclate de bonheur et parade fièrement devant {{player}} !",
+        "{{pet}} manifeste son enthousiasme en bondissant aux côtés de {{player}}.",
+        "{{pet}} déborde de joie et virevolte autour de {{player}} avec excitation !",
+        "{{pet}} affiche une satisfaction éclatante et danse autour de {{player}}.",
+        "{{pet}} rayonne de contentement et cabriole joyeusement près de {{player}} !",
+        "{{pet}} célèbre cette victoire en sautillant gaiement autour de {{player}}.",
+        "{{pet}} exulte et fait des bonds enthousiastes autour de {{player}} !",
+        "{{pet}} manifeste sa joie par des sauts énergiques près de {{player}}.",
+        "{{pet}} affiche un bonheur évident en tournoyant fièrement autour de {{player}} !",
+        "{{pet}} exprime sa fierté en gambadant joyeusement autour de {{player}}.",
+        "{{pet}} déborde d'enthousiasme et virevolte avec énergie près de {{player}} !",
+        "{{pet}} rayonne de satisfaction et parade victorieusement devant {{player}}.",
+        "{{pet}} manifeste son contentement en sautant avec vigueur autour de {{player}} !",
+        "{{pet}} exulte de fierté et bondit avec grâce près de {{player}}.",
+        "{{pet}} affiche une joie débordante en dansant autour de {{player}} !",
+        "{{pet}} célèbre en effectuant des cabrioles enthousiastes près de {{player}}.",
+        "{{pet}} rayonne de bonheur et tournoie fièrement autour de {{player}} !"
+      ],
+      "trained": [
+        "{{pet}} reste calme et satisfait, preuve de son excellent dressage.",
+        "{{pet}} affiche une assurance tranquille, témoignant de sa parfaite discipline.",
+        "{{pet}} se tient fièrement, comme le compagnon bien dressé qu'il est.",
+        "{{pet}} conserve son sang-froid habituel, signe d'un dressage exemplaire.",
+        "{{pet}} manifeste une satisfaction contenue, digne d'un animal bien éduqué.",
+        "{{pet}} garde son calme légendaire, preuve de son dressage accompli.",
+        "{{pet}} reste stoïque, à la manière d'un compagnon parfaitement discipliné.",
+        "{{pet}} affiche une fierté mesurée, caractéristique d'un excellent dressage.",
+        "{{pet}} maintient son attitude posée, signe d'une éducation impeccable.",
+        "{{pet}} demeure serein, comme tout familier admirablement dressé.",
+        "{{pet}} conserve sa prestance habituelle, fruit d'un dressage rigoureux.",
+        "{{pet}} reste imperturbable, preuve de son parfait conditionnement.",
+        "{{pet}} affiche une dignité tranquille, caractéristique d'un dressage de qualité.",
+        "{{pet}} maintient son aplomb, témoignant de sa formation exemplaire.",
+        "{{pet}} demeure impassible, signe d'un dressage accompli.",
+        "{{pet}} conserve son attitude disciplinée, preuve d'une éducation réussie.",
+        "{{pet}} reste composé, à l'image d'un compagnon parfaitement formé.",
+        "{{pet}} affiche une sérénité maîtrisée, fruit d'un excellent dressage.",
+        "{{pet}} maintient sa contenance, signe d'une discipline irréprochable.",
+        "{{pet}} demeure posé, comme tout animal superbement dressé."
+      ]
     },
     "fightActionChoose": {
       "turnIndicationTitle": "C'est au tour de {{pseudo}} de jouer {emote:fightCommand.crossedSwords}",
