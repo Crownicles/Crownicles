@@ -274,10 +274,10 @@ export abstract class SmallEventConstants {
 	};
 
 	static readonly PET_FOOD = {
-		BAD_SMELL_TYPES: ["de", "mo", "volcano", "mine", "ruins", "tundra", "icePeak", "iceBeach", "crystalCavern"],
+		BAD_SMELL_TYPES: ["de", "mo"],
 		VEGETARIAN_TYPES: ["fo", "pl", "ro"],
-		MEAT_TYPES: ["ri", "be", "la", "undergroundLake"],
-		GOOD_SMELL_TYPES: ["vi", "ci", "castleEntrance", "castleThrone", "blessedDoors"],
+		MEAT_TYPES: ["ri", "be", "la"],
+		GOOD_SMELL_TYPES: ["vi", "ci", "castleEntrance", "castleThrone"],
 		FOOD_TYPES: {
 			BAD_SMELL: "badSmell",
 			VEGETARIAN: "vegetarian",

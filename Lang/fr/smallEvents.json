@@ -1878,64 +1878,101 @@
   ],
   "petFood": {
     "intro": {
-      "badSmell": "Votre familier s'arrête soudainement, la truffe au vent. Il semble avoir repéré une odeur particulièrement désagréable qui émane d'un buisson proche.",
-      "goodSmell": "Votre familier s'agite joyeusement, attiré par une odeur alléchante. Il semble avoir flairé quelque chose de délicieux à proximité.",
-      "vegetarian": "Votre familier s'intéresse à un amas de végétation. Il semble avoir repéré quelque chose de comestible parmi les plantes.",
-      "meat": "Votre familier fixe intensément un point d'eau ou un recoin sombre. Il semble avoir repéré une proie ou un reste de viande.",
-      "soup": "Une odeur familière et réconfortante flotte dans l'air. Votre familier semble très intéressé par un bol fumant abandonné sur le bord de la route."
+      "badSmell": "Votre fidèle compagnon s'immobilise brusquement, les narines frémissantes. Ses oreilles se dressent tandis qu'il capte une odeur nauséabonde s'échappant d'un taillis sombre. Quelque chose de fétide y croupit, abandonné depuis des jours peut-être, et votre familier semble fasciné par cette puanteur qui ferait reculer bien des créatures.",
+      "goodSmell": "Votre compagnon de route s'agite soudainement, remuant la queue avec enthousiasme, les yeux brillants d'excitation. Une senteur alléchante et sucrée flotte dans l'air. Il se met à bondir joyeusement, attiré tel un papillon par la lumière vers cette fragrance prometteuse qui éveille son appétit.",
+      "vegetarian": "Votre fidèle familier ralentit son allure et penche la tête sur le côté, intrigué par un bosquet touffu bordant le sentier. Entre les herbes folles et les fougères argentées, il semble avoir discerné quelque chose de comestible à travers la végétation.",
+      "meat": "Votre compagnon s'arrête net, les muscles tendus, fixant d'un regard intense et prédateur un point d'eau miroitant sous le soleil couchant. Ses babines se retroussent légèrement, dévoilant des crocs acérés, tandis qu'il flaire l'air avec une concentration absolue. Il a manifestement repéré une proie...",
+      "soup": "Une senteur familière et réconfortante vient chatouiller vos narines : un fumet onctueux de potage mijotant dans une marmite de cuivre. Votre fidèle compagnon dresse aussitôt les oreilles et se précipite vers un campement abandonné en bordure de chemin, où repose encore un chaudron de fer noir suspendu au-dessus de braises mourantes. se pourrait-il qu'il s'agisse de soupe ultime ?"
     },
     "choices": {
-      "investigate": "Aller voir vous-même (5 min)",
+      "investigate": "Aller voir vous-même",
       "sendPet": "Envoyer votre familier",
       "continue": "Continuer votre route"
     },
     "outcomes": {
-      "found_by_player": "Vous vous approchez et découvrez **{{foodName}}**. Vous le donnez à votre familier qui semble apprécier.",
-      "found_by_pet": "Votre familier revient vers vous, tenant fièrement **{{foodName}}** dans sa gueule. Il s'empresse de le manger.",
-      "found_anyway": "Alors que vous repreniez votre route, votre familier déniche **{{foodName}}** et l'engloutit rapidement.",
-      "player_failed": "Vous fouillez les environs pendant de longues minutes, mais ne trouvez rien d'intéressant. Vous avez perdu du temps pour rien.",
-      "pet_failed": "Votre familier revient bredouille, l'air déçu.",
-      "nothing": "Vous décidez de ne pas vous attarder et poursuivez votre chemin."
+      "found_by_player": "Vous vous approchez prudemment et, après avoir écarté les branchages et fouillé les recoins, vous mettez la main sur **{{foodName}}**. Vous l'offrez à votre compagnon qui l'accepte avec reconnaissance, dévorant son présent avec des grognements de satisfaction.",
+      "found_by_player_soup": "Vous vous approchez prudemment du chaudron abandonné et découvrez avec satisfaction **{{foodName}}** qui mijote encore doucement. Vous en versez une généreuse portion dans une écuelle que vous présentez à votre compagnon. Celui-ci lape goulûment ce mets réconfortant en remuant la queue de contentement.",
+      "found_by_pet": "Votre familier s'élance d'un bond agile et disparaît quelques instants dans les fourrés. Il revient bientôt vers vous d'un trot fier et triomphant, tenant délicatement **{{foodName}}** entre ses crocs. Ses yeux brillent de fierté tandis qu'il s'installe pour savourer sa trouvaille avec des bruits de mastication enthousiastes.",
+      "found_by_pet_soup": "Votre familier trotte prestement vers le campement abandonné et plonge son museau dans le chaudron fumant. Il revient vers vous quelques instants plus tard, les babines encore luisantes, ayant manifestement savouré **{{foodName}}** avec un plaisir évident. Son regard pétillant et sa queue frétillante témoignent de sa satisfaction gourmande.",
+      "found_anyway": "Alors même que vous vous apprêtiez à reprendre votre route sans plus vous préoccuper de cette distraction, votre fidèle compagnon bondit soudainement vers les buissons environnants. Il en ressort victorieusement avec **{{foodName}}** qu'il engloutit sur-le-champ avec un appétit vorace, la queue frétillante de contentement.",
+      "found_anyway_soup": "Alors même que vous vous apprêtiez à reprendre votre route sans plus vous préoccuper de ce campement, votre fidèle compagnon se précipite vers le chaudron abandonné. Avant que vous ne puissiez l'en empêcher, il lape goulûment **{{foodName}}** avec des gémissements de délice, manifestement ravi de cette aubaine inattendue.",
+      "player_failed": "Vous avez passé de longues minutes éprouvantes à fouiller méticuleusement les environs, écartant ronces et épineux, retournant pierres et souches pourries, mais en dépit de tous vos efforts acharnés, vous ne dénichez rien qui vaille la peine. Le temps que vous avez investi s'est révélé aussi vain qu'une quête de trésor dans un coffre vide.",
+      "pet_failed": "Votre compagnon s'élance avec détermination dans les fourrés, mais revient quelques instants plus tard d'une démarche pesante, les oreilles basses et la queue pendante. Son regard déçu et ses couinements plaintifs trahissent son échec : la piste s'est avérée infructueuse et ses efforts n'ont produit qu'amertume.",
+      "pet_failed_soup": "Votre compagnon trotte vers le campement abandonné et renifle longuement le chaudron, mais celui-ci s'avère hélas vide ou son contenu déjà refroidi et immangeable. Il revient vers vous d'une démarche déçue, les oreilles basses et la queue pendante, manifestement frustré par cette déconvenue culinaire.",
+      "nothing": "Vous décidez sagement de ne point vous attarder davantage en ces lieux, jugeant que le temps presse et que votre quête ne saurait souffrir de tels détours. D'un geste résolu, vous enjoignez votre compagnon à vous suivre et reprenez ensemble votre chemin vers l'horizon qui vous appelle."
     },
     "foodNames": {
       "badSmell": [
-        "une charogne puante",
-        "un reste de monstre",
-        "un œuf pourri",
-        "un fromage oublié",
-        "une chaussette de gobelin"
+        "une charogne de corbeau en décomposition avancée",
+        "les entrailles putrides d'un gobelin des marais",
+        "un œuf de dragon pourri exhalant des vapeurs sulfureuses",
+        "un morceau de fromage bleu moisi oublié par un voyageur étourdi",
+        "les restes nauséabonds d'un rat crevé depuis plusieurs jours",
+        "une carcasse de chauve-souris infestée d'asticots grouillants",
+        "un morceau de viande faisandée abandonné par des bandits",
+        "un poisson mort aux écailles verdâtres flottant dans une mare stagnante",
+        "des abats de sanglier grouillants de mouches voraces",
+        "une panse de mouton gonflée par les gaz de putréfaction",
+        "un crâne de loup encore garni de lambeaux de chair noire"
       ],
       "goodSmell": [
-        "une friandise perdue",
-        "un gâteau rassis",
-        "un morceau de viande séchée",
-        "un fruit juteux",
-        "un biscuit en forme d'os"
+        "une tourte au miel et aux amandes encore tiède",
+        "un quartier de tarte aux pommes et cannelle dorée au four",
+        "un morceau de viande séchée assaisonnée aux herbes de Provence",
+        "une poire juteuse et sucrée tombée d'un verger abandonné",
+        "un biscuit croustillant en forme d'os façonné par un boulanger généreux",
+        "une part de gâteau aux noisettes et au sucre roux",
+        "un bout de pain d'épices parfumé au gingembre et au clou de girofle",
+        "une tranche de lard fumé à la braise de chêne",
+        "un petit pain brioché aux raisins secs et au beurre salé",
+        "un morceau de cheddar affiné enveloppé dans un linge de lin",
+        "une crêpe fourrée à la confiture d'abricots et saupoudrée de sucre",
+        "un éclair au chocolat abandonné sur un muret de pierre"
       ],
       "vegetarian": [
-        "des baies sauvages",
-        "une racine comestible",
-        "un champignon étrange",
-        "une fleur sucrée",
-        "une pomme tombée de l'arbre"
+        "une poignée de baies sauvages gorgées de jus sucré",
+        "une racine de navet comestible encore gorgée de terre fertile",
+        "un champignon forestier aux reflets cuivrés poussant sous un vieux chêne",
+        "une fleur de pissenlit sucrée et tendre",
+        "une pomme vermillon tombée d'un pommier solitaire",
+        "des noisettes fraîchement tombées de leur bogue épineuse",
+        "un épi de maïs doré oublié dans un champ après la moisson",
+        "une grappe de raisins sauvages d'un pourpre profond",
+        "des feuilles de laitue croquantes arrachées à un potager",
+        "une carotte sauvage au goût légèrement amer",
+        "un bouquet d'orties tendres aux vertus nutritives",
+        "des pousses de fougères comestibles au printemps",
+        "une courge citrouille éventrée sur le bord d'un sentier"
       ],
       "meat": [
-        "un poisson frétillant",
-        "un petit rongeur",
-        "un os à moelle",
-        "un reste de jambon",
-        "une saucisse égarée"
+        "un poisson argenté frétillant encore dans les eaux claires d'un ruisseau",
+        "un jeune lapereau égaré loin de son terrier",
+        "un os à moelle encore garni de chair tendre et grasse",
+        "une tranche de jambon fumé suspendue dans une réserve ouverte",
+        "une saucisse de porc épicée égarée par un marchand ambulant",
+        "un morceau de lard salé enveloppé dans un tissu graisseux",
+        "les restes d'un canard rôti abandonnés par des voyageurs pressés",
+        "un cuissot de chevreuil fraîchement dépecé par un chasseur",
+        "une langue de bœuf bouillie refroidissant sur une pierre plate",
+        "des tripes de mouton lavées à l'eau de source",
+        "un morceau de poulet grillé aux épices orientales",
+        "une anguille fumée au bois de hêtre",
+        "les restes d'un lièvre en civet mijotant dans sa sauce"
       ],
       "soup": [
-        "un bol de soupe abandonné",
-        "une marmite encore chaude",
-        "un reste de bouillon"
+        "de la soupe aux légumes du potager encore fumante",
+        "du bouillon de poule parfumé au thym et au laurier",
+        "du potage aux choux et lard rissolé",
+        "du velouté de champignons sauvages à la crème",
+        "de la soupe à l'oignon gratinée au fromage",
+        "du pot-au-feu aux carottes et navets fondants",
+        "de la bisque d'écrevisses relevée d'épices rares"
       ]
     },
     "love": {
-      "plus": "Votre familier semble vous apprécier davantage !",
-      "minus": "Votre familier vous regarde d'un air mauvais...",
-      "neutral": "Votre familier ne semble pas plus affecté que ça."
+      "plus": "Votre fidèle compagnon vous contemple avec des yeux brillants de gratitude et d'affection. Il se frotte contre vos jambes en émettant des ronronnements satisfaits, manifestant clairement que ce festin improvisé a renforcé les liens de confiance et d'amitié qui vous unissent !",
+      "minus": "Votre familier vous fixe d'un regard noir chargé de reproches silencieux, les babines retroussées en une moue désapprobatrice. Il détourne ostensiblement la tête en poussant un grognement mécontent, visiblement offensé par cette pitance indigne de son palais délicat...",
+      "neutral": "Votre compagnon de route engloutit son repas avec un détachement presque philosophique, sans montrer ni enthousiasme débordant ni dégoût particulier. Il semble considérer cette trouvaille comme une simple sustentation nécessaire, rien de plus, rien de moins."
     }
   }
 }
