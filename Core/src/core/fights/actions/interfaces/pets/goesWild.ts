@@ -40,7 +40,9 @@ function getStatsInfo(sender: Fighter, receiver: Fighter): statsInfo {
 }
 
 const use: PetAssistanceFunc = (fighter, opponent, turn, _fightController): Promise<PetAssistanceResult | null> => {
-	if (!(turn === 17 || turn === 18)) {
+	const force = PetDataController.instance.getById((fighter as PlayerFighter).pet.typeId).force;
+	const baseTurn = Math.floor(force / 2);
+	if (turn !== baseTurn + 2 && turn !== baseTurn + 3) {
 		return null;
 	}
 	const damages = FightActionController.getAttackDamage(getStatsInfo(fighter, opponent), fighter, getAttackInfo(), true);
