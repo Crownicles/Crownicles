@@ -33,8 +33,6 @@ import { PetAssistance } from "../../data/PetAssistance";
 import { getAiPetBehavior } from "./PetAssistManager";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { FightsManager } from "./FightsManager";
-import { CommandFightPetReactionPacket } from "../../../../Lib/src/packets/fights/FightPetReactionPacket";
-import { OwnedPet } from "../../../../Lib/src/types/OwnedPet";
 
 export class FightController {
 	turn: number;
@@ -54,6 +52,15 @@ export class FightController {
 	private readonly overtimeBehavior: FightOvertimeBehavior;
 
 	private readonly silentMode: boolean;
+
+	public petReactionData?: {
+		keycloakId: string;
+		reactionType: PostFightPetReactionType;
+		loveDelta: number;
+		petId: number;
+		petSex: string;
+		petNickname: string | null;
+	};
 
 	public constructor(
 		fighters: {
@@ -442,22 +449,6 @@ export class FightController {
 			loveChange: loveDelta,
 			reactionType: PetConstants.POST_FIGHT_REACTION_TYPES.LOVE_GAIN
 		};
-	}
-
-	private pushPetReactionPacket(
-		response: CrowniclesPacket[],
-		playerKeycloakId: string,
-		reactionType: PostFightPetReactionType,
-		loveDelta: number,
-		pet: OwnedPet
-	): void {
-		response.push(makePacket(CommandFightPetReactionPacket, {
-			fightId: this.id,
-			playerKeycloakId,
-			reactionType,
-			loveDelta,
-			pet
-		}));
 	}
 
 	private increaseDamagesPve(currentTurn: number): void {
