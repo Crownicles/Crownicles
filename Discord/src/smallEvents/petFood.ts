@@ -65,7 +65,7 @@ export async function petFoodCollector(context: PacketContext, packet: ReactionC
 
 		const getReactingPlayer = await KeycloakUtils.getKeycloakIdFromDiscordId(keycloakConfig, buttonInteraction.user.id, buttonInteraction.user.displayName);
 		if (!getReactingPlayer.isError && getReactingPlayer.payload.keycloakId) {
-			await buttonInteraction.deferUpdate();
+			await buttonInteraction.deferReply();
 			
 			// Disable buttons
 			row.components.forEach(c => c.setDisabled(true));
