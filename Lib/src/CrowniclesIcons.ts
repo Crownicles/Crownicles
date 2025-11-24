@@ -207,6 +207,8 @@ export const CrowniclesIcons: {
 		inn: string;
 		enchanter: string;
 		shop: string;
+		home: { [level: number]: string };
+		manageHome: string;
 	};
 	meals: {
 		[mealId: string]: string;
@@ -2386,15 +2388,24 @@ export const CrowniclesIcons: {
 		lost: "🔴",
 		draw: "🟡"
 	},
-	items: {
-		drinkPotion: "🥤"
-	},
+	items: { drinkPotion: "🥤" },
 	city: {
 		exit: "🏃‍➡️",
 		stay: "👀",
-		inn: "🏠",
+		inn: "🍺",
 		enchanter: "🔮",
-		shop: "💎"
+		shop: "💎",
+		home: {
+			1: "🏕️",
+			2: "🏕️",
+			3: "🏚️",
+			4: "🏚️",
+			5: "🏠",
+			6: "🏠",
+			7: "🏡",
+			8: "🏡"
+		},
+		manageHome: "🧑‍💼"
 	},
 	meals: {
 		breadAndCheese: "🧀",

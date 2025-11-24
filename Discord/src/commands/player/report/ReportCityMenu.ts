@@ -11,8 +11,11 @@ import {
 	makePacket, PacketContext
 } from "../../../../../Lib/src/packets/CrowniclesPacket";
 import {
+	ReactionCollectorCityBuyHomeReaction,
 	ReactionCollectorCityData,
+	ReactionCollectorCityMoveHomeReaction,
 	ReactionCollectorCityShopReaction,
+	ReactionCollectorCityUpgradeHomeReaction,
 	ReactionCollectorEnchantReaction,
 	ReactionCollectorExitCityReaction,
 	ReactionCollectorInnMealReaction,
@@ -33,6 +36,9 @@ import { ReactionCollectorReturnTypeOrNull } from "../../../packetHandlers/handl
 import { PacketUtils } from "../../../utils/PacketUtils";
 import { ReactionCollectorResetTimerPacketReq } from "../../../../../Lib/src/packets/interaction/ReactionCollectorResetTimer";
 import { millisecondsToSeconds } from "../../../../../Lib/src/utils/TimeUtils";
+import { HomeFeatures } from "../../../../../Lib/src/types/HomeFeatures";
+import { Language } from "../../../../../Lib/src/Language";
+import { ItemRarity } from "../../../../../Lib/src/constants/ItemConstants";
 
 function getMainMenu(context: PacketContext, interaction: CrowniclesInteraction, packet: ReactionCollectorCreationPacket, collectorTime: number, pseudo: string): CrowniclesNestedMenu {
 	const data = packet.data.data as ReactionCollectorCityData;
@@ -41,6 +47,36 @@ function getMainMenu(context: PacketContext, interaction: CrowniclesInteraction,
 	const selectMenu = new StringSelectMenuBuilder()
 		.setCustomId(ReactionCollectorExitCityReaction.name)
 		.setPlaceholder(i18n.t("commands:report.city.placeholder", { lng }));
+
+	// Owned home option
+	if (data.home.owned) {
+		selectMenu.addOptions({
+			label: i18n.t("commands:report.city.homes.goToOwnedHome", { lng }),
+			description: i18n.t("commands:report.city.homes.goToOwnedHomeDescription", { lng }),
+			value: "HOME_MENU",
+			emoji: CrowniclesIcons.city.home[data.home.owned.level]
+		});
+	}
+
+	// Manage home option
+	if (data.home.manage && (data.home.manage.newPrice || data.home.manage.upgrade || data.home.manage.movePrice)) {
+		selectMenu.addOptions({
+			label: i18n.t("commands:report.city.homes.manageHome", { lng }),
+			description: data.home.manage.newPrice
+				? i18n.t("commands:report.city.homes.manageHomeDescriptionNew", {
+					lng
+				})
+				: data.home.manage.upgrade
+					? i18n.t("commands:report.city.homes.manageHomeDescriptionUpgrade", {
+						lng
+					})
+					: i18n.t("commands:report.city.homes.manageHomeDescriptionMove", {
+						lng
+					}),
+			value: "MANAGE_HOME_MENU",
+			emoji: CrowniclesIcons.city.manageHome
+		});
+	}
 
 	// Enchanter option
 	if (data.enchanter) {
@@ -128,6 +164,16 @@ function getMainMenu(context: PacketContext, interaction: CrowniclesInteraction,
 
 				if (selectedValue === "ENCHANTER_MENU") {
 					await nestedMenus.changeMenu("ENCHANTER_MENU");
+					return;
+				}
+
+				if (selectedValue === "HOME_MENU") {
+					await nestedMenus.changeMenu("HOME_MENU");
+					return;
+				}
+
+				if (selectedValue === "MANAGE_HOME_MENU") {
+					await nestedMenus.changeMenu("MANAGE_HOME_MENU");
 					return;
 				}
 
@@ -427,6 +473,219 @@ function getEnchanterMenu(context: PacketContext, interaction: CrowniclesInterac
 	};
 }
 
+const formatHomeUpgradeChanges = (oldFeatures: HomeFeatures, newFeatures: HomeFeatures, lng: Language): string => {
+	const changes: string[] = [];
+
+	// Chest
+	if (oldFeatures.chestSlots !== newFeatures.chestSlots) {
+		if (oldFeatures.chestSlots === 0) {
+			changes.push(i18n.t("commands:report.city.homes.upgradeChanges.chest", { lng }));
+		}
+		else {
+			changes.push(i18n.t("commands:report.city.homes.upgradeChanges.biggerChest", { lng }));
+		}
+	}
+
+	// Item upgrade rarity
+	if (oldFeatures.upgradeItemMaximumRarity !== newFeatures.upgradeItemMaximumRarity) {
+		if (oldFeatures.upgradeItemMaximumRarity === ItemRarity.BASIC) {
+			changes.push(i18n.t("commands:report.city.homes.upgradeChanges.upgradeItemStation", { lng }));
+		}
+		else {
+			changes.push(i18n.t("commands:report.city.homes.upgradeChanges.betterUpgradeItemStation", { lng }));
+		}
+	}
+
+	// Potion craft rarity
+	if (oldFeatures.craftPotionMaximumRarity !== newFeatures.craftPotionMaximumRarity) {
+		if (oldFeatures.craftPotionMaximumRarity === ItemRarity.BASIC) {
+			changes.push(i18n.t("commands:report.city.homes.upgradeChanges.craftPotionStation", { lng }));
+		}
+		else {
+			changes.push(i18n.t("commands:report.city.homes.upgradeChanges.betterCraftPotionStation", { lng }));
+		}
+	}
+
+	// Bed
+	if (oldFeatures.bedHealthRegeneration !== newFeatures.bedHealthRegeneration) {
+		changes.push(i18n.t("commands:report.city.homes.upgradeChanges.betterBed", { lng }));
+	}
+
+	// Garden plots
+	if (oldFeatures.gardenPlots !== newFeatures.gardenPlots) {
+		if (oldFeatures.gardenPlots === 0) {
+			changes.push(i18n.t("commands:report.city.homes.upgradeChanges.garden", { lng }));
+		}
+		else {
+			changes.push(i18n.t("commands:report.city.homes.upgradeChanges.biggerGarden", { lng }));
+		}
+	}
+
+	// Garden earth quality
+	if (oldFeatures.gardenEarthQuality !== newFeatures.gardenEarthQuality) {
+		changes.push(i18n.t("commands:report.city.homes.upgradeChanges.betterGardenEarth", { lng }));
+	}
+
+	for (let i = 0; i < changes.length; i++) {
+		changes[i] = `- ${changes[i]}`;
+	}
+
+	return changes.join("\n");
+};
+
+function getManageHomeMenu(context: PacketContext, interaction: CrowniclesInteraction, packet: ReactionCollectorCreationPacket, collectorTime: number, pseudo: string): CrowniclesNestedMenu {
+	const data = (packet.data.data as ReactionCollectorCityData).home.manage!;
+	const lng = interaction.userLanguage;
+
+	const title = i18n.t("commands:report.city.homes.notaryTitle", {
+		lng,
+		pseudo
+	});
+	let description = i18n.t("commands:report.city.homes.notaryIntroduction", { lng }) + "\n\n";
+
+	if (data.newPrice) {
+		if (data.newPrice > data.currentMoney) {
+			description += i18n.t("commands:report.city.homes.notaryNewHomeNoMoney", {
+				lng,
+				cost: data.newPrice,
+				missingMoney: data.newPrice - data.currentMoney
+			});
+		}
+		else {
+			description += i18n.t("commands:report.city.homes.notaryNewHomeEnoughMoney", {
+				lng,
+				cost: data.newPrice
+			});
+		}
+	}
+	else if (data.upgrade) {
+		if (data.upgrade.price > data.currentMoney) {
+			description += i18n.t("commands:report.city.homes.notaryUpgradeHomeNoMoney", {
+				lng,
+				cost: data.upgrade.price,
+				missingMoney: data.upgrade.price - data.currentMoney
+			});
+		}
+		else {
+			const upgradeChanges = formatHomeUpgradeChanges(data.upgrade.oldFeatures, data.upgrade.newFeatures, lng);
+			description += i18n.t("commands:report.city.homes.notaryUpgradeHomeEnoughMoney", {
+				lng,
+				cost: data.upgrade.price,
+				upgradeChanges
+			});
+		}
+	}
+	else if (data.movePrice) {
+		if (data.movePrice > data.currentMoney) {
+			description += i18n.t("commands:report.city.homes.notaryMoveHomeNoMoney", {
+				lng,
+				cost: data.movePrice,
+				missingMoney: data.movePrice - data.currentMoney
+			});
+		}
+		else {
+			description += i18n.t("commands:report.city.homes.notaryMoveHomeEnoughMoney", {
+				lng,
+				cost: data.movePrice
+			});
+		}
+	}
+	else {
+		console.warn("Manage home menu opened without any available action");
+	}
+
+	const selectMenu = new StringSelectMenuBuilder()
+		.setCustomId("MANAGE_HOME_MENU")
+		.setPlaceholder(i18n.t("commands:report.city.placeholder", { lng }));
+
+	// Add action option based on what's available
+	if (data.newPrice && data.newPrice <= data.currentMoney) {
+		selectMenu.addOptions({
+			label: i18n.t("commands:report.city.homes.buyHome", { lng }),
+			value: "BUY_HOME",
+			emoji: CrowniclesIcons.collectors.accept
+		});
+	}
+	else if (data.upgrade && data.upgrade.price <= data.currentMoney) {
+		selectMenu.addOptions({
+			label: i18n.t("commands:report.city.homes.upgradeHome", { lng }),
+			value: "UPGRADE_HOME",
+			emoji: CrowniclesIcons.collectors.accept
+		});
+	}
+	else if (data.movePrice && data.movePrice <= data.currentMoney) {
+		selectMenu.addOptions({
+			label: i18n.t("commands:report.city.homes.moveHome", { lng }),
+			value: "MOVE_HOME",
+			emoji: CrowniclesIcons.collectors.accept
+		});
+	}
+
+	// Back option
+	selectMenu.addOptions({
+		label: selectMenu.options.length === 0 ? i18n.t("commands:report.city.homes.leaveNotary", { lng }) : i18n.t("commands:report.city.homes.refuseAndLeaveNotary", { lng }),
+		value: "BACK_TO_CITY",
+		emoji: selectMenu.options.length === 0 ? CrowniclesIcons.city.exit : CrowniclesIcons.collectors.refuse
+	});
+
+	return {
+		embed: new CrowniclesEmbed()
+			.formatAuthor(title, interaction.user)
+			.setDescription(description),
+		components: [new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(selectMenu)],
+		createCollector: (nestedMenus, message): CrowniclesNestedMenuCollector => {
+			const selectMenuCollector = message.createMessageComponentCollector({ time: collectorTime });
+
+			selectMenuCollector.on("collect", async (selectInteraction: StringSelectMenuInteraction) => {
+				if (selectInteraction.user.id !== interaction.user.id) {
+					await sendInteractionNotForYou(selectInteraction.user, selectInteraction, lng);
+					return;
+				}
+
+				const selectedValue = selectInteraction.values[0];
+
+				if (selectedValue === "BUY_HOME") {
+					await selectInteraction.deferReply();
+					const reactionIndex = packet.reactions.findIndex(
+						reaction => reaction.type === ReactionCollectorCityBuyHomeReaction.name
+					);
+					if (reactionIndex !== -1) {
+						DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, selectInteraction, reactionIndex);
+					}
+				}
+				else if (selectedValue === "UPGRADE_HOME") {
+					await selectInteraction.deferReply();
+					const reactionIndex = packet.reactions.findIndex(
+						reaction => reaction.type === ReactionCollectorCityUpgradeHomeReaction.name
+					);
+					if (reactionIndex !== -1) {
+						DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, selectInteraction, reactionIndex);
+					}
+				}
+				else if (selectedValue === "MOVE_HOME") {
+					await selectInteraction.deferReply();
+					const reactionIndex = packet.reactions.findIndex(
+						reaction => reaction.type === ReactionCollectorCityMoveHomeReaction.name
+					);
+					if (reactionIndex !== -1) {
+						DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, selectInteraction, reactionIndex);
+					}
+				}
+				else if (selectedValue === "BACK_TO_CITY") {
+					await selectInteraction.deferUpdate();
+					await nestedMenus.changeToMainMenu();
+				}
+			});
+
+			return selectMenuCollector;
+		}
+	};
+}
+
+function getHomeMenu(): CrowniclesNestedMenu {
+	throw new Error("Not implemented yet"); // todo
+}
+
 export class ReportCityMenu {
 	public static async handleCityCollector(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
 		const interaction = DiscordCache.getInteraction(context.discord!.interaction);
@@ -443,6 +702,15 @@ export class ReportCityMenu {
 		}
 		if ((packet.data.data as ReactionCollectorCityData).enchanter) {
 			menus.set("ENCHANTER_MENU", getEnchanterMenu(context, interaction, packet, collectorTime, pseudo));
+		}
+
+		/*
+		 *if ((packet.data.data as ReactionCollectorCityData).home.owned) {
+		 *menus.set("HOME_MENU", getHomeMenu());
+		 *}
+		 */
+		if ((packet.data.data as ReactionCollectorCityData).home.manage) {
+			menus.set("MANAGE_HOME_MENU", getManageHomeMenu(context, interaction, packet, collectorTime, pseudo));
 		}
 
 		const nestedMenus = new CrowniclesNestedMenus(

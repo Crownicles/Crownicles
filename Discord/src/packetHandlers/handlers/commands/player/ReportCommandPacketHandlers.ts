@@ -1,6 +1,7 @@
 import { packetHandler } from "../../../PacketHandler";
 import {
 	CommandReportBigEventResultRes,
+	CommandReportBuyHomeRes,
 	CommandReportChooseDestinationCityRes,
 	CommandReportEatInnMealCooldownRes,
 	CommandReportEatInnMealRes,
@@ -9,19 +10,24 @@ import {
 	CommandReportItemCannotBeEnchantedRes,
 	CommandReportItemEnchantedRes,
 	CommandReportMonsterRewardRes,
+	CommandReportMoveHomeRes,
 	CommandReportNotEnoughMoneyRes,
 	CommandReportRefusePveFightRes,
 	CommandReportSleepRoomRes,
 	CommandReportStayInCity,
-	CommandReportTravelSummaryRes
+	CommandReportTravelSummaryRes,
+	CommandReportUpgradeHomeRes
 } from "../../../../../../Lib/src/packets/commands/CommandReportPacket";
 import { PacketContext } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	displayMonsterReward,
+	handleBuyHome,
 	handleChooseDestinationCity,
 	handleEatInnMeal,
 	handleInnRoom,
 	handleItemEnchanted,
+	handleMoveHome,
+	handleUpgradeHome,
 	refusePveFight,
 	reportResult,
 	reportTravelSummary,
@@ -105,5 +111,20 @@ export default class ReportCommandPacketHandlers {
 	@packetHandler(CommandReportItemCannotBeEnchantedRes)
 	async reportItemCannotBeEnchantedRes(context: PacketContext, _packet: CommandReportItemCannotBeEnchantedRes): Promise<void> {
 		await handleClassicError(context, "commands:report.city.enchanter.cantEnchant");
+	}
+
+	@packetHandler(CommandReportBuyHomeRes)
+	async reportBuyHomeRes(context: PacketContext, packet: CommandReportBuyHomeRes): Promise<void> {
+		await handleBuyHome(packet, context);
+	}
+
+	@packetHandler(CommandReportUpgradeHomeRes)
+	async reportUpgradeHomeRes(context: PacketContext, packet: CommandReportUpgradeHomeRes): Promise<void> {
+		await handleUpgradeHome(packet, context);
+	}
+
+	@packetHandler(CommandReportMoveHomeRes)
+	async reportMoveHomeRes(context: PacketContext, packet: CommandReportMoveHomeRes): Promise<void> {
+		await handleMoveHome(packet, context);
 	}
 }

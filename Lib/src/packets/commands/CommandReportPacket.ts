@@ -154,3 +154,18 @@ export class CommandReportItemEnchantedRes extends CrowniclesPacket {
 
 	enchantmentType!: string;
 }
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportBuyHomeRes extends CrowniclesPacket {
+	cost!: number;
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportUpgradeHomeRes extends CrowniclesPacket {
+	cost!: number;
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportMoveHomeRes extends CrowniclesPacket {
+	cost!: number;
+}
