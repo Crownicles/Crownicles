@@ -278,14 +278,14 @@ export default class SmallEventsHandler {
 			embeds: [
 				new CrowniclesSmallEventEmbed(
 					"lottery",
-					i18n.t(`smallEvents:lottery.${packet.level}.success`, {
+					`${i18n.t(`smallEvents:lottery.${packet.level}.success`, {
 						lng,
 						lostTime: packet.lostTime,
 						lostTimeDisplay
-					}) + i18n.t(`smallEvents:lottery.rewardTypeText.${packet.winReward}`, {
+					})}${i18n.t(`smallEvents:lottery.rewardTypeText.${packet.winReward}`, {
 						lng,
 						reward: packet.winAmount
-					}),
+					})}`,
 					interaction.user,
 					lng
 				)
@@ -465,11 +465,10 @@ export default class SmallEventsHandler {
 			embeds: [
 				new CrowniclesSmallEventEmbed(
 					"winGuildXP",
-					StringUtils.getRandomTranslation("smallEvents:winGuildXP.stories", lng, { guild: packet.guildName })
-					+ i18n.t("smallEvents:winGuildXP.end", {
+					`${StringUtils.getRandomTranslation("smallEvents:winGuildXP.stories", lng, { guild: packet.guildName })}${i18n.t("smallEvents:winGuildXP.end", {
 						lng,
 						xp: packet.amount
-					}),
+					})}`,
 					interaction.user,
 					lng
 				)
@@ -582,12 +581,10 @@ export default class SmallEventsHandler {
 			embeds: [
 				new CrowniclesSmallEventEmbed(
 					"winPersonalXP",
-					getRandomSmallEventIntro(lng)
-					+ StringUtils.getRandomTranslation("smallEvents:winPersonalXP.stories", lng)
-					+ i18n.t("smallEvents:winPersonalXP.end", {
+					`${getRandomSmallEventIntro(lng)}${StringUtils.getRandomTranslation("smallEvents:winPersonalXP.stories", lng)}${i18n.t("smallEvents:winPersonalXP.end", {
 						lng,
 						xp: packet.amount
-					}),
+					})}`,
 					interaction.user,
 					lng
 				)
@@ -1047,13 +1044,33 @@ export default class SmallEventsHandler {
 		}
 		const lng = context.discord!.language;
 
+		const description = this.getPetFoodDescription(packet, lng);
+
+		const embed = new CrowniclesSmallEventEmbed(
+			"petFood",
+			description,
+			interaction.user,
+			lng
+		);
+
+		await interaction.editReply({
+			embeds: [embed], components: []
+		});
+	}
+
+	/**
+	 * Build the description text for pet food small event outcome
+	 * @param packet
+	 * @param lng
+	 */
+	private getPetFoodDescription(packet: SmallEventPetFoodPacket, lng: Language): string {
 		let foodName = "";
 		if ([
 			"found_by_player",
 			"found_by_pet",
 			"found_anyway"
 		].includes(packet.outcome)) {
-			const foodNames = i18n.t("smallEvents:petFood.foodNames." + packet.food, {
+			const foodNames = i18n.t(`smallEvents:petFood.foodNames.${packet.food}`, {
 				lng, returnObjects: true
 			}) as string[];
 			foodName = RandomUtils.crowniclesRandom.pick(foodNames);
@@ -1067,34 +1084,24 @@ export default class SmallEventsHandler {
 			"found_anyway",
 			"pet_failed"
 		].includes(packet.outcome)) {
-			outcomeKey = packet.outcome + "_soup";
+			outcomeKey = `${packet.outcome}_soup`;
 		}
 
-		let description = i18n.t("smallEvents:petFood.outcomes." + outcomeKey, {
+		let description = i18n.t(`smallEvents:petFood.outcomes.${outcomeKey}`, {
 			lng, foodName
 		});
 
 		if (packet.outcome === "found_by_player" || packet.outcome === "found_by_pet" || packet.outcome === "found_anyway") {
 			if (packet.loveChange > 0) {
-				description += "\n" + i18n.t("smallEvents:petFood.love.plus", { lng });
+				description += `\n${i18n.t("smallEvents:petFood.love.plus", { lng })}`;
 			}
 			else if (packet.loveChange < 0) {
-				description += "\n" + i18n.t("smallEvents:petFood.love.minus", { lng });
+				description += `\n${i18n.t("smallEvents:petFood.love.minus", { lng })}`;
 			}
 			else {
-				description += "\n" + i18n.t("smallEvents:petFood.love.neutral", { lng });
+				description += `\n${i18n.t("smallEvents:petFood.love.neutral", { lng })}`;
 			}
 		}
-
-		const embed = new CrowniclesSmallEventEmbed(
-			"petFood",
-			description,
-			interaction.user,
-			lng
-		);
-
-		await interaction.editReply({
-			embeds: [embed], components: []
-		});
+		return description;
 	}
 }
