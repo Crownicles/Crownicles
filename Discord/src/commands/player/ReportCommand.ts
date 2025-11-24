@@ -248,7 +248,7 @@ export async function chooseDestinationCollector(context: PacketContext, packet:
 		lng,
 		pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
 	}), interaction.user);
-	embed.setDescription(i18n.t("commands:report.chooseDestinationIndications", { lng }) + "\n\n");
+	embed.setDescription(`${i18n.t("commands:report.chooseDestinationIndications", { lng })}\n\n`);
 
 	return await DiscordCollectorUtils.createChoiceListCollector(interaction, {
 		packet,
