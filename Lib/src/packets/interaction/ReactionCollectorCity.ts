@@ -7,6 +7,7 @@ import {
 } from "./ReactionCollectorPacket";
 import { MainItemDetails } from "../../types/MainItemDetails";
 import { ItemCategory } from "../../constants/ItemConstants";
+import { HomeFeatures } from "../../types/HomeFeatures";
 
 export class ReactionCollectorCityData extends ReactionCollectorData {
 	mapTypeId!: string;
@@ -59,6 +60,22 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 		};
 		mageReduction: boolean;
 	};
+
+	home!: {
+		owned?: {
+			level: number;
+		};
+		manage?: {
+			newPrice?: number;
+			upgrade?: {
+				price: number;
+				oldFeatures: HomeFeatures;
+				newFeatures: HomeFeatures;
+			};
+			movePrice?: number;
+			currentMoney: number;
+		};
+	};
 }
 
 export class ReactionCollectorExitCityReaction extends ReactionCollectorReaction {}
@@ -92,6 +109,12 @@ export class ReactionCollectorEnchantReaction extends ReactionCollectorReaction 
 export class ReactionCollectorCityShopReaction extends ReactionCollectorReaction {
 	shopId!: string;
 }
+
+export class ReactionCollectorCityBuyHomeReaction extends ReactionCollectorReaction {}
+
+export class ReactionCollectorCityUpgradeHomeReaction extends ReactionCollectorReaction {}
+
+export class ReactionCollectorCityMoveHomeReaction extends ReactionCollectorReaction {}
 
 export class ReactionCollectorCity extends ReactionCollector {
 	private readonly data!: ReactionCollectorCityData;
@@ -127,6 +150,14 @@ export class ReactionCollectorCity extends ReactionCollector {
 				shopId: shop.shopId
 			})) || [];
 
+		const homeReaction = this.data.home.manage?.newPrice
+			? [this.buildReaction(ReactionCollectorCityBuyHomeReaction, {})]
+			: this.data.home.manage?.upgrade
+				? [this.buildReaction(ReactionCollectorCityUpgradeHomeReaction, {})]
+				: this.data.home.manage?.movePrice
+					? [this.buildReaction(ReactionCollectorCityMoveHomeReaction, {})]
+					: [];
+
 		return {
 			id,
 			endTime,
@@ -136,7 +167,8 @@ export class ReactionCollectorCity extends ReactionCollector {
 				...mealsReactions,
 				...roomsReactions,
 				...enchantReactions,
-				...shopReactions
+				...shopReactions,
+				...homeReaction
 			],
 			data: this.buildData(ReactionCollectorCityData, {
 				...this.data

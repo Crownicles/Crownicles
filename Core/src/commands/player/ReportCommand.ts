@@ -3,6 +3,7 @@ import {
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	CommandReportBigEventResultRes,
+	CommandReportBuyHomeRes,
 	CommandReportChooseDestinationCityRes,
 	CommandReportChooseDestinationRes,
 	CommandReportEatInnMealCooldownRes,
@@ -12,12 +13,14 @@ import {
 	CommandReportItemCannotBeEnchantedRes,
 	CommandReportItemEnchantedRes,
 	CommandReportMonsterRewardRes,
+	CommandReportMoveHomeRes,
 	CommandReportNotEnoughMoneyRes,
 	CommandReportPacketReq,
 	CommandReportRefusePveFightRes,
 	CommandReportSleepRoomRes,
 	CommandReportStayInCity,
-	CommandReportTravelSummaryRes
+	CommandReportTravelSummaryRes,
+	CommandReportUpgradeHomeRes
 } from "../../../../Lib/src/packets/commands/CommandReportPacket";
 import {
 	Player, Players
@@ -85,7 +88,11 @@ import {
 } from "../../data/City";
 import {
 	ReactionCollectorCity,
+	ReactionCollectorCityBuyHomeReaction,
+	ReactionCollectorCityData,
+	ReactionCollectorCityMoveHomeReaction,
 	ReactionCollectorCityShopReaction,
+	ReactionCollectorCityUpgradeHomeReaction,
 	ReactionCollectorEnchantReaction,
 	ReactionCollectorExitCityReaction,
 	ReactionCollectorInnMealReaction,
@@ -108,6 +115,8 @@ import {
 	getMoneyShopItem,
 	getValuableItemShopItem
 } from "../../core/utils/MissionShopItems";
+import { Homes } from "../../core/database/game/models/Home";
+import { HomeLevel } from "../../../../Lib/src/types/HomeLevel";
 
 export default class ReportCommand {
 	@commandRequires(CommandReportPacketReq, {
@@ -296,6 +305,96 @@ async function handleEnchantReaction(player: Player, reaction: ReactionCollector
 	}));
 }
 
+async function handleBuyHomeReaction(player: Player, city: City, data: ReactionCollectorCityData, response: CrowniclesPacket[]): Promise<void> {
+	await player.reload();
+
+	if (!data.home.manage.newPrice || data.home.manage.newPrice > player.money) {
+		response.push(makePacket(CommandReportNotEnoughMoneyRes, { missingMoney: data.home.manage.newPrice - player.money }));
+		return;
+	}
+
+	await Promise.all([
+		player.spendMoney({
+			response,
+			amount: data.home.manage.newPrice,
+			reason: NumberChangeReason.BUY_HOME
+		}),
+		Homes.createOrUpdateHome(player.id, city.id, HomeLevel.getInitialLevel().level)
+	]);
+
+	await player.save();
+
+	response.push(makePacket(CommandReportBuyHomeRes, {
+		cost: data.home.manage.newPrice
+	}));
+}
+
+async function handleUpgradeHomeReaction(player: Player, city: City, data: ReactionCollectorCityData, response: CrowniclesPacket[]): Promise<void> {
+	await player.reload();
+
+	if (!data.home.manage.upgrade || data.home.manage.upgrade.price > player.money) {
+		response.push(makePacket(CommandReportNotEnoughMoneyRes, { missingMoney: data.home.manage.upgrade.price - player.money }));
+		return;
+	}
+
+	const home = await Homes.getOfPlayer(player.id);
+
+	if (!home || home.cityId !== city.id) {
+		CrowniclesLogger.error(`Player ${player.keycloakId} tried to upgrade a home he doesn't own in city ${city.id}. It shouldn't happen because the player must not be able to switch while in the collector.`);
+		return;
+	}
+
+	home.level = HomeLevel.getNextUpgrade(home.getLevel(), player.level).level;
+
+	await player.spendMoney({
+		response,
+		amount: data.home.manage.upgrade.price,
+		reason: NumberChangeReason.UPGRADE_HOME
+	});
+
+	await Promise.all([
+		home.save(),
+		player.save()
+	]);
+
+	response.push(makePacket(CommandReportUpgradeHomeRes, {
+		cost: data.home.manage.upgrade.price
+	}));
+}
+
+async function handleMoveHomeReaction(player: Player, city: City, data: ReactionCollectorCityData, response: CrowniclesPacket[]): Promise<void> {
+	await player.reload();
+
+	if (!data.home.manage.movePrice || data.home.manage.movePrice > player.money) {
+		response.push(makePacket(CommandReportNotEnoughMoneyRes, { missingMoney: data.home.manage.movePrice - player.money }));
+		return;
+	}
+
+	const home = await Homes.getOfPlayer(player.id);
+
+	if (!home) {
+		CrowniclesLogger.error(`Player ${player.keycloakId} tried to move a home he doesn't own. It shouldn't happen because the player must not be able to switch while in the collector.`);
+		return;
+	}
+
+	home.cityId = city.id;
+
+	await player.spendMoney({
+		response,
+		amount: data.home.manage.movePrice,
+		reason: NumberChangeReason.MOVE_HOME
+	});
+
+	await Promise.all([
+		home.save(),
+		player.save()
+	]);
+
+	response.push(makePacket(CommandReportMoveHomeRes, {
+		cost: data.home.manage.movePrice
+	}));
+}
+
 function cityCollectorEndCallback(context: PacketContext, player: Player, forceSpecificEvent: number, city: City): EndCallback {
 	return async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
 		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.REPORT_COMMAND);
@@ -317,6 +416,15 @@ function cityCollectorEndCallback(context: PacketContext, player: Player, forceS
 					break;
 				case ReactionCollectorEnchantReaction.name:
 					await handleEnchantReaction(player, firstReaction.reaction.data as ReactionCollectorEnchantReaction, response);
+					break;
+				case ReactionCollectorCityBuyHomeReaction.name:
+					await handleBuyHomeReaction(player, city, collector.creationPacket.data.data as ReactionCollectorCityData, response);
+					break;
+				case ReactionCollectorCityUpgradeHomeReaction.name:
+					await handleUpgradeHomeReaction(player, city, collector.creationPacket.data.data as ReactionCollectorCityData, response);
+					break;
+				case ReactionCollectorCityMoveHomeReaction.name:
+					await handleMoveHomeReaction(player, city, collector.creationPacket.data.data as ReactionCollectorCityData, response);
 					break;
 				case ReactionCollectorCityShopReaction.name:
 					await handleCityShopReaction(
@@ -390,8 +498,10 @@ async function sendCityCollector(context: PacketContext, response: CrowniclesPac
 	const enchantmentId = isEnchanterHere ? await Settings.ENCHANTER_ENCHANTMENT_ID.getValue() : null;
 	const isPlayerMage = player.class === ClassConstants.CLASSES_ID.MYSTIC_MAGE;
 	const enchantment = ItemEnchantment.getById(enchantmentId);
+	const home = await Homes.getOfPlayer(player.id);
+	const nextHomeUpgrade = home ? HomeLevel.getNextUpgrade(home.getLevel(), player.level) : null;
 
-	const collector = new ReactionCollectorCity({
+	const collectorData: ReactionCollectorCityData = {
 		enterCityTimestamp: TravelTime.getTravelDataSimplified(player, currentDate).travelStartTime,
 		mapTypeId: MapLocationDataController.instance.getById(player.getDestinationId()).type,
 		mapLocationId: player.getDestinationId(),
@@ -433,8 +543,31 @@ async function sendCityCollector(context: PacketContext, response: CrowniclesPac
 				enchantmentType: enchantment.kind.type.id,
 				mageReduction: isPlayerMage
 			}
-			: null
-	});
+			: null,
+		home: {
+			owned: home && home.cityId === city.id
+				? { level: home.level }
+				: null,
+			manage: {
+				newPrice: home ? null : city.getHomeLevelPrice(HomeLevel.getInitialLevel(), await Homes.getHomesCount()),
+				upgrade: nextHomeUpgrade && home && home.cityId === city.id
+					? {
+						price: city.getHomeLevelPrice(nextHomeUpgrade, await Homes.getHomesCount()),
+						oldFeatures: home.getLevel().features,
+						newFeatures: nextHomeUpgrade.features
+					}
+					: null,
+				movePrice: home && home.cityId !== city.id ? city.getHomeLevelPrice(home.getLevel(), await Homes.getHomesCount()) : null,
+				currentMoney: player.money
+			}
+		}
+	};
+
+	if (!collectorData.home.manage.newPrice && !collectorData.home.manage.upgrade && !collectorData.home.manage.movePrice) {
+		delete collectorData.home.manage;
+	}
+
+	const collector = new ReactionCollectorCity(collectorData);
 
 	const collectorPacket = new ReactionCollectorInstance(
 		collector,

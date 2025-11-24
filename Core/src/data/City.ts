@@ -1,6 +1,8 @@
 import { DataControllerString } from "./DataController";
 import { Data } from "./Data";
 import { RandomUtils } from "../../../Lib/src/utils/RandomUtils";
+import { HomeConstants } from "../../../Lib/src/constants/HomeConstants";
+import { HomeLevel } from "../../../Lib/src/types/HomeLevel";
 
 export class InnMeal {
 	public readonly id: string;
@@ -51,6 +53,31 @@ export class City extends Data<string> {
 		}
 
 		return meals;
+	}
+
+	public getHomeLevelPrice(homeLevel: HomeLevel, cityPopulationCounts: {
+		cityId: string;
+		count: number;
+	}[]): number {
+		// Get population values
+		const totalPopulation = cityPopulationCounts.reduce((sum, city) => sum + city.count, 0);
+		const cityPopulation = cityPopulationCounts.find(city => city.cityId === this.id)?.count || 0;
+		const isTheMostPopularCity = cityPopulationCounts.length === 0 || cityPopulation === Math.max(...cityPopulationCounts.map(city => city.count));
+
+		// Calculate ponderation
+		let ponderation = totalPopulation === 0 ? 0 : cityPopulation / totalPopulation;
+		if (ponderation < HomeConstants.PONDERATION_MINIMUM) {
+			ponderation = HomeConstants.PONDERATION_MINIMUM;
+		}
+
+		// Calculate price
+		let price = homeLevel.cost;
+		price *= ponderation;
+		if (isTheMostPopularCity) {
+			price *= HomeConstants.MOST_POPULATED_CITY_PRICE_MALUS;
+		}
+
+		return Math.floor(price);
 	}
 }
 
