@@ -274,6 +274,20 @@ export abstract class SmallEventConstants {
 	};
 
 	static readonly PET_FOOD = {
+		SMALL_EVENT_NAME: "petFood",
+		OUTCOMES: {
+			FOUND_BY_PLAYER: "found_by_player",
+			FOUND_BY_PET: "found_by_pet",
+			FOUND_ANYWAY: "found_anyway",
+			NOTHING: "nothing",
+			PLAYER_FAILED: "player_failed",
+			PET_FAILED: "pet_failed"
+		},
+		TIME_TRAVEL_TIME: -5,
+		FEED_DELAY_MULTIPLIER: 3,
+		DECAY_FACTOR: 0.003,
+		MIN_PROBABILITY: 0.1,
+		MAX_PROBABILITY: 1.0,
 		BAD_SMELL_TYPES: ["de", "mo"],
 		VEGETARIAN_TYPES: [
 			"fo",
