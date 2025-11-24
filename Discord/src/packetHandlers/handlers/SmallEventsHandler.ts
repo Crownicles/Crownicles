@@ -3,7 +3,6 @@ import { PacketContext } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { SmallEventAdvanceTimePacket } from "../../../../Lib/src/packets/smallEvents/SmallEventAdvanceTimePacket";
 import { DiscordCache } from "../../bot/DiscordCache";
 import { CrowniclesSmallEventEmbed } from "../../messages/CrowniclesSmallEventEmbed";
-import { Language } from "../../../../Lib/src/Language";
 import {
 	escapeUsername, StringUtils
 } from "../../utils/StringUtils";
@@ -34,7 +33,12 @@ import {
 	SmallEventInteractOtherPlayersPacket,
 	SmallEventInteractOtherPlayersRefuseToGivePoorPacket
 } from "../../../../Lib/src/packets/smallEvents/SmallEventInteractOtherPlayers";
-import { interactOtherPlayerGetPlayerDisplay } from "../../smallEvents/interactOtherPlayers";
+import {
+	handleEffectInteraction,
+	handleNoPlayerInteraction,
+	handleOtherInteractions,
+	interactOtherPlayerGetPlayerDisplay
+} from "../../smallEvents/interactOtherPlayers";
 import { SmallEventLeagueRewardPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventLeagueReward";
 import {
 	minutesDisplay, printTimeBeforeDate
@@ -87,7 +91,6 @@ import {
 	SmallEventEpicItemShopRefusePacket
 } from "../../../../Lib/src/packets/smallEvents/SmallEventEpicItemShopPacket";
 import { Badge } from "../../../../Lib/src/types/Badge";
-import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
 import { SmallEventDwarfPetFanPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventDwarfPetFanPacket";
 import { SmallEventInfoFightPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventInfoFightPacket";
 import { infoFightResult } from "../../smallEvents/infoFight";
@@ -291,82 +294,6 @@ export default class SmallEventsHandler {
 		});
 	}
 
-	/**
-	 * Handles the case where no player is found for the interaction
-	 * @param interaction
-	 * @param lng
-	 */
-	private static async handleNoPlayerInteraction(interaction: CrowniclesInteraction, lng: Language): Promise<void> {
-		await interaction.editReply({
-			embeds: [
-				new CrowniclesSmallEventEmbed(
-					"interactOtherPlayers",
-					StringUtils.getRandomTranslation("smallEvents:interactOtherPlayers.no_one", lng),
-					interaction.user,
-					lng
-				)
-			]
-		});
-	}
-
-	/**
-	 * Handles the case where the interaction is an effect
-	 * @param interaction
-	 * @param packet
-	 * @param lng
-	 * @param playerDisplay
-	 */
-	private static async handleEffectInteraction(interaction: CrowniclesInteraction, packet: SmallEventInteractOtherPlayersPacket, lng: Language, playerDisplay: string): Promise<void> {
-		await interaction.editReply({
-			embeds: [
-				new CrowniclesSmallEventEmbed(
-					"interactOtherPlayers",
-					StringUtils.getRandomTranslation(`smallEvents:interactOtherPlayers.effect.${packet.data!.effectId}`, lng, { playerDisplay }),
-					interaction.user,
-					lng
-				)
-			]
-		});
-	}
-
-	/**
-	 * Handles the case where the interaction is not an effect
-	 * @param interaction
-	 * @param packet
-	 * @param lng
-	 * @param playerDisplay
-	 */
-	private static async handleOtherInteractions(interaction: CrowniclesInteraction, packet: SmallEventInteractOtherPlayersPacket, lng: Language, playerDisplay: string): Promise<void> {
-		const hasPetInfo = packet.data!.petId && packet.data!.petSex;
-		await interaction.editReply({
-			embeds: [
-				new CrowniclesSmallEventEmbed(
-					"interactOtherPlayers",
-					StringUtils.getRandomTranslation(
-						`smallEvents:interactOtherPlayers.${InteractOtherPlayerInteraction[packet.playerInteraction!].toLowerCase()}`,
-						lng,
-						{
-							playerDisplay,
-							level: packet.data!.level,
-							class: DisplayUtils.getClassDisplay(packet.data!.classId, lng),
-							classPlural: DisplayUtils.getClassDisplay(packet.data!.classId, lng, true),
-							advice: StringUtils.getRandomTranslation("advices:advices", lng),
-							petEmote: hasPetInfo ? DisplayUtils.getPetIcon(packet.data!.petId!, packet.data!.petSex!) : "",
-							petName: hasPetInfo ? DisplayUtils.getPetNicknameOrTypeName(packet.data!.petName ?? null, packet.data!.petId!, packet.data!.petSex!, lng) : "",
-							guildName: packet.data!.guildName,
-							weapon: DisplayUtils.getWeaponDisplay(packet.data!.weaponId, lng),
-							armor: DisplayUtils.getArmorDisplay(packet.data!.armorId, lng),
-							object: DisplayUtils.getObjectDisplay(packet.data!.objectId, lng),
-							potion: DisplayUtils.getPotionDisplay(packet.data!.potionId, lng)
-						}
-					),
-					interaction.user,
-					lng
-				)
-			]
-		});
-	}
-
 	@packetHandler(SmallEventInteractOtherPlayersPacket)
 	async smallEventInteractOtherPlayers(context: PacketContext, packet: SmallEventInteractOtherPlayersPacket): Promise<void> {
 		const interaction = DiscordCache.getInteraction(context.discord!.interaction);
@@ -376,7 +303,7 @@ export default class SmallEventsHandler {
 		const lng = interaction.userLanguage;
 
 		if (!packet.keycloakId) {
-			await SmallEventsHandler.handleNoPlayerInteraction(interaction, lng);
+			await handleNoPlayerInteraction(interaction, lng);
 			return;
 		}
 
@@ -387,11 +314,11 @@ export default class SmallEventsHandler {
 		const playerDisplay = await interactOtherPlayerGetPlayerDisplay(packet.keycloakId, packet.data.rank, lng);
 
 		if (packet.playerInteraction === InteractOtherPlayerInteraction.EFFECT) {
-			await SmallEventsHandler.handleEffectInteraction(interaction, packet, lng, playerDisplay);
+			await handleEffectInteraction(interaction, packet, lng, playerDisplay);
 			return;
 		}
 
-		await SmallEventsHandler.handleOtherInteractions(interaction, packet, lng, playerDisplay);
+		await handleOtherInteractions(interaction, packet, lng, playerDisplay);
 	}
 
 	@packetHandler(SmallEventInteractOtherPlayersAcceptToGivePoorPacket)
