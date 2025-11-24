@@ -1048,25 +1048,40 @@ export default class SmallEventsHandler {
 		const lng = context.discord!.language;
 
 		let foodName = "";
-		if (["found_by_player", "found_by_pet", "found_anyway"].includes(packet.outcome)) {
-			const foodNames = i18n.t("smallEvents:petFood.foodNames." + packet.food, { lng, returnObjects: true }) as string[];
+		if ([
+			"found_by_player",
+			"found_by_pet",
+			"found_anyway"
+		].includes(packet.outcome)) {
+			const foodNames = i18n.t("smallEvents:petFood.foodNames." + packet.food, {
+				lng, returnObjects: true
+			}) as string[];
 			foodName = RandomUtils.crowniclesRandom.pick(foodNames);
 		}
-		
+
 		// Use soup-specific outcomes when foodType is soup
 		let outcomeKey = packet.outcome;
-		if (packet.food === "soup" && ["found_by_player", "found_by_pet", "found_anyway", "pet_failed"].includes(packet.outcome)) {
+		if (packet.food === "soup" && [
+			"found_by_player",
+			"found_by_pet",
+			"found_anyway",
+			"pet_failed"
+		].includes(packet.outcome)) {
 			outcomeKey = packet.outcome + "_soup";
 		}
-		
-		let description = i18n.t("smallEvents:petFood.outcomes." + outcomeKey, { lng, foodName });
-		
+
+		let description = i18n.t("smallEvents:petFood.outcomes." + outcomeKey, {
+			lng, foodName
+		});
+
 		if (packet.outcome === "found_by_player" || packet.outcome === "found_by_pet" || packet.outcome === "found_anyway") {
 			if (packet.loveChange > 0) {
 				description += "\n" + i18n.t("smallEvents:petFood.love.plus", { lng });
-			} else if (packet.loveChange < 0) {
+			}
+			else if (packet.loveChange < 0) {
 				description += "\n" + i18n.t("smallEvents:petFood.love.minus", { lng });
-			} else {
+			}
+			else {
 				description += "\n" + i18n.t("smallEvents:petFood.love.neutral", { lng });
 			}
 		}
@@ -1078,6 +1093,8 @@ export default class SmallEventsHandler {
 			lng
 		);
 
-		await interaction.editReply({ embeds: [embed], components: [] });
+		await interaction.editReply({
+			embeds: [embed], components: []
+		});
 	}
 }
