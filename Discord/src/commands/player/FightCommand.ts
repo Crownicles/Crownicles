@@ -46,6 +46,11 @@ import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
 
 const buggedFights = new Set<string>();
 
+/**
+ * Mark a fight as bugged and request cancellation from the backend
+ * @param context - Packet context
+ * @param fightId - The identifier of the bugged fight
+ */
 function fightBugged(context: PacketContext, fightId: string): void {
 	buggedFights.add(fightId);
 	PacketUtils.sendPacketToBackend(context, makePacket(CommandFightCancelPacketReq, {
@@ -54,6 +59,12 @@ function fightBugged(context: PacketContext, fightId: string): void {
 	CrowniclesLogger.error("Fight bugged, cancelling fight");
 }
 
+/**
+ * Create the fight acceptance/refusal collector for initiating a fight
+ * @param context - Packet context
+ * @param packet - Reaction collector creation packet
+ * @returns The collector instance or null if creation failed
+ */
 export async function createFightCollector(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
 	await interaction.deferReply();
@@ -105,6 +116,10 @@ export async function createFightCollector(context: PacketContext, packet: React
 	});
 }
 
+/**
+ * Handle the player refusing to start a fight
+ * @param context - Packet context
+ */
 export async function handleCommandFightRefusePacketRes(context: PacketContext): Promise<void> {
 	const originalInteraction = DiscordCache.getInteraction(context.discord!.interaction!);
 	if (!originalInteraction) {
@@ -611,6 +626,12 @@ export async function handleFightReward(context: PacketContext, packet: FightRew
 	await interaction.channel?.send({ embeds: [embed] });
 }
 
+/**
+ * Prepare the fight command packet for the requested player
+ * @param interaction - The Discord interaction
+ * @param user - The Keycloak user initiating the fight
+ * @returns The fight packet or null if player preparation failed
+ */
 async function getPacket(interaction: CrowniclesInteraction, user: KeycloakUser): Promise<CommandFightPacketReq | null> {
 	const player = await PacketUtils.prepareAskedPlayer(interaction, user);
 	if (!player || !player.keycloakId) {

@@ -21,6 +21,12 @@ export class ReactionCollectorPetFoodSmallEvent extends ReactionCollector {
 		this.foodType = foodType;
 	}
 
+	/**
+	 * Create the packet data for the pet food reaction collector
+	 * @param id - Collector identifier
+	 * @param endTime - Timestamp when the collector expires
+	 * @returns The reaction collector creation packet
+	 */
 	creationPacket(id: string, endTime: number): ReactionCollectorCreationPacket {
 		return {
 			id,
