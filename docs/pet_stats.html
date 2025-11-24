@@ -1,0 +1,121 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crownicles - Statistiques des Familiers</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+    <style>
+        body { padding: 20px; background-color: #f8f9fa; }
+        .container { background-color: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .rarity-1 { color: #888; } /* Common */
+        .rarity-2 { color: #28a745; } /* Uncommon */
+        .rarity-3 { color: #007bff; } /* Rare */
+        .rarity-4 { color: #6f42c1; } /* Special */
+        .rarity-5 { color: #ffc107; text-shadow: 1px 1px 1px #333; } /* Epic */
+        .rarity-6 { color: #dc3545; font-weight: bold; } /* Legendary */
+        .rarity-7 { color: #fd7e14; font-weight: bold; } /* Mythical */
+        .rarity-8 { color: #000; font-weight: bold; text-shadow: 0 0 5px #dc3545; } /* Unique */
+        
+        #levelInput { width: 100px; display: inline-block; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="mb-4">Statistiques des Familiers Crownicles</h1>
+        
+        <div class="mb-4 p-3 bg-light border rounded">
+            <label for="levelInput" class="form-label me-2">Niveau du joueur :</label>
+            <input type="number" id="levelInput" class="form-control" value="100" min="1" max="200">
+            <span class="text-muted ms-2">Modifiez le niveau pour mettre à jour la puissance calculée.</span>
+        </div>
+
+        <table id="petsTable" class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nom</th>
+                    <th>Rareté</th>
+                    <th>Régime</th>
+                    <th>Force (Base)</th>
+                    <th>Puissance Calculée</th>
+                    <th>Délai (h)</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+    <script>
+        const petsData = [{"id":0,"name":"Aucun familier","rarity":0,"force":0,"feedDelay":1},{"id":1,"name":"Chien","rarity":1,"diet":"carnivorous","force":8,"feedDelay":3},{"id":2,"name":"Caniche","rarity":1,"diet":"carnivorous","force":4,"feedDelay":3},{"id":3,"name":"Chat","rarity":1,"diet":"carnivorous","force":4,"feedDelay":3},{"id":4,"name":"Chat noir","rarity":1,"diet":"carnivorous","force":4,"feedDelay":3},{"id":5,"name":"Rongeur","rarity":1,"force":1,"feedDelay":1},{"id":6,"name":"Hamster","rarity":1,"diet":"herbivorous","force":1,"feedDelay":1},{"id":7,"name":"Lapin","rarity":1,"diet":"herbivorous","force":2,"feedDelay":2},{"id":8,"name":"Bœuf","rarity":1,"diet":"herbivorous","force":14,"feedDelay":2},{"id":9,"name":"Porc","rarity":1,"diet":"herbivorous","force":10,"feedDelay":3},{"id":10,"name":"Coq","rarity":1,"diet":"herbivorous","force":1,"feedDelay":1},{"id":11,"name":"Oiseau","rarity":1,"diet":"herbivorous","force":1,"feedDelay":2},{"id":12,"name":"Canard","rarity":1,"diet":"herbivorous","force":1,"feedDelay":1},{"id":13,"name":"Étalon","rarity":2,"diet":"herbivorous","force":15,"feedDelay":2},{"id":14,"name":"Tortue","rarity":3,"diet":"herbivorous","force":2,"feedDelay":7},{"id":15,"name":"Serpent","rarity":3,"diet":"carnivorous","force":12,"feedDelay":10},{"id":16,"name":"Lézard","rarity":3,"diet":"carnivorous","force":1,"feedDelay":5},{"id":17,"name":"Bélier","rarity":2,"diet":"herbivorous","force":7,"feedDelay":1},{"id":18,"name":"Bouc","rarity":2,"diet":"herbivorous","force":6,"feedDelay":3},{"id":19,"name":"Dindon","rarity":2,"diet":"herbivorous","force":2,"feedDelay":1},{"id":20,"name":"Renard","rarity":2,"diet":"carnivorous","force":6,"feedDelay":5},{"id":21,"name":"Ours","rarity":4,"diet":"carnivorous","force":26,"feedDelay":7},{"id":22,"name":"Koala","rarity":3,"diet":"herbivorous","force":2,"feedDelay":9},{"id":23,"name":"Crapaud","rarity":2,"diet":"herbivorous","force":1,"feedDelay":5},{"id":24,"name":"Singe","rarity":5,"diet":"herbivorous","force":6,"feedDelay":3},{"id":25,"name":"Pingouin","rarity":3,"diet":"carnivorous","force":6,"feedDelay":4},{"id":26,"name":"Hibou","rarity":2,"diet":"carnivorous","force":4,"feedDelay":5},{"id":27,"name":"Chauve-souris","rarity":2,"diet":"carnivorous","force":3,"feedDelay":5},{"id":28,"name":"Loup","rarity":4,"diet":"carnivorous","force":14,"feedDelay":6},{"id":29,"name":"Sanglier","rarity":2,"force":14,"feedDelay":3},{"id":30,"name":"Phoque","rarity":2,"diet":"carnivorous","force":8,"feedDelay":5},{"id":31,"name":"Hippopotame","rarity":3,"diet":"herbivorous","force":29,"feedDelay":4},{"id":32,"name":"Lama","rarity":3,"diet":"herbivorous","force":5,"feedDelay":5},{"id":33,"name":"Cygne","rarity":3,"diet":"herbivorous","force":5,"feedDelay":4},{"id":34,"name":"Flamant rose","rarity":3,"force":2,"feedDelay":3},{"id":35,"name":"Raton laveur","rarity":3,"force":6,"feedDelay":3},{"id":36,"name":"Putois","rarity":3,"diet":"carnivorous","force":3,"feedDelay":4},{"id":37,"name":"Blaireau","rarity":3,"force":6,"feedDelay":4},{"id":38,"name":"Castor","rarity":3,"diet":"herbivorous","force":4,"feedDelay":3},{"id":39,"name":"Paresseux","rarity":4,"diet":"herbivorous","force":1,"feedDelay":10},{"id":40,"name":"Tamia","rarity":4,"diet":"herbivorous","force":1,"feedDelay":1},{"id":41,"name":"Hérisson","rarity":4,"force":1,"feedDelay":4},{"id":42,"name":"Ours polaire","rarity":4,"diet":"carnivorous","force":30,"feedDelay":8},{"id":43,"name":"Panda","rarity":4,"diet":"herbivorous","force":10,"feedDelay":1},{"id":44,"name":"Scorpion","rarity":4,"diet":"carnivorous","force":5,"feedDelay":6},{"id":45,"name":"Crocodile","rarity":4,"diet":"carnivorous","force":28,"feedDelay":10},{"id":46,"name":"Éléphant","rarity":4,"diet":"herbivorous","force":30,"feedDelay":2},{"id":47,"name":"Zèbre","rarity":4,"diet":"herbivorous","force":10,"feedDelay":2},{"id":48,"name":"Rhinocéros","rarity":5,"diet":"herbivorous","force":30,"feedDelay":5},{"id":49,"name":"Dromadaire","rarity":5,"diet":"herbivorous","force":12,"feedDelay":10},{"id":50,"name":"Chameau","rarity":5,"diet":"herbivorous","force":12,"feedDelay":10},{"id":51,"name":"Girafe","rarity":5,"diet":"herbivorous","force":14,"feedDelay":2},{"id":52,"name":"Kangourou","rarity":5,"diet":"herbivorous","force":17,"feedDelay":3},{"id":53,"name":"Paon","rarity":5,"diet":"herbivorous","force":2,"feedDelay":2},{"id":54,"name":"Perroquet","rarity":5,"force":3,"feedDelay":3},{"id":55,"name":"Loutre","rarity":5,"diet":"carnivorous","force":4,"feedDelay":3},{"id":56,"name":"Tigre","rarity":5,"diet":"carnivorous","force":28,"feedDelay":8},{"id":57,"name":"Lion","rarity":6,"diet":"carnivorous","force":28,"feedDelay":8},{"id":58,"name":"Aigle","rarity":6,"diet":"carnivorous","force":8,"feedDelay":7},{"id":59,"name":"Dodo","rarity":6,"diet":"herbivorous","force":1,"feedDelay":3},{"id":60,"name":"Léopard","rarity":6,"diet":"carnivorous","force":24,"feedDelay":8},{"id":61,"name":"Mammouth","rarity":6,"diet":"herbivorous","force":26,"feedDelay":4},{"id":62,"name":"Colombe","rarity":1,"diet":"herbivorous","force":1,"feedDelay":2},{"id":63,"name":"Licorne","rarity":7,"force":20,"feedDelay":6},{"id":64,"name":"Dragon","rarity":7,"diet":"carnivorous","force":30,"feedDelay":10},{"id":65,"name":"T-Rex","rarity":7,"diet":"carnivorous","force":30,"feedDelay":8},{"id":66,"name":"Stitch","rarity":7,"force":18,"feedDelay":6},{"id":67,"name":"Bonhomme de neige","rarity":6,"diet":"herbivorous","force":1,"feedDelay":10},{"id":68,"name":"Canard écarlate","rarity":7,"diet":"herbivorous","force":30,"feedDelay":1},{"id":69,"name":"Bonhomme de neige","rarity":7,"diet":"herbivorous","force":1,"feedDelay":10},{"id":70,"name":"Alien","rarity":7,"force":20,"feedDelay":6},{"id":71,"name":"Poulpe","rarity":5,"force":7,"feedDelay":4},{"id":72,"name":"Manchot","rarity":6,"force":6,"feedDelay":4},{"id":73,"name":"Poisson","rarity":1,"diet":"carnivorous","force":1,"feedDelay":3},{"id":74,"name":"Poisson tropical","rarity":7,"diet":"carnivorous","force":1,"feedDelay":2},{"id":75,"name":"Poisson-globe","rarity":6,"diet":"carnivorous","force":3,"feedDelay":3},{"id":76,"name":"Méduse","rarity":4,"diet":"carnivorous","force":6,"feedDelay":9},{"id":77,"name":"Requin","rarity":6,"diet":"carnivorous","force":26,"feedDelay":7},{"id":78,"name":"Baleine","rarity":5,"diet":"carnivorous","force":30,"feedDelay":4},{"id":79,"name":"Baleine","rarity":7,"diet":"carnivorous","force":30,"feedDelay":4},{"id":80,"name":"Crevette","rarity":4,"diet":"carnivorous","force":1,"feedDelay":1},{"id":81,"name":"Homard","rarity":6,"diet":"carnivorous","force":4,"feedDelay":5},{"id":82,"name":"Dauphin","rarity":6,"diet":"carnivorous","force":12,"feedDelay":5},{"id":83,"name":"Phénix","rarity":7,"force":30,"feedDelay":10},{"id":84,"name":"Diplodocus","rarity":7,"diet":"herbivorous","force":22,"feedDelay":6},{"id":85,"name":"Escargot","rarity":1,"diet":"herbivorous","force":1,"feedDelay":5},{"id":86,"name":"Crabe","rarity":4,"force":2,"feedDelay":3},{"id":87,"name":"Cerf","rarity":5,"force":10,"feedDelay":3},{"id":88,"name":"Buffle d'eau","rarity":6,"force":22,"feedDelay":2},{"id":89,"name":"Bison","rarity":5,"force":24,"feedDelay":2},{"id":90,"name":"Orang-outan","rarity":6,"force":18,"feedDelay":5},{"id":91,"name":"Gorille","rarity":6,"force":27,"feedDelay":3},{"id":92,"name":"Poussin","rarity":1,"force":1,"feedDelay":1},{"id":93,"name":"Rat","rarity":2,"force":2,"feedDelay":1},{"id":94,"name":"Merle","rarity":7,"force":1,"feedDelay":2},{"id":95,"name":"Corbeau","rarity":7,"force":3,"feedDelay":5},{"id":96,"name":"Âne","rarity":3,"force":9,"feedDelay":4},{"id":97,"name":"Oie","rarity":2,"force":3,"feedDelay":1},{"id":98,"name":"Élan","rarity":5,"force":18,"feedDelay":2},{"id":99,"name":"Jack-o'-lantern","rarity":7,"force":1,"feedDelay":10},{"id":100,"name":"Fantôme","rarity":7,"force":1,"feedDelay":10},{"id":101,"name":"Vampire","rarity":8,"diet":"carnivorous","force":25,"feedDelay":8}];
+        const PET_FORCE_BALANCE = {"COEFF_QUADRATIC":0.005,"COEFF_LINEAR":0.15};
+
+        function calculatePetStat(force, level) {
+            const normalizedForce = Math.max(0, force);
+            const multiplier = PET_FORCE_BALANCE.COEFF_QUADRATIC * normalizedForce * normalizedForce + 
+                              PET_FORCE_BALANCE.COEFF_LINEAR * normalizedForce;
+            return Math.floor(level * multiplier);
+        }
+
+        function getRarityName(rarity) {
+            const rarities = {
+                1: "Commun",
+                2: "Inhabituel",
+                3: "Rare",
+                4: "Spécial",
+                5: "Épique",
+                6: "Légendaire",
+                7: "Mythique",
+                8: "Unique"
+            };
+            return rarities[rarity] || rarity;
+        }
+
+        $(document).ready(function() {
+            const table = $('#petsTable').DataTable({
+                data: petsData,
+                columns: [
+                    { data: 'id' },
+                    { 
+                        data: 'name',
+                        render: function(data, type, row) {
+                            return `<span class="fw-bold">${data}</span>`;
+                        }
+                    },
+                    { 
+                        data: 'rarity',
+                        render: function(data, type, row) {
+                            return `<span class="rarity-${data}">${getRarityName(data)} (${data})</span>`;
+                        }
+                    },
+                    { data: 'diet' },
+                    { data: 'force' },
+                    { 
+                        data: null,
+                        render: function(data, type, row) {
+                            const level = parseInt($('#levelInput').val()) || 100;
+                            return calculatePetStat(row.force, level);
+                        }
+                    },
+                    { data: 'feedDelay' }
+                ],
+                pageLength: 25,
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json'
+                }
+            });
+
+            $('#levelInput').on('change keyup', function() {
+                table.rows().invalidate().draw();
+            });
+        });
+    </script>
+</body>
+</html>
+    
