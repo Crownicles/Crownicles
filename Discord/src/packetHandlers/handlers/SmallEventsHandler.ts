@@ -98,6 +98,7 @@ import { limogesResult } from "../../smallEvents/limoges";
 import { getPetFoodDescription } from "../../smallEvents/petFood";
 import { SmallEventHauntedPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventHauntedPacket";
 import { SmallEventPetFoodPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventPetFoodPacket";
+import { SmallEventBadPetPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventBadPetPacket";
 
 const PET_TIME_INTERACTIONS = new Set([
 	"gainTime",
@@ -973,6 +974,31 @@ export default class SmallEventsHandler {
 
 		const embed = new CrowniclesSmallEventEmbed(
 			"petFood",
+			description,
+			interaction.user,
+			lng
+		);
+
+		await interaction.editReply({
+			embeds: [embed], components: []
+		});
+	}
+
+	@packetHandler(SmallEventBadPetPacket)
+	async smallEventBadPet(context: PacketContext, packet: SmallEventBadPetPacket): Promise<void> {
+		const interaction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
+		if (!interaction) {
+			return;
+		}
+		const lng = context.discord!.language;
+
+		const description = i18n.t(`smallEvents:badPet.outcomes.${packet.interactionType}`, {
+			lng,
+			loveLost: packet.loveLost
+		});
+
+		const embed = new CrowniclesSmallEventEmbed(
+			"badPet",
 			description,
 			interaction.user,
 			lng

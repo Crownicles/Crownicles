@@ -45,6 +45,7 @@ export abstract class BlockingConstants {
 		CART_SMALL_EVENT: "cartSmallEvent",
 		LIMOGES_SMALL_EVENT: "limogesSmallEvent",
 		PET_FOOD_SMALL_EVENT: "petFoodSmallEvent",
+		BAD_PET_SMALL_EVENT: "badPetSmallEvent",
 		SKIP_MISSION: "skipMission",
 		SLOT_EXTENSION: "slotExtension"
 	} as const;

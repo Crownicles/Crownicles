@@ -1974,5 +1974,26 @@
       "minus": "Votre familier vous fixe d'un regard noir chargé de reproches silencieux, les babines retroussées en une moue désapprobatrice. Il détourne ostensiblement la tête en poussant un grognement mécontent, visiblement offensé par cette pitance indigne de son palais délicat...",
       "neutral": "Votre compagnon de route engloutit son repas avec un détachement presque philosophique, sans montrer ni enthousiasme débordant ni dégoût particulier. Il semble considérer cette trouvaille comme une simple sustentation nécessaire, rien de plus, rien de moins."
     }
+  },
+  "badPet": {
+    "intro": "Votre familier semble agité par quelque chose dans les environs...",
+    "choices": {
+      "intimidate": "Ordonner d'intimider la menace",
+      "plead": "Supplier la menace de partir",
+      "giveMeat": "Donner de la viande pour faire diversion",
+      "giveVeg": "Donner des légumes pour faire diversion",
+      "flee": "Prendre la fuite",
+      "hide": "Se cacher",
+      "wait": "Attendre que ça passe"
+    },
+    "outcomes": {
+      "intimidate": "Votre familier grogne férocement ! La menace recule, mais votre compagnon est stressé. Vous perdez {{loveLost}} points d'amour.",
+      "plead": "Vous suppliez pitoyablement. La menace s'en va, dégoûtée par tant de faiblesse. Votre familier a honte. Vous perdez {{loveLost}} points d'amour.",
+      "giveMeat": "La menace se jette sur la viande ! Votre familier est jaloux de ne pas l'avoir eue. Vous perdez {{loveLost}} points d'amour.",
+      "giveVeg": "La menace grignote les légumes. Votre familier vous regarde avec incompréhension. Vous perdez {{loveLost}} points d'amour.",
+      "flee": "Vous courrez comme des dératés ! Votre familier est épuisé. Vous perdez {{loveLost}} points d'amour.",
+      "hide": "Vous vous cachez dans un buisson épineux. Votre familier n'apprécie pas du tout. Vous perdez {{loveLost}} points d'amour.",
+      "wait": "Vous attendez... et attendez... Votre familier s'ennuie et s'énerve. Vous perdez {{loveLost}} points d'amour."
+    }
   }
 }
