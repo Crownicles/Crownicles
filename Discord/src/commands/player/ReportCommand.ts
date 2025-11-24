@@ -248,7 +248,7 @@ export async function chooseDestinationCollector(context: PacketContext, packet:
 		lng,
 		pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
 	}), interaction.user);
-	embed.setDescription(`${i18n.t("commands:report.chooseDestinationIndications", { lng })}\n\n`);
+	embed.setDescription(i18n.t("commands:report.chooseDestinationIndications", { lng }) + "\n\n");
 
 	return await DiscordCollectorUtils.createChoiceListCollector(interaction, {
 		packet,
@@ -442,7 +442,7 @@ export async function displayMonsterReward(
 	}
 
 	if (packet.petReaction) {
-		const petDisplay = PetUtils.petToShortString(lng, packet.petReaction.petNickname ?? undefined, packet.petReaction.petId, packet.petReaction.petSex as SexTypeShort);
+		const petDisplay = PetUtils.petToShortString(lng, packet.petReaction.petNickname, packet.petReaction.petId, packet.petReaction.petSex as SexTypeShort);
 		const petReactionText = StringUtils.getRandomTranslation(`commands:fight.petReactions.${packet.petReaction.reactionType}`, lng, {
 			player: escapeUsername(user.displayName),
 			pet: petDisplay

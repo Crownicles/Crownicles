@@ -31,34 +31,36 @@ export class CrowniclesFightStatusCachedMessage extends CrowniclesCachedMessage<
 		const defenderUsername = packet.defendingFighter.keycloakId ? this.usernamesCache.get(packet.defendingFighter.keycloakId) : i18n.t(`models:monsters.${packet.defendingFighter.monsterId}.name`, { lng });
 		const keyProlongation = packet.numberOfTurn > packet.maxNumberOfTurn ? "prolongation" : "noProlongation";
 
+		const summarySegments = [
+			i18n.t("commands:fight.summarize.intro.start", {
+				lng,
+				state: i18n.t(`commands:fight.summarize.intro.${keyProlongation}`, {
+					lng,
+					currentTurn: packet.numberOfTurn,
+					maxTurn: packet.maxNumberOfTurn
+				})
+			}),
+			i18n.t("commands:fight.summarize.attacker", {
+				lng,
+				pseudo: attackerUsername
+			}),
+			i18n.t("commands:fight.summarize.stats", {
+				lng,
+				...packet.activeFighter.stats
+			}),
+			i18n.t("commands:fight.summarize.defender", {
+				lng,
+				pseudo: defenderUsername
+			}),
+			i18n.t("commands:fight.summarize.stats", {
+				lng,
+				...packet.defendingFighter.stats
+			})
+		];
+
 		const embed = new CrowniclesEmbed()
 			.setTitle(i18n.t("commands:fight.summarize.title", { lng }))
-			.setDescription(`
-				${i18n.t("commands:fight.summarize.intro.start", {
-					lng,
-					state: i18n.t(`commands:fight.summarize.intro.${keyProlongation}`, {
-						lng,
-						currentTurn: packet.numberOfTurn,
-						maxTurn: packet.maxNumberOfTurn
-					})
-				})}
-				${i18n.t("commands:fight.summarize.attacker", {
-					lng,
-					pseudo: attackerUsername
-				})}
-				${i18n.t("commands:fight.summarize.stats", {
-					lng,
-					...packet.activeFighter.stats
-				})}
-				${i18n.t("commands:fight.summarize.defender", {
-					lng,
-					pseudo: defenderUsername
-				})}
-				${i18n.t("commands:fight.summarize.stats", {
-					lng,
-					...packet.defendingFighter.stats
-				})}
-			`);
+			.setDescription(summarySegments.join("\n"));
 
 		await this.post({ embeds: [embed] });
 		return null;

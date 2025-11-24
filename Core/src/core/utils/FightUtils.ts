@@ -26,12 +26,11 @@ export class FightUtils {
 	 * @returns stat = level * (0.005 * force^2 + 0.15 * force)
 	 */
 	static calculatePetStatFromForce(petForce: number, level: number): number {
-		const normalizedForce = Math.max(0, petForce);
+		const clampedForce = Math.max(0, petForce);
 		const {
 			COEFF_QUADRATIC,
 			COEFF_LINEAR
 		} = FightUtils.PET_FORCE_BALANCE;
-		const multiplier = COEFF_QUADRATIC * normalizedForce * normalizedForce + COEFF_LINEAR * normalizedForce;
-		return level * multiplier;
+		return level * clampedForce * (COEFF_QUADRATIC * clampedForce + COEFF_LINEAR);
 	}
 }

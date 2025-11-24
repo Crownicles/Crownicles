@@ -51,7 +51,10 @@ const use: PetAssistanceFunc = (fighter, opponent, turn, _fightController): Prom
 		const force = PetDataController.instance.getById(petId).force;
 		const centerSpeed = FightUtils.calculatePetStatFromForce(force * 0.75, fighter.level);
 		const startSpeed = FightUtils.calculatePetStatFromForce(force * 0.5, fighter.level);
-		const damageMultiplier = 0.5 - 0.5 * Math.tanh((opponent.getSpeed() - centerSpeed) / (centerSpeed - startSpeed));
+		const denominator = centerSpeed - startSpeed;
+		const damageMultiplier = Math.abs(denominator) < Number.EPSILON
+			? 0
+			: 0.5 - 0.5 * Math.tanh((opponent.getSpeed() - centerSpeed) / denominator);
 
 		const damages = Math.round(FightActionController.getAttackDamage(getStatsInfo(fighter, opponent), fighter, getAttackInfo(), true) * damageMultiplier);
 
