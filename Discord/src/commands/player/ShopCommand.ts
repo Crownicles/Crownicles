@@ -509,11 +509,11 @@ export async function shopCollector(context: PacketContext, packet: ReactionColl
 
 	const embed = new CrowniclesEmbed()
 		.setTitle(i18n.t("commands:shop.title", { lng }))
-		.setDescription(shopText + i18n.t("commands:shop.currentMoney", {
+		.setDescription(`${shopText}${i18n.t("commands:shop.currentMoney", {
 			lng,
 			money: data.availableCurrency,
 			currency: data.currency
-		}));
+		})}`);
 
 	const reply = await interaction.reply({
 		embeds: [embed],

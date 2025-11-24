@@ -451,6 +451,10 @@ export class FightController {
 		};
 	}
 
+	/**
+	 * Increase monster damages and stats in PVE fights during overtime
+	 * @param currentTurn - The current turn number
+	 */
 	private increaseDamagesPve(currentTurn: number): void {
 		for (const fighter of this.fighters) {
 			if (fighter instanceof MonsterFighter) {
