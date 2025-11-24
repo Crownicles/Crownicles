@@ -24,9 +24,14 @@ export class ReactionCollectorBadPetSmallEventData extends ReactionCollectorData
 }
 
 export class ReactionCollectorBadPetSmallEvent extends ReactionCollector {
-	private readonly possibleReactions: (new () => ReactionCollectorReaction)[];
+	/**
+	 * For alignment with the witch small event, bad-pet reactions now carry an ID in their data (eg 'intimidate').
+	 * This class accepts an array of ReactionCollectorReaction instances (each must include the id field)
+	 * and uses them directly when building the creation packet.
+	 */
+	private readonly possibleReactions: ReactionCollectorReaction[];
 
-	constructor(reactions: (new () => ReactionCollectorReaction)[]) {
+	constructor(reactions: ReactionCollectorReaction[]) {
 		super();
 		this.possibleReactions = reactions;
 	}
@@ -41,7 +46,7 @@ export class ReactionCollectorBadPetSmallEvent extends ReactionCollector {
 		return {
 			id,
 			endTime,
-			reactions: this.possibleReactions.map(ReactionClass => this.buildReaction(ReactionClass, {})),
+			reactions: this.possibleReactions.map(r => this.buildReaction(r.constructor as any, r as any)),
 			data: this.buildData(ReactionCollectorBadPetSmallEventData, {})
 		};
 	}
