@@ -577,13 +577,15 @@ async function doPVEBoss(
 					experience: rewards.xp,
 					guildXp,
 					guildPoints,
-					petReaction: fight.petReactionData ? {
-						reactionType: fight.petReactionData.reactionType,
-						loveDelta: fight.petReactionData.loveDelta,
-						petId: fight.petReactionData.petId,
-						petSex: fight.petReactionData.petSex,
-						petNickname: fight.petReactionData.petNickname
-					} : undefined
+					petReaction: fight.petReactionData
+						? {
+							reactionType: fight.petReactionData.reactionType,
+							loveDelta: fight.petReactionData.loveDelta,
+							petId: fight.petReactionData.petId,
+							petSex: fight.petReactionData.petSex,
+							petNickname: fight.petReactionData.petNickname
+						}
+						: undefined
 				}));
 				await MissionsController.update(player, endFightResponse, { missionId: "winBoss" });
 			}

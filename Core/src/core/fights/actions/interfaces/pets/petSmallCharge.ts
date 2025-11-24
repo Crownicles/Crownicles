@@ -6,7 +6,6 @@ import { PetAssistanceFunc } from "../../../../../data/PetAssistance";
 import {
 	PetAssistanceResult, PetAssistanceState
 } from "../../../../../../../Lib/src/types/PetAssistanceResult";
-import { RandomUtils } from "../../../../../../../Lib/src/utils/RandomUtils";
 import { FightUtils } from "../../../../utils/FightUtils";
 import { PlayerFighter } from "../../../fighter/PlayerFighter";
 import { PetDataController } from "../../../../../data/Pet";

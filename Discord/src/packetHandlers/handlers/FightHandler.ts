@@ -73,5 +73,4 @@ export default class FightHandler {
 	async fightReward(context: PacketContext, packet: FightRewardPacket): Promise<void> {
 		await handleFightReward(context, packet);
 	}
-
 }
