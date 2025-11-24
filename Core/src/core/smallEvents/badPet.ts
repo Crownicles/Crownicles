@@ -41,12 +41,14 @@ type BadPetActionHandler = (petEntity: PetEntity, petModel: Pet, player: Player)
 };
 
 interface BadPetAction {
+	id: string;
 	reactionClass: new () => ReactionCollectorReaction;
 	handler: BadPetActionHandler;
 }
 
 const BAD_PET_ACTIONS: BadPetAction[] = [
 	{
+		id: "intimidate",
 		reactionClass: ReactionCollectorBadPetIntimidateReaction,
 		handler: (_petEntity, petModel): {
 			loveLost: number;
@@ -61,6 +63,7 @@ const BAD_PET_ACTIONS: BadPetAction[] = [
 		}
 	},
 	{
+		id: "plead",
 		reactionClass: ReactionCollectorBadPetPleadReaction,
 		handler: (_petEntity, petModel): {
 			loveLost: number;
@@ -75,6 +78,7 @@ const BAD_PET_ACTIONS: BadPetAction[] = [
 		}
 	},
 	{
+		id: "giveMeat",
 		reactionClass: ReactionCollectorBadPetGiveMeatReaction,
 		handler: (_petEntity, petModel): {
 			loveLost: number;
@@ -89,6 +93,7 @@ const BAD_PET_ACTIONS: BadPetAction[] = [
 		}
 	},
 	{
+		id: "giveVeg",
 		reactionClass: ReactionCollectorBadPetGiveVegReaction,
 		handler: (_petEntity, petModel): {
 			loveLost: number;
@@ -103,6 +108,7 @@ const BAD_PET_ACTIONS: BadPetAction[] = [
 		}
 	},
 	{
+		id: "flee",
 		reactionClass: ReactionCollectorBadPetFleeReaction,
 		handler: (_petEntity, _petModel): {
 			loveLost: number;
@@ -117,6 +123,7 @@ const BAD_PET_ACTIONS: BadPetAction[] = [
 		}
 	},
 	{
+		id: "hide",
 		reactionClass: ReactionCollectorBadPetHideReaction,
 		handler: (_petEntity, _petModel): {
 			loveLost: number;
@@ -130,6 +137,7 @@ const BAD_PET_ACTIONS: BadPetAction[] = [
 		}
 	},
 	{
+		id: "wait",
 		reactionClass: ReactionCollectorBadPetWaitReaction,
 		handler: (_petEntity, _petModel, _player): {
 			loveLost: number;
@@ -143,16 +151,12 @@ const BAD_PET_ACTIONS: BadPetAction[] = [
 		}
 	},
 	{
+		id: "protect",
 		reactionClass: ReactionCollectorBadPetProtectReaction,
 		handler: (_petEntity, _petModel, _player): {
 			loveLost: number;
 			interactionType: string;
 		} => {
-			/*
-			 * Basé sur la défense du joueur
-			 * En pratique, charger les objets actifs ici serait trop lourd
-			 * On utilise donc une probabilité fixe de 50% (moyenne entre joueur faible/fort)
-			 */
 			const success = RandomUtils.crowniclesRandom.bool(0.5);
 			const loveLost = success ? 0 : RandomUtils.randInt(6, 10);
 			return {
@@ -162,12 +166,12 @@ const BAD_PET_ACTIONS: BadPetAction[] = [
 		}
 	},
 	{
+		id: "distract",
 		reactionClass: ReactionCollectorBadPetDistractReaction,
 		handler: (_petEntity, _petModel, _player): {
 			loveLost: number;
 			interactionType: string;
 		} => {
-			// Random pur - 50/50
 			const success = RandomUtils.crowniclesRandom.bool(0.5);
 			const loveLost = success ? 0 : RandomUtils.randInt(5, 8);
 			return {
@@ -177,17 +181,18 @@ const BAD_PET_ACTIONS: BadPetAction[] = [
 		}
 	},
 	{
+		id: "calm",
 		reactionClass: ReactionCollectorBadPetCalmReaction,
 		handler: (petEntity, _petModel, _player): {
 			loveLost: number;
 			interactionType: string;
 		} => {
-			// Basé sur l'amour actuel du pet - plus le love est proche du max, moins ça fail
+			// Based on the pet's current love — the closer love is to the maximum, the lower the chance of failure
 			const maxLove = PetConstants.MAX_LOVE_POINTS;
 			const currentLove = petEntity.lovePoints;
 			const loveRatio = currentLove / maxLove;
 
-			const successChance = 0.3 + (loveRatio * 0.6); // De 30% à 90% selon l'amour
+			const successChance = 0.3 + (loveRatio * 0.6); // From 30% to 90% depending on love
 			const success = RandomUtils.crowniclesRandom.bool(successChance);
 			const loveLost = success ? 0 : RandomUtils.randInt(4, 7);
 			return {
@@ -197,16 +202,17 @@ const BAD_PET_ACTIONS: BadPetAction[] = [
 		}
 	},
 	{
+		id: "showcase",
 		reactionClass: ReactionCollectorBadPetShowcaseReaction,
 		handler: (_petEntity, petModel, _player): {
 			loveLost: number;
 			interactionType: string;
 		} => {
-			// Basé sur la rareté du pet - plus rare = plus de chance de réussir
+			// Based on the pet's rarity — the rarer the pet, the higher the chance of success
 			const rarity = petModel.rarity;
 
-			// Rarity: 1 = commun, 8 = légendaire
-			const successChance = 0.2 + ((rarity - 1) * 0.1); // De 20% (commun) à 90% (légendaire)
+			// Rarity: 1 = common, 8 = legendary
+			const successChance = 0.2 + ((rarity - 1) * 0.1); // From 20% (common) to 90% (legendary)
 			const success = RandomUtils.crowniclesRandom.bool(successChance);
 			const loveLost = success ? 0 : RandomUtils.randInt(3, 6);
 			return {
@@ -216,16 +222,17 @@ const BAD_PET_ACTIONS: BadPetAction[] = [
 		}
 	},
 	{
+		id: "energize",
 		reactionClass: ReactionCollectorBadPetEnergizeReaction,
 		handler: (petEntity, petModel, _player): {
 			loveLost: number;
 			interactionType: string;
 		} => {
-			// Basé sur la vigueur (vigor) du pet
+			// Based on the pet's vigor
 			const vigor = PetUtils.getPetVigor(petModel, petEntity.lovePoints);
 
-			// Plus de vigor = meilleure chance (vigor va de 0 à 6)
-			const successChance = 0.15 + (vigor / PetConstants.VIGOR.MAX) * 0.75; // De 15% à 90%
+			// Higher vigor = better chance (vigor ranges from 0 to 6)
+			const successChance = 0.15 + (vigor / PetConstants.VIGOR.MAX) * 0.75; // From 15% to 90%
 			const success = RandomUtils.crowniclesRandom.bool(successChance);
 			const loveLost = success ? 0 : RandomUtils.randInt(4, 8);
 			return {
@@ -238,7 +245,8 @@ const BAD_PET_ACTIONS: BadPetAction[] = [
 
 const REACTION_HANDLERS: Record<string, BadPetActionHandler> = {};
 for (const action of BAD_PET_ACTIONS) {
-	REACTION_HANDLERS[action.reactionClass.name] = action.handler;
+	// map by id (eg 'intimidate') so we can use reaction.data.id (like witch)
+	REACTION_HANDLERS[action.id] = action.handler;
 }
 
 function pickRandom<T>(array: T[], count: number): T[] {
@@ -261,7 +269,9 @@ function getEndCallback(player: Player): EndCallback {
 		}; // Default
 
 		if (reaction) {
-			const handler = REACTION_HANDLERS[reaction.reaction.type];
+			// reactions carry data.id (eg 'intimidate'), use it to find the handler (same approach as witch)
+			const reactionId = (reaction.reaction.data as unknown as { id?: string }).id as string | undefined;
+			const handler = reactionId ? REACTION_HANDLERS[reactionId] : undefined;
 			if (handler) {
 				const petEntity = await PetEntity.findOne({ where: { id: player.petId } });
 				if (petEntity) {
@@ -308,7 +318,12 @@ export const smallEventFuncs: SmallEventFuncs = {
 
 	executeSmallEvent: (response: CrowniclesPacket[], player: Player, context): Promise<void> => {
 		const selectedActions = pickRandom(BAD_PET_ACTIONS, 3);
-		const reactions = selectedActions.map(a => a.reactionClass);
+		const reactions = selectedActions.map(a => {
+			const ReactionClass = a.reactionClass;
+			const instance = new ReactionClass() as unknown as ReactionCollectorReaction & { id?: string };
+			instance.id = a.id;
+			return instance as ReactionCollectorReaction;
+		});
 
 		const collector = new ReactionCollectorBadPetSmallEvent(reactions);
 

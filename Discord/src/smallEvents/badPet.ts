@@ -1,19 +1,5 @@
 import { PacketContext } from "../../../Lib/src/packets/CrowniclesPacket";
 import { ReactionCollectorCreationPacket } from "../../../Lib/src/packets/interaction/ReactionCollectorPacket";
-import {
-	ReactionCollectorBadPetIntimidateReaction,
-	ReactionCollectorBadPetPleadReaction,
-	ReactionCollectorBadPetGiveMeatReaction,
-	ReactionCollectorBadPetGiveVegReaction,
-	ReactionCollectorBadPetFleeReaction,
-	ReactionCollectorBadPetHideReaction,
-	ReactionCollectorBadPetWaitReaction,
-	ReactionCollectorBadPetProtectReaction,
-	ReactionCollectorBadPetDistractReaction,
-	ReactionCollectorBadPetCalmReaction,
-	ReactionCollectorBadPetShowcaseReaction,
-	ReactionCollectorBadPetEnergizeReaction
-} from "../../../Lib/src/packets/interaction/ReactionCollectorBadPetSmallEvent";
 import { DiscordCache } from "../bot/DiscordCache";
 import { CrowniclesSmallEventEmbed } from "../messages/CrowniclesSmallEventEmbed";
 import i18n from "../translations/i18n";
@@ -32,62 +18,62 @@ const REACTION_MAPPING: Record<string, {
 	icon: string;
 	labelKey: string;
 }> = {
-	[ReactionCollectorBadPetIntimidateReaction.name]: {
+	intimidate: {
 		id: "intimidate",
 		icon: CrowniclesIcons.fightActions.roarAttack,
 		labelKey: "intimidate"
 	},
-	[ReactionCollectorBadPetPleadReaction.name]: {
+	plead: {
 		id: "plead",
 		icon: CrowniclesIcons.fightActions.divineAttack,
 		labelKey: "plead"
 	},
-	[ReactionCollectorBadPetGiveMeatReaction.name]: {
+	giveMeat: {
 		id: "giveMeat",
 		icon: CrowniclesIcons.foods.carnivorousFood,
 		labelKey: "giveMeat"
 	},
-	[ReactionCollectorBadPetGiveVegReaction.name]: {
+	giveVeg: {
 		id: "giveVeg",
 		icon: CrowniclesIcons.foods.herbivorousFood,
 		labelKey: "giveVeg"
 	},
-	[ReactionCollectorBadPetFleeReaction.name]: {
+	flee: {
 		id: "flee",
 		icon: CrowniclesIcons.fightActions.quickAttack,
 		labelKey: "flee"
 	},
-	[ReactionCollectorBadPetHideReaction.name]: {
+	hide: {
 		id: "hide",
 		icon: CrowniclesIcons.fightActions.stealth,
 		labelKey: "hide"
 	},
-	[ReactionCollectorBadPetWaitReaction.name]: {
+	wait: {
 		id: "wait",
 		icon: CrowniclesIcons.fightActions.resting,
 		labelKey: "wait"
 	},
-	[ReactionCollectorBadPetProtectReaction.name]: {
+	protect: {
 		id: "protect",
 		icon: CrowniclesIcons.fightActions.shieldAttack,
 		labelKey: "protect"
 	},
-	[ReactionCollectorBadPetDistractReaction.name]: {
+	distract: {
 		id: "distract",
 		icon: CrowniclesIcons.fightActions.confused,
 		labelKey: "distract"
 	},
-	[ReactionCollectorBadPetCalmReaction.name]: {
+	calm: {
 		id: "calm",
 		icon: CrowniclesIcons.unitValues.health,
 		labelKey: "calm"
 	},
-	[ReactionCollectorBadPetShowcaseReaction.name]: {
+	showcase: {
 		id: "showcase",
 		icon: CrowniclesIcons.unitValues.petRarity,
 		labelKey: "showcase"
 	},
-	[ReactionCollectorBadPetEnergizeReaction.name]: {
+	energize: {
 		id: "energize",
 		icon: CrowniclesIcons.unitValues.energy,
 		labelKey: "energize"
@@ -104,14 +90,18 @@ export async function badPetCollector(context: PacketContext, packet: ReactionCo
 	const row = new ActionRowBuilder<ButtonBuilder>();
 
 	for (const reaction of packet.reactions) {
-		const mapping = REACTION_MAPPING[reaction.type];
+		const reactId = (reaction.data as unknown as { id?: string }).id;
+		const mapping = reactId ? REACTION_MAPPING[reactId] : undefined;
 		if (mapping) {
-			description += `${mapping.icon} ${i18n.t(`smallEvents:badPet.choices.${mapping.labelKey}`, { lng })}\n`;
+			const iconFromLib = CrowniclesIcons.badPetSmallEvent[reactId!];
+			const icon = iconFromLib ?? mapping.icon ?? "";
+
+			description += `${icon} ${i18n.t(`smallEvents:badPet.choices.${mapping.labelKey}`, { lng })}\n`;
 
 			row.addComponents(
 				new ButtonBuilder()
 					.setCustomId(mapping.id)
-					.setEmoji(parseEmoji(mapping.icon)!)
+					.setEmoji(parseEmoji(icon) ?? icon)
 					.setStyle(ButtonStyle.Secondary)
 			);
 		}
@@ -153,8 +143,8 @@ export async function badPetCollector(context: PacketContext, packet: ReactionCo
 
 			// Find the reaction index based on customId
 			const reactionIndex = packet.reactions.findIndex(r => {
-				const mapping = REACTION_MAPPING[r.type];
-				return mapping && mapping.id === buttonInteraction.customId;
+				const id = (r.data as unknown as { id?: string }).id;
+				return id === buttonInteraction.customId;
 			});
 
 			if (reactionIndex !== -1) {
