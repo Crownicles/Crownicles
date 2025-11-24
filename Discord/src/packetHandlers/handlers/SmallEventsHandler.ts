@@ -92,6 +92,7 @@ import { SmallEventDwarfPetFanPacket } from "../../../../Lib/src/packets/smallEv
 import { SmallEventInfoFightPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventInfoFightPacket";
 import { infoFightResult } from "../../smallEvents/infoFight";
 import { limogesResult } from "../../smallEvents/limoges";
+import { getPetFoodDescription } from "../../smallEvents/petFood";
 import { SmallEventHauntedPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventHauntedPacket";
 import { SmallEventPetFoodPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventPetFoodPacket";
 
@@ -1056,60 +1057,3 @@ export default class SmallEventsHandler {
 	}
 }
 
-/**
- * Build the description text for pet food small event outcome
- * @param packet
- * @param lng
- */
-function getPetFoodDescription(packet: SmallEventPetFoodPacket, lng: Language): string {
-	// Outcomes that mean some food was found (by player or pet, or simply found)
-	const FOUND_OUTCOMES = new Set([
-		"found_by_player",
-		"found_by_pet",
-		"found_anyway"
-	]);
-
-	// Outcomes that should use a specific "_soup" translation when the food is soup
-	const SOUP_OUTCOMES = new Set([
-		"found_by_player",
-		"found_by_pet",
-		"found_anyway",
-		"pet_failed"
-	]);
-
-	const outcomeIsFound = FOUND_OUTCOMES.has(packet.outcome);
-
-	// If the food was actually found, pick a readable display name for it from translations
-	const foodName = outcomeIsFound
-		? RandomUtils.crowniclesRandom.pick(
-			i18n.t(`smallEvents:petFood.foodNames.${packet.foodType}`, {
-				lng,
-				returnObjects: true
-			})
-		)
-		: "";
-
-	// When the food type is soup, some outcomes use a different translation key (e.g. "found_by_player_soup")
-	const outcomeKey = packet.foodType === "soup" && SOUP_OUTCOMES.has(packet.outcome)
-		? `${packet.outcome}_soup`
-		: packet.outcome;
-
-	// Base outcome message (always present)
-	const baseMessage = i18n.t(
-		`smallEvents:petFood.outcomes.${outcomeKey}`,
-		{
-			lng,
-			foodName
-		}
-	);
-
-	// Some outcomes also include a pet-love change message appended on a newline
-	if (!outcomeIsFound) {
-		return baseMessage;
-	}
-
-	const loveKey = packet.loveChange > 0 ? "plus" : packet.loveChange < 0 ? "minus" : "neutral";
-	const loveMessage = i18n.t(`smallEvents:petFood.love.${loveKey}`, { lng });
-
-	return `${baseMessage}\n${loveMessage}`;
-}
