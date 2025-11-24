@@ -60,10 +60,10 @@ async function sendMessageAllBadgesTooMuchBadges(gameUsername: string, badges: B
 					lng,
 					pseudo: gameUsername
 				}))
-				.setDescription(`${content}${i18n.t("commands:profile.badgeDisplay.numberBadge", {
+				.setDescription(content + i18n.t("commands:profile.badgeDisplay.numberBadge", {
 					lng,
 					count: badges.length
-				})}`)
+				}))
 		]
 	});
 }

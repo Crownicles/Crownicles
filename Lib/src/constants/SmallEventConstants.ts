@@ -283,7 +283,8 @@ export abstract class SmallEventConstants {
 			PLAYER_FAILED: "player_failed",
 			PET_FAILED: "pet_failed"
 		},
-		TIME_TRAVEL_TIME: -5,
+		TRAVEL_TIME_PENALTY_MINUTES: 5,
+		NO_LOVE_CHANGE: 0,
 		FEED_DELAY_MULTIPLIER: 3,
 		DECAY_FACTOR: 0.003,
 		MIN_PROBABILITY: 0.1,

@@ -31,6 +31,6 @@ export class CommandFightEndOfFightPacket extends CrowniclesPacket {
 		loveDelta: number;
 		petId: number;
 		petSex: string;
-		petNickname: string | null;
+		petNickname?: string;
 	};
 }
