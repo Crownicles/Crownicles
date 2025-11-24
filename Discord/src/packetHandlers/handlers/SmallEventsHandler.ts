@@ -1065,43 +1065,54 @@ export default class SmallEventsHandler {
  * @param lng
  */
 function getPetFoodDescription(packet: SmallEventPetFoodPacket, lng: Language): string {
-	let foodName = "";
-	if ([
+	// Outcomes that mean some food was found (by player or pet, or simply found)
+	const FOUND_OUTCOMES = new Set([
 		"found_by_player",
 		"found_by_pet",
 		"found_anyway"
-	].includes(packet.outcome)) {
-		const foodNames = i18n.t(`smallEvents:petFood.foodNames.${packet.foodType}`, {
-			lng, returnObjects: true
-		}) as string[];
-		foodName = RandomUtils.crowniclesRandom.pick(foodNames);
-	}
+	]);
 
-	// Use soup-specific outcomes when foodType is soup
-	let outcomeKey = packet.outcome;
-	if (packet.foodType === "soup" && [
+	// Outcomes that should use a specific "_soup" translation when the food is soup
+	const SOUP_OUTCOMES = new Set([
 		"found_by_player",
 		"found_by_pet",
 		"found_anyway",
 		"pet_failed"
-	].includes(packet.outcome)) {
-		outcomeKey = `${packet.outcome}_soup`;
+	]);
+
+	const outcomeIsFound = FOUND_OUTCOMES.has(packet.outcome);
+
+	// If the food was actually found, pick a readable display name for it from translations
+	const foodName = outcomeIsFound
+		? RandomUtils.crowniclesRandom.pick(
+			i18n.t(`smallEvents:petFood.foodNames.${packet.foodType}`, {
+				lng,
+				returnObjects: true
+			})
+		)
+		: "";
+
+	// When the food type is soup, some outcomes use a different translation key (e.g. "found_by_player_soup")
+	const outcomeKey = packet.foodType === "soup" && SOUP_OUTCOMES.has(packet.outcome)
+		? `${packet.outcome}_soup`
+		: packet.outcome;
+
+	// Base outcome message (always present)
+	const baseMessage = i18n.t(
+		`smallEvents:petFood.outcomes.${outcomeKey}`,
+		{
+			lng,
+			foodName
+		}
+	);
+
+	// Some outcomes also include a pet-love change message appended on a newline
+	if (!outcomeIsFound) {
+		return baseMessage;
 	}
 
-	let description = i18n.t(`smallEvents:petFood.outcomes.${outcomeKey}`, {
-		lng, foodName
-	});
+	const loveKey = packet.loveChange > 0 ? "plus" : packet.loveChange < 0 ? "minus" : "neutral";
+	const loveMessage = i18n.t(`smallEvents:petFood.love.${loveKey}`, { lng });
 
-	if (packet.outcome === "found_by_player" || packet.outcome === "found_by_pet" || packet.outcome === "found_anyway") {
-		if (packet.loveChange > 0) {
-			description += `\n${i18n.t("smallEvents:petFood.love.plus", { lng })}`;
-		}
-		else if (packet.loveChange < 0) {
-			description += `\n${i18n.t("smallEvents:petFood.love.minus", { lng })}`;
-		}
-		else {
-			description += `\n${i18n.t("smallEvents:petFood.love.neutral", { lng })}`;
-		}
-	}
-	return description;
+	return `${baseMessage}\n${loveMessage}`;
 }
