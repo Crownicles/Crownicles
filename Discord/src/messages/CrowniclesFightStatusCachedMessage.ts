@@ -33,32 +33,32 @@ export class CrowniclesFightStatusCachedMessage extends CrowniclesCachedMessage<
 
 		const embed = new CrowniclesEmbed()
 			.setTitle(i18n.t("commands:fight.summarize.title", { lng }))
-			.setDescription(
-				i18n.t("commands:fight.summarize.intro.start", {
+			.setDescription(`
+				${i18n.t("commands:fight.summarize.intro.start", {
 					lng,
 					state: i18n.t(`commands:fight.summarize.intro.${keyProlongation}`, {
 						lng,
 						currentTurn: packet.numberOfTurn,
 						maxTurn: packet.maxNumberOfTurn
 					})
-				})
-				+ i18n.t("commands:fight.summarize.attacker", {
+				})}
+				${i18n.t("commands:fight.summarize.attacker", {
 					lng,
 					pseudo: attackerUsername
-				})
-				+ i18n.t("commands:fight.summarize.stats", {
+				})}
+				${i18n.t("commands:fight.summarize.stats", {
 					lng,
 					...packet.activeFighter.stats
-				})
-				+ i18n.t("commands:fight.summarize.defender", {
+				})}
+				${i18n.t("commands:fight.summarize.defender", {
 					lng,
 					pseudo: defenderUsername
-				})
-				+ i18n.t("commands:fight.summarize.stats", {
+				})}
+				${i18n.t("commands:fight.summarize.stats", {
 					lng,
 					...packet.defendingFighter.stats
-				})
-			);
+				})}
+			`);
 
 		await this.post({ embeds: [embed] });
 		return null;

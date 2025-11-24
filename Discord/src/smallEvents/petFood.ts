@@ -16,6 +16,12 @@ import { KeycloakUtils } from "../../../Lib/src/keycloak/KeycloakUtils";
 import { keycloakConfig } from "../bot/CrowniclesShard";
 import { sendInteractionNotForYou } from "../utils/ErrorUtils";
 
+/**
+ * Handle the pet food small event collector interaction
+ * @param context - Packet context containing Discord interaction info
+ * @param packet - Reaction collector creation packet with event data
+ * @returns The collector instance or null if creation failed
+ */
 export async function petFoodCollector(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
 	const data = packet.data.data as ReactionCollectorPetFoodSmallEventData;
@@ -23,10 +29,7 @@ export async function petFoodCollector(context: PacketContext, packet: ReactionC
 
 	const embed = new CrowniclesSmallEventEmbed(
 		"petFood",
-		i18n.t("smallEvents:petFood.intro." + data.foodType, { lng }) + "\n\n"
-		+ CrowniclesIcons.collectors.question + " " + i18n.t("smallEvents:petFood.choices.investigate", { lng }) + "\n"
-		+ CrowniclesIcons.smallEvents.pet + " " + i18n.t("smallEvents:petFood.choices.sendPet", { lng }) + "\n"
-		+ CrowniclesIcons.smallEvents.doNothing + " " + i18n.t("smallEvents:petFood.choices.continue", { lng }),
+		`${i18n.t(`smallEvents:petFood.intro.${data.foodType}`, { lng })}\n\n${CrowniclesIcons.collectors.question} ${i18n.t("smallEvents:petFood.choices.investigate", { lng })}\n${CrowniclesIcons.smallEvents.pet} ${i18n.t("smallEvents:petFood.choices.sendPet", { lng })}\n${CrowniclesIcons.smallEvents.doNothing} ${i18n.t("smallEvents:petFood.choices.continue", { lng })}`,
 		interaction.user,
 		lng
 	);
