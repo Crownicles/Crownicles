@@ -624,12 +624,14 @@ export abstract class PetConstants {
 	};
 }
 
-export const PostFightPetLoveOutcome = {
+export const PostFightPetLoveOutcomes = {
 	WIN: "win",
 	LOSS: "loss"
 } as const;
 
-export type PostFightPetLoveOutcome = typeof PostFightPetLoveOutcome[keyof typeof PostFightPetLoveOutcome];
+export type PostFightPetLoveOutcome = typeof PostFightPetLoveOutcomes[keyof typeof PostFightPetLoveOutcomes];
+
+export type PostFightPetReactionType = typeof PetConstants.POST_FIGHT_REACTION_TYPES[keyof typeof PetConstants.POST_FIGHT_REACTION_TYPES];
 
 export enum PET_ENTITY_GIVE_RETURN {
 	NO_SLOT,
