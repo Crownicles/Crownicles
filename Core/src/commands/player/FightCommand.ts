@@ -25,7 +25,7 @@ import {
 	RankedFightResult
 } from "../../core/database/logs/LogsReadRequests";
 import {
-	FightController, PostFightPetLoveOutcome
+	FightController
 } from "../../core/fights/FightController";
 import { FightOvertimeBehavior } from "../../core/fights/FightOvertimeBehavior";
 import { PlayerFighter } from "../../core/fights/fighter/PlayerFighter";
@@ -44,6 +44,7 @@ import { PacketUtils } from "../../core/utils/PacketUtils";
 import { PlayerWasAttackedNotificationPacket } from "../../../../Lib/src/packets/notifications/PlayerWasAttackedNotificationPacket";
 import { PetEntities } from "../../core/database/game/models/PetEntity";
 import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
+import { PostFightPetLoveOutcomes } from "../../../../Lib/src/constants/PetConstants";
 
 type PlayerStats = {
 	pet: {
@@ -281,7 +282,7 @@ async function fightEndCallback(fight: FightController, response: CrowniclesPack
 
 	let petLoveChange;
 	if (!isDraw) {
-		const petLoveResult = fight.getPostFightPetLoveChange(winnerFighter, PostFightPetLoveOutcome.WIN);
+		const petLoveResult = fight.getPostFightPetLoveChange(winnerFighter, PostFightPetLoveOutcomes.WIN);
 		if (petLoveResult && winnerFighter instanceof PlayerFighter) {
 			const petEntity = winnerFighter.pet;
 			if (petEntity) {
