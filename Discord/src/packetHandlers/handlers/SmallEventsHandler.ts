@@ -278,14 +278,14 @@ export default class SmallEventsHandler {
 			embeds: [
 				new CrowniclesSmallEventEmbed(
 					"lottery",
-					`${i18n.t(`smallEvents:lottery.${packet.level}.success`, {
+					i18n.t(`smallEvents:lottery.${packet.level}.success`, {
 						lng,
 						lostTime: packet.lostTime,
 						lostTimeDisplay
-					})}${i18n.t(`smallEvents:lottery.rewardTypeText.${packet.winReward}`, {
+					}) + i18n.t(`smallEvents:lottery.rewardTypeText.${packet.winReward}`, {
 						lng,
 						reward: packet.winAmount
-					})}`,
+					}),
 					interaction.user,
 					lng
 				)
@@ -1070,7 +1070,7 @@ export default class SmallEventsHandler {
 			"found_by_pet",
 			"found_anyway"
 		].includes(packet.outcome)) {
-			const foodNames = i18n.t(`smallEvents:petFood.foodNames.${packet.food}`, {
+			const foodNames = i18n.t(`smallEvents:petFood.foodNames.${packet.foodType}`, {
 				lng, returnObjects: true
 			}) as string[];
 			foodName = RandomUtils.crowniclesRandom.pick(foodNames);
@@ -1078,7 +1078,7 @@ export default class SmallEventsHandler {
 
 		// Use soup-specific outcomes when foodType is soup
 		let outcomeKey = packet.outcome;
-		if (packet.food === "soup" && [
+		if (packet.foodType === "soup" && [
 			"found_by_player",
 			"found_by_pet",
 			"found_anyway",

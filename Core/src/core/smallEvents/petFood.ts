@@ -4,6 +4,7 @@ import {
 import { MapLocationDataController } from "../../data/MapLocation";
 import { MapLinkDataController } from "../../data/MapLink";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
+import { millisecondsToHours } from "../../../../Lib/src/utils/TimeUtils";
 import { BlockingUtils } from "../utils/BlockingUtils";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
 import {
@@ -33,6 +34,40 @@ import { TravelTime } from "../maps/TravelTime";
 import { Constants } from "../../../../Lib/src/constants/Constants";
 import { Maps } from "../maps/Maps";
 import { SmallEventConstants } from "../../../../Lib/src/constants/SmallEventConstants";
+import { Effect } from "../../../../Lib/src/types/Effect";
+
+type ReactionHandler = (player: Player, properties: PetFoodProperties) => Promise<string>;
+
+const LOCATION_PROBABILITY_MAPPING = [
+	{
+		types: SmallEventConstants.PET_FOOD.BAD_SMELL_TYPES,
+		probabilities: SmallEventConstants.PET_FOOD.PROBABILITIES.BAD_SMELL
+	},
+	{
+		types: SmallEventConstants.PET_FOOD.VEGETARIAN_TYPES,
+		probabilities: SmallEventConstants.PET_FOOD.PROBABILITIES.VEGETARIAN
+	},
+	{
+		types: SmallEventConstants.PET_FOOD.MEAT_TYPES,
+		probabilities: SmallEventConstants.PET_FOOD.PROBABILITIES.MEAT
+	},
+	{
+		types: SmallEventConstants.PET_FOOD.GOOD_SMELL_TYPES,
+		probabilities: SmallEventConstants.PET_FOOD.PROBABILITIES.GOOD_SMELL
+	}
+] as const;
+
+const REACTION_HANDLERS: Record<string, ReactionHandler> = {
+	[ReactionCollectorPetFoodInvestigateReaction.name]: handleInvestigateReaction,
+	[ReactionCollectorPetFoodSendPetReaction.name]: handleSendPetReaction,
+	[ReactionCollectorPetFoodContinueReaction.name]: handleContinueReaction
+};
+
+function assertPetEntity(petEntity: PetEntity | null, player: Player): asserts petEntity is PetEntity {
+	if (!petEntity) {
+		throw new Error(`Player ${player.id} triggered the pet food event without an associated pet.`);
+	}
+}
 
 type PetFoodProperties = {
 	probabilities: {
@@ -61,19 +96,11 @@ type PetFoodProperties = {
  * @param type
  */
 function getProbabilities(type: string): { [key: string]: number } {
-	if (SmallEventConstants.PET_FOOD.BAD_SMELL_TYPES.includes(type)) {
-		return SmallEventConstants.PET_FOOD.PROBABILITIES.BAD_SMELL;
+	const locationCategory = LOCATION_PROBABILITY_MAPPING.find(entry => entry.types.includes(type));
+	if (!locationCategory) {
+		return SmallEventConstants.PET_FOOD.PROBABILITIES.DEFAULT;
 	}
-	if (SmallEventConstants.PET_FOOD.VEGETARIAN_TYPES.includes(type)) {
-		return SmallEventConstants.PET_FOOD.PROBABILITIES.VEGETARIAN;
-	}
-	if (SmallEventConstants.PET_FOOD.MEAT_TYPES.includes(type)) {
-		return SmallEventConstants.PET_FOOD.PROBABILITIES.MEAT;
-	}
-	if (SmallEventConstants.PET_FOOD.GOOD_SMELL_TYPES.includes(type)) {
-		return SmallEventConstants.PET_FOOD.PROBABILITIES.GOOD_SMELL;
-	}
-	return SmallEventConstants.PET_FOOD.PROBABILITIES.DEFAULT;
+	return locationCategory.probabilities;
 }
 
 /**
@@ -109,29 +136,35 @@ function getFoodType(player: Player): string {
  * @param properties
  * @param petModel
  */
-function calculateLoveChange(foodType: string, properties: PetFoodProperties, petModel: Pet): number {
-	switch (foodType) {
-		case SmallEventConstants.PET_FOOD.FOOD_TYPES.BAD_SMELL: {
-			const rand = RandomUtils.crowniclesRandom.realZeroToOneInclusive();
-			if (rand < properties.probabilities.badSmell.plus) {
-				return properties.love.badSmell.plus;
-			}
-			if (rand < properties.probabilities.badSmell.plus + properties.probabilities.badSmell.minus) {
-				return properties.love.badSmell.minus;
-			}
-			return 0;
+const LOVE_CHANGE_HANDLERS: Record<string, (properties: PetFoodProperties, petModel: Pet) => number> = {
+	[SmallEventConstants.PET_FOOD.FOOD_TYPES.BAD_SMELL]: (properties: PetFoodProperties): number => {
+		const rand = RandomUtils.crowniclesRandom.realZeroToOneInclusive();
+		const plusThreshold = properties.probabilities.badSmell.plus;
+		const totalThreshold = plusThreshold + properties.probabilities.badSmell.minus;
+		if (rand < plusThreshold) {
+			return properties.love.badSmell.plus;
 		}
-		case SmallEventConstants.PET_FOOD.FOOD_TYPES.GOOD_SMELL:
-			return properties.love.goodSmell;
-		case SmallEventConstants.PET_FOOD.FOOD_TYPES.VEGETARIAN:
-			return petModel.diet === PetDiet.CARNIVOROUS ? 0 : properties.love.vegetarian;
-		case SmallEventConstants.PET_FOOD.FOOD_TYPES.MEAT:
-			return petModel.diet === PetDiet.HERBIVOROUS ? 0 : properties.love.meat;
-		case SmallEventConstants.PET_FOOD.FOOD_TYPES.SOUP:
-			return properties.love.soup;
-		default:
-			return 0;
+		if (rand < totalThreshold) {
+			return properties.love.badSmell.minus;
+		}
+		return SmallEventConstants.PET_FOOD.NO_LOVE_CHANGE;
+	},
+	[SmallEventConstants.PET_FOOD.FOOD_TYPES.GOOD_SMELL]: (properties: PetFoodProperties): number => properties.love.goodSmell,
+	[SmallEventConstants.PET_FOOD.FOOD_TYPES.VEGETARIAN]: (properties: PetFoodProperties, petModel: Pet): number => (petModel.diet === PetDiet.CARNIVOROUS
+		? SmallEventConstants.PET_FOOD.NO_LOVE_CHANGE
+		: properties.love.vegetarian),
+	[SmallEventConstants.PET_FOOD.FOOD_TYPES.MEAT]: (properties: PetFoodProperties, petModel: Pet): number => (petModel.diet === PetDiet.HERBIVOROUS
+		? SmallEventConstants.PET_FOOD.NO_LOVE_CHANGE
+		: properties.love.meat),
+	[SmallEventConstants.PET_FOOD.FOOD_TYPES.SOUP]: (properties: PetFoodProperties): number => properties.love.soup
+};
+
+function calculateLoveChange(foodType: string, properties: PetFoodProperties, petModel: Pet): number {
+	const handler = LOVE_CHANGE_HANDLERS[foodType];
+	if (!handler) {
+		return SmallEventConstants.PET_FOOD.NO_LOVE_CHANGE;
 	}
+	return handler(properties, petModel);
 }
 
 /**
@@ -151,6 +184,7 @@ async function applyOutcome(
 		foodType, outcome, properties
 	} = eventData;
 	const petEntity = await PetEntity.findByPk(player.petId);
+	assertPetEntity(petEntity, player);
 	const petModel = PetDataController.instance.getById(petEntity.typeId);
 	let loveChange = 0;
 
@@ -163,17 +197,18 @@ async function applyOutcome(
 	}
 
 	if (loveChange !== 0) {
-		petEntity.lovePoints = Math.min(petEntity.lovePoints + loveChange, PetConstants.MAX_LOVE_POINTS);
-		if (petEntity.lovePoints < 0) {
-			petEntity.lovePoints = 0;
-		}
+		const updatedLovePoints = petEntity.lovePoints + loveChange;
+		petEntity.lovePoints = Math.max(
+			0,
+			Math.min(updatedLovePoints, PetConstants.MAX_LOVE_POINTS)
+		);
 		petEntity.hungrySince = new Date();
 		await petEntity.save();
 	}
 
 	response.push(makePacket(SmallEventPetFoodPacket, {
 		outcome,
-		food: foodType,
+		foodType,
 		loveChange
 	}));
 }
@@ -184,7 +219,7 @@ async function applyOutcome(
  * @param properties
  */
 async function handleInvestigateReaction(player: Player, properties: PetFoodProperties): Promise<string> {
-	await TravelTime.timeTravel(player, SmallEventConstants.PET_FOOD.TIME_TRAVEL_TIME, NumberChangeReason.SMALL_EVENT);
+	await TravelTime.applyEffect(player, Effect.OCCUPIED, SmallEventConstants.PET_FOOD.TRAVEL_TIME_PENALTY_MINUTES, new Date(), NumberChangeReason.SMALL_EVENT);
 	await player.save();
 	if (RandomUtils.crowniclesRandom.realZeroToOneInclusive() < properties.probabilities.investigateFind) {
 		return SmallEventConstants.PET_FOOD.OUTCOMES.FOUND_BY_PLAYER;
@@ -198,11 +233,12 @@ async function handleInvestigateReaction(player: Player, properties: PetFoodProp
  */
 async function handleSendPetReaction(player: Player): Promise<string> {
 	const petEntity = await PetEntity.findByPk(player.petId);
+	assertPetEntity(petEntity, player);
 	const petModel = PetDataController.instance.getById(petEntity.typeId);
-	const now = new Date();
-	const hungrySince = petEntity.hungrySince ? new Date(petEntity.hungrySince) : new Date();
-	const diffHours = (now.getTime() - hungrySince.getTime()) / (1000 * 60 * 60);
-	const feedDelay = (PetConstants.BREED_COOLDOWN * (petModel.feedDelay ?? 1)) / (1000 * 60 * 60);
+	const now = Date.now();
+	const hungrySince = petEntity.hungrySince ? new Date(petEntity.hungrySince).getTime() : now;
+	const diffHours = millisecondsToHours(now - hungrySince);
+	const feedDelay = millisecondsToHours(PetConstants.BREED_COOLDOWN * (petModel.feedDelay ?? 1));
 
 	let probability;
 	if (diffHours < feedDelay) {
@@ -224,21 +260,19 @@ async function handleSendPetReaction(player: Player): Promise<string> {
 		}
 	}
 
-	if (RandomUtils.crowniclesRandom.realZeroToOneInclusive() < probability) {
-		return SmallEventConstants.PET_FOOD.OUTCOMES.FOUND_BY_PET;
-	}
-	return SmallEventConstants.PET_FOOD.OUTCOMES.PET_FAILED;
+	return RandomUtils.crowniclesRandom.realZeroToOneInclusive() < probability
+		? SmallEventConstants.PET_FOOD.OUTCOMES.FOUND_BY_PET
+		: SmallEventConstants.PET_FOOD.OUTCOMES.PET_FAILED;
 }
 
 /**
  * Handle the continue reaction outcome
  * @param properties
  */
-function handleContinueReaction(properties: PetFoodProperties): string {
-	if (RandomUtils.crowniclesRandom.realZeroToOneInclusive() < properties.probabilities.continueFind) {
-		return SmallEventConstants.PET_FOOD.OUTCOMES.FOUND_ANYWAY;
-	}
-	return SmallEventConstants.PET_FOOD.OUTCOMES.NOTHING;
+function handleContinueReaction(_player: Player, properties: PetFoodProperties): Promise<string> {
+	return Promise.resolve(RandomUtils.crowniclesRandom.realZeroToOneInclusive() < properties.probabilities.continueFind
+		? SmallEventConstants.PET_FOOD.OUTCOMES.FOUND_ANYWAY
+		: SmallEventConstants.PET_FOOD.OUTCOMES.NOTHING);
 }
 
 /**
@@ -250,20 +284,11 @@ function handleContinueReaction(properties: PetFoodProperties): string {
  */
 function getEndCallback(player: Player, foodType: string, properties: PetFoodProperties): EndCallback {
 	return async (collector, response) => {
-		const reaction = collector.getFirstReaction();
-		let outcome = SmallEventConstants.PET_FOOD.OUTCOMES.NOTHING;
-
-		if (reaction) {
-			if (reaction.reaction.type === ReactionCollectorPetFoodInvestigateReaction.name) {
-				outcome = await handleInvestigateReaction(player, properties);
-			}
-			else if (reaction.reaction.type === ReactionCollectorPetFoodSendPetReaction.name) {
-				outcome = await handleSendPetReaction(player);
-			}
-			else if (reaction.reaction.type === ReactionCollectorPetFoodContinueReaction.name) {
-				outcome = handleContinueReaction(properties);
-			}
-		}
+		const reactionType = collector.getFirstReaction()?.reaction.type;
+		const handler = reactionType ? REACTION_HANDLERS[reactionType] : undefined;
+		const outcome = handler
+			? await handler(player, properties)
+			: SmallEventConstants.PET_FOOD.OUTCOMES.NOTHING;
 
 		await applyOutcome(player, {
 			foodType, outcome, properties
