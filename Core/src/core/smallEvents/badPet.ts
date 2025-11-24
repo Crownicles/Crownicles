@@ -1,6 +1,4 @@
-import {
-	SmallEventDataController, SmallEventFuncs
-} from "../../data/SmallEvent";
+import { SmallEventFuncs } from "../../data/SmallEvent";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { BlockingUtils } from "../utils/BlockingUtils";
 import {
@@ -11,7 +9,12 @@ import {
 	ReactionCollectorBadPetIntimidateReaction,
 	ReactionCollectorBadPetPleadReaction,
 	ReactionCollectorBadPetSmallEvent,
-	ReactionCollectorBadPetWaitReaction
+	ReactionCollectorBadPetWaitReaction,
+	ReactionCollectorBadPetProtectReaction,
+	ReactionCollectorBadPetDistractReaction,
+	ReactionCollectorBadPetCalmReaction,
+	ReactionCollectorBadPetShowcaseReaction,
+	ReactionCollectorBadPetEnergizeReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorBadPetSmallEvent";
 import { SmallEventBadPetPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventBadPetPacket";
 import {
@@ -29,8 +32,10 @@ import { ReactionCollectorReaction } from "../../../../Lib/src/packets/interacti
 import { Maps } from "../maps/Maps";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
 import { Constants } from "../../../../Lib/src/constants/Constants";
+import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
+import { PetUtils } from "../utils/PetUtils";
 
-type BadPetActionHandler = (petEntity: PetEntity, petModel: Pet) => {
+type BadPetActionHandler = (petEntity: PetEntity, petModel: Pet, player: Player) => {
 	loveLost: number;
 	interactionType: string;
 };
@@ -126,7 +131,7 @@ const BAD_PET_ACTIONS: BadPetAction[] = [
 	},
 	{
 		reactionClass: ReactionCollectorBadPetWaitReaction,
-		handler: (_petEntity, _petModel): {
+		handler: (_petEntity, _petModel, _player): {
 			loveLost: number;
 			interactionType: string;
 		} => {
@@ -134,6 +139,98 @@ const BAD_PET_ACTIONS: BadPetAction[] = [
 			return {
 				loveLost,
 				interactionType: "wait"
+			};
+		}
+	},
+	{
+		reactionClass: ReactionCollectorBadPetProtectReaction,
+		handler: (_petEntity, _petModel, _player): {
+			loveLost: number;
+			interactionType: string;
+		} => {
+			/*
+			 * Basé sur la défense du joueur
+			 * En pratique, charger les objets actifs ici serait trop lourd
+			 * On utilise donc une probabilité fixe de 50% (moyenne entre joueur faible/fort)
+			 */
+			const success = RandomUtils.crowniclesRandom.bool(0.5);
+			const loveLost = success ? 0 : RandomUtils.randInt(6, 10);
+			return {
+				loveLost,
+				interactionType: "protect"
+			};
+		}
+	},
+	{
+		reactionClass: ReactionCollectorBadPetDistractReaction,
+		handler: (_petEntity, _petModel, _player): {
+			loveLost: number;
+			interactionType: string;
+		} => {
+			// Random pur - 50/50
+			const success = RandomUtils.crowniclesRandom.bool(0.5);
+			const loveLost = success ? 0 : RandomUtils.randInt(5, 8);
+			return {
+				loveLost,
+				interactionType: "distract"
+			};
+		}
+	},
+	{
+		reactionClass: ReactionCollectorBadPetCalmReaction,
+		handler: (petEntity, _petModel, _player): {
+			loveLost: number;
+			interactionType: string;
+		} => {
+			// Basé sur l'amour actuel du pet - plus le love est proche du max, moins ça fail
+			const maxLove = PetConstants.MAX_LOVE_POINTS;
+			const currentLove = petEntity.lovePoints;
+			const loveRatio = currentLove / maxLove;
+
+			const successChance = 0.3 + (loveRatio * 0.6); // De 30% à 90% selon l'amour
+			const success = RandomUtils.crowniclesRandom.bool(successChance);
+			const loveLost = success ? 0 : RandomUtils.randInt(4, 7);
+			return {
+				loveLost,
+				interactionType: "calm"
+			};
+		}
+	},
+	{
+		reactionClass: ReactionCollectorBadPetShowcaseReaction,
+		handler: (_petEntity, petModel, _player): {
+			loveLost: number;
+			interactionType: string;
+		} => {
+			// Basé sur la rareté du pet - plus rare = plus de chance de réussir
+			const rarity = petModel.rarity;
+
+			// Rarity: 1 = commun, 8 = légendaire
+			const successChance = 0.2 + ((rarity - 1) * 0.1); // De 20% (commun) à 90% (légendaire)
+			const success = RandomUtils.crowniclesRandom.bool(successChance);
+			const loveLost = success ? 0 : RandomUtils.randInt(3, 6);
+			return {
+				loveLost,
+				interactionType: "showcase"
+			};
+		}
+	},
+	{
+		reactionClass: ReactionCollectorBadPetEnergizeReaction,
+		handler: (petEntity, petModel, _player): {
+			loveLost: number;
+			interactionType: string;
+		} => {
+			// Basé sur la vigueur (vigor) du pet
+			const vigor = PetUtils.getPetVigor(petModel, petEntity.lovePoints);
+
+			// Plus de vigor = meilleure chance (vigor va de 0 à 6)
+			const successChance = 0.15 + (vigor / PetConstants.VIGOR.MAX) * 0.75; // De 15% à 90%
+			const success = RandomUtils.crowniclesRandom.bool(successChance);
+			const loveLost = success ? 0 : RandomUtils.randInt(4, 8);
+			return {
+				loveLost,
+				interactionType: "energize"
 			};
 		}
 	}
@@ -170,7 +267,7 @@ function getEndCallback(player: Player): EndCallback {
 				if (petEntity) {
 					const petModel = PetDataController.instance.getById(petEntity.typeId);
 					if (petModel) {
-						result = handler(petEntity, petModel);
+						result = handler(petEntity, petModel, player);
 					}
 				}
 			}
@@ -211,10 +308,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 
 	executeSmallEvent: (response: CrowniclesPacket[], player: Player, context): Promise<void> => {
 		const selectedActions = pickRandom(BAD_PET_ACTIONS, 3);
-		const reactions = selectedActions.map(a => {
-			const ReactionClass = a.reactionClass;
-			return new ReactionClass();
-		});
+		const reactions = selectedActions.map(a => a.reactionClass);
 
 		const collector = new ReactionCollectorBadPetSmallEvent(reactions);
 
@@ -234,5 +328,4 @@ export const smallEventFuncs: SmallEventFuncs = {
 		return Promise.resolve();
 	}
 };
-
 

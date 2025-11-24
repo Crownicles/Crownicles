@@ -7,7 +7,12 @@ import {
 	ReactionCollectorBadPetGiveVegReaction,
 	ReactionCollectorBadPetFleeReaction,
 	ReactionCollectorBadPetHideReaction,
-	ReactionCollectorBadPetWaitReaction
+	ReactionCollectorBadPetWaitReaction,
+	ReactionCollectorBadPetProtectReaction,
+	ReactionCollectorBadPetDistractReaction,
+	ReactionCollectorBadPetCalmReaction,
+	ReactionCollectorBadPetShowcaseReaction,
+	ReactionCollectorBadPetEnergizeReaction
 } from "../../../Lib/src/packets/interaction/ReactionCollectorBadPetSmallEvent";
 import { DiscordCache } from "../bot/DiscordCache";
 import { CrowniclesSmallEventEmbed } from "../messages/CrowniclesSmallEventEmbed";
@@ -29,7 +34,7 @@ const REACTION_MAPPING: Record<string, {
 }> = {
 	[ReactionCollectorBadPetIntimidateReaction.name]: {
 		id: "intimidate",
-		icon: CrowniclesIcons.fightActions.clawAttack,
+		icon: CrowniclesIcons.fightActions.roarAttack,
 		labelKey: "intimidate"
 	},
 	[ReactionCollectorBadPetPleadReaction.name]: {
@@ -49,18 +54,43 @@ const REACTION_MAPPING: Record<string, {
 	},
 	[ReactionCollectorBadPetFleeReaction.name]: {
 		id: "flee",
-		icon: CrowniclesIcons.events["77"].flee as string,
+		icon: CrowniclesIcons.fightActions.quickAttack,
 		labelKey: "flee"
 	},
 	[ReactionCollectorBadPetHideReaction.name]: {
 		id: "hide",
-		icon: CrowniclesIcons.events["77"].hide as string,
+		icon: CrowniclesIcons.fightActions.stealth,
 		labelKey: "hide"
 	},
 	[ReactionCollectorBadPetWaitReaction.name]: {
 		id: "wait",
-		icon: CrowniclesIcons.events["78"].wait as string,
+		icon: CrowniclesIcons.fightActions.resting,
 		labelKey: "wait"
+	},
+	[ReactionCollectorBadPetProtectReaction.name]: {
+		id: "protect",
+		icon: CrowniclesIcons.fightActions.shieldAttack,
+		labelKey: "protect"
+	},
+	[ReactionCollectorBadPetDistractReaction.name]: {
+		id: "distract",
+		icon: CrowniclesIcons.fightActions.confused,
+		labelKey: "distract"
+	},
+	[ReactionCollectorBadPetCalmReaction.name]: {
+		id: "calm",
+		icon: CrowniclesIcons.unitValues.health,
+		labelKey: "calm"
+	},
+	[ReactionCollectorBadPetShowcaseReaction.name]: {
+		id: "showcase",
+		icon: CrowniclesIcons.unitValues.petRarity,
+		labelKey: "showcase"
+	},
+	[ReactionCollectorBadPetEnergizeReaction.name]: {
+		id: "energize",
+		icon: CrowniclesIcons.unitValues.energy,
+		labelKey: "energize"
 	}
 };
 

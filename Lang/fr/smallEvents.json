@@ -1976,24 +1976,148 @@
     }
   },
   "badPet": {
-    "intro": "Votre familier semble agité par quelque chose dans les environs...",
+    "intro": [
+      "Votre fidèle compagnon s'immobilise brusquement, les poils hérissés sur l'échine, fixant intensément les fourrés environnants d'où émane une présence hostile. Un grondement sourd s'échappe de sa gorge tandis que ses oreilles se couchent contre son crâne. Quelque chose de dangereux rôde dans les parages, et la tension qui électrise l'air vous fait comprendre qu'une confrontation semble inévitable.",
+      "Alors que vous progressez tranquillement sur le sentier, votre compagnon s'arrête net et se met à grogner, les crocs découverts. Son regard alerte scrute nerveusement les alentours, et vous percevez dans son attitude une crainte inhabituelle. Une menace semble planer dans l'atmosphère, invisible mais palpable, faisant battre votre cœur plus fort dans votre poitrine.",
+      "Un frisson glacé parcourt l'échine de votre familier qui se met soudainement à trembler, le regard fixé sur une ombre mouvante qui se dessine dans la pénombre des arbres. Ses oreilles pivotent frénétiquement pour capter le moindre bruit suspect tandis qu'un gémissement inquiet s'échappe de sa gueule. La peur se lit dans ses yeux écarquillés, et vous comprenez immédiatement que le danger est proche.",
+      "Votre compagnon bondit soudain en arrière avec un jappement de terreur, fixant un point précis dans les broussailles environnantes. Ses pattes se figent dans une posture défensive, tous ses muscles bandés, prêt à bondir ou à fuir. Un silence pesant s'installe, rompu seulement par le halètement précipité de votre familier qui vous fait comprendre par son comportement qu'une menace imminente se profile.",
+      "Une odeur acre et menaçante parvient soudain aux narines de votre fidèle ami qui se met instantanément en alerte maximale. Ses babines se retroussent en un rictus menaçant, dévoilant des crocs prêts à mordre, tandis que son corps entier se raidit. Vous sentez la tension monter comme un ressort compressé, prêt à se détendre dans une explosion de violence si la situation dégénère."
+    ],
     "choices": {
-      "intimidate": "Ordonner d'intimider la menace",
-      "plead": "Supplier la menace de partir",
-      "giveMeat": "Donner de la viande pour faire diversion",
-      "giveVeg": "Donner des légumes pour faire diversion",
-      "flee": "Prendre la fuite",
-      "hide": "Se cacher",
-      "wait": "Attendre que ça passe"
+      "intimidate": "Ordonner à votre familier d'intimider la menace",
+      "plead": "Tenter d'apaiser la situation par des paroles",
+      "giveMeat": "Lancer de la viande en diversion",
+      "giveVeg": "Jeter des légumes pour détourner l'attention",
+      "flee": "Prendre vos jambes à votre cou",
+      "hide": "Vous dissimuler dans les environs",
+      "wait": "Observer sans bouger",
+      "protect": "Protéger votre familier de votre corps",
+      "distract": "Créer une diversion bruyante",
+      "calm": "Tenter de calmer votre compagnon",
+      "showcase": "Mettre en valeur votre compagnon",
+      "energize": "Motiver votre familier"
     },
     "outcomes": {
-      "intimidate": "Votre familier grogne férocement ! La menace recule, mais votre compagnon est stressé. Vous perdez {{loveLost}} points d'amour.",
-      "plead": "Vous suppliez pitoyablement. La menace s'en va, dégoûtée par tant de faiblesse. Votre familier a honte. Vous perdez {{loveLost}} points d'amour.",
-      "giveMeat": "La menace se jette sur la viande ! Votre familier est jaloux de ne pas l'avoir eue. Vous perdez {{loveLost}} points d'amour.",
-      "giveVeg": "La menace grignote les légumes. Votre familier vous regarde avec incompréhension. Vous perdez {{loveLost}} points d'amour.",
-      "flee": "Vous courrez comme des dératés ! Votre familier est épuisé. Vous perdez {{loveLost}} points d'amour.",
-      "hide": "Vous vous cachez dans un buisson épineux. Votre familier n'apprécie pas du tout. Vous perdez {{loveLost}} points d'amour.",
-      "wait": "Vous attendez... et attendez... Votre familier s'ennuie et s'énerve. Vous perdez {{loveLost}} points d'amour."
+      "intimidate": {
+        "success": [
+          "Obéissant à votre ordre, votre familier se dresse de toute sa hauteur et pousse un rugissement impressionnant. La menace, surprise par cette démonstration de force, hésite un instant avant de battre en retraite. Votre compagnon vous regarde fièrement, rassuré par votre leadership.",
+          "Votre familier adopte une posture menaçante et grogne avec une férocité surprenante. Face à cette détermination, l'adversaire décide qu'il vaut mieux chercher une proie plus facile ailleurs. Votre compagnon semble satisfait de votre décision."
+        ],
+        "fail": [
+          "Obéissant à votre ordre, votre familier se dresse de toute sa hauteur et pousse un rugissement pitoyable. La menace ne semble guère impressionnée, et votre compagnon recule précipitamment, l'orgueil blessé et la confiance ébranlée.",
+          "Votre familier tente de paraître menaçant, mais l'adversaire riposte par un grondement terrifiant qui transforme votre brave compagnon en chiffon tremblotant. Il vous en veut d'avoir été mis dans cette situation périlleuse."
+        ]
+      },
+      "plead": {
+        "success": [
+          "Vous tentez d'apaiser la situation par des paroles douces et conciliantes. Votre voix posée et votre attitude calme semblent détendre l'atmosphère. La menace, rassurée par votre approche pacifique, s'éloigne lentement. Votre compagnon apprécie votre sagesse.",
+          "Vos paroles apaisantes résonnent dans le silence. Votre familier se calme progressivement, influencé par votre assurance tranquille. La menace, voyant qu'aucune confrontation n'est recherchée, préfère s'en aller. Votre relation sort renforcée de cet épisode."
+        ],
+        "fail": [
+          "Vous tentez d'apaiser la situation par des paroles douces, mais votre voix chevrotante trahit votre peur. Cette démonstration de faiblesse fait honte à votre compagnon qui détourne le regard avec mépris.",
+          "Vos supplications pathétiques résonnent dans le silence. Votre familier vous observe avec un mélange de pitié et de dédain, manifestement gêné par cette attitude servile qui contraste avec l'image de maître fort qu'il avait de vous."
+        ]
+      },
+      "giveMeat": {
+        "success": [
+          "Vous sortez rapidement un morceau de viande et le lancez habilement vers la menace. L'animal se jette dessus et s'en va dévorer son butin ailleurs. Votre compagnon ne semble pas contrarié par ce sacrifice stratégique et vous regarde avec admiration pour votre ingéniosité.",
+          "Le morceau de viande que vous lancez atterrit pile au bon endroit. La menace l'attrape au vol et s'éloigne satisfaite. Votre familier apprécie cette solution astucieuse qui a évité la confrontation."
+        ],
+        "fail": [
+          "Vous sortez précipitamment un morceau de viande de votre besace et le lancez vers la menace. Malheureusement, votre familier convoitait secrètement ce mets et vous regarde avec des yeux accusateurs, déçu de voir cette friandise disparaître.",
+          "Le morceau de viande que vous sacrifiez pour votre salut est englouti par la menace. Votre compagnon observe la scène avec frustration, se sentant lésé par cette distribution injuste qui favorise un étranger."
+        ]
+      },
+      "giveVeg": {
+        "success": [
+          "Vous jetez rapidement quelques légumes vers la menace. Contre toute attente, l'animal les renifle avec intérêt et commence à les manger tout en s'éloignant. Votre compagnon semble impressionné par votre instinct qui vous a permis de trouver exactement ce qu'il fallait.",
+          "Les légumes que vous lancez atterrissent près de la menace qui, curieusement herbivore, les dévore avec appétit avant de partir. Votre familier apprécie cette solution pacifique et astucieuse."
+        ],
+        "fail": [
+          "Vous jetez une poignée de légumes vers la menace dans l'espoir de gagner du temps. Votre familier vous observe avec perplexité, se demandant quelle mouche vous a piqué pour croire qu'un prédateur serait intéressé par des carottes.",
+          "Les légumes que vous lancez maladroitement atterrissent aux pieds de la menace qui les ignore totalement. Votre compagnon secoue la tête, désespéré par votre incompétence à évaluer la situation."
+        ]
+      },
+      "flee": {
+        "success": [
+          "Vous prenez vos jambes à votre cou et votre familier vous suit avec agilité. Votre vitesse combinée vous permet de distancer rapidement la menace. Une fois à l'abri, votre compagnon halète mais semble satisfait de cette solution pragmatique.",
+          "La fuite se révèle être la bonne décision. Vous courez efficacement avec votre familier qui vous suit sans difficulté. La menace renonce rapidement à vous poursuivre. Votre relation n'en souffre pas, au contraire, vous avez fait équipe."
+        ],
+        "fail": [
+          "La panique vous submerge et vous détalez comme un lapin effrayé, votre familier sur vos talons. Cette course effrénée à travers ronces et épineux laisse votre compagnon épuisé et couvert d'égratignures. Haletant et fourbu, il vous en veut.",
+          "Vous prenez vos jambes à votre cou dans une débandade peu glorieuse, forçant votre pauvre compagnon à sprinter jusqu'à l'épuisement pour ne pas se faire distancer. Lorsque vous vous arrêtez enfin, il s'effondre, le cœur battant."
+        ]
+      },
+      "hide": {
+        "success": [
+          "Vous repérez rapidement un renfoncement dans les rochers et vous y glissez avec votre familier. La cachette est parfaite et vous permet d'attendre que la menace passe son chemin sans vous voir. Votre compagnon apprécie votre discrétion et votre sang-froid.",
+          "Vous trouvez un endroit idéal pour vous dissimuler derrière un gros arbre. Vous et votre familier restez immobiles tandis que la menace passe à quelques mètres sans vous remarquer. Votre compagnon semble rassuré par votre décision prudente."
+        ],
+        "fail": [
+          "Vous vous précipitez dans un buisson épineux en tirant votre compagnon avec vous. Les ronces acérées lacèrent sa peau délicate, arrachant des gémissements de douleur. Lorsque vous ressortez enfin, criblé d'épines, votre familier vous lance un regard lourd de reproches.",
+          "Votre tentative de dissimulation dans un fourré vous transforme, vous et votre compagnon, en pelotes d'épingles vivantes. Chaque mouvement enfonce un peu plus les épines dans votre chair, et les plaintes étouffées de votre familier témoignent de son supplice."
+        ]
+      },
+      "wait": {
+        "success": [
+          "Vous décidez d'attendre immobile en gardant votre calme. Après quelques minutes qui semblent durer une éternité, la menace, ne détectant aucun mouvement suspect, finit par s'éloigner. Votre compagnon semble apprécier votre patience et votre maîtrise de soi.",
+          "L'attente se révèle payante. En restant parfaitement immobile avec votre familier, vous parvenez à vous faire oublier. La menace, ne trouvant rien d'intéressant, repart. Votre compagnon vous regarde avec respect pour votre sagesse."
+        ],
+        "fail": [
+          "Vous décidez d'attendre immobile, espérant que la menace se lassera. Les minutes s'égrainent avec une lenteur insupportable tandis que votre compagnon piétine nerveusement, s'ennuyant ferme et s'énervant de cette inaction forcée.",
+          "L'attente s'éternise dans un silence pesant, et votre familier commence à gémir d'ennui et de frustration. Cette stratégie passive le met à rude épreuve, et il vous reproche mentalement de ne rien faire pour améliorer la situation."
+        ]
+      },
+      "protect": {
+        "success": [
+          "Dans un élan de bravoure protectrice, vous placez fermement votre corps entre la menace et votre compagnon. Votre détermination et votre posture assurée impressionnent l'adversaire qui décide de ne pas s'en prendre à une proie aussi déterminée. Votre familier est touché par votre courage.",
+          "Vous protégez votre compagnon en vous interposant avec assurance. Face à cette démonstration de loyauté et de courage, la menace hésite puis recule. Votre familier vous regarde avec une affection renouvelée, reconnaissant de votre protection."
+        ],
+        "fail": [
+          "Dans un élan de bravoure protectrice, vous placez votre corps entre la menace et votre compagnon. Malheureusement, votre geste héroïque est si maladroit que vous marchez accidentellement sur la patte de votre familier, lui arrachant un jappement de douleur.",
+          "Vous tentez courageusement de protéger votre compagnon en le saisissant pour le mettre à l'abri, mais dans la précipitation, votre poigne trop ferme lui fait mal. Il se débat, frustré par votre rudesse involontaire."
+        ]
+      },
+      "distract": {
+        "success": [
+          "Vous créez une diversion en lançant adroitement des pierres dans une direction opposée tout en produisant des bruits variés. La menace, intriguée et désorientée, se dirige vers ces sons étranges. Votre compagnon profite de la confusion pour s'éloigner avec vous, impressionné par votre ruse.",
+          "Votre diversion fonctionne à merveille. En agitant votre cape et en créant un vacarme contrôlé, vous attirez l'attention de la menace ailleurs. Pendant ce temps, vous et votre familier vous éclipsez discrètement. Il apprécie votre ingéniosité."
+        ],
+        "fail": [
+          "Vous décidez de créer une diversion en hurlant à pleins poumons et en agitant frénétiquement les bras. Ce spectacle ridicule effraie davantage votre compagnon que la menace elle-même, et il recule en gémissant, les oreilles plaquées contre son crâne.",
+          "Dans une tentative désespérée de diversion, vous lancez des pierres dans toutes les directions en poussant des cris de guerre. Malheureusement, l'un de vos projectiles maladroits atteint votre familier qui couine de douleur."
+        ]
+      },
+      "calm": {
+        "success": [
+          "Vous parvenez à apaiser votre compagnon par des caresses rassurantes et une voix posée. Votre calme communicatif détend progressivement votre familier qui se remet à respirer normalement. Face à cette sérénité retrouvée, la menace perd son intérêt et s'éloigne. Votre lien de confiance s'en trouve renforcé.",
+          "Vos paroles apaisantes et votre attitude confiante parviennent à calmer votre familier. Une fois détendu, il retrouve son assurance naturelle, ce qui fait hésiter la menace. Voyant une proie moins vulnérable, elle préfère partir. Votre compagnon vous est reconnaissant."
+        ],
+        "fail": [
+          "Vous tentez d'apaiser votre compagnon par des caresses rassurantes, mais votre main tremblante de peur trahit votre propre anxiété. Votre familier perçoit cette nervosité et, au lieu de se calmer, devient encore plus agité.",
+          "Vos paroles apaisantes se transforment en murmures chevrotants qui trahissent votre terreur. Votre compagnon, au lieu de se sentir rassuré, comprend que vous êtes vous-même pétrifié de peur, ce qui aggrave sa propre panique."
+        ]
+      },
+      "showcase": {
+        "success": [
+          "Vous mettez en valeur votre compagnon en le plaçant bien en évidence et en soulignant sa prestance naturelle. La menace, impressionnée par la rareté et la beauté de votre familier, hésite à s'en prendre à un spécimen aussi remarquable. Elle préfère s'éloigner avec respect. Votre compagnon est flatté par cette attention.",
+          "En mettant astucieusement en avant les qualités exceptionnelles de votre familier, vous parvenez à intimider la menace qui reconnaît avoir affaire à un animal hors du commun. Elle bat en retraite prudemment. Votre compagnon apprécie d'être ainsi valorisé."
+        ],
+        "fail": [
+          "Vous tentez de mettre en valeur votre compagnon, mais votre présentation maladroite et votre nervosité gâchent l'effet escompté. La menace n'est pas impressionnée, et votre familier se sent ridicule d'être ainsi exposé.",
+          "Votre tentative de showcase tourne court lorsque votre compagnon, stressé par la situation, refuse de coopérer et se recroqueville. La menace n'est pas impressionnée par ce spectacle pitoyable, et votre familier vous en veut de l'avoir mis dans l'embarras."
+        ]
+      },
+      "energize": {
+        "success": [
+          "Vous motivez votre familier avec des encouragements enthousiastes et énergiques. Galvanisé par votre soutien, votre compagnon retrouve toute sa vigueur et se dresse fièrement face à la menace. Impressionnée par ce regain d'énergie soudain, celle-ci préfère ne pas prendre de risque et s'éloigne. Votre familier est reconnaissant de votre soutien.",
+          "Vos mots d'encouragement redonnent confiance à votre familier qui puise dans ses réserves d'énergie. Cette démonstration de vitalité fait reculer la menace qui ne s'attendait pas à une telle résistance. Votre compagnon apprécie votre capacité à le remotiver."
+        ],
+        "fail": [
+          "Vous tentez de motiver votre familier avec des encouragements, mais votre voix manque de conviction. Votre compagnon, déjà épuisé, ne trouve pas l'énergie nécessaire et se sent encore plus fatigué par vos exigences.",
+          "Vos tentatives pour énergiser votre familier tombent à plat. Au lieu de le remotiver, vos paroles lui rappellent à quel point il est fatigué. Il vous en veut de lui demander un effort qu'il ne peut fournir."
+        ]
+      }
     }
   }
 }
