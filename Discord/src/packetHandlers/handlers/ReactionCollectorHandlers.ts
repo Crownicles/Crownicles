@@ -51,6 +51,8 @@ import { smallShopCollector } from "../../smallEvents/shop";
 import { epicItemShopCollector } from "../../smallEvents/epicItemShop";
 import { ReactionCollectorPetFoodSmallEventData } from "../../../../Lib/src/packets/interaction/ReactionCollectorPetFoodSmallEvent";
 import { petFoodCollector } from "../../smallEvents/petFood";
+import { ReactionCollectorBadPetSmallEventData } from "../../../../Lib/src/packets/interaction/ReactionCollectorBadPetSmallEvent";
+import { badPetCollector } from "../../smallEvents/badPet";
 import { ReactionCollectorEpicShopSmallEventData } from "../../../../Lib/src/packets/interaction/ReactionCollectorEpicShopSmallEvent";
 import { ReactionCollectorShopSmallEventData } from "../../../../Lib/src/packets/interaction/ReactionCollectorShopSmallEvent";
 import { ReactionCollectorSkipMissionShopItemData } from "../../../../Lib/src/packets/interaction/ReactionCollectorSkipMissionShopItem";
@@ -137,6 +139,7 @@ export default class ReactionCollectorHandler {
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorUnlockData.name, createUnlockCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorShopSmallEventData.name, smallShopCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorPetFoodSmallEventData.name, petFoodCollector);
+		ReactionCollectorHandler.collectorMap.set(ReactionCollectorBadPetSmallEventData.name, badPetCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorEpicShopSmallEventData.name, epicItemShopCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorSkipMissionShopItemData.name, skipMissionShopItemCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorFightData.name, createFightCollector);
