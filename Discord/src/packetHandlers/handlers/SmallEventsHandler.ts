@@ -992,7 +992,6 @@ export default class SmallEventsHandler {
 		}
 		const lng = context.discord!.language;
 
-		// Déterminer si c'est un succès ou un échec basé sur loveLost
 		const outcomeKey = packet.loveLost === 0 ? "success" : "fail";
 		const description = StringUtils.getRandomTranslation(
 			`smallEvents:badPet.outcomes.${packet.interactionType}.${outcomeKey}`,

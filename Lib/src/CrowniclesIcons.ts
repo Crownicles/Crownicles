@@ -34,6 +34,9 @@ export const CrowniclesIcons: {
 	witchSmallEvent: {
 		[ingredient: string]: string;
 	};
+	badPetSmallEvent: {
+		[choiceId: string]: string;
+	};
 	cartSmallEvent: {
 		accept: string;
 		refuse: string;
@@ -1849,6 +1852,20 @@ export const CrowniclesIcons: {
 		wand: "🪄",
 		wiltedRose: "🥀",
 		worm: "🪱"
+	},
+	badPetSmallEvent: {
+		intimidate: "📢",
+		plead: "🙏",
+		giveMeat: "🍖",
+		giveVeg: "🥬",
+		flee: "🗡️",
+		hide: "😶‍🌫️",
+		wait: "🛏️",
+		protect: "🛡️",
+		distract: "🤯",
+		calm: "❤️",
+		showcase: "⭐",
+		energize: "⚡"
 	},
 	cartSmallEvent: {
 		accept: "🚗",
