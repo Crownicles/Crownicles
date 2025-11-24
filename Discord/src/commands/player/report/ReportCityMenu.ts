@@ -682,9 +682,11 @@ function getManageHomeMenu(context: PacketContext, interaction: CrowniclesIntera
 	};
 }
 
-function getHomeMenu(): CrowniclesNestedMenu {
-	throw new Error("Not implemented yet"); // todo
-}
+/*
+ * function getHomeMenu(): CrowniclesNestedMenu {
+ * 	throw new Error("Not implemented yet"); // todo
+ * }
+ */
 
 export class ReportCityMenu {
 	public static async handleCityCollector(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
