@@ -12,7 +12,7 @@ import { MonsterFighter } from "./fighter/MonsterFighter";
 import { PlayerFighter } from "./fighter/PlayerFighter";
 import { PVEConstants } from "../../../../Lib/src/constants/PVEConstants";
 import {
-	CrowniclesPacket, makePacket, PacketContext
+	CrowniclesPacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	attackInfo, FightActionController, statsInfo
