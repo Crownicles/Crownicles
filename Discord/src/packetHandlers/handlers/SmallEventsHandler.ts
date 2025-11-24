@@ -7,6 +7,7 @@ import { Language } from "../../../../Lib/src/Language";
 import {
 	escapeUsername, StringUtils
 } from "../../utils/StringUtils";
+import { getRandomSmallEventIntro } from "../../utils/SmallEventUtils";
 import { SmallEventBigBadPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventBigBadPacket";
 import {
 	SmallEventBadIssue,
@@ -93,10 +94,6 @@ import { infoFightResult } from "../../smallEvents/infoFight";
 import { limogesResult } from "../../smallEvents/limoges";
 import { SmallEventHauntedPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventHauntedPacket";
 import { SmallEventPetFoodPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventPetFoodPacket";
-
-export function getRandomSmallEventIntro(language: Language): string {
-	return StringUtils.getRandomTranslation("smallEvents:intro", language);
-}
 
 const PET_TIME_INTERACTIONS = new Set([
 	"gainTime",
