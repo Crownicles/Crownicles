@@ -213,8 +213,8 @@ async function handleSendPetReaction(player: Player): Promise<string> {
 	}
 	else {
 		/*
-		 *Probability decreases linearly based on the force (more the pet is strong
-		 *faster it becomes weak). Cannot go lower than 10%.
+		 * Probability decreases linearly based on the force (the stronger the pet is,
+		 * the faster it becomes weak). Cannot go lower than 10%.
 		 */
 		const force = petModel.force;
 		const decayFactor = force * SmallEventConstants.PET_FOOD.DECAY_FACTOR;
