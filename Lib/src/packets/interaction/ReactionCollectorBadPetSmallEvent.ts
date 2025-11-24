@@ -12,6 +12,11 @@ export class ReactionCollectorBadPetGiveVegReaction extends ReactionCollectorRea
 export class ReactionCollectorBadPetFleeReaction extends ReactionCollectorReaction {}
 export class ReactionCollectorBadPetHideReaction extends ReactionCollectorReaction {}
 export class ReactionCollectorBadPetWaitReaction extends ReactionCollectorReaction {}
+export class ReactionCollectorBadPetProtectReaction extends ReactionCollectorReaction {}
+export class ReactionCollectorBadPetDistractReaction extends ReactionCollectorReaction {}
+export class ReactionCollectorBadPetCalmReaction extends ReactionCollectorReaction {}
+export class ReactionCollectorBadPetShowcaseReaction extends ReactionCollectorReaction {}
+export class ReactionCollectorBadPetEnergizeReaction extends ReactionCollectorReaction {}
 
 export class ReactionCollectorBadPetSmallEventData extends ReactionCollectorData {
 	// No specific data needed for now, maybe the pet name or something?
@@ -19,9 +24,9 @@ export class ReactionCollectorBadPetSmallEventData extends ReactionCollectorData
 }
 
 export class ReactionCollectorBadPetSmallEvent extends ReactionCollector {
-	private readonly possibleReactions: ReactionCollectorReaction[];
+	private readonly possibleReactions: (new () => ReactionCollectorReaction)[];
 
-	constructor(reactions: ReactionCollectorReaction[]) {
+	constructor(reactions: (new () => ReactionCollectorReaction)[]) {
 		super();
 		this.possibleReactions = reactions;
 	}
@@ -36,7 +41,7 @@ export class ReactionCollectorBadPetSmallEvent extends ReactionCollector {
 		return {
 			id,
 			endTime,
-			reactions: this.possibleReactions,
+			reactions: this.possibleReactions.map(ReactionClass => this.buildReaction(ReactionClass, {})),
 			data: this.buildData(ReactionCollectorBadPetSmallEventData, {})
 		};
 	}
