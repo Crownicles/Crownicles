@@ -24,7 +24,9 @@ import {
 	PersonalFightDailySummary,
 	RankedFightResult
 } from "../../core/database/logs/LogsReadRequests";
-import { FightController } from "../../core/fights/FightController";
+import {
+	FightController, PostFightPetLoveOutcome
+} from "../../core/fights/FightController";
 import { FightOvertimeBehavior } from "../../core/fights/FightOvertimeBehavior";
 import { PlayerFighter } from "../../core/fights/fighter/PlayerFighter";
 import { ClassDataController } from "../../data/Class";
@@ -279,7 +281,7 @@ async function fightEndCallback(fight: FightController, response: CrowniclesPack
 
 	let petLoveChange;
 	if (!isDraw) {
-		const petLoveResult = fight.getPostFightPetLoveChange(winnerFighter, "win");
+		const petLoveResult = fight.getPostFightPetLoveChange(winnerFighter, PostFightPetLoveOutcome.WIN);
 		if (petLoveResult && winnerFighter instanceof PlayerFighter) {
 			const petEntity = winnerFighter.pet;
 			if (petEntity) {
