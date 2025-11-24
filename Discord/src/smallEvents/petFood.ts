@@ -1,11 +1,15 @@
 import { PacketContext } from "../../../Lib/src/packets/CrowniclesPacket";
 import { ReactionCollectorCreationPacket } from "../../../Lib/src/packets/interaction/ReactionCollectorPacket";
-import { ReactionCollectorPetFoodSmallEventData, ReactionCollectorPetFoodInvestigateReaction, ReactionCollectorPetFoodSendPetReaction, ReactionCollectorPetFoodContinueReaction } from "../../../Lib/src/packets/interaction/ReactionCollectorPetFoodSmallEvent";
+import {
+	ReactionCollectorPetFoodSmallEventData, ReactionCollectorPetFoodInvestigateReaction, ReactionCollectorPetFoodSendPetReaction, ReactionCollectorPetFoodContinueReaction
+} from "../../../Lib/src/packets/interaction/ReactionCollectorPetFoodSmallEvent";
 import { DiscordCache } from "../bot/DiscordCache";
 import { CrowniclesSmallEventEmbed } from "../messages/CrowniclesSmallEventEmbed";
 import i18n from "../translations/i18n";
 import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
-import { ActionRowBuilder, ButtonBuilder, ButtonStyle, parseEmoji } from "discord.js";
+import {
+	ActionRowBuilder, ButtonBuilder, ButtonStyle, parseEmoji
+} from "discord.js";
 import { ReactionCollectorReturnTypeOrNull } from "../packetHandlers/handlers/ReactionCollectorHandlers";
 import { DiscordCollectorUtils } from "../utils/DiscordCollectorUtils";
 import { KeycloakUtils } from "../../../Lib/src/keycloak/KeycloakUtils";
@@ -19,10 +23,10 @@ export async function petFoodCollector(context: PacketContext, packet: ReactionC
 
 	const embed = new CrowniclesSmallEventEmbed(
 		"petFood",
-		i18n.t("smallEvents:petFood.intro." + data.foodType, { lng }) + "\n\n" +
-		CrowniclesIcons.collectors.question + " " + i18n.t("smallEvents:petFood.choices.investigate", { lng }) + "\n" +
-		CrowniclesIcons.smallEvents.pet + " " + i18n.t("smallEvents:petFood.choices.sendPet", { lng }) + "\n" +
-		CrowniclesIcons.smallEvents.doNothing + " " + i18n.t("smallEvents:petFood.choices.continue", { lng }),
+		i18n.t("smallEvents:petFood.intro." + data.foodType, { lng }) + "\n\n"
+		+ CrowniclesIcons.collectors.question + " " + i18n.t("smallEvents:petFood.choices.investigate", { lng }) + "\n"
+		+ CrowniclesIcons.smallEvents.pet + " " + i18n.t("smallEvents:petFood.choices.sendPet", { lng }) + "\n"
+		+ CrowniclesIcons.smallEvents.doNothing + " " + i18n.t("smallEvents:petFood.choices.continue", { lng }),
 		interaction.user,
 		lng
 	);
@@ -57,7 +61,7 @@ export async function petFoodCollector(context: PacketContext, packet: ReactionC
 		time: packet.endTime - Date.now()
 	});
 
-	collector.on("collect", async (buttonInteraction) => {
+	collector.on("collect", async buttonInteraction => {
 		if (buttonInteraction.user.id !== interaction.user.id) {
 			await sendInteractionNotForYou(buttonInteraction.user, buttonInteraction, lng);
 			return;
@@ -66,7 +70,7 @@ export async function petFoodCollector(context: PacketContext, packet: ReactionC
 		const getReactingPlayer = await KeycloakUtils.getKeycloakIdFromDiscordId(keycloakConfig, buttonInteraction.user.id, buttonInteraction.user.displayName);
 		if (!getReactingPlayer.isError && getReactingPlayer.payload.keycloakId) {
 			await buttonInteraction.deferReply();
-			
+
 			// Disable buttons
 			row.components.forEach(c => c.setDisabled(true));
 			await msg.edit({ components: [row] });
@@ -74,9 +78,11 @@ export async function petFoodCollector(context: PacketContext, packet: ReactionC
 			let reactionIndex = -1;
 			if (buttonInteraction.customId === "investigate") {
 				reactionIndex = packet.reactions.findIndex(r => r.type === ReactionCollectorPetFoodInvestigateReaction.name);
-			} else if (buttonInteraction.customId === "pet") {
+			}
+			else if (buttonInteraction.customId === "pet") {
 				reactionIndex = packet.reactions.findIndex(r => r.type === ReactionCollectorPetFoodSendPetReaction.name);
-			} else if (buttonInteraction.customId === "continue") {
+			}
+			else if (buttonInteraction.customId === "continue") {
 				reactionIndex = packet.reactions.findIndex(r => r.type === ReactionCollectorPetFoodContinueReaction.name);
 			}
 
