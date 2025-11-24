@@ -4,7 +4,7 @@ import { FightView } from "./FightView";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { FightConstants } from "../../../../Lib/src/constants/FightConstants";
 import {
-	PetConstants, PostFightPetLoveOutcome, PostFightPetReactionType
+	PetConstants, PostFightPetLoveOutcome, PostFightPetLoveOutcomes, PostFightPetReactionType
 } from "../../../../Lib/src/constants/PetConstants";
 import { FighterStatus } from "./FighterStatus";
 import { FightOvertimeBehavior } from "./FightOvertimeBehavior";
@@ -422,11 +422,11 @@ export class FightController {
 		if (!petEntity) {
 			return null;
 		}
-		if (outcome === PostFightPetLoveOutcome.LOSS || fighter instanceof AiPlayerFighter) {
+		if (outcome === PostFightPetLoveOutcomes.LOSS || fighter instanceof AiPlayerFighter) {
 			return null;
 		}
 
-		if (outcome === PostFightPetLoveOutcome.WIN && petEntity.getLoveLevelNumber() === PetConstants.LOVE_LEVEL.TRAINED) {
+		if (outcome === PostFightPetLoveOutcomes.WIN && petEntity.getLoveLevelNumber() === PetConstants.LOVE_LEVEL.TRAINED) {
 			return {
 				loveChange: 0,
 				reactionType: PetConstants.POST_FIGHT_REACTION_TYPES.TRAINED

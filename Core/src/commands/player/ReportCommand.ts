@@ -72,7 +72,7 @@ import { Effect } from "../../../../Lib/src/types/Effect";
 import { ReactionCollectorRefuseReaction } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { verifyPossibilityOutcomeCondition } from "../../data/events/PossibilityOutcomeCondition";
-import { PostFightPetLoveOutcome } from "../../../../Lib/src/constants/PetConstants";
+import { PostFightPetLoveOutcomes } from "../../../../Lib/src/constants/PetConstants";
 
 export default class ReportCommand {
 	@commandRequires(CommandReportPacketReq, {
@@ -528,7 +528,7 @@ async function handlePveFightRewards(
 
 	if (!fight.isADraw()) {
 		const winner = fight.getWinnerFighter();
-		const petLoveResult = fight.getPostFightPetLoveChange(winner, PostFightPetLoveOutcome.WIN);
+		const petLoveResult = fight.getPostFightPetLoveChange(winner, PostFightPetLoveOutcomes.WIN);
 		if (petLoveResult && winner instanceof PlayerFighter) {
 			const petEntity = winner.pet;
 			if (petEntity) {
