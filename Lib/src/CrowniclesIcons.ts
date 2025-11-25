@@ -1864,7 +1864,7 @@ export const CrowniclesIcons: {
 		protect: "🛡️",
 		distract: "🤯",
 		calm: "❤️",
-		showcase: "⭐",
+		imposer: "⭐",
 		energize: "⚡"
 	},
 	cartSmallEvent: {

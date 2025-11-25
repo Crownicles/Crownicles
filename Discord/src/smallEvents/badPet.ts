@@ -1,8 +1,12 @@
 import { PacketContext } from "../../../Lib/src/packets/CrowniclesPacket";
 import { ReactionCollectorCreationPacket } from "../../../Lib/src/packets/interaction/ReactionCollectorPacket";
+import { ReactionCollectorBadPetSmallEventData } from "../../../Lib/src/packets/interaction/ReactionCollectorBadPetSmallEvent";
 import { DiscordCache } from "../bot/DiscordCache";
 import { CrowniclesSmallEventEmbed } from "../messages/CrowniclesSmallEventEmbed";
 import i18n from "../translations/i18n";
+import { StringUtils } from "../utils/StringUtils";
+import { PetUtils } from "../utils/PetUtils";
+import { SexTypeShort } from "../../../Lib/src/constants/StringConstants";
 import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 import {
 	ActionRowBuilder, ButtonBuilder, ButtonStyle, parseEmoji
@@ -68,10 +72,10 @@ const REACTION_MAPPING: Record<string, {
 		icon: CrowniclesIcons.unitValues.health,
 		labelKey: "calm"
 	},
-	showcase: {
-		id: "showcase",
+	imposer: {
+		id: "imposer",
 		icon: CrowniclesIcons.unitValues.petRarity,
-		labelKey: "showcase"
+		labelKey: "imposer"
 	},
 	energize: {
 		id: "energize",
@@ -83,9 +87,11 @@ const REACTION_MAPPING: Record<string, {
 export async function badPetCollector(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
 	const lng = interaction!.userLanguage;
+	const data = packet.data.data as ReactionCollectorBadPetSmallEventData;
 
-	// Build description with choices
-	let description = i18n.t("smallEvents:badPet.intro", { lng }) + "\n\n";
+	const petDisplay = PetUtils.petToShortString(lng, undefined, data.petId, data.sex as SexTypeShort);
+
+	let description = StringUtils.getRandomTranslation("smallEvents:badPet.intro", lng, { petDisplay }) + "\n\n";
 
 	const row = new ActionRowBuilder<ButtonBuilder>();
 
