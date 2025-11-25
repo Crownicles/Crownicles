@@ -1,6 +1,7 @@
 import { SmallEventFuncs } from "../../data/SmallEvent";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { BlockingUtils } from "../utils/BlockingUtils";
+import { StringConstants } from "../../../../Lib/src/constants/StringConstants";
 import {
 	ReactionCollectorBadPetFleeReaction,
 	ReactionCollectorBadPetGiveMeatReaction,
@@ -13,7 +14,7 @@ import {
 	ReactionCollectorBadPetProtectReaction,
 	ReactionCollectorBadPetDistractReaction,
 	ReactionCollectorBadPetCalmReaction,
-	ReactionCollectorBadPetShowcaseReaction,
+	ReactionCollectorBadPetImposerReaction,
 	ReactionCollectorBadPetEnergizeReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorBadPetSmallEvent";
 import { SmallEventBadPetPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventBadPetPacket";
@@ -202,8 +203,8 @@ const BAD_PET_ACTIONS: BadPetAction[] = [
 		}
 	},
 	{
-		id: "showcase",
-		reactionClass: ReactionCollectorBadPetShowcaseReaction,
+		id: "imposer",
+		reactionClass: ReactionCollectorBadPetImposerReaction,
 		handler: (_petEntity, petModel, _player): {
 			loveLost: number;
 			interactionType: string;
@@ -217,7 +218,7 @@ const BAD_PET_ACTIONS: BadPetAction[] = [
 			const loveLost = success ? 0 : RandomUtils.randInt(3, 6);
 			return {
 				loveLost,
-				interactionType: "showcase"
+				interactionType: "imposer"
 			};
 		}
 	},
@@ -294,9 +295,15 @@ function getEndCallback(player: Player): EndCallback {
 			}
 		}
 
+		const petEntity = await PetEntity.findOne({ where: { id: player.petId } });
+		const petId = petEntity ? petEntity.typeId : 0;
+		const sex = petEntity ? petEntity.sex : StringConstants.SEX.MALE.short;
+
 		response.push(makePacket(SmallEventBadPetPacket, {
 			loveLost: result.loveLost,
-			interactionType: result.interactionType
+			interactionType: result.interactionType,
+			petId,
+			sex
 		}));
 	};
 }
@@ -316,7 +323,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 		return petEntity.lovePoints > 0;
 	},
 
-	executeSmallEvent: (response: CrowniclesPacket[], player: Player, context): Promise<void> => {
+	executeSmallEvent: async (response: CrowniclesPacket[], player: Player, context): Promise<void> => {
 		const selectedActions = pickRandom(BAD_PET_ACTIONS, 3);
 		const reactions = selectedActions.map(a => {
 			const ReactionClass = a.reactionClass;
@@ -325,7 +332,11 @@ export const smallEventFuncs: SmallEventFuncs = {
 			return instance as ReactionCollectorReaction;
 		});
 
-		const collector = new ReactionCollectorBadPetSmallEvent(reactions);
+		const petEntity = await PetEntity.findByPk(player.petId);
+		const petId = petEntity ? petEntity.typeId : 0;
+		const sex = petEntity ? petEntity.sex : StringConstants.SEX.MALE.short;
+
+		const collector = new ReactionCollectorBadPetSmallEvent(petId, sex, reactions);
 
 		const packet = new ReactionCollectorInstance(
 			collector,
@@ -340,7 +351,6 @@ export const smallEventFuncs: SmallEventFuncs = {
 			.build();
 
 		response.push(packet);
-		return Promise.resolve();
 	}
 };
 

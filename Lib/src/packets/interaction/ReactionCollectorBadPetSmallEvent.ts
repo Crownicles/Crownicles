@@ -15,12 +15,13 @@ export class ReactionCollectorBadPetWaitReaction extends ReactionCollectorReacti
 export class ReactionCollectorBadPetProtectReaction extends ReactionCollectorReaction {}
 export class ReactionCollectorBadPetDistractReaction extends ReactionCollectorReaction {}
 export class ReactionCollectorBadPetCalmReaction extends ReactionCollectorReaction {}
-export class ReactionCollectorBadPetShowcaseReaction extends ReactionCollectorReaction {}
+export class ReactionCollectorBadPetImposerReaction extends ReactionCollectorReaction {}
 export class ReactionCollectorBadPetEnergizeReaction extends ReactionCollectorReaction {}
 
 export class ReactionCollectorBadPetSmallEventData extends ReactionCollectorData {
-	// No specific data needed for now, maybe the pet name or something?
-	// But the intro text usually handles that on Discord side if we pass it or if it's generic.
+	petId!: number;
+
+	sex!: string;
 }
 
 export class ReactionCollectorBadPetSmallEvent extends ReactionCollector {
@@ -31,8 +32,14 @@ export class ReactionCollectorBadPetSmallEvent extends ReactionCollector {
 	 */
 	private readonly possibleReactions: ReactionCollectorReaction[];
 
-	constructor(reactions: ReactionCollectorReaction[]) {
+	private readonly petId: number;
+
+	private readonly sex: string;
+
+	constructor(petId: number, sex: string, reactions: ReactionCollectorReaction[]) {
 		super();
+		this.petId = petId;
+		this.sex = sex;
 		this.possibleReactions = reactions;
 	}
 
@@ -47,7 +54,10 @@ export class ReactionCollectorBadPetSmallEvent extends ReactionCollector {
 			id,
 			endTime,
 			reactions: this.possibleReactions.map(r => this.buildReaction(r.constructor as any, r as any)),
-			data: this.buildData(ReactionCollectorBadPetSmallEventData, {})
+			data: this.buildData(ReactionCollectorBadPetSmallEventData, {
+				petId: this.petId,
+				sex: this.sex
+			})
 		};
 	}
 }
