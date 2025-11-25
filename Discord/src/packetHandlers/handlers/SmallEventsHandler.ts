@@ -993,13 +993,13 @@ export default class SmallEventsHandler {
 		}
 		const lng = context.discord!.language;
 
-		const petDisplay = PetUtils.petToShortString(lng, undefined, packet.petId, packet.sex as SexTypeShort);
+		const petDisplay = PetUtils.petToShortString(lng, packet.petNickname, packet.petId, packet.sex as SexTypeShort);
 
 		const outcomeKey = packet.loveLost === 0 ? "success" : "fail";
 		const description = StringUtils.getRandomTranslation(
 			`smallEvents:badPet.outcomes.${packet.interactionType}.${outcomeKey}`,
 			lng,
-			{ petDisplay }
+			{ pet: petDisplay }
 		);
 
 		const embed = new CrowniclesSmallEventEmbed(
