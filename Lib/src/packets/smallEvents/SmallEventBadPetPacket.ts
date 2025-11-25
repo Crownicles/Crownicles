@@ -12,4 +12,6 @@ export class SmallEventBadPetPacket extends SmallEventPacket {
 	petId!: number;
 
 	sex!: string;
+
+	petNickname?: string;
 }
