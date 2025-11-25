@@ -3,10 +3,10 @@ import { PacketContext } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { SmallEventAdvanceTimePacket } from "../../../../Lib/src/packets/smallEvents/SmallEventAdvanceTimePacket";
 import { DiscordCache } from "../../bot/DiscordCache";
 import { CrowniclesSmallEventEmbed } from "../../messages/CrowniclesSmallEventEmbed";
-import { Language } from "../../../../Lib/src/Language";
 import {
 	escapeUsername, StringUtils
 } from "../../utils/StringUtils";
+import { getRandomSmallEventIntro } from "../../utils/SmallEventUtils";
 import { SmallEventBigBadPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventBigBadPacket";
 import {
 	SmallEventBadIssue,
@@ -33,7 +33,12 @@ import {
 	SmallEventInteractOtherPlayersPacket,
 	SmallEventInteractOtherPlayersRefuseToGivePoorPacket
 } from "../../../../Lib/src/packets/smallEvents/SmallEventInteractOtherPlayers";
-import { interactOtherPlayerGetPlayerDisplay } from "../../smallEvents/interactOtherPlayers";
+import {
+	handleEffectInteraction,
+	handleNoPlayerInteraction,
+	handleOtherInteractions,
+	interactOtherPlayerGetPlayerDisplay
+} from "../../smallEvents/interactOtherPlayers";
 import { SmallEventLeagueRewardPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventLeagueReward";
 import {
 	minutesDisplay, printTimeBeforeDate
@@ -86,17 +91,13 @@ import {
 	SmallEventEpicItemShopRefusePacket
 } from "../../../../Lib/src/packets/smallEvents/SmallEventEpicItemShopPacket";
 import { Badge } from "../../../../Lib/src/types/Badge";
-import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
 import { SmallEventDwarfPetFanPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventDwarfPetFanPacket";
 import { SmallEventInfoFightPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventInfoFightPacket";
 import { infoFightResult } from "../../smallEvents/infoFight";
 import { limogesResult } from "../../smallEvents/limoges";
+import { getPetFoodDescription } from "../../smallEvents/petFood";
 import { SmallEventHauntedPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventHauntedPacket";
 import { SmallEventPetFoodPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventPetFoodPacket";
-
-export function getRandomSmallEventIntro(language: Language): string {
-	return StringUtils.getRandomTranslation("smallEvents:intro", language);
-}
 
 const PET_TIME_INTERACTIONS = new Set([
 	"gainTime",
@@ -293,82 +294,6 @@ export default class SmallEventsHandler {
 		});
 	}
 
-	/**
-	 * Handles the case where no player is found for the interaction
-	 * @param interaction
-	 * @param lng
-	 */
-	private static async handleNoPlayerInteraction(interaction: CrowniclesInteraction, lng: Language): Promise<void> {
-		await interaction.editReply({
-			embeds: [
-				new CrowniclesSmallEventEmbed(
-					"interactOtherPlayers",
-					StringUtils.getRandomTranslation("smallEvents:interactOtherPlayers.no_one", lng),
-					interaction.user,
-					lng
-				)
-			]
-		});
-	}
-
-	/**
-	 * Handles the case where the interaction is an effect
-	 * @param interaction
-	 * @param packet
-	 * @param lng
-	 * @param playerDisplay
-	 */
-	private static async handleEffectInteraction(interaction: CrowniclesInteraction, packet: SmallEventInteractOtherPlayersPacket, lng: Language, playerDisplay: string): Promise<void> {
-		await interaction.editReply({
-			embeds: [
-				new CrowniclesSmallEventEmbed(
-					"interactOtherPlayers",
-					StringUtils.getRandomTranslation(`smallEvents:interactOtherPlayers.effect.${packet.data!.effectId}`, lng, { playerDisplay }),
-					interaction.user,
-					lng
-				)
-			]
-		});
-	}
-
-	/**
-	 * Handles the case where the interaction is not an effect
-	 * @param interaction
-	 * @param packet
-	 * @param lng
-	 * @param playerDisplay
-	 */
-	private static async handleOtherInteractions(interaction: CrowniclesInteraction, packet: SmallEventInteractOtherPlayersPacket, lng: Language, playerDisplay: string): Promise<void> {
-		const hasPetInfo = packet.data!.petId && packet.data!.petSex;
-		await interaction.editReply({
-			embeds: [
-				new CrowniclesSmallEventEmbed(
-					"interactOtherPlayers",
-					StringUtils.getRandomTranslation(
-						`smallEvents:interactOtherPlayers.${InteractOtherPlayerInteraction[packet.playerInteraction!].toLowerCase()}`,
-						lng,
-						{
-							playerDisplay,
-							level: packet.data!.level,
-							class: DisplayUtils.getClassDisplay(packet.data!.classId, lng),
-							classPlural: DisplayUtils.getClassDisplay(packet.data!.classId, lng, true),
-							advice: StringUtils.getRandomTranslation("advices:advices", lng),
-							petEmote: hasPetInfo ? DisplayUtils.getPetIcon(packet.data!.petId!, packet.data!.petSex!) : "",
-							petName: hasPetInfo ? DisplayUtils.getPetNicknameOrTypeName(packet.data!.petName ?? null, packet.data!.petId!, packet.data!.petSex!, lng) : "",
-							guildName: packet.data!.guildName,
-							weapon: DisplayUtils.getWeaponDisplay(packet.data!.weaponId, lng),
-							armor: DisplayUtils.getArmorDisplay(packet.data!.armorId, lng),
-							object: DisplayUtils.getObjectDisplay(packet.data!.objectId, lng),
-							potion: DisplayUtils.getPotionDisplay(packet.data!.potionId, lng)
-						}
-					),
-					interaction.user,
-					lng
-				)
-			]
-		});
-	}
-
 	@packetHandler(SmallEventInteractOtherPlayersPacket)
 	async smallEventInteractOtherPlayers(context: PacketContext, packet: SmallEventInteractOtherPlayersPacket): Promise<void> {
 		const interaction = DiscordCache.getInteraction(context.discord!.interaction);
@@ -378,7 +303,7 @@ export default class SmallEventsHandler {
 		const lng = interaction.userLanguage;
 
 		if (!packet.keycloakId) {
-			await SmallEventsHandler.handleNoPlayerInteraction(interaction, lng);
+			await handleNoPlayerInteraction(interaction, lng);
 			return;
 		}
 
@@ -389,11 +314,11 @@ export default class SmallEventsHandler {
 		const playerDisplay = await interactOtherPlayerGetPlayerDisplay(packet.keycloakId, packet.data.rank, lng);
 
 		if (packet.playerInteraction === InteractOtherPlayerInteraction.EFFECT) {
-			await SmallEventsHandler.handleEffectInteraction(interaction, packet, lng, playerDisplay);
+			await handleEffectInteraction(interaction, packet, lng, playerDisplay);
 			return;
 		}
 
-		await SmallEventsHandler.handleOtherInteractions(interaction, packet, lng, playerDisplay);
+		await handleOtherInteractions(interaction, packet, lng, playerDisplay);
 	}
 
 	@packetHandler(SmallEventInteractOtherPlayersAcceptToGivePoorPacket)
@@ -1059,60 +984,3 @@ export default class SmallEventsHandler {
 	}
 }
 
-/**
- * Build the description text for pet food small event outcome
- * @param packet
- * @param lng
- */
-function getPetFoodDescription(packet: SmallEventPetFoodPacket, lng: Language): string {
-	// Outcomes that mean some food was found (by player or pet, or simply found)
-	const FOUND_OUTCOMES = new Set([
-		"found_by_player",
-		"found_by_pet",
-		"found_anyway"
-	]);
-
-	// Outcomes that should use a specific "_soup" translation when the food is soup
-	const SOUP_OUTCOMES = new Set([
-		"found_by_player",
-		"found_by_pet",
-		"found_anyway",
-		"pet_failed"
-	]);
-
-	const outcomeIsFound = FOUND_OUTCOMES.has(packet.outcome);
-
-	// If the food was actually found, pick a readable display name for it from translations
-	const foodName = outcomeIsFound
-		? RandomUtils.crowniclesRandom.pick(
-			i18n.t(`smallEvents:petFood.foodNames.${packet.foodType}`, {
-				lng,
-				returnObjects: true
-			})
-		)
-		: "";
-
-	// When the food type is soup, some outcomes use a different translation key (e.g. "found_by_player_soup")
-	const outcomeKey = packet.foodType === "soup" && SOUP_OUTCOMES.has(packet.outcome)
-		? `${packet.outcome}_soup`
-		: packet.outcome;
-
-	// Base outcome message (always present)
-	const baseMessage = i18n.t(
-		`smallEvents:petFood.outcomes.${outcomeKey}`,
-		{
-			lng,
-			foodName
-		}
-	);
-
-	// Some outcomes also include a pet-love change message appended on a newline
-	if (!outcomeIsFound) {
-		return baseMessage;
-	}
-
-	const loveKey = packet.loveChange > 0 ? "plus" : packet.loveChange < 0 ? "minus" : "neutral";
-	const loveMessage = i18n.t(`smallEvents:petFood.love.${loveKey}`, { lng });
-
-	return `${baseMessage}\n${loveMessage}`;
-}
