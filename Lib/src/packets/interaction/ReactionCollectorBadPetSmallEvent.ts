@@ -22,6 +22,8 @@ export class ReactionCollectorBadPetSmallEventData extends ReactionCollectorData
 	petId!: number;
 
 	sex!: string;
+
+	petNickname?: string;
 }
 
 export class ReactionCollectorBadPetSmallEvent extends ReactionCollector {
@@ -36,10 +38,13 @@ export class ReactionCollectorBadPetSmallEvent extends ReactionCollector {
 
 	private readonly sex: string;
 
-	constructor(petId: number, sex: string, reactions: ReactionCollectorReaction[]) {
+	private readonly petNickname: string | undefined;
+
+	constructor(petId: number, sex: string, petNickname: string | undefined, reactions: ReactionCollectorReaction[]) {
 		super();
 		this.petId = petId;
 		this.sex = sex;
+		this.petNickname = petNickname;
 		this.possibleReactions = reactions;
 	}
 
@@ -56,7 +61,8 @@ export class ReactionCollectorBadPetSmallEvent extends ReactionCollector {
 			reactions: this.possibleReactions.map(r => this.buildReaction(r.constructor as any, r as any)),
 			data: this.buildData(ReactionCollectorBadPetSmallEventData, {
 				petId: this.petId,
-				sex: this.sex
+				sex: this.sex,
+				petNickname: this.petNickname
 			})
 		};
 	}

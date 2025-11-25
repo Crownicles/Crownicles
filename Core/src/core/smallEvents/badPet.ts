@@ -298,12 +298,14 @@ function getEndCallback(player: Player): EndCallback {
 		const petEntity = await PetEntity.findOne({ where: { id: player.petId } });
 		const petId = petEntity ? petEntity.typeId : 0;
 		const sex = petEntity ? petEntity.sex : StringConstants.SEX.MALE.short;
+		const petNickname = petEntity?.nickname ?? undefined;
 
 		response.push(makePacket(SmallEventBadPetPacket, {
 			loveLost: result.loveLost,
 			interactionType: result.interactionType,
 			petId,
-			sex
+			sex,
+			petNickname
 		}));
 	};
 }
@@ -335,8 +337,9 @@ export const smallEventFuncs: SmallEventFuncs = {
 		const petEntity = await PetEntity.findByPk(player.petId);
 		const petId = petEntity ? petEntity.typeId : 0;
 		const sex = petEntity ? petEntity.sex : StringConstants.SEX.MALE.short;
+		const petNickname = petEntity?.nickname ?? undefined;
 
-		const collector = new ReactionCollectorBadPetSmallEvent(petId, sex, reactions);
+		const collector = new ReactionCollectorBadPetSmallEvent(petId, sex, petNickname, reactions);
 
 		const packet = new ReactionCollectorInstance(
 			collector,
