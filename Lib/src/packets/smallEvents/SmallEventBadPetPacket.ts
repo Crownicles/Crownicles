@@ -8,4 +8,8 @@ export class SmallEventBadPetPacket extends SmallEventPacket {
 	loveLost!: number;
 
 	interactionType!: string;
+
+	petId!: number;
+
+	sex!: string;
 }
