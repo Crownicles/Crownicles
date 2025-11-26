@@ -46,7 +46,7 @@ function isValidActionId(id: string): id is BadPetActionId {
 
 export async function badPetCollector(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
-	const lng = interaction!.userLanguage;
+	const lng = interaction.userLanguage;
 	const data = packet.data.data as ReactionCollectorBadPetSmallEventData;
 
 	const petDisplay = PetUtils.petToShortString(lng, data.petNickname, data.petId, data.sex as SexTypeShort);
