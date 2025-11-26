@@ -19,7 +19,7 @@ import {
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorBadPetSmallEvent";
 import { SmallEventBadPetPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventBadPetPacket";
 import {
-	makePacket, CrowniclesPacket
+	makePacket, CrowniclesPacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { PetEntity } from "../database/game/models/PetEntity";
 import {
@@ -39,324 +39,349 @@ import { MapConstants } from "../../../../Lib/src/constants/MapConstants";
 import { Guilds } from "../database/game/models/Guild";
 import { InventorySlots } from "../database/game/models/InventorySlot";
 import { SmallEventConstants } from "../../../../Lib/src/constants/SmallEventConstants";
+import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 
-type BadPetActionHandler = (petEntity: PetEntity, petModel: Pet, player: Player) => Promise<{
+/**
+ * Result of a bad pet action handler
+ */
+type BadPetActionResult = {
 	loveLost: number;
 	interactionType: string;
-}>;
+};
 
+/**
+ * Handler function signature for bad pet actions
+ */
+type BadPetActionHandler = (petEntity: PetEntity, petModel: Pet, player: Player) => Promise<BadPetActionResult>;
+
+/**
+ * Structure defining a bad pet action
+ */
 interface BadPetAction {
 	id: string;
 	reactionClass: new () => ReactionCollectorReaction;
 	handler: BadPetActionHandler;
 }
 
+/*
+ * ============================================================================
+ * ACTION HANDLERS
+ * ============================================================================
+ */
+
+/**
+ * Handle intimidate action - effectiveness based on pet's force
+ */
+function handleIntimidate(_petEntity: PetEntity, petModel: Pet, _player: Player): Promise<BadPetActionResult> {
+	const {
+		THRESHOLDS, LOVE_LOST
+	} = SmallEventConstants.BAD_PET;
+	const isStrong = petModel.force >= THRESHOLDS.PET_FORCE_STRONG;
+
+	const loveLost = isStrong
+		? RandomUtils.randInt(LOVE_LOST.INTIMIDATE.STRONG_MIN, LOVE_LOST.INTIMIDATE.STRONG_MAX)
+		: RandomUtils.randInt(LOVE_LOST.INTIMIDATE.WEAK_MIN, LOVE_LOST.INTIMIDATE.WEAK_MAX);
+
+	return Promise.resolve({
+		loveLost, interactionType: "intimidate"
+	});
+}
+
+/**
+ * Handle plead action - effectiveness inverse to pet's force
+ */
+function handlePlead(_petEntity: PetEntity, petModel: Pet, _player: Player): Promise<BadPetActionResult> {
+	const {
+		THRESHOLDS, LOVE_LOST
+	} = SmallEventConstants.BAD_PET;
+	const isWeak = petModel.force < THRESHOLDS.PET_FORCE_STRONG;
+
+	const loveLost = isWeak
+		? RandomUtils.randInt(LOVE_LOST.PLEAD.WEAK_MIN, LOVE_LOST.PLEAD.WEAK_MAX)
+		: RandomUtils.randInt(LOVE_LOST.PLEAD.STRONG_MIN, LOVE_LOST.PLEAD.STRONG_MAX);
+
+	return Promise.resolve({
+		loveLost, interactionType: "plead"
+	});
+}
+
+/**
+ * Handle give meat action - depends on guild inventory and pet's diet
+ */
+async function handleGiveMeat(_petEntity: PetEntity, petModel: Pet, player: Player): Promise<BadPetActionResult> {
+	const { LOVE_LOST } = SmallEventConstants.BAD_PET;
+	const canEatMeat = petModel.canEatMeat();
+
+	let hasMeat = false;
+	if (player.guildId) {
+		const guild = await Guilds.getById(player.guildId);
+		if (guild && guild.carnivorousFood > 0) {
+			hasMeat = true;
+		}
+	}
+
+	let loveLost: number;
+	if (!hasMeat) {
+		loveLost = LOVE_LOST.GIVE_FOOD.NO_FOOD;
+	}
+	else if (canEatMeat) {
+		loveLost = RandomUtils.randInt(LOVE_LOST.GIVE_FOOD.JEALOUS_MIN, LOVE_LOST.GIVE_FOOD.JEALOUS_MAX);
+	}
+	else {
+		loveLost = RandomUtils.crowniclesRandom.bool(LOVE_LOST.GIVE_FOOD.DISLIKES_CHANCE)
+			? LOVE_LOST.GIVE_FOOD.DISLIKES_AMOUNT
+			: 0;
+	}
+
+	return {
+		loveLost, interactionType: "giveMeat"
+	};
+}
+
+/**
+ * Handle give vegetables action - depends on guild inventory and pet's diet
+ */
+async function handleGiveVeg(_petEntity: PetEntity, petModel: Pet, player: Player): Promise<BadPetActionResult> {
+	const { LOVE_LOST } = SmallEventConstants.BAD_PET;
+	const canEatVegetables = petModel.canEatVegetables();
+
+	let hasVegetables = false;
+	if (player.guildId) {
+		const guild = await Guilds.getById(player.guildId);
+		if (guild && guild.herbivorousFood > 0) {
+			hasVegetables = true;
+		}
+	}
+
+	let loveLost: number;
+	if (!hasVegetables) {
+		loveLost = LOVE_LOST.GIVE_FOOD.NO_FOOD;
+	}
+	else if (canEatVegetables) {
+		loveLost = RandomUtils.randInt(LOVE_LOST.GIVE_FOOD.JEALOUS_MIN, LOVE_LOST.GIVE_FOOD.JEALOUS_MAX);
+	}
+	else {
+		loveLost = RandomUtils.crowniclesRandom.bool(LOVE_LOST.GIVE_FOOD.DISLIKES_CHANCE)
+			? LOVE_LOST.GIVE_FOOD.DISLIKES_AMOUNT
+			: 0;
+	}
+
+	return {
+		loveLost, interactionType: "giveVeg"
+	};
+}
+
+/**
+ * Handle flee action - success chance based on player's speed
+ */
+async function handleFlee(_petEntity: PetEntity, _petModel: Pet, player: Player): Promise<BadPetActionResult> {
+	const {
+		THRESHOLDS, LOVE_LOST
+	} = SmallEventConstants.BAD_PET;
+
+	const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
+	const playerSpeed = player.getCumulativeSpeed(playerActiveObjects);
+
+	let loveLost: number;
+	if (playerSpeed > THRESHOLDS.PLAYER_SPEED_FAST) {
+		const success = RandomUtils.crowniclesRandom.bool(THRESHOLDS.FLEE_SUCCESS_CHANCE_FAST);
+		loveLost = success ? 0 : RandomUtils.randInt(LOVE_LOST.FLEE.MIN, LOVE_LOST.FLEE.MAX);
+	}
+	else {
+		loveLost = RandomUtils.randInt(LOVE_LOST.FLEE.MIN, LOVE_LOST.FLEE.MAX);
+	}
+
+	return {
+		loveLost, interactionType: "flee"
+	};
+}
+
+/**
+ * Handle hide action - success chance based on pet's force (weak pets hide better)
+ */
+function handleHide(_petEntity: PetEntity, petModel: Pet, _player: Player): Promise<BadPetActionResult> {
+	const {
+		THRESHOLDS, LOVE_LOST
+	} = SmallEventConstants.BAD_PET;
+
+	let loveLost: number;
+	if (petModel.force < THRESHOLDS.PET_FORCE_WEAK) {
+		const success = RandomUtils.crowniclesRandom.bool(THRESHOLDS.HIDE_SUCCESS_CHANCE_WEAK);
+		loveLost = success ? 0 : RandomUtils.randInt(LOVE_LOST.HIDE.MIN, LOVE_LOST.HIDE.MAX);
+	}
+	else {
+		loveLost = RandomUtils.randInt(LOVE_LOST.HIDE.MIN, LOVE_LOST.HIDE.MAX);
+	}
+
+	return Promise.resolve({
+		loveLost, interactionType: "hide"
+	});
+}
+
+/**
+ * Handle wait action - fixed love loss
+ */
+function handleWait(_petEntity: PetEntity, _petModel: Pet, _player: Player): Promise<BadPetActionResult> {
+	return Promise.resolve({
+		loveLost: SmallEventConstants.BAD_PET.LOVE_LOST.WAIT,
+		interactionType: "wait"
+	});
+}
+
+/**
+ * Handle protect action - success chance scales linearly with player's defense
+ */
+async function handleProtect(_petEntity: PetEntity, _petModel: Pet, player: Player): Promise<BadPetActionResult> {
+	const {
+		THRESHOLDS, LOVE_LOST
+	} = SmallEventConstants.BAD_PET;
+
+	const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
+	const playerDefense = player.getCumulativeDefense(playerActiveObjects);
+
+	const defenseRatio = Math.min(playerDefense / THRESHOLDS.PLAYER_DEFENSE_MAX, 1);
+	const successChance = defenseRatio * THRESHOLDS.PROTECT_MAX_SUCCESS_CHANCE;
+
+	const success = RandomUtils.crowniclesRandom.bool(successChance);
+	const loveLost = success ? 0 : RandomUtils.randInt(LOVE_LOST.PROTECT.FAIL_MIN, LOVE_LOST.PROTECT.FAIL_MAX);
+
+	return {
+		loveLost, interactionType: "protect"
+	};
+}
+
+/**
+ * Handle distract action - fixed success chance
+ */
+function handleDistract(_petEntity: PetEntity, _petModel: Pet, _player: Player): Promise<BadPetActionResult> {
+	const {
+		THRESHOLDS, LOVE_LOST
+	} = SmallEventConstants.BAD_PET;
+
+	const success = RandomUtils.crowniclesRandom.bool(THRESHOLDS.DISTRACT_SUCCESS_CHANCE);
+	const loveLost = success ? 0 : RandomUtils.randInt(LOVE_LOST.DISTRACT.FAIL_MIN, LOVE_LOST.DISTRACT.FAIL_MAX);
+
+	return Promise.resolve({
+		loveLost, interactionType: "distract"
+	});
+}
+
+/**
+ * Handle calm action - success chance based on pet's current love
+ */
+function handleCalm(petEntity: PetEntity, _petModel: Pet, _player: Player): Promise<BadPetActionResult> {
+	const { LOVE_LOST } = SmallEventConstants.BAD_PET;
+
+	const loveRatio = petEntity.lovePoints / PetConstants.MAX_LOVE_POINTS;
+	const successChance = LOVE_LOST.CALM.BASE_SUCCESS_CHANCE + loveRatio * LOVE_LOST.CALM.LOVE_BONUS_MULTIPLIER;
+
+	const success = RandomUtils.crowniclesRandom.bool(successChance);
+	const loveLost = success ? 0 : RandomUtils.randInt(LOVE_LOST.CALM.FAIL_MIN, LOVE_LOST.CALM.FAIL_MAX);
+
+	return Promise.resolve({
+		loveLost, interactionType: "calm"
+	});
+}
+
+/**
+ * Handle imposer action - success chance based on pet's rarity
+ */
+function handleImposer(_petEntity: PetEntity, petModel: Pet, _player: Player): Promise<BadPetActionResult> {
+	const { LOVE_LOST } = SmallEventConstants.BAD_PET;
+
+	const successChance = LOVE_LOST.IMPOSER.BASE_SUCCESS_CHANCE + (petModel.rarity - 1) * LOVE_LOST.IMPOSER.RARITY_BONUS;
+
+	const success = RandomUtils.crowniclesRandom.bool(successChance);
+	const loveLost = success ? 0 : RandomUtils.randInt(LOVE_LOST.IMPOSER.FAIL_MIN, LOVE_LOST.IMPOSER.FAIL_MAX);
+
+	return Promise.resolve({
+		loveLost, interactionType: "imposer"
+	});
+}
+
+/**
+ * Handle energize action - success chance based on pet's vigor
+ */
+function handleEnergize(petEntity: PetEntity, petModel: Pet, _player: Player): Promise<BadPetActionResult> {
+	const { LOVE_LOST } = SmallEventConstants.BAD_PET;
+
+	const vigor = PetUtils.getPetVigor(petModel, petEntity.lovePoints);
+	const successChance = LOVE_LOST.ENERGIZE.BASE_SUCCESS_CHANCE + vigor / PetConstants.VIGOR.MAX * LOVE_LOST.ENERGIZE.VIGOR_BONUS_MULTIPLIER;
+
+	const success = RandomUtils.crowniclesRandom.bool(successChance);
+	const loveLost = success ? 0 : RandomUtils.randInt(LOVE_LOST.ENERGIZE.FAIL_MIN, LOVE_LOST.ENERGIZE.FAIL_MAX);
+
+	return Promise.resolve({
+		loveLost, interactionType: "energize"
+	});
+}
+
+/*
+ * ============================================================================
+ * ACTION REGISTRY
+ * ============================================================================
+ */
+
+/**
+ * All available bad pet actions with their handlers
+ */
 const BAD_PET_ACTIONS: BadPetAction[] = [
 	{
-		id: "intimidate",
-		reactionClass: ReactionCollectorBadPetIntimidateReaction,
-		handler: (_petEntity, petModel): Promise<{
-			loveLost: number;
-			interactionType: string;
-		}> => {
-			const isStrong = petModel.force >= SmallEventConstants.BAD_PET.THRESHOLDS.PET_FORCE_STRONG;
-			const loveLost = isStrong
-				? RandomUtils.randInt(SmallEventConstants.BAD_PET.LOVE_LOST.INTIMIDATE.STRONG_MIN, SmallEventConstants.BAD_PET.LOVE_LOST.INTIMIDATE.STRONG_MAX)
-				: RandomUtils.randInt(SmallEventConstants.BAD_PET.LOVE_LOST.INTIMIDATE.WEAK_MIN, SmallEventConstants.BAD_PET.LOVE_LOST.INTIMIDATE.WEAK_MAX);
-			return Promise.resolve({
-				loveLost,
-				interactionType: "intimidate"
-			});
-		}
+		id: "intimidate", reactionClass: ReactionCollectorBadPetIntimidateReaction, handler: handleIntimidate
 	},
 	{
-		id: "plead",
-		reactionClass: ReactionCollectorBadPetPleadReaction,
-		handler: (_petEntity, petModel): Promise<{
-			loveLost: number;
-			interactionType: string;
-		}> => {
-			const isWeak = petModel.force < SmallEventConstants.BAD_PET.THRESHOLDS.PET_FORCE_STRONG;
-			const loveLost = isWeak
-				? RandomUtils.randInt(SmallEventConstants.BAD_PET.LOVE_LOST.PLEAD.WEAK_MIN, SmallEventConstants.BAD_PET.LOVE_LOST.PLEAD.WEAK_MAX)
-				: RandomUtils.randInt(SmallEventConstants.BAD_PET.LOVE_LOST.PLEAD.STRONG_MIN, SmallEventConstants.BAD_PET.LOVE_LOST.PLEAD.STRONG_MAX);
-			return Promise.resolve({
-				loveLost,
-				interactionType: "plead"
-			});
-		}
+		id: "plead", reactionClass: ReactionCollectorBadPetPleadReaction, handler: handlePlead
 	},
 	{
-		id: "giveMeat",
-		reactionClass: ReactionCollectorBadPetGiveMeatReaction,
-		handler: async (_petEntity, petModel, player): Promise<{
-			loveLost: number;
-			interactionType: string;
-		}> => {
-			const canEatMeat = petModel.canEatMeat();
-
-			// Check if player's guild has meat food
-			let hasMeat = false;
-			if (player.guildId) {
-				const guild = await Guilds.getById(player.guildId);
-				if (guild && guild.carnivorousFood > 0) {
-					hasMeat = true;
-				}
-			}
-
-			let loveLost: number;
-			if (!hasMeat) {
-				// No meat in guild inventory = always lose love
-				loveLost = SmallEventConstants.BAD_PET.LOVE_LOST.GIVE_FOOD.NO_FOOD;
-			}
-			else if (canEatMeat) {
-				// Pet is jealous because it likes the food = lose random
-				loveLost = RandomUtils.randInt(
-					SmallEventConstants.BAD_PET.LOVE_LOST.GIVE_FOOD.JEALOUS_MIN,
-					SmallEventConstants.BAD_PET.LOVE_LOST.GIVE_FOOD.JEALOUS_MAX
-				);
-			}
-			else {
-				// Pet doesn't like meat = 20% chance to lose 1, otherwise 0
-				loveLost = RandomUtils.crowniclesRandom.bool(SmallEventConstants.BAD_PET.LOVE_LOST.GIVE_FOOD.DISLIKES_CHANCE)
-					? SmallEventConstants.BAD_PET.LOVE_LOST.GIVE_FOOD.DISLIKES_AMOUNT
-					: 0;
-			}
-
-			return {
-				loveLost,
-				interactionType: "giveMeat"
-			};
-		}
+		id: "giveMeat", reactionClass: ReactionCollectorBadPetGiveMeatReaction, handler: handleGiveMeat
 	},
 	{
-		id: "giveVeg",
-		reactionClass: ReactionCollectorBadPetGiveVegReaction,
-		handler: async (_petEntity, petModel, player): Promise<{
-			loveLost: number;
-			interactionType: string;
-		}> => {
-			const canEatVegetables = petModel.canEatVegetables();
-
-			// Check if player's guild has vegetable food
-			let hasVegetables = false;
-			if (player.guildId) {
-				const guild = await Guilds.getById(player.guildId);
-				if (guild && guild.herbivorousFood > 0) {
-					hasVegetables = true;
-				}
-			}
-
-			let loveLost: number;
-			if (!hasVegetables) {
-				// No vegetables in guild inventory = always lose 5
-				loveLost = SmallEventConstants.BAD_PET.LOVE_LOST.GIVE_FOOD.NO_FOOD;
-			}
-			else if (canEatVegetables) {
-				// Pet is jealous because it likes the food = lose 1-5 random
-				loveLost = RandomUtils.randInt(
-					SmallEventConstants.BAD_PET.LOVE_LOST.GIVE_FOOD.JEALOUS_MIN,
-					SmallEventConstants.BAD_PET.LOVE_LOST.GIVE_FOOD.JEALOUS_MAX
-				);
-			}
-			else {
-				// Pet doesn't like vegetables = 20% chance to lose 1, otherwise 0
-				loveLost = RandomUtils.crowniclesRandom.bool(SmallEventConstants.BAD_PET.LOVE_LOST.GIVE_FOOD.DISLIKES_CHANCE)
-					? SmallEventConstants.BAD_PET.LOVE_LOST.GIVE_FOOD.DISLIKES_AMOUNT
-					: 0;
-			}
-
-			return {
-				loveLost,
-				interactionType: "giveVeg"
-			};
-		}
+		id: "giveVeg", reactionClass: ReactionCollectorBadPetGiveVegReaction, handler: handleGiveVeg
 	},
 	{
-		id: "flee",
-		reactionClass: ReactionCollectorBadPetFleeReaction,
-		handler: async (_petEntity, _petModel, player): Promise<{
-			loveLost: number;
-			interactionType: string;
-		}> => {
-			const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
-			const playerSpeed = player.getCumulativeSpeed(playerActiveObjects);
-
-			let loveLost: number;
-			if (playerSpeed > SmallEventConstants.BAD_PET.THRESHOLDS.PLAYER_SPEED_FAST) {
-				// Fast player: 70% chance to escape without loss
-				const success = RandomUtils.crowniclesRandom.bool(SmallEventConstants.BAD_PET.THRESHOLDS.FLEE_SUCCESS_CHANCE_FAST);
-				loveLost = success ? 0 : RandomUtils.randInt(SmallEventConstants.BAD_PET.LOVE_LOST.FLEE.MIN, SmallEventConstants.BAD_PET.LOVE_LOST.FLEE.MAX);
-			}
-			else {
-				// Slow player: always lose 1-10 love
-				loveLost = RandomUtils.randInt(SmallEventConstants.BAD_PET.LOVE_LOST.FLEE.MIN, SmallEventConstants.BAD_PET.LOVE_LOST.FLEE.MAX);
-			}
-
-			return {
-				loveLost,
-				interactionType: "flee"
-			};
-		}
+		id: "flee", reactionClass: ReactionCollectorBadPetFleeReaction, handler: handleFlee
 	},
 	{
-		id: "hide",
-		reactionClass: ReactionCollectorBadPetHideReaction,
-		handler: (_petEntity, petModel, _player): Promise<{
-			loveLost: number;
-			interactionType: string;
-		}> => {
-			let loveLost: number;
-
-			// If pet force is weak (< 5), 30% chance to lose nothing
-			if (petModel.force < SmallEventConstants.BAD_PET.THRESHOLDS.PET_FORCE_WEAK) {
-				const success = RandomUtils.crowniclesRandom.bool(SmallEventConstants.BAD_PET.THRESHOLDS.HIDE_SUCCESS_CHANCE_WEAK);
-				loveLost = success ? 0 : RandomUtils.randInt(SmallEventConstants.BAD_PET.LOVE_LOST.HIDE.MIN, SmallEventConstants.BAD_PET.LOVE_LOST.HIDE.MAX);
-			}
-			else {
-				// Strong pet: always lose some love
-				loveLost = RandomUtils.randInt(SmallEventConstants.BAD_PET.LOVE_LOST.HIDE.MIN, SmallEventConstants.BAD_PET.LOVE_LOST.HIDE.MAX);
-			}
-
-			return Promise.resolve({
-				loveLost,
-				interactionType: "hide"
-			});
-		}
+		id: "hide", reactionClass: ReactionCollectorBadPetHideReaction, handler: handleHide
 	},
 	{
-		id: "wait",
-		reactionClass: ReactionCollectorBadPetWaitReaction,
-		handler: (_petEntity, _petModel, _player): Promise<{
-			loveLost: number;
-			interactionType: string;
-		}> => Promise.resolve({
-			loveLost: SmallEventConstants.BAD_PET.LOVE_LOST.WAIT,
-			interactionType: "wait"
-		})
+		id: "wait", reactionClass: ReactionCollectorBadPetWaitReaction, handler: handleWait
 	},
 	{
-		id: "protect",
-		reactionClass: ReactionCollectorBadPetProtectReaction,
-		handler: async (_petEntity, _petModel, player): Promise<{
-			loveLost: number;
-			interactionType: string;
-		}> => {
-			const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
-			const playerDefense = player.getCumulativeDefense(playerActiveObjects);
-
-			// Linear scaling: 70% success at 500 defense, 0% at 0 defense
-			const defenseRatio = Math.min(playerDefense / SmallEventConstants.BAD_PET.THRESHOLDS.PLAYER_DEFENSE_MAX, 1);
-			const successChance = defenseRatio * SmallEventConstants.BAD_PET.THRESHOLDS.PROTECT_MAX_SUCCESS_CHANCE;
-
-			const success = RandomUtils.crowniclesRandom.bool(successChance);
-			const loveLost = success
-				? 0
-				: RandomUtils.randInt(SmallEventConstants.BAD_PET.LOVE_LOST.PROTECT.FAIL_MIN, SmallEventConstants.BAD_PET.LOVE_LOST.PROTECT.FAIL_MAX);
-
-			return {
-				loveLost,
-				interactionType: "protect"
-			};
-		}
+		id: "protect", reactionClass: ReactionCollectorBadPetProtectReaction, handler: handleProtect
 	},
 	{
-		id: "distract",
-		reactionClass: ReactionCollectorBadPetDistractReaction,
-		handler: (_petEntity, _petModel, _player): Promise<{
-			loveLost: number;
-			interactionType: string;
-		}> => {
-			const success = RandomUtils.crowniclesRandom.bool(0.5);
-			const loveLost = success
-				? 0
-				: RandomUtils.randInt(SmallEventConstants.BAD_PET.LOVE_LOST.DISTRACT.FAIL_MIN, SmallEventConstants.BAD_PET.LOVE_LOST.DISTRACT.FAIL_MAX);
-			return Promise.resolve({
-				loveLost,
-				interactionType: "distract"
-			});
-		}
+		id: "distract", reactionClass: ReactionCollectorBadPetDistractReaction, handler: handleDistract
 	},
 	{
-		id: "calm",
-		reactionClass: ReactionCollectorBadPetCalmReaction,
-		handler: (petEntity, _petModel, _player): Promise<{
-			loveLost: number;
-			interactionType: string;
-		}> => {
-			// Based on the pet's current love — the closer love is to the maximum, the lower the chance of failure
-			const maxLove = PetConstants.MAX_LOVE_POINTS;
-			const currentLove = petEntity.lovePoints;
-			const loveRatio = currentLove / maxLove;
-
-			const successChance = SmallEventConstants.BAD_PET.LOVE_LOST.CALM.BASE_SUCCESS_CHANCE
-				+ loveRatio * SmallEventConstants.BAD_PET.LOVE_LOST.CALM.LOVE_BONUS_MULTIPLIER;
-			const success = RandomUtils.crowniclesRandom.bool(successChance);
-			const loveLost = success
-				? 0
-				: RandomUtils.randInt(SmallEventConstants.BAD_PET.LOVE_LOST.CALM.FAIL_MIN, SmallEventConstants.BAD_PET.LOVE_LOST.CALM.FAIL_MAX);
-			return Promise.resolve({
-				loveLost,
-				interactionType: "calm"
-			});
-		}
+		id: "calm", reactionClass: ReactionCollectorBadPetCalmReaction, handler: handleCalm
 	},
 	{
-		id: "imposer",
-		reactionClass: ReactionCollectorBadPetImposerReaction,
-		handler: (_petEntity, petModel, _player): Promise<{
-			loveLost: number;
-			interactionType: string;
-		}> => {
-			// Based on the pet's rarity — the rarer the pet, the higher the chance of success
-			const rarity = petModel.rarity;
-
-			// Rarity: 1 = common, 8 = legendary
-			const successChance = SmallEventConstants.BAD_PET.LOVE_LOST.IMPOSER.BASE_SUCCESS_CHANCE
-				+ (rarity - 1) * SmallEventConstants.BAD_PET.LOVE_LOST.IMPOSER.RARITY_BONUS;
-			const success = RandomUtils.crowniclesRandom.bool(successChance);
-			const loveLost = success
-				? 0
-				: RandomUtils.randInt(SmallEventConstants.BAD_PET.LOVE_LOST.IMPOSER.FAIL_MIN, SmallEventConstants.BAD_PET.LOVE_LOST.IMPOSER.FAIL_MAX);
-			return Promise.resolve({
-				loveLost,
-				interactionType: "imposer"
-			});
-		}
+		id: "imposer", reactionClass: ReactionCollectorBadPetImposerReaction, handler: handleImposer
 	},
 	{
-		id: "energize",
-		reactionClass: ReactionCollectorBadPetEnergizeReaction,
-		handler: (petEntity, petModel, _player): Promise<{
-			loveLost: number;
-			interactionType: string;
-		}> => {
-			// Based on the pet's vigor
-			const vigor = PetUtils.getPetVigor(petModel, petEntity.lovePoints);
-
-			// Higher vigor = better chance (vigor ranges from 0 to 6)
-			const successChance = SmallEventConstants.BAD_PET.LOVE_LOST.ENERGIZE.BASE_SUCCESS_CHANCE
-				+ vigor / PetConstants.VIGOR.MAX * SmallEventConstants.BAD_PET.LOVE_LOST.ENERGIZE.VIGOR_BONUS_MULTIPLIER;
-			const success = RandomUtils.crowniclesRandom.bool(successChance);
-			const loveLost = success
-				? 0
-				: RandomUtils.randInt(SmallEventConstants.BAD_PET.LOVE_LOST.ENERGIZE.FAIL_MIN, SmallEventConstants.BAD_PET.LOVE_LOST.ENERGIZE.FAIL_MAX);
-			return Promise.resolve({
-				loveLost,
-				interactionType: "energize"
-			});
-		}
+		id: "energize", reactionClass: ReactionCollectorBadPetEnergizeReaction, handler: handleEnergize
 	}
 ];
 
-const REACTION_HANDLERS: Record<string, BadPetActionHandler> = {};
-for (const action of BAD_PET_ACTIONS) {
-	// map by id (eg 'intimidate') so we can use reaction.data.id (like witch)
-	REACTION_HANDLERS[action.id] = action.handler;
-}
+/**
+ * Map of action handlers indexed by action id for quick lookup
+ */
+const REACTION_HANDLERS: Record<string, BadPetActionHandler> = Object.fromEntries(
+	BAD_PET_ACTIONS.map(action => [action.id, action.handler])
+);
 
-function pickRandom<T>(array: T[], count: number): T[] {
-	const shuffled = [...array];
+/*
+ * ============================================================================
+ * UTILITY FUNCTIONS
+ * ============================================================================
+ */
+
+/**
+ * Pick random actions from the available pool
+ */
+function pickRandomActions(count: number): BadPetAction[] {
+	const shuffled = [...BAD_PET_ACTIONS];
 	for (let i = shuffled.length - 1; i > 0; i--) {
 		const j = RandomUtils.randInt(0, i + 1);
 		[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
@@ -364,112 +389,175 @@ function pickRandom<T>(array: T[], count: number): T[] {
 	return shuffled.slice(0, count);
 }
 
+/**
+ * Get pet entity data for packets
+ */
+async function getPetData(petId: number | null): Promise<{
+	petEntity: PetEntity | null;
+	petId: number;
+	sex: string;
+	petNickname: string | undefined;
+}> {
+	const petEntity = petId ? await PetEntity.findByPk(petId) : null;
+	return {
+		petEntity,
+		petId: petEntity?.typeId ?? 0,
+		sex: petEntity?.sex ?? StringConstants.SEX.MALE.short,
+		petNickname: petEntity?.nickname ?? undefined
+	};
+}
+
+/**
+ * Apply love loss using the canonical PetEntity.changeLovePoints helper.
+ * This ensures logging and mission updates are executed consistently.
+ */
+async function applyLoveLoss(petId: number | null, loveLost: number, player: Player, response: CrowniclesPacket[]): Promise<void> {
+	if (loveLost <= 0 || !petId) {
+		return;
+	}
+
+	const petEntity = await PetEntity.findOne({ where: { id: petId } });
+	if (!petEntity) {
+		return;
+	}
+
+	// changeLovePoints expects a PlayerEditValueParameters object - pass a negative amount to decrease love
+	await petEntity.changeLovePoints({
+		player,
+		amount: -Math.abs(loveLost),
+		response,
+		reason: NumberChangeReason.SMALL_EVENT
+	});
+}
+
+/**
+ * Execute the action handler based on the player's reaction
+ */
+async function executeActionHandler(reactionId: string | undefined, player: Player): Promise<BadPetActionResult> {
+	const defaultResult: BadPetActionResult = {
+		loveLost: SmallEventConstants.BAD_PET.LOVE_LOST.WAIT,
+		interactionType: "wait"
+	};
+
+	if (!reactionId) {
+		return defaultResult;
+	}
+
+	const handler = REACTION_HANDLERS[reactionId];
+	if (!handler) {
+		return defaultResult;
+	}
+
+	const petEntity = await PetEntity.findOne({ where: { id: player.petId } });
+	if (!petEntity) {
+		return defaultResult;
+	}
+
+	const petModel = PetDataController.instance.getById(petEntity.typeId);
+	if (!petModel) {
+		return defaultResult;
+	}
+
+	return handler(petEntity, petModel, player);
+}
+
+/*
+ * ============================================================================
+ * CALLBACK & SMALL EVENT FUNCTIONS
+ * ============================================================================
+ */
+
+/**
+ * Create the end callback for the reaction collector
+ */
 function getEndCallback(player: Player): EndCallback {
 	return async (collector, response): Promise<void> => {
 		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.BAD_PET_SMALL_EVENT);
 
 		const reaction = collector.getFirstReaction();
-		let result = {
-			loveLost: 5,
-			interactionType: "wait"
-		}; // Default
+		const reactionId = (reaction?.reaction.data as { id?: string } | undefined)?.id;
 
-		if (reaction) {
-			// reactions carry data.id (eg 'intimidate'), use it to find the handler (same approach as witch)
-			const reactionId = (reaction.reaction.data as unknown as { id?: string }).id as string | undefined;
-			const handler = reactionId ? REACTION_HANDLERS[reactionId] : undefined;
-			if (handler) {
-				const petEntity = await PetEntity.findOne({ where: { id: player.petId } });
-				if (petEntity) {
-					const petModel = PetDataController.instance.getById(petEntity.typeId);
-					if (petModel) {
-						result = await handler(petEntity, petModel, player);
-					}
-				}
-			}
-		}
+		const result = await executeActionHandler(reactionId, player);
 
-		if (result.loveLost > 0) {
-			const petEntity = await PetEntity.findOne({ where: { id: player.petId } });
-			if (petEntity) {
-				petEntity.lovePoints -= result.loveLost;
-				if (petEntity.lovePoints < 0) {
-					petEntity.lovePoints = 0;
-				}
-				await petEntity.save();
-			}
-		}
+		await applyLoveLoss(player.petId, result.loveLost, player, response);
 
-		const petEntity = await PetEntity.findOne({ where: { id: player.petId } });
-		const petId = petEntity ? petEntity.typeId : 0;
-		const sex = petEntity ? petEntity.sex : StringConstants.SEX.MALE.short;
-		const petNickname = petEntity?.nickname ?? undefined;
+		const petData = await getPetData(player.petId);
 
 		response.push(makePacket(SmallEventBadPetPacket, {
 			loveLost: result.loveLost,
 			interactionType: result.interactionType,
-			petId,
-			sex,
-			petNickname
+			petId: petData.petId,
+			sex: petData.sex,
+			petNickname: petData.petNickname
 		}));
 	};
 }
 
-export const smallEventFuncs: SmallEventFuncs = {
-	canBeExecuted: async (player: Player): Promise<boolean> => {
-		if (!Maps.isOnContinent(player)) {
-			return false;
-		}
-
-		// Moltiar avoids Mount Celestrum where Talvar resides
-		const destination = player.getDestination();
-		const origin = player.getPreviousMap();
-		if ([destination.id, origin.id].some(mapId => mapId === MapConstants.LOCATIONS_IDS.MOUNT_CELESTRUM)) {
-			return false;
-		}
-
-		if (!player.petId) {
-			return false;
-		}
-		const petEntity = await PetEntity.findByPk(player.petId);
-		if (!petEntity) {
-			return false;
-		}
-		return petEntity.lovePoints > 0;
-	},
-
-	executeSmallEvent: async (response: CrowniclesPacket[], player: Player, context): Promise<void> => {
-		const selectedActions = pickRandom(BAD_PET_ACTIONS, 3);
-		const reactions = selectedActions.map(a => {
-			const ReactionClass = a.reactionClass;
-			const instance = new ReactionClass() as unknown as ReactionCollectorReaction & { id?: string };
-			instance.id = a.id;
-			return {
-				reaction: instance as ReactionCollectorReaction,
-				reactionClass: ReactionClass
-			};
-		});
-
-		const petEntity = await PetEntity.findByPk(player.petId);
-		const petId = petEntity ? petEntity.typeId : 0;
-		const sex = petEntity ? petEntity.sex : StringConstants.SEX.MALE.short;
-		const petNickname = petEntity?.nickname ?? undefined;
-
-		const collector = new ReactionCollectorBadPetSmallEvent(petId, sex, petNickname, reactions);
-
-		const packet = new ReactionCollectorInstance(
-			collector,
-			context,
-			{
-				allowedPlayerKeycloakIds: [player.keycloakId],
-				time: Constants.MESSAGES.COLLECTOR_TIME
-			},
-			getEndCallback(player)
-		)
-			.block(player.keycloakId, BlockingConstants.REASONS.BAD_PET_SMALL_EVENT)
-			.build();
-
-		response.push(packet);
+/**
+ * Check if the small event can be executed for this player
+ */
+async function canBeExecuted(player: Player): Promise<boolean> {
+	if (!Maps.isOnContinent(player)) {
+		return false;
 	}
+
+	// Moltiar avoids Mount Celestrum where Talvar resides
+	const destination = player.getDestination();
+	const origin = player.getPreviousMap();
+	if ([destination.id, origin.id].some(mapId => mapId === MapConstants.LOCATIONS_IDS.MOUNT_CELESTRUM)) {
+		return false;
+	}
+
+	if (!player.petId) {
+		return false;
+	}
+
+	const petEntity = await PetEntity.findByPk(player.petId);
+	return petEntity !== null && petEntity.lovePoints > 0;
+}
+
+/**
+ * Execute the bad pet small event
+ */
+async function executeSmallEvent(response: CrowniclesPacket[], player: Player, context: PacketContext): Promise<void> {
+	const selectedActions = pickRandomActions(SmallEventConstants.BAD_PET.ACTIONS_TO_SHOW);
+
+	const reactions = selectedActions.map(action => {
+		const ReactionClass = action.reactionClass;
+		const instance = new ReactionClass() as ReactionCollectorReaction & { id?: string };
+		instance.id = action.id;
+		return {
+			reaction: instance as ReactionCollectorReaction,
+			reactionClass: action.reactionClass
+		};
+	});
+
+	const petData = await getPetData(player.petId);
+
+	const collector = new ReactionCollectorBadPetSmallEvent(
+		petData.petId,
+		petData.sex,
+		petData.petNickname,
+		reactions
+	);
+
+	const packet = new ReactionCollectorInstance(
+		collector,
+		context,
+		{
+			allowedPlayerKeycloakIds: [player.keycloakId],
+			time: Constants.MESSAGES.COLLECTOR_TIME
+		},
+		getEndCallback(player)
+	)
+		.block(player.keycloakId, BlockingConstants.REASONS.BAD_PET_SMALL_EVENT)
+		.build();
+
+	response.push(packet);
+}
+
+export const smallEventFuncs: SmallEventFuncs = {
+	canBeExecuted,
+	executeSmallEvent
 };
 

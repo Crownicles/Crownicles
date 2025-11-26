@@ -348,18 +348,19 @@ export abstract class SmallEventConstants {
 	};
 
 	static readonly BAD_PET = {
+		ACTIONS_TO_SHOW: 3,
 		LOVE_LOST: {
 			INTIMIDATE: {
-				STRONG_MIN: 1,
-				STRONG_MAX: 4,
-				WEAK_MIN: 5,
+				STRONG_MIN: 0,
+				STRONG_MAX: 3,
+				WEAK_MIN: 1,
 				WEAK_MAX: 9
 			},
 			PLEAD: {
-				WEAK_MIN: 1,
-				WEAK_MAX: 4,
-				STRONG_MIN: 5,
-				STRONG_MAX: 9
+				WEAK_MIN: 0,
+				WEAK_MAX: 3,
+				STRONG_MIN: 1,
+				STRONG_MAX: 8
 			},
 			GIVE_FOOD: {
 				NO_FOOD: 5,
@@ -405,13 +406,14 @@ export abstract class SmallEventConstants {
 			}
 		},
 		THRESHOLDS: {
-			PET_FORCE_STRONG: 50,
+			PET_FORCE_STRONG: 16,
 			PLAYER_SPEED_FAST: 400,
 			FLEE_SUCCESS_CHANCE_FAST: 0.7,
 			PET_FORCE_WEAK: 5,
 			HIDE_SUCCESS_CHANCE_WEAK: 0.3,
 			PLAYER_DEFENSE_MAX: 500,
-			PROTECT_MAX_SUCCESS_CHANCE: 0.7
+			PROTECT_MAX_SUCCESS_CHANCE: 0.7,
+			DISTRACT_SUCCESS_CHANCE: 0.5
 		}
 	};
 }
