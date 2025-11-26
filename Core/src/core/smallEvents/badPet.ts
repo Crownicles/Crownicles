@@ -398,13 +398,8 @@ async function getPetData(petId: number | null): Promise<{
  * Apply love loss using the canonical PetEntity.changeLovePoints helper.
  * This ensures logging and mission updates are executed consistently.
  */
-async function applyLoveLoss(petId: number | null, loveLost: number, player: Player, response: CrowniclesPacket[]): Promise<void> {
-	if (loveLost <= 0 || !petId) {
-		return;
-	}
-
-	const petEntity = await PetEntity.findOne({ where: { id: petId } });
-	if (!petEntity) {
+async function applyLoveLoss(petEntity: PetEntity | null, loveLost: number, player: Player, response: CrowniclesPacket[]): Promise<void> {
+	if (loveLost <= 0 || !petEntity) {
 		return;
 	}
 
@@ -418,37 +413,54 @@ async function applyLoveLoss(petId: number | null, loveLost: number, player: Pla
 }
 
 /**
+ * Extended result that includes the pet entity for reuse
+ */
+type BadPetActionResultWithEntity = BadPetActionResult & {
+	petEntity: PetEntity | null;
+};
+
+/**
  * Execute the action handler based on the player's reaction.
  * If no reaction is provided (timeout case), defaults to the "wait" action.
  * This is intentional behavior - when the collector expires without player input,
  * the event resolves with the default "wait" outcome rather than being cancelled.
  */
-async function executeActionHandler(reactionId: string | undefined, player: Player): Promise<BadPetActionResult> {
-	const defaultResult: BadPetActionResult = {
+async function executeActionHandler(reactionId: string | undefined, player: Player): Promise<BadPetActionResultWithEntity> {
+	const defaultResult: BadPetActionResultWithEntity = {
 		loveLost: SmallEventConstants.BAD_PET.LOVE_LOST.WAIT,
-		interactionType: "wait"
+		interactionType: "wait",
+		petEntity: null
 	};
-
-	if (!reactionId) {
-		return defaultResult;
-	}
-
-	const handler = REACTION_HANDLERS[reactionId];
-	if (!handler) {
-		return defaultResult;
-	}
 
 	const petEntity = await PetEntity.findOne({ where: { id: player.petId } });
 	if (!petEntity) {
 		return defaultResult;
 	}
 
-	const petModel = PetDataController.instance.getById(petEntity.typeId);
-	if (!petModel) {
-		return defaultResult;
+	if (!reactionId) {
+		return {
+			...defaultResult, petEntity
+		};
 	}
 
-	return handler(petEntity, petModel, player);
+	const handler = REACTION_HANDLERS[reactionId];
+	if (!handler) {
+		return {
+			...defaultResult, petEntity
+		};
+	}
+
+	const petModel = PetDataController.instance.getById(petEntity.typeId);
+	if (!petModel) {
+		return {
+			...defaultResult, petEntity
+		};
+	}
+
+	const result = await handler(petEntity, petModel, player);
+	return {
+		...result, petEntity
+	};
 }
 
 /*
@@ -469,7 +481,7 @@ function getEndCallback(player: Player): EndCallback {
 
 		const result = await executeActionHandler(reactionId, player);
 
-		await applyLoveLoss(player.petId, result.loveLost, player, response);
+		await applyLoveLoss(result.petEntity, result.loveLost, player, response);
 
 		const petData = await getPetData(player.petId);
 
@@ -509,8 +521,23 @@ async function canBeExecuted(player: Player): Promise<boolean> {
 /**
  * Execute the bad pet small event
  */
-async function executeSmallEvent(response: CrowniclesPacket[], player: Player, context: PacketContext): Promise<void> {
-	const selectedActions = pickRandomActions(SmallEventConstants.BAD_PET.ACTIONS_TO_SHOW);
+async function executeSmallEvent(response: CrowniclesPacket[], player: Player, context: PacketContext, testArgs?: string[]): Promise<void> {
+	let selectedActions: BadPetAction[];
+
+	if (testArgs && testArgs.length > 0) {
+		// Use testArgs to select specific actions by ID for testing
+		selectedActions = testArgs
+			.map(id => BAD_PET_ACTIONS.find(action => action.id === id))
+			.filter((action): action is BadPetAction => action !== undefined);
+
+		// Fallback to random if no valid actions found
+		if (selectedActions.length === 0) {
+			selectedActions = pickRandomActions(SmallEventConstants.BAD_PET.ACTIONS_TO_SHOW);
+		}
+	}
+	else {
+		selectedActions = pickRandomActions(SmallEventConstants.BAD_PET.ACTIONS_TO_SHOW);
+	}
 
 	// Create reaction instances with their ids directly set
 	const reactions = selectedActions.map(action => {
