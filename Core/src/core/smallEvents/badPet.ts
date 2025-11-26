@@ -50,6 +50,68 @@ interface BadPetAction {
 	handler: BadPetActionHandler;
 }
 
+/**
+ * Food type configuration for give food actions
+ */
+type FoodType = "meat" | "veg";
+
+
+/**
+ * Calculate love lost based on success chance - common pattern for many actions
+ * @param successChance - Probability of success (0-1)
+ * @param failMinLoveLost - Minimum love lost on failure
+ * @param failMaxLoveLost - Maximum love lost on failure
+ * @returns Love lost (0 if success, random value in range if failure)
+ */
+function calculateLoveLostFromSuccessChance(successChance: number, failMinLoveLost: number, failMaxLoveLost: number): number {
+	const success = RandomUtils.crowniclesRandom.bool(successChance);
+	return success ? 0 : RandomUtils.randInt(failMinLoveLost, failMaxLoveLost);
+}
+
+/**
+ * Check if pet's force meets the "strong" threshold
+ */
+function isPetStrong(petModel: Pet): boolean {
+	return petModel.force >= SmallEventConstants.BAD_PET.THRESHOLDS.PET_FORCE_STRONG;
+}
+
+/**
+ * Get pet entity data for packets
+ */
+async function getPetData(petId: number | null): Promise<{
+	petEntity: PetEntity | null;
+	petId: number;
+	sex: string;
+	petNickname: string | undefined;
+}> {
+	const petEntity = petId ? await PetEntity.findByPk(petId) : null;
+	return {
+		petEntity,
+		petId: petEntity?.typeId ?? 0,
+		sex: petEntity?.sex ?? StringConstants.SEX.MALE.short,
+		petNickname: petEntity?.nickname ?? undefined
+	};
+}
+
+/**
+ * Apply love loss using the canonical PetEntity.changeLovePoints helper.
+ * This ensures logging and mission updates are executed consistently.
+ */
+async function applyLoveLoss(petEntity: PetEntity | null, loveLost: number, player: Player, response: CrowniclesPacket[]): Promise<void> {
+	if (loveLost <= 0 || !petEntity) {
+		return;
+	}
+
+	// changeLovePoints expects a PlayerEditValueParameters object - pass a negative amount to decrease love
+	await petEntity.changeLovePoints({
+		player,
+		amount: -Math.abs(loveLost),
+		response,
+		reason: NumberChangeReason.SMALL_EVENT
+	});
+	await petEntity.save();
+}
+
 /*
  * ============================================================================
  * ACTION HANDLERS
@@ -60,12 +122,9 @@ interface BadPetAction {
  * Handle intimidate action - effectiveness based on pet's force
  */
 function handleIntimidate(_petEntity: PetEntity, petModel: Pet, _player: Player): Promise<BadPetActionResult> {
-	const {
-		THRESHOLDS, LOVE_LOST
-	} = SmallEventConstants.BAD_PET;
-	const isStrong = petModel.force >= THRESHOLDS.PET_FORCE_STRONG;
+	const { LOVE_LOST } = SmallEventConstants.BAD_PET;
 
-	const loveLost = isStrong
+	const loveLost = isPetStrong(petModel)
 		? RandomUtils.randInt(LOVE_LOST.INTIMIDATE.STRONG_MIN, LOVE_LOST.INTIMIDATE.STRONG_MAX)
 		: RandomUtils.randInt(LOVE_LOST.INTIMIDATE.WEAK_MIN, LOVE_LOST.INTIMIDATE.WEAK_MAX);
 
@@ -78,14 +137,11 @@ function handleIntimidate(_petEntity: PetEntity, petModel: Pet, _player: Player)
  * Handle plead action - effectiveness inverse to pet's force
  */
 function handlePlead(_petEntity: PetEntity, petModel: Pet, _player: Player): Promise<BadPetActionResult> {
-	const {
-		THRESHOLDS, LOVE_LOST
-	} = SmallEventConstants.BAD_PET;
-	const isWeak = petModel.force < THRESHOLDS.PET_FORCE_STRONG;
+	const { LOVE_LOST } = SmallEventConstants.BAD_PET;
 
-	const loveLost = isWeak
-		? RandomUtils.randInt(LOVE_LOST.PLEAD.WEAK_MIN, LOVE_LOST.PLEAD.WEAK_MAX)
-		: RandomUtils.randInt(LOVE_LOST.PLEAD.STRONG_MIN, LOVE_LOST.PLEAD.STRONG_MAX);
+	const loveLost = isPetStrong(petModel)
+		? RandomUtils.randInt(LOVE_LOST.PLEAD.STRONG_MIN, LOVE_LOST.PLEAD.STRONG_MAX)
+		: RandomUtils.randInt(LOVE_LOST.PLEAD.WEAK_MIN, LOVE_LOST.PLEAD.WEAK_MAX);
 
 	return Promise.resolve({
 		loveLost, interactionType: "plead"
@@ -93,93 +149,63 @@ function handlePlead(_petEntity: PetEntity, petModel: Pet, _player: Player): Pro
 }
 
 /**
- * Handle give meat action - depends on guild inventory and pet's diet
+ * Handle giving food to pet - generic handler for both meat and vegetables
+ * @param foodType - Type of food to give (meat or veg)
+ * @param petModel - Pet model to check diet compatibility
+ * @param player - Player giving the food
  */
-async function handleGiveMeat(_petEntity: PetEntity, petModel: Pet, player: Player): Promise<BadPetActionResult> {
+async function handleGiveFood(foodType: FoodType, petModel: Pet, player: Player): Promise<BadPetActionResult> {
 	const { LOVE_LOST } = SmallEventConstants.BAD_PET;
-	const canEatMeat = petModel.canEatMeat();
-
-	let hasMeat = false;
-	let guild: Awaited<ReturnType<typeof Guilds.getById>> | null = null;
-	if (player.guildId) {
-		guild = await Guilds.getById(player.guildId);
-		if (guild && guild.carnivorousFood > 0) {
-			hasMeat = true;
+	const foodConfig = foodType === "meat"
+		? {
+			canEat: petModel.canEatMeat(), foodKey: "carnivorousFood" as const, prefix: "giveMeat"
 		}
+		: {
+			canEat: petModel.canEatVegetables(), foodKey: "herbivorousFood" as const, prefix: "giveVeg"
+		};
+
+	const guild = player.guildId ? await Guilds.getById(player.guildId) : null;
+
+	if (!guild || guild[foodConfig.foodKey] <= 0) {
+		return {
+			loveLost: LOVE_LOST.GIVE_FOOD.NO_FOOD,
+			interactionType: `${foodConfig.prefix}NoFood`
+		};
 	}
 
-	let loveLost: number;
-	let interactionType: string;
+	// Decrement the food stock
+	guild[foodConfig.foodKey] -= 1;
+	await guild.save();
 
-	if (!hasMeat) {
-		loveLost = LOVE_LOST.GIVE_FOOD.NO_FOOD;
-		interactionType = "giveMeatNoFood";
+	if (foodConfig.canEat) {
+		return {
+			loveLost: RandomUtils.randInt(LOVE_LOST.GIVE_FOOD.JEALOUS_MIN, LOVE_LOST.GIVE_FOOD.JEALOUS_MAX),
+			interactionType: `${foodConfig.prefix}Likes`
+		};
 	}
-	else {
-		// Decrement the meat stock
-		guild!.carnivorousFood -= 1;
-		await guild!.save();
 
-		if (canEatMeat) {
-			loveLost = RandomUtils.randInt(LOVE_LOST.GIVE_FOOD.JEALOUS_MIN, LOVE_LOST.GIVE_FOOD.JEALOUS_MAX);
-			interactionType = "giveMeatLikes";
-		}
-		else {
-			loveLost = RandomUtils.crowniclesRandom.bool(LOVE_LOST.GIVE_FOOD.DISLIKES_CHANCE)
-				? LOVE_LOST.GIVE_FOOD.DISLIKES_AMOUNT
-				: 0;
-			interactionType = "giveMeatDislikes";
-		}
-	}
+	const dislikesLoveLost = RandomUtils.crowniclesRandom.bool(LOVE_LOST.GIVE_FOOD.DISLIKES_CHANCE)
+		? LOVE_LOST.GIVE_FOOD.DISLIKES_AMOUNT
+		: 0;
 
 	return {
-		loveLost, interactionType
+		loveLost: dislikesLoveLost,
+		interactionType: `${foodConfig.prefix}Dislikes`
 	};
+}
+
+/**
+ * Handle give meat action - depends on guild inventory and pet's diet
+ */
+function handleGiveMeat(_petEntity: PetEntity, petModel: Pet, player: Player): Promise<BadPetActionResult> {
+	return handleGiveFood("meat", petModel, player);
 }
 
 /**
  * Handle give vegetables action - depends on guild inventory and pet's diet
  */
-async function handleGiveVeg(_petEntity: PetEntity, petModel: Pet, player: Player): Promise<BadPetActionResult> {
-	const { LOVE_LOST } = SmallEventConstants.BAD_PET;
-	const canEatVegetables = petModel.canEatVegetables();
-
-	let hasVegetables = false;
-	let guild: Awaited<ReturnType<typeof Guilds.getById>> | null = null;
-	if (player.guildId) {
-		guild = await Guilds.getById(player.guildId);
-		if (guild && guild.herbivorousFood > 0) {
-			hasVegetables = true;
-		}
-	}
-
-	let loveLost: number;
-	let interactionType: string;
-
-	if (!hasVegetables) {
-		loveLost = LOVE_LOST.GIVE_FOOD.NO_FOOD;
-		interactionType = "giveVegNoFood";
-	}
-	else {
-		// Decrement the vegetables stock
-		guild!.herbivorousFood -= 1;
-		await guild!.save();
-
-		if (canEatVegetables) {
-			loveLost = RandomUtils.randInt(LOVE_LOST.GIVE_FOOD.JEALOUS_MIN, LOVE_LOST.GIVE_FOOD.JEALOUS_MAX);
-			interactionType = "giveVegLikes";
-		}
-		else {
-			loveLost = RandomUtils.crowniclesRandom.bool(LOVE_LOST.GIVE_FOOD.DISLIKES_CHANCE)
-				? LOVE_LOST.GIVE_FOOD.DISLIKES_AMOUNT
-				: 0;
-			interactionType = "giveVegDislikes";
-		}
-	}
-
-	return {
-		loveLost, interactionType
-	};
+function handleGiveVeg(_petEntity: PetEntity, petModel: Pet, player: Player): Promise<BadPetActionResult> {
+	return handleGiveFood("veg", petModel, player);
 }
 
 /**
@@ -193,17 +219,11 @@ async function handleFlee(_petEntity: PetEntity, _petModel: Pet, player: Player)
 	const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
 	const playerSpeed = player.getCumulativeSpeed(playerActiveObjects);
 
-	let loveLost: number;
-	if (playerSpeed > THRESHOLDS.PLAYER_SPEED_FAST) {
-		const success = RandomUtils.crowniclesRandom.bool(THRESHOLDS.FLEE_SUCCESS_CHANCE_FAST);
-		loveLost = success ? 0 : RandomUtils.randInt(LOVE_LOST.FLEE.MIN, LOVE_LOST.FLEE.MAX);
-	}
-	else {
-		loveLost = RandomUtils.randInt(LOVE_LOST.FLEE.MIN, LOVE_LOST.FLEE.MAX);
-	}
+	const successChance = playerSpeed > THRESHOLDS.PLAYER_SPEED_FAST ? THRESHOLDS.FLEE_SUCCESS_CHANCE_FAST : 0;
 
 	return {
-		loveLost, interactionType: "flee"
+		loveLost: calculateLoveLostFromSuccessChance(successChance, LOVE_LOST.FLEE.MIN, LOVE_LOST.FLEE.MAX),
+		interactionType: "flee"
 	};
 }
 
@@ -215,17 +235,11 @@ function handleHide(_petEntity: PetEntity, petModel: Pet, _player: Player): Prom
 		THRESHOLDS, LOVE_LOST
 	} = SmallEventConstants.BAD_PET;
 
-	let loveLost: number;
-	if (petModel.force < THRESHOLDS.PET_FORCE_WEAK) {
-		const success = RandomUtils.crowniclesRandom.bool(THRESHOLDS.HIDE_SUCCESS_CHANCE_WEAK);
-		loveLost = success ? 0 : RandomUtils.randInt(LOVE_LOST.HIDE.MIN, LOVE_LOST.HIDE.MAX);
-	}
-	else {
-		loveLost = RandomUtils.randInt(LOVE_LOST.HIDE.MIN, LOVE_LOST.HIDE.MAX);
-	}
+	const successChance = petModel.force < THRESHOLDS.PET_FORCE_WEAK ? THRESHOLDS.HIDE_SUCCESS_CHANCE_WEAK : 0;
 
 	return Promise.resolve({
-		loveLost, interactionType: "hide"
+		loveLost: calculateLoveLostFromSuccessChance(successChance, LOVE_LOST.HIDE.MIN, LOVE_LOST.HIDE.MAX),
+		interactionType: "hide"
 	});
 }
 
@@ -253,11 +267,9 @@ async function handleProtect(_petEntity: PetEntity, _petModel: Pet, player: Play
 	const defenseRatio = Math.min(playerDefense / THRESHOLDS.PLAYER_DEFENSE_MAX, 1);
 	const successChance = defenseRatio * THRESHOLDS.PROTECT_MAX_SUCCESS_CHANCE;
 
-	const success = RandomUtils.crowniclesRandom.bool(successChance);
-	const loveLost = success ? 0 : RandomUtils.randInt(LOVE_LOST.PROTECT.FAIL_MIN, LOVE_LOST.PROTECT.FAIL_MAX);
-
 	return {
-		loveLost, interactionType: "protect"
+		loveLost: calculateLoveLostFromSuccessChance(successChance, LOVE_LOST.PROTECT.FAIL_MIN, LOVE_LOST.PROTECT.FAIL_MAX),
+		interactionType: "protect"
 	};
 }
 
@@ -269,11 +281,13 @@ function handleDistract(_petEntity: PetEntity, _petModel: Pet, _player: Player):
 		THRESHOLDS, LOVE_LOST
 	} = SmallEventConstants.BAD_PET;
 
-	const success = RandomUtils.crowniclesRandom.bool(THRESHOLDS.DISTRACT_SUCCESS_CHANCE);
-	const loveLost = success ? 0 : RandomUtils.randInt(LOVE_LOST.DISTRACT.FAIL_MIN, LOVE_LOST.DISTRACT.FAIL_MAX);
-
 	return Promise.resolve({
-		loveLost, interactionType: "distract"
+		loveLost: calculateLoveLostFromSuccessChance(
+			THRESHOLDS.DISTRACT_SUCCESS_CHANCE,
+			LOVE_LOST.DISTRACT.FAIL_MIN,
+			LOVE_LOST.DISTRACT.FAIL_MAX
+		),
+		interactionType: "distract"
 	});
 }
 
@@ -282,15 +296,12 @@ function handleDistract(_petEntity: PetEntity, _petModel: Pet, _player: Player):
  */
 function handleCalm(petEntity: PetEntity, _petModel: Pet, _player: Player): Promise<BadPetActionResult> {
 	const { LOVE_LOST } = SmallEventConstants.BAD_PET;
-
 	const loveRatio = petEntity.lovePoints / PetConstants.MAX_LOVE_POINTS;
 	const successChance = LOVE_LOST.CALM.BASE_SUCCESS_CHANCE + loveRatio * LOVE_LOST.CALM.LOVE_BONUS_MULTIPLIER;
 
-	const success = RandomUtils.crowniclesRandom.bool(successChance);
-	const loveLost = success ? 0 : RandomUtils.randInt(LOVE_LOST.CALM.FAIL_MIN, LOVE_LOST.CALM.FAIL_MAX);
-
 	return Promise.resolve({
-		loveLost, interactionType: "calm"
+		loveLost: calculateLoveLostFromSuccessChance(successChance, LOVE_LOST.CALM.FAIL_MIN, LOVE_LOST.CALM.FAIL_MAX),
+		interactionType: "calm"
 	});
 }
 
@@ -299,14 +310,11 @@ function handleCalm(petEntity: PetEntity, _petModel: Pet, _player: Player): Prom
  */
 function handleImposer(_petEntity: PetEntity, petModel: Pet, _player: Player): Promise<BadPetActionResult> {
 	const { LOVE_LOST } = SmallEventConstants.BAD_PET;
-
 	const successChance = LOVE_LOST.IMPOSER.BASE_SUCCESS_CHANCE + (petModel.rarity - 1) * LOVE_LOST.IMPOSER.RARITY_BONUS;
 
-	const success = RandomUtils.crowniclesRandom.bool(successChance);
-	const loveLost = success ? 0 : RandomUtils.randInt(LOVE_LOST.IMPOSER.FAIL_MIN, LOVE_LOST.IMPOSER.FAIL_MAX);
-
 	return Promise.resolve({
-		loveLost, interactionType: "imposer"
+		loveLost: calculateLoveLostFromSuccessChance(successChance, LOVE_LOST.IMPOSER.FAIL_MIN, LOVE_LOST.IMPOSER.FAIL_MAX),
+		interactionType: "imposer"
 	});
 }
 
@@ -315,23 +323,14 @@ function handleImposer(_petEntity: PetEntity, petModel: Pet, _player: Player): P
  */
 function handleEnergize(petEntity: PetEntity, petModel: Pet, _player: Player): Promise<BadPetActionResult> {
 	const { LOVE_LOST } = SmallEventConstants.BAD_PET;
-
 	const vigor = PetUtils.getPetVigor(petModel, petEntity.lovePoints);
 	const successChance = LOVE_LOST.ENERGIZE.BASE_SUCCESS_CHANCE + vigor / PetConstants.VIGOR.MAX * LOVE_LOST.ENERGIZE.VIGOR_BONUS_MULTIPLIER;
 
-	const success = RandomUtils.crowniclesRandom.bool(successChance);
-	const loveLost = success ? 0 : RandomUtils.randInt(LOVE_LOST.ENERGIZE.FAIL_MIN, LOVE_LOST.ENERGIZE.FAIL_MAX);
-
 	return Promise.resolve({
-		loveLost, interactionType: "energize"
+		loveLost: calculateLoveLostFromSuccessChance(successChance, LOVE_LOST.ENERGIZE.FAIL_MIN, LOVE_LOST.ENERGIZE.FAIL_MAX),
+		interactionType: "energize"
 	});
 }
-
-/*
- * ============================================================================
- * ACTION REGISTRY
- * ============================================================================
- */
 
 /**
  * All available bad pet actions with their handlers
@@ -382,12 +381,6 @@ const REACTION_HANDLERS: Record<string, BadPetActionHandler> = Object.fromEntrie
 	BAD_PET_ACTIONS.map(action => [action.id, action.handler])
 );
 
-/*
- * ============================================================================
- * UTILITY FUNCTIONS
- * ============================================================================
- */
-
 /**
  * Pick random actions from the available pool
  */
@@ -398,43 +391,6 @@ function pickRandomActions(count: number): BadPetAction[] {
 		[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
 	}
 	return shuffled.slice(0, count);
-}
-
-/**
- * Get pet entity data for packets
- */
-async function getPetData(petId: number | null): Promise<{
-	petEntity: PetEntity | null;
-	petId: number;
-	sex: string;
-	petNickname: string | undefined;
-}> {
-	const petEntity = petId ? await PetEntity.findByPk(petId) : null;
-	return {
-		petEntity,
-		petId: petEntity?.typeId ?? 0,
-		sex: petEntity?.sex ?? StringConstants.SEX.MALE.short,
-		petNickname: petEntity?.nickname ?? undefined
-	};
-}
-
-/**
- * Apply love loss using the canonical PetEntity.changeLovePoints helper.
- * This ensures logging and mission updates are executed consistently.
- */
-async function applyLoveLoss(petEntity: PetEntity | null, loveLost: number, player: Player, response: CrowniclesPacket[]): Promise<void> {
-	if (loveLost <= 0 || !petEntity) {
-		return;
-	}
-
-	// changeLovePoints expects a PlayerEditValueParameters object - pass a negative amount to decrease love
-	await petEntity.changeLovePoints({
-		player,
-		amount: -Math.abs(loveLost),
-		response,
-		reason: NumberChangeReason.SMALL_EVENT
-	});
-	await petEntity.save();
 }
 
 /**
