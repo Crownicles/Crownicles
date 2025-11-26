@@ -100,28 +100,40 @@ async function handleGiveMeat(_petEntity: PetEntity, petModel: Pet, player: Play
 	const canEatMeat = petModel.canEatMeat();
 
 	let hasMeat = false;
+	let guild: Awaited<ReturnType<typeof Guilds.getById>> | null = null;
 	if (player.guildId) {
-		const guild = await Guilds.getById(player.guildId);
+		guild = await Guilds.getById(player.guildId);
 		if (guild && guild.carnivorousFood > 0) {
 			hasMeat = true;
 		}
 	}
 
 	let loveLost: number;
+	let interactionType: string;
+
 	if (!hasMeat) {
 		loveLost = LOVE_LOST.GIVE_FOOD.NO_FOOD;
-	}
-	else if (canEatMeat) {
-		loveLost = RandomUtils.randInt(LOVE_LOST.GIVE_FOOD.JEALOUS_MIN, LOVE_LOST.GIVE_FOOD.JEALOUS_MAX);
+		interactionType = "giveMeatNoFood";
 	}
 	else {
-		loveLost = RandomUtils.crowniclesRandom.bool(LOVE_LOST.GIVE_FOOD.DISLIKES_CHANCE)
-			? LOVE_LOST.GIVE_FOOD.DISLIKES_AMOUNT
-			: 0;
+		// Decrement the meat stock
+		guild!.carnivorousFood -= 1;
+		await guild!.save();
+
+		if (canEatMeat) {
+			loveLost = RandomUtils.randInt(LOVE_LOST.GIVE_FOOD.JEALOUS_MIN, LOVE_LOST.GIVE_FOOD.JEALOUS_MAX);
+			interactionType = "giveMeatLikes";
+		}
+		else {
+			loveLost = RandomUtils.crowniclesRandom.bool(LOVE_LOST.GIVE_FOOD.DISLIKES_CHANCE)
+				? LOVE_LOST.GIVE_FOOD.DISLIKES_AMOUNT
+				: 0;
+			interactionType = "giveMeatDislikes";
+		}
 	}
 
 	return {
-		loveLost, interactionType: "giveMeat"
+		loveLost, interactionType
 	};
 }
 
@@ -133,28 +145,40 @@ async function handleGiveVeg(_petEntity: PetEntity, petModel: Pet, player: Playe
 	const canEatVegetables = petModel.canEatVegetables();
 
 	let hasVegetables = false;
+	let guild: Awaited<ReturnType<typeof Guilds.getById>> | null = null;
 	if (player.guildId) {
-		const guild = await Guilds.getById(player.guildId);
+		guild = await Guilds.getById(player.guildId);
 		if (guild && guild.herbivorousFood > 0) {
 			hasVegetables = true;
 		}
 	}
 
 	let loveLost: number;
+	let interactionType: string;
+
 	if (!hasVegetables) {
 		loveLost = LOVE_LOST.GIVE_FOOD.NO_FOOD;
-	}
-	else if (canEatVegetables) {
-		loveLost = RandomUtils.randInt(LOVE_LOST.GIVE_FOOD.JEALOUS_MIN, LOVE_LOST.GIVE_FOOD.JEALOUS_MAX);
+		interactionType = "giveVegNoFood";
 	}
 	else {
-		loveLost = RandomUtils.crowniclesRandom.bool(LOVE_LOST.GIVE_FOOD.DISLIKES_CHANCE)
-			? LOVE_LOST.GIVE_FOOD.DISLIKES_AMOUNT
-			: 0;
+		// Decrement the vegetables stock
+		guild!.herbivorousFood -= 1;
+		await guild!.save();
+
+		if (canEatVegetables) {
+			loveLost = RandomUtils.randInt(LOVE_LOST.GIVE_FOOD.JEALOUS_MIN, LOVE_LOST.GIVE_FOOD.JEALOUS_MAX);
+			interactionType = "giveVegLikes";
+		}
+		else {
+			loveLost = RandomUtils.crowniclesRandom.bool(LOVE_LOST.GIVE_FOOD.DISLIKES_CHANCE)
+				? LOVE_LOST.GIVE_FOOD.DISLIKES_AMOUNT
+				: 0;
+			interactionType = "giveVegDislikes";
+		}
 	}
 
 	return {
-		loveLost, interactionType: "giveVeg"
+		loveLost, interactionType
 	};
 }
 
@@ -410,6 +434,7 @@ async function applyLoveLoss(petEntity: PetEntity | null, loveLost: number, play
 		response,
 		reason: NumberChangeReason.SMALL_EVENT
 	});
+	await petEntity.save();
 }
 
 /**
