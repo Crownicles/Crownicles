@@ -51,7 +51,7 @@ export async function badPetCollector(context: PacketContext, packet: ReactionCo
 
 	const petDisplay = PetUtils.petToShortString(lng, data.petNickname, data.petId, data.sex as SexTypeShort);
 
-	let description = StringUtils.getRandomTranslation("smallEvents:badPet.intro", lng, { pet: petDisplay }) + "\n\n";
+	let description = `${StringUtils.getRandomTranslation("smallEvents:badPet.intro", lng, { pet: petDisplay })}\n\n`;
 
 	const row = new ActionRowBuilder<ButtonBuilder>();
 
