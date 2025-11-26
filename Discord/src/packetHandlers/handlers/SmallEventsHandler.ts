@@ -65,7 +65,7 @@ import { SmallEventWinPersonalXPPacket } from "../../../../Lib/src/packets/small
 import { SmallEventWitchResultPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventWitchPacket";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { witchResult } from "../../smallEvents/witch";
-import { DisplayUtils } from "../../utils/DisplayUtils"; 
+import { DisplayUtils } from "../../utils/DisplayUtils";
 import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
 import {
 	SmallEventSpaceInitialPacket,

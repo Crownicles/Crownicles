@@ -346,4 +346,72 @@ export abstract class SmallEventConstants {
 			}
 		}
 	};
+
+	static readonly BAD_PET = {
+		LOVE_LOST: {
+			INTIMIDATE: {
+				STRONG_MIN: 1,
+				STRONG_MAX: 4,
+				WEAK_MIN: 5,
+				WEAK_MAX: 9
+			},
+			PLEAD: {
+				WEAK_MIN: 1,
+				WEAK_MAX: 4,
+				STRONG_MIN: 5,
+				STRONG_MAX: 9
+			},
+			GIVE_FOOD: {
+				NO_FOOD: 5,
+				JEALOUS_MIN: 1,
+				JEALOUS_MAX: 6,
+				DISLIKES_CHANCE: 0.2,
+				DISLIKES_AMOUNT: 1
+			},
+			FLEE: {
+				MIN: 1,
+				MAX: 11
+			},
+			HIDE: {
+				MIN: 1,
+				MAX: 6
+			},
+			WAIT: 2,
+			PROTECT: {
+				FAIL_MIN: 1,
+				FAIL_MAX: 4
+			},
+			DISTRACT: {
+				FAIL_MIN: 1,
+				FAIL_MAX: 8
+			},
+			CALM: {
+				BASE_SUCCESS_CHANCE: 0.3,
+				LOVE_BONUS_MULTIPLIER: 0.6,
+				FAIL_MIN: 4,
+				FAIL_MAX: 7
+			},
+			IMPOSER: {
+				BASE_SUCCESS_CHANCE: 0.2,
+				RARITY_BONUS: 0.1,
+				FAIL_MIN: 3,
+				FAIL_MAX: 6
+			},
+			ENERGIZE: {
+				BASE_SUCCESS_CHANCE: 0.15,
+				VIGOR_BONUS_MULTIPLIER: 0.75,
+				FAIL_MIN: 4,
+				FAIL_MAX: 8
+			}
+		},
+		THRESHOLDS: {
+			PET_FORCE_STRONG: 50,
+			PLAYER_SPEED_FAST: 400,
+			FLEE_SUCCESS_CHANCE_FAST: 0.7,
+			PET_FORCE_WEAK: 5,
+			HIDE_SUCCESS_CHANCE_WEAK: 0.3,
+			PLAYER_DEFENSE_MAX: 500,
+			PROTECT_MAX_SUCCESS_CHANCE: 0.7
+		}
+	};
 }
