@@ -8,6 +8,7 @@ import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
 import {
 	CommandPetPacketReq, CommandPetPacketRes, CommandPetCaressPacketReq
 } from "../../../../Lib/src/packets/commands/CommandPetPacket";
+import { CommandPetExpeditionPacketReq } from "../../../../Lib/src/packets/commands/CommandPetExpeditionPacket";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import { DiscordCache } from "../../bot/DiscordCache";
@@ -24,6 +25,8 @@ import { sendInteractionNotForYou } from "../../utils/ErrorUtils";
 import { Constants } from "../../../../Lib/src/constants/Constants";
 import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 import { Language } from "../../../../Lib/src/Language";
+import { finishInTimeDisplay } from "../../../../Lib/src/utils/TimeUtils";
+import { ExpeditionConstants } from "../../../../Lib/src/constants/ExpeditionConstants";
 
 /**
  * Display all the information about a Pet
@@ -51,6 +54,49 @@ function createPetButton(lng: Language): ButtonBuilder {
 }
 
 /**
+ * Create the expedition button component
+ * @param lng
+ * @param hasExpedition - whether an expedition is in progress
+ * @param hasTalisman - whether the player has the talisman
+ */
+function createExpeditionButton(lng: Language, hasExpedition: boolean, hasTalisman: boolean): ButtonBuilder {
+	const button = new ButtonBuilder()
+		.setCustomId("pet_expedition")
+		.setStyle(hasExpedition ? ButtonStyle.Success : ButtonStyle.Primary);
+
+	if (!hasTalisman) {
+		button.setLabel(i18n.t("commands:pet.expeditionButtonDisabled", { lng }));
+		button.setDisabled(true);
+	}
+	else if (hasExpedition) {
+		button.setLabel(i18n.t("commands:pet.recallButton", { lng }));
+		button.setEmoji("🏠");
+	}
+	else {
+		button.setLabel(i18n.t("commands:pet.expeditionButton", { lng }));
+		button.setEmoji("🗺️");
+	}
+
+	return button;
+}
+
+/**
+ * Get the location type emoji for display
+ * @param locationType
+ */
+function getLocationEmoji(locationType: string): string {
+	const emojiMap: Record<string, string> = {
+		[ExpeditionConstants.LOCATION_TYPES.FOREST]: "🌲",
+		[ExpeditionConstants.LOCATION_TYPES.MOUNTAIN]: "⛰️",
+		[ExpeditionConstants.LOCATION_TYPES.DESERT]: "🏜️",
+		[ExpeditionConstants.LOCATION_TYPES.OCEAN]: "🌊",
+		[ExpeditionConstants.LOCATION_TYPES.RUINS]: "🏛️",
+		[ExpeditionConstants.LOCATION_TYPES.CAVE]: "🕳️"
+	};
+	return emojiMap[locationType] || "🗺️";
+}
+
+/**
  * Create the embed for the pet command response
  * @param packet
  * @param interaction
@@ -65,6 +111,22 @@ async function createPetEmbed(
 		foundPlayerUsername = await DisplayUtils.getEscapedUsername(packet.askedKeycloakId, lng);
 	}
 
+	let description = DisplayUtils.getOwnedPetFieldDisplay(packet.pet, lng);
+
+	// Add expedition status if in progress
+	if (packet.expeditionInProgress) {
+		const locationEmoji = getLocationEmoji(packet.expeditionInProgress.locationType);
+		const locationName = i18n.t(`commands:petExpedition.locations.${packet.expeditionInProgress.locationType}`, { lng });
+		const riskCategory = getRiskCategoryName(packet.expeditionInProgress.riskRate, lng);
+
+		description += `\n\n${i18n.t("commands:petExpedition.expeditionStatus", {
+			lng,
+			location: `${locationEmoji} ${locationName}`,
+			risk: riskCategory,
+			returnTime: finishInTimeDisplay(new Date(packet.expeditionInProgress.endTime))
+		})}`;
+	}
+
 	return new CrowniclesEmbed()
 		.formatAuthor(
 			i18n.t("commands:pet.embedTitle", {
@@ -73,9 +135,28 @@ async function createPetEmbed(
 			}),
 			interaction.user
 		)
-		.setDescription(
-			DisplayUtils.getOwnedPetFieldDisplay(packet.pet, lng)
-		);
+		.setDescription(description);
+}
+
+/**
+ * Get the risk category name for display
+ * @param riskRate
+ * @param lng
+ */
+function getRiskCategoryName(riskRate: number, lng: Language): string {
+	if (riskRate <= 15) {
+		return i18n.t("commands:petExpedition.riskCategories.veryLow", { lng });
+	}
+	if (riskRate <= 30) {
+		return i18n.t("commands:petExpedition.riskCategories.low", { lng });
+	}
+	if (riskRate <= 50) {
+		return i18n.t("commands:petExpedition.riskCategories.medium", { lng });
+	}
+	if (riskRate <= 70) {
+		return i18n.t("commands:petExpedition.riskCategories.high", { lng });
+	}
+	return i18n.t("commands:petExpedition.riskCategories.veryHigh", { lng });
 }
 
 /**
@@ -83,7 +164,7 @@ async function createPetEmbed(
  * @param message
  * @param packet
  * @param interaction
- * @param petButton
+ * @param buttons
  * @param row
  * @param context
  */
@@ -91,7 +172,7 @@ function setupPetButtonCollector(
 	message: Message,
 	packet: CommandPetPacketRes,
 	interaction: CrowniclesInteraction,
-	petButton: ButtonBuilder,
+	buttons: { petButton: ButtonBuilder; expeditionButton?: ButtonBuilder },
 	row: ActionRowBuilder<ButtonBuilder>,
 	context: PacketContext
 ): void {
@@ -103,24 +184,34 @@ function setupPetButtonCollector(
 				sendInteractionNotForYou(i.user, i, lng);
 				return false;
 			}
-			return i.customId === "pet_the_pet";
+			return i.customId === "pet_the_pet" || i.customId === "pet_expedition";
 		},
 		time: Constants.MESSAGES.COLLECTOR_TIME,
 		max: 1
 	});
 
 	collector.on("collect", async (i: ButtonInteraction) => {
-		PacketUtils.sendPacketToBackend(context, makePacket(CommandPetCaressPacketReq, {}));
+		if (i.customId === "pet_the_pet") {
+			PacketUtils.sendPacketToBackend(context, makePacket(CommandPetCaressPacketReq, {}));
 
-		await i.reply({
-			content: StringUtils.getRandomTranslation("commands:pet.petPhrases", lng, {
-				petName: packet.pet?.nickname || i18n.t("commands:pet.defaultPetName", { lng })
-			})
-		});
+			await i.reply({
+				content: StringUtils.getRandomTranslation("commands:pet.petPhrases", lng, {
+					petName: packet.pet?.nickname || i18n.t("commands:pet.defaultPetName", { lng })
+				})
+			});
+		}
+		else if (i.customId === "pet_expedition") {
+			// Send expedition request packet - the handler will display the expedition UI
+			PacketUtils.sendPacketToBackend(context, makePacket(CommandPetExpeditionPacketReq, {}));
+			await i.deferUpdate();
+		}
 	});
 
 	collector.on("end", async () => {
-		petButton.setDisabled(true);
+		buttons.petButton.setDisabled(true);
+		if (buttons.expeditionButton) {
+			buttons.expeditionButton.setDisabled(true);
+		}
 		await message.edit({ components: [row] });
 	});
 }
@@ -137,6 +228,17 @@ export async function handleCommandPetPacketRes(packet: CommandPetPacketRes, con
 
 	const petButton = createPetButton(lng);
 	const row = new ActionRowBuilder<ButtonBuilder>().addComponents(petButton);
+	const buttons: { petButton: ButtonBuilder; expeditionButton?: ButtonBuilder } = { petButton };
+
+	// Add expedition button if viewing own pet
+	if (isOwnerViewingOwnPet) {
+		const hasExpedition = !!packet.expeditionInProgress;
+		const hasTalisman = !!packet.hasTalisman;
+		const expeditionButton = createExpeditionButton(lng, hasExpedition, hasTalisman);
+		row.addComponents(expeditionButton);
+		buttons.expeditionButton = expeditionButton;
+	}
+
 	const embed = await createPetEmbed(packet, interaction);
 
 	const reply = await interaction.reply({
@@ -152,7 +254,7 @@ export async function handleCommandPetPacketRes(packet: CommandPetPacketRes, con
 	const message = reply.resource.message;
 
 	if (packet.pet && isOwnerViewingOwnPet) {
-		setupPetButtonCollector(message, packet, interaction, petButton, row, context);
+		setupPetButtonCollector(message, packet, interaction, buttons, row, context);
 	}
 }
 

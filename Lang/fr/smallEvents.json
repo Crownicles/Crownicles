@@ -2156,5 +2156,27 @@
         ]
       }
     }
+  },
+  "expeditionAdvice": {
+    "intro": [
+      "Vous croisez un vieux sage qui tient une amulette scintillante.",
+      "Un ermite mystérieux surgit de nulle part, portant un étrange talisman.",
+      "Une voyante vous arrête et observe attentivement votre familier."
+    ],
+    "talismanReceived": [
+      "L'ermite vous tend un Talisman d'Ancrage : \"Avec ceci, votre familier pourra partir en expédition. Ce talisman maintiendra un lien spirituel entre vous, l'empêchant de se perdre.\"\n\nVous recevez le **Talisman d'Ancrage** ! Vous pouvez désormais envoyer votre familier en expédition depuis la commande **/pet**.",
+      "Le sage vous offre un Talisman d'Ancrage gravé de runes anciennes : \"Ce talisman vous permettra d'envoyer votre compagnon en mission. Il prendra sa place pendant son absence, assurant son retour.\"\n\nVous obtenez le **Talisman d'Ancrage** ! Les expéditions de familiers sont maintenant disponibles.",
+      "La voyante dépose un Talisman d'Ancrage dans votre main : \"Grâce à cet artefact, votre familier pourra explorer le monde et revenir avec des trésors. Le talisman occupera sa place pendant l'expédition.\"\n\nVous recevez le **Talisman d'Ancrage** ! Utilisez **/pet** pour envoyer votre familier en expédition."
+    ],
+    "expeditionBonus": [
+      "Le sage sourit en sentant la présence distante de votre familier en expédition : \"Votre compagnon explore courageusement le monde... Je bénis son voyage.\" Vous recevez **{{bonusMoney}} {emote:unitValues.money}** et **{{bonusExperience}} {emote:unitValues.xp}** !",
+      "L'ermite perçoit le lien du talisman avec votre familier absent : \"Je sens que **{{pet}}** est en mission. Que cette offrande vous porte chance.\" Vous gagnez **{{bonusMoney}} {emote:unitValues.money}** et **{{bonusExperience}} {emote:unitValues.xp}** !",
+      "La voyante lit les énergies du talisman : \"Votre familier voyage en ce moment même... Les étoiles favorisent son expédition.\" Vous obtenez **{{bonusMoney}} {emote:unitValues.money}** et **{{bonusExperience}} {emote:unitValues.xp}** !"
+    ],
+    "advice": [
+      "Le sage vous donne des conseils sur les expéditions : \"Envoyez votre familier là où le risque correspond à sa force. Plus l'expédition est longue, plus les récompenses sont grandes... mais aussi les dangers.\"",
+      "L'ermite partage sa sagesse : \"Les expéditions en montagne rapportent plus de gemmes, tandis que les forêts offrent de l'expérience. Choisissez selon vos besoins.\"",
+      "La voyante vous met en garde : \"N'envoyez jamais un familier malheureux en expédition. Son amour doit être suffisant pour qu'il veuille revenir vers vous.\""
+    ]
   }
 }
