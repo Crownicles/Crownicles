@@ -1977,15 +1977,15 @@
   },
   "badPet": {
     "intro": [
-      "Un nain trapu surgit d'un rocher, sa barbe rousse hirsute et son regard empli d'une haine viscérale. À la vue de **{{pet}}**, il crache au sol avec dégoût et brandit un bâton noueux, s'approchant d'un pas menaçant. Votre compagnon recule, les oreilles plaquées contre son crâne, tandis que le nain vous toise avec mépris.",
-      "Une voix rauque et colérique vous interpelle soudainement. Un nain au visage marqué par une vieille cicatrice s'avance vers vous, ses yeux injectés de sang fixés sur **{{pet}}** avec une fureur non dissimulée. Il fait tournoyer une massue cloutée d'un geste menaçant. Votre compagnon tremble de tous ses membres face à cette hostilité.",
-      "Surgissant de derrière une formation rocheuse, un nain au regard fou se plante devant vous, bloquant votre route. Sa main droite porte les stigmates d'une ancienne morsure, et son attention se fixe immédiatement sur **{{pet}}** avec une haine brûlante. Il dégaine une dague ébréchée en marmonnant des menaces incompréhensibles. Votre compagnon gémit d'inquiétude.",
-      "Un grognement guttural vous fait sursauter. Un nain corpulent émerge d'une anfractuosité, sa barbe tressée cliquetant de perles d'os. Dès qu'il aperçoit **{{pet}}**, sa face se tord de dégoût et il pointe vers vous un doigt accusateur, son autre main serrant fermement le manche d'une hache rouillée.",
-      "Votre chemin est soudain barré par une silhouette trapue et hostile. Le nain qui vous fait face arbore une expression de pure répulsion en découvrant **{{pet}}** à vos côtés. Une vieille blessure mal cicatrisée traverse son avant-bras, témoignage muet d'un passé douloureux. Il empoigne un marteau de guerre en vous fixant d'un regard meurtrier.",
-      "Le claquement d'une pierre qui roule vous alerte d'une présence. Un nain massif émerge de l'ombre d'un surplomb rocheux, ses yeux perçants scrutant immédiatement **{{pet}}** avec une animosité palpable. Les cicatrices qui zèbrent ses avant-bras témoignent d'anciennes rencontres douloureuses avec des créatures. Il brandit un gourdin d'un geste lourd de menaces.",
-      "Une odeur de terre et de sueur rance vous parvient avant même que vous ne voyiez l'agresseur. Un nain trapu surgit d'une crevasse, sa peau tannée par le soleil et ses mains calleuses serrées autour d'une pioche. Son regard tombe sur **{{pet}}** et une rage froide déforme ses traits tandis qu'il avance vers vous.",
-      "Le crissement de bottes sur les graviers annonce l'arrivée d'un intrus. Un nain au crâne partiellement chauve apparaît, sa barbe grise nouée en un catogan sévère. Ses yeux s'écarquillent d'horreur en apercevant **{{pet}}**, et il recule d'un pas avant de se ressaisir et de brandir un couteau de mineur avec une détermination haineuse.",
-      "Un sifflement moqueur résonne dans l'air. Perché sur un rocher, un nain aux épaules voûtées observe votre progression avec mépris. Lorsqu'il remarque **{{pet}}** trottant à vos côtés, son expression se mue en une grimace de dégoût profond. Il saute au sol et se plante devant vous, les poings serrés et le corps tendu.",
+      "Un nain trapu surgit d'un rocher, sa barbe rousse hirsute et son regard empli d'une haine viscérale. À la vue de **{{pet}}**, il crache au sol avec dégoût et brandit un bâton noueux. Votre compagnon recule, les oreilles plaquées contre son crâne. L'inconnu se présente comme Moltiar et jure qu'il n'a rien à voir avec son frère adorateur de bestioles.",
+      "Une voix rauque et colérique vous interpelle soudainement. Un nain au visage marqué par une vieille cicatrice s'avance, ses yeux injectés de sang fixés sur **{{pet}}** avec fureur. Il fait tournoyer une massue cloutée d'un geste menaçant. Votre compagnon tremble de tous ses membres.",
+      "Surgissant de derrière une formation rocheuse, un nain au regard fou se plante devant vous, bloquant votre route. Sa main droite porte les stigmates d'une ancienne morsure. Il fixe **{{pet}}** avec une haine brûlante et dégaine une dague ébréchée. Moltiar maugrée que contrairement à son frère Talvar, lui sait reconnaître une nuisance.",
+      "Un grognement guttural vous fait sursauter. Un nain corpulent émerge d'une anfractuosité, sa barbe tressée cliquetant de perles d'os. Dès qu'il aperçoit **{{pet}}**, sa face se tord de dégoût. Il pointe vers vous un doigt accusateur, son autre main serrant fermement une hache rouillée.",
+      "Votre chemin est soudain barré par une silhouette trapue et hostile. Le nain arbore une expression de pure répulsion en découvrant **{{pet}}** à vos côtés. Une vieille blessure traverse son avant-bras, témoignage d'un passé douloureux. Il empoigne un marteau de guerre. Moltiar gronde qu'il ne laissera pas ces créatures détestables parcourir ses terres, peu importe ce que son naïf frère peut en penser.",
+      "Le claquement d'une pierre qui roule vous alerte d'une présence. Un nain massif émerge de l'ombre d'un surplomb rocheux, scrutant immédiatement **{{pet}}** avec une animosité palpable. Les cicatrices qui zèbrent ses avant-bras témoignent d'anciennes rencontres douloureuses. Il brandit un gourdin d'un geste lourd de menaces.",
+      "Une odeur de terre et de sueur rance vous parvient avant même que vous ne voyiez l'agresseur. Un nain surgit d'une crevasse, sa peau tannée par le soleil, ses mains calleuses serrées autour d'une pioche. Son regard tombe sur **{{pet}}** et une rage froide déforme ses traits. Il crache que son idiot de frère devrait voir ce que ces bestioles lui ont fait subir.",
+      "Le crissement de bottes sur les graviers annonce l'arrivée d'un intrus. Un nain au crâne partiellement chauve apparaît, sa barbe grise nouée en un catogan sévère. Ses yeux s'écarquillent d'horreur en apercevant **{{pet}}**. Il recule avant de brandir un couteau de mineur avec une détermination haineuse.",
+      "Un sifflement moqueur résonne dans l'air. Perché sur un rocher, un nain observe votre progression avec mépris. Lorsqu'il remarque **{{pet}}** trottant à vos côtés, son expression se mue en une grimace de dégoût profond. Il saute au sol et se plante devant vous, marmonnant que son frère a vraiment corrompu trop de voyageurs avec ses idées saugrenues.",
       "Le sol tremble légèrement sous vos pieds, annonçant l'approche d'une présence massive. Un nain imposant, plus large que haut, émerge d'un éboulement de rochers. Son regard balaye le chemin et s'arrête sur **{{pet}}** avec une haine incandescente. Les muscles de ses bras se contractent tandis qu'il soulève un lourd maillet de forgeron."
     ],
     "choices": {
@@ -2005,7 +2005,7 @@
     "outcomes": {
       "intimidate": {
         "success": [
-          "Obéissant à votre ordre, **{{pet}}** se dresse de toute sa hauteur et pousse un grondement impressionnant. Le nain, surpris par cette démonstration de force, recule d'un pas mal assuré et marmonne quelques insultes en s'éloignant à contrecœur. Votre compagnon vous regarde fièrement.",
+          "Obéissant à votre ordre, **{{pet}}** se dresse de toute sa hauteur et pousse un grondement impressionnant. Moltiar, surpris par cette démonstration de force, recule d'un pas mal assuré et marmonne quelques insultes en s'éloignant à contrecœur. Votre compagnon vous regarde fièrement.",
           "Adoptant une posture menaçante, **{{pet}}** grogne avec une férocité surprenante face au nain hostile. Ce dernier, voyant que la confrontation pourrait mal tourner, crache une dernière insulte avant de battre en retraite. Votre compagnon semble satisfait d'avoir tenu tête à l'agresseur."
         ],
         "fail": [
@@ -2015,7 +2015,7 @@
       },
       "plead": {
         "success": [
-          "Vous tentez de raisonner le nain par des paroles apaisantes, lui expliquant que votre compagnon ne représente aucune menace. Quelque chose dans votre voix sincère semble toucher une corde sensible, et il finit par baisser son arme en grognant. **{{pet}}** apprécie votre diplomatie.",
+          "Vous tentez de raisonner Moltiar par des paroles apaisantes, lui expliquant que votre compagnon ne représente aucune menace. Quelque chose dans votre voix sincère semble toucher une corde sensible, et il finit par baisser son arme en grognant. **{{pet}}** apprécie votre diplomatie.",
           "Vos paroles mesurées résonnent dans le silence tendu. Vous évoquez le respect mutuel entre voyageurs, et le nain, malgré sa haine évidente des animaux, concède que vous semblez maîtriser votre bête. Il s'écarte en maugréant. **{{pet}}** se calme progressivement."
         ],
         "fail": [
@@ -2029,7 +2029,7 @@
           "Le morceau de viande que vous offrez fait hésiter le nain. Son estomac gronde plus fort que sa haine, et il finit par accepter votre présent en s'éloignant. **{{pet}}** apprécie votre ingéniosité qui a évité la confrontation."
         ],
         "fail": [
-          "Vous sortez un morceau de viande pour amadouer le nain, mais celui-ci le jette au sol avec dégoût, refusant de se laisser acheter ainsi. Malheureusement, **{{pet}}** lorgnait sur ce mets et vous regarde avec des yeux accusateurs.",
+          "Vous sortez un morceau de viande pour amadouer Moltiar, mais celui-ci le jette au sol avec dégoût, refusant de se laisser acheter ainsi. Malheureusement, **{{pet}}** lorgnait sur ce mets et vous regarde avec des yeux accusateurs.",
           "Le morceau de viande que vous offrez est piétiné par le nain furieux. **{{pet}}** observe la scène avec frustration, déçu de voir cette friandise gaspillée."
         ]
       },
@@ -2045,12 +2045,12 @@
       },
       "flee": {
         "success": [
-          "Vous prenez vos jambes à votre cou avec **{{pet}}** sur vos talons. Votre vitesse combinée vous permet de distancer rapidement le nain qui, trop corpulent, renonce à vous poursuivre en hurlant des jurons. Votre compagnon halète mais semble satisfait.",
+          "Vous prenez vos jambes à votre cou avec **{{pet}}** sur vos talons. Votre vitesse combinée vous permet de distancer rapidement Moltiar qui, trop corpulent, renonce à vous poursuivre en hurlant des jurons. Votre compagnon halète mais semble satisfait.",
           "La fuite se révèle être la bonne décision. Vous courez efficacement avec **{{pet}}** qui vous suit sans difficulté, laissant le nain furieux mais impuissant derrière vous. Vous avez fait équipe."
         ],
         "fail": [
-          "La panique vous submerge et vous détalez maladroitement, **{{pet}}** sur vos talons. Dans votre précipitation, vous trébuchez sur une pierre et votre compagnon se blesse en vous évitant. Haletant et meurtri, il vous en veut.",
-          "Vous prenez vos jambes à votre cou dans une débandade peu glorieuse, forçant **{{pet}}** à sprinter jusqu'à l'épuisement. Lorsque vous vous arrêtez enfin, il s'effondre, épuisé et blessé par cette course effrénée."
+          "La panique vous submerge et vous détalez maladroitement avec **{{pet}}** sur vos talons. Moltiar, plus rapide que prévu, vous rattrape et bouscule violemment votre compagnon au passage. Vous parvenez finalement à vous échapper, mais **{{pet}}** vous en veut de cette fuite précipitée.",
+          "Vous prenez vos jambes à votre cou dans une débandade peu glorieuse. Malheureusement, **{{pet}}** ne peut suivre votre rythme et reste à la traîne. Le nain en profite pour lui donner un coup de bâton avant que vous ne reveniez le chercher. Votre compagnon est furieux de cette fuite ratée."
         ]
       },
       "hide": {
@@ -2059,7 +2059,7 @@
           "Vous trouvez un endroit idéal pour cacher **{{pet}}** sous votre cape. Le nain, ne voyant plus l'objet de sa haine, finit par se calmer et poursuivre son chemin. Votre compagnon semble rassuré par votre protection."
         ],
         "fail": [
-          "Vous tentez de dissimuler **{{pet}}** dans un recoin, mais le nain vous surprend en pleine manœuvre. Il rugit de colère et malmène votre compagnon. Celui-ci vous lance un regard lourd de reproches.",
+          "Vous tentez de dissimuler **{{pet}}** dans un recoin, mais Moltiar vous surprend en pleine manœuvre. Il rugit de colère et malmène votre compagnon. Celui-ci vous lance un regard lourd de reproches.",
           "Votre tentative de dissimulation échoue lamentablement quand **{{pet}}** pousse un gémissement nerveux, révélant sa cachette. Le nain se rue vers lui et le bouscule violemment. Votre compagnon souffre de cette mésaventure."
         ]
       },
@@ -2075,17 +2075,17 @@
       },
       "protect": {
         "success": [
-          "Dans un élan de bravoure protectrice, vous placez fermement votre corps entre le nain et **{{pet}}**. Votre détermination impressionne l'agresseur qui, voyant que vous êtes prêt à vous battre, décide de ne point provoquer davantage. Votre compagnon est touché par votre courage.",
+          "Dans un élan de bravoure protectrice, vous placez fermement votre corps entre Moltiar et **{{pet}}**. Votre détermination impressionne l'agresseur qui, voyant que vous êtes prêt à vous battre, décide de ne point provoquer davantage. Votre compagnon est touché par votre courage.",
           "Vous protégez **{{pet}}** en vous interposant avec assurance face au nain hostile. Celui-ci, réalisant que vous ne céderez pas, préfère reculer en crachant des insultes. Votre compagnon vous regarde avec une affection renouvelée."
         ],
         "fail": [
-          "Dans un élan de bravoure, vous vous interposez entre le nain et **{{pet}}**. Malheureusement, votre geste brusque effraie votre compagnon qui tente de fuir et se blesse contre une pierre. Il vous en veut pour cette maladresse.",
-          "Vous tentez de protéger **{{pet}}** en le poussant derrière vous, mais dans la précipitation, votre geste trop vif lui fait mal. Le nain éclate de rire face à ce spectacle lamentable."
+          "Dans un élan de bravoure, vous vous interposez entre Moltiar et **{{pet}}**. Malheureusement, le nain est plus fort que vous ne le pensiez. Il vous repousse brutalement et en profite pour frapper votre compagnon. Vous vous sentez impuissant face à cette démonstration de force.",
+          "Vous tentez de protéger **{{pet}}** en vous plaçant devant lui, mais votre posture manque d'assurance. Le nain vous contourne aisément et bouscule votre compagnon qui vous lance un regard déçu par votre incapacité à le défendre."
         ]
       },
       "distract": {
         "success": [
-          "Vous créez une diversion en évoquant bruyamment une taverne réputée dans la direction opposée. Le nain, dont l'amour de la bière surpasse visiblement sa haine des animaux, tend l'oreille puis s'éloigne, intrigué. **{{pet}}** profite de la confusion, impressionné par votre ruse.",
+          "Vous créez une diversion en évoquant bruyamment une taverne réputée dans la direction opposée. Moltiar, dont l'amour de la bière surpasse visiblement sa haine des animaux, tend l'oreille puis s'éloigne, intrigué. **{{pet}}** profite de la confusion, impressionné par votre ruse.",
           "Votre diversion fonctionne à merveille. En lançant quelques pièces au loin, vous attirez l'attention cupide du nain. Pendant qu'il se précipite pour les ramasser, **{{pet}}** et vous vous éclipsez discrètement."
         ],
         "fail": [
@@ -2109,13 +2109,13 @@
           "Se posant calmement face au nain, **{{pet}}** dégage une aura de majesté indéniable. Le nain, bien que haïssant les animaux, ne peut s'empêcher de reconnaître la noblesse de votre compagnon et s'éloigne prudemment."
         ],
         "fail": [
-          "Vous tentez de laisser **{{pet}}** s'imposer face au nain, mais votre compagnon, intimidé, ne parvient pas à paraître menaçant. Le nain éclate d'un rire méprisant et le bouscule sans ménagement.",
+          "Vous tentez de laisser **{{pet}}** s'imposer face à Moltiar, mais votre compagnon, intimidé, ne parvient pas à paraître menaçant. Le nain éclate d'un rire méprisant et le bouscule sans ménagement.",
           "**{{pet}}** tente de se montrer imposant face au nain, mais son apparence ne suffit pas à l'impressionner. Le nain le regarde avec moquerie avant de lui donner un coup de pied."
         ]
       },
       "energize": {
         "success": [
-          "Vous encouragez **{{pet}}** avec des paroles enthousiastes. Galvanisé par votre soutien, votre compagnon retrouve toute sa vigueur et se dresse fièrement face au nain. Ce dernier, surpris par ce regain d'énergie, préfère ne point prendre de risque et s'éloigne.",
+          "Vous encouragez **{{pet}}** avec des paroles enthousiastes. Galvanisé par votre soutien, votre compagnon retrouve toute sa vigueur et se dresse fièrement face à Moltiar. Ce dernier, surpris par ce regain d'énergie, préfère ne point prendre de risque et s'éloigne.",
           "Vos mots d'encouragement redonnent confiance à **{{pet}}** qui se redresse avec détermination. Le nain, voyant que votre compagnon ne se laissera pas faire, renonce à son agression et part en grognant."
         ],
         "fail": [
