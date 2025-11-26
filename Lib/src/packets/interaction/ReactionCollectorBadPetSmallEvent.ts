@@ -4,20 +4,14 @@ import {
 	ReactionCollectorData,
 	ReactionCollectorReaction
 } from "./ReactionCollectorPacket";
-import { PacketLike } from "../CrowniclesPacket";
 
-export class ReactionCollectorBadPetIntimidateReaction extends ReactionCollectorReaction {}
-export class ReactionCollectorBadPetPleadReaction extends ReactionCollectorReaction {}
-export class ReactionCollectorBadPetGiveMeatReaction extends ReactionCollectorReaction {}
-export class ReactionCollectorBadPetGiveVegReaction extends ReactionCollectorReaction {}
-export class ReactionCollectorBadPetFleeReaction extends ReactionCollectorReaction {}
-export class ReactionCollectorBadPetHideReaction extends ReactionCollectorReaction {}
-export class ReactionCollectorBadPetWaitReaction extends ReactionCollectorReaction {}
-export class ReactionCollectorBadPetProtectReaction extends ReactionCollectorReaction {}
-export class ReactionCollectorBadPetDistractReaction extends ReactionCollectorReaction {}
-export class ReactionCollectorBadPetCalmReaction extends ReactionCollectorReaction {}
-export class ReactionCollectorBadPetImposerReaction extends ReactionCollectorReaction {}
-export class ReactionCollectorBadPetEnergizeReaction extends ReactionCollectorReaction {}
+/**
+ * Single reaction class for all bad pet actions, identified by an id field.
+ * Following the same pattern as ReactionCollectorWitchReaction.
+ */
+export class ReactionCollectorBadPetReaction extends ReactionCollectorReaction {
+	id!: string;
+}
 
 export class ReactionCollectorBadPetSmallEventData extends ReactionCollectorData {
 	petId!: number;
@@ -27,18 +21,8 @@ export class ReactionCollectorBadPetSmallEventData extends ReactionCollectorData
 	petNickname?: string;
 }
 
-interface BadPetReactionWithClass {
-	reaction: ReactionCollectorReaction;
-	reactionClass: PacketLike<ReactionCollectorReaction>;
-}
-
 export class ReactionCollectorBadPetSmallEvent extends ReactionCollector {
-	/**
-	 * For alignment with the witch small event, bad-pet reactions now carry an ID in their data (eg 'intimidate').
-	 * This class accepts an array of ReactionCollectorReaction instances (each must include the id field)
-	 * and uses them directly when building the creation packet.
-	 */
-	private readonly possibleReactions: BadPetReactionWithClass[];
+	private readonly reactions: ReactionCollectorBadPetReaction[];
 
 	private readonly petId: number;
 
@@ -46,12 +30,12 @@ export class ReactionCollectorBadPetSmallEvent extends ReactionCollector {
 
 	private readonly petNickname: string | undefined;
 
-	constructor(petId: number, sex: string, petNickname: string | undefined, reactions: BadPetReactionWithClass[]) {
+	constructor(petId: number, sex: string, petNickname: string | undefined, reactions: ReactionCollectorBadPetReaction[]) {
 		super();
 		this.petId = petId;
 		this.sex = sex;
 		this.petNickname = petNickname;
-		this.possibleReactions = reactions;
+		this.reactions = reactions;
 	}
 
 	/**
@@ -64,7 +48,7 @@ export class ReactionCollectorBadPetSmallEvent extends ReactionCollector {
 		return {
 			id,
 			endTime,
-			reactions: this.possibleReactions.map(r => this.buildReaction(r.reactionClass, r.reaction)),
+			reactions: this.reactions.map(reaction => this.buildReaction(ReactionCollectorBadPetReaction, reaction)),
 			data: this.buildData(ReactionCollectorBadPetSmallEventData, {
 				petId: this.petId,
 				sex: this.sex,
