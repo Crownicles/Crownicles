@@ -2023,7 +2023,7 @@
           "Vos supplications pathétiques semblent exaspérer le nain davantage. Il vous regarde avec un mépris non dissimulé. **{{pet}}** vous observe avec un mélange de déception et de peur."
         ]
       },
-      "giveMeat": {
+      "giveMeatLikes": {
         "success": [
           "Vous sortez rapidement un morceau de viande et le tendez au nain affamé. Surpris par cette offrande, il l'accepte en grognant et mord dedans avec appétit. Il vous fait signe de déguerpir avant qu'il ne change d'avis. **{{pet}}** semble soulagé de cette issue.",
           "Le morceau de viande que vous offrez fait hésiter le nain. Son estomac gronde plus fort que sa haine, et il finit par accepter votre présent en s'éloignant. **{{pet}}** apprécie votre ingéniosité qui a évité la confrontation."
@@ -2033,14 +2033,46 @@
           "Le morceau de viande que vous offrez est piétiné par le nain furieux. **{{pet}}** observe la scène avec frustration, déçu de voir cette friandise gaspillée."
         ]
       },
-      "giveVeg": {
+      "giveMeatDislikes": {
+        "success": [
+          "Vous sortez rapidement un morceau de viande et le tendez au nain affamé. Surpris par cette offrande, il l'accepte en grognant et mord dedans avec appétit. Il vous fait signe de déguerpir avant qu'il ne change d'avis. **{{pet}}** détourne le regard, visiblement peu intéressé par cette nourriture.",
+          "Le morceau de viande que vous offrez fait hésiter le nain. Son estomac gronde plus fort que sa haine, et il finit par accepter votre présent en s'éloignant. **{{pet}}** ne semble pas regretter cette offrande qui ne lui était pas destinée."
+        ],
+        "fail": [
+          "Vous sortez un morceau de viande pour amadouer Moltiar, mais celui-ci le jette au sol avec dégoût, refusant de se laisser acheter ainsi. **{{pet}}**, herbivore, ne semble pas perturbé par cette perte.",
+          "Le morceau de viande que vous offrez est piétiné par le nain furieux. **{{pet}}** n'y prête guère attention, ce type de nourriture ne lui convenant pas."
+        ]
+      },
+      "giveMeatNoFood": {
+        "fail": [
+          "Vous fouillez vos poches à la recherche d'un morceau de viande, mais l'entrepôt de votre guilde est désespérément vide. Moltiar ricane devant votre désarroi tandis que **{{pet}}** vous observe avec incompréhension.",
+          "Vous tentez de sortir de la viande pour calmer le nain, mais vous réalisez avec horreur que vous n'en avez pas. Moltiar en profite pour malmener **{{pet}}** qui vous lance un regard accusateur."
+        ]
+      },
+      "giveVegLikes": {
         "success": [
           "Vous offrez quelques légumes au nain, évoquant leur qualité et leur fraîcheur. Contre toute attente, le nain, amateur de potages, accepte votre offrande avec un grognement approbateur et s'en va. **{{pet}}** semble impressionné par votre instinct.",
           "Les légumes que vous présentez au nain lui rappellent visiblement des souvenirs plus agréables. Il les accepte avec un semblant de civilité et consent à vous laisser passer. **{{pet}}** apprécie cette résolution pacifique."
         ],
         "fail": [
-          "Vous tendez des légumes au nain dans l'espoir de l'amadouer. Il éclate de rire devant cette offre ridicule et les balaie d'un revers de main. **{{pet}}** vous observe avec perplexité face à cette stratégie douteuse.",
-          "Les légumes que vous offrez maladroitement sont balayés d'un revers de main par le nain méprisant. **{{pet}}** secoue la tête, désespéré par cette tentative vouée à l'échec."
+          "Vous tendez des légumes au nain dans l'espoir de l'amadouer. Il éclate de rire devant cette offre ridicule et les balaie d'un revers de main. **{{pet}}** observe avec envie ces légumes gaspillés.",
+          "Les légumes que vous offrez maladroitement sont balayés d'un revers de main par le nain méprisant. **{{pet}}** vous lance un regard de reproche, frustré de voir cette nourriture perdue."
+        ]
+      },
+      "giveVegDislikes": {
+        "success": [
+          "Vous offrez quelques légumes au nain, évoquant leur qualité et leur fraîcheur. Contre toute attente, le nain, amateur de potages, accepte votre offrande avec un grognement approbateur et s'en va. **{{pet}}** semble peu concerné par cette perte de légumes.",
+          "Les légumes que vous présentez au nain lui rappellent visiblement des souvenirs plus agréables. Il les accepte avec un semblant de civilité et consent à vous laisser passer. **{{pet}}**, carnivore, n'est pas dérangé par ce sacrifice."
+        ],
+        "fail": [
+          "Vous tendez des légumes au nain dans l'espoir de l'amadouer. Il éclate de rire devant cette offre ridicule et les balaie d'un revers de main. **{{pet}}** ne semble pas concerné par cette perte.",
+          "Les légumes que vous offrez maladroitement sont balayés d'un revers de main par le nain méprisant. **{{pet}}**, préférant la viande, n'accorde aucune importance à ces légumes perdus."
+        ]
+      },
+      "giveVegNoFood": {
+        "fail": [
+          "Vous cherchez des légumes à offrir au nain, mais l'entrepôt de votre guilde n'en contient aucun. Moltiar se moque de votre tentative pathétique tandis que **{{pet}}** baisse la tête, déçu.",
+          "Vous voulez proposer des légumes pour apaiser la situation, mais vous n'en avez pas. Le nain profite de votre hésitation pour bousculer **{{pet}}** qui vous regarde avec reproche."
         ]
       },
       "flee": {
