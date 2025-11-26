@@ -3,19 +3,8 @@ import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { BlockingUtils } from "../utils/BlockingUtils";
 import { StringConstants } from "../../../../Lib/src/constants/StringConstants";
 import {
-	ReactionCollectorBadPetFleeReaction,
-	ReactionCollectorBadPetGiveMeatReaction,
-	ReactionCollectorBadPetGiveVegReaction,
-	ReactionCollectorBadPetHideReaction,
-	ReactionCollectorBadPetIntimidateReaction,
-	ReactionCollectorBadPetPleadReaction,
-	ReactionCollectorBadPetSmallEvent,
-	ReactionCollectorBadPetWaitReaction,
-	ReactionCollectorBadPetProtectReaction,
-	ReactionCollectorBadPetDistractReaction,
-	ReactionCollectorBadPetCalmReaction,
-	ReactionCollectorBadPetImposerReaction,
-	ReactionCollectorBadPetEnergizeReaction
+	ReactionCollectorBadPetReaction,
+	ReactionCollectorBadPetSmallEvent
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorBadPetSmallEvent";
 import { SmallEventBadPetPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventBadPetPacket";
 import {
@@ -29,7 +18,6 @@ import Player from "../database/game/models/Player";
 import {
 	EndCallback, ReactionCollectorInstance
 } from "../utils/ReactionsCollector";
-import { ReactionCollectorReaction } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { Maps } from "../maps/Maps";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
 import { Constants } from "../../../../Lib/src/constants/Constants";
@@ -59,7 +47,6 @@ type BadPetActionHandler = (petEntity: PetEntity, petModel: Pet, player: Player)
  */
 interface BadPetAction {
 	id: string;
-	reactionClass: new () => ReactionCollectorReaction;
 	handler: BadPetActionHandler;
 }
 
@@ -327,40 +314,40 @@ function handleEnergize(petEntity: PetEntity, petModel: Pet, _player: Player): P
  */
 const BAD_PET_ACTIONS: BadPetAction[] = [
 	{
-		id: "intimidate", reactionClass: ReactionCollectorBadPetIntimidateReaction, handler: handleIntimidate
+		id: "intimidate", handler: handleIntimidate
 	},
 	{
-		id: "plead", reactionClass: ReactionCollectorBadPetPleadReaction, handler: handlePlead
+		id: "plead", handler: handlePlead
 	},
 	{
-		id: "giveMeat", reactionClass: ReactionCollectorBadPetGiveMeatReaction, handler: handleGiveMeat
+		id: "giveMeat", handler: handleGiveMeat
 	},
 	{
-		id: "giveVeg", reactionClass: ReactionCollectorBadPetGiveVegReaction, handler: handleGiveVeg
+		id: "giveVeg", handler: handleGiveVeg
 	},
 	{
-		id: "flee", reactionClass: ReactionCollectorBadPetFleeReaction, handler: handleFlee
+		id: "flee", handler: handleFlee
 	},
 	{
-		id: "hide", reactionClass: ReactionCollectorBadPetHideReaction, handler: handleHide
+		id: "hide", handler: handleHide
 	},
 	{
-		id: "wait", reactionClass: ReactionCollectorBadPetWaitReaction, handler: handleWait
+		id: "wait", handler: handleWait
 	},
 	{
-		id: "protect", reactionClass: ReactionCollectorBadPetProtectReaction, handler: handleProtect
+		id: "protect", handler: handleProtect
 	},
 	{
-		id: "distract", reactionClass: ReactionCollectorBadPetDistractReaction, handler: handleDistract
+		id: "distract", handler: handleDistract
 	},
 	{
-		id: "calm", reactionClass: ReactionCollectorBadPetCalmReaction, handler: handleCalm
+		id: "calm", handler: handleCalm
 	},
 	{
-		id: "imposer", reactionClass: ReactionCollectorBadPetImposerReaction, handler: handleImposer
+		id: "imposer", handler: handleImposer
 	},
 	{
-		id: "energize", reactionClass: ReactionCollectorBadPetEnergizeReaction, handler: handleEnergize
+		id: "energize", handler: handleEnergize
 	}
 ];
 
@@ -431,7 +418,10 @@ async function applyLoveLoss(petId: number | null, loveLost: number, player: Pla
 }
 
 /**
- * Execute the action handler based on the player's reaction
+ * Execute the action handler based on the player's reaction.
+ * If no reaction is provided (timeout case), defaults to the "wait" action.
+ * This is intentional behavior - when the collector expires without player input,
+ * the event resolves with the default "wait" outcome rather than being cancelled.
  */
 async function executeActionHandler(reactionId: string | undefined, player: Player): Promise<BadPetActionResult> {
 	const defaultResult: BadPetActionResult = {
@@ -522,14 +512,11 @@ async function canBeExecuted(player: Player): Promise<boolean> {
 async function executeSmallEvent(response: CrowniclesPacket[], player: Player, context: PacketContext): Promise<void> {
 	const selectedActions = pickRandomActions(SmallEventConstants.BAD_PET.ACTIONS_TO_SHOW);
 
+	// Create reaction instances with their ids directly set
 	const reactions = selectedActions.map(action => {
-		const ReactionClass = action.reactionClass;
-		const instance = new ReactionClass() as ReactionCollectorReaction & { id?: string };
-		instance.id = action.id;
-		return {
-			reaction: instance as ReactionCollectorReaction,
-			reactionClass: action.reactionClass
-		};
+		const reaction = new ReactionCollectorBadPetReaction();
+		reaction.id = action.id;
+		return reaction;
 	});
 
 	const petData = await getPetData(player.petId);
