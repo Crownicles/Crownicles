@@ -17,72 +17,32 @@ import { KeycloakUtils } from "../../../Lib/src/keycloak/KeycloakUtils";
 import { keycloakConfig } from "../bot/CrowniclesShard";
 import { sendInteractionNotForYou } from "../utils/ErrorUtils";
 
-const REACTION_MAPPING: Record<string, {
-	id: string;
-	icon: string;
-	labelKey: string;
-}> = {
-	intimidate: {
-		id: "intimidate",
-		icon: CrowniclesIcons.fightActions.roarAttack,
-		labelKey: "intimidate"
-	},
-	plead: {
-		id: "plead",
-		icon: CrowniclesIcons.fightActions.divineAttack,
-		labelKey: "plead"
-	},
-	giveMeat: {
-		id: "giveMeat",
-		icon: CrowniclesIcons.foods.carnivorousFood,
-		labelKey: "giveMeat"
-	},
-	giveVeg: {
-		id: "giveVeg",
-		icon: CrowniclesIcons.foods.herbivorousFood,
-		labelKey: "giveVeg"
-	},
-	flee: {
-		id: "flee",
-		icon: CrowniclesIcons.fightActions.quickAttack,
-		labelKey: "flee"
-	},
-	hide: {
-		id: "hide",
-		icon: CrowniclesIcons.fightActions.stealth,
-		labelKey: "hide"
-	},
-	wait: {
-		id: "wait",
-		icon: CrowniclesIcons.fightActions.resting,
-		labelKey: "wait"
-	},
-	protect: {
-		id: "protect",
-		icon: CrowniclesIcons.fightActions.shieldAttack,
-		labelKey: "protect"
-	},
-	distract: {
-		id: "distract",
-		icon: CrowniclesIcons.fightActions.confused,
-		labelKey: "distract"
-	},
-	calm: {
-		id: "calm",
-		icon: CrowniclesIcons.unitValues.health,
-		labelKey: "calm"
-	},
-	imposer: {
-		id: "imposer",
-		icon: CrowniclesIcons.unitValues.petRarity,
-		labelKey: "imposer"
-	},
-	energize: {
-		id: "energize",
-		icon: CrowniclesIcons.unitValues.energy,
-		labelKey: "energize"
-	}
-};
+/**
+ * List of valid action IDs for the bad pet small event
+ */
+const VALID_ACTION_IDS = [
+	"intimidate",
+	"plead",
+	"giveMeat",
+	"giveVeg",
+	"flee",
+	"hide",
+	"wait",
+	"protect",
+	"distract",
+	"calm",
+	"imposer",
+	"energize"
+] as const;
+
+type BadPetActionId = typeof VALID_ACTION_IDS[number];
+
+/**
+ * Check if an action ID is valid
+ */
+function isValidActionId(id: string): id is BadPetActionId {
+	return VALID_ACTION_IDS.includes(id as BadPetActionId);
+}
 
 export async function badPetCollector(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
@@ -96,17 +56,15 @@ export async function badPetCollector(context: PacketContext, packet: ReactionCo
 	const row = new ActionRowBuilder<ButtonBuilder>();
 
 	for (const reaction of packet.reactions) {
-		const reactId = (reaction.data as unknown as { id?: string }).id;
-		const mapping = reactId ? REACTION_MAPPING[reactId] : undefined;
-		if (mapping) {
-			const iconFromLib = CrowniclesIcons.badPetSmallEvent[reactId!];
-			const icon = iconFromLib ?? mapping.icon ?? "";
+		const actionId = (reaction.data as unknown as { id?: string }).id;
+		if (actionId && isValidActionId(actionId)) {
+			const icon = CrowniclesIcons.badPetSmallEvent[actionId];
 
-			description += `${icon} ${i18n.t(`smallEvents:badPet.choices.${mapping.labelKey}`, { lng })}\n`;
+			description += `${icon} ${i18n.t(`smallEvents:badPet.choices.${actionId}`, { lng })}\n`;
 
 			row.addComponents(
 				new ButtonBuilder()
-					.setCustomId(mapping.id)
+					.setCustomId(actionId)
 					.setEmoji(parseEmoji(icon) ?? icon)
 					.setStyle(ButtonStyle.Secondary)
 			);

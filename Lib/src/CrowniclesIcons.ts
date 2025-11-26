@@ -1854,18 +1854,18 @@ export const CrowniclesIcons: {
 		worm: "🪱"
 	},
 	badPetSmallEvent: {
-		intimidate: "📢",
+		intimidate: "🦁",
 		plead: "🙏",
 		giveMeat: "🍖",
 		giveVeg: "🥬",
-		flee: "🗡️",
-		hide: "😶‍🌫️",
-		wait: "🛏️",
+		flee: "🏃",
+		hide: "🫣",
+		wait: "⏳",
 		protect: "🛡️",
-		distract: "🤯",
-		calm: "❤️",
-		imposer: "⭐",
-		energize: "⚡"
+		distract: "🎭",
+		calm: "🤗",
+		imposer: "👑",
+		energize: "💪"
 	},
 	cartSmallEvent: {
 		accept: "🚗",
