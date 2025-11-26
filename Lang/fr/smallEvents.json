@@ -1977,145 +1977,150 @@
   },
   "badPet": {
     "intro": [
-      "Votre fidèle compagnon **{{pet}}** s'immobilise brusquement, les poils hérissés sur l'échine, fixant intensément les fourrés environnants d'où émane une présence hostile. Un grondement sourd s'échappe de sa gorge tandis que ses oreilles se couchent contre son crâne. Quelque chose de dangereux rôde dans les parages, et la tension qui électrise l'air vous fait comprendre qu'une confrontation semble inévitable.",
-      "Alors que vous progressez tranquillement sur le sentier, **{{pet}}** s'arrête net et se met à grogner, les crocs découverts. Son regard alerte scrute nerveusement les alentours, et vous percevez dans son attitude une crainte inhabituelle. Une menace semble planer dans l'atmosphère, invisible mais palpable, faisant battre votre cœur plus fort dans votre poitrine.",
-      "Un frisson glacé parcourt l'échine de **{{pet}}** qui se met soudainement à trembler, le regard fixé sur une ombre mouvante qui se dessine dans la pénombre des arbres. Ses oreilles pivotent frénétiquement pour capter le moindre bruit suspect tandis qu'un gémissement inquiet s'échappe de sa gueule. La peur se lit dans ses yeux écarquillés, et vous comprenez immédiatement que le danger est proche.",
-      "Sans prévenir, **{{pet}}** bondit en arrière avec un jappement de terreur, fixant un point précis dans les broussailles environnantes. Ses pattes se figent dans une posture défensive, tous ses muscles bandés, prêt à bondir ou à fuir. Un silence pesant s'installe, rompu seulement par son halètement précipité qui vous fait comprendre qu'une menace imminente se profile.",
-      "Une odeur acre et menaçante parvient soudain aux narines de **{{pet}}** qui se met instantanément en alerte maximale. Ses babines se retroussent en un rictus menaçant, dévoilant des crocs prêts à mordre, tandis que son corps entier se raidit. L'atmosphère devient électrique, chargée d'une tension palpable qui vous fait comprendre que la confrontation est inévitable."
+      "Un nain trapu surgit d'un rocher, sa barbe rousse hirsute et son regard empli d'une haine viscérale. À la vue de **{{pet}}**, il crache au sol avec dégoût et brandit un bâton noueux, s'approchant d'un pas menaçant. Votre compagnon recule, les oreilles plaquées contre son crâne, tandis que le nain vous toise avec mépris.",
+      "Une voix rauque et colérique vous interpelle soudainement. Un nain au visage marqué par une vieille cicatrice s'avance vers vous, ses yeux injectés de sang fixés sur **{{pet}}** avec une fureur non dissimulée. Il fait tournoyer une massue cloutée d'un geste menaçant. Votre compagnon tremble de tous ses membres face à cette hostilité.",
+      "Surgissant de derrière une formation rocheuse, un nain au regard fou se plante devant vous, bloquant votre route. Sa main droite porte les stigmates d'une ancienne morsure, et son attention se fixe immédiatement sur **{{pet}}** avec une haine brûlante. Il dégaine une dague ébréchée en marmonnant des menaces incompréhensibles. Votre compagnon gémit d'inquiétude.",
+      "Un grognement guttural vous fait sursauter. Un nain corpulent émerge d'une anfractuosité, sa barbe tressée cliquetant de perles d'os. Dès qu'il aperçoit **{{pet}}**, sa face se tord de dégoût et il pointe vers vous un doigt accusateur, son autre main serrant fermement le manche d'une hache rouillée.",
+      "Votre chemin est soudain barré par une silhouette trapue et hostile. Le nain qui vous fait face arbore une expression de pure répulsion en découvrant **{{pet}}** à vos côtés. Une vieille blessure mal cicatrisée traverse son avant-bras, témoignage muet d'un passé douloureux. Il empoigne un marteau de guerre en vous fixant d'un regard meurtrier.",
+      "Le claquement d'une pierre qui roule vous alerte d'une présence. Un nain massif émerge de l'ombre d'un surplomb rocheux, ses yeux perçants scrutant immédiatement **{{pet}}** avec une animosité palpable. Les cicatrices qui zèbrent ses avant-bras témoignent d'anciennes rencontres douloureuses avec des créatures. Il brandit un gourdin d'un geste lourd de menaces.",
+      "Une odeur de terre et de sueur rance vous parvient avant même que vous ne voyiez l'agresseur. Un nain trapu surgit d'une crevasse, sa peau tannée par le soleil et ses mains calleuses serrées autour d'une pioche. Son regard tombe sur **{{pet}}** et une rage froide déforme ses traits tandis qu'il avance vers vous.",
+      "Le crissement de bottes sur les graviers annonce l'arrivée d'un intrus. Un nain au crâne partiellement chauve apparaît, sa barbe grise nouée en un catogan sévère. Ses yeux s'écarquillent d'horreur en apercevant **{{pet}}**, et il recule d'un pas avant de se ressaisir et de brandir un couteau de mineur avec une détermination haineuse.",
+      "Un sifflement moqueur résonne dans l'air. Perché sur un rocher, un nain aux épaules voûtées observe votre progression avec mépris. Lorsqu'il remarque **{{pet}}** trottant à vos côtés, son expression se mue en une grimace de dégoût profond. Il saute au sol et se plante devant vous, les poings serrés et le corps tendu.",
+      "Le sol tremble légèrement sous vos pieds, annonçant l'approche d'une présence massive. Un nain imposant, plus large que haut, émerge d'un éboulement de rochers. Son regard balaye le chemin et s'arrête sur **{{pet}}** avec une haine incandescente. Les muscles de ses bras se contractent tandis qu'il soulève un lourd maillet de forgeron."
     ],
     "choices": {
-      "intimidate": "Ordonner à votre compagnon d'intimider la menace",
-      "plead": "Tenter d'apaiser la situation par des paroles",
-      "giveMeat": "Lancer de la viande en diversion",
-      "giveVeg": "Jeter des légumes pour détourner l'attention",
-      "flee": "Prendre vos jambes à votre cou",
-      "hide": "Vous dissimuler dans les environs",
-      "wait": "Observer sans bouger",
-      "protect": "Protéger votre compagnon de votre corps",
-      "distract": "Créer une diversion",
-      "calm": "Tenter de calmer votre compagnon",
-      "imposer": "Laisser votre compagnon s'imposer",
-      "energize": "Encourager votre compagnon"
+      "intimidate": "Ordonner à votre compagnon d'intimider le nain",
+      "plead": "Tenter de raisonner le nain par des paroles",
+      "giveMeat": "Offrir de la viande au nain pour l'amadouer",
+      "giveVeg": "Proposer des légumes au nain en signe de paix",
+      "flee": "Fuir avec votre compagnon",
+      "hide": "Cacher votre compagnon",
+      "wait": "Attendre que la colère du nain retombe",
+      "protect": "Vous interposer pour protéger votre compagnon",
+      "distract": "Détourner l'attention du nain",
+      "calm": "Tenter de calmer votre compagnon apeuré",
+      "imposer": "Laisser votre compagnon s'imposer face au nain",
+      "energize": "Encourager votre compagnon à tenir bon"
     },
     "outcomes": {
       "intimidate": {
         "success": [
-          "Obéissant à votre ordre, **{{pet}}** se dresse de toute sa hauteur et pousse un rugissement impressionnant. La menace, surprise par cette démonstration de force, hésite un instant avant de battre en retraite. Votre compagnon vous regarde fièrement, rassuré par votre commandement.",
-          "Adoptant une posture menaçante, **{{pet}}** grogne avec une férocité surprenante. Face à cette détermination, l'adversaire décide qu'il vaut mieux chercher une proie plus facile ailleurs. Votre compagnon semble satisfait de votre décision."
+          "Obéissant à votre ordre, **{{pet}}** se dresse de toute sa hauteur et pousse un grondement impressionnant. Le nain, surpris par cette démonstration de force, recule d'un pas mal assuré. « Pff, elle a du mordant, ta bestiole... » marmonne-t-il en s'éloignant à contrecœur. Votre compagnon vous regarde fièrement.",
+          "Adoptant une posture menaçante, **{{pet}}** grogne avec une férocité surprenante face au nain hostile. Ce dernier, voyant que la confrontation pourrait mal tourner, crache une dernière insulte avant de battre en retraite. Votre compagnon semble satisfait d'avoir tenu tête à l'agresseur."
         ],
         "fail": [
-          "Obéissant à votre ordre, **{{pet}}** se dresse de toute sa hauteur et pousse un rugissement pitoyable. La menace ne semble guère impressionnée, et votre compagnon recule précipitamment, l'orgueil blessé et la confiance ébranlée.",
-          "Tentant de paraître menaçant, **{{pet}}** se fait riposter par un grondement terrifiant qui le transforme en chiffon tremblotant. Il vous en veut d'avoir été mis dans cette situation périlleuse."
+          "Obéissant à votre ordre, **{{pet}}** tente de paraître menaçant, mais le nain éclate d'un rire cruel. « C'est ça ta bête féroce ? Pathétique ! » Il brandit son bâton et votre compagnon recule précipitamment, l'orgueil blessé par cette humiliation.",
+          "Tentant de paraître menaçant, **{{pet}}** ne parvient qu'à amuser le nain qui lui assène un coup de pied. Votre compagnon couine de douleur et vous lance un regard de reproche pour l'avoir exposé ainsi."
         ]
       },
       "plead": {
         "success": [
-          "Vous tentez d'apaiser la situation par des paroles douces et conciliantes. Votre voix posée et votre attitude calme semblent détendre l'atmosphère. La menace, rassurée par votre approche pacifique, s'éloigne lentement. **{{pet}}** apprécie votre sagesse.",
-          "Vos paroles apaisantes résonnent dans le silence. **{{pet}}** se calme progressivement, influencé par votre assurance tranquille. La menace, voyant qu'aucune confrontation n'est recherchée, préfère s'en aller. Votre lien avec votre compagnon sort renforcé de cet épisode."
+          "Vous tentez de raisonner le nain par des paroles apaisantes, lui expliquant que votre compagnon ne représente aucune menace. Quelque chose dans votre voix sincère semble toucher une corde sensible, et il finit par baisser son arme en grognant. **{{pet}}** apprécie votre diplomatie.",
+          "Vos paroles mesurées résonnent dans le silence tendu. Vous évoquez le respect mutuel entre voyageurs, et le nain, malgré sa haine évidente des animaux, concède que vous semblez maîtriser votre bête. Il s'écarte en maugréant. **{{pet}}** se calme progressivement."
         ],
         "fail": [
-          "Vous tentez d'apaiser la situation par des paroles douces, mais votre voix chevrotante trahit votre peur. Cette démonstration de faiblesse fait honte à **{{pet}}** qui détourne le regard avec mépris.",
-          "Vos supplications pathétiques résonnent dans le silence. **{{pet}}** vous observe avec un mélange de pitié et de dédain, manifestement gêné par cette attitude servile qui contraste avec l'image de maître fort qu'il avait de vous."
+          "Vous tentez de raisonner le nain, mais vos paroles ne font qu'attiser sa colère. « Des mots ! Toujours des mots pour défendre ces monstres ! » hurle-t-il. **{{pet}}** détourne le regard, honteux de votre échec à le protéger.",
+          "Vos supplications pathétiques semblent exaspérer le nain davantage. « Tu me fais pitié avec ta bestiole », crache-t-il avec mépris. **{{pet}}** vous observe avec un mélange de déception et de peur."
         ]
       },
       "giveMeat": {
         "success": [
-          "Vous sortez rapidement un morceau de viande et le lancez habilement vers la menace. L'animal se jette dessus et s'en va dévorer son butin ailleurs. **{{pet}}** ne semble point contrarié par ce sacrifice stratégique et vous regarde avec admiration pour votre ingéniosité.",
-          "Le morceau de viande que vous lancez atterrit pile au bon endroit. La menace l'attrape au vol et s'éloigne satisfaite. **{{pet}}** apprécie cette solution astucieuse qui a évité la confrontation."
+          "Vous sortez rapidement un morceau de viande et le tendez au nain affamé. Surpris par cette offrande, il l'accepte en grognant et mord dedans avec appétit. « Hmm... pas mauvais. Allez, déguerpissez avant que je change d'avis. » **{{pet}}** semble soulagé de cette issue.",
+          "Le morceau de viande que vous offrez fait hésiter le nain. Son estomac gronde plus fort que sa haine, et il finit par accepter votre présent en s'éloignant. **{{pet}}** apprécie votre ingéniosité qui a évité la confrontation."
         ],
         "fail": [
-          "Vous sortez précipitamment un morceau de viande de votre besace et le lancez vers la menace. Malheureusement, **{{pet}}** convoitait secrètement ce mets et vous regarde avec des yeux accusateurs, déçu de voir cette friandise disparaître.",
-          "Le morceau de viande que vous sacrifiez pour votre salut est englouti par la menace. **{{pet}}** observe la scène avec frustration, se sentant lésé par cette distribution injuste qui favorise un étranger."
+          "Vous sortez un morceau de viande pour amadouer le nain, mais celui-ci le jette au sol avec dégoût. « Tu crois m'acheter avec ça ? » Malheureusement, **{{pet}}** lorgnait sur ce mets et vous regarde avec des yeux accusateurs.",
+          "Le morceau de viande que vous offrez est piétiné par le nain furieux. **{{pet}}** observe la scène avec frustration, déçu de voir cette friandise gaspillée."
         ]
       },
       "giveVeg": {
         "success": [
-          "Vous jetez rapidement quelques légumes vers la menace. Contre toute attente, l'animal les renifle avec intérêt et commence à les manger tout en s'éloignant. **{{pet}}** semble impressionné par votre instinct qui vous a permis de trouver exactement ce qu'il fallait.",
-          "Les légumes que vous lancez atterrissent près de la menace qui, curieusement herbivore, les dévore avec appétit avant de partir. **{{pet}}** apprécie cette solution pacifique et astucieuse."
+          "Vous offrez quelques légumes au nain, évoquant leur qualité et leur fraîcheur. Contre toute attente, le nain, amateur de potages, accepte votre offrande avec un grognement approbateur et s'en va. **{{pet}}** semble impressionné par votre instinct.",
+          "Les légumes que vous présentez au nain lui rappellent visiblement des souvenirs plus agréables. Il les accepte avec un semblant de civilité et consent à vous laisser passer. **{{pet}}** apprécie cette résolution pacifique."
         ],
         "fail": [
-          "Vous jetez une poignée de légumes vers la menace dans l'espoir de gagner du temps. **{{pet}}** vous observe avec perplexité, se demandant quelle mouche vous a piqué pour croire qu'un prédateur serait intéressé par des carottes.",
-          "Les légumes que vous lancez maladroitement atterrissent aux pieds de la menace qui les ignore totalement. **{{pet}}** secoue la tête, désespéré par votre incompétence à évaluer la situation."
+          "Vous tendez des légumes au nain dans l'espoir de l'amadouer. Il éclate de rire. « Des légumes ? Tu me prends pour quoi ? » **{{pet}}** vous observe avec perplexité face à cette stratégie douteuse.",
+          "Les légumes que vous offrez maladroitement sont balayés d'un revers de main par le nain méprisant. **{{pet}}** secoue la tête, désespéré par cette tentative vouée à l'échec."
         ]
       },
       "flee": {
         "success": [
-          "Vous prenez vos jambes à votre cou et **{{pet}}** vous suit avec agilité. Votre vitesse combinée vous permet de distancer rapidement la menace. Une fois à l'abri, votre compagnon halète mais semble satisfait de cette solution pragmatique.",
-          "La fuite se révèle être la bonne décision. Vous courez efficacement avec **{{pet}}** qui vous suit sans difficulté. La menace renonce rapidement à vous poursuivre. Votre lien n'en souffre point, au contraire, vous avez fait équipe."
+          "Vous prenez vos jambes à votre cou avec **{{pet}}** sur vos talons. Votre vitesse combinée vous permet de distancer rapidement le nain qui, trop corpulent, renonce à vous poursuivre en hurlant des jurons. Votre compagnon halète mais semble satisfait.",
+          "La fuite se révèle être la bonne décision. Vous courez efficacement avec **{{pet}}** qui vous suit sans difficulté, laissant le nain furieux mais impuissant derrière vous. Vous avez fait équipe."
         ],
         "fail": [
-          "La panique vous submerge et vous détalez comme un lapin effrayé, **{{pet}}** sur vos talons. Cette course effrénée à travers ronces et épineux laisse votre compagnon épuisé et couvert d'égratignures. Haletant et fourbu, il vous en veut.",
-          "Vous prenez vos jambes à votre cou dans une débandade peu glorieuse, forçant **{{pet}}** à sprinter jusqu'à l'épuisement pour ne pas se faire distancer. Lorsque vous vous arrêtez enfin, il s'effondre, le cœur battant la chamade."
+          "La panique vous submerge et vous détalez maladroitement, **{{pet}}** sur vos talons. Dans votre précipitation, vous trébuchez sur une pierre et votre compagnon se blesse en vous évitant. Haletant et meurtri, il vous en veut.",
+          "Vous prenez vos jambes à votre cou dans une débandade peu glorieuse, forçant **{{pet}}** à sprinter jusqu'à l'épuisement. Lorsque vous vous arrêtez enfin, il s'effondre, épuisé et blessé par cette course effrénée."
         ]
       },
       "hide": {
         "success": [
-          "Vous repérez rapidement un renfoncement dans les rochers et vous y glissez avec **{{pet}}**. La cachette est parfaite et vous permet d'attendre que la menace passe son chemin sans vous voir. Votre compagnon apprécie votre discrétion et votre sang-froid.",
-          "Vous trouvez un endroit idéal pour vous dissimuler derrière un gros arbre. **{{pet}}** et vous demeurez immobiles tandis que la menace passe à quelques mètres sans vous remarquer. Votre compagnon semble rassuré par votre décision prudente."
+          "Vous repérez rapidement un renfoncement dans les rochers et y dissimulez **{{pet}}** avant que le nain ne le remarque. Ce dernier, ne voyant plus la bête, perd tout intérêt et s'éloigne en maugréant. Votre compagnon apprécie votre discrétion.",
+          "Vous trouvez un endroit idéal pour cacher **{{pet}}** sous votre cape. Le nain, ne voyant plus l'objet de sa haine, finit par se calmer et poursuivre son chemin. Votre compagnon semble rassuré par votre protection."
         ],
         "fail": [
-          "Vous vous précipitez dans un buisson épineux en tirant **{{pet}}** avec vous. Les ronces acérées lacèrent sa peau délicate, arrachant des gémissements de douleur. Lorsque vous ressortez enfin, criblé d'épines, votre compagnon vous lance un regard lourd de reproches.",
-          "Votre tentative de dissimulation dans un fourré vous transforme, **{{pet}}** et vous, en pelotes d'épingles vivantes. Chaque mouvement enfonce un peu plus les épines dans votre chair, et les plaintes étouffées de votre compagnon témoignent de son supplice."
+          "Vous tentez de dissimuler **{{pet}}** dans un recoin, mais le nain vous surprend en pleine manœuvre. « Tu crois pouvoir me berner ? » rugit-il en malmenant votre compagnon. Celui-ci vous lance un regard lourd de reproches.",
+          "Votre tentative de dissimulation échoue lamentablement quand **{{pet}}** pousse un gémissement nerveux, révélant sa cachette. Le nain se rue vers lui et le bouscule violemment. Votre compagnon souffre de cette mésaventure."
         ]
       },
       "wait": {
         "success": [
-          "Vous décidez d'attendre immobile en gardant votre calme. Après quelques minutes qui semblent durer une éternité, la menace, ne détectant aucun mouvement suspect, finit par s'éloigner. **{{pet}}** semble apprécier votre patience et votre maîtrise de soi.",
-          "L'attente se révèle payante. En demeurant parfaitement immobile avec **{{pet}}**, vous parvenez à vous faire oublier. La menace, ne trouvant rien d'intéressant, repart. Votre compagnon vous regarde avec respect pour votre sagesse."
+          "Vous décidez d'attendre immobile, espérant que la colère du nain retombe. Après de longues minutes de vociférations, il semble se lasser et finit par s'éloigner en grognant. **{{pet}}** semble apprécier votre patience et votre sang-froid.",
+          "L'attente se révèle payante. Le nain, ne trouvant pas la réaction qu'il espérait, perd progressivement son ardeur belliqueuse et repart. **{{pet}}** vous regarde avec respect pour votre sagesse."
         ],
         "fail": [
-          "Vous décidez d'attendre immobile, espérant que la menace se lassera. Les minutes s'égrainent avec une lenteur insupportable tandis que **{{pet}}** piétine nerveusement, s'ennuyant ferme et s'énervant de cette inaction forcée.",
-          "L'attente s'éternise dans un silence pesant, et **{{pet}}** commence à gémir d'ennui et de frustration. Cette stratégie passive le met à rude épreuve, et il vous reproche mentalement de ne rien faire pour améliorer la situation."
+          "Vous décidez d'attendre immobile, mais le nain interprète votre passivité comme de la faiblesse. Il s'approche davantage et menace **{{pet}}** de plus belle. Votre compagnon piétine nerveusement, stressé par cette inaction.",
+          "L'attente s'éternise et **{{pet}}** commence à gémir d'angoisse. Le nain, enhardi par votre inaction, se fait de plus en plus menaçant. Votre compagnon vous reproche de ne rien faire."
         ]
       },
       "protect": {
         "success": [
-          "Dans un élan de bravoure protectrice, vous placez fermement votre corps entre la menace et **{{pet}}**. Votre détermination et votre posture assurée impressionnent l'adversaire qui décide de ne point s'en prendre à une proie aussi déterminée. Votre compagnon est touché par votre courage.",
-          "Vous protégez **{{pet}}** en vous interposant avec assurance. Face à cette démonstration de loyauté et de courage, la menace hésite puis recule. Votre compagnon vous regarde avec une affection renouvelée, reconnaissant de votre protection."
+          "Dans un élan de bravoure protectrice, vous placez fermement votre corps entre le nain et **{{pet}}**. Votre détermination impressionne l'agresseur qui, voyant que vous êtes prêt à vous battre, décide de ne point provoquer davantage. Votre compagnon est touché par votre courage.",
+          "Vous protégez **{{pet}}** en vous interposant avec assurance face au nain hostile. Celui-ci, réalisant que vous ne céderez pas, préfère reculer en crachant des insultes. Votre compagnon vous regarde avec une affection renouvelée."
         ],
         "fail": [
-          "Dans un élan de bravoure protectrice, vous placez votre corps entre la menace et **{{pet}}**. Malheureusement, votre geste héroïque est si maladroit que vous marchez accidentellement sur la patte de votre compagnon, lui arrachant un jappement de douleur.",
-          "Vous tentez courageusement de protéger **{{pet}}** en le saisissant pour le mettre à l'abri, mais dans la précipitation, votre poigne trop ferme lui fait mal. Il se débat, frustré par votre rudesse involontaire."
+          "Dans un élan de bravoure, vous vous interposez entre le nain et **{{pet}}**. Malheureusement, votre geste brusque effraie votre compagnon qui tente de fuir et se blesse contre une pierre. Il vous en veut pour cette maladresse.",
+          "Vous tentez de protéger **{{pet}}** en le poussant derrière vous, mais dans la précipitation, votre geste trop vif lui fait mal. Le nain éclate de rire face à ce spectacle lamentable."
         ]
       },
       "distract": {
         "success": [
-          "Vous créez une diversion en lançant adroitement des pierres dans une direction opposée. La menace, intriguée et désorientée, se dirige vers ces sons étranges. **{{pet}}** profite de la confusion pour s'éloigner avec vous, impressionné par votre ruse.",
-          "Votre diversion fonctionne à merveille. En tirant sur une branche avant de la lâcher brusquement, vous attirez l'attention de la menace ailleurs. Pendant ce temps, **{{pet}}** et vous vous éclipsez discrètement. Votre compagnon apprécie votre ingéniosité."
+          "Vous créez une diversion en évoquant bruyamment une taverne réputée dans la direction opposée. Le nain, dont l'amour de la bière surpasse visiblement sa haine des animaux, tend l'oreille puis s'éloigne, intrigué. **{{pet}}** profite de la confusion, impressionné par votre ruse.",
+          "Votre diversion fonctionne à merveille. En lançant quelques pièces au loin, vous attirez l'attention cupide du nain. Pendant qu'il se précipite pour les ramasser, **{{pet}}** et vous vous éclipsez discrètement."
         ],
         "fail": [
-          "Vous décidez de créer une diversion en hurlant à pleins poumons et en agitant frénétiquement les bras. Ce spectacle ridicule effraie davantage **{{pet}}** que la menace elle-même, et il recule en gémissant, les oreilles plaquées contre son crâne.",
-          "Dans une tentative désespérée de diversion, vous lancez des pierres dans toutes les directions en poussant des cris de guerre. Malheureusement, l'un de vos projectiles maladroits atteint **{{pet}}** qui couine de douleur."
+          "Vous tentez de créer une diversion en gesticulant et en criant. Ce spectacle ridicule ne fait qu'irriter davantage le nain qui se rapproche, menaçant. **{{pet}}** recule, effrayé par votre comportement étrange.",
+          "Dans une tentative désespérée de diversion, vous lancez des cailloux au hasard. L'un d'eux atteint malencontreusement **{{pet}}** qui couine de douleur tandis que le nain ricane méchamment."
         ]
       },
       "calm": {
         "success": [
-          "Vous parvenez à apaiser **{{pet}}** par des caresses rassurantes et une voix posée. Votre calme communicatif détend progressivement votre compagnon qui se remet à respirer normalement. Face à cette sérénité retrouvée, la menace perd son intérêt et s'éloigne. Votre lien de confiance s'en trouve renforcé.",
-          "Vos paroles apaisantes et votre attitude confiante parviennent à calmer **{{pet}}**. Une fois détendu, il retrouve son assurance naturelle, ce qui fait hésiter la menace. Voyant une proie moins vulnérable, elle préfère partir. Votre compagnon vous est reconnaissant."
+          "Vous parvenez à apaiser **{{pet}}** par des caresses rassurantes malgré la menace du nain. Votre compagnon, reprenant confiance, cesse de trembler. Le nain, voyant que vous maîtrisez votre bête, semble moins enclin à l'attaquer et finit par s'éloigner.",
+          "Vos paroles apaisantes et votre attitude confiante parviennent à calmer **{{pet}}**. Une fois détendu, il dégage une assurance qui fait hésiter le nain. Ce dernier, moins sûr de lui face à cette sérénité, préfère partir."
         ],
         "fail": [
-          "Vous tentez d'apaiser **{{pet}}** par des caresses rassurantes, mais votre main tremblante de peur trahit votre propre anxiété. Votre compagnon perçoit cette nervosité et, au lieu de se calmer, devient encore plus agité.",
-          "Vos paroles apaisantes se transforment en murmures chevrotants qui trahissent votre terreur. **{{pet}}**, au lieu de se sentir rassuré, comprend que vous êtes vous-même pétrifié de peur, ce qui aggrave sa propre panique."
+          "Vous tentez d'apaiser **{{pet}}** par des caresses, mais votre propre nervosité face au nain hostile se transmet à votre compagnon. Au lieu de se calmer, il devient encore plus agité et gémissant.",
+          "Vos paroles censées être apaisantes trahissent votre propre terreur. **{{pet}}**, percevant votre peur, comprend que la situation est grave et sa panique s'aggrave."
         ]
       },
       "imposer": {
         "success": [
-          "Vous laissez **{{pet}}** s'avancer avec assurance, sa prestance naturelle se déployant comme un étendard de noblesse. La menace, reconnaissant instinctivement la rareté et la puissance de votre compagnon, hésite puis bat en retraite avec respect. Votre compagnon se redresse fièrement, conscient de l'effet produit.",
-          "Se posant calmement devant vous, **{{pet}}** dégage une aura de majesté qui ne trompe point. Face à un spécimen aussi remarquable, la menace comprend qu'elle n'a point affaire à une proie ordinaire et préfère s'éloigner prudemment. Votre compagnon apprécie que vous ayez su miser sur sa prestance."
+          "Vous laissez **{{pet}}** s'avancer avec assurance vers le nain. Sa prestance naturelle et sa beauté rare semblent désarçonner l'agresseur qui, malgré sa haine, reconnaît qu'il a affaire à un spécimen exceptionnel. Il bat en retraite, impressionné malgré lui.",
+          "Se posant calmement face au nain, **{{pet}}** dégage une aura de majesté indéniable. Le nain, bien que haïssant les animaux, ne peut s'empêcher de reconnaître la noblesse de votre compagnon et s'éloigne prudemment."
         ],
         "fail": [
-          "Vous tentez de laisser **{{pet}}** s'imposer, mais votre compagnon, trop commun, ne parvient guère à impressionner la menace qui le jauge d'un œil méprisant. Votre compagnon se sent humilié de ne point posséder l'allure nécessaire pour intimider l'adversaire.",
-          "Tentant de se montrer imposant, **{{pet}}** échoue à faire reculer la menace avec son apparence trop banale. Votre compagnon vous en veut d'avoir misé sur une prestance qu'il ne possède manifestement pas face à un tel adversaire."
+          "Vous tentez de laisser **{{pet}}** s'imposer face au nain, mais votre compagnon, intimidé, ne parvient pas à paraître menaçant. Le nain éclate d'un rire méprisant et le bouscule sans ménagement.",
+          "**{{pet}}** tente de se montrer imposant face au nain, mais son apparence ne suffit pas à l'impressionner. « Voilà donc la grande menace ? » se moque le nain en lui donnant un coup de pied."
         ]
       },
       "energize": {
         "success": [
-          "Vous encouragez **{{pet}}** avec des paroles enthousiastes et énergiques. Galvanisé par votre soutien, votre compagnon retrouve toute sa vigueur et se dresse fièrement face à la menace. Impressionnée par ce regain d'énergie soudain, celle-ci préfère ne point prendre de risque et s'éloigne. Votre compagnon est reconnaissant de votre soutien.",
-          "Vos mots d'encouragement redonnent confiance à **{{pet}}** qui puise dans ses réserves d'énergie. Cette démonstration de vitalité fait reculer la menace qui ne s'attendait point à une telle résistance. Votre compagnon apprécie votre capacité à le remotiver."
+          "Vous encouragez **{{pet}}** avec des paroles enthousiastes. Galvanisé par votre soutien, votre compagnon retrouve toute sa vigueur et se dresse fièrement face au nain. Ce dernier, surpris par ce regain d'énergie, préfère ne point prendre de risque et s'éloigne.",
+          "Vos mots d'encouragement redonnent confiance à **{{pet}}** qui se redresse avec détermination. Le nain, voyant que votre compagnon ne se laissera pas faire, renonce à son agression et part en grognant."
         ],
         "fail": [
-          "Vous tentez d'encourager **{{pet}}** avec des paroles, mais votre voix manque de conviction. Votre compagnon, déjà épuisé, ne trouve point l'énergie nécessaire et se sent encore plus fatigué par vos exigences.",
-          "Vos tentatives pour galvaniser **{{pet}}** tombent à plat. Au lieu de le remotiver, vos paroles lui rappellent à quel point il est fatigué. Il vous en veut de lui demander un effort qu'il ne peut fournir."
+          "Vous tentez d'encourager **{{pet}}** avec des paroles, mais votre voix manque de conviction face à la menace du nain. Votre compagnon, déjà terrorisé, ne trouve point le courage nécessaire et se recroqueville davantage.",
+          "Vos tentatives pour galvaniser **{{pet}}** tombent à plat. Le nain profite de ce moment de faiblesse pour malmener votre compagnon qui vous en veut de ne pas l'avoir mieux protégé."
         ]
       }
     }

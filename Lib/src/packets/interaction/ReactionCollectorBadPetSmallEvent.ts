@@ -4,6 +4,7 @@ import {
 	ReactionCollectorData,
 	ReactionCollectorReaction
 } from "./ReactionCollectorPacket";
+import { PacketLike } from "../CrowniclesPacket";
 
 export class ReactionCollectorBadPetIntimidateReaction extends ReactionCollectorReaction {}
 export class ReactionCollectorBadPetPleadReaction extends ReactionCollectorReaction {}
@@ -26,13 +27,18 @@ export class ReactionCollectorBadPetSmallEventData extends ReactionCollectorData
 	petNickname?: string;
 }
 
+interface BadPetReactionWithClass {
+	reaction: ReactionCollectorReaction;
+	reactionClass: PacketLike<ReactionCollectorReaction>;
+}
+
 export class ReactionCollectorBadPetSmallEvent extends ReactionCollector {
 	/**
 	 * For alignment with the witch small event, bad-pet reactions now carry an ID in their data (eg 'intimidate').
 	 * This class accepts an array of ReactionCollectorReaction instances (each must include the id field)
 	 * and uses them directly when building the creation packet.
 	 */
-	private readonly possibleReactions: ReactionCollectorReaction[];
+	private readonly possibleReactions: BadPetReactionWithClass[];
 
 	private readonly petId: number;
 
@@ -40,7 +46,7 @@ export class ReactionCollectorBadPetSmallEvent extends ReactionCollector {
 
 	private readonly petNickname: string | undefined;
 
-	constructor(petId: number, sex: string, petNickname: string | undefined, reactions: ReactionCollectorReaction[]) {
+	constructor(petId: number, sex: string, petNickname: string | undefined, reactions: BadPetReactionWithClass[]) {
 		super();
 		this.petId = petId;
 		this.sex = sex;
@@ -58,7 +64,7 @@ export class ReactionCollectorBadPetSmallEvent extends ReactionCollector {
 		return {
 			id,
 			endTime,
-			reactions: this.possibleReactions.map(r => this.buildReaction(r.constructor as any, r as any)),
+			reactions: this.possibleReactions.map(r => this.buildReaction(r.reactionClass, r.reaction)),
 			data: this.buildData(ReactionCollectorBadPetSmallEventData, {
 				petId: this.petId,
 				sex: this.sex,
