@@ -135,6 +135,20 @@ export const CrowniclesIcons: {
 		petButton: string;
 		pet: string;
 	};
+	expedition: {
+		locations: {
+			[locationId: string]: string;
+		};
+		map: string;
+		risk: string;
+		wealth: string;
+		duration: string;
+		difficulty: string;
+		food: string;
+		love: string;
+		talisman: string;
+		recall: string;
+	};
 	leagues: {
 		[leagueId: string]: string;
 	};
@@ -953,7 +967,8 @@ export const CrowniclesIcons: {
 		winPersonalXP: "⭐",
 		witch: "🧹",
 		infoFight: "🏰",
-		haunted: "🦴"
+		haunted: "🦴",
+		expeditionAdvice: "🗺️"
 	},
 	pets: {
 		0: {
@@ -2190,6 +2205,27 @@ export const CrowniclesIcons: {
 	petCommand: {
 		petButton: "🖐️",
 		pet: "😻"
+	},
+	expedition: {
+		locations: {
+			forest: "🌲",
+			mountain: "⛰️",
+			desert: "🏜️",
+			swamp: "🌿",
+			ruins: "🏛️",
+			cave: "🕳️",
+			plains: "🌾",
+			coast: "🌊"
+		},
+		map: "🗺️",
+		risk: "⚠️",
+		wealth: "💰",
+		duration: "⏱️",
+		difficulty: "📊",
+		food: "🍖",
+		love: "💕",
+		talisman: "🔮",
+		recall: "🏠"
 	},
 	leagues: {
 		0: "🌲",

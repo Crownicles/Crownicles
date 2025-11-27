@@ -26,7 +26,9 @@ import { Constants } from "../../../../Lib/src/constants/Constants";
 import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 import { Language } from "../../../../Lib/src/Language";
 import { finishInTimeDisplay } from "../../../../Lib/src/utils/TimeUtils";
-import { ExpeditionConstants } from "../../../../Lib/src/constants/ExpeditionConstants";
+import {
+	ExpeditionConstants, ExpeditionLocationType
+} from "../../../../Lib/src/constants/ExpeditionConstants";
 
 /**
  * Display all the information about a Pet
@@ -81,22 +83,6 @@ function createExpeditionButton(lng: Language, hasExpedition: boolean, hasTalism
 }
 
 /**
- * Get the location type emoji for display
- * @param locationType
- */
-function getLocationEmoji(locationType: string): string {
-	const emojiMap: Record<string, string> = {
-		[ExpeditionConstants.LOCATION_TYPES.FOREST]: "🌲",
-		[ExpeditionConstants.LOCATION_TYPES.MOUNTAIN]: "⛰️",
-		[ExpeditionConstants.LOCATION_TYPES.DESERT]: "🏜️",
-		[ExpeditionConstants.LOCATION_TYPES.OCEAN]: "🌊",
-		[ExpeditionConstants.LOCATION_TYPES.RUINS]: "🏛️",
-		[ExpeditionConstants.LOCATION_TYPES.CAVE]: "🕳️"
-	};
-	return emojiMap[locationType] || "🗺️";
-}
-
-/**
  * Create the embed for the pet command response
  * @param packet
  * @param interaction
@@ -115,9 +101,10 @@ async function createPetEmbed(
 
 	// Add expedition status if in progress
 	if (packet.expeditionInProgress) {
-		const locationEmoji = getLocationEmoji(packet.expeditionInProgress.locationType);
+		const locationEmoji = ExpeditionConstants.getLocationEmoji(packet.expeditionInProgress.locationType as ExpeditionLocationType);
 		const locationName = i18n.t(`commands:petExpedition.locations.${packet.expeditionInProgress.locationType}`, { lng });
-		const riskCategory = getRiskCategoryName(packet.expeditionInProgress.riskRate, lng);
+		const riskCategoryKey = ExpeditionConstants.getRiskCategoryName(packet.expeditionInProgress.riskRate);
+		const riskCategory = i18n.t(`commands:petExpedition.riskCategories.${riskCategoryKey}`, { lng });
 
 		description += `\n\n${i18n.t("commands:petExpedition.expeditionStatus", {
 			lng,
@@ -136,27 +123,6 @@ async function createPetEmbed(
 			interaction.user
 		)
 		.setDescription(description);
-}
-
-/**
- * Get the risk category name for display
- * @param riskRate
- * @param lng
- */
-function getRiskCategoryName(riskRate: number, lng: Language): string {
-	if (riskRate <= 15) {
-		return i18n.t("commands:petExpedition.riskCategories.veryLow", { lng });
-	}
-	if (riskRate <= 30) {
-		return i18n.t("commands:petExpedition.riskCategories.low", { lng });
-	}
-	if (riskRate <= 50) {
-		return i18n.t("commands:petExpedition.riskCategories.medium", { lng });
-	}
-	if (riskRate <= 70) {
-		return i18n.t("commands:petExpedition.riskCategories.high", { lng });
-	}
-	return i18n.t("commands:petExpedition.riskCategories.veryHigh", { lng });
 }
 
 /**

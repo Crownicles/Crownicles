@@ -15,7 +15,9 @@ import {
 	commandRequires, CommandUtils
 } from "../../core/utils/CommandUtils";
 import { PetExpeditions } from "../../core/database/game/models/PetExpedition";
-import { ExpeditionConstants } from "../../../../Lib/src/constants/ExpeditionConstants";
+import {
+	ExpeditionConstants, ExpeditionLocationType
+} from "../../../../Lib/src/constants/ExpeditionConstants";
 
 export default class PetCommand {
 	@commandRequires(CommandPetPacketReq, {
@@ -36,12 +38,12 @@ export default class PetCommand {
 		let expeditionInfo: PetExpeditionInfo | undefined;
 
 		if (isOwnerViewingOwnPet) {
-			const currentExpedition = await PetExpeditions.getActiveByPlayerId(player.id);
+			const currentExpedition = await PetExpeditions.getActiveExpeditionForPlayer(player.id);
 			if (currentExpedition && currentExpedition.status === ExpeditionConstants.STATUS.IN_PROGRESS) {
 				expeditionInfo = {
 					endTime: currentExpedition.endDate.getTime(),
 					riskRate: currentExpedition.riskRate,
-					locationType: currentExpedition.locationType
+					locationType: currentExpedition.locationType as ExpeditionLocationType
 				};
 			}
 		}

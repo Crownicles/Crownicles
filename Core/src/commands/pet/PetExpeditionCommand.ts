@@ -61,11 +61,11 @@ function generateRandomExpedition(): ExpeditionData {
 	const locationType = locationTypes[RandomUtils.randInt(0, locationTypes.length)] as ExpeditionLocationType;
 
 	return {
-		id: `exp_${Date.now()}_${RandomUtils.randInt(1000, 9999)}`,
+		id: `${ExpeditionConstants.ID_GENERATION.PREFIX}_${Date.now()}_${RandomUtils.randInt(ExpeditionConstants.ID_GENERATION.RANDOM_MIN, ExpeditionConstants.ID_GENERATION.RANDOM_MAX)}`,
 		durationMinutes,
 		riskRate,
 		difficulty,
-		wealthRate: Math.round(wealthRate * 100) / 100,
+		wealthRate: Math.round(wealthRate * ExpeditionConstants.PERCENTAGE.DECIMAL_PRECISION) / ExpeditionConstants.PERCENTAGE.DECIMAL_PRECISION,
 		locationType
 	};
 }
@@ -79,7 +79,7 @@ function calculateEffectiveRisk(expedition: ExpeditionData, petModel: Pet, petLo
 		- petModel.force
 		- petLovePoints / ExpeditionConstants.EFFECTIVE_RISK_FORMULA.LOVE_DIVISOR;
 
-	return Math.max(0, Math.min(100, effectiveRisk));
+	return Math.max(0, Math.min(ExpeditionConstants.PERCENTAGE.MAX, effectiveRisk));
 }
 
 /**
@@ -547,7 +547,7 @@ export default class PetExpeditionCommand {
 		 */
 
 		// First roll: check for total failure
-		const totalFailure = RandomUtils.crowniclesRandom.bool(effectiveRisk / 100);
+		const totalFailure = RandomUtils.crowniclesRandom.bool(effectiveRisk / ExpeditionConstants.PERCENTAGE.MAX);
 
 		let partialSuccess = false;
 		let rewards: ExpeditionRewardData | undefined;
@@ -559,7 +559,7 @@ export default class PetExpeditionCommand {
 		}
 		else {
 			// Second roll: check for partial success
-			partialSuccess = RandomUtils.crowniclesRandom.bool(effectiveRisk / 100);
+			partialSuccess = RandomUtils.crowniclesRandom.bool(effectiveRisk / ExpeditionConstants.PERCENTAGE.MAX);
 
 			const rewardIndex = calculateRewardIndex(expeditionData);
 			rewards = calculateRewards(expeditionData, rewardIndex, partialSuccess);
@@ -622,7 +622,7 @@ export default class PetExpeditionCommand {
 			 */
 			if (rewards.gems > 0) {
 				await player.addMoney({
-					amount: rewards.gems * 50,
+					amount: rewards.gems * ExpeditionConstants.GEM_TO_MONEY_FALLBACK_RATE,
 					response,
 					reason: NumberChangeReason.SMALL_EVENT
 				});

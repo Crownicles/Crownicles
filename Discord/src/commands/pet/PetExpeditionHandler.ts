@@ -18,7 +18,9 @@ import { sendInteractionNotForYou } from "../../utils/ErrorUtils";
 import { PacketUtils } from "../../utils/PacketUtils";
 import { escapeUsername } from "../../utils/StringUtils";
 import { finishInTimeDisplay } from "../../../../Lib/src/utils/TimeUtils";
-import { ExpeditionConstants } from "../../../../Lib/src/constants/ExpeditionConstants";
+import {
+	ExpeditionConstants, ExpeditionLocationType
+} from "../../../../Lib/src/constants/ExpeditionConstants";
 import { Language } from "../../../../Lib/src/Language";
 import {
 	CommandPetExpeditionPacketRes,
@@ -36,69 +38,35 @@ import {
 } from "../../../../Lib/src/packets/commands/CommandPetExpeditionPacket";
 
 /**
- * Get the emoji for a location type
+ * Get translated risk category name for display
  */
-function getLocationEmoji(locationType: string): string {
-	const emojiMap: Record<string, string> = {
-		[ExpeditionConstants.LOCATION_TYPES.FOREST]: "🌲",
-		[ExpeditionConstants.LOCATION_TYPES.MOUNTAIN]: "⛰️",
-		[ExpeditionConstants.LOCATION_TYPES.DESERT]: "🏜️",
-		[ExpeditionConstants.LOCATION_TYPES.SWAMP]: "🌿",
-		[ExpeditionConstants.LOCATION_TYPES.RUINS]: "🏛️",
-		[ExpeditionConstants.LOCATION_TYPES.CAVE]: "🕳️",
-		[ExpeditionConstants.LOCATION_TYPES.PLAINS]: "🌾",
-		[ExpeditionConstants.LOCATION_TYPES.COAST]: "🏖️"
-	};
-	return emojiMap[locationType] || "🗺️";
+function getTranslatedRiskCategoryName(riskRate: number, lng: Language): string {
+	const categoryKey = ExpeditionConstants.getRiskCategoryName(riskRate);
+	return i18n.t(`commands:petExpedition.riskCategories.${categoryKey}`, { lng });
 }
 
 /**
- * Get the risk category name for display
+ * Get translated wealth category name for display
  */
-function getRiskCategoryName(riskRate: number, lng: Language): string {
-	if (riskRate <= 15) {
-		return i18n.t("commands:petExpedition.riskCategories.veryLow", { lng });
-	}
-	if (riskRate <= 30) {
-		return i18n.t("commands:petExpedition.riskCategories.low", { lng });
-	}
-	if (riskRate <= 50) {
-		return i18n.t("commands:petExpedition.riskCategories.medium", { lng });
-	}
-	if (riskRate <= 70) {
-		return i18n.t("commands:petExpedition.riskCategories.high", { lng });
-	}
-	return i18n.t("commands:petExpedition.riskCategories.veryHigh", { lng });
-}
-
-/**
- * Get the wealth category name for display
- */
-function getWealthCategoryName(wealthRate: number, lng: Language): string {
-	if (wealthRate <= 0.5) {
-		return i18n.t("commands:petExpedition.wealthCategories.poor", { lng });
-	}
-	if (wealthRate <= 1.0) {
-		return i18n.t("commands:petExpedition.wealthCategories.modest", { lng });
-	}
-	if (wealthRate <= 1.5) {
-		return i18n.t("commands:petExpedition.wealthCategories.rich", { lng });
-	}
-	return i18n.t("commands:petExpedition.wealthCategories.legendary", { lng });
+function getTranslatedWealthCategoryName(wealthRate: number, lng: Language): string {
+	const categoryKey = ExpeditionConstants.getWealthCategoryName(wealthRate);
+	return i18n.t(`commands:petExpedition.wealthCategories.${categoryKey}`, { lng });
 }
 
 /**
  * Format duration for display
  */
 function formatDuration(minutes: number, lng: Language): string {
-	if (minutes < 60) {
+	const minutesPerHour = ExpeditionConstants.TIME.MINUTES_PER_HOUR;
+
+	if (minutes < minutesPerHour) {
 		return i18n.t("commands:petExpedition.duration.minutes", {
 			lng,
 			count: minutes
 		});
 	}
-	const hours = Math.floor(minutes / 60);
-	const remainingMinutes = minutes % 60;
+	const hours = Math.floor(minutes / minutesPerHour);
+	const remainingMinutes = minutes % minutesPerHour;
 	if (remainingMinutes === 0) {
 		return i18n.t("commands:petExpedition.duration.hours", {
 			lng,
@@ -156,7 +124,7 @@ export async function handleExpeditionStatusRes(
 		}
 
 		// Show expedition in progress with recall option
-		const locationEmoji = getLocationEmoji(expedition.locationType);
+		const locationEmoji = ExpeditionConstants.getLocationEmoji(expedition.locationType as ExpeditionLocationType);
 		const locationName = i18n.t(`commands:petExpedition.locations.${expedition.locationType}`, { lng });
 
 		const embed = new CrowniclesEmbed()
@@ -172,7 +140,7 @@ export async function handleExpeditionStatusRes(
 					lng,
 					petName: expedition.petNickname || i18n.t("commands:pet.defaultPetName", { lng }),
 					location: `${locationEmoji} ${locationName}`,
-					risk: getRiskCategoryName(expedition.riskRate, lng),
+					risk: getTranslatedRiskCategoryName(expedition.riskRate, lng),
 					returnTime: finishInTimeDisplay(endTime)
 				})
 			);
@@ -277,7 +245,7 @@ export async function handleExpeditionGenerateRes(
 
 	for (let i = 0; i < packet.expeditions.length; i++) {
 		const exp = packet.expeditions[i];
-		const locationEmoji = getLocationEmoji(exp.locationType);
+		const locationEmoji = ExpeditionConstants.getLocationEmoji(exp.locationType as ExpeditionLocationType);
 		const locationName = i18n.t(`commands:petExpedition.locations.${exp.locationType}`, { lng });
 
 		description += i18n.t("commands:petExpedition.expeditionOption", {
@@ -285,14 +253,14 @@ export async function handleExpeditionGenerateRes(
 			number: i + 1,
 			location: `${locationEmoji} ${locationName}`,
 			duration: formatDuration(exp.durationMinutes, lng),
-			risk: getRiskCategoryName(exp.riskRate, lng),
-			wealth: getWealthCategoryName(exp.wealthRate, lng),
+			risk: getTranslatedRiskCategoryName(exp.riskRate, lng),
+			wealth: getTranslatedWealthCategoryName(exp.wealthRate, lng),
 			difficulty: exp.difficulty
 		}) + "\n\n";
 
 		selectMenu.addOptions({
 			label: `${locationEmoji} ${locationName}`,
-			description: `${formatDuration(exp.durationMinutes, lng)} - ${getRiskCategoryName(exp.riskRate, lng)}`,
+			description: `${formatDuration(exp.durationMinutes, lng)} - ${getTranslatedRiskCategoryName(exp.riskRate, lng)}`,
 			value: exp.id
 		});
 	}
@@ -395,7 +363,7 @@ export async function handleExpeditionChoiceRes(
 	}
 
 	const expedition = packet.expedition!;
-	const locationEmoji = getLocationEmoji(expedition.locationType);
+	const locationEmoji = ExpeditionConstants.getLocationEmoji(expedition.locationType as ExpeditionLocationType);
 	const locationName = i18n.t(`commands:petExpedition.locations.${expedition.locationType}`, { lng });
 	const petName = expedition.petNickname || i18n.t("commands:pet.defaultPetName", { lng });
 
@@ -512,7 +480,7 @@ export async function handleExpeditionResolveRes(
 
 	const lng = interaction.userLanguage;
 	const petName = packet.petNickname || i18n.t("commands:pet.defaultPetName", { lng });
-	const locationEmoji = getLocationEmoji(packet.expedition.locationType);
+	const locationEmoji = ExpeditionConstants.getLocationEmoji(packet.expedition.locationType as ExpeditionLocationType);
 	const locationName = i18n.t(`commands:petExpedition.locations.${packet.expedition.locationType}`, { lng });
 
 	let description: string;

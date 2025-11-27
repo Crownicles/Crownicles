@@ -100,6 +100,7 @@ import { getPetFoodDescription } from "../../smallEvents/petFood";
 import { SmallEventHauntedPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventHauntedPacket";
 import { SmallEventPetFoodPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventPetFoodPacket";
 import { SmallEventBadPetPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventBadPetPacket";
+import { SmallEventExpeditionAdvicePacket } from "../../../../Lib/src/packets/smallEvents/SmallEventExpeditionAdvicePacket";
 
 const PET_TIME_INTERACTIONS = new Set([
 	"gainTime",
@@ -1011,6 +1012,44 @@ export default class SmallEventsHandler {
 
 		await interaction.editReply({
 			embeds: [embed], components: []
+		});
+	}
+
+	@packetHandler(SmallEventExpeditionAdvicePacket)
+	async smallEventExpeditionAdvice(context: PacketContext, packet: SmallEventExpeditionAdvicePacket): Promise<void> {
+		const interaction = DiscordCache.getInteraction(context.discord!.interaction);
+		if (!interaction) {
+			return;
+		}
+		const lng = interaction.userLanguage;
+
+		const intro = StringUtils.getRandomTranslation("smallEvents:expeditionAdvice.intro", lng);
+		let story: string;
+
+		if (packet.talismanGiven) {
+			// Talisman was just given
+			story = StringUtils.getRandomTranslation("smallEvents:expeditionAdvice.talismanReceived", lng);
+		}
+		else if (packet.petInExpedition && packet.bonusMoney !== undefined && packet.bonusExperience !== undefined) {
+			// Pet is in expedition, bonus rewards given
+			const petDisplay = packet.petTypeId !== undefined
+				? PetUtils.petToShortString(lng, packet.petNickname, packet.petTypeId, packet.petSex as SexTypeShort)
+				: i18n.t("commands:pet.defaultPetName", { lng });
+			story = StringUtils.getRandomTranslation("smallEvents:expeditionAdvice.expeditionBonus", lng, {
+				pet: petDisplay,
+				bonusMoney: packet.bonusMoney,
+				bonusExperience: packet.bonusExperience
+			});
+		}
+		else {
+			// Just give advice
+			story = StringUtils.getRandomTranslation("smallEvents:expeditionAdvice.advice", lng);
+		}
+
+		const description = `${intro}\n\n${story}`;
+
+		await interaction.editReply({
+			embeds: [new CrowniclesSmallEventEmbed("expeditionAdvice", description, interaction.user, lng)]
 		});
 	}
 }

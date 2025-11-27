@@ -4,56 +4,70 @@
  */
 export abstract class ExpeditionConstants {
 	/**
+	 * Time conversion constants
+	 */
+	static readonly TIME = {
+		MINUTES_PER_HOUR: 60,
+		HOURS_PER_DAY: 24
+	};
+
+	/**
 	 * Duration limits for expeditions (in minutes)
 	 */
 	static readonly DURATION = {
 		MIN_MINUTES: 10,
-		MAX_MINUTES: 3 * 24 * 60 // 3 days in minutes
+		MAX_MINUTES: 3 * ExpeditionConstants.TIME.HOURS_PER_DAY * ExpeditionConstants.TIME.MINUTES_PER_HOUR // 3 days in minutes
 	};
 
 	/**
 	 * Risk rate categories for display purposes
 	 * Risk rate is a percentage from 0 to 100
+	 * 5 categories: veryLow (0-15), low (16-30), medium (31-50), high (51-70), veryHigh (71+)
 	 */
-	static readonly RISK_CATEGORIES = {
+	static readonly RISK_DISPLAY_CATEGORIES = {
+		VERY_LOW: {
+			MAX: 15,
+			NAME: "veryLow"
+		},
 		LOW: {
-			MAX: 10,
+			MAX: 30,
 			NAME: "low"
 		},
-		MODERATE: {
-			MAX: 20,
-			NAME: "moderate"
+		MEDIUM: {
+			MAX: 50,
+			NAME: "medium"
 		},
-		RISKY: {
-			MAX: 40,
-			NAME: "risky"
+		HIGH: {
+			MAX: 70,
+			NAME: "high"
 		},
-		VERY_RISKY: {
+		VERY_HIGH: {
 			MAX: 100,
-			NAME: "veryRisky"
+			NAME: "veryHigh"
 		}
 	};
 
 	/**
 	 * Wealth rate categories for display purposes
 	 * Wealth rate is a multiplier from 0.0 to 2.0
+	 * 4 categories: poor (0-0.5), modest (0.51-1.0), rich (1.01-1.5), legendary (1.51+)
 	 */
-	static readonly WEALTH_CATEGORIES = {
-		VERY_LOW: {
+	static readonly WEALTH_DISPLAY_CATEGORIES = {
+		POOR: {
 			MAX: 0.5,
-			NAME: "veryLow"
+			NAME: "poor"
 		},
-		LOW: {
+		MODEST: {
 			MAX: 1.0,
-			NAME: "low"
+			NAME: "modest"
 		},
-		GOOD: {
+		RICH: {
 			MAX: 1.5,
-			NAME: "good"
+			NAME: "rich"
 		},
-		INCREDIBLE: {
+		LEGENDARY: {
 			MAX: 2.0,
-			NAME: "incredible"
+			NAME: "legendary"
 		}
 	};
 
@@ -111,7 +125,29 @@ export abstract class ExpeditionConstants {
 	/**
 	 * Multiplier applied to effective risk when player has insufficient food
 	 */
-	static readonly NO_FOOD_RISK_MULTIPLIER: 3;
+	static readonly NO_FOOD_RISK_MULTIPLIER = 3;
+
+	/**
+	 * Constants for expedition ID generation
+	 */
+	static readonly ID_GENERATION = {
+		RANDOM_MIN: 1000,
+		RANDOM_MAX: 9999,
+		PREFIX: "exp"
+	};
+
+	/**
+	 * Percentage/decimal conversion constants
+	 */
+	static readonly PERCENTAGE = {
+		MAX: 100,
+		DECIMAL_PRECISION: 100
+	};
+
+	/**
+	 * Fallback gem to money conversion rate when gem system is unavailable
+	 */
+	static readonly GEM_TO_MONEY_FALLBACK_RATE = 50;
 
 	/**
 	 * Number of expeditions proposed to the player
@@ -298,6 +334,68 @@ export abstract class ExpeditionConstants {
 			EXPERIENCE_MAX: 75
 		}
 	};
+
+	/**
+	 * Emoji mapping for location types
+	 */
+	static readonly LOCATION_EMOJIS: Record<ExpeditionLocationType, string> = {
+		forest: "🌲",
+		mountain: "⛰️",
+		desert: "🏜️",
+		swamp: "🌿",
+		ruins: "🏛️",
+		cave: "🕳️",
+		plains: "🌾",
+		coast: "🌊"
+	};
+
+	/**
+	 * Get the risk category name based on risk rate value
+	 * @param riskRate - Risk rate percentage (0-100)
+	 * @returns The category name key for translations
+	 */
+	static getRiskCategoryName(riskRate: number): string {
+		if (riskRate <= ExpeditionConstants.RISK_DISPLAY_CATEGORIES.VERY_LOW.MAX) {
+			return ExpeditionConstants.RISK_DISPLAY_CATEGORIES.VERY_LOW.NAME;
+		}
+		if (riskRate <= ExpeditionConstants.RISK_DISPLAY_CATEGORIES.LOW.MAX) {
+			return ExpeditionConstants.RISK_DISPLAY_CATEGORIES.LOW.NAME;
+		}
+		if (riskRate <= ExpeditionConstants.RISK_DISPLAY_CATEGORIES.MEDIUM.MAX) {
+			return ExpeditionConstants.RISK_DISPLAY_CATEGORIES.MEDIUM.NAME;
+		}
+		if (riskRate <= ExpeditionConstants.RISK_DISPLAY_CATEGORIES.HIGH.MAX) {
+			return ExpeditionConstants.RISK_DISPLAY_CATEGORIES.HIGH.NAME;
+		}
+		return ExpeditionConstants.RISK_DISPLAY_CATEGORIES.VERY_HIGH.NAME;
+	}
+
+	/**
+	 * Get the wealth category name based on wealth rate value
+	 * @param wealthRate - Wealth rate multiplier (0.0-2.0)
+	 * @returns The category name key for translations
+	 */
+	static getWealthCategoryName(wealthRate: number): string {
+		if (wealthRate <= ExpeditionConstants.WEALTH_DISPLAY_CATEGORIES.POOR.MAX) {
+			return ExpeditionConstants.WEALTH_DISPLAY_CATEGORIES.POOR.NAME;
+		}
+		if (wealthRate <= ExpeditionConstants.WEALTH_DISPLAY_CATEGORIES.MODEST.MAX) {
+			return ExpeditionConstants.WEALTH_DISPLAY_CATEGORIES.MODEST.NAME;
+		}
+		if (wealthRate <= ExpeditionConstants.WEALTH_DISPLAY_CATEGORIES.RICH.MAX) {
+			return ExpeditionConstants.WEALTH_DISPLAY_CATEGORIES.RICH.NAME;
+		}
+		return ExpeditionConstants.WEALTH_DISPLAY_CATEGORIES.LEGENDARY.NAME;
+	}
+
+	/**
+	 * Get the emoji for a location type
+	 * @param locationType - The expedition location type
+	 * @returns The emoji string for the location
+	 */
+	static getLocationEmoji(locationType: ExpeditionLocationType): string {
+		return ExpeditionConstants.LOCATION_EMOJIS[locationType] ?? "🗺️";
+	}
 }
 
 export type ExpeditionStatus = (typeof ExpeditionConstants.STATUS)[keyof typeof ExpeditionConstants.STATUS];

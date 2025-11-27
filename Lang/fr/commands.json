@@ -52,8 +52,8 @@
       "{emote:petCommand.pet} D'excitation tressaille **{{petName}}** au contact de votre main bienveillante.",
       "{emote:petCommand.pet} Sous vos doigts experts, **{{petName}}** se détend en toute quiétude."
     ],
-    "expeditionButton": "🗺 Expédition",
-    "expeditionButtonDisabled": "🗺 Expédition (indisponible)",
+    "expeditionButton": "{emote:expedition.map} Expédition",
+    "expeditionButtonDisabled": "{emote:expedition.map} Expédition (indisponible)",
     "recallButton": "Rappeler"
   },
   "petExpedition": {
@@ -61,19 +61,19 @@
     "noTalisman": "Vous ne possédez pas encore le **Talisman d'Ancrage**. Continuez votre aventure, vous le trouverez peut-être sur votre chemin !",
     "noPet": "Vous devez avoir un familier pour l'envoyer en expédition.",
     "insufficientLove": "Votre familier n'a pas assez d'affection pour partir en expédition. Il lui faut au moins **80** points d'amour (actuellement : {{lovePoints}}).",
-    "expeditionStatus": "🗺️ **Expédition en cours**\n📍 {{location}}\n⚠️ Risque : {{risk}}\n🕐 Retour : {{returnTime}}",
+    "expeditionStatus": "{emote:expedition.map} **Expédition en cours**\n📍 {{location}}\n{emote:expedition.risk} Risque : {{risk}}\n{emote:clocks.1} Retour : {{returnTime}}",
     "inProgressTitle": "{{pseudo}} - Expédition en cours",
-    "inProgressDescription": "**{{petName}}** est parti en expédition !\n\n📍 **Lieu :** {{location}}\n⚠️ **Risque :** {{risk}}\n🕐 **Retour :** {{returnTime}}\n\nVous pouvez rappeler votre familier, mais il perdra des points d'amour et ne rapportera aucune récompense.",
-    "recallButton": "🏠 Rappeler",
+    "inProgressDescription": "**{{petName}}** est parti en expédition !\n\n📍 **Lieu :** {{location}}\n{emote:expedition.risk} **Risque :** {{risk}}\n{emote:clocks.1} **Retour :** {{returnTime}}\n\nVous pouvez rappeler votre familier, mais il perdra des points d'amour et ne rapportera aucune récompense.",
+    "recallButton": "{emote:expedition.recall} Rappeler",
     "closeButton": "Fermer",
     "chooseExpedition": "Choisissez une expédition pour **{{petName}}** :",
     "selectPlaceholder": "Sélectionnez une expédition...",
-    "expeditionOption": "**{{number}}.** {{location}}\n⏱️ Durée : {{duration}}\n⚠️ Risque : {{risk}}\n💰 Richesse : {{wealth}}\n📊 Difficulté : {{difficulty}}/100",
+    "expeditionOption": "**{{number}}.** {{location}}\n{emote:expedition.duration} Durée : {{duration}}\n{emote:expedition.risk} Risque : {{risk}}\n{emote:expedition.wealth} Richesse : {{wealth}}\n{emote:expedition.difficulty} Difficulté : {{difficulty}}/100",
     "cancelButton": "Annuler",
     "startedTitle": "{{pseudo}} - Expédition lancée !",
-    "expeditionStarted": "**{{petName}}** est parti en expédition vers {{location}} !\n\n🕐 Retour prévu : {{returnTime}}",
-    "foodConsumed": "🍖 Nourriture consommée : **{{amount}}**",
-    "insufficientFoodWarning": "⚠️ **Nourriture insuffisante !** Le risque d'échec est triplé.",
+    "expeditionStarted": "**{{petName}}** est parti en expédition vers {{location}} !\n\n{emote:clocks.1} Retour prévu : {{returnTime}}",
+    "foodConsumed": "{emote:expedition.food} Nourriture consommée : **{{amount}}**",
+    "insufficientFoodWarning": "{emote:expedition.risk} **Nourriture insuffisante !** Le risque d'échec est triplé.",
     "cancelledTitle": "{{pseudo}} - Expédition annulée",
     "cancelled": "**{{petName}}** est déçu... Il perd **{{loveLost}}** points d'amour.",
     "recalledTitle": "{{pseudo}} - Familier rappelé",
@@ -83,8 +83,8 @@
     "partialSuccessTitle": "{{pseudo}} - Expédition mitigée",
     "partialSuccess": "**{{petName}}** a rencontré des difficultés lors de son expédition vers {{location}}, mais est revenu avec quelques trouvailles (récompenses réduites de moitié).",
     "failureTitle": "{{pseudo}} - Expédition échouée",
-    "totalFailure": "**{{petName}}** revient bredouille de son expédition vers {{location}}... L'aventure fut trop périlleuse.\n\n💔 Perte : {{loveLost}} points d'amour",
-    "loveChange": "💕 Amour : {{change}}",
+    "totalFailure": "**{{petName}}** revient bredouille de son expédition vers {{location}}... L'aventure fut trop périlleuse.\n\n{emote:unitValues.lostHealth} Perte : {{loveLost}} points d'amour",
+    "loveChange": "{emote:expedition.love} Amour : {{change}}",
     "duration": {
       "minutes": "{{count}} minute",
       "minutes_other": "{{count}} minutes",
@@ -93,11 +93,11 @@
       "hoursMinutes": "{{hours}}h {{minutes}}min"
     },
     "rewards": {
-      "money": "💰 {{amount}} pièces",
-      "gems": "💎 {{amount}} gemmes",
-      "experience": "⭐ {{amount}} XP",
-      "guildExperience": "🏰 {{amount}} XP de guilde",
-      "points": "🏆 {{amount}} points"
+      "money": "{emote:unitValues.money} {{amount}} pièces",
+      "gems": "{emote:unitValues.gem} {{amount}} gemmes",
+      "experience": "{emote:unitValues.xp} {{amount}} XP",
+      "guildExperience": "{emote:guild.icon} {{amount}} XP de guilde",
+      "points": "{emote:unitValues.score} {{amount}} points"
     },
     "riskCategories": {
       "veryLow": "Très faible",
