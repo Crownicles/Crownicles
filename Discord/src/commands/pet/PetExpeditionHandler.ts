@@ -24,6 +24,9 @@ import {
 	ExpeditionConstants, ExpeditionLocationType
 } from "../../../../Lib/src/constants/ExpeditionConstants";
 import { Language } from "../../../../Lib/src/Language";
+import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
+import { DisplayUtils } from "../../utils/DisplayUtils";
+import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
 import {
 	CommandPetExpeditionPacketRes,
 	CommandPetExpeditionGeneratePacketReq,
@@ -155,7 +158,7 @@ export async function handleExpeditionStatusRes(
 		const recallButton = new ButtonBuilder()
 			.setCustomId("expedition_recall")
 			.setLabel(i18n.t("commands:petExpedition.recallButton", { lng }))
-			.setEmoji("🏠")
+			.setEmoji(CrowniclesIcons.expedition.recall)
 			.setStyle(ButtonStyle.Danger);
 		row.addComponents(recallButton);
 
@@ -215,7 +218,10 @@ export async function handleExpeditionStatusRes(
 				interaction.user
 			);
 
-		const petName = packet.petNickname || i18n.t("commands:pet.defaultPetName", { lng });
+		// Get pet display with icon and name
+		const petDisplay = packet.petId && packet.petSex
+			? `${DisplayUtils.getPetIcon(packet.petId, packet.petSex as SexTypeShort)} **${DisplayUtils.getPetNicknameOrTypeName(packet.petNickname ?? null, packet.petId, packet.petSex as SexTypeShort, lng)}**`
+			: i18n.t("commands:pet.defaultPetName", { lng });
 
 		// Use RP messages for specific reasons
 		if (packet.cannotStartReason === "noPet") {
@@ -226,7 +232,7 @@ export async function handleExpeditionStatusRes(
 		else if (packet.cannotStartReason === "insufficientLove") {
 			embed.setDescription(
 				StringUtils.getRandomTranslation("commands:petExpedition.insufficientLove", lng, {
-					petName,
+					petDisplay,
 					lovePoints: packet.petLovePoints ?? 0
 				})
 			);
@@ -234,7 +240,7 @@ export async function handleExpeditionStatusRes(
 		else if (packet.cannotStartReason === "petHungry") {
 			embed.setDescription(
 				StringUtils.getRandomTranslation("commands:petExpedition.petHungry", lng, {
-					petName
+					petDisplay
 				})
 			);
 		}

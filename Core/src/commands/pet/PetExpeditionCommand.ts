@@ -260,7 +260,9 @@ export default class PetExpeditionCommand {
 				canStartExpedition: false,
 				cannotStartReason: "insufficientLove",
 				petLovePoints: petEntity.lovePoints,
-				petNickname: petEntity.nickname ?? undefined
+				petNickname: petEntity.nickname ?? undefined,
+				petId: petEntity.typeId,
+				petSex: petEntity.sex
 			}));
 			return;
 		}
@@ -274,7 +276,9 @@ export default class PetExpeditionCommand {
 				canStartExpedition: false,
 				cannotStartReason: "petHungry",
 				petLovePoints: petEntity.lovePoints,
-				petNickname: petEntity.nickname ?? undefined
+				petNickname: petEntity.nickname ?? undefined,
+				petId: petEntity.typeId,
+				petSex: petEntity.sex
 			}));
 			return;
 		}
@@ -285,7 +289,9 @@ export default class PetExpeditionCommand {
 			hasExpeditionInProgress: false,
 			canStartExpedition: true,
 			petLovePoints: petEntity.lovePoints,
-			petNickname: petEntity.nickname ?? undefined
+			petNickname: petEntity.nickname ?? undefined,
+			petId: petEntity.typeId,
+			petSex: petEntity.sex
 		}));
 	}
 

@@ -109,6 +109,16 @@ export class CommandPetExpeditionPacketRes extends CrowniclesPacket {
 	 * Pet nickname for display in error messages
 	 */
 	petNickname?: string;
+
+	/**
+	 * Pet type ID for display
+	 */
+	petId?: number;
+
+	/**
+	 * Pet sex for display
+	 */
+	petSex?: string;
 }
 
 /**

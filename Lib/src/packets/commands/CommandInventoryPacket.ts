@@ -46,6 +46,11 @@ export class CommandInventoryPacketRes extends CrowniclesPacket {
 
 	keycloakId?: string;
 
+	/**
+	 * Whether the player has the expedition talisman
+	 */
+	hasTalisman?: boolean;
+
 	data?: {
 		weapon: MainItemDisplayPacket;
 		armor: MainItemDisplayPacket;

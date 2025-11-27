@@ -67,11 +67,11 @@ function createExpeditionButton(lng: Language, hasExpedition: boolean): ButtonBu
 
 	if (hasExpedition) {
 		button.setLabel(i18n.t("commands:pet.recallButton", { lng }));
-		button.setEmoji("🏠");
+		button.setEmoji(CrowniclesIcons.expedition.recall);
 	}
 	else {
 		button.setLabel(i18n.t("commands:pet.expeditionButton", { lng }));
-		button.setEmoji("🗺️");
+		button.setEmoji(CrowniclesIcons.expedition.map);
 	}
 
 	return button;
