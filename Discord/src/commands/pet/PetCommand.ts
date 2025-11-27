@@ -59,18 +59,13 @@ function createPetButton(lng: Language): ButtonBuilder {
  * Create the expedition button component
  * @param lng
  * @param hasExpedition - whether an expedition is in progress
- * @param hasTalisman - whether the player has the talisman
  */
-function createExpeditionButton(lng: Language, hasExpedition: boolean, hasTalisman: boolean): ButtonBuilder {
+function createExpeditionButton(lng: Language, hasExpedition: boolean): ButtonBuilder {
 	const button = new ButtonBuilder()
 		.setCustomId("pet_expedition")
 		.setStyle(hasExpedition ? ButtonStyle.Success : ButtonStyle.Primary);
 
-	if (!hasTalisman) {
-		button.setLabel(i18n.t("commands:pet.expeditionButtonDisabled", { lng }));
-		button.setDisabled(true);
-	}
-	else if (hasExpedition) {
+	if (hasExpedition) {
 		button.setLabel(i18n.t("commands:pet.recallButton", { lng }));
 		button.setEmoji("🏠");
 	}
@@ -199,8 +194,7 @@ export async function handleCommandPetPacketRes(packet: CommandPetPacketRes, con
 	// Add expedition button if viewing own pet
 	if (isOwnerViewingOwnPet) {
 		const hasExpedition = !!packet.expeditionInProgress;
-		const hasTalisman = !!packet.hasTalisman;
-		const expeditionButton = createExpeditionButton(lng, hasExpedition, hasTalisman);
+		const expeditionButton = createExpeditionButton(lng, hasExpedition);
 		row.addComponents(expeditionButton);
 		buttons.expeditionButton = expeditionButton;
 	}

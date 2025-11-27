@@ -16,7 +16,9 @@ import {
 import { Constants } from "../../../../Lib/src/constants/Constants";
 import { sendInteractionNotForYou } from "../../utils/ErrorUtils";
 import { PacketUtils } from "../../utils/PacketUtils";
-import { escapeUsername } from "../../utils/StringUtils";
+import {
+	escapeUsername, StringUtils
+} from "../../utils/StringUtils";
 import { finishInTimeDisplay } from "../../../../Lib/src/utils/TimeUtils";
 import {
 	ExpeditionConstants, ExpeditionLocationType
@@ -94,18 +96,22 @@ export async function handleExpeditionStatusRes(
 
 	const lng = interaction.userLanguage;
 
-	// Check if player has talisman
+	// Check if player has talisman - show RP message if not
 	if (!packet.hasTalisman) {
+		const embed = new CrowniclesEmbed()
+			.formatAuthor(
+				i18n.t("commands:petExpedition.unavailableTitle", {
+					lng,
+					pseudo: escapeUsername(interaction.user.displayName)
+				}),
+				interaction.user
+			)
+			.setDescription(
+				StringUtils.getRandomTranslation("commands:petExpedition.noTalisman", lng, {})
+			);
+
 		await interaction.followUp({
-			embeds: [
-				new CrowniclesErrorEmbed(
-					interaction.user,
-					context,
-					interaction,
-					i18n.t("commands:petExpedition.noTalisman", { lng })
-				)
-			],
-			ephemeral: true
+			embeds: [embed]
 		});
 		return;
 	}
@@ -200,16 +206,47 @@ export async function handleExpeditionStatusRes(
 
 	// Check if player can start an expedition
 	if (!packet.canStartExpedition) {
+		const embed = new CrowniclesEmbed()
+			.formatAuthor(
+				i18n.t("commands:petExpedition.unavailableTitle", {
+					lng,
+					pseudo: escapeUsername(interaction.user.displayName)
+				}),
+				interaction.user
+			);
+
+		const petName = packet.petNickname || i18n.t("commands:pet.defaultPetName", { lng });
+
+		// Use RP messages for specific reasons
+		if (packet.cannotStartReason === "noPet") {
+			embed.setDescription(
+				StringUtils.getRandomTranslation("commands:petExpedition.noPet", lng, {})
+			);
+		}
+		else if (packet.cannotStartReason === "insufficientLove") {
+			embed.setDescription(
+				StringUtils.getRandomTranslation("commands:petExpedition.insufficientLove", lng, {
+					petName,
+					lovePoints: packet.petLovePoints ?? 0
+				})
+			);
+		}
+		else if (packet.cannotStartReason === "petHungry") {
+			embed.setDescription(
+				StringUtils.getRandomTranslation("commands:petExpedition.petHungry", lng, {
+					petName
+				})
+			);
+		}
+		else {
+			// Fallback for other reasons
+			embed.setDescription(
+				i18n.t(`commands:petExpedition.errors.${packet.cannotStartReason}`, { lng })
+			);
+		}
+
 		await interaction.followUp({
-			embeds: [
-				new CrowniclesErrorEmbed(
-					interaction.user,
-					context,
-					interaction,
-					i18n.t(`commands:petExpedition.${packet.cannotStartReason}`, { lng })
-				)
-			],
-			ephemeral: true
+			embeds: [embed]
 		});
 		return;
 	}
@@ -237,7 +274,7 @@ export async function handleExpeditionGenerateRes(
 	let description = i18n.t("commands:petExpedition.chooseExpedition", {
 		lng,
 		petName
-	}) + "\n\n";
+	});
 
 	const selectMenu = new StringSelectMenuBuilder()
 		.setCustomId("expedition_choice")
@@ -248,7 +285,7 @@ export async function handleExpeditionGenerateRes(
 		const locationEmoji = ExpeditionConstants.getLocationEmoji(exp.locationType as ExpeditionLocationType);
 		const locationName = i18n.t(`commands:petExpedition.locations.${exp.locationType}`, { lng });
 
-		description += i18n.t("commands:petExpedition.expeditionOption", {
+		description += "\n\n" + i18n.t("commands:petExpedition.expeditionOption", {
 			lng,
 			number: i + 1,
 			location: `${locationEmoji} ${locationName}`,
@@ -256,7 +293,7 @@ export async function handleExpeditionGenerateRes(
 			risk: getTranslatedRiskCategoryName(exp.riskRate, lng),
 			wealth: getTranslatedWealthCategoryName(exp.wealthRate, lng),
 			difficulty: exp.difficulty
-		}) + "\n\n";
+		});
 
 		selectMenu.addOptions({
 			label: `${locationEmoji} ${locationName}`,
@@ -267,7 +304,7 @@ export async function handleExpeditionGenerateRes(
 
 	const embed = new CrowniclesEmbed()
 		.formatAuthor(
-			i18n.t("commands:petExpedition.title", {
+			i18n.t("commands:petExpedition.chooseExpeditionTitle", {
 				lng,
 				pseudo: escapeUsername(interaction.user.displayName)
 			}),
@@ -491,11 +528,13 @@ export async function handleExpeditionResolveRes(
 			lng,
 			pseudo: escapeUsername(interaction.user.displayName)
 		});
-		description = i18n.t("commands:petExpedition.totalFailure", {
-			lng,
+		description = StringUtils.getRandomTranslation("commands:petExpedition.totalFailure", lng, {
 			petName,
-			location: `${locationEmoji} ${locationName}`,
-			loveLost: Math.abs(packet.loveChange)
+			location: `${locationEmoji} ${locationName}`
+		});
+		description += i18n.t("commands:petExpedition.loveChange", {
+			lng,
+			change: packet.loveChange.toString()
 		});
 	}
 	else if (packet.partialSuccess) {
@@ -503,15 +542,14 @@ export async function handleExpeditionResolveRes(
 			lng,
 			pseudo: escapeUsername(interaction.user.displayName)
 		});
-		description = i18n.t("commands:petExpedition.partialSuccess", {
-			lng,
+		description = StringUtils.getRandomTranslation("commands:petExpedition.partialSuccess", lng, {
 			petName,
 			location: `${locationEmoji} ${locationName}`
 		});
 		if (packet.rewards) {
-			description += "\n\n" + formatRewards(packet.rewards, lng);
+			description += formatRewards(packet.rewards, lng);
 		}
-		description += "\n" + i18n.t("commands:petExpedition.loveChange", {
+		description += i18n.t("commands:petExpedition.loveChange", {
 			lng,
 			change: packet.loveChange >= 0 ? `+${packet.loveChange}` : packet.loveChange.toString()
 		});
@@ -521,15 +559,14 @@ export async function handleExpeditionResolveRes(
 			lng,
 			pseudo: escapeUsername(interaction.user.displayName)
 		});
-		description = i18n.t("commands:petExpedition.success", {
-			lng,
+		description = StringUtils.getRandomTranslation("commands:petExpedition.success", lng, {
 			petName,
 			location: `${locationEmoji} ${locationName}`
 		});
 		if (packet.rewards) {
-			description += "\n\n" + formatRewards(packet.rewards, lng);
+			description += formatRewards(packet.rewards, lng);
 		}
-		description += "\n" + i18n.t("commands:petExpedition.loveChange", {
+		description += i18n.t("commands:petExpedition.loveChange", {
 			lng,
 			change: `+${packet.loveChange}`
 		});
@@ -555,7 +592,7 @@ function formatRewards(
 	},
 	lng: Language
 ): string {
-	const lines: string[] = [];
+	const lines: string[] = [i18n.t("commands:petExpedition.rewards.title", { lng })];
 
 	if (rewards.money > 0) {
 		lines.push(i18n.t("commands:petExpedition.rewards.money", {

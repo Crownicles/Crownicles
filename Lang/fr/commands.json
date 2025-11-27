@@ -58,33 +58,65 @@
   },
   "petExpedition": {
     "title": "Expéditions de familier",
-    "noTalisman": "Vous ne possédez pas encore le **Talisman d'Ancrage**. Continuez votre aventure, vous le trouverez peut-être sur votre chemin !",
-    "noPet": "Vous devez avoir un familier pour l'envoyer en expédition.",
-    "insufficientLove": "Votre familier n'a pas assez d'affection pour partir en expédition. Il lui faut au moins **80** points d'amour (actuellement : {{lovePoints}}).",
+    "unavailableTitle": "{{pseudo}} — Expédition impossible",
+    "noTalisman": [
+      "Vous posez la main sur votre sacoche, espérant y trouver le **Talisman d'Ancrage**, mais vos doigts ne rencontrent que le vide. Sans cet artefact ancestral, votre compagnon ne pourrait retrouver son chemin jusqu'à vous. Les anciens racontent qu'il se trouve quelque part sur les routes du royaume...",
+      "Un marchand ambulant vous observe avec curiosité. « Vous cherchez à envoyer votre bête en exploration ? » ricane-t-il. « Sans le **Talisman d'Ancrage**, votre familier errerait pour l'éternité ! Poursuivez votre quête, jeune aventurier, cet artefact vous attend quelque part. »",
+      "Votre familier vous fixe avec des yeux pleins d'espoir, prêt à partir à l'aventure. Hélas, vous ne possédez pas encore le **Talisman d'Ancrage**, ce précieux artefact qui permet aux familiers de retrouver leur maître à travers les terres les plus hostiles.",
+      "Les légendes parlent d'un talisman magique, forgé par les premiers dresseurs, capable de créer un lien indéfectible entre un familier et son maître. Sans le **Talisman d'Ancrage**, envoyer votre compagnon en expédition serait pure folie."
+    ],
+    "noPet": [
+      "Vous scrutez les alentours, mais aucun familier ne trottine à vos côtés. Les routes d'exploration sont bien trop périlleuses pour s'y aventurer seul...",
+      "Une brise légère soulève la poussière du chemin. Vous réalisez avec amertume que sans compagnon fidèle, les expéditions vous sont fermées.",
+      "Les marchands d'expédition vous dévisagent avec perplexité. « Un aventurier sans familier ? Revenez donc quand vous aurez trouvé un compagnon digne de ce nom ! »"
+    ],
+    "insufficientLove": [
+      "**{{petName}}** vous lance un regard méfiant et recule d'un pas. Le lien qui vous unit n'est pas encore assez fort pour qu'il s'aventure seul dans les contrées sauvages. Prenez soin de lui, nourrissez-le, et peut-être qu'un jour il vous fera suffisamment confiance.\n\n{emote:loveLevels.3} Affection actuelle : **{{lovePoints}}**/100\n{emote:loveLevels.4} Affection requise : **80**/100",
+      "Votre familier se blottit contre votre jambe, tremblant légèrement. **{{petName}}** n'est pas encore prêt à partir seul en expédition. Son cœur a besoin de plus de temps pour vous faire entièrement confiance.\n\n{emote:loveLevels.3} Affection actuelle : **{{lovePoints}}**/100\n{emote:loveLevels.4} Affection requise : **80**/100",
+      "Les yeux de **{{petName}}** trahissent une inquiétude profonde. Partir en expédition demande un lien fort entre un familier et son maître. Continuez à prendre soin de votre compagnon pour renforcer votre complicité.\n\n{emote:loveLevels.3} Affection actuelle : **{{lovePoints}}**/100\n{emote:loveLevels.4} Affection requise : **80**/100"
+    ],
+    "petHungry": [
+      "Le ventre de **{{petName}}** émet un grondement sonore. Les yeux suppliants, votre compagnon refuse catégoriquement de partir l'estomac vide. Nourrissez-le avant de l'envoyer à l'aventure !",
+      "**{{petName}}** renifle votre sacoche avec insistance, espérant y trouver quelque chose à se mettre sous la dent. Un familier affamé ne peut partir en expédition !",
+      "Votre familier s'affale au sol, trop faible pour envisager une quelconque aventure. **{{petName}}** a besoin d'un bon repas avant de pouvoir explorer les contrées lointaines."
+    ],
     "expeditionStatus": "{emote:expedition.map} **Expédition en cours**\n📍 {{location}}\n{emote:expedition.risk} Risque : {{risk}}\n{emote:clocks.1} Retour : {{returnTime}}",
-    "inProgressTitle": "{{pseudo}} - Expédition en cours",
-    "inProgressDescription": "**{{petName}}** est parti en expédition !\n\n📍 **Lieu :** {{location}}\n{emote:expedition.risk} **Risque :** {{risk}}\n{emote:clocks.1} **Retour :** {{returnTime}}\n\nVous pouvez rappeler votre familier, mais il perdra des points d'amour et ne rapportera aucune récompense.",
+    "inProgressTitle": "{{pseudo}} — Expédition en cours",
+    "inProgressDescription": "**{{petName}}** arpente actuellement des terres lointaines et mystérieuses !\n\n📍 **Destination :** {{location}}\n{emote:expedition.risk} **Dangerosité :** {{risk}}\n{emote:clocks.1} **Retour prévu :** {{returnTime}}\n\n⚠️ *Rappeler votre familier prématurément brisera le lien de confiance. Il reviendra sans butin et le cœur meurtri...*",
     "recallButton": "{emote:expedition.recall} Rappeler",
     "closeButton": "Fermer",
-    "chooseExpedition": "Choisissez une expédition pour **{{petName}}** :",
-    "selectPlaceholder": "Sélectionnez une expédition...",
-    "expeditionOption": "**{{number}}.** {{location}}\n{emote:expedition.duration} Durée : {{duration}}\n{emote:expedition.risk} Risque : {{risk}}\n{emote:expedition.wealth} Richesse : {{wealth}}\n{emote:expedition.difficulty} Difficulté : {{difficulty}}/100",
-    "cancelButton": "Annuler",
-    "startedTitle": "{{pseudo}} - Expédition lancée !",
-    "expeditionStarted": "**{{petName}}** est parti en expédition vers {{location}} !\n\n{emote:clocks.1} Retour prévu : {{returnTime}}",
-    "foodConsumed": "{emote:expedition.food} Nourriture consommée : **{{amount}}**",
-    "insufficientFoodWarning": "{emote:expedition.risk} **Nourriture insuffisante !** Le risque d'échec est triplé.",
-    "cancelledTitle": "{{pseudo}} - Expédition annulée",
-    "cancelled": "**{{petName}}** est déçu... Il perd **{{loveLost}}** points d'amour.",
-    "recalledTitle": "{{pseudo}} - Familier rappelé",
-    "recalled": "Vous avez rappelé **{{petName}}** de son expédition. Il perd **{{loveLost}}** points d'amour et ne rapporte aucune récompense.",
-    "successTitle": "{{pseudo}} - Expédition réussie !",
-    "success": "**{{petName}}** revient victorieux de son expédition vers {{location}} !",
-    "partialSuccessTitle": "{{pseudo}} - Expédition mitigée",
-    "partialSuccess": "**{{petName}}** a rencontré des difficultés lors de son expédition vers {{location}}, mais est revenu avec quelques trouvailles (récompenses réduites de moitié).",
-    "failureTitle": "{{pseudo}} - Expédition échouée",
-    "totalFailure": "**{{petName}}** revient bredouille de son expédition vers {{location}}... L'aventure fut trop périlleuse.\n\n{emote:unitValues.lostHealth} Perte : {{loveLost}} points d'amour",
-    "loveChange": "{emote:expedition.love} Amour : {{change}}",
+    "chooseExpeditionTitle": "{{pseudo}} — Nouvelles expéditions disponibles",
+    "chooseExpedition": "Un vieux cartographe déplie devant vous trois cartes jaunies par le temps. D'un doigt tremblant, il désigne les destinations possibles pour **{{petName}}** :\n",
+    "selectPlaceholder": "Choisissez une destination...",
+    "expeditionOption": "**{{number}}.** {{location}}\n{emote:expedition.duration} Durée estimée : {{duration}}\n{emote:expedition.risk} Dangerosité : {{risk}}\n{emote:expedition.wealth} Richesses potentielles : {{wealth}}\n{emote:expedition.difficulty} Difficulté du terrain : {{difficulty}}/100",
+    "cancelButton": "Refuser",
+    "startedTitle": "{{pseudo}} — Expédition lancée !",
+    "expeditionStarted": "D'un bond enthousiaste, **{{petName}}** s'élance vers {{location}} ! Vous le regardez disparaître à l'horizon, le cœur empli d'espoir.\n\n{emote:clocks.1} Retour prévu : {{returnTime}}",
+    "foodConsumed": "\n\n{emote:expedition.food} Provisions emportées : **{{amount}}** rations",
+    "insufficientFoodWarning": "\n\n⚠️ **Provisions insuffisantes !** Sans nourriture adéquate, votre familier sera affaibli et les risques d'échec seront **triplés**.",
+    "cancelledTitle": "{{pseudo}} — Départ annulé",
+    "cancelled": "Voyant votre hésitation, **{{petName}}** baisse la tête, déçu. Il pensait partir à l'aventure... La confiance entre vous s'effrite légèrement.\n\n{emote:unitValues.lostHealth} Affection perdue : **{{loveLost}}** points",
+    "recalledTitle": "{{pseudo}} — Familier rappelé",
+    "recalled": "Entendant votre appel, **{{petName}}** abandonne sa quête et revient vers vous, la queue basse et le regard chargé de reproches. Il ne ramène rien de son périple interrompu.\n\n{emote:unitValues.lostHealth} Affection perdue : **{{loveLost}}** points",
+    "successTitle": "{{pseudo}} — Retour triomphal !",
+    "success": [
+      "Au détour du chemin, une silhouette familière apparaît ! **{{petName}}** revient de {{location}}, la démarche fière et les pattes chargées de trésors !",
+      "Un nuage de poussière annonce le retour de **{{petName}}** ! Votre valeureux compagnon arbore un air satisfait après son périple vers {{location}}.",
+      "**{{petName}}** surgit des fourrés, le pelage emmêlé mais les yeux brillants de fierté ! L'expédition vers {{location}} fut un franc succès !"
+    ],
+    "partialSuccessTitle": "{{pseudo}} — Retour mitigé",
+    "partialSuccess": [
+      "**{{petName}}** revient de {{location}} en boitillant légèrement. L'aventure fut rude, mais votre courageux compagnon rapporte tout de même quelques trouvailles.",
+      "Les oreilles basses, **{{petName}}** réapparaît enfin. L'expédition vers {{location}} ne s'est pas déroulée comme prévu, mais votre familier n'est pas revenu les pattes vides.",
+      "Un peu échevelé et couvert d'égratignures, **{{petName}}** rentre de son périple vers {{location}}. Malgré les difficultés rencontrées, il a réussi à récupérer quelques trésors."
+    ],
+    "failureTitle": "{{pseudo}} — Expédition échouée",
+    "totalFailure": [
+      "**{{petName}}** revient de {{location}} la queue entre les pattes, le regard fuyant. L'aventure fut trop périlleuse, et votre compagnon rentre bredouille, le cœur lourd d'avoir échoué.",
+      "Après une longue absence, **{{petName}}** réapparaît enfin, épuisé et penaud. Les dangers de {{location}} ont eu raison de sa quête. Il se blottit contre vous, quémandant réconfort.",
+      "Les pattes tremblantes, **{{petName}}** émerge des ombres. L'expédition vers {{location}} s'est soldée par un échec. Votre familier a besoin de temps pour se remettre de cette mésaventure."
+    ],
+    "loveChange": "\n{emote:expedition.love} Affection : {{change}}",
     "duration": {
       "minutes": "{{count}} minute",
       "minutes_other": "{{count}} minutes",
@@ -93,42 +125,46 @@
       "hoursMinutes": "{{hours}}h {{minutes}}min"
     },
     "rewards": {
-      "money": "{emote:unitValues.money} {{amount}} pièces",
-      "gems": "{emote:unitValues.gem} {{amount}} gemmes",
-      "experience": "{emote:unitValues.xp} {{amount}} XP",
-      "guildExperience": "{emote:guild.icon} {{amount}} XP de guilde",
-      "points": "{emote:unitValues.score} {{amount}} points"
+      "title": "\n\n**Butin rapporté :**",
+      "money": "{emote:unitValues.money} **{{amount}}** pièces d'or",
+      "gems": "{emote:unitValues.gem} **{{amount}}** gemmes précieuses",
+      "experience": "{emote:unitValues.xp} **{{amount}}** points d'expérience",
+      "guildExperience": "{emote:guild.icon} **{{amount}}** XP de guilde",
+      "points": "{emote:unitValues.score} **{{amount}}** points de gloire"
     },
     "riskCategories": {
-      "veryLow": "Très faible",
-      "low": "Faible",
+      "veryLow": "Paisible",
+      "low": "Peu risqué",
       "medium": "Modéré",
-      "high": "Élevé",
-      "veryHigh": "Très élevé"
+      "high": "Dangereux",
+      "veryHigh": "Périlleux"
     },
     "wealthCategories": {
-      "poor": "Pauvre",
-      "modest": "Modeste",
-      "rich": "Riche",
-      "legendary": "Légendaire"
+      "poor": "Maigres",
+      "modest": "Modestes",
+      "rich": "Abondantes",
+      "legendary": "Légendaires"
     },
     "locations": {
-      "forest": "Forêt",
-      "mountain": "Montagne",
-      "desert": "Désert",
-      "swamp": "Marécage",
-      "ruins": "Ruines",
-      "cave": "Caverne",
-      "plains": "Plaines",
-      "coast": "Côte"
+      "forest": "la Forêt Ancienne",
+      "mountain": "les Pics Enneigés",
+      "desert": "les Dunes Ardentes",
+      "swamp": "les Marais Oubliés",
+      "ruins": "les Ruines Antiques",
+      "cave": "les Cavernes Profondes",
+      "plains": "les Plaines Venteuses",
+      "coast": "la Côte Sauvage"
     },
     "errors": {
-      "noPet": "Vous devez avoir un familier pour l'envoyer en expédition.",
-      "insufficientLove": "Votre familier n'a pas assez d'affection.",
-      "alreadyInExpedition": "Votre familier est déjà en expédition.",
-      "notInExpedition": "Votre familier n'est pas en expédition.",
-      "expeditionNotComplete": "L'expédition n'est pas encore terminée.",
-      "generic": "Une erreur est survenue."
+      "noPet": "Les esprits de la nature refusent de vous laisser envoyer un familier... car vous n'en possédez point !",
+      "insufficientLove": "Le lien entre vous et votre compagnon est trop fragile pour une telle aventure.",
+      "alreadyInExpedition": "Votre fidèle compagnon arpente déjà des contrées lointaines. Patience !",
+      "notInExpedition": "Votre familier se trouve présentement à vos côtés, nullement en expédition.",
+      "expeditionNotComplete": "Les vents contraires ralentissent votre familier. Son retour n'est pas encore imminent.",
+      "invalidState": "Les astres ne sont pas alignés en votre faveur. Réessayez plus tard.",
+      "noExpeditionData": "Le cartographe a égaré ses cartes ! Veuillez recommencer.",
+      "expeditionInProgress": "Votre familier explore déjà de lointaines contrées.",
+      "generic": "Une force mystérieuse empêche votre requête. Les sages conseillent de réessayer."
     }
   },
   "guild": {

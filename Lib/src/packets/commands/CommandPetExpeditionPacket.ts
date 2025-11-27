@@ -104,6 +104,11 @@ export class CommandPetExpeditionPacketRes extends CrowniclesPacket {
 	 * Current love points of the pet
 	 */
 	petLovePoints?: number;
+
+	/**
+	 * Pet nickname for display in error messages
+	 */
+	petNickname?: string;
 }
 
 /**

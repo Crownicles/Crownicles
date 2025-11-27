@@ -259,7 +259,22 @@ export default class PetExpeditionCommand {
 				hasExpeditionInProgress: false,
 				canStartExpedition: false,
 				cannotStartReason: "insufficientLove",
-				petLovePoints: petEntity.lovePoints
+				petLovePoints: petEntity.lovePoints,
+				petNickname: petEntity.nickname ?? undefined
+			}));
+			return;
+		}
+
+		// Check if pet is hungry (must be fed before expedition)
+		const petModel = PetDataController.instance.getById(petEntity.typeId);
+		if (petEntity.getFeedCooldown(petModel) <= 0) {
+			response.push(makePacket(CommandPetExpeditionPacketRes, {
+				hasTalisman: true,
+				hasExpeditionInProgress: false,
+				canStartExpedition: false,
+				cannotStartReason: "petHungry",
+				petLovePoints: petEntity.lovePoints,
+				petNickname: petEntity.nickname ?? undefined
 			}));
 			return;
 		}
@@ -269,7 +284,8 @@ export default class PetExpeditionCommand {
 			hasTalisman: true,
 			hasExpeditionInProgress: false,
 			canStartExpedition: true,
-			petLovePoints: petEntity.lovePoints
+			petLovePoints: petEntity.lovePoints,
+			petNickname: petEntity.nickname ?? undefined
 		}));
 	}
 
