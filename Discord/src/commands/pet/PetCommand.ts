@@ -46,13 +46,15 @@ async function getPacket(interaction: CrowniclesInteraction, keycloakUser: Keycl
 /**
  * Create the pet button component
  * @param lng
+ * @param disabled - whether the button should be disabled (e.g., during expedition)
  */
-function createPetButton(lng: Language): ButtonBuilder {
+function createPetButton(lng: Language, disabled = false): ButtonBuilder {
 	return new ButtonBuilder()
 		.setCustomId("pet_the_pet")
 		.setLabel(i18n.t("commands:pet.petButton", { lng }))
 		.setEmoji(CrowniclesIcons.petCommand.petButton)
-		.setStyle(ButtonStyle.Secondary);
+		.setStyle(ButtonStyle.Secondary)
+		.setDisabled(disabled);
 }
 
 /**
@@ -186,14 +188,15 @@ export async function handleCommandPetPacketRes(packet: CommandPetPacketRes, con
 
 	const lng = interaction.userLanguage;
 	const isOwnerViewingOwnPet = !packet.askedKeycloakId || packet.askedKeycloakId === context.keycloakId;
+	const hasExpedition = !!packet.expeditionInProgress;
 
-	const petButton = createPetButton(lng);
+	// Disable pet button during expedition (can't caress a pet that's not here)
+	const petButton = createPetButton(lng, hasExpedition);
 	const row = new ActionRowBuilder<ButtonBuilder>().addComponents(petButton);
 	const buttons: { petButton: ButtonBuilder; expeditionButton?: ButtonBuilder } = { petButton };
 
 	// Add expedition button if viewing own pet
 	if (isOwnerViewingOwnPet) {
-		const hasExpedition = !!packet.expeditionInProgress;
 		const expeditionButton = createExpeditionButton(lng, hasExpedition);
 		row.addComponents(expeditionButton);
 		buttons.expeditionButton = expeditionButton;

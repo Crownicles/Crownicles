@@ -159,6 +159,7 @@ export async function handleExpeditionStatusRes(
 		// Show expedition in progress with recall option
 		const locationEmoji = ExpeditionConstants.getLocationEmoji(expedition.locationType as ExpeditionLocationType);
 		const locationName = i18n.t(`commands:petExpedition.locations.${expedition.locationType}`, { lng });
+		const petDisplay = `${DisplayUtils.getPetIcon(expedition.petId, expedition.petSex as SexTypeShort)} **${DisplayUtils.getPetNicknameOrTypeName(expedition.petNickname ?? null, expedition.petId, expedition.petSex as SexTypeShort, lng)}**`;
 
 		const embed = new CrowniclesEmbed()
 			.formatAuthor(
@@ -171,7 +172,7 @@ export async function handleExpeditionStatusRes(
 			.setDescription(
 				i18n.t("commands:petExpedition.inProgressDescription", {
 					lng,
-					petName: expedition.petNickname || i18n.t("commands:pet.defaultPetName", { lng }),
+					petDisplay,
 					location: `${locationEmoji} ${locationName}`,
 					risk: getTranslatedRiskCategoryName(expedition.riskRate, lng),
 					returnTime: finishInTimeDisplay(endTime)
@@ -432,11 +433,11 @@ export async function handleExpeditionChoiceRes(
 	const expedition = packet.expedition!;
 	const locationEmoji = ExpeditionConstants.getLocationEmoji(expedition.locationType as ExpeditionLocationType);
 	const locationName = i18n.t(`commands:petExpedition.locations.${expedition.locationType}`, { lng });
-	const petName = expedition.petNickname || i18n.t("commands:pet.defaultPetName", { lng });
+	const petDisplay = `${DisplayUtils.getPetIcon(expedition.petId, expedition.petSex as SexTypeShort)} **${DisplayUtils.getPetNicknameOrTypeName(expedition.petNickname ?? null, expedition.petId, expedition.petSex as SexTypeShort, lng)}**`;
 
 	let description = i18n.t("commands:petExpedition.expeditionStarted", {
 		lng,
-		petName,
+		petDisplay,
 		location: `${locationEmoji} ${locationName}`,
 		returnTime: finishInTimeDisplay(new Date(expedition.endTime))
 	});
@@ -478,7 +479,7 @@ export async function handleExpeditionCancelRes(
 	}
 
 	const lng = interaction.userLanguage;
-	const petName = packet.petNickname || i18n.t("commands:pet.defaultPetName", { lng });
+	const petDisplay = `${DisplayUtils.getPetIcon(packet.petId, packet.petSex as SexTypeShort)} **${DisplayUtils.getPetNicknameOrTypeName(packet.petNickname ?? null, packet.petId, packet.petSex as SexTypeShort, lng)}**`;
 
 	const embed = new CrowniclesEmbed()
 		.formatAuthor(
@@ -491,7 +492,7 @@ export async function handleExpeditionCancelRes(
 		.setDescription(
 			i18n.t("commands:petExpedition.cancelled", {
 				lng,
-				petName,
+				petDisplay,
 				loveLost: packet.loveLost
 			})
 		);
@@ -512,7 +513,7 @@ export async function handleExpeditionRecallRes(
 	}
 
 	const lng = interaction.userLanguage;
-	const petName = packet.petNickname || i18n.t("commands:pet.defaultPetName", { lng });
+	const petDisplay = `${DisplayUtils.getPetIcon(packet.petId, packet.petSex as SexTypeShort)} **${DisplayUtils.getPetNicknameOrTypeName(packet.petNickname ?? null, packet.petId, packet.petSex as SexTypeShort, lng)}**`;
 
 	const embed = new CrowniclesEmbed()
 		.formatAuthor(
@@ -525,7 +526,7 @@ export async function handleExpeditionRecallRes(
 		.setDescription(
 			i18n.t("commands:petExpedition.recalled", {
 				lng,
-				petName,
+				petDisplay,
 				loveLost: packet.loveLost
 			})
 		);
@@ -546,7 +547,7 @@ export async function handleExpeditionResolveRes(
 	}
 
 	const lng = interaction.userLanguage;
-	const petName = packet.petNickname || i18n.t("commands:pet.defaultPetName", { lng });
+	const petDisplay = `${DisplayUtils.getPetIcon(packet.petId, packet.petSex as SexTypeShort)} **${DisplayUtils.getPetNicknameOrTypeName(packet.petNickname ?? null, packet.petId, packet.petSex as SexTypeShort, lng)}**`;
 	const locationEmoji = ExpeditionConstants.getLocationEmoji(packet.expedition.locationType as ExpeditionLocationType);
 	const locationName = i18n.t(`commands:petExpedition.locations.${packet.expedition.locationType}`, { lng });
 
@@ -559,7 +560,7 @@ export async function handleExpeditionResolveRes(
 			pseudo: escapeUsername(interaction.user.displayName)
 		});
 		description = StringUtils.getRandomTranslation("commands:petExpedition.totalFailure", lng, {
-			petName,
+			petDisplay,
 			location: `${locationEmoji} ${locationName}`
 		});
 		description += i18n.t("commands:petExpedition.loveChange", {
@@ -573,7 +574,7 @@ export async function handleExpeditionResolveRes(
 			pseudo: escapeUsername(interaction.user.displayName)
 		});
 		description = StringUtils.getRandomTranslation("commands:petExpedition.partialSuccess", lng, {
-			petName,
+			petDisplay,
 			location: `${locationEmoji} ${locationName}`
 		});
 		if (packet.rewards) {
@@ -590,7 +591,7 @@ export async function handleExpeditionResolveRes(
 			pseudo: escapeUsername(interaction.user.displayName)
 		});
 		description = StringUtils.getRandomTranslation("commands:petExpedition.success", lng, {
-			petName,
+			petDisplay,
 			location: `${locationEmoji} ${locationName}`
 		});
 		if (packet.rewards) {

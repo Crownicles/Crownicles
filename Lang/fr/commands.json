@@ -80,41 +80,41 @@
       "{{petDisplay}} renifle votre sacoche avec insistance, espérant y trouver quelque chose à se mettre sous la dent. Un familier affamé ne peut partir en expédition !",
       "Votre familier s'affale au sol, trop faible pour envisager une quelconque aventure. {{petDisplay}} a besoin d'un bon repas avant de pouvoir explorer les contrées lointaines."
     ],
-    "expeditionStatus": "{emote:expedition.map} **Expédition en cours**\n{emote:expedition.locations.map} {{location}}\n{emote:expedition.risk} Risque : {{risk}}\n{emote:clocks.1} Retour : {{returnTime}}",
+    "expeditionStatus": "{emote:expedition.map} **Expédition en cours**\n{emote:expedition.map} {{location}}\n{emote:expedition.risk} Risque : {{risk}}\n{emote:clocks.1} Retour : {{returnTime}}",
     "inProgressTitle": "{{pseudo}} -- Expédition en cours",
-    "inProgressDescription": "**{{petName}}** arpente actuellement des terres lointaines et mystérieuses !\n\n{emote:expedition.locations.map} **Destination :** {{location}}\n{emote:expedition.risk} **Dangerosité :** {{risk}}\n{emote:clocks.1} **Retour prévu :** {{returnTime}}\n\n{emote:messages.warning} *Rappeler votre familier prématurément brisera le lien de confiance. Il reviendra sans butin et le cœur meurtri...*",
+    "inProgressDescription": "{{petDisplay}} arpente actuellement des terres lointaines et mystérieuses !\n\n{emote:expedition.map} **Destination :** {{location}}\n{emote:expedition.risk} **Dangerosité :** {{risk}}\n{emote:clocks.1} **Retour prévu :** {{returnTime}}\n\n{emote:messages.warning} *Rappeler votre familier prématurément brisera le lien de confiance. Il reviendra sans butin et le cœur meurtri...*",
     "recallButton": "Rappeler",
     "closeButton": "Fermer",
     "chooseExpeditionTitle": "{{pseudo}} -- Nouvelles expéditions disponibles",
-    "chooseExpedition": "Un vieux cartographe déplie devant vous trois cartes jaunies par le temps. D'un doigt tremblant, il désigne les destinations possibles pour **{{petName}}** :\n",
+    "chooseExpedition": "Un vieux cartographe déplie devant vous trois cartes jaunies par le temps. D'un doigt tremblant, il désigne les destinations possibles pour {{petDisplay}} :\n",
     "selectPlaceholder": "Choisissez une destination...",
     "expeditionOption": "**{{number}}.** {{location}}\n{emote:expedition.duration} Durée estimée : {{duration}}\n{emote:expedition.risk} Dangerosité : {{risk}}\n{emote:expedition.wealth} Richesses potentielles : {{wealth}}\n{emote:expedition.difficulty} Difficulté du terrain : {{difficulty}}/100",
     "cancelButton": "Refuser",
     "startedTitle": "{{pseudo}} -- Expédition lancée !",
-    "expeditionStarted": "D'un bond enthousiaste, **{{petName}}** s'élance vers {{location}} ! Vous le regardez disparaître à l'horizon, le cœur empli d'espoir.\n\n{emote:clocks.1} Retour prévu : {{returnTime}}",
+    "expeditionStarted": "D'un bond enthousiaste, {{petDisplay}} s'élance vers {{location}} ! Vous le regardez disparaître à l'horizon, le cœur empli d'espoir.\n\n{emote:clocks.1} Retour prévu : {{returnTime}}",
     "foodConsumed": "\n\n{emote:expedition.food} Provisions emportées : **{{amount}}** rations",
-    "insufficientFoodWarning": "\n\n{emote:messages.warning} **Provisions insuffisantes !** Sans nourriture adéquate, votre familier sera affaibli et les risques d'échec seront **triples**.",
+    "insufficientFoodWarning": "\n\n{emote:messages.warning} **Attention !** Sans le soutien logistique de votre guilde, votre familier n'a pas pu emporter de provisions. Les risques d'échec seront **triplés** !",
     "cancelledTitle": "{{pseudo}} -- Départ annulé",
-    "cancelled": "Voyant votre hésitation, **{{petName}}** baisse la tête, déçu. Il pensait partir à l'aventure... La confiance entre vous s'effrite légèrement.\n\n{emote:unitValues.lostHealth} Affection perdue : **{{loveLost}}** points",
+    "cancelled": "Voyant votre hésitation, {{petDisplay}} baisse la tête, déçu. Il pensait partir à l'aventure... La confiance entre vous s'effrite légèrement.\n\n{emote:unitValues.lostHealth} Affection perdue : **{{loveLost}}** points",
     "recalledTitle": "{{pseudo}} -- Familier rappelé",
-    "recalled": "Entendant votre appel, **{{petName}}** abandonne sa quête et revient vers vous, la queue basse et le regard chargé de reproches. Il ne ramène rien de son périple interrompu.\n\n{emote:unitValues.lostHealth} Affection perdue : **{{loveLost}}** points",
+    "recalled": "Entendant votre appel, {{petDisplay}} abandonne sa quête et revient vers vous, la queue basse et le regard chargé de reproches. Il ne ramène rien de son périple interrompu.\n\n{emote:unitValues.lostHealth} Affection perdue : **{{loveLost}}** points",
     "successTitle": "{{pseudo}} -- Retour triomphal !",
     "success": [
-      "Au détour du chemin, une silhouette familière apparaît ! **{{petName}}** revient de {{location}}, la démarche fière et les pattes chargées de trésors !",
-      "Un nuage de poussière annonce le retour de **{{petName}}** ! Votre valeureux compagnon arbore un air satisfait après son périple vers {{location}}.",
-      "**{{petName}}** surgit des fourrés, le pelage emmêlé mais les yeux brillants de fierté ! L'expédition vers {{location}} fut un franc succès !"
+      "Au détour du chemin, une silhouette familière apparaît ! {{petDisplay}} revient de {{location}}, la démarche fière et les pattes chargées de trésors !",
+      "Un nuage de poussière annonce le retour de {{petDisplay}} ! Votre valeureux compagnon arbore un air satisfait après son périple vers {{location}}.",
+      "{{petDisplay}} surgit des fourrés, le pelage emmêlé mais les yeux brillants de fierté ! L'expédition vers {{location}} fut un franc succès !"
     ],
     "partialSuccessTitle": "{{pseudo}} -- Retour mitigé",
     "partialSuccess": [
-      "**{{petName}}** revient de {{location}} en boitillant légèrement. L'aventure fut rude, mais votre courageux compagnon rapporte tout de même quelques trouvailles.",
-      "Les oreilles basses, **{{petName}}** réapparaît enfin. L'expédition vers {{location}} ne s'est pas déroulée comme prévu, mais votre familier n'est pas revenu les pattes vides.",
-      "Un peu échevelé et couvert d'égratignures, **{{petName}}** rentre de son périple vers {{location}}. Malgré les difficultés rencontrées, il a réussi à récupérer quelques trésors."
+      "{{petDisplay}} revient de {{location}} en boitillant légèrement. L'aventure fut rude, mais votre courageux compagnon rapporte tout de même quelques trouvailles.",
+      "Les oreilles basses, {{petDisplay}} réapparaît enfin. L'expédition vers {{location}} ne s'est pas déroulée comme prévu, mais votre familier n'est pas revenu les pattes vides.",
+      "Un peu échevelé et couvert d'égratignures, {{petDisplay}} rentre de son périple vers {{location}}. Malgré les difficultés rencontrées, il a réussi à récupérer quelques trésors."
     ],
     "failureTitle": "{{pseudo}} -- Expédition échouée",
     "totalFailure": [
-      "**{{petName}}** revient de {{location}} la queue entre les pattes, le regard fuyant. L'aventure fut trop périlleuse, et votre compagnon rentre bredouille, le cœur lourd d'avoir échoué.",
-      "Après une longue absence, **{{petName}}** réapparaît enfin, épuisé et penaud. Les dangers de {{location}} ont eu raison de sa quête. Il se blottit contre vous, quémandant réconfort.",
-      "Les pattes tremblantes, **{{petName}}** émerge des ombres. L'expédition vers {{location}} s'est soldée par un échec. Votre familier a besoin de temps pour se remettre de cette mésaventure."
+      "{{petDisplay}} revient de {{location}} la queue entre les pattes, le regard fuyant. L'aventure fut trop périlleuse, et votre compagnon rentre bredouille, le cœur lourd d'avoir échoué.",
+      "Après une longue absence, {{petDisplay}} réapparaît enfin, épuisé et penaud. Les dangers de {{location}} ont eu raison de sa quête. Il se blottit contre vous, quémandant réconfort.",
+      "Les pattes tremblantes, {{petDisplay}} émerge des ombres. L'expédition vers {{location}} s'est soldée par un échec. Votre familier a besoin de temps pour se remettre de cette mésaventure."
     ],
     "loveChange": "\n{emote:expedition.love} Affection : {{change}}",
     "duration": {
