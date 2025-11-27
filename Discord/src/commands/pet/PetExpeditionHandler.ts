@@ -63,25 +63,49 @@ function getTranslatedWealthCategoryName(wealthRate: number, lng: Language): str
  */
 function formatDuration(minutes: number, lng: Language): string {
 	const minutesPerHour = ExpeditionConstants.TIME.MINUTES_PER_HOUR;
+	const hoursPerDay = ExpeditionConstants.TIME.HOURS_PER_DAY;
+	const minutesPerDay = minutesPerHour * hoursPerDay;
 
+	// Less than 1 hour: show only minutes
 	if (minutes < minutesPerHour) {
 		return i18n.t("commands:petExpedition.duration.minutes", {
 			lng,
 			count: minutes
 		});
 	}
-	const hours = Math.floor(minutes / minutesPerHour);
-	const remainingMinutes = minutes % minutesPerHour;
-	if (remainingMinutes === 0) {
-		return i18n.t("commands:petExpedition.duration.hours", {
+
+	// Less than 1 day: show hours and optionally minutes
+	if (minutes < minutesPerDay) {
+		const hours = Math.floor(minutes / minutesPerHour);
+		const remainingMinutes = minutes % minutesPerHour;
+		if (remainingMinutes === 0) {
+			return i18n.t("commands:petExpedition.duration.hours", {
+				lng,
+				count: hours
+			});
+		}
+		return i18n.t("commands:petExpedition.duration.hoursMinutes", {
 			lng,
-			count: hours
+			hours,
+			minutes: remainingMinutes
 		});
 	}
-	return i18n.t("commands:petExpedition.duration.hoursMinutes", {
+
+	// 1 day or more: show days and optionally hours
+	const days = Math.floor(minutes / minutesPerDay);
+	const remainingMinutes = minutes % minutesPerDay;
+	const remainingHours = Math.floor(remainingMinutes / minutesPerHour);
+
+	if (remainingHours === 0) {
+		return i18n.t("commands:petExpedition.duration.days", {
+			lng,
+			count: days
+		});
+	}
+	return i18n.t("commands:petExpedition.duration.daysHours", {
 		lng,
-		hours,
-		minutes: remainingMinutes
+		days,
+		hours: remainingHours
 	});
 }
 

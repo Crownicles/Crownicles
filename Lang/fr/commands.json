@@ -122,7 +122,10 @@
       "minutes_other": "{{count}} minutes",
       "hours": "{{count}} heure",
       "hours_other": "{{count}} heures",
-      "hoursMinutes": "{{hours}}h {{minutes}}min"
+      "hoursMinutes": "{{hours}}h {{minutes}}min",
+      "days": "{{count}} jour",
+      "days_other": "{{count}} jours",
+      "daysHours": "{{days}}j {{hours}}h"
     },
     "rewards": {
       "title": "\n\n**Butin rapporte :**",
@@ -146,14 +149,14 @@
       "legendary": "Legendaires"
     },
     "locations": {
-      "forest": "la Foret Ancienne",
-      "mountain": "les Pics Enneigés",
-      "desert": "les Dunes Ardentes",
-      "swamp": "les Marais Oubliés",
-      "ruins": "les Ruines Antiques",
-      "cave": "les Cavernes Profondes",
-      "plains": "les Plaines Venteuses",
-      "coast": "la Côte Sauvage"
+      "forest": "les Profondeurs de la Forêt du Vieillard",
+      "mountain": "les Grottes Secrètes du Mont Célestrum",
+      "desert": "les Tombeaux Oubliés de la Vallée des Rois",
+      "swamp": "les Marécages Maudits de la Route Marécageuse",
+      "ruins": "les Catacombes Perdues de Ville Forte",
+      "cave": "les Galeries Obscures du Bois Hurlant",
+      "plains": "les Prairies Cachées du Berceau",
+      "coast": "les Récifs Mystérieux de la Plage Sentinelle"
     },
     "errors": {
       "noPet": "Les esprits de la nature refusent de vous laisser envoyer un familier... car vous n'en possédez pas !",

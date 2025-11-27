@@ -35,12 +35,58 @@ import {
 } from "../../../../Lib/src/packets/commands/CommandPetExpeditionPacket";
 
 /**
- * Generate a single random expedition
+ * Cache for storing generated expeditions until the player makes a choice
+ * Key: keycloakId, Value: { expeditions, timestamp }
  */
-function generateRandomExpedition(): ExpeditionData {
+const pendingExpeditionsCache = new Map<string, {
+	expeditions: ExpeditionData[];
+	timestamp: number;
+}>();
+
+/**
+ * Cache cleanup interval (5 minutes)
+ */
+const CACHE_CLEANUP_INTERVAL = 5 * 60 * 1000;
+
+/**
+ * Cache expiry time (10 minutes)
+ */
+const CACHE_EXPIRY_TIME = 10 * 60 * 1000;
+
+/**
+ * Clean up expired cache entries periodically
+ */
+setInterval(() => {
+	const now = Date.now();
+	for (const [key, value] of pendingExpeditionsCache.entries()) {
+		if (now - value.timestamp > CACHE_EXPIRY_TIME) {
+			pendingExpeditionsCache.delete(key);
+		}
+	}
+}, CACHE_CLEANUP_INTERVAL);
+
+/**
+ * Duration ranges for the 3 expedition slots
+ * Slot 0: Short (10 min - 1 hour)
+ * Slot 1: Medium (15 min - 10 hours)
+ * Slot 2: Long (30 min - 3 days)
+ */
+const DURATION_RANGES = [
+	{ min: 10, max: 60 },
+	{ min: 15, max: 10 * 60 },
+	{ min: 30, max: 3 * 24 * 60 }
+];
+
+/**
+ * Generate a single random expedition with specified duration range and location
+ */
+function generateExpeditionWithConstraints(
+	durationRange: { min: number; max: number },
+	locationType: ExpeditionLocationType
+): ExpeditionData {
 	const durationMinutes = RandomUtils.randInt(
-		ExpeditionConstants.DURATION.MIN_MINUTES,
-		ExpeditionConstants.DURATION.MAX_MINUTES + 1
+		durationRange.min,
+		durationRange.max + 1
 	);
 
 	const riskRate = RandomUtils.randInt(
@@ -57,9 +103,6 @@ function generateRandomExpedition(): ExpeditionData {
 		* (ExpeditionConstants.WEALTH_RATE.MAX - ExpeditionConstants.WEALTH_RATE.MIN)
 		+ ExpeditionConstants.WEALTH_RATE.MIN;
 
-	const locationTypes = Object.values(ExpeditionConstants.LOCATION_TYPES);
-	const locationType = locationTypes[RandomUtils.randInt(0, locationTypes.length)] as ExpeditionLocationType;
-
 	return {
 		id: `${ExpeditionConstants.ID_GENERATION.PREFIX}_${Date.now()}_${RandomUtils.randInt(ExpeditionConstants.ID_GENERATION.RANDOM_MIN, ExpeditionConstants.ID_GENERATION.RANDOM_MAX)}`,
 		durationMinutes,
@@ -68,6 +111,33 @@ function generateRandomExpedition(): ExpeditionData {
 		wealthRate: Math.round(wealthRate * ExpeditionConstants.PERCENTAGE.DECIMAL_PRECISION) / ExpeditionConstants.PERCENTAGE.DECIMAL_PRECISION,
 		locationType
 	};
+}
+
+/**
+ * Shuffle an array using Fisher-Yates algorithm
+ */
+function shuffleArray<T>(array: T[]): T[] {
+	const result = [...array];
+	for (let i = result.length - 1; i > 0; i--) {
+		const j = RandomUtils.randInt(0, i + 1);
+		[result[i], result[j]] = [result[j], result[i]];
+	}
+	return result;
+}
+
+/**
+ * Generate 3 expeditions with different locations and fixed duration ranges
+ */
+function generateThreeExpeditions(): ExpeditionData[] {
+	// Get all location types and shuffle them to ensure 3 different locations
+	const allLocationTypes = Object.values(ExpeditionConstants.LOCATION_TYPES) as ExpeditionLocationType[];
+	const shuffledLocations = shuffleArray(allLocationTypes);
+
+	return [
+		generateExpeditionWithConstraints(DURATION_RANGES[0], shuffledLocations[0]),
+		generateExpeditionWithConstraints(DURATION_RANGES[1], shuffledLocations[1]),
+		generateExpeditionWithConstraints(DURATION_RANGES[2], shuffledLocations[2])
+	];
 }
 
 /**
@@ -303,7 +373,7 @@ export default class PetExpeditionCommand {
 		disallowedEffects: CommandUtils.DISALLOWED_EFFECTS.NOT_STARTED_OR_DEAD,
 		whereAllowed: CommandUtils.WHERE.EVERYWHERE
 	})
-	async generateExpeditions(response: CrowniclesPacket[], player: Player, _packet: CommandPetExpeditionGeneratePacketReq): Promise<void> {
+	async generateExpeditions(response: CrowniclesPacket[], player: Player, _packet: CommandPetExpeditionGeneratePacketReq, context: PacketContext): Promise<void> {
 		// Validate requirements
 		if (!player.hasTalisman || !player.petId) {
 			response.push(makePacket(CommandPetExpeditionErrorPacket, { errorCode: "invalidState" }));
@@ -323,12 +393,14 @@ export default class PetExpeditionCommand {
 			return;
 		}
 
-		// Generate 3 expeditions
-		const expeditions: ExpeditionData[] = [
-			generateRandomExpedition(),
-			generateRandomExpedition(),
-			generateRandomExpedition()
-		];
+		// Generate 3 expeditions with different locations
+		const expeditions = generateThreeExpeditions();
+
+		// Store expeditions in cache for later retrieval when player makes a choice
+		pendingExpeditionsCache.set(context.keycloakId, {
+			expeditions,
+			timestamp: Date.now()
+		});
 
 		response.push(makePacket(CommandPetExpeditionGeneratePacketRes, {
 			expeditions,
@@ -349,9 +421,8 @@ export default class PetExpeditionCommand {
 	async startExpedition(
 		response: CrowniclesPacket[],
 		player: Player,
-		_packet: CommandPetExpeditionChoicePacketReq,
-		_context: PacketContext,
-		expeditionData?: ExpeditionData // Passed from reaction collector
+		packet: CommandPetExpeditionChoicePacketReq,
+		context: PacketContext
 	): Promise<void> {
 		// Validate requirements
 		if (!player.hasTalisman || !player.petId) {
@@ -381,7 +452,18 @@ export default class PetExpeditionCommand {
 			return;
 		}
 
-		// If no expedition data passed, we need to regenerate it (shouldn't happen normally)
+		// Get expedition data from cache
+		const cachedData = pendingExpeditionsCache.get(context.keycloakId);
+		if (!cachedData) {
+			response.push(makePacket(CommandPetExpeditionChoicePacketRes, {
+				success: false,
+				failureReason: "noExpeditionData"
+			}));
+			return;
+		}
+
+		// Find the chosen expedition by ID
+		const expeditionData = cachedData.expeditions.find(exp => exp.id === packet.expeditionId);
 		if (!expeditionData) {
 			response.push(makePacket(CommandPetExpeditionChoicePacketRes, {
 				success: false,
@@ -389,6 +471,9 @@ export default class PetExpeditionCommand {
 			}));
 			return;
 		}
+
+		// Remove from cache after successful retrieval
+		pendingExpeditionsCache.delete(context.keycloakId);
 
 		const petModel = PetDataController.instance.getById(petEntity.typeId);
 		const rewardIndex = calculateRewardIndex(expeditionData);
