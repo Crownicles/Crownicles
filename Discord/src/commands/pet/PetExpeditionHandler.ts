@@ -299,12 +299,14 @@ export async function handleExpeditionGenerateRes(
 	}
 
 	const lng = interaction.userLanguage;
-	const petName = packet.petNickname || i18n.t("commands:pet.defaultPetName", { lng });
+	const petDisplay = packet.petId && packet.petSex
+		? `${DisplayUtils.getPetIcon(packet.petId, packet.petSex as SexTypeShort)} **${DisplayUtils.getPetNicknameOrTypeName(packet.petNickname ?? null, packet.petId, packet.petSex as SexTypeShort, lng)}**`
+		: i18n.t("commands:pet.defaultPetName", { lng });
 
 	// Build the embed with expedition options
 	let description = i18n.t("commands:petExpedition.chooseExpedition", {
 		lng,
-		petName
+		petDisplay
 	});
 
 	const selectMenu = new StringSelectMenuBuilder()
@@ -349,7 +351,7 @@ export async function handleExpeditionGenerateRes(
 	const cancelButton = new ButtonBuilder()
 		.setCustomId("expedition_cancel")
 		.setLabel(i18n.t("commands:petExpedition.cancelButton", { lng }))
-		.setStyle(ButtonStyle.Secondary);
+		.setStyle(ButtonStyle.Danger);
 	buttonRow.addComponents(cancelButton);
 
 	const reply = await interaction.followUp({
