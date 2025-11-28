@@ -345,19 +345,23 @@ export abstract class ExpeditionConstants {
 		 * Base drop chance (percentage, e.g., 0.5 = 0.5%)
 		 */
 		BASE_DROP_CHANCE: 0.5,
+
 		/**
 		 * Bonus drop chance per reward index point (0-9)
 		 * At max reward index (9), this adds 4.5% to base chance
 		 */
 		REWARD_INDEX_BONUS_PER_POINT: 0.5,
+
 		/**
 		 * Maximum total drop chance (percentage)
 		 */
 		MAX_DROP_CHANCE: 5,
+
 		/**
 		 * Locations with bonus drop chance for the clone talisman
 		 */
 		BONUS_LOCATIONS: ["ruins", "cave"] as const,
+
 		/**
 		 * Bonus multiplier for special locations
 		 */

@@ -149,6 +149,7 @@ async function manageNewPetSeen(response: CrowniclesPacket[], player: Player, pe
 			isGemReward: true,
 			isPetClone: true
 		}));
+
 		// Still mark the pet as seen
 		await DwarfPetsSeen.markPetAsSeen(player, petEntity.typeId);
 		await MissionsController.update(player, response, { missionId: "showPetsToTalvar" });
