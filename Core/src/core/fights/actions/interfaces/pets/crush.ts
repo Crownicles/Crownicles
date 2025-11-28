@@ -20,11 +20,11 @@ function getAttackInfo(): attackInfo {
 
 function getStatsInfo(sender: Fighter, receiver: Fighter): statsInfo {
 	const petId = (sender as PlayerFighter).pet.typeId;
-	const force = PetDataController.instance.getById(petId).force;
+	const petData = PetDataController.instance.getById(petId);
 	return {
 		attackerStats: [
-			FightUtils.calculatePetStatFromForce(force, sender.level),
-			FightUtils.calculatePetStatFromForce(force, sender.level)
+			FightUtils.calculatePetStatFromForce(petData.force, sender.level),
+			FightUtils.calculatePetStatFromSpeed(petData.speed, sender.level)
 		],
 		defenderStats: [
 			receiver.getDefense(),
@@ -48,9 +48,9 @@ const use: PetAssistanceFunc = (fighter, opponent, turn, _fightController): Prom
 	// On the following turn, the pet falls on the opponent except if the opponent is faster than the threshold
 	if (turn === 15 || turn === 16) {
 		const petId = (fighter as PlayerFighter).pet.typeId;
-		const force = PetDataController.instance.getById(petId).force;
-		const centerSpeed = FightUtils.calculatePetStatFromForce(force * 0.75, fighter.level);
-		const startSpeed = FightUtils.calculatePetStatFromForce(force * 0.5, fighter.level);
+		const petData = PetDataController.instance.getById(petId);
+		const centerSpeed = FightUtils.calculatePetStatFromForce(petData.force * 0.75, fighter.level);
+		const startSpeed = FightUtils.calculatePetStatFromForce(petData.force * 0.5, fighter.level);
 		const denominator = centerSpeed - startSpeed;
 		const damageMultiplier = Math.abs(denominator) < Number.EPSILON
 			? 0

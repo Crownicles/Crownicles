@@ -10,6 +10,8 @@ export class Pet extends Data<number> {
 
 	declare readonly force: number;
 
+	declare readonly speed: number;
+
 	declare readonly feedDelay: number;
 
 

@@ -95,6 +95,7 @@ export async function handleLovePointsValueShopItem(packet: CommandMissionShopPe
 					actualLP: packet.lovePoints,
 					diet: PetUtils.getDietDisplay(packet.diet, lng),
 					force: packet.force,
+					speed: packet.speed,
 					feedDelay: packet.feedDelay / 2,
 					nextFeed: PetUtils.getFeedCooldownDisplay(packet.nextFeed, lng),
 					commentOnFightEffect: StringUtils.getRandomTranslation(`commands:shop.shopItems.lovePointsValue.commentOnFightEffect.${packet.fightAssistId}`, lng),

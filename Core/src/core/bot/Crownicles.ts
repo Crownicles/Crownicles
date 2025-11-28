@@ -108,7 +108,7 @@ export class Crownicles {
 			},
 			{
 				where: {
-					lovePoints: { [Op.notIn]: [0] }
+					lovePoints: { [Op.gt]: 0 }
 				}
 			}
 		);

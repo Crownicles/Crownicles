@@ -2,5 +2,6 @@
   "rarity": 6,
   "diet": "herbivorous",
   "force": 5,
-  "feedDelay": 10
+  "feedDelay": 10,
+  "speed": 4
 }
