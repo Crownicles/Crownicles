@@ -395,7 +395,7 @@
       "bot_owner": ":crown: `Proprietario del bot'",
       "mission_completer": "Distintivo acquistato nel negozio di missioni",
       "powerful_guild": ":gem: `Membro di una gilda potente`",
-      "legendary_pet": ":revolving_hearts: `Giocatore che ha addestrato un animale di compagnia leggendario`",
+      "legendary_pet": "Joueur ayant réussi à dresser un familier puissant",
       "donor": ":money_with_wings: `Donatore`",
       "early_class_adopter": ":bookmark: `Tra i primi ha avere utilizzato le classe`",
       "good_bug_reporter": ":dove: `Persona che ha segnalato un bug maggiore sfruttabile senza averne approfittato`",
@@ -437,7 +437,7 @@
     },
     "pet": {
       "fieldName": "Animale di compagnia :",
-      "fieldValue": "Rarità: {{rarity}}\n"
+      "fieldValue": "$t(commands:pet.shortPetField) | {{rarity}}"
     },
     "playerClass": {
       "fieldName": "Classe :",
@@ -670,7 +670,7 @@
         "name": "{emote:shopItems.lovePointsValue} Veterinario di corte",
         "info": "Ottenere informazioni dettagliate sul vostro animale domestico.",
         "giveTitle": "{{pseudo}}acquisto effettuato!",
-        "giveDesc": "Dopo un esame approfondito del vostro animale e del suo stato di salute, il veterinario vi consegnerà il suo rapporto:\n\n**{{petName}}** {{commentOnResult}}\n{emote:petInformation.loveScore} ** Punteggio di amore**: {{actualLP}} / 100\n{emote:petInformation.diet} ** Regime alimentare** : {{diet}}\n{emote:petInformation.nextFeed} **Prossima fame** : {{nextFeed}}\n{emote:petInformation.age} **Età**: {{commentOnPetAge}}\n\n{emote:petInformation.fightEffect} **Effetto di lotta**: {{commentOnFightEffect}}",
+        "giveDesc": "Après avoir longuement étudié votre animal et son état de santé, le vétérinaire vous donne son rapport :\n\n**{{petName}}** {{commentOnResult}}\n{emote:petInformation.loveScore} **Score d'amour** : {{actualLP}} / {{maxLovePoints}}\n{emote:petInformation.diet} **Régime alimentaire** : {{diet}}\n{emote:petInformation.force} **Force** : {{force}}\n{emote:petInformation.speed} **Vitesse** : {{speed}}\n{emote:petInformation.feedDelay} **Intervalle entre repas** : {{feedDelay}}\n{emote:petInformation.nextFeed} **Prochaine faim** : {{nextFeed}}\n{emote:petInformation.age} **Âge** : {{commentOnPetAge}}\n\n{emote:petInformation.fightEffect} **Effet de combat** : {{commentOnFightEffect}}\n\n {{dwarfPet}}",
         "petIsHungry": "{emote:effects.starving} affamato",
         "commentOnFightEffect": {
           "bite": [
@@ -1174,6 +1174,52 @@
       "gameStatsProlongation": "{emote:fightCommand.gameStats} | Statistiche dei combattimenti\n- **Tour**: {{turn}}/{{maxTurn}} (tempo supplementare)\n- **Tempo dei combattimenti**: {{time}}",
       "fighterStats": "\n\n{emote:fightCommand.fighterStats} | Statistiche {{pseudo}}\n- **Vita finale** : {{energy}}/{{maxEnergy}} {emote:unitValues.energy}"
     },
+    "petReactions": {
+      "loveGain": [
+        "{{pet}} exulte de joie après cette victoire ! Il sautille fièrement autour de {{player}}.",
+        "{{pet}} rayonne de fierté et bondit joyeusement autour de {{player}} !",
+        "{{pet}} jubile et affiche sa joie en tournoyant autour de {{player}}.",
+        "{{pet}} éclate de bonheur et parade fièrement devant {{player}} !",
+        "{{pet}} manifeste son enthousiasme en bondissant aux côtés de {{player}}.",
+        "{{pet}} déborde de joie et virevolte autour de {{player}} avec excitation !",
+        "{{pet}} affiche une satisfaction éclatante et danse autour de {{player}}.",
+        "{{pet}} rayonne de contentement et cabriole joyeusement près de {{player}} !",
+        "{{pet}} célèbre cette victoire en sautillant gaiement autour de {{player}}.",
+        "{{pet}} exulte et fait des bonds enthousiastes autour de {{player}} !",
+        "{{pet}} manifeste sa joie par des sauts énergiques près de {{player}}.",
+        "{{pet}} affiche un bonheur évident en tournoyant fièrement autour de {{player}} !",
+        "{{pet}} exprime sa fierté en gambadant joyeusement autour de {{player}}.",
+        "{{pet}} déborde d'enthousiasme et virevolte avec énergie près de {{player}} !",
+        "{{pet}} rayonne de satisfaction et parade victorieusement devant {{player}}.",
+        "{{pet}} manifeste son contentement en sautant avec vigueur autour de {{player}} !",
+        "{{pet}} exulte de fierté et bondit avec grâce près de {{player}}.",
+        "{{pet}} affiche une joie débordante en dansant autour de {{player}} !",
+        "{{pet}} célèbre en effectuant des cabrioles enthousiastes près de {{player}}.",
+        "{{pet}} rayonne de bonheur et tournoie fièrement autour de {{player}} !"
+      ],
+      "trained": [
+        "{{pet}} reste calme et satisfait, preuve de son excellent dressage.",
+        "{{pet}} affiche une assurance tranquille, témoignant de sa parfaite discipline.",
+        "{{pet}} se tient fièrement, comme le compagnon bien dressé qu'il est.",
+        "{{pet}} conserve son sang-froid habituel, signe d'un dressage exemplaire.",
+        "{{pet}} manifeste une satisfaction contenue, digne d'un animal bien éduqué.",
+        "{{pet}} garde son calme légendaire, preuve de son dressage accompli.",
+        "{{pet}} reste stoïque, à la manière d'un compagnon parfaitement discipliné.",
+        "{{pet}} affiche une fierté mesurée, caractéristique d'un excellent dressage.",
+        "{{pet}} maintient son attitude posée, signe d'une éducation impeccable.",
+        "{{pet}} demeure serein, comme tout familier admirablement dressé.",
+        "{{pet}} conserve sa prestance habituelle, fruit d'un dressage rigoureux.",
+        "{{pet}} reste imperturbable, preuve de son parfait conditionnement.",
+        "{{pet}} affiche une dignité tranquille, caractéristique d'un dressage de qualité.",
+        "{{pet}} maintient son aplomb, témoignant de sa formation exemplaire.",
+        "{{pet}} demeure impassible, signe d'un dressage accompli.",
+        "{{pet}} conserve son attitude disciplinée, preuve d'une éducation réussie.",
+        "{{pet}} reste composé, à l'image d'un compagnon parfaitement formé.",
+        "{{pet}} affiche une sérénité maîtrisée, fruit d'un excellent dressage.",
+        "{{pet}} maintient sa contenance, signe d'une discipline irréprochable.",
+        "{{pet}} demeure posé, comme tout animal superbement dressé."
+      ]
+    },
     "fightActionChoose": {
       "turnIndicationTitle": "È il turno di {{pseudo}} di giocare a {emote:fightCommand.crossedSwords}",
       "turnIndicationDescription": "Scegliere un'azione"
@@ -1258,7 +1304,8 @@
     "fightReward": {
       "title": "{emote:fightCommand.gloryChange} Ricompense per il combattimento",
       "scoreAndMoneyField": "Ricompense per il combattimento",
-      "noReward": "Hai esaurito tutte le tue ricompense di combattimento, quindi torna domani.",
+      "petLoveField": "Relation avec le familier",
+      "noReward": "{{player}} a démontré pourquoi il est considéré comme l'un des meilleurs en remportant ce match facilement.",
       "points": ":medal: Punti vinti : **{{count}}**",
       "money": "{emote:unitValues.money} Soldi guadagnati : **{{count}}**",
       "gloryField": "Cambiamenti di gloria",
