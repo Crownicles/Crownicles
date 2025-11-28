@@ -1875,5 +1875,286 @@
     "You stop for a moment. Even your breath seems choked by the cold air. In this total stillness, you seem to hear a beat - faint, regular - like a heart buried beneath the earth.",
     "The fog thickens even further and you can barely make out your own feet. With each inhalation, the icy dampness seeps down your throat, and the whole world shrinks to a few meters around you.",
     "A distant whisper suddenly cuts through the mist, carried from nowhere. A voice? A wind? Impossible to say. You stand still, listening, aware that this place has no end and no beginning, only a breathing silence."
-  ]
+  ],
+  "petFood": {
+    "intro": {
+      "badSmell": "Votre fidèle compagnon s'immobilise brusquement, les narines frémissantes. Ses oreilles se dressent tandis qu'il capte une odeur nauséabonde s'échappant d'un taillis sombre. Quelque chose de fétide y croupit, abandonné depuis des jours peut-être, et votre familier semble fasciné par cette puanteur qui ferait reculer bien des créatures.",
+      "goodSmell": "Votre compagnon de route s'agite soudainement, remuant la queue avec enthousiasme, les yeux brillants d'excitation. Une senteur alléchante et sucrée flotte dans l'air. Il se met à bondir joyeusement, attiré tel un papillon par la lumière vers cette fragrance prometteuse qui éveille son appétit.",
+      "vegetarian": "Votre fidèle familier ralentit son allure et penche la tête sur le côté, intrigué par un bosquet touffu bordant le sentier. Entre les herbes folles et les fougères argentées, il semble avoir discerné quelque chose de comestible à travers la végétation.",
+      "meat": "Votre compagnon s'arrête net, les muscles tendus, fixant d'un regard intense et prédateur un point d'eau miroitant sous le soleil couchant. Ses babines se retroussent légèrement, dévoilant des crocs acérés, tandis qu'il flaire l'air avec une concentration absolue. Il a manifestement repéré une proie...",
+      "soup": "Une senteur familière et réconfortante vient chatouiller vos narines : un fumet onctueux de potage mijotant dans une marmite de cuivre. Votre fidèle compagnon dresse aussitôt les oreilles et se précipite vers un campement abandonné en bordure de chemin, où repose encore un chaudron de fer noir suspendu au-dessus de braises mourantes. Se pourrait-il qu'il s'agisse de soupe ultime ?"
+    },
+    "choices": {
+      "investigate": "Aller voir vous-même",
+      "sendPet": "Envoyer votre familier",
+      "continue": "Continue on your way"
+    },
+    "outcomes": {
+      "found_by_player": "Vous vous approchez prudemment et, après avoir écarté les branchages et fouillé les recoins, vous mettez la main sur **{{foodName}}**. Vous l'offrez à votre compagnon qui l'accepte avec reconnaissance, dévorant son présent avec des grognements de satisfaction.",
+      "found_by_player_soup": "Vous vous approchez prudemment du chaudron abandonné et découvrez avec satisfaction **{{foodName}}** qui mijote encore doucement. Vous en versez une généreuse portion dans une écuelle que vous présentez à votre compagnon. Celui-ci lape goulûment ce mets réconfortant en remuant la queue de contentement.",
+      "found_by_pet": "Votre familier s'élance d'un bond agile et disparaît quelques instants dans les fourrés. Il revient bientôt vers vous d'un trot fier et triomphant, tenant délicatement **{{foodName}}** entre ses crocs. Ses yeux brillent de fierté tandis qu'il s'installe pour savourer sa trouvaille avec des bruits de mastication enthousiastes.",
+      "found_by_pet_soup": "Votre familier trotte prestement vers le campement abandonné et plonge son museau dans le chaudron fumant. Il revient vers vous quelques instants plus tard, les babines encore luisantes, ayant manifestement savouré **{{foodName}}** avec un plaisir évident. Son regard pétillant et sa queue frétillante témoignent de sa satisfaction gourmande.",
+      "found_anyway": "Alors même que vous vous apprêtiez à reprendre votre route sans plus vous préoccuper de cette distraction, votre fidèle compagnon bondit soudainement vers les buissons environnants. Il en ressort victorieusement avec **{{foodName}}** qu'il engloutit sur-le-champ avec un appétit vorace, la queue frétillante de contentement.",
+      "found_anyway_soup": "Alors même que vous vous apprêtiez à reprendre votre route sans plus vous préoccuper de ce campement, votre fidèle compagnon se précipite vers le chaudron abandonné. Avant que vous ne puissiez l'en empêcher, il lape goulûment **{{foodName}}** avec des gémissements de délice, manifestement ravi de cette aubaine inattendue.",
+      "player_failed": "Vous avez passé de longues minutes éprouvantes à fouiller méticuleusement les environs, écartant ronces et épineux, retournant pierres et souches pourries, mais en dépit de tous vos efforts acharnés, vous ne dénichez rien qui vaille la peine. Le temps que vous avez investi s'est révélé aussi vain qu'une quête de trésor dans un coffre vide.",
+      "pet_failed": "Votre compagnon s'élance avec détermination dans les fourrés, mais revient quelques instants plus tard d'une démarche pesante, les oreilles basses et la queue pendante. Son regard déçu et ses couinements plaintifs trahissent son échec : la piste s'est avérée infructueuse et ses efforts n'ont produit qu'amertume.",
+      "pet_failed_soup": "Votre compagnon trotte vers le campement abandonné et renifle longuement le chaudron, mais celui-ci s'avère hélas vide ou son contenu déjà refroidi et immangeable. Il revient vers vous d'une démarche déçue, les oreilles basses et la queue pendante, manifestement frustré par cette déconvenue culinaire.",
+      "nothing": "Vous décidez sagement de ne point vous attarder davantage en ces lieux, jugeant que le temps presse et que votre quête ne saurait souffrir de tels détours. D'un geste résolu, vous enjoignez votre compagnon à vous suivre et reprenez ensemble votre chemin vers l'horizon qui vous appelle."
+    },
+    "foodNames": {
+      "badSmell": [
+        "une charogne de corbeau en décomposition avancée",
+        "les entrailles putrides d'un gobelin des marais",
+        "un œuf de dragon pourri exhalant des vapeurs sulfureuses",
+        "un morceau de fromage bleu moisi oublié par un voyageur étourdi",
+        "les restes nauséabonds d'un rat crevé depuis plusieurs jours",
+        "une carcasse de chauve-souris infestée d'asticots grouillants",
+        "un morceau de viande faisandée abandonné par des bandits",
+        "un poisson mort aux écailles verdâtres flottant dans une mare stagnante",
+        "des abats de sanglier grouillants de mouches voraces",
+        "une panse de mouton gonflée par les gaz de putréfaction",
+        "un crâne de loup encore garni de lambeaux de chair noire"
+      ],
+      "goodSmell": [
+        "une tourte au miel et aux amandes encore tiède",
+        "un quartier de tarte aux pommes et cannelle dorée au four",
+        "un morceau de viande séchée assaisonnée aux herbes de Provence",
+        "une poire juteuse et sucrée tombée d'un verger abandonné",
+        "un biscuit croustillant en forme d'os façonné par un boulanger généreux",
+        "une part de gâteau aux noisettes et au sucre roux",
+        "un bout de pain d'épices parfumé au gingembre et au clou de girofle",
+        "une tranche de lard fumé à la braise de chêne",
+        "un petit pain brioché aux raisins secs et au beurre salé",
+        "un morceau de cheddar affiné enveloppé dans un linge de lin",
+        "une crêpe fourrée à la confiture d'abricots et saupoudrée de sucre",
+        "un éclair au chocolat abandonné sur un muret de pierre"
+      ],
+      "vegetarian": [
+        "une poignée de baies sauvages gorgées de jus sucré",
+        "une racine de navet comestible encore gorgée de terre fertile",
+        "un champignon forestier aux reflets cuivrés poussant sous un vieux chêne",
+        "une fleur de pissenlit sucrée et tendre",
+        "une pomme vermillon tombée d'un pommier solitaire",
+        "des noisettes fraîchement tombées de leur bogue épineuse",
+        "un épi de maïs doré oublié dans un champ après la moisson",
+        "une grappe de raisins sauvages d'un pourpre profond",
+        "des feuilles de laitue croquantes arrachées à un potager",
+        "une carotte sauvage au goût légèrement amer",
+        "un bouquet d'orties tendres aux vertus nutritives",
+        "des pousses de fougères comestibles au printemps",
+        "une courge citrouille éventrée sur le bord d'un sentier"
+      ],
+      "meat": [
+        "un poisson argenté frétillant encore dans les eaux claires d'un ruisseau",
+        "un jeune lapereau égaré loin de son terrier",
+        "un os à moelle encore garni de chair tendre et grasse",
+        "une tranche de jambon fumé suspendue dans une réserve ouverte",
+        "une saucisse de porc épicée égarée par un marchand ambulant",
+        "un morceau de lard salé enveloppé dans un tissu graisseux",
+        "les restes d'un canard rôti abandonnés par des voyageurs pressés",
+        "un cuissot de chevreuil fraîchement dépecé par un chasseur",
+        "une langue de bœuf bouillie refroidissant sur une pierre plate",
+        "des tripes de mouton lavées à l'eau de source",
+        "un morceau de poulet grillé aux épices orientales",
+        "une anguille fumée au bois de hêtre",
+        "les restes d'un lièvre en civet mijotant dans sa sauce"
+      ],
+      "soup": [
+        "de la soupe aux légumes du potager encore fumante",
+        "du bouillon de poule parfumé au thym et au laurier",
+        "du potage aux choux et lard rissolé",
+        "du velouté de champignons sauvages à la crème",
+        "de la soupe à l'oignon gratinée au fromage",
+        "du pot-au-feu aux carottes et navets fondants",
+        "de la bisque d'écrevisses relevée d'épices rares"
+      ]
+    },
+    "love": {
+      "plus": "Votre fidèle compagnon vous contemple avec des yeux brillants de gratitude et d'affection. Il se frotte contre vos jambes en émettant des ronronnements satisfaits, manifestant clairement que ce festin improvisé a renforcé les liens de confiance et d'amitié qui vous unissent !",
+      "minus": "Votre familier vous fixe d'un regard noir chargé de reproches silencieux, les babines retroussées en une moue désapprobatrice. Il détourne ostensiblement la tête en poussant un grognement mécontent, visiblement offensé par cette pitance indigne de son palais délicat...",
+      "neutral": "Votre compagnon de route engloutit son repas avec un détachement presque philosophique, sans montrer ni enthousiasme débordant ni dégoût particulier. Il semble considérer cette trouvaille comme une simple sustentation nécessaire, rien de plus, rien de moins."
+    }
+  },
+  "badPet": {
+    "intro": [
+      "Un nain trapu surgit d'un rocher, sa barbe rousse hirsute et son regard empli d'une haine viscérale. À la vue de **{{pet}}**, il crache au sol avec dégoût et brandit un bâton noueux. Votre compagnon recule, les oreilles plaquées contre son crâne. L'inconnu se présente comme Moltiar et jure qu'il n'a rien à voir avec son frère adorateur de bestioles.",
+      "Une voix rauque et colérique vous interpelle soudainement. Un nain au visage marqué par une vieille cicatrice s'avance, ses yeux injectés de sang fixés sur **{{pet}}** avec fureur. Il fait tournoyer une massue cloutée d'un geste menaçant. Votre compagnon tremble de tous ses membres.",
+      "Surgissant de derrière une formation rocheuse, un nain au regard fou se plante devant vous, bloquant votre route. Sa main droite porte les stigmates d'une ancienne morsure. Il fixe **{{pet}}** avec une haine brûlante et dégaine une dague ébréchée. Moltiar maugrée que contrairement à son frère Talvar, lui sait reconnaître une nuisance.",
+      "Un grognement guttural vous fait sursauter. Un nain corpulent émerge d'une anfractuosité, sa barbe tressée cliquetant de perles d'os. Dès qu'il aperçoit **{{pet}}**, sa face se tord de dégoût. Il pointe vers vous un doigt accusateur, son autre main serrant fermement une hache rouillée.",
+      "Votre chemin est soudain barré par une silhouette trapue et hostile. Le nain arbore une expression de pure répulsion en découvrant **{{pet}}** à vos côtés. Une vieille blessure traverse son avant-bras, témoignage d'un passé douloureux. Il empoigne un marteau de guerre. Moltiar gronde qu'il ne laissera pas ces créatures détestables parcourir ses terres, peu importe ce que son naïf frère peut en penser.",
+      "Le claquement d'une pierre qui roule vous alerte d'une présence. Un nain massif émerge de l'ombre d'un surplomb rocheux, scrutant immédiatement **{{pet}}** avec une animosité palpable. Les cicatrices qui zèbrent ses avant-bras témoignent d'anciennes rencontres douloureuses. Il brandit un gourdin d'un geste lourd de menaces.",
+      "Une odeur de terre et de sueur rance vous parvient avant même que vous ne voyiez l'agresseur. Un nain surgit d'une crevasse, sa peau tannée par le soleil, ses mains calleuses serrées autour d'une pioche. Son regard tombe sur **{{pet}}** et une rage froide déforme ses traits. Il crache que son idiot de frère devrait voir ce que ces bestioles lui ont fait subir.",
+      "Le crissement de bottes sur les graviers annonce l'arrivée d'un intrus. Un nain au crâne partiellement chauve apparaît, sa barbe grise nouée en un catogan sévère. Ses yeux s'écarquillent d'horreur en apercevant **{{pet}}**. Il recule avant de brandir un couteau de mineur avec une détermination haineuse.",
+      "Un sifflement moqueur résonne dans l'air. Perché sur un rocher, un nain observe votre progression avec mépris. Lorsqu'il remarque **{{pet}}** trottant à vos côtés, son expression se mue en une grimace de dégoût profond. Il saute au sol et se plante devant vous, marmonnant que son frère a vraiment corrompu trop de voyageurs avec ses idées saugrenues.",
+      "Le sol tremble légèrement sous vos pieds, annonçant l'approche d'une présence massive. Un nain imposant, plus large que haut, émerge d'un éboulement de rochers. Son regard balaye le chemin et s'arrête sur **{{pet}}** avec une haine incandescente. Les muscles de ses bras se contractent tandis qu'il soulève un lourd maillet de forgeron."
+    ],
+    "choices": {
+      "intimidate": "Ordonner à votre compagnon d'intimider le nain",
+      "plead": "Tenter de raisonner le nain par des paroles",
+      "giveMeat": "Offrir de la viande au nain pour l'amadouer",
+      "giveVeg": "Proposer des légumes au nain en signe de paix",
+      "flee": "Fuir avec votre compagnon",
+      "hide": "Cacher votre compagnon",
+      "wait": "Attendre que la colère du nain retombe",
+      "protect": "Vous interposer pour protéger votre compagnon",
+      "distract": "Détourner l'attention du nain",
+      "calm": "Tenter de calmer votre compagnon apeuré",
+      "imposer": "Laisser votre compagnon s'imposer face au nain",
+      "energize": "Encourager votre compagnon à tenir bon"
+    },
+    "outcomes": {
+      "intimidate": {
+        "success": [
+          "Obéissant à votre ordre, **{{pet}}** se dresse de toute sa hauteur et pousse un grondement impressionnant. Moltiar, surpris par cette démonstration de force, recule d'un pas mal assuré et marmonne quelques insultes en s'éloignant à contrecœur. Votre compagnon vous regarde fièrement.",
+          "Adoptant une posture menaçante, **{{pet}}** grogne avec une férocité surprenante face au nain hostile. Ce dernier, voyant que la confrontation pourrait mal tourner, crache une dernière insulte avant de battre en retraite. Votre compagnon semble satisfait d'avoir tenu tête à l'agresseur."
+        ],
+        "fail": [
+          "Obéissant à votre ordre, **{{pet}}** tente de paraître menaçant, mais le nain éclate d'un rire cruel devant cette démonstration pathétique. Il brandit son bâton et votre compagnon recule précipitamment, l'orgueil blessé par cette humiliation.",
+          "Tentant de paraître menaçant, **{{pet}}** ne parvient qu'à amuser le nain qui lui assène un coup de pied. Votre compagnon couine de douleur et vous lance un regard de reproche pour l'avoir exposé ainsi."
+        ]
+      },
+      "plead": {
+        "success": [
+          "Vous tentez de raisonner Moltiar par des paroles apaisantes, lui expliquant que votre compagnon ne représente aucune menace. Quelque chose dans votre voix sincère semble toucher une corde sensible, et il finit par baisser son arme en grognant. **{{pet}}** apprécie votre diplomatie.",
+          "Vos paroles mesurées résonnent dans le silence tendu. Vous évoquez le respect mutuel entre voyageurs, et le nain, malgré sa haine évidente des animaux, concède que vous semblez maîtriser votre bête. Il s'écarte en maugréant. **{{pet}}** se calme progressivement."
+        ],
+        "fail": [
+          "Vous tentez de raisonner le nain, mais vos paroles ne font qu'attiser sa colère. Il hurle que les mots ne suffisent pas à défendre ces créatures qu'il abhorre. **{{pet}}** détourne le regard, honteux de votre échec à le protéger.",
+          "Vos supplications pathétiques semblent exaspérer le nain davantage. Il vous regarde avec un mépris non dissimulé. **{{pet}}** vous observe avec un mélange de déception et de peur."
+        ]
+      },
+      "giveMeatLikes": {
+        "success": [
+          "Vous sortez rapidement un morceau de viande et le tendez au nain affamé. Surpris par cette offrande, il l'accepte en grognant et mord dedans avec appétit. Il vous fait signe de déguerpir avant qu'il ne change d'avis. **{{pet}}** semble soulagé de cette issue.",
+          "Le morceau de viande que vous offrez fait hésiter le nain. Son estomac gronde plus fort que sa haine, et il finit par accepter votre présent en s'éloignant. **{{pet}}** apprécie votre ingéniosité qui a évité la confrontation."
+        ],
+        "fail": [
+          "Vous sortez un morceau de viande pour amadouer Moltiar, mais celui-ci le jette au sol avec dégoût, refusant de se laisser acheter ainsi. Malheureusement, **{{pet}}** lorgnait sur ce mets et vous regarde avec des yeux accusateurs.",
+          "Le morceau de viande que vous offrez est piétiné par le nain furieux. **{{pet}}** observe la scène avec frustration, déçu de voir cette friandise gaspillée."
+        ]
+      },
+      "giveMeatDislikes": {
+        "success": [
+          "Vous sortez rapidement un morceau de viande et le tendez au nain affamé. Surpris par cette offrande, il l'accepte en grognant et mord dedans avec appétit. Il vous fait signe de déguerpir avant qu'il ne change d'avis. **{{pet}}** détourne le regard, visiblement peu intéressé par cette nourriture.",
+          "Le morceau de viande que vous offrez fait hésiter le nain. Son estomac gronde plus fort que sa haine, et il finit par accepter votre présent en s'éloignant. **{{pet}}** ne semble pas regretter cette offrande qui ne lui était pas destinée."
+        ],
+        "fail": [
+          "Vous sortez un morceau de viande pour amadouer Moltiar, mais celui-ci le jette au sol avec dégoût, refusant de se laisser acheter ainsi. **{{pet}}**, herbivore, ne semble pas perturbé par cette perte.",
+          "Le morceau de viande que vous offrez est piétiné par le nain furieux. **{{pet}}** n'y prête guère attention, ce type de nourriture ne lui convenant pas."
+        ]
+      },
+      "giveMeatNoFood": {
+        "fail": [
+          "Vous fouillez vos poches à la recherche d'un morceau de viande, mais l'entrepôt de votre guilde est désespérément vide. Moltiar ricane devant votre désarroi tandis que **{{pet}}** vous observe avec incompréhension.",
+          "Vous tentez de sortir de la viande pour calmer le nain, mais vous réalisez avec horreur que vous n'en avez pas. Moltiar en profite pour malmener **{{pet}}** qui vous lance un regard accusateur."
+        ]
+      },
+      "giveVegLikes": {
+        "success": [
+          "Vous offrez quelques légumes au nain, évoquant leur qualité et leur fraîcheur. Contre toute attente, le nain, amateur de potages, accepte votre offrande avec un grognement approbateur et s'en va. **{{pet}}** semble impressionné par votre instinct.",
+          "Les légumes que vous présentez au nain lui rappellent visiblement des souvenirs plus agréables. Il les accepte avec un semblant de civilité et consent à vous laisser passer. **{{pet}}** apprécie cette résolution pacifique."
+        ],
+        "fail": [
+          "Vous tendez des légumes au nain dans l'espoir de l'amadouer. Il éclate de rire devant cette offre ridicule et les balaie d'un revers de main. **{{pet}}** observe avec envie ces légumes gaspillés.",
+          "Les légumes que vous offrez maladroitement sont balayés d'un revers de main par le nain méprisant. **{{pet}}** vous lance un regard de reproche, frustré de voir cette nourriture perdue."
+        ]
+      },
+      "giveVegDislikes": {
+        "success": [
+          "Vous offrez quelques légumes au nain, évoquant leur qualité et leur fraîcheur. Contre toute attente, le nain, amateur de potages, accepte votre offrande avec un grognement approbateur et s'en va. **{{pet}}** semble peu concerné par cette perte de légumes.",
+          "Les légumes que vous présentez au nain lui rappellent visiblement des souvenirs plus agréables. Il les accepte avec un semblant de civilité et consent à vous laisser passer. **{{pet}}**, carnivore, n'est pas dérangé par ce sacrifice."
+        ],
+        "fail": [
+          "Vous tendez des légumes au nain dans l'espoir de l'amadouer. Il éclate de rire devant cette offre ridicule et les balaie d'un revers de main. **{{pet}}** ne semble pas concerné par cette perte.",
+          "Les légumes que vous offrez maladroitement sont balayés d'un revers de main par le nain méprisant. **{{pet}}**, préférant la viande, n'accorde aucune importance à ces légumes perdus."
+        ]
+      },
+      "giveVegNoFood": {
+        "fail": [
+          "Vous cherchez des légumes à offrir au nain, mais l'entrepôt de votre guilde n'en contient aucun. Moltiar se moque de votre tentative pathétique tandis que **{{pet}}** baisse la tête, déçu.",
+          "Vous voulez proposer des légumes pour apaiser la situation, mais vous n'en avez pas. Le nain profite de votre hésitation pour bousculer **{{pet}}** qui vous regarde avec reproche."
+        ]
+      },
+      "flee": {
+        "success": [
+          "Vous prenez vos jambes à votre cou avec **{{pet}}** sur vos talons. Votre vitesse combinée vous permet de distancer rapidement Moltiar qui, trop corpulent, renonce à vous poursuivre en hurlant des jurons. Votre compagnon halète mais semble satisfait.",
+          "La fuite se révèle être la bonne décision. Vous courez efficacement avec **{{pet}}** qui vous suit sans difficulté, laissant le nain furieux mais impuissant derrière vous. Vous avez fait équipe."
+        ],
+        "fail": [
+          "La panique vous submerge et vous détalez maladroitement avec **{{pet}}** sur vos talons. Moltiar, plus rapide que prévu, vous rattrape et bouscule violemment votre compagnon au passage. Vous parvenez finalement à vous échapper, mais **{{pet}}** vous en veut de cette fuite précipitée.",
+          "Vous prenez vos jambes à votre cou dans une débandade peu glorieuse. Malheureusement, **{{pet}}** ne peut suivre votre rythme et reste à la traîne. Le nain en profite pour lui donner un coup de bâton avant que vous ne reveniez le chercher. Votre compagnon est furieux de cette fuite ratée."
+        ]
+      },
+      "hide": {
+        "success": [
+          "Vous repérez rapidement un renfoncement dans les rochers et y dissimulez **{{pet}}** avant que le nain ne le remarque. Ce dernier, ne voyant plus la bête, perd tout intérêt et s'éloigne en maugréant. Votre compagnon apprécie votre discrétion.",
+          "Vous trouvez un endroit idéal pour cacher **{{pet}}** sous votre cape. Le nain, ne voyant plus l'objet de sa haine, finit par se calmer et poursuivre son chemin. Votre compagnon semble rassuré par votre protection."
+        ],
+        "fail": [
+          "Vous tentez de dissimuler **{{pet}}** dans un recoin, mais Moltiar vous surprend en pleine manœuvre. Il rugit de colère et malmène votre compagnon. Celui-ci vous lance un regard lourd de reproches.",
+          "Votre tentative de dissimulation échoue lamentablement quand **{{pet}}** pousse un gémissement nerveux, révélant sa cachette. Le nain se rue vers lui et le bouscule violemment. Votre compagnon souffre de cette mésaventure."
+        ]
+      },
+      "wait": {
+        "success": [
+          "Vous décidez d'attendre immobile, espérant que la colère du nain retombe. Après de longues minutes de vociférations, il semble se lasser et finit par s'éloigner en grognant. **{{pet}}** semble apprécier votre patience et votre sang-froid.",
+          "L'attente se révèle payante. Le nain, ne trouvant pas la réaction qu'il espérait, perd progressivement son ardeur belliqueuse et repart. **{{pet}}** vous regarde avec respect pour votre sagesse."
+        ],
+        "fail": [
+          "Vous décidez d'attendre immobile, mais le nain interprète votre passivité comme de la faiblesse. Il s'approche davantage et menace **{{pet}}** de plus belle. Votre compagnon piétine nerveusement, stressé par cette inaction.",
+          "L'attente s'éternise et **{{pet}}** commence à gémir d'angoisse. Le nain, enhardi par votre inaction, se fait de plus en plus menaçant. Votre compagnon vous reproche de ne rien faire."
+        ]
+      },
+      "protect": {
+        "success": [
+          "Dans un élan de bravoure protectrice, vous placez fermement votre corps entre Moltiar et **{{pet}}**. Votre détermination impressionne l'agresseur qui, voyant que vous êtes prêt à vous battre, décide de ne point provoquer davantage. Votre compagnon est touché par votre courage.",
+          "Vous protégez **{{pet}}** en vous interposant avec assurance face au nain hostile. Celui-ci, réalisant que vous ne céderez pas, préfère reculer en crachant des insultes. Votre compagnon vous regarde avec une affection renouvelée."
+        ],
+        "fail": [
+          "Dans un élan de bravoure, vous vous interposez entre Moltiar et **{{pet}}**. Malheureusement, le nain est plus fort que vous ne le pensiez. Il vous repousse brutalement et en profite pour frapper votre compagnon. Vous vous sentez impuissant face à cette démonstration de force.",
+          "Vous tentez de protéger **{{pet}}** en vous plaçant devant lui, mais votre posture manque d'assurance. Le nain vous contourne aisément et bouscule votre compagnon qui vous lance un regard déçu par votre incapacité à le défendre."
+        ]
+      },
+      "distract": {
+        "success": [
+          "Vous créez une diversion en évoquant bruyamment une taverne réputée dans la direction opposée. Moltiar, dont l'amour de la bière surpasse visiblement sa haine des animaux, tend l'oreille puis s'éloigne, intrigué. **{{pet}}** profite de la confusion, impressionné par votre ruse.",
+          "Votre diversion fonctionne à merveille. En lançant quelques pièces au loin, vous attirez l'attention cupide du nain. Pendant qu'il se précipite pour les ramasser, **{{pet}}** et vous vous éclipsez discrètement."
+        ],
+        "fail": [
+          "Vous tentez de créer une diversion en gesticulant et en criant. Ce spectacle ridicule ne fait qu'irriter davantage le nain qui se rapproche, menaçant. **{{pet}}** recule, effrayé par votre comportement étrange.",
+          "Dans une tentative désespérée de diversion, vous lancez des cailloux au hasard. L'un d'eux atteint malencontreusement **{{pet}}** qui couine de douleur tandis que le nain ricane méchamment."
+        ]
+      },
+      "calm": {
+        "success": [
+          "Vous parvenez à apaiser **{{pet}}** par des caresses rassurantes malgré la menace du nain. Votre compagnon, reprenant confiance, cesse de trembler. Le nain, voyant que vous maîtrisez votre bête, semble moins enclin à l'attaquer et finit par s'éloigner.",
+          "Vos paroles apaisantes et votre attitude confiante parviennent à calmer **{{pet}}**. Une fois détendu, il dégage une assurance qui fait hésiter le nain. Ce dernier, moins sûr de lui face à cette sérénité, préfère partir."
+        ],
+        "fail": [
+          "Vous tentez d'apaiser **{{pet}}** par des caresses, mais votre propre nervosité face au nain hostile se transmet à votre compagnon. Au lieu de se calmer, il devient encore plus agité et gémissant.",
+          "Vos paroles censées être apaisantes trahissent votre propre terreur. **{{pet}}**, percevant votre peur, comprend que la situation est grave et sa panique s'aggrave."
+        ]
+      },
+      "imposer": {
+        "success": [
+          "Vous laissez **{{pet}}** s'avancer avec assurance vers le nain. Sa prestance naturelle et sa beauté rare semblent désarçonner l'agresseur qui, malgré sa haine, reconnaît qu'il a affaire à un spécimen exceptionnel. Il bat en retraite, impressionné malgré lui.",
+          "Se posant calmement face au nain, **{{pet}}** dégage une aura de majesté indéniable. Le nain, bien que haïssant les animaux, ne peut s'empêcher de reconnaître la noblesse de votre compagnon et s'éloigne prudemment."
+        ],
+        "fail": [
+          "Vous tentez de laisser **{{pet}}** s'imposer face à Moltiar, mais votre compagnon, intimidé, ne parvient pas à paraître menaçant. Le nain éclate d'un rire méprisant et le bouscule sans ménagement.",
+          "**{{pet}}** tente de se montrer imposant face au nain, mais son apparence ne suffit pas à l'impressionner. Le nain le regarde avec moquerie avant de lui donner un coup de pied."
+        ]
+      },
+      "energize": {
+        "success": [
+          "Vous encouragez **{{pet}}** avec des paroles enthousiastes. Galvanisé par votre soutien, votre compagnon retrouve toute sa vigueur et se dresse fièrement face à Moltiar. Ce dernier, surpris par ce regain d'énergie, préfère ne point prendre de risque et s'éloigne.",
+          "Vos mots d'encouragement redonnent confiance à **{{pet}}** qui se redresse avec détermination. Le nain, voyant que votre compagnon ne se laissera pas faire, renonce à son agression et part en grognant."
+        ],
+        "fail": [
+          "Vous tentez d'encourager **{{pet}}** avec des paroles, mais votre voix manque de conviction face à la menace du nain. Votre compagnon, déjà terrorisé, ne trouve point le courage nécessaire et se recroqueville davantage.",
+          "Vos tentatives pour galvaniser **{{pet}}** tombent à plat. Le nain profite de ce moment de faiblesse pour malmener votre compagnon qui vous en veut de ne pas l'avoir mieux protégé."
+        ]
+      }
+    }
+  }
 }
