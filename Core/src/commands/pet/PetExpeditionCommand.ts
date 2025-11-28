@@ -249,6 +249,162 @@ function calculateRewards(expedition: ExpeditionData, rewardIndex: number, isPar
 }
 
 /**
+ * Context for expedition resolution validation - success case
+ */
+interface ExpeditionValidationSuccess {
+	success: true;
+	activeExpedition: NonNullable<Awaited<ReturnType<typeof PetExpeditions.getActiveExpeditionForPlayer>>>;
+	petEntity: NonNullable<Awaited<ReturnType<typeof PetEntities.getById>>>;
+}
+
+/**
+ * Context for expedition resolution validation - failure case
+ */
+interface ExpeditionValidationFailure {
+	success: false;
+	errorCode: string;
+}
+
+type ExpeditionValidationResult = ExpeditionValidationSuccess | ExpeditionValidationFailure;
+
+/**
+ * Validate expedition prerequisites before resolution
+ */
+async function validateExpeditionPrerequisites(
+	playerId: number,
+	petId: number | null
+): Promise<ExpeditionValidationResult> {
+	const activeExpedition = await PetExpeditions.getActiveExpeditionForPlayer(playerId);
+	if (!activeExpedition) {
+		return {
+			success: false,
+			errorCode: "noExpedition"
+		};
+	}
+
+	if (!activeExpedition.hasEnded()) {
+		return {
+			success: false,
+			errorCode: "expeditionNotComplete"
+		};
+	}
+
+	if (!petId) {
+		return {
+			success: false,
+			errorCode: "noPet"
+		};
+	}
+
+	const petEntity = await PetEntities.getById(petId);
+	if (!petEntity) {
+		return {
+			success: false,
+			errorCode: "noPet"
+		};
+	}
+
+	return {
+		success: true,
+		activeExpedition,
+		petEntity
+	};
+}
+
+/**
+ * Determine expedition outcome based on effective risk
+ */
+function determineExpeditionOutcome(
+	effectiveRisk: number,
+	expedition: ExpeditionData,
+	hasCloneTalisman: boolean
+): {
+	totalFailure: boolean;
+	partialSuccess: boolean;
+	rewards: ExpeditionRewardData | undefined;
+	loveChange: number;
+} {
+	const totalFailure = RandomUtils.crowniclesRandom.bool(effectiveRisk / ExpeditionConstants.PERCENTAGE.MAX);
+
+	if (totalFailure) {
+		return {
+			totalFailure: true,
+			partialSuccess: false,
+			rewards: undefined,
+			loveChange: ExpeditionConstants.LOVE_CHANGES.TOTAL_FAILURE
+		};
+	}
+
+	const partialSuccess = RandomUtils.crowniclesRandom.bool(effectiveRisk / ExpeditionConstants.PERCENTAGE.MAX);
+	const rewardIndex = calculateRewardIndex(expedition);
+	const rewards = calculateRewards(expedition, rewardIndex, partialSuccess, hasCloneTalisman);
+
+	return {
+		totalFailure: false,
+		partialSuccess,
+		rewards,
+		loveChange: partialSuccess ? 0 : ExpeditionConstants.LOVE_CHANGES.TOTAL_SUCCESS
+	};
+}
+
+/**
+ * Apply expedition rewards to player
+ */
+async function applyExpeditionRewards(
+	rewards: ExpeditionRewardData,
+	player: Player,
+	response: CrowniclesPacket[]
+): Promise<void> {
+	if (rewards.money > 0) {
+		await player.addMoney({
+			amount: rewards.money,
+			response,
+			reason: NumberChangeReason.SMALL_EVENT
+		});
+	}
+
+	if (rewards.experience > 0) {
+		await player.addExperience({
+			amount: rewards.experience,
+			response,
+			reason: NumberChangeReason.SMALL_EVENT
+		});
+	}
+
+	if (rewards.points > 0) {
+		await player.addScore({
+			amount: rewards.points,
+			response,
+			reason: NumberChangeReason.SMALL_EVENT
+		});
+	}
+
+	if (rewards.guildExperience > 0 && player.guildId) {
+		const guild = await Guilds.getById(player.guildId);
+		if (guild) {
+			await guild.addExperience(rewards.guildExperience, response, NumberChangeReason.SMALL_EVENT);
+			await guild.save();
+		}
+	}
+
+	/*
+	 * Gems handled separately (need gem system)
+	 * For now, convert gems to money bonus
+	 */
+	if (rewards.gems > 0) {
+		await player.addMoney({
+			amount: rewards.gems * ExpeditionConstants.GEM_TO_MONEY_FALLBACK_RATE,
+			response,
+			reason: NumberChangeReason.SMALL_EVENT
+		});
+	}
+
+	if (rewards.cloneTalismanFound) {
+		player.hasCloneTalisman = true;
+	}
+}
+
+/**
  * Get food required for expedition based on pet diet
  */
 async function getFoodAvailable(player: Player, petModel: Pet): Promise<{
@@ -654,71 +810,29 @@ export default class PetExpeditionCommand {
 		whereAllowed: CommandUtils.WHERE.EVERYWHERE
 	})
 	async resolveExpedition(response: CrowniclesPacket[], player: Player, _packet: CommandPetExpeditionResolvePacketReq): Promise<void> {
-		// Check for active expedition
-		const activeExpedition = await PetExpeditions.getActiveExpeditionForPlayer(player.id);
-		if (!activeExpedition) {
-			response.push(makePacket(CommandPetExpeditionErrorPacket, { errorCode: "noExpedition" }));
+		// Validate prerequisites
+		const validation = await validateExpeditionPrerequisites(player.id, player.petId);
+		if (validation.success === false) {
+			response.push(makePacket(CommandPetExpeditionErrorPacket, { errorCode: validation.errorCode }));
 			return;
 		}
 
-		// Check if expedition has ended
-		if (!activeExpedition.hasEnded()) {
-			response.push(makePacket(CommandPetExpeditionErrorPacket, { errorCode: "expeditionNotComplete" }));
-			return;
-		}
-
-		if (!player.petId) {
-			response.push(makePacket(CommandPetExpeditionErrorPacket, { errorCode: "noPet" }));
-			return;
-		}
-
-		const petEntity = await PetEntities.getById(player.petId);
-		if (!petEntity) {
-			response.push(makePacket(CommandPetExpeditionErrorPacket, { errorCode: "noPet" }));
-			return;
-		}
-
+		const {
+			activeExpedition,
+			petEntity
+		} = validation;
 		const petModel = PetDataController.instance.getById(petEntity.typeId);
 		const expeditionData = activeExpedition.toExpeditionData();
 
-		// Calculate effective risk
+		// Calculate effective risk and determine outcome
 		const effectiveRisk = calculateEffectiveRisk(expeditionData, petModel, petEntity.lovePoints);
-
-		/*
-		 * If insufficient food was used, triple the effective risk
-		 * Note: We store this info in the expedition if needed, for now we just calculate
-		 * This could be stored in the expedition model if needed
-		 */
-
-		// First roll: check for total failure
-		const totalFailure = RandomUtils.crowniclesRandom.bool(effectiveRisk / ExpeditionConstants.PERCENTAGE.MAX);
-
-		let partialSuccess = false;
-		let rewards: ExpeditionRewardData | undefined;
-		let loveChange = 0;
-
-		if (totalFailure) {
-			// Total failure: no rewards, lose love
-			loveChange = ExpeditionConstants.LOVE_CHANGES.TOTAL_FAILURE;
-		}
-		else {
-			// Second roll: check for partial success
-			partialSuccess = RandomUtils.crowniclesRandom.bool(effectiveRisk / ExpeditionConstants.PERCENTAGE.MAX);
-
-			const rewardIndex = calculateRewardIndex(expeditionData);
-			rewards = calculateRewards(expeditionData, rewardIndex, partialSuccess, player.hasCloneTalisman);
-
-			if (!partialSuccess) {
-				// Total success: gain love
-				loveChange = ExpeditionConstants.LOVE_CHANGES.TOTAL_SUCCESS;
-			}
-		}
+		const outcome = determineExpeditionOutcome(effectiveRisk, expeditionData, player.hasCloneTalisman);
 
 		// Apply love change
-		if (loveChange !== 0) {
+		if (outcome.loveChange !== 0) {
 			await petEntity.changeLovePoints({
 				player,
-				amount: loveChange,
+				amount: outcome.loveChange,
 				response,
 				reason: NumberChangeReason.SMALL_EVENT
 			});
@@ -726,56 +840,8 @@ export default class PetExpeditionCommand {
 		}
 
 		// Apply rewards
-		if (rewards) {
-			if (rewards.money > 0) {
-				await player.addMoney({
-					amount: rewards.money,
-					response,
-					reason: NumberChangeReason.SMALL_EVENT
-				});
-			}
-
-			if (rewards.experience > 0) {
-				await player.addExperience({
-					amount: rewards.experience,
-					response,
-					reason: NumberChangeReason.SMALL_EVENT
-				});
-			}
-
-			if (rewards.points > 0) {
-				await player.addScore({
-					amount: rewards.points,
-					response,
-					reason: NumberChangeReason.SMALL_EVENT
-				});
-			}
-
-			// Guild experience
-			if (rewards.guildExperience > 0 && player.guildId) {
-				const guild = await Guilds.getById(player.guildId);
-				if (guild) {
-					await guild.addExperience(rewards.guildExperience, response, NumberChangeReason.SMALL_EVENT);
-					await guild.save();
-				}
-			}
-
-			/*
-			 * Gems handled separately (need gem system)
-			 * For now, convert gems to money bonus
-			 */
-			if (rewards.gems > 0) {
-				await player.addMoney({
-					amount: rewards.gems * ExpeditionConstants.GEM_TO_MONEY_FALLBACK_RATE,
-					response,
-					reason: NumberChangeReason.SMALL_EVENT
-				});
-			}
-
-			// Grant clone talisman if found
-			if (rewards.cloneTalismanFound) {
-				player.hasCloneTalisman = true;
-			}
+		if (outcome.rewards) {
+			await applyExpeditionRewards(outcome.rewards, player, response);
 		}
 
 		await player.save();
@@ -784,11 +850,11 @@ export default class PetExpeditionCommand {
 		await PetExpeditions.completeExpedition(activeExpedition);
 
 		response.push(makePacket(CommandPetExpeditionResolvePacketRes, {
-			success: !totalFailure,
-			partialSuccess,
-			totalFailure,
-			rewards,
-			loveChange,
+			success: !outcome.totalFailure,
+			partialSuccess: outcome.partialSuccess,
+			totalFailure: outcome.totalFailure,
+			rewards: outcome.rewards,
+			loveChange: outcome.loveChange,
 			petId: petEntity.typeId,
 			petSex: petEntity.sex,
 			petNickname: petEntity.nickname ?? undefined,

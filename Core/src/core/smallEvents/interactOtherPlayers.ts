@@ -172,8 +172,14 @@ function checkMoney(otherPlayer: Player, interactionsList: InteractOtherPlayerIn
  * @param interactionsList
  */
 async function checkPet(player: Player, otherPlayer: Player, interactionsList: InteractOtherPlayerInteraction[]): Promise<void> {
-	// Check if the other player has a pet that is available (not on expedition without clone talisman)
-	if (otherPlayer.petId && otherPlayer.petId !== player.petId && await PetUtils.isPetAvailable(otherPlayer, "smallEvent")) {
+	// Check if the other player has a different pet than the current player
+	if (!otherPlayer.petId || otherPlayer.petId === player.petId) {
+		return;
+	}
+
+	// Check if the other player's pet is available (not on expedition without clone talisman)
+	const isPetAvailable = await PetUtils.isPetAvailable(otherPlayer, "smallEvent");
+	if (isPetAvailable) {
 		interactionsList.push(InteractOtherPlayerInteraction.PET);
 	}
 }

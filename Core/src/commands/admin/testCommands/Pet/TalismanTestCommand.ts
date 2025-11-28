@@ -22,51 +22,86 @@ const TALISMAN_ACTIONS = {
 	REMOVE: "remove"
 } as const;
 
+type TalismanType = typeof TALISMAN_TYPES[keyof typeof TALISMAN_TYPES];
+type TalismanAction = typeof TALISMAN_ACTIONS[keyof typeof TALISMAN_ACTIONS];
+
+interface TalismanConfig {
+	hasProperty: "hasTalisman" | "hasCloneTalisman";
+	name: string;
+	giveMessage: string;
+	removeMessage: string;
+	alreadyHasMessage: string;
+	doesNotHaveMessage: string;
+}
+
+const TALISMAN_CONFIGS: Record<TalismanType, TalismanConfig> = {
+	[TALISMAN_TYPES.ANCHOR]: {
+		hasProperty: "hasTalisman",
+		name: "Talisman d'Ancrage",
+		giveMessage: "✨ Vous avez reçu le **Talisman d'Ancrage** ! Vous pouvez maintenant envoyer votre familier en expédition.",
+		removeMessage: "Le **Talisman d'Ancrage** a été retiré de votre inventaire.",
+		alreadyHasMessage: "Vous possédez déjà le Talisman d'Ancrage !",
+		doesNotHaveMessage: "Vous ne possédez pas le Talisman d'Ancrage !"
+	},
+	[TALISMAN_TYPES.CLONE]: {
+		hasProperty: "hasCloneTalisman",
+		name: "Talisman de Clonage",
+		giveMessage: "✨ Vous avez reçu le **Talisman de Clonage** ! Votre familier peut maintenant vous assister en défense et dans les petits événements même en expédition.",
+		removeMessage: "Le **Talisman de Clonage** a été retiré de votre inventaire.",
+		alreadyHasMessage: "Vous possédez déjà le Talisman de Clonage !",
+		doesNotHaveMessage: "Vous ne possédez pas le Talisman de Clonage !"
+	}
+};
+
+interface ValidatedTalismanArgs {
+	talismanType: TalismanType;
+	action: TalismanAction;
+}
+
 /**
- * Give or remove a talisman to/from the player
+ * Validate command arguments and return parsed values
  */
-const talismanTestCommand: ExecuteTestCommandLike = async (player, args) => {
+function validateTalismanArgs(args: string[]): ValidatedTalismanArgs {
 	const talismanType = args[0]?.toLowerCase();
 	const action = args[1]?.toLowerCase();
 
-	// Validate talisman type
 	if (talismanType !== TALISMAN_TYPES.ANCHOR && talismanType !== TALISMAN_TYPES.CLONE) {
 		throw new Error(`Type de talisman invalide: "${talismanType}". Utilisez "anchor" ou "clone".`);
 	}
 
-	// Validate action
 	if (action !== TALISMAN_ACTIONS.GIVE && action !== TALISMAN_ACTIONS.REMOVE) {
 		throw new Error(`Action invalide: "${action}". Utilisez "give" ou "remove".`);
 	}
 
+	return {
+		talismanType,
+		action
+	};
+}
+
+/**
+ * Give or remove a talisman to/from the player
+ */
+const talismanTestCommand: ExecuteTestCommandLike = async (player, args) => {
+	const {
+		talismanType,
+		action
+	} = validateTalismanArgs(args);
 	const isGiving = action === TALISMAN_ACTIONS.GIVE;
+	const config = TALISMAN_CONFIGS[talismanType];
+	const hasTalisman = player[config.hasProperty];
 
-	if (talismanType === TALISMAN_TYPES.ANCHOR) {
-		if (isGiving && player.hasTalisman) {
-			return "Vous possédez déjà le Talisman d'Ancrage !";
-		}
-		if (!isGiving && !player.hasTalisman) {
-			return "Vous ne possédez pas le Talisman d'Ancrage !";
-		}
-		player.hasTalisman = isGiving;
-		await player.save();
-		return isGiving
-			? "✨ Vous avez reçu le **Talisman d'Ancrage** ! Vous pouvez maintenant envoyer votre familier en expédition."
-			: "Le **Talisman d'Ancrage** a été retiré de votre inventaire.";
+	if (isGiving && hasTalisman) {
+		return config.alreadyHasMessage;
+	}
+	if (!isGiving && !hasTalisman) {
+		return config.doesNotHaveMessage;
 	}
 
-	// Clone talisman
-	if (isGiving && player.hasCloneTalisman) {
-		return "Vous possédez déjà le Talisman de Clonage !";
-	}
-	if (!isGiving && !player.hasCloneTalisman) {
-		return "Vous ne possédez pas le Talisman de Clonage !";
-	}
-	player.hasCloneTalisman = isGiving;
+	player[config.hasProperty] = isGiving;
 	await player.save();
-	return isGiving
-		? "✨ Vous avez reçu le **Talisman de Clonage** ! Votre familier peut maintenant vous assister en défense et dans les petits événements même en expédition."
-		: "Le **Talisman de Clonage** a été retiré de votre inventaire.";
+
+	return isGiving ? config.giveMessage : config.removeMessage;
 };
 
 commandInfo.execute = talismanTestCommand;

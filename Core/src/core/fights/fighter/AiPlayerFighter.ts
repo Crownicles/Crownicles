@@ -106,6 +106,26 @@ export class AiPlayerFighter extends Fighter {
 
 
 	/**
+	 * Load the pet entity for the fighter based on availability
+	 */
+	private async loadPetEntity(): Promise<void> {
+		if (!this.player.petId) {
+			this.pet = undefined;
+			return;
+		}
+
+		if (this.preloadedPetEntity !== undefined) {
+			this.pet = this.preloadedPetEntity;
+			return;
+		}
+
+		// Check if pet is available based on fight role
+		const petAvailabilityContext = this.fightRole === FightConstants.FIGHT_ROLES.ATTACKER ? "attackFight" : "defenseFight";
+		const isPetAvailable = await PetUtils.isPetAvailable(this.player, petAvailabilityContext);
+		this.pet = isPetAvailable ? await PetEntities.getById(this.player.petId) : undefined;
+	}
+
+	/**
 	 * The fighter loads its various stats
 	 */
 	public async loadStats(): Promise<void> {
@@ -119,22 +139,7 @@ export class AiPlayerFighter extends Fighter {
 		this.stats.maxBreath = this.player.getMaxBreath();
 		this.stats.breathRegen = this.player.getBreathRegen();
 		this.glory = this.player.getGloryPoints();
-		if (this.player.petId) {
-			if (this.preloadedPetEntity !== undefined) {
-				this.pet = this.preloadedPetEntity;
-			}
-			else {
-				// Check if pet is available based on fight role
-				const petAvailabilityContext = this.fightRole === FightConstants.FIGHT_ROLES.ATTACKER ? "attackFight" : "defenseFight";
-				const isPetAvailable = await PetUtils.isPetAvailable(this.player, petAvailabilityContext);
-				if (isPetAvailable) {
-					this.pet = await PetEntities.getById(this.player.petId);
-				}
-			}
-		}
-		else {
-			this.pet = undefined;
-		}
+		await this.loadPetEntity();
 	}
 
 	/**
