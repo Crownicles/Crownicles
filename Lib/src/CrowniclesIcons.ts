@@ -2184,6 +2184,7 @@ export const CrowniclesIcons: {
 		fightEffect: "⚔️",
 		age: "👶",
 		force: "💪",
+		speed: "🚀",
 		feedDelay: "⏳"
 	},
 	petCommand: {

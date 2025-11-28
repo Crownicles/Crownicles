@@ -63,12 +63,6 @@ const REACTION_HANDLERS: Record<string, ReactionHandler> = {
 	[ReactionCollectorPetFoodContinueReaction.name]: handleContinueReaction
 };
 
-function assertPetEntity(petEntity: PetEntity | null, player: Player): asserts petEntity is PetEntity {
-	if (!petEntity) {
-		throw new Error(`Player ${player.id} triggered the pet food event without an associated pet.`);
-	}
-}
-
 type PetFoodProperties = {
 	probabilities: {
 		badSmell: {
@@ -183,8 +177,7 @@ async function applyOutcome(
 	const {
 		foodType, outcome, properties
 	} = eventData;
-	const petEntity = await PetEntity.findByPk(player.petId);
-	assertPetEntity(petEntity, player);
+	const petEntity = (await PetEntity.findByPk(player.petId))!;
 	const petModel = PetDataController.instance.getById(petEntity.typeId);
 	let loveChange = 0;
 
@@ -232,8 +225,8 @@ async function handleInvestigateReaction(player: Player, properties: PetFoodProp
  * @param player
  */
 async function handleSendPetReaction(player: Player): Promise<string> {
-	const petEntity = await PetEntity.findByPk(player.petId);
-	assertPetEntity(petEntity, player);
+	// Pet existence is guaranteed by canBeExecuted
+	const petEntity = (await PetEntity.findByPk(player.petId))!;
 	const petModel = PetDataController.instance.getById(petEntity.typeId);
 	const now = Date.now();
 	const hungrySince = petEntity.hungrySince ? new Date(petEntity.hungrySince).getTime() : now;

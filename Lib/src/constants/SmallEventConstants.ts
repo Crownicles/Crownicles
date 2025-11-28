@@ -289,17 +289,25 @@ export abstract class SmallEventConstants {
 		DECAY_FACTOR: 0.003,
 		MIN_PROBABILITY: 0.1,
 		MAX_PROBABILITY: 1.0,
+
+		// Map location types that affect food type probabilities
 		BAD_SMELL_TYPES: ["de", "mo"],
+
+		// Map location types where vegetarian food is more likely
 		VEGETARIAN_TYPES: [
 			"fo",
 			"pl",
 			"ro"
 		],
+
+		// Map location types where meat is more likely
 		MEAT_TYPES: [
 			"ri",
 			"be",
 			"la"
 		],
+
+		// Map location types where good smelling food is more likely
 		GOOD_SMELL_TYPES: [
 			"vi",
 			"ci",

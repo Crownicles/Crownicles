@@ -1,5 +1,6 @@
 {
   "rarity": 1,
   "force": 1,
-  "feedDelay": 1
+  "feedDelay": 1,
+  "speed": 8
 }

@@ -46,6 +46,8 @@ export class CommandMissionShopPetInformation extends CrowniclesPacket {
 
 	force!: number;
 
+	speed!: number;
+
 	feedDelay!: number;
 
 	randomPetDwarf?: {
