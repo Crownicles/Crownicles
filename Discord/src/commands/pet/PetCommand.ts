@@ -190,7 +190,7 @@ export async function handleCommandPetPacketRes(packet: CommandPetPacketRes, con
 
 	const lng = interaction.userLanguage;
 	const isOwnerViewingOwnPet = !packet.askedKeycloakId || packet.askedKeycloakId === context.keycloakId;
-	const hasExpedition = !!packet.expeditionInProgress;
+	const hasExpedition = Boolean(packet.expeditionInProgress);
 
 	// Disable pet button during expedition (can't caress a pet that's not here)
 	const petButton = createPetButton(lng, hasExpedition);

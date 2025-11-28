@@ -17,17 +17,9 @@ import { Maps } from "../maps/Maps";
  * Requires: player level >= 20 and on continent
  */
 function canBeExecuted(player: Player): boolean {
-	// Must be on continent
-	if (!Maps.isOnContinent(player)) {
-		return false;
-	}
-
-	// Must be level 20 or higher
-	if (player.level < ExpeditionConstants.TALISMAN_EVENT.MIN_LEVEL) {
-		return false;
-	}
-
-	return true;
+	// Player must be on a continent AND meet the minimum level requirement
+	return Maps.isOnContinent(player)
+		&& player.level >= ExpeditionConstants.TALISMAN_EVENT.MIN_LEVEL;
 }
 
 /**

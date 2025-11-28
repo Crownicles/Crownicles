@@ -336,7 +336,7 @@ export async function handleExpeditionGenerateRes(
 		const locationEmoji = ExpeditionConstants.getLocationEmoji(exp.locationType as ExpeditionLocationType);
 		const locationName = i18n.t(`commands:petExpedition.locations.${exp.locationType}`, { lng });
 
-		description += "\n\n" + i18n.t("commands:petExpedition.expeditionOption", {
+		description += `\n\n${i18n.t("commands:petExpedition.expeditionOption", {
 			lng,
 			number: i + 1,
 			location: `${locationEmoji} ${locationName}`,
@@ -344,7 +344,7 @@ export async function handleExpeditionGenerateRes(
 			risk: getTranslatedRiskCategoryName(exp.riskRate, lng),
 			wealth: getTranslatedWealthCategoryName(exp.wealthRate, lng),
 			difficulty: exp.difficulty
-		});
+		})}`;
 
 		selectMenu.addOptions({
 			label: `${locationEmoji} ${locationName}`,
@@ -472,20 +472,20 @@ export async function handleExpeditionChoiceRes(
 	});
 
 	if (packet.foodConsumed && packet.foodConsumed > 0) {
-		description += "\n" + i18n.t("commands:petExpedition.foodConsumed", {
+		description += `\n${i18n.t("commands:petExpedition.foodConsumed", {
 			lng,
 			amount: packet.foodConsumed
-		});
+		})}`;
 	}
 
 	if (packet.insufficientFood) {
 		// Choose the right message depending on the cause (no guild / guild with no food). Default to a friendly no-guild message if not provided.
-		const cause = (packet as any).insufficientFoodCause as "noGuild" | "guildNoFood" | undefined;
+		const cause = (packet as unknown as { insufficientFoodCause?: "noGuild" | "guildNoFood" }).insufficientFoodCause;
 		if (cause === "guildNoFood") {
-			description += "\n" + i18n.t("commands:petExpedition.insufficientFoodWarning.guildNoFood", { lng });
+			description += `\n${i18n.t("commands:petExpedition.insufficientFoodWarning.guildNoFood", { lng })}`;
 		}
 		else {
-			description += "\n" + i18n.t("commands:petExpedition.insufficientFoodWarning.noGuild", { lng });
+			description += `\n${i18n.t("commands:petExpedition.insufficientFoodWarning.noGuild", { lng })}`;
 		}
 	}
 
