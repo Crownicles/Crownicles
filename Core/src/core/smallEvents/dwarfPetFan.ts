@@ -17,6 +17,7 @@ import { MapConstants } from "../../../../Lib/src/constants/MapConstants";
 import { Badge } from "../../../../Lib/src/types/Badge";
 import { SmallEventConstants } from "../../../../Lib/src/constants/SmallEventConstants";
 import { MissionsController } from "../missions/MissionsController";
+import { PetUtils } from "../utils/PetUtils";
 
 /**
  * Return true if the player has a pet AND the pet is not feisty AND the dwarf never saw this pet from it
@@ -33,6 +34,12 @@ async function canContinueSmallEvent(response: CrowniclesPacket[], player: Playe
 
 	// Check if the player has a pet
 	if (!player.petId) {
+		response.push(makePacket(SmallEventDwarfPetFanPacket, { interactionName: SmallEventConstants.DWARF_PET_FAN.INTERACTIONS_NAMES.NO_PET }));
+		return false;
+	}
+
+	// Check if the pet is available (not on expedition without clone talisman)
+	if (!await PetUtils.isPetAvailable(player, "smallEvent")) {
 		response.push(makePacket(SmallEventDwarfPetFanPacket, { interactionName: SmallEventConstants.DWARF_PET_FAN.INTERACTIONS_NAMES.NO_PET }));
 		return false;
 	}
@@ -123,6 +130,31 @@ async function manageAllPetsAreSeen(response: CrowniclesPacket[], player: Player
  * @param petEntity
  */
 async function manageNewPetSeen(response: CrowniclesPacket[], player: Player, petEntity: PetEntity): Promise<void> {
+	const isPetClone = await PetUtils.isPetClone(player);
+
+	// If pet is a clone, Talvar notices something strange but still gives reward
+	if (isPetClone) {
+		const missionInfo = await PlayerMissionsInfos.getOfPlayer(player.id);
+		await missionInfo.addGems(
+			SmallEventConstants.DWARF_PET_FAN.NEW_PET_SEEN_REWARD,
+			player.keycloakId,
+			NumberChangeReason.SMALL_EVENT
+		);
+		response.push(makePacket(SmallEventDwarfPetFanPacket, {
+			interactionName: SmallEventConstants.DWARF_PET_FAN.INTERACTIONS_NAMES.CLONE_PET,
+			amount: SmallEventConstants.DWARF_PET_FAN.NEW_PET_SEEN_REWARD,
+			petNickname: petEntity.nickname,
+			petSex: petEntity.sex as SexTypeShort,
+			petTypeId: petEntity.typeId,
+			isGemReward: true,
+			isPetClone: true
+		}));
+		// Still mark the pet as seen
+		await DwarfPetsSeen.markPetAsSeen(player, petEntity.typeId);
+		await MissionsController.update(player, response, { missionId: "showPetsToTalvar" });
+		return;
+	}
+
 	await DwarfPetsSeen.markPetAsSeen(player, petEntity.typeId);
 	const missionInfo = await PlayerMissionsInfos.getOfPlayer(player.id);
 	await missionInfo.addGems(

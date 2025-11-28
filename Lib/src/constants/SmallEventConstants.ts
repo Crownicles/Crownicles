@@ -269,7 +269,8 @@ export abstract class SmallEventConstants {
 			PET_ALREADY_SEEN: "petAlreadySeen",
 			NEW_PET_SEEN: "newPetSeen",
 			ALL_PETS_SEEN: "allPetsSeen",
-			FEISTY_PET: "petIsFeisty"
+			FEISTY_PET: "petIsFeisty",
+			CLONE_PET: "petIsClone"
 		}
 	};
 

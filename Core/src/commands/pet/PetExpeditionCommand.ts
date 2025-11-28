@@ -203,7 +203,7 @@ function calculateRewardIndex(expedition: ExpeditionData): number {
 /**
  * Calculate rewards based on expedition parameters and location
  */
-function calculateRewards(expedition: ExpeditionData, rewardIndex: number, isPartialSuccess: boolean): ExpeditionRewardData {
+function calculateRewards(expedition: ExpeditionData, rewardIndex: number, isPartialSuccess: boolean, hasCloneTalisman: boolean): ExpeditionRewardData {
 	const locationWeights = ExpeditionConstants.LOCATION_REWARD_WEIGHTS[expedition.locationType];
 
 	let money = Math.round(ExpeditionConstants.REWARD_TABLES.MONEY[rewardIndex] * expedition.wealthRate * locationWeights.money);
@@ -220,12 +220,31 @@ function calculateRewards(expedition: ExpeditionData, rewardIndex: number, isPar
 		points = Math.round(points / 2);
 	}
 
+	// Calculate clone talisman drop chance (only if player doesn't already have it)
+	let cloneTalismanFound = false;
+	if (!hasCloneTalisman && !isPartialSuccess) {
+		let dropChance = ExpeditionConstants.CLONE_TALISMAN.BASE_DROP_CHANCE
+			+ rewardIndex * ExpeditionConstants.CLONE_TALISMAN.REWARD_INDEX_BONUS_PER_POINT;
+
+		// Apply location bonus for special locations
+		if ((ExpeditionConstants.CLONE_TALISMAN.BONUS_LOCATIONS as readonly string[]).includes(expedition.locationType)) {
+			dropChance *= ExpeditionConstants.CLONE_TALISMAN.LOCATION_BONUS_MULTIPLIER;
+		}
+
+		// Cap at max drop chance
+		dropChance = Math.min(dropChance, ExpeditionConstants.CLONE_TALISMAN.MAX_DROP_CHANCE);
+
+		// Roll for clone talisman
+		cloneTalismanFound = RandomUtils.crowniclesRandom.bool(dropChance / 100);
+	}
+
 	return {
 		money,
 		gems,
 		experience,
 		guildExperience,
-		points
+		points,
+		cloneTalismanFound
 	};
 }
 
@@ -687,7 +706,7 @@ export default class PetExpeditionCommand {
 			partialSuccess = RandomUtils.crowniclesRandom.bool(effectiveRisk / ExpeditionConstants.PERCENTAGE.MAX);
 
 			const rewardIndex = calculateRewardIndex(expeditionData);
-			rewards = calculateRewards(expeditionData, rewardIndex, partialSuccess);
+			rewards = calculateRewards(expeditionData, rewardIndex, partialSuccess, player.hasCloneTalisman);
 
 			if (!partialSuccess) {
 				// Total success: gain love
@@ -751,6 +770,11 @@ export default class PetExpeditionCommand {
 					response,
 					reason: NumberChangeReason.SMALL_EVENT
 				});
+			}
+
+			// Grant clone talisman if found
+			if (rewards.cloneTalismanFound) {
+				player.hasCloneTalisman = true;
 			}
 		}
 

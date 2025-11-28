@@ -26,6 +26,7 @@ import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstan
 import { MissionsController } from "../../core/missions/MissionsController";
 import { FightController } from "../../core/fights/FightController";
 import { PVEConstants } from "../../../../Lib/src/constants/PVEConstants";
+import { FightConstants } from "../../../../Lib/src/constants/FightConstants";
 import { MonsterDataController } from "../../data/Monster";
 import { PlayerFighter } from "../../core/fights/fighter/PlayerFighter";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
@@ -683,6 +684,7 @@ async function doPVEBoss(
 		}
 
 		const playerFighter = new PlayerFighter(player, ClassDataController.instance.getById(player.class));
+		playerFighter.setFightRole(FightConstants.FIGHT_ROLES.ATTACKER); // PVE fights are always attack fights
 		await playerFighter.loadStats();
 		playerFighter.setBaseEnergy(playerFighter.getMaxEnergy() - player.fightPointsLost);
 

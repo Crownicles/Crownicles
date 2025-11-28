@@ -166,12 +166,13 @@
       "daysHours": "{{days}}j {{hours}}h"
     },
     "rewards": {
-      "title": "\n\n**Butin rapporte :**",
+      "title": "\n\n**Butin rapporté :**",
       "money": "{emote:unitValues.money} **{{amount}}** pièces d'or",
       "gems": "{emote:unitValues.gem} **{{amount}}** gemmes précieuses",
       "experience": "{emote:unitValues.xp} **{{amount}}** points d'expérience",
       "guildExperience": "{emote:guild.icon} **{{amount}}** XP de guilde",
-      "points": "{emote:unitValues.score} **{{amount}}** points de gloire"
+      "points": "{emote:unitValues.score} **{{amount}}** points de gloire",
+      "cloneTalisman": "\n\n{emote:expedition.cloneTalisman} **DÉCOUVERTE EXCEPTIONNELLE !**\nVotre familier a découvert un ancien artefact enfoui : le **Talisman de Clonage** !\nCet objet mystique permettra à votre compagnon de vous assister en défense et dans les petits événements, même lorsqu'il est en expédition !"
     },
     "riskCategories": {
       "veryLow": "Paisible",
@@ -493,7 +494,8 @@
     "weapons_one": "Arme ({{count}}/{{max}}) :",
     "weapons_other": "Armes ({{count}}/{{max}}) :",
     "talisman": "Artefacts :",
-    "talismanOwned": "{emote:expedition.talisman} **Talisman d'Ancrage** - Permet d'envoyer votre familier en expédition",
+    "anchorTalismanOwned": "{emote:expedition.talisman} **Talisman d'Ancrage** - Permet d'envoyer votre familier en expédition",
+    "cloneTalismanOwned": "{emote:expedition.cloneTalisman} **Talisman de Clonage** - Votre familier vous assiste en défense et dans les petits événements même en expédition",
     "talismanNotOwned": "{emote:inventory.empty} **Aucun artefact**",
     "randomItemTitle": "{{pseudo}}, vous avez trouvé quelque chose !",
     "randomItemAcceptTitle": "Vous avez déjà un équipement, souhaitez-vous le vendre ?",

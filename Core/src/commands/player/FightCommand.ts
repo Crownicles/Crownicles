@@ -458,8 +458,10 @@ function fightValidationEndCallback(player: Player, context: PacketContext): End
 				return;
 			}
 			const askingFighter = new PlayerFighter(player, ClassDataController.instance.getById(player.class));
+			askingFighter.setFightRole(FightConstants.FIGHT_ROLES.ATTACKER);
 			await askingFighter.loadStats();
 			const incomingFighter = new AiPlayerFighter(opponent, ClassDataController.instance.getById(opponent.class));
+			incomingFighter.setFightRole(FightConstants.FIGHT_ROLES.DEFENDER);
 			await incomingFighter.loadStats();
 
 			// Start fight

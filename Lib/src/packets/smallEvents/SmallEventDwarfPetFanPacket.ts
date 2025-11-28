@@ -18,4 +18,6 @@ export class SmallEventDwarfPetFanPacket extends SmallEventPacket {
 	interactionName!: string;
 
 	isGemReward?: boolean;
+
+	isPetClone?: boolean;
 }

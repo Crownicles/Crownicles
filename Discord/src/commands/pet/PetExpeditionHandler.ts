@@ -664,6 +664,7 @@ function formatRewards(
 		experience: number;
 		guildExperience: number;
 		points: number;
+		cloneTalismanFound?: boolean;
 	},
 	lng: Language
 ): string {
@@ -698,6 +699,9 @@ function formatRewards(
 			lng,
 			amount: rewards.points
 		}));
+	}
+	if (rewards.cloneTalismanFound) {
+		lines.push(i18n.t("commands:petExpedition.rewards.cloneTalisman", { lng }));
 	}
 
 	return lines.join("\n");

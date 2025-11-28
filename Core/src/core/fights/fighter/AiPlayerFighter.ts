@@ -16,8 +16,11 @@ import PetEntity, { PetEntities } from "../../database/game/models/PetEntity";
 import { FighterStatus } from "../FighterStatus";
 import { Potion } from "../../../data/Potion";
 import { checkDrinkPotionMissions } from "../../utils/ItemUtils";
-import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
+import {
+	FightConstants, FightRole
+} from "../../../../../Lib/src/constants/FightConstants";
 import { InventoryConstants } from "../../../../../Lib/src/constants/InventoryConstants";
+import { PetUtils } from "../../utils/PetUtils";
 
 type AiPlayerFighterOptions = {
 	allowPotionConsumption?: boolean;
@@ -46,6 +49,8 @@ export class AiPlayerFighter extends Fighter {
 
 	private readonly preloadedPetEntity?: PetEntity | null;
 
+	private fightRole: FightRole = FightConstants.FIGHT_ROLES.DEFENDER;
+
 	public constructor(player: Player, playerClass: Class, options: AiPlayerFighterOptions = {}) {
 		super(player.level, FightActionDataController.instance.getListById(playerClass.fightActionsIds));
 		this.player = player;
@@ -54,6 +59,15 @@ export class AiPlayerFighter extends Fighter {
 		this.allowPotionConsumption = options.allowPotionConsumption ?? true;
 		this.preloadedActiveObjects = options.preloadedActiveObjects;
 		this.preloadedPetEntity = options.preloadedPetEntity;
+	}
+
+	/**
+	 * Set the fight role (attacker or defender)
+	 * This affects whether the pet can participate if on expedition
+	 * @param role The role of the fighter in this fight
+	 */
+	public setFightRole(role: FightRole): void {
+		this.fightRole = role;
 	}
 
 	/**
@@ -110,7 +124,12 @@ export class AiPlayerFighter extends Fighter {
 				this.pet = this.preloadedPetEntity;
 			}
 			else {
-				this.pet = await PetEntities.getById(this.player.petId);
+				// Check if pet is available based on fight role
+				const petAvailabilityContext = this.fightRole === FightConstants.FIGHT_ROLES.ATTACKER ? "attackFight" : "defenseFight";
+				const isPetAvailable = await PetUtils.isPetAvailable(this.player, petAvailabilityContext);
+				if (isPetAvailable) {
+					this.pet = await PetEntities.getById(this.player.petId);
+				}
 			}
 		}
 		else {

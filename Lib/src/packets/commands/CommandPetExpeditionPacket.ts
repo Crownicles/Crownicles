@@ -270,6 +270,11 @@ export interface ExpeditionRewardData {
 	guildExperience: number;
 
 	points: number;
+
+	/**
+	 * Whether the clone talisman was found during this expedition
+	 */
+	cloneTalismanFound?: boolean;
 }
 
 /**

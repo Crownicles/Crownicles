@@ -147,6 +147,7 @@ export const CrowniclesIcons: {
 		food: string;
 		love: string;
 		talisman: string;
+		cloneTalisman: string;
 		recall: string;
 	};
 	leagues: {
@@ -2225,6 +2226,7 @@ export const CrowniclesIcons: {
 		food: "🍖",
 		love: "💕",
 		talisman: "🔮",
+		cloneTalisman: "🧬",
 		recall: "🏠"
 	},
 	leagues: {

@@ -29,6 +29,7 @@ import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants"
 import Guild, { Guilds } from "../database/game/models/Guild";
 import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
 import { Badge } from "../../../../Lib/src/types/Badge";
+import { PetUtils } from "../utils/PetUtils";
 
 /**
  * Check top interactions
@@ -170,8 +171,9 @@ function checkMoney(otherPlayer: Player, interactionsList: InteractOtherPlayerIn
  * @param otherPlayer
  * @param interactionsList
  */
-function checkPet(player: Player, otherPlayer: Player, interactionsList: InteractOtherPlayerInteraction[]): void {
-	if (otherPlayer.petId && otherPlayer.petId !== player.petId) {
+async function checkPet(player: Player, otherPlayer: Player, interactionsList: InteractOtherPlayerInteraction[]): Promise<void> {
+	// Check if the other player has a pet that is available (not on expedition without clone talisman)
+	if (otherPlayer.petId && otherPlayer.petId !== player.petId && await PetUtils.isPetAvailable(otherPlayer, "smallEvent")) {
 		interactionsList.push(InteractOtherPlayerInteraction.PET);
 	}
 }
@@ -260,7 +262,7 @@ async function getAvailableInteractions(otherPlayer: Player, player: Player, num
 	checkHealth(otherPlayer, interactionsList);
 	checkRanking(otherPlayerRank, numberOfPlayers, interactionsList, playerRank);
 	checkMoney(otherPlayer, interactionsList, player);
-	checkPet(player, otherPlayer, interactionsList);
+	await checkPet(player, otherPlayer, interactionsList);
 	guild = await checkGuildResponsibilities(otherPlayer, guild, interactionsList);
 	interactionsList.push(InteractOtherPlayerInteraction.CLASS);
 	checkEffects(otherPlayer, interactionsList);

@@ -7,6 +7,11 @@ import { PetDataController } from "../../../data/Pet";
 import { PetUtils } from "../../utils/PetUtils";
 
 export const fightPetAction: FightPetActionFunc = async (player, pet) => {
+	// Check if pet is available (handles expedition check with clone talisman logic)
+	if (!await PetUtils.isPetAvailable(player, "smallEvent")) {
+		return false;
+	}
+
 	const playerPetEntity = await PetEntities.getById(player.petId);
 	if (!playerPetEntity) {
 		return false; // Player doesn't have a pet, so cannot use one in the fight

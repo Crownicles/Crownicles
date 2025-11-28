@@ -491,7 +491,8 @@ async function canBeExecuted(player: Player): Promise<boolean> {
 		return false;
 	}
 
-	if (!player.petId) {
+	// Check if pet is available (handles expedition check with clone talisman logic)
+	if (!await PetUtils.isPetAvailable(player, "smallEvent")) {
 		return false;
 	}
 

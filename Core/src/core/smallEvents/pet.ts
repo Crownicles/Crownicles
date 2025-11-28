@@ -195,7 +195,7 @@ async function managePickedInteraction(packet: SmallEventPetPacket, response: Cr
 }
 
 export const smallEventFuncs: SmallEventFuncs = {
-	canBeExecuted: player => Maps.isOnContinent(player) && Boolean(player.petId),
+	canBeExecuted: async player => Maps.isOnContinent(player) && await PetUtils.isPetAvailable(player, "smallEvent"),
 	executeSmallEvent: async (response, player, context): Promise<void> => {
 		const petEntity = await PetEntities.getById(player.petId);
 		const pet = PetDataController.instance.getById(petEntity.typeId);
