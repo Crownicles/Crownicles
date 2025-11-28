@@ -169,7 +169,7 @@ function getValueLovePointsPetShopItem(): ShopItem {
 				nextFeed: pet.getFeedCooldown(petModel),
 				force: petModel.force,
 				speed: petModel.speed,
-				feedDelay: petModel.feedDelay,
+				feedDelay: petModel.feedDelay * PetConstants.BREED_COOLDOWN,
 				fightAssistId: getAiPetBehavior(petModel.id).id,
 				ageCategory: PetUtils.getAgeCategory(pet.id),
 				...randomPetDwarfModel && {
