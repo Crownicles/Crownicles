@@ -1878,42 +1878,42 @@
   ],
   "petFood": {
     "intro": {
-      "badSmell": "Votre fidèle compagnon s'immobilise brusquement, les narines frémissantes. Ses oreilles se dressent tandis qu'il capte une odeur nauséabonde s'échappant d'un taillis sombre. Quelque chose de fétide y croupit, abandonné depuis des jours peut-être, et votre familier semble fasciné par cette puanteur qui ferait reculer bien des créatures.",
-      "goodSmell": "Votre compagnon de route s'agite soudainement, remuant la queue avec enthousiasme, les yeux brillants d'excitation. Une senteur alléchante et sucrée flotte dans l'air. Il se met à bondir joyeusement, attiré tel un papillon par la lumière vers cette fragrance prometteuse qui éveille son appétit.",
-      "vegetarian": "Votre fidèle familier ralentit son allure et penche la tête sur le côté, intrigué par un bosquet touffu bordant le sentier. Entre les herbes folles et les fougères argentées, il semble avoir discerné quelque chose de comestible à travers la végétation.",
-      "meat": "Votre compagnon s'arrête net, les muscles tendus, fixant d'un regard intense et prédateur un point d'eau miroitant sous le soleil couchant. Ses babines se retroussent légèrement, dévoilant des crocs acérés, tandis qu'il flaire l'air avec une concentration absolue. Il a manifestement repéré une proie...",
-      "soup": "Une senteur familière et réconfortante vient chatouiller vos narines : un fumet onctueux de potage mijotant dans une marmite de cuivre. Votre fidèle compagnon dresse aussitôt les oreilles et se précipite vers un campement abandonné en bordure de chemin, où repose encore un chaudron de fer noir suspendu au-dessus de braises mourantes. Se pourrait-il qu'il s'agisse de soupe ultime ?"
+      "badSmell": "Your faithful companion suddenly stops, nostrils flaring. His ears perk up as he picks up a nauseating odor wafting from a dark copse. Something foul is stagnating there, abandoned for days perhaps, and your pet seems fascinated by the stench that would make many a creature recoil.",
+      "goodSmell": "Your travelling companion suddenly becomes agitated, wagging his tail enthusiastically, eyes shining with excitement. A sweet, tantalizing scent wafts through the air. He leaps up joyfully, drawn like a butterfly by the light towards this promising fragrance that awakens his appetite.",
+      "vegetarian": "Your faithful pet slows his pace and tilts his head to one side, intrigued by a bushy grove lining the path. Between the wild grasses and silvery ferns, he seems to have discerned something edible through the vegetation.",
+      "meat": "Your companion stops dead in his tracks, muscles tense, staring with intense, predatory gaze at a body of water shimmering under the setting sun. His lips curl up slightly, revealing sharp fangs, as he sniffs the air with absolute concentration. He's obviously spotted prey...",
+      "soup": "A familiar, comforting scent tickles your nostrils: the unctuous aroma of soup simmering in a copper pot. Your faithful companion perks up his ears and rushes to an abandoned campsite by the roadside, where a black iron cauldron still hangs over dying embers. Could this be the ultimate soup?"
     },
     "choices": {
-      "investigate": "Aller voir vous-même",
-      "sendPet": "Envoyer votre familier",
+      "investigate": "See for yourself",
+      "sendPet": "Send your pet",
       "continue": "Continue on your way"
     },
     "outcomes": {
-      "found_by_player": "Vous vous approchez prudemment et, après avoir écarté les branchages et fouillé les recoins, vous mettez la main sur **{{foodName}}**. Vous l'offrez à votre compagnon qui l'accepte avec reconnaissance, dévorant son présent avec des grognements de satisfaction.",
-      "found_by_player_soup": "Vous vous approchez prudemment du chaudron abandonné et découvrez avec satisfaction **{{foodName}}** qui mijote encore doucement. Vous en versez une généreuse portion dans une écuelle que vous présentez à votre compagnon. Celui-ci lape goulûment ce mets réconfortant en remuant la queue de contentement.",
-      "found_by_pet": "Votre familier s'élance d'un bond agile et disparaît quelques instants dans les fourrés. Il revient bientôt vers vous d'un trot fier et triomphant, tenant délicatement **{{foodName}}** entre ses crocs. Ses yeux brillent de fierté tandis qu'il s'installe pour savourer sa trouvaille avec des bruits de mastication enthousiastes.",
-      "found_by_pet_soup": "Votre familier trotte prestement vers le campement abandonné et plonge son museau dans le chaudron fumant. Il revient vers vous quelques instants plus tard, les babines encore luisantes, ayant manifestement savouré **{{foodName}}** avec un plaisir évident. Son regard pétillant et sa queue frétillante témoignent de sa satisfaction gourmande.",
-      "found_anyway": "Alors même que vous vous apprêtiez à reprendre votre route sans plus vous préoccuper de cette distraction, votre fidèle compagnon bondit soudainement vers les buissons environnants. Il en ressort victorieusement avec **{{foodName}}** qu'il engloutit sur-le-champ avec un appétit vorace, la queue frétillante de contentement.",
-      "found_anyway_soup": "Alors même que vous vous apprêtiez à reprendre votre route sans plus vous préoccuper de ce campement, votre fidèle compagnon se précipite vers le chaudron abandonné. Avant que vous ne puissiez l'en empêcher, il lape goulûment **{{foodName}}** avec des gémissements de délice, manifestement ravi de cette aubaine inattendue.",
-      "player_failed": "Vous avez passé de longues minutes éprouvantes à fouiller méticuleusement les environs, écartant ronces et épineux, retournant pierres et souches pourries, mais en dépit de tous vos efforts acharnés, vous ne dénichez rien qui vaille la peine. Le temps que vous avez investi s'est révélé aussi vain qu'une quête de trésor dans un coffre vide.",
-      "pet_failed": "Votre compagnon s'élance avec détermination dans les fourrés, mais revient quelques instants plus tard d'une démarche pesante, les oreilles basses et la queue pendante. Son regard déçu et ses couinements plaintifs trahissent son échec : la piste s'est avérée infructueuse et ses efforts n'ont produit qu'amertume.",
-      "pet_failed_soup": "Votre compagnon trotte vers le campement abandonné et renifle longuement le chaudron, mais celui-ci s'avère hélas vide ou son contenu déjà refroidi et immangeable. Il revient vers vous d'une démarche déçue, les oreilles basses et la queue pendante, manifestement frustré par cette déconvenue culinaire.",
-      "nothing": "Vous décidez sagement de ne point vous attarder davantage en ces lieux, jugeant que le temps presse et que votre quête ne saurait souffrir de tels détours. D'un geste résolu, vous enjoignez votre compagnon à vous suivre et reprenez ensemble votre chemin vers l'horizon qui vous appelle."
+      "found_by_player": "You approach cautiously and, after pushing aside the branches and searching the nooks and crannies, you lay your hands on **{{foodName}}**. You offer it to your companion, who accepts it gratefully, devouring his gift with grunts of satisfaction.",
+      "found_by_player_soup": "You cautiously approach the abandoned cauldron and discover with satisfaction **{{foodName}}** still simmering gently. You pour a generous portion into a bowl and present it to your companion. He greedily laps up the comfort food, wagging his tail in contentment.",
+      "found_by_pet": "Your pet takes off with a nimble leap and disappears for a moment into the thicket. He soon returns to you with a proud, triumphant trot, holding **{{foodName}}** delicately between his fangs. His eyes shine with pride as he settles down to savor his find with enthusiastic chewing noises.",
+      "found_by_pet_soup": "Your pet is rushing to the abandoned camp and plunges its muzzle into the smoking cauldron. It comes back to you a few moments later, the still glittering babies obviously tasted **{{foodName}}** with obvious pleasure. His painful eyes and his exhilarating tail testify to his gourmet satisfaction.",
+      "found_anyway": "Just as you're about to set off on your merry way, your faithful companion suddenly leaps into the surrounding bushes. He emerges victoriously with **{{foodName}}** which he gobbles up on the spot with a voracious appetite, his tail wagging with contentment.",
+      "found_anyway_soup": "Just as you're about to set off on your journey with no further concern for the camp, your faithful companion rushes to the abandoned cauldron. Before you can stop him, he greedily laps up **{{foodName}}** with groans of delight, clearly delighted by this unexpected windfall.",
+      "player_failed": "You've spent long, arduous minutes meticulously searching the surrounding area, pushing aside brambles and thorns, turning over stones and rotting stumps, but despite all your strenuous efforts, you can't find anything worthwhile. The time you invested proved as futile as searching for treasure in an empty chest.",
+      "pet_failed": "Your companion dashes off determinedly into the thicket, only to return a few moments later with a ponderous gait, ears low and tail hanging low. His disappointed look and plaintive squeaks betray his failure: the trail has proved fruitless and his efforts have produced nothing but bitterness.",
+      "pet_failed_soup": "Your companion trots towards the abandoned camp and takes a long sniff at the cauldron, but alas, it turns out to be empty or its contents already cooled and inedible. He returns to you with a disappointed gait, ears low and tail hanging low, clearly frustrated by this culinary disappointment.",
+      "nothing": "You wisely decide not to linger any longer in these parts, judging that time is short and that your quest cannot suffer such detours. With a resolute gesture, you ask your companion to follow you, and together you set off towards the horizon that beckons."
     },
     "foodNames": {
       "badSmell": [
-        "une charogne de corbeau en décomposition avancée",
-        "les entrailles putrides d'un gobelin des marais",
-        "un œuf de dragon pourri exhalant des vapeurs sulfureuses",
-        "un morceau de fromage bleu moisi oublié par un voyageur étourdi",
-        "les restes nauséabonds d'un rat crevé depuis plusieurs jours",
-        "une carcasse de chauve-souris infestée d'asticots grouillants",
-        "un morceau de viande faisandée abandonné par des bandits",
-        "un poisson mort aux écailles verdâtres flottant dans une mare stagnante",
-        "des abats de sanglier grouillants de mouches voraces",
-        "une panse de mouton gonflée par les gaz de putréfaction",
-        "un crâne de loup encore garni de lambeaux de chair noire"
+        "a raven's carrion in advanced decomposition",
+        "the putrid entrails of a swamp goblin",
+        "a rotten dragon egg exhaling sulfurous fumes",
+        "a piece of moldy blue cheese forgotten by a dizzy traveler",
+        "the foul-smelling remains of a rat that had died several days ago",
+        "a bat carcass infested with crawling maggots",
+        "a piece of pheasant meat abandoned by bandits",
+        "a dead fish with greenish scales floating in a stagnant pond",
+        "wild boar offal teeming with voracious flies",
+        "a sheep's belly swollen with putrefaction gases",
+        "a wolf's skull still lined with shreds of black flesh"
       ],
       "goodSmell": [
         "une tourte au miel et aux amandes encore tiède",
