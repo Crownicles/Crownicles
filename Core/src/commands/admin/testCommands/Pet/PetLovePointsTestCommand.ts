@@ -3,6 +3,7 @@ import {
 	ExecuteTestCommandLike, ITestCommand, TypeKey
 } from "../../../../core/CommandsTest";
 import { PetEntities } from "../../../../core/database/game/models/PetEntity";
+import { PetConstants } from "../../../../../../Lib/src/constants/PetConstants";
 
 export const commandInfo: ITestCommand = {
 	name: "petlovepoints",
@@ -23,8 +24,8 @@ const petLovePointsTestCommand: ExecuteTestCommandLike = async (player, args, re
 		throw new Error("Erreur petlp : vous n'avez pas de pet !");
 	}
 	const lovePoints = parseInt(args[0], 10);
-	if (lovePoints < 0 || lovePoints > 100) {
-		throw new Error("Erreur petlp : lovePoints invalide ! Fourchette de lovePoints comprise entre 0 et 100.");
+	if (lovePoints < 0 || lovePoints > PetConstants.MAX_LOVE_POINTS) {
+		throw new Error(`Erreur petlp : lovePoints invalide ! Fourchette de lovePoints comprise entre 0 et ${PetConstants.MAX_LOVE_POINTS}.`);
 	}
 	await pet.changeLovePoints({
 		player,

@@ -68,6 +68,13 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 		defaultValue: false
 	});
 
+	// Add hasCloneTalisman column to players table
+	await context.addColumn("players", "hasCloneTalisman", {
+		type: DataTypes.BOOLEAN,
+		allowNull: false,
+		defaultValue: false
+	});
+
 	// Add indexes for better query performance
 	await context.addIndex("pet_expeditions", ["playerId"], { name: "pet_expeditions_player_id" });
 	await context.addIndex("pet_expeditions", ["status"], { name: "pet_expeditions_status" });
@@ -77,6 +84,9 @@ export async function down({ context }: { context: QueryInterface }): Promise<vo
 	// Remove indexes
 	await context.removeIndex("pet_expeditions", "pet_expeditions_player_id");
 	await context.removeIndex("pet_expeditions", "pet_expeditions_status");
+
+	// Remove hasCloneTalisman column from players
+	await context.removeColumn("players", "hasCloneTalisman");
 
 	// Remove hasTalisman column from players
 	await context.removeColumn("players", "hasTalisman");

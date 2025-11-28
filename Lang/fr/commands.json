@@ -62,20 +62,20 @@
     "unavailableTitle": "{{pseudo}}, expédition impossible",
     "noTalisman_male": [
       "Vous posez la main sur votre sacoche, espérant y trouver le {emote:expedition.talisman} **Talisman d'Ancrage**, mais vos doigts ne rencontrent que le vide. Sans cet artefact ancestral, votre compagnon ne pourrait retrouver son chemin jusqu'à vous. Les anciens racontent qu'il se trouve quelque part sur les routes du royaume...",
-      "Un marchand ambulant vous observe avec curiosité. << Vous cherchez à envoyer votre bête en exploration ? >> ricane-t-il. << Sans le {emote:expedition.talisman} **Talisman d'Ancrage**, votre familier errerait pour l'éternité ! Poursuivez votre quête, jeune aventurier, cet artefact vous attend quelque part. >>",
+      "Vous  Sans le {emote:expedition.talisman} **Talisman d'Ancrage**, votre familier errerait pour l'éternité dans les contrées lointaines. Cet artefact précieux vous attend quelque part sur les routes du royaume.",
       "Votre familier vous fixe avec des yeux pleins d'espoir, prêt à partir à l'aventure. Hélas, vous ne possédez pas encore le {emote:expedition.talisman} **Talisman d'Ancrage**, ce précieux artefact qui permet aux familiers de retrouver leur maître à travers les terres les plus hostiles.",
       "Les légendes parlent d'un talisman magique, forgé par les premiers dresseurs, capable de créer un lien indéfectible entre un familier et son maître. Sans le {emote:expedition.talisman} **Talisman d'Ancrage**, envoyer votre compagnon en expédition serait pure folie."
     ],
     "noTalisman_female": [
       "Vous posez la main sur votre sacoche, espérant y trouver le {emote:expedition.talisman} **Talisman d'Ancrage**, mais vos doigts ne rencontrent que le vide. Sans cet artefact ancestral, votre compagne ne pourrait retrouver son chemin jusqu'à vous. Les anciens racontent qu'il se trouve quelque part sur les routes du royaume...",
-      "Un marchand ambulant vous observe avec curiosité. << Vous cherchez à envoyer votre bête en exploration ? >> ricane-t-il. << Sans le {emote:expedition.talisman} **Talisman d'Ancrage**, votre familier errerait pour l'éternité ! Poursuivez votre quête, jeune aventurier, cet artefact vous attend quelque part. >>",
+      "Un marchand ambulant vous observe avec curiosité et secoue la tête d'un air narquois. Sans le {emote:expedition.talisman} **Talisman d'Ancrage**, votre familier errerait pour l'éternité dans les contrées lointaines. Cet artefact précieux vous attend quelque part sur les routes du royaume.",
       "Votre familier vous fixe avec des yeux pleins d'espoir, prête à partir à l'aventure. Hélas, vous ne possédez pas encore le {emote:expedition.talisman} **Talisman d'Ancrage**, ce précieux artefact qui permet aux familiers de retrouver leur maître à travers les terres les plus hostiles.",
       "Les légendes parlent d'un talisman magique, forgé par les premiers dresseurs, capable de créer un lien indéfectible entre un familier et son maître. Sans le {emote:expedition.talisman} **Talisman d'Ancrage**, envoyer votre compagne en expédition serait pure folie."
     ],
     "noPet": [
       "Vous scrutez les alentours, mais aucun familier ne trottine à vos côtés. Les routes d'exploration sont bien trop périlleuses pour s'y aventurer seul...",
       "Une brise légère soulève la poussière du chemin. Vous réalisez avec amertume que sans compagnon fidèle, les expéditions vous sont fermées.",
-      "Les marchands d'expédition vous dévisagent avec perplexité. << Un aventurier sans familier ? Revenez donc quand vous aurez trouvé un compagnon digne de ce nom ! >>"
+      "Les marchands d'expédition vous dévisagent avec perplexité. Un aventurier sans familier ne peut prétendre aux expéditions. Il vous faut trouver un compagnon digne de ce nom."
     ],
     "insufficientLove_male": [
       "{{petDisplay}} vous lance un regard méfiant et recule d'un pas. Le lien qui vous unit n'est pas encore assez fort pour qu'il s'aventure seul dans les contrées sauvages. Prenez soin de lui, nourrissez-le, et peut-être qu'un jour il vous fera suffisamment confiance.\n\n{emote:loveLevels.3} Affection actuelle : **{{lovePoints}}**/100\n{emote:loveLevels.4} Affection requise : **80**/100",

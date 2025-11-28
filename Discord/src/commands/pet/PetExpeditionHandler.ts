@@ -146,7 +146,8 @@ export async function handleExpeditionStatusRes(
 			)
 			.setDescription(
 				StringUtils.getRandomTranslation("commands:petExpedition.noTalisman", lng, { context: sexContext })
-			);
+			)
+			.setErrorColor();
 
 		await interaction.followUp({
 			embeds: [embed]
@@ -293,6 +294,8 @@ export async function handleExpeditionStatusRes(
 				i18n.t(`commands:petExpedition.errors.${packet.cannotStartReason}`, { lng })
 			);
 		}
+
+		embed.setErrorColor();
 
 		await interaction.followUp({
 			embeds: [embed]
