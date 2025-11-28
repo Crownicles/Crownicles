@@ -490,7 +490,7 @@ export default class PetExpeditionCommand {
 		// Check and consume food
 		const foodInfo = await getFoodAvailable(player, petModel);
 		let insufficientFood = false;
-		let insufficientFoodCause: "noGuild" | "guildNoFood" | undefined = undefined;
+		let insufficientFoodCause: "noGuild" | "guildNoFood" | undefined;
 		let foodConsumed = 0;
 
 		if (foodInfo.available < foodRequired) {
