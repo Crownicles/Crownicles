@@ -670,7 +670,7 @@
         "name": "{emote:shopItems.lovePointsValue} Vétérinaire de la cour",
         "info": "Obtenir des informations détaillées sur votre familier.",
         "giveTitle": "{{pseudo}}, achat effectué !",
-        "giveDesc": "Après avoir longuement étudié votre animal et son état de santé, le vétérinaire vous donne son rapport :\n\n**{{petName}}** {{commentOnResult}}\n{emote:petInformation.loveScore} **Score d'amour** : {{actualLP}} / 100\n{emote:petInformation.diet} **Régime alimentaire** : {{diet}}\n{emote:petInformation.force} **Force** : {{force}}\n{emote:petInformation.speed} **Vitesse** : {{speed}}\n{emote:petInformation.feedDelay} **Intervalle entre repas** : {{feedDelay}} h\n{emote:petInformation.nextFeed} **Prochaine faim** : {{nextFeed}}\n{emote:petInformation.age} **Âge** : {{commentOnPetAge}}\n\n{emote:petInformation.fightEffect} **Effet de combat** : {{commentOnFightEffect}}\n\n {{dwarfPet}}",
+        "giveDesc": "Après avoir longuement étudié votre animal et son état de santé, le vétérinaire vous donne son rapport :\n\n**{{petName}}** {{commentOnResult}}\n{emote:petInformation.loveScore} **Score d'amour** : {{actualLP}} / 100\n{emote:petInformation.diet} **Régime alimentaire** : {{diet}}\n{emote:petInformation.force} **Force** : {{force}}\n{emote:petInformation.speed} **Vitesse** : {{speed}}\n{emote:petInformation.feedDelay} **Intervalle entre repas** : {{feedDelay}}\n{emote:petInformation.nextFeed} **Prochaine faim** : {{nextFeed}}\n{emote:petInformation.age} **Âge** : {{commentOnPetAge}}\n\n{emote:petInformation.fightEffect} **Effet de combat** : {{commentOnFightEffect}}\n\n {{dwarfPet}}",
         "petIsHungry": "{emote:effects.starving} affamé",
         "commentOnFightEffect": {
           "bite": [
