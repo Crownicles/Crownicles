@@ -181,6 +181,14 @@ export abstract class ExpeditionConstants {
 	};
 
 	/**
+	 * Safety caps used during expedition penalty calculations
+	 */
+	static readonly CAPS = {
+		/** Maximum cumulative love points that can be lost due to repeated cancellations/recalls */
+		MAX_CANCELLATION_LOVE_LOSS: 60
+	};
+
+	/**
 	 * Random item reward configuration
 	 * minRarity = max(1, rewardIndex - 3)
 	 * maxRarity depends on reward index:

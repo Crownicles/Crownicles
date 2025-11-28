@@ -260,9 +260,14 @@ async function handleExpeditionCancel(
 		ExpeditionConstants.CANCELLATION_PENALTY.LOOKBACK_DAYS
 	);
 
-	// Love lost = base * (1 + recentCancellations)
+	// Love lost = base * (1 + recentCancellations) but capped to 60
 	const baseLoveLost = Math.abs(ExpeditionConstants.LOVE_CHANGES.CANCEL_BEFORE_DEPARTURE_BASE);
-	const loveLost = baseLoveLost * (1 + recentCancellations);
+	let loveLost = baseLoveLost * (1 + recentCancellations);
+
+	// Prevent excessive cumulative loss — cap at constants value
+	if (loveLost > ExpeditionConstants.CAPS.MAX_CANCELLATION_LOVE_LOSS) {
+		loveLost = ExpeditionConstants.CAPS.MAX_CANCELLATION_LOVE_LOSS;
+	}
 	const loveChange = -loveLost;
 
 	// Log expedition cancellation to database
@@ -320,9 +325,14 @@ async function handleExpeditionRecall(
 		ExpeditionConstants.CANCELLATION_PENALTY.LOOKBACK_DAYS
 	);
 
-	// Love lost = base * (1 + recentCancellations)
+	// Love lost = base * (1 + recentCancellations) but capped to 60
 	const baseLoveLost = Math.abs(ExpeditionConstants.LOVE_CHANGES.RECALL_DURING_EXPEDITION);
-	const loveLost = baseLoveLost * (1 + recentCancellations);
+	let loveLost = baseLoveLost * (1 + recentCancellations);
+
+	// Prevent excessive cumulative loss — cap at constants value
+	if (loveLost > ExpeditionConstants.CAPS.MAX_CANCELLATION_LOVE_LOSS) {
+		loveLost = ExpeditionConstants.CAPS.MAX_CANCELLATION_LOVE_LOSS;
+	}
 	const loveChange = -loveLost;
 
 	// Log expedition recall to database
