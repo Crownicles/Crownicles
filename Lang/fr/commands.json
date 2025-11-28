@@ -111,7 +111,10 @@
     "expeditionStarted_male": "D'un bond enthousiaste, {{petDisplay}} s'élance vers {{location}} ! Vous le regardez disparaître à l'horizon, le cœur empli d'espoir.\n\n{emote:clocks.1} Retour prévu : {{returnTime}}",
     "expeditionStarted_female": "D'un bond enthousiaste, {{petDisplay}} s'élance vers {{location}} ! Vous la regardez disparaître à l'horizon, le cœur empli d'espoir.\n\n{emote:clocks.1} Retour prévu : {{returnTime}}",
     "foodConsumed": "\n\n{emote:expedition.food} Provisions emportées : **{{amount}}** rations",
-    "insufficientFoodWarning": "\n\n{emote:collectors.warning} **Attention !** Sans le soutien logistique de votre guilde, votre familier n'a pas pu emporter de provisions. Les risques d'échec seront **triplés** !",
+    "insufficientFoodWarning": {
+      "noGuild": "\n\n{emote:collectors.warning} **Quel dommage…** Vous n'avez pas de guilde — votre familier est parti sans provisions. Cela arrive, mais malheureusement les risques d'échec sont **triplés**. La prochaine fois, pensez à rejoindre une guilde ou à prévoir des rations !",
+      "guildNoFood": "\n\n{emote:collectors.warning} **La guilde est à court de provisions.** Votre guilde n'a pas pu fournir assez de rations, votre familier est donc parti sans ravitaillement. Les risques d'échec sont **triplés**. Reconstituez les stocks de votre guilde avant la prochaine expédition !"
+    },
     "cancelledTitle": "{{pseudo}}, départ annulé",
     "cancelled_male": "Voyant votre hésitation, {{petDisplay}} baisse la tête, déçu. Il pensait partir à l'aventure... La confiance entre vous s'effrite légèrement.\n\n{emote:unitValues.lostHealth} Affection perdue : **{{loveLost}}** points",
     "cancelled_female": "Voyant votre hésitation, {{petDisplay}} baisse la tête, déçue. Elle pensait partir à l'aventure... La confiance entre vous s'effrite légèrement.\n\n{emote:unitValues.lostHealth} Affection perdue : **{{loveLost}}** points",

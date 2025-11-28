@@ -490,11 +490,20 @@ export default class PetExpeditionCommand {
 		// Check and consume food
 		const foodInfo = await getFoodAvailable(player, petModel);
 		let insufficientFood = false;
+		let insufficientFoodCause: "noGuild" | "guildNoFood" | undefined = undefined;
 		let foodConsumed = 0;
 
 		if (foodInfo.available < foodRequired) {
 			insufficientFood = true;
 			foodConsumed = foodInfo.available;
+
+			// Distinguish between not being in a guild vs guild having no food
+			if (!player.guildId) {
+				insufficientFoodCause = "noGuild";
+			}
+			else {
+				insufficientFoodCause = "guildNoFood";
+			}
 		}
 		else {
 			foodConsumed = foodRequired;
@@ -526,7 +535,8 @@ export default class PetExpeditionCommand {
 				petEntity.nickname ?? undefined
 			),
 			foodConsumed,
-			insufficientFood
+			insufficientFood,
+			insufficientFoodCause
 		}));
 	}
 

@@ -188,6 +188,12 @@ export class CommandPetExpeditionChoicePacketRes extends CrowniclesPacket {
 	 * Whether the player had insufficient food (risk multiplied)
 	 */
 	insufficientFood?: boolean;
+
+	/**
+	 * Optional additional info about why food was insufficient.
+	 * Possible values: "noGuild" (player has no guild) or "guildNoFood" (guild exists but lacks food).
+	 */
+	insufficientFoodCause?: "noGuild" | "guildNoFood";
 }
 
 /**

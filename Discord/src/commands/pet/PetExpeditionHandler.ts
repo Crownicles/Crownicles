@@ -385,6 +385,8 @@ export async function handleExpeditionGenerateRes(
 		time: Constants.MESSAGES.COLLECTOR_TIME
 	});
 
+	const userInteractedReason = "userInteracted";
+
 	collector.on("collect", async componentInteraction => {
 		if (componentInteraction.user.id !== interaction.user.id) {
 			await sendInteractionNotForYou(componentInteraction.user, componentInteraction, lng);
@@ -402,22 +404,27 @@ export async function handleExpeditionGenerateRes(
 			);
 
 			await menuInteraction.deferUpdate();
-			collector.stop();
+			collector.stop(userInteractedReason);
 		}
 		else if (componentInteraction.isButton()) {
 			const buttonInteraction = componentInteraction as ButtonInteraction;
 			if (buttonInteraction.customId === "expedition_cancel") {
 				PacketUtils.sendPacketToBackend(context, makePacket(CommandPetExpeditionCancelPacketReq, {}));
 				await buttonInteraction.deferUpdate();
-				collector.stop();
+				collector.stop(userInteractedReason);
 			}
 		}
 	});
 
-	collector.on("end", async () => {
+	collector.on("end", async (_, reason) => {
 		selectMenu.setDisabled(true);
 		cancelButton.setDisabled(true);
 		await reply.edit({ components: [selectRow, buttonRow] }).catch(() => null);
+
+		// If the collector timed out (user didn't interact), treat it as a cancel
+		if (reason !== userInteractedReason) {
+			PacketUtils.sendPacketToBackend(context, makePacket(CommandPetExpeditionCancelPacketReq, {}));
+		}
 	});
 }
 
@@ -472,7 +479,14 @@ export async function handleExpeditionChoiceRes(
 	}
 
 	if (packet.insufficientFood) {
-		description += "\n" + i18n.t("commands:petExpedition.insufficientFoodWarning", { lng });
+		// Choose the right message depending on the cause (no guild / guild with no food). Default to a friendly no-guild message if not provided.
+		const cause = (packet as any).insufficientFoodCause as "noGuild" | "guildNoFood" | undefined;
+		if (cause === "guildNoFood") {
+			description += "\n" + i18n.t("commands:petExpedition.insufficientFoodWarning.guildNoFood", { lng });
+		}
+		else {
+			description += "\n" + i18n.t("commands:petExpedition.insufficientFoodWarning.noGuild", { lng });
+		}
 	}
 
 	const embed = new CrowniclesEmbed()
