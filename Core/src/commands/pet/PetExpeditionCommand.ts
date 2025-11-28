@@ -72,16 +72,24 @@ setInterval(() => {
  * Slot 2: Long (30 min - 3 days)
  */
 const DURATION_RANGES = [
-	{ min: 10, max: 60 },
-	{ min: 15, max: 10 * 60 },
-	{ min: 30, max: 3 * 24 * 60 }
+	{
+		min: 10, max: 60
+	},
+	{
+		min: 15, max: 10 * 60
+	},
+	{
+		min: 30, max: 3 * 24 * 60
+	}
 ];
 
 /**
  * Generate a single random expedition with specified duration range and location
  */
 function generateExpeditionWithConstraints(
-	durationRange: { min: number; max: number },
+	durationRange: {
+		min: number; max: number;
+	},
 	locationType: ExpeditionLocationType
 ): ExpeditionData {
 	const durationMinutes = RandomUtils.randInt(

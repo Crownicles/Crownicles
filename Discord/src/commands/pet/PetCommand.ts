@@ -135,7 +135,9 @@ function setupPetButtonCollector(
 	message: Message,
 	packet: CommandPetPacketRes,
 	interaction: CrowniclesInteraction,
-	buttons: { petButton: ButtonBuilder; expeditionButton?: ButtonBuilder },
+	buttons: {
+		petButton: ButtonBuilder; expeditionButton?: ButtonBuilder;
+	},
 	row: ActionRowBuilder<ButtonBuilder>,
 	context: PacketContext
 ): void {
@@ -193,7 +195,9 @@ export async function handleCommandPetPacketRes(packet: CommandPetPacketRes, con
 	// Disable pet button during expedition (can't caress a pet that's not here)
 	const petButton = createPetButton(lng, hasExpedition);
 	const row = new ActionRowBuilder<ButtonBuilder>().addComponents(petButton);
-	const buttons: { petButton: ButtonBuilder; expeditionButton?: ButtonBuilder } = { petButton };
+	const buttons: {
+		petButton: ButtonBuilder; expeditionButton?: ButtonBuilder;
+	} = { petButton };
 
 	// Add expedition button if viewing own pet
 	if (isOwnerViewingOwnPet) {
