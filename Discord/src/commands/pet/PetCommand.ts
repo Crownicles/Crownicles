@@ -61,17 +61,28 @@ function createPetButton(lng: Language, disabled = false): ButtonBuilder {
  * Create the expedition button component
  * @param lng
  * @param hasExpedition - whether an expedition is in progress
+ * @param expeditionFinished - whether the expedition has finished (time passed)
  */
-function createExpeditionButton(lng: Language, hasExpedition: boolean): ButtonBuilder {
+function createExpeditionButton(lng: Language, hasExpedition: boolean, expeditionFinished: boolean): ButtonBuilder {
 	const button = new ButtonBuilder()
-		.setCustomId("pet_expedition")
-		.setStyle(hasExpedition ? ButtonStyle.Danger : ButtonStyle.Primary);
+		.setCustomId("pet_expedition");
 
 	if (hasExpedition) {
-		button.setLabel(i18n.t("commands:pet.recallButton", { lng }));
-		button.setEmoji(CrowniclesIcons.expedition.recall);
+		if (expeditionFinished) {
+			// Expedition is done - show finish button (green/primary)
+			button.setStyle(ButtonStyle.Success);
+			button.setLabel(i18n.t("commands:pet.finishExpeditionButton", { lng }));
+			button.setEmoji(CrowniclesIcons.expedition.map);
+		}
+		else {
+			// Expedition still in progress - show recall button (red/danger)
+			button.setStyle(ButtonStyle.Danger);
+			button.setLabel(i18n.t("commands:pet.recallButton", { lng }));
+			button.setEmoji(CrowniclesIcons.expedition.recall);
+		}
 	}
 	else {
+		button.setStyle(ButtonStyle.Primary);
 		button.setLabel(i18n.t("commands:pet.expeditionButton", { lng }));
 		button.setEmoji(CrowniclesIcons.expedition.map);
 	}
@@ -191,6 +202,7 @@ export async function handleCommandPetPacketRes(packet: CommandPetPacketRes, con
 	const lng = interaction.userLanguage;
 	const isOwnerViewingOwnPet = !packet.askedKeycloakId || packet.askedKeycloakId === context.keycloakId;
 	const hasExpedition = Boolean(packet.expeditionInProgress);
+	const expeditionFinished = hasExpedition && Date.now() >= packet.expeditionInProgress!.endTime;
 
 	// Disable pet button during expedition (can't caress a pet that's not here)
 	const petButton = createPetButton(lng, hasExpedition);
@@ -201,7 +213,7 @@ export async function handleCommandPetPacketRes(packet: CommandPetPacketRes, con
 
 	// Add expedition button if viewing own pet
 	if (isOwnerViewingOwnPet) {
-		const expeditionButton = createExpeditionButton(lng, hasExpedition);
+		const expeditionButton = createExpeditionButton(lng, hasExpedition, expeditionFinished);
 		row.addComponents(expeditionButton);
 		buttons.expeditionButton = expeditionButton;
 	}

@@ -54,7 +54,8 @@
     ],
     "expeditionButton": "Expédition",
     "expeditionButtonDisabled": "Expédition (indisponible)",
-    "recallButton": "Rappeler"
+    "recallButton": "Rappeler",
+    "finishExpeditionButton": "Terminer l'exploration"
   },
   "petExpedition": {
     "title": "Expéditions de familier",
