@@ -65,7 +65,7 @@ function createPetButton(lng: Language, disabled = false): ButtonBuilder {
 function createExpeditionButton(lng: Language, hasExpedition: boolean): ButtonBuilder {
 	const button = new ButtonBuilder()
 		.setCustomId("pet_expedition")
-		.setStyle(hasExpedition ? ButtonStyle.Success : ButtonStyle.Primary);
+		.setStyle(hasExpedition ? ButtonStyle.Danger : ButtonStyle.Primary);
 
 	if (hasExpedition) {
 		button.setLabel(i18n.t("commands:pet.recallButton", { lng }));
