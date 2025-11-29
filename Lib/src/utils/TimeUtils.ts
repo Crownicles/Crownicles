@@ -16,14 +16,17 @@ function getMinutesDisplayStringConstants(language: string): {
 	hoursDisplay: string;
 	minutesDisplay: string;
 	secondsDisplay: string;
+	lessThanOneMinute: string;
 	plural: string;
 	linkWord: string;
 } {
 	return language === ""
 		? {
+			daysDisplay: "D",
 			hoursDisplay: "H",
 			minutesDisplay: "Min",
 			secondsDisplay: "s",
+			lessThanOneMinute: "< 1 Min",
 			linkWord: " ",
 			plural: ""
 		}
@@ -33,6 +36,7 @@ function getMinutesDisplayStringConstants(language: string): {
 				hoursDisplay: "heure",
 				minutesDisplay: "minute",
 				secondsDisplay: "seconde",
+				lessThanOneMinute: "< 1 minute",
 				linkWord: " et ",
 				plural: "s"
 			}
@@ -41,6 +45,7 @@ function getMinutesDisplayStringConstants(language: string): {
 				hoursDisplay: "hour",
 				minutesDisplay: "minute",
 				secondsDisplay: "second",
+				lessThanOneMinute: "< 1 Min",
 				linkWord: " and ",
 				plural: "s"
 			};
@@ -286,7 +291,7 @@ export function minutesDisplay(minutes: number, language: Language = LANGUAGE.DE
 	let hours = Math.floor(minutesToHours(minutes));
 	minutes = Math.floor(minutes % TimeConstants.S_TIME.MINUTE);
 	const days = Math.floor(hours / TimeConstants.HOURS_IN_DAY);
-	hours = hours % TimeConstants.HOURS_IN_DAY;
+	hours %= TimeConstants.HOURS_IN_DAY;
 
 	const displayConstantValues = getMinutesDisplayStringConstants(language);
 
@@ -298,7 +303,7 @@ export function minutesDisplay(minutes: number, language: Language = LANGUAGE.DE
 
 	const display = parts.join(displayConstantValues.linkWord);
 
-	return display === "" ? "< 1 Min" : display;
+	return display === "" ? displayConstantValues.lessThanOneMinute : display;
 }
 
 /**

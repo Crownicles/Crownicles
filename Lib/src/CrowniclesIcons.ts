@@ -140,6 +140,7 @@ export const CrowniclesIcons: {
 			[locationId: string]: string;
 		};
 		map: string;
+		loot: string;
 		risk: string;
 		wealth: string;
 		duration: string;
@@ -2219,6 +2220,7 @@ export const CrowniclesIcons: {
 			coast: "🌊"
 		},
 		map: "🗺️",
+		loot: "💰",
 		risk: "⚠️",
 		wealth: "💰",
 		duration: "⏱️",

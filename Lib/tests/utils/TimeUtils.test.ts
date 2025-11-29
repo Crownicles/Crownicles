@@ -24,6 +24,7 @@ describe("getWeekNumber", () => {
  		expect(minutesDisplay(60, LANGUAGE.FRENCH)).toBe("1 heure");
  		expect(minutesDisplay(30, LANGUAGE.FRENCH)).toBe("30 minutes");
  		expect(minutesDisplay(0, LANGUAGE.ENGLISH)).toBe("< 1 Min");
+ 		expect(minutesDisplay(0, LANGUAGE.FRENCH)).toBe("< 1 minute");
  	});
 
 	it("should return increasing week numbers throughout the year", () => {

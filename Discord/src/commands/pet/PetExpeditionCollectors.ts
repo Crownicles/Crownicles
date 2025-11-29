@@ -376,7 +376,7 @@ export async function createPetExpeditionFinishedCollector(
 	const claimButton = new ButtonBuilder()
 		.setCustomId("expedition_claim")
 		.setLabel(i18n.t("commands:petExpedition.claimButton", { lng }))
-		.setEmoji(CrowniclesIcons.expedition.map)
+		.setEmoji(CrowniclesIcons.expedition.loot)
 		.setStyle(ButtonStyle.Success);
 	row.addComponents(claimButton);
 
