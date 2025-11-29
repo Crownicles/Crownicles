@@ -68,24 +68,24 @@
     ],
     "noTalisman_female": [
       "Vous posez la main sur votre sacoche, espérant y trouver le {emote:expedition.talisman} **Talisman d'Ancrage**, mais vos doigts ne rencontrent que le vide. Sans cet artefact ancestral, votre compagne ne pourrait retrouver son chemin jusqu'à vous. Les anciens racontent qu'il se trouve quelque part sur les routes du royaume...",
-      "Un marchand ambulant vous observe avec curiosité et secoue la tête d'un air narquois. Sans le {emote:expedition.talisman} **Talisman d'Ancrage**, votre familier errerait pour l'éternité dans les contrées lointaines. Cet artefact précieux vous attend quelque part sur les routes du royaume.",
+      "Un vieux sage assis au bord du chemin vous observe avec curiosité et secoue la tête d'un air bienveillant. Sans le {emote:expedition.talisman} **Talisman d'Ancrage**, votre familier errerait pour l'éternité dans les contrées lointaines. Cet artefact précieux vous attend quelque part sur les routes du royaume.",
       "Votre familier vous fixe avec des yeux pleins d'espoir, prête à partir à l'aventure. Hélas, vous ne possédez pas encore le {emote:expedition.talisman} **Talisman d'Ancrage**, ce précieux artefact qui permet aux familiers de retrouver leur maître à travers les terres les plus hostiles.",
       "Les légendes parlent d'un talisman magique, forgé par les premiers dresseurs, capable de créer un lien indéfectible entre un familier et son maître. Sans le {emote:expedition.talisman} **Talisman d'Ancrage**, envoyer votre compagne en expédition serait pure folie."
     ],
     "noPet": [
       "Vous scrutez les alentours, mais aucun familier ne trottine à vos côtés. Les routes d'exploration sont bien trop périlleuses pour s'y aventurer seul...",
       "Une brise légère soulève la poussière du chemin. Vous réalisez avec amertume que sans compagnon fidèle, les expéditions vous sont fermées.",
-      "Les marchands d'expédition vous dévisagent avec perplexité. Un aventurier sans familier ne peut prétendre aux expéditions. Il vous faut trouver un compagnon digne de ce nom."
+      "Les vieux explorateurs assis près du feu vous observent avec perplexité. Un aventurier sans familier ne peut prétendre aux expéditions. Il vous faut d'abord trouver un compagnon digne de ce nom."
     ],
     "insufficientLove_male": [
-      "{{petDisplay}} vous lance un regard méfiant et recule d'un pas. Le lien qui vous unit n'est pas encore assez fort pour qu'il s'aventure seul dans les contrées sauvages. Prenez soin de lui, nourrissez-le, et peut-être qu'un jour il vous fera suffisamment confiance.\n\n{emote:loveLevels.3} Affection actuelle : **{{lovePoints}}**/100\n{emote:loveLevels.4} Affection requise : **80**/100",
-      "Votre familier se blottit contre votre jambe, tremblant légèrement. {{petDisplay}} n'est pas encore prêt à partir seul en expédition. Son cœur a besoin de plus de temps pour vous faire entièrement confiance.\n\n{emote:loveLevels.3} Affection actuelle : **{{lovePoints}}**/100\n{emote:loveLevels.4} Affection requise : **80**/100",
-      "Les yeux de {{petDisplay}} trahissent une inquiétude profonde. Partir en expédition demande un lien fort entre un familier et son maître. Continuez à prendre soin de votre compagnon pour renforcer votre complicité.\n\n{emote:loveLevels.3} Affection actuelle : **{{lovePoints}}**/100\n{emote:loveLevels.4} Affection requise : **80**/100"
+      "{{petDisplay}} vous lance un regard méfiant et recule d'un pas. Le lien qui vous unit n'est pas encore assez fort pour qu'il s'aventure seul dans les contrées sauvages. Prenez soin de lui, nourrissez-le, et peut-être qu'un jour il vous fera suffisamment confiance.\n\n*Votre compagnon semble encore trop craintif pour s'éloigner de vous. Renforcez votre lien avant de l'envoyer en expédition.*",
+      "Votre familier se blottit contre votre jambe, tremblant légèrement. {{petDisplay}} n'est pas encore prêt à partir seul en expédition. Son cœur a besoin de plus de temps pour vous faire entièrement confiance.\n\n*Le regard de votre compagnon trahit une certaine anxiété. Il lui faut encore du temps pour oser s'aventurer sans vous.*",
+      "Les yeux de {{petDisplay}} trahissent une inquiétude profonde. Partir en expédition demande un lien fort entre un familier et son maître. Continuez à prendre soin de votre compagnon pour renforcer votre complicité.\n\n*Votre familier ne vous fait pas encore assez confiance pour partir explorer seul. Caresses et friandises sauront y remédier.*"
     ],
     "insufficientLove_female": [
-      "{{petDisplay}} vous lance un regard méfiant et recule d'un pas. Le lien qui vous unit n'est pas encore assez fort pour qu'elle s'aventure seule dans les contrées sauvages. Prenez soin d'elle, nourrissez-la, et peut-être qu'un jour elle vous fera suffisamment confiance.\n\n{emote:loveLevels.3} Affection actuelle : **{{lovePoints}}**/100\n{emote:loveLevels.4} Affection requise : **80**/100",
-      "Votre familier se blottit contre votre jambe, tremblante légèrement. {{petDisplay}} n'est pas encore prête à partir seule en expédition. Son cœur a besoin de plus de temps pour vous faire entièrement confiance.\n\n{emote:loveLevels.3} Affection actuelle : **{{lovePoints}}**/100\n{emote:loveLevels.4} Affection requise : **80**/100",
-      "Les yeux de {{petDisplay}} trahissent une inquiétude profonde. Partir en expédition demande un lien fort entre un familier et son maître. Continuez à prendre soin de votre compagne pour renforcer votre complicité.\n\n{emote:loveLevels.3} Affection actuelle : **{{lovePoints}}**/100\n{emote:loveLevels.4} Affection requise : **80**/100"
+      "{{petDisplay}} vous lance un regard méfiant et recule d'un pas. Le lien qui vous unit n'est pas encore assez fort pour qu'elle s'aventure seule dans les contrées sauvages. Prenez soin d'elle, nourrissez-la, et peut-être qu'un jour elle vous fera suffisamment confiance.\n\n*Votre compagne semble encore trop craintive pour s'éloigner de vous. Renforcez votre lien avant de l'envoyer en expédition.*",
+      "Votre familier se blottit contre votre jambe, tremblante légèrement. {{petDisplay}} n'est pas encore prête à partir seule en expédition. Son cœur a besoin de plus de temps pour vous faire entièrement confiance.\n\n*Le regard de votre compagne trahit une certaine anxiété. Il lui faut encore du temps pour oser s'aventurer sans vous.*",
+      "Les yeux de {{petDisplay}} trahissent une inquiétude profonde. Partir en expédition demande un lien fort entre un familier et son maître. Continuez à prendre soin de votre compagne pour renforcer votre complicité.\n\n*Votre familier ne vous fait pas encore assez confiance pour partir explorer seule. Caresses et friandises sauront y remédier.*"
     ],
     "petHungry_male": [
       "Le ventre de {{petDisplay}} émet un grondement sonore. Les yeux suppliants, votre compagnon refuse catégoriquement de partir l'estomac vide. Nourrissez-le avant de l'envoyer à l'aventure !",
@@ -107,7 +107,7 @@
     "chooseExpeditionTitle": "{{pseudo}}, nouvelles expéditions disponibles",
     "chooseExpedition": "Un vieux cartographe déplie devant vous trois cartes jaunies par le temps. D'un doigt tremblant, il désigne les destinations possibles pour {{petDisplay}} :\n",
     "selectPlaceholder": "Choisissez une destination...",
-    "expeditionOption": "**{{number}}.** {{location}}\n{emote:expedition.duration} Durée estimée : {{duration}}\n{emote:expedition.risk} Dangerosité : {{risk}}\n{emote:expedition.wealth} Richesses potentielles : {{wealth}}\n{emote:expedition.difficulty} Difficulté du terrain : {{difficulty}}/100\n{emote:expedition.food} Provisions requises : {{foodCost}} rations",
+    "expeditionOption": "**{{number}}.** {{location}}\n{emote:expedition.duration} Durée estimée : {{duration}}\n{emote:expedition.risk} Dangerosité : {{risk}}\n{emote:expedition.wealth} Richesses potentielles : {{wealth}}\n{emote:expedition.difficulty} Difficulté du terrain : {{difficulty}}\n{emote:expedition.food} Provisions requises : {{foodCost}} rations",
     "cancelButton": "Refuser",
     "startedTitle": "{{pseudo}}, expédition lancée !",
     "expeditionStarted_male": "D'un bond enthousiaste, {{petDisplay}} s'élance vers {{location}} ! Vous le regardez disparaître à l'horizon, le cœur empli d'espoir.\n\n{emote:clocks.1} Retour prévu : {{returnTime}}",
@@ -118,11 +118,11 @@
       "guildNoFood": "\n\n{emote:collectors.warning} **La guilde est à court de provisions.** Votre guilde n'a pas pu fournir assez de rations, votre familier est donc parti sans ravitaillement. Les risques d'échec sont **triplés**. Reconstituez les stocks de votre guilde avant la prochaine expédition !"
     },
     "cancelledTitle": "{{pseudo}}, départ annulé",
-    "cancelled_male": "Voyant votre hésitation, {{petDisplay}} baisse la tête, déçu. Il pensait partir à l'aventure... La confiance entre vous s'effrite légèrement.\n\n{emote:unitValues.lostHealth} Affection perdue : **{{loveLost}}** points",
-    "cancelled_female": "Voyant votre hésitation, {{petDisplay}} baisse la tête, déçue. Elle pensait partir à l'aventure... La confiance entre vous s'effrite légèrement.\n\n{emote:unitValues.lostHealth} Affection perdue : **{{loveLost}}** points",
+    "cancelled_male": "Voyant votre hésitation, {{petDisplay}} baisse la tête, déçu. Il pensait partir à l'aventure... Vous sentez que la confiance entre vous s'effrite légèrement. Votre compagnon vous lance un regard blessé avant de s'éloigner, la queue basse.",
+    "cancelled_female": "Voyant votre hésitation, {{petDisplay}} baisse la tête, déçue. Elle pensait partir à l'aventure... Vous sentez que la confiance entre vous s'effrite légèrement. Votre compagne vous lance un regard blessé avant de s'éloigner, la queue basse.",
     "recalledTitle": "{{pseudo}}, familier rappelé",
-    "recalled_male": "Entendant votre appel, {{petDisplay}} abandonne sa quête et revient vers vous, la queue basse et le regard chargé de reproches. Il ne ramène rien de son périple interrompu.\n\n{emote:unitValues.lostHealth} Affection perdue : **{{loveLost}}** points",
-    "recalled_female": "Entendant votre appel, {{petDisplay}} abandonne sa quête et revient vers vous, la queue basse et le regard chargé de reproches. Elle ne ramène rien de son périple interrompu.\n\n{emote:unitValues.lostHealth} Affection perdue : **{{loveLost}}** points",
+    "recalled_male": "Entendant votre appel, {{petDisplay}} abandonne sa quête et revient vers vous, la queue basse et le regard chargé de reproches. Il ne ramène rien de son périple interrompu. La déception se lit dans ses yeux — il vous en voudra pendant un moment.",
+    "recalled_female": "Entendant votre appel, {{petDisplay}} abandonne sa quête et revient vers vous, la queue basse et le regard chargé de reproches. Elle ne ramène rien de son périple interrompu. La déception se lit dans ses yeux — elle vous en voudra pendant un moment.",
     "successTitle": "{{pseudo}}, retour triomphal !",
     "success_male": [
       "Au détour du chemin, une silhouette familière apparaît ! {{petDisplay}} revient de {{location}}, la démarche fière et les pattes chargées de trésors !",
@@ -156,7 +156,10 @@
       "Après une longue absence, {{petDisplay}} réapparaît enfin, épuisée et penaude. Les dangers de {{location}} ont eu raison de sa quête. Elle se blottit contre vous, quémandant réconfort.",
       "Les pattes tremblantes, {{petDisplay}} émerge des ombres. L'expédition vers {{location}} s'est soldée par un échec. Votre familier a besoin de temps pour se remettre de cette mésaventure."
     ],
-    "loveChange": "\n{emote:expedition.love} Affection : {{change}}",
+    "loveChangeFailure": "\n\n{emote:expedition.love} L'échec de cette expédition a fragilisé le lien entre vous. Votre compagnon aura besoin de temps et d'attention pour retrouver confiance.",
+    "loveChangePartialNegative": "\n\n{emote:expedition.love} Les difficultés rencontrées ont quelque peu ébranlé la confiance de votre familier. Quelques caresses et friandises l'aideront à se remettre.",
+    "loveChangePartialPositive": "\n\n{emote:expedition.love} Malgré les embûches, cette aventure a renforcé légèrement le lien entre vous. Votre compagnon apprécie que vous lui fassiez confiance.",
+    "loveChangeSuccess": "\n\n{emote:expedition.love} Cette expédition réussie a renforcé le lien qui vous unit. Votre familier vous regarde avec une admiration renouvelée !",
     "duration": {
       "minutes": "{{count}} minute",
       "minutes_other": "{{count}} minutes",
@@ -188,6 +191,13 @@
       "modest": "Modestes",
       "rich": "Abondantes",
       "legendary": "Legendaires"
+    },
+    "difficultyCategories": {
+      "trivial": "Aisé",
+      "easy": "Accessible",
+      "moderate": "Exigeant",
+      "challenging": "Ardu",
+      "treacherous": "Impitoyable"
     },
     "locations": {
       "forest": "les Profondeurs de la Forêt du Vieillard",

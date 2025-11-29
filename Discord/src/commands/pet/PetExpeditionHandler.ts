@@ -68,6 +68,14 @@ function getTranslatedWealthCategoryName(wealthRate: number, lng: Language): str
 }
 
 /**
+ * Get translated difficulty category name for display
+ */
+function getTranslatedDifficultyCategoryName(difficulty: number, lng: Language): string {
+	const categoryKey = ExpeditionConstants.getDifficultyCategoryName(difficulty);
+	return i18n.t(`commands:petExpedition.difficultyCategories.${categoryKey}`, { lng });
+}
+
+/**
  * Format duration for display
  */
 function formatDuration(minutes: number, lng: Language): string {
@@ -355,7 +363,7 @@ export async function handleExpeditionGenerateRes(
 			duration: formatDuration(exp.durationMinutes, lng),
 			risk: getTranslatedRiskCategoryName(exp.riskRate, lng),
 			wealth: getTranslatedWealthCategoryName(exp.wealthRate, lng),
-			difficulty: exp.difficulty,
+			difficulty: getTranslatedDifficultyCategoryName(exp.difficulty, lng),
 			foodCost: exp.foodCost ?? 1
 		})}`;
 
@@ -618,10 +626,7 @@ export async function handleExpeditionResolveRes(
 			petDisplay,
 			location: `${locationEmoji} ${locationName}`
 		});
-		description += i18n.t("commands:petExpedition.loveChange", {
-			lng,
-			change: packet.loveChange.toString()
-		});
+		description += i18n.t("commands:petExpedition.loveChangeFailure", { lng });
 	}
 	else if (packet.partialSuccess) {
 		title = i18n.t("commands:petExpedition.partialSuccessTitle", {
@@ -636,10 +641,7 @@ export async function handleExpeditionResolveRes(
 		if (packet.rewards) {
 			description += formatRewards(packet.rewards, lng);
 		}
-		description += i18n.t("commands:petExpedition.loveChange", {
-			lng,
-			change: packet.loveChange >= 0 ? `+${packet.loveChange}` : packet.loveChange.toString()
-		});
+		description += i18n.t(packet.loveChange >= 0 ? "commands:petExpedition.loveChangePartialPositive" : "commands:petExpedition.loveChangePartialNegative", { lng });
 	}
 	else {
 		title = i18n.t("commands:petExpedition.successTitle", {
@@ -654,10 +656,7 @@ export async function handleExpeditionResolveRes(
 		if (packet.rewards) {
 			description += formatRewards(packet.rewards, lng);
 		}
-		description += i18n.t("commands:petExpedition.loveChange", {
-			lng,
-			change: `+${packet.loveChange}`
-		});
+		description += i18n.t("commands:petExpedition.loveChangeSuccess", { lng });
 	}
 
 	const embed = new CrowniclesEmbed()

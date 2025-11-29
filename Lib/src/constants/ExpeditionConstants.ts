@@ -80,6 +80,34 @@ export abstract class ExpeditionConstants {
 	};
 
 	/**
+	 * Difficulty categories for display purposes
+	 * Difficulty is a value from 0 to 100
+	 * 5 categories: trivial (0-20), easy (21-40), moderate (41-60), challenging (61-80), treacherous (81+)
+	 */
+	static readonly DIFFICULTY_DISPLAY_CATEGORIES = {
+		TRIVIAL: {
+			MAX: 20,
+			NAME: "trivial"
+		},
+		EASY: {
+			MAX: 40,
+			NAME: "easy"
+		},
+		MODERATE: {
+			MAX: 60,
+			NAME: "moderate"
+		},
+		CHALLENGING: {
+			MAX: 80,
+			NAME: "challenging"
+		},
+		TREACHEROUS: {
+			MAX: 100,
+			NAME: "treacherous"
+		}
+	};
+
+	/**
 	 * Wealth rate range (multiplier)
 	 */
 	static readonly WEALTH_RATE = {
@@ -419,6 +447,27 @@ export abstract class ExpeditionConstants {
 			return ExpeditionConstants.WEALTH_DISPLAY_CATEGORIES.RICH.NAME;
 		}
 		return ExpeditionConstants.WEALTH_DISPLAY_CATEGORIES.LEGENDARY.NAME;
+	}
+
+	/**
+	 * Get the difficulty category name based on difficulty value
+	 * @param difficulty - Difficulty value (0-100)
+	 * @returns The category name key for translations
+	 */
+	static getDifficultyCategoryName(difficulty: number): string {
+		if (difficulty <= ExpeditionConstants.DIFFICULTY_DISPLAY_CATEGORIES.TRIVIAL.MAX) {
+			return ExpeditionConstants.DIFFICULTY_DISPLAY_CATEGORIES.TRIVIAL.NAME;
+		}
+		if (difficulty <= ExpeditionConstants.DIFFICULTY_DISPLAY_CATEGORIES.EASY.MAX) {
+			return ExpeditionConstants.DIFFICULTY_DISPLAY_CATEGORIES.EASY.NAME;
+		}
+		if (difficulty <= ExpeditionConstants.DIFFICULTY_DISPLAY_CATEGORIES.MODERATE.MAX) {
+			return ExpeditionConstants.DIFFICULTY_DISPLAY_CATEGORIES.MODERATE.NAME;
+		}
+		if (difficulty <= ExpeditionConstants.DIFFICULTY_DISPLAY_CATEGORIES.CHALLENGING.MAX) {
+			return ExpeditionConstants.DIFFICULTY_DISPLAY_CATEGORIES.CHALLENGING.NAME;
+		}
+		return ExpeditionConstants.DIFFICULTY_DISPLAY_CATEGORIES.TREACHEROUS.NAME;
 	}
 
 	/**
