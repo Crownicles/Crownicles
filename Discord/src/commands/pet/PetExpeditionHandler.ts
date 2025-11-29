@@ -174,6 +174,14 @@ export async function handleExpeditionStatusRes(
 		const petDisplay = `${DisplayUtils.getPetIcon(expedition.petId, expedition.petSex as SexTypeShort)} **${DisplayUtils.getPetNicknameOrTypeName(expedition.petNickname ?? null, expedition.petId, expedition.petSex as SexTypeShort, lng)}**`;
 		const sexContext = getSexContext(expedition.petSex as SexTypeShort);
 
+		// Build food info string if food was consumed
+		const foodInfo = expedition.foodConsumed && expedition.foodConsumed > 0
+			? i18n.t("commands:petExpedition.inProgressFoodInfo", {
+				lng,
+				amount: expedition.foodConsumed
+			})
+			: "";
+
 		const embed = new CrowniclesEmbed()
 			.formatAuthor(
 				i18n.t("commands:petExpedition.inProgressTitle", {
@@ -189,7 +197,8 @@ export async function handleExpeditionStatusRes(
 					petDisplay,
 					location: `${locationEmoji} ${locationName}`,
 					risk: getTranslatedRiskCategoryName(expedition.riskRate, lng),
-					returnTime: finishInTimeDisplay(endTime)
+					returnTime: finishInTimeDisplay(endTime),
+					foodInfo
 				})
 			);
 
@@ -346,7 +355,8 @@ export async function handleExpeditionGenerateRes(
 			duration: formatDuration(exp.durationMinutes, lng),
 			risk: getTranslatedRiskCategoryName(exp.riskRate, lng),
 			wealth: getTranslatedWealthCategoryName(exp.wealthRate, lng),
-			difficulty: exp.difficulty
+			difficulty: exp.difficulty,
+			foodCost: exp.foodCost ?? 1
 		})}`;
 
 		selectMenu.addOptions({

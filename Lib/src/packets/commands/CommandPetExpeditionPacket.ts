@@ -35,6 +35,11 @@ export interface ExpeditionData {
 	 * Location type affecting reward weights
 	 */
 	locationType: ExpeditionLocationType;
+
+	/**
+	 * Food cost for this expedition (based on reward index)
+	 */
+	foodCost?: number;
 }
 
 /**
@@ -61,6 +66,11 @@ export interface ExpeditionInProgressData extends ExpeditionData {
 	petSex: string;
 
 	petNickname?: string;
+
+	/**
+	 * Amount of food consumed for this expedition
+	 */
+	foodConsumed?: number;
 }
 
 /**

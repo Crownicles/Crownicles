@@ -32,6 +32,8 @@ export class PetExpedition extends Model {
 
 	declare status: string;
 
+	declare foodConsumed: number;
+
 	declare updatedAt: Date;
 
 	declare createdAt: Date;
@@ -89,7 +91,8 @@ export class PetExpedition extends Model {
 			status: this.status as ExpeditionStatus,
 			petId: petTypeId,
 			petSex,
-			petNickname
+			petNickname,
+			foodConsumed: this.foodConsumed
 		};
 	}
 }
@@ -121,7 +124,8 @@ export class PetExpeditions {
 		playerId: number,
 		petId: number,
 		expeditionData: ExpeditionData,
-		durationMinutes: number
+		durationMinutes: number,
+		foodConsumed: number
 	): PetExpedition {
 		const startDate = new Date();
 		const endDate = new Date(startDate.getTime() + durationMinutes * 60 * 1000);
@@ -135,7 +139,8 @@ export class PetExpeditions {
 			difficulty: expeditionData.difficulty,
 			wealthRate: expeditionData.wealthRate,
 			locationType: expeditionData.locationType,
-			status: ExpeditionConstants.STATUS.IN_PROGRESS
+			status: ExpeditionConstants.STATUS.IN_PROGRESS,
+			foodConsumed
 		});
 	}
 
@@ -207,6 +212,11 @@ export function initModel(sequelize: Sequelize): void {
 			type: DataTypes.STRING(32), // eslint-disable-line new-cap
 			allowNull: false,
 			defaultValue: ExpeditionConstants.STATUS.IN_PROGRESS
+		},
+		foodConsumed: {
+			type: DataTypes.INTEGER,
+			allowNull: false,
+			defaultValue: 0
 		},
 		updatedAt: {
 			type: DataTypes.DATE,

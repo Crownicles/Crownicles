@@ -51,6 +51,12 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 			allowNull: false,
 			defaultValue: EXPEDITION_STATUS_IN_PROGRESS
 		},
+		foodConsumed: {
+			// Amount of food consumed when the expedition departed
+			type: DataTypes.INTEGER,
+			allowNull: false,
+			defaultValue: 0
+		},
 		updatedAt: {
 			type: DataTypes.DATE,
 			allowNull: false

@@ -111,7 +111,7 @@ function generateExpeditionWithConstraints(
 		* (ExpeditionConstants.WEALTH_RATE.MAX - ExpeditionConstants.WEALTH_RATE.MIN)
 		+ ExpeditionConstants.WEALTH_RATE.MIN;
 
-	return {
+	const expeditionData: ExpeditionData = {
 		id: `${ExpeditionConstants.ID_GENERATION.PREFIX}_${Date.now()}_${RandomUtils.randInt(ExpeditionConstants.ID_GENERATION.RANDOM_MIN, ExpeditionConstants.ID_GENERATION.RANDOM_MAX)}`,
 		durationMinutes,
 		riskRate,
@@ -119,6 +119,11 @@ function generateExpeditionWithConstraints(
 		wealthRate: Math.round(wealthRate * ExpeditionConstants.PERCENTAGE.DECIMAL_PRECISION) / ExpeditionConstants.PERCENTAGE.DECIMAL_PRECISION,
 		locationType
 	};
+
+	// Calculate food cost based on reward index
+	expeditionData.foodCost = ExpeditionConstants.FOOD_CONSUMPTION[calculateRewardIndex(expeditionData)];
+
+	return expeditionData;
 }
 
 /**
@@ -405,44 +410,303 @@ async function applyExpeditionRewards(
 }
 
 /**
- * Get food required for expedition based on pet diet
+ * Food types with their ration values
+ * Priority order: commonFood (treats) > carnivorousFood/herbivorousFood > ultimateFood (soup)
  */
-async function getFoodAvailable(player: Player, petModel: Pet): Promise<{
-	available: number;
-	foodType: "carnivorousFood" | "herbivorousFood";
-}> {
+type FoodType = "commonFood" | "carnivorousFood" | "herbivorousFood" | "ultimateFood";
+
+const FOOD_RATION_VALUES: Record<FoodType, number> = {
+	commonFood: 1,
+	carnivorousFood: 3,
+	herbivorousFood: 3,
+	ultimateFood: 5
+};
+
+interface FoodConsumptionPlan {
+	totalRations: number;
+	consumption: {
+		foodType: FoodType;
+		itemsToConsume: number;
+		rationsProvided: number;
+	}[];
+}
+
+/**
+ * Calculate the optimal food consumption plan
+ * Priority: treats > meat/salad (based on diet) > soup
+ * Minimizes excess rations while respecting priority order
+ */
+async function calculateFoodConsumptionPlan(
+	player: Player,
+	petModel: Pet,
+	rationsRequired: number
+): Promise<FoodConsumptionPlan> {
+	const plan: FoodConsumptionPlan = {
+		totalRations: 0,
+		consumption: []
+	};
+
 	if (!player.guildId) {
-		return {
-			available: 0, foodType: petModel.canEatMeat() ? "carnivorousFood" : "herbivorousFood"
-		};
+		return plan;
 	}
 
 	const guild = await Guilds.getById(player.guildId);
 	if (!guild) {
+		return plan;
+	}
+
+	const dietFoodType: FoodType = petModel.canEatMeat() ? "carnivorousFood" : "herbivorousFood";
+	const dietRationValue = FOOD_RATION_VALUES[dietFoodType];
+	const soupRationValue = FOOD_RATION_VALUES.ultimateFood;
+	const treatRationValue = FOOD_RATION_VALUES.commonFood;
+
+	// Available food
+	const availableTreats = guild.commonFood;
+	const availableDiet = guild[dietFoodType];
+	const availableSoup = guild.ultimateFood;
+
+	// Find the optimal combination using a linear algorithm
+	const result = findOptimalFoodCombination({
+		required: rationsRequired,
+		availableTreats,
+		availableDiet,
+		availableSoup,
+		treatValue: treatRationValue,
+		dietValue: dietRationValue,
+		soupValue: soupRationValue
+	});
+
+	// Build the plan
+	if (result.treats > 0) {
+		plan.consumption.push({
+			foodType: "commonFood",
+			itemsToConsume: result.treats,
+			rationsProvided: result.treats * treatRationValue
+		});
+		plan.totalRations += result.treats * treatRationValue;
+	}
+
+	if (result.diet > 0) {
+		const rationsProvided = result.diet * dietRationValue;
+		plan.consumption.push({
+			foodType: dietFoodType,
+			itemsToConsume: result.diet,
+			rationsProvided
+		});
+		plan.totalRations += rationsProvided;
+	}
+
+	if (result.soup > 0) {
+		const rationsProvided = result.soup * soupRationValue;
+		plan.consumption.push({
+			foodType: "ultimateFood",
+			itemsToConsume: result.soup,
+			rationsProvided
+		});
+		plan.totalRations += rationsProvided;
+	}
+
+	return plan;
+}
+
+interface FoodCombination {
+	treats: number;
+	diet: number;
+	soup: number;
+	total: number;
+	excess: number;
+}
+
+interface DietSoupCombo {
+	diet: number;
+	soup: number;
+}
+
+interface FoodOptimizationParams {
+	required: number;
+	availableTreats: number;
+	availableDiet: number;
+	availableSoup: number;
+	treatValue: number;
+	dietValue: number;
+	soupValue: number;
+}
+
+/**
+ * Find the optimal food combination
+ * Rules:
+ * 1. Must reach required rations (or use all available if not enough)
+ * 2. Minimize excess rations
+ * 3. When same excess, prefer treats > diet > soup
+ */
+function findOptimalFoodCombination(params: FoodOptimizationParams): FoodCombination {
+	const {
+		required, availableTreats, availableDiet, availableSoup, treatValue, dietValue, soupValue
+	} = params;
+
+	// Calculate max usable treats
+	const maxTreats = Math.min(availableTreats, required);
+
+	let bestOption: FoodCombination | null = null;
+
+	// For each possible number of treats, find the best diet+soup combo
+	for (let t = 0; t <= maxTreats; t++) {
+		const remaining = required - t * treatValue;
+
+		if (remaining <= 0) {
+			// Treats alone are enough
+			const option: FoodCombination = {
+				treats: t,
+				diet: 0,
+				soup: 0,
+				total: t * treatValue,
+				excess: t * treatValue - required
+			};
+			if (isBetterOption(option, bestOption)) {
+				bestOption = option;
+			}
+			continue;
+		}
+
+		// Find best diet+soup combination for remaining rations
+		const dietSoupOptions = findBestDietSoupCombo(remaining, availableDiet, availableSoup, dietValue, soupValue);
+
+		for (const ds of dietSoupOptions) {
+			const option: FoodCombination = {
+				treats: t,
+				diet: ds.diet,
+				soup: ds.soup,
+				total: t * treatValue + ds.diet * dietValue + ds.soup * soupValue,
+				excess: t * treatValue + ds.diet * dietValue + ds.soup * soupValue - required
+			};
+			if (isBetterOption(option, bestOption)) {
+				bestOption = option;
+			}
+		}
+	}
+
+	// If no valid option found, use all available
+	if (!bestOption) {
+		const total = availableTreats * treatValue + availableDiet * dietValue + availableSoup * soupValue;
 		return {
-			available: 0, foodType: petModel.canEatMeat() ? "carnivorousFood" : "herbivorousFood"
+			treats: availableTreats,
+			diet: availableDiet,
+			soup: availableSoup,
+			total,
+			excess: total - required
 		};
 	}
 
-	if (petModel.canEatMeat() && petModel.canEatVegetables()) {
-		// Omnivore - use whichever is available
-		if (guild.carnivorousFood > 0) {
-			return {
-				available: guild.carnivorousFood, foodType: "carnivorousFood"
-			};
+	return bestOption;
+}
+
+/**
+ * Find best diet+soup combinations for a given remaining amount
+ * Returns a small set of candidate options
+ */
+function findBestDietSoupCombo(
+	remaining: number,
+	availableDiet: number,
+	availableSoup: number,
+	dietValue: number,
+	soupValue: number
+): DietSoupCombo[] {
+	const options: DietSoupCombo[] = [];
+
+	// Option 1: Diet only
+	if (availableDiet > 0) {
+		const dietNeeded = Math.ceil(remaining / dietValue);
+		if (dietNeeded <= availableDiet) {
+			options.push({
+				diet: dietNeeded,
+				soup: 0
+			});
 		}
-		return {
-			available: guild.herbivorousFood, foodType: "herbivorousFood"
-		};
 	}
-	else if (petModel.canEatMeat()) {
-		return {
-			available: guild.carnivorousFood, foodType: "carnivorousFood"
-		};
+
+	// Option 2: Soup only
+	if (availableSoup > 0) {
+		const soupNeeded = Math.ceil(remaining / soupValue);
+		if (soupNeeded <= availableSoup) {
+			options.push({
+				diet: 0,
+				soup: soupNeeded
+			});
+		}
 	}
-	return {
-		available: guild.herbivorousFood, foodType: "herbivorousFood"
-	};
+
+	// Option 3: Combinations - for each diet count, compute minimum soup needed
+	for (let d = 0; d <= Math.min(availableDiet, Math.ceil(remaining / dietValue)); d++) {
+		const fromDiet = d * dietValue;
+		if (fromDiet >= remaining) {
+			continue; // Already covered by diet-only option
+		}
+		const soupNeeded = Math.ceil((remaining - fromDiet) / soupValue);
+		if (soupNeeded <= availableSoup) {
+			options.push({
+				diet: d,
+				soup: soupNeeded
+			});
+		}
+	}
+
+	return options;
+}
+
+/**
+ * Compare two options: returns true if 'option' is better than 'best'
+ */
+function isBetterOption(option: FoodCombination, best: FoodCombination | null): boolean {
+	if (!best) {
+		return true;
+	}
+
+	// Only consider valid options (those that meet requirement)
+	if (option.excess < 0) {
+		return false;
+	}
+	if (best.excess < 0) {
+		return true;
+	}
+
+	// Prefer lower excess
+	if (option.excess < best.excess) {
+		return true;
+	}
+	if (option.excess > best.excess) {
+		return false;
+	}
+
+	// Same excess: prefer more treats
+	if (option.treats > best.treats) {
+		return true;
+	}
+	if (option.treats < best.treats) {
+		return false;
+	}
+
+	// Same treats: prefer more diet
+	return option.diet > best.diet;
+}
+
+/**
+ * Apply the food consumption plan to the guild storage
+ */
+async function applyFoodConsumptionPlan(guildId: number, plan: FoodConsumptionPlan): Promise<void> {
+	if (plan.consumption.length === 0) {
+		return;
+	}
+
+	const guild = await Guilds.getById(guildId);
+	if (!guild) {
+		return;
+	}
+
+	for (const item of plan.consumption) {
+		guild[item.foodType] -= item.itemsToConsume;
+	}
+
+	await guild.save();
 }
 
 export default class PetExpeditionCommand {
@@ -660,17 +924,16 @@ export default class PetExpeditionCommand {
 
 		const petModel = PetDataController.instance.getById(petEntity.typeId);
 		const rewardIndex = calculateRewardIndex(expeditionData);
-		const foodRequired = ExpeditionConstants.FOOD_CONSUMPTION[rewardIndex];
+		const rationsRequired = ExpeditionConstants.FOOD_CONSUMPTION[rewardIndex];
 
-		// Check and consume food
-		const foodInfo = await getFoodAvailable(player, petModel);
+		// Calculate optimal food consumption plan
+		const foodPlan = await calculateFoodConsumptionPlan(player, petModel, rationsRequired);
+
 		let insufficientFood = false;
 		let insufficientFoodCause: "noGuild" | "guildNoFood" | undefined;
-		let foodConsumed = 0;
 
-		if (foodInfo.available < foodRequired) {
+		if (foodPlan.totalRations < rationsRequired) {
 			insufficientFood = true;
-			foodConsumed = foodInfo.available;
 
 			// Distinguish between not being in a guild vs guild having no food
 			if (!player.guildId) {
@@ -680,17 +943,10 @@ export default class PetExpeditionCommand {
 				insufficientFoodCause = "guildNoFood";
 			}
 		}
-		else {
-			foodConsumed = foodRequired;
-		}
 
-		// Consume food from guild
-		if (foodConsumed > 0 && player.guildId) {
-			const guild = await Guilds.getById(player.guildId);
-			if (guild) {
-				guild[foodInfo.foodType] -= foodConsumed;
-				await guild.save();
-			}
+		// Apply food consumption to guild storage
+		if (player.guildId && foodPlan.consumption.length > 0) {
+			await applyFoodConsumptionPlan(player.guildId, foodPlan);
 		}
 
 		// Create expedition
@@ -698,7 +954,8 @@ export default class PetExpeditionCommand {
 			player.id,
 			petEntity.id,
 			expeditionData,
-			expeditionData.durationMinutes
+			expeditionData.durationMinutes,
+			foodPlan.totalRations
 		);
 		await expedition.save();
 
@@ -709,7 +966,7 @@ export default class PetExpeditionCommand {
 				petEntity.sex,
 				petEntity.nickname ?? undefined
 			),
-			foodConsumed,
+			foodConsumed: foodPlan.totalRations,
 			insufficientFood,
 			insufficientFoodCause
 		}));
