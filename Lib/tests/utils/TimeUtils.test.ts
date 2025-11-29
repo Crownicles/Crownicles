@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
-import {getWeekNumber} from "../../src/utils/TimeUtils";
+import {getWeekNumber, minutesDisplay} from "../../src/utils/TimeUtils";
+import {LANGUAGE} from "../../src/Language";
 
 describe("getWeekNumber", () => {
 	it("should return 1 for the first week of January", () => {
@@ -7,6 +8,23 @@ describe("getWeekNumber", () => {
 		const week = getWeekNumber(date);
 		expect(week).toBe(1);
 	});
+
+	it("minutesDisplay should show days/hours/minutes in French", () => {
+ 		// 3040 minutes = 50 hours 40 minutes = 2 days 2 hours 40 minutes
+ 		const display = minutesDisplay(3040, LANGUAGE.FRENCH);
+ 		expect(display).toBe("2 jours et 2 heures et 40 minutes");
+ 	});
+
+	it("minutesDisplay should show days/hours/minutes in English", () => {
+ 		const display = minutesDisplay(3040, LANGUAGE.ENGLISH);
+ 		expect(display).toBe("2 days and 2 hours and 40 minutes");
+ 	});
+
+	it("minutesDisplay small values", () => {
+ 		expect(minutesDisplay(60, LANGUAGE.FRENCH)).toBe("1 heure");
+ 		expect(minutesDisplay(30, LANGUAGE.FRENCH)).toBe("30 minutes");
+ 		expect(minutesDisplay(0, LANGUAGE.ENGLISH)).toBe("< 1 Min");
+ 	});
 
 	it("should return increasing week numbers throughout the year", () => {
 		const weekStart = getWeekNumber(new Date("2025-01-05"));

@@ -156,6 +156,10 @@
     "recalledTitle": "{{pseudo}}, familier rappelé",
     "recalled_male": "Entendant votre appel, {{petDisplay}} abandonne sa quête et revient vers vous, la queue basse et le regard chargé de reproches. Il ne ramène rien de son périple interrompu. La déception se lit dans ses yeux — il vous en voudra pendant un moment.",
     "recalled_female": "Entendant votre appel, {{petDisplay}} abandonne sa quête et revient vers vous, la queue basse et le regard chargé de reproches. Elle ne ramène rien de son périple interrompu. La déception se lit dans ses yeux — elle vous en voudra pendant un moment.",
+    "finishedTitle": "{{pseudo}}, expédition terminée !",
+    "finishedDescription_male": "Le {emote:expedition.talisman} **Talisman d'Ancrage** vibre intensément dans votre sacoche : {{petDisplay}} est de retour de son expédition vers {{location}} !\n\n{emote:expedition.risk} Dangerosité : {{risk}}\n\n*Votre compagnon trépigne d'impatience, pressé de vous montrer ce qu'il a rapporté !*",
+    "finishedDescription_female": "Le {emote:expedition.talisman} **Talisman d'Ancrage** vibre intensément dans votre sacoche : {{petDisplay}} est de retour de son expédition vers {{location}} !\n\n{emote:expedition.risk} Dangerosité : {{risk}}\n\n*Votre compagne trépigne d'impatience, pressée de vous montrer ce qu'elle a rapporté !*",
+    "claimButton": "Découvrir le butin",
     "successTitle": "{{pseudo}}, retour triomphal !",
     "success_male": [
       "Au détour du chemin, une silhouette familière apparaît ! {{petDisplay}} revient de son expédition : **{{location}}**, la démarche fière et les pattes chargées de trésors !",

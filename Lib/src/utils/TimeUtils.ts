@@ -12,6 +12,7 @@ import {
  * @param language
  */
 function getMinutesDisplayStringConstants(language: string): {
+	daysDisplay: string;
 	hoursDisplay: string;
 	minutesDisplay: string;
 	secondsDisplay: string;
@@ -28,6 +29,7 @@ function getMinutesDisplayStringConstants(language: string): {
 		}
 		: language === LANGUAGE.FRENCH
 			? {
+				daysDisplay: "jour",
 				hoursDisplay: "heure",
 				minutesDisplay: "minute",
 				secondsDisplay: "seconde",
@@ -35,6 +37,7 @@ function getMinutesDisplayStringConstants(language: string): {
 				plural: "s"
 			}
 			: {
+				daysDisplay: "day",
 				hoursDisplay: "hour",
 				minutesDisplay: "minute",
 				secondsDisplay: "second",
@@ -279,14 +282,22 @@ export function getTimeFromXHoursAgo(hours: number): Date {
  * @param language
  */
 export function minutesDisplay(minutes: number, language: Language = LANGUAGE.DEFAULT_LANGUAGE): string {
-	const hours = Math.floor(minutesToHours(minutes));
+	// Compute components
+	let hours = Math.floor(minutesToHours(minutes));
 	minutes = Math.floor(minutes % TimeConstants.S_TIME.MINUTE);
+	const days = Math.floor(hours / TimeConstants.HOURS_IN_DAY);
+	hours = hours % TimeConstants.HOURS_IN_DAY;
+
 	const displayConstantValues = getMinutesDisplayStringConstants(language);
-	const display = [
+
+	const parts = [
+		days > 0 ? `${days} ${displayConstantValues.daysDisplay}${days > 1 ? displayConstantValues.plural : ""}` : "",
 		hours > 0 ? `${hours} ${displayConstantValues.hoursDisplay}${hours > 1 ? displayConstantValues.plural : ""}` : "",
 		minutes > 0 ? `${minutes} ${displayConstantValues.minutesDisplay}${minutes > 1 ? displayConstantValues.plural : ""}` : ""
-	].filter(v => v !== "")
-		.join(displayConstantValues.linkWord);
+	].filter(v => v !== "");
+
+	const display = parts.join(displayConstantValues.linkWord);
+
 	return display === "" ? "< 1 Min" : display;
 }
 

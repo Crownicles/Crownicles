@@ -175,7 +175,7 @@ export async function handleExpeditionStatusRes(
 					lng,
 					context: sexContext,
 					petDisplay,
-					location: `${locationEmoji} **${locationName}**`,
+					location: `${locationEmoji} ${locationName}`,
 					risk: getTranslatedRiskCategoryName(expedition.riskRate, lng),
 					returnTime: finishInTimeDisplay(new Date(expedition.endTime)),
 					foodInfo
@@ -287,7 +287,7 @@ export async function handleExpeditionChoiceRes(
 		lng,
 		context: sexContext,
 		petDisplay,
-		location: `${locationEmoji} **${locationName}**`,
+		location: `${locationEmoji} ${locationName}`,
 		returnTime: finishInTimeDisplay(new Date(expedition.endTime))
 	});
 
@@ -427,7 +427,7 @@ export async function handleExpeditionResolveRes(
 		description = StringUtils.getRandomTranslation("commands:petExpedition.totalFailure", lng, {
 			context: sexContext,
 			petDisplay,
-			location: `${locationEmoji} **${locationName}**`
+			location: `${locationEmoji} ${locationName}`
 		});
 		description += i18n.t("commands:petExpedition.loveChangeFailure", { lng });
 	}
@@ -439,7 +439,7 @@ export async function handleExpeditionResolveRes(
 		description = StringUtils.getRandomTranslation("commands:petExpedition.partialSuccess", lng, {
 			context: sexContext,
 			petDisplay,
-			location: `${locationEmoji} **${locationName}**`
+			location: `${locationEmoji} ${locationName}`
 		});
 		if (packet.rewards) {
 			description += formatRewards(packet.rewards, lng);
@@ -454,7 +454,7 @@ export async function handleExpeditionResolveRes(
 		description = StringUtils.getRandomTranslation("commands:petExpedition.success", lng, {
 			context: sexContext,
 			petDisplay,
-			location: `${locationEmoji} **${locationName}**`
+			location: `${locationEmoji} ${locationName}`
 		});
 		if (packet.rewards) {
 			description += formatRewards(packet.rewards, lng);

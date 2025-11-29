@@ -28,6 +28,7 @@ import {
 	ReactionCollectorPetExpeditionChoiceData,
 	ExpeditionOptionData
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorPetExpeditionChoice";
+import { ReactionCollectorPetExpeditionFinishedData } from "../../../../Lib/src/packets/interaction/ReactionCollectorPetExpeditionFinished";
 import { ReactionCollectorReturnTypeOrNull } from "../../packetHandlers/handlers/ReactionCollectorHandlers";
 import {
 	DiscordCollectorUtils, disableRows
@@ -124,7 +125,7 @@ export async function createPetExpeditionCollector(
 				lng,
 				context: sexContext,
 				petDisplay,
-				location: `${locationEmoji} **${locationName}**`,
+				location: `${locationEmoji} ${locationName}`,
 				risk: getTranslatedRiskCategoryName(data.riskRate, lng),
 				returnTime: finishInTimeDisplay(new Date(data.returnTime)),
 				foodInfo
@@ -164,15 +165,15 @@ export async function createPetExpeditionCollector(
 			return;
 		}
 
-		await buttonInteraction.deferReply();
-
 		if (buttonInteraction.customId === "expedition_recall") {
-			// Recall - send reaction index 0
+			// Recall - defer reply as Core will send a response
+			await buttonInteraction.deferReply();
 			DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, buttonInteraction, 0);
 		}
 		else if (buttonInteraction.customId === "expedition_cancel_view") {
-			// Close - send reaction index 1
-			DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, buttonInteraction, 1);
+			// Close - just acknowledge, no response expected from Core
+			await buttonInteraction.deferUpdate();
+			DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, null, 1);
 		}
 
 		collector.stop();
@@ -328,6 +329,89 @@ export async function createPetExpeditionChoiceCollector(
 		selectMenu.setDisabled(true);
 		cancelButton.setDisabled(true);
 		await msg.edit({ components: [selectRow, buttonRow] }).catch(() => null);
+	});
+
+	return [collector];
+}
+
+/**
+ * Create a collector for the finished expedition view with claim option
+ */
+export async function createPetExpeditionFinishedCollector(
+	context: PacketContext,
+	packet: ReactionCollectorCreationPacket
+): Promise<ReactionCollectorReturnTypeOrNull> {
+	const interaction = DiscordCache.getInteraction(context.discord!.interaction);
+	if (!interaction) {
+		return null;
+	}
+
+	const data = packet.data.data as ReactionCollectorPetExpeditionFinishedData;
+	const lng = interaction.userLanguage;
+
+	const locationEmoji = ExpeditionConstants.getLocationEmoji(data.locationType);
+	const locationName = getExpeditionLocationName(lng, data.mapLocationId, data.isDistantExpedition);
+	const petDisplay = `${DisplayUtils.getPetIcon(data.petId, data.petSex)} **${DisplayUtils.getPetNicknameOrTypeName(data.petNickname ?? null, data.petId, data.petSex, lng)}**`;
+	const sexContext = getSexContext(data.petSex);
+
+	const embed = new CrowniclesEmbed()
+		.formatAuthor(
+			i18n.t("commands:petExpedition.finishedTitle", {
+				lng,
+				pseudo: escapeUsername(interaction.user.displayName)
+			}),
+			interaction.user
+		)
+		.setDescription(
+			i18n.t("commands:petExpedition.finishedDescription", {
+				lng,
+				context: sexContext,
+				petDisplay,
+				location: `${locationEmoji} ${locationName}`,
+				risk: getTranslatedRiskCategoryName(data.riskRate, lng)
+			})
+		);
+
+	const row = new ActionRowBuilder<ButtonBuilder>();
+	const claimButton = new ButtonBuilder()
+		.setCustomId("expedition_claim")
+		.setLabel(i18n.t("commands:petExpedition.claimButton", { lng }))
+		.setEmoji(CrowniclesIcons.expedition.map)
+		.setStyle(ButtonStyle.Success);
+	row.addComponents(claimButton);
+
+	const msg = await interaction.channel.send({
+		embeds: [embed],
+		components: [row]
+	});
+
+	if (!msg) {
+		return null;
+	}
+
+	const collector = msg.createMessageComponentCollector({
+		time: packet.endTime - Date.now()
+	});
+
+	collector.on("collect", async (buttonInteraction: ButtonInteraction) => {
+		if (buttonInteraction.user.id !== interaction.user.id) {
+			await sendInteractionNotForYou(buttonInteraction.user, buttonInteraction, lng);
+			return;
+		}
+
+		// Claim - defer reply as Core will send a response with rewards
+		await buttonInteraction.deferReply();
+
+		if (buttonInteraction.customId === "expedition_claim") {
+			DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, buttonInteraction, 0);
+		}
+
+		collector.stop();
+	});
+
+	collector.on("end", async () => {
+		disableRows([row]);
+		await msg.edit({ components: [row] }).catch(() => null);
 	});
 
 	return [collector];

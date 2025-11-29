@@ -133,10 +133,7 @@ function getMapLocationsFromLink(mapLinkId: number): number[] {
  */
 function getRandomDistantMapLocation(excludeIds: number[]): number {
 	const allLocations = MapLocationDataController.instance.getAll()
-		.filter(loc =>
-			loc.attribute === MapConstants.MAP_ATTRIBUTES.CONTINENT1
-			&& !excludeIds.includes(loc.id)
-		);
+		.filter(loc => loc.attribute === MapConstants.MAP_ATTRIBUTES.CONTINENT1 && !excludeIds.includes(loc.id));
 
 	if (allLocations.length === 0) {
 		// Fallback: just pick any location from continent 1

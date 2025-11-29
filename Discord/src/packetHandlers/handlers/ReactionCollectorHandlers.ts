@@ -102,9 +102,11 @@ import { ReactionCollectorDeposeItemData } from "../../../../Lib/src/packets/int
 import { deposeItemCollector } from "../../commands/player/DepositCommand";
 import { ReactionCollectorPetExpeditionData } from "../../../../Lib/src/packets/interaction/ReactionCollectorPetExpedition";
 import { ReactionCollectorPetExpeditionChoiceData } from "../../../../Lib/src/packets/interaction/ReactionCollectorPetExpeditionChoice";
+import { ReactionCollectorPetExpeditionFinishedData } from "../../../../Lib/src/packets/interaction/ReactionCollectorPetExpeditionFinished";
 import {
 	createPetExpeditionCollector,
-	createPetExpeditionChoiceCollector
+	createPetExpeditionChoiceCollector,
+	createPetExpeditionFinishedCollector
 } from "../../commands/pet/PetExpeditionCollectors";
 
 // Needed because we need to accept any parameter
@@ -164,6 +166,7 @@ export default class ReactionCollectorHandler {
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorLimogesData.name, limogesCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorPetExpeditionData.name, createPetExpeditionCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorPetExpeditionChoiceData.name, createPetExpeditionChoiceCollector);
+		ReactionCollectorHandler.collectorMap.set(ReactionCollectorPetExpeditionFinishedData.name, createPetExpeditionFinishedCollector);
 	}
 
 	@packetHandler(ReactionCollectorCreationPacket)

@@ -51,6 +51,10 @@ import {
 	ReactionCollectorPetExpeditionSelectReaction,
 	ExpeditionOptionData
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorPetExpeditionChoice";
+import {
+	ReactionCollectorPetExpeditionFinished,
+	ReactionCollectorPetExpeditionClaimReaction
+} from "../../../../Lib/src/packets/interaction/ReactionCollectorPetExpeditionFinished";
 import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
 
 /**
@@ -298,20 +302,52 @@ export default class PetExpeditionCommand {
 		if (activeExpedition) {
 			const now = Date.now();
 
-			// Check if expedition is complete - auto-resolve
+			// Check if expedition is complete - show claim rewards menu
 			if (now >= activeExpedition.endDate.getTime()) {
-				// Redirect to resolve - Discord handler will check hasExpeditionInProgress and endTime
-				response.push(makePacket(CommandPetExpeditionPacketRes, {
-					hasTalisman: true,
-					hasExpeditionInProgress: true,
-					expeditionInProgress: activeExpedition.toExpeditionInProgressData(
-						petEntity.typeId,
-						petEntity.sex,
-						petEntity.nickname ?? undefined
-					),
-					canStartExpedition: false,
-					petLovePoints: petEntity.lovePoints
-				}));
+				const finishedCollector = new ReactionCollectorPetExpeditionFinished({
+					petId: petEntity.typeId,
+					petSex: petEntity.sex as SexTypeShort,
+					petNickname: petEntity.nickname ?? undefined,
+					mapLocationId: activeExpedition.mapLocationId,
+					locationType: activeExpedition.locationType as ExpeditionLocationType,
+					riskRate: activeExpedition.riskRate,
+					foodConsumed: activeExpedition.foodConsumed,
+					isDistantExpedition: undefined
+				});
+
+				const finishedEndCallback: EndCallback = async (collectorInstance: ReactionCollectorInstance, resp: CrowniclesPacket[]): Promise<void> => {
+					const reaction = collectorInstance.getFirstReaction();
+
+					// Unblock player when collector ends
+					BlockingUtils.unblockPlayer(context.keycloakId, BlockingConstants.REASONS.PET_EXPEDITION);
+
+					// Reload player data
+					const reloadedPlayer = await Player.findOne({ where: { keycloakId: context.keycloakId } });
+					if (!reloadedPlayer) {
+						return;
+					}
+
+					// If claim was selected, resolve the expedition
+					if (reaction && reaction.reaction.type === ReactionCollectorPetExpeditionClaimReaction.name) {
+						await PetExpeditionCommand.doResolveExpedition(resp, reloadedPlayer);
+					}
+
+					// If timeout, do nothing (player can click expedition again later)
+				};
+
+				const finishedCollectorPacket = new ReactionCollectorInstance(
+					finishedCollector,
+					context,
+					{
+						allowedPlayerKeycloakIds: [context.keycloakId],
+						reactionLimit: 1
+					},
+					finishedEndCallback
+				)
+					.block(context.keycloakId, BlockingConstants.REASONS.PET_EXPEDITION)
+					.build();
+
+				response.push(finishedCollectorPacket);
 				return;
 			}
 
@@ -474,17 +510,11 @@ export default class PetExpeditionCommand {
 	}
 
 	/**
-	 * Resolve a completed expedition
+	 * Internal method to resolve expedition - used by both the command and the finished collector
 	 */
-	@commandRequires(CommandPetExpeditionResolvePacketReq, {
-		notBlocked: true,
-		disallowedEffects: CommandUtils.DISALLOWED_EFFECTS.NOT_STARTED_OR_DEAD,
-		whereAllowed: CommandUtils.WHERE.EVERYWHERE
-	})
-	async resolveExpedition(
+	private static async doResolveExpedition(
 		response: CrowniclesPacket[],
-		player: Player,
-		_packet: CommandPetExpeditionResolvePacketReq
+		player: Player
 	): Promise<void> {
 		// Validate prerequisites
 		const validation = await validateExpeditionPrerequisites(player.id, player.petId);
@@ -536,5 +566,21 @@ export default class PetExpeditionCommand {
 			petNickname: petEntity.nickname ?? undefined,
 			expedition: expeditionData
 		}));
+	}
+
+	/**
+	 * Resolve a completed expedition
+	 */
+	@commandRequires(CommandPetExpeditionResolvePacketReq, {
+		notBlocked: true,
+		disallowedEffects: CommandUtils.DISALLOWED_EFFECTS.NOT_STARTED_OR_DEAD,
+		whereAllowed: CommandUtils.WHERE.EVERYWHERE
+	})
+	async resolveExpedition(
+		response: CrowniclesPacket[],
+		player: Player,
+		_packet: CommandPetExpeditionResolvePacketReq
+	): Promise<void> {
+		await PetExpeditionCommand.doResolveExpedition(response, player);
 	}
 }

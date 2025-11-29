@@ -2227,7 +2227,7 @@
       ]
     },
     "talismanReceived": [
-      "Velanna vous observe en silence pendant de longues secondes. Puis, lentement, elle extrait de sa sacoche un pendentif de pierre noire veinée d'or. Le **Talisman d'Ancrage** pulse d'une lueur douce. Elle estime que vous avez fait vos preuves et vous enjoint de prendre soin de **{{pet}}**. Le lien entre un maître et sa bête est sacré. Elle pose le talisman dans votre main et referme vos doigts dessus, vous invitant à explorer le monde.\n\nVous recevez le **Talisman d'Ancrage** ! Vous pouvez désormais envoyer votre familier en expédition depuis la commande {command:pet}."
+      "Velanna vous observe en silence pendant de longues secondes. Puis, lentement, elle extrait de sa sacoche un pendentif de pierre noire veinée d'or. Le {emote:expedition.talisman} **Talisman d'Ancrage** pulse d'une lueur douce. Elle estime que vous avez fait vos preuves et vous enjoint de prendre soin de **{{pet}}**. Le lien entre un maître et sa bête est sacré. Elle pose le talisman dans votre main et referme vos doigts dessus, vous invitant à explorer le monde.\n\nVous recevez le {emote:expedition.talisman} **Talisman d'Ancrage** ! Vous pouvez désormais envoyer votre familier en expédition depuis la commande {command:pet}."
     ],
     "expeditionBonus": [
       "Velanna surgit des ombres et pose une main sur votre épaule. Elle perçoit la présence de **{{pet}}** à des lieues d'ici et sourit, un spectacle rare. Votre familier explore courageusement et le talisman renforce votre lien. Elle glisse quelques pièces dans votre main en guise d'offrande pour votre patience. Vous recevez **{{bonusMoney}} {emote:unitValues.money}** et **{{bonusExperience}} {emote:unitValues.xp}** !",
