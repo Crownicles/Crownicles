@@ -134,7 +134,7 @@
     "chooseExpedition": "Le {emote:expedition.talisman} **Talisman d'Ancrage** vibre doucement dans votre sacoche. Trois destinations apparaissent dans votre esprit, révélées par la magie de l'artefact. {{petDisplay}} trépigne d'impatience, prêt à partir explorer l'une de ces contrées :",
     "selectPlaceholder": "Choisissez une destination...",
     "distantExpeditionPrefix": "Expédition lointaine : {{location}}",
-    "expeditionOption": "\n\n**{{number}}. {{location}}**{emote:expedition.duration} Durée estimée : {{duration}}\n{emote:expedition.risk} Dangerosité : {{risk}}\n{emote:expedition.wealth} Richesses potentielles : {{wealth}}\n{emote:expedition.difficulty} Difficulté du terrain : {{difficulty}}\n{emote:expedition.food} Provisions requises : {{foodDisplay}}",
+    "expeditionOption": "\n\n**{{number}}.** {{location}}\n{emote:expedition.duration} Durée estimée : {{duration}}\n{emote:expedition.risk} Dangerosité : {{risk}}\n{emote:expedition.wealth} Richesses potentielles : {{wealth}}\n{emote:expedition.difficulty} Difficulté du terrain : {{difficulty}}\n{emote:expedition.food} Provisions requises : {{foodDisplay}}",
     "foodCost_one": "{{count}} ration",
     "foodCost_other": "{{count}} rations",
     "cancelButton": "Annuler l'expédition",

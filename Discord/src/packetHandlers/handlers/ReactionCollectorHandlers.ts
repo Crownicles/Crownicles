@@ -100,6 +100,12 @@ import { ReactionCollectorDailyBonusData } from "../../../../Lib/src/packets/int
 import { handleDailyBonusCollector } from "../../commands/player/DailyBonusCommand";
 import { ReactionCollectorDeposeItemData } from "../../../../Lib/src/packets/interaction/ReactionCollectorDeposeItem";
 import { deposeItemCollector } from "../../commands/player/DepositCommand";
+import { ReactionCollectorPetExpeditionData } from "../../../../Lib/src/packets/interaction/ReactionCollectorPetExpedition";
+import { ReactionCollectorPetExpeditionChoiceData } from "../../../../Lib/src/packets/interaction/ReactionCollectorPetExpeditionChoice";
+import {
+	createPetExpeditionCollector,
+	createPetExpeditionChoiceCollector
+} from "../../commands/pet/PetExpeditionCollectors";
 
 // Needed because we need to accept any parameter
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -156,6 +162,8 @@ export default class ReactionCollectorHandler {
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorPveFightData.name, handleStartPveFight);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorDailyBonusData.name, handleDailyBonusCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorLimogesData.name, limogesCollector);
+		ReactionCollectorHandler.collectorMap.set(ReactionCollectorPetExpeditionData.name, createPetExpeditionCollector);
+		ReactionCollectorHandler.collectorMap.set(ReactionCollectorPetExpeditionChoiceData.name, createPetExpeditionChoiceCollector);
 	}
 
 	@packetHandler(ReactionCollectorCreationPacket)

@@ -5,48 +5,31 @@ import { DiscordCache } from "../../bot/DiscordCache";
 import i18n from "../../translations/i18n";
 import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import { CrowniclesErrorEmbed } from "../../messages/CrowniclesErrorEmbed";
-import {
-	ActionRowBuilder,
-	ButtonBuilder,
-	ButtonInteraction,
-	ButtonStyle,
-	StringSelectMenuBuilder,
-	StringSelectMenuInteraction
-} from "discord.js";
-import { Constants } from "../../../../Lib/src/constants/Constants";
-import { sendInteractionNotForYou } from "../../utils/ErrorUtils";
 import { PacketUtils } from "../../utils/PacketUtils";
 import {
 	escapeUsername, StringUtils
 } from "../../utils/StringUtils";
-import {
-	finishInTimeDisplay, minutesDisplay
-} from "../../../../Lib/src/utils/TimeUtils";
+import { finishInTimeDisplay } from "../../../../Lib/src/utils/TimeUtils";
 import {
 	ExpeditionConstants, ExpeditionLocationType
 } from "../../../../Lib/src/constants/ExpeditionConstants";
 import { Language } from "../../../../Lib/src/Language";
-import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 import { DisplayUtils } from "../../utils/DisplayUtils";
 import {
 	SexTypeShort, StringConstants
 } from "../../../../Lib/src/constants/StringConstants";
 import {
 	CommandPetExpeditionPacketRes,
-	CommandPetExpeditionGeneratePacketReq,
-	CommandPetExpeditionGeneratePacketRes,
-	CommandPetExpeditionChoicePacketReq,
 	CommandPetExpeditionChoicePacketRes,
-	CommandPetExpeditionCancelPacketReq,
 	CommandPetExpeditionCancelPacketRes,
-	CommandPetExpeditionRecallPacketReq,
 	CommandPetExpeditionRecallPacketRes,
 	CommandPetExpeditionResolvePacketReq,
 	CommandPetExpeditionResolvePacketRes,
 	CommandPetExpeditionErrorPacket
 } from "../../../../Lib/src/packets/commands/CommandPetExpeditionPacket";
-import { ChangeBlockingReasonPacket } from "../../../../Lib/src/packets/utils/ChangeBlockingReasonPacket";
-import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
+import {
+	ButtonInteraction, StringSelectMenuInteraction
+} from "discord.js";
 
 /**
  * Get the sex context string for i18n translations (male/female)
@@ -56,27 +39,41 @@ function getSexContext(sex: SexTypeShort): string {
 }
 
 /**
+ * Helper to send response using the correct interaction (button/select menu or original)
+ */
+async function sendResponse(
+	context: PacketContext,
+	embed: CrowniclesEmbed
+): Promise<void> {
+	const interaction = DiscordCache.getInteraction(context.discord!.interaction);
+	if (!interaction) {
+		return;
+	}
+
+	// Check if we have a button or select menu interaction from a collector
+	const buttonInteraction = context.discord?.buttonInteraction
+		? DiscordCache.getButtonInteraction(context.discord.buttonInteraction) as ButtonInteraction | undefined
+		: undefined;
+	const selectMenuInteraction = context.discord?.stringSelectMenuInteraction
+		? DiscordCache.getStringSelectMenuInteraction(context.discord.stringSelectMenuInteraction) as StringSelectMenuInteraction | undefined
+		: undefined;
+
+	const componentInteraction = buttonInteraction ?? selectMenuInteraction;
+
+	if (componentInteraction && !componentInteraction.replied) {
+		await componentInteraction.editReply({ embeds: [embed] });
+	}
+	else {
+		await interaction.channel.send({ embeds: [embed] });
+	}
+}
+
+/**
  * Get translated risk category name for display
  */
 function getTranslatedRiskCategoryName(riskRate: number, lng: Language): string {
 	const categoryKey = ExpeditionConstants.getRiskCategoryName(riskRate);
 	return i18n.t(`commands:petExpedition.riskCategories.${categoryKey}`, { lng });
-}
-
-/**
- * Get translated wealth category name for display
- */
-function getTranslatedWealthCategoryName(wealthRate: number, lng: Language): string {
-	const categoryKey = ExpeditionConstants.getWealthCategoryName(wealthRate);
-	return i18n.t(`commands:petExpedition.wealthCategories.${categoryKey}`, { lng });
-}
-
-/**
- * Get translated difficulty category name for display
- */
-function getTranslatedDifficultyCategoryName(difficulty: number, lng: Language): string {
-	const categoryKey = ExpeditionConstants.getDifficultyCategoryName(difficulty);
-	return i18n.t(`commands:petExpedition.difficultyCategories.${categoryKey}`, { lng });
 }
 
 /**
@@ -100,6 +97,8 @@ function getExpeditionLocationName(
 
 /**
  * Handle the initial expedition status response
+ * This only handles error cases and auto-resolve redirect.
+ * Collector creation is now handled via ReactionCollectorCreationPacket.
  */
 export async function handleExpeditionStatusRes(
 	context: PacketContext,
@@ -135,30 +134,27 @@ export async function handleExpeditionStatusRes(
 		return;
 	}
 
-	// Check if there's an expedition in progress
+	// Check if there's an expedition in progress that's complete (auto-resolve)
 	if (packet.hasExpeditionInProgress && packet.expeditionInProgress) {
 		const expedition = packet.expeditionInProgress;
-		const endTime = new Date(expedition.endTime);
 		const now = Date.now();
 
-		// Check if expedition is complete
+		// Check if expedition is complete - redirect to resolve
 		if (now >= expedition.endTime) {
-			// Send resolve request
 			PacketUtils.sendPacketToBackend(context, makePacket(CommandPetExpeditionResolvePacketReq, {}));
 			return;
 		}
 
-		// Show expedition in progress with recall option
+		/*
+		 * If expedition is still in progress but we got this packet, it means
+		 * the collector failed or wasn't created. This shouldn't happen in normal flow.
+		 * But we can show an informational message
+		 */
 		const locationEmoji = ExpeditionConstants.getLocationEmoji(expedition.locationType as ExpeditionLocationType);
-		const locationName = getExpeditionLocationName(
-			lng,
-			expedition.mapLocationId!,
-			expedition.isDistantExpedition
-		);
+		const locationName = getExpeditionLocationName(lng, expedition.mapLocationId!, expedition.isDistantExpedition);
 		const petDisplay = `${DisplayUtils.getPetIcon(expedition.petId, expedition.petSex as SexTypeShort)} **${DisplayUtils.getPetNicknameOrTypeName(expedition.petNickname ?? null, expedition.petId, expedition.petSex as SexTypeShort, lng)}**`;
 		const sexContext = getSexContext(expedition.petSex as SexTypeShort);
 
-		// Build food info string if food was consumed
 		const foodInfo = expedition.foodConsumed && expedition.foodConsumed > 0
 			? i18n.t("commands:petExpedition.inProgressFoodInfo", {
 				lng,
@@ -179,83 +175,18 @@ export async function handleExpeditionStatusRes(
 					lng,
 					context: sexContext,
 					petDisplay,
-					location: `${locationEmoji} ${locationName}`,
+					location: `${locationEmoji} **${locationName}**`,
 					risk: getTranslatedRiskCategoryName(expedition.riskRate, lng),
-					returnTime: finishInTimeDisplay(endTime),
+					returnTime: finishInTimeDisplay(new Date(expedition.endTime)),
 					foodInfo
 				})
 			);
 
-		const row = new ActionRowBuilder<ButtonBuilder>();
-		const recallButton = new ButtonBuilder()
-			.setCustomId("expedition_recall")
-			.setLabel(i18n.t("commands:petExpedition.recallButton", { lng }))
-			.setEmoji(CrowniclesIcons.expedition.recall)
-			.setStyle(ButtonStyle.Danger);
-		row.addComponents(recallButton);
-
-		const cancelButton = new ButtonBuilder()
-			.setCustomId("expedition_cancel_view")
-			.setLabel(i18n.t("commands:petExpedition.closeButton", { lng }))
-			.setStyle(ButtonStyle.Secondary);
-		row.addComponents(cancelButton);
-
-		const reply = await interaction.followUp({
-			embeds: [embed],
-			components: [row]
-		});
-
-		if (!reply) {
-			return;
-		}
-
-		const collector = reply.createMessageComponentCollector({
-			time: Constants.MESSAGES.COLLECTOR_TIME
-		});
-
-		const userInteractedReason = "userInteracted";
-
-		collector.on("collect", async (buttonInteraction: ButtonInteraction) => {
-			if (buttonInteraction.user.id !== interaction.user.id) {
-				await sendInteractionNotForYou(buttonInteraction.user, buttonInteraction, lng);
-				return;
-			}
-
-			if (buttonInteraction.customId === "expedition_recall") {
-				// Recall packet will unblock the player
-				PacketUtils.sendPacketToBackend(context, makePacket(CommandPetExpeditionRecallPacketReq, {}));
-				await buttonInteraction.deferUpdate();
-				collector.stop(userInteractedReason);
-			}
-			else if (buttonInteraction.customId === "expedition_cancel_view") {
-				// Unblock player when closing the view without recall
-				PacketUtils.sendPacketToBackend(context, makePacket(ChangeBlockingReasonPacket, {
-					oldReason: BlockingConstants.REASONS.PET_EXPEDITION,
-					newReason: BlockingConstants.REASONS.NONE
-				}));
-				await buttonInteraction.update({ components: [] });
-				collector.stop(userInteractedReason);
-			}
-		});
-
-		collector.on("end", async (_, reason) => {
-			recallButton.setDisabled(true);
-			cancelButton.setDisabled(true);
-			await reply.edit({ components: [row] }).catch(() => null);
-
-			// Unblock player on timeout only (user interactions handle unblocking themselves)
-			if (reason !== userInteractedReason) {
-				PacketUtils.sendPacketToBackend(context, makePacket(ChangeBlockingReasonPacket, {
-					oldReason: BlockingConstants.REASONS.PET_EXPEDITION,
-					newReason: BlockingConstants.REASONS.NONE
-				}));
-			}
-		});
-
+		await interaction.followUp({ embeds: [embed] });
 		return;
 	}
 
-	// Check if player can start an expedition
+	// Check if player can't start an expedition (error cases)
 	if (!packet.canStartExpedition) {
 		const embed = new CrowniclesEmbed()
 			.formatAuthor(
@@ -309,167 +240,12 @@ export async function handleExpeditionStatusRes(
 		await interaction.followUp({
 			embeds: [embed]
 		});
-		return;
 	}
 
-	// Request expedition options
-	PacketUtils.sendPacketToBackend(context, makePacket(CommandPetExpeditionGeneratePacketReq, {}));
-}
-
-/**
- * Handle the expedition generation response - show 3 options to choose from
- */
-export async function handleExpeditionGenerateRes(
-	context: PacketContext,
-	packet: CommandPetExpeditionGeneratePacketRes
-): Promise<void> {
-	const interaction = DiscordCache.getInteraction(context.discord!.interaction);
-	if (!interaction) {
-		return;
-	}
-
-	const lng = interaction.userLanguage;
-	const petDisplay = packet.petId && packet.petSex
-		? `${DisplayUtils.getPetIcon(packet.petId, packet.petSex as SexTypeShort)} **${DisplayUtils.getPetNicknameOrTypeName(packet.petNickname ?? null, packet.petId, packet.petSex as SexTypeShort, lng)}**`
-		: i18n.t("commands:pet.defaultPetName", { lng });
-
-	// Build the embed with expedition options
-	let description = i18n.t("commands:petExpedition.chooseExpedition", {
-		lng,
-		petDisplay
-	});
-
-	const selectMenu = new StringSelectMenuBuilder()
-		.setCustomId("expedition_choice")
-		.setPlaceholder(i18n.t("commands:petExpedition.selectPlaceholder", { lng }));
-
-	for (let i = 0; i < packet.expeditions.length; i++) {
-		const exp = packet.expeditions[i];
-		const locationEmoji = ExpeditionConstants.getLocationEmoji(exp.locationType as ExpeditionLocationType);
-		const locationName = getExpeditionLocationName(
-			lng,
-			exp.mapLocationId!,
-			exp.isDistantExpedition
-		);
-
-		// Use displayDurationMinutes (rounded to nearest 10) for the selection menu
-		const displayDuration = minutesDisplay(exp.displayDurationMinutes, lng);
-		const foodCost = exp.foodCost ?? 1;
-		const foodDisplay = i18n.t("commands:petExpedition.foodCost", {
-			lng,
-			count: foodCost
-		});
-
-		description += i18n.t("commands:petExpedition.expeditionOption", {
-			lng,
-			number: i + 1,
-			location: `${locationEmoji} ${locationName}`,
-			duration: displayDuration,
-			risk: getTranslatedRiskCategoryName(exp.riskRate, lng),
-			wealth: getTranslatedWealthCategoryName(exp.wealthRate, lng),
-			difficulty: getTranslatedDifficultyCategoryName(exp.difficulty, lng),
-			foodDisplay
-		});
-
-		selectMenu.addOptions({
-			label: `${locationEmoji} ${locationName}`.substring(0, 100),
-			description: `${displayDuration} - ${getTranslatedRiskCategoryName(exp.riskRate, lng)}`,
-			value: exp.id
-		});
-	}
-
-	// Add guild provisions info with pet excitement text
-	const sexContext = getSexContext(packet.petSex as SexTypeShort);
-	if (packet.hasGuild && packet.guildFoodAmount !== undefined) {
-		description += i18n.t("commands:petExpedition.guildProvisionsInfo", {
-			lng,
-			context: sexContext,
-			petDisplay,
-			amount: packet.guildFoodAmount
-		});
-	}
-	else {
-		description += i18n.t("commands:petExpedition.noGuildProvisionsInfo", {
-			lng,
-			context: sexContext,
-			petDisplay
-		});
-	}
-
-	const embed = new CrowniclesEmbed()
-		.formatAuthor(
-			i18n.t("commands:petExpedition.chooseExpeditionTitle", {
-				lng,
-				pseudo: escapeUsername(interaction.user.displayName)
-			}),
-			interaction.user
-		)
-		.setDescription(description);
-
-	const selectRow = new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(selectMenu);
-	const buttonRow = new ActionRowBuilder<ButtonBuilder>();
-
-	const cancelButton = new ButtonBuilder()
-		.setCustomId("expedition_cancel")
-		.setLabel(i18n.t("commands:petExpedition.cancelButton", { lng }))
-		.setEmoji(CrowniclesIcons.expedition.recall)
-		.setStyle(ButtonStyle.Danger);
-	buttonRow.addComponents(cancelButton);
-
-	const reply = await interaction.followUp({
-		embeds: [embed],
-		components: [selectRow, buttonRow]
-	});
-
-	if (!reply) {
-		return;
-	}
-
-	const collector = reply.createMessageComponentCollector({
-		time: Constants.MESSAGES.COLLECTOR_TIME
-	});
-
-	const userInteractedReason = "userInteracted";
-
-	collector.on("collect", async componentInteraction => {
-		if (componentInteraction.user.id !== interaction.user.id) {
-			await sendInteractionNotForYou(componentInteraction.user, componentInteraction, lng);
-			return;
-		}
-
-		if (componentInteraction.isStringSelectMenu()) {
-			const menuInteraction = componentInteraction as StringSelectMenuInteraction;
-			const chosenId = menuInteraction.values[0];
-
-			// Send the choice to backend
-			PacketUtils.sendPacketToBackend(
-				context,
-				makePacket(CommandPetExpeditionChoicePacketReq, { expeditionId: chosenId })
-			);
-
-			await menuInteraction.deferUpdate();
-			collector.stop(userInteractedReason);
-		}
-		else if (componentInteraction.isButton()) {
-			const buttonInteraction = componentInteraction as ButtonInteraction;
-			if (buttonInteraction.customId === "expedition_cancel") {
-				PacketUtils.sendPacketToBackend(context, makePacket(CommandPetExpeditionCancelPacketReq, {}));
-				await buttonInteraction.deferUpdate();
-				collector.stop(userInteractedReason);
-			}
-		}
-	});
-
-	collector.on("end", async (_, reason) => {
-		selectMenu.setDisabled(true);
-		cancelButton.setDisabled(true);
-		await reply.edit({ components: [selectRow, buttonRow] }).catch(() => null);
-
-		// If the collector timed out (user didn't interact), treat it as a cancel
-		if (reason !== userInteractedReason) {
-			PacketUtils.sendPacketToBackend(context, makePacket(CommandPetExpeditionCancelPacketReq, {}));
-		}
-	});
+	/*
+	 * If canStartExpedition is true, Core should have sent a ReactionCollectorCreationPacket
+	 * So we don't need to do anything here
+	 */
 }
 
 /**
@@ -487,17 +263,13 @@ export async function handleExpeditionChoiceRes(
 	const lng = interaction.userLanguage;
 
 	if (!packet.success) {
-		await interaction.followUp({
-			embeds: [
-				new CrowniclesErrorEmbed(
-					interaction.user,
-					context,
-					interaction,
-					i18n.t(`commands:petExpedition.errors.${packet.failureReason}`, { lng })
-				)
-			],
-			ephemeral: true
-		});
+		const errorEmbed = new CrowniclesErrorEmbed(
+			interaction.user,
+			context,
+			interaction,
+			i18n.t(`commands:petExpedition.errors.${packet.failureReason}`, { lng })
+		);
+		await sendResponse(context, errorEmbed as CrowniclesEmbed);
 		return;
 	}
 
@@ -515,7 +287,7 @@ export async function handleExpeditionChoiceRes(
 		lng,
 		context: sexContext,
 		petDisplay,
-		location: `${locationEmoji} ${locationName}`,
+		location: `${locationEmoji} **${locationName}**`,
 		returnTime: finishInTimeDisplay(new Date(expedition.endTime))
 	});
 
@@ -527,7 +299,7 @@ export async function handleExpeditionChoiceRes(
 	}
 
 	if (packet.insufficientFood) {
-		// Choose the right message depending on the cause (no guild / guild with no food). Default to a friendly no-guild message if not provided.
+		// Choose the right message depending on the cause (no guild / guild with no food)
 		const cause = (packet as unknown as { insufficientFoodCause?: "noGuild" | "guildNoFood" }).insufficientFoodCause;
 		if (cause === "guildNoFood") {
 			description += i18n.t("commands:petExpedition.insufficientFoodWarning.guildNoFood", { lng });
@@ -547,7 +319,7 @@ export async function handleExpeditionChoiceRes(
 		)
 		.setDescription(description);
 
-	await interaction.followUp({ embeds: [embed] });
+	await sendResponse(context, embed);
 }
 
 /**
@@ -583,7 +355,7 @@ export async function handleExpeditionCancelRes(
 			})
 		);
 
-	await interaction.followUp({ embeds: [embed] });
+	await sendResponse(context, embed);
 }
 
 /**
@@ -619,7 +391,7 @@ export async function handleExpeditionRecallRes(
 			})
 		);
 
-	await interaction.followUp({ embeds: [embed] });
+	await sendResponse(context, embed);
 }
 
 /**
@@ -655,7 +427,7 @@ export async function handleExpeditionResolveRes(
 		description = StringUtils.getRandomTranslation("commands:petExpedition.totalFailure", lng, {
 			context: sexContext,
 			petDisplay,
-			location: `${locationEmoji} ${locationName}`
+			location: `${locationEmoji} **${locationName}**`
 		});
 		description += i18n.t("commands:petExpedition.loveChangeFailure", { lng });
 	}
@@ -667,7 +439,7 @@ export async function handleExpeditionResolveRes(
 		description = StringUtils.getRandomTranslation("commands:petExpedition.partialSuccess", lng, {
 			context: sexContext,
 			petDisplay,
-			location: `${locationEmoji} ${locationName}`
+			location: `${locationEmoji} **${locationName}**`
 		});
 		if (packet.rewards) {
 			description += formatRewards(packet.rewards, lng);
@@ -682,7 +454,7 @@ export async function handleExpeditionResolveRes(
 		description = StringUtils.getRandomTranslation("commands:petExpedition.success", lng, {
 			context: sexContext,
 			petDisplay,
-			location: `${locationEmoji} ${locationName}`
+			location: `${locationEmoji} **${locationName}**`
 		});
 		if (packet.rewards) {
 			description += formatRewards(packet.rewards, lng);

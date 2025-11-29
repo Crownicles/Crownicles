@@ -147,51 +147,6 @@ export class CommandPetExpeditionPacketRes extends CrowniclesPacket {
 }
 
 /**
- * Request to generate expedition options
- */
-@sendablePacket(PacketDirection.FRONT_TO_BACK)
-export class CommandPetExpeditionGeneratePacketReq extends CrowniclesPacket {
-}
-
-/**
- * Response with 3 generated expedition options
- */
-@sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandPetExpeditionGeneratePacketRes extends CrowniclesPacket {
-	/**
-	 * The 3 expedition options
-	 */
-	expeditions!: ExpeditionData[];
-
-	/**
-	 * Pet information for display
-	 */
-	petId!: number;
-
-	petSex!: string;
-
-	petNickname?: string;
-
-	/**
-	 * Guild food information
-	 */
-	hasGuild!: boolean;
-
-	guildFoodAmount?: number;
-}
-
-/**
- * Request to start a selected expedition
- */
-@sendablePacket(PacketDirection.FRONT_TO_BACK)
-export class CommandPetExpeditionChoicePacketReq extends CrowniclesPacket {
-	/**
-	 * ID of the chosen expedition (from the 3 options)
-	 */
-	expeditionId!: string;
-}
-
-/**
  * Response after starting an expedition
  */
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
@@ -229,13 +184,6 @@ export class CommandPetExpeditionChoicePacketRes extends CrowniclesPacket {
 }
 
 /**
- * Request to cancel expedition before departure (after generation)
- */
-@sendablePacket(PacketDirection.FRONT_TO_BACK)
-export class CommandPetExpeditionCancelPacketReq extends CrowniclesPacket {
-}
-
-/**
  * Response after cancelling expedition
  */
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
@@ -253,13 +201,6 @@ export class CommandPetExpeditionCancelPacketRes extends CrowniclesPacket {
 	petSex!: string;
 
 	petNickname?: string;
-}
-
-/**
- * Request to recall pet during expedition
- */
-@sendablePacket(PacketDirection.FRONT_TO_BACK)
-export class CommandPetExpeditionRecallPacketReq extends CrowniclesPacket {
 }
 
 /**

@@ -2,7 +2,6 @@ import { packetHandler } from "../../../PacketHandler";
 import { PacketContext } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	CommandPetExpeditionPacketRes,
-	CommandPetExpeditionGeneratePacketRes,
 	CommandPetExpeditionChoicePacketRes,
 	CommandPetExpeditionCancelPacketRes,
 	CommandPetExpeditionRecallPacketRes,
@@ -11,7 +10,6 @@ import {
 } from "../../../../../../Lib/src/packets/commands/CommandPetExpeditionPacket";
 import {
 	handleExpeditionStatusRes,
-	handleExpeditionGenerateRes,
 	handleExpeditionChoiceRes,
 	handleExpeditionCancelRes,
 	handleExpeditionRecallRes,
@@ -23,11 +21,6 @@ export default class PetExpeditionPacketHandlers {
 	@packetHandler(CommandPetExpeditionPacketRes)
 	async expeditionStatusRes(context: PacketContext, packet: CommandPetExpeditionPacketRes): Promise<void> {
 		await handleExpeditionStatusRes(context, packet);
-	}
-
-	@packetHandler(CommandPetExpeditionGeneratePacketRes)
-	async expeditionGenerateRes(context: PacketContext, packet: CommandPetExpeditionGeneratePacketRes): Promise<void> {
-		await handleExpeditionGenerateRes(context, packet);
 	}
 
 	@packetHandler(CommandPetExpeditionChoicePacketRes)
