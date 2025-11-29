@@ -9,9 +9,13 @@ import { ExpeditionLocationType } from "../../constants/ExpeditionConstants";
  */
 export interface PetExpeditionInfo {
 	endTime: number;
+	startTime: number;
 	riskRate: number;
+	difficulty: number;
 	locationType: ExpeditionLocationType;
 	mapLocationId: number;
+	foodConsumed: number;
+	isDistantExpedition?: boolean;
 }
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)

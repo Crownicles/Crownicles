@@ -29,6 +29,96 @@ import { finishInTimeDisplay } from "../../../../Lib/src/utils/TimeUtils";
 import {
 	ExpeditionConstants, ExpeditionLocationType
 } from "../../../../Lib/src/constants/ExpeditionConstants";
+import {
+	StringConstants, SexTypeShort
+} from "../../../../Lib/src/constants/StringConstants";
+
+/**
+ * Get the sex context string for i18n translations (male/female)
+ */
+function getSexContext(sex: SexTypeShort): string {
+	return sex === StringConstants.SEX.MALE.short ? StringConstants.SEX.MALE.long : StringConstants.SEX.FEMALE.long;
+}
+
+/**
+ * Generate a dynamic RP text for expedition status based on multiple factors
+ */
+function generateExpeditionRPText(
+	expedition: NonNullable<CommandPetPacketRes["expeditionInProgress"]>,
+	pet: CommandPetPacketRes["pet"],
+	lng: Language
+): string {
+	const sexContext = getSexContext(pet.sex as SexTypeShort);
+
+	// Get location info
+	const locationEmoji = ExpeditionConstants.getLocationEmoji(expedition.locationType as ExpeditionLocationType);
+	const locationName = expedition.mapLocationId
+		? i18n.t(`commands:petExpedition.mapLocationExpeditions.${expedition.mapLocationId}`, { lng })
+		: i18n.t(`commands:petExpedition.mapLocationExpeditions.1`, { lng });
+
+	// Header with location and return time
+	let text = i18n.t("commands:petExpedition.expeditionStatusRP.header", {
+		lng,
+		location: `${locationEmoji} ${locationName}`,
+		returnTime: finishInTimeDisplay(new Date(expedition.endTime))
+	});
+
+	// Calculate expedition progress
+	const totalDuration = expedition.endTime - expedition.startTime;
+	const elapsed = Date.now() - expedition.startTime;
+	const progressPercent = Math.min(100, Math.max(0, (elapsed / totalDuration) * 100));
+
+	// Determine progress stage
+	let progressKey: string;
+	if (progressPercent < 15) {
+		progressKey = "justStarted";
+	}
+	else if (progressPercent > 85) {
+		progressKey = "almostDone";
+	}
+	else {
+		progressKey = "ongoing";
+	}
+
+	text += `\n${i18n.t(`commands:petExpedition.expeditionStatusRP.progress.${progressKey}`, {
+		lng,
+		context: sexContext
+	})}`;
+
+	// Determine situation based on pet force vs risk/difficulty
+	const isStrongPet = pet.force >= 70; // Force on a scale of 0-100
+	const isHighRisk = expedition.riskRate > 50 || expedition.difficulty > 60;
+
+	let situationKey: string;
+	if (isStrongPet && !isHighRisk) {
+		situationKey = "strongPetEasyRisk";
+	}
+	else if (isStrongPet && isHighRisk) {
+		situationKey = "strongPetHardRisk";
+	}
+	else if (!isStrongPet && !isHighRisk) {
+		situationKey = "weakPetEasyRisk";
+	}
+	else {
+		situationKey = "weakPetHardRisk";
+	}
+
+	text += `\n${i18n.t(`commands:petExpedition.expeditionStatusRP.situation.${situationKey}`, {
+		lng,
+		context: sexContext
+	})}`;
+
+	// Add food status if relevant
+	const hasFood = expedition.foodConsumed > 0;
+	const foodKey = hasFood ? "wellFed" : "noFood";
+
+	text += `\n${i18n.t(`commands:petExpedition.expeditionStatusRP.food.${foodKey}`, {
+		lng,
+		context: sexContext
+	})}`;
+
+	return text;
+}
 
 /**
  * Display all the information about a Pet
@@ -109,19 +199,7 @@ async function createPetEmbed(
 
 	// Add expedition status if in progress
 	if (packet.expeditionInProgress) {
-		const locationEmoji = ExpeditionConstants.getLocationEmoji(packet.expeditionInProgress.locationType as ExpeditionLocationType);
-		const locationName = packet.expeditionInProgress.mapLocationId
-			? i18n.t(`commands:petExpedition.mapLocationExpeditions.${packet.expeditionInProgress.mapLocationId}`, { lng })
-			: i18n.t(`commands:petExpedition.mapLocationExpeditions.1`, { lng }); // Fallback
-		const riskCategoryKey = ExpeditionConstants.getRiskCategoryName(packet.expeditionInProgress.riskRate);
-		const riskCategory = i18n.t(`commands:petExpedition.riskCategories.${riskCategoryKey}`, { lng });
-
-		description += `\n\n${i18n.t("commands:petExpedition.expeditionStatus", {
-			lng,
-			location: `${locationEmoji} ${locationName}`,
-			risk: riskCategory,
-			returnTime: finishInTimeDisplay(new Date(packet.expeditionInProgress.endTime))
-		})}`;
+		description += `\n\n${generateExpeditionRPText(packet.expeditionInProgress, packet.pet, lng)}`;
 	}
 
 	return new CrowniclesEmbed()

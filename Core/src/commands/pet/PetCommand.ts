@@ -42,9 +42,12 @@ export default class PetCommand {
 			if (currentExpedition && currentExpedition.status === ExpeditionConstants.STATUS.IN_PROGRESS) {
 				expeditionInfo = {
 					endTime: currentExpedition.endDate.getTime(),
+					startTime: currentExpedition.startDate.getTime(),
 					riskRate: currentExpedition.riskRate,
+					difficulty: currentExpedition.difficulty,
 					locationType: currentExpedition.locationType as ExpeditionLocationType,
-					mapLocationId: currentExpedition.mapLocationId
+					mapLocationId: currentExpedition.mapLocationId,
+					foodConsumed: currentExpedition.foodConsumed
 				};
 			}
 		}

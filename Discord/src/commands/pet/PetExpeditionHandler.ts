@@ -338,7 +338,7 @@ export async function handleExpeditionGenerateRes(
 		// Use displayDurationMinutes (rounded to nearest 10) for the selection menu
 		const displayDuration = minutesDisplay(exp.displayDurationMinutes, lng);
 
-		description += `\n\n${i18n.t("commands:petExpedition.expeditionOption", {
+		description += `\n${i18n.t("commands:petExpedition.expeditionOption", {
 			lng,
 			number: i + 1,
 			location: `${locationEmoji} ${locationName}`,
@@ -498,20 +498,20 @@ export async function handleExpeditionChoiceRes(
 	});
 
 	if (packet.foodConsumed && packet.foodConsumed > 0) {
-		description += `\n${i18n.t("commands:petExpedition.foodConsumed", {
+		description += i18n.t("commands:petExpedition.foodConsumed", {
 			lng,
 			amount: packet.foodConsumed
-		})}`;
+		});
 	}
 
 	if (packet.insufficientFood) {
 		// Choose the right message depending on the cause (no guild / guild with no food). Default to a friendly no-guild message if not provided.
 		const cause = (packet as unknown as { insufficientFoodCause?: "noGuild" | "guildNoFood" }).insufficientFoodCause;
 		if (cause === "guildNoFood") {
-			description += `\n${i18n.t("commands:petExpedition.insufficientFoodWarning.guildNoFood", { lng })}`;
+			description += i18n.t("commands:petExpedition.insufficientFoodWarning.guildNoFood", { lng });
 		}
 		else {
-			description += `\n${i18n.t("commands:petExpedition.insufficientFoodWarning.noGuild", { lng })}`;
+			description += i18n.t("commands:petExpedition.insufficientFoodWarning.noGuild", { lng });
 		}
 	}
 
