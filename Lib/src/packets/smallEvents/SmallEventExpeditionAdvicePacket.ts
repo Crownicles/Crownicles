@@ -5,6 +5,32 @@ import {
 import { SmallEventPacket } from "./SmallEventPacket";
 import { SexTypeShort } from "../../constants/StringConstants";
 
+/**
+ * Interaction types for the expedition advice small event
+ */
+export enum ExpeditionAdviceInteractionType {
+	// Phase 1: Talisman introduction (encounters 1-5)
+	TALISMAN_INTRO = "talismanIntro",
+
+	// Phase 2: Expedition explanation (encounters 6-10)
+	EXPEDITION_EXPLANATION = "expeditionExplanation",
+
+	// Phase 3: Check conditions before giving talisman
+	CONDITION_NOT_MET_NO_PET = "conditionNotMetNoPet",
+	CONDITION_NOT_MET_PET_HUNGRY = "conditionNotMetPetHungry",
+	CONDITION_NOT_MET_PET_FEISTY = "conditionNotMetPetFeisty",
+	CONDITION_NOT_MET_PET_NOT_SEEN_BY_TALVAR = "conditionNotMetPetNotSeenByTalvar",
+	CONDITION_NOT_MET_NO_GUILD = "conditionNotMetNoGuild",
+	CONDITION_NOT_MET_LEVEL_TOO_LOW = "conditionNotMetLevelTooLow",
+
+	// Phase 3: Talisman given
+	TALISMAN_RECEIVED = "talismanReceived",
+
+	// Already has talisman: bonus or advice
+	EXPEDITION_BONUS = "expeditionBonus",
+	ADVICE = "advice"
+}
+
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class SmallEventExpeditionAdvicePacket extends SmallEventPacket {
 	/**
@@ -45,4 +71,19 @@ export class SmallEventExpeditionAdvicePacket extends SmallEventPacket {
 	 * The interaction type for translation
 	 */
 	interactionType!: string;
+
+	/**
+	 * Number of encounters with this small event (for progressive lore)
+	 */
+	encounterCount?: number;
+
+	/**
+	 * Required level for talisman (if level condition not met)
+	 */
+	requiredLevel?: number;
+
+	/**
+	 * Current player level (if level condition not met)
+	 */
+	playerLevel?: number;
 }

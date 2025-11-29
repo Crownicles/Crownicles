@@ -171,6 +171,13 @@ export class CommandPetExpeditionGeneratePacketRes extends CrowniclesPacket {
 	petSex!: string;
 
 	petNickname?: string;
+
+	/**
+	 * Guild food information
+	 */
+	hasGuild!: boolean;
+
+	guildFoodAmount?: number;
 }
 
 /**

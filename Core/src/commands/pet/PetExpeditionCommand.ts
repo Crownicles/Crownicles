@@ -9,6 +9,7 @@ import { PetEntities } from "../../core/database/game/models/PetEntity";
 import { PetExpeditions } from "../../core/database/game/models/PetExpedition";
 import { PetDataController } from "../../data/Pet";
 import { ExpeditionConstants } from "../../../../Lib/src/constants/ExpeditionConstants";
+import { Guilds } from "../../core/database/game/models/Guild";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import {
 	CommandPetExpeditionPacketReq,
@@ -179,11 +180,27 @@ export default class PetExpeditionCommand {
 		// Store expeditions in cache for later retrieval when player makes a choice
 		PendingExpeditionsCache.set(context.keycloakId, expeditions);
 
+		// Get guild food information if player has a guild
+		let hasGuild = false;
+		let guildFoodAmount: number | undefined;
+
+		if (player.guildId) {
+			const guild = await Guilds.getById(player.guildId);
+			if (guild) {
+				hasGuild = true;
+				const petModel = PetDataController.instance.getById(petEntity.typeId);
+				const dietFoodType = petModel.canEatMeat() ? "carnivorousFood" : "herbivorousFood";
+				guildFoodAmount = guild.commonFood + guild[dietFoodType] + guild.ultimateFood;
+			}
+		}
+
 		response.push(makePacket(CommandPetExpeditionGeneratePacketRes, {
 			expeditions,
 			petId: petEntity.typeId,
 			petSex: petEntity.sex,
-			petNickname: petEntity.nickname ?? undefined
+			petNickname: petEntity.nickname ?? undefined,
+			hasGuild,
+			guildFoodAmount
 		}));
 	}
 

@@ -10,6 +10,7 @@ import {
 	ButtonBuilder,
 	ButtonInteraction,
 	ButtonStyle,
+	parseEmoji,
 	StringSelectMenuBuilder,
 	StringSelectMenuInteraction
 } from "discord.js";
@@ -355,6 +356,24 @@ export async function handleExpeditionGenerateRes(
 		});
 	}
 
+	// Add guild provisions info with pet excitement text
+	const sexContext = getSexContext(packet.petSex as SexTypeShort);
+	if (packet.hasGuild && packet.guildFoodAmount !== undefined) {
+		description += i18n.t("commands:petExpedition.guildProvisionsInfo", {
+			lng,
+			context: sexContext,
+			petDisplay,
+			amount: packet.guildFoodAmount
+		});
+	}
+	else {
+		description += i18n.t("commands:petExpedition.noGuildProvisionsInfo", {
+			lng,
+			context: sexContext,
+			petDisplay
+		});
+	}
+
 	const embed = new CrowniclesEmbed()
 		.formatAuthor(
 			i18n.t("commands:petExpedition.chooseExpeditionTitle", {
@@ -371,6 +390,7 @@ export async function handleExpeditionGenerateRes(
 	const cancelButton = new ButtonBuilder()
 		.setCustomId("expedition_cancel")
 		.setLabel(i18n.t("commands:petExpedition.cancelButton", { lng }))
+		.setEmoji(parseEmoji(CrowniclesIcons.collectors.refuse)!)
 		.setStyle(ButtonStyle.Danger);
 	buttonRow.addComponents(cancelButton);
 

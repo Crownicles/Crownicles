@@ -2172,25 +2172,71 @@
     }
   },
   "expeditionAdvice": {
-    "intro": [
-      "Vous croisez un vieux sage qui tient une amulette scintillante.",
-      "Un ermite mystérieux surgit de nulle part, portant un étrange talisman.",
-      "Une voyante vous arrête et observe attentivement votre familier."
-    ],
+    "talismanIntro": {
+      "encounter1": [
+        "{emote:smallEvents.expeditionAdvice} Une femme aux cheveux corbeau tressés avec des plumes de rapace surgit du sous-bois. Une cicatrice barre sa joue gauche. Elle saisit votre bras d'une poigne de fer et vous fixe de ses yeux ambres perçants. Sans un mot, elle observe l'horizon, lâche votre bras et disparaît aussi vite qu'elle est apparue, laissant derrière elle une odeur de cuir tanné et d'herbes sauvages."
+      ],
+      "encounter2": [
+        "{emote:smallEvents.expeditionAdvice} La femme à la cicatrice réapparaît sur votre chemin, assise sur un rocher. Son armure de cuir usée porte les marques de dizaines de combats. Elle nettoie méthodiquement une dague à la lame noircie. En vous voyant, elle grogne : *Encore toi. Les anciens parlent d'un artefact capable de créer des liens entre un maître et sa bête... Le Talisman d'Ancrage.* Elle se lève et s'éloigne sans rien ajouter."
+      ],
+      "encounter3": [
+        "{emote:smallEvents.expeditionAdvice} La guerrière apparaît derrière vous sans faire le moindre bruit. Vous sursautez en découvrant son visage balafré à quelques centimètres du vôtre. Elle murmure : *Le Talisman d'Ancrage lie l'âme d'un familier à son maître. Même séparés par des lieues, ils restent connectés.* Elle tapote votre épaule avec une familiarité surprenante. *Mais ce n'est pas gratuit.*"
+      ],
+      "encounter4": [
+        "{emote:smallEvents.expeditionAdvice} Cette fois, vous repérez la femme sauvage avant qu'elle ne vous surprenne. Elle hoche la tête, un demi-sourire aux lèvres. *Tu apprends vite.* Elle s'accroupit et trace des symboles dans la terre. *Le Talisman crée un double spectral de ton familier pendant qu'il explore le monde. C'est de la vieille magie, de celle qu'on ne transmet qu'aux dignes.* Elle efface les traces et s'évanouit dans les broussailles."
+      ],
+      "encounter5": [
+        "{emote:smallEvents.expeditionAdvice} La guerrière vous attend, adossée à un arbre. Pour la première fois, vous remarquez une sacoche de cuir ouvragé à sa ceinture. *Je m'appelle Velanna*, dit-elle en croisant les bras. *Les gens de mon clan utilisaient le Talisman d'Ancrage pour envoyer leurs compagnons en reconnaissance. Maintenant, il n'y a plus de clan. Mais la tradition doit survivre.* Son regard se durcit. *Si tu veux le Talisman, tu devras le mériter.*"
+      ]
+    },
+    "expeditionExplanation": {
+      "encounter1": [
+        "{emote:smallEvents.expeditionAdvice} Velanna émerge des hautes herbes, une flèche encochée sur son arc. Elle la décoche vers un oiseau imaginaire puis se tourne vers vous. *Une expédition, ce n'est pas une promenade. Ton familier affronte des dangers, des prédateurs, des intempéries.* Elle récupère sa flèche plantée dans un tronc. *Mais les récompenses... Or, expérience, parfois même des objets rares. Ceux qui osent récoltent.*"
+      ],
+      "encounter2": [
+        "{emote:smallEvents.expeditionAdvice} Vous trouvez Velanna en train de dépecer un lièvre avec une efficacité brutale. Elle lève les yeux vers vous sans cesser son travail. *La durée de l'expédition compte. Plus c'est long, plus le butin est conséquent. Mais ton familier s'épuisera davantage.* Elle essuie sa lame sur sa cuisse. *Et s'il a faim avant de partir, il n'ira nulle part. C'est la règle.*"
+      ],
+      "encounter3": [
+        "{emote:smallEvents.expeditionAdvice} Velanna vous surprend en train de vous reposer et renverse votre gourde d'un coup de pied. *Debout ! Un bon maître doit comprendre son familier.* Elle s'accroupit face à vous. *Le risque d'une expédition dépend de la force de la bête. Un familier puissant et entraîné reviendra toujours. Un animal craintif ou sauvage... c'est une autre histoire.* Elle ramasse votre gourde et vous la tend."
+      ],
+      "encounter4": [
+        "{emote:smallEvents.expeditionAdvice} Velanna apparaît dans votre campement, un panier tressé sous le bras. Elle en sort des fruits sauvages qu'elle partage avec vous. *Pour qu'un familier parte en expédition, il doit être nourri et en confiance. Les bêtes fiélleuses refusent catégoriquement.* Elle croque dans une pomme. *Et il faut que quelqu'un l'ait examiné avant. Talvar des montagnes, par exemple. C'est un vieil ami.*"
+      ],
+      "encounter5": [
+        "{emote:smallEvents.expeditionAdvice} Velanna vous attend à un carrefour, les bras croisés. *Dernière leçon : une guilde. Ton familier a besoin de savoir que quelqu'un veillera sur toi pendant son absence.* Elle décroise les bras et pose une main sur son cœur. *C'était le code de mon clan. On ne laisse jamais un compagnon seul.* Son regard s'adoucit un instant. *Maintenant, prouve-moi que tu es prêt.*"
+      ]
+    },
+    "conditions": {
+      "noPet": [
+        "{emote:smallEvents.expeditionAdvice} Velanna vous toise avec mépris. *Tu veux un Talisman d'Ancrage... sans familier ?* Elle éclate d'un rire rauque. *Reviens quand tu auras apprivoisé une créature. Le Talisman crée un lien. Sans bête à lier, c'est juste un caillou brillant.*"
+      ],
+      "petHungry": [
+        "{emote:smallEvents.expeditionAdvice} Velanna examine **{{pet}}** d'un œil critique puis se tourne vers vous, furieuse. *Ton compagnon a le ventre vide et tu voudrais l'envoyer en expédition ?* Elle secoue la tête avec dégoût. *Nourris-le d'abord. Un familier affamé ne ferait pas trois pas avant de s'effondrer. Reviens quand il aura mangé.*"
+      ],
+      "petFeisty": [
+        "{emote:smallEvents.expeditionAdvice} Velanna observe **{{pet}}** qui grogne et crache dans votre direction. Elle recule prudemment. *Cette bête est fiélleuse. Elle te déteste.* La guerrière hausse les épaules. *Pourquoi risquerait-elle sa vie pour toi ? Gagne d'abord sa confiance. Quand elle t'acceptera vraiment, on en reparlera.*"
+      ],
+      "petNotSeenByTalvar": [
+        "{emote:smallEvents.expeditionAdvice} Velanna s'agenouille pour examiner **{{pet}}**. Après un moment, elle fronce les sourcils. *Cette créature n'a jamais été présentée à Talvar.* Elle se relève et époussète ses genoux. *Le nain des montagnes doit d'abord certifier que ton familier est en bonne santé. C'est un vieux pacte entre nos traditions. Va le voir, puis reviens me trouver.*"
+      ],
+      "noGuild": [
+        "{emote:smallEvents.expeditionAdvice} Velanna vous fixe longuement, puis soupire. *Tu voyages seul.* Ce n'est pas une question. *Quand ton familier sera parti en expédition, qui veillera sur toi ?* Elle croise les bras. *Rejoins une guilde. Trouve des compagnons de route. Le Talisman lie les âmes, mais il ne remplace pas la solidarité des vivants.*"
+      ],
+      "levelTooLow": [
+        "{emote:smallEvents.expeditionAdvice} Velanna vous jauge de la tête aux pieds. *Niveau {{playerLevel}} ? Tu plaisantes ?* Elle attrape votre bras et palpe vos muscles avec une moue critique. *Il faut au moins atteindre le niveau {{requiredLevel}} avant d'être digne du Talisman. Entraîne-toi, affronte des monstres, gagne en expérience. Reviens quand tu auras mûri.*"
+      ]
+    },
     "talismanReceived": [
-      "L'ermite vous tend un Talisman d'Ancrage. Grâce à cet artefact ancestral, votre familier pourra partir en expédition tout en maintenant un lien spirituel avec vous, l'empêchant de se perdre.\n\nVous recevez le **Talisman d'Ancrage** ! Vous pouvez désormais envoyer votre familier en expédition depuis la commande {command:pet}.",
-      "Le sage vous offre un Talisman d'Ancrage gravé de runes anciennes. Cet objet mystique permettra d'envoyer votre compagnon en mission, prenant sa place pendant son absence et assurant son retour.\n\nVous obtenez le **Talisman d'Ancrage** ! Les expéditions de familiers sont maintenant disponibles via {command:pet}.",
-      "La voyante dépose un Talisman d'Ancrage dans votre main. Grâce à cet artefact, votre familier pourra explorer le monde et revenir avec des trésors, le talisman occupant sa place pendant l'expédition.\n\nVous recevez le **Talisman d'Ancrage** ! Utilisez {command:pet} pour envoyer votre familier en expédition."
+      "{emote:smallEvents.expeditionAdvice} Velanna vous observe en silence pendant de longues secondes. Puis, lentement, elle extrait de sa sacoche un pendentif de pierre noire veinée d'or. Le **Talisman d'Ancrage** pulse d'une lueur douce. *Tu as fait tes preuves*, dit-elle d'une voix rauque. *Prends soin de **{{pet}}**. Et n'oublie jamais : le lien entre un maître et sa bête est sacré.* Elle pose le talisman dans votre main et referme vos doigts dessus. *Maintenant, va. Explore le monde.*\n\nVous recevez le **Talisman d'Ancrage** ! Vous pouvez désormais envoyer votre familier en expédition depuis la commande {command:pet}."
     ],
     "expeditionBonus": [
-      "Le sage sourit en sentant la présence distante de votre familier en expédition. Votre compagnon explore courageusement le monde et le vieil homme bénit son voyage. Vous recevez **{{bonusMoney}} {emote:unitValues.money}** et **{{bonusExperience}} {emote:unitValues.xp}** !",
-      "L'ermite perçoit le lien du talisman avec votre familier absent. **{{pet}}** est en mission quelque part dans les contrées lointaines, et cette offrande vous portera chance. Vous gagnez **{{bonusMoney}} {emote:unitValues.money}** et **{{bonusExperience}} {emote:unitValues.xp}** !",
-      "La voyante lit les énergies du talisman. Votre familier voyage en ce moment même, et les étoiles favorisent son expédition. Vous obtenez **{{bonusMoney}} {emote:unitValues.money}** et **{{bonusExperience}} {emote:unitValues.xp}** !"
+      "{emote:smallEvents.expeditionAdvice} Velanna surgit des ombres et pose une main sur votre épaule. *Je sens la présence de **{{pet}}** à des lieues d'ici.* Elle sourit, un spectacle rare. *Ton familier explore courageusement et le talisman renforce votre lien.* Elle glisse quelques pièces dans votre main. *Une offrande pour ta patience.* Vous recevez **{{bonusMoney}} {emote:unitValues.money}** et **{{bonusExperience}} {emote:unitValues.xp}** !",
+      "{emote:smallEvents.expeditionAdvice} Velanna apparaît à vos côtés, humant l'air. *Le lien du Talisman est fort. **{{pet}}** voyage bien.* Elle sort une bourse de sa ceinture. *Les esprits récompensent ceux qui font confiance à leurs compagnons.* Elle vous lance la bourse. Vous gagnez **{{bonusMoney}} {emote:unitValues.money}** et **{{bonusExperience}} {emote:unitValues.xp}** !"
     ],
     "advice": [
-      "Le sage partage ses conseils sur les expéditions : envoyer votre familier là où le risque correspond à sa force est primordial. Plus l'expédition est longue, plus les récompenses sont grandes... mais aussi les dangers.",
-      "L'ermite partage sa sagesse ancestrale. Les expéditions en montagne rapportent plus de gemmes, tandis que les forêts offrent de l'expérience. Le choix dépend de vos besoins.",
-      "La voyante met en garde les aventuriers imprudents. Un familier malheureux ne devrait jamais être envoyé en expédition. Son affection doit être suffisante pour qu'il veuille revenir vers vous."
+      "{emote:smallEvents.expeditionAdvice} Velanna vous croise sur le chemin et s'arrête brièvement. *Un conseil : ne sous-estime jamais le risque. Envoie ton familier là où sa force peut triompher.* Elle désigne l'horizon. *Les montagnes offrent des gemmes, les forêts de l'expérience. Choisis selon tes besoins.* Elle repart aussi silencieusement qu'elle est venue.",
+      "{emote:smallEvents.expeditionAdvice} Vous apercevez Velanna qui aiguise sa dague sur un rocher. Elle lève les yeux. *Les expéditions longues rapportent davantage, mais épuisent ton familier. Trouve l'équilibre.* Elle teste le tranchant de sa lame sur son pouce. *Et n'oublie jamais de le nourrir avant le départ. C'est élémentaire.*",
+      "{emote:smallEvents.expeditionAdvice} Velanna vous observe de loin, appuyée contre un arbre. Quand vous approchez, elle murmure : *L'affection de ton familier détermine sa loyauté en expédition. Plus il t'aime, plus il reviendra sain et sauf.* Elle détourne le regard. *C'est une leçon que j'ai apprise à mes dépens.*"
     ]
   }
 }

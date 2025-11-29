@@ -9,6 +9,8 @@ import { LogsPlayersPossibilities } from "./models/LogsPlayersPossibilities";
 import { LogsPossibilities } from "./models/LogsPossibilities";
 import { LogsPlayers } from "./models/LogsPlayers";
 import { LogsPlayersTravels } from "./models/LogsPlayersTravels";
+import { LogsPlayersSmallEvents } from "./models/LogsPlayersSmallEvents";
+import { LogsSmallEvents } from "./models/LogsSmallEvents";
 import {
 	dateToLogs,
 	getNextSaturdayMidnight,
@@ -467,5 +469,28 @@ export class LogsReadRequests {
 			}
 		}
 		return ret;
+	}
+
+	/**
+	 * Get the number of times a player has encountered a specific small event
+	 * @param keycloakId - The keycloak id of the player
+	 * @param smallEventName - The name of the small event
+	 */
+	static async getSmallEventEncounterCount(keycloakId: string, smallEventName: string): Promise<number> {
+		const logPlayer = await LogsDatabase.findOrCreatePlayer(keycloakId);
+		const smallEvent = await LogsSmallEvents.findOne({
+			where: { name: smallEventName }
+		});
+
+		if (!smallEvent) {
+			return 0;
+		}
+
+		return await LogsPlayersSmallEvents.count({
+			where: {
+				playerId: logPlayer.id,
+				smallEventId: smallEvent.id
+			}
+		});
 	}
 }

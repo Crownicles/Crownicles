@@ -354,7 +354,34 @@ export abstract class ExpeditionConstants {
 	 * Talisman small event constants
 	 */
 	static readonly TALISMAN_EVENT = {
+		/**
+		 * Minimum level to encounter the event
+		 */
 		MIN_LEVEL: 20,
+
+		/**
+		 * Minimum level to receive the talisman
+		 */
+		TALISMAN_MIN_LEVEL: 30,
+
+		/**
+		 * Number of encounters for talisman introduction phase
+		 */
+		TALISMAN_INTRO_ENCOUNTERS: 5,
+
+		/**
+		 * Number of encounters for expedition explanation phase
+		 */
+		EXPEDITION_EXPLANATION_ENCOUNTERS: 5,
+
+		/**
+		 * Total encounters needed before talisman can be given (intro + explanation)
+		 */
+		TOTAL_ENCOUNTERS_BEFORE_TALISMAN: 10,
+
+		/**
+		 * Bonus rewards when pet is in expedition
+		 */
 		BONUS_IF_PET_IN_EXPEDITION: {
 			MONEY_MIN: 50,
 			MONEY_MAX: 150,
