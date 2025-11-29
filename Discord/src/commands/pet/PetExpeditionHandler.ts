@@ -10,7 +10,6 @@ import {
 	ButtonBuilder,
 	ButtonInteraction,
 	ButtonStyle,
-	parseEmoji,
 	StringSelectMenuBuilder,
 	StringSelectMenuInteraction
 } from "discord.js";
@@ -337,8 +336,13 @@ export async function handleExpeditionGenerateRes(
 
 		// Use displayDurationMinutes (rounded to nearest 10) for the selection menu
 		const displayDuration = minutesDisplay(exp.displayDurationMinutes, lng);
+		const foodCost = exp.foodCost ?? 1;
+		const foodDisplay = i18n.t("commands:petExpedition.foodCost", {
+			lng,
+			count: foodCost
+		});
 
-		description += `\n${i18n.t("commands:petExpedition.expeditionOption", {
+		description += i18n.t("commands:petExpedition.expeditionOption", {
 			lng,
 			number: i + 1,
 			location: `${locationEmoji} ${locationName}`,
@@ -346,8 +350,8 @@ export async function handleExpeditionGenerateRes(
 			risk: getTranslatedRiskCategoryName(exp.riskRate, lng),
 			wealth: getTranslatedWealthCategoryName(exp.wealthRate, lng),
 			difficulty: getTranslatedDifficultyCategoryName(exp.difficulty, lng),
-			foodCost: exp.foodCost ?? 1
-		})}`;
+			foodDisplay
+		});
 
 		selectMenu.addOptions({
 			label: `${locationEmoji} ${locationName}`.substring(0, 100),
@@ -390,7 +394,7 @@ export async function handleExpeditionGenerateRes(
 	const cancelButton = new ButtonBuilder()
 		.setCustomId("expedition_cancel")
 		.setLabel(i18n.t("commands:petExpedition.cancelButton", { lng }))
-		.setEmoji(parseEmoji(CrowniclesIcons.collectors.refuse)!)
+		.setEmoji(CrowniclesIcons.expedition.recall)
 		.setStyle(ButtonStyle.Danger);
 	buttonRow.addComponents(cancelButton);
 
