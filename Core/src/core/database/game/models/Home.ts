@@ -18,7 +18,7 @@ export class Home extends Model {
 	declare createdAt: Date;
 
 
-	public getLevel(): HomeLevel {
+	public getLevel(): HomeLevel | null {
 		return HomeLevel.getByLevel(this.level);
 	}
 }

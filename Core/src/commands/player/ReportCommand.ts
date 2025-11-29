@@ -308,7 +308,11 @@ async function handleEnchantReaction(player: Player, reaction: ReactionCollector
 async function handleBuyHomeReaction(player: Player, city: City, data: ReactionCollectorCityData, response: CrowniclesPacket[]): Promise<void> {
 	await player.reload();
 
-	if (!data.home.manage.newPrice || data.home.manage.newPrice > player.money) {
+	if (data.home.manage.newPrice === null) {
+		CrowniclesLogger.error(`Player ${player.keycloakId} tried to buy a home in city ${city.id} but no home is available to buy. It shouldn't happen because the player must not be able to switch while in the collector.`);
+		return;
+	}
+	if (data.home.manage.newPrice > player.money) {
 		response.push(makePacket(CommandReportNotEnoughMoneyRes, { missingMoney: data.home.manage.newPrice - player.money }));
 		return;
 	}
@@ -332,7 +336,12 @@ async function handleBuyHomeReaction(player: Player, city: City, data: ReactionC
 async function handleUpgradeHomeReaction(player: Player, city: City, data: ReactionCollectorCityData, response: CrowniclesPacket[]): Promise<void> {
 	await player.reload();
 
-	if (!data.home.manage.upgrade || data.home.manage.upgrade.price > player.money) {
+	if (!data.home.manage.upgrade) {
+		CrowniclesLogger.error(`Player ${player.keycloakId} tried to upgrade a home in city ${city.id} but no upgrade is available. It shouldn't happen because the player must not be able to switch while in the collector.`);
+		return;
+	}
+
+	if (data.home.manage.upgrade.price > player.money) {
 		response.push(makePacket(CommandReportNotEnoughMoneyRes, { missingMoney: data.home.manage.upgrade.price - player.money }));
 		return;
 	}
@@ -365,7 +374,12 @@ async function handleUpgradeHomeReaction(player: Player, city: City, data: React
 async function handleMoveHomeReaction(player: Player, city: City, data: ReactionCollectorCityData, response: CrowniclesPacket[]): Promise<void> {
 	await player.reload();
 
-	if (!data.home.manage.movePrice || data.home.manage.movePrice > player.money) {
+	if (!data.home.manage.movePrice) {
+		CrowniclesLogger.error(`Player ${player.keycloakId} tried to move a home to city ${city.id} but no home is available to move. It shouldn't happen because the player must not be able to switch while in the collector.`);
+		return;
+	}
+
+	if (data.home.manage.movePrice > player.money) {
 		response.push(makePacket(CommandReportNotEnoughMoneyRes, { missingMoney: data.home.manage.movePrice - player.money }));
 		return;
 	}

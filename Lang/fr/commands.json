@@ -638,7 +638,7 @@
         "manageHomeDescriptionUpgrade": "Allez voir le notaire pour améliorer votre maison.",
         "manageHomeDescriptionMove": "Allez voir le notaire pour déménager dans une nouvelle maison.",
         "notaryTitle": "{{pseudo}}, vous rencontrez le notaire",
-        "notaryIntroduction": "🧑‍💼 Vous entrez dans le bureau d'un notaire, une personne chargée de gérer les transactions immobilières. Il vous accueille chaleureusement et examine votre dossier avant de vous proposer ses services.",
+        "notaryIntroduction": "{emote:city.manageHome} Vous entrez dans le bureau d'un notaire, une personne chargée de gérer les transactions immobilières. Il vous accueille chaleureusement et examine votre dossier avant de vous proposer ses services.",
         "notaryNewHomeNoMoney": "Après avoir consciencieusement analysé votre situation, le notaire vous informe que vous n'avez pas assez d'argent pour acheter une maison. En effet, une nouvelle maison coûte **{{cost}} {emote:unitValues.money}** et il vous manque donc **{{missingMoney}} {emote:unitValues.money}** pour pouvoir en acquérir une. Il vous explique les différentes options disponibles et vous encourage à revenir lorsque vous aurez économisé suffisamment.",
         "notaryNewHomeEnoughMoney": "Après avoir consciencieusement analysé votre situation, le notaire vous informe que vous avez suffisamment d'argent pour acheter une maison qui coûte aujourd'hui **{{cost}} {emote:unitValues.money}**. Il vous laisse le temps de réfléchir à votre décision et attend votre réponse.\n\nSouhaitez-vous acheter une maison ?",
         "notaryUpgradeHomeNoMoney": "Après avoir consciencieusement analysé votre situation, le notaire vous informe que vous n'avez pas assez d'argent pour améliorer votre maison. En effet, une amélioration coûte **{{cost}} {emote:unitValues.money}** et il vous manque donc **{{missingMoney}} {emote:unitValues.money}** pour pouvoir procéder à la mise à niveau. Il vous explique les différentes options disponibles et vous encourage à revenir lorsque vous aurez économisé suffisamment.",
@@ -658,16 +658,16 @@
         "refuseAndLeaveNotary": "Refuser et quitter le bureau du notaire",
         "leaveNotary": "Quitter le bureau du notaire",
         "upgradeChanges": {
-          "betterBed": "Un meilleur lit pour un sommeil plus réparateur 🛏️",
-          "chest": "Un coffre pour y ranger vos affaires 📦",
-          "biggerChest": "Un coffre plus grand pour y ranger encore plus d'affaires 📦",
-          "craftPotionStation": "Un établi d'alchimie pour créer des potions 🧪",
-          "betterCraftPotionStation": "Un meilleur établi d'alchimie pour créer des potions plus rares 🧪",
-          "upgradeItemStation": "Un établi d'équipement pour améliorer vos armes et armures 🛠️",
-          "betterUpgradeItemStation": "Un meilleur établi d'équipement pour améliorer des armes et armures plus puissantes 🛠️",
-          "garden": "Un jardin pour cultiver des plantes 🌱",
-          "biggerGarden": "Un plus grand jardin pour cultiver encore plus de plantes 🌱",
-          "betterGardenEarth": "Une terre améliorée pour faire pousser des plantes plus rapidement ↗️"
+          "betterBed": "Un meilleur lit pour un sommeil plus réparateur {emote:city.homeUpgrades.bed}",
+          "chest": "Un coffre pour y ranger vos affaires {emote:city.homeUpgrades.chest}",
+          "biggerChest": "Un coffre plus grand pour y ranger encore plus d'affaires {emote:city.homeUpgrades.chest}",
+          "craftPotionStation": "Un établi d'alchimie pour créer des potions {emote:city.homeUpgrades.potionStation}",
+          "betterCraftPotionStation": "Un meilleur établi d'alchimie pour créer des potions plus rares {emote:city.homeUpgrades.potionStation}",
+          "upgradeItemStation": "Un établi d'équipement pour améliorer vos armes et armures {emote:city.homeUpgrades.upgradeEquipment}",
+          "betterUpgradeItemStation": "Un meilleur établi d'équipement pour améliorer des armes et armures plus puissantes {emote:city.homeUpgrades.upgradeEquipment}",
+          "garden": "Un jardin pour cultiver des plantes {emote:city.homeUpgrades.garden}",
+          "biggerGarden": "Un plus grand jardin pour cultiver encore plus de plantes {emote:city.homeUpgrades.garden}",
+          "betterGardenEarth": "Une terre améliorée pour faire pousser des plantes plus rapidement {emote:city.homeUpgrades.earthQuality}",
         }
       }
     }

@@ -11,6 +11,7 @@ import {
 	CommandReportEatInnMealRes,
 	CommandReportItemEnchantedRes,
 	CommandReportMonsterRewardRes,
+	CommandReportMoveHomeRes,
 	CommandReportPacketReq,
 	CommandReportRefusePveFightRes,
 	CommandReportSleepRoomRes,
@@ -735,7 +736,7 @@ export async function handleUpgradeHome(packet: CommandReportUpgradeHomeRes, con
 	});
 }
 
-export async function handleMoveHome(packet: CommandReportBuyHomeRes, context: PacketContext): Promise<void> {
+export async function handleMoveHome(packet: CommandReportMoveHomeRes, context: PacketContext): Promise<void> {
 	const interaction = MessagesUtils.getCurrentInteraction(context);
 	if (!interaction) {
 		return;
