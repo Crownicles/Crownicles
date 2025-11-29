@@ -456,237 +456,121 @@ async function calculateFoodConsumptionPlan(
 	}
 
 	const dietFoodType: FoodType = petModel.canEatMeat() ? "carnivorousFood" : "herbivorousFood";
-	const dietRationValue = FOOD_RATION_VALUES[dietFoodType];
-	const soupRationValue = FOOD_RATION_VALUES.ultimateFood;
-	const treatRationValue = FOOD_RATION_VALUES.commonFood;
+	const treatVal = FOOD_RATION_VALUES.commonFood;
+	const dietVal = FOOD_RATION_VALUES[dietFoodType];
+	const soupVal = FOOD_RATION_VALUES.ultimateFood;
 
-	// Available food
-	const availableTreats = guild.commonFood;
-	const availableDiet = guild[dietFoodType];
-	const availableSoup = guild.ultimateFood;
+	const available = {
+		treats: guild.commonFood,
+		diet: guild[dietFoodType],
+		soup: guild.ultimateFood
+	};
 
-	// Find the optimal combination using a linear algorithm
-	const result = findOptimalFoodCombination({
-		required: rationsRequired,
-		availableTreats,
-		availableDiet,
-		availableSoup,
-		treatValue: treatRationValue,
-		dietValue: dietRationValue,
-		soupValue: soupRationValue
-	});
+	// Default to using everything if we can't meet requirements
+	let best = {
+		t: available.treats,
+		d: available.diet,
+		s: available.soup,
+		excess: (available.treats * treatVal + available.diet * dietVal + available.soup * soupVal) - rationsRequired
+	};
+
+	// If we have enough to meet requirements, search for optimal
+	if (best.excess >= 0) {
+		// Iterate treats from max down to 0 to prioritize treats
+		for (let t = Math.min(available.treats, rationsRequired); t >= 0; t--) {
+			const rem = rationsRequired - t * treatVal;
+
+			if (rem <= 0) {
+				// Treats alone are enough
+				const excess = -rem;
+				if (excess < best.excess || (excess === best.excess && t > best.t)) {
+					best = {
+						t,
+						d: 0,
+						s: 0,
+						excess
+					};
+				}
+				if (excess === 0) {
+					break; // Optimal found (0 excess, max treats)
+				}
+				continue;
+			}
+
+			/*
+			 * Need diet/soup. We want to minimize s (Soup < Diet priority).
+			 * We only need to check s in range [minSoup, minSoup + 2] to cover modulo 3 cases.
+			 */
+			const minSoup = Math.max(0, Math.ceil((rem - available.diet * dietVal) / soupVal));
+
+			if (minSoup > available.soup) {
+				continue; // Cannot satisfy with this t
+			}
+
+			// Check s, s+1, s+2
+			for (let s = minSoup; s <= Math.min(available.soup, minSoup + 2); s++) {
+				const remAfterSoup = rem - s * soupVal;
+				const d = Math.max(0, Math.ceil(remAfterSoup / dietVal));
+
+				if (d > available.diet) {
+					continue;
+				}
+
+				const currentExcess = (t * treatVal + d * dietVal + s * soupVal) - rationsRequired;
+
+				/*
+				 * Compare with best.
+				 * Priority: Minimize Excess > Maximize Treats > Maximize Diet (Minimize Soup)
+				 */
+				if (currentExcess < best.excess) {
+					best = {
+						t,
+						d,
+						s,
+						excess: currentExcess
+					};
+				}
+
+				if (currentExcess === 0) {
+					break;
+				}
+			}
+
+			if (best.excess === 0 && best.t === t) {
+				break; // Found optimal
+			}
+		}
+	}
 
 	// Build the plan
-	if (result.treats > 0) {
+	if (best.t > 0) {
 		plan.consumption.push({
 			foodType: "commonFood",
-			itemsToConsume: result.treats,
-			rationsProvided: result.treats * treatRationValue
+			itemsToConsume: best.t,
+			rationsProvided: best.t * treatVal
 		});
-		plan.totalRations += result.treats * treatRationValue;
+		plan.totalRations += best.t * treatVal;
 	}
 
-	if (result.diet > 0) {
-		const rationsProvided = result.diet * dietRationValue;
+	if (best.d > 0) {
 		plan.consumption.push({
 			foodType: dietFoodType,
-			itemsToConsume: result.diet,
-			rationsProvided
+			itemsToConsume: best.d,
+			rationsProvided: best.d * dietVal
 		});
-		plan.totalRations += rationsProvided;
+		plan.totalRations += best.d * dietVal;
 	}
 
-	if (result.soup > 0) {
-		const rationsProvided = result.soup * soupRationValue;
+	if (best.s > 0) {
 		plan.consumption.push({
 			foodType: "ultimateFood",
-			itemsToConsume: result.soup,
-			rationsProvided
+			itemsToConsume: best.s,
+			rationsProvided: best.s * soupVal
 		});
-		plan.totalRations += rationsProvided;
+		plan.totalRations += best.s * soupVal;
 	}
 
 	return plan;
-}
-
-interface FoodCombination {
-	treats: number;
-	diet: number;
-	soup: number;
-	total: number;
-	excess: number;
-}
-
-interface DietSoupCombo {
-	diet: number;
-	soup: number;
-}
-
-interface FoodOptimizationParams {
-	required: number;
-	availableTreats: number;
-	availableDiet: number;
-	availableSoup: number;
-	treatValue: number;
-	dietValue: number;
-	soupValue: number;
-}
-
-/**
- * Find the optimal food combination
- * Rules:
- * 1. Must reach required rations (or use all available if not enough)
- * 2. Minimize excess rations
- * 3. When same excess, prefer treats > diet > soup
- */
-function findOptimalFoodCombination(params: FoodOptimizationParams): FoodCombination {
-	const {
-		required, availableTreats, availableDiet, availableSoup, treatValue, dietValue, soupValue
-	} = params;
-
-	// Calculate max usable treats
-	const maxTreats = Math.min(availableTreats, required);
-
-	let bestOption: FoodCombination | null = null;
-
-	// For each possible number of treats, find the best diet+soup combo
-	for (let t = 0; t <= maxTreats; t++) {
-		const remaining = required - t * treatValue;
-
-		if (remaining <= 0) {
-			// Treats alone are enough
-			const option: FoodCombination = {
-				treats: t,
-				diet: 0,
-				soup: 0,
-				total: t * treatValue,
-				excess: t * treatValue - required
-			};
-			if (isBetterOption(option, bestOption)) {
-				bestOption = option;
-			}
-			continue;
-		}
-
-		// Find best diet+soup combination for remaining rations
-		const dietSoupOptions = findBestDietSoupCombo(remaining, availableDiet, availableSoup, dietValue, soupValue);
-
-		for (const ds of dietSoupOptions) {
-			const option: FoodCombination = {
-				treats: t,
-				diet: ds.diet,
-				soup: ds.soup,
-				total: t * treatValue + ds.diet * dietValue + ds.soup * soupValue,
-				excess: t * treatValue + ds.diet * dietValue + ds.soup * soupValue - required
-			};
-			if (isBetterOption(option, bestOption)) {
-				bestOption = option;
-			}
-		}
-	}
-
-	// If no valid option found, use all available
-	if (!bestOption) {
-		const total = availableTreats * treatValue + availableDiet * dietValue + availableSoup * soupValue;
-		return {
-			treats: availableTreats,
-			diet: availableDiet,
-			soup: availableSoup,
-			total,
-			excess: total - required
-		};
-	}
-
-	return bestOption;
-}
-
-/**
- * Find best diet+soup combinations for a given remaining amount
- * Returns a small set of candidate options
- */
-function findBestDietSoupCombo(
-	remaining: number,
-	availableDiet: number,
-	availableSoup: number,
-	dietValue: number,
-	soupValue: number
-): DietSoupCombo[] {
-	const options: DietSoupCombo[] = [];
-
-	// Option 1: Diet only
-	if (availableDiet > 0) {
-		const dietNeeded = Math.ceil(remaining / dietValue);
-		if (dietNeeded <= availableDiet) {
-			options.push({
-				diet: dietNeeded,
-				soup: 0
-			});
-		}
-	}
-
-	// Option 2: Soup only
-	if (availableSoup > 0) {
-		const soupNeeded = Math.ceil(remaining / soupValue);
-		if (soupNeeded <= availableSoup) {
-			options.push({
-				diet: 0,
-				soup: soupNeeded
-			});
-		}
-	}
-
-	// Option 3: Combinations - for each diet count, compute minimum soup needed
-	for (let d = 0; d <= Math.min(availableDiet, Math.ceil(remaining / dietValue)); d++) {
-		const fromDiet = d * dietValue;
-		if (fromDiet >= remaining) {
-			continue; // Already covered by diet-only option
-		}
-		const soupNeeded = Math.ceil((remaining - fromDiet) / soupValue);
-		if (soupNeeded <= availableSoup) {
-			options.push({
-				diet: d,
-				soup: soupNeeded
-			});
-		}
-	}
-
-	return options;
-}
-
-/**
- * Compare two options: returns true if 'option' is better than 'best'
- */
-function isBetterOption(option: FoodCombination, best: FoodCombination | null): boolean {
-	if (!best) {
-		return true;
-	}
-
-	// Only consider valid options (those that meet requirement)
-	if (option.excess < 0) {
-		return false;
-	}
-	if (best.excess < 0) {
-		return true;
-	}
-
-	// Prefer lower excess
-	if (option.excess < best.excess) {
-		return true;
-	}
-	if (option.excess > best.excess) {
-		return false;
-	}
-
-	// Same excess: prefer more treats
-	if (option.treats > best.treats) {
-		return true;
-	}
-	if (option.treats < best.treats) {
-		return false;
-	}
-
-	// Same treats: prefer more diet
-	return option.diet > best.diet;
 }
 
 /**
