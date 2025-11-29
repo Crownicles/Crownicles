@@ -11,6 +11,9 @@ import { PetDataController } from "../../data/Pet";
 import { ExpeditionConstants } from "../../../../Lib/src/constants/ExpeditionConstants";
 import { Guilds } from "../../core/database/game/models/Guild";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
+import { BlockingUtils } from "../../core/utils/BlockingUtils";
+import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
+import { Constants } from "../../../../Lib/src/constants/Constants";
 import {
 	CommandPetExpeditionPacketReq,
 	CommandPetExpeditionPacketRes,
@@ -47,7 +50,12 @@ export default class PetExpeditionCommand {
 		disallowedEffects: CommandUtils.DISALLOWED_EFFECTS.NOT_STARTED_OR_DEAD,
 		whereAllowed: CommandUtils.WHERE.EVERYWHERE
 	})
-	async checkStatus(response: CrowniclesPacket[], player: Player, _packet: CommandPetExpeditionPacketReq): Promise<void> {
+	async checkStatus(
+		response: CrowniclesPacket[],
+		player: Player,
+		_packet: CommandPetExpeditionPacketReq,
+		context: PacketContext
+	): Promise<void> {
 		// Check if player has talisman
 		if (!player.hasTalisman) {
 			response.push(makePacket(CommandPetExpeditionPacketRes, {
@@ -84,6 +92,9 @@ export default class PetExpeditionCommand {
 		// Check for expedition in progress
 		const activeExpedition = await PetExpeditions.getActiveExpeditionForPlayer(player.id);
 		if (activeExpedition) {
+			// Block player while viewing expedition with recall option
+			BlockingUtils.blockPlayer(context.keycloakId, BlockingConstants.REASONS.PET_EXPEDITION, Constants.MESSAGES.COLLECTOR_TIME);
+
 			response.push(makePacket(CommandPetExpeditionPacketRes, {
 				hasTalisman: true,
 				hasExpeditionInProgress: true,
@@ -194,6 +205,9 @@ export default class PetExpeditionCommand {
 			}
 		}
 
+		// Block player while choosing expedition
+		BlockingUtils.blockPlayer(context.keycloakId, BlockingConstants.REASONS.PET_EXPEDITION_CHOICE, Constants.MESSAGES.COLLECTOR_TIME);
+
 		response.push(makePacket(CommandPetExpeditionGeneratePacketRes, {
 			expeditions,
 			petId: petEntity.typeId,
@@ -208,7 +222,7 @@ export default class PetExpeditionCommand {
 	 * Start a selected expedition
 	 */
 	@commandRequires(CommandPetExpeditionChoicePacketReq, {
-		notBlocked: true,
+		notBlocked: false,
 		disallowedEffects: CommandUtils.DISALLOWED_EFFECTS.NOT_STARTED_OR_DEAD,
 		whereAllowed: CommandUtils.WHERE.EVERYWHERE
 	})
@@ -218,6 +232,9 @@ export default class PetExpeditionCommand {
 		packet: CommandPetExpeditionChoicePacketReq,
 		context: PacketContext
 	): Promise<void> {
+		// Unblock player from expedition choice
+		BlockingUtils.unblockPlayer(context.keycloakId, BlockingConstants.REASONS.PET_EXPEDITION_CHOICE);
+
 		// Validate requirements
 		if (!player.hasTalisman || !player.petId) {
 			response.push(makePacket(CommandPetExpeditionChoicePacketRes, {
@@ -306,15 +323,18 @@ export default class PetExpeditionCommand {
 	 * Cancel expedition before departure
 	 */
 	@commandRequires(CommandPetExpeditionCancelPacketReq, {
-		notBlocked: true,
+		notBlocked: false,
 		disallowedEffects: CommandUtils.DISALLOWED_EFFECTS.NOT_STARTED_OR_DEAD,
 		whereAllowed: CommandUtils.WHERE.EVERYWHERE
 	})
 	async cancelExpedition(
 		response: CrowniclesPacket[],
 		player: Player,
-		_packet: CommandPetExpeditionCancelPacketReq
+		_packet: CommandPetExpeditionCancelPacketReq,
+		context: PacketContext
 	): Promise<void> {
+		// Unblock player from expedition choice
+		BlockingUtils.unblockPlayer(context.keycloakId, BlockingConstants.REASONS.PET_EXPEDITION_CHOICE);
 		if (!player.petId) {
 			response.push(makePacket(CommandPetExpeditionErrorPacket, { errorCode: "noPet" }));
 			return;
@@ -348,15 +368,19 @@ export default class PetExpeditionCommand {
 	 * Recall pet during expedition
 	 */
 	@commandRequires(CommandPetExpeditionRecallPacketReq, {
-		notBlocked: true,
+		notBlocked: false,
 		disallowedEffects: CommandUtils.DISALLOWED_EFFECTS.NOT_STARTED_OR_DEAD,
 		whereAllowed: CommandUtils.WHERE.EVERYWHERE
 	})
 	async recallPet(
 		response: CrowniclesPacket[],
 		player: Player,
-		_packet: CommandPetExpeditionRecallPacketReq
+		_packet: CommandPetExpeditionRecallPacketReq,
+		context: PacketContext
 	): Promise<void> {
+		// Unblock player from expedition view
+		BlockingUtils.unblockPlayer(context.keycloakId, BlockingConstants.REASONS.PET_EXPEDITION);
+
 		// Check for active expedition
 		const activeExpedition = await PetExpeditions.getActiveExpeditionForPlayer(player.id);
 		if (!activeExpedition) {

@@ -45,6 +45,8 @@ import {
 	CommandPetExpeditionResolvePacketRes,
 	CommandPetExpeditionErrorPacket
 } from "../../../../Lib/src/packets/commands/CommandPetExpeditionPacket";
+import { ChangeBlockingReasonPacket } from "../../../../Lib/src/packets/utils/ChangeBlockingReasonPacket";
+import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
 
 /**
  * Get the sex context string for i18n translations (male/female)
@@ -211,6 +213,8 @@ export async function handleExpeditionStatusRes(
 			time: Constants.MESSAGES.COLLECTOR_TIME
 		});
 
+		const userInteractedReason = "userInteracted";
+
 		collector.on("collect", async (buttonInteraction: ButtonInteraction) => {
 			if (buttonInteraction.user.id !== interaction.user.id) {
 				await sendInteractionNotForYou(buttonInteraction.user, buttonInteraction, lng);
@@ -218,20 +222,34 @@ export async function handleExpeditionStatusRes(
 			}
 
 			if (buttonInteraction.customId === "expedition_recall") {
+				// Recall packet will unblock the player
 				PacketUtils.sendPacketToBackend(context, makePacket(CommandPetExpeditionRecallPacketReq, {}));
 				await buttonInteraction.deferUpdate();
-				collector.stop();
+				collector.stop(userInteractedReason);
 			}
 			else if (buttonInteraction.customId === "expedition_cancel_view") {
+				// Unblock player when closing the view without recall
+				PacketUtils.sendPacketToBackend(context, makePacket(ChangeBlockingReasonPacket, {
+					oldReason: BlockingConstants.REASONS.PET_EXPEDITION,
+					newReason: BlockingConstants.REASONS.NONE
+				}));
 				await buttonInteraction.update({ components: [] });
-				collector.stop();
+				collector.stop(userInteractedReason);
 			}
 		});
 
-		collector.on("end", async () => {
+		collector.on("end", async (_, reason) => {
 			recallButton.setDisabled(true);
 			cancelButton.setDisabled(true);
 			await reply.edit({ components: [row] }).catch(() => null);
+
+			// Unblock player on timeout only (user interactions handle unblocking themselves)
+			if (reason !== userInteractedReason) {
+				PacketUtils.sendPacketToBackend(context, makePacket(ChangeBlockingReasonPacket, {
+					oldReason: BlockingConstants.REASONS.PET_EXPEDITION,
+					newReason: BlockingConstants.REASONS.NONE
+				}));
+			}
 		});
 
 		return;
