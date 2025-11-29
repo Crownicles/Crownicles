@@ -72,9 +72,11 @@ export class PetExpedition extends Model {
 	 * Convert to ExpeditionData for packets
 	 */
 	public toExpeditionData(): ExpeditionData {
+		const durationMinutes = this.getDurationMinutes();
 		return {
 			id: this.id.toString(),
-			durationMinutes: this.getDurationMinutes(),
+			durationMinutes,
+			displayDurationMinutes: Math.ceil(durationMinutes / 10) * 10,
 			riskRate: this.riskRate,
 			difficulty: this.difficulty,
 			wealthRate: this.wealthRate,

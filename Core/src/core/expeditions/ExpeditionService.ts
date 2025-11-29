@@ -17,7 +17,7 @@ import { MapConstants } from "../../../../Lib/src/constants/MapConstants";
  * Duration ranges for the 3 expedition slots
  * Slot 0: Short (10 min - 1 hour)
  * Slot 1: Medium (15 min - 10 hours)
- * Slot 2: Long (30 min - 3 days)
+ * Slot 2: Long/Distant (12 hours - 3 days)
  */
 const DURATION_RANGES = [
 	{
@@ -27,7 +27,7 @@ const DURATION_RANGES = [
 		min: 15, max: 10 * 60
 	},
 	{
-		min: 30, max: 3 * 24 * 60
+		min: 12 * 60, max: 3 * 24 * 60
 	}
 ];
 
@@ -102,6 +102,7 @@ function generateExpeditionWithConstraints(
 	const expeditionData: ExpeditionData = {
 		id: generateExpeditionId(),
 		durationMinutes,
+		displayDurationMinutes: Math.ceil(durationMinutes / 10) * 10,
 		riskRate,
 		difficulty,
 		wealthRate: Math.round(wealthRate * ExpeditionConstants.PERCENTAGE.DECIMAL_PRECISION) / ExpeditionConstants.PERCENTAGE.DECIMAL_PRECISION,

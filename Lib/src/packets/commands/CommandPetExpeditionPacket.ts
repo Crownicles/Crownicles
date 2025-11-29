@@ -17,6 +17,11 @@ export interface ExpeditionData {
 	durationMinutes: number;
 
 	/**
+	 * Duration rounded up to the nearest 10 minutes for display in selection menu
+	 */
+	displayDurationMinutes: number;
+
+	/**
 	 * Risk rate as a percentage (0-100)
 	 */
 	riskRate: number;

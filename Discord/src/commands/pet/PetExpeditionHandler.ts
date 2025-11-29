@@ -19,7 +19,9 @@ import { PacketUtils } from "../../utils/PacketUtils";
 import {
 	escapeUsername, StringUtils
 } from "../../utils/StringUtils";
-import { finishInTimeDisplay } from "../../../../Lib/src/utils/TimeUtils";
+import {
+	finishInTimeDisplay, minutesDisplay
+} from "../../../../Lib/src/utils/TimeUtils";
 import {
 	ExpeditionConstants, ExpeditionLocationType
 } from "../../../../Lib/src/constants/ExpeditionConstants";
@@ -92,57 +94,6 @@ function getExpeditionLocationName(
 		});
 	}
 	return expeditionName;
-}
-
-/**
- * Format duration for display
- */
-function formatDuration(minutes: number, lng: Language): string {
-	const minutesPerHour = ExpeditionConstants.TIME.MINUTES_PER_HOUR;
-	const hoursPerDay = ExpeditionConstants.TIME.HOURS_PER_DAY;
-	const minutesPerDay = minutesPerHour * hoursPerDay;
-
-	// Less than 1 hour: show only minutes
-	if (minutes < minutesPerHour) {
-		return i18n.t("commands:petExpedition.duration.minutes", {
-			lng,
-			count: minutes
-		});
-	}
-
-	// Less than 1 day: show hours and optionally minutes
-	if (minutes < minutesPerDay) {
-		const hours = Math.floor(minutes / minutesPerHour);
-		const remainingMinutes = minutes % minutesPerHour;
-		if (remainingMinutes === 0) {
-			return i18n.t("commands:petExpedition.duration.hours", {
-				lng,
-				count: hours
-			});
-		}
-		return i18n.t("commands:petExpedition.duration.hoursMinutes", {
-			lng,
-			hours,
-			minutes: remainingMinutes
-		});
-	}
-
-	// 1 day or more: show days and optionally hours
-	const days = Math.floor(minutes / minutesPerDay);
-	const remainingMinutes = minutes % minutesPerDay;
-	const remainingHours = Math.floor(remainingMinutes / minutesPerHour);
-
-	if (remainingHours === 0) {
-		return i18n.t("commands:petExpedition.duration.days", {
-			lng,
-			count: days
-		});
-	}
-	return i18n.t("commands:petExpedition.duration.daysHours", {
-		lng,
-		days,
-		hours: remainingHours
-	});
 }
 
 /**
@@ -383,11 +334,14 @@ export async function handleExpeditionGenerateRes(
 			exp.isDistantExpedition
 		);
 
+		// Use displayDurationMinutes (rounded to nearest 10) for the selection menu
+		const displayDuration = minutesDisplay(exp.displayDurationMinutes, lng);
+
 		description += `\n\n${i18n.t("commands:petExpedition.expeditionOption", {
 			lng,
 			number: i + 1,
 			location: `${locationEmoji} ${locationName}`,
-			duration: formatDuration(exp.durationMinutes, lng),
+			duration: displayDuration,
 			risk: getTranslatedRiskCategoryName(exp.riskRate, lng),
 			wealth: getTranslatedWealthCategoryName(exp.wealthRate, lng),
 			difficulty: getTranslatedDifficultyCategoryName(exp.difficulty, lng),
@@ -396,7 +350,7 @@ export async function handleExpeditionGenerateRes(
 
 		selectMenu.addOptions({
 			label: `${locationEmoji} ${locationName}`.substring(0, 100),
-			description: `${formatDuration(exp.durationMinutes, lng)} - ${getTranslatedRiskCategoryName(exp.riskRate, lng)}`,
+			description: `${displayDuration} - ${getTranslatedRiskCategoryName(exp.riskRate, lng)}`,
 			value: exp.id
 		});
 	}
