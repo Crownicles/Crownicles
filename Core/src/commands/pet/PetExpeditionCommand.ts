@@ -173,8 +173,8 @@ export default class PetExpeditionCommand {
 			return;
 		}
 
-		// Generate 3 expeditions with different locations
-		const expeditions = generateThreeExpeditions();
+		// Generate 3 expeditions based on player's current map position
+		const expeditions = generateThreeExpeditions(player.mapLinkId);
 
 		// Store expeditions in cache for later retrieval when player makes a choice
 		PendingExpeditionsCache.set(context.keycloakId, expeditions);

@@ -43,7 +43,8 @@ export default class PetCommand {
 				expeditionInfo = {
 					endTime: currentExpedition.endDate.getTime(),
 					riskRate: currentExpedition.riskRate,
-					locationType: currentExpedition.locationType as ExpeditionLocationType
+					locationType: currentExpedition.locationType as ExpeditionLocationType,
+					mapLocationId: currentExpedition.mapLocationId
 				};
 			}
 		}

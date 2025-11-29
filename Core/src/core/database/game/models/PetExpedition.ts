@@ -30,6 +30,8 @@ export class PetExpedition extends Model {
 
 	declare locationType: string;
 
+	declare mapLocationId: number;
+
 	declare status: string;
 
 	declare foodConsumed: number;
@@ -76,7 +78,8 @@ export class PetExpedition extends Model {
 			riskRate: this.riskRate,
 			difficulty: this.difficulty,
 			wealthRate: this.wealthRate,
-			locationType: this.locationType as ExpeditionLocationType
+			locationType: this.locationType as ExpeditionLocationType,
+			mapLocationId: this.mapLocationId
 		};
 	}
 
@@ -139,6 +142,7 @@ export class PetExpeditions {
 			difficulty: expeditionData.difficulty,
 			wealthRate: expeditionData.wealthRate,
 			locationType: expeditionData.locationType,
+			mapLocationId: expeditionData.mapLocationId ?? 1,
 			status: ExpeditionConstants.STATUS.IN_PROGRESS,
 			foodConsumed
 		});
@@ -207,6 +211,11 @@ export function initModel(sequelize: Sequelize): void {
 		locationType: {
 			type: DataTypes.STRING(32), // eslint-disable-line new-cap
 			allowNull: false
+		},
+		mapLocationId: {
+			type: DataTypes.INTEGER,
+			allowNull: false,
+			defaultValue: 1
 		},
 		status: {
 			type: DataTypes.STRING(32), // eslint-disable-line new-cap

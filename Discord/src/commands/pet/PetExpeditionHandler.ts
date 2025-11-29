@@ -76,6 +76,25 @@ function getTranslatedDifficultyCategoryName(difficulty: number, lng: Language):
 }
 
 /**
+ * Get the display name for an expedition location
+ * Uses the stylized expedition name based on mapLocationId
+ */
+function getExpeditionLocationName(
+	lng: Language,
+	mapLocationId: number,
+	isDistantExpedition?: boolean
+): string {
+	const expeditionName = i18n.t(`commands:petExpedition.mapLocationExpeditions.${mapLocationId}`, { lng });
+	if (isDistantExpedition) {
+		return i18n.t("commands:petExpedition.distantExpeditionPrefix", {
+			lng,
+			location: expeditionName
+		});
+	}
+	return expeditionName;
+}
+
+/**
  * Format duration for display
  */
 function formatDuration(minutes: number, lng: Language): string {
@@ -178,7 +197,11 @@ export async function handleExpeditionStatusRes(
 
 		// Show expedition in progress with recall option
 		const locationEmoji = ExpeditionConstants.getLocationEmoji(expedition.locationType as ExpeditionLocationType);
-		const locationName = i18n.t(`commands:petExpedition.locations.${expedition.locationType}`, { lng });
+		const locationName = getExpeditionLocationName(
+			lng,
+			expedition.mapLocationId!,
+			expedition.isDistantExpedition
+		);
 		const petDisplay = `${DisplayUtils.getPetIcon(expedition.petId, expedition.petSex as SexTypeShort)} **${DisplayUtils.getPetNicknameOrTypeName(expedition.petNickname ?? null, expedition.petId, expedition.petSex as SexTypeShort, lng)}**`;
 		const sexContext = getSexContext(expedition.petSex as SexTypeShort);
 
@@ -354,7 +377,11 @@ export async function handleExpeditionGenerateRes(
 	for (let i = 0; i < packet.expeditions.length; i++) {
 		const exp = packet.expeditions[i];
 		const locationEmoji = ExpeditionConstants.getLocationEmoji(exp.locationType as ExpeditionLocationType);
-		const locationName = i18n.t(`commands:petExpedition.locations.${exp.locationType}`, { lng });
+		const locationName = getExpeditionLocationName(
+			lng,
+			exp.mapLocationId!,
+			exp.isDistantExpedition
+		);
 
 		description += `\n\n${i18n.t("commands:petExpedition.expeditionOption", {
 			lng,
@@ -368,7 +395,7 @@ export async function handleExpeditionGenerateRes(
 		})}`;
 
 		selectMenu.addOptions({
-			label: `${locationEmoji} ${locationName}`,
+			label: `${locationEmoji} ${locationName}`.substring(0, 100),
 			description: `${formatDuration(exp.durationMinutes, lng)} - ${getTranslatedRiskCategoryName(exp.riskRate, lng)}`,
 			value: exp.id
 		});
@@ -480,7 +507,11 @@ export async function handleExpeditionChoiceRes(
 
 	const expedition = packet.expedition!;
 	const locationEmoji = ExpeditionConstants.getLocationEmoji(expedition.locationType as ExpeditionLocationType);
-	const locationName = i18n.t(`commands:petExpedition.locations.${expedition.locationType}`, { lng });
+	const locationName = getExpeditionLocationName(
+		lng,
+		expedition.mapLocationId!,
+		expedition.isDistantExpedition
+	);
 	const petDisplay = `${DisplayUtils.getPetIcon(expedition.petId, expedition.petSex as SexTypeShort)} **${DisplayUtils.getPetNicknameOrTypeName(expedition.petNickname ?? null, expedition.petId, expedition.petSex as SexTypeShort, lng)}**`;
 	const sexContext = getSexContext(expedition.petSex as SexTypeShort);
 
@@ -610,7 +641,11 @@ export async function handleExpeditionResolveRes(
 	const lng = interaction.userLanguage;
 	const petDisplay = `${DisplayUtils.getPetIcon(packet.petId, packet.petSex as SexTypeShort)} **${DisplayUtils.getPetNicknameOrTypeName(packet.petNickname ?? null, packet.petId, packet.petSex as SexTypeShort, lng)}**`;
 	const locationEmoji = ExpeditionConstants.getLocationEmoji(packet.expedition.locationType as ExpeditionLocationType);
-	const locationName = i18n.t(`commands:petExpedition.locations.${packet.expedition.locationType}`, { lng });
+	const locationName = getExpeditionLocationName(
+		lng,
+		packet.expedition.mapLocationId!,
+		packet.expedition.isDistantExpedition
+	);
 	const sexContext = getSexContext(packet.petSex as SexTypeShort);
 
 	let description: string;

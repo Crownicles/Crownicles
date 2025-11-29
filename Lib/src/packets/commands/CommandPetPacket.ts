@@ -11,6 +11,7 @@ export interface PetExpeditionInfo {
 	endTime: number;
 	riskRate: number;
 	locationType: ExpeditionLocationType;
+	mapLocationId: number;
 }
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)

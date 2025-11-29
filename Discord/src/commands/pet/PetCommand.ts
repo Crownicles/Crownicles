@@ -110,7 +110,9 @@ async function createPetEmbed(
 	// Add expedition status if in progress
 	if (packet.expeditionInProgress) {
 		const locationEmoji = ExpeditionConstants.getLocationEmoji(packet.expeditionInProgress.locationType as ExpeditionLocationType);
-		const locationName = i18n.t(`commands:petExpedition.locations.${packet.expeditionInProgress.locationType}`, { lng });
+		const locationName = packet.expeditionInProgress.mapLocationId
+			? i18n.t(`commands:petExpedition.mapLocationExpeditions.${packet.expeditionInProgress.mapLocationId}`, { lng })
+			: i18n.t(`commands:petExpedition.mapLocationExpeditions.1`, { lng }); // Fallback
 		const riskCategoryKey = ExpeditionConstants.getRiskCategoryName(packet.expeditionInProgress.riskRate);
 		const riskCategory = i18n.t(`commands:petExpedition.riskCategories.${riskCategoryKey}`, { lng });
 

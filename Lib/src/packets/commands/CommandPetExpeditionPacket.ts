@@ -40,6 +40,16 @@ export interface ExpeditionData {
 	 * Food cost for this expedition (based on reward index)
 	 */
 	foodCost?: number;
+
+	/**
+	 * ID of the map location for local expeditions (linked to player's current position)
+	 */
+	mapLocationId?: number;
+
+	/**
+	 * Whether this is a distant expedition (3rd option, can be anywhere on the map)
+	 */
+	isDistantExpedition?: boolean;
 }
 
 /**

@@ -9,6 +9,9 @@ import { Pet } from "../../data/Pet";
 import {
 	calculateRewardIndex, calculateRewards
 } from "./ExpeditionRewardCalculator";
+import { MapLinkDataController } from "../../data/MapLink";
+import { MapLocationDataController } from "../../data/MapLocation";
+import { MapConstants } from "../../../../Lib/src/constants/MapConstants";
 
 /**
  * Duration ranges for the 3 expedition slots
@@ -29,15 +32,31 @@ const DURATION_RANGES = [
 ];
 
 /**
- * Shuffle an array using Fisher-Yates algorithm
+ * Map location types to expedition location types
+ * This allows using the existing reward calculation system based on location types
  */
-function shuffleArray<T>(array: T[]): T[] {
-	const result = [...array];
-	for (let i = result.length - 1; i > 0; i--) {
-		const j = RandomUtils.randInt(0, i + 1);
-		[result[i], result[j]] = [result[j], result[i]];
-	}
-	return result;
+const MAP_TYPE_TO_EXPEDITION_TYPE: Record<string, ExpeditionLocationType> = {
+	fo: "forest",
+	mo: "mountain",
+	de: "desert",
+	ruins: "ruins",
+	be: "coast",
+	ri: "coast",
+	la: "swamp",
+	pl: "plains",
+	ro: "plains",
+	vi: "plains",
+	ci: "cave",
+	castleEntrance: "ruins",
+	castleThrone: "ruins",
+	continent: "plains"
+};
+
+/**
+ * Get expedition location type from map location type
+ */
+function getExpeditionTypeFromMapType(mapType: string): ExpeditionLocationType {
+	return MAP_TYPE_TO_EXPEDITION_TYPE[mapType] ?? "plains";
 }
 
 /**
@@ -57,7 +76,9 @@ function generateExpeditionWithConstraints(
 	durationRange: {
 		min: number; max: number;
 	},
-	locationType: ExpeditionLocationType
+	locationType: ExpeditionLocationType,
+	mapLocationId?: number,
+	isDistantExpedition?: boolean
 ): ExpeditionData {
 	const durationMinutes = RandomUtils.randInt(
 		durationRange.min,
@@ -84,7 +105,9 @@ function generateExpeditionWithConstraints(
 		riskRate,
 		difficulty,
 		wealthRate: Math.round(wealthRate * ExpeditionConstants.PERCENTAGE.DECIMAL_PRECISION) / ExpeditionConstants.PERCENTAGE.DECIMAL_PRECISION,
-		locationType
+		locationType,
+		mapLocationId,
+		isDistantExpedition
 	};
 
 	// Calculate food cost based on reward index
@@ -94,18 +117,85 @@ function generateExpeditionWithConstraints(
 }
 
 /**
- * Generate 3 expeditions with different locations and fixed duration ranges
+ * Get the two map locations linked to a mapLink
  */
-export function generateThreeExpeditions(): ExpeditionData[] {
-	// Get all location types and shuffle them to ensure 3 different locations
-	const allLocationTypes = Object.values(ExpeditionConstants.LOCATION_TYPES) as ExpeditionLocationType[];
-	const shuffledLocations = shuffleArray(allLocationTypes);
+function getMapLocationsFromLink(mapLinkId: number): number[] {
+	const mapLink = MapLinkDataController.instance.getById(mapLinkId);
+	if (!mapLink) {
+		return [];
+	}
+	return [mapLink.startMap, mapLink.endMap];
+}
 
-	return [
-		generateExpeditionWithConstraints(DURATION_RANGES[0], shuffledLocations[0]),
-		generateExpeditionWithConstraints(DURATION_RANGES[1], shuffledLocations[1]),
-		generateExpeditionWithConstraints(DURATION_RANGES[2], shuffledLocations[2])
-	];
+/**
+ * Get a random map location from the main continent, excluding given locations
+ */
+function getRandomDistantMapLocation(excludeIds: number[]): number {
+	const allLocations = MapLocationDataController.instance.getAll()
+		.filter(loc =>
+			loc.attribute === MapConstants.MAP_ATTRIBUTES.CONTINENT1
+			&& !excludeIds.includes(loc.id)
+		);
+
+	if (allLocations.length === 0) {
+		// Fallback: just pick any location from continent 1
+		const fallback = MapLocationDataController.instance.getAll()
+			.find(loc => loc.attribute === MapConstants.MAP_ATTRIBUTES.CONTINENT1);
+		return fallback?.id ?? 1;
+	}
+
+	return RandomUtils.crowniclesRandom.pick(allLocations).id;
+}
+
+/**
+ * Generate 3 expeditions based on player's current map position
+ * - 2 first expeditions: linked to the 2 mapLocations of player's current mapLink
+ * - 3rd expedition: "distant expedition" to a random location on the map
+ * @param mapLinkId - The player's current mapLink ID
+ */
+export function generateThreeExpeditions(mapLinkId: number): ExpeditionData[] {
+	const localMapLocationIds = getMapLocationsFromLink(mapLinkId);
+
+	// Get map location data for the first two expeditions
+	const localExpeditions: ExpeditionData[] = [];
+
+	for (let i = 0; i < 2 && i < localMapLocationIds.length; i++) {
+		const mapLocationId = localMapLocationIds[i];
+		const mapLocation = MapLocationDataController.instance.getById(mapLocationId);
+		const locationType = getExpeditionTypeFromMapType(mapLocation?.type ?? "ro");
+
+		localExpeditions.push(
+			generateExpeditionWithConstraints(
+				DURATION_RANGES[i],
+				locationType,
+				mapLocationId,
+				false
+			)
+		);
+	}
+
+	// If we couldn't get 2 local expeditions (edge case), fill with random
+	while (localExpeditions.length < 2) {
+		const allLocationTypes = Object.values(ExpeditionConstants.LOCATION_TYPES) as ExpeditionLocationType[];
+		localExpeditions.push(generateExpeditionWithConstraints(
+			DURATION_RANGES[localExpeditions.length],
+			RandomUtils.crowniclesRandom.pick(allLocationTypes)
+		));
+	}
+
+	// 3rd expedition: distant expedition to a random location
+	const distantMapLocationId = getRandomDistantMapLocation(localMapLocationIds);
+	const distantMapLocation = MapLocationDataController.instance.getById(distantMapLocationId);
+	const distantLocationType = getExpeditionTypeFromMapType(distantMapLocation?.type ?? "ro");
+
+	const distantExpedition = generateExpeditionWithConstraints(
+		DURATION_RANGES[2],
+		distantLocationType,
+		distantMapLocationId,
+		true
+	);
+
+	return [...localExpeditions, distantExpedition];
 }
 
 /**
