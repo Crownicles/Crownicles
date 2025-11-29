@@ -209,6 +209,14 @@ export const CrowniclesIcons: {
 		shop: string;
 		home: { [level: number]: string };
 		manageHome: string;
+		homeUpgrades: {
+			bed: string;
+			chest: string;
+			potionStation: string;
+			upgradeEquipment: string;
+			garden: string;
+			earthQuality: string;
+		};
 	};
 	meals: {
 		[mealId: string]: string;
@@ -2405,7 +2413,15 @@ export const CrowniclesIcons: {
 			7: "🏡",
 			8: "🏡"
 		},
-		manageHome: "🧑‍💼"
+		manageHome: "🧑‍💼",
+		homeUpgrades: {
+			bed: "🛏️",
+			chest: "📦",
+			potionStation: "🧪",
+			upgradeEquipment: "🛠️",
+			garden: "🌱",
+			earthQuality: "↗️"
+		}
 	},
 	meals: {
 		breadAndCheese: "🧀",

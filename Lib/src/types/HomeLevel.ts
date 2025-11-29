@@ -104,13 +104,10 @@ export class HomeLevel {
 	}
 
 	public static getByLevel(level: number): HomeLevel | null {
-		for (const homeLevel of HomeLevel.LEVELS) {
-			if (homeLevel.level === level) {
-				return homeLevel;
-			}
+		if (level < 1 || level > HomeLevel.LEVELS.length) {
+			return null;
 		}
-
-		return null;
+		return HomeLevel.LEVELS[level - 1] || null;
 	}
 
 	public static getInitialLevel(): HomeLevel {

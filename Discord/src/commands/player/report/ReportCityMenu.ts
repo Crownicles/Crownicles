@@ -526,11 +526,7 @@ const formatHomeUpgradeChanges = (oldFeatures: HomeFeatures, newFeatures: HomeFe
 		changes.push(i18n.t("commands:report.city.homes.upgradeChanges.betterGardenEarth", { lng }));
 	}
 
-	for (let i = 0; i < changes.length; i++) {
-		changes[i] = `- ${changes[i]}`;
-	}
-
-	return changes.join("\n");
+	return changes.map(change => `- ${change}`).join("\n");
 };
 
 function getManageHomeMenu(context: PacketContext, interaction: CrowniclesInteraction, packet: ReactionCollectorCreationPacket, collectorTime: number, pseudo: string): CrowniclesNestedMenu {
