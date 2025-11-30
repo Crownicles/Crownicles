@@ -6,6 +6,7 @@ import {
 } from "./ReactionCollectorPacket";
 import { SexTypeShort } from "../../constants/StringConstants";
 import { ExpeditionLocationType } from "../../constants/ExpeditionConstants";
+import { FoodConsumptionDetail } from "../commands/CommandPetExpeditionPacket";
 
 /**
  * Data sent with the expedition in progress view (recall menu)
@@ -26,6 +27,8 @@ export class ReactionCollectorPetExpeditionData extends ReactionCollectorData {
 	returnTime!: number;
 
 	foodConsumed?: number;
+
+	foodConsumedDetails?: FoodConsumptionDetail[];
 
 	isDistantExpedition?: boolean;
 }
@@ -62,6 +65,8 @@ export class ReactionCollectorPetExpedition extends ReactionCollector {
 
 	private readonly foodConsumed: number | undefined;
 
+	private readonly foodConsumedDetails: FoodConsumptionDetail[] | undefined;
+
 	private readonly isDistantExpedition: boolean | undefined;
 
 	constructor(params: {
@@ -73,6 +78,7 @@ export class ReactionCollectorPetExpedition extends ReactionCollector {
 		riskRate: number;
 		returnTime: number;
 		foodConsumed: number | undefined;
+		foodConsumedDetails: FoodConsumptionDetail[] | undefined;
 		isDistantExpedition: boolean | undefined;
 	}) {
 		super();
@@ -84,6 +90,7 @@ export class ReactionCollectorPetExpedition extends ReactionCollector {
 		this.riskRate = params.riskRate;
 		this.returnTime = params.returnTime;
 		this.foodConsumed = params.foodConsumed;
+		this.foodConsumedDetails = params.foodConsumedDetails;
 		this.isDistantExpedition = params.isDistantExpedition;
 	}
 
@@ -104,6 +111,7 @@ export class ReactionCollectorPetExpedition extends ReactionCollector {
 				riskRate: this.riskRate,
 				returnTime: this.returnTime,
 				foodConsumed: this.foodConsumed,
+				foodConsumedDetails: this.foodConsumedDetails,
 				isDistantExpedition: this.isDistantExpedition
 			})
 		};

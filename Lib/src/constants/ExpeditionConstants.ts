@@ -165,8 +165,10 @@ export abstract class ExpeditionConstants {
 	static readonly SPEED_DURATION_MODIFIER = {
 		MIN_SPEED: 0,
 		MAX_SPEED: 30,
+
 		/** Duration multiplier at max speed (30% reduction) */
 		MAX_SPEED_MULTIPLIER: 0.70,
+
 		/** Duration multiplier at min speed (20% increase) */
 		MIN_SPEED_MULTIPLIER: 1.20
 	};

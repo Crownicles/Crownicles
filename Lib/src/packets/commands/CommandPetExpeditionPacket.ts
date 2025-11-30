@@ -6,6 +6,19 @@ import {
 } from "../../constants/ExpeditionConstants";
 
 /**
+ * Food types used in expeditions
+ */
+export type ExpeditionFoodType = "commonFood" | "carnivorousFood" | "herbivorousFood" | "ultimateFood";
+
+/**
+ * Detail of food consumed for an expedition
+ */
+export interface FoodConsumptionDetail {
+	foodType: ExpeditionFoodType;
+	amount: number;
+}
+
+/**
  * Data structure representing a single expedition option
  */
 export interface ExpeditionData {
@@ -86,6 +99,11 @@ export interface ExpeditionInProgressData extends ExpeditionData {
 	 * Amount of food consumed for this expedition
 	 */
 	foodConsumed?: number;
+
+	/**
+	 * Detailed breakdown of food consumed by type
+	 */
+	foodConsumedDetails?: FoodConsumptionDetail[];
 }
 
 /**
@@ -170,6 +188,11 @@ export class CommandPetExpeditionChoicePacketRes extends CrowniclesPacket {
 	 * Amount of food consumed
 	 */
 	foodConsumed?: number;
+
+	/**
+	 * Detailed breakdown of food consumed by type
+	 */
+	foodConsumedDetails?: FoodConsumptionDetail[];
 
 	/**
 	 * Whether the player had insufficient food (risk multiplied)

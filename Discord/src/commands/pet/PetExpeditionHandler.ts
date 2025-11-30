@@ -25,11 +25,31 @@ import {
 	CommandPetExpeditionRecallPacketRes,
 	CommandPetExpeditionResolvePacketReq,
 	CommandPetExpeditionResolvePacketRes,
-	CommandPetExpeditionErrorPacket
+	CommandPetExpeditionErrorPacket,
+	FoodConsumptionDetail
 } from "../../../../Lib/src/packets/commands/CommandPetExpeditionPacket";
 import {
 	ButtonInteraction, StringSelectMenuInteraction
 } from "discord.js";
+
+/**
+ * Format food consumption details for display
+ * Returns a string like: "{emote} Friandise: 2 | {emote} Viande: 1"
+ */
+export function formatFoodConsumedDetails(details: FoodConsumptionDetail[], lng: Language): string {
+	if (!details || details.length === 0) {
+		return "";
+	}
+
+	return details.map(detail => {
+		const foodName = i18n.t(`models:foods.${detail.foodType}`, {
+			lng,
+			count: detail.amount,
+			context: "capitalized"
+		});
+		return `{emote:foods.${detail.foodType}} ${foodName}: ${detail.amount}`;
+	}).join(" | ");
+}
 
 /**
  * Get the sex context string for i18n translations (male/female)
@@ -291,7 +311,16 @@ export async function handleExpeditionChoiceRes(
 		returnTime: finishInTimeDisplay(new Date(expedition.endTime))
 	});
 
-	if (packet.foodConsumed && packet.foodConsumed > 0) {
+	// Display food consumed with detailed breakdown if available
+	if (packet.foodConsumedDetails && packet.foodConsumedDetails.length > 0) {
+		const foodDetailsDisplay = formatFoodConsumedDetails(packet.foodConsumedDetails, lng);
+		description += i18n.t("commands:petExpedition.foodConsumedDetails", {
+			lng,
+			foodDetails: foodDetailsDisplay
+		});
+	}
+	else if (packet.foodConsumed && packet.foodConsumed > 0) {
+		// Fallback to simple display if no details available
 		description += i18n.t("commands:petExpedition.foodConsumed", {
 			lng,
 			amount: packet.foodConsumed
@@ -490,7 +519,7 @@ export async function handleExpeditionResolveRes(
 		.formatAuthor(title, interaction.user)
 		.setDescription(description);
 
-	await interaction.followUp({ embeds: [embed] });
+	await sendResponse(context, embed);
 }
 
 /**

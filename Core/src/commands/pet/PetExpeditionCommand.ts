@@ -26,7 +26,8 @@ import {
 	CommandPetExpeditionResolvePacketReq,
 	CommandPetExpeditionResolvePacketRes,
 	CommandPetExpeditionErrorPacket,
-	ExpeditionData
+	ExpeditionData,
+	FoodConsumptionDetail
 } from "../../../../Lib/src/packets/commands/CommandPetExpeditionPacket";
 import {
 	PendingExpeditionsCache,
@@ -37,7 +38,8 @@ import {
 	calculateEffectiveRisk,
 	determineExpeditionOutcome,
 	validateExpeditionPrerequisites,
-	applyExpeditionRewards
+	applyExpeditionRewards,
+	FoodConsumptionPlan
 } from "../../core/expeditions";
 import {
 	EndCallback, ReactionCollectorInstance
@@ -56,6 +58,16 @@ import {
 	ReactionCollectorPetExpeditionClaimReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorPetExpeditionFinished";
 import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
+
+/**
+ * Convert a FoodConsumptionPlan to an array of FoodConsumptionDetail for packet transmission
+ */
+function foodPlanToDetails(plan: FoodConsumptionPlan): FoodConsumptionDetail[] {
+	return plan.consumption.map(item => ({
+		foodType: item.foodType,
+		amount: item.itemsToConsume
+	}));
+}
 
 /**
  * Handle expedition choice selection
@@ -152,6 +164,7 @@ async function handleExpeditionSelect(
 			petEntity.nickname ?? undefined
 		),
 		foodConsumed: foodPlan.totalRations,
+		foodConsumedDetails: foodPlanToDetails(foodPlan),
 		insufficientFood,
 		insufficientFoodCause,
 		speedDurationModifier
@@ -377,6 +390,7 @@ export default class PetExpeditionCommand {
 				riskRate: activeExpedition.riskRate,
 				returnTime: activeExpedition.endDate.getTime(),
 				foodConsumed: activeExpedition.foodConsumed,
+				foodConsumedDetails: undefined, // Not stored in DB
 				isDistantExpedition: undefined // Not stored in DB, Discord will handle display
 			});
 

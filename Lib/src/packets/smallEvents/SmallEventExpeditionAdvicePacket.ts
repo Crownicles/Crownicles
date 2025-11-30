@@ -9,6 +9,7 @@ import { SexTypeShort } from "../../constants/StringConstants";
  * Interaction types for the expedition advice small event
  */
 export enum ExpeditionAdviceInteractionType {
+
 	// Phase 1: Talisman introduction (encounters 1-5)
 	TALISMAN_INTRO = "talismanIntro",
 
