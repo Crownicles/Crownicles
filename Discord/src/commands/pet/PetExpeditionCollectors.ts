@@ -188,6 +188,96 @@ export async function createPetExpeditionCollector(
 }
 
 /**
+ * Build expedition option description text for a single expedition
+ */
+function buildExpeditionOptionText(
+	exp: ExpeditionOptionData,
+	index: number,
+	lng: Language
+): string {
+	const locationEmoji = ExpeditionConstants.getLocationEmoji(exp.locationType);
+	const locationName = getExpeditionLocationName(lng, exp.mapLocationId, exp.isDistantExpedition);
+	const displayDuration = minutesDisplay(exp.displayDurationMinutes, lng);
+	const foodCost = exp.foodCost ?? 1;
+	const foodDisplay = i18n.t("commands:petExpedition.foodCost", {
+		lng, count: foodCost
+	});
+
+	return i18n.t("commands:petExpedition.expeditionOption", {
+		lng,
+		number: index + 1,
+		location: `${locationEmoji} **${locationName}**`,
+		duration: displayDuration,
+		risk: getTranslatedRiskCategoryName(exp.riskRate, lng),
+		reward: getTranslatedRewardCategoryName(exp.rewardIndex, lng),
+		difficulty: getTranslatedDifficultyCategoryName(exp.difficulty, lng),
+		foodDisplay
+	});
+}
+
+/**
+ * Add expedition option to the select menu
+ */
+function addExpeditionMenuOption(
+	selectMenu: StringSelectMenuBuilder,
+	exp: ExpeditionOptionData,
+	lng: Language
+): void {
+	const locationEmoji = ExpeditionConstants.getLocationEmoji(exp.locationType);
+	const locationName = getExpeditionLocationName(lng, exp.mapLocationId, exp.isDistantExpedition);
+	const displayDuration = minutesDisplay(exp.displayDurationMinutes, lng);
+
+	selectMenu.addOptions({
+		label: `${locationEmoji} ${locationName}`.substring(0, 100),
+		description: `${displayDuration} - ${getTranslatedRiskCategoryName(exp.riskRate, lng)}`,
+		value: exp.id
+	});
+}
+
+/**
+ * Build guild provisions description text
+ */
+function buildGuildProvisionsText(
+	data: ReactionCollectorPetExpeditionChoiceData,
+	lng: Language,
+	petDisplay: string
+): string {
+	const sexContext = getSexContext(data.petSex);
+	const hasGuildProvisions = data.hasGuild && data.guildFoodAmount !== undefined;
+	const translationKey = hasGuildProvisions
+		? "commands:petExpedition.guildProvisionsInfo"
+		: "commands:petExpedition.noGuildProvisionsInfo";
+
+	return i18n.t(translationKey, {
+		lng,
+		context: sexContext,
+		petDisplay,
+		amount: data.guildFoodAmount
+	});
+}
+
+/**
+ * Handle the collector interaction for expedition choice
+ */
+function handleExpeditionChoiceInteraction(
+	componentInteraction: ButtonInteraction | StringSelectMenuInteraction,
+	data: ReactionCollectorPetExpeditionChoiceData,
+	packet: ReactionCollectorCreationPacket,
+	context: PacketContext
+): void {
+	if (componentInteraction.isStringSelectMenu()) {
+		const chosenId = componentInteraction.values[0];
+		const expeditionIndex = data.expeditions.findIndex((exp: ExpeditionOptionData) => exp.id === chosenId);
+		if (expeditionIndex !== -1) {
+			DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, componentInteraction, expeditionIndex);
+		}
+	}
+	else if (componentInteraction.customId === "expedition_cancel") {
+		DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, componentInteraction, data.expeditions.length);
+	}
+}
+
+/**
  * Create a collector for the expedition choice menu
  */
 export async function createPetExpeditionChoiceCollector(
@@ -201,127 +291,52 @@ export async function createPetExpeditionChoiceCollector(
 
 	const data = packet.data.data as ReactionCollectorPetExpeditionChoiceData;
 	const lng = interaction.userLanguage;
-
 	const petDisplay = `${DisplayUtils.getPetIcon(data.petId, data.petSex)} **${DisplayUtils.getPetNicknameOrTypeName(data.petNickname ?? null, data.petId, data.petSex, lng)}**`;
 
-	// Build the embed with expedition options
+	// Build description with all expedition options
 	let description = i18n.t("commands:petExpedition.chooseExpedition", {
-		lng,
-		petDisplay
+		lng, petDisplay
 	});
-
 	const selectMenu = new StringSelectMenuBuilder()
 		.setCustomId("expedition_choice")
 		.setPlaceholder(i18n.t("commands:petExpedition.selectPlaceholder", { lng }));
 
 	for (let i = 0; i < data.expeditions.length; i++) {
-		const exp = data.expeditions[i];
-		const locationEmoji = ExpeditionConstants.getLocationEmoji(exp.locationType);
-		const locationName = getExpeditionLocationName(lng, exp.mapLocationId, exp.isDistantExpedition);
-
-		// Use displayDurationMinutes (rounded to nearest 10) for the selection menu
-		const displayDuration = minutesDisplay(exp.displayDurationMinutes, lng);
-		const foodCost = exp.foodCost ?? 1;
-		const foodDisplay = i18n.t("commands:petExpedition.foodCost", {
-			lng,
-			count: foodCost
-		});
-
-		description += i18n.t("commands:petExpedition.expeditionOption", {
-			lng,
-			number: i + 1,
-			location: `${locationEmoji} **${locationName}**`,
-			duration: displayDuration,
-			risk: getTranslatedRiskCategoryName(exp.riskRate, lng),
-			reward: getTranslatedRewardCategoryName(exp.rewardIndex, lng),
-			difficulty: getTranslatedDifficultyCategoryName(exp.difficulty, lng),
-			foodDisplay
-		});
-
-		selectMenu.addOptions({
-			label: `${locationEmoji} ${locationName}`.substring(0, 100),
-			description: `${displayDuration} - ${getTranslatedRiskCategoryName(exp.riskRate, lng)}`,
-			value: exp.id
-		});
+		description += buildExpeditionOptionText(data.expeditions[i], i, lng);
+		addExpeditionMenuOption(selectMenu, data.expeditions[i], lng);
 	}
-
-	// Add guild provisions info with pet excitement text
-	const sexContext = getSexContext(data.petSex);
-	if (data.hasGuild && data.guildFoodAmount !== undefined) {
-		description += i18n.t("commands:petExpedition.guildProvisionsInfo", {
-			lng,
-			context: sexContext,
-			petDisplay,
-			amount: data.guildFoodAmount
-		});
-	}
-	else {
-		description += i18n.t("commands:petExpedition.noGuildProvisionsInfo", {
-			lng,
-			context: sexContext,
-			petDisplay
-		});
-	}
+	description += buildGuildProvisionsText(data, lng, petDisplay);
 
 	const embed = new CrowniclesEmbed()
-		.formatAuthor(
-			i18n.t("commands:petExpedition.chooseExpeditionTitle", {
-				lng,
-				pseudo: escapeUsername(interaction.user.displayName)
-			}),
-			interaction.user
-		)
+		.formatAuthor(i18n.t("commands:petExpedition.chooseExpeditionTitle", {
+			lng, pseudo: escapeUsername(interaction.user.displayName)
+		}), interaction.user)
 		.setDescription(description);
 
 	const selectRow = new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(selectMenu);
-	const buttonRow = new ActionRowBuilder<ButtonBuilder>();
-
 	const cancelButton = new ButtonBuilder()
 		.setCustomId("expedition_cancel")
 		.setLabel(i18n.t("commands:petExpedition.cancelButton", { lng }))
 		.setEmoji(CrowniclesIcons.expedition.recall)
 		.setStyle(ButtonStyle.Danger);
-	buttonRow.addComponents(cancelButton);
+	const buttonRow = new ActionRowBuilder<ButtonBuilder>().addComponents(cancelButton);
 
 	const msg = await interaction.channel.send({
-		embeds: [embed],
-		components: [selectRow, buttonRow]
+		embeds: [embed], components: [selectRow, buttonRow]
 	});
-
 	if (!msg) {
 		return null;
 	}
 
-	const collector = msg.createMessageComponentCollector({
-		time: packet.endTime - Date.now()
-	});
+	const collector = msg.createMessageComponentCollector({ time: packet.endTime - Date.now() });
 
 	collector.on("collect", async componentInteraction => {
 		if (componentInteraction.user.id !== interaction.user.id) {
 			await sendInteractionNotForYou(componentInteraction.user, componentInteraction, lng);
 			return;
 		}
-
 		await componentInteraction.deferReply();
-
-		if (componentInteraction.isStringSelectMenu()) {
-			const menuInteraction = componentInteraction as StringSelectMenuInteraction;
-			const chosenId = menuInteraction.values[0];
-
-			// Find the index of the chosen expedition to send as reaction index
-			const expeditionIndex = data.expeditions.findIndex((exp: ExpeditionOptionData) => exp.id === chosenId);
-			if (expeditionIndex !== -1) {
-				DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, menuInteraction, expeditionIndex);
-			}
-		}
-		else if (componentInteraction.isButton()) {
-			const buttonInteraction = componentInteraction as ButtonInteraction;
-			if (buttonInteraction.customId === "expedition_cancel") {
-				// Cancel - send reaction index = number of expeditions (last reaction is cancel)
-				DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, buttonInteraction, data.expeditions.length);
-			}
-		}
-
+		handleExpeditionChoiceInteraction(componentInteraction as ButtonInteraction | StringSelectMenuInteraction, data, packet, context);
 		collector.stop();
 	});
 

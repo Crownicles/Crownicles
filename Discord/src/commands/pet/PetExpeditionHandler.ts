@@ -209,6 +209,32 @@ function getCannotStartDescription(
 }
 
 /**
+ * Build error embed for cannot start expedition scenarios
+ */
+function buildCannotStartEmbed(
+	interaction: CrowniclesInteraction,
+	packet: CommandPetExpeditionPacketRes
+): CrowniclesEmbed {
+	const lng = interaction.userLanguage;
+	const petDisplay = packet.petId && packet.petSex
+		? `${DisplayUtils.getPetIcon(packet.petId, packet.petSex as SexTypeShort)} **${DisplayUtils.getPetNicknameOrTypeName(packet.petNickname ?? null, packet.petId, packet.petSex as SexTypeShort, lng)}**`
+		: i18n.t("commands:pet.defaultPetName", { lng });
+
+	const sexContext = packet.petSex ? getSexContext(packet.petSex as SexTypeShort) : StringConstants.SEX.MALE.long;
+
+	return new CrowniclesEmbed()
+		.formatAuthor(
+			i18n.t("commands:petExpedition.unavailableTitle", {
+				lng,
+				pseudo: escapeUsername(interaction.user.displayName)
+			}),
+			interaction.user
+		)
+		.setDescription(getCannotStartDescription(packet, lng, petDisplay, sexContext))
+		.setErrorColor();
+}
+
+/**
  * Handle the initial expedition status response
  * This only handles error cases and auto-resolve redirect.
  * Collector creation is now handled via ReactionCollectorCreationPacket.
@@ -222,53 +248,26 @@ export async function handleExpeditionStatusRes(
 		return;
 	}
 
-	const lng = interaction.userLanguage;
-
 	// Check if player has talisman
 	if (!packet.hasTalisman) {
-		await interaction.followUp({
-			embeds: [buildNoTalismanEmbed(interaction, packet)]
-		});
+		await interaction.followUp({ embeds: [buildNoTalismanEmbed(interaction, packet)] });
 		return;
 	}
 
-	// Check if there's an expedition in progress that's complete (auto-resolve)
+	// Check if there's an expedition in progress
 	if (packet.hasExpeditionInProgress && packet.expeditionInProgress) {
-		const expedition = packet.expeditionInProgress;
-
-		// Check if expedition is complete - redirect to resolve
-		if (Date.now() >= expedition.endTime) {
+		// Auto-resolve if expedition is complete
+		if (Date.now() >= packet.expeditionInProgress.endTime) {
 			PacketUtils.sendPacketToBackend(context, makePacket(CommandPetExpeditionResolvePacketReq, {}));
 			return;
 		}
-
-		await interaction.followUp({ embeds: [buildInProgressEmbed(interaction, expedition)] });
+		await interaction.followUp({ embeds: [buildInProgressEmbed(interaction, packet.expeditionInProgress)] });
 		return;
 	}
 
 	// Check if player can't start an expedition (error cases)
 	if (!packet.canStartExpedition) {
-		// Get pet display with icon and name
-		const petDisplay = packet.petId && packet.petSex
-			? `${DisplayUtils.getPetIcon(packet.petId, packet.petSex as SexTypeShort)} **${DisplayUtils.getPetNicknameOrTypeName(packet.petNickname ?? null, packet.petId, packet.petSex as SexTypeShort, lng)}**`
-			: i18n.t("commands:pet.defaultPetName", { lng });
-
-		const sexContext = packet.petSex ? getSexContext(packet.petSex as SexTypeShort) : StringConstants.SEX.MALE.long;
-
-		const embed = new CrowniclesEmbed()
-			.formatAuthor(
-				i18n.t("commands:petExpedition.unavailableTitle", {
-					lng,
-					pseudo: escapeUsername(interaction.user.displayName)
-				}),
-				interaction.user
-			)
-			.setDescription(getCannotStartDescription(packet, lng, petDisplay, sexContext))
-			.setErrorColor();
-
-		await interaction.followUp({
-			embeds: [embed]
-		});
+		await interaction.followUp({ embeds: [buildCannotStartEmbed(interaction, packet)] });
 	}
 
 	/*
@@ -398,39 +397,54 @@ interface ExpeditionLoveLossPacket {
 }
 
 /**
- * Build an embed for expedition cancellation or recall
+ * Translation keys for expedition love loss responses
  */
-function buildExpeditionLoveLossEmbed(
+interface ExpeditionLoveLossKeys {
+	title: string;
+	description: string;
+}
+
+const EXPEDITION_CANCEL_KEYS: ExpeditionLoveLossKeys = {
+	title: "commands:petExpedition.cancelledTitle",
+	description: "commands:petExpedition.cancelled"
+};
+
+const EXPEDITION_RECALL_KEYS: ExpeditionLoveLossKeys = {
+	title: "commands:petExpedition.recalledTitle",
+	description: "commands:petExpedition.recalled"
+};
+
+/**
+ * Build and send an embed for expedition cancellation or recall
+ */
+async function handleExpeditionLoveLossResponse(
 	context: PacketContext,
 	packet: ExpeditionLoveLossPacket,
-	titleKey: string,
-	descriptionKey: string
-): CrowniclesEmbed | null {
+	keys: ExpeditionLoveLossKeys
+): Promise<void> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction);
 	if (!interaction) {
-		return null;
+		return;
 	}
 
 	const lng = interaction.userLanguage;
 	const petDisplay = `${DisplayUtils.getPetIcon(packet.petId, packet.petSex as SexTypeShort)} **${DisplayUtils.getPetNicknameOrTypeName(packet.petNickname ?? null, packet.petId, packet.petSex as SexTypeShort, lng)}**`;
 	const sexContext = getSexContext(packet.petSex as SexTypeShort);
 
-	return new CrowniclesEmbed()
+	const embed = new CrowniclesEmbed()
 		.formatAuthor(
-			i18n.t(titleKey, {
-				lng,
-				pseudo: escapeUsername(interaction.user.displayName)
+			i18n.t(keys.title, {
+				lng, pseudo: escapeUsername(interaction.user.displayName)
 			}),
 			interaction.user
 		)
 		.setDescription(
-			i18n.t(descriptionKey, {
-				lng,
-				context: sexContext,
-				petDisplay,
-				loveLost: packet.loveLost
+			i18n.t(keys.description, {
+				lng, context: sexContext, petDisplay, loveLost: packet.loveLost
 			})
 		);
+
+	await sendResponse(context, embed);
 }
 
 /**
@@ -440,15 +454,7 @@ export async function handleExpeditionCancelRes(
 	context: PacketContext,
 	packet: CommandPetExpeditionCancelPacketRes
 ): Promise<void> {
-	const embed = buildExpeditionLoveLossEmbed(
-		context,
-		packet,
-		"commands:petExpedition.cancelledTitle",
-		"commands:petExpedition.cancelled"
-	);
-	if (embed) {
-		await sendResponse(context, embed);
-	}
+	await handleExpeditionLoveLossResponse(context, packet, EXPEDITION_CANCEL_KEYS);
 }
 
 /**
@@ -458,15 +464,7 @@ export async function handleExpeditionRecallRes(
 	context: PacketContext,
 	packet: CommandPetExpeditionRecallPacketRes
 ): Promise<void> {
-	const embed = buildExpeditionLoveLossEmbed(
-		context,
-		packet,
-		"commands:petExpedition.recalledTitle",
-		"commands:petExpedition.recalled"
-	);
-	if (embed) {
-		await sendResponse(context, embed);
-	}
+	await handleExpeditionLoveLossResponse(context, packet, EXPEDITION_RECALL_KEYS);
 }
 
 /**
@@ -486,14 +484,18 @@ interface ExpeditionResolutionContext {
 function buildResolutionData(
 	packet: CommandPetExpeditionResolvePacketRes,
 	ctx: ExpeditionResolutionContext
-): { title: string; description: string } {
+): {
+	title: string; description: string;
+} {
 	const {
 		pseudo, sexContext, petDisplay, location, lng
 	} = ctx;
 
 	if (packet.totalFailure) {
 		return {
-			title: i18n.t("commands:petExpedition.failureTitle", { lng, pseudo }),
+			title: i18n.t("commands:petExpedition.failureTitle", {
+				lng, pseudo
+			}),
 			description: StringUtils.getRandomTranslation("commands:petExpedition.totalFailure", lng, {
 				context: sexContext,
 				petDisplay,
@@ -508,7 +510,9 @@ function buildResolutionData(
 			? "commands:petExpedition.loveChangePartialPositive"
 			: "commands:petExpedition.loveChangePartialNegative";
 		return {
-			title: i18n.t("commands:petExpedition.partialSuccessTitle", { lng, pseudo }),
+			title: i18n.t("commands:petExpedition.partialSuccessTitle", {
+				lng, pseudo
+			}),
 			description: StringUtils.getRandomTranslation("commands:petExpedition.partialSuccess", lng, {
 				context: sexContext,
 				petDisplay,
@@ -519,7 +523,9 @@ function buildResolutionData(
 
 	const rewardText = packet.rewards ? formatRewards(packet.rewards, lng) : "";
 	return {
-		title: i18n.t("commands:petExpedition.successTitle", { lng, pseudo }),
+		title: i18n.t("commands:petExpedition.successTitle", {
+			lng, pseudo
+		}),
 		description: StringUtils.getRandomTranslation("commands:petExpedition.success", lng, {
 			context: sexContext,
 			petDisplay,

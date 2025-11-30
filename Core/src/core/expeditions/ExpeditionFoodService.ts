@@ -56,6 +56,17 @@ interface FoodRationValues {
 }
 
 /**
+ * Parameters for the treats combination optimization
+ */
+interface TreatsCombinationParams {
+	available: AvailableFood;
+	rationsRequired: number;
+	treatsCount: number;
+	values: FoodRationValues;
+	currentBest: BestCombination;
+}
+
+/**
  * Calculate default combination using all available food
  */
 function calculateDefaultCombination(
@@ -63,7 +74,9 @@ function calculateDefaultCombination(
 	rationsRequired: number,
 	values: FoodRationValues
 ): BestCombination {
-	const { treatVal, dietVal, soupVal } = values;
+	const {
+		treatVal, dietVal, soupVal
+	} = values;
 	return {
 		t: available.treats,
 		d: available.diet,
@@ -73,42 +86,51 @@ function calculateDefaultCombination(
 }
 
 /**
- * Try to find a better combination with a specific number of treats
+ * Check if treats alone satisfy the rations requirement
  */
-function tryTreatsCombination(
-	available: AvailableFood,
-	rationsRequired: number,
+function checkTreatsOnly(
 	treatsCount: number,
-	values: FoodRationValues,
+	rationsRequired: number,
+	treatVal: number,
 	currentBest: BestCombination
-): BestCombination {
-	const { treatVal, dietVal, soupVal } = values;
-	let best = currentBest;
+): BestCombination | null {
 	const rem = rationsRequired - treatsCount * treatVal;
-
 	if (rem <= 0) {
-		// Treats alone are enough
 		const excess = -rem;
-		if (excess < best.excess || (excess === best.excess && treatsCount > best.t)) {
-			best = {
-				t: treatsCount,
-				d: 0,
-				s: 0,
-				excess
+		const isBetter = excess < currentBest.excess || (excess === currentBest.excess && treatsCount > currentBest.t);
+		if (isBetter) {
+			return {
+				t: treatsCount, d: 0, s: 0, excess
 			};
 		}
-		return best;
 	}
+	return null;
+}
 
-	// Need diet/soup. Check soup range [minSoup, minSoup + 2]
-	const minSoup = Math.max(0, Math.ceil((rem - available.diet * dietVal) / soupVal));
+/**
+ * Find the best diet/soup combination for remaining rations
+ */
+function findBestSoupDietCombination(
+	params: TreatsCombinationParams,
+	remaining: number
+): BestCombination {
+	const {
+		available, rationsRequired, treatsCount, values, currentBest
+	} = params;
+	const {
+		treatVal, dietVal, soupVal
+	} = values;
+
+	let best = currentBest;
+	const minSoup = Math.max(0, Math.ceil((remaining - available.diet * dietVal) / soupVal));
 
 	if (minSoup > available.soup) {
 		return best;
 	}
 
-	for (let soupCount = minSoup; soupCount <= Math.min(available.soup, minSoup + 2); soupCount++) {
-		const remAfterSoup = rem - soupCount * soupVal;
+	const maxSoup = Math.min(available.soup, minSoup + 2);
+	for (let soupCount = minSoup; soupCount <= maxSoup; soupCount++) {
+		const remAfterSoup = remaining - soupCount * soupVal;
 		const dietCount = Math.max(0, Math.ceil(remAfterSoup / dietVal));
 
 		if (dietCount > available.diet) {
@@ -116,22 +138,37 @@ function tryTreatsCombination(
 		}
 
 		const currentExcess = (treatsCount * treatVal + dietCount * dietVal + soupCount * soupVal) - rationsRequired;
-
 		if (currentExcess < best.excess) {
 			best = {
-				t: treatsCount,
-				d: dietCount,
-				s: soupCount,
-				excess: currentExcess
+				t: treatsCount, d: dietCount, s: soupCount, excess: currentExcess
 			};
 		}
-
 		if (currentExcess === 0) {
 			break;
 		}
 	}
 
 	return best;
+}
+
+/**
+ * Try to find a better combination with a specific number of treats
+ */
+function tryTreatsCombination(params: TreatsCombinationParams): BestCombination {
+	const {
+		rationsRequired, treatsCount, values, currentBest
+	} = params;
+	const { treatVal } = values;
+
+	// Check if treats alone are enough
+	const treatsOnlyResult = checkTreatsOnly(treatsCount, rationsRequired, treatVal, currentBest);
+	if (treatsOnlyResult) {
+		return treatsOnlyResult;
+	}
+
+	// Need diet/soup combination
+	const remaining = rationsRequired - treatsCount * treatVal;
+	return findBestSoupDietCombination(params, remaining);
 }
 
 /**
@@ -143,8 +180,6 @@ function findOptimalCombination(
 	rationsRequired: number,
 	values: FoodRationValues
 ): BestCombination {
-	const { treatVal } = values;
-
 	// Default to using everything if we can't meet requirements
 	let best = calculateDefaultCombination(available, rationsRequired, values);
 
@@ -155,7 +190,9 @@ function findOptimalCombination(
 
 	// Iterate treats from max down to 0 to prioritize treats
 	for (let treatsCount = Math.min(available.treats, rationsRequired); treatsCount >= 0; treatsCount--) {
-		best = tryTreatsCombination(available, rationsRequired, treatsCount, values, best);
+		best = tryTreatsCombination({
+			available, rationsRequired, treatsCount, values, currentBest: best
+		});
 
 		if (best.excess === 0 && best.t === treatsCount) {
 			break; // Found optimal
@@ -173,7 +210,9 @@ function buildConsumptionPlan(
 	dietFoodType: FoodType,
 	values: FoodRationValues
 ): FoodConsumptionPlan {
-	const { treatVal, dietVal, soupVal } = values;
+	const {
+		treatVal, dietVal, soupVal
+	} = values;
 	const plan: FoodConsumptionPlan = {
 		totalRations: 0,
 		consumption: []

@@ -253,9 +253,51 @@ function setupPetButtonCollector(params: {
 	});
 }
 
+/**
+ * Result of building pet command buttons
+ */
+interface PetButtonsResult {
+	row: ActionRowBuilder<ButtonBuilder>;
+	buttons: {
+		petButton: ButtonBuilder; expeditionButton?: ButtonBuilder;
+	};
+}
+
+/**
+ * Build the buttons row for the pet command
+ */
+function buildPetButtons(
+	lng: Language,
+	hasExpedition: boolean,
+	isOwnerViewingOwnPet: boolean,
+	hasTalisman: boolean
+): PetButtonsResult {
+	const petButton = createPetButton(lng, hasExpedition);
+	const row = new ActionRowBuilder<ButtonBuilder>().addComponents(petButton);
+	const buttons: {
+		petButton: ButtonBuilder; expeditionButton?: ButtonBuilder;
+	} = { petButton };
+
+	if (isOwnerViewingOwnPet && hasTalisman) {
+		const expeditionButton = createExpeditionButton(lng);
+		row.addComponents(expeditionButton);
+		buttons.expeditionButton = expeditionButton;
+	}
+
+	return {
+		row, buttons
+	};
+}
+
+/**
+ * Determine if button collector should be set up
+ */
+function shouldSetupCollector(packet: CommandPetPacketRes, isOwnerViewingOwnPet: boolean): boolean {
+	return Boolean(packet.pet && isOwnerViewingOwnPet);
+}
+
 export async function handleCommandPetPacketRes(packet: CommandPetPacketRes, context: PacketContext): Promise<void> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction);
-
 	if (!interaction) {
 		return;
 	}
@@ -264,25 +306,15 @@ export async function handleCommandPetPacketRes(packet: CommandPetPacketRes, con
 	const isOwnerViewingOwnPet = !packet.askedKeycloakId || packet.askedKeycloakId === context.keycloakId;
 	const hasExpedition = Boolean(packet.expeditionInProgress);
 
-	// Disable pet button during expedition (can't caress a pet that's not here)
-	const petButton = createPetButton(lng, hasExpedition);
-	const row = new ActionRowBuilder<ButtonBuilder>().addComponents(petButton);
-	const buttons: {
-		petButton: ButtonBuilder; expeditionButton?: ButtonBuilder;
-	} = { petButton };
-
-	// Add expedition button if viewing own pet and has talisman
-	if (isOwnerViewingOwnPet && packet.hasTalisman) {
-		const expeditionButton = createExpeditionButton(lng);
-		row.addComponents(expeditionButton);
-		buttons.expeditionButton = expeditionButton;
-	}
-
+	const {
+		row, buttons
+	} = buildPetButtons(lng, hasExpedition, isOwnerViewingOwnPet, packet.hasTalisman ?? false);
 	const embed = await createPetEmbed(packet, interaction);
+	const showButtons = shouldSetupCollector(packet, isOwnerViewingOwnPet);
 
 	const reply = await interaction.reply({
 		embeds: [embed],
-		components: packet.pet && isOwnerViewingOwnPet ? [row] : [],
+		components: showButtons ? [row] : [],
 		withResponse: true
 	});
 
@@ -290,11 +322,9 @@ export async function handleCommandPetPacketRes(packet: CommandPetPacketRes, con
 		return;
 	}
 
-	const message = reply.resource.message;
-
-	if (packet.pet && isOwnerViewingOwnPet) {
+	if (showButtons) {
 		setupPetButtonCollector({
-			message,
+			message: reply.resource.message,
 			packet,
 			interaction,
 			buttons,
