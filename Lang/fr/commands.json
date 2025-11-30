@@ -222,7 +222,7 @@
     "rewards": {
       "title": "\n\n**Butin rapporté :**",
       "money": "{emote:unitValues.money} Argent gagné : **{{amount}}** !",
-      "experience": "{emote:unitValues.xp} XP gagnée : **{{amount}}** !",
+      "experience": "{emote:unitValues.xp} Expérience gagnée : **{{amount}}** !",
       "points": "{emote:unitValues.score} Points gagnés : **{{amount}}** !",
       "item": "{emote:rewards.item} Vous recevez un équipement aléatoire !",
       "cloneTalisman": "{emote:expedition.cloneTalisman} **DÉCOUVERTE EXCEPTIONNELLE !**\nVotre familier a découvert un ancien artefact enfoui : le **Talisman de Clonage** !\nCet objet mystique permettra à votre compagnon de vous assister en défense et dans les petits événements, même lorsqu'il est en expédition !",
@@ -731,7 +731,7 @@
     "encounterMonsterStats": "> **{{emoji}} {{monsterName}} **| **Niveau {{level}}**\n> {{description}}\n\n{emote:unitValues.energy} {{energy}} | {emote:unitValues.attack} {{attack}} | {emote:unitValues.defense} {{defense}} | {emote:unitValues.speed} {{speed}}",
     "endPoint": "Point d'arrivée :",
     "energy": "** | {emote:unitValues.energy} Énergie gagnée : **{{energy}}",
-    "experience": "** | {emote:unitValues.xp} XP gagné : **{{experience}}",
+    "experience": "** | {emote:unitValues.xp} Expérience gagnée : **{{experience}}",
     "gems": "** | {emote:unitValues.gem} Gemmes gagnées : **{{gems}}",
     "health": "** | {emote:unitValues.health} Vie gagnée : **{{health}}",
     "healthLoose": "** | {emote:unitValues.lostHealth} Vie perdue : **{{health}}",
@@ -739,7 +739,7 @@
     "money": "** | {emote:unitValues.money} Argent gagné : **{{money}}",
     "moneyLoose": "** | {emote:unitValues.lostMoney} Argent perdu : **{{money}}",
     "rewardEmbedTitle": "{{pseudo}}, récompenses de combat",
-    "monsterRewardGuildXp": "{emote:unitValues.xp} XP de guilde gagnée : **{{guildXp}}**",
+    "monsterRewardGuildXp": "{emote:unitValues.xp} Expérience de guilde gagnée : **{{guildXp}}**",
     "monsterRewardsDescription": "{emote:unitValues.money} Argent gagné : **{{money}}**\n{emote:unitValues.xp} XP gagnée : **{{experience}}**",
     "monsterRewardsGuildPoints": "{emote:unitValues.guildPoint} Points de guilde gagnés : **{{guildPoints}}**",
     "monsterRewardsTitle": "{{pseudo}}, récompenses de combat",
@@ -1774,8 +1774,8 @@
     },
     "title": "{{pseudo}}, vous avez reçu votre récompense de ligue !",
     "description": {
-      "first": "Vous avez terminé la ligue précédente avec **{{glory}} gloire. {emote:unitValues.glory}**\n\n**Vous terminez à la $t(models:ordinals.get, {\"count\": {{rank}}, \"context\":\"feminine\", \"ordinal\": true}) place !**\nVotre ligue finale est : **{emote:leagues.{{leagueId}}} $t(models:leagues.{{leagueId}})**.\n\n{emote:unitValues.money} Argent gagné : **{{money}}** !\n{emote:unitValues.xp} XP gagnée : **{{xp}}** !\n{emote:unitValues.score} Points gagnés : **{{score}}** !\n{emote:unitValues.glory} Un badge vous a été offert à la fin de la saison.\n{emote:rewards.item} Vous recevez un équipement aléatoire !",
-      "other": "Vous avez terminé la ligue précédente avec **{{glory}} gloire. {emote:unitValues.glory}**\n\n Vous terminez à la $t(models:ordinals.get, {\"count\": {{rank}}, \"ordinal\": true}) place !\nVotre ligue finale est : **{emote:leagues.{{leagueId}}}$t(models:leagues.{{leagueId}})**.\n\n{emote:unitValues.money} Argent gagné : **{{money}}** !\n{emote:unitValues.xp} XP gagnée : **{{xp}}** !\n{emote:unitValues.score} Points gagnés : **{{score}}** !\n{emote:rewards.item} Vous recevez un équipement aléatoire !"
+      "first": "Vous avez terminé la ligue précédente avec **{{glory}} gloire. {emote:unitValues.glory}**\n\n**Vous terminez à la $t(models:ordinals.get, {\"count\": {{rank}}, \"context\":\"feminine\", \"ordinal\": true}) place !**\nVotre ligue finale est : **{emote:leagues.{{leagueId}}} $t(models:leagues.{{leagueId}})**.\n\n{emote:unitValues.money} Argent gagné : **{{money}}** !\n{emote:unitValues.xp} Expérience gagnée : **{{xp}}** !\n{emote:unitValues.score} Points gagnés : **{{score}}** !\n{emote:unitValues.glory} Un badge vous a été offert à la fin de la saison.\n{emote:rewards.item} Vous recevez un équipement aléatoire !",
+      "other": "Vous avez terminé la ligue précédente avec **{{glory}} gloire. {emote:unitValues.glory}**\n\n Vous terminez à la $t(models:ordinals.get, {\"count\": {{rank}}, \"ordinal\": true}) place !\nVotre ligue finale est : **{emote:leagues.{{leagueId}}}$t(models:leagues.{{leagueId}})**.\n\n{emote:unitValues.money} Argent gagné : **{{money}}** !\n{emote:unitValues.xp} Expérience gagnée : **{{xp}}** !\n{emote:unitValues.score} Points gagnés : **{{score}}** !\n{emote:rewards.item} Vous recevez un équipement aléatoire !"
     }
   },
   "guildStorage": {
