@@ -520,7 +520,7 @@ function buildResolutionData(
 	}
 
 	if (packet.partialSuccess) {
-		const rewardText = packet.rewards ? formatRewards(packet.rewards, lng) : "";
+		const rewardText = packet.rewards ? formatRewards(packet.rewards, lng, packet.badgeEarned) : "";
 		const loveChangeKey = packet.loveChange >= 0
 			? "commands:petExpedition.loveChangePartialPositive"
 			: "commands:petExpedition.loveChangePartialNegative";
@@ -536,7 +536,7 @@ function buildResolutionData(
 		};
 	}
 
-	const rewardText = packet.rewards ? formatRewards(packet.rewards, lng) : "";
+	const rewardText = packet.rewards ? formatRewards(packet.rewards, lng, packet.badgeEarned) : "";
 	return {
 		title: i18n.t("commands:petExpedition.successTitle", {
 			lng, pseudo
@@ -593,7 +593,8 @@ function formatRewards(
 		points: number;
 		cloneTalismanFound?: boolean;
 	},
-	lng: Language
+	lng: Language,
+	badgeEarned?: string
 ): string {
 	const lines: string[] = [i18n.t("commands:petExpedition.rewards.title", { lng })];
 
@@ -629,6 +630,9 @@ function formatRewards(
 	}
 	if (rewards.cloneTalismanFound) {
 		lines.push(i18n.t("commands:petExpedition.rewards.cloneTalisman", { lng }));
+	}
+	if (badgeEarned) {
+		lines.push(i18n.t("commands:petExpedition.rewards.badgeEarned", { lng }));
 	}
 
 	return lines.join("\n");

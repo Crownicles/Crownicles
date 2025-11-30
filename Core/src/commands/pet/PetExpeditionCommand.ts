@@ -64,6 +64,8 @@ import {
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorPetExpeditionFinished";
 import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
 import { Maps } from "../../core/maps/Maps";
+import { Badge } from "../../../../Lib/src/types/Badge";
+import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 
 /**
  * Convert a FoodConsumptionPlan to an array of FoodConsumptionDetail for packet transmission
@@ -186,6 +188,16 @@ async function handleExpeditionSelect(
 	});
 	await expedition.save();
 
+	CrowniclesLogger.info(`Expedition ${expedition.id} started for player ${player.id}`, {
+		expeditionId: expedition.id,
+		playerId: player.id,
+		petId: petEntity.id,
+		locationType: expeditionData.locationType,
+		mapLocationId: expeditionData.mapLocationId,
+		durationMinutes: adjustedDurationMinutes,
+		foodConsumed: foodPlan.totalRations
+	});
+
 	// Clean up the pending expeditions cache
 	PendingExpeditionsCache.delete(keycloakId);
 
@@ -221,6 +233,11 @@ async function handleExpeditionCancel(
 		response.push(makePacket(CommandPetExpeditionErrorPacket, { errorCode: "noPet" }));
 		return;
 	}
+
+	CrowniclesLogger.info(`Player ${player.id} cancelled expedition before departure`, {
+		playerId: player.id,
+		petId: petEntity.id
+	});
 
 	// Apply love loss for cancellation
 	const loveLost = Math.abs(ExpeditionConstants.LOVE_CHANGES.CANCEL_BEFORE_DEPARTURE);
@@ -264,6 +281,12 @@ async function handleExpeditionRecall(
 		response.push(makePacket(CommandPetExpeditionErrorPacket, { errorCode: "noPet" }));
 		return;
 	}
+
+	CrowniclesLogger.info(`Player ${player.id} recalled pet from expedition ${activeExpedition.id}`, {
+		expeditionId: activeExpedition.id,
+		playerId: player.id,
+		petId: petEntity.id
+	});
 
 	// Recall expedition
 	await PetExpeditions.recallExpedition(activeExpedition);
@@ -657,6 +680,7 @@ export default class PetExpeditionCommand {
 		// Validate prerequisites
 		const validation = await validateExpeditionPrerequisites(player.id, player.petId);
 		if (validation.success === false) {
+			CrowniclesLogger.debug(`Expedition resolution failed for player ${player.id}: ${validation.errorCode}`);
 			response.push(makePacket(CommandPetExpeditionErrorPacket, { errorCode: validation.errorCode }));
 			return;
 		}
@@ -668,9 +692,25 @@ export default class PetExpeditionCommand {
 		const petModel = PetDataController.instance.getById(petEntity.typeId);
 		const expeditionData = activeExpedition.toExpeditionData();
 
+		CrowniclesLogger.info(`Resolving expedition ${activeExpedition.id} for player ${player.id}`, {
+			expeditionId: activeExpedition.id,
+			playerId: player.id,
+			locationType: expeditionData.locationType,
+			mapLocationId: expeditionData.mapLocationId,
+			durationMinutes: expeditionData.durationMinutes
+		});
+
 		// Calculate effective risk and determine outcome
 		const effectiveRisk = calculateEffectiveRisk(expeditionData, petModel, petEntity.lovePoints);
 		const outcome = determineExpeditionOutcome(effectiveRisk, expeditionData, player.hasCloneTalisman);
+
+		CrowniclesLogger.debug(`Expedition ${activeExpedition.id} outcome determined`, {
+			expeditionId: activeExpedition.id,
+			playerId: player.id,
+			totalFailure: outcome.totalFailure,
+			partialSuccess: outcome.partialSuccess,
+			effectiveRisk
+		});
 
 		// Apply love change
 		if (outcome.loveChange !== 0) {
@@ -686,12 +726,35 @@ export default class PetExpeditionCommand {
 		// Apply rewards
 		if (outcome.rewards) {
 			await applyExpeditionRewards(outcome.rewards, player, response);
+			CrowniclesLogger.info(`Expedition ${activeExpedition.id} rewards applied`, {
+				expeditionId: activeExpedition.id,
+				playerId: player.id,
+				money: outcome.rewards.money,
+				experience: outcome.rewards.experience,
+				points: outcome.rewards.points,
+				cloneTalismanFound: outcome.rewards.cloneTalismanFound
+			});
 		}
 
 		await player.save();
 
 		// Mark expedition as completed
 		await PetExpeditions.completeExpedition(activeExpedition);
+
+		// Check for expert expediteur badge (only for successful expeditions)
+		let badgeEarned: string | undefined;
+		if (!outcome.totalFailure && !player.hasBadge(Badge.EXPERT_EXPEDITEUR)) {
+			const successfulExpeditions = await PetExpeditions.countSuccessfulExpeditions(player.id);
+			if (successfulExpeditions >= ExpeditionConstants.BADGE.EXPERT_EXPEDITEUR_THRESHOLD) {
+				player.addBadge(Badge.EXPERT_EXPEDITEUR);
+				await player.save();
+				badgeEarned = Badge.EXPERT_EXPEDITEUR;
+				CrowniclesLogger.info(`Player ${player.id} earned the expert expediteur badge`, {
+					playerId: player.id,
+					successfulExpeditions
+				});
+			}
+		}
 
 		response.push(makePacket(CommandPetExpeditionResolvePacketRes, {
 			success: !outcome.totalFailure,
@@ -702,7 +765,8 @@ export default class PetExpeditionCommand {
 			petId: petEntity.typeId,
 			petSex: petEntity.sex,
 			petNickname: petEntity.nickname ?? undefined,
-			expedition: expeditionData
+			expedition: expeditionData,
+			badgeEarned
 		}));
 	}
 

@@ -183,6 +183,18 @@ export class PetExpeditions {
 		expedition.status = ExpeditionConstants.STATUS.COMPLETED;
 		await expedition.save();
 	}
+
+	/**
+	 * Count the number of successful (completed) expeditions for a player
+	 */
+	static async countSuccessfulExpeditions(playerId: number): Promise<number> {
+		return await PetExpedition.count({
+			where: {
+				playerId,
+				status: ExpeditionConstants.STATUS.COMPLETED
+			}
+		});
+	}
 }
 
 export function initModel(sequelize: Sequelize): void {

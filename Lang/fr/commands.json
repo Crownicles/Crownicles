@@ -225,7 +225,8 @@
       "experience": "{emote:unitValues.xp} **{{amount}}** points d'expérience",
       "guildExperience": "{emote:guild.icon} **{{amount}}** XP de guilde",
       "points": "{emote:unitValues.score} **{{amount}}** points de gloire",
-      "cloneTalisman": "\n\n{emote:expedition.cloneTalisman} **DÉCOUVERTE EXCEPTIONNELLE !**\nVotre familier a découvert un ancien artefact enfoui : le **Talisman de Clonage** !\nCet objet mystique permettra à votre compagnon de vous assister en défense et dans les petits événements, même lorsqu'il est en expédition !"
+      "cloneTalisman": "\n\n{emote:expedition.cloneTalisman} **DÉCOUVERTE EXCEPTIONNELLE !**\nVotre familier a découvert un ancien artefact enfoui : le **Talisman de Clonage** !\nCet objet mystique permettra à votre compagnon de vous assister en défense et dans les petits événements, même lorsqu'il est en expédition !",
+      "badgeEarned": "\n\n{emote:badges.expert_expediteur} **BADGE OBTENU !**\nVotre familier et vous formez désormais une équipe d'explorateurs légendaires ! Après tant d'expéditions réussies, vous avez mérité le badge **Expéditeur Expert** !"
     },
     "riskCategories": {
       "veryLow": "Paisible",
@@ -648,7 +649,8 @@
       "rich": "Badge acheté dans le shop",
       "top_1_before_reset": "Personne ayant atteint la première place du classement après le reset",
       "very_powerful_guild": "Membre d'une guilde très puissante",
-      "animal_lover": "Personne ayant montré tous les familiers à Talvar le nain"
+      "animal_lover": "Personne ayant montré tous les familiers à Talvar le nain",
+      "expert_expediteur": "Personne ayant réussi 150 expéditions avec son familier"
     },
     "fightRanked": {
       "fieldName": "Gloire et ligue :",

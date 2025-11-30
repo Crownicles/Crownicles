@@ -337,6 +337,11 @@ export class CommandPetExpeditionResolvePacketRes extends CrowniclesPacket {
 	 * The expedition data for display
 	 */
 	expedition!: ExpeditionData;
+
+	/**
+	 * Badge earned during this expedition (e.g., expert expediteur)
+	 */
+	badgeEarned?: string;
 }
 
 /**

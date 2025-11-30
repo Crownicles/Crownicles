@@ -470,6 +470,16 @@ export abstract class ExpeditionConstants {
 	};
 
 	/**
+	 * Badge constants for expedition achievements
+	 */
+	static readonly BADGE = {
+		/**
+		 * Number of successful expeditions required to earn the expert expediteur badge
+		 */
+		EXPERT_EXPEDITEUR_THRESHOLD: 150
+	};
+
+	/**
 	 * Emoji mapping for location types
 	 */
 	static readonly LOCATION_EMOJIS: Record<ExpeditionLocationType, string> = {
