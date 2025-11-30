@@ -282,14 +282,14 @@ export abstract class ExpeditionConstants {
 		 * Money rewards ranging from 100 to 5000
 		 */
 		MONEY: [
-			100,
-			250,
-			500,
-			850,
+			50,
+			120,
+			235,
+			435,
+			710,
 			1300,
-			1900,
-			2600,
-			3400,
+			2100,
+			3200,
 			4200,
 			5000
 		],
@@ -384,28 +384,28 @@ export abstract class ExpeditionConstants {
 	 */
 	static readonly LOCATION_REWARD_WEIGHTS: Record<string, Record<string, number>> = {
 		forest: {
-			money: 1, experience: 1.5, points: 1
+			money: 0.8, experience: 1.3, points: 0.9
 		},
 		mountain: {
-			money: 1.5, experience: 1, points: 1
+			money: 1.9, experience: 1, points: 0.3
 		},
 		desert: {
-			money: 2, experience: 0.5, points: 1.5
+			money: 0.6, experience: 0.4, points: 1.5
 		},
 		swamp: {
-			money: 0.5, experience: 1, points: 1.5
+			money: 0.4, experience: 1, points: 1.6
 		},
 		ruins: {
-			money: 1, experience: 1, points: 0.5
+			money: 1.7, experience: 1, points: 0.5
 		},
 		cave: {
-			money: 1.5, experience: 0.5, points: 1
+			money: 2.2, experience: 0.5, points: 0.2
 		},
 		plains: {
-			money: 1, experience: 1.5, points: 1
+			money: 1, experience: 1, points: 1
 		},
 		coast: {
-			money: 1, experience: 1, points: 1.5
+			money: 1.2, experience: 0.7, points: 0.8
 		}
 	};
 
@@ -465,16 +465,6 @@ export abstract class ExpeditionConstants {
 		 * At max reward index (9), this adds 4.5% to base chance
 		 */
 		REWARD_INDEX_BONUS_PER_POINT: 0.5,
-
-		/**
-		 * Locations with bonus drop chance for the clone talisman
-		 */
-		BONUS_LOCATIONS: ["ruins", "cave"] as const,
-
-		/**
-		 * Bonus multiplier for special locations
-		 */
-		LOCATION_BONUS_MULTIPLIER: 1.5,
 
 		/**
 		 * Chance for an expedition to have the bonus clone talisman tag (1 in 20)
