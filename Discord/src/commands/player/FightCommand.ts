@@ -42,9 +42,15 @@ import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { ReactionCollectorFightChooseActionData } from "../../../../Lib/src/packets/interaction/ReactionCollectorFightChooseAction";
 import { DiscordConstants } from "../../DiscordConstants";
 import { PetUtils } from "../../utils/PetUtils";
+import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
 
 const buggedFights = new Set<string>();
 
+/**
+ * Mark a fight as bugged and request cancellation from the backend
+ * @param context - Packet context
+ * @param fightId - The identifier of the bugged fight
+ */
 function fightBugged(context: PacketContext, fightId: string): void {
 	buggedFights.add(fightId);
 	PacketUtils.sendPacketToBackend(context, makePacket(CommandFightCancelPacketReq, {
@@ -53,6 +59,12 @@ function fightBugged(context: PacketContext, fightId: string): void {
 	CrowniclesLogger.error("Fight bugged, cancelling fight");
 }
 
+/**
+ * Create the fight acceptance/refusal collector for initiating a fight
+ * @param context - Packet context
+ * @param packet - Reaction collector creation packet
+ * @returns The collector instance or null if creation failed
+ */
 export async function createFightCollector(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
 	await interaction.deferReply();
@@ -104,6 +116,10 @@ export async function createFightCollector(context: PacketContext, packet: React
 	});
 }
 
+/**
+ * Handle the player refusing to start a fight
+ * @param context - Packet context
+ */
 export async function handleCommandFightRefusePacketRes(context: PacketContext): Promise<void> {
 	const originalInteraction = DiscordCache.getInteraction(context.discord!.interaction!);
 	if (!originalInteraction) {
@@ -417,6 +433,27 @@ function generateFightRewardField(embed: CrowniclesEmbed, packet: FightRewardPac
 }
 
 /**
+ * Generate the pet love change field
+ * @param embed
+ * @param packet
+ * @param lng
+ * @param player1Username
+ */
+function generatePetLoveChangeField(embed: CrowniclesEmbed, packet: FightRewardPacket, lng: Language, player1Username: string): void {
+	if (packet.petLoveChange && packet.petLoveChange.loveChange > 0) {
+		const petDisplay = PetUtils.petToShortString(lng, packet.petLoveChange.petNickname ?? undefined, packet.petLoveChange.petId, packet.petLoveChange.petSex as SexTypeShort);
+		embed.addFields({
+			name: i18n.t("commands:fight.fightReward.petLoveField", { lng }),
+			value: StringUtils.getRandomTranslation(`commands:fight.petReactions.${packet.petLoveChange.reactionType}`, lng, {
+				player: player1Username,
+				pet: petDisplay
+			}),
+			inline: false
+		});
+	}
+}
+
+/**
  * Generate the glory changes field displaying glory changes for both players (glory won or lost)
  * @param embed
  * @param packet
@@ -574,6 +611,9 @@ export async function handleFightReward(context: PacketContext, packet: FightRew
 	// Add fight reward description
 	generateFightRewardField(embed, packet, lng, player1Username);
 
+	// Add pet love change
+	generatePetLoveChangeField(embed, packet, lng, player1Username);
+
 	// Add glory changes
 	generateGloryChangesField(embed, packet, lng, player1Username, player2Username);
 
@@ -586,6 +626,12 @@ export async function handleFightReward(context: PacketContext, packet: FightRew
 	await interaction.channel?.send({ embeds: [embed] });
 }
 
+/**
+ * Prepare the fight command packet for the requested player
+ * @param interaction - The Discord interaction
+ * @param user - The Keycloak user initiating the fight
+ * @returns The fight packet or null if player preparation failed
+ */
 async function getPacket(interaction: CrowniclesInteraction, user: KeycloakUser): Promise<CommandFightPacketReq | null> {
 	const player = await PacketUtils.prepareAskedPlayer(interaction, user);
 	if (!player || !player.keycloakId) {

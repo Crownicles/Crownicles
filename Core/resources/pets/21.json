@@ -1,4 +1,7 @@
 {
-  "rarity": 3,
-  "diet": "carnivorous"
+  "rarity": 4,
+  "diet": "carnivorous",
+  "force": 26,
+  "feedDelay": 7,
+  "speed": 14
 }

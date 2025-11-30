@@ -1,5 +1,5 @@
 import {
-	ItemCategory, itemCategoryToString
+	ItemCategory, itemCategoryToString, ItemConstants
 } from "../../../Lib/src/constants/ItemConstants";
 import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 import i18n from "../translations/i18n";
@@ -213,11 +213,13 @@ export class DisplayUtils {
 	}
 
 	/**
-	 * Display the stars corresponding to the rarity of a pet
+	 * Display the item-style rarity entry of a pet (emoji + text)
 	 * @param rarity
+	 * @param lng
 	 */
-	static getPetRarityDisplay(rarity: number): string {
-		return CrowniclesIcons.unitValues.petRarity.repeat(rarity);
+	static getPetRarityDisplay(rarity: number, lng: Language): string {
+		const safeRarity = Math.max(ItemConstants.RARITY.BASIC, Math.min(rarity, ItemConstants.RARITY.MYTHICAL));
+		return i18n.t(`items:rarities.${safeRarity}`, { lng });
 	}
 
 	/**
@@ -261,7 +263,7 @@ export class DisplayUtils {
 			emote: DisplayUtils.getPetIcon(ownedPet.typeId, ownedPet.sex),
 			typeName: DisplayUtils.getPetTypeName(lng, ownedPet.typeId, ownedPet.sex),
 			nickname: DisplayUtils.getPetDisplayNickname(lng, ownedPet.nickname),
-			rarity: DisplayUtils.getPetRarityDisplay(ownedPet.rarity),
+			rarity: DisplayUtils.getPetRarityDisplay(ownedPet.rarity, lng),
 			sex: i18n.t("commands:pet.sexDisplay", {
 				lng,
 				context: ownedPet.sex

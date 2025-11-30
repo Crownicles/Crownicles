@@ -3,10 +3,10 @@ import { PacketContext } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { SmallEventAdvanceTimePacket } from "../../../../Lib/src/packets/smallEvents/SmallEventAdvanceTimePacket";
 import { DiscordCache } from "../../bot/DiscordCache";
 import { CrowniclesSmallEventEmbed } from "../../messages/CrowniclesSmallEventEmbed";
-import { Language } from "../../../../Lib/src/Language";
 import {
 	escapeUsername, StringUtils
 } from "../../utils/StringUtils";
+import { getRandomSmallEventIntro } from "../../utils/SmallEventUtils";
 import { SmallEventBigBadPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventBigBadPacket";
 import {
 	SmallEventBadIssue,
@@ -61,6 +61,7 @@ import { SmallEventWitchResultPacket } from "../../../../Lib/src/packets/smallEv
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { witchResult } from "../../smallEvents/witch";
 import { DisplayUtils } from "../../utils/DisplayUtils";
+import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
 import {
 	SmallEventSpaceInitialPacket,
 	SmallEventSpaceResultPacket
@@ -86,16 +87,16 @@ import {
 	SmallEventEpicItemShopRefusePacket
 } from "../../../../Lib/src/packets/smallEvents/SmallEventEpicItemShopPacket";
 import { Badge } from "../../../../Lib/src/types/Badge";
-import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
 import { SmallEventDwarfPetFanPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventDwarfPetFanPacket";
 import { SmallEventInfoFightPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventInfoFightPacket";
 import { infoFightResult } from "../../smallEvents/infoFight";
 import { limogesResult } from "../../smallEvents/limoges";
+import { getPetFoodDescription } from "../../smallEvents/petFood";
 import { SmallEventHauntedPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventHauntedPacket";
-
-export function getRandomSmallEventIntro(language: Language): string {
-	return StringUtils.getRandomTranslation("smallEvents:intro", language);
-}
+import { SmallEventPetFoodPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventPetFoodPacket";
+import { SmallEventBadPetPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventBadPetPacket";
+import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
+import { Language } from "../../../../Lib/src/Language";
 
 const PET_TIME_INTERACTIONS = new Set([
 	"gainTime",
@@ -368,6 +369,7 @@ export default class SmallEventsHandler {
 		});
 	}
 
+
 	@packetHandler(SmallEventInteractOtherPlayersPacket)
 	async smallEventInteractOtherPlayers(context: PacketContext, packet: SmallEventInteractOtherPlayersPacket): Promise<void> {
 		const interaction = DiscordCache.getInteraction(context.discord!.interaction);
@@ -464,11 +466,10 @@ export default class SmallEventsHandler {
 			embeds: [
 				new CrowniclesSmallEventEmbed(
 					"winGuildXP",
-					StringUtils.getRandomTranslation("smallEvents:winGuildXP.stories", lng, { guild: packet.guildName })
-					+ i18n.t("smallEvents:winGuildXP.end", {
+					`${StringUtils.getRandomTranslation("smallEvents:winGuildXP.stories", lng, { guild: packet.guildName })}${i18n.t("smallEvents:winGuildXP.end", {
 						lng,
 						xp: packet.amount
-					}),
+					})}`,
 					interaction.user,
 					lng
 				)
@@ -581,12 +582,10 @@ export default class SmallEventsHandler {
 			embeds: [
 				new CrowniclesSmallEventEmbed(
 					"winPersonalXP",
-					getRandomSmallEventIntro(lng)
-					+ StringUtils.getRandomTranslation("smallEvents:winPersonalXP.stories", lng)
-					+ i18n.t("smallEvents:winPersonalXP.end", {
+					`${getRandomSmallEventIntro(lng)}${StringUtils.getRandomTranslation("smallEvents:winPersonalXP.stories", lng)}${i18n.t("smallEvents:winPersonalXP.end", {
 						lng,
 						xp: packet.amount
-					}),
+					})}`,
 					interaction.user,
 					lng
 				)
@@ -1037,4 +1036,56 @@ export default class SmallEventsHandler {
 		const description = StringUtils.getRandomTranslation("smallEvents:haunted", lng);
 		await interaction.editReply({ embeds: [new CrowniclesSmallEventEmbed("haunted", description, interaction.user, lng)] });
 	}
+
+	@packetHandler(SmallEventPetFoodPacket)
+	async smallEventPetFood(context: PacketContext, packet: SmallEventPetFoodPacket): Promise<void> {
+		const interaction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
+		if (!interaction) {
+			return;
+		}
+		const lng = context.discord!.language;
+
+		const description = getPetFoodDescription(packet, lng);
+
+		const embed = new CrowniclesSmallEventEmbed(
+			"petFood",
+			description,
+			interaction.user,
+			lng
+		);
+
+		await interaction.editReply({
+			embeds: [embed], components: []
+		});
+	}
+
+	@packetHandler(SmallEventBadPetPacket)
+	async smallEventBadPet(context: PacketContext, packet: SmallEventBadPetPacket): Promise<void> {
+		const interaction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
+		if (!interaction) {
+			return;
+		}
+		const lng = context.discord!.language;
+
+		const petDisplay = PetUtils.petToShortString(lng, packet.petNickname, packet.petId, packet.sex as SexTypeShort);
+
+		const outcomeKey = packet.loveLost === 0 ? "success" : "fail";
+		const description = StringUtils.getRandomTranslation(
+			`smallEvents:badPet.outcomes.${packet.interactionType}.${outcomeKey}`,
+			lng,
+			{ pet: petDisplay }
+		);
+
+		const embed = new CrowniclesSmallEventEmbed(
+			"badPet",
+			description,
+			interaction.user,
+			lng
+		);
+
+		await interaction.editReply({
+			embeds: [embed], components: []
+		});
+	}
 }
+

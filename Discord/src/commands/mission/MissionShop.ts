@@ -28,6 +28,10 @@ import { ReactionCollectorCreationPacket } from "../../../../Lib/src/packets/int
 import { Constants } from "../../../../Lib/src/constants/Constants";
 import { ReactionCollectorReturnTypeOrNull } from "../../packetHandlers/handlers/ReactionCollectorHandlers";
 import { Badge } from "../../../../Lib/src/types/Badge";
+import {
+	millisecondsToMinutes, minutesDisplay
+} from "../../../../Lib/src/utils/TimeUtils";
+import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
 
 /**
  * Get the packet to send to the server
@@ -93,7 +97,11 @@ export async function handleLovePointsValueShopItem(packet: CommandMissionShopPe
 						age: packet.petId - 1
 					}),
 					actualLP: packet.lovePoints,
+					maxLovePoints: PetConstants.MAX_LOVE_POINTS,
 					diet: PetUtils.getDietDisplay(packet.diet, lng),
+					force: packet.force,
+					speed: packet.speed,
+					feedDelay: minutesDisplay(millisecondsToMinutes(packet.feedDelay), lng), // We want to display this in a readable format
 					nextFeed: PetUtils.getFeedCooldownDisplay(packet.nextFeed, lng),
 					commentOnFightEffect: StringUtils.getRandomTranslation(`commands:shop.shopItems.lovePointsValue.commentOnFightEffect.${packet.fightAssistId}`, lng),
 					commentOnResult: StringUtils.getRandomTranslation(`commands:shop.shopItems.lovePointsValue.advice.${packet.loveLevel}`, lng),

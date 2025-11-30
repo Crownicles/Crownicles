@@ -155,8 +155,8 @@ async function applyOutcomeRandomItem(outcome: PossibilityOutcome, player: Playe
 
 async function applyOutcomeRandomPet(outcome: PossibilityOutcome, player: Player, response: CrowniclesPacket[]): Promise<void> {
 	if (outcome.randomPet) {
-		const minRarity = outcome.randomPet.rarity?.min ?? 1;
-		const maxRarity = outcome.randomPet.rarity?.max ?? 5;
+		const minRarity = outcome.randomPet.rarity?.min ?? PetConstants.PET_RARITY_RANGE.MIN;
+		const maxRarity = outcome.randomPet.rarity?.max ?? PetConstants.PET_RARITY_RANGE.MAX;
 
 		const pet = PetEntities.generateRandomPetEntityNotGuild(minRarity, maxRarity);
 		await pet.giveToPlayer(player, response);

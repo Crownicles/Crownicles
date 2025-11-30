@@ -4,7 +4,7 @@ import { DiscordCache } from "../bot/DiscordCache";
 import { ReactionCollectorGoToPVEIslandData } from "../../../Lib/src/packets/interaction/ReactionCollectorGoToPVEIsland";
 import i18n from "../translations/i18n";
 import { CrowniclesSmallEventEmbed } from "../messages/CrowniclesSmallEventEmbed";
-import { getRandomSmallEventIntro } from "../packetHandlers/handlers/SmallEventsHandler";
+import { getRandomSmallEventIntro } from "../utils/SmallEventUtils";
 import { StringUtils } from "../utils/StringUtils";
 import { DiscordCollectorUtils } from "../utils/DiscordCollectorUtils";
 import { ReactionCollectorReturnTypeOrNull } from "../packetHandlers/handlers/ReactionCollectorHandlers";

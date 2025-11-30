@@ -2,7 +2,7 @@ import { ReactionCollectorCreationPacket } from "../../../Lib/src/packets/intera
 import { PacketContext } from "../../../Lib/src/packets/CrowniclesPacket";
 import { DiscordCache } from "../bot/DiscordCache";
 import { CrowniclesSmallEventEmbed } from "../messages/CrowniclesSmallEventEmbed";
-import { getRandomSmallEventIntro } from "../packetHandlers/handlers/SmallEventsHandler";
+import { getRandomSmallEventIntro } from "../utils/SmallEventUtils";
 import i18n from "../translations/i18n";
 import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 import {

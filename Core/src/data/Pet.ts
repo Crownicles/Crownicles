@@ -8,6 +8,12 @@ export class Pet extends Data<number> {
 
 	declare readonly diet: string;
 
+	declare readonly force: number;
+
+	declare readonly speed: number;
+
+	declare readonly feedDelay: number;
+
 
 	/**
 	 * Returns true if the pet can eat meat

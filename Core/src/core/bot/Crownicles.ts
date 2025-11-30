@@ -5,7 +5,7 @@ import {
 	botConfig, crowniclesInstance
 } from "../../index";
 import {
-	literal, Op, Sequelize
+	Op, Sequelize
 } from "sequelize";
 import { minutesToMilliseconds } from "../../../../Lib/src/utils/TimeUtils";
 import { TimeoutFunctionsConstants } from "../../../../Lib/src/constants/TimeoutFunctionsConstants";
@@ -98,25 +98,24 @@ export class Crownicles {
 	 * Make some pet lose some love points
 	 */
 	static async randomLovePointsLoose(): Promise<boolean> {
-		if (RandomUtils.crowniclesRandom.bool()) {
-			CrowniclesLogger.info("All pets lost 4 loves point");
-			await PetEntity.update(
-				{
-					lovePoints: literal(
-						"CASE WHEN lovePoints - 4 < 0 THEN 0 ELSE lovePoints - 4 END"
-					)
-				},
-				{
-					where: {
-						lovePoints: {
-							[Op.notIn]: [PetConstants.MAX_LOVE_POINTS, 0]
-						}
-					}
-				}
-			);
-			return true;
+		if (!RandomUtils.crowniclesRandom.bool()) {
+			return false;
 		}
-		return false;
+
+		const [affectedCount] = await PetEntity.update(
+			{
+				lovePoints: Sequelize.literal(`GREATEST(0, lovePoints - ${PetConstants.DAILY_LOVE_LOSS})`)
+			},
+			{
+				where: {
+					lovePoints: { [Op.gt]: 0 }
+				}
+			}
+		);
+
+		CrowniclesLogger.info("Applied daily love loss to pets", { affectedPets: affectedCount });
+
+		return true;
 	}
 
 	/**

@@ -75,6 +75,9 @@ function getValueLovePointsPetShopItem(): ShopItem {
 				lovePoints: pet.lovePoints,
 				diet: petModel.diet as PetDiet,
 				nextFeed: pet.getFeedCooldown(petModel),
+				force: petModel.force,
+				speed: petModel.speed,
+				feedDelay: petModel.feedDelay * PetConstants.BREED_COOLDOWN,
 				fightAssistId: getAiPetBehavior(petModel.id).id,
 				ageCategory: PetUtils.getAgeCategory(pet.id),
 				...randomPetDwarfModel && {

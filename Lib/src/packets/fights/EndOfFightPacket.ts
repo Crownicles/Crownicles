@@ -1,6 +1,7 @@
 import {
 	CrowniclesPacket, PacketDirection, sendablePacket
 } from "../CrowniclesPacket";
+import { PostFightPetReactionType } from "../../constants/PetConstants";
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandFightEndOfFightPacket extends CrowniclesPacket {
@@ -23,4 +24,13 @@ export class CommandFightEndOfFightPacket extends CrowniclesPacket {
 	turns!: number;
 
 	maxTurns!: number;
+
+	petReaction?: {
+		keycloakId: string;
+		reactionType: PostFightPetReactionType;
+		loveDelta: number;
+		petId: number;
+		petSex: string;
+		petNickname?: string;
+	};
 }

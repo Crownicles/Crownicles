@@ -117,6 +117,7 @@ import {
 } from "../../core/utils/MissionShopItems";
 import { Homes } from "../../core/database/game/models/Home";
 import { HomeLevel } from "../../../../Lib/src/types/HomeLevel";
+import { PostFightPetLoveOutcomes } from "../../../../Lib/src/constants/PetConstants";
 
 export default class ReportCommand {
 	@commandRequires(CommandReportPacketReq, {
@@ -891,6 +892,9 @@ async function chooseDestination(
 
 	const collector = new ReactionCollectorChooseDestination(mapReactions);
 
+	/**
+	 * Handle the player's destination choice
+	 */
 	const endCallback: EndCallback = async (collector, response) => {
 		const firstReaction = collector.getFirstReaction();
 		const mapId = firstReaction
@@ -976,6 +980,77 @@ async function sendTravelPath(player: Player, response: CrowniclesPacket[], date
 }
 
 /**
+ * Handle rewards and pet reactions after a PVE fight
+ * @param fight
+ * @param player
+ * @param rewards
+ * @param endFightResponse
+ */
+async function handlePveFightRewards(
+	fight: FightController,
+	player: Player,
+	rewards: {
+		money: number; xp: number; guildScore: number; guildXp: number;
+	},
+	endFightResponse: CrowniclesPacket[]
+): Promise<{
+	guildXp: number; guildPoints: number;
+}> {
+	let guildXp = 0;
+	let guildPoints = 0;
+
+	if (!fight.isADraw()) {
+		const winner = fight.getWinnerFighter();
+		const petLoveResult = fight.getPostFightPetLoveChange(winner, PostFightPetLoveOutcomes.WIN);
+		if (petLoveResult && winner instanceof RealPlayerFighter) {
+			const petEntity = winner.pet;
+			if (petEntity) {
+				await petEntity.changeLovePoints({
+					player: winner.player,
+					response: endFightResponse,
+					amount: petLoveResult.loveChange,
+					reason: NumberChangeReason.FIGHT
+				});
+				await petEntity.save({ fields: ["lovePoints"] });
+				fight.petReactionData = {
+					keycloakId: winner.player.keycloakId,
+					reactionType: petLoveResult.reactionType,
+					loveDelta: petLoveResult.loveChange,
+					petId: petEntity.typeId,
+					petSex: petEntity.sex,
+					petNickname: petEntity.nickname
+				};
+			}
+		}
+	}
+
+	await player.addMoney({
+		amount: rewards.money,
+		reason: NumberChangeReason.PVE_FIGHT,
+		response: endFightResponse
+	});
+	await player.addExperience({
+		amount: rewards.xp,
+		reason: NumberChangeReason.PVE_FIGHT,
+		response: endFightResponse
+	}, await InventorySlots.getPlayerActiveObjects(player.id));
+
+	if (player.guildId) {
+		const guild = await Guilds.getById(player.guildId);
+		await guild.addScore(rewards.guildScore, endFightResponse, NumberChangeReason.PVE_FIGHT);
+		await guild.addExperience(rewards.guildXp, endFightResponse, NumberChangeReason.PVE_FIGHT);
+		await guild.save();
+		if (guild.level < GuildConstants.MAX_LEVEL) {
+			guildXp = rewards.guildXp;
+		}
+		guildPoints = rewards.guildScore;
+	}
+	return {
+		guildXp, guildPoints
+	};
+}
+
+/**
  * Do a PVE boss fight
  * @param player
  * @param response
@@ -990,6 +1065,10 @@ async function doPVEBoss(
 	const mapId = player.getDestination().id;
 	const monsterObj = MonsterDataController.instance.getRandomMonster(mapId, seed);
 	const randomLevel = player.level - PVEConstants.MONSTER_LEVEL_RANDOM_RANGE / 2 + seed % PVEConstants.MONSTER_LEVEL_RANDOM_RANGE;
+
+	/**
+	 * Handle rewards after the PVE fight completes
+	 */
 	const fightCallback = async (fight: FightController, endFightResponse: CrowniclesPacket[]): Promise<void> => {
 		const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
 		if (fight) {
@@ -1001,31 +1080,23 @@ async function doPVEBoss(
 
 			// Only give reward if draw or win
 			if (fight.isADraw() || fight.getWinnerFighter() instanceof RealPlayerFighter) {
-				await player.addMoney({
-					amount: rewards.money,
-					reason: NumberChangeReason.PVE_FIGHT,
-					response: endFightResponse
-				});
-				await player.addExperience({
-					amount: rewards.xp,
-					reason: NumberChangeReason.PVE_FIGHT,
-					response: endFightResponse
-				}, playerActiveObjects);
-				if (player.guildId) {
-					const guild = await Guilds.getById(player.guildId);
-					await guild.addScore(rewards.guildScore, endFightResponse, NumberChangeReason.PVE_FIGHT);
-					await guild.addExperience(rewards.guildXp, endFightResponse, NumberChangeReason.PVE_FIGHT);
-					await guild.save();
-					if (guild.level < GuildConstants.MAX_LEVEL) {
-						guildXp = rewards.guildXp;
-					}
-					guildPoints = rewards.guildScore;
-				}
+				const result = await handlePveFightRewards(fight, player, rewards, endFightResponse);
+				guildXp = result.guildXp;
+				guildPoints = result.guildPoints;
 				endFightResponse.push(makePacket(CommandReportMonsterRewardRes, {
 					money: rewards.money,
 					experience: rewards.xp,
 					guildXp,
-					guildPoints
+					guildPoints,
+					petReaction: fight.petReactionData
+						? {
+							reactionType: fight.petReactionData.reactionType,
+							loveDelta: fight.petReactionData.loveDelta,
+							petId: fight.petReactionData.petId,
+							petSex: fight.petReactionData.petSex,
+							petNickname: fight.petReactionData.petNickname
+						}
+						: undefined
 				}));
 				await MissionsController.update(player, endFightResponse, { missionId: "winBoss" });
 			}
@@ -1074,6 +1145,9 @@ async function doPVEBoss(
 		mapId
 	});
 
+	/**
+	 * Handle the end of the PVE fight collector
+	 */
 	const endCallback: EndCallback = async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]) => {
 		const firstReaction = collector.getFirstReaction();
 		if (!firstReaction || firstReaction.reaction.type === ReactionCollectorRefuseReaction.name) {

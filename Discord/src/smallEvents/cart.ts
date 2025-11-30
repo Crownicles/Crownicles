@@ -7,7 +7,7 @@ import { CrowniclesSmallEventEmbed } from "../messages/CrowniclesSmallEventEmbed
 import { StringUtils } from "../utils/StringUtils";
 import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 import i18n from "../translations/i18n";
-import { getRandomSmallEventIntro } from "../packetHandlers/handlers/SmallEventsHandler";
+import { getRandomSmallEventIntro } from "../utils/SmallEventUtils";
 import { ReactionCollectorCartData } from "../../../Lib/src/packets/interaction/ReactionCollectorCart";
 import { ReactionCollectorReturnTypeOrNull } from "../packetHandlers/handlers/ReactionCollectorHandlers";
 

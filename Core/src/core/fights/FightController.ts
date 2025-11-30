@@ -3,6 +3,9 @@ import { FightState } from "./FightState";
 import { FightView } from "./FightView";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { FightConstants } from "../../../../Lib/src/constants/FightConstants";
+import {
+	PetConstants, PostFightPetLoveOutcome, PostFightPetLoveOutcomes, PostFightPetReactionType
+} from "../../../../Lib/src/constants/PetConstants";
 import { FighterStatus } from "./FighterStatus";
 import { FightOvertimeBehavior } from "./FightOvertimeBehavior";
 import { MonsterFighter } from "./fighter/MonsterFighter";
@@ -50,6 +53,15 @@ export class FightController {
 	private readonly overtimeBehavior: FightOvertimeBehavior;
 
 	private readonly silentMode: boolean;
+
+	public petReactionData?: {
+		keycloakId: string;
+		reactionType: PostFightPetReactionType;
+		loveDelta: number;
+		petId: number;
+		petSex: string;
+		petNickname?: string;
+	};
 
 	public constructor(
 		fighters: {
@@ -397,6 +409,53 @@ export class FightController {
 		}
 	}
 
+	public getPostFightPetLoveChange(
+		fighter: PlayerFighter | AiPlayerFighter | MonsterFighter | null,
+		outcome: PostFightPetLoveOutcome
+	): {
+		loveChange: number;
+		reactionType: PostFightPetReactionType;
+	} | null {
+		if (!fighter || fighter instanceof MonsterFighter) {
+			return null;
+		}
+		const petEntity = fighter.pet;
+		if (!petEntity) {
+			return null;
+		}
+		if (outcome === PostFightPetLoveOutcomes.LOSS || fighter instanceof AiPlayerFighter) {
+			return null;
+		}
+
+		if (outcome === PostFightPetLoveOutcomes.WIN && petEntity.getLoveLevelNumber() === PetConstants.LOVE_LEVEL.TRAINED) {
+			return {
+				loveChange: 0,
+				reactionType: PetConstants.POST_FIGHT_REACTION_TYPES.TRAINED
+			};
+		}
+
+		if (fighter instanceof PlayerFighter && !fighter.hasPetAssisted()) {
+			return null;
+		}
+
+		const loveDelta = RandomUtils.randInt(
+			PetConstants.POST_FIGHT_LOVE_GAIN_RANGE.MIN,
+			PetConstants.POST_FIGHT_LOVE_GAIN_RANGE.MAX + 1
+		);
+		if (loveDelta <= 0) {
+			return null;
+		}
+
+		return {
+			loveChange: loveDelta,
+			reactionType: PetConstants.POST_FIGHT_REACTION_TYPES.LOVE_GAIN
+		};
+	}
+
+	/**
+	 * Increase monster damages and stats in PVE fights during overtime
+	 * @param currentTurn - The current turn number
+	 */
 	private increaseDamagesPve(currentTurn: number): void {
 		for (const fighter of this.fighters) {
 			if (fighter instanceof MonsterFighter) {

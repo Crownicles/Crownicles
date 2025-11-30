@@ -7,6 +7,8 @@ import {
 	PetAssistanceResult, PetAssistanceState
 } from "../../../../../../../Lib/src/types/PetAssistanceResult";
 import { FightUtils } from "../../../../utils/FightUtils";
+import { PlayerFighter } from "../../../fighter/PlayerFighter";
+import { PetDataController } from "../../../../../data/Pet";
 
 function getAttackInfo(): attackInfo {
 	return {
@@ -17,10 +19,12 @@ function getAttackInfo(): attackInfo {
 }
 
 function getStatsInfo(sender: Fighter, receiver: Fighter): statsInfo {
+	const petId = (sender as PlayerFighter).pet.typeId;
+	const petData = PetDataController.instance.getById(petId);
 	return {
 		attackerStats: [
-			FightUtils.calculatePetStatFromRawPower(8, sender.level),
-			FightUtils.calculatePetStatFromRawPower(0.5, sender.level)
+			FightUtils.calculatePetStatFromForce(petData.force, sender.level),
+			FightUtils.calculatePetStatFromSpeed(petData.speed, sender.level)
 		],
 		defenderStats: [
 			receiver.getDefense(),
@@ -43,13 +47,26 @@ const use: PetAssistanceFunc = (fighter, opponent, turn, _fightController): Prom
 
 	// On the following turn, the pet falls on the opponent except if the opponent is faster than the threshold
 	if (turn === 15 || turn === 16) {
-		if (opponent.getSpeed() > FightUtils.calculatePetStatFromRawPower(3.85, fighter.level)) {
+		const petId = (fighter as PlayerFighter).pet.typeId;
+		const petData = PetDataController.instance.getById(petId);
+		const centerSpeed = FightUtils.calculatePetStatFromForce(petData.force * 0.75, fighter.level);
+		const startSpeed = FightUtils.calculatePetStatFromForce(petData.force * 0.5, fighter.level);
+		const denominator = centerSpeed - startSpeed;
+		const damageMultiplier = Math.abs(denominator) < Number.EPSILON
+			? 0
+			: 0.5 - 0.5 * Math.tanh((opponent.getSpeed() - centerSpeed) / denominator);
+
+		const damages = Math.round(FightActionController.getAttackDamage(getStatsInfo(fighter, opponent), fighter, getAttackInfo(), true) * damageMultiplier);
+
+		// If the damages are below a certain threshold, the pet attack fails
+		if (damages < 30) {
 			return Promise.resolve({
 				assistanceStatus: PetAssistanceState.FAILURE
 			});
 		}
+
 		const result: PetAssistanceResult = {
-			damages: FightActionController.getAttackDamage(getStatsInfo(fighter, opponent), fighter, getAttackInfo(), true),
+			damages,
 			assistanceStatus: PetAssistanceState.SUCCESS
 		};
 

@@ -272,4 +272,156 @@ export abstract class SmallEventConstants {
 			FEISTY_PET: "petIsFeisty"
 		}
 	};
+
+	static readonly PET_FOOD = {
+		SMALL_EVENT_NAME: "petFood",
+		OUTCOMES: {
+			FOUND_BY_PLAYER: "found_by_player",
+			FOUND_BY_PET: "found_by_pet",
+			FOUND_ANYWAY: "found_anyway",
+			NOTHING: "nothing",
+			PLAYER_FAILED: "player_failed",
+			PET_FAILED: "pet_failed"
+		},
+		TRAVEL_TIME_PENALTY_MINUTES: 5,
+		NO_LOVE_CHANGE: 0,
+		FEED_DELAY_MULTIPLIER: 3,
+		DECAY_FACTOR: 0.003,
+		MIN_PROBABILITY: 0.1,
+		MAX_PROBABILITY: 1.0,
+
+		// Map location types that affect food type probabilities
+		BAD_SMELL_TYPES: ["de", "mo"],
+
+		// Map location types where vegetarian food is more likely
+		VEGETARIAN_TYPES: [
+			"fo",
+			"pl",
+			"ro"
+		],
+
+		// Map location types where meat is more likely
+		MEAT_TYPES: [
+			"ri",
+			"be",
+			"la"
+		],
+
+		// Map location types where good smelling food is more likely
+		GOOD_SMELL_TYPES: [
+			"vi",
+			"ci",
+			"castleEntrance",
+			"castleThrone"
+		],
+		FOOD_TYPES: {
+			BAD_SMELL: "badSmell",
+			VEGETARIAN: "vegetarian",
+			MEAT: "meat",
+			GOOD_SMELL: "goodSmell",
+			SOUP: "soup"
+		},
+		PROBABILITIES: {
+			BAD_SMELL: {
+				badSmell: 0.6,
+				vegetarian: 0.2,
+				meat: 0.1,
+				goodSmell: 0.1
+			},
+			VEGETARIAN: {
+				badSmell: 0.1,
+				vegetarian: 0.6,
+				meat: 0.2,
+				goodSmell: 0.1
+			},
+			MEAT: {
+				badSmell: 0.1,
+				vegetarian: 0.2,
+				meat: 0.6,
+				goodSmell: 0.1
+			},
+			GOOD_SMELL: {
+				badSmell: 0.1,
+				vegetarian: 0.2,
+				meat: 0.1,
+				goodSmell: 0.6
+			},
+			DEFAULT: {
+				badSmell: 0.25,
+				vegetarian: 0.25,
+				meat: 0.25,
+				goodSmell: 0.25
+			}
+		}
+	};
+
+	static readonly BAD_PET = {
+		ACTIONS_TO_SHOW: 3,
+		LOVE_LOST: {
+			INTIMIDATE: {
+				STRONG_MIN: 0,
+				STRONG_MAX: 3,
+				WEAK_MIN: 1,
+				WEAK_MAX: 9
+			},
+			PLEAD: {
+				WEAK_MIN: 0,
+				WEAK_MAX: 3,
+				STRONG_MIN: 1,
+				STRONG_MAX: 8
+			},
+			GIVE_FOOD: {
+				NO_FOOD: 5,
+				JEALOUS_MIN: 1,
+				JEALOUS_MAX: 6,
+				DISLIKES_CHANCE: 0.2,
+				DISLIKES_AMOUNT: 1
+			},
+			FLEE: {
+				MIN: 1,
+				MAX: 11
+			},
+			HIDE: {
+				MIN: 1,
+				MAX: 6
+			},
+			WAIT: 2,
+			PROTECT: {
+				FAIL_MIN: 1,
+				FAIL_MAX: 4
+			},
+			DISTRACT: {
+				FAIL_MIN: 1,
+				FAIL_MAX: 8
+			},
+			CALM: {
+				BASE_SUCCESS_CHANCE: 0.3,
+				LOVE_BONUS_MULTIPLIER: 0.6,
+				FAIL_MIN: 4,
+				FAIL_MAX: 7
+			},
+			IMPOSER: {
+				BASE_SUCCESS_CHANCE: 0.2,
+				RARITY_BONUS: 0.1,
+				FAIL_MIN: 3,
+				FAIL_MAX: 6
+			},
+			ENERGIZE: {
+				BASE_SUCCESS_CHANCE: 0.15,
+				VIGOR_BONUS_MULTIPLIER: 0.75,
+				FAIL_MIN: 4,
+				FAIL_MAX: 8
+			}
+		},
+		THRESHOLDS: {
+			PET_FORCE_STRONG: 16,
+			PLAYER_SPEED_FAST: 400,
+			FLEE_SUCCESS_CHANCE_FAST: 0.7,
+			PET_FORCE_WEAK: 5,
+			HIDE_SUCCESS_CHANCE_WEAK: 0.3,
+			PLAYER_DEFENSE_MAX: 500,
+			PROTECT_MAX_SUCCESS_CHANCE: 0.7,
+			DISTRACT_SUCCESS_CHANCE: 0.5
+		}
+	};
 }

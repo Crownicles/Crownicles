@@ -182,10 +182,9 @@ function generateFields(packet: CommandProfilePacketRes, lng: Language): EmbedFi
 
 	addField(fields, "pet", Boolean(packet.playerData.pet), {
 		lng,
-		rarity: CrowniclesIcons.unitValues.petRarity
-			.repeat(packet.playerData.pet?.rarity ?? 0),
-		emote: packet.playerData.pet ? DisplayUtils.getPetIcon(packet.playerData.pet?.typeId, packet.playerData.pet?.sex) : "",
-		name: packet.playerData.pet ? packet.playerData.pet?.nickname ?? DisplayUtils.getPetTypeName(lng, packet.playerData.pet?.typeId, packet.playerData.pet?.sex) : ""
+		rarity: packet.playerData.pet ? DisplayUtils.getPetRarityDisplay(packet.playerData.pet.rarity, lng) : "",
+		emote: packet.playerData.pet ? DisplayUtils.getPetIcon(packet.playerData.pet.typeId, packet.playerData.pet.sex) : "",
+		name: packet.playerData.pet ? packet.playerData.pet.nickname ?? DisplayUtils.getPetTypeName(lng, packet.playerData.pet.typeId, packet.playerData.pet.sex) : ""
 	});
 
 	return fields;

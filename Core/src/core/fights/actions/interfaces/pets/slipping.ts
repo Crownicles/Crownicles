@@ -9,6 +9,8 @@ import {
 import { RandomUtils } from "../../../../../../../Lib/src/utils/RandomUtils";
 import { FightActionType } from "../../../../../../../Lib/src/types/FightActionType";
 import { FightUtils } from "../../../../utils/FightUtils";
+import { PlayerFighter } from "../../../fighter/PlayerFighter";
+import { PetDataController } from "../../../../../data/Pet";
 
 function getAttackInfo(): attackInfo {
 	return {
@@ -19,10 +21,12 @@ function getAttackInfo(): attackInfo {
 }
 
 function getStatsInfo(sender: Fighter, receiver: Fighter): statsInfo {
+	const petId = (sender as PlayerFighter).pet.typeId;
+	const petData = PetDataController.instance.getById(petId);
 	return {
 		attackerStats: [
-			FightUtils.calculatePetStatFromRawPower(2.6, sender.level),
-			FightUtils.calculatePetStatFromRawPower(1.7, sender.level)
+			FightUtils.calculatePetStatFromForce(petData.force, sender.level),
+			FightUtils.calculatePetStatFromSpeed(petData.speed, sender.level)
 		],
 		defenderStats: [
 			receiver.getDefense(),
@@ -36,8 +40,8 @@ function getStatsInfo(sender: Fighter, receiver: Fighter): statsInfo {
 }
 
 const use: PetAssistanceFunc = (fighter, opponent, _turn, _fightController): Promise<PetAssistanceResult | null> => {
-	// 60% chance of doing nothing and does not trigger if opponent last action is magic
-	if (RandomUtils.crowniclesRandom.bool(0.6) || opponent.getLastFightActionUsed()?.type === FightActionType.MAGIC) {
+	// 40% chance of doing nothing and does not trigger if opponent last action is magic
+	if (RandomUtils.crowniclesRandom.bool(0.4) || opponent.getLastFightActionUsed()?.type === FightActionType.MAGIC) {
 		return null;
 	}
 

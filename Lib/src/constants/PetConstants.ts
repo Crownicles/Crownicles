@@ -1,4 +1,5 @@
 import { FightConstants } from "./FightConstants";
+import { ItemRarity } from "./ItemConstants";
 
 export type PetInteraction = {
 	name: string;
@@ -15,6 +16,11 @@ export abstract class PetConstants {
 	static readonly NICKNAME_LENGTH_RANGE = {
 		MIN: 3,
 		MAX: 16
+	};
+
+	static readonly PET_RARITY_RANGE = {
+		MIN: ItemRarity.COMMON,
+		MAX: ItemRarity.MYTHICAL
 	};
 
 	static readonly PET_AGE_GROUP_NAMES = {
@@ -118,11 +124,23 @@ export abstract class PetConstants {
 		}
 	};
 
-	static readonly BREED_COOLDOWN = 60 * 60 * 1000; // 1 hour
+	static readonly BREED_COOLDOWN = 30 * 60 * 1000; // 30 minutes
 
-	static readonly MAX_LOVE_POINTS = 100;
+	static readonly MAX_LOVE_POINTS = 110;
+
+	static readonly TRAINED_LOVE_THRESHOLD = 100;
 
 	static readonly BASE_LOVE = 10;
+
+	static readonly DAILY_LOVE_LOSS = 2;
+
+	static readonly VIGOR = {
+		MAX: 6,
+		MIN: 0,
+		LOVE_DIVIDER: 3,
+		DIVIDER: 10,
+		ENRAGED_MULTIPLIER: 2
+	};
 
 	static readonly GUILD_LEVEL_USED_FOR_NO_GUILD_LOOT = 20;
 
@@ -145,104 +163,19 @@ export abstract class PetConstants {
 		MAX: 50000
 	};
 
+	static readonly POST_FIGHT_LOVE_GAIN_RANGE = {
+		MIN: 0,
+		MAX: 2
+	};
+
+	static readonly POST_FIGHT_REACTION_TYPES = {
+		LOVE_GAIN: "loveGain",
+		TRAINED: "trained"
+	} as const;
+
 
 	static readonly SLOTS = 6;
 
-
-	/*
-	 *This array defines the probability of looting a pet based on two factors:
-	 *   - The rarity of the pet (represented by each column in the subarrays)
-	 *   - The level of the guild (represented by each subarray, with each subarray corresponding to a range of 10 guild levels)
-	 *
-	 *   Each subarray contains probabilities for 5 different rarities of pets (from most common to most rare).
-	 *   The probabilities are designed to sum up to 1 for each subarray, ensuring that a pet will be looted.
-	 *
-	 *   The array is structured as follows:
-	 *   - The first element of each subarray represents the probability of looting the most common pet.
-	 *   - The second element represents the probability of the next rarer pet, and so on.
-	 *   - The last element represents the probability of looting the rarest pet.
-	 *
-	 *   For example, a guild at level 1-10 has a 90% chance to loot the most common pet and a 0.01% chance to loot the rarest pet.
-	 */
-	static readonly PROBABILITIES = [
-		[
-			0.9000,
-			0.0900,
-			0.0090,
-			0.0009,
-			0.0001
-		],
-		[
-			0.8940,
-			0.0916,
-			0.0109,
-			0.0023,
-			0.0012
-		],
-		[
-			0.8760,
-			0.0964,
-			0.0166,
-			0.0065,
-			0.0045
-		],
-		[
-			0.8460,
-			0.1044,
-			0.0262,
-			0.0135,
-			0.0099
-		],
-		[
-			0.8040,
-			0.1156,
-			0.0396,
-			0.0233,
-			0.0175
-		],
-		[
-			0.7500,
-			0.1300,
-			0.0568,
-			0.0359,
-			0.0273
-		],
-		[
-			0.6840,
-			0.1476,
-			0.0778,
-			0.0513,
-			0.0393
-		],
-		[
-			0.6060,
-			0.1684,
-			0.1026,
-			0.0695,
-			0.0535
-		],
-		[
-			0.5160,
-			0.1924,
-			0.1312,
-			0.0905,
-			0.0699
-		],
-		[
-			0.4140,
-			0.2196,
-			0.1637,
-			0.1143,
-			0.0884
-		],
-		[
-			0.3000,
-			0.2500,
-			0.2000,
-			0.1409,
-			0.1091
-		]
-	];
 
 	static RESTRICTIVES_DIETS = {
 		CARNIVOROUS: PetDiet.CARNIVOROUS,
@@ -690,6 +623,15 @@ export abstract class PetConstants {
 		FEMALE: "f"
 	};
 }
+
+export const PostFightPetLoveOutcomes = {
+	WIN: "win",
+	LOSS: "loss"
+} as const;
+
+export type PostFightPetLoveOutcome = typeof PostFightPetLoveOutcomes[keyof typeof PostFightPetLoveOutcomes];
+
+export type PostFightPetReactionType = typeof PetConstants.POST_FIGHT_REACTION_TYPES[keyof typeof PetConstants.POST_FIGHT_REACTION_TYPES];
 
 export enum PET_ENTITY_GIVE_RETURN {
 	NO_SLOT,

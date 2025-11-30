@@ -49,10 +49,14 @@ import { ReportConstants } from "../../../../Lib/src/constants/ReportConstants";
 import { ReactionCollectorReturnTypeOrNull } from "../../packetHandlers/handlers/ReactionCollectorHandlers";
 import { DiscordConstants } from "../../DiscordConstants";
 import { ReactionCollectorPveFightData } from "../../../../Lib/src/packets/interaction/ReactionCollectorPveFight";
-import { escapeUsername } from "../../utils/StringUtils";
+import {
+	escapeUsername, StringUtils
+} from "../../utils/StringUtils";
 import { Language } from "../../../../Lib/src/Language";
 import { DisplayUtils } from "../../utils/DisplayUtils";
 import { MessagesUtils } from "../../utils/MessagesUtils";
+import { PetUtils } from "../../utils/PetUtils";
+import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
 
 async function getPacket(interaction: CrowniclesInteraction): Promise<CommandReportPacketReq> {
 	await interaction.deferReply();
@@ -455,6 +459,15 @@ export async function displayMonsterReward(
 				guildPoints: packet.guildPoints
 			})
 		);
+	}
+
+	if (packet.petReaction) {
+		const petDisplay = PetUtils.petToShortString(lng, packet.petReaction.petNickname, packet.petReaction.petId, packet.petReaction.petSex as SexTypeShort);
+		const petReactionText = StringUtils.getRandomTranslation(`commands:fight.petReactions.${packet.petReaction.reactionType}`, lng, {
+			player: escapeUsername(user.displayName),
+			pet: petDisplay
+		});
+		descriptionParts.push(`\n${petReactionText}`);
 	}
 
 	const embed = new CrowniclesEmbed()
