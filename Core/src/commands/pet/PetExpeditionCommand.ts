@@ -524,6 +524,68 @@ function createExpeditionChoiceCollector(params: ExpeditionChoiceParams): Crowni
 		.build();
 }
 
+/**
+ * Check basic requirements (talisman and pet)
+ */
+async function checkBasicRequirements(player: Player): Promise<CommandPetExpeditionPacketRes | null> {
+	if (!player.hasTalisman) {
+		return buildCannotStartResponse("noTalisman", false);
+	}
+
+	if (!player.petId) {
+		return buildCannotStartResponse("noPet", true);
+	}
+
+	const petEntity = await PetEntities.getById(player.petId);
+	if (!petEntity) {
+		return buildCannotStartResponse("noPet", true);
+	}
+
+	return null;
+}
+
+/**
+ * Handle active expedition - show finished or in-progress collector
+ */
+function handleActiveExpedition(
+	petEntity: PetEntity,
+	activeExpedition: PetExpedition,
+	context: PacketContext
+): CrowniclesPacket {
+	const isComplete = Date.now() >= activeExpedition.endDate.getTime();
+	const data: ExpeditionCollectorData = {
+		petEntity,
+		activeExpedition,
+		context
+	};
+	return isComplete
+		? createFinishedExpeditionCollector(data)
+		: createInProgressExpeditionCollector(data);
+}
+
+/**
+ * Check requirements to start a new expedition
+ */
+function checkStartRequirements(
+	player: Player,
+	petEntity: PetEntity,
+	petModel: Pet
+): CommandPetExpeditionPacketRes | null {
+	if (petEntity.lovePoints < ExpeditionConstants.REQUIREMENTS.MIN_LOVE_POINTS) {
+		return buildCannotStartResponse("insufficientLove", true, petEntity);
+	}
+
+	if (petEntity.getFeedCooldown(petModel) <= 0) {
+		return buildCannotStartResponse("petHungry", true, petEntity);
+	}
+
+	if (!Maps.isOnContinent(player)) {
+		return buildCannotStartResponse("notOnContinent", true, petEntity);
+	}
+
+	return null;
+}
+
 export default class PetExpeditionCommand {
 	/**
 	 * Check expedition status and requirements
@@ -544,7 +606,7 @@ export default class PetExpeditionCommand {
 		context: PacketContext
 	): Promise<void> {
 		// Check basic requirements
-		const basicCheckResult = await this.checkBasicRequirements(player);
+		const basicCheckResult = await checkBasicRequirements(player);
 		if (basicCheckResult) {
 			response.push(basicCheckResult);
 			return;
@@ -556,12 +618,12 @@ export default class PetExpeditionCommand {
 		// Handle expedition in progress
 		const activeExpedition = await PetExpeditions.getActiveExpeditionForPlayer(player.id);
 		if (activeExpedition) {
-			response.push(this.handleActiveExpedition(petEntity, activeExpedition, context));
+			response.push(handleActiveExpedition(petEntity, activeExpedition, context));
 			return;
 		}
 
 		// Check expedition start requirements
-		const startCheckResult = this.checkStartRequirements(player, petEntity, petModel);
+		const startCheckResult = checkStartRequirements(player, petEntity, petModel);
 		if (startCheckResult) {
 			response.push(startCheckResult);
 			return;
@@ -580,68 +642,6 @@ export default class PetExpeditionCommand {
 			guildInfo,
 			context
 		}));
-	}
-
-	/**
-	 * Check basic requirements (talisman and pet)
-	 */
-	private async checkBasicRequirements(player: Player): Promise<CommandPetExpeditionPacketRes | null> {
-		if (!player.hasTalisman) {
-			return buildCannotStartResponse("noTalisman", false);
-		}
-
-		if (!player.petId) {
-			return buildCannotStartResponse("noPet", true);
-		}
-
-		const petEntity = await PetEntities.getById(player.petId);
-		if (!petEntity) {
-			return buildCannotStartResponse("noPet", true);
-		}
-
-		return null;
-	}
-
-	/**
-	 * Handle active expedition - show finished or in-progress collector
-	 */
-	private handleActiveExpedition(
-		petEntity: PetEntity,
-		activeExpedition: PetExpedition,
-		context: PacketContext
-	): CrowniclesPacket {
-		const isComplete = Date.now() >= activeExpedition.endDate.getTime();
-		const data: ExpeditionCollectorData = {
-			petEntity,
-			activeExpedition,
-			context
-		};
-		return isComplete
-			? createFinishedExpeditionCollector(data)
-			: createInProgressExpeditionCollector(data);
-	}
-
-	/**
-	 * Check requirements to start a new expedition
-	 */
-	private checkStartRequirements(
-		player: Player,
-		petEntity: PetEntity,
-		petModel: Pet
-	): CommandPetExpeditionPacketRes | null {
-		if (petEntity.lovePoints < ExpeditionConstants.REQUIREMENTS.MIN_LOVE_POINTS) {
-			return buildCannotStartResponse("insufficientLove", true, petEntity);
-		}
-
-		if (petEntity.getFeedCooldown(petModel) <= 0) {
-			return buildCannotStartResponse("petHungry", true, petEntity);
-		}
-
-		if (!Maps.isOnContinent(player)) {
-			return buildCannotStartResponse("notOnContinent", true, petEntity);
-		}
-
-		return null;
 	}
 
 	/**

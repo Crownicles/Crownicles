@@ -269,8 +269,7 @@ interface PetButtonsResult {
 function buildPetButtons(
 	lng: Language,
 	hasExpedition: boolean,
-	isOwnerViewingOwnPet: boolean,
-	hasTalisman: boolean
+	isOwnerViewingOwnPet: boolean
 ): PetButtonsResult {
 	const petButton = createPetButton(lng, hasExpedition);
 	const row = new ActionRowBuilder<ButtonBuilder>().addComponents(petButton);
@@ -278,7 +277,7 @@ function buildPetButtons(
 		petButton: ButtonBuilder; expeditionButton?: ButtonBuilder;
 	} = { petButton };
 
-	if (isOwnerViewingOwnPet && hasTalisman) {
+	if (isOwnerViewingOwnPet) {
 		const expeditionButton = createExpeditionButton(lng);
 		row.addComponents(expeditionButton);
 		buttons.expeditionButton = expeditionButton;
@@ -308,7 +307,7 @@ export async function handleCommandPetPacketRes(packet: CommandPetPacketRes, con
 
 	const {
 		row, buttons
-	} = buildPetButtons(lng, hasExpedition, isOwnerViewingOwnPet, packet.hasTalisman ?? false);
+	} = buildPetButtons(lng, hasExpedition, isOwnerViewingOwnPet);
 	const embed = await createPetEmbed(packet, interaction);
 	const showButtons = shouldSetupCollector(packet, isOwnerViewingOwnPet);
 
