@@ -12,13 +12,29 @@ import { ExpeditionLocationType } from "../../constants/ExpeditionConstants";
  */
 export interface ExpeditionOptionData {
 	id: string;
+
 	mapLocationId: number;
+
 	locationType: ExpeditionLocationType;
+
+	/**
+	 * Actual duration in minutes (used for expedition creation)
+	 */
+	durationMinutes: number;
+
+	/**
+	 * Display duration rounded to nearest 10 minutes (shown to player)
+	 */
 	displayDurationMinutes: number;
+
 	riskRate: number;
+
 	wealthRate: number;
+
 	difficulty: number;
+
 	foodCost: number;
+
 	isDistantExpedition?: boolean;
 }
 
@@ -43,7 +59,10 @@ export class ReactionCollectorPetExpeditionChoiceData extends ReactionCollectorD
  * Reaction for selecting an expedition
  */
 export class ReactionCollectorPetExpeditionSelectReaction extends ReactionCollectorReaction {
-	expeditionId!: string;
+	/**
+	 * Complete expedition data (to avoid cache lookup on Core side)
+	 */
+	expedition!: ExpeditionOptionData;
 }
 
 /**
@@ -88,7 +107,7 @@ export class ReactionCollectorPetExpeditionChoice extends ReactionCollector {
 	creationPacket(id: string, endTime: number): ReactionCollectorCreationPacket {
 		const reactions = [
 			// Add a reaction for each expedition option
-			...this.expeditions.map(exp => this.buildReaction(ReactionCollectorPetExpeditionSelectReaction, { expeditionId: exp.id })),
+			...this.expeditions.map(exp => this.buildReaction(ReactionCollectorPetExpeditionSelectReaction, { expedition: exp })),
 
 			// Add cancel reaction
 			this.buildReaction(ReactionCollectorPetExpeditionCancelReaction, {})

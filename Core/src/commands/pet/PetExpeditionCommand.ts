@@ -30,9 +30,7 @@ import {
 	FoodConsumptionDetail
 } from "../../../../Lib/src/packets/commands/CommandPetExpeditionPacket";
 import {
-	PendingExpeditionsCache,
 	generateThreeExpeditions,
-	calculateRewardIndex,
 	calculateFoodConsumptionPlan,
 	applyFoodConsumptionPlan,
 	calculateEffectiveRisk,
@@ -76,8 +74,7 @@ function foodPlanToDetails(plan: FoodConsumptionPlan): FoodConsumptionDetail[] {
 async function handleExpeditionSelect(
 	player: Player,
 	petEntity: PetEntity,
-	expeditionId: string,
-	keycloakId: string,
+	expeditionData: ExpeditionOptionData,
 	response: CrowniclesPacket[]
 ): Promise<void> {
 	// Validate requirements
@@ -99,22 +96,8 @@ async function handleExpeditionSelect(
 		return;
 	}
 
-	// Get expedition data from cache
-	const expeditionData = PendingExpeditionsCache.findExpedition(keycloakId, expeditionId);
-	if (!expeditionData) {
-		response.push(makePacket(CommandPetExpeditionChoicePacketRes, {
-			success: false,
-			failureReason: "noExpeditionData"
-		}));
-		return;
-	}
-
-	// Remove from cache after successful retrieval
-	PendingExpeditionsCache.delete(keycloakId);
-
 	const petModel = PetDataController.instance.getById(petEntity.typeId);
-	const rewardIndex = calculateRewardIndex(expeditionData);
-	const rationsRequired = ExpeditionConstants.FOOD_CONSUMPTION[rewardIndex];
+	const rationsRequired = expeditionData.foodCost;
 
 	// Calculate optimal food consumption plan
 	const foodPlan = await calculateFoodConsumptionPlan(player, petModel, rationsRequired);
@@ -177,12 +160,8 @@ async function handleExpeditionSelect(
  */
 async function handleExpeditionCancel(
 	player: Player,
-	keycloakId: string,
 	response: CrowniclesPacket[]
 ): Promise<void> {
-	// Clean up cache
-	PendingExpeditionsCache.delete(keycloakId);
-
 	if (!player.petId) {
 		response.push(makePacket(CommandPetExpeditionErrorPacket, { errorCode: "noPet" }));
 		return;
@@ -266,6 +245,7 @@ function convertToExpeditionOptionData(expeditions: ExpeditionData[]): Expeditio
 		id: exp.id,
 		mapLocationId: exp.mapLocationId!,
 		locationType: exp.locationType,
+		durationMinutes: exp.durationMinutes,
 		displayDurationMinutes: exp.displayDurationMinutes,
 		riskRate: exp.riskRate,
 		wealthRate: exp.wealthRate,
@@ -479,9 +459,6 @@ export default class PetExpeditionCommand {
 		// All requirements met - generate expeditions and show choice menu
 		const expeditions = generateThreeExpeditions(player.mapLinkId);
 
-		// Store expeditions in cache for later retrieval when player makes a choice
-		PendingExpeditionsCache.set(context.keycloakId, expeditions);
-
 		// Get guild food information if player has a guild
 		let hasGuild = false;
 		let guildFoodAmount: number | undefined;
@@ -527,15 +504,14 @@ export default class PetExpeditionCommand {
 					await handleExpeditionSelect(
 						reloadedPlayer,
 						reloadedPetEntity,
-						selectReaction.expeditionId,
-						context.keycloakId,
+						selectReaction.expedition,
 						resp
 					);
 				}
 			}
 			else {
 				// Cancel was selected or timeout
-				await handleExpeditionCancel(reloadedPlayer, context.keycloakId, resp);
+				await handleExpeditionCancel(reloadedPlayer, resp);
 			}
 		};
 

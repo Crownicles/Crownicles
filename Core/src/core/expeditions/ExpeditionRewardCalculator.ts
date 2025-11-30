@@ -5,42 +5,50 @@ import { ExpeditionConstants } from "../../../../Lib/src/constants/ExpeditionCon
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 
 /**
+ * Return a 0..3 score for a numeric value based on 3 thresholds.
+ *
+ * The thresholds object contains values for SCORE_1..SCORE_3.
+ * - returns 3 when value >= SCORE_3
+ * - returns 2 when value >= SCORE_2
+ * - returns 1 when value >= SCORE_1
+ * - otherwise returns 0
+ */
+function getThresholdScore(
+	value: number,
+	thresholds: {
+		SCORE_1: number;
+		SCORE_2: number;
+		SCORE_3: number;
+	}
+): number {
+	if (value >= thresholds.SCORE_3) {
+		return 3;
+	}
+
+	if (value >= thresholds.SCORE_2) {
+		return 2;
+	}
+
+	if (value >= thresholds.SCORE_1) {
+		return 1;
+	}
+
+	return 0;
+}
+
+/**
  * Calculate the reward index (0-9) based on expedition parameters
  * Higher index = better rewards
+ *
+ * @param expedition Expedition input data used to compute the index
+ * @returns reward index between 0 and 9
  */
 export function calculateRewardIndex(expedition: ExpeditionData): number {
-	let durationScore = 0;
-	if (expedition.durationMinutes >= ExpeditionConstants.SCORE_THRESHOLDS.DURATION.SCORE_3) {
-		durationScore = 3;
-	}
-	else if (expedition.durationMinutes >= ExpeditionConstants.SCORE_THRESHOLDS.DURATION.SCORE_2) {
-		durationScore = 2;
-	}
-	else if (expedition.durationMinutes >= ExpeditionConstants.SCORE_THRESHOLDS.DURATION.SCORE_1) {
-		durationScore = 1;
-	}
+	const t = ExpeditionConstants.SCORE_THRESHOLDS;
 
-	let riskScore = 0;
-	if (expedition.riskRate >= ExpeditionConstants.SCORE_THRESHOLDS.RISK.SCORE_3) {
-		riskScore = 3;
-	}
-	else if (expedition.riskRate >= ExpeditionConstants.SCORE_THRESHOLDS.RISK.SCORE_2) {
-		riskScore = 2;
-	}
-	else if (expedition.riskRate >= ExpeditionConstants.SCORE_THRESHOLDS.RISK.SCORE_1) {
-		riskScore = 1;
-	}
-
-	let difficultyScore = 0;
-	if (expedition.difficulty >= ExpeditionConstants.SCORE_THRESHOLDS.DIFFICULTY.SCORE_3) {
-		difficultyScore = 3;
-	}
-	else if (expedition.difficulty >= ExpeditionConstants.SCORE_THRESHOLDS.DIFFICULTY.SCORE_2) {
-		difficultyScore = 2;
-	}
-	else if (expedition.difficulty >= ExpeditionConstants.SCORE_THRESHOLDS.DIFFICULTY.SCORE_1) {
-		difficultyScore = 1;
-	}
+	const durationScore = getThresholdScore(expedition.durationMinutes, t.DURATION);
+	const riskScore = getThresholdScore(expedition.riskRate, t.RISK);
+	const difficultyScore = getThresholdScore(expedition.difficulty, t.DIFFICULTY);
 
 	return Math.min(9, durationScore + riskScore + difficultyScore);
 }
