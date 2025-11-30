@@ -19,6 +19,9 @@ import {
 	SexTypeShort, StringConstants
 } from "../../../../Lib/src/constants/StringConstants";
 import {
+	ItemCategory, itemCategoryToString
+} from "../../../../Lib/src/constants/ItemConstants";
+import {
 	CommandPetExpeditionPacketRes,
 	CommandPetExpeditionChoicePacketRes,
 	CommandPetExpeditionCancelPacketRes,
@@ -587,10 +590,10 @@ export async function handleExpeditionResolveRes(
 function formatRewards(
 	rewards: {
 		money: number;
-		gems: number;
 		experience: number;
-		guildExperience: number;
 		points: number;
+		itemId?: number;
+		itemCategory?: number;
 		cloneTalismanFound?: boolean;
 	},
 	lng: Language,
@@ -604,28 +607,23 @@ function formatRewards(
 			amount: rewards.money
 		}));
 	}
-	if (rewards.gems > 0) {
-		lines.push(i18n.t("commands:petExpedition.rewards.gems", {
-			lng,
-			amount: rewards.gems
-		}));
-	}
 	if (rewards.experience > 0) {
 		lines.push(i18n.t("commands:petExpedition.rewards.experience", {
 			lng,
 			amount: rewards.experience
 		}));
 	}
-	if (rewards.guildExperience > 0) {
-		lines.push(i18n.t("commands:petExpedition.rewards.guildExperience", {
-			lng,
-			amount: rewards.guildExperience
-		}));
-	}
 	if (rewards.points > 0) {
 		lines.push(i18n.t("commands:petExpedition.rewards.points", {
 			lng,
 			amount: rewards.points
+		}));
+	}
+	if (rewards.itemId !== undefined && rewards.itemCategory !== undefined) {
+		lines.push(i18n.t("commands:petExpedition.rewards.item", {
+			lng,
+			itemCategory: itemCategoryToString(rewards.itemCategory as ItemCategory),
+			itemId: rewards.itemId
 		}));
 	}
 	if (rewards.cloneTalismanFound) {

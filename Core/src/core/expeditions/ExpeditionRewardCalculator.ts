@@ -3,6 +3,10 @@ import {
 } from "../../../../Lib/src/packets/commands/CommandPetExpeditionPacket";
 import { ExpeditionConstants } from "../../../../Lib/src/constants/ExpeditionConstants";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
+import {
+	generateRandomItem
+} from "../utils/ItemUtils";
+import { ItemCategory } from "../../../../Lib/src/constants/ItemConstants";
 
 /**
  * Return a 0..3 score for a numeric value based on 3 thresholds.
@@ -58,18 +62,14 @@ export function calculateRewardIndex(expedition: ExpeditionData): number {
  */
 function calculateBaseRewards(expedition: ExpeditionData, rewardIndex: number): {
 	money: number;
-	gems: number;
 	experience: number;
-	guildExperience: number;
 	points: number;
 } {
 	const locationWeights = ExpeditionConstants.LOCATION_REWARD_WEIGHTS[expedition.locationType];
 
 	return {
 		money: Math.round(ExpeditionConstants.REWARD_TABLES.MONEY[rewardIndex] * expedition.wealthRate * locationWeights.money),
-		gems: Math.round(ExpeditionConstants.REWARD_TABLES.GEMS[rewardIndex] * expedition.wealthRate * locationWeights.gems),
 		experience: Math.round(ExpeditionConstants.REWARD_TABLES.EXPERIENCE[rewardIndex] * expedition.wealthRate * locationWeights.experience),
-		guildExperience: Math.round(ExpeditionConstants.REWARD_TABLES.GUILD_EXPERIENCE[rewardIndex] * expedition.wealthRate * locationWeights.guildExperience),
 		points: Math.round(ExpeditionConstants.REWARD_TABLES.POINTS[rewardIndex] * expedition.wealthRate * locationWeights.points)
 	};
 }
@@ -79,15 +79,11 @@ function calculateBaseRewards(expedition: ExpeditionData, rewardIndex: number): 
  */
 function applyPartialSuccessPenalty(rewards: {
 	money: number;
-	gems: number;
 	experience: number;
-	guildExperience: number;
 	points: number;
 }): void {
 	rewards.money = Math.round(rewards.money / 2);
-	rewards.gems = Math.round(rewards.gems / 2);
 	rewards.experience = Math.round(rewards.experience / 2);
-	rewards.guildExperience = Math.round(rewards.guildExperience / 2);
 	rewards.points = Math.round(rewards.points / 2);
 }
 
@@ -113,10 +109,46 @@ function rollCloneTalisman(
 		dropChance *= ExpeditionConstants.CLONE_TALISMAN.LOCATION_BONUS_MULTIPLIER;
 	}
 
-	// Cap at max drop chance
-	dropChance = Math.min(dropChance, ExpeditionConstants.CLONE_TALISMAN.MAX_DROP_CHANCE);
+	// No cap on drop chance - removed MAX_DROP_CHANCE
 
 	return RandomUtils.crowniclesRandom.bool(dropChance / 100);
+}
+
+/**
+ * Calculate item rarity range based on reward index
+ * minRarity = max(1, rewardIndex - 3)
+ * maxRarity depends on reward index:
+ * - rewardIndex <= 1: maxRarity = 5 (SPECIAL)
+ * - rewardIndex = 2: maxRarity = 6 (EPIC)
+ * - rewardIndex = 3: maxRarity = 7 (LEGENDARY)
+ * - rewardIndex >= 4: maxRarity = 8 (MYTHICAL)
+ */
+function calculateItemRarityRange(rewardIndex: number): { minRarity: number; maxRarity: number } {
+	const minRarity = Math.max(
+		ExpeditionConstants.ITEM_REWARD.MIN_RARITY_FLOOR,
+		rewardIndex - ExpeditionConstants.ITEM_REWARD.MIN_RARITY_OFFSET
+	);
+
+	const maxRarity = ExpeditionConstants.ITEM_REWARD.MAX_RARITY_BY_REWARD_INDEX[rewardIndex];
+
+	return { minRarity, maxRarity };
+}
+
+/**
+ * Generate a random item reward based on reward index
+ */
+function generateItemReward(rewardIndex: number): { itemId: number; itemCategory: number } {
+	const { minRarity, maxRarity } = calculateItemRarityRange(rewardIndex);
+
+	const item = generateRandomItem({
+		minRarity,
+		maxRarity
+	});
+
+	return {
+		itemId: item.id,
+		itemCategory: item.getCategory()
+	};
 }
 
 /**
@@ -134,8 +166,13 @@ export function calculateRewards(
 		applyPartialSuccessPenalty(rewards);
 	}
 
+	// Generate random item reward (always given on success)
+	const itemReward = generateItemReward(rewardIndex);
+
 	return {
 		...rewards,
+		itemId: itemReward.itemId,
+		itemCategory: itemReward.itemCategory,
 		cloneTalismanFound: rollCloneTalisman(expedition, rewardIndex, hasCloneTalisman, isPartialSuccess)
 	};
 }

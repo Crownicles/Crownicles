@@ -221,10 +221,9 @@
     "rewards": {
       "title": "\n\n**Butin rapporté :**",
       "money": "{emote:unitValues.money} **{{amount}}** pièces d'or",
-      "gems": "{emote:unitValues.gem} **{{amount}}** gemmes précieuses",
       "experience": "{emote:unitValues.xp} **{{amount}}** points d'expérience",
-      "guildExperience": "{emote:guild.icon} **{{amount}}** XP de guilde",
       "points": "{emote:unitValues.score} **{{amount}}** points de gloire",
+      "item": "$t(items:nameDisplay, {\"itemCategory\": \"{{itemCategory}}\", \"itemId\": {{itemId}}})",
       "cloneTalisman": "\n\n{emote:expedition.cloneTalisman} **DÉCOUVERTE EXCEPTIONNELLE !**\nVotre familier a découvert un ancien artefact enfoui : le **Talisman de Clonage** !\nCet objet mystique permettra à votre compagnon de vous assister en défense et dans les petits événements, même lorsqu'il est en expédition !",
       "badgeEarned": "\n\n{emote:badges.expert_expediteur} **BADGE OBTENU !**\nVotre familier et vous formez désormais une équipe d'explorateurs légendaires ! Après tant d'expéditions réussies, vous avez mérité le badge **Expéditeur Expert** !"
     },

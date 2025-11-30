@@ -163,10 +163,36 @@ export abstract class ExpeditionConstants {
 	 * Love points changes during expedition lifecycle
 	 */
 	static readonly LOVE_CHANGES = {
-		CANCEL_BEFORE_DEPARTURE: -15,
+		CANCEL_BEFORE_DEPARTURE_BASE: -15,
 		RECALL_DURING_EXPEDITION: -25,
 		TOTAL_FAILURE: -10,
 		TOTAL_SUCCESS: 5
+	};
+
+	/**
+	 * Progressive penalty for cancellation
+	 * Love lost = base * (1 + cancellations in last 7 days)
+	 */
+	static readonly CANCELLATION_PENALTY = {
+		/**
+		 * Number of days to look back for cancellation history
+		 */
+		LOOKBACK_DAYS: 7
+	};
+
+	/**
+	 * Random item reward configuration
+	 * minRarity = max(1, rewardIndex - 3)
+	 * maxRarity depends on reward index:
+	 * - rewardIndex = 1: maxRarity = 5 (SPECIAL)
+	 * - rewardIndex = 2: maxRarity = 6 (EPIC)
+	 * - rewardIndex = 3: maxRarity = 7 (LEGENDARY)
+	 * - rewardIndex >= 4: maxRarity = 8 (MYTHICAL)
+	 */
+	static readonly ITEM_REWARD = {
+		MIN_RARITY_OFFSET: 3,
+		MIN_RARITY_FLOOR: 1,
+		MAX_RARITY_BY_REWARD_INDEX: [5, 5, 6, 7, 8, 8, 8, 8, 8, 8] as const
 	};
 
 	/**
@@ -233,65 +259,50 @@ export abstract class ExpeditionConstants {
 	 * Index is calculated from: duration_score + risk_score + difficulty_score (each 0-3)
 	 */
 	static readonly REWARD_TABLES = {
+		/**
+		 * Money rewards ranging from 100 to 5000
+		 */
 		MONEY: [
-			50,
-			75,
 			100,
-			150,
-			200,
-			275,
-			350,
-			450,
-			600,
-			800
-		],
-		GEMS: [
-			0,
-			0,
-			1,
-			1,
-			1,
-			2,
-			2,
-			3,
-			3,
-			5
-		],
-		EXPERIENCE: [
-			10,
-			20,
-			35,
-			50,
-			75,
-			100,
-			150,
-			200,
-			275,
-			400
-		],
-		GUILD_EXPERIENCE: [
-			5,
-			10,
-			20,
-			30,
-			45,
-			60,
-			80,
-			110,
-			150,
-			200
-		],
-		POINTS: [
-			10,
-			20,
-			35,
-			50,
-			70,
-			100,
-			140,
-			190,
 			250,
-			350
+			500,
+			850,
+			1300,
+			1900,
+			2600,
+			3400,
+			4200,
+			5000
+		],
+		/**
+		 * Experience rewards ranging from 50 to 3500
+		 */
+		EXPERIENCE: [
+			50,
+			150,
+			350,
+			600,
+			950,
+			1400,
+			1950,
+			2550,
+			3000,
+			3500
+		],
+		/**
+		 * Score/points rewards ranging from 75 to 2000
+		 */
+		POINTS: [
+			75,
+			175,
+			325,
+			525,
+			775,
+			1075,
+			1400,
+			1700,
+			1875,
+			2000
 		]
 	};
 
@@ -367,32 +378,32 @@ export abstract class ExpeditionConstants {
 
 	/**
 	 * Reward type weights by location
-	 * Higher weight = higher chance of getting that reward type
+	 * Higher weight = higher multiplier for that reward type
 	 */
 	static readonly LOCATION_REWARD_WEIGHTS: Record<string, Record<string, number>> = {
 		forest: {
-			money: 1, gems: 0.5, experience: 1.5, guildExperience: 1, points: 1
+			money: 1, experience: 1.5, points: 1
 		},
 		mountain: {
-			money: 1.5, gems: 1.5, experience: 1, guildExperience: 0.5, points: 1
+			money: 1.5, experience: 1, points: 1
 		},
 		desert: {
-			money: 2, gems: 0.5, experience: 0.5, guildExperience: 1, points: 1.5
+			money: 2, experience: 0.5, points: 1.5
 		},
 		swamp: {
-			money: 0.5, gems: 0.5, experience: 1, guildExperience: 1.5, points: 1.5
+			money: 0.5, experience: 1, points: 1.5
 		},
 		ruins: {
-			money: 1, gems: 2, experience: 1, guildExperience: 1, points: 0.5
+			money: 1, experience: 1, points: 0.5
 		},
 		cave: {
-			money: 1.5, gems: 1.5, experience: 0.5, guildExperience: 1, points: 1
+			money: 1.5, experience: 0.5, points: 1
 		},
 		plains: {
-			money: 1, gems: 0.5, experience: 1.5, guildExperience: 1.5, points: 1
+			money: 1, experience: 1.5, points: 1
 		},
 		coast: {
-			money: 1, gems: 1, experience: 1, guildExperience: 1, points: 1.5
+			money: 1, experience: 1, points: 1.5
 		}
 	};
 
@@ -452,11 +463,6 @@ export abstract class ExpeditionConstants {
 		 * At max reward index (9), this adds 4.5% to base chance
 		 */
 		REWARD_INDEX_BONUS_PER_POINT: 0.5,
-
-		/**
-		 * Maximum total drop chance (percentage)
-		 */
-		MAX_DROP_CHANCE: 5,
 
 		/**
 		 * Locations with bonus drop chance for the clone talisman

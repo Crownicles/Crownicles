@@ -235,18 +235,28 @@ async function handleExpeditionCancel(
 		return;
 	}
 
+	// Calculate progressive penalty based on recent cancellations
+	const recentCancellations = await crowniclesInstance.logsDatabase.countRecentExpeditionCancellations(
+		player.keycloakId,
+		ExpeditionConstants.CANCELLATION_PENALTY.LOOKBACK_DAYS
+	);
+
+	// Love lost = base * (1 + recentCancellations)
+	const baseLoveLost = Math.abs(ExpeditionConstants.LOVE_CHANGES.CANCEL_BEFORE_DEPARTURE_BASE);
+	const loveLost = baseLoveLost * (1 + recentCancellations);
+	const loveChange = -loveLost;
+
 	// Log expedition cancellation to database
 	crowniclesInstance.logsDatabase.logExpeditionCancel(
 		player.keycloakId,
 		petEntity.id,
-		ExpeditionConstants.LOVE_CHANGES.CANCEL_BEFORE_DEPARTURE
+		loveChange
 	).then();
 
 	// Apply love loss for cancellation
-	const loveLost = Math.abs(ExpeditionConstants.LOVE_CHANGES.CANCEL_BEFORE_DEPARTURE);
 	await petEntity.changeLovePoints({
 		player,
-		amount: ExpeditionConstants.LOVE_CHANGES.CANCEL_BEFORE_DEPARTURE,
+		amount: loveChange,
 		response,
 		reason: NumberChangeReason.SMALL_EVENT
 	});
@@ -285,23 +295,33 @@ async function handleExpeditionRecall(
 		return;
 	}
 
+	// Calculate progressive penalty based on recent cancellations (includes both cancel and recall)
+	const recentCancellations = await crowniclesInstance.logsDatabase.countRecentExpeditionCancellations(
+		player.keycloakId,
+		ExpeditionConstants.CANCELLATION_PENALTY.LOOKBACK_DAYS
+	);
+
+	// Love lost = base * (1 + recentCancellations)
+	const baseLoveLost = Math.abs(ExpeditionConstants.LOVE_CHANGES.RECALL_DURING_EXPEDITION);
+	const loveLost = baseLoveLost * (1 + recentCancellations);
+	const loveChange = -loveLost;
+
 	// Log expedition recall to database
 	crowniclesInstance.logsDatabase.logExpeditionRecall(
 		player.keycloakId,
 		petEntity.id,
 		activeExpedition.mapLocationId,
 		activeExpedition.locationType,
-		ExpeditionConstants.LOVE_CHANGES.RECALL_DURING_EXPEDITION
+		loveChange
 	).then();
 
 	// Recall expedition
 	await PetExpeditions.recallExpedition(activeExpedition);
 
-	// Apply love loss for recall
-	const loveLost = Math.abs(ExpeditionConstants.LOVE_CHANGES.RECALL_DURING_EXPEDITION);
+	// Apply love loss for recall with progressive penalty
 	await petEntity.changeLovePoints({
 		player,
-		amount: ExpeditionConstants.LOVE_CHANGES.RECALL_DURING_EXPEDITION,
+		amount: loveChange,
 		response,
 		reason: NumberChangeReason.SMALL_EVENT
 	});
@@ -424,7 +444,7 @@ function createFinishedExpeditionCollector(data: ExpeditionCollectorData): Crown
 
 	const endCallback = createExpeditionEndCallback(context, async (reaction, player, resp) => {
 		if (reaction?.reaction.type === ReactionCollectorPetExpeditionClaimReaction.name) {
-			await PetExpeditionCommand.doResolveExpedition(resp, player);
+			await PetExpeditionCommand.doResolveExpedition(resp, player, context);
 		}
 	});
 
@@ -681,7 +701,8 @@ export default class PetExpeditionCommand {
 	 */
 	static async doResolveExpedition(
 		response: CrowniclesPacket[],
-		player: Player
+		player: Player,
+		context: PacketContext
 	): Promise<void> {
 		// Validate prerequisites
 		const validation = await validateExpeditionPrerequisites(player.id, player.petId);
@@ -714,7 +735,7 @@ export default class PetExpeditionCommand {
 
 		// Apply rewards
 		if (outcome.rewards) {
-			await applyExpeditionRewards(outcome.rewards, player, response);
+			await applyExpeditionRewards(outcome.rewards, player, response, context);
 		}
 
 		await player.save();
@@ -771,8 +792,9 @@ export default class PetExpeditionCommand {
 	async resolveExpedition(
 		response: CrowniclesPacket[],
 		player: Player,
-		_packet: CommandPetExpeditionResolvePacketReq
+		_packet: CommandPetExpeditionResolvePacketReq,
+		context: PacketContext
 	): Promise<void> {
-		await PetExpeditionCommand.doResolveExpedition(response, player);
+		await PetExpeditionCommand.doResolveExpedition(response, player, context);
 	}
 }

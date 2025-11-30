@@ -280,13 +280,19 @@ export class CommandPetExpeditionResolvePacketReq extends CrowniclesPacket {
 export interface ExpeditionRewardData {
 	money: number;
 
-	gems: number;
-
 	experience: number;
 
-	guildExperience: number;
-
 	points: number;
+
+	/**
+	 * Random item obtained from the expedition (item ID, or undefined if none)
+	 */
+	itemId?: number;
+
+	/**
+	 * Category of the random item (for display purposes)
+	 */
+	itemCategory?: number;
 
 	/**
 	 * Whether the clone talisman was found during this expedition

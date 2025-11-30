@@ -4,7 +4,7 @@ import { LogsPlayers } from "./models/LogsPlayers";
 import { LogsPlayersHealth } from "./models/LogsPlayersHealth";
 import { LogsPlayersExperience } from "./models/LogsPlayersExperience";
 import {
-	CreateOptions, Model, ModelStatic
+	CreateOptions, Model, ModelStatic, Op
 } from "sequelize";
 import { LogsPlayersLevel } from "./models/LogsPlayersLevel";
 import { LogsPlayersScore } from "./models/LogsPlayersScore";
@@ -1415,5 +1415,24 @@ export class LogsDatabase extends Database {
 				creationTimestamp: Math.floor(Date.now() / 1000)
 			}
 		}))[0];
+	}
+
+	/**
+	 * Count the number of expedition cancellations (cancel + recall) for a player in the last N days
+	 * Both cancelling during preparation and recalling during expedition count towards the progressive penalty
+	 * @param keycloakId - The keycloak id of the player
+	 * @param days - Number of days to look back
+	 */
+	public async countRecentExpeditionCancellations(keycloakId: string, days: number): Promise<number> {
+		const logPlayer = await LogsDatabase.findOrCreatePlayer(keycloakId);
+		const cutoffDate = getDateLogs() - (days * 24 * 60 * 60);
+
+		return LogsExpeditions.count({
+			where: {
+				playerId: logPlayer.id,
+				action: { [Op.in]: ["cancel", "recall"] },
+				date: { [Op.gte]: cutoffDate }
+			}
+		});
 	}
 }
