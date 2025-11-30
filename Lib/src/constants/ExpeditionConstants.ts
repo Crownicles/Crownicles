@@ -303,19 +303,19 @@ export abstract class ExpeditionConstants {
 		],
 
 		/**
-		 * Score/points rewards ranging from 75 to 2000
+		 * Score/points rewards ranging from 6 to 710
 		 */
 		POINTS: [
+			6,
+			20,
 			75,
-			175,
-			325,
-			525,
-			775,
-			1075,
-			1400,
-			1700,
-			1875,
-			2000
+			145,
+			210,
+			340,
+			420,
+			585,
+			650,
+			710
 		]
 	};
 
