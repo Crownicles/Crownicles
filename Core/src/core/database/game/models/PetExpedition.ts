@@ -89,8 +89,15 @@ export class PetExpedition extends Model {
 	 * Convert to ExpeditionInProgressData for packets
 	 */
 	public toExpeditionInProgressData(petTypeId: number, petSex: string, petNickname?: string): ExpeditionInProgressData {
+		const durationMinutes = this.getDurationMinutes();
 		return {
-			...this.toExpeditionData(),
+			id: this.id.toString(),
+			durationMinutes,
+			displayDurationMinutes: Math.ceil(durationMinutes / 10) * 10,
+			riskRate: this.riskRate,
+			difficulty: this.difficulty,
+			locationType: this.locationType as ExpeditionLocationType,
+			mapLocationId: this.mapLocationId,
 			startTime: this.startDate.getTime(),
 			endTime: this.endDate.getTime(),
 			status: this.status as ExpeditionStatus,

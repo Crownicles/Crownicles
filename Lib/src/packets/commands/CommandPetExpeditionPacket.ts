@@ -19,7 +19,7 @@ export interface FoodConsumptionDetail {
 }
 
 /**
- * Data structure representing a single expedition option
+ * Data structure representing a single expedition option (server-side with all data)
  */
 export interface ExpeditionData {
 	id: string;
@@ -45,7 +45,7 @@ export interface ExpeditionData {
 	difficulty: number;
 
 	/**
-	 * Wealth rate multiplier (0.0-2.0)
+	 * Wealth rate multiplier (0.0-2.0) - SERVER ONLY, not sent to client
 	 */
 	wealthRate: number;
 
@@ -71,9 +71,24 @@ export interface ExpeditionData {
 }
 
 /**
- * Data for an expedition currently in progress
+ * Base client data for expeditions (without server-only fields like wealthRate)
  */
-export interface ExpeditionInProgressData extends ExpeditionData {
+export interface ExpeditionClientData {
+	id: string;
+	durationMinutes: number;
+	displayDurationMinutes: number;
+	riskRate: number;
+	difficulty: number;
+	locationType: ExpeditionLocationType;
+	foodCost?: number;
+	mapLocationId?: number;
+	isDistantExpedition?: boolean;
+}
+
+/**
+ * Data for an expedition currently in progress (client-side version)
+ */
+export interface ExpeditionInProgressData extends ExpeditionClientData {
 	startTime: number;
 
 	/**

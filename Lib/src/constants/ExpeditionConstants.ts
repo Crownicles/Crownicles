@@ -580,11 +580,23 @@ export abstract class ExpeditionConstants {
 	 * Get duration range as array for indexed access
 	 * @returns Array of duration ranges [SHORT, MEDIUM, LONG]
 	 */
-	static getDurationRangesArray(): Array<{ min: number; max: number }> {
+	static getDurationRangesArray(): Array<{
+		min: number;
+		max: number;
+	}> {
 		return [
-			{ min: ExpeditionConstants.DURATION_RANGES.SHORT.MIN, max: ExpeditionConstants.DURATION_RANGES.SHORT.MAX },
-			{ min: ExpeditionConstants.DURATION_RANGES.MEDIUM.MIN, max: ExpeditionConstants.DURATION_RANGES.MEDIUM.MAX },
-			{ min: ExpeditionConstants.DURATION_RANGES.LONG.MIN, max: ExpeditionConstants.DURATION_RANGES.LONG.MAX }
+			{
+				min: ExpeditionConstants.DURATION_RANGES.SHORT.MIN,
+				max: ExpeditionConstants.DURATION_RANGES.SHORT.MAX
+			},
+			{
+				min: ExpeditionConstants.DURATION_RANGES.MEDIUM.MIN,
+				max: ExpeditionConstants.DURATION_RANGES.MEDIUM.MAX
+			},
+			{
+				min: ExpeditionConstants.DURATION_RANGES.LONG.MIN,
+				max: ExpeditionConstants.DURATION_RANGES.LONG.MAX
+			}
 		];
 	}
 }
