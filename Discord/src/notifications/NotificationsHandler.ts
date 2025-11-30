@@ -133,12 +133,7 @@ export abstract class NotificationsHandler {
 				const packet = notification.packet as ExpeditionFinishedNotificationPacket;
 				notificationContent = i18n.t("bot:notificationPetExpedition", {
 					lng,
-					petDisplay: DisplayUtils.getPetNicknameOrTypeName(
-						packet.petNickname ?? null,
-						packet.petId,
-						packet.petSex as SexTypeShort,
-						lng
-					)
+					petDisplay: `**${DisplayUtils.getPetDisplay(packet.petId, packet.petSex as SexTypeShort, lng)}**`
 				});
 				notificationType = NotificationsTypes.PET_EXPEDITION;
 				break;

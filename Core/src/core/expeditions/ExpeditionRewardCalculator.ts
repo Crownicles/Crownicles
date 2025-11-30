@@ -121,11 +121,6 @@ function rollCloneTalisman(
 	let dropChance = ExpeditionConstants.CLONE_TALISMAN.BASE_DROP_CHANCE
 		+ rewardIndex * ExpeditionConstants.CLONE_TALISMAN.REWARD_INDEX_BONUS_PER_POINT;
 
-	// Apply location bonus for special locations
-	if ((ExpeditionConstants.CLONE_TALISMAN.BONUS_LOCATIONS as readonly string[]).includes(expedition.locationType)) {
-		dropChance *= ExpeditionConstants.CLONE_TALISMAN.LOCATION_BONUS_MULTIPLIER;
-	}
-
 	// Apply bonus expedition multiplier if this expedition has the special tag
 	if (expedition.hasCloneTalismanBonus) {
 		dropChance *= ExpeditionConstants.CLONE_TALISMAN.BONUS_EXPEDITION_MULTIPLIER;
