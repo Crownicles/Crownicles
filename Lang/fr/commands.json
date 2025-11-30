@@ -667,7 +667,7 @@
           "betterUpgradeItemStation": "Un meilleur établi d'équipement pour améliorer des armes et armures plus puissantes {emote:city.homeUpgrades.upgradeEquipment}",
           "garden": "Un jardin pour cultiver des plantes {emote:city.homeUpgrades.garden}",
           "biggerGarden": "Un plus grand jardin pour cultiver encore plus de plantes {emote:city.homeUpgrades.garden}",
-          "betterGardenEarth": "Une terre améliorée pour faire pousser des plantes plus rapidement {emote:city.homeUpgrades.earthQuality}",
+          "betterGardenEarth": "Une terre améliorée pour faire pousser des plantes plus rapidement {emote:city.homeUpgrades.earthQuality}"
         }
       }
     }
