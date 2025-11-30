@@ -213,7 +213,8 @@ async function handleExpeditionSelect(
 		foodConsumedDetails: foodPlanToDetails(foodPlan),
 		insufficientFood,
 		insufficientFoodCause,
-		speedDurationModifier
+		speedDurationModifier,
+		originalDisplayDurationMinutes: expeditionData.displayDurationMinutes
 	}));
 }
 

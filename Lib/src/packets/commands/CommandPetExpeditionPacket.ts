@@ -225,6 +225,12 @@ export class CommandPetExpeditionChoicePacketRes extends CrowniclesPacket {
 	 * Values below 1.0 mean faster expedition, above 1.0 mean slower
 	 */
 	speedDurationModifier?: number;
+
+	/**
+	 * Original display duration shown in the expedition selection menu (before speed modifier)
+	 * Used to calculate the speed category message (fast/slow) correctly
+	 */
+	originalDisplayDurationMinutes?: number;
 }
 
 /**

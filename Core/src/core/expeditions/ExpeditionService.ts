@@ -84,7 +84,7 @@ function generateExpeditionWithConstraints(
 	const expeditionData: ExpeditionData = {
 		id: generateExpeditionId(),
 		durationMinutes,
-		displayDurationMinutes: Math.ceil(durationMinutes / 10) * 10,
+		displayDurationMinutes: Math.round(durationMinutes / 10) * 10,
 		riskRate,
 		difficulty,
 		wealthRate: Math.round(wealthRate * ExpeditionConstants.PERCENTAGE.DECIMAL_PRECISION) / ExpeditionConstants.PERCENTAGE.DECIMAL_PRECISION,

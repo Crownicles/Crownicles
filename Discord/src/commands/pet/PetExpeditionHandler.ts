@@ -19,9 +19,6 @@ import {
 	SexTypeShort, StringConstants
 } from "../../../../Lib/src/constants/StringConstants";
 import {
-	ItemCategory, itemCategoryToString
-} from "../../../../Lib/src/constants/ItemConstants";
-import {
 	CommandPetExpeditionPacketRes,
 	CommandPetExpeditionChoicePacketRes,
 	CommandPetExpeditionCancelPacketRes,
@@ -379,9 +376,9 @@ export async function handleExpeditionChoiceRes(
 	}
 
 	// Add speed modifier message (only if actual time differs significantly from displayed time)
-	if (packet.expedition) {
+	if (packet.expedition && packet.originalDisplayDurationMinutes) {
 		const actualDuration = packet.expedition.durationMinutes;
-		const displayedDuration = packet.expedition.displayDurationMinutes;
+		const displayedDuration = packet.originalDisplayDurationMinutes;
 		const speedCategory = getSpeedCategory(actualDuration, displayedDuration);
 		if (speedCategory !== null) {
 			description += i18n.t(`commands:petExpedition.speedModifier.${speedCategory}`, {
@@ -622,8 +619,8 @@ function formatRewards(
 	if (rewards.itemId !== undefined && rewards.itemCategory !== undefined) {
 		lines.push(i18n.t("commands:petExpedition.rewards.item", {
 			lng,
-			itemCategory: itemCategoryToString(rewards.itemCategory as ItemCategory),
-			itemId: rewards.itemId
+			itemId: rewards.itemId,
+			itemCategory: rewards.itemCategory
 		}));
 	}
 	if (rewards.cloneTalismanFound) {

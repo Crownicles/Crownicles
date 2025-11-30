@@ -76,7 +76,7 @@ export class PetExpedition extends Model {
 		return {
 			id: this.id.toString(),
 			durationMinutes,
-			displayDurationMinutes: Math.ceil(durationMinutes / 10) * 10,
+			displayDurationMinutes: Math.round(durationMinutes / 10) * 10,
 			riskRate: this.riskRate,
 			difficulty: this.difficulty,
 			wealthRate: this.wealthRate,
@@ -93,7 +93,7 @@ export class PetExpedition extends Model {
 		return {
 			id: this.id.toString(),
 			durationMinutes,
-			displayDurationMinutes: Math.ceil(durationMinutes / 10) * 10,
+			displayDurationMinutes: Math.round(durationMinutes / 10) * 10,
 			riskRate: this.riskRate,
 			difficulty: this.difficulty,
 			locationType: this.locationType as ExpeditionLocationType,
