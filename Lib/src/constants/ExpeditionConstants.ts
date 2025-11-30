@@ -192,7 +192,18 @@ export abstract class ExpeditionConstants {
 	static readonly ITEM_REWARD = {
 		MIN_RARITY_OFFSET: 3,
 		MIN_RARITY_FLOOR: 1,
-		MAX_RARITY_BY_REWARD_INDEX: [5, 5, 6, 7, 8, 8, 8, 8, 8, 8] as const
+		MAX_RARITY_BY_REWARD_INDEX: [
+			5,
+			5,
+			6,
+			7,
+			8,
+			8,
+			8,
+			8,
+			8,
+			8
+		] as const
 	};
 
 	/**
@@ -274,6 +285,7 @@ export abstract class ExpeditionConstants {
 			4200,
 			5000
 		],
+
 		/**
 		 * Experience rewards ranging from 50 to 3500
 		 */
@@ -289,6 +301,7 @@ export abstract class ExpeditionConstants {
 			3000,
 			3500
 		],
+
 		/**
 		 * Score/points rewards ranging from 75 to 2000
 		 */
