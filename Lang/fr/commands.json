@@ -135,6 +135,7 @@
     "selectPlaceholder": "Choisissez une destination...",
     "distantExpeditionPrefix": "Expédition lointaine : {{location}}",
     "expeditionOption": "\n\n**{{number}}.** {{location}}\n{emote:expedition.duration} Durée estimée : {{duration}}\n{emote:expedition.risk} Dangerosité : {{risk}}\n{emote:expedition.reward} Récompenses estimées : {{reward}}\n{emote:expedition.difficulty} Difficulté du terrain : {{difficulty}}\n{emote:expedition.food} Provisions requises : {{foodDisplay}}",
+    "cloneTalismanBonusTag": "\n{emote:expedition.cloneTalisman} *Un étrange pressentiment vous envahit... Les rumeurs parlent d'un artefact légendaire peut-être caché en ces terres.*",
     "foodCost_one": "{{count}} ration",
     "foodCost_other": "{{count}} rations",
     "cancelButton": "Annuler l'expédition",

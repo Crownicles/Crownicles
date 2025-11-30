@@ -123,7 +123,10 @@ function rollCloneTalisman(
 		dropChance *= ExpeditionConstants.CLONE_TALISMAN.LOCATION_BONUS_MULTIPLIER;
 	}
 
-	// No cap on drop chance - removed MAX_DROP_CHANCE
+	// Apply bonus expedition multiplier if this expedition has the special tag
+	if (expedition.hasCloneTalismanBonus) {
+		dropChance *= ExpeditionConstants.CLONE_TALISMAN.BONUS_EXPEDITION_MULTIPLIER;
+	}
 
 	return RandomUtils.crowniclesRandom.bool(dropChance / 100);
 }

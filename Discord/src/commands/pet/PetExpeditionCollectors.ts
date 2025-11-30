@@ -203,7 +203,7 @@ function buildExpeditionOptionText(
 		lng, count: foodCost
 	});
 
-	return i18n.t("commands:petExpedition.expeditionOption", {
+	let optionText = i18n.t("commands:petExpedition.expeditionOption", {
 		lng,
 		number: index + 1,
 		location: `${locationEmoji} **${locationName}**`,
@@ -213,6 +213,13 @@ function buildExpeditionOptionText(
 		difficulty: getTranslatedDifficultyCategoryName(exp.difficulty, lng),
 		foodDisplay
 	});
+
+	// Add clone talisman bonus tag if present
+	if (exp.hasCloneTalismanBonus) {
+		optionText += i18n.t("commands:petExpedition.cloneTalismanBonusTag", { lng });
+	}
+
+	return optionText;
 }
 
 /**
@@ -227,8 +234,11 @@ function addExpeditionMenuOption(
 	const locationName = getExpeditionLocationName(lng, exp.mapLocationId, exp.isDistantExpedition);
 	const displayDuration = minutesDisplay(exp.displayDurationMinutes, lng);
 
+	// Add star indicator for clone talisman bonus expeditions
+	const bonusIndicator = exp.hasCloneTalismanBonus ? " ✨" : "";
+
 	selectMenu.addOptions({
-		label: `${locationEmoji} ${locationName}`.substring(0, 100),
+		label: `${locationEmoji} ${locationName}${bonusIndicator}`.substring(0, 100),
 		description: `${displayDuration} - ${getTranslatedRiskCategoryName(exp.riskRate, lng)}`,
 		value: exp.id
 	});

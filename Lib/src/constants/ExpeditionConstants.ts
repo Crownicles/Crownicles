@@ -329,11 +329,11 @@ export abstract class ExpeditionConstants {
 		3,
 		4,
 		6,
-		7,
 		8,
 		10,
 		15,
-		25
+		25,
+		32
 	];
 
 	/**
@@ -466,7 +466,18 @@ export abstract class ExpeditionConstants {
 		/**
 		 * Bonus multiplier for special locations
 		 */
-		LOCATION_BONUS_MULTIPLIER: 1.5
+		LOCATION_BONUS_MULTIPLIER: 1.5,
+
+		/**
+		 * Chance for an expedition to have the bonus clone talisman tag (1 in 20)
+		 * Only applied when the player does not already have the clone talisman
+		 */
+		BONUS_EXPEDITION_CHANCE: 20,
+
+		/**
+		 * Multiplier applied to clone talisman drop chance when expedition has the bonus tag
+		 */
+		BONUS_EXPEDITION_MULTIPLIER: 10
 	};
 
 	/**

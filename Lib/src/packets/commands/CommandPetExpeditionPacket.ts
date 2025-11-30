@@ -68,6 +68,12 @@ export interface ExpeditionData {
 	 * Whether this is a distant expedition (3rd option, can be anywhere on the map)
 	 */
 	isDistantExpedition?: boolean;
+
+	/**
+	 * Whether this expedition has increased clone talisman drop chance
+	 * Only appears when player doesn't have the clone talisman (1/20 chance per expedition)
+	 */
+	hasCloneTalismanBonus?: boolean;
 }
 
 /**

@@ -350,7 +350,8 @@ function convertToExpeditionOptionData(expeditions: ExpeditionData[]): Expeditio
 		difficulty: exp.difficulty,
 		foodCost: exp.foodCost ?? 1,
 		rewardIndex: calculateRewardIndex(exp),
-		isDistantExpedition: exp.isDistantExpedition
+		isDistantExpedition: exp.isDistantExpedition,
+		hasCloneTalismanBonus: exp.hasCloneTalismanBonus
 	}));
 }
 
@@ -684,7 +685,7 @@ export default class PetExpeditionCommand {
 
 		// All requirements met - show expedition choice
 		const guildInfo = await getGuildFoodInfo(player, petModel);
-		const expeditions = generateThreeExpeditions(player.mapLinkId);
+		const expeditions = generateThreeExpeditions(player.mapLinkId, player.hasCloneTalisman);
 
 		// Store expeditions in cache for later retrieval
 		PendingExpeditionsCache.set(context.keycloakId, expeditions);
