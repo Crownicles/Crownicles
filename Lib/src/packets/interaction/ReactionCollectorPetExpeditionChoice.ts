@@ -29,11 +29,20 @@ export interface ExpeditionOptionData {
 
 	riskRate: number;
 
+	/**
+	 * Wealth rate multiplier for reward calculation (not displayed to user)
+	 */
 	wealthRate: number;
 
 	difficulty: number;
 
 	foodCost: number;
+
+	/**
+	 * Reward index (0-9) based on duration, risk, and difficulty
+	 * Higher value = better potential rewards
+	 */
+	rewardIndex: number;
 
 	isDistantExpedition?: boolean;
 }

@@ -505,24 +505,6 @@ export abstract class ExpeditionConstants {
 	}
 
 	/**
-	 * Get the wealth category name based on wealth rate value
-	 * @param wealthRate - Wealth rate multiplier (0.0-2.0)
-	 * @returns The category name key for translations
-	 */
-	static getWealthCategoryName(wealthRate: number): string {
-		if (wealthRate <= ExpeditionConstants.WEALTH_DISPLAY_CATEGORIES.POOR.MAX) {
-			return ExpeditionConstants.WEALTH_DISPLAY_CATEGORIES.POOR.NAME;
-		}
-		if (wealthRate <= ExpeditionConstants.WEALTH_DISPLAY_CATEGORIES.MODEST.MAX) {
-			return ExpeditionConstants.WEALTH_DISPLAY_CATEGORIES.MODEST.NAME;
-		}
-		if (wealthRate <= ExpeditionConstants.WEALTH_DISPLAY_CATEGORIES.RICH.MAX) {
-			return ExpeditionConstants.WEALTH_DISPLAY_CATEGORIES.RICH.NAME;
-		}
-		return ExpeditionConstants.WEALTH_DISPLAY_CATEGORIES.LEGENDARY.NAME;
-	}
-
-	/**
 	 * Get the difficulty category name based on difficulty value
 	 * @param difficulty - Difficulty value (0-100)
 	 * @returns The category name key for translations

@@ -142,7 +142,6 @@ export const CrowniclesIcons: {
 		map: string;
 		loot: string;
 		risk: string;
-		wealth: string;
 		reward: string;
 		duration: string;
 		difficulty: string;
@@ -2223,7 +2222,6 @@ export const CrowniclesIcons: {
 		map: "🗺️",
 		loot: "💰",
 		risk: "⚠️",
-		wealth: "💰",
 		reward: "🎁",
 		duration: "⏱️",
 		difficulty: "📊",

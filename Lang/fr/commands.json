@@ -236,12 +236,6 @@
       "high": "Dangereux",
       "veryHigh": "Périlleux"
     },
-    "wealthCategories": {
-      "poor": "Maigres",
-      "modest": "Modestes",
-      "rich": "Abondantes",
-      "legendary": "Légendaires"
-    },
     "rewardCategories": {
       "meager": "Maigres",
       "modest": "Modestes",

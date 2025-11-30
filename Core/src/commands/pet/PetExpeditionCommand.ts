@@ -8,8 +8,12 @@ import Player from "../../core/database/game/models/Player";
 import {
 	PetEntities, PetEntity
 } from "../../core/database/game/models/PetEntity";
-import { PetExpeditions } from "../../core/database/game/models/PetExpedition";
-import { PetDataController } from "../../data/Pet";
+import {
+	PetExpedition, PetExpeditions
+} from "../../core/database/game/models/PetExpedition";
+import {
+	Pet, PetDataController
+} from "../../data/Pet";
 import {
 	ExpeditionConstants, ExpeditionLocationType
 } from "../../../../Lib/src/constants/ExpeditionConstants";
@@ -37,7 +41,8 @@ import {
 	determineExpeditionOutcome,
 	validateExpeditionPrerequisites,
 	applyExpeditionRewards,
-	FoodConsumptionPlan
+	FoodConsumptionPlan,
+	calculateRewardIndex
 } from "../../core/expeditions";
 import {
 	EndCallback, ReactionCollectorInstance
@@ -251,8 +256,200 @@ function convertToExpeditionOptionData(expeditions: ExpeditionData[]): Expeditio
 		wealthRate: exp.wealthRate,
 		difficulty: exp.difficulty,
 		foodCost: exp.foodCost ?? 1,
+		rewardIndex: calculateRewardIndex(exp),
 		isDistantExpedition: exp.isDistantExpedition
 	}));
+}
+
+/**
+ * Build a "cannot start expedition" response packet
+ */
+function buildCannotStartResponse(
+	reason: string,
+	hasTalisman: boolean,
+	petEntity?: PetEntity
+): CommandPetExpeditionPacketRes {
+	return makePacket(CommandPetExpeditionPacketRes, {
+		hasTalisman,
+		hasExpeditionInProgress: false,
+		canStartExpedition: false,
+		cannotStartReason: reason,
+		petLovePoints: petEntity?.lovePoints,
+		petNickname: petEntity?.nickname ?? undefined,
+		petId: petEntity?.typeId,
+		petSex: petEntity?.sex
+	});
+}
+
+/**
+ * Create the finished expedition collector with claim option
+ */
+function createFinishedExpeditionCollector(
+	petEntity: PetEntity,
+	activeExpedition: PetExpedition,
+	context: PacketContext
+): CrowniclesPacket {
+	const finishedCollector = new ReactionCollectorPetExpeditionFinished({
+		petId: petEntity.typeId,
+		petSex: petEntity.sex as SexTypeShort,
+		petNickname: petEntity.nickname ?? undefined,
+		mapLocationId: activeExpedition.mapLocationId,
+		locationType: activeExpedition.locationType as ExpeditionLocationType,
+		riskRate: activeExpedition.riskRate,
+		foodConsumed: activeExpedition.foodConsumed,
+		isDistantExpedition: undefined
+	});
+
+	const finishedEndCallback: EndCallback = async (collectorInstance: ReactionCollectorInstance, resp: CrowniclesPacket[]): Promise<void> => {
+		const reaction = collectorInstance.getFirstReaction();
+		BlockingUtils.unblockPlayer(context.keycloakId, BlockingConstants.REASONS.PET_EXPEDITION);
+
+		const reloadedPlayer = await Player.findOne({ where: { keycloakId: context.keycloakId } });
+		if (!reloadedPlayer) {
+			return;
+		}
+
+		if (reaction?.reaction.type === ReactionCollectorPetExpeditionClaimReaction.name) {
+			await PetExpeditionCommand.doResolveExpedition(resp, reloadedPlayer);
+		}
+	};
+
+	return new ReactionCollectorInstance(
+		finishedCollector,
+		context,
+		{
+			allowedPlayerKeycloakIds: [context.keycloakId],
+			reactionLimit: 1
+		},
+		finishedEndCallback
+	)
+		.block(context.keycloakId, BlockingConstants.REASONS.PET_EXPEDITION)
+		.build();
+}
+
+/**
+ * Create the in-progress expedition collector with recall option
+ */
+function createInProgressExpeditionCollector(
+	petEntity: PetEntity,
+	activeExpedition: PetExpedition,
+	context: PacketContext
+): CrowniclesPacket {
+	const collector = new ReactionCollectorPetExpedition({
+		petId: petEntity.typeId,
+		petSex: petEntity.sex as SexTypeShort,
+		petNickname: petEntity.nickname ?? undefined,
+		mapLocationId: activeExpedition.mapLocationId,
+		locationType: activeExpedition.locationType as ExpeditionLocationType,
+		riskRate: activeExpedition.riskRate,
+		returnTime: activeExpedition.endDate.getTime(),
+		foodConsumed: activeExpedition.foodConsumed,
+		foodConsumedDetails: undefined,
+		isDistantExpedition: undefined
+	});
+
+	const endCallback: EndCallback = async (collectorInstance: ReactionCollectorInstance, resp: CrowniclesPacket[]): Promise<void> => {
+		const reaction = collectorInstance.getFirstReaction();
+		BlockingUtils.unblockPlayer(context.keycloakId, BlockingConstants.REASONS.PET_EXPEDITION);
+
+		const reloadedPlayer = await Player.findOne({ where: { keycloakId: context.keycloakId } });
+		if (!reloadedPlayer) {
+			return;
+		}
+
+		if (reaction?.reaction.type === ReactionCollectorPetExpeditionRecallReaction.name) {
+			await handleExpeditionRecall(reloadedPlayer, resp);
+		}
+	};
+
+	return new ReactionCollectorInstance(
+		collector,
+		context,
+		{
+			allowedPlayerKeycloakIds: [context.keycloakId],
+			reactionLimit: 1
+		},
+		endCallback
+	)
+		.block(context.keycloakId, BlockingConstants.REASONS.PET_EXPEDITION)
+		.build();
+}
+
+/**
+ * Get guild food amount for a player's pet
+ */
+async function getGuildFoodInfo(player: Player, petModel: Pet): Promise<{
+	hasGuild: boolean;
+	guildFoodAmount?: number;
+}> {
+	if (!player.guildId) {
+		return { hasGuild: false };
+	}
+
+	const guild = await Guilds.getById(player.guildId);
+	if (!guild) {
+		return { hasGuild: false };
+	}
+
+	const dietFoodType = petModel.canEatMeat() ? "carnivorousFood" : "herbivorousFood";
+	return {
+		hasGuild: true,
+		guildFoodAmount: guild.commonFood + guild[dietFoodType] + guild.ultimateFood
+	};
+}
+
+/**
+ * Create the expedition choice collector
+ */
+function createExpeditionChoiceCollector(
+	petEntity: PetEntity,
+	expeditions: ExpeditionData[],
+	hasGuild: boolean,
+	guildFoodAmount: number | undefined,
+	context: PacketContext
+): CrowniclesPacket {
+	const collector = new ReactionCollectorPetExpeditionChoice({
+		petId: petEntity.typeId,
+		petSex: petEntity.sex as SexTypeShort,
+		petNickname: petEntity.nickname ?? undefined,
+		expeditions: convertToExpeditionOptionData(expeditions),
+		hasGuild,
+		guildFoodAmount
+	});
+
+	const endCallback: EndCallback = async (collectorInstance: ReactionCollectorInstance, resp: CrowniclesPacket[]): Promise<void> => {
+		const reaction = collectorInstance.getFirstReaction();
+		BlockingUtils.unblockPlayer(context.keycloakId, BlockingConstants.REASONS.PET_EXPEDITION_CHOICE);
+
+		const reloadedPlayer = await Player.findOne({ where: { keycloakId: context.keycloakId } });
+		if (!reloadedPlayer) {
+			return;
+		}
+
+		const reloadedPetEntity = reloadedPlayer.petId ? await PetEntities.getById(reloadedPlayer.petId) : null;
+
+		if (reaction?.reaction.type === ReactionCollectorPetExpeditionSelectReaction.name) {
+			const selectReaction = reaction.reaction.data as ReactionCollectorPetExpeditionSelectReaction;
+			if (reloadedPetEntity) {
+				await handleExpeditionSelect(reloadedPlayer, reloadedPetEntity, selectReaction.expedition, resp);
+			}
+		}
+		else {
+			await handleExpeditionCancel(reloadedPlayer, resp);
+		}
+	};
+
+	return new ReactionCollectorInstance(
+		collector,
+		context,
+		{
+			allowedPlayerKeycloakIds: [context.keycloakId],
+			reactionLimit: 1
+		},
+		endCallback
+	)
+		.block(context.keycloakId, BlockingConstants.REASONS.PET_EXPEDITION_CHOICE)
+		.build();
 }
 
 export default class PetExpeditionCommand {
@@ -274,266 +471,97 @@ export default class PetExpeditionCommand {
 		_packet: CommandPetExpeditionPacketReq,
 		context: PacketContext
 	): Promise<void> {
-		// Check if player has talisman
-		if (!player.hasTalisman) {
-			response.push(makePacket(CommandPetExpeditionPacketRes, {
-				hasTalisman: false,
-				hasExpeditionInProgress: false,
-				canStartExpedition: false,
-				cannotStartReason: "noTalisman"
-			}));
+		// Check basic requirements
+		const basicCheckResult = await this.checkBasicRequirements(player);
+		if (basicCheckResult) {
+			response.push(basicCheckResult);
 			return;
 		}
 
-		// Check if player has a pet
-		if (!player.petId) {
-			response.push(makePacket(CommandPetExpeditionPacketRes, {
-				hasTalisman: true,
-				hasExpeditionInProgress: false,
-				canStartExpedition: false,
-				cannotStartReason: "noPet"
-			}));
+		const petEntity = (await PetEntities.getById(player.petId!))!;
+		const petModel = PetDataController.instance.getById(petEntity.typeId);
+
+		// Handle expedition in progress
+		const activeExpedition = await PetExpeditions.getActiveExpeditionForPlayer(player.id);
+		if (activeExpedition) {
+			response.push(this.handleActiveExpedition(petEntity, activeExpedition, context));
 			return;
+		}
+
+		// Check expedition start requirements
+		const startCheckResult = this.checkStartRequirements(player, petEntity, petModel);
+		if (startCheckResult) {
+			response.push(startCheckResult);
+			return;
+		}
+
+		// All requirements met - show expedition choice
+		const guildInfo = await getGuildFoodInfo(player, petModel);
+		const expeditions = generateThreeExpeditions(player.mapLinkId);
+		response.push(createExpeditionChoiceCollector(petEntity, expeditions, guildInfo.hasGuild, guildInfo.guildFoodAmount, context));
+	}
+
+	/**
+	 * Check basic requirements (talisman and pet)
+	 */
+	private async checkBasicRequirements(player: Player): Promise<CommandPetExpeditionPacketRes | null> {
+		if (!player.hasTalisman) {
+			return buildCannotStartResponse("noTalisman", false);
+		}
+
+		if (!player.petId) {
+			return buildCannotStartResponse("noPet", true);
 		}
 
 		const petEntity = await PetEntities.getById(player.petId);
 		if (!petEntity) {
-			response.push(makePacket(CommandPetExpeditionPacketRes, {
-				hasTalisman: true,
-				hasExpeditionInProgress: false,
-				canStartExpedition: false,
-				cannotStartReason: "noPet"
-			}));
-			return;
+			return buildCannotStartResponse("noPet", true);
 		}
 
-		// Check for expedition in progress
-		const activeExpedition = await PetExpeditions.getActiveExpeditionForPlayer(player.id);
-		if (activeExpedition) {
-			const now = Date.now();
+		return null;
+	}
 
-			// Check if expedition is complete - show claim rewards menu
-			if (now >= activeExpedition.endDate.getTime()) {
-				const finishedCollector = new ReactionCollectorPetExpeditionFinished({
-					petId: petEntity.typeId,
-					petSex: petEntity.sex as SexTypeShort,
-					petNickname: petEntity.nickname ?? undefined,
-					mapLocationId: activeExpedition.mapLocationId,
-					locationType: activeExpedition.locationType as ExpeditionLocationType,
-					riskRate: activeExpedition.riskRate,
-					foodConsumed: activeExpedition.foodConsumed,
-					isDistantExpedition: undefined
-				});
+	/**
+	 * Handle active expedition - show finished or in-progress collector
+	 */
+	private handleActiveExpedition(
+		petEntity: PetEntity,
+		activeExpedition: PetExpedition,
+		context: PacketContext
+	): CrowniclesPacket {
+		const isComplete = Date.now() >= activeExpedition.endDate.getTime();
+		return isComplete
+			? createFinishedExpeditionCollector(petEntity, activeExpedition, context)
+			: createInProgressExpeditionCollector(petEntity, activeExpedition, context);
+	}
 
-				const finishedEndCallback: EndCallback = async (collectorInstance: ReactionCollectorInstance, resp: CrowniclesPacket[]): Promise<void> => {
-					const reaction = collectorInstance.getFirstReaction();
-
-					// Unblock player when collector ends
-					BlockingUtils.unblockPlayer(context.keycloakId, BlockingConstants.REASONS.PET_EXPEDITION);
-
-					// Reload player data
-					const reloadedPlayer = await Player.findOne({ where: { keycloakId: context.keycloakId } });
-					if (!reloadedPlayer) {
-						return;
-					}
-
-					// If claim was selected, resolve the expedition
-					if (reaction && reaction.reaction.type === ReactionCollectorPetExpeditionClaimReaction.name) {
-						await PetExpeditionCommand.doResolveExpedition(resp, reloadedPlayer);
-					}
-
-					// If timeout, do nothing (player can click expedition again later)
-				};
-
-				const finishedCollectorPacket = new ReactionCollectorInstance(
-					finishedCollector,
-					context,
-					{
-						allowedPlayerKeycloakIds: [context.keycloakId],
-						reactionLimit: 1
-					},
-					finishedEndCallback
-				)
-					.block(context.keycloakId, BlockingConstants.REASONS.PET_EXPEDITION)
-					.build();
-
-				response.push(finishedCollectorPacket);
-				return;
-			}
-
-			// Create collector for expedition in progress with recall option
-			const collector = new ReactionCollectorPetExpedition({
-				petId: petEntity.typeId,
-				petSex: petEntity.sex as SexTypeShort,
-				petNickname: petEntity.nickname ?? undefined,
-				mapLocationId: activeExpedition.mapLocationId,
-				locationType: activeExpedition.locationType as ExpeditionLocationType,
-				riskRate: activeExpedition.riskRate,
-				returnTime: activeExpedition.endDate.getTime(),
-				foodConsumed: activeExpedition.foodConsumed,
-				foodConsumedDetails: undefined, // Not stored in DB
-				isDistantExpedition: undefined // Not stored in DB, Discord will handle display
-			});
-
-			const endCallback: EndCallback = async (collectorInstance: ReactionCollectorInstance, resp: CrowniclesPacket[]): Promise<void> => {
-				const reaction = collectorInstance.getFirstReaction();
-
-				// Unblock player when collector ends
-				BlockingUtils.unblockPlayer(context.keycloakId, BlockingConstants.REASONS.PET_EXPEDITION);
-
-				// Reload player data
-				const reloadedPlayer = await Player.findOne({ where: { keycloakId: context.keycloakId } });
-				if (!reloadedPlayer) {
-					return;
-				}
-
-				// If recall was selected
-				if (reaction && reaction.reaction.type === ReactionCollectorPetExpeditionRecallReaction.name) {
-					await handleExpeditionRecall(reloadedPlayer, resp);
-				}
-
-				// If close was selected or timeout, do nothing
-			};
-
-			const collectorPacket = new ReactionCollectorInstance(
-				collector,
-				context,
-				{
-					allowedPlayerKeycloakIds: [context.keycloakId],
-					reactionLimit: 1
-				},
-				endCallback
-			)
-				.block(context.keycloakId, BlockingConstants.REASONS.PET_EXPEDITION)
-				.build();
-
-			response.push(collectorPacket);
-			return;
-		}
-
-		// Check love points requirement
+	/**
+	 * Check requirements to start a new expedition
+	 */
+	private checkStartRequirements(
+		player: Player,
+		petEntity: PetEntity,
+		petModel: Pet
+	): CommandPetExpeditionPacketRes | null {
 		if (petEntity.lovePoints < ExpeditionConstants.REQUIREMENTS.MIN_LOVE_POINTS) {
-			response.push(makePacket(CommandPetExpeditionPacketRes, {
-				hasTalisman: true,
-				hasExpeditionInProgress: false,
-				canStartExpedition: false,
-				cannotStartReason: "insufficientLove",
-				petLovePoints: petEntity.lovePoints,
-				petNickname: petEntity.nickname ?? undefined,
-				petId: petEntity.typeId,
-				petSex: petEntity.sex
-			}));
-			return;
+			return buildCannotStartResponse("insufficientLove", true, petEntity);
 		}
 
-		// Check if pet is hungry (must be fed before expedition)
-		const petModel = PetDataController.instance.getById(petEntity.typeId);
 		if (petEntity.getFeedCooldown(petModel) <= 0) {
-			response.push(makePacket(CommandPetExpeditionPacketRes, {
-				hasTalisman: true,
-				hasExpeditionInProgress: false,
-				canStartExpedition: false,
-				cannotStartReason: "petHungry",
-				petLovePoints: petEntity.lovePoints,
-				petNickname: petEntity.nickname ?? undefined,
-				petId: petEntity.typeId,
-				petSex: petEntity.sex
-			}));
-			return;
+			return buildCannotStartResponse("petHungry", true, petEntity);
 		}
 
-		// Check if player is on continent (can't start expeditions from island, haunted path, etc.)
 		if (!Maps.isOnContinent(player)) {
-			response.push(makePacket(CommandPetExpeditionPacketRes, {
-				hasTalisman: true,
-				hasExpeditionInProgress: false,
-				canStartExpedition: false,
-				cannotStartReason: "notOnContinent",
-				petNickname: petEntity.nickname ?? undefined,
-				petId: petEntity.typeId,
-				petSex: petEntity.sex
-			}));
-			return;
+			return buildCannotStartResponse("notOnContinent", true, petEntity);
 		}
 
-		// All requirements met - generate expeditions and show choice menu
-		const expeditions = generateThreeExpeditions(player.mapLinkId);
-
-		// Get guild food information if player has a guild
-		let hasGuild = false;
-		let guildFoodAmount: number | undefined;
-
-		if (player.guildId) {
-			const guild = await Guilds.getById(player.guildId);
-			if (guild) {
-				hasGuild = true;
-				const dietFoodType = petModel.canEatMeat() ? "carnivorousFood" : "herbivorousFood";
-				guildFoodAmount = guild.commonFood + guild[dietFoodType] + guild.ultimateFood;
-			}
-		}
-
-		// Create collector for expedition choice
-		const collector = new ReactionCollectorPetExpeditionChoice({
-			petId: petEntity.typeId,
-			petSex: petEntity.sex as SexTypeShort,
-			petNickname: petEntity.nickname ?? undefined,
-			expeditions: convertToExpeditionOptionData(expeditions),
-			hasGuild,
-			guildFoodAmount
-		});
-
-		const endCallback: EndCallback = async (collectorInstance: ReactionCollectorInstance, resp: CrowniclesPacket[]): Promise<void> => {
-			const reaction = collectorInstance.getFirstReaction();
-
-			// Unblock player when collector ends
-			BlockingUtils.unblockPlayer(context.keycloakId, BlockingConstants.REASONS.PET_EXPEDITION_CHOICE);
-
-			// Reload player data
-			const reloadedPlayer = await Player.findOne({ where: { keycloakId: context.keycloakId } });
-			if (!reloadedPlayer) {
-				return;
-			}
-
-			// Reload pet entity
-			const reloadedPetEntity = reloadedPlayer.petId ? await PetEntities.getById(reloadedPlayer.petId) : null;
-
-			// If expedition was selected
-			if (reaction && reaction.reaction.type === ReactionCollectorPetExpeditionSelectReaction.name) {
-				const selectReaction = reaction.reaction.data as ReactionCollectorPetExpeditionSelectReaction;
-				if (reloadedPetEntity) {
-					await handleExpeditionSelect(
-						reloadedPlayer,
-						reloadedPetEntity,
-						selectReaction.expedition,
-						resp
-					);
-				}
-			}
-			else {
-				// Cancel was selected or timeout
-				await handleExpeditionCancel(reloadedPlayer, resp);
-			}
-		};
-
-		const collectorPacket = new ReactionCollectorInstance(
-			collector,
-			context,
-			{
-				allowedPlayerKeycloakIds: [context.keycloakId],
-				reactionLimit: 1
-			},
-			endCallback
-		)
-			.block(context.keycloakId, BlockingConstants.REASONS.PET_EXPEDITION_CHOICE)
-			.build();
-
-		response.push(collectorPacket);
+		return null;
 	}
 
 	/**
 	 * Internal method to resolve expedition - used by both the command and the finished collector
 	 */
-	private static async doResolveExpedition(
+	static async doResolveExpedition(
 		response: CrowniclesPacket[],
 		player: Player
 	): Promise<void> {
