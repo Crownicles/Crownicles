@@ -55,8 +55,11 @@ export function calculateRewardIndex(expedition: ExpeditionData): number {
 		ExpeditionConstants.DIFFICULTY.MAX
 	);
 
-	// Sum the three scores (0-9 range)
-	const baseIndex = durationScore + riskScore + difficultyScore;
+	/*
+	 * Sum the three scores with duration counted twice (0-12 range before wealth rate)
+	 * Duration (0-3) * 2 + Risk (0-3) + Difficulty (0-3) = 0-12
+	 */
+	const baseIndex = (durationScore * 3) + riskScore + difficultyScore;
 
 	/*
 	 * Apply wealth rate bonus/malus (±30%)
@@ -140,7 +143,9 @@ function rollCloneTalisman(
  * - rewardIndex = 3: maxRarity = 7 (LEGENDARY)
  * - rewardIndex >= 4: maxRarity = 8 (MYTHICAL)
  */
-function calculateItemRarityRange(rewardIndex: number): { minRarity: number; maxRarity: number } {
+function calculateItemRarityRange(rewardIndex: number): {
+	minRarity: number; maxRarity: number;
+} {
 	const minRarity = Math.max(
 		ExpeditionConstants.ITEM_REWARD.MIN_RARITY_FLOOR,
 		rewardIndex - ExpeditionConstants.ITEM_REWARD.MIN_RARITY_OFFSET
@@ -148,14 +153,20 @@ function calculateItemRarityRange(rewardIndex: number): { minRarity: number; max
 
 	const maxRarity = ExpeditionConstants.ITEM_REWARD.MAX_RARITY_BY_REWARD_INDEX[rewardIndex];
 
-	return { minRarity, maxRarity };
+	return {
+		minRarity, maxRarity
+	};
 }
 
 /**
  * Generate a random item reward based on reward index
  */
-function generateItemReward(rewardIndex: number): { itemId: number; itemCategory: number } {
-	const { minRarity, maxRarity } = calculateItemRarityRange(rewardIndex);
+function generateItemReward(rewardIndex: number): {
+	itemId: number; itemCategory: number;
+} {
+	const {
+		minRarity, maxRarity
+	} = calculateItemRarityRange(rewardIndex);
 
 	const item = generateRandomItem({
 		minRarity,
