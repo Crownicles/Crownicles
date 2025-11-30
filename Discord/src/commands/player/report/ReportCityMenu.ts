@@ -537,7 +537,7 @@ function getManageHomeMenu(context: PacketContext, interaction: CrowniclesIntera
 		lng,
 		pseudo
 	});
-	let description = i18n.t("commands:report.city.homes.notaryIntroduction", { lng }) + "\n\n";
+	let description = `${i18n.t("commands:report.city.homes.notaryIntroduction", { lng })}\n\n`;
 
 	if (data.newPrice) {
 		if (data.newPrice > data.currentMoney) {
