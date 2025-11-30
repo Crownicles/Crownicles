@@ -114,6 +114,27 @@ function calculateAllFoodCombination(
 }
 
 /**
+ * Evaluate a single food combination and return it if valid, or null if insufficient
+ */
+function evaluateCombination(
+	t: number,
+	d: number,
+	s: number,
+	rationsRequired: number,
+	values: FoodRationValues,
+	prices: FoodPriceValues
+): FoodOption | null {
+	const total = t * values.treatVal + d * values.dietVal + s * values.soupVal;
+	if (total < rationsRequired) {
+		return null;
+	}
+	const cost = t * prices.treatPrice + d * prices.dietPrice + s * prices.soupPrice;
+	return {
+		t, d, s, total, excess: total - rationsRequired, cost
+	};
+}
+
+/**
  * Generate all valid food combinations that meet or exceed the required rations
  */
 function generateValidCombinations(
@@ -132,14 +153,10 @@ function generateValidCombinations(
 	for (let t = 0; t <= maxTreats; t++) {
 		for (let d = 0; d <= maxDiet; d++) {
 			for (let s = 0; s <= maxSoup; s++) {
-				const total = t * values.treatVal + d * values.dietVal + s * values.soupVal;
-				if (total < rationsRequired) {
-					continue;
+				const option = evaluateCombination(t, d, s, rationsRequired, values, prices);
+				if (option) {
+					options.push(option);
 				}
-				const cost = t * prices.treatPrice + d * prices.dietPrice + s * prices.soupPrice;
-				options.push({
-					t, d, s, total, excess: total - rationsRequired, cost
-				});
 			}
 		}
 	}
