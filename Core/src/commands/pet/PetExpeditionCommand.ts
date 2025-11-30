@@ -75,15 +75,26 @@ function foodPlanToDetails(plan: FoodConsumptionPlan): FoodConsumptionDetail[] {
 }
 
 /**
+ * Context for handling expedition selection
+ */
+interface ExpeditionSelectContext {
+	player: Player;
+	petEntity: PetEntity;
+	expeditionId: string;
+	keycloakId: string;
+}
+
+/**
  * Handle expedition choice selection
  */
 async function handleExpeditionSelect(
-	player: Player,
-	petEntity: PetEntity,
-	expeditionId: string,
-	keycloakId: string,
+	ctx: ExpeditionSelectContext,
 	response: CrowniclesPacket[]
 ): Promise<void> {
+	const {
+		player, petEntity, expeditionId, keycloakId
+	} = ctx;
+
 	// Validate requirements
 	if (!player.hasTalisman || !player.petId) {
 		response.push(makePacket(CommandPetExpeditionChoicePacketRes, {
@@ -296,6 +307,27 @@ function buildCannotStartResponse(
 }
 
 /**
+ * Build and return a blocking reaction collector for pet expedition
+ */
+function buildExpeditionCollector(
+	collector: ReactionCollectorPetExpedition | ReactionCollectorPetExpeditionFinished,
+	context: PacketContext,
+	endCallback: EndCallback
+): CrowniclesPacket {
+	return new ReactionCollectorInstance(
+		collector,
+		context,
+		{
+			allowedPlayerKeycloakIds: [context.keycloakId],
+			reactionLimit: 1
+		},
+		endCallback
+	)
+		.block(context.keycloakId, BlockingConstants.REASONS.PET_EXPEDITION)
+		.build();
+}
+
+/**
  * Create the finished expedition collector with claim option
  */
 function createFinishedExpeditionCollector(
@@ -303,7 +335,7 @@ function createFinishedExpeditionCollector(
 	activeExpedition: PetExpedition,
 	context: PacketContext
 ): CrowniclesPacket {
-	const finishedCollector = new ReactionCollectorPetExpeditionFinished({
+	const collector = new ReactionCollectorPetExpeditionFinished({
 		petId: petEntity.typeId,
 		petSex: petEntity.sex as SexTypeShort,
 		petNickname: petEntity.nickname ?? undefined,
@@ -314,7 +346,7 @@ function createFinishedExpeditionCollector(
 		isDistantExpedition: undefined
 	});
 
-	const finishedEndCallback: EndCallback = async (collectorInstance: ReactionCollectorInstance, resp: CrowniclesPacket[]): Promise<void> => {
+	const endCallback: EndCallback = async (collectorInstance: ReactionCollectorInstance, resp: CrowniclesPacket[]): Promise<void> => {
 		const reaction = collectorInstance.getFirstReaction();
 		BlockingUtils.unblockPlayer(context.keycloakId, BlockingConstants.REASONS.PET_EXPEDITION);
 
@@ -328,17 +360,7 @@ function createFinishedExpeditionCollector(
 		}
 	};
 
-	return new ReactionCollectorInstance(
-		finishedCollector,
-		context,
-		{
-			allowedPlayerKeycloakIds: [context.keycloakId],
-			reactionLimit: 1
-		},
-		finishedEndCallback
-	)
-		.block(context.keycloakId, BlockingConstants.REASONS.PET_EXPEDITION)
-		.build();
+	return buildExpeditionCollector(collector, context, endCallback);
 }
 
 /**
@@ -376,17 +398,7 @@ function createInProgressExpeditionCollector(
 		}
 	};
 
-	return new ReactionCollectorInstance(
-		collector,
-		context,
-		{
-			allowedPlayerKeycloakIds: [context.keycloakId],
-			reactionLimit: 1
-		},
-		endCallback
-	)
-		.block(context.keycloakId, BlockingConstants.REASONS.PET_EXPEDITION)
-		.build();
+	return buildExpeditionCollector(collector, context, endCallback);
 }
 
 /**
@@ -413,22 +425,33 @@ async function getGuildFoodInfo(player: Player, petModel: Pet): Promise<{
 }
 
 /**
+ * Parameters for creating expedition choice collector
+ */
+interface ExpeditionChoiceParams {
+	petEntity: PetEntity;
+	expeditions: ExpeditionData[];
+	guildInfo: {
+		hasGuild: boolean;
+		guildFoodAmount?: number;
+	};
+	context: PacketContext;
+}
+
+/**
  * Create the expedition choice collector
  */
-function createExpeditionChoiceCollector(
-	petEntity: PetEntity,
-	expeditions: ExpeditionData[],
-	hasGuild: boolean,
-	guildFoodAmount: number | undefined,
-	context: PacketContext
-): CrowniclesPacket {
+function createExpeditionChoiceCollector(params: ExpeditionChoiceParams): CrowniclesPacket {
+	const {
+		petEntity, expeditions, guildInfo, context
+	} = params;
+
 	const collector = new ReactionCollectorPetExpeditionChoice({
 		petId: petEntity.typeId,
 		petSex: petEntity.sex as SexTypeShort,
 		petNickname: petEntity.nickname ?? undefined,
 		expeditions: convertToExpeditionOptionData(expeditions),
-		hasGuild,
-		guildFoodAmount
+		hasGuild: guildInfo.hasGuild,
+		guildFoodAmount: guildInfo.guildFoodAmount
 	});
 
 	const endCallback: EndCallback = async (collectorInstance: ReactionCollectorInstance, resp: CrowniclesPacket[]): Promise<void> => {
@@ -445,7 +468,12 @@ function createExpeditionChoiceCollector(
 		if (reaction?.reaction.type === ReactionCollectorPetExpeditionSelectReaction.name) {
 			const selectReaction = reaction.reaction.data as ReactionCollectorPetExpeditionSelectReaction;
 			if (reloadedPetEntity) {
-				await handleExpeditionSelect(reloadedPlayer, reloadedPetEntity, selectReaction.expedition.id, context.keycloakId, resp);
+				await handleExpeditionSelect({
+					player: reloadedPlayer,
+					petEntity: reloadedPetEntity,
+					expeditionId: selectReaction.expedition.id,
+					keycloakId: context.keycloakId
+				}, resp);
 			}
 		}
 		else {
@@ -516,7 +544,12 @@ export default class PetExpeditionCommand {
 		// Store expeditions in cache for later retrieval
 		PendingExpeditionsCache.set(context.keycloakId, expeditions);
 
-		response.push(createExpeditionChoiceCollector(petEntity, expeditions, guildInfo.hasGuild, guildInfo.guildFoodAmount, context));
+		response.push(createExpeditionChoiceCollector({
+			petEntity,
+			expeditions,
+			guildInfo,
+			context
+		}));
 	}
 
 	/**
