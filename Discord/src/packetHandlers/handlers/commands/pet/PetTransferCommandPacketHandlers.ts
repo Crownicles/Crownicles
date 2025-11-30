@@ -6,6 +6,7 @@ import {
 	CommandPetTransferCancelErrorPacket,
 	CommandPetTransferFeistyErrorPacket,
 	CommandPetTransferNoPetErrorPacket,
+	CommandPetTransferPetOnExpeditionErrorPacket,
 	CommandPetTransferSituationChangedErrorPacket,
 	CommandPetTransferSuccessPacket
 } from "../../../../../../Lib/src/packets/commands/CommandPetTransferPacket";
@@ -50,5 +51,10 @@ export default class PetTransferCommandPacketHandlers {
 	@packetHandler(CommandPetTransferFeistyErrorPacket)
 	async feistyError(context: PacketContext, _packet: CommandPetTransferFeistyErrorPacket): Promise<void> {
 		await handleClassicError(context, "commands:petTransfer.feistyError");
+	}
+
+	@packetHandler(CommandPetTransferPetOnExpeditionErrorPacket)
+	async petOnExpeditionError(context: PacketContext, _packet: CommandPetTransferPetOnExpeditionErrorPacket): Promise<void> {
+		await handleClassicError(context, "commands:petTransfer.petOnExpedition");
 	}
 }

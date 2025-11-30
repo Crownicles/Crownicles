@@ -17,6 +17,8 @@ export class CommandPetFreePacketRes extends CrowniclesPacket {
 	missingMoney?: number;
 
 	cooldownRemainingTimeMs?: number;
+
+	petOnExpedition?: boolean;
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)

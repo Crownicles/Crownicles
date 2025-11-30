@@ -778,7 +778,8 @@
     "canceledDesc": "Le familier n'a pas été libéré.",
     "confirmDesc": "{emote:collectors.warning} Êtes-vous sur de vouloir libérer **{{pet}}** ? Il n'est pas possible d'annuler une fois l'action effectuée.",
     "acceptedDesc": "Adieu **{{pet}}**...",
-    "isFeisty": "{emote:collectors.warning} Attention, la libération d'un familier fielleux vous coûtera {{cost}} {emote:unitValues.money}."
+    "isFeisty": "{emote:collectors.warning} Attention, la libération d'un familier fielleux vous coûtera {{cost}} {emote:unitValues.money}.",
+    "petOnExpedition": "Votre familier est actuellement en expédition et ne peut pas être libéré."
   },
   "petNick": {
     "successTitle": "{{pseudo}}, changement du surnom du familier",
@@ -1384,6 +1385,7 @@
     "canceledTitle": "{{pseudo}}, vous avez annulé la recherche",
     "confirmDesc": "{emote:fightCommand.crossedSwords} | **{{pseudo}}**{{confirmSubText}}\n\n{emote:fightCommand.crossedSwords} | **Combattant : {{pseudo}}** | {{glory}} | {{className}} {{pet}}\n\n{{stats}}",
     "pet": "| {{petInfo}}",
+    "petOnExpedition": "| ~~{{petInfo}}~~",
     "confirmSubTexts": {
       "common": ", souhaitez-vous lancer une recherche de combat ?",
       "rare": ", voudriez-vous participer à la recherche d'un combattant adéquat à votre puissance personnelle afin d'effectuer le duel subséquent ?"
@@ -1643,6 +1645,7 @@
   },
   "petSell": {
     "noPet": "Vous n'avez aucun familier à vendre !",
+    "petOnExpedition": "Votre familier est actuellement en expédition et ne peut pas être vendu.",
     "noGuild": "Vous ne pouvez pas vendre votre familier car vous n'êtes pas dans une guilde. En effet, la vente de familier permet de générer de l'expérience de guilde.",
     "isFeisty": "Vous ne pouvez pas vendre un familier fielleux.",
     "badPrice": "Le prix doit être supérieur à `{{minPrice}}{emote:unitValues.money}` et inférieur à `{{maxPrice}}{emote:unitValues.money}`.",
@@ -1745,10 +1748,12 @@
     "withdrawPlaceholder": "Choisissez un familier à retirer",
     "switchPlaceholder": "Choisissez un familier à échanger contre {{pet}}",
     "selectMenuPetDetails": "{{rarity}} | {{sex}} | {{loveLevel}}",
-    "feistyError": "Vous ne pouvez pas transférer un familier fielleux."
+    "feistyError": "Vous ne pouvez pas transférer un familier fielleux.",
+    "petOnExpedition": "Votre familier est actuellement en expédition et ne peut pas être transféré."
   },
   "petFeed": {
     "noPet": "Vous n'avez aucun familier !",
+    "petOnExpedition": "Votre familier est actuellement en expédition et ne peut pas être nourri.",
     "noMoney": "Vous n'avez pas assez d'argent pour effectuer cet achat...",
     "notHungry": "Il semblerait que **{{pet}}** n'ait pas faim...",
     "guildStorageEmpty": "L'entrepôt de nourriture de votre guilde est vide. Achetez de la nourriture avec {command:guildshop}.",

@@ -11,6 +11,7 @@ import {
 	CommandPetTransferFeistyErrorPacket,
 	CommandPetTransferNoPetErrorPacket,
 	CommandPetTransferPacketReq,
+	CommandPetTransferPetOnExpeditionErrorPacket,
 	CommandPetTransferSituationChangedErrorPacket,
 	CommandPetTransferSuccessPacket
 } from "../../../../Lib/src/packets/commands/CommandPetTransferPacket";
@@ -35,6 +36,7 @@ import { crowniclesInstance } from "../../index";
 import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { MissionsController } from "../../core/missions/MissionsController";
+import { PetExpeditions } from "../../core/database/game/models/PetExpedition";
 
 
 /**
@@ -212,6 +214,15 @@ export default class PetTransferCommand {
 		if (playerPet?.isFeisty()) {
 			response.push(makePacket(CommandPetTransferFeistyErrorPacket, {}));
 			return;
+		}
+
+		// Check if player's pet is on expedition (can't deposit or switch while on expedition)
+		if (playerPet) {
+			const activeExpedition = await PetExpeditions.getActiveExpeditionForPlayer(player.id);
+			if (activeExpedition) {
+				response.push(makePacket(CommandPetTransferPetOnExpeditionErrorPacket, {}));
+				return;
+			}
 		}
 
 		const guildPets = await GuildPets.getOfGuild(player.guildId);

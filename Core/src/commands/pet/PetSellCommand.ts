@@ -21,6 +21,7 @@ import {
 	CommandPetSellNotInGuildErrorPacket,
 	CommandPetSellOnlyOwnerCanCancelErrorPacket,
 	CommandPetSellPacketReq,
+	CommandPetSellPetOnExpeditionErrorPacket,
 	CommandPetSellSameGuildError,
 	CommandPetSellSuccessPacket
 } from "../../../../Lib/src/packets/commands/CommandPetSellPacket";
@@ -47,6 +48,7 @@ import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
 import { LogsDatabase } from "../../core/database/logs/LogsDatabase";
 import { MissionsController } from "../../core/missions/MissionsController";
 import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
+import { PetExpeditions } from "../../core/database/game/models/PetExpedition";
 
 type SellerInformation = {
 	player: Player; pet: PetEntity; petModel: Pet; guild: Guild; petCost: number;
@@ -257,6 +259,13 @@ export default class PetSellCommand {
 
 		if (!pet) {
 			response.push(makePacket(CommandPetSellNoPetErrorPacket, {}));
+			return;
+		}
+
+		// Check if pet is on expedition
+		const activeExpedition = await PetExpeditions.getActiveExpeditionForPlayer(player.id);
+		if (activeExpedition) {
+			response.push(makePacket(CommandPetSellPetOnExpeditionErrorPacket, {}));
 			return;
 		}
 

@@ -45,12 +45,14 @@ import { PlayerWasAttackedNotificationPacket } from "../../../../Lib/src/packets
 import { PetEntities } from "../../core/database/game/models/PetEntity";
 import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
 import { PostFightPetLoveOutcomes } from "../../../../Lib/src/constants/PetConstants";
+import { PetExpeditions } from "../../core/database/game/models/PetExpedition";
 
 type PlayerStats = {
 	pet: {
 		petTypeId: number;
 		petSex: SexTypeShort;
 		petNickname: string;
+		isOnExpedition: boolean;
 	};
 	classId: number;
 	fightRanking: { glory: number };
@@ -84,11 +86,20 @@ export const fightsDefenderCooldowns = new Map<string, number>();
 async function getPlayerStats(player: Player): Promise<PlayerStats> {
 	const playerActiveObjects = await InventorySlots.getMainSlotsItems(player.id);
 	const petEntity = await PetEntities.getById(player.petId);
+
+	// Check if pet is on expedition
+	let isOnExpedition = false;
+	if (petEntity) {
+		const activeExpedition = await PetExpeditions.getActiveExpeditionForPlayer(player.id);
+		isOnExpedition = activeExpedition !== null;
+	}
+
 	return {
 		pet: {
 			petTypeId: petEntity ? petEntity.typeId! : null,
 			petSex: petEntity ? petEntity.sex as SexTypeShort : null,
-			petNickname: petEntity ? petEntity.nickname : null
+			petNickname: petEntity ? petEntity.nickname : null,
+			isOnExpedition
 		},
 		classId: player.class,
 		fightRanking: {

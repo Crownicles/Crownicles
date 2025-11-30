@@ -17,6 +17,9 @@ export class CommandPetSellPacketReq extends CrowniclesPacket {
 export class CommandPetSellNoPetErrorPacket extends CrowniclesPacket {}
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandPetSellPetOnExpeditionErrorPacket extends CrowniclesPacket {}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandPetSellNotInGuildErrorPacket extends CrowniclesPacket {}
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)

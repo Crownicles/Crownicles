@@ -7,6 +7,7 @@ import {
 	CommandPetFeedNoMoneyFeedErrorPacket,
 	CommandPetFeedNoPetErrorPacket,
 	CommandPetFeedNotHungryErrorPacket,
+	CommandPetFeedPetOnExpeditionErrorPacket,
 	CommandPetFeedSuccessPacket
 } from "../../../../../../Lib/src/packets/commands/CommandPetFeedPacket";
 import { DisplayUtils } from "../../../../utils/DisplayUtils";
@@ -16,6 +17,11 @@ export default class PetFeedCommandPacketHandlers {
 	@packetHandler(CommandPetFeedNoPetErrorPacket)
 	async noPet(context: PacketContext, _packet: CommandPetFeedNoPetErrorPacket): Promise<void> {
 		await handleClassicError(context, "commands:petFeed.noPet");
+	}
+
+	@packetHandler(CommandPetFeedPetOnExpeditionErrorPacket)
+	async petOnExpedition(context: PacketContext, _packet: CommandPetFeedPetOnExpeditionErrorPacket): Promise<void> {
+		await handleClassicError(context, "commands:petFeed.petOnExpedition");
 	}
 
 	@packetHandler(CommandPetFeedNoMoneyFeedErrorPacket)
