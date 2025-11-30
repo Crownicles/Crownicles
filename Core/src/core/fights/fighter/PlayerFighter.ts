@@ -13,8 +13,7 @@ import { Potion } from "../../../data/Potion";
 import { checkDrinkPotionMissions } from "../../utils/ItemUtils";
 import { InventoryConstants } from "../../../../../Lib/src/constants/InventoryConstants";
 import {
-	ItemEnchantment,
-	ItemEnchantmentKind
+	ItemEnchantment, ItemEnchantmentKind
 } from "../../../../../Lib/src/types/ItemEnchantment";
 import { EnchantmentConstants } from "../../../../../Lib/src/constants/EnchantmentConstants";
 import { FightAlterations } from "../actions/FightAlterations";
@@ -35,13 +34,6 @@ export abstract class PlayerFighter extends Fighter {
 	protected constructor(player: Player, playerClass: Class) {
 		super(player.level, FightActionDataController.instance.getListById(playerClass.fightActionsIds));
 		this.player = player;
-	}
-
-	/**
-	 * Check if the pet has assisted during the fight
-	 */
-	public hasPetAssisted(): boolean {
-		return this.petAssisted;
 	}
 
 	/**

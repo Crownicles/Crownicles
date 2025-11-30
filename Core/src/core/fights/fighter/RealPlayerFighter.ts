@@ -194,4 +194,11 @@ export class RealPlayerFighter extends PlayerFighter {
 			}
 		}
 	}
+
+	/**
+	 * Check if the pet has assisted during the fight
+	 */
+	public hasPetAssisted(): boolean {
+		return this.petAssisted;
+	}
 }

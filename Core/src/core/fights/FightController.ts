@@ -4,7 +4,10 @@ import { FightView } from "./FightView";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { FightConstants } from "../../../../Lib/src/constants/FightConstants";
 import {
-	PetConstants, PostFightPetLoveOutcome, PostFightPetLoveOutcomes, PostFightPetReactionType
+	PetConstants,
+	PostFightPetLoveOutcome,
+	PostFightPetLoveOutcomes,
+	PostFightPetReactionType
 } from "../../../../Lib/src/constants/PetConstants";
 import { FighterStatus } from "./FighterStatus";
 import { FightOvertimeBehavior } from "./FightOvertimeBehavior";
@@ -434,7 +437,7 @@ export class FightController {
 			};
 		}
 
-		if (fighter instanceof PlayerFighter && !fighter.hasPetAssisted()) {
+		if (fighter instanceof RealPlayerFighter && !fighter.hasPetAssisted()) {
 			return null;
 		}
 
