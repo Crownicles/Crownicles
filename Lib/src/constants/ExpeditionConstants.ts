@@ -523,6 +523,39 @@ export abstract class ExpeditionConstants {
 	static getLocationEmoji(locationType: ExpeditionLocationType): string {
 		return ExpeditionConstants.LOCATION_EMOJIS[locationType] ?? "🗺️";
 	}
+
+	/**
+	 * Duration ranges for each expedition slot
+	 * Slot 0 (SHORT): Quick expeditions (10 min - 1 hour)
+	 * Slot 1 (MEDIUM): Standard expeditions (15 min - 10 hours)
+	 * Slot 2 (LONG): Distant expeditions (12 hours - 3 days)
+	 */
+	static readonly DURATION_RANGES = {
+		SHORT: {
+			MIN: 10,
+			MAX: 60
+		},
+		MEDIUM: {
+			MIN: 15,
+			MAX: 10 * ExpeditionConstants.TIME.MINUTES_PER_HOUR
+		},
+		LONG: {
+			MIN: 12 * ExpeditionConstants.TIME.MINUTES_PER_HOUR,
+			MAX: 3 * ExpeditionConstants.TIME.HOURS_PER_DAY * ExpeditionConstants.TIME.MINUTES_PER_HOUR
+		}
+	};
+
+	/**
+	 * Get duration range as array for indexed access
+	 * @returns Array of duration ranges [SHORT, MEDIUM, LONG]
+	 */
+	static getDurationRangesArray(): Array<{ min: number; max: number }> {
+		return [
+			{ min: ExpeditionConstants.DURATION_RANGES.SHORT.MIN, max: ExpeditionConstants.DURATION_RANGES.SHORT.MAX },
+			{ min: ExpeditionConstants.DURATION_RANGES.MEDIUM.MIN, max: ExpeditionConstants.DURATION_RANGES.MEDIUM.MAX },
+			{ min: ExpeditionConstants.DURATION_RANGES.LONG.MIN, max: ExpeditionConstants.DURATION_RANGES.LONG.MAX }
+		];
+	}
 }
 
 export type ExpeditionStatus = (typeof ExpeditionConstants.STATUS)[keyof typeof ExpeditionConstants.STATUS];

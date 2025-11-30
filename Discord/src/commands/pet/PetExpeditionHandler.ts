@@ -131,7 +131,7 @@ export async function handleExpeditionStatusRes(
 
 	const lng = interaction.userLanguage;
 
-	// Check if player has talisman - show RP message if not
+	// Check if player has talisman
 	if (!packet.hasTalisman) {
 		// Determine sex context - use pet sex if available, default to male
 		const sexContext = packet.petSex ? getSexContext(packet.petSex as SexTypeShort) : StringConstants.SEX.MALE.long;

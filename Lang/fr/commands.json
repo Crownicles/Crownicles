@@ -94,7 +94,7 @@
     ],
     "petHungry_female": [
       "Le ventre de {{petDisplay}} émet un grondement sonore. Les yeux suppliants, votre compagne refuse catégoriquement de partir l'estomac vide. Nourrissez-la avant de l'envoyer à l'aventure !",
-      "{{petDisplay}} renifle votre sacoche avec insistance, espérant y trouver quelque chose à se mettre sous la dent. Une familier affamée ne peut partir en expédition !",
+      "{{petDisplay}} renifle votre sacoche avec insistance, espérant y trouver quelque chose à se mettre sous la dent. Un familier affamé ne peut partir en expédition !",
       "Votre familier s'affale au sol, trop faible pour envisager une quelconque aventure. {{petDisplay}} a besoin d'un bon repas avant de pouvoir explorer les contrées lointaines."
     ],
     "expeditionStatusRP": {
@@ -170,8 +170,8 @@
     "recalled_male": "Entendant votre appel, {{petDisplay}} abandonne sa quête et revient vers vous, la queue basse et le regard chargé de reproches. Il ne ramène rien de son périple interrompu. La déception se lit dans ses yeux — il vous en voudra pendant un moment.",
     "recalled_female": "Entendant votre appel, {{petDisplay}} abandonne sa quête et revient vers vous, la queue basse et le regard chargé de reproches. Elle ne ramène rien de son périple interrompu. La déception se lit dans ses yeux — elle vous en voudra pendant un moment.",
     "finishedTitle": "{{pseudo}}, expédition terminée !",
-    "finishedDescription_male": "Le {emote:expedition.talisman} **Talisman d'Ancrage** vibre intensément dans votre sacoche : {{petDisplay}} est de retour de son expédition vers {{location}} !\n\n{emote:expedition.risk} Dangerosité : {{risk}}\n\n*Votre compagnon trépigne d'impatience, pressé de vous montrer ce qu'il a rapporté !*",
-    "finishedDescription_female": "Le {emote:expedition.talisman} **Talisman d'Ancrage** vibre intensément dans votre sacoche : {{petDisplay}} est de retour de son expédition vers {{location}} !\n\n{emote:expedition.risk} Dangerosité : {{risk}}\n\n*Votre compagne trépigne d'impatience, pressée de vous montrer ce qu'elle a rapporté !*",
+    "finishedDescription_male": "Le {emote:expedition.talisman} **Talisman d'Ancrage** vibre intensément dans votre sacoche : {{petDisplay}} est de retour de son expédition vers **{{location}}** !\n\n{emote:expedition.risk} Dangerosité : {{risk}}\n\n*Votre compagnon trépigne d'impatience, pressé de vous montrer ce qu'il a rapporté !*",
+    "finishedDescription_female": "Le {emote:expedition.talisman} **Talisman d'Ancrage** vibre intensément dans votre sacoche : {{petDisplay}} est de retour de son expédition vers **{{location}}** !\n\n{emote:expedition.risk} Dangerosité : {{risk}}\n\n*Votre compagne trépigne d'impatience, pressée de vous montrer ce qu'elle a rapporté !*",
     "claimButton": "Découvrir le butin",
     "successTitle": "{{pseudo}}, retour triomphal !",
     "success_male": [
@@ -290,7 +290,8 @@
       "invalidState": "Les astres ne sont pas alignés en votre faveur. Réessayez plus tard.",
       "noExpeditionData": "Le cartographe a égaré ses cartes ! Veuillez recommencer.",
       "expeditionInProgress": "Votre familier explore déjà de lointaines contrées.",
-      "generic": "Une force mystérieuse empêche votre requête. Les sages conseillent de réessayer."
+      "generic": "Une force mystérieuse empêche votre requête. Les sages conseillent de réessayer.",
+      "notOnContinent": "Le {emote:expedition.talisman} **Talisman d'Ancrage** refuse de s'activer en ces terres étranges. Sa magie ancestrale ne semble fonctionner que sur le continent principal du royaume. Retournez sur les routes familières pour envoyer votre familier en expédition."
     }
   },
   "guild": {

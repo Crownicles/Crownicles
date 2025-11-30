@@ -14,24 +14,6 @@ import { MapLocationDataController } from "../../data/MapLocation";
 import { MapConstants } from "../../../../Lib/src/constants/MapConstants";
 
 /**
- * Duration ranges for the 3 expedition slots
- * Slot 0: Short (10 min - 1 hour)
- * Slot 1: Medium (15 min - 10 hours)
- * Slot 2: Long/Distant (12 hours - 3 days)
- */
-const DURATION_RANGES = [
-	{
-		min: 10, max: 60
-	},
-	{
-		min: 15, max: 10 * 60
-	},
-	{
-		min: 12 * 60, max: 3 * 24 * 60
-	}
-];
-
-/**
  * Map location types to expedition location types
  * This allows using the existing reward calculation system based on location types
  */
@@ -153,6 +135,7 @@ function getRandomDistantMapLocation(excludeIds: number[]): number {
  */
 export function generateThreeExpeditions(mapLinkId: number): ExpeditionData[] {
 	const localMapLocationIds = getMapLocationsFromLink(mapLinkId);
+	const durationRanges = ExpeditionConstants.getDurationRangesArray();
 
 	// Get map location data for the first two expeditions
 	const localExpeditions: ExpeditionData[] = [];
@@ -164,7 +147,7 @@ export function generateThreeExpeditions(mapLinkId: number): ExpeditionData[] {
 
 		localExpeditions.push(
 			generateExpeditionWithConstraints(
-				DURATION_RANGES[i],
+				durationRanges[i],
 				locationType,
 				mapLocationId,
 				false
@@ -176,7 +159,7 @@ export function generateThreeExpeditions(mapLinkId: number): ExpeditionData[] {
 	while (localExpeditions.length < 2) {
 		const allLocationTypes = Object.values(ExpeditionConstants.LOCATION_TYPES) as ExpeditionLocationType[];
 		localExpeditions.push(generateExpeditionWithConstraints(
-			DURATION_RANGES[localExpeditions.length],
+			durationRanges[localExpeditions.length],
 			RandomUtils.crowniclesRandom.pick(allLocationTypes)
 		));
 	}
@@ -187,7 +170,7 @@ export function generateThreeExpeditions(mapLinkId: number): ExpeditionData[] {
 	const distantLocationType = getExpeditionTypeFromMapType(distantMapLocation?.type ?? "ro");
 
 	const distantExpedition = generateExpeditionWithConstraints(
-		DURATION_RANGES[2],
+		durationRanges[2],
 		distantLocationType,
 		distantMapLocationId,
 		true
@@ -214,7 +197,7 @@ export function calculateEffectiveRisk(expedition: ExpeditionData, petModel: Pet
 export interface ExpeditionOutcome {
 	totalFailure: boolean;
 	partialSuccess: boolean;
-	rewards: ExpeditionRewardData | undefined;
+	rewards: ExpeditionRewardData | null;
 	loveChange: number;
 }
 
@@ -232,7 +215,7 @@ export function determineExpeditionOutcome(
 		return {
 			totalFailure: true,
 			partialSuccess: false,
-			rewards: undefined,
+			rewards: null,
 			loveChange: ExpeditionConstants.LOVE_CHANGES.TOTAL_FAILURE
 		};
 	}

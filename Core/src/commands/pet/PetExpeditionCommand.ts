@@ -58,6 +58,7 @@ import {
 	ReactionCollectorPetExpeditionClaimReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorPetExpeditionFinished";
 import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
+import { Maps } from "../../core/maps/Maps";
 
 /**
  * Convert a FoodConsumptionPlan to an array of FoodConsumptionDetail for packet transmission
@@ -454,6 +455,20 @@ export default class PetExpeditionCommand {
 				canStartExpedition: false,
 				cannotStartReason: "petHungry",
 				petLovePoints: petEntity.lovePoints,
+				petNickname: petEntity.nickname ?? undefined,
+				petId: petEntity.typeId,
+				petSex: petEntity.sex
+			}));
+			return;
+		}
+
+		// Check if player is on continent (can't start expeditions from island, haunted path, etc.)
+		if (!Maps.isOnContinent(player)) {
+			response.push(makePacket(CommandPetExpeditionPacketRes, {
+				hasTalisman: true,
+				hasExpeditionInProgress: false,
+				canStartExpedition: false,
+				cannotStartReason: "notOnContinent",
 				petNickname: petEntity.nickname ?? undefined,
 				petId: petEntity.typeId,
 				petSex: petEntity.sex
