@@ -57,6 +57,12 @@ export class NotificationsConfiguration extends Model {
 
 	declare dailyBonusChannelId?: string;
 
+	declare petExpeditionEnabled: boolean;
+
+	declare petExpeditionSendType: number;
+
+	declare petExpeditionChannelId?: string;
+
 	declare updatedAt: Date;
 
 	declare createdAt: Date;
@@ -170,6 +176,18 @@ export function initModel(sequelize: Sequelize): void {
 			defaultValue: NotificationSendTypeEnum.DM
 		},
 		dailyBonusChannelId: {
+			// eslint-disable-next-line new-cap
+			type: DataTypes.STRING(32)
+		},
+		petExpeditionEnabled: {
+			type: DataTypes.BOOLEAN,
+			defaultValue: true
+		},
+		petExpeditionSendType: {
+			type: DataTypes.INTEGER,
+			defaultValue: NotificationSendTypeEnum.DM
+		},
+		petExpeditionChannelId: {
 			// eslint-disable-next-line new-cap
 			type: DataTypes.STRING(32)
 		},

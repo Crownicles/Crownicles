@@ -160,6 +160,24 @@ export abstract class NotificationsTypes {
 		}
 	};
 
+	static PET_EXPEDITION: NotificationType = {
+		emote: CrowniclesIcons.notifications.types.petExpedition,
+		customId: "petExpedition",
+		i18nKey: "commands:notifications.types.petExpedition",
+		value: notificationsConfiguration => ({
+			enabled: notificationsConfiguration.petExpeditionEnabled,
+			sendType: notificationsConfiguration.petExpeditionSendType,
+			channelId: notificationsConfiguration.petExpeditionChannelId
+		}),
+		toggleCallback: (notificationsConfiguration): void => {
+			notificationsConfiguration.petExpeditionEnabled = !notificationsConfiguration.petExpeditionEnabled;
+		},
+		changeSendTypeCallback: (notificationsConfiguration, sendType, channelId): void => {
+			notificationsConfiguration.petExpeditionSendType = sendType;
+			notificationsConfiguration.petExpeditionChannelId = channelId;
+		}
+	};
+
 	static ALL: NotificationType[] = [
 		NotificationsTypes.REPORT,
 		NotificationsTypes.GUILD_DAILY,
@@ -168,6 +186,7 @@ export abstract class NotificationsTypes {
 		NotificationsTypes.GUILD_KICK,
 		NotificationsTypes.GUILD_STATUS_CHANGE,
 		NotificationsTypes.ENERGY,
-		NotificationsTypes.DAILY_BONUS
+		NotificationsTypes.DAILY_BONUS,
+		NotificationsTypes.PET_EXPEDITION
 	];
 }

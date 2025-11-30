@@ -26,6 +26,8 @@ import { GuildKickNotificationPacket } from "../../../Lib/src/packets/notificati
 import { GuildStatusChangeNotificationPacket } from "../../../Lib/src/packets/notifications/GuildStatusChangeNotificationPacket";
 import { EnergyFullNotificationPacket } from "../../../Lib/src/packets/notifications/EnergyFullNotificationPacket";
 import { DailyBonusNotificationPacket } from "../../../Lib/src/packets/notifications/DailyBonusNotificationPacket";
+import { ExpeditionFinishedNotificationPacket } from "../../../Lib/src/packets/notifications/ExpeditionFinishedNotificationPacket";
+import { SexTypeShort } from "../../../Lib/src/constants/StringConstants";
 
 export abstract class NotificationsHandler {
 	/**
@@ -125,6 +127,20 @@ export abstract class NotificationsHandler {
 					attackerPseudo: await DisplayUtils.getEscapedUsername(packet.attackedByPlayerKeycloakId, lng)
 				});
 				notificationType = NotificationsTypes.FIGHT_CHALLENGE;
+				break;
+			}
+			case ExpeditionFinishedNotificationPacket.name: {
+				const packet = notification.packet as ExpeditionFinishedNotificationPacket;
+				notificationContent = i18n.t("bot:notificationPetExpedition", {
+					lng,
+					petDisplay: DisplayUtils.getPetNicknameOrTypeName(
+						packet.petNickname ?? null,
+						packet.petId,
+						packet.petSex as SexTypeShort,
+						lng
+					)
+				});
+				notificationType = NotificationsTypes.PET_EXPEDITION;
 				break;
 			}
 			default:

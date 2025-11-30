@@ -67,6 +67,7 @@ import { Maps } from "../../core/maps/Maps";
 import { Badge } from "../../../../Lib/src/types/Badge";
 import { crowniclesInstance } from "../../index";
 import { LogsReadRequests } from "../../core/database/logs/LogsReadRequests";
+import { ScheduledExpeditionNotifications } from "../../core/database/game/models/ScheduledExpeditionNotification";
 
 /**
  * Convert a FoodConsumptionPlan to an array of FoodConsumptionDetail for packet transmission
@@ -192,6 +193,16 @@ async function handleExpeditionSelect(
 		rewardIndex
 	});
 	await expedition.save();
+
+	// Schedule notification for when the expedition ends
+	await ScheduledExpeditionNotifications.scheduleNotification(
+		expedition.id,
+		player.keycloakId,
+		petEntity.typeId,
+		petEntity.sex,
+		petEntity.nickname,
+		expedition.endDate
+	);
 
 	// Log expedition start to database
 	crowniclesInstance.logsDatabase.logExpeditionStart(
@@ -322,6 +333,9 @@ async function handleExpeditionRecall(
 		activeExpedition.locationType,
 		loveChange
 	).then();
+
+	// Cancel the scheduled notification for this expedition
+	await ScheduledExpeditionNotifications.deleteByExpeditionId(activeExpedition.id);
 
 	// Recall expedition
 	await PetExpeditions.recallExpedition(activeExpedition);
@@ -749,7 +763,8 @@ export default class PetExpeditionCommand {
 
 		await player.save();
 
-		// Mark expedition as completed
+		// Mark expedition as completed and remove scheduled notification
+		await ScheduledExpeditionNotifications.deleteByExpeditionId(activeExpedition.id);
 		await PetExpeditions.completeExpedition(activeExpedition);
 
 		// Log expedition completion to database (include stored reward index)
