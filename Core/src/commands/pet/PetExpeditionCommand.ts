@@ -43,7 +43,8 @@ import {
 	applyExpeditionRewards,
 	FoodConsumptionPlan,
 	calculateRewardIndex,
-	PendingExpeditionsCache
+	PendingExpeditionsCache,
+	FOOD_RATION_VALUES
 } from "../../core/expeditions";
 import {
 	EndCallback, ReactionCollectorInstance
@@ -450,7 +451,9 @@ async function getGuildFoodInfo(player: Player, petModel: Pet): Promise<{
 	const dietFoodType = petModel.canEatMeat() ? "carnivorousFood" : "herbivorousFood";
 	return {
 		hasGuild: true,
-		guildFoodAmount: guild.commonFood + guild[dietFoodType] + guild.ultimateFood
+		guildFoodAmount: guild.commonFood * FOOD_RATION_VALUES.commonFood
+			+ guild[dietFoodType] * FOOD_RATION_VALUES[dietFoodType]
+			+ guild.ultimateFood * FOOD_RATION_VALUES.ultimateFood
 	};
 }
 

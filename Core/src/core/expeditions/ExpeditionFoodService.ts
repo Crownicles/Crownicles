@@ -1,10 +1,11 @@
 import { Pet } from "../../data/Pet";
 import Player from "../database/game/models/Player";
 import { Guilds } from "../database/game/models/Guild";
+import { GuildShopConstants } from "../../../../Lib/src/constants/GuildShopConstants";
 
 /**
  * Food types with their ration values
- * Priority order: commonFood (treats) > carnivorousFood/herbivorousFood > ultimateFood (soup)
+ * Priority order is now based on cost per ration: treats (cheapest) > diet food > soup (most expensive)
  */
 export type FoodType = "commonFood" | "carnivorousFood" | "herbivorousFood" | "ultimateFood";
 
@@ -13,6 +14,17 @@ export const FOOD_RATION_VALUES: Record<FoodType, number> = {
 	carnivorousFood: 3,
 	herbivorousFood: 3,
 	ultimateFood: 5
+};
+
+/**
+ * Food prices per unit (from GuildShopConstants.PRICES.FOOD)
+ * Index: 0=commonFood, 1=herbivorousFood, 2=carnivorousFood, 3=ultimateFood
+ */
+export const FOOD_PRICES: Record<FoodType, number> = {
+	commonFood: GuildShopConstants.PRICES.FOOD[0],
+	herbivorousFood: GuildShopConstants.PRICES.FOOD[1],
+	carnivorousFood: GuildShopConstants.PRICES.FOOD[2],
+	ultimateFood: GuildShopConstants.PRICES.FOOD[3]
 };
 
 /**
@@ -44,6 +56,7 @@ interface BestCombination {
 	d: number; // diet food
 	s: number; // soup
 	excess: number;
+	cost: number;
 }
 
 /**
@@ -56,150 +69,93 @@ interface FoodRationValues {
 }
 
 /**
- * Parameters for the treats combination optimization
+ * Food prices for optimization
  */
-interface TreatsCombinationParams {
-	available: AvailableFood;
-	rationsRequired: number;
-	treatsCount: number;
-	values: FoodRationValues;
-	currentBest: BestCombination;
+interface FoodPriceValues {
+	treatPrice: number;
+	dietPrice: number;
+	soupPrice: number;
 }
 
 /**
- * Calculate default combination using all available food
- */
-function calculateDefaultCombination(
-	available: AvailableFood,
-	rationsRequired: number,
-	values: FoodRationValues
-): BestCombination {
-	const {
-		treatVal, dietVal, soupVal
-	} = values;
-	return {
-		t: available.treats,
-		d: available.diet,
-		s: available.soup,
-		excess: (available.treats * treatVal + available.diet * dietVal + available.soup * soupVal) - rationsRequired
-	};
-}
-
-/**
- * Check if treats alone satisfy the rations requirement
- */
-function checkTreatsOnly(
-	treatsCount: number,
-	rationsRequired: number,
-	treatVal: number,
-	currentBest: BestCombination
-): BestCombination | null {
-	const rem = rationsRequired - treatsCount * treatVal;
-	if (rem <= 0) {
-		const excess = -rem;
-		const isBetter = excess < currentBest.excess || (excess === currentBest.excess && treatsCount > currentBest.t);
-		if (isBetter) {
-			return {
-				t: treatsCount, d: 0, s: 0, excess
-			};
-		}
-	}
-	return null;
-}
-
-/**
- * Find the best diet/soup combination for remaining rations
- */
-function findBestSoupDietCombination(
-	params: TreatsCombinationParams,
-	remaining: number
-): BestCombination {
-	const {
-		available, rationsRequired, treatsCount, values, currentBest
-	} = params;
-	const {
-		treatVal, dietVal, soupVal
-	} = values;
-
-	let best = currentBest;
-	const minSoup = Math.max(0, Math.ceil((remaining - available.diet * dietVal) / soupVal));
-
-	if (minSoup > available.soup) {
-		return best;
-	}
-
-	const maxSoup = Math.min(available.soup, minSoup + 2);
-	for (let soupCount = minSoup; soupCount <= maxSoup; soupCount++) {
-		const remAfterSoup = remaining - soupCount * soupVal;
-		const dietCount = Math.max(0, Math.ceil(remAfterSoup / dietVal));
-
-		if (dietCount > available.diet) {
-			continue;
-		}
-
-		const currentExcess = (treatsCount * treatVal + dietCount * dietVal + soupCount * soupVal) - rationsRequired;
-		if (currentExcess < best.excess) {
-			best = {
-				t: treatsCount, d: dietCount, s: soupCount, excess: currentExcess
-			};
-		}
-		if (currentExcess === 0) {
-			break;
-		}
-	}
-
-	return best;
-}
-
-/**
- * Try to find a better combination with a specific number of treats
- */
-function tryTreatsCombination(params: TreatsCombinationParams): BestCombination {
-	const {
-		rationsRequired, treatsCount, values, currentBest
-	} = params;
-	const { treatVal } = values;
-
-	// Check if treats alone are enough
-	const treatsOnlyResult = checkTreatsOnly(treatsCount, rationsRequired, treatVal, currentBest);
-	if (treatsOnlyResult) {
-		return treatsOnlyResult;
-	}
-
-	// Need diet/soup combination
-	const remaining = rationsRequired - treatsCount * treatVal;
-	return findBestSoupDietCombination(params, remaining);
-}
-
-/**
- * Find the optimal food combination that minimizes excess while respecting priority
- * Priority: treats > diet food > soup
+ * Find the optimal food combination that minimizes excess first, then cost
+ * This uses a brute-force approach to find the cheapest combination that meets requirements
  */
 function findOptimalCombination(
 	available: AvailableFood,
 	rationsRequired: number,
-	values: FoodRationValues
+	values: FoodRationValues,
+	prices: FoodPriceValues
 ): BestCombination {
-	// Default to using everything if we can't meet requirements
-	let best = calculateDefaultCombination(available, rationsRequired, values);
+	const {
+		treatVal, dietVal, soupVal
+	} = values;
+	const {
+		treatPrice, dietPrice, soupPrice
+	} = prices;
 
-	// If we don't have enough to meet requirements, return default
-	if (best.excess < 0) {
-		return best;
+	// Calculate total available rations
+	const totalAvailable = available.treats * treatVal + available.diet * dietVal + available.soup * soupVal;
+
+	// If we don't have enough food, return everything we have
+	if (totalAvailable < rationsRequired) {
+		const totalCost = available.treats * treatPrice + available.diet * dietPrice + available.soup * soupPrice;
+		return {
+			t: available.treats,
+			d: available.diet,
+			s: available.soup,
+			excess: totalAvailable - rationsRequired,
+			cost: totalCost
+		};
 	}
 
-	// Iterate treats from max down to 0 to prioritize treats
-	for (let treatsCount = Math.min(available.treats, rationsRequired); treatsCount >= 0; treatsCount--) {
-		best = tryTreatsCombination({
-			available, rationsRequired, treatsCount, values, currentBest: best
-		});
+	// Generate all valid combinations that meet or exceed the requirement
+	interface Option {
+		t: number;
+		d: number;
+		s: number;
+		total: number;
+		excess: number;
+		cost: number;
+	}
 
-		if (best.excess === 0 && best.t === treatsCount) {
-			break; // Found optimal
+	const options: Option[] = [];
+
+	// Limit the search space - treats can't exceed what's needed for exact match
+	const maxTreats = Math.min(available.treats, rationsRequired);
+	const maxDiet = Math.min(available.diet, Math.ceil(rationsRequired / dietVal));
+	const maxSoup = Math.min(available.soup, Math.ceil(rationsRequired / soupVal));
+
+	for (let t = 0; t <= maxTreats; t++) {
+		for (let d = 0; d <= maxDiet; d++) {
+			for (let s = 0; s <= maxSoup; s++) {
+				const total = t * treatVal + d * dietVal + s * soupVal;
+				if (total >= rationsRequired) {
+					const cost = t * treatPrice + d * dietPrice + s * soupPrice;
+					options.push({
+						t, d, s, total, excess: total - rationsRequired, cost
+					});
+				}
+			}
 		}
 	}
 
-	return best;
+	// Sort options: minimize excess first, then minimize cost
+	options.sort((a, b) => {
+		if (a.excess !== b.excess) {
+			return a.excess - b.excess;
+		}
+		return a.cost - b.cost;
+	});
+
+	const best = options[0];
+	return {
+		t: best.t,
+		d: best.d,
+		s: best.s,
+		excess: best.excess,
+		cost: best.cost
+	};
 }
 
 /**
@@ -250,8 +206,7 @@ function buildConsumptionPlan(
 
 /**
  * Calculate the optimal food consumption plan for an expedition
- * Priority: treats > meat/salad (based on diet) > soup
- * Minimizes excess rations while respecting priority order
+ * Minimizes excess rations first, then minimizes total cost
  */
 export async function calculateFoodConsumptionPlan(
 	player: Player,
@@ -279,13 +234,19 @@ export async function calculateFoodConsumptionPlan(
 		soupVal: FOOD_RATION_VALUES.ultimateFood
 	};
 
+	const prices: FoodPriceValues = {
+		treatPrice: FOOD_PRICES.commonFood,
+		dietPrice: FOOD_PRICES[dietFoodType],
+		soupPrice: FOOD_PRICES.ultimateFood
+	};
+
 	const available: AvailableFood = {
 		treats: guild.commonFood,
 		diet: guild[dietFoodType],
 		soup: guild.ultimateFood
 	};
 
-	const best = findOptimalCombination(available, rationsRequired, values);
+	const best = findOptimalCombination(available, rationsRequired, values, prices);
 
 	return buildConsumptionPlan(best, dietFoodType, values);
 }

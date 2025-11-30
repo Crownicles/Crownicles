@@ -1,121 +1,71 @@
-import {describe, expect, it} from "vitest";
+import {describe, expect, it, vi, beforeEach} from "vitest";
+import {calculateFoodConsumptionPlan, FOOD_RATION_VALUES} from "../../../../src/core/expeditions";
+import {Guilds} from "../../../../src/core/database/game/models/Guild";
+import Player from "../../../../src/core/database/game/models/Player";
+import {Pet} from "../../../../src/data/Pet";
 
-// Food ration values
-const FOOD_RATION_VALUES = {
-	commonFood: 1,
-	carnivorousFood: 3,
-	herbivorousFood: 3,
-	ultimateFood: 5
-};
+// Mock the Guilds module
+vi.mock("../../../../src/core/database/game/models/Guild", () => ({
+	Guilds: {
+		getById: vi.fn()
+	}
+}));
 
-type FoodType = "commonFood" | "carnivorousFood" | "herbivorousFood" | "ultimateFood";
-
-interface FoodConsumptionResult {
-	treatsUsed: number;
-	dietUsed: number;
-	soupUsed: number;
-	totalRations: number;
-}
-
-interface AvailableFood {
-	treats: number;
-	dietFood: number;
-	soup: number;
+/**
+ * Helper to create a mock player
+ */
+function createMockPlayer(guildId: number | null): Player {
+	return { guildId } as Player;
 }
 
 /**
- * Calculate optimal food consumption plan
- * Rules (in order of priority):
- * 1. Never take less than required (unless no stock left)
- * 2. Minimize excess rations
- * 3. When same excess, use priority order: treats > diet food > soup
+ * Helper to create a mock pet
  */
-function calculateOptimalFoodConsumption(
-	rationsRequired: number,
-	available: AvailableFood,
-	dietRationValue: number = 3
-): FoodConsumptionResult {
-	const soupRationValue = FOOD_RATION_VALUES.ultimateFood;
-	const treatRationValue = FOOD_RATION_VALUES.commonFood;
-
-	// Generate all valid combinations that meet or exceed the requirement
-	interface Option {
-		treats: number;
-		diet: number;
-		soup: number;
-		total: number;
-		excess: number;
-	}
-
-	const options: Option[] = [];
-
-	// Try all combinations
-	const maxTreats = Math.min(available.treats, rationsRequired); // Treats can't exceed requirement (no waste)
-	const maxDiet = Math.min(available.dietFood, Math.ceil(rationsRequired / dietRationValue));
-	const maxSoup = Math.min(available.soup, Math.ceil(rationsRequired / soupRationValue));
-
-	for (let t = 0; t <= maxTreats; t++) {
-		for (let d = 0; d <= maxDiet; d++) {
-			for (let s = 0; s <= maxSoup; s++) {
-				const total = t * treatRationValue + d * dietRationValue + s * soupRationValue;
-				if (total >= rationsRequired) {
-					options.push({
-						treats: t,
-						diet: d,
-						soup: s,
-						total,
-						excess: total - rationsRequired
-					});
-				}
-			}
-		}
-	}
-
-	// If no valid options, use everything available
-	if (options.length === 0) {
-		const totalRations = available.treats * treatRationValue
-			+ available.dietFood * dietRationValue
-			+ available.soup * soupRationValue;
-		return {
-			treatsUsed: available.treats,
-			dietUsed: available.dietFood,
-			soupUsed: available.soup,
-			totalRations
-		};
-	}
-
-	// Sort options:
-	// 1. By excess (ascending) - minimize waste
-	// 2. By treats (descending) - prefer treats
-	// 3. By diet (descending) - prefer diet over soup
-	options.sort((a, b) => {
-		if (a.excess !== b.excess) {
-			return a.excess - b.excess;
-		}
-		if (a.treats !== b.treats) {
-			return b.treats - a.treats;
-		}
-		return b.diet - a.diet;
-	});
-
-	const best = options[0];
-
+function createMockPet(canEatMeat: boolean): Pet {
 	return {
-		treatsUsed: best.treats,
-		dietUsed: best.diet,
-		soupUsed: best.soup,
-		totalRations: best.total
+		canEatMeat: () => canEatMeat
+	} as Pet;
+}
+
+/**
+ * Helper to create a mock guild with food stocks
+ */
+function createMockGuild(commonFood: number, carnivorousFood: number, herbivorousFood: number, ultimateFood: number) {
+	return {
+		commonFood,
+		carnivorousFood,
+		herbivorousFood,
+		ultimateFood
+	};
+}
+
+/**
+ * Helper to extract consumption values from plan
+ */
+function extractConsumption(plan: Awaited<ReturnType<typeof calculateFoodConsumptionPlan>>, dietFoodType: "carnivorousFood" | "herbivorousFood") {
+	return {
+		treatsUsed: plan.consumption.find(c => c.foodType === "commonFood")?.itemsToConsume ?? 0,
+		dietUsed: plan.consumption.find(c => c.foodType === dietFoodType)?.itemsToConsume ?? 0,
+		soupUsed: plan.consumption.find(c => c.foodType === "ultimateFood")?.itemsToConsume ?? 0,
+		totalRations: plan.totalRations
 	};
 }
 
 describe("Food Consumption Plan", () => {
-	describe("calculateOptimalFoodConsumption", () => {
-		it("Scenario 1: 10 required, 4 treats, 0 diet, 3 soup -> should use 2 soup", () => {
-			const result = calculateOptimalFoodConsumption(10, {
-				treats: 4,
-				dietFood: 0,
-				soup: 3
-			});
+	beforeEach(() => {
+		vi.clearAllMocks();
+	});
+
+	describe("calculateFoodConsumptionPlan", () => {
+		it("Scenario 1: 10 required, 4 treats, 0 diet, 3 soup -> should use 2 soup", async () => {
+			vi.mocked(Guilds.getById).mockResolvedValue(createMockGuild(4, 0, 0, 3) as never);
+
+			const plan = await calculateFoodConsumptionPlan(
+				createMockPlayer(1),
+				createMockPet(true),
+				10
+			);
+			const result = extractConsumption(plan, "carnivorousFood");
 
 			expect(result.treatsUsed).toBe(0);
 			expect(result.dietUsed).toBe(0);
@@ -123,25 +73,31 @@ describe("Food Consumption Plan", () => {
 			expect(result.totalRations).toBe(10);
 		});
 
-		it("Scenario 2: 15 required, 2 treats, 2 diet, 3 soup -> should use 2 treats + 1 diet + 2 soup", () => {
-			const result = calculateOptimalFoodConsumption(15, {
-				treats: 2,
-				dietFood: 2,
-				soup: 3
-			});
+		it("Scenario 2: 15 required, 2 treats, 2 diet, 3 soup -> should use 2 treats + 1 diet + 2 soup", async () => {
+			vi.mocked(Guilds.getById).mockResolvedValue(createMockGuild(2, 2, 2, 3) as never);
+
+			const plan = await calculateFoodConsumptionPlan(
+				createMockPlayer(1),
+				createMockPet(true),
+				15
+			);
+			const result = extractConsumption(plan, "carnivorousFood");
 
 			expect(result.treatsUsed).toBe(2);
 			expect(result.dietUsed).toBe(1);
 			expect(result.soupUsed).toBe(2);
-			expect(result.totalRations).toBe(15); // 2 + 3 + 10 = 15
+			expect(result.totalRations).toBe(15);
 		});
 
-		it("Scenario 3: 3 required, 20 treats, 2 diet, 3 soup -> should use 3 treats", () => {
-			const result = calculateOptimalFoodConsumption(3, {
-				treats: 20,
-				dietFood: 2,
-				soup: 3
-			});
+		it("Scenario 3: 3 required, 20 treats, 2 diet, 3 soup -> should use 3 treats", async () => {
+			vi.mocked(Guilds.getById).mockResolvedValue(createMockGuild(20, 2, 2, 3) as never);
+
+			const plan = await calculateFoodConsumptionPlan(
+				createMockPlayer(1),
+				createMockPet(true),
+				3
+			);
+			const result = extractConsumption(plan, "carnivorousFood");
 
 			expect(result.treatsUsed).toBe(3);
 			expect(result.dietUsed).toBe(0);
@@ -149,55 +105,67 @@ describe("Food Consumption Plan", () => {
 			expect(result.totalRations).toBe(3);
 		});
 
-		it("Scenario 4: 5 required, 3 treats, 2 diet, 3 soup -> should use 2 treats + 1 diet", () => {
-			const result = calculateOptimalFoodConsumption(5, {
-				treats: 3,
-				dietFood: 2,
-				soup: 3
-			});
+		it("Scenario 4: 5 required, 3 treats, 2 diet, 3 soup -> should use 2 treats + 1 diet (cheapest)", async () => {
+			vi.mocked(Guilds.getById).mockResolvedValue(createMockGuild(3, 2, 2, 3) as never);
 
-			// Options with excess 0:
-			// - 2 treats + 1 diet = 2 + 3 = 5 (exact match, uses treats = priority)
-			// - 1 soup = 5 (exact match, but no treats)
-			// Winner: 2 treats + 1 diet (prioritizes treats)
+			const plan = await calculateFoodConsumptionPlan(
+				createMockPlayer(1),
+				createMockPet(true),
+				5
+			);
+			const result = extractConsumption(plan, "carnivorousFood");
+
+			// 2 treats + 1 diet = 5 (cost: 40 + 250 = 290)
+			// 1 soup = 5 (cost: 600)
 			expect(result.treatsUsed).toBe(2);
 			expect(result.dietUsed).toBe(1);
 			expect(result.soupUsed).toBe(0);
 			expect(result.totalRations).toBe(5);
 		});
 
-		it("Scenario 5: 2 required, 0 treats, 5 diet, 1 soup -> should use 1 diet", () => {
-			const result = calculateOptimalFoodConsumption(2, {
-				treats: 0,
-				dietFood: 5,
-				soup: 1
-			});
+		it("Scenario 5: 2 required, 0 treats, 5 diet, 1 soup -> should use 1 diet", async () => {
+			vi.mocked(Guilds.getById).mockResolvedValue(createMockGuild(0, 5, 5, 1) as never);
 
+			const plan = await calculateFoodConsumptionPlan(
+				createMockPlayer(1),
+				createMockPet(true),
+				2
+			);
+			const result = extractConsumption(plan, "carnivorousFood");
+
+			// 1 diet = 3 rations (excess 1, cost 250)
+			// 1 soup = 5 rations (excess 3, cost 600)
 			expect(result.treatsUsed).toBe(0);
 			expect(result.dietUsed).toBe(1);
 			expect(result.soupUsed).toBe(0);
-			expect(result.totalRations).toBe(3); // 1 diet = 3 rations (excess 1, but soup would be 5 = excess 3)
+			expect(result.totalRations).toBe(3);
 		});
 
-		it("Scenario 6: Insufficient food - should use all available", () => {
-			const result = calculateOptimalFoodConsumption(100, {
-				treats: 2,
-				dietFood: 1,
-				soup: 1
-			});
+		it("Scenario 6: Insufficient food - should use all available", async () => {
+			vi.mocked(Guilds.getById).mockResolvedValue(createMockGuild(2, 1, 1, 1) as never);
+
+			const plan = await calculateFoodConsumptionPlan(
+				createMockPlayer(1),
+				createMockPet(true),
+				100
+			);
+			const result = extractConsumption(plan, "carnivorousFood");
 
 			expect(result.treatsUsed).toBe(2);
 			expect(result.dietUsed).toBe(1);
 			expect(result.soupUsed).toBe(1);
-			expect(result.totalRations).toBe(10); // 2 + 3 + 5 = 10 (not enough)
+			expect(result.totalRations).toBe(10); // 2 + 3 + 5 = 10
 		});
 
-		it("Scenario 7: Exact match with treats only", () => {
-			const result = calculateOptimalFoodConsumption(5, {
-				treats: 10,
-				dietFood: 2,
-				soup: 2
-			});
+		it("Scenario 7: Exact match with treats only", async () => {
+			vi.mocked(Guilds.getById).mockResolvedValue(createMockGuild(10, 2, 2, 2) as never);
+
+			const plan = await calculateFoodConsumptionPlan(
+				createMockPlayer(1),
+				createMockPet(true),
+				5
+			);
+			const result = extractConsumption(plan, "carnivorousFood");
 
 			expect(result.treatsUsed).toBe(5);
 			expect(result.dietUsed).toBe(0);
@@ -205,41 +173,104 @@ describe("Food Consumption Plan", () => {
 			expect(result.totalRations).toBe(5);
 		});
 
-		it("Scenario 8: No treats, prefer diet over soup when equal excess", () => {
-			const result = calculateOptimalFoodConsumption(3, {
-				treats: 0,
-				dietFood: 2,
-				soup: 2
-			});
+		it("Scenario 8: No treats, prefer diet over soup (lower excess)", async () => {
+			vi.mocked(Guilds.getById).mockResolvedValue(createMockGuild(0, 2, 2, 2) as never);
 
-			// 1 diet = 3 (excess 0)
-			// 1 soup = 5 (excess 2)
+			const plan = await calculateFoodConsumptionPlan(
+				createMockPlayer(1),
+				createMockPet(true),
+				3
+			);
+			const result = extractConsumption(plan, "carnivorousFood");
+
+			// 1 diet = 3 (excess 0, cost 250)
+			// 1 soup = 5 (excess 2, cost 600)
 			expect(result.dietUsed).toBe(1);
 			expect(result.soupUsed).toBe(0);
 			expect(result.totalRations).toBe(3);
 		});
 
-		it("Scenario 9: Complex - 8 required, 2 treats, 1 diet, 2 soup", () => {
-			const result = calculateOptimalFoodConsumption(8, {
-				treats: 2,
-				dietFood: 1,
-				soup: 2
-			});
+		it("Scenario 9: Complex - 8 required, 2 treats, 1 diet, 2 soup -> should use 1 diet + 1 soup", async () => {
+			vi.mocked(Guilds.getById).mockResolvedValue(createMockGuild(2, 1, 1, 2) as never);
 
-			// After 2 treats: need 6 more
-			// 1 diet = 3, still need 3 more -> 1 soup = 5 -> total excess = 2
-			// 2 diet = 6 (but only 1 available)
-			// 1 soup = 5 (excess -1, not enough)
-			// 2 soup = 10 (excess 4)
-			// 1 diet + 1 soup = 8 (excess 2)
-			// Best without treats: 2 soup = 10 (excess 4) or 1 diet + 1 soup = 8 (excess 2)
-			// With treats: 2 treats + 1 diet + 1 soup = 2 + 3 + 5 = 10 (excess 2)
-			// Actually: 2 treats = 2, need 6 more. 1 diet + 1 soup = 8, total = 10 (excess 2)
-			// Or: 0 treats + 1 diet + 1 soup = 8 (exact!)
+			const plan = await calculateFoodConsumptionPlan(
+				createMockPlayer(1),
+				createMockPet(true),
+				8
+			);
+			const result = extractConsumption(plan, "carnivorousFood");
+
+			// 0 treats + 1 diet + 1 soup = 0 + 3 + 5 = 8 (exact match)
 			expect(result.treatsUsed).toBe(0);
 			expect(result.dietUsed).toBe(1);
 			expect(result.soupUsed).toBe(1);
 			expect(result.totalRations).toBe(8);
+		});
+
+		it("Scenario 10: Cheapest combination - 25 required, 12 treats, 5 diet, 5 soup -> should use 10 treats + 5 diet", async () => {
+			vi.mocked(Guilds.getById).mockResolvedValue(createMockGuild(12, 5, 5, 5) as never);
+
+			const plan = await calculateFoodConsumptionPlan(
+				createMockPlayer(1),
+				createMockPet(true),
+				25
+			);
+			const result = extractConsumption(plan, "carnivorousFood");
+
+			// 10 treats + 5 diet = 10 + 15 = 25 (cost: 200 + 1250 = 1450)
+			// 12 treats + 1 diet + 2 soup = 12 + 3 + 10 = 25 (cost: 240 + 250 + 1200 = 1690)
+			expect(result.treatsUsed).toBe(10);
+			expect(result.dietUsed).toBe(5);
+			expect(result.soupUsed).toBe(0);
+			expect(result.totalRations).toBe(25);
+		});
+
+		it("Scenario 11: Works with herbivorous food type", async () => {
+			vi.mocked(Guilds.getById).mockResolvedValue(createMockGuild(5, 0, 3, 2) as never);
+
+			const plan = await calculateFoodConsumptionPlan(
+				createMockPlayer(1),
+				createMockPet(false), // Herbivorous pet
+				10
+			);
+			const result = extractConsumption(plan, "herbivorousFood");
+
+			// 4 treats + 2 diet = 4 + 6 = 10 (cost: 80 + 500 = 580)
+			expect(result.treatsUsed).toBe(4);
+			expect(result.dietUsed).toBe(2);
+			expect(result.soupUsed).toBe(0);
+			expect(result.totalRations).toBe(10);
+		});
+
+		it("should return empty plan when player has no guild", async () => {
+			const plan = await calculateFoodConsumptionPlan(
+				createMockPlayer(null),
+				createMockPet(true),
+				10
+			);
+
+			expect(plan.totalRations).toBe(0);
+			expect(plan.consumption).toHaveLength(0);
+		});
+
+		it("should return empty plan when guild is not found", async () => {
+			vi.mocked(Guilds.getById).mockResolvedValue(null as never);
+
+			const plan = await calculateFoodConsumptionPlan(
+				createMockPlayer(1),
+				createMockPet(true),
+				10
+			);
+
+			expect(plan.totalRations).toBe(0);
+			expect(plan.consumption).toHaveLength(0);
+		});
+
+		it("should use FOOD_RATION_VALUES constants correctly", () => {
+			expect(FOOD_RATION_VALUES.commonFood).toBe(1);
+			expect(FOOD_RATION_VALUES.carnivorousFood).toBe(3);
+			expect(FOOD_RATION_VALUES.herbivorousFood).toBe(3);
+			expect(FOOD_RATION_VALUES.ultimateFood).toBe(5);
 		});
 	});
 });
