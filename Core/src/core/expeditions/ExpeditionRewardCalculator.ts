@@ -6,71 +6,85 @@ import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import {
 	generateRandomItem
 } from "../utils/ItemUtils";
-import { ItemCategory } from "../../../../Lib/src/constants/ItemConstants";
+import { MathUtils } from "../utils/MathUtils";
 
 /**
- * Return a 0..3 score for a numeric value based on 3 thresholds.
- *
- * The thresholds object contains values for SCORE_1..SCORE_3.
- * - returns 3 when value >= SCORE_3
- * - returns 2 when value >= SCORE_2
- * - returns 1 when value >= SCORE_1
- * - otherwise returns 0
+ * Extended reward data with item details for Core-side use
+ * The front-end only receives ExpeditionRewardData, but Core needs itemId/itemCategory to give the item
  */
-function getThresholdScore(
-	value: number,
-	thresholds: {
-		SCORE_1: number;
-		SCORE_2: number;
-		SCORE_3: number;
-	}
-): number {
-	if (value >= thresholds.SCORE_3) {
-		return 3;
-	}
+export interface ExpeditionRewardDataWithItem extends ExpeditionRewardData {
+	itemId: number;
+	itemCategory: number;
+}
 
-	if (value >= thresholds.SCORE_2) {
-		return 2;
-	}
-
-	if (value >= thresholds.SCORE_1) {
-		return 1;
-	}
-
-	return 0;
+/**
+ * Calculate a linear score (0-3) based on how close a value is to its maximum
+ * @param value Current value
+ * @param min Minimum possible value
+ * @param max Maximum possible value
+ * @returns Score between 0 and 3
+ */
+function calculateLinearScore(value: number, min: number, max: number): number {
+	const percentage = (value - min) / (max - min);
+	return MathUtils.getIntervalValue(0, 3, percentage);
 }
 
 /**
  * Calculate the reward index (0-9) based on expedition parameters
- * Higher index = better rewards
+ * Each component (duration, risk, difficulty) is scored 0-3 on a linear scale
+ * Wealth rate applies a ±30% bonus/malus to the final index
  *
  * @param expedition Expedition input data used to compute the index
  * @returns reward index between 0 and 9
  */
 export function calculateRewardIndex(expedition: ExpeditionData): number {
-	const thresholds = ExpeditionConstants.SCORE_THRESHOLDS;
+	// Calculate linear scores for each component (0-3 each)
+	const durationScore = calculateLinearScore(
+		expedition.durationMinutes,
+		ExpeditionConstants.DURATION.MIN_MINUTES,
+		ExpeditionConstants.DURATION.MAX_MINUTES
+	);
+	const riskScore = calculateLinearScore(
+		expedition.riskRate,
+		ExpeditionConstants.RISK_RATE.MIN,
+		ExpeditionConstants.RISK_RATE.MAX
+	);
+	const difficultyScore = calculateLinearScore(
+		expedition.difficulty,
+		ExpeditionConstants.DIFFICULTY.MIN,
+		ExpeditionConstants.DIFFICULTY.MAX
+	);
 
-	const durationScore = getThresholdScore(expedition.durationMinutes, thresholds.DURATION);
-	const riskScore = getThresholdScore(expedition.riskRate, thresholds.RISK);
-	const difficultyScore = getThresholdScore(expedition.difficulty, thresholds.DIFFICULTY);
+	// Sum the three scores (0-9 range)
+	const baseIndex = durationScore + riskScore + difficultyScore;
 
-	return Math.min(9, durationScore + riskScore + difficultyScore);
+	/*
+	 * Apply wealth rate bonus/malus (±30%)
+	 * wealthRate goes from 0 to 2, with 1 being neutral
+	 * At 0: -30%, at 1: 0%, at 2: +30%
+	 */
+	const wealthRateMultiplier = 1 + (expedition.wealthRate - 1) * ExpeditionConstants.WEALTH_RATE_REWARD_INDEX_BONUS;
+	const adjustedIndex = baseIndex * wealthRateMultiplier;
+
+	// Round and clamp to 0-9
+	return Math.max(0, Math.min(9, Math.round(adjustedIndex)));
 }
 
 /**
  * Calculate base rewards from expedition parameters
+ * Note: wealthRate is already factored into rewardIndex, so we don't multiply here
  */
-function calculateBaseRewards(expedition: ExpeditionData, rewardIndex: number): {
+function calculateBaseRewards(rewardIndex: number, locationType: string): {
 	money: number;
 	experience: number;
 	points: number;
 } {
-	const locationWeights = ExpeditionConstants.LOCATION_REWARD_WEIGHTS[expedition.locationType];
+	const locationWeights = ExpeditionConstants.LOCATION_REWARD_WEIGHTS[locationType];
 
 	return {
-		money: Math.round(ExpeditionConstants.REWARD_TABLES.MONEY[rewardIndex] * expedition.wealthRate * locationWeights.money),
-		experience: Math.round(ExpeditionConstants.REWARD_TABLES.EXPERIENCE[rewardIndex] * expedition.wealthRate * locationWeights.experience),
-		points: Math.round(ExpeditionConstants.REWARD_TABLES.POINTS[rewardIndex] * expedition.wealthRate * locationWeights.points)
+		money: Math.round(ExpeditionConstants.REWARD_TABLES.MONEY[rewardIndex] * locationWeights.money),
+		experience: Math.round(ExpeditionConstants.REWARD_TABLES.EXPERIENCE[rewardIndex] * locationWeights.experience),
+		points: Math.round(ExpeditionConstants.REWARD_TABLES.POINTS[rewardIndex] * locationWeights.points)
 	};
 }
 
@@ -159,8 +173,8 @@ export function calculateRewards(
 	rewardIndex: number,
 	isPartialSuccess: boolean,
 	hasCloneTalisman: boolean
-): ExpeditionRewardData {
-	const rewards = calculateBaseRewards(expedition, rewardIndex);
+): ExpeditionRewardDataWithItem {
+	const rewards = calculateBaseRewards(rewardIndex, expedition.locationType);
 
 	if (isPartialSuccess) {
 		applyPartialSuccessPenalty(rewards);

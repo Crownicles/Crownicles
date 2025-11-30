@@ -3,11 +3,11 @@ import {
 	ExpeditionConstants, ExpeditionLocationType
 } from "../../../../Lib/src/constants/ExpeditionConstants";
 import {
-	ExpeditionData, ExpeditionRewardData
+	ExpeditionData
 } from "../../../../Lib/src/packets/commands/CommandPetExpeditionPacket";
 import { Pet } from "../../data/Pet";
 import {
-	calculateRewardIndex, calculateRewards
+	calculateRewardIndex, calculateRewards, ExpeditionRewardDataWithItem
 } from "./ExpeditionRewardCalculator";
 import { MapLinkDataController } from "../../data/MapLink";
 import { MapLocationDataController } from "../../data/MapLocation";
@@ -197,7 +197,7 @@ export function calculateEffectiveRisk(expedition: ExpeditionData, petModel: Pet
 export interface ExpeditionOutcome {
 	totalFailure: boolean;
 	partialSuccess: boolean;
-	rewards: ExpeditionRewardData | null;
+	rewards: ExpeditionRewardDataWithItem | null;
 	loveChange: number;
 }
 

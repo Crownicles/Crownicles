@@ -337,31 +337,12 @@ export abstract class ExpeditionConstants {
 	];
 
 	/**
-	 * Score thresholds for converting values to 0-3 range
-	 * Each attribute (duration, risk, difficulty) is converted to a score 0-3
+	 * Wealth rate bonus/malus percentage applied to reward index
+	 * At wealthRate=0: -30% on reward index
+	 * At wealthRate=1: no change
+	 * At wealthRate=2: +30% on reward index
 	 */
-	static readonly SCORE_THRESHOLDS = {
-		// Duration thresholds in minutes
-		DURATION: {
-			SCORE_1: 60, // 1 hour
-			SCORE_2: 6 * 60, // 6 hours
-			SCORE_3: 24 * 60 // 24 hours
-		},
-
-		// Risk thresholds in percentage
-		RISK: {
-			SCORE_1: 15,
-			SCORE_2: 30,
-			SCORE_3: 50
-		},
-
-		// Difficulty thresholds
-		DIFFICULTY: {
-			SCORE_1: 25,
-			SCORE_2: 50,
-			SCORE_3: 75
-		}
-	};
+	static readonly WEALTH_RATE_REWARD_INDEX_BONUS = 0.30;
 
 	/**
 	 * Expedition status values

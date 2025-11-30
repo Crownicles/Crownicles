@@ -589,8 +589,6 @@ function formatRewards(
 		money: number;
 		experience: number;
 		points: number;
-		itemId?: number;
-		itemCategory?: number;
 		cloneTalismanFound?: boolean;
 	},
 	lng: Language,
@@ -616,13 +614,9 @@ function formatRewards(
 			amount: rewards.points
 		}));
 	}
-	if (rewards.itemId !== undefined && rewards.itemCategory !== undefined) {
-		lines.push(i18n.t("commands:petExpedition.rewards.item", {
-			lng,
-			itemId: rewards.itemId,
-			itemCategory: rewards.itemCategory
-		}));
-	}
+
+	// Item is always given on successful expeditions (shown in separate embed via giveItemToPlayer)
+	lines.push(i18n.t("commands:petExpedition.rewards.item", { lng }));
 	if (rewards.cloneTalismanFound) {
 		lines.push(i18n.t("commands:petExpedition.rewards.cloneTalisman", { lng }));
 	}

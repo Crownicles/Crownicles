@@ -291,16 +291,6 @@ export interface ExpeditionRewardData {
 	points: number;
 
 	/**
-	 * Random item obtained from the expedition (item ID, or undefined if none)
-	 */
-	itemId?: number;
-
-	/**
-	 * Category of the random item (for display purposes)
-	 */
-	itemCategory?: number;
-
-	/**
 	 * Whether the clone talisman was found during this expedition
 	 */
 	cloneTalismanFound?: boolean;

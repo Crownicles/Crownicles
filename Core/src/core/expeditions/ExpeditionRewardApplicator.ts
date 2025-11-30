@@ -1,7 +1,7 @@
 import {
 	CrowniclesPacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
-import { ExpeditionRewardData } from "../../../../Lib/src/packets/commands/CommandPetExpeditionPacket";
+import { ExpeditionRewardDataWithItem } from "./ExpeditionRewardCalculator";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import Player from "../database/game/models/Player";
 import {
@@ -63,7 +63,7 @@ async function applyItemReward(
  * Apply expedition rewards to player
  */
 export async function applyExpeditionRewards(
-	rewards: ExpeditionRewardData,
+	rewards: ExpeditionRewardDataWithItem,
 	player: Player,
 	response: CrowniclesPacket[],
 	context: PacketContext
