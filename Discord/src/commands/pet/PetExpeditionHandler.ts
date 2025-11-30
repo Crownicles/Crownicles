@@ -309,6 +309,30 @@ export async function handleExpeditionChoiceRes(
 		}
 	}
 
+	// Add speed modifier message based on pet speed impact
+	if (packet.speedDurationModifier !== undefined) {
+		let speedCategory: string;
+		if (packet.speedDurationModifier < 0.80) {
+			speedCategory = "veryFast";
+		}
+		else if (packet.speedDurationModifier < 0.95) {
+			speedCategory = "fast";
+		}
+		else if (packet.speedDurationModifier <= 1.05) {
+			speedCategory = "normal";
+		}
+		else if (packet.speedDurationModifier <= 1.15) {
+			speedCategory = "slow";
+		}
+		else {
+			speedCategory = "verySlow";
+		}
+		description += i18n.t(`commands:petExpedition.speedModifier.${speedCategory}`, {
+			lng,
+			context: sexContext
+		});
+	}
+
 	const embed = new CrowniclesEmbed()
 		.formatAuthor(
 			i18n.t("commands:petExpedition.startedTitle", {

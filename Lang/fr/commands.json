@@ -150,6 +150,18 @@
       "noGuild": "\n\n{emote:collectors.warning} **Vous n'avez pas de guilde pour préparer des rations** pour votre familier. Les risques d'échec de cette expédition sont **triplés**.",
       "guildNoFood": "\n\n{emote:collectors.warning} **La guilde est à court de provisions.** Votre guilde n'a pas pu fournir assez de rations, votre familier est donc parti sans ravitaillement. Les risques d'échec sont **triplés**. Reconstituez les stocks de votre guilde avant la prochaine expédition !"
     },
+    "speedModifier": {
+      "veryFast_male": "\n\n{emote:unitValues.speed} *Ses pattes véloces fendent l'air avec une grâce inégalée. Votre compagnon atteindra sa destination bien plus vite que prévu !*",
+      "veryFast_female": "\n\n{emote:unitValues.speed} *Ses pattes véloces fendent l'air avec une grâce inégalée. Votre compagne atteindra sa destination bien plus vite que prévu !*",
+      "fast_male": "\n\n{emote:unitValues.speed} *D'un pas alerte et assuré, votre compagnon file à bonne allure. L'expédition sera plus courte que prévu.*",
+      "fast_female": "\n\n{emote:unitValues.speed} *D'un pas alerte et assuré, votre compagne file à bonne allure. L'expédition sera plus courte que prévu.*",
+      "normal_male": "\n\n{emote:unitValues.speed} *Votre compagnon avance à un rythme régulier, ni trop vite ni trop lent.*",
+      "normal_female": "\n\n{emote:unitValues.speed} *Votre compagne avance à un rythme régulier, ni trop vite ni trop lent.*",
+      "slow_male": "\n\n{emote:unitValues.speed} *Ses pattes traînantes ralentissent quelque peu sa progression. L'expédition prendra un peu plus de temps que prévu.*",
+      "slow_female": "\n\n{emote:unitValues.speed} *Ses pattes traînantes ralentissent quelque peu sa progression. L'expédition prendra un peu plus de temps que prévu.*",
+      "verySlow_male": "\n\n{emote:unitValues.speed} *Votre compagnon se déplace avec une lenteur déconcertante, s'arrêtant fréquemment pour renifler les environs. L'expédition sera bien plus longue que prévu...*",
+      "verySlow_female": "\n\n{emote:unitValues.speed} *Votre compagne se déplace avec une lenteur déconcertante, s'arrêtant fréquemment pour renifler les environs. L'expédition sera bien plus longue que prévu...*"
+    },
     "cancelledTitle": "{{pseudo}}, départ annulé",
     "cancelled_male": "Voyant votre hésitation, {{petDisplay}} baisse la tête, déçu. Il pensait partir à l'aventure... Vous sentez que la confiance entre vous s'effrite légèrement. Votre compagnon vous lance un regard blessé avant de s'éloigner, la queue basse.",
     "cancelled_female": "Voyant votre hésitation, {{petDisplay}} baisse la tête, déçue. Elle pensait partir à l'aventure... Vous sentez que la confiance entre vous s'effrite légèrement. Votre compagne vous lance un regard blessé avant de s'éloigner, la queue basse.",

@@ -119,12 +119,27 @@ async function handleExpeditionSelect(
 		await applyFoodConsumptionPlan(player.guildId, foodPlan);
 	}
 
-	// Create expedition
+	/*
+	 * Calculate speed duration modifier based on pet speed
+	 * Speed 30 = 0.70 multiplier (30% faster)
+	 * Speed 0 = 1.20 multiplier (20% slower)
+	 */
+	const petSpeed = petModel.speed;
+	const speedConfig = ExpeditionConstants.SPEED_DURATION_MODIFIER;
+	const speedDurationModifier = speedConfig.MIN_SPEED_MULTIPLIER
+		- (petSpeed - speedConfig.MIN_SPEED)
+		* (speedConfig.MIN_SPEED_MULTIPLIER - speedConfig.MAX_SPEED_MULTIPLIER)
+		/ (speedConfig.MAX_SPEED - speedConfig.MIN_SPEED);
+
+	// Apply speed modifier to duration
+	const adjustedDurationMinutes = Math.round(expeditionData.durationMinutes * speedDurationModifier);
+
+	// Create expedition with adjusted duration
 	const expedition = PetExpeditions.createExpedition(
 		player.id,
 		petEntity.id,
 		expeditionData,
-		expeditionData.durationMinutes,
+		adjustedDurationMinutes,
 		foodPlan.totalRations
 	);
 	await expedition.save();
@@ -138,7 +153,8 @@ async function handleExpeditionSelect(
 		),
 		foodConsumed: foodPlan.totalRations,
 		insufficientFood,
-		insufficientFoodCause
+		insufficientFoodCause,
+		speedDurationModifier
 	}));
 }
 

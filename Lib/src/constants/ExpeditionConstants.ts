@@ -156,6 +156,22 @@ export abstract class ExpeditionConstants {
 	static readonly NO_FOOD_RISK_MULTIPLIER = 3;
 
 	/**
+	 * Pet speed impact on expedition duration
+	 * Speed ranges from 0 to 30
+	 * At speed 30: duration reduced by 30% (multiplier = 0.70)
+	 * At speed 0: duration increased by 20% (multiplier = 1.20)
+	 * Linear interpolation between these values
+	 */
+	static readonly SPEED_DURATION_MODIFIER = {
+		MIN_SPEED: 0,
+		MAX_SPEED: 30,
+		/** Duration multiplier at max speed (30% reduction) */
+		MAX_SPEED_MULTIPLIER: 0.70,
+		/** Duration multiplier at min speed (20% increase) */
+		MIN_SPEED_MULTIPLIER: 1.20
+	};
+
+	/**
 	 * Constants for expedition ID generation
 	 */
 	static readonly ID_GENERATION = {

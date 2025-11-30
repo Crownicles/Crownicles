@@ -181,6 +181,12 @@ export class CommandPetExpeditionChoicePacketRes extends CrowniclesPacket {
 	 * Possible values: "noGuild" (player has no guild) or "guildNoFood" (guild exists but lacks food).
 	 */
 	insufficientFoodCause?: "noGuild" | "guildNoFood";
+
+	/**
+	 * Duration modifier based on pet speed (0.70 to 1.20)
+	 * Values below 1.0 mean faster expedition, above 1.0 mean slower
+	 */
+	speedDurationModifier?: number;
 }
 
 /**
