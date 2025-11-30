@@ -297,19 +297,30 @@ function getFoodConsumedDescription(packet: CommandPetExpeditionChoicePacketRes,
 }
 
 /**
- * Get speed category based on duration modifier
+ * Get speed category based on actual final duration vs displayed duration
+ * Returns null if the actual time falls within the displayed time bucket (no message to display)
+ * @param actualDurationMinutes - The real duration after speed modifier
+ * @param displayedDurationMinutes - The duration shown to the user (rounded to 10 min)
  */
-function getSpeedCategory(speedDurationModifier: number): string {
-	if (speedDurationModifier < 0.80) {
+function getSpeedCategory(actualDurationMinutes: number, displayedDurationMinutes: number): string | null {
+	// Calculate ratio: how much faster/slower compared to what was displayed
+	const ratio = actualDurationMinutes / displayedDurationMinutes;
+
+	if (ratio < 0.70) {
 		return "veryFast";
 	}
-	if (speedDurationModifier < 0.95) {
+	if (ratio < 0.90) {
 		return "fast";
 	}
-	if (speedDurationModifier <= 1.05) {
-		return "normal";
+
+	/*
+	 * If actual duration is close to or above displayed duration, it's "normal" (no message)
+	 * Since displayed duration is already rounded up, being at or below it is expected
+	 */
+	if (ratio <= 1.0) {
+		return null;
 	}
-	if (speedDurationModifier <= 1.15) {
+	if (ratio <= 1.15) {
 		return "slow";
 	}
 	return "verySlow";
@@ -364,13 +375,17 @@ export async function handleExpeditionChoiceRes(
 		description += i18n.t(`commands:petExpedition.insufficientFoodWarning.${warningKey}`, { lng });
 	}
 
-	// Add speed modifier message
-	if (packet.speedDurationModifier !== undefined) {
-		const speedCategory = getSpeedCategory(packet.speedDurationModifier);
-		description += i18n.t(`commands:petExpedition.speedModifier.${speedCategory}`, {
-			lng,
-			context: sexContext
-		});
+	// Add speed modifier message (only if actual time differs significantly from displayed time)
+	if (packet.expedition) {
+		const actualDuration = packet.expedition.durationMinutes;
+		const displayedDuration = packet.expedition.displayDurationMinutes;
+		const speedCategory = getSpeedCategory(actualDuration, displayedDuration);
+		if (speedCategory !== null) {
+			description += i18n.t(`commands:petExpedition.speedModifier.${speedCategory}`, {
+				lng,
+				context: sexContext
+			});
+		}
 	}
 
 	const embed = new CrowniclesEmbed()
