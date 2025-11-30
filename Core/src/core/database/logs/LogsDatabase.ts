@@ -1269,13 +1269,47 @@ export class LogsDatabase extends Database {
 	}
 
 	/**
+	 * Helper method to create expedition log entries with common logic
+	 */
+	private async createExpeditionLog(
+		keycloakId: string,
+		petGameId: number,
+		data: Partial<{
+			mapLocationId: number;
+			locationType: string;
+			action: string;
+			durationMinutes: number;
+			foodConsumed: number;
+			success: boolean;
+			money: number | null;
+			experience: number | null;
+			points: number | null;
+			cloneTalismanFound: boolean | null;
+			loveChange: number;
+		}>
+	): Promise<void> {
+		const player = await LogsDatabase.findOrCreatePlayer(keycloakId);
+		const petEntity = await LogsDatabase.findOrCreatePetEntityByGameId(petGameId);
+		await LogsExpeditions.create({
+			playerId: player.id,
+			petId: petEntity.id,
+			mapLocationId: data.mapLocationId ?? 0,
+			locationType: data.locationType ?? "",
+			action: data.action ?? "",
+			durationMinutes: data.durationMinutes ?? 0,
+			foodConsumed: data.foodConsumed ?? 0,
+			success: data.success,
+			money: data.money,
+			experience: data.experience,
+			points: data.points,
+			cloneTalismanFound: data.cloneTalismanFound,
+			loveChange: data.loveChange,
+			date: getDateLogs()
+		});
+	}
+
+	/**
 	 * Log when a pet expedition starts
-	 * @param keycloakId
-	 * @param petGameId
-	 * @param mapLocationId
-	 * @param locationType
-	 * @param durationMinutes
-	 * @param foodConsumed
 	 */
 	public async logExpeditionStart(
 		keycloakId: string,
@@ -1285,32 +1319,19 @@ export class LogsDatabase extends Database {
 		durationMinutes: number,
 		foodConsumed: number
 	): Promise<void> {
-		const player = await LogsDatabase.findOrCreatePlayer(keycloakId);
-		const petEntity = await LogsDatabase.findOrCreatePetEntityByGameId(petGameId);
-		await LogsExpeditions.create({
-			playerId: player.id,
-			petId: petEntity.id,
+		await this.createExpeditionLog(keycloakId, petGameId, {
 			mapLocationId,
 			locationType,
 			action: "start",
 			durationMinutes,
-			foodConsumed,
-			date: getDateLogs()
+			foodConsumed
 		});
 	}
 
 	/**
 	 * Log when a pet expedition is completed
-	 * @param keycloakId
-	 * @param petGameId
-	 * @param mapLocationId
-	 * @param locationType
-	 * @param durationMinutes
-	 * @param foodConsumed
-	 * @param success
-	 * @param rewards
-	 * @param loveChange
 	 */
+	// eslint-disable-next-line max-params
 	public async logExpeditionComplete(
 		keycloakId: string,
 		petGameId: number,
@@ -1319,14 +1340,17 @@ export class LogsDatabase extends Database {
 		durationMinutes: number,
 		foodConsumed: number,
 		success: boolean,
-		rewards: { money?: number; experience?: number; points?: number; cloneTalismanFound?: boolean } | null,
+		rewards:
+		| {
+			money?: number;
+			experience?: number;
+			points?: number;
+			cloneTalismanFound?: boolean;
+		}
+		| null,
 		loveChange: number
 	): Promise<void> {
-		const player = await LogsDatabase.findOrCreatePlayer(keycloakId);
-		const petEntity = await LogsDatabase.findOrCreatePetEntityByGameId(petGameId);
-		await LogsExpeditions.create({
-			playerId: player.id,
-			petId: petEntity.id,
+		await this.createExpeditionLog(keycloakId, petGameId, {
 			mapLocationId,
 			locationType,
 			action: "complete",
@@ -1337,40 +1361,24 @@ export class LogsDatabase extends Database {
 			experience: rewards?.experience ?? null,
 			points: rewards?.points ?? null,
 			cloneTalismanFound: rewards?.cloneTalismanFound ?? null,
-			loveChange,
-			date: getDateLogs()
+			loveChange
 		});
 	}
 
 	/**
 	 * Log when a pet expedition is cancelled before departure
-	 * @param keycloakId
-	 * @param petGameId
-	 * @param loveChange
 	 */
 	public async logExpeditionCancel(keycloakId: string, petGameId: number, loveChange: number): Promise<void> {
-		const player = await LogsDatabase.findOrCreatePlayer(keycloakId);
-		const petEntity = await LogsDatabase.findOrCreatePetEntityByGameId(petGameId);
-		await LogsExpeditions.create({
-			playerId: player.id,
-			petId: petEntity.id,
+		await this.createExpeditionLog(keycloakId, petGameId, {
 			mapLocationId: 0,
 			locationType: "cancel",
 			action: "cancel",
-			durationMinutes: 0,
-			foodConsumed: 0,
-			loveChange,
-			date: getDateLogs()
+			loveChange
 		});
 	}
 
 	/**
 	 * Log when a pet is recalled from an expedition
-	 * @param keycloakId
-	 * @param petGameId
-	 * @param mapLocationId
-	 * @param locationType
-	 * @param loveChange
 	 */
 	public async logExpeditionRecall(
 		keycloakId: string,
@@ -1379,18 +1387,11 @@ export class LogsDatabase extends Database {
 		locationType: string,
 		loveChange: number
 	): Promise<void> {
-		const player = await LogsDatabase.findOrCreatePlayer(keycloakId);
-		const petEntity = await LogsDatabase.findOrCreatePetEntityByGameId(petGameId);
-		await LogsExpeditions.create({
-			playerId: player.id,
-			petId: petEntity.id,
+		await this.createExpeditionLog(keycloakId, petGameId, {
 			mapLocationId,
 			locationType,
 			action: "recall",
-			durationMinutes: 0,
-			foodConsumed: 0,
-			loveChange,
-			date: getDateLogs()
+			loveChange
 		});
 	}
 
@@ -1406,6 +1407,7 @@ export class LogsDatabase extends Database {
 		if (existing) {
 			return existing;
 		}
+
 		// If not found, create a placeholder with current timestamp
 		return (await LogsPetEntities.findOrCreate({
 			where: {

@@ -1,3 +1,4 @@
+/* eslint-disable new-cap */
 import {
 	DataTypes, QueryInterface
 } from "sequelize";

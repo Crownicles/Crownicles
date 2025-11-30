@@ -78,6 +78,100 @@ interface FoodPriceValues {
 }
 
 /**
+ * Option for food combination during optimization
+ */
+interface FoodOption {
+	t: number;
+	d: number;
+	s: number;
+	total: number;
+	excess: number;
+	cost: number;
+}
+
+/**
+ * Calculate the combination when all available food should be used (not enough food)
+ */
+function calculateAllFoodCombination(
+	available: AvailableFood,
+	rationsRequired: number,
+	values: FoodRationValues,
+	prices: FoodPriceValues
+): BestCombination {
+	const totalAvailable = available.treats * values.treatVal
+		+ available.diet * values.dietVal
+		+ available.soup * values.soupVal;
+	const totalCost = available.treats * prices.treatPrice
+		+ available.diet * prices.dietPrice
+		+ available.soup * prices.soupPrice;
+	return {
+		t: available.treats,
+		d: available.diet,
+		s: available.soup,
+		excess: totalAvailable - rationsRequired,
+		cost: totalCost
+	};
+}
+
+/**
+ * Generate all valid food combinations that meet or exceed the required rations
+ */
+function generateValidCombinations(
+	available: AvailableFood,
+	rationsRequired: number,
+	values: FoodRationValues,
+	prices: FoodPriceValues
+): FoodOption[] {
+	const options: FoodOption[] = [];
+
+	// Limit the search space - treats can't exceed what's needed for exact match
+	const maxTreats = Math.min(available.treats, rationsRequired);
+	const maxDiet = Math.min(available.diet, Math.ceil(rationsRequired / values.dietVal));
+	const maxSoup = Math.min(available.soup, Math.ceil(rationsRequired / values.soupVal));
+
+	for (let t = 0; t <= maxTreats; t++) {
+		for (let d = 0; d <= maxDiet; d++) {
+			for (let s = 0; s <= maxSoup; s++) {
+				const total = t * values.treatVal + d * values.dietVal + s * values.soupVal;
+				if (total < rationsRequired) {
+					continue;
+				}
+				const cost = t * prices.treatPrice + d * prices.dietPrice + s * prices.soupPrice;
+				options.push({
+					t, d, s, total, excess: total - rationsRequired, cost
+				});
+			}
+		}
+	}
+
+	return options;
+}
+
+/**
+ * Sort options by excess first, then by cost
+ */
+function sortByExcessThenCost(a: FoodOption, b: FoodOption): number {
+	if (a.excess !== b.excess) {
+		return a.excess - b.excess;
+	}
+	return a.cost - b.cost;
+}
+
+/**
+ * Check if there is enough food available to meet the requirement
+ */
+function hasEnoughFood(
+	available: AvailableFood,
+	rationsRequired: number,
+	values: FoodRationValues
+): boolean {
+	const totalAvailable = available.treats * values.treatVal
+		+ available.diet * values.dietVal
+		+ available.soup * values.soupVal;
+	return totalAvailable >= rationsRequired;
+}
+
+/**
  * Find the optimal food combination that minimizes excess first, then cost
  * This uses a brute-force approach to find the cheapest combination that meets requirements
  */
@@ -87,66 +181,16 @@ function findOptimalCombination(
 	values: FoodRationValues,
 	prices: FoodPriceValues
 ): BestCombination {
-	const {
-		treatVal, dietVal, soupVal
-	} = values;
-	const {
-		treatPrice, dietPrice, soupPrice
-	} = prices;
-
-	// Calculate total available rations
-	const totalAvailable = available.treats * treatVal + available.diet * dietVal + available.soup * soupVal;
-
 	// If we don't have enough food, return everything we have
-	if (totalAvailable < rationsRequired) {
-		const totalCost = available.treats * treatPrice + available.diet * dietPrice + available.soup * soupPrice;
-		return {
-			t: available.treats,
-			d: available.diet,
-			s: available.soup,
-			excess: totalAvailable - rationsRequired,
-			cost: totalCost
-		};
+	if (!hasEnoughFood(available, rationsRequired, values)) {
+		return calculateAllFoodCombination(available, rationsRequired, values, prices);
 	}
 
 	// Generate all valid combinations that meet or exceed the requirement
-	interface Option {
-		t: number;
-		d: number;
-		s: number;
-		total: number;
-		excess: number;
-		cost: number;
-	}
-
-	const options: Option[] = [];
-
-	// Limit the search space - treats can't exceed what's needed for exact match
-	const maxTreats = Math.min(available.treats, rationsRequired);
-	const maxDiet = Math.min(available.diet, Math.ceil(rationsRequired / dietVal));
-	const maxSoup = Math.min(available.soup, Math.ceil(rationsRequired / soupVal));
-
-	for (let t = 0; t <= maxTreats; t++) {
-		for (let d = 0; d <= maxDiet; d++) {
-			for (let s = 0; s <= maxSoup; s++) {
-				const total = t * treatVal + d * dietVal + s * soupVal;
-				if (total >= rationsRequired) {
-					const cost = t * treatPrice + d * dietPrice + s * soupPrice;
-					options.push({
-						t, d, s, total, excess: total - rationsRequired, cost
-					});
-				}
-			}
-		}
-	}
+	const options = generateValidCombinations(available, rationsRequired, values, prices);
 
 	// Sort options: minimize excess first, then minimize cost
-	options.sort((a, b) => {
-		if (a.excess !== b.excess) {
-			return a.excess - b.excess;
-		}
-		return a.cost - b.cost;
-	});
+	options.sort(sortByExcessThenCost);
 
 	const best = options[0];
 	return {
