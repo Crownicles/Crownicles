@@ -197,10 +197,13 @@ async function handleExpeditionSelect(
 	crowniclesInstance.logsDatabase.logExpeditionStart(
 		player.keycloakId,
 		petEntity.id,
-		expeditionData.mapLocationId!,
-		expeditionData.locationType,
-		adjustedDurationMinutes,
-		foodPlan.totalRations
+		{
+			mapLocationId: expeditionData.mapLocationId!,
+			locationType: expeditionData.locationType,
+			durationMinutes: adjustedDurationMinutes,
+			foodConsumed: foodPlan.totalRations,
+			rewardIndex
+		}
 	).then();
 
 	// Clean up the pending expeditions cache
@@ -749,15 +752,18 @@ export default class PetExpeditionCommand {
 		// Mark expedition as completed
 		await PetExpeditions.completeExpedition(activeExpedition);
 
-		// Log expedition completion to database
+		// Log expedition completion to database (include stored reward index)
 		crowniclesInstance.logsDatabase.logExpeditionComplete(
 			player.keycloakId,
 			petEntity.id,
-			expeditionData.mapLocationId!,
-			expeditionData.locationType,
-			expeditionData.durationMinutes,
-			activeExpedition.foodConsumed,
-			!outcome.totalFailure,
+			{
+				mapLocationId: expeditionData.mapLocationId!,
+				locationType: expeditionData.locationType,
+				durationMinutes: expeditionData.durationMinutes,
+				foodConsumed: activeExpedition.foodConsumed,
+				rewardIndex: activeExpedition.rewardIndex,
+				success: !outcome.totalFailure
+			},
 			outcome.rewards,
 			outcome.loveChange
 		).then();

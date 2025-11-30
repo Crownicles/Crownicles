@@ -1280,6 +1280,7 @@ export class LogsDatabase extends Database {
 			action: string;
 			durationMinutes: number;
 			foodConsumed: number;
+			rewardIndex: number;
 			success: boolean;
 			money: number | null;
 			experience: number | null;
@@ -1297,6 +1298,7 @@ export class LogsDatabase extends Database {
 			locationType: data.locationType ?? "",
 			action: data.action ?? "",
 			durationMinutes: data.durationMinutes ?? 0,
+			rewardIndex: data.rewardIndex ?? 0,
 			foodConsumed: data.foodConsumed ?? 0,
 			success: data.success,
 			money: data.money,
@@ -1314,32 +1316,38 @@ export class LogsDatabase extends Database {
 	public async logExpeditionStart(
 		keycloakId: string,
 		petGameId: number,
-		mapLocationId: number,
-		locationType: string,
-		durationMinutes: number,
-		foodConsumed: number
+		params: {
+			mapLocationId: number;
+			locationType: string;
+			durationMinutes: number;
+			foodConsumed: number;
+			rewardIndex?: number;
+		}
 	): Promise<void> {
 		await this.createExpeditionLog(keycloakId, petGameId, {
-			mapLocationId,
-			locationType,
+			mapLocationId: params.mapLocationId,
+			locationType: params.locationType,
 			action: "start",
-			durationMinutes,
-			foodConsumed
+			durationMinutes: params.durationMinutes,
+			foodConsumed: params.foodConsumed,
+			rewardIndex: params.rewardIndex ?? 0
 		});
 	}
 
 	/**
 	 * Log when a pet expedition is completed
 	 */
-	// eslint-disable-next-line max-params
 	public async logExpeditionComplete(
 		keycloakId: string,
 		petGameId: number,
-		mapLocationId: number,
-		locationType: string,
-		durationMinutes: number,
-		foodConsumed: number,
-		success: boolean,
+		params: {
+			mapLocationId: number;
+			locationType: string;
+			durationMinutes: number;
+			foodConsumed: number;
+			rewardIndex: number;
+			success: boolean;
+		},
 		rewards:
 		| {
 			money?: number;
@@ -1351,12 +1359,13 @@ export class LogsDatabase extends Database {
 		loveChange: number
 	): Promise<void> {
 		await this.createExpeditionLog(keycloakId, petGameId, {
-			mapLocationId,
-			locationType,
+			mapLocationId: params.mapLocationId,
+			locationType: params.locationType,
 			action: "complete",
-			durationMinutes,
-			foodConsumed,
-			success,
+			durationMinutes: params.durationMinutes,
+			foodConsumed: params.foodConsumed,
+			rewardIndex: params.rewardIndex,
+			success: params.success,
 			money: rewards?.money ?? null,
 			experience: rewards?.experience ?? null,
 			points: rewards?.points ?? null,

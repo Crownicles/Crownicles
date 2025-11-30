@@ -16,6 +16,8 @@ export class LogsExpeditions extends Model {
 
 	declare readonly durationMinutes: number;
 
+	declare readonly rewardIndex: number;
+
 	declare readonly foodConsumed: number;
 
 	declare readonly success: boolean | null;
@@ -58,6 +60,11 @@ export function initModel(sequelize: Sequelize): void {
 		durationMinutes: {
 			type: DataTypes.SMALLINT.UNSIGNED,
 			allowNull: false
+		},
+		rewardIndex: {
+			type: DataTypes.TINYINT.UNSIGNED,
+			allowNull: false,
+			defaultValue: 0
 		},
 		foodConsumed: {
 			type: DataTypes.TINYINT.UNSIGNED,
