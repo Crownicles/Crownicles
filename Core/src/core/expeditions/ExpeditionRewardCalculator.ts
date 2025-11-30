@@ -44,11 +44,11 @@ function getThresholdScore(
  * @returns reward index between 0 and 9
  */
 export function calculateRewardIndex(expedition: ExpeditionData): number {
-	const t = ExpeditionConstants.SCORE_THRESHOLDS;
+	const thresholds = ExpeditionConstants.SCORE_THRESHOLDS;
 
-	const durationScore = getThresholdScore(expedition.durationMinutes, t.DURATION);
-	const riskScore = getThresholdScore(expedition.riskRate, t.RISK);
-	const difficultyScore = getThresholdScore(expedition.difficulty, t.DIFFICULTY);
+	const durationScore = getThresholdScore(expedition.durationMinutes, thresholds.DURATION);
+	const riskScore = getThresholdScore(expedition.riskRate, thresholds.RISK);
+	const difficultyScore = getThresholdScore(expedition.difficulty, thresholds.DIFFICULTY);
 
 	return Math.min(9, durationScore + riskScore + difficultyScore);
 }

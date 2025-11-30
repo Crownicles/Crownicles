@@ -130,15 +130,18 @@ export class PetExpeditions {
 	}
 
 	/**
-	 * Create a new expedition
+	 * Parameters for creating a new expedition
 	 */
-	static createExpedition(
-		playerId: number,
-		petId: number,
-		expeditionData: ExpeditionData,
-		durationMinutes: number,
-		foodConsumed: number
-	): PetExpedition {
+	static createExpedition(params: {
+		playerId: number;
+		petId: number;
+		expeditionData: ExpeditionData;
+		durationMinutes: number;
+		foodConsumed: number;
+	}): PetExpedition {
+		const {
+			playerId, petId, expeditionData, durationMinutes, foodConsumed
+		} = params;
 		const startDate = new Date();
 		const endDate = new Date(startDate.getTime() + durationMinutes * 60 * 1000);
 

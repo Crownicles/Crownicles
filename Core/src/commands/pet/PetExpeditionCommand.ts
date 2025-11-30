@@ -85,6 +85,58 @@ interface ExpeditionSelectContext {
 }
 
 /**
+ * Create a failure response packet for expedition selection
+ */
+function createExpeditionSelectFailure(failureReason: string): CommandPetExpeditionChoicePacketRes {
+	return makePacket(CommandPetExpeditionChoicePacketRes, {
+		success: false,
+		failureReason
+	});
+}
+
+/**
+ * Validate expedition selection prerequisites
+ * Returns a failure packet if validation fails, null if all checks pass
+ */
+async function validateExpeditionSelection(
+	ctx: ExpeditionSelectContext
+): Promise<CommandPetExpeditionChoicePacketRes | null> {
+	const {
+		player, keycloakId, expeditionId
+	} = ctx;
+
+	// Validate requirements
+	if (!player.hasTalisman || !player.petId) {
+		return createExpeditionSelectFailure("invalidState");
+	}
+
+	// Retrieve expedition data from cache
+	const expeditionData = PendingExpeditionsCache.findExpedition(keycloakId, expeditionId);
+	if (!expeditionData) {
+		return createExpeditionSelectFailure("invalidState");
+	}
+
+	// Check no expedition in progress
+	const activeExpedition = await PetExpeditions.getActiveExpeditionForPlayer(player.id);
+	if (activeExpedition) {
+		return createExpeditionSelectFailure("expeditionInProgress");
+	}
+
+	return null;
+}
+
+/**
+ * Calculate speed duration modifier based on pet speed
+ */
+function calculateSpeedDurationModifier(petSpeed: number): number {
+	const speedConfig = ExpeditionConstants.SPEED_DURATION_MODIFIER;
+	return speedConfig.MIN_SPEED_MULTIPLIER
+		- (petSpeed - speedConfig.MIN_SPEED)
+		* (speedConfig.MIN_SPEED_MULTIPLIER - speedConfig.MAX_SPEED_MULTIPLIER)
+		/ (speedConfig.MAX_SPEED - speedConfig.MIN_SPEED);
+}
+
+/**
  * Handle expedition choice selection
  */
 async function handleExpeditionSelect(
@@ -95,77 +147,42 @@ async function handleExpeditionSelect(
 		player, petEntity, expeditionId, keycloakId
 	} = ctx;
 
-	// Validate requirements
-	if (!player.hasTalisman || !player.petId) {
-		response.push(makePacket(CommandPetExpeditionChoicePacketRes, {
-			success: false,
-			failureReason: "invalidState"
-		}));
+	// Validate prerequisites
+	const validationError = await validateExpeditionSelection(ctx);
+	if (validationError) {
+		response.push(validationError);
 		return;
 	}
 
-	// Retrieve expedition data from cache
-	const expeditionData = PendingExpeditionsCache.findExpedition(keycloakId, expeditionId);
-	if (!expeditionData) {
-		response.push(makePacket(CommandPetExpeditionChoicePacketRes, {
-			success: false,
-			failureReason: "invalidState"
-		}));
-		return;
-	}
-
-	// Check no expedition in progress
-	const activeExpedition = await PetExpeditions.getActiveExpeditionForPlayer(player.id);
-	if (activeExpedition) {
-		response.push(makePacket(CommandPetExpeditionChoicePacketRes, {
-			success: false,
-			failureReason: "expeditionInProgress"
-		}));
-		return;
-	}
-
+	const expeditionData = PendingExpeditionsCache.findExpedition(keycloakId, expeditionId)!;
 	const petModel = PetDataController.instance.getById(petEntity.typeId);
 	const rationsRequired = expeditionData.foodCost ?? 1;
 
 	// Calculate optimal food consumption plan
 	const foodPlan = await calculateFoodConsumptionPlan(player, petModel, rationsRequired);
 
-	let insufficientFood = false;
-	let insufficientFoodCause: "noGuild" | "guildNoFood" | undefined;
-
-	if (foodPlan.totalRations < rationsRequired) {
-		insufficientFood = true;
-		insufficientFoodCause = !player.guildId ? "noGuild" : "guildNoFood";
-	}
+	const insufficientFood = foodPlan.totalRations < rationsRequired;
+	const insufficientFoodCause = insufficientFood
+		? !player.guildId ? "noGuild" : "guildNoFood"
+		: undefined;
 
 	// Apply food consumption to guild storage
 	if (player.guildId && foodPlan.consumption.length > 0) {
 		await applyFoodConsumptionPlan(player.guildId, foodPlan);
 	}
 
-	/*
-	 * Calculate speed duration modifier based on pet speed
-	 * Speed 30 = 0.70 multiplier (30% faster)
-	 * Speed 0 = 1.20 multiplier (20% slower)
-	 */
-	const petSpeed = petModel.speed;
-	const speedConfig = ExpeditionConstants.SPEED_DURATION_MODIFIER;
-	const speedDurationModifier = speedConfig.MIN_SPEED_MULTIPLIER
-		- (petSpeed - speedConfig.MIN_SPEED)
-		* (speedConfig.MIN_SPEED_MULTIPLIER - speedConfig.MAX_SPEED_MULTIPLIER)
-		/ (speedConfig.MAX_SPEED - speedConfig.MIN_SPEED);
-
-	// Apply speed modifier to duration
+	// Calculate speed modifier and adjusted duration
+	const speedDurationModifier = calculateSpeedDurationModifier(petModel.speed);
 	const adjustedDurationMinutes = Math.round(expeditionData.durationMinutes * speedDurationModifier);
 
 	// Create expedition with adjusted duration
-	const expedition = PetExpeditions.createExpedition(
-		player.id,
-		petEntity.id,
+	const expedition = PetExpeditions.createExpedition({
+		playerId: player.id,
+		petId: petEntity.id,
 		expeditionData,
-		adjustedDurationMinutes,
-		foodPlan.totalRations
-	);
+		durationMinutes: adjustedDurationMinutes,
+		foodConsumed: foodPlan.totalRations
+	});
 	await expedition.save();
 
 	// Clean up the pending expeditions cache
@@ -328,13 +345,42 @@ function buildExpeditionCollector(
 }
 
 /**
+ * Common data for expedition collector creation
+ */
+interface ExpeditionCollectorData {
+	petEntity: PetEntity;
+	activeExpedition: PetExpedition;
+	context: PacketContext;
+}
+
+/**
+ * Create common end callback logic for expedition collectors
+ */
+function createExpeditionEndCallback(
+	context: PacketContext,
+	reactionHandler: (reaction: { reaction: { type: string } } | undefined, player: Player, resp: CrowniclesPacket[]) => Promise<void>
+): EndCallback {
+	return async (collectorInstance: ReactionCollectorInstance, resp: CrowniclesPacket[]): Promise<void> => {
+		const reaction = collectorInstance.getFirstReaction();
+		BlockingUtils.unblockPlayer(context.keycloakId, BlockingConstants.REASONS.PET_EXPEDITION);
+
+		const reloadedPlayer = await Player.findOne({ where: { keycloakId: context.keycloakId } });
+		if (!reloadedPlayer) {
+			return;
+		}
+
+		await reactionHandler(reaction, reloadedPlayer, resp);
+	};
+}
+
+/**
  * Create the finished expedition collector with claim option
  */
-function createFinishedExpeditionCollector(
-	petEntity: PetEntity,
-	activeExpedition: PetExpedition,
-	context: PacketContext
-): CrowniclesPacket {
+function createFinishedExpeditionCollector(data: ExpeditionCollectorData): CrowniclesPacket {
+	const {
+		petEntity, activeExpedition, context
+	} = data;
+
 	const collector = new ReactionCollectorPetExpeditionFinished({
 		petId: petEntity.typeId,
 		petSex: petEntity.sex as SexTypeShort,
@@ -346,19 +392,11 @@ function createFinishedExpeditionCollector(
 		isDistantExpedition: undefined
 	});
 
-	const endCallback: EndCallback = async (collectorInstance: ReactionCollectorInstance, resp: CrowniclesPacket[]): Promise<void> => {
-		const reaction = collectorInstance.getFirstReaction();
-		BlockingUtils.unblockPlayer(context.keycloakId, BlockingConstants.REASONS.PET_EXPEDITION);
-
-		const reloadedPlayer = await Player.findOne({ where: { keycloakId: context.keycloakId } });
-		if (!reloadedPlayer) {
-			return;
-		}
-
+	const endCallback = createExpeditionEndCallback(context, async (reaction, player, resp) => {
 		if (reaction?.reaction.type === ReactionCollectorPetExpeditionClaimReaction.name) {
-			await PetExpeditionCommand.doResolveExpedition(resp, reloadedPlayer);
+			await PetExpeditionCommand.doResolveExpedition(resp, player);
 		}
-	};
+	});
 
 	return buildExpeditionCollector(collector, context, endCallback);
 }
@@ -366,11 +404,11 @@ function createFinishedExpeditionCollector(
 /**
  * Create the in-progress expedition collector with recall option
  */
-function createInProgressExpeditionCollector(
-	petEntity: PetEntity,
-	activeExpedition: PetExpedition,
-	context: PacketContext
-): CrowniclesPacket {
+function createInProgressExpeditionCollector(data: ExpeditionCollectorData): CrowniclesPacket {
+	const {
+		petEntity, activeExpedition, context
+	} = data;
+
 	const collector = new ReactionCollectorPetExpedition({
 		petId: petEntity.typeId,
 		petSex: petEntity.sex as SexTypeShort,
@@ -384,19 +422,11 @@ function createInProgressExpeditionCollector(
 		isDistantExpedition: undefined
 	});
 
-	const endCallback: EndCallback = async (collectorInstance: ReactionCollectorInstance, resp: CrowniclesPacket[]): Promise<void> => {
-		const reaction = collectorInstance.getFirstReaction();
-		BlockingUtils.unblockPlayer(context.keycloakId, BlockingConstants.REASONS.PET_EXPEDITION);
-
-		const reloadedPlayer = await Player.findOne({ where: { keycloakId: context.keycloakId } });
-		if (!reloadedPlayer) {
-			return;
-		}
-
+	const endCallback = createExpeditionEndCallback(context, async (reaction, player, resp) => {
 		if (reaction?.reaction.type === ReactionCollectorPetExpeditionRecallReaction.name) {
-			await handleExpeditionRecall(reloadedPlayer, resp);
+			await handleExpeditionRecall(player, resp);
 		}
-	};
+	});
 
 	return buildExpeditionCollector(collector, context, endCallback);
 }
@@ -581,9 +611,14 @@ export default class PetExpeditionCommand {
 		context: PacketContext
 	): CrowniclesPacket {
 		const isComplete = Date.now() >= activeExpedition.endDate.getTime();
+		const data: ExpeditionCollectorData = {
+			petEntity,
+			activeExpedition,
+			context
+		};
 		return isComplete
-			? createFinishedExpeditionCollector(petEntity, activeExpedition, context)
-			: createInProgressExpeditionCollector(petEntity, activeExpedition, context);
+			? createFinishedExpeditionCollector(data)
+			: createInProgressExpeditionCollector(data);
 	}
 
 	/**

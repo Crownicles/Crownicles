@@ -54,7 +54,7 @@ function generateExpeditionRPText(
 	const locationEmoji = ExpeditionConstants.getLocationEmoji(expedition.locationType as ExpeditionLocationType);
 	const locationName = expedition.mapLocationId
 		? i18n.t(`commands:petExpedition.mapLocationExpeditions.${expedition.mapLocationId}`, { lng })
-		: i18n.t(`commands:petExpedition.mapLocationExpeditions.1`, { lng });
+		: i18n.t("commands:petExpedition.mapLocationExpeditions.1", { lng });
 
 	// Header with location and return time
 	let text = i18n.t("commands:petExpedition.expeditionStatusRP.header", {

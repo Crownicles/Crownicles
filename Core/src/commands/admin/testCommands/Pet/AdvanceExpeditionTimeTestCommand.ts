@@ -30,10 +30,10 @@ const advanceExpeditionTimeTestCommand: ExecuteTestCommandLike = async (player, 
 	const remainingMinutes = Math.max(0, Math.round((newEndDate.getTime() - Date.now()) / (60 * 1000)));
 
 	if (remainingMinutes <= 0) {
-		return `✅ L'expédition de votre familier est maintenant terminée ! Utilisez {command:pet} pour récupérer les récompenses.`;
+		return "✅ L'expédition de votre familier est maintenant terminée ! Utilisez {command:pet} pour récupérer les récompenses.";
 	}
 
-	return `✅ L'expédition a été avancée de ${minutesToAdvance} minutes. Temps restant : ${remainingMinutes} minutes.`;
+	return "✅ L'expédition a été avancée de " + minutesToAdvance + " minutes. Temps restant : " + remainingMinutes + " minutes.";
 };
 
 commandInfo.execute = advanceExpeditionTimeTestCommand;

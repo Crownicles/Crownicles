@@ -31,6 +31,7 @@ import {
 import {
 	ButtonInteraction, StringSelectMenuInteraction
 } from "discord.js";
+import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
 
 /**
  * Format food consumption details for display
@@ -116,6 +117,98 @@ function getExpeditionLocationName(
 }
 
 /**
+ * Build error embed for missing talisman
+ */
+function buildNoTalismanEmbed(
+	interaction: CrowniclesInteraction,
+	packet: CommandPetExpeditionPacketRes
+): CrowniclesEmbed {
+	const lng = interaction.userLanguage;
+	const sexContext = packet.petSex ? getSexContext(packet.petSex as SexTypeShort) : StringConstants.SEX.MALE.long;
+	return new CrowniclesEmbed()
+		.formatAuthor(
+			i18n.t("commands:petExpedition.unavailableTitle", {
+				lng,
+				pseudo: escapeUsername(interaction.user.displayName)
+			}),
+			interaction.user
+		)
+		.setDescription(
+			StringUtils.getRandomTranslation("commands:petExpedition.noTalisman", lng, { context: sexContext })
+		)
+		.setErrorColor();
+}
+
+/**
+ * Build embed for expedition in progress
+ */
+function buildInProgressEmbed(
+	interaction: CrowniclesInteraction,
+	expedition: NonNullable<CommandPetExpeditionPacketRes["expeditionInProgress"]>
+): CrowniclesEmbed {
+	const lng = interaction.userLanguage;
+	const locationEmoji = ExpeditionConstants.getLocationEmoji(expedition.locationType as ExpeditionLocationType);
+	const locationName = getExpeditionLocationName(lng, expedition.mapLocationId!, expedition.isDistantExpedition);
+	const petDisplay = `${DisplayUtils.getPetIcon(expedition.petId, expedition.petSex as SexTypeShort)} **${DisplayUtils.getPetNicknameOrTypeName(expedition.petNickname ?? null, expedition.petId, expedition.petSex as SexTypeShort, lng)}**`;
+	const sexContext = getSexContext(expedition.petSex as SexTypeShort);
+
+	const foodInfo = expedition.foodConsumed && expedition.foodConsumed > 0
+		? i18n.t("commands:petExpedition.inProgressFoodInfo", {
+			lng,
+			amount: expedition.foodConsumed
+		})
+		: "";
+
+	return new CrowniclesEmbed()
+		.formatAuthor(
+			i18n.t("commands:petExpedition.inProgressTitle", {
+				lng,
+				pseudo: escapeUsername(interaction.user.displayName)
+			}),
+			interaction.user
+		)
+		.setDescription(
+			i18n.t("commands:petExpedition.inProgressDescription", {
+				lng,
+				context: sexContext,
+				petDisplay,
+				location: `${locationEmoji} ${locationName}`,
+				risk: getTranslatedRiskCategoryName(expedition.riskRate, lng),
+				returnTime: finishInTimeDisplay(new Date(expedition.endTime)),
+				foodInfo
+			})
+		);
+}
+
+/**
+ * Get description for cannot start expedition reasons
+ */
+function getCannotStartDescription(
+	packet: CommandPetExpeditionPacketRes,
+	lng: Language,
+	petDisplay: string,
+	sexContext: string
+): string {
+	switch (packet.cannotStartReason) {
+		case "noPet":
+			return StringUtils.getRandomTranslation("commands:petExpedition.noPet", lng, {});
+		case "insufficientLove":
+			return StringUtils.getRandomTranslation("commands:petExpedition.insufficientLove", lng, {
+				context: sexContext,
+				petDisplay,
+				lovePoints: packet.petLovePoints ?? 0
+			});
+		case "petHungry":
+			return StringUtils.getRandomTranslation("commands:petExpedition.petHungry", lng, {
+				context: sexContext,
+				petDisplay
+			});
+		default:
+			return i18n.t(`commands:petExpedition.errors.${packet.cannotStartReason}`, { lng });
+	}
+}
+
+/**
  * Handle the initial expedition status response
  * This only handles error cases and auto-resolve redirect.
  * Collector creation is now handled via ReactionCollectorCreationPacket.
@@ -133,23 +226,8 @@ export async function handleExpeditionStatusRes(
 
 	// Check if player has talisman
 	if (!packet.hasTalisman) {
-		// Determine sex context - use pet sex if available, default to male
-		const sexContext = packet.petSex ? getSexContext(packet.petSex as SexTypeShort) : StringConstants.SEX.MALE.long;
-		const embed = new CrowniclesEmbed()
-			.formatAuthor(
-				i18n.t("commands:petExpedition.unavailableTitle", {
-					lng,
-					pseudo: escapeUsername(interaction.user.displayName)
-				}),
-				interaction.user
-			)
-			.setDescription(
-				StringUtils.getRandomTranslation("commands:petExpedition.noTalisman", lng, { context: sexContext })
-			)
-			.setErrorColor();
-
 		await interaction.followUp({
-			embeds: [embed]
+			embeds: [buildNoTalismanEmbed(interaction, packet)]
 		});
 		return;
 	}
@@ -157,57 +235,26 @@ export async function handleExpeditionStatusRes(
 	// Check if there's an expedition in progress that's complete (auto-resolve)
 	if (packet.hasExpeditionInProgress && packet.expeditionInProgress) {
 		const expedition = packet.expeditionInProgress;
-		const now = Date.now();
 
 		// Check if expedition is complete - redirect to resolve
-		if (now >= expedition.endTime) {
+		if (Date.now() >= expedition.endTime) {
 			PacketUtils.sendPacketToBackend(context, makePacket(CommandPetExpeditionResolvePacketReq, {}));
 			return;
 		}
 
-		/*
-		 * If expedition is still in progress but we got this packet, it means
-		 * the collector failed or wasn't created. This shouldn't happen in normal flow.
-		 * But we can show an informational message
-		 */
-		const locationEmoji = ExpeditionConstants.getLocationEmoji(expedition.locationType as ExpeditionLocationType);
-		const locationName = getExpeditionLocationName(lng, expedition.mapLocationId!, expedition.isDistantExpedition);
-		const petDisplay = `${DisplayUtils.getPetIcon(expedition.petId, expedition.petSex as SexTypeShort)} **${DisplayUtils.getPetNicknameOrTypeName(expedition.petNickname ?? null, expedition.petId, expedition.petSex as SexTypeShort, lng)}**`;
-		const sexContext = getSexContext(expedition.petSex as SexTypeShort);
-
-		const foodInfo = expedition.foodConsumed && expedition.foodConsumed > 0
-			? i18n.t("commands:petExpedition.inProgressFoodInfo", {
-				lng,
-				amount: expedition.foodConsumed
-			})
-			: "";
-
-		const embed = new CrowniclesEmbed()
-			.formatAuthor(
-				i18n.t("commands:petExpedition.inProgressTitle", {
-					lng,
-					pseudo: escapeUsername(interaction.user.displayName)
-				}),
-				interaction.user
-			)
-			.setDescription(
-				i18n.t("commands:petExpedition.inProgressDescription", {
-					lng,
-					context: sexContext,
-					petDisplay,
-					location: `${locationEmoji} ${locationName}`,
-					risk: getTranslatedRiskCategoryName(expedition.riskRate, lng),
-					returnTime: finishInTimeDisplay(new Date(expedition.endTime)),
-					foodInfo
-				})
-			);
-
-		await interaction.followUp({ embeds: [embed] });
+		await interaction.followUp({ embeds: [buildInProgressEmbed(interaction, expedition)] });
 		return;
 	}
 
 	// Check if player can't start an expedition (error cases)
 	if (!packet.canStartExpedition) {
+		// Get pet display with icon and name
+		const petDisplay = packet.petId && packet.petSex
+			? `${DisplayUtils.getPetIcon(packet.petId, packet.petSex as SexTypeShort)} **${DisplayUtils.getPetNicknameOrTypeName(packet.petNickname ?? null, packet.petId, packet.petSex as SexTypeShort, lng)}**`
+			: i18n.t("commands:pet.defaultPetName", { lng });
+
+		const sexContext = packet.petSex ? getSexContext(packet.petSex as SexTypeShort) : StringConstants.SEX.MALE.long;
+
 		const embed = new CrowniclesEmbed()
 			.formatAuthor(
 				i18n.t("commands:petExpedition.unavailableTitle", {
@@ -215,47 +262,9 @@ export async function handleExpeditionStatusRes(
 					pseudo: escapeUsername(interaction.user.displayName)
 				}),
 				interaction.user
-			);
-
-		// Get pet display with icon and name
-		const petDisplay = packet.petId && packet.petSex
-			? `${DisplayUtils.getPetIcon(packet.petId, packet.petSex as SexTypeShort)} **${DisplayUtils.getPetNicknameOrTypeName(packet.petNickname ?? null, packet.petId, packet.petSex as SexTypeShort, lng)}**`
-			: i18n.t("commands:pet.defaultPetName", { lng });
-
-		// Get sex context for gendered translations
-		const sexContext = packet.petSex ? getSexContext(packet.petSex as SexTypeShort) : StringConstants.SEX.MALE.long;
-
-		// Use RP messages for specific reasons
-		if (packet.cannotStartReason === "noPet") {
-			embed.setDescription(
-				StringUtils.getRandomTranslation("commands:petExpedition.noPet", lng, {})
-			);
-		}
-		else if (packet.cannotStartReason === "insufficientLove") {
-			embed.setDescription(
-				StringUtils.getRandomTranslation("commands:petExpedition.insufficientLove", lng, {
-					context: sexContext,
-					petDisplay,
-					lovePoints: packet.petLovePoints ?? 0
-				})
-			);
-		}
-		else if (packet.cannotStartReason === "petHungry") {
-			embed.setDescription(
-				StringUtils.getRandomTranslation("commands:petExpedition.petHungry", lng, {
-					context: sexContext,
-					petDisplay
-				})
-			);
-		}
-		else {
-			// Fallback for other reasons
-			embed.setDescription(
-				i18n.t(`commands:petExpedition.errors.${packet.cannotStartReason}`, { lng })
-			);
-		}
-
-		embed.setErrorColor();
+			)
+			.setDescription(getCannotStartDescription(packet, lng, petDisplay, sexContext))
+			.setErrorColor();
 
 		await interaction.followUp({
 			embeds: [embed]
@@ -266,6 +275,45 @@ export async function handleExpeditionStatusRes(
 	 * If canStartExpedition is true, Core should have sent a ReactionCollectorCreationPacket
 	 * So we don't need to do anything here
 	 */
+}
+
+/**
+ * Get food consumption description
+ */
+function getFoodConsumedDescription(packet: CommandPetExpeditionChoicePacketRes, lng: Language): string {
+	if (packet.foodConsumedDetails && packet.foodConsumedDetails.length > 0) {
+		const foodDetailsDisplay = formatFoodConsumedDetails(packet.foodConsumedDetails, lng);
+		return i18n.t("commands:petExpedition.foodConsumedDetails", {
+			lng,
+			foodDetails: foodDetailsDisplay
+		});
+	}
+	if (packet.foodConsumed && packet.foodConsumed > 0) {
+		return i18n.t("commands:petExpedition.foodConsumed", {
+			lng,
+			amount: packet.foodConsumed
+		});
+	}
+	return "";
+}
+
+/**
+ * Get speed category based on duration modifier
+ */
+function getSpeedCategory(speedDurationModifier: number): string {
+	if (speedDurationModifier < 0.80) {
+		return "veryFast";
+	}
+	if (speedDurationModifier < 0.95) {
+		return "fast";
+	}
+	if (speedDurationModifier <= 1.05) {
+		return "normal";
+	}
+	if (speedDurationModifier <= 1.15) {
+		return "slow";
+	}
+	return "verySlow";
 }
 
 /**
@@ -295,11 +343,7 @@ export async function handleExpeditionChoiceRes(
 
 	const expedition = packet.expedition!;
 	const locationEmoji = ExpeditionConstants.getLocationEmoji(expedition.locationType as ExpeditionLocationType);
-	const locationName = getExpeditionLocationName(
-		lng,
-		expedition.mapLocationId!,
-		expedition.isDistantExpedition
-	);
+	const locationName = getExpeditionLocationName(lng, expedition.mapLocationId!, expedition.isDistantExpedition);
 	const petDisplay = `${DisplayUtils.getPetIcon(expedition.petId, expedition.petSex as SexTypeShort)} **${DisplayUtils.getPetNicknameOrTypeName(expedition.petNickname ?? null, expedition.petId, expedition.petSex as SexTypeShort, lng)}**`;
 	const sexContext = getSexContext(expedition.petSex as SexTypeShort);
 
@@ -311,51 +355,19 @@ export async function handleExpeditionChoiceRes(
 		returnTime: finishInTimeDisplay(new Date(expedition.endTime))
 	});
 
-	// Display food consumed with detailed breakdown if available
-	if (packet.foodConsumedDetails && packet.foodConsumedDetails.length > 0) {
-		const foodDetailsDisplay = formatFoodConsumedDetails(packet.foodConsumedDetails, lng);
-		description += i18n.t("commands:petExpedition.foodConsumedDetails", {
-			lng,
-			foodDetails: foodDetailsDisplay
-		});
-	}
-	else if (packet.foodConsumed && packet.foodConsumed > 0) {
-		// Fallback to simple display if no details available
-		description += i18n.t("commands:petExpedition.foodConsumed", {
-			lng,
-			amount: packet.foodConsumed
-		});
-	}
+	// Add food consumption details
+	description += getFoodConsumedDescription(packet, lng);
 
+	// Add insufficient food warning if applicable
 	if (packet.insufficientFood) {
-		// Choose the right message depending on the cause (no guild / guild with no food)
 		const cause = (packet as unknown as { insufficientFoodCause?: "noGuild" | "guildNoFood" }).insufficientFoodCause;
-		if (cause === "guildNoFood") {
-			description += i18n.t("commands:petExpedition.insufficientFoodWarning.guildNoFood", { lng });
-		}
-		else {
-			description += i18n.t("commands:petExpedition.insufficientFoodWarning.noGuild", { lng });
-		}
+		const warningKey = cause === "guildNoFood" ? "guildNoFood" : "noGuild";
+		description += i18n.t(`commands:petExpedition.insufficientFoodWarning.${warningKey}`, { lng });
 	}
 
-	// Add speed modifier message based on pet speed impact
+	// Add speed modifier message
 	if (packet.speedDurationModifier !== undefined) {
-		let speedCategory: string;
-		if (packet.speedDurationModifier < 0.80) {
-			speedCategory = "veryFast";
-		}
-		else if (packet.speedDurationModifier < 0.95) {
-			speedCategory = "fast";
-		}
-		else if (packet.speedDurationModifier <= 1.05) {
-			speedCategory = "normal";
-		}
-		else if (packet.speedDurationModifier <= 1.15) {
-			speedCategory = "slow";
-		}
-		else {
-			speedCategory = "verySlow";
-		}
+		const speedCategory = getSpeedCategory(packet.speedDurationModifier);
 		description += i18n.t(`commands:petExpedition.speedModifier.${speedCategory}`, {
 			lng,
 			context: sexContext
@@ -376,39 +388,67 @@ export async function handleExpeditionChoiceRes(
 }
 
 /**
- * Handle expedition cancellation
+ * Common packet structure for cancel/recall responses
  */
-export async function handleExpeditionCancelRes(
+interface ExpeditionLoveLossPacket {
+	petId: number;
+	petSex: string;
+	petNickname?: string;
+	loveLost: number;
+}
+
+/**
+ * Build an embed for expedition cancellation or recall
+ */
+function buildExpeditionLoveLossEmbed(
 	context: PacketContext,
-	packet: CommandPetExpeditionCancelPacketRes
-): Promise<void> {
+	packet: ExpeditionLoveLossPacket,
+	titleKey: string,
+	descriptionKey: string
+): CrowniclesEmbed | null {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction);
 	if (!interaction) {
-		return;
+		return null;
 	}
 
 	const lng = interaction.userLanguage;
 	const petDisplay = `${DisplayUtils.getPetIcon(packet.petId, packet.petSex as SexTypeShort)} **${DisplayUtils.getPetNicknameOrTypeName(packet.petNickname ?? null, packet.petId, packet.petSex as SexTypeShort, lng)}**`;
 	const sexContext = getSexContext(packet.petSex as SexTypeShort);
 
-	const embed = new CrowniclesEmbed()
+	return new CrowniclesEmbed()
 		.formatAuthor(
-			i18n.t("commands:petExpedition.cancelledTitle", {
+			i18n.t(titleKey, {
 				lng,
 				pseudo: escapeUsername(interaction.user.displayName)
 			}),
 			interaction.user
 		)
 		.setDescription(
-			i18n.t("commands:petExpedition.cancelled", {
+			i18n.t(descriptionKey, {
 				lng,
 				context: sexContext,
 				petDisplay,
 				loveLost: packet.loveLost
 			})
 		);
+}
 
-	await sendResponse(context, embed);
+/**
+ * Handle expedition cancellation
+ */
+export async function handleExpeditionCancelRes(
+	context: PacketContext,
+	packet: CommandPetExpeditionCancelPacketRes
+): Promise<void> {
+	const embed = buildExpeditionLoveLossEmbed(
+		context,
+		packet,
+		"commands:petExpedition.cancelledTitle",
+		"commands:petExpedition.cancelled"
+	);
+	if (embed) {
+		await sendResponse(context, embed);
+	}
 }
 
 /**
@@ -418,33 +458,74 @@ export async function handleExpeditionRecallRes(
 	context: PacketContext,
 	packet: CommandPetExpeditionRecallPacketRes
 ): Promise<void> {
-	const interaction = DiscordCache.getInteraction(context.discord!.interaction);
-	if (!interaction) {
-		return;
+	const embed = buildExpeditionLoveLossEmbed(
+		context,
+		packet,
+		"commands:petExpedition.recalledTitle",
+		"commands:petExpedition.recalled"
+	);
+	if (embed) {
+		await sendResponse(context, embed);
 	}
+}
 
-	const lng = interaction.userLanguage;
-	const petDisplay = `${DisplayUtils.getPetIcon(packet.petId, packet.petSex as SexTypeShort)} **${DisplayUtils.getPetNicknameOrTypeName(packet.petNickname ?? null, packet.petId, packet.petSex as SexTypeShort, lng)}**`;
-	const sexContext = getSexContext(packet.petSex as SexTypeShort);
+/**
+ * Expedition resolution display context
+ */
+interface ExpeditionResolutionContext {
+	pseudo: string;
+	sexContext: string;
+	petDisplay: string;
+	location: string;
+	lng: Language;
+}
 
-	const embed = new CrowniclesEmbed()
-		.formatAuthor(
-			i18n.t("commands:petExpedition.recalledTitle", {
-				lng,
-				pseudo: escapeUsername(interaction.user.displayName)
-			}),
-			interaction.user
-		)
-		.setDescription(
-			i18n.t("commands:petExpedition.recalled", {
-				lng,
+/**
+ * Build resolution data based on expedition outcome
+ */
+function buildResolutionData(
+	packet: CommandPetExpeditionResolvePacketRes,
+	ctx: ExpeditionResolutionContext
+): { title: string; description: string } {
+	const {
+		pseudo, sexContext, petDisplay, location, lng
+	} = ctx;
+
+	if (packet.totalFailure) {
+		return {
+			title: i18n.t("commands:petExpedition.failureTitle", { lng, pseudo }),
+			description: StringUtils.getRandomTranslation("commands:petExpedition.totalFailure", lng, {
 				context: sexContext,
 				petDisplay,
-				loveLost: packet.loveLost
-			})
-		);
+				location
+			}) + i18n.t("commands:petExpedition.loveChangeFailure", { lng })
+		};
+	}
 
-	await sendResponse(context, embed);
+	if (packet.partialSuccess) {
+		const rewardText = packet.rewards ? formatRewards(packet.rewards, lng) : "";
+		const loveChangeKey = packet.loveChange >= 0
+			? "commands:petExpedition.loveChangePartialPositive"
+			: "commands:petExpedition.loveChangePartialNegative";
+		return {
+			title: i18n.t("commands:petExpedition.partialSuccessTitle", { lng, pseudo }),
+			description: StringUtils.getRandomTranslation("commands:petExpedition.partialSuccess", lng, {
+				context: sexContext,
+				petDisplay,
+				location
+			}) + rewardText + i18n.t(loveChangeKey, { lng })
+		};
+	}
+
+	const rewardText = packet.rewards ? formatRewards(packet.rewards, lng) : "";
+	return {
+		title: i18n.t("commands:petExpedition.successTitle", { lng, pseudo }),
+		description: StringUtils.getRandomTranslation("commands:petExpedition.success", lng, {
+			context: sexContext,
+			petDisplay,
+			location
+		}) + rewardText + i18n.t("commands:petExpedition.loveChangeSuccess", { lng })
+	};
 }
 
 /**
@@ -462,62 +543,19 @@ export async function handleExpeditionResolveRes(
 	const lng = interaction.userLanguage;
 	const petDisplay = `${DisplayUtils.getPetIcon(packet.petId, packet.petSex as SexTypeShort)} **${DisplayUtils.getPetNicknameOrTypeName(packet.petNickname ?? null, packet.petId, packet.petSex as SexTypeShort, lng)}**`;
 	const locationEmoji = ExpeditionConstants.getLocationEmoji(packet.expedition.locationType as ExpeditionLocationType);
-	const locationName = getExpeditionLocationName(
-		lng,
-		packet.expedition.mapLocationId!,
-		packet.expedition.isDistantExpedition
-	);
-	const sexContext = getSexContext(packet.petSex as SexTypeShort);
+	const locationName = getExpeditionLocationName(lng, packet.expedition.mapLocationId!, packet.expedition.isDistantExpedition);
 
-	let description: string;
-	let title: string;
-
-	if (packet.totalFailure) {
-		title = i18n.t("commands:petExpedition.failureTitle", {
-			lng,
-			pseudo: escapeUsername(interaction.user.displayName)
-		});
-		description = StringUtils.getRandomTranslation("commands:petExpedition.totalFailure", lng, {
-			context: sexContext,
-			petDisplay,
-			location: `${locationEmoji} ${locationName}`
-		});
-		description += i18n.t("commands:petExpedition.loveChangeFailure", { lng });
-	}
-	else if (packet.partialSuccess) {
-		title = i18n.t("commands:petExpedition.partialSuccessTitle", {
-			lng,
-			pseudo: escapeUsername(interaction.user.displayName)
-		});
-		description = StringUtils.getRandomTranslation("commands:petExpedition.partialSuccess", lng, {
-			context: sexContext,
-			petDisplay,
-			location: `${locationEmoji} ${locationName}`
-		});
-		if (packet.rewards) {
-			description += formatRewards(packet.rewards, lng);
-		}
-		description += i18n.t(packet.loveChange >= 0 ? "commands:petExpedition.loveChangePartialPositive" : "commands:petExpedition.loveChangePartialNegative", { lng });
-	}
-	else {
-		title = i18n.t("commands:petExpedition.successTitle", {
-			lng,
-			pseudo: escapeUsername(interaction.user.displayName)
-		});
-		description = StringUtils.getRandomTranslation("commands:petExpedition.success", lng, {
-			context: sexContext,
-			petDisplay,
-			location: `${locationEmoji} ${locationName}`
-		});
-		if (packet.rewards) {
-			description += formatRewards(packet.rewards, lng);
-		}
-		description += i18n.t("commands:petExpedition.loveChangeSuccess", { lng });
-	}
+	const resolutionData = buildResolutionData(packet, {
+		pseudo: escapeUsername(interaction.user.displayName),
+		sexContext: getSexContext(packet.petSex as SexTypeShort),
+		petDisplay,
+		location: `${locationEmoji} ${locationName}`,
+		lng
+	});
 
 	const embed = new CrowniclesEmbed()
-		.formatAuthor(title, interaction.user)
-		.setDescription(description);
+		.formatAuthor(resolutionData.title, interaction.user)
+		.setDescription(resolutionData.description);
 
 	await sendResponse(context, embed);
 }
