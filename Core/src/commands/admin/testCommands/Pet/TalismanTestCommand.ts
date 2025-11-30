@@ -58,6 +58,9 @@ interface ValidatedTalismanArgs {
 	action: TalismanAction;
 }
 
+const VALID_TALISMAN_TYPES = new Set<string>([TALISMAN_TYPES.ANCHOR, TALISMAN_TYPES.CLONE]);
+const VALID_TALISMAN_ACTIONS = new Set<string>([TALISMAN_ACTIONS.GIVE, TALISMAN_ACTIONS.REMOVE]);
+
 /**
  * Validate command arguments and return parsed values
  */
@@ -65,17 +68,17 @@ function validateTalismanArgs(args: string[]): ValidatedTalismanArgs {
 	const talismanType = args[0]?.toLowerCase();
 	const action = args[1]?.toLowerCase();
 
-	if (talismanType !== TALISMAN_TYPES.ANCHOR && talismanType !== TALISMAN_TYPES.CLONE) {
+	if (!VALID_TALISMAN_TYPES.has(talismanType)) {
 		throw new Error(`Type de talisman invalide: "${talismanType}". Utilisez "anchor" ou "clone".`);
 	}
 
-	if (action !== TALISMAN_ACTIONS.GIVE && action !== TALISMAN_ACTIONS.REMOVE) {
+	if (!VALID_TALISMAN_ACTIONS.has(action)) {
 		throw new Error(`Action invalide: "${action}". Utilisez "give" ou "remove".`);
 	}
 
 	return {
-		talismanType,
-		action
+		talismanType: talismanType as TalismanType,
+		action: action as TalismanAction
 	};
 }
 

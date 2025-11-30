@@ -33,7 +33,7 @@ const advanceExpeditionTimeTestCommand: ExecuteTestCommandLike = async (player, 
 		return "✅ L'expédition de votre familier est maintenant terminée ! Utilisez {command:pet} pour récupérer les récompenses.";
 	}
 
-	return "✅ L'expédition a été avancée de " + minutesToAdvance + " minutes. Temps restant : " + remainingMinutes + " minutes.";
+	return `✅ L'expédition a été avancée de ${minutesToAdvance} minutes. Temps restant : ${remainingMinutes} minutes.`;
 };
 
 commandInfo.execute = advanceExpeditionTimeTestCommand;
