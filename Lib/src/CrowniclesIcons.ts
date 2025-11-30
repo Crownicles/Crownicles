@@ -143,6 +143,7 @@ export const CrowniclesIcons: {
 		loot: string;
 		risk: string;
 		wealth: string;
+		reward: string;
 		duration: string;
 		difficulty: string;
 		food: string;
@@ -2223,6 +2224,7 @@ export const CrowniclesIcons: {
 		loot: "💰",
 		risk: "⚠️",
 		wealth: "💰",
+		reward: "🎁",
 		duration: "⏱️",
 		difficulty: "📊",
 		food: "🍖",

@@ -50,11 +50,11 @@ function getTranslatedRiskCategoryName(riskRate: number, lng: Language): string 
 }
 
 /**
- * Get translated wealth category name for display
+ * Get translated reward category name for display based on reward index
  */
-function getTranslatedWealthCategoryName(wealthRate: number, lng: Language): string {
-	const categoryKey = ExpeditionConstants.getWealthCategoryName(wealthRate);
-	return i18n.t(`commands:petExpedition.wealthCategories.${categoryKey}`, { lng });
+function getTranslatedRewardCategoryName(rewardIndex: number, lng: Language): string {
+	const categoryKey = ExpeditionConstants.getRewardCategoryName(rewardIndex);
+	return i18n.t(`commands:petExpedition.rewardCategories.${categoryKey}`, { lng });
 }
 
 /**
@@ -233,7 +233,7 @@ export async function createPetExpeditionChoiceCollector(
 			location: `${locationEmoji} **${locationName}**`,
 			duration: displayDuration,
 			risk: getTranslatedRiskCategoryName(exp.riskRate, lng),
-			wealth: getTranslatedWealthCategoryName(exp.wealthRate, lng),
+			reward: getTranslatedRewardCategoryName(exp.rewardIndex, lng),
 			difficulty: getTranslatedDifficultyCategoryName(exp.difficulty, lng),
 			foodDisplay
 		});

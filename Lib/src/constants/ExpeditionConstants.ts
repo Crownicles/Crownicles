@@ -72,6 +72,34 @@ export abstract class ExpeditionConstants {
 	};
 
 	/**
+	 * Reward index categories for display purposes
+	 * Reward index is a value from 0 to 9 based on duration, risk, and difficulty scores
+	 * 5 categories: meager (0-1), modest (2-3), substantial (4-5), bountiful (6-7), legendary (8-9)
+	 */
+	static readonly REWARD_DISPLAY_CATEGORIES = {
+		MEAGER: {
+			MAX: 1,
+			NAME: "meager"
+		},
+		MODEST: {
+			MAX: 3,
+			NAME: "modest"
+		},
+		SUBSTANTIAL: {
+			MAX: 5,
+			NAME: "substantial"
+		},
+		BOUNTIFUL: {
+			MAX: 7,
+			NAME: "bountiful"
+		},
+		LEGENDARY: {
+			MAX: 9,
+			NAME: "legendary"
+		}
+	};
+
+	/**
 	 * Difficulty range (0 to 100)
 	 */
 	static readonly DIFFICULTY = {
@@ -513,6 +541,27 @@ export abstract class ExpeditionConstants {
 			return ExpeditionConstants.DIFFICULTY_DISPLAY_CATEGORIES.CHALLENGING.NAME;
 		}
 		return ExpeditionConstants.DIFFICULTY_DISPLAY_CATEGORIES.TREACHEROUS.NAME;
+	}
+
+	/**
+	 * Get the reward category name based on reward index value
+	 * @param rewardIndex - Reward index value (0-9)
+	 * @returns The category name key for translations
+	 */
+	static getRewardCategoryName(rewardIndex: number): string {
+		if (rewardIndex <= ExpeditionConstants.REWARD_DISPLAY_CATEGORIES.MEAGER.MAX) {
+			return ExpeditionConstants.REWARD_DISPLAY_CATEGORIES.MEAGER.NAME;
+		}
+		if (rewardIndex <= ExpeditionConstants.REWARD_DISPLAY_CATEGORIES.MODEST.MAX) {
+			return ExpeditionConstants.REWARD_DISPLAY_CATEGORIES.MODEST.NAME;
+		}
+		if (rewardIndex <= ExpeditionConstants.REWARD_DISPLAY_CATEGORIES.SUBSTANTIAL.MAX) {
+			return ExpeditionConstants.REWARD_DISPLAY_CATEGORIES.SUBSTANTIAL.NAME;
+		}
+		if (rewardIndex <= ExpeditionConstants.REWARD_DISPLAY_CATEGORIES.BOUNTIFUL.MAX) {
+			return ExpeditionConstants.REWARD_DISPLAY_CATEGORIES.BOUNTIFUL.NAME;
+		}
+		return ExpeditionConstants.REWARD_DISPLAY_CATEGORIES.LEGENDARY.NAME;
 	}
 
 	/**
