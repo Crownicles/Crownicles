@@ -29,11 +29,6 @@ export interface ExpeditionOptionData {
 
 	riskRate: number;
 
-	/**
-	 * Wealth rate multiplier for reward calculation (not displayed to user)
-	 */
-	wealthRate: number;
-
 	difficulty: number;
 
 	foodCost: number;

@@ -1,4 +1,5 @@
 // Expedition system exports
+export { PendingExpeditionsCache } from "./PendingExpeditionsCache";
 export {
 	calculateRewardIndex, calculateRewards
 } from "./ExpeditionRewardCalculator";
