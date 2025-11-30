@@ -161,39 +161,27 @@ export class PetExpeditions {
 	}
 
 	/**
-	 * Cancel an expedition and update its status
+	 * Cancel an expedition and remove it from the database
+	 * Note: Cancelled expeditions are tracked in the logs database for analytics
 	 */
 	static async cancelExpedition(expedition: PetExpedition): Promise<void> {
-		expedition.status = ExpeditionConstants.STATUS.CANCELLED;
-		await expedition.save();
+		await expedition.destroy();
 	}
 
 	/**
-	 * Recall a pet from expedition
+	 * Recall a pet from expedition and remove the expedition from the database
+	 * Note: Recalled expeditions are tracked in the logs database for analytics
 	 */
 	static async recallExpedition(expedition: PetExpedition): Promise<void> {
-		expedition.status = ExpeditionConstants.STATUS.RECALLED;
-		await expedition.save();
+		await expedition.destroy();
 	}
 
 	/**
-	 * Mark expedition as completed
+	 * Mark expedition as completed and remove it from the database
+	 * Note: Completed expeditions are tracked in the logs database for analytics
 	 */
 	static async completeExpedition(expedition: PetExpedition): Promise<void> {
-		expedition.status = ExpeditionConstants.STATUS.COMPLETED;
-		await expedition.save();
-	}
-
-	/**
-	 * Count the number of successful (completed) expeditions for a player
-	 */
-	static async countSuccessfulExpeditions(playerId: number): Promise<number> {
-		return await PetExpedition.count({
-			where: {
-				playerId,
-				status: ExpeditionConstants.STATUS.COMPLETED
-			}
-		});
+		await expedition.destroy();
 	}
 }
 

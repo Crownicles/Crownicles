@@ -31,6 +31,7 @@ import { PVEConstants } from "../../../../../Lib/src/constants/PVEConstants";
 import { LogsGuildsJoins } from "./models/LogsGuildJoins";
 import { LogsGuilds } from "./models/LogsGuilds";
 import { MapLocationDataController } from "../../../data/MapLocation";
+import { LogsExpeditions } from "./models/LogsExpeditions";
 
 export type RankedFightResult = {
 	won: number;
@@ -490,6 +491,21 @@ export class LogsReadRequests {
 			where: {
 				playerId: logPlayer.id,
 				smallEventId: smallEvent.id
+			}
+		});
+	}
+
+	/**
+	 * Count the number of successful expeditions for a player
+	 * @param keycloakId - The keycloak id of the player
+	 */
+	static async countSuccessfulExpeditions(keycloakId: string): Promise<number> {
+		const logPlayer = await LogsDatabase.findOrCreatePlayer(keycloakId);
+		return LogsExpeditions.count({
+			where: {
+				playerId: logPlayer.id,
+				action: "complete",
+				success: true
 			}
 		});
 	}
