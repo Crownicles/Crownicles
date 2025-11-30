@@ -179,13 +179,17 @@ async function handleExpeditionSelect(
 	const speedDurationModifier = calculateSpeedDurationModifier(petModel.speed);
 	const adjustedDurationMinutes = Math.round(expeditionData.durationMinutes * speedDurationModifier);
 
-	// Create expedition with adjusted duration
+	// Calculate reward index once (based on original expedition data, before speed adjustment)
+	const rewardIndex = calculateRewardIndex(expeditionData);
+
+	// Create expedition with adjusted duration and stored reward index
 	const expedition = PetExpeditions.createExpedition({
 		playerId: player.id,
 		petId: petEntity.id,
 		expeditionData,
 		durationMinutes: adjustedDurationMinutes,
-		foodConsumed: foodPlan.totalRations
+		foodConsumed: foodPlan.totalRations,
+		rewardIndex
 	});
 	await expedition.save();
 
@@ -720,9 +724,9 @@ export default class PetExpeditionCommand {
 		const petModel = PetDataController.instance.getById(petEntity.typeId);
 		const expeditionData = activeExpedition.toExpeditionData();
 
-		// Calculate effective risk and determine outcome
+		// Calculate effective risk and determine outcome using stored rewardIndex
 		const effectiveRisk = calculateEffectiveRisk(expeditionData, petModel, petEntity.lovePoints);
-		const outcome = determineExpeditionOutcome(effectiveRisk, expeditionData, player.hasCloneTalisman);
+		const outcome = determineExpeditionOutcome(effectiveRisk, expeditionData, activeExpedition.rewardIndex, player.hasCloneTalisman);
 
 		// Apply love change
 		if (outcome.loveChange !== 0) {

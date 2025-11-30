@@ -36,6 +36,8 @@ export class PetExpedition extends Model {
 
 	declare foodConsumed: number;
 
+	declare rewardIndex: number;
+
 	declare updatedAt: Date;
 
 	declare createdAt: Date;
@@ -70,6 +72,8 @@ export class PetExpedition extends Model {
 
 	/**
 	 * Convert to ExpeditionData for packets
+	 * Note: durationMinutes uses the actual expedition duration (after speed adjustment)
+	 * The rewardIndex is stored separately and used directly for reward calculations
 	 */
 	public toExpeditionData(): ExpeditionData {
 		const durationMinutes = this.getDurationMinutes();
@@ -138,9 +142,10 @@ export class PetExpeditions {
 		expeditionData: ExpeditionData;
 		durationMinutes: number;
 		foodConsumed: number;
+		rewardIndex: number;
 	}): PetExpedition {
 		const {
-			playerId, petId, expeditionData, durationMinutes, foodConsumed
+			playerId, petId, expeditionData, durationMinutes, foodConsumed, rewardIndex
 		} = params;
 		const startDate = new Date();
 		const endDate = new Date(startDate.getTime() + durationMinutes * 60 * 1000);
@@ -156,7 +161,8 @@ export class PetExpeditions {
 			locationType: expeditionData.locationType,
 			mapLocationId: expeditionData.mapLocationId ?? 1,
 			status: ExpeditionConstants.STATUS.IN_PROGRESS,
-			foodConsumed
+			foodConsumed,
+			rewardIndex
 		});
 	}
 
@@ -235,6 +241,11 @@ export function initModel(sequelize: Sequelize): void {
 			defaultValue: ExpeditionConstants.STATUS.IN_PROGRESS
 		},
 		foodConsumed: {
+			type: DataTypes.INTEGER,
+			allowNull: false,
+			defaultValue: 0
+		},
+		rewardIndex: {
 			type: DataTypes.INTEGER,
 			allowNull: false,
 			defaultValue: 0

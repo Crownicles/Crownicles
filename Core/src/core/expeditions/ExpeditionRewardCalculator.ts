@@ -56,8 +56,8 @@ export function calculateRewardIndex(expedition: ExpeditionData): number {
 	);
 
 	/*
-	 * Sum the three scores with duration counted twice (0-12 range before wealth rate)
-	 * Duration (0-3) * 2 + Risk (0-3) + Difficulty (0-3) = 0-12
+	 * Sum the three scores with duration having a bonus weight
+	 * Duration (0-3) * 3 + Risk (0-3) + Difficulty (0-3)
 	 */
 	const baseIndex = (durationScore * 3) + riskScore + difficultyScore;
 

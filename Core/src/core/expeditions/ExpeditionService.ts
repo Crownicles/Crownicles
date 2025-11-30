@@ -229,6 +229,7 @@ export interface ExpeditionOutcome {
 export function determineExpeditionOutcome(
 	effectiveRisk: number,
 	expedition: ExpeditionData,
+	rewardIndex: number,
 	hasCloneTalisman: boolean
 ): ExpeditionOutcome {
 	const totalFailure = RandomUtils.crowniclesRandom.bool(effectiveRisk / ExpeditionConstants.PERCENTAGE.MAX);
@@ -243,7 +244,6 @@ export function determineExpeditionOutcome(
 	}
 
 	const partialSuccess = RandomUtils.crowniclesRandom.bool(effectiveRisk / ExpeditionConstants.PERCENTAGE.MAX);
-	const rewardIndex = calculateRewardIndex(expedition);
 	const rewards = calculateRewards(expedition, rewardIndex, partialSuccess, hasCloneTalisman);
 
 	return {
