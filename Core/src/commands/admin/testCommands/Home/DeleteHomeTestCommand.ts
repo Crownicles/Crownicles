@@ -11,7 +11,7 @@ export const commandInfo: ITestCommand = {
 const deleteHomeTestCommand: ExecuteTestCommandLike = async player => {
 	await Homes.deleteOfPlayer(player.id);
 
-	return `Votre maison a été supprimée.`;
+	return "Votre maison a été supprimée.";
 };
 
 commandInfo.execute = deleteHomeTestCommand;
