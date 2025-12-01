@@ -18,6 +18,7 @@ import { LogsPlayersPossibilities } from "./models/LogsPlayersPossibilities";
 import { LogsAlterations } from "./models/LogsAlterations";
 import { LogsPlayersStandardAlterations } from "./models/LogsPlayersStandardAlterations";
 import { LogsPlayersOccupiedAlterations } from "./models/LogsPlayersOccupiedAlterations";
+import { ExpeditionConstants } from "../../../../../Lib/src/constants/ExpeditionConstants";
 import { LogsUnlocks } from "./models/LogsUnlocks";
 import { LogsPlayersClassChanges } from "./models/LogsPlayersClassChanges";
 import { LogsPlayersTravels } from "./models/LogsPlayersTravels";
@@ -80,7 +81,10 @@ import { LogsPlayersDailies } from "./models/LogsPlayersDailies";
 import {
 	NumberChangeReason, ShopItemType
 } from "../../../../../Lib/src/constants/LogsConstants";
-import { getDateLogs } from "../../../../../Lib/src/utils/TimeUtils";
+import {
+	dateToLogs, getDateLogs
+} from "../../../../../Lib/src/utils/TimeUtils";
+import { TimeConstants } from "../../../../../Lib/src/constants/TimeConstants";
 import { LogsPlayersGloryPoints } from "./models/LogsPlayersGloryPoints";
 import { LogsPlayers15BestSeason } from "./models/LogsPlayers15BestSeason";
 import { LogsSeasonEnd } from "./models/LogsSeasonEnd";
@@ -212,7 +216,7 @@ export class LogsDatabase extends Database {
 		return (await LogsPetEntities.findOrCreate({
 			where: {
 				gameId: petEntity.id,
-				creationTimestamp: Math.floor(petEntity.creationDate.valueOf() / 1000.0)
+				creationTimestamp: dateToLogs(petEntity.creationDate)
 			}
 		}))[0];
 	}
@@ -225,7 +229,7 @@ export class LogsDatabase extends Database {
 		return (await LogsGuilds.findOrCreate({
 			where: {
 				gameId: guild.id,
-				creationTimestamp: Math.floor(guild.creationDate.valueOf() / 1000.0)
+				creationTimestamp: dateToLogs(guild.creationDate)
 			},
 			defaults: { name: guild.name }
 		}))[0];
@@ -1321,16 +1325,12 @@ export class LogsDatabase extends Database {
 			locationType: string;
 			durationMinutes: number;
 			foodConsumed: number;
-			rewardIndex?: number;
+			rewardIndex: number;
 		}
 	): Promise<void> {
 		await this.createExpeditionLog(keycloakId, petGameId, {
-			mapLocationId: params.mapLocationId,
-			locationType: params.locationType,
-			action: "start",
-			durationMinutes: params.durationMinutes,
-			foodConsumed: params.foodConsumed,
-			rewardIndex: params.rewardIndex ?? 0
+			...params,
+			action: ExpeditionConstants.LOG_ACTION.START
 		});
 	}
 
@@ -1349,23 +1349,18 @@ export class LogsDatabase extends Database {
 			success: boolean;
 		},
 		rewards:
-		| {
-			money?: number;
-			experience?: number;
-			points?: number;
-			cloneTalismanFound?: boolean;
-		}
-		| null,
+			| {
+				money?: number;
+				experience?: number;
+				points?: number;
+				cloneTalismanFound?: boolean;
+			}
+			| null,
 		loveChange: number
 	): Promise<void> {
 		await this.createExpeditionLog(keycloakId, petGameId, {
-			mapLocationId: params.mapLocationId,
-			locationType: params.locationType,
-			action: "complete",
-			durationMinutes: params.durationMinutes,
-			foodConsumed: params.foodConsumed,
-			rewardIndex: params.rewardIndex,
-			success: params.success,
+			...params,
+			action: ExpeditionConstants.LOG_ACTION.COMPLETE,
 			money: rewards?.money ?? null,
 			experience: rewards?.experience ?? null,
 			points: rewards?.points ?? null,
@@ -1380,8 +1375,8 @@ export class LogsDatabase extends Database {
 	public async logExpeditionCancel(keycloakId: string, petGameId: number, loveChange: number): Promise<void> {
 		await this.createExpeditionLog(keycloakId, petGameId, {
 			mapLocationId: 0,
-			locationType: "cancel",
-			action: "cancel",
+			locationType: ExpeditionConstants.LOG_ACTION.CANCEL,
+			action: ExpeditionConstants.LOG_ACTION.CANCEL,
 			loveChange
 		});
 	}
@@ -1392,15 +1387,15 @@ export class LogsDatabase extends Database {
 	public async logExpeditionRecall(
 		keycloakId: string,
 		petGameId: number,
-		mapLocationId: number,
-		locationType: string,
-		loveChange: number
+		params: {
+			mapLocationId: number;
+			locationType: string;
+			loveChange: number;
+		}
 	): Promise<void> {
 		await this.createExpeditionLog(keycloakId, petGameId, {
-			mapLocationId,
-			locationType,
-			action: "recall",
-			loveChange
+			...params,
+			action: ExpeditionConstants.LOG_ACTION.RECALL
 		});
 	}
 
@@ -1421,7 +1416,7 @@ export class LogsDatabase extends Database {
 		return (await LogsPetEntities.findOrCreate({
 			where: {
 				gameId,
-				creationTimestamp: Math.floor(Date.now() / 1000)
+				creationTimestamp: getDateLogs()
 			}
 		}))[0];
 	}
@@ -1434,12 +1429,12 @@ export class LogsDatabase extends Database {
 	 */
 	public async countRecentExpeditionCancellations(keycloakId: string, days: number): Promise<number> {
 		const logPlayer = await LogsDatabase.findOrCreatePlayer(keycloakId);
-		const cutoffDate = getDateLogs() - (days * 24 * 60 * 60);
+		const cutoffDate = getDateLogs() - days * TimeConstants.S_TIME.DAY;
 
 		return LogsExpeditions.count({
 			where: {
 				playerId: logPlayer.id,
-				action: { [Op.in]: ["cancel", "recall"] },
+				action: { [Op.in]: [ExpeditionConstants.LOG_ACTION.CANCEL, ExpeditionConstants.LOG_ACTION.RECALL] },
 				date: { [Op.gte]: cutoffDate }
 			}
 		});

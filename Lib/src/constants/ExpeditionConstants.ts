@@ -396,6 +396,16 @@ export abstract class ExpeditionConstants {
 	} as const;
 
 	/**
+	 * Log action values for expedition tracking
+	 */
+	static readonly LOG_ACTION = {
+		START: "start",
+		COMPLETE: "complete",
+		CANCEL: "cancel",
+		RECALL: "recall"
+	} as const;
+
+	/**
 	 * Location types for expeditions
 	 * Each location can influence reward types
 	 */

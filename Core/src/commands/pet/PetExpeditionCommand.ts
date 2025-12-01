@@ -488,9 +488,11 @@ async function handleExpeditionRecall(
 	crowniclesInstance.logsDatabase.logExpeditionRecall(
 		player.keycloakId,
 		petEntity.id,
-		activeExpedition.mapLocationId,
-		activeExpedition.locationType,
-		loveChange
+		{
+			mapLocationId: activeExpedition.mapLocationId,
+			locationType: activeExpedition.locationType,
+			loveChange
+		}
 	).then();
 
 	// Cancel the scheduled notification for this expedition

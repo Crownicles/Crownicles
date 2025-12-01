@@ -32,6 +32,7 @@ import { LogsGuildsJoins } from "./models/LogsGuildJoins";
 import { LogsGuilds } from "./models/LogsGuilds";
 import { MapLocationDataController } from "../../../data/MapLocation";
 import { LogsExpeditions } from "./models/LogsExpeditions";
+import { ExpeditionConstants } from "../../../../../Lib/src/constants/ExpeditionConstants";
 
 export type RankedFightResult = {
 	won: number;
@@ -99,9 +100,7 @@ export class LogsReadRequests {
 
 		// Convert the players to log players
 		const logsPlayers = await LogsPlayers.findAll({
-			where: {
-				keycloakId: { [Op.in]: ids }
-			}
+			where: { keycloakId: { [Op.in]: ids } }
 		});
 
 		// Extract ids from players
@@ -504,7 +503,7 @@ export class LogsReadRequests {
 		return LogsExpeditions.count({
 			where: {
 				playerId: logPlayer.id,
-				action: "complete",
+				action: ExpeditionConstants.LOG_ACTION.COMPLETE,
 				success: true
 			}
 		});
