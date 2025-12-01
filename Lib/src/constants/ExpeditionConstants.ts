@@ -385,6 +385,28 @@ export abstract class ExpeditionConstants {
 	static readonly WEALTH_RATE_REWARD_INDEX_BONUS = 0.30;
 
 	/**
+	 * Neutral wealth rate value (no bonus/malus)
+	 */
+	static readonly NEUTRAL_WEALTH_RATE = 1;
+
+	/**
+	 * Reward index calculation constants
+	 */
+	static readonly REWARD_INDEX = {
+		/** Minimum reward index value */
+		MIN: 0,
+		/** Maximum reward index value */
+		MAX: 9,
+		/** Duration score weight multiplier (duration counts 3x more than risk/difficulty) */
+		DURATION_WEIGHT: 3
+	};
+
+	/**
+	 * Divisor applied to all rewards on partial success (halves rewards)
+	 */
+	static readonly PARTIAL_SUCCESS_PENALTY_DIVISOR = 2;
+
+	/**
 	 * Expedition status values
 	 */
 	static readonly STATUS = {

@@ -44,6 +44,14 @@ interface RarityRange {
 }
 
 /**
+ * Generated item reward data
+ */
+interface ItemReward {
+	itemId: number;
+	itemCategory: number;
+}
+
+/**
  * Parameters for clone talisman drop calculation
  */
 interface CloneTalismanDropParams {
@@ -99,20 +107,23 @@ export function calculateRewardIndex(expedition: ExpeditionData): number {
 
 	/*
 	 * Sum the three scores with duration having a bonus weight
-	 * Duration (0-3) * 3 + Risk (0-3) + Difficulty (0-3)
+	 * Duration (0-3) * DURATION_WEIGHT + Risk (0-3) + Difficulty (0-3)
 	 */
-	const baseIndex = (durationScore * 3) + riskScore + difficultyScore;
+	const baseIndex = (durationScore * ExpeditionConstants.REWARD_INDEX.DURATION_WEIGHT) + riskScore + difficultyScore;
 
 	/*
 	 * Apply wealth rate bonus/malus (±30%)
-	 * wealthRate goes from 0 to 2, with 1 being neutral
+	 * wealthRate goes from 0 to 2, with NEUTRAL_WEALTH_RATE being neutral
 	 * At 0: -30%, at 1: 0%, at 2: +30%
 	 */
-	const wealthRateMultiplier = 1 + (expedition.wealthRate - 1) * ExpeditionConstants.WEALTH_RATE_REWARD_INDEX_BONUS;
+	const wealthRateMultiplier = 1 + (expedition.wealthRate - ExpeditionConstants.NEUTRAL_WEALTH_RATE) * ExpeditionConstants.WEALTH_RATE_REWARD_INDEX_BONUS;
 	const adjustedIndex = baseIndex * wealthRateMultiplier;
 
-	// Round and clamp to 0-9
-	return Math.max(0, Math.min(9, Math.round(adjustedIndex)));
+	// Round and clamp to REWARD_INDEX range
+	return Math.max(
+		ExpeditionConstants.REWARD_INDEX.MIN,
+		Math.min(ExpeditionConstants.REWARD_INDEX.MAX, Math.round(adjustedIndex))
+	);
 }
 
 /**
@@ -130,12 +141,13 @@ function calculateBaseRewards(rewardIndex: number, locationType: string): BaseRe
 }
 
 /**
- * Apply partial success penalty (halves all rewards)
+ * Apply partial success penalty (divides all rewards by penalty divisor)
  */
 function applyPartialSuccessPenalty(rewards: BaseRewards): void {
-	rewards.money = Math.round(rewards.money / 2);
-	rewards.experience = Math.round(rewards.experience / 2);
-	rewards.points = Math.round(rewards.points / 2);
+	const divisor = ExpeditionConstants.PARTIAL_SUCCESS_PENALTY_DIVISOR;
+	rewards.money = Math.round(rewards.money / divisor);
+	rewards.experience = Math.round(rewards.experience / divisor);
+	rewards.points = Math.round(rewards.points / divisor);
 }
 
 /**
@@ -187,9 +199,7 @@ function calculateItemRarityRange(rewardIndex: number): RarityRange {
 /**
  * Generate a random item reward based on reward index
  */
-function generateItemReward(rewardIndex: number): {
-	itemId: number; itemCategory: number;
-} {
+function generateItemReward(rewardIndex: number): ItemReward {
 	const rarityRange = calculateItemRarityRange(rewardIndex);
 
 	const item = generateRandomItem({

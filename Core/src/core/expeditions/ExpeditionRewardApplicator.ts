@@ -48,24 +48,24 @@ interface ItemRewardParams {
 	player: Player;
 	response: CrowniclesPacket[];
 	context: PacketContext;
-	itemId: number | undefined;
-	itemCategory: number | undefined;
+	itemId: number;
+	itemCategory: number;
 }
 
 /**
- * Apply item reward to the player if item is present
+ * Apply item reward to the player
  */
 async function applyItemReward(params: ItemRewardParams): Promise<void> {
 	const {
 		player, response, context, itemId, itemCategory
 	} = params;
 
-	if (itemId !== undefined && itemCategory !== undefined) {
-		const item = getItemByIdAndCategory(itemId, itemCategory);
-		if (item) {
-			await giveItemToPlayer(response, context, player, item);
-		}
+	const item = getItemByIdAndCategory(itemId, itemCategory);
+	if (!item) {
+		return;
 	}
+
+	await giveItemToPlayer(response, context, player, item);
 }
 
 /**
