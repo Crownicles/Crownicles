@@ -6,10 +6,17 @@ import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
 import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
 import {
 	CommandReportBigEventResultRes,
+	CommandReportBuyHomeRes,
+	CommandReportChooseDestinationCityRes,
+	CommandReportEatInnMealRes,
+	CommandReportItemEnchantedRes,
 	CommandReportMonsterRewardRes,
+	CommandReportMoveHomeRes,
 	CommandReportPacketReq,
 	CommandReportRefusePveFightRes,
-	CommandReportTravelSummaryRes
+	CommandReportSleepRoomRes,
+	CommandReportTravelSummaryRes,
+	CommandReportUpgradeHomeRes
 } from "../../../../Lib/src/packets/commands/CommandReportPacket";
 import { ReactionCollectorCreationPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import {
@@ -36,8 +43,7 @@ import {
 import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import { ReactionCollectorChooseDestinationReaction } from "../../../../Lib/src/packets/interaction/ReactionCollectorChooseDestination";
 import {
-	DiscordCollectorUtils,
-	disableRows
+	disableRows, DiscordCollectorUtils
 } from "../../utils/DiscordCollectorUtils";
 import { ReportConstants } from "../../../../Lib/src/constants/ReportConstants";
 import { ReactionCollectorReturnTypeOrNull } from "../../packetHandlers/handlers/ReactionCollectorHandlers";
@@ -48,6 +54,7 @@ import {
 } from "../../utils/StringUtils";
 import { Language } from "../../../../Lib/src/Language";
 import { DisplayUtils } from "../../utils/DisplayUtils";
+import { MessagesUtils } from "../../utils/MessagesUtils";
 import { PetUtils } from "../../utils/PetUtils";
 import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
 
@@ -92,14 +99,20 @@ export async function createBigEventCollector(context: PacketContext, packet: Re
 		}
 	}
 
-	const msg = (await interaction.editReply({
+	const msgOptions = {
 		content: i18n.t("commands:report.doEvent", {
 			lng,
 			event: eventText,
 			pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
 		}),
 		components: rows
-	}))!;
+	};
+
+	// Can be from a string select menu when the player started the event from a city
+	const msg = context.discord?.stringSelectMenuInteraction ? await interaction.followUp(msgOptions) : await interaction.editReply(msgOptions);
+	if (!msg) {
+		return null;
+	}
 
 	let responded = false; // To avoid concurrence between the button controller and reaction controller
 	const respondToEvent = (possibilityName: string, buttonInteraction: ButtonInteraction | null): void => {
@@ -265,10 +278,17 @@ export async function chooseDestinationCollector(context: PacketContext, packet:
 					.replace("2", "?");
 			return `${
 				CrowniclesIcons.mapTypes[destinationReaction.mapTypeId]
-			} ${
-				i18n.t(`models:map_locations.${destinationReaction.mapId}.name`, { lng })} (${duration})`;
+			} ${destinationReaction.enterInCity
+				? i18n.t("commands:report.city.enterIn", {
+					lng, mapLocationId: destinationReaction.mapId
+				})
+				: ""}${
+				i18n.t(`models:map_locations.${destinationReaction.mapId}.name`, { lng })} ${destinationReaction.enterInCity ? "" : `(${duration})`}`;
 		})
-	}, { refuse: { can: false } });
+	}, {
+		refuse: { can: false },
+		deferUpdate: true
+	});
 }
 
 function isCurrentlyInEffect(packet: CommandReportTravelSummaryRes, now: number): boolean {
@@ -571,6 +591,185 @@ export async function reportTravelSummary(packet: CommandReportTravelSummaryRes,
 		inline: true
 	});
 	await interaction.editReply({ embeds: [travelEmbed] });
+}
+
+export async function stayInCity(context: PacketContext): Promise<void> {
+	const lng = context.discord!.language!;
+	const interaction = DiscordCache.getInteraction(context.discord!.interaction!)!;
+	const embed = new CrowniclesEmbed()
+		.formatAuthor(i18n.t("commands:report.city.stayTitle", {
+			pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng),
+			lng
+		}), interaction.user)
+		.setDescription(i18n.t("commands:report.city.stayDescription", {
+			lng
+		}));
+	await interaction.followUp({
+		embeds: [embed]
+	});
+}
+
+export async function handleChooseDestinationCity(packet: CommandReportChooseDestinationCityRes, context: PacketContext): Promise<void> {
+	const interaction = DiscordCache.getInteraction(context.discord!.interaction);
+	if (!interaction) {
+		return;
+	}
+	const lng = interaction.userLanguage;
+
+	const embed = new CrowniclesEmbed();
+	embed.formatAuthor(i18n.t("commands:report.destinationTitle", {
+		lng,
+		pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
+	}), interaction.user);
+	embed.setDescription(i18n.t("commands:report.city.destination", {
+		lng,
+		mapLocationId: packet.mapId,
+		mapTypeId: packet.mapTypeId
+	}));
+
+	await interaction.followUp({
+		embeds: [embed]
+	});
+}
+
+export async function handleEatInnMeal(packet: CommandReportEatInnMealRes, context: PacketContext): Promise<void> {
+	const interaction = MessagesUtils.getCurrentInteraction(context);
+	if (!interaction) {
+		return;
+	}
+	const lng = context.discord!.language;
+
+	const embed = new CrowniclesEmbed()
+		.formatAuthor(i18n.t("commands:report.city.inns.eatMealTitle", {
+			lng,
+			pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
+		}), interaction.user)
+		.setDescription(i18n.t("commands:report.city.inns.eatMealDescription", {
+			lng,
+			energy: packet.energy,
+			price: packet.moneySpent
+		}));
+
+	await interaction.editReply({
+		embeds: [embed]
+	});
+}
+
+export async function handleInnRoom(packet: CommandReportSleepRoomRes, context: PacketContext): Promise<void> {
+	const interaction = MessagesUtils.getCurrentInteraction(context);
+	if (!interaction) {
+		return;
+	}
+	const lng = context.discord!.language;
+
+	const embed = new CrowniclesEmbed()
+		.formatAuthor(i18n.t("commands:report.city.inns.roomTitle", {
+			lng,
+			pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
+		}), interaction.user)
+		.setDescription(`${i18n.t(`commands:report.city.inns.roomsStories.${packet.roomId}`, {
+			lng
+		})}\n\n${i18n.t("commands:report.city.inns.roomEndStory", {
+			lng,
+			health: packet.health,
+			price: packet.moneySpent
+		})}`);
+
+	await interaction.editReply({
+		embeds: [embed]
+	});
+}
+
+export async function handleItemEnchanted(packet: CommandReportItemEnchantedRes, context: PacketContext): Promise<void> {
+	const interaction = MessagesUtils.getCurrentInteraction(context);
+	if (!interaction) {
+		return;
+	}
+	const lng = context.discord!.language;
+
+	const embed = new CrowniclesEmbed()
+		.formatAuthor(i18n.t("commands:report.city.enchanter.acceptTitle", {
+			lng,
+			pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
+		}), interaction.user)
+		.setDescription(i18n.t("commands:report.city.enchanter.acceptStory", {
+			lng,
+			enchantmentId: packet.enchantmentId,
+			enchantmentType: packet.enchantmentType
+		}));
+
+	await interaction.editReply({
+		embeds: [embed]
+	});
+}
+
+export async function handleBuyHome(packet: CommandReportBuyHomeRes, context: PacketContext): Promise<void> {
+	const interaction = MessagesUtils.getCurrentInteraction(context);
+	if (!interaction) {
+		return;
+	}
+
+	const lng = context.discord!.language;
+
+	const embed = new CrowniclesEmbed()
+		.formatAuthor(i18n.t("commands:report.city.homes.buyHomeTitle", {
+			lng,
+			pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
+		}), interaction.user)
+		.setDescription(i18n.t("commands:report.city.homes.buyHomeDescription", {
+			lng,
+			cost: packet.cost
+		}));
+
+	await interaction.editReply({
+		embeds: [embed]
+	});
+}
+
+export async function handleUpgradeHome(packet: CommandReportUpgradeHomeRes, context: PacketContext): Promise<void> {
+	const interaction = MessagesUtils.getCurrentInteraction(context);
+	if (!interaction) {
+		return;
+	}
+
+	const lng = context.discord!.language;
+
+	const embed = new CrowniclesEmbed()
+		.formatAuthor(i18n.t("commands:report.city.homes.upgradeHomeTitle", {
+			lng,
+			pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
+		}), interaction.user)
+		.setDescription(i18n.t("commands:report.city.homes.upgradeHomeDescription", {
+			lng,
+			cost: packet.cost
+		}));
+
+	await interaction.editReply({
+		embeds: [embed]
+	});
+}
+
+export async function handleMoveHome(packet: CommandReportMoveHomeRes, context: PacketContext): Promise<void> {
+	const interaction = MessagesUtils.getCurrentInteraction(context);
+	if (!interaction) {
+		return;
+	}
+
+	const lng = context.discord!.language;
+
+	const embed = new CrowniclesEmbed()
+		.formatAuthor(i18n.t("commands:report.city.homes.moveHomeTitle", {
+			lng,
+			pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
+		}), interaction.user)
+		.setDescription(i18n.t("commands:report.city.homes.moveHomeDescription", {
+			lng,
+			cost: packet.cost
+		}));
+
+	await interaction.editReply({
+		embeds: [embed]
+	});
 }
 
 export const commandInfo: ICommand = {

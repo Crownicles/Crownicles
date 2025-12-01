@@ -1,5 +1,8 @@
 import {
-	ReactionCollector, ReactionCollectorCreationPacket, ReactionCollectorData, ReactionCollectorReaction
+	ReactionCollector,
+	ReactionCollectorCreationPacket,
+	ReactionCollectorData,
+	ReactionCollectorReaction
 } from "./ReactionCollectorPacket";
 import {
 	CrowniclesPacket, PacketContext, PacketDirection, sendablePacket
@@ -34,22 +37,6 @@ export class CommandShopNoAlterationToHeal extends CrowniclesPacket {
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandShopHealAlterationDone extends CrowniclesPacket {
-}
-
-@sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandShopTooManyEnergyBought extends CrowniclesPacket {
-}
-
-@sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandShopNoEnergyToHeal extends CrowniclesPacket {
-}
-
-@sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandShopEnergyHeal extends CrowniclesPacket {
-}
-
-@sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandShopFullRegen extends CrowniclesPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)

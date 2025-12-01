@@ -2,6 +2,7 @@ import { NumberChangeReason } from "../../../../../../Lib/src/constants/LogsCons
 import {
 	ExecuteTestCommandLike, ITestCommand, TypeKey
 } from "../../../../core/CommandsTest";
+import { InventorySlots } from "../../../../core/database/game/models/InventorySlot";
 
 export const commandInfo: ITestCommand = {
 	name: "playerhealth",
@@ -19,13 +20,14 @@ const playerHealthTestCommand: ExecuteTestCommandLike = async (player, args, res
 	if (health < 0) {
 		throw new Error("Erreur vie : vie donnée inférieure à 0 interdit !");
 	}
-	await player.addHealth(parseInt(args[0], 10) - player.health, response, NumberChangeReason.TEST, {
+	const activeObjects = await InventorySlots.getPlayerActiveObjects(player.id);
+	await player.addHealth(parseInt(args[0], 10) - player.getHealth(activeObjects), response, NumberChangeReason.TEST, activeObjects, {
 		overHealCountsForMission: false,
 		shouldPokeMission: false
 	});
 	await player.save();
 
-	return `Vous avez maintenant ${player.health} :heart:!`;
+	return `Vous avez maintenant ${player.getHealth(activeObjects)} :heart:!`;
 };
 
 commandInfo.execute = playerHealthTestCommand;

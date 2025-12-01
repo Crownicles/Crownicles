@@ -96,6 +96,8 @@ import { ReactionCollectorJoinBoatData } from "../../../../Lib/src/packets/inter
 import { ReactionCollectorPveFightData } from "../../../../Lib/src/packets/interaction/ReactionCollectorPveFight";
 import { handleClassicError } from "../../utils/ErrorUtils";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
+import { ReactionCollectorCityData } from "../../../../Lib/src/packets/interaction/ReactionCollectorCity";
+import { ReportCityMenu } from "../../commands/player/report/ReportCityMenu";
 import { ReactionCollectorDailyBonusData } from "../../../../Lib/src/packets/interaction/ReactionCollectorDailyBonus";
 import { handleDailyBonusCollector } from "../../commands/player/DailyBonusCommand";
 import { ReactionCollectorDeposeItemData } from "../../../../Lib/src/packets/interaction/ReactionCollectorDeposeItem";
@@ -154,6 +156,7 @@ export default class ReactionCollectorHandler {
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorPetFeedWithGuildData.name, handleCommandPetFeedWithGuildCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorPetFeedWithoutGuildData.name, handleCommandPetFeedWithoutGuildCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorPveFightData.name, handleStartPveFight);
+		ReactionCollectorHandler.collectorMap.set(ReactionCollectorCityData.name, ReportCityMenu.handleCityCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorDailyBonusData.name, handleDailyBonusCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorLimogesData.name, limogesCollector);
 	}

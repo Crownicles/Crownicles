@@ -21,6 +21,8 @@ import Player from "./Player";
 // skipcq: JS-C1003 - moment does not expose itself as an ES Module.
 import * as moment from "moment";
 import { InventoryConstants } from "../../../../../../Lib/src/constants/InventoryConstants";
+import { ItemWithDetails } from "../../../../../../Lib/src/types/ItemWithDetails";
+import { toItemWithDetails } from "../../../utils/ItemUtils";
 
 type DepositCandidate = {
 	slot: InventorySlot;
@@ -35,6 +37,10 @@ export class InventorySlot extends Model {
 	declare itemCategory: number;
 
 	declare itemId: number;
+
+	declare itemLevel: number;
+
+	declare itemEnchantmentId?: string;
 
 	declare updatedAt: Date;
 
@@ -75,6 +81,10 @@ export class InventorySlot extends Model {
 	isObject(): boolean {
 		return this.itemCategory === ItemCategory.OBJECT;
 	}
+
+	itemWithDetails(player: Player): ItemWithDetails {
+		return toItemWithDetails(player, this.getItem(), this.itemLevel, this.itemEnchantmentId);
+	}
 }
 
 export class InventorySlots {
@@ -89,25 +99,33 @@ export class InventorySlots {
 						playerId,
 						itemId: 0,
 						slot: 0,
-						itemCategory: 0
+						itemCategory: 0,
+						itemLevel: 0,
+						itemEnchantmentId: null
 					},
 					{
 						playerId,
 						itemId: 0,
 						slot: 0,
-						itemCategory: 1
+						itemCategory: 1,
+						itemLevel: 0,
+						itemEnchantmentId: null
 					},
 					{
 						playerId,
 						itemId: 0,
 						slot: 0,
-						itemCategory: 2
+						itemCategory: 2,
+						itemLevel: 0,
+						itemEnchantmentId: null
 					},
 					{
 						playerId,
 						itemId: 0,
 						slot: 0,
-						itemCategory: 3
+						itemCategory: 3,
+						itemLevel: 0,
+						itemEnchantmentId: null
 					}
 				]
 			);
@@ -175,12 +193,30 @@ export class InventorySlots {
 	 * Return the current active items a player hold
 	 */
 	static async getMainSlotsItems(playerId: number): Promise<PlayerActiveObjects> {
-		await this.getOfPlayer(playerId);
+		const slots = await this.getOfPlayer(playerId);
+
+		const weaponSlot = slots.find(s => s.itemCategory === ItemCategory.WEAPON && s.isEquipped());
+		const armorSlot = slots.find(s => s.itemCategory === ItemCategory.ARMOR && s.isEquipped());
+		const potionSlot = slots.find(s => s.itemCategory === ItemCategory.POTION && s.isEquipped());
+		const objectSlot = slots.find(s => s.itemCategory === ItemCategory.OBJECT && s.isEquipped());
+
 		return {
-			weapon: <Weapon>(await (await InventorySlots.getMainWeaponSlot(playerId)).getItem()),
-			armor: <Armor>(await (await InventorySlots.getMainArmorSlot(playerId)).getItem()),
-			potion: <Potion>(await (await InventorySlots.getMainPotionSlot(playerId)).getItem()),
-			object: <ObjectItem>(await (await InventorySlots.getMainObjectSlot(playerId)).getItem())
+			weapon: {
+				item: <Weapon>weaponSlot.getItem(),
+				itemLevel: weaponSlot.itemLevel,
+				itemEnchantmentId: weaponSlot.itemEnchantmentId
+			},
+			armor: {
+				item: <Armor>armorSlot.getItem(),
+				itemLevel: armorSlot.itemLevel,
+				itemEnchantmentId: armorSlot.itemEnchantmentId
+			},
+			potion: {
+				item: <Potion>potionSlot.getItem()
+			},
+			object: {
+				item: <ObjectItem>objectSlot.getItem()
+			}
 		};
 	}
 
@@ -246,7 +282,9 @@ export class InventorySlots {
 		}
 		else {
 			await InventorySlot.update({
-				itemId: itemToPutInReserve.itemId
+				itemId: itemToPutInReserve.itemId,
+				itemLevel: itemToPutInReserve.itemLevel,
+				itemEnchantmentId: itemToPutInReserve.itemEnchantmentId
 			}, {
 				where: {
 					playerId: player.id,
@@ -256,7 +294,9 @@ export class InventorySlots {
 			});
 		}
 		await InventorySlot.update({
-			itemId: itemToPutInMain.itemId
+			itemId: itemToPutInMain.itemId,
+			itemLevel: itemToPutInMain.itemLevel,
+			itemEnchantmentId: itemToPutInMain.itemEnchantmentId
 		}, {
 			where: {
 				playerId: player.id,
@@ -283,6 +323,50 @@ export class InventorySlots {
 			}
 		});
 	}
+
+	static slotsToActiveObjects(slots: InventorySlot[]): PlayerActiveObjects {
+		const weaponSlot = slots.find(s => s.itemCategory === ItemCategory.WEAPON && s.isEquipped());
+		const armorSlot = slots.find(s => s.itemCategory === ItemCategory.ARMOR && s.isEquipped());
+		const potionSlot = slots.find(s => s.itemCategory === ItemCategory.POTION && s.isEquipped());
+		const objectSlot = slots.find(s => s.itemCategory === ItemCategory.OBJECT && s.isEquipped());
+
+		return {
+			weapon: weaponSlot
+				? {
+					item: <Weapon>weaponSlot.getItem(),
+					itemLevel: weaponSlot.itemLevel,
+					itemEnchantmentId: weaponSlot.itemEnchantmentId
+				}
+				: null,
+			armor: armorSlot
+				? {
+					item: <Armor>armorSlot.getItem(),
+					itemLevel: armorSlot.itemLevel,
+					itemEnchantmentId: armorSlot.itemEnchantmentId
+				}
+				: null,
+			potion: potionSlot
+				? {
+					item: <Potion>potionSlot.getItem()
+				}
+				: null,
+			object: objectSlot
+				? {
+					item: <ObjectItem>objectSlot.getItem()
+				}
+				: null
+		};
+	}
+
+	static async getItem(playerId: number, slot: number, category: number): Promise<InventorySlot | null> {
+		return await InventorySlot.findOne({
+			where: {
+				playerId,
+				slot,
+				itemCategory: category
+			}
+		});
+	}
 }
 
 export function initModel(sequelize: Sequelize): void {
@@ -302,6 +386,15 @@ export function initModel(sequelize: Sequelize): void {
 		itemId: {
 			type: DataTypes.INTEGER,
 			defaultValue: 0
+		},
+		itemLevel: {
+			type: DataTypes.INTEGER,
+			defaultValue: 0
+		},
+		itemEnchantmentId: {
+			type: DataTypes.STRING,
+			allowNull: true,
+			defaultValue: null
 		},
 		updatedAt: {
 			type: DataTypes.DATE,

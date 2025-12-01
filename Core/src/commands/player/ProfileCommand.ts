@@ -106,8 +106,8 @@ export default class ProfileCommand {
 						defense: toCheckPlayer.getCumulativeDefense(playerActiveObjects),
 						speed: toCheckPlayer.getCumulativeSpeed(playerActiveObjects),
 						energy: {
-							value: toCheckPlayer.getCumulativeEnergy(),
-							max: toCheckPlayer.getMaxCumulativeEnergy()
+							value: toCheckPlayer.getCumulativeEnergy(playerActiveObjects),
+							max: toCheckPlayer.getMaxCumulativeEnergy(playerActiveObjects)
 						},
 						breath: {
 							base: toCheckPlayer.getBaseBreath(),
@@ -121,8 +121,8 @@ export default class ProfileCommand {
 					max: toCheckPlayer.getExperienceNeededToLevelUp()
 				},
 				health: {
-					value: toCheckPlayer.health,
-					max: toCheckPlayer.getMaxHealth()
+					value: toCheckPlayer.getHealth(playerActiveObjects),
+					max: toCheckPlayer.getMaxHealth(playerActiveObjects)
 				},
 				money: toCheckPlayer.money
 			}

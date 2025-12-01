@@ -1,0 +1,59 @@
+{
+  "mapLinks": [
+    93,
+    94
+  ],
+  "maps": [
+    17,
+    38
+  ],
+  "inns": [
+    {
+      "id": "hotSwallow",
+      "meals": [
+        {
+          "id": "fishAndChips",
+          "price": 80,
+          "energy": 200
+        },
+        {
+          "id": "coldVegetableStew",
+          "price": 40,
+          "energy": 100
+        },
+        {
+          "id": "roastedPork",
+          "price": 150,
+          "energy": 320
+        },
+        {
+          "id": "oysterPlatter",
+          "price": 250,
+          "energy": 600
+        },
+        {
+          "id": "tamale",
+          "price": 300,
+          "energy": 900
+        }
+      ],
+      "rooms": [
+        {
+          "id": "simpleRoom",
+          "price": 450,
+          "health": 50
+        },
+        {
+          "id": "comfortableRoom",
+          "price": 950,
+          "health": 100
+        },
+        {
+          "id": "luxuryRoom",
+          "price": 1450,
+          "health": 200
+        }
+      ]
+    }
+  ]
+}

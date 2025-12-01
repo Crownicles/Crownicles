@@ -3,12 +3,24 @@ import {
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	CommandReportBigEventResultRes,
+	CommandReportBuyHomeRes,
+	CommandReportChooseDestinationCityRes,
 	CommandReportChooseDestinationRes,
+	CommandReportEatInnMealCooldownRes,
+	CommandReportEatInnMealRes,
+	CommandReportEnchantNotEnoughCurrenciesRes,
 	CommandReportErrorNoMonsterRes,
+	CommandReportItemCannotBeEnchantedRes,
+	CommandReportItemEnchantedRes,
 	CommandReportMonsterRewardRes,
+	CommandReportMoveHomeRes,
+	CommandReportNotEnoughMoneyRes,
 	CommandReportPacketReq,
 	CommandReportRefusePveFightRes,
-	CommandReportTravelSummaryRes
+	CommandReportSleepRoomRes,
+	CommandReportStayInCity,
+	CommandReportTravelSummaryRes,
+	CommandReportUpgradeHomeRes
 } from "../../../../Lib/src/packets/commands/CommandReportPacket";
 import {
 	Player, Players
@@ -27,7 +39,7 @@ import { MissionsController } from "../../core/missions/MissionsController";
 import { FightController } from "../../core/fights/FightController";
 import { PVEConstants } from "../../../../Lib/src/constants/PVEConstants";
 import { MonsterDataController } from "../../data/Monster";
-import { PlayerFighter } from "../../core/fights/fighter/PlayerFighter";
+import { RealPlayerFighter } from "../../core/fights/fighter/RealPlayerFighter";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { Guilds } from "../../core/database/game/models/Guild";
 import { GuildConstants } from "../../../../Lib/src/constants/GuildConstants";
@@ -60,8 +72,7 @@ import {
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorBigEvent";
 import { Possibility } from "../../data/events/Possibility";
 import {
-	applyPossibilityOutcome,
-	PossibilityOutcome
+	applyPossibilityOutcome, PossibilityOutcome
 } from "../../data/events/PossibilityOutcome";
 import { ErrorPacket } from "../../../../Lib/src/packets/commands/ErrorPacket";
 import { MapLocationDataController } from "../../data/MapLocation";
@@ -72,6 +83,40 @@ import { Effect } from "../../../../Lib/src/types/Effect";
 import { ReactionCollectorRefuseReaction } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { verifyPossibilityOutcomeCondition } from "../../data/events/PossibilityOutcomeCondition";
+import {
+	City, CityDataController
+} from "../../data/City";
+import {
+	ReactionCollectorCity,
+	ReactionCollectorCityBuyHomeReaction,
+	ReactionCollectorCityData,
+	ReactionCollectorCityMoveHomeReaction,
+	ReactionCollectorCityShopReaction,
+	ReactionCollectorCityUpgradeHomeReaction,
+	ReactionCollectorEnchantReaction,
+	ReactionCollectorExitCityReaction,
+	ReactionCollectorInnMealReaction,
+	ReactionCollectorInnRoomReaction
+} from "../../../../Lib/src/packets/interaction/ReactionCollectorCity";
+import { RequirementEffectPacket } from "../../../../Lib/src/packets/commands/requirements/RequirementEffectPacket";
+import { InventorySlots } from "../../core/database/game/models/InventorySlot";
+import { PlayerActiveObjects } from "../../core/database/game/models/PlayerActiveObjects";
+import { Settings } from "../../core/database/game/models/Setting";
+import { ItemEnchantment } from "../../../../Lib/src/types/ItemEnchantment";
+import { MainItemDetails } from "../../../../Lib/src/types/MainItemDetails";
+import { ClassConstants } from "../../../../Lib/src/constants/ClassConstants";
+import { PlayerMissionsInfos } from "../../core/database/game/models/PlayerMissionsInfo";
+import { ShopUtils } from "../../core/utils/ShopUtils";
+import { ShopCurrency } from "../../../../Lib/src/constants/ShopConstants";
+import { ShopCategory } from "../../../../Lib/src/packets/interaction/ReactionCollectorShop";
+import {
+	calculateGemsToMoneyRatio,
+	getAThousandPointsShopItem,
+	getMoneyShopItem,
+	getValuableItemShopItem
+} from "../../core/utils/MissionShopItems";
+import { Homes } from "../../core/database/game/models/Home";
+import { HomeLevel } from "../../../../Lib/src/types/HomeLevel";
 import { PostFightPetLoveOutcomes } from "../../../../Lib/src/constants/PetConstants";
 
 export default class ReportCommand {
@@ -98,8 +143,15 @@ export default class ReportCommand {
 
 		const currentDate = new Date();
 
-		if (player.effectId !== Effect.NO_EFFECT.id && player.currentEffectFinished(currentDate)) {
+		const currentEffectFinished = player.currentEffectFinished(currentDate);
+		if (player.effectId !== Effect.NO_EFFECT.id && currentEffectFinished) {
 			await MissionsController.update(player, response, { missionId: "recoverAlteration" });
+		}
+
+		const city = CityDataController.instance.getCityByMapLinkId(player.mapLinkId);
+		if (city && currentEffectFinished) {
+			await sendCityCollector(context, response, player, currentDate, city, forceSpecificEvent);
+			return;
 		}
 
 		if (Maps.isArrived(player, currentDate)) {
@@ -119,8 +171,16 @@ export default class ReportCommand {
 			return;
 		}
 
-		if (!player.currentEffectFinished(currentDate)) {
-			await sendTravelPath(player, response, currentDate, player.effectId);
+		if (!currentEffectFinished) {
+			if (city) {
+				response.push(makePacket(RequirementEffectPacket, {
+					currentEffectId: player.effectId,
+					remainingTime: player.effectRemainingTime()
+				}));
+			}
+			else {
+				await sendTravelPath(player, response, currentDate, player.effectId);
+			}
 			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.REPORT_COMMAND);
 			return;
 		}
@@ -140,6 +200,403 @@ export default class ReportCommand {
 		await sendTravelPath(player, response, currentDate, null);
 		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.REPORT_COMMAND);
 	}
+}
+
+async function handleInnMealReaction(
+	player: Player,
+	reaction: ReactionCollectorInnMealReaction,
+	response: CrowniclesPacket[]
+): Promise<void> {
+	if (player.canEat()) {
+		if (reaction.meal.price > player.money) {
+			response.push(makePacket(CommandReportNotEnoughMoneyRes, { missingMoney: reaction.meal.price - player.money }));
+			return;
+		}
+
+		player.addEnergy(reaction.meal.energy, NumberChangeReason.INN_MEAL, await InventorySlots.getPlayerActiveObjects(player.id));
+		player.eatMeal();
+		await player.spendMoney({
+			response,
+			amount: reaction.meal.price,
+			reason: NumberChangeReason.INN_MEAL
+		});
+		await player.save();
+		response.push(makePacket(CommandReportEatInnMealRes, {
+			energy: reaction.meal.energy,
+			moneySpent: reaction.meal.price
+		}));
+	}
+	else {
+		response.push(makePacket(CommandReportEatInnMealCooldownRes, {}));
+	}
+}
+
+async function handleInnRoomReaction(
+	player: Player,
+	reaction: ReactionCollectorInnRoomReaction,
+	response: CrowniclesPacket[]
+): Promise<void> {
+	if (reaction.room.price > player.money) {
+		response.push(makePacket(CommandReportNotEnoughMoneyRes, { missingMoney: reaction.room.price - player.money }));
+		return;
+	}
+
+	await player.addHealth(reaction.room.health, response, NumberChangeReason.INN_ROOM, await InventorySlots.getPlayerActiveObjects(player.id));
+	await player.spendMoney({
+		response,
+		amount: reaction.room.price,
+		reason: NumberChangeReason.INN_ROOM
+	});
+	await TravelTime.applyEffect(player, Effect.SLEEPING, 0, new Date(), NumberChangeReason.INN_ROOM);
+	await player.save();
+	response.push(makePacket(CommandReportSleepRoomRes, {
+		roomId: reaction.room.roomId,
+		health: reaction.room.health,
+		moneySpent: reaction.room.price
+	}));
+}
+
+async function handleEnchantReaction(player: Player, reaction: ReactionCollectorEnchantReaction, response: CrowniclesPacket[]): Promise<void> {
+	const enchantment = ItemEnchantment.getById(await Settings.ENCHANTER_ENCHANTMENT_ID.getValue());
+	const isPlayerMage = player.class === ClassConstants.CLASSES_ID.MYSTIC_MAGE;
+	const price = enchantment.getEnchantmentCost(isPlayerMage);
+
+	const hasEnoughMoney = player.money >= price.money;
+	const playerMissionsInfo = price.gems !== 0 ? await PlayerMissionsInfos.getOfPlayer(player.id) : null;
+	const hasEnoughGems = playerMissionsInfo ? playerMissionsInfo.gems >= price.gems : true;
+
+	if (!hasEnoughMoney || !hasEnoughGems) {
+		response.push(makePacket(CommandReportEnchantNotEnoughCurrenciesRes, {
+			missingMoney: hasEnoughMoney ? 0 : price.money - player.money,
+			missingGems: hasEnoughGems ? 0 : price.gems - playerMissionsInfo.gems
+		}));
+		return;
+	}
+
+	const itemToEnchant = await InventorySlots.getItem(player.id, reaction.slot, reaction.itemCategory);
+	if (!itemToEnchant || !(itemToEnchant.isWeapon() || itemToEnchant.isArmor()) || itemToEnchant.itemEnchantmentId) {
+		CrowniclesLogger.error("Player tried to enchant an item that doesn't exist or cannot be enchanted. It shouldn't happen because the player must not be able to switch items while in the collector.");
+		response.push(makePacket(CommandReportItemCannotBeEnchantedRes, {}));
+		return;
+	}
+
+	await player.reload();
+
+	itemToEnchant.itemEnchantmentId = enchantment.id;
+	if (price.money > 0) {
+		await player.spendMoney({
+			response,
+			amount: price.money,
+			reason: NumberChangeReason.ENCHANT_ITEM
+		});
+	}
+	if (price.gems > 0) {
+		await playerMissionsInfo.spendGems(price.gems, response, NumberChangeReason.ENCHANT_ITEM);
+	}
+
+	await Promise.all([
+		itemToEnchant.save(),
+		player.save(),
+		playerMissionsInfo ? playerMissionsInfo.save() : Promise.resolve()
+	]);
+
+	response.push(makePacket(CommandReportItemEnchantedRes, {
+		enchantmentId: enchantment.id,
+		enchantmentType: enchantment.kind.type.id
+	}));
+}
+
+async function handleBuyHomeReaction(player: Player, city: City, data: ReactionCollectorCityData, response: CrowniclesPacket[]): Promise<void> {
+	await player.reload();
+
+	if (data.home.manage.newPrice === null) {
+		CrowniclesLogger.error(`Player ${player.keycloakId} tried to buy a home in city ${city.id} but no home is available to buy. It shouldn't happen because the player must not be able to switch while in the collector.`);
+		return;
+	}
+	if (data.home.manage.newPrice > player.money) {
+		response.push(makePacket(CommandReportNotEnoughMoneyRes, { missingMoney: data.home.manage.newPrice - player.money }));
+		return;
+	}
+
+	await Promise.all([
+		player.spendMoney({
+			response,
+			amount: data.home.manage.newPrice,
+			reason: NumberChangeReason.BUY_HOME
+		}),
+		Homes.createOrUpdateHome(player.id, city.id, HomeLevel.getInitialLevel().level)
+	]);
+
+	await player.save();
+
+	response.push(makePacket(CommandReportBuyHomeRes, {
+		cost: data.home.manage.newPrice
+	}));
+}
+
+async function handleUpgradeHomeReaction(player: Player, city: City, data: ReactionCollectorCityData, response: CrowniclesPacket[]): Promise<void> {
+	await player.reload();
+
+	if (!data.home.manage.upgrade) {
+		CrowniclesLogger.error(`Player ${player.keycloakId} tried to upgrade a home in city ${city.id} but no upgrade is available. It shouldn't happen because the player must not be able to switch while in the collector.`);
+		return;
+	}
+
+	if (data.home.manage.upgrade.price > player.money) {
+		response.push(makePacket(CommandReportNotEnoughMoneyRes, { missingMoney: data.home.manage.upgrade.price - player.money }));
+		return;
+	}
+
+	const home = await Homes.getOfPlayer(player.id);
+
+	if (!home || home.cityId !== city.id) {
+		CrowniclesLogger.error(`Player ${player.keycloakId} tried to upgrade a home he doesn't own in city ${city.id}. It shouldn't happen because the player must not be able to switch while in the collector.`);
+		return;
+	}
+
+	home.level = HomeLevel.getNextUpgrade(home.getLevel(), player.level).level;
+
+	await player.spendMoney({
+		response,
+		amount: data.home.manage.upgrade.price,
+		reason: NumberChangeReason.UPGRADE_HOME
+	});
+
+	await Promise.all([
+		home.save(),
+		player.save()
+	]);
+
+	response.push(makePacket(CommandReportUpgradeHomeRes, {
+		cost: data.home.manage.upgrade.price
+	}));
+}
+
+async function handleMoveHomeReaction(player: Player, city: City, data: ReactionCollectorCityData, response: CrowniclesPacket[]): Promise<void> {
+	await player.reload();
+
+	if (!data.home.manage.movePrice) {
+		CrowniclesLogger.error(`Player ${player.keycloakId} tried to move a home to city ${city.id} but no home is available to move. It shouldn't happen because the player must not be able to switch while in the collector.`);
+		return;
+	}
+
+	if (data.home.manage.movePrice > player.money) {
+		response.push(makePacket(CommandReportNotEnoughMoneyRes, { missingMoney: data.home.manage.movePrice - player.money }));
+		return;
+	}
+
+	const home = await Homes.getOfPlayer(player.id);
+
+	if (!home) {
+		CrowniclesLogger.error(`Player ${player.keycloakId} tried to move a home he doesn't own. It shouldn't happen because the player must not be able to switch while in the collector.`);
+		return;
+	}
+
+	home.cityId = city.id;
+
+	await player.spendMoney({
+		response,
+		amount: data.home.manage.movePrice,
+		reason: NumberChangeReason.MOVE_HOME
+	});
+
+	await Promise.all([
+		home.save(),
+		player.save()
+	]);
+
+	response.push(makePacket(CommandReportMoveHomeRes, {
+		cost: data.home.manage.movePrice
+	}));
+}
+
+function cityCollectorEndCallback(context: PacketContext, player: Player, forceSpecificEvent: number, city: City): EndCallback {
+	return async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
+		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.REPORT_COMMAND);
+		const firstReaction = collector.getFirstReaction();
+		if (!firstReaction || firstReaction.reaction.type === ReactionCollectorRefuseReaction.name) {
+			response.push(makePacket(CommandReportStayInCity, {}));
+		}
+		else {
+			await player.reload();
+			switch (firstReaction.reaction.type) {
+				case ReactionCollectorExitCityReaction.name:
+					await doRandomBigEvent(context, response, player, forceSpecificEvent);
+					break;
+				case ReactionCollectorInnMealReaction.name:
+					await handleInnMealReaction(player, firstReaction.reaction.data as ReactionCollectorInnMealReaction, response);
+					break;
+				case ReactionCollectorInnRoomReaction.name:
+					await handleInnRoomReaction(player, firstReaction.reaction.data as ReactionCollectorInnRoomReaction, response);
+					break;
+				case ReactionCollectorEnchantReaction.name:
+					await handleEnchantReaction(player, firstReaction.reaction.data as ReactionCollectorEnchantReaction, response);
+					break;
+				case ReactionCollectorCityBuyHomeReaction.name:
+					await handleBuyHomeReaction(player, city, collector.creationPacket.data.data as ReactionCollectorCityData, response);
+					break;
+				case ReactionCollectorCityUpgradeHomeReaction.name:
+					await handleUpgradeHomeReaction(player, city, collector.creationPacket.data.data as ReactionCollectorCityData, response);
+					break;
+				case ReactionCollectorCityMoveHomeReaction.name:
+					await handleMoveHomeReaction(player, city, collector.creationPacket.data.data as ReactionCollectorCityData, response);
+					break;
+				case ReactionCollectorCityShopReaction.name:
+					await handleCityShopReaction(
+						player,
+						city,
+						(firstReaction.reaction.data as ReactionCollectorCityShopReaction).shopId,
+						context,
+						response
+					);
+					break;
+				default:
+					CrowniclesLogger.error(`Unknown city reaction: ${firstReaction.reaction.type}`);
+					break;
+			}
+		}
+	};
+}
+
+async function handleCityShopReaction(
+	player: Player,
+	city: City,
+	shopId: string,
+	context: PacketContext,
+	response: CrowniclesPacket[]
+): Promise<void> {
+	if (!city.shops?.includes(shopId)) {
+		CrowniclesLogger.warn(`Player tried to access unknown shop ${shopId} in city ${city.id}`);
+		return;
+	}
+
+	switch (shopId) {
+		case "royalMarket":
+			await openRoyalMarket(player, context, response);
+			break;
+		default:
+			CrowniclesLogger.error(`Unhandled city shop ${shopId}`);
+			break;
+	}
+}
+
+async function openRoyalMarket(player: Player, context: PacketContext, response: CrowniclesPacket[]): Promise<void> {
+	const shopCategories: ShopCategory[] = [
+		{
+			id: "resources",
+			items: [
+				getMoneyShopItem(),
+				getValuableItemShopItem()
+			]
+		},
+		{
+			id: "prestige",
+			items: [getAThousandPointsShopItem()]
+		}
+	];
+
+	await ShopUtils.createAndSendShopCollector(context, response, {
+		shopCategories,
+		player,
+		logger: crowniclesInstance.logsDatabase.logMissionShopBuyout,
+		additionalShopData: {
+			currency: ShopCurrency.GEM,
+			gemToMoneyRatio: calculateGemsToMoneyRatio()
+		}
+	});
+}
+
+async function sendCityCollector(context: PacketContext, response: CrowniclesPacket[], player: Player, currentDate: Date, city: City, forceSpecificEvent: number): Promise<void> {
+	const playerInventory = await InventorySlots.getOfPlayer(player.id);
+	const playerActiveObjects = InventorySlots.slotsToActiveObjects(playerInventory);
+	const isEnchanterHere = await Settings.ENCHANTER_CITY.getValue() === city.id;
+	const enchantmentId = isEnchanterHere ? await Settings.ENCHANTER_ENCHANTMENT_ID.getValue() : null;
+	const isPlayerMage = player.class === ClassConstants.CLASSES_ID.MYSTIC_MAGE;
+	const enchantment = ItemEnchantment.getById(enchantmentId);
+	const home = await Homes.getOfPlayer(player.id);
+	const nextHomeUpgrade = home ? HomeLevel.getNextUpgrade(home.getLevel(), player.level) : null;
+
+	const collectorData: ReactionCollectorCityData = {
+		enterCityTimestamp: TravelTime.getTravelDataSimplified(player, currentDate).travelStartTime,
+		mapTypeId: MapLocationDataController.instance.getById(player.getDestinationId()).type,
+		mapLocationId: player.getDestinationId(),
+		inns: city.inns.map(inn => ({
+			innId: inn.id,
+			meals: city.getTodayInnMeals(inn, new Date()).map(meal => ({
+				mealId: meal.id,
+				price: meal.price,
+				energy: meal.energy
+			})),
+			rooms: inn.rooms.map(room => ({
+				roomId: room.id,
+				price: room.price,
+				health: room.health
+			}))
+		})),
+		shops: (city.shops || []).map(shopId => ({
+			shopId
+		})),
+		energy: {
+			current: player.getCumulativeEnergy(playerActiveObjects),
+			max: player.getMaxCumulativeEnergy(playerActiveObjects)
+		},
+		health: {
+			current: player.getHealth(playerActiveObjects),
+			max: player.getMaxHealth(playerActiveObjects)
+		},
+		enchanter: isEnchanterHere
+			? {
+				enchantableItems: playerInventory.filter(i => (i.isWeapon() || i.isArmor()) && i.itemId !== 0 && !i.itemEnchantmentId).map(i => ({
+					category: i.itemCategory,
+					slot: i.slot,
+					details: i.itemWithDetails(player) as MainItemDetails
+				})),
+				isInventoryEmpty: playerInventory.filter(i => (i.isWeapon() || i.isArmor()) && i.itemId !== 0).length === 0,
+				hasAtLeastOneEnchantedItem: playerInventory.filter(i => (i.isWeapon() || i.isArmor()) && Boolean(i.itemEnchantmentId)).length > 0,
+				enchantmentId,
+				enchantmentCost: enchantment.getEnchantmentCost(isPlayerMage),
+				enchantmentType: enchantment.kind.type.id,
+				mageReduction: isPlayerMage
+			}
+			: null,
+		home: {
+			owned: home && home.cityId === city.id
+				? { level: home.level }
+				: null,
+			manage: {
+				newPrice: home ? null : city.getHomeLevelPrice(HomeLevel.getInitialLevel(), await Homes.getHomesCount()),
+				upgrade: nextHomeUpgrade && home && home.cityId === city.id
+					? {
+						price: city.getHomeLevelPrice(nextHomeUpgrade, await Homes.getHomesCount()),
+						oldFeatures: home.getLevel().features,
+						newFeatures: nextHomeUpgrade.features
+					}
+					: null,
+				movePrice: home && home.cityId !== city.id ? city.getHomeLevelPrice(home.getLevel(), await Homes.getHomesCount()) : null,
+				currentMoney: player.money
+			}
+		}
+	};
+
+	if (!collectorData.home.manage.newPrice && !collectorData.home.manage.upgrade && !collectorData.home.manage.movePrice) {
+		delete collectorData.home.manage;
+	}
+
+	const collector = new ReactionCollectorCity(collectorData);
+
+	const collectorPacket = new ReactionCollectorInstance(
+		collector,
+		context,
+		{
+			allowedPlayerKeycloakIds: [player.keycloakId],
+			reactionLimit: 1
+		},
+		cityCollectorEndCallback(context, player, forceSpecificEvent, city)
+	)
+		.block(player.keycloakId, BlockingConstants.REASONS.REPORT_COMMAND)
+		.build();
+
+	response.push(collectorPacket);
 }
 
 /**
@@ -355,6 +812,27 @@ async function doRandomBigEvent(
 	await doEvent(event, player, time, context, response);
 }
 
+function addDestinationResToResponse(
+	response: CrowniclesPacket[],
+	mapLink: MapLink,
+	mapTypeId: string,
+	tripDuration: number
+): void {
+	if (CityDataController.instance.getCityByMapLinkId(mapLink.id)) {
+		response.push(makePacket(CommandReportChooseDestinationCityRes, {
+			mapId: mapLink.endMap,
+			mapTypeId
+		}));
+	}
+	else {
+		response.push(makePacket(CommandReportChooseDestinationRes, {
+			mapId: mapLink.endMap,
+			mapTypeId,
+			tripDuration
+		}));
+	}
+}
+
 /**
  * Automatically chooses a destination at random / based on the forced link
  * @param forcedLink
@@ -366,11 +844,7 @@ async function automaticChooseDestination(forcedLink: MapLink, player: Player, d
 	const newLink = forcedLink && forcedLink.id !== -1 ? forcedLink : MapLinkDataController.instance.getLinkByLocations(player.getDestinationId(), destinationMaps[0]);
 	const endMap = MapLocationDataController.instance.getById(newLink.endMap);
 	await Maps.startTravel(player, newLink, Date.now());
-	response.push(makePacket(CommandReportChooseDestinationRes, {
-		mapId: newLink.endMap,
-		mapTypeId: endMap.type,
-		tripDuration: newLink.tripDuration
-	}));
+	addDestinationResToResponse(response, newLink, endMap.type, newLink.tripDuration);
 }
 
 /**
@@ -411,7 +885,8 @@ async function chooseDestination(
 		return {
 			mapId,
 			mapTypeId,
-			tripDuration: isPveMap || RandomUtils.crowniclesRandom.bool() ? mapLink.tripDuration : null
+			tripDuration: isPveMap || RandomUtils.crowniclesRandom.bool() ? mapLink.tripDuration : null,
+			enterInCity: Boolean(CityDataController.instance.getCityByMapLinkId(mapLink.id))
 		};
 	});
 
@@ -430,11 +905,8 @@ async function chooseDestination(
 
 		await Maps.startTravel(player, newLink, Date.now());
 
-		response.push(makePacket(CommandReportChooseDestinationRes, {
-			mapId: newLink.endMap,
-			mapTypeId: endMap.type,
-			tripDuration: newLink.tripDuration
-		}));
+		addDestinationResToResponse(response, newLink, endMap.type, newLink.tripDuration);
+
 		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.CHOOSE_DESTINATION);
 	};
 
@@ -477,6 +949,7 @@ async function sendTravelPath(player: Player, response: CrowniclesPacket[], date
 	const lastMiniEvent = await PlayerSmallEvents.getLastOfPlayer(player.id);
 	const endMap = player.getDestination();
 	const startMap = player.getPreviousMap();
+	const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
 	response.push(makePacket(CommandReportTravelSummaryRes, {
 		effect: effectId,
 		startTime: timeData.travelStartTime,
@@ -489,8 +962,8 @@ async function sendTravelPath(player: Player, response: CrowniclesPacket[], date
 		},
 		energy: {
 			show: showEnergy,
-			current: showEnergy ? player.getCumulativeEnergy() : 0,
-			max: showEnergy ? player.getMaxCumulativeEnergy() : 0
+			current: showEnergy ? player.getCumulativeEnergy(playerActiveObjects) : 0,
+			max: showEnergy ? player.getMaxCumulativeEnergy(playerActiveObjects) : 0
 		},
 		endMap: {
 			id: endMap.id,
@@ -529,7 +1002,7 @@ async function handlePveFightRewards(
 	if (!fight.isADraw()) {
 		const winner = fight.getWinnerFighter();
 		const petLoveResult = fight.getPostFightPetLoveChange(winner, PostFightPetLoveOutcomes.WIN);
-		if (petLoveResult && winner instanceof PlayerFighter) {
+		if (petLoveResult && winner instanceof RealPlayerFighter) {
 			const petEntity = winner.pet;
 			if (petEntity) {
 				await petEntity.changeLovePoints({
@@ -560,7 +1033,8 @@ async function handlePveFightRewards(
 		amount: rewards.xp,
 		reason: NumberChangeReason.PVE_FIGHT,
 		response: endFightResponse
-	});
+	}, await InventorySlots.getPlayerActiveObjects(player.id));
+
 	if (player.guildId) {
 		const guild = await Guilds.getById(player.guildId);
 		await guild.addScore(rewards.guildScore, endFightResponse, NumberChangeReason.PVE_FIGHT);
@@ -596,6 +1070,7 @@ async function doPVEBoss(
 	 * Handle rewards after the PVE fight completes
 	 */
 	const fightCallback = async (fight: FightController, endFightResponse: CrowniclesPacket[]): Promise<void> => {
+		const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
 		if (fight) {
 			const rewards = monsterObj.getRewards(randomLevel);
 			let guildXp = 0;
@@ -604,11 +1079,10 @@ async function doPVEBoss(
 			player.fightPointsLost = fight.fightInitiator.getMaxEnergy() - fight.fightInitiator.getEnergy();
 
 			// Only give reward if draw or win
-			if (fight.isADraw() || fight.getWinnerFighter() instanceof PlayerFighter) {
+			if (fight.isADraw() || fight.getWinnerFighter() instanceof RealPlayerFighter) {
 				const result = await handlePveFightRewards(fight, player, rewards, endFightResponse);
 				guildXp = result.guildXp;
 				guildPoints = result.guildPoints;
-
 				endFightResponse.push(makePacket(CommandReportMonsterRewardRes, {
 					money: rewards.money,
 					experience: rewards.xp,
@@ -628,7 +1102,7 @@ async function doPVEBoss(
 			}
 			else {
 				// Make sure the player has no energy left after a loss even if he leveled up
-				player.setEnergyLost(player.getMaxCumulativeEnergy(), NumberChangeReason.PVE_FIGHT);
+				player.setEnergyLost(player.getMaxCumulativeEnergy(playerActiveObjects), NumberChangeReason.PVE_FIGHT, playerActiveObjects);
 			}
 
 			await player.save();
@@ -637,7 +1111,7 @@ async function doPVEBoss(
 				.then();
 		}
 
-		if (!await player.leavePVEIslandIfNoEnergy(endFightResponse)) {
+		if (!await player.leavePVEIslandIfNoEnergy(endFightResponse, playerActiveObjects)) {
 			await Maps.stopTravel(player);
 			await player.setLastReportWithEffect(
 				0,
@@ -682,8 +1156,8 @@ async function doPVEBoss(
 			return;
 		}
 
-		const playerFighter = new PlayerFighter(player, ClassDataController.instance.getById(player.class));
-		await playerFighter.loadStats();
+		const playerFighter = new RealPlayerFighter(player, ClassDataController.instance.getById(player.class));
+		await playerFighter.loadStats("MonsterFighter");
 		playerFighter.setBaseEnergy(playerFighter.getMaxEnergy() - player.fightPointsLost);
 
 		const fight = new FightController(
@@ -718,8 +1192,9 @@ async function doPVEBoss(
  * Get a random small event
  * @param response
  * @param player
+ * @param playerActiveObjects
  */
-async function getRandomSmallEvent(response: CrowniclesPacket[], player: Player): Promise<string> {
+async function getRandomSmallEvent(response: CrowniclesPacket[], player: Player, playerActiveObjects: PlayerActiveObjects): Promise<string> {
 	const keys = SmallEventDataController.instance.getKeys();
 	let totalSmallEventsRarity = 0;
 	const updatedKeys = [];
@@ -729,7 +1204,7 @@ async function getRandomSmallEvent(response: CrowniclesPacket[], player: Player)
 			response.push(makePacket(ErrorPacket, { message: `${key} doesn't contain a canBeExecuted function` }));
 			return null;
 		}
-		if (await file.smallEventFuncs.canBeExecuted(player)) {
+		if (await (file.smallEventFuncs as SmallEventFuncs).canBeExecuted(player, playerActiveObjects)) {
 			updatedKeys.push(key);
 			totalSmallEventsRarity += SmallEventDataController.instance.getById(key).rarity;
 		}
@@ -753,8 +1228,10 @@ async function getRandomSmallEvent(response: CrowniclesPacket[], player: Player)
  * @param forced
  */
 async function executeSmallEvent(response: CrowniclesPacket[], player: Player, context: PacketContext, forced: string): Promise<void> {
+	const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
+
 	// Pick a random event
-	const event: string = forced ? forced : await getRandomSmallEvent(response, player);
+	const event: string = forced ? forced : await getRandomSmallEvent(response, player, playerActiveObjects);
 	if (!event) {
 		response.push(makePacket(ErrorPacket, { message: "No small event can be executed..." }));
 		return;
@@ -773,7 +1250,7 @@ async function executeSmallEvent(response: CrowniclesPacket[], player: Player, c
 			const smallEventRecord = PlayerSmallEvents.createPlayerSmallEvent(player.id, event, Date.now());
 			await smallEventRecord.save();
 
-			await smallEvent.executeSmallEvent(response, player, context);
+			await smallEvent.executeSmallEvent(response, player, context, playerActiveObjects);
 			await MissionsController.update(player, response, { missionId: "doReports" });
 		}
 		catch (e) {

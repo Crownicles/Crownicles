@@ -859,207 +859,252 @@
     "1": {
       "description": "Une grande plage de sable fin au bord de la ville.",
       "name": "Plage Sentinelle",
-      "particle": "vers la"
+      "particle": "vers la",
+      "atParticle": "à la"
     },
     "10": {
       "description": "Ancienne grande ville fortifiée, Ville Forte n'est plus que l'ombre d'elle-même. Ravagée par l'ancienne guerre il ne reste qu'une dizaine de maisons et paysans. Le reste de l'ancienne fortification n'est que ruine.",
       "name": "Ville Forte",
-      "particle": "vers la"
+      "particle": "vers la",
+      "atParticle": "à la",
+      "inParticle": "dans la"
     },
     "1000": {
       "description": "Une grande plage de sable volcanique noir. Elle tient son nom de sa couleur très particulière. Les premiers hommes à avoir posé le pied sur la plage noire redoutaient une grande malédiction. Il n'en est évidemment rien. Attention cependant, le sable noir tache les pieds et les habits.",
       "name": "Plage noire",
-      "particle": "vers la"
+      "particle": "vers la",
+      "atParticle": "à la"
     },
     "1001": {
       "description": "Une immense forêt qui recouvre pratiquement l'entièreté de l'île. De fines particules de cendres tombent du Volcan Grondant, ce qui rend la visibilité dans cette forêt plutôt difficile. Elle est de ce fait que très peu explorée.",
       "name": "Forêt de la pénombre",
-      "particle": "vers la"
+      "particle": "vers la",
+      "atParticle": "à la"
     },
     "1002": {
       "description": "Un petit village d'une vingtaine de maisons, partiellement détruit, qui se trouve à proximité de la forêt de la pénombre. Personne ne sait exactement pourquoi ce village est en ruines. Beaucoup pensent qu'il s'agit du village des anciens habitants qui auraient succombé aux coulées de lave du Volcan Grondant. Mais d'autres avancent la théorie d'une maladie, la peste et de nombreux rats. Il ne reste plus un seul habitant ici...",
       "name": "Village en ruines",
-      "particle": "vers le"
+      "particle": "vers le",
+      "atParticle": "au"
     },
     "1003": {
       "description": "Cette ancienne mine abandonnée passe sous le chemin escarpé et les montagnes. Elle est tellement grande et labyrinthique qu'elle finit au cœur du volcan. Il est cependant difficile d'arriver jusque là. Attention toutefois à ne pas glisser, certains auraient retrouvé de vieux restes de bananes dans la mine brumeuse.",
       "name": "Mine brumeuse",
-      "particle": "vers la"
+      "particle": "vers la",
+      "atParticle": "à la"
     },
     "1004": {
       "description": "Ce chemin est le seul vrai chemin existant permettant d'aller jusqu'au sommet du Volcan Grondant. Il est très difficile de l'utiliser et surtout très dangereux. De nombreux hommes sont morts en voulant y grimper. À vos risques et périls.",
       "name": "Chemin escarpé",
-      "particle": "vers le"
+      "particle": "vers le",
+      "atParticle": "au"
     },
     "1005": {
       "description": "Pièce maîtresse de l'île volcanique, ce volcan est toujours en activité. Il déverse plusieurs tonnes de cendres par an sur cette petite île qui de ce fait ne fait que grandir. La lave qui coule en son centre est en si grande quantité qu'un canal souterrain qu'on appelle Canal Lavique circule sur plusieurs kilomètres. Depuis les bateaux sur l'eau, on peut apercevoir ce canal faire bouillir l'eau en profondeur. Ce volcan serait même le créateur de plusieurs petites îles aux alentours comme l'île de glace.",
       "name": "Volcan grondant",
-      "particle": "vers le"
+      "particle": "vers le",
+      "atParticle": "au"
     },
     "11": {
       "description": "Dernière vraie route qui permet encore de contourner le Mont Célestrum par le nord, le grand axe est encore très utilisé aujourd'hui, principalement par les brigands.",
       "name": "Grand Axe",
-      "particle": "vers le"
+      "particle": "vers le",
+      "atParticle": "au"
     },
     "1100": {
       "description": "Ce rivage est la première chose que l'on voit quand on arrive sur l'île de glace. Il tire son nom du bruit que faisaient les marins quand ils ont accosté. Évidemment, ils revenaient de l'île volcanique où la température est beaucoup plus chaude.",
       "name": "Rivage gla-gla",
-      "particle": "vers le"
+      "particle": "vers le",
+      "atParticle": "au"
     },
     "1101": {
       "description": "Une étendue de terre gelée où le climat est sans pitié. Une tempête permanente de neige rend difficile la progression et la cartographie du lieu. On peut y croiser tous types d’animaux arctiques.",
       "name": "Toundra",
-      "particle": "vers la"
+      "particle": "vers la",
+      "atParticle": "à la"
     },
     "1102": {
       "description": "Une grande caverne dans laquelle le moindre rayon de soleil qui rentre est démultiplié par les cristaux rendant celle-ci très lumineuse. Des stalactites pointus et des stalagmites tranchantes, synonymes de blessures graves voir mortelles si l’une d’elle nous tombe dessus ou que l’on fait un pas de travers, forment le décor de la caverne. Si vous osez vous aventurez plus loin, vous devrez choisir entre sortir vers le sommet du pic enneigée ou vous enfoncer encore plus profond.",
       "name": "Caverne de cristal",
-      "particle": "vers la"
+      "particle": "vers la",
+      "atParticle": "à la"
     },
     "1103": {
       "description": "Deux majestueuses portes se dressent en haut d’une longue série de marches. Les monter ne sera pas de tout repos. On raconte qu’elles ont été construites par une civilisation ancienne en l’honneur d’une divinité.",
       "name": "Portes sacrées",
-      "particle": "vers les"
+      "particle": "vers les",
+      "atParticle": "aux"
     },
     "1104": {
       "description": "Dans la chaîne de montagnes, ce pic se démarque par la violence de ses tempêtes de neige et la vitesse de ses vents. Il est si haut que l’oxygène y est rare et que le risque de mourir de froid est élevé si vous n’avez pas déjà succombé aux animaux sauvages…",
       "name": "Pic enneigé",
-      "particle": "vers le"
+      "particle": "vers le",
+      "atParticle": "au"
     },
     "1105": {
       "description": "Un grand lac au cœur de la montagne dont la traversée n’est pas sans risque. Comme la température est glaciale, le fait qu’il ne soit pas gelé reste un mystère. Nul n’en connait sa profondeur ni sa faune.",
       "name": "Lac souterrain",
-      "particle": "vers le"
+      "particle": "vers le",
+      "atParticle": "au"
     },
     "1106": {
       "description": "Un village riche abandonné dont il ne reste que ruines et désolations. On peut y voir le toit d’un manoir qui a plié sous le poids de la cloche de l’église effondrée. Il y règne un silence pesant parfois interrompu par les cris de souffrance des âmes égarés.",
       "name": "Village dévasté",
-      "particle": "vers le"
+      "particle": "vers le",
+      "atParticle": "au"
     },
     "1107": {
       "description": "Personne ne s'est encore aventuré jusque là. Au loin, vous voyez une gigantesque silhouette se réfléchir sur un mur de glace.",
       "name": "Nid glacé",
-      "particle": "vers le"
+      "particle": "vers le",
+      "atParticle": "au"
     },
     "12": {
       "description": "Une grande plaine vide nordique sans grand intérêt.",
       "name": "L'Étendue",
-      "particle": "vers"
+      "particle": "vers",
+      "atParticle": "à"
     },
     "13": {
       "description": "Un chemin difficile d'accès, boueux et humide. La Route Marécageuse relie l'Étendue à la Rivière aux crabes.",
       "name": "Route Marécageuse",
-      "particle": "vers la"
+      "particle": "vers la",
+      "atParticle": "à la"
     },
     "14": {
       "description": "Un grand lac où les familles aiment bien se réunir. La rivière Vacarme vient s'y jeter.",
       "name": "Lac Mirage",
-      "particle": "vers le"
+      "particle": "vers le",
+      "atParticle": "au"
     },
     "15": {
       "description": "Le Mont Celestrum est la montagne dominante de la région. Haute de plusieurs kilomètres, Celestrum est visible de tous. On raconte qu'elle porte le nom de l'ancienne déesse. Par ailleurs, une seule personne est parvenue à grimper jusqu'au sommet. On ne retient d'elle que ses initiales : M-B.",
       "name": "Mont Célestrum",
-      "particle": "vers le"
+      "particle": "vers le",
+      "atParticle": "au"
     },
     "16": {
       "description": "Petit chemin dangereux bordant la rivière Vacarme. Attention à ne pas tomber.",
       "name": "Chemin aux Loups",
-      "particle": "vers le"
+      "particle": "vers le",
+      "atParticle": "au"
     },
     "17": {
       "description": "Village chaud bordant la vallée des rois. Il s'agit d'une oasis chaleureuse pour les voyageurs en transit.",
       "name": "Village Coco",
-      "particle": "vers le"
+      "particle": "vers le",
+      "atParticle": "au",
+      "inParticle": "dans le"
     },
     "18": {
       "description": "Cette rivière doit son nom au bruit produit par son fort courant qui a fait perdre la vie à de nombreux villageois.",
       "name": "Rivière Vacarme",
-      "particle": "vers la"
+      "particle": "vers la",
+      "atParticle": "à la"
     },
     "19": {
       "description": "Plage créée par les forts vents de la Vallée des Rois. La Dune protège les Plaines du Contre Bois de la chaleur et amène l'eau de la rivière Vacarme.",
       "name": "La Dune",
-      "particle": "vers"
+      "particle": "vers",
+      "atParticle": "à"
     },
     "1999": {
       "description": "Un vieux bateau en bois, il a l'air de tenir le coup grâce aux réparations des ouvriers. Il est prêt à partir et n'attend plus que votre arrivée.",
       "name": "Bateau pour quitter l'île",
-      "particle": "vers le"
+      "particle": "vers le",
+      "atParticle": "au"
     },
     "2": {
       "description": "Une petite route qui permet de se rendre à la campagne à partir de Mergagnan et inversement.",
       "name": "Voie champêtre",
-      "particle": "vers la"
+      "particle": "vers la",
+      "atParticle": "à la"
     },
     "20": {
       "description": "Une vaste plaine paisible et agricole.",
       "name": "Plaines du Contre Bois",
-      "particle": "vers les"
+      "particle": "vers les",
+      "atParticle": "aux"
     },
     "21": {
       "description": "Une route très empruntée par les villageois. Beaucoup de petits vendeurs ambulants s'y installent le temps d'une journée pour au final créer un immense marché.",
       "name": "Route des Merveilles",
-      "particle": "vers la"
+      "particle": "vers la",
+      "atParticle": "à la"
     },
     "22": {
       "description": "Forêt mal famée au bord de Claire de Ville, Bois Hurlant a une très mauvaise réputation. Repaire de bandits et hors la loi en tout genre, elle tient surtout son nom de ces pratiques douteuses il y a de ça des centaines d'années.",
       "name": "Bois Hurlant",
-      "particle": "vers le"
+      "particle": "vers le",
+      "atParticle": "au"
     },
     "22222": {
       "description": "Une zone de test pour les monstres. N'est jamais censée apparaître dans le jeu.",
       "name": "Zone de test des monstres",
-      "particle": "vers la"
+      "particle": "vers la",
+      "atParticle": "à la"
     },
     "23": {
       "description": "Grande ville marchande et carrefour économique, Claire de Ville n'a pas toujours été aussi accueillante. Au début très pauvre, elle a su se développer rapidement grâce à ses nombreux commerces et hôtels offrant un large choix aux voyageurs de la région. Claire de Ville est aussi réputée pour son calme et son respect de l'ordre.",
       "name": "Claire de Ville",
-      "particle": "vers"
+      "particle": "vers",
+      "atParticle": "à",
+      "inParticle": "dans"
     },
     "24": {
       "description": "Une route très raide qui mène jusqu'à Claire de Ville. Tout dépend dans quel sens vous l'empruntez.",
       "name": "Route Grimpante",
-      "particle": "vers la"
+      "particle": "vers la",
+      "atParticle": "à la"
     },
     "25": {
       "description": "Tout est dans le nom. Une rivière très appréciée des poissonniers de Claire de Ville.",
       "name": "Rivière aux Crabes",
-      "particle": "vers la"
+      "particle": "vers la",
+      "atParticle": "à la"
     },
     "26": {
       "description": "Une paisible ville au bord de la Plage Sentinelle.",
       "name": "Mergagnan",
-      "particle": "vers"
+      "particle": "vers",
+      "atParticle": "à",
+      "inParticle": "dans"
     },
     "27": {
       "description": "Une forêt au bord du Mont Célestrum.",
       "name": "Forêt Célestrum",
-      "particle": "vers la"
+      "particle": "vers la",
+      "atParticle": "à la"
     },
     "28": {
       "description": "Entrée du château du roi. Entouré d'une épaisse muraille, il semble pouvoir résister à toutes les attaques imaginables.",
       "name": "Portes du château",
-      "particle": "vers les"
+      "particle": "vers les",
+      "atParticle": "aux"
     },
     "29": {
       "description": "Immense salle ornée de nombreuses oeuvres d'art.",
       "name": "Salle de réception",
-      "particle": "vers la"
+      "particle": "vers la",
+      "atParticle": "à la"
     },
     "3": {
       "description": "Grande plaine de l'ouest de la contrée bordée d'une grande forêt et traversée par une grande route.",
       "name": "Le Berceau",
-      "particle": "vers"
+      "particle": "vers",
+      "atParticle": "au"
     },
     "32": {
       "description": "La route qui mène au château du Roi.",
       "name": "Route vers le château du Roi",
-      "particle": "vers"
+      "particle": "vers",
+      "atParticle": "à"
     },
     "33": {
       "description": "",
       "name": "Continent principal",
-      "particle": "vers"
+      "particle": "vers",
+      "atParticle": "au"
     },
     "39": {
       "description": "Sentier noyé dans une brume épaisse, immobile et sans origine. Ni repère ni forme ne permet de situer cet endroit.",
@@ -1071,35 +1116,91 @@
       "name": "Maison hantée",
       "particle": "vers la"
     },
+    "41": {
+      "description": "Esplanade pavée reliant Boug-Coton aux portes du château royal. Les messagers s’y croisent avant d’accéder aux appartements du roi.",
+      "name": "Cour du Château",
+      "particle": "vers la",
+      "atParticle": "à la",
+      "inParticle": "dans la"
+    },
+    "42": {
+      "description": "Esplanade pavée reliant Boug-Coton aux portes du château royal. Les messagers s’y croisent avant d’accéder aux appartements du roi.",
+      "name": "Cour du Château",
+      "particle": "vers la",
+      "atParticle": "à la",
+      "inParticle": "dans la"
+    },
     "4": {
       "description": "Immense forêt au sud du Berceau. On raconte que beaucoup de voyageurs s'y sont perdus.",
       "name": "Forêt Du Vieillard",
-      "particle": "vers la"
+      "particle": "vers la",
+      "atParticle": "à la"
     },
     "5": {
       "description": "Chemin tirant son surnom de son sillonement au sein de la nature foisonnant du sud de la forêt du vieillard.",
       "name": "Chemin du Dédale",
-      "particle": "vers le"
+      "particle": "vers le",
+      "atParticle": "au"
     },
     "6": {
       "description": "Un village paisible réputé pour son auberge accueillante.",
       "name": "Boug-Coton",
-      "particle": "vers"
+      "particle": "vers",
+      "atParticle": "à",
+      "inParticle": "dans"
     },
     "7": {
       "description": "Désert de sable chaud nommé en l'honneur des anciens rois de la région.",
       "name": "Vallée des Rois",
-      "particle": "vers la"
+      "particle": "vers la",
+      "atParticle": "à la"
     },
     "8": {
       "description": "Un très grand carrefour qui relie les principaux chemins à l'ouest du Mont Célestrum.",
       "name": "Croisement des Destins",
-      "particle": "vers le"
+      "particle": "vers le",
+      "atParticle": "au"
     },
     "9": {
       "description": "Ancienne grande route commerciale reliant le Berceau et Ville forte, il ne reste de la Grande Rue que de vieux pavés ébréchés.",
       "name": "Grande Rue",
-      "particle": "vers la"
+      "particle": "vers la",
+      "atParticle": "à la"
+    },
+    "34": {
+      "description": "Une paisible ville au bord de la Plage Sentinelle.",
+      "name": "Mergagnan",
+      "particle": "vers",
+      "atParticle": "à",
+      "inParticle": "dans"
+    },
+    "35": {
+      "description": "Un village paisible réputé pour son auberge accueillante.",
+      "name": "Boug-Coton",
+      "particle": "vers",
+      "atParticle": "à",
+      "inParticle": "dans"
+    },
+    "36": {
+      "description": "Ancienne grande ville fortifiée, Ville Forte n'est plus que l'ombre d'elle-même. Ravagée par l'ancienne guerre il ne reste qu'une dizaine de maisons et paysans. Le reste de l'ancienne fortification n'est que ruine.",
+      "name": "Ville Forte",
+      "particle": "vers la",
+      "atParticle": "à la",
+      "inParticle": "dans la"
+    },
+    "37": {
+      "description": "Grande ville marchande et carrefour économique, Claire de Ville n'a pas toujours été aussi accueillante. Au début très pauvre, elle a su se développer rapidement grâce à ses nombreux commerces et hôtels offrant un large choix aux voyageurs de la région. Claire de Ville est aussi réputée pour son calme et son respect de l'ordre.",
+      "name": "Claire de Ville",
+      "particle": "vers",
+      "atParticle": "à",
+      "inParticle": "dans"
+    },
+    "38": {
+      "description": "Village chaud bordant la vallée des rois. Il s'agit d'une oasis chaleureuse pour les voyageurs en transit.",
+      "name": "Village Coco",
+      "particle": "vers le",
+      "atParticle": "au",
+      "inParticle": "dans le"
     }
   },
   "map_types": {

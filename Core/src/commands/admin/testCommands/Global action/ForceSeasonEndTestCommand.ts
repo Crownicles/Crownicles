@@ -1,7 +1,7 @@
-import { Crownicles } from "../../../../core/bot/Crownicles";
 import {
 	ExecuteTestCommandLike, ITestCommand
 } from "../../../../core/CommandsTest";
+import { CrowniclesSunday } from "../../../../core/bot/cronJobs/CrowniclesSunday";
 
 export const commandInfo: ITestCommand = {
 	name: "forceseasonend",
@@ -13,7 +13,7 @@ export const commandInfo: ITestCommand = {
  * Force a season end event
  */
 const forceTopWeekEndTestCommand: ExecuteTestCommandLike = async () => {
-	await Crownicles.seasonEnd();
+	await CrowniclesSunday.job();
 	return "Vous avez effectué une fin de saison !";
 };
 

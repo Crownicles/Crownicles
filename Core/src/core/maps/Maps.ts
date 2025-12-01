@@ -18,6 +18,7 @@ import { Settings } from "../database/game/models/Setting";
 import { PVEConstants } from "../../../../Lib/src/constants/PVEConstants";
 import { MissionsController } from "../missions/MissionsController";
 import { minutesToMilliseconds } from "../../../../Lib/src/utils/TimeUtils";
+import { CityDataController } from "../../data/City";
 
 export type OptionsStartBoatTravel = {
 	startTravelTimestamp: number;
@@ -39,11 +40,12 @@ export class Maps {
 		const map = player.getDestinationId();
 		const previousMap = player.getPreviousMapId();
 
-		const nextMaps = [];
+		let nextMaps = MapLocationDataController.instance.getMapsConnectedIds(map, previousMap);
 
-		const nextMapIds = MapLocationDataController.instance.getMapsConnectedIds(map, previousMap);
-		for (const id of nextMapIds) {
-			nextMaps.push(id);
+		// Don't allow going back to the city
+		const city = CityDataController.instance.getCityByMapId(previousMap);
+		if (city) {
+			nextMaps = nextMaps.filter(id => !city.maps.includes(id));
 		}
 
 		if (nextMaps.length === 0 && previousMap) {

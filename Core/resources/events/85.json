@@ -1,0 +1,48 @@
+{
+  "possibilities": {
+    "report": {
+      "outcomes": {
+        "0": {
+          "money": 75
+        },
+        "1": {
+          "effect": "occupied",
+          "lostTime": 60
+        }
+      }
+    },
+    "stealFromThief": {
+      "outcomes": {
+        "0": {
+          "money": 200,
+          "effect": "occupied",
+          "lostTime": 30
+        },
+        "1": {
+          "effect": "jailed"
+        }
+      }
+    },
+    "fight": {
+      "outcomes": {
+        "0": {
+          "health": -20
+        },
+        "1": {
+          "health": -50,
+          "money": 300
+        }
+      }
+    },
+    "ignore": {
+      "outcomes": {
+        "0": {}
+      }
+    }
+  },
+  "triggers": [
+    {
+      "mapId": 41
+    }
+  ]
+}

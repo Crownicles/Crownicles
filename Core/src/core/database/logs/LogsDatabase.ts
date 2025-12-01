@@ -93,7 +93,6 @@ import { LogsPlayersRage } from "./models/LogsPlayersRage";
 import { GenericItem } from "../../../data/GenericItem";
 import { MapLink } from "../../../data/MapLink";
 import { FightController } from "../../fights/FightController";
-import { PlayerFighter } from "../../fights/fighter/PlayerFighter";
 import { MonsterFighter } from "../../fights/fighter/MonsterFighter";
 import { Effect } from "../../../../../Lib/src/types/Effect";
 import { getDatabaseConfiguration } from "../../bot/CrowniclesConfig";
@@ -104,6 +103,7 @@ import { LogsCommandSubOrigins } from "./models/LogsCommandSubOrigins";
 import { ReactionCollectorReactPacket } from "../../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { LogsPlayersTeleportations } from "./models/LogsPlayersTeleportations";
 import { AiPlayerFighter } from "../../fights/fighter/AiPlayerFighter";
+import { PlayerFighter } from "../../fights/fighter/PlayerFighter";
 
 /**
  * This class is used to log all the changes in the game database

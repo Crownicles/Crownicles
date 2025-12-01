@@ -22,6 +22,7 @@ import {
 	ButtonBuilder,
 	ButtonInteraction,
 	ButtonStyle,
+	Message,
 	MessageComponentInteraction,
 	parseEmoji,
 	SelectMenuInteraction,
@@ -60,39 +61,6 @@ export async function handleCommandShopNoAlterationToHeal(context: PacketContext
 
 	if (interaction) {
 		await sendErrorMessage(interaction.user, context, interaction, i18n.t("commands:shop.noAlterationToHeal", { lng: interaction.userLanguage }), { sendManner: SendManner.FOLLOWUP });
-	}
-}
-
-export async function handleCommandShopNoEnergyToHeal(context: PacketContext): Promise<void> {
-	const interaction = DiscordCache.getInteraction(context.discord!.interaction!);
-
-	if (interaction) {
-		await sendErrorMessage(interaction.user, context, interaction, i18n.t("commands:shop.noEnergyToHeal", { lng: interaction.userLanguage }), { sendManner: SendManner.FOLLOWUP });
-	}
-}
-
-export async function handleCommandShopEnergyHeal(context: PacketContext): Promise<void> {
-	const interaction = DiscordCache.getInteraction(context.discord!.interaction!);
-
-	if (interaction) {
-		await interaction.followUp({
-			embeds: [
-				new CrowniclesEmbed()
-					.formatAuthor(i18n.t("commands:shop.success", {
-						lng: interaction.userLanguage,
-						pseudo: escapeUsername(interaction.user.displayName)
-					}), interaction.user)
-					.setDescription(i18n.t("commands:shop.shopItems.energyHeal.give", { lng: interaction.userLanguage }))
-			]
-		});
-	}
-}
-
-export async function handleCommandShopTooManyEnergyBought(context: PacketContext): Promise<void> {
-	const interaction = DiscordCache.getInteraction(context.discord!.interaction!);
-
-	if (interaction) {
-		await sendErrorMessage(interaction.user, context, interaction, i18n.t("commands:shop.tooManyEnergyBought", { lng: interaction.userLanguage }), { sendManner: SendManner.FOLLOWUP });
 	}
 }
 
@@ -139,24 +107,6 @@ export async function handleCommandShopHealAlterationDone(context: PacketContext
 					pseudo: escapeUsername(interaction.user.displayName)
 				}), interaction.user)
 				.setDescription(i18n.t("commands:shop.healAlteration", { lng }))
-		]
-	});
-}
-
-export async function handleCommandShopFullRegen(context: PacketContext): Promise<void> {
-	const interaction = DiscordCache.getInteraction(context.discord!.interaction!);
-	if (!interaction) {
-		return;
-	}
-	const lng = interaction.userLanguage;
-	await interaction.followUp({
-		embeds: [
-			new CrowniclesEmbed()
-				.formatAuthor(i18n.t("commands:shop.success", {
-					lng,
-					pseudo: escapeUsername(interaction.user.displayName)
-				}), interaction.user)
-				.setDescription(i18n.t("commands:shop.fullRegen", { lng }))
 		]
 	});
 }
@@ -415,9 +365,9 @@ function getShopItemNames(data: ReactionCollectorShopData, shopItemId: ShopItemT
 	if (shopItemId === ShopItemType.DAILY_POTION) {
 		return {
 			normal: DisplayUtils.getItemDisplayWithStats(data.additionalShopData!.dailyPotion!, lng),
-			short: DisplayUtils.getItemDisplay({
+			short: DisplayUtils.getSimpleItemDisplay({
 				id: data.additionalShopData!.dailyPotion!.id,
-				category: data.additionalShopData!.dailyPotion!.category
+				category: data.additionalShopData!.dailyPotion!.itemCategory
 			}, lng)
 		};
 	}
@@ -515,17 +465,29 @@ export async function shopCollector(context: PacketContext, packet: ReactionColl
 			currency: data.currency
 		}));
 
-	const reply = await interaction.reply({
+	const messagePayload = {
 		embeds: [embed],
-		components: [selectRow, buttonRow],
-		withResponse: true
-	});
+		components: [selectRow, buttonRow]
+	};
 
-	if (!reply?.resource?.message) {
-		return null;
+	let msg: Message | null;
+	if (interaction.replied) {
+		msg = await interaction.followUp(messagePayload);
+	}
+	else if (interaction.deferred) {
+		msg = await interaction.editReply(messagePayload);
+	}
+	else {
+		const reply = await interaction.reply({
+			...messagePayload,
+			withResponse: true
+		});
+		msg = reply?.resource?.message ?? null;
 	}
 
-	const msg = reply.resource.message;
+	if (!msg) {
+		return null;
+	}
 
 	const buttonCollector = msg.createMessageComponentCollector({
 		time: packet.endTime - Date.now()

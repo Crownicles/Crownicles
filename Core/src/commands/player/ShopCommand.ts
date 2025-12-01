@@ -13,12 +13,8 @@ import {
 	CommandShopBadgeBought,
 	CommandShopBoughtTooMuchDailyPotions,
 	CommandShopClosed,
-	CommandShopEnergyHeal,
-	CommandShopFullRegen,
 	CommandShopHealAlterationDone,
 	CommandShopNoAlterationToHeal,
-	CommandShopNoEnergyToHeal,
-	CommandShopTooManyEnergyBought,
 	ShopCategory,
 	ShopItem
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorShop";
@@ -34,7 +30,6 @@ import { millisecondsToMinutes } from "../../../../Lib/src/utils/TimeUtils";
 import { Effect } from "../../../../Lib/src/types/Effect";
 import { TravelTime } from "../../core/maps/TravelTime";
 import { MissionsController } from "../../core/missions/MissionsController";
-import { EntityConstants } from "../../../../Lib/src/constants/EntityConstants";
 import {
 	Potion, PotionDataController
 } from "../../data/Potion";
@@ -129,55 +124,6 @@ function getHealAlterationShopItem(player: Player): ShopItem {
 		}
 	};
 }
-
-/**
- * Get the shop item for recovering energy
- * @param healEnergyAlreadyPurchased
- */
-function getHealEnergyShopItem(healEnergyAlreadyPurchased: number): ShopItem {
-	return {
-		id: ShopItemType.ENERGY_HEAL,
-		price: EntityConstants.HEAL_ENERGY_PRICE[healEnergyAlreadyPurchased > EntityConstants.HEAL_ENERGY_PRICE.length - 1 ? EntityConstants.HEAL_ENERGY_PRICE.length - 1 : healEnergyAlreadyPurchased],
-		amounts: [1],
-		buyCallback: async (response, playerId): Promise<boolean> => {
-			const player = await Players.getById(playerId);
-			if (healEnergyAlreadyPurchased > EntityConstants.HEAL_ENERGY_PRICE.length - 1) {
-				response.push(makePacket(CommandShopTooManyEnergyBought, {}));
-				return false;
-			}
-			if (player.fightPointsLost === 0) {
-				response.push(makePacket(CommandShopNoEnergyToHeal, {}));
-				return false;
-			}
-			player.setEnergyLost(0, NumberChangeReason.SHOP);
-			await player.save();
-			response.push(makePacket(CommandShopEnergyHeal, {}));
-			return true;
-		}
-	};
-}
-
-/**
- * Get the shop item for regenerating to full life
- */
-function getRegenShopItem(): ShopItem {
-	return {
-		id: ShopItemType.FULL_REGEN,
-		price: ShopConstants.FULL_REGEN_PRICE,
-		amounts: [1],
-		buyCallback: async (response, playerId): Promise<boolean> => {
-			const player = await Players.getById(playerId);
-			await player.addHealth(player.getMaxHealth() - player.health, response, NumberChangeReason.SHOP, {
-				shouldPokeMission: true,
-				overHealCountsForMission: false
-			});
-			await player.save();
-			response.push(makePacket(CommandShopFullRegen, {}));
-			return true;
-		}
-	};
-}
-
 
 /**
  * Get the shop item for the money mouth badge
@@ -311,7 +257,6 @@ export default class ShopCommand {
 		_packet: CommandShopPacketReq,
 		context: PacketContext
 	): Promise<void> {
-		const healEnergyAlreadyPurchased = await LogsReadRequests.getAmountOfHealEnergyBoughtByPlayerThisWeek(player.keycloakId);
 		const potion = PotionDataController.instance.getById(await Settings.SHOP_POTION.getValue());
 
 		const shopCategories: ShopCategory[] = [
@@ -320,8 +265,6 @@ export default class ShopCommand {
 				items: [
 					getRandomItemShopItem(),
 					getHealAlterationShopItem(player),
-					getHealEnergyShopItem(healEnergyAlreadyPurchased),
-					getRegenShopItem(),
 					getBadgeShopItem()
 				]
 			}, {
@@ -343,7 +286,7 @@ export default class ShopCommand {
 			player,
 			additionalShopData: {
 				remainingPotions: ShopConstants.MAX_DAILY_POTION_BUYOUTS - await LogsReadRequests.getAmountOfDailyPotionsBoughtByPlayer(player.keycloakId),
-				dailyPotion: toItemWithDetails(potion)
+				dailyPotion: toItemWithDetails(player, potion, 0, null)
 			},
 			logger: crowniclesInstance.logsDatabase.logClassicalShopBuyout
 		});

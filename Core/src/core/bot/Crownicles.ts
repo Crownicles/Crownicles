@@ -4,14 +4,9 @@ import { LogsDatabase } from "../database/logs/LogsDatabase";
 import {
 	botConfig, crowniclesInstance
 } from "../../index";
-import { Settings } from "../database/game/models/Setting";
-import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
 import {
 	Op, Sequelize
 } from "sequelize";
-import PetEntity from "../database/game/models/PetEntity";
-import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
-import { PotionDataController } from "../../data/Potion";
 import { minutesToMilliseconds } from "../../../../Lib/src/utils/TimeUtils";
 import { TimeoutFunctionsConstants } from "../../../../Lib/src/constants/TimeoutFunctionsConstants";
 import { MapCache } from "../maps/MapCache";
@@ -21,28 +16,33 @@ import Player from "../database/game/models/Player";
 import { FightConstants } from "../../../../Lib/src/constants/FightConstants";
 import { PacketUtils } from "../utils/PacketUtils";
 import { makePacket } from "../../../../Lib/src/packets/CrowniclesPacket";
-import { TopWeekAnnouncementPacket } from "../../../../Lib/src/packets/announcements/TopWeekAnnouncementPacket";
-import { TopWeekFightAnnouncementPacket } from "../../../../Lib/src/packets/announcements/TopWeekFightAnnouncementPacket";
-import PlayerMissionsInfo from "../database/game/models/PlayerMissionsInfo";
 import { ScheduledReportNotifications } from "../database/game/models/ScheduledReportNotification";
 import { ReachDestinationNotificationPacket } from "../../../../Lib/src/packets/notifications/ReachDestinationNotificationPacket";
 import { MapLocationDataController } from "../../data/MapLocation";
+import { Settings } from "../database/game/models/Setting";
+import { PotionDataController } from "../../data/Potion";
+import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
+import PetEntity from "../database/game/models/PetEntity";
+import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
+import { TopWeekFightAnnouncementPacket } from "../../../../Lib/src/packets/announcements/TopWeekFightAnnouncementPacket";
+import { MqttTopicUtils } from "../../../../Lib/src/utils/MqttTopicUtils";
+import { Badge } from "../../../../Lib/src/types/Badge";
+import { TopWeekAnnouncementPacket } from "../../../../Lib/src/packets/announcements/TopWeekAnnouncementPacket";
+import { PlayerMissionsInfo } from "../database/game/models/PlayerMissionsInfo";
 
 // skipcq: JS-C1003 - fs does not expose itself as an ES Module.
 import * as fs from "fs";
-import { MqttTopicUtils } from "../../../../Lib/src/utils/MqttTopicUtils";
 import { initializeAllClassBehaviors } from "../fights/AiBehaviorController";
 import { initializeAllPetBehaviors } from "../fights/PetAssistManager";
 import { CrowniclesCoreWebServer } from "./CrowniclesCoreWebServer";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
-import { Badge } from "../../../../Lib/src/types/Badge";
 import { FightsManager } from "../fights/FightsManager";
-import {
-	DayOfTheWeek, setDailyCronJob, setWeeklyCronJob
-} from "../utils/CronInterface";
 import { EnergyFullNotificationPacket } from "../../../../Lib/src/packets/notifications/EnergyFullNotificationPacket";
 import { DailyBonusNotificationPacket } from "../../../../Lib/src/packets/notifications/DailyBonusNotificationPacket";
 import { ScheduledDailyBonusNotifications } from "../database/game/models/ScheduledDailyBonusNotification";
+import { CrowniclesDaily } from "./cronJobs/CrowniclesDaily";
+import { CrowniclesSunday } from "./cronJobs/CrowniclesSunday";
+import { CrowniclesMonday } from "./cronJobs/CrowniclesMonday";
 
 export class Crownicles {
 	public readonly packetListener: PacketListenerServer;
@@ -301,29 +301,6 @@ export class Crownicles {
 		);
 	}
 
-	/**
-	 * Execute all the daily tasks
-	 */
-	static async weeklyTimeout(): Promise<void> {
-		if (!PacketUtils.isMqttConnected()) {
-			CrowniclesLogger.error("MQTT is not connected, can't announce the end of the week. Trying again in 1 minute");
-			setTimeout(Crownicles.weeklyTimeout, 60000);
-			return;
-		}
-
-		/*
-		 * First program the next weekly end immediately at +7 days
-		 * Then wait a bit before setting the next date, so we are sure to be past the date
-		 *
-		 * The first one is set immediately so if the bot crashes before programming the next one, it will be set anyway to approximately a valid date (at 1s max of difference)
-		 */
-		await Settings.NEXT_WEEKLY_RESET.setValue(await Settings.NEXT_WEEKLY_RESET.getValue() + 7 * 24 * 60 * 60 * 1000);
-		Crownicles.topWeekEnd()
-			.then();
-		Crownicles.newPveIsland()
-			.then();
-	}
-
 	static async reportNotifications(): Promise<void> {
 		if (PacketUtils.isMqttConnected()) {
 			const notifications = await ScheduledReportNotifications.getNotificationsBeforeDate(new Date());
@@ -403,7 +380,9 @@ export class Crownicles {
 			await CommandsTest.init();
 		}
 
-		await Crownicles.programTimeouts();
+		await CrowniclesDaily.programCronJob();
+		await CrowniclesSunday.programCronJob();
+		await CrowniclesMonday.programCronJob();
 
 		Crownicles.reportNotifications()
 			.then();
@@ -415,11 +394,5 @@ export class Crownicles {
 			Crownicles.fightPowerRegenerationLoop,
 			minutesToMilliseconds(FightConstants.POINTS_REGEN_MINUTES)
 		);
-	}
-
-	private static async programTimeouts(): Promise<void> {
-		await setDailyCronJob(Crownicles.dailyTimeout, await Settings.NEXT_DAILY_RESET.getValue() < Date.now());
-		await setWeeklyCronJob(Crownicles.seasonEnd, await Settings.NEXT_SEASON_RESET.getValue() < Date.now(), DayOfTheWeek.SUNDAY);
-		await setWeeklyCronJob(Crownicles.weeklyTimeout, await Settings.NEXT_WEEKLY_RESET.getValue() < Date.now(), DayOfTheWeek.MONDAY);
 	}
 }

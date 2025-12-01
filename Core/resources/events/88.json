@@ -1,0 +1,51 @@
+{
+  "possibilities": {
+    "end": {
+      "outcomes": {
+        "0": {}
+      }
+    },
+    "touchStatue": {
+      "outcomes": {
+        "0": {
+          "randomItem": {},
+          "effect": "occupied",
+          "lostTime": 30
+        },
+        "1": {
+          "effect": "sick",
+          "health": -25
+        }
+      }
+    },
+    "pray": {
+      "outcomes": {
+        "0": {
+          "health": 20,
+          "randomItem": {}
+        },
+        "1": {
+          "effect": "confounded",
+          "lostTime": 30
+        }
+      }
+    },
+    "break": {
+      "outcomes": {
+        "0": {
+          "effect": "occupied",
+          "lostTime": 120,
+          "money": -100
+        },
+        "1": {
+          "effect": "jailed"
+        }
+      }
+    }
+  },
+  "triggers": [
+    {
+      "mapId": 42
+    }
+  ]
+}

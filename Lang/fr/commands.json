@@ -510,7 +510,167 @@
     "travellingDescription": "Tout se passe bien depuis votre dernière aventure {{smallEventEmoji}}. Prochain arrêt prévu {{time}}.",
     "travellingDescriptionEndTravel": "Tout se passe bien dans votre aventure, vous arriverez bientôt à destination.",
     "travellingDescriptionWithoutSmallEvent": "Tout se passe bien dans votre aventure. Prochain arrêt prévu {{time}}.",
-    "travellingTitle": "Vous êtes actuellement en train d'avancer !"
+    "travellingTitle": "Vous êtes actuellement en train d'avancer !",
+    "city": {
+      "placeholder": "Choisissez quelque chose à faire",
+      "title": "{{pseudo}}, vous êtes en ville !",
+      "description": "{emote:commands.report} Vous êtes entré $t(models:map_locations.{{mapLocationId}}.atParticle) **{emote:mapTypes.{{mapTypeId}}} $t(models:map_locations.{{mapLocationId}}.name)** <t:{{enterCityTimestamp}}:R>.\n\nVous pouvez accéder à beaucoup de services ici, mais vous pouvez également choisir de partir pour continuer votre aventure.",
+      "stayTitle": "{{pseudo}}, vous avez décidé de rester en ville",
+      "stayDescription": "Vous avez décidé de rester en ville pour profiter des services disponibles. Vous pouvez toujours partir plus tard en utilisant la commande {command:report}.",
+      "destination": "Vous entrez $t(models:map_locations.{{mapLocationId}}.inParticle) {emote:mapTypes.{{mapTypeId}}} **$t(models:map_locations.{{mapLocationId}}.name)**. Vous pouvez y trouver de nombreux choses utiles pour votre aventure!\n\nFaites la commande {command:report} afin de voir les services disponibles.",
+      "enterIn": "Entrer $t(models:map_locations.{{mapLocationId}}.inParticle) ",
+      "exitInn": "Sortir de l'auberge",
+      "reactions": {
+        "exit": {
+          "label": "Sortir de la ville",
+          "description": "Sortez de la ville pour continuer votre aventure."
+        },
+        "inn": {
+          "label": "Aller à l'auberge $t(commands:report.city.inns.names.{{innId}})",
+          "description": "Entrez dans l'auberge pour y manger et reprendre des forces."
+        },
+        "stay": {
+          "label": "Rester en ville",
+          "description": "Restez en ville et profitez des services disponibles."
+        },
+        "enchanter": {
+          "label": "Aller voir l'enchanteur",
+          "description": "Allez voir l'enchanteur itinérant pour améliorer vos équipements."
+        }
+      },
+      "shops": {
+        "royalMarket": {
+          "label": "Marché royal",
+          "description": "Convertissez vos gemmes en or et trésors exclusifs dans la boutique privée du château."
+        }
+      },
+      "inns": {
+        "names": {
+          "lordInn": "L'Auberge du Seigneur",
+          "bravesStop": "L'Alte des Braves",
+          "hotSwallow": "La Gorgée Brûlante",
+          "fireside": "Au Coin du Feu",
+          "bloodyTankard": "La Chope Sanglante",
+          "royalPavilion": "Le Pavillon Royal"
+        },
+        "stories": {
+          "lordInn": "{emote:city.inn} Vous entrez dans l'Auberge du Seigneur. Ici, tout est luxueux, du mobilier aux boissons. Vous pouvez y trouver des aventuriers de renom et des nobles en quête de sensations fortes. Vous avez même déjà entendu dire que le Roi y avait séjourné lors de ses voyages.",
+          "bravesStop": "{emote:city.inn} Qui n'a jamais entendu parler de l'Alte des Braves ? C'est la plus vieille et la plus célèbre auberge de la région. Vous entrez dans une salle bondée, remplie de rires et de chants. Les murs sont couverts de trophées de chasse et d'armes anciennes. C'est l'endroit idéal pour rencontrer d'autres aventuriers.",
+          "hotSwallow": "{emote:city.inn} Vous entrez dans la Gorgée Brûlante, une petit auberge de village où il fait bon se rafraichir, contrairement à ce que laisse penser son nom. Sa désignation vient de la boisson phare de l'établissement, une bière épicée qui réchauffe le cœur et l'âme. Les murs sont décorés de souvenirs de voyageurs passés, et l'atmosphère est chaleureuse.",
+          "fireside": "{emote:city.inn} Vous entrez dans l'auberge Au Coin du Feu, un endroit où les aventuriers se rassemblent pour partager des histoires autour d'un feu crépitant. L'odeur de poisson grillé flotte dans l'air, à côté des rires et des chants des clients. La décoration est simple mais rappelle la vie des marins et des pêcheurs.",
+          "bloodyTankard": "{emote:city.inn} Vous entrez dans la Chope Sanglante, une auberge réputée pour ses boissons fortes et son ambiance sombre. Vous y trouvez beaucoup de trophées de monstres chassés par les clients, et un air chargé de l'odeur de la bière et du tabac. La nourriture n'y est pas de grande qualité, et les lits non plus d'ailleurs.",
+          "royalPavilion": "{emote:city.inn} Vous franchissez les portes du Pavillon Royal, un salon privé du château réservé aux invités de marque. Les plats sont servis sur de l'argenterie gravée et les domestiques veillent à ce que votre moindre désir soit comblé. Même le silence y est feutré, comme si les murs eux-mêmes respectaient l'étiquette."
+        },
+        "storiesEnergyAndHealth": "Vous avez actuellement **{{currentEnergy}}** / **{{maxEnergy}}** {emote:unitValues.energy} et **{{currentHealth}}** / **{{maxHealth}}** {emote:unitValues.health}.",
+        "meals": {
+          "breadAndCheese": "Pain et fromage",
+          "roastedFowl": "Volaille rôtie",
+          "roastedBeef": "Boeuf rôti",
+          "stew": "Ragoût",
+          "lordPie": "Tourte du Seigneur",
+          "potatoSoup": "Soupe de pommes de terre",
+          "friedEggs": "Œufs au plat",
+          "curryRice": "Curry et riz",
+          "sushi": "Sushi",
+          "bravesPanOfFood": "Poêlon de nourriture des Braves",
+          "fishAndChips": "Poisson et frites",
+          "coldVegetableStew": "Ragoût de légumes froid",
+          "roastedPork": "Porc rôti",
+          "oysterPlatter": "Plateau d'huîtres",
+          "tamale": "Tamale",
+          "friedShrimp": "Crevettes frites",
+          "clamChowder": "Chaudrée de palourdes",
+          "grilledFish": "Poisson grillé",
+          "lobsterRoll": "Rouleau de homard",
+          "jellyfishCarpaccio": "Carpaccio de méduse",
+          "bread": "Pain",
+          "pretzels": "Bretzels",
+          "simpleSalad": "Salade simple"
+        },
+        "rooms": {
+          "horribleRoom": "Chambre Horrible",
+          "simpleRoom": "Chambre Simple",
+          "comfortableRoom": "Chambre Confortable",
+          "luxuryRoom": "Chambre de Luxe",
+          "royalSuite": "Suite Royale",
+          "imperialSuite": "Appartement Impérial"
+        },
+        "roomsStories": {
+          "horribleRoom": "{emote:city.inn} Vous entrez dans une chambre minable, avec un lit grinçant et des murs sales. L'odeur de moisi est omniprésente, et vous avez du mal à imaginer comment quelqu'un pourrait y dormir.",
+          "simpleRoom": "{emote:city.inn} Vous entrez dans une chambre simple mais propre. Le lit est confortable, et la décoration est basique mais agréable. C'est l'endroit idéal pour se reposer après une longue journée d'aventure.",
+          "comfortableRoom": "{emote:city.inn} Vous entrez dans une chambre confortable, avec un grand lit douillet et des meubles en bois massif. La décoration est chaleureuse, avec des tapis et des rideaux en tissus épais. Vous vous sentez déjà plus reposé.",
+          "luxuryRoom": "{emote:city.inn} Vous entrez dans une chambre luxueuse, digne d'un noble. Le lit est immense, avec des draps en soie et des oreillers moelleux. La décoration est somptueuse, avec des tapisseries et des meubles en bois sculpté. Vous vous sentez comme un roi.",
+          "royalSuite": "{emote:city.inn} Cette suite privée donne sur les jardins du château. Un valet vous apporte une infusion chaude pendant qu'un autre prépare votre lit aux draps brodés de fils d'or.",
+          "imperialSuite": "{emote:city.inn} Les appartements impériaux sont décorés de pierres précieuses et disposent même d'un petit bain parfumé. Chaque détail respire l'opulence absolue."
+        },
+        "roomTitle": "{{pseudo}}, vous louez une chambre !",
+        "roomEndStory": "😴 Vous vous endormez et vous récupérez **{{health}}** {emote:unitValues.health}. Vous avez dépensé **{{price}}** {emote:unitValues.lostMoney} pour la nuit.",
+        "roomDescription": "Vie + {{health}} {emote:unitValues.health} | Prix : {{price}} {emote:unitValues.money}",
+        "mealDescription": "Énergie + {{energy}} {emote:unitValues.energy} | Prix : {{price}} {emote:unitValues.money}",
+        "embedTitle": "{{pseudo}}, vous êtes à l'auberge !",
+        "eatMealTitle": "{{pseudo}}, vous mangez à l'auberge !",
+        "eatMealDescription": "{emote:city.inn} Vous mangez le plat qui a vous a été servi avec appétit ! Cela vous rend **{{energy}}** {emote:unitValues.energy}. Vous n'oubliez pas de payer la note de **{{price}}** {emote:unitValues.lostMoney}.",
+        "eatMealCooldown": "Vous digérez encore le dernier repas que vous avez pris à l'auberge et vous n'avez pas vraiment faim pour le moment. Attendez une demi-journée entre chaque repas."
+      },
+      "enchanter": {
+        "title": "{{pseudo}}, vous rencontrez l'enchanteur",
+        "emptyInventoryStory": "🔮 Vous rencontrez un enchanteur itinérant qui se présente sous le nom de Mernil. D'un air hautain, il vous explique qu'il est le seul et le meilleur enchanteur de toutes les contrées, et qu'il peut améliorer vos équipements grâce à la magie des runes. Malheureusement, il semble que vous n'ayez aucun équipement à lui montrer pour le moment, vous décidez donc de partir et de revenir plus tard. En partant, il vous dit cependant qu'il ne sait pas s'il sera encore dans cette ville demain.",
+        "story": "🔮 Vous rencontrez un enchanteur itinérant qui se présente sous le nom de Mernil. D'un air hautain, il vous explique qu'il est le seul et le meilleur enchanteur de toutes les contrées, et qu'il peut améliorer vos équipements grâce à la magie des runes.",
+        "enchantmentNoReduction": "En effet, il peut vous mettre l'enchantement {emote:enchantmentTypes.{{enchantmentType}}} **$t(items:enchantments.{{enchantmentId}})** pour **{{price}}**.\nVous prenez le temps de réfléchir à sa proposition, mais il précise que si ça ne convient pas, vous pouvez toujours revenir le voir demain car il aura d'autres runes à sa disposition. Cependant, il ne garantit pas qu'il sera toujours dans cette ville...",
+        "enchantmentWithReduction": "En effet, il peut vous mettre l'enchantement {emote:enchantmentTypes.{{enchantmentType}}} **$t(items:enchantments.{{enchantmentId}})** pour **{{price}}**. Il ajoute qu'il vous a fait une réduction car il apprécie les personnes qui s'intéressent à la magie !\nVous prenez le temps de réfléchir à sa proposition, mais il précise que si ça ne convient pas, vous pouvez toujours revenir le voir demain car il aura d'autres runes à sa disposition. Cependant, il ne garantit pas qu'il sera toujours dans cette ville...",
+        "hasAtLeastOneEnchantedItem": "De plus, en voyant vos équipements déjà enchantés, Mernil fronce les sourcils. Il dit que c'est le travail des forgerons de désenchanter les objets, pas le sien, et qu'il ne les touchera pas.",
+        "acceptStory": "Il prend de suite votre équipement et murmure quelques incantations en agitant une rune au-dessus... Après quelques instants, il vous rend l'objet en vous disant que c'est fait ! Votre équipement est maintenant enchanté avec {emote:enchantmentTypes.{{enchantmentType}}} **$t(items:enchantments.{{enchantmentId}})**. Faites-en bon usage !",
+        "acceptTitle": "{{pseudo}}, enchantement réussi !",
+        "priceMoneyOnly": "{{money}} {emote:unitValues.money}",
+        "priceMoneyAndGems": "{{money}} {emote:unitValues.money} et {{gems}} {emote:unitValues.gem}",
+        "notEnoughMoney": "Vous n'avez pas assez d'argent pour payer l'enchantement ! Il vous manque **{{missingMoney}}** {emote:unitValues.money}.",
+        "notEnoughGems": "Vous n'avez pas assez de gemmes pour payer l'enchantement ! Il vous manque **{{missingGems}}** {emote:unitValues.gem}.",
+        "notEnoughMoneyAndGems": "Vous n'avez pas assez d'argent et de gemmes pour payer l'enchantement ! Il vous manque **{{missingMoney}}** {emote:unitValues.money} et **{{missingGems}}** {emote:unitValues.gem}.",
+        "cantEnchant": "Mernil regarde votre équipement et secoue la tête. Il dit qu'il ne peut malheureusement pas enchanter cet objet. Peut-être devriez-vous essayer avec un autre équipement ?",
+        "placeholder": "Choisissez un objet à enchanter",
+        "leave": "Retourner en ville"
+      },
+      "homes": {
+        "goToOwnedHome": "Aller à votre maison",
+        "goToOwnedHomeDescription": "Entrez dans votre maison pour y accéder à vos services personnels.",
+        "manageHome": "Aller voir le notaire",
+        "manageHomeDescriptionNew": "Allez voir le notaire pour acheter une maison.",
+        "manageHomeDescriptionUpgrade": "Allez voir le notaire pour améliorer votre maison.",
+        "manageHomeDescriptionMove": "Allez voir le notaire pour déménager dans une nouvelle maison.",
+        "notaryTitle": "{{pseudo}}, vous rencontrez le notaire",
+        "notaryIntroduction": "{emote:city.manageHome} Vous entrez dans le bureau d'un notaire, une personne chargée de gérer les transactions immobilières. Il vous accueille chaleureusement et examine votre dossier avant de vous proposer ses services.",
+        "notaryNewHomeNoMoney": "Après avoir consciencieusement analysé votre situation, le notaire vous informe que vous n'avez pas assez d'argent pour acheter une maison. En effet, une nouvelle maison coûte **{{cost}} {emote:unitValues.money}** et il vous manque donc **{{missingMoney}} {emote:unitValues.money}** pour pouvoir en acquérir une. Il vous explique les différentes options disponibles et vous encourage à revenir lorsque vous aurez économisé suffisamment.",
+        "notaryNewHomeEnoughMoney": "Après avoir consciencieusement analysé votre situation, le notaire vous informe que vous avez suffisamment d'argent pour acheter une maison qui coûte aujourd'hui **{{cost}} {emote:unitValues.money}**. Il vous laisse le temps de réfléchir à votre décision et attend votre réponse.\n\nSouhaitez-vous acheter une maison ?",
+        "notaryUpgradeHomeNoMoney": "Après avoir consciencieusement analysé votre situation, le notaire vous informe que vous n'avez pas assez d'argent pour améliorer votre maison. En effet, une amélioration coûte **{{cost}} {emote:unitValues.money}** et il vous manque donc **{{missingMoney}} {emote:unitValues.money}** pour pouvoir procéder à la mise à niveau. Il vous explique les différentes options disponibles et vous encourage à revenir lorsque vous aurez économisé suffisamment.",
+        "notaryUpgradeHomeEnoughMoney": "Après avoir consciencieusement analysé votre situation, le notaire vous informe que vous avez suffisamment d'argent pour améliorer votre maison. Cette amélioration vous coûtera **{{cost}} {emote:unitValues.money}** et apportera les changements suivants :\n{{upgradeChanges}}\nIl vous laisse le temps de réfléchir à votre décision et attend votre réponse.\n\nSouhaitez-vous améliorer votre maison ?",
+        "notaryMoveHomeNoMoney": "Après avoir consciencieusement analysé votre situation, le notaire vous informe que vous n'avez pas assez d'argent pour déménager dans une nouvelle maison dans cette ville. En effet, un déménagement coûte **{{cost}} {emote:unitValues.money}** et il vous manque donc **{{missingMoney}} {emote:unitValues.money}** pour pouvoir procéder au transfert. Il vous explique les différentes options disponibles et vous encourage à revenir lorsque vous aurez économisé suffisamment.",
+        "notaryMoveHomeEnoughMoney": "Après avoir consciencieusement analysé votre situation, le notaire vous informe que vous avez suffisamment d'argent pour déménager dans une nouvelle maison dans cette ville pour **{{cost}} {emote:unitValues.money}**. Celle-ci sera de même niveau que votre ancienne maison. Il vous informe bien que vous ne pouvez avoir **qu'une seule maison à la fois** et que votre ancienne maison sera automatiquement vendue. Il vous laisse le temps de réfléchir à votre décision et attend votre réponse.\n\nSouhaitez-vous déménager dans une nouvelle maison ?",
+        "buyHome": "Acheter une maison",
+        "buyHomeTitle": "{{pseudo}}, achat de maison réussi !",
+        "buyHomeDescription": "Félicitations ! Vous êtes désormais propriétaire de votre propre maison dans cette ville. Vous avez dépensé **{{cost}} {emote:unitValues.money}** pour l'acquérir. Profitez bien de votre nouveau chez-vous !",
+        "upgradeHome": "Améliorer votre maison",
+        "upgradeHomeTitle": "{{pseudo}}, amélioration de maison réussie !",
+        "upgradeHomeDescription": "Félicitations ! Votre maison a été améliorée avec succès. Vous avez dépensé **{{cost}} {emote:unitValues.money}** pour cette mise à niveau. Profitez bien des nouvelles fonctionnalités et du confort supplémentaire de votre maison améliorée !",
+        "moveHome": "Déménager dans une nouvelle maison",
+        "moveHomeTitle": "{{pseudo}}, déménagement réussi !",
+        "moveHomeDescription": "Félicitations ! Vous avez déménagé avec succès dans une nouvelle maison dans cette ville. Vous avez dépensé **{{cost}} {emote:unitValues.money}** pour ce transfert. Profitez bien de votre nouveau chez-vous !",
+        "notEnoughMoney": "Vous n'avez pas assez d'argent pour cette transaction !",
+        "refuseAndLeaveNotary": "Refuser et quitter le bureau du notaire",
+        "leaveNotary": "Quitter le bureau du notaire",
+        "upgradeChanges": {
+          "betterBed": "Un meilleur lit pour un sommeil plus réparateur {emote:city.homeUpgrades.bed}",
+          "chest": "Un coffre pour y ranger vos affaires {emote:city.homeUpgrades.chest}",
+          "biggerChest": "Un coffre plus grand pour y ranger encore plus d'affaires {emote:city.homeUpgrades.chest}",
+          "craftPotionStation": "Un établi d'alchimie pour créer des potions {emote:city.homeUpgrades.potionStation}",
+          "betterCraftPotionStation": "Un meilleur établi d'alchimie pour créer des potions plus rares {emote:city.homeUpgrades.potionStation}",
+          "upgradeItemStation": "Un établi d'équipement pour améliorer vos armes et armures {emote:city.homeUpgrades.upgradeEquipment}",
+          "betterUpgradeItemStation": "Un meilleur établi d'équipement pour améliorer des armes et armures plus puissantes {emote:city.homeUpgrades.upgradeEquipment}",
+          "garden": "Un jardin pour cultiver des plantes {emote:city.homeUpgrades.garden}",
+          "biggerGarden": "Un plus grand jardin pour cultiver encore plus de plantes {emote:city.homeUpgrades.garden}",
+          "betterGardenEarth": "Une terre améliorée pour faire pousser des plantes plus rapidement {emote:city.homeUpgrades.earthQuality}"
+        }
+      }
+    }
   },
   "update": {
     "description": "La version actuelle du noyau du bot est la **{{coreVersion}}**. Celle du module Discord est la **{{discordModuleVersion}}**.\n\nToutes les informations concernant les mises à jour sont disponibles ici :\nhttps://guide.crownicles.com/lore/historique-des-mises-a-jour",
@@ -546,8 +706,6 @@
     "noAlterationToHeal": "Vous n'êtes victime d'aucune altération d'état. {emote:effects.none}",
     "success": "{{pseudo}}, transaction réussie !",
     "healAlteration": "{emote:shopItems.healAlteration} Vos altérations d'état ont été supprimées.",
-    "tooManyEnergyBought": "Vous avez acheté la quantité maximale de récupération d'énergie pour cette semaine.",
-    "noEnergyToHeal": "Vous disposez de toute votre énergie de combat. {emote:unitValues.energy}",
     "fullRegen": "{emote:shopItems.regen} Vous avez été complétement soigné.",
     "alreadyHaveBadge": "Vous possédez déjà ce badge.",
     "badgeBought": "Vous avez reçu un nouveau badge : {emote:badges.{{badgeName}}} !",
@@ -594,11 +752,6 @@
         "name": "{emote:shopItems.healAlteration} Soin des altérations d'état",
         "info": "Vos altérations d'état seront supprimées et vous reprendrez votre route immédiatement.",
         "give": "{emote:shopItems.healAlteration} Vos altérations d'état ont été supprimées."
-      },
-      "energyHeal": {
-        "name": "{emote:shopItems.healEnergy} Récupération d'énergie",
-        "info": "Votre énergie de combat sera intégralement restaurée.",
-        "give": "{emote:shopItems.healEnergy} Votre énergie a été restaurée."
       },
       "fullRegen": {
         "name": "{emote:shopItems.regen} Régen complète de la vie",

@@ -50,7 +50,13 @@ export enum NumberChangeReason {
 	PVE_FIGHT,
 	FIGHT_PET_SMALL_EVENT,
 	RAGE_EXPLOSION_ACTION,
-	JOIN_BOAT
+	JOIN_BOAT,
+	INN_MEAL,
+	INN_ROOM,
+	ENCHANT_ITEM,
+	BUY_HOME,
+	UPGRADE_HOME,
+	MOVE_HOME
 }
 
 export enum ShopItemType {

@@ -17,4 +17,6 @@ export abstract class PlayersConstants {
 		START_TRAVEL_DATE: 0,
 		NOTIFICATIONS: NotificationsConstants.DM_VALUE
 	};
+
+	static readonly MEAL_COOLDOWN = 12 * 60 * 60 * 1000; // 12 hours in ms
 }

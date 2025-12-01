@@ -4,12 +4,15 @@ import { FightView } from "./FightView";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { FightConstants } from "../../../../Lib/src/constants/FightConstants";
 import {
-	PetConstants, PostFightPetLoveOutcome, PostFightPetLoveOutcomes, PostFightPetReactionType
+	PetConstants,
+	PostFightPetLoveOutcome,
+	PostFightPetLoveOutcomes,
+	PostFightPetReactionType
 } from "../../../../Lib/src/constants/PetConstants";
 import { FighterStatus } from "./FighterStatus";
 import { FightOvertimeBehavior } from "./FightOvertimeBehavior";
 import { MonsterFighter } from "./fighter/MonsterFighter";
-import { PlayerFighter } from "./fighter/PlayerFighter";
+import { RealPlayerFighter } from "./fighter/RealPlayerFighter";
 import { PVEConstants } from "../../../../Lib/src/constants/PVEConstants";
 import {
 	CrowniclesPacket, PacketContext
@@ -33,15 +36,16 @@ import { PetAssistance } from "../../data/PetAssistance";
 import { getAiPetBehavior } from "./PetAssistManager";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { FightsManager } from "./FightsManager";
+import { PlayerFighter } from "./fighter/PlayerFighter";
 
 export class FightController {
 	turn: number;
 
 	public readonly id: string;
 
-	private readonly fighters: (PlayerFighter | MonsterFighter | AiPlayerFighter)[];
+	private readonly fighters: (PlayerFighter | MonsterFighter)[];
 
-	public readonly fightInitiator: PlayerFighter | AiPlayerFighter;
+	public readonly fightInitiator: PlayerFighter;
 
 	private readonly _fightView: FightView;
 
@@ -64,7 +68,7 @@ export class FightController {
 
 	public constructor(
 		fighters: {
-			fighter1: PlayerFighter | AiPlayerFighter;
+			fighter1: PlayerFighter;
 			fighter2: (MonsterFighter | AiPlayerFighter);
 		},
 		overtimeBehavior: FightOvertimeBehavior,
@@ -91,7 +95,7 @@ export class FightController {
 		}
 
 		if (!this.silentMode) {
-			this._fightView.introduceFight(response, this.fighters[0] as PlayerFighter | AiPlayerFighter, this.fighters[1] as MonsterFighter | AiPlayerFighter);
+			this._fightView.introduceFight(response, this.fighters[0] as PlayerFighter, this.fighters[1] as MonsterFighter | AiPlayerFighter);
 		}
 
 		// The player with the highest speed starts the fight
@@ -113,7 +117,7 @@ export class FightController {
 	 * Get the playing fighter or null if the fight is not running
 	 * @returns
 	 */
-	public getPlayingFighter(): PlayerFighter | MonsterFighter | AiPlayerFighter {
+	public getPlayingFighter(): PlayerFighter | MonsterFighter {
 		return this.state === FightState.RUNNING ? this.fighters[0] : null;
 	}
 
@@ -121,7 +125,7 @@ export class FightController {
 	 * Get the defending fighter or null if the fight is not running
 	 * @returns
 	 */
-	public getDefendingFighter(): PlayerFighter | MonsterFighter | AiPlayerFighter {
+	public getDefendingFighter(): PlayerFighter | MonsterFighter {
 		return this.state === FightState.RUNNING ? this.fighters[1] : null;
 	}
 
@@ -129,7 +133,7 @@ export class FightController {
 	 * Get the fighter that is not the fight initiator
 	 * @returns
 	 */
-	public getNonFightInitiatorFighter(): PlayerFighter | MonsterFighter | AiPlayerFighter {
+	public getNonFightInitiatorFighter(): PlayerFighter | MonsterFighter {
 		return this.fighters[1] === this.fightInitiator ? this.fighters[0] : this.fighters[1];
 	}
 
@@ -170,7 +174,7 @@ export class FightController {
 	public async endBugFight(response: CrowniclesPacket[]): Promise<void> {
 		for (const fighter of this.fighters) {
 			fighter.unblock();
-			if (fighter instanceof PlayerFighter) {
+			if (fighter instanceof RealPlayerFighter) {
 				fighter.kill();
 			}
 		}
@@ -288,7 +292,7 @@ export class FightController {
 		if (!result) {
 			return;
 		}
-		if (attacker instanceof PlayerFighter) {
+		if (attacker instanceof RealPlayerFighter) {
 			attacker.markPetAssisted();
 		}
 		this._fightView.addActionToHistory(response, attacker, petAssistance, result);
@@ -306,9 +310,9 @@ export class FightController {
 	 * @param defender
 	 */
 	private handleOutOfBreathScenarios(
-		attacker: PlayerFighter | MonsterFighter | AiPlayerFighter,
+		attacker: PlayerFighter | MonsterFighter,
 		fightAction: FightAction,
-		defender: PlayerFighter | MonsterFighter | AiPlayerFighter
+		defender: PlayerFighter | MonsterFighter
 	): {
 		fightAction: FightAction; result: FightActionResult | FightAlterationResult;
 	} {
@@ -359,7 +363,7 @@ export class FightController {
 		}
 
 		const currentFighter = this.getPlayingFighter();
-		if ((currentFighter instanceof AiPlayerFighter || currentFighter instanceof PlayerFighter) && currentFighter.pet) {
+		if ((currentFighter instanceof AiPlayerFighter || currentFighter instanceof RealPlayerFighter) && currentFighter.pet) {
 			const petAction = getAiPetBehavior(currentFighter.pet.typeId);
 			if (petAction) {
 				await this.executePetAssistance(petAction, response);
@@ -433,7 +437,7 @@ export class FightController {
 			};
 		}
 
-		if (fighter instanceof PlayerFighter && !fighter.hasPetAssisted()) {
+		if (fighter instanceof RealPlayerFighter && !fighter.hasPetAssisted()) {
 			return null;
 		}
 

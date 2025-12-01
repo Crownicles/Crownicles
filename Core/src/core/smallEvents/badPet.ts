@@ -8,7 +8,7 @@ import {
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorBadPetSmallEvent";
 import { SmallEventBadPetPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventBadPetPacket";
 import {
-	makePacket, CrowniclesPacket, PacketContext
+	CrowniclesPacket, makePacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { PetEntity } from "../database/game/models/PetEntity";
 import {
@@ -28,6 +28,7 @@ import { Guilds } from "../database/game/models/Guild";
 import { InventorySlots } from "../database/game/models/InventorySlot";
 import { SmallEventConstants } from "../../../../Lib/src/constants/SmallEventConstants";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
+import { PlayerActiveObjects } from "../database/game/models/PlayerActiveObjects";
 
 /**
  * Result of a bad pet action handler
@@ -502,7 +503,7 @@ async function canBeExecuted(player: Player): Promise<boolean> {
 /**
  * Execute the bad pet small event
  */
-async function executeSmallEvent(response: CrowniclesPacket[], player: Player, context: PacketContext, testArgs?: string[]): Promise<void> {
+async function executeSmallEvent(response: CrowniclesPacket[], player: Player, context: PacketContext, _playerActiveObjects: PlayerActiveObjects, testArgs?: string[]): Promise<void> {
 	let selectedActions: BadPetAction[];
 
 	if (testArgs && testArgs.length > 0) {

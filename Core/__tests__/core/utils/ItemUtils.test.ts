@@ -115,7 +115,8 @@ describe('ItemUtils - giveItemToPlayer', () => {
 			giveItem: vi.fn(),
 			addMoney: vi.fn(),
 			save: vi.fn(),
-			reload: vi.fn()
+			reload: vi.fn(),
+			getMaxStatsValue: vi.fn().mockReturnValue(100)
 		};
 
 		// Mock basic item
@@ -123,7 +124,15 @@ describe('ItemUtils - giveItemToPlayer', () => {
 			id: 100,
 			rarity: ItemRarity.COMMON,
 			getCategory: vi.fn().mockReturnValue(ItemCategory.WEAPON),
-			getItemAddedValue: vi.fn().mockReturnValue(10)
+			getItemAddedValue: vi.fn().mockReturnValue(10),
+			getDisplayPacket: vi.fn().mockReturnValue({
+				id: 100,
+				category: ItemCategory.WEAPON,
+				rarity: ItemRarity.COMMON,
+				detailsSupportItem: null,
+				detailsMainItem: null,
+				maxStats: null
+			})
 		};
 
 		// Mock inventory slots
@@ -138,7 +147,8 @@ describe('ItemUtils - giveItemToPlayer', () => {
 				getItem: vi.fn().mockReturnValue({
 					id: 50,
 					rarity: ItemRarity.BASIC,
-					getCategory: vi.fn().mockReturnValue(ItemCategory.WEAPON)
+					getCategory: vi.fn().mockReturnValue(ItemCategory.WEAPON),
+					getDisplayPacket: vi.fn().mockReturnValue({ id: 50, name: 'Slot Item' })
 				})
 			}
 		];
@@ -253,7 +263,8 @@ describe('ItemUtils - giveItemToPlayer', () => {
 					getItem: vi.fn().mockReturnValue({
 						id: 60,
 						rarity: ItemRarity.COMMON,
-						getCategory: vi.fn().mockReturnValue(ItemCategory.WEAPON)
+						getCategory: vi.fn().mockReturnValue(ItemCategory.WEAPON),
+						getDisplayPacket: vi.fn().mockReturnValue({ id: 60, name: 'Second Weapon' })
 					})
 				}
 			);
@@ -273,7 +284,15 @@ describe('ItemUtils - giveItemToPlayer', () => {
 				id: 200,
 				rarity: ItemRarity.RARE,
 				getCategory: vi.fn().mockReturnValue(ItemCategory.POTION),
-				isFightPotion: vi.fn().mockReturnValue(false)
+				isFightPotion: vi.fn().mockReturnValue(false),
+				getDisplayPacket: vi.fn().mockReturnValue({
+					id: 200,
+					category: ItemCategory.POTION,
+					rarity: ItemRarity.RARE,
+					detailsSupportItem: null,
+					detailsMainItem: null,
+					maxStats: null
+				})
 			};
 			mockPlayer.giveItem.mockResolvedValue(false);
 		});
@@ -469,11 +488,19 @@ describe('ItemUtils - giveItemToPlayer', () => {
 			const weaponItem = {
 				id: 1,
 				rarity: ItemRarity.LEGENDARY,
-				getCategory: vi.fn().mockReturnValue(ItemCategory.WEAPON)
+				getCategory: vi.fn().mockReturnValue(ItemCategory.WEAPON),
+				getDisplayPacket: vi.fn().mockReturnValue({
+					id: 1,
+					category: ItemCategory.WEAPON,
+					rarity: ItemRarity.LEGENDARY,
+					detailsSupportItem: null,
+					detailsMainItem: { attack: 100, defense: 50, speed: 75 },
+					maxStats: null
+				})
 			};
 
 			// Act
-			const result = toItemWithDetails(weaponItem as any);
+			const result = toItemWithDetails(mockPlayer, weaponItem as any, 5, null);
 
 			// Assert
 			expect(result).toEqual({
@@ -481,9 +508,11 @@ describe('ItemUtils - giveItemToPlayer', () => {
 				category: ItemCategory.WEAPON,
 				rarity: ItemRarity.LEGENDARY,
 				detailsSupportItem: null,
-				detailsMainItem: expect.any(Object),
+				detailsMainItem: { attack: 100, defense: 50, speed: 75 },
 				maxStats: null
 			});
+			// Note: Since weaponItem is not an actual instance of MainItem, it falls through to SupportItem branch
+			expect(weaponItem.getDisplayPacket).toHaveBeenCalledWith(100);
 		});
 
 		it('should correctly convert potion item to ItemWithDetails', () => {
@@ -491,21 +520,30 @@ describe('ItemUtils - giveItemToPlayer', () => {
 			const potionItem = {
 				id: 2,
 				rarity: ItemRarity.RARE,
-				getCategory: vi.fn().mockReturnValue(ItemCategory.POTION)
+				getCategory: vi.fn().mockReturnValue(ItemCategory.POTION),
+				getDisplayPacket: vi.fn().mockReturnValue({
+					id: 2,
+					category: ItemCategory.POTION,
+					rarity: ItemRarity.RARE,
+					detailsSupportItem: { nature: 1, power: 50 },
+					detailsMainItem: null,
+					maxStats: null
+				})
 			};
 
 			// Act
-			const result = toItemWithDetails(potionItem as any);
+			const result = toItemWithDetails(mockPlayer, potionItem as any, 0, null);
 
 			// Assert
 			expect(result).toEqual({
 				id: 2,
 				category: ItemCategory.POTION,
 				rarity: ItemRarity.RARE,
-				detailsSupportItem: expect.any(Object),
+				detailsSupportItem: { nature: 1, power: 50 },
 				detailsMainItem: null,
 				maxStats: null
 			});
+			expect(potionItem.getDisplayPacket).toHaveBeenCalledWith(100);
 		});
 	});
 
@@ -531,7 +569,8 @@ describe('ItemUtils - giveItemToPlayer', () => {
 				isFightPotion: vi.fn().mockReturnValue(false),
 				getAttack: vi.fn().mockReturnValue(0),
 				getDefense: vi.fn().mockReturnValue(0),
-				getSpeed: vi.fn().mockReturnValue(0)
+				getSpeed: vi.fn().mockReturnValue(0),
+				getDisplayPacket: vi.fn().mockReturnValue({ id: 200, name: 'Time Potion' })
 			};
 
 			// Setup potion inventory slot
@@ -548,7 +587,8 @@ describe('ItemUtils - giveItemToPlayer', () => {
 						rarity: ItemRarity.BASIC,
 						getCategory: vi.fn().mockReturnValue(ItemCategory.POTION),
 						nature: 1, // Regular potion
-						isFightPotion: vi.fn().mockReturnValue(false)
+						isFightPotion: vi.fn().mockReturnValue(false),
+						getDisplayPacket: vi.fn().mockReturnValue({ id: 50, name: 'Slot Potion' })
 					})
 				}
 			];
@@ -569,7 +609,8 @@ describe('ItemUtils - giveItemToPlayer', () => {
 				isFightPotion: vi.fn().mockReturnValue(false),
 				getAttack: vi.fn().mockReturnValue(0),
 				getDefense: vi.fn().mockReturnValue(0),
-				getSpeed: vi.fn().mockReturnValue(0)
+				getSpeed: vi.fn().mockReturnValue(0),
+				getDisplayPacket: vi.fn().mockReturnValue({ id: 201, name: 'Health Potion' })
 			};
 
 			// Act
@@ -617,7 +658,8 @@ describe('ItemUtils - giveItemToPlayer', () => {
 				isFightPotion: vi.fn().mockReturnValue(true),
 				getAttack: vi.fn().mockReturnValue(0),
 				getDefense: vi.fn().mockReturnValue(0),
-				getSpeed: vi.fn().mockReturnValue(10) // Fight potion has speed
+				getSpeed: vi.fn().mockReturnValue(10), // Fight potion has speed
+				getDisplayPacket: vi.fn().mockReturnValue({ id: 202, name: 'Fight Potion' })
 			};
 
 			// Act
@@ -643,7 +685,8 @@ describe('ItemUtils - giveItemToPlayer', () => {
 				isFightPotion: vi.fn().mockReturnValue(false),
 				getAttack: vi.fn().mockReturnValue(0),
 				getDefense: vi.fn().mockReturnValue(0),
-				getSpeed: vi.fn().mockReturnValue(0)
+				getSpeed: vi.fn().mockReturnValue(0),
+				getDisplayPacket: vi.fn().mockReturnValue({ id: 203, name: 'Money Potion' })
 			};
 
 			// Act - Even with canDrinkImmediately = false, non-TIME_SPEEDUP potions should be drinkable
@@ -668,7 +711,8 @@ describe('ItemUtils - giveItemToPlayer', () => {
 					getItem: vi.fn().mockReturnValue({
 						id: 100,
 						rarity: ItemRarity.BASIC,
-						getCategory: vi.fn().mockReturnValue(ItemCategory.POTION)
+						getCategory: vi.fn().mockReturnValue(ItemCategory.POTION),
+						getDisplayPacket: vi.fn().mockReturnValue({ id: 100, name: 'Potion 100' })
 					})
 				},
 				{
@@ -680,7 +724,8 @@ describe('ItemUtils - giveItemToPlayer', () => {
 					getItem: vi.fn().mockReturnValue({
 						id: 101,
 						rarity: ItemRarity.COMMON,
-						getCategory: vi.fn().mockReturnValue(ItemCategory.POTION)
+						getCategory: vi.fn().mockReturnValue(ItemCategory.POTION),
+						getDisplayPacket: vi.fn().mockReturnValue({ id: 101, name: 'Potion 101' })
 					})
 				}
 			];

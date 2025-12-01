@@ -5,7 +5,7 @@ import {
 	FightAction, FightActionDataController
 } from "../../../data/FightAction";
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
-import { PlayerFighter } from "../fighter/PlayerFighter";
+import { RealPlayerFighter } from "../fighter/RealPlayerFighter";
 import { RandomUtils } from "../../../../../Lib/src/utils/RandomUtils";
 import {
 	piercingOrSimpleAttack, shouldProtect
@@ -16,7 +16,7 @@ class FighterFightBehavior implements ClassBehavior {
 
 	chooseAction(me: AiPlayerFighter, fightView: FightView): FightAction {
 		const powerfulAttacksUsed = this.powerfulAttacksUsedMap;
-		const opponent = fightView.fightController.getDefendingFighter() as PlayerFighter | AiPlayerFighter; // AI will never fight monsters
+		const opponent = fightView.fightController.getDefendingFighter() as RealPlayerFighter | AiPlayerFighter; // AI will never fight monsters
 
 		if (shouldProtect(opponent, me, fightView.fightController.turn)) {
 			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.PROTECTION);

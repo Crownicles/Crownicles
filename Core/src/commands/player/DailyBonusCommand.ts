@@ -22,7 +22,6 @@ import { DailyConstants } from "../../../../Lib/src/constants/DailyConstants";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { TravelTime } from "../../core/maps/TravelTime";
 import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
-import { toItemWithDetails } from "../../core/utils/ItemUtils";
 import {
 	EndCallback, ReactionCollectorInstance
 } from "../../core/utils/ReactionsCollector";
@@ -82,10 +81,10 @@ async function activateDailyItem(player: Player, activeObject: ObjectItem, respo
 	response.push(packet);
 	switch (packet.itemNature) {
 		case ItemNature.ENERGY:
-			player.addEnergy(activeObject.power, NumberChangeReason.DAILY);
+			player.addEnergy(activeObject.power, NumberChangeReason.DAILY, await InventorySlots.getPlayerActiveObjects(player.id));
 			break;
 		case ItemNature.HEALTH:
-			await player.addHealth(activeObject.power, response, NumberChangeReason.DAILY);
+			await player.addHealth(activeObject.power, response, NumberChangeReason.DAILY, await InventorySlots.getPlayerActiveObjects(player.id));
 			break;
 		case ItemNature.TIME_SPEEDUP:
 			await TravelTime.timeTravel(player, activeObject.power, NumberChangeReason.DAILY);
@@ -140,7 +139,7 @@ export default class DailyBonusCommand {
 			return;
 		}
 
-		const collector = new ReactionCollectorDailyBonus(usableObjects.map(i => toItemWithDetails(i.getItem())));
+		const collector = new ReactionCollectorDailyBonus(usableObjects.map(i => i.itemWithDetails(player)));
 
 		const endCallback: EndCallback = async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
 			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.DAILY_BONUS);
@@ -152,7 +151,7 @@ export default class DailyBonusCommand {
 			}
 
 			const objectDetails = (reaction.reaction.data as ReactionCollectorDailyBonusReaction).object;
-			const objectItem = usableObjects.find(uo => uo.itemId === objectDetails.id && uo.itemCategory === objectDetails.category).getItem() as ObjectItem;
+			const objectItem = usableObjects.find(uo => uo.itemId === objectDetails.id && uo.itemCategory === objectDetails.itemCategory).getItem() as ObjectItem;
 			await activateDailyItem(
 				await player.reload(),
 				objectItem,

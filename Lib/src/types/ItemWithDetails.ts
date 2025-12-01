@@ -1,30 +1,4 @@
-import {
-	ItemCategory, ItemNature, ItemRarity
-} from "../constants/ItemConstants";
+import { MainItemDetails } from "./MainItemDetails";
+import { SupportItemDetails } from "./SupportItemDetails";
 
-export interface ItemWithDetails {
-	category: ItemCategory;
-
-	id: number;
-
-	rarity: ItemRarity;
-
-	detailsSupportItem?: {
-		nature: ItemNature;
-		power: number;
-	};
-
-	detailsMainItem?: {
-		stats: {
-			attack: number;
-			defense: number;
-			speed: number;
-		};
-	};
-
-	maxStats?: {
-		attack: number;
-		defense: number;
-		speed: number;
-	};
-}
+export type ItemWithDetails = MainItemDetails | SupportItemDetails;

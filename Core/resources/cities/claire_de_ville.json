@@ -1,0 +1,59 @@
+{
+  "mapLinks": [
+    91,
+    92
+  ],
+  "maps": [
+    23,
+    37
+  ],
+  "inns": [
+    {
+      "id": "bravesStop",
+      "meals": [
+        {
+          "id": "potatoSoup",
+          "price": 75,
+          "energy": 210
+        },
+        {
+          "id": "friedEggs",
+          "price": 50,
+          "energy": 150
+        },
+        {
+          "id": "curryRice",
+          "price": 120,
+          "energy": 330
+        },
+        {
+          "id": "sushi",
+          "price": 200,
+          "energy": 500
+        },
+        {
+          "id": "bravesPanOfFood",
+          "price": 700,
+          "energy": 1750
+        }
+      ],
+      "rooms": [
+        {
+          "id": "simpleRoom",
+          "price": 550,
+          "health": 50
+        },
+        {
+          "id": "comfortableRoom",
+          "price": 1050,
+          "health": 100
+        },
+        {
+          "id": "luxuryRoom",
+          "price": 1550,
+          "health": 200
+        }
+      ]
+    }
+  ]
+}

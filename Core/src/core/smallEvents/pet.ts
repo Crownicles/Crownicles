@@ -28,6 +28,7 @@ import { giveFoodToGuild } from "../utils/FoodUtils";
 import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
 import { PetFood } from "../../../../Lib/src/types/PetFood";
 import { Badge } from "../../../../Lib/src/types/Badge";
+import { PlayerActiveObjects } from "../database/game/models/PlayerActiveObjects";
 import { PetUtils } from "../utils/PetUtils";
 
 /**
@@ -72,9 +73,17 @@ function pickRandomInteraction(possibleIssues: PetInteraction[]): string {
  * @param response
  * @param context
  * @param player
+ * @param playerActiveObjects
  * @param petEntity
  */
-async function managePickedInteraction(packet: SmallEventPetPacket, response: CrowniclesPacket[], context: PacketContext, player: Player, petEntity: PetEntity): Promise<void> {
+async function managePickedInteraction(
+	packet: SmallEventPetPacket,
+	response: CrowniclesPacket[],
+	context: PacketContext,
+	player: Player,
+	playerActiveObjects: PlayerActiveObjects,
+	petEntity: PetEntity
+): Promise<void> {
 	switch (packet.interactionName) {
 		case PetConstants.PET_INTERACTIONS_NAMES.WIN_ENERGY:
 			if (player.fightPointsLost === 0) {
@@ -82,7 +91,7 @@ async function managePickedInteraction(packet: SmallEventPetPacket, response: Cr
 				break;
 			}
 			packet.amount = RandomUtils.rangedInt(SmallEventConstants.PET.ENERGY);
-			player.addEnergy(packet.amount, NumberChangeReason.SMALL_EVENT);
+			player.addEnergy(packet.amount, NumberChangeReason.SMALL_EVENT, playerActiveObjects);
 			break;
 
 		case PetConstants.PET_INTERACTIONS_NAMES.WIN_FOOD:
@@ -132,12 +141,12 @@ async function managePickedInteraction(packet: SmallEventPetPacket, response: Cr
 			break;
 
 		case PetConstants.PET_INTERACTIONS_NAMES.WIN_HEALTH:
-			if (player.health === player.getMaxHealth()) {
+			if (player.getHealth(playerActiveObjects) === player.getMaxHealth(playerActiveObjects)) {
 				packet.interactionName = PetConstants.PET_INTERACTIONS_NAMES.NOTHING;
 				break;
 			}
 			packet.amount = RandomUtils.rangedInt(SmallEventConstants.PET.HEALTH);
-			await player.addHealth(packet.amount, response, NumberChangeReason.SMALL_EVENT);
+			await player.addHealth(packet.amount, response, NumberChangeReason.SMALL_EVENT, playerActiveObjects);
 			await MissionsController.update(player, response, { missionId: "petEarnHealth" });
 			break;
 
@@ -155,7 +164,7 @@ async function managePickedInteraction(packet: SmallEventPetPacket, response: Cr
 
 		case PetConstants.PET_INTERACTIONS_NAMES.LOSE_HEALTH:
 			packet.amount = RandomUtils.rangedInt(SmallEventConstants.PET.HEALTH);
-			await player.addHealth(-packet.amount, response, NumberChangeReason.SMALL_EVENT);
+			await player.addHealth(-packet.amount, response, NumberChangeReason.SMALL_EVENT, playerActiveObjects);
 			await player.killIfNeeded(response, NumberChangeReason.SMALL_EVENT);
 			break;
 
@@ -196,7 +205,7 @@ async function managePickedInteraction(packet: SmallEventPetPacket, response: Cr
 
 export const smallEventFuncs: SmallEventFuncs = {
 	canBeExecuted: player => Maps.isOnContinent(player) && Boolean(player.petId),
-	executeSmallEvent: async (response, player, context): Promise<void> => {
+	executeSmallEvent: async (response, player, context, playerActiveObjects): Promise<void> => {
 		const petEntity = await PetEntities.getById(player.petId);
 		const pet = PetDataController.instance.getById(petEntity.typeId);
 		const possibleIssues = generatePossibleIssues(petEntity, pet);
@@ -213,7 +222,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 			response.push(makePacket(ErrorPacket, { message: "SmallEvent Pet : cannot determine an interaction for the user" }));
 			return;
 		}
-		await managePickedInteraction(packet, response, context, player, petEntity);
+		await managePickedInteraction(packet, response, context, player, playerActiveObjects, petEntity);
 		response.unshift(makePacket(SmallEventPetPacket, packet));
 	}
 };

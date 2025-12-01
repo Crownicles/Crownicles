@@ -1,9 +1,10 @@
 import {
-	ReactionCollector, ReactionCollectorCreationPacket, ReactionCollectorData, ReactionCollectorReaction
+	ReactionCollector,
+	ReactionCollectorCreationPacket,
+	ReactionCollectorData,
+	ReactionCollectorReaction
 } from "./ReactionCollectorPacket";
-import {
-	MainItemDisplayPacket, SupportItemDisplayPacket
-} from "../commands/CommandInventoryPacket";
+import { ItemWithDetails } from "../../types/ItemWithDetails";
 
 export class ReactionCollectorSwitchItemData extends ReactionCollectorData {
 }
@@ -11,16 +12,16 @@ export class ReactionCollectorSwitchItemData extends ReactionCollectorData {
 export class ReactionCollectorSwitchItemReaction extends ReactionCollectorReaction {
 	itemIndex!: number;
 
-	item!: MainItemDisplayPacket | SupportItemDisplayPacket;
+	item!: ItemWithDetails;
 }
 
 export class ReactionCollectorSwitchItemCloseReaction extends ReactionCollectorReaction {
 }
 
 export class ReactionCollectorSwitchItem extends ReactionCollector {
-	private readonly itemList: (MainItemDisplayPacket | SupportItemDisplayPacket)[];
+	private readonly itemList: ItemWithDetails[];
 
-	constructor(itemList: (MainItemDisplayPacket | SupportItemDisplayPacket)[]) {
+	constructor(itemList: ItemWithDetails[]) {
 		super();
 		this.itemList = itemList;
 	}

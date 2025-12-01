@@ -6,6 +6,8 @@ import { MapCache } from "../../../maps/MapCache";
 
 // skipcq: JS-C1003 - moment does not expose itself as an ES Module.
 import * as moment from "moment";
+import { ItemEnchantment } from "../../../../../../Lib/src/types/ItemEnchantment";
+import { CityDataController } from "../../../../data/City";
 
 class SettingClassNumber {
 	private readonly name: string;
@@ -46,7 +48,7 @@ class SettingClassNumber {
 }
 
 // Currently keeping it for a future update
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+
 class SettingClassString {
 	private readonly name: string;
 
@@ -121,6 +123,16 @@ export class Settings {
 	public static readonly NEXT_DAILY_RESET = new SettingClassNumber(
 		"nextDailyReset",
 		(): Promise<number> => Promise.resolve(0)
+	);
+
+	public static readonly ENCHANTER_CITY = new SettingClassString(
+		"enchanterCity",
+		(): Promise<string> => Promise.resolve(CityDataController.instance.getRandomCity().id)
+	);
+
+	public static readonly ENCHANTER_ENCHANTMENT_ID = new SettingClassString(
+		"enchanterEnchantmentId",
+		(): Promise<string> => Promise.resolve(ItemEnchantment.DEFENSE_1.id)
 	);
 }
 

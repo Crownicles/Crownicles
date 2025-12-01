@@ -111,3 +111,69 @@ export class CommandReportBigEventResultRes extends CrowniclesPacket {
 
 	oneshot!: boolean;
 }
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportStayInCity extends CrowniclesPacket {}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportChooseDestinationCityRes extends CrowniclesPacket {
+	mapId!: number;
+
+	mapTypeId!: string;
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportEatInnMealRes extends CrowniclesPacket {
+	energy!: number;
+
+	moneySpent!: number;
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportEatInnMealCooldownRes extends CrowniclesPacket {}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportSleepRoomRes extends CrowniclesPacket {
+	roomId!: string;
+
+	health!: number;
+
+	moneySpent!: number;
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportNotEnoughMoneyRes extends CrowniclesPacket {
+	missingMoney!: number;
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportEnchantNotEnoughCurrenciesRes extends CrowniclesPacket {
+	missingMoney!: number;
+
+	missingGems!: number;
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportItemCannotBeEnchantedRes extends CrowniclesPacket {}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportItemEnchantedRes extends CrowniclesPacket {
+	enchantmentId!: string;
+
+	enchantmentType!: string;
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportBuyHomeRes extends CrowniclesPacket {
+	cost!: number;
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportUpgradeHomeRes extends CrowniclesPacket {
+	cost!: number;
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportMoveHomeRes extends CrowniclesPacket {
+	cost!: number;
+}

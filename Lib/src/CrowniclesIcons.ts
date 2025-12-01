@@ -201,7 +201,40 @@ export const CrowniclesIcons: {
 		lost: string;
 		draw: string;
 	};
-	items: { drinkPotion: string };
+	items: {
+		drinkPotion: string;
+	};
+	city: {
+		exit: string;
+		stay: string;
+		inn: string;
+		enchanter: string;
+		shop: string;
+		home: { [level: number]: string };
+		manageHome: string;
+		homeUpgrades: {
+			bed: string;
+			chest: string;
+			potionStation: string;
+			upgradeEquipment: string;
+			garden: string;
+			earthQuality: string;
+		};
+	};
+	meals: {
+		[mealId: string]: string;
+	};
+	rooms: {
+		[roomId: string]: string;
+	};
+	enchantmentTypes: {
+		damage: string;
+		health: string;
+		defense: string;
+		speed: string;
+		magic: string;
+		other: string;
+	};
 } = {
 	effects: {
 		notStarted: "👶",
@@ -878,6 +911,56 @@ export const CrowniclesIcons: {
 			visitFloor: "↗️",
 			visitBasement: "🕸️",
 			randomRoom: "🚪",
+			end: { 0: "🚶" }
+		},
+		82: {
+			takeLetter: "📩",
+			openLetter: "📜",
+			deliver: "📮",
+			end: { 0: "🚶" }
+		},
+		83: {
+			skip: "🚶",
+			buy: "💶",
+			steal: "🕵️",
+			haggle: "🤝",
+			end: { 0: "🚶" }
+		},
+		84: {
+			help: "🤝",
+			ask: "🗣️",
+			end: { 0: "🚶" }
+		},
+		85: {
+			report: "📰",
+			stealFromThief: "🕵️",
+			fight: "⚔️",
+			ignore: "🚶",
+			end: { 0: "🚶" }
+		},
+		86: {
+			dance: "💃",
+			drink: "🍺",
+			pickPocket: "🕵️",
+			end: { 0: "🚶" }
+		},
+		87: {
+			skip: "🚶",
+			buyHorse: "🐴",
+			trade: "👥",
+			stealHorse: "🕵️",
+			end: { 0: "🚶" }
+		},
+		88: {
+			touchStatue: "🤚",
+			pray: "🙏",
+			break: "🔨",
+			end: { 0: "🚶" }
+		},
+		89: {
+			listen: "👂",
+			followMelody: "🎵",
+			coverEars: "🙉",
 			end: { 0: "🚶" }
 		},
 		9: {
@@ -2335,5 +2418,72 @@ export const CrowniclesIcons: {
 		lost: "🔴",
 		draw: "🟡"
 	},
-	items: { drinkPotion: "🥤" }
+	items: { drinkPotion: "🥤" },
+	city: {
+		exit: "🏃‍➡️",
+		stay: "👀",
+		inn: "🍺",
+		enchanter: "🔮",
+		shop: "💎",
+		home: {
+			1: "🏕️",
+			2: "🏕️",
+			3: "🏚️",
+			4: "🏚️",
+			5: "🏠",
+			6: "🏠",
+			7: "🏡",
+			8: "🏡"
+		},
+		manageHome: "🧑‍💼",
+		homeUpgrades: {
+			bed: "🛏️",
+			chest: "📦",
+			potionStation: "🧪",
+			upgradeEquipment: "🛠️",
+			garden: "🌱",
+			earthQuality: "↗️"
+		}
+	},
+	meals: {
+		breadAndCheese: "🧀",
+		roastedFowl: "🍗",
+		roastedBeef: "🥩",
+		stew: "🍲",
+		lordPie: "🥧",
+		potatoSoup: "🥔",
+		friedEggs: "🍳",
+		curryRice: "🍛",
+		sushi: "🍣",
+		bravesPanOfFood: "🍳",
+		fishAndChips: "🍟",
+		coldVegetableStew: "🥗",
+		roastedPork: "🍖",
+		oysterPlatter: "🦪",
+		tamale: "🫔",
+		friedShrimp: "🍤",
+		clamChowder: "🍲",
+		grilledFish: "🐟",
+		lobsterRoll: "🦞",
+		jellyfishCarpaccio: "🪼",
+		bread: "🍞",
+		pretzels: "🥨",
+		simpleSalad: "🥗"
+	},
+	rooms: {
+		horribleRoom: "🕸️",
+		simpleRoom: "🛋️",
+		comfortableRoom: "🛏️",
+		luxuryRoom: "👑",
+		royalSuite: "💠",
+		imperialSuite: "💎"
+	},
+	enchantmentTypes: {
+		damage: "📕",
+		health: "📗",
+		defense: "📘",
+		speed: "📓",
+		magic: "📔",
+		other: "📒"
+	}
 };
