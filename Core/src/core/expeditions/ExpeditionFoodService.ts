@@ -144,6 +144,7 @@ function evaluateCombination(params: EvaluateCombinationParams): FoodOption | nu
 
 /**
  * Generate all valid food combinations that meet or exceed the required rations
+ * Uses a flat iteration approach to avoid deep nesting
  */
 function generateValidCombinations(
 	available: AvailableFood,
@@ -158,16 +159,18 @@ function generateValidCombinations(
 	const maxDiet = Math.min(available.diet, Math.ceil(rationsRequired / values.dietVal));
 	const maxSoup = Math.min(available.soup, Math.ceil(rationsRequired / values.soupVal));
 
-	for (let t = 0; t <= maxTreats; t++) {
-		for (let d = 0; d <= maxDiet; d++) {
-			for (let s = 0; s <= maxSoup; s++) {
-				const option = evaluateCombination({
-					t, d, s, rationsRequired, values, prices
-				});
-				if (option) {
-					options.push(option);
-				}
-			}
+	// Generate all combinations using a flat loop with computed indices
+	const totalCombinations = (maxTreats + 1) * (maxDiet + 1) * (maxSoup + 1);
+	for (let i = 0; i < totalCombinations; i++) {
+		const t = i % (maxTreats + 1);
+		const d = Math.floor(i / (maxTreats + 1)) % (maxDiet + 1);
+		const s = Math.floor(i / ((maxTreats + 1) * (maxDiet + 1)));
+
+		const option = evaluateCombination({
+			t, d, s, rationsRequired, values, prices
+		});
+		if (option) {
+			options.push(option);
 		}
 	}
 

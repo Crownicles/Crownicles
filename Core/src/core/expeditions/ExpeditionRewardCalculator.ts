@@ -18,14 +18,56 @@ export interface ExpeditionRewardDataWithItem extends ExpeditionRewardData {
 }
 
 /**
- * Calculate a linear score (0-3) based on how close a value is to its maximum
- * @param value Current value
- * @param min Minimum possible value
- * @param max Maximum possible value
- * @returns Score between 0 and 3
+ * Value range for linear score calculation
  */
-function calculateLinearScore(value: number, min: number, max: number): number {
-	const percentage = (value - min) / (max - min);
+interface ValueRange {
+	value: number;
+	min: number;
+	max: number;
+}
+
+/**
+ * Base rewards before any modifiers
+ */
+interface BaseRewards {
+	money: number;
+	experience: number;
+	points: number;
+}
+
+/**
+ * Item rarity constraints
+ */
+interface RarityRange {
+	minRarity: number;
+	maxRarity: number;
+}
+
+/**
+ * Parameters for clone talisman drop calculation
+ */
+interface CloneTalismanDropParams {
+	expedition: ExpeditionData;
+	rewardIndex: number;
+	hasCloneTalisman: boolean;
+	isPartialSuccess: boolean;
+}
+
+/**
+ * Parameters for reward calculation
+ */
+export interface RewardCalculationParams {
+	expedition: ExpeditionData;
+	rewardIndex: number;
+	isPartialSuccess: boolean;
+	hasCloneTalisman: boolean;
+}
+
+/**
+ * Calculate a linear score (0-3) based on how close a value is to its maximum
+ */
+function calculateLinearScore(range: ValueRange): number {
+	const percentage = (range.value - range.min) / (range.max - range.min);
 	return MathUtils.getIntervalValue(0, 3, percentage);
 }
 
@@ -39,21 +81,21 @@ function calculateLinearScore(value: number, min: number, max: number): number {
  */
 export function calculateRewardIndex(expedition: ExpeditionData): number {
 	// Calculate linear scores for each component (0-3 each)
-	const durationScore = calculateLinearScore(
-		expedition.durationMinutes,
-		ExpeditionConstants.DURATION.MIN_MINUTES,
-		ExpeditionConstants.DURATION.MAX_MINUTES
-	);
-	const riskScore = calculateLinearScore(
-		expedition.riskRate,
-		ExpeditionConstants.RISK_RATE.MIN,
-		ExpeditionConstants.RISK_RATE.MAX
-	);
-	const difficultyScore = calculateLinearScore(
-		expedition.difficulty,
-		ExpeditionConstants.DIFFICULTY.MIN,
-		ExpeditionConstants.DIFFICULTY.MAX
-	);
+	const durationScore = calculateLinearScore({
+		value: expedition.durationMinutes,
+		min: ExpeditionConstants.DURATION.MIN_MINUTES,
+		max: ExpeditionConstants.DURATION.MAX_MINUTES
+	});
+	const riskScore = calculateLinearScore({
+		value: expedition.riskRate,
+		min: ExpeditionConstants.RISK_RATE.MIN,
+		max: ExpeditionConstants.RISK_RATE.MAX
+	});
+	const difficultyScore = calculateLinearScore({
+		value: expedition.difficulty,
+		min: ExpeditionConstants.DIFFICULTY.MIN,
+		max: ExpeditionConstants.DIFFICULTY.MAX
+	});
 
 	/*
 	 * Sum the three scores with duration having a bonus weight
@@ -77,11 +119,7 @@ export function calculateRewardIndex(expedition: ExpeditionData): number {
  * Calculate base rewards from expedition parameters
  * Note: wealthRate is already factored into rewardIndex, so we don't multiply here
  */
-function calculateBaseRewards(rewardIndex: number, locationType: string): {
-	money: number;
-	experience: number;
-	points: number;
-} {
+function calculateBaseRewards(rewardIndex: number, locationType: string): BaseRewards {
 	const locationWeights = ExpeditionConstants.LOCATION_REWARD_WEIGHTS[locationType];
 
 	return {
@@ -94,11 +132,7 @@ function calculateBaseRewards(rewardIndex: number, locationType: string): {
 /**
  * Apply partial success penalty (halves all rewards)
  */
-function applyPartialSuccessPenalty(rewards: {
-	money: number;
-	experience: number;
-	points: number;
-}): void {
+function applyPartialSuccessPenalty(rewards: BaseRewards): void {
 	rewards.money = Math.round(rewards.money / 2);
 	rewards.experience = Math.round(rewards.experience / 2);
 	rewards.points = Math.round(rewards.points / 2);
@@ -107,12 +141,11 @@ function applyPartialSuccessPenalty(rewards: {
 /**
  * Calculate chance and roll for clone talisman drop
  */
-function rollCloneTalisman(
-	expedition: ExpeditionData,
-	rewardIndex: number,
-	hasCloneTalisman: boolean,
-	isPartialSuccess: boolean
-): boolean {
+function rollCloneTalisman(params: CloneTalismanDropParams): boolean {
+	const {
+		expedition, rewardIndex, hasCloneTalisman, isPartialSuccess
+	} = params;
+
 	// No drop if player already has it or partial success
 	if (hasCloneTalisman || isPartialSuccess) {
 		return false;
@@ -138,9 +171,7 @@ function rollCloneTalisman(
  * - rewardIndex = 3: maxRarity = 7 (LEGENDARY)
  * - rewardIndex >= 4: maxRarity = 8 (MYTHICAL)
  */
-function calculateItemRarityRange(rewardIndex: number): {
-	minRarity: number; maxRarity: number;
-} {
+function calculateItemRarityRange(rewardIndex: number): RarityRange {
 	const minRarity = Math.max(
 		ExpeditionConstants.ITEM_REWARD.MIN_RARITY_FLOOR,
 		rewardIndex - ExpeditionConstants.ITEM_REWARD.MIN_RARITY_OFFSET
@@ -159,13 +190,11 @@ function calculateItemRarityRange(rewardIndex: number): {
 function generateItemReward(rewardIndex: number): {
 	itemId: number; itemCategory: number;
 } {
-	const {
-		minRarity, maxRarity
-	} = calculateItemRarityRange(rewardIndex);
+	const rarityRange = calculateItemRarityRange(rewardIndex);
 
 	const item = generateRandomItem({
-		minRarity,
-		maxRarity
+		minRarity: rarityRange.minRarity,
+		maxRarity: rarityRange.maxRarity
 	});
 
 	return {
@@ -177,12 +206,10 @@ function generateItemReward(rewardIndex: number): {
 /**
  * Calculate rewards based on expedition parameters and location
  */
-export function calculateRewards(
-	expedition: ExpeditionData,
-	rewardIndex: number,
-	isPartialSuccess: boolean,
-	hasCloneTalisman: boolean
-): ExpeditionRewardDataWithItem {
+export function calculateRewards(params: RewardCalculationParams): ExpeditionRewardDataWithItem {
+	const {
+		expedition, rewardIndex, isPartialSuccess, hasCloneTalisman
+	} = params;
 	const rewards = calculateBaseRewards(rewardIndex, expedition.locationType);
 
 	if (isPartialSuccess) {
@@ -196,6 +223,11 @@ export function calculateRewards(
 		...rewards,
 		itemId: itemReward.itemId,
 		itemCategory: itemReward.itemCategory,
-		cloneTalismanFound: rollCloneTalisman(expedition, rewardIndex, hasCloneTalisman, isPartialSuccess)
+		cloneTalismanFound: rollCloneTalisman({
+			expedition,
+			rewardIndex,
+			hasCloneTalisman,
+			isPartialSuccess
+		})
 	};
 }

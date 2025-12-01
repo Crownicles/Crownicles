@@ -52,16 +52,31 @@ function generateExpeditionId(): string {
 }
 
 /**
+ * Duration range for expedition generation
+ */
+interface DurationRange {
+	min: number;
+	max: number;
+}
+
+/**
+ * Parameters for generating an expedition
+ */
+interface ExpeditionGenerationParams {
+	durationRange: DurationRange;
+	locationType: ExpeditionLocationType;
+	mapLocationId?: number;
+	isDistantExpedition?: boolean;
+}
+
+/**
  * Generate a single random expedition with specified duration range and location
  */
-function generateExpeditionWithConstraints(
-	durationRange: {
-		min: number; max: number;
-	},
-	locationType: ExpeditionLocationType,
-	mapLocationId?: number,
-	isDistantExpedition?: boolean
-): ExpeditionData {
+function generateExpeditionWithConstraints(params: ExpeditionGenerationParams): ExpeditionData {
+	const {
+		durationRange, locationType, mapLocationId, isDistantExpedition
+	} = params;
+
 	const durationMinutes = RandomUtils.randInt(
 		durationRange.min,
 		durationRange.max + 1
@@ -128,14 +143,6 @@ function getRandomDistantMapLocation(excludeIds: number[]): number {
 }
 
 /**
- * Duration range type
- */
-type DurationRange = {
-	min: number;
-	max: number;
-};
-
-/**
  * Generate local expeditions based on map locations from player's current link
  */
 function generateLocalExpeditions(
@@ -150,7 +157,12 @@ function generateLocalExpeditions(
 		const mapLocation = MapLocationDataController.instance.getById(mapLocationId);
 		const locationType = getExpeditionTypeFromMapType(mapLocation?.type ?? "ro");
 
-		const expedition = generateExpeditionWithConstraints(durationRanges[i], locationType, mapLocationId, false);
+		const expedition = generateExpeditionWithConstraints({
+			durationRange: durationRanges[i],
+			locationType,
+			mapLocationId,
+			isDistantExpedition: false
+		});
 
 		if (bonusExpeditionIndex === i) {
 			expedition.hasCloneTalismanBonus = true;
@@ -172,10 +184,10 @@ function fillMissingLocalExpeditions(
 ): void {
 	while (expeditions.length < 2) {
 		const allLocationTypes = Object.values(ExpeditionConstants.LOCATION_TYPES) as ExpeditionLocationType[];
-		const expedition = generateExpeditionWithConstraints(
-			durationRanges[expeditions.length],
-			RandomUtils.crowniclesRandom.pick(allLocationTypes)
-		);
+		const expedition = generateExpeditionWithConstraints({
+			durationRange: durationRanges[expeditions.length],
+			locationType: RandomUtils.crowniclesRandom.pick(allLocationTypes)
+		});
 
 		if (bonusExpeditionIndex === expeditions.length) {
 			expedition.hasCloneTalismanBonus = true;
@@ -214,7 +226,12 @@ export function generateThreeExpeditions(mapLinkId: number, hasCloneTalisman: bo
 	const distantMapLocation = MapLocationDataController.instance.getById(distantMapLocationId);
 	const distantLocationType = getExpeditionTypeFromMapType(distantMapLocation?.type ?? "ro");
 
-	const distantExpedition = generateExpeditionWithConstraints(durationRanges[2], distantLocationType, distantMapLocationId, true);
+	const distantExpedition = generateExpeditionWithConstraints({
+		durationRange: durationRanges[2],
+		locationType: distantLocationType,
+		mapLocationId: distantMapLocationId,
+		isDistantExpedition: true
+	});
 
 	if (bonusExpeditionIndex === 2) {
 		distantExpedition.hasCloneTalismanBonus = true;
@@ -291,7 +308,12 @@ export function determineExpeditionOutcome(
 	}
 
 	const partialSuccess = RandomUtils.crowniclesRandom.bool(effectiveRisk / ExpeditionConstants.PERCENTAGE.MAX);
-	const rewards = calculateRewards(expedition, rewardIndex, partialSuccess, hasCloneTalisman);
+	const rewards = calculateRewards({
+		expedition,
+		rewardIndex,
+		isPartialSuccess: partialSuccess,
+		hasCloneTalisman
+	});
 
 	return {
 		totalFailure: false,

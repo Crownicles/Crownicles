@@ -142,6 +142,104 @@ function calculateSpeedDurationModifier(petSpeed: number): number {
 }
 
 /**
+ * Data for creating and starting an expedition
+ */
+interface ExpeditionCreationData {
+	player: Player;
+	petEntity: PetEntity;
+	expeditionData: ExpeditionData;
+	foodPlan: FoodConsumptionPlan;
+	adjustedDurationMinutes: number;
+	rewardIndex: number;
+}
+
+/**
+ * Create and save expedition to database
+ */
+async function createAndSaveExpedition(data: ExpeditionCreationData): Promise<PetExpedition> {
+	const {
+		player, petEntity, expeditionData, foodPlan, adjustedDurationMinutes, rewardIndex
+	} = data;
+
+	const expedition = PetExpeditions.createExpedition({
+		playerId: player.id,
+		petId: petEntity.id,
+		expeditionData,
+		durationMinutes: adjustedDurationMinutes,
+		foodConsumed: foodPlan.totalRations,
+		rewardIndex
+	});
+	await expedition.save();
+
+	// Schedule notification for when the expedition ends
+	await ScheduledExpeditionNotifications.scheduleNotification(
+		expedition.id,
+		player.keycloakId,
+		petEntity.typeId,
+		petEntity.sex,
+		petEntity.nickname,
+		expedition.endDate
+	);
+
+	return expedition;
+}
+
+/**
+ * Log expedition start to database
+ */
+function logExpeditionStart(
+	playerKeycloakId: string,
+	petEntityId: number,
+	expeditionData: ExpeditionData,
+	adjustedDurationMinutes: number,
+	foodConsumed: number,
+	rewardIndex: number
+): void {
+	crowniclesInstance.logsDatabase.logExpeditionStart(
+		playerKeycloakId,
+		petEntityId,
+		{
+			mapLocationId: expeditionData.mapLocationId!,
+			locationType: expeditionData.locationType,
+			durationMinutes: adjustedDurationMinutes,
+			foodConsumed,
+			rewardIndex
+		}
+	).then();
+}
+
+/**
+ * Build the success response packet for expedition selection
+ */
+function buildExpeditionSelectSuccessResponse(
+	expedition: PetExpedition,
+	petEntity: PetEntity,
+	foodPlan: FoodConsumptionPlan,
+	rationsRequired: number,
+	speedDurationModifier: number,
+	originalDisplayDurationMinutes: number
+): CommandPetExpeditionChoicePacketRes {
+	const insufficientFood = foodPlan.totalRations < rationsRequired;
+
+	return makePacket(CommandPetExpeditionChoicePacketRes, {
+		success: true,
+		expedition: expedition.toExpeditionInProgressData(
+			petEntity.typeId,
+			petEntity.sex,
+			petEntity.nickname ?? undefined
+		),
+		foodConsumed: foodPlan.totalRations,
+		foodConsumedDetails: foodPlanToDetails(foodPlan),
+		insufficientFood,
+		insufficientFoodCause: insufficientFood
+			? !foodPlan.consumption.length ? "noGuild" : "guildNoFood"
+			: undefined,
+		speedDurationModifier,
+		originalDisplayDurationMinutes
+	});
+}
+
+/**
  * Check and award expert expediteur badge if conditions are met
  */
 async function checkAndAwardExpeditionBadge(
@@ -186,11 +284,6 @@ async function handleExpeditionSelect(
 	// Calculate optimal food consumption plan
 	const foodPlan = await calculateFoodConsumptionPlan(player, petModel, rationsRequired);
 
-	const insufficientFood = foodPlan.totalRations < rationsRequired;
-	const insufficientFoodCause = insufficientFood
-		? !player.guildId ? "noGuild" : "guildNoFood"
-		: undefined;
-
 	// Apply food consumption to guild storage (even if insufficient, consume what's available)
 	if (player.guildId && foodPlan.consumption.length > 0) {
 		await applyFoodConsumptionPlan(player.guildId, foodPlan);
@@ -199,61 +292,30 @@ async function handleExpeditionSelect(
 	// Calculate speed modifier and adjusted duration
 	const speedDurationModifier = calculateSpeedDurationModifier(petModel.speed);
 	const adjustedDurationMinutes = Math.round(expeditionData.durationMinutes * speedDurationModifier);
-
-	// Calculate reward index once (based on original expedition data, before speed adjustment)
 	const rewardIndex = calculateRewardIndex(expeditionData);
 
-	// Create expedition with adjusted duration and stored reward index
-	const expedition = PetExpeditions.createExpedition({
-		playerId: player.id,
-		petId: petEntity.id,
+	// Create and save expedition
+	const expedition = await createAndSaveExpedition({
+		player,
+		petEntity,
 		expeditionData,
-		durationMinutes: adjustedDurationMinutes,
-		foodConsumed: foodPlan.totalRations,
+		foodPlan,
+		adjustedDurationMinutes,
 		rewardIndex
 	});
-	await expedition.save();
 
-	// Schedule notification for when the expedition ends
-	await ScheduledExpeditionNotifications.scheduleNotification(
-		expedition.id,
-		player.keycloakId,
-		petEntity.typeId,
-		petEntity.sex,
-		petEntity.nickname,
-		expedition.endDate
-	);
-
-	// Log expedition start to database
-	crowniclesInstance.logsDatabase.logExpeditionStart(
-		player.keycloakId,
-		petEntity.id,
-		{
-			mapLocationId: expeditionData.mapLocationId!,
-			locationType: expeditionData.locationType,
-			durationMinutes: adjustedDurationMinutes,
-			foodConsumed: foodPlan.totalRations,
-			rewardIndex
-		}
-	).then();
-
-	// Clean up the pending expeditions cache
+	// Log and clean up
+	logExpeditionStart(player.keycloakId, petEntity.id, expeditionData, adjustedDurationMinutes, foodPlan.totalRations, rewardIndex);
 	PendingExpeditionsCache.delete(keycloakId);
 
-	response.push(makePacket(CommandPetExpeditionChoicePacketRes, {
-		success: true,
-		expedition: expedition.toExpeditionInProgressData(
-			petEntity.typeId,
-			petEntity.sex,
-			petEntity.nickname ?? undefined
-		),
-		foodConsumed: foodPlan.totalRations,
-		foodConsumedDetails: foodPlanToDetails(foodPlan),
-		insufficientFood,
-		insufficientFoodCause,
+	response.push(buildExpeditionSelectSuccessResponse(
+		expedition,
+		petEntity,
+		foodPlan,
+		rationsRequired,
 		speedDurationModifier,
-		originalDisplayDurationMinutes: expeditionData.displayDurationMinutes
-	}));
+		expeditionData.displayDurationMinutes
+	));
 }
 
 /**

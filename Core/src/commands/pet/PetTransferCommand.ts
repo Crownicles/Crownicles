@@ -15,7 +15,9 @@ import {
 	CommandPetTransferSituationChangedErrorPacket,
 	CommandPetTransferSuccessPacket
 } from "../../../../Lib/src/packets/commands/CommandPetTransferPacket";
-import { PetEntities } from "../../core/database/game/models/PetEntity";
+import {
+	PetEntities, PetEntity
+} from "../../core/database/game/models/PetEntity";
 import { ReactionCollectorInstance } from "../../core/utils/ReactionsCollector";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
 import {
@@ -30,13 +32,16 @@ import {
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorPetTransfer";
 import { Guilds } from "../../core/database/game/models/Guild";
 import { BlockingUtils } from "../../core/utils/BlockingUtils";
-import { GuildPets } from "../../core/database/game/models/GuildPet";
+import {
+	GuildPet, GuildPets
+} from "../../core/database/game/models/GuildPet";
 import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
 import { crowniclesInstance } from "../../index";
 import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { MissionsController } from "../../core/missions/MissionsController";
 import { PetExpeditions } from "../../core/database/game/models/PetExpedition";
+import { OwnedPet } from "../../../../Lib/src/types/OwnedPet";
 
 
 /**
@@ -188,6 +193,83 @@ function getEndCallback(player: Player) {
 	};
 }
 
+/**
+ * Check if another guild member is currently transferring a pet
+ */
+async function checkGuildMemberTransferring(
+	guildId: number
+): Promise<string | null> {
+	const guildMembers = await Players.getByGuild(guildId);
+	for (const member of guildMembers) {
+		if (BlockingUtils.isPlayerBlockedWithReason(member.keycloakId, BlockingConstants.REASONS.PET_TRANSFER)) {
+			return member.keycloakId;
+		}
+	}
+	return null;
+}
+
+/**
+ * Check if player's pet is on an expedition
+ */
+async function isPetOnExpedition(playerId: number): Promise<boolean> {
+	const activeExpedition = await PetExpeditions.getActiveExpeditionForPlayer(playerId);
+	return activeExpedition !== null;
+}
+
+/**
+ * Build reactions array for pet transfer collector
+ */
+function buildTransferReactions(
+	playerPet: PetEntity | null,
+	guild: { isPetShelterFull: (pets: GuildPet[]) => boolean },
+	guildPets: GuildPet[]
+): ReactionCollectorReaction[] | null {
+	const reactions: ReactionCollectorReaction[] = [];
+
+	if (playerPet) {
+		if (!guild.isPetShelterFull(guildPets) && !playerPet.isFeisty()) {
+			reactions.push(makePacket(ReactionCollectorPetTransferDepositReaction, {}));
+		}
+		for (const guildPet of guildPets) {
+			reactions.push(makePacket(ReactionCollectorPetTransferSwitchReaction, {
+				petEntityId: guildPet.petEntityId
+			}));
+		}
+	}
+	else if (guildPets.length > 0) {
+		for (const guildPet of guildPets) {
+			reactions.push(makePacket(ReactionCollectorPetTransferWithdrawReaction, {
+				petEntityId: guildPet.petEntityId
+			}));
+		}
+	}
+	else {
+		return null; // No valid transfer options
+	}
+
+	reactions.push(makePacket(ReactionCollectorRefuseReaction, {}));
+	return reactions;
+}
+
+/**
+ * Build guild pets entities array for collector
+ */
+async function buildGuildPetsEntities(
+	guildPets: GuildPet[]
+): Promise<{
+	petEntityId: number;
+	pet: OwnedPet;
+}[]> {
+	const guildPetsEntities = [];
+	for (const guildPet of guildPets) {
+		guildPetsEntities.push({
+			petEntityId: guildPet.petEntityId,
+			pet: (await PetEntities.getById(guildPet.petEntityId)).asOwnedPet()
+		});
+	}
+	return guildPetsEntities;
+}
+
 export default class PetTransferCommand {
 	@commandRequires(CommandPetTransferPacketReq, {
 		notBlocked: true,
@@ -196,17 +278,13 @@ export default class PetTransferCommand {
 		whereAllowed: [WhereAllowed.CONTINENT]
 	})
 	async execute(response: CrowniclesPacket[], player: Player, _packet: CommandPetTransferPacketReq, context: PacketContext): Promise<void> {
-		const guild = await Guilds.getById(player.guildId);
-
-		// Can't transfer pet if another guild member is transferring
-		const guildMembers = await Players.getByGuild(player.guildId);
-		for (const member of guildMembers) {
-			if (BlockingUtils.isPlayerBlockedWithReason(member.keycloakId, BlockingConstants.REASONS.PET_TRANSFER)) {
-				response.push(makePacket(CommandPetTransferAnotherMemberTransferringErrorPacket, {
-					keycloakId: member.keycloakId
-				}));
-				return;
-			}
+		// Check if another guild member is transferring
+		const transferringMemberId = await checkGuildMemberTransferring(player.guildId);
+		if (transferringMemberId) {
+			response.push(makePacket(CommandPetTransferAnotherMemberTransferringErrorPacket, {
+				keycloakId: transferringMemberId
+			}));
+			return;
 		}
 
 		const playerPet = await PetEntities.getById(player.petId);
@@ -216,50 +294,23 @@ export default class PetTransferCommand {
 			return;
 		}
 
-		// Check if player's pet is on expedition (can't deposit or switch while on expedition)
-		if (playerPet) {
-			const activeExpedition = await PetExpeditions.getActiveExpeditionForPlayer(player.id);
-			if (activeExpedition) {
-				response.push(makePacket(CommandPetTransferPetOnExpeditionErrorPacket, {}));
-				return;
-			}
+		// Check if player's pet is on expedition
+		if (playerPet && await isPetOnExpedition(player.id)) {
+			response.push(makePacket(CommandPetTransferPetOnExpeditionErrorPacket, {}));
+			return;
 		}
 
+		const guild = await Guilds.getById(player.guildId);
 		const guildPets = await GuildPets.getOfGuild(player.guildId);
 
-		const reactions: ReactionCollectorReaction[] = [];
-
-		if (playerPet) {
-			if (!guild.isPetShelterFull(guildPets) && !playerPet.isFeisty()) {
-				reactions.push(makePacket(ReactionCollectorPetTransferDepositReaction, {}));
-			}
-
-			for (const guildPet of guildPets) {
-				reactions.push(makePacket(ReactionCollectorPetTransferSwitchReaction, {
-					petEntityId: guildPet.petEntityId
-				}));
-			}
-		}
-		else if (guildPets.length > 0) {
-			for (const guildPet of guildPets) {
-				reactions.push(makePacket(ReactionCollectorPetTransferWithdrawReaction, {
-					petEntityId: guildPet.petEntityId
-				}));
-			}
-		}
-		else {
+		// Build reactions - returns null if no valid transfer options
+		const reactions = buildTransferReactions(playerPet, guild, guildPets);
+		if (!reactions) {
 			response.push(makePacket(CommandPetTransferNoPetErrorPacket, {}));
 			return;
 		}
-		reactions.push(makePacket(ReactionCollectorRefuseReaction, {}));
 
-		const guildPetsEntities = [];
-		for (const guildPet of guildPets) {
-			guildPetsEntities.push({
-				petEntityId: guildPet.petEntityId,
-				pet: (await PetEntities.getById(guildPet.petEntityId)).asOwnedPet()
-			});
-		}
+		const guildPetsEntities = await buildGuildPetsEntities(guildPets);
 
 		const collector = new ReactionCollectorPetTransfer(
 			playerPet?.asOwnedPet(),
