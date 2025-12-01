@@ -7,8 +7,7 @@ export {
 	calculateFoodConsumptionPlan,
 	applyFoodConsumptionPlan,
 	getDietFoodType,
-	FOOD_RATION_VALUES,
-	FOOD_PRICES,
+	calculateTotalAvailableRations,
 	type FoodType,
 	type FoodConsumptionPlan
 } from "./ExpeditionFoodService";

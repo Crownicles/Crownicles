@@ -1,8 +1,9 @@
 import {describe, expect, it, vi, beforeEach} from "vitest";
-import {calculateFoodConsumptionPlan, FOOD_RATION_VALUES} from "../../../../src/core/expeditions";
+import {calculateFoodConsumptionPlan} from "../../../../src/core/expeditions";
 import {Guilds} from "../../../../src/core/database/game/models/Guild";
 import Player from "../../../../src/core/database/game/models/Player";
 import {Pet} from "../../../../src/data/Pet";
+import {PetConstants} from "../../../../../Lib/src/constants/PetConstants";
 
 // Mock the Guilds module
 vi.mock("../../../../src/core/database/game/models/Guild", () => ({
@@ -266,11 +267,11 @@ describe("Food Consumption Plan", () => {
 			expect(plan.consumption).toHaveLength(0);
 		});
 
-		it("should use FOOD_RATION_VALUES constants correctly", () => {
-			expect(FOOD_RATION_VALUES.commonFood).toBe(1);
-			expect(FOOD_RATION_VALUES.carnivorousFood).toBe(3);
-			expect(FOOD_RATION_VALUES.herbivorousFood).toBe(3);
-			expect(FOOD_RATION_VALUES.ultimateFood).toBe(5);
+		it("should use PET_FOOD_LOVE_POINTS_AMOUNT constants correctly", () => {
+			expect(PetConstants.PET_FOOD_LOVE_POINTS_AMOUNT[0]).toBe(1);
+			expect(PetConstants.PET_FOOD_LOVE_POINTS_AMOUNT[2]).toBe(3);
+			expect(PetConstants.PET_FOOD_LOVE_POINTS_AMOUNT[1]).toBe(3);
+			expect(PetConstants.PET_FOOD_LOVE_POINTS_AMOUNT[3]).toBe(5);
 		});
 	});
 });

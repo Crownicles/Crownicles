@@ -44,8 +44,7 @@ import {
 	FoodConsumptionPlan,
 	calculateRewardIndex,
 	PendingExpeditionsCache,
-	FOOD_RATION_VALUES,
-	getDietFoodType
+	calculateTotalAvailableRations
 } from "../../core/expeditions";
 import {
 	EndCallback, ReactionCollectorInstance
@@ -682,12 +681,9 @@ async function getGuildFoodInfo(player: Player, petModel: Pet): Promise<GuildFoo
 		return { hasGuild: false };
 	}
 
-	const dietFoodType = getDietFoodType(petModel);
 	return {
 		hasGuild: true,
-		guildFoodAmount: guild.commonFood * FOOD_RATION_VALUES.commonFood
-			+ guild[dietFoodType] * FOOD_RATION_VALUES[dietFoodType]
-			+ guild.ultimateFood * FOOD_RATION_VALUES.ultimateFood
+		guildFoodAmount: calculateTotalAvailableRations(guild, petModel)
 	};
 }
 
