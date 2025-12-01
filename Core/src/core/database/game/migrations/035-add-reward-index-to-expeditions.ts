@@ -3,8 +3,10 @@ import {
 } from "sequelize";
 
 export async function up({ context }: { context: QueryInterface }): Promise<void> {
-	// Add rewardIndex column to pet_expeditions table
-	// This stores the reward index calculated at expedition start for consistent reward calculation
+	/*
+	 * Add rewardIndex column to pet_expeditions table
+	 * This stores the reward index calculated at expedition start for consistent reward calculation
+	 */
 	await context.addColumn("pet_expeditions", "rewardIndex", {
 		type: DataTypes.INTEGER,
 		allowNull: false,

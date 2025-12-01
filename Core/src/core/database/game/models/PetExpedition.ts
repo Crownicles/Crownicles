@@ -38,6 +38,8 @@ export class PetExpedition extends Model {
 
 	declare rewardIndex: number;
 
+	declare isDistantExpedition: boolean;
+
 	declare updatedAt: Date;
 
 	declare createdAt: Date;
@@ -85,7 +87,8 @@ export class PetExpedition extends Model {
 			difficulty: this.difficulty,
 			wealthRate: this.wealthRate,
 			locationType: this.locationType as ExpeditionLocationType,
-			mapLocationId: this.mapLocationId
+			mapLocationId: this.mapLocationId,
+			isDistantExpedition: this.isDistantExpedition
 		};
 	}
 
@@ -108,7 +111,8 @@ export class PetExpedition extends Model {
 			petId: petTypeId,
 			petSex,
 			petNickname,
-			foodConsumed: this.foodConsumed
+			foodConsumed: this.foodConsumed,
+			isDistantExpedition: this.isDistantExpedition
 		};
 	}
 }
@@ -162,7 +166,8 @@ export class PetExpeditions {
 			mapLocationId: expeditionData.mapLocationId ?? 1,
 			status: ExpeditionConstants.STATUS.IN_PROGRESS,
 			foodConsumed,
-			rewardIndex
+			rewardIndex,
+			isDistantExpedition: expeditionData.isDistantExpedition ?? false
 		});
 	}
 
@@ -249,6 +254,11 @@ export function initModel(sequelize: Sequelize): void {
 			type: DataTypes.INTEGER,
 			allowNull: false,
 			defaultValue: 0
+		},
+		isDistantExpedition: {
+			type: DataTypes.BOOLEAN,
+			allowNull: false,
+			defaultValue: false
 		},
 		updatedAt: {
 			type: DataTypes.DATE,

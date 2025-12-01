@@ -17,9 +17,7 @@ import { Maps } from "../maps/Maps";
 import { LogsReadRequests } from "../database/logs/LogsReadRequests";
 import { DwarfPetsSeen } from "../database/game/models/DwarfPetsSeen";
 import { PetDataController } from "../../data/Pet";
-import {
-	FightItemNatures, ItemCategory
-} from "../../../../Lib/src/constants/ItemConstants";
+import { FightItemNatures } from "../../../../Lib/src/constants/ItemConstants";
 import { PotionDataController } from "../../data/Potion";
 import {
 	generateRandomItem, giveItemToPlayer, toItemWithDetails
@@ -145,6 +143,97 @@ function generateRandomCombatPotion(): ItemWithDetails {
 }
 
 /**
+ * Pet information for expedition bonus
+ */
+interface ExpeditionPetInfo {
+	petInExpedition: boolean;
+	petTypeId?: number;
+	petSex?: SexTypeShort;
+	petNickname?: string;
+}
+
+/**
+ * Bonus rewards given during the expedition advice event
+ */
+interface ExpeditionBonusRewards {
+	bonusPoints?: number;
+	bonusMoney?: number;
+	bonusItem?: ItemWithDetails;
+	bonusCombatPotion?: ItemWithDetails;
+}
+
+/**
+ * Check if player has a pet currently in expedition
+ */
+async function getExpeditionPetInfo(player: Player): Promise<ExpeditionPetInfo> {
+	const activeExpedition = await PetExpeditions.getActiveExpeditionForPlayer(player.id);
+	if (!activeExpedition || !player.petId) {
+		return { petInExpedition: false };
+	}
+
+	const petEntity = await PetEntities.getById(player.petId);
+	if (!petEntity) {
+		return { petInExpedition: false };
+	}
+
+	return {
+		petInExpedition: true,
+		petTypeId: petEntity.typeId,
+		petSex: petEntity.sex as SexTypeShort,
+		petNickname: petEntity.nickname ?? undefined
+	};
+}
+
+/**
+ * Apply bonus rewards when pet is in expedition
+ */
+async function applyExpeditionBonusRewards(
+	response: CrowniclesPacket[],
+	player: Player,
+	context: PacketContext
+): Promise<ExpeditionBonusRewards> {
+	const bonusConfig = ExpeditionConstants.TALISMAN_EVENT.BONUS_IF_PET_IN_EXPEDITION;
+	const rewards: ExpeditionBonusRewards = {};
+
+	// Always give bonus points
+	rewards.bonusPoints = RandomUtils.randInt(bonusConfig.POINTS_MIN, bonusConfig.POINTS_MAX + 1);
+	await player.addScore({
+		amount: rewards.bonusPoints,
+		response,
+		reason: NumberChangeReason.SMALL_EVENT
+	});
+
+	// Check if we give a combat potion (15% chance) - replaces other rewards
+	if (RandomUtils.crowniclesRandom.bool(bonusConfig.COMBAT_POTION_CHANCE / 100)) {
+		const potion = generateRandomCombatPotion();
+		rewards.bonusCombatPotion = potion;
+		const potionInstance = PotionDataController.instance.getById(potion.id);
+		await giveItemToPlayer(response, context, player, potionInstance);
+		return rewards;
+	}
+
+	// Check if we give money (20% chance)
+	if (RandomUtils.crowniclesRandom.bool(bonusConfig.MONEY_CHANCE / 100)) {
+		rewards.bonusMoney = RandomUtils.randInt(bonusConfig.MONEY_MIN, bonusConfig.MONEY_MAX + 1);
+		await player.addMoney({
+			amount: rewards.bonusMoney,
+			response,
+			reason: NumberChangeReason.SMALL_EVENT
+		});
+		return rewards;
+	}
+
+	// Check if we give a random item (20% chance)
+	if (RandomUtils.crowniclesRandom.bool(bonusConfig.ITEM_CHANCE / 100)) {
+		const item = generateRandomItem({});
+		rewards.bonusItem = toItemWithDetails(item);
+		await giveItemToPlayer(response, context, player, item);
+	}
+
+	return rewards;
+}
+
+/**
  * Handle the case when player already has talisman
  */
 async function handlePlayerWithTalisman(
@@ -152,64 +241,12 @@ async function handlePlayerWithTalisman(
 	player: Player,
 	context: PacketContext
 ): Promise<void> {
-	let petInExpedition = false;
-	let bonusPoints: number | undefined;
-	let bonusMoney: number | undefined;
-	let bonusItem: ItemWithDetails | undefined;
-	let bonusCombatPotion: ItemWithDetails | undefined;
-	let petTypeId: number | undefined;
-	let petSex: SexTypeShort | undefined;
-	let petNickname: string | undefined;
+	const petInfo = await getExpeditionPetInfo(player);
+	let rewards: ExpeditionBonusRewards = {};
 	let interactionType: ExpeditionAdviceInteractionType;
 
-	// Check if player has a pet in expedition
-	const activeExpedition = await PetExpeditions.getActiveExpeditionForPlayer(player.id);
-	if (activeExpedition && player.petId) {
-		petInExpedition = true;
-		const petEntity = await PetEntities.getById(player.petId);
-		if (petEntity) {
-			petTypeId = petEntity.typeId;
-			petSex = petEntity.sex as SexTypeShort;
-			petNickname = petEntity.nickname ?? undefined;
-		}
-	}
-
-	if (petInExpedition) {
-		const bonusConfig = ExpeditionConstants.TALISMAN_EVENT.BONUS_IF_PET_IN_EXPEDITION;
-
-		// Always give bonus points
-		bonusPoints = RandomUtils.randInt(bonusConfig.POINTS_MIN, bonusConfig.POINTS_MAX + 1);
-		await player.addScore({
-			amount: bonusPoints,
-			response,
-			reason: NumberChangeReason.SMALL_EVENT
-		});
-
-		// Check if we give a combat potion (15% chance) - replaces other rewards
-		if (RandomUtils.crowniclesRandom.bool(bonusConfig.COMBAT_POTION_CHANCE / 100)) {
-			const potion = generateRandomCombatPotion();
-			bonusCombatPotion = potion;
-			const potionInstance = PotionDataController.instance.getById(potion.id);
-			await giveItemToPlayer(response, context, player, potionInstance);
-		}
-		else {
-			// Check if we give money (20% chance)
-			if (RandomUtils.crowniclesRandom.bool(bonusConfig.MONEY_CHANCE / 100)) {
-				bonusMoney = RandomUtils.randInt(bonusConfig.MONEY_MIN, bonusConfig.MONEY_MAX + 1);
-				await player.addMoney({
-					amount: bonusMoney,
-					response,
-					reason: NumberChangeReason.SMALL_EVENT
-				});
-			}
-			// Check if we give a random item (20% chance)
-			else if (RandomUtils.crowniclesRandom.bool(bonusConfig.ITEM_CHANCE / 100)) {
-				const item = generateRandomItem({});
-				bonusItem = toItemWithDetails(item);
-				await giveItemToPlayer(response, context, player, item);
-			}
-		}
-
+	if (petInfo.petInExpedition) {
+		rewards = await applyExpeditionBonusRewards(response, player, context);
 		await player.save();
 		interactionType = ExpeditionAdviceInteractionType.EXPEDITION_BONUS;
 	}
@@ -220,14 +257,14 @@ async function handlePlayerWithTalisman(
 	response.push(makePacket(SmallEventExpeditionAdvicePacket, {
 		alreadyHasTalisman: true,
 		talismanGiven: false,
-		petInExpedition,
-		bonusPoints,
-		bonusMoney,
-		bonusItem,
-		bonusCombatPotion,
-		petTypeId,
-		petSex,
-		petNickname,
+		petInExpedition: petInfo.petInExpedition,
+		bonusPoints: rewards.bonusPoints,
+		bonusMoney: rewards.bonusMoney,
+		bonusItem: rewards.bonusItem,
+		bonusCombatPotion: rewards.bonusCombatPotion,
+		petTypeId: petInfo.petTypeId,
+		petSex: petInfo.petSex,
+		petNickname: petInfo.petNickname,
 		interactionType
 	}));
 }

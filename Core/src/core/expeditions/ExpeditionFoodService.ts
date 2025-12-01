@@ -114,16 +114,24 @@ function calculateAllFoodCombination(
 }
 
 /**
+ * Parameters for evaluating a food combination
+ */
+interface EvaluateCombinationParams {
+	t: number;
+	d: number;
+	s: number;
+	rationsRequired: number;
+	values: FoodRationValues;
+	prices: FoodPriceValues;
+}
+
+/**
  * Evaluate a single food combination and return it if valid, or null if insufficient
  */
-function evaluateCombination(
-	t: number,
-	d: number,
-	s: number,
-	rationsRequired: number,
-	values: FoodRationValues,
-	prices: FoodPriceValues
-): FoodOption | null {
+function evaluateCombination(params: EvaluateCombinationParams): FoodOption | null {
+	const {
+		t, d, s, rationsRequired, values, prices
+	} = params;
 	const total = t * values.treatVal + d * values.dietVal + s * values.soupVal;
 	if (total < rationsRequired) {
 		return null;
@@ -153,7 +161,9 @@ function generateValidCombinations(
 	for (let t = 0; t <= maxTreats; t++) {
 		for (let d = 0; d <= maxDiet; d++) {
 			for (let s = 0; s <= maxSoup; s++) {
-				const option = evaluateCombination(t, d, s, rationsRequired, values, prices);
+				const option = evaluateCombination({
+					t, d, s, rationsRequired, values, prices
+				});
 				if (option) {
 					options.push(option);
 				}

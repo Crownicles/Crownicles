@@ -1,5 +1,6 @@
-/* eslint-disable new-cap */
-import { DataTypes, QueryInterface } from "sequelize";
+import {
+	DataTypes, QueryInterface
+} from "sequelize";
 
 export async function up({ context }: { context: QueryInterface }): Promise<void> {
 	// Add rewardIndex column to logs.expeditions table to store the reward index used for rewards calculation

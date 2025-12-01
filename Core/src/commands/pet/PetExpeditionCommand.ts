@@ -171,7 +171,7 @@ async function handleExpeditionSelect(
 		? !player.guildId ? "noGuild" : "guildNoFood"
 		: undefined;
 
-	// Apply food consumption to guild storage
+	// Apply food consumption to guild storage (even if insufficient, consume what's available)
 	if (player.guildId && foodPlan.consumption.length > 0) {
 		await applyFoodConsumptionPlan(player.guildId, foodPlan);
 	}
@@ -472,7 +472,7 @@ function createFinishedExpeditionCollector(data: ExpeditionCollectorData): Crown
 		locationType: activeExpedition.locationType as ExpeditionLocationType,
 		riskRate: activeExpedition.riskRate,
 		foodConsumed: activeExpedition.foodConsumed,
-		isDistantExpedition: undefined
+		isDistantExpedition: activeExpedition.isDistantExpedition
 	});
 
 	const endCallback = createExpeditionEndCallback(context, async (reaction, player, resp) => {
@@ -502,7 +502,7 @@ function createInProgressExpeditionCollector(data: ExpeditionCollectorData): Cro
 		returnTime: activeExpedition.endDate.getTime(),
 		foodConsumed: activeExpedition.foodConsumed,
 		foodConsumedDetails: undefined,
-		isDistantExpedition: undefined
+		isDistantExpedition: activeExpedition.isDistantExpedition
 	});
 
 	const endCallback = createExpeditionEndCallback(context, async (reaction, player, resp) => {
@@ -751,8 +751,17 @@ export default class PetExpeditionCommand {
 		const petModel = PetDataController.instance.getById(petEntity.typeId);
 		const expeditionData = activeExpedition.toExpeditionData();
 
-		// Calculate effective risk and determine outcome using stored rewardIndex
-		const effectiveRisk = calculateEffectiveRisk(expeditionData, petModel, petEntity.lovePoints);
+		// Get the required food from the stored reward index
+		const foodRequired = ExpeditionConstants.FOOD_CONSUMPTION[activeExpedition.rewardIndex];
+
+		// Calculate effective risk with food penalty if insufficient food was consumed
+		const effectiveRisk = calculateEffectiveRisk(
+			expeditionData,
+			petModel,
+			petEntity.lovePoints,
+			activeExpedition.foodConsumed,
+			foodRequired
+		);
 		const outcome = determineExpeditionOutcome(effectiveRisk, expeditionData, activeExpedition.rewardIndex, player.hasCloneTalisman);
 
 		// Apply love change

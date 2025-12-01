@@ -42,15 +42,24 @@ async function applyScoreReward(player: Player, response: CrowniclesPacket[], am
 }
 
 /**
+ * Item reward parameters
+ */
+interface ItemRewardParams {
+	player: Player;
+	response: CrowniclesPacket[];
+	context: PacketContext;
+	itemId: number | undefined;
+	itemCategory: number | undefined;
+}
+
+/**
  * Apply item reward to the player if item is present
  */
-async function applyItemReward(
-	player: Player,
-	response: CrowniclesPacket[],
-	context: PacketContext,
-	itemId: number | undefined,
-	itemCategory: number | undefined
-): Promise<void> {
+async function applyItemReward(params: ItemRewardParams): Promise<void> {
+	const {
+		player, response, context, itemId, itemCategory
+	} = params;
+
 	if (itemId !== undefined && itemCategory !== undefined) {
 		const item = getItemByIdAndCategory(itemId, itemCategory);
 		if (item) {
@@ -71,7 +80,13 @@ export async function applyExpeditionRewards(
 	await applyMoneyReward(player, response, rewards.money);
 	await applyExperienceReward(player, response, rewards.experience);
 	await applyScoreReward(player, response, rewards.points);
-	await applyItemReward(player, response, context, rewards.itemId, rewards.itemCategory);
+	await applyItemReward({
+		player,
+		response,
+		context,
+		itemId: rewards.itemId,
+		itemCategory: rewards.itemCategory
+	});
 
 	if (rewards.cloneTalismanFound) {
 		player.hasCloneTalisman = true;

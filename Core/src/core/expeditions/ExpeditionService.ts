@@ -203,12 +203,33 @@ export function generateThreeExpeditions(mapLinkId: number, hasCloneTalisman: bo
 
 /**
  * Calculate the effective risk based on pet stats and expedition parameters
+ * If insufficient food was consumed, the risk is multiplied by NO_FOOD_RISK_MULTIPLIER
+ * @param expedition - The expedition data
+ * @param petModel - The pet model
+ * @param petLovePoints - The pet's love points
+ * @param foodConsumed - The amount of food consumed (optional, used to detect insufficient food)
+ * @param foodRequired - The required food for the expedition (optional, used to detect insufficient food)
  */
-export function calculateEffectiveRisk(expedition: ExpeditionData, petModel: Pet, petLovePoints: number): number {
-	const effectiveRisk = expedition.riskRate
+export function calculateEffectiveRisk(
+	expedition: ExpeditionData,
+	petModel: Pet,
+	petLovePoints: number,
+	foodConsumed?: number,
+	foodRequired?: number
+): number {
+	let effectiveRisk = expedition.riskRate
 		+ expedition.difficulty / ExpeditionConstants.EFFECTIVE_RISK_FORMULA.DIFFICULTY_DIVISOR
 		- petModel.force
 		- petLovePoints / ExpeditionConstants.EFFECTIVE_RISK_FORMULA.LOVE_DIVISOR;
+
+	// Apply food penalty if insufficient food was consumed
+	const hasInsufficientFood = foodConsumed !== undefined
+		&& foodRequired !== undefined
+		&& foodConsumed < foodRequired;
+
+	if (hasInsufficientFood) {
+		effectiveRisk *= ExpeditionConstants.NO_FOOD_RISK_MULTIPLIER;
+	}
 
 	return Math.max(0, Math.min(ExpeditionConstants.PERCENTAGE.MAX, effectiveRisk));
 }
