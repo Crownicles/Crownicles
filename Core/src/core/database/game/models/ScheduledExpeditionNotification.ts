@@ -14,7 +14,7 @@ export class ScheduledExpeditionNotification extends Model {
 
 	declare readonly petSex: string;
 
-	declare readonly petNickname: string | null;
+	declare readonly petNickname?: string;
 
 	declare readonly scheduledAt: Date;
 
@@ -31,7 +31,7 @@ export interface ScheduleNotificationParams {
 	keycloakId: string;
 	petId: number;
 	petSex: string;
-	petNickname: string | null;
+	petNickname?: string;
 	scheduledAt: Date;
 }
 

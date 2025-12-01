@@ -87,20 +87,20 @@ async function getPlayerStats(player: Player): Promise<PlayerStats> {
 	const playerActiveObjects = await InventorySlots.getMainSlotsItems(player.id);
 	const petEntity = await PetEntities.getById(player.petId);
 
-	// Check if pet is on expedition
-	let isOnExpedition = false;
-	if (petEntity) {
-		const activeExpedition = await PetExpeditions.getActiveExpeditionForPlayer(player.id);
-		isOnExpedition = activeExpedition !== null;
-	}
-
 	return {
-		pet: {
-			petTypeId: petEntity ? petEntity.typeId! : null,
-			petSex: petEntity ? petEntity.sex as SexTypeShort : null,
-			petNickname: petEntity ? petEntity.nickname : null,
-			isOnExpedition
-		},
+		pet: petEntity
+			? {
+				petTypeId: petEntity.typeId!,
+				petSex: petEntity.sex as SexTypeShort,
+				petNickname: petEntity.nickname,
+				isOnExpedition: await PetExpeditions.getActiveExpeditionForPlayer(player.id) !== null
+			}
+			: {
+				petTypeId: null,
+				petSex: null,
+				petNickname: null,
+				isOnExpedition: false
+			},
 		classId: player.class,
 		fightRanking: {
 			glory: player.getGloryPoints()
