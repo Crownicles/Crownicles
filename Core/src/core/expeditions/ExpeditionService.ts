@@ -128,6 +128,64 @@ function getRandomDistantMapLocation(excludeIds: number[]): number {
 }
 
 /**
+ * Duration range type
+ */
+type DurationRange = {
+	min: number;
+	max: number;
+};
+
+/**
+ * Generate local expeditions based on map locations from player's current link
+ */
+function generateLocalExpeditions(
+	localMapLocationIds: number[],
+	durationRanges: DurationRange[],
+	bonusExpeditionIndex: number
+): ExpeditionData[] {
+	const expeditions: ExpeditionData[] = [];
+
+	for (let i = 0; i < 2 && i < localMapLocationIds.length; i++) {
+		const mapLocationId = localMapLocationIds[i];
+		const mapLocation = MapLocationDataController.instance.getById(mapLocationId);
+		const locationType = getExpeditionTypeFromMapType(mapLocation?.type ?? "ro");
+
+		const expedition = generateExpeditionWithConstraints(durationRanges[i], locationType, mapLocationId, false);
+
+		if (bonusExpeditionIndex === i) {
+			expedition.hasCloneTalismanBonus = true;
+		}
+
+		expeditions.push(expedition);
+	}
+
+	return expeditions;
+}
+
+/**
+ * Fill missing local expeditions with random ones
+ */
+function fillMissingLocalExpeditions(
+	expeditions: ExpeditionData[],
+	durationRanges: DurationRange[],
+	bonusExpeditionIndex: number
+): void {
+	while (expeditions.length < 2) {
+		const allLocationTypes = Object.values(ExpeditionConstants.LOCATION_TYPES) as ExpeditionLocationType[];
+		const expedition = generateExpeditionWithConstraints(
+			durationRanges[expeditions.length],
+			RandomUtils.crowniclesRandom.pick(allLocationTypes)
+		);
+
+		if (bonusExpeditionIndex === expeditions.length) {
+			expedition.hasCloneTalismanBonus = true;
+		}
+
+		expeditions.push(expedition);
+	}
+}
+
+/**
  * Generate 3 expeditions based on player's current map position
  * - 2 first expeditions: linked to the 2 mapLocations of player's current mapLink
  * - 3rd expedition: "distant expedition" to a random location on the map
@@ -138,61 +196,25 @@ export function generateThreeExpeditions(mapLinkId: number, hasCloneTalisman: bo
 	const localMapLocationIds = getMapLocationsFromLink(mapLinkId);
 	const durationRanges = ExpeditionConstants.getDurationRangesArray();
 
-	// If player doesn't have clone talisman, one random expedition might get the bonus
+	// Determine if a bonus expedition should exist
 	const bonusExpeditionIndex = hasCloneTalisman
 		? -1
 		: RandomUtils.randInt(1, ExpeditionConstants.CLONE_TALISMAN.BONUS_EXPEDITION_CHANCE + 1) === 1
 			? RandomUtils.randInt(0, 3)
 			: -1;
 
-	// Get map location data for the first two expeditions
-	const localExpeditions: ExpeditionData[] = [];
+	// Generate local expeditions
+	const localExpeditions = generateLocalExpeditions(localMapLocationIds, durationRanges, bonusExpeditionIndex);
 
-	for (let i = 0; i < 2 && i < localMapLocationIds.length; i++) {
-		const mapLocationId = localMapLocationIds[i];
-		const mapLocation = MapLocationDataController.instance.getById(mapLocationId);
-		const locationType = getExpeditionTypeFromMapType(mapLocation?.type ?? "ro");
+	// Fill with random expeditions if needed
+	fillMissingLocalExpeditions(localExpeditions, durationRanges, bonusExpeditionIndex);
 
-		const expedition = generateExpeditionWithConstraints(
-			durationRanges[i],
-			locationType,
-			mapLocationId,
-			false
-		);
-
-		if (bonusExpeditionIndex === i) {
-			expedition.hasCloneTalismanBonus = true;
-		}
-
-		localExpeditions.push(expedition);
-	}
-
-	// If we couldn't get 2 local expeditions (edge case), fill with random
-	while (localExpeditions.length < 2) {
-		const allLocationTypes = Object.values(ExpeditionConstants.LOCATION_TYPES) as ExpeditionLocationType[];
-		const expedition = generateExpeditionWithConstraints(
-			durationRanges[localExpeditions.length],
-			RandomUtils.crowniclesRandom.pick(allLocationTypes)
-		);
-
-		if (bonusExpeditionIndex === localExpeditions.length) {
-			expedition.hasCloneTalismanBonus = true;
-		}
-
-		localExpeditions.push(expedition);
-	}
-
-	// 3rd expedition: distant expedition to a random location
+	// Generate distant expedition
 	const distantMapLocationId = getRandomDistantMapLocation(localMapLocationIds);
 	const distantMapLocation = MapLocationDataController.instance.getById(distantMapLocationId);
 	const distantLocationType = getExpeditionTypeFromMapType(distantMapLocation?.type ?? "ro");
 
-	const distantExpedition = generateExpeditionWithConstraints(
-		durationRanges[2],
-		distantLocationType,
-		distantMapLocationId,
-		true
-	);
+	const distantExpedition = generateExpeditionWithConstraints(durationRanges[2], distantLocationType, distantMapLocationId, true);
 
 	if (bonusExpeditionIndex === 2) {
 		distantExpedition.hasCloneTalismanBonus = true;
@@ -202,21 +224,25 @@ export function generateThreeExpeditions(mapLinkId: number, hasCloneTalisman: bo
 }
 
 /**
+ * Parameters for calculating effective risk
+ */
+export interface EffectiveRiskParams {
+	expedition: ExpeditionData;
+	petModel: Pet;
+	petLovePoints: number;
+	foodConsumed?: number;
+	foodRequired?: number;
+}
+
+/**
  * Calculate the effective risk based on pet stats and expedition parameters
  * If insufficient food was consumed, the risk is multiplied by NO_FOOD_RISK_MULTIPLIER
- * @param expedition - The expedition data
- * @param petModel - The pet model
- * @param petLovePoints - The pet's love points
- * @param foodConsumed - The amount of food consumed (optional, used to detect insufficient food)
- * @param foodRequired - The required food for the expedition (optional, used to detect insufficient food)
  */
-export function calculateEffectiveRisk(
-	expedition: ExpeditionData,
-	petModel: Pet,
-	petLovePoints: number,
-	foodConsumed?: number,
-	foodRequired?: number
-): number {
+export function calculateEffectiveRisk(params: EffectiveRiskParams): number {
+	const {
+		expedition, petModel, petLovePoints, foodConsumed, foodRequired
+	} = params;
+
 	let effectiveRisk = expedition.riskRate
 		+ expedition.difficulty / ExpeditionConstants.EFFECTIVE_RISK_FORMULA.DIFFICULTY_DIVISOR
 		- petModel.force

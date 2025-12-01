@@ -15,7 +15,8 @@ export {
 	generateThreeExpeditions,
 	calculateEffectiveRisk,
 	determineExpeditionOutcome,
-	type ExpeditionOutcome
+	type ExpeditionOutcome,
+	type EffectiveRiskParams
 } from "./ExpeditionService";
 export { applyExpeditionRewards } from "./ExpeditionRewardApplicator";
 export {

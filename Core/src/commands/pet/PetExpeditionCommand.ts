@@ -142,6 +142,26 @@ function calculateSpeedDurationModifier(petSpeed: number): number {
 }
 
 /**
+ * Check and award expert expediteur badge if conditions are met
+ */
+async function checkAndAwardExpeditionBadge(
+	player: Player,
+	expeditionSuccessful: boolean
+): Promise<string | undefined> {
+	if (!expeditionSuccessful || player.hasBadge(Badge.EXPERT_EXPEDITEUR)) {
+		return undefined;
+	}
+
+	const successfulExpeditions = await LogsReadRequests.countSuccessfulExpeditions(player.keycloakId);
+	if (successfulExpeditions >= ExpeditionConstants.BADGE.EXPERT_EXPEDITEUR_THRESHOLD) {
+		player.addBadge(Badge.EXPERT_EXPEDITEUR);
+		await player.save();
+		return Badge.EXPERT_EXPEDITEUR;
+	}
+	return undefined;
+}
+
+/**
  * Handle expedition choice selection
  */
 async function handleExpeditionSelect(
@@ -755,13 +775,13 @@ export default class PetExpeditionCommand {
 		const foodRequired = ExpeditionConstants.FOOD_CONSUMPTION[activeExpedition.rewardIndex];
 
 		// Calculate effective risk with food penalty if insufficient food was consumed
-		const effectiveRisk = calculateEffectiveRisk(
-			expeditionData,
+		const effectiveRisk = calculateEffectiveRisk({
+			expedition: expeditionData,
 			petModel,
-			petEntity.lovePoints,
-			activeExpedition.foodConsumed,
+			petLovePoints: petEntity.lovePoints,
+			foodConsumed: activeExpedition.foodConsumed,
 			foodRequired
-		);
+		});
 		const outcome = determineExpeditionOutcome(effectiveRisk, expeditionData, activeExpedition.rewardIndex, player.hasCloneTalisman);
 
 		// Apply love change
@@ -802,16 +822,8 @@ export default class PetExpeditionCommand {
 			outcome.loveChange
 		).then();
 
-		// Check for expert expediteur badge (only for successful expeditions)
-		let badgeEarned: string | undefined;
-		if (!outcome.totalFailure && !player.hasBadge(Badge.EXPERT_EXPEDITEUR)) {
-			const successfulExpeditions = await LogsReadRequests.countSuccessfulExpeditions(player.keycloakId);
-			if (successfulExpeditions >= ExpeditionConstants.BADGE.EXPERT_EXPEDITEUR_THRESHOLD) {
-				player.addBadge(Badge.EXPERT_EXPEDITEUR);
-				await player.save();
-				badgeEarned = Badge.EXPERT_EXPEDITEUR;
-			}
-		}
+		// Check for expert expediteur badge
+		const badgeEarned = await checkAndAwardExpeditionBadge(player, !outcome.totalFailure);
 
 		response.push(makePacket(CommandPetExpeditionResolvePacketRes, {
 			success: !outcome.totalFailure,
