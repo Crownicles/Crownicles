@@ -77,6 +77,11 @@ export abstract class ExpeditionConstants {
 	static readonly DEFAULT_FOOD_COST = 1;
 
 	/**
+	 * Default map location ID when not specified
+	 */
+	static readonly DEFAULT_MAP_LOCATION_ID = 1;
+
+	/**
 	 * Reward index categories for display purposes
 	 * Reward index is a value from 0 to 9 based on duration, risk, and difficulty scores
 	 * 5 categories: meager (0-1), modest (2-3), substantial (4-5), bountiful (6-7), legendary (8-9)

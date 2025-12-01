@@ -7,6 +7,7 @@ import {
 import {
 	ExpeditionData, ExpeditionInProgressData
 } from "../../../../../../Lib/src/packets/commands/CommandPetExpeditionPacket";
+import { millisecondsToMinutes, minutesToMilliseconds } from "../../../../../../Lib/src/utils/TimeUtils";
 
 // skipcq: JS-C1003 - moment does not expose itself as an ES Module.
 import * as moment from "moment";
@@ -48,7 +49,7 @@ export class PetExpedition extends Model {
 	 * Get the duration of the expedition in minutes
 	 */
 	public getDurationMinutes(): number {
-		return Math.round((this.endDate.getTime() - this.startDate.getTime()) / (1000 * 60));
+		return millisecondsToMinutes(this.endDate.getTime() - this.startDate.getTime());
 	}
 
 	/**
@@ -80,12 +81,21 @@ export class PetExpedition extends Model {
 	public toExpeditionData(): ExpeditionData {
 		const durationMinutes = this.getDurationMinutes();
 		return {
+			...this.getBaseExpeditionData(durationMinutes),
+			wealthRate: this.wealthRate
+		};
+	}
+
+	/**
+	 * Get the base expedition data shared between ExpeditionData and ExpeditionInProgressData
+	 */
+	private getBaseExpeditionData(durationMinutes: number): Omit<ExpeditionData, "wealthRate"> {
+		return {
 			id: this.id.toString(),
 			durationMinutes,
 			displayDurationMinutes: Math.round(durationMinutes / 10) * 10,
 			riskRate: this.riskRate,
 			difficulty: this.difficulty,
-			wealthRate: this.wealthRate,
 			locationType: this.locationType as ExpeditionLocationType,
 			mapLocationId: this.mapLocationId,
 			isDistantExpedition: this.isDistantExpedition
@@ -98,21 +108,14 @@ export class PetExpedition extends Model {
 	public toExpeditionInProgressData(petTypeId: number, petSex: string, petNickname?: string): ExpeditionInProgressData {
 		const durationMinutes = this.getDurationMinutes();
 		return {
-			id: this.id.toString(),
-			durationMinutes,
-			displayDurationMinutes: Math.round(durationMinutes / 10) * 10,
-			riskRate: this.riskRate,
-			difficulty: this.difficulty,
-			locationType: this.locationType as ExpeditionLocationType,
-			mapLocationId: this.mapLocationId,
+			...this.getBaseExpeditionData(durationMinutes),
 			startTime: this.startDate.getTime(),
 			endTime: this.endDate.getTime(),
 			status: this.status as ExpeditionStatus,
 			petId: petTypeId,
 			petSex,
 			petNickname,
-			foodConsumed: this.foodConsumed,
-			isDistantExpedition: this.isDistantExpedition
+			foodConsumed: this.foodConsumed
 		};
 	}
 }
@@ -152,7 +155,7 @@ export class PetExpeditions {
 			playerId, petId, expeditionData, durationMinutes, foodConsumed, rewardIndex
 		} = params;
 		const startDate = new Date();
-		const endDate = new Date(startDate.getTime() + durationMinutes * 60 * 1000);
+		const endDate = new Date(startDate.getTime() + minutesToMilliseconds(durationMinutes));
 
 		return PetExpedition.build({
 			playerId,
@@ -163,7 +166,7 @@ export class PetExpeditions {
 			difficulty: expeditionData.difficulty,
 			wealthRate: expeditionData.wealthRate,
 			locationType: expeditionData.locationType,
-			mapLocationId: expeditionData.mapLocationId ?? 1,
+			mapLocationId: expeditionData.mapLocationId ?? ExpeditionConstants.DEFAULT_MAP_LOCATION_ID,
 			status: ExpeditionConstants.STATUS.IN_PROGRESS,
 			foodConsumed,
 			rewardIndex,

@@ -370,7 +370,7 @@ export class Crownicles {
 					keycloakId: notification.keycloakId,
 					petId: notification.petId,
 					petSex: notification.petSex,
-					petNickname: notification.petNickname ?? undefined
+					petNickname: notification.petNickname
 				})));
 				await ScheduledExpeditionNotifications.bulkDelete(notifications);
 			}
