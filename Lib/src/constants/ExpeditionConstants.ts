@@ -82,6 +82,60 @@ export abstract class ExpeditionConstants {
 	static readonly DEFAULT_MAP_LOCATION_ID = 1;
 
 	/**
+	 * Default map type code when not specified
+	 */
+	static readonly DEFAULT_MAP_TYPE = "ro";
+
+	/**
+	 * Number of local expeditions generated (based on player's current map link)
+	 */
+	static readonly LOCAL_EXPEDITIONS_COUNT = 2;
+
+	/**
+	 * Value indicating no bonus expedition is selected
+	 */
+	static readonly NO_BONUS_EXPEDITION = -1;
+
+	/**
+	 * Total number of expeditions proposed (local + distant)
+	 */
+	static readonly TOTAL_EXPEDITIONS_COUNT = 3;
+
+	/**
+	 * Rounding factor for display duration (rounds to nearest 10 minutes)
+	 */
+	static readonly DURATION_DISPLAY_ROUNDING = 10;
+
+	/**
+	 * Mapping from map location types to expedition location types
+	 */
+	static readonly MAP_TYPE_TO_EXPEDITION_TYPE: Record<string, ExpeditionLocationType> = {
+		fo: "forest",
+		mo: "mountain",
+		de: "desert",
+		ruins: "ruins",
+		be: "coast",
+		ri: "coast",
+		la: "swamp",
+		pl: "plains",
+		ro: "plains",
+		vi: "plains",
+		ci: "cave",
+		castleEntrance: "ruins",
+		castleThrone: "ruins",
+		continent: "plains"
+	};
+
+	/**
+	 * Get expedition location type from map location type
+	 * @param mapType - The map location type code
+	 * @returns The corresponding expedition location type
+	 */
+	static getExpeditionTypeFromMapType(mapType: string): ExpeditionLocationType {
+		return ExpeditionConstants.MAP_TYPE_TO_EXPEDITION_TYPE[mapType] ?? ExpeditionConstants.LOCATION_TYPES.PLAINS;
+	}
+
+	/**
 	 * Reward index categories for display purposes
 	 * Reward index is a value from 0 to 9 based on duration, risk, and difficulty scores
 	 * 5 categories: meager (0-1), modest (2-3), substantial (4-5), bountiful (6-7), legendary (8-9)
@@ -395,8 +449,10 @@ export abstract class ExpeditionConstants {
 	static readonly REWARD_INDEX = {
 		/** Minimum reward index value */
 		MIN: 0,
+
 		/** Maximum reward index value */
 		MAX: 9,
+
 		/** Duration score weight multiplier (duration counts 3x more than risk/difficulty) */
 		DURATION_WEIGHT: 3
 	};

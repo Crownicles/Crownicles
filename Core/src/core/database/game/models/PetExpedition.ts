@@ -7,7 +7,9 @@ import {
 import {
 	ExpeditionData, ExpeditionInProgressData
 } from "../../../../../../Lib/src/packets/commands/CommandPetExpeditionPacket";
-import { millisecondsToMinutes, minutesToMilliseconds } from "../../../../../../Lib/src/utils/TimeUtils";
+import {
+	millisecondsToMinutes, minutesToMilliseconds
+} from "../../../../../../Lib/src/utils/TimeUtils";
 
 // skipcq: JS-C1003 - moment does not expose itself as an ES Module.
 import * as moment from "moment";

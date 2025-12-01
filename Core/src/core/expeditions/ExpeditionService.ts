@@ -14,34 +14,6 @@ import { MapLocationDataController } from "../../data/MapLocation";
 import { MapConstants } from "../../../../Lib/src/constants/MapConstants";
 
 /**
- * Map location types to expedition location types
- * This allows using the existing reward calculation system based on location types
- */
-const MAP_TYPE_TO_EXPEDITION_TYPE: Record<string, ExpeditionLocationType> = {
-	fo: "forest",
-	mo: "mountain",
-	de: "desert",
-	ruins: "ruins",
-	be: "coast",
-	ri: "coast",
-	la: "swamp",
-	pl: "plains",
-	ro: "plains",
-	vi: "plains",
-	ci: "cave",
-	castleEntrance: "ruins",
-	castleThrone: "ruins",
-	continent: "plains"
-};
-
-/**
- * Get expedition location type from map location type
- */
-function getExpeditionTypeFromMapType(mapType: string): ExpeditionLocationType {
-	return MAP_TYPE_TO_EXPEDITION_TYPE[mapType] ?? "plains";
-}
-
-/**
  * Generate a unique expedition ID
  */
 function generateExpeditionId(): string {
@@ -77,20 +49,14 @@ function generateExpeditionWithConstraints(params: ExpeditionGenerationParams): 
 		durationRange, locationType, mapLocationId, isDistantExpedition
 	} = params;
 
-	const durationMinutes = RandomUtils.randInt(
+	const durationMinutes = RandomUtils.crowniclesRandom.integer(
 		durationRange.min,
-		durationRange.max + 1
+		durationRange.max
 	);
 
-	const riskRate = RandomUtils.randInt(
-		ExpeditionConstants.RISK_RATE.MIN,
-		ExpeditionConstants.RISK_RATE.MAX + 1
-	);
+	const riskRate = RandomUtils.rangedInt(ExpeditionConstants.RISK_RATE);
 
-	const difficulty = RandomUtils.randInt(
-		ExpeditionConstants.DIFFICULTY.MIN,
-		ExpeditionConstants.DIFFICULTY.MAX + 1
-	);
+	const difficulty = RandomUtils.rangedInt(ExpeditionConstants.DIFFICULTY);
 
 	const wealthRate = RandomUtils.crowniclesRandom.realZeroToOneInclusive()
 		* (ExpeditionConstants.WEALTH_RATE.MAX - ExpeditionConstants.WEALTH_RATE.MIN)
@@ -99,7 +65,7 @@ function generateExpeditionWithConstraints(params: ExpeditionGenerationParams): 
 	const expeditionData: ExpeditionData = {
 		id: generateExpeditionId(),
 		durationMinutes,
-		displayDurationMinutes: Math.round(durationMinutes / 10) * 10,
+		displayDurationMinutes: Math.round(durationMinutes / ExpeditionConstants.DURATION_DISPLAY_ROUNDING) * ExpeditionConstants.DURATION_DISPLAY_ROUNDING,
 		riskRate,
 		difficulty,
 		wealthRate: Math.round(wealthRate * ExpeditionConstants.PERCENTAGE.DECIMAL_PRECISION) / ExpeditionConstants.PERCENTAGE.DECIMAL_PRECISION,
@@ -136,7 +102,7 @@ function getRandomDistantMapLocation(excludeIds: number[]): number {
 		// Fallback: just pick any location from continent 1
 		const fallback = MapLocationDataController.instance.getAll()
 			.find(loc => loc.attribute === MapConstants.MAP_ATTRIBUTES.CONTINENT1);
-		return fallback?.id ?? 1;
+		return fallback?.id ?? ExpeditionConstants.DEFAULT_MAP_LOCATION_ID;
 	}
 
 	return RandomUtils.crowniclesRandom.pick(allLocations).id;
@@ -152,10 +118,10 @@ function generateLocalExpeditions(
 ): ExpeditionData[] {
 	const expeditions: ExpeditionData[] = [];
 
-	for (let i = 0; i < 2 && i < localMapLocationIds.length; i++) {
+	for (let i = 0; i < ExpeditionConstants.LOCAL_EXPEDITIONS_COUNT && i < localMapLocationIds.length; i++) {
 		const mapLocationId = localMapLocationIds[i];
 		const mapLocation = MapLocationDataController.instance.getById(mapLocationId);
-		const locationType = getExpeditionTypeFromMapType(mapLocation?.type ?? "ro");
+		const locationType = ExpeditionConstants.getExpeditionTypeFromMapType(mapLocation?.type ?? ExpeditionConstants.DEFAULT_MAP_TYPE);
 
 		const expedition = generateExpeditionWithConstraints({
 			durationRange: durationRanges[i],
@@ -182,7 +148,7 @@ function fillMissingLocalExpeditions(
 	durationRanges: DurationRange[],
 	bonusExpeditionIndex: number
 ): void {
-	while (expeditions.length < 2) {
+	while (expeditions.length < ExpeditionConstants.LOCAL_EXPEDITIONS_COUNT) {
 		const allLocationTypes = Object.values(ExpeditionConstants.LOCATION_TYPES) as ExpeditionLocationType[];
 		const expedition = generateExpeditionWithConstraints({
 			durationRange: durationRanges[expeditions.length],
@@ -210,10 +176,10 @@ export function generateThreeExpeditions(mapLinkId: number, hasCloneTalisman: bo
 
 	// Determine if a bonus expedition should exist
 	const bonusExpeditionIndex = hasCloneTalisman
-		? -1
-		: RandomUtils.randInt(1, ExpeditionConstants.CLONE_TALISMAN.BONUS_EXPEDITION_CHANCE + 1) === 1
-			? RandomUtils.randInt(0, 3)
-			: -1;
+		? ExpeditionConstants.NO_BONUS_EXPEDITION
+		: RandomUtils.crowniclesRandom.bool(1 / ExpeditionConstants.CLONE_TALISMAN.BONUS_EXPEDITION_CHANCE)
+			? RandomUtils.randInt(0, ExpeditionConstants.TOTAL_EXPEDITIONS_COUNT)
+			: ExpeditionConstants.NO_BONUS_EXPEDITION;
 
 	// Generate local expeditions
 	const localExpeditions = generateLocalExpeditions(localMapLocationIds, durationRanges, bonusExpeditionIndex);
@@ -224,16 +190,16 @@ export function generateThreeExpeditions(mapLinkId: number, hasCloneTalisman: bo
 	// Generate distant expedition
 	const distantMapLocationId = getRandomDistantMapLocation(localMapLocationIds);
 	const distantMapLocation = MapLocationDataController.instance.getById(distantMapLocationId);
-	const distantLocationType = getExpeditionTypeFromMapType(distantMapLocation?.type ?? "ro");
+	const distantLocationType = ExpeditionConstants.getExpeditionTypeFromMapType(distantMapLocation?.type ?? ExpeditionConstants.DEFAULT_MAP_TYPE);
 
 	const distantExpedition = generateExpeditionWithConstraints({
-		durationRange: durationRanges[2],
+		durationRange: durationRanges[ExpeditionConstants.LOCAL_EXPEDITIONS_COUNT],
 		locationType: distantLocationType,
 		mapLocationId: distantMapLocationId,
 		isDistantExpedition: true
 	});
 
-	if (bonusExpeditionIndex === 2) {
+	if (bonusExpeditionIndex === ExpeditionConstants.LOCAL_EXPEDITIONS_COUNT) {
 		distantExpedition.hasCloneTalismanBonus = true;
 	}
 
@@ -247,8 +213,8 @@ export interface EffectiveRiskParams {
 	expedition: ExpeditionData;
 	petModel: Pet;
 	petLovePoints: number;
-	foodConsumed?: number;
-	foodRequired?: number;
+	foodConsumed: number | null;
+	foodRequired: number | null;
 }
 
 /**
@@ -266,8 +232,8 @@ export function calculateEffectiveRisk(params: EffectiveRiskParams): number {
 		- petLovePoints / ExpeditionConstants.EFFECTIVE_RISK_FORMULA.LOVE_DIVISOR;
 
 	// Apply food penalty if insufficient food was consumed
-	const hasInsufficientFood = foodConsumed !== undefined
-		&& foodRequired !== undefined
+	const hasInsufficientFood = foodConsumed !== null
+		&& foodRequired !== null
 		&& foodConsumed < foodRequired;
 
 	if (hasInsufficientFood) {
@@ -283,7 +249,7 @@ export function calculateEffectiveRisk(params: EffectiveRiskParams): number {
 export interface ExpeditionOutcome {
 	totalFailure: boolean;
 	partialSuccess: boolean;
-	rewards: ExpeditionRewardDataWithItem | null;
+	rewards: ExpeditionRewardDataWithItem | undefined;
 	loveChange: number;
 }
 
@@ -302,7 +268,7 @@ export function determineExpeditionOutcome(
 		return {
 			totalFailure: true,
 			partialSuccess: false,
-			rewards: null,
+			rewards: undefined,
 			loveChange: ExpeditionConstants.LOVE_CHANGES.TOTAL_FAILURE
 		};
 	}
