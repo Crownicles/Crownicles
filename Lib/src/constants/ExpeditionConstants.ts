@@ -333,12 +333,12 @@ export abstract class ExpeditionConstants {
 	 */
 	static readonly FOOD_CONSUMPTION = [
 		1,
-		2,
 		3,
-		4,
+		5,
 		6,
 		8,
 		10,
+		12,
 		15,
 		25,
 		32

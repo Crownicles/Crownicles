@@ -299,6 +299,16 @@
       "{{playerDisplay}} passe près de vous et vous montre son animal **{{petEmote}}** **{{petName}}**. Vous le caressez et repartez, bonne route !",
       "{{playerDisplay}} passe sur votre route avec **{{petEmote}}** **{{petName}}** au bout de sa laisse. Vous le regardez stupéfait et vous vous dites que vous aimeriez bien avoir cet animal aussi !"
     ],
+    "pet_on_expedition": [
+      "Vous croisez {{playerDisplay}} sur votre route. Son animal **{{petEmote}}** **{{petName}}** n'est pas avec lui aujourd'hui, il l'a envoyé en expédition ! Ce dresseur sait vraiment comment optimiser ses relations avec son compagnon.",
+      "{{playerDisplay}} marche seul, sans son fidèle **{{petEmote}}** **{{petName}}**. En discutant, vous apprenez qu'il a envoyé son animal explorer des contrées lointaines. Un véritable maître dresseur !",
+      "Tiens, {{playerDisplay}} n'a pas son animal avec lui aujourd'hui. Il vous explique fièrement que son **{{petEmote}}** **{{petName}}** est parti en expédition. Quelle confiance mutuelle !"
+    ],
+    "pet_clone": [
+      "{{playerDisplay}} passe près de vous avec... une étrange créature translucide ? C'est **{{petEmote}}** **{{petName}}**, mais quelque chose cloche. L'animal semble presque fantomatique, comme s'il n'était pas vraiment là...",
+      "Vous observez {{playerDisplay}} avec un air perplexe. Son **{{petEmote}}** **{{petName}}** a l'air... bizarre. Translucide, presque éthéré. Il vous explique qu'un talisman ancien lui permet de garder un clone de son compagnon pendant que le vrai explore le monde.",
+      "Est-ce un fantôme ? Non, c'est le **{{petEmote}}** **{{petName}}** de {{playerDisplay}}, mais sa silhouette est étrangement transparente. La magie d'un talisman de clonage, vous dit-il, pendant que son vrai compagnon est en expédition !"
+    ],
     "guild_chief": [
       "Ne paniquez pas ! Vous passez à côté de {{playerDisplay}}, chef de la guilde **{{guildName}}**.",
       "Vous passez près de {{playerDisplay}}. Il est le chef de la guilde **{{guildName}}** !",

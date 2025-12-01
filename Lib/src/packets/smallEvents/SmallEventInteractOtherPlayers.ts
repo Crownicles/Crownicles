@@ -24,6 +24,8 @@ export enum InteractOtherPlayerInteraction {
 	RICH,
 	POOR,
 	PET,
+	PET_ON_EXPEDITION,
+	PET_CLONE,
 	GUILD_CHIEF,
 	GUILD_ELDER,
 	EFFECT,
