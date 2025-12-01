@@ -28,6 +28,13 @@ export const FOOD_PRICES: Record<FoodType, number> = {
 };
 
 /**
+ * Get the diet food type based on whether the pet can eat meat
+ */
+export function getDietFoodType(petModel: Pet): FoodType {
+	return petModel.canEatMeat() ? "carnivorousFood" : "herbivorousFood";
+}
+
+/**
  * Food consumption plan for an expedition
  */
 export interface FoodConsumptionPlan {
@@ -301,7 +308,7 @@ export async function calculateFoodConsumptionPlan(
 		return emptyPlan;
 	}
 
-	const dietFoodType: FoodType = petModel.canEatMeat() ? "carnivorousFood" : "herbivorousFood";
+	const dietFoodType = getDietFoodType(petModel);
 	const values: FoodRationValues = {
 		treatVal: FOOD_RATION_VALUES.commonFood,
 		dietVal: FOOD_RATION_VALUES[dietFoodType],

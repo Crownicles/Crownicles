@@ -6,6 +6,7 @@ export {
 export {
 	calculateFoodConsumptionPlan,
 	applyFoodConsumptionPlan,
+	getDietFoodType,
 	FOOD_RATION_VALUES,
 	FOOD_PRICES,
 	type FoodType,

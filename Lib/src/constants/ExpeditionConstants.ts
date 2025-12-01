@@ -72,6 +72,11 @@ export abstract class ExpeditionConstants {
 	};
 
 	/**
+	 * Default food cost when not specified
+	 */
+	static readonly DEFAULT_FOOD_COST = 1;
+
+	/**
 	 * Reward index categories for display purposes
 	 * Reward index is a value from 0 to 9 based on duration, risk, and difficulty scores
 	 * 5 categories: meager (0-1), modest (2-3), substantial (4-5), bountiful (6-7), legendary (8-9)
@@ -343,6 +348,28 @@ export abstract class ExpeditionConstants {
 		25,
 		32
 	];
+
+	/**
+	 * Error codes for expedition operations
+	 */
+	static readonly ERROR_CODES = {
+		NO_PET: "noPet",
+		NO_EXPEDITION: "noExpedition",
+		INVALID_STATE: "invalidState",
+		EXPEDITION_IN_PROGRESS: "expeditionInProgress",
+		NO_TALISMAN: "noTalisman",
+		INSUFFICIENT_LOVE: "insufficientLove",
+		PET_HUNGRY: "petHungry",
+		NOT_ON_CONTINENT: "notOnContinent"
+	} as const;
+
+	/**
+	 * Insufficient food cause codes
+	 */
+	static readonly INSUFFICIENT_FOOD_CAUSES = {
+		NO_GUILD: "noGuild",
+		GUILD_NO_FOOD: "guildNoFood"
+	} as const;
 
 	/**
 	 * Wealth rate bonus/malus percentage applied to reward index

@@ -23,22 +23,27 @@ export class ScheduledExpeditionNotification extends Model {
 	declare createdAt: Date;
 }
 
+/**
+ * Parameters for scheduling an expedition notification
+ */
+export interface ScheduleNotificationParams {
+	expeditionId: number;
+	keycloakId: string;
+	petId: number;
+	petSex: string;
+	petNickname: string | null;
+	scheduledAt: Date;
+}
+
 export class ScheduledExpeditionNotifications {
-	static async scheduleNotification(
-		expeditionId: number,
-		keycloakId: string,
-		petId: number,
-		petSex: string,
-		petNickname: string | null,
-		scheduledAt: Date
-	): Promise<void> {
+	static async scheduleNotification(params: ScheduleNotificationParams): Promise<void> {
 		await ScheduledExpeditionNotification.upsert({
-			expeditionId,
-			keycloakId,
-			petId,
-			petSex,
-			petNickname,
-			scheduledAt
+			expeditionId: params.expeditionId,
+			keycloakId: params.keycloakId,
+			petId: params.petId,
+			petSex: params.petSex,
+			petNickname: params.petNickname,
+			scheduledAt: params.scheduledAt
 		});
 	}
 
