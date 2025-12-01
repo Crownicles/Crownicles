@@ -1,8 +1,13 @@
 import { PetExpeditions } from "../database/game/models/PetExpedition";
 import { PetEntities } from "../database/game/models/PetEntity";
+import { ExpeditionConstants } from "../../../../Lib/src/constants/ExpeditionConstants";
 
 /**
  * Context for expedition resolution validation - success case
+ * Uses TypeScript utility types to infer the non-null return types of async database queries:
+ * - Awaited<T> unwraps the Promise to get the resolved type
+ * - ReturnType<typeof fn> gets the return type of the function
+ * - NonNullable<T> removes null/undefined from the type
  */
 export interface ExpeditionValidationSuccess {
 	success: true;
@@ -22,30 +27,25 @@ export type ExpeditionValidationResult = ExpeditionValidationSuccess | Expeditio
 
 /**
  * Validate expedition prerequisites before resolution
+ * @param playerId - The player's database ID
+ * @param petId - The pet's database ID (must be provided, validated by caller)
  */
 export async function validateExpeditionPrerequisites(
 	playerId: number,
-	petId: number | null
+	petId: number
 ): Promise<ExpeditionValidationResult> {
 	const activeExpedition = await PetExpeditions.getActiveExpeditionForPlayer(playerId);
 	if (!activeExpedition) {
 		return {
 			success: false,
-			errorCode: "noExpedition"
+			errorCode: ExpeditionConstants.ERROR_CODES.NO_EXPEDITION
 		};
 	}
 
 	if (!activeExpedition.hasEnded()) {
 		return {
 			success: false,
-			errorCode: "expeditionNotComplete"
-		};
-	}
-
-	if (!petId) {
-		return {
-			success: false,
-			errorCode: "noPet"
+			errorCode: ExpeditionConstants.ERROR_CODES.EXPEDITION_NOT_COMPLETE
 		};
 	}
 
@@ -53,7 +53,7 @@ export async function validateExpeditionPrerequisites(
 	if (!petEntity) {
 		return {
 			success: false,
-			errorCode: "noPet"
+			errorCode: ExpeditionConstants.ERROR_CODES.NO_PET
 		};
 	}
 

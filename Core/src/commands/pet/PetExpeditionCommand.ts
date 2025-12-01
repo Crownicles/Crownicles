@@ -35,17 +35,19 @@ import {
 } from "../../../../Lib/src/packets/commands/CommandPetExpeditionPacket";
 import {
 	generateThreeExpeditions,
+	calculateEffectiveRisk,
+	determineExpeditionOutcome
+} from "../../core/expeditions/ExpeditionService";
+import {
 	calculateFoodConsumptionPlan,
 	applyFoodConsumptionPlan,
-	calculateEffectiveRisk,
-	determineExpeditionOutcome,
-	validateExpeditionPrerequisites,
-	applyExpeditionRewards,
-	FoodConsumptionPlan,
-	calculateRewardIndex,
-	PendingExpeditionsCache,
-	calculateTotalAvailableRations
-} from "../../core/expeditions";
+	calculateTotalAvailableRations,
+	type FoodConsumptionPlan
+} from "../../core/expeditions/ExpeditionFoodService";
+import { validateExpeditionPrerequisites } from "../../core/expeditions/ExpeditionValidation";
+import { applyExpeditionRewards } from "../../core/expeditions/ExpeditionRewardApplicator";
+import { calculateRewardIndex } from "../../core/expeditions/ExpeditionRewardCalculator";
+import { PendingExpeditionsCache } from "../../core/expeditions/PendingExpeditionsCache";
 import {
 	EndCallback, ReactionCollectorInstance
 } from "../../core/utils/ReactionsCollector";

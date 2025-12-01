@@ -1,5 +1,5 @@
 import {describe, expect, it, vi, beforeEach} from "vitest";
-import {calculateFoodConsumptionPlan} from "../../../../src/core/expeditions";
+import {calculateFoodConsumptionPlan} from "../../../../src/core/expeditions/ExpeditionFoodService";
 import {Guilds} from "../../../../src/core/database/game/models/Guild";
 import Player from "../../../../src/core/database/game/models/Player";
 import {Pet} from "../../../../src/data/Pet";

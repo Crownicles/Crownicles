@@ -127,15 +127,6 @@ export abstract class ExpeditionConstants {
 	};
 
 	/**
-	 * Get expedition location type from map location type
-	 * @param mapType - The map location type code
-	 * @returns The corresponding expedition location type
-	 */
-	static getExpeditionTypeFromMapType(mapType: string): ExpeditionLocationType {
-		return ExpeditionConstants.MAP_TYPE_TO_EXPEDITION_TYPE[mapType] ?? ExpeditionConstants.LOCATION_TYPES.PLAINS;
-	}
-
-	/**
 	 * Reward index categories for display purposes
 	 * Reward index is a value from 0 to 9 based on duration, risk, and difficulty scores
 	 * 5 categories: meager (0-1), modest (2-3), substantial (4-5), bountiful (6-7), legendary (8-9)
@@ -414,6 +405,7 @@ export abstract class ExpeditionConstants {
 	static readonly ERROR_CODES = {
 		NO_PET: "noPet",
 		NO_EXPEDITION: "noExpedition",
+		EXPEDITION_NOT_COMPLETE: "expeditionNotComplete",
 		INVALID_STATE: "invalidState",
 		EXPEDITION_IN_PROGRESS: "expeditionInProgress",
 		NO_TALISMAN: "noTalisman",
