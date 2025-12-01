@@ -131,7 +131,7 @@ function rollCloneTalisman(
 
 /**
  * Calculate item rarity range based on reward index
- * minRarity = max(1, rewardIndex - 3)
+ * minRarity = max(1, rewardIndex - 4)
  * maxRarity depends on reward index:
  * - rewardIndex <= 1: maxRarity = 5 (SPECIAL)
  * - rewardIndex = 2: maxRarity = 6 (EPIC)

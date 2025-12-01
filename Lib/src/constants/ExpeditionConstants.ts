@@ -190,7 +190,7 @@ export abstract class ExpeditionConstants {
 
 	/**
 	 * Random item reward configuration
-	 * minRarity = max(1, rewardIndex - 3)
+	 * minRarity = max(1, rewardIndex - 4)
 	 * maxRarity depends on reward index:
 	 * - rewardIndex = 1: maxRarity = 5 (SPECIAL)
 	 * - rewardIndex = 2: maxRarity = 6 (EPIC)
@@ -198,7 +198,7 @@ export abstract class ExpeditionConstants {
 	 * - rewardIndex >= 4: maxRarity = 8 (MYTHICAL)
 	 */
 	static readonly ITEM_REWARD = {
-		MIN_RARITY_OFFSET: 3,
+		MIN_RARITY_OFFSET: 4,
 		MIN_RARITY_FLOOR: 1,
 		MAX_RARITY_BY_REWARD_INDEX: [
 			5,
@@ -439,13 +439,19 @@ export abstract class ExpeditionConstants {
 		TOTAL_ENCOUNTERS_BEFORE_TALISMAN: 10,
 
 		/**
-		 * Bonus rewards when pet is in expedition
+		 * Bonus rewards when pet is in expedition (Velanna's rewards)
+		 * Always gives bonus points, then has chances to give money/item or combat potion
 		 */
 		BONUS_IF_PET_IN_EXPEDITION: {
-			MONEY_MIN: 50,
-			MONEY_MAX: 150,
-			EXPERIENCE_MIN: 25,
-			EXPERIENCE_MAX: 75
+			POINTS_MIN: 1,
+			POINTS_MAX: 40,
+			COMBAT_POTION_CHANCE: 15,
+			COMBAT_POTION_MIN_RARITY: 5,
+			COMBAT_POTION_MAX_RARITY: 6,
+			MONEY_CHANCE: 20,
+			MONEY_MIN: 60,
+			MONEY_MAX: 110,
+			ITEM_CHANCE: 20
 		}
 	};
 

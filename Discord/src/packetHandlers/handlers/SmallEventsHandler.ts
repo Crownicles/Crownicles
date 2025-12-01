@@ -1104,10 +1104,27 @@ export default class SmallEventsHandler {
 				const petDisplayBonus = packet.petTypeId !== undefined
 					? PetUtils.petToShortString(lng, packet.petNickname, packet.petTypeId, packet.petSex as SexTypeShort)
 					: i18n.t("commands:pet.defaultPetName", { lng });
-				story = StringUtils.getRandomTranslation("smallEvents:expeditionAdvice.expeditionBonus", lng, {
+
+				// Determine which translation to use based on rewards
+				let translationKey: string;
+				if (packet.bonusCombatPotion) {
+					translationKey = "smallEvents:expeditionAdvice.expeditionBonus.combatPotion";
+				}
+				else if (packet.bonusItem) {
+					translationKey = "smallEvents:expeditionAdvice.expeditionBonus.pointsAndItem";
+				}
+				else if (packet.bonusMoney) {
+					translationKey = "smallEvents:expeditionAdvice.expeditionBonus.pointsAndMoney";
+				}
+				else {
+					translationKey = "smallEvents:expeditionAdvice.expeditionBonus.points";
+				}
+
+				story = i18n.t(translationKey, {
+					lng,
 					pet: petDisplayBonus,
-					bonusMoney: packet.bonusMoney,
-					bonusExperience: packet.bonusExperience
+					bonusPoints: packet.bonusPoints,
+					bonusMoney: packet.bonusMoney
 				});
 				break;
 			}

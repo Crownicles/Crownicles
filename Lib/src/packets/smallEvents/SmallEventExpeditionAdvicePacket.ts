@@ -4,6 +4,7 @@ import {
 } from "../CrowniclesPacket";
 import { SmallEventPacket } from "./SmallEventPacket";
 import { SexTypeShort } from "../../constants/StringConstants";
+import { ItemWithDetails } from "../../types/ItemWithDetails";
 
 /**
  * Interaction types for the expedition advice small event
@@ -50,14 +51,24 @@ export class SmallEventExpeditionAdvicePacket extends SmallEventPacket {
 	petInExpedition!: boolean;
 
 	/**
-	 * Bonus money given if pet was in expedition
+	 * Bonus points given if pet was in expedition (always given)
+	 */
+	bonusPoints?: number;
+
+	/**
+	 * Bonus money given if pet was in expedition (20% chance when no combat potion)
 	 */
 	bonusMoney?: number;
 
 	/**
-	 * Bonus experience given if pet was in expedition
+	 * Bonus item given if pet was in expedition (20% chance when no money and no combat potion)
 	 */
-	bonusExperience?: number;
+	bonusItem?: ItemWithDetails;
+
+	/**
+	 * Combat potion given if pet was in expedition (15% chance, replaces other rewards)
+	 */
+	bonusCombatPotion?: ItemWithDetails;
 
 	/**
 	 * Pet information (if pet is in expedition)

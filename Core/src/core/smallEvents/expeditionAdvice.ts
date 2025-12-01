@@ -17,6 +17,14 @@ import { Maps } from "../maps/Maps";
 import { LogsReadRequests } from "../database/logs/LogsReadRequests";
 import { DwarfPetsSeen } from "../database/game/models/DwarfPetsSeen";
 import { PetDataController } from "../../data/Pet";
+import {
+	FightItemNatures, ItemCategory
+} from "../../../../Lib/src/constants/ItemConstants";
+import { PotionDataController } from "../../data/Potion";
+import {
+	generateRandomItem, giveItemToPlayer, toItemWithDetails
+} from "../utils/ItemUtils";
+import { ItemWithDetails } from "../../../../Lib/src/types/ItemWithDetails";
 
 const SMALL_EVENT_NAME = "expeditionAdvice";
 
@@ -125,15 +133,30 @@ async function checkTalismanConditions(
 }
 
 /**
+ * Generate a random combat potion (SPECIAL or EPIC rarity) for Velanna's rewards
+ */
+function generateRandomCombatPotion(): ItemWithDetails {
+	const bonusConfig = ExpeditionConstants.TALISMAN_EVENT.BONUS_IF_PET_IN_EXPEDITION;
+	const rarity = RandomUtils.randInt(bonusConfig.COMBAT_POTION_MIN_RARITY, bonusConfig.COMBAT_POTION_MAX_RARITY + 1);
+	const nature = RandomUtils.crowniclesRandom.pick(FightItemNatures);
+
+	const potion = PotionDataController.instance.randomItem(nature, rarity);
+	return toItemWithDetails(potion);
+}
+
+/**
  * Handle the case when player already has talisman
  */
 async function handlePlayerWithTalisman(
 	response: CrowniclesPacket[],
-	player: Player
+	player: Player,
+	context: PacketContext
 ): Promise<void> {
 	let petInExpedition = false;
+	let bonusPoints: number | undefined;
 	let bonusMoney: number | undefined;
-	let bonusExperience: number | undefined;
+	let bonusItem: ItemWithDetails | undefined;
+	let bonusCombatPotion: ItemWithDetails | undefined;
 	let petTypeId: number | undefined;
 	let petSex: SexTypeShort | undefined;
 	let petNickname: string | undefined;
@@ -152,26 +175,41 @@ async function handlePlayerWithTalisman(
 	}
 
 	if (petInExpedition) {
-		// Bonus rewards for having pet in expedition
-		bonusMoney = RandomUtils.randInt(
-			ExpeditionConstants.TALISMAN_EVENT.BONUS_IF_PET_IN_EXPEDITION.MONEY_MIN,
-			ExpeditionConstants.TALISMAN_EVENT.BONUS_IF_PET_IN_EXPEDITION.MONEY_MAX + 1
-		);
-		bonusExperience = RandomUtils.randInt(
-			ExpeditionConstants.TALISMAN_EVENT.BONUS_IF_PET_IN_EXPEDITION.EXPERIENCE_MIN,
-			ExpeditionConstants.TALISMAN_EVENT.BONUS_IF_PET_IN_EXPEDITION.EXPERIENCE_MAX + 1
-		);
+		const bonusConfig = ExpeditionConstants.TALISMAN_EVENT.BONUS_IF_PET_IN_EXPEDITION;
 
-		await player.addMoney({
-			amount: bonusMoney,
+		// Always give bonus points
+		bonusPoints = RandomUtils.randInt(bonusConfig.POINTS_MIN, bonusConfig.POINTS_MAX + 1);
+		await player.addScore({
+			amount: bonusPoints,
 			response,
 			reason: NumberChangeReason.SMALL_EVENT
 		});
-		await player.addExperience({
-			amount: bonusExperience,
-			response,
-			reason: NumberChangeReason.SMALL_EVENT
-		});
+
+		// Check if we give a combat potion (15% chance) - replaces other rewards
+		if (RandomUtils.crowniclesRandom.bool(bonusConfig.COMBAT_POTION_CHANCE / 100)) {
+			const potion = generateRandomCombatPotion();
+			bonusCombatPotion = potion;
+			const potionInstance = PotionDataController.instance.getById(potion.id);
+			await giveItemToPlayer(response, context, player, potionInstance);
+		}
+		else {
+			// Check if we give money (20% chance)
+			if (RandomUtils.crowniclesRandom.bool(bonusConfig.MONEY_CHANCE / 100)) {
+				bonusMoney = RandomUtils.randInt(bonusConfig.MONEY_MIN, bonusConfig.MONEY_MAX + 1);
+				await player.addMoney({
+					amount: bonusMoney,
+					response,
+					reason: NumberChangeReason.SMALL_EVENT
+				});
+			}
+			// Check if we give a random item (20% chance)
+			else if (RandomUtils.crowniclesRandom.bool(bonusConfig.ITEM_CHANCE / 100)) {
+				const item = generateRandomItem({});
+				bonusItem = toItemWithDetails(item);
+				await giveItemToPlayer(response, context, player, item);
+			}
+		}
+
 		await player.save();
 		interactionType = ExpeditionAdviceInteractionType.EXPEDITION_BONUS;
 	}
@@ -183,8 +221,10 @@ async function handlePlayerWithTalisman(
 		alreadyHasTalisman: true,
 		talismanGiven: false,
 		petInExpedition,
+		bonusPoints,
 		bonusMoney,
-		bonusExperience,
+		bonusItem,
+		bonusCombatPotion,
 		petTypeId,
 		petSex,
 		petNickname,
@@ -278,7 +318,7 @@ async function executeSmallEvent(
 	_testArgs?: string[]
 ): Promise<void> {
 	if (player.hasTalisman) {
-		await handlePlayerWithTalisman(response, player);
+		await handlePlayerWithTalisman(response, player, context);
 	}
 	else {
 		await handlePlayerWithoutTalisman(response, player, context);
