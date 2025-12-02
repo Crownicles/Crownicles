@@ -160,6 +160,29 @@ function buildInProgressEmbed(
 		})
 		: "";
 
+	// Build description using nested translations
+	const intro = i18n.t("commands:petExpedition.inProgressDescription.intro", {
+		lng, petDisplay
+	});
+	const destination = i18n.t("commands:petExpedition.inProgressDescription.destination", {
+		lng,
+		location: `${locationEmoji} ${locationName}`
+	});
+	const risk = i18n.t("commands:petExpedition.inProgressDescription.risk", {
+		lng,
+		risk: getTranslatedRiskCategoryName(expedition.riskRate, lng)
+	});
+	const returnTime = i18n.t("commands:petExpedition.inProgressDescription.returnTime", {
+		lng,
+		returnTime: finishInTimeDisplay(new Date(expedition.endTime))
+	});
+	const warning = i18n.t("commands:petExpedition.inProgressDescription.warning", {
+		lng,
+		context: sexContext
+	});
+
+	const description = `${intro}\n\n${destination}\n${risk}\n${returnTime}${foodInfo}\n\n${warning}`;
+
 	return new CrowniclesEmbed()
 		.formatAuthor(
 			i18n.t("commands:petExpedition.inProgressTitle", {
@@ -168,17 +191,7 @@ function buildInProgressEmbed(
 			}),
 			interaction.user
 		)
-		.setDescription(
-			i18n.t("commands:petExpedition.inProgressDescription", {
-				lng,
-				context: sexContext,
-				petDisplay,
-				location: `${locationEmoji} ${locationName}`,
-				risk: getTranslatedRiskCategoryName(expedition.riskRate, lng),
-				returnTime: finishInTimeDisplay(new Date(expedition.endTime)),
-				foodInfo
-			})
-		);
+		.setDescription(description);
 }
 
 /**
@@ -186,7 +199,6 @@ function buildInProgressEmbed(
  */
 const CANNOT_START_RANDOM_KEYS = [
 	"noPet",
-	"insufficientLove",
 	"petHungry"
 ] as const;
 
@@ -200,6 +212,19 @@ function getCannotStartDescription(
 	sexContext: string
 ): string {
 	const reason = packet.cannotStartReason;
+
+	// Special handling for insufficientLove - combine main text with advice
+	if (reason === "insufficientLove") {
+		const mainText = StringUtils.getRandomTranslation(`commands:petExpedition.${reason}`, lng, {
+			context: sexContext,
+			petDisplay,
+			lovePoints: packet.petLovePoints ?? 0
+		});
+		const adviceText = StringUtils.getRandomTranslation("commands:petExpedition.insufficientLoveAdvice", lng, {
+			context: sexContext
+		});
+		return `${mainText}\n\n${adviceText}`;
+	}
 
 	if (reason && CANNOT_START_RANDOM_KEYS.includes(reason as typeof CANNOT_START_RANDOM_KEYS[number])) {
 		return StringUtils.getRandomTranslation(`commands:petExpedition.${reason}`, lng, {

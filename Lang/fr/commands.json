@@ -78,14 +78,24 @@
       "Le {emote:expedition.talisman} **Talisman d'Ancrage** ne réagit pas dans votre sacoche. Sa magie ne peut s'activer qu'en présence d'un familier. Il convient de trouver un compagnon digne de ce nom avant de songer aux expéditions."
     ],
     "insufficientLove_male": [
-      "{{petDisplay}} vous lance un regard méfiant et recule d'un pas. Le lien qui vous unit n'est pas encore assez fort pour qu'il s'aventure seul dans les contrées sauvages. Prenez soin de lui, nourrissez-le, et peut-être qu'un jour il vous fera suffisamment confiance.\n\n*Votre compagnon semble encore trop craintif pour s'éloigner de vous. Renforcez votre lien avant de l'envoyer en expédition.*",
-      "Votre familier se blottit contre votre jambe, tremblant légèrement. {{petDisplay}} n'est pas encore prêt à partir seul en expédition. Son cœur a besoin de plus de temps pour vous faire entièrement confiance.\n\n*Le regard de votre compagnon trahit une certaine anxiété. Il lui faut encore du temps pour oser s'aventurer sans vous.*",
-      "Les yeux de {{petDisplay}} trahissent une inquiétude profonde. Partir en expédition demande un lien fort entre un familier et son maître. Continuez à prendre soin de votre compagnon pour renforcer votre complicité.\n\n*Votre familier ne vous fait pas encore assez confiance pour partir explorer seul. Caresses et friandises sauront y remédier.*"
+      "{{petDisplay}} vous lance un regard méfiant et recule d'un pas. Le lien qui vous unit n'est pas encore assez fort pour qu'il s'aventure seul dans les contrées sauvages. Prenez soin de lui, nourrissez-le, et peut-être qu'un jour il vous fera suffisamment confiance.",
+      "Votre familier se blottit contre votre jambe, tremblant légèrement. {{petDisplay}} n'est pas encore prêt à partir seul en expédition. Son cœur a besoin de plus de temps pour vous faire entièrement confiance.",
+      "Les yeux de {{petDisplay}} trahissent une inquiétude profonde. Partir en expédition demande un lien fort entre un familier et son maître. Continuez à prendre soin de votre compagnon pour renforcer votre complicité."
     ],
     "insufficientLove_female": [
-      "{{petDisplay}} vous lance un regard méfiant et recule d'un pas. Le lien qui vous unit n'est pas encore assez fort pour qu'elle s'aventure seule dans les contrées sauvages. Prenez soin d'elle, nourrissez-la, et peut-être qu'un jour elle vous fera suffisamment confiance.\n\n*Votre compagne semble encore trop craintive pour s'éloigner de vous. Renforcez votre lien avant de l'envoyer en expédition.*",
-      "Votre familier se blottit contre votre jambe, tremblante légèrement. {{petDisplay}} n'est pas encore prête à partir seule en expédition. Son cœur a besoin de plus de temps pour vous faire entièrement confiance.\n\n*Le regard de votre compagne trahit une certaine anxiété. Il lui faut encore du temps pour oser s'aventurer sans vous.*",
-      "Les yeux de {{petDisplay}} trahissent une inquiétude profonde. Partir en expédition demande un lien fort entre un familier et son maître. Continuez à prendre soin de votre compagne pour renforcer votre complicité.\n\n*Votre familier ne vous fait pas encore assez confiance pour partir explorer seule. Caresses et friandises sauront y remédier.*"
+      "{{petDisplay}} vous lance un regard méfiant et recule d'un pas. Le lien qui vous unit n'est pas encore assez fort pour qu'elle s'aventure seule dans les contrées sauvages. Prenez soin d'elle, nourrissez-la, et peut-être qu'un jour elle vous fera suffisamment confiance.",
+      "Votre familier se blottit contre votre jambe, tremblante légèrement. {{petDisplay}} n'est pas encore prête à partir seule en expédition. Son cœur a besoin de plus de temps pour vous faire entièrement confiance.",
+      "Les yeux de {{petDisplay}} trahissent une inquiétude profonde. Partir en expédition demande un lien fort entre un familier et son maître. Continuez à prendre soin de votre compagne pour renforcer votre complicité."
+    ],
+    "insufficientLoveAdvice_male": [
+      "*Votre compagnon semble encore trop craintif pour s'éloigner de vous. Renforcez votre lien avant de l'envoyer en expédition.*",
+      "*Le regard de votre compagnon trahit une certaine anxiété. Il lui faut encore du temps pour oser s'aventurer sans vous.*",
+      "*Votre familier ne vous fait pas encore assez confiance pour partir explorer seul. Caresses et friandises sauront y remédier.*"
+    ],
+    "insufficientLoveAdvice_female": [
+      "*Votre compagne semble encore trop craintive pour s'éloigner de vous. Renforcez votre lien avant de l'envoyer en expédition.*",
+      "*Le regard de votre compagne trahit une certaine anxiété. Il lui faut encore du temps pour oser s'aventurer sans vous.*",
+      "*Votre familier ne vous fait pas encore assez confiance pour partir explorer seule. Caresses et friandises sauront y remédier.*"
     ],
     "petHungry_male": [
       "Le ventre de {{petDisplay}} émet un grondement sonore. Les yeux suppliants, votre compagnon refuse catégoriquement de partir l'estomac vide. Nourrissez-le avant de l'envoyer à l'aventure !",
@@ -125,8 +135,14 @@
       }
     },
     "inProgressTitle": "{{pseudo}}, expédition en cours",
-    "inProgressDescription_male": "{{petDisplay}} arpente actuellement des terres lointaines et mystérieuses !\n\n{emote:expedition.map} **Destination :** **{{location}}**\n{emote:expedition.risk} **Dangerosité :** {{risk}}\n{emote:clocks.1} **Retour prévu :** {{returnTime}}{{foodInfo}}\n\n{emote:collectors.warning} *Rappeler votre familier prématurément brisera le lien de confiance. Il reviendra sans butin et le cœur meurtri...*",
-    "inProgressDescription_female": "{{petDisplay}} arpente actuellement des terres lointaines et mystérieuses !\n\n{emote:expedition.map} **Destination :** **{{location}}**\n{emote:expedition.risk} **Dangerosité :** {{risk}}\n{emote:clocks.1} **Retour prévu :** {{returnTime}}{{foodInfo}}\n\n{emote:collectors.warning} *Rappeler votre familier prématurément brisera le lien de confiance. Elle reviendra sans butin et le cœur meurtrie...*",
+    "inProgressDescription": {
+      "intro": "{{petDisplay}} arpente actuellement des terres lointaines et mystérieuses !",
+      "destination": "{emote:expedition.map} **Destination :** **{{location}}**",
+      "risk": "{emote:expedition.risk} **Dangerosité :** {{risk}}",
+      "returnTime": "{emote:clocks.1} **Retour prévu :** {{returnTime}}",
+      "warning_male": "{emote:collectors.warning} *Rappeler votre familier prématurément brisera le lien de confiance. Il reviendra sans butin et le cœur meurtri...*",
+      "warning_female": "{emote:collectors.warning} *Rappeler votre familier prématurément brisera le lien de confiance. Elle reviendra sans butin et le cœur meurtrie...*"
+    },
     "inProgressFoodInfo": "\n{emote:expedition.food} **Provisions emportées :** {{amount}} rations",
     "recallButton": "Rappeler",
     "closeButton": "Continuer l'exploration",
@@ -134,15 +150,22 @@
     "chooseExpedition": "Le {emote:expedition.talisman} **Talisman d'Ancrage** vibre doucement dans votre sacoche. Trois destinations apparaissent dans votre esprit, révélées par la magie de l'artefact. {{petDisplay}} trépigne d'impatience, prêt à partir explorer l'une de ces contrées :",
     "selectPlaceholder": "Choisissez une destination...",
     "distantExpeditionPrefix": "Expédition lointaine : {{location}}",
-    "expeditionOption": "\n\n**{{number}}.** {{location}}\n{emote:expedition.duration} Durée estimée : {{duration}}\n{emote:expedition.risk} Dangerosité : {{risk}}\n{emote:expedition.reward} Récompenses estimées : {{reward}}\n{emote:expedition.difficulty} Difficulté du terrain : {{difficulty}}\n{emote:expedition.food} Provisions requises : {{foodDisplay}}",
-    "cloneTalismanBonusTag": "\n{emote:expedition.cloneTalisman} *Un étrange pressentiment vous envahit... Les rumeurs parlent d'un artefact légendaire peut-être caché en ces terres.*",
+    "expeditionOption": {
+      "header": "**{{number}}.** {{location}}",
+      "duration": "{emote:expedition.duration} Durée estimée : {{duration}}",
+      "risk": "{emote:expedition.risk} Dangerosité : {{risk}}",
+      "reward": "{emote:expedition.reward} Récompenses estimées : {{reward}}",
+      "difficulty": "{emote:expedition.difficulty} Difficulté du terrain : {{difficulty}}",
+      "food": "{emote:expedition.food} Provisions requises : {{foodDisplay}}",
+      "cloneTalismanBonus": "{emote:expedition.cloneTalisman} *Un étrange pressentiment vous envahit... Les rumeurs parlent d'un artefact légendaire peut-être caché en ces terres.*"
+    },
     "foodCost_one": "{{count}} ration",
     "foodCost_other": "{{count}} rations",
     "cancelButton": "Annuler l'expédition",
-    "guildProvisionsInfo_male": "\n\n{emote:expedition.food} **Provisions de guilde disponibles :** {{amount}} rations\n\n*{{petDisplay}} trépigne d'impatience, la queue frétillante, prêt à s'élancer vers l'aventure !*",
-    "guildProvisionsInfo_female": "\n\n{emote:expedition.food} **Provisions de guilde disponibles :** {{amount}} rations\n\n*{{petDisplay}} trépigne d'impatience, la queue frétillante, prête à s'élancer vers l'aventure !*",
-    "noGuildProvisionsInfo_male": "\n\n{emote:collectors.warning} **Vous n'avez pas de guilde pour préparer des rations.**\n\n*{{petDisplay}} trépigne d'impatience, la queue frétillante, prêt à s'élancer vers l'aventure !*",
-    "noGuildProvisionsInfo_female": "\n\n{emote:collectors.warning} **Vous n'avez pas de guilde pour préparer des rations.**\n\n*{{petDisplay}} trépigne d'impatience, la queue frétillante, prête à s'élancer vers l'aventure !*",
+    "guildProvisionsInfo": "{emote:expedition.food} **Provisions de guilde disponibles :** {{amount}} {{foodCostDisplay}}",
+    "noGuildProvisionsInfo": "{emote:collectors.warning} **Vous n'avez pas de guilde pour préparer des rations.**",
+    "petImpatience_male": "*{{petDisplay}} trépigne d'impatience, la queue frétillante, prêt à s'élancer vers l'aventure !*",
+    "petImpatience_female": "*{{petDisplay}} trépigne d'impatience, la queue frétillante, prête à s'élancer vers l'aventure !*",
     "startedTitle": "{{pseudo}}, expédition lancée !",
     "expeditionStarted_male": "D'un bond enthousiaste, {{petDisplay}} s'élance vers **{{location}}** ! Vous le regardez disparaître à l'horizon, le cœur empli d'espoir.\n\n{emote:clocks.1} Retour prévu : {{returnTime}}",
     "expeditionStarted_female": "D'un bond enthousiaste, {{petDisplay}} s'élance vers **{{location}}** ! Vous la regardez disparaître à l'horizon, le cœur empli d'espoir.\n\n{emote:clocks.1} Retour prévu : {{returnTime}}",
@@ -169,8 +192,15 @@
     "recalled_male": "Entendant votre appel, {{petDisplay}} abandonne sa quête et revient vers vous, la queue basse et le regard chargé de reproches. Il ne ramène rien de son périple interrompu. La déception se lit dans ses yeux — il vous en voudra pendant un moment.",
     "recalled_female": "Entendant votre appel, {{petDisplay}} abandonne sa quête et revient vers vous, la queue basse et le regard chargé de reproches. Elle ne ramène rien de son périple interrompu. La déception se lit dans ses yeux — elle vous en voudra pendant un moment.",
     "finishedTitle": "{{pseudo}}, expédition terminée !",
-    "finishedDescription_male": "Le {emote:expedition.talisman} **Talisman d'Ancrage** vibre intensément dans votre sacoche : {{petDisplay}} est de retour de son expédition vers **{{location}}** !\n\n{emote:expedition.risk} Dangerosité : {{risk}}\n\n*Votre compagnon trépigne d'impatience, pressé de vous montrer ce qu'il a rapporté !*",
-    "finishedDescription_female": "Le {emote:expedition.talisman} **Talisman d'Ancrage** vibre intensément dans votre sacoche : {{petDisplay}} est de retour de son expédition vers **{{location}}** !\n\n{emote:expedition.risk} Dangerosité : {{risk}}\n\n*Votre compagne trépigne d'impatience, pressée de vous montrer ce qu'elle a rapporté !*",
+    "finishedDescription": {
+      "talisman": {
+        "name": "Talisman d'Ancrage",
+        "intro": "Le {emote:expedition.talisman} **{{talismanName}}** vibre intensément dans votre sacoche : {{petDisplay}} est de retour de son expédition vers **{{location}}** !"
+      },
+      "risk": "{emote:expedition.risk} Dangerosité : {{risk}}",
+      "impatience_male": "*Votre compagnon trépigne d'impatience, pressé de vous montrer ce qu'il a rapporté !*",
+      "impatience_female": "*Votre compagne trépigne d'impatience, pressée de vous montrer ce qu'elle a rapporté !*"
+    },
     "claimButton": "Découvrir le butin",
     "successTitle": "{{pseudo}}, retour triomphal !",
     "success_male": [
@@ -578,8 +608,17 @@
     "weapons_one": "Arme ({{count}}/{{max}}) :",
     "weapons_other": "Armes ({{count}}/{{max}}) :",
     "talisman": "Artefacts :",
-    "anchorTalismanOwned": "{emote:expedition.talisman} **Talisman d'Ancrage** - Permet d'envoyer votre familier en expédition",
-    "cloneTalismanOwned": "{emote:expedition.cloneTalisman} **Talisman de Clonage** - Votre familier vous assiste en défense et dans les petits événements même en expédition",
+    "talismans": {
+      "anchorTalisman": {
+        "name": "Talisman d'Ancrage",
+        "description": "Permet d'envoyer votre familier en expédition"
+      },
+      "cloneTalisman": {
+        "name": "Talisman de Clonage",
+        "description": "Votre familier vous assiste en défense et dans les petits événements même en expédition"
+      }
+    },
+    "talismanOwned": "{emote:expedition.{{talismanEmote}}} **{{talismanName}}** - {{talismanDescription}}",
     "talismanNotOwned": "{emote:inventory.empty} **Aucun artefact**",
     "randomItemTitle": "{{pseudo}}, vous avez trouvé quelque chose !",
     "randomItemAcceptTitle": "Vous avez déjà un équipement, souhaitez-vous le vendre ?",

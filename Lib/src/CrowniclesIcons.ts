@@ -2232,7 +2232,7 @@ export const CrowniclesIcons: {
 		food: "🍖",
 		love: "💕",
 		talisman: "🔮",
-		cloneTalisman: "🧬"
+		cloneTalisman: "🧬",
 		recall: "🏠",
 		speed: "🚀",
 		slow: "🐌"

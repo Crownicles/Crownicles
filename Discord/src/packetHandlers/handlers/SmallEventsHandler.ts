@@ -1025,28 +1025,37 @@ export default class SmallEventsHandler {
 			return;
 		}
 		const lng = interaction.userLanguage;
+		const talismanName = i18n.t("smallEvents:expeditionAdvice.talisman.name", { lng });
 
 		let story: string;
 
 		switch (packet.interactionType) {
-			case ExpeditionAdviceInteractionType.TALISMAN_INTRO:
+			case ExpeditionAdviceInteractionType.TALISMAN_INTRO: {
 				// Phase 1: Talisman introduction (encounters 1-5)
-				story = StringUtils.getRandomTranslation(
-					`smallEvents:expeditionAdvice.talismanIntro.encounter${packet.encounterCount}`,
-					lng
-				);
+				const introTexts: string[] = i18n.t("smallEvents:expeditionAdvice.talismanIntro", {
+					returnObjects: true,
+					lng,
+					talismanName
+				});
+				story = introTexts[packet.encounterCount! - 1] ?? introTexts[0];
 				break;
+			}
 
-			case ExpeditionAdviceInteractionType.EXPEDITION_EXPLANATION:
+			case ExpeditionAdviceInteractionType.EXPEDITION_EXPLANATION: {
 				// Phase 2: Expedition explanation (encounters 6-10)
-				story = StringUtils.getRandomTranslation(
-					`smallEvents:expeditionAdvice.expeditionExplanation.encounter${packet.encounterCount! - 5}`,
+				const explanationTexts: string[] = i18n.t("smallEvents:expeditionAdvice.expeditionExplanation", {
+					returnObjects: true,
 					lng
-				);
+				});
+				const explanationIndex = packet.encounterCount! - 6;
+				story = explanationTexts[explanationIndex] ?? explanationTexts[0];
 				break;
+			}
 
 			case ExpeditionAdviceInteractionType.CONDITION_NOT_MET_NO_PET:
-				story = StringUtils.getRandomTranslation("smallEvents:expeditionAdvice.conditions.noPet", lng);
+				story = StringUtils.getRandomTranslation("smallEvents:expeditionAdvice.conditions.noPet", lng, {
+					talismanName
+				});
 				break;
 
 			case ExpeditionAdviceInteractionType.CONDITION_NOT_MET_PET_HUNGRY: {
@@ -1080,13 +1089,16 @@ export default class SmallEventsHandler {
 			}
 
 			case ExpeditionAdviceInteractionType.CONDITION_NOT_MET_NO_GUILD:
-				story = StringUtils.getRandomTranslation("smallEvents:expeditionAdvice.conditions.noGuild", lng);
+				story = StringUtils.getRandomTranslation("smallEvents:expeditionAdvice.conditions.noGuild", lng, {
+					talismanName
+				});
 				break;
 
 			case ExpeditionAdviceInteractionType.CONDITION_NOT_MET_LEVEL_TOO_LOW:
 				story = StringUtils.getRandomTranslation("smallEvents:expeditionAdvice.conditions.levelTooLow", lng, {
 					requiredLevel: packet.requiredLevel,
-					playerLevel: packet.playerLevel
+					playerLevel: packet.playerLevel,
+					talismanName
 				});
 				break;
 
@@ -1095,7 +1107,8 @@ export default class SmallEventsHandler {
 					? PetUtils.petToShortString(lng, packet.petNickname, packet.petTypeId, packet.petSex as SexTypeShort)
 					: i18n.t("commands:pet.defaultPetName", { lng });
 				story = StringUtils.getRandomTranslation("smallEvents:expeditionAdvice.talismanReceived", lng, {
-					pet: petDisplayReceived
+					pet: petDisplayReceived,
+					talismanName
 				});
 				break;
 			}
@@ -1124,7 +1137,8 @@ export default class SmallEventsHandler {
 					lng,
 					pet: petDisplayBonus,
 					bonusPoints: packet.bonusPoints,
-					bonusMoney: packet.bonusMoney
+					bonusMoney: packet.bonusMoney,
+					talismanName
 				});
 				break;
 			}

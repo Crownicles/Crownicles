@@ -203,20 +203,38 @@ function buildExpeditionOptionText(
 		lng, count: foodCost
 	});
 
-	let optionText = i18n.t("commands:petExpedition.expeditionOption", {
+	// Build option text using nested translations
+	const header = i18n.t("commands:petExpedition.expeditionOption.header", {
 		lng,
 		number: index + 1,
-		location: `${locationEmoji} **${locationName}**`,
-		duration: displayDuration,
-		risk: getTranslatedRiskCategoryName(exp.riskRate, lng),
-		reward: getTranslatedRewardCategoryName(exp.rewardIndex, lng),
-		difficulty: getTranslatedDifficultyCategoryName(exp.difficulty, lng),
+		location: `${locationEmoji} **${locationName}**`
+	});
+	const duration = i18n.t("commands:petExpedition.expeditionOption.duration", {
+		lng,
+		duration: displayDuration
+	});
+	const risk = i18n.t("commands:petExpedition.expeditionOption.risk", {
+		lng,
+		risk: getTranslatedRiskCategoryName(exp.riskRate, lng)
+	});
+	const reward = i18n.t("commands:petExpedition.expeditionOption.reward", {
+		lng,
+		reward: getTranslatedRewardCategoryName(exp.rewardIndex, lng)
+	});
+	const difficulty = i18n.t("commands:petExpedition.expeditionOption.difficulty", {
+		lng,
+		difficulty: getTranslatedDifficultyCategoryName(exp.difficulty, lng)
+	});
+	const food = i18n.t("commands:petExpedition.expeditionOption.food", {
+		lng,
 		foodDisplay
 	});
 
+	let optionText = `\n\n${header}\n${duration}\n${risk}\n${reward}\n${difficulty}\n${food}`;
+
 	// Add clone talisman bonus tag if present
 	if (exp.hasCloneTalismanBonus) {
-		optionText += i18n.t("commands:petExpedition.cloneTalismanBonusTag", { lng });
+		optionText += `\n${i18n.t("commands:petExpedition.expeditionOption.cloneTalismanBonus", { lng })}`;
 	}
 
 	return optionText;
@@ -251,16 +269,27 @@ function buildGuildProvisionsText(
 ): string {
 	const sexContext = getSexContext(data.petSex);
 	const hasGuildProvisions = data.hasGuild && data.guildFoodAmount !== undefined;
-	const translationKey = hasGuildProvisions
-		? "commands:petExpedition.guildProvisionsInfo"
-		: "commands:petExpedition.noGuildProvisionsInfo";
 
-	return i18n.t(translationKey, {
+	// Build provisions info text
+	const provisionsText = hasGuildProvisions
+		? i18n.t("commands:petExpedition.guildProvisionsInfo", {
+			lng,
+			amount: data.guildFoodAmount,
+			foodCostDisplay: i18n.t("commands:petExpedition.foodCost", {
+				lng,
+				count: data.guildFoodAmount
+			})
+		})
+		: i18n.t("commands:petExpedition.noGuildProvisionsInfo", { lng });
+
+	// Build pet impatience text
+	const impatienceText = i18n.t("commands:petExpedition.petImpatience", {
 		lng,
 		context: sexContext,
-		petDisplay,
-		amount: data.guildFoodAmount
+		petDisplay
 	});
+
+	return `\n\n${provisionsText}\n\n${impatienceText}`;
 }
 
 /**
@@ -376,6 +405,25 @@ export async function createPetExpeditionFinishedCollector(
 	const petDisplay = `${DisplayUtils.getPetIcon(data.petId, data.petSex)} **${DisplayUtils.getPetNicknameOrTypeName(data.petNickname, data.petId, data.petSex, lng)}**`;
 	const sexContext = getSexContext(data.petSex);
 
+	// Build description using nested translations
+	const talismanName = i18n.t("commands:petExpedition.finishedDescription.talisman.name", { lng });
+	const intro = i18n.t("commands:petExpedition.finishedDescription.talisman.intro", {
+		lng,
+		talismanName,
+		petDisplay,
+		location: `${locationEmoji} ${locationName}`
+	});
+	const risk = i18n.t("commands:petExpedition.finishedDescription.risk", {
+		lng,
+		risk: getTranslatedRiskCategoryName(data.riskRate, lng)
+	});
+	const impatience = i18n.t("commands:petExpedition.finishedDescription.impatience", {
+		lng,
+		context: sexContext
+	});
+
+	const description = `${intro}\n\n${risk}\n\n${impatience}`;
+
 	const embed = new CrowniclesEmbed()
 		.formatAuthor(
 			i18n.t("commands:petExpedition.finishedTitle", {
@@ -384,15 +432,7 @@ export async function createPetExpeditionFinishedCollector(
 			}),
 			interaction.user
 		)
-		.setDescription(
-			i18n.t("commands:petExpedition.finishedDescription", {
-				lng,
-				context: sexContext,
-				petDisplay,
-				location: `${locationEmoji} ${locationName}`,
-				risk: getTranslatedRiskCategoryName(data.riskRate, lng)
-			})
-		);
+		.setDescription(description);
 
 	const row = new ActionRowBuilder<ButtonBuilder>();
 	const claimButton = new ButtonBuilder()

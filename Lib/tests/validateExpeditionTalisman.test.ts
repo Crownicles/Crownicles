@@ -30,8 +30,12 @@ describe('expeditionAdvice / talisman formatting (fr)', () => {
     for (const { key, value } of nodes) {
       // check only strings mentioning talisman (case-insensitive)
       if (/talisman/i.test(value)) {
+        // Skip the talisman.name key as it's just the name definition
+        if (key === 'talisman.name') continue;
+
         const hasEmote = /\{emote:expedition\.talisman\}/.test(value);
-        const hasBoldFullName = /\*\*Talisman d'Ancrage\*\*/.test(value);
+        // Accept either the hardcoded name or the placeholder
+        const hasBoldFullName = /\*\*Talisman d'Ancrage\*\*/.test(value) || /\*\*\{\{talismanName\}\}\*\*/.test(value);
         if (!hasEmote || !hasBoldFullName) errors.push({ key, value });
       }
     }
