@@ -13,6 +13,15 @@ export enum PetDiet {
 }
 
 export abstract class PetConstants {
+	/**
+	 * Contexts in which pet availability can be checked
+	 */
+	static readonly AVAILABILITY_CONTEXT = {
+		SMALL_EVENT: "smallEvent",
+		ATTACK_FIGHT: "attackFight",
+		DEFENSE_FIGHT: "defenseFight"
+	} as const;
+
 	static readonly NICKNAME_LENGTH_RANGE = {
 		MIN: 3,
 		MAX: 16

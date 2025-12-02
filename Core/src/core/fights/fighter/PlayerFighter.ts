@@ -25,6 +25,7 @@ import {
 	FightConstants, FightRole
 } from "../../../../../Lib/src/constants/FightConstants";
 import { InventoryConstants } from "../../../../../Lib/src/constants/InventoryConstants";
+import { PetConstants } from "../../../../../Lib/src/constants/PetConstants";
 import { PetUtils } from "../../utils/PetUtils";
 
 /**
@@ -151,7 +152,9 @@ export class PlayerFighter extends Fighter {
 		this.stats.breathRegen = this.player.getBreathRegen();
 		if (this.player.petId) {
 			// Check if pet is available based on fight role
-			const petAvailabilityContext = this.fightRole === FightConstants.FIGHT_ROLES.ATTACKER ? "attackFight" : "defenseFight";
+			const petAvailabilityContext = this.fightRole === FightConstants.FIGHT_ROLES.ATTACKER
+				? PetConstants.AVAILABILITY_CONTEXT.ATTACK_FIGHT
+				: PetConstants.AVAILABILITY_CONTEXT.DEFENSE_FIGHT;
 			const isPetAvailable = await PetUtils.isPetAvailable(this.player, petAvailabilityContext);
 			if (isPetAvailable) {
 				this.pet = await PetEntities.getById(this.player.petId);

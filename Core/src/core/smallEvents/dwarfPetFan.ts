@@ -17,6 +17,7 @@ import { MapConstants } from "../../../../Lib/src/constants/MapConstants";
 import { Badge } from "../../../../Lib/src/types/Badge";
 import { SmallEventConstants } from "../../../../Lib/src/constants/SmallEventConstants";
 import { MissionsController } from "../missions/MissionsController";
+import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
 import { PetUtils } from "../utils/PetUtils";
 
 /**
@@ -39,7 +40,7 @@ async function canContinueSmallEvent(response: CrowniclesPacket[], player: Playe
 	}
 
 	// Check if the pet is available (not on expedition without clone talisman)
-	if (!await PetUtils.isPetAvailable(player, "smallEvent")) {
+	if (!await PetUtils.isPetAvailable(player, PetConstants.AVAILABILITY_CONTEXT.SMALL_EVENT)) {
 		response.push(makePacket(SmallEventDwarfPetFanPacket, { interactionName: SmallEventConstants.DWARF_PET_FAN.INTERACTIONS_NAMES.NO_PET }));
 		return false;
 	}

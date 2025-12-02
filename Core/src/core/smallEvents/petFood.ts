@@ -296,7 +296,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 		if (!Maps.isOnContinent(player)) {
 			return false;
 		}
-		if (!player.petId || !await PetUtils.isPetAvailable(player, "smallEvent")) {
+		if (!player.petId || !await PetUtils.isPetAvailable(player, PetConstants.AVAILABILITY_CONTEXT.SMALL_EVENT)) {
 			return false;
 		}
 		const petEntity = await PetEntity.findByPk(player.petId);

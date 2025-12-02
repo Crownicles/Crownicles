@@ -6,7 +6,7 @@ import Player from "../database/game/models/Player";
 /**
  * Context in which pet availability is being checked
  */
-export type PetAvailabilityContext = "smallEvent" | "attackFight" | "defenseFight";
+export type PetAvailabilityContext = (typeof PetConstants.AVAILABILITY_CONTEXT)[keyof typeof PetConstants.AVAILABILITY_CONTEXT];
 
 export abstract class PetUtils {
 	/**
@@ -40,13 +40,13 @@ export abstract class PetUtils {
 
 		// Clone talisman is present - check context
 		switch (context) {
-			case "smallEvent":
+			case PetConstants.AVAILABILITY_CONTEXT.SMALL_EVENT:
 				// Clone talisman allows pet in small events
 				return true;
-			case "defenseFight":
+			case PetConstants.AVAILABILITY_CONTEXT.DEFENSE_FIGHT:
 				// Clone talisman allows pet in defense fights
 				return true;
-			case "attackFight":
+			case PetConstants.AVAILABILITY_CONTEXT.ATTACK_FIGHT:
 				// Clone talisman does NOT allow pet in attack fights
 				return false;
 			default:

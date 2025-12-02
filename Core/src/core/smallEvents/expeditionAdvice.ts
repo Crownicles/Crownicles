@@ -23,8 +23,7 @@ import {
 	generateRandomItem, giveItemToPlayer, toItemWithDetails
 } from "../utils/ItemUtils";
 import { ItemWithDetails } from "../../../../Lib/src/types/ItemWithDetails";
-
-const SMALL_EVENT_NAME = "expeditionAdvice";
+import { SmallEventConstants } from "../../../../Lib/src/constants/SmallEventConstants";
 
 /**
  * Check if the small event can be executed for this player
@@ -36,31 +35,41 @@ function canBeExecuted(player: Player): boolean {
 }
 
 /**
+ * Phase type for expedition advice progression
+ */
+type ExpeditionAdvicePhase = typeof SmallEventConstants.EXPEDITION_ADVICE.PHASES[keyof typeof SmallEventConstants.EXPEDITION_ADVICE.PHASES];
+
+/**
  * Get the phase based on encounter count for players without talisman
  */
-function getPhaseFromEncounterCount(encounterCount: number): "intro" | "explanation" | "conditions" {
+function getPhaseFromEncounterCount(encounterCount: number): ExpeditionAdvicePhase {
+	const { PHASES } = SmallEventConstants.EXPEDITION_ADVICE;
+
 	if (encounterCount < ExpeditionConstants.TALISMAN_EVENT.TALISMAN_INTRO_ENCOUNTERS) {
-		return "intro";
+		return PHASES.INTRO;
 	}
 	if (encounterCount < ExpeditionConstants.TALISMAN_EVENT.TOTAL_ENCOUNTERS_BEFORE_TALISMAN) {
-		return "explanation";
+		return PHASES.EXPLANATION;
 	}
-	return "conditions";
+	return PHASES.CONDITIONS;
+}
+
+/**
+ * Result of checking talisman conditions
+ */
+interface TalismanConditionResult {
+	conditionMet: boolean;
+	interactionType: ExpeditionAdviceInteractionType;
+	petTypeId?: number;
+	petSex?: SexTypeShort;
+	petNickname?: string;
 }
 
 /**
  * Check all conditions required to receive the talisman
  * Returns the first unmet condition or null if all conditions are met
  */
-async function checkTalismanConditions(
-	player: Player
-): Promise<{
-	conditionMet: boolean;
-	interactionType: ExpeditionAdviceInteractionType;
-	petTypeId?: number;
-	petSex?: SexTypeShort;
-	petNickname?: string;
-}> {
+async function checkTalismanConditions(player: Player): Promise<TalismanConditionResult> {
 	// Condition 1: Player level >= 30
 	if (player.level < ExpeditionConstants.TALISMAN_EVENT.TALISMAN_MIN_LEVEL) {
 		return {
@@ -81,7 +90,7 @@ async function checkTalismanConditions(
 	const petInfo = {
 		petTypeId: petEntity.typeId,
 		petSex: petEntity.sex as SexTypeShort,
-		petNickname: petEntity.nickname ?? undefined
+		petNickname: petEntity.nickname
 	};
 
 	// Condition 3: Pet is not feisty
@@ -180,7 +189,7 @@ async function getExpeditionPetInfo(player: Player): Promise<ExpeditionPetInfo> 
 		petInExpedition: true,
 		petTypeId: petEntity.typeId,
 		petSex: petEntity.sex as SexTypeShort,
-		petNickname: petEntity.nickname ?? undefined
+		petNickname: petEntity.nickname
 	};
 }
 
@@ -257,14 +266,8 @@ async function handlePlayerWithTalisman(
 	response.push(makePacket(SmallEventExpeditionAdvicePacket, {
 		alreadyHasTalisman: true,
 		talismanGiven: false,
-		petInExpedition: petInfo.petInExpedition,
-		bonusPoints: rewards.bonusPoints,
-		bonusMoney: rewards.bonusMoney,
-		bonusItem: rewards.bonusItem,
-		bonusCombatPotion: rewards.bonusCombatPotion,
-		petTypeId: petInfo.petTypeId,
-		petSex: petInfo.petSex,
-		petNickname: petInfo.petNickname,
+		...petInfo,
+		...rewards,
 		interactionType
 	}));
 }
@@ -280,31 +283,34 @@ async function handlePlayerWithoutTalisman(
 	// Get encounter count for progressive lore
 	const encounterCount = await LogsReadRequests.getSmallEventEncounterCount(
 		context.keycloakId,
-		SMALL_EVENT_NAME
+		SmallEventConstants.EXPEDITION_ADVICE.SMALL_EVENT_NAME
 	);
 
 	const phase = getPhaseFromEncounterCount(encounterCount);
+	const { PHASES } = SmallEventConstants.EXPEDITION_ADVICE;
 
-	if (phase === "intro") {
+	// Base packet properties for all cases when player doesn't have talisman
+	const basePacketData = {
+		alreadyHasTalisman: false,
+		talismanGiven: false,
+		petInExpedition: false,
+		encounterCount: encounterCount + 1 // +1 because this encounter hasn't been logged yet
+	};
+
+	if (phase === PHASES.INTRO) {
 		// Phase 1: Talisman introduction (encounters 1-5)
 		response.push(makePacket(SmallEventExpeditionAdvicePacket, {
-			alreadyHasTalisman: false,
-			talismanGiven: false,
-			petInExpedition: false,
-			interactionType: ExpeditionAdviceInteractionType.TALISMAN_INTRO,
-			encounterCount: encounterCount + 1 // +1 because this encounter hasn't been logged yet
+			...basePacketData,
+			interactionType: ExpeditionAdviceInteractionType.TALISMAN_INTRO
 		}));
 		return;
 	}
 
-	if (phase === "explanation") {
+	if (phase === PHASES.EXPLANATION) {
 		// Phase 2: Expedition explanation (encounters 6-10)
 		response.push(makePacket(SmallEventExpeditionAdvicePacket, {
-			alreadyHasTalisman: false,
-			talismanGiven: false,
-			petInExpedition: false,
-			interactionType: ExpeditionAdviceInteractionType.EXPEDITION_EXPLANATION,
-			encounterCount: encounterCount + 1
+			...basePacketData,
+			interactionType: ExpeditionAdviceInteractionType.EXPEDITION_EXPLANATION
 		}));
 		return;
 	}
@@ -315,14 +321,11 @@ async function handlePlayerWithoutTalisman(
 	if (!conditionResult.conditionMet) {
 		// A condition is not met - explain what's missing
 		response.push(makePacket(SmallEventExpeditionAdvicePacket, {
-			alreadyHasTalisman: false,
-			talismanGiven: false,
-			petInExpedition: false,
+			...basePacketData,
 			interactionType: conditionResult.interactionType,
 			petTypeId: conditionResult.petTypeId,
 			petSex: conditionResult.petSex,
 			petNickname: conditionResult.petNickname,
-			encounterCount: encounterCount + 1,
 			requiredLevel: ExpeditionConstants.TALISMAN_EVENT.TALISMAN_MIN_LEVEL,
 			playerLevel: player.level
 		}));
@@ -334,14 +337,12 @@ async function handlePlayerWithoutTalisman(
 	await player.save();
 
 	response.push(makePacket(SmallEventExpeditionAdvicePacket, {
-		alreadyHasTalisman: false,
+		...basePacketData,
 		talismanGiven: true,
-		petInExpedition: false,
 		interactionType: ExpeditionAdviceInteractionType.TALISMAN_RECEIVED,
 		petTypeId: conditionResult.petTypeId,
 		petSex: conditionResult.petSex,
-		petNickname: conditionResult.petNickname,
-		encounterCount: encounterCount + 1
+		petNickname: conditionResult.petNickname
 	}));
 }
 
