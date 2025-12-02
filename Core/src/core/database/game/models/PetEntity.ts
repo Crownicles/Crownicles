@@ -36,7 +36,7 @@ export class PetEntity extends Model {
 
 	declare typeId: number;
 
-	declare sex: string;
+	declare sex: SexTypeShort;
 
 	declare nickname: string;
 
@@ -117,7 +117,7 @@ export class PetEntity extends Model {
 			giveInPlayerInv: false,
 			noRoomInGuild: false,
 			petTypeId: this.typeId,
-			petSex: this.sex as SexTypeShort
+			petSex: this.sex
 		});
 
 		// Search for a user's guild
@@ -168,7 +168,7 @@ export class PetEntity extends Model {
 			typeId: this.typeId,
 			nickname: this.nickname,
 			rarity: petModel.rarity,
-			sex: this.sex as SexTypeShort,
+			sex: this.sex,
 			loveLevel: this.getLoveLevelNumber(),
 			force: petModel.force,
 			feedDelay: petModel.feedDelay

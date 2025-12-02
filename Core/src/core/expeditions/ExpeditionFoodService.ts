@@ -115,15 +115,33 @@ function getAvailableFoodSlots(guild: Guild, dietType: FoodType): [AvailableFood
 }
 
 /**
+ * Food amounts for a combination evaluation
+ */
+interface FoodAmounts {
+	treats: number;
+	diet: number;
+	soup: number;
+}
+
+/**
+ * Context for evaluating food combinations
+ */
+interface FoodEvaluationContext {
+	slots: [AvailableFoodSlot, AvailableFoodSlot, AvailableFoodSlot];
+	rationsRequired: number;
+}
+
+/**
  * Calculate rations and cost for a combination
  */
-function evaluateCombination(
-	treats: number,
-	diet: number,
-	soup: number,
-	slots: [AvailableFoodSlot, AvailableFoodSlot, AvailableFoodSlot],
-	rationsRequired: number
-): FoodCombination {
+function evaluateCombination(amounts: FoodAmounts, context: FoodEvaluationContext): FoodCombination {
+	const {
+		treats, diet, soup
+	} = amounts;
+	const {
+		slots, rationsRequired
+	} = context;
+
 	const totalRations = treats * slots[0].config.rations
 		+ diet * slots[1].config.rations
 		+ soup * slots[2].config.rations;
@@ -153,6 +171,42 @@ function isBetterCombination(candidate: FoodCombination, current: FoodCombinatio
 }
 
 /**
+ * Calculate the minimum treats needed for a given soup and diet combination
+ */
+function calculateTreatsNeeded(
+	remainingRations: number,
+	treatSlot: AvailableFoodSlot
+): number | null {
+	const treatsNeeded = remainingRations > 0
+		? Math.ceil(remainingRations / treatSlot.config.rations)
+		: 0;
+
+	// Return null if we need more treats than available
+	return treatsNeeded <= treatSlot.available ? treatsNeeded : null;
+}
+
+/**
+ * Try a combination and update best if it's better
+ */
+function tryAndUpdateBest(
+	amounts: FoodAmounts,
+	evalContext: FoodEvaluationContext,
+	current: FoodCombination | null
+): FoodCombination | null {
+	const candidate = evaluateCombination(amounts, evalContext);
+
+	// Only consider combinations that meet the requirement
+	if (candidate.totalRations < evalContext.rationsRequired) {
+		return current;
+	}
+
+	if (current === null || isBetterCombination(candidate, current)) {
+		return candidate;
+	}
+	return current;
+}
+
+/**
  * Find optimal food combination that minimizes excess first, then cost.
  *
  * Algorithm: Smart bounded iteration
@@ -174,6 +228,9 @@ function findOptimalCombination(
 		dietSlot,
 		soupSlot
 	] = slots;
+	const evalContext: FoodEvaluationContext = {
+		slots, rationsRequired
+	};
 
 	// Calculate total available rations
 	const totalAvailableRations = treatSlot.available * treatSlot.config.rations
@@ -183,11 +240,10 @@ function findOptimalCombination(
 	// If not enough food, return all available
 	if (totalAvailableRations < rationsRequired) {
 		return evaluateCombination(
-			treatSlot.available,
-			dietSlot.available,
-			soupSlot.available,
-			slots,
-			rationsRequired
+			{
+				treats: treatSlot.available, diet: dietSlot.available, soup: soupSlot.available
+			},
+			evalContext
 		);
 	}
 
@@ -197,41 +253,26 @@ function findOptimalCombination(
 
 	let best: FoodCombination | null = null;
 
-	// Iterate soup from 0 to max (outer loop on highest ration food for efficiency)
+	// Iterate all valid combinations
 	for (let soup = 0; soup <= maxSoup; soup++) {
-		const soupRations = soup * soupSlot.config.rations;
-		const remainingAfterSoup = rationsRequired - soupRations;
+		const remainingAfterSoup = rationsRequired - soup * soupSlot.config.rations;
 
-		// Iterate diet amounts
 		for (let diet = 0; diet <= maxDiet; diet++) {
-			const dietRations = diet * dietSlot.config.rations;
-			const remainingAfterDiet = remainingAfterSoup - dietRations;
+			const remainingAfterDiet = remainingAfterSoup - diet * dietSlot.config.rations;
+			const treatsNeeded = calculateTreatsNeeded(remainingAfterDiet, treatSlot);
 
-			// Calculate minimum treats needed
-			const treatsNeeded = remainingAfterDiet > 0
-				? Math.ceil(remainingAfterDiet / treatSlot.config.rations)
-				: 0;
-
-			// Skip if we need more treats than available
-			if (treatsNeeded > treatSlot.available) {
-				continue;
-			}
-
-			const candidate = evaluateCombination(treatsNeeded, diet, soup, slots, rationsRequired);
-
-			// Only consider combinations that meet the requirement
-			if (candidate.totalRations < rationsRequired) {
-				continue;
-			}
-
-			if (best === null || isBetterCombination(candidate, best)) {
-				best = candidate;
+			if (treatsNeeded !== null) {
+				best = tryAndUpdateBest({
+					treats: treatsNeeded, diet, soup
+				}, evalContext, best);
 			}
 		}
 	}
 
 	// Fallback (should not happen if totalAvailable >= required)
-	return best ?? evaluateCombination(0, 0, 0, slots, rationsRequired);
+	return best ?? evaluateCombination({
+		treats: 0, diet: 0, soup: 0
+	}, evalContext);
 }
 
 /**

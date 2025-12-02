@@ -27,7 +27,7 @@ import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 import { Language } from "../../../../Lib/src/Language";
 import { finishInTimeDisplay } from "../../../../Lib/src/utils/TimeUtils";
 import {
-	ExpeditionConstants, ExpeditionLocationType
+	ExpeditionLocationType
 } from "../../../../Lib/src/constants/ExpeditionConstants";
 import {
 	StringConstants, SexTypeShort

@@ -8,7 +8,8 @@ import {
 	ButtonInteraction,
 	ButtonStyle,
 	StringSelectMenuBuilder,
-	StringSelectMenuInteraction
+	StringSelectMenuInteraction,
+	User
 } from "discord.js";
 import { sendInteractionNotForYou } from "../../utils/ErrorUtils";
 import { escapeUsername } from "../../utils/StringUtils";
@@ -386,26 +387,19 @@ export async function createPetExpeditionChoiceCollector(
 }
 
 /**
- * Create a collector for the finished expedition view with claim option
+ * Build the embed for the finished expedition view
  */
-export async function createPetExpeditionFinishedCollector(
-	context: PacketContext,
-	packet: ReactionCollectorCreationPacket
-): Promise<ReactionCollectorReturnTypeOrNull> {
-	const interaction = DiscordCache.getInteraction(context.discord!.interaction);
-	if (!interaction) {
-		return null;
-	}
-
-	const data = packet.data.data as ReactionCollectorPetExpeditionFinishedData;
-	const lng = interaction.userLanguage;
-
+function buildFinishedExpeditionEmbed(
+	data: ReactionCollectorPetExpeditionFinishedData,
+	lng: Language,
+	userName: string,
+	user: User
+): CrowniclesEmbed {
 	const locationEmoji = CrowniclesIcons.expedition.locations[data.locationType];
 	const locationName = getExpeditionLocationName(lng, data.mapLocationId, data.isDistantExpedition);
 	const petDisplay = `${DisplayUtils.getPetIcon(data.petId, data.petSex)} **${DisplayUtils.getPetNicknameOrTypeName(data.petNickname, data.petId, data.petSex, lng)}**`;
 	const sexContext = getSexContext(data.petSex);
 
-	// Build description using nested translations
 	const talismanName = i18n.t("commands:petExpedition.finishedDescription.talisman.name", { lng });
 	const intro = i18n.t("commands:petExpedition.finishedDescription.talisman.intro", {
 		lng,
@@ -422,18 +416,21 @@ export async function createPetExpeditionFinishedCollector(
 		context: sexContext
 	});
 
-	const description = `${intro}\n\n${risk}\n\n${impatience}`;
-
-	const embed = new CrowniclesEmbed()
+	return new CrowniclesEmbed()
 		.formatAuthor(
 			i18n.t("commands:petExpedition.finishedTitle", {
 				lng,
-				pseudo: escapeUsername(interaction.user.displayName)
+				pseudo: escapeUsername(userName)
 			}),
-			interaction.user
+			user
 		)
-		.setDescription(description);
+		.setDescription(`${intro}\n\n${risk}\n\n${impatience}`);
+}
 
+/**
+ * Build the claim button row for finished expedition
+ */
+function buildClaimButtonRow(lng: Language): ActionRowBuilder<ButtonBuilder> {
 	const row = new ActionRowBuilder<ButtonBuilder>();
 	const claimButton = new ButtonBuilder()
 		.setCustomId("expedition_claim")
@@ -441,6 +438,26 @@ export async function createPetExpeditionFinishedCollector(
 		.setEmoji(CrowniclesIcons.expedition.loot)
 		.setStyle(ButtonStyle.Success);
 	row.addComponents(claimButton);
+	return row;
+}
+
+/**
+ * Create a collector for the finished expedition view with claim option
+ */
+export async function createPetExpeditionFinishedCollector(
+	context: PacketContext,
+	packet: ReactionCollectorCreationPacket
+): Promise<ReactionCollectorReturnTypeOrNull> {
+	const interaction = DiscordCache.getInteraction(context.discord!.interaction);
+	if (!interaction) {
+		return null;
+	}
+
+	const data = packet.data.data as ReactionCollectorPetExpeditionFinishedData;
+	const lng = interaction.userLanguage;
+
+	const embed = buildFinishedExpeditionEmbed(data, lng, interaction.user.displayName, interaction.user);
+	const row = buildClaimButtonRow(lng);
 
 	const msg = await interaction.channel.send({
 		embeds: [embed],
@@ -461,7 +478,6 @@ export async function createPetExpeditionFinishedCollector(
 			return;
 		}
 
-		// Claim - defer reply as Core will send a response with rewards
 		await buttonInteraction.deferReply();
 
 		if (buttonInteraction.customId === "expedition_claim") {

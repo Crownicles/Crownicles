@@ -114,7 +114,7 @@ interface PetCollectorInfo {
 function extractPetCollectorInfo(petEntity: PetEntity): PetCollectorInfo {
 	return {
 		petId: petEntity.typeId,
-		petSex: petEntity.sex as SexTypeShort,
+		petSex: petEntity.sex,
 		petNickname: petEntity.nickname
 	};
 }
@@ -129,6 +129,18 @@ interface ExpeditionLogParams {
 	foodConsumed: number;
 	rewardIndex: number;
 	success: boolean;
+}
+
+/**
+ * Parameters for logging expedition start
+ */
+interface ExpeditionLogStartParams {
+	playerKeycloakId: string;
+	petEntityId: number;
+	expeditionData: ExpeditionData;
+	adjustedDurationMinutes: number;
+	foodConsumed: number;
+	rewardIndex: number;
 }
 
 /**
@@ -256,14 +268,11 @@ async function createAndSaveExpedition(data: ExpeditionCreationData): Promise<Pe
 /**
  * Log expedition start to database
  */
-function logExpeditionStart(
-	playerKeycloakId: string,
-	petEntityId: number,
-	expeditionData: ExpeditionData,
-	adjustedDurationMinutes: number,
-	foodConsumed: number,
-	rewardIndex: number
-): void {
+function logExpeditionStart(params: ExpeditionLogStartParams): void {
+	const {
+		playerKeycloakId, petEntityId, expeditionData, adjustedDurationMinutes, foodConsumed, rewardIndex
+	} = params;
+
 	crowniclesInstance.logsDatabase.logExpeditionStart(
 		playerKeycloakId,
 		petEntityId,
@@ -278,16 +287,24 @@ function logExpeditionStart(
 }
 
 /**
+ * Parameters for building expedition select success response
+ */
+interface ExpeditionSelectSuccessParams {
+	expedition: PetExpedition;
+	petEntity: PetEntity;
+	foodPlan: FoodConsumptionPlan;
+	rationsRequired: number;
+	speedDurationModifier: number;
+	originalDisplayDurationMinutes: number;
+}
+
+/**
  * Build the success response packet for expedition selection
  */
-function buildExpeditionSelectSuccessResponse(
-	expedition: PetExpedition,
-	petEntity: PetEntity,
-	foodPlan: FoodConsumptionPlan,
-	rationsRequired: number,
-	speedDurationModifier: number,
-	originalDisplayDurationMinutes: number
-): CommandPetExpeditionChoicePacketRes {
+function buildExpeditionSelectSuccessResponse(params: ExpeditionSelectSuccessParams): CommandPetExpeditionChoicePacketRes {
+	const {
+		expedition, petEntity, foodPlan, rationsRequired, speedDurationModifier, originalDisplayDurationMinutes
+	} = params;
 	const insufficientFood = foodPlan.totalRations < rationsRequired;
 
 	return makePacket(CommandPetExpeditionChoicePacketRes, {
@@ -374,17 +391,24 @@ async function handleExpeditionSelect(
 	});
 
 	// Log and clean up
-	logExpeditionStart(player.keycloakId, petEntity.id, expeditionData, adjustedDurationMinutes, foodPlan.totalRations, rewardIndex);
+	logExpeditionStart({
+		playerKeycloakId: player.keycloakId,
+		petEntityId: petEntity.id,
+		expeditionData,
+		adjustedDurationMinutes,
+		foodConsumed: foodPlan.totalRations,
+		rewardIndex
+	});
 	PendingExpeditionsCache.delete(keycloakId);
 
-	response.push(buildExpeditionSelectSuccessResponse(
+	response.push(buildExpeditionSelectSuccessResponse({
 		expedition,
 		petEntity,
 		foodPlan,
 		rationsRequired,
 		speedDurationModifier,
-		expeditionData.displayDurationMinutes
-	));
+		originalDisplayDurationMinutes: expeditionData.displayDurationMinutes
+	}));
 }
 
 /**
