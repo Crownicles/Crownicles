@@ -14,6 +14,7 @@ import {
 	ExpeditionConstants, ExpeditionLocationType, SpeedCategory
 } from "../../../../Lib/src/constants/ExpeditionConstants";
 import { Language } from "../../../../Lib/src/Language";
+import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 import { DisplayUtils } from "../../utils/DisplayUtils";
 import {
 	SexTypeShort, StringConstants
@@ -148,7 +149,7 @@ function buildInProgressEmbed(
 	expedition: NonNullable<CommandPetExpeditionPacketRes["expeditionInProgress"]>
 ): CrowniclesEmbed {
 	const lng = interaction.userLanguage;
-	const locationEmoji = ExpeditionConstants.getLocationEmoji(expedition.locationType as ExpeditionLocationType);
+	const locationEmoji = CrowniclesIcons.expedition.locations[expedition.locationType as ExpeditionLocationType];
 	const locationName = getExpeditionLocationName(lng, expedition.mapLocationId!, expedition.isDistantExpedition);
 	const petDisplay = `${DisplayUtils.getPetIcon(expedition.petId, expedition.petSex)} **${DisplayUtils.getPetNicknameOrTypeName(expedition.petNickname, expedition.petId, expedition.petSex, lng)}**`;
 	const sexContext = getSexContext(expedition.petSex);
@@ -380,7 +381,7 @@ export async function handleExpeditionChoiceRes(
 	}
 
 	const expedition = packet.expedition!;
-	const locationEmoji = ExpeditionConstants.getLocationEmoji(expedition.locationType as ExpeditionLocationType);
+	const locationEmoji = CrowniclesIcons.expedition.locations[expedition.locationType as ExpeditionLocationType];
 	const locationName = getExpeditionLocationName(lng, expedition.mapLocationId!, expedition.isDistantExpedition);
 	const petDisplay = `${DisplayUtils.getPetIcon(expedition.petId, expedition.petSex)} **${DisplayUtils.getPetNicknameOrTypeName(expedition.petNickname, expedition.petId, expedition.petSex, lng)}**`;
 	const sexContext = getSexContext(expedition.petSex);
@@ -590,7 +591,7 @@ export async function handleExpeditionResolveRes(
 
 	const lng = interaction.userLanguage;
 	const petDisplay = `${DisplayUtils.getPetIcon(packet.petId, packet.petSex)} **${DisplayUtils.getPetNicknameOrTypeName(packet.petNickname, packet.petId, packet.petSex, lng)}**`;
-	const locationEmoji = ExpeditionConstants.getLocationEmoji(packet.expedition.locationType as ExpeditionLocationType);
+	const locationEmoji = CrowniclesIcons.expedition.locations[packet.expedition.locationType as ExpeditionLocationType];
 	const locationName = getExpeditionLocationName(lng, packet.expedition.mapLocationId!, packet.expedition.isDistantExpedition);
 
 	const resolutionData = buildResolutionData(packet, {

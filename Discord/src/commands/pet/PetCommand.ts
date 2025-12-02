@@ -51,7 +51,7 @@ function generateExpeditionRPText(
 	const sexContext = getSexContext(pet.sex as SexTypeShort);
 
 	// Get location info
-	const locationEmoji = ExpeditionConstants.getLocationEmoji(expedition.locationType as ExpeditionLocationType);
+	const locationEmoji = CrowniclesIcons.expedition.locations[expedition.locationType as ExpeditionLocationType];
 	const locationName = expedition.mapLocationId
 		? i18n.t(`commands:petExpedition.mapLocationExpeditions.${expedition.mapLocationId}`, { lng })
 		: i18n.t("commands:petExpedition.mapLocationExpeditions.1", { lng });

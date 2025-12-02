@@ -442,7 +442,10 @@ export abstract class ExpeditionConstants {
 		MAX: 9,
 
 		/** Duration score weight multiplier (duration counts 3x more than risk/difficulty) */
-		DURATION_WEIGHT: 3
+		DURATION_WEIGHT: 3,
+
+		/** Base offset applied to calculated index to balance rewards */
+		BASE_OFFSET: 2
 	};
 
 	/**
@@ -603,20 +606,6 @@ export abstract class ExpeditionConstants {
 	};
 
 	/**
-	 * Emoji mapping for location types
-	 */
-	static readonly LOCATION_EMOJIS: Record<ExpeditionLocationType, string> = {
-		forest: "🌲",
-		mountain: "⛰️",
-		desert: "🏜️",
-		swamp: "🌿",
-		ruins: "🏛️",
-		cave: "🕳️",
-		plains: "🌾",
-		coast: "🌊"
-	};
-
-	/**
 	 * Get the risk category name based on risk rate value
 	 * @param riskRate - Risk rate percentage (0-100)
 	 * @returns The category name key for translations
@@ -677,15 +666,6 @@ export abstract class ExpeditionConstants {
 			return ExpeditionConstants.REWARD_DISPLAY_CATEGORIES.BOUNTIFUL.NAME;
 		}
 		return ExpeditionConstants.REWARD_DISPLAY_CATEGORIES.LEGENDARY.NAME;
-	}
-
-	/**
-	 * Get the emoji for a location type
-	 * @param locationType - The expedition location type
-	 * @returns The emoji string for the location
-	 */
-	static getLocationEmoji(locationType: ExpeditionLocationType): string {
-		return ExpeditionConstants.LOCATION_EMOJIS[locationType] ?? "🗺️";
 	}
 
 	/**

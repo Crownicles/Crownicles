@@ -119,10 +119,11 @@ export function calculateRewardIndex(expedition: ExpeditionData): number {
 	const wealthRateMultiplier = 1 + (expedition.wealthRate - ExpeditionConstants.NEUTRAL_WEALTH_RATE) * ExpeditionConstants.WEALTH_RATE_REWARD_INDEX_BONUS;
 	const adjustedIndex = baseIndex * wealthRateMultiplier;
 
-	// Round and clamp to REWARD_INDEX range
+	// Round, apply base offset, and clamp to REWARD_INDEX range (minimum 0)
+	const rawIndex = Math.round(adjustedIndex) - ExpeditionConstants.REWARD_INDEX.BASE_OFFSET;
 	return Math.max(
 		ExpeditionConstants.REWARD_INDEX.MIN,
-		Math.min(ExpeditionConstants.REWARD_INDEX.MAX, Math.round(adjustedIndex))
+		Math.min(ExpeditionConstants.REWARD_INDEX.MAX, rawIndex)
 	);
 }
 

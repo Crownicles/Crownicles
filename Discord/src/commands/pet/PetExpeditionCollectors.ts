@@ -99,7 +99,7 @@ export async function createPetExpeditionCollector(
 	const data = packet.data.data as ReactionCollectorPetExpeditionData;
 	const lng = interaction.userLanguage;
 
-	const locationEmoji = ExpeditionConstants.getLocationEmoji(data.locationType);
+	const locationEmoji = CrowniclesIcons.expedition.locations[data.locationType];
 	const locationName = getExpeditionLocationName(lng, data.mapLocationId, data.isDistantExpedition);
 	const petDisplay = `${DisplayUtils.getPetIcon(data.petId, data.petSex)} **${DisplayUtils.getPetNicknameOrTypeName(data.petNickname, data.petId, data.petSex, lng)}**`;
 	const sexContext = getSexContext(data.petSex);
@@ -195,7 +195,7 @@ function buildExpeditionOptionText(
 	index: number,
 	lng: Language
 ): string {
-	const locationEmoji = ExpeditionConstants.getLocationEmoji(exp.locationType);
+	const locationEmoji = CrowniclesIcons.expedition.locations[exp.locationType];
 	const locationName = getExpeditionLocationName(lng, exp.mapLocationId, exp.isDistantExpedition);
 	const displayDuration = minutesDisplay(exp.displayDurationMinutes, lng);
 	const foodCost = exp.foodCost ?? 1;
@@ -248,7 +248,7 @@ function addExpeditionMenuOption(
 	exp: ExpeditionOptionData,
 	lng: Language
 ): void {
-	const locationEmoji = ExpeditionConstants.getLocationEmoji(exp.locationType);
+	const locationEmoji = CrowniclesIcons.expedition.locations[exp.locationType];
 	const locationName = getExpeditionLocationName(lng, exp.mapLocationId, exp.isDistantExpedition);
 	const displayDuration = minutesDisplay(exp.displayDurationMinutes, lng);
 
@@ -400,7 +400,7 @@ export async function createPetExpeditionFinishedCollector(
 	const data = packet.data.data as ReactionCollectorPetExpeditionFinishedData;
 	const lng = interaction.userLanguage;
 
-	const locationEmoji = ExpeditionConstants.getLocationEmoji(data.locationType);
+	const locationEmoji = CrowniclesIcons.expedition.locations[data.locationType];
 	const locationName = getExpeditionLocationName(lng, data.mapLocationId, data.isDistantExpedition);
 	const petDisplay = `${DisplayUtils.getPetIcon(data.petId, data.petSex)} **${DisplayUtils.getPetNicknameOrTypeName(data.petNickname, data.petId, data.petSex, lng)}**`;
 	const sexContext = getSexContext(data.petSex);
