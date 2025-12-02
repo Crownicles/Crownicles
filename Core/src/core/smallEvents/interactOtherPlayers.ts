@@ -29,7 +29,7 @@ import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants"
 import Guild, { Guilds } from "../database/game/models/Guild";
 import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
 import { Badge } from "../../../../Lib/src/types/Badge";
-import { PetExpeditions } from "../database/game/models/PetExpedition";
+import { PetUtils } from "../utils/PetUtils";
 
 /**
  * Check top interactions
@@ -180,23 +180,20 @@ async function checkPet(player: Player, otherPlayer: Player, interactionsList: I
 		return;
 	}
 
-	// Check if pet is on expedition
-	const activeExpedition = await PetExpeditions.getActiveExpeditionForPlayer(otherPlayer.id);
-
-	// Pet is not on expedition, normal pet interaction
-	if (!activeExpedition) {
-		interactionsList.push(InteractOtherPlayerInteraction.PET);
-		return;
-	}
-
-	// Pet is on expedition with clone talisman - pet appears as a translucent clone
-	if (otherPlayer.hasCloneTalisman) {
+	// Check if pet is a clone (on expedition with clone talisman)
+	if (await PetUtils.isPetClone(otherPlayer)) {
 		interactionsList.push(InteractOtherPlayerInteraction.PET_CLONE);
 		return;
 	}
 
-	// Pet is on expedition without clone talisman - skilled trainer
-	interactionsList.push(InteractOtherPlayerInteraction.PET_ON_EXPEDITION);
+	// Check if pet is on expedition (without clone talisman)
+	if (await PetUtils.isPetOnExpedition(otherPlayer.id)) {
+		interactionsList.push(InteractOtherPlayerInteraction.PET_ON_EXPEDITION);
+		return;
+	}
+
+	// Pet is not on expedition, normal pet interaction
+	interactionsList.push(InteractOtherPlayerInteraction.PET);
 }
 
 /**

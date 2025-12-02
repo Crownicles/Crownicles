@@ -4,8 +4,8 @@ import {
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import Player from "../database/game/models/Player";
 import { PetEntities } from "../database/game/models/PetEntity";
-import { PetExpeditions } from "../database/game/models/PetExpedition";
 import { ExpeditionConstants } from "../../../../Lib/src/constants/ExpeditionConstants";
+import { PetUtils } from "../utils/PetUtils";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import {
@@ -175,8 +175,7 @@ interface ExpeditionBonusRewards {
  * Check if player has a pet currently in expedition
  */
 async function getExpeditionPetInfo(player: Player): Promise<ExpeditionPetInfo> {
-	const activeExpedition = await PetExpeditions.getActiveExpeditionForPlayer(player.id);
-	if (!activeExpedition || !player.petId) {
+	if (!player.petId || !await PetUtils.isPetOnExpedition(player.id)) {
 		return { petInExpedition: false };
 	}
 
