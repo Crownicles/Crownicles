@@ -1373,7 +1373,7 @@ export class LogsDatabase extends Database {
 	 */
 	public async logExpeditionCancel(keycloakId: string, petGameId: number, loveChange: number): Promise<void> {
 		await this.createExpeditionLog(keycloakId, petGameId, {
-			mapLocationId: 0,
+			mapLocationId: ExpeditionConstants.NO_MAP_LOCATION,
 			locationType: ExpeditionConstants.LOG_ACTION.CANCEL,
 			action: ExpeditionConstants.LOG_ACTION.CANCEL,
 			loveChange

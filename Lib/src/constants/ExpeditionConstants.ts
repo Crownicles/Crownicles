@@ -73,6 +73,11 @@ export abstract class ExpeditionConstants {
 	static readonly DEFAULT_FOOD_COST = 1;
 
 	/**
+	 * Map location ID used when no location exists (e.g., cancelled before departure)
+	 */
+	static readonly NO_MAP_LOCATION = 0;
+
+	/**
 	 * Default map location ID when not specified
 	 */
 	static readonly DEFAULT_MAP_LOCATION_ID = 1;
