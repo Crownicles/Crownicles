@@ -104,7 +104,7 @@ async function managePickedInteraction(packet: SmallEventPetPacket, response: Cr
 			break;
 
 		case PetConstants.PET_INTERACTIONS_NAMES.WIN_LOVE:
-			if (petEntity.getLoveLevelNumber() === 5) {
+			if (petEntity.getLoveLevelNumber() === PetConstants.LOVE_LEVEL.TRAINED) {
 				packet.interactionName = PetConstants.PET_INTERACTIONS_NAMES.NOTHING;
 				break;
 			}

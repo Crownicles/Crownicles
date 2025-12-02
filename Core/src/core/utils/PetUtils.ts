@@ -38,20 +38,12 @@ export abstract class PetUtils {
 			return false;
 		}
 
-		// Clone talisman is present - check context
-		switch (context) {
-			case PetConstants.AVAILABILITY_CONTEXT.SMALL_EVENT:
-				// Clone talisman allows pet in small events
-				return true;
-			case PetConstants.AVAILABILITY_CONTEXT.DEFENSE_FIGHT:
-				// Clone talisman allows pet in defense fights
-				return true;
-			case PetConstants.AVAILABILITY_CONTEXT.ATTACK_FIGHT:
-				// Clone talisman does NOT allow pet in attack fights
-				return false;
-			default:
-				return false;
-		}
+		/*
+		 * Clone talisman is present - check if context allows clone usage
+		 * Clone talisman allows pet in small events and defense fights, but NOT in attack fights
+		 */
+		return context === PetConstants.AVAILABILITY_CONTEXT.SMALL_EVENT
+			|| context === PetConstants.AVAILABILITY_CONTEXT.DEFENSE_FIGHT;
 	}
 
 	/**
@@ -70,20 +62,39 @@ export abstract class PetUtils {
 	}
 
 	/**
+	 * Age categories sorted from youngest to oldest
+	 */
+	private static readonly AGE_CATEGORIES = [
+		{
+			threshold: PetConstants.PET_AGE_GROUPS_THRESHOLDS.ANCESTOR,
+			name: PetConstants.PET_AGE_GROUP_NAMES.ANCESTOR
+		},
+		{
+			threshold: PetConstants.PET_AGE_GROUPS_THRESHOLDS.VERY_OLD,
+			name: PetConstants.PET_AGE_GROUP_NAMES.VERY_OLD
+		},
+		{
+			threshold: PetConstants.PET_AGE_GROUPS_THRESHOLDS.OLD,
+			name: PetConstants.PET_AGE_GROUP_NAMES.OLD
+		},
+		{
+			threshold: PetConstants.PET_AGE_GROUPS_THRESHOLDS.ADULT,
+			name: PetConstants.PET_AGE_GROUP_NAMES.ADULT
+		}
+	];
+
+	/**
 	 * Get age context depending on the id of the pet
 	 * @param age - the id of the pet
 	 * @returns a string context that can be used to get more precise translations
 	 */
 	static getAgeCategory(age: number): string {
-		return age <= PetConstants.PET_AGE_GROUPS_THRESHOLDS.ANCESTOR
-			? PetConstants.PET_AGE_GROUP_NAMES.ANCESTOR
-			: age <= PetConstants.PET_AGE_GROUPS_THRESHOLDS.VERY_OLD
-				? PetConstants.PET_AGE_GROUP_NAMES.VERY_OLD
-				: age <= PetConstants.PET_AGE_GROUPS_THRESHOLDS.OLD
-					? PetConstants.PET_AGE_GROUP_NAMES.OLD
-					: age <= PetConstants.PET_AGE_GROUPS_THRESHOLDS.ADULT
-						? PetConstants.PET_AGE_GROUP_NAMES.ADULT
-						: PetConstants.PET_AGE_GROUP_NAMES.OTHER;
+		for (const category of this.AGE_CATEGORIES) {
+			if (age <= category.threshold) {
+				return category.name;
+			}
+		}
+		return PetConstants.PET_AGE_GROUP_NAMES.OTHER;
 	}
 
 	static generateRandomPetRarity(
