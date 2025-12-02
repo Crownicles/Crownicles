@@ -4,6 +4,7 @@ import {
 import {
 	ExpeditionLocationType, ExpeditionStatus
 } from "../../constants/ExpeditionConstants";
+import { SexTypeShort } from "../../constants/StringConstants";
 
 /**
  * Food types used in expeditions
@@ -112,7 +113,7 @@ export interface ExpeditionInProgressData extends ExpeditionClientData {
 	 */
 	petId: number;
 
-	petSex: string;
+	petSex: SexTypeShort;
 
 	petNickname?: string;
 
@@ -182,7 +183,7 @@ export class CommandPetExpeditionPacketRes extends CrowniclesPacket {
 	/**
 	 * Pet sex for display
 	 */
-	petSex?: string;
+	petSex?: SexTypeShort;
 }
 
 /**
@@ -254,7 +255,7 @@ export class CommandPetExpeditionCancelPacketRes extends CrowniclesPacket {
 	 */
 	petId!: number;
 
-	petSex!: string;
+	petSex!: SexTypeShort;
 
 	petNickname?: string;
 }
@@ -274,7 +275,7 @@ export class CommandPetExpeditionRecallPacketRes extends CrowniclesPacket {
 	 */
 	petId!: number;
 
-	petSex!: string;
+	petSex!: SexTypeShort;
 
 	petNickname?: string;
 }
@@ -337,7 +338,7 @@ export class CommandPetExpeditionResolvePacketRes extends CrowniclesPacket {
 	 */
 	petId!: number;
 
-	petSex!: string;
+	petSex!: SexTypeShort;
 
 	petNickname?: string;
 
