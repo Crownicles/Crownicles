@@ -173,6 +173,22 @@ export function hoursToSeconds(hours: number): number {
 }
 
 /**
+ * Convert days to minutes
+ * @param days
+ */
+export function daysToMinutes(days: number): number {
+	return days * TimeConstants.HOURS_IN_DAY * TimeConstants.S_TIME.MINUTE;
+}
+
+/**
+ * Convert days to seconds
+ * @param days
+ */
+export function daysToSeconds(days: number): number {
+	return days * TimeConstants.S_TIME.DAY;
+}
+
+/**
  * Check if two dates are the same day
  * @param first - first date
  * @param second - second date

@@ -1,22 +1,18 @@
+import {
+	daysToMinutes, hoursToMinutes
+} from "../utils/TimeUtils";
+
 /**
  * Constants for the Pet Expedition system
  * Players can send their pet on expeditions to earn rewards based on duration, risk, and difficulty
  */
 export abstract class ExpeditionConstants {
 	/**
-	 * Time conversion constants
-	 */
-	static readonly TIME = {
-		MINUTES_PER_HOUR: 60,
-		HOURS_PER_DAY: 24
-	};
-
-	/**
 	 * Duration limits for expeditions (in minutes)
 	 */
 	static readonly DURATION = {
 		MIN_MINUTES: 10,
-		MAX_MINUTES: 3 * ExpeditionConstants.TIME.HOURS_PER_DAY * ExpeditionConstants.TIME.MINUTES_PER_HOUR // 3 days in minutes
+		MAX_MINUTES: daysToMinutes(3)
 	};
 
 	/**
@@ -494,7 +490,7 @@ export abstract class ExpeditionConstants {
 	 * Reward type weights by location
 	 * Higher weight = higher multiplier for that reward type
 	 */
-	static readonly LOCATION_REWARD_WEIGHTS: Record<string, Record<string, number>> = {
+	static readonly LOCATION_REWARD_WEIGHTS: Record<(typeof ExpeditionConstants.LOCATION_TYPES)[keyof typeof ExpeditionConstants.LOCATION_TYPES], RewardWeights> = {
 		forest: {
 			money: 0.8, experience: 1.3, points: 0.9
 		},
@@ -701,15 +697,15 @@ export abstract class ExpeditionConstants {
 	static readonly DURATION_RANGES = {
 		SHORT: {
 			MIN: 10,
-			MAX: 60
+			MAX: hoursToMinutes(1)
 		},
 		MEDIUM: {
 			MIN: 15,
-			MAX: 10 * ExpeditionConstants.TIME.MINUTES_PER_HOUR
+			MAX: hoursToMinutes(10)
 		},
 		LONG: {
-			MIN: 12 * ExpeditionConstants.TIME.MINUTES_PER_HOUR,
-			MAX: 3 * ExpeditionConstants.TIME.HOURS_PER_DAY * ExpeditionConstants.TIME.MINUTES_PER_HOUR
+			MIN: hoursToMinutes(12),
+			MAX: daysToMinutes(3)
 		}
 	};
 
@@ -740,3 +736,4 @@ export abstract class ExpeditionConstants {
 
 export type ExpeditionStatus = (typeof ExpeditionConstants.STATUS)[keyof typeof ExpeditionConstants.STATUS];
 export type ExpeditionLocationType = (typeof ExpeditionConstants.LOCATION_TYPES)[keyof typeof ExpeditionConstants.LOCATION_TYPES];
+export type RewardWeights = Record<"money" | "experience" | "points", number>;

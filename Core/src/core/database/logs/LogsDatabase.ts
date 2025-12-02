@@ -82,9 +82,8 @@ import {
 	NumberChangeReason, ShopItemType
 } from "../../../../../Lib/src/constants/LogsConstants";
 import {
-	dateToLogs, getDateLogs
+	dateToLogs, daysToSeconds, getDateLogs
 } from "../../../../../Lib/src/utils/TimeUtils";
-import { TimeConstants } from "../../../../../Lib/src/constants/TimeConstants";
 import { LogsPlayersGloryPoints } from "./models/LogsPlayersGloryPoints";
 import { LogsPlayers15BestSeason } from "./models/LogsPlayers15BestSeason";
 import { LogsSeasonEnd } from "./models/LogsSeasonEnd";
@@ -1429,7 +1428,7 @@ export class LogsDatabase extends Database {
 	 */
 	public async countRecentExpeditionCancellations(keycloakId: string, days: number): Promise<number> {
 		const logPlayer = await LogsDatabase.findOrCreatePlayer(keycloakId);
-		const cutoffDate = getDateLogs() - days * TimeConstants.S_TIME.DAY;
+		const cutoffDate = getDateLogs() - daysToSeconds(days);
 
 		return LogsExpeditions.count({
 			where: {
