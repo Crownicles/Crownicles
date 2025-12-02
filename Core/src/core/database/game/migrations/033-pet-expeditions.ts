@@ -45,6 +45,21 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 			type: DataTypes.STRING(32),
 			allowNull: false
 		},
+		mapLocationId: {
+			type: DataTypes.INTEGER,
+			allowNull: false,
+			defaultValue: 1
+		},
+		rewardIndex: {
+			type: DataTypes.INTEGER,
+			allowNull: false,
+			defaultValue: 0
+		},
+		isDistantExpedition: {
+			type: DataTypes.BOOLEAN,
+			allowNull: false,
+			defaultValue: false
+		},
 		status: {
 			// eslint-disable-next-line new-cap
 			type: DataTypes.STRING(32),
@@ -52,7 +67,6 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 			defaultValue: EXPEDITION_STATUS_IN_PROGRESS
 		},
 		foodConsumed: {
-			// Amount of food consumed when the expedition departed
 			type: DataTypes.INTEGER,
 			allowNull: false,
 			defaultValue: 0
@@ -65,6 +79,39 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 			type: DataTypes.DATE,
 			allowNull: false
 		}
+	});
+
+	// Create scheduled_expedition_notifications table
+	await context.createTable("scheduled_expedition_notifications", {
+		expeditionId: {
+			type: DataTypes.INTEGER,
+			primaryKey: true
+		},
+		keycloakId: {
+			// eslint-disable-next-line new-cap
+			type: DataTypes.STRING(64),
+			allowNull: false
+		},
+		petId: {
+			type: DataTypes.INTEGER,
+			allowNull: false
+		},
+		petSex: {
+			// eslint-disable-next-line new-cap
+			type: DataTypes.STRING(1),
+			allowNull: false
+		},
+		petNickname: {
+			// eslint-disable-next-line new-cap
+			type: DataTypes.STRING(16),
+			allowNull: true
+		},
+		scheduledAt: {
+			type: DataTypes.DATE,
+			allowNull: false
+		},
+		updatedAt: { type: DataTypes.DATE },
+		createdAt: { type: DataTypes.DATE }
 	});
 
 	// Add hasTalisman column to players table
@@ -91,12 +138,11 @@ export async function down({ context }: { context: QueryInterface }): Promise<vo
 	await context.removeIndex("pet_expeditions", "pet_expeditions_player_id");
 	await context.removeIndex("pet_expeditions", "pet_expeditions_status");
 
-	// Remove hasCloneTalisman column from players
+	// Remove columns from players
 	await context.removeColumn("players", "hasCloneTalisman");
-
-	// Remove hasTalisman column from players
 	await context.removeColumn("players", "hasTalisman");
 
-	// Drop pet_expeditions table
+	// Drop tables
+	await context.dropTable("scheduled_expedition_notifications");
 	await context.dropTable("pet_expeditions");
 }

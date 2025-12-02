@@ -29,6 +29,11 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 			type: DataTypes.SMALLINT.UNSIGNED,
 			allowNull: false
 		},
+		rewardIndex: {
+			type: DataTypes.TINYINT.UNSIGNED,
+			allowNull: false,
+			defaultValue: 0
+		},
 		foodConsumed: {
 			type: DataTypes.TINYINT.UNSIGNED,
 			allowNull: false,
