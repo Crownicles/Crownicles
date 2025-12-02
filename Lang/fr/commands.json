@@ -609,16 +609,9 @@
     "weapons_other": "Armes ({{count}}/{{max}}) :",
     "talisman": "Artefacts :",
     "talismans": {
-      "anchorTalisman": {
-        "name": "Talisman d'Ancrage",
-        "description": "Permet d'envoyer votre familier en expédition"
-      },
-      "cloneTalisman": {
-        "name": "Talisman de Clonage",
-        "description": "Votre familier vous assiste en défense et dans les petits événements même en expédition"
-      }
+      "anchorTalisman": "{emote:expedition.talisman} **Talisman d'Ancrage** - Permet d'envoyer votre familier en expédition",
+      "cloneTalisman": "{emote:expedition.cloneTalisman} **Talisman de Clonage** - Votre familier vous assiste en défense et dans les petits événements même en expédition"
     },
-    "talismanOwned": "{emote:expedition.{{talismanEmote}}} **{{talismanName}}** - {{talismanDescription}}",
     "talismanNotOwned": "{emote:inventory.empty} **Aucun artefact**",
     "randomItemTitle": "{{pseudo}}, vous avez trouvé quelque chose !",
     "randomItemAcceptTitle": "Vous avez déjà un équipement, souhaitez-vous le vendre ?",

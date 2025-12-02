@@ -140,7 +140,7 @@ async function checkTalismanConditions(player: Player): Promise<TalismanConditio
  */
 function generateRandomCombatPotion(): ItemWithDetails {
 	const bonusConfig = ExpeditionConstants.TALISMAN_EVENT.BONUS_IF_PET_IN_EXPEDITION;
-	const rarity = RandomUtils.randInt(bonusConfig.COMBAT_POTION_MIN_RARITY, bonusConfig.COMBAT_POTION_MAX_RARITY + 1);
+	const rarity = RandomUtils.crowniclesRandom.integer(bonusConfig.COMBAT_POTION_MIN_RARITY, bonusConfig.COMBAT_POTION_MAX_RARITY);
 	const nature = RandomUtils.crowniclesRandom.pick(FightItemNatures);
 
 	const potion = PotionDataController.instance.randomItem(nature, rarity);

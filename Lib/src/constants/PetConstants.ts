@@ -203,7 +203,7 @@ export abstract class PetConstants {
 		PetConstants.PET_FOOD.HERBIVOROUS_FOOD,
 		PetConstants.PET_FOOD.CARNIVOROUS_FOOD,
 		PetConstants.PET_FOOD.ULTIMATE_FOOD
-	];
+	] as const;
 
 	static readonly PETS = {
 		NO_PET: 0,

@@ -84,20 +84,10 @@ function getEquippedEmbed(packet: CommandInventoryPacketRes, pseudo: string, lng
 		if (packet.hasTalisman || packet.hasCloneTalisman) {
 			const talismans: string[] = [];
 			if (packet.hasTalisman) {
-				talismans.push(i18n.t("commands:inventory.talismanOwned", {
-					lng,
-					talismanEmote: "talisman",
-					talismanName: i18n.t("commands:inventory.talismans.anchorTalisman.name", { lng }),
-					talismanDescription: i18n.t("commands:inventory.talismans.anchorTalisman.description", { lng })
-				}));
+				talismans.push(i18n.t("commands:inventory.talismans.anchorTalisman", { lng }));
 			}
 			if (packet.hasCloneTalisman) {
-				talismans.push(i18n.t("commands:inventory.talismanOwned", {
-					lng,
-					talismanEmote: "cloneTalisman",
-					talismanName: i18n.t("commands:inventory.talismans.cloneTalisman.name", { lng }),
-					talismanDescription: i18n.t("commands:inventory.talismans.cloneTalisman.description", { lng })
-				}));
+				talismans.push(i18n.t("commands:inventory.talismans.cloneTalisman", { lng }));
 			}
 			talismanValue = talismans.join("\n");
 		}

@@ -12,7 +12,6 @@ import { DwarfPetsSeen } from "../database/game/models/DwarfPetsSeen";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { PlayerMissionsInfos } from "../database/game/models/PlayerMissionsInfo";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
-import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
 import { MapConstants } from "../../../../Lib/src/constants/MapConstants";
 import { Badge } from "../../../../Lib/src/types/Badge";
 import { SmallEventConstants } from "../../../../Lib/src/constants/SmallEventConstants";
