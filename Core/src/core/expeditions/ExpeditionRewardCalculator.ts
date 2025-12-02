@@ -1,7 +1,9 @@
 import {
 	ExpeditionData, ExpeditionRewardData
 } from "../../../../Lib/src/packets/commands/CommandPetExpeditionPacket";
-import { ExpeditionConstants } from "../../../../Lib/src/constants/ExpeditionConstants";
+import {
+	ExpeditionConstants, ExpeditionLocationType
+} from "../../../../Lib/src/constants/ExpeditionConstants";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import {
 	generateRandomItem
@@ -131,7 +133,7 @@ export function calculateRewardIndex(expedition: ExpeditionData): number {
  * Calculate base rewards from expedition parameters
  * Note: wealthRate is already factored into rewardIndex, so we don't multiply here
  */
-function calculateBaseRewards(rewardIndex: number, locationType: string): BaseRewards {
+function calculateBaseRewards(rewardIndex: number, locationType: ExpeditionLocationType): BaseRewards {
 	const locationWeights = ExpeditionConstants.LOCATION_REWARD_WEIGHTS[locationType];
 
 	return {
