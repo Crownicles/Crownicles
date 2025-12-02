@@ -213,13 +213,11 @@ async function validateExpeditionSelection(
 
 /**
  * Calculate speed duration modifier based on pet speed
+ * Higher speed = lower multiplier = faster expedition
  */
 function calculateSpeedDurationModifier(petSpeed: number): number {
 	const speedConfig = ExpeditionConstants.SPEED_DURATION_MODIFIER;
-	return speedConfig.MIN_SPEED_MULTIPLIER
-		- (petSpeed - speedConfig.MIN_SPEED)
-		* (speedConfig.MIN_SPEED_MULTIPLIER - speedConfig.MAX_SPEED_MULTIPLIER)
-		/ (speedConfig.MAX_SPEED - speedConfig.MIN_SPEED);
+	return speedConfig.BASE_MULTIPLIER - petSpeed * speedConfig.REDUCTION_PER_SPEED_POINT;
 }
 
 /**

@@ -285,16 +285,14 @@ export abstract class ExpeditionConstants {
 	 * At speed 30: duration reduced by 30% (multiplier = 0.70)
 	 * At speed 0: duration increased by 20% (multiplier = 1.20)
 	 * Linear interpolation between these values
+	 * Formula: BASE_MULTIPLIER - petSpeed * REDUCTION_PER_SPEED_POINT
 	 */
 	static readonly SPEED_DURATION_MODIFIER = {
-		MIN_SPEED: 0,
-		MAX_SPEED: 30,
+		/** Duration multiplier at speed 0 (20% increase) */
+		BASE_MULTIPLIER: 1.20,
 
-		/** Duration multiplier at max speed (30% reduction) */
-		MAX_SPEED_MULTIPLIER: 0.70,
-
-		/** Duration multiplier at min speed (20% increase) */
-		MIN_SPEED_MULTIPLIER: 1.20
+		/** Duration reduction per speed point: (1.20 - 0.70) / 30 */
+		REDUCTION_PER_SPEED_POINT: 0.5 / 30
 	};
 
 	/**
