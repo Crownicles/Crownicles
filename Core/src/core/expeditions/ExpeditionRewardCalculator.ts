@@ -74,11 +74,16 @@ export interface RewardCalculationParams {
 }
 
 /**
- * Calculate a linear score (0-3) based on how close a value is to its maximum
+ * Calculate a linear score based on how close a value is to its maximum
+ * Returns a value in the COMPONENT_SCORE range (0-3)
  */
 function calculateLinearScore(range: ValueRange): number {
 	const percentage = (range.value - range.min) / (range.max - range.min);
-	return MathUtils.getIntervalValue(0, 3, percentage);
+	return MathUtils.getIntervalValue(
+		ExpeditionConstants.COMPONENT_SCORE.MIN,
+		ExpeditionConstants.COMPONENT_SCORE.MAX,
+		percentage
+	);
 }
 
 /**
@@ -118,7 +123,8 @@ export function calculateRewardIndex(expedition: ExpeditionData): number {
 	 * wealthRate goes from 0 to 2, with NEUTRAL_WEALTH_RATE being neutral
 	 * At 0: -30%, at 1: 0%, at 2: +30%
 	 */
-	const wealthRateMultiplier = 1 + (expedition.wealthRate - ExpeditionConstants.NEUTRAL_WEALTH_RATE) * ExpeditionConstants.WEALTH_RATE_REWARD_INDEX_BONUS;
+	const wealthRateMultiplier = ExpeditionConstants.NEUTRAL_WEALTH_RATE
+		+ (expedition.wealthRate - ExpeditionConstants.NEUTRAL_WEALTH_RATE) * ExpeditionConstants.WEALTH_RATE_REWARD_INDEX_BONUS;
 	const adjustedIndex = baseIndex * wealthRateMultiplier;
 
 	// Round, apply base offset, and clamp to REWARD_INDEX range (minimum 0)

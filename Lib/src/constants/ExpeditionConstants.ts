@@ -73,6 +73,15 @@ export abstract class ExpeditionConstants {
 	static readonly DEFAULT_FOOD_COST = 1;
 
 	/**
+	 * Score range for each component (duration, risk, difficulty)
+	 * Each component is scored from 0 to 3, sum gives reward index 0-9
+	 */
+	static readonly COMPONENT_SCORE = {
+		MIN: 0,
+		MAX: 3
+	};
+
+	/**
 	 * Map location ID used when no location exists (e.g., cancelled before departure)
 	 */
 	static readonly NO_MAP_LOCATION = 0;

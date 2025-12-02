@@ -48,9 +48,7 @@ async function canContinueSmallEvent(response: CrowniclesPacket[], player: Playe
 	if (petEntity.isFeisty()) {
 		response.push(makePacket(SmallEventDwarfPetFanPacket, {
 			interactionName: SmallEventConstants.DWARF_PET_FAN.INTERACTIONS_NAMES.FEISTY_PET,
-			petNickname: petEntity.nickname,
-			petSex: petEntity.sex as SexTypeShort,
-			petTypeId: petEntity.typeId
+			...petEntity.getBasicInfo()
 		}));
 		return false;
 	}
@@ -59,9 +57,7 @@ async function canContinueSmallEvent(response: CrowniclesPacket[], player: Playe
 	if (await DwarfPetsSeen.isPetSeen(player, petEntity.typeId)) {
 		response.push(makePacket(SmallEventDwarfPetFanPacket, {
 			interactionName: SmallEventConstants.DWARF_PET_FAN.INTERACTIONS_NAMES.PET_ALREADY_SEEN,
-			petNickname: petEntity.nickname,
-			petSex: petEntity.sex as SexTypeShort,
-			petTypeId: petEntity.typeId
+			...petEntity.getBasicInfo()
 		}));
 		return false;
 	}
@@ -77,9 +73,7 @@ async function canContinueSmallEvent(response: CrowniclesPacket[], player: Playe
 async function manageAllPetsAreSeen(response: CrowniclesPacket[], player: Player, petEntity: PetEntity): Promise<void> {
 	if (player.petId && petEntity.isFeisty()) {
 		response.push(makePacket(SmallEventDwarfPetFanPacket, {
-			petNickname: petEntity.nickname,
-			petSex: petEntity.sex as SexTypeShort,
-			petTypeId: petEntity.typeId,
+			...petEntity.getBasicInfo(),
 			interactionName: SmallEventConstants.DWARF_PET_FAN.INTERACTIONS_NAMES.FEISTY_PET
 		}));
 		return;
@@ -144,9 +138,7 @@ async function manageNewPetSeen(response: CrowniclesPacket[], player: Player, pe
 		response.push(makePacket(SmallEventDwarfPetFanPacket, {
 			interactionName: SmallEventConstants.DWARF_PET_FAN.INTERACTIONS_NAMES.CLONE_PET,
 			amount: SmallEventConstants.DWARF_PET_FAN.NEW_PET_SEEN_REWARD,
-			petNickname: petEntity.nickname,
-			petSex: petEntity.sex as SexTypeShort,
-			petTypeId: petEntity.typeId,
+			...petEntity.getBasicInfo(),
 			isGemReward: true,
 			isPetClone: true
 		}));
@@ -167,9 +159,7 @@ async function manageNewPetSeen(response: CrowniclesPacket[], player: Player, pe
 	response.push(makePacket(SmallEventDwarfPetFanPacket, {
 		interactionName: SmallEventConstants.DWARF_PET_FAN.INTERACTIONS_NAMES.NEW_PET_SEEN,
 		amount: SmallEventConstants.DWARF_PET_FAN.NEW_PET_SEEN_REWARD,
-		petNickname: petEntity.nickname,
-		petSex: petEntity.sex as SexTypeShort,
-		petTypeId: petEntity.typeId,
+		...petEntity.getBasicInfo(),
 		isGemReward: true
 	}));
 	await MissionsController.update(player, response, { missionId: "showPetsToTalvar" });

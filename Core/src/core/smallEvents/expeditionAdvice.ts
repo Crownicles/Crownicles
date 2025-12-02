@@ -87,11 +87,7 @@ async function checkTalismanConditions(player: Player): Promise<TalismanConditio
 	}
 
 	const petEntity = await PetEntities.getById(player.petId);
-	const petInfo = {
-		petTypeId: petEntity.typeId,
-		petSex: petEntity.sex as SexTypeShort,
-		petNickname: petEntity.nickname
-	};
+	const petInfo = petEntity.getBasicInfo();
 
 	// Condition 3: Pet is not feisty
 	if (petEntity.isFeisty()) {
@@ -186,9 +182,7 @@ async function getExpeditionPetInfo(player: Player): Promise<ExpeditionPetInfo> 
 
 	return {
 		petInExpedition: true,
-		petTypeId: petEntity.typeId,
-		petSex: petEntity.sex as SexTypeShort,
-		petNickname: petEntity.nickname
+		...petEntity.getBasicInfo()
 	};
 }
 
@@ -204,7 +198,7 @@ async function applyExpeditionBonusRewards(
 	const rewards: ExpeditionBonusRewards = {};
 
 	// Always give bonus points
-	rewards.bonusPoints = RandomUtils.randInt(bonusConfig.POINTS_MIN, bonusConfig.POINTS_MAX + 1);
+	rewards.bonusPoints = RandomUtils.crowniclesRandom.integer(bonusConfig.POINTS_MIN, bonusConfig.POINTS_MAX);
 	await player.addScore({
 		amount: rewards.bonusPoints,
 		response,
@@ -222,7 +216,7 @@ async function applyExpeditionBonusRewards(
 
 	// Check if we give money (20% chance)
 	if (RandomUtils.crowniclesRandom.bool(bonusConfig.MONEY_CHANCE / 100)) {
-		rewards.bonusMoney = RandomUtils.randInt(bonusConfig.MONEY_MIN, bonusConfig.MONEY_MAX + 1);
+		rewards.bonusMoney = RandomUtils.crowniclesRandom.integer(bonusConfig.MONEY_MIN, bonusConfig.MONEY_MAX);
 		await player.addMoney({
 			amount: rewards.bonusMoney,
 			response,
