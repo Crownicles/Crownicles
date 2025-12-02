@@ -11,7 +11,7 @@ import {
 } from "../../utils/StringUtils";
 import { finishInTimeDisplay } from "../../../../Lib/src/utils/TimeUtils";
 import {
-	ExpeditionConstants, ExpeditionLocationType
+	ExpeditionConstants, ExpeditionLocationType, SpeedCategory
 } from "../../../../Lib/src/constants/ExpeditionConstants";
 import { Language } from "../../../../Lib/src/Language";
 import { DisplayUtils } from "../../utils/DisplayUtils";
@@ -181,6 +181,15 @@ function buildInProgressEmbed(
 }
 
 /**
+ * Keys that use random translations with context and pet display
+ */
+const CANNOT_START_RANDOM_KEYS = [
+	"noPet",
+	"insufficientLove",
+	"petHungry"
+] as const;
+
+/**
  * Get description for cannot start expedition reasons
  */
 function getCannotStartDescription(
@@ -189,23 +198,17 @@ function getCannotStartDescription(
 	petDisplay: string,
 	sexContext: string
 ): string {
-	switch (packet.cannotStartReason) {
-		case "noPet":
-			return StringUtils.getRandomTranslation("commands:petExpedition.noPet", lng, {});
-		case "insufficientLove":
-			return StringUtils.getRandomTranslation("commands:petExpedition.insufficientLove", lng, {
-				context: sexContext,
-				petDisplay,
-				lovePoints: packet.petLovePoints ?? 0
-			});
-		case "petHungry":
-			return StringUtils.getRandomTranslation("commands:petExpedition.petHungry", lng, {
-				context: sexContext,
-				petDisplay
-			});
-		default:
-			return i18n.t(`commands:petExpedition.errors.${packet.cannotStartReason}`, { lng });
+	const reason = packet.cannotStartReason;
+
+	if (reason && CANNOT_START_RANDOM_KEYS.includes(reason as typeof CANNOT_START_RANDOM_KEYS[number])) {
+		return StringUtils.getRandomTranslation(`commands:petExpedition.${reason}`, lng, {
+			context: sexContext,
+			petDisplay,
+			lovePoints: packet.petLovePoints ?? 0
+		});
 	}
+
+	return i18n.t(`commands:petExpedition.errors.${reason}`, { lng });
 }
 
 /**
@@ -298,19 +301,18 @@ function getFoodConsumedDescription(packet: CommandPetExpeditionChoicePacketRes,
 
 /**
  * Get speed category based on actual final duration vs displayed duration
- * Returns null if the actual time falls within the displayed time bucket (no message to display)
  * @param actualDurationMinutes - The real duration after speed modifier
  * @param displayedDurationMinutes - The duration shown to the user (rounded to 10 min)
  */
-function getSpeedCategory(actualDurationMinutes: number, displayedDurationMinutes: number): string | null {
+function getSpeedCategory(actualDurationMinutes: number, displayedDurationMinutes: number): SpeedCategory {
 	// Calculate ratio: how much faster/slower compared to what was displayed
 	const ratio = actualDurationMinutes / displayedDurationMinutes;
 
 	if (ratio < 0.70) {
-		return "veryFast";
+		return ExpeditionConstants.SPEED_CATEGORIES.VERY_FAST;
 	}
 	if (ratio < 0.90) {
-		return "fast";
+		return ExpeditionConstants.SPEED_CATEGORIES.FAST;
 	}
 
 	/*
@@ -318,12 +320,12 @@ function getSpeedCategory(actualDurationMinutes: number, displayedDurationMinute
 	 * Since displayed duration is already rounded up, being at or below it is expected
 	 */
 	if (ratio <= 1.0) {
-		return null;
+		return ExpeditionConstants.SPEED_CATEGORIES.NORMAL;
 	}
 	if (ratio <= 1.15) {
-		return "slow";
+		return ExpeditionConstants.SPEED_CATEGORIES.SLOW;
 	}
-	return "verySlow";
+	return ExpeditionConstants.SPEED_CATEGORIES.VERY_SLOW;
 }
 
 /**
@@ -370,8 +372,7 @@ export async function handleExpeditionChoiceRes(
 
 	// Add insufficient food warning if applicable
 	if (packet.insufficientFood) {
-		const cause = (packet as unknown as { insufficientFoodCause?: "noGuild" | "guildNoFood" }).insufficientFoodCause;
-		const warningKey = cause === "guildNoFood" ? "guildNoFood" : "noGuild";
+		const warningKey = packet.insufficientFoodCause === "guildNoFood" ? "guildNoFood" : "noGuild";
 		description += i18n.t(`commands:petExpedition.insufficientFoodWarning.${warningKey}`, { lng });
 	}
 
@@ -380,7 +381,7 @@ export async function handleExpeditionChoiceRes(
 		const actualDuration = packet.expedition.durationMinutes;
 		const displayedDuration = packet.originalDisplayDurationMinutes;
 		const speedCategory = getSpeedCategory(actualDuration, displayedDuration);
-		if (speedCategory !== null) {
+		if (speedCategory !== ExpeditionConstants.SPEED_CATEGORIES.NORMAL) {
 			description += i18n.t(`commands:petExpedition.speedModifier.${speedCategory}`, {
 				lng,
 				context: sexContext

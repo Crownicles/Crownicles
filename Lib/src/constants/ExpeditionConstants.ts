@@ -732,8 +732,21 @@ export abstract class ExpeditionConstants {
 			}
 		];
 	}
+
+	/**
+	 * Speed categories for expedition duration comparison
+	 * Used to determine if the pet was faster or slower than expected
+	 */
+	static readonly SPEED_CATEGORIES = {
+		VERY_FAST: "veryFast",
+		FAST: "fast",
+		NORMAL: "normal",
+		SLOW: "slow",
+		VERY_SLOW: "verySlow"
+	} as const;
 }
 
 export type ExpeditionStatus = (typeof ExpeditionConstants.STATUS)[keyof typeof ExpeditionConstants.STATUS];
 export type ExpeditionLocationType = (typeof ExpeditionConstants.LOCATION_TYPES)[keyof typeof ExpeditionConstants.LOCATION_TYPES];
 export type RewardWeights = Record<"money" | "experience" | "points", number>;
+export type SpeedCategory = (typeof ExpeditionConstants.SPEED_CATEGORIES)[keyof typeof ExpeditionConstants.SPEED_CATEGORIES];
