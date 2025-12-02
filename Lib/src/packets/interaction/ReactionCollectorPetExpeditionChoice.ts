@@ -84,39 +84,21 @@ export class ReactionCollectorPetExpeditionCancelReaction extends ReactionCollec
  * Collector for the expedition choice menu
  */
 export class ReactionCollectorPetExpeditionChoice extends ReactionCollector {
-	private readonly petId: number;
-
-	private readonly petSex: SexTypeShort;
-
-	private readonly petNickname: string | undefined;
-
-	private readonly expeditions: ExpeditionOptionData[];
-
-	private readonly hasGuild: boolean;
-
-	private readonly guildFoodAmount: number | undefined;
-
-	constructor(params: {
+	constructor(private readonly params: {
 		petId: number;
 		petSex: SexTypeShort;
-		petNickname: string | undefined;
+		petNickname?: string;
 		expeditions: ExpeditionOptionData[];
 		hasGuild: boolean;
-		guildFoodAmount: number | undefined;
+		guildFoodAmount?: number;
 	}) {
 		super();
-		this.petId = params.petId;
-		this.petSex = params.petSex;
-		this.petNickname = params.petNickname;
-		this.expeditions = params.expeditions;
-		this.hasGuild = params.hasGuild;
-		this.guildFoodAmount = params.guildFoodAmount;
 	}
 
 	creationPacket(id: string, endTime: number): ReactionCollectorCreationPacket {
 		const reactions = [
 			// Add a reaction for each expedition option
-			...this.expeditions.map(exp => this.buildReaction(ReactionCollectorPetExpeditionSelectReaction, { expedition: exp })),
+			...this.params.expeditions.map(exp => this.buildReaction(ReactionCollectorPetExpeditionSelectReaction, { expedition: exp })),
 
 			// Add cancel reaction
 			this.buildReaction(ReactionCollectorPetExpeditionCancelReaction, {})
@@ -126,14 +108,7 @@ export class ReactionCollectorPetExpeditionChoice extends ReactionCollector {
 			id,
 			endTime,
 			reactions,
-			data: this.buildData(ReactionCollectorPetExpeditionChoiceData, {
-				petId: this.petId,
-				petSex: this.petSex,
-				petNickname: this.petNickname,
-				expeditions: this.expeditions,
-				hasGuild: this.hasGuild,
-				guildFoodAmount: this.guildFoodAmount
-			})
+			data: this.buildData(ReactionCollectorPetExpeditionChoiceData, { ...this.params })
 		};
 	}
 }

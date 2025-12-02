@@ -101,7 +101,7 @@ export async function createPetExpeditionCollector(
 
 	const locationEmoji = ExpeditionConstants.getLocationEmoji(data.locationType);
 	const locationName = getExpeditionLocationName(lng, data.mapLocationId, data.isDistantExpedition);
-	const petDisplay = `${DisplayUtils.getPetIcon(data.petId, data.petSex)} **${DisplayUtils.getPetNicknameOrTypeName(data.petNickname ?? null, data.petId, data.petSex, lng)}**`;
+	const petDisplay = `${DisplayUtils.getPetIcon(data.petId, data.petSex)} **${DisplayUtils.getPetNicknameOrTypeName(data.petNickname, data.petId, data.petSex, lng)}**`;
 	const sexContext = getSexContext(data.petSex);
 
 	// Build food info string if food was consumed
@@ -234,11 +234,8 @@ function addExpeditionMenuOption(
 	const locationName = getExpeditionLocationName(lng, exp.mapLocationId, exp.isDistantExpedition);
 	const displayDuration = minutesDisplay(exp.displayDurationMinutes, lng);
 
-	// Add star indicator for clone talisman bonus expeditions
-	const bonusIndicator = exp.hasCloneTalismanBonus ? " ✨" : "";
-
 	selectMenu.addOptions({
-		label: `${locationEmoji} ${locationName}${bonusIndicator}`.substring(0, 100),
+		label: `${locationEmoji} ${locationName}`.substring(0, 100),
 		description: `${displayDuration} - ${getTranslatedRiskCategoryName(exp.riskRate, lng)}`,
 		value: exp.id
 	});
@@ -301,7 +298,7 @@ export async function createPetExpeditionChoiceCollector(
 
 	const data = packet.data.data as ReactionCollectorPetExpeditionChoiceData;
 	const lng = interaction.userLanguage;
-	const petDisplay = `${DisplayUtils.getPetIcon(data.petId, data.petSex)} **${DisplayUtils.getPetNicknameOrTypeName(data.petNickname ?? null, data.petId, data.petSex, lng)}**`;
+	const petDisplay = `${DisplayUtils.getPetIcon(data.petId, data.petSex)} **${DisplayUtils.getPetNicknameOrTypeName(data.petNickname, data.petId, data.petSex, lng)}**`;
 
 	// Build description with all expedition options
 	let description = i18n.t("commands:petExpedition.chooseExpedition", {
@@ -376,7 +373,7 @@ export async function createPetExpeditionFinishedCollector(
 
 	const locationEmoji = ExpeditionConstants.getLocationEmoji(data.locationType);
 	const locationName = getExpeditionLocationName(lng, data.mapLocationId, data.isDistantExpedition);
-	const petDisplay = `${DisplayUtils.getPetIcon(data.petId, data.petSex)} **${DisplayUtils.getPetNicknameOrTypeName(data.petNickname ?? null, data.petId, data.petSex, lng)}**`;
+	const petDisplay = `${DisplayUtils.getPetIcon(data.petId, data.petSex)} **${DisplayUtils.getPetNicknameOrTypeName(data.petNickname, data.petId, data.petSex, lng)}**`;
 	const sexContext = getSexContext(data.petSex);
 
 	const embed = new CrowniclesEmbed()

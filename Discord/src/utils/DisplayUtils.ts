@@ -188,7 +188,7 @@ export class DisplayUtils {
 		});
 	}
 
-	static getPetNicknameOrTypeName(nickname: string | null, typeId: number, sex: SexTypeShort, lng: Language): string {
+	static getPetNicknameOrTypeName(nickname: string | null | undefined, typeId: number, sex: SexTypeShort, lng: Language): string {
 		return nickname ? DisplayUtils.getPetDisplayNickname(lng, nickname) : DisplayUtils.getPetTypeName(lng, typeId, sex);
 	}
 

@@ -301,9 +301,17 @@ export function minutesDisplay(minutes: number, language: Language = LANGUAGE.DE
 		minutes > 0 ? `${minutes} ${displayConstantValues.minutesDisplay}${minutes > 1 ? displayConstantValues.plural : ""}` : ""
 	].filter(v => v !== "");
 
-	const display = parts.join(displayConstantValues.linkWord);
+	if (parts.length === 0) {
+		return displayConstantValues.lessThanOneMinute;
+	}
 
-	return display === "" ? displayConstantValues.lessThanOneMinute : display;
+	if (parts.length === 1) {
+		return parts[0];
+	}
+
+	// Join all parts except the last with commas, then add the link word before the last part
+	const lastPart = parts.pop()!;
+	return `${parts.join(", ")}${displayConstantValues.linkWord}${lastPart}`;
 }
 
 /**

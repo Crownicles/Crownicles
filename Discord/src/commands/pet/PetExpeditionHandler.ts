@@ -149,7 +149,7 @@ function buildInProgressEmbed(
 	const lng = interaction.userLanguage;
 	const locationEmoji = ExpeditionConstants.getLocationEmoji(expedition.locationType as ExpeditionLocationType);
 	const locationName = getExpeditionLocationName(lng, expedition.mapLocationId!, expedition.isDistantExpedition);
-	const petDisplay = `${DisplayUtils.getPetIcon(expedition.petId, expedition.petSex as SexTypeShort)} **${DisplayUtils.getPetNicknameOrTypeName(expedition.petNickname ?? null, expedition.petId, expedition.petSex as SexTypeShort, lng)}**`;
+	const petDisplay = `${DisplayUtils.getPetIcon(expedition.petId, expedition.petSex as SexTypeShort)} **${DisplayUtils.getPetNicknameOrTypeName(expedition.petNickname, expedition.petId, expedition.petSex as SexTypeShort, lng)}**`;
 	const sexContext = getSexContext(expedition.petSex as SexTypeShort);
 
 	const foodInfo = expedition.foodConsumed && expedition.foodConsumed > 0
@@ -217,7 +217,7 @@ function buildCannotStartEmbed(
 ): CrowniclesEmbed {
 	const lng = interaction.userLanguage;
 	const petDisplay = packet.petId && packet.petSex
-		? `${DisplayUtils.getPetIcon(packet.petId, packet.petSex as SexTypeShort)} **${DisplayUtils.getPetNicknameOrTypeName(packet.petNickname ?? null, packet.petId, packet.petSex as SexTypeShort, lng)}**`
+		? `${DisplayUtils.getPetIcon(packet.petId, packet.petSex as SexTypeShort)} **${DisplayUtils.getPetNicknameOrTypeName(packet.petNickname, packet.petId, packet.petSex as SexTypeShort, lng)}**`
 		: i18n.t("commands:pet.defaultPetName", { lng });
 
 	const sexContext = packet.petSex ? getSexContext(packet.petSex as SexTypeShort) : StringConstants.SEX.MALE.long;
@@ -354,7 +354,7 @@ export async function handleExpeditionChoiceRes(
 	const expedition = packet.expedition!;
 	const locationEmoji = ExpeditionConstants.getLocationEmoji(expedition.locationType as ExpeditionLocationType);
 	const locationName = getExpeditionLocationName(lng, expedition.mapLocationId!, expedition.isDistantExpedition);
-	const petDisplay = `${DisplayUtils.getPetIcon(expedition.petId, expedition.petSex as SexTypeShort)} **${DisplayUtils.getPetNicknameOrTypeName(expedition.petNickname ?? null, expedition.petId, expedition.petSex as SexTypeShort, lng)}**`;
+	const petDisplay = `${DisplayUtils.getPetIcon(expedition.petId, expedition.petSex as SexTypeShort)} **${DisplayUtils.getPetNicknameOrTypeName(expedition.petNickname, expedition.petId, expedition.petSex as SexTypeShort, lng)}**`;
 	const sexContext = getSexContext(expedition.petSex as SexTypeShort);
 
 	let description = i18n.t("commands:petExpedition.expeditionStarted", {
@@ -443,7 +443,7 @@ async function handleExpeditionLoveLossResponse(
 	}
 
 	const lng = interaction.userLanguage;
-	const petDisplay = `${DisplayUtils.getPetIcon(packet.petId, packet.petSex as SexTypeShort)} **${DisplayUtils.getPetNicknameOrTypeName(packet.petNickname ?? null, packet.petId, packet.petSex as SexTypeShort, lng)}**`;
+	const petDisplay = `${DisplayUtils.getPetIcon(packet.petId, packet.petSex as SexTypeShort)} **${DisplayUtils.getPetNicknameOrTypeName(packet.petNickname, packet.petId, packet.petSex as SexTypeShort, lng)}**`;
 	const sexContext = getSexContext(packet.petSex as SexTypeShort);
 
 	const embed = new CrowniclesEmbed()
@@ -562,7 +562,7 @@ export async function handleExpeditionResolveRes(
 	}
 
 	const lng = interaction.userLanguage;
-	const petDisplay = `${DisplayUtils.getPetIcon(packet.petId, packet.petSex as SexTypeShort)} **${DisplayUtils.getPetNicknameOrTypeName(packet.petNickname ?? null, packet.petId, packet.petSex as SexTypeShort, lng)}**`;
+	const petDisplay = `${DisplayUtils.getPetIcon(packet.petId, packet.petSex as SexTypeShort)} **${DisplayUtils.getPetNicknameOrTypeName(packet.petNickname, packet.petId, packet.petSex as SexTypeShort, lng)}**`;
 	const locationEmoji = ExpeditionConstants.getLocationEmoji(packet.expedition.locationType as ExpeditionLocationType);
 	const locationName = getExpeditionLocationName(lng, packet.expedition.mapLocationId!, packet.expedition.isDistantExpedition);
 
