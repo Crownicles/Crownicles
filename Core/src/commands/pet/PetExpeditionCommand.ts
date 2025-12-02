@@ -100,6 +100,15 @@ interface GuildFoodInfo {
 }
 
 /**
+ * Calculate progressive love loss based on recent cancellations
+ * Love lost = base * (1 + recentCancellations), capped at MAX_CANCELLATION_LOVE_LOSS
+ */
+function calculateProgressiveLoveLoss(baseLoveLost: number, recentCancellations: number): number {
+	const loveLost = Math.abs(baseLoveLost) * (1 + recentCancellations);
+	return Math.min(loveLost, ExpeditionConstants.CAPS.MAX_CANCELLATION_LOVE_LOSS);
+}
+
+/**
  * Common pet info for expedition collectors
  */
 interface PetCollectorInfo {
@@ -433,14 +442,10 @@ async function handleExpeditionCancel(
 		ExpeditionConstants.CANCELLATION_PENALTY.LOOKBACK_DAYS
 	);
 
-	// Love lost = base * (1 + recentCancellations) but capped to 60
-	const baseLoveLost = Math.abs(ExpeditionConstants.LOVE_CHANGES.CANCEL_BEFORE_DEPARTURE_BASE);
-	let loveLost = baseLoveLost * (1 + recentCancellations);
-
-	// Prevent excessive cumulative loss — cap at constants value
-	if (loveLost > ExpeditionConstants.CAPS.MAX_CANCELLATION_LOVE_LOSS) {
-		loveLost = ExpeditionConstants.CAPS.MAX_CANCELLATION_LOVE_LOSS;
-	}
+	const loveLost = calculateProgressiveLoveLoss(
+		ExpeditionConstants.LOVE_CHANGES.CANCEL_BEFORE_DEPARTURE_BASE,
+		recentCancellations
+	);
 	const loveChange = -loveLost;
 
 	// Log expedition cancellation to database
@@ -498,14 +503,10 @@ async function handleExpeditionRecall(
 		ExpeditionConstants.CANCELLATION_PENALTY.LOOKBACK_DAYS
 	);
 
-	// Love lost = base * (1 + recentCancellations) but capped to 60
-	const baseLoveLost = Math.abs(ExpeditionConstants.LOVE_CHANGES.RECALL_DURING_EXPEDITION);
-	let loveLost = baseLoveLost * (1 + recentCancellations);
-
-	// Prevent excessive cumulative loss — cap at constants value
-	if (loveLost > ExpeditionConstants.CAPS.MAX_CANCELLATION_LOVE_LOSS) {
-		loveLost = ExpeditionConstants.CAPS.MAX_CANCELLATION_LOVE_LOSS;
-	}
+	const loveLost = calculateProgressiveLoveLoss(
+		ExpeditionConstants.LOVE_CHANGES.RECALL_DURING_EXPEDITION,
+		recentCancellations
+	);
 	const loveChange = -loveLost;
 
 	// Log expedition recall to database
