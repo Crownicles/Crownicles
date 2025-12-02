@@ -1344,18 +1344,7 @@ export class LogsDatabase extends Database {
 		await LogsExpeditions.create({
 			playerId: player.id,
 			petId: petEntity.id,
-			mapLocationId: data.mapLocationId ?? 0,
-			locationType: data.locationType ?? "",
-			action: data.action ?? "",
-			durationMinutes: data.durationMinutes ?? 0,
-			rewardIndex: data.rewardIndex ?? 0,
-			foodConsumed: data.foodConsumed ?? 0,
-			success: data.success,
-			money: data.money,
-			experience: data.experience,
-			points: data.points,
-			cloneTalismanFound: data.cloneTalismanFound,
-			loveChange: data.loveChange,
+			...data,
 			date: getDateLogs()
 		});
 	}

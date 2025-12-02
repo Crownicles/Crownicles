@@ -27,23 +27,23 @@ interface FoodConfig {
  * Uses existing constants from PetConstants and GuildShopConstants
  */
 const FOOD_CONFIG_MAP: Record<FoodType, FoodConfig> = {
-	commonFood: {
-		type: "commonFood",
+	[PetConstants.PET_FOOD.COMMON_FOOD]: {
+		type: PetConstants.PET_FOOD.COMMON_FOOD,
 		rations: PetConstants.PET_FOOD_LOVE_POINTS_AMOUNT[0],
 		price: GuildShopConstants.PRICES.FOOD[0]
 	},
-	herbivorousFood: {
-		type: "herbivorousFood",
+	[PetConstants.PET_FOOD.HERBIVOROUS_FOOD]: {
+		type: PetConstants.PET_FOOD.HERBIVOROUS_FOOD,
 		rations: PetConstants.PET_FOOD_LOVE_POINTS_AMOUNT[1],
 		price: GuildShopConstants.PRICES.FOOD[1]
 	},
-	carnivorousFood: {
-		type: "carnivorousFood",
+	[PetConstants.PET_FOOD.CARNIVOROUS_FOOD]: {
+		type: PetConstants.PET_FOOD.CARNIVOROUS_FOOD,
 		rations: PetConstants.PET_FOOD_LOVE_POINTS_AMOUNT[2],
 		price: GuildShopConstants.PRICES.FOOD[2]
 	},
-	ultimateFood: {
-		type: "ultimateFood",
+	[PetConstants.PET_FOOD.ULTIMATE_FOOD]: {
+		type: PetConstants.PET_FOOD.ULTIMATE_FOOD,
 		rations: PetConstants.PET_FOOD_LOVE_POINTS_AMOUNT[3],
 		price: GuildShopConstants.PRICES.FOOD[3]
 	}
@@ -53,7 +53,7 @@ const FOOD_CONFIG_MAP: Record<FoodType, FoodConfig> = {
  * Get the diet food type based on whether the pet can eat meat
  */
 export function getDietFoodType(petModel: Pet): FoodType {
-	return petModel.canEatMeat() ? "carnivorousFood" : "herbivorousFood";
+	return petModel.canEatMeat() ? PetConstants.PET_FOOD.CARNIVOROUS_FOOD : PetConstants.PET_FOOD.HERBIVOROUS_FOOD;
 }
 
 /**
