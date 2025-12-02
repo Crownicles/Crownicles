@@ -38,7 +38,7 @@ import {
 	Guild, Guilds
 } from "../../core/database/game/models/Guild";
 import { GuildConstants } from "../../../../Lib/src/constants/GuildConstants";
-import { PetExpeditions } from "../../core/database/game/models/PetExpedition";
+import { PetUtils } from "../../core/utils/PetUtils";
 
 function getWithoutGuildPetFeedEndCallback(player: Player, authorPet: PetEntity) {
 	return async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
@@ -235,8 +235,7 @@ export default class PetFeedCommand {
 		}
 
 		// Check if pet is on expedition
-		const activeExpedition = await PetExpeditions.getActiveExpeditionForPlayer(player.id);
-		if (activeExpedition) {
+		if (await PetUtils.isPetOnExpedition(player.id)) {
 			response.push(makePacket(CommandPetFeedPetOnExpeditionErrorPacket, {}));
 			return;
 		}

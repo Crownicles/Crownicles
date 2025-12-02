@@ -162,7 +162,7 @@
     "foodCost_one": "{{count}} ration",
     "foodCost_other": "{{count}} rations",
     "cancelButton": "Annuler l'expédition",
-    "guildProvisionsInfo": "{emote:expedition.food} **Provisions de guilde disponibles :** {{amount}} {{foodCostDisplay}}",
+    "guildProvisionsInfo": "{emote:expedition.food} **Provisions de guilde disponibles :** {{foodCostDisplay}}",
     "noGuildProvisionsInfo": "{emote:collectors.warning} **Vous n'avez pas de guilde pour préparer des rations.**",
     "petImpatience_male": "*{{petDisplay}} trépigne d'impatience, la queue frétillante, prêt à s'élancer vers l'aventure !*",
     "petImpatience_female": "*{{petDisplay}} trépigne d'impatience, la queue frétillante, prête à s'élancer vers l'aventure !*",

@@ -40,7 +40,7 @@ import { crowniclesInstance } from "../../index";
 import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { MissionsController } from "../../core/missions/MissionsController";
-import { PetExpeditions } from "../../core/database/game/models/PetExpedition";
+import { PetUtils } from "../../core/utils/PetUtils";
 import { OwnedPet } from "../../../../Lib/src/types/OwnedPet";
 
 /**
@@ -239,14 +239,6 @@ async function checkGuildMemberTransferring(
 }
 
 /**
- * Check if player's pet is on an expedition
- */
-async function isPetOnExpedition(playerId: number): Promise<boolean> {
-	const activeExpedition = await PetExpeditions.getActiveExpeditionForPlayer(playerId);
-	return activeExpedition !== null;
-}
-
-/**
  * Build reactions array for pet transfer collector
  */
 function buildTransferReactions(
@@ -325,7 +317,7 @@ export default class PetTransferCommand {
 		}
 
 		// Check if player's pet is on expedition
-		if (playerPet && await isPetOnExpedition(player.id)) {
+		if (playerPet && await PetUtils.isPetOnExpedition(player.id)) {
 			response.push(makePacket(CommandPetTransferPetOnExpeditionErrorPacket, {}));
 			return;
 		}

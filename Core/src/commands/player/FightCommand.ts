@@ -45,7 +45,7 @@ import { PlayerWasAttackedNotificationPacket } from "../../../../Lib/src/packets
 import { PetEntities } from "../../core/database/game/models/PetEntity";
 import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
 import { PostFightPetLoveOutcomes } from "../../../../Lib/src/constants/PetConstants";
-import { PetExpeditions } from "../../core/database/game/models/PetExpedition";
+import { PetUtils } from "../../core/utils/PetUtils";
 
 type PlayerStats = {
 	pet: {
@@ -93,7 +93,7 @@ async function getPlayerStats(player: Player): Promise<PlayerStats> {
 				petTypeId: petEntity.typeId!,
 				petSex: petEntity.sex as SexTypeShort,
 				petNickname: petEntity.nickname,
-				isOnExpedition: await PetExpeditions.getActiveExpeditionForPlayer(player.id) !== null
+				isOnExpedition: await PetUtils.isPetOnExpedition(player.id)
 			}
 			: {
 				petTypeId: null,

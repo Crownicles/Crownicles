@@ -57,7 +57,17 @@ export abstract class PetUtils {
 			return false;
 		}
 
-		const activeExpedition = await PetExpeditions.getActiveExpeditionForPlayer(player.id);
+		return await this.isPetOnExpedition(player.id);
+	}
+
+	/**
+	 * Check if player's pet is currently on an expedition
+	 *
+	 * @param playerId - The player ID to check
+	 * @returns true if the pet is on an expedition
+	 */
+	static async isPetOnExpedition(playerId: number): Promise<boolean> {
+		const activeExpedition = await PetExpeditions.getActiveExpeditionForPlayer(playerId);
 		return activeExpedition !== null;
 	}
 
