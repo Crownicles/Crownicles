@@ -196,7 +196,7 @@ export abstract class PetConstants {
 		CARNIVOROUS_FOOD: "carnivorousFood",
 		HERBIVOROUS_FOOD: "herbivorousFood",
 		ULTIMATE_FOOD: "ultimateFood"
-	};
+	} as const;
 
 	static readonly PET_FOOD_BY_ID = [
 		PetConstants.PET_FOOD.COMMON_FOOD,
@@ -641,6 +641,11 @@ export const PostFightPetLoveOutcomes = {
 export type PostFightPetLoveOutcome = typeof PostFightPetLoveOutcomes[keyof typeof PostFightPetLoveOutcomes];
 
 export type PostFightPetReactionType = typeof PetConstants.POST_FIGHT_REACTION_TYPES[keyof typeof PetConstants.POST_FIGHT_REACTION_TYPES];
+
+/**
+ * Type representing a pet food type
+ */
+export type PetFood = typeof PetConstants.PET_FOOD[keyof typeof PetConstants.PET_FOOD];
 
 export enum PET_ENTITY_GIVE_RETURN {
 	NO_SLOT,

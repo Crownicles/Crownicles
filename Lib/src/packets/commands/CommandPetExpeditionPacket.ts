@@ -5,17 +5,18 @@ import {
 	ExpeditionLocationType, ExpeditionStatus
 } from "../../constants/ExpeditionConstants";
 import { SexTypeShort } from "../../constants/StringConstants";
+import { PetFood } from "../../constants/PetConstants";
 
 /**
- * Food types used in expeditions
+ * Reason why food was insufficient for expedition
  */
-export type ExpeditionFoodType = "commonFood" | "carnivorousFood" | "herbivorousFood" | "ultimateFood";
+export type InsufficientFoodCause = "noGuild" | "guildNoFood";
 
 /**
  * Detail of food consumed for an expedition
  */
 export interface FoodConsumptionDetail {
-	foodType: ExpeditionFoodType;
+	foodType: PetFood;
 	amount: number;
 }
 
@@ -225,7 +226,7 @@ export class CommandPetExpeditionChoicePacketRes extends CrowniclesPacket {
 	 * Optional additional info about why food was insufficient.
 	 * Possible values: "noGuild" (player has no guild) or "guildNoFood" (guild exists but lacks food).
 	 */
-	insufficientFoodCause?: "noGuild" | "guildNoFood";
+	insufficientFoodCause?: InsufficientFoodCause;
 
 	/**
 	 * Duration modifier based on pet speed (0.70 to 1.20)

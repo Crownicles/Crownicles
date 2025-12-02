@@ -3,14 +3,15 @@ import Player from "../database/game/models/Player";
 import {
 	Guild, Guilds
 } from "../database/game/models/Guild";
-import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
+import {
+	PetConstants, PetFood
+} from "../../../../Lib/src/constants/PetConstants";
 import { GuildShopConstants } from "../../../../Lib/src/constants/GuildShopConstants";
-import { ExpeditionFoodType } from "../../../../Lib/src/packets/commands/CommandPetExpeditionPacket";
 
 /**
- * Re-export ExpeditionFoodType as FoodType for backward compatibility
+ * Re-export PetFood as FoodType for backward compatibility
  */
-export type FoodType = ExpeditionFoodType;
+export type FoodType = PetFood;
 
 /**
  * Configuration for a single food type - organized by food, not by characteristic
