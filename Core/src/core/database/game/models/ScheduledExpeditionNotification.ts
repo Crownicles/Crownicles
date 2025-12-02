@@ -37,14 +37,7 @@ export interface ScheduleNotificationParams {
 
 export class ScheduledExpeditionNotifications {
 	static async scheduleNotification(params: ScheduleNotificationParams): Promise<void> {
-		await ScheduledExpeditionNotification.upsert({
-			expeditionId: params.expeditionId,
-			keycloakId: params.keycloakId,
-			petId: params.petId,
-			petSex: params.petSex,
-			petNickname: params.petNickname,
-			scheduledAt: params.scheduledAt
-		});
+		await ScheduledExpeditionNotification.upsert({ ...params });
 	}
 
 	static async getNotificationsBeforeDate(date: Date): Promise<ScheduledExpeditionNotification[]> {

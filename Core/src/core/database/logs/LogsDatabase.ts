@@ -110,6 +110,66 @@ import { AiPlayerFighter } from "../../fights/fighter/AiPlayerFighter";
 import { LogsExpeditions } from "./models/LogsExpeditions";
 
 /**
+ * Data structure for expedition log entries
+ */
+export interface ExpeditionLogData {
+	mapLocationId: number;
+	locationType: string;
+	action: string;
+	durationMinutes: number;
+	foodConsumed: number;
+	rewardIndex: number;
+	success: boolean;
+	money: number | null;
+	experience: number | null;
+	points: number | null;
+	cloneTalismanFound: boolean | null;
+	loveChange: number;
+}
+
+/**
+ * Parameters for logging expedition start
+ */
+export interface ExpeditionStartParams {
+	mapLocationId: number;
+	locationType: string;
+	durationMinutes: number;
+	foodConsumed: number;
+	rewardIndex: number;
+}
+
+/**
+ * Parameters for logging expedition completion
+ */
+export interface ExpeditionCompleteParams {
+	mapLocationId: number;
+	locationType: string;
+	durationMinutes: number;
+	foodConsumed: number;
+	rewardIndex: number;
+	success: boolean;
+}
+
+/**
+ * Rewards from expedition completion
+ */
+export interface ExpeditionRewards {
+	money?: number;
+	experience?: number;
+	points?: number;
+	cloneTalismanFound?: boolean;
+}
+
+/**
+ * Parameters for logging expedition recall
+ */
+export interface ExpeditionRecallParams {
+	mapLocationId: number;
+	locationType: string;
+	loveChange: number;
+}
+
+/**
  * This class is used to log all the changes in the game database
  */
 export class LogsDatabase extends Database {
@@ -1277,20 +1337,7 @@ export class LogsDatabase extends Database {
 	private async createExpeditionLog(
 		keycloakId: string,
 		petGameId: number,
-		data: Partial<{
-			mapLocationId: number;
-			locationType: string;
-			action: string;
-			durationMinutes: number;
-			foodConsumed: number;
-			rewardIndex: number;
-			success: boolean;
-			money: number | null;
-			experience: number | null;
-			points: number | null;
-			cloneTalismanFound: boolean | null;
-			loveChange: number;
-		}>
+		data: Partial<ExpeditionLogData>
 	): Promise<void> {
 		const player = await LogsDatabase.findOrCreatePlayer(keycloakId);
 		const petEntity = await LogsDatabase.findOrCreatePetEntityByGameId(petGameId);
@@ -1319,13 +1366,7 @@ export class LogsDatabase extends Database {
 	public async logExpeditionStart(
 		keycloakId: string,
 		petGameId: number,
-		params: {
-			mapLocationId: number;
-			locationType: string;
-			durationMinutes: number;
-			foodConsumed: number;
-			rewardIndex: number;
-		}
+		params: ExpeditionStartParams
 	): Promise<void> {
 		await this.createExpeditionLog(keycloakId, petGameId, {
 			...params,
@@ -1339,22 +1380,8 @@ export class LogsDatabase extends Database {
 	public async logExpeditionComplete(
 		keycloakId: string,
 		petGameId: number,
-		params: {
-			mapLocationId: number;
-			locationType: string;
-			durationMinutes: number;
-			foodConsumed: number;
-			rewardIndex: number;
-			success: boolean;
-		},
-		rewards:
-			| {
-				money?: number;
-				experience?: number;
-				points?: number;
-				cloneTalismanFound?: boolean;
-			}
-			| null,
+		params: ExpeditionCompleteParams,
+		rewards: ExpeditionRewards | null,
 		loveChange: number
 	): Promise<void> {
 		await this.createExpeditionLog(keycloakId, petGameId, {
@@ -1386,11 +1413,7 @@ export class LogsDatabase extends Database {
 	public async logExpeditionRecall(
 		keycloakId: string,
 		petGameId: number,
-		params: {
-			mapLocationId: number;
-			locationType: string;
-			loveChange: number;
-		}
+		params: ExpeditionRecallParams
 	): Promise<void> {
 		await this.createExpeditionLog(keycloakId, petGameId, {
 			...params,
