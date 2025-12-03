@@ -102,8 +102,8 @@ export async function createPetExpeditionCollector(
 
 	const locationEmoji = CrowniclesIcons.expedition.locations[data.locationType];
 	const locationName = getExpeditionLocationName(lng, data.mapLocationId, data.isDistantExpedition);
-	const petDisplay = `${DisplayUtils.getPetIcon(data.petId, data.petSex)} **${DisplayUtils.getPetNicknameOrTypeName(data.petNickname, data.petId, data.petSex, lng)}**`;
-	const sexContext = getSexContext(data.petSex);
+	const petDisplay = `${DisplayUtils.getPetIcon(data.pet.petTypeId, data.pet.petSex)} **${DisplayUtils.getPetNicknameOrTypeName(data.pet.petNickname, data.pet.petTypeId, data.pet.petSex, lng)}**`;
+	const sexContext = getSexContext(data.pet.petSex);
 
 	// Build food info string if food was consumed
 	const foodInfo = data.foodConsumed && data.foodConsumed > 0
@@ -268,7 +268,7 @@ function buildGuildProvisionsText(
 	lng: Language,
 	petDisplay: string
 ): string {
-	const sexContext = getSexContext(data.petSex);
+	const sexContext = getSexContext(data.pet.petSex);
 	const hasGuildProvisions = data.hasGuild && data.guildFoodAmount !== undefined;
 
 	// Build provisions info text
@@ -328,7 +328,7 @@ export async function createPetExpeditionChoiceCollector(
 
 	const data = packet.data.data as ReactionCollectorPetExpeditionChoiceData;
 	const lng = interaction.userLanguage;
-	const petDisplay = `${DisplayUtils.getPetIcon(data.petId, data.petSex)} **${DisplayUtils.getPetNicknameOrTypeName(data.petNickname, data.petId, data.petSex, lng)}**`;
+	const petDisplay = `${DisplayUtils.getPetIcon(data.pet.petTypeId, data.pet.petSex)} **${DisplayUtils.getPetNicknameOrTypeName(data.pet.petNickname, data.pet.petTypeId, data.pet.petSex, lng)}**`;
 
 	// Build description with all expedition options
 	let description = i18n.t("commands:petExpedition.chooseExpedition", {
@@ -397,8 +397,8 @@ function buildFinishedExpeditionEmbed(
 ): CrowniclesEmbed {
 	const locationEmoji = CrowniclesIcons.expedition.locations[data.locationType];
 	const locationName = getExpeditionLocationName(lng, data.mapLocationId, data.isDistantExpedition);
-	const petDisplay = `${DisplayUtils.getPetIcon(data.petId, data.petSex)} **${DisplayUtils.getPetNicknameOrTypeName(data.petNickname, data.petId, data.petSex, lng)}**`;
-	const sexContext = getSexContext(data.petSex);
+	const petDisplay = `${DisplayUtils.getPetIcon(data.pet.petTypeId, data.pet.petSex)} **${DisplayUtils.getPetNicknameOrTypeName(data.pet.petNickname, data.pet.petTypeId, data.pet.petSex, lng)}**`;
+	const sexContext = getSexContext(data.pet.petSex);
 
 	const talismanName = i18n.t("commands:petExpedition.finishedDescription.talisman.name", { lng });
 	const intro = i18n.t("commands:petExpedition.finishedDescription.talisman.intro", {

@@ -4,19 +4,15 @@ import {
 	ReactionCollectorData,
 	ReactionCollectorReaction
 } from "./ReactionCollectorPacket";
-import { SexTypeShort } from "../../constants/StringConstants";
 import { ExpeditionLocationType } from "../../constants/ExpeditionConstants";
 import { FoodConsumptionDetail } from "../commands/CommandPetExpeditionPacket";
+import { PetBasicInfo } from "../../types/PetBasicInfo";
 
 /**
  * Data sent with the expedition in progress view (recall menu)
  */
 export class ReactionCollectorPetExpeditionData extends ReactionCollectorData {
-	petId!: number;
-
-	petSex!: SexTypeShort;
-
-	petNickname?: string;
+	pet!: PetBasicInfo;
 
 	mapLocationId!: number;
 
@@ -50,9 +46,7 @@ export class ReactionCollectorPetExpeditionCloseReaction extends ReactionCollect
  */
 export class ReactionCollectorPetExpedition extends ReactionCollector {
 	constructor(private readonly params: {
-		petId: number;
-		petSex: SexTypeShort;
-		petNickname?: string;
+		pet: PetBasicInfo;
 		mapLocationId: number;
 		locationType: ExpeditionLocationType;
 		riskRate: number;

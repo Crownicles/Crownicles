@@ -4,18 +4,14 @@ import {
 	ReactionCollectorData,
 	ReactionCollectorReaction
 } from "./ReactionCollectorPacket";
-import { SexTypeShort } from "../../constants/StringConstants";
 import { ExpeditionLocationType } from "../../constants/ExpeditionConstants";
+import { PetBasicInfo } from "../../types/PetBasicInfo";
 
 /**
  * Data sent with the finished expedition view (claim rewards menu)
  */
 export class ReactionCollectorPetExpeditionFinishedData extends ReactionCollectorData {
-	petId!: number;
-
-	petSex!: SexTypeShort;
-
-	petNickname?: string;
+	pet!: PetBasicInfo;
 
 	mapLocationId!: number;
 
@@ -39,9 +35,7 @@ export class ReactionCollectorPetExpeditionClaimReaction extends ReactionCollect
  */
 export class ReactionCollectorPetExpeditionFinished extends ReactionCollector {
 	constructor(private readonly params: {
-		petId: number;
-		petSex: SexTypeShort;
-		petNickname?: string;
+		pet: PetBasicInfo;
 		mapLocationId: number;
 		locationType: ExpeditionLocationType;
 		riskRate: number;

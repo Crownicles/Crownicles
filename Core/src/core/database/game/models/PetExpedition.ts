@@ -10,7 +10,7 @@ import {
 import {
 	millisecondsToMinutes, minutesToMilliseconds
 } from "../../../../../../Lib/src/utils/TimeUtils";
-import { SexTypeShort } from "../../../../../../Lib/src/constants/StringConstants";
+import { PetBasicInfo } from "../../../../../../Lib/src/types/PetBasicInfo";
 
 // skipcq: JS-C1003 - moment does not expose itself as an ES Module.
 import * as moment from "moment";
@@ -108,16 +108,14 @@ export class PetExpedition extends Model {
 	/**
 	 * Convert to ExpeditionInProgressData for packets
 	 */
-	public toExpeditionInProgressData(petTypeId: number, petSex: SexTypeShort, petNickname?: string): ExpeditionInProgressData {
+	public toExpeditionInProgressData(pet: PetBasicInfo): ExpeditionInProgressData {
 		const durationMinutes = this.getDurationMinutes();
 		return {
 			...this.getBaseExpeditionData(durationMinutes),
 			startTime: this.startDate.getTime(),
 			endTime: this.endDate.getTime(),
 			status: this.status as ExpeditionStatus,
-			petId: petTypeId,
-			petSex,
-			petNickname,
+			pet,
 			foodConsumed: this.foodConsumed
 		};
 	}

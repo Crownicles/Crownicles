@@ -6,5 +6,5 @@ import { SexTypeShort } from "../constants/StringConstants";
 export interface PetBasicInfo {
 	petTypeId: number;
 	petSex: SexTypeShort;
-	petNickname: string;
+	petNickname?: string;
 }

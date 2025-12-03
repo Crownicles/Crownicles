@@ -64,7 +64,7 @@ import {
 	ReactionCollectorPetExpeditionFinished,
 	ReactionCollectorPetExpeditionClaimReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorPetExpeditionFinished";
-import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
+import { PetBasicInfo } from "../../../../Lib/src/types/PetBasicInfo";
 import { Maps } from "../../core/maps/Maps";
 import { Badge } from "../../../../Lib/src/types/Badge";
 import { crowniclesInstance } from "../../index";
@@ -109,22 +109,11 @@ function calculateProgressiveLoveLoss(baseLoveLost: number, recentCancellations:
 }
 
 /**
- * Common pet info for expedition collectors
- */
-interface PetCollectorInfo {
-	petId: number;
-	petSex: SexTypeShort;
-	petNickname: string | null;
-}
-
-/**
  * Extract common pet info for collectors
  */
-function extractPetCollectorInfo(petEntity: PetEntity): PetCollectorInfo {
+function extractPetCollectorInfo(petEntity: PetEntity): { pet: PetBasicInfo } {
 	return {
-		petId: petEntity.typeId,
-		petSex: petEntity.sex,
-		petNickname: petEntity.nickname
+		pet: petEntity.getBasicInfo()
 	};
 }
 
@@ -316,11 +305,7 @@ function buildExpeditionSelectSuccessResponse(params: ExpeditionSelectSuccessPar
 
 	return makePacket(CommandPetExpeditionChoicePacketRes, {
 		success: true,
-		expedition: expedition.toExpeditionInProgressData(
-			petEntity.typeId,
-			petEntity.sex,
-			petEntity.nickname
-		),
+		expedition: expedition.toExpeditionInProgressData(petEntity.getBasicInfo()),
 		foodConsumed: foodPlan.totalRations,
 		foodConsumedDetails: foodPlanToDetails(foodPlan),
 		insufficientFood,
@@ -466,9 +451,7 @@ async function handleExpeditionCancel(
 
 	response.push(makePacket(CommandPetExpeditionCancelPacketRes, {
 		loveLost,
-		petId: petEntity.typeId,
-		petSex: petEntity.sex,
-		petNickname: petEntity.nickname
+		pet: petEntity.getBasicInfo()
 	}));
 }
 
@@ -537,9 +520,7 @@ async function handleExpeditionRecall(
 
 	response.push(makePacket(CommandPetExpeditionRecallPacketRes, {
 		loveLost,
-		petId: petEntity.typeId,
-		petSex: petEntity.sex,
-		petNickname: petEntity.nickname
+		pet: petEntity.getBasicInfo()
 	}));
 }
 
@@ -569,9 +550,7 @@ function buildCannotStartResponse(
 		canStartExpedition: false,
 		cannotStartReason: reason,
 		petLovePoints: petEntity?.lovePoints,
-		petNickname: petEntity?.nickname,
-		petId: petEntity?.typeId,
-		petSex: petEntity?.sex
+		pet: petEntity?.getBasicInfo()
 	});
 }
 
@@ -972,9 +951,7 @@ export default class PetExpeditionCommand {
 		response.push(makePacket(CommandPetExpeditionResolvePacketRes, {
 			success: expeditionSuccess,
 			...outcome,
-			petId: petEntity.typeId,
-			petSex: petEntity.sex,
-			petNickname: petEntity.nickname,
+			pet: petEntity.getBasicInfo(),
 			expedition: expeditionData,
 			badgeEarned
 		}));

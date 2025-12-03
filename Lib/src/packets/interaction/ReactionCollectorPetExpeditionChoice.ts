@@ -4,8 +4,8 @@ import {
 	ReactionCollectorData,
 	ReactionCollectorReaction
 } from "./ReactionCollectorPacket";
-import { SexTypeShort } from "../../constants/StringConstants";
 import { ExpeditionLocationType } from "../../constants/ExpeditionConstants";
+import { PetBasicInfo } from "../../types/PetBasicInfo";
 
 /**
  * Data for a single expedition option
@@ -51,11 +51,7 @@ export interface ExpeditionOptionData {
  * Data sent with the expedition choice menu
  */
 export class ReactionCollectorPetExpeditionChoiceData extends ReactionCollectorData {
-	petId!: number;
-
-	petSex!: SexTypeShort;
-
-	petNickname?: string;
+	pet!: PetBasicInfo;
 
 	expeditions!: ExpeditionOptionData[];
 
@@ -85,9 +81,7 @@ export class ReactionCollectorPetExpeditionCancelReaction extends ReactionCollec
  */
 export class ReactionCollectorPetExpeditionChoice extends ReactionCollector {
 	constructor(private readonly params: {
-		petId: number;
-		petSex: SexTypeShort;
-		petNickname?: string;
+		pet: PetBasicInfo;
 		expeditions: ExpeditionOptionData[];
 		hasGuild: boolean;
 		guildFoodAmount?: number;

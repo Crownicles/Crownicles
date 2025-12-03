@@ -4,8 +4,8 @@ import {
 import {
 	ExpeditionLocationType, ExpeditionStatus
 } from "../../constants/ExpeditionConstants";
-import { SexTypeShort } from "../../constants/StringConstants";
 import { PetFood } from "../../constants/PetConstants";
+import { PetBasicInfo } from "../../types/PetBasicInfo";
 
 /**
  * Reason why food was insufficient for expedition
@@ -112,11 +112,7 @@ export interface ExpeditionInProgressData extends ExpeditionClientData {
 	/**
 	 * Pet information
 	 */
-	petId: number;
-
-	petSex: SexTypeShort;
-
-	petNickname?: string;
+	pet: PetBasicInfo;
 
 	/**
 	 * Amount of food consumed for this expedition
@@ -172,19 +168,9 @@ export class CommandPetExpeditionPacketRes extends CrowniclesPacket {
 	petLovePoints?: number;
 
 	/**
-	 * Pet nickname for display in error messages
+	 * Pet info for display in error messages
 	 */
-	petNickname?: string;
-
-	/**
-	 * Pet type ID for display
-	 */
-	petId?: number;
-
-	/**
-	 * Pet sex for display
-	 */
-	petSex?: SexTypeShort;
+	pet?: PetBasicInfo;
 }
 
 /**
@@ -254,11 +240,7 @@ export class CommandPetExpeditionCancelPacketRes extends CrowniclesPacket {
 	/**
 	 * Pet information for display
 	 */
-	petId!: number;
-
-	petSex!: SexTypeShort;
-
-	petNickname?: string;
+	pet!: PetBasicInfo;
 }
 
 /**
@@ -274,11 +256,7 @@ export class CommandPetExpeditionRecallPacketRes extends CrowniclesPacket {
 	/**
 	 * Pet information for display
 	 */
-	petId!: number;
-
-	petSex!: SexTypeShort;
-
-	petNickname?: string;
+	pet!: PetBasicInfo;
 }
 
 /**
@@ -337,11 +315,7 @@ export class CommandPetExpeditionResolvePacketRes extends CrowniclesPacket {
 	/**
 	 * Pet information for display
 	 */
-	petId!: number;
-
-	petSex!: SexTypeShort;
-
-	petNickname?: string;
+	pet!: PetBasicInfo;
 
 	/**
 	 * The expedition data for display
