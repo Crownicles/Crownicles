@@ -58,7 +58,7 @@ export function formatFoodConsumedDetails(details: FoodConsumptionDetail[], lng:
 /**
  * Get the sex context string for i18n translations (male/female)
  */
-function getSexContext(sex: SexTypeShort): string {
+export function getSexContext(sex: SexTypeShort): string {
 	return sex === StringConstants.SEX.MALE.short ? StringConstants.SEX.MALE.long : StringConstants.SEX.FEMALE.long;
 }
 
@@ -95,7 +95,7 @@ async function sendResponse(
 /**
  * Get translated risk category name for display
  */
-function getTranslatedRiskCategoryName(riskRate: number, lng: Language): string {
+export function getTranslatedRiskCategoryName(riskRate: number, lng: Language): string {
 	const categoryKey = ExpeditionConstants.getRiskCategoryName(riskRate);
 	return i18n.t(`commands:petExpedition.riskCategories.${categoryKey}`, { lng });
 }
@@ -104,7 +104,7 @@ function getTranslatedRiskCategoryName(riskRate: number, lng: Language): string 
  * Get the display name for an expedition location
  * Uses the stylized expedition name based on mapLocationId
  */
-function getExpeditionLocationName(
+export function getExpeditionLocationName(
 	lng: Language,
 	mapLocationId: number,
 	isDistantExpedition?: boolean
@@ -117,6 +117,56 @@ function getExpeditionLocationName(
 		});
 	}
 	return expeditionName;
+}
+
+/**
+ * Parameters for building in-progress expedition description
+ */
+export interface InProgressDescriptionParams {
+	lng: Language;
+	petDisplay: string;
+	locationEmoji: string;
+	locationName: string;
+	riskRate: number;
+	returnTime: Date;
+	sexContext: string;
+	foodConsumed?: number;
+}
+
+/**
+ * Build the description text for an expedition in progress
+ */
+export function buildInProgressDescription(params: InProgressDescriptionParams): string {
+	const {
+		lng, petDisplay, locationEmoji, locationName, riskRate, returnTime, sexContext, foodConsumed
+	} = params;
+
+	const foodInfo = foodConsumed && foodConsumed > 0
+		? i18n.t("commands:petExpedition.inProgressFoodInfo", {
+			lng, amount: foodConsumed
+		})
+		: "";
+
+	const intro = i18n.t("commands:petExpedition.inProgressDescription.intro", {
+		lng, petDisplay
+	});
+	const destination = i18n.t("commands:petExpedition.inProgressDescription.destination", {
+		lng,
+		location: `${locationEmoji} ${locationName}`
+	});
+	const risk = i18n.t("commands:petExpedition.inProgressDescription.risk", {
+		lng,
+		risk: getTranslatedRiskCategoryName(riskRate, lng)
+	});
+	const returnTimeText = i18n.t("commands:petExpedition.inProgressDescription.returnTime", {
+		lng,
+		returnTime: finishInTimeDisplay(returnTime)
+	});
+	const warning = i18n.t("commands:petExpedition.inProgressDescription.warning", {
+		lng, context: sexContext
+	});
+
+	return `${intro}\n\n${destination}\n${risk}\n${returnTimeText}${foodInfo}\n\n${warning}`;
 }
 
 /**
@@ -155,35 +205,16 @@ function buildInProgressEmbed(
 	const petDisplay = `${DisplayUtils.getPetIcon(expedition.pet.petTypeId, expedition.pet.petSex)} **${DisplayUtils.getPetNicknameOrTypeName(expedition.pet.petNickname, expedition.pet.petTypeId, expedition.pet.petSex, lng)}**`;
 	const sexContext = getSexContext(expedition.pet.petSex);
 
-	const foodInfo = expedition.foodConsumed && expedition.foodConsumed > 0
-		? i18n.t("commands:petExpedition.inProgressFoodInfo", {
-			lng,
-			amount: expedition.foodConsumed
-		})
-		: "";
-
-	// Build description using nested translations
-	const intro = i18n.t("commands:petExpedition.inProgressDescription.intro", {
-		lng, petDisplay
-	});
-	const destination = i18n.t("commands:petExpedition.inProgressDescription.destination", {
+	const description = buildInProgressDescription({
 		lng,
-		location: `${locationEmoji} ${locationName}`
+		petDisplay,
+		locationEmoji,
+		locationName,
+		riskRate: expedition.riskRate,
+		returnTime: new Date(expedition.endTime),
+		sexContext,
+		foodConsumed: expedition.foodConsumed
 	});
-	const risk = i18n.t("commands:petExpedition.inProgressDescription.risk", {
-		lng,
-		risk: getTranslatedRiskCategoryName(expedition.riskRate, lng)
-	});
-	const returnTime = i18n.t("commands:petExpedition.inProgressDescription.returnTime", {
-		lng,
-		returnTime: finishInTimeDisplay(new Date(expedition.endTime))
-	});
-	const warning = i18n.t("commands:petExpedition.inProgressDescription.warning", {
-		lng,
-		context: sexContext
-	});
-
-	const description = `${intro}\n\n${destination}\n${risk}\n${returnTime}${foodInfo}\n\n${warning}`;
 
 	return new CrowniclesEmbed()
 		.formatAuthor(

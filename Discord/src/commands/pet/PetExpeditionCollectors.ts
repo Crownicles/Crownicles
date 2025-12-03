@@ -13,16 +13,11 @@ import {
 } from "discord.js";
 import { sendInteractionNotForYou } from "../../utils/ErrorUtils";
 import { escapeUsername } from "../../utils/StringUtils";
-import {
-	finishInTimeDisplay, minutesDisplay
-} from "../../../../Lib/src/utils/TimeUtils";
+import { minutesDisplay } from "../../../../Lib/src/utils/TimeUtils";
 import { ExpeditionConstants } from "../../../../Lib/src/constants/ExpeditionConstants";
 import { Language } from "../../../../Lib/src/Language";
 import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 import { DisplayUtils } from "../../utils/DisplayUtils";
-import {
-	SexTypeShort, StringConstants
-} from "../../../../Lib/src/constants/StringConstants";
 import { ReactionCollectorCreationPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { ReactionCollectorPetExpeditionData } from "../../../../Lib/src/packets/interaction/ReactionCollectorPetExpedition";
 import {
@@ -34,21 +29,12 @@ import { ReactionCollectorReturnTypeOrNull } from "../../packetHandlers/handlers
 import {
 	DiscordCollectorUtils, disableRows
 } from "../../utils/DiscordCollectorUtils";
-
-/**
- * Get the sex context string for i18n translations (male/female)
- */
-function getSexContext(sex: SexTypeShort): string {
-	return sex === StringConstants.SEX.MALE.short ? StringConstants.SEX.MALE.long : StringConstants.SEX.FEMALE.long;
-}
-
-/**
- * Get translated risk category name for display
- */
-function getTranslatedRiskCategoryName(riskRate: number, lng: Language): string {
-	const categoryKey = ExpeditionConstants.getRiskCategoryName(riskRate);
-	return i18n.t(`commands:petExpedition.riskCategories.${categoryKey}`, { lng });
-}
+import {
+	buildInProgressDescription,
+	getExpeditionLocationName,
+	getSexContext,
+	getTranslatedRiskCategoryName
+} from "./PetExpeditionHandler";
 
 /**
  * Get translated reward category name for display based on reward index
@@ -64,25 +50,6 @@ function getTranslatedRewardCategoryName(rewardIndex: number, lng: Language): st
 function getTranslatedDifficultyCategoryName(difficulty: number, lng: Language): string {
 	const categoryKey = ExpeditionConstants.getDifficultyCategoryName(difficulty);
 	return i18n.t(`commands:petExpedition.difficultyCategories.${categoryKey}`, { lng });
-}
-
-/**
- * Get the display name for an expedition location
- * Uses the stylized expedition name based on mapLocationId
- */
-function getExpeditionLocationName(
-	lng: Language,
-	mapLocationId: number,
-	isDistantExpedition?: boolean
-): string {
-	const expeditionName = i18n.t(`commands:petExpedition.mapLocationExpeditions.${mapLocationId}`, { lng });
-	if (isDistantExpedition) {
-		return i18n.t("commands:petExpedition.distantExpeditionPrefix", {
-			lng,
-			location: expeditionName
-		});
-	}
-	return expeditionName;
 }
 
 /**
@@ -105,13 +72,16 @@ export async function createPetExpeditionCollector(
 	const petDisplay = `${DisplayUtils.getPetIcon(data.pet.petTypeId, data.pet.petSex)} **${DisplayUtils.getPetNicknameOrTypeName(data.pet.petNickname, data.pet.petTypeId, data.pet.petSex, lng)}**`;
 	const sexContext = getSexContext(data.pet.petSex);
 
-	// Build food info string if food was consumed
-	const foodInfo = data.foodConsumed && data.foodConsumed > 0
-		? i18n.t("commands:petExpedition.inProgressFoodInfo", {
-			lng,
-			amount: data.foodConsumed
-		})
-		: "";
+	const description = buildInProgressDescription({
+		lng,
+		petDisplay,
+		locationEmoji,
+		locationName,
+		riskRate: data.riskRate,
+		returnTime: new Date(data.returnTime),
+		sexContext,
+		foodConsumed: data.foodConsumed
+	});
 
 	const embed = new CrowniclesEmbed()
 		.formatAuthor(
@@ -121,17 +91,7 @@ export async function createPetExpeditionCollector(
 			}),
 			interaction.user
 		)
-		.setDescription(
-			i18n.t("commands:petExpedition.inProgressDescription", {
-				lng,
-				context: sexContext,
-				petDisplay,
-				location: `${locationEmoji} ${locationName}`,
-				risk: getTranslatedRiskCategoryName(data.riskRate, lng),
-				returnTime: finishInTimeDisplay(new Date(data.returnTime)),
-				foodInfo
-			})
-		);
+		.setDescription(description);
 
 	const row = new ActionRowBuilder<ButtonBuilder>();
 	const recallButton = new ButtonBuilder()
