@@ -19,7 +19,7 @@ import { MapConstants } from "../../../../Lib/src/constants/MapConstants";
  * @returns The corresponding expedition location type
  */
 function getExpeditionTypeFromMapType(mapType: string): ExpeditionLocationType {
-	return ExpeditionConstants.MAP_TYPE_TO_EXPEDITION_TYPE[mapType] ?? ExpeditionConstants.LOCATION_TYPES.PLAINS;
+	return ExpeditionConstants.MAP_TYPE_TO_EXPEDITION_TYPE[mapType] ?? ExpeditionConstants.EXPEDITION_LOCATION_TYPES.PLAINS;
 }
 
 /**
@@ -158,7 +158,7 @@ function fillMissingLocalExpeditions(
 	bonusExpeditionIndex: number
 ): void {
 	while (expeditions.length < ExpeditionConstants.LOCAL_EXPEDITIONS_COUNT) {
-		const allLocationTypes = Object.values(ExpeditionConstants.LOCATION_TYPES) as ExpeditionLocationType[];
+		const allLocationTypes = Object.values(ExpeditionConstants.EXPEDITION_LOCATION_TYPES) as ExpeditionLocationType[];
 		const expedition = generateExpeditionWithConstraints({
 			durationRange: durationRanges[expeditions.length],
 			locationType: RandomUtils.crowniclesRandom.pick(allLocationTypes)

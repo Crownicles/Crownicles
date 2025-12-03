@@ -490,7 +490,7 @@ export abstract class ExpeditionConstants {
 	 * Location types for expeditions
 	 * Each location can influence reward types
 	 */
-	static readonly LOCATION_TYPES = {
+	static readonly EXPEDITION_LOCATION_TYPES = {
 		FOREST: "forest",
 		MOUNTAIN: "mountain",
 		DESERT: "desert",
@@ -505,7 +505,7 @@ export abstract class ExpeditionConstants {
 	 * Reward type weights by location
 	 * Higher weight = higher multiplier for that reward type
 	 */
-	static readonly LOCATION_REWARD_WEIGHTS: Record<(typeof ExpeditionConstants.LOCATION_TYPES)[keyof typeof ExpeditionConstants.LOCATION_TYPES], RewardWeights> = {
+	static readonly LOCATION_REWARD_WEIGHTS: Record<(typeof ExpeditionConstants.EXPEDITION_LOCATION_TYPES)[keyof typeof ExpeditionConstants.EXPEDITION_LOCATION_TYPES], RewardWeights> = {
 		forest: {
 			money: 0.8, experience: 1.3, points: 0.9
 		},
@@ -739,6 +739,6 @@ export abstract class ExpeditionConstants {
 }
 
 export type ExpeditionStatus = (typeof ExpeditionConstants.STATUS)[keyof typeof ExpeditionConstants.STATUS];
-export type ExpeditionLocationType = (typeof ExpeditionConstants.LOCATION_TYPES)[keyof typeof ExpeditionConstants.LOCATION_TYPES];
+export type ExpeditionLocationType = (typeof ExpeditionConstants.EXPEDITION_LOCATION_TYPES)[keyof typeof ExpeditionConstants.EXPEDITION_LOCATION_TYPES];
 export type RewardWeights = Record<"money" | "experience" | "points", number>;
 export type SpeedCategory = (typeof ExpeditionConstants.SPEED_CATEGORIES)[keyof typeof ExpeditionConstants.SPEED_CATEGORIES];
