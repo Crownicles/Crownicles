@@ -52,8 +52,16 @@ async function canContinueSmallEvent(response: CrowniclesPacket[], player: Playe
 		return false;
 	}
 
-	// Check if the dwarf has already seen this pet
+	// Check if the dwarf has already seen this pet type
 	if (await DwarfPetsSeen.isPetSeen(player, petEntity.typeId)) {
+		// Check if this is a clone - Talvar notices something is off
+		if (await PetUtils.isPetClone(player)) {
+			response.push(makePacket(SmallEventDwarfPetFanPacket, {
+				interactionName: SmallEventConstants.DWARF_PET_FAN.INTERACTIONS_NAMES.CLONE_PET_ALREADY_SEEN,
+				...petEntity.getBasicInfo()
+			}));
+			return false;
+		}
 		response.push(makePacket(SmallEventDwarfPetFanPacket, {
 			interactionName: SmallEventConstants.DWARF_PET_FAN.INTERACTIONS_NAMES.PET_ALREADY_SEEN,
 			...petEntity.getBasicInfo()
