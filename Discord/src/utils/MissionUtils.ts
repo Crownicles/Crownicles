@@ -5,7 +5,7 @@ import { Language } from "../../../Lib/src/Language";
 import i18n from "../translations/i18n";
 import { MissionUtils as MissionUtilsLib } from "../../../Lib/src/utils/MissionUtils";
 import {
-	dateDisplay, hoursToMilliseconds
+	dateDisplay, hoursToMilliseconds, minutesDisplay
 } from "../../../Lib/src/utils/TimeUtils";
 import { getTranslatedRiskCategoryName } from "../commands/pet/expedition/ExpeditionDisplayUtils";
 
@@ -89,6 +89,9 @@ export class MissionUtils {
 		}
 		if (mission.missionId === "dangerousExpedition") {
 			return getTranslatedRiskCategoryName(mission.missionVariant, lng);
+		}
+		if (mission.missionId === "longExpedition") {
+			return minutesDisplay(mission.missionVariant, lng);
 		}
 		if (!MissionUtilsLib.isRequiredFightActionId(mission)) {
 			return i18n.t([`models:missionVariants.${mission.missionId}`, "models:missionVariants.default"], {

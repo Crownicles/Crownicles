@@ -1274,7 +1274,7 @@
     "meetVelanna": "Rencontrer Velanna",
     "doExpeditions_one": "Réussir {{count}} expédition",
     "doExpeditions_other": "Réussir {{count}} expéditions",
-    "longExpedition": "Réussir une expédition d'au moins {{variantText}} minutes",
+    "longExpedition": "Réussir une expédition d'au moins {{variantText}}",
     "dangerousExpedition": "Réussir une expédition de dangerosité \"{{variantText}}\" ou supérieure",
     "expeditionStreak_one": "Réussir {{count}} expédition d'affilée",
     "expeditionStreak_other": "Réussir {{count}} expéditions d'affilée",
