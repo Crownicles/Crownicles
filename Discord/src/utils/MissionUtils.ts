@@ -7,6 +7,7 @@ import { MissionUtils as MissionUtilsLib } from "../../../Lib/src/utils/MissionU
 import {
 	dateDisplay, hoursToMilliseconds
 } from "../../../Lib/src/utils/TimeUtils";
+import { getTranslatedRiskCategoryName } from "../commands/pet/expedition/ExpeditionDisplayUtils";
 
 export class MissionUtils {
 	/**
@@ -85,6 +86,9 @@ export class MissionUtils {
 		}
 		if (mission.missionId === "chooseClassTier") {
 			return String(mission.missionVariant + 1);
+		}
+		if (mission.missionId === "dangerousExpedition") {
+			return getTranslatedRiskCategoryName(mission.missionVariant, lng);
 		}
 		if (!MissionUtilsLib.isRequiredFightActionId(mission)) {
 			return i18n.t([`models:missionVariants.${mission.missionId}`, "models:missionVariants.default"], {
