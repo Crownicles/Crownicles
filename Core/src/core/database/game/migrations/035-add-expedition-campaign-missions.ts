@@ -11,9 +11,9 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 		40, // doExpeditions (after trainedPet)
 		76, // longExpedition 120min (after fightStreak)
 		83, // longExpedition 300min (after drinkEnergyPotion)
-		90, // expeditionStreak (after meetHermit)
-		95, // dangerousExpedition 30% (after sellItemWithGivenCost)
-		95, // dangerousExpedition 50%
+		83, // dangerousExpedition 30% (after longExpedition 300min)
+		89, // expeditionStreak (after meetHermit)
+		95, // dangerousExpedition 50% (after sellItemWithGivenCost)
 		98  // showCloneToTalvar (at the very end)
 	]);
 }
@@ -23,8 +23,8 @@ export async function down({ context }: { context: QueryInterface }): Promise<vo
 		40,
 		76,
 		83,
-		90,
-		95,
+		83,
+		89,
 		95,
 		98
 	]);
