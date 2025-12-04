@@ -1013,11 +1013,18 @@
         "Le flair de **{{pet}}** vous a permis de trouver un raccourci. Grâce à elle, vous avez gagné **{{amountDisplay}}** {emote:unitValues.timeGain}.",
         "Défendre **{{pet}}** contre {{randomAnimal}} sauvage n'a pas été une mince affaire, et cette fois, vous avez trouvé plus fort que vous. Vous décidez de prendre la fuite, et courez à toute vitesse. Grâce à cette mésaventure vous gagnez **{{amountDisplay}}** {emote:unitValues.timeGain} sur votre trajet."
       ],
-      "points": [
+      "points_m": [
         "Les personnes qui vous croisent avec **{{pet}}** ne manquent pas de vous remarquer. Cela améliore votre réputation et vous gagnez donc **{{amount}}** {emote:unitValues.score}.",
         "Raconter vos aventures auprès de **{{pet}}** à un vieil homme semble avoir amélioré votre réputation. Vous gagnez **{{amount}}** {emote:unitValues.score}."
       ],
-      "badge": [
+      "points_f": [
+        "Les personnes qui vous croisent avec **{{pet}}** ne manquent pas de vous remarquer. Cela améliore votre réputation et vous gagnez donc **{{amount}}** {emote:unitValues.score}.",
+        "Raconter vos aventures auprès de **{{pet}}** à un vieil homme semble avoir amélioré votre réputation. Vous gagnez **{{amount}}** {emote:unitValues.score}."
+      ],
+      "badge_m": [
+        "Réussir à dresser **{{pet}}** a été un véritable défi qui prouve votre talent avec les animaux. Vous obtenez le badge {{badge}} !"
+      ],
+      "badge_f": [
         "Réussir à dresser **{{pet}}** a été un véritable défi qui prouve votre talent avec les animaux. Vous obtenez le badge {{badge}} !"
       ],
       "loseLife_m": [
@@ -1086,7 +1093,10 @@
         "Après une longue marche, **{{pet}}** est essoufflée, il semblerait qu'elle n'arrive pas à vous suivre. Ne pas l'avoir attendu a détérioré votre relation. Elle perd donc un peu en amour...",
         "À l'approche d'un stand, **{{pet}}** fixe avec insistance la nourriture posée sur une planche. Malgré sa requête, vous décidez de continuer votre route. **{{pet}}** est rancunière, elle perd un peu foi en vous."
       ],
-      "nothing": [
+      "nothing_m": [
+        "Vous continuez votre route aux côtés de **{{pet}}**. Rien de spécial ne se passe."
+      ],
+      "nothing_f": [
         "Vous continuez votre route aux côtés de **{{pet}}**. Rien de spécial ne se passe."
       ]
     },
