@@ -14,10 +14,8 @@ import {
 import { sendInteractionNotForYou } from "../../utils/ErrorUtils";
 import { escapeUsername } from "../../utils/StringUtils";
 import { minutesDisplay } from "../../../../Lib/src/utils/TimeUtils";
-import { ExpeditionConstants } from "../../../../Lib/src/constants/ExpeditionConstants";
 import { Language } from "../../../../Lib/src/Language";
 import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
-import { DisplayUtils } from "../../utils/DisplayUtils";
 import { ReactionCollectorCreationPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { ReactionCollectorPetExpeditionData } from "../../../../Lib/src/packets/interaction/ReactionCollectorPetExpedition";
 import {
@@ -33,24 +31,10 @@ import {
 	buildInProgressDescription,
 	getExpeditionLocationName,
 	getSexContext,
-	getTranslatedRiskCategoryName
-} from "./PetExpeditionHandler";
-
-/**
- * Get translated reward category name for display based on reward index
- */
-function getTranslatedRewardCategoryName(rewardIndex: number, lng: Language): string {
-	const categoryKey = ExpeditionConstants.getRewardCategoryName(rewardIndex);
-	return i18n.t(`commands:petExpedition.rewardCategories.${categoryKey}`, { lng });
-}
-
-/**
- * Get translated difficulty category name for display
- */
-function getTranslatedDifficultyCategoryName(difficulty: number, lng: Language): string {
-	const categoryKey = ExpeditionConstants.getDifficultyCategoryName(difficulty);
-	return i18n.t(`commands:petExpedition.difficultyCategories.${categoryKey}`, { lng });
-}
+	getTranslatedRiskCategoryName,
+	buildExpeditionOptionText,
+	getPetDisplayString
+} from "./expedition/ExpeditionDisplayUtils";
 
 /**
  * Create a collector for the expedition in progress view with recall option
@@ -69,7 +53,7 @@ export async function createPetExpeditionCollector(
 
 	const locationEmoji = CrowniclesIcons.expedition.locations[data.locationType];
 	const locationName = getExpeditionLocationName(lng, data.mapLocationId, data.isDistantExpedition);
-	const petDisplay = `${DisplayUtils.getPetIcon(data.pet.petTypeId, data.pet.petSex)} **${DisplayUtils.getPetNicknameOrTypeName(data.pet.petNickname, data.pet.petTypeId, data.pet.petSex, lng)}**`;
+	const petDisplay = getPetDisplayString(data.pet, lng);
 	const sexContext = getSexContext(data.pet.petSex);
 
 	const description = buildInProgressDescription({
@@ -146,59 +130,6 @@ export async function createPetExpeditionCollector(
 	});
 
 	return [collector];
-}
-
-/**
- * Build expedition option description text for a single expedition
- */
-function buildExpeditionOptionText(
-	exp: ExpeditionOptionData,
-	index: number,
-	lng: Language
-): string {
-	const locationEmoji = CrowniclesIcons.expedition.locations[exp.locationType];
-	const locationName = getExpeditionLocationName(lng, exp.mapLocationId, exp.isDistantExpedition);
-	const displayDuration = minutesDisplay(exp.displayDurationMinutes, lng);
-	const foodCost = exp.foodCost ?? 1;
-	const foodDisplay = i18n.t("commands:petExpedition.foodCost", {
-		lng, count: foodCost
-	});
-
-	// Build option text using nested translations
-	const header = i18n.t("commands:petExpedition.expeditionOption.header", {
-		lng,
-		number: index + 1,
-		location: `${locationEmoji} **${locationName}**`
-	});
-	const duration = i18n.t("commands:petExpedition.expeditionOption.duration", {
-		lng,
-		duration: displayDuration
-	});
-	const risk = i18n.t("commands:petExpedition.expeditionOption.risk", {
-		lng,
-		risk: getTranslatedRiskCategoryName(exp.riskRate, lng)
-	});
-	const reward = i18n.t("commands:petExpedition.expeditionOption.reward", {
-		lng,
-		reward: getTranslatedRewardCategoryName(exp.rewardIndex, lng)
-	});
-	const difficulty = i18n.t("commands:petExpedition.expeditionOption.difficulty", {
-		lng,
-		difficulty: getTranslatedDifficultyCategoryName(exp.difficulty, lng)
-	});
-	const food = i18n.t("commands:petExpedition.expeditionOption.food", {
-		lng,
-		foodDisplay
-	});
-
-	let optionText = `\n\n${header}\n${duration}\n${risk}\n${reward}\n${difficulty}\n${food}`;
-
-	// Add clone talisman bonus tag if present
-	if (exp.hasCloneTalismanBonus) {
-		optionText += `\n${i18n.t("commands:petExpedition.expeditionOption.cloneTalismanBonus", { lng })}`;
-	}
-
-	return optionText;
 }
 
 /**
@@ -288,7 +219,7 @@ export async function createPetExpeditionChoiceCollector(
 
 	const data = packet.data.data as ReactionCollectorPetExpeditionChoiceData;
 	const lng = interaction.userLanguage;
-	const petDisplay = `${DisplayUtils.getPetIcon(data.pet.petTypeId, data.pet.petSex)} **${DisplayUtils.getPetNicknameOrTypeName(data.pet.petNickname, data.pet.petTypeId, data.pet.petSex, lng)}**`;
+	const petDisplay = getPetDisplayString(data.pet, lng);
 
 	// Build description with all expedition options
 	let description = i18n.t("commands:petExpedition.chooseExpedition", {
@@ -357,7 +288,7 @@ function buildFinishedExpeditionEmbed(
 ): CrowniclesEmbed {
 	const locationEmoji = CrowniclesIcons.expedition.locations[data.locationType];
 	const locationName = getExpeditionLocationName(lng, data.mapLocationId, data.isDistantExpedition);
-	const petDisplay = `${DisplayUtils.getPetIcon(data.pet.petTypeId, data.pet.petSex)} **${DisplayUtils.getPetNicknameOrTypeName(data.pet.petNickname, data.pet.petTypeId, data.pet.petSex, lng)}**`;
+	const petDisplay = getPetDisplayString(data.pet, lng);
 	const sexContext = getSexContext(data.pet.petSex);
 
 	const talismanName = i18n.t("commands:petExpedition.finishedDescription.talisman.name", { lng });
