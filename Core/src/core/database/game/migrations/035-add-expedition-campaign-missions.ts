@@ -16,6 +16,15 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 		95, // dangerousExpedition 50% (after sellItemWithGivenCost)
 		98  // showCloneToTalvar (at the very end)
 	]);
+
+	// Handle players who have already completed the campaign
+	// They need to be set to the first new mission (position 40 -> doExpeditions)
+	await context.sequelize.query(`
+		UPDATE player_missions_info
+		SET campaignProgression = 40
+		WHERE campaignProgression = 0
+		  AND LENGTH(campaignBlob) > 0
+	`);
 }
 
 export async function down({ context }: { context: QueryInterface }): Promise<void> {
