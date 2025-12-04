@@ -42,6 +42,8 @@ import {
 	handleActiveExpedition,
 	setResolveExpeditionFunction
 } from "../../core/expeditions/ExpeditionCollectorFactory";
+import { MissionsController } from "../../core/missions/MissionsController";
+import { MissionSlots } from "../../core/database/game/models/MissionSlot";
 
 /**
  * Expedition log parameters
@@ -260,6 +262,36 @@ export default class PetExpeditionCommand {
 			outcome.rewards,
 			outcome.loveChange
 		).then();
+
+		// Update expedition missions
+		if (expeditionSuccess) {
+			// Update doExpeditions mission (count successful expeditions)
+			await MissionsController.update(player, response, { missionId: "doExpeditions" });
+
+			// Update longExpedition mission (check duration)
+			await MissionsController.update(player, response, {
+				missionId: "longExpedition",
+				params: { durationMinutes: expeditionData.durationMinutes }
+			});
+
+			// Update dangerousExpedition mission (check risk rate)
+			await MissionsController.update(player, response, {
+				missionId: "dangerousExpedition",
+				params: { riskRate: expeditionData.riskRate }
+			});
+
+			// Update expeditionStreak mission (consecutive successes)
+			await MissionsController.update(player, response, { missionId: "expeditionStreak" });
+		}
+		else {
+			// Reset expedition streak on failure
+			const missionSlots = await MissionSlots.getOfPlayer(player.id);
+			const streakMission = missionSlots.find(slot => slot.missionId === "expeditionStreak");
+			if (streakMission && !streakMission.isCompleted()) {
+				streakMission.numberDone = 0;
+				await streakMission.save();
+			}
+		}
 
 		// Check for expert expediteur badge
 		const badgeEarned = await checkAndAwardExpeditionBadge(player, expeditionSuccess);

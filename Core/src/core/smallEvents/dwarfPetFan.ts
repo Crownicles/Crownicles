@@ -152,6 +152,11 @@ async function manageNewPetSeen(response: CrowniclesPacket[], player: Player, pe
 	}));
 
 	await MissionsController.update(player, response, { missionId: "showPetsToTalvar" });
+
+	// If the pet is a clone, update the showCloneToTalvar mission
+	if (isPetClone) {
+		await MissionsController.update(player, response, { missionId: "showCloneToTalvar" });
+	}
 }
 
 export const smallEventFuncs: SmallEventFuncs = {
