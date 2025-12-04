@@ -50,9 +50,10 @@ export class PetExpedition extends Model {
 
 	/**
 	 * Get the duration of the expedition in minutes
+	 * Returns the absolute value to prevent negative durations
 	 */
 	public getDurationMinutes(): number {
-		return millisecondsToMinutes(this.endDate.getTime() - this.startDate.getTime());
+		return Math.max(0, millisecondsToMinutes(this.endDate.getTime() - this.startDate.getTime()));
 	}
 
 	/**
