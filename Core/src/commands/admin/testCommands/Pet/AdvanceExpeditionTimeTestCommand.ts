@@ -22,8 +22,10 @@ const advanceExpeditionTimeTestCommand: ExecuteTestCommandLike = async (player, 
 		return "❌ Vous n'avez pas d'expédition en cours !";
 	}
 
-	// Subtract time from both start and end dates to preserve the original duration
-	// This way the expedition duration stored in logs will remain correct
+	/*
+	 * Subtract time from both start and end dates to preserve the original duration
+	 * This way the expedition duration stored in logs will remain correct
+	 */
 	const newStartDate = new Date(activeExpedition.startDate.getTime() - minutesToAdvance * 60 * 1000);
 	const newEndDate = new Date(activeExpedition.endDate.getTime() - minutesToAdvance * 60 * 1000);
 	activeExpedition.startDate = newStartDate;
