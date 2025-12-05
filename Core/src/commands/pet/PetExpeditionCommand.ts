@@ -76,6 +76,37 @@ function extractExpeditionLogParams(
 }
 
 /**
+ * Update expedition-related missions based on outcome
+ */
+async function updateExpeditionMissions(
+	player: Player,
+	response: CrowniclesPacket[],
+	expeditionData: ExpeditionData,
+	expeditionSuccessful: boolean
+): Promise<void> {
+	if (expeditionSuccessful) {
+		await MissionsController.update(player, response, { missionId: "doExpeditions" });
+		await MissionsController.update(player, response, {
+			missionId: "longExpedition",
+			params: { durationMinutes: expeditionData.durationMinutes }
+		});
+		await MissionsController.update(player, response, {
+			missionId: "dangerousExpedition",
+			params: { riskRate: expeditionData.riskRate }
+		});
+		await MissionsController.update(player, response, { missionId: "expeditionStreak" });
+	}
+	else {
+		const missionSlots = await MissionSlots.getOfPlayer(player.id);
+		const streakMission = missionSlots.find(slot => slot.missionId === "expeditionStreak");
+		if (streakMission && !streakMission.isCompleted()) {
+			streakMission.numberDone = 0;
+			await streakMission.save();
+		}
+	}
+}
+
+/**
  * Check and award expert expediteur badge if conditions are met
  */
 async function checkAndAwardExpeditionBadge(
@@ -264,34 +295,7 @@ export default class PetExpeditionCommand {
 		).then();
 
 		// Update expedition missions
-		if (expeditionSuccess) {
-			// Update doExpeditions mission (count successful expeditions)
-			await MissionsController.update(player, response, { missionId: "doExpeditions" });
-
-			// Update longExpedition mission (check duration)
-			await MissionsController.update(player, response, {
-				missionId: "longExpedition",
-				params: { durationMinutes: expeditionData.durationMinutes }
-			});
-
-			// Update dangerousExpedition mission (check risk rate)
-			await MissionsController.update(player, response, {
-				missionId: "dangerousExpedition",
-				params: { riskRate: expeditionData.riskRate }
-			});
-
-			// Update expeditionStreak mission (consecutive successes)
-			await MissionsController.update(player, response, { missionId: "expeditionStreak" });
-		}
-		else {
-			// Reset expedition streak on failure
-			const missionSlots = await MissionSlots.getOfPlayer(player.id);
-			const streakMission = missionSlots.find(slot => slot.missionId === "expeditionStreak");
-			if (streakMission && !streakMission.isCompleted()) {
-				streakMission.numberDone = 0;
-				await streakMission.save();
-			}
-		}
+		await updateExpeditionMissions(player, response, expeditionData, expeditionSuccess);
 
 		// Check for expert expediteur badge
 		const badgeEarned = await checkAndAwardExpeditionBadge(player, expeditionSuccess);

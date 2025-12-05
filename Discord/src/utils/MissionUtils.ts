@@ -76,22 +76,24 @@ export class MissionUtils {
 	}
 
 	/**
+	 * Handlers for specific mission variant text generation
+	 */
+	private static readonly variantTextHandlers: Record<string, (mission: BaseMission, lng: Language) => string> = {
+		fromPlaceToPlace: (mission, lng) => MissionUtils.manageFromPlaceToPlaceVariant(mission, lng),
+		chooseClassTier: mission => String(mission.missionVariant + 1),
+		dangerousExpedition: (mission, lng) => getTranslatedRiskCategoryName(mission.missionVariant, lng),
+		longExpedition: (mission, lng) => minutesDisplay(mission.missionVariant, lng)
+	};
+
+	/**
 	 * Get the text version of a mission variant
 	 * @param mission
 	 * @param lng
 	 */
 	private static getVariantText(mission: BaseMission, lng: Language): string {
-		if (mission.missionId === "fromPlaceToPlace") {
-			return this.manageFromPlaceToPlaceVariant(mission, lng);
-		}
-		if (mission.missionId === "chooseClassTier") {
-			return String(mission.missionVariant + 1);
-		}
-		if (mission.missionId === "dangerousExpedition") {
-			return getTranslatedRiskCategoryName(mission.missionVariant, lng);
-		}
-		if (mission.missionId === "longExpedition") {
-			return minutesDisplay(mission.missionVariant, lng);
+		const handler = this.variantTextHandlers[mission.missionId];
+		if (handler) {
+			return handler(mission, lng);
 		}
 		if (!MissionUtilsLib.isRequiredFightActionId(mission)) {
 			return i18n.t([`models:missionVariants.${mission.missionId}`, "models:missionVariants.default"], {
