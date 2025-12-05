@@ -60,6 +60,7 @@ async function canContinueSmallEvent(response: CrowniclesPacket[], player: Playe
 				interactionName: SmallEventConstants.DWARF_PET_FAN.INTERACTIONS_NAMES.CLONE_PET_ALREADY_SEEN,
 				...petEntity.getBasicInfo()
 			}));
+			await MissionsController.update(player, response, { missionId: "showCloneToTalvar" });
 			return false;
 		}
 		response.push(makePacket(SmallEventDwarfPetFanPacket, {
