@@ -42,6 +42,8 @@ import {
 	handleActiveExpedition,
 	setResolveExpeditionFunction
 } from "../../core/expeditions/ExpeditionCollectorFactory";
+import { MissionsController } from "../../core/missions/MissionsController";
+import { MissionSlots } from "../../core/database/game/models/MissionSlot";
 
 /**
  * Expedition log parameters
@@ -71,6 +73,46 @@ function extractExpeditionLogParams(
 		rewardIndex: activeExpedition.rewardIndex,
 		success
 	};
+}
+
+/**
+ * Reset expedition streak mission progress if the latest expedition failed
+ */
+async function resetExpeditionStreakMission(player: Player): Promise<void> {
+	const missionSlots = await MissionSlots.getOfPlayer(player.id);
+	const streakMission = missionSlots.find(slot => slot.missionId === "expeditionStreak");
+	if (!streakMission || streakMission.isCompleted()) {
+		return;
+	}
+
+	streakMission.numberDone = 0;
+	await streakMission.save();
+}
+
+/**
+ * Update expedition-related missions based on outcome
+ */
+async function updateExpeditionMissions(
+	player: Player,
+	response: CrowniclesPacket[],
+	expeditionData: ExpeditionData,
+	expeditionSuccessful: boolean
+): Promise<void> {
+	if (!expeditionSuccessful) {
+		await resetExpeditionStreakMission(player);
+		return;
+	}
+
+	await MissionsController.update(player, response, { missionId: "doExpeditions" });
+	await MissionsController.update(player, response, {
+		missionId: "longExpedition",
+		params: { durationMinutes: expeditionData.durationMinutes }
+	});
+	await MissionsController.update(player, response, {
+		missionId: "dangerousExpedition",
+		params: { riskRate: expeditionData.riskRate }
+	});
+	await MissionsController.update(player, response, { missionId: "expeditionStreak" });
 }
 
 /**
@@ -260,6 +302,9 @@ export default class PetExpeditionCommand {
 			outcome.rewards,
 			outcome.loveChange
 		).then();
+
+		// Update expedition missions
+		await updateExpeditionMissions(player, response, expeditionData, expeditionSuccess);
 
 		// Check for expert expediteur badge
 		const badgeEarned = await checkAndAwardExpeditionBadge(player, expeditionSuccess);

@@ -24,6 +24,7 @@ import {
 } from "../utils/ItemUtils";
 import { ItemWithDetails } from "../../../../Lib/src/types/ItemWithDetails";
 import { SmallEventConstants } from "../../../../Lib/src/constants/SmallEventConstants";
+import { MissionsController } from "../missions/MissionsController";
 
 /**
  * Check if the small event can be executed for this player
@@ -348,6 +349,8 @@ async function executeSmallEvent(
 	context: PacketContext,
 	_testArgs?: string[]
 ): Promise<void> {
+	await MissionsController.update(player, response, { missionId: "meetVelanna" });
+
 	if (player.hasTalisman) {
 		await handlePlayerWithTalisman(response, player, context);
 	}

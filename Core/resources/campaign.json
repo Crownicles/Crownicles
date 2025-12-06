@@ -201,6 +201,14 @@
       "moneyToWin": 0
     },
     {
+      "missionId": "meetVelanna",
+      "missionVariant": 0,
+      "missionObjective": 1,
+      "gemsToWin": 3,
+      "xpToWin": 150,
+      "moneyToWin": 0
+    },
+    {
       "missionId": "havePet",
       "missionVariant": 0,
       "missionObjective": 1,
@@ -302,6 +310,14 @@
       "missionObjective": 1,
       "gemsToWin": 3,
       "xpToWin": 200,
+      "moneyToWin": 0
+    },
+    {
+      "missionId": "doExpeditions",
+      "missionVariant": 0,
+      "missionObjective": 1,
+      "gemsToWin": 2,
+      "xpToWin": 150,
       "moneyToWin": 0
     },
     {
@@ -593,6 +609,14 @@
       "moneyToWin": 0
     },
     {
+      "missionId": "longExpedition",
+      "missionVariant": 120,
+      "missionObjective": 1,
+      "gemsToWin": 3,
+      "xpToWin": 200,
+      "moneyToWin": 0
+    },
+    {
       "missionId": "earnPoints",
       "missionVariant": 0,
       "missionObjective": 15000,
@@ -643,9 +667,25 @@
     {
       "missionId": "drinkEnergyPotion",
       "missionVariant": 0,
-      "missionObjective": 5,
-      "gemsToWin": 3,
-      "xpToWin": 110,
+      "missionObjective": 3,
+      "gemsToWin": 1,
+      "xpToWin": 50,
+      "moneyToWin": 0
+    },
+    {
+      "missionId": "longExpedition",
+      "missionVariant": 300,
+      "missionObjective": 1,
+      "gemsToWin": 5,
+      "xpToWin": 350,
+      "moneyToWin": 0
+    },
+    {
+      "missionId": "dangerousExpedition",
+      "missionVariant": 30,
+      "missionObjective": 1,
+      "gemsToWin": 5,
+      "xpToWin": 300,
       "moneyToWin": 0
     },
     {
@@ -705,6 +745,14 @@
       "moneyToWin": 0
     },
     {
+      "missionId": "expeditionStreak",
+      "missionVariant": 0,
+      "missionObjective": 3,
+      "gemsToWin": 4,
+      "xpToWin": 250,
+      "moneyToWin": 0
+    },
+    {
       "missionId": "drinkPotionRarity",
       "missionVariant": 7,
       "missionObjective": 1,
@@ -745,6 +793,14 @@
       "moneyToWin": 0
     },
     {
+      "missionId": "dangerousExpedition",
+      "missionVariant": 50,
+      "missionObjective": 1,
+      "gemsToWin": 7,
+      "xpToWin": 400,
+      "moneyToWin": 0
+    },
+    {
       "missionId": "fightHealthPercent",
       "missionVariant": 5,
       "missionObjective": 1,
@@ -766,6 +822,14 @@
       "missionObjective": 20,
       "gemsToWin": 7,
       "xpToWin": 520,
+      "moneyToWin": 0
+    },
+    {
+      "missionId": "showCloneToTalvar",
+      "missionVariant": 0,
+      "missionObjective": 1,
+      "gemsToWin": 10,
+      "xpToWin": 500,
       "moneyToWin": 0
     }
   ]

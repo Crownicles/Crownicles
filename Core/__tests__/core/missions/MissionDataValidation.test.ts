@@ -121,5 +121,41 @@ describe("Mission JSON files validation", () => {
 				}
 			}
 		});
+
+		it("should have all variants referenced in difficulties", () => {
+			const objectives = missionData.objectives;
+			const difficulties = missionData.difficulties;
+
+			// Skip campaign-only missions or missions without objectives/difficulties
+			if (!objectives || !difficulties || objectives.length === 0) {
+				return;
+			}
+
+			// Collect all variant indexes referenced in difficulties
+			const referencedVariants = new Set<number>();
+			for (const indexes of Object.values(difficulties)) {
+				if (indexes) {
+					for (const index of indexes) {
+						referencedVariants.add(index);
+					}
+				}
+			}
+
+			// Check that all variants (0 to objectives.length - 1) are referenced
+			const totalVariants = objectives.length;
+			const unreferencedVariants: number[] = [];
+
+			for (let i = 0; i < totalVariants; i++) {
+				if (!referencedVariants.has(i)) {
+					unreferencedVariants.push(i);
+				}
+			}
+
+			expect(
+				unreferencedVariants,
+				`Mission has ${unreferencedVariants.length} unreferenced variant(s): [${unreferencedVariants.join(", ")}]. ` +
+				`All variants (0-${totalVariants - 1}) must be referenced in difficulties (easy/medium/hard).`
+			).toHaveLength(0);
+		});
 	});
 });

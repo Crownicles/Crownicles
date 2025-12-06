@@ -60,6 +60,7 @@ async function canContinueSmallEvent(response: CrowniclesPacket[], player: Playe
 				interactionName: SmallEventConstants.DWARF_PET_FAN.INTERACTIONS_NAMES.CLONE_PET_ALREADY_SEEN,
 				...petEntity.getBasicInfo()
 			}));
+			await MissionsController.update(player, response, { missionId: "showCloneToTalvar" });
 			return false;
 		}
 		response.push(makePacket(SmallEventDwarfPetFanPacket, {
@@ -152,6 +153,11 @@ async function manageNewPetSeen(response: CrowniclesPacket[], player: Player, pe
 	}));
 
 	await MissionsController.update(player, response, { missionId: "showPetsToTalvar" });
+
+	// If the pet is a clone, update the showCloneToTalvar mission
+	if (isPetClone) {
+		await MissionsController.update(player, response, { missionId: "showCloneToTalvar" });
+	}
 }
 
 export const smallEventFuncs: SmallEventFuncs = {
