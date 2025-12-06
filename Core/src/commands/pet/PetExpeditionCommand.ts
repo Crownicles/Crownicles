@@ -76,6 +76,20 @@ function extractExpeditionLogParams(
 }
 
 /**
+ * Reset expedition streak mission progress if the latest expedition failed
+ */
+async function resetExpeditionStreakMission(player: Player): Promise<void> {
+	const missionSlots = await MissionSlots.getOfPlayer(player.id);
+	const streakMission = missionSlots.find(slot => slot.missionId === "expeditionStreak");
+	if (!streakMission || streakMission.isCompleted()) {
+		return;
+	}
+
+	streakMission.numberDone = 0;
+	await streakMission.save();
+}
+
+/**
  * Update expedition-related missions based on outcome
  */
 async function updateExpeditionMissions(
@@ -84,26 +98,21 @@ async function updateExpeditionMissions(
 	expeditionData: ExpeditionData,
 	expeditionSuccessful: boolean
 ): Promise<void> {
-	if (expeditionSuccessful) {
-		await MissionsController.update(player, response, { missionId: "doExpeditions" });
-		await MissionsController.update(player, response, {
-			missionId: "longExpedition",
-			params: { durationMinutes: expeditionData.durationMinutes }
-		});
-		await MissionsController.update(player, response, {
-			missionId: "dangerousExpedition",
-			params: { riskRate: expeditionData.riskRate }
-		});
-		await MissionsController.update(player, response, { missionId: "expeditionStreak" });
+	if (!expeditionSuccessful) {
+		await resetExpeditionStreakMission(player);
+		return;
 	}
-	else {
-		const missionSlots = await MissionSlots.getOfPlayer(player.id);
-		const streakMission = missionSlots.find(slot => slot.missionId === "expeditionStreak");
-		if (streakMission && !streakMission.isCompleted()) {
-			streakMission.numberDone = 0;
-			await streakMission.save();
-		}
-	}
+
+	await MissionsController.update(player, response, { missionId: "doExpeditions" });
+	await MissionsController.update(player, response, {
+		missionId: "longExpedition",
+		params: { durationMinutes: expeditionData.durationMinutes }
+	});
+	await MissionsController.update(player, response, {
+		missionId: "dangerousExpedition",
+		params: { riskRate: expeditionData.riskRate }
+	});
+	await MissionsController.update(player, response, { missionId: "expeditionStreak" });
 }
 
 /**
