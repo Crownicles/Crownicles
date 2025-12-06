@@ -12,32 +12,40 @@ import {
  * @param language
  */
 function getMinutesDisplayStringConstants(language: string): {
+	daysDisplay: string;
 	hoursDisplay: string;
 	minutesDisplay: string;
 	secondsDisplay: string;
+	lessThanOneMinute: string;
 	plural: string;
 	linkWord: string;
 } {
 	return language === ""
 		? {
+			daysDisplay: "D",
 			hoursDisplay: "H",
 			minutesDisplay: "Min",
 			secondsDisplay: "s",
+			lessThanOneMinute: "< 1 Min",
 			linkWord: " ",
 			plural: ""
 		}
 		: language === LANGUAGE.FRENCH
 			? {
+				daysDisplay: "jour",
 				hoursDisplay: "heure",
 				minutesDisplay: "minute",
 				secondsDisplay: "seconde",
+				lessThanOneMinute: "< 1 minute",
 				linkWord: " et ",
 				plural: "s"
 			}
 			: {
+				daysDisplay: "day",
 				hoursDisplay: "hour",
 				minutesDisplay: "minute",
 				secondsDisplay: "second",
+				lessThanOneMinute: "< 1 Min",
 				linkWord: " and ",
 				plural: "s"
 			};
@@ -165,6 +173,22 @@ export function hoursToSeconds(hours: number): number {
 }
 
 /**
+ * Convert days to minutes
+ * @param days
+ */
+export function daysToMinutes(days: number): number {
+	return days * TimeConstants.HOURS_IN_DAY * TimeConstants.S_TIME.MINUTE;
+}
+
+/**
+ * Convert days to seconds
+ * @param days
+ */
+export function daysToSeconds(days: number): number {
+	return days * TimeConstants.S_TIME.DAY;
+}
+
+/**
  * Check if two dates are the same day
  * @param first - first date
  * @param second - second date
@@ -279,15 +303,31 @@ export function getTimeFromXHoursAgo(hours: number): Date {
  * @param language
  */
 export function minutesDisplay(minutes: number, language: Language = LANGUAGE.DEFAULT_LANGUAGE): string {
-	const hours = Math.floor(minutesToHours(minutes));
+	// Compute components
+	let hours = Math.floor(minutesToHours(minutes));
 	minutes = Math.floor(minutes % TimeConstants.S_TIME.MINUTE);
+	const days = Math.floor(hours / TimeConstants.HOURS_IN_DAY);
+	hours %= TimeConstants.HOURS_IN_DAY;
+
 	const displayConstantValues = getMinutesDisplayStringConstants(language);
-	const display = [
+
+	const parts = [
+		days > 0 ? `${days} ${displayConstantValues.daysDisplay}${days > 1 ? displayConstantValues.plural : ""}` : "",
 		hours > 0 ? `${hours} ${displayConstantValues.hoursDisplay}${hours > 1 ? displayConstantValues.plural : ""}` : "",
 		minutes > 0 ? `${minutes} ${displayConstantValues.minutesDisplay}${minutes > 1 ? displayConstantValues.plural : ""}` : ""
-	].filter(v => v !== "")
-		.join(displayConstantValues.linkWord);
-	return display === "" ? "< 1 Min" : display;
+	].filter(v => v !== "");
+
+	if (parts.length === 0) {
+		return displayConstantValues.lessThanOneMinute;
+	}
+
+	if (parts.length === 1) {
+		return parts[0];
+	}
+
+	// Join all parts except the last with commas, then add the link word before the last part
+	const lastPart = parts.pop()!;
+	return `${parts.join(", ")}${displayConstantValues.linkWord}${lastPart}`;
 }
 
 /**

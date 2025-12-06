@@ -43,6 +43,8 @@ import {
 import { EnergyFullNotificationPacket } from "../../../../Lib/src/packets/notifications/EnergyFullNotificationPacket";
 import { DailyBonusNotificationPacket } from "../../../../Lib/src/packets/notifications/DailyBonusNotificationPacket";
 import { ScheduledDailyBonusNotifications } from "../database/game/models/ScheduledDailyBonusNotification";
+import { ScheduledExpeditionNotifications } from "../database/game/models/ScheduledExpeditionNotification";
+import { ExpeditionFinishedNotificationPacket } from "../../../../Lib/src/packets/notifications/ExpeditionFinishedNotificationPacket";
 
 export class Crownicles {
 	public readonly packetListener: PacketListenerServer;
@@ -360,6 +362,26 @@ export class Crownicles {
 		setTimeout(Crownicles.dailyBonusNotifications, TimeoutFunctionsConstants.DAILY_TIMEOUT);
 	}
 
+	static async expeditionNotifications(): Promise<void> {
+		if (PacketUtils.isMqttConnected()) {
+			const notifications = await ScheduledExpeditionNotifications.getNotificationsBeforeDate(new Date());
+			if (notifications.length !== 0) {
+				PacketUtils.sendNotifications(notifications.map(notification => makePacket(ExpeditionFinishedNotificationPacket, {
+					keycloakId: notification.keycloakId,
+					petId: notification.petId,
+					petSex: notification.petSex,
+					petNickname: notification.petNickname
+				})));
+				await ScheduledExpeditionNotifications.bulkDelete(notifications);
+			}
+		}
+		else {
+			CrowniclesLogger.error(`MQTT is not connected, can't do expedition notifications. Trying again in ${TimeoutFunctionsConstants.REPORT_NOTIFICATIONS} ms`);
+		}
+
+		setTimeout(Crownicles.expeditionNotifications, TimeoutFunctionsConstants.REPORT_NOTIFICATIONS);
+	}
+
 
 	/**
 	 * Sets the maintenance mode of the bot
@@ -409,6 +431,9 @@ export class Crownicles {
 			.then();
 
 		Crownicles.dailyBonusNotifications()
+			.then();
+
+		Crownicles.expeditionNotifications()
 			.then();
 
 		setTimeout(

@@ -9,6 +9,8 @@ import { LogsPlayersPossibilities } from "./models/LogsPlayersPossibilities";
 import { LogsPossibilities } from "./models/LogsPossibilities";
 import { LogsPlayers } from "./models/LogsPlayers";
 import { LogsPlayersTravels } from "./models/LogsPlayersTravels";
+import { LogsPlayersSmallEvents } from "./models/LogsPlayersSmallEvents";
+import { LogsSmallEvents } from "./models/LogsSmallEvents";
 import {
 	dateToLogs,
 	getNextSaturdayMidnight,
@@ -29,6 +31,8 @@ import { PVEConstants } from "../../../../../Lib/src/constants/PVEConstants";
 import { LogsGuildsJoins } from "./models/LogsGuildJoins";
 import { LogsGuilds } from "./models/LogsGuilds";
 import { MapLocationDataController } from "../../../data/MapLocation";
+import { LogsExpeditions } from "./models/LogsExpeditions";
+import { ExpeditionConstants } from "../../../../../Lib/src/constants/ExpeditionConstants";
 
 export type RankedFightResult = {
 	won: number;
@@ -96,9 +100,7 @@ export class LogsReadRequests {
 
 		// Convert the players to log players
 		const logsPlayers = await LogsPlayers.findAll({
-			where: {
-				keycloakId: { [Op.in]: ids }
-			}
+			where: { keycloakId: { [Op.in]: ids } }
 		});
 
 		// Extract ids from players
@@ -467,5 +469,43 @@ export class LogsReadRequests {
 			}
 		}
 		return ret;
+	}
+
+	/**
+	 * Get the number of times a player has encountered a specific small event
+	 * @param keycloakId - The keycloak id of the player
+	 * @param smallEventName - The name of the small event
+	 */
+	static async getSmallEventEncounterCount(keycloakId: string, smallEventName: string): Promise<number> {
+		const logPlayer = await LogsDatabase.findOrCreatePlayer(keycloakId);
+		const smallEvent = await LogsSmallEvents.findOne({
+			where: { name: smallEventName }
+		});
+
+		if (!smallEvent) {
+			return 0;
+		}
+
+		return await LogsPlayersSmallEvents.count({
+			where: {
+				playerId: logPlayer.id,
+				smallEventId: smallEvent.id
+			}
+		});
+	}
+
+	/**
+	 * Count the number of successful expeditions for a player
+	 * @param keycloakId - The keycloak id of the player
+	 */
+	static async countSuccessfulExpeditions(keycloakId: string): Promise<number> {
+		const logPlayer = await LogsDatabase.findOrCreatePlayer(keycloakId);
+		return LogsExpeditions.count({
+			where: {
+				playerId: logPlayer.id,
+				action: ExpeditionConstants.LOG_ACTION.COMPLETE,
+				success: true
+			}
+		});
 	}
 }

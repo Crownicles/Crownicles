@@ -12,11 +12,12 @@ import { DwarfPetsSeen } from "../database/game/models/DwarfPetsSeen";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { PlayerMissionsInfos } from "../database/game/models/PlayerMissionsInfo";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
-import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
 import { MapConstants } from "../../../../Lib/src/constants/MapConstants";
 import { Badge } from "../../../../Lib/src/types/Badge";
 import { SmallEventConstants } from "../../../../Lib/src/constants/SmallEventConstants";
 import { MissionsController } from "../missions/MissionsController";
+import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
+import { PetUtils } from "../utils/PetUtils";
 
 /**
  * Return true if the player has a pet AND the pet is not feisty AND the dwarf never saw this pet from it
@@ -37,23 +38,33 @@ async function canContinueSmallEvent(response: CrowniclesPacket[], player: Playe
 		return false;
 	}
 
+	// Check if the pet is available (not on expedition without clone talisman)
+	if (!await PetUtils.isPetAvailable(player, PetConstants.AVAILABILITY_CONTEXT.SMALL_EVENT)) {
+		response.push(makePacket(SmallEventDwarfPetFanPacket, { interactionName: SmallEventConstants.DWARF_PET_FAN.INTERACTIONS_NAMES.NO_PET }));
+		return false;
+	}
+
 	if (petEntity.isFeisty()) {
 		response.push(makePacket(SmallEventDwarfPetFanPacket, {
 			interactionName: SmallEventConstants.DWARF_PET_FAN.INTERACTIONS_NAMES.FEISTY_PET,
-			petNickname: petEntity.nickname,
-			petSex: petEntity.sex as SexTypeShort,
-			petTypeId: petEntity.typeId
+			...petEntity.getBasicInfo()
 		}));
 		return false;
 	}
 
-	// Check if the dwarf has already seen this pet
+	// Check if the dwarf has already seen this pet type
 	if (await DwarfPetsSeen.isPetSeen(player, petEntity.typeId)) {
+		// Check if this is a clone - Talvar notices something is off
+		if (await PetUtils.isPetClone(player)) {
+			response.push(makePacket(SmallEventDwarfPetFanPacket, {
+				interactionName: SmallEventConstants.DWARF_PET_FAN.INTERACTIONS_NAMES.CLONE_PET_ALREADY_SEEN,
+				...petEntity.getBasicInfo()
+			}));
+			return false;
+		}
 		response.push(makePacket(SmallEventDwarfPetFanPacket, {
 			interactionName: SmallEventConstants.DWARF_PET_FAN.INTERACTIONS_NAMES.PET_ALREADY_SEEN,
-			petNickname: petEntity.nickname,
-			petSex: petEntity.sex as SexTypeShort,
-			petTypeId: petEntity.typeId
+			...petEntity.getBasicInfo()
 		}));
 		return false;
 	}
@@ -69,9 +80,7 @@ async function canContinueSmallEvent(response: CrowniclesPacket[], player: Playe
 async function manageAllPetsAreSeen(response: CrowniclesPacket[], player: Player, petEntity: PetEntity): Promise<void> {
 	if (player.petId && petEntity.isFeisty()) {
 		response.push(makePacket(SmallEventDwarfPetFanPacket, {
-			petNickname: petEntity.nickname,
-			petSex: petEntity.sex as SexTypeShort,
-			petTypeId: petEntity.typeId,
+			...petEntity.getBasicInfo(),
 			interactionName: SmallEventConstants.DWARF_PET_FAN.INTERACTIONS_NAMES.FEISTY_PET
 		}));
 		return;
@@ -123,6 +132,8 @@ async function manageAllPetsAreSeen(response: CrowniclesPacket[], player: Player
  * @param petEntity
  */
 async function manageNewPetSeen(response: CrowniclesPacket[], player: Player, petEntity: PetEntity): Promise<void> {
+	const isPetClone = await PetUtils.isPetClone(player);
+
 	await DwarfPetsSeen.markPetAsSeen(player, petEntity.typeId);
 	const missionInfo = await PlayerMissionsInfos.getOfPlayer(player.id);
 	await missionInfo.addGems(
@@ -130,14 +141,16 @@ async function manageNewPetSeen(response: CrowniclesPacket[], player: Player, pe
 		player.keycloakId,
 		NumberChangeReason.SMALL_EVENT
 	);
+
 	response.push(makePacket(SmallEventDwarfPetFanPacket, {
-		interactionName: SmallEventConstants.DWARF_PET_FAN.INTERACTIONS_NAMES.NEW_PET_SEEN,
+		interactionName: isPetClone
+			? SmallEventConstants.DWARF_PET_FAN.INTERACTIONS_NAMES.CLONE_PET
+			: SmallEventConstants.DWARF_PET_FAN.INTERACTIONS_NAMES.NEW_PET_SEEN,
 		amount: SmallEventConstants.DWARF_PET_FAN.NEW_PET_SEEN_REWARD,
-		petNickname: petEntity.nickname,
-		petSex: petEntity.sex as SexTypeShort,
-		petTypeId: petEntity.typeId,
+		...petEntity.getBasicInfo(),
 		isGemReward: true
 	}));
+
 	await MissionsController.update(player, response, { missionId: "showPetsToTalvar" });
 }
 

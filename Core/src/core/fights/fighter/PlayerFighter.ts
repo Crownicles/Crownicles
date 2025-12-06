@@ -21,8 +21,12 @@ import {
 import { CrowniclesPacket } from "../../../../../Lib/src/packets/CrowniclesPacket";
 import { Potion } from "../../../data/Potion";
 import PetEntity, { PetEntities } from "../../database/game/models/PetEntity";
-import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
+import {
+	FightConstants, FightRole
+} from "../../../../../Lib/src/constants/FightConstants";
 import { InventoryConstants } from "../../../../../Lib/src/constants/InventoryConstants";
+import { PetConstants } from "../../../../../Lib/src/constants/PetConstants";
+import { PetUtils } from "../../utils/PetUtils";
 
 /**
  * Fighter
@@ -39,10 +43,21 @@ export class PlayerFighter extends Fighter {
 
 	private petAssisted: boolean;
 
+	private fightRole: FightRole = FightConstants.FIGHT_ROLES.ATTACKER;
+
 	public constructor(player: Player, playerClass: Class) {
 		super(player.level, FightActionDataController.instance.getListById(playerClass.fightActionsIds));
 		this.player = player;
 		this.petAssisted = false;
+	}
+
+	/**
+	 * Set the fight role (attacker or defender)
+	 * This affects whether the pet can participate if on expedition
+	 * @param role The role of the fighter in this fight
+	 */
+	public setFightRole(role: FightRole): void {
+		this.fightRole = role;
 	}
 
 	/**
@@ -136,7 +151,14 @@ export class PlayerFighter extends Fighter {
 		this.stats.maxBreath = this.player.getMaxBreath();
 		this.stats.breathRegen = this.player.getBreathRegen();
 		if (this.player.petId) {
-			this.pet = await PetEntities.getById(this.player.petId);
+			// Check if pet is available based on fight role
+			const petAvailabilityContext = this.fightRole === FightConstants.FIGHT_ROLES.ATTACKER
+				? PetConstants.AVAILABILITY_CONTEXT.ATTACK_FIGHT
+				: PetConstants.AVAILABILITY_CONTEXT.DEFENSE_FIGHT;
+			const isPetAvailable = await PetUtils.isPetAvailable(this.player, petAvailabilityContext);
+			if (isPetAvailable) {
+				this.pet = await PetEntities.getById(this.player.petId);
+			}
 		}
 	}
 

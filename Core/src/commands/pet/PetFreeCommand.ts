@@ -30,6 +30,7 @@ import {
 } from "../../core/utils/CommandUtils";
 import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
 import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
+import { PetUtils } from "../../core/utils/PetUtils";
 
 
 /**
@@ -125,6 +126,16 @@ export default class PetFreeCommand {
 		if (!playerPet) {
 			response.push(makePacket(CommandPetFreePacketRes, {
 				foundPet: false
+			}));
+			return;
+		}
+
+		// Check if pet is on expedition
+		if (await PetUtils.isPetOnExpedition(player.id)) {
+			response.push(makePacket(CommandPetFreePacketRes, {
+				foundPet: true,
+				petCanBeFreed: false,
+				petOnExpedition: true
 			}));
 			return;
 		}

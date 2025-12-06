@@ -13,6 +13,15 @@ export enum PetDiet {
 }
 
 export abstract class PetConstants {
+	/**
+	 * Contexts in which pet availability can be checked
+	 */
+	static readonly AVAILABILITY_CONTEXT = {
+		SMALL_EVENT: "smallEvent",
+		ATTACK_FIGHT: "attackFight",
+		DEFENSE_FIGHT: "defenseFight"
+	} as const;
+
 	static readonly NICKNAME_LENGTH_RANGE = {
 		MIN: 3,
 		MAX: 16
@@ -187,14 +196,14 @@ export abstract class PetConstants {
 		CARNIVOROUS_FOOD: "carnivorousFood",
 		HERBIVOROUS_FOOD: "herbivorousFood",
 		ULTIMATE_FOOD: "ultimateFood"
-	};
+	} as const;
 
 	static readonly PET_FOOD_BY_ID = [
 		PetConstants.PET_FOOD.COMMON_FOOD,
 		PetConstants.PET_FOOD.HERBIVOROUS_FOOD,
 		PetConstants.PET_FOOD.CARNIVOROUS_FOOD,
 		PetConstants.PET_FOOD.ULTIMATE_FOOD
-	];
+	] as const;
 
 	static readonly PETS = {
 		NO_PET: 0,
@@ -632,6 +641,11 @@ export const PostFightPetLoveOutcomes = {
 export type PostFightPetLoveOutcome = typeof PostFightPetLoveOutcomes[keyof typeof PostFightPetLoveOutcomes];
 
 export type PostFightPetReactionType = typeof PetConstants.POST_FIGHT_REACTION_TYPES[keyof typeof PetConstants.POST_FIGHT_REACTION_TYPES];
+
+/**
+ * Type representing a pet food type
+ */
+export type PetFood = typeof PetConstants.PET_FOOD[keyof typeof PetConstants.PET_FOOD];
 
 export enum PET_ENTITY_GIVE_RETURN {
 	NO_SLOT,

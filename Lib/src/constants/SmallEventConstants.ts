@@ -269,7 +269,9 @@ export abstract class SmallEventConstants {
 			PET_ALREADY_SEEN: "petAlreadySeen",
 			NEW_PET_SEEN: "newPetSeen",
 			ALL_PETS_SEEN: "allPetsSeen",
-			FEISTY_PET: "petIsFeisty"
+			FEISTY_PET: "petIsFeisty",
+			CLONE_PET: "petIsClone",
+			CLONE_PET_ALREADY_SEEN: "clonePetAlreadySeen"
 		}
 	};
 
@@ -356,6 +358,7 @@ export abstract class SmallEventConstants {
 	};
 
 	static readonly BAD_PET = {
+		SMALL_EVENT_NAME: "badPet",
 		ACTIONS_TO_SHOW: 3,
 		LOVE_LOST: {
 			INTIMIDATE: {
@@ -424,4 +427,13 @@ export abstract class SmallEventConstants {
 			DISTRACT_SUCCESS_CHANCE: 0.5
 		}
 	};
+
+	static readonly EXPEDITION_ADVICE = {
+		SMALL_EVENT_NAME: "expeditionAdvice",
+		PHASES: {
+			INTRO: "intro",
+			EXPLANATION: "explanation",
+			CONDITIONS: "conditions"
+		}
+	} as const;
 }

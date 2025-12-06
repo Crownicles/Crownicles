@@ -29,6 +29,7 @@ import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants"
 import Guild, { Guilds } from "../database/game/models/Guild";
 import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
 import { Badge } from "../../../../Lib/src/types/Badge";
+import { PetUtils } from "../utils/PetUtils";
 
 /**
  * Check top interactions
@@ -38,14 +39,17 @@ import { Badge } from "../../../../Lib/src/types/Badge";
 function checkTop(otherPlayerRank: number, interactionsList: InteractOtherPlayerInteraction[]): void {
 	if (otherPlayerRank === 1) {
 		interactionsList.push(InteractOtherPlayerInteraction.TOP1);
+		return;
 	}
-	else if (otherPlayerRank <= 10) {
+	if (otherPlayerRank <= 10) {
 		interactionsList.push(InteractOtherPlayerInteraction.TOP10);
+		return;
 	}
-	else if (otherPlayerRank <= 50) {
+	if (otherPlayerRank <= 50) {
 		interactionsList.push(InteractOtherPlayerInteraction.TOP50);
+		return;
 	}
-	else if (otherPlayerRank <= 100) {
+	if (otherPlayerRank <= 100) {
 		interactionsList.push(InteractOtherPlayerInteraction.TOP100);
 	}
 }
@@ -170,10 +174,26 @@ function checkMoney(otherPlayer: Player, interactionsList: InteractOtherPlayerIn
  * @param otherPlayer
  * @param interactionsList
  */
-function checkPet(player: Player, otherPlayer: Player, interactionsList: InteractOtherPlayerInteraction[]): void {
-	if (otherPlayer.petId && otherPlayer.petId !== player.petId) {
-		interactionsList.push(InteractOtherPlayerInteraction.PET);
+async function checkPet(player: Player, otherPlayer: Player, interactionsList: InteractOtherPlayerInteraction[]): Promise<void> {
+	// Check if the other player has a different pet than the current player
+	if (!otherPlayer.petId || otherPlayer.petId === player.petId) {
+		return;
 	}
+
+	// Check if pet is a clone (on expedition with clone talisman)
+	if (await PetUtils.isPetClone(otherPlayer)) {
+		interactionsList.push(InteractOtherPlayerInteraction.PET_CLONE);
+		return;
+	}
+
+	// Check if pet is on expedition (without clone talisman)
+	if (await PetUtils.isPetOnExpedition(otherPlayer.id)) {
+		interactionsList.push(InteractOtherPlayerInteraction.PET_ON_EXPEDITION);
+		return;
+	}
+
+	// Pet is not on expedition, normal pet interaction
+	interactionsList.push(InteractOtherPlayerInteraction.PET);
 }
 
 /**
@@ -260,7 +280,7 @@ async function getAvailableInteractions(otherPlayer: Player, player: Player, num
 	checkHealth(otherPlayer, interactionsList);
 	checkRanking(otherPlayerRank, numberOfPlayers, interactionsList, playerRank);
 	checkMoney(otherPlayer, interactionsList, player);
-	checkPet(player, otherPlayer, interactionsList);
+	await checkPet(player, otherPlayer, interactionsList);
 	guild = await checkGuildResponsibilities(otherPlayer, guild, interactionsList);
 	interactionsList.push(InteractOtherPlayerInteraction.CLASS);
 	checkEffects(otherPlayer, interactionsList);

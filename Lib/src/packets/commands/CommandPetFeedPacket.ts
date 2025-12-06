@@ -17,6 +17,9 @@ export class CommandPetFeedPacketReq extends CrowniclesPacket {}
 export class CommandPetFeedNoPetErrorPacket extends CrowniclesPacket {}
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandPetFeedPetOnExpeditionErrorPacket extends CrowniclesPacket {}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandPetFeedNotHungryErrorPacket extends CrowniclesPacket {
 	pet!: OwnedPet;
 }

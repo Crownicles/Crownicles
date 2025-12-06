@@ -41,6 +41,8 @@ export default class InventoryCommand {
 		response.push(makePacket(CommandInventoryPacketRes, {
 			foundPlayer: true,
 			keycloakId: toCheckPlayer.keycloakId,
+			hasTalisman: toCheckPlayer.hasTalisman,
+			hasCloneTalisman: toCheckPlayer.hasCloneTalisman,
 			data: {
 				weapon: (items.find(item => item.isWeapon() && item.isEquipped()).getItem() as MainItem).getDisplayPacket(maxStatsValues),
 				armor: (items.find(item => item.isArmor() && item.isEquipped()).getItem() as MainItem).getDisplayPacket(maxStatsValues),

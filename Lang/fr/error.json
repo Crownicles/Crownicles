@@ -32,6 +32,8 @@
     "petSell": "vente d'un familier",
     "petSellConfirm": "confirmation de l'achat d'un familier",
     "petTransfer": "transfert d'animaux",
+    "petExpedition": "consultation d'expédition en cours",
+    "petExpeditionChoice": "choix d'une expédition",
     "pveIsland": "mini-évent île PVE",
     "report": "rapport",
     "reportCommand": "commande rapport",

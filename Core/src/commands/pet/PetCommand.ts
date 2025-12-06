@@ -7,12 +7,17 @@ import {
 import {
 	CommandPetPacketReq,
 	CommandPetPacketRes,
-	CommandPetPetNotFound
+	CommandPetPetNotFound,
+	PetExpeditionInfo
 } from "../../../../Lib/src/packets/commands/CommandPetPacket";
 import { PetEntities } from "../../core/database/game/models/PetEntity";
 import {
 	commandRequires, CommandUtils
 } from "../../core/utils/CommandUtils";
+import { PetExpeditions } from "../../core/database/game/models/PetExpedition";
+import {
+	ExpeditionConstants, ExpeditionLocationType
+} from "../../../../Lib/src/constants/ExpeditionConstants";
 
 export default class PetCommand {
 	@commandRequires(CommandPetPacketReq, {
@@ -28,9 +33,30 @@ export default class PetCommand {
 			return;
 		}
 
+		// Check if the player being viewed has an expedition in progress
+		const isOwnerViewingOwnPet = toCheckPlayer.id === player.id;
+		let expeditionInfo: PetExpeditionInfo | undefined;
+
+		if (isOwnerViewingOwnPet) {
+			const currentExpedition = await PetExpeditions.getActiveExpeditionForPlayer(player.id);
+			if (currentExpedition && currentExpedition.status === ExpeditionConstants.STATUS.IN_PROGRESS) {
+				expeditionInfo = {
+					endTime: currentExpedition.endDate.getTime(),
+					startTime: currentExpedition.startDate.getTime(),
+					riskRate: currentExpedition.riskRate,
+					difficulty: currentExpedition.difficulty,
+					locationType: currentExpedition.locationType as ExpeditionLocationType,
+					mapLocationId: currentExpedition.mapLocationId,
+					foodConsumed: currentExpedition.foodConsumed
+				};
+			}
+		}
+
 		response.push(makePacket(CommandPetPacketRes, {
 			askedKeycloakId: toCheckPlayer?.keycloakId,
-			pet: pet.asOwnedPet()
+			pet: pet.asOwnedPet(),
+			hasTalisman: isOwnerViewingOwnPet ? player.hasTalisman : undefined,
+			expeditionInProgress: expeditionInfo
 		}));
 	}
 }

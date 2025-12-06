@@ -79,7 +79,23 @@ function getBackupField<T = MainItemDisplayPacket | SupportItemDisplayPacket>(
 
 function getEquippedEmbed(packet: CommandInventoryPacketRes, pseudo: string, lng: Language): CrowniclesEmbed {
 	if (packet.data) {
-		return new CrowniclesEmbed()
+		// Build talisman display value
+		let talismanValue: string;
+		if (packet.hasTalisman || packet.hasCloneTalisman) {
+			const talismans: string[] = [];
+			if (packet.hasTalisman) {
+				talismans.push(i18n.t("commands:inventory.talismans.anchorTalisman", { lng }));
+			}
+			if (packet.hasCloneTalisman) {
+				talismans.push(i18n.t("commands:inventory.talismans.cloneTalisman", { lng }));
+			}
+			talismanValue = talismans.join("\n");
+		}
+		else {
+			talismanValue = i18n.t("commands:inventory.talismanNotOwned", { lng });
+		}
+
+		const embed = new CrowniclesEmbed()
 			.setTitle(i18n.t("commands:inventory.title", {
 				lng,
 				pseudo
@@ -88,8 +104,14 @@ function getEquippedEmbed(packet: CommandInventoryPacketRes, pseudo: string, lng
 				DiscordItemUtils.getWeaponField(packet.data.weapon, lng),
 				DiscordItemUtils.getArmorField(packet.data.armor, lng),
 				DiscordItemUtils.getPotionField(packet.data.potion, lng),
-				DiscordItemUtils.getObjectField(packet.data.object, lng)
+				DiscordItemUtils.getObjectField(packet.data.object, lng),
+				{
+					name: i18n.t("commands:inventory.talisman", { lng }),
+					value: talismanValue,
+					inline: false
+				}
 			]);
+		return embed;
 	}
 
 	throw new Error("Inventory packet data must not be undefined");

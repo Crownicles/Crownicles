@@ -35,6 +35,7 @@ import { Constants } from "../../../../Lib/src/constants/Constants";
 import { Maps } from "../maps/Maps";
 import { SmallEventConstants } from "../../../../Lib/src/constants/SmallEventConstants";
 import { Effect } from "../../../../Lib/src/types/Effect";
+import { PetUtils } from "../utils/PetUtils";
 
 type ReactionHandler = (player: Player, properties: PetFoodProperties) => Promise<string>;
 
@@ -295,7 +296,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 		if (!Maps.isOnContinent(player)) {
 			return false;
 		}
-		if (!player.petId) {
+		if (!player.petId || !await PetUtils.isPetAvailable(player, PetConstants.AVAILABILITY_CONTEXT.SMALL_EVENT)) {
 			return false;
 		}
 		const petEntity = await PetEntity.findByPk(player.petId);

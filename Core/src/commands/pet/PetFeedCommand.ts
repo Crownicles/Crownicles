@@ -12,6 +12,7 @@ import {
 	CommandPetFeedNoPetErrorPacket,
 	CommandPetFeedNotHungryErrorPacket,
 	CommandPetFeedPacketReq,
+	CommandPetFeedPetOnExpeditionErrorPacket,
 	CommandPetFeedResult,
 	CommandPetFeedSuccessPacket
 } from "../../../../Lib/src/packets/commands/CommandPetFeedPacket";
@@ -37,6 +38,7 @@ import {
 	Guild, Guilds
 } from "../../core/database/game/models/Guild";
 import { GuildConstants } from "../../../../Lib/src/constants/GuildConstants";
+import { PetUtils } from "../../core/utils/PetUtils";
 
 function getWithoutGuildPetFeedEndCallback(player: Player, authorPet: PetEntity) {
 	return async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
@@ -229,6 +231,12 @@ export default class PetFeedCommand {
 		const authorPet = await PetEntities.getById(player.petId);
 		if (!authorPet) {
 			response.push(makePacket(CommandPetFeedNoPetErrorPacket, {}));
+			return;
+		}
+
+		// Check if pet is on expedition
+		if (await PetUtils.isPetOnExpedition(player.id)) {
+			response.push(makePacket(CommandPetFeedPetOnExpeditionErrorPacket, {}));
 			return;
 		}
 

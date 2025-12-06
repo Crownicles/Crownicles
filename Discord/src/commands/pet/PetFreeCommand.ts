@@ -83,6 +83,19 @@ export async function handleCommandPetFreePacketRes(packet: CommandPetFreePacket
 				)
 			]
 		});
+		return;
+	}
+	if (packet.petOnExpedition) {
+		await interaction.reply({
+			embeds: [
+				new CrowniclesErrorEmbed(
+					interaction.user,
+					context,
+					interaction,
+					i18n.t("commands:petFree.petOnExpedition", { lng })
+				)
+			]
+		});
 	}
 }
 

@@ -66,7 +66,7 @@ export class MissionDataController extends DataControllerString<Mission> {
 	public getRandomDailyMission(): Mission {
 		return RandomUtils.crowniclesRandom.pick(
 			this.getValuesArray()
-				.filter(mission => mission.dailyIndexes?.length !== 0 && !mission.campaignOnly)
+				.filter(mission => mission.dailyIndexes && mission.dailyIndexes.length > 0 && !mission.campaignOnly)
 		);
 	}
 }

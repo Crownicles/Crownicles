@@ -135,6 +135,24 @@ export const CrowniclesIcons: {
 		petButton: string;
 		pet: string;
 	};
+	expedition: {
+		locations: {
+			[locationId: string]: string;
+		};
+		map: string;
+		loot: string;
+		risk: string;
+		reward: string;
+		duration: string;
+		difficulty: string;
+		food: string;
+		love: string;
+		talisman: string;
+		cloneTalisman: string;
+		recall: string;
+		speed: string;
+		slow: string;
+	};
 	leagues: {
 		[leagueId: string]: string;
 	};
@@ -953,7 +971,8 @@ export const CrowniclesIcons: {
 		winPersonalXP: "⭐",
 		witch: "🧹",
 		infoFight: "🏰",
-		haunted: "🦴"
+		haunted: "🦴",
+		expeditionAdvice: "🗺️"
 	},
 	pets: {
 		0: {
@@ -2100,7 +2119,8 @@ export const CrowniclesIcons: {
 		[Badge.MISSION_COMPLETER]: "💍",
 		[Badge.GOOD_BUG_REPORTER]: "🕊️",
 		[Badge.VOTER]: "🗳️",
-		[Badge.ANIMAL_LOVER]: "🐾"
+		[Badge.ANIMAL_LOVER]: "🐾",
+		[Badge.EXPERT_EXPEDITEUR]: "🧭"
 	},
 	itemKinds: [
 		"⚔️",
@@ -2120,7 +2140,8 @@ export const CrowniclesIcons: {
 			fightChallenge: "⚔️",
 			guildStatusChange: "📜",
 			energy: "⚡",
-			dailyBonus: "📅"
+			dailyBonus: "📅",
+			petExpedition: "🐾"
 		}
 	},
 	missions: {
@@ -2190,6 +2211,31 @@ export const CrowniclesIcons: {
 	petCommand: {
 		petButton: "🖐️",
 		pet: "😻"
+	},
+	expedition: {
+		locations: {
+			forest: "🌲",
+			mountain: "⛰️",
+			desert: "🏜️",
+			swamp: "🌿",
+			ruins: "🏛️",
+			cave: "🕳️",
+			plains: "🌾",
+			coast: "🌊"
+		},
+		map: "🗺️",
+		loot: "💰",
+		risk: "⚠️",
+		reward: "🎁",
+		duration: "⏱️",
+		difficulty: "📊",
+		food: "🍖",
+		love: "💕",
+		talisman: "🔮",
+		cloneTalisman: "🧬",
+		recall: "🏠",
+		speed: "🚀",
+		slow: "🐌"
 	},
 	leagues: {
 		0: "🌲",

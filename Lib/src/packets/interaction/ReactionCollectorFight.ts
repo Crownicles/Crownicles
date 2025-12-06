@@ -12,6 +12,7 @@ type PlayerStats = {
 		petTypeId: number;
 		petSex: SexTypeShort;
 		petNickname: string;
+		isOnExpedition: boolean;
 	};
 	classId: number;
 	fightRanking: { glory: number };

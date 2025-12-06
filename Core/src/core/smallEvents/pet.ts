@@ -104,7 +104,7 @@ async function managePickedInteraction(packet: SmallEventPetPacket, response: Cr
 			break;
 
 		case PetConstants.PET_INTERACTIONS_NAMES.WIN_LOVE:
-			if (petEntity.getLoveLevelNumber() === 5) {
+			if (petEntity.getLoveLevelNumber() === PetConstants.LOVE_LEVEL.TRAINED) {
 				packet.interactionName = PetConstants.PET_INTERACTIONS_NAMES.NOTHING;
 				break;
 			}
@@ -195,7 +195,7 @@ async function managePickedInteraction(packet: SmallEventPetPacket, response: Cr
 }
 
 export const smallEventFuncs: SmallEventFuncs = {
-	canBeExecuted: player => Maps.isOnContinent(player) && Boolean(player.petId),
+	canBeExecuted: async player => Maps.isOnContinent(player) && await PetUtils.isPetAvailable(player, PetConstants.AVAILABILITY_CONTEXT.SMALL_EVENT),
 	executeSmallEvent: async (response, player, context): Promise<void> => {
 		const petEntity = await PetEntities.getById(player.petId);
 		const pet = PetDataController.instance.getById(petEntity.typeId);

@@ -4,7 +4,7 @@ import { LogsPlayers } from "./models/LogsPlayers";
 import { LogsPlayersHealth } from "./models/LogsPlayersHealth";
 import { LogsPlayersExperience } from "./models/LogsPlayersExperience";
 import {
-	CreateOptions, Model, ModelStatic
+	CreateOptions, Model, ModelStatic, Op
 } from "sequelize";
 import { LogsPlayersLevel } from "./models/LogsPlayersLevel";
 import { LogsPlayersScore } from "./models/LogsPlayersScore";
@@ -18,6 +18,7 @@ import { LogsPlayersPossibilities } from "./models/LogsPlayersPossibilities";
 import { LogsAlterations } from "./models/LogsAlterations";
 import { LogsPlayersStandardAlterations } from "./models/LogsPlayersStandardAlterations";
 import { LogsPlayersOccupiedAlterations } from "./models/LogsPlayersOccupiedAlterations";
+import { ExpeditionConstants } from "../../../../../Lib/src/constants/ExpeditionConstants";
 import { LogsUnlocks } from "./models/LogsUnlocks";
 import { LogsPlayersClassChanges } from "./models/LogsPlayersClassChanges";
 import { LogsPlayersTravels } from "./models/LogsPlayersTravels";
@@ -80,7 +81,9 @@ import { LogsPlayersDailies } from "./models/LogsPlayersDailies";
 import {
 	NumberChangeReason, ShopItemType
 } from "../../../../../Lib/src/constants/LogsConstants";
-import { getDateLogs } from "../../../../../Lib/src/utils/TimeUtils";
+import {
+	dateToLogs, daysToSeconds, getDateLogs
+} from "../../../../../Lib/src/utils/TimeUtils";
 import { LogsPlayersGloryPoints } from "./models/LogsPlayersGloryPoints";
 import { LogsPlayers15BestSeason } from "./models/LogsPlayers15BestSeason";
 import { LogsSeasonEnd } from "./models/LogsSeasonEnd";
@@ -104,6 +107,67 @@ import { LogsCommandSubOrigins } from "./models/LogsCommandSubOrigins";
 import { ReactionCollectorReactPacket } from "../../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { LogsPlayersTeleportations } from "./models/LogsPlayersTeleportations";
 import { AiPlayerFighter } from "../../fights/fighter/AiPlayerFighter";
+import { LogsExpeditions } from "./models/LogsExpeditions";
+
+/**
+ * Data structure for expedition log entries
+ */
+export interface ExpeditionLogData {
+	mapLocationId: number;
+	locationType: string;
+	action: string;
+	durationMinutes: number;
+	foodConsumed: number;
+	rewardIndex: number;
+	success: boolean;
+	money: number | null;
+	experience: number | null;
+	points: number | null;
+	cloneTalismanFound: boolean | null;
+	loveChange: number;
+}
+
+/**
+ * Parameters for logging expedition start
+ */
+export interface ExpeditionStartParams {
+	mapLocationId: number;
+	locationType: string;
+	durationMinutes: number;
+	foodConsumed: number;
+	rewardIndex: number;
+}
+
+/**
+ * Parameters for logging expedition completion
+ */
+export interface ExpeditionCompleteParams {
+	mapLocationId: number;
+	locationType: string;
+	durationMinutes: number;
+	foodConsumed: number;
+	rewardIndex: number;
+	success: boolean;
+}
+
+/**
+ * Rewards from expedition completion
+ */
+export interface ExpeditionRewards {
+	money?: number;
+	experience?: number;
+	points?: number;
+	cloneTalismanFound?: boolean;
+}
+
+/**
+ * Parameters for logging expedition recall
+ */
+export interface ExpeditionRecallParams {
+	mapLocationId: number;
+	locationType: string;
+	loveChange: number;
+}
 
 /**
  * This class is used to log all the changes in the game database
@@ -211,7 +275,7 @@ export class LogsDatabase extends Database {
 		return (await LogsPetEntities.findOrCreate({
 			where: {
 				gameId: petEntity.id,
-				creationTimestamp: Math.floor(petEntity.creationDate.valueOf() / 1000.0)
+				creationTimestamp: dateToLogs(petEntity.creationDate)
 			}
 		}))[0];
 	}
@@ -224,7 +288,7 @@ export class LogsDatabase extends Database {
 		return (await LogsGuilds.findOrCreate({
 			where: {
 				gameId: guild.id,
-				creationTimestamp: Math.floor(guild.creationDate.valueOf() / 1000.0)
+				creationTimestamp: dateToLogs(guild.creationDate)
 			},
 			defaults: { name: guild.name }
 		}))[0];
@@ -1264,6 +1328,126 @@ export class LogsDatabase extends Database {
 			originMapLinkId,
 			newMapLinkId,
 			date: getDateLogs()
+		});
+	}
+
+	/**
+	 * Helper method to create expedition log entries with common logic
+	 */
+	private async createExpeditionLog(
+		keycloakId: string,
+		petGameId: number,
+		data: Partial<ExpeditionLogData>
+	): Promise<void> {
+		const player = await LogsDatabase.findOrCreatePlayer(keycloakId);
+		const petEntity = await LogsDatabase.findOrCreatePetEntityByGameId(petGameId);
+		await LogsExpeditions.create({
+			playerId: player.id,
+			petId: petEntity.id,
+			...data,
+			date: getDateLogs()
+		});
+	}
+
+	/**
+	 * Log when a pet expedition starts
+	 */
+	public async logExpeditionStart(
+		keycloakId: string,
+		petGameId: number,
+		params: ExpeditionStartParams
+	): Promise<void> {
+		await this.createExpeditionLog(keycloakId, petGameId, {
+			...params,
+			action: ExpeditionConstants.LOG_ACTION.START
+		});
+	}
+
+	/**
+	 * Log when a pet expedition is completed
+	 */
+	public async logExpeditionComplete(
+		keycloakId: string,
+		petGameId: number,
+		params: ExpeditionCompleteParams,
+		rewards: ExpeditionRewards | null,
+		loveChange: number
+	): Promise<void> {
+		await this.createExpeditionLog(keycloakId, petGameId, {
+			...params,
+			action: ExpeditionConstants.LOG_ACTION.COMPLETE,
+			money: rewards?.money ?? null,
+			experience: rewards?.experience ?? null,
+			points: rewards?.points ?? null,
+			cloneTalismanFound: rewards?.cloneTalismanFound ?? null,
+			loveChange
+		});
+	}
+
+	/**
+	 * Log when a pet expedition is cancelled before departure
+	 */
+	public async logExpeditionCancel(keycloakId: string, petGameId: number, loveChange: number): Promise<void> {
+		await this.createExpeditionLog(keycloakId, petGameId, {
+			mapLocationId: ExpeditionConstants.NO_MAP_LOCATION,
+			locationType: ExpeditionConstants.LOG_ACTION.CANCEL,
+			action: ExpeditionConstants.LOG_ACTION.CANCEL,
+			loveChange
+		});
+	}
+
+	/**
+	 * Log when a pet is recalled from an expedition
+	 */
+	public async logExpeditionRecall(
+		keycloakId: string,
+		petGameId: number,
+		params: ExpeditionRecallParams
+	): Promise<void> {
+		await this.createExpeditionLog(keycloakId, petGameId, {
+			...params,
+			action: ExpeditionConstants.LOG_ACTION.RECALL
+		});
+	}
+
+	/**
+	 * Find or create a pet entity in the log database by game id
+	 * @param gameId
+	 */
+	private static async findOrCreatePetEntityByGameId(gameId: number): Promise<LogsPetEntities> {
+		const existing = await LogsPetEntities.findOne({
+			where: { gameId },
+			order: [["creationTimestamp", "DESC"]]
+		});
+		if (existing) {
+			return existing;
+		}
+
+		// If not found, create a placeholder with current timestamp
+		return (await LogsPetEntities.findOrCreate({
+			where: {
+				gameId,
+				creationTimestamp: getDateLogs()
+			}
+		}))[0];
+	}
+
+	/**
+	 * Count the number of expedition cancellations (cancel + recall) for a player in the last N days
+	 * Both cancelling during preparation and recalling during expedition count towards the progressive penalty
+	 * @param keycloakId - The keycloak id of the player
+	 * @param days - Number of days to look back
+	 */
+	public async countRecentExpeditionCancellations(keycloakId: string, days: number): Promise<number> {
+		const logPlayer = await LogsDatabase.findOrCreatePlayer(keycloakId);
+		const cutoffDate = getDateLogs() - daysToSeconds(days);
+
+		return LogsExpeditions.count({
+			where: {
+				playerId: logPlayer.id,
+				action: { [Op.in]: [ExpeditionConstants.LOG_ACTION.CANCEL, ExpeditionConstants.LOG_ACTION.RECALL] },
+				date: { [Op.gte]: cutoffDate }
+			}
 		});
 	}
 }
