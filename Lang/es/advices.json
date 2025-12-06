@@ -252,6 +252,23 @@
     "Si tienes una poción equipada y te atacan, su efecto se aplicará aunque no hayas iniciado el combate.",
     "Si te atacan y tienes una poción, tiene un 15% de posibilidades de consumirse. ¡Probablemente podrás volver a usarla!",
     "Una poción de combate bien elegida puede compensar las debilidades de tu clase actual.",
-    "Las pociones de combate raras son más potentes, pero también más difíciles de encontrar."
+    "Las pociones de combate raras son más potentes, pero también más difíciles de encontrar.",
+    "À partir du niveau 20, vous pourriez croiser une mystérieuse guerrière qui parle d'expéditions.",
+    "Les expéditions permettent d'envoyer votre familier chercher des trésors pendant que vous continuez votre aventure.",
+    "Pour débloquer les expéditions, vous devez avoir un familier, être niveau 30, appartenir à une guilde, et avoir présenté votre familier à Talvar.",
+    "Plus une expédition est longue, plus les récompenses sont importantes, mais elle consommera davantage de nourriture.",
+    "La vitesse de votre familier réduit la durée des expéditions : un familier rapide reviendra plus tôt.",
+    "La force de votre familier diminue le risque d'échec des expéditions.",
+    "L'affection de votre familier influence ses chances de succès en expédition.",
+    "Un familier en expédition ne peut pas vous aider en combat si vous êtes l'attaquant.",
+    "Annuler une expédition ou rappeler votre familier fait perdre de l'affection, et la pénalité augmente si vous le faites plusieurs fois par semaine.",
+    "Chaque lieu d'expédition offre des bonus différents : les montagnes rapportent plus d'argent, les forêts plus d'expérience.",
+    "Les expéditions lointaines durent plus longtemps mais peuvent rapporter de meilleures récompenses.",
+    "Votre familier doit être nourri avant de partir en expédition.",
+    "Un familier fielleux refusera de partir en expédition.",
+    "La nourriture consommée par l'expédition provient du stock de votre guilde.",
+    "Trois expéditions vous sont proposées à chaque fois : deux proches de votre position et une lointaine.",
+    "Il existe un talisman de clonage très rare qui permet d'avoir un double spectral de votre familier pendant qu'il est en expédition.",
+    "Croiser Velanna quand votre familier est en expédition peut vous rapporter des points bonus et parfois d'autres surprises."
   ]
 }
