@@ -1,6 +1,10 @@
 import { packetHandler } from "../../../PacketHandler";
 import {
 	CommandReportBigEventResultRes,
+	CommandReportBuyHealAcceptPacketRes,
+	CommandReportBuyHealCannotHealOccupiedPacketRes,
+	CommandReportBuyHealNoAlterationPacketRes,
+	CommandReportBuyHealRefusePacketRes,
 	CommandReportErrorNoMonsterRes,
 	CommandReportMonsterRewardRes,
 	CommandReportRefusePveFightRes,
@@ -11,6 +15,10 @@ import {
 import { PacketContext } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	displayMonsterReward,
+	handleBuyHealAccept,
+	handleBuyHealCannotHealOccupied,
+	handleBuyHealNoAlteration,
+	handleBuyHealRefuse,
 	handleUseTokensAccept,
 	handleUseTokensRefuse,
 	refusePveFight,
@@ -53,5 +61,25 @@ export default class ReportCommandPacketHandlers {
 	@packetHandler(CommandReportUseTokensRefusePacketRes)
 	async reportUseTokensRefuseRes(context: PacketContext, _packet: CommandReportUseTokensRefusePacketRes): Promise<void> {
 		await handleUseTokensRefuse(context);
+	}
+
+	@packetHandler(CommandReportBuyHealAcceptPacketRes)
+	async reportBuyHealAcceptRes(context: PacketContext, packet: CommandReportBuyHealAcceptPacketRes): Promise<void> {
+		await handleBuyHealAccept(packet, context);
+	}
+
+	@packetHandler(CommandReportBuyHealRefusePacketRes)
+	async reportBuyHealRefuseRes(context: PacketContext, _packet: CommandReportBuyHealRefusePacketRes): Promise<void> {
+		await handleBuyHealRefuse(context);
+	}
+
+	@packetHandler(CommandReportBuyHealNoAlterationPacketRes)
+	async reportBuyHealNoAlterationRes(context: PacketContext, _packet: CommandReportBuyHealNoAlterationPacketRes): Promise<void> {
+		await handleBuyHealNoAlteration(context);
+	}
+
+	@packetHandler(CommandReportBuyHealCannotHealOccupiedPacketRes)
+	async reportBuyHealCannotHealOccupiedRes(context: PacketContext, _packet: CommandReportBuyHealCannotHealOccupiedPacketRes): Promise<void> {
+		await handleBuyHealCannotHealOccupied(context);
 	}
 }

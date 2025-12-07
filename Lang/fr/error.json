@@ -38,6 +38,7 @@
     "report": "rapport",
     "reportCommand": "commande rapport",
     "reportUseTokens": "confirmation d'utilisation de jetons",
+    "reportBuyHeal": "confirmation d'achat de soin",
     "selectQuantity": "sélection d'une quantité",
     "sell": "vente d'un objet",
     "sellConfirm": "confirmation de la vente d'un objet",

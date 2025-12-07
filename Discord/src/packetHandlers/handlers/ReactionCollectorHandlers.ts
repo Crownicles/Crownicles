@@ -8,11 +8,13 @@ import { ReactionCollectorBigEventData } from "../../../../Lib/src/packets/inter
 import {
 	chooseDestinationCollector,
 	createBigEventCollector,
+	createBuyHealCollector,
 	createUseTokensCollector,
 	handleStartPveFight
 } from "../../commands/player/ReportCommand";
 import { ReactionCollectorChooseDestinationData } from "../../../../Lib/src/packets/interaction/ReactionCollectorChooseDestination";
 import { ReactionCollectorUseTokensData } from "../../../../Lib/src/packets/interaction/ReactionCollectorUseTokens";
+import { ReactionCollectorBuyHealData } from "../../../../Lib/src/packets/interaction/ReactionCollectorBuyHeal";
 import { ReactionCollectorGoToPVEIslandData } from "../../../../Lib/src/packets/interaction/ReactionCollectorGoToPVEIsland";
 import { goToPVEIslandCollector } from "../../smallEvents/goToPVEIsland";
 import { ReactionCollectorLotteryData } from "../../../../Lib/src/packets/interaction/ReactionCollectorLottery";
@@ -170,6 +172,7 @@ export default class ReactionCollectorHandler {
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorPetExpeditionChoiceData.name, createPetExpeditionChoiceCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorPetExpeditionFinishedData.name, createPetExpeditionFinishedCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorUseTokensData.name, createUseTokensCollector);
+		ReactionCollectorHandler.collectorMap.set(ReactionCollectorBuyHealData.name, createBuyHealCollector);
 	}
 
 	@packetHandler(ReactionCollectorCreationPacket)

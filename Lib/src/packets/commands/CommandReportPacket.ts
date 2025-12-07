@@ -49,6 +49,11 @@ export class CommandReportTravelSummaryRes extends CrowniclesPacket {
 		cost: number;
 		playerTokens: number;
 	};
+
+	heal?: {
+		price: number;
+		playerMoney: number;
+	};
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
@@ -130,4 +135,27 @@ export class CommandReportUseTokensAcceptPacketRes extends CrowniclesPacket {
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandReportUseTokensRefusePacketRes extends CrowniclesPacket {
+}
+
+@sendablePacket(PacketDirection.FRONT_TO_BACK)
+export class CommandReportBuyHealPacketReq extends CrowniclesPacket {
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportBuyHealAcceptPacketRes extends CrowniclesPacket {
+	healPrice!: number;
+
+	isArrived!: boolean;
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportBuyHealRefusePacketRes extends CrowniclesPacket {
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportBuyHealNoAlterationPacketRes extends CrowniclesPacket {
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportBuyHealCannotHealOccupiedPacketRes extends CrowniclesPacket {
 }
