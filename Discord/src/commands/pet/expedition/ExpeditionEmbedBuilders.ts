@@ -191,7 +191,7 @@ function formatRewards(
 	if (rewards.tokens && rewards.tokens > 0) {
 		lines.push(i18n.t("commands:petExpedition.rewards.tokens", {
 			lng,
-			amount: rewards.tokens
+			count: rewards.tokens
 		}));
 	}
 
