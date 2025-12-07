@@ -69,6 +69,19 @@ export class CommandShopBoughtTooMuchDailyPotions extends CrowniclesPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandShopBoughtTooMuchTokens extends CrowniclesPacket {
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandShopTokensBought extends CrowniclesPacket {
+	amount!: number;
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandShopTokensFull extends CrowniclesPacket {
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandShopNotEnoughCurrency extends CrowniclesPacket {
 	missingCurrency!: number;
 
@@ -101,6 +114,7 @@ export type additionalShopData = {
 	remainingPotions?: number;
 	dailyPotion?: ItemWithDetails;
 	gemToMoneyRatio?: number;
+	remainingTokens?: number;
 };
 
 export class ReactionCollectorShop extends ReactionCollector {

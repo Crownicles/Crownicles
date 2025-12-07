@@ -12,6 +12,7 @@ import {
 	CommandShopAlreadyHaveBadge,
 	CommandShopBadgeBought,
 	CommandShopBoughtTooMuchDailyPotions,
+	CommandShopBoughtTooMuchTokens,
 	CommandShopCannotHealOccupied,
 	CommandShopClosed,
 	CommandShopEnergyHeal,
@@ -19,6 +20,8 @@ import {
 	CommandShopHealAlterationDone,
 	CommandShopNoAlterationToHeal,
 	CommandShopNoEnergyToHeal,
+	CommandShopTokensBought,
+	CommandShopTokensFull,
 	CommandShopTooManyEnergyBought,
 	ShopCategory,
 	ShopItem
@@ -59,6 +62,7 @@ import {
 } from "../../core/utils/CommandUtils";
 import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
 import { Badge } from "../../../../Lib/src/types/Badge";
+import { TokensConstants } from "../../../../Lib/src/constants/TokensConstants";
 
 /**
  * Get the shop item for getting a random item
@@ -183,6 +187,44 @@ function getBadgeShopItem(): ShopItem {
 }
 
 /**
+ * Get the shop item for buying tokens
+ * @param tokensAlreadyPurchased - Number of tokens already purchased today
+ */
+function getTokenShopItem(tokensAlreadyPurchased: number): ShopItem {
+	return {
+		id: ShopItemType.TOKEN,
+		price: ShopConstants.TOKEN_PRICE,
+		amounts: [1],
+		buyCallback: async (response, playerId): Promise<boolean> => {
+			const player = await Players.getById(playerId);
+
+			// Check if the player has already bought the maximum amount of tokens today
+			if (tokensAlreadyPurchased >= ShopConstants.MAX_DAILY_TOKEN_BUYOUTS) {
+				response.push(makePacket(CommandShopBoughtTooMuchTokens, {}));
+				return false;
+			}
+
+			// Check if player already has max tokens
+			if (player.tokens >= TokensConstants.MAX) {
+				response.push(makePacket(CommandShopTokensFull, {}));
+				return false;
+			}
+
+			// Add token to player
+			await player.addTokens({
+				amount: 1,
+				response,
+				reason: NumberChangeReason.SHOP
+			});
+			await player.save();
+
+			response.push(makePacket(CommandShopTokensBought, { amount: 1 }));
+			return true;
+		}
+	};
+}
+
+/**
  * Get the shop item for getting the daily potion
  * @param potion
  */
@@ -293,6 +335,7 @@ export default class ShopCommand {
 		context: PacketContext
 	): Promise<void> {
 		const healEnergyAlreadyPurchased = await LogsReadRequests.getAmountOfHealEnergyBoughtByPlayerThisWeek(player.keycloakId);
+		const tokensAlreadyPurchased = await LogsReadRequests.getAmountOfTokensBoughtByPlayerToday(player.keycloakId);
 		const potion = PotionDataController.instance.getById(await Settings.SHOP_POTION.getValue());
 
 		const shopCategories: ShopCategory[] = [
@@ -305,9 +348,14 @@ export default class ShopCommand {
 					getRegenShopItem(),
 					getBadgeShopItem()
 				]
-			}, {
+			},
+			{
 				id: "dailyPotion",
 				items: [getDailyPotionShopItem(potion)]
+			},
+			{
+				id: "token",
+				items: [getTokenShopItem(tokensAlreadyPurchased)]
 			}
 		];
 
@@ -324,7 +372,8 @@ export default class ShopCommand {
 			player,
 			additionalShopData: {
 				remainingPotions: ShopConstants.MAX_DAILY_POTION_BUYOUTS - await LogsReadRequests.getAmountOfDailyPotionsBoughtByPlayer(player.keycloakId),
-				dailyPotion: toItemWithDetails(potion)
+				dailyPotion: toItemWithDetails(potion),
+				remainingTokens: ShopConstants.MAX_DAILY_TOKEN_BUYOUTS - tokensAlreadyPurchased
 			},
 			logger: crowniclesInstance.logsDatabase.logClassicalShopBuyout
 		});

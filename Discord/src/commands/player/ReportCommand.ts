@@ -777,7 +777,7 @@ function createTokenButton(packet: CommandReportTravelSummaryRes, lng: Language)
 	return new ButtonBuilder()
 		.setCustomId("useTokens")
 		.setLabel(tokenButtonLabel)
-		.setEmoji(parseEmoji(CrowniclesIcons.unitValues.tokens)!)
+		.setEmoji(parseEmoji(CrowniclesIcons.unitValues.token)!)
 		.setStyle(hasEnoughTokens ? ButtonStyle.Primary : ButtonStyle.Secondary)
 		.setDisabled(!hasEnoughTokens);
 }

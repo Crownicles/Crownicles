@@ -3,6 +3,7 @@ import {
 	CommandShopAlreadyHaveBadge,
 	CommandShopBadgeBought,
 	CommandShopBoughtTooMuchDailyPotions,
+	CommandShopBoughtTooMuchTokens,
 	CommandShopCannotHealOccupied,
 	CommandShopClosed,
 	CommandShopEnergyHeal,
@@ -11,6 +12,8 @@ import {
 	CommandShopNoAlterationToHeal,
 	CommandShopNoEnergyToHeal,
 	CommandShopNotEnoughCurrency,
+	CommandShopTokensBought,
+	CommandShopTokensFull,
 	CommandShopTooManyEnergyBought
 } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorShop";
 import { PacketContext } from "../../../../../../Lib/src/packets/CrowniclesPacket";
@@ -18,6 +21,7 @@ import {
 	handleCommandShopAlreadyHaveBadge,
 	handleCommandShopBadgeBought,
 	handleCommandShopBoughtTooMuchDailyPotions,
+	handleCommandShopBoughtTooMuchTokens,
 	handleCommandShopCannotHealOccupied,
 	handleCommandShopClosed,
 	handleCommandShopEnergyHeal,
@@ -26,6 +30,8 @@ import {
 	handleCommandShopNoAlterationToHeal,
 	handleCommandShopNoEnergyToHeal,
 	handleCommandShopNotEnoughMoney,
+	handleCommandShopTokensBought,
+	handleCommandShopTokensFull,
 	handleCommandShopTooManyEnergyBought, handleReactionCollectorBuyCategorySlotBuySuccess
 } from "../../../../commands/player/ShopCommand";
 import { ReactionCollectorBuyCategorySlotBuySuccess } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorBuyCategorySlot";
@@ -79,6 +85,21 @@ export default class ShopCommandPacketHandlers {
 	@packetHandler(CommandShopBoughtTooMuchDailyPotions)
 	async shopBoughtTooMuchDailyPotions(context: PacketContext, _packet: CommandShopBoughtTooMuchDailyPotions): Promise<void> {
 		await handleCommandShopBoughtTooMuchDailyPotions(context);
+	}
+
+	@packetHandler(CommandShopBoughtTooMuchTokens)
+	async shopBoughtTooMuchTokens(context: PacketContext, _packet: CommandShopBoughtTooMuchTokens): Promise<void> {
+		await handleCommandShopBoughtTooMuchTokens(context);
+	}
+
+	@packetHandler(CommandShopTokensBought)
+	async shopTokensBought(context: PacketContext, _packet: CommandShopTokensBought): Promise<void> {
+		await handleCommandShopTokensBought(context);
+	}
+
+	@packetHandler(CommandShopTokensFull)
+	async shopTokensFull(context: PacketContext, _packet: CommandShopTokensFull): Promise<void> {
+		await handleCommandShopTokensFull(context);
 	}
 
 	@packetHandler(CommandShopNotEnoughCurrency)
