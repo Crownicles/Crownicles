@@ -254,6 +254,7 @@
       "money": "{emote:unitValues.money} Argent gagné : **{{amount}}** !",
       "experience": "{emote:unitValues.xp} Expérience gagnée : **{{amount}}** !",
       "points": "{emote:unitValues.score} Points gagnés : **{{amount}}** !",
+      "tokens": "{emote:unitValues.tokens} Jetons gagnés : **{{amount}}** !",
       "item": "{emote:rewards.item} Vous recevez un équipement aléatoire !",
       "cloneTalisman": "{emote:expedition.cloneTalisman} **DÉCOUVERTE EXCEPTIONNELLE !**\nVotre familier a découvert un ancien artefact enfoui : le **Talisman de Clonage** !\nCet objet mystique permettra à votre compagnon de vous assister en défense et dans les petits événements, même lorsqu'il est en expédition !",
       "badgeEarned": "{emote:badges.expert_expediteur} Un badge vous a été offert : **Expéditeur Expert** !"
@@ -698,7 +699,7 @@
     },
     "information": {
       "fieldName": "Informations :",
-      "fieldValue": "{emote:unitValues.health} {{health}} / {{maxHealth}} | {emote:unitValues.xp} {{experience}} / {{experienceNeededToLevelUp}} | {emote:unitValues.money} {{money}}"
+      "fieldValue": "{emote:unitValues.health} {{health}} / {{maxHealth}} | {emote:unitValues.xp} {{experience}} / {{experienceNeededToLevelUp}} | {emote:unitValues.money} {{money}} | {emote:unitValues.tokens} {{tokens}} / {{tokensMax}}"
     },
     "map": {
       "fieldName": "Destination :",

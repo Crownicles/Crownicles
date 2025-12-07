@@ -8,6 +8,7 @@ export abstract class PlayersConstants {
 		LEVEL: 0,
 		EXPERIENCE: 0,
 		MONEY: 0,
+		TOKENS: 0,
 		CLASS: 0,
 		BADGES: null as unknown as string,
 		GUILD_ID: null as unknown as number,

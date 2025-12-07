@@ -277,6 +277,11 @@ export interface ExpeditionRewardData {
 	points: number;
 
 	/**
+	 * Tokens earned during the expedition
+	 */
+	tokens?: number;
+
+	/**
 	 * Whether the clone talisman was found during this expedition
 	 */
 	cloneTalismanFound?: boolean;

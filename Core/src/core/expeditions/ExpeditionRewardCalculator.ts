@@ -4,6 +4,7 @@ import {
 import {
 	ExpeditionConstants, ExpeditionLocationType
 } from "../../../../Lib/src/constants/ExpeditionConstants";
+import { TokensConstants } from "../../../../Lib/src/constants/TokensConstants";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import {
 	generateRandomItem
@@ -51,6 +52,10 @@ interface RarityRange {
 interface ItemReward {
 	itemId: number;
 	itemCategory: number;
+}
+
+function calculateTokensReward(rewardIndex: number): number {
+	return Math.max(1, rewardIndex + TokensConstants.EXPEDITION.REWARD_INDEX_OFFSET);
 }
 
 /**
@@ -230,6 +235,7 @@ export function calculateRewards(params: RewardCalculationParams): ExpeditionRew
 		expedition, rewardIndex, isPartialSuccess, hasCloneTalisman
 	} = params;
 	const rewards = calculateBaseRewards(rewardIndex, expedition.locationType);
+	const tokens = calculateTokensReward(rewardIndex);
 
 	if (isPartialSuccess) {
 		applyPartialSuccessPenalty(rewards);
@@ -242,6 +248,7 @@ export function calculateRewards(params: RewardCalculationParams): ExpeditionRew
 		...rewards,
 		itemId: itemReward.itemId,
 		itemCategory: itemReward.itemCategory,
+		tokens,
 		cloneTalismanFound: rollCloneTalisman({
 			expedition,
 			rewardIndex,

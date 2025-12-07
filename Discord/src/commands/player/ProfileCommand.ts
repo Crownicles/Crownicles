@@ -26,6 +26,7 @@ import {
 } from "../../../../Lib/src/utils/TimeUtils";
 import { DisplayUtils } from "../../utils/DisplayUtils";
 import { Badge } from "../../../../Lib/src/types/Badge";
+import { TokensConstants } from "../../../../Lib/src/constants/TokensConstants";
 
 /**
  * Display the profile of a player
@@ -118,7 +119,9 @@ function generateFields(packet: CommandProfilePacketRes, lng: Language): EmbedFi
 		maxHealth: packet.playerData.health.max,
 		money: packet.playerData.money,
 		experience: packet.playerData.experience.value,
-		experienceNeededToLevelUp: packet.playerData.experience.max
+		experienceNeededToLevelUp: packet.playerData.experience.max,
+		tokens: packet.playerData.tokens ?? 0,
+		tokensMax: packet.playerData.tokensMax ?? TokensConstants.MAX
 	});
 
 	addField(fields, "statistics", Boolean(packet.playerData.stats), {

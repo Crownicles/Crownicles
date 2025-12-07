@@ -2059,6 +2059,7 @@ export const CrowniclesIcons: {
 	unitValues: {
 		score: "🏅",
 		money: "💰",
+		tokens: "🪙",
 		lostMoney: "💸",
 		xp: "⭐",
 		gem: "💎",

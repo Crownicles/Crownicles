@@ -56,6 +56,7 @@ import { StatValues } from "../../../../../../Lib/src/types/StatValues";
 import { ReachDestinationNotificationPacket } from "../../../../../../Lib/src/packets/notifications/ReachDestinationNotificationPacket";
 import { CrowniclesLogger } from "../../../../../../Lib/src/logs/CrowniclesLogger";
 import { Badge } from "../../../../../../Lib/src/types/Badge";
+import { TokensConstants } from "../../../../../../Lib/src/constants/TokensConstants";
 
 // skipcq: JS-C1003 - moment does not expose itself as an ES Module.
 import * as moment from "moment";
@@ -102,6 +103,8 @@ export class Player extends Model {
 	declare experience: number;
 
 	declare money: number;
+
+	declare tokens: number;
 
 	declare class: number;
 
@@ -292,6 +295,26 @@ export class Player extends Model {
 		});
 		parameters.amount = -parameters.amount;
 		return this.addMoney(parameters);
+	}
+
+	/**
+	 * Add or remove tokens to the player
+	 * @param parameters
+	 */
+	public async addTokens(parameters: EditValueParameters): Promise<Player> {
+		const newTokens = Math.min(
+			TokensConstants.MAX,
+			Math.max(0, this.tokens + parameters.amount)
+		);
+
+		if (newTokens === this.tokens) {
+			return this;
+		}
+
+		this.setTokens(newTokens);
+		crowniclesInstance.logsDatabase.logTokensChange(this.keycloakId, this.tokens, parameters.reason)
+			.then();
+		return this;
 	}
 
 	/**
@@ -999,6 +1022,14 @@ export class Player extends Model {
 	}
 
 	/**
+	 * Set the tokens of a player clamped between 0 and the maximum capacity
+	 * @param tokens
+	 */
+	private setTokens(tokens: number): void {
+		this.tokens = Math.min(TokensConstants.MAX, Math.max(0, tokens));
+	}
+
+	/**
 	 * Add points to the weekly score of the player
 	 * @param weeklyScore
 	 */
@@ -1528,6 +1559,10 @@ export function initModel(sequelize: Sequelize): void {
 		money: {
 			type: DataTypes.INTEGER,
 			defaultValue: PlayersConstants.PLAYER_DEFAULT_VALUES.MONEY
+		},
+		tokens: {
+			type: DataTypes.INTEGER,
+			defaultValue: PlayersConstants.PLAYER_DEFAULT_VALUES.TOKENS
 		},
 		class: {
 			type: DataTypes.INTEGER,

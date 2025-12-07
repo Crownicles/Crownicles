@@ -9,6 +9,7 @@ import {
 import { LogsPlayersLevel } from "./models/LogsPlayersLevel";
 import { LogsPlayersScore } from "./models/LogsPlayersScore";
 import { LogsPlayersGems } from "./models/LogsPlayersGems";
+import { LogsPlayersTokens } from "./models/LogsPlayersTokens";
 import { LogsCommands } from "./models/LogsCommands";
 import { LogsPlayersCommands } from "./models/LogsPlayersCommands";
 import { LogsSmallEvents } from "./models/LogsSmallEvents";
@@ -123,6 +124,7 @@ export interface ExpeditionLogData {
 	money: number | null;
 	experience: number | null;
 	points: number | null;
+	tokens: number | null;
 	cloneTalismanFound: boolean | null;
 	loveChange: number;
 }
@@ -157,6 +159,7 @@ export interface ExpeditionRewards {
 	money?: number;
 	experience?: number;
 	points?: number;
+	tokens?: number;
 	cloneTalismanFound?: boolean;
 }
 
@@ -394,6 +397,16 @@ export class LogsDatabase extends Database {
 	 */
 	public logMoneyChange(keycloakId: string, value: number, reason: NumberChangeReason): Promise<void> {
 		return LogsDatabase.logNumberChange(keycloakId, value, reason, LogsPlayersMoney);
+	}
+
+	/**
+	 * Log a player's tokens change
+	 * @param keycloakId
+	 * @param value
+	 * @param reason
+	 */
+	public logTokensChange(keycloakId: string, value: number, reason: NumberChangeReason): Promise<void> {
+		return LogsDatabase.logNumberChange(keycloakId, value, reason, LogsPlayersTokens);
 	}
 
 	/**
@@ -1379,6 +1392,7 @@ export class LogsDatabase extends Database {
 			money: rewards?.money ?? null,
 			experience: rewards?.experience ?? null,
 			points: rewards?.points ?? null,
+			tokens: rewards?.tokens ?? null,
 			cloneTalismanFound: rewards?.cloneTalismanFound ?? null,
 			loveChange
 		});

@@ -24,6 +24,7 @@ import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
 import { Badge } from "../../../../Lib/src/types/Badge";
 import { ClassConstants } from "../../../../Lib/src/constants/ClassConstants";
 import { Effect } from "../../../../Lib/src/types/Effect";
+import { TokensConstants } from "../../../../Lib/src/constants/TokensConstants";
 
 /**
  * Get the current campaign progression of the player
@@ -124,7 +125,9 @@ export default class ProfileCommand {
 					value: toCheckPlayer.health,
 					max: toCheckPlayer.getMaxHealth()
 				},
-				money: toCheckPlayer.money
+				money: toCheckPlayer.money,
+				tokens: toCheckPlayer.tokens,
+				tokensMax: TokensConstants.MAX
 			}
 		}));
 	}
