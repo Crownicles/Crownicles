@@ -608,6 +608,27 @@ export abstract class ExpeditionConstants {
 	};
 
 	/**
+	 * Bonus tokens constants
+	 * A rare bonus that can be applied to expeditions (mutually exclusive with clone talisman bonus)
+	 */
+	static readonly BONUS_TOKENS = {
+		/**
+		 * Chance for an expedition to have the bonus tokens multiplier (1 in 50)
+		 */
+		BONUS_EXPEDITION_CHANCE: 50,
+
+		/**
+		 * Multiplier applied to tokens when expedition has the bonus tag
+		 */
+		MULTIPLIER: 3,
+
+		/**
+		 * Minimum tokens guaranteed from any expedition
+		 */
+		MIN_TOKEN_REWARD: 1
+	};
+
+	/**
 	 * Badge constants for expedition achievements
 	 */
 	static readonly BADGE = {

@@ -23,7 +23,7 @@ import { ExpeditionOptionData } from "../../../../../Lib/src/packets/interaction
  */
 type ExpeditionOptionLike = Pick<ExpeditionOptionData,
 	| "locationType" | "mapLocationId" | "displayDurationMinutes" | "foodCost"
-	| "riskRate" | "rewardIndex" | "difficulty" | "isDistantExpedition" | "hasCloneTalismanBonus"
+	| "riskRate" | "rewardIndex" | "difficulty" | "isDistantExpedition" | "hasCloneTalismanBonus" | "hasBonusTokens"
 >;
 
 /**
@@ -263,6 +263,11 @@ export function buildExpeditionOptionText(
 	// Add clone talisman bonus tag if present
 	if (exp.hasCloneTalismanBonus) {
 		optionText += `\n${i18n.t("commands:petExpedition.expeditionOption.cloneTalismanBonus", { lng })}`;
+	}
+
+	// Add bonus tokens tag if present
+	if (exp.hasBonusTokens) {
+		optionText += `\n${i18n.t("commands:petExpedition.expeditionOption.bonusTokens", { lng })}`;
 	}
 
 	return optionText;

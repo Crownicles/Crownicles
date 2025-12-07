@@ -76,6 +76,11 @@ export interface ExpeditionData {
 	 * Only appears when player doesn't have the clone talisman (1/20 chance per expedition)
 	 */
 	hasCloneTalismanBonus?: boolean;
+
+	/**
+	 * Whether this expedition has bonus token rewards (1 in 50 expeditions, mutually exclusive with clone talisman bonus)
+	 */
+	hasBonusTokens?: boolean;
 }
 
 /**

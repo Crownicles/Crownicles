@@ -157,7 +157,8 @@
       "reward": "{emote:expedition.reward} Récompenses estimées : {{reward}}",
       "difficulty": "{emote:expedition.difficulty} Difficulté du terrain : {{difficulty}}",
       "food": "{emote:expedition.food} Provisions requises : {{foodDisplay}}",
-      "cloneTalismanBonus": "{emote:expedition.cloneTalisman} *Un étrange pressentiment vous envahit... Les rumeurs parlent d'un artefact légendaire peut-être caché en ces terres.*"
+      "cloneTalismanBonus": "{emote:expedition.cloneTalisman} *Un étrange pressentiment vous envahit... Les rumeurs parlent d'un artefact légendaire peut-être caché en ces terres.*",
+      "bonusTokens": "{emote:unitValues.tokens} *Cette région regorge de trésors anciens ! Votre familier pourrait y découvrir une fortune en jetons perdus...*"
     },
     "foodCost_one": "{{count}} ration",
     "foodCost_other": "{{count}} rations",

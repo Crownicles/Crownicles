@@ -54,8 +54,12 @@ interface ItemReward {
 	itemCategory: number;
 }
 
-function calculateTokensReward(rewardIndex: number): number {
-	return Math.max(1, rewardIndex + TokensConstants.EXPEDITION.REWARD_INDEX_OFFSET);
+function calculateTokensReward(rewardIndex: number, hasBonusTokens: boolean): number {
+	const baseTokens = rewardIndex - TokensConstants.EXPEDITION.REWARD_INDEX_OFFSET;
+	const finalTokens = hasBonusTokens
+		? baseTokens * ExpeditionConstants.BONUS_TOKENS.MULTIPLIER
+		: baseTokens;
+	return Math.max(ExpeditionConstants.BONUS_TOKENS.MIN_TOKEN_REWARD, finalTokens);
 }
 
 /**
@@ -177,6 +181,11 @@ function rollCloneTalisman(params: CloneTalismanDropParams): boolean {
 		return false;
 	}
 
+	// No drop if expedition has bonus tokens (mutually exclusive)
+	if (expedition.hasBonusTokens) {
+		return false;
+	}
+
 	let dropChance = ExpeditionConstants.CLONE_TALISMAN.BASE_DROP_CHANCE
 		+ rewardIndex * ExpeditionConstants.CLONE_TALISMAN.REWARD_INDEX_BONUS_PER_POINT;
 
@@ -235,7 +244,7 @@ export function calculateRewards(params: RewardCalculationParams): ExpeditionRew
 		expedition, rewardIndex, isPartialSuccess, hasCloneTalisman
 	} = params;
 	const rewards = calculateBaseRewards(rewardIndex, expedition.locationType);
-	const tokens = calculateTokensReward(rewardIndex);
+	const tokens = calculateTokensReward(rewardIndex, expedition.hasBonusTokens ?? false);
 
 	if (isPartialSuccess) {
 		applyPartialSuccessPenalty(rewards);

@@ -312,8 +312,7 @@ export class Player extends Model {
 		}
 
 		this.setTokens(newTokens);
-		crowniclesInstance.logsDatabase.logTokensChange(this.keycloakId, this.tokens, parameters.reason)
-			.then();
+		await crowniclesInstance.logsDatabase.logTokensChange(this.keycloakId, this.tokens, parameters.reason);
 		return this;
 	}
 
