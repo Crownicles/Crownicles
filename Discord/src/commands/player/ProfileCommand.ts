@@ -113,7 +113,8 @@ function addField(fields: EmbedField[], fieldKey: string, shouldBeFielded: boole
  */
 function generateFields(packet: CommandProfilePacketRes, lng: Language): EmbedField[] {
 	const fields: EmbedField[] = [];
-	addField(fields, "information", true, {
+	const showTokens = packet.playerData.level >= TokensConstants.LEVEL_TO_UNLOCK;
+	addField(fields, showTokens ? "information" : "informationNoTokens", true, {
 		lng,
 		health: packet.playerData.health.value,
 		maxHealth: packet.playerData.health.max,

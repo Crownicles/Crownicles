@@ -703,6 +703,10 @@
       "fieldName": "Informations :",
       "fieldValue": "{emote:unitValues.health} {{health}} / {{maxHealth}} | {emote:unitValues.xp} {{experience}} / {{experienceNeededToLevelUp}} | {emote:unitValues.money} {{money}} | {emote:unitValues.token} {{tokens}} / {{tokensMax}}"
     },
+    "informationNoTokens": {
+      "fieldName": "Informations :",
+      "fieldValue": "{emote:unitValues.health} {{health}} / {{maxHealth}} | {emote:unitValues.xp} {{experience}} / {{experienceNeededToLevelUp}} | {emote:unitValues.money} {{money}}"
+    },
     "map": {
       "fieldName": "Destination :",
       "fieldValue": "{emote:mapTypes.{{mapTypeId}}} $t(models:map_locations.{{mapName}}.name)"

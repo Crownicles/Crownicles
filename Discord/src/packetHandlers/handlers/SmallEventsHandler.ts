@@ -1109,6 +1109,11 @@ export default class SmallEventsHandler {
 					playerLevel: packet.playerLevel,
 					talismanName
 				});
+
+				// Add consolation token message if a token was given
+				if (packet.consolationTokenGiven) {
+					story += `\n\n${i18n.t("smallEvents:expeditionAdvice.conditions.consolationToken", { lng })}`;
+				}
 				break;
 
 			case ExpeditionAdviceInteractionType.TALISMAN_RECEIVED: {

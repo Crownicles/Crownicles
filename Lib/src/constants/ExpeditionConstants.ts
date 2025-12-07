@@ -537,11 +537,6 @@ export abstract class ExpeditionConstants {
 	 */
 	static readonly TALISMAN_EVENT = {
 		/**
-		 * Minimum level to encounter the event
-		 */
-		MIN_LEVEL: 20,
-
-		/**
 		 * Minimum level to receive the talisman
 		 */
 		TALISMAN_MIN_LEVEL: 30,

@@ -352,12 +352,16 @@ export default class ShopCommand {
 			{
 				id: "dailyPotion",
 				items: [getDailyPotionShopItem(potion)]
-			},
-			{
-				id: "token",
-				items: [getTokenShopItem(tokensAlreadyPurchased)]
 			}
 		];
+
+		// Only show token category if player has unlocked tokens
+		if (player.level >= TokensConstants.LEVEL_TO_UNLOCK) {
+			shopCategories.push({
+				id: "token",
+				items: [getTokenShopItem(tokensAlreadyPurchased)]
+			});
+		}
 
 		const slotExtensionItem = await getSlotExtensionShopItem(player);
 		if (slotExtensionItem) {

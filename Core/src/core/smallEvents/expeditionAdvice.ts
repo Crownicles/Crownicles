@@ -13,6 +13,7 @@ import {
 	ExpeditionAdviceInteractionType
 } from "../../../../Lib/src/packets/smallEvents/SmallEventExpeditionAdvicePacket";
 import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
+import { TokensConstants } from "../../../../Lib/src/constants/TokensConstants";
 import { Maps } from "../maps/Maps";
 import { LogsReadRequests } from "../database/logs/LogsReadRequests";
 import { DwarfPetsSeen } from "../database/game/models/DwarfPetsSeen";
@@ -28,11 +29,11 @@ import { MissionsController } from "../missions/MissionsController";
 
 /**
  * Check if the small event can be executed for this player
- * Requires: player level >= 20 and on continent
+ * Requires: player level >= tokens unlock level and on continent
  */
 function canBeExecuted(player: Player): boolean {
 	return Maps.isOnContinent(player)
-		&& player.level >= ExpeditionConstants.TALISMAN_EVENT.MIN_LEVEL;
+		&& player.level >= TokensConstants.LEVEL_TO_UNLOCK;
 }
 
 /**
@@ -313,6 +314,16 @@ async function handlePlayerWithoutTalisman(
 	const conditionResult = await checkTalismanConditions(player);
 
 	if (!conditionResult.conditionMet) {
+		// Check if the condition is level too low - give a consolation token
+		const isLevelTooLow = conditionResult.interactionType === ExpeditionAdviceInteractionType.CONDITION_NOT_MET_LEVEL_TOO_LOW;
+		if (isLevelTooLow) {
+			await player.addTokens({
+				amount: 1,
+				response,
+				reason: NumberChangeReason.SMALL_EVENT
+			});
+		}
+
 		// A condition is not met - explain what's missing
 		response.push(makePacket(SmallEventExpeditionAdvicePacket, {
 			...basePacketData,
@@ -321,7 +332,8 @@ async function handlePlayerWithoutTalisman(
 			petSex: conditionResult.petSex,
 			petNickname: conditionResult.petNickname,
 			requiredLevel: ExpeditionConstants.TALISMAN_EVENT.TALISMAN_MIN_LEVEL,
-			playerLevel: player.level
+			playerLevel: player.level,
+			consolationTokenGiven: isLevelTooLow
 		}));
 		return;
 	}
