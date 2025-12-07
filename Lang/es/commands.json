@@ -52,101 +52,101 @@
       "{emote:petCommand.pet} Excitada, se estremece **{{petName}}** al contacto de tu amable mano.",
       "{emote:petCommand.pet} Bajo sus dedos expertos, **{{petName}}** se relaja en total tranquilidad."
     ],
-    "expeditionButton": "Expédition",
-    "expeditionButtonDisabled": "Expédition (indisponible)",
-    "recallButton": "Rappeler",
-    "finishExpeditionButton": "Terminer l'exploration"
+    "expeditionButton": "Expedición",
+    "expeditionButtonDisabled": "Expedición (no disponible)",
+    "recallButton": "Llamar",
+    "finishExpeditionButton": "Terminar la exploración"
   },
   "petExpedition": {
-    "title": "Expéditions de familier",
-    "unavailableTitle": "{{pseudo}}, expédition impossible",
+    "title": "Expediciones de mascota",
+    "unavailableTitle": "{{pseudo}}, expedición imposible",
     "noTalisman_male": [
-      "Vous posez la main sur votre sacoche, espérant y trouver le {emote:expedition.talisman} **Talisman d'Ancrage**, mais vos doigts ne rencontrent que le vide. Sans cet artefact ancestral, votre compagnon ne pourrait retrouver son chemin jusqu'à vous. Les anciens racontent qu'il se trouve quelque part sur les routes du royaume... Vous décidez de reporter cette expedition à un moment plus propice.",
-      "Sans le {emote:expedition.talisman} **Talisman d'Ancrage**, votre familier errerait pour l'éternité dans les contrées lointaines. Cet artefact précieux vous attend quelque part sur les routes du royaume. Vous décidez de reporter cette expedition à un moment plus propice.",
-      "Votre familier vous fixe avec des yeux pleins d'espoir, prêt à partir à l'aventure. Hélas, vous ne possédez pas encore le {emote:expedition.talisman} **Talisman d'Ancrage**, ce précieux artefact qui permet aux familiers de retrouver leur maître à travers les terres les plus hostiles. Vous décidez de reporter cette expedition à un moment plus propice.",
-      "Les légendes parlent d'un talisman magique, forgé par les premiers dresseurs, capable de créer un lien indéfectible entre un familier et son maître. Sans le {emote:expedition.talisman} **Talisman d'Ancrage**, envoyer votre compagnon en expédition serait pure folie. Vous décidez de reporter cette expedition à un moment plus propice."
+      "Pones la mano en tu bolsa, esperando encontrar el {emote:expedition.talisman} **Talismán de Anclaje**, pero tus dedos solo encuentran el vacío. Sin este artefacto ancestral, tu compañero no podría encontrar el camino de vuelta hacia ti. Los ancianos cuentan que se encuentra en algún lugar de los caminos del reino... Decides aplazar esta expedición para un momento más propicio.",
+      "Sin el {emote:expedition.talisman} **Talismán de Anclaje**, tu mascota deambularía por la eternidad en tierras lejanas. Este preciado artefacto te espera en algún lugar de los caminos del reino. Decides aplazar esta expedición para un momento más propicio.",
+      "Tu mascota te mira con ojos llenos de esperanza, lista para la aventura. Por desgracia, aún no posees el {emote:expedition.talisman} **Talismán de Anclaje**, este preciado artefacto que permite a las mascotas encontrar a su dueño a través de las tierras más hostiles. Decides aplazar esta expedición para un momento más propicio.",
+      "Las leyendas hablan de un talismán mágico, forjado por los primeros entrenadores, capaz de crear un vínculo inquebrantable entre una mascota y su maestro. Sin el {emote:expedition.talisman} **Talismán de Anclaje**, enviar a tu compañero en expedición sería una locura. Decides posponer esta expedición a un momento más propicio."
     ],
     "noTalisman_female": [
-      "Vous posez la main sur votre sacoche, espérant y trouver le {emote:expedition.talisman} **Talisman d'Ancrage**, mais vos doigts ne rencontrent que le vide. Sans cet artefact ancestral, votre compagne ne pourrait retrouver son chemin jusqu'à vous. Cet objet précieux se trouverait quelque part sur les routes du royaume. Il semble judicieux de reporter cette expédition à un moment plus propice.",
-      "Votre sacoche ne contient pas le {emote:expedition.talisman} **Talisman d'Ancrage**. Sans cet artefact, votre familier errerait pour l'éternité dans les contrées lointaines. L'objet se trouverait quelque part sur les routes du royaume. Il convient de reporter cette expédition.",
-      "Votre familier vous fixe avec des yeux pleins d'espoir, prête à partir à l'aventure. Hélas, le {emote:expedition.talisman} **Talisman d'Ancrage** ne se trouve pas dans vos affaires. Sans ce précieux artefact permettant aux familiers de retrouver leur maître à travers les terres les plus hostiles, l'expédition devra attendre.",
-      "Le {emote:expedition.talisman} **Talisman d'Ancrage**, cet artefact légendaire capable de créer un lien indéfectible entre un familier et son maître, reste introuvable dans votre équipement. Envoyer votre compagne en expédition sans lui serait pure folie. L'expédition est reportée."
+      "Pones la mano en tu cartera, esperando encontrar el {emote:expedition.talisman} **Talismán de Anclaje**, pero tus dedos solo encuentran el vacío. Sin este artefacto ancestral, tu compañera no podría encontrar el camino de regreso a ti. Este objeto precioso se encontraría en algún lugar de las rutas del reino. Parece sensato posponer esta expedición a un momento más propicio.",
+      "Tu cartera no contiene el {emote:expedition.talisman} **Talismán de Anclaje**. Sin este artefacto, tu mascota vagaría por la eternidad en tierras lejanas. El objeto se encontraría en algún lugar de las rutas del reino. Es conveniente posponer esta expedición.",
+      "Su mascota le mira con ojos llenos de esperanza, lista para la aventura. Por desgracia, el {emote:expedition.talisman} **Talismán de Anclaje** no se encuentra entre sus pertenencias. Sin este precioso artefacto que permite a las mascotas encontrar a su maestro a través de las tierras más hostiles, la expedición tendrá que esperar.",
+      "El {emote:expedition.talisman} **Talismán de Anclaje**, ese artefacto legendario capaz de crear un vínculo inquebrantable entre una mascota y su maestro, sigue sin encontrarse en su equipo. Enviar a su compañera en una expedición sin él sería una locura. La expedición se pospone."
     ],
     "noPet": [
-      "Vous scrutez les alentours, mais aucun familier ne trottine à vos côtés. Les routes d'exploration sont bien trop périlleuses pour s'y aventurer seul. L'expédition devra attendre l'arrivée d'un compagnon fidèle.",
-      "Une brise légère soulève la poussière du chemin. Sans compagnon fidèle à vos côtés, les expéditions restent hors de portée. Il faudra d'abord trouver un familier.",
-      "Le {emote:expedition.talisman} **Talisman d'Ancrage** ne réagit pas dans votre sacoche. Sa magie ne peut s'activer qu'en présence d'un familier. Il convient de trouver un compagnon digne de ce nom avant de songer aux expéditions."
+      "Explora los alrededores, pero ninguna mascota trota a su lado. Los caminos de exploración son demasiado peligrosos para aventurarse solo. La expedición tendrá que esperar la llegada de un compañero fiel.",
+      "Una ligera brisa levanta el polvo del camino. Sin un compañero fiel a su lado, las expediciones quedan fuera de alcance. Primero tendrá que encontrar una mascota.",
+      "El {emote:expedition.talisman} **Talismán de Anclaje** no reacciona en tu bolsa. Su magia solo puede activarse en presencia de una mascota. Conviene encontrar un compañero digno de ese nombre antes de pensar en las expediciones."
     ],
     "insufficientLove_male": [
-      "{{petDisplay}} vous lance un regard méfiant et recule d'un pas. Le lien qui vous unit n'est pas encore assez fort pour qu'il s'aventure seul dans les contrées sauvages. Prenez soin de lui, nourrissez-le, et peut-être qu'un jour il vous fera suffisamment confiance.",
-      "Votre familier se blottit contre votre jambe, tremblant légèrement. {{petDisplay}} n'est pas encore prêt à partir seul en expédition. Son cœur a besoin de plus de temps pour vous faire entièrement confiance.",
-      "Les yeux de {{petDisplay}} trahissent une inquiétude profonde. Partir en expédition demande un lien fort entre un familier et son maître. Continuez à prendre soin de votre compagnon pour renforcer votre complicité."
+      "{{petDisplay}} te lanza una mirada desconfiada y retrocede un paso. El vínculo que os une aún no es lo suficientemente fuerte como para que se aventure solo en las tierras salvajes. Cuídalo, nútrelo, y quizás algún día confíe en ti lo suficiente.",
+      "Tu mascota se acurruca contra tu pierna, temblando ligeramente. {{petDisplay}} aún no está listo para ir solo de expedición. Su corazón necesita más tiempo para confiar plenamente en ti.",
+      "Los ojos de {{petDisplay}} delatan una profunda preocupación. Partir de expedición requiere un vínculo fuerte entre una mascota y su amo. Continúa cuidando a tu compañero para fortalecer vuestra complicidad."
     ],
     "insufficientLove_female": [
-      "{{petDisplay}} vous lance un regard méfiant et recule d'un pas. Le lien qui vous unit n'est pas encore assez fort pour qu'elle s'aventure seule dans les contrées sauvages. Prenez soin d'elle, nourrissez-la, et peut-être qu'un jour elle vous fera suffisamment confiance.",
-      "Votre familier se blottit contre votre jambe, tremblante légèrement. {{petDisplay}} n'est pas encore prête à partir seule en expédition. Son cœur a besoin de plus de temps pour vous faire entièrement confiance.",
-      "Les yeux de {{petDisplay}} trahissent une inquiétude profonde. Partir en expédition demande un lien fort entre un familier et son maître. Continuez à prendre soin de votre compagne pour renforcer votre complicité."
+      "{{petDisplay}} te mira con recelo y retrocede un paso. El vínculo que os une aún no es lo suficientemente fuerte para que se aventure sola en las tierras salvajes. Cuida de ella, aliméntala, y quizás algún día confíe lo suficiente en ti.",
+      "Tu mascota se acurruca contra tu pierna, temblando ligeramente. {{petDisplay}} aún no está lista para irse de expedición sola. Su corazón necesita más tiempo para confiar plenamente en ti.",
+      "Los ojos de {{petDisplay}} delatan una profunda preocupación. Ir de expedición requiere un fuerte vínculo entre una mascota y su amo. Sigue cuidando a tu compañera para fortalecer vuestra complicidad."
     ],
     "insufficientLoveAdvice_male": [
-      "*Votre compagnon semble encore trop craintif pour s'éloigner de vous. Renforcez votre lien avant de l'envoyer en expédition.*",
-      "*Le regard de votre compagnon trahit une certaine anxiété. Il lui faut encore du temps pour oser s'aventurer sans vous.*",
-      "*Votre familier ne vous fait pas encore assez confiance pour partir explorer seul. Caresses et friandises sauront y remédier.*"
+      "*Tu compañero parece aún demasiado temeroso para alejarse de ti. Refuerza vuestro vínculo antes de enviarlo de expedición.*",
+      "*La mirada de tu compañero delata cierta ansiedad. Todavía necesita tiempo para atreverse a aventurarse sin ti.*",
+      "*Tu mascota aún no confía lo suficiente en ti como para ir a explorar solo. Las caricias y las golosinas lo remediarán.*"
     ],
     "insufficientLoveAdvice_female": [
-      "*Votre compagne semble encore trop craintive pour s'éloigner de vous. Renforcez votre lien avant de l'envoyer en expédition.*",
-      "*Le regard de votre compagne trahit une certaine anxiété. Il lui faut encore du temps pour oser s'aventurer sans vous.*",
-      "*Votre familier ne vous fait pas encore assez confiance pour partir explorer seule. Caresses et friandises sauront y remédier.*"
+      "*Tu compañera parece aún demasiado asustadiza para alejarse de ti. Refuerza vuestro vínculo antes de enviarla de expedición.*",
+      "*La mirada de tu compañera delata cierta ansiedad. Todavía necesita tiempo para atreverse a aventurarse sin ti.*",
+      "*Tu mascota aún no confía lo suficiente en ti como para ir a explorar sola. Las caricias y las golosinas lo remediarán.*"
     ],
     "petHungry_male": [
-      "Le ventre de {{petDisplay}} émet un grondement sonore. Les yeux suppliants, votre compagnon refuse catégoriquement de partir l'estomac vide. Nourrissez-le avant de l'envoyer à l'aventure !",
-      "{{petDisplay}} renifle votre sacoche avec insistance, espérant y trouver quelque chose à se mettre sous la dent. Un familier affamé ne peut partir en expédition !",
-      "Votre familier s'affale au sol, trop faible pour envisager une quelconque aventure. {{petDisplay}} a besoin d'un bon repas avant de pouvoir explorer les contrées lointaines."
+      "El vientre de {{petDisplay}} emite un rugido sonoro. Con ojos suplicantes, tu compañero se niega rotundamente a irse con el estómago vacío. ¡Aliméntalo antes de enviarlo a la aventura!",
+      "{{petDisplay}} olfatea tu bolsa con insistencia, esperando encontrar algo para comer. ¡Una mascota hambrienta no puede ir de expedición!",
+      "Tu mascota se desploma en el suelo, demasiado débil para emprender cualquier aventura. {{petDisplay}} necesita una buena comida antes de poder explorar tierras lejanas."
     ],
     "petHungry_female": [
-      "Le ventre de {{petDisplay}} émet un grondement sonore. Les yeux suppliants, votre compagne refuse catégoriquement de partir l'estomac vide. Nourrissez-la avant de l'envoyer à l'aventure !",
-      "{{petDisplay}} renifle votre sacoche avec insistance, espérant y trouver quelque chose à se mettre sous la dent. Un familier affamé ne peut partir en expédition !",
-      "Votre familier s'affale au sol, trop faible pour envisager une quelconque aventure. {{petDisplay}} a besoin d'un bon repas avant de pouvoir explorer les contrées lointaines."
+      "El vientre de {{petDisplay}} emite un rugido sonoro. Con ojos suplicantes, tu compañera se niega rotundamente a irse con el estómago vacío. ¡Aliméntala antes de enviarla a la aventura!",
+      "{{petDisplay}} olfatea tu zurrón con insistencia, esperando encontrar algo para comer. ¡Una mascota hambrienta no puede ir de expedición!",
+      "Tu mascota se desploma en el suelo, demasiado débil para emprender cualquier aventura. {{petDisplay}} necesita una buena comida antes de poder explorar tierras lejanas."
     ],
     "expeditionStatusRP": {
-      "header": "{emote:expedition.map} **Expédition en cours**\n**{{location}}**\n{emote:clocks.1} Retour : {{returnTime}}",
+      "header": "{emote:expedition.map} **Expedición en curso**\n**{{location}}**\n{emote:clocks.1} Regreso: {{returnTime}}",
       "progress": {
-        "justStarted_male": "*Votre familier vient tout juste de s'élancer vers l'aventure, la queue frétillante d'excitation.*",
-        "justStarted_female": "*Votre familier vient tout juste de s'élancer vers l'aventure, la queue frétillante d'excitation.*",
-        "ongoing_male": "*Votre familier progresse à travers les contrées sauvages, attentif au moindre danger.*",
-        "ongoing_female": "*Votre familier progresse à travers les contrées sauvages, attentive au moindre danger.*",
-        "almostDone_male": "*Votre familier devrait bientôt pointer le bout de son museau à l'horizon.*",
-        "almostDone_female": "*Votre familier devrait bientôt pointer le bout de son museau à l'horizon.*"
+        "justStarted_male": "*Tu mascota acaba de lanzarse a la aventura, la cola moviéndose de excitación.*",
+        "justStarted_female": "*Tu mascota acaba de lanzarse a la aventura, con la cola moviéndose de emoción.*",
+        "ongoing_male": "*Tu mascota progresa a través de las tierras salvajes, atento al menor peligro.*",
+        "ongoing_female": "*Tu mascota progresa a través de las tierras salvajes, atenta al menor peligro.*",
+        "almostDone_male": "*Tu mascota pronto debería asomar el hocico en el horizonte.*",
+        "almostDone_female": "*Tu mascota pronto debería asomar el hocico en el horizonte.*"
       },
       "situation": {
-        "strongPetEasyRisk_male": "*Sa force naturelle le rend confiant face aux périls de cette expédition.*",
-        "strongPetEasyRisk_female": "*Sa force naturelle la rend confiante face aux périls de cette expédition.*",
-        "strongPetHardRisk_male": "*Malgré sa puissance, cette expédition périlleuse ne sera pas une promenade de santé.*",
-        "strongPetHardRisk_female": "*Malgré sa puissance, cette expédition périlleuse ne sera pas une promenade de santé.*",
-        "weakPetEasyRisk_male": "*Cette expédition paisible convient parfaitement à son tempérament prudent.*",
-        "weakPetEasyRisk_female": "*Cette expédition paisible convient parfaitement à son tempérament prudent.*",
-        "weakPetHardRisk_male": "*Vous espérez qu'il saura se montrer rusé face aux dangers qui l'attendent.*",
-        "weakPetHardRisk_female": "*Vous espérez qu'elle saura se montrer rusée face aux dangers qui l'attendent.*"
+        "strongPetEasyRisk_male": "*Su fuerza natural lo hace confiado frente a los peligros de esta expedición.*",
+        "strongPetEasyRisk_female": "*Su fuerza natural la hace confiada frente a los peligros de esta expedición.*",
+        "strongPetHardRisk_male": "*A pesar de su poder, esta peligrosa expedición no será un paseo por el parque.*",
+        "strongPetHardRisk_female": "*A pesar de su poder, esta peligrosa expedición no será un paseo por el parque.*",
+        "weakPetEasyRisk_male": "*Esta expedición tranquila se adapta perfectamente a su temperamento prudente.*",
+        "weakPetEasyRisk_female": "*Esta expedición tranquila se adapta perfectamente a su temperamento prudente.*",
+        "weakPetHardRisk_male": "*Esperas que sepa ser astuto frente a los peligros que le esperan.*",
+        "weakPetHardRisk_female": "*Esperas que sepa ser astuta frente a los peligros que le esperan.*"
       },
       "food": {
-        "wellFed_male": "*Ses provisions bien garnies lui permettent de voyager l'esprit tranquille.*",
-        "wellFed_female": "*Ses provisions bien garnies lui permettent de voyager l'esprit tranquille.*",
-        "noFood_male": "*Parti sans provisions, il devra se débrouiller seul pour trouver de quoi se sustenter.*",
-        "noFood_female": "*Partie sans provisions, elle devra se débrouiller seule pour trouver de quoi se sustenter.*"
+        "wellFed_male": "*Sus provisiones bien surtidas le permiten viajar con tranquilidad.*",
+        "wellFed_female": "*Sus provisiones bien surtidas le permiten viajar con tranquilidad.*",
+        "noFood_male": "*Partió sin provisiones, tendrá que arreglárselas solo para encontrar qué comer.*",
+        "noFood_female": "*Partió sin provisiones, tendrá que arreglárselas sola para encontrar qué comer.*"
       }
     },
-    "inProgressTitle": "{{pseudo}}, expédition en cours",
+    "inProgressTitle": "{{pseudo}}, expedición en curso",
     "inProgressDescription": {
-      "intro": "{{petDisplay}} arpente actuellement des terres lointaines et mystérieuses !",
-      "destination": "{emote:expedition.map} **Destination :** **{{location}}**",
-      "risk": "{emote:expedition.risk} **Dangerosité :** {{risk}}",
-      "returnTime": "{emote:clocks.1} **Retour prévu :** {{returnTime}}",
-      "warning_male": "{emote:collectors.warning} *Rappeler votre familier prématurément brisera le lien de confiance. Il reviendra sans butin et le cœur meurtri...*",
-      "warning_female": "{emote:collectors.warning} *Rappeler votre familier prématurément brisera le lien de confiance. Elle reviendra sans butin et le cœur meurtrie...*"
+      "intro": "¡{{petDisplay}} recorre actualmente tierras lejanas y misteriosas!",
+      "destination": "{emote:expedition.map} **Destino:** **{{location}}**",
+      "risk": "{emote:expedition.risk} **Peligrosidad:** {{risk}}",
+      "returnTime": "{emote:clocks.1} **Regreso programado:** {{returnTime}}",
+      "warning_male": "{emote:collectors.warning} *Recordar a tu mascota prematuramente romperá el vínculo de confianza. Volverá sin botín y con el corazón herido...*",
+      "warning_female": "{emote:collectors.warning} *Recordar a tu mascota prematuramente romperá el vínculo de confianza. Volverá sin botín y con el corazón herido...*"
     },
-    "inProgressFoodInfo": "\n{emote:expedition.food} **Provisions emportées :** {{amount}} rations",
-    "recallButton": "Rappeler",
-    "closeButton": "Continuer l'exploration",
-    "chooseExpeditionTitle": "{{pseudo}}, nouvelles expéditions disponibles",
+    "inProgressFoodInfo": "\n{emote:expedition.food} **Provisiones llevadas:** {{amount}} raciones",
+    "recallButton": "Recordar",
+    "closeButton": "Continuar la exploración",
+    "chooseExpeditionTitle": "{{pseudo}}, nuevas expediciones disponibles",
     "chooseExpedition": "Le {emote:expedition.talisman} **Talisman d'Ancrage** vibre doucement dans votre sacoche. Trois destinations apparaissent dans votre esprit, révélées par la magie de l'artefact. {{petDisplay}} trépigne d'impatience, prêt à partir explorer l'une de ces contrées :",
     "selectPlaceholder": "Choisissez une destination...",
     "distantExpeditionPrefix": "Expédition lointaine : {{location}}",
@@ -671,7 +671,7 @@
       "bot_owner": ":crown: Propietario del bot",
       "mission_completer": "Insignia adquirida en la tienda de misiones",
       "powerful_guild": ":gem: Miembro de un poderoso gremio",
-      "legendary_pet": "Joueur ayant réussi à dresser un familier puissant",
+      "legendary_pet": "Jugador que ha logrado entrenar una mascota poderosa",
       "donor": ":money_with_wings: Donante",
       "early_class_adopter": ":bookmark: Adopción temprana de las clases",
       "good_bug_reporter": ":dove: Persona que informó de un fallo explotable sin aprovecharse de él`.",
@@ -948,7 +948,7 @@
         "name": "{emote:shopItems.lovePointsValue} Veterinario judicial",
         "info": "Obtenga información detallada sobre su mascota.",
         "giveTitle": "{{pseudo}}¡compra realizada!",
-        "giveDesc": "Après avoir longuement étudié votre animal et son état de santé, le vétérinaire vous donne son rapport :\n\n**{{petName}}** {{commentOnResult}}\n{emote:petInformation.loveScore} **Score d'amour** : {{actualLP}} / {{maxLovePoints}}\n{emote:petInformation.diet} **Régime alimentaire** : {{diet}}\n{emote:petInformation.force} **Force** : {{force}}\n{emote:petInformation.speed} **Vitesse** : {{speed}}\n{emote:petInformation.feedDelay} **Intervalle entre repas** : {{feedDelay}}\n{emote:petInformation.nextFeed} **Prochaine faim** : {{nextFeed}}\n{emote:petInformation.age} **Âge** : {{commentOnPetAge}}\n\n{emote:petInformation.fightEffect} **Effet de combat** : {{commentOnFightEffect}}\n\n {{dwarfPet}}",
+        "giveDesc": "Tras un examen exhaustivo de tu mascota y de su estado de salud, el veterinario te da su informe:\\n\\n**{{petName}}** {{commentOnResult}}\\n{emote:petInformation.loveScore} **Puntuación de cariño**: {{actualLP}} / {{maxLovePoints}}\\n{emote:petInformation.diet} **Régimen alimenticio**: {{diet}}\\n{emote:petInformation.force} **Fuerza**: {{force}}\\n{emote:petInformation.speed} **Velocidad**: {{speed}}\\n{emote:petInformation.feedDelay} **Intervalo entre comidas**: {{feedDelay}}\\n{emote:petInformation.nextFeed} **Próxima vez que tenga hambre**: {{nextFeed}}\\n{emote:petInformation.age} **Edad**: {{commentOnPetAge}}\\n\\n{emote:petInformation.fightEffect} **Efecto de combate**: {{commentOnFightEffect}}\\n\\n {{dwarfPet}}",
         "petIsHungry": "{emote:effects.starving} hambriento",
         "commentOnFightEffect": {
           "bite": [
@@ -1456,48 +1456,48 @@
     },
     "petReactions": {
       "loveGain": [
-        "{{pet}} exulte de joie après cette victoire ! Il sautille fièrement autour de {{player}}.",
-        "{{pet}} rayonne de fierté et bondit joyeusement autour de {{player}} !",
-        "{{pet}} jubile et affiche sa joie en tournoyant autour de {{player}}.",
-        "{{pet}} éclate de bonheur et parade fièrement devant {{player}} !",
-        "{{pet}} manifeste son enthousiasme en bondissant aux côtés de {{player}}.",
-        "{{pet}} déborde de joie et virevolte autour de {{player}} avec excitation !",
-        "{{pet}} affiche une satisfaction éclatante et danse autour de {{player}}.",
-        "{{pet}} rayonne de contentement et cabriole joyeusement près de {{player}} !",
-        "{{pet}} célèbre cette victoire en sautillant gaiement autour de {{player}}.",
-        "{{pet}} exulte et fait des bonds enthousiastes autour de {{player}} !",
-        "{{pet}} manifeste sa joie par des sauts énergiques près de {{player}}.",
-        "{{pet}} affiche un bonheur évident en tournoyant fièrement autour de {{player}} !",
-        "{{pet}} exprime sa fierté en gambadant joyeusement autour de {{player}}.",
-        "{{pet}} déborde d'enthousiasme et virevolte avec énergie près de {{player}} !",
-        "{{pet}} rayonne de satisfaction et parade victorieusement devant {{player}}.",
-        "{{pet}} manifeste son contentement en sautant avec vigueur autour de {{player}} !",
-        "{{pet}} exulte de fierté et bondit avec grâce près de {{player}}.",
-        "{{pet}} affiche une joie débordante en dansant autour de {{player}} !",
-        "{{pet}} célèbre en effectuant des cabrioles enthousiastes près de {{player}}.",
-        "{{pet}} rayonne de bonheur et tournoie fièrement autour de {{player}} !"
+        "{{pet}} ¡exulta de alegría tras esta victoria! Salta orgullosamente alrededor de {{player}}.",
+        "¡{{pet}} irradia orgullo y salta alegremente alrededor de {{player}}!",
+        "{{pet}} se regocija y muestra su alegría girando alrededor de {{player}}.",
+        "{{pet}} explota de felicidad y desfila orgullosamente frente a {{player}}!",
+        "{{pet}} manifiesta su entusiasmo saltando junto a {{player}}.",
+        "{{pet}} rebosa de alegría y revolotea alrededor de {{player}} con emoción!",
+        "{{pet}} muestra una satisfacción radiante y baila alrededor de {{player}}.",
+        "{{pet}} irradia alegría y retoza alegremente cerca de {{player}}!",
+        "{{pet}} celebra esta victoria saltando alegremente alrededor de {{player}}.",
+        "{{pet}} se exulta y da saltos entusiastas alrededor de {{player}}!",
+        "{{pet}} manifiesta su alegría con saltos enérgicos cerca de {{player}}.",
+        "{{pet}} muestra una felicidad evidente girando orgullosamente alrededor de {{player}}!",
+        "{{pet}} expresa su orgullo retozando alegremente alrededor de {{player}}.",
+        "{{pet}} desborda entusiasmo y revolotea con energía cerca de {{player}}!",
+        "{{pet}} irradia satisfacción y desfila victoriosamente ante {{player}}.",
+        "{{pet}} manifiesta su contento saltando con vigor alrededor de {{player}}!",
+        "{{pet}} exulta de orgullo y salta con gracia cerca de {{player}}.",
+        "{{pet}} muestra una alegría desbordante bailando alrededor de {{player}}!",
+        "{{pet}} celebra haciendo cabriolas entusiastas cerca de {{player}}.",
+        "¡{{pet}} irradia felicidad y gira orgullosamente alrededor de {{player}}!"
       ],
       "trained": [
-        "{{pet}} reste calme et satisfait, preuve de son excellent dressage.",
-        "{{pet}} affiche une assurance tranquille, témoignant de sa parfaite discipline.",
-        "{{pet}} se tient fièrement, comme le compagnon bien dressé qu'il est.",
-        "{{pet}} conserve son sang-froid habituel, signe d'un dressage exemplaire.",
-        "{{pet}} manifeste une satisfaction contenue, digne d'un animal bien éduqué.",
-        "{{pet}} garde son calme légendaire, preuve de son dressage accompli.",
-        "{{pet}} reste stoïque, à la manière d'un compagnon parfaitement discipliné.",
-        "{{pet}} affiche une fierté mesurée, caractéristique d'un excellent dressage.",
-        "{{pet}} maintient son attitude posée, signe d'une éducation impeccable.",
-        "{{pet}} demeure serein, comme tout familier admirablement dressé.",
-        "{{pet}} conserve sa prestance habituelle, fruit d'un dressage rigoureux.",
-        "{{pet}} reste imperturbable, preuve de son parfait conditionnement.",
-        "{{pet}} affiche une dignité tranquille, caractéristique d'un dressage de qualité.",
-        "{{pet}} maintient son aplomb, témoignant de sa formation exemplaire.",
-        "{{pet}} demeure impassible, signe d'un dressage accompli.",
-        "{{pet}} conserve son attitude disciplinée, preuve d'une éducation réussie.",
-        "{{pet}} reste composé, à l'image d'un compagnon parfaitement formé.",
-        "{{pet}} affiche une sérénité maîtrisée, fruit d'un excellent dressage.",
-        "{{pet}} maintient sa contenance, signe d'une discipline irréprochable.",
-        "{{pet}} demeure posé, comme tout animal superbement dressé."
+        "{{pet}} se mantiene tranquilo y satisfecho, prueba de su excelente adiestramiento.",
+        "{{pet}} muestra una confianza tranquila, demostrando su perfecta disciplina.",
+        "{{pet}} se mantiene orgulloso, como el compañero bien adiestrado que es.",
+        "{{pet}} conserva su habitual sangre fría, señal de un adiestramiento ejemplar.",
+        "{{pet}} manifiesta una satisfacción contenida, digna de un animal bien educado.",
+        "{{pet}} mantiene su legendaria calma, prueba de su adiestramiento logrado.",
+        "{{pet}} se mantiene estoico, a la manera de un compañero perfectamente disciplinado.",
+        "{{pet}} muestra un orgullo mesurado, característico de un excelente adiestramiento.",
+        "{{pet}} mantiene su actitud serena, señal de una educación impecable.",
+        "{{pet}} permanece sereno, como cualquier familiar admirablemente adiestrado.",
+        "{{pet}} conserva su prestancia habitual, fruto de un adiestramiento riguroso.",
+        "{{pet}} se mantiene imperturbable, prueba de su perfecto condicionamiento.",
+        "{{pet}} muestra una dignidad tranquila, característica de un adiestramiento de calidad.",
+        "{{pet}} mantiene su aplomo, testimonio de su formación ejemplar.",
+        "{{pet}} permanece impasible, señal de un adiestramiento logrado.",
+        "{{pet}} mantiene su actitud disciplinada, prueba de una educación exitosa.",
+        "{{pet}} se mantiene sereno, como un compañero perfectamente entrenado.",
+        "{{pet}} muestra una serenidad controlada, fruto de un excelente adiestramiento.",
+        "{{pet}} mantiene la compostura, señal de una disciplina intachable.",
+        "{{pet}} permanece tranquilo, como cualquier animal superbamente entrenado."
       ]
     },
     "fightActionChoose": {
@@ -1584,8 +1584,8 @@
     "fightReward": {
       "title": "{emote:fightCommand.gloryChange} Recompensas de combate",
       "scoreAndMoneyField": "Recompensas de combate",
-      "petLoveField": "Relation avec le familier",
-      "noReward": "{{player}} a démontré pourquoi il est considéré comme l'un des meilleurs en remportant ce match facilement.",
+      "petLoveField": "Relación con la mascota",
+      "noReward": "{{player}} ha demostrado por qué es considerado uno de los mejores al ganar este partido fácilmente.",
       "points": ":medal: Puntos ganados : **{{count}}**",
       "money": "{emote:unitValues.money} Plata ganó : **{{count}}**",
       "gloryField": "Cambios de gloria",
