@@ -150,17 +150,8 @@ export function canUseTokensAtLocation(player: Player): boolean {
 		return false;
 	}
 
-	// Tokens cannot be used on the boat
-	if (Maps.isOnBoat(player)) {
-		return false;
-	}
-
-	// Tokens cannot be used on the PVE island
-	if (Maps.isOnPveIsland(player)) {
-		return false;
-	}
-
-	return true;
+	// Tokens cannot be used on the boat or on the PVE island
+	return !(Maps.isOnBoat(player) || Maps.isOnPveIsland(player));
 }
 
 /**
