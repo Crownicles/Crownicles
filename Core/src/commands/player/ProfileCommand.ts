@@ -107,8 +107,12 @@ function buildStatsData(player: Player, playerActiveObjects: PlayerActiveObjects
 	attack: number;
 	defense: number;
 	speed: number;
-	energy: { value: number; max: number };
-	breath: { base: number; max: number; regen: number };
+	energy: {
+		value: number; max: number;
+	};
+	breath: {
+		base: number; max: number; regen: number;
+	};
 } | null {
 	if (player.level < ClassConstants.REQUIRED_LEVEL) {
 		return null;
@@ -172,7 +176,14 @@ export default class ProfileCommand {
 		}
 
 		// Gather all required data
-		const [guild, rank, numberOfPlayers, petEntity, missionsInfo, playerActiveObjects] = await Promise.all([
+		const [
+			guild,
+			rank,
+			numberOfPlayers,
+			petEntity,
+			missionsInfo,
+			playerActiveObjects
+		] = await Promise.all([
 			toCheckPlayer.guildId ? Guilds.getById(toCheckPlayer.guildId) : null,
 			Players.getRankById(toCheckPlayer.id),
 			Players.getNbPlayersHaveStartedTheAdventure(),
