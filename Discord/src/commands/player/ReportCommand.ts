@@ -681,7 +681,8 @@ export async function createBuyHealCollector(context: PacketContext, packet: Rea
 		}), interaction.user)
 		.setDescription(i18n.t("commands:report.buyHealConfirmDescription", {
 			lng,
-			price: data.healPrice
+			price: data.healPrice,
+			playerMoney: data.playerMoney
 		}));
 
 	// Create buttons
@@ -758,7 +759,8 @@ export async function createUseTokensCollector(context: PacketContext, packet: R
 		}), interaction.user)
 		.setDescription(i18n.t("commands:report.useTokensConfirmDescription", {
 			lng,
-			count: data.cost
+			count: data.cost,
+			playerTokens: data.playerTokens
 		}));
 
 	// Create buttons

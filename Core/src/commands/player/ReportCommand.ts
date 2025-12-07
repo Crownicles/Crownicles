@@ -189,7 +189,7 @@ export default class ReportCommand {
 		}
 
 		// Create confirmation collector
-		const collector = new ReactionCollectorUseTokens(tokenCost);
+		const collector = new ReactionCollectorUseTokens(tokenCost, player.tokens);
 
 		const endCallback: EndCallback = async (collector, response) => {
 			const reaction = collector.getFirstReaction();
@@ -253,7 +253,7 @@ export default class ReportCommand {
 		}
 
 		// Create confirmation collector
-		const collector = new ReactionCollectorBuyHeal(healPrice);
+		const collector = new ReactionCollectorBuyHeal(healPrice, player.money);
 
 		const endCallback: EndCallback = async (collector, response) => {
 			const reaction = collector.getFirstReaction();
