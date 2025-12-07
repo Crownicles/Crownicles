@@ -668,13 +668,13 @@ export default class SmallEventsHandler {
 		const amountDisplay = packet.issue === SmallEventBadIssue.TIME
 			? minutesDisplay(packet.amount, lng)
 			: packet.amount;
-		
+
 		// For TIME issue, choose translation key based on effectId
 		let translationKey = `smallEvents:smallBad.${packet.issue}.stories`;
 		if (packet.issue === SmallEventBadIssue.TIME && packet.effectId) {
 			translationKey = `smallEvents:smallBad.${packet.issue}.${packet.effectId}.stories`;
 		}
-		
+
 		await interaction?.editReply({
 			embeds: [
 				new CrowniclesSmallEventEmbed(
@@ -945,10 +945,12 @@ export default class SmallEventsHandler {
 				new CrowniclesSmallEventEmbed(
 					"dwarfPetFan",
 					`${StringUtils.getRandomTranslation("smallEvents:dwarfPetFan.intro", lng)} ${StringUtils.getRandomTranslation(`smallEvents:dwarfPetFan.${packet.interactionName}`, lng, {
-						...(hasPetInfo ? { context: packet.petSex } : {}),
+						...hasPetInfo ? { context: packet.petSex } : {},
 						pet: hasPetInfo ? PetUtils.petToShortString(lng, packet.petNickname, packet.petTypeId!, packet.petSex!) : "",
 						reward: packet.amount !== undefined
-							? i18n.t(`smallEvents:dwarfPetFan.reward.${keyReward}`, { lng, amount: packet.amount })
+							? i18n.t(`smallEvents:dwarfPetFan.reward.${keyReward}`, {
+								lng, amount: packet.amount
+							})
 							: ""
 					})}`,
 					interaction.user,
