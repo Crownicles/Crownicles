@@ -124,6 +124,8 @@ export class CommandReportUseTokensPacketReq extends CrowniclesPacket {
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandReportUseTokensAcceptPacketRes extends CrowniclesPacket {
 	tokensSpent!: number;
+
+	isArrived!: boolean;
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)

@@ -220,7 +220,7 @@ async function acceptUseTokens(
 	player: Player,
 	tokenCost: number,
 	response: CrowniclesPacket[],
-	context: PacketContext
+	_context: PacketContext
 ): Promise<void> {
 	await player.reload();
 	const currentDate = new Date();
@@ -256,11 +256,15 @@ async function acceptUseTokens(
 
 	await player.save();
 
-	// Send the success response
-	response.push(makePacket(CommandReportUseTokensAcceptPacketRes, { tokensSpent: tokenCost }));
+	// Check if player arrived at destination or has a small event waiting
+	const newDate = new Date();
+	const isArrived = Maps.isArrived(player, newDate);
 
-	// Execute the small event
-	await executeSmallEvent(response, player, context, null);
+	// Send the success response with info about what's next
+	response.push(makePacket(CommandReportUseTokensAcceptPacketRes, {
+		tokensSpent: tokenCost,
+		isArrived
+	}));
 }
 
 /**

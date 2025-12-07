@@ -542,13 +542,20 @@ export async function handleUseTokensAccept(packet: CommandReportUseTokensAccept
 	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
 	const lng = interaction.userLanguage;
 
-	await buttonInteraction?.editReply({
-		content: i18n.t("commands:report.tokensUsedSuccess", {
+	const embed = new CrowniclesEmbed()
+		.formatAuthor(i18n.t("commands:report.tokensUsedSuccessTitle", {
 			lng,
-			pseudo: escapeUsername(interaction.user.displayName),
-			count: packet.tokensSpent
-		})
-	});
+			pseudo: escapeUsername(interaction.user.displayName)
+		}), interaction.user)
+		.setDescription(i18n.t("commands:report.tokensUsedSuccessDescription", {
+			lng,
+			count: packet.tokensSpent,
+			nextStep: packet.isArrived
+				? i18n.t("commands:report.tokensNextStepArrived", { lng })
+				: i18n.t("commands:report.tokensNextStepSmallEvent", { lng })
+		}));
+
+	await buttonInteraction?.editReply({ embeds: [embed] });
 }
 
 /**

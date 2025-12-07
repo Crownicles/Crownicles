@@ -796,8 +796,11 @@
     "useTokensConfirmTitle": "{{pseudo}}, confirmation",
     "useTokensConfirmDescription_one": "Voulez-vous dépenser **{{count}} jeton** {emote:unitValues.tokens} pour avancer jusqu'à la prochaine étape de l'aventure ?",
     "useTokensConfirmDescription_other": "Voulez-vous dépenser **{{count}} jetons** {emote:unitValues.tokens} pour avancer jusqu'à la prochaine étape de l'aventure ?",
-    "tokensUsedSuccess_one": "{emote:unitValues.tokens} **{{pseudo}}** a dépensé **{{count}} jeton** pour avancer dans son voyage.",
-    "tokensUsedSuccess_other": "{emote:unitValues.tokens} **{{pseudo}}** a dépensé **{{count}} jetons** pour avancer dans son voyage.",
+    "tokensUsedSuccessTitle": "{{pseudo}}, jetons utilisés !",
+    "tokensUsedSuccessDescription_one": "{emote:unitValues.tokens} Vous avez dépensé **{{count}} jeton** pour avancer dans votre voyage.\n\n{{nextStep}}",
+    "tokensUsedSuccessDescription_other": "{emote:unitValues.tokens} Vous avez dépensé **{{count}} jetons** pour avancer dans votre voyage.\n\n{{nextStep}}",
+    "tokensNextStepArrived": "{emote:messages.tip} Vous êtes arrivé à destination ! Utilisez `/rapport` pour voir ce qui vous attend.",
+    "tokensNextStepSmallEvent": "{emote:messages.tip} Un événement vous attend sur la route. Utilisez `/rapport` pour le découvrir.",
     "tokensUsedRefused": "{emote:messages.refuse} **{{pseudo}}** a décidé de ne pas utiliser de jetons."
   },
   "update": {
