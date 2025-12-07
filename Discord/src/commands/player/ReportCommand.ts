@@ -57,6 +57,7 @@ import { DisplayUtils } from "../../utils/DisplayUtils";
 import { PetUtils } from "../../utils/PetUtils";
 import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
 import { PacketUtils } from "../../utils/PacketUtils";
+import { createConfirmationCollector } from "../../utils/ReportConfirmationCollector";
 
 async function getPacket(interaction: CrowniclesInteraction): Promise<CommandReportPacketReq> {
 	await interaction.deferReply();
@@ -670,76 +671,16 @@ export async function handleBuyHealCannotHealOccupied(context: PacketContext): P
  * @param packet
  */
 export async function createBuyHealCollector(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
-	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
 	const data = packet.data.data as ReactionCollectorBuyHealData;
-	const lng = interaction.userLanguage;
 
-	const embed = new CrowniclesEmbed()
-		.formatAuthor(i18n.t("commands:report.buyHealConfirmTitle", {
-			lng,
-			pseudo: escapeUsername(interaction.user.displayName)
-		}), interaction.user)
-		.setDescription(i18n.t("commands:report.buyHealConfirmDescription", {
-			lng,
+	return await createConfirmationCollector(context, packet, {
+		titleKey: "commands:report.buyHealConfirmTitle",
+		descriptionKey: "commands:report.buyHealConfirmDescription",
+		descriptionParams: {
 			price: data.healPrice,
 			playerMoney: data.playerMoney
-		}));
-
-	// Create buttons
-	const row = new ActionRowBuilder<ButtonBuilder>();
-	const acceptButton = new ButtonBuilder()
-		.setEmoji(parseEmoji(CrowniclesIcons.collectors.accept)!)
-		.setCustomId("accept")
-		.setStyle(ButtonStyle.Secondary);
-	const refuseButton = new ButtonBuilder()
-		.setEmoji(parseEmoji(CrowniclesIcons.collectors.refuse)!)
-		.setCustomId("refuse")
-		.setStyle(ButtonStyle.Secondary);
-	row.addComponents(acceptButton, refuseButton);
-
-	// Send as followUp (reply to original message)
-	const msg = await interaction.followUp({
-		embeds: [embed],
-		components: [row]
-	});
-
-	if (!msg) {
-		return null;
-	}
-
-	const buttonCollector = msg.createMessageComponentCollector({
-		time: packet.endTime - Date.now()
-	});
-
-	buttonCollector.on("collect", async (buttonInteraction: ButtonInteraction) => {
-		if (buttonInteraction.user.id !== context.discord?.user) {
-			await sendInteractionNotForYou(buttonInteraction.user, buttonInteraction, lng);
-			return;
 		}
-
-		// Disable buttons
-		disableRows([row]);
-		await msg.edit({
-			embeds: [embed], components: [row]
-		});
-
-		// Defer reply for the response
-		await buttonInteraction.deferReply();
-
-		// Send reaction to backend
-		const reactionIndex = buttonInteraction.customId === "accept" ? 0 : 1;
-		DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, buttonInteraction, reactionIndex);
-		buttonCollector.stop();
 	});
-
-	buttonCollector.on("end", async () => {
-		disableRows([row]);
-		await msg.edit({
-			embeds: [embed], components: [row]
-		}).catch(() => null);
-	});
-
-	return [buttonCollector];
 }
 
 /**
@@ -748,100 +689,26 @@ export async function createBuyHealCollector(context: PacketContext, packet: Rea
  * @param packet
  */
 export async function createUseTokensCollector(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
-	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
 	const data = packet.data.data as ReactionCollectorUseTokensData;
-	const lng = interaction.userLanguage;
 
-	const embed = new CrowniclesEmbed()
-		.formatAuthor(i18n.t("commands:report.useTokensConfirmTitle", {
-			lng,
-			pseudo: escapeUsername(interaction.user.displayName)
-		}), interaction.user)
-		.setDescription(i18n.t("commands:report.useTokensConfirmDescription", {
-			lng,
+	return await createConfirmationCollector(context, packet, {
+		titleKey: "commands:report.useTokensConfirmTitle",
+		descriptionKey: "commands:report.useTokensConfirmDescription",
+		descriptionParams: {
 			count: data.cost,
 			playerTokens: data.playerTokens
-		}));
-
-	// Create buttons
-	const row = new ActionRowBuilder<ButtonBuilder>();
-	const acceptButton = new ButtonBuilder()
-		.setEmoji(parseEmoji(CrowniclesIcons.collectors.accept)!)
-		.setCustomId("accept")
-		.setStyle(ButtonStyle.Secondary);
-	const refuseButton = new ButtonBuilder()
-		.setEmoji(parseEmoji(CrowniclesIcons.collectors.refuse)!)
-		.setCustomId("refuse")
-		.setStyle(ButtonStyle.Secondary);
-	row.addComponents(acceptButton, refuseButton);
-
-	// Send as followUp (reply to original message)
-	const msg = await interaction.followUp({
-		embeds: [embed],
-		components: [row]
-	});
-
-	if (!msg) {
-		return null;
-	}
-
-	const buttonCollector = msg.createMessageComponentCollector({
-		time: packet.endTime - Date.now()
-	});
-
-	buttonCollector.on("collect", async (buttonInteraction: ButtonInteraction) => {
-		if (buttonInteraction.user.id !== context.discord?.user) {
-			await sendInteractionNotForYou(buttonInteraction.user, buttonInteraction, lng);
-			return;
 		}
-
-		// Disable buttons
-		disableRows([row]);
-		await msg.edit({
-			embeds: [embed], components: [row]
-		});
-
-		// Defer reply for the response
-		await buttonInteraction.deferReply();
-
-		// Send reaction to backend
-		const reactionIndex = buttonInteraction.customId === "accept" ? 0 : 1;
-		DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, buttonInteraction, reactionIndex);
-		buttonCollector.stop();
 	});
-
-	buttonCollector.on("end", async () => {
-		disableRows([row]);
-		await msg.edit({
-			embeds: [embed], components: [row]
-		}).catch(() => null);
-	});
-
-	return [buttonCollector];
 }
 
 /**
- * Display the travel summary (embed with the travel path in between small events)
- * @param packet
- * @param context
+ * Add optional energy and points fields to the travel embed
  */
-export async function reportTravelSummary(packet: CommandReportTravelSummaryRes, context: PacketContext): Promise<void> {
-	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
-	if (!interaction) {
-		return;
-	}
-	const lng = interaction.userLanguage;
-	const now = Date.now();
-	const travelEmbed = new CrowniclesEmbed();
-	travelEmbed.formatAuthor(i18n.t("commands:report.travelPathTitle", { lng }), interaction.user);
-	travelEmbed.setDescription(generateTravelPathString(packet, now));
-	const fieldsArguments = {
-		packet,
-		lng,
-		travelEmbed
-	};
-	manageEndPathDescriptions(fieldsArguments);
-	manageMainSummaryText(fieldsArguments, await DisplayUtils.getEscapedUsername(context.keycloakId!, lng), now);
+function addEnergyAndPointsFields(
+	travelEmbed: CrowniclesEmbed,
+	packet: CommandReportTravelSummaryRes,
+	lng: Language
+): void {
 	if (packet.energy.show) {
 		travelEmbed.addFields({
 			name: i18n.t("commands:report.remainingEnergyTitle", { lng }),
@@ -856,6 +723,12 @@ export async function reportTravelSummary(packet: CommandReportTravelSummaryRes,
 			inline: true
 		});
 	}
+}
+
+/**
+ * Add a random advice field to the travel embed
+ */
+function addAdviceField(travelEmbed: CrowniclesEmbed, lng: Language): void {
 	const advices = i18n.t("advices:advices", {
 		returnObjects: true,
 		lng
@@ -865,102 +738,180 @@ export async function reportTravelSummary(packet: CommandReportTravelSummaryRes,
 		value: advices[Math.floor(Math.random() * advices.length)],
 		inline: true
 	});
+}
 
-	// Build action row with buttons
+/**
+ * Create heal button if applicable
+ */
+function createHealButton(packet: CommandReportTravelSummaryRes, lng: Language): ButtonBuilder | null {
+	if (!packet.heal) {
+		return null;
+	}
+
+	const hasEnoughMoney = packet.heal.playerMoney >= packet.heal.price;
+	const healButtonLabel = hasEnoughMoney
+		? i18n.t("commands:report.buyHealButton", { lng })
+		: i18n.t("commands:report.notEnoughMoneyHealButton", { lng });
+
+	return new ButtonBuilder()
+		.setCustomId("buyHeal")
+		.setLabel(healButtonLabel)
+		.setEmoji(parseEmoji(CrowniclesIcons.shopItems.healAlteration)!)
+		.setStyle(hasEnoughMoney ? ButtonStyle.Success : ButtonStyle.Secondary)
+		.setDisabled(!hasEnoughMoney);
+}
+
+/**
+ * Create token button if applicable
+ */
+function createTokenButton(packet: CommandReportTravelSummaryRes, lng: Language): ButtonBuilder | null {
+	if (!packet.tokens) {
+		return null;
+	}
+
+	const hasEnoughTokens = packet.tokens.playerTokens >= packet.tokens.cost;
+	const tokenButtonLabel = hasEnoughTokens
+		? i18n.t("commands:report.useTokensButton", { lng })
+		: i18n.t("commands:report.notEnoughTokensButton", { lng });
+
+	return new ButtonBuilder()
+		.setCustomId("useTokens")
+		.setLabel(tokenButtonLabel)
+		.setEmoji(parseEmoji(CrowniclesIcons.unitValues.tokens)!)
+		.setStyle(hasEnoughTokens ? ButtonStyle.Primary : ButtonStyle.Secondary)
+		.setDisabled(!hasEnoughTokens);
+}
+
+/**
+ * Build action row with heal and token buttons
+ */
+function buildTravelActionRow(packet: CommandReportTravelSummaryRes, lng: Language): ActionRowBuilder<ButtonBuilder> | null {
 	const row = new ActionRowBuilder<ButtonBuilder>();
-	let hasButtons = false;
 
-	// Add heal button if player has a healable alteration
-	if (packet.heal) {
-		const hasEnoughMoney = packet.heal.playerMoney >= packet.heal.price;
-		const healButtonLabel = hasEnoughMoney
-			? i18n.t("commands:report.buyHealButton", { lng })
-			: i18n.t("commands:report.notEnoughMoneyHealButton", { lng });
-
-		const healButton = new ButtonBuilder()
-			.setCustomId("buyHeal")
-			.setLabel(healButtonLabel)
-			.setEmoji(parseEmoji(CrowniclesIcons.shopItems.healAlteration)!)
-			.setStyle(hasEnoughMoney ? ButtonStyle.Success : ButtonStyle.Secondary)
-			.setDisabled(!hasEnoughMoney);
-
+	const healButton = createHealButton(packet, lng);
+	if (healButton) {
 		row.addComponents(healButton);
-		hasButtons = true;
 	}
 
-	// Add token button if player can use tokens (no alteration or occupied)
-	if (packet.tokens) {
-		const hasEnoughTokens = packet.tokens.playerTokens >= packet.tokens.cost;
-		const tokenButtonLabel = hasEnoughTokens
-			? i18n.t("commands:report.useTokensButton", { lng })
-			: i18n.t("commands:report.notEnoughTokensButton", { lng });
-
-		const tokenButton = new ButtonBuilder()
-			.setCustomId("useTokens")
-			.setLabel(tokenButtonLabel)
-			.setEmoji(parseEmoji(CrowniclesIcons.unitValues.tokens)!)
-			.setStyle(hasEnoughTokens ? ButtonStyle.Primary : ButtonStyle.Secondary)
-			.setDisabled(!hasEnoughTokens);
-
+	const tokenButton = createTokenButton(packet, lng);
+	if (tokenButton) {
 		row.addComponents(tokenButton);
-		hasButtons = true;
 	}
 
-	// Display with or without buttons
-	if (hasButtons) {
-		const msg = await interaction.editReply({
-			embeds: [travelEmbed],
-			components: [row]
-		});
+	return row.components.length > 0 ? row : null;
+}
 
-		const hasInteractiveButton = (packet.tokens && packet.tokens.playerTokens >= packet.tokens.cost)
-			|| (packet.heal && packet.heal.playerMoney >= packet.heal.price);
+/**
+ * Check if any button is interactive (not disabled)
+ */
+function hasInteractiveButton(packet: CommandReportTravelSummaryRes): boolean {
+	const tokensInteractive = packet.tokens && packet.tokens.playerTokens >= packet.tokens.cost;
+	const healInteractive = packet.heal && packet.heal.playerMoney >= packet.heal.price;
+	return Boolean(tokensInteractive || healInteractive);
+}
 
-		if (hasInteractiveButton && msg) {
-			const buttonCollector = msg.createMessageComponentCollector({
-				time: Constants.MESSAGES.COLLECTOR_TIME
-			});
+/**
+ * Handle button interaction in travel summary
+ */
+async function handleTravelButtonInteraction(
+	buttonInteraction: ButtonInteraction,
+	context: PacketContext,
+	lng: Language
+): Promise<void> {
+	if (buttonInteraction.customId === "useTokens") {
+		await buttonInteraction.followUp({
+			content: i18n.t("commands:report.useTokensLoading", { lng }),
+			ephemeral: false
+		}).then(msg => msg.delete().catch(() => null));
 
-			buttonCollector.on("collect", async (buttonInteraction: ButtonInteraction) => {
-				if (buttonInteraction.user.id !== context.discord?.user) {
-					await sendInteractionNotForYou(buttonInteraction.user, buttonInteraction, lng);
-					return;
-				}
+		PacketUtils.sendPacketToBackend(context, makePacket(CommandReportUseTokensPacketReq, {}));
+	}
+	else if (buttonInteraction.customId === "buyHeal") {
+		await buttonInteraction.followUp({
+			content: i18n.t("commands:report.buyHealLoading", { lng }),
+			ephemeral: false
+		}).then(msg => msg.delete().catch(() => null));
 
-				// Disable all buttons
-				row.components.forEach(button => button.setDisabled(true));
-				await buttonInteraction.update({ components: [row] });
+		PacketUtils.sendPacketToBackend(context, makePacket(CommandReportBuyHealPacketReq, {}));
+	}
+}
 
-				// Handle the appropriate action based on which button was clicked
-				if (buttonInteraction.customId === "useTokens") {
-					await buttonInteraction.followUp({
-						content: i18n.t("commands:report.useTokensLoading", { lng }),
-						ephemeral: false
-					}).then(msg => msg.delete().catch(() => null));
+/**
+ * Setup button collector for travel summary
+ */
+function setupTravelButtonCollector(
+	msg: NonNullable<Awaited<ReturnType<CrowniclesInteraction["editReply"]>>>,
+	row: ActionRowBuilder<ButtonBuilder>,
+	context: PacketContext,
+	lng: Language
+): void {
+	const buttonCollector = msg.createMessageComponentCollector({
+		time: Constants.MESSAGES.COLLECTOR_TIME
+	});
 
-					PacketUtils.sendPacketToBackend(context, makePacket(CommandReportUseTokensPacketReq, {}));
-				}
-				else if (buttonInteraction.customId === "buyHeal") {
-					await buttonInteraction.followUp({
-						content: i18n.t("commands:report.buyHealLoading", { lng }),
-						ephemeral: false
-					}).then(msg => msg.delete().catch(() => null));
-
-					PacketUtils.sendPacketToBackend(context, makePacket(CommandReportBuyHealPacketReq, {}));
-				}
-
-				buttonCollector.stop();
-			});
-
-			buttonCollector.on("end", async () => {
-				row.components.forEach(button => button.setDisabled(true));
-				await msg.edit({ components: [row] })
-					.catch(() => null);
-			});
+	buttonCollector.on("collect", async (buttonInteraction: ButtonInteraction) => {
+		if (buttonInteraction.user.id !== context.discord?.user) {
+			await sendInteractionNotForYou(buttonInteraction.user, buttonInteraction, lng);
+			return;
 		}
+
+		row.components.forEach(button => button.setDisabled(true));
+		await buttonInteraction.update({ components: [row] });
+
+		await handleTravelButtonInteraction(buttonInteraction, context, lng);
+		buttonCollector.stop();
+	});
+
+	buttonCollector.on("end", async () => {
+		row.components.forEach(button => button.setDisabled(true));
+		await msg.edit({ components: [row] }).catch(() => null);
+	});
+}
+
+/**
+ * Display the travel summary (embed with the travel path in between small events)
+ * @param packet
+ * @param context
+ */
+export async function reportTravelSummary(packet: CommandReportTravelSummaryRes, context: PacketContext): Promise<void> {
+	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
+	if (!interaction) {
+		return;
 	}
-	else {
+
+	const lng = interaction.userLanguage;
+	const now = Date.now();
+
+	// Build embed
+	const travelEmbed = new CrowniclesEmbed();
+	travelEmbed.formatAuthor(i18n.t("commands:report.travelPathTitle", { lng }), interaction.user);
+	travelEmbed.setDescription(generateTravelPathString(packet, now));
+
+	const fieldsArguments = {
+		packet,
+		lng,
+		travelEmbed
+	};
+	manageEndPathDescriptions(fieldsArguments);
+	manageMainSummaryText(fieldsArguments, await DisplayUtils.getEscapedUsername(context.keycloakId!, lng), now);
+	addEnergyAndPointsFields(travelEmbed, packet, lng);
+	addAdviceField(travelEmbed, lng);
+
+	// Build action row
+	const row = buildTravelActionRow(packet, lng);
+
+	if (!row) {
 		await interaction.editReply({ embeds: [travelEmbed] });
+		return;
+	}
+
+	const msg = await interaction.editReply({
+		embeds: [travelEmbed],
+		components: [row]
+	});
+
+	if (hasInteractiveButton(packet) && msg) {
+		setupTravelButtonCollector(msg, row, context, lng);
 	}
 }
 

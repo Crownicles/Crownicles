@@ -194,6 +194,52 @@ function determineBonusType(hasCloneTalisman: boolean): ExpeditionBonusType {
 }
 
 /**
+ * Apply bonus to an expedition based on bonus type
+ */
+function applyBonusToExpedition(expedition: ExpeditionData, bonusType: ExpeditionBonusType): void {
+	switch (bonusType) {
+		case ExpeditionBonusType.CLONE_TALISMAN:
+			expedition.hasCloneTalismanBonus = true;
+			break;
+		case ExpeditionBonusType.BONUS_TOKENS:
+			expedition.hasBonusTokens = true;
+			break;
+		default:
+			// No bonus to apply
+			break;
+	}
+}
+
+/**
+ * Generate the distant expedition
+ */
+function generateDistantExpedition(
+	localMapLocationIds: number[],
+	durationRanges: DurationRange[]
+): ExpeditionData {
+	const distantMapLocationId = getRandomDistantMapLocation(localMapLocationIds);
+	const distantMapLocation = MapLocationDataController.instance.getById(distantMapLocationId);
+	const distantLocationType = getExpeditionTypeFromMapType(distantMapLocation?.type ?? ExpeditionConstants.DEFAULT_MAP_TYPE);
+
+	return generateExpeditionWithConstraints({
+		durationRange: durationRanges[ExpeditionConstants.LOCAL_EXPEDITIONS_COUNT],
+		locationType: distantLocationType,
+		mapLocationId: distantMapLocationId,
+		isDistantExpedition: true
+	});
+}
+
+/**
+ * Calculate which expedition should receive the bonus (if any)
+ */
+function calculateBonusExpeditionIndex(bonusType: ExpeditionBonusType): number {
+	if (bonusType === ExpeditionBonusType.NONE) {
+		return ExpeditionConstants.NO_BONUS_EXPEDITION;
+	}
+	return RandomUtils.randInt(0, ExpeditionConstants.TOTAL_EXPEDITIONS_COUNT);
+}
+
+/**
  * Generate 3 expeditions based on player's current map position
  * - 2 first expeditions: linked to the 2 mapLocations of player's current mapLink
  * - 3rd expedition: "distant expedition" to a random location on the map
@@ -206,49 +252,24 @@ export function generateThreeExpeditions(mapLinkId: number, hasCloneTalisman: bo
 
 	// Determine which bonus to apply and to which expedition
 	const bonusType = determineBonusType(hasCloneTalisman);
-	const bonusExpeditionIndex = bonusType !== ExpeditionBonusType.NONE
-		? RandomUtils.randInt(0, ExpeditionConstants.TOTAL_EXPEDITIONS_COUNT)
-		: ExpeditionConstants.NO_BONUS_EXPEDITION;
+	const bonusExpeditionIndex = calculateBonusExpeditionIndex(bonusType);
 
 	// Generate local expeditions
 	const localExpeditions = generateLocalExpeditions(localMapLocationIds, durationRanges);
-
-	// Fill with random expeditions if needed
 	fillMissingLocalExpeditions(localExpeditions, durationRanges);
 
-	// Apply bonus to local expeditions if needed
-	if (bonusExpeditionIndex < ExpeditionConstants.LOCAL_EXPEDITIONS_COUNT) {
-		if (bonusType === ExpeditionBonusType.CLONE_TALISMAN) {
-			localExpeditions[bonusExpeditionIndex].hasCloneTalismanBonus = true;
-		}
-		else if (bonusType === ExpeditionBonusType.BONUS_TOKENS) {
-			localExpeditions[bonusExpeditionIndex].hasBonusTokens = true;
-		}
-	}
-
 	// Generate distant expedition
-	const distantMapLocationId = getRandomDistantMapLocation(localMapLocationIds);
-	const distantMapLocation = MapLocationDataController.instance.getById(distantMapLocationId);
-	const distantLocationType = getExpeditionTypeFromMapType(distantMapLocation?.type ?? ExpeditionConstants.DEFAULT_MAP_TYPE);
+	const distantExpedition = generateDistantExpedition(localMapLocationIds, durationRanges);
 
-	const distantExpedition = generateExpeditionWithConstraints({
-		durationRange: durationRanges[ExpeditionConstants.LOCAL_EXPEDITIONS_COUNT],
-		locationType: distantLocationType,
-		mapLocationId: distantMapLocationId,
-		isDistantExpedition: true
-	});
+	// Combine all expeditions
+	const allExpeditions = [...localExpeditions, distantExpedition];
 
-	// Apply bonus to distant expedition if it's the selected one
-	if (bonusExpeditionIndex === ExpeditionConstants.LOCAL_EXPEDITIONS_COUNT) {
-		if (bonusType === ExpeditionBonusType.CLONE_TALISMAN) {
-			distantExpedition.hasCloneTalismanBonus = true;
-		}
-		else if (bonusType === ExpeditionBonusType.BONUS_TOKENS) {
-			distantExpedition.hasBonusTokens = true;
-		}
+	// Apply bonus to the selected expedition
+	if (bonusExpeditionIndex >= 0 && bonusExpeditionIndex < allExpeditions.length) {
+		applyBonusToExpedition(allExpeditions[bonusExpeditionIndex], bonusType);
 	}
 
-	return [...localExpeditions, distantExpedition];
+	return allExpeditions;
 }
 
 /**
