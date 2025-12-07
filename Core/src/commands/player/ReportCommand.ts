@@ -61,7 +61,11 @@ import {
 } from "../../data/SmallEvent";
 import { ReportConstants } from "../../../../Lib/src/constants/ReportConstants";
 import { TokensConstants } from "../../../../Lib/src/constants/TokensConstants";
-import { ShopConstants } from "../../../../Lib/src/constants/ShopConstants";
+import {
+	calculateHealAlterationPrice,
+	canHealAlteration,
+	healAlterationAndAdvance
+} from "../../core/utils/HealAlterationUtils";
 import {
 	BigEvent, BigEventDataController
 } from "../../data/BigEvent";
@@ -241,7 +245,7 @@ export default class ReportCommand {
 		}
 
 		// Calculate the heal price
-		const healPrice = calculateHealPrice(player);
+		const healPrice = calculateHealAlterationPrice(player);
 
 		// If player doesn't have enough money, don't do anything (button should be disabled already)
 		if (player.money < healPrice) {
@@ -352,20 +356,20 @@ async function acceptBuyHeal(
 	await player.reload();
 	const currentDate = new Date();
 
-	// Check if player still has an alteration
-	if (player.currentEffectFinished(currentDate)) {
-		response.push(makePacket(CommandReportBuyHealNoAlterationPacketRes, {}));
-		return;
-	}
-
-	// Check if the alteration is occupied (cannot be healed)
-	if (player.effectId === Effect.OCCUPIED.id) {
-		response.push(makePacket(CommandReportBuyHealCannotHealOccupiedPacketRes, {}));
+	// Check if player can be healed
+	const healCheck = canHealAlteration(player, currentDate);
+	if (!healCheck.canHeal) {
+		if (healCheck.reason === "no_alteration") {
+			response.push(makePacket(CommandReportBuyHealNoAlterationPacketRes, {}));
+		}
+		else if (healCheck.reason === "occupied") {
+			response.push(makePacket(CommandReportBuyHealCannotHealOccupiedPacketRes, {}));
+		}
 		return;
 	}
 
 	// Recalculate the heal price (in case something changed)
-	const newHealPrice = calculateHealPrice(player);
+	const newHealPrice = calculateHealAlterationPrice(player);
 
 	// If price changed or player no longer has enough money, abort
 	if (player.money < newHealPrice) {
@@ -379,19 +383,8 @@ async function acceptBuyHeal(
 		reason: NumberChangeReason.SHOP
 	});
 
-	// Remove the effect (guérison)
-	if (player.effectId !== Effect.DEAD.id && player.effectId !== Effect.JAILED.id) {
-		await TravelTime.removeEffect(player, NumberChangeReason.SHOP);
-	}
-
-	await player.save();
-
-	// Update mission
-	await MissionsController.update(player, response, { missionId: "recoverAlteration" });
-
-	// Check if player arrived at destination
-	const newDate = new Date();
-	const isArrived = Maps.isArrived(player, newDate);
+	// Heal and advance the player
+	const isArrived = await healAlterationAndAdvance(player, currentDate, NumberChangeReason.SHOP, response);
 
 	// Send the success response
 	response.push(makePacket(CommandReportBuyHealAcceptPacketRes, {
@@ -723,36 +716,6 @@ async function needSmallEvent(player: Player, date: Date): Promise<boolean> {
 }
 
 /**
- * Calculate the heal price based on remaining alteration time
- * @param player - The player to calculate heal price for
- */
-function calculateHealPrice(player: Player): number {
-	let price = ShopConstants.ALTERATION_HEAL_BASE_PRICE;
-	const remainingTime = millisecondsToMinutes(player.effectRemainingTime());
-
-	/*
-	 * If the remaining time is under one hour,
-	 * The price becomes degressive until being divided by MAX_PRICE_REDUCTION_DIVISOR at the 15-minute mark;
-	 * Then it no longer decreases
-	 */
-	if (remainingTime < ShopConstants.MAX_REDUCTION_TIME) {
-		if (remainingTime <= ShopConstants.MIN_REDUCTION_TIME) {
-			price /= ShopConstants.MAX_PRICE_REDUCTION_DIVISOR;
-		}
-		else {
-			// Calculate the price reduction based on the remaining time
-			const priceDecreasePerMinute = (
-				ShopConstants.ALTERATION_HEAL_BASE_PRICE - ShopConstants.ALTERATION_HEAL_BASE_PRICE / ShopConstants.MAX_PRICE_REDUCTION_DIVISOR
-			) / (
-				ShopConstants.MAX_REDUCTION_TIME - ShopConstants.MIN_REDUCTION_TIME
-			);
-			price -= priceDecreasePerMinute * (ShopConstants.MAX_REDUCTION_TIME - remainingTime);
-		}
-	}
-	return Math.round(price);
-}
-
-/**
  * Calculate the token cost for advancing using tokens
  * @param effectId - The current effect of the player
  * @param effectRemainingTime - The remaining time of the effect in milliseconds
@@ -795,7 +758,7 @@ async function sendTravelPath(player: Player, response: CrowniclesPacket[], date
 
 	// Calculate heal price if player has a healable alteration
 	const healPrice = effectId && effectId !== Effect.OCCUPIED.id
-		? calculateHealPrice(player)
+		? calculateHealAlterationPrice(player)
 		: null;
 
 	response.push(makePacket(CommandReportTravelSummaryRes, {
