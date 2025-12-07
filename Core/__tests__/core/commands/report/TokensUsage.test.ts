@@ -9,6 +9,7 @@ import { Maps } from "../../../../src/core/maps/Maps";
 import { Constants } from "../../../../../Lib/src/constants/Constants";
 import { NumberChangeReason } from "../../../../../Lib/src/constants/LogsConstants";
 import { PlayerSmallEvent } from "../../../../src/core/database/game/models/PlayerSmallEvent";
+import { canUseTokensAtLocation } from "../../../../src/core/report/ReportTravelService";
 
 // Use fake timers so that `Date.now()` and `new Date()` both return our controlled `now`
 vi.useFakeTimers();
@@ -515,6 +516,47 @@ describe("Tokens Usage", () => {
 			const tokenCost = calculateTokenCost(Effect.OCCUPIED.id, effectRemainingTime);
 			expect(tokenCost).toBe(3);
 			expect(player.tokens >= tokenCost!).toBe(true);
+		});
+	});
+
+	describe("canUseTokensAtLocation", () => {
+		beforeEach(() => {
+			// Reset all mocks before each test
+			vi.spyOn(Maps, "isOnContinent").mockReturnValue(true);
+			vi.spyOn(Maps, "isOnBoat").mockReturnValue(false);
+			vi.spyOn(Maps, "isOnPveIsland").mockReturnValue(false);
+		});
+
+		it("should allow tokens on the main continent", () => {
+			const player = createMockPlayer({ mapLinkId: 1 });
+			vi.spyOn(Maps, "isOnContinent").mockReturnValue(true);
+			vi.spyOn(Maps, "isOnBoat").mockReturnValue(false);
+			vi.spyOn(Maps, "isOnPveIsland").mockReturnValue(false);
+
+			expect(canUseTokensAtLocation(player as unknown as Parameters<typeof canUseTokensAtLocation>[0])).toBe(true);
+		});
+
+		it("should deny tokens when not on continent", () => {
+			const player = createMockPlayer({ mapLinkId: 1 });
+			vi.spyOn(Maps, "isOnContinent").mockReturnValue(false);
+
+			expect(canUseTokensAtLocation(player as unknown as Parameters<typeof canUseTokensAtLocation>[0])).toBe(false);
+		});
+
+		it("should deny tokens when on boat", () => {
+			const player = createMockPlayer({ mapLinkId: 1 });
+			vi.spyOn(Maps, "isOnContinent").mockReturnValue(true);
+			vi.spyOn(Maps, "isOnBoat").mockReturnValue(true);
+
+			expect(canUseTokensAtLocation(player as unknown as Parameters<typeof canUseTokensAtLocation>[0])).toBe(false);
+		});
+
+		it("should deny tokens when on PVE island", () => {
+			const player = createMockPlayer({ mapLinkId: 1 });
+			vi.spyOn(Maps, "isOnContinent").mockReturnValue(true);
+			vi.spyOn(Maps, "isOnPveIsland").mockReturnValue(true);
+
+			expect(canUseTokensAtLocation(player as unknown as Parameters<typeof canUseTokensAtLocation>[0])).toBe(false);
 		});
 	});
 });

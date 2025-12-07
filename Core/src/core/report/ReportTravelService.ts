@@ -12,6 +12,7 @@ import { Effect } from "../../../../Lib/src/types/Effect";
 import { calculateHealAlterationPrice } from "../utils/HealAlterationUtils";
 import { TokensConstants } from "../../../../Lib/src/constants/TokensConstants";
 import { millisecondsToMinutes } from "../../../../Lib/src/utils/TimeUtils";
+import { Constants } from "../../../../Lib/src/constants/Constants";
 
 /**
  * Token cost calculation result
@@ -135,18 +136,48 @@ interface TokenButtonData {
 }
 
 /**
+ * Check if the player can use tokens at their current location
+ * Tokens can only be used on the main continent (not on boat, not on PVE island, and tutorial completed)
+ * @param player - The player to check
+ */
+export function canUseTokensAtLocation(player: Player): boolean {
+	// Tokens can only be used on the main continent
+	if (!Maps.isOnContinent(player)) {
+		return false;
+	}
+
+	// Tokens cannot be used on the boat
+	if (Maps.isOnBoat(player)) {
+		return false;
+	}
+
+	// Tokens cannot be used on the PVE island
+	if (Maps.isOnPveIsland(player)) {
+		return false;
+	}
+
+	return true;
+}
+
+/**
  * Build token button data if applicable
  */
 function buildTokenData(
 	tokenCostResult: TokenCostResult | TokenCostUnavailable,
-	playerTokens: number
+	player: Player
 ): TokenButtonData | undefined {
 	if (!tokenCostResult.canUseTokens) {
 		return undefined;
 	}
+
+	// Check if the player can use tokens at their current location
+	if (!canUseTokensAtLocation(player)) {
+		return undefined;
+	}
+
 	return {
 		cost: tokenCostResult.cost,
-		playerTokens
+		playerTokens: player.tokens
 	};
 }
 
@@ -212,7 +243,7 @@ export async function sendTravelPath(
 			type: startMap.type
 		},
 		isOnBoat: travelSummaryData.isOnBoat,
-		tokens: buildTokenData(tokenCostResult, player.tokens),
+		tokens: buildTokenData(tokenCostResult, player),
 		heal: buildHealData(player, effectId)
 	}));
 }

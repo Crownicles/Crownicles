@@ -27,7 +27,10 @@ import {
 	canHealAlteration,
 	healAlterationAndAdvance
 } from "../utils/HealAlterationUtils";
-import { calculateTokenCost } from "./ReportTravelService";
+import {
+	calculateTokenCost,
+	canUseTokensAtLocation
+} from "./ReportTravelService";
 
 /**
  * Execute the token usage after confirmation
@@ -233,6 +236,11 @@ export function validateUseTokensRequest(
 	effectId: string,
 	effectRemainingTime: number
 ): ValidTokenCostResult | InvalidTokenCostResult {
+	// Check if the player can use tokens at their current location
+	if (!canUseTokensAtLocation(player)) {
+		return { valid: false };
+	}
+
 	const tokenCostResult = calculateTokenCost(effectId, effectRemainingTime);
 
 	if (!tokenCostResult.canUseTokens) {
