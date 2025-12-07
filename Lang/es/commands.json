@@ -51,7 +51,277 @@
       "{emote:petCommand.pet} Con una mirada de agradecimiento, **{{petName}}** le honra con su gratitud.",
       "{emote:petCommand.pet} Excitada, se estremece **{{petName}}** al contacto de tu amable mano.",
       "{emote:petCommand.pet} Bajo sus dedos expertos, **{{petName}}** se relaja en total tranquilidad."
-    ]
+    ],
+    "expeditionButton": "Expédition",
+    "expeditionButtonDisabled": "Expédition (indisponible)",
+    "recallButton": "Rappeler",
+    "finishExpeditionButton": "Terminer l'exploration"
+  },
+  "petExpedition": {
+    "title": "Expéditions de familier",
+    "unavailableTitle": "{{pseudo}}, expédition impossible",
+    "noTalisman_male": [
+      "Vous posez la main sur votre sacoche, espérant y trouver le {emote:expedition.talisman} **Talisman d'Ancrage**, mais vos doigts ne rencontrent que le vide. Sans cet artefact ancestral, votre compagnon ne pourrait retrouver son chemin jusqu'à vous. Les anciens racontent qu'il se trouve quelque part sur les routes du royaume... Vous décidez de reporter cette expedition à un moment plus propice.",
+      "Sans le {emote:expedition.talisman} **Talisman d'Ancrage**, votre familier errerait pour l'éternité dans les contrées lointaines. Cet artefact précieux vous attend quelque part sur les routes du royaume. Vous décidez de reporter cette expedition à un moment plus propice.",
+      "Votre familier vous fixe avec des yeux pleins d'espoir, prêt à partir à l'aventure. Hélas, vous ne possédez pas encore le {emote:expedition.talisman} **Talisman d'Ancrage**, ce précieux artefact qui permet aux familiers de retrouver leur maître à travers les terres les plus hostiles. Vous décidez de reporter cette expedition à un moment plus propice.",
+      "Les légendes parlent d'un talisman magique, forgé par les premiers dresseurs, capable de créer un lien indéfectible entre un familier et son maître. Sans le {emote:expedition.talisman} **Talisman d'Ancrage**, envoyer votre compagnon en expédition serait pure folie. Vous décidez de reporter cette expedition à un moment plus propice."
+    ],
+    "noTalisman_female": [
+      "Vous posez la main sur votre sacoche, espérant y trouver le {emote:expedition.talisman} **Talisman d'Ancrage**, mais vos doigts ne rencontrent que le vide. Sans cet artefact ancestral, votre compagne ne pourrait retrouver son chemin jusqu'à vous. Cet objet précieux se trouverait quelque part sur les routes du royaume. Il semble judicieux de reporter cette expédition à un moment plus propice.",
+      "Votre sacoche ne contient pas le {emote:expedition.talisman} **Talisman d'Ancrage**. Sans cet artefact, votre familier errerait pour l'éternité dans les contrées lointaines. L'objet se trouverait quelque part sur les routes du royaume. Il convient de reporter cette expédition.",
+      "Votre familier vous fixe avec des yeux pleins d'espoir, prête à partir à l'aventure. Hélas, le {emote:expedition.talisman} **Talisman d'Ancrage** ne se trouve pas dans vos affaires. Sans ce précieux artefact permettant aux familiers de retrouver leur maître à travers les terres les plus hostiles, l'expédition devra attendre.",
+      "Le {emote:expedition.talisman} **Talisman d'Ancrage**, cet artefact légendaire capable de créer un lien indéfectible entre un familier et son maître, reste introuvable dans votre équipement. Envoyer votre compagne en expédition sans lui serait pure folie. L'expédition est reportée."
+    ],
+    "noPet": [
+      "Vous scrutez les alentours, mais aucun familier ne trottine à vos côtés. Les routes d'exploration sont bien trop périlleuses pour s'y aventurer seul. L'expédition devra attendre l'arrivée d'un compagnon fidèle.",
+      "Une brise légère soulève la poussière du chemin. Sans compagnon fidèle à vos côtés, les expéditions restent hors de portée. Il faudra d'abord trouver un familier.",
+      "Le {emote:expedition.talisman} **Talisman d'Ancrage** ne réagit pas dans votre sacoche. Sa magie ne peut s'activer qu'en présence d'un familier. Il convient de trouver un compagnon digne de ce nom avant de songer aux expéditions."
+    ],
+    "insufficientLove_male": [
+      "{{petDisplay}} vous lance un regard méfiant et recule d'un pas. Le lien qui vous unit n'est pas encore assez fort pour qu'il s'aventure seul dans les contrées sauvages. Prenez soin de lui, nourrissez-le, et peut-être qu'un jour il vous fera suffisamment confiance.",
+      "Votre familier se blottit contre votre jambe, tremblant légèrement. {{petDisplay}} n'est pas encore prêt à partir seul en expédition. Son cœur a besoin de plus de temps pour vous faire entièrement confiance.",
+      "Les yeux de {{petDisplay}} trahissent une inquiétude profonde. Partir en expédition demande un lien fort entre un familier et son maître. Continuez à prendre soin de votre compagnon pour renforcer votre complicité."
+    ],
+    "insufficientLove_female": [
+      "{{petDisplay}} vous lance un regard méfiant et recule d'un pas. Le lien qui vous unit n'est pas encore assez fort pour qu'elle s'aventure seule dans les contrées sauvages. Prenez soin d'elle, nourrissez-la, et peut-être qu'un jour elle vous fera suffisamment confiance.",
+      "Votre familier se blottit contre votre jambe, tremblante légèrement. {{petDisplay}} n'est pas encore prête à partir seule en expédition. Son cœur a besoin de plus de temps pour vous faire entièrement confiance.",
+      "Les yeux de {{petDisplay}} trahissent une inquiétude profonde. Partir en expédition demande un lien fort entre un familier et son maître. Continuez à prendre soin de votre compagne pour renforcer votre complicité."
+    ],
+    "insufficientLoveAdvice_male": [
+      "*Votre compagnon semble encore trop craintif pour s'éloigner de vous. Renforcez votre lien avant de l'envoyer en expédition.*",
+      "*Le regard de votre compagnon trahit une certaine anxiété. Il lui faut encore du temps pour oser s'aventurer sans vous.*",
+      "*Votre familier ne vous fait pas encore assez confiance pour partir explorer seul. Caresses et friandises sauront y remédier.*"
+    ],
+    "insufficientLoveAdvice_female": [
+      "*Votre compagne semble encore trop craintive pour s'éloigner de vous. Renforcez votre lien avant de l'envoyer en expédition.*",
+      "*Le regard de votre compagne trahit une certaine anxiété. Il lui faut encore du temps pour oser s'aventurer sans vous.*",
+      "*Votre familier ne vous fait pas encore assez confiance pour partir explorer seule. Caresses et friandises sauront y remédier.*"
+    ],
+    "petHungry_male": [
+      "Le ventre de {{petDisplay}} émet un grondement sonore. Les yeux suppliants, votre compagnon refuse catégoriquement de partir l'estomac vide. Nourrissez-le avant de l'envoyer à l'aventure !",
+      "{{petDisplay}} renifle votre sacoche avec insistance, espérant y trouver quelque chose à se mettre sous la dent. Un familier affamé ne peut partir en expédition !",
+      "Votre familier s'affale au sol, trop faible pour envisager une quelconque aventure. {{petDisplay}} a besoin d'un bon repas avant de pouvoir explorer les contrées lointaines."
+    ],
+    "petHungry_female": [
+      "Le ventre de {{petDisplay}} émet un grondement sonore. Les yeux suppliants, votre compagne refuse catégoriquement de partir l'estomac vide. Nourrissez-la avant de l'envoyer à l'aventure !",
+      "{{petDisplay}} renifle votre sacoche avec insistance, espérant y trouver quelque chose à se mettre sous la dent. Un familier affamé ne peut partir en expédition !",
+      "Votre familier s'affale au sol, trop faible pour envisager une quelconque aventure. {{petDisplay}} a besoin d'un bon repas avant de pouvoir explorer les contrées lointaines."
+    ],
+    "expeditionStatusRP": {
+      "header": "{emote:expedition.map} **Expédition en cours**\n**{{location}}**\n{emote:clocks.1} Retour : {{returnTime}}",
+      "progress": {
+        "justStarted_male": "*Votre familier vient tout juste de s'élancer vers l'aventure, la queue frétillante d'excitation.*",
+        "justStarted_female": "*Votre familier vient tout juste de s'élancer vers l'aventure, la queue frétillante d'excitation.*",
+        "ongoing_male": "*Votre familier progresse à travers les contrées sauvages, attentif au moindre danger.*",
+        "ongoing_female": "*Votre familier progresse à travers les contrées sauvages, attentive au moindre danger.*",
+        "almostDone_male": "*Votre familier devrait bientôt pointer le bout de son museau à l'horizon.*",
+        "almostDone_female": "*Votre familier devrait bientôt pointer le bout de son museau à l'horizon.*"
+      },
+      "situation": {
+        "strongPetEasyRisk_male": "*Sa force naturelle le rend confiant face aux périls de cette expédition.*",
+        "strongPetEasyRisk_female": "*Sa force naturelle la rend confiante face aux périls de cette expédition.*",
+        "strongPetHardRisk_male": "*Malgré sa puissance, cette expédition périlleuse ne sera pas une promenade de santé.*",
+        "strongPetHardRisk_female": "*Malgré sa puissance, cette expédition périlleuse ne sera pas une promenade de santé.*",
+        "weakPetEasyRisk_male": "*Cette expédition paisible convient parfaitement à son tempérament prudent.*",
+        "weakPetEasyRisk_female": "*Cette expédition paisible convient parfaitement à son tempérament prudent.*",
+        "weakPetHardRisk_male": "*Vous espérez qu'il saura se montrer rusé face aux dangers qui l'attendent.*",
+        "weakPetHardRisk_female": "*Vous espérez qu'elle saura se montrer rusée face aux dangers qui l'attendent.*"
+      },
+      "food": {
+        "wellFed_male": "*Ses provisions bien garnies lui permettent de voyager l'esprit tranquille.*",
+        "wellFed_female": "*Ses provisions bien garnies lui permettent de voyager l'esprit tranquille.*",
+        "noFood_male": "*Parti sans provisions, il devra se débrouiller seul pour trouver de quoi se sustenter.*",
+        "noFood_female": "*Partie sans provisions, elle devra se débrouiller seule pour trouver de quoi se sustenter.*"
+      }
+    },
+    "inProgressTitle": "{{pseudo}}, expédition en cours",
+    "inProgressDescription": {
+      "intro": "{{petDisplay}} arpente actuellement des terres lointaines et mystérieuses !",
+      "destination": "{emote:expedition.map} **Destination :** **{{location}}**",
+      "risk": "{emote:expedition.risk} **Dangerosité :** {{risk}}",
+      "returnTime": "{emote:clocks.1} **Retour prévu :** {{returnTime}}",
+      "warning_male": "{emote:collectors.warning} *Rappeler votre familier prématurément brisera le lien de confiance. Il reviendra sans butin et le cœur meurtri...*",
+      "warning_female": "{emote:collectors.warning} *Rappeler votre familier prématurément brisera le lien de confiance. Elle reviendra sans butin et le cœur meurtrie...*"
+    },
+    "inProgressFoodInfo": "\n{emote:expedition.food} **Provisions emportées :** {{amount}} rations",
+    "recallButton": "Rappeler",
+    "closeButton": "Continuer l'exploration",
+    "chooseExpeditionTitle": "{{pseudo}}, nouvelles expéditions disponibles",
+    "chooseExpedition": "Le {emote:expedition.talisman} **Talisman d'Ancrage** vibre doucement dans votre sacoche. Trois destinations apparaissent dans votre esprit, révélées par la magie de l'artefact. {{petDisplay}} trépigne d'impatience, prêt à partir explorer l'une de ces contrées :",
+    "selectPlaceholder": "Choisissez une destination...",
+    "distantExpeditionPrefix": "Expédition lointaine : {{location}}",
+    "expeditionOption": {
+      "header": "**{{number}}.** {{location}}",
+      "duration": "{emote:expedition.duration} Durée estimée : {{duration}}",
+      "risk": "{emote:expedition.risk} Dangerosité : {{risk}}",
+      "reward": "{emote:expedition.reward} Récompenses estimées : {{reward}}",
+      "difficulty": "{emote:expedition.difficulty} Difficulté du terrain : {{difficulty}}",
+      "food": "{emote:expedition.food} Provisions requises : {{foodDisplay}}",
+      "cloneTalismanBonus": "{emote:expedition.cloneTalisman} *Un étrange pressentiment vous envahit... Les rumeurs parlent d'un artefact légendaire peut-être caché en ces terres.*"
+    },
+    "foodCost_one": "{{count}} ration",
+    "foodCost_other": "{{count}} rations",
+    "cancelButton": "Annuler l'expédition",
+    "guildProvisionsInfo": "{emote:expedition.food} **Provisions de guilde disponibles :** {{foodCostDisplay}}",
+    "noGuildProvisionsInfo": "{emote:collectors.warning} **Vous n'avez pas de guilde pour préparer des rations.**",
+    "petImpatience_male": "*{{petDisplay}} trépigne d'impatience, la queue frétillante, prêt à s'élancer vers l'aventure !*",
+    "petImpatience_female": "*{{petDisplay}} trépigne d'impatience, la queue frétillante, prête à s'élancer vers l'aventure !*",
+    "startedTitle": "{{pseudo}}, expédition lancée !",
+    "expeditionStarted_male": "D'un bond enthousiaste, {{petDisplay}} s'élance vers **{{location}}** ! Vous le regardez disparaître à l'horizon, le cœur empli d'espoir.\n\n{emote:clocks.1} Retour prévu : {{returnTime}}",
+    "expeditionStarted_female": "D'un bond enthousiaste, {{petDisplay}} s'élance vers **{{location}}** ! Vous la regardez disparaître à l'horizon, le cœur empli d'espoir.\n\n{emote:clocks.1} Retour prévu : {{returnTime}}",
+    "foodConsumed": "\n{emote:expedition.food} Provisions emportées : **{{amount}}** rations",
+    "foodConsumedDetails": "\n{emote:expedition.food} **Provisions emportées :** {{foodDetails}}",
+    "insufficientFoodWarning": {
+      "noGuild": "\n\n{emote:collectors.warning} **Vous n'avez pas de guilde pour préparer des rations** pour votre familier. Les risques d'échec de cette expédition sont **triplés**.",
+      "guildNoFood": "\n\n{emote:collectors.warning} **La guilde est à court de provisions.** Votre guilde n'a pas pu fournir assez de rations, votre familier est donc parti sans ravitaillement. Les risques d'échec sont **triplés**. Reconstituez les stocks de votre guilde avant la prochaine expédition !"
+    },
+    "speedModifier": {
+      "veryFast_male": "\n\n{emote:expedition.speed} *Ses pattes véloces fendent l'air avec une grâce inégalée. Votre compagnon atteindra sa destination bien plus vite que prévu !*",
+      "veryFast_female": "\n\n{emote:expedition.speed} *Ses pattes véloces fendent l'air avec une grâce inégalée. Votre compagne atteindra sa destination bien plus vite que prévu !*",
+      "fast_male": "\n\n{emote:expedition.speed} *D'un pas alerte et assuré, votre compagnon file à bonne allure. L'expédition sera plus courte que prévu.*",
+      "fast_female": "\n\n{emote:expedition.speed} *D'un pas alerte et assuré, votre compagne file à bonne allure. L'expédition sera plus courte que prévu.*",
+      "slow_male": "\n\n{emote:expedition.slow} *Ses pattes traînantes ralentissent quelque peu sa progression. L'expédition prendra un peu plus de temps que prévu.*",
+      "slow_female": "\n\n{emote:expedition.slow} *Ses pattes traînantes ralentissent quelque peu sa progression. L'expédition prendra un peu plus de temps que prévu.*",
+      "verySlow_male": "\n\n{emote:expedition.slow} *Votre compagnon se déplace avec une lenteur déconcertante, s'arrêtant fréquemment pour renifler les environs. L'expédition sera bien plus longue que prévu...*",
+      "verySlow_female": "\n\n{emote:expedition.slow} *Votre compagne se déplace avec une lenteur déconcertante, s'arrêtant fréquemment pour renifler les environs. L'expédition sera bien plus longue que prévu...*"
+    },
+    "cancelledTitle": "{{pseudo}}, départ annulé",
+    "cancelled_male": "Voyant votre hésitation, {{petDisplay}} baisse la tête, déçu. Il pensait partir à l'aventure... Vous sentez que la confiance entre vous s'effrite légèrement. Votre compagnon vous lance un regard blessé avant de s'éloigner, la queue basse.",
+    "cancelled_female": "Voyant votre hésitation, {{petDisplay}} baisse la tête, déçue. Elle pensait partir à l'aventure... Vous sentez que la confiance entre vous s'effrite légèrement. Votre compagne vous lance un regard blessé avant de s'éloigner, la queue basse.",
+    "recalledTitle": "{{pseudo}}, familier rappelé",
+    "recalled_male": "Entendant votre appel, {{petDisplay}} abandonne sa quête et revient vers vous, la queue basse et le regard chargé de reproches. Il ne ramène rien de son périple interrompu. La déception se lit dans ses yeux — il vous en voudra pendant un moment.",
+    "recalled_female": "Entendant votre appel, {{petDisplay}} abandonne sa quête et revient vers vous, la queue basse et le regard chargé de reproches. Elle ne ramène rien de son périple interrompu. La déception se lit dans ses yeux — elle vous en voudra pendant un moment.",
+    "finishedTitle": "{{pseudo}}, expédition terminée !",
+    "finishedDescription": {
+      "talisman": {
+        "name": "Talisman d'Ancrage",
+        "intro": "Le {emote:expedition.talisman} **{{talismanName}}** vibre intensément dans votre sacoche : {{petDisplay}} est de retour de son expédition vers **{{location}}** !"
+      },
+      "risk": "{emote:expedition.risk} Dangerosité : {{risk}}",
+      "impatience_male": "*Votre compagnon trépigne d'impatience, pressé de vous montrer ce qu'il a rapporté !*",
+      "impatience_female": "*Votre compagne trépigne d'impatience, pressée de vous montrer ce qu'elle a rapporté !*"
+    },
+    "claimButton": "Découvrir le butin",
+    "successTitle": "{{pseudo}}, retour triomphal !",
+    "success_male": [
+      "Au détour du chemin, une silhouette familière apparaît ! {{petDisplay}} revient de son expédition : **{{location}}**, la démarche fière et les pattes chargées de trésors !",
+      "Un nuage de poussière annonce le retour de {{petDisplay}} ! Votre valeureux compagnon arbore un air satisfait après son périple vers **{{location}}**.",
+      "{{petDisplay}} surgit des fourrés, le pelage emmêlé mais les yeux brillants de fierté ! L'expédition vers **{{location}}** fut un franc succès !"
+    ],
+    "success_female": [
+      "Au détour du chemin, une silhouette familière apparaît ! {{petDisplay}} revient de son expédition : **{{location}}**, la démarche fière et les pattes chargées de trésors !",
+      "Un nuage de poussière annonce le retour de {{petDisplay}} ! Votre valeureuse compagne arbore un air satisfait après son périple vers **{{location}}**.",
+      "{{petDisplay}} surgit des fourrés, le pelage emmêlé mais les yeux brillants de fierté ! L'expédition vers **{{location}}** fut un franc succès !"
+    ],
+    "partialSuccessTitle": "{{pseudo}}, retour mitigé",
+    "partialSuccess_male": [
+      "{{petDisplay}} revient de son expédition vers **{{location}}** en boitillant légèrement. L'aventure fut rude, mais votre courageux compagnon rapporte tout de même quelques trouvailles.",
+      "Les oreilles basses, {{petDisplay}} réapparaît enfin. L'expédition vers **{{location}}** ne s'est pas déroulée comme prévu, mais votre familier n'est pas revenu les pattes vides.",
+      "Un peu échevelé et couvert d'égratignures, {{petDisplay}} rentre de son périple vers **{{location}}**. Malgré les difficultés rencontrées, il a réussi à récupérer quelques trésors."
+    ],
+    "partialSuccess_female": [
+      "{{petDisplay}} revient de son expédition vers **{{location}}** en boitillant légèrement. L'aventure fut rude, mais votre courageuse compagne rapporte tout de même quelques trouvailles.",
+      "Les oreilles basses, {{petDisplay}} réapparaît enfin. L'expédition vers **{{location}}** ne s'est pas déroulée comme prévu, mais votre familier n'est pas revenue les pattes vides.",
+      "Un peu échevelée et couverte d'égratignures, {{petDisplay}} rentre de son périple vers **{{location}}**. Malgré les difficultés rencontrées, elle a réussi à récupérer quelques trésors."
+    ],
+    "failureTitle": "{{pseudo}}, expédition échouée",
+    "totalFailure_male": [
+      "{{petDisplay}} revient de **{{location}}** la queue entre les pattes, le regard fuyant. L'aventure fut trop périlleuse, et votre compagnon rentre bredouille, le cœur lourd d'avoir échoué.",
+      "Après une longue absence, {{petDisplay}} réapparaît enfin, épuisé et penaud. Les dangers de **{{location}}** ont eu raison de sa quête. Il se blottit contre vous, quémandant réconfort.",
+      "Les pattes tremblantes, {{petDisplay}} émerge des ombres. L'expédition vers **{{location}}** s'est soldée par un échec. Votre familier a besoin de temps pour se remettre de cette mésaventure."
+    ],
+    "totalFailure_female": [
+      "{{petDisplay}} revient de **{{location}}** la queue entre les pattes, le regard fuyant. L'aventure fut trop périlleuse, et votre compagne rentre bredouille, le cœur lourd d'avoir échoué.",
+      "Après une longue absence, {{petDisplay}} réapparaît enfin, épuisée et penaude. Les dangers de **{{location}}** ont eu raison de sa quête. Elle se blottit contre vous, quémandant réconfort.",
+      "Les pattes tremblantes, {{petDisplay}} émerge des ombres. L'expédition vers **{{location}}** s'est soldée par un échec. Votre familier a besoin de temps pour se remettre de cette mésaventure."
+    ],
+    "loveChangeFailure": "\n\n{emote:expedition.love} L'échec de cette expédition a fragilisé le lien entre vous. Votre compagnon aura besoin de temps et d'attention pour retrouver confiance.",
+    "loveChangePartialNegative": "\n\n{emote:expedition.love} Les difficultés rencontrées ont quelque peu ébranlé la confiance de votre familier. Quelques caresses et friandises l'aideront à se remettre.",
+    "loveChangePartialPositive": "\n\n{emote:expedition.love} Malgré les embûches, cette aventure a renforcé légèrement le lien entre vous. Votre compagnon apprécie que vous lui fassiez confiance.",
+    "loveChangeSuccess": "\n\n{emote:expedition.love} Cette expédition réussie a renforcé le lien qui vous unit. Votre familier vous regarde avec une admiration renouvelée !",
+    "duration": {
+      "minutes": "{{count}} minute",
+      "minutes_other": "{{count}} minutes",
+      "hours": "{{count}} heure",
+      "hours_other": "{{count}} heures",
+      "hoursMinutes": "{{hours}}h {{minutes}}min",
+      "days": "{{count}} jour",
+      "days_other": "{{count}} jours",
+      "daysHours": "{{days}}j {{hours}}h"
+    },
+    "rewards": {
+      "title": "\n\n**Butin rapporté :**",
+      "money": "{emote:unitValues.money} Argent gagné : **{{amount}}** !",
+      "experience": "{emote:unitValues.xp} Expérience gagnée : **{{amount}}** !",
+      "points": ":medal: Puntos ganados : **{{amount}}** !",
+      "item": "{emote:rewards.item} Vous recevez un équipement aléatoire !",
+      "cloneTalisman": "{emote:expedition.cloneTalisman} **DÉCOUVERTE EXCEPTIONNELLE !**\nVotre familier a découvert un ancien artefact enfoui : le **Talisman de Clonage** !\nCet objet mystique permettra à votre compagnon de vous assister en défense et dans les petits événements, même lorsqu'il est en expédition !",
+      "badgeEarned": "{emote:badges.expert_expediteur} Un badge vous a été offert : **Expéditeur Expert** !"
+    },
+    "riskCategories": {
+      "veryLow": "Paisible",
+      "low": "Peu risqué",
+      "medium": "Modéré",
+      "high": "Dangereux",
+      "veryHigh": "Périlleux"
+    },
+    "rewardCategories": {
+      "meager": "Maigres",
+      "modest": "Modestes",
+      "substantial": "Correctes",
+      "bountiful": "Abondantes",
+      "legendary": "Exceptionnelles"
+    },
+    "difficultyCategories": {
+      "trivial": "Aisé",
+      "easy": "Accessible",
+      "moderate": "Exigeant",
+      "challenging": "Ardu",
+      "treacherous": "Impitoyable"
+    },
+    "mapLocationExpeditions": {
+      "1": "les Récifs Mystérieux de la Plage Sentinelle",
+      "2": "les Sentiers Secrets de la Voie Champêtre",
+      "3": "les Prairies Cachées du Berceau",
+      "4": "les Profondeurs de la Forêt du Vieillard",
+      "5": "les Dédales Oubliés du Chemin du Dédale",
+      "6": "les Caves Secrètes de Boug-Coton",
+      "7": "les Tombeaux Oubliés de la Vallée des Rois",
+      "8": "les Passages Mystiques du Croisement des Destins",
+      "9": "les Pavés Anciens de la Grande Rue",
+      "10": "les Catacombes Perdues de Ville Forte",
+      "11": "les Embuscades du Grand Axe",
+      "12": "les Plaines Désolées de l'Étendue",
+      "13": "les Marécages Maudits de la Route Marécageuse",
+      "14": "les Brumes Enchanteresses du Lac Mirage",
+      "15": "les Grottes Secrètes du Mont Célestrum",
+      "16": "les Tanières du Chemin aux Loups",
+      "17": "les Oasis Cachées du Village Coco",
+      "18": "les Rapides Tumultueux de la Rivière Vacarme",
+      "19": "les Dunes Mouvantes de La Dune",
+      "20": "les Champs Paisibles des Plaines du Contre Bois",
+      "21": "les Échoppes Abandonnées de la Route des Merveilles",
+      "22": "les Galeries Obscures du Bois Hurlant",
+      "23": "les Ruelles Secrètes de Claire de Ville",
+      "24": "les Escarpements de la Route Grimpante",
+      "25": "les Méandres de la Rivière aux Crabes",
+      "26": "les Quartiers Anciens de Mergagnan",
+      "27": "les Clairières Mystiques de la Forêt Célestrum",
+      "28": "les Souterrains des Portes du Château",
+      "29": "les Alcôves de la Salle de Réception",
+      "32": "les Pavés Royaux de la Route vers le Château"
+    },
+    "errors": {
+      "noPet": "Les esprits de la nature refusent de vous laisser envoyer un familier... car vous n'en possédez pas !",
+      "insufficientLove": "Le lien entre vous et votre compagnon est trop fragile pour une telle aventure.",
+      "alreadyInExpedition": "Votre fidèle compagnon arpente déjà des contrées lointaines. Patience !",
+      "notInExpedition": "Votre familier se trouve présentement à vos côtés, nullement en expédition.",
+      "expeditionNotComplete": "Les vents contraires ralentissent votre familier. Son retour n'est pas encore imminent.",
+      "invalidState": "Les astres ne sont pas alignés en votre faveur. Réessayez plus tard.",
+      "expeditionInProgress": "Votre familier explore déjà de lointaines contrées.",
+      "generic": "Une force mystérieuse empêche votre requête. Les sages conseillent de réessayer.",
+      "notOnContinent": "Le $t(commands:inventory.talismans.anchorTalisman) refuse de s'activer en ces terres étranges. Sa magie ancestrale ne semble fonctionner que sur le continent principal du royaume. Retournez sur les routes familières pour envoyer votre familier en expédition."
+    }
   },
   "guild": {
     "embedTitle": "Gremio {{guildName}} | Nivel {{level}}",
@@ -241,7 +511,7 @@
         "description": "Muestra la tienda de la misión."
       },
       "NOTIFICATIONS": {
-        "description": "Te permite configurar cómo quieres recibir las notificaciones de los bots. Puedes elegir si quieres recibir notificaciones (y dónde mostrarlas) por la llegada a un lugar específico, las recompensas de gremio, la liberación de prisión, los ataques de otros jugadores, las exclusiones de gremio, los cambios de estado dentro del gremio, la regeneración total de energía y la disponibilidad de tu bonificación diaria."
+        "description": "Permet de paramétrer la réception des notifications du bot. Vous pouvez choisir de recevoir des notifications (et déterminer où les afficher) pour l'arrivée à un lieu dit, les récompenses de guilde, la libération de prison, les attaques d'autres joueurs, les exclusions de guilde, les changements de statut au sein de la guilde, la régénération totale de l'énergie, la disponibilité de votre bonus journalier et la fin des expéditions de familier."
       },
       "PET": {
         "description": "Muestra información sobre su mascota."
@@ -337,6 +607,12 @@
     "title": ":briefcase: ** {{pseudo}}**Inventario",
     "weapons_one": "Arma ({{count}}/{{max}}):",
     "weapons_other": "Armas ({{count}}/{{max}}) :",
+    "talisman": "Artefacts :",
+    "talismans": {
+      "anchorTalisman": "{emote:expedition.talisman} **Talisman d'Ancrage** - Permet d'envoyer votre familier en expédition",
+      "cloneTalisman": "{emote:expedition.cloneTalisman} **Talisman de Clonage** - Votre familier vous assiste en défense et dans les petits événements même en expédition"
+    },
+    "talismanNotOwned": "{emote:inventory.empty} **Aucun artefact**",
     "randomItemTitle": "{{pseudo}}¡has encontrado algo!",
     "randomItemAcceptTitle": "¿Ya posee un equipo? ¿Le gustaría venderlo?",
     "randomItemAcceptTitlePotion": "Ya tienes una poción, ¿qué te gustaría hacer?",
@@ -395,7 +671,7 @@
       "bot_owner": ":crown: Propietario del bot",
       "mission_completer": "Insignia adquirida en la tienda de misiones",
       "powerful_guild": ":gem: Miembro de un poderoso gremio",
-      "legendary_pet": ":revolving_hearts: Jugador que ha entrenado a una mascota legendaria",
+      "legendary_pet": "Joueur ayant réussi à dresser un familier puissant",
       "donor": ":money_with_wings: Donante",
       "early_class_adopter": ":bookmark: Adopción temprana de las clases",
       "good_bug_reporter": ":dove: Persona que informó de un fallo explotable sin aprovecharse de él`.",
@@ -405,7 +681,8 @@
       "rich": ":money_mouth: Insignia comprada en la tienda",
       "top_1_before_reset": ":first_place: Persona que alcanzó la cima de la clasificación tras el reinicio`.",
       "very_powerful_guild": ":mirror_ball: Miembro de un gremio muy poderoso",
-      "animal_lover": "Persona que mostró todas las mascotas a Talvar el enano"
+      "animal_lover": "Persona que mostró todas las mascotas a Talvar el enano",
+      "expert_expediteur": "Personne ayant réussi 150 expéditions avec son familier"
     },
     "fightRanked": {
       "fieldName": "Gloria y liga :",
@@ -437,7 +714,7 @@
     },
     "pet": {
       "fieldName": "Familiar :",
-      "fieldValue": "Rareza: {{rarity}}\n"
+      "fieldValue": "$t(commands:pet.shortPetField) | {{rarity}}"
     },
     "playerClass": {
       "fieldName": "Clase :",
@@ -486,7 +763,7 @@
     "encounterMonsterStats": "> **{{emoji}} {{monsterName}} **| **Nivel {{level}}**\n> {{description}}\n\n⚡ {{fightPoints}} | 🗡 {{attack}} | 🛡 {{defense}} | 🚀 {{speed}}",
     "endPoint": "Punto de llegada :",
     "energy": "** | :zap: Energía ahorrada : **{{energy}}",
-    "experience": "| :star: XP ganada : **{{experience}}",
+    "experience": "** | {emote:unitValues.xp} Expérience gagnée : **{{experience}}",
     "gems": "** | :gem: Gemas ganadas : **{{gems}}",
     "health": "| :heart: La vida ganada : **{{health}}",
     "healthLoose": "| :broken_heart: Vida perdida : **{{health}}",
@@ -494,7 +771,7 @@
     "money": "{emote:unitValues.money} ** Dinero ganado :{{money}}**",
     "moneyLoose": "** | :money_with_wings: Dinero perdido : **{{money}}",
     "rewardEmbedTitle": "{{pseudo}}recompensas de combate",
-    "monsterRewardGuildXp": "{emote:unitValues.xp} Guild XP ganada : **{{guildXp}}**",
+    "monsterRewardGuildXp": "{emote:unitValues.xp} Expérience de guilde gagnée : **{{guildXp}}**",
     "monsterRewardsDescription": "{emote:unitValues.money} Plata ganada :{{money}}\n:star: ** XP ganada :{{experience}}** **",
     "monsterRewardsGuildPoints": ":mirror_ball: Puntos de gremio ganados : **{{guildPoints}}**",
     "monsterRewardsTitle": "{{pseudo}}recompensas de combate",
@@ -533,7 +810,8 @@
     "canceledDesc": "La mascota no ha sido liberada.",
     "confirmDesc": ":warning:{{pet}}¿Está seguro de que desea liberar ** **? No es posible cancelar una vez que la acción se ha completado.",
     "acceptedDesc": "{{pet}}Adiós ** **...",
-    "isFeisty": "{emote:collectors.warning} Ten cuidado, liberar a una mascota con fiebre te costará {{cost}} {emote:unitValues.money}."
+    "isFeisty": "{emote:collectors.warning} Ten cuidado, liberar a una mascota con fiebre te costará {{cost}} {emote:unitValues.money}.",
+    "petOnExpedition": "Votre familier est actuellement en expédition et ne peut pas être libéré."
   },
   "petNick": {
     "successTitle": "{{pseudo}}cambiar el apodo de la mascota",
@@ -670,7 +948,7 @@
         "name": "{emote:shopItems.lovePointsValue} Veterinario judicial",
         "info": "Obtenga información detallada sobre su mascota.",
         "giveTitle": "{{pseudo}}¡compra realizada!",
-        "giveDesc": "Tras un examen exhaustivo de tu mascota y de su estado de salud, el veterinario te dará su informe:\n\n**{{petName}}** {{commentOnResult}}\n{emote:petInformation.loveScore} **Puntuación de cariño**: {{actualLP}} / 100\n{emote:petInformation.diet} **Régimen dietético** : {{diet}}\n{emote:petInformation.nextFeed} **Próxima hambre** : {{nextFeed}}\n{emote:petInformation.age} **Edad**: {{commentOnPetAge}}\n\n{emote:petInformation.fightEffect} **Efecto de lucha**: {{commentOnFightEffect}}",
+        "giveDesc": "Après avoir longuement étudié votre animal et son état de santé, le vétérinaire vous donne son rapport :\n\n**{{petName}}** {{commentOnResult}}\n{emote:petInformation.loveScore} **Score d'amour** : {{actualLP}} / {{maxLovePoints}}\n{emote:petInformation.diet} **Régime alimentaire** : {{diet}}\n{emote:petInformation.force} **Force** : {{force}}\n{emote:petInformation.speed} **Vitesse** : {{speed}}\n{emote:petInformation.feedDelay} **Intervalle entre repas** : {{feedDelay}}\n{emote:petInformation.nextFeed} **Prochaine faim** : {{nextFeed}}\n{emote:petInformation.age} **Âge** : {{commentOnPetAge}}\n\n{emote:petInformation.fightEffect} **Effet de combat** : {{commentOnFightEffect}}\n\n {{dwarfPet}}",
         "petIsHungry": "{emote:effects.starving} hambriento",
         "commentOnFightEffect": {
           "bite": [
@@ -1004,7 +1282,8 @@
       "guildKick": "Exclusión del gremio",
       "guildStatusChange": "Cambio de estatus dentro del gremio",
       "energy": "Energía regenerada",
-      "dailyBonus": "Bonificación diaria"
+      "dailyBonus": "Bonificación diaria",
+      "petExpedition": "Expédition de familier terminée"
     },
     "enableDisable": "Activar/Desactivar",
     "sendLocationField": "Dirección de entrega :",
@@ -1139,6 +1418,7 @@
     "canceledTitle": "{{pseudo}}ha cancelado la búsqueda",
     "confirmDesc": "{emote:fightCommand.crossedSwords} | **{{pseudo}}**{{confirmSubText}}\n\n{emote:fightCommand.crossedSwords} | **Fighter : {{pseudo}}| {{glory}} {{className}} {{pet}}\n\n{{stats}}",
     "pet": "| {{petInfo}}",
+    "petOnExpedition": "| ~~{{petInfo}}~~",
     "confirmSubTexts": {
       "common": "¿Quieres iniciar una búsqueda de pelea?",
       "rare": "¿Te gustaría participar en la búsqueda de un luchador de tu fuerza personal para el duelo posterior?"
@@ -1173,6 +1453,52 @@
       "gameStats": "{emote:fightCommand.gameStats} | Estadísticas de combate\n- **Rondas** : {{turn}}/{{maxTurn}}\n- **Tiempo de combate** : {{time}}",
       "gameStatsProlongation": "{emote:fightCommand.gameStats} | Estadísticas de la lucha\n- **Vueltas**: {{turn}}/{{maxTurn}} (tiempo extra)\n- **Tiempo de la lucha**: {{time}}",
       "fighterStats": "\n\n{emote:fightCommand.fighterStats} | Estadísticas {{pseudo}}\n- **Vida final** : {{energy}}/{{maxEnergy}} {emote:unitValues.energy}"
+    },
+    "petReactions": {
+      "loveGain": [
+        "{{pet}} exulte de joie après cette victoire ! Il sautille fièrement autour de {{player}}.",
+        "{{pet}} rayonne de fierté et bondit joyeusement autour de {{player}} !",
+        "{{pet}} jubile et affiche sa joie en tournoyant autour de {{player}}.",
+        "{{pet}} éclate de bonheur et parade fièrement devant {{player}} !",
+        "{{pet}} manifeste son enthousiasme en bondissant aux côtés de {{player}}.",
+        "{{pet}} déborde de joie et virevolte autour de {{player}} avec excitation !",
+        "{{pet}} affiche une satisfaction éclatante et danse autour de {{player}}.",
+        "{{pet}} rayonne de contentement et cabriole joyeusement près de {{player}} !",
+        "{{pet}} célèbre cette victoire en sautillant gaiement autour de {{player}}.",
+        "{{pet}} exulte et fait des bonds enthousiastes autour de {{player}} !",
+        "{{pet}} manifeste sa joie par des sauts énergiques près de {{player}}.",
+        "{{pet}} affiche un bonheur évident en tournoyant fièrement autour de {{player}} !",
+        "{{pet}} exprime sa fierté en gambadant joyeusement autour de {{player}}.",
+        "{{pet}} déborde d'enthousiasme et virevolte avec énergie près de {{player}} !",
+        "{{pet}} rayonne de satisfaction et parade victorieusement devant {{player}}.",
+        "{{pet}} manifeste son contentement en sautant avec vigueur autour de {{player}} !",
+        "{{pet}} exulte de fierté et bondit avec grâce près de {{player}}.",
+        "{{pet}} affiche une joie débordante en dansant autour de {{player}} !",
+        "{{pet}} célèbre en effectuant des cabrioles enthousiastes près de {{player}}.",
+        "{{pet}} rayonne de bonheur et tournoie fièrement autour de {{player}} !"
+      ],
+      "trained": [
+        "{{pet}} reste calme et satisfait, preuve de son excellent dressage.",
+        "{{pet}} affiche une assurance tranquille, témoignant de sa parfaite discipline.",
+        "{{pet}} se tient fièrement, comme le compagnon bien dressé qu'il est.",
+        "{{pet}} conserve son sang-froid habituel, signe d'un dressage exemplaire.",
+        "{{pet}} manifeste une satisfaction contenue, digne d'un animal bien éduqué.",
+        "{{pet}} garde son calme légendaire, preuve de son dressage accompli.",
+        "{{pet}} reste stoïque, à la manière d'un compagnon parfaitement discipliné.",
+        "{{pet}} affiche une fierté mesurée, caractéristique d'un excellent dressage.",
+        "{{pet}} maintient son attitude posée, signe d'une éducation impeccable.",
+        "{{pet}} demeure serein, comme tout familier admirablement dressé.",
+        "{{pet}} conserve sa prestance habituelle, fruit d'un dressage rigoureux.",
+        "{{pet}} reste imperturbable, preuve de son parfait conditionnement.",
+        "{{pet}} affiche une dignité tranquille, caractéristique d'un dressage de qualité.",
+        "{{pet}} maintient son aplomb, témoignant de sa formation exemplaire.",
+        "{{pet}} demeure impassible, signe d'un dressage accompli.",
+        "{{pet}} conserve son attitude disciplinée, preuve d'une éducation réussie.",
+        "{{pet}} reste composé, à l'image d'un compagnon parfaitement formé.",
+        "{{pet}} affiche une sérénité maîtrisée, fruit d'un excellent dressage.",
+        "{{pet}} maintient sa contenance, signe d'une discipline irréprochable.",
+        "{{pet}} demeure posé, comme tout animal superbement dressé."
+      ]
     },
     "fightActionChoose": {
       "turnIndicationTitle": "Es el turno de {{pseudo}} para jugar {emote:fightCommand.crossedSwords}",
@@ -1258,7 +1584,8 @@
     "fightReward": {
       "title": "{emote:fightCommand.gloryChange} Recompensas de combate",
       "scoreAndMoneyField": "Recompensas de combate",
-      "noReward": "Has usado todas tus recompensas de combate, así que vuelve mañana.",
+      "petLoveField": "Relation avec le familier",
+      "noReward": "{{player}} a démontré pourquoi il est considéré comme l'un des meilleurs en remportant ce match facilement.",
       "points": ":medal: Puntos ganados : **{{count}}**",
       "money": "{emote:unitValues.money} Plata ganó : **{{count}}**",
       "gloryField": "Cambios de gloria",
@@ -1351,6 +1678,7 @@
   },
   "petSell": {
     "noPet": "¡No tienes mascotas que vender!",
+    "petOnExpedition": "Votre familier est actuellement en expédition et ne peut pas être vendu.",
     "noGuild": "No puedes vender tu mascota porque no estás en un gremio. Esto se debe a que la venta de mascotas genera experiencia de gremio.",
     "isFeisty": "No se puede vender una mascota peleona.",
     "badPrice": "El precio debe ser superior a `{{minPrice}}{emote:unitValues.money}` e inferior a `{{maxPrice}}{emote:unitValues.money}`.",
@@ -1453,10 +1781,12 @@
     "withdrawPlaceholder": "Elija una mascota para eliminar",
     "switchPlaceholder": "Elige una mascota para intercambiarla por {{pet}}",
     "selectMenuPetDetails": "{{rarity}} | {{sex}} {{loveLevel}}",
-    "feistyError": "No se puede trasladar a una mascota peleona."
+    "feistyError": "No se puede trasladar a una mascota peleona.",
+    "petOnExpedition": "Votre familier est actuellement en expédition et ne peut pas être transféré."
   },
   "petFeed": {
     "noPet": "¡No tienes mascotas!",
+    "petOnExpedition": "Votre familier est actuellement en expédition et ne peut pas être nourri.",
     "noMoney": "No tienes suficiente dinero para hacer esta compra...",
     "notHungry": "Parece que **{{pet}}** no tiene hambre...",
     "guildStorageEmpty": "El almacén de comida de tu gremio está vacío. Compra comida en {command:guildshop}.",
@@ -1482,8 +1812,8 @@
     },
     "title": "{{pseudo}}¡Has recibido tu premio de la liga!",
     "description": {
-      "first": "Terminaste la liga anterior con **{{glory}} gloria. {emote:unitValues.glory}**\n\n**Terminaste en $t(models:ordinals.get, {\"count\": {{rank}}, \"context\":\"feminine\", \"ordinal\": true}) !**\nTu liga final es : **{emote:leagues.{{leagueId}}} $t(models:leagues.{{leagueId}})**.\n\n{emote:unitValues.money} Dinero ganado : ¡**{{money}}** !\n{emote:unitValues.xp} XP ganada: ¡**{{xp}}** !\n{emote:unitValues.score} Puntos ganados : ¡**{{score}}** !\n{emote:unitValues.glory} Una insignia se le dio a usted al final de la temporada.\n{emote:rewards.item} ¡Recibirás equipamiento aleatorio!",
-      "other": "Terminaste la liga anterior con **{{glory}} gloria. {emote:unitValues.glory}**\n\n ¡Terminas en $t(models:ordinals.get, {\"count\": {{rank}}, \"ordinal\": true}) !\nTu liga final es : **{emote:leagues.{{leagueId}}}$t(models:leagues.{{leagueId}})**.\n\n{emote:unitValues.money} Dinero ganado: ¡**{{money}}** !\n{emote:unitValues.xp} XP ganada: ¡**{{xp}}** !\n{emote:rewards.item} ¡Recibes equipo al azar!"
+      "first": "Vous avez terminé la ligue précédente avec **{{glory}} gloire. {emote:unitValues.glory}**\n\n**Vous terminez à la $t(models:ordinals.get, {\"count\": {{rank}}, \"context\":\"feminine\", \"ordinal\": true}) place !**\nVotre ligue finale est : **{emote:leagues.{{leagueId}}} $t(models:leagues.{{leagueId}})**.\n\n{emote:unitValues.money} Argent gagné : **{{money}}** !\n{emote:unitValues.xp} Expérience gagnée : **{{xp}}** !\n{emote:unitValues.score} Points gagnés : **{{score}}** !\n{emote:unitValues.glory} Un badge vous a été offert à la fin de la saison.\n{emote:rewards.item} Vous recevez un équipement aléatoire !",
+      "other": "Vous avez terminé la ligue précédente avec **{{glory}} gloire. {emote:unitValues.glory}**\n\n Vous terminez à la $t(models:ordinals.get, {\"count\": {{rank}}, \"ordinal\": true}) place !\nVotre ligue finale est : **{emote:leagues.{{leagueId}}}$t(models:leagues.{{leagueId}})**.\n\n{emote:unitValues.money} Argent gagné : **{{money}}** !\n{emote:unitValues.xp} Expérience gagnée : **{{xp}}** !\n{emote:unitValues.score} Points gagnés : **{{score}}** !\n{emote:rewards.item} Vous recevez un équipement aléatoire !"
     }
   },
   "guildStorage": {
