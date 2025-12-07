@@ -228,7 +228,8 @@ export class TravelTime {
 
 		// Apply the new effect
 		player.effectId = effect.id;
-		if (effect === Effect.OCCUPIED) {
+		if (effect === Effect.OCCUPIED || (effect === Effect.SLEEPING && time > 0)) {
+			// OCCUPIED always uses custom duration, SLEEPING only if time > 0 is provided
 			player.effectDuration = time;
 		}
 		else {
