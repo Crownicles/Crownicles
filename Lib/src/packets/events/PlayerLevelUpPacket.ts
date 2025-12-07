@@ -28,5 +28,7 @@ export class PlayerLevelUpPacket extends CrowniclesPacket {
 
 	pveUnlocked!: boolean;
 
+	tokensUnlocked!: boolean;
+
 	statsIncreased!: boolean;
 }

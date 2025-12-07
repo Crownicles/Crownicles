@@ -365,6 +365,7 @@ export class Player extends Model {
 			classesTier5Unlocked: newLevel === ClassConstants.GROUP4LEVEL,
 			missionSlotUnlocked: newLevel === Constants.MISSIONS.SLOT_2_LEVEL || newLevel === Constants.MISSIONS.SLOT_3_LEVEL,
 			pveUnlocked: newLevel === PVEConstants.MIN_LEVEL,
+			tokensUnlocked: newLevel === TokensConstants.LEVEL_TO_UNLOCK,
 			statsIncreased: true
 		});
 

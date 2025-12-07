@@ -227,8 +227,8 @@ export default class ProfileCommand {
 					max: toCheckPlayer.getMaxHealth()
 				},
 				money: toCheckPlayer.money,
-				tokens: toCheckPlayer.tokens,
-				tokensMax: TokensConstants.MAX
+				tokens: toCheckPlayer.level >= TokensConstants.LEVEL_TO_UNLOCK ? toCheckPlayer.tokens : undefined,
+				tokensMax: toCheckPlayer.level >= TokensConstants.LEVEL_TO_UNLOCK ? TokensConstants.MAX : undefined
 			}
 		}));
 	}

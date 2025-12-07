@@ -1,6 +1,8 @@
 export abstract class TokensConstants {
 	static readonly MAX = 20;
 
+	static readonly LEVEL_TO_UNLOCK = 5;
+
 	static readonly DAILY = {
 		FREE_PER_DAY: 3
 	};

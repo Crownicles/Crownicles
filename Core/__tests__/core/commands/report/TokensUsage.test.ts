@@ -41,6 +41,7 @@ interface MockPlayer {
 	id: number;
 	keycloakId: string;
 	tokens: number;
+	level: number;
 	effectId: string;
 	effectDuration: number;
 	effectEndDate: Date;
@@ -63,6 +64,7 @@ function createMockPlayer(overrides: Partial<MockPlayer> = {}): MockPlayer {
 		id: 1,
 		keycloakId: "test-user-123",
 		tokens: 10,
+		level: 10, // Default level above unlock threshold
 		effectId: Effect.NO_EFFECT.id,
 		effectDuration: 0,
 		effectEndDate: new Date(now),
@@ -527,8 +529,8 @@ describe("Tokens Usage", () => {
 			vi.spyOn(Maps, "isOnPveIsland").mockReturnValue(false);
 		});
 
-		it("should allow tokens on the main continent", () => {
-			const player = createMockPlayer({ mapLinkId: 1 });
+		it("should allow tokens on the main continent at level 5 or above", () => {
+			const player = createMockPlayer({ mapLinkId: 1, level: TokensConstants.LEVEL_TO_UNLOCK });
 			vi.spyOn(Maps, "isOnContinent").mockReturnValue(true);
 			vi.spyOn(Maps, "isOnBoat").mockReturnValue(false);
 			vi.spyOn(Maps, "isOnPveIsland").mockReturnValue(false);
@@ -536,15 +538,24 @@ describe("Tokens Usage", () => {
 			expect(canUseTokensAtLocation(player as unknown as Parameters<typeof canUseTokensAtLocation>[0])).toBe(true);
 		});
 
+		it("should deny tokens when player level is below unlock threshold", () => {
+			const player = createMockPlayer({ mapLinkId: 1, level: TokensConstants.LEVEL_TO_UNLOCK - 1 });
+			vi.spyOn(Maps, "isOnContinent").mockReturnValue(true);
+			vi.spyOn(Maps, "isOnBoat").mockReturnValue(false);
+			vi.spyOn(Maps, "isOnPveIsland").mockReturnValue(false);
+
+			expect(canUseTokensAtLocation(player as unknown as Parameters<typeof canUseTokensAtLocation>[0])).toBe(false);
+		});
+
 		it("should deny tokens when not on continent", () => {
-			const player = createMockPlayer({ mapLinkId: 1 });
+			const player = createMockPlayer({ mapLinkId: 1, level: 10 });
 			vi.spyOn(Maps, "isOnContinent").mockReturnValue(false);
 
 			expect(canUseTokensAtLocation(player as unknown as Parameters<typeof canUseTokensAtLocation>[0])).toBe(false);
 		});
 
 		it("should deny tokens when on boat", () => {
-			const player = createMockPlayer({ mapLinkId: 1 });
+			const player = createMockPlayer({ mapLinkId: 1, level: 10 });
 			vi.spyOn(Maps, "isOnContinent").mockReturnValue(true);
 			vi.spyOn(Maps, "isOnBoat").mockReturnValue(true);
 
@@ -552,7 +563,7 @@ describe("Tokens Usage", () => {
 		});
 
 		it("should deny tokens when on PVE island", () => {
-			const player = createMockPlayer({ mapLinkId: 1 });
+			const player = createMockPlayer({ mapLinkId: 1, level: 10 });
 			vi.spyOn(Maps, "isOnContinent").mockReturnValue(true);
 			vi.spyOn(Maps, "isOnPveIsland").mockReturnValue(true);
 

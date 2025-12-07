@@ -1922,6 +1922,7 @@
         "classTier": "{emote:commands.classes} | Classes de palier {{tier}} débloquées ! Pour plus d'informations sur les classes, utilisez les commandes {command:classesinfo} et {command:help}.",
         "newMissionSlot": "{emote:missions.sideMission} | Nouvel emplacement de mission débloqué ! Pour plus d'informations sur vos missions, utilisez la commande {command:missions}.",
         "pveUnlocked": "{emote:other.island} | Accès aux îles lointaines débloquées ! Rendez-vous près d'un point d'eau pour de nouvelles aventures !",
+        "tokensUnlocked": "{emote:unitValues.token} | Jetons débloqués ! Vous pouvez désormais utiliser vos jetons pour avancer plus vite avec la commande {command:report}.",
         "statsIncreased": "{emote:other.increase} | Statistiques améliorées."
       }
     }
