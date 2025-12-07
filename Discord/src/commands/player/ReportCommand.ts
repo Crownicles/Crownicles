@@ -591,7 +591,61 @@ export async function createUseTokensCollector(context: PacketContext, packet: R
 			count: data.cost
 		}));
 
-	return await DiscordCollectorUtils.createAcceptRefuseCollector(interaction, embed, packet, context);
+	// Create buttons
+	const row = new ActionRowBuilder<ButtonBuilder>();
+	const acceptButton = new ButtonBuilder()
+		.setEmoji(parseEmoji(CrowniclesIcons.collectors.accept)!)
+		.setCustomId("accept")
+		.setStyle(ButtonStyle.Secondary);
+	const refuseButton = new ButtonBuilder()
+		.setEmoji(parseEmoji(CrowniclesIcons.collectors.refuse)!)
+		.setCustomId("refuse")
+		.setStyle(ButtonStyle.Secondary);
+	row.addComponents(acceptButton, refuseButton);
+
+	// Send as followUp (reply to original message)
+	const msg = await interaction.followUp({
+		embeds: [embed],
+		components: [row]
+	});
+
+	if (!msg) {
+		return null;
+	}
+
+	const buttonCollector = msg.createMessageComponentCollector({
+		time: packet.endTime - Date.now()
+	});
+
+	buttonCollector.on("collect", async (buttonInteraction: ButtonInteraction) => {
+		if (buttonInteraction.user.id !== context.discord?.user) {
+			await sendInteractionNotForYou(buttonInteraction.user, buttonInteraction, lng);
+			return;
+		}
+
+		// Disable buttons
+		disableRows([row]);
+		await msg.edit({
+			embeds: [embed], components: [row]
+		});
+
+		// Defer reply for the response
+		await buttonInteraction.deferReply();
+
+		// Send reaction to backend
+		const reactionIndex = buttonInteraction.customId === "accept" ? 0 : 1;
+		DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, buttonInteraction, reactionIndex);
+		buttonCollector.stop();
+	});
+
+	buttonCollector.on("end", async () => {
+		disableRows([row]);
+		await msg.edit({
+			embeds: [embed], components: [row]
+		}).catch(() => null);
+	});
+
+	return [buttonCollector];
 }
 
 /**
