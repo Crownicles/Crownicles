@@ -197,7 +197,8 @@ export default class ReportCommand {
 			context,
 			{
 				allowedPlayerKeycloakIds: [player.keycloakId],
-				reactionLimit: 1
+				reactionLimit: 1,
+				mainPacket: false
 			},
 			endCallback
 		)

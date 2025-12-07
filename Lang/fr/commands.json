@@ -794,9 +794,11 @@
     "notEnoughTokensButton": "Jetons insuffisants",
     "useTokensLoading": "Chargement...",
     "useTokensConfirmTitle": "{{pseudo}}, confirmation",
-    "useTokensConfirmDescription": "Voulez-vous dépenser **{{cost}} jeton(s)** {emote:unitValues.tokens} pour avancer jusqu'à la prochaine étape de l'aventure ?",
-    "tokensUsedSuccess": "{emote:unitValues.tokens} **{{pseudo}}** a dépensé **{{tokensSpent}} jeton(s)** pour avancer dans son voyage.",
-    "tokensUsedRefused": "{emote:messages.refused} **{{pseudo}}** a décidé de ne pas utiliser de jetons."
+    "useTokensConfirmDescription_one": "Voulez-vous dépenser **{{count}} jeton** {emote:unitValues.tokens} pour avancer jusqu'à la prochaine étape de l'aventure ?",
+    "useTokensConfirmDescription_other": "Voulez-vous dépenser **{{count}} jetons** {emote:unitValues.tokens} pour avancer jusqu'à la prochaine étape de l'aventure ?",
+    "tokensUsedSuccess_one": "{emote:unitValues.tokens} **{{pseudo}}** a dépensé **{{count}} jeton** pour avancer dans son voyage.",
+    "tokensUsedSuccess_other": "{emote:unitValues.tokens} **{{pseudo}}** a dépensé **{{count}} jetons** pour avancer dans son voyage.",
+    "tokensUsedRefused": "{emote:messages.refuse} **{{pseudo}}** a décidé de ne pas utiliser de jetons."
   },
   "update": {
     "description": "La version actuelle du noyau du bot est la **{{coreVersion}}**. Celle du module Discord est la **{{discordModuleVersion}}**.\n\nToutes les informations concernant les mises à jour sont disponibles ici :\nhttps://guide.crownicles.com/lore/historique-des-mises-a-jour",

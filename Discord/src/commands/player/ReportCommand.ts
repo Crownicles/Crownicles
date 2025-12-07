@@ -546,7 +546,7 @@ export async function handleUseTokensAccept(packet: CommandReportUseTokensAccept
 		content: i18n.t("commands:report.tokensUsedSuccess", {
 			lng,
 			pseudo: escapeUsername(interaction.user.displayName),
-			tokensSpent: packet.tokensSpent
+			count: packet.tokensSpent
 		})
 	});
 }
@@ -588,7 +588,7 @@ export async function createUseTokensCollector(context: PacketContext, packet: R
 		}), interaction.user)
 		.setDescription(i18n.t("commands:report.useTokensConfirmDescription", {
 			lng,
-			cost: data.cost
+			count: data.cost
 		}));
 
 	return await DiscordCollectorUtils.createAcceptRefuseCollector(interaction, embed, packet, context);
