@@ -34,7 +34,7 @@
   },
   "notificationEnergyFull": "Recuperou toda a sua energia.",
   "notificationDailyBonus": "O seu bónus diário está disponível.",
-  "notificationPetExpedition": "{{petDisplay}} est de retour d'expédition et a peut-être ramené des trésors !",
+  "notificationPetExpedition": "{{petDisplay}} regressou da sua expedição e pode ter trazido um tesouro!",
   "supportMessage": "{{langFlag}} Se precisar de ajuda, seleccione o seu idioma através dos botões abaixo. Se não precisar de ajuda, ignore esta mensagem. \n{emote:collectors.warning} **Todas as mensagens aqui enviadas podem ser lidas por um ser humano!**\n",
   "commandDisabledInDM": "{{langFlag}} Olá, os comandos estão desativados em mensagens privadas. Por favor, vá para um servidor para jogar!\nSe quiser ajuda, clique no botão correspondente ao seu idioma abaixo. \n"
 }
