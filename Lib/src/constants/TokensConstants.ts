@@ -8,4 +8,10 @@ export abstract class TokensConstants {
 	static readonly EXPEDITION = {
 		REWARD_INDEX_OFFSET: 1
 	};
+
+	static readonly REPORT = {
+		BASE_COST: 1,
+		MINUTES_PER_ADDITIONAL_TOKEN: 20,
+		MAX_COST: 5
+	};
 }

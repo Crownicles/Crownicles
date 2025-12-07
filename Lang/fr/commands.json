@@ -789,7 +789,11 @@
     "travellingDescription": "Tout se passe bien depuis votre dernière aventure {{smallEventEmoji}}. Prochain arrêt prévu {{time}}.",
     "travellingDescriptionEndTravel": "Tout se passe bien dans votre aventure, vous arriverez bientôt à destination.",
     "travellingDescriptionWithoutSmallEvent": "Tout se passe bien dans votre aventure. Prochain arrêt prévu {{time}}.",
-    "travellingTitle": "Vous êtes actuellement en train d'avancer !"
+    "travellingTitle": "Vous êtes actuellement en train d'avancer !",
+    "useTokensButton": "Avancer ({{cost}} {emote:unitValues.tokens})",
+    "notEnoughTokensButton": "Jetons insuffisants",
+    "tokensUsedSuccess": "{emote:unitValues.tokens} **{{pseudo}}** a dépensé **{{tokensSpent}} jeton(s)** pour avancer dans son voyage.",
+    "notEnoughTokensError": "{emote:messages.error} Vous n'avez pas assez de jetons pour utiliser cette action."
   },
   "update": {
     "description": "La version actuelle du noyau du bot est la **{{coreVersion}}**. Celle du module Discord est la **{{discordModuleVersion}}**.\n\nToutes les informations concernant les mises à jour sont disponibles ici :\nhttps://guide.crownicles.com/lore/historique-des-mises-a-jour",
@@ -824,6 +828,7 @@
     "closeShop": "Vous avez fermé le magasin.",
     "closeShopTitle": "{{pseudo}}, fermeture du magasin",
     "noAlterationToHeal": "Vous n'êtes victime d'aucune altération d'état. {emote:effects.none}",
+    "cannotHealOccupied": "Vous êtes actuellement occupé. Cette altération ne peut pas être soignée au magasin. {emote:effects.occupied}",
     "success": "{{pseudo}}, transaction réussie !",
     "healAlteration": "{emote:shopItems.healAlteration} Vos altérations d'état ont été supprimées.",
     "tooManyEnergyBought": "Vous avez acheté la quantité maximale de récupération d'énergie pour cette semaine.",

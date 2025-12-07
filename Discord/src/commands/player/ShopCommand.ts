@@ -63,6 +63,14 @@ export async function handleCommandShopNoAlterationToHeal(context: PacketContext
 	}
 }
 
+export async function handleCommandShopCannotHealOccupied(context: PacketContext): Promise<void> {
+	const interaction = DiscordCache.getInteraction(context.discord!.interaction!);
+
+	if (interaction) {
+		await sendErrorMessage(interaction.user, context, interaction, i18n.t("commands:shop.cannotHealOccupied", { lng: interaction.userLanguage }), { sendManner: SendManner.FOLLOWUP });
+	}
+}
+
 export async function handleCommandShopNoEnergyToHeal(context: PacketContext): Promise<void> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction!);
 

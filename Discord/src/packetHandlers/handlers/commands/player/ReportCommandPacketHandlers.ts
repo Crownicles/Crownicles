@@ -3,12 +3,16 @@ import {
 	CommandReportBigEventResultRes,
 	CommandReportErrorNoMonsterRes,
 	CommandReportMonsterRewardRes,
+	CommandReportNotEnoughTokensPacketRes,
 	CommandReportRefusePveFightRes,
-	CommandReportTravelSummaryRes
+	CommandReportTravelSummaryRes,
+	CommandReportUseTokensPacketRes
 } from "../../../../../../Lib/src/packets/commands/CommandReportPacket";
 import { PacketContext } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	displayMonsterReward,
+	handleNotEnoughTokens,
+	handleUseTokensSuccess,
 	refusePveFight,
 	reportResult,
 	reportTravelSummary
@@ -39,5 +43,15 @@ export default class ReportCommandPacketHandlers {
 	@packetHandler(CommandReportRefusePveFightRes)
 	async reportRefusePveFightRes(context: PacketContext, packet: CommandReportRefusePveFightRes): Promise<void> {
 		await refusePveFight(packet, context);
+	}
+
+	@packetHandler(CommandReportUseTokensPacketRes)
+	async reportUseTokensRes(context: PacketContext, packet: CommandReportUseTokensPacketRes): Promise<void> {
+		await handleUseTokensSuccess(packet, context);
+	}
+
+	@packetHandler(CommandReportNotEnoughTokensPacketRes)
+	async reportNotEnoughTokensRes(context: PacketContext, _packet: CommandReportNotEnoughTokensPacketRes): Promise<void> {
+		await handleNotEnoughTokens(context);
 	}
 }

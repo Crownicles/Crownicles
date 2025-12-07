@@ -44,6 +44,11 @@ export class CommandReportTravelSummaryRes extends CrowniclesPacket {
 	};
 
 	lastSmallEventId?: string;
+
+	tokens?: {
+		cost: number;
+		playerTokens: number;
+	};
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
@@ -110,4 +115,17 @@ export class CommandReportBigEventResultRes extends CrowniclesPacket {
 	gems!: number;
 
 	oneshot!: boolean;
+}
+
+@sendablePacket(PacketDirection.FRONT_TO_BACK)
+export class CommandReportUseTokensPacketReq extends CrowniclesPacket {
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportUseTokensPacketRes extends CrowniclesPacket {
+	tokensSpent!: number;
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportNotEnoughTokensPacketRes extends CrowniclesPacket {
 }

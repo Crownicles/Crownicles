@@ -50,7 +50,8 @@ export enum NumberChangeReason {
 	PVE_FIGHT,
 	FIGHT_PET_SMALL_EVENT,
 	RAGE_EXPLOSION_ACTION,
-	JOIN_BOAT
+	JOIN_BOAT,
+	REPORT_TOKENS
 }
 
 export enum ShopItemType {

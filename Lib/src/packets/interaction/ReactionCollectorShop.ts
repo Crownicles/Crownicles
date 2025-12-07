@@ -33,6 +33,10 @@ export class CommandShopNoAlterationToHeal extends CrowniclesPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandShopCannotHealOccupied extends CrowniclesPacket {
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandShopHealAlterationDone extends CrowniclesPacket {
 }
 

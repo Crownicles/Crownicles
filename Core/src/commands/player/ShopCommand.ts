@@ -12,6 +12,7 @@ import {
 	CommandShopAlreadyHaveBadge,
 	CommandShopBadgeBought,
 	CommandShopBoughtTooMuchDailyPotions,
+	CommandShopCannotHealOccupied,
 	CommandShopClosed,
 	CommandShopEnergyHeal,
 	CommandShopFullRegen,
@@ -117,6 +118,10 @@ function getHealAlterationShopItem(player: Player): ShopItem {
 			const player = await Players.getById(playerId);
 			if (player.currentEffectFinished(new Date())) {
 				response.push(makePacket(CommandShopNoAlterationToHeal, {}));
+				return false;
+			}
+			if (player.effectId === Effect.OCCUPIED.id) {
+				response.push(makePacket(CommandShopCannotHealOccupied, {}));
 				return false;
 			}
 			if (player.effectId !== Effect.DEAD.id && player.effectId !== Effect.JAILED.id) {

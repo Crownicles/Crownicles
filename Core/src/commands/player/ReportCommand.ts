@@ -6,9 +6,12 @@ import {
 	CommandReportChooseDestinationRes,
 	CommandReportErrorNoMonsterRes,
 	CommandReportMonsterRewardRes,
+	CommandReportNotEnoughTokensPacketRes,
 	CommandReportPacketReq,
 	CommandReportRefusePveFightRes,
-	CommandReportTravelSummaryRes
+	CommandReportTravelSummaryRes,
+	CommandReportUseTokensPacketReq,
+	CommandReportUseTokensPacketRes
 } from "../../../../Lib/src/packets/commands/CommandReportPacket";
 import {
 	Player, Players
@@ -52,6 +55,7 @@ import {
 	SmallEventDataController, SmallEventFuncs
 } from "../../data/SmallEvent";
 import { ReportConstants } from "../../../../Lib/src/constants/ReportConstants";
+import { TokensConstants } from "../../../../Lib/src/constants/TokensConstants";
 import {
 	BigEvent, BigEventDataController
 } from "../../data/BigEvent";
@@ -140,6 +144,63 @@ export default class ReportCommand {
 
 		await sendTravelPath(player, response, currentDate, null);
 		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.REPORT_COMMAND);
+	}
+
+	@commandRequires(CommandReportUseTokensPacketReq, {
+		notBlocked: true,
+		disallowedEffects: CommandUtils.DISALLOWED_EFFECTS.DEAD,
+		whereAllowed: CommandUtils.WHERE.EVERYWHERE
+	})
+	static async useTokens(
+		response: CrowniclesPacket[],
+		player: Player,
+		_packet: CommandReportUseTokensPacketReq,
+		context: PacketContext
+	): Promise<void> {
+		const currentDate = new Date();
+		const timeData = await TravelTime.getTravelData(player, currentDate);
+
+		// Calculate the token cost
+		const tokenCost = calculateTokenCost(player.effectId, timeData.effectRemainingTime);
+
+		// If token cost is null, the player has an alteration that cannot be skipped with tokens
+		if (tokenCost === null) {
+			return;
+		}
+
+		// Check if player has enough tokens
+		if (player.tokens < tokenCost) {
+			response.push(makePacket(CommandReportNotEnoughTokensPacketRes, {}));
+			return;
+		}
+
+		// Spend the tokens
+		await player.addTokens({
+			amount: -tokenCost,
+			response,
+			reason: NumberChangeReason.REPORT_TOKENS
+		});
+
+		// If player has occupied alteration, remove it
+		if (player.effectId === Effect.OCCUPIED.id) {
+			await TravelTime.removeEffect(player, NumberChangeReason.REPORT_TOKENS);
+		}
+
+		// Make the player time travel to the next small event
+		await TravelTime.timeTravel(
+			player,
+			timeData.nextSmallEventTime - currentDate.valueOf(),
+			NumberChangeReason.REPORT_TOKENS,
+			true
+		);
+
+		await player.save();
+
+		// Send the success response
+		response.push(makePacket(CommandReportUseTokensPacketRes, { tokensSpent: tokenCost }));
+
+		// Execute the small event
+		await executeSmallEvent(response, player, context, null);
 	}
 }
 
@@ -466,6 +527,30 @@ async function needSmallEvent(player: Player, date: Date): Promise<boolean> {
 }
 
 /**
+ * Calculate the token cost for advancing using tokens
+ * @param effectId - The current effect of the player
+ * @param effectRemainingTime - The remaining time of the effect in milliseconds
+ */
+function calculateTokenCost(effectId: string, effectRemainingTime: number): number | null {
+	// If player has an alteration other than occupied or no_effect, tokens cannot be used
+	if (effectId !== Effect.NO_EFFECT.id && effectId !== Effect.OCCUPIED.id) {
+		return null;
+	}
+
+	// Base cost is 1 token
+	let cost = TokensConstants.REPORT.BASE_COST;
+
+	// If occupied, add 1 token per 20 minutes of remaining time
+	if (effectId === Effect.OCCUPIED.id) {
+		const remainingMinutes = millisecondsToMinutes(effectRemainingTime);
+		cost += Math.ceil(remainingMinutes / TokensConstants.REPORT.MINUTES_PER_ADDITIONAL_TOKEN);
+	}
+
+	// Cap the cost at the maximum
+	return Math.min(cost, TokensConstants.REPORT.MAX_COST);
+}
+
+/**
  * Send the location where the player is currently staying on the road
  * @param player
  * @param response
@@ -478,6 +563,10 @@ async function sendTravelPath(player: Player, response: CrowniclesPacket[], date
 	const lastMiniEvent = await PlayerSmallEvents.getLastOfPlayer(player.id);
 	const endMap = player.getDestination();
 	const startMap = player.getPreviousMap();
+
+	// Calculate token cost for the use token button
+	const tokenCost = calculateTokenCost(effectId ?? Effect.NO_EFFECT.id, timeData.effectRemainingTime);
+
 	response.push(makePacket(CommandReportTravelSummaryRes, {
 		effect: effectId,
 		startTime: timeData.travelStartTime,
@@ -503,7 +592,13 @@ async function sendTravelPath(player: Player, response: CrowniclesPacket[], date
 			id: startMap.id,
 			type: startMap.type
 		},
-		isOnBoat: Maps.isOnBoat(player)
+		isOnBoat: Maps.isOnBoat(player),
+		tokens: tokenCost !== null
+			? {
+				cost: tokenCost,
+				playerTokens: player.tokens
+			}
+			: undefined
 	}));
 }
 

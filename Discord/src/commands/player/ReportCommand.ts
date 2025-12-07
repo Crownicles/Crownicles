@@ -9,7 +9,9 @@ import {
 	CommandReportMonsterRewardRes,
 	CommandReportPacketReq,
 	CommandReportRefusePveFightRes,
-	CommandReportTravelSummaryRes
+	CommandReportTravelSummaryRes,
+	CommandReportUseTokensPacketReq,
+	CommandReportUseTokensPacketRes
 } from "../../../../Lib/src/packets/commands/CommandReportPacket";
 import { ReactionCollectorCreationPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import {
@@ -50,6 +52,7 @@ import { Language } from "../../../../Lib/src/Language";
 import { DisplayUtils } from "../../utils/DisplayUtils";
 import { PetUtils } from "../../utils/PetUtils";
 import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
+import { PacketUtils } from "../../utils/PacketUtils";
 
 async function getPacket(interaction: CrowniclesInteraction): Promise<CommandReportPacketReq> {
 	await interaction.deferReply();
@@ -526,6 +529,46 @@ function manageEndPathDescriptions({
 }
 
 /**
+ * Handle the response when player successfully uses tokens to advance
+ * @param packet
+ * @param context
+ */
+export async function handleUseTokensSuccess(packet: CommandReportUseTokensPacketRes, context: PacketContext): Promise<void> {
+	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
+	if (!interaction) {
+		return;
+	}
+	const lng = interaction.userLanguage;
+
+	await interaction.followUp({
+		content: i18n.t("commands:report.tokensUsedSuccess", {
+			lng,
+			pseudo: escapeUsername(interaction.user.displayName),
+			tokensSpent: packet.tokensSpent
+		})
+	});
+}
+
+/**
+ * Handle the response when player doesn't have enough tokens
+ * @param context
+ */
+export async function handleNotEnoughTokens(context: PacketContext): Promise<void> {
+	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
+	if (!interaction) {
+		return;
+	}
+	const lng = interaction.userLanguage;
+
+	await interaction.followUp({
+		content: i18n.t("commands:report.notEnoughTokensError", {
+			lng,
+			pseudo: escapeUsername(interaction.user.displayName)
+		})
+	});
+}
+
+/**
  * Display the travel summary (embed with the travel path in between small events)
  * @param packet
  * @param context
@@ -570,7 +613,60 @@ export async function reportTravelSummary(packet: CommandReportTravelSummaryRes,
 		value: advices[Math.floor(Math.random() * advices.length)],
 		inline: true
 	});
-	await interaction.editReply({ embeds: [travelEmbed] });
+
+	// Add token button if player can use tokens (no alteration or occupied)
+	if (packet.tokens) {
+		const hasEnoughTokens = packet.tokens.playerTokens >= packet.tokens.cost;
+		const tokenButtonLabel = hasEnoughTokens
+			? i18n.t("commands:report.useTokensButton", {
+				lng, cost: packet.tokens.cost
+			})
+			: i18n.t("commands:report.notEnoughTokensButton", { lng });
+
+		const tokenButton = new ButtonBuilder()
+			.setCustomId("useTokens")
+			.setLabel(tokenButtonLabel)
+			.setEmoji(parseEmoji(CrowniclesIcons.unitValues.tokens)!)
+			.setStyle(hasEnoughTokens ? ButtonStyle.Primary : ButtonStyle.Secondary)
+			.setDisabled(!hasEnoughTokens);
+
+		const row = new ActionRowBuilder<ButtonBuilder>().addComponents(tokenButton);
+
+		const msg = await interaction.editReply({
+			embeds: [travelEmbed],
+			components: [row]
+		});
+
+		if (hasEnoughTokens && msg) {
+			const buttonCollector = msg.createMessageComponentCollector({
+				time: Constants.MESSAGES.COLLECTOR_TIME
+			});
+
+			buttonCollector.on("collect", async (buttonInteraction: ButtonInteraction) => {
+				if (buttonInteraction.user.id !== context.discord?.user) {
+					await sendInteractionNotForYou(buttonInteraction.user, buttonInteraction, lng);
+					return;
+				}
+
+				// Disable the button
+				tokenButton.setDisabled(true);
+				await buttonInteraction.update({ components: [row] });
+
+				// Send the packet to use tokens
+				PacketUtils.sendPacketToBackend(context, makePacket(CommandReportUseTokensPacketReq, {}));
+				buttonCollector.stop();
+			});
+
+			buttonCollector.on("end", async () => {
+				tokenButton.setDisabled(true);
+				await msg.edit({ components: [row] })
+					.catch(() => null);
+			});
+		}
+	}
+	else {
+		await interaction.editReply({ embeds: [travelEmbed] });
+	}
 }
 
 export const commandInfo: ICommand = {
