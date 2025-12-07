@@ -790,10 +790,13 @@
     "travellingDescriptionEndTravel": "Tout se passe bien dans votre aventure, vous arriverez bientôt à destination.",
     "travellingDescriptionWithoutSmallEvent": "Tout se passe bien dans votre aventure. Prochain arrêt prévu {{time}}.",
     "travellingTitle": "Vous êtes actuellement en train d'avancer !",
-    "useTokensButton": "Avancer ({{cost}} {emote:unitValues.tokens})",
+    "useTokensButton": "Avancer",
     "notEnoughTokensButton": "Jetons insuffisants",
+    "useTokensLoading": "Chargement...",
+    "useTokensConfirmTitle": "{{pseudo}}, confirmation",
+    "useTokensConfirmDescription": "Voulez-vous dépenser **{{cost}} jeton(s)** {emote:unitValues.tokens} pour avancer jusqu'à la prochaine étape de l'aventure ?",
     "tokensUsedSuccess": "{emote:unitValues.tokens} **{{pseudo}}** a dépensé **{{tokensSpent}} jeton(s)** pour avancer dans son voyage.",
-    "notEnoughTokensError": "{emote:messages.error} Vous n'avez pas assez de jetons pour utiliser cette action."
+    "tokensUsedRefused": "{emote:messages.refused} **{{pseudo}}** a décidé de ne pas utiliser de jetons."
   },
   "update": {
     "description": "La version actuelle du noyau du bot est la **{{coreVersion}}**. Celle du module Discord est la **{{discordModuleVersion}}**.\n\nToutes les informations concernant les mises à jour sont disponibles ici :\nhttps://guide.crownicles.com/lore/historique-des-mises-a-jour",

@@ -6,12 +6,12 @@ import {
 	CommandReportChooseDestinationRes,
 	CommandReportErrorNoMonsterRes,
 	CommandReportMonsterRewardRes,
-	CommandReportNotEnoughTokensPacketRes,
 	CommandReportPacketReq,
 	CommandReportRefusePveFightRes,
 	CommandReportTravelSummaryRes,
+	CommandReportUseTokensAcceptPacketRes,
 	CommandReportUseTokensPacketReq,
-	CommandReportUseTokensPacketRes
+	CommandReportUseTokensRefusePacketRes
 } from "../../../../Lib/src/packets/commands/CommandReportPacket";
 import {
 	Player, Players
@@ -63,6 +63,7 @@ import {
 	ReactionCollectorBigEvent,
 	ReactionCollectorBigEventPossibilityReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorBigEvent";
+import { ReactionCollectorUseTokens } from "../../../../Lib/src/packets/interaction/ReactionCollectorUseTokens";
 import { Possibility } from "../../data/events/Possibility";
 import {
 	applyPossibilityOutcome,
@@ -74,7 +75,10 @@ import {
 	commandRequires, CommandUtils
 } from "../../core/utils/CommandUtils";
 import { Effect } from "../../../../Lib/src/types/Effect";
-import { ReactionCollectorRefuseReaction } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
+import {
+	ReactionCollectorAcceptReaction,
+	ReactionCollectorRefuseReaction
+} from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { verifyPossibilityOutcomeCondition } from "../../data/events/PossibilityOutcomeCondition";
 import { PostFightPetLoveOutcomes } from "../../../../Lib/src/constants/PetConstants";
@@ -168,40 +172,94 @@ export default class ReportCommand {
 			return;
 		}
 
-		// Check if player has enough tokens
+		// If player doesn't have enough tokens, don't do anything (button should be disabled already)
 		if (player.tokens < tokenCost) {
-			response.push(makePacket(CommandReportNotEnoughTokensPacketRes, {}));
 			return;
 		}
 
-		// Spend the tokens
-		await player.addTokens({
-			amount: -tokenCost,
-			response,
-			reason: NumberChangeReason.REPORT_TOKENS
-		});
+		// Create confirmation collector
+		const collector = new ReactionCollectorUseTokens(tokenCost);
 
-		// If player has occupied alteration, remove it
-		if (player.effectId === Effect.OCCUPIED.id) {
-			await TravelTime.removeEffect(player, NumberChangeReason.REPORT_TOKENS);
-		}
+		const endCallback: EndCallback = async (collector, response) => {
+			const reaction = collector.getFirstReaction();
+			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.REPORT_USE_TOKENS);
 
-		// Make the player time travel to the next small event
-		await TravelTime.timeTravel(
-			player,
-			timeData.nextSmallEventTime - currentDate.valueOf(),
-			NumberChangeReason.REPORT_TOKENS,
-			true
-		);
+			if (reaction && reaction.reaction.type === ReactionCollectorAcceptReaction.name) {
+				await acceptUseTokens(player, tokenCost, response, context);
+			}
+			else {
+				response.push(makePacket(CommandReportUseTokensRefusePacketRes, {}));
+			}
+		};
 
-		await player.save();
+		const collectorPacket = new ReactionCollectorInstance(
+			collector,
+			context,
+			{
+				allowedPlayerKeycloakIds: [player.keycloakId],
+				reactionLimit: 1
+			},
+			endCallback
+		)
+			.block(player.keycloakId, BlockingConstants.REASONS.REPORT_USE_TOKENS)
+			.build();
 
-		// Send the success response
-		response.push(makePacket(CommandReportUseTokensPacketRes, { tokensSpent: tokenCost }));
-
-		// Execute the small event
-		await executeSmallEvent(response, player, context, null);
+		response.push(collectorPacket);
 	}
+}
+
+/**
+ * Execute the token usage after confirmation
+ * @param player
+ * @param tokenCost
+ * @param response
+ * @param context
+ */
+async function acceptUseTokens(
+	player: Player,
+	tokenCost: number,
+	response: CrowniclesPacket[],
+	context: PacketContext
+): Promise<void> {
+	await player.reload();
+	const currentDate = new Date();
+	const timeData = await TravelTime.getTravelData(player, currentDate);
+
+	// Recalculate the token cost (in case something changed)
+	const newTokenCost = calculateTokenCost(player.effectId, timeData.effectRemainingTime);
+
+	// If token cost changed or player no longer has enough tokens, abort
+	if (newTokenCost === null || player.tokens < newTokenCost) {
+		return;
+	}
+
+	// Spend the tokens
+	await player.addTokens({
+		amount: -tokenCost,
+		response,
+		reason: NumberChangeReason.REPORT_TOKENS
+	});
+
+	// If player has occupied alteration, remove it
+	if (player.effectId === Effect.OCCUPIED.id) {
+		await TravelTime.removeEffect(player, NumberChangeReason.REPORT_TOKENS);
+	}
+
+	// Make the player time travel to the next small event
+	await TravelTime.timeTravel(
+		player,
+		timeData.nextSmallEventTime - currentDate.valueOf(),
+		NumberChangeReason.REPORT_TOKENS,
+		true
+	);
+
+	await player.save();
+
+	// Send the success response
+	response.push(makePacket(CommandReportUseTokensAcceptPacketRes, { tokensSpent: tokenCost }));
+
+	// Execute the small event
+	await executeSmallEvent(response, player, context, null);
 }
 
 /**

@@ -122,10 +122,10 @@ export class CommandReportUseTokensPacketReq extends CrowniclesPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandReportUseTokensPacketRes extends CrowniclesPacket {
+export class CommandReportUseTokensAcceptPacketRes extends CrowniclesPacket {
 	tokensSpent!: number;
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandReportNotEnoughTokensPacketRes extends CrowniclesPacket {
+export class CommandReportUseTokensRefusePacketRes extends CrowniclesPacket {
 }

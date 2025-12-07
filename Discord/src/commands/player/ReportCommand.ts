@@ -10,8 +10,8 @@ import {
 	CommandReportPacketReq,
 	CommandReportRefusePveFightRes,
 	CommandReportTravelSummaryRes,
-	CommandReportUseTokensPacketReq,
-	CommandReportUseTokensPacketRes
+	CommandReportUseTokensAcceptPacketRes,
+	CommandReportUseTokensPacketReq
 } from "../../../../Lib/src/packets/commands/CommandReportPacket";
 import { ReactionCollectorCreationPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import {
@@ -41,6 +41,7 @@ import {
 	DiscordCollectorUtils,
 	disableRows
 } from "../../utils/DiscordCollectorUtils";
+import { ReactionCollectorUseTokensData } from "../../../../Lib/src/packets/interaction/ReactionCollectorUseTokens";
 import { ReportConstants } from "../../../../Lib/src/constants/ReportConstants";
 import { ReactionCollectorReturnTypeOrNull } from "../../packetHandlers/handlers/ReactionCollectorHandlers";
 import { DiscordConstants } from "../../DiscordConstants";
@@ -533,14 +534,15 @@ function manageEndPathDescriptions({
  * @param packet
  * @param context
  */
-export async function handleUseTokensSuccess(packet: CommandReportUseTokensPacketRes, context: PacketContext): Promise<void> {
+export async function handleUseTokensAccept(packet: CommandReportUseTokensAcceptPacketRes, context: PacketContext): Promise<void> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
 	if (!interaction) {
 		return;
 	}
+	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
 	const lng = interaction.userLanguage;
 
-	await interaction.followUp({
+	await buttonInteraction?.editReply({
 		content: i18n.t("commands:report.tokensUsedSuccess", {
 			lng,
 			pseudo: escapeUsername(interaction.user.displayName),
@@ -550,22 +552,46 @@ export async function handleUseTokensSuccess(packet: CommandReportUseTokensPacke
 }
 
 /**
- * Handle the response when player doesn't have enough tokens
+ * Handle the response when player refuses to use tokens
  * @param context
  */
-export async function handleNotEnoughTokens(context: PacketContext): Promise<void> {
+export async function handleUseTokensRefuse(context: PacketContext): Promise<void> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
 	if (!interaction) {
 		return;
 	}
+	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
 	const lng = interaction.userLanguage;
 
-	await interaction.followUp({
-		content: i18n.t("commands:report.notEnoughTokensError", {
+	await buttonInteraction?.editReply({
+		content: i18n.t("commands:report.tokensUsedRefused", {
 			lng,
 			pseudo: escapeUsername(interaction.user.displayName)
 		})
 	});
+}
+
+/**
+ * Create the confirmation collector for using tokens
+ * @param context
+ * @param packet
+ */
+export async function createUseTokensCollector(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
+	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
+	const data = packet.data.data as ReactionCollectorUseTokensData;
+	const lng = interaction.userLanguage;
+
+	const embed = new CrowniclesEmbed()
+		.formatAuthor(i18n.t("commands:report.useTokensConfirmTitle", {
+			lng,
+			pseudo: escapeUsername(interaction.user.displayName)
+		}), interaction.user)
+		.setDescription(i18n.t("commands:report.useTokensConfirmDescription", {
+			lng,
+			cost: data.cost
+		}));
+
+	return await DiscordCollectorUtils.createAcceptRefuseCollector(interaction, embed, packet, context);
 }
 
 /**
@@ -618,9 +644,7 @@ export async function reportTravelSummary(packet: CommandReportTravelSummaryRes,
 	if (packet.tokens) {
 		const hasEnoughTokens = packet.tokens.playerTokens >= packet.tokens.cost;
 		const tokenButtonLabel = hasEnoughTokens
-			? i18n.t("commands:report.useTokensButton", {
-				lng, cost: packet.tokens.cost
-			})
+			? i18n.t("commands:report.useTokensButton", { lng })
 			: i18n.t("commands:report.notEnoughTokensButton", { lng });
 
 		const tokenButton = new ButtonBuilder()
@@ -652,7 +676,13 @@ export async function reportTravelSummary(packet: CommandReportTravelSummaryRes,
 				tokenButton.setDisabled(true);
 				await buttonInteraction.update({ components: [row] });
 
-				// Send the packet to use tokens
+				// Defer reply for the confirmation message
+				await buttonInteraction.followUp({
+					content: i18n.t("commands:report.useTokensLoading", { lng }),
+					ephemeral: false
+				}).then(msg => msg.delete().catch(() => null));
+
+				// Send the packet to use tokens (will trigger confirmation collector)
 				PacketUtils.sendPacketToBackend(context, makePacket(CommandReportUseTokensPacketReq, {}));
 				buttonCollector.stop();
 			});
