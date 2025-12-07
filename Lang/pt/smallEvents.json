@@ -299,6 +299,16 @@
       "{{playerDisplay}}{{petEmote}}{{petName}}passa por si e mostra-lhe o seu animal de estimação ** ** ** ** **. Acariciamo-lo e partimos de novo, bon voyage!",
       "{{playerDisplay}}{{petEmote}}{{petName}}passa por si com ** ** ** ** ** na sua trela. Olhamos para ele com espanto e dizemos para nós próprios que também gostaríamos de ter este animal!"
     ],
+    "pet_on_expedition": [
+      "Passa por {{playerDisplay}} no seu caminho. O seu animal de estimação **{{petEmote}}** **{{petName}}** não está com ele hoje, enviou-o para uma expedição! Este treinador sabe mesmo como otimizar a sua relação com o seu companheiro.",
+      "{{playerDisplay}} caminha sozinho, sem o seu fiel **{{petEmote}}**{{petName}}**. Enquanto conversamos, fica a saber que ele enviou o seu animal de estimação para explorar terras longínquas. Um verdadeiro mestre do treino!",
+      "{{playerDisplay}} não tem o seu animal de estimação com ele hoje. Ele explica com orgulho que o seu **{{petEmote}}**{{petName}}** foi numa expedição. Que confiança mútua!"
+    ],
+    "pet_clone": [
+      "{{playerDisplay}} passa por ti com... uma estranha criatura translúcida? É **{{petEmote}}** **{{petName}}**, mas algo não está bem. O animal parece quase fantasmagórico, como se não estivesse realmente lá...",
+      "Olhas para {{playerDisplay}} com uma expressão intrigada. O seu **{{petEmote}}** **{{petName}}** parece... estranho. Translúcido, quase etéreo. Ele explica que um antigo talismã lhe permite manter um clone do seu companheiro enquanto o verdadeiro explora o mundo.",
+      "É um fantasma? Não, é o **{{petEmote}}** **{{petName}}** de {{playerDisplay}}, mas a sua silhueta é estranhamente transparente. A magia de um talismã de clonagem, diz ele, enquanto o seu verdadeiro companheiro está numa expedição!"
+    ],
     "guild_chief": [
       "Não entres em pânico! {{playerDisplay}}{{guildName}}Estás a passar, líder da guilda ** **.",
       "Passa por {{playerDisplay}}. Ele é o líder do grémio **{{guildName}}** !",
@@ -1003,12 +1013,19 @@
         "O talento de **{{pet}}** permitiu-lhe encontrar um atalho. Graças a ela, ganhaste **{{amountDisplay}}** {emote:unitValues.timeGain}.",
         "Defender **{{pet}}** contra {{randomAnimal}} sauvage não tem sido tarefa fácil, e desta vez encontraste algo mais forte do que tu. Decides fugir e corres a toda a velocidade. Graças a esta desventura, ganhaste **{{amountDisplay}}** {emote:unitValues.timeGain} pelo caminho."
       ],
-      "points": [
+      "points_m": [
         "As pessoas que o encontrarem com **{{pet}}** não deixarão de o notar. Isto melhora a sua reputação e, por conseguinte, ganha **{{amount}}** {emote:unitValues.score}.",
         "Contar a um velho sobre as suas aventuras com **{{pet}}** parece ter melhorado a sua reputação. Ganhaste **{{amount}}** {emote:unitValues.score}."
       ],
-      "badge": [
-        "{{pet}}Treinar com sucesso ** ** foi um verdadeiro desafio que prova o teu talento com os animais. {{badge}} Receberás o distintivo!"
+      "points_f": [
+        "As pessoas que o encontrarem com **{{pet}}** não deixarão de o notar. Isto melhora a sua reputação e, por conseguinte, ganha **{{amount}}** {emote:unitValues.score}.",
+        "Contar a um velho sobre as suas aventuras com **{{pet}}** parece ter melhorado a sua reputação. Ganhaste **{{amount}}** {emote:unitValues.score}."
+      ],
+      "badge_m": [
+        "Treinar com sucesso **{{pet}}** foi um verdadeiro desafio que prova o teu talento com os animais. Receberás o emblema {{badge}} !"
+      ],
+      "badge_f": [
+        "Treinar com sucesso **{{pet}}** foi um verdadeiro desafio que prova o teu talento com os animais. Receberás o emblema {{badge}} !"
       ],
       "loseLife_m": [
         "{{pet}}Quando tenta acariciar ** **, ele não o deixa e morde-lhe a mão.{{amount}} {emote:unitValues.lostHealth}Perdes ** ** .",
@@ -1076,8 +1093,11 @@
         "{{pet}}Depois de uma longa caminhada, ** ** está sem fôlego e parece não conseguir acompanhá-lo. O facto de não esperar por ela prejudicou a vossa relação. Por isso, ela está a perder um pouco de amor...",
         "{{pet}}Quando se aproxima de uma banca, ** ** olha para a comida num tabuleiro. Apesar do pedido dela, decide continuar o seu caminho.{{pet}}** ** está ressentido e está a perder um pouco de fé em si."
       ],
-      "nothing": [
-        "{{pet}}Continua a sua viagem ao lado de ** **. Nada de especial acontece."
+      "nothing_m": [
+        "Continua a sua viagem ao lado de **{{pet}}**. Nada de especial acontece."
+      ],
+      "nothing_f": [
+        "Continua a sua viagem ao lado de **{{pet}}**. Nada de especial acontece."
       ]
     },
     "randomAnimal_m": "{{randomAnimal}}a ** **",
@@ -1771,6 +1791,32 @@
       "Perante a sua solidão, Talvar não pode deixar de partilhar a sua filosofia de vida, centrada no amor pelas criaturas. Fala-nos das curas milagrosas que a presença dos animais provoca no corpo e no espírito. As suas descrições apaixonadas revelam um homem transformado por uma vida dedicada a estes seres extraordinários. Ficará tocado por esta revelação e talvez destinado a seguir um caminho semelhante.",
       "Sem nenhum familiar ao teu lado, os olhos de Talvar brilham com uma missão a cumprir. Ele apresenta-te os segredos da domesticação de animais e os rituais sagrados que selam a amizade entre homens e animais. Os seus ensinamentos ressoam tradições ancestrais e conhecimentos esquecidos. Continuas a tua viagem, um repositório deste precioso conhecimento e talvez sejas chamado a pô-lo em prática num futuro próximo."
     ],
+    "petIsClone_m": [
+      "Ao ver **{{pet}}**, Talvar semicerrou os olhos em perplexidade. Aproxima o seu rosto da criatura, examinando-a de todos os ângulos, e depois afasta-se com uma expressão preocupada. Ele murmura que este companheiro exala uma aura singular, como se estivesse tanto aqui como noutro lugar. Apesar das suas dúvidas, entrega-vos {{reward}}, mas o seu olhar permanece fixo no vosso familiar com uma curiosidade misturada com preocupação.",
+      "Talvar pára morto no seu caminho quando vê **{{pet}}**. As suas sobrancelhas espessas franzem-se e ele, hesitante, estende a mão para a criatura. Ele diz que nunca viu nada assim e que o familiar parece desfocado, como um reflexo numa água turva. Abana a cabeça, confuso com a visão, mas oferece-lhe {{reward}}na mesma. Sai com a sensação de que algo estranho acabou de acontecer.",
+      "Quando **{{pet}}** aparece à frente de Talvar, o velho anão pestaneja várias vezes. Ele resmunga que os seus olhos lhe estão a pregar partidas e que esta criatura parece translúcida por vezes. Ele circula à volta do teu companheiro, perplexo. Finalmente, encolhe os ombros e entrega-vos {{reward}}, ainda lançando olhares cautelosos para o familiar espetral.",
+      "O olhar de Talvar pára em **{{pet}}**, e uma expressão de confusão preenche as suas feições. Diz com uma voz incerta que sente algo de invulgar nesta criatura, que ela está lá mas não é bem assim, como um eco ou uma projeção. Apesar da sua evidente confusão, a sua generosidade vence e ele oferece-vos {{reward}}, mas a sua mente continua visivelmente preocupada com este mistério.",
+      "Talvar observa **{{pet}}** com uma intensidade invulgar. Começa a falar antes de fazer uma pausa, à procura de palavras. Explica que esta criatura emite uma energia que nunca sentiu antes, como se a sua essência estivesse dividida entre dois sítios. Um arrepio percorre-lhe a barba prateada. Ele entrega-vos {{reward}} com uma mão ligeiramente trémula, claramente perturbado por este encontro sobrenatural."
+    ],
+    "petIsClone_f": [
+      "Ao ver **{{pet}}**, Talvar semicerrou os olhos em perplexidade. Aproxima o seu rosto da criatura, examinando-a de todos os ângulos, e depois afasta-se com uma expressão preocupada. Ele murmura que esta companheira exala uma aura singular, como se ela estivesse tanto aqui como noutro lugar. Apesar das suas dúvidas, entrega-vos {{reward}}, mas o seu olhar permanece fixo no vosso familiar com uma curiosidade misturada com preocupação.",
+      "Talvar pára morto no seu caminho quando vê **{{pet}}**. As suas sobrancelhas espessas franzem-se e, hesitante, estende a mão para a criatura. Ele murmura que nunca viu nada assim e que a criatura lhe parece desfocada, como um reflexo numa água turva. Ele abana a cabeça, confuso com a visão, mas oferece-lhe {{reward}}na mesma. Sai com a sensação de que algo estranho acabou de acontecer.",
+      "Quando **{{pet}}** aparece à frente de Talvar, o velho anão pestaneja várias vezes. Ele resmunga que os seus olhos lhe estão a pregar partidas e que esta criatura parece translúcida por vezes. Ele circula à volta do teu companheiro, perplexo. Finalmente, encolhe os ombros e entrega-vos {{reward}}, ainda lançando olhares cautelosos para o familiar espetral.",
+      "O olhar de Talvar pára em **{{pet}}**, e uma expressão de confusão preenche as suas feições. Diz com uma voz incerta que sente algo de invulgar nesta criatura, que ela está lá mas não é bem assim, como um eco ou uma projeção. Apesar da sua evidente confusão, a sua generosidade vence e ele oferece-vos {{reward}}, mas a sua mente continua visivelmente preocupada com este mistério.",
+      "Talvar observa **{{pet}}** com uma intensidade invulgar. Começa a falar antes de fazer uma pausa, à procura de palavras. Explica que esta criatura emite uma energia que nunca sentiu antes, como se a sua essência estivesse dividida entre dois sítios. Um arrepio percorre-lhe a barba prateada. Ele entrega-vos {{reward}} com uma mão ligeiramente trémula, claramente perturbado por este encontro sobrenatural."
+    ],
+    "clonePetAlreadySeen_m": [
+      "Talvar olha de soslaio para **{{pet}}**, depois abana a cabeça vigorosamente. Ele resmunga que já viu um familiar como este antes, mas este é... diferente. Ele circula à volta da criatura, intrigado, murmurando que é como ver um reflexo que não corresponde exatamente ao original. Ele afasta-o com um aceno de mão, claramente perturbado por esta anomalia.",
+      "O velho anão pára quando vê **{{pet}}**. As suas sobrancelhas espessas franzem-se enquanto ele examina a criatura de todos os ângulos. Declara que conhece este tipo de familiar, que já o admirou antes, mas que ele emite uma aura estranha, como se existisse em dois sítios ao mesmo tempo. Resmunga algumas palavras incompreensíveis e manda-o seguir o seu caminho.",
+      "Ao ver **{{pet}}**, Talvar deu um passo para trás, o seu olhar perturbado. Ele afirma já ter visto esta espécie antes, mas esta companhia parece-lhe nebulosa, irreal. Ele estende hesitantemente uma mão em direção à criatura antes de a retirar abruptamente, como se tivesse tocado em algo sobrenatural. Com uma voz incerta, deseja-vos uma boa viagem.",
+      "O sábio anão observa{{pet}}** com uma desconfiança invulgar. Confessa que já teve o prazer de admirar um familiar deste género, mas que este o deixa inquieto. Murmura que esta criatura parece estar lá sem estar realmente, como um eco ou uma sombra viva. Abana a cabeça e afasta-se, deixando escapar que tem de meditar sobre este mistério."
+    ],
+    "clonePetAlreadySeen_f": [
+      "Talvar olha para **{{pet}}**, depois abana a cabeça vigorosamente. Ele resmunga que já viu uma criatura como esta antes, mas esta é... diferente. Anda à volta da criatura, intrigado, murmurando que é como ver um reflexo que não corresponde exatamente ao original. Ele afasta-vos com um aceno de mão, claramente perturbado por esta anomalia.",
+      "O velho anão pára quando vê **{{pet}}**. As suas sobrancelhas espessas franzem-se enquanto ele examina a criatura de todos os ângulos. Declara que conhece este tipo de familiar, que já o admirou antes, mas que ele emite uma aura estranha, como se existisse em dois sítios ao mesmo tempo. Resmunga algumas palavras incompreensíveis e manda-o seguir o seu caminho.",
+      "Ao ver **{{pet}}**, Talvar deu um passo para trás, o seu olhar perturbado. Ele afirma já ter visto esta espécie antes, mas esta companhia parece-lhe nebulosa, irreal. Ele estende hesitantemente uma mão em direção à criatura antes de a retirar abruptamente, como se tivesse tocado em algo sobrenatural. Com uma voz incerta, deseja-vos uma boa viagem.",
+      "O sábio anão observa{{pet}}** com uma desconfiança invulgar. Confessa que já teve o prazer de admirar uma criatura deste género, mas que esta o deixa inquieto. Murmura que esta criatura parece estar lá sem estar realmente, como um eco ou uma sombra viva. Abana a cabeça e afasta-se, deixando escapar que tem de meditar sobre este mistério."
+    ],
     "badge": [
       "O olhar de Talvar tornou-se sério, depois iluminou-se com um brilho de orgulho. Cada gesto, cada expressão revela uma admiração sincera. Ele reconhece plenamente o valor das tuas acções, elogiando a tua coragem, o teu discernimento e o respeito que demonstraste pelas criaturas. Como prova do seu apreço, oferece-te o emblema {emote:badges.animal_lover}, um presente de grande significado. Este sinal de estima sela a vossa ligação. Separam-se num silêncio carregado de respeito, unidos por uma compreensão tácita partilhada apenas por aqueles que trabalharam por uma causa maior do que eles próprios."
     ]
@@ -1875,5 +1921,344 @@
     "Pára por um momento. Até a tua respiração parece sufocada pelo ar frio. Nesta quietude total, parece ouvir um batimento - ténue, regular - como um coração enterrado na terra.",
     "O nevoeiro está a ficar mais espesso e mal se consegue ver os próprios pés. A cada respiração, a humidade gelada penetra na sua garganta, e o mundo inteiro encolhe-se a alguns metros à sua volta.",
     "Um sussurro distante atravessa subitamente a névoa, vindo do nada. Uma voz? Um vento? Impossível de dizer. Fica-se parado, à escuta, consciente de que este lugar não tem fim nem princípio, apenas um silêncio que respira."
-  ]
+  ],
+  "petFood": {
+    "intro": {
+      "badSmell": "O teu fiel companheiro pára de repente, com as narinas a arder. As suas orelhas levantam-se quando ele capta o cheiro que vem de um bosque escuro. Há algo de imundo a apodrecer, talvez abandonado há dias, e o teu animal de estimação parece fascinado por este fedor que faria recuar muitas criaturas.",
+      "goodSmell": "O seu companheiro de viagem fica subitamente agitado, abanando a cauda com entusiasmo, com os olhos a brilhar de excitação. Um aroma doce e tentador paira no ar. Como uma borboleta, ele é atraído pela luz para esta fragrância prometedora, que lhe desperta o apetite.",
+      "vegetarian": "O seu fiel animal de estimação abranda o passo e inclina a cabeça para um lado, intrigado com um bosque de arbustos que ladeia o caminho. Entre as ervas selvagens e os fetos prateados, ele parece ter discernido algo comestível por entre a vegetação.",
+      "meat": "O teu companheiro pára, com os músculos tensos, olhando atenta e predatoriamente para um corpo de água que brilha ao sol poente. Os seus lábios curvam-se ligeiramente, revelando presas afiadas, enquanto ele fareja o ar com absoluta concentração. Ele avistou claramente a sua presa...",
+      "soup": "Um cheiro familiar e reconfortante faz cócegas nas suas narinas: o aroma untuoso da sopa a ferver numa panela de cobre. O teu fiel companheiro levanta os ouvidos e corre para um acampamento abandonado à beira da estrada, onde um caldeirão de ferro preto ainda está suspenso sobre brasas moribundas. Será esta a derradeira sopa?"
+    },
+    "choices": {
+      "investigate": "Veja por si próprio",
+      "sendPet": "Envie o seu animal de estimação",
+      "continue": "Continuar o seu caminho"
+    },
+    "outcomes": {
+      "found_by_player": "Aproximas-te cautelosamente e, depois de afastares os ramos e procurares nos cantos e recantos, pões as mãos em **{{foodName}}**. Oferece-o ao seu companheiro, que o aceita com gratidão, devorando o seu presente com grunhidos de satisfação.",
+      "found_by_player_soup": "Aproximas-te cautelosamente do caldeirão abandonado e descobres com satisfação que **{{foodName}}** ainda está a ferver suavemente. Deita uma porção generosa numa tigela e oferece-a ao seu companheiro. Ele lambe avidamente a comida reconfortante, abanando a cauda de contentamento.",
+      "found_by_pet": "O seu animal de estimação salta agilmente e desaparece por um momento no meio do mato. Em breve regressa a si com um trote orgulhoso e triunfante, segurando delicadamente entre as presas o **{{foodName}}**. Os seus olhos brilham de orgulho e ele instala-se para saborear a sua descoberta com ruídos de mastigação entusiásticos.",
+      "found_by_pet_soup": "A tua mascote trota rapidamente em direção ao acampamento abandonado e mergulha o focinho no caldeirão fumegante. Volta para junto de ti alguns instantes depois, com os lábios ainda brilhantes, depois de ter saboreado **{{foodName}}** com evidente prazer. Os seus olhos brilhantes e a cauda a abanar testemunham a sua satisfação gulosa.",
+      "found_anyway": "Quando estava prestes a continuar o seu caminho sem se preocupar com esta distração, o seu fiel companheiro salta subitamente para os arbustos circundantes. Sai vitorioso com **{{foodName}}** que devora imediatamente com um apetite voraz, com a cauda a abanar de contentamento.",
+      "found_anyway_soup": "No momento em que está prestes a pôr-se a caminho sem se preocupar com o acampamento, o seu fiel companheiro corre para o caldeirão abandonado. Antes que possas impedi-lo, ele bebe avidamente **{{foodName}}** com gemidos de prazer, claramente encantado com esta inesperada sorte.",
+      "player_failed": "Passou longos e árduos minutos a vasculhar meticulosamente a área, limpando silvas e espinhos, revirando pedras e cepos apodrecidos, mas, apesar de todos os seus esforços, não encontrou nada de valor. O tempo investido revelou-se tão inútil como procurar um tesouro numa arca vazia.",
+      "pet_failed": "O seu companheiro parte resolutamente para o meio do mato, mas regressa alguns instantes depois com um andar pesado, as orelhas em baixo e a cauda pendurada. O seu olhar desiludido e os seus guinchos queixosos denunciam o seu fracasso: o trilho revelou-se infrutífero e os seus esforços não produziram mais do que amargura.",
+      "pet_failed_soup": "O teu companheiro trota em direção ao acampamento abandonado e dá uma longa cheiradela ao caldeirão, mas, infelizmente, este está vazio ou o seu conteúdo já está frio e não é comestível. Volta para junto de si com um andar desapontado, orelhas baixas e cauda baixa, claramente frustrado com esta desilusão culinária.",
+      "nothing": "Decide sabiamente não se demorar mais nestas paragens, considerando que o tempo urge e que a sua demanda não pode sofrer tais desvios. Com um gesto resoluto, pede ao seu companheiro que o siga e partem juntos em direção ao horizonte que o espera."
+    },
+    "foodNames": {
+      "badSmell": [
+        "uma carniça de corvo em decomposição avançada",
+        "as entranhas pútridas de um duende do pântano",
+        "um ovo de dragão podre que liberta fumos sulfurosos",
+        "um pedaço de queijo azul bolorento esquecido por um viajante tonto",
+        "os restos malcheirosos de uma ratazana morta há vários dias",
+        "uma carcaça de morcego infestada de larvas rastejantes",
+        "um pedaço de carne de faisão abandonado por bandidos",
+        "um peixe morto com escamas esverdeadas a boiar num lago estagnado",
+        "miudezas de javali repletas de moscas vorazes",
+        "barriga de uma ovelha inchada com gases de putrefação",
+        "o crânio de um lobo ainda coberto de pedaços de carne negra"
+      ],
+      "goodSmell": [
+        "uma tarte quente de mel e amêndoa",
+        "uma fatia de tarte de maçã e canela, cozida até ficar dourada",
+        "um pedaço de carne seca temperada com ervas da Provença",
+        "uma pera doce e sumarenta de um pomar abandonado",
+        "um biscoito estaladiço em forma de osso moldado por um padeiro generoso",
+        "uma fatia de bolo de avelã e açúcar mascavado",
+        "um pedaço de pão de especiarias aromatizado com gengibre e cravinho",
+        "uma fatia de toucinho fumado no carvalho",
+        "um pão de brioche com passas e manteiga com sal",
+        "um pedaço de queijo cheddar curado envolto num pano de linho",
+        "um crepe recheado com doce de alperce e polvilhado com açúcar",
+        "um éclair de chocolate abandonado num muro de pedra baixo"
+      ],
+      "vegetarian": [
+        "uma mão-cheia de bagas silvestres cheias de sumo doce",
+        "uma raiz de nabo comestível ainda cheia de terra fértil",
+        "um cogumelo florestal cor de cobre que cresce debaixo de um velho carvalho",
+        "uma flor de dente-de-leão doce e tenra",
+        "uma maçã vermelha a cair de uma macieira solitária",
+        "avelãs recém-cortadas das suas cascas espinhosas",
+        "uma espiga de milho dourada deixada num campo após a colheita",
+        "um cacho de uvas selvagens de cor púrpura profunda",
+        "folhas de alface estaladiças arrancadas de uma horta",
+        "uma cenoura selvagem com um sabor ligeiramente amargo",
+        "um ramo de urtigas tenras e nutritivas",
+        "rebentos de fetos comestíveis na primavera",
+        "uma abóbora estripada na berma de um caminho"
+      ],
+      "meat": [
+        "um peixe prateado que ainda se agita nas águas límpidas de um riacho",
+        "um jovem coelho perdido longe da sua toca",
+        "um osso da medula ainda cheio de carne tenra e gorda",
+        "uma fatia de fiambre fumado pendurada numa panela aberta",
+        "uma salsicha de porco picante extraviada por um vendedor ambulante",
+        "um pedaço de toucinho salgado embrulhado num pano gorduroso",
+        "os restos de um pato assado abandonado por viajantes com pressa",
+        "uma peça de carne de veado acabada de abater por um caçador",
+        "língua de vaca cozida a arrefecer numa pedra plana",
+        "Tripas de carneiro lavadas em água de nascente",
+        "um pedaço de frango grelhado com especiarias orientais",
+        "uma enguia fumada com madeira de faia",
+        "os restos de uma lebre em jarro a ferver no seu molho"
+      ],
+      "soup": [
+        "sopa de legumes da horta ao vapor",
+        "caldo de galinha aromatizado com tomilho e folhas de louro",
+        "sopa de couve com bacon dourado",
+        "Sopa de creme de cogumelos selvagens",
+        "sopa de cebola gratinada com queijo",
+        "pote-au-feu com cenouras e nabos a derreter",
+        "bisque de lagostim temperado com especiarias raras"
+      ]
+    },
+    "love": {
+      "plus": "O seu fiel companheiro olha para si com olhos que brilham de gratidão e de afeto. Ele esfrega-se nas suas pernas e ronrona contente, demonstrando claramente que esta festa improvisada reforçou os laços de confiança e de amizade entre vocês!",
+      "minus": "O seu animal de estimação olha para si com um olhar sombrio de reprovação silenciosa, com os lábios curvados num beicinho de desaprovação. Ele vira ostensivamente a cabeça para o lado com um rosnado de desagrado, claramente ofendido por esta comida indigna do seu paladar delicado...",
+      "neutral": "O seu companheiro de viagem devora a sua refeição com um distanciamento quase filosófico, não demonstrando nem um entusiasmo transbordante nem um desgosto particular. Ele parece considerar este achado como um alimento necessário, nada mais, nada menos."
+    }
+  },
+  "badPet": {
+    "intro": [
+      "Um anão corpulento emerge de uma rocha, com a barba ruiva desgrenhada e o olhar cheio de ódio visceral. Ao ver **{{pet}}**, cospe no chão com nojo e brandindo um pau nodoso. O teu companheiro recua, com as orelhas coladas ao crânio. O estranho apresenta-se como Moltiar e jura que não tem nada a ver com o seu irmão adorador de insectos.",
+      "Uma voz rouca e zangada chama-te de repente. Um anão com uma velha cicatriz na cara avança, com os olhos ensanguentados fixos em{{pet}}** com fúria. Gira uma clava com um gesto ameaçador. O teu companheiro treme todo.",
+      "Saindo de trás de uma formação rochosa, um anão de aspeto louco coloca-se à tua frente, bloqueando o teu caminho. A sua mão direita tem as cicatrizes de uma mordidela antiga. Ele olha para **{{pet}}** com um ódio ardente e saca um punhal lascado. Moltiar resmunga que, ao contrário do seu irmão Talvar, ele reconhece um incómodo quando o vê.",
+      "Um rugido gutural assusta-o. Um anão corpulento emerge de uma fenda, com a sua barba entrançada a chocalhar com gotas de osso. Assim que ele vê **{{pet}}**, a sua cara torce-se de nojo. Aponta-te um dedo acusador, com a outra mão a agarrar firmemente um machado ferrugento.",
+      "O vosso caminho é subitamente bloqueado por uma figura atarracada e hostil. O anão tem uma expressão de pura repulsa quando descobre **{{pet}}** ao teu lado. Uma velha ferida atravessa-lhe o antebraço, testemunho de um passado doloroso. Ele segura um martelo de guerra. Moltiar rosna que não vai deixar estas criaturas repugnantes vaguearem pelas suas terras, independentemente do que o seu irmão ingénuo possa pensar.",
+      "O barulho de uma pedra a rolar alerta-o para uma presença. Um anão maciço emerge das sombras de uma saliência rochosa, examinando imediatamente **{{pet}}** com uma animosidade palpável. As cicatrizes nos seus antebraços são o testemunho de encontros dolorosos no passado. Ele brandia uma clava com um gesto carregado de ameaça.",
+      "O cheiro a terra e a suor rançoso chega até ti antes mesmo de veres o agressor. Um anão emerge de uma fenda, a sua pele bronzeada pelo sol, as suas mãos calejadas agarradas a uma picareta. O seu olhar recai sobre **{{pet}}** e uma raiva fria distorce-lhe as feições. Ele cospe que o idiota do irmão devia ver o que aqueles insectos lhe fizeram.",
+      "O ranger das botas no cascalho anuncia a chegada de um intruso. Aparece um anão com a cabeça parcialmente calva, com a barba cinzenta atada num severo catogan. Os seus olhos arregalam-se de horror quando vê **{{pet}}**. Dá um passo atrás antes de brandir uma faca de mineiro com uma determinação odiosa.",
+      "Um assobio zombeteiro ecoa pelo ar. Empoleirado numa rocha, um anão observa o vosso progresso com desprezo. Quando repara que **{{pet}}** trota ao teu lado, a sua expressão muda para uma careta de profundo desgosto. Ele salta para o chão e coloca-se à tua frente, murmurando que o seu irmão corrompeu demasiados viajantes com as suas ideias loucas.",
+      "O chão treme ligeiramente sob os vossos pés, anunciando a aproximação de uma presença maciça. Um anão imponente, mais largo do que alto, emerge de um afloramento rochoso. O seu olhar percorre o caminho, fixando-se em **{{pet}}** com um ódio incandescente. Os músculos dos seus braços contorcem-se enquanto ele levanta um pesado martelo de ferreiro."
+    ],
+    "choices": {
+      "intimidate": "Ordenar ao seu companheiro que intimide o anão",
+      "plead": "Tentar argumentar com o anão com palavras",
+      "giveMeat": "Oferecer ao anão um pouco de carne para o amolecer",
+      "giveVeg": "Oferecer legumes ao anão como sinal de paz",
+      "flee": "Fugir com o seu companheiro",
+      "hide": "Esconder o seu parceiro",
+      "wait": "À espera que a cólera do anão se acalme",
+      "protect": "Intervir para proteger o seu companheiro",
+      "distract": "Desviar a atenção do anão",
+      "calm": "Tentar acalmar o seu companheiro assustado",
+      "imposer": "Deixar o seu companheiro prevalecer sobre o anão",
+      "energize": "Incentivar o seu companheiro a manter-se firme"
+    },
+    "outcomes": {
+      "intimidate": {
+        "success": [
+          "Obedecendo à tua ordem,{{pet}}** eleva-se à sua altura máxima e solta um rugido impressionante. Moltiar, surpreendido por esta demonstração de força, dá um passo atrás e murmura alguns insultos enquanto se afasta com relutância. O teu companheiro olha para ti com orgulho.",
+          "Adoptando uma postura ameaçadora, **{{pet}}** rosna com uma ferocidade surpreendente para o anão hostil. Este, vendo que o confronto poderia ficar feio, cospe um último insulto antes de recuar. O teu companheiro parece satisfeito por ter enfrentado o agressor."
+        ],
+        "fail": [
+          "Obedecendo à tua ordem, **{{pet}}** tenta parecer ameaçador, mas o anão desata numa gargalhada cruel perante esta exibição patética. Brandindo o seu bastão, o teu companheiro volta a correr, com o orgulho ferido por esta humilhação.",
+          "Tentando parecer ameaçador,{{pet}}** só consegue divertir o anão, que lhe dá um pontapé. O teu companheiro guincha de dor e lança-te um olhar de reprovação por o teres exposto daquela maneira."
+        ]
+      },
+      "plead": {
+        "success": [
+          "Tenta chamar Moltiar à razão com palavras suaves, explicando-lhe que o seu companheiro não representa qualquer ameaça. Alguma coisa na tua voz sincera parece ter feito sentido, e ele finalmente baixa a arma com um rosnado. **{{pet}}aprecia a tua diplomacia.",
+          "As suas palavras ponderadas ecoam no silêncio tenso. Mencionas o respeito mútuo entre os viajantes e o anão, apesar do seu óbvio ódio aos animais, admite que pareces ter a tua fera sob controlo. Ele resmunga e afasta-se. **{{pet}}** acalma-se gradualmente."
+        ],
+        "fail": [
+          "Tentas argumentar com o anão, mas as tuas palavras apenas alimentam a sua raiva. Ele grita que as palavras não são suficientes para defender estas criaturas que ele abomina. **{{pet}}** desvia o olhar, envergonhado por não o ter protegido.",
+          "As tuas patéticas súplicas parecem exasperar ainda mais o anão. Ele olha para ti com um desprezo indisfarçável. **{{pet}}** olha para ti com um misto de desilusão e medo."
+        ]
+      },
+      "giveMeatLikes": {
+        "success": [
+          "Rapidamente retira um pedaço de carne e entrega-o ao anão esfomeado. Surpreendido com a oferta, ele aceita-a com um grunhido e morde-a com apetite. Acena-te antes de mudar de ideias. **{{pet}}parece aliviado com o resultado.",
+          "O pedaço de carne que ofereces faz o anão hesitar. O seu estômago ronca mais alto do que o seu ódio, e ele acaba por aceitar o teu presente e vai-se embora. **{{pet}}aprecia o teu engenho para evitar um confronto."
+        ],
+        "fail": [
+          "Puxa um pedaço de carne para convencer Moltiar, mas ele atira-o para o chão com nojo, recusando-se a ser comprado daquela maneira. Infelizmente, **{{pet}}** estava de olho no prato e olha para ti com ar de acusação.",
+          "O pedaço de carne que ofereces é espezinhado pelo anão furioso. **{{pet}}olha com frustração, desapontado por ver esta iguaria ser desperdiçada."
+        ]
+      },
+      "giveMeatDislikes": {
+        "success": [
+          "Rapidamente retira um pedaço de carne e entrega-o ao anão esfomeado. Surpreendido com a oferta, ele aceita-a com um grunhido e morde-a com apetite. Acena-te antes de mudar de ideias. **{{pet}}** desvia o olhar, claramente desinteressado na comida.",
+          "O pedaço de carne que ofereces faz o anão hesitar. O seu estômago ronca mais alto do que o seu ódio, e ele acaba por aceitar o teu presente e afasta-se. **{{pet}}** não parece lamentar esta oferta que não lhe era destinada."
+        ],
+        "fail": [
+          "Puxa um pedaço de carne para convencer Moltiar, mas ele atira-o para o chão com repugnância, recusando-se a ser comprado assim. **{{pet}}**, um herbívoro, não parece perturbado com esta perda.",
+          "O pedaço de carne que ofereces é espezinhado pelo anão furioso. **{{pet}}** não presta atenção, pois este tipo de comida não lhe agrada."
+        ]
+      },
+      "giveMeatNoFood": {
+        "fail": [
+          "Procuras um pedaço de carne nos bolsos, mas o armazém da tua guilda está desesperadamente vazio. Moltiar escarnece do teu desânimo enquanto **{{pet}}** olha para ele perplexo.",
+          "Tenta tirar alguma carne para acalmar o anão, mas apercebe-se, para seu horror, que não tem nenhuma. Moltiar aproveita a oportunidade para manipular **{{pet}}**, que vos lança um olhar acusador."
+        ]
+      },
+      "giveVegLikes": {
+        "success": [
+          "Ofereces ao anão alguns legumes, mencionando a sua qualidade e frescura. Inesperadamente, o anão amante de sopa aceita a tua oferta com um grunhido de aprovação e vai-se embora. **{{pet}}parece impressionado com os teus instintos.",
+          "Os legumes que apresentas ao anão trazem-te obviamente recordações mais agradáveis. Ele aceita-os com uma aparência de civilidade e concorda em deixar-te passar. **{{pet}}aprecia esta resolução pacífica."
+        ],
+        "fail": [
+          "Dá alguns legumes ao anão, na esperança de o convencer. Ele desata a rir-se da oferta ridícula e afasta-os com um aceno de mão. **{{pet}}olha com inveja para os legumes desperdiçados.",
+          "Os legumes que oferece desajeitadamente são postos de lado pelo anão desdenhoso. **{{pet}}** lança-lhe um olhar de reprovação, frustrado por ver a comida desperdiçada."
+        ]
+      },
+      "giveVegDislikes": {
+        "success": [
+          "Ofereces ao anão alguns legumes, mencionando a sua qualidade e frescura. Inesperadamente, o anão amante de sopa aceita a tua oferta com um grunhido de aprovação e parte. **{{pet}}parece não se preocupar com esta perda de legumes.",
+          "Os legumes que apresentas ao anão trazem-te obviamente recordações mais agradáveis. Ele aceita-os com uma aparência de civilidade e aceita deixar-te passar. **{{pet}}**, um carnívoro, não se incomoda com este sacrifício."
+        ],
+        "fail": [
+          "Dá alguns legumes ao anão, na esperança de o convencer. Ele desata a rir com esta oferta ridícula e afasta-os com um aceno de mão. **{{pet}}não parece importar-se com a perda.",
+          "Os legumes que oferece desajeitadamente são postos de lado pelo anão desdenhoso. **{{pet}}**, preferindo a carne, não dá importância a estes legumes desperdiçados."
+        ]
+      },
+      "giveVegNoFood": {
+        "fail": [
+          "Estás à procura de vegetais para dar ao anão, mas o armazém da tua guilda não tem nenhum. Moltiar ri-se da tua tentativa patética, enquanto **{{pet}}** abaixa a cabeça em desapontamento.",
+          "Queres oferecer alguns legumes para acalmar a situação, mas não tens nenhum. O anão aproveita a tua hesitação para apressar **{{pet}}** que te olha com reprovação."
+        ]
+      },
+      "flee": {
+        "success": [
+          "Arrancais com **{{pet}}** nos vossos calcanhares. A vossa velocidade combinada permite-vos ultrapassar rapidamente Moltiar, que, demasiado corpulento, desiste de vos perseguir, gritando maldições. O vosso companheiro suspira mas parece satisfeito.",
+          "A fuga revela-se a decisão correta. Corres eficazmente com **{{pet}}** que te segue sem dificuldade, deixando para trás o anão furioso mas impotente. Formaram uma equipa."
+        ],
+        "fail": [
+          "O pânico apodera-se de ti e foges desajeitadamente com **{{pet}}** no teu encalço. Moltiar, mais rápido do que o esperado, alcança-vos e empurra violentamente o vosso companheiro quando passa. Consegues finalmente fugir, mas **{{pet}}** culpa-te pela tua fuga precipitada.",
+          "Atira-se aos calcanhares numa debandada inglória. Infelizmente, **{{pet}}** não consegue acompanhar-vos e fica para trás. O anão aproveita a oportunidade para o picar com o seu pau antes de o apanharem. O teu companheiro fica furioso com esta fuga falhada."
+        ]
+      },
+      "hide": {
+        "success": [
+          "Rapidamente, encontras uma reentrância nas rochas e escondes-te **{{pet}}** lá antes que o anão se aperceba. O anão, que já não vê o animal, perde o interesse e vai-se embora a resmungar. O teu companheiro aprecia a tua discrição.",
+          "Encontra um local ideal para se esconder **{{pet}}** debaixo do seu manto. O anão, já sem ver o objeto do seu ódio, acalma-se e continua o seu caminho. O seu companheiro parece tranquilo com a sua proteção."
+        ],
+        "fail": [
+          "Tenta esconder-se **{{pet}}** a um canto, mas Moltiar apanha-o em flagrante. Ele ruge de raiva e agarra o teu companheiro. Olha para ti com ar de reprovação.",
+          "A vossa tentativa de ocultação falha miseravelmente quando **{{pet}}** solta um gemido nervoso, revelando o seu esconderijo. O anão corre para ele e empurra-o violentamente. O teu companheiro sofre com este contratempo."
+        ]
+      },
+      "wait": {
+        "success": [
+          "Decide esperar imóvel, na esperança de que a raiva do anão diminua. Depois de longos minutos de gritaria, ele parece cansar-se e finalmente grunhe. **{{pet}}parece apreciar a tua paciência e compostura.",
+          "A espera valeu a pena. O anão, não encontrando a reação que esperava, perde gradualmente o seu ardor beligerante e vai-se embora. **{{pet}}olha para si com respeito pela sua sabedoria."
+        ],
+        "fail": [
+          "Decide esperar imóvel, mas o anão interpreta a sua passividade como fraqueza. Ele aproxima-se e **{{pet}}** ameaça-o novamente. O teu companheiro caminha nervosamente, stressado com esta inação.",
+          "A espera prolonga-se e **{{pet}}** começa a gemer de angústia. O anão, encorajado pela tua inação, torna-se cada vez mais ameaçador. O seu companheiro censura-o por não fazer nada."
+        ]
+      },
+      "protect": {
+        "success": [
+          "Numa explosão de bravura protetora, coloca o seu corpo firmemente entre Moltiar e **{{pet}}**. A tua determinação impressiona o atacante que, vendo que estás pronto para lutar, decide não provocar mais. O teu companheiro fica comovido com a tua coragem.",
+          "Protege **{{pet}}** colocando-se com confiança entre si e o anão hostil. O anão, apercebendo-se de que não cede, prefere afastar-se, cuspindo insultos. O teu companheiro olha para ti com um carinho renovado."
+        ],
+        "fail": [
+          "Num gesto de coragem, meteste-te entre Moltiar e **{{pet}}**. Infelizmente, o anão é mais forte do que pensavas. Ele empurra-te brutalmente e aproveita-se da situação para bater no teu companheiro. Sentes-te impotente perante esta demonstração de força.",
+          "Tenta proteger **{{pet}}** colocando-se à frente dele, mas a sua postura carece de confiança. O anão escapa-lhe facilmente e empurra o seu companheiro, que lhe lança um olhar desapontado pela sua incapacidade de o defender."
+        ]
+      },
+      "distract": {
+        "success": [
+          "Cria uma distração ao mencionar em voz alta uma taberna conhecida na direção oposta. Moltiar, cujo amor pela cerveja supera claramente o seu ódio pelos animais, ouve com atenção e depois afasta-se, intrigado. **{{pet}}** aproveita a confusão, impressionado com o teu estratagema.",
+          "A vossa manobra de diversão funciona perfeitamente. Ao atirar algumas moedas para longe, atrais a atenção gananciosa do anão. Quando ele se apressa a apanhá-las, **{{pet}}** e tu escapas discretamente."
+        ],
+        "fail": [
+          "Tentas criar uma distração, gesticulando e gritando. Esta demonstração ridícula só serve para irritar ainda mais o anão e ele aproxima-se, ameaçador. **{{pet}}afasta-se, assustado com o seu comportamento estranho.",
+          "Numa tentativa desesperada de o distrair, atira pedras ao acaso. Por azar, uma delas acerta em **{{pet}}** que guincha de dor enquanto o anão faz uma careta maliciosa."
+        ]
+      },
+      "calm": {
+        "success": [
+          "Conseguiste acalmar **{{pet}}** com carícias tranquilizadoras, apesar da ameaça do anão. O teu companheiro recupera a confiança e deixa de tremer. O anão, vendo que tens a tua fera sob controlo, parece menos inclinado a atacar e acaba por se afastar.",
+          "As suas palavras suaves e o seu comportamento confiante conseguem acalmar **{{pet}}**. Uma vez relaxado, ele exala uma confiança que faz o anão hesitar. O anão, menos seguro de si perante esta serenidade, prefere ir-se embora."
+        ],
+        "fail": [
+          "Tentas acalmar **{{pet}}** com carícias, mas o teu próprio nervosismo em relação ao anão hostil é transmitido ao teu companheiro. Em vez de se acalmar, ele fica ainda mais agitado e a gemer.",
+          "As suas palavras, supostamente tranquilizadoras, traem o seu próprio terror. **{{pet}}**, sentindo o seu medo, compreende que a situação é grave e o seu pânico agrava-se."
+        ]
+      },
+      "imposer": {
+        "success": [
+          "Deixou **{{pet}}** avançar com confiança em direção ao anão. A sua presença natural e a sua rara beleza parecem confundir o agressor que, apesar do seu ódio, reconhece que está a lidar com um espécime excecional. Ele recua, impressionado, apesar de si próprio.",
+          "Parado calmamente em frente ao anão, **{{pet}}** exala uma inegável aura de majestade. O anão, apesar de detestar animais, não consegue deixar de reconhecer a nobreza do teu companheiro e afasta-se cautelosamente."
+        ],
+        "fail": [
+          "Tenta deixar **{{pet}}** fazer frente a Moltiar, mas o seu companheiro intimidado não consegue parecer ameaçador. O anão ri-se com desdém e empurra-o para o lado.",
+          "**{{pet}}** tenta parecer imponente perante o anão, mas a sua aparência não é suficiente para o impressionar. O anão olha-o com ar zombeteiro antes de lhe dar um pontapé."
+        ]
+      },
+      "energize": {
+        "success": [
+          "Encoraja **{{pet}}** com palavras entusiásticas. Animado pelo vosso apoio, o vosso companheiro recupera todo o seu vigor e enfrenta orgulhosamente Moltiar. O Moltiar, surpreendido por esta energia renovada, prefere não correr riscos e afasta-se.",
+          "As tuas palavras de encorajamento restauram a confiança de **{{pet}}** e ele levanta-se com determinação. O anão, vendo que o seu companheiro não vai aceitar isso de braços cruzados, desiste da sua agressividade e vai-se embora, rosnando."
+        ],
+        "fail": [
+          "Tentas encorajar **{{pet}}** com palavras, mas a tua voz não tem convicção perante a ameaça do anão. O teu companheiro, já aterrorizado, não encontra a coragem de que precisa e acobarda-se ainda mais.",
+          "As vossas tentativas de galvanizar **{{pet}}** falham. O anão aproveita este momento de fraqueza para maltratar o seu companheiro, que o culpa por não o ter protegido melhor."
+        ]
+      }
+    }
+  },
+  "expeditionAdvice": {
+    "talisman": {
+      "name": "Talismã de Anchorage"
+    },
+    "talismanIntro": [
+      "Uma mulher com cabelo de corvo entrançado com penas de ave de rapina emerge da vegetação rasteira. Uma cicatriz marca-lhe a face esquerda. Ela agarra o teu braço com um aperto de ferro e olha-te fixamente com os seus olhos âmbar penetrantes. Sem dizer uma palavra, ela olha para o horizonte, solta o teu braço e desaparece tão rapidamente como apareceu, deixando para trás o cheiro a couro curtido e ervas selvagens.",
+      "A mulher com a cicatriz reaparece no teu caminho, sentada numa rocha. A sua armadura de couro gasta tem as marcas de dezenas de batalhas. Limpa metodicamente um punhal com a lâmina enegrecida. Ao ver-te, resmunga qualquer coisa sobre um artefacto antigo capaz de criar ligações entre um mestre e a sua besta... o {emote:expedition.talisman} **{{talismanName}}**. Levanta-se e vai-se embora sem dizer mais nada.",
+      "A guerreira aparece atrás de ti sem fazer barulho. Assustas-te ao ver o seu rosto cheio de cicatrizes a centímetros do teu. Ela sussurra que {emote:expedition.talisman} **{{talismanName}}** liga a alma de um animal de estimação ao seu dono, permitindo que eles permaneçam conectados mesmo que estejam a quilómetros de distância. Ela dá-lhe uma palmadinha no ombro com uma familiaridade surpreendente, antes de insinuar que este poder tem um preço.",
+      "Desta vez, avistas a mulher selvagem antes que ela te apanhe. Ela acena com um meio sorriso, claramente impressionada com o teu progresso. Ela agacha-se e desenha símbolos na terra, evocando o poder de {emote:expedition.talisman} **{{talismanName}}** para criar um duplo espetral de um familiar enquanto este explora o mundo. Uma magia antiga reservada aos dignos. Apaga os vestígios e desaparece na vegetação rasteira.",
+      "A guerreira está à tua espera, encostada a uma árvore. Pela primeira vez, reparas numa elaborada bolsa de couro no seu cinto. Ela apresenta-se como Velanna e explica que o seu clã costumava usar {emote:expedition.talisman} **{{talismanName}}** para enviar os seus companheiros em missões de reconhecimento. O clã já não existe, mas a tradição tem de sobreviver. O seu olhar endurece, dando a entender que terás de merecer o {emote:expedition.talisman} **{{talismanName}}**."
+    ],
+    "expeditionExplanation": [
+      "Velanna emerge da erva alta, com uma flecha no arco. Atira-a a um pássaro imaginário e depois vira-se para ti. Ela diz-te que uma expedição não é um passeio no parque: o teu animal de estimação vai enfrentar perigos, predadores e mau tempo. Ela recupera a flecha do tronco de uma árvore, acrescentando que as recompensas - ouro, experiência, objectos raros - valem os riscos para aqueles que se atrevem.",
+      "Encontra Velanna a abater uma lebre com uma eficácia brutal. Ela olha para ti sem parar o seu trabalho e explica que a duração da expedição é importante: quanto mais tempo demorar, maior será o saque, mas a mascote ficará mais exausta. Limpa a lâmina na coxa, lembrando que uma mascote esfomeada se recusará a partir.",
+      "Velanna apanha-o a descansar e dá um pontapé no seu cantil. Diz-lhe para se levantar e compreender o seu familiar. Agacha-se à tua frente e explica-te que o risco de uma expedição depende da força do animal: um animal poderoso e treinado regressa sempre, mas um animal medroso ou selvagem é outra história. Pega no seu cantil e entrega-lho.",
+      "Velanna aparece no vosso acampamento com um cesto de tecido debaixo do braço. Ela tira alguns frutos silvestres e partilha-os contigo. Lembra-vos que, para partir numa expedição, é preciso alimentar um animal de estimação e confiar nele: os animais demoníacos recusam-se categoricamente. Ela morde uma maçã e menciona que Talvar das Montanhas, um velho amigo, deve examinar previamente o animal.",
+      "Velanna está à tua espera num cruzamento, de braços cruzados. Ela dá a sua última lição: um animal de estimação precisa de saber que alguém cuidará do seu dono enquanto ele estiver ausente, daí a importância de uma guilda. Descruza os braços e coloca uma mão sobre o coração, evocando o código do seu clã que proíbe deixar um companheiro sozinho. O seu olhar suaviza-se por um momento antes de te dizer que é altura de provares o teu valor."
+    ],
+    "conditions": {
+      "noPet": [
+        "Velanna olha para ti com desprezo. Um {emote:expedition.talisman} **{{talismanName}}** sem um familiar para amarrar é apenas uma pedra brilhante. Ela solta uma gargalhada estridente e convida-te a voltar quando tiveres domado uma criatura."
+      ],
+      "petHungry": [
+        "Velanna examina **{{pet}}** com um olhar crítico, depois vira-se com raiva para ti. O estômago vazio do teu companheiro assusta-a. Ela abana a cabeça com nojo: um animal de estimação esfomeado não daria três passos antes de cair. Dá-lhe de comer primeiro."
+      ],
+      "petFeisty": [
+        "Velanna observa enquanto **{{pet}}** rosna e cospe na sua direção. Ela afasta-se cautelosamente, apercebendo-se de que esta fera mal-humorada a odeia. A guerreira encolhe os ombros: porque é que ela arriscaria a vida por ti? Ganha a confiança dela primeiro."
+      ],
+      "petNotSeenByTalvar": [
+        "Velanna ajoelha-se para examinar **{{pet}}**. Passado um momento, franze o sobrolho: esta criatura nunca foi apresentada a Talvar. Levanta-se e limpa os joelhos, explicando que o anão da montanha tem de certificar primeiro que o seu animal de estimação está de boa saúde. É um pacto antigo entre as suas tradições."
+      ],
+      "noGuild": [
+        "Velanna olha para ti durante um longo momento e depois suspira quando se apercebe que estás a viajar sozinho. Interroga-se sobre quem tomará conta de ti quando o teu familiar estiver fora, numa expedição. Ela cruza os braços: o {emote:expedition.talisman} **{{talismanName}}** une as almas, mas não substitui a solidariedade dos vivos. Junta-te a um grémio."
+      ],
+      "levelTooLow": [
+        "A Velanna está a avaliar-te da cabeça aos pés. O teu nível {{playerLevel}} não a impressiona muito. Ela agarra no teu braço e apalpa os teus músculos com um beicinho crítico: tens de atingir pelo menos o nível {{requiredLevel}} antes de seres digno de {emote:expedition.talisman} **{{talismanName}}**. Treina, luta contra monstros, ganha experiência."
+      ]
+    },
+    "talismanReceived": [
+      "Velanna observa-o em silêncio durante longos segundos. Depois, lentamente, retira da sua mochila um pendente de pedra negra com veios dourados. O {emote:expedition.talisman}{{talismanName}}** pulsa com um brilho suave. Ela sente que provaste o teu valor e pede-te que tomes conta de **{{pet}}**. A ligação entre o mestre e o animal é sagrada. Ela coloca o talismã na tua mão e fecha os dedos sobre ele, convidando-te a explorar o mundo.\n\nRecebe o {emote:expedition.talisman} **{{talismanName}}** ! Pode agora enviar o seu animal de estimação através do formulário de encomenda {command:pet}."
+    ],
+    "expeditionBonus": {
+      "points": "Velanna sai das sombras e põe a mão no teu ombro. Ela sente a presença de **{{pet}}** a quilómetros de distância e sorri, uma visão rara. O teu familiar explora corajosamente e {emote:expedition.talisman} **{{talismanName}}** reforça a vossa ligação. Ela dá-lhe uma palmadinha na cabeça, murmurando que a sua perseverança está a dar frutos. Ganhaste **{{bonusPoints}} {emote:unitValues.score}** !",
+      "pointsAndMoney": "Velanna aparece ao teu lado, farejando o ar. Ela nota que a ligação de {emote:expedition.talisman} **{{talismanName}}** é forte e que **{{pet}}** está a viajar bem. Ela tira uma bolsa do cinto e explica que os espíritos recompensam aqueles que confiam nos seus companheiros. Atira a bolsa para ti. Ganhaste **{{bonusPoints}} {emote:unitValues.score}** e **{{bonusMoney}} {emote:unitValues.money}** !",
+      "pointsAndItem": "Velanna sai da moita e olha para ti com aprovação. Ela sente a ligação entre ti e **{{pet}}** através de {emote:expedition.talisman} **{{talismanName}}**. Ela tira da bolsa um objeto que lhe entrega: uma recordação das suas expedições passadas, para lhe agradecer a sua confiança. Ganhaste **{{bonusPoints}} {emote:unitValues.score}** !",
+      "combatPotion": "Velanna aparece do nada, com um frasco cintilante na mão. Ela acena com a cabeça, impressionada com a coragem de **{{pet}}** enquanto ele vagueia pelo deserto. Ela dá-te a poção, sussurrando que, como o teu companheiro não te pode ajudar em combate enquanto está numa expedição, esta mistura vai servir. Ganhaste **{{bonusPoints}} {emote:unitValues.score}**!"
+    },
+    "advice": [
+      "Velanna passa por ti no caminho e pára um pouco. Aconselha-vos a nunca subestimar o risco e a enviar o vosso animal para onde a sua força possa triunfar. Aponta para o horizonte, dizendo que as montanhas oferecem jóias e as florestas experiência. Ela parte tão silenciosamente como chegou.",
+      "Vês a Velanna a afiar o seu punhal numa rocha. Ela olha para cima e lembra-te que as expedições mais longas são mais gratificantes, mas desgastam o teu animal de estimação. O equilíbrio é essencial. Ela testa o afiamento da lâmina no polegar e acrescenta que nunca se deve esquecer de alimentar o companheiro antes de partir.",
+      "Velanna observa-o de longe, encostada a uma árvore. Quando te aproximas, ela sussurra que o afeto do teu animal de estimação determina a sua lealdade numa expedição: quanto mais ele te amar, mais seguro regressará. Ela desvia o olhar, sugerindo que esta é uma lição que aprendeu da maneira mais difícil."
+    ],
+    "cancellationWarning": [
+      "Velanna aparece à tua frente, com o rosto sério. Fixa o seu olhar no seu e faz um aviso: assim que começa a preparar uma expedição, o seu animal de estimação fica excitado. Ele está a preparar mentalmente a sua viagem, sonhando com os territórios a explorar. Cancelar nesta altura - ou pior, chamá-lo de volta a meio da sua viagem - é quebrar uma promessa. Ela bate no seu peito com o dedo: cada desilusão deixa uma cicatriz no coração do seu parceiro. Uma vez é suficiente. Mas se repetir o erro, quer seja durante os preparativos ou depois da partida, a ferida fica cada vez pior.",
+      "Velanna aparece ao seu lado, olhando pensativa para o horizonte. Ela lembra-se de um ancião do clã que começava a preparar uma expedição para o seu animal de estimação e depois mudava de ideias à última da hora. Outras vezes, chamava-o de volta pelo caminho. Ela vira-se para ti: em ambos os casos, é a mesma traição aos olhos da fera. Assim que abre o mapa do destino, a sua companheira treme de impaciência. Cancelar é apagar essa chama. Desenha um círculo na poeira, sussurrando que quanto mais vezes o fizermos - preparativos abortados ou lembretes brutais - mais grave será a perda de afeto.",
+      "Velanna apanha-o no caminho, de braços cruzados. Ela pergunta-lhe se compreende realmente o que sente um familiar quando lhe é mostrado um mapa de expedição. Os seus olhos brilham, o seu coração acelera, já está a imaginar as aventuras que a esperam. Aproxima-se, baixando a voz: quer cancele antes da partida, quer lhe telefone a meio de uma exploração, para ele é a mesma coisa - uma promessa não cumprida. Da primeira vez, ele perde um pouco de amor. A segunda vez na mesma semana, é o dobro. A terceira vez, o triplo. Ela encolhe os ombros com um meio sorriso amargo: os familiares não sabem a diferença entre as duas coisas, apenas contam as desilusões."
+    ]
+  }
 }

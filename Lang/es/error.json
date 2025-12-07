@@ -32,6 +32,8 @@
     "petSell": "vender un animal de compañía",
     "petSellConfirm": "confirmación de la compra del animal de compañía",
     "petTransfer": "traslado de animales",
+    "petExpedition": "consulta marítima en curso",
+    "petExpeditionChoice": "elegir un envío",
     "pveIsland": "minivento isla PVE",
     "report": "informe",
     "reportCommand": "informe de pedido",

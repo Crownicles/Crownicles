@@ -32,6 +32,8 @@
     "petSell": "selling a pet",
     "petSellConfirm": "confirmation of a pet purchase",
     "petTransfer": "animal transfer",
+    "petExpedition": "shipping consultation in progress",
+    "petExpeditionChoice": "choosing a shipment",
     "pveIsland": "PVE island small event",
     "report": "report",
     "reportCommand": "report command",

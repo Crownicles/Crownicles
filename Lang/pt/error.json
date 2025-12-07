@@ -32,6 +32,8 @@
     "petSell": "vender um animal de estimação",
     "petSellConfirm": "confirmação da compra do animal de estimação",
     "petTransfer": "transferência de animais",
+    "petExpedition": "consulta sobre transportes marítimos em curso",
+    "petExpeditionChoice": "escolher um transporte",
     "pveIsland": "ilha de mini-ventos PVE",
     "report": "relatório",
     "reportCommand": "relatório de encomenda",

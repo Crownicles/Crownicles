@@ -34,6 +34,7 @@
   },
   "notificationEnergyFull": "Sie haben Ihre gesamte Energie zurückgewonnen.",
   "notificationDailyBonus": "Ihr täglicher Bonus ist verfügbar.",
+  "notificationPetExpedition": "{{petDisplay}} ist von einer Expedition zurückgekehrt und hat vielleicht Schätze mitgebracht!",
   "supportMessage": "{{langFlag}} Wenn Sie Hilfe benötigen, wählen Sie Ihre Sprache mithilfe der Schaltflächen unten aus. Wenn Sie keine Hilfe benötigen, ignorieren Sie diese Nachricht.\n{emote:collectors.warning} **Jede hier gesendete Nachricht kann von einem Menschen gelesen werden!**\n",
   "commandDisabledInDM": "{{langFlag}} Hallo, Befehle sind in privaten Nachrichten deaktiviert. Bitte gehe zum Spielen auf einen Server!\nWenn du Hilfe benötigst, klicke unten auf die Schaltfläche für deine Sprache.\n"
 }

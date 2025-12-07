@@ -299,6 +299,16 @@
       "{{playerDisplay}} passes you by and shows you his pet **{{petEmote}}** **{{petName}}**. You pet him and leave, have a nice trip!",
       "{{playerDisplay}} crosses your path with **{{petEmote}}** **{{petName}}** on his leash. You look at him in amazement and say to yourself that you'd love to have this animal too!"
     ],
+    "pet_on_expedition": [
+      "You pass {{playerDisplay}} on your way. His pet **{{petEmote}}** **{{petName}}** isn't with him today, he's sent him on an expedition! This trainer really knows how to optimize his relationship with his companion.",
+      "{{playerDisplay}} walks alone, without his trusty **{{petEmote}}** **{{petName}}**. As we talk, you learn that he's sent his pet off to explore faraway lands. A true master trainer!",
+      "{{playerDisplay}} doesn't have his pet with him today. He proudly explains that his **{{petEmote}}** **{{petName}}** has gone on an expedition. What mutual trust!"
+    ],
+    "pet_clone": [
+      "{{playerDisplay}} passes by you with... a strange translucent creature? It's **{{petEmote}}** **{{petName}}**, but something's not right. The animal seems almost ghostly, as if it's not really there...",
+      "You watch {{playerDisplay}} with a puzzled expression. His **{{petEmote}}** **{{petName}}** looks... odd. Translucent, almost ethereal. He explains that an ancient talisman allows him to keep a clone of his companion while the real one explores the world.",
+      "Is it a ghost? No, it's the **{{petEmote}}** **{{petName}}** of {{playerDisplay}}, but his silhouette is strangely transparent. The magic of a cloning talisman, he tells you, while his real companion is on an expedition!"
+    ],
     "guild_chief": [
       "Don't panic! You pass by {{playerDisplay}}, the leader of the **{{guildName}}** guild.",
       "You pass by {{playerDisplay}}. He is the guild leader **{{guildName}}** !",
@@ -1003,11 +1013,18 @@
         "The flair of **{{pet}}** has enabled you to find a shortcut. Thanks to her, you've won **{{amountDisplay}}** {emote:unitValues.timeGain}.",
         "Defending **{{pet}}** against {{randomAnimal}} sauvage has been no mean feat, and this time you've found something stronger than yourself. You decide to flee, and run at full speed. Thanks to this misadventure, you now earn **{{amountDisplay}}** {emote:unitValues.timeGain} along the way."
       ],
-      "points": [
+      "points_m": [
         "People who come across you with **{{pet}}** are sure to take notice. This improves your reputation and earns you **{{amount}}** {emote:unitValues.score}.",
         "Telling an old man about your adventures with **{{pet}}** seems to have improved your reputation. You win **{{amount}}** {emote:unitValues.score}."
       ],
-      "badge": [
+      "points_f": [
+        "People who come across you with **{{pet}}** are sure to take notice. This improves your reputation and earns you **{{amount}}** {emote:unitValues.score}.",
+        "Telling an old man about your adventures with **{{pet}}** seems to have improved your reputation. You win **{{amount}}** {emote:unitValues.score}."
+      ],
+      "badge_m": [
+        "Successfully training **{{pet}}** was a real challenge that proves your talent with the animals. You get the {{badge}} badge!"
+      ],
+      "badge_f": [
         "Successfully training **{{pet}}** was a real challenge that proves your talent with the animals. You get the {{badge}} badge!"
       ],
       "loseLife_m": [
@@ -1076,7 +1093,10 @@
         "After a long walk, **{{pet}}** is running out of breath, it looks like she can't follow you. Not waiting for her has diminished your relationship. Thus, she loses a little in love...",
         "When approaching a stand, **{{pet}}** stares with insistence on the food placed on a board. Despite her request, you decide to continue your journey. **{{pet}}** is grudging, she loses faith in you."
       ],
-      "nothing": [
+      "nothing_m": [
+        "You continue your route alongside **{{pet}}**. Nothing special happens."
+      ],
+      "nothing_f": [
         "You continue your route alongside **{{pet}}**. Nothing special happens."
       ]
     },
@@ -1771,6 +1791,32 @@
       "Faced with your loneliness, Talvar can't help but share his philosophy of life centered on love for creatures. He tells you about the miraculous cures that the presence of animals can bring to both body and spirit. His passionate descriptions reveal a man transformed by a life devoted to these extraordinary beings. You'll leave touched by this revelation, and perhaps destined to follow a similar path.",
       "With no familiar by your side, Talvar's eyes shine with a mission to accomplish. He initiates you into the secrets of taming and the sacred rituals that seal the friendship between man and beast. His teachings resonate with ancestral traditions and forgotten knowledge. You'll continue on your way, a repository of this precious knowledge, and perhaps called upon to put it into practice in the near future."
     ],
+    "petIsClone_m": [
+      "At the sight of **{{pet}}**, Talvar squints in bewilderment. He brings his face close to the creature, examines it from every angle, then steps back with a troubled expression. He murmurs that this companion exudes a singular aura, as if he were both here and elsewhere. Despite his doubts, he hands you over {{reward}}, but his gaze remains fixed on your familiar with curiosity mingled with concern.",
+      "Talvar stops dead in his tracks as he catches sight of **{{pet}}**. His bushy eyebrows furrow as he hesitantly reaches for the creature. He murmurs that he's never seen anything like it, and that the familiar seems blurred, like a reflection in murky water. He shakes his head, troubled by this vision, but offers you {{reward}}all the same. You leave with the feeling that something strange has just happened.",
+      "When **{{pet}}** appears in front of Talvar, the old dwarf blinks several times. He grumbles that his eyes are playing tricks on him and that this creature seems translucent at times. He circles around your companion, puzzled. Finally, he shrugs his shoulders and hands you {{reward}}, while continuing to cast wary glances at the spectral familiar.",
+      "Talvar's gaze freezes on **{{pet}}**, and an expression of confusion invades his features. He declares in an uncertain voice that he senses something unusual about this creature, that it's there but not quite, like an echo or a projection. Despite his obvious confusion, his generosity prevails and he offers you {{reward}}, but his mind remains visibly preoccupied by this mystery.",
+      "Talvar watches **{{pet}}** with unusual intensity. He begins to speak before pausing, searching for words. He explains that this creature gives off an energy he's never felt before, as if its essence were divided between two places. A shiver runs through his silver beard. He hands you {{reward}} with a slightly trembling hand, clearly disturbed by this supernatural encounter."
+    ],
+    "petIsClone_f": [
+      "At the sight of **{{pet}}**, Talvar squints in bewilderment. He brings his face close to the creature, examines it from every angle, then steps back with a troubled expression. He murmurs that this companion exudes a singular aura, as if she were both here and elsewhere. Despite his doubts, he hands you over {{reward}}, but his gaze remains fixed on your familiar with curiosity mingled with concern.",
+      "Talvar stops dead in his tracks as he catches sight of **{{pet}}**. His bushy eyebrows furrow as he hesitantly reaches for the creature. He murmurs that he's never seen anything like it and that the creature seems blurred, like a reflection in murky water. He shakes his head, confused by the vision, but offers you {{reward}}all the same. You leave with the feeling that something strange has just happened.",
+      "When **{{pet}}** appears in front of Talvar, the old dwarf blinks several times. He grumbles that his eyes are playing tricks on him and that this creature seems translucent at times. He circles around your companion, puzzled. Finally, he shrugs his shoulders and hands you {{reward}}, while continuing to cast wary glances at the spectral familiar.",
+      "Talvar's gaze freezes on **{{pet}}**, and an expression of confusion invades his features. He declares in an uncertain voice that he senses something unusual about this creature, that it's there but not quite, like an echo or a projection. Despite his obvious confusion, his generosity prevails and he offers you {{reward}}, but his mind remains visibly preoccupied by this mystery.",
+      "Talvar watches **{{pet}}** with unusual intensity. He begins to speak before pausing, searching for words. He explains that this creature gives off an energy he's never felt before, as if its essence were divided between two places. A shiver runs through his silver beard. He hands you {{reward}} with a slightly trembling hand, clearly disturbed by this supernatural encounter."
+    ],
+    "clonePetAlreadySeen_m": [
+      "Talvar squints at **{{pet}}**, then shakes his head vigorously. He grumbles that he's seen a familiar like this before, but this one is... different. He circles the creature, puzzled, mumbling that it's like seeing a reflection that doesn't quite match the original. He dismisses you with a wave of his hand, clearly disturbed by the anomaly.",
+      "The old dwarf stops dead in his tracks as he catches sight of **{{pet}}**. His bushy eyebrows furrow as he examines the creature from every angle. He declares that he knows this type of familiar, that he has admired it before, but that it gives off a strange aura, as if it existed in two places at once. He mumbles some incomprehensible words and waves you on your way.",
+      "At the sight of **{{pet}}**, Talvar takes a step backwards, his gaze troubled. He claims to have contemplated this species before, but this companion seems blurred, unreal. He hesitantly extends a hand towards the creature before abruptly withdrawing it, as if he had touched something supernatural. He wishes you a safe journey in an uncertain voice.",
+      "The wise dwarf observes{{pet}}** with unusual suspicion. He confides that he has already had the pleasure of admiring a familiar of this kind, but that this one makes him uneasy. He murmurs that this creature seems to be there without really being there, like an echo or a living shadow. He shakes his head and walks away, letting slip that he must meditate on this mystery."
+    ],
+    "clonePetAlreadySeen_f": [
+      "Talvar squints at **{{pet}}**, then shakes his head vigorously. He grumbles that he's seen a creature like this before, but this one is... different. He circles the creature, puzzled, mumbling that it's like seeing a reflection that doesn't quite match the original. He dismisses you with a wave of his hand, clearly disturbed by the anomaly.",
+      "The old dwarf stops dead in his tracks as he catches sight of **{{pet}}**. His bushy eyebrows furrow as he examines the creature from every angle. He declares that he knows this type of familiar, that he has admired it before, but that this one gives off a strange aura, as if it existed in two places at once. He mumbles some incomprehensible words and waves you on your way.",
+      "At the sight of **{{pet}}**, Talvar takes a step backwards, his gaze troubled. He claims to have contemplated this species before, but this companion seems hazy, unreal. He hesitantly extends a hand towards the creature before abruptly withdrawing it, as if he had touched something supernatural. He wishes you a safe journey in an uncertain voice.",
+      "The wise dwarf observes{{pet}}** with unusual suspicion. He confides that he has already had the pleasure of admiring a creature of this kind, but that this one makes him uneasy. He murmurs that this creature seems to be there without really being there, like an echo or a living shadow. He shakes his head and walks away, letting slip that he must meditate on this mystery."
+    ],
     "badge": [
       "Talvar’s gaze is serious, and then it is brightened with a glimmer of pride. Every gesture, every expression betrays a sinister admiration. It fully recognizes the value of your actions, saluting your courage, discernment, and respect for creatures. By way of recognition, he gives you the {emote:badges.animal_lover}badge, a significant meaning. This mark of esteem seals your link. You are sitting in a silence charged with respect, united by a tacit understanding that only those who worked for a cause greater than themselves."
     ]
@@ -1875,5 +1921,344 @@
     "You stop for a moment. Even your breath seems choked by the cold air. In this total stillness, you seem to hear a beat - faint, regular - like a heart buried beneath the earth.",
     "The fog thickens even further and you can barely make out your own feet. With each inhalation, the icy dampness seeps down your throat, and the whole world shrinks to a few meters around you.",
     "A distant whisper suddenly cuts through the mist, carried from nowhere. A voice? A wind? Impossible to say. You stand still, listening, aware that this place has no end and no beginning, only a breathing silence."
-  ]
+  ],
+  "petFood": {
+    "intro": {
+      "badSmell": "Your faithful companion suddenly stops, nostrils flaring. His ears perk up as he picks up a nauseating odor wafting from a dark copse. Something foul is stagnating there, abandoned for days perhaps, and your pet seems fascinated by the stench that would make many a creature recoil.",
+      "goodSmell": "Your travelling companion suddenly becomes agitated, wagging his tail enthusiastically, eyes shining with excitement. A sweet, tantalizing scent wafts through the air. He leaps up joyfully, drawn like a butterfly by the light towards this promising fragrance that awakens his appetite.",
+      "vegetarian": "Your faithful pet slows his pace and tilts his head to one side, intrigued by a bushy grove lining the path. Between the wild grasses and silvery ferns, he seems to have discerned something edible through the vegetation.",
+      "meat": "Your companion stops dead in his tracks, muscles tense, staring with intense, predatory gaze at a body of water shimmering under the setting sun. His lips curl up slightly, revealing sharp fangs, as he sniffs the air with absolute concentration. He's obviously spotted prey...",
+      "soup": "A familiar, comforting scent tickles your nostrils: the unctuous aroma of soup simmering in a copper pot. Your faithful companion perks up his ears and rushes to an abandoned campsite by the roadside, where a black iron cauldron still hangs over dying embers. Could this be the ultimate soup?"
+    },
+    "choices": {
+      "investigate": "See for yourself",
+      "sendPet": "Send your pet",
+      "continue": "Continue on your way"
+    },
+    "outcomes": {
+      "found_by_player": "You approach cautiously and, after pushing aside the branches and searching the nooks and crannies, you lay your hands on **{{foodName}}**. You offer it to your companion, who accepts it gratefully, devouring his gift with grunts of satisfaction.",
+      "found_by_player_soup": "You cautiously approach the abandoned cauldron and discover with satisfaction **{{foodName}}** still simmering gently. You pour a generous portion into a bowl and present it to your companion. He greedily laps up the comfort food, wagging his tail in contentment.",
+      "found_by_pet": "Your pet takes off with a nimble leap and disappears for a moment into the thicket. He soon returns to you with a proud, triumphant trot, holding **{{foodName}}** delicately between his fangs. His eyes shine with pride as he settles down to savor his find with enthusiastic chewing noises.",
+      "found_by_pet_soup": "Your pet is rushing to the abandoned camp and plunges its muzzle into the smoking cauldron. It comes back to you a few moments later, the still glittering babies obviously tasted **{{foodName}}** with obvious pleasure. His painful eyes and his exhilarating tail testify to his gourmet satisfaction.",
+      "found_anyway": "Just as you're about to set off on your merry way, your faithful companion suddenly leaps into the surrounding bushes. He emerges victoriously with **{{foodName}}** which he gobbles up on the spot with a voracious appetite, his tail wagging with contentment.",
+      "found_anyway_soup": "Just as you're about to set off on your journey with no further concern for the camp, your faithful companion rushes to the abandoned cauldron. Before you can stop him, he greedily laps up **{{foodName}}** with groans of delight, clearly delighted by this unexpected windfall.",
+      "player_failed": "You've spent long, arduous minutes meticulously searching the surrounding area, pushing aside brambles and thorns, turning over stones and rotting stumps, but despite all your strenuous efforts, you can't find anything worthwhile. The time you invested proved as futile as searching for treasure in an empty chest.",
+      "pet_failed": "Your companion dashes off determinedly into the thicket, only to return a few moments later with a ponderous gait, ears low and tail hanging low. His disappointed look and plaintive squeaks betray his failure: the trail has proved fruitless and his efforts have produced nothing but bitterness.",
+      "pet_failed_soup": "Your companion trots towards the abandoned camp and takes a long sniff at the cauldron, but alas, it turns out to be empty or its contents already cooled and inedible. He returns to you with a disappointed gait, ears low and tail hanging low, clearly frustrated by this culinary disappointment.",
+      "nothing": "You wisely decide not to linger any longer in these parts, judging that time is short and that your quest cannot suffer such detours. With a resolute gesture, you ask your companion to follow you, and together you set off towards the horizon that beckons."
+    },
+    "foodNames": {
+      "badSmell": [
+        "a raven's carrion in advanced decomposition",
+        "the putrid entrails of a swamp goblin",
+        "a rotten dragon egg exhaling sulfurous fumes",
+        "a piece of moldy blue cheese forgotten by a dizzy traveler",
+        "the foul-smelling remains of a rat that had died several days ago",
+        "a bat carcass infested with crawling maggots",
+        "a piece of pheasant meat abandoned by bandits",
+        "a dead fish with greenish scales floating in a stagnant pond",
+        "wild boar offal teeming with voracious flies",
+        "a sheep's belly swollen with putrefaction gases",
+        "a wolf's skull still lined with shreds of black flesh"
+      ],
+      "goodSmell": [
+        "a still-warm honey and almond tart",
+        "a slice of golden baked apple and cinnamon pie",
+        "a piece of dried meat seasoned with herbs of Provence",
+        "a sweet, juicy pear from an abandoned orchard",
+        "a crunchy bone-shaped cookie fashioned by a generous baker",
+        "a slice of hazelnut and brown sugar cake",
+        "a piece of gingerbread scented with ginger and cloves",
+        "a slice of oak-smoked bacon",
+        "a brioche roll with raisins and salted butter",
+        "a piece of mature cheddar wrapped in a linen cloth",
+        "a crêpe filled with apricot jam and sprinkled with sugar",
+        "a chocolate éclair abandoned on a low stone wall"
+      ],
+      "vegetarian": [
+        "a handful of wild berries bursting with sweet juice",
+        "an edible turnip root still full of fertile soil",
+        "a coppery forest mushroom growing under an old oak tree",
+        "a sweet, tender dandelion flower",
+        "a vermilion apple falls from a lonely apple tree",
+        "hazelnuts freshly removed from their thorny bugs",
+        "a golden corncob left in a field after harvesting",
+        "a bunch of deep purple wild grapes",
+        "crisp lettuce leaves torn from a vegetable garden",
+        "a wild carrot with a slightly bitter taste",
+        "a bouquet of tender, nutritious nettles",
+        "edible fern shoots in spring",
+        "a disembowelled pumpkin on the side of a pathway"
+      ],
+      "meat": [
+        "a silver fish still wriggling in the clear waters of a stream",
+        "a young rabbit strays from its burrow",
+        "a marrow bone still filled with tender, fatty flesh",
+        "a slice of smoked ham hanging in an open stockpot",
+        "a spicy pork sausage mislaid by a street vendor",
+        "a piece of salted bacon wrapped in a greasy cloth",
+        "the remains of a roast duck abandoned by harried travelers",
+        "a deer leg freshly butchered by a hunter",
+        "boiled beef tongue cooling on a flat stone",
+        "mutton tripe washed in spring water",
+        "a piece of grilled chicken with oriental spices",
+        "beechwood-smoked eel",
+        "the remains of a jugged hare simmering in its sauce"
+      ],
+      "soup": [
+        "steaming vegetable soup from the garden",
+        "chicken stock flavoured with thyme and bay leaves",
+        "cabbage soup with browned bacon",
+        "wild mushroom cream soup",
+        "onion soup au gratin with cheese",
+        "pot-au-feu with melting carrots and turnips",
+        "crayfish bisque seasoned with rare spices"
+      ]
+    },
+    "love": {
+      "plus": "Your faithful companion gazes at you with eyes shining with gratitude and affection. He rubs against your legs with satisfied purrs, clearly demonstrating that this impromptu feast has strengthened the bonds of trust and friendship between you!",
+      "minus": "Your pet stares at you with a dark, silently reproachful gaze, lips curled into a disapproving pout. He ostentatiously turns his head away with a disgruntled growl, clearly offended by this pittance unworthy of his delicate palate...",
+      "neutral": "Your travelling companion gulps down his meal with an almost philosophical detachment, showing neither overflowing enthusiasm nor particular disgust. He seems to regard this find as a necessary sustenance, nothing more, nothing less."
+    }
+  },
+  "badPet": {
+    "intro": [
+      "A stocky dwarf emerges from a rock, his red beard shaggy and his gaze filled with visceral hatred. At the sight of **{{pet}}**, he spits at the ground in disgust and brandishes a gnarled stick. Your companion recoils, ears pressed to his skull. The stranger introduces himself as Moltiar and swears he has nothing to do with his bug-worshipping brother.",
+      "A hoarse, angry voice suddenly calls out to you. A dwarf with a scarred face strides forward, his bloodshot eyes fixed on{{pet}}** with fury. He twirls a studded club in a menacing gesture. Your companion shakes all over.",
+      "Emerging from behind a rock formation, a crazy-looking dwarf plants himself in front of you, blocking your path. His right hand bears the scars of an ancient bite. He stares **{{pet}}** with burning hatred and draws a chipped dagger. Moltiar grumbles that, unlike his brother Talvar, he knows a nuisance when he sees one.",
+      "A guttural growl startles you. A burly dwarf emerges from a crevice, his braided beard rattling with bone beads. As soon as he spots **{{pet}}**, his face twists in disgust. He points an accusing finger at you, his other hand firmly gripping a rusty axe.",
+      "Your path is suddenly blocked by a stocky, hostile figure. The dwarf wears an expression of pure repulsion as he discovers **{{pet}}** beside you. An old wound crosses his forearm, testimony to a painful past. He grips a war hammer. Moltiar growls that he won't let these loathsome creatures roam his lands, no matter what his naive brother may think.",
+      "The clatter of a rolling stone alerts you to a presence. A massive dwarf emerges from the shadows of a rocky overhang, immediately scrutinizing **{{pet}}** with palpable animosity. The scars on his forearms bear witness to past painful encounters. He brandishes a club with a gesture heavy with menace.",
+      "The smell of earth and rancid sweat reaches you before you even see the assailant. A dwarf emerges from a crevice, his skin tanned by the sun, his calloused hands clasped around a pickaxe. His gaze falls on **{{pet}}** and a cold rage distorts his features. He spits that his idiot brother should see what those bugs have done to him.",
+      "The crunch of boots on gravel heralds the arrival of an intruder. A dwarf with a partially bald head appears, his gray beard tied into a severe catogan. His eyes widen in horror at the sight **{{pet}}**. He steps back before brandishing a miner's knife with hateful determination.",
+      "A mocking whistle echoes through the air. Perched on a rock, a dwarf watches your progress with contempt. When he notices **{{pet}}** trotting along beside you, his expression changes to one of deep disgust. He jumps to the ground and plants himself in front of you, muttering about how his brother has corrupted too many travelers with his crazy ideas.",
+      "The ground trembles slightly beneath your feet, announcing the approach of a massive presence. An imposing dwarf, wider than he is tall, emerges from a rockslide. His gaze sweeps along the path, settling on **{{pet}}** with incandescent hatred. His arm muscles twitch as he lifts a heavy blacksmith's mallet."
+    ],
+    "choices": {
+      "intimidate": "Order your companion to intimidate the dwarf",
+      "plead": "Try to reason with the dwarf with words",
+      "giveMeat": "Offer meat to the dwarf to soften him up",
+      "giveVeg": "Offer vegetables to the dwarf as a sign of peace",
+      "flee": "Running away with your companion",
+      "hide": "Hiding your companion",
+      "wait": "Waiting for the dwarf's anger to subside",
+      "protect": "Stepping in to protect your companion",
+      "distract": "Diverting the dwarf's attention",
+      "calm": "Trying to calm your frightened companion",
+      "imposer": "Let your companion prevail over the dwarf",
+      "energize": "Encouraging your companion to hang in there"
+    },
+    "outcomes": {
+      "intimidate": {
+        "success": [
+          "Obeying your command, **{{pet}}** rises to its full height and lets out an impressive growl. Moltiar, taken aback by this show of strength, takes an awkward step back and mutters a few insults as he reluctantly walks away. Your companion looks at you proudly.",
+          "Adopting a menacing posture, **{{pet}}** growls with surprising ferocity at the hostile dwarf. The latter, seeing that the confrontation could turn ugly, spits a final insult before retreating. Your companion seems satisfied to have stood up to the aggressor."
+        ],
+        "fail": [
+          "Obeying your order, **{{pet}}** tries to appear threatening, but the dwarf bursts into cruel laughter at this pathetic display. He brandishes his stick and your companion hurriedly backs away, his pride wounded by this humiliation.",
+          "Attempting to appear threatening,{{pet}}** only succeeds in amusing the dwarf, who kicks him. Your companion squeals in pain and gives you a reproachful look for exposing him like that."
+        ]
+      },
+      "plead": {
+        "success": [
+          "You try to reason with Moltiar with soothing words, explaining that your companion poses no threat. Something in your sincere voice seems to strike a chord, and he finally lowers his weapon with a growl. **{{pet}}** appreciates your diplomacy.",
+          "Your measured words echo in the tense silence. You mention mutual respect between travelers, and the dwarf, despite his obvious hatred of animals, concedes that you seem to have your beast under control. He grumbles away. **{{pet}}** gradually calms down."
+        ],
+        "fail": [
+          "You try to reason with the dwarf, but your words only inflame his anger. He screams that words are not enough to defend these creatures he abhors. **{{pet}}** looks away, ashamed of your failure to protect him.",
+          "Your pathetic pleas seem to exasperate the dwarf even more. He looks at you with undisguised contempt. **{{pet}}** watches you with a mixture of disappointment and fear."
+        ]
+      },
+      "giveMeatLikes": {
+        "success": [
+          "You quickly pull out a piece of meat and hand it to the hungry dwarf. Surprised by this offering, he accepts it with a grunt and bites into it hungrily. He waves you off before he changes his mind. **{{pet}}** seems relieved at this outcome.",
+          "The piece of meat you offer makes the dwarf hesitate. His stomach growls louder than his hatred, and he finally accepts your gift and walks away. **{{pet}}** appreciates your ingenuity in avoiding confrontation."
+        ],
+        "fail": [
+          "You pull out a piece of meat to coax Moltiar, but he throws it to the ground in disgust, refusing to be bought like that. Unfortunately, **{{pet}}** had his eye on the dish and looks at you with accusing eyes.",
+          "The piece of meat you offer is trampled by the furious dwarf. **{{pet}}** looks on in frustration, disappointed at the wasted treat."
+        ]
+      },
+      "giveMeatDislikes": {
+        "success": [
+          "You quickly pull out a piece of meat and hand it to the hungry dwarf. Surprised by this offering, he accepts it with a grunt and bites into it hungrily. He waves you off before he changes his mind. **{{pet}}** looks away, clearly uninterested in the food.",
+          "The piece of meat you offer makes the dwarf hesitate. His stomach growls louder than his hatred, and he finally accepts your gift and walks away. **{{pet}}** does not seem to regret this offering which was not intended for him."
+        ],
+        "fail": [
+          "You pull out a piece of meat to coax Moltiar, but he throws it to the ground in disgust, refusing to be bought like that. **{{pet}}**, a herbivore, doesn't seem perturbed by this loss.",
+          "The piece of meat you offer is trampled by the furious dwarf. **{{pet}}** doesn't pay much attention, as this type of food doesn't suit him."
+        ]
+      },
+      "giveMeatNoFood": {
+        "fail": [
+          "You search your pockets for a piece of meat, but your guild's warehouse is desperately empty. Moltiar sneers at your dismay, while **{{pet}}** looks on in bewilderment.",
+          "You try to pull out some meat to calm the dwarf, but realize to your horror that you don't have any. Moltiar takes the opportunity to manhandle **{{pet}}**, who gives you an accusatory look."
+        ]
+      },
+      "giveVegLikes": {
+        "success": [
+          "You offer the dwarf some vegetables, mentioning their quality and freshness. Against all expectations, the soup-loving dwarf accepts your offering with an approving grunt and leaves. **{{pet}}** seems impressed by your instincts.",
+          "The vegetables you present to the dwarf obviously bring back more pleasant memories. He accepts them with a semblance of civility and agrees to let you pass. **{{pet}}** appreciates this peaceful resolution."
+        ],
+        "fail": [
+          "You hand the dwarf some vegetables in the hope of coaxing him. He bursts out laughing at this ridiculous offer and sweeps them aside with a wave of his hand. **{{pet}}** looks enviously at the wasted vegetables.",
+          "The vegetables you clumsily offer are brushed aside by the scornful dwarf. **{{pet}}** gives you a reproachful look, frustrated at seeing this food wasted."
+        ]
+      },
+      "giveVegDislikes": {
+        "success": [
+          "You offer the dwarf some vegetables, mentioning their quality and freshness. Against all expectations, the soup-loving dwarf accepts your offering with an approving grunt and leaves. **{{pet}}** seems unconcerned by this loss of vegetables.",
+          "The vegetables you present to the dwarf obviously bring back more pleasant memories. He accepts them with a semblance of civility and agrees to let you pass. **{{pet}}**, a carnivore, is not bothered by this sacrifice."
+        ],
+        "fail": [
+          "You hand the dwarf some vegetables in the hope of coaxing him. He bursts out laughing at this ridiculous offer and sweeps them aside with a wave of his hand. **{{pet}}** does not seem concerned by this loss.",
+          "The vegetables you clumsily offer are brushed aside by the scornful dwarf. **{{pet}}**, preferring meat, pays no attention to these wasted vegetables."
+        ]
+      },
+      "giveVegNoFood": {
+        "fail": [
+          "You're looking for vegetables to offer the dwarf, but your guild's warehouse contains none. Moltiar laughs at your pathetic attempt, while **{{pet}}** hangs his head in disappointment.",
+          "You want to offer some vegetables to calm the situation, but you don't have any. The dwarf takes advantage of your hesitation to jostle **{{pet}}** who looks at you reproachfully."
+        ]
+      },
+      "flee": {
+        "success": [
+          "You take to your heels with **{{pet}}** on your heels. Your combined speed enables you to quickly outrun Moltiar, who, being too corpulent, gives up chasing you, shouting curses. Your companion gasps but seems satisfied.",
+          "Running away turns out to be the right decision. You run efficiently with **{{pet}}** who follows without difficulty, leaving the furious but helpless dwarf behind. You've teamed up."
+        ],
+        "fail": [
+          "Panic overwhelms you and you clumsily scurry away with **{{pet}}** hot on your heels. Moltiar, faster than expected, catches up with you and violently shoves your companion along the way. You finally manage to escape, but **{{pet}}** blames you for your hasty escape.",
+          "You take to your heels in an inglorious stampede. Unfortunately, **{{pet}}** can't keep up with you and lags behind. The dwarf takes the opportunity to poke him with his stick before you come back for him. Your companion is furious at this botched escape."
+        ]
+      },
+      "hide": {
+        "success": [
+          "You quickly spot an indentation in the rocks and conceal **{{pet}}** before the dwarf notices. The dwarf, no longer seeing the beast, loses interest and grumbles away. Your companion appreciates your discretion.",
+          "You find an ideal place to hide **{{pet}}** under your cape. The dwarf, no longer seeing the object of his hatred, finally calms down and continues on his way. Your companion seems reassured by your protection."
+        ],
+        "fail": [
+          "You try to hide **{{pet}}** in a corner, but Moltiar catches you in the act. He roars with anger and manhandles your companion. He gives you a reproachful look.",
+          "Your attempt at concealment fails miserably when **{{pet}}** lets out a nervous groan, revealing his hiding place. The dwarf rushes towards him and shoves him violently. Your companion suffers from this mishap."
+        ]
+      },
+      "wait": {
+        "success": [
+          "You decide to wait motionless, hoping that the dwarf's anger will subside. After long minutes of ranting, he seems to tire and finally grunts away. **{{pet}}** seems to appreciate your patience and composure.",
+          "The wait paid off. The dwarf, not finding the reaction he was hoping for, gradually loses his belligerent ardor and leaves. **{{pet}}** looks at you with respect for your wisdom."
+        ],
+        "fail": [
+          "You decide to wait motionless, but the dwarf interprets your passivity as weakness. He comes closer and threatens **{{pet}}** even more. Your companion stomps nervously, stressed by this inaction.",
+          "The wait drags on and **{{pet}}** begins to moan in anguish. The dwarf, emboldened by your inaction, becomes increasingly threatening. Your companion reproaches you for doing nothing."
+        ]
+      },
+      "protect": {
+        "success": [
+          "In a burst of protective bravery, you place your body firmly between Moltiar and **{{pet}}**. Your determination impresses the aggressor who, seeing that you're ready to fight, decides not to provoke further. Your companion is touched by your courage.",
+          "You protect **{{pet}}** by confidently standing up to the hostile dwarf. The dwarf, realizing that you won't give in, prefers to back away, spitting insults. Your companion looks at you with renewed affection."
+        ],
+        "fail": [
+          "In a fit of bravery, you step in between Moltiar and **{{pet}}**. Unfortunately, the dwarf is stronger than you thought. He brutally pushes you away and takes advantage of the situation to strike your companion. You feel powerless in the face of this show of force.",
+          "You try to protect{{pet}}** by placing yourself in front of him, but your posture lacks confidence. The dwarf easily sidesteps you and shoves your companion, who gives you a disappointed look at your inability to defend him."
+        ]
+      },
+      "distract": {
+        "success": [
+          "You create a diversion by loudly mentioning a well-known tavern in the opposite direction. Moltiar, whose love of beer clearly outweighs his hatred of animals, listens attentively and then moves away, intrigued. **{{pet}}** takes advantage of the confusion, impressed by your ruse.",
+          "Your diversion works perfectly. Tossing a few coins into the distance, you attract the dwarf's greedy attention. As he rushes to pick them up, **{{pet}}** and you discreetly slip away."
+        ],
+        "fail": [
+          "You try to create a diversion by gesticulating and shouting. This ridiculous display only irritates the dwarf further, and he closes in, threatening. **{{pet}}** backs away, frightened by your strange behavior.",
+          "In a desperate attempt at diversion, you throw stones at random. One of them unluckily hits **{{pet}}** who squeals in pain while the dwarf sneers wickedly."
+        ]
+      },
+      "calm": {
+        "success": [
+          "You manage to soothe **{{pet}}** with reassuring caresses despite the dwarf's threat. Your companion regains confidence and stops trembling. The dwarf, seeing that you have your beast under control, seems less inclined to attack and eventually moves away.",
+          "Your soothing words and confident demeanor succeed in calming **{{pet}}**. Once relaxed, he exudes an assurance that makes the dwarf hesitate. The latter, less sure of himself in the face of this serenity, prefers to leave."
+        ],
+        "fail": [
+          "You try to soothe **{{pet}}** with caresses, but your own nervousness about the hostile dwarf is transmitted to your companion. Instead of calming down, he becomes even more agitated and moaning.",
+          "Your supposedly soothing words betray your own terror. **{{pet}}**, sensing your fear, understands that the situation is serious and his panic worsens."
+        ]
+      },
+      "imposer": {
+        "success": [
+          "You let **{{pet}}** move confidently towards the dwarf. His natural presence and rare beauty seem to bewilder the assailant who, despite his hatred, recognizes that he is dealing with an exceptional specimen. He retreats, impressed in spite of himself.",
+          "Standing calmly in front of the dwarf, **{{pet}}** exudes an aura of undeniable majesty. The dwarf, despite his hatred of animals, can't help but recognize your companion's nobility and cautiously moves away."
+        ],
+        "fail": [
+          "You try to let **{{pet}}** stand up to Moltiar, but your intimidated companion fails to appear threatening. The dwarf laughs scornfully and shoves him aside.",
+          "**{{pet}}** tries to look imposing in front of the dwarf, but his appearance is not enough to impress him. The dwarf looks at him mockingly before kicking him."
+        ]
+      },
+      "energize": {
+        "success": [
+          "You encourage **{{pet}}** with enthusiastic words. Galvanized by your support, your companion regains all his vigor and proudly stands up to Moltiar. The latter, surprised by this renewed energy, prefers not to take any risks and walks away.",
+          "Your words of encouragement restore **{{pet}}**'s confidence, and he rises to his feet with determination. The dwarf, seeing that your companion won't give in, gives up his aggression and leaves, growling."
+        ],
+        "fail": [
+          "You try to encourage **{{pet}}** with words, but your voice lacks conviction in the face of the dwarf's threat. Your companion, already terrified, can't find the courage he needs and cowers even further.",
+          "Your attempts to galvanize **{{pet}}** fall flat. The dwarf takes advantage of this moment of weakness to bully your companion, who blames you for not protecting him better."
+        ]
+      }
+    }
+  },
+  "expeditionAdvice": {
+    "talisman": {
+      "name": "Anchoring Talisman"
+    },
+    "talismanIntro": [
+      "A woman with raven hair braided with raptor feathers emerges from the undergrowth. A scar marks her left cheek. She grabs your arm in an iron grip and stares at you with her piercing amber eyes. Without a word, she gazes at the horizon, lets go of your arm and disappears as quickly as she appeared, leaving behind a scent of tanned leather and wild herbs.",
+      "The woman with the scar reappears on your path, sitting on a rock. Her worn leather armor bears the marks of dozens of battles. She methodically cleans a dagger with a blackened blade. Seeing you, she grumbles something about an ancient artifact capable of creating bonds between a master and his beast... the {emote:expedition.talisman} **{{talismanName}}**. She gets up and walks away without adding anything.",
+      "The warrior appears behind you without making a sound. You are startled to see her scarred face inches from yours. She whispers that {emote:expedition.talisman} **{{talismanName}}** binds the soul of a pet to its master, enabling them to remain connected even when separated by leagues. She pats your shoulder with surprising familiarity before implying that this power comes at a price.",
+      "This time, you spot the wild woman before she catches you. She nods, a half-smile on her lips, clearly impressed by your progress. She crouches down and traces symbols in the earth, evoking the power of {emote:expedition.talisman} **{{talismanName}}** to create a spectral double of a familiar as it explores the world. An ancient magic reserved for the worthy. She erases traces and vanishes into the undergrowth.",
+      "The warrior awaits you, leaning against a tree. For the first time, you notice an elaborate leather pouch on her belt. She introduces herself as Velanna and explains that her clan once used {emote:expedition.talisman} **{{talismanName}}** to send their companions on reconnaissance. The clan no longer exists, but the tradition must survive. Her gaze hardens, implying that you will have to earn the {emote:expedition.talisman} **{{talismanName}}**."
+    ],
+    "expeditionExplanation": [
+      "Velanna emerges from the tall grass, an arrow notched on her bow. She aims it at an imaginary bird, then turns to you. She lets you know that an expedition is no walk in the park: your pet will face dangers, predators and bad weather. She retrieves her arrow from a trunk, adding that the rewards - gold, experience, rare items - are worth the risks for those who dare.",
+      "You find Velanna butchering a hare with brutal efficiency. She looks up at you without ceasing her work, and explains that the length of the expedition counts: the longer it takes, the greater the booty, but the pet will become more exhausted. She wipes her blade on her thigh, pointing out that a hungry pet will refuse to leave.",
+      "Velanna catches you resting and kicks over your gourd. She urges you to stand up and understand your familiar. She crouches down in front of you and explains that the risk of an expedition depends on the strength of the beast: a powerful, trained pet will always come back, but a fearful or wild animal is a different story. She picks up your gourd and hands it to you.",
+      "Velanna appears in your camp, a woven basket under her arm. She pulls out some wild fruit and shares it with you. She reminds you that to go on an expedition, a pet needs to be fed and trusted: feisty beasts categorically refuse. She bites into an apple, mentioning that Talvar of the Mountains, an old friend, must examine the pet beforehand.",
+      "Velanna is waiting for you at a crossroads, arms folded. She delivers her final lesson: a pet needs to know that someone will look after its master while it's away, hence the importance of a guild. She uncrosses her arms and places a hand on her heart, evoking her clan's code of not leaving a companion alone. Her gaze softens for a moment before telling you that it's time to prove your worth."
+    ],
+    "conditions": {
+      "noPet": [
+        "Velanna looks down on you. A {emote:expedition.talisman} **{{talismanName}}** without a familiar to bind is just a shiny pebble. She lets out a raucous laugh and invites you to come back when you've tamed a creature."
+      ],
+      "petHungry": [
+        "Velanna examines **{{pet}}** critically, then turns to you, furious. Your companion's empty belly dismays her. She shakes her head in disgust: a hungry pet wouldn't take three steps before collapsing. Feed him first."
+      ],
+      "petFeisty": [
+        "Velanna observes **{{pet}}** growling and spitting in your direction. She backs away cautiously, realizing that this feisty beast hates you. The warrior shrugs: why would she risk her life for you? Earn her trust first."
+      ],
+      "petNotSeenByTalvar": [
+        "Velanna kneels down to examine **{{pet}}**. After a moment, she frowns: this creature has never been introduced to Talvar. She stands up and dusts her knees, explaining that the mountain dwarf must first certify that your pet is in good health. It's an old pact between their traditions."
+      ],
+      "noGuild": [
+        "Velanna stares at you for a long moment, then sighs as she realizes you're traveling alone. She wonders who will look after you when your familiar is away on an expedition. She crosses her arms: {emote:expedition.talisman}{{talismanName}}** binds souls, but it's no substitute for the solidarity of the living. Join a guild."
+      ],
+      "levelTooLow": [
+        "Velanna is sizing you up from head to toe. Your level {{playerLevel}} doesn't impress her much. She grabs your arm and feels your muscles with a critical pout: you need to reach at least level {{requiredLevel}} before you're worthy of {emote:expedition.talisman} **{{talismanName}}**. Train, fight monsters, gain experience."
+      ]
+    },
+    "talismanReceived": [
+      "Velanna watches you in silence for a few long seconds. Then, slowly, she extracts a pendant of black stone veined with gold from her satchel. The {emote:expedition.talisman}{{talismanName}}** pulses with a soft glow. She feels that you have proven yourself and instructs you to take care of **{{pet}}**. The bond between master and beast is sacred. She places the talisman in your hand and closes your fingers over it, inviting you to explore the world.\n\nYou receive the {emote:expedition.talisman} **{{talismanName}}** ! You can now send your pet for shipment from {command:pet}."
+    ],
+    "expeditionBonus": {
+      "points": "Velanna emerges from the shadows and puts a hand on your shoulder. She senses the presence of **{{pet}}** leagues away and smiles, a rare sight. Your pet explores bravely and {emote:expedition.talisman} **{{talismanName}}** strengthens your bond. She pats your head, murmuring that your perseverance is paying off. You win **{{bonusPoints}} {emote:unitValues.score}**!",
+      "pointsAndMoney": "Velanna appears at your side, sniffing the air. She notes that {emote:expedition.talisman} **{{talismanName}}**'s bond is strong and that **{{pet}}** is traveling well. She pulls a purse from her belt, explaining that the spirits reward those who trust their companions. She tosses the purse to you. You win **{{bonusPoints}} {emote:unitValues.score}** and **{{bonusMoney}} {emote:unitValues.money}**!",
+      "pointsAndItem": "Velanna emerges from the thicket and watches you approvingly. She senses the link between you and **{{pet}}** through {emote:expedition.talisman} **{{talismanName}}**. She reaches into her bag and pulls out an object, which she hands to you: a memento of her own past expeditions, to thank you for your trust. You win **{{bonusPoints}} {emote:unitValues.score}**!",
+      "combatPotion": "Velanna appears from nowhere, a sparkling vial in hand. She nods, impressed by **{{pet}}**'s courage as he roams the wilderness. She hands you the potion, murmuring that since your companion can't help you in combat while he's on expedition, this mixture will do the trick. You win **{{bonusPoints}} {emote:unitValues.score}**!"
+    },
+    "advice": [
+      "Velanna passes you on the path and stops briefly. She advises you never to underestimate the risk and to send your pet where its strength can triumph. She points to the horizon, mentioning that mountains offer gems and forests experience. She leaves as silently as she came.",
+      "You spot Velanna sharpening her dagger on a rock. She looks up and reminds you that long expeditions are more rewarding but exhaust your pet. Balance is essential. She tests the sharpness of her blade on her thumb, adding that you should never forget to feed your companion before setting out.",
+      "Velanna watches you from afar, leaning against a tree. As you approach, she whispers that your pet's affection determines his loyalty on expeditions: the more he loves you, the safer he'll return. She looks away, implying that this is a lesson she's learned the hard way."
+    ],
+    "cancellationWarning": [
+      "Velanna appears in front of you, her face serious. She fixes her gaze on yours and growls a warning: as soon as you begin preparations for an expedition, your pet gets excited. He's mentally preparing his journey, dreaming of the territories to be explored. To cancel at this point - or worse, to call him back in the middle of his journey - is to break a promise. She taps your chest with her finger: every disappointment leaves a scar in your companion's heart. Once is enough. But repeat the mistake, whether during preparations or after departure, and the wound deepens every time.",
+      "Velanna appears at your side, gazing pensively at the horizon. She recalls a clan elder who would launch expedition preparations for his pet, then change his mind at the last minute. Other times, he'd call him back along the way. She turns to you: in both cases, it's the same betrayal in the eyes of the beast. From the moment you open the destination map, your companion shudders with impatience. To cancel is to extinguish that flame. It draws a circle in the dust, murmuring that the more often you do it - aborted preparations or brutal reminders - the more severe the loss of affection.",
+      "Velanna intercepts you on the path, arms crossed. She asks if you really understand how a familiar feels when shown an expedition map. Her eyes sparkle, her heart races, she's already imagining the adventures that await her. She approaches, lowering her voice: whether you cancel before departure or call him back mid-exploration, for him it's all the same - a broken promise. The first time, he loses a little love. The second time in the same week, it's double. The third, triple. She shrugs with a bitter half-smile: pets don't know the difference between the two, they just count the disappointments."
+    ]
+  }
 }

@@ -299,6 +299,16 @@
       "{{playerDisplay}} vi passa accanto e vi mostra il suo animaletto **{{petEmote}}** **{{petName}}**. Lo accarezzate e ripartite, bon voyage!",
       "{{playerDisplay}} vi passa accanto con **{{petEmote}}** **{{petName}}** al guinzaglio. Lo guardate con stupore e vi dite che anche a voi piacerebbe avere questo animale!"
     ],
+    "pet_on_expedition": [
+      "Sulla vostra strada passate davanti a {{playerDisplay}} . Il suo animale **{{petEmote}}** **{{petName}}** non è con lui oggi, lo ha mandato in spedizione! Questo addestratore sa davvero come ottimizzare il rapporto con il suo compagno.",
+      "{{playerDisplay}} cammina da solo, senza il suo fedele **{{petEmote}}**{{petName}}**. Mentre chiacchieriamo, si apprende che ha mandato il suo animale domestico a esplorare terre lontane. Un vero maestro di addestramento!",
+      "{{playerDisplay}} non ha con sé il suo animale domestico oggi. Spiega con orgoglio che il suo **{{petEmote}}**{{petName}}** è partito per una spedizione. Che fiducia reciproca!"
+    ],
+    "pet_clone": [
+      "{{playerDisplay}} vi passa accanto con... una strana creatura traslucida? È **{{petEmote}}** **{{petName}}**, ma qualcosa non quadra. L'animale sembra quasi spettrale, come se non fosse realmente lì...",
+      "Si guarda {{playerDisplay}} con un'espressione perplessa. Il suo **{{petEmote}}** **{{petName}}** sembra... strano. Traslucido, quasi etereo. Spiega che un antico talismano gli permette di mantenere un clone del suo compagno mentre quello vero esplora il mondo.",
+      "È un fantasma? No, è il **{{petEmote}}** **{{petName}}** di {{playerDisplay}}, ma la sua sagoma è stranamente trasparente. La magia di un talismano di clonazione, vi dice, mentre il suo vero compagno è in spedizione!"
+    ],
     "guild_chief": [
       "Non fatevi prendere dal panico! State passando davanti a {{playerDisplay}}, capo gilda **{{guildName}}**.",
       "Passate davanti a {{playerDisplay}}. È il capo della gilda **{{guildName}}** !",
@@ -1003,12 +1013,19 @@
         "L'estro di **{{pet}}** vi ha permesso di trovare una scorciatoia. Grazie a lei, avete vinto **{{amountDisplay}}** {emote:unitValues.timeGain}.",
         "Difendere **{{pet}}** da {{randomAnimal}} sauvage non è stata un'impresa da poco, e questa volta avete trovato qualcosa più forte di voi. Decidi di fuggire e corri a tutta velocità. Grazie a questa disavventura, hai guadagnato **{{amountDisplay}}** {emote:unitValues.timeGain} lungo la strada."
       ],
-      "points": [
+      "points_m": [
         "Le persone che si imbattono in voi con **{{pet}}** sono sicure di notarlo. Questo migliora la vostra reputazione e quindi guadagnate **{{amount}}** {emote:unitValues.score}.",
         "Raccontare a un vecchio le tue avventure con **{{pet}}** sembra aver migliorato la tua reputazione. Hai vinto **{{amount}}** {emote:unitValues.score}."
       ],
-      "badge": [
-        "{{pet}}Riuscire ad addestrare ** ** è stata una vera sfida che dimostra il tuo talento con gli animali. {{badge}} Ti verrà assegnato il distintivo!"
+      "points_f": [
+        "Le persone che si imbattono in voi con **{{pet}}** sono sicure di notarlo. Questo migliora la vostra reputazione e quindi guadagnate **{{amount}}** {emote:unitValues.score}.",
+        "Raccontare a un vecchio le tue avventure con **{{pet}}** sembra aver migliorato la tua reputazione. Hai vinto **{{amount}}** {emote:unitValues.score}."
+      ],
+      "badge_m": [
+        "Riuscire ad addestrare **{{pet}}** è stata una vera sfida che dimostra il tuo talento con gli animali. Riceverai il distintivo {{badge}} !"
+      ],
+      "badge_f": [
+        "Riuscire ad addestrare **{{pet}}** è stata una vera sfida che dimostra il tuo talento con gli animali. Riceverai il distintivo {{badge}} !"
       ],
       "loseLife_m": [
         "{{pet}}Quando cerchi di accarezzare ** **, non te lo permette e ti morde la mano.{{amount}} {emote:unitValues.lostHealth}Si perde ** ** .",
@@ -1076,8 +1093,11 @@
         "{{pet}}Dopo una lunga passeggiata, ** ** ha il fiatone e non riesce a tenere il passo con voi. Non aspettarla ha danneggiato il vostro rapporto. Quindi sta perdendo un po' di amore...",
         "{{pet}}Mentre vi avvicinate a una bancarella, ** ** fissa il cibo su una tavola. Nonostante la sua richiesta, decidete di proseguire per la vostra strada.{{pet}}** ** è risentita e sta perdendo un po' di fiducia in lei."
       ],
-      "nothing": [
-        "{{pet}}Continuate il vostro viaggio accanto a ** **. Non succede nulla di speciale."
+      "nothing_m": [
+        "Continuate il vostro viaggio accanto a **{{pet}}**. Non succede nulla di speciale."
+      ],
+      "nothing_f": [
+        "Continuate il vostro viaggio accanto a **{{pet}}**. Non succede nulla di speciale."
       ]
     },
     "randomAnimal_m": "{{randomAnimal}}a ** **",
@@ -1771,6 +1791,32 @@
       "Di fronte alla vostra solitudine, Talvar non può fare a meno di condividere la sua filosofia di vita, incentrata sull'amore per le creature. Racconta le cure miracolose che la presenza degli animali esercita sul corpo e sullo spirito. Le sue descrizioni appassionate rivelano un uomo trasformato da una vita dedicata a questi esseri straordinari. Vi lascerà toccati da questa rivelazione e forse destinati a seguire un percorso simile.",
       "Senza un familiare al suo fianco, gli occhi di Talvar brillano per una missione da compiere. Vi introduce ai segreti dell'addomesticamento degli animali e ai rituali sacri che suggellano l'amicizia tra uomo e bestia. I suoi insegnamenti risuonano di tradizioni ancestrali e conoscenze dimenticate. Continuate il vostro viaggio, depositari di questa preziosa conoscenza e forse chiamati a metterla in pratica in un prossimo futuro."
     ],
+    "petIsClone_m": [
+      "Alla vista di **{{pet}}**, Talvar strabuzza gli occhi sconcertato. Avvicina il viso alla creatura, esaminandola da ogni angolazione, poi si allontana con un'espressione preoccupata. Mormora che questo compagno emana un'aura singolare, come se fosse sia qui che altrove. Nonostante i suoi dubbi, vi consegna {{reward}}, ma il suo sguardo rimane fisso sul vostro familiare con curiosità mista a preoccupazione.",
+      "Talvar si ferma di botto quando scorge **{{pet}}**. Le sue sopracciglia cespugliose si aggrottano mentre allunga titubante una mano verso la creatura. Sbuffa dicendo di non aver mai visto nulla di simile e che il familiare sembra sfocato, come un riflesso nell'acqua torbida. Scuote la testa, confuso dalla vista, ma vi offre comunque {{reward}}. Ve ne andate con la sensazione che sia appena successo qualcosa di strano.",
+      "Quando **{{pet}}** appare di fronte a Talvar, il vecchio nano sbatte le palpebre più volte. Brontola che i suoi occhi gli stanno giocando brutti scherzi e che questa creatura a volte sembra traslucida. Gira intorno al vostro compagno, perplesso. Infine, scrolla le spalle e ti porge {{reward}}, lanciando ancora occhiate diffidenti al famiglio spettrale.",
+      "Lo sguardo di Talvar si blocca su **{{pet}}** e un'espressione di confusione gli riempie i lineamenti. Con voce incerta dice di percepire qualcosa di insolito in questa creatura, che è lì ma non del tutto, come un'eco o una proiezione. Nonostante l'evidente confusione, la sua generosità ha la meglio e ti offre {{reward}}, ma la sua mente rimane visibilmente preoccupata da questo mistero.",
+      "Talvar osservava **{{pet}}** con insolita intensità. Inizia a parlare prima di fermarsi, cercando le parole. Spiega che questa creatura emana un'energia che non ha mai sentito prima, come se la sua essenza fosse divisa tra due luoghi. Un brivido attraversa la sua barba argentata. Vi porge {{reward}} con una mano leggermente tremante, chiaramente turbata da questo incontro soprannaturale."
+    ],
+    "petIsClone_f": [
+      "Alla vista di **{{pet}}**, Talvar strabuzza gli occhi sconcertato. Avvicina il viso alla creatura, esaminandola da ogni angolazione, poi si allontana con un'espressione preoccupata. Mormora che questa compagna emana un'aura singolare, come se fosse sia qui che altrove. Nonostante i suoi dubbi, vi consegna {{reward}}, ma il suo sguardo rimane fisso sul vostro familiare con curiosità mista a preoccupazione.",
+      "Talvar si ferma di botto quando scorge **{{pet}}**. Le sue sopracciglia cespugliose si aggrottano mentre allunga titubante una mano verso la creatura. Mormora di non aver mai visto nulla di simile e che la creatura gli sembra sfocata, come un riflesso nell'acqua torbida. Scuote la testa, confuso dalla vista, ma vi offre comunque {{reward}}. Ve ne andate con la sensazione che sia appena successo qualcosa di strano.",
+      "Quando **{{pet}}** appare di fronte a Talvar, il vecchio nano sbatte le palpebre più volte. Brontola che i suoi occhi gli stanno giocando brutti scherzi e che questa creatura a volte sembra traslucida. Gira intorno al vostro compagno, perplesso. Infine, scrolla le spalle e ti porge {{reward}}, lanciando ancora occhiate diffidenti al famiglio spettrale.",
+      "Lo sguardo di Talvar si blocca su **{{pet}}** e un'espressione di confusione gli riempie i lineamenti. Con voce incerta dice di percepire qualcosa di insolito in questa creatura, che è lì ma non del tutto, come un'eco o una proiezione. Nonostante l'evidente confusione, la sua generosità ha la meglio e ti offre {{reward}}, ma la sua mente rimane visibilmente preoccupata da questo mistero.",
+      "Talvar osservava **{{pet}}** con insolita intensità. Inizia a parlare prima di fermarsi, cercando le parole. Spiega che questa creatura emana un'energia che non ha mai sentito prima, come se la sua essenza fosse divisa tra due luoghi. Un brivido attraversa la sua barba argentata. Vi porge {{reward}} con una mano leggermente tremante, chiaramente turbata da questo incontro soprannaturale."
+    ],
+    "clonePetAlreadySeen_m": [
+      "Talvar strizza l'occhio a **{{pet}}**, poi scuote vigorosamente la testa. Brontola che ha già visto un familiare come questo, ma questo è... diverso. Gira intorno alla creatura, perplesso, borbottando che è come vedere un riflesso che non corrisponde all'originale. Vi congeda con un gesto della mano, chiaramente disturbato da questa anomalia.",
+      "Il vecchio nano si ferma di botto quando scorge **{{pet}}**. Le sue sopracciglia folte si aggrottano mentre esamina la creatura da ogni angolazione. Dichiara di conoscere questo tipo di famiglio, di averlo già ammirato in passato, ma che emana una strana aura, come se esistesse in due luoghi contemporaneamente. Borbotta alcune parole incomprensibili e vi fa cenno di proseguire.",
+      "Alla vista di **{{pet}}**, Talvar fece un passo indietro, con lo sguardo turbato. Afferma di aver già visto questa specie in passato, ma questo compagno sembra nebuloso, irreale. Allunga esitante una mano verso la creatura prima di ritirarla bruscamente, come se avesse toccato qualcosa di soprannaturale. Con voce incerta vi augura buon viaggio.",
+      "Il saggio nano osserva{{pet}}** con insolito sospetto. Confida di aver già avuto il piacere di ammirare un familiare di questo tipo, ma che questo lo mette a disagio. Mormora che questa creatura sembra essere lì senza esserci davvero, come un'eco o un'ombra vivente. Scuote la testa e si allontana, lasciandosi sfuggire che deve meditare su questo mistero."
+    ],
+    "clonePetAlreadySeen_f": [
+      "Talvar strizza l'occhio a **{{pet}}**, poi scuote vigorosamente la testa. Brontola che ha già visto una creatura del genere in passato, ma questa è... diversa. Gira intorno alla creatura, perplesso, borbottando che è come vedere un riflesso che non corrisponde all'originale. Vi congeda con un gesto della mano, chiaramente disturbato da questa anomalia.",
+      "Il vecchio nano si ferma di botto quando scorge **{{pet}}**. Le sue sopracciglia folte si aggrottano mentre esamina la creatura da ogni angolazione. Dichiara di conoscere questo tipo di famiglio, di averlo già ammirato in passato, ma che emana una strana aura, come se esistesse in due luoghi contemporaneamente. Borbotta alcune parole incomprensibili e vi fa cenno di proseguire.",
+      "Alla vista di **{{pet}}**, Talvar fece un passo indietro, con lo sguardo turbato. Afferma di aver già visto questa specie in passato, ma questo compagno sembra nebuloso, irreale. Allunga esitante una mano verso la creatura prima di ritirarla bruscamente, come se avesse toccato qualcosa di soprannaturale. Con voce incerta vi augura buon viaggio.",
+      "Il saggio nano osserva{{pet}}** con insolito sospetto. Confida di aver già avuto il piacere di ammirare una creatura di questo tipo, ma che questa lo mette a disagio. Mormora che questa creatura sembra essere lì senza essere realmente lì, come un'eco o un'ombra vivente. Scuote la testa e si allontana, lasciandosi sfuggire che deve meditare su questo mistero."
+    ],
     "badge": [
       "Lo sguardo di Talvar si fa serio, poi si illumina di un barlume di orgoglio. Ogni gesto, ogni espressione tradisce una sincera ammirazione. Riconosce pienamente il valore delle tue azioni, lodando il tuo coraggio, il tuo discernimento e il rispetto che hai dimostrato verso le creature. In segno di apprezzamento, vi regala il distintivo {emote:badges.animal_lover}, un dono dal grande significato. Questo segno di stima suggella il vostro legame. Vi lasciate in un silenzio carico di rispetto, uniti da una tacita comprensione condivisa solo da coloro che hanno lavorato per una causa più grande di loro."
     ]
@@ -1875,5 +1921,344 @@
     "Vi fermate per un momento. Persino il vostro respiro sembra soffocato dall'aria fredda. In questa quiete totale, vi sembra di sentire un battito - debole, regolare - come un cuore sepolto nella terra.",
     "La nebbia si fa più fitta e si riesce a malapena a distinguere i propri piedi. A ogni respiro, l'umidità gelida si insinua nella gola e il mondo intero si riduce a pochi metri intorno a voi.",
     "Un sussurro lontano attraversa improvvisamente la nebbia, portato dal nulla. Una voce? Un vento? Impossibile dirlo. Rimanete fermi ad ascoltare, consapevoli che questo luogo non ha fine né inizio, ma solo un silenzio che respira."
-  ]
+  ],
+  "petFood": {
+    "intro": {
+      "badSmell": "Il vostro fedele compagno si ferma all'improvviso, con le narici dilatate. Le sue orecchie si drizzano quando percepisce il fetore che proviene da un boschetto buio. Qualcosa di ripugnante sta marcendo lì, abbandonato forse da giorni, e il vostro animale sembra affascinato da questo fetore che farebbe indietreggiare molte creature.",
+      "goodSmell": "Il vostro compagno di viaggio si agita improvvisamente, scodinzolando con entusiasmo e con gli occhi che brillano per l'eccitazione. Un profumo dolce e stuzzicante si diffonde nell'aria. Come una farfalla, è attratto dalla luce di questa fragranza promettente, che risveglia il suo appetito.",
+      "vegetarian": "Il vostro fedele animale domestico rallenta il passo e inclina la testa da un lato, incuriosito da un boschetto di cespugli che costeggia il sentiero. Tra le erbe selvatiche e le felci argentate, sembra aver scorto qualcosa di commestibile tra la vegetazione.",
+      "meat": "Il vostro compagno si ferma di botto, con i muscoli tesi, fissando con attenzione e predazione uno specchio d'acqua che luccica al tramonto. Le sue labbra si arricciano leggermente, rivelando zanne affilate, mentre annusa l'aria con assoluta concentrazione. Ha chiaramente individuato la sua preda...",
+      "soup": "Un profumo familiare e confortante solletica le vostre narici: l'aroma untuoso della zuppa che sobbolle in una pentola di rame. Il vostro fedele compagno drizza le orecchie e si precipita in un campeggio abbandonato sul ciglio della strada, dove un calderone di ferro nero è ancora sospeso su braci morenti. Potrebbe essere questa la zuppa definitiva?"
+    },
+    "choices": {
+      "investigate": "Guardate voi stessi",
+      "sendPet": "Invia il tuo animale domestico",
+      "continue": "Continuate il vostro cammino"
+    },
+    "outcomes": {
+      "found_by_player": "Vi avvicinate con cautela e, dopo aver spinto via i rami e aver frugato negli angoli e nelle fessure, mettete le mani su **{{foodName}}**. Lo offrite al vostro compagno, che lo accetta con gratitudine, divorando il suo dono con grugniti di soddisfazione.",
+      "found_by_player_soup": "Vi avvicinate con cautela al calderone abbandonato e scoprite con soddisfazione che **{{foodName}}** sta ancora sobbollendo dolcemente. Ne versate una porzione generosa in una ciotola e la offrite al vostro compagno. Egli assapora avidamente il cibo di conforto, scodinzolando soddisfatto.",
+      "found_by_pet": "Il vostro animale domestico balza in piedi agilmente e scompare per un attimo nella boscaglia. Torna presto da voi con un trotto fiero e trionfante, tenendo **{{foodName}}** delicatamente tra le zanne. I suoi occhi brillano d'orgoglio, mentre si sistema per assaporare la sua scoperta con entusiastici rumori di masticazione.",
+      "found_by_pet_soup": "Il vostro animale domestico trotta velocemente verso l'accampamento abbandonato e immerge il muso nel calderone fumante. Torna da voi pochi istanti dopo, con le labbra ancora scintillanti, dopo aver chiaramente assaporato **{{foodName}}** con evidente piacere. I suoi occhi scintillanti e la sua coda scodinzolante testimoniano la sua avida soddisfazione.",
+      "found_anyway": "Proprio mentre stavate per proseguire il vostro cammino senza preoccuparvi di questa distrazione, il vostro fedele compagno balza improvvisamente tra i cespugli circostanti. Riemerge vittorioso con **{{foodName}}** che trangugia immediatamente con vorace appetito, scodinzolando soddisfatto.",
+      "found_anyway_soup": "Proprio mentre state per rimettervi in cammino senza preoccuparvi dell'accampamento, il vostro fedele compagno si precipita verso il calderone abbandonato. Prima che possiate fermarlo, egli sta avidamente leccando **{{foodName}}** con gemiti di gioia, chiaramente al settimo cielo per questa inaspettata vincita.",
+      "player_failed": "Avete trascorso lunghi e faticosi minuti a perlustrare meticolosamente l'area, eliminando rovi e spine, rivoltando pietre e ceppi marcescenti, ma nonostante tutti i vostri strenui sforzi non avete portato alla luce nulla di utile. Il tempo investito si è rivelato inutile come la ricerca di un tesoro in un forziere vuoto.",
+      "pet_failed": "Il vostro compagno si avvia deciso verso la boscaglia, per poi tornare pochi istanti dopo con un'andatura pesante, le orecchie basse e la coda bassa. Il suo sguardo deluso e i suoi squittii lamentosi tradiscono il suo fallimento: il sentiero si è rivelato infruttuoso e i suoi sforzi non hanno prodotto altro che amarezza.",
+      "pet_failed_soup": "Il vostro compagno trotta verso l'accampamento abbandonato e annusa a lungo il calderone, ma ahimè si rivela vuoto o il suo contenuto già raffreddato e immangiabile. Torna da voi con un'andatura delusa, le orecchie basse e la coda bassa, chiaramente frustrato da questa delusione culinaria.",
+      "nothing": "Decidete saggiamente di non indugiare oltre da queste parti, ritenendo che il tempo sia poco e che la vostra ricerca non possa subire simili deviazioni. Con un gesto risoluto, chiedete al vostro compagno di seguirvi e vi incamminate insieme verso l'orizzonte che vi attende."
+    },
+    "foodNames": {
+      "badSmell": [
+        "una carogna di corvo in avanzata decomposizione",
+        "le putride interiora di un goblin della palude",
+        "un uovo di drago marcio che emette esalazioni sulfuree",
+        "un pezzo di formaggio blu ammuffito dimenticato da un viaggiatore stordito",
+        "i resti maleodoranti di un ratto morto da diversi giorni",
+        "una carcassa di pipistrello infestata da vermi striscianti",
+        "un pezzo di carne di fagiano abbandonato dai banditi",
+        "un pesce morto con squame verdastre che galleggia in uno stagno stagnante",
+        "frattaglie di cinghiale che pullulano di mosche voraci",
+        "un ventre di pecora gonfio di gas di putrefazione",
+        "un teschio di lupo ancora coperto da brandelli di carne nera"
+      ],
+      "goodSmell": [
+        "una torta calda al miele e mandorle",
+        "una fetta di torta di mele e cannella al forno",
+        "un pezzo di carne secca condita con erbe di Provenza",
+        "una pera dolce e succosa proveniente da un frutteto abbandonato",
+        "un biscotto croccante a forma di osso modellato da un generoso panettiere",
+        "una fetta di torta alle nocciole e zucchero di canna",
+        "un pezzo di pan di zenzero aromatizzato con zenzero e chiodi di garofano",
+        "una fetta di pancetta affumicata di rovere",
+        "un panino di brioche con uvetta e burro salato",
+        "un pezzo di cheddar stagionato avvolto in un telo di lino",
+        "una crêpe ripiena di marmellata di albicocche e cosparsa di zucchero",
+        "un éclair al cioccolato abbandonato su un muretto di pietra"
+      ],
+      "vegetarian": [
+        "una manciata di bacche selvatiche che sprigionano il loro dolce succo",
+        "una radice di rapa commestibile ancora piena di terra fertile",
+        "un fungo di bosco color rame che cresce sotto una vecchia quercia",
+        "un dolce e tenero fiore di tarassaco",
+        "una mela vermiglia che cade da un albero di mele solitario",
+        "nocciole appena tagliate dai loro gusci spinosi",
+        "una pannocchia dorata lasciata in un campo dopo il raccolto",
+        "un grappolo di uva selvatica viola intenso",
+        "foglie di lattuga croccanti strappate da un campo di verdure",
+        "una carota selvatica dal sapore leggermente amaro",
+        "un bouquet di ortiche tenere e nutrienti",
+        "germogli di felce commestibili in primavera",
+        "una zucca sventrata sul ciglio di un marciapiede"
+      ],
+      "meat": [
+        "un pesce d'argento che si dimena ancora nelle acque limpide di un ruscello",
+        "un giovane coniglio che si è perso lontano dalla sua tana",
+        "un osso midollare ancora pieno di carne tenera e grassa",
+        "una fetta di prosciutto affumicato appesa in un pentolone aperto",
+        "una salsiccia di maiale piccante smarrita da un venditore ambulante",
+        "un pezzo di pancetta salata avvolto in un panno unto",
+        "i resti di un'anatra arrosto abbandonata da viaggiatori in fretta e furia",
+        "una coscia di cervo appena macellata da un cacciatore",
+        "lingua di manzo bollita che si raffredda su una pietra piatta",
+        "Trippa di pecora lavata in acqua di sorgente",
+        "un pezzo di pollo alla griglia con spezie orientali",
+        "un'anguilla affumicata con legno di faggio",
+        "i resti di una lepre in salmì che sobbolle nella sua salsa"
+      ],
+      "soup": [
+        "zuppa di verdure fumante dell'orto",
+        "brodo di pollo aromatizzato con timo e alloro",
+        "zuppa di cavolo con pancetta rosolata",
+        "Crema di funghi selvatici",
+        "zuppa di cipolle gratinata con formaggio",
+        "Pot-au-feu con carote e rape fondenti",
+        "bisque di gamberi condita con spezie rare"
+      ]
+    },
+    "love": {
+      "plus": "Il vostro fedele compagno vi guarda con occhi che brillano di gratitudine e affetto. Si strofina contro le vostre gambe e fa le fusa contento, dimostrando chiaramente che questo banchetto improvvisato ha rafforzato i legami di fiducia e amicizia tra voi!",
+      "minus": "Il vostro animale domestico vi fissa con uno sguardo cupo di silenzioso rimprovero, con le labbra arricciate in un broncio di disapprovazione. Gira ostentatamente la testa da un'altra parte con un ringhio indispettito, chiaramente offeso da questo cibo indegno del suo delicato palato...",
+      "neutral": "Il vostro compagno di viaggio trangugia il suo pasto con un distacco quasi filosofico, non mostrando né un entusiasmo traboccante né un particolare disgusto. Sembra che consideri questa scoperta come un sostentamento necessario, niente di più e niente di meno."
+    }
+  },
+  "badPet": {
+    "intro": [
+      "Un nano tarchiato emerge da una roccia, con la barba rossa arruffata e gli occhi pieni di odio viscerale. Alla vista di **{{pet}}**, sputa a terra con disgusto e brandisce un bastone nodoso. Il vostro compagno indietreggia, con le orecchie incollate al cranio. Lo straniero si presenta come Moltiar e giura di non avere nulla a che fare con il fratello adoratore di insetti.",
+      "Una voce rauca e arrabbiata vi chiama all'improvviso. Un nano con una vecchia cicatrice sul volto si fa avanti, con gli occhi iniettati di sangue fissi su{{pet}}** con furia. Fa roteare una mazza chiodata in un gesto minaccioso. Il vostro compagno trema tutto.",
+      "Emergendo da dietro una formazione rocciosa, un nano dall'aspetto folle si pianta davanti a voi, bloccandovi il cammino. La sua mano destra porta le cicatrici di un antico morso. Fissa **{{pet}}** con odio bruciante ed estrae un pugnale scheggiato. Moltiar brontola che, a differenza di suo fratello Talvar, sa riconoscere una seccatura quando la vede.",
+      "Un ringhio gutturale vi spaventa. Un nano corpulento emerge da una fessura, con la barba intrecciata che scintilla di perline d'osso. Non appena scorge **{{pet}}**, il suo volto si contorce per il disgusto. Vi punta contro un dito accusatore, mentre con l'altra mano impugna saldamente un'ascia arrugginita.",
+      "Il vostro cammino viene improvvisamente bloccato da una figura tozza e ostile. Il nano ha un'espressione di pura repulsione quando scopre **{{pet}}** accanto a voi. Una vecchia ferita gli attraversa l'avambraccio, a testimonianza di un passato doloroso. Raccoglie un martello da guerra. Moltiar ringhia che non lascerà che queste ripugnanti creature vaghino per le sue terre, a prescindere da ciò che può pensare il suo ingenuo fratello.",
+      "Il rumore di una pietra che rotola vi avverte di una presenza. Un nano massiccio emerge dalle ombre di una sporgenza rocciosa, scrutando immediatamente **{{pet}}** con palpabile animosità. Le cicatrici sui suoi avambracci testimoniano passati incontri dolorosi. Brandisce una clava con un gesto carico di minaccia.",
+      "L'odore di terra e di sudore rancido vi raggiunge prima ancora di vedere l'assalitore. Da una fessura emerge un nano, con la pelle abbronzata dal sole e le mani callose strette attorno a un piccone. Il suo sguardo cade su **{{pet}}** e una fredda rabbia gli distorce i lineamenti. Sputa fuori che quell'idiota di suo fratello dovrebbe vedere cosa gli hanno fatto quegli insetti.",
+      "Lo scricchiolio degli stivali sulla ghiaia annuncia l'arrivo di un intruso. Appare un nano con la testa parzialmente calva, la barba grigia legata in un severo catogan. I suoi occhi si allargano per l'orrore quando scorge **{{pet}}**. Fa un passo indietro prima di brandire un coltello da minatore con odiosa determinazione.",
+      "Un fischio beffardo riecheggia nell'aria. Appollaiato su una roccia, un nano osserva con disprezzo i vostri progressi. Quando nota **{{pet}}** trotterellare al vostro fianco, la sua espressione cambia in una smorfia di profondo disgusto. Salta a terra e si pianta davanti a voi, borbottando su come suo fratello abbia corrotto troppi viaggiatori con le sue idee folli.",
+      "Il terreno trema leggermente sotto i vostri piedi, annunciando l'avvicinarsi di una presenza massiccia. Un nano imponente, più largo che alto, emerge da un affioramento roccioso. Il suo sguardo spazia lungo il sentiero e si posa su **{{pet}}** con odio incandescente. I muscoli delle braccia si contraggono mentre solleva un pesante maglio da fabbro."
+    ],
+    "choices": {
+      "intimidate": "Ordinate al vostro compagno di intimidire il nano.",
+      "plead": "Cercare di far ragionare il nano con le parole",
+      "giveMeat": "Offrite al nano un po' di carne per ammorbidirlo.",
+      "giveVeg": "Offrire verdure al nano in segno di pace",
+      "flee": "Fuga con il proprio compagno",
+      "hide": "Nascondere il partner",
+      "wait": "Aspettando che la rabbia del nano si plachi",
+      "protect": "Intervenire per proteggere il proprio compagno",
+      "distract": "Distogliere l'attenzione del nano",
+      "calm": "Cercare di calmare il compagno spaventato",
+      "imposer": "Che il tuo compagno prevalga sul nano",
+      "energize": "Incoraggiare l'accompagnatore a restare saldo"
+    },
+    "outcomes": {
+      "intimidate": {
+        "success": [
+          "Obbedendo al tuo comando,{{pet}}** si alza in tutta la sua altezza ed emette un ruggito impressionante. Moltiar, sorpreso da questa dimostrazione di forza, fa un passo indietro instabile e borbotta qualche insulto mentre si allontana con riluttanza. Il vostro compagno vi guarda con orgoglio.",
+          "Adottando un atteggiamento minaccioso, **{{pet}}** ringhia con sorprendente ferocia contro il nano ostile. Quest'ultimo, vedendo che lo scontro potrebbe diventare spiacevole, sputa un ultimo insulto prima di ritirarsi. Il tuo compagno sembra soddisfatto di aver tenuto testa all'aggressore."
+        ],
+        "fail": [
+          "Obbedendo al tuo ordine, **{{pet}}** cerca di apparire minaccioso, ma il nano scoppia in una risata crudele per questa patetica esibizione. Brandisce il bastone e il tuo compagno si precipita indietro, con l'orgoglio ferito da questa umiliazione.",
+          "Cercando di apparire minaccioso,{{pet}}** riesce solo a divertire il nano, che lo prende a calci. Il vostro compagno strilla di dolore e vi lancia un'occhiata di rimprovero per averlo esposto in quel modo."
+        ]
+      },
+      "plead": {
+        "success": [
+          "Cerchi di far ragionare Moltiar con parole tranquillizzanti, spiegandogli che il tuo compagno non rappresenta una minaccia. Qualcosa nella tua voce sincera sembra colpire l'attenzione, ed egli abbassa finalmente l'arma con un ringhio. **{{pet}}** apprezza la tua diplomazia.",
+          "Le vostre parole misurate riecheggiano nel silenzio teso. Accennate al rispetto reciproco tra i viaggiatori e il nano, nonostante il suo evidente odio per gli animali, ammette che sembrate avere la vostra bestia sotto controllo. Brontola e si fa da parte. **{{pet}}** si calma gradualmente."
+        ],
+        "fail": [
+          "Cercate di far ragionare il nano, ma le vostre parole non fanno che alimentare la sua rabbia. Grida che le parole non sono sufficienti per difendere queste creature che aborrisce. **{{pet}}** distoglie lo sguardo, vergognandosi del suo fallimento nel proteggerlo.",
+          "Le vostre patetiche suppliche sembrano esasperare ancora di più il nano. Vi guarda con disprezzo non celato. **{{pet}}** vi guarda con un misto di delusione e paura."
+        ]
+      },
+      "giveMeatLikes": {
+        "success": [
+          "Estraete rapidamente un pezzo di carne e lo porgete al nano affamato. Sorpreso da questa offerta, lo accetta con un grugnito e lo addenta con appetito. Ti saluta prima di cambiare idea. **{{pet}}** sembra sollevato da questo risultato.",
+          "Il pezzo di carne che offrite fa esitare il nano. Il suo stomaco brontola più forte del suo odio, e alla fine accetta il vostro dono e si allontana. **{{pet}}** apprezza la tua ingegnosità nell'evitare lo scontro."
+        ],
+        "fail": [
+          "Tiri fuori un pezzo di carne per convincere Moltiar, ma lui lo getta a terra disgustato, rifiutandosi di essere comprato in quel modo. Sfortunatamente, **{{pet}}** ha messo gli occhi sul piatto e ti guarda con aria accusatoria.",
+          "Il pezzo di carne offerto viene calpestato dal nano furioso. **{{pet}}** guarda con frustrazione, deluso di vedere questa prelibatezza andare sprecata."
+        ]
+      },
+      "giveMeatDislikes": {
+        "success": [
+          "Estraete rapidamente un pezzo di carne e lo porgete al nano affamato. Sorpreso da questa offerta, lo accetta con un grugnito e lo addenta con appetito. Ti saluta prima di cambiare idea. **{{pet}}** distoglie lo sguardo, chiaramente disinteressato al cibo.",
+          "Il pezzo di carne che offrite fa esitare il nano. Il suo stomaco brontola più forte del suo odio, e alla fine accetta il vostro dono e si allontana. **{{pet}}** non sembra pentirsi di questa offerta che non era destinata a lui."
+        ],
+        "fail": [
+          "Tiri fuori un pezzo di carne per convincere Moltiar, ma lui lo getta a terra disgustato, rifiutandosi di essere comprato in quel modo. **{{pet}}**, un erbivoro, non sembra turbato da questa perdita.",
+          "Il pezzo di carne che offrite viene calpestato dal nano furioso. **{{pet}}** presta poca attenzione, poiché questo tipo di cibo non gli si addice."
+        ]
+      },
+      "giveMeatNoFood": {
+        "fail": [
+          "Cercate nelle vostre tasche un pezzo di carne, ma il magazzino della vostra gilda è desolatamente vuoto. Moltiar sogghigna al tuo sgomento mentre **{{pet}}** guarda sconcertato.",
+          "Cercate di tirare fuori un po' di carne per calmare il nano, ma vi rendete conto con orrore di non averne. Moltiar coglie l'occasione per maltrattare **{{pet}}**, che ti lancia un'occhiata accusatoria."
+        ]
+      },
+      "giveVegLikes": {
+        "success": [
+          "Offrite al nano alcune verdure, menzionandone la qualità e la freschezza. Inaspettatamente, il nano amante della zuppa accetta la tua offerta con un grugnito di approvazione e se ne va. **{{pet}}** sembra colpito dal tuo istinto.",
+          "Le verdure che presentate al nano riportano ovviamente a ricordi più piacevoli. Egli le accetta con una parvenza di civiltà e accetta di lasciarvi passare. **{{pet}}** apprezza questa risoluzione pacifica."
+        ],
+        "fail": [
+          "Porgete al nano alcune verdure nella speranza di convincerlo. Egli scoppia a ridere per la ridicola offerta e le spazza via con un gesto della mano. **{{pet}}** guarda con invidia le verdure sprecate.",
+          "Le verdure che offrite maldestramente vengono spazzate via dal nano sprezzante. **{{pet}}** ti rivolge uno sguardo di rimprovero, frustrato per aver visto questo cibo andare sprecato."
+        ]
+      },
+      "giveVegDislikes": {
+        "success": [
+          "Offrite al nano alcune verdure, menzionando la loro qualità e freschezza. Inaspettatamente, il nano amante della zuppa accetta la tua offerta con un grugnito di approvazione e se ne va. **{{pet}}** sembra non preoccuparsi di questa perdita di verdure.",
+          "Le verdure che presentate al nano riportano ovviamente a ricordi più piacevoli. Egli le accetta con una parvenza di civiltà e accetta di lasciarvi passare. **{{pet}}**, un carnivoro, non è infastidito da questo sacrificio."
+        ],
+        "fail": [
+          "Porgete al nano alcune verdure nella speranza di convincerlo. Scoppia a ridere a questa ridicola offerta e le spazza via con un gesto della mano. **{{pet}}** non sembra preoccuparsi della perdita.",
+          "Le verdure che offrite maldestramente vengono spazzolate via dal nano sprezzante. **{{pet}}**, preferendo la carne, non attribuisce alcuna importanza a queste verdure sprecate."
+        ]
+      },
+      "giveVegNoFood": {
+        "fail": [
+          "Stai cercando delle verdure da dare al nano, ma il magazzino della tua gilda non ne contiene. Moltiar ride del tuo patetico tentativo, mentre **{{pet}}** pende la testa in segno di disappunto.",
+          "Vorreste offrire della verdura per calmare la situazione, ma non ne avete. Il nano approfitta della vostra esitazione per avventarsi su **{{pet}}** che vi guarda con rimprovero."
+        ]
+      },
+      "flee": {
+        "success": [
+          "Partite con **{{pet}}** alle calcagna. La vostra velocità combinata vi permette di superare rapidamente Moltiar, che, essendo troppo corpulento, rinuncia a inseguirvi, gridando maledizioni. Il tuo compagno sussulta ma sembra soddisfatto.",
+          "La fuga si rivela la decisione giusta. Correte efficientemente con **{{pet}}** che vi segue senza difficoltà, lasciandovi alle spalle il nano furioso ma impotente. Avete fatto squadra."
+        ],
+        "fail": [
+          "Il panico vi travolge e scappate goffamente con **{{pet}}** alle calcagna. Moltiar, più veloce del previsto, ti raggiunge e spinge violentemente il tuo compagno al suo passaggio. Alla fine riesci a scappare, ma **{{pet}}** ti rimprovera per la tua fuga precipitosa.",
+          "Si parte in quarta in un'ingloriosa fuga. Sfortunatamente, **{{pet}}** non riesce a tenere il vostro passo e rimane indietro. Il nano ne approfitta per colpirlo con il suo bastone prima che voi torniate a prenderlo. Il vostro compagno è furioso per questa fuga mal riuscita."
+        ]
+      },
+      "hide": {
+        "success": [
+          "Individuate rapidamente una rientranza nelle rocce e vi nascondete **{{pet}}** prima che il nano se ne accorga. Il nano, non vedendo più la bestia, perde interesse e si allontana brontolando. Il tuo compagno apprezza la tua discrezione.",
+          "Trovi un posto ideale per nascondere **{{pet}}** sotto il tuo mantello. Il nano, non vedendo più l'oggetto del suo odio, finalmente si calma e prosegue per la sua strada. Il tuo compagno sembra rassicurato dalla tua protezione."
+        ],
+        "fail": [
+          "Cerchi di nascondere **{{pet}}** in un angolo, ma Moltiar ti coglie sul fatto. Ruggisce di rabbia e maltratta il tuo compagno. Ti rivolge uno sguardo di rimprovero.",
+          "Il tuo tentativo di occultamento fallisce miseramente quando **{{pet}}** emette un gemito nervoso, rivelando il suo nascondiglio. Il nano si precipita verso di lui e lo spinge violentemente. Il tuo compagno soffre per questa disavventura."
+        ]
+      },
+      "wait": {
+        "success": [
+          "Decidete di aspettare immobili, sperando che la rabbia del nano si plachi. Dopo lunghi minuti di farneticazioni, sembra stancarsi e alla fine si allontana con un grugnito. **{{pet}}** sembra apprezzare la tua pazienza e compostezza.",
+          "L'attesa è stata ripagata. Il nano, non trovando la reazione che sperava, perde gradualmente il suo ardore bellicoso e se ne va. **{{pet}}** ti guarda con rispetto per la tua saggezza."
+        ],
+        "fail": [
+          "Decidete di aspettare immobili, ma il nano interpreta la vostra passività come una debolezza. Si avvicina e **{{pet}}** vi minaccia di nuovo. Il vostro compagno cammina nervosamente, stressato da questa inazione.",
+          "L'attesa si trascina e **{{pet}}** inizia a gemere in preda all'angoscia. Il nano, incoraggiato dalla vostra inazione, diventa sempre più minaccioso. Il vostro compagno vi rimprovera di non aver fatto nulla."
+        ]
+      },
+      "protect": {
+        "success": [
+          "In uno slancio di coraggio protettivo, vi ponete saldamente tra Moltiar e **{{pet}}**. La tua determinazione impressiona l'aggressore che, vedendo che sei pronto a combattere, decide di non provocare ulteriormente. Il tuo compagno è commosso dal tuo coraggio.",
+          "Proteggete **{{pet}}** ponendovi con sicurezza tra voi e il nano ostile. Il nano, rendendosi conto che non cederete, preferisce indietreggiare, sputando insulti. Il vostro compagno vi guarda con rinnovato affetto."
+        ],
+        "fail": [
+          "In un impeto di coraggio, ti metti tra Moltiar e **{{pet}}**. Purtroppo, il nano è più forte di quanto pensassi. Ti spinge brutalmente via e approfitta della situazione per colpire il tuo compagno. Ti senti impotente di fronte a questa dimostrazione di forza.",
+          "Cerchi di proteggere **{{pet}}** stando di fronte a lui, ma la tua postura manca di sicurezza. Il nano vi scansa facilmente e spinge il vostro compagno, che vi rivolge uno sguardo deluso per la vostra incapacità di difenderlo."
+        ]
+      },
+      "distract": {
+        "success": [
+          "Crei un diversivo menzionando ad alta voce una nota taverna nella direzione opposta. Moltiar, il cui amore per la birra supera chiaramente il suo odio per gli animali, ascolta attentamente e poi si allontana, incuriosito. **{{pet}}** approfitta della confusione, impressionato dal tuo stratagemma.",
+          "Il vostro diversivo funziona perfettamente. Gettando alcune monete in lontananza, attirate l'avida attenzione del nano. Mentre si precipita a raccoglierle, **{{pet}}** e voi scivolate via con discrezione."
+        ],
+        "fail": [
+          "Cercate di creare un diversivo gesticolando e gridando. Questo ridicolo spettacolo serve solo a irritare ancora di più il nano, che si avvicina minaccioso. **{{pet}}** indietreggia, spaventato dal vostro strano comportamento.",
+          "Nel disperato tentativo di distrarlo, lanciate pietre a caso. Una di esse colpisce sfortunatamente **{{pet}}** che strilla per il dolore mentre il nano sghignazza in modo sgradevole."
+        ]
+      },
+      "calm": {
+        "success": [
+          "Riesci a calmare **{{pet}}** con carezze rassicuranti, nonostante la minaccia del nano. Il vostro compagno riacquista fiducia e smette di tremare. Il nano, vedendo che avete la vostra bestia sotto controllo, sembra meno incline ad attaccare e alla fine si allontana.",
+          "Le tue parole tranquillizzanti e il tuo atteggiamento sicuro riescono a calmare **{{pet}}**. Una volta rilassato, emana una sicurezza che fa esitare il nano. Il nano, meno sicuro di sé di fronte a questa serenità, preferisce andarsene."
+        ],
+        "fail": [
+          "Cerchi di calmare **{{pet}}** con delle carezze, ma il tuo nervosismo per il nano ostile si trasmette al tuo compagno. Invece di calmarsi, si agita e geme ancora di più.",
+          "Le tue parole apparentemente tranquillizzanti tradiscono il tuo stesso terrore. **{{pet}}**, percependo la sua paura, capisce che la situazione è grave e il suo panico si aggrava."
+        ]
+      },
+      "imposer": {
+        "success": [
+          "Lasciate che **{{pet}}** si muova con sicurezza verso il nano. La sua naturale presenza e la sua rara bellezza sembrano disorientare l'assalitore che, nonostante l'odio, riconosce di avere a che fare con un esemplare eccezionale. Si ritira, impressionato suo malgrado.",
+          "In piedi con calma di fronte al nano, **{{pet}}** emana un'innegabile aura di maestosità. Il nano, nonostante odi gli animali, non può fare a meno di riconoscere la nobiltà del vostro compagno e si allontana cautamente."
+        ],
+        "fail": [
+          "Cerchi di lasciare che **{{pet}}** si opponga a Moltiar, ma il tuo compagno intimidito non riesce ad apparire minaccioso. Il nano ride sprezzante e lo spinge via.",
+          "**{{pet}}** cerca di sembrare imponente di fronte al nano, ma il suo aspetto non è sufficiente a impressionarlo. Il nano lo guarda beffardo prima di dargli un calcio."
+        ]
+      },
+      "energize": {
+        "success": [
+          "Incoraggi **{{pet}}** con parole entusiastiche. Galvanizzato dal tuo sostegno, il tuo compagno ritrova tutto il suo vigore e si oppone con orgoglio a Moltiar. Moltiar, sorpreso da questa rinnovata energia, preferisce non correre rischi e si allontana.",
+          "Le vostre parole di incoraggiamento ridanno fiducia a **{{pet}}** che si alza in piedi con determinazione. Il nano, vedendo che il vostro compagno non ha intenzione di accettare la situazione, rinuncia all'aggressione e se ne va, ringhiando."
+        ],
+        "fail": [
+          "Cerchi di incoraggiare **{{pet}}** con le parole, ma la tua voce manca di convinzione di fronte alla minaccia del nano. Il tuo compagno, già terrorizzato, non riesce a trovare il coraggio necessario e si rannicchia ancora di più.",
+          "I tuoi tentativi di galvanizzare **{{pet}}** cadono nel vuoto. Il nano approfitta di questo momento di debolezza per maltrattare il tuo compagno, che ti rimprovera di non averlo protetto meglio."
+        ]
+      }
+    }
+  },
+  "expeditionAdvice": {
+    "talisman": {
+      "name": "Talismano di Anchorage"
+    },
+    "talismanIntro": [
+      "Una donna dai capelli corvini intrecciati con piume di rapace emerge dal sottobosco. Una cicatrice le segna la guancia sinistra. Ti afferra il braccio con una presa ferrea e ti fissa con i suoi penetranti occhi color ambra. Senza dire una parola, fissa l'orizzonte, lascia il braccio e scompare con la stessa rapidità con cui è apparsa, lasciando dietro di sé un profumo di cuoio conciato e di erbe selvatiche.",
+      "La donna con la cicatrice riappare sul vostro cammino, seduta su una roccia. La sua armatura di cuoio logoro porta i segni di decine di battaglie. Pulisce metodicamente un pugnale dalla lama annerita. Vedendovi, brontola qualcosa a proposito di un antico artefatto in grado di creare legami tra un padrone e la sua bestia... {emote:expedition.talisman} **{{talismanName}}**. Si alza e si allontana senza dire altro.",
+      "La guerriera appare alle vostre spalle senza fare rumore. Siete sorpresi di vedere il suo volto sfregiato a pochi centimetri dal vostro. Sussurra che {emote:expedition.talisman} **{{talismanName}}** lega l'anima di un animale domestico al suo padrone, permettendo loro di rimanere in contatto anche se sono lontani chilometri. Ti dà una pacca sulla spalla con sorprendente familiarità prima di insinuare che questo potere ha un prezzo.",
+      "Questa volta individuate la donna selvaggia prima che vi raggiunga. Annuisce con un mezzo sorriso, chiaramente impressionata dai vostri progressi. Si accovaccia e disegna simboli nella terra, evocando il potere di {emote:expedition.talisman} **{{talismanName}}** per creare un doppio spettrale di un familiare mentre esplora il mondo. Un'antica magia riservata ai meritevoli. Cancella le tracce e scompare nel sottobosco.",
+      "La guerriera vi sta aspettando, appoggiata a un albero. Per la prima volta notate un elaborato astuccio di pelle sulla sua cintura. Si presenta come Velanna e spiega che il suo clan usava {emote:expedition.talisman} **{{talismanName}}** per inviare i propri compagni in missione di ricognizione. Il clan non esiste più, ma la tradizione deve sopravvivere. Il suo sguardo si indurisce, lasciando intendere che dovrete guadagnarvi il {emote:expedition.talisman} **{{talismanName}}**."
+    ],
+    "expeditionExplanation": [
+      "Velanna emerge dall'erba alta, con una freccia appuntata sull'arco. La scocca contro un uccello immaginario, poi si rivolge a voi. Vi fa capire che una spedizione non è una passeggiata: il vostro animale dovrà affrontare pericoli, predatori e maltempo. Recupera la freccia da un tronco d'albero, aggiungendo che le ricompense - oro, esperienza, oggetti rari - valgono i rischi per coloro che osano.",
+      "Trovate Velanna che sta macellando una lepre con brutale efficienza. Vi guarda senza smettere di lavorare e vi spiega che conta la durata della spedizione: più tempo ci vuole, più grande sarà il bottino, ma l'animale domestico sarà più esausto. Si pulisce la lama sulla coscia, sottolineando che un animale affamato si rifiuterà di andarsene.",
+      "Velanna ti sorprende a riposare e ti calcia la borraccia. Vi dice di alzarvi e di capire il vostro famiglio. Si accovaccia davanti a voi e vi spiega che il rischio di una spedizione dipende dalla forza della bestia: un animale potente e addestrato tornerà sempre, ma un animale timoroso o selvatico è un'altra storia. Prende la borraccia e ve la porge.",
+      "Velanna appare nel vostro accampamento con un cesto intrecciato sotto il braccio. Tira fuori dei frutti selvatici e li condivide con te. Vi ricorda che per partire per una spedizione è necessario nutrire e fidarsi di un animale domestico: le bestie demoniache si rifiutano categoricamente. Morde una mela e dice che Talvar delle Montagne, un vecchio amico, deve esaminare l'animale prima di partire.",
+      "Velanna vi aspetta a un incrocio, a braccia conserte. Ti impartisce l'ultima lezione: un animale domestico deve sapere che qualcuno si prenderà cura del suo padrone mentre è lontano, da qui l'importanza di una gilda. Scioglie le braccia e si mette una mano sul cuore, riferendosi al codice del suo clan che vieta di lasciare un compagno da solo. Il suo sguardo si addolcisce per un attimo prima di dirle che è arrivato il momento di dimostrare il suo valore."
+    ],
+    "conditions": {
+      "noPet": [
+        "Velanna ti guarda con disprezzo. Un {emote:expedition.talisman} **{{talismanName}}** senza un familiare da legare è solo un sasso luccicante. Si lascia andare a una risata rauca e ti invita a tornare quando avrai domato una creatura."
+      ],
+      "petHungry": [
+        "Velanna esamina **{{pet}}** con occhio critico, poi si rivolge a te con rabbia. Lo stomaco vuoto del vostro compagno la sconcerta. Scuote la testa disgustata: un animale affamato non farebbe tre passi prima di crollare. Dategli prima da mangiare."
+      ],
+      "petFeisty": [
+        "Velanna osserva **{{pet}}** che ringhia e sputa nella vostra direzione. Si allontana con cautela, rendendosi conto che questa bestia esuberante ti odia. La guerriera alza le spalle: perché dovrebbe rischiare la vita per te? Conquista prima la sua fiducia."
+      ],
+      "petNotSeenByTalvar": [
+        "Velanna si inginocchia per esaminare **{{pet}}**. Dopo un attimo, aggrotta le sopracciglia: questa creatura non è mai stata presentata a Talvar. Si alza e si spolvera le ginocchia, spiegando che il nano di montagna deve prima certificare che il vostro animale è in buona salute. È un vecchio patto tra le loro tradizioni."
+      ],
+      "noGuild": [
+        "Velanna vi fissa per un lungo momento, poi sospira quando si rende conto che state viaggiando da soli. Si chiede chi si prenderà cura di voi quando il vostro familiare sarà via per una spedizione. Incrocia le braccia: il {emote:expedition.talisman} **{{talismanName}}** lega le anime tra loro, ma non sostituisce la solidarietà dei vivi. Unisciti a una gilda."
+      ],
+      "levelTooLow": [
+        "Velanna ti sta valutando dalla testa ai piedi. Il tuo livello {{playerLevel}} non la impressiona molto. Ti afferra il braccio e ti tasta i muscoli con un broncio critico: devi raggiungere almeno il livello {{requiredLevel}} prima di essere degno di {emote:expedition.talisman} **{{talismanName}}**. Allenati, combatti i mostri, guadagna esperienza."
+      ]
+    },
+    "talismanReceived": [
+      "Velanna la osserva in silenzio per lunghi secondi. Poi, lentamente, estrae dalla borsa un ciondolo di pietra nera con venature dorate. Il {emote:expedition.talisman}{{talismanName}}** pulsa di un tenue bagliore. Ritiene che tu abbia dato prova di te e ti chiede di prenderti cura di **{{pet}}**. Il legame tra il padrone e la bestia è sacro. Ti mette in mano il talismano e chiude le dita su di esso, invitandoti a esplorare il mondo.\n\nRicevete il {emote:expedition.talisman} **{{talismanName}}** ! Ora è possibile inviare il proprio animale domestico tramite il modulo d'ordine {command:pet}."
+    ],
+    "expeditionBonus": {
+      "points": "Velanna emerge dall'ombra e ti mette una mano sulla spalla. Percepisce la presenza di **{{pet}}** da chilometri di distanza e sorride, cosa rara. Il tuo familiare esplora coraggiosamente e {emote:expedition.talisman} **{{talismanName}}** rafforza il vostro legame. Ti accarezza la testa, mormorando che la tua perseveranza sta dando i suoi frutti. Hai vinto **{{bonusPoints}} {emote:unitValues.score}** !",
+      "pointsAndMoney": "Velanna appare accanto a voi, annusando l'aria. Nota che il legame di {emote:expedition.talisman} **{{talismanName}}** è forte e che **{{pet}}** sta viaggiando bene. Estrae una borsa dalla cintura, spiegando che gli spiriti premiano coloro che si fidano dei loro compagni. Ti lancia la borsa. Hai vinto **{{bonusPoints}} {emote:unitValues.score}** e **{{bonusMoney}} {emote:unitValues.money}** !",
+      "pointsAndItem": "Velanna emerge dal boschetto e vi guarda con approvazione. Percepisce il legame tra voi e **{{pet}}** attraverso {emote:expedition.talisman} **{{talismanName}}**. Fruga nella sua borsa e tira fuori un oggetto, che vi porge: un ricordo delle sue spedizioni passate, per ringraziarvi della vostra fiducia. Hai vinto **{{bonusPoints}} {emote:unitValues.score}** !",
+      "combatPotion": "Velanna appare dal nulla, con una fiala scintillante in mano. Annuisce, impressionata dal coraggio di **{{pet}}** nel suo vagare per le terre selvagge. Ti porge la pozione, sussurrandoti che, poiché il tuo compagno non può aiutarti in combattimento mentre è in spedizione, questa mistura farà al caso tuo. Hai vinto **{{bonusPoints}} {emote:unitValues.score}**!"
+    },
+    "advice": [
+      "Velanna vi supera sul sentiero e si ferma brevemente. Vi consiglia di non sottovalutare mai il rischio e di mandare il vostro animale dove la sua forza può trionfare. Indica l'orizzonte, ricordando che le montagne offrono gemme e le foreste esperienza. Se ne va in silenzio come è arrivata.",
+      "Vedete Velanna che affila il suo pugnale su una roccia. Alza lo sguardo e vi ricorda che le spedizioni più lunghe sono più gratificanti, ma che sfibrano il vostro animale. L'equilibrio è essenziale. Verifica l'affilatura della lama sul pollice e aggiunge che non bisogna mai dimenticare di nutrire il proprio compagno prima di partire.",
+      "Velanna vi osserva da lontano, appoggiata a un albero. Quando vi avvicinate, vi sussurra che l'affetto del vostro animale determina la sua fedeltà durante una spedizione: più vi ama, più tornerà sicuro. Distoglie lo sguardo, lasciando intendere che si tratta di una lezione che ha imparato a sue spese."
+    ],
+    "cancellationWarning": [
+      "Velanna appare di fronte a voi, con il volto serio. Fissa il suo sguardo sul vostro e ringhia un avvertimento: non appena iniziate a preparare una spedizione, il vostro animale domestico si agita. Sta preparando mentalmente il viaggio, sognando i territori da esplorare. Annullare a questo punto - o peggio, richiamarlo nel bel mezzo del suo viaggio - significa infrangere una promessa. Si tocca il petto con il dito: ogni delusione lascia una cicatrice nel cuore del partner. Una volta è sufficiente. Ma se si ripete l'errore, sia durante i preparativi che dopo la partenza, la ferita si aggrava ogni volta.",
+      "Velanna appare accanto a voi e guarda pensierosa l'orizzonte. Ricorda un anziano del clan che si preparava a una spedizione per il suo animale domestico e poi cambiava idea all'ultimo momento. Altre volte lo richiamava lungo il cammino. Si volta verso di voi: in entrambi i casi, agli occhi della bestia è lo stesso tradimento. Non appena aprite la mappa della destinazione, il vostro compagno di viaggio freme d'impazienza. Annullare è spegnere quella fiamma. Disegna un cerchio nella polvere, sussurrando che più spesso lo si fa - preparativi interrotti o richiami brutali - più grave sarà la perdita di affetto.",
+      "Velanna ti raggiunge sul sentiero, a braccia conserte. Ti chiede se capisci davvero cosa prova un familiare quando gli viene mostrata la mappa di una spedizione. Gli occhi le brillano, il cuore le batte forte, sta già immaginando le avventure che la attendono. Si avvicina, abbassando la voce: che tu disdica prima della partenza o lo richiami nel bel mezzo di un'esplorazione, per lui è lo stesso: una promessa non mantenuta. La prima volta, perde un po' d'amore. La seconda volta nella stessa settimana, è il doppio. La terza volta, il triplo. Fa spallucce con un mezzo sorriso amaro: i familiari non conoscono la differenza tra le due cose, contano solo le delusioni."
+    ]
+  }
 }

@@ -252,6 +252,23 @@
     "Se si possiede una pozione e si viene attaccati, il suo effetto verrà applicato anche se non si è iniziato il combattimento.",
     "Se venite attaccati e avete una pozione, questa ha una probabilità del 15% di essere consumata. Probabilmente sarete in grado di usarla di nuovo!",
     "Una pozione da combattimento ben scelta può compensare le debolezze della vostra classe attuale.",
-    "Le pozioni da combattimento rare sono più potenti ma anche più difficili da trovare."
+    "Le pozioni da combattimento rare sono più potenti ma anche più difficili da trovare.",
+    "Dal livello 20 in poi, potrete imbattervi in una misteriosa guerriera che parla di spedizioni.",
+    "Le spedizioni consentono di inviare il proprio animale alla ricerca di tesori mentre si continua l'avventura.",
+    "Per sbloccare le spedizioni, è necessario avere un animale domestico, essere di livello 30, appartenere a una gilda e aver presentato l'animale a Talvar.",
+    "Più lunga è la spedizione, maggiori sono le ricompense, ma si consuma più cibo.",
+    "La velocità dell'animale riduce la durata delle spedizioni: un animale veloce tornerà prima.",
+    "La forza dell'animale riduce il rischio di fallire le spedizioni.",
+    "L'affetto del vostro animale domestico influenza le sue possibilità di successo nelle spedizioni.",
+    "Un animale in spedizione non può aiutarvi in combattimento se siete voi ad attaccare.",
+    "Annullare una spedizione o richiamare il proprio animale domestico significa perdere affetto, e la penalità aumenta se lo si fa più volte alla settimana.",
+    "Ogni luogo di spedizione offre bonus diversi: le montagne fanno guadagnare più soldi, le foreste più esperienza.",
+    "Le spedizioni a lunga distanza richiedono più tempo, ma possono dare frutti migliori.",
+    "Il vostro animale domestico deve essere nutrito prima di partire per una spedizione.",
+    "Un animale rancoroso si rifiuta di partecipare a una spedizione.",
+    "Il cibo consumato dalla spedizione proviene dalle scorte della vostra gilda.",
+    "Ogni volta vengono proposte tre spedizioni: due vicine alla vostra posizione e una lontana.",
+    "Esiste un talismano di clonazione molto raro che permette di avere un sosia spettrale del proprio animale durante la spedizione.",
+    "Incrociare Velanna quando il vostro animale è in spedizione può farvi guadagnare punti bonus e talvolta altre sorprese."
   ]
 }

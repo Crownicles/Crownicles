@@ -299,6 +299,16 @@
       "{{playerDisplay}} geht an Ihnen vorbei und zeigt Ihnen sein Tier **{{petEmote}}** **{{petName}}**. Sie streicheln es und gehen weiter. Gute Fahrt!",
       "{{playerDisplay}} läuft mit **{{petEmote}}** **{{petName}}** an der Leine über deine Straße. Sie schauen ihn verblüfft an und denken sich, dass Sie dieses Tier auch gerne hätten!"
     ],
+    "pet_on_expedition": [
+      "Sie begegnen {{playerDisplay}} auf Ihrem Weg. Sein Haustier **{{petEmote}}** **{{petName}}** ist heute nicht bei ihm, er hat es auf eine Expedition geschickt! Dieser Trainer weiß wirklich, wie er die Beziehung zu seinem Haustier optimieren kann.",
+      "{{playerDisplay}} läuft allein, ohne seinen treuen **{{petEmote}}** **{{petName}}**. Im Gespräch erfahren Sie, dass er sein Tier in ferne Länder geschickt hat, um sie zu erkunden. Ein wahrer Meistertrainer!",
+      "Nanu, {{playerDisplay}} hat sein Haustier heute nicht dabei. Er erklärt Ihnen stolz, dass sein **{{petEmote}}** **{{petName}}** auf eine Expedition gegangen ist. Was für ein gegenseitiges Vertrauen!"
+    ],
+    "pet_clone": [
+      "{{playerDisplay}} geht an Ihnen vorbei mit ... einer seltsamen, durchscheinenden Kreatur? Es ist **{{petEmote}}** **{{petName}}**, aber etwas stimmt nicht. Das Tier wirkt fast gespenstisch, als wäre es gar nicht wirklich da ...",
+      "Sie beobachten {{playerDisplay}} mit einem verwirrten Blick. Sein **{{petEmote}}** **{{petName}}** sieht ... seltsam aus. Durchscheinend, fast ätherisch. Er erklärt Ihnen, dass ein uralter Talisman es ihm ermöglicht, einen Klon seines Begleiters zu behalten, während der echte die Welt erkundet.",
+      "Ist es ein Geist? Nein, es ist der **{{petEmote}}** **{{petName}}** von {{playerDisplay}}, aber seine Silhouette ist seltsam durchsichtig. Die Magie eines Klon-Talismans, erzählt er Ihnen, während sein wirklicher Begleiter auf einer Expedition ist!"
+    ],
     "guild_chief": [
       "Verfallen Sie nicht in Panik! Sie laufen an {{playerDisplay}}, dem Anführer der Gilde **{{guildName}}**, vorbei.",
       "Sie kommen an {{playerDisplay}}vorbei. Er ist der Anführer der Gilde **{{guildName}}**!",
@@ -1003,11 +1013,18 @@
         "Der Spürsinn von **{{pet}}** hat Ihnen geholfen, eine Abkürzung zu finden. Dank ihr haben Sie **{{amountDisplay}}** {emote:unitValues.timeGain}gewonnen.",
         "Die Verteidigung von **{{pet}}** gegen {{randomAnimal}} wild war keine leichte Aufgabe, und dieses Mal haben Sie einen Stärkeren als sich selbst gefunden. Sie beschließen, die Flucht zu ergreifen, und rennen so schnell Sie können. Durch dieses Missgeschick gewinnen Sie **{{amountDisplay}}** {emote:unitValues.timeGain} auf Ihrer Reise."
       ],
-      "points": [
+      "points_m": [
         "Menschen, die Ihnen mit **{{pet}}** begegnen, werden Sie unweigerlich bemerken. Das steigert Ihren Ruf und Sie verdienen daher **{{amount}}** {emote:unitValues.score}.",
         "Einem alten Mann von Ihren Abenteuern bei **{{pet}}** zu erzählen, scheint Ihren Ruf verbessert zu haben. Sie gewinnen **{{amount}}** {emote:unitValues.score}."
       ],
-      "badge": [
+      "points_f": [
+        "Menschen, die Ihnen mit **{{pet}}** begegnen, werden Sie unweigerlich bemerken. Das steigert Ihren Ruf und Sie verdienen daher **{{amount}}** {emote:unitValues.score}.",
+        "Einem alten Mann von Ihren Abenteuern bei **{{pet}}** zu erzählen, scheint Ihren Ruf verbessert zu haben. Sie gewinnen **{{amount}}** {emote:unitValues.score}."
+      ],
+      "badge_m": [
+        "Die erfolgreiche Dressur von **{{pet}}** war eine echte Herausforderung, die Ihr Talent im Umgang mit Tieren beweist. Sie erhalten das Abzeichen {{badge}} !"
+      ],
+      "badge_f": [
         "Die erfolgreiche Dressur von **{{pet}}** war eine echte Herausforderung, die Ihr Talent im Umgang mit Tieren beweist. Sie erhalten das Abzeichen {{badge}} !"
       ],
       "loseLife_m": [
@@ -1076,7 +1093,10 @@
         "Nach einem langen Spaziergang ist **{{pet}}** außer Atem, es scheint, als könne sie nicht mit Ihnen Schritt halten. Dass Sie nicht auf sie gewartet haben, hat Ihre Beziehung verschlechtert. Sie verliert daher ein wenig an Liebe...",
         "Als Sie sich einem Stand nähern, starrt **{{pet}}** beharrlich auf das Essen, das auf einem Brett liegt. Trotz ihrer Bitte beschließen Sie, Ihren Weg fortzusetzen. **{{pet}}** Sie ist nachtragend und verliert ein wenig den Glauben an Sie."
       ],
-      "nothing": [
+      "nothing_m": [
+        "Sie setzen Ihren Weg an der Seite von **{{pet}}** fort. Es passiert nichts Besonderes."
+      ],
+      "nothing_f": [
         "Sie setzen Ihren Weg an der Seite von **{{pet}}** fort. Es passiert nichts Besonderes."
       ]
     },
@@ -1771,6 +1791,32 @@
       "Angesichts Ihrer Einsamkeit kann Talvar nicht anders, als seine Lebensphilosophie zu teilen, die sich auf die Liebe zu den Kreaturen konzentriert. Er erzählt Ihnen von den wundersamen Heilungen, die die Anwesenheit von Tieren bewirkt, sowohl auf den Körper als auch auf den Geist. Seine leidenschaftlichen Beschreibungen offenbaren einen Mann, der durch ein Leben, das er diesen außergewöhnlichen Wesen gewidmet hat, verändert wurde. Sie gehen nach Hause, berührt von dieser Offenbarung und vielleicht dazu bestimmt, einen ähnlichen Weg einzuschlagen.",
       "Angesichts der Tatsache, dass Sie keinen Vertrauten an Ihrer Seite haben, leuchten Talvars Augen von einer Mission, die es zu erfüllen gilt. Er weiht Sie in die Geheimnisse der Zähmung und die heiligen Rituale ein, die die Freundschaft zwischen Mensch und Tier besiegeln. Seine Lehren sind geprägt von uralten Traditionen und vergessenem Wissen. Sie setzen Ihren Weg als Hüter dieses wertvollen Wissens fort und werden vielleicht in naher Zukunft dazu berufen, es in die Praxis umzusetzen."
     ],
+    "petIsClone_m": [
+      "Beim Anblick von **{{pet}}** kneift Talvar verwirrt die Augen zusammen. Er nähert sich dem Wesen mit seinem Gesicht, betrachtet es von allen Seiten und weicht dann mit einem verwirrten Gesichtsausdruck zurück. Er flüstert, dass dieser Gefährte eine eigenartige Aura ausstrahlt, als wäre er gleichzeitig hier und woanders. Trotz seiner Zweifel übergibt er Ihnen {{reward}}, aber sein Blick bleibt mit einer Mischung aus Neugier und Sorge auf Ihren Vertrauten gerichtet.",
+      "Talvar bleibt abrupt stehen, als er **{{pet}}** erblickt. Seine buschigen Augenbrauen ziehen sich zusammen, als er zögernd eine Hand nach dem Wesen ausstreckt. Er haucht, dass er so etwas noch nie gesehen hat und dass ihm dieser Vertraute verschwommen vorkommt, wie ein Spiegelbild in trübem Wasser. Er schüttelt verwirrt den Kopf, bietet Ihnen aber dennoch {{reward}}an. Sie gehen mit dem Gefühl nach Hause, dass gerade etwas Seltsames passiert ist.",
+      "Als **{{pet}}** vor Talvar erscheint, blinzelt der alte Zwerg mehrmals. Er grummelt, dass seine Augen ihm einen Streich spielen und dass dieses Wesen zeitweise durchscheinend zu sein scheint. Verwirrt umkreist er Ihren Begleiter. Schließlich zuckt er mit den Schultern und reicht Ihnen {{reward}}, während er weiterhin misstrauische Blicke auf den geisterhaften Vertrauten wirft.",
+      "Talvars Blick erstarrt auf **{{pet}}**, und ein Ausdruck der Verwirrung überzieht seine Züge. Mit unsicherer Stimme erklärt er, dass er etwas Ungewöhnliches an dieser Kreatur wahrnimmt, dass sie da ist, aber nicht ganz, wie ein Echo oder eine Projektion. Trotz seiner offensichtlichen Verwirrung siegt seine Großzügigkeit und er bietet Ihnen {{reward}}, aber sein Geist bleibt sichtlich mit diesem Geheimnis beschäftigt.",
+      "Talvar beobachtet **{{pet}}** mit ungewöhnlicher Intensität. Er beginnt zu sprechen, bricht dann aber ab und sucht nach Worten. Er erklärt, dass diese Kreatur eine Energie ausstrahlt, die er noch nie zuvor gespürt hat, als wäre ihre Essenz zwischen zwei Orten aufgeteilt. Ein Schauer läuft durch seinen silbernen Bart. Er überreicht Ihnen {{reward}} mit leicht zitternder Hand, offensichtlich beunruhigt von dieser übernatürlichen Begegnung."
+    ],
+    "petIsClone_f": [
+      "Beim Anblick von **{{pet}}** kneift Talvar verwirrt die Augen zusammen. Er nähert sich dem Wesen mit seinem Gesicht, betrachtet es von allen Seiten und weicht dann mit einem verwirrten Gesichtsausdruck zurück. Er flüstert, dass diese Begleiterin eine eigenartige Aura ausstrahlt, als wäre sie gleichzeitig hier und woanders. Trotz seiner Zweifel übergibt er Ihnen {{reward}}, aber sein Blick bleibt mit einer Mischung aus Neugier und Sorge auf Ihren Vertrauten gerichtet.",
+      "Talvar bleibt abrupt stehen, als er **{{pet}}** erblickt. Seine buschigen Augenbrauen ziehen sich zusammen, als er zögernd eine Hand nach dem Wesen ausstreckt. Er haucht, dass er so etwas noch nie gesehen hat und dass ihm diese Kreatur verschwommen vorkommt, wie eine Spiegelung in trübem Wasser. Er schüttelt den Kopf, verwirrt über diesen Anblick, bietet Ihnen aber trotzdem {{reward}}an. Sie gehen mit dem Gefühl nach Hause, dass gerade etwas Seltsames passiert ist.",
+      "Als **{{pet}}** vor Talvar erscheint, blinzelt der alte Zwerg mehrmals. Er grummelt, dass seine Augen ihm einen Streich spielen und dass dieses Wesen zeitweise durchscheinend zu sein scheint. Verwirrt umkreist er Ihre Begleiterin. Schließlich zuckt er mit den Schultern und reicht Ihnen {{reward}}, während er weiterhin misstrauische Blicke auf den geisterhaften Vertrauten wirft.",
+      "Talvars Blick erstarrt auf **{{pet}}**, und ein Ausdruck der Verwirrung überzieht seine Züge. Mit unsicherer Stimme erklärt er, dass er etwas Ungewöhnliches an dieser Kreatur wahrnimmt, dass sie da ist, aber nicht ganz, wie ein Echo oder eine Projektion. Trotz seiner offensichtlichen Verwirrung siegt seine Großzügigkeit und er bietet Ihnen {{reward}}, aber sein Geist bleibt sichtlich mit diesem Geheimnis beschäftigt.",
+      "Talvar beobachtet **{{pet}}** mit ungewöhnlicher Intensität. Er beginnt zu sprechen, bricht dann aber ab und sucht nach Worten. Er erklärt, dass diese Kreatur eine Energie ausstrahlt, die er noch nie zuvor gespürt hat, als wäre ihre Essenz zwischen zwei Orten aufgeteilt. Ein Schauer läuft durch seinen silbernen Bart. Er überreicht Ihnen {{reward}} mit leicht zitternder Hand, offensichtlich beunruhigt von dieser übernatürlichen Begegnung."
+    ],
+    "clonePetAlreadySeen_m": [
+      "Talvar kneift die Augen zusammen, als er **{{pet}}** beobachtet, und schüttelt dann energisch den Kopf. Er grummelt, dass er schon einmal einen solchen Vertrauten gesehen hat, aber dieser hier ist ... anders ist. Er umkreist das Wesen verwirrt und murmelt, es sei, als würde man ein Spiegelbild sehen, das nicht ganz dem Original entspricht. Er entlässt Sie mit einer Handbewegung, sichtlich verwirrt über diese Anomalie.",
+      "Der alte Zwerg bleibt abrupt stehen, als er **{{pet}}** erblickt. Seine buschigen Augenbrauen ziehen sich zusammen, als er die Kreatur von allen Seiten betrachtet. Er erklärt, dass er diese Art von Vertrautem kennt und schon einmal bewundert hat, aber dass es eine seltsame Aura ausstrahlt, als würde es an zwei Orten gleichzeitig existieren. Er murmelt unverständliche Worte und winkt Ihnen zu, weiterzugehen.",
+      "Beim Anblick von **{{pet}}** tritt Talvar einen Schritt zurück, sein Blick ist verwirrt. Er behauptet, diese Spezies schon einmal gesehen zu haben, doch dieser Gefährte erscheint ihm verschwommen und unwirklich. Er streckt zögernd eine Hand nach der Kreatur aus, bevor er sie abrupt zurückzieht, als hätte er etwas Übernatürliches berührt. Mit unsicherer Stimme wünscht er Ihnen eine gute Reise.",
+      "Der weise Zwerg beobachtet **{{pet}}** mit ungewöhnlichem Misstrauen. Er gesteht, dass er schon einmal das Vergnügen hatte, einen solchen Vertrauten zu bewundern, doch dieser bereitet ihm Unbehagen. Er flüstert, dass dieses Wesen anscheinend da ist, ohne wirklich da zu sein, wie ein Echo oder ein lebender Schatten. Er entfernt sich kopfschüttelnd und lässt durchblicken, dass er über dieses Mysterium meditieren muss."
+    ],
+    "clonePetAlreadySeen_f": [
+      "Talvar kneift die Augen zusammen, als er **{{pet}}** beobachtet, und schüttelt dann energisch den Kopf. Er grummelt, dass er schon einmal eine solche Kreatur gesehen hat, aber diese hier ist ... anders ist. Er umkreist die Kreatur verwirrt und murmelt, es sei, als würde man ein Spiegelbild sehen, das nicht ganz dem Original entspricht. Er entlässt Sie mit einer Handbewegung, sichtlich verwirrt über diese Anomalie.",
+      "Der alte Zwerg bleibt abrupt stehen, als er **{{pet}}** erblickt. Seine buschigen Augenbrauen ziehen sich zusammen, als er die Kreatur von allen Seiten betrachtet. Er erklärt, dass er diese Art von Vertrautem kennt und sie schon einmal bewundert hat, aber dass sie eine seltsame Aura ausstrahlt, als würde sie an zwei Orten gleichzeitig existieren. Er murmelt unverständliche Worte und winkt Ihnen zu, weiterzugehen.",
+      "Beim Anblick von **{{pet}}** tritt Talvar einen Schritt zurück und schaut verwirrt. Er behauptet, diese Art schon einmal gesehen zu haben, aber diese Gefährtin erscheint ihm verschwommen und unwirklich. Er streckt zögernd eine Hand nach der Kreatur aus, bevor er sie abrupt zurückzieht, als ob er etwas Übernatürliches berührt hätte. Mit unsicherer Stimme wünscht er Ihnen eine gute Reise.",
+      "Der weise Zwerg beobachtet **{{pet}}** mit ungewöhnlichem Misstrauen. Er gesteht, dass er schon einmal das Vergnügen hatte, ein solches Wesen zu bewundern, aber dieses hier bereitet ihm Unbehagen. Er flüstert, dass diese Kreatur scheinbar da ist, ohne wirklich da zu sein, wie ein Echo oder ein lebender Schatten. Er entfernt sich kopfschüttelnd und lässt durchblicken, dass er über dieses Mysterium nachdenken muss."
+    ],
     "badge": [
       "Talvars Blick ist ernst und wird dann von einem stolzen Leuchten erhellt. Jede Geste, jeder Ausdruck verrät aufrichtige Bewunderung. Er erkennt den Wert Ihrer Taten an und lobt Ihren Mut, Ihr Urteilsvermögen und den Respekt, den Sie den Geschöpfen entgegengebracht haben. Als Zeichen der Anerkennung überreicht er Ihnen das Abzeichen {emote:badges.animal_lover}, ein bedeutungsvolles Geschenk. Dieses Zeichen der Wertschätzung besiegelt Ihre Verbindung. Sie trennen sich in respektvollem Schweigen, vereint durch ein unausgesprochenes Verständnis, das nur diejenigen teilen, die sich für eine Sache eingesetzt haben, die größer ist als sie selbst."
     ]
@@ -1875,5 +1921,344 @@
     "Sie bleiben einen Moment lang stehen. Selbst Ihr Atem scheint in der kalten Luft zu ersticken. In dieser völligen Bewegungslosigkeit meinen Sie, einen Schlag zu hören - schwach, regelmäßig - wie ein Herz, das unter der Erde begraben ist.",
     "Der Nebel wird noch dichter und Sie können Ihre eigenen Füße schon fast nicht mehr erkennen. Mit jedem Atemzug kriecht die eisige Feuchtigkeit in Ihre Kehle und die ganze Welt schrumpft auf ein paar Meter um Sie herum.",
     "Ein fernes Flüstern dringt plötzlich durch den Nebel, getragen von nirgendwo. Eine Stimme? Ein Wind? Unmöglich zu sagen. Sie stehen still, lauschen und sind sich bewusst, dass dieser Ort weder ein Ende noch einen Anfang hat, sondern nur eine atmende Stille."
-  ]
+  ],
+  "petFood": {
+    "intro": {
+      "badSmell": "Ihr treuer Begleiter bleibt plötzlich stehen, seine Nasenflügel zucken. Seine Ohren spitzen sich, als er den üblen Geruch wahrnimmt, der aus einem dunklen Dickicht strömt. Ihr Vertrauter scheint von diesem Gestank fasziniert zu sein, der viele Kreaturen zurückschrecken lassen würde.",
+      "goodSmell": "Ihr Begleiter wird plötzlich unruhig, wedelt begeistert mit dem Schwanz und seine Augen glänzen vor Aufregung. Ein verlockender, süßer Duft liegt in der Luft. Er beginnt freudig zu hüpfen, wie ein Schmetterling vom Licht angezogen, hin zu diesem vielversprechenden Duft, der seinen Appetit weckt.",
+      "vegetarian": "Ihr treuer Vertrauter verlangsamt sein Tempo und neigt den Kopf zur Seite, fasziniert von einem dichten Gehölz, das den Pfad säumt. Zwischen wilden Gräsern und silbrigen Farnen scheint er etwas Essbares durch die Vegetation zu erkennen.",
+      "meat": "Ihr Begleiter bleibt mit angespannten Muskeln stehen und starrt mit einem intensiven, raubtierhaften Blick auf ein Wasserloch, das in der untergehenden Sonne glitzert. Seine Lefzen kräuseln sich leicht und enthüllen scharfe Reißzähne, während er mit absoluter Konzentration die Luft schnuppert. Offensichtlich hat er eine Beute entdeckt...",
+      "soup": "Ein vertrauter, wohltuender Duft kitzelt Ihre Nase: der cremige Geruch einer Suppe, die in einem Kupfertopf köchelt. Ihr treuer Begleiter spitzt sofort die Ohren und eilt zu einem verlassenen Lager am Wegesrand, in dem noch immer ein schwarzer Eisenkessel über der glimmenden Glut hängt. Könnte es sein, dass es sich dabei um die ultimative Suppe handelt?"
+    },
+    "choices": {
+      "investigate": "Selbst nachsehen gehen",
+      "sendPet": "Schicken Sie Ihren Vertrauten",
+      "continue": "Fahren Sie weiter fort"
+    },
+    "outcomes": {
+      "found_by_player": "Sie nähern sich vorsichtig und nachdem Sie das Geäst beiseite geschoben und die Ecken durchsucht haben, fällt Ihnen **{{foodName}}** in die Hände. Sie bieten ihn Ihrem Begleiter an, der ihn dankbar annimmt und sein Geschenk mit einem zufriedenen Grunzen verschlingt.",
+      "found_by_player_soup": "Sie nähern sich vorsichtig dem verlassenen Kessel und entdecken mit Genugtuung **{{foodName}}**, der noch immer leise vor sich hin köchelt. Sie schütten eine große Portion in einen Napf und halten sie Ihrem Begleiter hin. Er schlürft die wärmende Mahlzeit und wedelt zufrieden mit dem Schwanz.",
+      "found_by_pet": "Ihr Vertrauter macht einen flinken Sprung und verschwindet für einen Moment im Dickicht. Bald darauf kommt er in einem stolzen, triumphierenden Trab zu Ihnen zurück und hält **{{foodName}}** behutsam zwischen seinen Fängen. Seine Augen glänzen vor Stolz, während er sich mit begeisterten Kaugeräuschen niederlässt und seinen Fund genießt.",
+      "found_by_pet_soup": "Ihr Vertrauter trabt schnell zu dem verlassenen Lager und taucht seine Schnauze in den dampfenden Kessel. Einige Augenblicke später kommt er mit glänzenden Schnauzen zu Ihnen zurück, nachdem er **{{foodName}}** offensichtlich mit sichtlichem Vergnügen genossen hat. Seine funkelnden Augen und sein wedelnder Schwanz zeugen von seiner gierigen Zufriedenheit.",
+      "found_anyway": "Gerade als du dich wieder auf den Weg machen willst, ohne dich weiter um diese Ablenkung zu kümmern, springt dein treuer Gefährte plötzlich in die umliegenden Büsche. Er kommt mit **{{foodName}}** wieder heraus, die er sofort mit gierigem Appetit und wedelndem Schwanz verschlingt.",
+      "found_anyway_soup": "Gerade als Sie sich wieder auf den Weg machen wollen, ohne sich weiter um das Lager zu kümmern, rennt Ihr treuer Begleiter zu dem verlassenen Kessel. Bevor Sie ihn daran hindern können, schlürft er mit einem genüsslichen Stöhnen **{{foodName}}** und freut sich sichtlich über den unerwarteten Gewinn.",
+      "player_failed": "Sie haben viele nervenaufreibende Minuten damit verbracht, die Umgebung akribisch abzusuchen, Brombeeren und Dornengestrüpp beiseite zu schieben, Steine und morsche Baumstümpfe umzudrehen, aber trotz all Ihrer verbissenen Bemühungen haben Sie nichts gefunden, was sich lohnt. Die Zeit, die Sie investiert haben, hat sich als genauso sinnlos erwiesen wie die Suche nach einem Schatz in einer leeren Truhe.",
+      "pet_failed": "Ihr Begleiter rennt entschlossen ins Gebüsch, kommt aber nach wenigen Augenblicken mit schwerfälligen Schritten, herunterhängenden Ohren und hängendem Schwanz zurück. Sein enttäuschter Blick und sein klägliches Quieken verraten, dass er versagt hat: Die Fährte war erfolglos und seine Bemühungen haben nur Bitterkeit hervorgebracht.",
+      "pet_failed_soup": "Ihr Begleiter trottet zu dem verlassenen Lagerplatz und schnüffelt lange an dem Kessel, der sich aber leider als leer erweist oder dessen Inhalt bereits abgekühlt und ungenießbar ist. Er kommt mit gesenkten Ohren und hängendem Schwanz zu Ihnen zurück, offensichtlich frustriert von der kulinarischen Enttäuschung.",
+      "nothing": "Sie beschließen weise, sich nicht länger an diesem Ort aufzuhalten, da die Zeit knapp ist und Ihre Suche keine Umwege duldet. Mit einer entschlossenen Geste fordern Sie Ihren Begleiter auf, Ihnen zu folgen, und setzen gemeinsam Ihren Weg in Richtung des Horizonts fort, der Sie ruft."
+    },
+    "foodNames": {
+      "badSmell": [
+        "ein Aas einer Krähe in fortgeschrittener Verwesung",
+        "die fauligen Eingeweide eines Sumpfgoblins",
+        "ein verfaultes Drachenei, das schwefelhaltige Dämpfe ausatmet",
+        "ein verschimmeltes Stück Blauschimmelkäse, das von einem gedankenlosen Reisenden vergessen wurde",
+        "die stinkenden Überreste einer Ratte, die seit mehreren Tagen krepiert war",
+        "ein Fledermauskadaver, der von krabbelnden Maden befallen ist",
+        "ein von Banditen zurückgelassenes Stück faschiertes Fleisch",
+        "ein toter Fisch mit grünlichen Schuppen, der in einem stehenden Teich schwimmt",
+        "Innereien von Wildschweinen, die von gefräßigen Fliegen wimmeln",
+        "ein durch Fäulnisgase aufgeblähter Schafsbauch",
+        "ein Wolfsschädel, der noch mit schwarzen Fleischfetzen besetzt ist"
+      ],
+      "goodSmell": [
+        "eine noch lauwarme Honig-Mandel-Torte",
+        "ein Viertel eines im Ofen goldbraun gebackenen Apfelkuchens mit Zimt",
+        "ein Stück Trockenfleisch, gewürzt mit Kräutern der Provence",
+        "eine saftige, süße Birne, die aus einem verlassenen Obstgarten gefallen ist",
+        "ein knuspriges, knochenförmiges Gebäck, das von einem großzügigen Bäcker geformt wurde",
+        "ein Stück Kuchen mit Haselnüssen und braunem Zucker",
+        "ein Stück Lebkuchen, der mit Ingwer und Nelken aromatisiert ist",
+        "eine Scheibe über Eichenglut geräucherter Speck",
+        "ein Briochebrötchen mit Rosinen und gesalzener Butter",
+        "ein Stück gereifter Cheddar-Käse, in ein Leinentuch gewickelt",
+        "ein Pfannkuchen, der mit Aprikosenkonfitüre gefüllt und mit Zucker bestreut ist",
+        "ein Schokoladenblitz, der auf einer Steinmauer zurückgelassen wurde"
+      ],
+      "vegetarian": [
+        "eine Handvoll wilde Beeren, die mit süßem Saft gefüllt sind",
+        "eine essbare Rübenwurzel, die noch mit fruchtbarer Erde gefüllt ist",
+        "ein kupferfarben schimmernder Waldpilz, der unter einer alten Eiche wächst",
+        "eine süße, zarte Löwenzahnblüte",
+        "ein zinnoberroter Apfel, der von einem einsamen Apfelbaum fiel",
+        "Haselnüsse, die frisch von ihren stacheligen Wanzen gefallen sind",
+        "ein goldener Maiskolben, der nach der Ernte auf einem Feld vergessen wurde",
+        "eine Traube wilder Weintrauben von tiefem Purpurrot",
+        "knackige Salatblätter, die von einem Gemüsegarten abgerissen wurden",
+        "eine wilde Karotte mit leicht bitterem Geschmack",
+        "einen Strauß zarter Brennnesseln mit nahrhaften Eigenschaften",
+        "essbare Farnsprossen im Frühling",
+        "ein aufgeschlitzter Kürbis am Rand eines Weges"
+      ],
+      "meat": [
+        "ein silberner Fisch, der noch im klaren Wasser eines Baches zappelt",
+        "ein junges Kaninchen, das sich weit von seinem Bau verirrt hat",
+        "ein Markknochen, der noch mit zartem und fettem Fleisch gefüllt ist",
+        "eine Scheibe geräucherter Schinken, die in einem offenen Lagerraum hängt",
+        "eine scharfe Schweinewurst, die von einem Straßenhändler verlegt wurde",
+        "ein Stück gesalzener Speck, das in Fettgewebe eingewickelt ist",
+        "die Reste einer gebratenen Ente, die von eiligen Reisenden zurückgelassen wurden",
+        "eine von einem Jäger frisch gehäutete Rehkeule",
+        "eine gekochte Rinderzunge, die auf einem flachen Stein abkühlt",
+        "mit Quellwasser gewaschene Schafskutteln",
+        "ein Stück gegrilltes Hähnchenfleisch mit orientalischen Gewürzen",
+        "ein mit Buchenholz geräucherter Aal",
+        "die Reste eines Hasenpfeffers, der in seiner Soße schmort"
+      ],
+      "soup": [
+        "noch dampfende Gemüsesuppe aus dem Garten",
+        "mit Thymian und Lorbeer parfümierte Hühnerbrühe",
+        "von der Kohlsuppe mit gebratenem Speck",
+        "Wildpilzcremesuppe mit Pilzen",
+        "mit Käse überbackene Zwiebelsuppe",
+        "von Eintopf mit Karotten und zartschmelzenden Rüben",
+        "Flusskrebs-Bisque, die mit seltenen Gewürzen verfeinert wurde"
+      ]
+    },
+    "love": {
+      "plus": "Ihr treuer Begleiter betrachtet Sie mit leuchtenden Augen, die von Dankbarkeit und Zuneigung zeugen. Er reibt sich an Ihren Beinen und gibt ein zufriedenes Schnurren von sich, was deutlich zeigt, dass dieses improvisierte Festmahl die Bande des Vertrauens und der Freundschaft zwischen Ihnen gestärkt hat!",
+      "minus": "Ihr Vertrauter starrt Sie mit einem schwarzen Blick voller stiller Vorwürfe an, die Lefzen sind zu einem missbilligenden Schmollmund aufgerollt. Er wendet den Kopf demonstrativ ab und stößt ein unzufriedenes Knurren aus, offensichtlich beleidigt von dem Essen, das seines zarten Gaumens nicht würdig ist...",
+      "neutral": "Ihr Mitreisender schlingt seine Mahlzeit mit einer fast philosophischen Distanz hinunter, ohne überschwängliche Begeisterung oder besonderen Ekel zu zeigen. Er scheint diesen Fund einfach als eine notwendige Sättigung zu betrachten, nicht mehr und nicht weniger."
+    }
+  },
+  "badPet": {
+    "intro": [
+      "Ein untersetzter Zwerg springt aus einem Felsen, sein roter Bart ist zottelig und seine Augen sind voller Hass. Beim Anblick von **{{pet}}** spuckt er angewidert auf den Boden und schwingt einen knorrigen Stock. Ihr Begleiter weicht zurück und legt die Ohren an den Schädel. Der Fremde stellt sich als Moltiar vor und schwört, dass er nichts mit seinem käferanbetenden Bruder zu tun hat.",
+      "Eine raue, zornige Stimme ruft Sie plötzlich an. Ein Zwerg mit einem Gesicht, das von einer alten Narbe gezeichnet ist, tritt vor, seine blutunterlaufenen Augen sind wütend auf **{{pet}}** gerichtet. Mit einer bedrohlichen Geste wirbelt er eine mit Nägeln beschlagene Keule herum. Ihr Begleiter zittert am ganzen Körper.",
+      "Hinter einer Felsformation springt ein verrückt dreinblickender Zwerg hervor, der sich vor Ihnen aufbaut und Ihren Weg versperrt. Seine rechte Hand weist die Stigmata eines alten Bisses auf. Er starrt **{{pet}}** mit brennendem Hass an und zieht einen zerbrochenen Dolch. Moltiar flucht, dass er im Gegensatz zu seinem Bruder Talvar weiß, wie man ein Ärgernis erkennt.",
+      "Ein kehliges Knurren lässt Sie aufschrecken. Ein dicker Zwerg lugt aus einer Nische hervor, sein geflochtener Bart klappert mit Knochenperlen. Sobald er **{{pet}}** sieht, verzieht sich sein Gesicht vor Ekel. Er zeigt mit einem anklagenden Finger auf Sie, während seine andere Hand eine rostige Axt fest umklammert.",
+      "Ihr Weg wird plötzlich von einer untersetzten, feindseligen Gestalt versperrt. Der Zwerg verzieht das Gesicht zu einem Ausdruck purer Abscheu, als er **{{pet}}** neben Ihnen entdeckt. Eine alte Wunde durchzieht seinen Unterarm und zeugt von einer schmerzhaften Vergangenheit. Er greift nach einem Kriegshammer. Moltiar knurrt, dass er diese abscheulichen Kreaturen nicht durch seine Ländereien ziehen lassen wird, egal, was sein naiver Bruder davon halten mag.",
+      "Das Klatschen eines rollenden Steins macht Sie auf eine Präsenz aufmerksam. Ein massiver Zwerg tritt aus dem Schatten eines Felsüberhangs hervor und mustert sofort **{{pet}}** mit spürbarer Feindseligkeit. Die Narben auf seinen Unterarmen zeugen von früheren schmerzhaften Begegnungen. Er schwingt drohend einen Knüppel.",
+      "Der Geruch von Erde und ranzigem Schweiß steigt Ihnen in die Nase, noch bevor Sie den Angreifer sehen. Ein Zwerg springt aus einer Felsspalte, seine Haut ist von der Sonne gegerbt, seine schwieligen Hände sind um eine Spitzhacke geklammert. Sein Blick fällt auf **{{pet}}** und kalte Wut verzerrt seine Züge. Er spuckt aus, dass sein idiotischer Bruder sehen sollte, was diese Viecher mit ihm gemacht haben.",
+      "Das Knirschen von Stiefeln auf dem Kies kündigt die Ankunft eines Eindringlings an. Ein Zwerg mit einem teilweise kahlen Kopf erscheint, sein grauer Bart ist zu einem strengen Katogan zusammengebunden. Seine Augen weiten sich vor Entsetzen, als er **{{pet}}** erblickt. Er weicht zurück, bevor er mit hasserfüllter Entschlossenheit ein Bergmannsmesser schwingt.",
+      "Ein spöttischer Pfiff hallt durch die Luft. Ein Zwerg sitzt auf einem Felsen und beobachtet Ihren Fortschritt mit Verachtung. Als er **{{pet}}** bemerkt, der neben Ihnen hertrottet, verzieht sich sein Gesichtsausdruck zu einer Grimasse aus tiefstem Ekel. Er springt auf den Boden, baut sich vor Ihnen auf und murmelt, dass sein Bruder mit seinen verrückten Ideen zu viele Reisende verdorben hat.",
+      "Der Boden unter Ihren Füßen bebt leicht und kündigt die Annäherung einer massiven Präsenz an. Ein mächtiger Zwerg, der breiter als hoch ist, taucht aus einem Felsbrocken auf. Sein Blick streift den Weg und bleibt mit glühendem Hass auf **{{pet}}** haften. Seine Armmuskeln verkrampfen sich, als er einen schweren Schmiedehammer hochhebt."
+    ],
+    "choices": {
+      "intimidate": "Befehlen Sie Ihrem Begleiter, den Zwerg einzuschüchtern",
+      "plead": "Versuch, den Zwerg mit Worten zur Vernunft zu bringen",
+      "giveMeat": "Dem Zwerg Fleisch anbieten, um ihn zu besänftigen",
+      "giveVeg": "Dem Zwerg als Zeichen des Friedens Gemüse anbieten",
+      "flee": "Mit Ihrem Begleiter fliehen",
+      "hide": "Ihren Begleiter verbergen",
+      "wait": "Warten, bis der Zorn des Zwergs nachlässt",
+      "protect": "Sich einmischen, um Ihren Begleiter zu schützen",
+      "distract": "Die Aufmerksamkeit des Zwergs ablenken",
+      "calm": "Versuchen, Ihren verängstigten Begleiter zu beruhigen",
+      "imposer": "Lassen Sie Ihren Begleiter sich gegen den Zwerg durchsetzen",
+      "energize": "Ihren Begleiter zum Durchhalten ermutigen"
+    },
+    "outcomes": {
+      "intimidate": {
+        "success": [
+          "Auf Ihren Befehl hin erhebt sich **{{pet}}** zu seiner vollen Höhe und stößt ein beeindruckendes Knurren aus. Moltiar, der von dieser Machtdemonstration überrascht ist, weicht einen unsicheren Schritt zurück und murmelt einige Beleidigungen, während er sich widerwillig entfernt. Ihr Begleiter schaut Ihnen stolz hinterher.",
+          "{{pet}}** nimmt eine bedrohliche Haltung ein und knurrt den feindseligen Zwerg mit überraschender Wildheit an. Als dieser merkt, dass die Konfrontation schiefgehen könnte, spuckt er eine letzte Beleidigung aus, bevor er sich zurückzieht. Ihr Begleiter scheint zufrieden zu sein, dass er sich dem Angreifer widersetzt hat."
+        ],
+        "fail": [
+          "Auf Ihren Befehl hin versucht **{{pet}}**, bedrohlich zu wirken, aber der Zwerg bricht angesichts dieser erbärmlichen Demonstration in ein grausames Lachen aus. Er schwingt seinen Stab und Ihr Begleiter weicht hastig zurück, sein Stolz ist durch diese Demütigung verletzt.",
+          "Bei dem Versuch, bedrohlich zu wirken, gelingt es **{{pet}}** nur, den Zwerg zu amüsieren, der ihm einen Tritt verpasst. Ihr Begleiter quiekt vor Schmerzen und wirft Ihnen einen vorwurfsvollen Blick zu, weil Sie ihn so bloßgestellt haben."
+        ]
+      },
+      "plead": {
+        "success": [
+          "Sie versuchen, Moltiar mit beruhigenden Worten zu besänftigen und ihm zu erklären, dass Ihr Begleiter keine Bedrohung darstellt. Etwas in Ihrer ehrlichen Stimme scheint einen Nerv zu treffen, und schließlich senkt er knurrend seine Waffe. **{{pet}}** weiß Ihre Diplomatie zu schätzen.",
+          "Ihre gemessenen Worte hallen in der angespannten Stille wider. Sie erwähnen den gegenseitigen Respekt unter Reisenden und der Zwerg stimmt trotz seines offensichtlichen Tierhasses zu, dass Sie Ihr Tier unter Kontrolle zu haben scheinen. Er tritt fluchend beiseite. **{{pet}}** beruhigt sich allmählich."
+        ],
+        "fail": [
+          "Sie versuchen, den Zwerg zur Vernunft zu bringen, aber Ihre Worte schüren nur seinen Zorn. Er schreit, dass Worte nicht ausreichen, um diese Kreaturen zu verteidigen, die er verabscheut. **{{pet}}** wendet den Blick ab, beschämt über Ihr Versagen, ihn zu beschützen.",
+          "Ihr erbärmliches Flehen scheint den Zwerg noch mehr zu verärgern. Er schaut Sie mit unverhohlener Verachtung an. **{{pet}}** beobachtet Sie mit einer Mischung aus Enttäuschung und Angst."
+        ]
+      },
+      "giveMeatLikes": {
+        "success": [
+          "Sie holen schnell ein Stück Fleisch heraus und halten es dem hungrigen Zwerg hin. Überrascht von diesem Angebot, nimmt er es knurrend an und beißt hungrig hinein. Er winkt Ihnen zu, sich zu verziehen, bevor er es sich anders überlegt. **{{pet}}** scheint über diesen Ausgang erleichtert zu sein.",
+          "Das Stück Fleisch, das Sie anbieten, lässt den Zwerg zögern. Sein Magen knurrt lauter als sein Hass, und schließlich nimmt er Ihr Geschenk an, während er sich entfernt. **{{pet}}** Erfreut sich an Ihrem Einfallsreichtum, der eine Konfrontation verhindert hat."
+        ],
+        "fail": [
+          "Sie holen ein Stück Fleisch heraus, um Moltiar zu besänftigen, doch dieser wirft es angewidert auf den Boden und weigert sich, sich so kaufen zu lassen. Leider hat **{{pet}}** ein Auge auf diese Delikatesse geworfen und schaut Sie mit anklagenden Augen an.",
+          "Das Stück Fleisch, das Sie anbieten, wird von dem wütenden Zwerg zertrampelt. **{{pet}}** beobachtet die Szene frustriert und ist enttäuscht, dass diese Leckerei verschwendet wurde."
+        ]
+      },
+      "giveMeatDislikes": {
+        "success": [
+          "Sie holen schnell ein Stück Fleisch heraus und halten es dem hungrigen Zwerg hin. Überrascht von diesem Angebot, nimmt er es knurrend an und beißt hungrig hinein. Er winkt Ihnen zu, sich zu verziehen, bevor er es sich anders überlegt. **{{pet}}** wendet den Blick ab, sichtlich uninteressiert an diesem Essen.",
+          "Das Stück Fleisch, das Sie anbieten, lässt den Zwerg zögern. Sein Magen knurrt lauter als sein Hass, und schließlich nimmt er Ihr Geschenk an, während er sich entfernt. **{{pet}}** scheint diese Gabe, die nicht für ihn bestimmt war, nicht zu bereuen."
+        ],
+        "fail": [
+          "Sie holen ein Stück Fleisch heraus, um Moltiar zu erweichen, doch dieser wirft es angewidert auf den Boden und weigert sich, sich so kaufen zu lassen. **{{pet}}** Als Pflanzenfresser scheint ihn dieser Verlust nicht zu stören.",
+          "Das Stück Fleisch, das du anbietest, wird von dem wütenden Zwerg zertrampelt. **{{pet}}** beachtet es kaum, da ihm diese Art von Essen nicht zusagt."
+        ]
+      },
+      "giveMeatNoFood": {
+        "fail": [
+          "Sie durchsuchen Ihre Taschen nach einem Stück Fleisch, doch das Lager Ihrer Gilde ist hoffnungslos leer. Moltiar kichert über deine Verwirrung, während **{{pet}}** dich verständnislos beobachtet.",
+          "Sie versuchen, Fleisch herauszuholen, um den Zwerg zu beruhigen, stellen aber entsetzt fest, dass Sie kein Fleisch haben. Moltiar nutzt die Gelegenheit, um **{{pet}}** zu misshandeln, der Ihnen einen anklagenden Blick zuwirft."
+        ]
+      },
+      "giveVegLikes": {
+        "success": [
+          "Sie bieten dem Zwerg einige Gemüsesorten an und verweisen auf deren Qualität und Frische. Wider Erwarten nimmt der Zwerg, der Suppen liebt, Ihre Gabe mit einem zustimmenden Grunzen an und geht. **{{pet}}** scheint von Ihrem Instinkt beeindruckt zu sein.",
+          "Das Gemüse, das Sie dem Zwerg anbieten, weckt bei ihm offensichtlich angenehmere Erinnerungen. Er nimmt es mit einem Anschein von Höflichkeit an und willigt ein, Sie passieren zu lassen. **{{pet}}** weiß diese friedliche Lösung zu schätzen."
+        ],
+        "fail": [
+          "Sie halten dem Zwerg Gemüse hin, in der Hoffnung, ihn damit zu besänftigen. Er bricht angesichts dieses lächerlichen Angebots in schallendes Gelächter aus und wischt sie mit einer Handbewegung beiseite. **{{pet}}** beobachtet neidisch das verschwendete Gemüse.",
+          "Das Gemüse, das Sie ungeschickt anbieten, wird von dem verächtlichen Zwerg mit einer Handbewegung weggefegt. **{{pet}}** wirft Ihnen einen vorwurfsvollen Blick zu, frustriert darüber, dass dieses Essen verloren geht."
+        ]
+      },
+      "giveVegDislikes": {
+        "success": [
+          "Sie bieten dem Zwerg einige Gemüsesorten an und verweisen auf deren Qualität und Frische. Wider Erwarten nimmt der Zwerg, der Suppen liebt, Ihre Gabe mit einem zustimmenden Grunzen an und geht. **{{pet}}** scheint sich wenig um den Verlust des Gemüses zu kümmern.",
+          "Das Gemüse, das Sie dem Zwerg anbieten, weckt bei ihm offensichtlich angenehmere Erinnerungen. Er nimmt es mit einem Anschein von Höflichkeit an und lässt Sie passieren. **{{pet}}** Als Fleischfresser stört sich der Zwerg nicht an diesem Opfer."
+        ],
+        "fail": [
+          "Sie halten dem Zwerg Gemüse hin, in der Hoffnung, ihn damit zu besänftigen. Er bricht angesichts dieses lächerlichen Angebots in schallendes Gelächter aus und wischt sie mit einer Handbewegung beiseite. **{{pet}}** scheint von diesem Verlust nicht betroffen zu sein.",
+          "Das Gemüse, das Sie ungeschickt anbieten, wird von dem verächtlichen Zwerg mit einem Handstreich beiseite gewischt. **{{pet}}**, der Fleisch bevorzugt, misst dem verlorenen Gemüse keine Bedeutung bei."
+        ]
+      },
+      "giveVegNoFood": {
+        "fail": [
+          "Du suchst nach Gemüse, das du dem Zwerg anbieten kannst, aber im Lager deiner Gilde gibt es keins. Moltiar lacht über deinen armseligen Versuch, während **{{pet}}** enttäuscht den Kopf senkt.",
+          "Sie wollen Gemüse anbieten, um die Situation zu beruhigen, aber Sie haben keins. Der Zwerg nutzt Ihr Zögern aus, um **{{pet}}** anzurempeln, der Sie vorwurfsvoll ansieht."
+        ]
+      },
+      "flee": {
+        "success": [
+          "Sie nehmen die Beine in die Hand und haben **{{pet}}** auf den Fersen. Dank Ihrer kombinierten Geschwindigkeit können Sie Moltiar schnell hinter sich lassen, der zu korpulent ist und fluchend aufgibt, Sie zu verfolgen. Ihr Begleiter schnappt nach Luft, scheint aber zufrieden zu sein.",
+          "Die Flucht erweist sich als die richtige Entscheidung. Sie rennen effizient mit **{{pet}}**, der Ihnen problemlos folgt, und lassen den wütenden, aber hilflosen Zwerg hinter sich. Sie haben sich verbündet."
+        ],
+        "fail": [
+          "Panik überkommt Sie und Sie rennen ungeschickt mit **{{pet}}** auf den Fersen davon. Moltiar, der schneller als erwartet ist, holt Sie ein und stößt Ihren Begleiter heftig an. Sie können schließlich fliehen, aber **{{pet}}** gibt Ihnen die Schuld an der überstürzten Flucht.",
+          "Sie nehmen in einer unrühmlichen Stampede die Beine in die Hand. Leider kann **{{pet}}** nicht mit Ihrem Tempo mithalten und bleibt zurück. Der Zwerg nutzt die Gelegenheit, um ihm einen Stockschlag zu verpassen, bevor Sie ihn zurückholen. Ihr Begleiter ist wütend über die missglückte Flucht."
+        ]
+      },
+      "hide": {
+        "success": [
+          "Sie finden schnell eine Felsnische und verstecken **{{pet}}** darin, bevor der Zwerg es bemerkt. Als er das Tier nicht mehr sehen kann, verliert er das Interesse und geht fluchend davon. Ihr Begleiter weiß Ihre Diskretion zu schätzen.",
+          "Sie finden einen idealen Ort, um **{{pet}}** unter Ihrem Umhang zu verstecken. Der Zwerg, der das Objekt seines Hasses nicht mehr sehen kann, beruhigt sich schließlich und setzt seinen Weg fort. Ihr Begleiter scheint durch Ihren Schutz beruhigt zu sein."
+        ],
+        "fail": [
+          "Sie versuchen, **{{pet}}** in einer Ecke zu verstecken, aber Moltiar überrascht Sie dabei. Er brüllt vor Wut und misshandelt Ihren Begleiter. Dieser wirft Ihnen einen vorwurfsvollen Blick zu.",
+          "Ihr Versuch, sich zu verstecken, scheitert kläglich, als **{{pet}}** ein nervöses Stöhnen ausstößt und sein Versteck preisgibt. Der Zwerg stürmt auf ihn zu und rempelt ihn heftig an. Ihr Begleiter leidet unter diesem Missgeschick."
+        ]
+      },
+      "wait": {
+        "success": [
+          "Sie beschließen, regungslos zu warten, in der Hoffnung, dass sich die Wut des Zwergs legt. Nach langen Minuten des Gebrülls scheint er müde zu werden und entfernt sich schließlich knurrend. **{{pet}}** scheint Ihre Geduld und Gelassenheit zu schätzen.",
+          "Das Warten zahlt sich aus. Als der Zwerg nicht die Reaktion findet, die er sich erhofft hatte, verliert er allmählich seinen kriegerischen Eifer und geht wieder. **{{pet}}** blickt Ihnen mit Respekt für Ihre Weisheit nach."
+        ],
+        "fail": [
+          "Sie beschließen, regungslos zu warten, aber der Zwerg interpretiert Ihre Passivität als Schwäche. Er kommt noch näher und droht **{{pet}}** noch mehr. Ihr Begleiter stampft nervös auf, gestresst von der Untätigkeit.",
+          "Das Warten zieht sich in die Länge und **{{pet}}** beginnt ängstlich zu stöhnen. Der Zwerg, der durch Ihre Untätigkeit ermutigt wurde, wird immer bedrohlicher. Ihr Begleiter wirft Ihnen vor, nichts zu tun."
+        ]
+      },
+      "protect": {
+        "success": [
+          "In einem Anfall von schützender Tapferkeit bringen Sie Ihren Körper fest zwischen Moltiar und **{{pet}}**. Ihre Entschlossenheit beeindruckt den Angreifer, und als er sieht, dass Sie bereit sind zu kämpfen, beschließt er, nicht weiter zu provozieren. Ihr Begleiter ist von Ihrem Mut gerührt.",
+          "Sie schützen **{{pet}}**, indem Sie sich selbstbewusst vor dem feindseligen Zwerg einmischen. Als dieser merkt, dass Sie nicht nachgeben werden, zieht er sich lieber zurück und spuckt Beleidigungen aus. Ihr Begleiter schaut Sie mit erneuter Zuneigung an."
+        ],
+        "fail": [
+          "In einem Anflug von Tapferkeit stellen Sie sich zwischen Moltiar und **{{pet}}**. Leider ist der Zwerg stärker, als Sie gedacht haben. Er stößt Sie grob zurück und nutzt die Gelegenheit, um Ihren Begleiter zu schlagen. Sie fühlen sich hilflos angesichts dieser Machtdemonstration.",
+          "Sie versuchen, **{{pet}}** zu schützen, indem Sie sich vor ihn stellen, aber Ihre Haltung ist unsicher. Der Zwerg geht leicht um Sie herum und rempelt Ihren Begleiter an, der Ihnen einen enttäuschten Blick zuwirft, weil Sie ihn nicht verteidigen können."
+        ]
+      },
+      "distract": {
+        "success": [
+          "Sie sorgen für Ablenkung, indem Sie lautstark auf eine bekannte Taverne in der entgegengesetzten Richtung verweisen. Moltiar, dessen Liebe zum Bier seinen Hass auf Tiere offensichtlich übertrifft, spitzt die Ohren und entfernt sich dann fasziniert. **{{pet}}** nutzt die Verwirrung aus, beeindruckt von Ihrer List.",
+          "Ihre Ablenkung funktioniert wunderbar. Indem Sie ein paar Münzen in die Luft werfen, ziehen Sie die gierige Aufmerksamkeit des Zwergs auf sich. Während er losstürmt, um die Münzen aufzuheben, **{{pet}}** und Sie schleichen sich unauffällig davon."
+        ],
+        "fail": [
+          "Sie versuchen, durch Gestikulieren und Schreien für Ablenkung zu sorgen. Dieses lächerliche Schauspiel reizt den Zwerg nur noch mehr und er kommt bedrohlich näher. **{{pet}}** weicht zurück, erschrocken über Ihr seltsames Verhalten.",
+          "In einem verzweifelten Versuch, den Gegner abzulenken, werfen Sie wahllos Kieselsteine. Einer davon trifft **{{pet}}**, der vor Schmerzen quietscht, während der Zwerg böse kichert."
+        ]
+      },
+      "calm": {
+        "success": [
+          "Es gelingt Ihnen, **{{pet}}** trotz der Bedrohung durch den Zwerg mit beruhigenden Berührungen zu besänftigen. Ihr Begleiter gewinnt Vertrauen und hört auf zu zittern. Als der Zwerg sieht, dass Sie Ihr Tier unter Kontrolle haben, scheint er weniger geneigt, es anzugreifen und entfernt sich schließlich.",
+          "Ihre beruhigenden Worte und Ihre selbstbewusste Haltung schaffen es, **{{pet}}** zu beruhigen. Sobald er sich entspannt hat, strahlt er eine Selbstsicherheit aus, die den Zwerg zögern lässt. Der Zwerg, der sich angesichts dieser Gelassenheit nicht mehr so sicher fühlt, zieht es vor, zu gehen."
+        ],
+        "fail": [
+          "Sie versuchen, **{{pet}}** mit Streicheleinheiten zu besänftigen, aber Ihre eigene Nervosität angesichts des feindseligen Zwergs überträgt sich auf Ihren Begleiter. Anstatt sich zu beruhigen, wird er noch unruhiger und wimmert.",
+          "Ihre Worte, die eigentlich beruhigend wirken sollen, verraten Ihren eigenen Schrecken. **{{pet}}** Da sie Ihre Angst wahrnimmt, begreift sie, dass die Situation ernst ist, und ihre Panik wird noch schlimmer."
+        ]
+      },
+      "imposer": {
+        "success": [
+          "Sie lassen **{{pet}}** selbstbewusst auf den Zwerg zugehen. Sein natürliches Auftreten und seine seltene Schönheit scheinen den Angreifer zu verunsichern, der trotz seines Hasses erkennt, dass er es mit einem außergewöhnlichen Exemplar zu tun hat. Er zieht sich zurück, gegen seinen Willen beeindruckt.",
+          "Ruhig vor dem Zwerg sitzend, strahlt **{{pet}}** eine unleugbare Aura der Erhabenheit aus. Der Zwerg, obwohl er Tiere hasst, kann nicht anders, als den Adel Ihres Begleiters anzuerkennen und entfernt sich vorsichtig."
+        ],
+        "fail": [
+          "Sie versuchen, **{{pet}}** sich gegen Moltiar durchsetzen zu lassen, aber Ihr eingeschüchterter Begleiter schafft es nicht, bedrohlich zu wirken. Der Zwerg bricht in ein verächtliches Lachen aus und rempelt ihn unsanft an.",
+          "**{{pet}}** versucht, sich dem Zwerg gegenüber imposant zu präsentieren, aber sein Aussehen reicht nicht aus, um ihn zu beeindrucken. Der Zwerg schaut ihn spöttisch an, bevor er ihm einen Tritt verpasst."
+        ]
+      },
+      "energize": {
+        "success": [
+          "Sie feuern **{{pet}}** mit begeisterten Worten an. Durch Ihre Unterstützung gewinnt Ihr Gefährte neue Kraft und stellt sich stolz vor Moltiar auf. Dieser ist von der neuen Energie überrascht, will aber kein Risiko eingehen und entfernt sich.",
+          "Ihre aufmunternden Worte geben **{{pet}}** neues Selbstvertrauen und er richtet sich entschlossen auf. Als der Zwerg sieht, dass Ihr Gefährte sich das nicht gefallen lässt, gibt er seinen Angriff auf und geht knurrend davon."
+        ],
+        "fail": [
+          "Sie versuchen, **{{pet}}** mit Worten zu ermutigen, aber Ihre Stimme ist angesichts der Bedrohung durch den Zwerg nicht überzeugend genug. Ihr Begleiter, der bereits in Angst und Schrecken versetzt ist, findet nicht den nötigen Mut und kauert sich noch weiter zusammen.",
+          "Ihre Versuche, **{{pet}}** zu verzinken, gehen ins Leere. Der Zwerg nutzt diesen Moment der Schwäche, um Ihren Begleiter zu misshandeln, der Ihnen vorwirft, ihn nicht besser beschützt zu haben."
+        ]
+      }
+    }
+  },
+  "expeditionAdvice": {
+    "talisman": {
+      "name": "Talisman der Verankerung"
+    },
+    "talismanIntro": [
+      "Eine Frau mit rabenschwarzem Haar, das mit Raubvogelfedern geflochten ist, taucht aus dem Unterholz auf. Eine Narbe durchzieht ihre linke Wange. Sie packt Ihren Arm mit einem eisernen Griff und starrt Sie mit ihren stechenden bernsteinfarbenen Augen an. Wortlos mustert sie den Horizont, lässt Ihren Arm los und verschwindet so schnell, wie sie aufgetaucht ist, und hinterlässt den Geruch von gegerbtem Leder und wilden Kräutern.",
+      "Die Frau mit der Narbe taucht auf Ihrem Weg wieder auf und sitzt auf einem Felsen. Ihre abgenutzte Lederrüstung trägt die Spuren von Dutzenden von Kämpfen. Sie reinigt methodisch einen Dolch mit geschwärzter Klinge. Als sie Sie sieht, knurrt sie etwas über ein uraltes Artefakt, das eine Verbindung zwischen einem Meister und seinem Tier herstellen kann... die {emote:expedition.talisman} **{{talismanName}}**. Sie steht auf und geht weg, ohne etwas hinzuzufügen.",
+      "Die Kriegerin erscheint hinter Ihnen, ohne auch nur den geringsten Laut von sich zu geben. Sie zucken zusammen, als Sie ihr vernarbtes Gesicht nur wenige Zentimeter von Ihrem entfernt entdecken. Sie flüstert, dass die {emote:expedition.talisman} **{{talismanName}}** die Seele eines Vertrauten mit seinem Herrn verbindet, sodass sie auch dann miteinander verbunden bleiben können, wenn sie meilenweit voneinander entfernt sind. Sie klopft Ihnen überraschend vertraut auf die Schulter und deutet dann an, dass diese Macht ihren Preis hat.",
+      "Diesmal entdecken Sie die wilde Frau, bevor sie Sie überraschen kann. Sie nickt mit einem halben Lächeln auf den Lippen und ist sichtlich beeindruckt von Ihren Fortschritten. Sie hockt sich hin und zeichnet Symbole in die Erde, die an die Macht des {emote:expedition.talisman} **{{talismanName}}** erinnern, einen geisterhaften Doppelgänger eines Vertrauten zu erschaffen, während dieser die Welt erkundet. Eine alte Magie, die nur den Würdigen vorbehalten ist. Sie verwischt die Spuren und verschwindet im Gestrüpp.",
+      "Die Kriegerin erwartet Sie, an einen Baum gelehnt. Zum ersten Mal fällt Ihnen eine kunstvoll gearbeitete Ledertasche an ihrem Gürtel auf. Sie stellt sich als Velanna vor und erklärt, dass ihr Klan früher die {emote:expedition.talisman} **{{talismanName}}** benutzte, um ihre Gefährten auf Erkundungstour zu schicken. Der Klan existiert nicht mehr, aber die Tradition muss weiterleben. Ihr Blick wird härter und deutet an, dass Sie sich die {emote:expedition.talisman} **{{talismanName}}** verdienen müssen."
+    ],
+    "expeditionExplanation": [
+      "Velanna taucht aus dem hohen Gras auf und hat einen Pfeil auf ihrem Bogen eingelegt. Sie schießt den Pfeil auf einen imaginären Vogel und wendet sich dann an Sie. Sie macht Ihnen klar, dass eine Expedition kein Spaziergang ist: Ihr Haustier wird Gefahren begegnen, Raubtieren und dem Wetter. Sie holt ihren Pfeil aus einem Baumstamm und fügt hinzu, dass die Belohnungen - Gold, Erfahrung, seltene Gegenstände - das Risiko für diejenigen wert sind, die es wagen.",
+      "Sie finden Velanna dabei, wie sie mit brutaler Effizienz einen Hasen häutet. Sie schaut zu Ihnen auf, ohne ihre Arbeit zu unterbrechen, und erklärt Ihnen, dass es auf die Dauer der Expedition ankommt: Je länger sie dauert, desto größer ist die Beute, aber der Begleiter wird sich auch mehr verausgaben. Sie wischt ihre Klinge an ihrem Oberschenkel ab und sagt, dass ein hungriger Begleiter sich weigern wird, zu gehen.",
+      "Velanna ertappt Sie beim Ausruhen und tritt Ihre Feldflasche um. Sie fordert Sie auf, aufzustehen und Ihren Vertrauten zu verstehen. Sie hockt sich vor Sie und erklärt, dass das Risiko einer Expedition von der Stärke des Tieres abhängt: Ein starker und trainierter Vertrauter wird immer zurückkehren, aber ein ängstliches oder wildes Tier ist eine andere Geschichte. Sie hebt Ihre Feldflasche auf und reicht sie Ihnen.",
+      "Velanna erscheint in Ihrem Lager mit einem geflochtenen Korb unter dem Arm. Daraus holt sie wilde Früchte hervor, die sie mit Ihnen teilt. Sie weist darauf hin, dass ein Vertrauter, der auf eine Expedition gehen soll, gefüttert werden und Vertrauen haben muss, was griesgrämige Tiere kategorisch ablehnen. Sie beißt in einen Apfel und erwähnt, dass Talvar von den Bergen, ein alter Freund, den Vertrauten vorher untersuchen muss.",
+      "Velanna wartet mit verschränkten Armen an einer Kreuzung auf Sie. Sie erteilt ihre letzte Lektion: Ein Begleiter muss wissen, dass jemand auf seinen Herrn aufpasst, während er weg ist, daher ist eine Gilde so wichtig. Sie nimmt ihre Arme auseinander und legt eine Hand auf ihr Herz, wobei sie auf den Kodex ihres Clans verweist, der es verbietet, einen Begleiter allein zu lassen. Ihr Blick wird kurz weich, bevor sie Ihnen signalisiert, dass es an der Zeit ist, sich zu beweisen."
+    ],
+    "conditions": {
+      "noPet": [
+        "Velanna beäugt Sie verächtlich. Ein {emote:expedition.talisman} **{{talismanName}}** ohne Vertraute zum Anbinden ist nur ein glänzender Kieselstein. Sie bricht in ein heiseres Lachen aus und lädt Sie ein, wiederzukommen, wenn Sie eine Kreatur gezähmt haben."
+      ],
+      "petHungry": [
+        "Velanna mustert **{{pet}}** kritisch und dreht sich dann wütend zu Ihnen um. Der leere Bauch Ihres Begleiters entsetzt sie. Sie schüttelt angewidert den Kopf: Ein hungriger Vertrauter würde keine drei Schritte machen, bevor er zusammenbricht. Füttern Sie ihn zuerst."
+      ],
+      "petFeisty": [
+        "Velanna beobachtet, wie **{{pet}}** knurrt und in Ihre Richtung spuckt. Sie weicht vorsichtig zurück und stellt fest, dass dieses gallige Tier Sie hasst. Die Kriegerin zuckt mit den Schultern: Warum sollte sie ihr Leben für Sie riskieren? Gewinnen Sie zuerst ihr Vertrauen."
+      ],
+      "petNotSeenByTalvar": [
+        "Velanna kniet nieder, um **{{pet}}** zu untersuchen. Nach einer Weile runzelt sie die Stirn: Diese Kreatur ist Talvar noch nie vorgestellt worden. Sie steht auf, klopft sich die Knie ab und erklärt, dass der Bergzwerg zuerst bescheinigen muss, dass Ihr Vertrauter gesund ist. Das ist ein alter Pakt zwischen ihren Traditionen."
+      ],
+      "noGuild": [
+        "Velanna starrt Sie lange an und seufzt dann, als sie feststellt, dass Sie allein reisen. Sie fragt sich, wer auf Sie aufpassen wird, wenn Ihr Vertrauter auf Expedition geht. Sie verschränkt die Arme: Der {emote:expedition.talisman} **{{talismanName}}** verbindet die Seelen, aber er ersetzt nicht die Solidarität der Lebenden. Schließen Sie sich einer Gilde an."
+      ],
+      "levelTooLow": [
+        "Velanna misst Sie von Kopf bis Fuß. Ihr Niveau {{playerLevel}} beeindruckt sie nicht sehr. Sie greift nach deinem Arm und tastet deine Muskeln mit einem kritischen Schmollmund ab: Du musst mindestens Level {{requiredLevel}} erreichen, bevor du dich der {emote:expedition.talisman} **{{talismanName}}** würdig erweisen kannst. Trainiere, kämpfe gegen Monster, sammle Erfahrung."
+      ]
+    },
+    "talismanReceived": [
+      "Velanna beobachtet Sie viele Sekunden lang schweigend. Dann zieht sie langsam einen Anhänger aus schwarzem Stein mit goldenen Adern aus ihrer Tasche. Der {emote:expedition.talisman} **{{talismanName}}** pulsiert in einem sanften Licht. Sie ist der Meinung, dass Sie sich bewährt haben, und weist Sie an, sich um **{{pet}}** zu kümmern. Die Verbindung zwischen einem Meister und seinem Tier ist heilig. Sie legt den Talisman in Ihre Hand, schließt Ihre Finger und lädt Sie ein, die Welt zu erkunden.\n\nSie erhalten den {emote:expedition.talisman} **{{talismanName}}**! Sie können Ihren Vertrauten nun aus der Bestellung {command:pet}in den Versand schicken."
+    ],
+    "expeditionBonus": {
+      "points": "Velanna taucht aus den Schatten auf und legt eine Hand auf Ihre Schulter. Sie nimmt die Anwesenheit von **{{pet}}** meilenweit entfernt wahr und lächelt - ein seltener Anblick. Ihr Vertrauter erkundet mutig und die {emote:expedition.talisman} **{{talismanName}}** stärkt eure Verbindung. Sie klopft Ihnen auf den Kopf und flüstert, dass sich Ihre Beharrlichkeit auszahlt. Sie gewinnen **{{bonusPoints}} {emote:unitValues.score}**!",
+      "pointsAndMoney": "Velanna erscheint neben Ihnen und schnuppert an der Luft. Sie stellt fest, dass die Verbindung von {emote:expedition.talisman} **{{talismanName}}** stark ist und dass **{{pet}}** gut reist. Sie zieht einen Geldbeutel aus ihrem Gürtel und erklärt, dass die Geister diejenigen belohnen, die ihren Gefährten vertrauen. Sie wirft Ihnen den Geldbeutel zu. Sie gewinnen **{{bonusPoints}} {emote:unitValues.score}** und **{{bonusMoney}} {emote:unitValues.money}**!",
+      "pointsAndItem": "Velanna taucht aus dem Gebüsch auf und beobachtet Sie mit anerkennenden Augen. Sie spürt die Verbindung zwischen Ihnen und **{{pet}}** durch den {emote:expedition.talisman} **{{talismanName}}**. Sie greift in ihre Tasche und zieht einen Gegenstand hervor, den sie Ihnen überreicht: ein Andenken an ihre eigenen früheren Expeditionen, um Ihnen für Ihr Vertrauen zu danken. Sie gewinnen **{{bonusPoints}} {emote:unitValues.score}**!",
+      "combatPotion": "Velanna taucht wie aus dem Nichts auf, mit einer funkelnden Phiole in der Hand. Sie nickt, beeindruckt vom Mut von **{{pet}}**, der durch die Wildnis zieht. Sie reicht Ihnen den Trank und flüstert, dass Ihr Gefährte Ihnen im Kampf nicht helfen kann, solange er auf einer Expedition ist, also wird diese Mixtur den Zweck erfüllen. Sie gewinnen **{{bonusPoints}} {emote:unitValues.score}**!"
+    },
+    "advice": [
+      "Velanna begegnet Ihnen auf dem Weg und bleibt kurz stehen. Sie rät Ihnen, das Risiko nie zu unterschätzen und Ihren Vertrauten dorthin zu schicken, wo seine Stärke triumphieren kann. Sie deutet auf den Horizont und erwähnt, dass die Berge Edelsteine und die Wälder Erfahrung bieten. Sie geht so leise wieder weg, wie sie gekommen ist.",
+      "Sie sehen Velanna, die ihren Dolch an einem Felsen schärft. Sie schaut auf und erinnert Sie daran, dass längere Expeditionen mehr Geld einbringen, aber Ihren Begleiter erschöpfen. Es ist wichtig, das Gleichgewicht zu finden. Sie testet die Schärfe der Klinge an ihrem Daumen und fügt hinzu, dass man nie vergessen sollte, seinen Begleiter vor dem Aufbruch zu füttern.",
+      "Velanna beobachtet Sie aus der Ferne, wie Sie sich an einen Baum lehnen. Als Sie sich nähern, flüstert sie, dass die Zuneigung Ihres Vertrauten seine Loyalität auf der Expedition bestimmt: Je mehr er Sie liebt, desto sicherer wird er zurückkehren. Sie schaut weg und deutet an, dass sie diese Lektion auf ihre Kosten gelernt hat."
+    ],
+    "cancellationWarning": [
+      "Velanna taucht mit ernstem Gesicht vor Ihnen auf. Sie blickt in Ihre Augen und brummt eine Warnung: Sobald Sie mit den Vorbereitungen für eine Expedition beginnen, wird Ihr Vertrauter vor Aufregung in Flammen stehen. Er plant im Geiste seine Reise und träumt von den Gebieten, die er erkunden will. Zu diesem Zeitpunkt abzusagen - oder schlimmer noch, ihn mitten auf der Reise zurückzurufen - ist wie ein Versprechen zu brechen. Sie tippt mit dem Finger auf Ihre Brust: Jede Enttäuschung hinterlässt eine Narbe im Herzen Ihres Partners. Einmal geht es noch. Aber diesen Fehler zu wiederholen, sei es während der Vorbereitungen oder nach der Abreise, und die Wunde wird jedes Mal größer.",
+      "Velanna erscheint neben Ihnen und blickt nachdenklich auf den Horizont. Sie erinnert sich an einen Clanältesten, der die Vorbereitungen für eine Expedition seines Vertrauten in die Wege leitete und es sich dann im letzten Moment anders überlegte. Ein anderes Mal rief er ihn während der Reise zurück. Sie wendet sich Ihnen zu: In beiden Fällen handelt es sich in den Augen der Bestie um denselben Verrat. In dem Moment, in dem Sie die Karte mit den Reisezielen öffnen, zittert Ihr Begleiter vor Ungeduld. Eine Stornierung bedeutet, diese Flamme zu löschen. Sie zieht einen Kreis in den Staub und flüstert, dass der Verlust an Zuneigung umso größer ist, je öfter Sie es tun - abgebrochene Vorbereitungen oder abrupte Erinnerungen.",
+      "Velanna fängt Sie auf dem Pfad mit verschränkten Armen ab. Sie fragt, ob Sie wirklich verstehen, wie sich ein Vertrauter fühlt, wenn man ihm eine Expeditionskarte zeigt. Ihre Augen leuchten, ihr Herz rast und sie malt sich bereits die Abenteuer aus, die sie erwarten. Sie kommt näher und senkt die Stimme: Ob Sie vor der Abreise absagen oder ihn mitten in der Erkundung zurückrufen, für ihn ist es das Gleiche - ein gebrochenes Versprechen. Beim ersten Mal verliert er ein bisschen Liebe. Beim zweiten Mal in derselben Woche ist es doppelt so viel. Beim dritten Mal das Dreifache. Sie zuckt die Schultern mit einem halben, bitteren Lächeln: Vertraute machen keinen Unterschied zwischen den beiden, sie zählen nur die Enttäuschungen."
+    ]
+  }
 }
