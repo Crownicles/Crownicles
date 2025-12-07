@@ -32,6 +32,8 @@
     "petSell": "Verkauf von Begleiter",
     "petSellConfirm": "Bestätigung des Ankaufs eines Begleites",
     "petTransfer": "Tiertransfer",
+    "petExpedition": "consultation d'expédition en cours",
+    "petExpeditionChoice": "choix d'une expédition",
     "pveIsland": "Mini-Wind aus der PVE",
     "report": "Bericht",
     "reportCommand": "Bericht, Befehl",
