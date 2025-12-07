@@ -615,7 +615,7 @@ export abstract class ExpeditionConstants {
 		/**
 		 * Chance for an expedition to have the bonus tokens multiplier (1 in 50)
 		 */
-		BONUS_EXPEDITION_CHANCE: 50,
+		TOKEN_BONUS_EXPEDITION_CHANCE: 8,
 
 		/**
 		 * Multiplier applied to tokens when expedition has the bonus tag
@@ -625,7 +625,17 @@ export abstract class ExpeditionConstants {
 		/**
 		 * Minimum tokens guaranteed from any expedition
 		 */
-		MIN_TOKEN_REWARD: 1
+		MIN_TOKEN_REWARD: 1,
+
+		/**
+		 * Random boost range applied to all expeditions (minimum inclusive)
+		 */
+		RANDOM_BOOST_MIN: 0,
+
+		/**
+		 * Random boost range applied to all expeditions (maximum inclusive)
+		 */
+		RANDOM_BOOST_MAX: 2
 	};
 
 	/**

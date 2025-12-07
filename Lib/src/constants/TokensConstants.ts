@@ -11,7 +11,7 @@ export abstract class TokensConstants {
 
 	static readonly REPORT = {
 		BASE_COST: 1,
-		MINUTES_PER_ADDITIONAL_TOKEN: 20,
+		MINUTES_PER_ADDITIONAL_TOKEN: 28,
 		MAX_COST: 5
 	};
 }

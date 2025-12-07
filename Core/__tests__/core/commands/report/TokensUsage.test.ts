@@ -137,39 +137,39 @@ describe("Tokens Usage", () => {
 				expect(cost).toBe(2);
 			});
 
-			it("should cost 2 tokens for exactly 20 minutes remaining", () => {
-				const cost = calculateTokenCost(Effect.OCCUPIED.id, 20 * 60_000); // 20 minutes
+			it("should cost 2 tokens for exactly 28 minutes remaining", () => {
+				const cost = calculateTokenCost(Effect.OCCUPIED.id, 28 * 60_000); // 28 minutes
 				expect(cost).toBe(2);
 			});
 
-			it("should cost 3 tokens for 21 minutes remaining", () => {
-				const cost = calculateTokenCost(Effect.OCCUPIED.id, 21 * 60_000); // 21 minutes
+			it("should cost 3 tokens for 29 minutes remaining", () => {
+				const cost = calculateTokenCost(Effect.OCCUPIED.id, 29 * 60_000); // 29 minutes
 				expect(cost).toBe(3);
 			});
 
-			it("should cost 3 tokens for 40 minutes remaining", () => {
-				const cost = calculateTokenCost(Effect.OCCUPIED.id, 40 * 60_000); // 40 minutes
+			it("should cost 3 tokens for 56 minutes remaining", () => {
+				const cost = calculateTokenCost(Effect.OCCUPIED.id, 56 * 60_000); // 56 minutes
 				expect(cost).toBe(3);
 			});
 
-			it("should cost 4 tokens for 41 minutes remaining", () => {
-				const cost = calculateTokenCost(Effect.OCCUPIED.id, 41 * 60_000); // 41 minutes
+			it("should cost 4 tokens for 57 minutes remaining", () => {
+				const cost = calculateTokenCost(Effect.OCCUPIED.id, 57 * 60_000); // 57 minutes
 				expect(cost).toBe(4);
 			});
 
-			it("should cost 4 tokens for 60 minutes remaining", () => {
-				const cost = calculateTokenCost(Effect.OCCUPIED.id, 60 * 60_000); // 60 minutes
+			it("should cost 4 tokens for 84 minutes remaining", () => {
+				const cost = calculateTokenCost(Effect.OCCUPIED.id, 84 * 60_000); // 84 minutes
 				expect(cost).toBe(4);
 			});
 
-			it("should cost 5 tokens for 61 minutes remaining", () => {
-				const cost = calculateTokenCost(Effect.OCCUPIED.id, 61 * 60_000); // 61 minutes
+			it("should cost 5 tokens for 85 minutes remaining", () => {
+				const cost = calculateTokenCost(Effect.OCCUPIED.id, 85 * 60_000); // 85 minutes
 				expect(cost).toBe(5);
 			});
 
-			it("should cap at 5 tokens for 80 minutes remaining", () => {
+			it("should cost 4 tokens for 80 minutes remaining", () => {
 				const cost = calculateTokenCost(Effect.OCCUPIED.id, 80 * 60_000); // 80 minutes
-				expect(cost).toBe(5);
+				expect(cost).toBe(4);
 			});
 
 			it("should cap at 5 tokens for very long durations (120 minutes)", () => {
@@ -243,18 +243,18 @@ describe("Tokens Usage", () => {
 				expect(cost).toBe(2);
 			});
 
-			it("should handle exactly at boundaries", () => {
-				// Exactly 0 remaining
-				expect(calculateTokenCost(Effect.OCCUPIED.id, 0)).toBe(1);
-				// Exactly 20 minutes
-				expect(calculateTokenCost(Effect.OCCUPIED.id, 20 * 60_000)).toBe(2);
-				// Exactly 40 minutes
-				expect(calculateTokenCost(Effect.OCCUPIED.id, 40 * 60_000)).toBe(3);
-				// Exactly 60 minutes
-				expect(calculateTokenCost(Effect.OCCUPIED.id, 60 * 60_000)).toBe(4);
-				// Exactly 80 minutes
-				expect(calculateTokenCost(Effect.OCCUPIED.id, 80 * 60_000)).toBe(5);
-			});
+		it("should handle exactly at boundaries", () => {
+			// Exactly 0 remaining
+			expect(calculateTokenCost(Effect.OCCUPIED.id, 0)).toBe(1);
+			// Exactly 28 minutes
+			expect(calculateTokenCost(Effect.OCCUPIED.id, 28 * 60_000)).toBe(2);
+			// Exactly 56 minutes
+			expect(calculateTokenCost(Effect.OCCUPIED.id, 56 * 60_000)).toBe(3);
+			// Exactly 84 minutes
+			expect(calculateTokenCost(Effect.OCCUPIED.id, 84 * 60_000)).toBe(4);
+			// Exactly 112 minutes (beyond max, capped at 5)
+			expect(calculateTokenCost(Effect.OCCUPIED.id, 112 * 60_000)).toBe(5);
+		});
 		});
 	});
 
@@ -263,11 +263,9 @@ describe("Tokens Usage", () => {
 			expect(TokensConstants.REPORT.BASE_COST).toBe(1);
 		});
 
-		it("should have correct minutes per additional token", () => {
-			expect(TokensConstants.REPORT.MINUTES_PER_ADDITIONAL_TOKEN).toBe(20);
-		});
-
-		it("should have correct max cost", () => {
+			it("should have correct minutes per additional token", () => {
+				expect(TokensConstants.REPORT.MINUTES_PER_ADDITIONAL_TOKEN).toBe(28);
+			});		it("should have correct max cost", () => {
 			expect(TokensConstants.REPORT.MAX_COST).toBe(5);
 		});
 

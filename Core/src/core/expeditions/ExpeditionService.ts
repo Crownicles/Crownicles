@@ -186,7 +186,7 @@ function determineBonusType(hasCloneTalisman: boolean): ExpeditionBonusType {
 	}
 
 	// Check for bonus tokens (1/50)
-	if (RandomUtils.crowniclesRandom.bool(1 / ExpeditionConstants.BONUS_TOKENS.BONUS_EXPEDITION_CHANCE)) {
+	if (RandomUtils.crowniclesRandom.bool(1 / ExpeditionConstants.BONUS_TOKENS.TOKEN_BONUS_EXPEDITION_CHANCE)) {
 		return ExpeditionBonusType.BONUS_TOKENS;
 	}
 
@@ -326,7 +326,8 @@ export function determineExpeditionOutcome(
 	effectiveRisk: number,
 	expedition: ExpeditionData,
 	rewardIndex: number,
-	hasCloneTalisman: boolean
+	hasCloneTalisman: boolean,
+	playerCurrentTokens: number
 ): ExpeditionOutcome {
 	const totalFailure = RandomUtils.crowniclesRandom.bool(effectiveRisk / ExpeditionConstants.PERCENTAGE.MAX);
 
@@ -344,7 +345,8 @@ export function determineExpeditionOutcome(
 		expedition,
 		rewardIndex,
 		isPartialSuccess: partialSuccess,
-		hasCloneTalisman
+		hasCloneTalisman,
+		playerCurrentTokens
 	});
 
 	return {

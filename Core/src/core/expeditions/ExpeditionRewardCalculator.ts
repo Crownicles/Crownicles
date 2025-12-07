@@ -54,12 +54,20 @@ interface ItemReward {
 	itemCategory: number;
 }
 
-function calculateTokensReward(rewardIndex: number, hasBonusTokens: boolean): number {
+function calculateTokensReward(rewardIndex: number, hasBonusTokens: boolean, playerCurrentTokens: number): number {
 	const baseTokens = rewardIndex - TokensConstants.EXPEDITION.REWARD_INDEX_OFFSET;
 	const finalTokens = hasBonusTokens
 		? baseTokens * ExpeditionConstants.BONUS_TOKENS.MULTIPLIER
 		: baseTokens;
-	return Math.max(ExpeditionConstants.BONUS_TOKENS.MIN_TOKEN_REWARD, finalTokens);
+	const randomBoost = RandomUtils.randInt(
+		ExpeditionConstants.BONUS_TOKENS.RANDOM_BOOST_MIN,
+		ExpeditionConstants.BONUS_TOKENS.RANDOM_BOOST_MAX
+	);
+	const calculatedTokens = Math.max(ExpeditionConstants.BONUS_TOKENS.MIN_TOKEN_REWARD, finalTokens + randomBoost);
+	
+	// Limit tokens to available slots (max capacity - current tokens)
+	const availableSlots = TokensConstants.MAX - playerCurrentTokens;
+	return Math.min(calculatedTokens, Math.max(0, availableSlots));
 }
 
 /**
@@ -80,6 +88,7 @@ export interface RewardCalculationParams {
 	rewardIndex: number;
 	isPartialSuccess: boolean;
 	hasCloneTalisman: boolean;
+	playerCurrentTokens: number;
 }
 
 /**
@@ -241,10 +250,10 @@ function generateItemReward(rewardIndex: number): ItemReward {
  */
 export function calculateRewards(params: RewardCalculationParams): ExpeditionRewardDataWithItem {
 	const {
-		expedition, rewardIndex, isPartialSuccess, hasCloneTalisman
+		expedition, rewardIndex, isPartialSuccess, hasCloneTalisman, playerCurrentTokens
 	} = params;
 	const rewards = calculateBaseRewards(rewardIndex, expedition.locationType);
-	const tokens = calculateTokensReward(rewardIndex, expedition.hasBonusTokens ?? false);
+	const tokens = calculateTokensReward(rewardIndex, expedition.hasBonusTokens ?? false, playerCurrentTokens);
 
 	if (isPartialSuccess) {
 		applyPartialSuccessPenalty(rewards);
