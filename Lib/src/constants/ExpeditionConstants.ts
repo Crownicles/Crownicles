@@ -628,6 +628,11 @@ export abstract class ExpeditionConstants {
 		MIN_TOKEN_REWARD: 1,
 
 		/**
+		 * Minimum tokens guaranteed when the expedition has the bonus multiplier
+		 */
+		MIN_BONUS_TOKEN_REWARD: 2,
+
+		/**
 		 * Random boost range applied to all expeditions (minimum inclusive)
 		 */
 		RANDOM_BOOST_MIN: 0,

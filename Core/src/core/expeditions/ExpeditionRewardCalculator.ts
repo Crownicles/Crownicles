@@ -63,7 +63,10 @@ function calculateTokensReward(rewardIndex: number, hasBonusTokens: boolean, pla
 		ExpeditionConstants.BONUS_TOKENS.RANDOM_BOOST_MIN,
 		ExpeditionConstants.BONUS_TOKENS.RANDOM_BOOST_MAX
 	);
-	const calculatedTokens = Math.max(ExpeditionConstants.BONUS_TOKENS.MIN_TOKEN_REWARD, finalTokens + randomBoost);
+
+	// Minimum is MIN_BONUS_TOKEN_REWARD tokens for bonus expeditions, otherwise the default MIN_TOKEN_REWARD
+	const minimumTokens = hasBonusTokens ? ExpeditionConstants.BONUS_TOKENS.MIN_BONUS_TOKEN_REWARD : ExpeditionConstants.BONUS_TOKENS.MIN_TOKEN_REWARD;
+	const calculatedTokens = Math.max(minimumTokens, finalTokens + randomBoost);
 
 	// Limit tokens to available slots (max capacity - current tokens)
 	const availableSlots = TokensConstants.MAX - playerCurrentTokens;
