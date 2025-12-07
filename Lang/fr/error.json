@@ -65,7 +65,7 @@
   "alreadyInAGuild": "Vous appartenez déjà à une guilde.",
   "petDoesntExist": "Aucun familier n'a été trouvé.",
   "unexpectedError": "Une erreur est survenue :(",
-  "pleaseWaitForHeal": "Veuillez attendre la fin des soins de votre altération d'état pour continuer à jouer : {{time}}\n\n{emote:messages.info} Vous pouvez utiliser la commande {command:shop} pour acheter un soin.",
+  "pleaseWaitForHeal": "Veuillez attendre la fin des soins de votre altération d'état pour continuer à jouer : {{time}}",
   "pleaseWaitForHisHeal": "Veuillez attendre la fin des soins de son altération d'état : {{time}}",
   "notEnoughMoney": "Vous n'avez pas assez d'argent pour effectuer cette action. Il vous manque {{money}} {emote:unitValues.money}.",
   "cooldownPetFree": "Vous ne pouvez libérer qu'un familier par heure. Vous pourrez en libérer un autre {{remainingTime}}.",
