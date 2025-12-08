@@ -21,6 +21,9 @@ import {
 	commandRequires, CommandUtils
 } from "../../core/utils/CommandUtils";
 import { Effect } from "../../../../Lib/src/types/Effect";
+import {
+	HEAL_VALIDATION_REASONS
+} from "../../core/report/ReportValidationConstants";
 
 // Import refactored services
 import { sendTravelPath } from "../../core/report/ReportTravelService";
@@ -170,10 +173,10 @@ export default class ReportCommand {
 		const validation = validateBuyHealRequest(player, currentDate);
 
 		if (!validation.valid) {
-			if ("reason" in validation && validation.reason === "no_alteration") {
+			if ("reason" in validation && validation.reason === HEAL_VALIDATION_REASONS.NO_ALTERATION) {
 				response.push(makePacket(CommandReportBuyHealNoAlterationPacketRes, {}));
 			}
-			else if ("reason" in validation && validation.reason === "occupied") {
+			else if ("reason" in validation && validation.reason === HEAL_VALIDATION_REASONS.OCCUPIED) {
 				response.push(makePacket(CommandReportBuyHealCannotHealOccupiedPacketRes, {}));
 			}
 			return;

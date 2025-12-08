@@ -31,6 +31,9 @@ import {
 	calculateTokenCost,
 	canUseTokensAtLocation
 } from "./ReportTravelService";
+import {
+	HEAL_VALIDATION_REASONS, HealValidationReason
+} from "./ReportValidationConstants";
 
 /**
  * Execute the token usage after confirmation
@@ -41,18 +44,13 @@ async function acceptUseTokens(
 	response: CrowniclesPacket[]
 ): Promise<void> {
 	await player.reload();
-	const currentDate = new Date();
-	const timeData = await TravelTime.getTravelData(player, currentDate);
 
-	// Recalculate the token cost (in case something changed)
-	const newTokenCostResult = calculateTokenCost(player.effectId, timeData.effectRemainingTime);
-
-	// If token cost changed or player no longer has enough tokens, abort
-	if (!newTokenCostResult.canUseTokens || player.tokens < newTokenCostResult.cost) {
+	// If player no longer has enough tokens, abort
+	if (player.tokens < tokenCost) {
 		return;
 	}
 
-	// Spend the tokens
+	// Spend the tokens (use original cost for clarity to the user)
 	await player.addTokens({
 		amount: -tokenCost,
 		response,
@@ -102,24 +100,21 @@ async function acceptBuyHeal(
 	// Check if player can be healed
 	const healCheck = canHealAlteration(player, currentDate);
 	if (!healCheck.canHeal) {
-		if (healCheck.reason === "no_alteration") {
+		if (healCheck.reason === HEAL_VALIDATION_REASONS.NO_ALTERATION) {
 			response.push(makePacket(CommandReportBuyHealNoAlterationPacketRes, {}));
 		}
-		else if (healCheck.reason === "occupied") {
+		else if (healCheck.reason === HEAL_VALIDATION_REASONS.OCCUPIED) {
 			response.push(makePacket(CommandReportBuyHealCannotHealOccupiedPacketRes, {}));
 		}
 		return;
 	}
 
-	// Recalculate the heal price (in case something changed)
-	const newHealPrice = calculateHealAlterationPrice(player);
-
-	// If price changed or player no longer has enough money, abort
-	if (player.money < newHealPrice) {
+	// If player no longer has enough money, abort
+	if (player.money < healPrice) {
 		return;
 	}
 
-	// Spend the money
+	// Spend the money (use original price for clarity to the user)
 	await player.addMoney({
 		amount: -healPrice,
 		response,
@@ -270,7 +265,7 @@ interface ValidHealPriceResult {
  */
 interface InvalidHealPriceResult {
 	valid: false;
-	reason?: "no_alteration" | "occupied";
+	reason?: HealValidationReason;
 }
 
 /**
@@ -284,7 +279,7 @@ export function validateBuyHealRequest(
 	if (player.currentEffectFinished(currentDate)) {
 		return {
 			valid: false,
-			reason: "no_alteration"
+			reason: HEAL_VALIDATION_REASONS.NO_ALTERATION
 		};
 	}
 
@@ -292,7 +287,7 @@ export function validateBuyHealRequest(
 	if (player.effectId === Effect.OCCUPIED.id) {
 		return {
 			valid: false,
-			reason: "occupied"
+			reason: HEAL_VALIDATION_REASONS.OCCUPIED
 		};
 	}
 

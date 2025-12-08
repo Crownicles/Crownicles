@@ -14,7 +14,7 @@ import {
 async function applyMoneyReward(player: Player, response: CrowniclesPacket[], amount: number): Promise<void> {
 	if (amount > 0) {
 		await player.addMoney({
-			amount, response, reason: NumberChangeReason.SMALL_EVENT
+			amount, response, reason: NumberChangeReason.EXPEDITION
 		});
 	}
 }
@@ -25,7 +25,7 @@ async function applyMoneyReward(player: Player, response: CrowniclesPacket[], am
 async function applyExperienceReward(player: Player, response: CrowniclesPacket[], amount: number): Promise<void> {
 	if (amount > 0) {
 		await player.addExperience({
-			amount, response, reason: NumberChangeReason.SMALL_EVENT
+			amount, response, reason: NumberChangeReason.EXPEDITION
 		});
 	}
 }
@@ -36,7 +36,7 @@ async function applyExperienceReward(player: Player, response: CrowniclesPacket[
 async function applyScoreReward(player: Player, response: CrowniclesPacket[], amount: number): Promise<void> {
 	if (amount > 0) {
 		await player.addScore({
-			amount, response, reason: NumberChangeReason.SMALL_EVENT
+			amount, response, reason: NumberChangeReason.EXPEDITION
 		});
 	}
 }
@@ -47,7 +47,7 @@ async function applyScoreReward(player: Player, response: CrowniclesPacket[], am
 async function applyTokensReward(player: Player, response: CrowniclesPacket[], amount: number): Promise<void> {
 	if (amount > 0) {
 		await player.addTokens({
-			amount, response, reason: NumberChangeReason.SMALL_EVENT
+			amount, response, reason: NumberChangeReason.EXPEDITION
 		});
 	}
 }

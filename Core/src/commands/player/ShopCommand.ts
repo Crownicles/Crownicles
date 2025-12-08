@@ -48,6 +48,9 @@ import { Settings } from "../../core/database/game/models/Setting";
 import { InventoryInfos } from "../../core/database/game/models/InventoryInfo";
 import { ItemConstants } from "../../../../Lib/src/constants/ItemConstants";
 import {
+	HEAL_VALIDATION_REASONS
+} from "../../core/report/ReportValidationConstants";
+import {
 	EndCallback, ReactionCollectorInstance
 } from "../../core/utils/ReactionsCollector";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
@@ -97,10 +100,10 @@ function getHealAlterationShopItem(player: Player): ShopItem {
 			// Check if player can be healed
 			const healCheck = canHealAlteration(player, currentDate);
 			if (!healCheck.canHeal) {
-				if (healCheck.reason === "no_alteration") {
+				if (healCheck.reason === HEAL_VALIDATION_REASONS.NO_ALTERATION) {
 					response.push(makePacket(CommandShopNoAlterationToHeal, {}));
 				}
-				else if (healCheck.reason === "occupied") {
+				else if (healCheck.reason === HEAL_VALIDATION_REASONS.OCCUPIED) {
 					response.push(makePacket(CommandShopCannotHealOccupied, {}));
 				}
 				return false;

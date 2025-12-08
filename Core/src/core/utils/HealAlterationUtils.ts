@@ -7,6 +7,9 @@ import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants"
 import { MissionsController } from "../missions/MissionsController";
 import { CrowniclesPacket } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { Maps } from "../maps/Maps";
+import {
+	HEAL_VALIDATION_REASONS, HealValidationReason
+} from "../report/ReportValidationConstants";
 
 /**
  * Calculate the price for healing from an alteration
@@ -46,13 +49,13 @@ export function calculateHealAlterationPrice(player: Player): number {
  */
 export function canHealAlteration(player: Player, currentDate: Date): {
 	canHeal: boolean;
-	reason?: "no_alteration" | "occupied" | "dead_or_jailed";
+	reason?: HealValidationReason;
 } {
 	// Check if player has an alteration
 	if (player.currentEffectFinished(currentDate)) {
 		return {
 			canHeal: false,
-			reason: "no_alteration"
+			reason: HEAL_VALIDATION_REASONS.NO_ALTERATION
 		};
 	}
 
@@ -60,15 +63,7 @@ export function canHealAlteration(player: Player, currentDate: Date): {
 	if (player.effectId === Effect.OCCUPIED.id) {
 		return {
 			canHeal: false,
-			reason: "occupied"
-		};
-	}
-
-	// Check if player is dead or jailed (special case)
-	if (player.effectId === Effect.DEAD.id || player.effectId === Effect.JAILED.id) {
-		return {
-			canHeal: false,
-			reason: "dead_or_jailed"
+			reason: HEAL_VALIDATION_REASONS.OCCUPIED
 		};
 	}
 
