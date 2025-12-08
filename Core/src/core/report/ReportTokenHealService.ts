@@ -275,19 +275,12 @@ export function validateBuyHealRequest(
 	player: Player,
 	currentDate: Date
 ): ValidHealPriceResult | InvalidHealPriceResult {
-	// Check if player has an alteration
-	if (player.currentEffectFinished(currentDate)) {
+	// Use shared validation logic
+	const healCheck = canHealAlteration(player, currentDate);
+	if (!healCheck.canHeal) {
 		return {
 			valid: false,
-			reason: HEAL_VALIDATION_REASONS.NO_ALTERATION
-		};
-	}
-
-	// Check if the alteration is occupied (cannot be healed)
-	if (player.effectId === Effect.OCCUPIED.id) {
-		return {
-			valid: false,
-			reason: HEAL_VALIDATION_REASONS.OCCUPIED
+			reason: healCheck.reason
 		};
 	}
 

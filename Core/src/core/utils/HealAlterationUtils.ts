@@ -67,7 +67,8 @@ export function canHealAlteration(player: Player, currentDate: Date): {
 		};
 	}
 
-	return { canHeal: true };
+	// Player is jailed -> cannot be healed
+	return { canHeal: player.effectId !== Effect.JAILED.id };
 }
 
 /**

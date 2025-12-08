@@ -191,7 +191,11 @@ function buildHealData(
 	player: Player,
 	effectId: string | null
 ): HealButtonData | undefined {
-	if (!effectId || effectId === Effect.OCCUPIED.id) {
+	/*
+	 * OCCUPIED cannot be healed via report
+	 * JAILED should not show heal button
+	 */
+	if (!effectId || effectId === Effect.OCCUPIED.id || effectId === Effect.JAILED.id) {
 		return undefined;
 	}
 	return {
