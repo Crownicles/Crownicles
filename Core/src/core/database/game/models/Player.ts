@@ -307,15 +307,56 @@ export class Player extends Model {
 			this.tokens + parameters.amount,
 			0,
 			TokensConstants.MAX
+		const previousTokens = this.tokens;
+		const newTokens = Math.min(
+			TokensConstants.MAX,
+			Math.max(0, this.tokens + parameters.amount)
 		);
 
-		if (newTokens === this.tokens) {
+		if (newTokens === previousTokens) {
 			return this;
 		}
 
 		this.setTokens(newTokens);
 		await crowniclesInstance.logsDatabase.logTokensChange(this.keycloakId, this.tokens, parameters.reason);
+
+		// Track missions for earning tokens
+		if (parameters.amount > 0) {
+			await MissionsController.update(this, parameters.response, {
+				missionId: "earnTokens",
+				count: parameters.amount
+			});
+
+			// Check if max tokens reached
+			if (this.tokens === TokensConstants.MAX) {
+				await MissionsController.update(this, parameters.response, {
+					missionId: "maxTokensReached"
+				});
+			}
+		}
+
 		return this;
+	}
+
+	/**
+	 * Use tokens (for missions tracking) - only for spending tokens
+	 * @param parameters
+	 */
+	public async useTokens(parameters: EditValueParameters): Promise<Player> {
+		const tokensToUse = Math.abs(parameters.amount);
+
+		// Track missions for using tokens
+		await MissionsController.update(this, parameters.response, {
+			missionId: "useTokens",
+			count: tokensToUse
+		});
+		await MissionsController.update(this, parameters.response, {
+			missionId: "spendTokensInOneDay",
+			count: tokensToUse
+		});
+
+		parameters.amount = -tokensToUse;
+		return this.addTokens(parameters);
 	}
 
 	/**
