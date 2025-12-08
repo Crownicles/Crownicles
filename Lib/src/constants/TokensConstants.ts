@@ -8,7 +8,7 @@ export abstract class TokensConstants {
 	};
 
 	static readonly EXPEDITION = {
-		REWARD_INDEX_OFFSET: 1
+		REWARD_INDEX_OFFSET: -1
 	};
 
 	static readonly REPORT = {
