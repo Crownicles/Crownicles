@@ -257,7 +257,7 @@ function handleBadgeReaction(
 ): void {
 	if (reaction.emoji.name === CrowniclesIcons.profile.displayAllBadgeEmote) {
 		collector.stop(); // Only one is allowed to avoid spam
-		void sendMessageAllBadgesTooMuchBadges(pseudo, badges, interaction);
+		sendMessageAllBadgesTooMuchBadges(pseudo, badges, interaction).catch(() => undefined);
 		return;
 	}
 
