@@ -209,7 +209,6 @@ export class TravelTime {
 	 * Check if effect uses custom duration
 	 * @param effect
 	 * @param time
-	 * @private
 	 */
 	private static shouldUseCustomDuration(effect: Effect, time: number): boolean {
 		return effect === Effect.OCCUPIED || (effect === Effect.SLEEPING && time > 0);

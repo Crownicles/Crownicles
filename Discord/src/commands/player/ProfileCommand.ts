@@ -130,7 +130,7 @@ function addFightRankingField(fields: EmbedField[], packet: CommandProfilePacket
 	const fightRanking = packet.playerData.fightRanking;
 	const isRanked = fightRanking && fightRanking.gloryRank !== -1;
 	const fieldKey = isRanked ? "fightRanked" : "fightUnranked";
-	
+
 	addField(fields, fieldKey, Boolean(fightRanking), {
 		lng,
 		rank: fightRanking?.gloryRank ?? 0,
@@ -161,7 +161,7 @@ function addPetField(fields: EmbedField[], packet: CommandProfilePacketRes, lng:
  */
 function generateFields(packet: CommandProfilePacketRes, lng: Language): EmbedField[] {
 	const fields: EmbedField[] = [];
-	
+
 	addInformationField(fields, packet, lng);
 
 	addField(fields, "statistics", Boolean(packet.playerData.stats), {
