@@ -1284,6 +1284,8 @@
     "dangerousExpedition": "Réussir une expédition de dangerosité \"{{variantText}}\" ou supérieure",
     "expeditionStreak_one": "Réussir {{count}} expédition d'affilée",
     "expeditionStreak_other": "Réussir {{count}} expéditions d'affilée",
+    "dailyStreak_one": "Accomplir la mission quotidienne {{count}} jour d'affilée",
+    "dailyStreak_other": "Accomplir la mission quotidienne {{count}} jours d'affilée",
     "showCloneToTalvar": "Montrer un clone à Talvar",
     "petEarnHealth": "Obtenir de la vie grâce à un familier",
     "reachGlory": "Avoir {{count}} points de gloire ou plus",

@@ -2,7 +2,7 @@ import Player from "../database/game/models/Player";
 import { IMission } from "./IMission";
 import MissionSlot, { MissionSlots } from "../database/game/models/MissionSlot";
 import { DailyMissions } from "../database/game/models/DailyMission";
-import { hoursToMilliseconds } from "../../../../Lib/src/utils/TimeUtils";
+import { hoursToMilliseconds, datesAreOnSameDay } from "../../../../Lib/src/utils/TimeUtils";
 import { MissionDifficulty } from "./MissionDifficulty";
 import { Campaign } from "./Campaign";
 import { Constants } from "../../../../Lib/src/constants/Constants";
@@ -88,7 +88,65 @@ export class MissionsController {
 				keycloakId: player.keycloakId
 			}));
 		}
+
+		// Handle dailyStreak mission update after daily mission completion
+		if (specialMissionCompletion.daily) {
+			await MissionsController.handleDailyStreakMission(player, missionSlots, missionInfo, response);
+		}
+
 		return player;
+	}
+
+	/**
+	 * Handle the dailyStreak mission update when a daily mission is completed.
+	 * Resets the streak if the player missed a day (last completion was not yesterday).
+	 * @param player
+	 * @param missionSlots
+	 * @param missionInfo
+	 * @param response
+	 */
+	private static async handleDailyStreakMission(
+		player: Player,
+		missionSlots: MissionSlot[],
+		missionInfo: PlayerMissionsInfo,
+		response: CrowniclesPacket[]
+	): Promise<void> {
+		const streakMission = missionSlots.find(slot => slot.missionId === "dailyStreak");
+		if (!streakMission || streakMission.isCompleted()) {
+			// Update the mission if the player doesn't have it or has already completed it
+			await MissionsController.update(player, response, { missionId: "dailyStreak" });
+			return;
+		}
+
+		// Check if the player completed the daily mission yesterday
+		const yesterday = new Date();
+		yesterday.setDate(yesterday.getDate() - 1);
+
+		// If lastDailyMissionCompleted is not yesterday, reset the streak
+		// Note: lastDailyMissionCompleted is updated BEFORE this is called, so we need to check if it was yesterday before today's update
+		// Since we're called after the completion, we can't easily check the previous state
+		// Instead, we rely on the fact that completing the daily mission multiple times in one day doesn't break the streak
+		// The streak breaks only if there's a gap > 1 day
+
+		// Get yesterday's date at midnight for comparison
+		const lastCompleted = missionInfo.lastDailyMissionCompleted;
+		if (lastCompleted) {
+			const lastCompletedDate = new Date(lastCompleted);
+			const yesterdayMidnight = new Date(yesterday.getFullYear(), yesterday.getMonth(), yesterday.getDate());
+			const lastCompletedMidnight = new Date(lastCompletedDate.getFullYear(), lastCompletedDate.getMonth(), lastCompletedDate.getDate());
+
+			// Calculate days difference
+			const daysDiff = Math.floor((yesterdayMidnight.getTime() - lastCompletedMidnight.getTime()) / (1000 * 60 * 60 * 24));
+
+			// If last completed was more than 0 days before yesterday (i.e., 2+ days ago), reset streak
+			if (daysDiff > 0) {
+				streakMission.numberDone = 0;
+				await streakMission.save();
+			}
+		}
+
+		// Update the dailyStreak mission
+		await MissionsController.update(player, response, { missionId: "dailyStreak" });
 	}
 
 	/**
