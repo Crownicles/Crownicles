@@ -321,6 +321,14 @@
       "moneyToWin": 0
     },
     {
+      "missionId": "buyTokensFromShop",
+      "missionVariant": 0,
+      "missionObjective": 1,
+      "gemsToWin": 2,
+      "xpToWin": 100,
+      "moneyToWin": 0
+    },
+    {
       "missionId": "gainRage",
       "missionVariant": 0,
       "missionObjective": 3,
@@ -750,6 +758,14 @@
       "missionObjective": 3,
       "gemsToWin": 4,
       "xpToWin": 250,
+      "moneyToWin": 0
+    },
+    {
+      "missionId": "maxTokensReached",
+      "missionVariant": 0,
+      "missionObjective": 1,
+      "gemsToWin": 3,
+      "xpToWin": 150,
       "moneyToWin": 0
     },
     {
