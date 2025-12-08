@@ -107,12 +107,9 @@ function addField(fields: EmbedField[], fieldKey: string, shouldBeFielded: boole
 }
 
 /**
- * Generate the fields of the profile embed
- * @param packet
- * @param lng
+ * Add information field (health, money, experience, tokens)
  */
-function generateFields(packet: CommandProfilePacketRes, lng: Language): EmbedField[] {
-	const fields: EmbedField[] = [];
+function addInformationField(fields: EmbedField[], packet: CommandProfilePacketRes, lng: Language): void {
 	const showTokens = packet.playerData.level >= TokensConstants.LEVEL_TO_UNLOCK;
 	addField(fields, showTokens ? "information" : "informationNoTokens", true, {
 		lng,
@@ -124,6 +121,48 @@ function generateFields(packet: CommandProfilePacketRes, lng: Language): EmbedFi
 		tokens: packet.playerData.tokens ?? 0,
 		tokensMax: packet.playerData.tokensMax ?? TokensConstants.MAX
 	});
+}
+
+/**
+ * Add fight ranking field
+ */
+function addFightRankingField(fields: EmbedField[], packet: CommandProfilePacketRes, lng: Language): void {
+	const fightRanking = packet.playerData.fightRanking;
+	const isRanked = fightRanking && fightRanking.gloryRank !== -1;
+	const fieldKey = isRanked ? "fightRanked" : "fightUnranked";
+	
+	addField(fields, fieldKey, Boolean(fightRanking), {
+		lng,
+		rank: fightRanking?.gloryRank ?? 0,
+		numberOfPlayers: fightRanking?.numberOfFighters ?? 0,
+		leagueEmoji: fightRanking?.league ? CrowniclesIcons.leagues[fightRanking.league] : "",
+		leagueId: fightRanking?.league ?? 0,
+		gloryPoints: fightRanking?.glory ?? 0
+	});
+}
+
+/**
+ * Add pet field with all pet details
+ */
+function addPetField(fields: EmbedField[], packet: CommandProfilePacketRes, lng: Language): void {
+	const pet = packet.playerData.pet;
+	addField(fields, "pet", Boolean(pet), {
+		lng,
+		rarity: pet ? DisplayUtils.getPetRarityDisplay(pet.rarity, lng) : "",
+		emote: pet ? DisplayUtils.getPetIcon(pet.typeId, pet.sex) : "",
+		name: pet ? pet.nickname ?? DisplayUtils.getPetTypeName(lng, pet.typeId, pet.sex) : ""
+	});
+}
+
+/**
+ * Generate the fields of the profile embed
+ * @param packet
+ * @param lng
+ */
+function generateFields(packet: CommandProfilePacketRes, lng: Language): EmbedField[] {
+	const fields: EmbedField[] = [];
+	
+	addInformationField(fields, packet, lng);
 
 	addField(fields, "statistics", Boolean(packet.playerData.stats), {
 		lng,
@@ -161,17 +200,7 @@ function generateFields(packet: CommandProfilePacketRes, lng: Language): EmbedFi
 		id: packet.playerData.classId
 	});
 
-	addField(fields,
-		packet.playerData.fightRanking
-			? packet.playerData.fightRanking.gloryRank !== -1 ? "fightRanked" : "fightUnranked"
-			: "fightUnranked", Boolean(packet.playerData.fightRanking), {
-			lng,
-			rank: packet.playerData.fightRanking?.gloryRank ?? 0,
-			numberOfPlayers: packet.playerData.fightRanking?.numberOfFighters ?? 0,
-			leagueEmoji: packet.playerData.fightRanking?.league ? CrowniclesIcons.leagues[packet.playerData.fightRanking.league] : "",
-			leagueId: packet.playerData.fightRanking?.league ?? 0,
-			gloryPoints: packet.playerData.fightRanking?.glory ?? 0
-		});
+	addFightRankingField(fields, packet, lng);
 
 	addField(fields, "guild", Boolean(packet.playerData.guild), {
 		lng,
@@ -184,12 +213,7 @@ function generateFields(packet: CommandProfilePacketRes, lng: Language): EmbedFi
 		mapName: packet.playerData.destinationId
 	});
 
-	addField(fields, "pet", Boolean(packet.playerData.pet), {
-		lng,
-		rarity: packet.playerData.pet ? DisplayUtils.getPetRarityDisplay(packet.playerData.pet.rarity, lng) : "",
-		emote: packet.playerData.pet ? DisplayUtils.getPetIcon(packet.playerData.pet.typeId, packet.playerData.pet.sex) : "",
-		name: packet.playerData.pet ? packet.playerData.pet.nickname ?? DisplayUtils.getPetTypeName(lng, packet.playerData.pet.typeId, packet.playerData.pet.sex) : ""
-	});
+	addPetField(fields, packet, lng);
 
 	return fields;
 }

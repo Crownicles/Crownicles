@@ -741,6 +741,27 @@ function addAdviceField(travelEmbed: CrowniclesEmbed, lng: Language): void {
 }
 
 /**
+ * Generic button creation with currency check
+ */
+interface ButtonConfig {
+	customId: string;
+	hasEnough: boolean;
+	sufficientLabel: string;
+	insufficientLabel: string;
+	emoji: string;
+	sufficientStyle: ButtonStyle;
+}
+
+function createCurrencyButton(config: ButtonConfig): ButtonBuilder {
+	return new ButtonBuilder()
+		.setCustomId(config.customId)
+		.setLabel(config.hasEnough ? config.sufficientLabel : config.insufficientLabel)
+		.setEmoji(parseEmoji(config.emoji)!)
+		.setStyle(config.hasEnough ? config.sufficientStyle : ButtonStyle.Secondary)
+		.setDisabled(!config.hasEnough);
+}
+
+/**
  * Create heal button if applicable
  */
 function createHealButton(packet: CommandReportTravelSummaryRes, lng: Language): ButtonBuilder | null {
@@ -749,16 +770,14 @@ function createHealButton(packet: CommandReportTravelSummaryRes, lng: Language):
 	}
 
 	const hasEnoughMoney = packet.heal.playerMoney >= packet.heal.price;
-	const healButtonLabel = hasEnoughMoney
-		? i18n.t("commands:report.buyHealButton", { lng })
-		: i18n.t("commands:report.notEnoughMoneyHealButton", { lng });
-
-	return new ButtonBuilder()
-		.setCustomId("buyHeal")
-		.setLabel(healButtonLabel)
-		.setEmoji(parseEmoji(CrowniclesIcons.shopItems.healAlteration)!)
-		.setStyle(hasEnoughMoney ? ButtonStyle.Success : ButtonStyle.Secondary)
-		.setDisabled(!hasEnoughMoney);
+	return createCurrencyButton({
+		customId: "buyHeal",
+		hasEnough: hasEnoughMoney,
+		sufficientLabel: i18n.t("commands:report.buyHealButton", { lng }),
+		insufficientLabel: i18n.t("commands:report.notEnoughMoneyHealButton", { lng }),
+		emoji: CrowniclesIcons.shopItems.healAlteration,
+		sufficientStyle: ButtonStyle.Success
+	});
 }
 
 /**
@@ -770,16 +789,14 @@ function createTokenButton(packet: CommandReportTravelSummaryRes, lng: Language)
 	}
 
 	const hasEnoughTokens = packet.tokens.playerTokens >= packet.tokens.cost;
-	const tokenButtonLabel = hasEnoughTokens
-		? i18n.t("commands:report.useTokensButton", { lng })
-		: i18n.t("commands:report.notEnoughTokensButton", { lng });
-
-	return new ButtonBuilder()
-		.setCustomId("useTokens")
-		.setLabel(tokenButtonLabel)
-		.setEmoji(parseEmoji(CrowniclesIcons.unitValues.token)!)
-		.setStyle(hasEnoughTokens ? ButtonStyle.Primary : ButtonStyle.Secondary)
-		.setDisabled(!hasEnoughTokens);
+	return createCurrencyButton({
+		customId: "useTokens",
+		hasEnough: hasEnoughTokens,
+		sufficientLabel: i18n.t("commands:report.useTokensButton", { lng }),
+		insufficientLabel: i18n.t("commands:report.notEnoughTokensButton", { lng }),
+		emoji: CrowniclesIcons.unitValues.token,
+		sufficientStyle: ButtonStyle.Primary
+	});
 }
 
 /**

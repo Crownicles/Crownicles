@@ -320,16 +320,21 @@ export interface ExpeditionOutcome {
 }
 
 /**
+ * Parameters for determining expedition outcome
+ */
+export interface ExpeditionOutcomeParams {
+	effectiveRisk: number;
+	expedition: ExpeditionData;
+	rewardIndex: number;
+	hasCloneTalisman: boolean;
+	playerCurrentTokens: number;
+}
+
+/**
  * Determine expedition outcome based on effective risk
  */
-export function determineExpeditionOutcome(
-	effectiveRisk: number,
-	expedition: ExpeditionData,
-	rewardIndex: number,
-	hasCloneTalisman: boolean,
-	playerCurrentTokens: number
-): ExpeditionOutcome {
-	const totalFailure = RandomUtils.crowniclesRandom.bool(effectiveRisk / ExpeditionConstants.PERCENTAGE.MAX);
+export function determineExpeditionOutcome(params: ExpeditionOutcomeParams): ExpeditionOutcome {
+	const totalFailure = RandomUtils.crowniclesRandom.bool(params.effectiveRisk / ExpeditionConstants.PERCENTAGE.MAX);
 
 	if (totalFailure) {
 		return {
@@ -340,13 +345,13 @@ export function determineExpeditionOutcome(
 		};
 	}
 
-	const partialSuccess = RandomUtils.crowniclesRandom.bool(effectiveRisk / ExpeditionConstants.PERCENTAGE.MAX);
+	const partialSuccess = RandomUtils.crowniclesRandom.bool(params.effectiveRisk / ExpeditionConstants.PERCENTAGE.MAX);
 	const rewards = calculateRewards({
-		expedition,
-		rewardIndex,
+		expedition: params.expedition,
+		rewardIndex: params.rewardIndex,
 		isPartialSuccess: partialSuccess,
-		hasCloneTalisman,
-		playerCurrentTokens
+		hasCloneTalisman: params.hasCloneTalisman,
+		playerCurrentTokens: params.playerCurrentTokens
 	});
 
 	return {
