@@ -51,10 +51,11 @@ async function applyTokensReward(player: Player, response: CrowniclesPacket[], a
 			amount, response, reason: NumberChangeReason.EXPEDITION
 		});
 
-		// Track mission for earning tokens in a single expedition
+		// Track mission for earning tokens in a single expedition (set: true replaces progression instead of incrementing)
 		await MissionsController.update(player, response, {
 			missionId: "earnTokensInOneExpedition",
-			count: amount
+			count: amount,
+			set: true
 		});
 	}
 }
