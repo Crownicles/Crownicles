@@ -1,7 +1,9 @@
 import { SmallEventFuncs } from "../../data/SmallEvent";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { BlockingUtils } from "../utils/BlockingUtils";
-import { StringConstants } from "../../../../Lib/src/constants/StringConstants";
+import {
+	SexTypeShort, StringConstants
+} from "../../../../Lib/src/constants/StringConstants";
 import {
 	ReactionCollectorBadPetReaction,
 	ReactionCollectorBadPetSmallEvent
@@ -10,7 +12,9 @@ import { SmallEventBadPetPacket } from "../../../../Lib/src/packets/smallEvents/
 import {
 	makePacket, CrowniclesPacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
-import { PetEntity } from "../database/game/models/PetEntity";
+import {
+	PetEntities, PetEntity
+} from "../database/game/models/PetEntity";
 import {
 	Pet, PetDataController
 } from "../../data/Pet";
@@ -76,20 +80,44 @@ function isPetStrong(petModel: Pet): boolean {
 }
 
 /**
- * Get pet entity data for packets
+ * Pet data result for packets
  */
-async function getPetData(petId: number | null): Promise<{
-	petEntity: PetEntity | null;
-	petId: number;
-	sex: string;
-	petNickname: string | undefined;
-}> {
-	const petEntity = petId ? await PetEntity.findByPk(petId) : null;
+interface PetData {
+	foundPet: boolean;
+	petTypeId: number;
+	sex: SexTypeShort;
+	nickname?: string;
+}
+
+/**
+ * Get pet entity data for packets using PetEntities.getById
+ * @param player - The player whose pet data to retrieve
+ * @returns Pet data with foundPet flag indicating if pet was found
+ */
+async function getPetData(player: Player): Promise<PetData> {
+	if (!player.petId) {
+		return {
+			foundPet: false,
+			petTypeId: 0,
+			sex: StringConstants.SEX.MALE.short
+		};
+	}
+
+	const petEntity = await PetEntities.getById(player.petId);
+
+	if (!petEntity) {
+		return {
+			foundPet: false,
+			petTypeId: 0,
+			sex: StringConstants.SEX.MALE.short
+		};
+	}
+
 	return {
-		petEntity,
-		petId: petEntity?.typeId ?? 0,
-		sex: petEntity?.sex ?? StringConstants.SEX.MALE.short,
-		petNickname: petEntity?.nickname ?? undefined
+		foundPet: true,
+		petTypeId: petEntity.typeId,
+		sex: petEntity.sex as SexTypeShort,
+		nickname: petEntity.nickname ?? undefined
 	};
 }
 
@@ -486,14 +514,14 @@ function getEndCallback(player: Player): EndCallback {
 
 		await applyLoveLoss(result.petEntity, result.loveLost, player, response);
 
-		const petData = await getPetData(player.petId);
+		const petData = await getPetData(player);
 
 		response.push(makePacket(SmallEventBadPetPacket, {
 			loveLost: result.loveLost,
 			interactionType: result.interactionType,
-			petId: petData.petId,
+			petId: petData.petTypeId,
 			sex: petData.sex,
-			petNickname: petData.petNickname
+			petNickname: petData.nickname
 		}));
 	};
 }
@@ -550,12 +578,12 @@ async function executeSmallEvent(response: CrowniclesPacket[], player: Player, c
 		return reaction;
 	});
 
-	const petData = await getPetData(player.petId);
+	const petData = await getPetData(player);
 
 	const collector = new ReactionCollectorBadPetSmallEvent(
-		petData.petId,
+		petData.petTypeId,
 		petData.sex,
-		petData.petNickname,
+		petData.nickname,
 		reactions
 	);
 
