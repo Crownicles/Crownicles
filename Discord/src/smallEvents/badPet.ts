@@ -17,26 +17,17 @@ import { DiscordCollectorUtils } from "../utils/DiscordCollectorUtils";
 import { KeycloakUtils } from "../../../Lib/src/keycloak/KeycloakUtils";
 import { keycloakConfig } from "../bot/CrowniclesShard";
 import { sendInteractionNotForYou } from "../utils/ErrorUtils";
+import { SmallEventConstants } from "../../../Lib/src/constants/SmallEventConstants";
+
+/**
+ * Valid action ID type derived from SmallEventConstants
+ */
+type BadPetActionId = typeof SmallEventConstants.BAD_PET.ACTION_IDS[keyof typeof SmallEventConstants.BAD_PET.ACTION_IDS];
 
 /**
  * List of valid action IDs for the bad pet small event
  */
-const VALID_ACTION_IDS = [
-	"intimidate",
-	"plead",
-	"giveMeat",
-	"giveVeg",
-	"flee",
-	"hide",
-	"wait",
-	"protect",
-	"distract",
-	"calm",
-	"imposer",
-	"energize"
-] as const;
-
-type BadPetActionId = typeof VALID_ACTION_IDS[number];
+const VALID_ACTION_IDS: readonly BadPetActionId[] = Object.values(SmallEventConstants.BAD_PET.ACTION_IDS);
 
 /**
  * Check if an action ID is valid

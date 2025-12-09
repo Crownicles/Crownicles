@@ -362,6 +362,28 @@ export abstract class SmallEventConstants {
 	static readonly BAD_PET = {
 		SMALL_EVENT_NAME: "badPet",
 		ACTIONS_TO_SHOW: 3,
+		ACTION_IDS: {
+			INTIMIDATE: "intimidate",
+			PLEAD: "plead",
+			GIVE_MEAT: "giveMeat",
+			GIVE_VEG: "giveVeg",
+			FLEE: "flee",
+			HIDE: "hide",
+			WAIT: "wait",
+			PROTECT: "protect",
+			DISTRACT: "distract",
+			CALM: "calm",
+			IMPOSER: "imposer",
+			ENERGIZE: "energize"
+		} as const,
+		OUTCOME_TYPES: {
+			GIVE_MEAT_NO_FOOD: "giveMeatNoFood",
+			GIVE_MEAT_LIKES: "giveMeatLikes",
+			GIVE_MEAT_DISLIKES: "giveMeatDislikes",
+			GIVE_VEG_NO_FOOD: "giveVegNoFood",
+			GIVE_VEG_LIKES: "giveVegLikes",
+			GIVE_VEG_DISLIKES: "giveVegDislikes"
+		} as const,
 		LOVE_LOST: {
 			INTIMIDATE: {
 				STRONG_MIN: 0,
