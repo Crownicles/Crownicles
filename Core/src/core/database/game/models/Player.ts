@@ -321,10 +321,11 @@ export class Player extends Model {
 		await crowniclesInstance.logsDatabase.logTokensChange(this.keycloakId, this.tokens, parameters.reason);
 
 		// Track missions for earning tokens
-		if (parameters.amount > 0) {
+		const actualChange = newTokens - previousTokens;
+		if (actualChange > 0) {
 			await MissionsController.update(this, parameters.response, {
 				missionId: "earnTokens",
-				count: parameters.amount
+				count: actualChange
 			});
 
 			// Check if max tokens reached
