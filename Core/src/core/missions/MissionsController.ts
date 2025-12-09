@@ -2,7 +2,7 @@ import Player from "../database/game/models/Player";
 import { IMission } from "./IMission";
 import MissionSlot, { MissionSlots } from "../database/game/models/MissionSlot";
 import { DailyMissions } from "../database/game/models/DailyMission";
-import { hoursToMilliseconds, datesAreOnSameDay } from "../../../../Lib/src/utils/TimeUtils";
+import { hoursToMilliseconds } from "../../../../Lib/src/utils/TimeUtils";
 import { MissionDifficulty } from "./MissionDifficulty";
 import { Campaign } from "./Campaign";
 import { Constants } from "../../../../Lib/src/constants/Constants";
@@ -10,7 +10,8 @@ import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import PlayerMissionsInfo, { PlayerMissionsInfos } from "../database/game/models/PlayerMissionsInfo";
 import {
-	CrowniclesPacket, makePacket
+	CrowniclesPacket,
+	makePacket
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { MissionsExpiredPacket } from "../../../../Lib/src/packets/events/MissionsExpiredPacket";
 import { crowniclesInstance } from "../../index";
@@ -122,11 +123,14 @@ export class MissionsController {
 		const yesterday = new Date();
 		yesterday.setDate(yesterday.getDate() - 1);
 
-		// If lastDailyMissionCompleted is not yesterday, reset the streak
-		// Note: lastDailyMissionCompleted is updated BEFORE this is called, so we need to check if it was yesterday before today's update
-		// Since we're called after the completion, we can't easily check the previous state
-		// Instead, we rely on the fact that completing the daily mission multiple times in one day doesn't break the streak
-		// The streak breaks only if there's a gap > 1 day
+		/*
+		 * If lastDailyMissionCompleted is not yesterday, reset the streak.
+		 * Note: lastDailyMissionCompleted is updated BEFORE this is called, so we need
+		 * to check if it was yesterday before today's update. Since we're called after
+		 * the completion, we can't easily check the previous state. Instead we rely
+		 * on the fact that completing the daily mission multiple times in one day
+		 * doesn't break the streak; a gap of more than one day will.
+		 */
 
 		// Get yesterday's date at midnight for comparison
 		const lastCompleted = missionInfo.lastDailyMissionCompleted;
