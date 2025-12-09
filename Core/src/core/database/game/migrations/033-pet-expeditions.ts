@@ -60,6 +60,16 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 			allowNull: false,
 			defaultValue: false
 		},
+		hasBonusTokens: {
+			type: DataTypes.BOOLEAN,
+			allowNull: false,
+			defaultValue: false
+		},
+		hasCloneTalismanBonus: {
+			type: DataTypes.BOOLEAN,
+			allowNull: false,
+			defaultValue: false
+		},
 		status: {
 			// eslint-disable-next-line new-cap
 			type: DataTypes.STRING(32),
