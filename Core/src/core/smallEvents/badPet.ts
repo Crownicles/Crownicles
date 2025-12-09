@@ -55,9 +55,9 @@ interface BadPetAction {
 }
 
 /**
- * Guild food type for give food actions
+ * Guild model food property key (carnivorousFood or herbivorousFood)
  */
-type GuildFoodType = typeof PetConstants.PET_FOOD.CARNIVOROUS_FOOD | typeof PetConstants.PET_FOOD.HERBIVOROUS_FOOD;
+type GuildFoodPropertyKey = typeof PetConstants.PET_FOOD.CARNIVOROUS_FOOD | typeof PetConstants.PET_FOOD.HERBIVOROUS_FOOD;
 
 
 /**
@@ -186,7 +186,7 @@ function handlePlead(_petEntity: PetEntity, petModel: Pet, _player: Player): Pro
  * @param petModel - Pet model to check diet compatibility
  * @param player - Player giving the food
  */
-async function handleGiveFood(guildFoodKey: GuildFoodType, petModel: Pet, player: Player): Promise<BadPetActionResult> {
+async function handleGiveFood(guildFoodKey: GuildFoodPropertyKey, petModel: Pet, player: Player): Promise<BadPetActionResult> {
 	const {
 		LOVE_LOST, OUTCOME_TYPES
 	} = SmallEventConstants.BAD_PET;
