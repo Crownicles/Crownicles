@@ -115,8 +115,8 @@ async function acceptBuyHeal(
 	}
 
 	// Spend the money (use original price for clarity to the user)
-	await player.addMoney({
-		amount: -healPrice,
+	await player.spendMoney({
+		amount: healPrice,
 		response,
 		reason: NumberChangeReason.SHOP
 	});

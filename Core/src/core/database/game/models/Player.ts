@@ -57,6 +57,7 @@ import { ReachDestinationNotificationPacket } from "../../../../../../Lib/src/pa
 import { CrowniclesLogger } from "../../../../../../Lib/src/logs/CrowniclesLogger";
 import { Badge } from "../../../../../../Lib/src/types/Badge";
 import { TokensConstants } from "../../../../../../Lib/src/constants/TokensConstants";
+import { MathUtils } from "../../../utils/MathUtils";
 
 // skipcq: JS-C1003 - moment does not expose itself as an ES Module.
 import * as moment from "moment";
@@ -302,9 +303,10 @@ export class Player extends Model {
 	 * @param parameters
 	 */
 	public async addTokens(parameters: EditValueParameters): Promise<Player> {
-		const newTokens = Math.min(
-			TokensConstants.MAX,
-			Math.max(0, this.tokens + parameters.amount)
+		const newTokens = MathUtils.clamp(
+			this.tokens + parameters.amount,
+			0,
+			TokensConstants.MAX
 		);
 
 		if (newTokens === this.tokens) {

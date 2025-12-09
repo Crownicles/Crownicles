@@ -8,10 +8,8 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 	await context.addColumn("players", "tokens", {
 		type: DataTypes.INTEGER,
 		allowNull: false,
-		defaultValue: 0
+		defaultValue: INITIAL_TOKENS
 	});
-
-	await context.sequelize.query(`UPDATE players SET tokens = ${INITIAL_TOKENS}`);
 }
 
 export async function down({ context }: { context: QueryInterface }): Promise<void> {

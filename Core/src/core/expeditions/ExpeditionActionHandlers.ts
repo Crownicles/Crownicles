@@ -283,7 +283,7 @@ export async function handleExpeditionSelect(
 		rationsRequired,
 		speedDurationModifier,
 		originalDisplayDurationMinutes: expeditionData.displayDurationMinutes,
-		hasGuild: !!player.guildId
+		hasGuild: Boolean(player.guildId)
 	}));
 }
 

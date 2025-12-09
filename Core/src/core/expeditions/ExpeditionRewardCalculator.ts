@@ -87,7 +87,7 @@ function calculateTokensReward(rewardIndex: number, hasBonusTokens: boolean, pla
 
 	// Limit to available capacity
 	const availableSlots = TokensConstants.MAX - playerCurrentTokens;
-	return Math.min(tokens, Math.max(0, availableSlots));
+	return MathUtils.clamp(tokens, 0, availableSlots);
 }
 
 /**
