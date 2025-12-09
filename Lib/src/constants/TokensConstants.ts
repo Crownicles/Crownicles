@@ -8,7 +8,16 @@ export abstract class TokensConstants {
 	};
 
 	static readonly EXPEDITION = {
-		REWARD_INDEX_OFFSET: -1
+		REWARD_INDEX_OFFSET: -1,
+
+		/** Duration threshold in minutes below which a malus is applied (1 hour) */
+		SHORT_DURATION_THRESHOLD_MINUTES: 60,
+
+		/** Token malus for expeditions shorter than 1 hour */
+		SHORT_DURATION_MALUS: 1,
+
+		/** Token malus for expeditions with reward index 0 */
+		LOW_REWARD_INDEX_MALUS: 1
 	};
 
 	static readonly REPORT = {

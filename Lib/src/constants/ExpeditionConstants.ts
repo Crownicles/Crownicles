@@ -284,7 +284,7 @@ export abstract class ExpeditionConstants {
 	 * effective_risk = initial_risk + (difficulty / DIFFICULTY_DIVISOR) - pet_force - (love / LOVE_DIVISOR)
 	 */
 	static readonly EFFECTIVE_RISK_FORMULA = {
-		DIFFICULTY_DIVISOR: 3,
+		DIFFICULTY_DIVISOR: 4,
 		LOVE_DIVISOR: 10
 	};
 

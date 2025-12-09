@@ -54,23 +54,40 @@ interface ItemReward {
 	itemCategory: number;
 }
 
-function calculateTokensReward(rewardIndex: number, hasBonusTokens: boolean, playerCurrentTokens: number): number {
-	const baseTokens = rewardIndex - TokensConstants.EXPEDITION.REWARD_INDEX_OFFSET;
-	const finalTokens = hasBonusTokens
-		? baseTokens * ExpeditionConstants.BONUS_TOKENS.MULTIPLIER
-		: baseTokens;
-	const randomBoost = RandomUtils.randInt(
+function calculateTokensReward(rewardIndex: number, hasBonusTokens: boolean, playerCurrentTokens: number, durationMinutes: number): number {
+	// Calculate base tokens from reward index
+	let tokens = rewardIndex - TokensConstants.EXPEDITION.REWARD_INDEX_OFFSET;
+
+	// Apply malus for short expeditions (less than 1 hour)
+	if (durationMinutes < TokensConstants.EXPEDITION.SHORT_DURATION_THRESHOLD_MINUTES) {
+		tokens -= TokensConstants.EXPEDITION.SHORT_DURATION_MALUS;
+	}
+
+	// Apply malus for low reward index (rewardIndex = 0)
+	if (rewardIndex === 0) {
+		tokens -= TokensConstants.EXPEDITION.LOW_REWARD_INDEX_MALUS;
+	}
+
+	// Apply bonus multiplier if applicable
+	if (hasBonusTokens) {
+		tokens *= ExpeditionConstants.BONUS_TOKENS.MULTIPLIER;
+	}
+
+	// Add random boost
+	tokens += RandomUtils.randInt(
 		ExpeditionConstants.BONUS_TOKENS.RANDOM_BOOST_MIN,
 		ExpeditionConstants.BONUS_TOKENS.RANDOM_BOOST_MAX
 	);
 
-	// Minimum is MIN_BONUS_TOKEN_REWARD tokens for bonus expeditions, otherwise the default MIN_TOKEN_REWARD
-	const minimumTokens = hasBonusTokens ? ExpeditionConstants.BONUS_TOKENS.MIN_BONUS_TOKEN_REWARD : ExpeditionConstants.BONUS_TOKENS.MIN_TOKEN_REWARD;
-	const calculatedTokens = Math.max(minimumTokens, finalTokens + randomBoost);
+	// Ensure minimum reward (different minimums for bonus vs regular expeditions)
+	const minimumTokens = hasBonusTokens
+		? ExpeditionConstants.BONUS_TOKENS.MIN_BONUS_TOKEN_REWARD
+		: ExpeditionConstants.BONUS_TOKENS.MIN_TOKEN_REWARD;
+	tokens = Math.max(minimumTokens, tokens);
 
-	// Limit tokens to available slots (max capacity - current tokens)
+	// Limit to available capacity
 	const availableSlots = TokensConstants.MAX - playerCurrentTokens;
-	return Math.min(calculatedTokens, Math.max(0, availableSlots));
+	return Math.min(tokens, Math.max(0, availableSlots));
 }
 
 /**
@@ -256,7 +273,7 @@ export function calculateRewards(params: RewardCalculationParams): ExpeditionRew
 		expedition, rewardIndex, isPartialSuccess, hasCloneTalisman, playerCurrentTokens
 	} = params;
 	const rewards = calculateBaseRewards(rewardIndex, expedition.locationType);
-	const tokens = calculateTokensReward(rewardIndex, expedition.hasBonusTokens ?? false, playerCurrentTokens);
+	const tokens = calculateTokensReward(rewardIndex, expedition.hasBonusTokens ?? false, playerCurrentTokens, expedition.durationMinutes);
 
 	if (isPartialSuccess) {
 		applyPartialSuccessPenalty(rewards);
