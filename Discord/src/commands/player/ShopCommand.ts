@@ -63,6 +63,14 @@ export async function handleCommandShopNoAlterationToHeal(context: PacketContext
 	}
 }
 
+export async function handleCommandShopCannotHealOccupied(context: PacketContext): Promise<void> {
+	const interaction = DiscordCache.getInteraction(context.discord!.interaction!);
+
+	if (interaction) {
+		await sendErrorMessage(interaction.user, context, interaction, i18n.t("commands:shop.cannotHealOccupied", { lng: interaction.userLanguage }), { sendManner: SendManner.FOLLOWUP });
+	}
+}
+
 export async function handleCommandShopNoEnergyToHeal(context: PacketContext): Promise<void> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction!);
 
@@ -109,6 +117,41 @@ export async function handleCommandShopBoughtTooMuchDailyPotions(context: Packet
 
 	if (interaction) {
 		await sendErrorMessage(interaction.user, context, interaction, i18n.t("commands:shop.boughtTooMuchDailyPotions", { lng: interaction.userLanguage }), { sendManner: SendManner.FOLLOWUP });
+	}
+}
+
+export async function handleCommandShopBoughtTooMuchTokens(context: PacketContext): Promise<void> {
+	const interaction = DiscordCache.getInteraction(context.discord!.interaction!);
+
+	if (interaction) {
+		await sendErrorMessage(interaction.user, context, interaction, i18n.t("commands:shop.boughtTooMuchTokens", { lng: interaction.userLanguage }), { sendManner: SendManner.FOLLOWUP });
+	}
+}
+
+export async function handleCommandShopTokensBought(context: PacketContext): Promise<void> {
+	const interaction = DiscordCache.getInteraction(context.discord!.interaction!);
+	if (!interaction) {
+		return;
+	}
+	const lng = interaction.userLanguage;
+
+	await interaction.followUp({
+		embeds: [
+			new CrowniclesEmbed()
+				.formatAuthor(i18n.t("commands:shop.success", {
+					lng,
+					pseudo: escapeUsername(interaction.user.displayName)
+				}), interaction.user)
+				.setDescription(i18n.t("commands:shop.tokensBought", { lng }))
+		]
+	});
+}
+
+export async function handleCommandShopTokensFull(context: PacketContext): Promise<void> {
+	const interaction = DiscordCache.getInteraction(context.discord!.interaction!);
+
+	if (interaction) {
+		await sendErrorMessage(interaction.user, context, interaction, i18n.t("commands:shop.tokensFull", { lng: interaction.userLanguage }), { sendManner: SendManner.FOLLOWUP });
 	}
 }
 
@@ -481,7 +524,7 @@ export async function shopCollector(context: PacketContext, packet: ReactionColl
 
 		shopText += `${`**${i18n.t(`commands:shop.shopCategories.${categoryId}`, {
 			lng,
-			count: data.additionalShopData!.remainingPotions
+			count: categoryId === "token" ? data.additionalShopData!.remainingTokens : data.additionalShopData!.remainingPotions
 		})}** :\n`
 			.concat(...categoryItemsIds.map(id => {
 				const reaction = packet.reactions.find(reaction => (reaction.data as ReactionCollectorShopItemReaction).shopItemId === id)!.data as ReactionCollectorShopItemReaction;

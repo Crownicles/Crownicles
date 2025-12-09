@@ -45,6 +45,11 @@ export interface ExpeditionOptionData {
 	 * Whether this expedition has increased clone talisman drop chance
 	 */
 	hasCloneTalismanBonus?: boolean;
+
+	/**
+	 * Whether this expedition has bonus token rewards
+	 */
+	hasBonusTokens?: boolean;
 }
 
 /**

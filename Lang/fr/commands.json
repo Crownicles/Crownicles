@@ -157,7 +157,8 @@
       "reward": "{emote:expedition.reward} Récompenses estimées : {{reward}}",
       "difficulty": "{emote:expedition.difficulty} Difficulté du terrain : {{difficulty}}",
       "food": "{emote:expedition.food} Provisions requises : {{foodDisplay}}",
-      "cloneTalismanBonus": "{emote:expedition.cloneTalisman} *Un étrange pressentiment vous envahit... Les rumeurs parlent d'un artefact légendaire peut-être caché en ces terres.*"
+      "cloneTalismanBonus": "{emote:expedition.cloneTalisman} *Un étrange pressentiment vous envahit... Les rumeurs parlent d'un artefact légendaire peut-être caché en ces terres.*",
+      "bonusTokens": "{emote:unitValues.token} *Cette région regorge de trésors anciens ! Votre familier pourrait y découvrir une fortune en jetons perdus...*"
     },
     "foodCost_one": "{{count}} ration",
     "foodCost_other": "{{count}} rations",
@@ -254,6 +255,8 @@
       "money": "{emote:unitValues.money} Argent gagné : **{{amount}}** !",
       "experience": "{emote:unitValues.xp} Expérience gagnée : **{{amount}}** !",
       "points": "{emote:unitValues.score} Points gagnés : **{{amount}}** !",
+      "tokens_one": "{emote:unitValues.token} Jeton gagné : **{{count}}** !",
+      "tokens_other": "{emote:unitValues.token} Jetons gagnés : **{{count}}** !",
       "item": "{emote:rewards.item} Vous recevez un équipement aléatoire !",
       "cloneTalisman": "{emote:expedition.cloneTalisman} **DÉCOUVERTE EXCEPTIONNELLE !**\nVotre familier a découvert un ancien artefact enfoui : le **Talisman de Clonage** !\nCet objet mystique permettra à votre compagnon de vous assister en défense et dans les petits événements, même lorsqu'il est en expédition !",
       "badgeEarned": "{emote:badges.expert_expediteur} Un badge vous a été offert : **Expéditeur Expert** !"
@@ -698,6 +701,10 @@
     },
     "information": {
       "fieldName": "Informations :",
+      "fieldValue": "{emote:unitValues.health} {{health}} / {{maxHealth}} | {emote:unitValues.xp} {{experience}} / {{experienceNeededToLevelUp}} | {emote:unitValues.money} {{money}} | {emote:unitValues.token} {{tokens}} / {{tokensMax}}"
+    },
+    "informationNoTokens": {
+      "fieldName": "Informations :",
       "fieldValue": "{emote:unitValues.health} {{health}} / {{maxHealth}} | {emote:unitValues.xp} {{experience}} / {{experienceNeededToLevelUp}} | {emote:unitValues.money} {{money}}"
     },
     "map": {
@@ -787,7 +794,31 @@
     "travellingDescription": "Tout se passe bien depuis votre dernière aventure {{smallEventEmoji}}. Prochain arrêt prévu {{time}}.",
     "travellingDescriptionEndTravel": "Tout se passe bien dans votre aventure, vous arriverez bientôt à destination.",
     "travellingDescriptionWithoutSmallEvent": "Tout se passe bien dans votre aventure. Prochain arrêt prévu {{time}}.",
-    "travellingTitle": "Vous êtes actuellement en train d'avancer !"
+    "travellingTitle": "Vous êtes actuellement en train d'avancer !",
+    "useTokensButton": "Avancer",
+    "notEnoughTokensButton": "Jetons insuffisants",
+    "useTokensLoading": "Chargement...",
+    "useTokensConfirmTitle": "{{pseudo}}, confirmation",
+    "useTokensConfirmDescription_one": "Voulez-vous dépenser **{{count}} jeton** {emote:unitValues.token} pour avancer jusqu'à la prochaine étape de l'aventure ?\n\nVous avez actuellement **{{playerTokens}} jetons** {emote:unitValues.token}.",
+    "useTokensConfirmDescription_other": "Voulez-vous dépenser **{{count}} jetons** {emote:unitValues.token} pour avancer jusqu'à la prochaine étape de l'aventure ?\n\nVous avez actuellement **{{playerTokens}} jetons** {emote:unitValues.token}.",
+    "tokensUsedSuccessTitle": "{{pseudo}}, jetons utilisés !",
+    "tokensUsedSuccessDescription_one": "{emote:unitValues.token} Vous avez dépensé **{{count}} jeton** pour avancer dans votre voyage.\n\n{{nextStep}}",
+    "tokensUsedSuccessDescription_other": "{emote:unitValues.token} Vous avez dépensé **{{count}} jetons** pour avancer dans votre voyage.\n\n{{nextStep}}",
+    "tokensNextStepArrived": "{emote:messages.info} Vous êtes arrivé à destination ! Utilisez {command:report} pour voir ce qui vous attend.",
+    "tokensNextStepSmallEvent": "{emote:messages.info} Un événement vous attend sur la route. Utilisez {command:report} pour le découvrir.",
+    "tokensUsedRefused": "{emote:messages.refuse} **{{pseudo}}** a décidé de ne pas utiliser de jetons.",
+    "buyHealButton": "Se soigner",
+    "notEnoughMoneyHealButton": "Argent insuffisant",
+    "buyHealLoading": "Chargement...",
+    "buyHealConfirmTitle": "{{pseudo}}, confirmation",
+    "buyHealConfirmDescription": "Voulez-vous dépenser **{{price}}** {emote:unitValues.money} pour guérir votre altération d'état et reprendre immédiatement votre route ?\n\nVous avez actuellement **{{playerMoney}}** {emote:unitValues.money}.",
+    "healSuccessTitle": "{{pseudo}}, soins terminés !",
+    "healSuccessDescription": "{emote:shopItems.healAlteration} Vous avez dépensé **{{price}}** {emote:unitValues.money} pour vous soigner.\n\n{{nextStep}}",
+    "healNextStepArrived": "{emote:messages.info} Vous êtes arrivé à destination ! Utilisez {command:report} pour voir ce qui vous attend.",
+    "healNextStepSmallEvent": "{emote:messages.info} Un événement vous attend sur la route. Utilisez {command:report} pour le découvrir.",
+    "healRefused": "{emote:messages.refuse} **{{pseudo}}** a décidé de ne pas se soigner.",
+    "healNoAlteration": "{emote:effects.none} Vous n'êtes victime d'aucune altération d'état.",
+    "healCannotHealOccupied": "{emote:effects.occupied} Vous êtes actuellement occupé. Cette altération ne peut pas être soignée."
   },
   "update": {
     "description": "La version actuelle du noyau du bot est la **{{coreVersion}}**. Celle du module Discord est la **{{discordModuleVersion}}**.\n\nToutes les informations concernant les mises à jour sont disponibles ici :\nhttps://guide.crownicles.com/lore/historique-des-mises-a-jour",
@@ -822,6 +853,7 @@
     "closeShop": "Vous avez fermé le magasin.",
     "closeShopTitle": "{{pseudo}}, fermeture du magasin",
     "noAlterationToHeal": "Vous n'êtes victime d'aucune altération d'état. {emote:effects.none}",
+    "cannotHealOccupied": "Vous êtes actuellement occupé. Cette altération ne peut pas être soignée au magasin. {emote:effects.occupied}",
     "success": "{{pseudo}}, transaction réussie !",
     "healAlteration": "{emote:shopItems.healAlteration} Vos altérations d'état ont été supprimées.",
     "tooManyEnergyBought": "Vous avez acheté la quantité maximale de récupération d'énergie pour cette semaine.",
@@ -831,6 +863,9 @@
     "badgeBought": "Vous avez reçu un nouveau badge : {emote:badges.{{badgeName}}} !",
     "notEnoughMoney": "Vous n'avez pas assez d'argent pour acheter cet objet ! Il vous manque `{{missingCurrency}} {emote:unitValues.{{currency}}}`.",
     "boughtTooMuchDailyPotions": "Il n'y a plus aucune potion du jour disponible à la vente... Revenez demain !",
+    "boughtTooMuchTokens": "Il n'est plus possible d'acheter des jetons aujourd'hui... Revenez demain !",
+    "tokensBought": "Vous avez acheté un jeton. {emote:unitValues.token}",
+    "tokensFull": "Vous possédez déjà le maximum de jetons possible !",
     "title": "{emote:commands.shop} Affichage du Magasin",
     "currentMoney": "Vous avez `{{money}}{emote:unitValues.{{currency}}}`.",
     "shopItemsDisplaySingle": "{{name}} | `{{price}}{emote:unitValues.{{currency}}}`",
@@ -846,6 +881,9 @@
       "dailyPotion_zero": "Potion du jour (rupture de stock)",
       "dailyPotion_one": "Potion du jour ({{count}} disponible)",
       "dailyPotion_other": "Potion du jour ({{count}} disponibles)",
+      "token_zero": "Jetons (rupture de stock)",
+      "token_one": "Jetons ({{count}} disponible)",
+      "token_other": "Jetons ({{count}} disponibles)",
       "slotExtension": "Extensions d'inventaire",
       "food": "Nourriture pour familiers",
       "guildXp": "Expérience de guilde",
@@ -893,6 +931,10 @@
       },
       "dailyPotion": {
         "info": "Vous obtiendrez une potion que vous déciderez de garder ou non. Si vous l'avez déjà, elle sera jetée sans remboursement !"
+      },
+      "token": {
+        "name": "{emote:unitValues.token} Jeton",
+        "info": "Les jetons permettent de progresser plus vite en accélérant certaines actions comme les rapports. Vous pouvez en acheter jusqu'à 10 par jour."
       },
       "smallGuildXp": {
         "name": "{emote:shopItems.smallGuildXp} Un peu d'xp pour votre guilde",

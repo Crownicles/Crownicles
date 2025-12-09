@@ -269,6 +269,11 @@
     "La nourriture consommée par l'expédition provient du stock de votre guilde.",
     "Trois expéditions vous sont proposées à chaque fois : deux proches de votre position et une lointaine.",
     "Il existe un talisman de clonage très rare qui permet d'avoir un double spectral de votre familier pendant qu'il est en expédition.",
-    "Croiser Velanna quand votre familier est en expédition peut vous rapporter des points bonus et parfois d'autres surprises."
+    "Croiser Velanna quand votre familier est en expédition peut vous rapporter des points bonus et parfois d'autres surprises.",
+    "Les jetons permettent d'avancer plus vite sur la carte en utilisant la commande {command:report}.",
+    "Vous pouvez obtenir des jetons grâce au bonus journalier ({command:dailybonus}), aux expéditions de familier, ou en les achetant dans le magasin.",
+    "Les jetons sont débloqués à partir du niveau 5.",
+    "Un jeton permet de sauter directement à la prochaine étape de votre voyage.",
+    "Plus vous êtes occupé longtemps, plus le coût en jetons pour avancer sera élevé."
   ]
 }

@@ -14,4 +14,6 @@ export class SmallEventSmallBadPacket extends SmallEventPacket {
 	amount!: number;
 
 	issue!: SmallEventBadIssue;
+
+	effectId?: string;
 }

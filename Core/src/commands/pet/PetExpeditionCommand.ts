@@ -269,7 +269,13 @@ export default class PetExpeditionCommand {
 			foodConsumed: activeExpedition.foodConsumed,
 			foodRequired
 		});
-		const outcome = determineExpeditionOutcome(effectiveRisk, expeditionData, activeExpedition.rewardIndex, player.hasCloneTalisman);
+		const outcome = determineExpeditionOutcome({
+			effectiveRisk,
+			expedition: expeditionData,
+			rewardIndex: activeExpedition.rewardIndex,
+			hasCloneTalisman: player.hasCloneTalisman,
+			playerCurrentTokens: player.tokens
+		});
 
 		// Apply love change
 		if (outcome.loveChange) {

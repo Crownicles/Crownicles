@@ -188,6 +188,12 @@ function formatRewards(
 			amount: rewards.points
 		}));
 	}
+	if (rewards.tokens && rewards.tokens > 0) {
+		lines.push(i18n.t("commands:petExpedition.rewards.tokens", {
+			lng,
+			count: rewards.tokens
+		}));
+	}
 
 	// Item is always given on successful expeditions (shown in separate embed via giveItemToPlayer)
 	lines.push(i18n.t("commands:petExpedition.rewards.item", { lng }));

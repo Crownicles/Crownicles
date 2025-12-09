@@ -44,6 +44,8 @@ export abstract class BlockingConstants {
 		UNLOCK: "unlock",
 		START_BOSS_FIGHT: "startBossFight",
 		REPORT_COMMAND: "reportCommand",
+		REPORT_USE_TOKENS: "reportUseTokens",
+		REPORT_BUY_HEAL: "reportBuyHeal",
 		CART_SMALL_EVENT: "cartSmallEvent",
 		LIMOGES_SMALL_EVENT: "limogesSmallEvent",
 		PET_FOOD_SMALL_EVENT: "petFoodSmallEvent",

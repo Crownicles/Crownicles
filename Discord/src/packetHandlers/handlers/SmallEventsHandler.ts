@@ -668,12 +668,19 @@ export default class SmallEventsHandler {
 		const amountDisplay = packet.issue === SmallEventBadIssue.TIME
 			? minutesDisplay(packet.amount, lng)
 			: packet.amount;
+
+		// For TIME issue, choose translation key based on effectId
+		let translationKey = `smallEvents:smallBad.${packet.issue}.stories`;
+		if (packet.issue === SmallEventBadIssue.TIME && packet.effectId) {
+			translationKey = `smallEvents:smallBad.${packet.issue}.${packet.effectId}.stories`;
+		}
+
 		await interaction?.editReply({
 			embeds: [
 				new CrowniclesSmallEventEmbed(
 					"smallBad",
 					getRandomSmallEventIntro(lng)
-					+ StringUtils.getRandomTranslation(`smallEvents:smallBad.${packet.issue}.stories`, lng, { amount: amountDisplay }),
+					+ StringUtils.getRandomTranslation(translationKey, lng, { amount: amountDisplay }),
 					interaction.user,
 					lng
 				)
@@ -932,17 +939,19 @@ export default class SmallEventsHandler {
 		const interaction = DiscordCache.getInteraction(context.discord!.interaction);
 		const lng = interaction!.userLanguage;
 		const keyReward = packet.isGemReward ? "gem" : "money";
+		const hasPetInfo = packet.petTypeId !== undefined;
 		await interaction?.editReply({
 			embeds: [
 				new CrowniclesSmallEventEmbed(
 					"dwarfPetFan",
 					`${StringUtils.getRandomTranslation("smallEvents:dwarfPetFan.intro", lng)} ${StringUtils.getRandomTranslation(`smallEvents:dwarfPetFan.${packet.interactionName}`, lng, {
-						context: packet.petTypeId ? packet.petSex : "m",
-						pet: packet.petTypeId ? PetUtils.petToShortString(lng, packet.petNickname, packet.petTypeId!, packet.petSex!) : "",
-						reward: i18n.t(`smallEvents:dwarfPetFan.reward.${keyReward}`, {
-							lng,
-							amount: packet.amount
-						})
+						...hasPetInfo ? { context: packet.petSex } : {},
+						pet: hasPetInfo ? PetUtils.petToShortString(lng, packet.petNickname, packet.petTypeId!, packet.petSex!) : "",
+						reward: packet.amount !== undefined
+							? i18n.t(`smallEvents:dwarfPetFan.reward.${keyReward}`, {
+								lng, amount: packet.amount
+							})
+							: ""
 					})}`,
 					interaction.user,
 					lng
@@ -1100,6 +1109,11 @@ export default class SmallEventsHandler {
 					playerLevel: packet.playerLevel,
 					talismanName
 				});
+
+				// Add consolation token message if a token was given
+				if (packet.consolationTokenGiven) {
+					story += `\n\n${i18n.t("smallEvents:expeditionAdvice.conditions.consolationToken", { lng })}`;
+				}
 				break;
 
 			case ExpeditionAdviceInteractionType.TALISMAN_RECEIVED: {

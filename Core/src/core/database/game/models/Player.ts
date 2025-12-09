@@ -56,6 +56,8 @@ import { StatValues } from "../../../../../../Lib/src/types/StatValues";
 import { ReachDestinationNotificationPacket } from "../../../../../../Lib/src/packets/notifications/ReachDestinationNotificationPacket";
 import { CrowniclesLogger } from "../../../../../../Lib/src/logs/CrowniclesLogger";
 import { Badge } from "../../../../../../Lib/src/types/Badge";
+import { TokensConstants } from "../../../../../../Lib/src/constants/TokensConstants";
+import { MathUtils } from "../../../utils/MathUtils";
 
 // skipcq: JS-C1003 - moment does not expose itself as an ES Module.
 import * as moment from "moment";
@@ -102,6 +104,8 @@ export class Player extends Model {
 	declare experience: number;
 
 	declare money: number;
+
+	declare tokens: number;
 
 	declare class: number;
 
@@ -295,6 +299,26 @@ export class Player extends Model {
 	}
 
 	/**
+	 * Add or remove tokens to the player
+	 * @param parameters
+	 */
+	public async addTokens(parameters: EditValueParameters): Promise<Player> {
+		const newTokens = MathUtils.clamp(
+			this.tokens + parameters.amount,
+			0,
+			TokensConstants.MAX
+		);
+
+		if (newTokens === this.tokens) {
+			return this;
+		}
+
+		this.setTokens(newTokens);
+		await crowniclesInstance.logsDatabase.logTokensChange(this.keycloakId, this.tokens, parameters.reason);
+		return this;
+	}
+
+	/**
 	 * Return the value of glory that is displayed to the users
 	 */
 	public getGloryPoints(): number {
@@ -343,6 +367,7 @@ export class Player extends Model {
 			classesTier5Unlocked: newLevel === ClassConstants.GROUP4LEVEL,
 			missionSlotUnlocked: newLevel === Constants.MISSIONS.SLOT_2_LEVEL || newLevel === Constants.MISSIONS.SLOT_3_LEVEL,
 			pveUnlocked: newLevel === PVEConstants.MIN_LEVEL,
+			tokensUnlocked: newLevel === TokensConstants.LEVEL_TO_UNLOCK,
 			statsIncreased: true
 		});
 
@@ -725,7 +750,7 @@ export class Player extends Model {
 	 */
 	public getCumulativeEnergy(): number {
 		const maxEnergy = this.getMaxCumulativeEnergy();
-		return Math.max(0, Math.min(maxEnergy - this.fightPointsLost, maxEnergy));
+		return MathUtils.clamp(maxEnergy - this.fightPointsLost, 0, maxEnergy);
 	}
 
 	public getRatioCumulativeEnergy(): number {
@@ -996,6 +1021,14 @@ export class Player extends Model {
 		else {
 			this.money = 0;
 		}
+	}
+
+	/**
+	 * Set the tokens of a player clamped between 0 and the maximum capacity
+	 * @param tokens
+	 */
+	private setTokens(tokens: number): void {
+		this.tokens = MathUtils.clamp(tokens, 0, TokensConstants.MAX);
 	}
 
 	/**
@@ -1528,6 +1561,10 @@ export function initModel(sequelize: Sequelize): void {
 		money: {
 			type: DataTypes.INTEGER,
 			defaultValue: PlayersConstants.PLAYER_DEFAULT_VALUES.MONEY
+		},
+		tokens: {
+			type: DataTypes.INTEGER,
+			defaultValue: PlayersConstants.PLAYER_DEFAULT_VALUES.TOKENS
 		},
 		class: {
 			type: DataTypes.INTEGER,

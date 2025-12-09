@@ -49,6 +49,7 @@ interface ExpeditionSelectSuccessParams {
 	rationsRequired: number;
 	speedDurationModifier: number;
 	originalDisplayDurationMinutes: number;
+	hasGuild: boolean;
 }
 
 /**
@@ -201,7 +202,7 @@ function logExpeditionStart(params: ExpeditionLogStartParams): void {
  */
 function buildExpeditionSelectSuccessResponse(params: ExpeditionSelectSuccessParams): CommandPetExpeditionChoicePacketRes {
 	const {
-		expedition, petEntity, foodPlan, rationsRequired, speedDurationModifier, originalDisplayDurationMinutes
+		expedition, petEntity, foodPlan, rationsRequired, speedDurationModifier, originalDisplayDurationMinutes, hasGuild
 	} = params;
 	const insufficientFood = foodPlan.totalRations < rationsRequired;
 
@@ -212,7 +213,7 @@ function buildExpeditionSelectSuccessResponse(params: ExpeditionSelectSuccessPar
 		foodConsumedDetails: foodPlanToDetails(foodPlan),
 		insufficientFood,
 		insufficientFoodCause: insufficientFood
-			? !foodPlan.consumption.length ? ExpeditionConstants.INSUFFICIENT_FOOD_CAUSES.NO_GUILD : ExpeditionConstants.INSUFFICIENT_FOOD_CAUSES.GUILD_NO_FOOD
+			? !hasGuild ? ExpeditionConstants.INSUFFICIENT_FOOD_CAUSES.NO_GUILD : ExpeditionConstants.INSUFFICIENT_FOOD_CAUSES.GUILD_NO_FOOD
 			: undefined,
 		speedDurationModifier,
 		originalDisplayDurationMinutes
@@ -281,7 +282,8 @@ export async function handleExpeditionSelect(
 		foodPlan,
 		rationsRequired,
 		speedDurationModifier,
-		originalDisplayDurationMinutes: expeditionData.displayDurationMinutes
+		originalDisplayDurationMinutes: expeditionData.displayDurationMinutes,
+		hasGuild: Boolean(player.guildId)
 	}));
 }
 

@@ -12,12 +12,16 @@ import {
 	CommandShopAlreadyHaveBadge,
 	CommandShopBadgeBought,
 	CommandShopBoughtTooMuchDailyPotions,
+	CommandShopBoughtTooMuchTokens,
+	CommandShopCannotHealOccupied,
 	CommandShopClosed,
 	CommandShopEnergyHeal,
 	CommandShopFullRegen,
 	CommandShopHealAlterationDone,
 	CommandShopNoAlterationToHeal,
 	CommandShopNoEnergyToHeal,
+	CommandShopTokensBought,
+	CommandShopTokensFull,
 	CommandShopTooManyEnergyBought,
 	ShopCategory,
 	ShopItem
@@ -30,9 +34,11 @@ import { crowniclesInstance } from "../../index";
 import {
 	NumberChangeReason, ShopItemType
 } from "../../../../Lib/src/constants/LogsConstants";
-import { millisecondsToMinutes } from "../../../../Lib/src/utils/TimeUtils";
-import { Effect } from "../../../../Lib/src/types/Effect";
-import { TravelTime } from "../../core/maps/TravelTime";
+import {
+	calculateHealAlterationPrice,
+	canHealAlteration,
+	healAlterationAndAdvance
+} from "../../core/utils/HealAlterationUtils";
 import { MissionsController } from "../../core/missions/MissionsController";
 import { EntityConstants } from "../../../../Lib/src/constants/EntityConstants";
 import {
@@ -41,6 +47,9 @@ import {
 import { Settings } from "../../core/database/game/models/Setting";
 import { InventoryInfos } from "../../core/database/game/models/InventoryInfo";
 import { ItemConstants } from "../../../../Lib/src/constants/ItemConstants";
+import {
+	HEAL_VALIDATION_REASONS
+} from "../../core/report/ReportValidationConstants";
 import {
 	EndCallback, ReactionCollectorInstance
 } from "../../core/utils/ReactionsCollector";
@@ -56,6 +65,7 @@ import {
 } from "../../core/utils/CommandUtils";
 import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
 import { Badge } from "../../../../Lib/src/types/Badge";
+import { TokensConstants } from "../../../../Lib/src/constants/TokensConstants";
 
 /**
  * Get the shop item for getting a random item
@@ -74,36 +84,6 @@ function getRandomItemShopItem(): ShopItem {
 }
 
 /**
- * Calculate the price for healing from an alteration
- * @param player
- */
-function calculateHealAlterationPrice(player: Player): number {
-	let price = ShopConstants.ALTERATION_HEAL_BASE_PRICE;
-	const remainingTime = millisecondsToMinutes(player.effectRemainingTime());
-
-	/*
-	 * If the remaining time is under one hour,
-	 * The price becomes degressive until being divided by 8 at the 15-minute marque;
-	 * Then it no longer decreases
-	 */
-	if (remainingTime < ShopConstants.MAX_REDUCTION_TIME) {
-		if (remainingTime <= ShopConstants.MIN_REDUCTION_TIME) {
-			price /= ShopConstants.MAX_PRICE_REDUCTION_DIVISOR;
-		}
-		else {
-			// Calculate the price reduction based on the remaining time
-			const priceDecreasePerMinute = (
-				ShopConstants.ALTERATION_HEAL_BASE_PRICE - ShopConstants.ALTERATION_HEAL_BASE_PRICE / ShopConstants.MAX_PRICE_REDUCTION_DIVISOR
-			) / (
-				ShopConstants.MAX_REDUCTION_TIME - ShopConstants.MIN_REDUCTION_TIME
-			);
-			price -= priceDecreasePerMinute * (ShopConstants.MAX_REDUCTION_TIME - remainingTime);
-		}
-	}
-	return Math.round(price);
-}
-
-/**
  * Get the shop item for healing from an alteration
  * @param player
  */
@@ -115,15 +95,23 @@ function getHealAlterationShopItem(player: Player): ShopItem {
 		amounts: [1],
 		buyCallback: async (response, playerId): Promise<boolean> => {
 			const player = await Players.getById(playerId);
-			if (player.currentEffectFinished(new Date())) {
-				response.push(makePacket(CommandShopNoAlterationToHeal, {}));
+			const currentDate = new Date();
+
+			// Check if player can be healed
+			const healCheck = canHealAlteration(player, currentDate);
+			if (!healCheck.canHeal) {
+				if (healCheck.reason === HEAL_VALIDATION_REASONS.NO_ALTERATION) {
+					response.push(makePacket(CommandShopNoAlterationToHeal, {}));
+				}
+				else if (healCheck.reason === HEAL_VALIDATION_REASONS.OCCUPIED) {
+					response.push(makePacket(CommandShopCannotHealOccupied, {}));
+				}
 				return false;
 			}
-			if (player.effectId !== Effect.DEAD.id && player.effectId !== Effect.JAILED.id) {
-				await TravelTime.removeEffect(player, NumberChangeReason.SHOP);
-				await player.save();
-			}
-			await MissionsController.update(player, response, { missionId: "recoverAlteration" });
+
+			// Heal and advance the player
+			await healAlterationAndAdvance(player, currentDate, NumberChangeReason.SHOP, response);
+
 			response.push(makePacket(CommandShopHealAlterationDone, {}));
 			return true;
 		}
@@ -196,6 +184,44 @@ function getBadgeShopItem(): ShopItem {
 			player.addBadge(Badge.RICH);
 			await player.save();
 			response.push(makePacket(CommandShopBadgeBought, {}));
+			return true;
+		}
+	};
+}
+
+/**
+ * Get the shop item for buying tokens
+ * @param tokensAlreadyPurchased - Number of tokens already purchased today
+ */
+function getTokenShopItem(tokensAlreadyPurchased: number): ShopItem {
+	return {
+		id: ShopItemType.TOKEN,
+		price: ShopConstants.TOKEN_PRICE,
+		amounts: [1],
+		buyCallback: async (response, playerId): Promise<boolean> => {
+			const player = await Players.getById(playerId);
+
+			// Check if the player has already bought the maximum amount of tokens today
+			if (tokensAlreadyPurchased >= ShopConstants.MAX_DAILY_TOKEN_BUYOUTS) {
+				response.push(makePacket(CommandShopBoughtTooMuchTokens, {}));
+				return false;
+			}
+
+			// Check if player already has max tokens
+			if (player.tokens >= TokensConstants.MAX) {
+				response.push(makePacket(CommandShopTokensFull, {}));
+				return false;
+			}
+
+			// Add token to player
+			await player.addTokens({
+				amount: 1,
+				response,
+				reason: NumberChangeReason.SHOP
+			});
+			await player.save();
+
+			response.push(makePacket(CommandShopTokensBought, { amount: 1 }));
 			return true;
 		}
 	};
@@ -312,6 +338,7 @@ export default class ShopCommand {
 		context: PacketContext
 	): Promise<void> {
 		const healEnergyAlreadyPurchased = await LogsReadRequests.getAmountOfHealEnergyBoughtByPlayerThisWeek(player.keycloakId);
+		const tokensAlreadyPurchased = await LogsReadRequests.getAmountOfTokensBoughtByPlayerToday(player.keycloakId);
 		const potion = PotionDataController.instance.getById(await Settings.SHOP_POTION.getValue());
 
 		const shopCategories: ShopCategory[] = [
@@ -324,11 +351,20 @@ export default class ShopCommand {
 					getRegenShopItem(),
 					getBadgeShopItem()
 				]
-			}, {
+			},
+			{
 				id: "dailyPotion",
 				items: [getDailyPotionShopItem(potion)]
 			}
 		];
+
+		// Only show token category if player has unlocked tokens
+		if (player.level >= TokensConstants.LEVEL_TO_UNLOCK) {
+			shopCategories.push({
+				id: "token",
+				items: [getTokenShopItem(tokensAlreadyPurchased)]
+			});
+		}
 
 		const slotExtensionItem = await getSlotExtensionShopItem(player);
 		if (slotExtensionItem) {
@@ -343,7 +379,8 @@ export default class ShopCommand {
 			player,
 			additionalShopData: {
 				remainingPotions: ShopConstants.MAX_DAILY_POTION_BUYOUTS - await LogsReadRequests.getAmountOfDailyPotionsBoughtByPlayer(player.keycloakId),
-				dailyPotion: toItemWithDetails(potion)
+				dailyPotion: toItemWithDetails(potion),
+				remainingTokens: ShopConstants.MAX_DAILY_TOKEN_BUYOUTS - tokensAlreadyPurchased
 			},
 			logger: crowniclesInstance.logsDatabase.logClassicalShopBuyout
 		});

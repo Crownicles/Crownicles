@@ -284,7 +284,7 @@ export abstract class ExpeditionConstants {
 	 * effective_risk = initial_risk + (difficulty / DIFFICULTY_DIVISOR) - pet_force - (love / LOVE_DIVISOR)
 	 */
 	static readonly EFFECTIVE_RISK_FORMULA = {
-		DIFFICULTY_DIVISOR: 3,
+		DIFFICULTY_DIVISOR: 4,
 		LOVE_DIVISOR: 10
 	};
 
@@ -537,11 +537,6 @@ export abstract class ExpeditionConstants {
 	 */
 	static readonly TALISMAN_EVENT = {
 		/**
-		 * Minimum level to encounter the event
-		 */
-		MIN_LEVEL: 20,
-
-		/**
 		 * Minimum level to receive the talisman
 		 */
 		TALISMAN_MIN_LEVEL: 30,
@@ -605,6 +600,42 @@ export abstract class ExpeditionConstants {
 		 * Multiplier applied to clone talisman drop chance when expedition has the bonus tag
 		 */
 		BONUS_EXPEDITION_MULTIPLIER: 10
+	};
+
+	/**
+	 * Bonus tokens constants
+	 * A rare bonus that can be applied to expeditions (mutually exclusive with clone talisman bonus)
+	 */
+	static readonly BONUS_TOKENS = {
+		/**
+		 * Chance for an expedition to have the bonus tokens multiplier (1 in 50)
+		 */
+		TOKEN_BONUS_EXPEDITION_CHANCE: 8,
+
+		/**
+		 * Multiplier applied to tokens when expedition has the bonus tag
+		 */
+		MULTIPLIER: 3,
+
+		/**
+		 * Minimum tokens guaranteed from any expedition
+		 */
+		MIN_TOKEN_REWARD: 1,
+
+		/**
+		 * Minimum tokens guaranteed when the expedition has the bonus multiplier
+		 */
+		MIN_BONUS_TOKEN_REWARD: 2,
+
+		/**
+		 * Random boost range applied to all expeditions (minimum inclusive)
+		 */
+		RANDOM_BOOST_MIN: 0,
+
+		/**
+		 * Random boost range applied to all expeditions (maximum inclusive)
+		 */
+		RANDOM_BOOST_MAX: 2
 	};
 
 	/**

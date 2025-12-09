@@ -5,6 +5,7 @@ import { SmallEventConstants } from "../../../../../Lib/src/constants/SmallEvent
 import { RandomUtils } from "../../../../../Lib/src/utils/RandomUtils";
 import { PetDataController } from "../../../data/Pet";
 import { PetUtils } from "../../utils/PetUtils";
+import { MathUtils } from "../../utils/MathUtils";
 
 /**
  * Calculate love level bonus/malus for pet fight
@@ -60,7 +61,11 @@ export const fightPetAction: FightPetActionFunc = async (player, pet) => {
 		* SmallEventConstants.FIGHT_PET.SUCCESS_PROBABILITY_FOR_RARITY_DIFFERENCE;
 
 	// Ensure the success probability is within a reasonable range
-	const clampedSuccessProbability = Math.max(SmallEventConstants.FIGHT_PET.MIN_PROBABILITY_PET_VS_PET, Math.min(SmallEventConstants.FIGHT_PET.MAX_PROBABILITY_PET_VS_PET, successProbability));
+	const clampedSuccessProbability = MathUtils.clamp(
+		successProbability,
+		SmallEventConstants.FIGHT_PET.MIN_PROBABILITY_PET_VS_PET,
+		SmallEventConstants.FIGHT_PET.MAX_PROBABILITY_PET_VS_PET
+	);
 
 	return RandomUtils.crowniclesRandom.bool(clampedSuccessProbability);
 };

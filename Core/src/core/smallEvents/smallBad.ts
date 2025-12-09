@@ -30,10 +30,15 @@ export const smallEventFuncs: SmallEventFuncs = {
 				});
 				break;
 
-			default:
+			default: {
 				packet.amount = RandomUtils.rangedInt(SmallEventConstants.SMALL_BAD.TIME) * 5;
-				await TravelTime.applyEffect(player, Effect.OCCUPIED, packet.amount, new Date(), NumberChangeReason.SMALL_EVENT);
+				const effect = RandomUtils.crowniclesRandom.bool(SmallEventConstants.SMALL_BAD.SLEEPING_PROBABILITY)
+					? Effect.SLEEPING
+					: Effect.OCCUPIED;
+				packet.effectId = effect.id;
+				await TravelTime.applyEffect(player, effect, packet.amount, new Date(), NumberChangeReason.SMALL_EVENT);
 				break;
+			}
 		}
 		response.push(makePacket(SmallEventSmallBadPacket, packet));
 

@@ -12,6 +12,7 @@ import {
 import { MapLinkDataController } from "../../data/MapLink";
 import { MapLocationDataController } from "../../data/MapLocation";
 import { MapConstants } from "../../../../Lib/src/constants/MapConstants";
+import { MathUtils } from "../utils/MathUtils";
 
 /**
  * Get expedition location type from map location type
@@ -122,8 +123,7 @@ function getRandomDistantMapLocation(excludeIds: number[]): number {
  */
 function generateLocalExpeditions(
 	localMapLocationIds: number[],
-	durationRanges: DurationRange[],
-	bonusExpeditionIndex: number
+	durationRanges: DurationRange[]
 ): ExpeditionData[] {
 	const expeditions: ExpeditionData[] = [];
 
@@ -139,9 +139,6 @@ function generateLocalExpeditions(
 			isDistantExpedition: false
 		});
 
-		if (bonusExpeditionIndex === i) {
-			expedition.hasCloneTalismanBonus = true;
-		}
 
 		expeditions.push(expedition);
 	}
@@ -154,8 +151,7 @@ function generateLocalExpeditions(
  */
 function fillMissingLocalExpeditions(
 	expeditions: ExpeditionData[],
-	durationRanges: DurationRange[],
-	bonusExpeditionIndex: number
+	durationRanges: DurationRange[]
 ): void {
 	while (expeditions.length < ExpeditionConstants.LOCAL_EXPEDITIONS_COUNT) {
 		const allLocationTypes = Object.values(ExpeditionConstants.EXPEDITION_LOCATION_TYPES) as ExpeditionLocationType[];
@@ -164,12 +160,84 @@ function fillMissingLocalExpeditions(
 			locationType: RandomUtils.crowniclesRandom.pick(allLocationTypes)
 		});
 
-		if (bonusExpeditionIndex === expeditions.length) {
-			expedition.hasCloneTalismanBonus = true;
-		}
-
 		expeditions.push(expedition);
 	}
+}
+
+/**
+ * Bonus types that can be applied to expeditions (mutually exclusive)
+ */
+enum ExpeditionBonusType {
+	NONE,
+	CLONE_TALISMAN,
+	BONUS_TOKENS
+}
+
+/**
+ * Determine which bonus type should be applied to expeditions
+ * Clone talisman bonus (1/20) has priority over triple tokens bonus (1/50) when player doesn't have clone talisman
+ * If player already has clone talisman, only triple tokens bonus can be applied
+ */
+function determineBonusType(hasCloneTalisman: boolean): ExpeditionBonusType {
+	if (!hasCloneTalisman) {
+		// Player doesn't have clone talisman: check for clone talisman bonus first (1/20)
+		if (RandomUtils.crowniclesRandom.bool(1 / ExpeditionConstants.CLONE_TALISMAN.BONUS_EXPEDITION_CHANCE)) {
+			return ExpeditionBonusType.CLONE_TALISMAN;
+		}
+	}
+
+	// Check for bonus tokens (1/50)
+	if (RandomUtils.crowniclesRandom.bool(1 / ExpeditionConstants.BONUS_TOKENS.TOKEN_BONUS_EXPEDITION_CHANCE)) {
+		return ExpeditionBonusType.BONUS_TOKENS;
+	}
+
+	return ExpeditionBonusType.NONE;
+}
+
+/**
+ * Apply bonus to an expedition based on bonus type
+ */
+function applyBonusToExpedition(expedition: ExpeditionData, bonusType: ExpeditionBonusType): void {
+	switch (bonusType) {
+		case ExpeditionBonusType.CLONE_TALISMAN:
+			expedition.hasCloneTalismanBonus = true;
+			break;
+		case ExpeditionBonusType.BONUS_TOKENS:
+			expedition.hasBonusTokens = true;
+			break;
+		default:
+			// No bonus to apply
+			break;
+	}
+}
+
+/**
+ * Generate the distant expedition
+ */
+function generateDistantExpedition(
+	localMapLocationIds: number[],
+	durationRanges: DurationRange[]
+): ExpeditionData {
+	const distantMapLocationId = getRandomDistantMapLocation(localMapLocationIds);
+	const distantMapLocation = MapLocationDataController.instance.getById(distantMapLocationId);
+	const distantLocationType = getExpeditionTypeFromMapType(distantMapLocation?.type ?? ExpeditionConstants.DEFAULT_MAP_TYPE);
+
+	return generateExpeditionWithConstraints({
+		durationRange: durationRanges[ExpeditionConstants.LOCAL_EXPEDITIONS_COUNT],
+		locationType: distantLocationType,
+		mapLocationId: distantMapLocationId,
+		isDistantExpedition: true
+	});
+}
+
+/**
+ * Calculate which expedition should receive the bonus (if any)
+ */
+function calculateBonusExpeditionIndex(bonusType: ExpeditionBonusType): number {
+	if (bonusType === ExpeditionBonusType.NONE) {
+		return ExpeditionConstants.NO_BONUS_EXPEDITION;
+	}
+	return RandomUtils.randInt(0, ExpeditionConstants.TOTAL_EXPEDITIONS_COUNT);
 }
 
 /**
@@ -183,36 +251,26 @@ export function generateThreeExpeditions(mapLinkId: number, hasCloneTalisman: bo
 	const localMapLocationIds = getMapLocationsFromLink(mapLinkId);
 	const durationRanges = ExpeditionConstants.getDurationRangesArray();
 
-	// Determine if a bonus expedition should exist
-	const bonusExpeditionIndex = hasCloneTalisman
-		? ExpeditionConstants.NO_BONUS_EXPEDITION
-		: RandomUtils.crowniclesRandom.bool(1 / ExpeditionConstants.CLONE_TALISMAN.BONUS_EXPEDITION_CHANCE)
-			? RandomUtils.randInt(0, ExpeditionConstants.TOTAL_EXPEDITIONS_COUNT)
-			: ExpeditionConstants.NO_BONUS_EXPEDITION;
+	// Determine which bonus to apply and to which expedition
+	const bonusType = determineBonusType(hasCloneTalisman);
+	const bonusExpeditionIndex = calculateBonusExpeditionIndex(bonusType);
 
 	// Generate local expeditions
-	const localExpeditions = generateLocalExpeditions(localMapLocationIds, durationRanges, bonusExpeditionIndex);
-
-	// Fill with random expeditions if needed
-	fillMissingLocalExpeditions(localExpeditions, durationRanges, bonusExpeditionIndex);
+	const localExpeditions = generateLocalExpeditions(localMapLocationIds, durationRanges);
+	fillMissingLocalExpeditions(localExpeditions, durationRanges);
 
 	// Generate distant expedition
-	const distantMapLocationId = getRandomDistantMapLocation(localMapLocationIds);
-	const distantMapLocation = MapLocationDataController.instance.getById(distantMapLocationId);
-	const distantLocationType = getExpeditionTypeFromMapType(distantMapLocation?.type ?? ExpeditionConstants.DEFAULT_MAP_TYPE);
+	const distantExpedition = generateDistantExpedition(localMapLocationIds, durationRanges);
 
-	const distantExpedition = generateExpeditionWithConstraints({
-		durationRange: durationRanges[ExpeditionConstants.LOCAL_EXPEDITIONS_COUNT],
-		locationType: distantLocationType,
-		mapLocationId: distantMapLocationId,
-		isDistantExpedition: true
-	});
+	// Combine all expeditions
+	const allExpeditions = [...localExpeditions, distantExpedition];
 
-	if (bonusExpeditionIndex === ExpeditionConstants.LOCAL_EXPEDITIONS_COUNT) {
-		distantExpedition.hasCloneTalismanBonus = true;
+	// Apply bonus to the selected expedition
+	if (bonusExpeditionIndex >= 0 && bonusExpeditionIndex < allExpeditions.length) {
+		applyBonusToExpedition(allExpeditions[bonusExpeditionIndex], bonusType);
 	}
 
-	return [...localExpeditions, distantExpedition];
+	return allExpeditions;
 }
 
 /**
@@ -249,7 +307,7 @@ export function calculateEffectiveRisk(params: EffectiveRiskParams): number {
 		effectiveRisk *= ExpeditionConstants.NO_FOOD_RISK_MULTIPLIER;
 	}
 
-	return Math.max(0, Math.min(ExpeditionConstants.PERCENTAGE.MAX, effectiveRisk));
+	return MathUtils.clamp(effectiveRisk, 0, ExpeditionConstants.PERCENTAGE.MAX);
 }
 
 /**
@@ -263,15 +321,21 @@ export interface ExpeditionOutcome {
 }
 
 /**
+ * Parameters for determining expedition outcome
+ */
+export interface ExpeditionOutcomeParams {
+	effectiveRisk: number;
+	expedition: ExpeditionData;
+	rewardIndex: number;
+	hasCloneTalisman: boolean;
+	playerCurrentTokens: number;
+}
+
+/**
  * Determine expedition outcome based on effective risk
  */
-export function determineExpeditionOutcome(
-	effectiveRisk: number,
-	expedition: ExpeditionData,
-	rewardIndex: number,
-	hasCloneTalisman: boolean
-): ExpeditionOutcome {
-	const totalFailure = RandomUtils.crowniclesRandom.bool(effectiveRisk / ExpeditionConstants.PERCENTAGE.MAX);
+export function determineExpeditionOutcome(params: ExpeditionOutcomeParams): ExpeditionOutcome {
+	const totalFailure = RandomUtils.crowniclesRandom.bool(params.effectiveRisk / ExpeditionConstants.PERCENTAGE.MAX);
 
 	if (totalFailure) {
 		return {
@@ -282,12 +346,13 @@ export function determineExpeditionOutcome(
 		};
 	}
 
-	const partialSuccess = RandomUtils.crowniclesRandom.bool(effectiveRisk / ExpeditionConstants.PERCENTAGE.MAX);
+	const partialSuccess = RandomUtils.crowniclesRandom.bool(params.effectiveRisk / ExpeditionConstants.PERCENTAGE.MAX);
 	const rewards = calculateRewards({
-		expedition,
-		rewardIndex,
+		expedition: params.expedition,
+		rewardIndex: params.rewardIndex,
 		isPartialSuccess: partialSuccess,
-		hasCloneTalisman
+		hasCloneTalisman: params.hasCloneTalisman,
+		playerCurrentTokens: params.playerCurrentTokens
 	});
 
 	return {

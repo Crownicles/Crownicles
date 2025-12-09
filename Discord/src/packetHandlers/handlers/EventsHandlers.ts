@@ -342,6 +342,7 @@ export default class EventsHandlers {
 			},
 			missionSlotUnlocked: { tr: "newMissionSlot" },
 			pveUnlocked: { tr: "pveUnlocked" },
+			tokensUnlocked: { tr: "tokensUnlocked" },
 			statsIncreased: { tr: "statsIncreased" }
 		};
 

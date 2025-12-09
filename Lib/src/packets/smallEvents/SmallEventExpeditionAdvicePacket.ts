@@ -98,4 +98,9 @@ export class SmallEventExpeditionAdvicePacket extends SmallEventPacket {
 	 * Current player level (if level condition not met)
 	 */
 	playerLevel?: number;
+
+	/**
+	 * Whether a consolation token was given (when level is too low for talisman)
+	 */
+	consolationTokenGiven?: boolean;
 }

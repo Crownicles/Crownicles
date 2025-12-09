@@ -4,6 +4,7 @@ import {
 import {
 	ExpeditionConstants, ExpeditionLocationType
 } from "../../../../Lib/src/constants/ExpeditionConstants";
+import { TokensConstants } from "../../../../Lib/src/constants/TokensConstants";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import {
 	generateRandomItem
@@ -53,6 +54,42 @@ interface ItemReward {
 	itemCategory: number;
 }
 
+function calculateTokensReward(rewardIndex: number, hasBonusTokens: boolean, playerCurrentTokens: number, durationMinutes: number): number {
+	// Calculate base tokens from reward index
+	let tokens = rewardIndex - TokensConstants.EXPEDITION.REWARD_INDEX_OFFSET;
+
+	// Apply malus for short expeditions (less than 1 hour)
+	if (durationMinutes < TokensConstants.EXPEDITION.SHORT_DURATION_THRESHOLD_MINUTES) {
+		tokens -= TokensConstants.EXPEDITION.SHORT_DURATION_MALUS;
+	}
+
+	// Apply malus for low reward index (rewardIndex = 0)
+	if (rewardIndex === 0) {
+		tokens -= TokensConstants.EXPEDITION.LOW_REWARD_INDEX_MALUS;
+	}
+
+	// Apply bonus multiplier if applicable
+	if (hasBonusTokens) {
+		tokens *= ExpeditionConstants.BONUS_TOKENS.MULTIPLIER;
+	}
+
+	// Add random boost
+	tokens += RandomUtils.randInt(
+		ExpeditionConstants.BONUS_TOKENS.RANDOM_BOOST_MIN,
+		ExpeditionConstants.BONUS_TOKENS.RANDOM_BOOST_MAX
+	);
+
+	// Ensure minimum reward (different minimums for bonus vs regular expeditions)
+	const minimumTokens = hasBonusTokens
+		? ExpeditionConstants.BONUS_TOKENS.MIN_BONUS_TOKEN_REWARD
+		: ExpeditionConstants.BONUS_TOKENS.MIN_TOKEN_REWARD;
+	tokens = Math.max(minimumTokens, tokens);
+
+	// Limit to available capacity
+	const availableSlots = TokensConstants.MAX - playerCurrentTokens;
+	return MathUtils.clamp(tokens, 0, availableSlots);
+}
+
 /**
  * Parameters for clone talisman drop calculation
  */
@@ -71,6 +108,7 @@ export interface RewardCalculationParams {
 	rewardIndex: number;
 	isPartialSuccess: boolean;
 	hasCloneTalisman: boolean;
+	playerCurrentTokens: number;
 }
 
 /**
@@ -172,6 +210,11 @@ function rollCloneTalisman(params: CloneTalismanDropParams): boolean {
 		return false;
 	}
 
+	// No drop if expedition has bonus tokens (mutually exclusive)
+	if (expedition.hasBonusTokens) {
+		return false;
+	}
+
 	let dropChance = ExpeditionConstants.CLONE_TALISMAN.BASE_DROP_CHANCE
 		+ rewardIndex * ExpeditionConstants.CLONE_TALISMAN.REWARD_INDEX_BONUS_PER_POINT;
 
@@ -227,9 +270,10 @@ function generateItemReward(rewardIndex: number): ItemReward {
  */
 export function calculateRewards(params: RewardCalculationParams): ExpeditionRewardDataWithItem {
 	const {
-		expedition, rewardIndex, isPartialSuccess, hasCloneTalisman
+		expedition, rewardIndex, isPartialSuccess, hasCloneTalisman, playerCurrentTokens
 	} = params;
 	const rewards = calculateBaseRewards(rewardIndex, expedition.locationType);
+	const tokens = calculateTokensReward(rewardIndex, expedition.hasBonusTokens ?? false, playerCurrentTokens, expedition.durationMinutes);
 
 	if (isPartialSuccess) {
 		applyPartialSuccessPenalty(rewards);
@@ -242,6 +286,7 @@ export function calculateRewards(params: RewardCalculationParams): ExpeditionRew
 		...rewards,
 		itemId: itemReward.itemId,
 		itemCategory: itemReward.itemCategory,
+		tokens,
 		cloneTalismanFound: rollCloneTalisman({
 			expedition,
 			rewardIndex,

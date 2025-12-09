@@ -44,6 +44,10 @@ export class PetExpedition extends Model {
 
 	declare isDistantExpedition: boolean;
 
+	declare hasBonusTokens: boolean;
+
+	declare hasCloneTalismanBonus: boolean;
+
 	declare updatedAt: Date;
 
 	declare createdAt: Date;
@@ -86,7 +90,9 @@ export class PetExpedition extends Model {
 		const durationMinutes = this.getDurationMinutes();
 		return {
 			...this.getBaseExpeditionData(durationMinutes),
-			wealthRate: this.wealthRate
+			wealthRate: this.wealthRate,
+			hasBonusTokens: this.hasBonusTokens,
+			hasCloneTalismanBonus: this.hasCloneTalismanBonus
 		};
 	}
 
@@ -172,7 +178,9 @@ export class PetExpeditions {
 			status: ExpeditionConstants.STATUS.IN_PROGRESS,
 			foodConsumed,
 			rewardIndex,
-			isDistantExpedition: expeditionData.isDistantExpedition ?? false
+			isDistantExpedition: expeditionData.isDistantExpedition ?? false,
+			hasBonusTokens: expeditionData.hasBonusTokens ?? false,
+			hasCloneTalismanBonus: expeditionData.hasCloneTalismanBonus ?? false
 		});
 	}
 
@@ -261,6 +269,16 @@ export function initModel(sequelize: Sequelize): void {
 			defaultValue: 0
 		},
 		isDistantExpedition: {
+			type: DataTypes.BOOLEAN,
+			allowNull: false,
+			defaultValue: false
+		},
+		hasBonusTokens: {
+			type: DataTypes.BOOLEAN,
+			allowNull: false,
+			defaultValue: false
+		},
+		hasCloneTalismanBonus: {
 			type: DataTypes.BOOLEAN,
 			allowNull: false,
 			defaultValue: false

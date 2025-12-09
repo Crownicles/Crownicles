@@ -35,7 +35,9 @@ export abstract class SmallEventConstants {
 		MONEY: {
 			MIN: 10,
 			MAX: 50
-		}
+		},
+
+		SLEEPING_PROBABILITY: 0.7
 	};
 
 	static readonly BIG_BAD = {

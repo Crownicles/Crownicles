@@ -149,7 +149,8 @@ export default class GuildShopCommand {
 			const amounts: number[] = [
 				1,
 				Math.min(5, commonFoodRemainingSlots),
-				Math.min(10, commonFoodRemainingSlots)
+				Math.min(10, commonFoodRemainingSlots),
+				Math.min(25, commonFoodRemainingSlots)
 			];
 			foodItems.push(getFoodShopItem(PetConstants.PET_FOOD.COMMON_FOOD, [...new Set(amounts)])); // Remove duplicates
 		}
@@ -158,7 +159,8 @@ export default class GuildShopCommand {
 			const amounts: number[] = [
 				1,
 				Math.min(5, herbivorousFoodRemainingSlots),
-				Math.min(10, herbivorousFoodRemainingSlots)
+				Math.min(10, herbivorousFoodRemainingSlots),
+				Math.min(15, herbivorousFoodRemainingSlots)
 			];
 			foodItems.push(getFoodShopItem(PetConstants.PET_FOOD.HERBIVOROUS_FOOD, [...new Set(amounts)])); // Remove duplicates
 		}
@@ -167,7 +169,8 @@ export default class GuildShopCommand {
 			const amounts: number[] = [
 				1,
 				Math.min(5, carnivorousFoodRemainingSlots),
-				Math.min(10, carnivorousFoodRemainingSlots)
+				Math.min(10, carnivorousFoodRemainingSlots),
+				Math.min(15, carnivorousFoodRemainingSlots)
 			];
 			foodItems.push(getFoodShopItem(PetConstants.PET_FOOD.CARNIVOROUS_FOOD, [...new Set(amounts)])); // Remove duplicates
 		}

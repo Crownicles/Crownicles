@@ -28,6 +28,8 @@ export class LogsExpeditions extends Model {
 
 	declare readonly points: number | null;
 
+	declare readonly tokens: number | null;
+
 	declare readonly cloneTalismanFound: boolean | null;
 
 	declare readonly loveChange: number | null;
@@ -84,6 +86,10 @@ export function initModel(sequelize: Sequelize): void {
 			allowNull: true
 		},
 		points: {
+			type: DataTypes.SMALLINT.UNSIGNED,
+			allowNull: true
+		},
+		tokens: {
 			type: DataTypes.SMALLINT.UNSIGNED,
 			allowNull: true
 		},

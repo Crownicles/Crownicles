@@ -15,7 +15,7 @@ const use: FightActionFunc = (sender, receiver, fightAction) => {
 	const damageDealt = FightActionController.applySecondaryEffects(
 		initialDamage,
 		0,
-		MathUtils.getIntervalValue(2, 12, Math.max(0, Math.min(1, (130 - sender.level) / 40)))
+		MathUtils.getIntervalValue(2, 12, MathUtils.clamp((130 - sender.level) / 40, 0, 1))
 	);
 
 	/*
