@@ -2,6 +2,7 @@ import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
 import { generateRandomRarity } from "./ItemUtils";
 import { PetExpeditions } from "../database/game/models/PetExpedition";
 import Player from "../database/game/models/Player";
+import { MathUtils } from "./MathUtils";
 
 /**
  * Context in which pet availability is being checked
@@ -111,17 +112,25 @@ export abstract class PetUtils {
 		minRarity = PetConstants.PET_RARITY_RANGE.MIN,
 		maxRarity = PetConstants.PET_RARITY_RANGE.MAX
 	): number {
-		const clampedMin = Math.max(PetConstants.PET_RARITY_RANGE.MIN, Math.min(PetConstants.PET_RARITY_RANGE.MAX, minRarity));
-		const clampedMax = Math.max(clampedMin, Math.min(PetConstants.PET_RARITY_RANGE.MAX, maxRarity));
+		const clampedMin = MathUtils.clamp(minRarity, PetConstants.PET_RARITY_RANGE.MIN, PetConstants.PET_RARITY_RANGE.MAX);
+		const clampedMax = MathUtils.clamp(maxRarity, clampedMin, PetConstants.PET_RARITY_RANGE.MAX);
 		return generateRandomRarity(clampedMin, clampedMax);
 	}
 
 	static getPetVigor(pet: { force: number }, lovePoints = 0, options?: { enraged?: boolean }): number {
 		if (options?.enraged) {
-			return Math.max(PetConstants.VIGOR.MIN, Math.min(PetConstants.VIGOR.MAX, Math.round((pet.force * PetConstants.VIGOR.ENRAGED_MULTIPLIER) / PetConstants.VIGOR.DIVIDER)));
+			return MathUtils.clamp(
+				Math.round((pet.force * PetConstants.VIGOR.ENRAGED_MULTIPLIER) / PetConstants.VIGOR.DIVIDER),
+				PetConstants.VIGOR.MIN,
+				PetConstants.VIGOR.MAX
+			);
 		}
 		const effectiveLovePoints = Math.min(lovePoints, PetConstants.TRAINED_LOVE_THRESHOLD);
 		const vigorSource = effectiveLovePoints / PetConstants.VIGOR.LOVE_DIVIDER + pet.force;
-		return Math.max(PetConstants.VIGOR.MIN, Math.min(PetConstants.VIGOR.MAX, Math.round(vigorSource / PetConstants.VIGOR.DIVIDER)));
+		return MathUtils.clamp(
+			Math.round(vigorSource / PetConstants.VIGOR.DIVIDER),
+			PetConstants.VIGOR.MIN,
+			PetConstants.VIGOR.MAX
+		);
 	}
 }

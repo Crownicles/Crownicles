@@ -12,6 +12,7 @@ import {
 import { MapLinkDataController } from "../../data/MapLink";
 import { MapLocationDataController } from "../../data/MapLocation";
 import { MapConstants } from "../../../../Lib/src/constants/MapConstants";
+import { MathUtils } from "../utils/MathUtils";
 
 /**
  * Get expedition location type from map location type
@@ -306,7 +307,7 @@ export function calculateEffectiveRisk(params: EffectiveRiskParams): number {
 		effectiveRisk *= ExpeditionConstants.NO_FOOD_RISK_MULTIPLIER;
 	}
 
-	return Math.max(0, Math.min(ExpeditionConstants.PERCENTAGE.MAX, effectiveRisk));
+	return MathUtils.clamp(effectiveRisk, 0, ExpeditionConstants.PERCENTAGE.MAX);
 }
 
 /**

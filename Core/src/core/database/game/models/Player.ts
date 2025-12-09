@@ -750,7 +750,7 @@ export class Player extends Model {
 	 */
 	public getCumulativeEnergy(): number {
 		const maxEnergy = this.getMaxCumulativeEnergy();
-		return Math.max(0, Math.min(maxEnergy - this.fightPointsLost, maxEnergy));
+		return MathUtils.clamp(maxEnergy - this.fightPointsLost, 0, maxEnergy);
 	}
 
 	public getRatioCumulativeEnergy(): number {
@@ -1028,7 +1028,7 @@ export class Player extends Model {
 	 * @param tokens
 	 */
 	private setTokens(tokens: number): void {
-		this.tokens = Math.min(TokensConstants.MAX, Math.max(0, tokens));
+		this.tokens = MathUtils.clamp(tokens, 0, TokensConstants.MAX);
 	}
 
 	/**
