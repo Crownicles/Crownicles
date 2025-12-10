@@ -57,11 +57,12 @@ async function applyTokensReward(player: Player, response: CrowniclesPacket[], a
 		const actualChange = newTokens - previousTokens;
 		if (actualChange > 0) {
 			// Track mission for earning tokens in a single expedition (set: true replaces progression instead of incrementing)
-			await MissionsController.update(player, response, {
+			const newPlayer = await MissionsController.update(player, response, {
 				missionId: "earnTokensInOneExpedition",
 				count: actualChange,
 				set: true
 			});
+			Object.assign(player, newPlayer);
 		}
 	}
 }

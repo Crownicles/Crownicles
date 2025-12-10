@@ -320,16 +320,23 @@ export class Player extends Model {
 		// Track missions for earning tokens
 		const actualChange = newTokens - previousTokens;
 		if (actualChange > 0) {
-			await MissionsController.update(this, parameters.response, {
+			let newPlayer = await MissionsController.update(this, parameters.response, {
 				missionId: "earnTokens",
 				count: actualChange
 			});
 
+			/*
+			 * Clone the mission entity and player to this player model and the entity instance passed in the parameters
+			 * As the money and experience may have changed, we update the models of the caller
+			 */
+			Object.assign(this, newPlayer);
+
 			// Check if max tokens reached
 			if (this.tokens === TokensConstants.MAX) {
-				await MissionsController.update(this, parameters.response, {
+				newPlayer = await MissionsController.update(this, parameters.response, {
 					missionId: "maxTokensReached"
 				});
+				Object.assign(this, newPlayer);
 			}
 		}
 
@@ -344,14 +351,17 @@ export class Player extends Model {
 		const tokensToUse = Math.abs(parameters.amount);
 
 		// Track missions for using tokens
-		await MissionsController.update(this, parameters.response, {
+		let newPlayer = await MissionsController.update(this, parameters.response, {
 			missionId: "useTokens",
 			count: tokensToUse
 		});
-		await MissionsController.update(this, parameters.response, {
+		Object.assign(this, newPlayer);
+
+		newPlayer = await MissionsController.update(this, parameters.response, {
 			missionId: "spendTokensInOneDay",
 			count: tokensToUse
 		});
+		Object.assign(this, newPlayer);
 
 		parameters.amount = -tokensToUse;
 		return this.addTokens(parameters);
