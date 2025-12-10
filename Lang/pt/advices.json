@@ -269,6 +269,11 @@
     "Os alimentos consumidos pela expedição provêm do stock do teu grémio.",
     "São oferecidas três expedições de cada vez: duas perto da sua posição e uma longe.",
     "Existe um talismã de clonagem muito raro que permite ter um duplo espetral do seu animal de estimação durante uma expedição.",
-    "Ao cruzar-se com Velanna quando a sua mascote está numa expedição, pode ganhar pontos de bónus e, por vezes, outras surpresas."
+    "Ao cruzar-se com Velanna quando a sua mascote está numa expedição, pode ganhar pontos de bónus e, por vezes, outras surpresas.",
+    "Les jetons permettent d'avancer plus vite sur la carte en utilisant la commande {command:report}.",
+    "Vous pouvez obtenir des jetons grâce au bonus journalier ({command:dailybonus}), aux expéditions de familier, ou en les achetant dans le magasin.",
+    "Les jetons sont débloqués à partir du niveau 5.",
+    "Un jeton permet de sauter directement à la prochaine étape de votre voyage.",
+    "Plus vous êtes occupé longtemps, plus le coût en jetons pour avancer sera élevé."
   ]
 }
