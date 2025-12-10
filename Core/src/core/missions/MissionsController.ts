@@ -427,7 +427,7 @@ export class MissionsController {
 		if (missionInfo.dailyMissionNumberDone >= dailyMission.missionObjective) {
 			// Handle daily streak mission BEFORE updating lastDailyMissionCompleted
 			await MissionsController.handleDailyStreakMission(player, missionSlots, missionInfo, response);
-			
+
 			missionInfo.lastDailyMissionCompleted = new Date();
 			await missionInfo.save();
 			specialMissionCompletion.daily = true;
