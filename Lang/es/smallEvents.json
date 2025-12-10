@@ -877,20 +877,20 @@
     "timeLost": {
       "sleeping": {
         "stories": [
-          "vous tombez de fatigue. Vos aventures vous ont épuisé, c'est pour cela que vous décidez de vous reposer durant **{{amount}}**. {emote:effects.sleeping}",
-          "vous ressentez une fatigue intense. Vos paupières deviennent lourdes et vous décidez de faire une sieste réparatrice de **{{amount}}**. {emote:effects.sleeping}",
-          "épuisé par votre voyage, vous vous allongez contre un arbre pour dormir un peu. Vous vous réveillez **{{amount}}** plus tard. {emote:effects.sleeping}",
-          "la fatigue vous submerge. Vous trouvez un endroit confortable pour vous reposer durant **{{amount}}**. {emote:effects.sleeping}",
-          "vos jambes ne vous portent plus. Vous vous asseyez et sombrez rapidement dans le sommeil pour **{{amount}}**. {emote:effects.sleeping}"
+          "te estás cansando Tus aventuras te han agotado, así que decides descansar durante **{{amount}}**. {emote:effects.sleeping}",
+          "te sientes intensamente cansado. Te pesan los párpados y decides echarte una siesta reparadora para **{{amount}}**. {emote:effects.sleeping}",
+          "Agotado por el viaje, te tumbas contra un árbol para dormir. Te despiertas **{{amount}}** más tarde. {emote:effects.sleeping}",
+          "la fatiga te abruma. Encuentras un lugar cómodo para descansar durante **{{amount}}**. {emote:effects.sleeping}",
+          "tus piernas ya no te sostienen. Te incorporas y te duermes rápidamente **{{amount}}**. {emote:effects.sleeping}"
         ]
       },
       "occupied": {
         "stories": [
-          "vous marchez sur un piège. L'instant d'après vous êtes suspendu par le pied. Vous défaire de ce piège risque d'être long... vous perdez **{{amount}}**. {emote:effects.occupied}",
-          "il se met à pleuvoir. Vous vous apprêtez à courir pour ne pas être trempé, mais vous apercevez un superbe arc-en-ciel. Vous ne pensez plus à la pluie et vous vous laissez absorber par le spectacle durant **{{amount}}**. {emote:effects.occupied}",
-          "en marchant plongé dans vos pensées, vous ne remarquez pas la branche au sol. Vous trébuchez dessus et vos affaires s'éparpillent. Vous perdez **{{amount}}**. {emote:effects.occupied}",
-          "vous entendez un bruit sourd et fracassant provenant d'un sous-bois. Votre curiosité a été piquée au vif : vous voulez savoir de quoi il s'agit, et allez inspecter la zone. Après **{{amount}}**, vous abandonnez sans avoir trouvé ni compris l'origine de ce bruit qui vous a fait sursauter. {emote:effects.occupied}",
-          "vous croisez un vieil homme qui semble perdu. Vous passez **{{amount}}** à l'aider à retrouver son chemin. {emote:effects.occupied}"
+          "estás pisando una trampa. Lo siguiente que sabes es que estás colgando de tu pie. Salir de esta trampa podría llevarte mucho tiempo... pierdes **{{amount}}**. {emote:effects.occupied}",
+          "empieza a llover. Estás a punto de correr para no empaparte, pero ves un arco iris soberbio. Dejas de pensar en la lluvia y te dejas absorber por el espectáculo durante **{{amount}}**. {emote:effects.occupied}",
+          "Mientras caminas, sumido en tus pensamientos, no reparas en la rama que hay en el suelo. Tropiezas con ella y tus pertenencias se dispersan. Pierdes **{{amount}}**. {emote:effects.occupied}",
+          "oyes un fuerte ruido que proviene de la maleza. Te pica la curiosidad: quieres saber de qué se trata y vas a inspeccionar la zona. Después de **{{amount}}**, te rindes sin haber encontrado ni comprendido el origen del ruido que te ha sobresaltado. {emote:effects.occupied}",
+          "te encuentras con un anciano que parece perdido. Pasas **{{amount}}** ayudándole a encontrar el camino a casa. {emote:effects.occupied}"
         ]
       }
     },
@@ -2251,7 +2251,7 @@
       "levelTooLow": [
         "Velanna te está examinando de pies a cabeza. Tu nivel {{playerLevel}} no la impresiona demasiado. Te agarra del brazo y te palpa los músculos con una mueca crítica: necesitas alcanzar al menos el nivel {{requiredLevel}} antes de ser digno de {emote:expedition.talisman} **{{talismanName}}**. Entrena, lucha contra monstruos, gana experiencia."
       ],
-      "consolationToken": "Cependant, touchée par votre détermination, Velanna fouille dans sa sacoche et en sort un éclat doré. Elle vous tend ce **jeton de voyage** en guise d'encouragement. Vous recevez **1 {emote:report.token}** !"
+      "consolationToken": "Sin embargo, conmovida por tu determinación, Velanna rebusca en su mochila y saca un fragmento dorado. Te entrega esta **ficha de viaje** a modo de estímulo. ¡Recibes **1 {emote:report.token}** !"
     },
     "talismanReceived": [
       "Velanna te observa en silencio durante largos segundos. Luego, lentamente, saca de su mochila un colgante de piedra negra con vetas doradas. El {emote:expedition.talisman}{{talismanName}}** pulsa con un suave resplandor. Siente que has demostrado tu valía y te pide que cuides de **{{pet}}**. El vínculo entre amo y bestia es sagrado. Coloca el talismán en tu mano y cierra los dedos sobre él, invitándote a explorar el mundo.\n\n¡Recibes el {emote:expedition.talisman} **{{talismanName}}** ! Ahora puede enviar a su mascota a través del formulario de pedido {command:pet}."
