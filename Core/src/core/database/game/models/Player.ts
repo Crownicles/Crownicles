@@ -303,14 +303,11 @@ export class Player extends Model {
 	 * @param parameters
 	 */
 	public async addTokens(parameters: EditValueParameters): Promise<Player> {
+		const previousTokens = this.tokens;
 		const newTokens = MathUtils.clamp(
 			this.tokens + parameters.amount,
 			0,
 			TokensConstants.MAX
-		const previousTokens = this.tokens;
-		const newTokens = Math.min(
-			TokensConstants.MAX,
-			Math.max(0, this.tokens + parameters.amount)
 		);
 
 		if (newTokens === previousTokens) {
