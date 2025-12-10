@@ -5,7 +5,7 @@
     "10": "Schwerer Klick",
     "100": "Plot-Rüstung",
     "101": "Hitzeschild",
-    "102": "Rüstung aus Mythril",
+    "102": "Armure en mythril",
     "103": "Brustpanzer",
     "104": "Brustpanzer Schutz 4",
     "105": "Panzer",
@@ -1922,6 +1922,7 @@
         "classTier": "{emote:commands.classes} | Stufenklassen {{tier}} freigeschaltet! Weitere Informationen zu den Klassen finden Sie mit den Befehlen {command:classesinfo} und {command:help}.",
         "newMissionSlot": "{emote:missions.sideMission} | Neuer Missionsplatz freigeschaltet! Weitere Informationen zu Ihren Missionen erhalten Sie mit dem Befehl {command:missions}.",
         "pveUnlocked": "{emote:other.island} | Zugang zu freigeschalteten entfernten Inseln! Treffen Sie sich an einem Wasserloch, um neue Abenteuer zu erleben!",
+        "tokensUnlocked": "{emote:unitValues.token} | Jetons débloqués ! Vous pouvez désormais utiliser vos jetons pour avancer plus vite avec la commande {command:report}.",
         "statsIncreased": "{emote:other.increase} | Verbesserte Statistiken."
       }
     }
