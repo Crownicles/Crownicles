@@ -270,10 +270,10 @@
     "Siempre se te ofrecen tres expediciones: dos cerca de tu posición y una lejana.",
     "Existe un talismán de clonación muy raro que permite tener un doble espectral de tu mascota mientras está en expedición.",
     "Cruzarte con Velanna cuando tu mascota está de expedición puede darte puntos de bonificación y a veces otras sorpresas.",
-    "Les jetons permettent d'avancer plus vite sur la carte en utilisant la commande {command:report}.",
-    "Vous pouvez obtenir des jetons grâce au bonus journalier ({command:dailybonus}), aux expéditions de familier, ou en les achetant dans le magasin.",
-    "Les jetons sont débloqués à partir du niveau 5.",
-    "Un jeton permet de sauter directement à la prochaine étape de votre voyage.",
-    "Plus vous êtes occupé longtemps, plus le coût en jetons pour avancer sera élevé."
+    "Las fichas se pueden utilizar para moverse más rápido por el mapa mediante el comando {command:report}.",
+    "Puedes obtener fichas a través de la bonificación diaria ({command:dailybonus}), los envíos de mascotas o comprándolas en la tienda.",
+    "Las fichas se desbloquean a partir del nivel 5.",
+    "Una ficha le permite pasar directamente a la siguiente etapa de su viaje.",
+    "Cuanto más tiempo esté ocupado, mayor será el coste en fichas para avanzar."
   ]
 }
