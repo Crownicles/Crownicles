@@ -5,7 +5,7 @@
     "10": "Scudo pesante",
     "100": "Tramarmor",
     "101": "Scudo termico",
-    "102": "Armatura in mithril",
+    "102": "Armure en mythril",
     "103": "Pettorale",
     "104": "Protezione della piastra 4",
     "105": "Cuirass",
@@ -1922,6 +1922,7 @@
         "classTier": "{emote:commands.classes} | Classi di livello {{tier}} sbloccate! Per ulteriori informazioni sulle classi, utilizzare i comandi {command:classesinfo} e {command:help}.",
         "newMissionSlot": "{emote:missions.sideMission} | Nuovo slot di missione sbloccato! Per ulteriori informazioni sulle missioni, utilizzare il comando {command:missions}.",
         "pveUnlocked": "{emote:other.island} | Accesso alle isole remote sbloccate! Incontratevi in un punto di ristoro per vivere nuove avventure!",
+        "tokensUnlocked": "{emote:unitValues.token} | Jetons débloqués ! Vous pouvez désormais utiliser vos jetons pour avancer plus vite avec la commande {command:report}.",
         "statsIncreased": "{emote:other.increase} | Statistiche migliorate."
       }
     }
