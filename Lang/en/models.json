@@ -5,7 +5,7 @@
     "10": "Heavy shield",
     "100": "Plot armor",
     "101": "Heat shield",
-    "102": "Mythril armor",
+    "102": "Armure en mythril",
     "103": "Faceplate",
     "104": "Faceplate protection 4",
     "105": "Cuirass",
@@ -1922,6 +1922,7 @@
         "classTier": "{emote:commands.classes} | Level classes {{tier}} unlocked! For more information on the classes, use the commands {command:classesinfo} and {command:help}.",
         "newMissionSlot": "{emote:missions.sideMission} | New mission slot unlocked! For more information on your missions, use the command {command:missions}.",
         "pveUnlocked": "{emote:other.island} | Access to unlocked remote islands! Meet at a watering hole for new adventures!",
+        "tokensUnlocked": "{emote:unitValues.token} | Jetons débloqués ! Vous pouvez désormais utiliser vos jetons pour avancer plus vite avec la commande {command:report}.",
         "statsIncreased": "{emote:other.increase} | Improved statistics."
       }
     }
