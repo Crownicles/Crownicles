@@ -5,7 +5,7 @@
     "10": "Escudo pesado",
     "100": "Plot armor",
     "101": "Escudo térmico",
-    "102": "armadura de mythril",
+    "102": "Armure en mythril",
     "103": "Placa frontal",
     "104": "Protección de la placa frontal 4",
     "105": "Coraza",
@@ -1922,6 +1922,7 @@
         "classTier": "{emote:commands.classes} | Clases de nivel {{tier}} ¡desbloqueadas! Para obtener más información sobre las clases, utilice los comandos {command:classesinfo} y {command:help}.",
         "newMissionSlot": "{emote:missions.sideMission} | ¡Nueva misión desbloqueada! Para obtener más información sobre sus misiones, utilice el comando {command:missions}.",
         "pveUnlocked": "{emote:other.island} | ¡Acceso a islas remotas desbloqueadas! Reúnete en un abrevadero para vivir nuevas aventuras.",
+        "tokensUnlocked": "{emote:unitValues.token} | Jetons débloqués ! Vous pouvez désormais utiliser vos jetons pour avancer plus vite avec la commande {command:report}.",
         "statsIncreased": "{emote:other.increase} | Estadísticas mejoradas."
       }
     }
