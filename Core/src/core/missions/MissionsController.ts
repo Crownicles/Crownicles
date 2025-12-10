@@ -93,11 +93,6 @@ export class MissionsController {
 			}));
 		}
 
-		// Handle dailyStreak mission update after daily mission completion
-		if (specialMissionCompletion.daily) {
-			await MissionsController.handleDailyStreakMission(player, missionSlots, missionInfo, response);
-		}
-
 		return player;
 	}
 
