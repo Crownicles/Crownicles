@@ -875,13 +875,24 @@
       ]
     },
     "timeLost": {
-      "stories": [
-        "you walk on a trap. The moment afterwards, you are suspended from the foot. Getting out of this trap may take a long time... you lose **{{amount}} :clock2:**.",
-        "it starts to rain, You ready yourself to start running to avoid being soaked when you see a stunning rainbow just a few steps away. You stop thinking about the rain and get absorbed by the show during **{{amount}} :clock2:**.",
-        "you fall from fatigue. Your adventures have been exhausting, and that is why you decide to rest for **{{amount}} :clock2:**.",
-        "while walking deep in your thoughts, you don't notice the branch on the ground. You trip on it and your stuff spreads. You lose **{{amount}} :clock2:**.",
-        "you hear a loud crashing noise coming from the understory. Your curiosity has been piqued: you want to know what it's all about, and go to inspect the area. After **{{amount}} :clock2:**, you give up without having found or understood the origin of the noise that startled you."
-      ]
+      "sleeping": {
+        "stories": [
+          "vous tombez de fatigue. Vos aventures vous ont épuisé, c'est pour cela que vous décidez de vous reposer durant **{{amount}}**. {emote:effects.sleeping}",
+          "vous ressentez une fatigue intense. Vos paupières deviennent lourdes et vous décidez de faire une sieste réparatrice de **{{amount}}**. {emote:effects.sleeping}",
+          "épuisé par votre voyage, vous vous allongez contre un arbre pour dormir un peu. Vous vous réveillez **{{amount}}** plus tard. {emote:effects.sleeping}",
+          "la fatigue vous submerge. Vous trouvez un endroit confortable pour vous reposer durant **{{amount}}**. {emote:effects.sleeping}",
+          "vos jambes ne vous portent plus. Vous vous asseyez et sombrez rapidement dans le sommeil pour **{{amount}}**. {emote:effects.sleeping}"
+        ]
+      },
+      "occupied": {
+        "stories": [
+          "vous marchez sur un piège. L'instant d'après vous êtes suspendu par le pied. Vous défaire de ce piège risque d'être long... vous perdez **{{amount}}**. {emote:effects.occupied}",
+          "il se met à pleuvoir. Vous vous apprêtez à courir pour ne pas être trempé, mais vous apercevez un superbe arc-en-ciel. Vous ne pensez plus à la pluie et vous vous laissez absorber par le spectacle durant **{{amount}}**. {emote:effects.occupied}",
+          "en marchant plongé dans vos pensées, vous ne remarquez pas la branche au sol. Vous trébuchez dessus et vos affaires s'éparpillent. Vous perdez **{{amount}}**. {emote:effects.occupied}",
+          "vous entendez un bruit sourd et fracassant provenant d'un sous-bois. Votre curiosité a été piquée au vif : vous voulez savoir de quoi il s'agit, et allez inspecter la zone. Après **{{amount}}**, vous abandonnez sans avoir trouvé ni compris l'origine de ce bruit qui vous a fait sursauter. {emote:effects.occupied}",
+          "vous croisez un vieil homme qui semble perdu. Vous passez **{{amount}}** à l'aider à retrouver son chemin. {emote:effects.occupied}"
+        ]
+      }
     },
     "moneyLost": {
       "stories": [
@@ -2239,7 +2250,8 @@
       ],
       "levelTooLow": [
         "Velanna is sizing you up from head to toe. Your level {{playerLevel}} doesn't impress her much. She grabs your arm and feels your muscles with a critical pout: you need to reach at least level {{requiredLevel}} before you're worthy of {emote:expedition.talisman} **{{talismanName}}**. Train, fight monsters, gain experience."
-      ]
+      ],
+      "consolationToken": "Cependant, touchée par votre détermination, Velanna fouille dans sa sacoche et en sort un éclat doré. Elle vous tend ce **jeton de voyage** en guise d'encouragement. Vous recevez **1 {emote:report.token}** !"
     },
     "talismanReceived": [
       "Velanna watches you in silence for a few long seconds. Then, slowly, she extracts a pendant of black stone veined with gold from her satchel. The {emote:expedition.talisman}{{talismanName}}** pulses with a soft glow. She feels that you have proven yourself and instructs you to take care of **{{pet}}**. The bond between master and beast is sacred. She places the talisman in your hand and closes your fingers over it, inviting you to explore the world.\n\nYou receive the {emote:expedition.talisman} **{{talismanName}}** ! You can now send your pet for shipment from {command:pet}."
