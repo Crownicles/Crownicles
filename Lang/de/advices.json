@@ -270,10 +270,10 @@
     "Jedes Mal werden Ihnen drei Expeditionen angeboten: zwei in der Nähe Ihres Standorts und eine in die Ferne.",
     "Es gibt einen sehr seltenen Klon-Talisman, der es ermöglicht, ein spektrales Duplikat deines Begleiters zu erhalten, während er sich auf einer Expedition befindet.",
     "Velanna zu kreuzen, wenn Ihr Begleiter auf einer Expedition ist, kann Ihnen Bonuspunkte und manchmal auch andere Überraschungen einbringen.",
-    "Les jetons permettent d'avancer plus vite sur la carte en utilisant la commande {command:report}.",
-    "Vous pouvez obtenir des jetons grâce au bonus journalier ({command:dailybonus}), aux expéditions de familier, ou en les achetant dans le magasin.",
-    "Les jetons sont débloqués à partir du niveau 5.",
-    "Un jeton permet de sauter directement à la prochaine étape de votre voyage.",
-    "Plus vous êtes occupé longtemps, plus le coût en jetons pour avancer sera élevé."
+    "Mit Tokens kann man auf der Karte schneller vorankommen, wenn man den Befehl {command:report}verwendet.",
+    "Du kannst Tokens durch den täglichen Bonus ({command:dailybonus}), durch Vertrautexpeditionen oder durch den Kauf im Laden erhalten.",
+    "Die Tokens werden ab Stufe 5 freigeschaltet.",
+    "Mit einem Token können Sie direkt zum nächsten Schritt Ihrer Reise springen.",
+    "Je länger Sie beschäftigt sind, desto höher sind die Kosten für Chips, um voranzukommen."
   ]
 }
