@@ -269,6 +269,11 @@
     "Il cibo consumato dalla spedizione proviene dalle scorte della vostra gilda.",
     "Ogni volta vengono proposte tre spedizioni: due vicine alla vostra posizione e una lontana.",
     "Esiste un talismano di clonazione molto raro che permette di avere un sosia spettrale del proprio animale durante la spedizione.",
-    "Incrociare Velanna quando il vostro animale è in spedizione può farvi guadagnare punti bonus e talvolta altre sorprese."
+    "Incrociare Velanna quando il vostro animale è in spedizione può farvi guadagnare punti bonus e talvolta altre sorprese.",
+    "Les jetons permettent d'avancer plus vite sur la carte en utilisant la commande {command:report}.",
+    "Vous pouvez obtenir des jetons grâce au bonus journalier ({command:dailybonus}), aux expéditions de familier, ou en les achetant dans le magasin.",
+    "Les jetons sont débloqués à partir du niveau 5.",
+    "Un jeton permet de sauter directement à la prochaine étape de votre voyage.",
+    "Plus vous êtes occupé longtemps, plus le coût en jetons pour avancer sera élevé."
   ]
 }
