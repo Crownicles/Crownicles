@@ -5,7 +5,7 @@
     "10": "Escudo pesado",
     "100": "Armadura de enredo",
     "101": "Escudo térmico",
-    "102": "Armure en mythril",
+    "102": "Armadura de Mythril",
     "103": "Placa frontal",
     "104": "Proteção do painel frontal 4",
     "105": "Cuirass",
@@ -1922,7 +1922,7 @@
         "classTier": "{emote:commands.classes} | Classes de nível {{tier}} desbloqueadas! Para obter mais informações sobre as classes, utilize os comandos {command:classesinfo} e {command:help}.",
         "newMissionSlot": "{emote:missions.sideMission} | Nova slot de missão desbloqueada! Para mais informações sobre as tuas missões, utiliza o comando {command:missions}.",
         "pveUnlocked": "{emote:other.island} | Acesso a ilhas remotas desbloqueadas! Encontra-te num bar para novas aventuras!",
-        "tokensUnlocked": "{emote:unitValues.token} | Jetons débloqués ! Vous pouvez désormais utiliser vos jetons pour avancer plus vite avec la commande {command:report}.",
+        "tokensUnlocked": "{emote:unitValues.token} | Tokens desbloqueados! Agora podes usar os teus tokens para avançar mais rapidamente com o comando {command:report}.",
         "statsIncreased": "{emote:other.increase} | Estatísticas melhoradas."
       }
     }
