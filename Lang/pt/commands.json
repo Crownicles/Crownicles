@@ -157,7 +157,8 @@
       "reward": "{emote:expedition.reward} Recompensas estimadas: {{reward}}",
       "difficulty": "{emote:expedition.difficulty} Dificuldade do terreno: {{difficulty}}",
       "food": "{emote:expedition.food} Disposições necessárias: {{foodDisplay}}",
-      "cloneTalismanBonus": "{emote:expedition.cloneTalisman} *Um sentimento estranho apodera-se de ti... Há rumores de que um artefacto lendário pode estar escondido nestas terras."
+      "cloneTalismanBonus": "{emote:expedition.cloneTalisman} *Um sentimento estranho apodera-se de ti... Há rumores de que um artefacto lendário pode estar escondido nestas terras.",
+      "bonusTokens": "{emote:unitValues.token} *Cette région regorge de trésors anciens ! Votre familier pourrait y découvrir une fortune en jetons perdus...*"
     },
     "foodCost_one": "{{count}} ração",
     "foodCost_other": "{{count}} rações",
@@ -254,6 +255,8 @@
       "money": "{emote:unitValues.money} Dinheiro ganho : **{{amount}}** !",
       "experience": "{emote:unitValues.xp} Experiência adquirida : **{{amount}}** !",
       "points": "{emote:unitValues.score} Pontos ganhos : **{{amount}}** !",
+      "tokens_one": "{emote:unitValues.token} Jeton gagné : **{{count}}** !",
+      "tokens_other": "{emote:unitValues.token} Jetons gagnés : **{{count}}** !",
       "item": "{emote:rewards.item} Recebe equipamento aleatório!",
       "cloneTalisman": "{emote:expedition.cloneTalisman} **DESCOBERTA EXCEPCIONAL\nO teu animal de estimação descobriu um antigo artefacto enterrado: o **Talismã da Clonagem**!\nEste objeto místico permitirá que o teu animal de estimação te ajude na defesa e em eventos menores, mesmo quando ele estiver numa expedição!",
       "badgeEarned": "{emote:badges.expert_expediteur} Foi-lhe oferecido um crachá: **Consignatário especialista** !"
@@ -698,6 +701,10 @@
     },
     "information": {
       "fieldName": "Mais informações :",
+      "fieldValue": "{emote:unitValues.health} {{health}} / {{maxHealth}} | {emote:unitValues.xp} {{experience}} / {{experienceNeededToLevelUp}} | {emote:unitValues.money} {{money}} | {emote:unitValues.token} {{tokens}} / {{tokensMax}}"
+    },
+    "informationNoTokens": {
+      "fieldName": "Informations :",
       "fieldValue": "{emote:unitValues.health} {{health}} / {{maxHealth}} | {emote:unitValues.xp} {{experience}} / {{experienceNeededToLevelUp}} | {emote:unitValues.money} {{money}}"
     },
     "map": {
@@ -787,7 +794,31 @@
     "travellingDescription": "{{smallEventEmoji}}Tudo está a correr bem desde a vossa última aventura. {{time}}Próxima paragem .",
     "travellingDescriptionEndTravel": "Tudo está a correr bem na vossa aventura e em breve chegarão ao vosso destino.",
     "travellingDescriptionWithoutSmallEvent": "A vossa aventura está a correr bem. {{time}}Próxima paragem .",
-    "travellingTitle": "Está a fazer progressos!"
+    "travellingTitle": "Está a fazer progressos!",
+    "useTokensButton": "Avancer",
+    "notEnoughTokensButton": "Jetons insuffisants",
+    "useTokensLoading": "Chargement...",
+    "useTokensConfirmTitle": "{{pseudo}}, confirmation",
+    "useTokensConfirmDescription_one": "Voulez-vous dépenser **{{count}} jeton** {emote:unitValues.token} pour avancer jusqu'à la prochaine étape de l'aventure ?\n\nVous avez actuellement **{{playerTokens}} jetons** {emote:unitValues.token}.",
+    "useTokensConfirmDescription_other": "Voulez-vous dépenser **{{count}} jetons** {emote:unitValues.token} pour avancer jusqu'à la prochaine étape de l'aventure ?\n\nVous avez actuellement **{{playerTokens}} jetons** {emote:unitValues.token}.",
+    "tokensUsedSuccessTitle": "{{pseudo}}, jetons utilisés !",
+    "tokensUsedSuccessDescription_one": "{emote:unitValues.token} Vous avez dépensé **{{count}} jeton** pour avancer dans votre voyage.\n\n{{nextStep}}",
+    "tokensUsedSuccessDescription_other": "{emote:unitValues.token} Vous avez dépensé **{{count}} jetons** pour avancer dans votre voyage.\n\n{{nextStep}}",
+    "tokensNextStepArrived": "{emote:messages.info} Vous êtes arrivé à destination ! Utilisez {command:report} pour voir ce qui vous attend.",
+    "tokensNextStepSmallEvent": "{emote:messages.info} Un événement vous attend sur la route. Utilisez {command:report} pour le découvrir.",
+    "tokensUsedRefused": "{emote:messages.refuse} **{{pseudo}}** a décidé de ne pas utiliser de jetons.",
+    "buyHealButton": "Se soigner",
+    "notEnoughMoneyHealButton": "Argent insuffisant",
+    "buyHealLoading": "Chargement...",
+    "buyHealConfirmTitle": "{{pseudo}}, confirmation",
+    "buyHealConfirmDescription": "Voulez-vous dépenser **{{price}}** {emote:unitValues.money} pour guérir votre altération d'état et reprendre immédiatement votre route ?\n\nVous avez actuellement **{{playerMoney}}** {emote:unitValues.money}.",
+    "healSuccessTitle": "{{pseudo}}, soins terminés !",
+    "healSuccessDescription": "{emote:shopItems.healAlteration} Vous avez dépensé **{{price}}** {emote:unitValues.money} pour vous soigner.\n\n{{nextStep}}",
+    "healNextStepArrived": "{emote:messages.info} Vous êtes arrivé à destination ! Utilisez {command:report} pour voir ce qui vous attend.",
+    "healNextStepSmallEvent": "{emote:messages.info} Un événement vous attend sur la route. Utilisez {command:report} pour le découvrir.",
+    "healRefused": "{emote:messages.refuse} **{{pseudo}}** a décidé de ne pas se soigner.",
+    "healNoAlteration": "{emote:effects.none} Vous n'êtes victime d'aucune altération d'état.",
+    "healCannotHealOccupied": "{emote:effects.occupied} Vous êtes actuellement occupé. Cette altération ne peut pas être soignée."
   },
   "update": {
     "description": "{{coreVersion}}A versão atual do núcleo do bot é ** **.{{discordModuleVersion}}A versão do módulo Discord é ** **.\n\n\nTodas as informações sobre actualizações estão disponíveis aqui: https://guide.draftbot.com/lore/historique-des-mises-a-jour",
@@ -822,6 +853,7 @@
     "closeShop": "Fechou a loja.",
     "closeShopTitle": "{{pseudo}}encerramento da loja",
     "noAlterationToHeal": "Não é vítima de qualquer alteração de estado 🙂",
+    "cannotHealOccupied": "Vous êtes actuellement occupé. Cette altération ne peut pas être soignée au magasin. {emote:effects.occupied}",
     "success": "{{pseudo}}Uma transação bem sucedida!",
     "healAlteration": "As suas alterações de estado foram removidas.",
     "tooManyEnergyBought": "Comprou a quantidade máxima de recuperação de energia para esta semana.",
@@ -831,6 +863,9 @@
     "badgeBought": "Recebeu um novo distintivo: {emote:badges.{{badgeName}}} !",
     "notEnoughMoney": "Não tens dinheiro suficiente para comprar este artigo!{{missingCurrency}} Falta-lhe ` {emote:unitValues.{{currency}}}`.",
     "boughtTooMuchDailyPotions": "Não há mais poções do dia disponíveis para venda... Volta amanhã!",
+    "boughtTooMuchTokens": "Il n'est plus possible d'acheter des jetons aujourd'hui... Revenez demain !",
+    "tokensBought": "Vous avez acheté un jeton. {emote:unitValues.token}",
+    "tokensFull": "Vous possédez déjà le maximum de jetons possible !",
     "title": "Ecrã da loja",
     "currentMoney": "{{money}}Tem ` {emote:unitValues.{{currency}}}`.",
     "shopItemsDisplaySingle": "{{name}}{{price}}| {emote:unitValues.{{currency}}}`",
@@ -846,6 +881,9 @@
       "dailyPotion_zero": "Poção do dia (esgotado)",
       "dailyPotion_one": "{{count}} Poção do dia ( disponível)",
       "dailyPotion_other": "{{count}} Poção do dia ( disponível)",
+      "token_zero": "Jetons (rupture de stock)",
+      "token_one": "Jetons ({{count}} disponible)",
+      "token_other": "Jetons ({{count}} disponibles)",
       "slotExtension": "Extensões de inventário",
       "food": "Alimentos para animais de estimação",
       "guildXp": "Experiência de grémio",
@@ -893,6 +931,10 @@
       },
       "dailyPotion": {
         "info": "Receberás uma poção que poderás decidir se queres ou não guardar. Se já a tiveres, será deitada fora sem direito a reembolso!"
+      },
+      "token": {
+        "name": "{emote:unitValues.token} Jeton",
+        "info": "Les jetons permettent de progresser plus vite en accélérant certaines actions comme les rapports. Vous pouvez en acheter jusqu'à 10 par jour."
       },
       "smallGuildXp": {
         "name": "{emote:shopItems.smallGuildXp} Um pouco de xp para a tua guilda",
