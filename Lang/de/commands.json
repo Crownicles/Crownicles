@@ -157,7 +157,8 @@
       "reward": "{emote:expedition.reward} Geschätzte Belohnungen: {{reward}}",
       "difficulty": "{emote:expedition.difficulty} Schwierigkeitsgrad des Geländes: {{difficulty}}",
       "food": "{emote:expedition.food} Erforderliche Rückstellungen: {{foodDisplay}}",
-      "cloneTalismanBonus": "{emote:expedition.cloneTalisman} *Eine seltsame Vorahnung überkommt Sie... Gerüchte sprechen von einem legendären Artefakt, das vielleicht in diesem Land versteckt ist."
+      "cloneTalismanBonus": "{emote:expedition.cloneTalisman} *Eine seltsame Vorahnung überkommt Sie... Gerüchte sprechen von einem legendären Artefakt, das vielleicht in diesem Land versteckt ist.",
+      "bonusTokens": "{emote:unitValues.token} *Diese Region ist voller alter Schätze! Ihr Vertrauter könnte dort ein Vermögen an verlorenen Chips entdecken...*."
     },
     "foodCost_one": "{{count}} Ration",
     "foodCost_other": "{{count}} rationen",
@@ -254,6 +255,8 @@
       "money": "{emote:unitValues.money} Verdientes Geld : **{{amount}}**!",
       "experience": "{emote:unitValues.xp} Gewonnene Erfahrungen : **{{amount}}**!",
       "points": "{emote:unitValues.score} Gewonnene Punkte : **{{amount}}**!",
+      "tokens_one": "{emote:unitValues.token} Gewonnener Jeton : **{{count}}**!",
+      "tokens_other": "{emote:unitValues.token} Gewonnene Jetons : **{{count}}**!",
       "item": "{emote:rewards.item} Sie erhalten eine zufällige Ausrüstung!",
       "cloneTalisman": "{emote:expedition.cloneTalisman} **AUSSERGEWÖHNLICHE ENTDECKUNG!**\nIhr Begleiter hat ein altes, vergrabenes Artefakt entdeckt: den **Talisman des Klonens**!\nMit diesem mystischen Gegenstand kann Ihr Begleiter Sie bei der Verteidigung und bei kleineren Ereignissen unterstützen, selbst wenn er sich auf einer Expedition befindet!",
       "badgeEarned": "{emote:badges.expert_expediteur} Ein Abzeichen wurde Ihnen angeboten: **Expert Publisher**!"
@@ -698,6 +701,10 @@
     },
     "information": {
       "fieldName": "Information:",
+      "fieldValue": "{emote:unitValues.health} {{health}} / {{maxHealth}} | {emote:unitValues.xp} {{experience}} / {{experienceNeededToLevelUp}} | {emote:unitValues.money} {{money}} | {emote:unitValues.token} {{tokens}} / {{tokensMax}}"
+    },
+    "informationNoTokens": {
+      "fieldName": "Informationen :",
       "fieldValue": "{emote:unitValues.health} {{health}} / {{maxHealth}} | {emote:unitValues.xp} {{experience}} / {{experienceNeededToLevelUp}} | {emote:unitValues.money} {{money}}"
     },
     "map": {
@@ -787,7 +794,31 @@
     "travellingDescription": "Es läuft alles gut, seit Ihr letztes Abenteuer {{smallEventEmoji}}. Nächster Halt {{time}}.",
     "travellingDescriptionEndTravel": "Es läuft alles gut in Ihrem Abenteuer, Sie werden bald am Ziel ankommen.",
     "travellingDescriptionWithoutSmallEvent": "Es läuft alles gut in Ihrem Abenteuer. Nächster Halt {{time}}.",
-    "travellingTitle": "Sie sind gerade dabei, Fortschritte zu machen!"
+    "travellingTitle": "Sie sind gerade dabei, Fortschritte zu machen!",
+    "useTokensButton": "Weitergehen",
+    "notEnoughTokensButton": "Unzureichende Jetons",
+    "useTokensLoading": "Laden...",
+    "useTokensConfirmTitle": "{{pseudo}} Bestätigung",
+    "useTokensConfirmDescription_one": "Möchtest du **{{count}} Token** {emote:unitValues.token} ausgeben, um in die nächste Phase des Abenteuers vorzustoßen?\n\nSie haben derzeit **{{playerTokens}} Token** {emote:unitValues.token}.",
+    "useTokensConfirmDescription_other": "Möchtest du **{{count}} Token** {emote:unitValues.token} ausgeben, um bis zum nächsten Schritt des Abenteuers voranzukommen?\n\nSie haben derzeit **{{playerTokens}} Token** {emote:unitValues.token}.",
+    "tokensUsedSuccessTitle": "{{pseudo}}Die Münzen werden verwendet!",
+    "tokensUsedSuccessDescription_one": "{emote:unitValues.token} Sie haben **{{count}} Token** ausgegeben, um auf Ihrer Reise voranzukommen.\n\n{{nextStep}}",
+    "tokensUsedSuccessDescription_other": "{emote:unitValues.token} Du hast **{{count}} Chips** ausgegeben, um auf deiner Reise voranzukommen.\n\n{{nextStep}}",
+    "tokensNextStepArrived": "{emote:messages.info} Sie sind am Ziel angekommen! Nutzen Sie {command:report} , um zu sehen, was Sie erwartet.",
+    "tokensNextStepSmallEvent": "{emote:messages.info} Auf der Straße wartet ein Ereignis auf Sie. Nutzen Sie {command:report} , um es herauszufinden.",
+    "tokensUsedRefused": "{emote:messages.refuse} **{{pseudo}}** hat sich entschieden, keine Chips zu verwenden.",
+    "buyHealButton": "Sich pflegen",
+    "notEnoughMoneyHealButton": "Unzureichendes Geld",
+    "buyHealLoading": "Laden...",
+    "buyHealConfirmTitle": "{{pseudo}} Bestätigung",
+    "buyHealConfirmDescription": "Möchten Sie **{{price}}** {emote:unitValues.money} ausgeben, um Ihre Zustandsveränderung zu heilen und Ihre Reise sofort fortzusetzen?\n\nSie haben derzeit **{{playerMoney}}** {emote:unitValues.money}.",
+    "healSuccessTitle": "{{pseudo}}, Pflege abgeschlossen!",
+    "healSuccessDescription": "{emote:shopItems.healAlteration} Sie haben **{{price}}** {emote:unitValues.money} ausgegeben, um sich zu heilen.\n\n{{nextStep}}",
+    "healNextStepArrived": "{emote:messages.info} Sie sind am Ziel angekommen! Nutzen Sie {command:report} , um zu sehen, was Sie erwartet.",
+    "healNextStepSmallEvent": "{emote:messages.info} Auf der Straße wartet ein Ereignis auf Sie. Nutzen Sie {command:report} , um es herauszufinden.",
+    "healRefused": "{emote:messages.refuse} **{{pseudo}}** hat sich entschieden, sich nicht behandeln zu lassen.",
+    "healNoAlteration": "{emote:effects.none} Sie sind nicht Opfer einer Zustandsveränderung.",
+    "healCannotHealOccupied": "{emote:effects.occupied} Sie sind derzeit beschäftigt. Diese Alteration kann nicht geheilt werden."
   },
   "update": {
     "description": "Die aktuelle Version des Bot-Kernels lautet **{{coreVersion}}**. Das Paket für das Discord-Modul lautet **{{discordModuleVersion}}**.\n\nAlle Informationen zu den Aktualisierungen sind hier verfügbar:\nhttps://guide.draftbot.com/lore/historique-des-mises-a-jour",
@@ -822,6 +853,7 @@
     "closeShop": "Sie haben den Laden geschlossen.",
     "closeShopTitle": "{{pseudo}}, Ladenschluss",
     "noAlterationToHeal": "Sie sind nicht Opfer einer Zustandsveränderung.\n{emote:effects.none}",
+    "cannotHealOccupied": "Sie sind derzeit beschäftigt. Diese Alteration kann nicht im Laden geheilt werden. {emote:effects.occupied}",
     "success": "{{pseudo}}Erfolgreiche Transaktion!",
     "healAlteration": "🏥 Ihre Zustandsveränderungen wurden entfernt.",
     "tooManyEnergyBought": "Sie haben die maximale Menge an Energierückgewinnung für diese Woche gekauft.",
@@ -831,6 +863,9 @@
     "badgeBought": "Sie haben eine neue Marke erhalten: {emote:badges.{{badgeName}}} !",
     "notEnoughMoney": "Sie haben nicht genug Geld, um diesen Gegenstand zu kaufen! Es fehlt Ihnen `{{missingCurrency}} {emote:unitValues.{{currency}}}`.",
     "boughtTooMuchDailyPotions": "Es gibt keinen Trank des Tages mehr, der zum Verkauf angeboten wird... Kommen Sie morgen wieder!",
+    "boughtTooMuchTokens": "Es ist heute nicht mehr möglich, Tokens zu kaufen... Kommen Sie morgen wieder!",
+    "tokensBought": "Sie haben eine Spielmarke gekauft. {emote:unitValues.token}",
+    "tokensFull": "Sie besitzen bereits die höchstmögliche Anzahl an Chips!",
     "title": "🛒 Anzeige des Magazins",
     "currentMoney": "Sie haben `{{money}}{emote:unitValues.{{currency}}}`.",
     "shopItemsDisplaySingle": "{{name}} | `{{price}}{emote:unitValues.{{currency}}}`",
@@ -846,6 +881,9 @@
       "dailyPotion_zero": "Trank des Tages (ausverkauft)",
       "dailyPotion_one": "Trank des Tages ({{count}} verfügbar)",
       "dailyPotion_other": "Trank des Tages ({{count}} verfügbar)",
+      "token_zero": "Jetons (ausverkauft)",
+      "token_one": "Jetons ({{count}} verfügbar)",
+      "token_other": "Jetons ({{count}} verfügbar)",
       "slotExtension": "Inventarerweiterungen",
       "food": "Nahrung für Begleiter",
       "guildXp": "Erfahrung in der Gilde",
@@ -893,6 +931,10 @@
       },
       "dailyPotion": {
         "info": "Sie erhalten einen Trank, bei dem Sie entscheiden, ob Sie ihn behalten wollen oder nicht. Wenn Sie ihn bereits haben, wird er ohne Rückerstattung weggeworfen!"
+      },
+      "token": {
+        "name": "{emote:unitValues.token} Jeton",
+        "info": "Mit Tokens können Sie schneller vorankommen, indem Sie bestimmte Aktionen wie Berichte beschleunigen. Sie können bis zu 10 davon pro Tag kaufen."
       },
       "smallGuildXp": {
         "name": "{emote:shopItems.smallGuildXp} Ein bisschen xp für deine Gilde",

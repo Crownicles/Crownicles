@@ -269,6 +269,11 @@
     "Il cibo consumato dalla spedizione proviene dalle scorte della vostra gilda.",
     "Ogni volta vengono proposte tre spedizioni: due vicine alla vostra posizione e una lontana.",
     "Esiste un talismano di clonazione molto raro che permette di avere un sosia spettrale del proprio animale durante la spedizione.",
-    "Incrociare Velanna quando il vostro animale è in spedizione può farvi guadagnare punti bonus e talvolta altre sorprese."
+    "Incrociare Velanna quando il vostro animale è in spedizione può farvi guadagnare punti bonus e talvolta altre sorprese.",
+    "I gettoni possono essere usati per spostarsi più velocemente sulla mappa usando il comando {command:report}.",
+    "È possibile ottenere i gettoni attraverso il bonus giornaliero ({command:dailybonus}), le spedizioni di animali domestici o acquistandoli nel negozio.",
+    "I gettoni si sbloccano a partire dal livello 5.",
+    "Un gettone vi permette di passare direttamente alla fase successiva del vostro viaggio.",
+    "Più a lungo si è impegnati, più alto è il costo in gettoni per avanzare."
   ]
 }

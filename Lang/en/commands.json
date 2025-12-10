@@ -157,7 +157,8 @@
       "reward": "{emote:expedition.reward} Estimated awards: {{reward}}",
       "difficulty": "{emote:expedition.difficulty} Difficulty of terrain: {{difficulty}}",
       "food": "{emote:expedition.food} Provisions required: {{foodDisplay}}",
-      "cloneTalismanBonus": "{emote:expedition.cloneTalisman} *A strange feeling comes over you... Rumors speak of a legendary artifact that may be hidden in these lands."
+      "cloneTalismanBonus": "{emote:expedition.cloneTalisman} *A strange feeling comes over you... Rumors speak of a legendary artifact that may be hidden in these lands.",
+      "bonusTokens": "{emote:unitValues.token} *This region is full of ancient treasures! Your pet could discover a fortune in lost tokens...*."
     },
     "foodCost_one": "{{count}} ration",
     "foodCost_other": "{{count}} rations",
@@ -254,6 +255,8 @@
       "money": "{emote:unitValues.money} Money earned: **{{amount}}** !",
       "experience": "{emote:unitValues.xp} Experience gained : **{{amount}}** !",
       "points": "{emote:unitValues.score} Points earned: **{{amount}}** !",
+      "tokens_one": "{emote:unitValues.token} Token won : **{{count}}** !",
+      "tokens_other": "{emote:unitValues.token} Chips won : **{{count}}** !",
       "item": "{emote:rewards.item} You get random equipment!",
       "cloneTalisman": "{emote:expedition.cloneTalisman} **EXCEPTIONAL DISCOVERY\nYour pet has discovered an ancient buried artifact: the **Talisman of Cloning**!\nThis mystical object will enable your companion to assist you in defense and in small events, even when on expedition!",
       "badgeEarned": "{emote:badges.expert_expediteur} You have been offered a free badge : **Expert Consignor** !"
@@ -698,6 +701,10 @@
     },
     "information": {
       "fieldName": "Information:",
+      "fieldValue": "{emote:unitValues.health} {{health}} / {{maxHealth}} | {emote:unitValues.xp} {{experience}} / {{experienceNeededToLevelUp}} | {emote:unitValues.money} {{money}} {emote:unitValues.token} {{tokens}} / {{tokensMax}}"
+    },
+    "informationNoTokens": {
+      "fieldName": "Information:",
       "fieldValue": "{emote:unitValues.health} {{health}} / {{maxHealth}} | {emote:unitValues.xp} {{experience}} / {{experienceNeededToLevelUp}} | {emote:unitValues.money} {{money}}"
     },
     "map": {
@@ -787,7 +794,31 @@
     "travellingDescription": "Everything is going well since your last adventure {{smallEventEmoji}}. Next stop scheduled {{time}}.",
     "travellingDescriptionEndTravel": "Everything is going well for you. You will reach your destination shortly.",
     "travellingDescriptionWithoutSmallEvent": "Everything is going well for you. Next stop scheduled {{time}}.",
-    "travellingTitle": "You are currently making progress!"
+    "travellingTitle": "You are currently making progress!",
+    "useTokensButton": "Forward",
+    "notEnoughTokensButton": "Insufficient tokens",
+    "useTokensLoading": "Loading...",
+    "useTokensConfirmTitle": "{{pseudo}}confirmation",
+    "useTokensConfirmDescription_one": "Would you like to spend **{{count}} token** {emote:unitValues.token} to advance to the next stage of the adventure?\n\nYou currently have **{{playerTokens}} tokens** {emote:unitValues.token}.",
+    "useTokensConfirmDescription_other": "Would you like to spend **{{count}} tokens** {emote:unitValues.token} to advance to the next stage of the adventure?\n\nYou currently have **{{playerTokens}} tokens** {emote:unitValues.token}.",
+    "tokensUsedSuccessTitle": "{{pseudo}}used tokens!",
+    "tokensUsedSuccessDescription_one": "{emote:unitValues.token} You have spent **{{count}} token** to advance your journey.\n\n{{nextStep}}",
+    "tokensUsedSuccessDescription_other": "{emote:unitValues.token} You have spent **{{count}} tokens** to advance your journey.\n\n{{nextStep}}",
+    "tokensNextStepArrived": "{emote:messages.info} You've arrived at your destination! Use {command:report} to see what awaits you.",
+    "tokensNextStepSmallEvent": "{emote:messages.info} An event is waiting for you on the road. Use {command:report} to find out.",
+    "tokensUsedRefused": "{emote:messages.refuse} **{{pseudo}}** has decided not to use tokens.",
+    "buyHealButton": "Taking care of yourself",
+    "notEnoughMoneyHealButton": "Not enough money",
+    "buyHealLoading": "Loading...",
+    "buyHealConfirmTitle": "{{pseudo}}confirmation",
+    "buyHealConfirmDescription": "Do you want to spend **{{price}}** {emote:unitValues.money} to heal your altered state and get back on the road immediately?\n\nYou currently have **{{playerMoney}}** {emote:unitValues.money}.",
+    "healSuccessTitle": "{{pseudo}}Care completed!",
+    "healSuccessDescription": "{emote:shopItems.healAlteration} You have spent **{{price}}** {emote:unitValues.money} to treat yourself.\n\n{{nextStep}}",
+    "healNextStepArrived": "{emote:messages.info} You've arrived at your destination! Use {command:report} to see what's waiting for you.",
+    "healNextStepSmallEvent": "{emote:messages.info} An event is waiting for you on the road. Use {command:report} to find out.",
+    "healRefused": "{emote:messages.refuse} **{{pseudo}}** has decided not to treat himself.",
+    "healNoAlteration": "{emote:effects.none} You are not a victim of any alteration of state.",
+    "healCannotHealOccupied": "{emote:effects.occupied} You are currently busy. This alteration cannot be cured."
   },
   "update": {
     "description": "The latest version of the bot's core is **{{coreVersion}}**. The Discord module's version is **{{discordModuleVersion}}**.\n\nInformation about the changelog can be found here:\nhttps://guide.draftbot.com/v/en/lore/change-logs",
@@ -822,6 +853,7 @@
     "closeShop": "You closed the shop.",
     "closeShopTitle": "{{pseudo}}, closing shop",
     "noAlterationToHeal": "You have not been affected by any state alteration. {emote:effects.none}",
+    "cannotHealOccupied": "You are currently busy. This alteration cannot be cured in the store. {emote:effects.occupied}",
     "success": "{{pseudo}}, transaction successful!",
     "healAlteration": "{emote:shopItems.healAlteration} Your state changes have been deleted.",
     "tooManyEnergyBought": "You purchased the maximum energy recovery amount for this week.",
@@ -831,6 +863,9 @@
     "badgeBought": "You have received a new badge: {emote:badges.{{badgeName}}}!",
     "notEnoughMoney": "You don't have enough money to buy this item! You are missing `{{missingCurrency}} {emote:unitValues.{{currency}}}`.",
     "boughtTooMuchDailyPotions": "There are no more potions available for sale... Come back tomorrow!",
+    "boughtTooMuchTokens": "It is no longer possible to buy tokens today... Please come back tomorrow!",
+    "tokensBought": "You have bought a token. {emote:unitValues.token}",
+    "tokensFull": "You already have as many tokens as possible!",
     "title": "{emote:commands.shop} Shop",
     "currentMoney": "You have `{{money}}{emote:unitValues.{{currency}}}`.",
     "shopItemsDisplaySingle": "{{name}} | `{{price}}{emote:unitValues.{{currency}}}`",
@@ -846,6 +881,9 @@
       "dailyPotion_zero": "Today's potion (Out of stock)",
       "dailyPotion_one": "Today's potion ({{count}} available)",
       "dailyPotion_other": "Today's potion ({{count}} available)",
+      "token_zero": "Tokens (out of stock)",
+      "token_one": "Tokens ({{count}} available)",
+      "token_other": "Tokens ({{count}} available)",
       "slotExtension": "Inventory slot extensions",
       "food": "Pet food",
       "guildXp": "Guild experience",
@@ -893,6 +931,10 @@
       },
       "dailyPotion": {
         "info": "You'll get a potion that you can decide whether to keep it or not. If you already have it, it will be thrown away without refund!"
+      },
+      "token": {
+        "name": "{emote:unitValues.token} Token",
+        "info": "Tokens allow you to progress faster by accelerating certain actions, such as reporting. You can buy up to 10 per day."
       },
       "smallGuildXp": {
         "name": "{emote:shopItems.smallGuildXp} A small amount of XP for your guild",

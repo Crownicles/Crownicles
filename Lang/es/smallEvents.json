@@ -875,13 +875,24 @@
       ]
     },
     "timeLost": {
-      "stories": [
-        "estás pisando una trampa. Lo siguiente que sabes es que estás colgando de tu pie.{{amount}} :clock2:Salir de esta trampa podría tomar mucho tiempo... pierdes ** **.",
-        "empieza a llover. Estás a punto de correr para no empaparte, pero ves un arco iris soberbio.{{amount}} :clock2:Dejas de pensar en la lluvia y te dejas absorber por el espectáculo durante ** **.",
-        "te estás cansando{{amount}} :clock2:Tus aventuras te han agotado, así que decides descansar durante ** **.",
-        "Mientras caminas, sumido en tus pensamientos, no reparas en la rama que hay en el suelo. Tropiezas con ella y tus pertenencias se desparraman.{{amount}} :clock2:Pierdes ** **.",
-        "oyes un fuerte ruido que proviene de la maleza. Te pica la curiosidad: quieres saber de qué se trata y vas a inspeccionar la zona. Después de **{{amount}} :clock2:**, te rindes sin haber encontrado ni comprendido el origen del ruido que te ha sobresaltado."
-      ]
+      "sleeping": {
+        "stories": [
+          "te estás cansando Tus aventuras te han agotado, así que decides descansar durante **{{amount}}**. {emote:effects.sleeping}",
+          "te sientes intensamente cansado. Te pesan los párpados y decides echarte una siesta reparadora para **{{amount}}**. {emote:effects.sleeping}",
+          "Agotado por el viaje, te tumbas contra un árbol para dormir. Te despiertas **{{amount}}** más tarde. {emote:effects.sleeping}",
+          "la fatiga te abruma. Encuentras un lugar cómodo para descansar durante **{{amount}}**. {emote:effects.sleeping}",
+          "tus piernas ya no te sostienen. Te incorporas y te duermes rápidamente **{{amount}}**. {emote:effects.sleeping}"
+        ]
+      },
+      "occupied": {
+        "stories": [
+          "estás pisando una trampa. Lo siguiente que sabes es que estás colgando de tu pie. Salir de esta trampa podría llevarte mucho tiempo... pierdes **{{amount}}**. {emote:effects.occupied}",
+          "empieza a llover. Estás a punto de correr para no empaparte, pero ves un arco iris soberbio. Dejas de pensar en la lluvia y te dejas absorber por el espectáculo durante **{{amount}}**. {emote:effects.occupied}",
+          "Mientras caminas, sumido en tus pensamientos, no reparas en la rama que hay en el suelo. Tropiezas con ella y tus pertenencias se dispersan. Pierdes **{{amount}}**. {emote:effects.occupied}",
+          "oyes un fuerte ruido que proviene de la maleza. Te pica la curiosidad: quieres saber de qué se trata y vas a inspeccionar la zona. Después de **{{amount}}**, te rindes sin haber encontrado ni comprendido el origen del ruido que te ha sobresaltado. {emote:effects.occupied}",
+          "te encuentras con un anciano que parece perdido. Pasas **{{amount}}** ayudándole a encontrar el camino a casa. {emote:effects.occupied}"
+        ]
+      }
     },
     "moneyLost": {
       "stories": [
@@ -2239,7 +2250,8 @@
       ],
       "levelTooLow": [
         "Velanna te está examinando de pies a cabeza. Tu nivel {{playerLevel}} no la impresiona demasiado. Te agarra del brazo y te palpa los músculos con una mueca crítica: necesitas alcanzar al menos el nivel {{requiredLevel}} antes de ser digno de {emote:expedition.talisman} **{{talismanName}}**. Entrena, lucha contra monstruos, gana experiencia."
-      ]
+      ],
+      "consolationToken": "Sin embargo, conmovida por tu determinación, Velanna rebusca en su mochila y saca un fragmento dorado. Te entrega esta **ficha de viaje** a modo de estímulo. ¡Recibes **1 {emote:report.token}** !"
     },
     "talismanReceived": [
       "Velanna te observa en silencio durante largos segundos. Luego, lentamente, saca de su mochila un colgante de piedra negra con vetas doradas. El {emote:expedition.talisman}{{talismanName}}** pulsa con un suave resplandor. Siente que has demostrado tu valía y te pide que cuides de **{{pet}}**. El vínculo entre amo y bestia es sagrado. Coloca el talismán en tu mano y cierra los dedos sobre él, invitándote a explorar el mundo.\n\n¡Recibes el {emote:expedition.talisman} **{{talismanName}}** ! Ahora puede enviar a su mascota a través del formulario de pedido {command:pet}."

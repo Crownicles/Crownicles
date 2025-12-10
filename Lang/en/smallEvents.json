@@ -875,13 +875,24 @@
       ]
     },
     "timeLost": {
-      "stories": [
-        "you walk on a trap. The moment afterwards, you are suspended from the foot. Getting out of this trap may take a long time... you lose **{{amount}} :clock2:**.",
-        "it starts to rain, You ready yourself to start running to avoid being soaked when you see a stunning rainbow just a few steps away. You stop thinking about the rain and get absorbed by the show during **{{amount}} :clock2:**.",
-        "you fall from fatigue. Your adventures have been exhausting, and that is why you decide to rest for **{{amount}} :clock2:**.",
-        "while walking deep in your thoughts, you don't notice the branch on the ground. You trip on it and your stuff spreads. You lose **{{amount}} :clock2:**.",
-        "you hear a loud crashing noise coming from the understory. Your curiosity has been piqued: you want to know what it's all about, and go to inspect the area. After **{{amount}} :clock2:**, you give up without having found or understood the origin of the noise that startled you."
-      ]
+      "sleeping": {
+        "stories": [
+          "you're getting tired. Your adventures have exhausted you, so you decide to rest for **{{amount}}**. {emote:effects.sleeping}",
+          "you feel intensely tired. Your eyelids become heavy and you decide to take a restorative nap for **{{amount}}**. {emote:effects.sleeping}",
+          "Exhausted by your journey, you lie down against a tree to get some sleep. You wake up **{{amount}}** later. {emote:effects.sleeping}",
+          "fatigue overwhelms you. You find a comfortable place to rest for **{{amount}}**. {emote:effects.sleeping}",
+          "your legs no longer support you. You sit up and quickly fall asleep for **{{amount}}**. {emote:effects.sleeping}"
+        ]
+      },
+      "occupied": {
+        "stories": [
+          "you're stepping on a trap. The next thing you know, you're hanging by your foot. Getting out of the trap may take a while... you lose **{{amount}}**. {emote:effects.occupied}",
+          "it starts to rain. You're about to run to avoid getting soaked, but then you see a beautiful rainbow. You stop thinking about the rain and let yourself be absorbed by the spectacle for **{{amount}}**. {emote:effects.occupied}",
+          "As you walk along, deep in thought, you don't notice the branch on the ground. You trip over it and your belongings scatter. You lose **{{amount}}**. {emote:effects.occupied}",
+          "you hear a loud crashing noise coming from undergrowth. Your curiosity has been piqued: you want to know what it's all about, and go to inspect the area. After **{{amount}}**, you give up without having found or understood the origin of the noise that startled you. {emote:effects.occupied}",
+          "you come across an old man who seems lost. You spend **{{amount}}** helping him find his way back. {emote:effects.occupied}"
+        ]
+      }
     },
     "moneyLost": {
       "stories": [
@@ -2239,7 +2250,8 @@
       ],
       "levelTooLow": [
         "Velanna is sizing you up from head to toe. Your level {{playerLevel}} doesn't impress her much. She grabs your arm and feels your muscles with a critical pout: you need to reach at least level {{requiredLevel}} before you're worthy of {emote:expedition.talisman} **{{talismanName}}**. Train, fight monsters, gain experience."
-      ]
+      ],
+      "consolationToken": "However, touched by your determination, Velanna reaches into her saddlebag and pulls out a golden shard. She hands you this **travel token** by way of encouragement. You receive **1 {emote:report.token}** !"
     },
     "talismanReceived": [
       "Velanna watches you in silence for a few long seconds. Then, slowly, she extracts a pendant of black stone veined with gold from her satchel. The {emote:expedition.talisman}{{talismanName}}** pulses with a soft glow. She feels that you have proven yourself and instructs you to take care of **{{pet}}**. The bond between master and beast is sacred. She places the talisman in your hand and closes your fingers over it, inviting you to explore the world.\n\nYou receive the {emote:expedition.talisman} **{{talismanName}}** ! You can now send your pet for shipment from {command:pet}."

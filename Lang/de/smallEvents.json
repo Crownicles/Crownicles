@@ -875,13 +875,24 @@
       ]
     },
     "timeLost": {
-      "stories": [
-        "treten Sie in eine Falle. Im nächsten Moment hängen Sie an Ihrem Fuß. Sie verlieren **{{amount}} :clock2:**.",
-        "fängt es an zu regnen. Sie wollen gerade losrennen, um nicht nass zu werden, doch dann sehen Sie einen wunderschönen Regenbogen. Sie denken nicht mehr an den Regen und lassen sich während **{{amount}} :clock2:** von dem Schauspiel absorbieren.",
-        "Sie fallen vor Müdigkeit um. Deine Abenteuer haben dich erschöpft, weshalb du beschließt, dich während **{{amount}} :clock2:** auszuruhen.",
-        "Während Sie in Gedanken versunken durch die Gegend laufen, bemerken Sie den Ast am Boden nicht. Du stolperst darüber und deine Sachen werden verstreut. Du verlierst **{{amount}} :clock2:**.",
-        "hören Sie ein lautes, krachendes Geräusch aus dem Unterholz. Ihre Neugier ist geweckt: Sie wollen wissen, was es damit auf sich hat, und sehen sich in der Gegend um. Nach **{{amount}} :clock2:** geben Sie auf, ohne den Ursprung des Geräusches, das Sie aufgeschreckt hat, gefunden oder verstanden zu haben."
-      ]
+      "sleeping": {
+        "stories": [
+          "Sie fallen vor Müdigkeit um. Deine Abenteuer haben dich erschöpft, weshalb du beschließt, dich während **{{amount}}** auszuruhen. {emote:effects.sleeping}",
+          "Sie fühlen sich sehr müde. Ihre Augenlider werden schwer und Sie beschließen, ein erholsames Nickerchen von **{{amount}}** zu machen. {emote:effects.sleeping}",
+          "Erschöpft von Ihrer Reise legen Sie sich gegen einen Baum, um ein wenig zu schlafen. Sie wachen **{{amount}}** später auf. {emote:effects.sleeping}",
+          "die Müdigkeit übermannt Sie. Sie finden einen gemütlichen Platz, um sich während **{{amount}}** auszuruhen. {emote:effects.sleeping}",
+          "Ihre Beine tragen Sie nicht mehr. Sie setzen sich auf und sinken schnell in den Schlaf für **{{amount}}**. {emote:effects.sleeping}"
+        ]
+      },
+      "occupied": {
+        "stories": [
+          "treten Sie in eine Falle. Im nächsten Moment hängen Sie an Ihrem Fuß. Sie verlieren **{{amount}}**. {emote:effects.occupied}",
+          "fängt es an zu regnen. Sie wollen gerade losrennen, um nicht nass zu werden, doch dann sehen Sie einen wunderschönen Regenbogen. Sie denken nicht mehr an den Regen und lassen sich während **{{amount}}** von dem Schauspiel absorbieren. {emote:effects.occupied}",
+          "Während Sie in Gedanken versunken durch die Gegend laufen, bemerken Sie den Ast am Boden nicht. Du stolperst darüber und deine Sachen werden verstreut. Du verlierst **{{amount}}**. {emote:effects.occupied}",
+          "hören Sie ein lautes, krachendes Geräusch aus dem Unterholz. Ihre Neugier ist geweckt: Sie wollen wissen, was es damit auf sich hat, und sehen sich in der Gegend um. Nach **{{amount}}** geben Sie auf, ohne den Ursprung des Geräusches, das Sie aufgeschreckt hat, gefunden oder verstanden zu haben. {emote:effects.occupied}",
+          "Sie begegnen einem alten Mann, der verloren scheint. Sie verbringen **{{amount}}** damit, ihm zu helfen, seinen Weg zurückzufinden. {emote:effects.occupied}"
+        ]
+      }
     },
     "moneyLost": {
       "stories": [
@@ -2239,7 +2250,8 @@
       ],
       "levelTooLow": [
         "Velanna misst Sie von Kopf bis Fuß. Ihr Niveau {{playerLevel}} beeindruckt sie nicht sehr. Sie greift nach deinem Arm und tastet deine Muskeln mit einem kritischen Schmollmund ab: Du musst mindestens Level {{requiredLevel}} erreichen, bevor du dich der {emote:expedition.talisman} **{{talismanName}}** würdig erweisen kannst. Trainiere, kämpfe gegen Monster, sammle Erfahrung."
-      ]
+      ],
+      "consolationToken": "Gerührt von Ihrer Entschlossenheit greift Velanna jedoch in ihre Tasche und holt einen goldenen Splitter heraus. Sie überreicht Ihnen diese **Reisemünze** als Zeichen der Ermutigung. Sie erhalten **1 {emote:report.token}**!"
     },
     "talismanReceived": [
       "Velanna beobachtet Sie viele Sekunden lang schweigend. Dann zieht sie langsam einen Anhänger aus schwarzem Stein mit goldenen Adern aus ihrer Tasche. Der {emote:expedition.talisman} **{{talismanName}}** pulsiert in einem sanften Licht. Sie ist der Meinung, dass Sie sich bewährt haben, und weist Sie an, sich um **{{pet}}** zu kümmern. Die Verbindung zwischen einem Meister und seinem Tier ist heilig. Sie legt den Talisman in Ihre Hand, schließt Ihre Finger und lädt Sie ein, die Welt zu erkunden.\n\nSie erhalten den {emote:expedition.talisman} **{{talismanName}}**! Sie können Ihren Vertrauten nun aus der Bestellung {command:pet}in den Versand schicken."

@@ -875,13 +875,24 @@
       ]
     },
     "timeLost": {
-      "stories": [
-        "stai calpestando una trappola. Subito dopo ti ritrovi appeso per un piede.{{amount}} :clock2:Uscire da questa trappola potrebbe richiedere molto tempo... si perde ** **.",
-        "inizia a piovere. Si sta per correre per evitare di inzupparsi, ma si vede un superbo arcobaleno.{{amount}} :clock2:Si smette di pensare alla pioggia e ci si lascia assorbire dallo spettacolo per ** **.",
-        "siete stanchi.{{amount}} :clock2:Le vostre avventure vi hanno stremato, quindi decidete di riposare per ** **.",
-        "Mentre camminate, immersi nei vostri pensieri, non notate il ramo a terra. Si inciampa e le proprie cose si disperdono.{{amount}} :clock2:Si perde ** **.",
-        "sentite un forte rumore di schianto provenire da un sottobosco. La vostra curiosità è stata stuzzicata: volete sapere di cosa si tratta e andate a ispezionare la zona. Dopo **{{amount}} :clock2:**, vi arrendete senza aver trovato o capito la fonte del rumore che vi ha spaventato."
-      ]
+      "sleeping": {
+        "stories": [
+          "siete stanchi. Le tue avventure ti hanno stremato, quindi decidi di riposare per **{{amount}}**. {emote:effects.sleeping}",
+          "vi sentite intensamente stanchi. Le palpebre diventano pesanti e si decide di fare un pisolino ristoratore per **{{amount}}**. {emote:effects.sleeping}",
+          "Stremati dal viaggio, ci si sdraia contro un albero per dormire un po'. Ci si sveglia **{{amount}}** più tardi. {emote:effects.sleeping}",
+          "La stanchezza vi opprime. Trovate un posto comodo dove riposare per **{{amount}}**. {emote:effects.sleeping}",
+          "le gambe non vi sostengono più. Ci si alza a sedere e ci si addormenta rapidamente **{{amount}}**. {emote:effects.sleeping}"
+        ]
+      },
+      "occupied": {
+        "stories": [
+          "stai calpestando una trappola. Subito dopo ci si ritrova appesi per un piede. Uscire da questa trappola potrebbe richiedere molto tempo... si perde **{{amount}}**. {emote:effects.occupied}",
+          "inizia a piovere. Si sta per correre per evitare di inzupparsi, ma si vede un superbo arcobaleno. Si smette di pensare alla pioggia e ci si lascia assorbire dallo spettacolo per **{{amount}}**. {emote:effects.occupied}",
+          "Mentre camminate, immersi nei vostri pensieri, non notate il ramo a terra. Si inciampa e le proprie cose si disperdono. Si perde **{{amount}}**. {emote:effects.occupied}",
+          "sentite un forte rumore di schianto provenire dal sottobosco. La vostra curiosità è stata stuzzicata: volete sapere di cosa si tratta e andate a ispezionare la zona. Dopo **{{amount}}**, vi arrendete senza aver trovato o capito la fonte del rumore che vi ha spaventato. {emote:effects.occupied}",
+          "si incontra un uomo anziano che sembra essersi perso. Trascorri **{{amount}}** aiutandolo a trovare la strada di casa. {emote:effects.occupied}"
+        ]
+      }
     },
     "moneyLost": {
       "stories": [
@@ -2239,7 +2250,8 @@
       ],
       "levelTooLow": [
         "Velanna ti sta valutando dalla testa ai piedi. Il tuo livello {{playerLevel}} non la impressiona molto. Ti afferra il braccio e ti tasta i muscoli con un broncio critico: devi raggiungere almeno il livello {{requiredLevel}} prima di essere degno di {emote:expedition.talisman} **{{talismanName}}**. Allenati, combatti i mostri, guadagna esperienza."
-      ]
+      ],
+      "consolationToken": "Tuttavia, toccata dalla tua determinazione, Velanna allunga la mano nella sua borsa e tira fuori un frammento d'oro. Ti consegna questo **gettone di viaggio** come incoraggiamento. Ricevi **1 {emote:report.token}** !"
     },
     "talismanReceived": [
       "Velanna la osserva in silenzio per lunghi secondi. Poi, lentamente, estrae dalla borsa un ciondolo di pietra nera con venature dorate. Il {emote:expedition.talisman}{{talismanName}}** pulsa di un tenue bagliore. Ritiene che tu abbia dato prova di te e ti chiede di prenderti cura di **{{pet}}**. Il legame tra il padrone e la bestia è sacro. Ti mette in mano il talismano e chiude le dita su di esso, invitandoti a esplorare il mondo.\n\nRicevete il {emote:expedition.talisman} **{{talismanName}}** ! Ora è possibile inviare il proprio animale domestico tramite il modulo d'ordine {command:pet}."

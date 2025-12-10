@@ -1922,6 +1922,7 @@
         "classTier": "{emote:commands.classes} | Stufenklassen {{tier}} freigeschaltet! Weitere Informationen zu den Klassen finden Sie mit den Befehlen {command:classesinfo} und {command:help}.",
         "newMissionSlot": "{emote:missions.sideMission} | Neuer Missionsplatz freigeschaltet! Weitere Informationen zu Ihren Missionen erhalten Sie mit dem Befehl {command:missions}.",
         "pveUnlocked": "{emote:other.island} | Zugang zu freigeschalteten entfernten Inseln! Treffen Sie sich an einem Wasserloch, um neue Abenteuer zu erleben!",
+        "tokensUnlocked": "{emote:unitValues.token} | Token freigeschaltet! Sie können nun Ihre Token verwenden, um schneller voranzukommen, mit dem Befehl {command:report}.",
         "statsIncreased": "{emote:other.increase} | Verbesserte Statistiken."
       }
     }

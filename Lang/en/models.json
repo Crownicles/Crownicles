@@ -1922,6 +1922,7 @@
         "classTier": "{emote:commands.classes} | Level classes {{tier}} unlocked! For more information on the classes, use the commands {command:classesinfo} and {command:help}.",
         "newMissionSlot": "{emote:missions.sideMission} | New mission slot unlocked! For more information on your missions, use the command {command:missions}.",
         "pveUnlocked": "{emote:other.island} | Access to unlocked remote islands! Meet at a watering hole for new adventures!",
+        "tokensUnlocked": "{emote:unitValues.token} | Tokens unlocked! You can now use your tokens to advance faster with the {command:report}command.",
         "statsIncreased": "{emote:other.increase} | Improved statistics."
       }
     }

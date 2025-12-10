@@ -269,6 +269,11 @@
     "The food consumed by the expedition comes from your guild's stock.",
     "Three expeditions are proposed each time: two close to your position and one far away.",
     "A rare cloning talisman allows you to have a spectral double of your pet while on expedition.",
-    "Crossing paths with Velanna when your pet is on an expedition can earn you bonus points and sometimes other surprises."
+    "Crossing paths with Velanna when your pet is on an expedition can earn you bonus points and sometimes other surprises.",
+    "The tokens allow you to move faster across the map using the {command:report}command.",
+    "You can obtain tokens through the daily bonus ({command:dailybonus}), pet shipments, or by buying them in the store.",
+    "Tokens are unlocked from level 5.",
+    "A token allows you to jump straight to the next stage of your journey.",
+    "The longer you're busy, the higher the cost in chips to advance."
   ]
 }
