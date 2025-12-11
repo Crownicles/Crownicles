@@ -13,6 +13,13 @@ export class ReactionCollectorDailyBonusReaction extends ReactionCollectorReacti
 	object!: ItemWithDetails;
 }
 
+type DailyBonusReaction = ReactionCollectorDailyBonusReaction | ReactionCollectorRefuseReaction;
+export type ReactionCollectorDailyBonusPacket = ReactionCollectorCreationPacket<
+	ReactionCollectorDailyBonusData,
+	DailyBonusReaction
+>;
+
+
 export class ReactionCollectorDailyBonus extends ReactionCollector {
 	private readonly objects!: ItemWithDetails[];
 
@@ -21,7 +28,7 @@ export class ReactionCollectorDailyBonus extends ReactionCollector {
 		this.objects = objects;
 	}
 
-	creationPacket(id: string, endTime: number): ReactionCollectorCreationPacket {
+	creationPacket(id: string, endTime: number): ReactionCollectorDailyBonusPacket {
 		return {
 			id,
 			endTime,
