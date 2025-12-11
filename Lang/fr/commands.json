@@ -971,7 +971,7 @@
       },
       "money": {
         "name": "{emote:unitValues.money} Argent du roi",
-        "info": "D'après les cours du jour de la gemme et après déduction de la taxe du roi, vous recevrez `{{kingsMoneyAmount}}` {emote:unitValues.money}.",
+        "info": "D'après les cours du jour de la gemme et après déduction de la taxe du roi, vous recevrez `{{kingsMoneyAmount, number}}` {emote:unitValues.money}.",
         "giveTitle": "{{pseudo}}, achat effectué !",
         "giveDescription": "Vous avez reçu `{{amount, number}}` {emote:unitValues.money}."
       },
@@ -1311,7 +1311,7 @@
     }
   },
   "respawn": {
-    "response_other": "{{respawnEmote}} | ** {{pseudo}} ** Nous vous avons ressuscité avec succès ! Cependant veuillez noter que {{count}} {{scoreEmote}} ont été retirés de votre score durant l'opération !",
+    "response_other": "{{respawnEmote}} | ** {{pseudo}} ** Nous vous avons ressuscité avec succès ! Cependant veuillez noter que {{count, number}} {{scoreEmote}} ont été retirés de votre score durant l'opération !",
     "response_one": "{{respawnEmote}} | ** {{pseudo}} ** Nous vous avons ressuscité avec succès ! Cependant veuillez noter qu'1 {{scoreEmote}} a été retiré de votre score durant l'opération !",
     "alreadyAlive": "Il semblerait que vous ne soyez pas K.O... Vous n'avez pas besoin de nos services."
   },
@@ -1354,8 +1354,8 @@
     },
     "dailyFinished": "Vous avez complété la mission du jour ! Revenez {{time}}.",
     "noCurrentMissions": "Vous pouvez occasionnellement trouver des missions supplémentaires à réaliser en demandant un rapport.",
-    "missionDisplay_campaign": "{{mission}}\n{{progressionBar}} {{current}}/{{objective}}",
-    "missionDisplay_other": "{{mission}} (expire {{time}})\n{{progressionBar}} {{current}}/{{objective}}"
+    "missionDisplay_campaign": "{{mission}}\n{{progressionBar}} {{current, number}}/{{objective, number}}",
+    "missionDisplay_other": "{{mission}} (expire {{time}})\n{{progressionBar}} {{current, number}}/{{objective, number}}"
   },
   "guildShop": {
     "noFoodStorageSpace": "Vous n'avez pas assez de place dans votre réserve pour stocker cette nourriture.",
