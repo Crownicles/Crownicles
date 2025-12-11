@@ -444,6 +444,9 @@ export class DisplayUtils {
 	 * @param lng
 	 */
 	static formatNumber(value: number, lng: Language): string {
+		if (!Number.isFinite(value)) {
+			return String(value);
+		}
 		return new Intl.NumberFormat(lng, { useGrouping: true }).format(value);
 	}
 }

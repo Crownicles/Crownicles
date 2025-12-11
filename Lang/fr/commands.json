@@ -701,7 +701,7 @@
     },
     "information": {
       "fieldName": "Informations :",
-      "fieldValue": "{emote:unitValues.health} {{health, number}} / {{maxHealth, number}} | {emote:unitValues.xp} {{experience, number}} / {{experienceNeededToLevelUp, number}} | {emote:unitValues.money} {{money, number}} | {emote:unitValues.token} {{tokens}} / {{tokensMax}}"
+      "fieldValue": "{emote:unitValues.health} {{health, number}} / {{maxHealth, number}} | {emote:unitValues.xp} {{experience, number}} / {{experienceNeededToLevelUp, number}} | {emote:unitValues.money} {{money, number}} | {emote:unitValues.token} {{tokens, number}} / {{tokensMax, number}}"
     },
     "informationNoTokens": {
       "fieldName": "Informations :",

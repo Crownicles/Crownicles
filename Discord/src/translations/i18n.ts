@@ -28,7 +28,7 @@ function getI18nOptions(): i18next.InitOptions<unknown> {
 		interpolation: {
 			escapeValue: false,
 			format: (value, format, lng): string => {
-				if (format === "number" && typeof value === "number") {
+				if (format === "number" && typeof value === "number" && !isNaN(value)) {
 					return new Intl.NumberFormat(lng, { useGrouping: true }).format(value);
 				}
 				return String(value);
