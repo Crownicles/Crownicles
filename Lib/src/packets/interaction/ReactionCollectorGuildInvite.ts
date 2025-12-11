@@ -1,7 +1,7 @@
 import {
+	AcceptRefusePacket,
 	ReactionCollector,
 	ReactionCollectorAcceptReaction,
-	ReactionCollectorCreationPacket,
 	ReactionCollectorData,
 	ReactionCollectorRefuseReaction
 } from "./ReactionCollectorPacket.js";
@@ -11,6 +11,8 @@ export class ReactionCollectorGuildInviteData extends ReactionCollectorData {
 
 	invitedPlayerKeycloakId!: string;
 }
+
+export type ReactionCollectorGuildInvitePacket = AcceptRefusePacket<ReactionCollectorGuildInviteData>;
 
 export class ReactionCollectorGuildInvite extends ReactionCollector {
 	private readonly guildName: string;
@@ -23,7 +25,7 @@ export class ReactionCollectorGuildInvite extends ReactionCollector {
 		this.invitedKeycloakId = invitedId;
 	}
 
-	creationPacket(id: string, endTime: number): ReactionCollectorCreationPacket {
+	creationPacket(id: string, endTime: number): ReactionCollectorGuildInvitePacket {
 		return {
 			id,
 			endTime,
