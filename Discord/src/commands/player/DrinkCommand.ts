@@ -10,13 +10,11 @@ import {
 import { DiscordCache } from "../../bot/DiscordCache";
 import i18n from "../../translations/i18n";
 import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
-import {
-	ReactionCollectorCreationPacket,
-	ReactionCollectorRefuseReaction
-} from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
+import { ReactionCollectorRefuseReaction } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { DisplayUtils } from "../../utils/DisplayUtils";
 import { DiscordCollectorUtils } from "../../utils/DiscordCollectorUtils";
 import {
+	ReactionCollectorDrinkPacket,
 	ReactionCollectorDrinkReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorDrink";
 import { minutesDisplay } from "../../../../Lib/src/utils/TimeUtils";
@@ -44,7 +42,7 @@ async function getPacket(interaction: CrowniclesInteraction): Promise<CommandDri
 	return makePacket(CommandDrinkPacketReq, {});
 }
 
-export async function drinkAcceptCollector(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
+export async function drinkAcceptCollector(context: PacketContext, packet: ReactionCollectorDrinkPacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
 	if (!interaction) {
 		return null;
