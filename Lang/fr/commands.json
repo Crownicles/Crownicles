@@ -252,9 +252,9 @@
     },
     "rewards": {
       "title": "\n\n**Butin rapporté :**",
-      "money": "{emote:unitValues.money} Argent gagné : **{{amount}}** !",
-      "experience": "{emote:unitValues.xp} Expérience gagnée : **{{amount}}** !",
-      "points": "{emote:unitValues.score} Points gagnés : **{{amount}}** !",
+      "money": "{emote:unitValues.money} Argent gagné : **{{amount, number}}** !",
+      "experience": "{emote:unitValues.xp} Expérience gagnée : **{{amount, number}}** !",
+      "points": "{emote:unitValues.score} Points gagnés : **{{amount, number}}** !",
       "tokens_one": "{emote:unitValues.token} Jeton gagné : **{{count}}** !",
       "tokens_other": "{emote:unitValues.token} Jetons gagnés : **{{count}}** !",
       "item": "{emote:rewards.item} Vous recevez un équipement aléatoire !",
@@ -327,15 +327,15 @@
     }
   },
   "guild": {
-    "embedTitle": "Guilde {{guildName}} | Niveau {{level}}",
+    "embedTitle": "Guilde {{guildName}} | Niveau {{level, number}}",
     "description": "{emote:messages.description} `{{description}}`",
     "separator": " | ",
-    "memberInfo": "{{icon}} - **{{pseudo}}** ({{ranking}} {emote:announcements.trophy} | {{score}} {emote:unitValues.score}{{islandStatusIcon}})\n",
+    "memberInfo": "{{icon}} - **{{pseudo}}** ({{ranking}} {emote:announcements.trophy} | {{score, number}} {emote:unitValues.score}{{islandStatusIcon}})\n",
     "members": "{emote:guild.membersCount} {{memberCount}} / {{maxGuildMembers}} membres",
     "infoTitle": "Informations",
     "islandInfo": "{emote:guild.isOnPveIsland} Nombre d'alliés sur l'île mystérieuse : {{membersOnPveIsland}}\n",
-    "info": "{emote:unitValues.xp} {{experience}} | {emote:unitValues.guildPoint} {{guildPoints}} | {emote:announcements.trophy} {{ranking}}",
-    "xpNeeded": "{{xp}} / {{xpToLevelUp}}",
+    "info": "{emote:unitValues.xp} {{experience, number}} | {emote:unitValues.guildPoint} {{guildPoints, number}} | {emote:announcements.trophy} {{ranking}}",
+    "xpNeeded": "{{xp, number}} / {{xpToLevelUp, number}}",
     "xpMax": "Max",
     "ranking": "{{rank}} / {{rankTotal}}",
     "notRanked": "Non classée"
@@ -344,7 +344,7 @@
     "title": "{{pseudo}}, création d'une guilde",
     "canceledTitle": "{{pseudo}}, annulation de la création d'une guilde.",
     "canceledDesc": "La création de votre guilde a été annulée.",
-    "confirmDesc": "{emote:collectors.question} Confirmer la création de la guilde **{{guildName}}** pour `{{price}}` {emote:unitValues.money} ?",
+    "confirmDesc": "{emote:collectors.question} Confirmer la création de la guilde **{{guildName}}** pour `{{price, number}}` {emote:unitValues.money} ?",
     "acceptedFooter": "Attention, le staff se réserve le droit de renommer votre guilde.",
     "acceptedDesc": "La guilde **{{guildName}}** a été créée !"
   },
@@ -689,11 +689,11 @@
     },
     "fightRanked": {
       "fieldName": "Gloire et ligue :",
-      "fieldValue": "{emote:announcements.trophy} {{rank}} / {{numberOfPlayers}} | {emote:unitValues.glory} {{gloryPoints}} | {emote:leagues.{{leagueId}}} $t(models:leagues.{{leagueId}})"
+      "fieldValue": "{emote:announcements.trophy} {{rank, number}} / {{numberOfPlayers, number}} | {emote:unitValues.glory} {{gloryPoints, number}} | {emote:leagues.{{leagueId}}} $t(models:leagues.{{leagueId}})"
     },
     "fightUnranked": {
       "fieldName": "Gloire et ligue :",
-      "fieldValue": "{emote:announcements.trophy} Non classé | {emote:unitValues.glory} {{gloryPoints}} | {emote:leagues.{{leagueId}}} $t(models:leagues.{{leagueId}})"
+      "fieldValue": "{emote:announcements.trophy} Non classé | {emote:unitValues.glory} {{gloryPoints, number}} | {emote:leagues.{{leagueId}}} $t(models:leagues.{{leagueId}})"
     },
     "guild": {
       "fieldName": "Guilde :",
@@ -701,11 +701,11 @@
     },
     "information": {
       "fieldName": "Informations :",
-      "fieldValue": "{emote:unitValues.health} {{health}} / {{maxHealth}} | {emote:unitValues.xp} {{experience}} / {{experienceNeededToLevelUp}} | {emote:unitValues.money} {{money}} | {emote:unitValues.token} {{tokens}} / {{tokensMax}}"
+      "fieldValue": "{emote:unitValues.health} {{health, number}} / {{maxHealth, number}} | {emote:unitValues.xp} {{experience, number}} / {{experienceNeededToLevelUp, number}} | {emote:unitValues.money} {{money, number}} | {emote:unitValues.token} {{tokens}} / {{tokensMax}}"
     },
     "informationNoTokens": {
       "fieldName": "Informations :",
-      "fieldValue": "{emote:unitValues.health} {{health}} / {{maxHealth}} | {emote:unitValues.xp} {{experience}} / {{experienceNeededToLevelUp}} | {emote:unitValues.money} {{money}}"
+      "fieldValue": "{emote:unitValues.health} {{health, number}} / {{maxHealth, number}} | {emote:unitValues.xp} {{experience, number}} / {{experienceNeededToLevelUp, number}} | {emote:unitValues.money} {{money, number}}"
     },
     "map": {
       "fieldName": "Destination :",
@@ -729,21 +729,21 @@
     },
     "ranking": {
       "fieldName": "Classement et Score :",
-      "fieldValue": "{emote:announcements.trophy} {{rank}} / {{numberOfPlayer}} | {emote:unitValues.score} {{score}}"
+      "fieldValue": "{emote:announcements.trophy} {{rank, number}} / {{numberOfPlayer, number}} | {emote:unitValues.score} {{score, number}}"
     },
     "unranked": {
       "fieldName": "Classement et Score :",
-      "fieldValue": "{emote:announcements.trophy} Non classé | {emote:unitValues.score} {{score}}"
+      "fieldValue": "{emote:announcements.trophy} Non classé | {emote:unitValues.score} {{score, number}}"
     },
     "statistics": {
       "fieldName": "Statistiques :",
-      "fieldValue": "{emote:unitValues.energy} {{cumulativeHealth}} / {{cumulativeMaxHealth}} | {emote:unitValues.attack} {{cumulativeAttack}} | {emote:unitValues.defense} {{cumulativeDefense}} | {emote:unitValues.speed} {{cumulativeSpeed}} | {emote:unitValues.breath} {{baseBreath}} / {{maxBreath}} | {emote:unitValues.breathRegen} {{breathRegen}}"
+      "fieldValue": "{emote:unitValues.energy} {{cumulativeHealth, number}} / {{cumulativeMaxHealth, number}} | {emote:unitValues.attack} {{cumulativeAttack, number}} | {emote:unitValues.defense} {{cumulativeDefense, number}} | {emote:unitValues.speed} {{cumulativeSpeed, number}} | {emote:unitValues.breath} {{baseBreath}} / {{maxBreath}} | {emote:unitValues.breathRegen} {{breathRegen}}"
     },
     "timeLeft": {
       "fieldName": "Temps restant :",
       "fieldValue": "{emote:effects.{{effectId}}} {{timeLeft}}"
     },
-    "title": "{emote:effects.{{effectId}}} | {{pseudo}} | Niveau {{level}}"
+    "title": "{emote:effects.{{effectId}}} | {{pseudo}} | Niveau {{level, number}}"
   },
   "rarity": {
     "earlyAvailable": "Possédé en début de jeu",
@@ -767,24 +767,24 @@
     "encounterMonster": [
       "Vous arrivez à votre destination quand soudain, vous entendez un bruit derrière vous... Un monstre vous attaque !"
     ],
-    "encounterMonsterStats": "> **{{emoji}} {{monsterName}} **| **Niveau {{level}}**\n> {{description}}\n\n{emote:unitValues.energy} {{energy}} | {emote:unitValues.attack} {{attack}} | {emote:unitValues.defense} {{defense}} | {emote:unitValues.speed} {{speed}}",
+    "encounterMonsterStats": "> **{{emoji}} {{monsterName}} **| **Niveau {{level, number}}**\n> {{description}}\n\n{emote:unitValues.energy} {{energy}} | {emote:unitValues.attack} {{attack}} | {emote:unitValues.defense} {{defense}} | {emote:unitValues.speed} {{speed}}",
     "endPoint": "Point d'arrivée :",
-    "energy": "** | {emote:unitValues.energy} Énergie gagnée : **{{energy}}",
-    "experience": "** | {emote:unitValues.xp} Expérience gagnée : **{{experience}}",
+    "energy": "** | {emote:unitValues.energy} Énergie gagnée : **{{energy, number}}",
+    "experience": "** | {emote:unitValues.xp} Expérience gagnée : **{{experience, number}}",
     "gems": "** | {emote:unitValues.gem} Gemmes gagnées : **{{gems}}",
-    "health": "** | {emote:unitValues.health} Vie gagnée : **{{health}}",
-    "healthLoose": "** | {emote:unitValues.lostHealth} Vie perdue : **{{health}}",
+    "health": "** | {emote:unitValues.health} Vie gagnée : **{{health, number}}",
+    "healthLoose": "** | {emote:unitValues.lostHealth} Vie perdue : **{{health, number}}",
     "journal": "Journal de {{pseudo}}",
-    "money": "** | {emote:unitValues.money} Argent gagné : **{{money}}",
-    "moneyLoose": "** | {emote:unitValues.lostMoney} Argent perdu : **{{money}}",
+    "money": "** | {emote:unitValues.money} Argent gagné : **{{money, number}}",
+    "moneyLoose": "** | {emote:unitValues.lostMoney} Argent perdu : **{{money, number}}",
     "rewardEmbedTitle": "{{pseudo}}, récompenses de combat",
-    "monsterRewardGuildXp": "{emote:unitValues.xp} Expérience de guilde gagnée : **{{guildXp}}**",
-    "monsterRewardsDescription": "{emote:unitValues.money} Argent gagné : **{{money}}**\n{emote:unitValues.xp} XP gagnée : **{{experience}}**",
-    "monsterRewardsGuildPoints": "{emote:unitValues.guildPoint} Points de guilde gagnés : **{{guildPoints}}**",
+    "monsterRewardGuildXp": "{emote:unitValues.xp} Expérience de guilde gagnée : **{{guildXp, number}}**",
+    "monsterRewardsDescription": "{emote:unitValues.money} Argent gagné : **{{money, number}}**\n{emote:unitValues.xp} XP gagnée : **{{experience, number}}**",
+    "monsterRewardsGuildPoints": "{emote:unitValues.guildPoint} Points de guilde gagnés : **{{guildPoints, number}}**",
     "monsterRewardsTitle": "{{pseudo}}, récompenses de combat",
     "newBigEvent": "{emote:languages.fr} Vous êtes arrivé à **{{destination}}** !",
     "noFight": "{emote:commands.report} **Journal de {{pseudo}} :** {emote:pveFights.waitABit} | Vous vous enfuyez rapidement et trouvez une petite cachette ! Le monstre vous attend patiemment dehors...",
-    "points": ":** {emote:unitValues.score} Points gagnés : **{{score}}",
+    "points": ":** {emote:unitValues.score} Points gagnés : **{{score, number}}",
     "pveEvent": "{emote:commands.report} **Journal de {{pseudo}} :** {{event}}\n\n{{monsterDisplay}}\n\n{emote:pveFights.startFight} Commencer le combat\n{emote:pveFights.waitABit} Attendre un peu avant de commencer le combat\n\n*- Utilisez les boutons pour effectuer une action*",
     "pveFightRefused": "{emote:commands.report} **Journal de {{pseudo}} :** {emote:pveFights.waitABit} | Vous décidez de ne pas engager le combat pour le moment et partez vous réfugier dans une cachette non loin. Il faudra finir par affronter la bête, car vous ne trouvez aucune autre issue.",
     "remainingEnergyTitle": "Énergie restante :",
@@ -799,8 +799,8 @@
     "notEnoughTokensButton": "Jetons insuffisants",
     "useTokensLoading": "Chargement...",
     "useTokensConfirmTitle": "{{pseudo}}, confirmation",
-    "useTokensConfirmDescription_one": "Voulez-vous dépenser **{{count}} jeton** {emote:unitValues.token} pour avancer jusqu'à la prochaine étape de l'aventure ?\n\nVous avez actuellement **{{playerTokens}} jetons** {emote:unitValues.token}.",
-    "useTokensConfirmDescription_other": "Voulez-vous dépenser **{{count}} jetons** {emote:unitValues.token} pour avancer jusqu'à la prochaine étape de l'aventure ?\n\nVous avez actuellement **{{playerTokens}} jetons** {emote:unitValues.token}.",
+    "useTokensConfirmDescription_one": "Voulez-vous dépenser **{{count}} jeton** {emote:unitValues.token} pour avancer jusqu'à la prochaine étape de l'aventure ?\n\nVous avez actuellement **{{playerTokens, number}} jetons** {emote:unitValues.token}.",
+    "useTokensConfirmDescription_other": "Voulez-vous dépenser **{{count}} jetons** {emote:unitValues.token} pour avancer jusqu'à la prochaine étape de l'aventure ?\n\nVous avez actuellement **{{playerTokens, number}} jetons** {emote:unitValues.token}.",
     "tokensUsedSuccessTitle": "{{pseudo}}, jetons utilisés !",
     "tokensUsedSuccessDescription_one": "{emote:unitValues.token} Vous avez dépensé **{{count}} jeton** pour avancer dans votre voyage.\n\n{{nextStep}}",
     "tokensUsedSuccessDescription_other": "{emote:unitValues.token} Vous avez dépensé **{{count}} jetons** pour avancer dans votre voyage.\n\n{{nextStep}}",
@@ -811,9 +811,9 @@
     "notEnoughMoneyHealButton": "Argent insuffisant",
     "buyHealLoading": "Chargement...",
     "buyHealConfirmTitle": "{{pseudo}}, confirmation",
-    "buyHealConfirmDescription": "Voulez-vous dépenser **{{price}}** {emote:unitValues.money} pour guérir votre altération d'état et reprendre immédiatement votre route ?\n\nVous avez actuellement **{{playerMoney}}** {emote:unitValues.money}.",
+    "buyHealConfirmDescription": "Voulez-vous dépenser **{{price, number}}** {emote:unitValues.money} pour guérir votre altération d'état et reprendre immédiatement votre route ?\n\nVous avez actuellement **{{playerMoney, number}}** {emote:unitValues.money}.",
     "healSuccessTitle": "{{pseudo}}, soins terminés !",
-    "healSuccessDescription": "{emote:shopItems.healAlteration} Vous avez dépensé **{{price}}** {emote:unitValues.money} pour vous soigner.\n\n{{nextStep}}",
+    "healSuccessDescription": "{emote:shopItems.healAlteration} Vous avez dépensé **{{price, number}}** {emote:unitValues.money} pour vous soigner.\n\n{{nextStep}}",
     "healNextStepArrived": "{emote:messages.info} Vous êtes arrivé à destination ! Utilisez {command:report} pour voir ce qui vous attend.",
     "healNextStepSmallEvent": "{emote:messages.info} Un événement vous attend sur la route. Utilisez {command:report} pour le découvrir.",
     "healRefused": "{emote:messages.refuse} **{{pseudo}}** a décidé de ne pas se soigner.",
@@ -841,7 +841,7 @@
     "canceledDesc": "Le familier n'a pas été libéré.",
     "confirmDesc": "{emote:collectors.warning} Êtes-vous sur de vouloir libérer **{{pet}}** ? Il n'est pas possible d'annuler une fois l'action effectuée.",
     "acceptedDesc": "Adieu **{{pet}}**...",
-    "isFeisty": "{emote:collectors.warning} Attention, la libération d'un familier fielleux vous coûtera {{cost}} {emote:unitValues.money}.",
+    "isFeisty": "{emote:collectors.warning} Attention, la libération d'un familier fielleux vous coûtera {{cost, number}} {emote:unitValues.money}.",
     "petOnExpedition": "Votre familier est actuellement en expédition et ne peut pas être libéré."
   },
   "petNick": {
@@ -861,18 +861,18 @@
     "fullRegen": "{emote:shopItems.regen} Vous avez été complétement soigné.",
     "alreadyHaveBadge": "Vous possédez déjà ce badge.",
     "badgeBought": "Vous avez reçu un nouveau badge : {emote:badges.{{badgeName}}} !",
-    "notEnoughMoney": "Vous n'avez pas assez d'argent pour acheter cet objet ! Il vous manque `{{missingCurrency}} {emote:unitValues.{{currency}}}`.",
+    "notEnoughMoney": "Vous n'avez pas assez d'argent pour acheter cet objet ! Il vous manque `{{missingCurrency, number}} {emote:unitValues.{{currency}}}`.",
     "boughtTooMuchDailyPotions": "Il n'y a plus aucune potion du jour disponible à la vente... Revenez demain !",
     "boughtTooMuchTokens": "Il n'est plus possible d'acheter des jetons aujourd'hui... Revenez demain !",
     "tokensBought": "Vous avez acheté un jeton. {emote:unitValues.token}",
     "tokensFull": "Vous possédez déjà le maximum de jetons possible !",
     "title": "{emote:commands.shop} Affichage du Magasin",
-    "currentMoney": "Vous avez `{{money}}{emote:unitValues.{{currency}}}`.",
-    "shopItemsDisplaySingle": "{{name}} | `{{price}}{emote:unitValues.{{currency}}}`",
-    "shopItemsDisplayMultiple": "**{{amount}}x** {{name}} | `{{price}}{emote:unitValues.{{currency}}}`",
+    "currentMoney": "Vous avez `{{money, number}}{emote:unitValues.{{currency}}}`.",
+    "shopItemsDisplaySingle": "{{name}} | `{{price, number}}{emote:unitValues.{{currency}}}`",
+    "shopItemsDisplayMultiple": "**{{amount}}x** {{name}} | `{{price, number}}{emote:unitValues.{{currency}}}`",
     "shopSelectPlaceholder": "Sélectionnez un objet à acheter",
     "buyCategorySlotSuccess": "Vous avez acheté un nouvel emplacement d'inventaire !",
-    "shopItemsSelectDescription": "{{price}}{emote:unitValues.{{currency}}}",
+    "shopItemsSelectDescription": "{{price, number}}{emote:unitValues.{{currency}}}",
     "closeShopButton": "{emote:messages.refuse} Fermer le magasin",
     "shopConfirmationTitle": "{{pseudo}}, vous avez sélectionné le produit suivant :",
     "shopConfirmationTitleMultiple": "{{pseudo}}, sélectionnez une quantité pour ce produit :",
@@ -973,7 +973,7 @@
         "name": "{emote:unitValues.money} Argent du roi",
         "info": "D'après les cours du jour de la gemme et après déduction de la taxe du roi, vous recevrez `{{kingsMoneyAmount}}` {emote:unitValues.money}.",
         "giveTitle": "{{pseudo}}, achat effectué !",
-        "giveDescription": "Vous avez reçu `{{amount}}` {emote:unitValues.money}."
+        "giveDescription": "Vous avez reçu `{{amount, number}}` {emote:unitValues.money}."
       },
       "treasure": {
         "name": "{emote:shopItems.treasure} Trésor du roi",
@@ -982,9 +982,9 @@
       },
       "kingsFavor": {
         "name": "{emote:unitValues.score} Ferveur du roi",
-        "info": "Vous octroie {{thousandPoints}} points. Ne peut être utilisé qu'une fois par semaine.",
+        "info": "Vous octroie {{thousandPoints, number}} points. Ne peut être utilisé qu'une fois par semaine.",
         "giveTitle": "{{pseudo}}, achat effectué !",
-        "giveDescription": "Vous avez reçu {{thousandPoints}} {emote:unitValues.score}. À la semaine prochaine pour une nouvelle ferveur !"
+        "giveDescription": "Vous avez reçu {{thousandPoints, number}} {emote:unitValues.score}. À la semaine prochaine pour une nouvelle ferveur !"
       },
       "lovePointsValue": {
         "name": "{emote:shopItems.lovePointsValue} Vétérinaire de la cour",
@@ -1361,23 +1361,23 @@
     "noFoodStorageSpace": "Vous n'avez pas assez de place dans votre réserve pour stocker cette nourriture.",
     "empty": "Il n'y a plus rien à acheter pour le moment. Votre guilde est au niveau maximum et son stock de nourriture est plein.",
     "giveXpTitle": "Succès de l'achat",
-    "giveXp": "{emote:unitValues.xp} Votre guilde a reçu **{{xp}}** points d'expérience."
+    "giveXp": "{emote:unitValues.xp} Votre guilde a reçu **{{xp, number}}** points d'expérience."
   },
   "guildDaily": {
     "rewardTitle": "Récompense de la guilde {{guildName}} :",
     "coolDown": "La récompense de guilde n'est disponible qu'une fois toutes les {{coolDownTime}} heures. L'ajout d'un nouveau membre à la guilde réinitialise le compteur. Prochaine récompense {{time}}.",
     "pveIslandError": "La récompense de guilde ne peut pas être obtenue car un des membres est actuellement sur une île mystérieuse !",
     "rewards": {
-      "personalXP": "{emote:unitValues.xp} | Les membres de la guilde ont reçu de l'expérience. `+ {{quantity}} {emote:unitValues.xp}`.",
-      "guildXP": "{emote:unitValues.xp} | La guilde a reçu de l'expérience. `+ {{quantity}} {emote:unitValues.xp}`",
-      "money": "{emote:unitValues.money} | Les membres de la guilde ont reçu `{{quantity}} {emote:unitValues.money}`.",
+      "personalXP": "{emote:unitValues.xp} | Les membres de la guilde ont reçu de l'expérience. `+ {{quantity, number}} {emote:unitValues.xp}`.",
+      "guildXP": "{emote:unitValues.xp} | La guilde a reçu de l'expérience. `+ {{quantity, number}} {emote:unitValues.xp}`",
+      "money": "{emote:unitValues.money} | Les membres de la guilde ont reçu `{{quantity, number}} {emote:unitValues.money}`.",
       "item": "{emote:rewards.item} | Les membres de la guilde ont reçu un objet au hasard.",
       "badge": "{emote:badges.powerful_guild} | Les membres de la guilde ont reçu un badge.",
       "superBadge": "{emote:badges.very_powerful_guild} | Les membres de la guilde ont reçu un badge.",
       "fullHeal": "{emote:shopItems.regen} | Les membres de la guilde ont été soignés complètement.",
       "advanceTime": "{emote:unitValues.time} | Les membres de la guilde ont avancé de {{quantity}}h.",
-      "partialHeal": "{emote:rewards.partialHeal} | Les membres de la guilde ont été partiellement soignés. `+ {{quantity}} {emote:unitValues.health}`",
-      "alterationHeal": "{emote:shopItems.healAlteration} | Les altérations d'état des membres de la guilde ont été supprimées. Les membres en bonne santé ont été partiellement soignés. `+ {{quantity}} {emote:unitValues.health}`",
+      "partialHeal": "{emote:rewards.partialHeal} | Les membres de la guilde ont été partiellement soignés. `+ {{quantity, number}} {emote:unitValues.health}`",
+      "alterationHeal": "{emote:shopItems.healAlteration} | Les altérations d'état des membres de la guilde ont été supprimées. Les membres en bonne santé ont été partiellement soignés. `+ {{quantity, number}} {emote:unitValues.health}`",
       "alterationNoHeal": "{emote:shopItems.healAlteration} | Les altérations d'état des membres de la guilde ont été supprimées.",
       "petFood": "{emote:foods.commonFood} {{quantity}} friandises ont été rajoutées à l'inventaire de votre guilde.",
       "pet_male": "{emote:pets.{{petId}}.emoteMale} | Un familier a rejoint le refuge de la guilde: **{{pet}}**",
@@ -1409,7 +1409,7 @@
     "himself": "Vous ne pouvez pas vous libérer vous-même, demandez à un ami de le faire.",
     "notInJail": "Ce joueur n'est pas en prison.",
     "title": "Libération de {{pseudo}}",
-    "confirmDesc": "Êtes-vous sûr de vouloir libérer **{{pseudo}}** pour **{{price}} {emote:unitValues.money}**?",
+    "confirmDesc": "Êtes-vous sûr de vouloir libérer **{{pseudo}}** pour **{{price, number}} {emote:unitValues.money}**?",
     "canceledTitle": "Libération annulée",
     "canceledDesc": "La libération a été annulée.",
     "acceptedDesc": "Vous avez libéré **{{pseudo}}** !"
@@ -1428,7 +1428,7 @@
     }
   },
   "top": {
-    "level": "Niveau {{level}}",
+    "level": "Niveau {{level, number}}",
     "titleScoreAllTime": "{emote:top.congrats} Affichage du top des places {{minRank}} à {{maxRank}}",
     "titleScoreWeekly": "{emote:top.congrats} Affichage du top de la semaine des places {{minRank}} à {{maxRank}}",
     "yourRankTitle": "**Votre classement**",
@@ -1467,9 +1467,9 @@
     },
     "canceledDesc": "Vous avez annulé la recherche de combat.",
     "information": {
-      "glory": "{emote:unitValues.glory} {{gloryPoints}}",
+      "glory": "{emote:unitValues.glory} {{gloryPoints, number}}",
       "class": "$t(models:classFormat)",
-      "stats": "{emote:unitValues.energy} {{cumulativeHealth}} / {{cumulativeMaxHealth}} | {emote:unitValues.attack} {{cumulativeAttack}} | {emote:unitValues.defense} {{cumulativeDefense}} | {emote:unitValues.speed} {{cumulativeSpeed}} | {emote:unitValues.breath} {{baseBreath}} / {{maxBreath}} | {emote:unitValues.breathRegen} {{breathRegen}}"
+      "stats": "{emote:unitValues.energy} {{cumulativeHealth, number}} / {{cumulativeMaxHealth, number}} | {emote:unitValues.attack} {{cumulativeAttack, number}} | {emote:unitValues.defense} {{cumulativeDefense, number}} | {emote:unitValues.speed} {{cumulativeSpeed, number}} | {emote:unitValues.breath} {{baseBreath}} / {{maxBreath}} | {emote:unitValues.breathRegen} {{breathRegen}}"
     },
     "opponentsNotFound": "Aucun adversaire n'a été trouvé pour vous affronter. Vous pouvez réessayer plus tard.",
     "notEnoughEnergy": "Vous n'avez pas assez d'énergie pour démarrer un combat !",
@@ -1487,7 +1487,7 @@
       },
       "attacker": "{emote:unitValues.attack} | **Attaquant : {{pseudo}}**\n",
       "defender": "\n\n{emote:unitValues.defense} | **Défenseur : {{pseudo}}**\n",
-      "stats": "{emote:unitValues.energy} {{power}} | {emote:unitValues.attack} {{attack}} | {emote:unitValues.defense} {{defense}} | {emote:unitValues.speed} {{speed}} | {emote:unitValues.breath} {{breath}} / {{maxBreath}} | {emote:unitValues.breathRegen} {{breathRegen}}"
+      "stats": "{emote:unitValues.energy} {{power, number}} | {emote:unitValues.attack} {{attack, number}} | {emote:unitValues.defense} {{defense, number}} | {emote:unitValues.speed} {{speed, number}} | {emote:unitValues.breath} {{breath}} / {{maxBreath}} | {emote:unitValues.breathRegen} {{breathRegen}}"
     },
     "end": {
       "draw": "{emote:commands.report} | **{{player1}} et {{player2}} terminent leur combat sur une égalité !**\n\n",
@@ -1628,8 +1628,8 @@
       "scoreAndMoneyField": "Récompenses du combat",
       "petLoveField": "Relation avec le familier",
       "noReward": "{{player}} a démontré pourquoi il est considéré comme l'un des meilleurs en remportant ce match facilement.",
-      "points": "{emote:unitValues.score} Points gagnés : **{{count}}**",
-      "money": "{emote:unitValues.money} Argent gagné : **{{count}}**",
+      "points": "{emote:unitValues.score} Points gagnés : **{{count, number}}**",
+      "money": "{emote:unitValues.money} Argent gagné : **{{count, number}}**",
       "gloryField": "Changements de gloire",
       "gloryNegative": "**{{player}} :** - {{count}} {emote:unitValues.glory}\n",
       "gloryPositive": "**{{player}} :** + {{count}} {emote:unitValues.glory}\n",
@@ -1730,11 +1730,11 @@
     "noOneAvailable": "Malheureusement, personne ne semble disponible pour acheter votre familier. Votre vente a été annulée.",
     "sameGuild": "Vous ne pouvez pas acheter ce familier car le vendeur fait partie de votre guilde.",
     "alreadyHavePet": "Vous avez déjà un familier dans votre inventaire.",
-    "notEnoughMoney": "Vous n'avez pas assez d'argent pour effectuer cette transaction. Il vous manque `{{missingMoney}}{emote:unitValues.money}`.",
+    "notEnoughMoney": "Vous n'avez pas assez d'argent pour effectuer cette transaction. Il vous manque `{{missingMoney, number}}{emote:unitValues.money}`.",
     "initiatorSituationChanged": "Le vendeur n'est plus en mesure de vendre son familier. La vente a été annulée.",
     "sellTitle": "Vente d'un familier",
     "sellTitleWithBuyer": "{{buyer}}, {{seller}} souhaite vous vendre un familier :",
-    "sellDescription": "{{pseudo}} souhaite vendre un familier pour `{{price}}{emote:unitValues.money}`",
+    "sellDescription": "{{pseudo}} souhaite vendre un familier pour `{{price, number}}{emote:unitValues.money}`",
     "maxLevelWarning": "{emote:collectors.warning} Votre guilde est au niveau maximal, vous ne recevrez pas d'expérience !",
     "petFieldName": "Familier vendu :",
     "sellFooter": "Pour plus d'informations à propos des ventes de familiers, utilisez la commande help petsell.",
@@ -1786,16 +1786,16 @@
   },
   "sell": {
     "noItemToSell": "Vous n'avez malheureusement aucun objet dans votre réserve !",
-    "confirmSell": "Êtes-vous sûr de vouloir vous séparer de {{item}} pour **{{value}}** {emote:unitValues.money} ?",
+    "confirmSell": "Êtes-vous sûr de vouloir vous séparer de {{item}} pour **{{value, number}}** {emote:unitValues.money} ?",
     "sellCanceled": "La vente a bien été annulée !",
     "sellTitle": "{{pseudo}}, confirmation :",
-    "soldMessage": "Vous avez vendu {{item}} pour **{{value}}** {emote:unitValues.money} !",
+    "soldMessage": "Vous avez vendu {{item}} pour **{{value, number}}** {emote:unitValues.money} !",
     "soldMessageTitle": "{{pseudo}}, vous avez vendu un équipement.",
     "potionDestroyedTitle": "Vous avez détruit une potion.",
     "potionDestroyedMessage": "**{{item}}** a été versée dans un évier.",
     "soldMessageAlreadyOwnTitle": "{{pseudo}}, vous avez reçu un équipement que vous possédiez déjà.",
     "titleChoiceEmbed": "{{pseudo}}, vente d'objet",
-    "sellField": "{{name}} | {{value}} {emote:unitValues.money}",
+    "sellField": "{{name}} | {{value, number}} {emote:unitValues.money}",
     "throwAwayField": "{{name}} | {emote:other.trash}",
     "confirmThrowAway": "Êtes-vous sûr de vouloir jeter {{item}} ?",
     "sellIndication": "Choisissez un objet à vendre dans la liste ci-dessous :",
@@ -1913,7 +1913,7 @@
   "fightHistory": {
     "noHistory": "Vous n'avez pas encore de combats dans votre historique.",
     "title": "{{pseudo}}, historique des combats",
-    "historyLine": "{{date}}\n{{attackSentence}}\n**Résultat :** {{resultSentence}}\n**Votre gloire :** {emote:unitValues.glory} {{meInitialGlory}} -> {{meFinalGlory}}{{meLeagueChange}}\n**Gloire adverse :** {emote:unitValues.glory} {{opponentInitialGlory}} -> {{opponentFinalGlory}}",
+    "historyLine": "{{date}}\n{{attackSentence}}\n**Résultat :** {{resultSentence}}\n**Votre gloire :** {emote:unitValues.glory} {{meInitialGlory, number}} -> {{meFinalGlory, number}}{{meLeagueChange}}\n**Gloire adverse :** {emote:unitValues.glory} {{opponentInitialGlory, number}} -> {{opponentFinalGlory, number}}",
     "attackSentence": {
       "attacker": "{emote:fightCommand.crossedSwords} Vous avez attaqué **{{opponent}}** ({emote:classes.{{opponentClassId}}} $t(models:classes.{{opponentClassId}}))",
       "defender": "{emote:fightCommand.shield} Vous avez été attaqué par **{{opponent}}** ({emote:classes.{{opponentClassId}}} $t(models:classes.{{opponentClassId}}))"
