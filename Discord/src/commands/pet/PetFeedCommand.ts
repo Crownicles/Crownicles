@@ -11,14 +11,11 @@ import {
 import { DiscordCache } from "../../bot/DiscordCache";
 import i18n from "../../translations/i18n";
 import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
-import {
-	ReactionCollectorCreationPacket,
-	ReactionCollectorRefuseReaction
-} from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
+import { ReactionCollectorRefuseReaction } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { ReactionCollectorReturnTypeOrNull } from "../../packetHandlers/handlers/ReactionCollectorHandlers";
 import {
-	ReactionCollectorPetFeedWithGuildData,
-	ReactionCollectorPetFeedWithGuildFoodReaction
+	ReactionCollectorPetFeedWithGuildFoodReaction,
+	ReactionCollectorPetFeedWithGuildPacket
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorPetFeedWithGuild";
 import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 import {
@@ -30,7 +27,7 @@ import {
 } from "discord.js";
 import { sendInteractionNotForYou } from "../../utils/ErrorUtils";
 import { DiscordCollectorUtils } from "../../utils/DiscordCollectorUtils";
-import { ReactionCollectorPetFeedWithoutGuildData } from "../../../../Lib/src/packets/interaction/ReactionCollectorPetFeedWithoutGuild";
+import { ReactionCollectorPetFeedWithoutGuildPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorPetFeedWithoutGuild";
 
 async function getPacket(interaction: CrowniclesInteraction): Promise<CommandPetFeedPacketReq> {
 	await interaction.deferReply();
@@ -60,7 +57,7 @@ export async function handleCommandPetFeedSuccessPacket(packet: CommandPetFeedSu
 	});
 }
 
-export async function handleCommandPetFeedWithGuildCollector(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
+export async function handleCommandPetFeedWithGuildCollector(context: PacketContext, packet: ReactionCollectorPetFeedWithGuildPacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction);
 
 	if (!interaction) {
@@ -68,12 +65,12 @@ export async function handleCommandPetFeedWithGuildCollector(context: PacketCont
 	}
 	const lng = interaction.userLanguage;
 
-	const data = packet.data.data as ReactionCollectorPetFeedWithGuildData;
+	const data = packet.data.data;
 	const foodReactions = packet.reactions.map((reaction, index) => ({
 		reaction,
 		index
 	}))
-		.filter(reaction => reaction.reaction.type === ReactionCollectorPetFeedWithGuildFoodReaction.name);
+		.filter((r): r is { reaction: { type: string; data: ReactionCollectorPetFeedWithGuildFoodReaction }; index: number } => r.reaction.type === ReactionCollectorPetFeedWithGuildFoodReaction.name);
 	const refuseIndex = packet.reactions.findIndex(reaction => reaction.type === ReactionCollectorRefuseReaction.name);
 
 	const rowFood = new ActionRowBuilder<ButtonBuilder>();
@@ -165,7 +162,7 @@ export async function handleCommandPetFeedWithGuildCollector(context: PacketCont
 	return [msgCollector];
 }
 
-export async function handleCommandPetFeedWithoutGuildCollector(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
+export async function handleCommandPetFeedWithoutGuildCollector(context: PacketContext, packet: ReactionCollectorPetFeedWithoutGuildPacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction);
 
 	if (!interaction) {
@@ -173,7 +170,7 @@ export async function handleCommandPetFeedWithoutGuildCollector(context: PacketC
 	}
 	const lng = interaction.userLanguage;
 
-	const data = packet.data.data as ReactionCollectorPetFeedWithoutGuildData;
+	const data = packet.data.data;
 
 	const embed = new CrowniclesEmbed().formatAuthor(i18n.t("commands:petFeed.feedTitle", {
 		lng,
