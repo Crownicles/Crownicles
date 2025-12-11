@@ -26,8 +26,14 @@ export class ReactionCollectorGobletsGameData extends ReactionCollectorData {
 
 }
 
+type GobletsGameReaction = ReactionCollectorGobletsGameMetalReaction | ReactionCollectorGobletsGameBiggestReaction | ReactionCollectorGobletsGameSparklingReaction;
+export type ReactionCollectorGobletsGamePacket = ReactionCollectorCreationPacket<
+	ReactionCollectorGobletsGameData,
+	GobletsGameReaction
+>;
+
 export class ReactionCollectorGobletsGame extends ReactionCollector {
-	creationPacket(id: string, endTime: number): ReactionCollectorCreationPacket {
+	creationPacket(id: string, endTime: number): ReactionCollectorGobletsGamePacket {
 		return {
 			id,
 			endTime,
