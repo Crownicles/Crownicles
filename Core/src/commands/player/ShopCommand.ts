@@ -193,45 +193,69 @@ function getBadgeShopItem(): ShopItem {
  * Get the shop item for buying tokens
  * @param tokensAlreadyPurchasedToday - Number of tokens already purchased today
  * @param tokensAlreadyPurchasedThisWeek - Number of tokens already purchased this week
+ * @param remainingTokens - Maximum tokens that can still be purchased (minimum of daily and weekly limits)
+ * @param playerCurrentTokens - Current number of tokens the player has
  */
-function getTokenShopItem(tokensAlreadyPurchasedToday: number, tokensAlreadyPurchasedThisWeek: number): ShopItem {
+function getTokenShopItem(
+	tokensAlreadyPurchasedToday: number,
+	tokensAlreadyPurchasedThisWeek: number,
+	remainingTokens: number,
+	playerCurrentTokens: number
+): ShopItem {
+	// Calculate maximum tokens that can be purchased considering player's current tokens
+	const maxTokensToAdd = Math.min(remainingTokens, TokensConstants.MAX - playerCurrentTokens);
+
+	// Calculate available amounts based on remaining tokens
+	const amounts = ShopConstants.TOKEN_PURCHASE_AMOUNTS
+		.map(amount => Math.min(amount, maxTokensToAdd))
+		.filter(amount => amount > 0);
+
+	// Remove duplicates and ensure at least 1 is available
+	const uniqueAmounts = [...new Set(amounts)];
+	if (uniqueAmounts.length === 0) {
+		uniqueAmounts.push(1); // Fallback, will be blocked by validation anyway
+	}
+
 	return {
 		id: ShopItemType.TOKEN,
 		price: ShopConstants.TOKEN_PRICE,
-		amounts: [1],
-		buyCallback: async (response, playerId): Promise<boolean> => {
+		amounts: uniqueAmounts,
+		buyCallback: async (response, playerId, _context, amount): Promise<boolean> => {
 			const player = await Players.getById(playerId);
 
 			// Check if the player has already bought the maximum amount of tokens today
-			if (tokensAlreadyPurchasedToday >= ShopConstants.MAX_DAILY_TOKEN_BUYOUTS) {
+			if (tokensAlreadyPurchasedToday + amount > ShopConstants.MAX_DAILY_TOKEN_BUYOUTS) {
 				response.push(makePacket(CommandShopBoughtTooMuchTokens, {}));
 				return false;
 			}
 
 			// Check if the player has already bought the maximum amount of tokens this week
-			if (tokensAlreadyPurchasedThisWeek >= ShopConstants.MAX_WEEKLY_TOKEN_BUYOUTS) {
+			if (tokensAlreadyPurchasedThisWeek + amount > ShopConstants.MAX_WEEKLY_TOKEN_BUYOUTS) {
 				response.push(makePacket(CommandShopBoughtTooMuchTokens, {}));
 				return false;
 			}
 
-			// Check if player already has max tokens
-			if (player.tokens >= TokensConstants.MAX) {
+			// Check if player would exceed max tokens
+			if (player.tokens + amount > TokensConstants.MAX) {
 				response.push(makePacket(CommandShopTokensFull, {}));
 				return false;
 			}
 
-			// Add token to player
+			// Add tokens to player
 			await player.addTokens({
-				amount: 1,
+				amount,
 				response,
 				reason: NumberChangeReason.SHOP
 			});
 			await player.save();
 
 			// Track mission for buying tokens from shop
-			await MissionsController.update(player, response, { missionId: "buyTokensFromShop" });
+			await MissionsController.update(player, response, {
+				missionId: "buyTokensFromShop",
+				count: amount
+			});
 
-			response.push(makePacket(CommandShopTokensBought, { amount: 1 }));
+			response.push(makePacket(CommandShopTokensBought, { amount }));
 			return true;
 		}
 	};
@@ -369,11 +393,16 @@ export default class ShopCommand {
 			}
 		];
 
+		// Calculate remaining tokens as the minimum between daily and weekly limits
+		const remainingDailyTokens = ShopConstants.MAX_DAILY_TOKEN_BUYOUTS - tokensAlreadyPurchasedToday;
+		const remainingWeeklyTokens = ShopConstants.MAX_WEEKLY_TOKEN_BUYOUTS - tokensAlreadyPurchasedThisWeek;
+		const remainingTokens = Math.min(remainingDailyTokens, remainingWeeklyTokens);
+
 		// Only show token category if player has unlocked tokens
 		if (player.level >= TokensConstants.LEVEL_TO_UNLOCK) {
 			shopCategories.push({
 				id: "token",
-				items: [getTokenShopItem(tokensAlreadyPurchasedToday, tokensAlreadyPurchasedThisWeek)]
+				items: [getTokenShopItem(tokensAlreadyPurchasedToday, tokensAlreadyPurchasedThisWeek, remainingTokens, player.tokens)]
 			});
 		}
 
@@ -384,11 +413,6 @@ export default class ShopCommand {
 				items: [slotExtensionItem]
 			});
 		}
-
-		// Calculate remaining tokens as the minimum between daily and weekly limits
-		const remainingDailyTokens = ShopConstants.MAX_DAILY_TOKEN_BUYOUTS - tokensAlreadyPurchasedToday;
-		const remainingWeeklyTokens = ShopConstants.MAX_WEEKLY_TOKEN_BUYOUTS - tokensAlreadyPurchasedThisWeek;
-		const remainingTokens = Math.min(remainingDailyTokens, remainingWeeklyTokens);
 
 		await ShopUtils.createAndSendShopCollector(context, response, {
 			shopCategories,
