@@ -81,6 +81,12 @@ export class ReactionCollectorPetExpeditionSelectReaction extends ReactionCollec
 export class ReactionCollectorPetExpeditionCancelReaction extends ReactionCollectorReaction {
 }
 
+type PetExpeditionChoiceReaction = ReactionCollectorPetExpeditionSelectReaction | ReactionCollectorPetExpeditionCancelReaction;
+export type ReactionCollectorPetExpeditionChoicePacket = ReactionCollectorCreationPacket<
+	ReactionCollectorPetExpeditionChoiceData,
+	PetExpeditionChoiceReaction
+>;
+
 /**
  * Collector for the expedition choice menu
  */
@@ -94,7 +100,7 @@ export class ReactionCollectorPetExpeditionChoice extends ReactionCollector {
 		super();
 	}
 
-	creationPacket(id: string, endTime: number): ReactionCollectorCreationPacket {
+	creationPacket(id: string, endTime: number): ReactionCollectorPetExpeditionChoicePacket {
 		const reactions = [
 			// Add a reaction for each expedition option
 			...this.params.expeditions.map(exp => this.buildReaction(ReactionCollectorPetExpeditionSelectReaction, { expedition: exp })),

@@ -41,6 +41,12 @@ export class ReactionCollectorPetExpeditionRecallReaction extends ReactionCollec
 export class ReactionCollectorPetExpeditionCloseReaction extends ReactionCollectorReaction {
 }
 
+type PetExpeditionReaction = ReactionCollectorPetExpeditionRecallReaction | ReactionCollectorPetExpeditionCloseReaction;
+export type ReactionCollectorPetExpeditionPacket = ReactionCollectorCreationPacket<
+	ReactionCollectorPetExpeditionData,
+	PetExpeditionReaction
+>;
+
 /**
  * Collector for the expedition in progress view with recall option
  */
@@ -58,7 +64,7 @@ export class ReactionCollectorPetExpedition extends ReactionCollector {
 		super();
 	}
 
-	creationPacket(id: string, endTime: number): ReactionCollectorCreationPacket {
+	creationPacket(id: string, endTime: number): ReactionCollectorPetExpeditionPacket {
 		return {
 			id,
 			endTime,

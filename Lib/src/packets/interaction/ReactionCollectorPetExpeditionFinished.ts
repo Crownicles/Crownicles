@@ -30,6 +30,11 @@ export class ReactionCollectorPetExpeditionFinishedData extends ReactionCollecto
 export class ReactionCollectorPetExpeditionClaimReaction extends ReactionCollectorReaction {
 }
 
+export type ReactionCollectorPetExpeditionFinishedPacket = ReactionCollectorCreationPacket<
+	ReactionCollectorPetExpeditionFinishedData,
+	ReactionCollectorPetExpeditionClaimReaction
+>;
+
 /**
  * Collector for the finished expedition view with claim rewards option
  */
@@ -45,7 +50,7 @@ export class ReactionCollectorPetExpeditionFinished extends ReactionCollector {
 		super();
 	}
 
-	creationPacket(id: string, endTime: number): ReactionCollectorCreationPacket {
+	creationPacket(id: string, endTime: number): ReactionCollectorPetExpeditionFinishedPacket {
 		return {
 			id,
 			endTime,
