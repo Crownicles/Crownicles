@@ -160,7 +160,7 @@
   "banned": "Vous avez été banni du jeu.",
   "aDevMessedUp": "Oups ! Une erreur s'est produite. Rassurez-vous, ce n'est pas de votre fait. Nous vous prions de bien vouloir accepter nos excuses pour la gêne occasionnée. Pour résoudre ce problème, merci de contacter notre support via notre serveur Discord : https://discord.gg/5JqrMtZ",
   "commandNotAvailableHere": "Cette commande ne peut pas être utilisée à cet endroit.",
-  "guildFoodStorageFull": "Vous avez reçu **{{quantity}}x {{food}}**, mais le stock de nourriture de votre guilde est plein. La nourriture a été jetée.",
+  "guildFoodStorageFull": "Vous avez reçu **{{quantity, number}}x {{food}}**, mais le stock de nourriture de votre guilde est plein. La nourriture a été jetée.",
   "fightBugged": "Le combat a été annulé car il y a eu un problème technique. Ceci est en général dû à la suppression d'un message nécessaire au combat ou à un problème de permissions.",
   "resetIsNow": "{emote:announcements.trophy} Le classement de la semaine est en cours de réinitialisation ! Le gagnant sera annoncé sous peu sur le serveur du bot ! Le jeu reprendra dans moins de 5 minutes !",
   "seasonEndIsNow": "{emote:unitValues.glory} La saison de combat est en cours de réinitialisation ! Le gagnant sera annoncé sous peu sur le serveur du bot ! Le jeu reprendra dans moins de 20 minutes !"
