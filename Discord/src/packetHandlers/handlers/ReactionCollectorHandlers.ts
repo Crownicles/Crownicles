@@ -1,8 +1,8 @@
 import { packetHandler } from "../PacketHandler";
 import { PacketContext } from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
-	ReactionCollectorCreationPacket,
-	ReactionCollectorEnded
+	ReactionCollectorCreationPacket, ReactionCollectorData,
+	ReactionCollectorEnded, ReactionCollectorReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { ReactionCollectorBigEventData } from "../../../../Lib/src/packets/interaction/ReactionCollectorBigEvent";
 import {
@@ -122,7 +122,15 @@ export type ReactionCollectorReturnTypeOrNull = ReactionCollectorReturnType | nu
 export default class ReactionCollectorHandler {
 	private static collectorsCache: Map<string, ReactionCollectorReturnType> = new Map();
 
-	static collectorMap: Map<string, (context: PacketContext, packet: ReactionCollectorCreationPacket) => Promise<ReactionCollectorReturnTypeOrNull>>;
+	/**
+	 * Registry of collector handlers. Uses `any` for generic parameters because TypeScript's
+	 * contravariance on function parameters prevents storing handlers with specific packet types
+	 * in a map expecting the base type. Type safety is ensured within each individual handler.
+	 */
+	static collectorMap: Map<
+		string,
+		(context: PacketContext, packet: ReactionCollectorCreationPacket<any, any>) => Promise<ReactionCollectorReturnTypeOrNull>
+	>;
 
 	static initCollectorMap(): void {
 		ReactionCollectorHandler.collectorMap = new Map();
