@@ -56,7 +56,7 @@ export async function badPetCollector(context: PacketContext, packet: ReactionCo
 			description += `${icon} ${i18n.t(`smallEvents:badPet.choices.${actionId}`, { lng })}\n`;
 
 			row.addComponents(
-new ButtonBuilder()
+				new ButtonBuilder()
 					.setCustomId(actionId)
 					.setEmoji(parseEmoji(icon) ?? icon)
 					.setStyle(ButtonStyle.Secondary)
@@ -65,23 +65,23 @@ new ButtonBuilder()
 	}
 
 	const embed = new CrowniclesSmallEventEmbed(
-"badPet",
-description,
-interaction.user,
-lng
-);
+		"badPet",
+		description,
+		interaction.user,
+		lng
+	);
 
 	const msg = await interaction.editReply({
-embeds: [embed],
-components: [row]
-});
+		embeds: [embed],
+		components: [row]
+	});
 
 	if (!msg) {
 		return null;
 	}
 
 	const collector = msg.createMessageComponentCollector({
-time: packet.endTime - Date.now()
+		time: packet.endTime - Date.now()
 	});
 
 	collector.on("collect", async buttonInteraction => {
