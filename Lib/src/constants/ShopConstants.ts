@@ -20,6 +20,8 @@ export abstract class ShopConstants {
 	static readonly TOKEN_PRICE = 375;
 
 	static readonly MAX_DAILY_TOKEN_BUYOUTS = 10;
+
+	static readonly MAX_WEEKLY_TOKEN_BUYOUTS = 30;
 }
 
 export enum ShopCurrency {

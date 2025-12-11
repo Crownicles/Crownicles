@@ -96,6 +96,22 @@ export class LogsReadRequests {
 	}
 
 	/**
+	 * Get the amount of tokens a specific player has bought this week
+	 * @param playerKeycloakId - The keycloak id of the player we want to check on
+	 */
+	static async getAmountOfTokensBoughtByPlayerThisWeek(playerKeycloakId: string): Promise<number> {
+		const startOfWeek = Math.floor((getNextSundayMidnight() - hoursToMilliseconds(7 * 24)) / 1000);
+		const logPlayer = await LogsDatabase.findOrCreatePlayer(playerKeycloakId);
+		return LogsClassicalShopBuyouts.count({
+			where: {
+				playerId: logPlayer.id,
+				shopItem: ShopItemType.TOKEN,
+				date: { [Op.gt]: startOfWeek }
+			}
+		});
+	}
+
+	/**
 	 * Get all the members of the player's guild on the pve island
 	 */
 	static async getGuildMembersThatWereOnPveIsland(player: Player): Promise<Player[]> {
