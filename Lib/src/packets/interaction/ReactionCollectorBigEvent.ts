@@ -13,6 +13,11 @@ export class ReactionCollectorBigEventData extends ReactionCollectorData {
 	eventId!: number;
 }
 
+export type ReactionCollectorBigEventPacket = ReactionCollectorCreationPacket<
+	ReactionCollectorBigEventData,
+	ReactionCollectorBigEventPossibilityReaction
+>;
+
 export class ReactionCollectorBigEvent extends ReactionCollector {
 	private readonly eventId: number;
 
@@ -24,7 +29,7 @@ export class ReactionCollectorBigEvent extends ReactionCollector {
 		this.reactions = reactions;
 	}
 
-	creationPacket(id: string, endTime: number): ReactionCollectorCreationPacket {
+	creationPacket(id: string, endTime: number): ReactionCollectorBigEventPacket {
 		const reactions = [];
 		for (const reaction of this.reactions) {
 			reactions.push(this.buildReaction(ReactionCollectorBigEventPossibilityReaction, reaction));

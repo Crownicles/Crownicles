@@ -15,9 +15,8 @@ import {
 	CommandReportUseTokensAcceptPacketRes,
 	CommandReportUseTokensPacketReq
 } from "../../../../Lib/src/packets/commands/CommandReportPacket";
-import { ReactionCollectorCreationPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import {
-	ReactionCollectorBigEventData,
+	ReactionCollectorBigEventPacket,
 	ReactionCollectorBigEventPossibilityReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorBigEvent";
 import i18n, { TranslationOption } from "../../translations/i18n";
@@ -38,17 +37,19 @@ import {
 	printTimeBeforeDate
 } from "../../../../Lib/src/utils/TimeUtils";
 import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
-import { ReactionCollectorChooseDestinationReaction } from "../../../../Lib/src/packets/interaction/ReactionCollectorChooseDestination";
+import {
+	ReactionCollectorChooseDestinationPacket
+} from "../../../../Lib/src/packets/interaction/ReactionCollectorChooseDestination";
 import {
 	DiscordCollectorUtils,
 	disableRows
 } from "../../utils/DiscordCollectorUtils";
-import { ReactionCollectorUseTokensData } from "../../../../Lib/src/packets/interaction/ReactionCollectorUseTokens";
-import { ReactionCollectorBuyHealData } from "../../../../Lib/src/packets/interaction/ReactionCollectorBuyHeal";
+import { ReactionCollectorUseTokensPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorUseTokens";
+import { ReactionCollectorBuyHealPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorBuyHeal";
 import { ReportConstants } from "../../../../Lib/src/constants/ReportConstants";
 import { ReactionCollectorReturnTypeOrNull } from "../../packetHandlers/handlers/ReactionCollectorHandlers";
 import { DiscordConstants } from "../../DiscordConstants";
-import { ReactionCollectorPveFightData } from "../../../../Lib/src/packets/interaction/ReactionCollectorPveFight";
+import { ReactionCollectorPveFightPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorPveFight";
 import {
 	escapeUsername, StringUtils
 } from "../../utils/StringUtils";
@@ -69,11 +70,11 @@ async function getPacket(interaction: CrowniclesInteraction): Promise<CommandRep
  * @param context
  * @param packet
  */
-export async function createBigEventCollector(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
+export async function createBigEventCollector(context: PacketContext, packet: ReactionCollectorBigEventPacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
 	const lng = interaction.userLanguage;
-	const data = packet.data.data as ReactionCollectorBigEventData;
-	const reactions = packet.reactions.map(reaction => reaction.data) as ReactionCollectorBigEventPossibilityReaction[];
+	const data = packet.data.data;
+	const reactions = packet.reactions.map(reaction => reaction.data);
 
 	const rows = [new ActionRowBuilder<ButtonBuilder>()];
 	let eventText = `${i18n.t(`events:${data.eventId}.text`, {
@@ -247,7 +248,7 @@ export async function reportResult(packet: CommandReportBigEventResultRes, conte
  * @param context
  * @param packet
  */
-export async function chooseDestinationCollector(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
+export async function chooseDestinationCollector(context: PacketContext, packet: ReactionCollectorChooseDestinationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
 	const lng = interaction.userLanguage;
 
@@ -264,7 +265,7 @@ export async function chooseDestinationCollector(context: PacketContext, packet:
 	}, {
 		embed,
 		items: packet.reactions.map(reaction => {
-			const destinationReaction = reaction.data as ReactionCollectorChooseDestinationReaction;
+			const destinationReaction = reaction.data;
 
 			// If the trip duration is hidden, the translation module is used with a 2 hours placeholder and the 2 is replaced by a ? afterward
 			const duration = destinationReaction.tripDuration
@@ -353,9 +354,9 @@ function generateTravelPathString(packet: CommandReportTravelSummaryRes, now: nu
  * @param context
  * @param packet
  */
-export async function handleStartPveFight(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
+export async function handleStartPveFight(context: PacketContext, packet: ReactionCollectorPveFightPacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
-	const data = packet.data.data as ReactionCollectorPveFightData;
+	const data = packet.data.data;
 	const lng = interaction.userLanguage;
 	const msg = i18n.t("commands:report.pveEvent", {
 		lng,
@@ -670,8 +671,8 @@ export async function handleBuyHealCannotHealOccupied(context: PacketContext): P
  * @param context
  * @param packet
  */
-export async function createBuyHealCollector(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
-	const data = packet.data.data as ReactionCollectorBuyHealData;
+export async function createBuyHealCollector(context: PacketContext, packet: ReactionCollectorBuyHealPacket): Promise<ReactionCollectorReturnTypeOrNull> {
+	const data = packet.data.data;
 
 	return await createConfirmationCollector(context, packet, {
 		titleKey: "commands:report.buyHealConfirmTitle",
@@ -688,8 +689,8 @@ export async function createBuyHealCollector(context: PacketContext, packet: Rea
  * @param context
  * @param packet
  */
-export async function createUseTokensCollector(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
-	const data = packet.data.data as ReactionCollectorUseTokensData;
+export async function createUseTokensCollector(context: PacketContext, packet: ReactionCollectorUseTokensPacket): Promise<ReactionCollectorReturnTypeOrNull> {
+	const data = packet.data.data;
 
 	return await createConfirmationCollector(context, packet, {
 		titleKey: "commands:report.useTokensConfirmTitle",
