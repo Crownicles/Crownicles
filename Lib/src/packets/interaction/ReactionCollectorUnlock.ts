@@ -1,7 +1,7 @@
 import {
+	AcceptRefusePacket,
 	ReactionCollector,
 	ReactionCollectorAcceptReaction,
-	ReactionCollectorCreationPacket,
 	ReactionCollectorData,
 	ReactionCollectorRefuseReaction
 } from "./ReactionCollectorPacket";
@@ -9,6 +9,8 @@ import {
 export class ReactionCollectorUnlockData extends ReactionCollectorData {
 	unlockedKeycloakId!: string;
 }
+
+export type ReactionCollectorUnlockPacket = AcceptRefusePacket<ReactionCollectorUnlockData>;
 
 export class ReactionCollectorUnlock extends ReactionCollector {
 	private readonly unlockedKeycloakId: string;
@@ -18,7 +20,7 @@ export class ReactionCollectorUnlock extends ReactionCollector {
 		this.unlockedKeycloakId = unlockedKeycloakId;
 	}
 
-	creationPacket(id: string, endTime: number): ReactionCollectorCreationPacket {
+	creationPacket(id: string, endTime: number): ReactionCollectorUnlockPacket {
 		return {
 			id,
 			endTime,

@@ -13,10 +13,9 @@ import {
 	CommandUnlockNotEnoughMoney,
 	CommandUnlockPacketReq
 } from "../../../../Lib/src/packets/commands/CommandUnlockPacket";
-import { ReactionCollectorCreationPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import { DiscordCollectorUtils } from "../../utils/DiscordCollectorUtils";
-import { ReactionCollectorUnlockData } from "../../../../Lib/src/packets/interaction/ReactionCollectorUnlock";
+import { ReactionCollectorUnlockPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorUnlock";
 import { PacketUtils } from "../../utils/PacketUtils";
 import { CommandProfilePacketReq } from "../../../../Lib/src/packets/commands/CommandProfilePacket";
 import {
@@ -65,11 +64,11 @@ export async function handleCommandUnlockNotEnoughMoneyError(packet: CommandUnlo
  * @param packet
  * @param context
  */
-export async function createUnlockCollector(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
+export async function createUnlockCollector(context: PacketContext, packet: ReactionCollectorUnlockPacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
 	await interaction.deferReply();
 	const lng = interaction.userLanguage;
-	const data = packet.data.data as ReactionCollectorUnlockData;
+	const data = packet.data.data;
 	const pseudo = await DisplayUtils.getEscapedUsername(data.unlockedKeycloakId, lng);
 	const embed = new CrowniclesEmbed().formatAuthor(i18n.t("commands:unlock.title", {
 		lng,
