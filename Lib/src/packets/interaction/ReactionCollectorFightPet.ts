@@ -15,6 +15,11 @@ export class ReactionCollectorFightPetData extends ReactionCollectorData {
 	isFemale!: boolean;
 }
 
+export type ReactionCollectorFightPetPacket = ReactionCollectorCreationPacket<
+	ReactionCollectorFightPetData,
+	ReactionCollectorFightPetReaction
+>;
+
 export class ReactionCollectorFightPet extends ReactionCollector {
 	private readonly actions: ReactionCollectorFightPetReaction[];
 
@@ -29,7 +34,7 @@ export class ReactionCollectorFightPet extends ReactionCollector {
 		this.actions = actions;
 	}
 
-	creationPacket(id: string, endTime: number): ReactionCollectorCreationPacket {
+	creationPacket(id: string, endTime: number): ReactionCollectorFightPetPacket {
 		const reactions = [];
 		for (const action of this.actions) {
 			reactions.push(this.buildReaction(ReactionCollectorFightPetReaction, action));

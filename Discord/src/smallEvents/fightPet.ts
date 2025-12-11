@@ -1,4 +1,3 @@
-import { ReactionCollectorCreationPacket } from "../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { PacketContext } from "../../../Lib/src/packets/CrowniclesPacket";
 import { DiscordCache } from "../bot/DiscordCache";
 import { CrowniclesSmallEventEmbed } from "../messages/CrowniclesSmallEventEmbed";
@@ -7,7 +6,7 @@ import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 import i18n from "../translations/i18n";
 import { getRandomSmallEventIntro } from "../utils/SmallEventUtils";
 import {
-	ReactionCollectorFightPetData,
+	ReactionCollectorFightPetPacket,
 	ReactionCollectorFightPetReaction
 } from "../../../Lib/src/packets/interaction/ReactionCollectorFightPet";
 import {
@@ -29,9 +28,9 @@ function getFightPetReactions(baseReactions: ReactionCollectorFightPetReaction[]
 	return reactions;
 }
 
-export async function fightPetCollector(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
+export async function fightPetCollector(context: PacketContext, packet: ReactionCollectorFightPetPacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
-	const data = packet.data.data as ReactionCollectorFightPetData;
+	const data = packet.data.data;
 	const lng = interaction!.userLanguage;
 
 	const formatBaseOptions = {
@@ -39,7 +38,12 @@ export async function fightPetCollector(context: PacketContext, packet: Reaction
 		context: data.isFemale ? StringConstants.SEX.MALE.long : StringConstants.SEX.FEMALE.long
 	};
 
-	const reactions = getFightPetReactions(packet.reactions.map(reaction => reaction.data as ReactionCollectorFightPetReaction), lng);
+	const reactions = getFightPetReactions(
+		packet.reactions
+			.filter((r): r is { type: string; data: ReactionCollectorFightPetReaction } => r.type === ReactionCollectorFightPetReaction.name)
+			.map(r => r.data),
+		lng
+	);
 
 	const embed = new CrowniclesSmallEventEmbed(
 		"fightPet",
