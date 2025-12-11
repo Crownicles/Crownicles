@@ -523,16 +523,13 @@ async function canBeExecuted(player: Player): Promise<boolean> {
 		return false;
 	}
 
-	/*
-	 * Check if pet is available (handles expedition check with clone talisman logic)
-	 * Note: isPetAvailable already checks if player.petId exists
-	 */
+	// Check if pet is available (handles expedition check with clone talisman logic + petId existence)
 	if (!await PetUtils.isPetAvailable(player, PetConstants.AVAILABILITY_CONTEXT.SMALL_EVENT)) {
 		return false;
 	}
 
-	const petEntity = await PetEntities.getById(player.petId);
-	return petEntity !== null && petEntity.lovePoints > 0;
+	const petEntity = (await PetEntities.getById(player.petId))!;
+	return petEntity.lovePoints > 0;
 }
 
 /**
