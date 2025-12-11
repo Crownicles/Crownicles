@@ -146,7 +146,7 @@ function formatScoreAttributes(element: TopElement<TopElementScoreFirstType, num
 		attributes += `${CrowniclesIcons.mapTypes[element.attributes["1"].mapType]} | `;
 	}
 
-	attributes += `\`${element.attributes["2"]}\` | \`${i18n.t("commands:top.level", {
+	attributes += `\`${DisplayUtils.formatNumber(element.attributes["2"], lng)}\` | \`${i18n.t("commands:top.level", {
 		lng,
 		level: element.attributes["3"]
 	})}\``;
@@ -158,7 +158,7 @@ function formatGloryAttributes(element: TopElement<number, number, number>, lng:
 	return `${
 		CrowniclesIcons.leagues[element.attributes["1"].toString(10)]
 	} | \`${
-		element.attributes["2"]
+		DisplayUtils.formatNumber(element.attributes["2"], lng)
 	}\` | \`${
 		i18n.t("commands:top.level", {
 			lng,
@@ -168,7 +168,7 @@ function formatGloryAttributes(element: TopElement<number, number, number>, lng:
 }
 
 function formatGuildAttributes(element: TopElement<number, number, undefined>, lng: Language): string {
-	return `\`${element.attributes["1"]}\` | \`${i18n.t("commands:top.level", {
+	return `\`${DisplayUtils.formatNumber(element.attributes["1"], lng)}\` | \`${i18n.t("commands:top.level", {
 		lng,
 		level: element.attributes["2"]
 	})}\``;

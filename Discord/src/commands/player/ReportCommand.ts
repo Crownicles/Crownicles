@@ -719,7 +719,7 @@ function addEnergyAndPointsFields(
 	if (packet.points.show) {
 		travelEmbed.addFields({
 			name: i18n.t("commands:report.collectedPointsTitle", { lng }),
-			value: `${CrowniclesIcons.unitValues.score} ${new Intl.NumberFormat(lng, { useGrouping: true }).format(packet.points.cumulated)}`,
+			value: `${CrowniclesIcons.unitValues.score} ${DisplayUtils.formatNumber(packet.points.cumulated, lng)}`,
 			inline: true
 		});
 	}
