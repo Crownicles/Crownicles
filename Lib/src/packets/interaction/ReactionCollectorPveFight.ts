@@ -1,7 +1,7 @@
 import {
+	AcceptRefusePacket,
 	ReactionCollector,
 	ReactionCollectorAcceptReaction,
-	ReactionCollectorCreationPacket,
 	ReactionCollectorData,
 	ReactionCollectorRefuseReaction
 } from "./ReactionCollectorPacket";
@@ -19,6 +19,8 @@ export class ReactionCollectorPveFightData extends ReactionCollectorData {
 	mapId!: number;
 }
 
+export type ReactionCollectorPveFightPacket = AcceptRefusePacket<ReactionCollectorPveFightData>;
+
 export class ReactionCollectorPveFight extends ReactionCollector {
 	private readonly data: ReactionCollectorPveFightData;
 
@@ -27,7 +29,7 @@ export class ReactionCollectorPveFight extends ReactionCollector {
 		this.data = data;
 	}
 
-	creationPacket(id: string, endTime: number): ReactionCollectorCreationPacket {
+	creationPacket(id: string, endTime: number): ReactionCollectorPveFightPacket {
 		return {
 			id,
 			endTime,
