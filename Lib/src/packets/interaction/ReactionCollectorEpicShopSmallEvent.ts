@@ -1,7 +1,7 @@
 import {
+	AcceptRefusePacket,
 	ReactionCollector,
 	ReactionCollectorAcceptReaction,
-	ReactionCollectorCreationPacket,
 	ReactionCollectorRefuseReaction
 } from "./ReactionCollectorPacket";
 import { ReactionCollectorAnyShopSmallEventData } from "./ReactionCollectorAnyShopSmallEvent";
@@ -9,6 +9,8 @@ import { ReactionCollectorAnyShopSmallEventData } from "./ReactionCollectorAnySh
 export class ReactionCollectorEpicShopSmallEventData extends ReactionCollectorAnyShopSmallEventData {
 	tip!: boolean;
 }
+
+export type ReactionCollectorEpicShopSmallEventPacket = AcceptRefusePacket<ReactionCollectorEpicShopSmallEventData>;
 
 export class ReactionCollectorEpicShopSmallEvent extends ReactionCollector {
 	private readonly data: ReactionCollectorEpicShopSmallEventData;
@@ -18,7 +20,7 @@ export class ReactionCollectorEpicShopSmallEvent extends ReactionCollector {
 		this.data = data;
 	}
 
-	creationPacket(id: string, endTime: number): ReactionCollectorCreationPacket {
+	creationPacket(id: string, endTime: number): ReactionCollectorEpicShopSmallEventPacket {
 		return {
 			id,
 			endTime,
