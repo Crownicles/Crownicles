@@ -26,7 +26,6 @@ export type ReactionCollectorDeposeItemPacket = ReactionCollectorCreationPacket<
 	DeposeItemReaction
 >;
 
-
 export class ReactionCollectorDeposeItem extends ReactionCollector {
 	private readonly itemList: (MainItemDisplayPacket | SupportItemDisplayPacket)[];
 

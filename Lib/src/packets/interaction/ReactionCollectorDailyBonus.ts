@@ -19,7 +19,6 @@ export type ReactionCollectorDailyBonusPacket = ReactionCollectorCreationPacket<
 	DailyBonusReaction
 >;
 
-
 export class ReactionCollectorDailyBonus extends ReactionCollector {
 	private readonly objects!: ItemWithDetails[];
 
