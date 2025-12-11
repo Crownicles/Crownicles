@@ -86,13 +86,13 @@ export class LogsReadRequests {
 	static async getAmountOfTokensBoughtByPlayerToday(playerKeycloakId: string): Promise<number> {
 		const todayMidnight = dateToLogs(getTodayMidnight());
 		const logPlayer = await LogsDatabase.findOrCreatePlayer(playerKeycloakId);
-		return LogsClassicalShopBuyouts.count({
+		return await LogsClassicalShopBuyouts.sum("amount", {
 			where: {
 				playerId: logPlayer.id,
 				shopItem: ShopItemType.TOKEN,
 				date: { [Op.gte]: todayMidnight }
 			}
-		});
+		}) ?? 0;
 	}
 
 	/**
@@ -102,13 +102,13 @@ export class LogsReadRequests {
 	static async getAmountOfTokensBoughtByPlayerThisWeek(playerKeycloakId: string): Promise<number> {
 		const startOfWeek = Math.floor((getNextSundayMidnight() - hoursToMilliseconds(7 * 24)) / 1000);
 		const logPlayer = await LogsDatabase.findOrCreatePlayer(playerKeycloakId);
-		return LogsClassicalShopBuyouts.count({
+		return await LogsClassicalShopBuyouts.sum("amount", {
 			where: {
 				playerId: logPlayer.id,
 				shopItem: ShopItemType.TOKEN,
 				date: { [Op.gt]: startOfWeek }
 			}
-		});
+		}) ?? 0;
 	}
 
 	/**

@@ -93,8 +93,8 @@ export default class ShopCommandPacketHandlers {
 	}
 
 	@packetHandler(CommandShopTokensBought)
-	async shopTokensBought(context: PacketContext, _packet: CommandShopTokensBought): Promise<void> {
-		await handleCommandShopTokensBought(context);
+	async shopTokensBought(context: PacketContext, packet: CommandShopTokensBought): Promise<void> {
+		await handleCommandShopTokensBought(context, packet.amount);
 	}
 
 	@packetHandler(CommandShopTokensFull)
