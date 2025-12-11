@@ -1,13 +1,15 @@
 import {
+	AcceptRefusePacket,
 	ReactionCollector,
 	ReactionCollectorAcceptReaction,
-	ReactionCollectorCreationPacket,
 	ReactionCollectorRefuseReaction
 } from "./ReactionCollectorPacket";
 import { ReactionCollectorAnyShopSmallEventData } from "./ReactionCollectorAnyShopSmallEvent";
 
 export class ReactionCollectorShopSmallEventData extends ReactionCollectorAnyShopSmallEventData {
 }
+
+export type ReactionCollectorShopSmallEventPacket = AcceptRefusePacket<ReactionCollectorShopSmallEventData>;
 
 export class ReactionCollectorShopSmallEvent extends ReactionCollector {
 	private readonly data: ReactionCollectorShopSmallEventData;
@@ -17,7 +19,7 @@ export class ReactionCollectorShopSmallEvent extends ReactionCollector {
 		this.data = data;
 	}
 
-	creationPacket(id: string, endTime: number): ReactionCollectorCreationPacket {
+	creationPacket(id: string, endTime: number): ReactionCollectorShopSmallEventPacket {
 		return {
 			id,
 			endTime,

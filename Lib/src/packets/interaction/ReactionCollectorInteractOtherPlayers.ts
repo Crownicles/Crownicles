@@ -1,7 +1,7 @@
 import {
+	AcceptRefusePacket,
 	ReactionCollector,
 	ReactionCollectorAcceptReaction,
-	ReactionCollectorCreationPacket,
 	ReactionCollectorData,
 	ReactionCollectorRefuseReaction
 } from "./ReactionCollectorPacket";
@@ -11,6 +11,8 @@ export class ReactionCollectorInteractOtherPlayersPoorData extends ReactionColle
 
 	rank?: number;
 }
+
+export type ReactionCollectorInteractOtherPlayersPacket = AcceptRefusePacket<ReactionCollectorInteractOtherPlayersPoorData>;
 
 export class ReactionCollectorInteractOtherPlayersPoor extends ReactionCollector {
 	private readonly keycloakId: string;
@@ -23,7 +25,7 @@ export class ReactionCollectorInteractOtherPlayersPoor extends ReactionCollector
 		this.rank = rank;
 	}
 
-	creationPacket(id: string, endTime: number): ReactionCollectorCreationPacket {
+	creationPacket(id: string, endTime: number): ReactionCollectorInteractOtherPlayersPacket {
 		return {
 			id,
 			endTime,

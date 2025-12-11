@@ -17,6 +17,12 @@ export class ReactionCollectorSwitchItemReaction extends ReactionCollectorReacti
 export class ReactionCollectorSwitchItemCloseReaction extends ReactionCollectorReaction {
 }
 
+type SwitchItemReaction = ReactionCollectorSwitchItemReaction | ReactionCollectorSwitchItemCloseReaction;
+export type ReactionCollectorSwitchItemPacket = ReactionCollectorCreationPacket<
+	ReactionCollectorSwitchItemData,
+	SwitchItemReaction
+>;
+
 export class ReactionCollectorSwitchItem extends ReactionCollector {
 	private readonly itemList: (MainItemDisplayPacket | SupportItemDisplayPacket)[];
 
@@ -25,7 +31,7 @@ export class ReactionCollectorSwitchItem extends ReactionCollector {
 		this.itemList = itemList;
 	}
 
-	creationPacket(id: string, endTime: number): ReactionCollectorCreationPacket {
+	creationPacket(id: string, endTime: number): ReactionCollectorSwitchItemPacket {
 		const reactions: {
 			type: string;
 			data: ReactionCollectorReaction;

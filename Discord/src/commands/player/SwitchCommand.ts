@@ -10,12 +10,12 @@ import {
 	CommandSwitchPacketReq, CommandSwitchSuccess
 } from "../../../../Lib/src/packets/commands/CommandSwitchPacket";
 import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
-import { ReactionCollectorCreationPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import {
 	DiscordCollectorUtils, SEND_POLITICS
 } from "../../utils/DiscordCollectorUtils";
 import {
 	ReactionCollectorSwitchItemCloseReaction,
+	ReactionCollectorSwitchItemPacket,
 	ReactionCollectorSwitchItemReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorSwitchItem";
 import { DiscordItemUtils } from "../../utils/DiscordItemUtils";
@@ -63,7 +63,7 @@ export async function handleItemSwitch(packet: CommandSwitchSuccess, context: Pa
 	});
 }
 
-export async function switchItemCollector(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
+export async function switchItemCollector(context: PacketContext, packet: ReactionCollectorSwitchItemPacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction!);
 	if (!interaction) {
 		return null;

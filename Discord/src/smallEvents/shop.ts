@@ -1,4 +1,4 @@
-import { ReactionCollectorCreationPacket } from "../../../Lib/src/packets/interaction/ReactionCollectorPacket";
+import { ReactionCollectorShopSmallEventPacket } from "../../../Lib/src/packets/interaction/ReactionCollectorShopSmallEvent";
 import { PacketContext } from "../../../Lib/src/packets/CrowniclesPacket";
 import { DiscordCache } from "../bot/DiscordCache";
 import { CrowniclesSmallEventEmbed } from "../messages/CrowniclesSmallEventEmbed";
@@ -8,7 +8,6 @@ import { RandomUtils } from "../../../Lib/src/utils/RandomUtils";
 import { DisplayUtils } from "../utils/DisplayUtils";
 import i18n from "../translations/i18n";
 import { StringConstants } from "../../../Lib/src/constants/StringConstants";
-import { ReactionCollectorShopSmallEventData } from "../../../Lib/src/packets/interaction/ReactionCollectorShopSmallEvent";
 import { ReactionCollectorReturnTypeOrNull } from "../packetHandlers/handlers/ReactionCollectorHandlers";
 import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 
@@ -17,10 +16,10 @@ import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
  * @param packet
  * @param context
  */
-export async function smallShopCollector(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
+export async function smallShopCollector(context: PacketContext, packet: ReactionCollectorShopSmallEventPacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
 	const lng = interaction!.userLanguage;
-	const data = packet.data.data as ReactionCollectorShopSmallEventData;
+	const data = packet.data.data;
 	const gender = RandomUtils.crowniclesRandom.bool() ? StringConstants.SEX.MALE : StringConstants.SEX.FEMALE;
 	const name = StringUtils.getRandomTranslation("smallEvents:shop.names", lng, { context: gender.short });
 

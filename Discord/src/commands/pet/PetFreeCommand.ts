@@ -14,10 +14,9 @@ import { DiscordCache } from "../../bot/DiscordCache";
 import { CrowniclesErrorEmbed } from "../../messages/CrowniclesErrorEmbed";
 import { KeycloakUser } from "../../../../Lib/src/keycloak/KeycloakUser";
 import { printTimeBeforeDate } from "../../../../Lib/src/utils/TimeUtils";
-import { ReactionCollectorCreationPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { DiscordCollectorUtils } from "../../utils/DiscordCollectorUtils";
 import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
-import { ReactionCollectorPetFreeData } from "../../../../Lib/src/packets/interaction/ReactionCollectorPetFree";
+import { ReactionCollectorPetFreePacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorPetFree";
 import { PetUtils } from "../../utils/PetUtils";
 import { ReactionCollectorReturnTypeOrNull } from "../../packetHandlers/handlers/ReactionCollectorHandlers";
 import { escapeUsername } from "../../utils/StringUtils";
@@ -99,10 +98,10 @@ export async function handleCommandPetFreePacketRes(packet: CommandPetFreePacket
 	}
 }
 
-export async function createPetFreeCollector(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
+export async function createPetFreeCollector(context: PacketContext, packet: ReactionCollectorPetFreePacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
 	await interaction.deferReply();
-	const data = packet.data.data as ReactionCollectorPetFreeData;
+	const data = packet.data.data;
 	const lng = interaction.userLanguage;
 
 	const embed = new CrowniclesEmbed().formatAuthor(i18n.t("commands:petFree.title", {

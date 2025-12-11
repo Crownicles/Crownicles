@@ -35,6 +35,9 @@ export class ReactionCollectorChangeClassReaction extends ReactionCollectorReact
 	classId!: number;
 }
 
+type ChangeClassReaction = ReactionCollectorChangeClassReaction | ReactionCollectorRefuseReaction;
+export type ReactionCollectorChangeClassPacket = ReactionCollectorCreationPacket<ReactionCollectorChangeClassData, ChangeClassReaction>;
+
 export class ReactionCollectorChangeClass extends ReactionCollector {
 	private readonly classesDetails: ReactionCollectorChangeClassDetails[];
 
@@ -46,7 +49,7 @@ export class ReactionCollectorChangeClass extends ReactionCollector {
 		this.cooldownSeconds = cooldownSeconds;
 	}
 
-	creationPacket(id: string, endTime: number): ReactionCollectorCreationPacket {
+	creationPacket(id: string, endTime: number): ReactionCollectorChangeClassPacket {
 		return {
 			id,
 			endTime,

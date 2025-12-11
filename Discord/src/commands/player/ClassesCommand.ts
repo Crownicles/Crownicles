@@ -11,12 +11,11 @@ import { DiscordCache } from "../../bot/DiscordCache";
 import i18n from "../../translations/i18n";
 import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import {
-	ReactionCollectorCreationPacket,
 	ReactionCollectorRefuseReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { ReactionCollectorReturnTypeOrNull } from "../../packetHandlers/handlers/ReactionCollectorHandlers";
 import {
-	ReactionCollectorChangeClassData,
+	ReactionCollectorChangeClassPacket,
 	ReactionCollectorChangeClassReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorChangeClass";
 import { DisplayUtils } from "../../utils/DisplayUtils";
@@ -78,7 +77,7 @@ export async function handleCommandClassesChangeSuccessPacket(packet: CommandCla
 	});
 }
 
-export async function handleChangeClassReactionCollector(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
+export async function handleChangeClassReactionCollector(context: PacketContext, packet: ReactionCollectorChangeClassPacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction);
 
 	if (!interaction) {
@@ -86,9 +85,12 @@ export async function handleChangeClassReactionCollector(context: PacketContext,
 	}
 	const lng = interaction.userLanguage;
 
-	const data = packet.data.data as ReactionCollectorChangeClassData;
-	const classesReactions = packet.reactions.filter(reaction => reaction.type === ReactionCollectorChangeClassReaction.name)
-		.map(reaction => reaction.data) as ReactionCollectorChangeClassReaction[];
+	const data = packet.data.data;
+	const classesReactions = packet.reactions
+		.filter((r): r is {
+			type: string; data: ReactionCollectorChangeClassReaction;
+		} => r.type === ReactionCollectorChangeClassReaction.name)
+		.map(r => r.data);
 
 	const mainEmbed = new CrowniclesEmbed()
 		.setTitle(i18n.t("commands:classes.title", { lng }))

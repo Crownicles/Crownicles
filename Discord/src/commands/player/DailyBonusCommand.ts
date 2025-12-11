@@ -19,12 +19,12 @@ import {
 	ItemConstants, ItemNature
 } from "../../../../Lib/src/constants/ItemConstants";
 import { escapeUsername } from "../../utils/StringUtils";
-import {
-	ReactionCollectorCreationPacket,
-	ReactionCollectorRefuseReaction
-} from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
+import { ReactionCollectorRefuseReaction } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { ReactionCollectorReturnTypeOrNull } from "../../packetHandlers/handlers/ReactionCollectorHandlers";
-import { ReactionCollectorDailyBonusReaction } from "../../../../Lib/src/packets/interaction/ReactionCollectorDailyBonus";
+import {
+	ReactionCollectorDailyBonusPacket,
+	ReactionCollectorDailyBonusReaction
+} from "../../../../Lib/src/packets/interaction/ReactionCollectorDailyBonus";
 import { DisplayUtils } from "../../utils/DisplayUtils";
 import { DiscordCollectorUtils } from "../../utils/DiscordCollectorUtils";
 import {
@@ -102,14 +102,18 @@ export async function handleDailyBonusRes(context: PacketContext, packet: Comman
 	});
 }
 
-export async function handleDailyBonusCollector(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
+export async function handleDailyBonusCollector(context: PacketContext, packet: ReactionCollectorDailyBonusPacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
 	if (!interaction) {
 		return null;
 	}
 	const lng = interaction.userLanguage;
 
-	const objects = packet.reactions.filter(r => r.type === ReactionCollectorDailyBonusReaction.name).map(r => r.data as ReactionCollectorDailyBonusReaction);
+	const objects = packet.reactions
+		.filter((r): r is {
+			type: string; data: ReactionCollectorDailyBonusReaction;
+		} => r.type === ReactionCollectorDailyBonusReaction.name)
+		.map(r => r.data);
 	const refuseReactionIndex = packet.reactions.findIndex(r => r.type === ReactionCollectorRefuseReaction.name);
 
 	if (objects.length === 1) {

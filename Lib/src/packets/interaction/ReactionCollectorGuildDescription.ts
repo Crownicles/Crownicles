@@ -1,7 +1,7 @@
 import {
+	AcceptRefusePacket,
 	ReactionCollector,
 	ReactionCollectorAcceptReaction,
-	ReactionCollectorCreationPacket,
 	ReactionCollectorData,
 	ReactionCollectorRefuseReaction
 } from "./ReactionCollectorPacket";
@@ -9,6 +9,8 @@ import {
 export class ReactionCollectorGuildDescriptionData extends ReactionCollectorData {
 	description!: string;
 }
+
+export type ReactionCollectorGuildDescriptionPacket = AcceptRefusePacket<ReactionCollectorGuildDescriptionData>;
 
 export class ReactionCollectorGuildDescription extends ReactionCollector {
 	private readonly description: string;
@@ -18,7 +20,7 @@ export class ReactionCollectorGuildDescription extends ReactionCollector {
 		this.description = description;
 	}
 
-	creationPacket(id: string, endTime: number): ReactionCollectorCreationPacket {
+	creationPacket(id: string, endTime: number): ReactionCollectorGuildDescriptionPacket {
 		return {
 			id,
 			endTime,

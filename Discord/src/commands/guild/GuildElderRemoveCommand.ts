@@ -1,4 +1,3 @@
-import { ReactionCollectorCreationPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import {
 	makePacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
@@ -13,7 +12,7 @@ import {
 	CommandGuildElderRemovePacketReq,
 	CommandGuildElderRemoveRefusePacketRes
 } from "../../../../Lib/src/packets/commands/CommandGuildElderRemovePacket";
-import { ReactionCollectorGuildElderRemoveData } from "../../../../Lib/src/packets/interaction/ReactionCollectorGuildElderRemove";
+import { ReactionCollectorGuildElderRemovePacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorGuildElderRemove";
 import { ReactionCollectorReturnTypeOrNull } from "../../packetHandlers/handlers/ReactionCollectorHandlers";
 import { escapeUsername } from "../../utils/StringUtils";
 import { DisplayUtils } from "../../utils/DisplayUtils";
@@ -23,10 +22,10 @@ import { DisplayUtils } from "../../utils/DisplayUtils";
  * @param packet
  * @param context
  */
-export async function createGuildElderRemoveCollector(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
+export async function createGuildElderRemoveCollector(context: PacketContext, packet: ReactionCollectorGuildElderRemovePacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
 	await interaction.deferReply();
-	const data = packet.data.data as ReactionCollectorGuildElderRemoveData;
+	const data = packet.data.data;
 	const lng = interaction.userLanguage;
 	const embed = new CrowniclesEmbed().formatAuthor(i18n.t("commands:guildElderRemove.title", {
 		lng,

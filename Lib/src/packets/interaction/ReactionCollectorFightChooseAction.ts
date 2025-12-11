@@ -15,6 +15,11 @@ export class ReactionCollectorFightChooseActionData extends ReactionCollectorDat
 	fighterKeycloakId!: string;
 }
 
+export type ReactionCollectorFightChooseActionPacket = ReactionCollectorCreationPacket<
+	ReactionCollectorFightChooseActionData,
+	ReactionCollectorFightChooseActionReaction
+>;
+
 export class ReactionCollectorFightChooseAction extends ReactionCollector {
 	private readonly fightId: string;
 
@@ -32,7 +37,7 @@ export class ReactionCollectorFightChooseAction extends ReactionCollector {
 		this.fighterKeycloackId = fighterKeycloakId;
 	}
 
-	creationPacket(id: string, endTime: number): ReactionCollectorCreationPacket {
+	creationPacket(id: string, endTime: number): ReactionCollectorFightChooseActionPacket {
 		const reactions = [];
 		for (const reaction of this.reactions) {
 			reactions.push(this.buildReaction(ReactionCollectorFightChooseActionReaction, reaction));

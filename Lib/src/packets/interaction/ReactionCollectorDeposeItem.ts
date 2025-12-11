@@ -17,6 +17,15 @@ export class ReactionCollectorDeposeItemReaction extends ReactionCollectorReacti
 export class ReactionCollectorDeposeItemCloseReaction extends ReactionCollectorReaction {
 }
 
+type DeposeItemReaction =
+	| ReactionCollectorDeposeItemReaction
+	| ReactionCollectorDeposeItemCloseReaction;
+
+export type ReactionCollectorDeposeItemPacket = ReactionCollectorCreationPacket<
+	ReactionCollectorDeposeItemData,
+	DeposeItemReaction
+>;
+
 export class ReactionCollectorDeposeItem extends ReactionCollector {
 	private readonly itemList: (MainItemDisplayPacket | SupportItemDisplayPacket)[];
 
@@ -25,7 +34,7 @@ export class ReactionCollectorDeposeItem extends ReactionCollector {
 		this.itemList = itemList;
 	}
 
-	creationPacket(id: string, endTime: number): ReactionCollectorCreationPacket {
+	creationPacket(id: string, endTime: number): ReactionCollectorDeposeItemPacket {
 		const reactions: {
 			type: string;
 			data: ReactionCollectorReaction;

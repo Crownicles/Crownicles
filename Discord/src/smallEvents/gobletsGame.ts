@@ -1,4 +1,4 @@
-import { ReactionCollectorCreationPacket } from "../../../Lib/src/packets/interaction/ReactionCollectorPacket";
+import { ReactionCollectorGobletsGamePacket } from "../../../Lib/src/packets/interaction/ReactionCollectorGobletsGame";
 import { PacketContext } from "../../../Lib/src/packets/CrowniclesPacket";
 import { DiscordCache } from "../bot/DiscordCache";
 import { CrowniclesSmallEventEmbed } from "../messages/CrowniclesSmallEventEmbed";
@@ -32,7 +32,7 @@ function getGobletsGameReactions(lng: Language): CrowniclesButtonReaction[] {
  * @param packet
  * @param context
  */
-export async function gobletsGameCollector(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
+export async function gobletsGameCollector(context: PacketContext, packet: ReactionCollectorGobletsGamePacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
 	const lng = interaction.userLanguage;
 

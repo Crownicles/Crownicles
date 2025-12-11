@@ -1,6 +1,6 @@
 import {
+	AcceptRefusePacket,
 	ReactionCollector, ReactionCollectorAcceptReaction,
-	ReactionCollectorCreationPacket,
 	ReactionCollectorData,
 	ReactionCollectorRefuseReaction
 } from "./ReactionCollectorPacket";
@@ -14,6 +14,8 @@ export class ReactionCollectorPetFeedWithoutGuildData extends ReactionCollectorD
 
 	price!: number;
 }
+
+export type ReactionCollectorPetFeedWithoutGuildPacket = AcceptRefusePacket<ReactionCollectorPetFeedWithoutGuildData>;
 
 export class ReactionCollectorPetFeedWithoutGuild extends ReactionCollector {
 	private readonly pet: OwnedPet;
@@ -29,7 +31,7 @@ export class ReactionCollectorPetFeedWithoutGuild extends ReactionCollector {
 		this.food = food;
 	}
 
-	creationPacket(id: string, endTime: number): ReactionCollectorCreationPacket {
+	creationPacket(id: string, endTime: number): ReactionCollectorPetFeedWithoutGuildPacket {
 		return {
 			id,
 			endTime,

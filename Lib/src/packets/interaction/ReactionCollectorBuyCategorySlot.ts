@@ -29,6 +29,12 @@ export class ReactionCollectorBuyCategorySlotReaction extends ReactionCollectorR
 export class ReactionCollectorBuyCategorySlotCancelReaction extends ReactionCollectorData {
 }
 
+type BuyCategorySlotReaction = ReactionCollectorBuyCategorySlotReaction | ReactionCollectorBuyCategorySlotCancelReaction;
+export type ReactionCollectorBuyCategorySlotPacket = ReactionCollectorCreationPacket<
+	ReactionCollectorBuyCategorySlotData,
+	BuyCategorySlotReaction
+>;
+
 export class ReactionCollectorBuyCategorySlot extends ReactionCollector {
 	private readonly availableCategories!: number[];
 
@@ -39,7 +45,7 @@ export class ReactionCollectorBuyCategorySlot extends ReactionCollector {
 		this.availableCategories = availableCategories;
 	}
 
-	creationPacket(id: string, endTime: number): ReactionCollectorCreationPacket {
+	creationPacket(id: string, endTime: number): ReactionCollectorBuyCategorySlotPacket {
 		const reactions = [];
 		const categoriesCount = Object.keys(ItemCategory).length;
 		for (let i = 0; i < categoriesCount; ++i) {

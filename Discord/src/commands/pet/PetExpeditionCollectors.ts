@@ -16,13 +16,12 @@ import { escapeUsername } from "../../utils/StringUtils";
 import { minutesDisplay } from "../../../../Lib/src/utils/TimeUtils";
 import { Language } from "../../../../Lib/src/Language";
 import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
-import { ReactionCollectorCreationPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
-import { ReactionCollectorPetExpeditionData } from "../../../../Lib/src/packets/interaction/ReactionCollectorPetExpedition";
+import { ReactionCollectorPetExpeditionPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorPetExpedition";
 import {
-	ReactionCollectorPetExpeditionChoiceData,
+	ReactionCollectorPetExpeditionChoicePacket,
 	ExpeditionOptionData
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorPetExpeditionChoice";
-import { ReactionCollectorPetExpeditionFinishedData } from "../../../../Lib/src/packets/interaction/ReactionCollectorPetExpeditionFinished";
+import { ReactionCollectorPetExpeditionFinishedPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorPetExpeditionFinished";
 import { ReactionCollectorReturnTypeOrNull } from "../../packetHandlers/handlers/ReactionCollectorHandlers";
 import {
 	DiscordCollectorUtils, disableRows
@@ -41,14 +40,14 @@ import {
  */
 export async function createPetExpeditionCollector(
 	context: PacketContext,
-	packet: ReactionCollectorCreationPacket
+	packet: ReactionCollectorPetExpeditionPacket
 ): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction);
 	if (!interaction) {
 		return null;
 	}
 
-	const data = packet.data.data as ReactionCollectorPetExpeditionData;
+	const data = packet.data.data;
 	const lng = interaction.userLanguage;
 
 	const locationEmoji = CrowniclesIcons.expedition.locations[data.locationType];
@@ -155,7 +154,7 @@ function addExpeditionMenuOption(
  * Build guild provisions description text
  */
 function buildGuildProvisionsText(
-	data: ReactionCollectorPetExpeditionChoiceData,
+	data: ReactionCollectorPetExpeditionChoicePacket["data"]["data"],
 	lng: Language,
 	petDisplay: string
 ): string {
@@ -189,8 +188,8 @@ function buildGuildProvisionsText(
  */
 function handleExpeditionChoiceInteraction(
 	componentInteraction: ButtonInteraction | StringSelectMenuInteraction,
-	data: ReactionCollectorPetExpeditionChoiceData,
-	packet: ReactionCollectorCreationPacket,
+	data: ReactionCollectorPetExpeditionChoicePacket["data"]["data"],
+	packet: ReactionCollectorPetExpeditionChoicePacket,
 	context: PacketContext
 ): void {
 	if (componentInteraction.isStringSelectMenu()) {
@@ -210,14 +209,14 @@ function handleExpeditionChoiceInteraction(
  */
 export async function createPetExpeditionChoiceCollector(
 	context: PacketContext,
-	packet: ReactionCollectorCreationPacket
+	packet: ReactionCollectorPetExpeditionChoicePacket
 ): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction);
 	if (!interaction) {
 		return null;
 	}
 
-	const data = packet.data.data as ReactionCollectorPetExpeditionChoiceData;
+	const data = packet.data.data;
 	const lng = interaction.userLanguage;
 	const petDisplay = getPetDisplayString(data.pet, lng);
 
@@ -281,7 +280,7 @@ export async function createPetExpeditionChoiceCollector(
  * Build the embed for the finished expedition view
  */
 function buildFinishedExpeditionEmbed(
-	data: ReactionCollectorPetExpeditionFinishedData,
+	data: ReactionCollectorPetExpeditionFinishedPacket["data"]["data"],
 	lng: Language,
 	userName: string,
 	user: User
@@ -337,14 +336,14 @@ function buildClaimButtonRow(lng: Language): ActionRowBuilder<ButtonBuilder> {
  */
 export async function createPetExpeditionFinishedCollector(
 	context: PacketContext,
-	packet: ReactionCollectorCreationPacket
+	packet: ReactionCollectorPetExpeditionFinishedPacket
 ): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction);
 	if (!interaction) {
 		return null;
 	}
 
-	const data = packet.data.data as ReactionCollectorPetExpeditionFinishedData;
+	const data = packet.data.data;
 	const lng = interaction.userLanguage;
 
 	const embed = buildFinishedExpeditionEmbed(data, lng, interaction.user.displayName, interaction.user);

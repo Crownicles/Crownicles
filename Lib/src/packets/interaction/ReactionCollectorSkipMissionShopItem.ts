@@ -18,6 +18,12 @@ export class ReactionCollectorSkipMissionShopItemReaction extends ReactionCollec
 export class ReactionCollectorSkipMissionShopItemCloseReaction extends ReactionCollectorReaction {
 }
 
+type SkipMissionReaction = ReactionCollectorSkipMissionShopItemReaction | ReactionCollectorSkipMissionShopItemCloseReaction;
+export type ReactionCollectorSkipMissionShopItemPacket = ReactionCollectorCreationPacket<
+	ReactionCollectorSkipMissionShopItemData,
+	SkipMissionReaction
+>;
+
 export class ReactionCollectorSkipMissionShopItem extends ReactionCollector {
 	private readonly missionList: BaseMission[];
 
@@ -26,7 +32,7 @@ export class ReactionCollectorSkipMissionShopItem extends ReactionCollector {
 		this.missionList = missionList;
 	}
 
-	creationPacket(id: string, endTime: number): ReactionCollectorCreationPacket {
+	creationPacket(id: string, endTime: number): ReactionCollectorSkipMissionShopItemPacket {
 		const reactions: {
 			type: string;
 			data: ReactionCollectorReaction;

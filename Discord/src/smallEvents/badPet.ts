@@ -1,6 +1,7 @@
 import { PacketContext } from "../../../Lib/src/packets/CrowniclesPacket";
-import { ReactionCollectorCreationPacket } from "../../../Lib/src/packets/interaction/ReactionCollectorPacket";
-import { ReactionCollectorBadPetSmallEventData } from "../../../Lib/src/packets/interaction/ReactionCollectorBadPetSmallEvent";
+import {
+	ReactionCollectorBadPetSmallEventPacket
+} from "../../../Lib/src/packets/interaction/ReactionCollectorBadPetSmallEvent";
 import { DiscordCache } from "../bot/DiscordCache";
 import { CrowniclesSmallEventEmbed } from "../messages/CrowniclesSmallEventEmbed";
 import i18n from "../translations/i18n";
@@ -44,10 +45,10 @@ function isValidActionId(id: string): id is BadPetActionId {
 	return VALID_ACTION_IDS.includes(id as BadPetActionId);
 }
 
-export async function badPetCollector(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
+export async function badPetCollector(context: PacketContext, packet: ReactionCollectorBadPetSmallEventPacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
 	const lng = interaction.userLanguage;
-	const data = packet.data.data as ReactionCollectorBadPetSmallEventData;
+	const data = packet.data.data;
 
 	const petDisplay = PetUtils.petToShortString(lng, data.petNickname, data.petId, data.sex as SexTypeShort);
 
@@ -56,7 +57,8 @@ export async function badPetCollector(context: PacketContext, packet: ReactionCo
 	const row = new ActionRowBuilder<ButtonBuilder>();
 
 	for (const reaction of packet.reactions) {
-		const actionId = (reaction.data as unknown as { id?: string }).id;
+		const reactionData = reaction.data;
+		const actionId = reactionData.id;
 		if (actionId && isValidActionId(actionId)) {
 			const icon = CrowniclesIcons.badPetSmallEvent[actionId];
 
