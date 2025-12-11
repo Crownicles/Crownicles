@@ -1,7 +1,6 @@
 import { PacketContext } from "../../../Lib/src/packets/CrowniclesPacket";
-import { ReactionCollectorCreationPacket } from "../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import {
-	ReactionCollectorPetFoodSmallEventData, ReactionCollectorPetFoodInvestigateReaction, ReactionCollectorPetFoodSendPetReaction, ReactionCollectorPetFoodContinueReaction
+	ReactionCollectorPetFoodSmallEventPacket, ReactionCollectorPetFoodInvestigateReaction, ReactionCollectorPetFoodSendPetReaction, ReactionCollectorPetFoodContinueReaction
 } from "../../../Lib/src/packets/interaction/ReactionCollectorPetFoodSmallEvent";
 import { DiscordCache } from "../bot/DiscordCache";
 import { CrowniclesSmallEventEmbed } from "../messages/CrowniclesSmallEventEmbed";
@@ -25,9 +24,9 @@ import { RandomUtils } from "../../../Lib/src/utils/RandomUtils";
  * @param packet - Reaction collector creation packet with event data
  * @returns The collector instance or null if creation failed
  */
-export async function petFoodCollector(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
+export async function petFoodCollector(context: PacketContext, packet: ReactionCollectorPetFoodSmallEventPacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
-	const data = packet.data.data as ReactionCollectorPetFoodSmallEventData;
+	const data = packet.data.data;
 	const lng = interaction!.userLanguage;
 
 	const embed = new CrowniclesSmallEventEmbed(

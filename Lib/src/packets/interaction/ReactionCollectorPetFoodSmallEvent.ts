@@ -13,6 +13,12 @@ export class ReactionCollectorPetFoodSmallEventData extends ReactionCollectorDat
 	foodType!: string;
 }
 
+type PetFoodSmallEventReaction = ReactionCollectorPetFoodInvestigateReaction | ReactionCollectorPetFoodSendPetReaction | ReactionCollectorPetFoodContinueReaction;
+export type ReactionCollectorPetFoodSmallEventPacket = ReactionCollectorCreationPacket<
+	ReactionCollectorPetFoodSmallEventData,
+	PetFoodSmallEventReaction
+>;
+
 export class ReactionCollectorPetFoodSmallEvent extends ReactionCollector {
 	private readonly foodType: string;
 
@@ -27,7 +33,7 @@ export class ReactionCollectorPetFoodSmallEvent extends ReactionCollector {
 	 * @param endTime - Timestamp when the collector expires
 	 * @returns The reaction collector creation packet
 	 */
-	creationPacket(id: string, endTime: number): ReactionCollectorCreationPacket {
+	creationPacket(id: string, endTime: number): ReactionCollectorPetFoodSmallEventPacket {
 		return {
 			id,
 			endTime,
