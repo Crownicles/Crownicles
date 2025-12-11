@@ -1,7 +1,6 @@
-import { ReactionCollectorCreationPacket } from "../../../Lib/src/packets/interaction/ReactionCollectorPacket";
+import { ReactionCollectorLimogesPacket } from "../../../Lib/src/packets/interaction/ReactionCollectorLimoges";
 import { PacketContext } from "../../../Lib/src/packets/CrowniclesPacket";
 import { DiscordCache } from "../bot/DiscordCache";
-import { ReactionCollectorLimogesData } from "../../../Lib/src/packets/interaction/ReactionCollectorLimoges";
 import i18n from "../translations/i18n";
 import { CrowniclesSmallEventEmbed } from "../messages/CrowniclesSmallEventEmbed";
 import { getRandomSmallEventIntro } from "../utils/SmallEventUtils";
@@ -11,12 +10,12 @@ import { StringUtils } from "../utils/StringUtils";
 import { SmallEventLimogesPacket } from "../../../Lib/src/packets/smallEvents/SmallEventLimogesPacket";
 import { minutesDisplay } from "../../../Lib/src/utils/TimeUtils";
 
-export async function limogesCollector(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
+export async function limogesCollector(context: PacketContext, packet: ReactionCollectorLimogesPacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction);
 	if (!interaction) {
 		return null;
 	}
-	const data = packet.data.data as ReactionCollectorLimogesData;
+	const data = packet.data.data;
 	const lng = interaction.userLanguage;
 
 	const intro = getRandomSmallEventIntro(lng);
