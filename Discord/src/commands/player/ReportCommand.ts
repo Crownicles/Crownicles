@@ -16,8 +16,7 @@ import {
 	CommandReportUseTokensPacketReq
 } from "../../../../Lib/src/packets/commands/CommandReportPacket";
 import {
-	ReactionCollectorBigEventPacket,
-	ReactionCollectorBigEventPossibilityReaction
+	ReactionCollectorBigEventPacket
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorBigEvent";
 import i18n, { TranslationOption } from "../../translations/i18n";
 import {

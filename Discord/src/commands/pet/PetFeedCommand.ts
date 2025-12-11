@@ -70,7 +70,12 @@ export async function handleCommandPetFeedWithGuildCollector(context: PacketCont
 		reaction,
 		index
 	}))
-		.filter((r): r is { reaction: { type: string; data: ReactionCollectorPetFeedWithGuildFoodReaction }; index: number } => r.reaction.type === ReactionCollectorPetFeedWithGuildFoodReaction.name);
+		.filter((r): r is {
+			reaction: {
+				type: string; data: ReactionCollectorPetFeedWithGuildFoodReaction;
+			};
+			index: number;
+		} => r.reaction.type === ReactionCollectorPetFeedWithGuildFoodReaction.name);
 	const refuseIndex = packet.reactions.findIndex(reaction => reaction.type === ReactionCollectorRefuseReaction.name);
 
 	const rowFood = new ActionRowBuilder<ButtonBuilder>();

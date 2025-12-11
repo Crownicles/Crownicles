@@ -1,8 +1,8 @@
 import { packetHandler } from "../PacketHandler";
 import { PacketContext } from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
-	ReactionCollectorCreationPacket, ReactionCollectorData,
-	ReactionCollectorEnded, ReactionCollectorReaction
+	ReactionCollectorCreationPacket,
+	ReactionCollectorEnded
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { ReactionCollectorBigEventData } from "../../../../Lib/src/packets/interaction/ReactionCollectorBigEvent";
 import {
@@ -129,6 +129,7 @@ export default class ReactionCollectorHandler {
 	 */
 	static collectorMap: Map<
 		string,
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		(context: PacketContext, packet: ReactionCollectorCreationPacket<any, any>) => Promise<ReactionCollectorReturnTypeOrNull>
 	>;
 
