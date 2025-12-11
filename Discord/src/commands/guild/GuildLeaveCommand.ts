@@ -7,12 +7,11 @@ import {
 	CommandGuildLeaveAcceptPacketRes,
 	CommandGuildLeavePacketReq
 } from "../../../../Lib/src/packets/commands/CommandGuildLeavePacket";
-import { ReactionCollectorCreationPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { DiscordCache } from "../../bot/DiscordCache";
 import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import i18n from "../../translations/i18n";
 import { DiscordCollectorUtils } from "../../utils/DiscordCollectorUtils";
-import { ReactionCollectorGuildLeaveData } from "../../../../Lib/src/packets/interaction/ReactionCollectorGuildLeave";
+import { ReactionCollectorGuildLeavePacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorGuildLeave";
 import { KeycloakUtils } from "../../../../Lib/src/keycloak/KeycloakUtils";
 import { keycloakConfig } from "../../bot/CrowniclesShard";
 import { ReactionCollectorReturnTypeOrNull } from "../../packetHandlers/handlers/ReactionCollectorHandlers";
@@ -24,10 +23,10 @@ import { DisplayUtils } from "../../utils/DisplayUtils";
  * @param packet
  * @param context
  */
-export async function createGuildLeaveCollector(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
+export async function createGuildLeaveCollector(context: PacketContext, packet: ReactionCollectorGuildLeavePacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
 	await interaction.deferReply();
-	const data = packet.data.data as ReactionCollectorGuildLeaveData;
+	const data = packet.data.data;
 	const keyDesc = data.isGuildDestroyed ? "confirmChiefDesc" : data.newChiefKeycloakId ? "confirmChiefDescWithElder" : "confirmDesc";
 	const lng = interaction.userLanguage;
 	const embed = new CrowniclesEmbed().formatAuthor(i18n.t("commands:guildLeave.title", {

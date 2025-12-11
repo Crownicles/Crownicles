@@ -1,7 +1,7 @@
 import {
+	AcceptRefusePacket,
 	ReactionCollector,
 	ReactionCollectorAcceptReaction,
-	ReactionCollectorCreationPacket,
 	ReactionCollectorData,
 	ReactionCollectorRefuseReaction
 } from "./ReactionCollectorPacket";
@@ -13,6 +13,8 @@ export class ReactionCollectorGuildLeaveData extends ReactionCollectorData {
 
 	newChiefKeycloakId!: string;
 }
+
+export type ReactionCollectorGuildLeavePacket = AcceptRefusePacket<ReactionCollectorGuildLeaveData>;
 
 export class ReactionCollectorGuildLeave extends ReactionCollector {
 	private readonly guildName: string;
@@ -28,7 +30,7 @@ export class ReactionCollectorGuildLeave extends ReactionCollector {
 		this.isGuildDestroyed = isGuildDestroyed;
 	}
 
-	creationPacket(id: string, endTime: number): ReactionCollectorCreationPacket {
+	creationPacket(id: string, endTime: number): ReactionCollectorGuildLeavePacket {
 		return {
 			id,
 			endTime,
