@@ -40,7 +40,9 @@ export async function fightPetCollector(context: PacketContext, packet: Reaction
 
 	const reactions = getFightPetReactions(
 		packet.reactions
-			.filter((r): r is { type: string; data: ReactionCollectorFightPetReaction } => r.type === ReactionCollectorFightPetReaction.name)
+			.filter((r): r is {
+				type: string; data: ReactionCollectorFightPetReaction;
+			} => r.type === ReactionCollectorFightPetReaction.name)
 			.map(r => r.data),
 		lng
 	);
