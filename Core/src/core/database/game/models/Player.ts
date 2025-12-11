@@ -358,7 +358,7 @@ export class Player extends Model {
 		Object.assign(this, newPlayer);
 
 		newPlayer = await MissionsController.update(this, parameters.response, {
-			missionId: "spendTokensInOneDay",
+			missionId: "spendTokens",
 			count: tokensToUse
 		});
 		Object.assign(this, newPlayer);
