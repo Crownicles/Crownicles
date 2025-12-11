@@ -839,12 +839,14 @@ export class LogsDatabase extends Database {
 	 * Log when anything is bought from the shop
 	 * @param keycloakId
 	 * @param shopItem
+	 * @param amount - Number of items bought (defaults to 1)
 	 */
-	public async logClassicalShopBuyout(keycloakId: string, shopItem: ShopItemType): Promise<void> {
+	public async logClassicalShopBuyout(keycloakId: string, shopItem: ShopItemType, amount: number = 1): Promise<void> {
 		const logPlayer = await LogsDatabase.findOrCreatePlayer(keycloakId);
 		await LogsClassicalShopBuyouts.create({
 			playerId: logPlayer.id,
 			shopItem,
+			amount,
 			date: getDateLogs()
 		});
 	}

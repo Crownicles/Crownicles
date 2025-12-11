@@ -128,7 +128,7 @@ export async function handleCommandShopBoughtTooMuchTokens(context: PacketContex
 	}
 }
 
-export async function handleCommandShopTokensBought(context: PacketContext): Promise<void> {
+export async function handleCommandShopTokensBought(context: PacketContext, amount: number): Promise<void> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction!);
 	if (!interaction) {
 		return;
@@ -142,7 +142,9 @@ export async function handleCommandShopTokensBought(context: PacketContext): Pro
 					lng,
 					pseudo: escapeUsername(interaction.user.displayName)
 				}), interaction.user)
-				.setDescription(i18n.t("commands:shop.tokensBought", { lng }))
+				.setDescription(i18n.t("commands:shop.tokensBought", {
+					lng, count: amount
+				}))
 		]
 	});
 }
