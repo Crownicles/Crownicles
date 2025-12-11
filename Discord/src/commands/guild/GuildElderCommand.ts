@@ -1,4 +1,3 @@
-import { ReactionCollectorCreationPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import {
 	makePacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
@@ -6,7 +5,7 @@ import { DiscordCache } from "../../bot/DiscordCache";
 import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import i18n from "../../translations/i18n";
 import { DiscordCollectorUtils } from "../../utils/DiscordCollectorUtils";
-import { ReactionCollectorGuildElderData } from "../../../../Lib/src/packets/interaction/ReactionCollectorGuildElder";
+import { ReactionCollectorGuildElderPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorGuildElder";
 import {
 	CommandGuildElderAcceptPacketRes,
 	CommandGuildElderPacketReq,
@@ -27,10 +26,10 @@ import { DisplayUtils } from "../../utils/DisplayUtils";
  * @param packet
  * @param context
  */
-export async function createGuildElderCollector(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
+export async function createGuildElderCollector(context: PacketContext, packet: ReactionCollectorGuildElderPacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
 	await interaction.deferReply();
-	const data = packet.data.data as ReactionCollectorGuildElderData;
+	const data = packet.data.data;
 	const lng = interaction.userLanguage;
 	const embed = new CrowniclesEmbed().formatAuthor(i18n.t("commands:guildElder.title", {
 		lng,
