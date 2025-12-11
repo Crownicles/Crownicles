@@ -1,7 +1,7 @@
 import {
+	AcceptRefusePacket,
 	ReactionCollector,
 	ReactionCollectorAcceptReaction,
-	ReactionCollectorCreationPacket,
 	ReactionCollectorData,
 	ReactionCollectorRefuseReaction
 } from "./ReactionCollectorPacket";
@@ -14,6 +14,8 @@ export class ReactionCollectorGoToPVEIslandData extends ReactionCollectorData {
 		max: number;
 	};
 }
+
+export type ReactionCollectorGoToPVEIslandPacket = AcceptRefusePacket<ReactionCollectorGoToPVEIslandData>;
 
 export class ReactionCollectorGoToPVEIsland extends ReactionCollector {
 	private readonly price: number;
@@ -29,7 +31,7 @@ export class ReactionCollectorGoToPVEIsland extends ReactionCollector {
 		this.maxEnergy = maxEnergy;
 	}
 
-	creationPacket(id: string, endTime: number): ReactionCollectorCreationPacket {
+	creationPacket(id: string, endTime: number): ReactionCollectorGoToPVEIslandPacket {
 		return {
 			id,
 			endTime,
