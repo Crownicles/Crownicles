@@ -1,4 +1,3 @@
-import { ReactionCollectorCreationPacket } from "../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { PacketContext } from "../../../Lib/src/packets/CrowniclesPacket";
 import { DiscordCache } from "../bot/DiscordCache";
 import { CrowniclesSmallEventEmbed } from "../messages/CrowniclesSmallEventEmbed";
@@ -9,7 +8,7 @@ import {
 } from "discord.js";
 import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 import { sendInteractionNotForYou } from "../utils/ErrorUtils";
-import { ReactionCollectorWitchReaction } from "../../../Lib/src/packets/interaction/ReactionCollectorWitch";
+import { ReactionCollectorWitchPacket } from "../../../Lib/src/packets/interaction/ReactionCollectorWitch";
 import { getRandomSmallEventIntro } from "../utils/SmallEventUtils";
 import { StringUtils } from "../utils/StringUtils";
 import { SmallEventWitchResultPacket } from "../../../Lib/src/packets/smallEvents/SmallEventWitchPacket";
@@ -19,14 +18,14 @@ import { ReactionCollectorReturnTypeOrNull } from "../packetHandlers/handlers/Re
 import { MessagesUtils } from "../utils/MessagesUtils";
 import { minutesDisplay } from "../../../Lib/src/utils/TimeUtils";
 
-export async function witchCollector(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
+export async function witchCollector(context: PacketContext, packet: ReactionCollectorWitchPacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
 	const lng = interaction.userLanguage;
 
 	let witchIngredients = "\n\n";
 	const reactions: [string, string][] = [];
 	for (const reaction of packet.reactions) {
-		const ingredientId = (reaction.data as ReactionCollectorWitchReaction).id;
+		const ingredientId = reaction.data.id;
 		const emoji = CrowniclesIcons.witchSmallEvent[ingredientId];
 		witchIngredients += `${emoji} ${i18n.t(`smallEvents:witch.witchEventNames.${ingredientId}`, { lng })}\n`;
 		reactions.push([ingredientId, emoji]);
@@ -79,7 +78,7 @@ export async function witchCollector(context: PacketContext, packet: ReactionCol
 			context,
 			context.keycloakId!,
 			buttonInteraction,
-			packet.reactions.findIndex(reaction => (reaction.data as ReactionCollectorWitchReaction).id === buttonInteraction.customId)
+			packet.reactions.findIndex(reaction => reaction.data.id === buttonInteraction.customId)
 		);
 	});
 
