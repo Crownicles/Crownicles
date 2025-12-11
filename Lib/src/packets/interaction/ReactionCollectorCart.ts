@@ -31,7 +31,7 @@ export class ReactionCollectorCart extends ReactionCollector {
 		this.price = price;
 	}
 
-	creationPacket(id: string, endTime: number): AcceptRefusePacket<ReactionCollectorCartData> {
+	creationPacket(id: string, endTime: number): ReactionCollectorCartPacket {
 		return {
 			id,
 			endTime,
