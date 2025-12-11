@@ -191,9 +191,10 @@ function getBadgeShopItem(): ShopItem {
 
 /**
  * Get the shop item for buying tokens
- * @param tokensAlreadyPurchased - Number of tokens already purchased today
+ * @param tokensAlreadyPurchasedToday - Number of tokens already purchased today
+ * @param tokensAlreadyPurchasedThisWeek - Number of tokens already purchased this week
  */
-function getTokenShopItem(tokensAlreadyPurchased: number): ShopItem {
+function getTokenShopItem(tokensAlreadyPurchasedToday: number, tokensAlreadyPurchasedThisWeek: number): ShopItem {
 	return {
 		id: ShopItemType.TOKEN,
 		price: ShopConstants.TOKEN_PRICE,
@@ -202,7 +203,13 @@ function getTokenShopItem(tokensAlreadyPurchased: number): ShopItem {
 			const player = await Players.getById(playerId);
 
 			// Check if the player has already bought the maximum amount of tokens today
-			if (tokensAlreadyPurchased >= ShopConstants.MAX_DAILY_TOKEN_BUYOUTS) {
+			if (tokensAlreadyPurchasedToday >= ShopConstants.MAX_DAILY_TOKEN_BUYOUTS) {
+				response.push(makePacket(CommandShopBoughtTooMuchTokens, {}));
+				return false;
+			}
+
+			// Check if the player has already bought the maximum amount of tokens this week
+			if (tokensAlreadyPurchasedThisWeek >= ShopConstants.MAX_WEEKLY_TOKEN_BUYOUTS) {
 				response.push(makePacket(CommandShopBoughtTooMuchTokens, {}));
 				return false;
 			}
@@ -341,7 +348,8 @@ export default class ShopCommand {
 		context: PacketContext
 	): Promise<void> {
 		const healEnergyAlreadyPurchased = await LogsReadRequests.getAmountOfHealEnergyBoughtByPlayerThisWeek(player.keycloakId);
-		const tokensAlreadyPurchased = await LogsReadRequests.getAmountOfTokensBoughtByPlayerToday(player.keycloakId);
+		const tokensAlreadyPurchasedToday = await LogsReadRequests.getAmountOfTokensBoughtByPlayerToday(player.keycloakId);
+		const tokensAlreadyPurchasedThisWeek = await LogsReadRequests.getAmountOfTokensBoughtByPlayerThisWeek(player.keycloakId);
 		const potion = PotionDataController.instance.getById(await Settings.SHOP_POTION.getValue());
 
 		const shopCategories: ShopCategory[] = [
@@ -365,7 +373,7 @@ export default class ShopCommand {
 		if (player.level >= TokensConstants.LEVEL_TO_UNLOCK) {
 			shopCategories.push({
 				id: "token",
-				items: [getTokenShopItem(tokensAlreadyPurchased)]
+				items: [getTokenShopItem(tokensAlreadyPurchasedToday, tokensAlreadyPurchasedThisWeek)]
 			});
 		}
 
@@ -377,13 +385,18 @@ export default class ShopCommand {
 			});
 		}
 
+		// Calculate remaining tokens as the minimum between daily and weekly limits
+		const remainingDailyTokens = ShopConstants.MAX_DAILY_TOKEN_BUYOUTS - tokensAlreadyPurchasedToday;
+		const remainingWeeklyTokens = ShopConstants.MAX_WEEKLY_TOKEN_BUYOUTS - tokensAlreadyPurchasedThisWeek;
+		const remainingTokens = Math.min(remainingDailyTokens, remainingWeeklyTokens);
+
 		await ShopUtils.createAndSendShopCollector(context, response, {
 			shopCategories,
 			player,
 			additionalShopData: {
 				remainingPotions: ShopConstants.MAX_DAILY_POTION_BUYOUTS - await LogsReadRequests.getAmountOfDailyPotionsBoughtByPlayer(player.keycloakId),
 				dailyPotion: toItemWithDetails(potion),
-				remainingTokens: ShopConstants.MAX_DAILY_TOKEN_BUYOUTS - tokensAlreadyPurchased
+				remainingTokens
 			},
 			logger: crowniclesInstance.logsDatabase.logClassicalShopBuyout
 		});
