@@ -1,7 +1,7 @@
 import {
+	AcceptRefusePacket,
 	ReactionCollector,
 	ReactionCollectorAcceptReaction,
-	ReactionCollectorCreationPacket,
 	ReactionCollectorData,
 	ReactionCollectorRefuseReaction
 } from "./ReactionCollectorPacket";
@@ -34,6 +34,8 @@ export class ReactionCollectorFightData extends ReactionCollectorData {
 	playerStats!: PlayerStats;
 }
 
+export type ReactionCollectorFightPacket = AcceptRefusePacket<ReactionCollectorFightData>;
+
 export class ReactionCollectorFight extends ReactionCollector {
 	private readonly playerStats: PlayerStats;
 
@@ -42,7 +44,7 @@ export class ReactionCollectorFight extends ReactionCollector {
 		this.playerStats = playerStats;
 	}
 
-	creationPacket(id: string, endTime: number): ReactionCollectorCreationPacket {
+	creationPacket(id: string, endTime: number): ReactionCollectorFightPacket {
 		return {
 			id,
 			endTime,

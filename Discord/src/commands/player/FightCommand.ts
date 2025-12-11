@@ -3,7 +3,6 @@ import i18n from "../../translations/i18n";
 import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import { ICommand } from "../ICommand";
 import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
-import { ReactionCollectorCreationPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import {
 	makePacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
@@ -12,7 +11,7 @@ import { DiscordCollectorUtils } from "../../utils/DiscordCollectorUtils";
 import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 import { PacketUtils } from "../../utils/PacketUtils";
 import { CommandFightPacketReq } from "../../../../Lib/src/packets/commands/CommandFightPacket";
-import { ReactionCollectorFightData } from "../../../../Lib/src/packets/interaction/ReactionCollectorFight";
+import { ReactionCollectorFightPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorFight";
 import { KeycloakUser } from "../../../../Lib/src/keycloak/KeycloakUser";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { FightConstants } from "../../../../Lib/src/constants/FightConstants";
@@ -39,10 +38,10 @@ import { DisplayUtils } from "../../utils/DisplayUtils";
 import { escapeUsername } from "../../../../Lib/src/utils/StringUtils";
 import { CommandFightCancelPacketReq } from "../../../../Lib/src/packets/commands/CommandFightCancelPacket";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
-import { ReactionCollectorFightChooseActionData } from "../../../../Lib/src/packets/interaction/ReactionCollectorFightChooseAction";
 import { DiscordConstants } from "../../DiscordConstants";
 import { PetUtils } from "../../utils/PetUtils";
 import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
+import { ReactionCollectorFightChooseActionPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorFightChooseAction";
 
 const buggedFights = new Set<string>();
 
@@ -65,11 +64,11 @@ function fightBugged(context: PacketContext, fightId: string): void {
  * @param packet - Reaction collector creation packet
  * @returns The collector instance or null if creation failed
  */
-export async function createFightCollector(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
+export async function createFightCollector(context: PacketContext, packet: ReactionCollectorFightPacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
 	await interaction.deferReply();
 	const lng = interaction.userLanguage;
-	const data = packet.data.data as ReactionCollectorFightData;
+	const data = packet.data.data;
 	const subTextKey = RandomUtils.crowniclesRandom.bool(FightConstants.RARE_SUB_TEXT_INTRO) ? "rare" : "common";
 	const embed = new CrowniclesEmbed().formatAuthor(i18n.t("commands:fight.title", {
 		lng,
@@ -293,8 +292,8 @@ export async function handleCommandFightAIFightActionChoose(context: PacketConte
  * @param packet
  * @param context
  */
-export async function handleCommandFightActionChoose(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
-	const data = packet.data.data as ReactionCollectorFightChooseActionData;
+export async function handleCommandFightActionChoose(context: PacketContext, packet: ReactionCollectorFightChooseActionPacket): Promise<ReactionCollectorReturnTypeOrNull> {
+	const data = packet.data.data;
 
 	if (buggedFights.has(data.fightId) || !context.discord?.interaction) {
 		return null;
