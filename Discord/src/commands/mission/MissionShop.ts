@@ -19,12 +19,12 @@ import {
 import { MissionUtils } from "../../utils/MissionUtils";
 import {
 	ReactionCollectorSkipMissionShopItemCloseReaction,
+	ReactionCollectorSkipMissionShopItemPacket,
 	ReactionCollectorSkipMissionShopItemReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorSkipMissionShopItem";
 import {
 	DiscordCollectorUtils, SEND_POLITICS
 } from "../../utils/DiscordCollectorUtils";
-import { ReactionCollectorCreationPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { Constants } from "../../../../Lib/src/constants/Constants";
 import { ReactionCollectorReturnTypeOrNull } from "../../packetHandlers/handlers/ReactionCollectorHandlers";
 import { Badge } from "../../../../Lib/src/types/Badge";
@@ -116,7 +116,7 @@ export async function handleLovePointsValueShopItem(packet: CommandMissionShopPe
 	});
 }
 
-export async function skipMissionShopItemCollector(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
+export async function skipMissionShopItemCollector(context: PacketContext, packet: ReactionCollectorSkipMissionShopItemPacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction!);
 	if (!interaction) {
 		return null;
