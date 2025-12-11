@@ -86,8 +86,11 @@ export async function handleChangeClassReactionCollector(context: PacketContext,
 	const lng = interaction.userLanguage;
 
 	const data = packet.data.data;
-	const classesReactions = packet.reactions.filter(reaction => reaction.type === ReactionCollectorChangeClassReaction.name)
-		.map(reaction => reaction.data) as ReactionCollectorChangeClassReaction[];
+	const classesReactions = packet.reactions
+		.filter((r): r is {
+			type: string; data: ReactionCollectorChangeClassReaction;
+		} => r.type === ReactionCollectorChangeClassReaction.name)
+		.map(r => r.data);
 
 	const mainEmbed = new CrowniclesEmbed()
 		.setTitle(i18n.t("commands:classes.title", { lng }))

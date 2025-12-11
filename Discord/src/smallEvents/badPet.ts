@@ -1,6 +1,5 @@
 import { PacketContext } from "../../../Lib/src/packets/CrowniclesPacket";
 import {
-	ReactionCollectorBadPetReaction,
 	ReactionCollectorBadPetSmallEventPacket
 } from "../../../Lib/src/packets/interaction/ReactionCollectorBadPetSmallEvent";
 import { DiscordCache } from "../bot/DiscordCache";
@@ -58,7 +57,7 @@ export async function badPetCollector(context: PacketContext, packet: ReactionCo
 	const row = new ActionRowBuilder<ButtonBuilder>();
 
 	for (const reaction of packet.reactions) {
-		const reactionData = reaction.data as ReactionCollectorBadPetReaction;
+		const reactionData = reaction.data;
 		const actionId = reactionData.id;
 		if (actionId && isValidActionId(actionId)) {
 			const icon = CrowniclesIcons.badPetSmallEvent[actionId];

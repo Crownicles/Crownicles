@@ -18,6 +18,8 @@ export class ReactionCollectorCartData extends ReactionCollectorData {
 	price!: number;
 }
 
+export type ReactionCollectorCartPacket = AcceptRefusePacket<ReactionCollectorCartData>;
+
 export class ReactionCollectorCart extends ReactionCollector {
 	private readonly displayedDestination: DisplayedDestination;
 

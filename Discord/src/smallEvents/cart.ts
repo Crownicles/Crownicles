@@ -1,6 +1,3 @@
-import {
-	AcceptRefusePacket
-} from "../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { PacketContext } from "../../../Lib/src/packets/CrowniclesPacket";
 import { DiscordCache } from "../bot/DiscordCache";
 import { DiscordCollectorUtils } from "../utils/DiscordCollectorUtils";
@@ -10,10 +7,12 @@ import { StringUtils } from "../utils/StringUtils";
 import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 import i18n from "../translations/i18n";
 import { getRandomSmallEventIntro } from "../utils/SmallEventUtils";
-import { ReactionCollectorCartData } from "../../../Lib/src/packets/interaction/ReactionCollectorCart";
+import {
+	ReactionCollectorCartPacket
+} from "../../../Lib/src/packets/interaction/ReactionCollectorCart";
 import { ReactionCollectorReturnTypeOrNull } from "../packetHandlers/handlers/ReactionCollectorHandlers";
 
-export async function cartCollector(context: PacketContext, packet: AcceptRefusePacket<ReactionCollectorCartData>): Promise<ReactionCollectorReturnTypeOrNull> {
+export async function cartCollector(context: PacketContext, packet: ReactionCollectorCartPacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
 	const data = packet.data.data;
 	const story = data.displayedDestination.isDisplayed ? "knownDestination" : "unknownDestination";
