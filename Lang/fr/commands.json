@@ -143,7 +143,7 @@
       "warning_male": "{emote:collectors.warning} *Rappeler votre familier prématurément brisera le lien de confiance. Il reviendra sans butin et le cœur meurtri...*",
       "warning_female": "{emote:collectors.warning} *Rappeler votre familier prématurément brisera le lien de confiance. Elle reviendra sans butin et le cœur meurtrie...*"
     },
-    "inProgressFoodInfo": "\n{emote:expedition.food} **Provisions emportées :** {{amount}} rations",
+    "inProgressFoodInfo": "\n{emote:expedition.food} **Provisions emportées :** {{amount, number}} rations",
     "recallButton": "Rappeler",
     "closeButton": "Continuer l'exploration",
     "chooseExpeditionTitle": "{{pseudo}}, nouvelles expéditions disponibles",
@@ -170,7 +170,7 @@
     "startedTitle": "{{pseudo}}, expédition lancée !",
     "expeditionStarted_male": "D'un bond enthousiaste, {{petDisplay}} s'élance vers **{{location}}** ! Vous le regardez disparaître à l'horizon, le cœur empli d'espoir.\n\n{emote:clocks.1} Retour prévu : {{returnTime}}",
     "expeditionStarted_female": "D'un bond enthousiaste, {{petDisplay}} s'élance vers **{{location}}** ! Vous la regardez disparaître à l'horizon, le cœur empli d'espoir.\n\n{emote:clocks.1} Retour prévu : {{returnTime}}",
-    "foodConsumed": "\n{emote:expedition.food} Provisions emportées : **{{amount}}** rations",
+    "foodConsumed": "\n{emote:expedition.food} Provisions emportées : **{{amount, number}}** rations",
     "foodConsumedDetails": "\n{emote:expedition.food} **Provisions emportées :** {{foodDetails}}",
     "insufficientFoodWarning": {
       "noGuild": "\n\n{emote:collectors.warning} **Vous n'avez pas de guilde pour préparer des rations** pour votre familier. Les risques d'échec de cette expédition sont **triplés**.",
@@ -331,13 +331,13 @@
     "description": "{emote:messages.description} `{{description}}`",
     "separator": " | ",
     "memberInfo": "{{icon}} - **{{pseudo}}** ({{ranking}} {emote:announcements.trophy} | {{score, number}} {emote:unitValues.score}{{islandStatusIcon}})\n",
-    "members": "{emote:guild.membersCount} {{memberCount}} / {{maxGuildMembers}} membres",
+    "members": "{emote:guild.membersCount} {{memberCount, number}} / {{maxGuildMembers, number}} membres",
     "infoTitle": "Informations",
     "islandInfo": "{emote:guild.isOnPveIsland} Nombre d'alliés sur l'île mystérieuse : {{membersOnPveIsland}}\n",
     "info": "{emote:unitValues.xp} {{experience, number}} | {emote:unitValues.guildPoint} {{guildPoints, number}} | {emote:announcements.trophy} {{ranking}}",
     "xpNeeded": "{{xp, number}} / {{xpToLevelUp, number}}",
     "xpMax": "Max",
-    "ranking": "{{rank}} / {{rankTotal}}",
+    "ranking": "{{rank, number}} / {{rankTotal, number}}",
     "notRanked": "Non classée"
   },
   "guildCreate": {
@@ -713,7 +713,7 @@
     },
     "mission": {
       "fieldName": "Missions :",
-      "fieldValue": "{emote:unitValues.gem} {{gems}} | {emote:missions.book} {{campaign}}% "
+      "fieldValue": "{emote:unitValues.gem} {{gems, number}} | {emote:missions.book} {{campaign, number}}% "
     },
     "noTimeLeft": {
       "fieldName": "Temps restant :",
@@ -737,7 +737,7 @@
     },
     "statistics": {
       "fieldName": "Statistiques :",
-      "fieldValue": "{emote:unitValues.energy} {{cumulativeHealth, number}} / {{cumulativeMaxHealth, number}} | {emote:unitValues.attack} {{cumulativeAttack, number}} | {emote:unitValues.defense} {{cumulativeDefense, number}} | {emote:unitValues.speed} {{cumulativeSpeed, number}} | {emote:unitValues.breath} {{baseBreath}} / {{maxBreath}} | {emote:unitValues.breathRegen} {{breathRegen}}"
+      "fieldValue": "{emote:unitValues.energy} {{cumulativeHealth, number}} / {{cumulativeMaxHealth, number}} | {emote:unitValues.attack} {{cumulativeAttack, number}} | {emote:unitValues.defense} {{cumulativeDefense, number}} | {emote:unitValues.speed} {{cumulativeSpeed, number}} | {emote:unitValues.breath} {{baseBreath, number}} / {{maxBreath, number}} | {emote:unitValues.breathRegen} {{breathRegen}}"
     },
     "timeLeft": {
       "fieldName": "Temps restant :",
@@ -767,11 +767,11 @@
     "encounterMonster": [
       "Vous arrivez à votre destination quand soudain, vous entendez un bruit derrière vous... Un monstre vous attaque !"
     ],
-    "encounterMonsterStats": "> **{{emoji}} {{monsterName}} **| **Niveau {{level, number}}**\n> {{description}}\n\n{emote:unitValues.energy} {{energy}} | {emote:unitValues.attack} {{attack}} | {emote:unitValues.defense} {{defense}} | {emote:unitValues.speed} {{speed}}",
+    "encounterMonsterStats": "> **{{emoji}} {{monsterName}} **| **Niveau {{level, number}}**\n> {{description}}\n\n{emote:unitValues.energy} {{energy, number}} | {emote:unitValues.attack} {{attack, number}} | {emote:unitValues.defense} {{defense, number}} | {emote:unitValues.speed} {{speed, number}}",
     "endPoint": "Point d'arrivée :",
     "energy": "** | {emote:unitValues.energy} Énergie gagnée : **{{energy, number}}",
     "experience": "** | {emote:unitValues.xp} Expérience gagnée : **{{experience, number}}",
-    "gems": "** | {emote:unitValues.gem} Gemmes gagnées : **{{gems}}",
+    "gems": "** | {emote:unitValues.gem} Gemmes gagnées : **{{gems, number}}",
     "health": "** | {emote:unitValues.health} Vie gagnée : **{{health, number}}",
     "healthLoose": "** | {emote:unitValues.lostHealth} Vie perdue : **{{health, number}}",
     "journal": "Journal de {{pseudo}}",
@@ -869,7 +869,7 @@
     "title": "{emote:commands.shop} Affichage du Magasin",
     "currentMoney": "Vous avez `{{money, number}}{emote:unitValues.{{currency}}}`.",
     "shopItemsDisplaySingle": "{{name}} | `{{price, number}}{emote:unitValues.{{currency}}}`",
-    "shopItemsDisplayMultiple": "**{{amount}}x** {{name}} | `{{price, number}}{emote:unitValues.{{currency}}}`",
+    "shopItemsDisplayMultiple": "**{{amount, number}}x** {{name}} | `{{price, number}}{emote:unitValues.{{currency}}}`",
     "shopSelectPlaceholder": "Sélectionnez un objet à acheter",
     "buyCategorySlotSuccess": "Vous avez acheté un nouvel emplacement d'inventaire !",
     "shopItemsSelectDescription": "{{price, number}}{emote:unitValues.{{currency}}}",
@@ -990,7 +990,7 @@
         "name": "{emote:shopItems.lovePointsValue} Vétérinaire de la cour",
         "info": "Obtenir des informations détaillées sur votre familier.",
         "giveTitle": "{{pseudo}}, achat effectué !",
-        "giveDesc": "Après avoir longuement étudié votre animal et son état de santé, le vétérinaire vous donne son rapport :\n\n**{{petName}}** {{commentOnResult}}\n{emote:petInformation.loveScore} **Score d'amour** : {{actualLP}} / {{maxLovePoints}}\n{emote:petInformation.diet} **Régime alimentaire** : {{diet}}\n{emote:petInformation.force} **Force** : {{force}}\n{emote:petInformation.speed} **Vitesse** : {{speed}}\n{emote:petInformation.feedDelay} **Intervalle entre repas** : {{feedDelay}}\n{emote:petInformation.nextFeed} **Prochaine faim** : {{nextFeed}}\n{emote:petInformation.age} **Âge** : {{commentOnPetAge}}\n\n{emote:petInformation.fightEffect} **Effet de combat** : {{commentOnFightEffect}}\n\n {{dwarfPet}}",
+        "giveDesc": "Après avoir longuement étudié votre animal et son état de santé, le vétérinaire vous donne son rapport :\n\n**{{petName}}** {{commentOnResult}}\n{emote:petInformation.loveScore} **Score d'amour** : {{actualLP, number}} / {{maxLovePoints, number}}\n{emote:petInformation.diet} **Régime alimentaire** : {{diet}}\n{emote:petInformation.force} **Force** : {{force, number}}\n{emote:petInformation.speed} **Vitesse** : {{speed, number}}\n{emote:petInformation.feedDelay} **Intervalle entre repas** : {{feedDelay}}\n{emote:petInformation.nextFeed} **Prochaine faim** : {{nextFeed}}\n{emote:petInformation.age} **Âge** : {{commentOnPetAge}}\n\n{emote:petInformation.fightEffect} **Effet de combat** : {{commentOnFightEffect}}\n\n {{dwarfPet}}",
         "petIsHungry": "{emote:effects.starving} affamé",
         "commentOnFightEffect": {
           "bite": [
@@ -1296,7 +1296,7 @@
   "classesInfo": {
     "title": {
       "list": "{emote:commands.classesInfo} Liste des classes",
-      "attack": "{{emote}} {{name}} | {{cost}} {emote:unitValues.breath}"
+      "attack": "{{emote}} {{name}} | {{cost, number}} {emote:unitValues.breath}"
     },
     "description": {
       "list": "Voici la liste des classes disponibles pour votre personnage et leurs statistiques. Pour plus d'informations sur une classe, sélectionnez celle-ci parmi les choix ci-dessous.\n​"
@@ -1307,7 +1307,7 @@
     },
     "displays": {
       "details": "{{classDetails}}\n\n**Attaques disponibles pour cette classe :**\n​",
-      "class": "{emote:unitValues.energy} {{fightPoint}} | {emote:unitValues.attack} {{attack}} | {emote:unitValues.defense} {{defense}} | {emote:unitValues.speed} {{speed}} | {emote:unitValues.breath} {{baseBreath}} / {{maxBreath}} | {emote:unitValues.breathRegen} {{breathRegen}} | {emote:unitValues.health} {{health}}"
+      "class": "{emote:unitValues.energy} {{fightPoint, number}} | {emote:unitValues.attack} {{attack, number}} | {emote:unitValues.defense} {{defense, number}} | {emote:unitValues.speed} {{speed, number}} | {emote:unitValues.breath} {{baseBreath, number}} / {{maxBreath, number}} | {emote:unitValues.breathRegen} {{breathRegen}} | {emote:unitValues.health} {{health, number}}"
     }
   },
   "respawn": {
@@ -1379,7 +1379,7 @@
       "partialHeal": "{emote:rewards.partialHeal} | Les membres de la guilde ont été partiellement soignés. `+ {{quantity, number}} {emote:unitValues.health}`",
       "alterationHeal": "{emote:shopItems.healAlteration} | Les altérations d'état des membres de la guilde ont été supprimées. Les membres en bonne santé ont été partiellement soignés. `+ {{quantity, number}} {emote:unitValues.health}`",
       "alterationNoHeal": "{emote:shopItems.healAlteration} | Les altérations d'état des membres de la guilde ont été supprimées.",
-      "petFood": "{emote:foods.commonFood} {{quantity}} friandises ont été rajoutées à l'inventaire de votre guilde.",
+      "petFood": "{emote:foods.commonFood} {{quantity, number}} friandises ont été rajoutées à l'inventaire de votre guilde.",
       "pet_male": "{emote:pets.{{petId}}.emoteMale} | Un familier a rejoint le refuge de la guilde: **{{pet}}**",
       "pet_female": "{emote:pets.{{petId}}.emoteFemale} | Un familier a rejoint le refuge de la guilde: **{{pet}}**"
     }
@@ -1429,26 +1429,26 @@
   },
   "top": {
     "level": "Niveau {{level, number}}",
-    "titleScoreAllTime": "{emote:top.congrats} Affichage du top des places {{minRank}} à {{maxRank}}",
-    "titleScoreWeekly": "{emote:top.congrats} Affichage du top de la semaine des places {{minRank}} à {{maxRank}}",
+    "titleScoreAllTime": "{emote:top.congrats} Affichage du top des places {{minRank, number}} à {{maxRank, number}}",
+    "titleScoreWeekly": "{emote:top.congrats} Affichage du top de la semaine des places {{minRank, number}} à {{maxRank, number}}",
     "yourRankTitle": "**Votre classement**",
-    "yourRankFirst_one": "{emote:top.congrats} Félicitations **{{pseudo}}** ! Vous êtes actuellement le meilleur sur un total de {{total}} joueur !",
-    "yourRankFirst_other": "{emote:top.congrats} Félicitations **{{pseudo}}** ! Vous êtes actuellement le meilleur sur un total de {{total}} joueurs !",
-    "yourRank_one": "{{badge}} **{{pseudo}}**, vous êtes actuellement classé **{{rank}}ème** sur un total de {{total}} joueur !",
-    "yourRank_other": "{{badge}} **{{pseudo}}**, vous êtes actuellement classé **{{rank}}ème** sur un total de {{total}} joueurs !",
+    "yourRankFirst_one": "{emote:top.congrats} Félicitations **{{pseudo}}** ! Vous êtes actuellement le meilleur sur un total de {{total, number}} joueur !",
+    "yourRankFirst_other": "{emote:top.congrats} Félicitations **{{pseudo}}** ! Vous êtes actuellement le meilleur sur un total de {{total, number}} joueurs !",
+    "yourRank_one": "{{badge}} **{{pseudo}}**, vous êtes actuellement classé **{{rank, number}}ème** sur un total de {{total, number}} joueur !",
+    "yourRank_other": "{{badge}} **{{pseudo}}**, vous êtes actuellement classé **{{rank, number}}ème** sur un total de {{total, number}} joueurs !",
     "yourRankNoneScore": "{emote:top.error} | Vous n'apparaissez malheureusement pas dans le top car vous avez un score égal ou inférieur à 100 !",
-    "yourRankAtPage": "(Vous vous trouverez à la page {{page}} / {{maxPage}})",
-    "titleGlory": "{emote:unitValues.glory} Affichage du top gloire des places {{minRank}} à {{maxRank}}",
-    "yourRankNoneGlory_one": "{emote:top.error} | Vous n'apparaissez malheureusement pas dans le top car vous n'avez pas encore réalisé assez de combats classés ! Vous devez encore réaliser {{needFight}} combat classé.",
-    "yourRankNoneGlory_other": "{emote:top.error} | Vous n'apparaissez malheureusement pas dans le top car vous n'avez pas encore réalisé assez de combats classés ! Vous devez encore réaliser {{needFight}} combats classés.",
-    "titleGuild": "{emote:top.guild} Affichage du top guildes des places {{minRank}} à {{maxRank}}",
+    "yourRankAtPage": "(Vous vous trouverez à la page {{page, number}} / {{maxPage, number}})",
+    "titleGlory": "{emote:unitValues.glory} Affichage du top gloire des places {{minRank, number}} à {{maxRank, number}}",
+    "yourRankNoneGlory_one": "{emote:top.error} | Vous n'apparaissez malheureusement pas dans le top car vous n'avez pas encore réalisé assez de combats classés ! Vous devez encore réaliser {{needFight, number}} combat classé.",
+    "yourRankNoneGlory_other": "{emote:top.error} | Vous n'apparaissez malheureusement pas dans le top car vous n'avez pas encore réalisé assez de combats classés ! Vous devez encore réaliser {{needFight, number}} combats classés.",
+    "titleGuild": "{emote:top.guild} Affichage du top guildes des places {{minRank, number}} à {{maxRank, number}}",
     "yourRankGuildTitle": "**Classement de votre guilde**",
-    "yourRankGuildFirst_one": "{emote:top.congrats} Félicitations **{{pseudo}}** ! Votre guilde est actuellement la meilleure sur un total de {{total}} guilde !",
-    "yourRankGuildFirst_other": "{emote:top.congrats} Félicitations **{{pseudo}}** ! Votre guilde est actuellement la meilleure sur un total de {{total}} guildes !",
-    "yourRankGuild_one": "{{badge}} **{{pseudo}}**, votre guilde est actuellement classée **{{rank}}ème** sur un total de {{total}} guilde !",
-    "yourRankGuild_other": "{{badge}} **{{pseudo}}**, votre guilde est actuellement classée **{{rank}}ème** sur un total de {{total}} guildes !",
+    "yourRankGuildFirst_one": "{emote:top.congrats} Félicitations **{{pseudo}}** ! Votre guilde est actuellement la meilleure sur un total de {{total, number}} guilde !",
+    "yourRankGuildFirst_other": "{emote:top.congrats} Félicitations **{{pseudo}}** ! Votre guilde est actuellement la meilleure sur un total de {{total, number}} guildes !",
+    "yourRankGuild_one": "{{badge}} **{{pseudo}}**, votre guilde est actuellement classée **{{rank, number}}ème** sur un total de {{total, number}} guilde !",
+    "yourRankGuild_other": "{{badge}} **{{pseudo}}**, votre guilde est actuellement classée **{{rank, number}}ème** sur un total de {{total, number}} guildes !",
     "yourRankNoneGuild": "{emote:top.error} | Votre guilde n'apparait malheureusement pas dans le top car elle n'a pas de points de guilde !",
-    "yourRankAtPageGuild": "(Vous la trouverez à la page {{page}} / {{maxPage}})",
+    "yourRankAtPageGuild": "(Vous la trouverez à la page {{page, number}} / {{maxPage, number}})",
     "noGuild": "{emote:top.error} | Vous n'apparaissez pas dans ce classement puisque vous ne faites pas partie d'une guilde !",
     "nobodyInTopPlayers": "Aucun joueur n'est actuellement classé !",
     "nobodyInTopGlory": "Aucun joueur n'est actuellement classé ! Réalisez encore {{needFight}} combat classé pour apparaître dans le classement !",
@@ -1458,7 +1458,7 @@
   "fight": {
     "title": "{{pseudo}}, vous êtes sur le point de démarrer un combat",
     "canceledTitle": "{{pseudo}}, vous avez annulé la recherche",
-    "confirmDesc": "{emote:fightCommand.crossedSwords} | **{{pseudo}}**{{confirmSubText}}\n\n{emote:fightCommand.crossedSwords} | **Combattant : {{pseudo}}** | {{glory}} | {{className}} {{pet}}\n\n{{stats}}",
+    "confirmDesc": "{emote:fightCommand.crossedSwords} | **{{pseudo}}**{{confirmSubText}}\n\n{emote:fightCommand.crossedSwords} | **Combattant : {{pseudo}}** | {{glory, number}} | {{className}} {{pet}}\n\n{{stats}}",
     "pet": "| {{petInfo}}",
     "petOnExpedition": "| ~~{{petInfo}}~~",
     "confirmSubTexts": {
@@ -1469,7 +1469,7 @@
     "information": {
       "glory": "{emote:unitValues.glory} {{gloryPoints, number}}",
       "class": "$t(models:classFormat)",
-      "stats": "{emote:unitValues.energy} {{cumulativeHealth, number}} / {{cumulativeMaxHealth, number}} | {emote:unitValues.attack} {{cumulativeAttack, number}} | {emote:unitValues.defense} {{cumulativeDefense, number}} | {emote:unitValues.speed} {{cumulativeSpeed, number}} | {emote:unitValues.breath} {{baseBreath}} / {{maxBreath}} | {emote:unitValues.breathRegen} {{breathRegen}}"
+      "stats": "{emote:unitValues.energy} {{cumulativeHealth, number}} / {{cumulativeMaxHealth, number}} | {emote:unitValues.attack} {{cumulativeAttack, number}} | {emote:unitValues.defense} {{cumulativeDefense, number}} | {emote:unitValues.speed} {{cumulativeSpeed, number}} | {emote:unitValues.breath} {{baseBreath, number}} / {{maxBreath, number}} | {emote:unitValues.breathRegen} {{breathRegen}}"
     },
     "opponentsNotFound": "Aucun adversaire n'a été trouvé pour vous affronter. Vous pouvez réessayer plus tard.",
     "notEnoughEnergy": "Vous n'avez pas assez d'énergie pour démarrer un combat !",
@@ -1477,7 +1477,7 @@
     "fightIntroTitle": "{emote:fightCommand.crossedSwords} | Un combat est lancé entre {{fightInitiator}} et {{opponent}} !",
     "actionsOf": "**Attaques de {{pseudo}} :**",
     "petOf": "**Familier de {{pseudo}} :**",
-    "fightActionNameDisplay": "{{fightActionEmote}} - {{fightActionName}} | {emote:unitValues.breath} {{breathCost}}",
+    "fightActionNameDisplay": "{{fightActionEmote}} - {{fightActionName}} | {emote:unitValues.breath} {{breathCost, number}}",
     "summarize": {
       "title": "Résumé du combat",
       "intro": {
@@ -1487,14 +1487,14 @@
       },
       "attacker": "{emote:unitValues.attack} | **Attaquant : {{pseudo}}**\n",
       "defender": "\n\n{emote:unitValues.defense} | **Défenseur : {{pseudo}}**\n",
-      "stats": "{emote:unitValues.energy} {{power, number}} | {emote:unitValues.attack} {{attack, number}} | {emote:unitValues.defense} {{defense, number}} | {emote:unitValues.speed} {{speed, number}} | {emote:unitValues.breath} {{breath}} / {{maxBreath}} | {emote:unitValues.breathRegen} {{breathRegen}}"
+      "stats": "{emote:unitValues.energy} {{power, number}} | {emote:unitValues.attack} {{attack, number}} | {emote:unitValues.defense} {{defense, number}} | {emote:unitValues.speed} {{speed, number}} | {emote:unitValues.breath} {{breath, number}} / {{maxBreath, number}} | {emote:unitValues.breathRegen} {{breathRegen}}"
     },
     "end": {
       "draw": "{emote:commands.report} | **{{player1}} et {{player2}} terminent leur combat sur une égalité !**\n\n",
       "win": "{emote:commands.report}| **{{winner}} remporte le match contre {{loser}}**\n\n",
       "gameStats": "{emote:fightCommand.gameStats} | Statistiques du combat\n- **Tours** : {{turn}}/{{maxTurn}}\n- **Temps de combat** : {{time}}",
       "gameStatsProlongation": "{emote:fightCommand.gameStats} | Statistiques du combat\n- **Tours** : {{turn}}/{{maxTurn}} (prolongations)\n- **Temps de combat** : {{time}}",
-      "fighterStats": "\n\n{emote:fightCommand.fighterStats} | Statistiques de {{pseudo}}\n- **Vie finale** : {{energy}}/{{maxEnergy}} {emote:unitValues.energy}"
+      "fighterStats": "\n\n{emote:fightCommand.fighterStats} | Statistiques de {{pseudo}}\n- **Vie finale** : {{energy, number}}/{{maxEnergy, number}} {emote:unitValues.energy}"
     },
     "petReactions": {
       "loveGain": [
@@ -1603,22 +1603,22 @@
       "fightActionEffects": {
         "self": {
           "newAlteration": " `Vous êtes désormais {{effect}} !`",
-          "damages": " `Dégâts reçus : {{amount}}`",
-          "defense": " `Défense : {{operator}} {{amount}} %`",
-          "breath": " `Souffle : {{operator}} {{amount}}`",
-          "speed": " `Vitesse : {{operator}} {{amount}} %`",
-          "attack": " `Attaque : {{operator}} {{amount}} %`",
-          "energy": " `Énergie récupérée : {{amount}}`"
+          "damages": " `Dégâts reçus : {{amount, number}}`",
+          "defense": " `Défense : {{operator}} {{amount, number}} %`",
+          "breath": " `Souffle : {{operator}} {{amount, number}}`",
+          "speed": " `Vitesse : {{operator}} {{amount, number}} %`",
+          "attack": " `Attaque : {{operator}} {{amount, number}} %`",
+          "energy": " `Énergie récupérée : {{amount, number}}`"
         },
         "opponent": {
           "newAlteration": " `Votre adversaire est désormais {{effect}} !`",
-          "damages": " `Dégâts infligés : {{amount}}`",
-          "defense": " `Défense de l'adversaire : {{operator}} {{amount}} %`",
-          "breath": " `Souffle de l'adversaire : {{operator}} {{amount}}`",
-          "speed": " `Vitesse de l'adversaire : {{operator}} {{amount}} %`",
-          "attack": " `Attaque de l'adversaire : {{operator}} {{amount}} %`",
-          "energy": " `Énergie de l'adversaire récupérée : {{amount}}`",
-          "summoning": " `Invocation de {{amount}} alliés`"
+          "damages": " `Dégâts infligés : {{amount, number}}`",
+          "defense": " `Défense de l'adversaire : {{operator}} {{amount, number}} %`",
+          "breath": " `Souffle de l'adversaire : {{operator}} {{amount, number}}`",
+          "speed": " `Vitesse de l'adversaire : {{operator}} {{amount, number}} %`",
+          "attack": " `Attaque de l'adversaire : {{operator}} {{amount, number}} %`",
+          "energy": " `Énergie de l'adversaire récupérée : {{amount, number}}`",
+          "summoning": " `Invocation de {{amount, number}} alliés`"
         }
       },
       "aiChoose": "{emote:fightCommand.aiThinking} L'adversaire choisit une attaque..."
@@ -1801,7 +1801,7 @@
     "sellIndication": "Choisissez un objet à vendre dans la liste ci-dessous :",
     "menuPlaceholder": "Choisissez un objet à vendre",
     "cancel": "Annuler",
-    "selectMenuDescSell": "Vendre pour {{value}} {emote:unitValues.money}",
+    "selectMenuDescSell": "Vendre pour {{value, number}} {emote:unitValues.money}",
     "selectMenuDescThrow": "Jeter {emote:other.trash}"
   },
   "petTransfer": {
@@ -1842,9 +1842,9 @@
     },
     "feedTitle": "{{pseudo}}, nourrissage de votre familier",
     "feedDescription": "Choisissez une nourriture pour **{{pet}}** :",
-    "feedFoodBullet": "- **{{food}}** ({{amount}} / {{maxAmount}})",
+    "feedFoodBullet": "- **{{food}}** ({{amount, number}} / {{maxAmount, number}})",
     "cancelButton": "Annuler",
-    "feedWithoutGuildDesc": "Souhaitez-vous acheter une friandise pour {{pet}} ?\n\n{{food}} | `{{price}}{emote:unitValues.money}`"
+    "feedWithoutGuildDesc": "Souhaitez-vous acheter une friandise pour {{pet}} ?\n\n{{food}} | `{{price, number}}{emote:unitValues.money}`"
   },
   "leagueReward": {
     "errors": {
@@ -1854,8 +1854,8 @@
     },
     "title": "{{pseudo}}, vous avez reçu votre récompense de ligue !",
     "description": {
-      "first": "Vous avez terminé la ligue précédente avec **{{glory}} gloire. {emote:unitValues.glory}**\n\n**Vous terminez à la $t(models:ordinals.get, {\"count\": {{rank}}, \"context\":\"feminine\", \"ordinal\": true}) place !**\nVotre ligue finale est : **{emote:leagues.{{leagueId}}} $t(models:leagues.{{leagueId}})**.\n\n{emote:unitValues.money} Argent gagné : **{{money}}** !\n{emote:unitValues.xp} Expérience gagnée : **{{xp}}** !\n{emote:unitValues.score} Points gagnés : **{{score}}** !\n{emote:unitValues.glory} Un badge vous a été offert à la fin de la saison.\n{emote:rewards.item} Vous recevez un équipement aléatoire !",
-      "other": "Vous avez terminé la ligue précédente avec **{{glory}} gloire. {emote:unitValues.glory}**\n\n Vous terminez à la $t(models:ordinals.get, {\"count\": {{rank}}, \"ordinal\": true}) place !\nVotre ligue finale est : **{emote:leagues.{{leagueId}}}$t(models:leagues.{{leagueId}})**.\n\n{emote:unitValues.money} Argent gagné : **{{money}}** !\n{emote:unitValues.xp} Expérience gagnée : **{{xp}}** !\n{emote:unitValues.score} Points gagnés : **{{score}}** !\n{emote:rewards.item} Vous recevez un équipement aléatoire !"
+      "first": "Vous avez terminé la ligue précédente avec **{{glory, number}} gloire. {emote:unitValues.glory}**\n\n**Vous terminez à la $t(models:ordinals.get, {\"count\": {{rank}}, \"context\":\"feminine\", \"ordinal\": true}) place !**\nVotre ligue finale est : **{emote:leagues.{{leagueId}}} $t(models:leagues.{{leagueId}})**.\n\n{emote:unitValues.money} Argent gagné : **{{money, number}}** !\n{emote:unitValues.xp} Expérience gagnée : **{{xp, number}}** !\n{emote:unitValues.score} Points gagnés : **{{score, number}}** !\n{emote:unitValues.glory} Un badge vous a été offert à la fin de la saison.\n{emote:rewards.item} Vous recevez un équipement aléatoire !",
+      "other": "Vous avez terminé la ligue précédente avec **{{glory, number}} gloire. {emote:unitValues.glory}**\n\n Vous terminez à la $t(models:ordinals.get, {\"count\": {{rank}}, \"ordinal\": true}) place !\nVotre ligue finale est : **{emote:leagues.{{leagueId}}}$t(models:leagues.{{leagueId}})**.\n\n{emote:unitValues.money} Argent gagné : **{{money, number}}** !\n{emote:unitValues.xp} Expérience gagnée : **{{xp, number}}** !\n{emote:unitValues.score} Points gagnés : **{{score, number}}** !\n{emote:rewards.item} Vous recevez un équipement aléatoire !"
     }
   },
   "guildStorage": {
@@ -1866,7 +1866,7 @@
     },
     "food": {
       "title": "{emote:foods.{{foodId}}} $t(models:foods.{{foodId}}, {\"context\": \"capitalized\"})",
-      "description": "**Stock** : {{amount}}/{{maxAmount}}\n"
+      "description": "**Stock** : {{amount, number}}/{{maxAmount, number}}\n"
     }
   },
   "joinBoat": {
@@ -1884,12 +1884,12 @@
       },
       "description": {
         "confirmation": {
-          "text": "{emote:guild.isOnBoat} Êtes-vous sûr de vouloir rejoindre votre guilde sur le bateau ?\nLe capitaine vous indique que le voyage **{{priceText}}**.\n\nVoulez-vous partir sur l'île ? Vous avez {emote:unitValues.energy} **{{currentEnergy}}/{{maxEnergy}}**.",
+          "text": "{emote:guild.isOnBoat} Êtes-vous sûr de vouloir rejoindre votre guilde sur le bateau ?\nLe capitaine vous indique que le voyage **{{priceText}}**.\n\nVoulez-vous partir sur l'île ? Vous avez {emote:unitValues.energy} **{{currentEnergy, number}}/{{maxEnergy, number}}**.",
           "priceText_zero": "est gratuit",
           "priceText_other": "coûtera {{gemsCost}} {emote:unitValues.gem}"
         },
         "confirmed": "{{gainScore}} Vous rejoignez votre guilde sur le bateau.",
-        "confirmedScore": "**{emote:unitValues.score} Points gagnés :** {{score}}\n"
+        "confirmedScore": "**{emote:unitValues.score} Points gagnés :** {{score, number}}\n"
       }
     },
     "refuse": "Vous décidez finalement de rester ici et ne pas rejoindre votre guilde sur le bateau."

@@ -169,7 +169,7 @@
   },
   "classFormat": "{emote:classes.{{id}}} $t(models:classes.{{id}})",
   "classPluralFormat": "{emote:classes.{{id}}} $t(models:classes_plural.{{id}})",
-  "classWithStatsFormat": "{emote:classes.{{id}}} $t(models:classes.{{id}}) :\n{emote:unitValues.energy} {{energy, number}} | {emote:unitValues.attack} {{attack, number}} | {emote:unitValues.defense} {{defense, number}} | {emote:unitValues.speed} {{speed, number}} | {emote:unitValues.breath} {{initialBreath}} / {{maxBreath}} | {emote:unitValues.health} {{health, number}}",
+  "classWithStatsFormat": "{emote:classes.{{id}}} $t(models:classes.{{id}}) :\n{emote:unitValues.energy} {{energy, number}} | {emote:unitValues.attack} {{attack, number}} | {emote:unitValues.defense} {{defense, number}} | {emote:unitValues.speed} {{speed, number}} | {emote:unitValues.breath} {{initialBreath, number}} / {{maxBreath, number}} | {emote:unitValues.health} {{health, number}}",
   "class_descriptions": {
     "0": "Une classe simple. Plutôt équilibrée.",
     "1": "Une classe simple. Plutôt équilibrée.",

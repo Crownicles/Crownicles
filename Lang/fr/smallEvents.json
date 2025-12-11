@@ -108,7 +108,7 @@
       "vous êtes accosté par un grand homme barbu, se présentant comme le chef d'un groupe de mercenaires réputé dans la région. Il vous dit pouvoir vous présenter une incroyable offre. Il s'agirait pour vous de vous rendre sur une nouvelle et mystérieuse île, où cohabitent opportunités et dangers, en tant que chasseur de monstres. Il ajoute aussi que {{priceText}}."
     ],
     "priceFree": "le voyage **est gratuit**",
-    "priceMoney": "le voyage **coûtera {{price}} {emote:unitValues.gem}**",
+    "priceMoney": "le voyage **coûtera {{price, number}} {emote:unitValues.gem}**",
     "confirm": "Voulez-vous partir sur l'île ? Vous avez {emote:unitValues.energy} **{{energy, number}} / {{energyMax, number}}**.",
     "endStoryAccept": "{{gainScore}} Vous acceptez et embarquez sur le bateau en direction de l'île.",
     "endStoryAcceptWithMember": "{{gainScore}} Vous acceptez et au moment d'embarquer, vous remarquez qu'un membre de votre guilde se trouve déjà sur le bateau, vous le rejoignez et partez en direction de l'île.",
@@ -186,7 +186,7 @@
     "failureFallback": "L'étranger s'incline avec une raideur déçue avant de disparaître dans la cohue des passants, vous laissant méditer amèrement sur votre manque d'enthousiasme."
   },
   "interactOtherPlayers": {
-    "playerDisplayRanked": "**{{pseudo}}** ({{rank}} {emote:top.congrats})",
+    "playerDisplayRanked": "**{{pseudo}}** ({{rank, number}} {emote:top.congrats})",
     "playerDisplayUnranked": "**{{pseudo}}** (Non classé)",
     "no_one": [
       "Vous continuez votre chemin dans le plus grand calme. Il n'y a pas un chat sur votre route.",
@@ -850,7 +850,7 @@
       "feistyPets": "la SPAC, ou Société Protectrice des Animaux de la Contrée, milite pour aider les **animaux fielleux** à obtenir une meilleure vie. Ils en ont recensé **{{infoNumber}}**. À la fois déçu et réconforté par cette nouvelle,",
       "percentMalePets": "la SPAC, ou Société Protectrice des Animaux de la Contrée, a découvert que **{{infoNumber}}%** des animaux sur le territoire sont des mâles. Ravi de cette nouvelle,",
       "percentFemalePets": "la SPAC, ou Société Protectrice des Animaux de la Contrée, a découvert que **{{infoNumber}}%** des animaux sur le territoire sont des femelles. Ravi de cette nouvelle,",
-      "guildLevelMean": "l'AGC, ou Agence des Guildes de la Contrée, a noté que les guildes actuelles ont atteint en moyenne le **niveau {{infoNumber, number}}**. Intrigué par cette information,",,
+      "guildLevelMean": "l'AGC, ou Agence des Guildes de la Contrée, a noté que les guildes actuelles ont atteint en moyenne le **niveau {{infoNumber, number}}**. Intrigué par cette information,",
       "nbPlayersHaventStartedTheAdventure_zero": "le SAFAC, ou Service Anti-Fraude des Aventuriers de la Contrée, a découvert qu'**aucun aventurier** ne s'est volatilisé juste après avoir obtenu leur licence d'aventurier. Admiratif de tous ces valeureux aventuriers,",
       "nbPlayersHaventStartedTheAdventure_one": "le SAFAC, ou Service Anti-Fraude des Aventuriers de la Contrée, a découvert qu'**un aventurier** s'est volatilisé juste après avoir obtenu sa licence d'aventurier. Indigné par l'action de cette personne,",
       "nbPlayersHaventStartedTheAdventure_other": "le SAFAC, ou Service Anti-Fraude des Aventuriers de la Contrée, a découvert que **{{infoNumber}} aventuriers** se sont volatilisés juste après avoir obtenu leur licence d'aventurier. Indigné par l'action de ces personnes,",
@@ -1587,10 +1587,10 @@
       }
     },
     "results": {
-      "life": "Vous soulevez doucement le gobelet $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) et remarquez qu'il n'y a rien dessous. Déçu, et mauvais perdant, vous frappez les gobelets restants qui volent dans les airs. Remarquant qu'il n'y avait rien non plus dans les autres gobelets, vous vous retournez vers l'arnaqueur. Malheureusement, celui-ci frappe le premier. Vous perdez **{{quantity}} {emote:unitValues.lostHealth}**.",
+      "life": "Vous soulevez doucement le gobelet $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) et remarquez qu'il n'y a rien dessous. Déçu, et mauvais perdant, vous frappez les gobelets restants qui volent dans les airs. Remarquant qu'il n'y avait rien non plus dans les autres gobelets, vous vous retournez vers l'arnaqueur. Malheureusement, celui-ci frappe le premier. Vous perdez **{{quantity, number}} {emote:unitValues.lostHealth}**.",
       "time": "Vous soulevez doucement le gobelet $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) et découvrez avec plaisir une petite pièce ! Malheureusement, l'homme derrière vous ne semble pas vouloir vous laisser partir avec votre récompense. Vous perdez **{{quantity}} {emote:unitValues.time}** à négocier avec lui avant d'abandonner et de reprendre votre route.",
       "nothing": "Vous soulevez doucement le gobelet $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) et remarquez qu'il n'y a rien dessous. Déçu, vous repartez tristement en vous disant que vous aurez peut-être plus de chance une autre fois.",
-      "end": "Devant votre manque de réaction, l'homme a la mauvaise idée d'essayer de vous voler. Remarquant sa manoeuvre, vous intervenez, mais vous êtes rapidement surpris de la force de l'homme qui parvient à se dégager d'un brusque mouvement, avant de s'enfuir. Vous vous en sortez avec une légère blessure. Vous perdez **{{quantity}} {emote:unitValues.lostHealth}**."
+      "end": "Devant votre manque de réaction, l'homme a la mauvaise idée d'essayer de vous voler. Remarquant sa manoeuvre, vous intervenez, mais vous êtes rapidement surpris de la force de l'homme qui parvient à se dégager d'un brusque mouvement, avant de s'enfuir. Vous vous en sortez avec une légère blessure. Vous perdez **{{quantity, number}} {emote:unitValues.lostHealth}**."
     }
   },
   "shop": {
@@ -1611,7 +1611,7 @@
       "Tandis que vous avancez tranquillement sur votre route, vous croisez une charrette dans laquelle se trouve une marchande du nom de {{name}}. Celle-ci vous propose de lui acheter l'un de ses objets, vous affirmant qu'il pourrait vous être utile dans votre aventure."
     ],
     "end": [
-      "\n\n{{item}} | `{{price}} {emote:unitValues.money}`\n\n**Type :** {{type}}"
+      "\n\n{{item}} | `{{price, number}} {emote:unitValues.money}`\n\n**Type :** {{type}}"
     ],
     "types": [
       "Arme",
