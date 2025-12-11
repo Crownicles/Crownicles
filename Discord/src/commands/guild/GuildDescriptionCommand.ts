@@ -10,20 +10,19 @@ import {
 	CommandGuildDescriptionPacketReq,
 	CommandGuildDescriptionRefusePacketRes
 } from "../../../../Lib/src/packets/commands/CommandGuildDescriptionPacket";
-import { ReactionCollectorCreationPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { DiscordCache } from "../../bot/DiscordCache";
 import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import i18n from "../../translations/i18n";
 import { DiscordCollectorUtils } from "../../utils/DiscordCollectorUtils";
-import { ReactionCollectorGuildDescriptionData } from "../../../../Lib/src/packets/interaction/ReactionCollectorGuildDescription";
+import { ReactionCollectorGuildDescriptionPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorGuildDescription";
 import { ReactionCollectorReturnTypeOrNull } from "../../packetHandlers/handlers/ReactionCollectorHandlers";
 import { escapeUsername } from "../../utils/StringUtils";
 
 
-export async function createGuildDescriptionCollector(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
+export async function createGuildDescriptionCollector(context: PacketContext, packet: ReactionCollectorGuildDescriptionPacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
 	await interaction.deferReply();
-	const data = packet.data.data as ReactionCollectorGuildDescriptionData;
+	const data = packet.data.data;
 	const lng = interaction.userLanguage;
 	const embed = new CrowniclesEmbed().formatAuthor(i18n.t("commands:guildDescription.title", {
 		lng,
