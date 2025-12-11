@@ -2,7 +2,6 @@ import { PacketContext } from "../../../Lib/src/packets/CrowniclesPacket";
 import { DiscordCache } from "../bot/DiscordCache";
 import {
 	ReactionCollectorAcceptReaction,
-	ReactionCollectorCreationPacket,
 	ReactionCollectorRefuseReaction
 } from "../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { CrowniclesEmbed } from "../messages/CrowniclesEmbed";
@@ -14,11 +13,12 @@ import { DisplayUtils } from "../utils/DisplayUtils";
 import {
 	ReactionCollectorItemChoiceDrinkPotionReaction,
 	ReactionCollectorItemChoiceItemReaction,
+	ReactionCollectorItemChoicePacket,
 	ReactionCollectorItemChoiceRefuseReaction
 } from "../../../Lib/src/packets/interaction/ReactionCollectorItemChoice";
 import {
-	ReactionCollectorItemAcceptData,
-	ReactionCollectorItemAcceptDrinkPotionReaction
+	ReactionCollectorItemAcceptDrinkPotionReaction,
+	ReactionCollectorItemAcceptPacket
 } from "../../../Lib/src/packets/interaction/ReactionCollectorItemAccept";
 import { ItemCategory } from "../../../Lib/src/constants/ItemConstants";
 import { ReactionCollectorReturnTypeOrNull } from "../packetHandlers/handlers/ReactionCollectorHandlers";
@@ -28,7 +28,7 @@ import {
 import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 import { sendInteractionNotForYou } from "../utils/ErrorUtils";
 
-export async function itemChoiceCollector(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
+export async function itemChoiceCollector(context: PacketContext, packet: ReactionCollectorItemChoicePacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
 	const lng = interaction.userLanguage;
 	const drinkReactionIndex = packet.reactions.findIndex(reaction => reaction.type === ReactionCollectorItemChoiceDrinkPotionReaction.name);
@@ -69,9 +69,9 @@ export async function itemChoiceCollector(context: PacketContext, packet: Reacti
 	});
 }
 
-export async function itemAcceptCollector(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
+export async function itemAcceptCollector(context: PacketContext, packet: ReactionCollectorItemAcceptPacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
-	const data = packet.data.data as ReactionCollectorItemAcceptData;
+	const data = packet.data.data;
 	const lng = interaction.userLanguage;
 	const drinkReactionIndex = packet.reactions.findIndex(reaction => reaction.type === ReactionCollectorItemAcceptDrinkPotionReaction.name);
 

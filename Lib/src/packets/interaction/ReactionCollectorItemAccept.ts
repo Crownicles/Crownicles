@@ -14,6 +14,12 @@ export class ReactionCollectorItemAcceptData extends ReactionCollectorData {
 
 export class ReactionCollectorItemAcceptDrinkPotionReaction extends ReactionCollectorReaction {}
 
+type ItemAcceptReaction = ReactionCollectorAcceptReaction | ReactionCollectorItemAcceptDrinkPotionReaction | ReactionCollectorRefuseReaction;
+export type ReactionCollectorItemAcceptPacket = ReactionCollectorCreationPacket<
+	ReactionCollectorItemAcceptData,
+	ItemAcceptReaction
+>;
+
 export class ReactionCollectorItemAccept extends ReactionCollector {
 	private readonly itemWithDetails: ItemWithDetails;
 
@@ -25,7 +31,7 @@ export class ReactionCollectorItemAccept extends ReactionCollector {
 		this.canDrink = canDrink;
 	}
 
-	creationPacket(id: string, endTime: number, mainPacket = true): ReactionCollectorCreationPacket {
+	creationPacket(id: string, endTime: number, mainPacket = true): ReactionCollectorItemAcceptPacket {
 		const reactions = [this.buildReaction(ReactionCollectorAcceptReaction, {})];
 
 		if (this.canDrink) {
