@@ -1,7 +1,7 @@
 import {
+	AcceptRefusePacket,
 	ReactionCollector,
 	ReactionCollectorAcceptReaction,
-	ReactionCollectorCreationPacket,
 	ReactionCollectorData,
 	ReactionCollectorRefuseReaction
 } from "./ReactionCollectorPacket";
@@ -11,6 +11,8 @@ export class ReactionCollectorBuyHealData extends ReactionCollectorData {
 
 	playerMoney!: number;
 }
+
+export type ReactionCollectorBuyHealPacket = AcceptRefusePacket<ReactionCollectorBuyHealData>;
 
 export class ReactionCollectorBuyHeal extends ReactionCollector {
 	private readonly healPrice: number;
@@ -23,7 +25,7 @@ export class ReactionCollectorBuyHeal extends ReactionCollector {
 		this.playerMoney = playerMoney;
 	}
 
-	creationPacket(id: string, endTime: number, mainPacket: boolean): ReactionCollectorCreationPacket {
+	creationPacket(id: string, endTime: number, mainPacket: boolean): ReactionCollectorBuyHealPacket {
 		return {
 			id,
 			endTime,
