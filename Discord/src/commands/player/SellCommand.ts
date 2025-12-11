@@ -13,12 +13,12 @@ import {
 } from "../../../../Lib/src/packets/commands/CommandSellPacket";
 import { ItemCategory } from "../../../../Lib/src/constants/ItemConstants";
 import { DisplayUtils } from "../../utils/DisplayUtils";
-import {
-	ReactionCollectorCreationPacket,
-	ReactionCollectorRefuseReaction
-} from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
+import { ReactionCollectorRefuseReaction } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { ReactionCollectorReturnTypeOrNull } from "../../packetHandlers/handlers/ReactionCollectorHandlers";
-import { ReactionCollectorSellItemReaction } from "../../../../Lib/src/packets/interaction/ReactionCollectorSell";
+import {
+	ReactionCollectorSellItemReaction,
+	ReactionCollectorSellPacket
+} from "../../../../Lib/src/packets/interaction/ReactionCollectorSell";
 import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 import {
 	ActionRowBuilder,
@@ -82,7 +82,7 @@ export async function handleCommandSellSuccessPacket(packet: CommandSellItemSucc
 }
 
 async function validateSell(
-	packet: ReactionCollectorCreationPacket,
+	packet: ReactionCollectorSellPacket,
 	context: PacketContext,
 	interaction: CrowniclesInteraction | StringSelectMenuInteraction,
 	reactionsInfo: {
@@ -161,7 +161,7 @@ async function validateSell(
 	return [validateCollector];
 }
 
-export async function handleSellReactionCollector(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
+export async function handleSellReactionCollector(context: PacketContext, packet: ReactionCollectorSellPacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction);
 
 	if (!interaction) {
