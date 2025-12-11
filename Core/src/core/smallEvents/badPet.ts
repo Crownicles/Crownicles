@@ -1,9 +1,7 @@
 import { SmallEventFuncs } from "../../data/SmallEvent";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { BlockingUtils } from "../utils/BlockingUtils";
-import {
-	SexTypeShort, StringConstants
-} from "../../../../Lib/src/constants/StringConstants";
+import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
 import {
 	ReactionCollectorBadPetReaction,
 	ReactionCollectorBadPetSmallEvent
@@ -83,7 +81,6 @@ function isPetStrong(petModel: Pet): boolean {
  * Pet data result for packets
  */
 interface PetData {
-	foundPet: boolean;
 	petTypeId: number;
 	sex: SexTypeShort;
 	nickname?: string;
@@ -91,33 +88,18 @@ interface PetData {
 
 /**
  * Get pet entity data for packets using PetEntities.getById
+ * Note: This function assumes canBeExecuted has already validated pet existence
  * @param player - The player whose pet data to retrieve
- * @returns Pet data with foundPet flag indicating if pet was found
+ * @returns Pet data for the player's pet
  */
 async function getPetData(player: Player): Promise<PetData> {
-	if (!player.petId) {
-		return {
-			foundPet: false,
-			petTypeId: 0,
-			sex: StringConstants.SEX.MALE.short
-		};
-	}
-
+	// canBeExecuted guarantees player.petId exists and pet is valid
 	const petEntity = await PetEntities.getById(player.petId);
 
-	if (!petEntity) {
-		return {
-			foundPet: false,
-			petTypeId: 0,
-			sex: StringConstants.SEX.MALE.short
-		};
-	}
-
 	return {
-		foundPet: true,
-		petTypeId: petEntity.typeId,
-		sex: petEntity.sex as SexTypeShort,
-		nickname: petEntity.nickname ?? undefined
+		petTypeId: petEntity!.typeId,
+		sex: petEntity!.sex as SexTypeShort,
+		nickname: petEntity!.nickname ?? undefined
 	};
 }
 
@@ -541,12 +523,15 @@ async function canBeExecuted(player: Player): Promise<boolean> {
 		return false;
 	}
 
-	// Check if pet is available (handles expedition check with clone talisman logic)
+	/*
+	 * Check if pet is available (handles expedition check with clone talisman logic)
+	 * Note: isPetAvailable already checks if player.petId exists
+	 */
 	if (!await PetUtils.isPetAvailable(player, PetConstants.AVAILABILITY_CONTEXT.SMALL_EVENT)) {
 		return false;
 	}
 
-	const petEntity = await PetEntity.findByPk(player.petId);
+	const petEntity = await PetEntities.getById(player.petId);
 	return petEntity !== null && petEntity.lovePoints > 0;
 }
 

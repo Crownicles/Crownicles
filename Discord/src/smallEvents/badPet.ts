@@ -43,7 +43,7 @@ export async function badPetCollector(context: PacketContext, packet: ReactionCo
 
 	const petDisplay = PetUtils.petToShortString(lng, data.petNickname, data.petId, data.sex as SexTypeShort);
 
-	let description = \`\${StringUtils.getRandomTranslation("smallEvents:badPet.intro", lng, { pet: petDisplay })}\n\n\`;
+	let description = `${StringUtils.getRandomTranslation("smallEvents:badPet.intro", lng, { pet: petDisplay })}\n\n`;
 
 	const row = new ActionRowBuilder<ButtonBuilder>();
 
@@ -53,7 +53,7 @@ export async function badPetCollector(context: PacketContext, packet: ReactionCo
 		if (actionId && isValidActionId(actionId)) {
 			const icon = CrowniclesIcons.badPetSmallEvent[actionId];
 
-			description += \`\${icon} \${i18n.t(\`smallEvents:badPet.choices.\${actionId}\`, { lng })}\n\`;
+			description += `${icon} ${i18n.t(`smallEvents:badPet.choices.${actionId}`, { lng })}\n`;
 
 			row.addComponents(
 new ButtonBuilder()
