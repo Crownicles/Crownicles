@@ -1,4 +1,6 @@
-import { ReactionCollectorCreationPacket } from "../../../Lib/src/packets/interaction/ReactionCollectorPacket";
+import {
+	AcceptRefusePacket
+} from "../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { PacketContext } from "../../../Lib/src/packets/CrowniclesPacket";
 import { DiscordCache } from "../bot/DiscordCache";
 import { DiscordCollectorUtils } from "../utils/DiscordCollectorUtils";
@@ -11,9 +13,9 @@ import { getRandomSmallEventIntro } from "../utils/SmallEventUtils";
 import { ReactionCollectorCartData } from "../../../Lib/src/packets/interaction/ReactionCollectorCart";
 import { ReactionCollectorReturnTypeOrNull } from "../packetHandlers/handlers/ReactionCollectorHandlers";
 
-export async function cartCollector(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
+export async function cartCollector(context: PacketContext, packet: AcceptRefusePacket<ReactionCollectorCartData>): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
-	const data = packet.data.data as ReactionCollectorCartData;
+	const data = packet.data.data;
 	const story = data.displayedDestination.isDisplayed ? "knownDestination" : "unknownDestination";
 	const lng = interaction!.userLanguage;
 

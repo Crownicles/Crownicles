@@ -1,7 +1,7 @@
 import {
+	AcceptRefusePacket,
 	ReactionCollector,
 	ReactionCollectorAcceptReaction,
-	ReactionCollectorCreationPacket,
 	ReactionCollectorData,
 	ReactionCollectorRefuseReaction
 } from "./ReactionCollectorPacket";
@@ -29,7 +29,7 @@ export class ReactionCollectorCart extends ReactionCollector {
 		this.price = price;
 	}
 
-	creationPacket(id: string, endTime: number): ReactionCollectorCreationPacket {
+	creationPacket(id: string, endTime: number): AcceptRefusePacket<ReactionCollectorCartData> {
 		return {
 			id,
 			endTime,
