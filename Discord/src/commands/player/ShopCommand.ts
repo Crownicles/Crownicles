@@ -10,12 +10,11 @@ import i18n from "../../translations/i18n";
 import {
 	sendErrorMessage, sendInteractionNotForYou, SendManner
 } from "../../utils/ErrorUtils";
-import { ReactionCollectorCreationPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import {
 	CommandShopNotEnoughCurrency,
 	ReactionCollectorShopCloseReaction,
-	ReactionCollectorShopData,
-	ReactionCollectorShopItemReaction
+	ReactionCollectorShopItemReaction,
+	ReactionCollectorShopPacket
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorShop";
 import {
 	ActionRowBuilder,
@@ -40,6 +39,7 @@ import {
 } from "../../utils/DiscordCollectorUtils";
 import {
 	ReactionCollectorBuyCategorySlotCancelReaction,
+	ReactionCollectorBuyCategorySlotPacket,
 	ReactionCollectorBuyCategorySlotReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorBuyCategorySlot";
 import { ShopItemType } from "../../../../Lib/src/constants/LogsConstants";
@@ -226,7 +226,7 @@ export async function handleCommandShopBadgeBought(context: PacketContext): Prom
 	});
 }
 
-export async function shopInventoryExtensionCollector(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
+export async function shopInventoryExtensionCollector(context: PacketContext, packet: ReactionCollectorBuyCategorySlotPacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction!)!;
 	const lng = interaction.userLanguage;
 	const row = new ActionRowBuilder<ButtonBuilder>();
@@ -343,7 +343,7 @@ export async function handleCommandShopClosed(context: PacketContext): Promise<v
 	await (interaction.replied ? interaction.followUp(args) : interaction.reply(args));
 }
 
-async function manageBuyoutConfirmation(packet: ReactionCollectorCreationPacket, context: PacketContext, data: ReactionCollectorShopData, reaction: ReactionCollectorShopItemReaction): Promise<void> {
+async function manageBuyoutConfirmation(packet: ReactionCollectorShopPacket, context: PacketContext, data: ReactionCollectorShopPacket["data"]["data"], reaction: ReactionCollectorShopItemReaction): Promise<void> {
 	PacketUtils.sendPacketToBackend(context, makePacket(ChangeBlockingReasonPacket, {
 		oldReason: BlockingConstants.REASONS.SHOP,
 		newReason: BlockingConstants.REASONS.SHOP_CONFIRMATION
@@ -454,7 +454,7 @@ type ShopItemNames = {
 	short: string;
 };
 
-function getShopItemNames(data: ReactionCollectorShopData, shopItemId: ShopItemType, lng: Language): ShopItemNames {
+function getShopItemNames(data: ReactionCollectorShopPacket["data"]["data"], shopItemId: ShopItemType, lng: Language): ShopItemNames {
 	if (shopItemId === ShopItemType.DAILY_POTION) {
 		return {
 			normal: DisplayUtils.getItemDisplayWithStats(data.additionalShopData!.dailyPotion!, lng),
@@ -473,7 +473,7 @@ function getShopItemNames(data: ReactionCollectorShopData, shopItemId: ShopItemT
 	};
 }
 
-function getShopItemDisplay(data: ReactionCollectorShopData, reaction: ReactionCollectorShopItemReaction, lng: Language, shopItemNames: ShopItemNames, amounts: number[]): string {
+function getShopItemDisplay(data: ReactionCollectorShopPacket["data"]["data"], reaction: ReactionCollectorShopItemReaction, lng: Language, shopItemNames: ShopItemNames, amounts: number[]): string {
 	if (amounts.length === 1 && amounts[0] === 1) {
 		return `${i18n.t("commands:shop.shopItemsDisplaySingle", {
 			lng,
@@ -497,10 +497,10 @@ function getShopItemDisplay(data: ReactionCollectorShopData, reaction: ReactionC
 	return desc;
 }
 
-export async function shopCollector(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
+export async function shopCollector(context: PacketContext, packet: ReactionCollectorShopPacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction!)!;
 	const lng = interaction.userLanguage;
-	const data = packet.data.data as ReactionCollectorShopData;
+	const data = packet.data.data;
 
 	const categories: string[] = [];
 	for (const reaction of packet.reactions) {
