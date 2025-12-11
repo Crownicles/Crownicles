@@ -303,19 +303,68 @@ export class Player extends Model {
 	 * @param parameters
 	 */
 	public async addTokens(parameters: EditValueParameters): Promise<Player> {
+		const previousTokens = this.tokens;
 		const newTokens = MathUtils.clamp(
 			this.tokens + parameters.amount,
 			0,
 			TokensConstants.MAX
 		);
 
-		if (newTokens === this.tokens) {
+		if (newTokens === previousTokens) {
 			return this;
 		}
 
 		this.setTokens(newTokens);
 		await crowniclesInstance.logsDatabase.logTokensChange(this.keycloakId, this.tokens, parameters.reason);
+
+		// Track missions for earning tokens
+		const actualChange = newTokens - previousTokens;
+		if (actualChange > 0) {
+			let newPlayer = await MissionsController.update(this, parameters.response, {
+				missionId: "earnTokens",
+				count: actualChange
+			});
+
+			/*
+			 * Clone the mission entity and player to this player model and the entity instance passed in the parameters
+			 * As the money and experience may have changed, we update the models of the caller
+			 */
+			Object.assign(this, newPlayer);
+
+			// Check if max tokens reached
+			if (this.tokens === TokensConstants.MAX) {
+				newPlayer = await MissionsController.update(this, parameters.response, {
+					missionId: "maxTokensReached"
+				});
+				Object.assign(this, newPlayer);
+			}
+		}
+
 		return this;
+	}
+
+	/**
+	 * Use tokens (for missions tracking) - only for spending tokens
+	 * @param parameters
+	 */
+	public async useTokens(parameters: EditValueParameters): Promise<Player> {
+		const tokensToUse = Math.abs(parameters.amount);
+
+		// Track missions for using tokens
+		let newPlayer = await MissionsController.update(this, parameters.response, {
+			missionId: "useTokens",
+			count: tokensToUse
+		});
+		Object.assign(this, newPlayer);
+
+		newPlayer = await MissionsController.update(this, parameters.response, {
+			missionId: "spendTokens",
+			count: tokensToUse
+		});
+		Object.assign(this, newPlayer);
+
+		parameters.amount = -tokensToUse;
+		return this.addTokens(parameters);
 	}
 
 	/**

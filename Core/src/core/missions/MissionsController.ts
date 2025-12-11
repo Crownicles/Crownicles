@@ -2,7 +2,10 @@ import Player from "../database/game/models/Player";
 import { IMission } from "./IMission";
 import MissionSlot, { MissionSlots } from "../database/game/models/MissionSlot";
 import { DailyMissions } from "../database/game/models/DailyMission";
-import { hoursToMilliseconds } from "../../../../Lib/src/utils/TimeUtils";
+import {
+	datesAreOnSameDay,
+	hoursToMilliseconds
+} from "../../../../Lib/src/utils/TimeUtils";
 import { MissionDifficulty } from "./MissionDifficulty";
 import { Campaign } from "./Campaign";
 import { Constants } from "../../../../Lib/src/constants/Constants";
@@ -10,7 +13,8 @@ import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import PlayerMissionsInfo, { PlayerMissionsInfos } from "../database/game/models/PlayerMissionsInfo";
 import {
-	CrowniclesPacket, makePacket
+	CrowniclesPacket,
+	makePacket
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { MissionsExpiredPacket } from "../../../../Lib/src/packets/events/MissionsExpiredPacket";
 import { crowniclesInstance } from "../../index";
@@ -88,7 +92,53 @@ export class MissionsController {
 				keycloakId: player.keycloakId
 			}));
 		}
+
 		return player;
+	}
+
+	/**
+	 * Handle the dailyStreak mission update when a daily mission is completed.
+	 * Resets the streak if the player missed a day (last completion was not yesterday).
+	 * This MUST be called BEFORE updating lastDailyMissionCompleted to get accurate streak tracking.
+	 * @param player
+	 * @param missionSlots
+	 * @param missionInfo
+	 * @param response
+	 */
+	private static async handleDailyStreakMission(
+		player: Player,
+		missionSlots: MissionSlot[],
+		missionInfo: PlayerMissionsInfo,
+		response: CrowniclesPacket[]
+	): Promise<void> {
+		const streakMission = missionSlots.find(slot => slot.missionId === "dailyStreak");
+		if (!streakMission || streakMission.isCompleted()) {
+			// Update the mission if the player doesn't have it or has already completed it
+			await MissionsController.update(player, response, { missionId: "dailyStreak" });
+			return;
+		}
+
+		// Check if the player completed the daily mission yesterday
+		const today = new Date();
+		today.setHours(0, 0, 0, 0);
+		const yesterday = new Date(today);
+		yesterday.setDate(yesterday.getDate() - 1);
+
+		// Check the last completion date
+		const lastCompleted = missionInfo.lastDailyMissionCompleted;
+		if (lastCompleted) {
+			const lastCompletedDate = new Date(lastCompleted);
+			lastCompletedDate.setHours(0, 0, 0, 0);
+
+			// If the last completion was NOT yesterday and NOT today, reset the streak
+			if (!datesAreOnSameDay(lastCompletedDate, yesterday) && !datesAreOnSameDay(lastCompletedDate, today)) {
+				streakMission.numberDone = 0;
+				await streakMission.save();
+			}
+		}
+
+		// Update the dailyStreak mission
+		await MissionsController.update(player, response, { missionId: "dailyStreak" });
 	}
 
 	/**
@@ -119,7 +169,7 @@ export class MissionsController {
 			count,
 			params,
 			set
-		}, missionSlots, missionInfo);
+		}, missionSlots, missionInfo, player, response);
 		player = await MissionsController.checkCompletedMissions(player, missionSlots, missionInfo, response, specialMissionCompletion);
 
 		await player.save();
@@ -337,9 +387,17 @@ export class MissionsController {
 	 * @param missionInformation
 	 * @param missionSlots
 	 * @param missionInfo
+	 * @param player
+	 * @param response
 	 * @returns true if the daily mission is finished and needs to be said to the player
 	 */
-	private static async updateMissionsCounts(missionInformation: MissionInformations, missionSlots: MissionSlot[], missionInfo: PlayerMissionsInfo): Promise<SpecialMissionCompletion> {
+	private static async updateMissionsCounts(
+		missionInformation: MissionInformations,
+		missionSlots: MissionSlot[],
+		missionInfo: PlayerMissionsInfo,
+		player: Player,
+		response: CrowniclesPacket[]
+	): Promise<SpecialMissionCompletion> {
 		const missionInterface = this.getMissionInterface(missionInformation.missionId);
 		const specialMissionCompletion: SpecialMissionCompletion = {
 			daily: false,
@@ -362,6 +420,9 @@ export class MissionsController {
 		}
 		await missionInfo.save();
 		if (missionInfo.dailyMissionNumberDone >= dailyMission.missionObjective) {
+			// Handle daily streak mission BEFORE updating lastDailyMissionCompleted
+			await MissionsController.handleDailyStreakMission(player, missionSlots, missionInfo, response);
+
 			missionInfo.lastDailyMissionCompleted = new Date();
 			await missionInfo.save();
 			specialMissionCompletion.daily = true;

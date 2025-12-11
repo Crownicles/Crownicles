@@ -12,10 +12,12 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 	await addCampaignMissionList(context, [
 		26, // meetVelanna (after chooseClassTier with variant 1)
 		39, // doExpeditions (after trainedPet)
+		40, // buyTokensFromShop (after doExpeditions)
 		75, // longExpedition 120min (after fightStreak)
 		82, // longExpedition 300min (after drinkEnergyPotion)
 		82, // dangerousExpedition 30% (after longExpedition 300min)
 		89, // expeditionStreak (after meetHermit)
+		90, // maxTokensReached (after expeditionStreak)
 		94, // dangerousExpedition 50% (after sellItemWithGivenCost)
 		97 // showCloneToTalvar (at the very end)
 	]);
@@ -36,10 +38,12 @@ export async function down({ context }: { context: QueryInterface }): Promise<vo
 	await removeCampaignMissionList(context, [
 		26,
 		39,
+		40,
 		75,
 		82,
 		82,
 		89,
+		90,
 		94,
 		97
 	]);

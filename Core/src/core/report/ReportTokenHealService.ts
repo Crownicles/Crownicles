@@ -51,8 +51,8 @@ async function acceptUseTokens(
 	}
 
 	// Spend the tokens (use original cost for clarity to the user)
-	await player.addTokens({
-		amount: -tokenCost,
+	await player.useTokens({
+		amount: tokenCost,
 		response,
 		reason: NumberChangeReason.REPORT_TOKENS
 	});

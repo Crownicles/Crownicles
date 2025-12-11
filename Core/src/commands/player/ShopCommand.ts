@@ -221,6 +221,9 @@ function getTokenShopItem(tokensAlreadyPurchased: number): ShopItem {
 			});
 			await player.save();
 
+			// Track mission for buying tokens from shop
+			await MissionsController.update(player, response, { missionId: "buyTokensFromShop" });
+
 			response.push(makePacket(CommandShopTokensBought, { amount: 1 }));
 			return true;
 		}

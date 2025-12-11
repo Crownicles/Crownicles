@@ -7,6 +7,7 @@ import Player from "../database/game/models/Player";
 import {
 	giveItemToPlayer, getItemByIdAndCategory
 } from "../utils/ItemUtils";
+import { MissionsController } from "../missions/MissionsController";
 
 /**
  * Apply a currency reward to the player if amount is positive
@@ -46,9 +47,23 @@ async function applyScoreReward(player: Player, response: CrowniclesPacket[], am
  */
 async function applyTokensReward(player: Player, response: CrowniclesPacket[], amount: number): Promise<void> {
 	if (amount > 0) {
+		const previousTokens = player.tokens;
 		await player.addTokens({
 			amount, response, reason: NumberChangeReason.EXPEDITION
 		});
+		const newTokens = player.tokens;
+
+		// Only track mission if tokens were actually added
+		const actualChange = newTokens - previousTokens;
+		if (actualChange > 0) {
+			// Track mission for earning tokens in a single expedition (set: true replaces progression instead of incrementing)
+			const newPlayer = await MissionsController.update(player, response, {
+				missionId: "earnTokensInOneExpedition",
+				count: actualChange,
+				set: true
+			});
+			Object.assign(player, newPlayer);
+		}
 	}
 }
 
