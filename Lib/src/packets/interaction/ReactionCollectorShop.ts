@@ -117,6 +117,12 @@ export type additionalShopData = {
 	remainingTokens?: number;
 };
 
+type ShopReaction = ReactionCollectorShopItemReaction | ReactionCollectorShopCloseReaction;
+export type ReactionCollectorShopPacket = ReactionCollectorCreationPacket<
+	ReactionCollectorShopData,
+	ShopReaction
+>;
+
 export class ReactionCollectorShop extends ReactionCollector {
 	public readonly currency!: ShopCurrency.MONEY | ShopCurrency.GEM;
 
@@ -140,7 +146,7 @@ export class ReactionCollectorShop extends ReactionCollector {
 		this.additionalShopData = additionalShopData;
 	}
 
-	creationPacket(id: string, endTime: number): ReactionCollectorCreationPacket {
+	creationPacket(id: string, endTime: number): ReactionCollectorShopPacket {
 		const reactions = [];
 		for (const shopCategory of this.shopCategories) {
 			for (const shopItem of shopCategory.items) {
