@@ -16,7 +16,6 @@ import { DisplayUtils } from "../../utils/DisplayUtils";
 import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import i18n from "../../translations/i18n";
 import {
-	ReactionCollectorCreationPacket,
 	ReactionCollectorReaction,
 	ReactionCollectorRefuseReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
@@ -24,6 +23,7 @@ import { ReactionCollectorReturnTypeOrNull } from "../../packetHandlers/handlers
 import {
 	ReactionCollectorPetTransferData,
 	ReactionCollectorPetTransferDepositReaction,
+	ReactionCollectorPetTransferPacket,
 	ReactionCollectorPetTransferSwitchReaction,
 	ReactionCollectorPetTransferWithdrawReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorPetTransfer";
@@ -239,7 +239,7 @@ function getWithdrawComponents(
 
 async function handlePetTransferCollect(
 	inMainMenu: boolean,
-	packet: ReactionCollectorCreationPacket,
+	packet: ReactionCollectorPetTransferPacket,
 	context: PacketContext,
 	reactions: {
 		depositReaction?: ReactionMap;
@@ -343,7 +343,7 @@ async function handlePetTransferCollect(
 }
 
 
-export async function handlePetTransferReactionCollector(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
+export async function handlePetTransferReactionCollector(context: PacketContext, packet: ReactionCollectorPetTransferPacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction);
 
 	if (!interaction) {
@@ -351,7 +351,7 @@ export async function handlePetTransferReactionCollector(context: PacketContext,
 	}
 	const lng = interaction.userLanguage;
 
-	const data = packet.data.data as ReactionCollectorPetTransferData;
+	const data = packet.data.data;
 	const depositReaction = packet.reactions.map((reaction, index) => ({
 		reaction,
 		index
