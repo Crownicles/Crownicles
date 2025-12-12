@@ -7,9 +7,11 @@ import { smallEventFuncs } from "../../../../core/smallEvents/witch";
 const witchActions = WitchActionDataController.instance.getAll();
 
 const strings: string[] = [];
+const actionIds: string[] = [];
 witchActions
 	.forEach(action => {
 		strings.push(`- ${action.id}`);
+		actionIds.push(action.id);
 	});
 
 export const commandInfo: ITestCommand = {
@@ -20,7 +22,12 @@ export const commandInfo: ITestCommand = {
 		action2: TypeKey.STRING,
 		action3: TypeKey.STRING
 	},
-	description: `Force le déclenchement du mini-événement de la sorcière avec 3 actions spécifiées. Permet de tester les différents choix et leurs conséquences. Liste des actions :\n${strings.join("\n")}`
+	description: `Force le déclenchement du mini-événement de la sorcière avec 3 actions spécifiées. Permet de tester les différents choix et leurs conséquences. Liste des actions :\n${strings.join("\n")}`,
+	argSuggestions: {
+		action1: actionIds,
+		action2: actionIds,
+		action3: actionIds
+	}
 };
 
 const witchActionsLower = witchActions.map(action => action.id.toLowerCase());

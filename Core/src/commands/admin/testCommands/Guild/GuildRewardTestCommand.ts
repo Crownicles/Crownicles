@@ -18,7 +18,10 @@ export const commandInfo: ITestCommand = {
 	aliases: ["greward"],
 	commandFormat: "<reward>",
 	typeWaited: { reward: TypeKey.STRING },
-	description: stringDesc
+	description: stringDesc,
+	argSuggestions: {
+		reward: Object.values(GuildDailyConstants.REWARD_TYPES)
+	}
 };
 
 /**

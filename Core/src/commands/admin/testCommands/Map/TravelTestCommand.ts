@@ -15,7 +15,15 @@ export const commandInfo: ITestCommand = {
 		idStart: TypeKey.INTEGER,
 		idEnd: TypeKey.INTEGER
 	},
-	description: "Téléporte le joueur sur un chemin spécifique entre deux lieux. Voir Core/resources/mapLinks/ pour les chemins valides ou /test mapinfo pour votre position"
+	description: "Téléporte le joueur sur un chemin spécifique entre deux lieux. Voir Core/resources/mapLinks/ pour les chemins valides ou /test mapinfo pour votre position",
+	argSuggestions: {
+		idStart: ["1", "2", "3", "4", "5", "10", "15", "20"],
+		idEnd: ["1", "2", "3", "4", "5", "10", "15", "20"]
+	},
+	fullSuggestions: [
+		"1 2", "1 3", "2 1", "2 3", "3 1", "3 2",
+		"4 5", "5 4", "10 11", "11 10", "15 16", "20 21"
+	]
 };
 
 /**

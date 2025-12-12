@@ -7,7 +7,8 @@ export const commandInfo: ITestCommand = {
 	aliases: ["apfree"],
 	commandFormat: "<time>",
 	typeWaited: { time: TypeKey.INTEGER },
-	description: "Avance la date du dernier 'pet free' de X minutes, permettant de libérer un animal plus tôt que prévu"
+	description: "Avance la date du dernier 'pet free' de X minutes, permettant de libérer un animal plus tôt que prévu",
+	argSuggestions: { time: ["1", "60", "120", "360", "720", "1440"] }
 };
 
 /**

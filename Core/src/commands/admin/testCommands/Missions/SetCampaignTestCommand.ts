@@ -12,7 +12,8 @@ export const commandInfo: ITestCommand = {
 	typeWaited: {
 		progression: TypeKey.INTEGER
 	},
-	description: "Positionne le joueur à une étape spécifique de la campagne principale. Utile pour tester des missions de campagne avancées sans refaire tout le scénario"
+	description: "Positionne le joueur à une étape spécifique de la campagne principale. Utile pour tester des missions de campagne avancées sans refaire tout le scénario",
+	argSuggestions: { progression: ["1", "5", "10", "15", "20", "25", "30"] }
 };
 
 const setCampaignTestCommand: ExecuteTestCommandLike = async (player, args) => {

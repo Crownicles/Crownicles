@@ -6,6 +6,11 @@ import {
 } from "../../../../core/CommandsTest";
 import { PetDataController } from "../../../../data/Pet";
 
+// Generate pet id suggestions (sample of pet IDs with both sexes)
+const maxPetId = PetDataController.instance.getMaxId();
+const samplePetIds = [1, 2, 3, 5, 8, 10, 15, 20].filter(id => id <= maxPetId);
+const guildPetFullSuggestions: string[] = samplePetIds.flatMap(id => [`${id} m`, `${id} f`]).slice(0, 25);
+
 export const commandInfo: ITestCommand = {
 	name: "guildpet",
 	aliases: ["gp"],
@@ -14,7 +19,12 @@ export const commandInfo: ITestCommand = {
 		id: TypeKey.INTEGER,
 		sex: TypeKey.STRING
 	},
-	description: "Ajoute un familier au refuge de guilde avec l'ID et le sexe spécifiés. Voir Core/resources/pets/ pour les IDs valides. Sexe: m=mâle, f=femelle"
+	description: "Ajoute un familier au refuge de guilde avec l'ID et le sexe spécifiés. Voir Core/resources/pets/ pour les IDs valides. Sexe: m=mâle, f=femelle",
+	argSuggestions: {
+		id: samplePetIds.map(id => id.toString()),
+		sex: ["m", "f"]
+	},
+	fullSuggestions: guildPetFullSuggestions
 };
 
 /**

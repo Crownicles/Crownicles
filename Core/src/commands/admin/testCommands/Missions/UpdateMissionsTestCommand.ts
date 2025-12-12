@@ -2,7 +2,16 @@ import { MissionsController } from "../../../../core/missions/MissionsController
 import {
 	ExecuteTestCommandLike, ITestCommand, TypeKey
 } from "../../../../core/CommandsTest";
-import { MissionDataController } from "../../../../data/Mission";
+import { Mission, MissionDataController } from "../../../../data/Mission";
+
+const missionIds = MissionDataController.instance.getAll().map((m: Mission) => m.id);
+
+// Sample mission IDs with common count values
+const sampleMissionIds = missionIds.slice(0, 8);
+const commonCounts = ["1", "5", "10"];
+const updateMissionFullSuggestions = sampleMissionIds.flatMap(missionId =>
+	commonCounts.map(count => `${missionId} ${count}`)
+).slice(0, 25);
 
 export const commandInfo: ITestCommand = {
 	name: "updateMissions",
@@ -12,7 +21,12 @@ export const commandInfo: ITestCommand = {
 		"mission id": TypeKey.STRING,
 		"count": TypeKey.INTEGER
 	},
-	description: "Met à jour le progrès d'une mission spécifique avec le nombre d'unités donné. Voir Core/resources/missions/ pour les IDs valides"
+	description: "Met à jour le progrès d'une mission spécifique avec le nombre d'unités donné. Voir Core/resources/missions/ pour les IDs valides",
+	argSuggestions: {
+		"mission id": missionIds,
+		"count": commonCounts
+	},
+	fullSuggestions: updateMissionFullSuggestions
 };
 
 /**

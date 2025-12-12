@@ -8,7 +8,8 @@ export const commandInfo: ITestCommand = {
 	aliases: ["level", "lvl"],
 	commandFormat: "<niveau>",
 	typeWaited: { niveau: TypeKey.INTEGER },
-	description: "Définit le niveau du joueur testeur. Le niveau influence les points de vie, de puissance, et débloque de nouvelles fonctionnalités"
+	description: "Définit le niveau du joueur testeur. Le niveau influence les points de vie, de puissance, et débloque de nouvelles fonctionnalités",
+	argSuggestions: { niveau: ["1", "10", "25", "50", "75", "100", "150", "200"] }
 };
 
 /**

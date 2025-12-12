@@ -5,6 +5,12 @@ import {
 } from "../../../../core/CommandsTest";
 import { PetConstants } from "../../../../../../Lib/src/constants/PetConstants";
 
+const foodTypes = [...PetConstants.PET_FOOD_BY_ID];
+const foodAmounts = ["0", "10", "50", "100"];
+const setFoodFullSuggestions = foodTypes.slice(0, 6).flatMap(food =>
+	foodAmounts.map(amount => `${food} ${amount}`)
+).slice(0, 25);
+
 export const commandInfo: ITestCommand = {
 	name: "setfood",
 	aliases: ["sf"],
@@ -13,7 +19,12 @@ export const commandInfo: ITestCommand = {
 		foodType: TypeKey.STRING,
 		amount: TypeKey.INTEGER
 	},
-	description: "Définit la quantité d'un type de nourriture spécifique dans le stockage de la guilde. Types disponibles : voir les constantes de nourriture"
+	description: "Définit la quantité d'un type de nourriture spécifique dans le stockage de la guilde. Types disponibles : voir les constantes de nourriture",
+	argSuggestions: {
+		foodType: foodTypes,
+		amount: foodAmounts
+	},
+	fullSuggestions: setFoodFullSuggestions
 };
 
 /**

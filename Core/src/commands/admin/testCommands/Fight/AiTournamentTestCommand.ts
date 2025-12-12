@@ -335,7 +335,10 @@ export const commandInfo: ITestCommand = {
 		showDetails: TypeKey.STRING
 	},
 	minArgs: 0, // Both parameters are optional
-	description: "Lance un tournoi IA entre tous les joueurs niveau 8+ de la base de données. Paramètres optionnels : fightsPerPair (3-10000, défaut 5000), showDetails (true/false, défaut false)."
+	description: "Lance un tournoi IA entre tous les joueurs niveau 8+ de la base de données. Paramètres optionnels : fightsPerPair (3-10000, défaut 5000), showDetails (true/false, défaut false).",
+	argSuggestions: {
+		showDetails: ["true", "false"]
+	}
 };
 
 /**

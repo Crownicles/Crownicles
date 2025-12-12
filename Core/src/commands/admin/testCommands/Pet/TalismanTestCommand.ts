@@ -2,6 +2,14 @@ import {
 	ExecuteTestCommandLike, ITestCommand, TypeKey
 } from "../../../../core/CommandsTest";
 
+// Generate all combinations of type and action
+const talismanFullSuggestions = [
+	"anchor give",
+	"anchor remove",
+	"clone give",
+	"clone remove"
+];
+
 export const commandInfo: ITestCommand = {
 	name: "talisman",
 	commandFormat: "<type = anchor/clone> <action = give/remove>",
@@ -9,7 +17,12 @@ export const commandInfo: ITestCommand = {
 		type: TypeKey.STRING,
 		action: TypeKey.STRING
 	},
-	description: "Donne ou retire un talisman. Types: anchor (ancrage), clone (clonage). Actions: give (donner), remove (retirer)"
+	description: "Donne ou retire un talisman. Types: anchor (ancrage), clone (clonage). Actions: give (donner), remove (retirer)",
+	argSuggestions: {
+		type: ["anchor", "clone"],
+		action: ["give", "remove"]
+	},
+	fullSuggestions: talismanFullSuggestions
 };
 
 const TALISMAN_TYPES = {

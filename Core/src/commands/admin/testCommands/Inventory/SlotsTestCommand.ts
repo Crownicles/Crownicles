@@ -11,7 +11,17 @@ export const commandInfo: ITestCommand = {
 		"category [0-3]": TypeKey.INTEGER,
 		"number": TypeKey.INTEGER
 	},
-	description: "Modifie le nombre d'emplacements d'inventaire pour une catégorie d'objets. Catégories : 0=armes, 1=armures, 2=potions, 3=objets."
+	description: "Modifie le nombre d'emplacements d'inventaire pour une catégorie d'objets. Catégories : 0=armes, 1=armures, 2=potions, 3=objets.",
+	argSuggestions: {
+		"category [0-3]": ["0", "1", "2", "3"],
+		"number": ["0", "1", "2", "3", "4"]
+	},
+	fullSuggestions: [
+		"0 0", "0 1", "0 2", "0 3", "0 4",
+		"1 0", "1 1", "1 2", "1 3", "1 4",
+		"2 0", "2 1", "2 2", "2 3", "2 4",
+		"3 0", "3 1", "3 2", "3 3", "3 4"
+	]
 };
 
 /**

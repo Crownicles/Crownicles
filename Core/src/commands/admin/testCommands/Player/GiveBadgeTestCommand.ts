@@ -3,11 +3,14 @@ import {
 } from "../../../../core/CommandsTest";
 import { Badge } from "../../../../../../Lib/src/types/Badge";
 
+const allBadges = Object.values(Badge);
+
 export const commandInfo: ITestCommand = {
 	name: "givebadge",
 	commandFormat: "<badge>",
 	typeWaited: { badge: TypeKey.STRING },
-	description: "Attribue un badge spécifique au joueur. Utilisez '*' pour tous les badges. La commande affiche la liste des badges disponibles en cas d'erreur"
+	description: "Attribue un badge spécifique au joueur. Utilisez '*' pour tous les badges. La commande affiche la liste des badges disponibles en cas d'erreur",
+	argSuggestions: { badge: ["*", ...allBadges] }
 };
 
 /**

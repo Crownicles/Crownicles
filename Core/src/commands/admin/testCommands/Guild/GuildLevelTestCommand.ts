@@ -9,7 +9,8 @@ export const commandInfo: ITestCommand = {
 	aliases: ["glvl"],
 	commandFormat: "<level>",
 	typeWaited: { level: TypeKey.INTEGER },
-	description: "Définit le niveau de la guilde du joueur."
+	description: "Définit le niveau de la guilde du joueur.",
+	argSuggestions: { level: ["1", "5", "10", "25", "50", "75", "100"] }
 };
 
 /**

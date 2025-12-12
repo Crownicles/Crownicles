@@ -14,7 +14,8 @@ export const commandInfo: ITestCommand = {
 	],
 	commandFormat: "<points>",
 	typeWaited: { points: TypeKey.INTEGER },
-	description: "Définit le score total de la guilde du joueur testeur."
+	description: "Définit le score total de la guilde du joueur testeur.",
+	argSuggestions: { points: ["100", "500", "1000", "5000", "10000", "50000", "100000"] }
 };
 
 /**

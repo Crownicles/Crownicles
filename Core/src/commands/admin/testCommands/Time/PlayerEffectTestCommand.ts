@@ -12,8 +12,10 @@ const effects = Array.from(Effect.getAll()).filter(value => [
 	Effect.OCCUPIED
 ].indexOf(value) === -1);
 let printableEffects = "";
+const effectIds: string[] = [];
 effects.forEach(e => {
 	printableEffects = printableEffects.concat(`- ${e.id}\n`);
+	effectIds.push(e.id);
 });
 
 export const commandInfo: ITestCommand = {
@@ -21,7 +23,8 @@ export const commandInfo: ITestCommand = {
 	aliases: ["effect"],
 	commandFormat: "<effect>",
 	typeWaited: { effect: TypeKey.STRING },
-	description: `Applique l'effet spécifié au joueur testeur. Permet de tester les différents états de jeu et leurs conséquences\nListe des effets :\n${printableEffects}`
+	description: `Applique l'effet spécifié au joueur testeur. Permet de tester les différents états de jeu et leurs conséquences\nListe des effets :\n${printableEffects}`,
+	argSuggestions: { effect: effectIds }
 };
 
 /**

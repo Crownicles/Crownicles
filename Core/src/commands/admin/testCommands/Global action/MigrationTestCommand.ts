@@ -12,7 +12,10 @@ export const commandInfo: ITestCommand = {
 		database: TypeKey.STRING,
 		number: TypeKey.INTEGER
 	},
-	description: "Teste les migrations de base de données en effectuant un rollback (down) puis une remise à jour (up). Databases : 'logs' ou 'game'. DANGER : peut corrompre les données"
+	description: "Teste les migrations de base de données en effectuant un rollback (down) puis une remise à jour (up). Databases : 'logs' ou 'game'. DANGER : peut corrompre les données",
+	argSuggestions: {
+		database: ["logs", "game"]
+	}
 };
 
 function getDatabaseFromName(databaseName: string): LogsDatabase | GameDatabase {

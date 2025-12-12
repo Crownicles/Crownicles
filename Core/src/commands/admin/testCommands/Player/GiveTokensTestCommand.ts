@@ -12,7 +12,8 @@ export const commandInfo: ITestCommand = {
 	],
 	commandFormat: "<tokens>",
 	typeWaited: { tokens: TypeKey.INTEGER },
-	description: "Ajoute ou retire des jetons au joueur testeur. Peut être négatif pour retirer des jetons"
+	description: "Ajoute ou retire des jetons au joueur testeur. Peut être négatif pour retirer des jetons",
+	argSuggestions: { tokens: ["1", "5", "10", "25", "50", "100", "-1", "-5"] }
 };
 
 /**

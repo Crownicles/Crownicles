@@ -10,7 +10,8 @@ export const commandInfo: ITestCommand = {
 	typeWaited: {
 		classId: TypeKey.INTEGER
 	},
-	description: "Change votre classe pour la classe d'id donnée."
+	description: "Change votre classe pour la classe d'id donnée.",
+	argSuggestions: { classId: ["1", "2", "3", "4", "5", "6", "7", "8"] }
 };
 
 /**

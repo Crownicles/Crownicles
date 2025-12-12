@@ -10,7 +10,8 @@ export const commandInfo: ITestCommand = {
 	aliases: ["fr", "forcer"],
 	commandFormat: "<id>",
 	typeWaited: { id: TypeKey.INTEGER },
-	description: "Force un événement spécifique lors du prochain /report. Utile pour tester des événements précis. Utilisez -1 pour un événement aléatoire. Voir /test listevents pour les IDs"
+	description: "Force un événement spécifique lors du prochain /report. Utile pour tester des événements précis. Utilisez -1 pour un événement aléatoire. Voir /test listevents pour les IDs",
+	argSuggestions: { id: ["-1", "1", "2", "3", "4", "5", "10", "20", "50"] }
 };
 
 /**

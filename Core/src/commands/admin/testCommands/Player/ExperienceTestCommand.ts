@@ -10,7 +10,8 @@ export const commandInfo: ITestCommand = {
 	typeWaited: {
 		experience: TypeKey.INTEGER
 	},
-	description: "Définit l'expérience du joueur testeur."
+	description: "Définit l'expérience du joueur testeur.",
+	argSuggestions: { experience: ["0", "100", "500", "1000", "5000", "10000"] }
 };
 
 /**

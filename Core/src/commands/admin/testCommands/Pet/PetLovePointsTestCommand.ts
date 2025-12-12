@@ -12,7 +12,8 @@ export const commandInfo: ITestCommand = {
 	typeWaited: {
 		lovePoints: TypeKey.INTEGER
 	},
-	description: "Définit le niveau d'amour (love points) du familier actuel. Les points d'amour influencent les capacités et l'efficacité du pet"
+	description: "Définit le niveau d'amour (love points) du familier actuel. Les points d'amour influencent les capacités et l'efficacité du pet",
+	argSuggestions: { lovePoints: ["0", "25", "50", "75", "100", "150", "200"] }
 };
 
 /**

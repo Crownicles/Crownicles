@@ -7,7 +7,8 @@ export const commandInfo: ITestCommand = {
 	name: "addmoney",
 	commandFormat: "<money>",
 	typeWaited: { money: TypeKey.INTEGER },
-	description: "Ajoute une somme d'argent au solde actuel du joueur testeur. Peut être négatif pour retirer de l'argent"
+	description: "Ajoute une somme d'argent au solde actuel du joueur testeur. Peut être négatif pour retirer de l'argent",
+	argSuggestions: { money: ["100", "500", "1000", "5000", "10000", "-100", "-500"] }
 };
 
 /**

@@ -8,7 +8,8 @@ export const commandInfo: ITestCommand = {
 	aliases: ["agd"],
 	commandFormat: "<time>",
 	typeWaited: { time: TypeKey.INTEGER },
-	description: "Récule la date de la dernière récompense quotidienne de guilde de X minutes. Permet de récupérer la récompense suivante X minutes plus tôt."
+	description: "Récule la date de la dernière récompense quotidienne de guilde de X minutes. Permet de récupérer la récompense suivante X minutes plus tôt.",
+	argSuggestions: { time: ["1", "60", "120", "360", "720", "1440"] }
 };
 
 /**
