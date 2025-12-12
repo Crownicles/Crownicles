@@ -220,7 +220,7 @@ export abstract class ExpeditionConstants {
 	 * Requirements to start an expedition
 	 */
 	static readonly REQUIREMENTS = {
-		MIN_LOVE_POINTS: 80,
+		MIN_LOVE_POINTS: 50,
 		MIN_LEVEL_FOR_TALISMAN: 20
 	};
 
