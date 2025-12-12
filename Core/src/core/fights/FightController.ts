@@ -139,7 +139,7 @@ export class FightController {
 	 * @param bug true if the fight has bugged
 	 */
 	public async endFight(response: CrowniclesPacket[], bug = false): Promise<void> {
-		this.state = bug ? FightState.FINISHED : FightState.BUG;
+		this.state = bug ? FightState.BUG : FightState.FINISHED;
 
 		this.checkNegativeEnergy();
 
@@ -158,7 +158,8 @@ export class FightController {
 			await fighter.endFight(!isADraw && fighter === winnerFighter, response, bug, this.turn);
 		}
 
-		if (this.endCallback) {
+		// Only execute the callback if the fight ended normally (not bugged)
+		if (this.endCallback && !bug) {
 			await this.endCallback(this, response);
 		}
 	}
