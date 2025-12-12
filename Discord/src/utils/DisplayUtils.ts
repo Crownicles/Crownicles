@@ -437,4 +437,16 @@ export class DisplayUtils {
 		});
 		return itemWithDetails.id === 0 ? itemField.split("|")[0] : itemField;
 	}
+
+	/**
+	 * Format a number with thousands separators according to the language
+	 * @param value
+	 * @param lng
+	 */
+	static formatNumber(value: number, lng: Language): string {
+		if (!Number.isFinite(value)) {
+			return String(value);
+		}
+		return new Intl.NumberFormat(lng, { useGrouping: true }).format(value);
+	}
 }
