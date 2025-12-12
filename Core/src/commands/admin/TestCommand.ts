@@ -125,9 +125,13 @@ export default class TestCommand {
 			const {
 				command, args
 			} = parseTestCommand(testCommandStr);
+
+			// If args are provided separately in the packet, use them instead
+			const finalArgs = packet.args ? packet.args.split(" ") : args;
+
 			await executeSingleTestCommand({
 				testCommand: command,
-				argsTest: args,
+				argsTest: finalArgs,
 				player,
 				response,
 				context

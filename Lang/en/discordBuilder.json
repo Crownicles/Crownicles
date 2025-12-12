@@ -148,6 +148,10 @@
       "commandName": {
         "description": "Test command to execute.",
         "name": "command"
+      },
+      "args": {
+        "description": "Arguments for the test command.",
+        "name": "arguments"
       }
     }
   },

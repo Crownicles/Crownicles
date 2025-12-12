@@ -27,10 +27,12 @@ import {
 
 async function getPacket(interaction: CrowniclesInteraction, user: KeycloakUser): Promise<CommandTestPacketReq> {
 	const commandName = interaction.options.get("command");
+	const args = interaction.options.get("arguments");
 	await interaction.deferReply();
 	return makePacket(CommandTestPacketReq, {
 		keycloakId: user.id,
-		command: commandName ? commandName.value as string : undefined
+		command: commandName ? commandName.value as string : undefined,
+		args: args ? args.value as string : undefined
 	});
 }
 
@@ -142,7 +144,13 @@ async function sendResultWithoutInteraction(packet: CommandTestPacketRes, contex
 
 async function handleAutocomplete(interaction: AutocompleteInteraction): Promise<void> {
 	try {
-		const focusedValue = interaction.options.getFocused();
+		const focusedOption = interaction.options.getFocused(true);
+
+		// Only handle autocomplete for the command option
+		if (focusedOption.name !== "command") {
+			await interaction.respond([]);
+			return;
+		}
 
 		// Check if we have test commands cached
 		if (!TestCommandsCache.hasCommands()) {
@@ -158,7 +166,7 @@ async function handleAutocomplete(interaction: AutocompleteInteraction): Promise
 			aliases: cmd.aliases && cmd.aliases.length > 0 ? cmd.aliases : [cmd.name]
 		}));
 
-		const results = searchAutocomplete(testCommands, focusedValue);
+		const results = searchAutocomplete(testCommands, focusedOption.value);
 		const choices = toDiscordChoices(results);
 
 		await interaction.respond(choices);
@@ -180,7 +188,9 @@ export const commandInfo: ICommand = {
 	slashCommandBuilder: SlashCommandBuilderGenerator.generateBaseCommand("test")
 		.addStringOption(option => SlashCommandBuilderGenerator.generateOption("test", "commandName", option)
 			.setRequired(false)
-			.setAutocomplete(true)) as SlashCommandBuilder,
+			.setAutocomplete(true))
+		.addStringOption(option => SlashCommandBuilderGenerator.generateOption("test", "args", option)
+			.setRequired(false)) as SlashCommandBuilder,
 	getPacket,
 	mainGuildCommand: false,
 	handleAutocomplete
