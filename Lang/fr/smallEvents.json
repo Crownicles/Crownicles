@@ -2235,8 +2235,14 @@
       "noGuild": [
         "Au détour d'un sentier, vous tombez nez-à-nez Velanna. Elle vous fixe longuement, puis soupire en constatant que vous n'êtes pas dans une guilde. Le {emote:expedition.talisman} **{{talismanName}}** lie les âmes, mais ne permet pas de remplir la panse de votre familier ! Il vous faut une réserve de nourriture, ce qu'une guilde peut fournir."
       ],
+      "petNotSeenByTalvar": [
+        "Vous croisez Velanna qui après de rapide salutations, s'agenouille pour examiner **{{pet}}**. Après un moment, elle fronce les sourcils : cette créature n'a jamais été présentée à Talvar. Elle se relève et époussète ses genoux, expliquant que le nain des montagnes doit d'abord certifier que votre familier est en bonne santé. C'est un vieux pacte entre leurs traditions."
+      ],
       "levelTooLow": [
-        "Après un virage, vous tombez nez-à-nez avec Velanna. Elle vous jauge de la tête aux pieds, et votre niveau {{playerLevel}} ne l'impressionne guère. Elle attrape votre bras et palpe vos muscles avec une moue critique : il faut au moins atteindre le niveau {{requiredLevel}} avant d'être digne du {emote:expedition.talisman} **{{talismanName}}**."
+        "Après un virage, vous tombez nez-à-nez avec Velanna. Elle vous jauge de la tête aux pieds, et votre niveau {{playerLevel}} ne l'impressionne guère. Elle attrape votre bras et palpe vos muscles avec une moue critique : il faut au moins atteindre le niveau {{requiredLevel}} avant d'être digne du {emote:expedition.talisman} **{{talismanName}}**. Afin de vous encourager à continuer de progresser, elle vous tend quelques jetons de voyage. Vous recevez 1 {emote:report.token} !"
+      ],
+      "notEnoughMeet": [
+        "Vous croisez Velanna, et la guerrière vous salue, un demi-sourire aux lèvres. Elle vous déclare que vous êtes désormais digne de recevoir le {emote:expedition.talisman} {{talismanName}}, et qu'elle vous le rapportera bientôt. Elle fouille dans sa sacoche, en sort quelques jetons de voyage qu'elle vous tend en guise d'encouragement. Vous recevez 3 {emote:report.token} !"
       ]
     },
     "talismanReceived": [
