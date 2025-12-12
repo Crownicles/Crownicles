@@ -841,7 +841,7 @@ export class LogsDatabase extends Database {
 	 * @param shopItem
 	 * @param amount - Number of items bought (defaults to 1)
 	 */
-	public async logClassicalShopBuyout(keycloakId: string, shopItem: ShopItemType, amount: number = 1): Promise<void> {
+	public async logClassicalShopBuyout(keycloakId: string, shopItem: ShopItemType, amount = 1): Promise<void> {
 		const logPlayer = await LogsDatabase.findOrCreatePlayer(keycloakId);
 		await LogsClassicalShopBuyouts.create({
 			playerId: logPlayer.id,
