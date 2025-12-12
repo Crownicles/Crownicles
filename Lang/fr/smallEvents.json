@@ -2234,18 +2234,17 @@
         "Au détour d'un sentier, vous croisez Velanna. Elle vous toise avec mépris : un {emote:expedition.talisman} **{{talismanName}}** sans familier à lier n'est qu'un caillou brillant. Elle éclate d'un rire rauque et vous invite à revenir quand vous aurez apprivoisé une créature."
       ],
       "petHungry": [
-        "Au détour d'un sentier, vous croisez Velanna. Elle examine **{{pet}}** d'un œil critique puis se tourne vers vous, furieuse. Le ventre vide de votre compagnon la consterne. Elle secoue la tête avec dégoût : un familier affamé ne ferait pas trois pas avant de s'effondrer. Nourrissez-le d'abord."
+        "Au détour d'un sentier, vous rencontrez Velanna. Elle examine **{{pet}}** d'un œil critique puis se tourne vers vous, furieuse : un familier affamé ne ferait pas trois pas avant de s'effondrer. Vous vous devez de le nourrir, sinon la pauvre bête ne pourra jamais vous aider en retour !"
       ],
       "petFeisty": [
         "Au détour d'un sentier, vous croisez Velanna. Elle remarque **{{pet}}** qui grogne et crache dans votre direction et recule prudemment, constatant que cette bête fielleuse vous déteste. Gagnez d'abord sa confiance, car sinon votre familier ne se battra jamais pour vous."
       ],
       "noGuild": [
-        "Au détour d'un sentier, vous croisez Velanna. Elle vous fixe longuement, puis soupire en constatant que vous voyagez seul. Elle s'interroge sur qui veillera sur vous quand votre familier sera parti en expédition. Le {emote:expedition.talisman} **{{talismanName}}** lie les âmes, mais il ne remplace pas la solidarité des vivants. Rejoignez une guilde."
+        "Au détour d'un sentier, vous tombez nez-à-nez Velanna. Elle vous fixe longuement, puis soupire en constatant que vous n'êtes pas dans une guilde. Le {emote:expedition.talisman} **{{talismanName}}** lie les âmes, mais ne permet pas de remplir la panse de votre familier ! Il vous faut une réserve de nourriture, ce qu'une guilde peut fournir."
       ],
       "levelTooLow": [
-        "Au détour d'un sentier, vous croisez Velanna. Elle vous jauge de la tête aux pieds. Votre niveau {{playerLevel}} ne l'impressionne guère. Elle attrape votre bras et palpe vos muscles avec une moue critique : il faut au moins atteindre le niveau {{requiredLevel}} avant d'être digne du {emote:expedition.talisman} **{{talismanName}}**. Entraînez-vous, affrontez des monstres, gagnez en expérience."
-      ],
-      "consolationToken": "Vous croisez Velanna, et la guerrière vous salue, un demi-sourire aux lèvres. Vous êtes désormais digne de recevoir le {emote:expedition.talisman} **{{talismanName}}**, et elle vous le rapportera bientôt. Elle fouille dans sa sacoche, en sort quelques jetons de voyage qu'elle vous tend en guise d'encouragement. Vous recevez **{{count}} {emote:unitValues.token}** !"
+        "Après un virage, vous tombez nez-à-nez avec Velanna. Elle vous jauge de la tête aux pieds, et votre niveau {{playerLevel}} ne l'impressionne guère. Elle attrape votre bras et palpe vos muscles avec une moue critique : il faut au moins atteindre le niveau {{requiredLevel}} avant d'être digne du {emote:expedition.talisman} **{{talismanName}}**."
+      ]
     },
     "talismanReceived": [
       "Velanna vous observe en silence pendant de longues secondes. Puis, lentement, elle extrait de sa sacoche un pendentif de pierre noire veinée d'or. Le {emote:expedition.talisman} **{{talismanName}}** pulse d'une lueur douce. Vous avez fait vos preuves : prenez soin de **{{pet}}**, car le lien entre un maître et sa bête est sacré. Elle pose le talisman dans votre main et referme vos doigts dessus, vous invitant à explorer le monde.\n\nVous recevez le {emote:expedition.talisman} **{{talismanName}}** ! Vous pouvez désormais envoyer votre familier en expédition depuis la commande {command:pet}."
