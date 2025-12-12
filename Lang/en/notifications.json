@@ -18,17 +18,17 @@
       },
       "totalRewards": "{emote:missions.total} Total rewards",
       "totalDisplay": {
-        "gems": "Gems earned: {{count}} {emote:unitValues.gem}",
-        "points": "Points earned: {{count}} {emote:unitValues.score}",
-        "money": "Money earned: {{count}} {emote:unitValues.money}",
-        "xp": "Experience gained: {{count}} {emote:unitValues.xp}"
+        "gems": "Gemmes gagnées : {{count, number}} {emote:unitValues.gem}",
+        "points": "Points gagnés : {{count, number}} {emote:unitValues.score}",
+        "money": "Argent gagné : {{count, number}} {emote:unitValues.money}",
+        "xp": "Expérience gagnée : {{count, number}} {emote:unitValues.xp}"
       },
       "noRewards": "No reward.",
       "missionDisplay": "- {{missionDescription}}{{missionsReward}}",
-      "pointsDisplay": "+{{count}} {emote:unitValues.score}",
-      "gemsDisplay": "+{{count}} {emote:unitValues.gem}",
-      "moneyDisplay": "+{{count}} {emote:unitValues.money}",
-      "xpDisplay": "+{{count}} {emote:unitValues.xp}"
+      "pointsDisplay": "+{{count, number}} {emote:unitValues.score}",
+      "gemsDisplay": "+{{count, number}} {emote:unitValues.gem}",
+      "moneyDisplay": "+{{count, number}} {emote:unitValues.money}",
+      "xpDisplay": "+{{count, number}} {emote:unitValues.xp}"
     }
   },
   "guildFood": {
