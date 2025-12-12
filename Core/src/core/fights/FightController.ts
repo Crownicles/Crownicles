@@ -158,8 +158,8 @@ export class FightController {
 			await fighter.endFight(!isADraw && fighter === winnerFighter, response, bug, this.turn);
 		}
 
-		// Only execute the callback if the fight ended normally (not bugged)
-		if (this.endCallback && !bug) {
+		// Execute the callback even if the fight has bugged to ensure proper cleanup and state management
+		if (this.endCallback) {
 			await this.endCallback(this, response);
 		}
 	}
