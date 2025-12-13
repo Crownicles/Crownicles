@@ -268,7 +268,7 @@
     "Ein galliger Vertrauter wird sich weigern, auf eine Expedition zu gehen.",
     "Die Nahrung, die von der Expedition verzehrt wird, stammt aus dem Bestand Ihrer Gilde.",
     "Jedes Mal werden Ihnen drei Expeditionen angeboten: zwei in der Nähe Ihres Standorts und eine in die Ferne.",
-    "Es gibt einen sehr seltenen Klon-Talisman, der es ermöglicht, ein spektrales Duplikat deines Begleiters zu erhalten, während er sich auf einer Expedition befindet.",
+    "Il existe un $t(models:talisman.clone) très rare qui permet d'avoir un double spectral de votre familier pendant qu'il est en expédition.",
     "Velanna zu kreuzen, wenn Ihr Begleiter auf einer Expedition ist, kann Ihnen Bonuspunkte und manchmal auch andere Überraschungen einbringen.",
     "Mit Tokens kann man auf der Karte schneller vorankommen, wenn man den Befehl {command:report}verwendet.",
     "Du kannst Tokens durch den täglichen Bonus ({command:dailybonus}), durch Vertrautexpeditionen oder durch den Kauf im Laden erhalten.",
