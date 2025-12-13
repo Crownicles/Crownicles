@@ -38,13 +38,13 @@
   },
   "bigBad": {
     "lifeLoss": [
-      "vous entendez un bruit strident venant du ciel. Vous levez les yeux mais trop tard : un oiseau aux griffes acérées vous fonce dessus. Au moment où celui-ci vous griffe, il se rend compte que vous n'êtes pas sa proie habituelle et repart aussitôt. Vous contemplez votre blessure, elle a l'air profonde. Vous perdez **{{lifeLoss, number}} {emote:unitValues.lostHealth}**.",
-      "alors que vous arpentez un sentier escarpé, vous dérapez et vous tordez la cheville droite. Vous perdez **{{lifeLoss, number}} {emote:unitValues.lostHealth}**.",
-      "vous voyez une mouche tourner autour de vous. Vous sortez votre arme dans l'espoir de la tuer, mais vous n'arrivez qu'à vous entailler légèrement le poignet, perdant au passage **{{lifeLoss, number}} {emote:unitValues.lostHealth}**."
+      "you hear a shrill noise coming from the sky. You look up, but too late: a bird with sharp claws is swooping down on you. As it scratches you, it realizes that you're not its usual prey and immediately leaves. You contemplate your wound; it looks deep. You lose **{{lifeLoss, number}} {emote:unitValues.lostHealth}**.",
+      "while walking along a steep path, you slip and twist your right ankle. You lose **{{lifeLoss, number}} {emote:unitValues.lostHealth}**.",
+      "you see a fly circling around you. You draw your weapon in the hope of killing it, but you only manage to nick your wrist slightly, losing **{{lifeLoss, number}} in the process. {emote:unitValues.lostHealth}**."
     ],
     "moneyLoss": [
       "you realize that your bag is torn off. After checking, you notice that your purse has disappeared, you have lost **{{moneyLost, number}} {emote:unitValues.lostMoney}**.",
-      "vous prenez conscience de l'absence de votre bourse en votre sac. Vous vous souvenez soudain l'avoir oubliée dans la précédente taverne, vous avez perdu **{{moneyLost, number}} {emote:unitValues.lostMoney}**.",
+      "you realize that your purse is missing from your bag. You suddenly remember having forgotten it in the previous tavern, you lost **{{moneyLost, number}}. {emote:unitValues.lostMoney}**.",
       "travelers pass next to you, hustling you, then they get up and apologize roughly. A few minutes later, you notice that your wallet has disappeared, you lost **{{moneyLost, number}} {emote:unitValues.lostMoney}**."
     ],
     "alterationStories": {
@@ -108,8 +108,8 @@
       "you're accosted by a tall, bearded man, introducing himself as the leader of a mercenary group renowned in the region. He tells you that he can make you an incredible offer. The offer is for you to travel to a mysterious new island, where opportunity and danger coexist, as a monster hunter. He also adds that {{priceText}}."
     ],
     "priceFree": "the trip **is free**",
-    "priceMoney": "le voyage **coûtera {{price, number}} {emote:unitValues.gem}**",
-    "confirm": "Voulez-vous partir sur l'île ? Vous avez {emote:unitValues.energy} **{{energy, number}} / {{energyMax, number}}**.",
+    "priceMoney": "the trip **will cost {{price, number}} {emote:unitValues.gem}**",
+    "confirm": "Do you want to go to the island? You have {emote:unitValues.energy} **{{energy, number}} / {{energyMax, number}}**.",
     "endStoryAccept": "{{gainScore}} You accept and board the boat bound for the island.",
     "endStoryAcceptWithMember": "{{gainScore}} You accept, and just as you're about to embark, you notice that a member of your guild is already on the boat, so you join him and head for the island.",
     "endStoryRefuse": "You politely decline the offer and continue on your way.",
@@ -129,15 +129,15 @@
     "hard": {
       "success": "You win the man's game. As a result, he rewards you graciously. However, you lose **{{lostTimeDisplay}} :clock2:**.",
       "fail": "You seize your chance. Unfortunately, you don't win. Maybe you'll be luckier next time. Taking part in the lottery will have cost you **{{lostTimeDisplay}} :clock2:**.",
-      "failWithMalus": "Vous misez une centaine de pièces au jeu de l'homme. Vous perdez cependant et repartez, dépité d'avoir perdu **{{money, number}}** {emote:unitValues.lostMoney}. Participer à la loterie vous aura de plus fait perdre **{{lostTimeDisplay}} :clock2:**."
+      "failWithMalus": "You bet a hundred coins on the man's game. You lose, however, and leave, disappointed at having lost **{{money, number}}** {emote:unitValues.lostMoney}. Taking part in the lottery will also have cost you **{{lostTimeDisplay}}. :clock2:**."
     },
     "poor": "You try to trick the man into paying you a large sum of money. Unfortunately for you, the shopkeeper doubts your good faith, and unable to prove any wealth, you are ruthlessly rejected.",
     "end": "Without paying any further attention to the individual, you continue on your way.",
     "rewardTypeText": {
-      "xp": " Vous avez gagné **{{reward, number}} {emote:unitValues.xp}**.",
+      "xp": " You have won **{{reward, number}} {emote:unitValues.xp}**.",
       "money": " You won **{{reward, number}}{emote:unitValues.money}**!",
-      "guildXp": " Votre guilde gagne **{{reward, number}} {emote:unitValues.xp}**.",
-      "points": " Vous avez gagné **{{reward, number}} {emote:unitValues.score}**."
+      "guildXp": " Your guild wins **{{reward, number}} {emote:unitValues.xp}**.",
+      "points": " You have won **{{reward, number}} {emote:unitValues.score}**."
     }
   },
   "limoges": {
@@ -174,13 +174,13 @@
       }
     },
     "successStories": [
-      "L'étranger éclate d'un rire cristallin et complice : il comprend votre attirance mais confesse avec regret qu'il ne peut vous y mener dès ce jour. Néanmoins, il vous laisse une étincelle d'inspiration qui vous vaut **{{experience, number}} {emote:unitValues.xp}** et **{{score, number}} {emote:unitValues.score}**.",
-      "Ravi de votre ferveur, l'inconnu incline courtoisement son chapeau à large bord. Il vous promet de vous faire parvenir un signe quand la route s'ouvrira enfin, puis glisse discrètement dans votre escarcelle une récompense bien méritée : **{{experience, number}} {emote:unitValues.xp}** et **{{score, number}} {emote:unitValues.score}**.",
-      "Touché par l'ardeur de votre conviction, l'étranger murmure qu'il espère vous croiser un jour sous les verrières majestueuses de la grande halle. Sa bénédiction vous galvanise et vous fait gagner : **{{experience, number}} {emote:unitValues.xp}** et **{{score, number}} {emote:unitValues.score}**."
+      "The stranger bursts into a crystalline, knowing laugh: he understands your attraction, but regretfully confesses that he can't take you there today. Nevertheless, he leaves you with a spark of inspiration that earns you **{{experience, number}} {emote:unitValues.xp}** and **{{score, number}} {emote:unitValues.score}**.",
+      "Pleased by your fervor, the stranger courteously tips his wide-brimmed hat. He promises to send you a sign when the road finally opens, then discreetly slips a well-deserved reward into your pocket: **{{experience, number}} {emote:unitValues.xp}** and **{{score, number}} {emote:unitValues.score}**.",
+      "Touched by the ardor of your conviction, the stranger murmurs that he hopes to cross paths with you one day under the majestic glass roofs of the Great Hall. His blessing galvanizes you and wins you over: **{{experience, number}} {emote:unitValues.xp}** and **{{score, number}} {emote:unitValues.score}**."
     ],
     "penalties": {
-      "health": "Votre réponse tiède comme eau de puits refroidit aussitôt son enthousiasme. Déçu, il vous tourne le dos d'un geste brusque. En vous détournant vous-même, vous trébuchez sur un pavé luisant et vous blessez **{{amount, number}} {emote:unitValues.lostHealth}**.",
-      "money": "Vexé par votre manque d'émerveillement, il vous réclame une obole \"pour l'entretien des fours sacrés et la gloire des artisans\". Afin de vous débarrasser de cet importun, vous finissez par lui céder à contrecœur **{{amount, number}} {emote:unitValues.lostMoney}**.",
+      "health": "Your lukewarm response immediately cools his enthusiasm. Disappointed, he abruptly turns his back on you. Turning away yourself, you trip on a shiny paving stone and injure yourself **{{amount, number}} {emote:unitValues.lostHealth}**.",
+      "money": "Vexed by your lack of wonder, he demands an obeisance \"for the upkeep of the sacred kilns and the glory of the craftsmen\". To get rid of this nuisance, you reluctantly give in to him **{{amount, number}}. {emote:unitValues.lostMoney}**.",
       "time": "The stranger stubbornly refuses to let you leave without reliving every marvel of the city in detail. His interminable ranting delays you by **{{amountDisplay}} :clock2:**."
     },
     "failureFallback": "The stranger bows with disappointed stiffness before disappearing into the throng of passers-by, leaving you to meditate bitterly on your lack of enthusiasm."
@@ -307,7 +307,7 @@
     "pet_clone": [
       "{{playerDisplay}} passes by you with... a strange translucent creature? It's **{{petEmote}}** **{{petName}}**, but something's not right. The animal seems almost ghostly, as if it's not really there...",
       "You watch {{playerDisplay}} with a puzzled expression. His **{{petEmote}}** **{{petName}}** looks... odd. Translucent, almost ethereal. He explains that an ancient talisman allows him to keep a clone of his companion while the real one explores the world.",
-      "Est-ce un fantôme ? Non, c'est le **{{petEmote}}** **{{petName}}** de {{playerDisplay}}, mais sa silhouette est étrangement transparente. La magie d'un $t(models:talisman.clone), vous dit-il, pendant que son vrai compagnon est en expédition !"
+      "Is it a ghost? No, it's the **{{petEmote}}** **{{petName}}** of {{playerDisplay}}, but his silhouette is strangely transparent. The magic of a $t(models:talisman.clone), he tells you, while his real companion is on an expedition!"
     ],
     "guild_chief": [
       "Don't panic! You pass by {{playerDisplay}}, the leader of the **{{guildName}}** guild.",
@@ -327,7 +327,7 @@
     "weapon": [
       "You meet {{playerDisplay}}, who shows you his \"**{{weapon}}**\" weapon.",
       "A passer-by comes to show off next to you, it's {{playerDisplay}} and he shows you his \"**{{weapon}}**\" weapon!",
-      "Impressionnant ! {{playerDisplay}} brandit sa magnifique arme \"**{{weapon}}**\" devant vous. Vous reprenez votre chemin étonné."
+      "Impressive! {{playerDisplay}} brandishes his magnificent \"{{weapon}}\" weapon at you. You resume your astonished journey."
     ],
     "armor": [
       "You meet {{playerDisplay}}, who shows you his magnificent \"**{{armor}}**\" armor.",
@@ -461,13 +461,13 @@
   },
   "winEnergyOnIsland": {
     "stories": [
-      "vous voyez un banc sur le bord du chemin et vous asseyez quelques minutes. Cela vous rend {emote:unitValues.energy} **{{energy, number}}**.",
-      "vous détachez votre gourde de votre ceinture et vous vous désaltérez. Vous gagnez {emote:unitValues.energy} **{{energy, number}}**.",
-      "vous sortez un fruit que vous gardiez dans un tissu et le mangez. Cela vous rend {emote:unitValues.energy} **{{energy, number}}**.",
-      "vous vous arrêtez quelques secondes pour reprendre votre souffle. Vous repartez un peu plus endurant et gagnez {emote:unitValues.energy} **{{energy, number}}**.",
-      "vous sortez un morceau de pain et vous rassasiez avec celui-ci. Cela vous rend {emote:unitValues.energy} **{{energy, number}}**.",
-      "vous vous asseyez quelques minutes et méditez pour apaiser votre esprit. Vous récupérez {emote:unitValues.energy} **{{energy, number}}**.",
-      "vous sentez vos muscles se tendre et vous arrêtez quelques instants pour les étirer. Vous récupérez {emote:unitValues.energy} **{{energy, number}}**."
+      "you see a bench by the side of the road and sit down for a few minutes. This makes you {emote:unitValues.energy} **{{energy, number}}**.",
+      "you detach your canteen from your belt and quench your thirst. You win {emote:unitValues.energy} **{{energy, number}}**.",
+      "you take out a fruit you've been keeping in a cloth and eat it. This makes you {emote:unitValues.energy} **{{energy, number}}**.",
+      "you stop for a few seconds to catch your breath. You start again with a little more stamina and win {emote:unitValues.energy} **{{energy, number}}**.",
+      "you take out a piece of bread and satiate yourself with it. This makes you {emote:unitValues.energy} **{{energy, number}}**.",
+      "you sit for a few minutes and meditate to calm your mind. You recover {emote:unitValues.energy} **{{energy, number}}**.",
+      "you feel your muscles tense up and stop for a moment to stretch them. You recover {emote:unitValues.energy} **{{energy, number}}**."
     ]
   },
   "winHealth": {
@@ -619,12 +619,12 @@
           ]
         },
         "3": [
-          "Une fois la potion terminée, la sorcière vous tend un verre. Encore brulant, vous l'échappez maladroitement sur votre pied. Vous perdez **{{lifeLoss, number}} {emote:unitValues.lostHealth}**.",
-          "Alors que vous alliez terminer la potion, vous êtes victime de la maladresse de la vieille sorcière qui échappe le chaudron sur vous. Vous perdez **{{lifeLoss, number}} {emote:unitValues.lostHealth}**.",
-          "Malgré la bonne odeur de la potion, cette dernière n'est pas aussi bonne pour la santé que ce que vous auriez pu espérer. Vous perdez **{{lifeLoss, number}} {emote:unitValues.lostHealth}**.",
-          "Le goût de la potion est très étrange. Peut être auriez vous du écouter votre instinct et ne pas y goûter... Vous perdez **{{lifeLoss, number}} {emote:unitValues.lostHealth}**.",
-          "Les vapeurs de la potion auront suffi à vous rendre malade. Vous partez sans demander votre reste mais non sans avoir subi les conséquences de l'inhalation de ces vapeurs. Vous perdez **{{lifeLoss, number}} {emote:unitValues.lostHealth}**.",
-          "Alors que la vieille dame s'apprête à verser la dernière goute dans la marmite un bruit sourd se fait entendre. Il semblerait que le chaudron ait explosé. Vous perdez **{{lifeLoss, number}} {emote:unitValues.lostHealth}**."
+          "Once the potion is finished, the witch hands you a glass. Still burning, you clumsily drop it on your foot. You lose **{{lifeLoss, number}} {emote:unitValues.lostHealth}**.",
+          "Just as you're about to finish the potion, the old witch clumsily drops the cauldron on you. You lose **{{lifeLoss, number}} {emote:unitValues.lostHealth}**.",
+          "Although the potion smells good, it's not as good for your health as you might have hoped. You lose **{{lifeLoss, number}} {emote:unitValues.lostHealth}**.",
+          "The taste of the potion is very strange. Perhaps you should have listened to your instincts and not tasted it... You lose **{{lifeLoss, number}} {emote:unitValues.lostHealth}**.",
+          "The fumes from the potion are enough to make you ill. You leave without asking for help, but not without suffering the consequences of inhaling the fumes. You lose **{{lifeLoss, number}} {emote:unitValues.lostHealth}**.",
+          "Just as the old lady is about to pour the last drop into the cauldron, a thud is heard. The cauldron seems to have exploded. You lose **{{lifeLoss, number}} {emote:unitValues.lostHealth}**."
         ],
         "4": [
           "Unfortunately, the potion seems completely charred and undrinkable. You decide not to take the risk of drinking it and leave quickly.",
@@ -1043,14 +1043,14 @@
         "Around a bend, **{{pet}}** suddenly starts running. You hold on to the leash as best you can but come away with a few scratches. You lose **{{amount, number}}** {emote:unitValues.lostHealth}.",
         "You see **{{pet}}** leave. He comes back a few minutes after with some food. You eat it and severely regret it a few minutes later. You suddenly suffer from a bellyache... You lose **{{amount, number}}** {emote:unitValues.lostHealth}.",
         "**{{pet}}** seems to have triggered hostilities with {{randomAnimal}}! You decide to defend him, but unfortunately the wild creature hurts you. You lose **{{amount, number}}** {emote:unitValues.lostHealth}.",
-        "**{{pet}}** semble vouloir jouer et se jette du haut d'un arbre. Malheureusement, son poids brise la branche et il tombe sur vous. Vous perdez **{{amount, number}}** {emote:unitValues.lostHealth}."
+        "**{{pet}}** seems to want to play and throws himself from the top of a tree. Unfortunately, his weight breaks the branch and he falls on top of you. You lose **{{amount, number}}** {emote:unitValues.lostHealth}."
       ],
       "loseLife_f": [
         "While you are trying to caress **{{pet}}**, she doesn't get along and bites your hand. You lose **{{amount, number}}** {emote:unitValues.lostHealth}.",
         "Around a bend, **{{pet}}** suddenly starts running. You hold on to the leash as best you can but come away with a few scratches. You lose **{{amount, number}}** {emote:unitValues.lostHealth}.",
         "You see **{{pet}}** leave. She comes back a few minutes after with some food. You eat it and severely regret it a few minutes later. You suddenly suffer from a bellyache... You lose **{{amount, number}}** {emote:unitValues.lostHealth}.",
         "**{{pet}}** seems to have triggered hostilities with {{randomAnimal}}! You decide to defend her, but unfortunately the wild creature hurts you. You lose **{{amount, number}}** {emote:unitValues.lostHealth}.",
-        "**{{pet}}** semble vouloir jouer et se jette du haut d'un arbre. Malheureusement, son poids brise la branche et elle tombe sur vous. Vous perdez **{{amount, number}}** {emote:unitValues.lostHealth}."
+        "**{{pet}}** seems to want to play and throws herself from the top of a tree. Unfortunately, her weight breaks the branch and she falls on top of you. You lose **{{amount, number}}** {emote:unitValues.lostHealth}."
       ],
       "loseMoney_m": [
         "You feel that **{{pet}}** steals a few pieces from your purse and hides them further. Unfortunately you can't find them again. You thus lose **{{amount, number}}** {emote:unitValues.lostMoney}.",
@@ -2216,58 +2216,58 @@
   },
   "expeditionAdvice": {
     "talismanIntro": [
-      "Vous tombez nez à nez avec une femme au visage balafré, assise sur un grand rocher. Son armure de cuir usée porte les marques de dizaines de combats. Elle nettoie méthodiquement une dague à la lame noircie où est gravé son nom : Velanna. Sans lever les yeux, elle grogne quelque chose à propos d'un artefact ancien capable de créer des liens entre un maître et sa bête... le $t(models:talisman.anchor). Elle se lève et s'éloigne sans rien ajouter.",
-      "Une guerrière apparaît derrière vous sans faire le moindre bruit. Vous la reconnaissez en voyant son visage balafré à quelques centimètres du vôtre. Velanna porte une armure de cuir usée, marquée par des dizaines de combats. Elle vous murmure que le $t(models:talisman.anchor) lie l'âme d'un familier à son maître, leur permettant de rester connectés même séparés par des lieues. Grâce à cet artefact, vous pourrez envoyer votre familier en expédition pour qu'il ramène diverses richesses. Puis, sans un mot de plus, elle s'éloigne."
+      "You come face to face with a woman with a scarred face, sitting on a large rock. Her worn leather armor bears the marks of dozens of battles. She methodically cleans a dagger with a blackened blade engraved with her name: Velanna. Without looking up, she grumbles something about an ancient artifact capable of creating bonds between a master and his beast... the $t(models:talisman.anchor). She gets up and walks away without adding anything.",
+      "A warrior appears behind you without making a sound. You recognize her by the sight of her scarred face inches from yours. Velanna wears worn leather armor, marked by dozens of battles. She whispers to you that $t(models:talisman.anchor) binds the soul of a pet to its master, enabling them to remain connected even when separated by leagues. Thanks to this artifact, you can send your pet on expeditions to bring back various riches. Then, without another word, she walks away."
     ],
     "conditions": {
       "noPet": [
-        "Au détour d'un sentier, vous croisez Velanna. Elle vous regarde de haut en bas, puis croise les bras en fronçant les sourcils. Elle remarque que vous voyagez seul, sans compagnon à vos côtés. Elle secoue la tête, déclarant qu'elle ne peut vous confier le $t(models:talisman.anchor) sans créature à lier. Revenez quand vous aurez apprivoisé un familier."
+        "At the bend in the path, you come across Velanna. She looks you up and down, then crosses her arms and frowns. She notices that you're traveling alone, without a companion by your side. She shakes her head, declaring that she cannot entrust you with $t(models:talisman.anchor) without a creature to bind. Come back when you've tamed a pet."
       ],
       "petHungry": [
-        "Au détour d'un sentier, vous rencontrez Velanna. Elle examine **{{pet}}** d'un œil critique puis se tourne vers vous, furieuse : un familier affamé ne ferait pas trois pas avant de s'effondrer. Vous vous devez de le nourrir, sinon la pauvre bête ne pourra jamais vous aider en retour !"
+        "At the bend in the path, you meet Velanna. She examines **{{pet}}** with a critical eye, then turns to you, furious: a hungry pet wouldn't take three steps before collapsing. You owe it to yourself to feed it, otherwise the poor beast will never be able to help you in return!"
       ],
       "petFeisty": [
-        "Au détour d'un sentier, vous croisez Velanna. Elle remarque **{{pet}}** qui grogne et crache dans votre direction et recule prudemment, constatant que cette bête fielleuse vous déteste. Gagnez d'abord sa confiance, car sinon votre familier ne se battra jamais pour vous."
+        "At the bend in the path, you come across Velanna. She notices **{{pet}}** snarling and spitting in your direction and backs away cautiously, realizing that this feisty beast hates you. Win her trust first, otherwise your pet will never fight for you."
       ],
       "noGuild": [
-        "Au détour d'un sentier, vous tombez nez-à-nez Velanna. Elle vous fixe longuement, puis soupire en constatant que vous n'êtes pas dans une guilde. Le $t(models:talisman.anchor) lie les âmes, mais ne permet pas de remplir la panse de votre familier ! Il vous faut une réserve de nourriture, ce qu'une guilde peut fournir."
+        "At the bend in the path, you come face to face with Velanna. She stares at you for a long moment, then sighs as she realizes that you're not in a guild. $t(models:talisman.anchor) binds souls, but doesn't fill your pet's belly! You need a supply of food, which a guild can provide."
       ],
       "petNotSeenByTalvar": [
-        "Vous croisez Velanna qui après de rapide salutations, s'agenouille pour examiner **{{pet}}**. Après un moment, elle fronce les sourcils : cette créature n'a jamais été présentée à Talvar. Elle se relève et époussète ses genoux, expliquant que le nain des montagnes doit d'abord certifier que votre familier est en bonne santé. C'est un vieux pacte entre leurs traditions."
+        "You pass Velanna who, after a quick greeting, kneels down to examine **{{pet}}**. After a moment, she frowns: this creature has never been introduced to Talvar. She stands up and dusts her knees, explaining that the mountain dwarf must first certify that your pet is in good health. It's an old pact between their traditions."
       ],
       "levelTooLow_zero": [
-        "Après un virage, vous tombez nez-à-nez avec Velanna. Elle vous jauge de la tête aux pieds, et votre niveau {{playerLevel}} ne l'impressionne guère. Elle attrape votre bras et palpe vos muscles avec une moue critique : il faut au moins atteindre le niveau {{requiredLevel}} avant d'être digne du $t(models:talisman.anchor). Elle fouille dans sa sacoche pour vous offrir quelques jetons de voyage, mais constate que vous en avez déjà suffisamment."
+        "After a bend in the road, you come face to face with Velanna. She's sizing you up from head to toe, and your level {{playerLevel}} doesn't impress her much. She grabs your arm and feels your muscles with a critical pout: you need to reach at least level {{requiredLevel}} before you're worthy of $t(models:talisman.anchor). She digs into her bag to offer you a few travel tokens, but finds that you already have enough."
       ],
       "levelTooLow_one": [
-        "Après un virage, vous tombez nez-à-nez avec Velanna. Elle vous jauge de la tête aux pieds, et votre niveau {{playerLevel}} ne l'impressionne guère. Elle attrape votre bras et palpe vos muscles avec une moue critique : il faut au moins atteindre le niveau {{requiredLevel}} avant d'être digne du $t(models:talisman.anchor). Afin de vous encourager à continuer de progresser, elle vous tend quelques jetons de voyage. Vous recevez **{{count}}** {emote:unitValues.token} !"
+        "After a bend in the road, you come face to face with Velanna. She's sizing you up from head to toe, and your level {{playerLevel}} doesn't impress her much. She grabs your arm and feels your muscles with a critical pout: you need to reach at least level {{requiredLevel}} before you're worthy of $t(models:talisman.anchor). To encourage you to keep progressing, she hands you a few travel tokens. You receive **{{count}}** {emote:unitValues.token} !"
       ],
       "levelTooLow_other": [
-        "Après un virage, vous tombez nez-à-nez avec Velanna. Elle vous jauge de la tête aux pieds, et votre niveau {{playerLevel}} ne l'impressionne guère. Elle attrape votre bras et palpe vos muscles avec une moue critique : il faut au moins atteindre le niveau {{requiredLevel}} avant d'être digne du $t(models:talisman.anchor). Afin de vous encourager à continuer de progresser, elle vous tend quelques jetons de voyage. Vous recevez **{{count}}** {emote:unitValues.token} !"
+        "After a bend in the road, you come face to face with Velanna. She's sizing you up from head to toe, and your level {{playerLevel}} doesn't impress her much. She grabs your arm and feels your muscles with a critical pout: you need to reach at least level {{requiredLevel}} before you're worthy of $t(models:talisman.anchor). To encourage you to keep progressing, she hands you a few travel tokens. You receive **{{count}}** {emote:unitValues.token} !"
       ]
     },
     "talismanReceived": [
-      "Velanna vous observe en silence pendant de longues secondes. Puis, lentement, elle extrait de sa sacoche un pendentif de pierre noire veinée d'or. Le $t(models:talisman.anchor) pulse d'une lueur douce. Vous avez fait vos preuves : prenez soin de **{{pet}}**, car le lien entre un maître et sa bête est sacré. Elle pose le talisman dans votre main et referme vos doigts dessus, vous invitant à explorer le monde.\n\nVous recevez le $t(models:talisman.anchor) ! Vous pouvez désormais envoyer votre familier en expédition depuis la commande {command:pet}."
+      "Velanna watches you in silence for a few long seconds. Then, slowly, she extracts from her satchel a pendant of black stone veined with gold. The $t(models:talisman.anchor) pulses with a soft glow. You've proved yourself: take care of **{{pet}}**, for the bond between master and beast is sacred. She places the talisman in your hand and closes your fingers over it, inviting you to explore the world.\n\nYou receive the $t(models:talisman.anchor) ! You can now send your pet for shipment from {command:pet}."
     ],
     "expeditionBonus": {
-      "points": "Velanna surgit des ombres et pose une main sur votre épaule. Elle perçoit la présence de **{{pet}}** à des lieues d'ici et sourit, un spectacle rare. Votre familier explore courageusement et le $t(models:talisman.anchor) renforce votre lien. Votre persévérance paie. Vous gagnez **{{bonusPoints}} {emote:unitValues.score}** !",
-      "pointsAndMoney": "Velanna apparaît à vos côtés, humant l'air. Le lien du $t(models:talisman.anchor) est fort et **{{pet}}** voyage bien. Elle sort une petite bourse de sa ceinture : les esprits récompensent ceux qui font confiance à leurs compagnons. Elle vous lance l'argent et vous promet conter vos réussites. Vous gagnez **{{bonusPoints}} {emote:unitValues.score}** et **{{bonusMoney}} {emote:unitValues.money}** !",
-      "pointsAndItem": "Velanna émerge des fourrés et vous observe d'un œil approbateur. Elle sent le lien entre vous et **{{pet}}** à travers le $t(models:talisman.anchor). Elle fouille dans son sac et en tire un objet qu'elle vous tend : un souvenir de ses propres expéditions passées, pour vous remercier de votre confiance. Vous gagnez **{{bonusPoints}} {emote:unitValues.score}** !",
-      "combatPotion": "Velanna surgit de nulle part, une fiole étincelante à la main. Elle hoche la tête, impressionnée par le courage de **{{pet}}** qui parcourt les terres sauvages. Votre compagnon ne pouvant pas vous aider en combat tant qu'il est en expédition, cette mixture fera l'affaire. Vous gagnez **{{bonusPoints}} {emote:unitValues.score}** !"
+      "points": "Velanna emerges from the shadows and puts a hand on your shoulder. She senses the presence of **{{pet}}** leagues away and smiles, a rare sight. Your pet explores bravely and $t(models:talisman.anchor) strengthens your bond. Your perseverance pays off. You win **{{bonusPoints}} {emote:unitValues.score}**!",
+      "pointsAndMoney": "Velanna appears at your side, sniffing the air. The $t(models:talisman.anchor) link is strong and **{{pet}}** travels well. She pulls a small purse from her belt: the spirits reward those who trust their companions. She tosses you the money and promises to tell you about your successes. You win **{{bonusPoints}} {emote:unitValues.score}** and **{{bonusMoney}} {emote:unitValues.money}**!",
+      "pointsAndItem": "Velanna emerges from the thicket and watches you approvingly. She senses the link between you and **{{pet}}** through $t(models:talisman.anchor). She reaches into her bag and pulls out an object, which she hands to you: a memento of her own past expeditions, to thank you for your trust. You win **{{bonusPoints}} {emote:unitValues.score}** !",
+      "combatPotion": "Velanna appears from nowhere, a sparkling vial in hand. She nods, impressed by **{{pet}}**'s courage as he roams the wilderness. Since your companion can't help you in combat while he's on an expedition, this mixture will do the trick. You win **{{bonusPoints}} {emote:unitValues.score}**!"
     },
     "advice": [
-      "Velanna vous attend à un carrefour, les bras croisés. Vous souriez bêtement, ce qui lui fait lever les yeux au ciel, accablée par votre simplicité. Daignant vous prodiguer ses précieux conseils afin d'éviter que la vie ne fasse de vous son pantin, elle vous apprend qu'une expédition n'est pas une promenade. Votre compagnon d'aventure affrontera des dangers, des prédateurs, des intempéries... mais les récompenses en valent la peine : or, expérience, objets rares et jetons.",
-      "Vous trouvez Velanna en train de dépecer un lièvre avec une efficacité brutale. Elle lève les yeux vers vous sans cesser son travail, daignant partager avec vous son expérience des expéditions d'animaux. Elle vous apprend que plus la mission est longue, plus le butin est conséquent, mais le familier aura besoin de plus de nourriture pour le voyage. Elle essuie sa lame sur sa cuisse et récupère sa prise avant de reprendre sa route.",
-      "Velanna vous surprend en train de vous reposer et renverse votre gourde d'un coup de pied. D'un bond, vous vous relevez, prêt à écouter la moindre de ses consignes. Daignant partager son savoir, la guerrière vous explique que le risque d'une expédition dépend de la force de votre familier : une bête puissante et entraînée pourra braver les terrains les plus inhospitaliers, alors qu'un animal faible et craintif pourrait ne pas franchir ces obstacles.",
-      "Velanna apparaît dans votre campement, un panier tressé sous le bras. Elle en sort des fruits sauvages qu'elle partage avec vous. Elle vous explique que pour partir en expédition, un familier doit être nourri et en confiance : les bêtes fielleuses ou affamées refusent catégoriquement. Elle croque dans une pomme, puis repart avec ses provisions.",
-      "Velanna émerge des hautes herbes, l'air grave, fixant l'emblème de votre guilde sur votre tunique. Elle vous rappelle l'importance de celle-ci, car elle vous permet d'avoir accès à un stock de nourriture pour remplir la panse de votre familier lors de ses expéditions. Celui-ci aura en effet besoin de se ressourcer régulièrement afin de mener à bien sa mission !",
-      "Au détour d'un sentier rocailleux, vous apercevez Velanna accroupie au sommet d'un rocher, scrutant l'horizon. Son regard acéré se pose sur vous et elle daigne descendre de son perchoir. Elle vous enseigne que le terrain influence les récompenses d'expédition : les montagnes recèlent des richesses, les forêts forgent l'expérience, tandis que explorer les marais plaira au roi. Elle s'éloigne d'un pas silencieux, vous laissant méditer sur ces paroles.",
-      "Vous découvrez Velanna assise sur une souche, aiguisant sa dague avec des gestes méthodiques. Son regard se pose sur vous et vous salue avec nonchalance. Elle daigne tout de même vous expliquer que les expéditions prolongées rapportent davantage de récompenses, mais épuisent les réserves de nourriture de votre guilde plus rapidement. Elle teste le tranchant de sa lame sur son pouce, puis disparaît entre les arbres.",
-      "Velanna surgit de derrière un arbre, vous faisant sursauter. Ses yeux scrutent les vôtres avec intensité tandis qu'elle vous révèle une vérité essentielle : l'affection d'un familier détermine sa résistance face aux dangers. Elle vous explique que plus le lien entre maître et bête est fort, plus les chances de succès sont élevées. Elle époussette sa tunique de cuir et repart sans se retourner, vous laissant assimiler cet enseignement.",
-      "Velanna apparaît au détour d'un sentier, tenant un $t(models:talisman.clone) brillant faiblement dans sa paume. Elle le fait tournoyer entre ses doigts calleux, les yeux perdus dans le vide. Elle vous confie que certains maîtres, après des années de pratique, parviennent à créer un double spectral de leur compagnon, lui permettant de combattre à leurs côtés tout en explorant des terres lointaines. Elle referme le poing sur l'artefact et disparaît dans l'ombre des arbres.",
-      "Vous découvrez Velanna agenouillée près d'un ruisseau, traçant des symboles ancestraux dans la boue humide. Elle lève les yeux vers vous, surprise par votre intrusion, mais décide de partager un secret rare. Elle vous apprend que les aventuriers les plus accomplis ont découvert l'art du clonage : leur familier peut exister en deux endroits simultanément, explorant le monde tout en protégeant leur maître au combat. Elle efface ses dessins d'un geste vif et s'éloigne d'un pas silencieux.",
-      "Velanna émerge des fourrés, le visage grave. Elle s'approche de vous et vous prévient que les familiers rêvent d'aventure dès qu'une expédition se profile. Elle vous explique qu'annuler les préparatifs ou rappeler la bête en plein périple brise cette promesse sacrée. Elle plante son doigt dans votre poitrine et vous avertit que chaque trahison laisse une cicatrice sur le cœur de votre compagnon, et que la blessure s'aggrave à chaque déception.",
-      "Velanna surgit de derrière un rocher moussu, un os rongé entre les dents qu'elle jette négligemment par-dessus son épaule. Elle s'approche de vous et pose une main sur votre épaule. Elle vous raconte qu'un ancien de son clan avait l'habitude de changer d'avis au dernier moment, rappelant sans cesse son familier en cours de route. La bête a fini par le haïr. Elle vous avertit que plus les annulations se multiplient, plus la perte d'affection devient sévère.",
-      "Velanna vous barre le chemin, jambes écartées et bras croisés, une expression sévère sur son visage balafré. Elle vous ordonne de l'écouter attentivement. Elle vous explique que les yeux d'un familier brillent d'excitation devant une carte d'expédition, son cœur s'emballe à l'idée de l'aventure promise. Elle vous apprend qu'annuler avant le départ ou rappeler en pleine exploration produit le même effet dévastateur : une promesse brisée. Elle compte sur ses doigts et vous avertit que la perte d'amour double à la deuxième trahison, triple à la troisième. Les familiers n'oublient jamais."
+      "Velanna is waiting for you at a crossroads, arms folded. You smile stupidly, causing her to roll her eyes, overwhelmed by your simplicity. She deigns to give you her precious advice on how to avoid life making you her puppet, and teaches you that an expedition is no walk in the park. Your fellow adventurer will face dangers, predators, bad weather... but the rewards are worth it: gold, experience, rare items and tokens.",
+      "You find Velanna butchering a hare with brutal efficiency. She looks up at you without stopping her work, deigning to share with you her experience of animal expeditions. She tells you that the longer the mission, the greater the booty, but the pet will need more food for the journey. She wipes her blade on her thigh and retrieves her catch before resuming her journey.",
+      "Velanna catches you resting and kicks your canteen over. You leap to your feet, ready to listen to her every word. Deigning to share her knowledge, the warrior explains that the risk of an expedition depends on the strength of your pet: a powerful, trained beast will be able to brave the most inhospitable terrain, while a weak, fearful animal may not be able to overcome such obstacles.",
+      "Velanna appears in your camp, a woven basket under her arm. She pulls out some wild fruit and shares it with you. She explains that, to go on an expedition, a pet needs to be fed and confident: hungry or quarrelsome beasts refuse outright. She bites into an apple, then leaves with her provisions.",
+      "Velanna emerges from the tall grass, looking serious, staring at the guild emblem on your tunic. She reminds you of the importance of your tunic, as it gives you access to a stock of food to fill your pet's belly during expeditions. After all, your pet will need to refuel regularly to carry out its mission!",
+      "At the bend in a rocky path, you spot Velanna crouched atop a rock, scanning the horizon. Her sharp gaze settles on you, and she deigns to come down from her perch. She teaches you that terrain influences expedition rewards: mountains hold riches, forests forge experience, while exploring swamps will please the king. She walks away silently, leaving you to ponder her words.",
+      "You discover Velanna sitting on a stump, sharpening her dagger with methodical gestures. Her gaze falls on you and she greets you nonchalantly. She deigns to explain that prolonged expeditions bring more rewards, but deplete your guild's food reserves more quickly. She tests the edge of her blade on her thumb, then disappears between the trees.",
+      "Velanna emerges from behind a tree, startling you. Her eyes scan yours intently as she reveals an essential truth: a pet's affection determines its resistance to danger. She explains that the stronger the bond between master and beast, the greater the chances of success. She dusts off her leather tunic and leaves without looking back, leaving you to assimilate this lesson.",
+      "Velanna appears at the bend in a path, holding a $t(models:talisman.clone) glittering faintly in her palm. She twirls it between her calloused fingers, her eyes lost in the void. She confides in you that some masters, after years of practice, manage to create a spectral double of their companion, enabling him to fight alongside them while exploring distant lands. She closes her fist on the artifact and disappears into the shadows of the trees.",
+      "You discover Velanna kneeling by a stream, tracing ancestral symbols in the damp mud. She looks up at you, surprised by your intrusion, but decides to share a rare secret. She tells you that the most accomplished adventurers have discovered the art of cloning: their pets can exist in two places simultaneously, exploring the world while protecting their master in battle. She briskly erases her drawings and silently walks away.",
+      "Velanna emerges from the thicket, her face grave. She approaches you and warns you that pets dream of adventure as soon as an expedition begins. She tells you that canceling preparations or calling the beast back mid-journey breaks this sacred promise. She sticks her finger in your chest and warns you that every betrayal leaves a scar on your companion's heart, and that the wound deepens with every disappointment.",
+      "Velanna emerges from behind a mossy rock, a gnawed bone between her teeth, which she casually throws over her shoulder. She approaches you and places a hand on your shoulder. She tells you that one of her clan elders used to change his mind at the last minute, constantly calling his pet back along the way. The beast came to hate him. She warns you that the more frequent the cancellations, the more severe the loss of affection.",
+      "Velanna stands in your way, legs spread and arms crossed, a stern expression on her scarred face. She orders you to listen carefully. She explains that a familiar's eyes sparkle with excitement at the sight of an expedition map, its heart racing at the thought of the promised adventure. She tells you that canceling before departure or calling back in the middle of an exploration has the same devastating effect: a broken promise. She counts on her fingers and warns you that the loss of love doubles on the second betrayal, triples on the third. Familiars never forget."
     ]
   }
 }
