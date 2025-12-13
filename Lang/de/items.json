@@ -1,30 +1,30 @@
 {
   "armorsFieldName": "Rüstung/Schild :",
-  "attack": "{emote:unitValues.attack} {{value}}",
-  "defense": "{emote:unitValues.defense} {{value}}",
+  "attack": "{emote:unitValues.attack} {{value, number}}",
+  "defense": "{emote:unitValues.defense} {{value, number}}",
   "nameDisplay": "{emote:{{itemCategory}}.{{itemId}}} **$t(models:{{itemCategory}}.{{itemId}})**",
   "nerfDisplay": "~ ~{{old}}~ ~ {{max}}",
   "objectsFieldName": "Betreff :",
   "objectsNatures": [
     "{emote:itemNatures.0} Keine Auswirkungen",
-    "{emote:itemNatures.1} Leben + {{power}} pro Tag",
-    "{emote:itemNatures.2} Geschwindigkeit + {{power}} während des Kampfes",
-    "{emote:itemNatures.3} Angriff + {{power}} während des Kampfes",
-    "{emote:itemNatures.4} Verteidigung + {{power}} während des Kampfes",
+    "{emote:itemNatures.1} Vie + {{power, number}} par jour",
+    "{emote:itemNatures.2} Vitesse + {{power, number}} pendant les combats",
+    "{emote:itemNatures.3} Attaque + {{power, number}} pendant les combats",
+    "{emote:itemNatures.4} Défense + {{power, number}} pendant les combats",
     "{emote:itemNatures.5} Spule die Zeit von {{power}} jeden Tag vor",
-    "{emote:itemNatures.6} Geld + {{power}} pro Tag",
-    "{emote:itemNatures.7} Energie + {{power}} pro Tag"
+    "{emote:itemNatures.6} Argent + {{power, number}} par jour",
+    "{emote:itemNatures.7} Énergie + {{power, number}} par jour"
   ],
   "potionsFieldName": "Trank:",
   "potionsNatures": [
     "{emote:itemNatures.0} Keine Auswirkungen",
-    "{emote:itemNatures.1} Leben + {{power}}",
-    "{emote:itemNatures.2} Geschwindigkeit + {{power}} während des nächsten Kampfes",
-    "{emote:itemNatures.3} Angriff + {{power}} während des nächsten Kampfes",
-    "{emote:itemNatures.4} Verteidigung + {{power}} während des nächsten Kampfes",
+    "{emote:itemNatures.1} Vie + {{power, number}}",
+    "{emote:itemNatures.2} Vitesse + {{power, number}} pendant le prochain combat",
+    "{emote:itemNatures.3} Attaque + {{power, number}} pendant le prochain combat",
+    "{emote:itemNatures.4} Défense + {{power, number}} pendant le prochain combat",
     "{emote:itemNatures.5} Schiebt die Zeit vor {{power}}",
-    "{emote:itemNatures.6} Silber + {{power}}",
-    "{emote:itemNatures.7} Energie + {{power}}"
+    "{emote:itemNatures.6} Argent + {{power, number}}",
+    "{emote:itemNatures.7} Énergie + {{power, number}}"
   ],
   "rarities": [
     "{emote:rarity.0} Basic",
@@ -37,7 +37,7 @@
     "{emote:rarity.7} Legendär",
     "{emote:rarity.8} Mythisch"
   ],
-  "speed": "{emote:unitValues.speed} {{value}}",
+  "speed": "{emote:unitValues.speed} {{value, number}}",
   "weaponsFieldName": "Waffe:",
   "itemsField": "**{{emote}} {{name}}** | {{rarity}} | {{values}}"
 }
