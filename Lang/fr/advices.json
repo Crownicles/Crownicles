@@ -252,11 +252,11 @@
     "Si vous êtes attaqué et que vous avez une potion, elle a 15% de chance d'être consommée. Vous pourrez probablement la réutiliser !",
     "Une potion de combat bien choisie peut compenser les faiblesses de votre classe actuelle.",
     "Les potions de combat rares sont plus puissantes mais aussi plus difficiles à trouver.",
-    "À partir du niveau 20, vous pourriez croiser une mystérieuse guerrière qui parle d'expéditions.",
+    "À partir du niveau 5, vous pourriez croiser une mystérieuse guerrière qui parle d'expéditions.",
     "Les expéditions permettent d'envoyer votre familier chercher des trésors pendant que vous continuez votre aventure.",
-    "Pour débloquer les expéditions, vous devez avoir un familier, être niveau 30, appartenir à une guilde, et avoir présenté votre familier à Talvar.",
+    "Pour débloquer les expéditions, vous devez avoir un familier nourri et non fielleux, être niveau 30, appartenir à une guilde, et avoir présenté votre familier à Talvar.",
     "Plus une expédition est longue, plus les récompenses sont importantes, mais elle consommera davantage de nourriture.",
-    "La vitesse de votre familier réduit la durée des expéditions : un familier rapide reviendra plus tôt.",
+    "La vitesse de votre familier impacte la durée des expéditions : un familier rapide reviendra plus tôt.",
     "La force de votre familier diminue le risque d'échec des expéditions.",
     "L'affection de votre familier influence ses chances de succès en expédition.",
     "Un familier en expédition ne peut pas vous aider en combat si vous êtes l'attaquant.",
@@ -270,16 +270,13 @@
     "Il existe un $t(models:talisman.clone) très rare qui permet d'avoir un double spectral de votre familier pendant qu'il est en expédition.",
     "Croiser Velanna quand votre familier est en expédition peut vous rapporter des points bonus et parfois d'autres surprises.",
     "Les jetons permettent d'avancer plus vite sur la carte en utilisant la commande {command:report}.",
-    "Vous pouvez obtenir des jetons grâce au bonus journalier ({command:dailybonus}), aux expéditions de familier, ou en les achetant dans le magasin.",
+    "Vous pouvez obtenir des jetons grâce aux expéditions de familier, ou en les achetant dans le magasin. Vous en recevez également 3 gratuitement chaque jour.",
     "Les jetons sont débloqués à partir du niveau 5.",
     "Un jeton permet de sauter directement à la prochaine étape de votre voyage.",
     "Plus vous êtes occupé longtemps, plus le coût en jetons pour avancer sera élevé.",
     "Méfiez-vous de Moltiar, le frère de Talvar : contrairement à ce dernier, il déteste les animaux et pourrait s'en prendre à votre familier.",
-    "Si votre familier est fielleux et que vous croisez Moltiar, essayez de calmer votre compagnon pour éviter une confrontation.",
     "Les expéditions vers les marais rapportent plus de points que les autres destinations.",
     "Le nombre maximum de jetons que vous pouvez accumuler est de 20.",
-    "Des missions liées aux expéditions de familier vous permettent de gagner des gemmes supplémentaires.",
-    "Velanna n'apparaît que sur le continent principal. Vous ne la croiserez jamais sur les îles mystérieuses.",
-    "Le magasin limite l'achat de jetons à 10 par jour et 30 par semaine. Gérez bien vos achats !"
+    "Le magasin limite l'acquisition de jetons à 10 par jour et 30 par semaine. Gérez bien vos achats !"
   ]
 }
