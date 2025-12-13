@@ -863,8 +863,9 @@
     "badgeBought": "You have received a new badge: {emote:badges.{{badgeName}}}!",
     "notEnoughMoney": "You don't have enough money to buy this item! You are missing `{{missingCurrency, number}} {emote:unitValues.{{currency}}}`.",
     "boughtTooMuchDailyPotions": "There are no more potions available for sale... Come back tomorrow!",
-    "boughtTooMuchTokens": "It is no longer possible to buy tokens today... Please come back tomorrow!",
-    "tokensBought": "You have bought a token. {emote:unitValues.token}",
+    "boughtTooMuchTokens": "Vous avez atteint la limite d'achat de jetons pour le moment. Revenez plus tard !",
+    "tokensBought_one": "Vous avez acheté **{{count}} jeton** {emote:unitValues.token}.",
+    "tokensBought_other": "Vous avez acheté **{{count}} jetons** {emote:unitValues.token}.",
     "tokensFull": "You already have as many tokens as possible!",
     "title": "{emote:commands.shop} Shop",
     "currentMoney": "You have `{{money, number}}{emote:unitValues.{{currency}}}`.",
@@ -882,7 +883,7 @@
       "dailyPotion_one": "Today's potion ({{count}} available)",
       "dailyPotion_other": "Today's potion ({{count}} available)",
       "token_zero": "Tokens (out of stock)",
-      "token_one": "Tokens ({{count}} available)",
+      "token_one": "Jeton ({{count}} disponible)",
       "token_other": "Tokens ({{count}} available)",
       "slotExtension": "Inventory slot extensions",
       "food": "Pet food",
@@ -934,7 +935,7 @@
       },
       "token": {
         "name": "{emote:unitValues.token} Token",
-        "info": "Tokens allow you to progress faster by accelerating certain actions, such as reporting. You can buy up to 10 per day."
+        "info": "Les jetons permettent de progresser plus vite en accélérant certaines actions comme les rapports. Vous pouvez en acheter jusqu'à 10 par jour et 30 par semaine."
       },
       "smallGuildXp": {
         "name": "{emote:shopItems.smallGuildXp} A small amount of XP for your guild",
