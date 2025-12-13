@@ -59,7 +59,7 @@
     "Le classement de la semaine est disponible en utilisant la commande {command:top score} et l'option `durée`.",
     "Votre guilde est au niveau 50 ou plus ? Vous avez alors 1% de chance d'obtenir un badge pour tous les membres de la guilde à chaque récompense journalière.",
     "Une fois que votre familier est dressé, vous n'avez plus besoin de le nourrir.",
-    "Le temps pour pouvoir nourrir son familier à nouveau dépend de sa rareté ! Une étoile = une heure !",
+    "Le temps pour pouvoir nourrir son familier dépend de chaque familier, allez voir le vétérinaire pour en savoir plus sur votre animal.",
     "Il est possible de vendre un familier à un autre joueur grâce à la commande {command:petsell}.",
     "En cliquant sur les badges des profils des joueurs qui en ont, vous pouvez apprendre comment ils les ont obtenus.",
     "Si vous voulez voir le profil d'un autre joueur, tapez la commande {command:profile} !",
@@ -277,6 +277,7 @@
     "Méfiez-vous de Moltiar, le frère de Talvar : contrairement à ce dernier, il déteste les animaux et pourrait s'en prendre à votre familier.",
     "Les expéditions vers les marais rapportent plus de points que les autres destinations.",
     "Le nombre maximum de jetons que vous pouvez accumuler est de 20.",
-    "Le magasin limite l'acquisition de jetons à 10 par jour et 30 par semaine. Gérez bien vos achats !"
+    "Le magasin limite l'acquisition de jetons à 10 par jour et 30 par semaine. Gérez bien vos achats !",
+    "Le résultat d'une expédition a un impact sur l'affection de votre familier : un succès augmente l'affection, un échec la diminue."
   ]
 }
