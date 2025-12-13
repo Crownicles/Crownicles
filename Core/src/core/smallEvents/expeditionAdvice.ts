@@ -105,11 +105,18 @@ async function checkTalismanConditions(player: Player): Promise<TalismanConditio
 
 	// Condition 6: Player level >= 30
 	if (player.level < ExpeditionConstants.TALISMAN_EVENT.TALISMAN_MIN_LEVEL) {
+		// Calculate consolation tokens based on remaining space (max tokens - current tokens)
+		const remainingSpace = TokensConstants.MAX - player.tokens;
+		const consolationAmount = Math.min(
+			ExpeditionConstants.TALISMAN_EVENT.LEVEL_TOO_LOW_TOKEN_COMPENSATION,
+			Math.max(0, remainingSpace)
+		);
+
 		return {
 			conditionMet: false,
 			interactionType: ExpeditionAdviceInteractionType.CONDITION_NOT_MET_LEVEL_TOO_LOW,
 			...petInfo,
-			consolationTokensAmount: ExpeditionConstants.TALISMAN_EVENT.LEVEL_TOO_LOW_TOKEN_COMPENSATION
+			consolationTokensAmount: consolationAmount
 		};
 	}
 
