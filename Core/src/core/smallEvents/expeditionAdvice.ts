@@ -277,11 +277,14 @@ async function handlePlayerWithoutTalisman(
 		alreadyHasTalisman: false,
 		talismanGiven: false,
 		petInExpedition: false,
-		encounterCount: encounterCount + 1 // +1 because this encounter hasn't been logged yet
+		encounterCount // Already includes current encounter as it's logged before execution
 	};
 
-	// First 2 encounters: Show talisman intro in order (index 0, then index 1)
-	if (encounterCount < ExpeditionConstants.TALISMAN_EVENT.TALISMAN_INTRO_ENCOUNTERS) {
+	/*
+	 * First 2 encounters: Show talisman intro in order (index 0, then index 1)
+	 * Note: encounterCount already includes current encounter as it's logged before execution
+	 */
+	if (encounterCount <= ExpeditionConstants.TALISMAN_EVENT.TALISMAN_INTRO_ENCOUNTERS) {
 		response.push(makePacket(SmallEventExpeditionAdvicePacket, {
 			...basePacketData,
 			interactionType: ExpeditionAdviceInteractionType.TALISMAN_INTRO
