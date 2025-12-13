@@ -2221,7 +2221,7 @@
     ],
     "conditions": {
       "noPet": [
-        "Au détour d'un sentier, vous croisez Velanna. Elle vous toise avec mépris : un $t(models:talisman.anchor) sans familier à lier n'est qu'un caillou brillant. Elle éclate d'un rire rauque et vous invite à revenir quand vous aurez apprivoisé une créature."
+        "Au détour d'un sentier, vous croisez Velanna. Elle vous regarde de haut en bas, puis croise les bras en fronçant les sourcils. Elle remarque que vous voyagez seul, sans compagnon à vos côtés. Elle secoue la tête, déclarant qu'elle ne peut vous confier le $t(models:talisman.anchor) sans créature à lier. Revenez quand vous aurez apprivoisé un familier."
       ],
       "petHungry": [
         "Au détour d'un sentier, vous rencontrez Velanna. Elle examine **{{pet}}** d'un œil critique puis se tourne vers vous, furieuse : un familier affamé ne ferait pas trois pas avant de s'effondrer. Vous vous devez de le nourrir, sinon la pauvre bête ne pourra jamais vous aider en retour !"
@@ -2236,10 +2236,10 @@
         "Vous croisez Velanna qui après de rapide salutations, s'agenouille pour examiner **{{pet}}**. Après un moment, elle fronce les sourcils : cette créature n'a jamais été présentée à Talvar. Elle se relève et époussète ses genoux, expliquant que le nain des montagnes doit d'abord certifier que votre familier est en bonne santé. C'est un vieux pacte entre leurs traditions."
       ],
       "levelTooLow_one": [
-        "Après un virage, vous tombez nez-à-nez avec Velanna. Elle vous jauge de la tête aux pieds, et votre niveau {{playerLevel}} ne l'impressionne guère. Elle attrape votre bras et palpe vos muscles avec une moue critique : il faut au moins atteindre le niveau {{requiredLevel}} avant d'être digne du $t(models:talisman.anchor). Afin de vous encourager à continuer de progresser, elle vous tend quelques jetons de voyage. Vous recevez {{count}} {emote:report.token} !"
+        "Après un virage, vous tombez nez-à-nez avec Velanna. Elle vous jauge de la tête aux pieds, et votre niveau {{playerLevel}} ne l'impressionne guère. Elle attrape votre bras et palpe vos muscles avec une moue critique : il faut au moins atteindre le niveau {{requiredLevel}} avant d'être digne du $t(models:talisman.anchor). Afin de vous encourager à continuer de progresser, elle vous tend quelques jetons de voyage. Vous recevez {{count}} {emote:unitValues.token} !"
       ],
       "levelTooLow_other": [
-        "Après un virage, vous tombez nez-à-nez avec Velanna. Elle vous jauge de la tête aux pieds, et votre niveau {{playerLevel}} ne l'impressionne guère. Elle attrape votre bras et palpe vos muscles avec une moue critique : il faut au moins atteindre le niveau {{requiredLevel}} avant d'être digne du $t(models:talisman.anchor). Afin de vous encourager à continuer de progresser, elle vous tend quelques jetons de voyage. Vous recevez {{count}} {emote:report.token} !"
+        "Après un virage, vous tombez nez-à-nez avec Velanna. Elle vous jauge de la tête aux pieds, et votre niveau {{playerLevel}} ne l'impressionne guère. Elle attrape votre bras et palpe vos muscles avec une moue critique : il faut au moins atteindre le niveau {{requiredLevel}} avant d'être digne du $t(models:talisman.anchor). Afin de vous encourager à continuer de progresser, elle vous tend quelques jetons de voyage. Vous recevez {{count}} {emote:unitValues.token} !"
       ]
     },
     "talismanReceived": [
