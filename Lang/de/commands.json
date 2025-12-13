@@ -61,21 +61,21 @@
     "title": "Vertraute Expeditionen",
     "unavailableTitle": "{{pseudo}}, Versand nicht möglich",
     "noTalisman_male": [
-      "Sie greifen in Ihre Satteltasche und hoffen, dort den {emote:expedition.talisman} **Talisman der Verankerung** zu finden, doch Ihre Finger stoßen nur auf Leere. Ohne dieses uralte Artefakt würde Ihr Begleiter den Weg zu Ihnen nicht finden können. Die Alten erzählen, dass er sich irgendwo auf den Straßen des Königreichs befindet... Sie beschließen, die Expedition auf einen günstigeren Zeitpunkt zu verschieben.",
-      "Ohne den {emote:expedition.talisman} **Talisman der Verankerung** würde dein Vertrauter für immer in der Ferne umherirren. Dieses wertvolle Artefakt wartet irgendwo auf den Straßen des Königreichs auf Sie. Sie beschließen, die Expedition auf einen günstigeren Zeitpunkt zu verschieben.",
-      "Ihr Begleiter starrt Sie mit erwartungsvollen Augen an und ist bereit, sich auf ein Abenteuer einzulassen. Leider besitzen Sie noch nicht den {emote:expedition.talisman} **Talisman der Verankerung**, ein kostbares Artefakt, das es dem Vertrauten ermöglicht, seinen Herrn auch in den unwirtlichsten Ländern wiederzufinden. Sie beschließen, die Expedition auf einen günstigeren Zeitpunkt zu verschieben.",
-      "Die Legenden erzählen von einem magischen Talisman, der von den ersten Trainern geschmiedet wurde und eine unzerstörbare Bindung zwischen einem Vertrauten und seinem Besitzer herstellen kann. Ohne den {emote:expedition.talisman} **Talisman der Verankerung** wäre es verrückt, deinen Begleiter auf eine Expedition zu schicken. Sie beschließen, die Expedition auf einen günstigeren Zeitpunkt zu verschieben."
+      "Vous posez la main sur votre sacoche, espérant y trouver le $t(models:talisman.anchor), mais vos doigts ne rencontrent que le vide. Sans cet artefact ancestral, votre compagnon ne pourrait retrouver son chemin jusqu'à vous. Les anciens racontent qu'il se trouve quelque part sur les routes du royaume... Vous décidez de reporter cette expedition à un moment plus propice.",
+      "Sans le $t(models:talisman.anchor), votre familier errerait pour l'éternité dans les contrées lointaines. Cet artefact précieux vous attend quelque part sur les routes du royaume. Vous décidez de reporter cette expedition à un moment plus propice.",
+      "Votre familier vous fixe avec des yeux pleins d'espoir, prêt à partir à l'aventure. Hélas, vous ne possédez pas encore le $t(models:talisman.anchor), ce précieux artefact qui permet aux familiers de retrouver leur maître à travers les terres les plus hostiles. Vous décidez de reporter cette expedition à un moment plus propice.",
+      "Les légendes parlent d'un talisman magique, forgé par les premiers dresseurs, capable de créer un lien indéfectible entre un familier et son maître. Sans le $t(models:talisman.anchor), envoyer votre compagnon en expédition serait pure folie. Vous décidez de reporter cette expedition à un moment plus propice."
     ],
     "noTalisman_female": [
-      "Sie greifen in Ihre Satteltasche und hoffen, dort den {emote:expedition.talisman} **Talisman der Verankerung** zu finden, doch Ihre Finger stoßen nur auf Leere. Ohne dieses uralte Artefakt würde Ihre Begleiterin den Weg zu Ihnen nicht finden können. Dieses wertvolle Artefakt soll sich irgendwo auf den Straßen des Königreichs befinden. Es scheint ratsam, die Expedition auf einen günstigeren Zeitpunkt zu verschieben.",
-      "In Ihrer Satteltasche fehlt der {emote:expedition.talisman} **Talisman der Verankerung**. Ohne dieses Artefakt würde Ihr Vertrauter für immer in der Ferne umherirren. Das Artefakt würde sich irgendwo auf den Straßen des Königreichs befinden. Es empfiehlt sich, die Expedition zu verschieben.",
-      "Ihr Vertrauter starrt Sie mit erwartungsvollen Augen an, bereit, sich auf ein Abenteuer einzulassen. Leider befindet sich der {emote:expedition.talisman} **Talisman der Verankerung** nicht in Ihren Sachen. Ohne dieses kostbare Artefakt, das es Vertrauten ermöglicht, ihren Meister auch in den unwirtlichsten Ländern wiederzufinden, muss die Expedition warten.",
-      "Der {emote:expedition.talisman} **Talisman der Verankerung**, ein legendäres Artefakt, das eine unzerstörbare Verbindung zwischen einem Vertrauten und seinem Meister herstellen kann, ist in Ihrer Ausrüstung nicht zu finden. Ihre Begleiterin ohne ihn auf eine Expedition zu schicken, wäre reiner Wahnsinn. Die Expedition wird verschoben."
+      "Vous posez la main sur votre sacoche, espérant y trouver le $t(models:talisman.anchor), mais vos doigts ne rencontrent que le vide. Sans cet artefact ancestral, votre compagne ne pourrait retrouver son chemin jusqu'à vous. Cet objet précieux se trouverait quelque part sur les routes du royaume. Il semble judicieux de reporter cette expédition à un moment plus propice.",
+      "Votre sacoche ne contient pas le $t(models:talisman.anchor). Sans cet artefact, votre familier errerait pour l'éternité dans les contrées lointaines. L'objet se trouverait quelque part sur les routes du royaume. Il convient de reporter cette expédition.",
+      "Votre familier vous fixe avec des yeux pleins d'espoir, prête à partir à l'aventure. Hélas, le $t(models:talisman.anchor) ne se trouve pas dans vos affaires. Sans ce précieux artefact permettant aux familiers de retrouver leur maître à travers les terres les plus hostiles, l'expédition devra attendre.",
+      "Le $t(models:talisman.anchor), cet artefact légendaire capable de créer un lien indéfectible entre un familier et son maître, reste introuvable dans votre équipement. Envoyer votre compagne en expédition sans lui serait pure folie. L'expédition est reportée."
     ],
     "noPet": [
       "Sie suchen die Umgebung ab, aber kein Vertrauter trottet neben Ihnen her. Die Erkundungsrouten sind viel zu gefährlich, um sie allein zu begehen. Die Expedition muss auf die Ankunft eines treuen Begleiters warten.",
       "Eine leichte Brise wirbelt den Staub des Weges auf. Ohne einen treuen Begleiter an Ihrer Seite bleiben Expeditionen unerreichbar. Zuerst müssen Sie einen Vertrauten finden.",
-      "Der {emote:expedition.talisman} **Talisman der Verankerung** in deiner Satteltasche reagiert nicht. Seine Magie kann nur in Anwesenheit eines Begleiters aktiviert werden. Bevor Sie an Expeditionen denken, sollten Sie einen würdigen Begleiter finden."
+      "Le $t(models:talisman.anchor) ne réagit pas dans votre sacoche. Sa magie ne peut s'activer qu'en présence d'un familier. Il convient de trouver un compagnon digne de ce nom avant de songer aux expéditions."
     ],
     "insufficientLove_male": [
       "{{petDisplay}} wirft Ihnen einen misstrauischen Blick zu und weicht einen Schritt zurück. Die Bindung zwischen euch ist noch nicht stark genug, damit er sich allein in die Wildnis wagt. Kümmern Sie sich um ihn, füttern Sie ihn und vielleicht wird er Ihnen eines Tages genug vertrauen.",
@@ -147,7 +147,7 @@
     "recallButton": "Rückruf",
     "closeButton": "Die Erkundung fortsetzen",
     "chooseExpeditionTitle": "{{pseudo}}Neue Sendungen verfügbar",
-    "chooseExpedition": "Der {emote:expedition.talisman} **Talisman der Verankerung** vibriert sanft in deinem Rucksack. Vor Ihrem geistigen Auge erscheinen drei Reiseziele, die durch die Magie des Artefakts enthüllt werden. {{petDisplay}} stampft ungeduldig auf, bereit, eines dieser Länder zu erkunden:",
+    "chooseExpedition": "Le $t(models:talisman.anchor) vibre doucement dans votre sacoche. Trois destinations apparaissent dans votre esprit, révélées par la magie de l'artefact. {{petDisplay}} trépigne d'impatience, prêt à partir explorer l'une de ces contrées :",
     "selectPlaceholder": "Wählen Sie ein Ziel aus...",
     "distantExpeditionPrefix": "Fernexpedition: {{location}}",
     "expeditionOption": {
@@ -195,8 +195,7 @@
     "finishedTitle": "{{pseudo}}, Versand beendet!",
     "finishedDescription": {
       "talisman": {
-        "name": "Talisman der Verankerung",
-        "intro": "Die {emote:expedition.talisman} **{{talismanName}}** vibriert intensiv in Ihrer Tasche: {{petDisplay}} ist wieder aus dem Versand nach **{{location}}**!"
+        "intro": "Le $t(models:talisman.anchor) vibre intensément dans votre sacoche : {{petDisplay}} est de retour de son expédition vers **{{location}}** !"
       },
       "risk": "{emote:expedition.risk} Gefährlichkeit: {{risk}}",
       "impatience_male": "*Ihr Begleiter stampft ungeduldig auf und will Ihnen unbedingt zeigen, was er mitgebracht hat!*",
@@ -258,7 +257,7 @@
       "tokens_one": "{emote:unitValues.token} Gewonnener Jeton : **{{count}}**!",
       "tokens_other": "{emote:unitValues.token} Gewonnene Jetons : **{{count}}**!",
       "item": "{emote:rewards.item} Sie erhalten eine zufällige Ausrüstung!",
-      "cloneTalisman": "{emote:expedition.cloneTalisman} **AUSSERGEWÖHNLICHE ENTDECKUNG!**\nIhr Begleiter hat ein altes, vergrabenes Artefakt entdeckt: den **Talisman des Klonens**!\nMit diesem mystischen Gegenstand kann Ihr Begleiter Sie bei der Verteidigung und bei kleineren Ereignissen unterstützen, selbst wenn er sich auf einer Expedition befindet!",
+      "cloneTalisman": "{emote:expedition.cloneTalisman} **DÉCOUVERTE EXCEPTIONNELLE !**\nVotre familier a découvert un ancien artefact enfoui : le $t(models:talisman.clone) !\nCet objet mystique permettra à votre compagnon de vous assister en défense et dans les petits événements, même lorsqu'il est en expédition !",
       "badgeEarned": "{emote:badges.expert_expediteur} Ein Abzeichen wurde Ihnen angeboten: **Expert Publisher**!"
     },
     "riskCategories": {
@@ -612,8 +611,8 @@
     "weapons_other": "Waffen ({{count}}/{{max}}):",
     "talisman": "Artefakte:",
     "talismans": {
-      "anchorTalisman": "{emote:expedition.talisman} **Talisman der Verankerung** - Ermöglicht es dir, deinen Vertrauten auf eine Expedition zu schicken.",
-      "cloneTalisman": "{emote:expedition.cloneTalisman} **Klon-Talisman** - Ihr Vertrauter unterstützt Sie bei der Verteidigung und bei kleinen Ereignissen sogar auf Expeditionen."
+      "anchorTalisman": "$t(models:talisman.anchor) - Permet d'envoyer votre familier en expédition",
+      "cloneTalisman": "$t(models:talisman.clone) - Votre familier vous assiste en défense et dans les petits événements même en expédition"
     },
     "talismanNotOwned": "{emote:inventory.empty} **Kein Artefakt**",
     "randomItemTitle": "{{pseudo}}Sie haben etwas gefunden!",
