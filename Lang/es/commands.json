@@ -688,7 +688,7 @@
     },
     "fightRanked": {
       "fieldName": "Gloria y liga :",
-      "fieldValue": "{emote:announcements.trophy} {{rank, number}} / {{numberOfPlayers, number}} | {emote:unitValues.glory} {{gloryPoints, number}} | {emote:leagues.{{leagueId}}} $t(models:leagues.{{leagueId}})"
+      "fieldValue": "{emote:announcements.trophy} {{rank, number}} / {{numberOfPlayers, number}} | {emote:unitValues.glory} {{gloryPoints, number}} | {emote:ligas.{{leagueId}}} $t(models:leagues.{{leagueId}})"
     },
     "fightUnranked": {
       "fieldName": "Gloria y liga :",
@@ -872,7 +872,7 @@
     "shopItemsDisplayMultiple": "**{{amount, number}}x** {{name}} | `{{price, number}}{emote:unitValues.{{currency}}}`",
     "shopSelectPlaceholder": "Seleccione un artículo para comprar",
     "buyCategorySlotSuccess": "Has comprado un nuevo espacio de inventario.",
-    "shopItemsSelectDescription": "{{price, number}}{emote:unitValues.{{currency}}}",
+    "shopItemsSelectDescription": "Tienes `{{price, number}}{emote:unitValues.{{currency}}}",
     "closeShopButton": "❌ Cerrar tienda",
     "shopConfirmationTitle": "{{pseudo}}ha seleccionado el siguiente producto:",
     "shopConfirmationTitleMultiple": "{{pseudo}}Seleccione una cantidad para este producto:",
