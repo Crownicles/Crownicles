@@ -67,7 +67,7 @@
   "unexpectedError": "Es ist ein Fehler aufgetreten: (",
   "pleaseWaitForHeal": "Bitte warten Sie mit dem Weiterspielen, bis die Heilung Ihrer Zustandsveränderung abgeschlossen ist: {{time}}",
   "pleaseWaitForHisHeal": "Bitte warten Sie bis zum Ende der Pflege seines veränderten Zustands: {{time}}",
-  "notEnoughMoney": "Sie haben nicht genug Geld, um diese Aktion durchzuführen. Es fehlt Ihnen {{money}}{emote:unitValues.money}.",
+  "notEnoughMoney": "Sie haben nicht genug Geld, um diese Aktion durchzuführen. Es fehlt Ihnen {{money, number}}{emote:unitValues.money}.",
   "cooldownPetFree": "Sie können nur einen Begleiter pro Stunde befreien. Sie können einen weiteren befreien {{remainingTime}}.",
   "unknownPlayer": "Pseudo 404",
   "petNickNotValid": "Die Regeln für den Namen eines Vertrauten lauten wie folgt:\n$t(error:stringRules)",
@@ -75,8 +75,8 @@
   "stringRules": "- Mindestens einen Buchstaben verwenden\n- Nicht mehr als zwei aufeinanderfolgende Leerzeichen verwenden\n- Sonderzeichen sind nicht erlaubt\n- Zwischen {{min}} und {{max}} Zeichen",
   "notInAGuild": "Sie müssen zu einer Gilde gehören, um diesen Befehl ausführen zu können.",
   "notAuthorizedError": "Sie haben nicht die erforderlichen Berechtigungen, um diese Bestellung innerhalb Ihrer Gilde durchzuführen. Fragen Sie ggf. einen Ihrer Vorgesetzten.",
-  "levelTooLow": "Sie müssen **level {{level}}** sein, um diesen Befehl zu verwenden! Kommen Sie später wieder!",
-  "targetLevelTooLow": "Dieser Spieler muss **Level {{level}}** sein, damit du diesen Befehl verwenden kannst!",
+  "levelTooLow": "Vous devez être **niveau {{level, number}}** pour utiliser cette commande ! Revenez plus tard !",
+  "targetLevelTooLow": "Ce joueur doit être **niveau {{level, number}}** pour que vous puissiez utiliser cette commande !",
   "notAuthorizedRight": "Sie haben nicht die erforderlichen Berechtigungen, um diesen Befehl auszuführen.",
   "notPossibleWithoutStatus": "Sie benötigen unsere Dienste derzeit nicht",
   "effects": {
@@ -160,7 +160,7 @@
   "banned": "Sie wurden aus dem Spiel verbannt.",
   "aDevMessedUp": "Ups! Es ist ein Fehler aufgetreten. Seien Sie versichert, dass dies nicht Ihr Verschulden ist. Wir bitten Sie, unsere Entschuldigung für die Unannehmlichkeiten zu akzeptieren. Um das Problem zu beheben, kontaktieren Sie bitte unseren Support über unseren Discord-Server: https://discord.gg/5JqrMtZ",
   "commandNotAvailableHere": "Dieser Befehl kann an dieser Stelle nicht verwendet werden.",
-  "guildFoodStorageFull": "Du hast **{{quantity}}x {{food}}** erhalten, aber das Nahrungslager deiner Gilde ist voll. Die Nahrung wurde weggeworfen.",
+  "guildFoodStorageFull": "Vous avez reçu **{{quantity, number}}x {{food}}**, mais le stock de nourriture de votre guilde est plein. La nourriture a été jetée.",
   "fightBugged": "Der Kampf wurde abgebrochen, weil es ein technisches Problem gab. Dies ist in der Regel darauf zurückzuführen, dass eine für den Kampf notwendige Nachricht gelöscht wurde oder ein Problem mit den Berechtigungen vorliegt.",
   "resetIsNow": "{emote:announcements.trophy} Die Rangliste der Woche wird zurückgesetzt! Der Gewinner wird in Kürze auf dem Bot-Server bekannt gegeben! Das Spiel wird in weniger als 5 Minuten fortgesetzt!",
   "seasonEndIsNow": "{emote:unitValues.glory} Die Kampfsaison wird gerade zurückgesetzt! Der Gewinner wird in Kürze auf dem Bot-Server bekannt gegeben! Das Spiel wird in weniger als 20 Minuten fortgesetzt!"
