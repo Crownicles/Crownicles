@@ -2217,7 +2217,7 @@
   "expeditionAdvice": {
     "talismanIntro": [
       "Vous tombez nez à nez avec une femme au visage balafré, assise sur un grand rocher. Son armure de cuir usée porte les marques de dizaines de combats. Elle nettoie méthodiquement une dague à la lame noircie où est gravé son nom : Velanna. Sans lever les yeux, elle grogne quelque chose à propos d'un artefact ancien capable de créer des liens entre un maître et sa bête... le $t(models:talisman.anchor). Elle se lève et s'éloigne sans rien ajouter.",
-      "Une guerrière apparaît derrière vous sans faire le moindre bruit. Vous la reconnaissez en voyant son visage balafré à quelques centimètres du vôtre. Velanna porte une armure de cuir usée, marquée par des dizaines de combats. Elle vous murmure que le $t(models:talisman.anchor) lie l'âme d'un familier à son maître, leur permettant de rester connectés même séparés par des lieues. Grâce à cet artefact, vous pourrez envoyer votre familier en expédition pour qu'il ramène divers richesses. Puis, sans un mot de plus, elle s'éloigne."
+      "Une guerrière apparaît derrière vous sans faire le moindre bruit. Vous la reconnaissez en voyant son visage balafré à quelques centimètres du vôtre. Velanna porte une armure de cuir usée, marquée par des dizaines de combats. Elle vous murmure que le $t(models:talisman.anchor) lie l'âme d'un familier à son maître, leur permettant de rester connectés même séparés par des lieues. Grâce à cet artefact, vous pourrez envoyer votre familier en expédition pour qu'il ramène diverses richesses. Puis, sans un mot de plus, elle s'éloigne."
     ],
     "conditions": {
       "noPet": [
