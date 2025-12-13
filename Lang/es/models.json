@@ -1906,6 +1906,10 @@
     "male": "Hombre",
     "female": "Mujer"
   },
+  "talisman": {
+    "anchor": "{emote:expedition.talisman} **Talisman d'Ancrage**",
+    "clone": "{emote:expedition.cloneTalisman} **Talisman de Clonage**"
+  },
   "ordinals": {
     "get_feminine_ordinal_one": "1º",
     "get_feminine_ordinal_other": "{{count}}th",
