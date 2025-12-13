@@ -97,6 +97,7 @@ import { SmallEventPetFoodPacket } from "../../../../Lib/src/packets/smallEvents
 import { SmallEventBadPetPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventBadPetPacket";
 import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
 import { Language } from "../../../../Lib/src/Language";
+import { SmallEventFindMaterialPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventFindMaterialPacket";
 
 const PET_TIME_INTERACTIONS = new Set([
 	"gainTime",
@@ -1085,6 +1086,28 @@ export default class SmallEventsHandler {
 
 		await interaction.editReply({
 			embeds: [embed], components: []
+		});
+	}
+
+	@packetHandler(SmallEventFindMaterialPacket)
+	async smallEventFindMaterial(context: PacketContext, packet: SmallEventFindMaterialPacket): Promise<void> {
+		const interaction = DiscordCache.getInteraction(context.discord!.interaction);
+		const lng = interaction!.userLanguage;
+
+		await interaction?.editReply({
+			embeds: [
+				new CrowniclesSmallEventEmbed(
+					"findMaterial",
+					`${getRandomSmallEventIntro(lng)
+					+ i18n.t(`smallEvents:findMaterial.typesStories.${packet.materialType}`, { lng })}\n${i18n.t(`smallEvents:findMaterial.foundStories.${packet.materialRarity}`, {
+						lng,
+						materialEmote: CrowniclesIcons.materials[packet.materialId],
+						materialId: packet.materialId
+					})}`,
+					interaction.user,
+					lng
+				)
+			]
 		});
 	}
 }

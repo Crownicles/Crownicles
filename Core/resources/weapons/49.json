@@ -2,5 +2,6 @@
   "rarity": 4,
   "rawAttack": 7,
   "defense": -20,
-  "speed": 10
+  "speed": 10,
+  "type": "rope"
 }

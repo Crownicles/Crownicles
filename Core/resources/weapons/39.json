@@ -3,5 +3,6 @@
   "rawAttack": 10,
   "attack": 10,
   "defense": 30,
-  "speed": -50
+  "speed": -50,
+  "type": "metal"
 }

@@ -2156,5 +2156,24 @@
         ]
       }
     }
+  },
+  "findMaterial": {
+    "typesStories": {
+      "wood":  "vous tombez sur un bosquet d'arbres aux troncs robustes et aux branches souples, parfaits pour la collecte de bois. Vous prenez votre hache et commencez à couper du bois.",
+      "metal": "vous découvrez une veine de minerai scintillant incrustée dans une paroi rocheuse, idéale pour l'extraction de métal. Vous sortez votre pioche et commencez à extraire le minerai de la paroi rocheuse.",
+      "alloy": "vous apercevez un amas de débris métalliques et de fragments d'alliages divers, propice à la récupération de matériaux composites. Vous rassemblez les débris métalliques et commencez à trier les fragments d'alliages divers.",
+      "rope": "vous trouvez des plantes fibreuses aux tiges longues et résistantes, parfaites pour tresser des cordes et des tissus. Vous cueillez prenez votre couteau et commencez à couper les plantes fibreuses.",
+      "magic": "vous sentez un lieu chargé d'énergie, où la magie semble imprégner l'air et les objets environnants, idéal pour la collecte de composants magiques. Vous fouillez les environs à la recherche de composants magiques.",
+      "poison": "vous repérez des plantes vénéneuses aux feuilles luisantes et aux fleurs colorées, ainsi qu'un point d'eau, parfaits pour la récolte de substances toxiques. Vous récoltez les éléments empoisonnés avec précaution.",
+      "explosive": "vous découvrez des cristaux instables et des plantes aux propriétés explosives, propices à la collecte de matériaux dangereux. Vous manipulez les éléments instables avec soin pour éviter toute explosion accidentelle.",
+      "leather": "vous tombez sur des carcasses d'animaux récemment abattus, offrant une source précieuse de cuir et de peaux. Vous récupérez les peaux et le cuir des carcasses d'animaux.",
+      "nature": "vous trouvez une zone riche en éléments naturels, avec des plantes, des minéraux et des ressources organiques variées, idéale pour la collecte de matériaux de la nature. Vous collectez divers éléments naturels dans la zone environnante.",
+      "spiritual": "vous trouvez un endroit empreint de sérénité, où l'atmosphère est paisible et propice à votre bien être. Vous fouillez les environs à la recherche d'éléments ou d'objets."
+    },
+    "foundStories": {
+      "1": "Super ! Vous avez trouvé le matériel commun suivant : {{materialEmote}} **$t(models:materials.{{materialId}})**.",
+      "2": "Incroyable ! Vous avez mis la main sur un matériel peu commun : {{materialEmote}} **$t(models:materials.{{materialId}})**.",
+      "3": "Quelle chance inouïe ! Vous avez découvert un matériel rare : {{materialEmote}} **$t(models:materials.{{materialId}})**."
+    }
   }
 }

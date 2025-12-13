@@ -1,3 +1,54 @@
+import { MaterialRarity } from "../types/MaterialRarity";
+
+export enum ItemCategory {
+	WEAPON,
+	ARMOR,
+	POTION,
+	OBJECT
+}
+
+export function itemCategoryToString(category: ItemCategory): string {
+	switch (category) {
+		case ItemCategory.WEAPON:
+			return "weapons";
+		case ItemCategory.ARMOR:
+			return "armors";
+		case ItemCategory.POTION:
+			return "potions";
+		default:
+			return "objects";
+	}
+}
+
+export enum ItemRarity {
+	BASIC,
+	COMMON,
+	UNCOMMON,
+	EXOTIC,
+	RARE,
+	SPECIAL,
+	EPIC,
+	LEGENDARY,
+	MYTHICAL
+}
+
+export enum ItemNature {
+	NONE,
+	HEALTH,
+	SPEED,
+	ATTACK,
+	DEFENSE,
+	TIME_SPEEDUP,
+	MONEY,
+	ENERGY
+}
+
+export const FightItemNatures = [
+	ItemNature.ATTACK,
+	ItemNature.DEFENSE,
+	ItemNature.SPEED
+];
+
 export abstract class ItemConstants {
 	static readonly SLOTS = {
 		LIMITS: [
@@ -77,53 +128,270 @@ export abstract class ItemConstants {
 		1.23,
 		1.32
 	];
-}
 
-export enum ItemCategory {
-	WEAPON,
-	ARMOR,
-	POTION,
-	OBJECT
-}
+	static MAX_UPGRADE_LEVEL = 5;
 
-export function itemCategoryToString(category: ItemCategory): string {
-	switch (category) {
-		case ItemCategory.WEAPON:
-			return "weapons";
-		case ItemCategory.ARMOR:
-			return "armors";
-		case ItemCategory.POTION:
-			return "potions";
-		default:
-			return "objects";
-	}
+	static readonly UPGRADE_MATERIALS_PER_ITEM_RARITY_AND_LEVEL: {
+		[rarity in ItemRarity]: {
+			1: {
+				[materialRarity in MaterialRarity]: number
+			};
+			2: {
+				[materialRarity in MaterialRarity]: number
+			};
+			3: {
+				[materialRarity in MaterialRarity]: number
+			};
+			4: {
+				[materialRarity in MaterialRarity]: number
+			};
+			5: {
+				[materialRarity in MaterialRarity]: number
+			};
+		};
+	} = {
+		[ItemRarity.BASIC]: {
+			1: {
+				[MaterialRarity.COMMON]: 0,
+				[MaterialRarity.UNCOMMON]: 0,
+				[MaterialRarity.RARE]: 0
+			},
+			2: {
+				[MaterialRarity.COMMON]: 0,
+				[MaterialRarity.UNCOMMON]: 0,
+				[MaterialRarity.RARE]: 0
+			},
+			3: {
+				[MaterialRarity.COMMON]: 0,
+				[MaterialRarity.UNCOMMON]: 0,
+				[MaterialRarity.RARE]: 0
+			},
+			4: {
+				[MaterialRarity.COMMON]: 0,
+				[MaterialRarity.UNCOMMON]: 0,
+				[MaterialRarity.RARE]: 0
+			},
+			5: {
+				[MaterialRarity.COMMON]: 0,
+				[MaterialRarity.UNCOMMON]: 0,
+				[MaterialRarity.RARE]: 0
+			}
+		},
+		[ItemRarity.COMMON]: {
+			1: {
+				[MaterialRarity.COMMON]: 2,
+				[MaterialRarity.UNCOMMON]: 0,
+				[MaterialRarity.RARE]: 0
+			},
+			2: {
+				[MaterialRarity.COMMON]: 3,
+				[MaterialRarity.UNCOMMON]: 0,
+				[MaterialRarity.RARE]: 0
+			},
+			3: {
+				[MaterialRarity.COMMON]: 4,
+				[MaterialRarity.UNCOMMON]: 0,
+				[MaterialRarity.RARE]: 0
+			},
+			4: {
+				[MaterialRarity.COMMON]: 5,
+				[MaterialRarity.UNCOMMON]: 0,
+				[MaterialRarity.RARE]: 0
+			},
+			5: {
+				[MaterialRarity.COMMON]: 6,
+				[MaterialRarity.UNCOMMON]: 0,
+				[MaterialRarity.RARE]: 0
+			}
+		},
+		[ItemRarity.UNCOMMON]: {
+			1: {
+				[MaterialRarity.COMMON]: 2,
+				[MaterialRarity.UNCOMMON]: 0,
+				[MaterialRarity.RARE]: 0
+			},
+			2: {
+				[MaterialRarity.COMMON]: 4,
+				[MaterialRarity.UNCOMMON]: 0,
+				[MaterialRarity.RARE]: 0
+			},
+			3: {
+				[MaterialRarity.COMMON]: 5,
+				[MaterialRarity.UNCOMMON]: 1,
+				[MaterialRarity.RARE]: 0
+			},
+			4: {
+				[MaterialRarity.COMMON]: 6,
+				[MaterialRarity.UNCOMMON]: 2,
+				[MaterialRarity.RARE]: 0
+			},
+			5: {
+				[MaterialRarity.COMMON]: 6,
+				[MaterialRarity.UNCOMMON]: 4,
+				[MaterialRarity.RARE]: 0
+			}
+		},
+		[ItemRarity.EXOTIC]: {
+			1: {
+				[MaterialRarity.COMMON]: 3,
+				[MaterialRarity.UNCOMMON]: 0,
+				[MaterialRarity.RARE]: 0
+			},
+			2: {
+				[MaterialRarity.COMMON]: 4,
+				[MaterialRarity.UNCOMMON]: 1,
+				[MaterialRarity.RARE]: 0
+			},
+			3: {
+				[MaterialRarity.COMMON]: 5,
+				[MaterialRarity.UNCOMMON]: 3,
+				[MaterialRarity.RARE]: 0
+			},
+			4: {
+				[MaterialRarity.COMMON]: 6,
+				[MaterialRarity.UNCOMMON]: 5,
+				[MaterialRarity.RARE]: 0
+			},
+			5: {
+				[MaterialRarity.COMMON]: 8,
+				[MaterialRarity.UNCOMMON]: 5,
+				[MaterialRarity.RARE]: 1
+			}
+		},
+		[ItemRarity.RARE]: {
+			1: {
+				[MaterialRarity.COMMON]: 5,
+				[MaterialRarity.UNCOMMON]: 0,
+				[MaterialRarity.RARE]: 0
+			},
+			2: {
+				[MaterialRarity.COMMON]: 6,
+				[MaterialRarity.UNCOMMON]: 2,
+				[MaterialRarity.RARE]: 0
+			},
+			3: {
+				[MaterialRarity.COMMON]: 7,
+				[MaterialRarity.UNCOMMON]: 3,
+				[MaterialRarity.RARE]: 1
+			},
+			4: {
+				[MaterialRarity.COMMON]: 8,
+				[MaterialRarity.UNCOMMON]: 4,
+				[MaterialRarity.RARE]: 2
+			},
+			5: {
+				[MaterialRarity.COMMON]: 9,
+				[MaterialRarity.UNCOMMON]: 5,
+				[MaterialRarity.RARE]: 3
+			}
+		},
+		[ItemRarity.SPECIAL]: {
+			1: {
+				[MaterialRarity.COMMON]: 8,
+				[MaterialRarity.UNCOMMON]: 2,
+				[MaterialRarity.RARE]: 0
+			},
+			2: {
+				[MaterialRarity.COMMON]: 9,
+				[MaterialRarity.UNCOMMON]: 4,
+				[MaterialRarity.RARE]: 1
+			},
+			3: {
+				[MaterialRarity.COMMON]: 10,
+				[MaterialRarity.UNCOMMON]: 5,
+				[MaterialRarity.RARE]: 2
+			},
+			4: {
+				[MaterialRarity.COMMON]: 11,
+				[MaterialRarity.UNCOMMON]: 6,
+				[MaterialRarity.RARE]: 3
+			},
+			5: {
+				[MaterialRarity.COMMON]: 12,
+				[MaterialRarity.UNCOMMON]: 7,
+				[MaterialRarity.RARE]: 5
+			}
+		},
+		[ItemRarity.EPIC]: {
+			1: {
+				[MaterialRarity.COMMON]: 8,
+				[MaterialRarity.UNCOMMON]: 2,
+				[MaterialRarity.RARE]: 3
+			},
+			2: {
+				[MaterialRarity.COMMON]: 9,
+				[MaterialRarity.UNCOMMON]: 4,
+				[MaterialRarity.RARE]: 5
+			},
+			3: {
+				[MaterialRarity.COMMON]: 10,
+				[MaterialRarity.UNCOMMON]: 5,
+				[MaterialRarity.RARE]: 7
+			},
+			4: {
+				[MaterialRarity.COMMON]: 11,
+				[MaterialRarity.UNCOMMON]: 6,
+				[MaterialRarity.RARE]: 9
+			},
+			5: {
+				[MaterialRarity.COMMON]: 12,
+				[MaterialRarity.UNCOMMON]: 7,
+				[MaterialRarity.RARE]: 12
+			}
+		},
+		[ItemRarity.LEGENDARY]: {
+			1: {
+				[MaterialRarity.COMMON]: 10,
+				[MaterialRarity.UNCOMMON]: 5,
+				[MaterialRarity.RARE]: 5
+			},
+			2: {
+				[MaterialRarity.COMMON]: 15,
+				[MaterialRarity.UNCOMMON]: 10,
+				[MaterialRarity.RARE]: 8
+			},
+			3: {
+				[MaterialRarity.COMMON]: 20,
+				[MaterialRarity.UNCOMMON]: 15,
+				[MaterialRarity.RARE]: 12
+			},
+			4: {
+				[MaterialRarity.COMMON]: 25,
+				[MaterialRarity.UNCOMMON]: 20,
+				[MaterialRarity.RARE]: 15
+			},
+			5: {
+				[MaterialRarity.COMMON]: 30,
+				[MaterialRarity.UNCOMMON]: 25,
+				[MaterialRarity.RARE]: 20
+			}
+		},
+		[ItemRarity.MYTHICAL]: {
+			1: {
+				[MaterialRarity.COMMON]: 15,
+				[MaterialRarity.UNCOMMON]: 10,
+				[MaterialRarity.RARE]: 10
+			},
+			2: {
+				[MaterialRarity.COMMON]: 20,
+				[MaterialRarity.UNCOMMON]: 15,
+				[MaterialRarity.RARE]: 15
+			},
+			3: {
+				[MaterialRarity.COMMON]: 25,
+				[MaterialRarity.UNCOMMON]: 20,
+				[MaterialRarity.RARE]: 20
+			},
+			4: {
+				[MaterialRarity.COMMON]: 30,
+				[MaterialRarity.UNCOMMON]: 25,
+				[MaterialRarity.RARE]: 25
+			},
+			5: {
+				[MaterialRarity.COMMON]: 40,
+				[MaterialRarity.UNCOMMON]: 30,
+				[MaterialRarity.RARE]: 30
+			}
+		}
+	};
 }
-
-export enum ItemRarity {
-	BASIC,
-	COMMON,
-	UNCOMMON,
-	EXOTIC,
-	RARE,
-	SPECIAL,
-	EPIC,
-	LEGENDARY,
-	MYTHICAL
-}
-
-export enum ItemNature {
-	NONE,
-	HEALTH,
-	SPEED,
-	ATTACK,
-	DEFENSE,
-	TIME_SPEEDUP,
-	MONEY,
-	ENERGY
-}
-
-export const FightItemNatures = [
-	ItemNature.ATTACK,
-	ItemNature.DEFENSE,
-	ItemNature.SPEED
-];

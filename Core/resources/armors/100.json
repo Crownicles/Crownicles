@@ -2,5 +2,6 @@
   "rarity": 8,
   "rawDefense": 4,
   "attack": -40,
-  "speed": 75
+  "speed": 75,
+  "type": "spiritual"
 }

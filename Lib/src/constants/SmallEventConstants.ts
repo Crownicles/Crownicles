@@ -424,4 +424,10 @@ export abstract class SmallEventConstants {
 			DISTRACT_SUCCESS_CHANCE: 0.5
 		}
 	};
+
+	static readonly FIND_MATERIAL = {
+		COMMON_PROBABILITY: 0.6,
+		UNCOMMON_PROBABILITY: 0.3,
+		RARE_PROBABILITY: 0.1
+	};
 }

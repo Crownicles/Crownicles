@@ -82,7 +82,7 @@ function globalStopOfPlayers(response: CrowniclesPacket[], dataJson: {
 		response.push(makePacket(ErrorResetIsNow, {}));
 		return true;
 	}
-	if (seasonEndIsNow()
+	if (false && seasonEndIsNow()
 		&& !CoreConstants.BYPASS_MAINTENANCE_AND_RESETS_PACKETS.includes(dataJson.packet.name)) {
 		response.push(makePacket(ErrorSeasonEndIsNow, {}));
 		return true;

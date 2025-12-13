@@ -1,5 +1,6 @@
 {
   "rarity": 3,
   "rawAttack": 8,
-  "speed": 20
+  "speed": 20,
+  "type": "wood"
 }

@@ -1,5 +1,6 @@
 {
   "rarity": 4,
   "rawDefense": 10,
-  "speed": -35
+  "speed": -35,
+  "type": "alloy"
 }

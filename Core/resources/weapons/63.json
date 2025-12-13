@@ -2,5 +2,6 @@
   "rarity": 8,
   "rawAttack": 10,
   "attack": 20,
-  "speed": -40
+  "speed": -40,
+  "type": "explosive"
 }

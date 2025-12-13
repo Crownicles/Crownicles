@@ -1,8 +1,15 @@
 import { GenericItem } from "./GenericItem";
 import { StatValues } from "../../../Lib/src/types/StatValues";
 import { InventoryConstants } from "../../../Lib/src/constants/InventoryConstants";
-import { ItemConstants } from "../../../Lib/src/constants/ItemConstants";
+import {
+	ItemConstants, ItemRarity
+} from "../../../Lib/src/constants/ItemConstants";
 import { MainItemDetails } from "../../../Lib/src/types/MainItemDetails";
+import { MaterialType } from "../../../Lib/src/types/MaterialType";
+import {
+	Material, MaterialDataController
+} from "./Material";
+import { MaterialRarity } from "../../../Lib/src/types/MaterialRarity";
 
 export abstract class MainItem extends GenericItem {
 	public readonly rawAttack?: number;
@@ -14,6 +21,11 @@ export abstract class MainItem extends GenericItem {
 	public readonly defense?: number;
 
 	public readonly speed?: number;
+
+	public readonly type!: MaterialType;
+
+
+	private upgradeMaterialsCache: Map<number, Material[]> = new Map<number, Material[]>();
 
 
 	protected abstract getBaseAttack(): number;
@@ -89,5 +101,48 @@ export abstract class MainItem extends GenericItem {
 			itemLevel = ItemConstants.UPGRADE_LEVEL_STATS_MULTIPLIER.length - 1;
 		}
 		return ItemConstants.UPGRADE_LEVEL_STATS_MULTIPLIER[itemLevel];
+	}
+
+	/**
+	 * Get the upgrade materials for a given level
+	 * @param level
+	 */
+	public getUpgradeMaterials(level: number): Material[] {
+		if (level < 0) {
+			level = 0;
+		}
+		if (level > ItemConstants.MAX_UPGRADE_LEVEL) {
+			level = ItemConstants.MAX_UPGRADE_LEVEL;
+		}
+
+		let materials = this.upgradeMaterialsCache.get(level);
+		if (!materials) {
+			const seed = this.id << 4 | level;
+
+			const upgradeMaterialsCounts = ItemConstants.UPGRADE_MATERIALS_PER_ITEM_RARITY_AND_LEVEL[this.rarity as ItemRarity][level as 1 | 2 | 3 | 4 | 5];
+			const upgradeMaterials = MaterialDataController.instance.getMaterialsFromType(this.type);
+
+			materials = [];
+
+			// For each material rarity, get random materials with the seed
+			for (const countEntry of Object.entries(upgradeMaterialsCounts)) {
+				const materialRarity = Number(countEntry[0]) as MaterialRarity;
+				const count = countEntry[1];
+
+				if (count > 0) {
+					const filteredMaterials = upgradeMaterials.filter(material => material.rarity === materialRarity);
+
+					// Pseudo-random selection based on the seed
+					for (let i = 0; i < count; i++) {
+						const index = ((seed + i + materialRarity << 6) * 2654435761) % filteredMaterials.length;
+						materials.push(filteredMaterials[index]);
+					}
+				}
+			}
+
+			this.upgradeMaterialsCache.set(level, materials);
+		}
+
+		return materials;
 	}
 }

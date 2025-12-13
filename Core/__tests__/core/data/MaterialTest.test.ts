@@ -23,6 +23,18 @@ const loadMaterial = (materialsDir: string, fileName: string): any => {
 	}
 };
 
+// Helper to load a JSON file and fail with a clear message
+const loadJsonFile = (dir: string, fileName: string): any => {
+	const fullPath = path.join(dir, fileName);
+	try {
+		const raw = readFileSync(fullPath, "utf8");
+		return JSON.parse(raw);
+	}
+	catch (error) {
+		throw new Error(`Failed to load or parse JSON file '${fullPath}': ${(error as Error).message}`);
+	}
+};
+
 describe("Materials consistency", () => {
 	it("every material file has a translation and an icon, and vice versa", () => {
 		// 1. Collect material IDs from Core/resources/materials (filenames)
@@ -106,6 +118,79 @@ describe("Materials consistency", () => {
 
 		if (errors.length > 0) {
 			throw new Error(`Invalid materials distribution by type/rarity:\n${errors.join("\n")}`);
+		}
+	});
+
+	it("armors and weapons must have a valid type value", () => {
+		const coreResourcesDir = path.join(__dirname, "../../../../Core/resources");
+
+		const allowedTypes = new Set([
+			"magic",
+			"metal",
+			"wood",
+			"rope",
+			"alloy",
+			"poison",
+			"explosive",
+			"spiritual",
+			"nature",
+			"leather",
+		]);
+
+		const checkDirectory = (subDir: string): void => {
+			const dir = path.join(coreResourcesDir, subDir);
+			const files = readdirSync(dir).filter((file) => file.endsWith(".json"));
+
+			for (const file of files) {
+				const json = loadJsonFile(dir, file);
+
+				if (file === "0.json") {
+					// 0.json is allowed to have `type: null`
+					if (!Object.prototype.hasOwnProperty.call(json, "type")) {
+						throw new Error(`${subDir}/${file} is missing required 'type' field (expected null)`);
+					}
+					if (json.type !== null) {
+						throw new Error(`${subDir}/${file} should have type=null, got: ${JSON.stringify(json.type)}`);
+					}
+				}
+				else {
+					if (!Object.prototype.hasOwnProperty.call(json, "type")) {
+						throw new Error(`${subDir}/${file} is missing required 'type' field`);
+					}
+					if (!allowedTypes.has(json.type)) {
+						throw new Error(
+							`${subDir}/${file} has invalid type '${String(
+								json.type,
+							)}' (allowed: ${Array.from(allowedTypes).sort().join(", ")}, or null only for 0.json)`,
+						);
+					}
+				}
+			}
+		};
+
+		checkDirectory("armors");
+		checkDirectory("weapons");
+	});
+
+	it("material IDs must be at most 16 characters long", () => {
+		const materialsDir = path.join(__dirname, "../../../../Core/resources/materials");
+		const materialFiles = readdirSync(materialsDir).filter((file) => file.endsWith(".json"));
+
+		const tooLongIds: string[] = [];
+
+		for (const file of materialFiles) {
+			const id = getMaterialIdFromFile(file);
+			if (id.length > 16) {
+				tooLongIds.push(`${id} (from ${file})`);
+			}
+		}
+
+		if (tooLongIds.length > 0) {
+			throw new Error(
+				`Found material IDs longer than 16 characters:\n${tooLongIds
+					.sort()
+					.join("\n")}`,
+			);
 		}
 	});
 });

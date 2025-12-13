@@ -1,5 +1,6 @@
 {
   "rarity": 5,
   "rawDefense": 7,
-  "attack": -15
+  "attack": -15,
+  "type": "wood"
 }

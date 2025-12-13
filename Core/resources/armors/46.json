@@ -1,5 +1,6 @@
 {
   "rarity": 4,
   "rawDefense": 3,
-  "attack": 10
+  "attack": 10,
+  "type": "alloy"
 }

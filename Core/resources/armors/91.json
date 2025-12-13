@@ -2,5 +2,6 @@
   "rarity": 2,
   "rawDefense": 5,
   "attack": 4,
-  "speed": 5
+  "speed": 5,
+  "type": "metal"
 }
