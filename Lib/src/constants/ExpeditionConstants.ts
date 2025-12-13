@@ -220,7 +220,7 @@ export abstract class ExpeditionConstants {
 	 * Requirements to start an expedition
 	 */
 	static readonly REQUIREMENTS = {
-		MIN_LOVE_POINTS: 80,
+		MIN_LOVE_POINTS: 50,
 		MIN_LEVEL_FOR_TALISMAN: 20
 	};
 
@@ -542,19 +542,14 @@ export abstract class ExpeditionConstants {
 		TALISMAN_MIN_LEVEL: 30,
 
 		/**
-		 * Number of encounters for talisman introduction phase
+		 * Number of encounters for talisman introduction phase (shows intro texts in order)
 		 */
-		TALISMAN_INTRO_ENCOUNTERS: 5,
+		TALISMAN_INTRO_ENCOUNTERS: 2,
 
 		/**
-		 * Number of encounters for expedition explanation phase
+		 * Number of tokens given as consolation when player level is too low
 		 */
-		EXPEDITION_EXPLANATION_ENCOUNTERS: 5,
-
-		/**
-		 * Total encounters needed before talisman can be given (intro + explanation)
-		 */
-		TOTAL_ENCOUNTERS_BEFORE_TALISMAN: 10,
+		LEVEL_TOO_LOW_TOKEN_COMPENSATION: 1,
 
 		/**
 		 * Bonus rewards when pet is in expedition (Velanna's rewards)

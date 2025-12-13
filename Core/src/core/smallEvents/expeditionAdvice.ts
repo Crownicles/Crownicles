@@ -37,26 +37,6 @@ function canBeExecuted(player: Player): boolean {
 }
 
 /**
- * Phase type for expedition advice progression
- */
-type ExpeditionAdvicePhase = typeof SmallEventConstants.EXPEDITION_ADVICE.PHASES[keyof typeof SmallEventConstants.EXPEDITION_ADVICE.PHASES];
-
-/**
- * Get the phase based on encounter count for players without talisman
- */
-function getPhaseFromEncounterCount(encounterCount: number): ExpeditionAdvicePhase {
-	const { PHASES } = SmallEventConstants.EXPEDITION_ADVICE;
-
-	if (encounterCount < ExpeditionConstants.TALISMAN_EVENT.TALISMAN_INTRO_ENCOUNTERS) {
-		return PHASES.INTRO;
-	}
-	if (encounterCount < ExpeditionConstants.TALISMAN_EVENT.TOTAL_ENCOUNTERS_BEFORE_TALISMAN) {
-		return PHASES.EXPLANATION;
-	}
-	return PHASES.CONDITIONS;
-}
-
-/**
  * Result of checking talisman conditions
  */
 interface TalismanConditionResult {
@@ -65,22 +45,16 @@ interface TalismanConditionResult {
 	petTypeId?: number;
 	petSex?: SexTypeShort;
 	petNickname?: string;
+	consolationTokensAmount?: number;
 }
 
 /**
  * Check all conditions required to receive the talisman
  * Returns the first unmet condition or null if all conditions are met
+ * Order: noPet, petHungry, petFeisty, noGuild, petNotSeenByTalvar, levelTooLow
  */
 async function checkTalismanConditions(player: Player): Promise<TalismanConditionResult> {
-	// Condition 1: Player level >= 30
-	if (player.level < ExpeditionConstants.TALISMAN_EVENT.TALISMAN_MIN_LEVEL) {
-		return {
-			conditionMet: false,
-			interactionType: ExpeditionAdviceInteractionType.CONDITION_NOT_MET_LEVEL_TOO_LOW
-		};
-	}
-
-	// Condition 2: Player has a pet
+	// Condition 1: Player has a pet
 	if (!player.petId) {
 		return {
 			conditionMet: false,
@@ -90,6 +64,16 @@ async function checkTalismanConditions(player: Player): Promise<TalismanConditio
 
 	const petEntity = await PetEntities.getById(player.petId);
 	const petInfo = petEntity.getBasicInfo();
+	const petModel = PetDataController.instance.getById(petEntity.typeId);
+
+	// Condition 2: Pet is not hungry (has been fed recently)
+	if (petEntity.getFeedCooldown(petModel) <= 0) {
+		return {
+			conditionMet: false,
+			interactionType: ExpeditionAdviceInteractionType.CONDITION_NOT_MET_PET_HUNGRY,
+			...petInfo
+		};
+	}
 
 	// Condition 3: Pet is not feisty
 	if (petEntity.isFeisty()) {
@@ -100,12 +84,11 @@ async function checkTalismanConditions(player: Player): Promise<TalismanConditio
 		};
 	}
 
-	// Condition 4: Pet is not hungry (has been fed recently)
-	const petModel = PetDataController.instance.getById(petEntity.typeId);
-	if (petEntity.getFeedCooldown(petModel) <= 0) {
+	// Condition 4: Player has a guild
+	if (!player.guildId) {
 		return {
 			conditionMet: false,
-			interactionType: ExpeditionAdviceInteractionType.CONDITION_NOT_MET_PET_HUNGRY,
+			interactionType: ExpeditionAdviceInteractionType.CONDITION_NOT_MET_NO_GUILD,
 			...petInfo
 		};
 	}
@@ -120,12 +103,20 @@ async function checkTalismanConditions(player: Player): Promise<TalismanConditio
 		};
 	}
 
-	// Condition 6: Player has a guild
-	if (!player.guildId) {
+	// Condition 6: Player level >= 30
+	if (player.level < ExpeditionConstants.TALISMAN_EVENT.TALISMAN_MIN_LEVEL) {
+		// Calculate consolation tokens based on remaining space (max tokens - current tokens)
+		const remainingSpace = TokensConstants.MAX - player.tokens;
+		const consolationAmount = Math.min(
+			ExpeditionConstants.TALISMAN_EVENT.LEVEL_TOO_LOW_TOKEN_COMPENSATION,
+			Math.max(0, remainingSpace)
+		);
+
 		return {
 			conditionMet: false,
-			interactionType: ExpeditionAdviceInteractionType.CONDITION_NOT_MET_NO_GUILD,
-			...petInfo
+			interactionType: ExpeditionAdviceInteractionType.CONDITION_NOT_MET_LEVEL_TOO_LOW,
+			...petInfo,
+			consolationTokensAmount: consolationAmount
 		};
 	}
 
@@ -281,9 +272,6 @@ async function handlePlayerWithoutTalisman(
 		SmallEventConstants.EXPEDITION_ADVICE.SMALL_EVENT_NAME
 	);
 
-	const phase = getPhaseFromEncounterCount(encounterCount);
-	const { PHASES } = SmallEventConstants.EXPEDITION_ADVICE;
-
 	// Base packet properties for all cases when player doesn't have talisman
 	const basePacketData = {
 		alreadyHasTalisman: false,
@@ -292,8 +280,8 @@ async function handlePlayerWithoutTalisman(
 		encounterCount: encounterCount + 1 // +1 because this encounter hasn't been logged yet
 	};
 
-	if (phase === PHASES.INTRO) {
-		// Phase 1: Talisman introduction (encounters 1-5)
+	// First 2 encounters: Show talisman intro in order (index 0, then index 1)
+	if (encounterCount < ExpeditionConstants.TALISMAN_EVENT.TALISMAN_INTRO_ENCOUNTERS) {
 		response.push(makePacket(SmallEventExpeditionAdvicePacket, {
 			...basePacketData,
 			interactionType: ExpeditionAdviceInteractionType.TALISMAN_INTRO
@@ -301,24 +289,14 @@ async function handlePlayerWithoutTalisman(
 		return;
 	}
 
-	if (phase === PHASES.EXPLANATION) {
-		// Phase 2: Expedition explanation (encounters 6-10)
-		response.push(makePacket(SmallEventExpeditionAdvicePacket, {
-			...basePacketData,
-			interactionType: ExpeditionAdviceInteractionType.EXPEDITION_EXPLANATION
-		}));
-		return;
-	}
-
-	// Phase 3: Check conditions and potentially give talisman
+	// Check conditions and potentially give talisman
 	const conditionResult = await checkTalismanConditions(player);
 
 	if (!conditionResult.conditionMet) {
-		// Check if the condition is level too low - give a consolation token
-		const isLevelTooLow = conditionResult.interactionType === ExpeditionAdviceInteractionType.CONDITION_NOT_MET_LEVEL_TOO_LOW;
-		if (isLevelTooLow) {
+		// Give consolation tokens if applicable
+		if (conditionResult.consolationTokensAmount) {
 			await player.addTokens({
-				amount: 1,
+				amount: conditionResult.consolationTokensAmount,
 				response,
 				reason: NumberChangeReason.SMALL_EVENT
 			});
@@ -333,7 +311,8 @@ async function handlePlayerWithoutTalisman(
 			petNickname: conditionResult.petNickname,
 			requiredLevel: ExpeditionConstants.TALISMAN_EVENT.TALISMAN_MIN_LEVEL,
 			playerLevel: player.level,
-			consolationTokenGiven: isLevelTooLow
+			consolationTokenGiven: Boolean(conditionResult.consolationTokensAmount),
+			consolationTokensAmount: conditionResult.consolationTokensAmount
 		}));
 		return;
 	}

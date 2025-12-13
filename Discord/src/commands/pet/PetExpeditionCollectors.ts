@@ -290,10 +290,8 @@ function buildFinishedExpeditionEmbed(
 	const petDisplay = getPetDisplayString(data.pet, lng);
 	const sexContext = getSexContext(data.pet.petSex);
 
-	const talismanName = i18n.t("commands:petExpedition.finishedDescription.talisman.name", { lng });
 	const intro = i18n.t("commands:petExpedition.finishedDescription.talisman.intro", {
 		lng,
-		talismanName,
 		petDisplay,
 		location: `${locationEmoji} ${locationName}`
 	});

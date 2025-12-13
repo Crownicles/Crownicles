@@ -61,21 +61,21 @@
     "title": "Expéditions de familier",
     "unavailableTitle": "{{pseudo}}, expédition impossible",
     "noTalisman_male": [
-      "Vous posez la main sur votre sacoche, espérant y trouver le {emote:expedition.talisman} **Talisman d'Ancrage**, mais vos doigts ne rencontrent que le vide. Sans cet artefact ancestral, votre compagnon ne pourrait retrouver son chemin jusqu'à vous. Les anciens racontent qu'il se trouve quelque part sur les routes du royaume... Vous décidez de reporter cette expedition à un moment plus propice.",
-      "Sans le {emote:expedition.talisman} **Talisman d'Ancrage**, votre familier errerait pour l'éternité dans les contrées lointaines. Cet artefact précieux vous attend quelque part sur les routes du royaume. Vous décidez de reporter cette expedition à un moment plus propice.",
-      "Votre familier vous fixe avec des yeux pleins d'espoir, prêt à partir à l'aventure. Hélas, vous ne possédez pas encore le {emote:expedition.talisman} **Talisman d'Ancrage**, ce précieux artefact qui permet aux familiers de retrouver leur maître à travers les terres les plus hostiles. Vous décidez de reporter cette expedition à un moment plus propice.",
-      "Les légendes parlent d'un talisman magique, forgé par les premiers dresseurs, capable de créer un lien indéfectible entre un familier et son maître. Sans le {emote:expedition.talisman} **Talisman d'Ancrage**, envoyer votre compagnon en expédition serait pure folie. Vous décidez de reporter cette expedition à un moment plus propice."
+      "Vous posez la main sur votre sacoche, espérant y trouver le $t(models:talisman.anchor), mais vos doigts ne rencontrent que le vide. Sans cet artefact ancestral, votre compagnon ne pourrait retrouver son chemin jusqu'à vous. Les anciens racontent qu'il se trouve quelque part sur les routes du royaume... Vous décidez de reporter cette expedition à un moment plus propice.",
+      "Sans le $t(models:talisman.anchor), votre familier errerait pour l'éternité dans les contrées lointaines. Cet artefact précieux vous attend quelque part sur les routes du royaume. Vous décidez de reporter cette expedition à un moment plus propice.",
+      "Votre familier vous fixe avec des yeux pleins d'espoir, prêt à partir à l'aventure. Hélas, vous ne possédez pas encore le $t(models:talisman.anchor), ce précieux artefact qui permet aux familiers de retrouver leur maître à travers les terres les plus hostiles. Vous décidez de reporter cette expedition à un moment plus propice.",
+      "Les légendes parlent d'un talisman magique, forgé par les premiers dresseurs, capable de créer un lien indéfectible entre un familier et son maître. Sans le $t(models:talisman.anchor), envoyer votre compagnon en expédition serait pure folie. Vous décidez de reporter cette expedition à un moment plus propice."
     ],
     "noTalisman_female": [
-      "Vous posez la main sur votre sacoche, espérant y trouver le {emote:expedition.talisman} **Talisman d'Ancrage**, mais vos doigts ne rencontrent que le vide. Sans cet artefact ancestral, votre compagne ne pourrait retrouver son chemin jusqu'à vous. Cet objet précieux se trouverait quelque part sur les routes du royaume. Il semble judicieux de reporter cette expédition à un moment plus propice.",
-      "Votre sacoche ne contient pas le {emote:expedition.talisman} **Talisman d'Ancrage**. Sans cet artefact, votre familier errerait pour l'éternité dans les contrées lointaines. L'objet se trouverait quelque part sur les routes du royaume. Il convient de reporter cette expédition.",
-      "Votre familier vous fixe avec des yeux pleins d'espoir, prête à partir à l'aventure. Hélas, le {emote:expedition.talisman} **Talisman d'Ancrage** ne se trouve pas dans vos affaires. Sans ce précieux artefact permettant aux familiers de retrouver leur maître à travers les terres les plus hostiles, l'expédition devra attendre.",
-      "Le {emote:expedition.talisman} **Talisman d'Ancrage**, cet artefact légendaire capable de créer un lien indéfectible entre un familier et son maître, reste introuvable dans votre équipement. Envoyer votre compagne en expédition sans lui serait pure folie. L'expédition est reportée."
+      "Vous posez la main sur votre sacoche, espérant y trouver le $t(models:talisman.anchor), mais vos doigts ne rencontrent que le vide. Sans cet artefact ancestral, votre compagne ne pourrait retrouver son chemin jusqu'à vous. Cet objet précieux se trouverait quelque part sur les routes du royaume. Il semble judicieux de reporter cette expédition à un moment plus propice.",
+      "Votre sacoche ne contient pas le $t(models:talisman.anchor). Sans cet artefact, votre familier errerait pour l'éternité dans les contrées lointaines. L'objet se trouverait quelque part sur les routes du royaume. Il convient de reporter cette expédition.",
+      "Votre familier vous fixe avec des yeux pleins d'espoir, prête à partir à l'aventure. Hélas, le $t(models:talisman.anchor) ne se trouve pas dans vos affaires. Sans ce précieux artefact permettant aux familiers de retrouver leur maître à travers les terres les plus hostiles, l'expédition devra attendre.",
+      "Le $t(models:talisman.anchor), cet artefact légendaire capable de créer un lien indéfectible entre un familier et son maître, reste introuvable dans votre équipement. Envoyer votre compagne en expédition sans lui serait pure folie. L'expédition est reportée."
     ],
     "noPet": [
       "Vous scrutez les alentours, mais aucun familier ne trottine à vos côtés. Les routes d'exploration sont bien trop périlleuses pour s'y aventurer seul. L'expédition devra attendre l'arrivée d'un compagnon fidèle.",
       "Une brise légère soulève la poussière du chemin. Sans compagnon fidèle à vos côtés, les expéditions restent hors de portée. Il faudra d'abord trouver un familier.",
-      "Le {emote:expedition.talisman} **Talisman d'Ancrage** ne réagit pas dans votre sacoche. Sa magie ne peut s'activer qu'en présence d'un familier. Il convient de trouver un compagnon digne de ce nom avant de songer aux expéditions."
+      "Le $t(models:talisman.anchor) ne réagit pas dans votre sacoche. Sa magie ne peut s'activer qu'en présence d'un familier. Il convient de trouver un compagnon digne de ce nom avant de songer aux expéditions."
     ],
     "insufficientLove_male": [
       "{{petDisplay}} vous lance un regard méfiant et recule d'un pas. Le lien qui vous unit n'est pas encore assez fort pour qu'il s'aventure seul dans les contrées sauvages. Prenez soin de lui, nourrissez-le, et peut-être qu'un jour il vous fera suffisamment confiance.",
@@ -147,7 +147,7 @@
     "recallButton": "Rappeler",
     "closeButton": "Continuer l'exploration",
     "chooseExpeditionTitle": "{{pseudo}}, nouvelles expéditions disponibles",
-    "chooseExpedition": "Le {emote:expedition.talisman} **Talisman d'Ancrage** vibre doucement dans votre sacoche. Trois destinations apparaissent dans votre esprit, révélées par la magie de l'artefact. {{petDisplay}} trépigne d'impatience, prêt à partir explorer l'une de ces contrées :",
+    "chooseExpedition": "Le $t(models:talisman.anchor) vibre doucement dans votre sacoche. Trois destinations apparaissent dans votre esprit, révélées par la magie de l'artefact. {{petDisplay}} trépigne d'impatience, prêt à partir explorer l'une de ces contrées :",
     "selectPlaceholder": "Choisissez une destination...",
     "distantExpeditionPrefix": "Expédition lointaine : {{location}}",
     "expeditionOption": {
@@ -195,8 +195,7 @@
     "finishedTitle": "{{pseudo}}, expédition terminée !",
     "finishedDescription": {
       "talisman": {
-        "name": "Talisman d'Ancrage",
-        "intro": "Le {emote:expedition.talisman} **{{talismanName}}** vibre intensément dans votre sacoche : {{petDisplay}} est de retour de son expédition vers **{{location}}** !"
+        "intro": "Le $t(models:talisman.anchor) vibre intensément dans votre sacoche : {{petDisplay}} est de retour de son expédition vers **{{location}}** !"
       },
       "risk": "{emote:expedition.risk} Dangerosité : {{risk}}",
       "impatience_male": "*Votre compagnon trépigne d'impatience, pressé de vous montrer ce qu'il a rapporté !*",
@@ -258,7 +257,7 @@
       "tokens_one": "{emote:unitValues.token} Jeton gagné : **{{count}}** !",
       "tokens_other": "{emote:unitValues.token} Jetons gagnés : **{{count}}** !",
       "item": "{emote:rewards.item} Vous recevez un équipement aléatoire !",
-      "cloneTalisman": "{emote:expedition.cloneTalisman} **DÉCOUVERTE EXCEPTIONNELLE !**\nVotre familier a découvert un ancien artefact enfoui : le **Talisman de Clonage** !\nCet objet mystique permettra à votre compagnon de vous assister en défense et dans les petits événements, même lorsqu'il est en expédition !",
+      "cloneTalisman": "{emote:expedition.cloneTalisman} **DÉCOUVERTE EXCEPTIONNELLE !**\nVotre familier a découvert un ancien artefact enfoui : le $t(models:talisman.clone) !\nCet objet mystique permettra à votre compagnon de vous assister en défense et dans les petits événements, même lorsqu'il est en expédition !",
       "badgeEarned": "{emote:badges.expert_expediteur} Un badge vous a été offert : **Expéditeur Expert** !"
     },
     "riskCategories": {
@@ -612,8 +611,8 @@
     "weapons_other": "Armes ({{count}}/{{max}}) :",
     "talisman": "Artefacts :",
     "talismans": {
-      "anchorTalisman": "{emote:expedition.talisman} **Talisman d'Ancrage** - Permet d'envoyer votre familier en expédition",
-      "cloneTalisman": "{emote:expedition.cloneTalisman} **Talisman de Clonage** - Votre familier vous assiste en défense et dans les petits événements même en expédition"
+      "anchorTalisman": "$t(models:talisman.anchor) - Permet d'envoyer votre familier en expédition",
+      "cloneTalisman": "$t(models:talisman.clone) - Votre familier vous assiste en défense et dans les petits événements même en expédition"
     },
     "talismanNotOwned": "{emote:inventory.empty} **Aucun artefact**",
     "randomItemTitle": "{{pseudo}}, vous avez trouvé quelque chose !",

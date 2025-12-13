@@ -60,7 +60,7 @@ export class CrowniclesFightStatusCachedMessage extends CrowniclesCachedMessage<
 
 		const embed = new CrowniclesEmbed()
 			.setTitle(i18n.t("commands:fight.summarize.title", { lng }))
-			.setDescription(summarySegments.join("\n"));
+			.setDescription(summarySegments.join(""));
 
 		await this.post({ embeds: [embed] });
 		return null;
