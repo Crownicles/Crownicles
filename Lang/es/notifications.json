@@ -33,7 +33,7 @@
   },
   "guildFood": {
     "receivedFoodTitle": "Tu gremio ha recibido alimentos",
-    "receivedFoodDescription": "{emote:foods.{{foodId}}} Tu gremio ha recibido : **{{amount}}x {{foodName}}**."
+    "receivedFoodDescription": "Votre guilde a reçu **{{amount}} {{foodName}}** {emote:foods.{{foodId}}}."
   },
   "playerFreedFromJail": {
     "description": "¡Has sido puesto en libertad por **{{freedByPlayer}}** !"
