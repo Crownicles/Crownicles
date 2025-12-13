@@ -355,7 +355,7 @@
       "afraid": "é ajudado por **{{petNickname}}** que, apesar de se lembrar perfeitamente dos acontecimentos recentes, treme demasiado de medo para conseguir recuperar o fôlego perdido."
     },
     "energeticAttack": {
-      "description": "La moitié des dégâts de cette attaque sont restitués au lanceur sous forme de soin. Ignore une partie de la défense adverse.",
+      "description": "Metade do dano deste ataque é devolvido ao atacante em forma de cura. Ignora parte da defesa adversária.",
       "name_one": "Ataque energético",
       "name_other": "Ataques energéticos"
     },
@@ -963,7 +963,7 @@
     },
     "16": {
       "description": "Pequeno caminho perigoso ao longo das margens do rio Vacarme. Cuidado para não cair.",
-      "name": "Chemin aux Loups",
+      "name": "Caminho dos Lobos",
       "particle": "para o"
     },
     "17": {
@@ -1023,7 +1023,7 @@
     },
     "25": {
       "description": "Está tudo no nome. Um rio muito apreciado pelas peixarias de Claire de Ville.",
-      "name": "Rivière aux Crabes",
+      "name": "Rio dos Caranguejos",
       "particle": "para o"
     },
     "26": {
@@ -1975,7 +1975,7 @@
       "shinyElementary": "Continuas a tua busca de aventura na Gruta de Cristal, um caminho na encosta da montanha que conduz a outras paisagens. Pelas magníficas pedras preciosas que sobressaem das paredes, podes ver que o local faz jus ao seu nome. Os teus passos ecoam nas paredes que te rodeiam, o seu som chega até ti tal como a tua imagem se reflecte nos milhares de pedras preciosas. Brinca com o eco enquanto admira o local, mas de repente um som que não parece vir de si chega aos seus tímpanos. Os cristais parecem estar a bater uns contra os outros, cada vez mais alto. De repente, um aglomerado destas pedras assume uma forma humanoide com o dobro do teu tamanho. A luz que atravessa esta entidade desfaz-se num magnífico arco-íris, mas tendo em conta a agressividade da criatura para contigo, achas que vai ser necessário pôr fim a esta bela iluminação."
     },
     "1103": {
-      "celestialGuardian": "Vous sortez de la caverne de cristal et vous vous retrouvez ébloui par le soleil qui de reflète sur la neige qui vous entoure. Après plusieurs secondes pour vous habituer à la luminosité, vous apercevez des centaines de marches qui mènent à deux gigantesques portes entourées de deux statues tout aussi grandes. Vous ne comptez pas vous arrêter en si bon chemin, donc vous commencez à gravir difficilement les marches les unes après les autres. Vous faites attention à ne pas déraper sur les pierres rendues glissantes par la glace qui s'est formée dessus. Après plusieurs minutes de marche intense, vous arrivez aux pieds de la construction. Les inscriptions sur les portes ne vous sont pas familières: en effet, elles sont rédigées dans une écriture qui vous est inconnue. En tout cas, les portes sont sur votre chemin, et il vous faut les franchir pour avancer. Vous tentez donc de poser votre paume sur la pierre froide, et soudain, un mécanisme s'active et les portes commencent à grincer. Après plusieurs secondes, les portes sont enfin totalement ouvertes, mais le mécanisme ne s'arrête pourtant pas de faire du bruit. C'est alors qu'en vous retournant sur votre droite, vous remarquez que la statue commence à bouger et attraper un marteau qui est à son échelle..."
+      "celestialGuardian": "Você sai da caverna de cristal e se vê ofuscado pelo sol que reflete na neve ao seu redor. Após alguns segundos para se acostumar com a luminosidade, você avista centenas de degraus que levam a duas portas gigantescas cercadas por duas estátuas igualmente enormes. Você não pretende parar por aqui, então começa a subir os degraus com dificuldade, um após o outro. Você toma cuidado para não escorregar nas pedras tornadas escorregadias pelo gelo que se formou sobre elas. Após vários minutos de caminhada intensa, você chega aos pés da construção. As inscrições nas portas não lhe são familiares: na verdade, estão escritas em uma escrita que você desconhece. De qualquer forma, as portas estão no seu caminho, e você precisa atravessá-las para avançar. Então você tenta colocar sua palma na pedra fria, e de repente, um mecanismo se ativa e as portas começam a ranger. Após alguns segundos, as portas finalmente estão totalmente abertas, mas o mecanismo ainda não para de fazer barulho. É então que, ao se virar para a direita, você percebe que a estátua começa a se mover e pegar um martelo do seu tamanho..."
     },
     "1104": {
       "maleIceDragon": "A subida ao pico coberto de neve deixou-o exausto. A esta altitude vertiginosa, cada respiração é uma batalha contra o ar rarefeito que queima os seus pulmões. Os teus passos rangem na neve endurecida por ventos violentos que ameaçam desequilibrar-te a qualquer momento. Quando pensamos que chegámos ao cume, o chão treme debaixo dos nossos pés. Um rugido titânico rasga o ar gelado, tão poderoso que provoca uma avalanche ao longe. Ao olhar para as nuvens baixas, vê uma sombra gigantesca a pairar sobre si. De repente, cai na terra com um estrondo ensurdecedor. Um colossal dragão de gelo aterra à tua frente, com as suas escamas cristalinas a brilhar como mil diamantes. O seu hálito transforma instantaneamente o ar em névoa gelada, enquanto os seus olhos azuis árcticos olham para ti com uma inteligência milenar. Este senhor dos picos decidiu que a tua intrusão no seu domínio merece uma... resposta definitiva."
