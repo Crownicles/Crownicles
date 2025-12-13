@@ -18,10 +18,10 @@
       },
       "totalRewards": "{emote:missions.total} Summe der Auszeichnungen",
       "totalDisplay": {
-        "gems": "Gemmes gagnées : {{count, number}} {emote:unitValues.gem}",
-        "points": "Points gagnés : {{count, number}} {emote:unitValues.score}",
-        "money": "Argent gagné : {{count, number}} {emote:unitValues.money}",
-        "xp": "Expérience gagnée : {{count, number}} {emote:unitValues.xp}"
+        "gems": "Verdiente Edelsteine: {{count, number}} {emote:unitValues.gem}",
+        "points": "Verdiente Punkte: {{count, number}} {emote:unitValues.score}",
+        "money": "Verdientes Geld: {{count, number}} {emote:unitValues.money}",
+        "xp": "Gewonnene Erfahrung: {{count, number}} {emote:unitValues.xp}"
       },
       "noRewards": "Keine Belohnung.",
       "missionDisplay": "- {{missionDescription}}{{missionsReward}}",
@@ -33,7 +33,7 @@
   },
   "guildFood": {
     "receivedFoodTitle": "Ihre Gilde hat Nahrung erhalten",
-    "receivedFoodDescription": "Votre guilde a reçu **{{amount}} {{foodName}}** {emote:foods.{{foodId}}}."
+    "receivedFoodDescription": "Ihre Gilde hat **{{amount}} {{foodName}}** {emote:foods.{{foodId}}}."
   },
   "playerFreedFromJail": {
     "description": "Sie wurden von **{{freedByPlayer}}** aus dem Gefängnis entlassen!"
