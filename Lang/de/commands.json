@@ -863,8 +863,9 @@
     "badgeBought": "Sie haben eine neue Marke erhalten: {emote:badges.{{badgeName}}} !",
     "notEnoughMoney": "Vous n'avez pas assez d'argent pour acheter cet objet ! Il vous manque `{{missingCurrency, number}} {emote:unitValues.{{currency}}}`.",
     "boughtTooMuchDailyPotions": "Es gibt keinen Trank des Tages mehr, der zum Verkauf angeboten wird... Kommen Sie morgen wieder!",
-    "boughtTooMuchTokens": "Es ist heute nicht mehr möglich, Tokens zu kaufen... Kommen Sie morgen wieder!",
-    "tokensBought": "Sie haben eine Spielmarke gekauft. {emote:unitValues.token}",
+    "boughtTooMuchTokens": "Vous avez atteint la limite d'achat de jetons pour le moment. Revenez plus tard !",
+    "tokensBought_one": "Vous avez acheté **{{count}} jeton** {emote:unitValues.token}.",
+    "tokensBought_other": "Vous avez acheté **{{count}} jetons** {emote:unitValues.token}.",
     "tokensFull": "Sie besitzen bereits die höchstmögliche Anzahl an Chips!",
     "title": "🛒 Anzeige des Magazins",
     "currentMoney": "Vous avez `{{money, number}}{emote:unitValues.{{currency}}}`.",
@@ -882,7 +883,7 @@
       "dailyPotion_one": "Trank des Tages ({{count}} verfügbar)",
       "dailyPotion_other": "Trank des Tages ({{count}} verfügbar)",
       "token_zero": "Jetons (ausverkauft)",
-      "token_one": "Jetons ({{count}} verfügbar)",
+      "token_one": "Jeton ({{count}} disponible)",
       "token_other": "Jetons ({{count}} verfügbar)",
       "slotExtension": "Inventarerweiterungen",
       "food": "Nahrung für Begleiter",
@@ -934,7 +935,7 @@
       },
       "token": {
         "name": "{emote:unitValues.token} Jeton",
-        "info": "Mit Tokens können Sie schneller vorankommen, indem Sie bestimmte Aktionen wie Berichte beschleunigen. Sie können bis zu 10 davon pro Tag kaufen."
+        "info": "Les jetons permettent de progresser plus vite en accélérant certaines actions comme les rapports. Vous pouvez en acheter jusqu'à 10 par jour et 30 par semaine."
       },
       "smallGuildXp": {
         "name": "{emote:shopItems.smallGuildXp} Ein bisschen xp für deine Gilde",
