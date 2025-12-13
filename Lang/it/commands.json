@@ -61,21 +61,21 @@
     "title": "Spedizioni di animali domestici",
     "unavailableTitle": "{{pseudo}}impossibile da spedire",
     "noTalisman_male": [
-      "Mettete la mano sulla vostra borsa, sperando di trovare il {emote:expedition.talisman} **Talisman of Anchorage**, ma le vostre dita incontrano solo il vuoto. Senza questo antico manufatto, il vostro compagno non sarebbe in grado di ritrovare la strada per tornare da voi. Gli anziani vi dicono che si trova da qualche parte lungo le strade del regno... Decidete di rimandare la spedizione a un momento più opportuno.",
-      "Senza il {emote:expedition.talisman} **Talisman of Anchorage**, il vostro animale domestico vagherebbe per l'eternità in terre lontane. Questo prezioso artefatto vi aspetta da qualche parte lungo le strade del regno. Decidete di rimandare la spedizione a un momento più opportuno.",
-      "Il vostro animale domestico vi guarda con occhi pieni di speranza, pronto a partire per un'avventura. Purtroppo, non avete ancora il {emote:expedition.talisman} **Talisman of Anchorage**, il prezioso artefatto che permette agli animali domestici di trovare i loro padroni nelle terre più ostili. Decidete di rimandare la spedizione a un momento più opportuno.",
-      "Le leggende narrano di un talismano magico, forgiato dai primi addestratori, in grado di creare un legame indissolubile tra un animale domestico e il suo padrone. Senza il talismano {emote:expedition.talisman} **Anchoring Talisman**, mandare il vostro compagno in spedizione sarebbe una pura follia. Decidete di rimandare la spedizione a un momento più adatto."
+      "Vous posez la main sur votre sacoche, espérant y trouver le $t(models:talisman.anchor), mais vos doigts ne rencontrent que le vide. Sans cet artefact ancestral, votre compagnon ne pourrait retrouver son chemin jusqu'à vous. Les anciens racontent qu'il se trouve quelque part sur les routes du royaume... Vous décidez de reporter cette expedition à un moment plus propice.",
+      "Sans le $t(models:talisman.anchor), votre familier errerait pour l'éternité dans les contrées lointaines. Cet artefact précieux vous attend quelque part sur les routes du royaume. Vous décidez de reporter cette expedition à un moment plus propice.",
+      "Votre familier vous fixe avec des yeux pleins d'espoir, prêt à partir à l'aventure. Hélas, vous ne possédez pas encore le $t(models:talisman.anchor), ce précieux artefact qui permet aux familiers de retrouver leur maître à travers les terres les plus hostiles. Vous décidez de reporter cette expedition à un moment plus propice.",
+      "Les légendes parlent d'un talisman magique, forgé par les premiers dresseurs, capable de créer un lien indéfectible entre un familier et son maître. Sans le $t(models:talisman.anchor), envoyer votre compagnon en expédition serait pure folie. Vous décidez de reporter cette expedition à un moment plus propice."
     ],
     "noTalisman_female": [
-      "Mettete la mano sulla vostra borsa, sperando di trovare il {emote:expedition.talisman} **Talisman of Anchorage**, ma le vostre dita incontrano solo il vuoto. Senza questo antico manufatto, la vostra compagna non sarebbe in grado di ritrovare la strada per tornare da voi. Si dice che questo prezioso oggetto si trovi da qualche parte lungo le strade del regno. Sembra saggio rimandare questa spedizione a un momento più favorevole.",
-      "La tua borsa non contiene il {emote:expedition.talisman} **Talisman of Anchorage**. Senza questo artefatto, il tuo animale vagherebbe per l'eternità in terre lontane. L'oggetto si troverebbe da qualche parte lungo le strade del regno. Questa spedizione deve essere rimandata.",
-      "Il vostro animale domestico vi fissa con occhi pieni di speranza, pronto a partire per un'avventura. Purtroppo, il {emote:expedition.talisman} **Talisman of Anchorage** non è tra i vostri effetti personali. Senza questo prezioso artefatto, che permette agli animali domestici di trovare i loro padroni nelle terre più ostili, la spedizione dovrà aspettare.",
-      "Il {emote:expedition.talisman} **Talisman of Anchorage**, un artefatto leggendario in grado di creare un legame indistruttibile tra un animale domestico e il suo padrone, non si trova da nessuna parte nel vostro equipaggiamento. Mandare il vostro compagno in spedizione senza di esso sarebbe una pura follia. La spedizione è stata rimandata."
+      "Vous posez la main sur votre sacoche, espérant y trouver le $t(models:talisman.anchor), mais vos doigts ne rencontrent que le vide. Sans cet artefact ancestral, votre compagne ne pourrait retrouver son chemin jusqu'à vous. Cet objet précieux se trouverait quelque part sur les routes du royaume. Il semble judicieux de reporter cette expédition à un moment plus propice.",
+      "Votre sacoche ne contient pas le $t(models:talisman.anchor). Sans cet artefact, votre familier errerait pour l'éternité dans les contrées lointaines. L'objet se trouverait quelque part sur les routes du royaume. Il convient de reporter cette expédition.",
+      "Votre familier vous fixe avec des yeux pleins d'espoir, prête à partir à l'aventure. Hélas, le $t(models:talisman.anchor) ne se trouve pas dans vos affaires. Sans ce précieux artefact permettant aux familiers de retrouver leur maître à travers les terres les plus hostiles, l'expédition devra attendre.",
+      "Le $t(models:talisman.anchor), cet artefact légendaire capable de créer un lien indéfectible entre un familier et son maître, reste introuvable dans votre équipement. Envoyer votre compagne en expédition sans lui serait pure folie. L'expédition est reportée."
     ],
     "noPet": [
       "Scrutate l'ambiente circostante, ma non ci sono animali domestici che trotterellano accanto a voi. Le vie di esplorazione sono troppo pericolose per avventurarsi da soli. La spedizione dovrà attendere l'arrivo di un fedele compagno.",
       "Una leggera brezza solleva la polvere dal sentiero. Senza un fedele compagno al vostro fianco, le spedizioni restano fuori portata. Prima dovrete trovare un animale domestico.",
-      "Il {emote:expedition.talisman} **Talismano di Anchorage** non reagisce nella tua sacca. La sua magia può essere attivata solo in presenza di un familiare. Dovrai trovare un degno compagno prima di iniziare a pensare alle spedizioni."
+      "Le $t(models:talisman.anchor) ne réagit pas dans votre sacoche. Sa magie ne peut s'activer qu'en présence d'un familier. Il convient de trouver un compagnon digne de ce nom avant de songer aux expéditions."
     ],
     "insufficientLove_male": [
       "{{petDisplay}} vi guarda con diffidenza e fa un passo indietro. Il legame tra voi non è ancora abbastanza forte da permettergli di avventurarsi da solo nella natura selvaggia. Prendetevi cura di lui, nutritelo e forse un giorno si fiderà abbastanza di voi.",
@@ -147,7 +147,7 @@
     "recallButton": "Richiamare",
     "closeButton": "Continua ad esplorare",
     "chooseExpeditionTitle": "{{pseudo}}nuove spedizioni disponibili",
-    "chooseExpedition": "Il {emote:expedition.talisman} **Talisman of Anchorage** vibra delicatamente nella vostra borsa. Tre destinazioni appaiono nell'occhio della tua mente, rivelate dalla magia del manufatto. {{petDisplay}} non vede l'ora di partire ed esplorare una di queste terre:",
+    "chooseExpedition": "Le $t(models:talisman.anchor) vibre doucement dans votre sacoche. Trois destinations apparaissent dans votre esprit, révélées par la magie de l'artefact. {{petDisplay}} trépigne d'impatience, prêt à partir explorer l'une de ces contrées :",
     "selectPlaceholder": "Scegliere una destinazione...",
     "distantExpeditionPrefix": "Spedizione a lunga distanza: {{location}}",
     "expeditionOption": {
@@ -195,8 +195,7 @@
     "finishedTitle": "{{pseudo}}La spedizione è finita!",
     "finishedDescription": {
       "talisman": {
-        "name": "Talismano di Anchorage",
-        "intro": "{emote:expedition.talisman} **{{talismanName}}** vibra intensamente nella vostra borsa: {{petDisplay}} è tornato dalla sua spedizione a **{{location}}** !"
+        "intro": "Le $t(models:talisman.anchor) vibre intensément dans votre sacoche : {{petDisplay}} est de retour de son expédition vers **{{location}}** !"
       },
       "risk": "{emote:expedition.risk} Pericolosità: {{risk}}",
       "impatience_male": "*Il vostro compagno è impaziente di mostrarvi ciò che ha portato con sé!",
@@ -258,7 +257,7 @@
       "tokens_one": "{emote:unitValues.token} Gettone vinto : **{{count}}** !",
       "tokens_other": "{emote:unitValues.token} Fiches vinte : **{{count}}** !",
       "item": "{emote:rewards.item} Si ottiene un equipaggiamento casuale!",
-      "cloneTalisman": "{emote:expedition.cloneTalisman} **Scoperta eccezionale\nIl vostro animale domestico ha scoperto un antico manufatto sepolto: il **Talismano della Clonazione**!\nQuesto oggetto mistico permetterà al vostro animale di assistervi nella difesa e negli eventi minori, anche quando è in spedizione!",
+      "cloneTalisman": "{emote:expedition.cloneTalisman} **DÉCOUVERTE EXCEPTIONNELLE !**\nVotre familier a découvert un ancien artefact enfoui : le $t(models:talisman.clone) !\nCet objet mystique permettra à votre compagnon de vous assister en défense et dans les petits événements, même lorsqu'il est en expédition !",
       "badgeEarned": "{emote:badges.expert_expediteur} Ti è stato offerto un badge: **Esperto mittente** !"
     },
     "riskCategories": {
@@ -612,8 +611,8 @@
     "weapons_other": "Armi ({{count}}/{{max}}) :",
     "talisman": "Artefatti :",
     "talismans": {
-      "anchorTalisman": "{emote:expedition.talisman} **Talismano dell'Antore** - Invia l'animale in spedizione.",
-      "cloneTalisman": "{emote:expedition.cloneTalisman} **Talismano della clonazione** - Il vostro animale domestico vi aiuta a difendervi e ad affrontare piccoli incidenti, anche durante le spedizioni."
+      "anchorTalisman": "$t(models:talisman.anchor) - Permet d'envoyer votre familier en expédition",
+      "cloneTalisman": "$t(models:talisman.clone) - Votre familier vous assiste en défense et dans les petits événements même en expédition"
     },
     "talismanNotOwned": "{emote:inventory.empty} **Non ci sono manufatti",
     "randomItemTitle": "{{pseudo}}, avete trovato qualcosa !",
