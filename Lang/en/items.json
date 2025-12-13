@@ -1,30 +1,30 @@
 {
   "armorsFieldName": "Armor/Shield:",
-  "attack": "{emote:unitValues.attack} {{value}}",
-  "defense": "{emote:unitValues.defense} {{value}}",
+  "attack": "{emote:unitValues.attack} {{value, number}}",
+  "defense": "{emote:unitValues.defense} {{value, number}}",
   "nameDisplay": "{emote:{{itemCategory}}.{{itemId}}} **$t(models:{{itemCategory}}.{{itemId}})**",
   "nerfDisplay": "~~{{old}}~~ {{max}}",
   "objectsFieldName": "Object:",
   "objectsNatures": [
     "{emote:itemNatures.0} No effect",
-    "{emote:itemNatures.1} Health + {{power}} per day",
-    "{emote:itemNatures.2} Speed + {{power}} during fights",
-    "{emote:itemNatures.3} Attack + {{power}} during fights",
-    "{emote:itemNatures.4} Defense + {{power}} during fights",
+    "{emote:itemNatures.1} Health + {{power, number}} per day",
+    "{emote:itemNatures.2} Speed + {{power, number}} during fights",
+    "{emote:itemNatures.3} Attack + {{power, number}} during fights",
+    "{emote:itemNatures.4} Defense + {{power, number}} during fights",
     "{emote:itemNatures.5} Advances time by {{power}} every day",
-    "{emote:itemNatures.6} Money + {{power}} per day",
-    "{emote:itemNatures.7} Energy + {{power}} per day"
+    "{emote:itemNatures.6} Money + {{power, number}} per day",
+    "{emote:itemNatures.7} Energy + {{power, number}} per day"
   ],
   "potionsFieldName": "Potion:",
   "potionsNatures": [
     "{emote:itemNatures.0} No effect",
-    "{emote:itemNatures.1} Health + {{power}}",
-    "{emote:itemNatures.2} Speed + {{power}} during the next fight",
-    "{emote:itemNatures.3} Attack + {{power}} during the next fight",
-    "{emote:itemNatures.4} Defense + {{power}} during the next fight",
+    "{emote:itemNatures.1} Health + {{power, number}}",
+    "{emote:itemNatures.2} Speed + {{power, number}} during the next fight",
+    "{emote:itemNatures.3} Attack + {{power, number}} during the next fight",
+    "{emote:itemNatures.4} Defense + {{power, number}} during the next fight",
     "{emote:itemNatures.5} Advances time by {{power}}",
-    "{emote:itemNatures.6} Money + {{power}}",
-    "{emote:itemNatures.7} Energy + {{power}}"
+    "{emote:itemNatures.6} Money + {{power, number}}",
+    "{emote:itemNatures.7} Energy + {{power, number}}"
   ],
   "rarities": [
     "{emote:rarity.0} Basic",
@@ -37,7 +37,7 @@
     "{emote:rarity.7} Legendary",
     "{emote:rarity.8} Mythical"
   ],
-  "speed": "{emote:unitValues.speed} {{value}}",
+  "speed": "{emote:unitValues.speed} {{value, number}}",
   "weaponsFieldName": "Weapon:",
   "itemsField": "**{{emote}} {{name}}** | {{rarity}} | {{values}}"
 }
