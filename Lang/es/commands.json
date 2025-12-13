@@ -252,7 +252,7 @@
     "rewards": {
       "title": "\n\n**Objetivo comunicado:**",
       "money": "{emote:unitValues.money} Dinero ganado: **{{amount, number}}** !",
-      "experience": "{emote:unitValues.xp} Experiencia ganada: **{{amount, number}}** !" ,
+      "experience": "{emote:unitValues.xp} Experiencia ganada: **{{amount, number}}** !",
       "points": ":medal: Puntos ganados : **{{amount, number}}** !",
       "tokens_one": "{emote:unitValues.token} Ficha ganada : ¡**{{count}}** !",
       "tokens_other": "{emote:unitValues.token} Fichas ganadas : ¡**{{count}}** !",
@@ -696,7 +696,7 @@
     },
     "guild": {
       "fieldName": "Gremio :",
-      "fieldValue": "{emote:guild.icon} {{guild}}"
+      "fieldValue": ":stadium: {{guild}}"
     },
     "information": {
       "fieldName": "Más información :",
@@ -708,11 +708,11 @@
     },
     "map": {
       "fieldName": "Destino :",
-      "fieldValue": "{emote:mapTypes.{{mapTypeId}}} $t(models:map_locations.{{mapName}}.name)"
+      "fieldValue": "{{mapEmote}} {{mapName}}"
     },
     "mission": {
       "fieldName": "Tareas :",
-      "fieldValue": "{emote:unitValues.gem} {{gems, number}} | {emote:missions.book} {{campaign, number}}% "
+      "fieldValue": ":gem: {{gems, number}} | :book: {{campaign, number}}% "
     },
     "noTimeLeft": {
       "fieldName": "Tiempo restante :",
@@ -724,7 +724,7 @@
     },
     "playerClass": {
       "fieldName": "Clase :",
-      "fieldValue": "$t(models:classFormat)"
+      "fieldValue": "{{className}}"
     },
     "ranking": {
       "fieldName": "Clasificación y puntuación :",
@@ -736,11 +736,11 @@
     },
     "statistics": {
       "fieldName": "Estadísticas :",
-      "fieldValue": "{emote:unitValues.energy} {{cumulativeHealth, number}} / {{cumulativeMaxHealth, number}} | {emote:unitValues.attack} {{cumulativeAttack, number}} | {emote:unitValues.defense} {{cumulativeDefense, number}} | {emote:unitValues.speed} {{cumulativeSpeed, number}} | {emote:unitValues.breath} {{baseBreath, number}} / {{maxBreath, number}} | {emote:unitValues.breathRegen} {{breathRegen}}"
+      "fieldValue": ":zap: {{cumulativeHealth, number}} / {{cumulativeMaxHealth, number}} | :dagger: {{cumulativeAttack, number}} | :shield: {{cumulativeDefense, number}} | :rocket: {{cumulativeSpeed, number}} | :wind_blowing_face: {{baseBreath, number}} / {{maxBreath, number}} | :lungs: {{breathRegen}}"
     },
     "timeLeft": {
       "fieldName": "Tiempo restante :",
-      "fieldValue": "{emote:effects.{{effectId}}} {{timeLeft}}"
+      "fieldValue": "{{effect}} {{timeLeft}}"
     },
     "title": "{emote:effects.{{effectId}}} | {{pseudo}} | Nivel {{level, number}}"
   },
