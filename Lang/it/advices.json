@@ -268,13 +268,13 @@
     "Un animale rancoroso si rifiuta di partecipare a una spedizione.",
     "Il cibo consumato dalla spedizione proviene dalle scorte della vostra gilda.",
     "Ogni volta vengono proposte tre spedizioni: due vicine alla vostra posizione e una lontana.",
-    "Esiste un talismano di clonazione molto raro che permette di avere un sosia spettrale del proprio animale durante la spedizione.",
+    "Il existe un $t(models:talisman.clone) très rare qui permet d'avoir un double spectral de votre familier pendant qu'il est en expédition.",
     "Incrociare Velanna quando il vostro animale è in spedizione può farvi guadagnare punti bonus e talvolta altre sorprese.",
     "I gettoni possono essere usati per spostarsi più velocemente sulla mappa usando il comando {command:report}.",
     "È possibile ottenere i gettoni attraverso il bonus giornaliero ({command:dailybonus}), le spedizioni di animali domestici o acquistandoli nel negozio.",
     "I gettoni si sbloccano a partire dal livello 5.",
     "Un gettone vi permette di passare direttamente alla fase successiva del vostro viaggio.",
     "Più a lungo si è impegnati, più alto è il costo in gettoni per avanzare.",
-    "Le magasin limite l'achat de jetons à 10 par jour et 30 par semaine. Gérez bien vos achats !"
+    "Il negozio limita l’acquisto di gettoni a 10 al giorno e 30 a settimana. Gestite bene i vostri acquisti!"
   ]
 }
