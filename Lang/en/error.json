@@ -67,7 +67,7 @@
   "unexpectedError": "An error occurred. :(",
   "pleaseWaitForHeal": "Please wait until your condition has been cured before continuing to play: {{time}}",
   "pleaseWaitForHisHeal": "Please wait until his state alteration recovery is complete: {{time}}",
-  "notEnoughMoney": "You don't have enough money to perform this action. You are missing {{money}}{emote:unitValues.money}.",
+  "notEnoughMoney": "You don't have enough money to perform this action. You are missing {{money, number}}{emote:unitValues.money}.",
   "cooldownPetFree": "You can only release one pet per hour. You will be able to release another one {{remainingTime}}.",
   "unknownPlayer": "Nickname 404",
   "petNickNotValid": "The rules for naming a pet are as follows:\n$t(error:stringRules)",
@@ -75,8 +75,8 @@
   "stringRules": "- Use at least one letter\n- Do not put more than 2 consecutive spaces\n- Special characters are not allowed\n- Between {{min}} and {{max}} characters",
   "notInAGuild": "You must belong to a guild to place this order.",
   "notAuthorizedError": "You do not have the required permissions to do that command in your guild, please ask a superior if needed.",
-  "levelTooLow": "You must be **level {{level}}** to use this command! Come back later!",
-  "targetLevelTooLow": "This player must be **level {{level}}** for you to use this command!",
+  "levelTooLow": "You must be **level {{level, number}}** to use this command! Come back later!",
+  "targetLevelTooLow": "This player must be **level {{level, number}}** for you to use this command!",
   "notAuthorizedRight": "You do not have the required permissions to perform this command.",
   "notPossibleWithoutStatus": "You don't need our services right now",
   "effects": {
@@ -160,7 +160,7 @@
   "banned": "You have been banned from the game.",
   "aDevMessedUp": "Oops! An error has occurred. Don't worry, it's not your fault. Please accept our apologies for the inconvenience. To resolve this problem, please contact our support team via our Discord server: https://discord.gg/5JqrMtZ",
   "commandNotAvailableHere": "This command cannot be used at this location.",
-  "guildFoodStorageFull": "You have received **{{quantity}}x {{food}}**, but your guild's food stock is full. The food has been thrown away.",
+  "guildFoodStorageFull": "You have received **{{quantity, number}}x {{food}}**, but your guild's food supply is full. The food has been thrown away.",
   "fightBugged": "The battle was cancelled because there was a technical problem. This is due to the deletion of a message necessary for combat or a permission issue.",
   "resetIsNow": "{emote:announcements.trophy} The weekly ranking is currently being reset. The winner will soon be announced on the bot's server! The game will resume in less than 5 minutes!",
   "seasonEndIsNow": "{emote:unitValues.glory} The fighting season is being reset! The winner will be announced shortly on the bot's server! The game will resume in less than 20 minutes!"

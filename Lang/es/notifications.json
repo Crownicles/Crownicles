@@ -18,22 +18,22 @@
       },
       "totalRewards": "{emote:missions.total} Remuneración total",
       "totalDisplay": {
-        "gems": "Gemas ganadas: {{count}} {emote:unitValues.gem}",
-        "points": "Puntos ganados: {{count}} {emote:unitValues.score}",
-        "money": "Dinero ganado: {{count}} {emote:unitValues.money}",
-        "xp": "Experiencia adquirida: {{count}} {emote:unitValues.xp}"
+        "gems": "Gemas ganadas: {{count, number}} {emote:unitValues.gem}",
+        "points": "Puntos ganados: {{count, number}} {emote:unitValues.score}",
+        "money": "Dinero ganado: {{count, number}} {emote:unitValues.money}",
+        "xp": "Experiencia adquirida: {{count, number}} {emote:unitValues.xp}"
       },
       "noRewards": "Sin recompensa.",
       "missionDisplay": "{{missionDescription}}{{missionsReward}}-",
-      "pointsDisplay": "{{count}} {emote:unitValues.score}+",
-      "gemsDisplay": "{{count}} {emote:unitValues.gem}+",
-      "moneyDisplay": "{{count}} {emote:unitValues.money}+",
-      "xpDisplay": "{{count}} {emote:unitValues.xp}+"
+      "pointsDisplay": "+{{count, number}} {emote:unitValues.score}",
+      "gemsDisplay": "+{{count, number}} {emote:unitValues.gem}",
+      "moneyDisplay": "+{{count, number}} {emote:unitValues.money}",
+      "xpDisplay": "+{{count, number}} {emote:unitValues.xp}"
     }
   },
   "guildFood": {
     "receivedFoodTitle": "Tu gremio ha recibido alimentos",
-    "receivedFoodDescription": "{emote:foods.{{foodId}}} Tu gremio ha recibido : **{{amount}}x {{foodName}}**."
+    "receivedFoodDescription": "Tu gremio ha recibido **{{amount}} {{foodName}}** {emote:foods.{{foodId}}}."
   },
   "playerFreedFromJail": {
     "description": "¡Has sido puesto en libertad por **{{freedByPlayer}}** !"

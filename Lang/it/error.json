@@ -67,7 +67,7 @@
   "unexpectedError": "Si è verificato un errore :(",
   "pleaseWaitForHeal": "Prima di continuare a giocare, attendere la guarigione del disturbo: {{time}}.",
   "pleaseWaitForHisHeal": "{{time}}Per favore, aspettate fino alla fine delle cure per il deterioramento delle sue condizioni:",
-  "notEnoughMoney": "Non avete abbastanza soldi per realizzare questa azione. {{money}} Siete a corto di denaro {emote:unitValues.money}.",
+  "notEnoughMoney": "Non avete abbastanza soldi per realizzare questa azione. {{money, number}} Siete a corto di denaro {emote:unitValues.money}.",
   "cooldownPetFree": "È possibile liberare un solo animale domestico all'ora. {{remainingTime}}È possibile liberare un altro .",
   "unknownPlayer": "Nome utente 404",
   "petNickNotValid": "Le regole per dare un nome a un animale domestico sono le seguenti:\n$t(error:stringRules)",
@@ -75,8 +75,8 @@
   "stringRules": "\n\n\n {{min}} {{max}} - Utilizzare almeno una lettera - Non utilizzare più di 2 spazi consecutivi - I caratteri speciali non sono ammessi - Tra e caratteri",
   "notInAGuild": "Dovete essere in una gilda per Effettuare questo comando.",
   "notAuthorizedError": "Non avete le permissione necessarie per Effettuare questo commando in vostra gilda, chiedete a un dei vostri superiori se bisogno.",
-  "levelTooLow": "{{level}}Dovete essere di **livello ** per usare questo comando! Tornate più tardi!",
-  "targetLevelTooLow": "{{level}}Questo giocatore deve essere di **livello ** prima di poter usare questo comando!",
+  "levelTooLow": "È necessario essere di **livello {{level, number}}** per utilizzare questo comando! Tornate più tardi!",
+  "targetLevelTooLow": "Questo giocatore deve essere di **livello {{level, number}}** per poter usare questo comando!",
   "notAuthorizedRight": "Non si dispone delle autorizzazioni necessarie per eseguire questo comando.",
   "notPossibleWithoutStatus": "Non avete attualmente bisogno dei nostri servizi",
   "effects": {
@@ -160,7 +160,7 @@
   "banned": "Sei stato bandito dal gioco.",
   "aDevMessedUp": "Oops! Si è verificato un errore. Non si preoccupi, non è colpa sua. Ti preghiamo di accettare le nostre scuse per gli inconvenienti causati. Per risolvere questo problema, contatta il nostro team di supporto tramite il nostro server Discord: https://discord.gg/5JqrMtZ",
   "commandNotAvailableHere": "Questo comando non può essere utilizzato in questa posizione.",
-  "guildFoodStorageFull": "Hai ricevuto **{{quantity}}x {{food}}**, ma le scorte di cibo della tua gilda sono piene. Il cibo è stato gettato via.",
+  "guildFoodStorageFull": "Hai ricevuto **{{quantity, number}}x {{food}}**, ma le scorte di cibo della tua gilda sono piene. Il cibo è stato gettato via.",
   "fightBugged": "L'incontro è stato annullato a causa di un problema tecnico. Di solito ciò è dovuto alla cancellazione di un messaggio necessario per l'incontro o a un problema di permessi.",
   "resetIsNow": "{emote:announcements.trophy} Le classifiche della settimana sono in corso di reimpostazione ! Il vincitore sarà annunciato tra poco sul server del bot ! Il gioco riprenderà tra 5 minuti !",
   "seasonEndIsNow": "{emote:unitValues.glory} Le classifiche della settimana sono in corso di reimpostazione ! Il vincitore sarà annunciato tra poco sul server del bot ! Il gioco riprenderà tra 5 minuti !"
