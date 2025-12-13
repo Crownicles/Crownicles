@@ -268,7 +268,7 @@
     "Una mascota rencorosa se negará a ir de expedición.",
     "La comida consumida por la expedición proviene del stock de tu gremio.",
     "Siempre se te ofrecen tres expediciones: dos cerca de tu posición y una lejana.",
-    "Existe un talismán de clonación muy raro que permite tener un doble espectral de tu mascota mientras está en expedición.",
+    "Il existe un $t(models:talisman.clone) très rare qui permet d'avoir un double spectral de votre familier pendant qu'il est en expédition.",
     "Cruzarte con Velanna cuando tu mascota está de expedición puede darte puntos de bonificación y a veces otras sorpresas.",
     "Las fichas se pueden utilizar para moverse más rápido por el mapa mediante el comando {command:report}.",
     "Puedes obtener fichas a través de la bonificación diaria ({command:dailybonus}), los envíos de mascotas o comprándolas en la tienda.",
