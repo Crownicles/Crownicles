@@ -7,24 +7,24 @@
   "objectsFieldName": "Assunto :",
   "objectsNatures": [
     "{emote:itemNatures.0} Sem efeito",
-    "{emote:itemNatures.1} Vie + {{power, number}} par jour",
-    "{emote:itemNatures.2} Vitesse + {{power, number}} pendant les combats",
-    "{emote:itemNatures.3} Attaque + {{power, number}} pendant les combats",
-    "{emote:itemNatures.4} Défense + {{power, number}} pendant les combats",
+    "{emote:itemNatures.1} Vida + {{power, number}} por dia",
+    "{emote:itemNatures.2} Velocidade + {{power, number}} durante o combate",
+    "{emote:itemNatures.3} Ataque + {{power, number}} durante o combate",
+    "{emote:itemNatures.4} Defesa + {{power, number}} durante o combate",
     "{emote:itemNatures.5} Avançar para {{power}} todos os dias",
-    "{emote:itemNatures.6} Argent + {{power, number}} par jour",
-    "{emote:itemNatures.7} Énergie + {{power, number}} par jour"
+    "{emote:itemNatures.6} Dinheiro + {{power, number}} por dia",
+    "{emote:itemNatures.7} Energia + {{power, number}} por dia"
   ],
   "potionsFieldName": "Poção :",
   "potionsNatures": [
     "{emote:itemNatures.0} Sem efeito",
-    "{emote:itemNatures.1} Vie + {{power, number}}",
-    "{emote:itemNatures.2} Vitesse + {{power, number}} pendant le prochain combat",
-    "{emote:itemNatures.3} Attaque + {{power, number}} pendant le prochain combat",
-    "{emote:itemNatures.4} Défense + {{power, number}} pendant le prochain combat",
+    "{emote:itemNatures.1} Life + {{power, number}}",
+    "{emote:itemNatures.2} Velocidade + {{power, number}} durante o próximo combate",
+    "{emote:itemNatures.3} Ataque + {{power, number}} durante a próxima luta",
+    "{emote:itemNatures.4} Defesa + {{power, number}} durante o próximo combate",
     "{emote:itemNatures.5} Tempo de antecedência {{power}}",
-    "{emote:itemNatures.6} Argent + {{power, number}}",
-    "{emote:itemNatures.7} Énergie + {{power, number}}"
+    "{emote:itemNatures.6} Prata + {{power, number}}",
+    "{emote:itemNatures.7} Energia + {{power, number}}"
   ],
   "rarities": [
     "{emote:rarity.0} Básico",
