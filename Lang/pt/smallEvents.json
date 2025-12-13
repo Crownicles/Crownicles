@@ -1280,23 +1280,23 @@
         "intro": "O céu está cinzento e a temperatura é média. É o tempo ideal para caminhar e continuar a sua aventura. No entanto, após alguns passos, o chão frágil cede sob os seus pés e cai num buraco.",
         "success": {
           "withGuild": "Com a ajuda dos vossos companheiros de guilda, conseguem sair da fenda e salvá-los. Esta provação fortaleceu os seus laços, e a sua guilda recebe **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
-          "soloWithGuild": "Ne perdant pas votre sang-froid, vous appliquez immédiatement les enseignements de votre guilde et parvenez aisément à escalader la paroi. Votre guilde reçoit **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
-          "solo": "Ne perdant pas votre sang-froid, vous appliquez ce que vous avez appris durant vos aventures et parvenez aisément à escalader la paroi. Vous recevez **{{amount, number}} {emote:unitValues.xp}**."
+          "soloWithGuild": "Sem perder a calma, aplica imediatamente os ensinamentos da sua guilda e consegue escalar a parede com facilidade. A sua guilda recebe **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
+          "solo": "Sem perder a calma, aplica o que aprendeu durante as suas aventuras e consegue escalar a parede com facilidade. Recebe **{{amount, number}} {emote:unitValues.xp}**."
         },
         "escape": {
           "withGuild": "Sem perder tempo, tu e os teus companheiros apressam-se a examinar esta fenda, que se revela ser uma gruta. Depois de uma caminhada às cegas, consegue sair do buraco mais à frente.",
           "solo": "Desesperado, sozinho no fundo desta fenda, só passados alguns minutos é que se apercebe da passagem estreita à sua esquerda. Depois de lutar contra a terra que decidiu confiná-lo, emerge para o ar livre."
         },
         "lose": {
-          "withGuild": "Grâce à l'aide de vos camarades de guilde, vous parvenez à vous hisser hors de cette crevasse et à les sauver à leur tour. Cependant, celui qui avait votre bourse est remonté en dernier, et a malencontreusement laissé tomber l'argent durant l'escalade. Vous perdez **{{amount, number}} {emote:unitValues.lostMoney}**.",
-          "solo": "Alors que vous tentez d'escalader la paroi, la terre s'effrite sous vos doigts et vos pieds et provoque un éboulement. Grâce à lui, vous parvenez à sortir de cette crevasse mais vous êtes bien amoché. Vous perdez **{{amount, number}} {emote:unitValues.lostHealth}**."
+          "withGuild": "Com a ajuda dos seus companheiros de guilda, consegue sair da fenda e salvá-los também. No entanto, aquele que tinha a sua bolsa subiu por último e deixou cair o dinheiro acidentalmente durante a escalada. Perde **{{amount, number}} {emote:unitValues.lostMoney}**.",
+          "solo": "Enquanto tenta escalar a parede, a terra desmorona sob os seus dedos e pés, provocando um desabamento. Graças a ele, consegue sair desta fenda, mas fica bastante ferido. Perde **{{amount, number}} {emote:unitValues.lostHealth}**."
         }
       },
       {
         "intro": "Decides descansar um pouco depois de uma intensa travessia da ilha. Mas assim que te deitas no chão, a terra começa a tremer.",
         "success": {
           "withGuild": "Cependant, vous vous agrippez les uns les autres, afin d'éviter qu'une potentielle crevasse fasse tomber l'un d'entre vous. La secousse se termine, et vous êtes tous sains et saufs. Votre guilde gagne **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
-          "soloWithGuild": "Vous suivez les instructions qui vous ont été données en cas de séisme par votre guilde, et décidez de vous abriter sous une structure qui, heureusement, ne s'est pas écroulée sur vous. Sain et sauf, vous vous promettez de remercier votre guilde dès votre retour de votre expédition. Votre guilde gagne **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
+          "soloWithGuild": "Segue as instruções dadas pela sua guilda para o caso de um terramoto e decide abrigar-se sob uma estrutura que, felizmente, não desabou sobre si. São e salvo, prometes agradecer à tua guilda assim que regressares da tua expedição. A tua guilda ganha **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
           "solo": "Vous essayez de tenir malgré la secousse. Heureusement, elle n'a causé aucun dégât autour, vous continuez à vous reposer un peu en admirant le ciel et les environs. Vous recevez **{{amount, number}} {emote:unitValues.xp}**."
         },
         "escape": {
@@ -1304,31 +1304,31 @@
           "solo": "Em pânico, tenta desviar-se dos danos potenciais do terramoto. Passados alguns instantes, deixa de sentir o tremor. Quando regressa ao local onde queria descansar, repara nos estragos causados pelo terramoto. Ainda bem que não tinhas ficado ali..."
         },
         "lose": {
-          "withGuild": "Vous vous dites que ce séisme sera court, et demandez au reste de la guilde de braver celui-ci. Quelle erreur ! Un rocher s'écrase sur vous et vous assomme. Vous perdez **{{amount, number}} {emote:unitValues.energy}**.",
-          "solo": "Vous disant qu'il n'y aura que peu de dégâts, vous continuez à vous reposer. Cependant, une crevasse se forme sous votre corps. Par peur de tomber dedans, vous essayez de courir le plus loin possible, mais vous trébuchez et vous entaillez le bras. Vous perdez **{{amount, number}} {emote:unitValues.lostHealth}**."
+          "withGuild": "Pensa que este sismo será curto e pede ao resto da guilda para o enfrentar. Que erro! Uma pedra cai sobre si e deixa-o inconsciente. Perde **{{amount, number}} {emote:unitValues.energy}**.",
+          "solo": "Pensando que haverá poucos danos, continua a descansar. No entanto, uma fenda forma-se sob o seu corpo. Com medo de cair nela, tenta correr o mais longe possível, mas tropeça e corta o braço. Perde **{{amount, number}} {emote:unitValues.lostHealth}**."
         }
       },
       {
         "intro": "Tu (e os teus companheiros de grupo) estás a viver tranquilamente a tua aventura, quando os teus instintos te alertam para o perigo. Gradualmente, uma névoa esbranquiçada, quase opaca, sobe do chão irregular e cai do céu para vos rodear. Em breve não consegues ver nada à tua volta.",
         "success": {
-          "withGuild": "Plusieurs paires d'yeux valent mieux qu'une ! Grâce à la coopération de vos visions, vos compagnons et vous parvenez à avancer entre les rochers et les crevasses sans qu'un seul ne soit blessé ou perdu. Votre guilde reçoit **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
-          "soloWithGuild": "Dans cette situation urgente, vous gardez votre sang-froid et utilisez les techniques de pistage apprises grâce à votre guilde afin de vous sortir de ce pétrin sans encombre. Votre guilde reçoit **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
-          "solo": "Dans cette situation urgente, vous gardez votre sang-froid et utilisez des techniques de pistage apprises un peu plus tôt afin de vous sortir de ce pétrin sans encombre. Vous recevez **{{amount, number}} {emote:unitValues.xp}**."
+          "withGuild": "Vários pares de olhos valem mais do que um! Graças à cooperação das vossas visões, os seus companheiros e você conseguem avançar entre as rochas e as fendas sem que ninguém fique ferido ou perdido. A sua guilda recebe **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
+          "soloWithGuild": "Nesta situação urgente, mantém a calma e usa as técnicas de rastreamento aprendidas graças à sua guilda para sair deste apuro sem problemas. A sua guilda recebe **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
+          "solo": "Nesta situação urgente, mantém a calma e usa técnicas de rastreamento aprendidas anteriormente para sair deste apuro sem problemas. Recebe **{{amount, number}} {emote:unitValues.xp}**."
         },
         "escape": {
           "withGuild": "Completamente perdidos no nevoeiro denso e ameaçador, tu e os teus companheiros decidiram juntar-se para se protegerem do frio, esperando que o vento dispersasse a névoa.",
           "solo": "Completamente paralisado pela angústia deste fenómeno quase sobrenatural, entra em pânico, o seu pulso acelera e, apesar da frescura, sente o suor da sua testa pálida escorrer um a um, até que a névoa se dispersa com o vento."
         },
         "lose": {
-          "withGuild": "Votre groupe n'étant pas au complet, vos compagnons de guilde et vous paniquez face à cette épreuve. Chacun fuit de son côté et vous ne demandez pas votre reste pour courir à votre tour. Mais dans la précipitation, vous laissez tomber **{{amount, number}} {emote:unitValues.lostMoney}**.",
-          "solo": "Complètement paniqué devant cette brume presque menaçante, vous prenez vos jambes à votre cou et courrez droit devant vous. Une grave erreur, car vous choyez bien vite au sol à cause du brouillard. Vous perdez **{{amount, number}} {emote:unitValues.lostHealth}**."
+          "withGuild": "Como o seu grupo não está completo, os seus companheiros de guilda e você entram em pânico perante esta provação. Cada um foge para seu lado e você não perde tempo a correr também. Mas na precipitação, deixa cair **{{amount, number}} {emote:unitValues.lostMoney}**.",
+          "solo": "Completamente em pânico perante esta névoa quase ameaçadora, foge a correr em frente. Um grave erro, pois cai rapidamente no chão por causa do nevoeiro. Perde **{{amount, number}} {emote:unitValues.lostHealth}**."
         }
       },
       {
         "intro": "Está-se a avançar calmamente para novas aventuras quando uma pedrinha sorrateira, atrevida e pontiaguda decide fazer de si a sua vítima e corta-lhe cruelmente o tornozelo.",
         "success": {
           "withGuild": "Heureusement pour vous, vos compagnons de guilde pansent votre blessure et vous remettent rapidement sur pied. Votre guilde reçoit **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
-          "soloWithGuild": "Malgré la douleur, vous parvenez à vous souvenir des enseignements de votre guilde et parvenez grâce à ces connaissances à vous soigner rapidement. Votre guilde reçoit **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
+          "soloWithGuild": "Apesar da dor, consegue lembrar-se dos ensinamentos da sua guilda e, graças a esse conhecimento, cura-se rapidamente. A tua guilda recebe **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
           "solo": "Malgré la douleur, vous parvenez à désinfecter et à bander la plaie afin de reprendre votre route au plus vite. Vous recevez **{{amount, number}} {emote:unitValues.xp}**."
         },
         "escape": {
@@ -1336,15 +1336,15 @@
           "solo": "Apesar da dor, consegue continuar a coxear."
         },
         "lose": {
-          "withGuild": "Complètement impuissants face à cette blessure, vos compagnons vous soignent comme ils le peuvent mais la plaie s'infecte et la douleur devient insoutenable. Vous perdez **{{amount, number}} {emote:unitValues.lostHealth}**.",
-          "solo": "Seul, vous tordant de douleur au milieu du chemin, vous maudissez cette pierre fière de son coup et endurez l'effroyable douleur afin de continuer votre aventure. Vous perdez **{{amount, number}} {emote:unitValues.lostHealth}**."
+          "withGuild": "Completamente impotentes perante esta ferida, os seus companheiros tratam-no como podem, mas a ferida infeta e a dor torna-se insuportável. Perde **{{amount, number}} {emote:unitValues.lostHealth}**.",
+          "solo": "Sozinho, contorcendo-se de dor no meio do caminho, amaldiçoa esta pedra orgulhosa do seu golpe e suporta a dor horrível para continuar a sua aventura. Perde **{{amount, number}} {emote:unitValues.lostHealth}**."
         }
       },
       {
         "intro": "Está a caminhar calmamente para o seu destino quando grandes nuvens negras se formam sobre a região. Está escuro como breu.",
         "success": {
           "withGuild": "Vos compagnons de guilde sont cependant prévoyants et l'un d'eux sort une torche de son sac afin d'éclairer votre route. Votre guilde reçoit **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
-          "soloWithGuild": "Heureusement que vous aviez une torche dans votre sacoche, qu'un de vos compagnons de guilde vous a donné à votre départ ! Vous pouvez ainsi aisément voir votre chemin et continuer votre route. Votre guilde reçoit **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
+          "soloWithGuild": "Por sorte, tinhas uma tocha na mochila, dada por um dos teus companheiros de guilda quando partiste! Permitiu-lhe ver facilmente o caminho e continuar a sua jornada. A tua guilda recebe **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
           "solo": "Heureusement que vous aviez une torche dans votre poche, préparée avant votre départ ! Vous pouvez ainsi aisément voir votre chemin et continuer votre route. Vous recevez **{{amount, number}} {emote:unitValues.xp}**."
         },
         "escape": {
@@ -1360,7 +1360,7 @@
         "intro": "Já está a caminhar há algum tempo num caminho que parece não ter fim, quando de repente as forças lhe faltam e cai de cansaço.",
         "success": {
           "withGuild": "Voyant votre malaise, vos compagnons accourent pour vous soutenir et vous offrent de quoi récupérer l'énergie nécessaire pour vous relever et continuer à avancer dans votre quête. Votre guilde reçoit **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
-          "soloWithGuild": "Malgré ce malaise, vous utilisez le peu d'énergie qui vous reste pour sortir de votre inventaire un peu de nourriture offerte par votre guilde afin de reprendre des forces et continuer votre quête. Votre guilde reçoit **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
+          "soloWithGuild": "Apesar deste desconforto, utiliza a pouca energia que lhe resta para obter um pouco de comida do seu inventário, fornecida pela sua guilda, para recuperar as suas forças e continuar a sua viagem. A tua guilda recebe **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
           "solo": "Malgré ce malaise, vous utilisez le peu d'énergie qui vous reste pour sortir de votre inventaire un peu de nourriture préparée à l'avance afin de reprendre des forces et continuer votre quête. Vous recevez **{{amount, number}} {emote:unitValues.xp}**."
         },
         "escape": {
