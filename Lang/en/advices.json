@@ -268,7 +268,7 @@
     "An angry pet will refuse to go on an expedition.",
     "The food consumed by the expedition comes from your guild's stock.",
     "Three expeditions are proposed each time: two close to your position and one far away.",
-    "Il existe un $t(models:talisman.clone) très rare qui permet d'avoir un double spectral de votre familier pendant qu'il est en expédition.",
+    "There is a very rare $t(models:talisman.clone) that allows you to have a spectral double of your familiar while it is on an expedition.",
     "Crossing paths with Velanna when your pet is on an expedition can earn you bonus points and sometimes other surprises.",
     "The tokens allow you to move faster across the map using the {command:report}command.",
     "You can obtain tokens through the daily bonus ({command:dailybonus}), pet shipments, or by buying them in the store.",
