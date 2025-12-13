@@ -61,21 +61,21 @@
     "title": "Pet expeditions",
     "unavailableTitle": "{{pseudo}}impossible to ship",
     "noTalisman_male": [
-      "You put your hand on your satchel, hoping to find the {emote:expedition.talisman} **Talisman of Anchorage**, but your fingers meet only emptiness. Without this ancestral artifact, your companion could not find his way back to you. The elders say it lies somewhere along the kingdom's roads... You decide to postpone this expedition until a more convenient time.",
-      "Without the {emote:expedition.talisman} **Talisman of Anchorage**, your pet would wander for eternity in faraway lands. This precious artifact is waiting for you somewhere along the kingdom's roads. You decide to postpone this expedition until a more convenient time.",
-      "Your pet stares at you with hopeful eyes, ready for adventure. Alas, you do not yet possess the {emote:expedition.talisman} **Talisman of Anchorage**, the precious artifact that enables pets to find their masters in the most hostile lands. You decide to postpone this expedition until a more convenient time.",
-      "Legends tell of a magical talisman, forged by early trainers, capable of creating an unbreakable bond between a pet and its master. Without the {emote:expedition.talisman} **Anchoring Talisman**, sending your companion on an expedition would be sheer madness. You decide to postpone the expedition until a more convenient time."
+      "Vous posez la main sur votre sacoche, espérant y trouver le $t(models:talisman.anchor), mais vos doigts ne rencontrent que le vide. Sans cet artefact ancestral, votre compagnon ne pourrait retrouver son chemin jusqu'à vous. Les anciens racontent qu'il se trouve quelque part sur les routes du royaume... Vous décidez de reporter cette expedition à un moment plus propice.",
+      "Sans le $t(models:talisman.anchor), votre familier errerait pour l'éternité dans les contrées lointaines. Cet artefact précieux vous attend quelque part sur les routes du royaume. Vous décidez de reporter cette expedition à un moment plus propice.",
+      "Votre familier vous fixe avec des yeux pleins d'espoir, prêt à partir à l'aventure. Hélas, vous ne possédez pas encore le $t(models:talisman.anchor), ce précieux artefact qui permet aux familiers de retrouver leur maître à travers les terres les plus hostiles. Vous décidez de reporter cette expedition à un moment plus propice.",
+      "Les légendes parlent d'un talisman magique, forgé par les premiers dresseurs, capable de créer un lien indéfectible entre un familier et son maître. Sans le $t(models:talisman.anchor), envoyer votre compagnon en expédition serait pure folie. Vous décidez de reporter cette expedition à un moment plus propice."
     ],
     "noTalisman_female": [
-      "You put your hand on your satchel, hoping to find the {emote:expedition.talisman} **Talisman of Anchorage**, but your fingers meet only emptiness. Without this ancestral artifact, your companion would not be able to find her way back to you. This precious object could be found somewhere along the kingdom's roads. It seems wise to postpone this expedition to a more convenient time.",
-      "Your satchel does not contain the {emote:expedition.talisman} **Talisman of Anchorage**. Without this artifact, your pet would wander for eternity in faraway lands. The object would be somewhere on the kingdom's roads. This expedition must be postponed.",
-      "Your pet stares at you with hopeful eyes, ready for adventure. Alas, the {emote:expedition.talisman} **Talisman of Anchorage** is not among your belongings. Without this precious artifact, which enables pets to find their masters in the most hostile lands, the expedition will have to wait.",
-      "The {emote:expedition.talisman} **Talisman of Anchorage**, the legendary artifact capable of creating an indestructible bond between a pet and its master, remains unaccounted for in your equipment. Sending your companion on an expedition without it would be sheer madness. The expedition is postponed."
+      "Vous posez la main sur votre sacoche, espérant y trouver le $t(models:talisman.anchor), mais vos doigts ne rencontrent que le vide. Sans cet artefact ancestral, votre compagne ne pourrait retrouver son chemin jusqu'à vous. Cet objet précieux se trouverait quelque part sur les routes du royaume. Il semble judicieux de reporter cette expédition à un moment plus propice.",
+      "Votre sacoche ne contient pas le $t(models:talisman.anchor). Sans cet artefact, votre familier errerait pour l'éternité dans les contrées lointaines. L'objet se trouverait quelque part sur les routes du royaume. Il convient de reporter cette expédition.",
+      "Votre familier vous fixe avec des yeux pleins d'espoir, prête à partir à l'aventure. Hélas, le $t(models:talisman.anchor) ne se trouve pas dans vos affaires. Sans ce précieux artefact permettant aux familiers de retrouver leur maître à travers les terres les plus hostiles, l'expédition devra attendre.",
+      "Le $t(models:talisman.anchor), cet artefact légendaire capable de créer un lien indéfectible entre un familier et son maître, reste introuvable dans votre équipement. Envoyer votre compagne en expédition sans lui serait pure folie. L'expédition est reportée."
     ],
     "noPet": [
       "You scan your surroundings, but there are no pets trotting along beside you. The exploration routes are far too dangerous to venture down alone. The expedition will have to wait for the arrival of a faithful companion.",
       "A gentle breeze lifts the dust from the path. Without a faithful companion by your side, expeditions remain out of reach. You'll have to find a pet first.",
-      "The {emote:expedition.talisman} **Talisman of Anchorage** does not react in your satchel. Its magic can only be activated in the presence of a pet. It's a good idea to find a worthy companion before thinking about expeditions."
+      "Le $t(models:talisman.anchor) ne réagit pas dans votre sacoche. Sa magie ne peut s'activer qu'en présence d'un familier. Il convient de trouver un compagnon digne de ce nom avant de songer aux expéditions."
     ],
     "insufficientLove_male": [
       "{{petDisplay}} gives you a wary look and takes a step back. The bond between you is not yet strong enough for him to venture out alone into the wilderness. Take care of him, feed him, and maybe one day he'll trust you enough.",
@@ -147,7 +147,7 @@
     "recallButton": "Call back",
     "closeButton": "Continue exploring",
     "chooseExpeditionTitle": "{{pseudo}}new shipments available",
-    "chooseExpedition": "The {emote:expedition.talisman} **Talisman of Anchorage** vibrates gently in your satchel. Three destinations appear in your mind's eye, revealed by the artifact's magic. {{petDisplay}} can't wait to explore one of these lands:",
+    "chooseExpedition": "Le $t(models:talisman.anchor) vibre doucement dans votre sacoche. Trois destinations apparaissent dans votre esprit, révélées par la magie de l'artefact. {{petDisplay}} trépigne d'impatience, prêt à partir explorer l'une de ces contrées :",
     "selectPlaceholder": "Choose a destination...",
     "distantExpeditionPrefix": "Long-distance expedition: {{location}}",
     "expeditionOption": {
@@ -195,8 +195,7 @@
     "finishedTitle": "{{pseudo}}The expedition is over!",
     "finishedDescription": {
       "talisman": {
-        "name": "Anchoring Talisman",
-        "intro": "The {emote:expedition.talisman} **{{talismanName}}** vibrates intensely in your bag: {{petDisplay}} is back from its expedition to **{{location}}** !"
+        "intro": "Le $t(models:talisman.anchor) vibre intensément dans votre sacoche : {{petDisplay}} est de retour de son expédition vers **{{location}}** !"
       },
       "risk": "{emote:expedition.risk} Dangerousness: {{risk}}",
       "impatience_male": "*Your companion can't wait to show you what he's got!",
@@ -258,7 +257,7 @@
       "tokens_one": "{emote:unitValues.token} Token won : **{{count}}** !",
       "tokens_other": "{emote:unitValues.token} Chips won : **{{count}}** !",
       "item": "{emote:rewards.item} You get random equipment!",
-      "cloneTalisman": "{emote:expedition.cloneTalisman} **EXCEPTIONAL DISCOVERY\nYour pet has discovered an ancient buried artifact: the **Talisman of Cloning**!\nThis mystical object will enable your companion to assist you in defense and in small events, even when on expedition!",
+      "cloneTalisman": "{emote:expedition.cloneTalisman} **DÉCOUVERTE EXCEPTIONNELLE !**\nVotre familier a découvert un ancien artefact enfoui : le $t(models:talisman.clone) !\nCet objet mystique permettra à votre compagnon de vous assister en défense et dans les petits événements, même lorsqu'il est en expédition !",
       "badgeEarned": "{emote:badges.expert_expediteur} You have been offered a free badge : **Expert Consignor** !"
     },
     "riskCategories": {
@@ -612,8 +611,8 @@
     "weapons_other": "Weapons ({{count}}/{{max}}):",
     "talisman": "Artifacts :",
     "talismans": {
-      "anchorTalisman": "{emote:expedition.talisman} **Anchoring Talisman** - Sends your pet on expedition",
-      "cloneTalisman": "{emote:expedition.cloneTalisman} **Cloning Talisman** - Your pet assists you in defense and in small events, even on expeditions."
+      "anchorTalisman": "$t(models:talisman.anchor) - Permet d'envoyer votre familier en expédition",
+      "cloneTalisman": "$t(models:talisman.clone) - Votre familier vous assiste en défense et dans les petits événements même en expédition"
     },
     "talismanNotOwned": "{emote:inventory.empty} **No artifacts",
     "randomItemTitle": "{{pseudo}}, you found something!",
