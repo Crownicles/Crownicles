@@ -863,8 +863,9 @@
     "badgeBought": "Hai ricevuto un nuovo badge: {emote:badges.{{badgeName}}} !",
     "notEnoughMoney": "Vous n'avez pas assez d'argent pour acheter cet objet ! Il vous manque `{{missingCurrency, number}} {emote:unitValues.{{currency}}}`.",
     "boughtTooMuchDailyPotions": "Non ci sono più pozioni del giorno disponibili per la vendita... Tornate domani!",
-    "boughtTooMuchTokens": "Oggi non è più possibile acquistare gettoni... Tornate domani!",
-    "tokensBought": "Avete acquistato un gettone. {emote:unitValues.token}",
+    "boughtTooMuchTokens": "Vous avez atteint la limite d'achat de jetons pour le moment. Revenez plus tard !",
+    "tokensBought_one": "Vous avez acheté **{{count}} jeton** {emote:unitValues.token}.",
+    "tokensBought_other": "Vous avez acheté **{{count}} jetons** {emote:unitValues.token}.",
     "tokensFull": "Hai già il maggior numero di gettoni possibile!",
     "title": "🛒 Display del negozio",
     "currentMoney": "Vous avez `{{money, number}}{emote:unitValues.{{currency}}}`.",
@@ -882,7 +883,7 @@
       "dailyPotion_one": "{{count}} Pozione del giorno ( disponibile)",
       "dailyPotion_other": "{{count}} Pozione del giorno ( disponibile)",
       "token_zero": "Gettoni (esauriti)",
-      "token_one": "Gettoni ({{count}} disponibile)",
+      "token_one": "Jeton ({{count}} disponible)",
       "token_other": "Gettoni ({{count}} disponibile)",
       "slotExtension": "Estensioni dell'inventario",
       "food": "Cibo per animali",
@@ -934,7 +935,7 @@
       },
       "token": {
         "name": "{emote:unitValues.token} Gettone",
-        "info": "I gettoni consentono di progredire più rapidamente accelerando alcune azioni, come la segnalazione. È possibile acquistarne fino a 10 al giorno."
+        "info": "Les jetons permettent de progresser plus vite en accélérant certaines actions comme les rapports. Vous pouvez en acheter jusqu'à 10 par jour et 30 par semaine."
       },
       "smallGuildXp": {
         "name": "{emote:shopItems.smallGuildXp} Un po' di xp per la tua gilda",
