@@ -268,7 +268,7 @@
     "Um animal de estimação rancoroso recusar-se-á a ir numa expedição.",
     "Os alimentos consumidos pela expedição provêm do stock do teu grémio.",
     "São oferecidas três expedições de cada vez: duas perto da sua posição e uma longe.",
-    "Existe um talismã de clonagem muito raro que permite ter um duplo espetral do seu animal de estimação durante uma expedição.",
+    "Il existe un $t(models:talisman.clone) très rare qui permet d'avoir un double spectral de votre familier pendant qu'il est en expédition.",
     "Ao cruzar-se com Velanna quando a sua mascote está numa expedição, pode ganhar pontos de bónus e, por vezes, outras surpresas.",
     "As fichas podem ser utilizadas para se deslocar mais rapidamente no mapa utilizando o comando {command:report}.",
     "Pode obter fichas através do bónus diário ({command:dailybonus}), envios de animais de estimação ou comprando-as na loja.",
