@@ -1034,7 +1034,6 @@ export default class SmallEventsHandler {
 			return;
 		}
 		const lng = interaction.userLanguage;
-		const talismanName = i18n.t("smallEvents:expeditionAdvice.talisman.name", { lng });
 
 		let story: string;
 
@@ -1043,17 +1042,14 @@ export default class SmallEventsHandler {
 				// Talisman introduction (first 2 encounters, displayed in order)
 				const introTexts: string[] = i18n.t("smallEvents:expeditionAdvice.talismanIntro", {
 					returnObjects: true,
-					lng,
-					talismanName
+					lng
 				});
 				story = introTexts[packet.encounterCount! - 1] ?? introTexts[0];
 				break;
 			}
 
 			case ExpeditionAdviceInteractionType.CONDITION_NOT_MET_NO_PET:
-				story = StringUtils.getRandomTranslation("smallEvents:expeditionAdvice.conditions.noPet", lng, {
-					talismanName
-				});
+				story = StringUtils.getRandomTranslation("smallEvents:expeditionAdvice.conditions.noPet", lng);
 				break;
 
 			case ExpeditionAdviceInteractionType.CONDITION_NOT_MET_PET_HUNGRY: {
@@ -1087,16 +1083,13 @@ export default class SmallEventsHandler {
 			}
 
 			case ExpeditionAdviceInteractionType.CONDITION_NOT_MET_NO_GUILD:
-				story = StringUtils.getRandomTranslation("smallEvents:expeditionAdvice.conditions.noGuild", lng, {
-					talismanName
-				});
+				story = StringUtils.getRandomTranslation("smallEvents:expeditionAdvice.conditions.noGuild", lng);
 				break;
 
 			case ExpeditionAdviceInteractionType.CONDITION_NOT_MET_LEVEL_TOO_LOW:
 				story = StringUtils.getRandomTranslation("smallEvents:expeditionAdvice.conditions.levelTooLow", lng, {
 					requiredLevel: packet.requiredLevel,
-					playerLevel: packet.playerLevel,
-					talismanName
+					playerLevel: packet.playerLevel
 				});
 				break;
 
@@ -1105,8 +1098,7 @@ export default class SmallEventsHandler {
 					? PetUtils.petToShortString(lng, packet.petNickname, packet.petTypeId, packet.petSex as SexTypeShort)
 					: i18n.t("commands:pet.defaultPetName", { lng });
 				story = StringUtils.getRandomTranslation("smallEvents:expeditionAdvice.talismanReceived", lng, {
-					pet: petDisplayReceived,
-					talismanName
+					pet: petDisplayReceived
 				});
 				break;
 			}
@@ -1135,8 +1127,7 @@ export default class SmallEventsHandler {
 					lng,
 					pet: petDisplayBonus,
 					bonusPoints: packet.bonusPoints,
-					bonusMoney: packet.bonusMoney,
-					talismanName
+					bonusMoney: packet.bonusMoney
 				});
 				break;
 			}
