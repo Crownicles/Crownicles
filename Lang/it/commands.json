@@ -659,7 +659,7 @@
       "tournament_winner": ":crossed_swords: `Vincitore di un torneo`",
       "technical_team": ":gear: `Squadra tecnica`",
       "first_20_members": ":helmet_with_cross: `Persona facendo parte dei 20 primi avendo raggiunto il server del bot`",
-      "top_glory": "{emote:unitValues.glory} La persona che ha ottenuto più gloria durante una stagione di combattimenti.",
+      "top_glory": "La persona che ha ottenuto più gloria durante una stagione di combattimenti.",
       "support": ":heart: `Persona avendo il grado Sostegno sul server del bot`",
       "translator": ":earth_africa: `Traduttore`",
       "advertiser": "Persona che ha aiutato a mettere il bot su un server con oltre 2000 membri",
@@ -696,7 +696,7 @@
     },
     "guild": {
       "fieldName": "Gilda :",
-      "fieldValue": ":stadium: {{guild}}"
+      "fieldValue": "{emote:guild.icon} {{guild}}"
     },
     "information": {
       "fieldName": "Informazione :",
@@ -708,15 +708,15 @@
     },
     "map": {
       "fieldName": "Destinazione:",
-      "fieldValue": "{{mapEmote}} {{mapName}}"
+      "fieldValue": "{emote:mapTypes.{{mapTypeId}}} $t(models:map_locations.{{mapName}}.name)"
     },
     "mission": {
       "fieldName": "Missione :",
-      "fieldValue": ":gem: {{gems, number}} | :book: {{campaign, number}}% "
+      "fieldValue": "{emote:unitValues.gem} {{gems, number}} | {emote:missions.book} {{campaign, number}}% "
     },
     "noTimeLeft": {
       "fieldName": "Tempo restante:",
-      "fieldValue": ":hospital: Ripresa del gioco possibile"
+      "fieldValue": "{emote:effects.healed} Ripresa del gioco possibile"
     },
     "pet": {
       "fieldName": "Animale di compagnia :",
@@ -724,7 +724,7 @@
     },
     "playerClass": {
       "fieldName": "Classe :",
-      "fieldValue": "{{className}}"
+      "fieldValue": "$t(models:classFormat)"
     },
     "ranking": {
       "fieldName": "Classifica e punti :",
@@ -736,13 +736,13 @@
     },
     "statistics": {
       "fieldName": "Statistiche :",
-      "fieldValue": ":zap: {{cumulativeHealth, number}} / {{cumulativeMaxHealth, number}} | :dagger: {{cumulativeAttack, number}} | :shield: {{cumulativeDefense, number}} | :rocket: {{cumulativeSpeed, number}} | :wind_blowing_face: {{baseBreath, number}} / {{maxBreath, number}} | :lungs: {{breathRegen}}"
+      "fieldValue": "{emote:unitValues.energy} {{cumulativeHealth, number}} / {{cumulativeMaxHealth, number}} | {emote:unitValues.attack} {{cumulativeAttack, number}} | {emote:unitValues.defense} {{cumulativeDefense, number}} | {emote:unitValues.speed} {{cumulativeSpeed, number}} | {emote:unitValues.breath} {{baseBreath, number}} / {{maxBreath, number}} | {emote:unitValues.breathRegen} {{breathRegen}}"
     },
     "timeLeft": {
       "fieldName": "Tempo restante :",
-      "fieldValue": "{{effect}} {{timeLeft}}"
+      "fieldValue": "{emote:effects.{{effectId}}} {{timeLeft}}"
     },
-    "title": "{{effect}} | {{pseudo}} | Livello {{level, number}}"
+    "title": "{emote:effects.{{effectId}}} | {{pseudo}} | Livello {{level, number}}"
   },
   "rarity": {
     "earlyAvailable": "Posseduto all'inizio della partita",

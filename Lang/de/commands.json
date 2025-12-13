@@ -659,7 +659,7 @@
       "tournament_winner": "Gewinner eines Turniers",
       "technical_team": "Technisches Team",
       "first_20_members": ":helmet_with_cross: Personen, die zu den ersten 20 Personen gehören, die dem Bot-Server beigetreten sind.",
-      "top_glory": "{emote:unitValues.glory} `Person, die während einer Kampfsaison den meisten Ruhm erlangt hat`.",
+      "top_glory": "Person, die während einer Kampfsaison den meisten Ruhm erlangt hat.",
       "support": "Personen mit der Besoldungsgruppe auf dem Bot-Server-Server",
       "translator": ":earth_africa: ` Traducer `",
       "advertiser": "Person, die geholfen hat, den Bot auf einen Server mit über 2000 Mitgliedern zu bringen",
@@ -696,7 +696,7 @@
     },
     "guild": {
       "fieldName": "Gilde:",
-      "fieldValue": ":stadium: {{guild}}"
+      "fieldValue": "{emote:guild.icon} {{guild}}"
     },
     "information": {
       "fieldName": "Information:",
@@ -712,11 +712,11 @@
     },
     "mission": {
       "fieldName": "Aufgaben:",
-      "fieldValue": ":gem: {{gems, number}} | :book: {{campaign, number}}% "
+      "fieldValue": "{emote:unitValues.gem} {{gems, number}} | {emote:missions.book} {{campaign, number}}% "
     },
     "noTimeLeft": {
       "fieldName": "Restdauer:",
-      "fieldValue": ":hospital: Mögliche Wiederherstellung des Spiels"
+      "fieldValue": "{emote:effects.healed} Mögliche Wiederherstellung des Spiels"
     },
     "pet": {
       "fieldName": "Home:",
@@ -736,7 +736,7 @@
     },
     "statistics": {
       "fieldName": "Statistik:",
-      "fieldValue": ":zap: {{cumulativeHealth, number}} / {{cumulativeMaxHealth, number}} | :dagger: {{cumulativeAttack, number}} | :shield: {{cumulativeDefense, number}} | :rocket: {{cumulativeSpeed, number}} | :wind_blowing_face: {{baseBreath, number}} / {{maxBreath, number}} | :lungs: {{breathRegen}}"
+      "fieldValue": "{emote:unitValues.energy} {{cumulativeHealth, number}} / {{cumulativeMaxHealth, number}} | {emote:unitValues.attack} {{cumulativeAttack, number}} | {emote:unitValues.defense} {{cumulativeDefense, number}} | {emote:unitValues.speed} {{cumulativeSpeed, number}} | {emote:unitValues.breath} {{baseBreath, number}} / {{maxBreath, number}} | {emote:unitValues.breathRegen} {{breathRegen}}"
     },
     "timeLeft": {
       "fieldName": "Restdauer:",

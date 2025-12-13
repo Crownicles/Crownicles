@@ -659,7 +659,7 @@
       "tournament_winner": ":crossed_swords: Ganador del torneo",
       "technical_team": ":gear: Equipo técnico",
       "first_20_members": ":helmet_with_cross: Una de las 20 primeras personas en unirse al servidor de bots.",
-      "top_glory": "{emote:unitValues.glory} La persona que ha ganado más gloria durante una temporada de lucha.",
+      "top_glory": "La persona que ha ganado más gloria durante una temporada de lucha.",
       "support": ":heart: `Persona con rango de Soporte en el servidor bot`.",
       "translator": ":earth_africa: Traductor",
       "advertiser": "Persona que ayudó a poner el bot en un servidor con más de 2000 miembros",
@@ -692,11 +692,11 @@
     },
     "fightUnranked": {
       "fieldName": "Gloria y liga :",
-      "fieldValue": "{emote:announcements.trophy} Non classé | {emote:unitValues.glory} {{gloryPoints, number}} | {emote:leagues.{{leagueId}}} $t(models:leagues.{{leagueId}})"
+      "fieldValue": "{emote:announcements.trophy} Sin clasificar | {emote:unitValues.glory} {{gloryPoints, number}} | {emote:leagues.{{leagueId}}} $t(models:leagues.{{leagueId}})"
     },
     "guild": {
       "fieldName": "Gremio :",
-      "fieldValue": ":stadium: {{guild}}"
+      "fieldValue": "{emote:guild.icon} {{guild}}"
     },
     "information": {
       "fieldName": "Más información :",
@@ -708,15 +708,15 @@
     },
     "map": {
       "fieldName": "Destino :",
-      "fieldValue": "{{mapEmote}} {{mapName}}"
+      "fieldValue": "{emote:mapTypes.{{mapTypeId}}} $t(models:map_locations.{{mapName}}.name)"
     },
     "mission": {
       "fieldName": "Tareas :",
-      "fieldValue": ":gem: {{gems, number}} | :book: {{campaign, number}}% "
+      "fieldValue": "{emote:unitValues.gem} {{gems, number}} | {emote:missions.book} {{campaign, number}}% "
     },
     "noTimeLeft": {
       "fieldName": "Tiempo restante :",
-      "fieldValue": ":hospital: Posible reanudación del juego"
+      "fieldValue": "{emote:effects.healed} Posible reanudación del juego"
     },
     "pet": {
       "fieldName": "Familiar :",
@@ -724,7 +724,7 @@
     },
     "playerClass": {
       "fieldName": "Clase :",
-      "fieldValue": "{{className}}"
+      "fieldValue": "$t(models:classFormat)"
     },
     "ranking": {
       "fieldName": "Clasificación y puntuación :",
@@ -732,17 +732,17 @@
     },
     "unranked": {
       "fieldName": "Clasificación y puntuación :",
-      "fieldValue": "{emote:announcements.trophy} Non classé | {emote:unitValues.score} {{score, number}}"
+      "fieldValue": "{emote:announcements.trophy} Sin clasificar | {emote:unitValues.score} {{score, number}}"
     },
     "statistics": {
       "fieldName": "Estadísticas :",
-      "fieldValue": ":zap: {{cumulativeHealth, number}} / {{cumulativeMaxHealth, number}} | :dagger: {{cumulativeAttack, number}} | :shield: {{cumulativeDefense, number}} | :rocket: {{cumulativeSpeed, number}} | :wind_blowing_face: {{baseBreath, number}} / {{maxBreath, number}} | :lungs: {{breathRegen}}"
+      "fieldValue": "{emote:unitValues.energy} {{cumulativeHealth, number}} / {{cumulativeMaxHealth, number}} | {emote:unitValues.attack} {{cumulativeAttack, number}} | {emote:unitValues.defense} {{cumulativeDefense, number}} | {emote:unitValues.speed} {{cumulativeSpeed, number}} | {emote:unitValues.breath} {{baseBreath, number}} / {{maxBreath, number}} | {emote:unitValues.breathRegen} {{breathRegen}}"
     },
     "timeLeft": {
       "fieldName": "Tiempo restante :",
-      "fieldValue": "{{effect}} {{timeLeft}}"
+      "fieldValue": "{emote:effects.{{effectId}}} {{timeLeft}}"
     },
-    "title": "{{effect}} | {{pseudo}} | Nivel {{level, number}}"
+    "title": "{emote:effects.{{effectId}}} | {{pseudo}} | Nivel {{level, number}}"
   },
   "rarity": {
     "earlyAvailable": "Propiedad al inicio del juego",
