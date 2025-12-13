@@ -11,21 +11,18 @@ import { ItemWithDetails } from "../../types/ItemWithDetails";
  */
 export enum ExpeditionAdviceInteractionType {
 
-	// Phase 1: Talisman introduction (encounters 1-5)
+	// Phase 1: Talisman introduction (first 2 encounters)
 	TALISMAN_INTRO = "talismanIntro",
 
-	// Phase 2: Expedition explanation (encounters 6-10)
-	EXPEDITION_EXPLANATION = "expeditionExplanation",
-
-	// Phase 3: Check conditions before giving talisman
+	// Phase 2: Check conditions before giving talisman (in order)
 	CONDITION_NOT_MET_NO_PET = "conditionNotMetNoPet",
 	CONDITION_NOT_MET_PET_HUNGRY = "conditionNotMetPetHungry",
 	CONDITION_NOT_MET_PET_FEISTY = "conditionNotMetPetFeisty",
-	CONDITION_NOT_MET_PET_NOT_SEEN_BY_TALVAR = "conditionNotMetPetNotSeenByTalvar",
 	CONDITION_NOT_MET_NO_GUILD = "conditionNotMetNoGuild",
+	CONDITION_NOT_MET_PET_NOT_SEEN_BY_TALVAR = "conditionNotMetPetNotSeenByTalvar",
 	CONDITION_NOT_MET_LEVEL_TOO_LOW = "conditionNotMetLevelTooLow",
 
-	// Phase 3: Talisman given
+	// Phase 2: Talisman given
 	TALISMAN_RECEIVED = "talismanReceived",
 
 	// Already has talisman: bonus or advice
@@ -103,4 +100,9 @@ export class SmallEventExpeditionAdvicePacket extends SmallEventPacket {
 	 * Whether a consolation token was given (when level is too low for talisman)
 	 */
 	consolationTokenGiven?: boolean;
+
+	/**
+	 * Number of consolation tokens given
+	 */
+	consolationTokensAmount?: number;
 }

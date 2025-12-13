@@ -195,8 +195,7 @@
     "finishedTitle": "{{pseudo}}, expédition terminée !",
     "finishedDescription": {
       "talisman": {
-        "name": "Talisman d'Ancrage",
-        "intro": "Le {emote:expedition.talisman} **{{talismanName}}** vibre intensément dans votre sacoche : {{petDisplay}} est de retour de son expédition vers **{{location}}** !"
+        "intro": "Le {emote:expedition.talisman} **Talisman d'Ancrage** vibre intensément dans votre sacoche : {{petDisplay}} est de retour de son expédition vers **{{location}}** !"
       },
       "risk": "{emote:expedition.risk} Dangerosité : {{risk}}",
       "impatience_male": "*Votre compagnon trépigne d'impatience, pressé de vous montrer ce qu'il a rapporté !*",

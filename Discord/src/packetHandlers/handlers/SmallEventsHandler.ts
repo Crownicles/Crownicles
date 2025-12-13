@@ -1040,24 +1040,13 @@ export default class SmallEventsHandler {
 
 		switch (packet.interactionType) {
 			case ExpeditionAdviceInteractionType.TALISMAN_INTRO: {
-				// Phase 1: Talisman introduction (encounters 1-5)
+				// Talisman introduction (first 2 encounters, displayed in order)
 				const introTexts: string[] = i18n.t("smallEvents:expeditionAdvice.talismanIntro", {
 					returnObjects: true,
 					lng,
 					talismanName
 				});
 				story = introTexts[packet.encounterCount! - 1] ?? introTexts[0];
-				break;
-			}
-
-			case ExpeditionAdviceInteractionType.EXPEDITION_EXPLANATION: {
-				// Phase 2: Expedition explanation (encounters 6-10)
-				const explanationTexts: string[] = i18n.t("smallEvents:expeditionAdvice.expeditionExplanation", {
-					returnObjects: true,
-					lng
-				});
-				const explanationIndex = packet.encounterCount! - 6;
-				story = explanationTexts[explanationIndex] ?? explanationTexts[0];
 				break;
 			}
 
@@ -1109,11 +1098,6 @@ export default class SmallEventsHandler {
 					playerLevel: packet.playerLevel,
 					talismanName
 				});
-
-				// Add consolation token message if a token was given
-				if (packet.consolationTokenGiven) {
-					story += `\n\n${i18n.t("smallEvents:expeditionAdvice.conditions.consolationToken", { lng })}`;
-				}
 				break;
 
 			case ExpeditionAdviceInteractionType.TALISMAN_RECEIVED: {
