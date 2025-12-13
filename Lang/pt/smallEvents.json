@@ -1280,8 +1280,8 @@
         "intro": "O céu está cinzento e a temperatura é média. É o tempo ideal para caminhar e continuar a sua aventura. No entanto, após alguns passos, o chão frágil cede sob os seus pés e cai num buraco.",
         "success": {
           "withGuild": "Com a ajuda dos vossos companheiros de guilda, conseguem sair da fenda e salvá-los. Esta provação fortaleceu os seus laços, e a sua guilda recebe **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
-          "soloWithGuild": "Ne perdant pas votre sang-froid, vous appliquez immédiatement les enseignements de votre guilde et parvenez aisément à escalader la paroi. Votre guilde reçoit **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
-          "solo": "Ne perdant pas votre sang-froid, vous appliquez ce que vous avez appris durant vos aventures et parvenez aisément à escalader la paroi. Vous recevez **{{amount, number}} {emote:unitValues.xp}**."
+          "soloWithGuild": "Sem perder a calma, aplica imediatamente os ensinamentos da sua guilda e consegue escalar a parede com facilidade. A sua guilda recebe **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
+          "solo": "Sem perder a calma, aplica o que aprendeu durante as suas aventuras e consegue escalar a parede com facilidade. Recebe **{{amount, number}} {emote:unitValues.xp}**."
         },
         "escape": {
           "withGuild": "Sem perder tempo, tu e os teus companheiros apressam-se a examinar esta fenda, que se revela ser uma gruta. Depois de uma caminhada às cegas, consegue sair do buraco mais à frente.",
