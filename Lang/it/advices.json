@@ -268,7 +268,7 @@
     "Un animale rancoroso si rifiuta di partecipare a una spedizione.",
     "Il cibo consumato dalla spedizione proviene dalle scorte della vostra gilda.",
     "Ogni volta vengono proposte tre spedizioni: due vicine alla vostra posizione e una lontana.",
-    "Il existe un $t(models:talisman.clone) très rare qui permet d'avoir un double spectral de votre familier pendant qu'il est en expédition.",
+    "Esiste un $t(models:talisman.clone) molto raro che permette di avere un doppio spettrale del tuo famiglio mentre è in spedizione.",
     "Incrociare Velanna quando il vostro animale è in spedizione può farvi guadagnare punti bonus e talvolta altre sorprese.",
     "I gettoni possono essere usati per spostarsi più velocemente sulla mappa usando il comando {command:report}.",
     "È possibile ottenere i gettoni attraverso il bonus giornaliero ({command:dailybonus}), le spedizioni di animali domestici o acquistandoli nel negozio.",
