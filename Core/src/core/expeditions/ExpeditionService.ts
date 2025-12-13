@@ -10,17 +10,29 @@ import {
 	calculateRewardIndex, calculateRewards, ExpeditionRewardDataWithItem
 } from "./ExpeditionRewardCalculator";
 import { MapLinkDataController } from "../../data/MapLink";
-import { MapLocationDataController } from "../../data/MapLocation";
+import {
+	MapLocation, MapLocationDataController
+} from "../../data/MapLocation";
 import { MapConstants } from "../../../../Lib/src/constants/MapConstants";
 import { MathUtils } from "../utils/MathUtils";
 
 /**
- * Get expedition location type from map location type
- * @param mapType - The map location type code
+ * Get expedition location type from map location
+ * Uses expeditionType override if defined, otherwise derives from map type
+ * @param mapLocation - The map location (can be null/undefined)
  * @returns The corresponding expedition location type
  */
-function getExpeditionTypeFromMapType(mapType: string): ExpeditionLocationType {
-	return ExpeditionConstants.MAP_TYPE_TO_EXPEDITION_TYPE[mapType] ?? ExpeditionConstants.EXPEDITION_LOCATION_TYPES.PLAINS;
+function getExpeditionTypeFromMapLocation(mapLocation: MapLocation | null): ExpeditionLocationType {
+	if (!mapLocation) {
+		return ExpeditionConstants.EXPEDITION_LOCATION_TYPES.PLAINS;
+	}
+
+	// Use explicit expeditionType if defined, otherwise derive from map type
+	if (mapLocation.expeditionType) {
+		return mapLocation.expeditionType;
+	}
+
+	return ExpeditionConstants.MAP_TYPE_TO_EXPEDITION_TYPE[mapLocation.type] ?? ExpeditionConstants.EXPEDITION_LOCATION_TYPES.PLAINS;
 }
 
 /**
@@ -130,7 +142,7 @@ function generateLocalExpeditions(
 	for (let i = 0; i < ExpeditionConstants.LOCAL_EXPEDITIONS_COUNT && i < localMapLocationIds.length; i++) {
 		const mapLocationId = localMapLocationIds[i];
 		const mapLocation = MapLocationDataController.instance.getById(mapLocationId);
-		const locationType = getExpeditionTypeFromMapType(mapLocation?.type ?? ExpeditionConstants.DEFAULT_MAP_TYPE);
+		const locationType = getExpeditionTypeFromMapLocation(mapLocation);
 
 		const expedition = generateExpeditionWithConstraints({
 			durationRange: durationRanges[i],
@@ -220,7 +232,7 @@ function generateDistantExpedition(
 ): ExpeditionData {
 	const distantMapLocationId = getRandomDistantMapLocation(localMapLocationIds);
 	const distantMapLocation = MapLocationDataController.instance.getById(distantMapLocationId);
-	const distantLocationType = getExpeditionTypeFromMapType(distantMapLocation?.type ?? ExpeditionConstants.DEFAULT_MAP_TYPE);
+	const distantLocationType = getExpeditionTypeFromMapLocation(distantMapLocation);
 
 	return generateExpeditionWithConstraints({
 		durationRange: durationRanges[ExpeditionConstants.LOCAL_EXPEDITIONS_COUNT],

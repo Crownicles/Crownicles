@@ -4,6 +4,7 @@ import { MapLinkDataController } from "./MapLink";
 import Player from "../core/database/game/models/Player";
 import { Data } from "./Data";
 import { RandomUtils } from "../../../Lib/src/utils/RandomUtils";
+import { ExpeditionLocationType } from "../../../Lib/src/constants/ExpeditionConstants";
 
 export class MapLocation extends Data<number> {
 	declare readonly type: string;
@@ -13,6 +14,11 @@ export class MapLocation extends Data<number> {
 	declare readonly attribute: string;
 
 	declare readonly forcedImage?: string;
+
+	/**
+	 * Optional override for expedition type. If not set, the expedition type is derived from the map type.
+	 */
+	declare readonly expeditionType?: ExpeditionLocationType;
 
 
 	/**
