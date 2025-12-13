@@ -109,7 +109,7 @@ async function checkTalismanConditions(player: Player): Promise<TalismanConditio
 			conditionMet: false,
 			interactionType: ExpeditionAdviceInteractionType.CONDITION_NOT_MET_LEVEL_TOO_LOW,
 			...petInfo,
-			consolationTokensAmount: 1
+			consolationTokensAmount: ExpeditionConstants.TALISMAN_EVENT.LEVEL_TOO_LOW_TOKEN_COMPENSATION
 		};
 	}
 

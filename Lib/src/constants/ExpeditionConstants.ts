@@ -547,6 +547,11 @@ export abstract class ExpeditionConstants {
 		TALISMAN_INTRO_ENCOUNTERS: 2,
 
 		/**
+		 * Number of tokens given as consolation when player level is too low
+		 */
+		LEVEL_TOO_LOW_TOKEN_COMPENSATION: 1,
+
+		/**
 		 * Bonus rewards when pet is in expedition (Velanna's rewards)
 		 * Always gives bonus points, then has chances to give money/item or combat potion
 		 */

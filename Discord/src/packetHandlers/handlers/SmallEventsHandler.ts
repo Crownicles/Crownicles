@@ -1089,7 +1089,8 @@ export default class SmallEventsHandler {
 			case ExpeditionAdviceInteractionType.CONDITION_NOT_MET_LEVEL_TOO_LOW:
 				story = StringUtils.getRandomTranslation("smallEvents:expeditionAdvice.conditions.levelTooLow", lng, {
 					requiredLevel: packet.requiredLevel,
-					playerLevel: packet.playerLevel
+					playerLevel: packet.playerLevel,
+					count: packet.consolationTokensAmount
 				});
 				break;
 
