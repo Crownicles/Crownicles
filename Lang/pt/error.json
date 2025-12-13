@@ -75,8 +75,8 @@
   "stringRules": "\n\n\n {{min}} {{max}} - Utilizar pelo menos uma letra - Não utilizar mais de 2 espaços consecutivos - Não são permitidos caracteres especiais - Entre e caracteres",
   "notInAGuild": "É necessário pertencer a um grémio para efetuar esta encomenda.",
   "notAuthorizedError": "Não tens as permissões necessárias para fazer esta encomenda na tua guilda, por isso pede a um dos teus superiores se precisares.",
-  "levelTooLow": "Vous devez être **niveau {{level, number}}** pour utiliser cette commande ! Revenez plus tard !",
-  "targetLevelTooLow": "Ce joueur doit être **niveau {{level, number}}** pour que vous puissiez utiliser cette commande !",
+  "levelTooLow": "Tens de ser **level {{level, number}}** para usar este comando! Volte mais tarde!",
+  "targetLevelTooLow": "Este jogador tem de ser de **nível {{level, number}}** para poderes usar este comando!",
   "notAuthorizedRight": "Não tem as permissões necessárias para efetuar este comando.",
   "notPossibleWithoutStatus": "Não necessita atualmente dos nossos serviços",
   "effects": {
@@ -160,7 +160,7 @@
   "banned": "Foste banido do jogo.",
   "aDevMessedUp": "Ops! Ocorreu um erro. Não se preocupe, a culpa não é sua. Por favor, aceite as nossas desculpas por qualquer incómodo causado. Para resolver este problema, contacte a nossa equipa de apoio através do nosso servidor Discord: https://discord.gg/5JqrMtZ",
   "commandNotAvailableHere": "Este comando não pode ser utilizado nesta localização.",
-  "guildFoodStorageFull": "Vous avez reçu **{{quantity, number}}x {{food}}**, mais le stock de nourriture de votre guilde est plein. La nourriture a été jetée.",
+  "guildFoodStorageFull": "Recebeste **{{quantity, number}}x {{food}}**, mas o stock de comida da tua guilda está cheio. A comida foi deitada fora.",
   "fightBugged": "O combate foi cancelado devido a um problema técnico. Isto deve-se normalmente à eliminação de uma mensagem necessária para o combate ou a um problema com as permissões.",
   "resetIsNow": "{emote:announcements.trophy} As classificações desta semana estão a ser repostas! O vencedor será anunciado em breve no servidor bot! O jogo será retomado em menos de 5 minutos!",
   "seasonEndIsNow": "{emote:unitValues.glory} A época de combates está a ser reiniciada! O vencedor será anunciado em breve no servidor bot! O jogo será retomado em menos de 20 minutos!"
