@@ -1458,7 +1458,7 @@
   "fight": {
     "title": "{{pseudo}}, you're about to start a fight",
     "canceledTitle": "{{pseudo}}, search cancelled",
-    "confirmDesc": "{emote:fightCommand.crossedSwords} | **{{pseudo}}**{{confirmSubText}}\n\n{emote:fightCommand.crossedSwords} | **Fighter: {{pseudo}}** | {{glory, number}} | {{className}} {{pet}} { ~\n\n{stats}}",
+    "confirmDesc": "{emote:fightCommand.crossedSwords} | **{{pseudo}}**{{confirmSubText}}\n\n{emote:fightCommand.crossedSwords} | **Fighter: {{pseudo}}** | {{glory, number}} | {{className}} {{pet}} \n\n{{stats}}",
     "pet": "| {{petInfo}}",
     "petOnExpedition": "| ~~{{petInfo}}~~",
     "confirmSubTexts": {
