@@ -114,7 +114,7 @@
     "endStoryAcceptWithMember": "{{gainScore}} Aceptas y, cuando estás a punto de embarcar, te das cuenta de que un miembro de tu gremio ya está en el barco, así que te unes a él y ponéis rumbo a la isla.",
     "endStoryRefuse": "Declinas amablemente la oferta y continúas tu camino.",
     "notEnoughGems": "Aceptas, pero cuando llega el momento de pagar, te das cuenta de que no tienes suficiente para hacerlo. Así que te vas decepcionado.",
-    "confirmedScore": "**{emote:unitValues.score} Points gagnés :** {{score, number}}\n"
+    "confirmedScore": "**{emote:unitValues.score} Puntos ganados:** {{score, number}}\n"
   },
   "lottery": {
     "intro": "Te cruzas con un hombre que te llama. Curioso, te detienes. Te ofrece participar en un juego de azar que ha creado. Puedes elegir entre varios niveles de recompensa.\n\n{emote:collectors.lottery.easy} Pequeña recompensa\n{emote:collectors.lottery.medium} Mediana recompensa\n{emote:collectors.lottery.hard} Grande recompensa\n",
@@ -850,7 +850,7 @@
       "feistyPets": "La SPAC, o Société Protectrice des Animaux de la Contrée, hace campaña para ayudar a los **animaux fielleux** a tener una vida mejor.{{infoNumber}}Han contado ** **. Esta noticia me ha decepcionado y reconfortado a la vez,",
       "percentMalePets": "{{infoNumber}}La SPAC, o Société Protectrice des Animaux de la Contrée, ha descubierto que el ** %** de los animales de la zona son machos. Estoy encantado de oír estas noticias,",
       "percentFemalePets": "{{infoNumber}}La SPAC, o Société Protectrice des Animaux de la Contrée, ha descubierto que el ** %** de los animales de la zona son hembras. Estoy encantado de oír estas noticias,",
-      "guildLevelMean": "l'AGC, ou Agence des Guildes de la Contrée, a noté que les guildes actuelles ont atteint en moyenne le **niveau {{infoNumber, number}}**. Intrigué par cette information,",
+      "guildLevelMean": "La AGC, o Agencia de Gremios de la Tierra, observó que los gremios actuales han alcanzado un promedio de **nivel {{infoNumber, number}}**. Intrigados por esta información,",
       "nbPlayersHaventStartedTheAdventure_zero": "El SAFAC (Service Anti-Fraude des Aventuriers de la Contrée) ha descubierto que **ni un solo aventurero** se desvaneció en el aire inmediatamente después de obtener su licencia de aventurero. Estoy asombrado de todos estos valientes aventureros,",
       "nbPlayersHaventStartedTheAdventure_one": "El SAFAC (Service Anti-Fraude des Aventuriers de la Contrée) ha descubierto que **un aventurero** se ha desvanecido en el aire justo después de obtener su licencia de aventurero. Estamos indignados por las acciones de esta persona,",
       "nbPlayersHaventStartedTheAdventure_other": "{{infoNumber}} El SAFAC (Service Anti-Fraude des Aventuriers de la Contrée) ha descubierto que ** aventureros** se han desvanecido en el aire justo después de obtener su licencia de aventurero. Estoy indignado por las acciones de esta gente,",
@@ -1571,30 +1571,30 @@
     }
   },
   "gobletsGame": {
-    "intro": "vous croisez un homme qui vous paraît suspect. En effet, celui-ci s'approche de vous, et vous pousse sans ménagement vers une table, sur laquelle sont posés quatre mystérieux gobelets. Les consignes qui vous sont données sont simples : vous devez choisir un gobelet, et recevoir la récompense, quelle qu'elle soit. Pendant que vous observez les objets disposés sur la table, l'homme se glisse dans votre dos et ne semble pas vouloir vous laisser partir. Pour vous sortir de cette situation, vous vous résignez à choisir un gobelet.",
+    "intro": "te encuentras con un hombre que parece sospechoso. Se acerca y te empuja bruscamente hacia una mesa donde hay cuatro copas misteriosas. Las instrucciones son sencillas: debes elegir una copa y recibir la recompensa, sea cual sea. Mientras examinas los objetos de la mesa, el hombre se acerca sigilosamente por detrás y no parece dispuesto a soltarte. Para salir de este aprieto, te resignas a elegir una copa.",
     "goblets": {
       "metal": {
-        "description": "Celui en métal, semblant très ancien, le choix classique et équilibré",
+        "description": "El de metal, de aspecto muy antiguo, es la opción clásica y equilibrada",
         "name": "metal"
       },
       "biggest": {
-        "description": "Le plus grand des quatre, massif et rassurant, le choix prudent et moins risqué",
+        "description": "El más grande de los cuatro, masivo y tranquilizador, la opción prudente y menos arriesgada",
         "name": "el mayor"
       },
       "sparkling": {
-        "description": "Le scintillant, sculpté dans un bois bleu enchanté, le choix risqué qui peut rapporter gros",
+        "description": "El brillante, tallado en madera azul encantada, la elección arriesgada que puede dar grandes frutos",
         "name": "espumoso"
       },
       "cracked": {
-        "description": "Le fissuré, à l'air instable, le choix du parieur, tout ou rien",
-        "name": "fissuré"
+        "description": "El aire agrietado e inestable, la elección del apostador, todo o nada",
+        "name": "grieta"
       }
     },
     "results": {
       "life": "Levantas suavemente el vaso $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) y notas que no hay nada debajo. Decepcionado, y mal perdedor, golpeas los vasos restantes que vuelan por los aires. Al notar que tampoco había nada en los otros vasos, te giras hacia el estafador. Desafortunadamente, éste golpea primero. Pierdes **{{quantity, number}} {emote:unitValues.lostHealth}**.",
       "time": "Levanta suavemente la taza $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) y descubre encantado una pequeña moneda. Desgraciadamente, el hombre que está detrás de ti no parece querer dejarte marchar con tu recompensa. Pasas **{{quantity}} {emote:unitValues.time}** negociando con él antes de darte por vencido y continuar tu camino.",
-      "nothing": "Vous soulevez doucement le gobelet $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) et constatez qu'il n'y a rien dessous. L'arnaqueur esquisse un sourire narquois, mais vous remarquez du coin de l'œil que les autres gobelets étaient tout aussi vides. Comprenant que vous avez échappé à un piège retors, vous vous éloignez prestement, soulagé de vous en tirer sans le moindre mal.",
-      "item": "Vous soulevez doucement le gobelet $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) et découvrez un éclat brillant ! Un objet d'une rareté exceptionnelle était caché dessous. L'arnaqueur, stupéfait, vous laisse partir avec votre précieuse trouvaille.",
+      "nothing": "Levantas con cuidado la taza $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) y la encuentras vacía. El estafador te dedica una sonrisa pícara, pero con el rabillo del ojo, notas que las otras tazas estaban igual de vacías. Al darte cuenta de que has escapado de una astuta trampa, te alejas rápidamente, aliviado de haber salido ileso.",
+      "item": "Levantas suavemente el cubilete $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) ¡y descubres un brillo resplandeciente! Un objeto de una rareza excepcional estaba escondido debajo. El estafador, estupefacto, te deja marchar con tu valioso hallazgo.",
       "end": "Ante tu falta de reacción, el hombre tiene la mala idea de intentar robarte. Al notar su maniobra, intervienes, pero rápidamente te sorprende la fuerza del hombre que logra liberarse de un movimiento brusco antes de huir. Sales con una leve herida. Pierdes **{{quantity, number}} {emote:unitValues.lostHealth}**."
     }
   },
@@ -1616,7 +1616,7 @@
       "{{name}}Mientras avanzas por el camino, te cruzas con un carro en el que viaja un mercader llamado . Te ofrece comprar uno de sus objetos, diciendo que podría serte útil en tu aventura."
     ],
     "end": [
-      "\n\n{{item}} | `{{price, number}} {emote:unitValues.money}`\n\n**Type :** {{type}}"
+      "\n\n{{item}} | `{{price, number}} {emote:unitValues.money}`\n\n**Tipo:** {{type}}"
     ],
     "types": [
       "Arma",
@@ -2034,7 +2034,7 @@
     "love": {
       "plus": "Tu fiel compañero te mira con ojos brillantes de gratitud y afecto. Se frota contra tus piernas y ronronea satisfecho, demostrando claramente que este banquete improvisado ha reforzado los lazos de confianza y amistad entre vosotros.",
       "minus": "Tu mascota te mira con una oscura mirada de silencioso reproche, con los labios curvados en un mohín de desaprobación. Aparta ostentosamente la cabeza con un gruñido contrariado, claramente ofendido por esa comida indigna de su delicado paladar...",
-      "neutral": "Votre compagnon de route engloutit son repas avec un détachement presque philosophique, sans montrer ni enthousiasme débordant ni dégoût particulier."
+      "neutral": "Tu compañero de viaje devora su comida con un desapego casi filosófico, sin mostrar ni entusiasmo desbordante ni aversión particular."
     }
   },
   "badPet": {
