@@ -363,12 +363,20 @@ async function fightEndCallback(fight: FightController, response: CrowniclesPack
 
 	const petLoveChange = gameResults.isDraw ? undefined : await handlePostFightPetLove(fight, response);
 
+	// Determine winner keycloak id
+	const winnerKeycloakId = gameResults.isDraw
+		? undefined
+		: gameResults.initiatorResult === EloGameResult.WIN
+			? initiatorPlayer.keycloakId
+			: opponentPlayer.keycloakId;
+
 	response.push(makePacket(FightRewardPacket, {
 		points: scoreBonus,
 		money: extraMoneyBonus,
 		player1: buildPlayerGloryInfo(initiatorPlayer, player1OldGlory),
 		player2: buildPlayerGloryInfo(opponentPlayer, player2OldGlory),
 		draw: gameResults.isDraw,
+		winnerKeycloakId,
 		petLoveChange
 	}));
 }
