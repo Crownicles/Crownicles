@@ -336,6 +336,17 @@ export abstract class SmallEventConstants {
 			PLAYER_FAILED: "player_failed",
 			PET_FAILED: "pet_failed"
 		},
+		BUTTON_IDS: {
+			INVESTIGATE: "investigate",
+			SEND_PET: "pet",
+			CONTINUE: "continue"
+		},
+		LOVE_CHANGE_TYPES: {
+			PLUS: "plus",
+			MINUS: "minus",
+			NEUTRAL: "neutral"
+		},
+		TRANSLATION_SUFFIX: { SOUP: "_soup" },
 		TRAVEL_TIME_PENALTY_MINUTES: 5,
 		NO_LOVE_CHANGE: 0,
 		FEED_DELAY_MULTIPLIER: 3,
