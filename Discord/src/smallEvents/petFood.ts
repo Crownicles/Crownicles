@@ -17,6 +17,7 @@ import { sendInteractionNotForYou } from "../utils/ErrorUtils";
 import { SmallEventPetFoodPacket } from "../../../Lib/src/packets/smallEvents/SmallEventPetFoodPacket";
 import { Language } from "../../../Lib/src/Language";
 import { RandomUtils } from "../../../Lib/src/utils/RandomUtils";
+import { minutesDisplay } from "../../../Lib/src/utils/TimeUtils";
 
 /**
  * Handle the pet food small event collector interaction
@@ -127,7 +128,14 @@ export function getPetFoodDescription(packet: SmallEventPetFoodPacket, lng: Lang
 		"pet_failed"
 	]);
 
+	// Outcomes where the player investigated (loses time)
+	const PLAYER_INVESTIGATED_OUTCOMES = new Set([
+		"found_by_player",
+		"player_failed"
+	]);
+
 	const outcomeIsFound = FOUND_OUTCOMES.has(packet.outcome);
+	const playerInvestigated = PLAYER_INVESTIGATED_OUTCOMES.has(packet.outcome);
 
 	// If the food was actually found, pick a readable display name for it from translations
 	const foodName = outcomeIsFound
@@ -144,22 +152,30 @@ export function getPetFoodDescription(packet: SmallEventPetFoodPacket, lng: Lang
 		? `${packet.outcome}_soup`
 		: packet.outcome;
 
-	// Base outcome message (always present)
+	// Calculate time display if player investigated
+	const timeDisplay = playerInvestigated && packet.timeLost
+		? minutesDisplay(packet.timeLost, lng)
+		: "";
+
+	// Base outcome message (always present) - pass time for outcomes where player investigated
 	const baseMessage = i18n.t(
 		`smallEvents:petFood.outcomes.${outcomeKey}`,
 		{
 			lng,
-			foodName
+			foodName,
+			time: timeDisplay
 		}
 	);
 
+	// Build the result message
+	let result = baseMessage;
+
 	// Some outcomes also include a pet-love change message appended on a newline
-	if (!outcomeIsFound) {
-		return baseMessage;
+	if (outcomeIsFound) {
+		const loveKey = packet.loveChange > 0 ? "plus" : packet.loveChange < 0 ? "minus" : "neutral";
+		const loveMessage = i18n.t(`smallEvents:petFood.love.${loveKey}`, { lng });
+		result += `\n${loveMessage}`;
 	}
 
-	const loveKey = packet.loveChange > 0 ? "plus" : packet.loveChange < 0 ? "minus" : "neutral";
-	const loveMessage = i18n.t(`smallEvents:petFood.love.${loveKey}`, { lng });
-
-	return `${baseMessage}\n${loveMessage}`;
+	return result;
 }
