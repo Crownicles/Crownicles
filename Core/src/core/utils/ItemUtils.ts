@@ -229,7 +229,6 @@ async function manageItemRefusal(response: CrowniclesPacket[], {
 		soldMoney: money
 	}));
 	await MissionsController.update(player, response, { missionId: "findOrBuyItem" });
-	await player.reload();
 	await MissionsController.update(player, response, {
 		missionId: "havePotions",
 		count: countNbOfPotions(inventorySlots),

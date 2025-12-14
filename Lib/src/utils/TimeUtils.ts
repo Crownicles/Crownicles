@@ -273,14 +273,17 @@ export function minutesDisplayIntl(minutes: number, lng: string): string {
 		duration.minutes = mins;
 	}
 
-	// If all values are 0, show "0 minutes" instead of empty string
+	// If all values are 0, show "< 1 minute" using Intl formatting for localized output
 	if (Object.keys(duration).length === 0) {
-		duration.minutes = 0;
+		const formatter = new Intl.DurationFormat(lng, {
+			style: "long",
+			minutesDisplay: "always"
+		});
+		return `< ${formatter.format({ minutes: 1 })}`;
 	}
 
 	const formatter = new Intl.DurationFormat(lng, {
-		style: "long",
-		minutesDisplay: "always"
+		style: "long"
 	});
 	return formatter.format(duration);
 }

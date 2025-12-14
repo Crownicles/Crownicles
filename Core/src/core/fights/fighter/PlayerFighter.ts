@@ -78,11 +78,12 @@ export class PlayerFighter extends Fighter {
 	 * Function called when the fight starts
 	 * @param fightView The fight view
 	 * @param startStatus The first status of a player
+	 * @param response The response packets
 	 */
-	async startFight(fightView: FightView, startStatus: FighterStatus): Promise<void> {
+	async startFight(_fightView: FightView, startStatus: FighterStatus, response: CrowniclesPacket[]): Promise<void> {
 		this.status = startStatus;
 
-		await this.consumePotionIfNeeded([fightView.context]);
+		await this.consumePotionIfNeeded(response);
 		this.block();
 	}
 

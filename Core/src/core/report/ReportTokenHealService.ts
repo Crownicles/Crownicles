@@ -34,6 +34,7 @@ import {
 import {
 	HEAL_VALIDATION_REASONS, HealValidationReason
 } from "./ReportValidationConstants";
+import { MissionsController } from "../missions/MissionsController";
 
 /**
  * Execute the token usage after confirmation
@@ -60,6 +61,9 @@ async function acceptUseTokens(
 	// If player has occupied alteration, remove it
 	if (player.effectId === Effect.OCCUPIED.id) {
 		await TravelTime.removeEffect(player, NumberChangeReason.REPORT_TOKENS);
+
+		// Update mission for recovering from alteration
+		await MissionsController.update(player, response, { missionId: "recoverAlteration" });
 	}
 
 	// Recalculate travel data AFTER removing the effect to get the correct next small event time

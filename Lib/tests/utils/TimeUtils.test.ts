@@ -102,14 +102,14 @@ describe("minutesDisplayIntl", () => {
 	});
 
 	it("should handle small values using Intl.DurationFormat", () => {
-		expect(minutesDisplayIntl(60, LANGUAGE.FRENCH)).toBe(`1${nbsp}heure et 0 minute`);
+		expect(minutesDisplayIntl(60, LANGUAGE.FRENCH)).toBe(`1${nbsp}heure`);
 		expect(minutesDisplayIntl(30, LANGUAGE.FRENCH)).toBe("30 minutes");
-		expect(minutesDisplayIntl(0, LANGUAGE.FRENCH)).toBe("0 minute");
+		expect(minutesDisplayIntl(0, LANGUAGE.FRENCH)).toBe("< 1 minute");
 	});
 
 	it("should handle two-part combinations using Intl.DurationFormat", () => {
-		// days + hours (no minutes but minutesDisplay: always shows 0)
-		expect(minutesDisplayIntl(1500, LANGUAGE.FRENCH)).toBe(`1${nbsp}jour, 1${nbsp}heure et 0 minute`); // 24*60 + 60 = 1500
+		// days + hours (no minutes when minutes is 0)
+		expect(minutesDisplayIntl(1500, LANGUAGE.FRENCH)).toBe(`1${nbsp}jour et 1${nbsp}heure`); // 24*60 + 60 = 1500
 		// hours + minutes (no days)
 		expect(minutesDisplayIntl(125, LANGUAGE.FRENCH)).toBe(`2${nbsp}heures et 5 minutes`);
 		// days + minutes (no hours)
@@ -121,7 +121,7 @@ describe("minutesDisplayIntl", () => {
 		expect(minutesDisplayIntl(1, LANGUAGE.FRENCH)).toBe("1 minute");
 		// Multiple units: first units use nbsp, last (minutes) uses regular space
 		expect(minutesDisplayIntl(61, LANGUAGE.FRENCH)).toBe(`1${nbsp}heure et 1 minute`);
-		expect(minutesDisplayIntl(1440, LANGUAGE.FRENCH)).toBe(`1${nbsp}jour et 0 minute`); // exactly 24 hours
+		expect(minutesDisplayIntl(1440, LANGUAGE.FRENCH)).toBe(`1${nbsp}jour`); // exactly 24 hours (0 minutes not shown)
 	});
 
 	it("should work with different locales", () => {

@@ -138,7 +138,7 @@ export function buildInProgressDescription(params: InProgressDescriptionParams):
 
 	const foodInfo = foodConsumed && foodConsumed > 0
 		? i18n.t("commands:petExpedition.inProgressFoodInfo", {
-			lng, amount: foodConsumed
+			lng, amount: foodConsumed, count: foodConsumed
 		})
 		: "";
 
@@ -178,7 +178,8 @@ export function getFoodConsumedDescription(packet: CommandPetExpeditionChoicePac
 	if (packet.foodConsumed && packet.foodConsumed > 0) {
 		return i18n.t("commands:petExpedition.foodConsumed", {
 			lng,
-			amount: packet.foodConsumed
+			amount: packet.foodConsumed,
+			count: packet.foodConsumed
 		});
 	}
 	return "";

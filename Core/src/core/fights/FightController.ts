@@ -87,7 +87,7 @@ export class FightController {
 	public async startFight(response: CrowniclesPacket[]): Promise<void> {
 		// Make the fighters ready
 		for (let i = 0; i < this.fighters.length; i++) {
-			await this.fighters[i].startFight(this._fightView, i === 0 ? FighterStatus.ATTACKER : FighterStatus.DEFENDER);
+			await this.fighters[i].startFight(this._fightView, i === 0 ? FighterStatus.ATTACKER : FighterStatus.DEFENDER, response);
 		}
 
 		if (!this.silentMode) {
