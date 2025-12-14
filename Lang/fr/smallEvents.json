@@ -1571,25 +1571,30 @@
     }
   },
   "gobletsGame": {
-    "intro": "vous croisez un homme qui vous paraît suspect. En effet, celui-ci s'approche de vous, et vous pousse sans ménagement vers une table, sur laquelle sont posés trois mystérieux gobelets. Les consignes qui vous sont données sont simples : vous devez tirer un gobelet au hasard, et recevoir la récompense, quelle qu'elle soit. Pendant que vous observez les objets disposés sur la table, l'homme se glisse dans votre dos et ne semble pas vouloir vous laisser partir. Pour vous sortir de cette situation, vous vous résignez à choisir un gobelet.",
+    "intro": "vous croisez un homme qui vous paraît suspect. En effet, celui-ci s'approche de vous, et vous pousse sans ménagement vers une table, sur laquelle sont posés quatre mystérieux gobelets. Les consignes qui vous sont données sont simples : vous devez choisir un gobelet, et recevoir la récompense, quelle qu'elle soit. Pendant que vous observez les objets disposés sur la table, l'homme se glisse dans votre dos et ne semble pas vouloir vous laisser partir. Pour vous sortir de cette situation, vous vous résignez à choisir un gobelet.",
     "goblets": {
       "metal": {
-        "description": "Celui en métal, semblant très ancien, gravé d'une tête de dragon",
+        "description": "Celui en métal, semblant très ancien, le choix classique et équilibré",
         "name": "en métal"
       },
       "biggest": {
-        "description": "Le plus grand des trois, d'une matière que vous parvenez pas à identifier",
+        "description": "Le plus grand des quatre, massif et rassurant, le choix prudent et moins risqué",
         "name": "le plus grand"
       },
       "sparkling": {
-        "description": "Le dernier, sculpté dans un bois bleu et scintillant à tel point qu'il paraît enchanté",
+        "description": "Le scintillant, sculpté dans un bois bleu enchanté, le choix risqué qui peut rapporter gros",
         "name": "scintillant"
+      },
+      "cracked": {
+        "description": "Le fissuré, à l'air instable, le choix du parieur, tout ou rien",
+        "name": "fissuré"
       }
     },
     "results": {
       "life": "Vous soulevez doucement le gobelet $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) et remarquez qu'il n'y a rien dessous. Déçu, et mauvais perdant, vous frappez les gobelets restants qui volent dans les airs. Remarquant qu'il n'y avait rien non plus dans les autres gobelets, vous vous retournez vers l'arnaqueur. Malheureusement, celui-ci frappe le premier. Vous perdez **{{quantity, number}} {emote:unitValues.lostHealth}**.",
       "time": "Vous soulevez doucement le gobelet $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) et découvrez avec plaisir une petite pièce ! Malheureusement, l'homme derrière vous ne semble pas vouloir vous laisser partir avec votre récompense. Vous perdez **{{quantity}} {emote:unitValues.time}** à négocier avec lui avant d'abandonner et de reprendre votre route.",
-      "nothing": "Vous soulevez doucement le gobelet $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) et remarquez qu'il n'y a rien dessous. Déçu, vous repartez tristement en vous disant que vous aurez peut-être plus de chance une autre fois.",
+      "nothing": "Vous soulevez doucement le gobelet $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) et constatez qu'il n'y a rien dessous. L'arnaqueur esquisse un sourire narquois, mais vous remarquez du coin de l'œil que les autres gobelets étaient tout aussi vides. Comprenant que vous avez échappé à un piège retors, vous vous éloignez prestement, soulagé de vous en tirer sans le moindre mal.",
+      "item": "Vous soulevez doucement le gobelet $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) et découvrez un éclat brillant ! Un objet d'une rareté exceptionnelle était caché dessous. L'arnaqueur, stupéfait, vous laisse partir avec votre précieuse trouvaille.",
       "end": "Devant votre manque de réaction, l'homme a la mauvaise idée d'essayer de vous voler. Remarquant sa manoeuvre, vous intervenez, mais vous êtes rapidement surpris de la force de l'homme qui parvient à se dégager d'un brusque mouvement, avant de s'enfuir. Vous vous en sortez avec une légère blessure. Vous perdez **{{quantity, number}} {emote:unitValues.lostHealth}**."
     }
   },
@@ -2029,7 +2034,7 @@
     "love": {
       "plus": "Votre fidèle compagnon vous contemple avec des yeux brillants de gratitude et d'affection. Il se frotte contre vos jambes en émettant des ronronnements satisfaits, manifestant clairement que ce festin improvisé a renforcé les liens de confiance et d'amitié qui vous unissent !",
       "minus": "Votre familier vous fixe d'un regard noir chargé de reproches silencieux, les babines retroussées en une moue désapprobatrice. Il détourne ostensiblement la tête en poussant un grognement mécontent, visiblement offensé par cette pitance indigne de son palais délicat...",
-      "neutral": "Votre compagnon de route engloutit son repas avec un détachement presque philosophique, sans montrer ni enthousiasme débordant ni dégoût particulier. Il semble considérer cette trouvaille comme une simple sustentation nécessaire, rien de plus, rien de moins."
+      "neutral": "Votre compagnon de route engloutit son repas avec un détachement presque philosophique, sans montrer ni enthousiasme débordant ni dégoût particulier."
     }
   },
   "badPet": {

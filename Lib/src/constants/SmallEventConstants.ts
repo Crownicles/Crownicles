@@ -117,7 +117,56 @@ export abstract class SmallEventConstants {
 			LEVEL_MULTIPLIER: 1 / 6,
 			END_INTENSIFIER: 3 / 2,
 			END_ADJUSTER: 5 / 2
-		}
+		},
+
+		/**
+		 * Strategy configurations for the goblets game
+		 * Each strategy has different probabilities and multipliers
+		 */
+		STRATEGIES: {
+			/**
+			 * Classic: Same behavior as before
+			 * 33% life, 33% time, 33% nothing
+			 */
+			CLASSIC: {
+				NOTHING_CHANCE: 1 / 3,
+				ITEM_CHANCE: 0,
+				MALUS_MULTIPLIER: 1
+			},
+
+			/**
+			 * Risky: 2% chance for epic/legendary/mythic item, but only 10% nothing
+			 * 10% nothing, 2% item, rest is split between life and time
+			 */
+			RISKY: {
+				NOTHING_CHANCE: 0.10,
+				ITEM_CHANCE: 0.02,
+				MALUS_MULTIPLIER: 1
+			},
+
+			/**
+			 * Safe: Always a malus, but 33% weaker
+			 * 0% nothing, 50% life, 50% time (with 0.67 multiplier)
+			 */
+			SAFE: {
+				NOTHING_CHANCE: 0,
+				ITEM_CHANCE: 0,
+				MALUS_MULTIPLIER: 2 / 3
+			},
+
+			/**
+			 * Gambler: 90% nothing, but malus are 3.3x stronger
+			 * 80% nothing, 10% life, 10% time (with 3.3 multiplier)
+			 */
+			GAMBLER: {
+				NOTHING_CHANCE: 0.80,
+				ITEM_CHANCE: 0,
+				MALUS_MULTIPLIER: 3.3
+			}
+		},
+
+		// Minimum level to allow EPIC as a minimum rarity in the goblets game
+		MIN_LEVEL_FOR_EPIC_ITEM: 100
 	};
 
 	static readonly WITCH = {

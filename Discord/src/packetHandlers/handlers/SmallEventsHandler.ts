@@ -860,6 +860,18 @@ export default class SmallEventsHandler {
 			return;
 		}
 		const lng = interaction.userLanguage;
+
+		/*
+		 * For ITEM result, the item display is handled by the ItemFound system
+		 * We just need to display a different message
+		 */
+		const resultKey = packet.malus === SmallEventGobletsGameMalus.ITEM
+			? "smallEvents:gobletsGame.results.item"
+			: `smallEvents:gobletsGame.results.${packet.malus}`;
+
+		const goblet = packet.goblet ?? RandomUtils.crowniclesRandom.pick(Object.keys(CrowniclesIcons.goblets));
+		const gobletEmote = CrowniclesIcons.goblets[goblet] ?? "";
+
 		await interaction.followUp({
 			embeds: [
 				new CrowniclesEmbed()
@@ -871,11 +883,11 @@ export default class SmallEventsHandler {
 						interaction.user
 					)
 					.setDescription(
-						i18n.t(`{emote:goblets.{{goblet}}} $t(smallEvents:gobletsGame.results.${packet.malus})`, {
+						`${gobletEmote} ${i18n.t(resultKey, {
 							lng,
 							quantity: packet.malus === SmallEventGobletsGameMalus.TIME ? minutesDisplay(packet.value, lng) : packet.value,
-							goblet: packet.goblet ?? RandomUtils.crowniclesRandom.pick(Object.keys(CrowniclesIcons.goblets))
-						})
+							goblet
+						})}`
 					)
 			]
 		});

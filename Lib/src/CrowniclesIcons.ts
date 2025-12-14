@@ -2188,7 +2188,8 @@ export const CrowniclesIcons: {
 	goblets: {
 		metal: "🐲",
 		biggest: "🪣",
-		sparkling: "✨"
+		sparkling: "✨",
+		cracked: "💀"
 	},
 	sex: {
 		male: "♂️",
