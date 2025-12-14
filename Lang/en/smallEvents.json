@@ -1571,30 +1571,30 @@
     }
   },
   "gobletsGame": {
-    "intro": "vous croisez un homme qui vous paraît suspect. En effet, celui-ci s'approche de vous, et vous pousse sans ménagement vers une table, sur laquelle sont posés quatre mystérieux gobelets. Les consignes qui vous sont données sont simples : vous devez choisir un gobelet, et recevoir la récompense, quelle qu'elle soit. Pendant que vous observez les objets disposés sur la table, l'homme se glisse dans votre dos et ne semble pas vouloir vous laisser partir. Pour vous sortir de cette situation, vous vous résignez à choisir un gobelet.",
+    "intro": "you meet a man who seems suspicious to you. Indeed, it approaches you and pushes you to a table, where four mystery goblets are laid. The instructions given to you are simple: you must choose a cup, and receive the prize of any kind. While you observe the objects on the table, the man slips into your back and doesn't seem to want to let you go. To get out of this situation, you can choose a cup.",
     "goblets": {
       "metal": {
-        "description": "Celui en métal, semblant très ancien, le choix classique et équilibré",
+        "description": "That in metal, seeming ancient tree, classic and balanced choice",
         "name": "metallic"
       },
       "biggest": {
-        "description": "Le plus grand des quatre, massif et rassurant, le choix prudent et moins risqué",
+        "description": "Largest of four, massive and reassuring, prudent and less risky choice",
         "name": "largest"
       },
       "sparkling": {
-        "description": "Le scintillant, sculpté dans un bois bleu enchanté, le choix risqué qui peut rapporter gros",
+        "description": "The shimmering, sculpt in enchanted blue wood, the choice risks that can bring large amounts back",
         "name": "glittering"
       },
       "cracked": {
-        "description": "Le fissuré, à l'air instable, le choix du parieur, tout ou rien",
-        "name": "fissuré"
+        "description": "The crack, in unstable air, the choice of the better, all or nothing",
+        "name": "crack"
       }
     },
     "results": {
       "life": "You gently lift the $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) cup and notice that there's nothing underneath. Disappointed, and a sore loser, you strike the remaining cups, which fly into the air. Noticing that there was nothing in the other cups either, you turn back to the hustler. Unfortunately, he strikes first. You lose **{{quantity, number}} {emote:unitValues.lostHealth}**.",
       "time": "You gently lift the cup $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) and are delighted to discover a small coin! Unfortunately, the man behind you doesn't seem to want to let you leave with your reward. You waste **{{quantity}} {emote:unitValues.time}** negotiating with him before giving up and continuing on your way.",
-      "nothing": "Vous soulevez doucement le gobelet $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) et constatez qu'il n'y a rien dessous. L'arnaqueur esquisse un sourire narquois, mais vous remarquez du coin de l'œil que les autres gobelets étaient tout aussi vides. Comprenant que vous avez échappé à un piège retors, vous vous éloignez prestement, soulagé de vous en tirer sans le moindre mal.",
-      "item": "Vous soulevez doucement le gobelet $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) et découvrez un éclat brillant ! Un objet d'une rareté exceptionnelle était caché dessous. L'arnaqueur, stupéfait, vous laisse partir avec votre précieuse trouvaille.",
+      "nothing": "You gently raise the cup $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) and see that there is nothing below. The scammer sketches a smile but you notice from the corner of the eye that the other cups were just as empty. Believing that you escaped from a twisting piece, you quickly walked away, relieved to get away from it without any harm.",
+      "item": "You gently raise the cup $t(smallEvents:gobletsGame.goblets.{{goblet}}. ame) and discover a shiny shine! An item of exceptional rarity was hidden below. The scammer, stupeté, lets you leave with your precious find.",
       "end": "Seeing your lack of reaction, the man has the bad idea of trying to rob you. Noticing his maneuver, you intervene, but you're quickly surprised by the man's strength, as he manages to get out of the way with a sudden movement, before fleeing. You escape with a slight wound. You lose **{{quantity, number}} {emote:unitValues.lostHealth}**."
     }
   },
@@ -2034,7 +2034,7 @@
     "love": {
       "plus": "Your faithful companion gazes at you with eyes shining with gratitude and affection. He rubs against your legs with satisfied purrs, clearly demonstrating that this impromptu feast has strengthened the bonds of trust and friendship between you!",
       "minus": "Your pet stares at you with a dark, silently reproachful gaze, lips curled into a disapproving pout. He ostentatiously turns his head away with a disgruntled growl, clearly offended by this pittance unworthy of his delicate palate...",
-      "neutral": "Votre compagnon de route engloutit son repas avec un détachement presque philosophique, sans montrer ni enthousiasme débordant ni dégoût particulier."
+      "neutral": "Your road companion swallows his meal with an almost philosophical detachment, without showing any overlapping enthusiasm or special taste."
     }
   },
   "badPet": {
