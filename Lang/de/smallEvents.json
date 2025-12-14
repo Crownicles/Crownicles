@@ -1571,23 +1571,23 @@
     }
   },
   "gobletsGame": {
-    "intro": "vous croisez un homme qui vous paraît suspect. En effet, celui-ci s'approche de vous, et vous pousse sans ménagement vers une table, sur laquelle sont posés quatre mystérieux gobelets. Les consignes qui vous sont données sont simples : vous devez choisir un gobelet, et recevoir la récompense, quelle qu'elle soit. Pendant que vous observez les objets disposés sur la table, l'homme se glisse dans votre dos et ne semble pas vouloir vous laisser partir. Pour vous sortir de cette situation, vous vous résignez à choisir un gobelet.",
+    "intro": "Du begegnest einem Mann, der dir verdächtig vorkommt. Er kommt auf dich zu und drängt dich unsanft zu einem Tisch, auf dem vier geheimnisvolle Becher stehen. Die Anweisungen sind einfach: Du musst einen Becher wählen und die Belohnung entgegennehmen, was auch immer sie sein mag. Während du die Gegenstände auf dem Tisch betrachtest, schleicht sich der Mann von hinten an dich heran und scheint nicht gewillt, dich gehen zu lassen. Um dich aus dieser misslichen Lage zu befreien, beschließt du, einen Becher zu wählen.",
     "goblets": {
       "metal": {
-        "description": "Celui en métal, semblant très ancien, le choix classique et équilibré",
+        "description": "Die Variante aus Metall, die sehr alt aussieht, ist die klassische und ausgewogene Wahl",
         "name": "aus Metall"
       },
       "biggest": {
-        "description": "Le plus grand des quatre, massif et rassurant, le choix prudent et moins risqué",
+        "description": "Die größte der vier, massiv und beruhigend, die umsichtige und risikoärmere Wahl",
         "name": "der größte"
       },
       "sparkling": {
-        "description": "Le scintillant, sculpté dans un bois bleu enchanté, le choix risqué qui peut rapporter gros",
+        "description": "Das glitzernde Exemplar, aus verzaubertem blauem Holz geschnitzt – die riskante Wahl, die sich lohnen kann",
         "name": "glitzernd"
       },
       "cracked": {
-        "description": "Le fissuré, à l'air instable, le choix du parieur, tout ou rien",
-        "name": "fissuré"
+        "description": "Die brüchige, unbeständige Luft, die Wahl des Wettenden, alles oder nichts",
+        "name": "Riss"
       }
     },
     "results": {
