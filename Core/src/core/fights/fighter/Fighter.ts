@@ -95,8 +95,11 @@ export abstract class Fighter {
 
 	/**
 	 * Function called when the fight starts
+	 * @param fightView
+	 * @param startStatus
+	 * @param response
 	 */
-	abstract startFight(fightView: FightView, startStatus: FighterStatus): Promise<void>;
+	abstract startFight(fightView: FightView, startStatus: FighterStatus, response: CrowniclesPacket[]): Promise<void>;
 
 	/**
 	 * Function called when the fight ends

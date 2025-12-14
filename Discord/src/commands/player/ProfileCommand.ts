@@ -287,7 +287,7 @@ export async function handleCommandProfilePacketRes(packet: CommandProfilePacket
 					pseudo,
 					level: packet.playerData?.level
 				}))
-				.addFields(generateFields(packet, lng))
+				.addFields([...generateFields(packet, lng)])
 		],
 		withResponse: true
 	});

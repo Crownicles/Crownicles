@@ -35,7 +35,7 @@ export async function fightPetCollector(context: PacketContext, packet: Reaction
 
 	const formatBaseOptions = {
 		lng,
-		context: data.isFemale ? StringConstants.SEX.MALE.long : StringConstants.SEX.FEMALE.long
+		context: data.isFemale ? StringConstants.SEX.FEMALE.long : StringConstants.SEX.MALE.long
 	};
 
 	const reactions = getFightPetReactions(

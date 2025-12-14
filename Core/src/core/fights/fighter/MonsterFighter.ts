@@ -55,7 +55,7 @@ export class MonsterFighter extends Fighter {
 		return Promise.resolve();
 	}
 
-	startFight(): Promise<void> {
+	startFight(_fightView: FightView, _startStatus: FighterStatus, _response: CrowniclesPacket[]): Promise<void> {
 		return Promise.resolve();
 	}
 

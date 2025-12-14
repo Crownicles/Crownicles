@@ -27,6 +27,8 @@ export class FightRewardPacket extends CrowniclesPacket {
 
 	draw!: boolean;
 
+	winnerKeycloakId?: string;
+
 	petLoveChange?: {
 		keycloakId: string;
 		loveChange: number;

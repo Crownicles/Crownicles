@@ -198,12 +198,18 @@ export async function handleCommandFightIntroduceFightersRes(context: PacketCont
 		const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
 		const lng = interaction.userLanguage;
 		const getUser = packet.fightOpponentKeycloakId ? await KeycloakUtils.getUserByKeycloakId(keycloakConfig, packet.fightOpponentKeycloakId) : undefined;
-		if (getUser?.isError) {
-			return;
+
+		let opponentDisplayName: string;
+		if (getUser && !getUser.isError) {
+			opponentDisplayName = escapeUsername(getUser.payload.user.attributes.gameUsername[0]);
 		}
-		const opponentDisplayName = getUser
-			? escapeUsername(getUser.payload.user.attributes.gameUsername[0])
-			: i18n.t(`models:monsters.${packet.fightOpponentMonsterId}.name`, { lng });
+		else if (packet.fightOpponentMonsterId) {
+			opponentDisplayName = i18n.t(`models:monsters.${packet.fightOpponentMonsterId}.name`, { lng });
+		}
+		else {
+			// Fallback for test players or unknown opponents
+			opponentDisplayName = packet.fightOpponentKeycloakId ?? "???";
+		}
 		const embed = new CrowniclesEmbed().formatAuthor(i18n.t("commands:fight.fightIntroTitle", {
 			lng,
 			fightInitiator: escapeUsername(interaction.user.displayName),
@@ -213,7 +219,9 @@ export async function handleCommandFightIntroduceFightersRes(context: PacketCont
 		addFightProfileFor(embed, lng, escapeUsername(interaction.user.displayName), packet.fightInitiatorActions, packet.fightOpponentActions.length, packet.fightInitiatorPet);
 		addFightProfileFor(embed, lng, escapeUsername(opponentDisplayName), packet.fightOpponentActions, packet.fightInitiatorActions.length, packet.fightOpponentPet);
 
-		await buttonInteraction?.editReply({ embeds: [embed] });
+		if (buttonInteraction) {
+			await buttonInteraction.editReply({ embeds: [embed] });
+		}
 		await CrowniclesCachedMessages.getOrCreate(interaction.id, CrowniclesHistoryCachedMessage)
 			.post({ content: DiscordConstants.EMPTY_MESSAGE });
 		await CrowniclesCachedMessages.getOrCreate(interaction.id, CrowniclesFightStatusCachedMessage)
@@ -398,33 +406,30 @@ export async function handleEndOfFight(context: PacketContext, packet: CommandFi
  * @param player1Username
  */
 function generateFightRewardField(embed: CrowniclesEmbed, packet: FightRewardPacket, lng: Language, player1Username: string): void {
+	// Ne pas afficher le field si aucune récompense n'a été gagnée
+	if (packet.money <= 0 && packet.points <= 0) {
+		return;
+	}
+
 	embed.addFields({
 		name: i18n.t("commands:fight.fightReward.scoreAndMoneyField", { lng }),
-		value: ((): string => {
-			if (packet.money <= 0 && packet.points <= 0) {
-				return i18n.t("commands:fight.fightReward.noReward", {
+		value: [
+			packet.money > 0
+				? i18n.t("commands:fight.fightReward.money", {
 					lng,
-					player: player1Username
-				});
-			}
-			return [
-				packet.money > 0
-					? i18n.t("commands:fight.fightReward.money", {
-						lng,
-						player: player1Username,
-						count: packet.money
-					})
-					: "",
-				packet.points > 0
-					? i18n.t("commands:fight.fightReward.points", {
-						lng,
-						player: player1Username,
-						count: packet.points
-					})
-					: ""
-			].filter(Boolean)
-				.join("\n");
-		})(),
+					player: player1Username,
+					count: packet.money
+				})
+				: "",
+			packet.points > 0
+				? i18n.t("commands:fight.fightReward.points", {
+					lng,
+					player: player1Username,
+					count: packet.points
+				})
+				: ""
+		].filter(Boolean)
+			.join("\n"),
 		inline: false
 	});
 }
@@ -538,43 +543,39 @@ function displayLeagueChangesIfNeeded(embed: CrowniclesEmbed, packet: FightRewar
  * @param player2Username
  */
 function generateFightRecapDescription(embed: CrowniclesEmbed, packet: FightRewardPacket, lng: Language, player1Username: string, player2Username: string): void {
-	const player1Won = packet.player1.newGlory > packet.player1.oldGlory;
-	const player2Won = packet.player2.newGlory > packet.player2.oldGlory;
 	const gloryDifference = Math.abs(packet.player1.oldGlory - packet.player2.oldGlory);
+
 	if (packet.draw) {
 		embed.setDescription(StringUtils.getRandomTranslation("commands:fight.fightReward.draw", lng, {
 			player1: player1Username,
 			player2: player2Username
 		}));
+		return;
 	}
-	else if (gloryDifference < FightConstants.ELO.ELO_DIFFERENCE_FOR_SAME_ELO) {
+
+	// Use the winnerKeycloakId from the packet to determine the winner
+	const player1Won = packet.winnerKeycloakId === packet.player1.keycloakId;
+	const winnerUsername = player1Won ? player1Username : player2Username;
+	const loserUsername = player1Won ? player2Username : player1Username;
+	const winnerOldGlory = player1Won ? packet.player1.oldGlory : packet.player2.oldGlory;
+	const loserOldGlory = player1Won ? packet.player2.oldGlory : packet.player1.oldGlory;
+
+	if (gloryDifference < FightConstants.ELO.ELO_DIFFERENCE_FOR_SAME_ELO) {
 		embed.setDescription(StringUtils.getRandomTranslation("commands:fight.fightReward.sameElo", lng, {
 			player1: player1Username,
 			player2: player2Username
 		}));
 	}
-	else if (player1Won && packet.player1.oldGlory > packet.player2.oldGlory) {
+	else if (winnerOldGlory > loserOldGlory) {
 		embed.setDescription(StringUtils.getRandomTranslation("commands:fight.fightReward.higherEloWins", lng, {
-			winner: player1Username,
-			loser: player2Username
-		}));
-	}
-	else if (player2Won && packet.player2.oldGlory > packet.player1.oldGlory) {
-		embed.setDescription(StringUtils.getRandomTranslation("commands:fight.fightReward.higherEloWins", lng, {
-			winner: player2Username,
-			loser: player1Username
-		}));
-	}
-	else if (player1Won && packet.player1.oldGlory < packet.player2.oldGlory) {
-		embed.setDescription(StringUtils.getRandomTranslation("commands:fight.fightReward.lowestEloWins", lng, {
-			winner: player1Username,
-			loser: player2Username
+			winner: winnerUsername,
+			loser: loserUsername
 		}));
 	}
 	else {
 		embed.setDescription(StringUtils.getRandomTranslation("commands:fight.fightReward.lowestEloWins", lng, {
-			winner: player2Username,
-			loser: player1Username
+			winner: winnerUsername,
+			loser: loserUsername
 		}));
 	}
 }
