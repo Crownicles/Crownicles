@@ -1571,25 +1571,30 @@
     }
   },
   "gobletsGame": {
-    "intro": "te cruzas con un hombre que parece sospechoso. Se te acerca y te empuja hacia una mesa en la que hay tres misteriosas copas. Las instrucciones que te da son sencillas: debes sacar una copa al azar y recibir la recompensa, sea cual sea. Mientras observas los objetos de la mesa, el hombre se acerca sigilosamente por detrás y no parece querer dejarte marchar. Para salir de esta situación, te resignas a elegir una taza.",
+    "intro": "vous croisez un homme qui vous paraît suspect. En effet, celui-ci s'approche de vous, et vous pousse sans ménagement vers une table, sur laquelle sont posés quatre mystérieux gobelets. Les consignes qui vous sont données sont simples : vous devez choisir un gobelet, et recevoir la récompense, quelle qu'elle soit. Pendant que vous observez les objets disposés sur la table, l'homme se glisse dans votre dos et ne semble pas vouloir vous laisser partir. Pour vous sortir de cette situation, vous vous résignez à choisir un gobelet.",
     "goblets": {
       "metal": {
-        "description": "La de metal, que parece muy antigua, lleva grabada una cabeza de dragón.",
+        "description": "Celui en métal, semblant très ancien, le choix classique et équilibré",
         "name": "metal"
       },
       "biggest": {
-        "description": "El mayor de los tres, hecho de un material que no puedes identificar",
+        "description": "Le plus grand des quatre, massif et rassurant, le choix prudent et moins risqué",
         "name": "el mayor"
       },
       "sparkling": {
-        "description": "El último, tallado en madera azul y reluciente hasta tal punto que parece encantado",
+        "description": "Le scintillant, sculpté dans un bois bleu enchanté, le choix risqué qui peut rapporter gros",
         "name": "espumoso"
+      },
+      "cracked": {
+        "description": "Le fissuré, à l'air instable, le choix du parieur, tout ou rien",
+        "name": "fissuré"
       }
     },
     "results": {
       "life": "Levantas suavemente el vaso $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) y notas que no hay nada debajo. Decepcionado, y mal perdedor, golpeas los vasos restantes que vuelan por los aires. Al notar que tampoco había nada en los otros vasos, te giras hacia el estafador. Desafortunadamente, éste golpea primero. Pierdes **{{quantity, number}} {emote:unitValues.lostHealth}**.",
       "time": "Levanta suavemente la taza $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) y descubre encantado una pequeña moneda. Desgraciadamente, el hombre que está detrás de ti no parece querer dejarte marchar con tu recompensa. Pasas **{{quantity}} {emote:unitValues.time}** negociando con él antes de darte por vencido y continuar tu camino.",
-      "nothing": "$t(smallEvents:gobletsGame.goblets.{{goblet}}.name) Levanta suavemente la taza y comprueba que no hay nada debajo. Decepcionado, te marchas con tristeza, pensando que tal vez tengas más suerte en otra ocasión.",
+      "nothing": "Vous soulevez doucement le gobelet $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) et constatez qu'il n'y a rien dessous. L'arnaqueur esquisse un sourire narquois, mais vous remarquez du coin de l'œil que les autres gobelets étaient tout aussi vides. Comprenant que vous avez échappé à un piège retors, vous vous éloignez prestement, soulagé de vous en tirer sans le moindre mal.",
+      "item": "Vous soulevez doucement le gobelet $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) et découvrez un éclat brillant ! Un objet d'une rareté exceptionnelle était caché dessous. L'arnaqueur, stupéfait, vous laisse partir avec votre précieuse trouvaille.",
       "end": "Ante tu falta de reacción, el hombre tiene la mala idea de intentar robarte. Al notar su maniobra, intervienes, pero rápidamente te sorprende la fuerza del hombre que logra liberarse de un movimiento brusco antes de huir. Sales con una leve herida. Pierdes **{{quantity, number}} {emote:unitValues.lostHealth}**."
     }
   },
@@ -2029,7 +2034,7 @@
     "love": {
       "plus": "Tu fiel compañero te mira con ojos brillantes de gratitud y afecto. Se frota contra tus piernas y ronronea satisfecho, demostrando claramente que este banquete improvisado ha reforzado los lazos de confianza y amistad entre vosotros.",
       "minus": "Tu mascota te mira con una oscura mirada de silencioso reproche, con los labios curvados en un mohín de desaprobación. Aparta ostentosamente la cabeza con un gruñido contrariado, claramente ofendido por esa comida indigna de su delicado paladar...",
-      "neutral": "Su compañero de viaje engulle la comida con un distanciamiento casi filosófico, sin mostrar ni un entusiasmo desbordante ni un disgusto especial. Parece considerar este descubrimiento como un sustento necesario, ni más ni menos."
+      "neutral": "Votre compagnon de route engloutit son repas avec un détachement presque philosophique, sans montrer ni enthousiasme débordant ni dégoût particulier."
     }
   },
   "badPet": {
