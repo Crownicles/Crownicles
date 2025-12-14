@@ -1571,25 +1571,30 @@
     }
   },
   "gobletsGame": {
-    "intro": "vi imbattete in un uomo dall'aria sospetta. Si avvicina a voi e vi spinge verso un tavolo con tre misteriose tazze. Le istruzioni che vi vengono date sono semplici: dovete pescare una tazza a caso e ricevere la ricompensa, qualunque essa sia. Mentre guardate gli oggetti sul tavolo, l'uomo si insinua dietro di voi e sembra non volervi lasciare andare. Per uscire da questa situazione, vi rassegnate a scegliere una tazza.",
+    "intro": "vous croisez un homme qui vous paraît suspect. En effet, celui-ci s'approche de vous, et vous pousse sans ménagement vers une table, sur laquelle sont posés quatre mystérieux gobelets. Les consignes qui vous sont données sont simples : vous devez choisir un gobelet, et recevoir la récompense, quelle qu'elle soit. Pendant que vous observez les objets disposés sur la table, l'homme se glisse dans votre dos et ne semble pas vouloir vous laisser partir. Pour vous sortir de cette situation, vous vous résignez à choisir un gobelet.",
     "goblets": {
       "metal": {
-        "description": "Quello in metallo, che sembra molto antico, è inciso con una testa di drago.",
+        "description": "Celui en métal, semblant très ancien, le choix classique et équilibré",
         "name": "metallo"
       },
       "biggest": {
-        "description": "Il più grande dei tre, fatto di un materiale che non è possibile identificare.",
+        "description": "Le plus grand des quatre, massif et rassurant, le choix prudent et moins risqué",
         "name": "il più grande"
       },
       "sparkling": {
-        "description": "L'ultimo, intagliato in legno blu e scintillante a tal punto da sembrare incantato, è il più grande dei due.",
+        "description": "Le scintillant, sculpté dans un bois bleu enchanté, le choix risqué qui peut rapporter gros",
         "name": "scintillante"
+      },
+      "cracked": {
+        "description": "Le fissuré, à l'air instable, le choix du parieur, tout ou rien",
+        "name": "fissuré"
       }
     },
     "results": {
       "life": "Si solleva delicatamente la tazza $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) e si nota che sotto non c'è nulla. Delusi, e arrabbiati per la sconfitta, date un calcio alle altre tazze, che volano in aria. Notando che anche nelle altre tazze non c'era nulla, vi voltate verso il truffatore. Sfortunatamente, è lui a colpire per primo. Si perde **{{quantity, number}} {emote:unitValues.lostHealth}**.",
       "time": "Sollevate delicatamente la tazza $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) e siete felici di scoprire una piccola moneta! Purtroppo, l'uomo dietro di voi non sembra voler lasciarvi andare con la vostra ricompensa. Passate **{{quantity}} {emote:unitValues.time}** a negoziare con lui prima di arrendervi e continuare il vostro cammino.",
-      "nothing": "$t(smallEvents:gobletsGame.goblets.{{goblet}}.name) Sollevate delicatamente la tazza e notate che sotto non c'è nulla. Delusi, ve ne andate mestamente, pensando che forse sarete più fortunati un'altra volta.",
+      "nothing": "Vous soulevez doucement le gobelet $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) et constatez qu'il n'y a rien dessous. L'arnaqueur esquisse un sourire narquois, mais vous remarquez du coin de l'œil que les autres gobelets étaient tout aussi vides. Comprenant que vous avez échappé à un piège retors, vous vous éloignez prestement, soulagé de vous en tirer sans le moindre mal.",
+      "item": "Vous soulevez doucement le gobelet $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) et découvrez un éclat brillant ! Un objet d'une rareté exceptionnelle était caché dessous. L'arnaqueur, stupéfait, vous laisse partir avec votre précieuse trouvaille.",
       "end": "Vedendo la vostra mancanza di reazione, l'uomo ha la pessima idea di tentare di derubarvi. Notando la sua manovra, intervenite, ma siete subito sorpresi dalla forza dell'uomo, che riesce a togliersi di mezzo con un movimento improvviso, prima di fuggire. Si esce con una leggera ferita. Perdi **{{quantity, number}} {emote:unitValues.lostHealth}**."
     }
   },
@@ -2029,7 +2034,7 @@
     "love": {
       "plus": "Il vostro fedele compagno vi guarda con occhi che brillano di gratitudine e affetto. Si strofina contro le vostre gambe e fa le fusa contento, dimostrando chiaramente che questo banchetto improvvisato ha rafforzato i legami di fiducia e amicizia tra voi!",
       "minus": "Il vostro animale domestico vi fissa con uno sguardo cupo di silenzioso rimprovero, con le labbra arricciate in un broncio di disapprovazione. Gira ostentatamente la testa da un'altra parte con un ringhio indispettito, chiaramente offeso da questo cibo indegno del suo delicato palato...",
-      "neutral": "Il vostro compagno di viaggio trangugia il suo pasto con un distacco quasi filosofico, non mostrando né un entusiasmo traboccante né un particolare disgusto. Sembra che consideri questa scoperta come un sostentamento necessario, niente di più e niente di meno."
+      "neutral": "Votre compagnon de route engloutit son repas avec un détachement presque philosophique, sans montrer ni enthousiasme débordant ni dégoût particulier."
     }
   },
   "badPet": {
