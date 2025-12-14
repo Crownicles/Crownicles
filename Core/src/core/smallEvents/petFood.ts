@@ -171,12 +171,12 @@ function calculateLoveChange(foodType: string, properties: PetFoodProperties, pe
 async function applyOutcome(
 	player: Player,
 	eventData: {
-		foodType: string; outcome: string; properties: PetFoodProperties;
+		foodType: string; outcome: string; properties: PetFoodProperties; wasInvestigating: boolean;
 	},
 	response: CrowniclesPacket[]
 ): Promise<void> {
 	const {
-		foodType, outcome, properties
+		foodType, outcome, properties, wasInvestigating
 	} = eventData;
 	const petEntity = (await PetEntity.findByPk(player.petId))!;
 	const petModel = PetDataController.instance.getById(petEntity.typeId);
@@ -203,7 +203,8 @@ async function applyOutcome(
 	response.push(makePacket(SmallEventPetFoodPacket, {
 		outcome,
 		foodType,
-		loveChange
+		loveChange,
+		timeLost: wasInvestigating ? SmallEventConstants.PET_FOOD.TRAVEL_TIME_PENALTY_MINUTES : undefined
 	}));
 }
 
@@ -284,8 +285,11 @@ function getEndCallback(player: Player, foodType: string, properties: PetFoodPro
 			? await handler(player, properties)
 			: SmallEventConstants.PET_FOOD.OUTCOMES.NOTHING;
 
+		// Check if the player chose to investigate (which applies the time penalty)
+		const wasInvestigating = reactionType === ReactionCollectorPetFoodInvestigateReaction.name;
+
 		await applyOutcome(player, {
-			foodType, outcome, properties
+			foodType, outcome, properties, wasInvestigating
 		}, response);
 		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.PET_FOOD_SMALL_EVENT);
 	};
