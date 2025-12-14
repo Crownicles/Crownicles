@@ -18,6 +18,7 @@ import { SmallEventPetFoodPacket } from "../../../Lib/src/packets/smallEvents/Sm
 import { Language } from "../../../Lib/src/Language";
 import { RandomUtils } from "../../../Lib/src/utils/RandomUtils";
 import { minutesDisplay } from "../../../Lib/src/utils/TimeUtils";
+import { SmallEventConstants } from "../../../Lib/src/constants/SmallEventConstants";
 
 /**
  * Handle the pet food small event collector interaction
@@ -31,7 +32,7 @@ export async function petFoodCollector(context: PacketContext, packet: ReactionC
 	const lng = interaction!.userLanguage;
 
 	const embed = new CrowniclesSmallEventEmbed(
-		"petFood",
+		SmallEventConstants.PET_FOOD.SMALL_EVENT_NAME,
 		`${i18n.t(`smallEvents:petFood.intro.${data.foodType}`, { lng })}\n\n${CrowniclesIcons.collectors.question} ${i18n.t("smallEvents:petFood.choices.investigate", { lng })}\n${CrowniclesIcons.smallEvents.pet} ${i18n.t("smallEvents:petFood.choices.sendPet", { lng })}\n${CrowniclesIcons.smallEvents.doNothing} ${i18n.t("smallEvents:petFood.choices.continue", { lng })}`,
 		interaction.user,
 		lng
@@ -41,15 +42,15 @@ export async function petFoodCollector(context: PacketContext, packet: ReactionC
 
 	row.addComponents(
 		new ButtonBuilder()
-			.setCustomId("investigate")
+			.setCustomId(SmallEventConstants.PET_FOOD.BUTTON_IDS.INVESTIGATE)
 			.setEmoji(parseEmoji(CrowniclesIcons.collectors.question)!)
 			.setStyle(ButtonStyle.Secondary),
 		new ButtonBuilder()
-			.setCustomId("pet")
+			.setCustomId(SmallEventConstants.PET_FOOD.BUTTON_IDS.SEND_PET)
 			.setEmoji(parseEmoji(CrowniclesIcons.smallEvents.pet)!)
 			.setStyle(ButtonStyle.Secondary),
 		new ButtonBuilder()
-			.setCustomId("continue")
+			.setCustomId(SmallEventConstants.PET_FOOD.BUTTON_IDS.CONTINUE)
 			.setEmoji(parseEmoji(CrowniclesIcons.smallEvents.doNothing)!)
 			.setStyle(ButtonStyle.Secondary)
 	);
@@ -82,13 +83,13 @@ export async function petFoodCollector(context: PacketContext, packet: ReactionC
 			await msg.edit({ components: [row] });
 
 			let reactionIndex = -1;
-			if (buttonInteraction.customId === "investigate") {
+			if (buttonInteraction.customId === SmallEventConstants.PET_FOOD.BUTTON_IDS.INVESTIGATE) {
 				reactionIndex = packet.reactions.findIndex(r => r.type === ReactionCollectorPetFoodInvestigateReaction.name);
 			}
-			else if (buttonInteraction.customId === "pet") {
+			else if (buttonInteraction.customId === SmallEventConstants.PET_FOOD.BUTTON_IDS.SEND_PET) {
 				reactionIndex = packet.reactions.findIndex(r => r.type === ReactionCollectorPetFoodSendPetReaction.name);
 			}
-			else if (buttonInteraction.customId === "continue") {
+			else if (buttonInteraction.customId === SmallEventConstants.PET_FOOD.BUTTON_IDS.CONTINUE) {
 				reactionIndex = packet.reactions.findIndex(r => r.type === ReactionCollectorPetFoodContinueReaction.name);
 			}
 
@@ -114,28 +115,28 @@ export async function petFoodCollector(context: PacketContext, packet: ReactionC
  */
 export function getPetFoodDescription(packet: SmallEventPetFoodPacket, lng: Language): string {
 	// Outcomes that mean some food was found (by player or pet, or simply found)
-	const FOUND_OUTCOMES = new Set([
-		"found_by_player",
-		"found_by_pet",
-		"found_anyway"
-	]);
+	const FOUND_OUTCOMES = [
+		SmallEventConstants.PET_FOOD.OUTCOMES.FOUND_BY_PLAYER,
+		SmallEventConstants.PET_FOOD.OUTCOMES.FOUND_BY_PET,
+		SmallEventConstants.PET_FOOD.OUTCOMES.FOUND_ANYWAY
+	];
 
 	// Outcomes that should use a specific "_soup" translation when the food is soup
-	const SOUP_OUTCOMES = new Set([
-		"found_by_player",
-		"found_by_pet",
-		"found_anyway",
-		"pet_failed"
-	]);
+	const SOUP_OUTCOMES = [
+		SmallEventConstants.PET_FOOD.OUTCOMES.FOUND_BY_PLAYER,
+		SmallEventConstants.PET_FOOD.OUTCOMES.FOUND_BY_PET,
+		SmallEventConstants.PET_FOOD.OUTCOMES.FOUND_ANYWAY,
+		SmallEventConstants.PET_FOOD.OUTCOMES.PET_FAILED
+	];
 
 	// Outcomes where the player investigated (loses time)
-	const PLAYER_INVESTIGATED_OUTCOMES = new Set([
-		"found_by_player",
-		"player_failed"
-	]);
+	const PLAYER_INVESTIGATED_OUTCOMES = [
+		SmallEventConstants.PET_FOOD.OUTCOMES.FOUND_BY_PLAYER,
+		SmallEventConstants.PET_FOOD.OUTCOMES.PLAYER_FAILED
+	];
 
-	const outcomeIsFound = FOUND_OUTCOMES.has(packet.outcome);
-	const playerInvestigated = PLAYER_INVESTIGATED_OUTCOMES.has(packet.outcome);
+	const outcomeIsFound = FOUND_OUTCOMES.includes(packet.outcome);
+	const playerInvestigated = PLAYER_INVESTIGATED_OUTCOMES.includes(packet.outcome);
 
 	// If the food was actually found, pick a readable display name for it from translations
 	const foodName = outcomeIsFound
@@ -148,8 +149,8 @@ export function getPetFoodDescription(packet: SmallEventPetFoodPacket, lng: Lang
 		: "";
 
 	// When the food type is soup, some outcomes use a different translation key (e.g. "found_by_player_soup")
-	const outcomeKey = packet.foodType === "soup" && SOUP_OUTCOMES.has(packet.outcome)
-		? `${packet.outcome}_soup`
+	const outcomeKey = packet.foodType === SmallEventConstants.PET_FOOD.FOOD_TYPES.SOUP && SOUP_OUTCOMES.includes(packet.outcome)
+		? `${packet.outcome}${SmallEventConstants.PET_FOOD.TRANSLATION_SUFFIX.SOUP}`
 		: packet.outcome;
 
 	// Calculate time display if player investigated
@@ -172,7 +173,11 @@ export function getPetFoodDescription(packet: SmallEventPetFoodPacket, lng: Lang
 
 	// Some outcomes also include a pet-love change message appended on a newline
 	if (outcomeIsFound) {
-		const loveKey = packet.loveChange > 0 ? "plus" : packet.loveChange < 0 ? "minus" : "neutral";
+		const loveKey = packet.loveChange > 0
+			? SmallEventConstants.PET_FOOD.LOVE_CHANGE_TYPES.PLUS
+			: packet.loveChange < 0
+				? SmallEventConstants.PET_FOOD.LOVE_CHANGE_TYPES.MINUS
+				: SmallEventConstants.PET_FOOD.LOVE_CHANGE_TYPES.NEUTRAL;
 		const loveMessage = i18n.t(`smallEvents:petFood.love.${loveKey}`, { lng });
 		result += `\n${loveMessage}`;
 	}
