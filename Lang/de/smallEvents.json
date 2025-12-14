@@ -1593,8 +1593,8 @@
     "results": {
       "life": "Sie heben den Becher $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) vorsichtig an und bemerken, dass sich darunter nichts befindet. Enttäuscht und als schlechter Verlierer schlagen Sie gegen die restlichen Becher, die durch die Luft fliegen. Als Sie bemerken, dass sich auch in den anderen Bechern nichts befindet, wenden Sie sich wieder dem Betrüger zu. Leider schlägt dieser zuerst zu. Sie verlieren **{{quantity, number}} {emote:unitValues.lostHealth}**.",
       "time": "Sie heben den Becher $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) vorsichtig an und entdecken mit Freude eine kleine Münze! Leider scheint der Mann hinter Ihnen nicht gewillt zu sein, Sie mit Ihrer Belohnung gehen zu lassen. Sie verlieren **{{quantity}} {emote:unitValues.time}** dabei, mit ihm zu verhandeln, bevor Sie aufgeben und Ihren Weg fortsetzen.",
-      "nothing": "Vous soulevez doucement le gobelet $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) et constatez qu'il n'y a rien dessous. L'arnaqueur esquisse un sourire narquois, mais vous remarquez du coin de l'œil que les autres gobelets étaient tout aussi vides. Comprenant que vous avez échappé à un piège retors, vous vous éloignez prestement, soulagé de vous en tirer sans le moindre mal.",
-      "item": "Vous soulevez doucement le gobelet $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) et découvrez un éclat brillant ! Un objet d'une rareté exceptionnelle était caché dessous. L'arnaqueur, stupéfait, vous laisse partir avec votre précieuse trouvaille.",
+      "nothing": "Du hebst vorsichtig die Tasse an $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) und stellst fest, dass sie leer ist. Der Betrüger lächelt verschmitzt, doch aus dem Augenwinkel bemerkst du, dass die anderen Tassen genauso leer sind. Dir wird klar, dass du einer raffinierten Falle entkommen bist, und du gehst schnell weg, erleichtert, unversehrt davongekommen zu sein.",
+      "item": "Du hebst die Tasse vorsichtig an $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) und entdeckst einen strahlenden Glanz! Darunter verbarg sich ein außergewöhnlich seltener Gegenstand. Der verblüffte Betrüger lässt dich mit deinem wertvollen Fund gehen.",
       "end": "Als Sie nicht reagieren, kommt der Mann auf die schlechte Idee, Sie ausrauben zu wollen. Sie bemerken sein Manöver und greifen ein, werden aber schnell von der Stärke des Mannes überrascht, der sich mit einer plötzlichen Bewegung losreißen kann und dann wegläuft. Sie kommen mit einer leichten Verletzung davon. Sie verlieren **{{quantity, number}} {emote:unitValues.lostHealth}**."
     }
   },
@@ -2034,7 +2034,7 @@
     "love": {
       "plus": "Ihr treuer Begleiter betrachtet Sie mit leuchtenden Augen, die von Dankbarkeit und Zuneigung zeugen. Er reibt sich an Ihren Beinen und gibt ein zufriedenes Schnurren von sich, was deutlich zeigt, dass dieses improvisierte Festmahl die Bande des Vertrauens und der Freundschaft zwischen Ihnen gestärkt hat!",
       "minus": "Ihr Vertrauter starrt Sie mit einem schwarzen Blick voller stiller Vorwürfe an, die Lefzen sind zu einem missbilligenden Schmollmund aufgerollt. Er wendet den Kopf demonstrativ ab und stößt ein unzufriedenes Knurren aus, offensichtlich beleidigt von dem Essen, das seines zarten Gaumens nicht würdig ist...",
-      "neutral": "Votre compagnon de route engloutit son repas avec un détachement presque philosophique, sans montrer ni enthousiasme débordant ni dégoût particulier."
+      "neutral": "Ihr Reisebegleiter verschlang seine Mahlzeit mit beinahe philosophischer Distanz, ohne überschwängliche Begeisterung oder besonderen Ekel zu zeigen."
     }
   },
   "badPet": {
