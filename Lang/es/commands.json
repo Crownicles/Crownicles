@@ -882,7 +882,7 @@
       "dailyPotion_one": "{{count}} Poción del día ( disponible)",
       "dailyPotion_other": "{{count}} Poción del día ( disponible)",
       "token_zero": "Fichas (agotado)",
-      "token_one": "Jeton ({{count}} disponible)",
+      "token_one": "Token ({{count}} disponible)",
       "token_other": "Fichas ({{count}} disponible)",
       "slotExtension": "Ampliaciones de inventario",
       "food": "Alimentos para mascotas",
@@ -1355,7 +1355,7 @@
     "dailyFinished": "¡Has completado la misión de hoy! {{time}}Vuelve a .",
     "noCurrentMissions": "Ocasionalmente, puede encontrar tareas adicionales que realizar solicitando un informe.",
     "missionDisplay_campaign": "{{mission}}\n{{progressionBar}} {{current, number}}/{{objective, number}}",
-    "missionDisplay_other": "{{mission}} (expire {{time}})\n{{progressionBar}} {{current, number}}/{{objective, number}}"
+    "missionDisplay_other": "{{mission}} (caduca {{time}})\n{{progressionBar}} {{current, number}}/{{objective, number}}"
   },
   "guildShop": {
     "noFoodStorageSpace": "No tienes espacio suficiente en tu almacén para guardar esta comida.",
@@ -1458,7 +1458,7 @@
   "fight": {
     "title": "{{pseudo}}estás a punto de empezar una pelea",
     "canceledTitle": "{{pseudo}}ha cancelado la búsqueda",
-    "confirmDesc": "{emote:fightCommand.crossedSwords} | **{{pseudo}}**{{confirmSubText}}\n\n{emote:fightCommand.crossedSwords} | **Combattant : {{pseudo}}** | {{glory, number}} | {{className}} {{pet}}\n\n{{stats}}",
+    "confirmDesc": "{emote:fightCommand.crossedSwords} | **{{pseudo}}**{{confirmSubText}}\n\n{emote:fightCommand.crossedSwords} | **Luchador: {{pseudo}}** | {{glory, number}} | {{className}} {{pet}}\n\n{{stats}}",
     "pet": "| {{petInfo}}",
     "petOnExpedition": "| ~~{{petInfo}}~~",
     "confirmSubTexts": {
@@ -1866,7 +1866,7 @@
     },
     "food": {
       "title": "{emote:foods.{{foodId}}} $t(models:foods.{{foodId}}, {\"context\": \"capitalized\"})",
-      "description": "**Stock** : {{amount, number}}/{{maxAmount, number}}\n"
+      "description": "**Existencias**: {{amount, number}}/{{maxAmount, number}}\n"
     }
   },
   "joinBoat": {
