@@ -696,7 +696,7 @@
     },
     "guild": {
       "fieldName": "Gilde:",
-      "fieldValue": "{emote:guild.icon} {{guild}}"
+      "fieldValue": ":stadium: {{guild}}"
     },
     "information": {
       "fieldName": "Information:",
@@ -712,7 +712,7 @@
     },
     "mission": {
       "fieldName": "Aufgaben:",
-      "fieldValue": "{emote:unitValues.gem} {{gems, number}} | {emote:missions.book} {{campaign, number}}% "
+      "fieldValue": ":gem: {{gems, number}} | :book: {{campaign, number}}% "
     },
     "noTimeLeft": {
       "fieldName": "Restdauer:",
@@ -736,7 +736,7 @@
     },
     "statistics": {
       "fieldName": "Statistik:",
-      "fieldValue": "{emote:unitValues.energy} {{cumulativeHealth, number}} / {{cumulativeMaxHealth, number}} | {emote:unitValues.attack} {{cumulativeAttack, number}} | {emote:unitValues.defense} {{cumulativeDefense, number}} | {emote:unitValues.speed} {{cumulativeSpeed, number}} | {emote:unitValues.breath} {{baseBreath, number}} / {{maxBreath, number}} | {emote:unitValues.breathRegen} {{breathRegen}}"
+      "fieldValue": ":zap: {{cumulativeHealth, number}} / {{cumulativeMaxHealth, number}} | :dagger: {{cumulativeAttack, number}} | :shield: {{cumulativeDefense, number}} | :rocket: {{cumulativeSpeed, number}} | :wind_blowing_face: {{baseBreath, number}} / {{maxBreath, number}} | :lungs: {{breathRegen}}"
     },
     "timeLeft": {
       "fieldName": "Restdauer:",
