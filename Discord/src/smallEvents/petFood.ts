@@ -17,7 +17,6 @@ import { sendInteractionNotForYou } from "../utils/ErrorUtils";
 import { SmallEventPetFoodPacket } from "../../../Lib/src/packets/smallEvents/SmallEventPetFoodPacket";
 import { Language } from "../../../Lib/src/Language";
 import { RandomUtils } from "../../../Lib/src/utils/RandomUtils";
-import { minutesDisplay } from "../../../Lib/src/utils/TimeUtils";
 import { SmallEventConstants } from "../../../Lib/src/constants/SmallEventConstants";
 
 /**
@@ -154,7 +153,7 @@ export function getPetFoodDescription(packet: SmallEventPetFoodPacket, lng: Lang
 
 	// Calculate time display if player investigated
 	const timeDisplay = playerInvestigated && packet.timeLost
-		? minutesDisplay(packet.timeLost, lng)
+		? i18n.formatDuration(packet.timeLost, lng)
 		: "";
 
 	// Base outcome message (always present) - pass time for outcomes where player investigated

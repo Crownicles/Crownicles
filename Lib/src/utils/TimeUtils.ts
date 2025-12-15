@@ -8,7 +8,14 @@ import {
 } from "../constants/TimeConstants";
 
 /**
+ * Translation function type for time display
+ * Compatible with i18n.t() signature - uses a generic type to allow any compatible function
+ */
+export type TimeTranslationFunction = (key: string, options?: Record<string, unknown>) => string;
+
+/**
  * Get the elements to display the remaining time in the given language
+ * @deprecated Use minutesDisplayI18n instead for proper i18n support
  * @param language
  */
 function getMinutesDisplayStringConstants(language: string): {
@@ -299,6 +306,7 @@ export function getTimeFromXHoursAgo(hours: number): Date {
 
 /**
  * Display a time in a human-readable format
+ * @deprecated Use minutesDisplayI18n instead for proper i18n support
  * @param minutes - the time in minutes
  * @param language
  */
@@ -328,6 +336,46 @@ export function minutesDisplay(minutes: number, language: Language = LANGUAGE.DE
 	// Join all parts except the last with commas, then add the link word before the last part
 	const lastPart = parts.pop()!;
 	return `${parts.join(", ")}${displayConstantValues.linkWord}${lastPart}`;
+}
+
+/**
+ * Display a time in a human-readable format using i18n translations
+ * @param minutes - the time in minutes
+ * @param t - translation function (i18n.t)
+ * @param lng - language code (optional, passed to translation function)
+ */
+export function minutesDisplayI18n(minutes: number, t: TimeTranslationFunction, lng?: string): string {
+	// Compute components
+	let hours = Math.floor(minutesToHours(minutes));
+	minutes = Math.floor(minutes % TimeConstants.S_TIME.MINUTE);
+	const days = Math.floor(hours / TimeConstants.HOURS_IN_DAY);
+	hours %= TimeConstants.HOURS_IN_DAY;
+
+	const parts: string[] = [];
+
+	if (days > 0) {
+		parts.push(t("models:time.day", { count: days, lng }));
+	}
+	if (hours > 0) {
+		parts.push(t("models:time.hour", { count: hours, lng }));
+	}
+	if (minutes > 0) {
+		parts.push(t("models:time.minute", { count: minutes, lng }));
+	}
+
+	if (parts.length === 0) {
+		return t("models:time.lessThanOneMinute", { lng });
+	}
+
+	if (parts.length === 1) {
+		return parts[0];
+	}
+
+	// Join all parts except the last with separator, then add the link word before the last part
+	const lastPart = parts.pop()!;
+	const separator = t("models:time.separator", { lng });
+	const linkWord = t("models:time.linkWord", { lng });
+	return `${parts.join(separator)}${linkWord}${lastPart}`;
 }
 
 /**

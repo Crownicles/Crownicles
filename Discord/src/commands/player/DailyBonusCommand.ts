@@ -12,7 +12,7 @@ import { DiscordCache } from "../../bot/DiscordCache";
 import { CrowniclesErrorEmbed } from "../../messages/CrowniclesErrorEmbed";
 import i18n from "../../translations/i18n";
 import {
-	hoursToMilliseconds, minutesDisplay, printTimeBeforeDate
+	hoursToMilliseconds, printTimeBeforeDate
 } from "../../../../Lib/src/utils/TimeUtils";
 import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import {
@@ -93,7 +93,7 @@ export async function handleDailyBonusRes(context: PacketContext, packet: Comman
 				}), interaction.user)
 				.setDescription(
 					i18n.t("commands:daily.description", {
-						value: packet.itemNature === ItemNature.TIME_SPEEDUP ? minutesDisplay(packet.value, lng) : packet.value,
+						value: packet.itemNature === ItemNature.TIME_SPEEDUP ? i18n.formatDuration(packet.value, lng) : packet.value,
 						nature: ItemConstants.NATURE_ID_TO_NAME[packet.itemNature],
 						lng
 					})

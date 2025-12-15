@@ -8,7 +8,6 @@ import { DiscordCollectorUtils } from "../utils/DiscordCollectorUtils";
 import { ReactionCollectorReturnTypeOrNull } from "../packetHandlers/handlers/ReactionCollectorHandlers";
 import { StringUtils } from "../utils/StringUtils";
 import { SmallEventLimogesPacket } from "../../../Lib/src/packets/smallEvents/SmallEventLimogesPacket";
-import { minutesDisplay } from "../../../Lib/src/utils/TimeUtils";
 
 export async function limogesCollector(context: PacketContext, packet: ReactionCollectorLimogesPacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction);
@@ -56,7 +55,7 @@ export async function limogesResult(packet: SmallEventLimogesPacket, context: Pa
 	}
 	else {
 		const amountDisplay = packet.penalty.type === "time"
-			? minutesDisplay(packet.penalty.amount, lng)
+			? i18n.formatDuration(packet.penalty.amount, lng)
 			: packet.penalty.amount;
 		outcome = i18n.t(`smallEvents:limoges.penalties.${packet.penalty.type}`, {
 			lng,

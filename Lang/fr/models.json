@@ -1916,6 +1916,19 @@
     "get_ordinal_one": "1er",
     "get_ordinal_other": "{{count}}ème"
   },
+  "time": {
+    "day_one": "{{count}} jour",
+    "day_other": "{{count}} jours",
+    "hour_one": "{{count}} heure",
+    "hour_other": "{{count}} heures",
+    "minute_one": "{{count}} minute",
+    "minute_other": "{{count}} minutes",
+    "second_one": "{{count}} seconde",
+    "second_other": "{{count}} secondes",
+    "lessThanOneMinute": "< 1 minute",
+    "linkWord": " et ",
+    "separator": ", "
+  },
   "guilds": {
     "levelUpTitle": "{emote:unitValues.xp} La guilde {{guild}} monte de niveau !",
     "levelUpDesc": "La guilde est désormais niveau **{{level, number}}** !"
