@@ -1,4 +1,4 @@
-ARG NODE_VERSION=23
+ARG NODE_VERSION=24
 
 # Base image to use
 FROM node:${NODE_VERSION}-alpine AS builder
