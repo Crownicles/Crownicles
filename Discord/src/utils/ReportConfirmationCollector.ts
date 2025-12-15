@@ -121,7 +121,6 @@ function setupButtonCollector(
 
 		const reactionIndex = buttonInteraction.customId === "accept" ? 0 : 1;
 		DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, buttonInteraction, reactionIndex);
-		// Note: Do not call buttonCollector.stop() here - Core will send ReactionCollectorStopPacket to stop the collector
 	});
 
 	buttonCollector.on("end", async () => {
