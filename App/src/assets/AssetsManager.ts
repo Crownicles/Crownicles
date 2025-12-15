@@ -1,5 +1,5 @@
-import * as FileSystem from 'expo-file-system';
-import {EncodingType} from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
+import {EncodingType} from 'expo-file-system/legacy';
 import {RestApi} from "@/src/networking/RestApi";
 import {AppIcons} from "@/src/AppIcons";
 import {reloadI18n} from "@/src/translations/i18nLoader";
