@@ -1408,6 +1408,9 @@ export class LogsDatabase extends Database {
 			mapLocationId: ExpeditionConstants.NO_MAP_LOCATION,
 			locationType: ExpeditionConstants.LOG_ACTION.CANCEL,
 			action: ExpeditionConstants.LOG_ACTION.CANCEL,
+			durationMinutes: 0,
+			rewardIndex: 0,
+			foodConsumed: 0,
 			loveChange
 		});
 	}
