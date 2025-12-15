@@ -34,8 +34,11 @@ export interface TokenCostUnavailable {
  * @param effectRemainingTime - The remaining time of the effect in milliseconds
  */
 export function calculateTokenCost(effectId: string, effectRemainingTime: number): TokenCostResult | TokenCostUnavailable {
+	// If the effect has expired (remaining time <= 0), treat it as no effect
+	const activeEffectId = effectRemainingTime <= 0 ? Effect.NO_EFFECT.id : effectId;
+
 	// If player has an alteration other than occupied or no_effect, tokens cannot be used
-	if (effectId !== Effect.NO_EFFECT.id && effectId !== Effect.OCCUPIED.id) {
+	if (activeEffectId !== Effect.NO_EFFECT.id && activeEffectId !== Effect.OCCUPIED.id) {
 		return { canUseTokens: false };
 	}
 
@@ -43,7 +46,7 @@ export function calculateTokenCost(effectId: string, effectRemainingTime: number
 	let cost = TokensConstants.REPORT.BASE_COST;
 
 	// If occupied, add 1 token per 20 minutes of remaining time
-	if (effectId === Effect.OCCUPIED.id) {
+	if (activeEffectId === Effect.OCCUPIED.id) {
 		const remainingMinutes = millisecondsToMinutes(effectRemainingTime);
 		cost += Math.ceil(remainingMinutes / TokensConstants.REPORT.MINUTES_PER_ADDITIONAL_TOKEN);
 	}
