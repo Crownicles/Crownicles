@@ -107,7 +107,7 @@ export async function badPetCollector(context: PacketContext, packet: ReactionCo
 			if (reactionIndex !== -1) {
 				DiscordCollectorUtils.sendReaction(packet, context, getReactingPlayer.payload.keycloakId, buttonInteraction, reactionIndex);
 			}
-			collector.stop();
+			// Note: Do not call collector.stop() here - Core will send ReactionCollectorStopPacket to stop the collector
 		}
 	});
 
