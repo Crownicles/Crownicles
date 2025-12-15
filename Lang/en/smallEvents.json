@@ -1571,25 +1571,30 @@
     }
   },
   "gobletsGame": {
-    "intro": "you meet a man who seems suspicious to you. Indeed, it approaches you and pushes you to a table, where three mysterious goblets are on. The instructions given to you are simple: you must pick a cup at random and receive the prize, whatever that would be. While you observe the objects on the table, the man slips into your back and doesn't seem to want to let you go. To get out of this situation, you force yourself to choose a cup.",
+    "intro": "you meet a man who seems suspicious to you. Indeed, it approaches you and pushes you to a table, where four mystery goblets are laid. The instructions given to you are simple: you must choose a cup, and receive the prize of any kind. While you observe the objects on the table, the man slips into your back and doesn't seem to want to let you go. To get out of this situation, you can choose a cup.",
     "goblets": {
       "metal": {
-        "description": "The metallic one, seemingly ancient, engraved with a dragon's head",
+        "description": "That in metal, seeming ancient tree, classic and balanced choice",
         "name": "metallic"
       },
       "biggest": {
-        "description": "The largest of the three, made of an unidentifiable matter",
+        "description": "Largest of four, massive and reassuring, prudent and less risky choice",
         "name": "largest"
       },
       "sparkling": {
-        "description": "The last one, carved in blue wood and glittering to such an extent that it seems enchanted",
+        "description": "The shimmering, sculpt in enchanted blue wood, the choice risks that can bring large amounts back",
         "name": "glittering"
+      },
+      "cracked": {
+        "description": "The crack, in unstable air, the choice of the better, all or nothing",
+        "name": "crack"
       }
     },
     "results": {
       "life": "You gently lift the $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) cup and notice that there's nothing underneath. Disappointed, and a sore loser, you strike the remaining cups, which fly into the air. Noticing that there was nothing in the other cups either, you turn back to the hustler. Unfortunately, he strikes first. You lose **{{quantity, number}} {emote:unitValues.lostHealth}**.",
       "time": "You gently lift the cup $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) and are delighted to discover a small coin! Unfortunately, the man behind you doesn't seem to want to let you leave with your reward. You waste **{{quantity}} {emote:unitValues.time}** negotiating with him before giving up and continuing on your way.",
-      "nothing": "You gently raise the $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) cup and notice that there is nothing below. Disappointed, you are sadly getting back on your tracks, hoping you may have more luck another time.",
+      "nothing": "You gently raise the cup $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) and see that there is nothing below. The scammer sketches a smile but you notice from the corner of the eye that the other cups were just as empty. Believing that you escaped from a twisting piece, you quickly walked away, relieved to get away from it without any harm.",
+      "item": "You gently raise the cup $t(smallEvents:gobletsGame.goblets.{{goblet}}. ame) and discover a shiny shine! An item of exceptional rarity was hidden below. The scammer, stupeté, lets you leave with your precious find.",
       "end": "Seeing your lack of reaction, the man has the bad idea of trying to rob you. Noticing his maneuver, you intervene, but you're quickly surprised by the man's strength, as he manages to get out of the way with a sudden movement, before fleeing. You escape with a slight wound. You lose **{{quantity, number}} {emote:unitValues.lostHealth}**."
     }
   },
@@ -1947,13 +1952,13 @@
       "continue": "Continue on your way"
     },
     "outcomes": {
-      "found_by_player": "You approach cautiously and, after pushing aside the branches and searching the nooks and crannies, you lay your hands on **{{foodName}}**. You offer it to your companion, who accepts it gratefully, devouring his gift with grunts of satisfaction.",
-      "found_by_player_soup": "You cautiously approach the abandoned cauldron and discover with satisfaction **{{foodName}}** still simmering gently. You pour a generous portion into a bowl and present it to your companion. He greedily laps up the comfort food, wagging his tail in contentment.",
+      "found_by_player": "Vous vous approchez prudemment et, après avoir écarté les branchages et fouillé méticuleusement les recoins pendant **{{time}}** {emote:effects.occupied}, vous mettez enfin la main sur **{{foodName}}**. Vous l'offrez à votre compagnon qui l'accepte avec reconnaissance, dévorant son présent avec des grognements de satisfaction.",
+      "found_by_player_soup": "Vous vous approchez prudemment du chaudron abandonné. Après **{{time}}** {emote:effects.occupied} passées à vérifier qu'aucun danger ne rôde, vous découvrez avec satisfaction **{{foodName}}** qui mijote encore doucement. Vous en versez une généreuse portion dans une écuelle que vous présentez à votre compagnon, lequel lape goulûment ce mets réconfortant en remuant la queue de contentement.",
       "found_by_pet": "Your pet takes off with a nimble leap and disappears for a moment into the thicket. He soon returns to you with a proud, triumphant trot, holding **{{foodName}}** delicately between his fangs. His eyes shine with pride as he settles down to savor his find with enthusiastic chewing noises.",
       "found_by_pet_soup": "Your pet is rushing to the abandoned camp and plunges its muzzle into the smoking cauldron. It comes back to you a few moments later, the still glittering babies obviously tasted **{{foodName}}** with obvious pleasure. His painful eyes and his exhilarating tail testify to his gourmet satisfaction.",
       "found_anyway": "Just as you're about to set off on your merry way, your faithful companion suddenly leaps into the surrounding bushes. He emerges victoriously with **{{foodName}}** which he gobbles up on the spot with a voracious appetite, his tail wagging with contentment.",
       "found_anyway_soup": "Just as you're about to set off on your journey with no further concern for the camp, your faithful companion rushes to the abandoned cauldron. Before you can stop him, he greedily laps up **{{foodName}}** with groans of delight, clearly delighted by this unexpected windfall.",
-      "player_failed": "You've spent long, arduous minutes meticulously searching the surrounding area, pushing aside brambles and thorns, turning over stones and rotting stumps, but despite all your strenuous efforts, you can't find anything worthwhile. The time you invested proved as futile as searching for treasure in an empty chest.",
+      "player_failed": "Vous passez **{{time}}** {emote:effects.occupied} éprouvantes à fouiller méticuleusement les environs, écartant ronces et épineux, retournant pierres et souches pourries, mais en dépit de tous vos efforts acharnés, vous ne dénichez rien qui vaille la peine. Ce temps investi se révèle aussi vain qu'une quête de trésor dans un coffre vide.",
       "pet_failed": "Your companion dashes off determinedly into the thicket, only to return a few moments later with a ponderous gait, ears low and tail hanging low. His disappointed look and plaintive squeaks betray his failure: the trail has proved fruitless and his efforts have produced nothing but bitterness.",
       "pet_failed_soup": "Your companion trots towards the abandoned camp and takes a long sniff at the cauldron, but alas, it turns out to be empty or its contents already cooled and inedible. He returns to you with a disappointed gait, ears low and tail hanging low, clearly frustrated by this culinary disappointment.",
       "nothing": "You wisely decide not to linger any longer in these parts, judging that time is short and that your quest cannot suffer such detours. With a resolute gesture, you ask your companion to follow you, and together you set off towards the horizon that beckons."
@@ -2029,7 +2034,7 @@
     "love": {
       "plus": "Your faithful companion gazes at you with eyes shining with gratitude and affection. He rubs against your legs with satisfied purrs, clearly demonstrating that this impromptu feast has strengthened the bonds of trust and friendship between you!",
       "minus": "Your pet stares at you with a dark, silently reproachful gaze, lips curled into a disapproving pout. He ostentatiously turns his head away with a disgruntled growl, clearly offended by this pittance unworthy of his delicate palate...",
-      "neutral": "Your travelling companion gulps down his meal with an almost philosophical detachment, showing neither overflowing enthusiasm nor particular disgust. He seems to regard this find as a necessary sustenance, nothing more, nothing less."
+      "neutral": "Your road companion swallows his meal with an almost philosophical detachment, without showing any overlapping enthusiasm or special taste."
     }
   },
   "badPet": {
