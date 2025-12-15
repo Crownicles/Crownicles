@@ -114,7 +114,7 @@
     "endStoryAcceptWithMember": "{{gainScore}} Aceptas y, cuando estás a punto de embarcar, te das cuenta de que un miembro de tu gremio ya está en el barco, así que te unes a él y ponéis rumbo a la isla.",
     "endStoryRefuse": "Declinas amablemente la oferta y continúas tu camino.",
     "notEnoughGems": "Aceptas, pero cuando llega el momento de pagar, te das cuenta de que no tienes suficiente para hacerlo. Así que te vas decepcionado.",
-    "confirmedScore": "**{emote:unitValues.score} Points gagnés :** {{score, number}}\n"
+    "confirmedScore": "**{emote:unitValues.score} Puntos ganados:** {{score, number}}\n"
   },
   "lottery": {
     "intro": "Te cruzas con un hombre que te llama. Curioso, te detienes. Te ofrece participar en un juego de azar que ha creado. Puedes elegir entre varios niveles de recompensa.\n\n{emote:collectors.lottery.easy} Pequeña recompensa\n{emote:collectors.lottery.medium} Mediana recompensa\n{emote:collectors.lottery.hard} Grande recompensa\n",
@@ -850,7 +850,7 @@
       "feistyPets": "La SPAC, o Société Protectrice des Animaux de la Contrée, hace campaña para ayudar a los **animaux fielleux** a tener una vida mejor.{{infoNumber}}Han contado ** **. Esta noticia me ha decepcionado y reconfortado a la vez,",
       "percentMalePets": "{{infoNumber}}La SPAC, o Société Protectrice des Animaux de la Contrée, ha descubierto que el ** %** de los animales de la zona son machos. Estoy encantado de oír estas noticias,",
       "percentFemalePets": "{{infoNumber}}La SPAC, o Société Protectrice des Animaux de la Contrée, ha descubierto que el ** %** de los animales de la zona son hembras. Estoy encantado de oír estas noticias,",
-      "guildLevelMean": "l'AGC, ou Agence des Guildes de la Contrée, a noté que les guildes actuelles ont atteint en moyenne le **niveau {{infoNumber, number}}**. Intrigué par cette information,",
+      "guildLevelMean": "La AGC, o Agencia de Gremios de la Tierra, observó que los gremios actuales han alcanzado un promedio de **nivel {{infoNumber, number}}**. Intrigados por esta información,",
       "nbPlayersHaventStartedTheAdventure_zero": "El SAFAC (Service Anti-Fraude des Aventuriers de la Contrée) ha descubierto que **ni un solo aventurero** se desvaneció en el aire inmediatamente después de obtener su licencia de aventurero. Estoy asombrado de todos estos valientes aventureros,",
       "nbPlayersHaventStartedTheAdventure_one": "El SAFAC (Service Anti-Fraude des Aventuriers de la Contrée) ha descubierto que **un aventurero** se ha desvanecido en el aire justo después de obtener su licencia de aventurero. Estamos indignados por las acciones de esta persona,",
       "nbPlayersHaventStartedTheAdventure_other": "{{infoNumber}} El SAFAC (Service Anti-Fraude des Aventuriers de la Contrée) ha descubierto que ** aventureros** se han desvanecido en el aire justo después de obtener su licencia de aventurero. Estoy indignado por las acciones de esta gente,",
@@ -1571,25 +1571,30 @@
     }
   },
   "gobletsGame": {
-    "intro": "te cruzas con un hombre que parece sospechoso. Se te acerca y te empuja hacia una mesa en la que hay tres misteriosas copas. Las instrucciones que te da son sencillas: debes sacar una copa al azar y recibir la recompensa, sea cual sea. Mientras observas los objetos de la mesa, el hombre se acerca sigilosamente por detrás y no parece querer dejarte marchar. Para salir de esta situación, te resignas a elegir una taza.",
+    "intro": "te encuentras con un hombre que parece sospechoso. Se acerca y te empuja bruscamente hacia una mesa donde hay cuatro copas misteriosas. Las instrucciones son sencillas: debes elegir una copa y recibir la recompensa, sea cual sea. Mientras examinas los objetos de la mesa, el hombre se acerca sigilosamente por detrás y no parece dispuesto a soltarte. Para salir de este aprieto, te resignas a elegir una copa.",
     "goblets": {
       "metal": {
-        "description": "La de metal, que parece muy antigua, lleva grabada una cabeza de dragón.",
+        "description": "El de metal, de aspecto muy antiguo, es la opción clásica y equilibrada",
         "name": "metal"
       },
       "biggest": {
-        "description": "El mayor de los tres, hecho de un material que no puedes identificar",
+        "description": "El más grande de los cuatro, masivo y tranquilizador, la opción prudente y menos arriesgada",
         "name": "el mayor"
       },
       "sparkling": {
-        "description": "El último, tallado en madera azul y reluciente hasta tal punto que parece encantado",
+        "description": "El brillante, tallado en madera azul encantada, la elección arriesgada que puede dar grandes frutos",
         "name": "espumoso"
+      },
+      "cracked": {
+        "description": "El aire agrietado e inestable, la elección del apostador, todo o nada",
+        "name": "grieta"
       }
     },
     "results": {
       "life": "Levantas suavemente el vaso $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) y notas que no hay nada debajo. Decepcionado, y mal perdedor, golpeas los vasos restantes que vuelan por los aires. Al notar que tampoco había nada en los otros vasos, te giras hacia el estafador. Desafortunadamente, éste golpea primero. Pierdes **{{quantity, number}} {emote:unitValues.lostHealth}**.",
       "time": "Levanta suavemente la taza $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) y descubre encantado una pequeña moneda. Desgraciadamente, el hombre que está detrás de ti no parece querer dejarte marchar con tu recompensa. Pasas **{{quantity}} {emote:unitValues.time}** negociando con él antes de darte por vencido y continuar tu camino.",
-      "nothing": "$t(smallEvents:gobletsGame.goblets.{{goblet}}.name) Levanta suavemente la taza y comprueba que no hay nada debajo. Decepcionado, te marchas con tristeza, pensando que tal vez tengas más suerte en otra ocasión.",
+      "nothing": "Levantas con cuidado la taza $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) y la encuentras vacía. El estafador te dedica una sonrisa pícara, pero con el rabillo del ojo, notas que las otras tazas estaban igual de vacías. Al darte cuenta de que has escapado de una astuta trampa, te alejas rápidamente, aliviado de haber salido ileso.",
+      "item": "Levantas suavemente el cubilete $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) ¡y descubres un brillo resplandeciente! Un objeto de una rareza excepcional estaba escondido debajo. El estafador, estupefacto, te deja marchar con tu valioso hallazgo.",
       "end": "Ante tu falta de reacción, el hombre tiene la mala idea de intentar robarte. Al notar su maniobra, intervienes, pero rápidamente te sorprende la fuerza del hombre que logra liberarse de un movimiento brusco antes de huir. Sales con una leve herida. Pierdes **{{quantity, number}} {emote:unitValues.lostHealth}**."
     }
   },
@@ -1611,7 +1616,7 @@
       "{{name}}Mientras avanzas por el camino, te cruzas con un carro en el que viaja un mercader llamado . Te ofrece comprar uno de sus objetos, diciendo que podría serte útil en tu aventura."
     ],
     "end": [
-      "\n\n{{item}} | `{{price, number}} {emote:unitValues.money}`\n\n**Type :** {{type}}"
+      "\n\n{{item}} | `{{price, number}} {emote:unitValues.money}`\n\n**Tipo:** {{type}}"
     ],
     "types": [
       "Arma",
@@ -1947,13 +1952,13 @@
       "continue": "Continúa tu camino"
     },
     "outcomes": {
-      "found_by_player": "Te acercas con cautela y, tras apartar las ramas y buscar en los recovecos, pones tus manos sobre **{{foodName}}**. Se lo ofreces a tu compañero, que lo acepta agradecido y devora su regalo con gruñidos de satisfacción.",
-      "found_by_player_soup": "Te acercas cautelosamente al caldero abandonado y descubres con satisfacción **{{foodName}}** aún hirviendo a fuego lento. Viertes una generosa porción en un cuenco y se la ofreces a tu compañero. Él lo engulle con avidez y mueve la cola con satisfacción.",
+      "found_by_player": "Vous vous approchez prudemment et, après avoir écarté les branchages et fouillé méticuleusement les recoins pendant **{{time}}** {emote:effects.occupied}, vous mettez enfin la main sur **{{foodName}}**. Vous l'offrez à votre compagnon qui l'accepte avec reconnaissance, dévorant son présent avec des grognements de satisfaction.",
+      "found_by_player_soup": "Vous vous approchez prudemment du chaudron abandonné. Après **{{time}}** {emote:effects.occupied} passées à vérifier qu'aucun danger ne rôde, vous découvrez avec satisfaction **{{foodName}}** qui mijote encore doucement. Vous en versez une généreuse portion dans une écuelle que vous présentez à votre compagnon, lequel lape goulûment ce mets réconfortant en remuant la queue de contentement.",
       "found_by_pet": "Tu mascota salta ágilmente y desaparece en la espesura por un momento. Pronto vuelve hacia ti con un trote orgulloso y triunfante, sosteniendo **{{foodName}}** delicadamente entre sus colmillos. Sus ojos brillan de orgullo mientras se sienta a saborear su hallazgo con entusiastas ruidos de masticación.",
       "found_by_pet_soup": "Tu mascota trota rápidamente hacia el campamento abandonado y mete el hocico en el caldero humeante. Regresa a tu lado unos instantes después, con los labios aún brillantes, tras haber saboreado **{{foodName}}** con evidente placer. Sus ojos brillantes y su cola meneante dan fe de su codiciosa satisfacción.",
       "found_anyway": "Justo cuando ibas a continuar tu camino sin preocuparte por esta distracción, tu fiel compañero salta de repente a los arbustos de alrededor. Sale victorioso con **{{foodName}}** que engulle inmediatamente con un apetito voraz, moviendo la cola con satisfacción.",
       "found_anyway_soup": "Justo cuando estás a punto de emprender de nuevo el camino sin preocuparte por el campamento, tu fiel compañero se precipita hacia el caldero abandonado. Antes de que puedas detenerlo, está engullendo ávidamente **{{foodName}}** con gemidos de placer, claramente encantado con esta inesperada ganancia.",
-      "player_failed": "Has pasado largos y arduos minutos registrando meticulosamente la zona, quitando zarzas y espinas, revolviendo piedras y tocones podridos, pero a pesar de todos tus denodados esfuerzos, no has desenterrado nada que merezca la pena. El tiempo invertido ha sido tan inútil como buscar un tesoro en un cofre vacío.",
+      "player_failed": "Vous passez **{{time}}** {emote:effects.occupied} éprouvantes à fouiller méticuleusement les environs, écartant ronces et épineux, retournant pierres et souches pourries, mais en dépit de tous vos efforts acharnés, vous ne dénichez rien qui vaille la peine. Ce temps investi se révèle aussi vain qu'une quête de trésor dans un coffre vide.",
       "pet_failed": "Tu compañero se adentra con determinación en la espesura, para regresar unos instantes después con paso pesado, las orejas gachas y la cola colgando. Su mirada decepcionada y sus quejumbrosos chillidos delatan su fracaso: el rastro ha resultado infructuoso y sus esfuerzos no han producido más que amargura.",
       "pet_failed_soup": "Tu compañero trota hacia el campamento abandonado y olfatea largamente el caldero, pero, por desgracia, resulta estar vacío o su contenido ya enfriado y no comestible. Vuelve hacia ti con paso decepcionado, las orejas gachas y la cola colgando, claramente frustrado por esta decepción culinaria.",
       "nothing": "Decides sabiamente no demorarte más en estos parajes, juzgando que el tiempo apremia y que tu búsqueda no puede sufrir tales rodeos. Con gesto resuelto, pides a tu compañero que te siga y juntos os encamináis hacia el horizonte que os llama."
@@ -2029,7 +2034,7 @@
     "love": {
       "plus": "Tu fiel compañero te mira con ojos brillantes de gratitud y afecto. Se frota contra tus piernas y ronronea satisfecho, demostrando claramente que este banquete improvisado ha reforzado los lazos de confianza y amistad entre vosotros.",
       "minus": "Tu mascota te mira con una oscura mirada de silencioso reproche, con los labios curvados en un mohín de desaprobación. Aparta ostentosamente la cabeza con un gruñido contrariado, claramente ofendido por esa comida indigna de su delicado paladar...",
-      "neutral": "Su compañero de viaje engulle la comida con un distanciamiento casi filosófico, sin mostrar ni un entusiasmo desbordante ni un disgusto especial. Parece considerar este descubrimiento como un sustento necesario, ni más ni menos."
+      "neutral": "Tu compañero de viaje devora su comida con un desapego casi filosófico, sin mostrar ni entusiasmo desbordante ni aversión particular."
     }
   },
   "badPet": {
