@@ -65,12 +65,17 @@ export abstract class PetConstants {
 		WIN_ITEM: "item"
 	};
 
+	/**
+	 * Minimum tier that has actual interactions (tier 0 is empty placeholder)
+	 */
+	static readonly MIN_UNLOCKED_INTERACTION_TIER = 1;
+
 	static readonly PET_INTERACTIONS: {
 		PET_NORMAL: { [interactionKey: string]: PetInteraction }[];
 		PET_FEISTY: { [interactionKey: string]: PetInteraction };
 	} = {
 		PET_NORMAL: [
-			{},
+			{}, // Tier 0: empty placeholder, interactions start at tier 1
 			{
 				WIN_ENERGY: {
 					name: this.PET_INTERACTIONS_NAMES.WIN_ENERGY, probabilityWeight: 9

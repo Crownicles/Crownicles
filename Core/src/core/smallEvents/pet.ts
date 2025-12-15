@@ -41,8 +41,11 @@ function generatePossibleIssues(petEntity: PetEntity, pet: Pet): PetInteraction[
 	}
 	const petVigor = PetUtils.getPetVigor(pet, petEntity.lovePoints);
 	const interactions: PetInteraction[] = [];
-	const unlockedTiers = Math.max(1, Math.min(petVigor, PetConstants.PET_INTERACTIONS.PET_NORMAL.length - 1));
-	for (let i = 1; i <= unlockedTiers; i++) {
+	const unlockedTiers = Math.max(
+		PetConstants.MIN_UNLOCKED_INTERACTION_TIER,
+		Math.min(petVigor, PetConstants.PET_INTERACTIONS.PET_NORMAL.length - 1)
+	);
+	for (let i = PetConstants.MIN_UNLOCKED_INTERACTION_TIER; i <= unlockedTiers; i++) {
 		interactions.push(...Object.values(PetConstants.PET_INTERACTIONS.PET_NORMAL[i]));
 	}
 	return interactions;
