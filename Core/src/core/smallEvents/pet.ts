@@ -41,11 +41,11 @@ function generatePossibleIssues(petEntity: PetEntity, pet: Pet): PetInteraction[
 	}
 	const petVigor = PetUtils.getPetVigor(pet, petEntity.lovePoints);
 	const interactions: PetInteraction[] = [];
-	const unlockedTiers = Math.min(petVigor, PetConstants.PET_INTERACTIONS.PET_NORMAL.length - 1);
-	for (let i = 0; i <= unlockedTiers; i++) {
+	const unlockedTiers = Math.max(1, Math.min(petVigor, PetConstants.PET_INTERACTIONS.PET_NORMAL.length - 1));
+	for (let i = 1; i <= unlockedTiers; i++) {
 		interactions.push(...Object.values(PetConstants.PET_INTERACTIONS.PET_NORMAL[i]));
 	}
-	return Object.values(interactions);
+	return interactions;
 }
 
 /**
@@ -53,8 +53,14 @@ function generatePossibleIssues(petEntity: PetEntity, pet: Pet): PetInteraction[
  * @param possibleIssues
  */
 function pickRandomInteraction(possibleIssues: PetInteraction[]): string {
+	if (possibleIssues.length === 0) {
+		return Constants.DEFAULT_ERROR;
+	}
 	const totalWeight = possibleIssues.map((pi: PetInteraction): number => pi.probabilityWeight)
-		.reduce((a: number, b: number): number => a + b);
+		.reduce((a: number, b: number): number => a + b, 0);
+	if (totalWeight === 0) {
+		return Constants.DEFAULT_ERROR;
+	}
 	const randomNb = RandomUtils.randInt(1, totalWeight + 1);
 	let sum = 0;
 	for (const petInteraction of possibleIssues) {
