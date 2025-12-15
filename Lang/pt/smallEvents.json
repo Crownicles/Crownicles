@@ -1571,25 +1571,30 @@
     }
   },
   "gobletsGame": {
-    "intro": "encontra um homem que parece suspeito. Ele aproxima-se de ti e empurra-te para uma mesa com três taças misteriosas. As instruções que lhe são dadas são simples: deve tirar uma chávena ao acaso e receber a recompensa, seja ela qual for. Enquanto olha para os objectos sobre a mesa, o homem aproxima-se por trás de si e parece não o querer largar. Para sair desta situação, resigna-se a escolher uma chávena.",
+    "intro": "depara-se com um homem de aparência suspeita. Aproxima-se e, sem cerimónias, empurra-te em direção a uma mesa onde estão dispostas quatro chávenas misteriosas. As instruções são simples: deve escolher uma chávena e receber a recompensa, seja ela qual for. Enquanto examinas os objetos em cima da mesa, o homem aproxima-se sorrateiramente por trás e parece não te querer largar. Para se livrar desta situação, resigna-se a escolher uma chávena.",
     "goblets": {
       "metal": {
-        "description": "O de metal, que parece muito antigo, tem gravada a cabeça de um dragão.",
+        "description": "A de metal, com um aspeto muito antigo, é a escolha clássica e equilibrada",
         "name": "metal"
       },
       "biggest": {
-        "description": "O maior dos três, feito de um material que não se consegue identificar",
+        "description": "O maior dos quatro, imponente e reconfortante, a escolha prudente e menos arriscada",
         "name": "o maior"
       },
       "sparkling": {
-        "description": "O último, esculpido em madeira azul e que brilha de tal forma que parece encantado",
+        "description": "A reluzente, esculpida em madeira azul encantada, a escolha arriscada que pode render muito",
         "name": "cintilante"
+      },
+      "cracked": {
+        "description": "O ar gretado e instável, a escolha do apostador, o tudo ou nada",
+        "name": "rachadura"
       }
     },
     "results": {
       "life": "Levanta suavemente o copo $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) e repara que não há nada debaixo. Desiludido e mau perdedor, bate nos copos restantes que voam pelos ares. Reparando que também não havia nada nos outros copos, vira-se para o vigarista. Infelizmente, este bate primeiro. Perde **{{quantity, number}} {emote:unitValues.lostHealth}**.",
       "time": "Levanta suavemente a chávena $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) e fica encantado por descobrir uma pequena moeda! Infelizmente, o homem atrás de si não parece querer deixá-lo partir com a sua recompensa. Passas **{{quantity}} {emote:unitValues.time}** a negociar com ele antes de desistires e continuares o teu caminho.",
-      "nothing": "$t(smallEvents:gobletsGame.goblets.{{goblet}}.name) Levanta suavemente a chávena e verifica que não há nada por baixo. Desapontado, vai-se embora com tristeza, pensando que talvez tenha mais sorte noutra altura.",
+      "nothing": "Levanta delicadamente a chávena $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) e encontra-a vazia. O burlão esboça um sorriso malicioso, mas, pelo canto do olho, percebe-se que as outras chávenas também estavam vazias. Ao perceber que escapou a uma armadilha astuta, afasta-se rapidamente, aliviado por ter saído ileso.",
+      "item": "Levanta delicadamente a chávena $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) e descobre um brilho intenso! Um objeto excecionalmente raro estava escondido debaixo dela. O burlão, surpreendido, deixa-o ir com a sua preciosa descoberta.",
       "end": "Perante a sua falta de reação, o homem tem a má ideia de tentar roubá-lo. Reparando na sua manobra, intervém, mas fica rapidamente surpreendido com a força do homem que consegue libertar-se com um movimento brusco antes de fugir. Sai com um pequeno ferimento. Perde **{{quantity, number}} {emote:unitValues.lostHealth}**."
     }
   },
@@ -1611,7 +1616,7 @@
       "{{name}}Ao percorreres a estrada, encontras uma carroça com uma comerciante de nome . Ela oferece-se para comprar um dos seus artigos, dizendo que pode ser útil na tua aventura."
     ],
     "end": [
-      "\n\n{{item}} | `{{price, number}} {emote:unitValues.money}`\n\n**Type :** {{type}}"
+      "\n\n{{item}} | `{{price, number}} {emote:unitValues.money}`\n\n**Tipo:** {{type}}"
     ],
     "types": [
       "Arma",
@@ -1947,13 +1952,13 @@
       "continue": "Continuar o seu caminho"
     },
     "outcomes": {
-      "found_by_player": "Aproximas-te cautelosamente e, depois de afastares os ramos e procurares nos cantos e recantos, pões as mãos em **{{foodName}}**. Oferece-o ao seu companheiro, que o aceita com gratidão, devorando o seu presente com grunhidos de satisfação.",
-      "found_by_player_soup": "Aproximas-te cautelosamente do caldeirão abandonado e descobres com satisfação que **{{foodName}}** ainda está a ferver suavemente. Deita uma porção generosa numa tigela e oferece-a ao seu companheiro. Ele lambe avidamente a comida reconfortante, abanando a cauda de contentamento.",
+      "found_by_player": "Vous vous approchez prudemment et, après avoir écarté les branchages et fouillé méticuleusement les recoins pendant **{{time}}** {emote:effects.occupied}, vous mettez enfin la main sur **{{foodName}}**. Vous l'offrez à votre compagnon qui l'accepte avec reconnaissance, dévorant son présent avec des grognements de satisfaction.",
+      "found_by_player_soup": "Vous vous approchez prudemment du chaudron abandonné. Après **{{time}}** {emote:effects.occupied} passées à vérifier qu'aucun danger ne rôde, vous découvrez avec satisfaction **{{foodName}}** qui mijote encore doucement. Vous en versez une généreuse portion dans une écuelle que vous présentez à votre compagnon, lequel lape goulûment ce mets réconfortant en remuant la queue de contentement.",
       "found_by_pet": "O seu animal de estimação salta agilmente e desaparece por um momento no meio do mato. Em breve regressa a si com um trote orgulhoso e triunfante, segurando delicadamente entre as presas o **{{foodName}}**. Os seus olhos brilham de orgulho e ele instala-se para saborear a sua descoberta com ruídos de mastigação entusiásticos.",
       "found_by_pet_soup": "A tua mascote trota rapidamente em direção ao acampamento abandonado e mergulha o focinho no caldeirão fumegante. Volta para junto de ti alguns instantes depois, com os lábios ainda brilhantes, depois de ter saboreado **{{foodName}}** com evidente prazer. Os seus olhos brilhantes e a cauda a abanar testemunham a sua satisfação gulosa.",
       "found_anyway": "Quando estava prestes a continuar o seu caminho sem se preocupar com esta distração, o seu fiel companheiro salta subitamente para os arbustos circundantes. Sai vitorioso com **{{foodName}}** que devora imediatamente com um apetite voraz, com a cauda a abanar de contentamento.",
       "found_anyway_soup": "No momento em que está prestes a pôr-se a caminho sem se preocupar com o acampamento, o seu fiel companheiro corre para o caldeirão abandonado. Antes que possas impedi-lo, ele bebe avidamente **{{foodName}}** com gemidos de prazer, claramente encantado com esta inesperada sorte.",
-      "player_failed": "Passou longos e árduos minutos a vasculhar meticulosamente a área, limpando silvas e espinhos, revirando pedras e cepos apodrecidos, mas, apesar de todos os seus esforços, não encontrou nada de valor. O tempo investido revelou-se tão inútil como procurar um tesouro numa arca vazia.",
+      "player_failed": "Vous passez **{{time}}** {emote:effects.occupied} éprouvantes à fouiller méticuleusement les environs, écartant ronces et épineux, retournant pierres et souches pourries, mais en dépit de tous vos efforts acharnés, vous ne dénichez rien qui vaille la peine. Ce temps investi se révèle aussi vain qu'une quête de trésor dans un coffre vide.",
       "pet_failed": "O seu companheiro parte resolutamente para o meio do mato, mas regressa alguns instantes depois com um andar pesado, as orelhas em baixo e a cauda pendurada. O seu olhar desiludido e os seus guinchos queixosos denunciam o seu fracasso: o trilho revelou-se infrutífero e os seus esforços não produziram mais do que amargura.",
       "pet_failed_soup": "O teu companheiro trota em direção ao acampamento abandonado e dá uma longa cheiradela ao caldeirão, mas, infelizmente, este está vazio ou o seu conteúdo já está frio e não é comestível. Volta para junto de si com um andar desapontado, orelhas baixas e cauda baixa, claramente frustrado com esta desilusão culinária.",
       "nothing": "Decide sabiamente não se demorar mais nestas paragens, considerando que o tempo urge e que a sua demanda não pode sofrer tais desvios. Com um gesto resoluto, pede ao seu companheiro que o siga e partem juntos em direção ao horizonte que o espera."
@@ -2029,7 +2034,7 @@
     "love": {
       "plus": "O seu fiel companheiro olha para si com olhos que brilham de gratidão e de afeto. Ele esfrega-se nas suas pernas e ronrona contente, demonstrando claramente que esta festa improvisada reforçou os laços de confiança e de amizade entre vocês!",
       "minus": "O seu animal de estimação olha para si com um olhar sombrio de reprovação silenciosa, com os lábios curvados num beicinho de desaprovação. Ele vira ostensivamente a cabeça para o lado com um rosnado de desagrado, claramente ofendido por esta comida indigna do seu paladar delicado...",
-      "neutral": "O seu companheiro de viagem devora a sua refeição com um distanciamento quase filosófico, não demonstrando nem um entusiasmo transbordante nem um desgosto particular. Ele parece considerar este achado como um alimento necessário, nada mais, nada menos."
+      "neutral": "O seu companheiro de viagem devorou a refeição com um distanciamento quase filosófico, sem demonstrar entusiasmo desenfreado nem repulsa particular."
     }
   },
   "badPet": {
