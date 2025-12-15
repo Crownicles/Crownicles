@@ -96,7 +96,6 @@ export async function petFoodCollector(context: PacketContext, packet: ReactionC
 			if (reactionIndex !== -1) {
 				DiscordCollectorUtils.sendReaction(packet, context, getReactingPlayer.payload.keycloakId, buttonInteraction, reactionIndex);
 			}
-			// Note: Do not call collector.stop() here - Core will send ReactionCollectorStopPacket to stop the collector
 		}
 	});
 
