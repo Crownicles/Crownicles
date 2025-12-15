@@ -1571,25 +1571,30 @@
     }
   },
   "gobletsGame": {
-    "intro": "Sie begegnen einem Mann, der Ihnen verdächtig vorkommt. Er kommt auf Sie zu und drängt Sie zu einem Tisch, auf dem drei mysteriöse Becher stehen. Die Anweisungen, die Sie erhalten, sind einfach: Ziehen Sie einen Becher nach dem Zufallsprinzip und nehmen Sie die Belohnung entgegen, was auch immer das sein mag. Während Sie die Gegenstände auf dem Tisch betrachten, schleicht sich der Mann hinter Ihrem Rücken an und scheint Sie nicht gehen lassen zu wollen. Um aus dieser Situation herauszukommen, finden Sie sich damit ab, einen Becher auszuwählen.",
+    "intro": "Du begegnest einem Mann, der dir verdächtig vorkommt. Er kommt auf dich zu und drängt dich unsanft zu einem Tisch, auf dem vier geheimnisvolle Becher stehen. Die Anweisungen sind einfach: Du musst einen Becher wählen und die Belohnung entgegennehmen, was auch immer sie sein mag. Während du die Gegenstände auf dem Tisch betrachtest, schleicht sich der Mann von hinten an dich heran und scheint nicht gewillt, dich gehen zu lassen. Um dich aus dieser misslichen Lage zu befreien, beschließt du, einen Becher zu wählen.",
     "goblets": {
       "metal": {
-        "description": "Der aus Metall, der sehr alt aussieht und mit einem Drachenkopf graviert ist.",
+        "description": "Die Variante aus Metall, die sehr alt aussieht, ist die klassische und ausgewogene Wahl",
         "name": "aus Metall"
       },
       "biggest": {
-        "description": "Der größte der drei, aus einem Material, das Sie nicht identifizieren können",
+        "description": "Die größte der vier, massiv und beruhigend, die umsichtige und risikoärmere Wahl",
         "name": "der größte"
       },
       "sparkling": {
-        "description": "Der letzte, aus blauem Holz geschnitzt und so glitzernd, dass er wie verzaubert wirkt",
+        "description": "Das glitzernde Exemplar, aus verzaubertem blauem Holz geschnitzt – die riskante Wahl, die sich lohnen kann",
         "name": "glitzernd"
+      },
+      "cracked": {
+        "description": "Die brüchige, unbeständige Luft, die Wahl des Wettenden, alles oder nichts",
+        "name": "Riss"
       }
     },
     "results": {
       "life": "Sie heben den Becher $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) vorsichtig an und bemerken, dass sich darunter nichts befindet. Enttäuscht und als schlechter Verlierer schlagen Sie gegen die restlichen Becher, die durch die Luft fliegen. Als Sie bemerken, dass sich auch in den anderen Bechern nichts befindet, wenden Sie sich wieder dem Betrüger zu. Leider schlägt dieser zuerst zu. Sie verlieren **{{quantity, number}} {emote:unitValues.lostHealth}**.",
       "time": "Sie heben den Becher $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) vorsichtig an und entdecken mit Freude eine kleine Münze! Leider scheint der Mann hinter Ihnen nicht gewillt zu sein, Sie mit Ihrer Belohnung gehen zu lassen. Sie verlieren **{{quantity}} {emote:unitValues.time}** dabei, mit ihm zu verhandeln, bevor Sie aufgeben und Ihren Weg fortsetzen.",
-      "nothing": "Sie heben den Becher $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) vorsichtig an und bemerken, dass sich darunter nichts befindet. Enttäuscht machen Sie sich traurig auf den Weg und sagen sich, dass Sie vielleicht ein anderes Mal mehr Glück haben werden.",
+      "nothing": "Du hebst vorsichtig die Tasse an $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) und stellst fest, dass sie leer ist. Der Betrüger lächelt verschmitzt, doch aus dem Augenwinkel bemerkst du, dass die anderen Tassen genauso leer sind. Dir wird klar, dass du einer raffinierten Falle entkommen bist, und du gehst schnell weg, erleichtert, unversehrt davongekommen zu sein.",
+      "item": "Du hebst die Tasse vorsichtig an $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) und entdeckst einen strahlenden Glanz! Darunter verbarg sich ein außergewöhnlich seltener Gegenstand. Der verblüffte Betrüger lässt dich mit deinem wertvollen Fund gehen.",
       "end": "Als Sie nicht reagieren, kommt der Mann auf die schlechte Idee, Sie ausrauben zu wollen. Sie bemerken sein Manöver und greifen ein, werden aber schnell von der Stärke des Mannes überrascht, der sich mit einer plötzlichen Bewegung losreißen kann und dann wegläuft. Sie kommen mit einer leichten Verletzung davon. Sie verlieren **{{quantity, number}} {emote:unitValues.lostHealth}**."
     }
   },
@@ -1947,13 +1952,13 @@
       "continue": "Fahren Sie weiter fort"
     },
     "outcomes": {
-      "found_by_player": "Sie nähern sich vorsichtig und nachdem Sie das Geäst beiseite geschoben und die Ecken durchsucht haben, fällt Ihnen **{{foodName}}** in die Hände. Sie bieten ihn Ihrem Begleiter an, der ihn dankbar annimmt und sein Geschenk mit einem zufriedenen Grunzen verschlingt.",
-      "found_by_player_soup": "Sie nähern sich vorsichtig dem verlassenen Kessel und entdecken mit Genugtuung **{{foodName}}**, der noch immer leise vor sich hin köchelt. Sie schütten eine große Portion in einen Napf und halten sie Ihrem Begleiter hin. Er schlürft die wärmende Mahlzeit und wedelt zufrieden mit dem Schwanz.",
+      "found_by_player": "Vous vous approchez prudemment et, après avoir écarté les branchages et fouillé méticuleusement les recoins pendant **{{time}}** {emote:effects.occupied}, vous mettez enfin la main sur **{{foodName}}**. Vous l'offrez à votre compagnon qui l'accepte avec reconnaissance, dévorant son présent avec des grognements de satisfaction.",
+      "found_by_player_soup": "Vous vous approchez prudemment du chaudron abandonné. Après **{{time}}** {emote:effects.occupied} passées à vérifier qu'aucun danger ne rôde, vous découvrez avec satisfaction **{{foodName}}** qui mijote encore doucement. Vous en versez une généreuse portion dans une écuelle que vous présentez à votre compagnon, lequel lape goulûment ce mets réconfortant en remuant la queue de contentement.",
       "found_by_pet": "Ihr Vertrauter macht einen flinken Sprung und verschwindet für einen Moment im Dickicht. Bald darauf kommt er in einem stolzen, triumphierenden Trab zu Ihnen zurück und hält **{{foodName}}** behutsam zwischen seinen Fängen. Seine Augen glänzen vor Stolz, während er sich mit begeisterten Kaugeräuschen niederlässt und seinen Fund genießt.",
       "found_by_pet_soup": "Ihr Vertrauter trabt schnell zu dem verlassenen Lager und taucht seine Schnauze in den dampfenden Kessel. Einige Augenblicke später kommt er mit glänzenden Schnauzen zu Ihnen zurück, nachdem er **{{foodName}}** offensichtlich mit sichtlichem Vergnügen genossen hat. Seine funkelnden Augen und sein wedelnder Schwanz zeugen von seiner gierigen Zufriedenheit.",
       "found_anyway": "Gerade als du dich wieder auf den Weg machen willst, ohne dich weiter um diese Ablenkung zu kümmern, springt dein treuer Gefährte plötzlich in die umliegenden Büsche. Er kommt mit **{{foodName}}** wieder heraus, die er sofort mit gierigem Appetit und wedelndem Schwanz verschlingt.",
       "found_anyway_soup": "Gerade als Sie sich wieder auf den Weg machen wollen, ohne sich weiter um das Lager zu kümmern, rennt Ihr treuer Begleiter zu dem verlassenen Kessel. Bevor Sie ihn daran hindern können, schlürft er mit einem genüsslichen Stöhnen **{{foodName}}** und freut sich sichtlich über den unerwarteten Gewinn.",
-      "player_failed": "Sie haben viele nervenaufreibende Minuten damit verbracht, die Umgebung akribisch abzusuchen, Brombeeren und Dornengestrüpp beiseite zu schieben, Steine und morsche Baumstümpfe umzudrehen, aber trotz all Ihrer verbissenen Bemühungen haben Sie nichts gefunden, was sich lohnt. Die Zeit, die Sie investiert haben, hat sich als genauso sinnlos erwiesen wie die Suche nach einem Schatz in einer leeren Truhe.",
+      "player_failed": "Vous passez **{{time}}** {emote:effects.occupied} éprouvantes à fouiller méticuleusement les environs, écartant ronces et épineux, retournant pierres et souches pourries, mais en dépit de tous vos efforts acharnés, vous ne dénichez rien qui vaille la peine. Ce temps investi se révèle aussi vain qu'une quête de trésor dans un coffre vide.",
       "pet_failed": "Ihr Begleiter rennt entschlossen ins Gebüsch, kommt aber nach wenigen Augenblicken mit schwerfälligen Schritten, herunterhängenden Ohren und hängendem Schwanz zurück. Sein enttäuschter Blick und sein klägliches Quieken verraten, dass er versagt hat: Die Fährte war erfolglos und seine Bemühungen haben nur Bitterkeit hervorgebracht.",
       "pet_failed_soup": "Ihr Begleiter trottet zu dem verlassenen Lagerplatz und schnüffelt lange an dem Kessel, der sich aber leider als leer erweist oder dessen Inhalt bereits abgekühlt und ungenießbar ist. Er kommt mit gesenkten Ohren und hängendem Schwanz zu Ihnen zurück, offensichtlich frustriert von der kulinarischen Enttäuschung.",
       "nothing": "Sie beschließen weise, sich nicht länger an diesem Ort aufzuhalten, da die Zeit knapp ist und Ihre Suche keine Umwege duldet. Mit einer entschlossenen Geste fordern Sie Ihren Begleiter auf, Ihnen zu folgen, und setzen gemeinsam Ihren Weg in Richtung des Horizonts fort, der Sie ruft."
@@ -2029,7 +2034,7 @@
     "love": {
       "plus": "Ihr treuer Begleiter betrachtet Sie mit leuchtenden Augen, die von Dankbarkeit und Zuneigung zeugen. Er reibt sich an Ihren Beinen und gibt ein zufriedenes Schnurren von sich, was deutlich zeigt, dass dieses improvisierte Festmahl die Bande des Vertrauens und der Freundschaft zwischen Ihnen gestärkt hat!",
       "minus": "Ihr Vertrauter starrt Sie mit einem schwarzen Blick voller stiller Vorwürfe an, die Lefzen sind zu einem missbilligenden Schmollmund aufgerollt. Er wendet den Kopf demonstrativ ab und stößt ein unzufriedenes Knurren aus, offensichtlich beleidigt von dem Essen, das seines zarten Gaumens nicht würdig ist...",
-      "neutral": "Ihr Mitreisender schlingt seine Mahlzeit mit einer fast philosophischen Distanz hinunter, ohne überschwängliche Begeisterung oder besonderen Ekel zu zeigen. Er scheint diesen Fund einfach als eine notwendige Sättigung zu betrachten, nicht mehr und nicht weniger."
+      "neutral": "Ihr Reisebegleiter verschlang seine Mahlzeit mit beinahe philosophischer Distanz, ohne überschwängliche Begeisterung oder besonderen Ekel zu zeigen."
     }
   },
   "badPet": {
