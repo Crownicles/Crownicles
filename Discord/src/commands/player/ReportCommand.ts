@@ -574,12 +574,15 @@ export async function handleUseTokensRefuse(context: PacketContext): Promise<voi
 	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
 	const lng = interaction.userLanguage;
 
-	await buttonInteraction?.editReply({
-		content: i18n.t("commands:report.tokensUsedRefused", {
+	const embed = new CrowniclesEmbed()
+		.formatAuthor(i18n.t("commands:report.tokensUsedRefusedTitle", {
 			lng,
 			pseudo: escapeUsername(interaction.user.displayName)
-		})
-	});
+		}), interaction.user)
+		.setDescription(i18n.t("commands:report.tokensUsedRefusedDescription", { lng }))
+		.setErrorColor();
+
+	await buttonInteraction?.editReply({ embeds: [embed] });
 }
 
 /**
