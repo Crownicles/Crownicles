@@ -1924,10 +1924,7 @@
     "minute_one": "{{count}} minute",
     "minute_other": "{{count}} minutes",
     "second_one": "{{count}} seconde",
-    "second_other": "{{count}} secondes",
-    "lessThanOneMinute": "< 1 minute",
-    "linkWord": " et ",
-    "separator": ", "
+    "second_other": "{{count}} secondes"
   },
   "guilds": {
     "levelUpTitle": "{emote:unitValues.xp} La guilde {{guild}} monte de niveau !",
