@@ -339,7 +339,44 @@ export function minutesDisplay(minutes: number, language: Language = LANGUAGE.DE
 }
 
 /**
+ * Display a time in a human-readable format using Intl.DurationFormat
+ * @param minutes - the time in minutes
+ * @param lng - language code for formatting
+ */
+export function minutesDisplayIntl(minutes: number, lng: string): string {
+	// Compute components
+	let hours = Math.floor(minutesToHours(minutes));
+	const mins = Math.floor(minutes % TimeConstants.S_TIME.MINUTE);
+	const days = Math.floor(hours / TimeConstants.HOURS_IN_DAY);
+	hours %= TimeConstants.HOURS_IN_DAY;
+
+	// Build duration object with only non-zero values
+	const duration: Intl.DurationInput = {};
+	if (days > 0) {
+		duration.days = days;
+	}
+	if (hours > 0) {
+		duration.hours = hours;
+	}
+	if (mins > 0) {
+		duration.minutes = mins;
+	}
+
+	// If all values are 0, show "0 minutes" instead of empty string
+	if (Object.keys(duration).length === 0) {
+		duration.minutes = 0;
+	}
+
+	const formatter = new Intl.DurationFormat(lng, {
+		style: "long",
+		minutesDisplay: "always"
+	});
+	return formatter.format(duration);
+}
+
+/**
  * Display a time in a human-readable format using i18n translations
+ * @deprecated Use minutesDisplayIntl instead for native Intl.DurationFormat support
  * @param minutes - the time in minutes
  * @param t - translation function (i18n.t)
  * @param lng - language code (optional, passed to translation function)

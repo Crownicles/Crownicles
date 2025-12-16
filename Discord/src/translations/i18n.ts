@@ -8,9 +8,7 @@ import { resolve } from "path";
 import { BotUtils } from "../utils/BotUtils";
 import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 import { CrowniclesLogger } from "../../../Lib/src/logs/CrowniclesLogger";
-import {
-	minutesDisplayI18n, TimeTranslationFunction
-} from "../../../Lib/src/utils/TimeUtils";
+import { minutesDisplayIntl } from "../../../Lib/src/utils/TimeUtils";
 
 function getI18nOptions(): i18next.InitOptions<unknown> {
 	const resources: i18next.Resource = {};
@@ -154,25 +152,12 @@ export class I18nCrownicles {
 	}
 
 	/**
-	 * Create a translation function wrapper compatible with TimeTranslationFunction
-	 * Used with minutesDisplayI18n from Lib
-	 * @param lng - Language to use for translation
-	 */
-	static createTimeTranslator(lng: Language): TimeTranslationFunction {
-		return (key: string, opts?: Record<string, unknown>): string => i18next.t(key, {
-			...opts,
-			lng
-		});
-	}
-
-	/**
-	 * Display a time in a human-readable format using i18n translations
-	 * Wrapper around minutesDisplayI18n from Lib
+	 * Display a time in a human-readable format using Intl.DurationFormat
 	 * @param minutes - the time in minutes
 	 * @param lng - language code
 	 */
 	static formatDuration(minutes: number, lng: Language): string {
-		return minutesDisplayI18n(minutes, I18nCrownicles.createTimeTranslator(lng), lng);
+		return minutesDisplayIntl(minutes, lng);
 	}
 }
 
