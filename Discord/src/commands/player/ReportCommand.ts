@@ -213,12 +213,12 @@ export async function reportResult(packet: CommandReportBigEventResultRes, conte
 	const lng = interaction.userLanguage;
 
 	const result = getReportResultConditionTriplets(packet, lng)
-		.map(triplet => (triplet[0]
+		.map(triplet => triplet[0]
 			? i18n.t(`commands:report.${triplet[1]}`, {
 				lng,
 				...triplet[2]
 			})
-			: ""))
+			: "")
 		.join("");
 
 	const content = i18n.t("commands:report.doPossibility", {

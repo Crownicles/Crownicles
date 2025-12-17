@@ -273,7 +273,7 @@ async function getOverriddenPlayersUsernames<U, V, W>(elements: TopElement<U, V,
 		return elements.map(_ => unknownUsername);
 	}
 	return req.payload.users
-		.map(u => (u ? escapeUsername(u.attributes.gameUsername[0]) : unknownUsername));
+		.map(u => u ? escapeUsername(u.attributes.gameUsername[0]) : unknownUsername);
 }
 
 export async function handleCommandTopPacketResScore(context: PacketContext, packet: CommandTopPacketResScore): Promise<void> {
