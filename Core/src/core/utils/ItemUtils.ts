@@ -350,7 +350,7 @@ function manageMoreThan2ItemsSwitching(
 	canDrinkThisPotion: boolean
 ): void {
 	const keycloakId = whoIsConcerned.player.keycloakId;
-	tradableItems.sort((a: InventorySlot, b: InventorySlot) => (a.slot > b.slot ? 1 : b.slot > a.slot ? -1 : 0));
+	tradableItems.sort((a: InventorySlot, b: InventorySlot) => a.slot > b.slot ? 1 : b.slot > a.slot ? -1 : 0);
 
 	const collector = new ReactionCollectorItemChoice({
 		item: {
@@ -626,9 +626,9 @@ export function sortPlayerItemList(items: InventorySlot[]): InventorySlot[] {
 	}))
 		.sort(
 			(a: TemporarySlotAndItemType, b: TemporarySlotAndItemType) =>
-				(a.slot.itemCategory !== b.slot.itemCategory
+				a.slot.itemCategory !== b.slot.itemCategory
 					? a.slot.itemCategory - b.slot.itemCategory
-					: getItemValue(b.item) - getItemValue(a.item))
+					: getItemValue(b.item) - getItemValue(a.item)
 		)
 		.map(e => e.slot);
 }

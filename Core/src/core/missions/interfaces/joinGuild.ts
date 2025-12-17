@@ -5,7 +5,7 @@ export const missionInterface: IMission = {
 
 	areParamsMatchingVariantAndBlob: () => true,
 
-	initialNumberDone: player => (player.guildId ? 1 : 0),
+	initialNumberDone: player => player.guildId ? 1 : 0,
 
 	updateSaveBlob: () => null
 };
