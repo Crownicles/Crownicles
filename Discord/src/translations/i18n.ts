@@ -8,6 +8,7 @@ import { resolve } from "path";
 import { BotUtils } from "../utils/BotUtils";
 import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 import { CrowniclesLogger } from "../../../Lib/src/logs/CrowniclesLogger";
+import { minutesDisplayIntl } from "../../../Lib/src/utils/TimeUtils";
 
 function getI18nOptions(): i18next.InitOptions<unknown> {
 	const resources: i18next.Resource = {};
@@ -148,6 +149,15 @@ export class I18nCrownicles {
 			return (value as string[]).map(crowniclesFormat);
 		}
 		return crowniclesFormat(value);
+	}
+
+	/**
+	 * Display a time in a human-readable format using Intl.DurationFormat
+	 * @param minutes - the time in minutes
+	 * @param lng - language code
+	 */
+	static formatDuration(minutes: number, lng: Language): string {
+		return minutesDisplayIntl(minutes, lng);
 	}
 }
 

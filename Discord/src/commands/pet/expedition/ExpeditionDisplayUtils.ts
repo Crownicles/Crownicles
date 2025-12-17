@@ -1,7 +1,5 @@
 import i18n from "../../../translations/i18n";
-import {
-	finishInTimeDisplay, minutesDisplay
-} from "../../../../../Lib/src/utils/TimeUtils";
+import { finishInTimeDisplay } from "../../../../../Lib/src/utils/TimeUtils";
 import {
 	ExpeditionConstants, ExpeditionLocationType, SpeedCategory
 } from "../../../../../Lib/src/constants/ExpeditionConstants";
@@ -225,7 +223,7 @@ export function buildExpeditionOptionText(
 ): string {
 	const locationEmoji = CrowniclesIcons.expedition.locations[exp.locationType];
 	const locationName = getExpeditionLocationName(lng, exp.mapLocationId, exp.isDistantExpedition);
-	const displayDuration = minutesDisplay(exp.displayDurationMinutes, lng);
+	const displayDuration = i18n.formatDuration(exp.displayDurationMinutes, lng);
 	const foodCost = exp.foodCost ?? 1;
 	const foodDisplay = i18n.t("commands:petExpedition.foodCost", {
 		lng, count: foodCost

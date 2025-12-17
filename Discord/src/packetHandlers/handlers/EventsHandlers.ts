@@ -9,10 +9,7 @@ import {
 	crowniclesClient, keycloakConfig
 } from "../../bot/CrowniclesShard";
 import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
-import {
-	minutesDisplay,
-	minutesToHours
-} from "../../../../Lib/src/utils/TimeUtils";
+import { minutesToHours } from "../../../../Lib/src/utils/TimeUtils";
 import { GuildLevelUpPacket } from "../../../../Lib/src/packets/events/GuildLevelUpPacket";
 import { MissionsCompletedPacket } from "../../../../Lib/src/packets/events/MissionsCompletedPacket";
 import { MissionsExpiredPacket } from "../../../../Lib/src/packets/events/MissionsExpiredPacket";
@@ -45,7 +42,7 @@ export default class EventsHandlers {
 			pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
 		}), interaction.user);
 		let time = packet.tripDuration;
-		const timeDisplay = minutesDisplay(packet.tripDuration, lng);
+		const timeDisplay = i18n.formatDuration(packet.tripDuration, lng);
 		let i18nTr: string;
 		if (time < 60) {
 			i18nTr = "commands:report.choseMapMinutes";

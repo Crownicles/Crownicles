@@ -16,7 +16,6 @@ import { Effect } from "../../../Lib/src/types/Effect";
 import { WitchActionOutcomeType } from "../../../Lib/src/types/WitchActionOutcomeType";
 import { ReactionCollectorReturnTypeOrNull } from "../packetHandlers/handlers/ReactionCollectorHandlers";
 import { MessagesUtils } from "../utils/MessagesUtils";
-import { minutesDisplay } from "../../../Lib/src/utils/TimeUtils";
 
 export async function witchCollector(context: PacketContext, packet: ReactionCollectorWitchPacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
@@ -102,7 +101,7 @@ export async function witchResult(packet: SmallEventWitchResultPacket, context: 
 	const lng = context.discord!.language;
 	const introToLoad = packet.isIngredient ? "smallEvents:witch.witchEventResults.ingredientIntros" : "smallEvents:witch.witchEventResults.adviceIntros";
 	const isTimePenalty = packet.effectId === Effect.OCCUPIED.id && packet.timeLost > 0;
-	const lostTimeDisplay = isTimePenalty ? minutesDisplay(packet.timeLost, lng) : null;
+	const lostTimeDisplay = isTimePenalty ? i18n.formatDuration(packet.timeLost, lng) : null;
 	const timeOutro = isTimePenalty
 		? ` ${StringUtils.getRandomTranslation("smallEvents:witch.witchEventResults.outcomes.2.time", lng, {
 			lostTime: packet.timeLost,

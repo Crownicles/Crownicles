@@ -8,7 +8,6 @@ import { EmbedField } from "discord.js";
 import {
 	FightItemNatures, itemCategoryToString, ItemNature
 } from "../../../Lib/src/constants/ItemConstants";
-import { minutesDisplay } from "../../../Lib/src/utils/TimeUtils";
 import { StatValues } from "../../../Lib/src/types/StatValues";
 import { DisplayUtils } from "./DisplayUtils";
 
@@ -128,7 +127,7 @@ export class DiscordItemUtils {
 			}),
 			i18n.t(`items:potionsNatures.${displayPacket.nature}`, {
 				lng,
-				power: displayPacket.nature === ItemNature.TIME_SPEEDUP ? minutesDisplay(displayPacket.power, lng) : displayPacket.power
+				power: displayPacket.nature === ItemNature.TIME_SPEEDUP ? i18n.formatDuration(displayPacket.power, lng) : displayPacket.power
 			}),
 			displayPacket,
 			lng
@@ -151,7 +150,7 @@ export class DiscordItemUtils {
 		return i18n.t(`items:objectsNatures.${nature}`, {
 			lng,
 			power: nature === ItemNature.TIME_SPEEDUP
-				? minutesDisplay(power, lng)
+				? i18n.formatDuration(power, lng)
 				: FightItemNatures.includes(nature) && maxPower < power
 					? i18n.t("items:nerfDisplay", {
 						lng,
@@ -166,7 +165,7 @@ export class DiscordItemUtils {
 		return i18n.t(`items:potionsNatures.${nature}`, {
 			lng,
 			power: nature === ItemNature.TIME_SPEEDUP
-				? minutesDisplay(power, lng)
+				? i18n.formatDuration(power, lng)
 				: power
 		});
 	}

@@ -23,9 +23,6 @@ importers:
       triple-beam:
         specifier: 1.4.1
         version: 1.4.1
-      typescript:
-        specifier: 5.9.3
-        version: 5.9.3
       umzug:
         specifier: 3.8.2
         version: 3.8.2(@types/node@25.0.2)
@@ -60,6 +57,9 @@ importers:
       eslint-plugin-jsdoc:
         specifier: 61.5.0
         version: 61.5.0(eslint@9.39.2)
+      typescript:
+        specifier: 5.9.3
+        version: 5.9.3
       typescript-eslint:
         specifier: 8.50.0
         version: 8.50.0(eslint@9.39.2)(typescript@5.9.3)

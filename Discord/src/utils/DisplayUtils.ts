@@ -5,7 +5,6 @@ import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 import i18n from "../translations/i18n";
 import { Language } from "../../../Lib/src/Language";
 import { ItemWithDetails } from "../../../Lib/src/types/ItemWithDetails";
-import { minutesDisplay } from "../../../Lib/src/utils/TimeUtils";
 import { Item } from "../../../Lib/src/types/Item";
 import {
 	SexTypeShort, StringConstants
@@ -354,7 +353,7 @@ export class DisplayUtils {
 			rarity: i18n.t(`items:rarities.${itemWithDetails.rarity}`, { lng }),
 			values: i18n.t(`items:potionsNatures.${itemWithDetails.detailsSupportItem!.nature}`, {
 				power: itemWithDetails.detailsSupportItem!.nature === ItemNature.TIME_SPEEDUP
-					? minutesDisplay(itemWithDetails.detailsSupportItem!.power, lng)
+					? i18n.formatDuration(itemWithDetails.detailsSupportItem!.power, lng)
 					: itemWithDetails.detailsSupportItem!.power,
 				lng
 			}),
@@ -377,7 +376,7 @@ export class DisplayUtils {
 		switch (nature) {
 			case ItemNature.TIME_SPEEDUP:
 				return i18n.t(`items:objectsNatures.${nature}`, {
-					power: minutesDisplay(power, lng),
+					power: i18n.formatDuration(power, lng),
 					lng
 				});
 

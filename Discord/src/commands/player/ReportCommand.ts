@@ -32,7 +32,6 @@ import { Effect } from "../../../../Lib/src/types/Effect";
 import {
 	millisecondsToHours,
 	millisecondsToMinutes,
-	minutesDisplay,
 	printTimeBeforeDate
 } from "../../../../Lib/src/utils/TimeUtils";
 import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
@@ -198,7 +197,7 @@ function getReportResultConditionTriplets(packet: CommandReportBigEventResultRes
 		[
 			packet.effect?.name === Effect.OCCUPIED.id,
 			"timeLost",
-			{ timeLost: packet.effect ? minutesDisplay(packet.effect.time, lng) : 0 }
+			{ timeLost: packet.effect ? i18n.formatDuration(packet.effect.time, lng) : 0 }
 		]
 	];
 }
@@ -268,8 +267,8 @@ export async function chooseDestinationCollector(context: PacketContext, packet:
 
 			// If the trip duration is hidden, the translation module is used with a 2 hours placeholder and the 2 is replaced by a ? afterward
 			const duration = destinationReaction.tripDuration
-				? minutesDisplay(destinationReaction.tripDuration, lng)
-				: minutesDisplay(120, lng)
+				? i18n.formatDuration(destinationReaction.tripDuration, lng)
+				: i18n.formatDuration(120, lng)
 					.replace("2", "?");
 			return `${
 				CrowniclesIcons.mapTypes[destinationReaction.mapTypeId]

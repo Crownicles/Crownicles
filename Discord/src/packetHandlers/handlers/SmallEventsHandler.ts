@@ -40,9 +40,7 @@ import {
 	interactOtherPlayerGetPlayerDisplay
 } from "../../smallEvents/interactOtherPlayers";
 import { SmallEventLeagueRewardPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventLeagueReward";
-import {
-	minutesDisplay, printTimeBeforeDate
-} from "../../../../Lib/src/utils/TimeUtils";
+import { printTimeBeforeDate } from "../../../../Lib/src/utils/TimeUtils";
 import { SmallEventWinGuildXPPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventWinGuildXPPacket";
 import { SmallEventBonusGuildPVEIslandPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventBonusGuildPVEIslandPacket";
 import { SmallEventBotFactsPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventBotFactsPacket";
@@ -118,7 +116,7 @@ export default class SmallEventsHandler {
 			return;
 		}
 		const lng = interaction.userLanguage;
-		const timeDisplay = minutesDisplay(packet.amount, lng);
+		const timeDisplay = i18n.formatDuration(packet.amount, lng);
 		const description = getRandomSmallEventIntro(lng)
 			+ StringUtils.getRandomTranslation("smallEvents:advanceTime.stories", lng, {
 				time: packet.amount,
@@ -258,7 +256,7 @@ export default class SmallEventsHandler {
 	async smallEventLotteryLose(context: PacketContext, packet: SmallEventLotteryLosePacket): Promise<void> {
 		const interaction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
 		const lng = context.discord!.language;
-		const lostTimeDisplay = minutesDisplay(packet.lostTime, lng);
+		const lostTimeDisplay = i18n.formatDuration(packet.lostTime, lng);
 		await interaction?.editReply({
 			embeds: [
 				new CrowniclesSmallEventEmbed(
@@ -280,7 +278,7 @@ export default class SmallEventsHandler {
 	async smallEventLotteryWin(context: PacketContext, packet: SmallEventLotteryWinPacket): Promise<void> {
 		const interaction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
 		const lng = context.discord!.language;
-		const lostTimeDisplay = minutesDisplay(packet.lostTime, lng);
+		const lostTimeDisplay = i18n.formatDuration(packet.lostTime, lng);
 		await interaction?.editReply({
 			embeds: [
 				new CrowniclesSmallEventEmbed(
@@ -666,7 +664,7 @@ export default class SmallEventsHandler {
 		const interaction = DiscordCache.getInteraction(context.discord!.interaction);
 		const lng = interaction!.userLanguage;
 		const amountDisplay = packet.issue === SmallEventBadIssue.TIME
-			? minutesDisplay(packet.amount, lng)
+			? i18n.formatDuration(packet.amount, lng)
 			: packet.amount;
 
 		// For TIME issue, choose translation key based on effectId
@@ -727,7 +725,7 @@ export default class SmallEventsHandler {
 		const interaction = DiscordCache.getInteraction(context.discord!.interaction);
 		const lng = interaction!.userLanguage;
 		const amountDisplay = packet.amount && PET_TIME_INTERACTIONS.has(packet.interactionName)
-			? minutesDisplay(packet.amount, lng)
+			? i18n.formatDuration(packet.amount, lng)
 			: packet.amount;
 		await interaction?.editReply({
 			embeds: [
@@ -885,7 +883,7 @@ export default class SmallEventsHandler {
 					.setDescription(
 						`${gobletEmote} ${i18n.t(resultKey, {
 							lng,
-							quantity: packet.malus === SmallEventGobletsGameMalus.TIME ? minutesDisplay(packet.value, lng) : packet.value,
+							quantity: packet.malus === SmallEventGobletsGameMalus.TIME ? i18n.formatDuration(packet.value, lng) : packet.value,
 							goblet
 						})}`
 					)

@@ -23,7 +23,6 @@
     "random-js": "2.1.0",
     "sequelize": "6.37.7",
     "triple-beam": "1.4.1",
-    "typescript": "5.9.3",
     "umzug": "3.8.2",
     "winston": "3.19.0",
     "winston-daily-rotate-file": "5.0.0",
@@ -37,7 +36,7 @@
     "@vitest/coverage-v8": "4.0.15",
     "eslint": "9.39.2",
     "eslint-plugin-jsdoc": "61.5.0",
-    "typescript": "5.8.3",
+    "typescript": "5.9.3",
     "typescript-eslint": "8.50.0",
     "vitest": "4.0.15"
   }

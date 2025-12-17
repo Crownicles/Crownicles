@@ -1,55 +1,7 @@
 import {
-	Language,
-	LANGUAGE
-} from "../Language";
-import {
 	DAYS,
 	TimeConstants
 } from "../constants/TimeConstants";
-
-/**
- * Get the elements to display the remaining time in the given language
- * @param language
- */
-function getMinutesDisplayStringConstants(language: string): {
-	daysDisplay: string;
-	hoursDisplay: string;
-	minutesDisplay: string;
-	secondsDisplay: string;
-	lessThanOneMinute: string;
-	plural: string;
-	linkWord: string;
-} {
-	return language === ""
-		? {
-			daysDisplay: "D",
-			hoursDisplay: "H",
-			minutesDisplay: "Min",
-			secondsDisplay: "s",
-			lessThanOneMinute: "< 1 Min",
-			linkWord: " ",
-			plural: ""
-		}
-		: language === LANGUAGE.FRENCH
-			? {
-				daysDisplay: "jour",
-				hoursDisplay: "heure",
-				minutesDisplay: "minute",
-				secondsDisplay: "seconde",
-				lessThanOneMinute: "< 1 minute",
-				linkWord: " et ",
-				plural: "s"
-			}
-			: {
-				daysDisplay: "day",
-				hoursDisplay: "hour",
-				minutesDisplay: "minute",
-				secondsDisplay: "second",
-				lessThanOneMinute: "< 1 Min",
-				linkWord: " and ",
-				plural: "s"
-			};
-}
 
 /**
  * Get the current date for logging purposes
@@ -298,36 +250,39 @@ export function getTimeFromXHoursAgo(hours: number): Date {
 }
 
 /**
- * Display a time in a human-readable format
+ * Display a time in a human-readable format using Intl.DurationFormat
  * @param minutes - the time in minutes
- * @param language
+ * @param lng - language code for formatting
  */
-export function minutesDisplay(minutes: number, language: Language = LANGUAGE.DEFAULT_LANGUAGE): string {
+export function minutesDisplayIntl(minutes: number, lng: string): string {
 	// Compute components
 	let hours = Math.floor(minutesToHours(minutes));
-	minutes = Math.floor(minutes % TimeConstants.S_TIME.MINUTE);
+	const mins = Math.floor(minutes % TimeConstants.S_TIME.MINUTE);
 	const days = Math.floor(hours / TimeConstants.HOURS_IN_DAY);
 	hours %= TimeConstants.HOURS_IN_DAY;
 
-	const displayConstantValues = getMinutesDisplayStringConstants(language);
-
-	const parts = [
-		days > 0 ? `${days} ${displayConstantValues.daysDisplay}${days > 1 ? displayConstantValues.plural : ""}` : "",
-		hours > 0 ? `${hours} ${displayConstantValues.hoursDisplay}${hours > 1 ? displayConstantValues.plural : ""}` : "",
-		minutes > 0 ? `${minutes} ${displayConstantValues.minutesDisplay}${minutes > 1 ? displayConstantValues.plural : ""}` : ""
-	].filter(v => v !== "");
-
-	if (parts.length === 0) {
-		return displayConstantValues.lessThanOneMinute;
+	// Build duration object with only non-zero values
+	const duration: Intl.DurationInput = {};
+	if (days > 0) {
+		duration.days = days;
+	}
+	if (hours > 0) {
+		duration.hours = hours;
+	}
+	if (mins > 0) {
+		duration.minutes = mins;
 	}
 
-	if (parts.length === 1) {
-		return parts[0];
+	// If all values are 0, show "0 minutes" instead of empty string
+	if (Object.keys(duration).length === 0) {
+		duration.minutes = 0;
 	}
 
-	// Join all parts except the last with commas, then add the link word before the last part
-	const lastPart = parts.pop()!;
-	return `${parts.join(", ")}${displayConstantValues.linkWord}${lastPart}`;
+	const formatter = new Intl.DurationFormat(lng, {
+		style: "long",
+		minutesDisplay: "always"
+	});
+	return formatter.format(duration);
 }
 
 /**

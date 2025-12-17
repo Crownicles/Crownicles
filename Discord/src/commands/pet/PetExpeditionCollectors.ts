@@ -13,7 +13,6 @@ import {
 } from "discord.js";
 import { sendInteractionNotForYou } from "../../utils/ErrorUtils";
 import { escapeUsername } from "../../utils/StringUtils";
-import { minutesDisplay } from "../../../../Lib/src/utils/TimeUtils";
 import { Language } from "../../../../Lib/src/Language";
 import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 import { ReactionCollectorPetExpeditionPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorPetExpedition";
@@ -141,7 +140,7 @@ function addExpeditionMenuOption(
 ): void {
 	const locationEmoji = CrowniclesIcons.expedition.locations[exp.locationType];
 	const locationName = getExpeditionLocationName(lng, exp.mapLocationId, exp.isDistantExpedition);
-	const displayDuration = minutesDisplay(exp.displayDurationMinutes, lng);
+	const displayDuration = i18n.formatDuration(exp.displayDurationMinutes, lng);
 
 	selectMenu.addOptions({
 		label: `${locationEmoji} ${locationName}`.substring(0, 100),
