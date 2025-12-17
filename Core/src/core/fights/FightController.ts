@@ -65,7 +65,7 @@ export class FightController {
 	public constructor(
 		fighters: {
 			fighter1: PlayerFighter | AiPlayerFighter;
-			fighter2: (MonsterFighter | AiPlayerFighter);
+			fighter2: MonsterFighter | AiPlayerFighter;
 		},
 		overtimeBehavior: FightOvertimeBehavior,
 		context: PacketContext,
