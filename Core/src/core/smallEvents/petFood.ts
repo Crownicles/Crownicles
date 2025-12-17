@@ -145,12 +145,12 @@ const LOVE_CHANGE_HANDLERS: Record<string, (properties: PetFoodProperties, petMo
 		return SmallEventConstants.PET_FOOD.NO_LOVE_CHANGE;
 	},
 	[SmallEventConstants.PET_FOOD.FOOD_TYPES.GOOD_SMELL]: (properties: PetFoodProperties): number => properties.love.goodSmell,
-	[SmallEventConstants.PET_FOOD.FOOD_TYPES.VEGETARIAN]: (properties: PetFoodProperties, petModel: Pet): number => (petModel.diet === PetDiet.CARNIVOROUS
+	[SmallEventConstants.PET_FOOD.FOOD_TYPES.VEGETARIAN]: (properties: PetFoodProperties, petModel: Pet): number => petModel.diet === PetDiet.CARNIVOROUS
 		? SmallEventConstants.PET_FOOD.NO_LOVE_CHANGE
-		: properties.love.vegetarian),
-	[SmallEventConstants.PET_FOOD.FOOD_TYPES.MEAT]: (properties: PetFoodProperties, petModel: Pet): number => (petModel.diet === PetDiet.HERBIVOROUS
+		: properties.love.vegetarian,
+	[SmallEventConstants.PET_FOOD.FOOD_TYPES.MEAT]: (properties: PetFoodProperties, petModel: Pet): number => petModel.diet === PetDiet.HERBIVOROUS
 		? SmallEventConstants.PET_FOOD.NO_LOVE_CHANGE
-		: properties.love.meat),
+		: properties.love.meat,
 	[SmallEventConstants.PET_FOOD.FOOD_TYPES.SOUP]: (properties: PetFoodProperties): number => properties.love.soup
 };
 
