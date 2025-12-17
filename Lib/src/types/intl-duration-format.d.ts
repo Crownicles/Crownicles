@@ -53,7 +53,10 @@ declare namespace Intl {
 		constructor(locales?: string | string[], options?: DurationFormatOptions);
 		format(duration: DurationInput): string;
 		formatToParts(duration: DurationInput): DurationFormatPart[];
-		resolvedOptions(): DurationFormatOptions & { locale: string; numberingSystem: string };
+		resolvedOptions(): DurationFormatOptions & {
+			locale: string;
+			numberingSystem: string;
+		};
 		static supportedLocalesOf(locales: string | string[], options?: { localeMatcher?: "best fit" | "lookup" }): string[];
 	}
 }

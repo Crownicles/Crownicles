@@ -1,13 +1,7 @@
 import {
-	Language,
-	LANGUAGE
-} from "../Language";
-import {
 	DAYS,
 	TimeConstants
 } from "../constants/TimeConstants";
-
-
 
 /**
  * Get the current date for logging purposes
