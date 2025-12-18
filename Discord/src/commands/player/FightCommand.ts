@@ -571,8 +571,12 @@ function generateFightRecapDescription(embed: CrowniclesEmbed, packet: FightRewa
 
 	// sameElo uses player1/player2 keys, while higherEloWins/lowestEloWins use winner/loser keys
 	const translationParams = gloryDifference < FightConstants.ELO.ELO_DIFFERENCE_FOR_SAME_ELO
-		? { player1: player1Username, player2: player2Username }
-		: { winner: fightResult.winnerUsername, loser: fightResult.loserUsername };
+		? {
+			player1: player1Username, player2: player2Username
+		}
+		: {
+			winner: fightResult.winnerUsername, loser: fightResult.loserUsername
+		};
 
 	embed.setDescription(StringUtils.getRandomTranslation(translationKey, lng, translationParams));
 }
