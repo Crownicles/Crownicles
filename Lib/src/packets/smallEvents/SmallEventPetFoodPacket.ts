@@ -3,6 +3,7 @@ import {
 	sendablePacket
 } from "../CrowniclesPacket";
 import { SmallEventPacket } from "./SmallEventPacket";
+import { SexTypeShort } from "../../constants/StringConstants";
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class SmallEventPetFoodPacket extends SmallEventPacket {
@@ -13,4 +14,6 @@ export class SmallEventPetFoodPacket extends SmallEventPacket {
 	loveChange!: number;
 
 	timeLost?: number; // Time lost in minutes when investigating
+
+	petSex!: SexTypeShort; // Sex of the pet for gendered translations
 }

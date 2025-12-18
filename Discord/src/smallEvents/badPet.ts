@@ -7,7 +7,7 @@ import { CrowniclesSmallEventEmbed } from "../messages/CrowniclesSmallEventEmbed
 import i18n from "../translations/i18n";
 import { StringUtils } from "../utils/StringUtils";
 import { PetUtils } from "../utils/PetUtils";
-import { SexTypeShort } from "../../../Lib/src/constants/StringConstants";
+import { SexTypeShort, StringConstants } from "../../../Lib/src/constants/StringConstants";
 import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 import {
 	ActionRowBuilder, ButtonBuilder, ButtonStyle, parseEmoji
@@ -43,7 +43,12 @@ export async function badPetCollector(context: PacketContext, packet: ReactionCo
 
 	const petDisplay = PetUtils.petToShortString(lng, data.petNickname, data.petId, data.sex as SexTypeShort);
 
-	let description = `${StringUtils.getRandomTranslation("smallEvents:badPet.intro", lng, { pet: petDisplay })}\n\n`;
+	// Get the sex context for gendered translations
+	const sexContext = data.sex === StringConstants.SEX.MALE.short
+		? StringConstants.SEX.MALE.long
+		: StringConstants.SEX.FEMALE.long;
+
+	let description = `${StringUtils.getRandomTranslation("smallEvents:badPet.intro", lng, { pet: petDisplay, context: sexContext })}\n\n`;
 
 	const row = new ActionRowBuilder<ButtonBuilder>();
 
@@ -53,7 +58,7 @@ export async function badPetCollector(context: PacketContext, packet: ReactionCo
 		if (actionId && isValidActionId(actionId)) {
 			const icon = CrowniclesIcons.badPetSmallEvent[actionId];
 
-			description += `${icon} ${i18n.t(`smallEvents:badPet.choices.${actionId}`, { lng })}\n`;
+			description += `${icon} ${i18n.t(`smallEvents:badPet.choices.${actionId}`, { lng, context: sexContext })}\n`;
 
 			row.addComponents(
 				new ButtonBuilder()

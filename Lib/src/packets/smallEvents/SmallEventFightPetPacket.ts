@@ -8,4 +8,6 @@ export class SmallEventFightPetPacket extends SmallEventPacket {
 	isSuccess!: boolean;
 
 	fightPetActionId!: string;
+
+	isFemale!: boolean; // Sex of the feral pet for gendered translations
 }

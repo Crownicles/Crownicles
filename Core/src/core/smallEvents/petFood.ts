@@ -204,7 +204,8 @@ async function applyOutcome(
 		outcome,
 		foodType,
 		loveChange,
-		timeLost: wasInvestigating ? SmallEventConstants.PET_FOOD.TRAVEL_TIME_PENALTY_MINUTES : undefined
+		timeLost: wasInvestigating ? SmallEventConstants.PET_FOOD.TRAVEL_TIME_PENALTY_MINUTES : undefined,
+		petSex: petEntity.sex
 	}));
 }
 
