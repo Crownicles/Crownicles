@@ -267,12 +267,12 @@ export class Guild extends Model {
                        FROM (SELECT id, RANK() OVER (ORDER BY score desc, level desc) ranking
                              FROM guilds) subquery
                        WHERE subquery.id = :id`;
-		return (<{
-			ranking: number;
-		}[]>(await Guild.sequelize.query(query, {
+		return ((await Guild.sequelize.query(query, {
 			replacements: { id: this.id },
 			type: QueryTypes.SELECT
-		})))[0].ranking;
+		}))[0] as {
+			ranking: number;
+		}).ranking;
 	}
 
 	/**
