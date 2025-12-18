@@ -64,7 +64,7 @@ import { SmallEventWitchResultPacket } from "../../../../Lib/src/packets/smallEv
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { witchResult } from "../../smallEvents/witch";
 import { DisplayUtils } from "../../utils/DisplayUtils";
-import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
+import { SexTypeShort, StringConstants } from "../../../../Lib/src/constants/StringConstants";
 import {
 	SmallEventSpaceInitialPacket,
 	SmallEventSpaceResultPacket
@@ -833,11 +833,13 @@ export default class SmallEventsHandler {
 			return;
 		}
 		const lng = interaction.userLanguage;
+		// Get the sex context for gendered translations
+		const sexContext = packet.isFemale ? StringConstants.SEX.FEMALE.long : StringConstants.SEX.MALE.long;
 		await interaction.followUp({
 			embeds: [
 				new CrowniclesSmallEventEmbed(
 					"fightPet",
-					i18n.t(`smallEvents:fightPet.fightPetActions.${packet.fightPetActionId}.${packet.isSuccess ? "success" : "failure"}`, { lng })
+					i18n.t(`smallEvents:fightPet.fightPetActions.${packet.fightPetActionId}.${packet.isSuccess ? "success" : "failure"}`, { lng, context: sexContext })
 					+ (packet.isSuccess
 						? i18n.t("smallEvents:fightPet.rageUpFormat", {
 							lng,

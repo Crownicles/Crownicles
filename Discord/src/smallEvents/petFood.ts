@@ -18,6 +18,7 @@ import { SmallEventPetFoodPacket } from "../../../Lib/src/packets/smallEvents/Sm
 import { Language } from "../../../Lib/src/Language";
 import { RandomUtils } from "../../../Lib/src/utils/RandomUtils";
 import { SmallEventConstants } from "../../../Lib/src/constants/SmallEventConstants";
+import { StringConstants } from "../../../Lib/src/constants/StringConstants";
 
 /**
  * Handle the pet food small event collector interaction
@@ -136,6 +137,11 @@ export function getPetFoodDescription(packet: SmallEventPetFoodPacket, lng: Lang
 	const outcomeIsFound = FOUND_OUTCOMES.includes(packet.outcome);
 	const playerInvestigated = PLAYER_INVESTIGATED_OUTCOMES.includes(packet.outcome);
 
+	// Get the sex context for gendered translations
+	const sexContext = packet.petSex === StringConstants.SEX.MALE.short
+		? StringConstants.SEX.MALE.long
+		: StringConstants.SEX.FEMALE.long;
+
 	// If the food was actually found, pick a readable display name for it from translations
 	const foodName = outcomeIsFound
 		? RandomUtils.crowniclesRandom.pick(
@@ -161,6 +167,7 @@ export function getPetFoodDescription(packet: SmallEventPetFoodPacket, lng: Lang
 		`smallEvents:petFood.outcomes.${outcomeKey}`,
 		{
 			lng,
+			context: sexContext,
 			foodName,
 			time: timeDisplay
 		}
@@ -176,7 +183,10 @@ export function getPetFoodDescription(packet: SmallEventPetFoodPacket, lng: Lang
 			: packet.loveChange < 0
 				? SmallEventConstants.PET_FOOD.LOVE_CHANGE_TYPES.MINUS
 				: SmallEventConstants.PET_FOOD.LOVE_CHANGE_TYPES.NEUTRAL;
-		const loveMessage = i18n.t(`smallEvents:petFood.love.${loveKey}`, { lng });
+		const loveMessage = i18n.t(`smallEvents:petFood.love.${loveKey}`, {
+			lng,
+			context: sexContext
+		});
 		result += `\n${loveMessage}`;
 	}
 

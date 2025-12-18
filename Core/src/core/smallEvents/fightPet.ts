@@ -83,7 +83,8 @@ export const smallEventFuncs: SmallEventFuncs = {
 			await player.save();
 			response.push(makePacket(SmallEventFightPetPacket, {
 				isSuccess: outcomeIsSuccess,
-				fightPetActionId: selectedFightPetAction.id
+				fightPetActionId: selectedFightPetAction.id,
+				isFemale
 			}));
 		};
 
