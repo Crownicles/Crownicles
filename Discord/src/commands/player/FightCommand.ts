@@ -555,29 +555,26 @@ function generateFightRecapDescription(embed: CrowniclesEmbed, packet: FightRewa
 
 	// Use the winnerKeycloakId from the packet to determine the winner
 	const player1Won = packet.winnerKeycloakId === packet.player1.keycloakId;
-	const winnerUsername = player1Won ? player1Username : player2Username;
-	const loserUsername = player1Won ? player2Username : player1Username;
-	const winnerOldGlory = player1Won ? packet.player1.oldGlory : packet.player2.oldGlory;
-	const loserOldGlory = player1Won ? packet.player2.oldGlory : packet.player1.oldGlory;
+	const fightResult = {
+		winnerUsername: player1Won ? player1Username : player2Username,
+		loserUsername: player1Won ? player2Username : player1Username,
+		winnerOldGlory: player1Won ? packet.player1.oldGlory : packet.player2.oldGlory,
+		loserOldGlory: player1Won ? packet.player2.oldGlory : packet.player1.oldGlory
+	};
 
-	if (gloryDifference < FightConstants.ELO.ELO_DIFFERENCE_FOR_SAME_ELO) {
-		embed.setDescription(StringUtils.getRandomTranslation("commands:fight.fightReward.sameElo", lng, {
-			player1: player1Username,
-			player2: player2Username
-		}));
-	}
-	else if (winnerOldGlory > loserOldGlory) {
-		embed.setDescription(StringUtils.getRandomTranslation("commands:fight.fightReward.higherEloWins", lng, {
-			winner: winnerUsername,
-			loser: loserUsername
-		}));
-	}
-	else {
-		embed.setDescription(StringUtils.getRandomTranslation("commands:fight.fightReward.lowestEloWins", lng, {
-			winner: winnerUsername,
-			loser: loserUsername
-		}));
-	}
+	// Determine the translation key based on glory difference
+	const translationKey = gloryDifference < FightConstants.ELO.ELO_DIFFERENCE_FOR_SAME_ELO
+		? "commands:fight.fightReward.sameElo"
+		: fightResult.winnerOldGlory > fightResult.loserOldGlory
+			? "commands:fight.fightReward.higherEloWins"
+			: "commands:fight.fightReward.lowestEloWins";
+
+	// sameElo uses player1/player2 keys, while higherEloWins/lowestEloWins use winner/loser keys
+	const translationParams = gloryDifference < FightConstants.ELO.ELO_DIFFERENCE_FOR_SAME_ELO
+		? { player1: player1Username, player2: player2Username }
+		: { winner: fightResult.winnerUsername, loser: fightResult.loserUsername };
+
+	embed.setDescription(StringUtils.getRandomTranslation(translationKey, lng, translationParams));
 }
 
 /**

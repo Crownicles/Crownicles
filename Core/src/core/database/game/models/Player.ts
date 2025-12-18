@@ -248,10 +248,11 @@ export class Player extends Model {
 	public async addScore(parameters: EditValueParameters): Promise<Player> {
 		this.score += parameters.amount;
 		if (parameters.amount > 0) {
-			await MissionsController.update(this, parameters.response, {
+			const newPlayer = await MissionsController.update(this, parameters.response, {
 				missionId: "earnPoints",
 				count: parameters.amount
 			});
+			Object.assign(this, newPlayer);
 		}
 		await this.setScore(this.score, parameters.response);
 		crowniclesInstance.logsDatabase.logScoreChange(this.keycloakId, this.score, parameters.reason)
@@ -267,10 +268,16 @@ export class Player extends Model {
 	public async addMoney(parameters: EditValueParameters): Promise<Player> {
 		this.money += parameters.amount;
 		if (parameters.amount > 0) {
-			await MissionsController.update(this, parameters.response, {
+			const newPlayer = await MissionsController.update(this, parameters.response, {
 				missionId: "earnMoney",
 				count: parameters.amount
 			});
+
+			/*
+			 * Clone the mission entity and player to this player model and the entity instance passed in the parameters
+			 * As the money and experience may have changed, we update the models of the caller
+			 */
+			Object.assign(this, newPlayer);
 		}
 		this.setMoney(this.money);
 		crowniclesInstance.logsDatabase.logMoneyChange(this.keycloakId, this.money, parameters.reason)
@@ -313,16 +320,23 @@ export class Player extends Model {
 		// Track missions for earning tokens
 		const actualChange = newTokens - previousTokens;
 		if (actualChange > 0) {
-			await MissionsController.update(this, parameters.response, {
+			let newPlayer = await MissionsController.update(this, parameters.response, {
 				missionId: "earnTokens",
 				count: actualChange
 			});
 
+			/*
+			 * Clone the mission entity and player to this player model and the entity instance passed in the parameters
+			 * As the money and experience may have changed, we update the models of the caller
+			 */
+			Object.assign(this, newPlayer);
+
 			// Check if max tokens reached
 			if (this.tokens === TokensConstants.MAX) {
-				await MissionsController.update(this, parameters.response, {
+				newPlayer = await MissionsController.update(this, parameters.response, {
 					missionId: "maxTokensReached"
 				});
+				Object.assign(this, newPlayer);
 			}
 		}
 
@@ -337,15 +351,17 @@ export class Player extends Model {
 		const tokensToUse = Math.abs(parameters.amount);
 
 		// Track missions for using tokens
-		await MissionsController.update(this, parameters.response, {
+		let newPlayer = await MissionsController.update(this, parameters.response, {
 			missionId: "useTokens",
 			count: tokensToUse
 		});
+		Object.assign(this, newPlayer);
 
-		await MissionsController.update(this, parameters.response, {
+		newPlayer = await MissionsController.update(this, parameters.response, {
 			missionId: "spendTokens",
 			count: tokensToUse
 		});
+		Object.assign(this, newPlayer);
 
 		parameters.amount = -tokensToUse;
 		return this.addTokens(parameters);
@@ -430,13 +446,11 @@ export class Player extends Model {
 		const newLevel = ++this.level;
 		crowniclesInstance.logsDatabase.logLevelChange(this.keycloakId, this.level)
 			.then();
-
-		// Update reachLevel mission without overwriting the player object to avoid losing state
-		await MissionsController.update(this, response, {
+		Object.assign(this, await MissionsController.update(this, response, {
 			missionId: "reachLevel",
 			count: newLevel,
 			set: true
-		});
+		}));
 
 		await this.addLevelUpPacket(response, newLevel);
 
@@ -688,11 +702,16 @@ export class Player extends Model {
 		crowniclesInstance.logsDatabase.logExperienceChange(this.keycloakId, this.experience, parameters.reason)
 			.then();
 		if (parameters.amount > 0) {
-			// Update earnXP mission without overwriting the player object to avoid losing state
-			await MissionsController.update(this, parameters.response, {
+			const newPlayer = await MissionsController.update(this, parameters.response, {
 				missionId: "earnXP",
 				count: parameters.amount
 			});
+
+			/*
+			 * Clone the mission entity and player to this player model, and the entity instance passed in the parameters
+			 * As the money and experience may have changed, we update the models of the caller
+			 */
+			Object.assign(this, newPlayer);
 		}
 
 		await this.levelUpIfNeeded(parameters.response);
@@ -938,12 +957,11 @@ export class Player extends Model {
 			await crowniclesInstance.logsDatabase.logPlayersAttackGloryPoints(this.keycloakId, gloryPoints, reason, fightId);
 		}
 
-		// Update reachGlory mission without overwriting the player object to avoid losing state
-		await MissionsController.update(this, response, {
+		Object.assign(this, await MissionsController.update(this, response, {
 			missionId: "reachGlory",
 			count: this.getGloryPoints(),
 			set: true
-		});
+		}));
 	}
 
 	/**
@@ -1227,10 +1245,9 @@ export class Players {
 		               FROM (SELECT id, RANK() OVER (ORDER BY ${orderBy} desc, level desc) ranking
 		                     FROM players ${condition}) subquery
 		               WHERE subquery.id = ${playerId}`;
-		const results = await Player.sequelize.query(query, { type: QueryTypes.SELECT }) as {
+		return ((await Player.sequelize.query(query, { type: QueryTypes.SELECT }))[0] as {
 			ranking: number;
-		}[];
-		return results[0].ranking;
+		}).ranking;
 	}
 
 	/**
@@ -1242,10 +1259,9 @@ export class Players {
 		               FROM players
 		               WHERE players.${weekOnly ? "weeklyScore" : "score"}
 			                     > ${Constants.MINIMAL_PLAYER_SCORE}`;
-		const results = await Player.sequelize.query(query, { type: QueryTypes.SELECT }) as {
+		return ((await Player.sequelize.query(query, { type: QueryTypes.SELECT }))[0] as {
 			nbPlayers: number;
-		}[];
-		return results[0].nbPlayers;
+		}).nbPlayers;
 	}
 
 	/**
@@ -1256,10 +1272,9 @@ export class Players {
 		               FROM players
 		               WHERE players.fightCountdown
 			                     <= ${FightConstants.FIGHT_COUNTDOWN_MAXIMAL_VALUE}`;
-		const results = await Player.sequelize.query(query, { type: QueryTypes.SELECT }) as {
+		return ((await Player.sequelize.query(query, { type: QueryTypes.SELECT }))[0] as {
 			nbPlayers: number;
-		}[];
-		return results[0].nbPlayers;
+		}).nbPlayers;
 	}
 
 	/**
