@@ -64,7 +64,9 @@ import { SmallEventWitchResultPacket } from "../../../../Lib/src/packets/smallEv
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { witchResult } from "../../smallEvents/witch";
 import { DisplayUtils } from "../../utils/DisplayUtils";
-import { SexTypeShort, StringConstants } from "../../../../Lib/src/constants/StringConstants";
+import {
+	SexTypeShort, StringConstants
+} from "../../../../Lib/src/constants/StringConstants";
 import {
 	SmallEventSpaceInitialPacket,
 	SmallEventSpaceResultPacket
@@ -833,13 +835,16 @@ export default class SmallEventsHandler {
 			return;
 		}
 		const lng = interaction.userLanguage;
+
 		// Get the sex context for gendered translations
 		const sexContext = packet.isFemale ? StringConstants.SEX.FEMALE.long : StringConstants.SEX.MALE.long;
 		await interaction.followUp({
 			embeds: [
 				new CrowniclesSmallEventEmbed(
 					"fightPet",
-					i18n.t(`smallEvents:fightPet.fightPetActions.${packet.fightPetActionId}.${packet.isSuccess ? "success" : "failure"}`, { lng, context: sexContext })
+					i18n.t(`smallEvents:fightPet.fightPetActions.${packet.fightPetActionId}.${packet.isSuccess ? "success" : "failure"}`, {
+						lng, context: sexContext
+					})
 					+ (packet.isSuccess
 						? i18n.t("smallEvents:fightPet.rageUpFormat", {
 							lng,
@@ -1020,11 +1025,18 @@ export default class SmallEventsHandler {
 
 		const petDisplay = PetUtils.petToShortString(lng, packet.petNickname, packet.petId, packet.sex as SexTypeShort);
 
+		// Get the sex context for gendered translations
+		const sexContext = packet.sex === StringConstants.SEX.MALE.short
+			? StringConstants.SEX.MALE.long
+			: StringConstants.SEX.FEMALE.long;
+
 		const outcomeKey = packet.loveLost === 0 ? "success" : "fail";
 		const description = StringUtils.getRandomTranslation(
 			`smallEvents:badPet.outcomes.${packet.interactionType}.${outcomeKey}`,
 			lng,
-			{ pet: petDisplay }
+			{
+				pet: petDisplay, context: sexContext
+			}
 		);
 
 		const embed = new CrowniclesSmallEventEmbed(
