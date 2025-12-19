@@ -143,7 +143,8 @@
       "warning_male": "{emote:collectors.warning} *Recordar a tu mascota prematuramente romperá el vínculo de confianza. Volverá sin botín y con el corazón herido...*",
       "warning_female": "{emote:collectors.warning} *Recordar a tu mascota prematuramente romperá el vínculo de confianza. Volverá sin botín y con el corazón herido...*"
     },
-    "inProgressFoodInfo": "\n{emote:expedition.food} **Provisiones llevadas:** {{amount, number}} raciones",
+    "inProgressFoodInfo_one": "\n{emote:expedition.food} **Provisions emportées :** {{count, number}} ration",
+    "inProgressFoodInfo_other": "\n{emote:expedition.food} **Provisiones llevadas:** {{count, number}} raciones",
     "recallButton": "Recordar",
     "closeButton": "Continuar la exploración",
     "chooseExpeditionTitle": "{{pseudo}}, nuevas expediciones disponibles",
@@ -170,7 +171,8 @@
     "startedTitle": "{{pseudo}}¡expedición lanzada!",
     "expeditionStarted_male": "¡Con un salto entusiasta, {{petDisplay}} se precipita hacia **{{location}}** ! Le ves desaparecer por el horizonte, con el corazón lleno de esperanza.\n\n{emote:clocks.1} Regreso previsto: {{returnTime}}",
     "expeditionStarted_female": "¡Con un salto entusiasta, {{petDisplay}} sale corriendo hacia **{{location}}** ! La ves desaparecer en el horizonte, con el corazón lleno de esperanza.\n\n{emote:clocks.1} Regreso previsto: {{returnTime}}",
-    "foodConsumed": "\n{emote:expedition.food} Provisiones llevadas: **{{amount, number}}** raciones",
+    "foodConsumed_one": "\n{emote:expedition.food} Provisions emportées : **{{count, number}}** ration",
+    "foodConsumed_other": "\n{emote:expedition.food} Provisiones llevadas: **{{count, number}}** raciones",
     "foodConsumedDetails": "\n{emote:expedition.food} **Provisiones adoptadas:** {{foodDetails}}",
     "insufficientFoodWarning": {
       "noGuild": "\n\n{emote:collectors.warning} **No tienes un gremio que prepare raciones** para tu mascota. El riesgo de fracaso de esta expedición se **triplica**.",
