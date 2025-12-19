@@ -143,7 +143,8 @@
       "warning_male": "{emote:collectors.warning} *Chamar o seu animal de estimação de volta prematuramente quebrará o vínculo de confiança. Ele regressará sem saque e com o coração magoado...",
       "warning_female": "{emote:collectors.warning} *Chamar o teu familiar de volta prematuramente quebrará o laço de confiança. Ela regressará sem saque e com o coração magoado..."
     },
-    "inProgressFoodInfo": "\n{emote:expedition.food} **Provisões tomadas:** {{amount, number}} rações",
+    "inProgressFoodInfo_one": "\n{emote:expedition.food} **Provisions emportées :** {{count, number}} ration",
+    "inProgressFoodInfo_other": "\n{emote:expedition.food} **Provisões tomadas:** {{count, number}} rações",
     "recallButton": "Ligar de volta",
     "closeButton": "Continuar a explorar",
     "chooseExpeditionTitle": "{{pseudo}}novas remessas disponíveis",
@@ -170,7 +171,8 @@
     "startedTitle": "{{pseudo}}expedição lançada!",
     "expeditionStarted_male": "Com um salto entusiasmado, {{petDisplay}} corre em direção a **{{location}}** ! Vê-o desaparecer no horizonte, com o coração cheio de esperança.\n\n{emote:clocks.1} Regresso previsto: {{returnTime}}",
     "expeditionStarted_female": "Com um salto entusiasmado, {{petDisplay}} corre para **{{location}}** ! Vê-a desaparecer no horizonte, com o coração cheio de esperança.\n\n{emote:clocks.1} Regresso previsto: {{returnTime}}",
-    "foodConsumed": "\n{emote:expedition.food} Provisões transportadas : **{{amount, number}}** rações",
+    "foodConsumed_one": "\n{emote:expedition.food} Provisions emportées : **{{count, number}}** ration",
+    "foodConsumed_other": "\n{emote:expedition.food} Provisões transportadas : **{{count, number}}** rações",
     "foodConsumedDetails": "\n{emote:expedition.food} **Provisões adoptadas:** {{foodDetails}}",
     "insufficientFoodWarning": {
       "noGuild": "\n\n{emote:collectors.warning} **Não tens um grémio para preparar rações** para o teu animal de estimação. O risco de fracasso desta expedição é **triplicado**.",
