@@ -201,7 +201,7 @@ export async function handleCommandFightIntroduceFightersRes(context: PacketCont
 
 		let opponentDisplayName: string;
 		if (getUser && !getUser.isError) {
-			opponentDisplayName = escapeUsername(getUser.payload.user.attributes.gameUsername[0]);
+			opponentDisplayName = getUser.payload.user.attributes.gameUsername[0];
 		}
 		else if (packet.fightOpponentMonsterId) {
 			opponentDisplayName = i18n.t(`models:monsters.${packet.fightOpponentMonsterId}.name`, { lng });
