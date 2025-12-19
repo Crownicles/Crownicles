@@ -181,6 +181,11 @@ async function getExpeditionPetInfo(player: Player): Promise<ExpeditionPetInfo> 
 
 /**
  * Apply bonus rewards when pet is in expedition
+ * Uses a single random roll to determine the bonus type:
+ * - 0-4% (5%): random item
+ * - 5-14% (10%): money
+ * - 15-64% (35%): combat potion
+ * - 50-100% (50%): points only
  */
 async function applyExpeditionBonusRewards(
 	response: CrowniclesPacket[],
@@ -198,33 +203,33 @@ async function applyExpeditionBonusRewards(
 		reason: NumberChangeReason.SMALL_EVENT
 	});
 
-	// Check if we give a combat potion (15% chance) - replaces other rewards
-	if (RandomUtils.crowniclesRandom.bool(bonusConfig.COMBAT_POTION_CHANCE / 100)) {
-		const potion = generateRandomCombatPotion();
-		rewards.bonusCombatPotion = potion;
-		const potionInstance = PotionDataController.instance.getById(potion.id);
-		await giveItemToPlayer(response, context, player, potionInstance);
-		return rewards;
-	}
+	// Single random roll to determine bonus type
+	const roll = RandomUtils.crowniclesRandom.integer(0, 99);
 
-	// Check if we give money (20% chance)
-	if (RandomUtils.crowniclesRandom.bool(bonusConfig.MONEY_CHANCE / 100)) {
+	if (roll < bonusConfig.ITEM_THRESHOLD) {
+		// 5% chance: random item
+		const item = generateRandomItem({});
+		rewards.bonusItem = toItemWithDetails(item);
+		await giveItemToPlayer(response, context, player, item);
+	}
+	else if (roll < bonusConfig.MONEY_THRESHOLD) {
+		// 10% chance: money
 		rewards.bonusMoney = RandomUtils.crowniclesRandom.integer(bonusConfig.MONEY_MIN, bonusConfig.MONEY_MAX);
 		await player.addMoney({
 			amount: rewards.bonusMoney,
 			response,
 			reason: NumberChangeReason.SMALL_EVENT
 		});
-		return rewards;
+	}
+	else if (roll < bonusConfig.POTION_THRESHOLD) {
+		// 35% chance: combat potion
+		const potion = generateRandomCombatPotion();
+		rewards.bonusCombatPotion = potion;
+		const potionInstance = PotionDataController.instance.getById(potion.id);
+		await giveItemToPlayer(response, context, player, potionInstance);
 	}
 
-	// Check if we give a random item (20% chance)
-	if (RandomUtils.crowniclesRandom.bool(bonusConfig.ITEM_CHANCE / 100)) {
-		const item = generateRandomItem({});
-		rewards.bonusItem = toItemWithDetails(item);
-		await giveItemToPlayer(response, context, player, item);
-	}
-
+	// else: 50% chance - points only (no additional reward)
 	return rewards;
 }
 
