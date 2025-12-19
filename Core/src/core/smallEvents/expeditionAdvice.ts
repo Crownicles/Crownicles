@@ -184,8 +184,8 @@ async function getExpeditionPetInfo(player: Player): Promise<ExpeditionPetInfo> 
  * Uses a single random roll to determine the bonus type:
  * - 0-4% (5%): random item
  * - 5-14% (10%): money
- * - 15-64% (35%): combat potion
- * - 50-100% (50%): points only
+ * - 15-49% (35%): combat potion
+ * - 50-99% (50%): points only
  */
 async function applyExpeditionBonusRewards(
 	response: CrowniclesPacket[],

@@ -556,8 +556,8 @@ export abstract class ExpeditionConstants {
 		 * Always gives bonus points, plus one of the following based on a single random roll:
 		 * - 0-4% (5%): random item
 		 * - 5-14% (10%): money
-		 * - 15-64% (50%): combat potion
-		 * - 65-100% (35%): points only
+		 * - 15-49% (35%): combat potion
+		 * - 50-99% (50%): points only
 		 */
 		BONUS_IF_PET_IN_EXPEDITION: {
 			POINTS_MIN: 1,
