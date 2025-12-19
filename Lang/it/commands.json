@@ -143,7 +143,8 @@
       "warning_male": "{emote:collectors.warning} *Richiamare prematuramente il vostro animale domestico romperà il legame di fiducia. Tornerà senza bottino e con il cuore ferito...*.",
       "warning_female": "{emote:collectors.warning} *Richiamare prematuramente il vostro familiare romperà il legame di fiducia. Tornerà senza bottino e con il cuore ferito...*."
     },
-    "inProgressFoodInfo": "\n{emote:expedition.food} **Provviste prese:** {{amount, number}} razioni",
+    "inProgressFoodInfo_one": "\n{emote:expedition.food} **Provviste prese:** {{count, number}} razione",
+    "inProgressFoodInfo_other": "\n{emote:expedition.food} **Provviste prese:** {{count, number}} razioni",
     "recallButton": "Richiamare",
     "closeButton": "Continua ad esplorare",
     "chooseExpeditionTitle": "{{pseudo}}nuove spedizioni disponibili",
@@ -170,7 +171,8 @@
     "startedTitle": "{{pseudo}}spedizione lanciata!",
     "expeditionStarted_male": "Con un balzo entusiasta, {{petDisplay}} si lancia verso **{{location}}**! Lo si guarda scomparire all'orizzonte, con il cuore pieno di speranza.\n\n{emote:clocks.1} Ritorno previsto: {{returnTime}}",
     "expeditionStarted_female": "Con un balzo entusiasta, {{petDisplay}} si lancia verso **{{location}}**! La guardate scomparire all'orizzonte, con il cuore pieno di speranza.\n\n{emote:clocks.1} Ritorno previsto: {{returnTime}}",
-    "foodConsumed": "\n{emote:expedition.food} Disposizioni trasportate: **{{amount, number}}** razioni",
+    "foodConsumed_one": "\n{emote:expedition.food} Disposizioni trasportate: **{{count, number}}** razione",
+    "foodConsumed_other": "\n{emote:expedition.food} Disposizioni trasportate: **{{count, number}}** razioni",
     "foodConsumedDetails": "\n{emote:expedition.food} **Provvedimenti presi:** {{foodDetails}}",
     "insufficientFoodWarning": {
       "noGuild": "\n\n{emote:collectors.warning} **Non avete una gilda che prepari razioni** per il vostro animale. Il rischio di fallimento di questa spedizione è **triplicato**.",
