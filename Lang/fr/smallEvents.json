@@ -1940,11 +1940,16 @@
   ],
   "petFood": {
     "intro": {
-      "badSmell": "Votre fidèle compagnon s'immobilise brusquement, les narines frémissantes. Ses oreilles se dressent tandis qu'il capte une odeur nauséabonde s'échappant d'un taillis sombre. Quelque chose de fétide y croupit, abandonné depuis des jours peut-être, et votre familier semble fasciné par cette puanteur qui ferait reculer bien des créatures.",
-      "goodSmell": "Votre compagnon de route s'agite soudainement, remuant la queue avec enthousiasme, les yeux brillants d'excitation. Une senteur alléchante et sucrée flotte dans l'air. Il se met à bondir joyeusement, attiré tel un papillon par la lumière vers cette fragrance prometteuse qui éveille son appétit.",
-      "vegetarian": "Votre fidèle familier ralentit son allure et penche la tête sur le côté, intrigué par un bosquet touffu bordant le sentier. Entre les herbes folles et les fougères argentées, il semble avoir discerné quelque chose de comestible à travers la végétation.",
-      "meat": "Votre compagnon s'arrête net, les muscles tendus, fixant d'un regard intense et prédateur un point d'eau miroitant sous le soleil couchant. Ses babines se retroussent légèrement, dévoilant des crocs acérés, tandis qu'il flaire l'air avec une concentration absolue. Il a manifestement repéré une proie...",
-      "soup": "Une senteur familière et réconfortante vient chatouiller vos narines : un fumet onctueux de potage mijotant dans une marmite de cuivre. Votre fidèle compagnon dresse aussitôt les oreilles et se précipite vers un campement abandonné en bordure de chemin, où repose encore un chaudron de fer noir suspendu au-dessus de braises mourantes. Se pourrait-il qu'il s'agisse de soupe ultime ?"
+      "badSmell_male": "Votre fidèle compagnon s'immobilise brusquement, les narines frémissantes. Ses oreilles se dressent tandis qu'il capte une odeur nauséabonde s'échappant d'un taillis sombre. Quelque chose de fétide y croupit, abandonné depuis des jours peut-être, et votre familier semble fasciné par cette puanteur qui ferait reculer bien des créatures.",
+      "badSmell_female": "Votre fidèle compagne s'immobilise brusquement, les narines frémissantes. Ses oreilles se dressent tandis qu'elle capte une odeur nauséabonde s'échappant d'un taillis sombre. Quelque chose de fétide y croupit, abandonné depuis des jours peut-être, et votre familier semble fasciné par cette puanteur qui ferait reculer bien des créatures.",
+      "goodSmell_male": "Votre compagnon de route s'agite soudainement, remuant la queue avec enthousiasme, les yeux brillants d'excitation. Une senteur alléchante et sucrée flotte dans l'air. Il se met à bondir joyeusement, attiré tel un papillon par la lumière vers cette fragrance prometteuse qui éveille son appétit.",
+      "goodSmell_female": "Votre compagne de route s'agite soudainement, remuant la queue avec enthousiasme, les yeux brillants d'excitation. Une senteur alléchante et sucrée flotte dans l'air. Elle se met à bondir joyeusement, attirée tel un papillon par la lumière vers cette fragrance prometteuse qui éveille son appétit.",
+      "vegetarian_male": "Votre fidèle familier ralentit son allure et penche la tête sur le côté, intrigué par un bosquet touffu bordant le sentier. Entre les herbes folles et les fougères argentées, il semble avoir discerné quelque chose de comestible à travers la végétation.",
+      "vegetarian_female": "Votre fidèle familier ralentit son allure et penche la tête sur le côté, intriguée par un bosquet touffu bordant le sentier. Entre les herbes folles et les fougères argentées, elle semble avoir discerné quelque chose de comestible à travers la végétation.",
+      "meat_male": "Votre compagnon s'arrête net, les muscles tendus, fixant d'un regard intense et prédateur un point d'eau miroitant sous le soleil couchant. Ses babines se retroussent légèrement, dévoilant des crocs acérés, tandis qu'il flaire l'air avec une concentration absolue. Il a manifestement repéré une proie...",
+      "meat_female": "Votre compagne s'arrête net, les muscles tendus, fixant d'un regard intense et prédateur un point d'eau miroitant sous le soleil couchant. Ses babines se retroussent légèrement, dévoilant des crocs acérés, tandis qu'elle flaire l'air avec une concentration absolue. Elle a manifestement repéré une proie...",
+      "soup_male": "Une senteur familière et réconfortante vient chatouiller vos narines : un fumet onctueux de potage mijotant dans une marmite de cuivre. Votre fidèle compagnon dresse aussitôt les oreilles et se précipite vers un campement abandonné en bordure de chemin, où repose encore un chaudron de fer noir suspendu au-dessus de braises mourantes. Se pourrait-il qu'il s'agisse de soupe ultime ?",
+      "soup_female": "Une senteur familière et réconfortante vient chatouiller vos narines : un fumet onctueux de potage mijotant dans une marmite de cuivre. Votre fidèle compagne dresse aussitôt les oreilles et se précipite vers un campement abandonné en bordure de chemin, où repose encore un chaudron de fer noir suspendu au-dessus de braises mourantes. Se pourrait-il qu'il s'agisse de soupe ultime ?"
     },
     "choices": {
       "investigate": "Aller voir vous-même",
@@ -1952,16 +1957,25 @@
       "continue": "Continuer votre route"
     },
     "outcomes": {
-      "found_by_player": "Vous vous approchez prudemment et, après avoir écarté les branchages et fouillé méticuleusement les recoins pendant **{{time}}** {emote:effects.occupied}, vous mettez enfin la main sur **{{foodName}}**. Vous l'offrez à votre compagnon qui l'accepte avec reconnaissance, dévorant son présent avec des grognements de satisfaction.",
-      "found_by_player_soup": "Vous vous approchez prudemment du chaudron abandonné. Après **{{time}}** {emote:effects.occupied} passées à vérifier qu'aucun danger ne rôde, vous découvrez avec satisfaction **{{foodName}}** qui mijote encore doucement. Vous en versez une généreuse portion dans une écuelle que vous présentez à votre compagnon, lequel lape goulûment ce mets réconfortant en remuant la queue de contentement.",
-      "found_by_pet": "Votre familier s'élance d'un bond agile et disparaît quelques instants dans les fourrés. Il revient bientôt vers vous d'un trot fier et triomphant, tenant délicatement **{{foodName}}** entre ses crocs. Ses yeux brillent de fierté tandis qu'il s'installe pour savourer sa trouvaille avec des bruits de mastication enthousiastes.",
-      "found_by_pet_soup": "Votre familier trotte prestement vers le campement abandonné et plonge son museau dans le chaudron fumant. Il revient vers vous quelques instants plus tard, les babines encore luisantes, ayant manifestement savouré **{{foodName}}** avec un plaisir évident. Son regard pétillant et sa queue frétillante témoignent de sa satisfaction gourmande.",
-      "found_anyway": "Alors même que vous vous apprêtiez à reprendre votre route sans plus vous préoccuper de cette distraction, votre fidèle compagnon bondit soudainement vers les buissons environnants. Il en ressort victorieusement avec **{{foodName}}** qu'il engloutit sur-le-champ avec un appétit vorace, la queue frétillante de contentement.",
-      "found_anyway_soup": "Alors même que vous vous apprêtiez à reprendre votre route sans plus vous préoccuper de ce campement, votre fidèle compagnon se précipite vers le chaudron abandonné. Avant que vous ne puissiez l'en empêcher, il lape goulûment **{{foodName}}** avec des gémissements de délice, manifestement ravi de cette aubaine inattendue.",
+      "found_by_player_male": "Vous vous approchez prudemment et, après avoir écarté les branchages et fouillé méticuleusement les recoins pendant **{{time}}** {emote:effects.occupied}, vous mettez enfin la main sur **{{foodName}}**. Vous l'offrez à votre compagnon qui l'accepte avec reconnaissance, dévorant son présent avec des grognements de satisfaction.",
+      "found_by_player_female": "Vous vous approchez prudemment et, après avoir écarté les branchages et fouillé méticuleusement les recoins pendant **{{time}}** {emote:effects.occupied}, vous mettez enfin la main sur **{{foodName}}**. Vous l'offrez à votre compagne qui l'accepte avec reconnaissance, dévorant son présent avec des grognements de satisfaction.",
+      "found_by_player_soup_male": "Vous vous approchez prudemment du chaudron abandonné. Après **{{time}}** {emote:effects.occupied} passées à vérifier qu'aucun danger ne rôde, vous découvrez avec satisfaction **{{foodName}}** qui mijote encore doucement. Vous en versez une généreuse portion dans une écuelle que vous présentez à votre compagnon, lequel lape goulûment ce mets réconfortant en remuant la queue de contentement.",
+      "found_by_player_soup_female": "Vous vous approchez prudemment du chaudron abandonné. Après **{{time}}** {emote:effects.occupied} passées à vérifier qu'aucun danger ne rôde, vous découvrez avec satisfaction **{{foodName}}** qui mijote encore doucement. Vous en versez une généreuse portion dans une écuelle que vous présentez à votre compagne, laquelle lape goulûment ce mets réconfortant en remuant la queue de contentement.",
+      "found_by_pet_male": "Votre familier s'élance d'un bond agile et disparaît quelques instants dans les fourrés. Il revient bientôt vers vous d'un trot fier et triomphant, tenant délicatement **{{foodName}}** entre ses crocs. Ses yeux brillent de fierté tandis qu'il s'installe pour savourer sa trouvaille avec des bruits de mastication enthousiastes.",
+      "found_by_pet_female": "Votre familier s'élance d'un bond agile et disparaît quelques instants dans les fourrés. Elle revient bientôt vers vous d'un trot fier et triomphant, tenant délicatement **{{foodName}}** entre ses crocs. Ses yeux brillent de fierté tandis qu'elle s'installe pour savourer sa trouvaille avec des bruits de mastication enthousiastes.",
+      "found_by_pet_soup_male": "Votre familier trotte prestement vers le campement abandonné et plonge son museau dans le chaudron fumant. Il revient vers vous quelques instants plus tard, les babines encore luisantes, ayant manifestement savouré **{{foodName}}** avec un plaisir évident. Son regard pétillant et sa queue frétillante témoignent de sa satisfaction gourmande.",
+      "found_by_pet_soup_female": "Votre familier trotte prestement vers le campement abandonné et plonge son museau dans le chaudron fumant. Elle revient vers vous quelques instants plus tard, les babines encore luisantes, ayant manifestement savouré **{{foodName}}** avec un plaisir évident. Son regard pétillant et sa queue frétillante témoignent de sa satisfaction gourmande.",
+      "found_anyway_male": "Alors même que vous vous apprêtiez à reprendre votre route sans plus vous préoccuper de cette distraction, votre fidèle compagnon bondit soudainement vers les buissons environnants. Il en ressort victorieusement avec **{{foodName}}** qu'il engloutit sur-le-champ avec un appétit vorace, la queue frétillante de contentement.",
+      "found_anyway_female": "Alors même que vous vous apprêtiez à reprendre votre route sans plus vous préoccuper de cette distraction, votre fidèle compagne bondit soudainement vers les buissons environnants. Elle en ressort victorieusement avec **{{foodName}}** qu'elle engloutit sur-le-champ avec un appétit vorace, la queue frétillante de contentement.",
+      "found_anyway_soup_male": "Alors même que vous vous apprêtiez à reprendre votre route sans plus vous préoccuper de ce campement, votre fidèle compagnon se précipite vers le chaudron abandonné. Avant que vous ne puissiez l'en empêcher, il lape goulûment **{{foodName}}** avec des gémissements de délice, manifestement ravi de cette aubaine inattendue.",
+      "found_anyway_soup_female": "Alors même que vous vous apprêtiez à reprendre votre route sans plus vous préoccuper de ce campement, votre fidèle compagne se précipite vers le chaudron abandonné. Avant que vous ne puissiez l'en empêcher, elle lape goulûment **{{foodName}}** avec des gémissements de délice, manifestement ravie de cette aubaine inattendue.",
       "player_failed": "Vous passez **{{time}}** {emote:effects.occupied} éprouvantes à fouiller méticuleusement les environs, écartant ronces et épineux, retournant pierres et souches pourries, mais en dépit de tous vos efforts acharnés, vous ne dénichez rien qui vaille la peine. Ce temps investi se révèle aussi vain qu'une quête de trésor dans un coffre vide.",
-      "pet_failed": "Votre compagnon s'élance avec détermination dans les fourrés, mais revient quelques instants plus tard d'une démarche pesante, les oreilles basses et la queue pendante. Son regard déçu et ses couinements plaintifs trahissent son échec : la piste s'est avérée infructueuse et ses efforts n'ont produit qu'amertume.",
-      "pet_failed_soup": "Votre compagnon trotte vers le campement abandonné et renifle longuement le chaudron, mais celui-ci s'avère hélas vide ou son contenu déjà refroidi et immangeable. Il revient vers vous d'une démarche déçue, les oreilles basses et la queue pendante, manifestement frustré par cette déconvenue culinaire.",
-      "nothing": "Vous décidez sagement de ne point vous attarder davantage en ces lieux, jugeant que le temps presse et que votre quête ne saurait souffrir de tels détours. D'un geste résolu, vous enjoignez votre compagnon à vous suivre et reprenez ensemble votre chemin vers l'horizon qui vous appelle."
+      "pet_failed_male": "Votre compagnon s'élance avec détermination dans les fourrés, mais revient quelques instants plus tard d'une démarche pesante, les oreilles basses et la queue pendante. Son regard déçu et ses couinements plaintifs trahissent son échec : la piste s'est avérée infructueuse et ses efforts n'ont produit qu'amertume.",
+      "pet_failed_female": "Votre compagne s'élance avec détermination dans les fourrés, mais revient quelques instants plus tard d'une démarche pesante, les oreilles basses et la queue pendante. Son regard déçu et ses couinements plaintifs trahissent son échec : la piste s'est avérée infructueuse et ses efforts n'ont produit qu'amertume.",
+      "pet_failed_soup_male": "Votre compagnon trotte vers le campement abandonné et renifle longuement le chaudron, mais celui-ci s'avère hélas vide ou son contenu déjà refroidi et immangeable. Il revient vers vous d'une démarche déçue, les oreilles basses et la queue pendante, manifestement frustré par cette déconvenue culinaire.",
+      "pet_failed_soup_female": "Votre compagne trotte vers le campement abandonné et renifle longuement le chaudron, mais celui-ci s'avère hélas vide ou son contenu déjà refroidi et immangeable. Elle revient vers vous d'une démarche déçue, les oreilles basses et la queue pendante, manifestement frustrée par cette déconvenue culinaire.",
+      "nothing_male": "Vous décidez sagement de ne point vous attarder davantage en ces lieux, jugeant que le temps presse et que votre quête ne saurait souffrir de tels détours. D'un geste résolu, vous enjoignez votre compagnon à vous suivre et reprenez ensemble votre chemin vers l'horizon qui vous appelle.",
+      "nothing_female": "Vous décidez sagement de ne point vous attarder davantage en ces lieux, jugeant que le temps presse et que votre quête ne saurait souffrir de tels détours. D'un geste résolu, vous enjoignez votre compagne à vous suivre et reprenez ensemble votre chemin vers l'horizon qui vous appelle."
     },
     "foodNames": {
       "badSmell": [
@@ -2032,13 +2046,16 @@
       ]
     },
     "love": {
-      "plus": "Votre fidèle compagnon vous contemple avec des yeux brillants de gratitude et d'affection. Il se frotte contre vos jambes en émettant des ronronnements satisfaits, manifestant clairement que ce festin improvisé a renforcé les liens de confiance et d'amitié qui vous unissent !",
-      "minus": "Votre familier vous fixe d'un regard noir chargé de reproches silencieux, les babines retroussées en une moue désapprobatrice. Il détourne ostensiblement la tête en poussant un grognement mécontent, visiblement offensé par cette pitance indigne de son palais délicat...",
-      "neutral": "Votre compagnon de route engloutit son repas avec un détachement presque philosophique, sans montrer ni enthousiasme débordant ni dégoût particulier."
+      "plus_male": "Votre fidèle compagnon vous contemple avec des yeux brillants de gratitude et d'affection. Il se frotte contre vos jambes en émettant des ronronnements satisfaits, manifestant clairement que ce festin improvisé a renforcé les liens de confiance et d'amitié qui vous unissent !",
+      "plus_female": "Votre fidèle compagne vous contemple avec des yeux brillants de gratitude et d'affection. Elle se frotte contre vos jambes en émettant des ronronnements satisfaits, manifestant clairement que ce festin improvisé a renforcé les liens de confiance et d'amitié qui vous unissent !",
+      "minus_male": "Votre familier vous fixe d'un regard noir chargé de reproches silencieux, les babines retroussées en une moue désapprobatrice. Il détourne ostensiblement la tête en poussant un grognement mécontent, visiblement offensé par cette pitance indigne de son palais délicat...",
+      "minus_female": "Votre familier vous fixe d'un regard noir chargé de reproches silencieux, les babines retroussées en une moue désapprobatrice. Elle détourne ostensiblement la tête en poussant un grognement mécontent, visiblement offensée par cette pitance indigne de son palais délicat...",
+      "neutral_male": "Votre compagnon de route engloutit son repas avec un détachement presque philosophique, sans montrer ni enthousiasme débordant ni dégoût particulier.",
+      "neutral_female": "Votre compagne de route engloutit son repas avec un détachement presque philosophique, sans montrer ni enthousiasme débordant ni dégoût particulier."
     }
   },
   "badPet": {
-    "intro": [
+    "intro_male": [
       "Un nain trapu surgit d'un rocher, sa barbe rousse hirsute et son regard empli d'une haine viscérale. À la vue de **{{pet}}**, il crache au sol avec dégoût et brandit un bâton noueux. Votre compagnon recule, les oreilles plaquées contre son crâne. L'inconnu se présente comme Moltiar et jure qu'il n'a rien à voir avec son frère adorateur de bestioles.",
       "Une voix rauque et colérique vous interpelle soudainement. Un nain au visage marqué par une vieille cicatrice s'avance, ses yeux injectés de sang fixés sur **{{pet}}** avec fureur. Il fait tournoyer une massue cloutée d'un geste menaçant. Votre compagnon tremble de tous ses membres.",
       "Surgissant de derrière une formation rocheuse, un nain au regard fou se plante devant vous, bloquant votre route. Sa main droite porte les stigmates d'une ancienne morsure. Il fixe **{{pet}}** avec une haine brûlante et dégaine une dague ébréchée. Moltiar maugrée que contrairement à son frère Talvar, lui sait reconnaître une nuisance.",
@@ -2050,171 +2067,310 @@
       "Un sifflement moqueur résonne dans l'air. Perché sur un rocher, un nain observe votre progression avec mépris. Lorsqu'il remarque **{{pet}}** trottant à vos côtés, son expression se mue en une grimace de dégoût profond. Il saute au sol et se plante devant vous, marmonnant que son frère a vraiment corrompu trop de voyageurs avec ses idées saugrenues.",
       "Le sol tremble légèrement sous vos pieds, annonçant l'approche d'une présence massive. Un nain imposant, plus large que haut, émerge d'un éboulement de rochers. Son regard balaye le chemin et s'arrête sur **{{pet}}** avec une haine incandescente. Les muscles de ses bras se contractent tandis qu'il soulève un lourd maillet de forgeron."
     ],
+    "intro_female": [
+      "Un nain trapu surgit d'un rocher, sa barbe rousse hirsute et son regard empli d'une haine viscérale. À la vue de **{{pet}}**, il crache au sol avec dégoût et brandit un bâton noueux. Votre compagne recule, les oreilles plaquées contre son crâne. L'inconnu se présente comme Moltiar et jure qu'il n'a rien à voir avec son frère adorateur de bestioles.",
+      "Une voix rauque et colérique vous interpelle soudainement. Un nain au visage marqué par une vieille cicatrice s'avance, ses yeux injectés de sang fixés sur **{{pet}}** avec fureur. Il fait tournoyer une massue cloutée d'un geste menaçant. Votre compagne tremble de tous ses membres.",
+      "Surgissant de derrière une formation rocheuse, un nain au regard fou se plante devant vous, bloquant votre route. Sa main droite porte les stigmates d'une ancienne morsure. Il fixe **{{pet}}** avec une haine brûlante et dégaine une dague ébréchée. Moltiar maugrée que contrairement à son frère Talvar, lui sait reconnaître une nuisance.",
+      "Un grognement guttural vous fait sursauter. Un nain corpulent émerge d'une anfractuosité, sa barbe tressée cliquetant de perles d'os. Dès qu'il aperçoit **{{pet}}**, sa face se tord de dégoût. Il pointe vers vous un doigt accusateur, son autre main serrant fermement une hache rouillée.",
+      "Votre chemin est soudain barré par une silhouette trapue et hostile. Le nain arbore une expression de pure répulsion en découvrant **{{pet}}** à vos côtés. Une vieille blessure traverse son avant-bras, témoignage d'un passé douloureux. Il empoigne un marteau de guerre. Moltiar gronde qu'il ne laissera pas ces créatures détestables parcourir ses terres, peu importe ce que son naïf frère peut en penser.",
+      "Le claquement d'une pierre qui roule vous alerte d'une présence. Un nain massif émerge de l'ombre d'un surplomb rocheux, scrutant immédiatement **{{pet}}** avec une animosité palpable. Les cicatrices qui zèbrent ses avant-bras témoignent d'anciennes rencontres douloureuses. Il brandit un gourdin d'un geste lourd de menaces.",
+      "Une odeur de terre et de sueur rance vous parvient avant même que vous ne voyiez l'agresseur. Un nain surgit d'une crevasse, sa peau tannée par le soleil, ses mains calleuses serrées autour d'une pioche. Son regard tombe sur **{{pet}}** et une rage froide déforme ses traits. Il crache que son idiot de frère devrait voir ce que ces bestioles lui ont fait subir.",
+      "Le crissement de bottes sur les graviers annonce l'arrivée d'un intrus. Un nain au crâne partiellement chauve apparaît, sa barbe grise nouée en un catogan sévère. Ses yeux s'écarquillent d'horreur en apercevant **{{pet}}**. Il recule avant de brandir un couteau de mineur avec une détermination haineuse.",
+      "Un sifflement moqueur résonne dans l'air. Perché sur un rocher, un nain observe votre progression avec mépris. Lorsqu'il remarque **{{pet}}** trottant à vos côtés, son expression se mue en une grimace de dégoût profond. Il saute au sol et se plante devant vous, marmonnant que son frère a vraiment corrompu trop de voyageurs avec ses idées saugrenues.",
+      "Le sol tremble légèrement sous vos pieds, annonçant l'approche d'une présence massive. Un nain imposant, plus large que haut, émerge d'un éboulement de rochers. Son regard balaye le chemin et s'arrête sur **{{pet}}** avec une haine incandescente. Les muscles de ses bras se contractent tandis qu'il soulève un lourd maillet de forgeron."
+    ],
     "choices": {
-      "intimidate": "Ordonner à votre compagnon d'intimider le nain",
+      "intimidate_male": "Ordonner à votre compagnon d'intimider le nain",
+      "intimidate_female": "Ordonner à votre compagne d'intimider le nain",
       "plead": "Tenter de raisonner le nain par des paroles",
       "giveMeat": "Offrir de la viande au nain pour l'amadouer",
       "giveVeg": "Proposer des légumes au nain en signe de paix",
-      "flee": "Fuir avec votre compagnon",
-      "hide": "Cacher votre compagnon",
+      "flee_male": "Fuir avec votre compagnon",
+      "flee_female": "Fuir avec votre compagne",
+      "hide_male": "Cacher votre compagnon",
+      "hide_female": "Cacher votre compagne",
       "wait": "Attendre que la colère du nain retombe",
-      "protect": "Vous interposer pour protéger votre compagnon",
+      "protect_male": "Vous interposer pour protéger votre compagnon",
+      "protect_female": "Vous interposer pour protéger votre compagne",
       "distract": "Détourner l'attention du nain",
-      "calm": "Tenter de calmer votre compagnon apeuré",
-      "imposer": "Laisser votre compagnon s'imposer face au nain",
-      "energize": "Encourager votre compagnon à tenir bon"
+      "calm_male": "Tenter de calmer votre compagnon apeuré",
+      "calm_female": "Tenter de calmer votre compagne apeurée",
+      "imposer_male": "Laisser votre compagnon s'imposer face au nain",
+      "imposer_female": "Laisser votre compagne s'imposer face au nain",
+      "energize_male": "Encourager votre compagnon à tenir bon",
+      "energize_female": "Encourager votre compagne à tenir bon"
     },
     "outcomes": {
       "intimidate": {
-        "success": [
+        "success_male": [
           "Obéissant à votre ordre, **{{pet}}** se dresse de toute sa hauteur et pousse un grondement impressionnant. Moltiar, surpris par cette démonstration de force, recule d'un pas mal assuré et marmonne quelques insultes en s'éloignant à contrecœur. Votre compagnon vous regarde fièrement.",
           "Adoptant une posture menaçante, **{{pet}}** grogne avec une férocité surprenante face au nain hostile. Ce dernier, voyant que la confrontation pourrait mal tourner, crache une dernière insulte avant de battre en retraite. Votre compagnon semble satisfait d'avoir tenu tête à l'agresseur."
         ],
-        "fail": [
-          "Obéissant à votre ordre, **{{pet}}** tente de paraître menaçant, mais le nain éclate d'un rire cruel devant cette démonstration pathétique. Il brandit son bâton et votre compagnon recule précipitamment, l'orgueil blessé par cette humiliation.",
+        "success_female": [
+          "Obéissant à votre ordre, **{{pet}}** se dresse de toute sa hauteur et pousse un grondement impressionnant. Moltiar, surpris par cette démonstration de force, recule d'un pas mal assuré et marmonne quelques insultes en s'éloignant à contrecœur. Votre compagne vous regarde fièrement.",
+          "Adoptant une posture menaçante, **{{pet}}** grogne avec une férocité surprenante face au nain hostile. Ce dernier, voyant que la confrontation pourrait mal tourner, crache une dernière insulte avant de battre en retraite. Votre compagne semble satisfaite d'avoir tenu tête à l'agresseur."
+        ],
+        "fail_male": [
+          "Obéissant à votre ordre, **{{pet}}** tente de paraître menaçant, mais le nain éclate d'un rire cruel devant cette démonstration pathétique. Il brandit son bâton et votre compagnon recule précipitamment, humilié.",
           "Tentant de paraître menaçant, **{{pet}}** ne parvient qu'à amuser le nain qui lui assène un coup de pied. Votre compagnon couine de douleur et vous lance un regard de reproche pour l'avoir exposé ainsi."
+        ],
+        "fail_female": [
+          "Obéissant à votre ordre, **{{pet}}** tente de paraître menaçante, mais le nain éclate d'un rire cruel devant cette démonstration pathétique. Il brandit son bâton et votre compagne recule précipitamment, humiliée.",
+          "Tentant de paraître menaçante, **{{pet}}** ne parvient qu'à amuser le nain qui lui assène un coup de pied. Votre compagne couine de douleur et vous lance un regard de reproche pour l'avoir exposée ainsi."
         ]
       },
       "plead": {
-        "success": [
+        "success_male": [
           "Vous tentez de raisonner Moltiar par des paroles apaisantes, lui expliquant que votre compagnon ne représente aucune menace. Quelque chose dans votre voix sincère semble toucher une corde sensible, et il finit par baisser son arme en grognant. **{{pet}}** apprécie votre diplomatie.",
           "Vos paroles mesurées résonnent dans le silence tendu. Vous évoquez le respect mutuel entre voyageurs, et le nain, malgré sa haine évidente des animaux, concède que vous semblez maîtriser votre bête. Il s'écarte en maugréant. **{{pet}}** se calme progressivement."
         ],
-        "fail": [
+        "success_female": [
+          "Vous tentez de raisonner Moltiar par des paroles apaisantes, lui expliquant que votre compagne ne représente aucune menace. Quelque chose dans votre voix sincère semble toucher une corde sensible, et il finit par baisser son arme en grognant. **{{pet}}** apprécie votre diplomatie.",
+          "Vos paroles mesurées résonnent dans le silence tendu. Vous évoquez le respect mutuel entre voyageurs, et le nain, malgré sa haine évidente des animaux, concède que vous semblez maîtriser votre bête. Il s'écarte en maugréant. **{{pet}}** se calme progressivement."
+        ],
+        "fail_male": [
           "Vous tentez de raisonner le nain, mais vos paroles ne font qu'attiser sa colère. Il hurle que les mots ne suffisent pas à défendre ces créatures qu'il abhorre. **{{pet}}** détourne le regard, honteux de votre échec à le protéger.",
+          "Vos supplications pathétiques semblent exaspérer le nain davantage. Il vous regarde avec un mépris non dissimulé. **{{pet}}** vous observe avec un mélange de déception et de peur."
+        ],
+        "fail_female": [
+          "Vous tentez de raisonner le nain, mais vos paroles ne font qu'attiser sa colère. Il hurle que les mots ne suffisent pas à défendre ces créatures qu'il abhorre. **{{pet}}** détourne le regard, honteuse de votre échec à la protéger.",
           "Vos supplications pathétiques semblent exaspérer le nain davantage. Il vous regarde avec un mépris non dissimulé. **{{pet}}** vous observe avec un mélange de déception et de peur."
         ]
       },
       "giveMeatLikes": {
-        "success": [
+        "success_male": [
           "Vous sortez rapidement un morceau de viande et le tendez au nain affamé. Surpris par cette offrande, il l'accepte en grognant et mord dedans avec appétit. Il vous fait signe de déguerpir avant qu'il ne change d'avis. **{{pet}}** semble soulagé de cette issue.",
           "Le morceau de viande que vous offrez fait hésiter le nain. Son estomac gronde plus fort que sa haine, et il finit par accepter votre présent en s'éloignant. **{{pet}}** apprécie votre ingéniosité qui a évité la confrontation."
         ],
-        "fail": [
+        "success_female": [
+          "Vous sortez rapidement un morceau de viande et le tendez au nain affamé. Surpris par cette offrande, il l'accepte en grognant et mord dedans avec appétit. Il vous fait signe de déguerpir avant qu'il ne change d'avis. **{{pet}}** semble soulagée de cette issue.",
+          "Le morceau de viande que vous offrez fait hésiter le nain. Son estomac gronde plus fort que sa haine, et il finit par accepter votre présent en s'éloignant. **{{pet}}** apprécie votre ingéniosité qui a évité la confrontation."
+        ],
+        "fail_male": [
           "Vous sortez un morceau de viande pour amadouer Moltiar, mais celui-ci le jette au sol avec dégoût, refusant de se laisser acheter ainsi. Malheureusement, **{{pet}}** lorgnait sur ce mets et vous regarde avec des yeux accusateurs.",
           "Le morceau de viande que vous offrez est piétiné par le nain furieux. **{{pet}}** observe la scène avec frustration, déçu de voir cette friandise gaspillée."
+        ],
+        "fail_female": [
+          "Vous sortez un morceau de viande pour amadouer Moltiar, mais celui-ci le jette au sol avec dégoût, refusant de se laisser acheter ainsi. Malheureusement, **{{pet}}** lorgnait sur ce mets et vous regarde avec des yeux accusateurs.",
+          "Le morceau de viande que vous offrez est piétiné par le nain furieux. **{{pet}}** observe la scène avec frustration, déçue de voir cette friandise gaspillée."
         ]
       },
       "giveMeatDislikes": {
-        "success": [
+        "success_male": [
           "Vous sortez rapidement un morceau de viande et le tendez au nain affamé. Surpris par cette offrande, il l'accepte en grognant et mord dedans avec appétit. Il vous fait signe de déguerpir avant qu'il ne change d'avis. **{{pet}}** détourne le regard, visiblement peu intéressé par cette nourriture.",
           "Le morceau de viande que vous offrez fait hésiter le nain. Son estomac gronde plus fort que sa haine, et il finit par accepter votre présent en s'éloignant. **{{pet}}** ne semble pas regretter cette offrande qui ne lui était pas destinée."
         ],
-        "fail": [
+        "success_female": [
+          "Vous sortez rapidement un morceau de viande et le tendez au nain affamé. Surpris par cette offrande, il l'accepte en grognant et mord dedans avec appétit. Il vous fait signe de déguerpir avant qu'il ne change d'avis. **{{pet}}** détourne le regard, visiblement peu intéressée par cette nourriture.",
+          "Le morceau de viande que vous offrez fait hésiter le nain. Son estomac gronde plus fort que sa haine, et il finit par accepter votre présent en s'éloignant. **{{pet}}** ne semble pas regretter cette offrande qui ne lui était pas destinée."
+        ],
+        "fail_male": [
           "Vous sortez un morceau de viande pour amadouer Moltiar, mais celui-ci le jette au sol avec dégoût, refusant de se laisser acheter ainsi. **{{pet}}**, herbivore, ne semble pas perturbé par cette perte.",
+          "Le morceau de viande que vous offrez est piétiné par le nain furieux. **{{pet}}** n'y prête guère attention, ce type de nourriture ne lui convenant pas."
+        ],
+        "fail_female": [
+          "Vous sortez un morceau de viande pour amadouer Moltiar, mais celui-ci le jette au sol avec dégoût, refusant de se laisser acheter ainsi. **{{pet}}**, herbivore, ne semble pas perturbée par cette perte.",
           "Le morceau de viande que vous offrez est piétiné par le nain furieux. **{{pet}}** n'y prête guère attention, ce type de nourriture ne lui convenant pas."
         ]
       },
       "giveMeatNoFood": {
-        "fail": [
+        "fail_male": [
+          "Vous fouillez vos poches à la recherche d'un morceau de viande, mais l'entrepôt de votre guilde est désespérément vide. Moltiar ricane devant votre désarroi tandis que **{{pet}}** vous observe avec incompréhension.",
+          "Vous tentez de sortir de la viande pour calmer le nain, mais vous réalisez avec horreur que vous n'en avez pas. Moltiar en profite pour malmener **{{pet}}** qui vous lance un regard accusateur."
+        ],
+        "fail_female": [
           "Vous fouillez vos poches à la recherche d'un morceau de viande, mais l'entrepôt de votre guilde est désespérément vide. Moltiar ricane devant votre désarroi tandis que **{{pet}}** vous observe avec incompréhension.",
           "Vous tentez de sortir de la viande pour calmer le nain, mais vous réalisez avec horreur que vous n'en avez pas. Moltiar en profite pour malmener **{{pet}}** qui vous lance un regard accusateur."
         ]
       },
       "giveVegLikes": {
-        "success": [
+        "success_male": [
           "Vous offrez quelques légumes au nain, évoquant leur qualité et leur fraîcheur. Contre toute attente, le nain, amateur de potages, accepte votre offrande avec un grognement approbateur et s'en va. **{{pet}}** semble impressionné par votre instinct.",
           "Les légumes que vous présentez au nain lui rappellent visiblement des souvenirs plus agréables. Il les accepte avec un semblant de civilité et consent à vous laisser passer. **{{pet}}** apprécie cette résolution pacifique."
         ],
-        "fail": [
+        "success_female": [
+          "Vous offrez quelques légumes au nain, évoquant leur qualité et leur fraîcheur. Contre toute attente, le nain, amateur de potages, accepte votre offrande avec un grognement approbateur et s'en va. **{{pet}}** semble impressionnée par votre instinct.",
+          "Les légumes que vous présentez au nain lui rappellent visiblement des souvenirs plus agréables. Il les accepte avec un semblant de civilité et consent à vous laisser passer. **{{pet}}** apprécie cette résolution pacifique."
+        ],
+        "fail_male": [
           "Vous tendez des légumes au nain dans l'espoir de l'amadouer. Il éclate de rire devant cette offre ridicule et les balaie d'un revers de main. **{{pet}}** observe avec envie ces légumes gaspillés.",
           "Les légumes que vous offrez maladroitement sont balayés d'un revers de main par le nain méprisant. **{{pet}}** vous lance un regard de reproche, frustré de voir cette nourriture perdue."
+        ],
+        "fail_female": [
+          "Vous tendez des légumes au nain dans l'espoir de l'amadouer. Il éclate de rire devant cette offre ridicule et les balaie d'un revers de main. **{{pet}}** observe avec envie ces légumes gaspillés.",
+          "Les légumes que vous offrez maladroitement sont balayés d'un revers de main par le nain méprisant. **{{pet}}** vous lance un regard de reproche, frustrée de voir cette nourriture perdue."
         ]
       },
       "giveVegDislikes": {
-        "success": [
+        "success_male": [
           "Vous offrez quelques légumes au nain, évoquant leur qualité et leur fraîcheur. Contre toute attente, le nain, amateur de potages, accepte votre offrande avec un grognement approbateur et s'en va. **{{pet}}** semble peu concerné par cette perte de légumes.",
           "Les légumes que vous présentez au nain lui rappellent visiblement des souvenirs plus agréables. Il les accepte avec un semblant de civilité et consent à vous laisser passer. **{{pet}}**, carnivore, n'est pas dérangé par ce sacrifice."
         ],
-        "fail": [
+        "success_female": [
+          "Vous offrez quelques légumes au nain, évoquant leur qualité et leur fraîcheur. Contre toute attente, le nain, amateur de potages, accepte votre offrande avec un grognement approbateur et s'en va. **{{pet}}** semble peu concernée par cette perte de légumes.",
+          "Les légumes que vous présentez au nain lui rappellent visiblement des souvenirs plus agréables. Il les accepte avec un semblant de civilité et consent à vous laisser passer. **{{pet}}**, carnivore, n'est pas dérangée par ce sacrifice."
+        ],
+        "fail_male": [
           "Vous tendez des légumes au nain dans l'espoir de l'amadouer. Il éclate de rire devant cette offre ridicule et les balaie d'un revers de main. **{{pet}}** ne semble pas concerné par cette perte.",
+          "Les légumes que vous offrez maladroitement sont balayés d'un revers de main par le nain méprisant. **{{pet}}**, préférant la viande, n'accorde aucune importance à ces légumes perdus."
+        ],
+        "fail_female": [
+          "Vous tendez des légumes au nain dans l'espoir de l'amadouer. Il éclate de rire devant cette offre ridicule et les balaie d'un revers de main. **{{pet}}** ne semble pas concernée par cette perte.",
           "Les légumes que vous offrez maladroitement sont balayés d'un revers de main par le nain méprisant. **{{pet}}**, préférant la viande, n'accorde aucune importance à ces légumes perdus."
         ]
       },
       "giveVegNoFood": {
-        "fail": [
+        "fail_male": [
           "Vous cherchez des légumes à offrir au nain, mais l'entrepôt de votre guilde n'en contient aucun. Moltiar se moque de votre tentative pathétique tandis que **{{pet}}** baisse la tête, déçu.",
+          "Vous voulez proposer des légumes pour apaiser la situation, mais vous n'en avez pas. Le nain profite de votre hésitation pour bousculer **{{pet}}** qui vous regarde avec reproche."
+        ],
+        "fail_female": [
+          "Vous cherchez des légumes à offrir au nain, mais l'entrepôt de votre guilde n'en contient aucun. Moltiar se moque de votre tentative pathétique tandis que **{{pet}}** baisse la tête, déçue.",
           "Vous voulez proposer des légumes pour apaiser la situation, mais vous n'en avez pas. Le nain profite de votre hésitation pour bousculer **{{pet}}** qui vous regarde avec reproche."
         ]
       },
       "flee": {
-        "success": [
+        "success_male": [
           "Vous prenez vos jambes à votre cou avec **{{pet}}** sur vos talons. Votre vitesse combinée vous permet de distancer rapidement Moltiar qui, trop corpulent, renonce à vous poursuivre en hurlant des jurons. Votre compagnon halète mais semble satisfait.",
           "La fuite se révèle être la bonne décision. Vous courez efficacement avec **{{pet}}** qui vous suit sans difficulté, laissant le nain furieux mais impuissant derrière vous. Vous avez fait équipe."
         ],
-        "fail": [
+        "success_female": [
+          "Vous prenez vos jambes à votre cou avec **{{pet}}** sur vos talons. Votre vitesse combinée vous permet de distancer rapidement Moltiar qui, trop corpulent, renonce à vous poursuivre en hurlant des jurons. Votre compagne halète mais semble satisfaite.",
+          "La fuite se révèle être la bonne décision. Vous courez efficacement avec **{{pet}}** qui vous suit sans difficulté, laissant le nain furieux mais impuissant derrière vous. Vous avez fait équipe."
+        ],
+        "fail_male": [
           "La panique vous submerge et vous détalez maladroitement avec **{{pet}}** sur vos talons. Moltiar, plus rapide que prévu, vous rattrape et bouscule violemment votre compagnon au passage. Vous parvenez finalement à vous échapper, mais **{{pet}}** vous en veut de cette fuite précipitée.",
           "Vous prenez vos jambes à votre cou dans une débandade peu glorieuse. Malheureusement, **{{pet}}** ne peut suivre votre rythme et reste à la traîne. Le nain en profite pour lui donner un coup de bâton avant que vous ne reveniez le chercher. Votre compagnon est furieux de cette fuite ratée."
+        ],
+        "fail_female": [
+          "La panique vous submerge et vous détalez maladroitement avec **{{pet}}** sur vos talons. Moltiar, plus rapide que prévu, vous rattrape et bouscule violemment votre compagne au passage. Vous parvenez finalement à vous échapper, mais **{{pet}}** vous en veut de cette fuite précipitée.",
+          "Vous prenez vos jambes à votre cou dans une débandade peu glorieuse. Malheureusement, **{{pet}}** ne peut suivre votre rythme et reste à la traîne. Le nain en profite pour lui donner un coup de bâton avant que vous ne reveniez la chercher. Votre compagne est furieuse de cette fuite ratée."
         ]
       },
       "hide": {
-        "success": [
+        "success_male": [
           "Vous repérez rapidement un renfoncement dans les rochers et y dissimulez **{{pet}}** avant que le nain ne le remarque. Ce dernier, ne voyant plus la bête, perd tout intérêt et s'éloigne en maugréant. Votre compagnon apprécie votre discrétion.",
           "Vous trouvez un endroit idéal pour cacher **{{pet}}** sous votre cape. Le nain, ne voyant plus l'objet de sa haine, finit par se calmer et poursuivre son chemin. Votre compagnon semble rassuré par votre protection."
         ],
-        "fail": [
+        "success_female": [
+          "Vous repérez rapidement un renfoncement dans les rochers et y dissimulez **{{pet}}** avant que le nain ne la remarque. Ce dernier, ne voyant plus la bête, perd tout intérêt et s'éloigne en maugréant. Votre compagne apprécie votre discrétion.",
+          "Vous trouvez un endroit idéal pour cacher **{{pet}}** sous votre cape. Le nain, ne voyant plus l'objet de sa haine, finit par se calmer et poursuivre son chemin. Votre compagne semble rassurée par votre protection."
+        ],
+        "fail_male": [
           "Vous tentez de dissimuler **{{pet}}** dans un recoin, mais Moltiar vous surprend en pleine manœuvre. Il rugit de colère et malmène votre compagnon. Celui-ci vous lance un regard lourd de reproches.",
           "Votre tentative de dissimulation échoue lamentablement quand **{{pet}}** pousse un gémissement nerveux, révélant sa cachette. Le nain se rue vers lui et le bouscule violemment. Votre compagnon souffre de cette mésaventure."
+        ],
+        "fail_female": [
+          "Vous tentez de dissimuler **{{pet}}** dans un recoin, mais Moltiar vous surprend en pleine manœuvre. Il rugit de colère et malmène votre compagne. Celle-ci vous lance un regard lourd de reproches.",
+          "Votre tentative de dissimulation échoue lamentablement quand **{{pet}}** pousse un gémissement nerveux, révélant sa cachette. Le nain se rue vers elle et la bouscule violemment. Votre compagne souffre de cette mésaventure."
         ]
       },
       "wait": {
-        "success": [
+        "success_male": [
           "Vous décidez d'attendre immobile, espérant que la colère du nain retombe. Après de longues minutes de vociférations, il semble se lasser et finit par s'éloigner en grognant. **{{pet}}** semble apprécier votre patience et votre sang-froid.",
           "L'attente se révèle payante. Le nain, ne trouvant pas la réaction qu'il espérait, perd progressivement son ardeur belliqueuse et repart. **{{pet}}** vous regarde avec respect pour votre sagesse."
         ],
-        "fail": [
+        "success_female": [
+          "Vous décidez d'attendre immobile, espérant que la colère du nain retombe. Après de longues minutes de vociférations, il semble se lasser et finit par s'éloigner en grognant. **{{pet}}** semble apprécier votre patience et votre sang-froid.",
+          "L'attente se révèle payante. Le nain, ne trouvant pas la réaction qu'il espérait, perd progressivement son ardeur belliqueuse et repart. **{{pet}}** vous regarde avec respect pour votre sagesse."
+        ],
+        "fail_male": [
           "Vous décidez d'attendre immobile, mais le nain interprète votre passivité comme de la faiblesse. Il s'approche davantage et menace **{{pet}}** de plus belle. Votre compagnon piétine nerveusement, stressé par cette inaction.",
           "L'attente s'éternise et **{{pet}}** commence à gémir d'angoisse. Le nain, enhardi par votre inaction, se fait de plus en plus menaçant. Votre compagnon vous reproche de ne rien faire."
+        ],
+        "fail_female": [
+          "Vous décidez d'attendre immobile, mais le nain interprète votre passivité comme de la faiblesse. Il s'approche davantage et menace **{{pet}}** de plus belle. Votre compagne piétine nerveusement, stressée par cette inaction.",
+          "L'attente s'éternise et **{{pet}}** commence à gémir d'angoisse. Le nain, enhardi par votre inaction, se fait de plus en plus menaçant. Votre compagne vous reproche de ne rien faire."
         ]
       },
       "protect": {
-        "success": [
+        "success_male": [
           "Dans un élan de bravoure protectrice, vous placez fermement votre corps entre Moltiar et **{{pet}}**. Votre détermination impressionne l'agresseur qui, voyant que vous êtes prêt à vous battre, décide de ne point provoquer davantage. Votre compagnon est touché par votre courage.",
           "Vous protégez **{{pet}}** en vous interposant avec assurance face au nain hostile. Celui-ci, réalisant que vous ne céderez pas, préfère reculer en crachant des insultes. Votre compagnon vous regarde avec une affection renouvelée."
         ],
-        "fail": [
+        "success_female": [
+          "Dans un élan de bravoure protectrice, vous placez fermement votre corps entre Moltiar et **{{pet}}**. Votre détermination impressionne l'agresseur qui, voyant que vous êtes prêt à vous battre, décide de ne point provoquer davantage. Votre compagne est touchée par votre courage.",
+          "Vous protégez **{{pet}}** en vous interposant avec assurance face au nain hostile. Celui-ci, réalisant que vous ne céderez pas, préfère reculer en crachant des insultes. Votre compagne vous regarde avec une affection renouvelée."
+        ],
+        "fail_male": [
           "Dans un élan de bravoure, vous vous interposez entre Moltiar et **{{pet}}**. Malheureusement, le nain est plus fort que vous ne le pensiez. Il vous repousse brutalement et en profite pour frapper votre compagnon. Vous vous sentez impuissant face à cette démonstration de force.",
           "Vous tentez de protéger **{{pet}}** en vous plaçant devant lui, mais votre posture manque d'assurance. Le nain vous contourne aisément et bouscule votre compagnon qui vous lance un regard déçu par votre incapacité à le défendre."
+        ],
+        "fail_female": [
+          "Dans un élan de bravoure, vous vous interposez entre Moltiar et **{{pet}}**. Malheureusement, le nain est plus fort que vous ne le pensiez. Il vous repousse brutalement et en profite pour frapper votre compagne. Vous vous sentez impuissant face à cette démonstration de force.",
+          "Vous tentez de protéger **{{pet}}** en vous plaçant devant elle, mais votre posture manque d'assurance. Le nain vous contourne aisément et bouscule votre compagne qui vous lance un regard déçu par votre incapacité à la défendre."
         ]
       },
       "distract": {
-        "success": [
+        "success_male": [
           "Vous créez une diversion en évoquant bruyamment une taverne réputée dans la direction opposée. Moltiar, dont l'amour de la bière surpasse visiblement sa haine des animaux, tend l'oreille puis s'éloigne, intrigué. **{{pet}}** profite de la confusion, impressionné par votre ruse.",
           "Votre diversion fonctionne à merveille. En lançant quelques pièces au loin, vous attirez l'attention cupide du nain. Pendant qu'il se précipite pour les ramasser, **{{pet}}** et vous vous éclipsez discrètement."
         ],
-        "fail": [
+        "success_female": [
+          "Vous créez une diversion en évoquant bruyamment une taverne réputée dans la direction opposée. Moltiar, dont l'amour de la bière surpasse visiblement sa haine des animaux, tend l'oreille puis s'éloigne, intrigué. **{{pet}}** profite de la confusion, impressionnée par votre ruse.",
+          "Votre diversion fonctionne à merveille. En lançant quelques pièces au loin, vous attirez l'attention cupide du nain. Pendant qu'il se précipite pour les ramasser, **{{pet}}** et vous vous éclipsez discrètement."
+        ],
+        "fail_male": [
           "Vous tentez de créer une diversion en gesticulant et en criant. Ce spectacle ridicule ne fait qu'irriter davantage le nain qui se rapproche, menaçant. **{{pet}}** recule, effrayé par votre comportement étrange.",
+          "Dans une tentative désespérée de diversion, vous lancez des cailloux au hasard. L'un d'eux atteint malencontreusement **{{pet}}** qui couine de douleur tandis que le nain ricane méchamment."
+        ],
+        "fail_female": [
+          "Vous tentez de créer une diversion en gesticulant et en criant. Ce spectacle ridicule ne fait qu'irriter davantage le nain qui se rapproche, menaçant. **{{pet}}** recule, effrayée par votre comportement étrange.",
           "Dans une tentative désespérée de diversion, vous lancez des cailloux au hasard. L'un d'eux atteint malencontreusement **{{pet}}** qui couine de douleur tandis que le nain ricane méchamment."
         ]
       },
       "calm": {
-        "success": [
+        "success_male": [
           "Vous parvenez à apaiser **{{pet}}** par des caresses rassurantes malgré la menace du nain. Votre compagnon, reprenant confiance, cesse de trembler. Le nain, voyant que vous maîtrisez votre bête, semble moins enclin à l'attaquer et finit par s'éloigner.",
           "Vos paroles apaisantes et votre attitude confiante parviennent à calmer **{{pet}}**. Une fois détendu, il dégage une assurance qui fait hésiter le nain. Ce dernier, moins sûr de lui face à cette sérénité, préfère partir."
         ],
-        "fail": [
+        "success_female": [
+          "Vous parvenez à apaiser **{{pet}}** par des caresses rassurantes malgré la menace du nain. Votre compagne, reprenant confiance, cesse de trembler. Le nain, voyant que vous maîtrisez votre bête, semble moins enclin à l'attaquer et finit par s'éloigner.",
+          "Vos paroles apaisantes et votre attitude confiante parviennent à calmer **{{pet}}**. Une fois détendue, elle dégage une assurance qui fait hésiter le nain. Ce dernier, moins sûr de lui face à cette sérénité, préfère partir."
+        ],
+        "fail_male": [
           "Vous tentez d'apaiser **{{pet}}** par des caresses, mais votre propre nervosité face au nain hostile se transmet à votre compagnon. Au lieu de se calmer, il devient encore plus agité et gémissant.",
+          "Vos paroles censées être apaisantes trahissent votre propre terreur. **{{pet}}**, percevant votre peur, comprend que la situation est grave et sa panique s'aggrave."
+        ],
+        "fail_female": [
+          "Vous tentez d'apaiser **{{pet}}** par des caresses, mais votre propre nervosité face au nain hostile se transmet à votre compagne. Au lieu de se calmer, elle devient encore plus agitée et gémissante.",
           "Vos paroles censées être apaisantes trahissent votre propre terreur. **{{pet}}**, percevant votre peur, comprend que la situation est grave et sa panique s'aggrave."
         ]
       },
       "imposer": {
-        "success": [
+        "success_male": [
           "Vous laissez **{{pet}}** s'avancer avec assurance vers le nain. Sa prestance naturelle et sa beauté rare semblent désarçonner l'agresseur qui, malgré sa haine, reconnaît qu'il a affaire à un spécimen exceptionnel. Il bat en retraite, impressionné malgré lui.",
           "Se posant calmement face au nain, **{{pet}}** dégage une aura de majesté indéniable. Le nain, bien que haïssant les animaux, ne peut s'empêcher de reconnaître la noblesse de votre compagnon et s'éloigne prudemment."
         ],
-        "fail": [
+        "success_female": [
+          "Vous laissez **{{pet}}** s'avancer avec assurance vers le nain. Sa prestance naturelle et sa beauté rare semblent désarçonner l'agresseur qui, malgré sa haine, reconnaît qu'il a affaire à un spécimen exceptionnel. Il bat en retraite, impressionné malgré lui.",
+          "Se posant calmement face au nain, **{{pet}}** dégage une aura de majesté indéniable. Le nain, bien que haïssant les animaux, ne peut s'empêcher de reconnaître la noblesse de votre compagne et s'éloigne prudemment."
+        ],
+        "fail_male": [
           "Vous tentez de laisser **{{pet}}** s'imposer face à Moltiar, mais votre compagnon, intimidé, ne parvient pas à paraître menaçant. Le nain éclate d'un rire méprisant et le bouscule sans ménagement.",
           "**{{pet}}** tente de se montrer imposant face au nain, mais son apparence ne suffit pas à l'impressionner. Le nain le regarde avec moquerie avant de lui donner un coup de pied."
+        ],
+        "fail_female": [
+          "Vous tentez de laisser **{{pet}}** s'imposer face à Moltiar, mais votre compagne, intimidée, ne parvient pas à paraître menaçante. Le nain éclate d'un rire méprisant et la bouscule sans ménagement.",
+          "**{{pet}}** tente de se montrer imposante face au nain, mais son apparence ne suffit pas à l'impressionner. Le nain la regarde avec moquerie avant de lui donner un coup de pied."
         ]
       },
       "energize": {
-        "success": [
+        "success_male": [
           "Vous encouragez **{{pet}}** avec des paroles enthousiastes. Galvanisé par votre soutien, votre compagnon retrouve toute sa vigueur et se dresse fièrement face à Moltiar. Ce dernier, surpris par ce regain d'énergie, préfère ne point prendre de risque et s'éloigne.",
           "Vos mots d'encouragement redonnent confiance à **{{pet}}** qui se redresse avec détermination. Le nain, voyant que votre compagnon ne se laissera pas faire, renonce à son agression et part en grognant."
         ],
-        "fail": [
+        "success_female": [
+          "Vous encouragez **{{pet}}** avec des paroles enthousiastes. Galvanisée par votre soutien, votre compagne retrouve toute sa vigueur et se dresse fièrement face à Moltiar. Ce dernier, surpris par ce regain d'énergie, préfère ne point prendre de risque et s'éloigne.",
+          "Vos mots d'encouragement redonnent confiance à **{{pet}}** qui se redresse avec détermination. Le nain, voyant que votre compagne ne se laissera pas faire, renonce à son agression et part en grognant."
+        ],
+        "fail_male": [
           "Vous tentez d'encourager **{{pet}}** avec des paroles, mais votre voix manque de conviction face à la menace du nain. Votre compagnon, déjà terrorisé, ne trouve point le courage nécessaire et se recroqueville davantage.",
           "Vos tentatives pour galvaniser **{{pet}}** tombent à plat. Le nain profite de ce moment de faiblesse pour malmener votre compagnon qui vous en veut de ne pas l'avoir mieux protégé."
+        ],
+        "fail_female": [
+          "Vous tentez d'encourager **{{pet}}** avec des paroles, mais votre voix manque de conviction face à la menace du nain. Votre compagne, déjà terrorisée, ne trouve point le courage nécessaire et se recroqueville davantage.",
+          "Vos tentatives pour galvaniser **{{pet}}** tombent à plat. Le nain profite de ce moment de faiblesse pour malmener votre compagne qui vous en veut de ne pas l'avoir mieux protégée."
         ]
       }
     }
