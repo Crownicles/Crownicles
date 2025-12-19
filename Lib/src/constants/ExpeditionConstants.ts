@@ -553,18 +553,30 @@ export abstract class ExpeditionConstants {
 
 		/**
 		 * Bonus rewards when pet is in expedition (Velanna's rewards)
-		 * Always gives bonus points, then has chances to give money/item or combat potion
+		 * Always gives bonus points, plus one of the following based on a single random roll:
+		 * - 0-4% (5%): random item
+		 * - 5-14% (10%): money
+		 * - 15-64% (50%): combat potion
+		 * - 65-100% (35%): points only
 		 */
 		BONUS_IF_PET_IN_EXPEDITION: {
 			POINTS_MIN: 1,
 			POINTS_MAX: 40,
-			COMBAT_POTION_CHANCE: 15,
+
+			/** Threshold for item reward (0 to ITEM_THRESHOLD - 1) */
+			ITEM_THRESHOLD: 5,
+
+			/** Threshold for money reward (ITEM_THRESHOLD to MONEY_THRESHOLD - 1) */
+			MONEY_THRESHOLD: 15,
+
+			/** Threshold for combat potion (MONEY_THRESHOLD to POTION_THRESHOLD - 1) */
+			POTION_THRESHOLD: 50,
+
+			/** Above POTION_THRESHOLD: points only */
 			COMBAT_POTION_MIN_RARITY: 4,
 			COMBAT_POTION_MAX_RARITY: 7,
-			MONEY_CHANCE: 20,
 			MONEY_MIN: 60,
-			MONEY_MAX: 110,
-			ITEM_CHANCE: 20
+			MONEY_MAX: 110
 		}
 	};
 
