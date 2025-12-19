@@ -143,7 +143,8 @@
       "warning_male": "{emote:collectors.warning} *Rappeler votre familier prématurément brisera le lien de confiance. Il reviendra sans butin et le cœur meurtri...*",
       "warning_female": "{emote:collectors.warning} *Rappeler votre familier prématurément brisera le lien de confiance. Elle reviendra sans butin et le cœur meurtrie...*"
     },
-    "inProgressFoodInfo": "\n{emote:expedition.food} **Provisions emportées :** {{amount, number}} rations",
+    "inProgressFoodInfo_one": "\n{emote:expedition.food} **Provisions emportées :** {{count, number}} ration",
+    "inProgressFoodInfo_other": "\n{emote:expedition.food} **Provisions emportées :** {{count, number}} rations",
     "recallButton": "Rappeler",
     "closeButton": "Continuer l'exploration",
     "chooseExpeditionTitle": "{{pseudo}}, nouvelles expéditions disponibles",
@@ -170,7 +171,8 @@
     "startedTitle": "{{pseudo}}, expédition lancée !",
     "expeditionStarted_male": "D'un bond enthousiaste, {{petDisplay}} s'élance vers **{{location}}** ! Vous le regardez disparaître à l'horizon, le cœur empli d'espoir.\n\n{emote:clocks.1} Retour prévu : {{returnTime}}",
     "expeditionStarted_female": "D'un bond enthousiaste, {{petDisplay}} s'élance vers **{{location}}** ! Vous la regardez disparaître à l'horizon, le cœur empli d'espoir.\n\n{emote:clocks.1} Retour prévu : {{returnTime}}",
-    "foodConsumed": "\n{emote:expedition.food} Provisions emportées : **{{amount, number}}** rations",
+    "foodConsumed_one": "\n{emote:expedition.food} Provisions emportées : **{{count, number}}** ration",
+    "foodConsumed_other": "\n{emote:expedition.food} Provisions emportées : **{{count, number}}** rations",
     "foodConsumedDetails": "\n{emote:expedition.food} **Provisions emportées :** {{foodDetails}}",
     "insufficientFoodWarning": {
       "noGuild": "\n\n{emote:collectors.warning} **Vous n'avez pas de guilde pour préparer des rations** pour votre familier. Les risques d'échec de cette expédition sont **triplés**.",
