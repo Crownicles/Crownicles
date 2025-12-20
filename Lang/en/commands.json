@@ -143,7 +143,8 @@
       "warning_male": "{emote:collectors.warning} *Calling your pet back prematurely will break the bond of trust. He'll return with no loot and a bruised heart...*",
       "warning_female": "{emote:collectors.warning} *Calling your pet back prematurely will break the bond of trust. She'll return lootless and heartbroken...*"
     },
-    "inProgressFoodInfo": "\n{emote:expedition.food} **Packed provisions:** {{amount, number}} rations",
+    "inProgressFoodInfo_one": "{emote:expedition.food} Provisions carried: {{count, number}} ration(s)",
+    "inProgressFoodInfo_other": "\n{emote:expedition.food} **Packed provisions:** {{count, number}} rations",
     "recallButton": "Call back",
     "closeButton": "Continue exploring",
     "chooseExpeditionTitle": "{{pseudo}}new shipments available",
@@ -170,7 +171,8 @@
     "startedTitle": "{{pseudo}}expedition launched!",
     "expeditionStarted_male": "With an enthusiastic leap, {{petDisplay}} dashes off to **{{location}}**! You watch him disappear over the horizon, your heart full of hope.\n\n{emote:clocks.1} Scheduled return: {{returnTime}}",
     "expeditionStarted_female": "With an enthusiastic leap, {{petDisplay}} dashes off to **{{location}}**! You watch her disappear over the horizon, your heart full of hope.\n\n{emote:clocks.1} Scheduled return: {{returnTime}}",
-    "foodConsumed": "\n{emote:expedition.food} Provisions carried : **{{amount, number}}** rations",
+    "foodConsumed_one": "{emote:expedition.food} Provisions carried: **{{count, number}}** ration\n",
+    "foodConsumed_other": "\n{emote:expedition.food} Provisions carried : **{{count, number}}** rations",
     "foodConsumedDetails": "\n{emote:expedition.food} **Provisions taken:** {{foodDetails}}",
     "insufficientFoodWarning": {
       "noGuild": "\n\n{emote:collectors.warning} **You have no guild to prepare rations** for your pet. The risk of failure of this expedition is **tripled**.",
@@ -805,7 +807,8 @@
     "tokensUsedSuccessDescription_other": "{emote:unitValues.token} You have spent **{{count}} tokens** to advance your journey.\n\n{{nextStep}}",
     "tokensNextStepArrived": "{emote:messages.info} You've arrived at your destination! Use {command:report} to see what awaits you.",
     "tokensNextStepSmallEvent": "{emote:messages.info} An event is waiting for you on the road. Use {command:report} to find out.",
-    "tokensUsedRefused": "{emote:messages.refuse} **{{pseudo}}** has decided not to use tokens.",
+    "tokensUsedRefusedTitle": "{{pseudo}}, cancellation",
+    "tokensUsedRefusedDescription": "{emote:messages.refuse} You have decided to keep your tokens.",
     "buyHealButton": "Taking care of yourself",
     "notEnoughMoneyHealButton": "Not enough money",
     "buyHealLoading": "Loading...",
@@ -1458,7 +1461,7 @@
   "fight": {
     "title": "{{pseudo}}, you're about to start a fight",
     "canceledTitle": "{{pseudo}}, search cancelled",
-    "confirmDesc": "{emote:fightCommand.crossedSwords} | **{{pseudo}}**{{confirmSubText}}\n\n{emote:fightCommand.crossedSwords} | **Fighter: {{pseudo}}** | {{glory, number}} | {{className}} {{pet}} { ~\n\n{stats}}",
+    "confirmDesc": "{emote:fightCommand.crossedSwords} | **{{pseudo}}**{{confirmSubText}}\n\n{emote:fightCommand.crossedSwords} | **Fighter: {{pseudo}}** | {{glory, number}} | {{className}} {{pet}} \n\n{{stats}}",
     "pet": "| {{petInfo}}",
     "petOnExpedition": "| ~~{{petInfo}}~~",
     "confirmSubTexts": {
