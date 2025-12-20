@@ -6,7 +6,7 @@ import * as moment from "moment/moment";
 export class Material extends Model {
 	declare readonly playerId: number;
 
-	declare readonly materialId: string;
+	declare readonly materialId: number;
 
 	declare quantity: number;
 
@@ -49,8 +49,7 @@ export function initModel(sequelize: Sequelize): void {
 			primaryKey: true
 		},
 		materialId: {
-			// eslint-disable-next-line new-cap
-			type: DataTypes.STRING(16),
+			type: DataTypes.TINYINT,
 			primaryKey: true
 		},
 		quantity: {

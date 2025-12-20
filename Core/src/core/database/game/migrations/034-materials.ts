@@ -10,8 +10,7 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 			primaryKey: true
 		},
 		materialId: {
-			// eslint-disable-next-line new-cap
-			type: DataTypes.STRING(16),
+			type: DataTypes.TINYINT,
 			primaryKey: true
 		},
 		quantity: {

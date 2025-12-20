@@ -172,22 +172,25 @@ describe("Materials consistency", () => {
 		checkDirectory("weapons");
 	});
 
-	it("material IDs must be at most 16 characters long", () => {
+	it("material IDs must be valid 8-bit numbers (1-255)", () => {
 		const materialsDir = path.join(__dirname, "../../../../Core/resources/materials");
 		const materialFiles = readdirSync(materialsDir).filter((file) => file.endsWith(".json"));
 
-		const tooLongIds: string[] = [];
+		const invalidIds: string[] = [];
 
 		for (const file of materialFiles) {
 			const id = getMaterialIdFromFile(file);
-			if (id.length > 16) {
-				tooLongIds.push(`${id} (from ${file})`);
+			const numericId = parseInt(id, 10);
+
+			// Check if ID is a valid number between 1 and 255 (8-bit range)
+			if (isNaN(numericId) || numericId < 1 || numericId > 255 || id !== String(numericId)) {
+				invalidIds.push(`${id} (from ${file})`);
 			}
 		}
 
-		if (tooLongIds.length > 0) {
+		if (invalidIds.length > 0) {
 			throw new Error(
-				`Found material IDs longer than 16 characters:\n${tooLongIds
+				`Found invalid material IDs (must be numbers between 1 and 255):\n${invalidIds
 					.sort()
 					.join("\n")}`,
 			);
