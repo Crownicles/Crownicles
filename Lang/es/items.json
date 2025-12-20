@@ -7,24 +7,24 @@
   "objectsFieldName": "Asunto :",
   "objectsNatures": [
     "{emote:itemNatures.0} Sin efecto",
-    "{emote:itemNatures.1} Vie + {{power, number}} par jour",
-    "{emote:itemNatures.2} Vitesse + {{power, number}} pendant les combats",
-    "{emote:itemNatures.3} Attaque + {{power, number}} pendant les combats",
-    "{emote:itemNatures.4} Défense + {{power, number}} pendant les combats",
+    "{emote:itemNatures.1} Vida + {{power, number}} por día",
+    "{emote:itemNatures.2} Velocidad + {{power, number}} durante las batallas",
+    "{emote:itemNatures.3} Ataque + {{power, number}} durante el combate",
+    "{emote:itemNatures.4} Defensa + {{power, number}} durante las batallas",
     "{emote:itemNatures.5} Avance rápido a {{power}} cada día",
-    "{emote:itemNatures.6} Argent + {{power, number}} par jour",
+    "{emote:itemNatures.6} Dinero + {{power, number}} por día",
     "{emote:itemNatures.7} Énergie + {{power, number}} par jour"
   ],
   "potionsFieldName": "Poción :",
   "potionsNatures": [
     "{emote:itemNatures.0} Sin efecto",
-    "{emote:itemNatures.1} Vie + {{power, number}}",
-    "{emote:itemNatures.2} Vitesse + {{power, number}} pendant le prochain combat",
-    "{emote:itemNatures.3} Attaque + {{power, number}} pendant le prochain combat",
-    "{emote:itemNatures.4} Défense + {{power, number}} pendant le prochain combat",
+    "{emote:itemNatures.1} Vida + {{power, number}}",
+    "{emote:itemNatures.2} Velocidad + {{power, number}} durante la próxima pelea",
+    "{emote:itemNatures.3} Ataque + {{power, number}} durante la próxima batalla",
+    "{emote:itemNatures.4} Defensa + {{power, number}} durante la próxima batalla",
     "{emote:itemNatures.5} Tiempo de antelación {{power}}",
-    "{emote:itemNatures.6} Argent + {{power, number}}",
-    "{emote:itemNatures.7} Énergie + {{power, number}}"
+    "{emote:itemNatures.6} Dinero + {{power, number}}",
+    "{emote:itemNatures.7} Energía + {{power, number}}"
   ],
   "rarities": [
     "{emote:rarity.0} Básico",

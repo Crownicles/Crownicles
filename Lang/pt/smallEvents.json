@@ -1571,25 +1571,30 @@
     }
   },
   "gobletsGame": {
-    "intro": "encontra um homem que parece suspeito. Ele aproxima-se de ti e empurra-te para uma mesa com três taças misteriosas. As instruções que lhe são dadas são simples: deve tirar uma chávena ao acaso e receber a recompensa, seja ela qual for. Enquanto olha para os objectos sobre a mesa, o homem aproxima-se por trás de si e parece não o querer largar. Para sair desta situação, resigna-se a escolher uma chávena.",
+    "intro": "depara-se com um homem de aparência suspeita. Aproxima-se e, sem cerimónias, empurra-te em direção a uma mesa onde estão dispostas quatro chávenas misteriosas. As instruções são simples: deve escolher uma chávena e receber a recompensa, seja ela qual for. Enquanto examinas os objetos em cima da mesa, o homem aproxima-se sorrateiramente por trás e parece não te querer largar. Para se livrar desta situação, resigna-se a escolher uma chávena.",
     "goblets": {
       "metal": {
-        "description": "O de metal, que parece muito antigo, tem gravada a cabeça de um dragão.",
+        "description": "A de metal, com um aspeto muito antigo, é a escolha clássica e equilibrada",
         "name": "metal"
       },
       "biggest": {
-        "description": "O maior dos três, feito de um material que não se consegue identificar",
+        "description": "O maior dos quatro, imponente e reconfortante, a escolha prudente e menos arriscada",
         "name": "o maior"
       },
       "sparkling": {
-        "description": "O último, esculpido em madeira azul e que brilha de tal forma que parece encantado",
+        "description": "A reluzente, esculpida em madeira azul encantada, a escolha arriscada que pode render muito",
         "name": "cintilante"
+      },
+      "cracked": {
+        "description": "O ar gretado e instável, a escolha do apostador, o tudo ou nada",
+        "name": "rachadura"
       }
     },
     "results": {
       "life": "Levanta suavemente o copo $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) e repara que não há nada debaixo. Desiludido e mau perdedor, bate nos copos restantes que voam pelos ares. Reparando que também não havia nada nos outros copos, vira-se para o vigarista. Infelizmente, este bate primeiro. Perde **{{quantity, number}} {emote:unitValues.lostHealth}**.",
       "time": "Levanta suavemente a chávena $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) e fica encantado por descobrir uma pequena moeda! Infelizmente, o homem atrás de si não parece querer deixá-lo partir com a sua recompensa. Passas **{{quantity}} {emote:unitValues.time}** a negociar com ele antes de desistires e continuares o teu caminho.",
-      "nothing": "$t(smallEvents:gobletsGame.goblets.{{goblet}}.name) Levanta suavemente a chávena e verifica que não há nada por baixo. Desapontado, vai-se embora com tristeza, pensando que talvez tenha mais sorte noutra altura.",
+      "nothing": "Levanta delicadamente a chávena $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) e encontra-a vazia. O burlão esboça um sorriso malicioso, mas, pelo canto do olho, percebe-se que as outras chávenas também estavam vazias. Ao perceber que escapou a uma armadilha astuta, afasta-se rapidamente, aliviado por ter saído ileso.",
+      "item": "Levanta delicadamente a chávena $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) e descobre um brilho intenso! Um objeto excecionalmente raro estava escondido debaixo dela. O burlão, surpreendido, deixa-o ir com a sua preciosa descoberta.",
       "end": "Perante a sua falta de reação, o homem tem a má ideia de tentar roubá-lo. Reparando na sua manobra, intervém, mas fica rapidamente surpreendido com a força do homem que consegue libertar-se com um movimento brusco antes de fugir. Sai com um pequeno ferimento. Perde **{{quantity, number}} {emote:unitValues.lostHealth}**."
     }
   },
@@ -1611,7 +1616,7 @@
       "{{name}}Ao percorreres a estrada, encontras uma carroça com uma comerciante de nome . Ela oferece-se para comprar um dos seus artigos, dizendo que pode ser útil na tua aventura."
     ],
     "end": [
-      "\n\n{{item}} | `{{price, number}} {emote:unitValues.money}`\n\n**Type :** {{type}}"
+      "\n\n{{item}} | `{{price, number}} {emote:unitValues.money}`\n\n**Tipo:** {{type}}"
     ],
     "types": [
       "Arma",
@@ -1935,11 +1940,16 @@
   ],
   "petFood": {
     "intro": {
-      "badSmell": "O teu fiel companheiro pára de repente, com as narinas a arder. As suas orelhas levantam-se quando ele capta o cheiro que vem de um bosque escuro. Há algo de imundo a apodrecer, talvez abandonado há dias, e o teu animal de estimação parece fascinado por este fedor que faria recuar muitas criaturas.",
-      "goodSmell": "O seu companheiro de viagem fica subitamente agitado, abanando a cauda com entusiasmo, com os olhos a brilhar de excitação. Um aroma doce e tentador paira no ar. Como uma borboleta, ele é atraído pela luz para esta fragrância prometedora, que lhe desperta o apetite.",
-      "vegetarian": "O seu fiel animal de estimação abranda o passo e inclina a cabeça para um lado, intrigado com um bosque de arbustos que ladeia o caminho. Entre as ervas selvagens e os fetos prateados, ele parece ter discernido algo comestível por entre a vegetação.",
-      "meat": "O teu companheiro pára, com os músculos tensos, olhando atenta e predatoriamente para um corpo de água que brilha ao sol poente. Os seus lábios curvam-se ligeiramente, revelando presas afiadas, enquanto ele fareja o ar com absoluta concentração. Ele avistou claramente a sua presa...",
-      "soup": "Um cheiro familiar e reconfortante faz cócegas nas suas narinas: o aroma untuoso da sopa a ferver numa panela de cobre. O teu fiel companheiro levanta os ouvidos e corre para um acampamento abandonado à beira da estrada, onde um caldeirão de ferro preto ainda está suspenso sobre brasas moribundas. Será esta a derradeira sopa?"
+      "badSmell_male": "O teu fiel companheiro pára de repente, com as narinas a arder. As suas orelhas levantam-se quando ele capta o cheiro que vem de um bosque escuro. Há algo de imundo a apodrecer, talvez abandonado há dias, e o teu animal de estimação parece fascinado por este fedor que faria recuar muitas criaturas.",
+      "badSmell_female": "Votre fidèle compagne s'immobilise brusquement, les narines frémissantes. Ses oreilles se dressent tandis qu'elle capte une odeur nauséabonde s'échappant d'un taillis sombre. Quelque chose de fétide y croupit, abandonné depuis des jours peut-être, et votre familier semble fasciné par cette puanteur qui ferait reculer bien des créatures.",
+      "goodSmell_male": "O seu companheiro de viagem fica subitamente agitado, abanando a cauda com entusiasmo, com os olhos a brilhar de excitação. Um aroma doce e tentador paira no ar. Como uma borboleta, ele é atraído pela luz para esta fragrância prometedora, que lhe desperta o apetite.",
+      "goodSmell_female": "Votre compagne de route s'agite soudainement, remuant la queue avec enthousiasme, les yeux brillants d'excitation. Une senteur alléchante et sucrée flotte dans l'air. Elle se met à bondir joyeusement, attirée tel un papillon par la lumière vers cette fragrance prometteuse qui éveille son appétit.",
+      "vegetarian_male": "O seu fiel animal de estimação abranda o passo e inclina a cabeça para um lado, intrigado com um bosque de arbustos que ladeia o caminho. Entre as ervas selvagens e os fetos prateados, ele parece ter discernido algo comestível por entre a vegetação.",
+      "vegetarian_female": "Votre fidèle familier ralentit son allure et penche la tête sur le côté, intriguée par un bosquet touffu bordant le sentier. Entre les herbes folles et les fougères argentées, elle semble avoir discerné quelque chose de comestible à travers la végétation.",
+      "meat_male": "O teu companheiro pára, com os músculos tensos, olhando atenta e predatoriamente para um corpo de água que brilha ao sol poente. Os seus lábios curvam-se ligeiramente, revelando presas afiadas, enquanto ele fareja o ar com absoluta concentração. Ele avistou claramente a sua presa...",
+      "meat_female": "Votre compagne s'arrête net, les muscles tendus, fixant d'un regard intense et prédateur un point d'eau miroitant sous le soleil couchant. Ses babines se retroussent légèrement, dévoilant des crocs acérés, tandis qu'elle flaire l'air avec une concentration absolue. Elle a manifestement repéré une proie...",
+      "soup_male": "Um cheiro familiar e reconfortante faz cócegas nas suas narinas: o aroma untuoso da sopa a ferver numa panela de cobre. O teu fiel companheiro levanta os ouvidos e corre para um acampamento abandonado à beira da estrada, onde um caldeirão de ferro preto ainda está suspenso sobre brasas moribundas. Será esta a derradeira sopa?",
+      "soup_female": "Une senteur familière et réconfortante vient chatouiller vos narines : un fumet onctueux de potage mijotant dans une marmite de cuivre. Votre fidèle compagne dresse aussitôt les oreilles et se précipite vers un campement abandonné en bordure de chemin, où repose encore un chaudron de fer noir suspendu au-dessus de braises mourantes. Se pourrait-il qu'il s'agisse de soupe ultime ?"
     },
     "choices": {
       "investigate": "Veja por si próprio",
@@ -1947,16 +1957,25 @@
       "continue": "Continuar o seu caminho"
     },
     "outcomes": {
-      "found_by_player": "Aproximas-te cautelosamente e, depois de afastares os ramos e procurares nos cantos e recantos, pões as mãos em **{{foodName}}**. Oferece-o ao seu companheiro, que o aceita com gratidão, devorando o seu presente com grunhidos de satisfação.",
-      "found_by_player_soup": "Aproximas-te cautelosamente do caldeirão abandonado e descobres com satisfação que **{{foodName}}** ainda está a ferver suavemente. Deita uma porção generosa numa tigela e oferece-a ao seu companheiro. Ele lambe avidamente a comida reconfortante, abanando a cauda de contentamento.",
-      "found_by_pet": "O seu animal de estimação salta agilmente e desaparece por um momento no meio do mato. Em breve regressa a si com um trote orgulhoso e triunfante, segurando delicadamente entre as presas o **{{foodName}}**. Os seus olhos brilham de orgulho e ele instala-se para saborear a sua descoberta com ruídos de mastigação entusiásticos.",
-      "found_by_pet_soup": "A tua mascote trota rapidamente em direção ao acampamento abandonado e mergulha o focinho no caldeirão fumegante. Volta para junto de ti alguns instantes depois, com os lábios ainda brilhantes, depois de ter saboreado **{{foodName}}** com evidente prazer. Os seus olhos brilhantes e a cauda a abanar testemunham a sua satisfação gulosa.",
-      "found_anyway": "Quando estava prestes a continuar o seu caminho sem se preocupar com esta distração, o seu fiel companheiro salta subitamente para os arbustos circundantes. Sai vitorioso com **{{foodName}}** que devora imediatamente com um apetite voraz, com a cauda a abanar de contentamento.",
-      "found_anyway_soup": "No momento em que está prestes a pôr-se a caminho sem se preocupar com o acampamento, o seu fiel companheiro corre para o caldeirão abandonado. Antes que possas impedi-lo, ele bebe avidamente **{{foodName}}** com gemidos de prazer, claramente encantado com esta inesperada sorte.",
-      "player_failed": "Passou longos e árduos minutos a vasculhar meticulosamente a área, limpando silvas e espinhos, revirando pedras e cepos apodrecidos, mas, apesar de todos os seus esforços, não encontrou nada de valor. O tempo investido revelou-se tão inútil como procurar um tesouro numa arca vazia.",
-      "pet_failed": "O seu companheiro parte resolutamente para o meio do mato, mas regressa alguns instantes depois com um andar pesado, as orelhas em baixo e a cauda pendurada. O seu olhar desiludido e os seus guinchos queixosos denunciam o seu fracasso: o trilho revelou-se infrutífero e os seus esforços não produziram mais do que amargura.",
-      "pet_failed_soup": "O teu companheiro trota em direção ao acampamento abandonado e dá uma longa cheiradela ao caldeirão, mas, infelizmente, este está vazio ou o seu conteúdo já está frio e não é comestível. Volta para junto de si com um andar desapontado, orelhas baixas e cauda baixa, claramente frustrado com esta desilusão culinária.",
-      "nothing": "Decide sabiamente não se demorar mais nestas paragens, considerando que o tempo urge e que a sua demanda não pode sofrer tais desvios. Com um gesto resoluto, pede ao seu companheiro que o siga e partem juntos em direção ao horizonte que o espera."
+      "found_by_player_male": "Vous vous approchez prudemment et, après avoir écarté les branchages et fouillé méticuleusement les recoins pendant **{{time}}** {emote:effects.occupied}, vous mettez enfin la main sur **{{foodName}}**. Vous l'offrez à votre compagnon qui l'accepte avec reconnaissance, dévorant son présent avec des grognements de satisfaction.",
+      "found_by_player_female": "Vous vous approchez prudemment et, après avoir écarté les branchages et fouillé méticuleusement les recoins pendant **{{time}}** {emote:effects.occupied}, vous mettez enfin la main sur **{{foodName}}**. Vous l'offrez à votre compagne qui l'accepte avec reconnaissance, dévorant son présent avec des grognements de satisfaction.",
+      "found_by_player_soup_male": "Vous vous approchez prudemment du chaudron abandonné. Après **{{time}}** {emote:effects.occupied} passées à vérifier qu'aucun danger ne rôde, vous découvrez avec satisfaction **{{foodName}}** qui mijote encore doucement. Vous en versez une généreuse portion dans une écuelle que vous présentez à votre compagnon, lequel lape goulûment ce mets réconfortant en remuant la queue de contentement.",
+      "found_by_player_soup_female": "Vous vous approchez prudemment du chaudron abandonné. Après **{{time}}** {emote:effects.occupied} passées à vérifier qu'aucun danger ne rôde, vous découvrez avec satisfaction **{{foodName}}** qui mijote encore doucement. Vous en versez une généreuse portion dans une écuelle que vous présentez à votre compagne, laquelle lape goulûment ce mets réconfortant en remuant la queue de contentement.",
+      "found_by_pet_male": "O seu animal de estimação salta agilmente e desaparece por um momento no meio do mato. Em breve regressa a si com um trote orgulhoso e triunfante, segurando delicadamente entre as presas o **{{foodName}}**. Os seus olhos brilham de orgulho e ele instala-se para saborear a sua descoberta com ruídos de mastigação entusiásticos.",
+      "found_by_pet_female": "Votre familier s'élance d'un bond agile et disparaît quelques instants dans les fourrés. Elle revient bientôt vers vous d'un trot fier et triomphant, tenant délicatement **{{foodName}}** entre ses crocs. Ses yeux brillent de fierté tandis qu'elle s'installe pour savourer sa trouvaille avec des bruits de mastication enthousiastes.",
+      "found_by_pet_soup_male": "A tua mascote trota rapidamente em direção ao acampamento abandonado e mergulha o focinho no caldeirão fumegante. Volta para junto de ti alguns instantes depois, com os lábios ainda brilhantes, depois de ter saboreado **{{foodName}}** com evidente prazer. Os seus olhos brilhantes e a cauda a abanar testemunham a sua satisfação gulosa.",
+      "found_by_pet_soup_female": "Votre familier trotte prestement vers le campement abandonné et plonge son museau dans le chaudron fumant. Elle revient vers vous quelques instants plus tard, les babines encore luisantes, ayant manifestement savouré **{{foodName}}** avec un plaisir évident. Son regard pétillant et sa queue frétillante témoignent de sa satisfaction gourmande.",
+      "found_anyway_male": "Quando estava prestes a continuar o seu caminho sem se preocupar com esta distração, o seu fiel companheiro salta subitamente para os arbustos circundantes. Sai vitorioso com **{{foodName}}** que devora imediatamente com um apetite voraz, com a cauda a abanar de contentamento.",
+      "found_anyway_female": "Alors même que vous vous apprêtiez à reprendre votre route sans plus vous préoccuper de cette distraction, votre fidèle compagne bondit soudainement vers les buissons environnants. Elle en ressort victorieusement avec **{{foodName}}** qu'elle engloutit sur-le-champ avec un appétit vorace, la queue frétillante de contentement.",
+      "found_anyway_soup_male": "No momento em que está prestes a pôr-se a caminho sem se preocupar com o acampamento, o seu fiel companheiro corre para o caldeirão abandonado. Antes que possas impedi-lo, ele bebe avidamente **{{foodName}}** com gemidos de prazer, claramente encantado com esta inesperada sorte.",
+      "found_anyway_soup_female": "Alors même que vous vous apprêtiez à reprendre votre route sans plus vous préoccuper de ce campement, votre fidèle compagne se précipite vers le chaudron abandonné. Avant que vous ne puissiez l'en empêcher, elle lape goulûment **{{foodName}}** avec des gémissements de délice, manifestement ravie de cette aubaine inattendue.",
+      "player_failed": "Vous passez **{{time}}** {emote:effects.occupied} éprouvantes à fouiller méticuleusement les environs, écartant ronces et épineux, retournant pierres et souches pourries, mais en dépit de tous vos efforts acharnés, vous ne dénichez rien qui vaille la peine. Ce temps investi se révèle aussi vain qu'une quête de trésor dans un coffre vide.",
+      "pet_failed_male": "O seu companheiro parte resolutamente para o meio do mato, mas regressa alguns instantes depois com um andar pesado, as orelhas em baixo e a cauda pendurada. O seu olhar desiludido e os seus guinchos queixosos denunciam o seu fracasso: o trilho revelou-se infrutífero e os seus esforços não produziram mais do que amargura.",
+      "pet_failed_female": "Votre compagne s'élance avec détermination dans les fourrés, mais revient quelques instants plus tard d'une démarche pesante, les oreilles basses et la queue pendante. Son regard déçu et ses couinements plaintifs trahissent son échec : la piste s'est avérée infructueuse et ses efforts n'ont produit qu'amertume.",
+      "pet_failed_soup_male": "O teu companheiro trota em direção ao acampamento abandonado e dá uma longa cheiradela ao caldeirão, mas, infelizmente, este está vazio ou o seu conteúdo já está frio e não é comestível. Volta para junto de si com um andar desapontado, orelhas baixas e cauda baixa, claramente frustrado com esta desilusão culinária.",
+      "pet_failed_soup_female": "Votre compagne trotte vers le campement abandonné et renifle longuement le chaudron, mais celui-ci s'avère hélas vide ou son contenu déjà refroidi et immangeable. Elle revient vers vous d'une démarche déçue, les oreilles basses et la queue pendante, manifestement frustrée par cette déconvenue culinaire.",
+      "nothing_male": "Decide sabiamente não se demorar mais nestas paragens, considerando que o tempo urge e que a sua demanda não pode sofrer tais desvios. Com um gesto resoluto, pede ao seu companheiro que o siga e partem juntos em direção ao horizonte que o espera.",
+      "nothing_female": "Vous décidez sagement de ne point vous attarder davantage en ces lieux, jugeant que le temps presse et que votre quête ne saurait souffrir de tels détours. D'un geste résolu, vous enjoignez votre compagne à vous suivre et reprenez ensemble votre chemin vers l'horizon qui vous appelle."
     },
     "foodNames": {
       "badSmell": [
@@ -2027,13 +2046,16 @@
       ]
     },
     "love": {
-      "plus": "O seu fiel companheiro olha para si com olhos que brilham de gratidão e de afeto. Ele esfrega-se nas suas pernas e ronrona contente, demonstrando claramente que esta festa improvisada reforçou os laços de confiança e de amizade entre vocês!",
-      "minus": "O seu animal de estimação olha para si com um olhar sombrio de reprovação silenciosa, com os lábios curvados num beicinho de desaprovação. Ele vira ostensivamente a cabeça para o lado com um rosnado de desagrado, claramente ofendido por esta comida indigna do seu paladar delicado...",
-      "neutral": "O seu companheiro de viagem devora a sua refeição com um distanciamento quase filosófico, não demonstrando nem um entusiasmo transbordante nem um desgosto particular. Ele parece considerar este achado como um alimento necessário, nada mais, nada menos."
+      "plus_male": "O seu fiel companheiro olha para si com olhos que brilham de gratidão e de afeto. Ele esfrega-se nas suas pernas e ronrona contente, demonstrando claramente que esta festa improvisada reforçou os laços de confiança e de amizade entre vocês!",
+      "plus_female": "Votre fidèle compagne vous contemple avec des yeux brillants de gratitude et d'affection. Elle se frotte contre vos jambes en émettant des ronronnements satisfaits, manifestant clairement que ce festin improvisé a renforcé les liens de confiance et d'amitié qui vous unissent !",
+      "minus_male": "O seu animal de estimação olha para si com um olhar sombrio de reprovação silenciosa, com os lábios curvados num beicinho de desaprovação. Ele vira ostensivamente a cabeça para o lado com um rosnado de desagrado, claramente ofendido por esta comida indigna do seu paladar delicado...",
+      "minus_female": "Votre familier vous fixe d'un regard noir chargé de reproches silencieux, les babines retroussées en une moue désapprobatrice. Elle détourne ostensiblement la tête en poussant un grognement mécontent, visiblement offensée par cette pitance indigne de son palais délicat...",
+      "neutral_male": "O seu companheiro de viagem devorou a refeição com um distanciamento quase filosófico, sem demonstrar entusiasmo desenfreado nem repulsa particular.",
+      "neutral_female": "Votre compagne de route engloutit son repas avec un détachement presque philosophique, sans montrer ni enthousiasme débordant ni dégoût particulier."
     }
   },
   "badPet": {
-    "intro": [
+    "intro_male": [
       "Um anão corpulento emerge de uma rocha, com a barba ruiva desgrenhada e o olhar cheio de ódio visceral. Ao ver **{{pet}}**, cospe no chão com nojo e brandindo um pau nodoso. O teu companheiro recua, com as orelhas coladas ao crânio. O estranho apresenta-se como Moltiar e jura que não tem nada a ver com o seu irmão adorador de insectos.",
       "Uma voz rouca e zangada chama-te de repente. Um anão com uma velha cicatriz na cara avança, com os olhos ensanguentados fixos em{{pet}}** com fúria. Gira uma clava com um gesto ameaçador. O teu companheiro treme todo.",
       "Saindo de trás de uma formação rochosa, um anão de aspeto louco coloca-se à tua frente, bloqueando o teu caminho. A sua mão direita tem as cicatrizes de uma mordidela antiga. Ele olha para **{{pet}}** com um ódio ardente e saca um punhal lascado. Moltiar resmunga que, ao contrário do seu irmão Talvar, ele reconhece um incómodo quando o vê.",
@@ -2045,171 +2067,310 @@
       "Um assobio zombeteiro ecoa pelo ar. Empoleirado numa rocha, um anão observa o vosso progresso com desprezo. Quando repara que **{{pet}}** trota ao teu lado, a sua expressão muda para uma careta de profundo desgosto. Ele salta para o chão e coloca-se à tua frente, murmurando que o seu irmão corrompeu demasiados viajantes com as suas ideias loucas.",
       "O chão treme ligeiramente sob os vossos pés, anunciando a aproximação de uma presença maciça. Um anão imponente, mais largo do que alto, emerge de um afloramento rochoso. O seu olhar percorre o caminho, fixando-se em **{{pet}}** com um ódio incandescente. Os músculos dos seus braços contorcem-se enquanto ele levanta um pesado martelo de ferreiro."
     ],
+    "intro_female": [
+      "Un nain trapu surgit d'un rocher, sa barbe rousse hirsute et son regard empli d'une haine viscérale. À la vue de **{{pet}}**, il crache au sol avec dégoût et brandit un bâton noueux. Votre compagne recule, les oreilles plaquées contre son crâne. L'inconnu se présente comme Moltiar et jure qu'il n'a rien à voir avec son frère adorateur de bestioles.",
+      "Une voix rauque et colérique vous interpelle soudainement. Un nain au visage marqué par une vieille cicatrice s'avance, ses yeux injectés de sang fixés sur **{{pet}}** avec fureur. Il fait tournoyer une massue cloutée d'un geste menaçant. Votre compagne tremble de tous ses membres.",
+      "Saindo de trás de uma formação rochosa, um anão de aspeto louco coloca-se à tua frente, bloqueando o teu caminho. A sua mão direita tem as cicatrizes de uma mordidela antiga. Ele olha para **{{pet}}** com um ódio ardente e saca um punhal lascado. Moltiar resmunga que, ao contrário do seu irmão Talvar, ele reconhece um incómodo quando o vê.",
+      "Um rugido gutural assusta-o. Um anão corpulento emerge de uma fenda, com a sua barba entrançada a chocalhar com gotas de osso. Assim que ele vê **{{pet}}**, a sua cara torce-se de nojo. Aponta-te um dedo acusador, com a outra mão a agarrar firmemente um machado ferrugento.",
+      "O vosso caminho é subitamente bloqueado por uma figura atarracada e hostil. O anão tem uma expressão de pura repulsa quando descobre **{{pet}}** ao teu lado. Uma velha ferida atravessa-lhe o antebraço, testemunho de um passado doloroso. Ele segura um martelo de guerra. Moltiar rosna que não vai deixar estas criaturas repugnantes vaguearem pelas suas terras, independentemente do que o seu irmão ingénuo possa pensar.",
+      "O barulho de uma pedra a rolar alerta-o para uma presença. Um anão maciço emerge das sombras de uma saliência rochosa, examinando imediatamente **{{pet}}** com uma animosidade palpável. As cicatrizes nos seus antebraços são o testemunho de encontros dolorosos no passado. Ele brandia uma clava com um gesto carregado de ameaça.",
+      "O cheiro a terra e a suor rançoso chega até ti antes mesmo de veres o agressor. Um anão emerge de uma fenda, a sua pele bronzeada pelo sol, as suas mãos calejadas agarradas a uma picareta. O seu olhar recai sobre **{{pet}}** e uma raiva fria distorce-lhe as feições. Ele cospe que o idiota do irmão devia ver o que aqueles insectos lhe fizeram.",
+      "O ranger das botas no cascalho anuncia a chegada de um intruso. Aparece um anão com a cabeça parcialmente calva, com a barba cinzenta atada num severo catogan. Os seus olhos arregalam-se de horror quando vê **{{pet}}**. Dá um passo atrás antes de brandir uma faca de mineiro com uma determinação odiosa.",
+      "Um assobio zombeteiro ecoa pelo ar. Empoleirado numa rocha, um anão observa o vosso progresso com desprezo. Quando repara que **{{pet}}** trota ao teu lado, a sua expressão muda para uma careta de profundo desgosto. Ele salta para o chão e coloca-se à tua frente, murmurando que o seu irmão corrompeu demasiados viajantes com as suas ideias loucas.",
+      "O chão treme ligeiramente sob os vossos pés, anunciando a aproximação de uma presença maciça. Um anão imponente, mais largo do que alto, emerge de um afloramento rochoso. O seu olhar percorre o caminho, fixando-se em **{{pet}}** com um ódio incandescente. Os músculos dos seus braços contorcem-se enquanto ele levanta um pesado martelo de ferreiro."
+    ],
     "choices": {
-      "intimidate": "Ordenar ao seu companheiro que intimide o anão",
+      "intimidate_male": "Ordenar ao seu companheiro que intimide o anão",
+      "intimidate_female": "Ordonner à votre compagne d'intimider le nain",
       "plead": "Tentar argumentar com o anão com palavras",
       "giveMeat": "Oferecer ao anão um pouco de carne para o amolecer",
       "giveVeg": "Oferecer legumes ao anão como sinal de paz",
-      "flee": "Fugir com o seu companheiro",
-      "hide": "Esconder o seu parceiro",
+      "flee_male": "Fugir com o seu companheiro",
+      "flee_female": "Fuir avec votre compagne",
+      "hide_male": "Esconder o seu parceiro",
+      "hide_female": "Cacher votre compagne",
       "wait": "À espera que a cólera do anão se acalme",
-      "protect": "Intervir para proteger o seu companheiro",
+      "protect_male": "Intervir para proteger o seu companheiro",
+      "protect_female": "Vous interposer pour protéger votre compagne",
       "distract": "Desviar a atenção do anão",
-      "calm": "Tentar acalmar o seu companheiro assustado",
-      "imposer": "Deixar o seu companheiro prevalecer sobre o anão",
-      "energize": "Incentivar o seu companheiro a manter-se firme"
+      "calm_male": "Tentar acalmar o seu companheiro assustado",
+      "calm_female": "Tenter de calmer votre compagne apeurée",
+      "imposer_male": "Deixar o seu companheiro prevalecer sobre o anão",
+      "imposer_female": "Laisser votre compagne s'imposer face au nain",
+      "energize_male": "Incentivar o seu companheiro a manter-se firme",
+      "energize_female": "Encourager votre compagne à tenir bon"
     },
     "outcomes": {
       "intimidate": {
-        "success": [
+        "success_male": [
           "Obedecendo à tua ordem,{{pet}}** eleva-se à sua altura máxima e solta um rugido impressionante. Moltiar, surpreendido por esta demonstração de força, dá um passo atrás e murmura alguns insultos enquanto se afasta com relutância. O teu companheiro olha para ti com orgulho.",
           "Adoptando uma postura ameaçadora, **{{pet}}** rosna com uma ferocidade surpreendente para o anão hostil. Este, vendo que o confronto poderia ficar feio, cospe um último insulto antes de recuar. O teu companheiro parece satisfeito por ter enfrentado o agressor."
         ],
-        "fail": [
-          "Obedecendo à tua ordem, **{{pet}}** tenta parecer ameaçador, mas o anão desata numa gargalhada cruel perante esta exibição patética. Brandindo o seu bastão, o teu companheiro volta a correr, com o orgulho ferido por esta humilhação.",
+        "success_female": [
+          "Obéissant à votre ordre, **{{pet}}** se dresse de toute sa hauteur et pousse un grondement impressionnant. Moltiar, surpris par cette démonstration de force, recule d'un pas mal assuré et marmonne quelques insultes en s'éloignant à contrecœur. Votre compagne vous regarde fièrement.",
+          "Adoptant une posture menaçante, **{{pet}}** grogne avec une férocité surprenante face au nain hostile. Ce dernier, voyant que la confrontation pourrait mal tourner, crache une dernière insulte avant de battre en retraite. Votre compagne semble satisfaite d'avoir tenu tête à l'agresseur."
+        ],
+        "fail_male": [
+          "Obéissant à votre ordre, **{{pet}}** tente de paraître menaçant, mais le nain éclate d'un rire cruel devant cette démonstration pathétique. Il brandit son bâton et votre compagnon recule précipitamment, humilié.",
           "Tentando parecer ameaçador,{{pet}}** só consegue divertir o anão, que lhe dá um pontapé. O teu companheiro guincha de dor e lança-te um olhar de reprovação por o teres exposto daquela maneira."
+        ],
+        "fail_female": [
+          "Obéissant à votre ordre, **{{pet}}** tente de paraître menaçante, mais le nain éclate d'un rire cruel devant cette démonstration pathétique. Il brandit son bâton et votre compagne recule précipitamment, humiliée.",
+          "Tentant de paraître menaçante, **{{pet}}** ne parvient qu'à amuser le nain qui lui assène un coup de pied. Votre compagne couine de douleur et vous lance un regard de reproche pour l'avoir exposée ainsi."
         ]
       },
       "plead": {
-        "success": [
+        "success_male": [
           "Tenta chamar Moltiar à razão com palavras suaves, explicando-lhe que o seu companheiro não representa qualquer ameaça. Alguma coisa na tua voz sincera parece ter feito sentido, e ele finalmente baixa a arma com um rosnado. **{{pet}}aprecia a tua diplomacia.",
           "As suas palavras ponderadas ecoam no silêncio tenso. Mencionas o respeito mútuo entre os viajantes e o anão, apesar do seu óbvio ódio aos animais, admite que pareces ter a tua fera sob controlo. Ele resmunga e afasta-se. **{{pet}}** acalma-se gradualmente."
         ],
-        "fail": [
+        "success_female": [
+          "Vous tentez de raisonner Moltiar par des paroles apaisantes, lui expliquant que votre compagne ne représente aucune menace. Quelque chose dans votre voix sincère semble toucher une corde sensible, et il finit par baisser son arme en grognant. **{{pet}}** apprécie votre diplomatie.",
+          "As suas palavras ponderadas ecoam no silêncio tenso. Mencionas o respeito mútuo entre os viajantes e o anão, apesar do seu óbvio ódio aos animais, admite que pareces ter a tua fera sob controlo. Ele resmunga e afasta-se. **{{pet}}** acalma-se gradualmente."
+        ],
+        "fail_male": [
           "Tentas argumentar com o anão, mas as tuas palavras apenas alimentam a sua raiva. Ele grita que as palavras não são suficientes para defender estas criaturas que ele abomina. **{{pet}}** desvia o olhar, envergonhado por não o ter protegido.",
+          "As tuas patéticas súplicas parecem exasperar ainda mais o anão. Ele olha para ti com um desprezo indisfarçável. **{{pet}}** olha para ti com um misto de desilusão e medo."
+        ],
+        "fail_female": [
+          "Vous tentez de raisonner le nain, mais vos paroles ne font qu'attiser sa colère. Il hurle que les mots ne suffisent pas à défendre ces créatures qu'il abhorre. **{{pet}}** détourne le regard, honteuse de votre échec à la protéger.",
           "As tuas patéticas súplicas parecem exasperar ainda mais o anão. Ele olha para ti com um desprezo indisfarçável. **{{pet}}** olha para ti com um misto de desilusão e medo."
         ]
       },
       "giveMeatLikes": {
-        "success": [
+        "success_male": [
           "Rapidamente retira um pedaço de carne e entrega-o ao anão esfomeado. Surpreendido com a oferta, ele aceita-a com um grunhido e morde-a com apetite. Acena-te antes de mudar de ideias. **{{pet}}parece aliviado com o resultado.",
           "O pedaço de carne que ofereces faz o anão hesitar. O seu estômago ronca mais alto do que o seu ódio, e ele acaba por aceitar o teu presente e vai-se embora. **{{pet}}aprecia o teu engenho para evitar um confronto."
         ],
-        "fail": [
+        "success_female": [
+          "Vous sortez rapidement un morceau de viande et le tendez au nain affamé. Surpris par cette offrande, il l'accepte en grognant et mord dedans avec appétit. Il vous fait signe de déguerpir avant qu'il ne change d'avis. **{{pet}}** semble soulagée de cette issue.",
+          "O pedaço de carne que ofereces faz o anão hesitar. O seu estômago ronca mais alto do que o seu ódio, e ele acaba por aceitar o teu presente e vai-se embora. **{{pet}}aprecia o teu engenho para evitar um confronto."
+        ],
+        "fail_male": [
           "Puxa um pedaço de carne para convencer Moltiar, mas ele atira-o para o chão com nojo, recusando-se a ser comprado daquela maneira. Infelizmente, **{{pet}}** estava de olho no prato e olha para ti com ar de acusação.",
           "O pedaço de carne que ofereces é espezinhado pelo anão furioso. **{{pet}}olha com frustração, desapontado por ver esta iguaria ser desperdiçada."
+        ],
+        "fail_female": [
+          "Puxa um pedaço de carne para convencer Moltiar, mas ele atira-o para o chão com nojo, recusando-se a ser comprado daquela maneira. Infelizmente, **{{pet}}** estava de olho no prato e olha para ti com ar de acusação.",
+          "Le morceau de viande que vous offrez est piétiné par le nain furieux. **{{pet}}** observe la scène avec frustration, déçue de voir cette friandise gaspillée."
         ]
       },
       "giveMeatDislikes": {
-        "success": [
+        "success_male": [
           "Rapidamente retira um pedaço de carne e entrega-o ao anão esfomeado. Surpreendido com a oferta, ele aceita-a com um grunhido e morde-a com apetite. Acena-te antes de mudar de ideias. **{{pet}}** desvia o olhar, claramente desinteressado na comida.",
           "O pedaço de carne que ofereces faz o anão hesitar. O seu estômago ronca mais alto do que o seu ódio, e ele acaba por aceitar o teu presente e afasta-se. **{{pet}}** não parece lamentar esta oferta que não lhe era destinada."
         ],
-        "fail": [
+        "success_female": [
+          "Vous sortez rapidement un morceau de viande et le tendez au nain affamé. Surpris par cette offrande, il l'accepte en grognant et mord dedans avec appétit. Il vous fait signe de déguerpir avant qu'il ne change d'avis. **{{pet}}** détourne le regard, visiblement peu intéressée par cette nourriture.",
+          "O pedaço de carne que ofereces faz o anão hesitar. O seu estômago ronca mais alto do que o seu ódio, e ele acaba por aceitar o teu presente e afasta-se. **{{pet}}** não parece lamentar esta oferta que não lhe era destinada."
+        ],
+        "fail_male": [
           "Puxa um pedaço de carne para convencer Moltiar, mas ele atira-o para o chão com repugnância, recusando-se a ser comprado assim. **{{pet}}**, um herbívoro, não parece perturbado com esta perda.",
+          "O pedaço de carne que ofereces é espezinhado pelo anão furioso. **{{pet}}** não presta atenção, pois este tipo de comida não lhe agrada."
+        ],
+        "fail_female": [
+          "Vous sortez un morceau de viande pour amadouer Moltiar, mais celui-ci le jette au sol avec dégoût, refusant de se laisser acheter ainsi. **{{pet}}**, herbivore, ne semble pas perturbée par cette perte.",
           "O pedaço de carne que ofereces é espezinhado pelo anão furioso. **{{pet}}** não presta atenção, pois este tipo de comida não lhe agrada."
         ]
       },
       "giveMeatNoFood": {
-        "fail": [
+        "fail_male": [
+          "Procuras um pedaço de carne nos bolsos, mas o armazém da tua guilda está desesperadamente vazio. Moltiar escarnece do teu desânimo enquanto **{{pet}}** olha para ele perplexo.",
+          "Tenta tirar alguma carne para acalmar o anão, mas apercebe-se, para seu horror, que não tem nenhuma. Moltiar aproveita a oportunidade para manipular **{{pet}}**, que vos lança um olhar acusador."
+        ],
+        "fail_female": [
           "Procuras um pedaço de carne nos bolsos, mas o armazém da tua guilda está desesperadamente vazio. Moltiar escarnece do teu desânimo enquanto **{{pet}}** olha para ele perplexo.",
           "Tenta tirar alguma carne para acalmar o anão, mas apercebe-se, para seu horror, que não tem nenhuma. Moltiar aproveita a oportunidade para manipular **{{pet}}**, que vos lança um olhar acusador."
         ]
       },
       "giveVegLikes": {
-        "success": [
+        "success_male": [
           "Ofereces ao anão alguns legumes, mencionando a sua qualidade e frescura. Inesperadamente, o anão amante de sopa aceita a tua oferta com um grunhido de aprovação e vai-se embora. **{{pet}}parece impressionado com os teus instintos.",
           "Os legumes que apresentas ao anão trazem-te obviamente recordações mais agradáveis. Ele aceita-os com uma aparência de civilidade e concorda em deixar-te passar. **{{pet}}aprecia esta resolução pacífica."
         ],
-        "fail": [
+        "success_female": [
+          "Vous offrez quelques légumes au nain, évoquant leur qualité et leur fraîcheur. Contre toute attente, le nain, amateur de potages, accepte votre offrande avec un grognement approbateur et s'en va. **{{pet}}** semble impressionnée par votre instinct.",
+          "Os legumes que apresentas ao anão trazem-te obviamente recordações mais agradáveis. Ele aceita-os com uma aparência de civilidade e concorda em deixar-te passar. **{{pet}}aprecia esta resolução pacífica."
+        ],
+        "fail_male": [
           "Dá alguns legumes ao anão, na esperança de o convencer. Ele desata a rir-se da oferta ridícula e afasta-os com um aceno de mão. **{{pet}}olha com inveja para os legumes desperdiçados.",
           "Os legumes que oferece desajeitadamente são postos de lado pelo anão desdenhoso. **{{pet}}** lança-lhe um olhar de reprovação, frustrado por ver a comida desperdiçada."
+        ],
+        "fail_female": [
+          "Dá alguns legumes ao anão, na esperança de o convencer. Ele desata a rir-se da oferta ridícula e afasta-os com um aceno de mão. **{{pet}}olha com inveja para os legumes desperdiçados.",
+          "Les légumes que vous offrez maladroitement sont balayés d'un revers de main par le nain méprisant. **{{pet}}** vous lance un regard de reproche, frustrée de voir cette nourriture perdue."
         ]
       },
       "giveVegDislikes": {
-        "success": [
+        "success_male": [
           "Ofereces ao anão alguns legumes, mencionando a sua qualidade e frescura. Inesperadamente, o anão amante de sopa aceita a tua oferta com um grunhido de aprovação e parte. **{{pet}}parece não se preocupar com esta perda de legumes.",
           "Os legumes que apresentas ao anão trazem-te obviamente recordações mais agradáveis. Ele aceita-os com uma aparência de civilidade e aceita deixar-te passar. **{{pet}}**, um carnívoro, não se incomoda com este sacrifício."
         ],
-        "fail": [
+        "success_female": [
+          "Vous offrez quelques légumes au nain, évoquant leur qualité et leur fraîcheur. Contre toute attente, le nain, amateur de potages, accepte votre offrande avec un grognement approbateur et s'en va. **{{pet}}** semble peu concernée par cette perte de légumes.",
+          "Les légumes que vous présentez au nain lui rappellent visiblement des souvenirs plus agréables. Il les accepte avec un semblant de civilité et consent à vous laisser passer. **{{pet}}**, carnivore, n'est pas dérangée par ce sacrifice."
+        ],
+        "fail_male": [
           "Dá alguns legumes ao anão, na esperança de o convencer. Ele desata a rir com esta oferta ridícula e afasta-os com um aceno de mão. **{{pet}}não parece importar-se com a perda.",
+          "Os legumes que oferece desajeitadamente são postos de lado pelo anão desdenhoso. **{{pet}}**, preferindo a carne, não dá importância a estes legumes desperdiçados."
+        ],
+        "fail_female": [
+          "Vous tendez des légumes au nain dans l'espoir de l'amadouer. Il éclate de rire devant cette offre ridicule et les balaie d'un revers de main. **{{pet}}** ne semble pas concernée par cette perte.",
           "Os legumes que oferece desajeitadamente são postos de lado pelo anão desdenhoso. **{{pet}}**, preferindo a carne, não dá importância a estes legumes desperdiçados."
         ]
       },
       "giveVegNoFood": {
-        "fail": [
+        "fail_male": [
           "Estás à procura de vegetais para dar ao anão, mas o armazém da tua guilda não tem nenhum. Moltiar ri-se da tua tentativa patética, enquanto **{{pet}}** abaixa a cabeça em desapontamento.",
+          "Queres oferecer alguns legumes para acalmar a situação, mas não tens nenhum. O anão aproveita a tua hesitação para apressar **{{pet}}** que te olha com reprovação."
+        ],
+        "fail_female": [
+          "Vous cherchez des légumes à offrir au nain, mais l'entrepôt de votre guilde n'en contient aucun. Moltiar se moque de votre tentative pathétique tandis que **{{pet}}** baisse la tête, déçue.",
           "Queres oferecer alguns legumes para acalmar a situação, mas não tens nenhum. O anão aproveita a tua hesitação para apressar **{{pet}}** que te olha com reprovação."
         ]
       },
       "flee": {
-        "success": [
+        "success_male": [
           "Arrancais com **{{pet}}** nos vossos calcanhares. A vossa velocidade combinada permite-vos ultrapassar rapidamente Moltiar, que, demasiado corpulento, desiste de vos perseguir, gritando maldições. O vosso companheiro suspira mas parece satisfeito.",
           "A fuga revela-se a decisão correta. Corres eficazmente com **{{pet}}** que te segue sem dificuldade, deixando para trás o anão furioso mas impotente. Formaram uma equipa."
         ],
-        "fail": [
+        "success_female": [
+          "Vous prenez vos jambes à votre cou avec **{{pet}}** sur vos talons. Votre vitesse combinée vous permet de distancer rapidement Moltiar qui, trop corpulent, renonce à vous poursuivre en hurlant des jurons. Votre compagne halète mais semble satisfaite.",
+          "A fuga revela-se a decisão correta. Corres eficazmente com **{{pet}}** que te segue sem dificuldade, deixando para trás o anão furioso mas impotente. Formaram uma equipa."
+        ],
+        "fail_male": [
           "O pânico apodera-se de ti e foges desajeitadamente com **{{pet}}** no teu encalço. Moltiar, mais rápido do que o esperado, alcança-vos e empurra violentamente o vosso companheiro quando passa. Consegues finalmente fugir, mas **{{pet}}** culpa-te pela tua fuga precipitada.",
           "Atira-se aos calcanhares numa debandada inglória. Infelizmente, **{{pet}}** não consegue acompanhar-vos e fica para trás. O anão aproveita a oportunidade para o picar com o seu pau antes de o apanharem. O teu companheiro fica furioso com esta fuga falhada."
+        ],
+        "fail_female": [
+          "La panique vous submerge et vous détalez maladroitement avec **{{pet}}** sur vos talons. Moltiar, plus rapide que prévu, vous rattrape et bouscule violemment votre compagne au passage. Vous parvenez finalement à vous échapper, mais **{{pet}}** vous en veut de cette fuite précipitée.",
+          "Vous prenez vos jambes à votre cou dans une débandade peu glorieuse. Malheureusement, **{{pet}}** ne peut suivre votre rythme et reste à la traîne. Le nain en profite pour lui donner un coup de bâton avant que vous ne reveniez la chercher. Votre compagne est furieuse de cette fuite ratée."
         ]
       },
       "hide": {
-        "success": [
+        "success_male": [
           "Rapidamente, encontras uma reentrância nas rochas e escondes-te **{{pet}}** lá antes que o anão se aperceba. O anão, que já não vê o animal, perde o interesse e vai-se embora a resmungar. O teu companheiro aprecia a tua discrição.",
           "Encontra um local ideal para se esconder **{{pet}}** debaixo do seu manto. O anão, já sem ver o objeto do seu ódio, acalma-se e continua o seu caminho. O seu companheiro parece tranquilo com a sua proteção."
         ],
-        "fail": [
+        "success_female": [
+          "Vous repérez rapidement un renfoncement dans les rochers et y dissimulez **{{pet}}** avant que le nain ne la remarque. Ce dernier, ne voyant plus la bête, perd tout intérêt et s'éloigne en maugréant. Votre compagne apprécie votre discrétion.",
+          "Vous trouvez un endroit idéal pour cacher **{{pet}}** sous votre cape. Le nain, ne voyant plus l'objet de sa haine, finit par se calmer et poursuivre son chemin. Votre compagne semble rassurée par votre protection."
+        ],
+        "fail_male": [
           "Tenta esconder-se **{{pet}}** a um canto, mas Moltiar apanha-o em flagrante. Ele ruge de raiva e agarra o teu companheiro. Olha para ti com ar de reprovação.",
           "A vossa tentativa de ocultação falha miseravelmente quando **{{pet}}** solta um gemido nervoso, revelando o seu esconderijo. O anão corre para ele e empurra-o violentamente. O teu companheiro sofre com este contratempo."
+        ],
+        "fail_female": [
+          "Vous tentez de dissimuler **{{pet}}** dans un recoin, mais Moltiar vous surprend en pleine manœuvre. Il rugit de colère et malmène votre compagne. Celle-ci vous lance un regard lourd de reproches.",
+          "Votre tentative de dissimulation échoue lamentablement quand **{{pet}}** pousse un gémissement nerveux, révélant sa cachette. Le nain se rue vers elle et la bouscule violemment. Votre compagne souffre de cette mésaventure."
         ]
       },
       "wait": {
-        "success": [
+        "success_male": [
           "Decide esperar imóvel, na esperança de que a raiva do anão diminua. Depois de longos minutos de gritaria, ele parece cansar-se e finalmente grunhe. **{{pet}}parece apreciar a tua paciência e compostura.",
           "A espera valeu a pena. O anão, não encontrando a reação que esperava, perde gradualmente o seu ardor beligerante e vai-se embora. **{{pet}}olha para si com respeito pela sua sabedoria."
         ],
-        "fail": [
+        "success_female": [
+          "Decide esperar imóvel, na esperança de que a raiva do anão diminua. Depois de longos minutos de gritaria, ele parece cansar-se e finalmente grunhe. **{{pet}}parece apreciar a tua paciência e compostura.",
+          "A espera valeu a pena. O anão, não encontrando a reação que esperava, perde gradualmente o seu ardor beligerante e vai-se embora. **{{pet}}olha para si com respeito pela sua sabedoria."
+        ],
+        "fail_male": [
           "Decide esperar imóvel, mas o anão interpreta a sua passividade como fraqueza. Ele aproxima-se e **{{pet}}** ameaça-o novamente. O teu companheiro caminha nervosamente, stressado com esta inação.",
           "A espera prolonga-se e **{{pet}}** começa a gemer de angústia. O anão, encorajado pela tua inação, torna-se cada vez mais ameaçador. O seu companheiro censura-o por não fazer nada."
+        ],
+        "fail_female": [
+          "Vous décidez d'attendre immobile, mais le nain interprète votre passivité comme de la faiblesse. Il s'approche davantage et menace **{{pet}}** de plus belle. Votre compagne piétine nerveusement, stressée par cette inaction.",
+          "L'attente s'éternise et **{{pet}}** commence à gémir d'angoisse. Le nain, enhardi par votre inaction, se fait de plus en plus menaçant. Votre compagne vous reproche de ne rien faire."
         ]
       },
       "protect": {
-        "success": [
+        "success_male": [
           "Numa explosão de bravura protetora, coloca o seu corpo firmemente entre Moltiar e **{{pet}}**. A tua determinação impressiona o atacante que, vendo que estás pronto para lutar, decide não provocar mais. O teu companheiro fica comovido com a tua coragem.",
           "Protege **{{pet}}** colocando-se com confiança entre si e o anão hostil. O anão, apercebendo-se de que não cede, prefere afastar-se, cuspindo insultos. O teu companheiro olha para ti com um carinho renovado."
         ],
-        "fail": [
+        "success_female": [
+          "Dans un élan de bravoure protectrice, vous placez fermement votre corps entre Moltiar et **{{pet}}**. Votre détermination impressionne l'agresseur qui, voyant que vous êtes prêt à vous battre, décide de ne point provoquer davantage. Votre compagne est touchée par votre courage.",
+          "Vous protégez **{{pet}}** en vous interposant avec assurance face au nain hostile. Celui-ci, réalisant que vous ne céderez pas, préfère reculer en crachant des insultes. Votre compagne vous regarde avec une affection renouvelée."
+        ],
+        "fail_male": [
           "Num gesto de coragem, meteste-te entre Moltiar e **{{pet}}**. Infelizmente, o anão é mais forte do que pensavas. Ele empurra-te brutalmente e aproveita-se da situação para bater no teu companheiro. Sentes-te impotente perante esta demonstração de força.",
           "Tenta proteger **{{pet}}** colocando-se à frente dele, mas a sua postura carece de confiança. O anão escapa-lhe facilmente e empurra o seu companheiro, que lhe lança um olhar desapontado pela sua incapacidade de o defender."
+        ],
+        "fail_female": [
+          "Dans un élan de bravoure, vous vous interposez entre Moltiar et **{{pet}}**. Malheureusement, le nain est plus fort que vous ne le pensiez. Il vous repousse brutalement et en profite pour frapper votre compagne. Vous vous sentez impuissant face à cette démonstration de force.",
+          "Vous tentez de protéger **{{pet}}** en vous plaçant devant elle, mais votre posture manque d'assurance. Le nain vous contourne aisément et bouscule votre compagne qui vous lance un regard déçu par votre incapacité à la défendre."
         ]
       },
       "distract": {
-        "success": [
+        "success_male": [
           "Cria uma distração ao mencionar em voz alta uma taberna conhecida na direção oposta. Moltiar, cujo amor pela cerveja supera claramente o seu ódio pelos animais, ouve com atenção e depois afasta-se, intrigado. **{{pet}}** aproveita a confusão, impressionado com o teu estratagema.",
           "A vossa manobra de diversão funciona perfeitamente. Ao atirar algumas moedas para longe, atrais a atenção gananciosa do anão. Quando ele se apressa a apanhá-las, **{{pet}}** e tu escapas discretamente."
         ],
-        "fail": [
+        "success_female": [
+          "Vous créez une diversion en évoquant bruyamment une taverne réputée dans la direction opposée. Moltiar, dont l'amour de la bière surpasse visiblement sa haine des animaux, tend l'oreille puis s'éloigne, intrigué. **{{pet}}** profite de la confusion, impressionnée par votre ruse.",
+          "A vossa manobra de diversão funciona perfeitamente. Ao atirar algumas moedas para longe, atrais a atenção gananciosa do anão. Quando ele se apressa a apanhá-las, **{{pet}}** e tu escapas discretamente."
+        ],
+        "fail_male": [
           "Tentas criar uma distração, gesticulando e gritando. Esta demonstração ridícula só serve para irritar ainda mais o anão e ele aproxima-se, ameaçador. **{{pet}}afasta-se, assustado com o seu comportamento estranho.",
+          "Numa tentativa desesperada de o distrair, atira pedras ao acaso. Por azar, uma delas acerta em **{{pet}}** que guincha de dor enquanto o anão faz uma careta maliciosa."
+        ],
+        "fail_female": [
+          "Vous tentez de créer une diversion en gesticulant et en criant. Ce spectacle ridicule ne fait qu'irriter davantage le nain qui se rapproche, menaçant. **{{pet}}** recule, effrayée par votre comportement étrange.",
           "Numa tentativa desesperada de o distrair, atira pedras ao acaso. Por azar, uma delas acerta em **{{pet}}** que guincha de dor enquanto o anão faz uma careta maliciosa."
         ]
       },
       "calm": {
-        "success": [
+        "success_male": [
           "Conseguiste acalmar **{{pet}}** com carícias tranquilizadoras, apesar da ameaça do anão. O teu companheiro recupera a confiança e deixa de tremer. O anão, vendo que tens a tua fera sob controlo, parece menos inclinado a atacar e acaba por se afastar.",
           "As suas palavras suaves e o seu comportamento confiante conseguem acalmar **{{pet}}**. Uma vez relaxado, ele exala uma confiança que faz o anão hesitar. O anão, menos seguro de si perante esta serenidade, prefere ir-se embora."
         ],
-        "fail": [
+        "success_female": [
+          "Vous parvenez à apaiser **{{pet}}** par des caresses rassurantes malgré la menace du nain. Votre compagne, reprenant confiance, cesse de trembler. Le nain, voyant que vous maîtrisez votre bête, semble moins enclin à l'attaquer et finit par s'éloigner.",
+          "Vos paroles apaisantes et votre attitude confiante parviennent à calmer **{{pet}}**. Une fois détendue, elle dégage une assurance qui fait hésiter le nain. Ce dernier, moins sûr de lui face à cette sérénité, préfère partir."
+        ],
+        "fail_male": [
           "Tentas acalmar **{{pet}}** com carícias, mas o teu próprio nervosismo em relação ao anão hostil é transmitido ao teu companheiro. Em vez de se acalmar, ele fica ainda mais agitado e a gemer.",
+          "As suas palavras, supostamente tranquilizadoras, traem o seu próprio terror. **{{pet}}**, sentindo o seu medo, compreende que a situação é grave e o seu pânico agrava-se."
+        ],
+        "fail_female": [
+          "Vous tentez d'apaiser **{{pet}}** par des caresses, mais votre propre nervosité face au nain hostile se transmet à votre compagne. Au lieu de se calmer, elle devient encore plus agitée et gémissante.",
           "As suas palavras, supostamente tranquilizadoras, traem o seu próprio terror. **{{pet}}**, sentindo o seu medo, compreende que a situação é grave e o seu pânico agrava-se."
         ]
       },
       "imposer": {
-        "success": [
+        "success_male": [
           "Deixou **{{pet}}** avançar com confiança em direção ao anão. A sua presença natural e a sua rara beleza parecem confundir o agressor que, apesar do seu ódio, reconhece que está a lidar com um espécime excecional. Ele recua, impressionado, apesar de si próprio.",
           "Parado calmamente em frente ao anão, **{{pet}}** exala uma inegável aura de majestade. O anão, apesar de detestar animais, não consegue deixar de reconhecer a nobreza do teu companheiro e afasta-se cautelosamente."
         ],
-        "fail": [
+        "success_female": [
+          "Deixou **{{pet}}** avançar com confiança em direção ao anão. A sua presença natural e a sua rara beleza parecem confundir o agressor que, apesar do seu ódio, reconhece que está a lidar com um espécime excecional. Ele recua, impressionado, apesar de si próprio.",
+          "Se posant calmement face au nain, **{{pet}}** dégage une aura de majesté indéniable. Le nain, bien que haïssant les animaux, ne peut s'empêcher de reconnaître la noblesse de votre compagne et s'éloigne prudemment."
+        ],
+        "fail_male": [
           "Tenta deixar **{{pet}}** fazer frente a Moltiar, mas o seu companheiro intimidado não consegue parecer ameaçador. O anão ri-se com desdém e empurra-o para o lado.",
           "**{{pet}}** tenta parecer imponente perante o anão, mas a sua aparência não é suficiente para o impressionar. O anão olha-o com ar zombeteiro antes de lhe dar um pontapé."
+        ],
+        "fail_female": [
+          "Vous tentez de laisser **{{pet}}** s'imposer face à Moltiar, mais votre compagne, intimidée, ne parvient pas à paraître menaçante. Le nain éclate d'un rire méprisant et la bouscule sans ménagement.",
+          "**{{pet}}** tente de se montrer imposante face au nain, mais son apparence ne suffit pas à l'impressionner. Le nain la regarde avec moquerie avant de lui donner un coup de pied."
         ]
       },
       "energize": {
-        "success": [
+        "success_male": [
           "Encoraja **{{pet}}** com palavras entusiásticas. Animado pelo vosso apoio, o vosso companheiro recupera todo o seu vigor e enfrenta orgulhosamente Moltiar. O Moltiar, surpreendido por esta energia renovada, prefere não correr riscos e afasta-se.",
           "As tuas palavras de encorajamento restauram a confiança de **{{pet}}** e ele levanta-se com determinação. O anão, vendo que o seu companheiro não vai aceitar isso de braços cruzados, desiste da sua agressividade e vai-se embora, rosnando."
         ],
-        "fail": [
+        "success_female": [
+          "Vous encouragez **{{pet}}** avec des paroles enthousiastes. Galvanisée par votre soutien, votre compagne retrouve toute sa vigueur et se dresse fièrement face à Moltiar. Ce dernier, surpris par ce regain d'énergie, préfère ne point prendre de risque et s'éloigne.",
+          "Vos mots d'encouragement redonnent confiance à **{{pet}}** qui se redresse avec détermination. Le nain, voyant que votre compagne ne se laissera pas faire, renonce à son agression et part en grognant."
+        ],
+        "fail_male": [
           "Tentas encorajar **{{pet}}** com palavras, mas a tua voz não tem convicção perante a ameaça do anão. O teu companheiro, já aterrorizado, não encontra a coragem de que precisa e acobarda-se ainda mais.",
           "As vossas tentativas de galvanizar **{{pet}}** falham. O anão aproveita este momento de fraqueza para maltratar o seu companheiro, que o culpa por não o ter protegido melhor."
+        ],
+        "fail_female": [
+          "Vous tentez d'encourager **{{pet}}** avec des paroles, mais votre voix manque de conviction face à la menace du nain. Votre compagne, déjà terrorisée, ne trouve point le courage nécessaire et se recroqueville davantage.",
+          "Vos tentatives pour galvaniser **{{pet}}** tombent à plat. Le nain profite de ce moment de faiblesse pour malmener votre compagne qui vous en veut de ne pas l'avoir mieux protégée."
         ]
       }
     }
