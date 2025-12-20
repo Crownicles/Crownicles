@@ -143,7 +143,7 @@
       "warning_male": "{emote:collectors.warning} *Chamar o seu animal de estimação de volta prematuramente quebrará o vínculo de confiança. Ele regressará sem saque e com o coração magoado...",
       "warning_female": "{emote:collectors.warning} *Chamar o teu familiar de volta prematuramente quebrará o laço de confiança. Ela regressará sem saque e com o coração magoado..."
     },
-    "inProgressFoodInfo_one": "\n{emote:expedition.food} **Provisions emportées :** {{count, number}} ration",
+    "inProgressFoodInfo_one": "\n{emote:expedition.food} **Provisões levadas:** {{count, number}} ração",
     "inProgressFoodInfo_other": "\n{emote:expedition.food} **Provisões tomadas:** {{count, number}} rações",
     "recallButton": "Ligar de volta",
     "closeButton": "Continuar a explorar",
@@ -171,7 +171,7 @@
     "startedTitle": "{{pseudo}}expedição lançada!",
     "expeditionStarted_male": "Com um salto entusiasmado, {{petDisplay}} corre em direção a **{{location}}** ! Vê-o desaparecer no horizonte, com o coração cheio de esperança.\n\n{emote:clocks.1} Regresso previsto: {{returnTime}}",
     "expeditionStarted_female": "Com um salto entusiasmado, {{petDisplay}} corre para **{{location}}** ! Vê-a desaparecer no horizonte, com o coração cheio de esperança.\n\n{emote:clocks.1} Regresso previsto: {{returnTime}}",
-    "foodConsumed_one": "\n{emote:expedition.food} Provisions emportées : **{{count, number}}** ration",
+    "foodConsumed_one": "\n{emote:expedition.food} Provisões levadas: **{{count, number}}** ração",
     "foodConsumed_other": "\n{emote:expedition.food} Provisões transportadas : **{{count, number}}** rações",
     "foodConsumedDetails": "\n{emote:expedition.food} **Provisões adoptadas:** {{foodDetails}}",
     "insufficientFoodWarning": {
@@ -807,8 +807,8 @@
     "tokensUsedSuccessDescription_other": "{emote:unitValues.token} Gastou **{{count}} tokens** para avançar na sua viagem.\n\n{{nextStep}}",
     "tokensNextStepArrived": "{emote:messages.info} Chegou ao seu destino! Utilize {command:report} para ver o que o espera.",
     "tokensNextStepSmallEvent": "{emote:messages.info} Há um evento à sua espera na estrada. Utilize {command:report} para o descobrir.",
-    "tokensUsedRefusedTitle": "{{pseudo}}, annulation",
-    "tokensUsedRefusedDescription": "{emote:messages.refuse} Vous avez décidé de conserver vos jetons.",
+    "tokensUsedRefusedTitle": "{{pseudo}}, cancelamento",
+    "tokensUsedRefusedDescription": "{emote:messages.refuse} Você decidiu manter seus tokens.",
     "buyHealButton": "Tratamento",
     "notEnoughMoneyHealButton": "Não há dinheiro suficiente",
     "buyHealLoading": "Carregando...",
