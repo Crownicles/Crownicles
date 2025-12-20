@@ -1571,25 +1571,30 @@
     }
   },
   "gobletsGame": {
-    "intro": "Sie begegnen einem Mann, der Ihnen verdächtig vorkommt. Er kommt auf Sie zu und drängt Sie zu einem Tisch, auf dem drei mysteriöse Becher stehen. Die Anweisungen, die Sie erhalten, sind einfach: Ziehen Sie einen Becher nach dem Zufallsprinzip und nehmen Sie die Belohnung entgegen, was auch immer das sein mag. Während Sie die Gegenstände auf dem Tisch betrachten, schleicht sich der Mann hinter Ihrem Rücken an und scheint Sie nicht gehen lassen zu wollen. Um aus dieser Situation herauszukommen, finden Sie sich damit ab, einen Becher auszuwählen.",
+    "intro": "Du begegnest einem Mann, der dir verdächtig vorkommt. Er kommt auf dich zu und drängt dich unsanft zu einem Tisch, auf dem vier geheimnisvolle Becher stehen. Die Anweisungen sind einfach: Du musst einen Becher wählen und die Belohnung entgegennehmen, was auch immer sie sein mag. Während du die Gegenstände auf dem Tisch betrachtest, schleicht sich der Mann von hinten an dich heran und scheint nicht gewillt, dich gehen zu lassen. Um dich aus dieser misslichen Lage zu befreien, beschließt du, einen Becher zu wählen.",
     "goblets": {
       "metal": {
-        "description": "Der aus Metall, der sehr alt aussieht und mit einem Drachenkopf graviert ist.",
+        "description": "Die Variante aus Metall, die sehr alt aussieht, ist die klassische und ausgewogene Wahl",
         "name": "aus Metall"
       },
       "biggest": {
-        "description": "Der größte der drei, aus einem Material, das Sie nicht identifizieren können",
+        "description": "Die größte der vier, massiv und beruhigend, die umsichtige und risikoärmere Wahl",
         "name": "der größte"
       },
       "sparkling": {
-        "description": "Der letzte, aus blauem Holz geschnitzt und so glitzernd, dass er wie verzaubert wirkt",
+        "description": "Das glitzernde Exemplar, aus verzaubertem blauem Holz geschnitzt – die riskante Wahl, die sich lohnen kann",
         "name": "glitzernd"
+      },
+      "cracked": {
+        "description": "Die brüchige, unbeständige Luft, die Wahl des Wettenden, alles oder nichts",
+        "name": "Riss"
       }
     },
     "results": {
       "life": "Sie heben den Becher $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) vorsichtig an und bemerken, dass sich darunter nichts befindet. Enttäuscht und als schlechter Verlierer schlagen Sie gegen die restlichen Becher, die durch die Luft fliegen. Als Sie bemerken, dass sich auch in den anderen Bechern nichts befindet, wenden Sie sich wieder dem Betrüger zu. Leider schlägt dieser zuerst zu. Sie verlieren **{{quantity, number}} {emote:unitValues.lostHealth}**.",
       "time": "Sie heben den Becher $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) vorsichtig an und entdecken mit Freude eine kleine Münze! Leider scheint der Mann hinter Ihnen nicht gewillt zu sein, Sie mit Ihrer Belohnung gehen zu lassen. Sie verlieren **{{quantity}} {emote:unitValues.time}** dabei, mit ihm zu verhandeln, bevor Sie aufgeben und Ihren Weg fortsetzen.",
-      "nothing": "Sie heben den Becher $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) vorsichtig an und bemerken, dass sich darunter nichts befindet. Enttäuscht machen Sie sich traurig auf den Weg und sagen sich, dass Sie vielleicht ein anderes Mal mehr Glück haben werden.",
+      "nothing": "Du hebst vorsichtig die Tasse an $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) und stellst fest, dass sie leer ist. Der Betrüger lächelt verschmitzt, doch aus dem Augenwinkel bemerkst du, dass die anderen Tassen genauso leer sind. Dir wird klar, dass du einer raffinierten Falle entkommen bist, und du gehst schnell weg, erleichtert, unversehrt davongekommen zu sein.",
+      "item": "Du hebst die Tasse vorsichtig an $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) und entdeckst einen strahlenden Glanz! Darunter verbarg sich ein außergewöhnlich seltener Gegenstand. Der verblüffte Betrüger lässt dich mit deinem wertvollen Fund gehen.",
       "end": "Als Sie nicht reagieren, kommt der Mann auf die schlechte Idee, Sie ausrauben zu wollen. Sie bemerken sein Manöver und greifen ein, werden aber schnell von der Stärke des Mannes überrascht, der sich mit einer plötzlichen Bewegung losreißen kann und dann wegläuft. Sie kommen mit einer leichten Verletzung davon. Sie verlieren **{{quantity, number}} {emote:unitValues.lostHealth}**."
     }
   },
@@ -1935,11 +1940,16 @@
   ],
   "petFood": {
     "intro": {
-      "badSmell": "Ihr treuer Begleiter bleibt plötzlich stehen, seine Nasenflügel zucken. Seine Ohren spitzen sich, als er den üblen Geruch wahrnimmt, der aus einem dunklen Dickicht strömt. Ihr Vertrauter scheint von diesem Gestank fasziniert zu sein, der viele Kreaturen zurückschrecken lassen würde.",
-      "goodSmell": "Ihr Begleiter wird plötzlich unruhig, wedelt begeistert mit dem Schwanz und seine Augen glänzen vor Aufregung. Ein verlockender, süßer Duft liegt in der Luft. Er beginnt freudig zu hüpfen, wie ein Schmetterling vom Licht angezogen, hin zu diesem vielversprechenden Duft, der seinen Appetit weckt.",
-      "vegetarian": "Ihr treuer Vertrauter verlangsamt sein Tempo und neigt den Kopf zur Seite, fasziniert von einem dichten Gehölz, das den Pfad säumt. Zwischen wilden Gräsern und silbrigen Farnen scheint er etwas Essbares durch die Vegetation zu erkennen.",
-      "meat": "Ihr Begleiter bleibt mit angespannten Muskeln stehen und starrt mit einem intensiven, raubtierhaften Blick auf ein Wasserloch, das in der untergehenden Sonne glitzert. Seine Lefzen kräuseln sich leicht und enthüllen scharfe Reißzähne, während er mit absoluter Konzentration die Luft schnuppert. Offensichtlich hat er eine Beute entdeckt...",
-      "soup": "Ein vertrauter, wohltuender Duft kitzelt Ihre Nase: der cremige Geruch einer Suppe, die in einem Kupfertopf köchelt. Ihr treuer Begleiter spitzt sofort die Ohren und eilt zu einem verlassenen Lager am Wegesrand, in dem noch immer ein schwarzer Eisenkessel über der glimmenden Glut hängt. Könnte es sein, dass es sich dabei um die ultimative Suppe handelt?"
+      "badSmell_male": "Ihr treuer Begleiter bleibt plötzlich stehen, seine Nasenflügel zucken. Seine Ohren spitzen sich, als er den üblen Geruch wahrnimmt, der aus einem dunklen Dickicht strömt. Ihr Vertrauter scheint von diesem Gestank fasziniert zu sein, der viele Kreaturen zurückschrecken lassen würde.",
+      "badSmell_female": "Ihre treue Begleiterin bleibt plötzlich stehen, ihre Nasenflügel zucken. Ihre Ohren spitzen sich, während sie einen üblen Geruch wahrnimmt, der aus einem dunklen Dickicht strömt. Etwas Fäulnisiges verwest dort, vielleicht seit Tagen verlassen, und Ihr Vertrauter scheint von diesem Gestank fasziniert zu sein, der viele Kreaturen zurückschrecken lassen würde.",
+      "goodSmell_male": "Ihr Begleiter wird plötzlich unruhig, wedelt begeistert mit dem Schwanz und seine Augen glänzen vor Aufregung. Ein verlockender, süßer Duft liegt in der Luft. Er beginnt freudig zu hüpfen, wie ein Schmetterling vom Licht angezogen, hin zu diesem vielversprechenden Duft, der seinen Appetit weckt.",
+      "goodSmell_female": "Ihre Begleiterin wird plötzlich unruhig, wedelt begeistert mit dem Schwanz und ihre Augen glänzen vor Aufregung. Ein verlockender, süßer Duft liegt in der Luft. Sie beginnt freudig zu hüpfen, wie ein Schmetterling vom Licht angezogen, hin zu diesem vielversprechenden Duft, der ihren Appetit weckt.",
+      "vegetarian_male": "Ihr treuer Vertrauter verlangsamt sein Tempo und neigt den Kopf zur Seite, fasziniert von einem dichten Gehölz, das den Pfad säumt. Zwischen wilden Gräsern und silbrigen Farnen scheint er etwas Essbares durch die Vegetation zu erkennen.",
+      "vegetarian_female": "Ihre treue Begleiterin verlangsamt ihr Tempo und neigt den Kopf zur Seite, fasziniert von einem dichten Gehölz, das den Pfad säumt. Zwischen wilden Gräsern und silbrigen Farnen scheint sie etwas Essbares durch die Vegetation zu erkennen.",
+      "meat_male": "Ihr Begleiter bleibt mit angespannten Muskeln stehen und starrt mit einem intensiven, raubtierhaften Blick auf ein Wasserloch, das in der untergehenden Sonne glitzert. Seine Lefzen kräuseln sich leicht und enthüllen scharfe Reißzähne, während er mit absoluter Konzentration die Luft schnuppert. Offensichtlich hat er eine Beute entdeckt...",
+      "meat_female": "Ihre Begleiterin bleibt mit angespannten Muskeln stehen und starrt mit einem intensiven, raubtierhaften Blick auf ein Wasserloch, das in der untergehenden Sonne glitzert. Ihre Lefzen kräuseln sich leicht und enthüllen scharfe Reißzähne, während sie mit absoluter Konzentration die Luft schnuppert. Offensichtlich hat sie eine Beute entdeckt...",
+      "soup_male": "Ein vertrauter, wohltuender Duft kitzelt Ihre Nase: der cremige Geruch einer Suppe, die in einem Kupfertopf köchelt. Ihr treuer Begleiter spitzt sofort die Ohren und eilt zu einem verlassenen Lager am Wegesrand, in dem noch immer ein schwarzer Eisenkessel über der glimmenden Glut hängt. Könnte es sein, dass es sich dabei um die ultimative Suppe handelt?",
+      "soup_female": "Ein vertrauter, wohltuender Duft kitzelt Ihre Nase: der cremige Geruch einer Suppe, die in einem Kupfertopf köchelt. Ihre treue Begleiterin spitzt sofort die Ohren und eilt zu einem verlassenen Lager am Wegesrand, in dem noch immer ein schwarzer Eisenkessel über der glimmenden Glut hängt. Könnte es sein, dass es sich dabei um die ultimative Suppe handelt?"
     },
     "choices": {
       "investigate": "Selbst nachsehen gehen",
@@ -1947,16 +1957,25 @@
       "continue": "Fahren Sie weiter fort"
     },
     "outcomes": {
-      "found_by_player": "Sie nähern sich vorsichtig und nachdem Sie das Geäst beiseite geschoben und die Ecken durchsucht haben, fällt Ihnen **{{foodName}}** in die Hände. Sie bieten ihn Ihrem Begleiter an, der ihn dankbar annimmt und sein Geschenk mit einem zufriedenen Grunzen verschlingt.",
-      "found_by_player_soup": "Sie nähern sich vorsichtig dem verlassenen Kessel und entdecken mit Genugtuung **{{foodName}}**, der noch immer leise vor sich hin köchelt. Sie schütten eine große Portion in einen Napf und halten sie Ihrem Begleiter hin. Er schlürft die wärmende Mahlzeit und wedelt zufrieden mit dem Schwanz.",
-      "found_by_pet": "Ihr Vertrauter macht einen flinken Sprung und verschwindet für einen Moment im Dickicht. Bald darauf kommt er in einem stolzen, triumphierenden Trab zu Ihnen zurück und hält **{{foodName}}** behutsam zwischen seinen Fängen. Seine Augen glänzen vor Stolz, während er sich mit begeisterten Kaugeräuschen niederlässt und seinen Fund genießt.",
-      "found_by_pet_soup": "Ihr Vertrauter trabt schnell zu dem verlassenen Lager und taucht seine Schnauze in den dampfenden Kessel. Einige Augenblicke später kommt er mit glänzenden Schnauzen zu Ihnen zurück, nachdem er **{{foodName}}** offensichtlich mit sichtlichem Vergnügen genossen hat. Seine funkelnden Augen und sein wedelnder Schwanz zeugen von seiner gierigen Zufriedenheit.",
-      "found_anyway": "Gerade als du dich wieder auf den Weg machen willst, ohne dich weiter um diese Ablenkung zu kümmern, springt dein treuer Gefährte plötzlich in die umliegenden Büsche. Er kommt mit **{{foodName}}** wieder heraus, die er sofort mit gierigem Appetit und wedelndem Schwanz verschlingt.",
-      "found_anyway_soup": "Gerade als Sie sich wieder auf den Weg machen wollen, ohne sich weiter um das Lager zu kümmern, rennt Ihr treuer Begleiter zu dem verlassenen Kessel. Bevor Sie ihn daran hindern können, schlürft er mit einem genüsslichen Stöhnen **{{foodName}}** und freut sich sichtlich über den unerwarteten Gewinn.",
-      "player_failed": "Sie haben viele nervenaufreibende Minuten damit verbracht, die Umgebung akribisch abzusuchen, Brombeeren und Dornengestrüpp beiseite zu schieben, Steine und morsche Baumstümpfe umzudrehen, aber trotz all Ihrer verbissenen Bemühungen haben Sie nichts gefunden, was sich lohnt. Die Zeit, die Sie investiert haben, hat sich als genauso sinnlos erwiesen wie die Suche nach einem Schatz in einer leeren Truhe.",
-      "pet_failed": "Ihr Begleiter rennt entschlossen ins Gebüsch, kommt aber nach wenigen Augenblicken mit schwerfälligen Schritten, herunterhängenden Ohren und hängendem Schwanz zurück. Sein enttäuschter Blick und sein klägliches Quieken verraten, dass er versagt hat: Die Fährte war erfolglos und seine Bemühungen haben nur Bitterkeit hervorgebracht.",
-      "pet_failed_soup": "Ihr Begleiter trottet zu dem verlassenen Lagerplatz und schnüffelt lange an dem Kessel, der sich aber leider als leer erweist oder dessen Inhalt bereits abgekühlt und ungenießbar ist. Er kommt mit gesenkten Ohren und hängendem Schwanz zu Ihnen zurück, offensichtlich frustriert von der kulinarischen Enttäuschung.",
-      "nothing": "Sie beschließen weise, sich nicht länger an diesem Ort aufzuhalten, da die Zeit knapp ist und Ihre Suche keine Umwege duldet. Mit einer entschlossenen Geste fordern Sie Ihren Begleiter auf, Ihnen zu folgen, und setzen gemeinsam Ihren Weg in Richtung des Horizonts fort, der Sie ruft."
+      "found_by_player_male": "Sie nähern sich vorsichtig und, nachdem Sie das Geäst beiseitegeschoben und die Ecken **{{time}}** {emote:effects.occupied} lang akribisch durchsucht haben, finden Sie endlich **{{foodName}}**. Sie bieten es Ihrem Begleiter an, der es dankbar annimmt und sein Geschenk mit zufriedenem Grunzen verschlingt.",
+      "found_by_player_female": "Sie nähern sich vorsichtig und, nachdem Sie das Geäst beiseitegeschoben und die Ecken **{{time}}** {emote:effects.occupied} lang akribisch durchsucht haben, finden Sie endlich **{{foodName}}**. Sie bieten es Ihrer Begleiterin an, die es dankbar annimmt und ihr Geschenk mit zufriedenem Grunzen verschlingt.",
+      "found_by_player_soup_male": "Sie nähern sich vorsichtig dem verlassenen Kessel. Nachdem Sie **{{time}}** {emote:effects.occupied} lang überprüft haben, dass keine Gefahr lauert, entdecken Sie mit Zufriedenheit **{{foodName}}**, das noch immer sanft vor sich hin köchelt. Sie gießen eine großzügige Portion in einen Napf, den Sie Ihrem Begleiter präsentieren, welcher dieses wärmende Gericht gierig schlürft und dabei zufrieden mit dem Schwanz wedelt.",
+      "found_by_player_soup_female": "Sie nähern sich vorsichtig dem verlassenen Kessel. Nachdem **{{time}}** {emote:effects.occupied} damit verbracht wurden, nach Gefahren Ausschau zu halten, entdecken Sie mit Genugtuung **{{foodName}}**, das noch immer sanft köchelt. Sie gießen eine großzügige Portion in einen Napf, den Sie Ihrer Begleiterin reichen, die dieses tröstliche Mahl genüsslich schlürft und dabei zufrieden mit dem Schwanz wedelt.",
+      "found_by_pet_male": "Ihr Vertrauter macht einen flinken Sprung und verschwindet für einen Moment im Dickicht. Bald darauf kommt er in einem stolzen, triumphierenden Trab zu Ihnen zurück und hält **{{foodName}}** behutsam zwischen seinen Fängen. Seine Augen glänzen vor Stolz, während er sich mit begeisterten Kaugeräuschen niederlässt und seinen Fund genießt.",
+      "found_by_pet_female": "Ihr Vertrauter macht einen flinken Sprung und verschwindet für einen Moment im Dickicht. Bald darauf kehrt sie in einem stolzen, triumphierenden Trab zu Ihnen zurück und hält **{{foodName}}** behutsam zwischen ihren Fängen. Ihre Augen leuchten stolz, während sie sich niederlässt, um ihren Fund mit begeisterten Kaugeräuschen zu genießen.",
+      "found_by_pet_soup_male": "Ihr Vertrauter trabt schnell zu dem verlassenen Lager und taucht seine Schnauze in den dampfenden Kessel. Einige Augenblicke später kommt er mit glänzenden Schnauzen zu Ihnen zurück, nachdem er **{{foodName}}** offensichtlich mit sichtlichem Vergnügen genossen hat. Seine funkelnden Augen und sein wedelnder Schwanz zeugen von seiner gierigen Zufriedenheit.",
+      "found_by_pet_soup_female": "Ihr Vertrauter trabt schnell zu dem verlassenen Lager und taucht ihre Schnauze in den dampfenden Kessel. Einige Augenblicke später kehrt sie mit noch glänzenden Lefzen zu Ihnen zurück, nachdem sie **{{foodName}}** offensichtlich mit sichtlichem Vergnügen genossen hat. Ihr funkelnder Blick und ihr wedelnder Schwanz zeugen von ihrer genüsslichen Zufriedenheit.",
+      "found_anyway_male": "Gerade als du dich wieder auf den Weg machen willst, ohne dich weiter um diese Ablenkung zu kümmern, springt dein treuer Gefährte plötzlich in die umliegenden Büsche. Er kommt mit **{{foodName}}** wieder heraus, die er sofort mit gierigem Appetit und wedelndem Schwanz verschlingt.",
+      "found_anyway_female": "Gerade als Sie sich wieder auf den Weg machen wollten, ohne sich weiter um diese Ablenkung zu kümmern, sprang Ihre treue Gefährtin plötzlich in die umliegenden Büsche. Sie kam siegreich mit **{{foodName}}** heraus, die sie sofort mit gierigem Appetit und wedelndem Schwanz verschlang.",
+      "found_anyway_soup_male": "Gerade als Sie sich wieder auf den Weg machen wollen, ohne sich weiter um das Lager zu kümmern, rennt Ihr treuer Begleiter zu dem verlassenen Kessel. Bevor Sie ihn daran hindern können, schlürft er mit einem genüsslichen Stöhnen **{{foodName}}** und freut sich sichtlich über den unerwarteten Gewinn.",
+      "found_anyway_soup_female": "Gerade als Sie sich wieder auf den Weg machen wollten, ohne sich weiter um dieses Lager zu kümmern, rannte Ihre treue Begleiterin zu dem verlassenen Kessel. Bevor Sie sie daran hindern konnten, schlürfte sie gierig **{{foodName}}** mit Wimmern der Freude und war sichtlich erfreut über diesen unerwarteten Fund.",
+      "player_failed": "Sie verbringen **{{time}}** {emote:effects.occupied} anstrengende Momente damit, die Umgebung akribisch abzusuchen, Dornen und Gestrüpp beiseite zu schieben, Steine und verrottete Baumstümpfe umzudrehen, aber trotz all Ihrer hartnäckigen Bemühungen finden Sie nichts Wertvolles. Die investierte Zeit erweist sich als so sinnlos wie eine Schatzsuche in einer leeren Kiste.",
+      "pet_failed_male": "Ihr Begleiter rennt entschlossen ins Gebüsch, kommt aber nach wenigen Augenblicken mit schwerfälligen Schritten, herunterhängenden Ohren und hängendem Schwanz zurück. Sein enttäuschter Blick und sein klägliches Quieken verraten, dass er versagt hat: Die Fährte war erfolglos und seine Bemühungen haben nur Bitterkeit hervorgebracht.",
+      "pet_failed_female": "Ihre Gefährtin stürmt entschlossen ins Unterholz, kehrt aber wenige Augenblicke später mit schleppenden Schritten, gesenkten Ohren und hängendem Schwanz zurück. Ihr enttäuschter Blick und ihr klägliches Wimmern verraten ihr Scheitern: Die Spur erwies sich als erfolglos und ihre Bemühungen brachten nur Bitterkeit hervor.",
+      "pet_failed_soup_male": "Ihr Begleiter trottet zu dem verlassenen Lagerplatz und schnüffelt lange an dem Kessel, der sich aber leider als leer erweist oder dessen Inhalt bereits abgekühlt und ungenießbar ist. Er kommt mit gesenkten Ohren und hängendem Schwanz zu Ihnen zurück, offensichtlich frustriert von der kulinarischen Enttäuschung.",
+      "pet_failed_soup_female": "Ihre Gefährtin trottet zu dem verlassenen Lager und schnüffelt lange am Kessel, doch dieser erweist sich leider als leer oder sein Inhalt ist bereits abgekühlt und ungenießbar. Sie kehrt mit enttäuschter Miene, gesenkten Ohren und hängendem Schwanz zu Ihnen zurück, sichtlich frustriert von dieser kulinarischen Enttäuschung.",
+      "nothing_male": "Sie beschließen weise, sich nicht länger an diesem Ort aufzuhalten, da die Zeit knapp ist und Ihre Suche keine Umwege duldet. Mit einer entschlossenen Geste fordern Sie Ihren Begleiter auf, Ihnen zu folgen, und setzen gemeinsam Ihren Weg in Richtung des Horizonts fort, der Sie ruft.",
+      "nothing_female": "Sie beschließen weise, sich nicht länger an diesem Ort aufzuhalten, da die Zeit knapp ist und Ihre Suche keine Umwege duldet. Mit einer entschlossenen Geste fordern Sie Ihre Begleiterin auf, Ihnen zu folgen, und setzen gemeinsam Ihren Weg in Richtung des Horizonts fort, der Sie ruft."
     },
     "foodNames": {
       "badSmell": [
@@ -2027,13 +2046,16 @@
       ]
     },
     "love": {
-      "plus": "Ihr treuer Begleiter betrachtet Sie mit leuchtenden Augen, die von Dankbarkeit und Zuneigung zeugen. Er reibt sich an Ihren Beinen und gibt ein zufriedenes Schnurren von sich, was deutlich zeigt, dass dieses improvisierte Festmahl die Bande des Vertrauens und der Freundschaft zwischen Ihnen gestärkt hat!",
-      "minus": "Ihr Vertrauter starrt Sie mit einem schwarzen Blick voller stiller Vorwürfe an, die Lefzen sind zu einem missbilligenden Schmollmund aufgerollt. Er wendet den Kopf demonstrativ ab und stößt ein unzufriedenes Knurren aus, offensichtlich beleidigt von dem Essen, das seines zarten Gaumens nicht würdig ist...",
-      "neutral": "Ihr Mitreisender schlingt seine Mahlzeit mit einer fast philosophischen Distanz hinunter, ohne überschwängliche Begeisterung oder besonderen Ekel zu zeigen. Er scheint diesen Fund einfach als eine notwendige Sättigung zu betrachten, nicht mehr und nicht weniger."
+      "plus_male": "Ihr treuer Begleiter betrachtet Sie mit leuchtenden Augen, die von Dankbarkeit und Zuneigung zeugen. Er reibt sich an Ihren Beinen und gibt ein zufriedenes Schnurren von sich, was deutlich zeigt, dass dieses improvisierte Festmahl die Bande des Vertrauens und der Freundschaft zwischen Ihnen gestärkt hat!",
+      "plus_female": "Ihre treue Begleiterin betrachtet Sie mit leuchtenden Augen, die von Dankbarkeit und Zuneigung zeugen. Sie reibt sich an Ihren Beinen und gibt ein zufriedenes Schnurren von sich, was deutlich zeigt, dass dieses improvisierte Festmahl die Bande des Vertrauens und der Freundschaft zwischen Ihnen gestärkt hat!",
+      "minus_male": "Ihr Vertrauter starrt Sie mit einem schwarzen Blick voller stiller Vorwürfe an, die Lefzen sind zu einem missbilligenden Schmollmund aufgerollt. Er wendet den Kopf demonstrativ ab und stößt ein unzufriedenes Knurren aus, offensichtlich beleidigt von dem Essen, das seines zarten Gaumens nicht würdig ist...",
+      "minus_female": "Ihre Vertraute starrt Sie mit einem schwarzen Blick voller stiller Vorwürfe an, die Lefzen sind zu einem missbilligenden Schmollmund aufgerollt. Sie wendet den Kopf demonstrativ ab und stößt ein unzufriedenes Knurren aus, offensichtlich beleidigt von dem Essen, das ihres zarten Gaumens nicht würdig ist...",
+      "neutral_male": "Ihr Weggefährte verschlingt sein Mahl mit einer fast philosophischen Gleichgültigkeit, ohne überschwängliche Begeisterung oder besonderen Ekel zu zeigen.",
+      "neutral_female": "Ihre Weggefährtin verschlingt ihr Mahl mit einer fast philosophischen Gleichgültigkeit, ohne überschwängliche Begeisterung oder besonderen Ekel zu zeigen."
     }
   },
   "badPet": {
-    "intro": [
+    "intro_male": [
       "Ein untersetzter Zwerg springt aus einem Felsen, sein roter Bart ist zottelig und seine Augen sind voller Hass. Beim Anblick von **{{pet}}** spuckt er angewidert auf den Boden und schwingt einen knorrigen Stock. Ihr Begleiter weicht zurück und legt die Ohren an den Schädel. Der Fremde stellt sich als Moltiar vor und schwört, dass er nichts mit seinem käferanbetenden Bruder zu tun hat.",
       "Eine raue, zornige Stimme ruft Sie plötzlich an. Ein Zwerg mit einem Gesicht, das von einer alten Narbe gezeichnet ist, tritt vor, seine blutunterlaufenen Augen sind wütend auf **{{pet}}** gerichtet. Mit einer bedrohlichen Geste wirbelt er eine mit Nägeln beschlagene Keule herum. Ihr Begleiter zittert am ganzen Körper.",
       "Hinter einer Felsformation springt ein verrückt dreinblickender Zwerg hervor, der sich vor Ihnen aufbaut und Ihren Weg versperrt. Seine rechte Hand weist die Stigmata eines alten Bisses auf. Er starrt **{{pet}}** mit brennendem Hass an und zieht einen zerbrochenen Dolch. Moltiar flucht, dass er im Gegensatz zu seinem Bruder Talvar weiß, wie man ein Ärgernis erkennt.",
@@ -2045,171 +2067,310 @@
       "Ein spöttischer Pfiff hallt durch die Luft. Ein Zwerg sitzt auf einem Felsen und beobachtet Ihren Fortschritt mit Verachtung. Als er **{{pet}}** bemerkt, der neben Ihnen hertrottet, verzieht sich sein Gesichtsausdruck zu einer Grimasse aus tiefstem Ekel. Er springt auf den Boden, baut sich vor Ihnen auf und murmelt, dass sein Bruder mit seinen verrückten Ideen zu viele Reisende verdorben hat.",
       "Der Boden unter Ihren Füßen bebt leicht und kündigt die Annäherung einer massiven Präsenz an. Ein mächtiger Zwerg, der breiter als hoch ist, taucht aus einem Felsbrocken auf. Sein Blick streift den Weg und bleibt mit glühendem Hass auf **{{pet}}** haften. Seine Armmuskeln verkrampfen sich, als er einen schweren Schmiedehammer hochhebt."
     ],
+    "intro_female": [
+      "Ein untersetzter Zwerg springt aus einem Felsen, sein zotteliger roter Bart und sein Blick voller tiefer Abneigung. Beim Anblick von **{{pet}}** spuckt er angewidert auf den Boden und schwingt einen knorrigen Stock. Ihre Begleiterin weicht zurück, die Ohren an den Kopf gelegt. Der Unbekannte stellt sich als Moltiar vor und schwört, dass er nichts mit seinem insektenanbetenden Bruder zu tun hat.",
+      "Eine raue und wütende Stimme ruft Sie plötzlich an. Ein Zwerg mit einem Gesicht, das von einer alten Narbe gezeichnet ist, tritt vor, seine blutunterlaufenen Augen mit Wut auf **{{pet}}** gerichtet. Er wirbelt eine mit Nägeln beschlagene Keule mit einer bedrohlichen Geste herum. Ihre Begleiterin zittert am ganzen Körper.",
+      "Hinter einer Felsformation springt ein verrückt dreinblickender Zwerg hervor, der sich vor Ihnen aufbaut und Ihren Weg versperrt. Seine rechte Hand weist die Stigmata eines alten Bisses auf. Er starrt **{{pet}}** mit brennendem Hass an und zieht einen zerbrochenen Dolch. Moltiar flucht, dass er im Gegensatz zu seinem Bruder Talvar weiß, wie man ein Ärgernis erkennt.",
+      "Ein kehliges Knurren lässt Sie aufschrecken. Ein dicker Zwerg lugt aus einer Nische hervor, sein geflochtener Bart klappert mit Knochenperlen. Sobald er **{{pet}}** sieht, verzieht sich sein Gesicht vor Ekel. Er zeigt mit einem anklagenden Finger auf Sie, während seine andere Hand eine rostige Axt fest umklammert.",
+      "Ihr Weg wird plötzlich von einer untersetzten, feindseligen Gestalt versperrt. Der Zwerg verzieht das Gesicht zu einem Ausdruck purer Abscheu, als er **{{pet}}** neben Ihnen entdeckt. Eine alte Wunde durchzieht seinen Unterarm und zeugt von einer schmerzhaften Vergangenheit. Er greift nach einem Kriegshammer. Moltiar knurrt, dass er diese abscheulichen Kreaturen nicht durch seine Ländereien ziehen lassen wird, egal, was sein naiver Bruder davon halten mag.",
+      "Das Klatschen eines rollenden Steins macht Sie auf eine Präsenz aufmerksam. Ein massiver Zwerg tritt aus dem Schatten eines Felsüberhangs hervor und mustert sofort **{{pet}}** mit spürbarer Feindseligkeit. Die Narben auf seinen Unterarmen zeugen von früheren schmerzhaften Begegnungen. Er schwingt drohend einen Knüppel.",
+      "Der Geruch von Erde und ranzigem Schweiß steigt Ihnen in die Nase, noch bevor Sie den Angreifer sehen. Ein Zwerg springt aus einer Felsspalte, seine Haut ist von der Sonne gegerbt, seine schwieligen Hände sind um eine Spitzhacke geklammert. Sein Blick fällt auf **{{pet}}** und kalte Wut verzerrt seine Züge. Er spuckt aus, dass sein idiotischer Bruder sehen sollte, was diese Viecher mit ihm gemacht haben.",
+      "Das Knirschen von Stiefeln auf dem Kies kündigt die Ankunft eines Eindringlings an. Ein Zwerg mit einem teilweise kahlen Kopf erscheint, sein grauer Bart ist zu einem strengen Katogan zusammengebunden. Seine Augen weiten sich vor Entsetzen, als er **{{pet}}** erblickt. Er weicht zurück, bevor er mit hasserfüllter Entschlossenheit ein Bergmannsmesser schwingt.",
+      "Ein spöttischer Pfiff hallt durch die Luft. Ein Zwerg sitzt auf einem Felsen und beobachtet Ihren Fortschritt mit Verachtung. Als er **{{pet}}** bemerkt, der neben Ihnen hertrottet, verzieht sich sein Gesichtsausdruck zu einer Grimasse aus tiefstem Ekel. Er springt auf den Boden, baut sich vor Ihnen auf und murmelt, dass sein Bruder mit seinen verrückten Ideen zu viele Reisende verdorben hat.",
+      "Der Boden unter Ihren Füßen bebt leicht und kündigt die Annäherung einer massiven Präsenz an. Ein mächtiger Zwerg, der breiter als hoch ist, taucht aus einem Felsbrocken auf. Sein Blick streift den Weg und bleibt mit glühendem Hass auf **{{pet}}** haften. Seine Armmuskeln verkrampfen sich, als er einen schweren Schmiedehammer hochhebt."
+    ],
     "choices": {
-      "intimidate": "Befehlen Sie Ihrem Begleiter, den Zwerg einzuschüchtern",
+      "intimidate_male": "Befehlen Sie Ihrem Begleiter, den Zwerg einzuschüchtern",
+      "intimidate_female": "Ihrer Begleiterin befehlen, den Zwerg einzuschüchtern",
       "plead": "Versuch, den Zwerg mit Worten zur Vernunft zu bringen",
       "giveMeat": "Dem Zwerg Fleisch anbieten, um ihn zu besänftigen",
       "giveVeg": "Dem Zwerg als Zeichen des Friedens Gemüse anbieten",
-      "flee": "Mit Ihrem Begleiter fliehen",
-      "hide": "Ihren Begleiter verbergen",
+      "flee_male": "Mit Ihrem Begleiter fliehen",
+      "flee_female": "Mit Ihrer Begleiterin fliehen",
+      "hide_male": "Ihren Begleiter verbergen",
+      "hide_female": "Ihre Begleiterin verstecken",
       "wait": "Warten, bis der Zorn des Zwergs nachlässt",
-      "protect": "Sich einmischen, um Ihren Begleiter zu schützen",
+      "protect_male": "Sich einmischen, um Ihren Begleiter zu schützen",
+      "protect_female": "Sich dazwischenstellen, um Ihre Begleiterin zu schützen",
       "distract": "Die Aufmerksamkeit des Zwergs ablenken",
-      "calm": "Versuchen, Ihren verängstigten Begleiter zu beruhigen",
-      "imposer": "Lassen Sie Ihren Begleiter sich gegen den Zwerg durchsetzen",
-      "energize": "Ihren Begleiter zum Durchhalten ermutigen"
+      "calm_male": "Versuchen, Ihren verängstigten Begleiter zu beruhigen",
+      "calm_female": "Versuchen, Ihre verängstigte Begleiterin zu beruhigen",
+      "imposer_male": "Lassen Sie Ihren Begleiter sich gegen den Zwerg durchsetzen",
+      "imposer_female": "Lassen Sie Ihre Begleiterin sich gegen den Zwerg durchsetzen",
+      "energize_male": "Ihren Begleiter zum Durchhalten ermutigen",
+      "energize_female": "Ihre Begleiterin zum Durchhalten ermutigen"
     },
     "outcomes": {
       "intimidate": {
-        "success": [
+        "success_male": [
           "Auf Ihren Befehl hin erhebt sich **{{pet}}** zu seiner vollen Höhe und stößt ein beeindruckendes Knurren aus. Moltiar, der von dieser Machtdemonstration überrascht ist, weicht einen unsicheren Schritt zurück und murmelt einige Beleidigungen, während er sich widerwillig entfernt. Ihr Begleiter schaut Ihnen stolz hinterher.",
           "{{pet}}** nimmt eine bedrohliche Haltung ein und knurrt den feindseligen Zwerg mit überraschender Wildheit an. Als dieser merkt, dass die Konfrontation schiefgehen könnte, spuckt er eine letzte Beleidigung aus, bevor er sich zurückzieht. Ihr Begleiter scheint zufrieden zu sein, dass er sich dem Angreifer widersetzt hat."
         ],
-        "fail": [
-          "Auf Ihren Befehl hin versucht **{{pet}}**, bedrohlich zu wirken, aber der Zwerg bricht angesichts dieser erbärmlichen Demonstration in ein grausames Lachen aus. Er schwingt seinen Stab und Ihr Begleiter weicht hastig zurück, sein Stolz ist durch diese Demütigung verletzt.",
+        "success_female": [
+          "Ihrem Befehl gehorchend, **{{pet}}** erhebt sich zu seiner vollen Höhe und stößt ein beeindruckendes Knurren aus. Moltiar, von dieser Machtdemonstration überrascht, weicht einen unsicheren Schritt zurück und murmelt einige Beleidigungen, während er sich widerwillig entfernt. Ihre Begleiterin blickt Sie stolz an.",
+          "Eine bedrohliche Haltung einnehmend, knurrt **{{pet}}** mit überraschender Wildheit den feindseligen Zwerg an. Dieser, sehend, dass die Konfrontation schlecht ausgehen könnte, spuckt eine letzte Beleidigung aus, bevor er sich zurückzieht. Ihre Begleiterin scheint zufrieden zu sein, sich dem Angreifer widersetzt zu haben."
+        ],
+        "fail_male": [
+          "Ihrem Befehl gehorchend, versucht **{{pet}}**, bedrohlich zu wirken, aber der Zwerg bricht angesichts dieser erbärmlichen Demonstration in ein grausames Lachen aus. Er schwingt seinen Stab und Ihr Begleiter weicht hastig zurück, gedemütigt.",
           "Bei dem Versuch, bedrohlich zu wirken, gelingt es **{{pet}}** nur, den Zwerg zu amüsieren, der ihm einen Tritt verpasst. Ihr Begleiter quiekt vor Schmerzen und wirft Ihnen einen vorwurfsvollen Blick zu, weil Sie ihn so bloßgestellt haben."
+        ],
+        "fail_female": [
+          "Auf Ihren Befehl hin versucht **{{pet}}**, bedrohlich zu wirken, aber der Zwerg bricht angesichts dieser erbärmlichen Demonstration in ein grausames Lachen aus. Er schwingt seinen Stab und Ihre Begleiterin weicht hastig zurück, gedemütigt.",
+          "Beim Versuch, bedrohlich zu wirken, gelingt es **{{pet}}** nur, den Zwerg zu amüsieren, der ihr einen Tritt verpasst. Ihre Begleiterin quietscht vor Schmerzen und wirft Ihnen einen vorwurfsvollen Blick zu, weil Sie sie so bloßgestellt haben."
         ]
       },
       "plead": {
-        "success": [
+        "success_male": [
           "Sie versuchen, Moltiar mit beruhigenden Worten zu besänftigen und ihm zu erklären, dass Ihr Begleiter keine Bedrohung darstellt. Etwas in Ihrer ehrlichen Stimme scheint einen Nerv zu treffen, und schließlich senkt er knurrend seine Waffe. **{{pet}}** weiß Ihre Diplomatie zu schätzen.",
           "Ihre gemessenen Worte hallen in der angespannten Stille wider. Sie erwähnen den gegenseitigen Respekt unter Reisenden und der Zwerg stimmt trotz seines offensichtlichen Tierhasses zu, dass Sie Ihr Tier unter Kontrolle zu haben scheinen. Er tritt fluchend beiseite. **{{pet}}** beruhigt sich allmählich."
         ],
-        "fail": [
+        "success_female": [
+          "Sie versuchen, Moltiar mit beruhigenden Worten zu besänftigen und ihm zu erklären, dass Ihre Begleiterin keine Bedrohung darstellt. Etwas in Ihrer ehrlichen Stimme scheint einen Nerv zu treffen, und schließlich senkt er knurrend seine Waffe. **{{pet}}** weiß Ihre Diplomatie zu schätzen.",
+          "Ihre gemessenen Worte hallen in der angespannten Stille wider. Sie erwähnen den gegenseitigen Respekt unter Reisenden und der Zwerg stimmt trotz seines offensichtlichen Tierhasses zu, dass Sie Ihr Tier unter Kontrolle zu haben scheinen. Er tritt fluchend beiseite. **{{pet}}** beruhigt sich allmählich."
+        ],
+        "fail_male": [
           "Sie versuchen, den Zwerg zur Vernunft zu bringen, aber Ihre Worte schüren nur seinen Zorn. Er schreit, dass Worte nicht ausreichen, um diese Kreaturen zu verteidigen, die er verabscheut. **{{pet}}** wendet den Blick ab, beschämt über Ihr Versagen, ihn zu beschützen.",
+          "Ihr erbärmliches Flehen scheint den Zwerg noch mehr zu verärgern. Er schaut Sie mit unverhohlener Verachtung an. **{{pet}}** beobachtet Sie mit einer Mischung aus Enttäuschung und Angst."
+        ],
+        "fail_female": [
+          "Sie versuchen, den Zwerg zur Vernunft zu bringen, aber Ihre Worte schüren nur seinen Zorn. Er schreit, dass Worte nicht ausreichen, um diese Kreaturen zu verteidigen, die er verabscheut. **{{pet}}** wendet den Blick ab, beschämt über Ihr Versagen, sie zu beschützen.",
           "Ihr erbärmliches Flehen scheint den Zwerg noch mehr zu verärgern. Er schaut Sie mit unverhohlener Verachtung an. **{{pet}}** beobachtet Sie mit einer Mischung aus Enttäuschung und Angst."
         ]
       },
       "giveMeatLikes": {
-        "success": [
+        "success_male": [
           "Sie holen schnell ein Stück Fleisch heraus und halten es dem hungrigen Zwerg hin. Überrascht von diesem Angebot, nimmt er es knurrend an und beißt hungrig hinein. Er winkt Ihnen zu, sich zu verziehen, bevor er es sich anders überlegt. **{{pet}}** scheint über diesen Ausgang erleichtert zu sein.",
           "Das Stück Fleisch, das Sie anbieten, lässt den Zwerg zögern. Sein Magen knurrt lauter als sein Hass, und schließlich nimmt er Ihr Geschenk an, während er sich entfernt. **{{pet}}** Erfreut sich an Ihrem Einfallsreichtum, der eine Konfrontation verhindert hat."
         ],
-        "fail": [
+        "success_female": [
+          "Sie holen schnell ein Stück Fleisch heraus und halten es dem hungrigen Zwerg hin. Überrascht von diesem Angebot, nimmt er es knurrend an und beißt hungrig hinein. Er winkt Ihnen zu, sich zu verziehen, bevor er es sich anders überlegt. **{{pet}}** scheint über diesen Ausgang erleichtert zu sein.",
+          "Das Stück Fleisch, das Sie anbieten, lässt den Zwerg zögern. Sein Magen knurrt lauter als sein Hass, und schließlich nimmt er Ihr Geschenk an, während er sich entfernt. **{{pet}}** Erfreut sich an Ihrem Einfallsreichtum, der eine Konfrontation verhindert hat."
+        ],
+        "fail_male": [
+          "Sie holen ein Stück Fleisch heraus, um Moltiar zu besänftigen, doch dieser wirft es angewidert auf den Boden und weigert sich, sich so kaufen zu lassen. Leider hat **{{pet}}** ein Auge auf diese Delikatesse geworfen und schaut Sie mit anklagenden Augen an.",
+          "Das Stück Fleisch, das Sie anbieten, wird von dem wütenden Zwerg zertrampelt. **{{pet}}** beobachtet die Szene frustriert und ist enttäuscht, dass diese Leckerei verschwendet wurde."
+        ],
+        "fail_female": [
           "Sie holen ein Stück Fleisch heraus, um Moltiar zu besänftigen, doch dieser wirft es angewidert auf den Boden und weigert sich, sich so kaufen zu lassen. Leider hat **{{pet}}** ein Auge auf diese Delikatesse geworfen und schaut Sie mit anklagenden Augen an.",
           "Das Stück Fleisch, das Sie anbieten, wird von dem wütenden Zwerg zertrampelt. **{{pet}}** beobachtet die Szene frustriert und ist enttäuscht, dass diese Leckerei verschwendet wurde."
         ]
       },
       "giveMeatDislikes": {
-        "success": [
+        "success_male": [
           "Sie holen schnell ein Stück Fleisch heraus und halten es dem hungrigen Zwerg hin. Überrascht von diesem Angebot, nimmt er es knurrend an und beißt hungrig hinein. Er winkt Ihnen zu, sich zu verziehen, bevor er es sich anders überlegt. **{{pet}}** wendet den Blick ab, sichtlich uninteressiert an diesem Essen.",
           "Das Stück Fleisch, das Sie anbieten, lässt den Zwerg zögern. Sein Magen knurrt lauter als sein Hass, und schließlich nimmt er Ihr Geschenk an, während er sich entfernt. **{{pet}}** scheint diese Gabe, die nicht für ihn bestimmt war, nicht zu bereuen."
         ],
-        "fail": [
+        "success_female": [
+          "Sie holen schnell ein Stück Fleisch heraus und halten es dem hungrigen Zwerg hin. Überrascht von diesem Angebot, nimmt er es knurrend an und beißt hungrig hinein. Er winkt Ihnen zu, sich zu verziehen, bevor er es sich anders überlegt. **{{pet}}** wendet den Blick ab, sichtlich uninteressiert an diesem Essen.",
+          "Das Stück Fleisch, das Sie anbieten, lässt den Zwerg zögern. Sein Magen knurrt lauter als sein Hass, und schließlich nimmt er Ihr Geschenk an, während er sich entfernt. **{{pet}}** scheint diese Gabe, die nicht für ihn bestimmt war, nicht zu bereuen."
+        ],
+        "fail_male": [
           "Sie holen ein Stück Fleisch heraus, um Moltiar zu erweichen, doch dieser wirft es angewidert auf den Boden und weigert sich, sich so kaufen zu lassen. **{{pet}}** Als Pflanzenfresser scheint ihn dieser Verlust nicht zu stören.",
+          "Das Stück Fleisch, das du anbietest, wird von dem wütenden Zwerg zertrampelt. **{{pet}}** beachtet es kaum, da ihm diese Art von Essen nicht zusagt."
+        ],
+        "fail_female": [
+          "Sie holen ein Stück Fleisch heraus, um Moltiar zu erweichen, doch dieser wirft es angewidert auf den Boden und weigert sich, sich so kaufen zu lassen. **{{pet}}**, als Pflanzenfresser, scheint von diesem Verlust nicht gestört zu sein.",
           "Das Stück Fleisch, das du anbietest, wird von dem wütenden Zwerg zertrampelt. **{{pet}}** beachtet es kaum, da ihm diese Art von Essen nicht zusagt."
         ]
       },
       "giveMeatNoFood": {
-        "fail": [
+        "fail_male": [
+          "Sie durchsuchen Ihre Taschen nach einem Stück Fleisch, doch das Lager Ihrer Gilde ist hoffnungslos leer. Moltiar kichert über deine Verwirrung, während **{{pet}}** dich verständnislos beobachtet.",
+          "Sie versuchen, Fleisch herauszuholen, um den Zwerg zu beruhigen, stellen aber entsetzt fest, dass Sie kein Fleisch haben. Moltiar nutzt die Gelegenheit, um **{{pet}}** zu misshandeln, der Ihnen einen anklagenden Blick zuwirft."
+        ],
+        "fail_female": [
           "Sie durchsuchen Ihre Taschen nach einem Stück Fleisch, doch das Lager Ihrer Gilde ist hoffnungslos leer. Moltiar kichert über deine Verwirrung, während **{{pet}}** dich verständnislos beobachtet.",
           "Sie versuchen, Fleisch herauszuholen, um den Zwerg zu beruhigen, stellen aber entsetzt fest, dass Sie kein Fleisch haben. Moltiar nutzt die Gelegenheit, um **{{pet}}** zu misshandeln, der Ihnen einen anklagenden Blick zuwirft."
         ]
       },
       "giveVegLikes": {
-        "success": [
+        "success_male": [
           "Sie bieten dem Zwerg einige Gemüsesorten an und verweisen auf deren Qualität und Frische. Wider Erwarten nimmt der Zwerg, der Suppen liebt, Ihre Gabe mit einem zustimmenden Grunzen an und geht. **{{pet}}** scheint von Ihrem Instinkt beeindruckt zu sein.",
           "Das Gemüse, das Sie dem Zwerg anbieten, weckt bei ihm offensichtlich angenehmere Erinnerungen. Er nimmt es mit einem Anschein von Höflichkeit an und willigt ein, Sie passieren zu lassen. **{{pet}}** weiß diese friedliche Lösung zu schätzen."
         ],
-        "fail": [
+        "success_female": [
+          "Sie bieten dem Zwerg einige Gemüsesorten an und verweisen auf deren Qualität und Frische. Wider Erwarten nimmt der Zwerg, der Suppen liebt, Ihre Gabe mit einem zustimmenden Grunzen an und geht. **{{pet}}** scheint von Ihrem Instinkt beeindruckt zu sein.",
+          "Das Gemüse, das Sie dem Zwerg anbieten, weckt bei ihm offensichtlich angenehmere Erinnerungen. Er nimmt es mit einem Anschein von Höflichkeit an und willigt ein, Sie passieren zu lassen. **{{pet}}** weiß diese friedliche Lösung zu schätzen."
+        ],
+        "fail_male": [
+          "Sie halten dem Zwerg Gemüse hin, in der Hoffnung, ihn damit zu besänftigen. Er bricht angesichts dieses lächerlichen Angebots in schallendes Gelächter aus und wischt sie mit einer Handbewegung beiseite. **{{pet}}** beobachtet neidisch das verschwendete Gemüse.",
+          "Das Gemüse, das Sie ungeschickt anbieten, wird von dem verächtlichen Zwerg mit einer Handbewegung weggefegt. **{{pet}}** wirft Ihnen einen vorwurfsvollen Blick zu, frustriert darüber, dass dieses Essen verloren geht."
+        ],
+        "fail_female": [
           "Sie halten dem Zwerg Gemüse hin, in der Hoffnung, ihn damit zu besänftigen. Er bricht angesichts dieses lächerlichen Angebots in schallendes Gelächter aus und wischt sie mit einer Handbewegung beiseite. **{{pet}}** beobachtet neidisch das verschwendete Gemüse.",
           "Das Gemüse, das Sie ungeschickt anbieten, wird von dem verächtlichen Zwerg mit einer Handbewegung weggefegt. **{{pet}}** wirft Ihnen einen vorwurfsvollen Blick zu, frustriert darüber, dass dieses Essen verloren geht."
         ]
       },
       "giveVegDislikes": {
-        "success": [
+        "success_male": [
           "Sie bieten dem Zwerg einige Gemüsesorten an und verweisen auf deren Qualität und Frische. Wider Erwarten nimmt der Zwerg, der Suppen liebt, Ihre Gabe mit einem zustimmenden Grunzen an und geht. **{{pet}}** scheint sich wenig um den Verlust des Gemüses zu kümmern.",
           "Das Gemüse, das Sie dem Zwerg anbieten, weckt bei ihm offensichtlich angenehmere Erinnerungen. Er nimmt es mit einem Anschein von Höflichkeit an und lässt Sie passieren. **{{pet}}** Als Fleischfresser stört sich der Zwerg nicht an diesem Opfer."
         ],
-        "fail": [
+        "success_female": [
+          "Sie bieten dem Zwerg einige Gemüsesorten an und verweisen auf deren Qualität und Frische. Wider Erwarten nimmt der Zwerg, der Suppen liebt, Ihre Gabe mit einem zustimmenden Grunzen an und geht. **{{pet}}** scheint sich wenig um den Verlust des Gemüses zu kümmern.",
+          "Das Gemüse, das Sie dem Zwerg anbieten, weckt bei ihm offensichtlich angenehmere Erinnerungen. Er nimmt es mit einem Anschein von Höflichkeit an und lässt Sie passieren. **{{pet}}**, als Fleischfresser, stört sich nicht an diesem Opfer."
+        ],
+        "fail_male": [
+          "Sie halten dem Zwerg Gemüse hin, in der Hoffnung, ihn damit zu besänftigen. Er bricht angesichts dieses lächerlichen Angebots in schallendes Gelächter aus und wischt sie mit einer Handbewegung beiseite. **{{pet}}** scheint von diesem Verlust nicht betroffen zu sein.",
+          "Das Gemüse, das Sie ungeschickt anbieten, wird von dem verächtlichen Zwerg mit einem Handstreich beiseite gewischt. **{{pet}}**, der Fleisch bevorzugt, misst dem verlorenen Gemüse keine Bedeutung bei."
+        ],
+        "fail_female": [
           "Sie halten dem Zwerg Gemüse hin, in der Hoffnung, ihn damit zu besänftigen. Er bricht angesichts dieses lächerlichen Angebots in schallendes Gelächter aus und wischt sie mit einer Handbewegung beiseite. **{{pet}}** scheint von diesem Verlust nicht betroffen zu sein.",
           "Das Gemüse, das Sie ungeschickt anbieten, wird von dem verächtlichen Zwerg mit einem Handstreich beiseite gewischt. **{{pet}}**, der Fleisch bevorzugt, misst dem verlorenen Gemüse keine Bedeutung bei."
         ]
       },
       "giveVegNoFood": {
-        "fail": [
+        "fail_male": [
           "Du suchst nach Gemüse, das du dem Zwerg anbieten kannst, aber im Lager deiner Gilde gibt es keins. Moltiar lacht über deinen armseligen Versuch, während **{{pet}}** enttäuscht den Kopf senkt.",
+          "Sie wollen Gemüse anbieten, um die Situation zu beruhigen, aber Sie haben keins. Der Zwerg nutzt Ihr Zögern aus, um **{{pet}}** anzurempeln, der Sie vorwurfsvoll ansieht."
+        ],
+        "fail_female": [
+          "Sie suchen nach Gemüse, das Sie dem Zwerg anbieten können, aber im Lager Ihrer Gilde gibt es keins. Moltiar lacht über Ihren armseligen Versuch, während **{{pet}}** enttäuscht den Kopf senkt.",
           "Sie wollen Gemüse anbieten, um die Situation zu beruhigen, aber Sie haben keins. Der Zwerg nutzt Ihr Zögern aus, um **{{pet}}** anzurempeln, der Sie vorwurfsvoll ansieht."
         ]
       },
       "flee": {
-        "success": [
+        "success_male": [
           "Sie nehmen die Beine in die Hand und haben **{{pet}}** auf den Fersen. Dank Ihrer kombinierten Geschwindigkeit können Sie Moltiar schnell hinter sich lassen, der zu korpulent ist und fluchend aufgibt, Sie zu verfolgen. Ihr Begleiter schnappt nach Luft, scheint aber zufrieden zu sein.",
           "Die Flucht erweist sich als die richtige Entscheidung. Sie rennen effizient mit **{{pet}}**, der Ihnen problemlos folgt, und lassen den wütenden, aber hilflosen Zwerg hinter sich. Sie haben sich verbündet."
         ],
-        "fail": [
+        "success_female": [
+          "Sie nehmen die Beine in die Hand und haben **{{pet}}** auf den Fersen. Dank Ihrer kombinierten Geschwindigkeit können Sie Moltiar schnell hinter sich lassen, der zu korpulent ist und fluchend aufgibt, Sie zu verfolgen. Ihr Begleiter schnappt nach Luft, scheint aber zufrieden zu sein.",
+          "Die Flucht erweist sich als die richtige Entscheidung. Sie rennen effizient mit **{{pet}}**, der Ihnen problemlos folgt, und lassen den wütenden, aber hilflosen Zwerg hinter sich. Sie haben sich verbündet."
+        ],
+        "fail_male": [
           "Panik überkommt Sie und Sie rennen ungeschickt mit **{{pet}}** auf den Fersen davon. Moltiar, der schneller als erwartet ist, holt Sie ein und stößt Ihren Begleiter heftig an. Sie können schließlich fliehen, aber **{{pet}}** gibt Ihnen die Schuld an der überstürzten Flucht.",
           "Sie nehmen in einer unrühmlichen Stampede die Beine in die Hand. Leider kann **{{pet}}** nicht mit Ihrem Tempo mithalten und bleibt zurück. Der Zwerg nutzt die Gelegenheit, um ihm einen Stockschlag zu verpassen, bevor Sie ihn zurückholen. Ihr Begleiter ist wütend über die missglückte Flucht."
+        ],
+        "fail_female": [
+          "Panik überkommt Sie und Sie rennen ungeschickt mit **{{pet}}** auf den Fersen davon. Moltiar, der schneller als erwartet ist, holt Sie ein und stößt Ihren Begleiter heftig an. Sie können schließlich fliehen, aber **{{pet}}** gibt Ihnen die Schuld an der überstürzten Flucht.",
+          "Sie nehmen in einer unrühmlichen Flucht die Beine in die Hand. Leider kann **{{pet}}** nicht mit Ihrem Tempo mithalten und bleibt zurück. Der Zwerg nutzt die Gelegenheit, um ihr einen Stockschlag zu verpassen, bevor Sie sie zurückholen. Ihre Begleiterin ist wütend über diese missglückte Flucht."
         ]
       },
       "hide": {
-        "success": [
+        "success_male": [
           "Sie finden schnell eine Felsnische und verstecken **{{pet}}** darin, bevor der Zwerg es bemerkt. Als er das Tier nicht mehr sehen kann, verliert er das Interesse und geht fluchend davon. Ihr Begleiter weiß Ihre Diskretion zu schätzen.",
           "Sie finden einen idealen Ort, um **{{pet}}** unter Ihrem Umhang zu verstecken. Der Zwerg, der das Objekt seines Hasses nicht mehr sehen kann, beruhigt sich schließlich und setzt seinen Weg fort. Ihr Begleiter scheint durch Ihren Schutz beruhigt zu sein."
         ],
-        "fail": [
+        "success_female": [
+          "Sie finden schnell eine Felsnische und verstecken **{{pet}}** darin, bevor der Zwerg sie bemerkt. Als er das Tier nicht mehr sehen kann, verliert er das Interesse und geht fluchend davon. Ihre Begleiterin weiß Ihre Diskretion zu schätzen.",
+          "Sie finden einen idealen Ort, um **{{pet}}** unter Ihrem Umhang zu verstecken. Der Zwerg, der das Objekt seines Hasses nicht mehr sehen kann, beruhigt sich schließlich und setzt seinen Weg fort. Ihre Begleiterin scheint durch Ihren Schutz beruhigt zu sein."
+        ],
+        "fail_male": [
           "Sie versuchen, **{{pet}}** in einer Ecke zu verstecken, aber Moltiar überrascht Sie dabei. Er brüllt vor Wut und misshandelt Ihren Begleiter. Dieser wirft Ihnen einen vorwurfsvollen Blick zu.",
           "Ihr Versuch, sich zu verstecken, scheitert kläglich, als **{{pet}}** ein nervöses Stöhnen ausstößt und sein Versteck preisgibt. Der Zwerg stürmt auf ihn zu und rempelt ihn heftig an. Ihr Begleiter leidet unter diesem Missgeschick."
+        ],
+        "fail_female": [
+          "Sie versuchen, **{{pet}}** in einer Ecke zu verstecken, aber Moltiar überrascht Sie dabei. Er brüllt vor Wut und misshandelt Ihre Begleiterin. Diese wirft Ihnen einen vorwurfsvollen Blick zu.",
+          "Ihr Versuch, sich zu verstecken, scheitert kläglich, als **{{pet}}** ein nervöses Stöhnen ausstößt und sein Versteck preisgibt. Der Zwerg stürmt auf sie zu und rempelt sie heftig an. Ihre Begleiterin leidet unter diesem Missgeschick."
         ]
       },
       "wait": {
-        "success": [
+        "success_male": [
           "Sie beschließen, regungslos zu warten, in der Hoffnung, dass sich die Wut des Zwergs legt. Nach langen Minuten des Gebrülls scheint er müde zu werden und entfernt sich schließlich knurrend. **{{pet}}** scheint Ihre Geduld und Gelassenheit zu schätzen.",
           "Das Warten zahlt sich aus. Als der Zwerg nicht die Reaktion findet, die er sich erhofft hatte, verliert er allmählich seinen kriegerischen Eifer und geht wieder. **{{pet}}** blickt Ihnen mit Respekt für Ihre Weisheit nach."
         ],
-        "fail": [
+        "success_female": [
+          "Sie beschließen, regungslos zu warten, in der Hoffnung, dass sich die Wut des Zwergs legt. Nach langen Minuten des Gebrülls scheint er müde zu werden und entfernt sich schließlich knurrend. **{{pet}}** scheint Ihre Geduld und Gelassenheit zu schätzen.",
+          "Das Warten zahlt sich aus. Als der Zwerg nicht die Reaktion findet, die er sich erhofft hatte, verliert er allmählich seinen kriegerischen Eifer und geht wieder. **{{pet}}** blickt Ihnen mit Respekt für Ihre Weisheit nach."
+        ],
+        "fail_male": [
           "Sie beschließen, regungslos zu warten, aber der Zwerg interpretiert Ihre Passivität als Schwäche. Er kommt noch näher und droht **{{pet}}** noch mehr. Ihr Begleiter stampft nervös auf, gestresst von der Untätigkeit.",
           "Das Warten zieht sich in die Länge und **{{pet}}** beginnt ängstlich zu stöhnen. Der Zwerg, der durch Ihre Untätigkeit ermutigt wurde, wird immer bedrohlicher. Ihr Begleiter wirft Ihnen vor, nichts zu tun."
+        ],
+        "fail_female": [
+          "Sie beschließen, regungslos zu warten, aber der Zwerg interpretiert Ihre Passivität als Schwäche. Er kommt noch näher und droht **{{pet}}** noch mehr. Ihre Begleiterin stampft nervös auf, gestresst von der Untätigkeit.",
+          "Das Warten zieht sich in die Länge und **{{pet}}** beginnt ängstlich zu stöhnen. Der Zwerg, der durch Ihre Untätigkeit ermutigt wurde, wird immer bedrohlicher. Ihre Begleiterin wirft Ihnen vor, nichts zu tun."
         ]
       },
       "protect": {
-        "success": [
+        "success_male": [
           "In einem Anfall von schützender Tapferkeit bringen Sie Ihren Körper fest zwischen Moltiar und **{{pet}}**. Ihre Entschlossenheit beeindruckt den Angreifer, und als er sieht, dass Sie bereit sind zu kämpfen, beschließt er, nicht weiter zu provozieren. Ihr Begleiter ist von Ihrem Mut gerührt.",
           "Sie schützen **{{pet}}**, indem Sie sich selbstbewusst vor dem feindseligen Zwerg einmischen. Als dieser merkt, dass Sie nicht nachgeben werden, zieht er sich lieber zurück und spuckt Beleidigungen aus. Ihr Begleiter schaut Sie mit erneuter Zuneigung an."
         ],
-        "fail": [
+        "success_female": [
+          "In einem Anfall von schützender Tapferkeit bringen Sie Ihren Körper fest zwischen Moltiar und **{{pet}}**. Ihre Entschlossenheit beeindruckt den Angreifer, und als er sieht, dass Sie bereit sind zu kämpfen, beschließt er, nicht weiter zu provozieren. Ihre Begleiterin ist von Ihrem Mut gerührt.",
+          "Sie schützen **{{pet}}**, indem Sie sich selbstbewusst vor den feindseligen Zwerg stellen. Dieser merkt, dass Sie nicht nachgeben werden, und zieht sich lieber fluchend zurück. Ihre Begleiterin blickt Sie mit erneuter Zuneigung an."
+        ],
+        "fail_male": [
           "In einem Anflug von Tapferkeit stellen Sie sich zwischen Moltiar und **{{pet}}**. Leider ist der Zwerg stärker, als Sie gedacht haben. Er stößt Sie grob zurück und nutzt die Gelegenheit, um Ihren Begleiter zu schlagen. Sie fühlen sich hilflos angesichts dieser Machtdemonstration.",
           "Sie versuchen, **{{pet}}** zu schützen, indem Sie sich vor ihn stellen, aber Ihre Haltung ist unsicher. Der Zwerg geht leicht um Sie herum und rempelt Ihren Begleiter an, der Ihnen einen enttäuschten Blick zuwirft, weil Sie ihn nicht verteidigen können."
+        ],
+        "fail_female": [
+          "In einem Anflug von Tapferkeit stellen Sie sich zwischen Moltiar und **{{pet}}**. Leider ist der Zwerg stärker, als Sie dachten. Er stößt Sie brutal zurück und nutzt die Gelegenheit, um Ihre Begleiterin zu schlagen. Sie fühlen sich hilflos angesichts dieser Machtdemonstration.",
+          "Sie versuchen, **{{pet}}** zu schützen, indem Sie sich vor sie stellen, aber Ihre Haltung ist unsicher. Der Zwerg umgeht Sie mühelos und stößt Ihre Begleiterin beiseite, die Ihnen einen enttäuschten Blick zuwirft, weil Sie sie nicht verteidigen konnten."
         ]
       },
       "distract": {
-        "success": [
+        "success_male": [
           "Sie sorgen für Ablenkung, indem Sie lautstark auf eine bekannte Taverne in der entgegengesetzten Richtung verweisen. Moltiar, dessen Liebe zum Bier seinen Hass auf Tiere offensichtlich übertrifft, spitzt die Ohren und entfernt sich dann fasziniert. **{{pet}}** nutzt die Verwirrung aus, beeindruckt von Ihrer List.",
           "Ihre Ablenkung funktioniert wunderbar. Indem Sie ein paar Münzen in die Luft werfen, ziehen Sie die gierige Aufmerksamkeit des Zwergs auf sich. Während er losstürmt, um die Münzen aufzuheben, **{{pet}}** und Sie schleichen sich unauffällig davon."
         ],
-        "fail": [
+        "success_female": [
+          "Sie lenken ab, indem Sie lautstark eine bekannte Taverne in der entgegengesetzten Richtung erwähnen. Moltiar, dessen Liebe zum Bier seinen Hass auf Tiere offensichtlich übertrifft, spitzt die Ohren und entfernt sich dann, fasziniert. **{{pet}}** nutzt die Verwirrung, beeindruckt von Ihrer List.",
+          "Ihre Ablenkung funktioniert wunderbar. Indem Sie ein paar Münzen in die Luft werfen, ziehen Sie die gierige Aufmerksamkeit des Zwergs auf sich. Während er losstürmt, um die Münzen aufzuheben, **{{pet}}** und Sie schleichen sich unauffällig davon."
+        ],
+        "fail_male": [
+          "Sie versuchen, durch Gestikulieren und Schreien für Ablenkung zu sorgen. Dieses lächerliche Schauspiel reizt den Zwerg nur noch mehr und er kommt bedrohlich näher. **{{pet}}** weicht zurück, erschrocken über Ihr seltsames Verhalten.",
+          "In einem verzweifelten Versuch, den Gegner abzulenken, werfen Sie wahllos Kieselsteine. Einer davon trifft **{{pet}}**, der vor Schmerzen quietscht, während der Zwerg böse kichert."
+        ],
+        "fail_female": [
           "Sie versuchen, durch Gestikulieren und Schreien für Ablenkung zu sorgen. Dieses lächerliche Schauspiel reizt den Zwerg nur noch mehr und er kommt bedrohlich näher. **{{pet}}** weicht zurück, erschrocken über Ihr seltsames Verhalten.",
           "In einem verzweifelten Versuch, den Gegner abzulenken, werfen Sie wahllos Kieselsteine. Einer davon trifft **{{pet}}**, der vor Schmerzen quietscht, während der Zwerg böse kichert."
         ]
       },
       "calm": {
-        "success": [
+        "success_male": [
           "Es gelingt Ihnen, **{{pet}}** trotz der Bedrohung durch den Zwerg mit beruhigenden Berührungen zu besänftigen. Ihr Begleiter gewinnt Vertrauen und hört auf zu zittern. Als der Zwerg sieht, dass Sie Ihr Tier unter Kontrolle haben, scheint er weniger geneigt, es anzugreifen und entfernt sich schließlich.",
           "Ihre beruhigenden Worte und Ihre selbstbewusste Haltung schaffen es, **{{pet}}** zu beruhigen. Sobald er sich entspannt hat, strahlt er eine Selbstsicherheit aus, die den Zwerg zögern lässt. Der Zwerg, der sich angesichts dieser Gelassenheit nicht mehr so sicher fühlt, zieht es vor, zu gehen."
         ],
-        "fail": [
+        "success_female": [
+          "Es gelingt Ihnen, **{{pet}}** trotz der Bedrohung durch den Zwerg mit beruhigenden Berührungen zu besänftigen. Ihre Begleiterin gewinnt Vertrauen und hört auf zu zittern. Als der Zwerg sieht, dass Sie Ihr Tier unter Kontrolle haben, scheint er weniger geneigt, es anzugreifen und entfernt sich schließlich.",
+          "Ihre beruhigenden Worte und Ihre selbstbewusste Haltung schaffen es, **{{pet}}** zu beruhigen. Sobald sie sich entspannt hat, strahlt sie eine Selbstsicherheit aus, die den Zwerg zögern lässt. Der Zwerg, der sich angesichts dieser Gelassenheit nicht mehr so sicher fühlt, zieht es vor, zu gehen."
+        ],
+        "fail_male": [
           "Sie versuchen, **{{pet}}** mit Streicheleinheiten zu besänftigen, aber Ihre eigene Nervosität angesichts des feindseligen Zwergs überträgt sich auf Ihren Begleiter. Anstatt sich zu beruhigen, wird er noch unruhiger und wimmert.",
+          "Ihre Worte, die eigentlich beruhigend wirken sollen, verraten Ihren eigenen Schrecken. **{{pet}}** Da sie Ihre Angst wahrnimmt, begreift sie, dass die Situation ernst ist, und ihre Panik wird noch schlimmer."
+        ],
+        "fail_female": [
+          "Sie versuchen, **{{pet}}** mit Streicheleinheiten zu besänftigen, aber Ihre eigene Nervosität angesichts des feindseligen Zwergs überträgt sich auf Ihre Begleiterin. Anstatt sich zu beruhigen, wird sie noch unruhiger und wimmert.",
           "Ihre Worte, die eigentlich beruhigend wirken sollen, verraten Ihren eigenen Schrecken. **{{pet}}** Da sie Ihre Angst wahrnimmt, begreift sie, dass die Situation ernst ist, und ihre Panik wird noch schlimmer."
         ]
       },
       "imposer": {
-        "success": [
+        "success_male": [
           "Sie lassen **{{pet}}** selbstbewusst auf den Zwerg zugehen. Sein natürliches Auftreten und seine seltene Schönheit scheinen den Angreifer zu verunsichern, der trotz seines Hasses erkennt, dass er es mit einem außergewöhnlichen Exemplar zu tun hat. Er zieht sich zurück, gegen seinen Willen beeindruckt.",
           "Ruhig vor dem Zwerg sitzend, strahlt **{{pet}}** eine unleugbare Aura der Erhabenheit aus. Der Zwerg, obwohl er Tiere hasst, kann nicht anders, als den Adel Ihres Begleiters anzuerkennen und entfernt sich vorsichtig."
         ],
-        "fail": [
+        "success_female": [
+          "Sie lassen **{{pet}}** selbstbewusst auf den Zwerg zugehen. Sein natürliches Auftreten und seine seltene Schönheit scheinen den Angreifer zu verunsichern, der trotz seines Hasses erkennt, dass er es mit einem außergewöhnlichen Exemplar zu tun hat. Er zieht sich zurück, gegen seinen Willen beeindruckt.",
+          "Ruhig vor dem Zwerg sitzend, strahlt **{{pet}}** eine unleugbare Aura der Majestät aus. Der Zwerg, obwohl er Tiere hasst, kann nicht anders, als den Adel Ihrer Begleiterin anzuerkennen und entfernt sich vorsichtig."
+        ],
+        "fail_male": [
           "Sie versuchen, **{{pet}}** sich gegen Moltiar durchsetzen zu lassen, aber Ihr eingeschüchterter Begleiter schafft es nicht, bedrohlich zu wirken. Der Zwerg bricht in ein verächtliches Lachen aus und rempelt ihn unsanft an.",
           "**{{pet}}** versucht, sich dem Zwerg gegenüber imposant zu präsentieren, aber sein Aussehen reicht nicht aus, um ihn zu beeindrucken. Der Zwerg schaut ihn spöttisch an, bevor er ihm einen Tritt verpasst."
+        ],
+        "fail_female": [
+          "Sie versuchen, **{{pet}}** sich gegen Moltiar durchsetzen zu lassen, aber Ihre eingeschüchterte Begleiterin schafft es nicht, bedrohlich zu wirken. Der Zwerg bricht in ein verächtliches Lachen aus und stößt sie unsanft an.",
+          "**{{pet}}** versucht, sich dem Zwerg gegenüber imposant zu zeigen, aber ihr Aussehen reicht nicht aus, um ihn zu beeindrucken. Der Zwerg schaut sie spöttisch an, bevor er ihr einen Tritt verpasst."
         ]
       },
       "energize": {
-        "success": [
+        "success_male": [
           "Sie feuern **{{pet}}** mit begeisterten Worten an. Durch Ihre Unterstützung gewinnt Ihr Gefährte neue Kraft und stellt sich stolz vor Moltiar auf. Dieser ist von der neuen Energie überrascht, will aber kein Risiko eingehen und entfernt sich.",
           "Ihre aufmunternden Worte geben **{{pet}}** neues Selbstvertrauen und er richtet sich entschlossen auf. Als der Zwerg sieht, dass Ihr Gefährte sich das nicht gefallen lässt, gibt er seinen Angriff auf und geht knurrend davon."
         ],
-        "fail": [
+        "success_female": [
+          "Sie ermutigen **{{pet}}** mit enthusiastischen Worten. Galvanisiert durch Ihre Unterstützung, findet Ihre Begleiterin ihre volle Kraft wieder und stellt sich stolz Moltiar entgegen. Dieser, überrascht von diesem Energieschub, zieht es vor, kein Risiko einzugehen und entfernt sich.",
+          "Ihre aufmunternden Worte geben **{{pet}}** neues Selbstvertrauen und es richtet sich entschlossen auf. Als der Zwerg sieht, dass Ihre Gefährtin sich das nicht gefallen lässt, gibt er seinen Angriff auf und geht knurrend davon."
+        ],
+        "fail_male": [
           "Sie versuchen, **{{pet}}** mit Worten zu ermutigen, aber Ihre Stimme ist angesichts der Bedrohung durch den Zwerg nicht überzeugend genug. Ihr Begleiter, der bereits in Angst und Schrecken versetzt ist, findet nicht den nötigen Mut und kauert sich noch weiter zusammen.",
           "Ihre Versuche, **{{pet}}** zu verzinken, gehen ins Leere. Der Zwerg nutzt diesen Moment der Schwäche, um Ihren Begleiter zu misshandeln, der Ihnen vorwirft, ihn nicht besser beschützt zu haben."
+        ],
+        "fail_female": [
+          "Sie versuchen, **{{pet}}** mit Worten zu ermutigen, aber Ihre Stimme ist angesichts der Bedrohung durch den Zwerg nicht überzeugend genug. Ihre Begleiterin, die bereits in Angst und Schrecken versetzt ist, findet nicht den nötigen Mut und kauert sich noch weiter zusammen.",
+          "Ihre Versuche, **{{pet}}** zu motivieren, schlagen fehl. Der Zwerg nutzt diesen Moment der Schwäche, um Ihre Begleiterin zu misshandeln, die Ihnen vorwirft, sie nicht besser beschützt zu haben."
         ]
       }
     }
