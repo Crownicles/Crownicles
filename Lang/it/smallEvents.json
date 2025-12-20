@@ -2107,15 +2107,15 @@
           "Adottando un atteggiamento minaccioso, **{{pet}}** ringhia con sorprendente ferocia contro il nano ostile. Quest'ultimo, vedendo che lo scontro potrebbe diventare spiacevole, sputa un ultimo insulto prima di ritirarsi. Il tuo compagno sembra soddisfatto di aver tenuto testa all'aggressore."
         ],
         "success_female": [
-          "Obéissant à votre ordre, **{{pet}}** se dresse de toute sa hauteur et pousse un grondement impressionnant. Moltiar, surpris par cette démonstration de force, recule d'un pas mal assuré et marmonne quelques insultes en s'éloignant à contrecœur. Votre compagne vous regarde fièrement.",
-          "Adoptant une posture menaçante, **{{pet}}** grogne avec une férocité surprenante face au nain hostile. Ce dernier, voyant que la confrontation pourrait mal tourner, crache une dernière insulte avant de battre en retraite. Votre compagne semble satisfaite d'avoir tenu tête à l'agresseur."
+          "Obbedendo al tuo ordine, **{{pet}}** si alza in tutta la sua altezza ed emette un ruggito impressionante. Moltiar, sorpreso da questa dimostrazione di forza, fa un passo indietro incerto e borbotta qualche insulto mentre si allontana con riluttanza. La tua compagna ti guarda con orgoglio.",
+          "Adottando una postura minacciosa, **{{pet}}** ringhia con sorprendente ferocia contro il nano ostile. Quest'ultimo, vedendo che la confrontazione potrebbe finire male, sputa un ultimo insulto prima di battere in ritirata. La tua compagna sembra soddisfatta di aver tenuto testa all'aggressore."
         ],
         "fail_male": [
-          "Obéissant à votre ordre, **{{pet}}** tente de paraître menaçant, mais le nain éclate d'un rire cruel devant cette démonstration pathétique. Il brandit son bâton et votre compagnon recule précipitamment, humilié.",
+          "Obbedendo al tuo ordine, **{{pet}}** tenta di apparire minaccioso, ma il nano scoppia in una risata crudele davanti a questa dimostrazione patetica. Brandisce il suo bastone e il tuo compagno arretra precipitosamente, umiliato.",
           "Cercando di apparire minaccioso,{{pet}}** riesce solo a divertire il nano, che lo prende a calci. Il vostro compagno strilla di dolore e vi lancia un'occhiata di rimprovero per averlo esposto in quel modo."
         ],
         "fail_female": [
-          "Obéissant à votre ordre, **{{pet}}** tente de paraître menaçante, mais le nain éclate d'un rire cruel devant cette démonstration pathétique. Il brandit son bâton et votre compagne recule précipitamment, humiliée.",
+          "Obbedendo al tuo ordine, **{{pet}}** tenta di apparire minacciosa, ma il nano scoppia in una risata crudele davanti a questa dimostrazione patetica. Brandisce il suo bastone e la tua compagna arretra precipitosamente, umiliata.",
           "Tentant de paraître menaçante, **{{pet}}** ne parvient qu'à amuser le nain qui lui assène un coup de pied. Votre compagne couine de douleur et vous lance un regard de reproche pour l'avoir exposée ainsi."
         ]
       },
@@ -2253,16 +2253,16 @@
           "Trovi un posto ideale per nascondere **{{pet}}** sotto il tuo mantello. Il nano, non vedendo più l'oggetto del suo odio, finalmente si calma e prosegue per la sua strada. Il tuo compagno sembra rassicurato dalla tua protezione."
         ],
         "success_female": [
-          "Vous repérez rapidement un renfoncement dans les rochers et y dissimulez **{{pet}}** avant que le nain ne la remarque. Ce dernier, ne voyant plus la bête, perd tout intérêt et s'éloigne en maugréant. Votre compagne apprécie votre discrétion.",
-          "Vous trouvez un endroit idéal pour cacher **{{pet}}** sous votre cape. Le nain, ne voyant plus l'objet de sa haine, finit par se calmer et poursuivre son chemin. Votre compagne semble rassurée par votre protection."
+          "Individuate rapidamente una rientranza nelle rocce e vi nascondete **{{pet}}** prima che il nano la noti. Quest'ultimo, non vedendo più la bestia, perde ogni interesse e si allontana brontolando. La vostra compagna apprezza la vostra discrezione.",
+          "Trovate un posto ideale per nascondere **{{pet}}** sotto il vostro mantello. Il nano, non vedendo più l'oggetto del suo odio, finisce per calmarsi e proseguire il suo cammino. La vostra compagna sembra rassicurata dalla vostra protezione."
         ],
         "fail_male": [
           "Cerchi di nascondere **{{pet}}** in un angolo, ma Moltiar ti coglie sul fatto. Ruggisce di rabbia e maltratta il tuo compagno. Ti rivolge uno sguardo di rimprovero.",
           "Il tuo tentativo di occultamento fallisce miseramente quando **{{pet}}** emette un gemito nervoso, rivelando il suo nascondiglio. Il nano si precipita verso di lui e lo spinge violentemente. Il tuo compagno soffre per questa disavventura."
         ],
         "fail_female": [
-          "Vous tentez de dissimuler **{{pet}}** dans un recoin, mais Moltiar vous surprend en pleine manœuvre. Il rugit de colère et malmène votre compagne. Celle-ci vous lance un regard lourd de reproches.",
-          "Votre tentative de dissimulation échoue lamentablement quand **{{pet}}** pousse un gémissement nerveux, révélant sa cachette. Le nain se rue vers elle et la bouscule violemment. Votre compagne souffre de cette mésaventure."
+          "Tentate di dissimulare **{{pet}}** in un angolo, ma Moltiar vi sorprende in piena manovra. Ruggisce di rabbia e maltratta la vostra compagna. Quest'ultima vi lancia uno sguardo carico di rimproveri.",
+          "Il vostro tentativo di dissimulazione fallisce miseramente quando **{{pet}}** emette un gemito nervoso, rivelando il suo nascondiglio. Il nano si precipita verso di lei e la spinge violentemente. La vostra compagna soffre per questa disavventura."
         ]
       },
       "wait": {
