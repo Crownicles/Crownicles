@@ -18,7 +18,7 @@ export class Material extends Model {
 export class Materials {
 	public static async giveMaterial(
 		playerId: number,
-		materialId: string,
+		materialId: number,
 		quantity: number
 	): Promise<void> {
 		const material = await Material.findOne({
