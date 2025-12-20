@@ -143,7 +143,8 @@
       "warning_male": "{emote:collectors.warning} *Chamar o seu animal de estimação de volta prematuramente quebrará o vínculo de confiança. Ele regressará sem saque e com o coração magoado...",
       "warning_female": "{emote:collectors.warning} *Chamar o teu familiar de volta prematuramente quebrará o laço de confiança. Ela regressará sem saque e com o coração magoado..."
     },
-    "inProgressFoodInfo": "\n{emote:expedition.food} **Provisões tomadas:** {{amount, number}} rações",
+    "inProgressFoodInfo_one": "\n{emote:expedition.food} **Provisões levadas:** {{count, number}} ração",
+    "inProgressFoodInfo_other": "\n{emote:expedition.food} **Provisões tomadas:** {{count, number}} rações",
     "recallButton": "Ligar de volta",
     "closeButton": "Continuar a explorar",
     "chooseExpeditionTitle": "{{pseudo}}novas remessas disponíveis",
@@ -170,7 +171,8 @@
     "startedTitle": "{{pseudo}}expedição lançada!",
     "expeditionStarted_male": "Com um salto entusiasmado, {{petDisplay}} corre em direção a **{{location}}** ! Vê-o desaparecer no horizonte, com o coração cheio de esperança.\n\n{emote:clocks.1} Regresso previsto: {{returnTime}}",
     "expeditionStarted_female": "Com um salto entusiasmado, {{petDisplay}} corre para **{{location}}** ! Vê-a desaparecer no horizonte, com o coração cheio de esperança.\n\n{emote:clocks.1} Regresso previsto: {{returnTime}}",
-    "foodConsumed": "\n{emote:expedition.food} Provisões transportadas : **{{amount, number}}** rações",
+    "foodConsumed_one": "\n{emote:expedition.food} Provisões levadas: **{{count, number}}** ração",
+    "foodConsumed_other": "\n{emote:expedition.food} Provisões transportadas : **{{count, number}}** rações",
     "foodConsumedDetails": "\n{emote:expedition.food} **Provisões adoptadas:** {{foodDetails}}",
     "insufficientFoodWarning": {
       "noGuild": "\n\n{emote:collectors.warning} **Não tens um grémio para preparar rações** para o teu animal de estimação. O risco de fracasso desta expedição é **triplicado**.",
@@ -696,7 +698,7 @@
     },
     "guild": {
       "fieldName": "Grémio :",
-      "fieldValue": "{emote:guild.icon} {{guild}}"
+      "fieldValue": ":stadium: {{guild}}"
     },
     "information": {
       "fieldName": "Mais informações :",
@@ -708,11 +710,11 @@
     },
     "map": {
       "fieldName": "Destino :",
-      "fieldValue": "{emote:mapTypes.{{mapTypeId}}} $t(models:map_locations.{{mapName}}.name)"
+      "fieldValue": "{{mapEmote}} {{mapName}}"
     },
     "mission": {
       "fieldName": "Tarefas :",
-      "fieldValue": "{emote:unitValues.gem} {{gems, number}} | {emote:missions.book} {{campaign, number}}% "
+      "fieldValue": ":gem: {{gems, number}} :book: {{campaign, number}}| % "
     },
     "noTimeLeft": {
       "fieldName": "Tempo restante :",
@@ -724,7 +726,7 @@
     },
     "playerClass": {
       "fieldName": "Classe :",
-      "fieldValue": "$t(models:classFormat)"
+      "fieldValue": "{{className}}"
     },
     "ranking": {
       "fieldName": "Classificação e pontuação :",
@@ -736,11 +738,11 @@
     },
     "statistics": {
       "fieldName": "Estatísticas :",
-      "fieldValue": "{emote:unitValues.energy} {{cumulativeHealth, number}} / {{cumulativeMaxHealth, number}} | {emote:unitValues.attack} {{cumulativeAttack, number}} | {emote:unitValues.defense} {{cumulativeDefense, number}} | {emote:unitValues.speed} {{cumulativeSpeed, number}} | {emote:unitValues.breath} {{baseBreath, number}} / {{maxBreath, number}} | {emote:unitValues.breathRegen} {{breathRegen}}"
+      "fieldValue": ":zap: {{cumulativeHealth, number}} {{cumulativeMaxHealth, number}} :dagger: {{cumulativeAttack, number}} :shield: {{cumulativeDefense, number}} :rocket: {{cumulativeSpeed, number}} :wind_blowing_face: {{baseBreath, number}} {{maxBreath, number}} :lungs: {{breathRegen}}/ | | | | / |"
     },
     "timeLeft": {
       "fieldName": "Tempo restante :",
-      "fieldValue": "{emote:effects.{{effectId}}} {{timeLeft}}"
+      "fieldValue": "{{effect}} {{timeLeft}}"
     },
     "title": "{emote:effects.{{effectId}}} | {{pseudo}} | Nível {{level, number}}"
   },
@@ -805,7 +807,8 @@
     "tokensUsedSuccessDescription_other": "{emote:unitValues.token} Gastou **{{count}} tokens** para avançar na sua viagem.\n\n{{nextStep}}",
     "tokensNextStepArrived": "{emote:messages.info} Chegou ao seu destino! Utilize {command:report} para ver o que o espera.",
     "tokensNextStepSmallEvent": "{emote:messages.info} Há um evento à sua espera na estrada. Utilize {command:report} para o descobrir.",
-    "tokensUsedRefused": "{emote:messages.refuse} **{{pseudo}}** decidiu não utilizar fichas.",
+    "tokensUsedRefusedTitle": "{{pseudo}}, cancelamento",
+    "tokensUsedRefusedDescription": "{emote:messages.refuse} Você decidiu manter seus tokens.",
     "buyHealButton": "Tratamento",
     "notEnoughMoneyHealButton": "Não há dinheiro suficiente",
     "buyHealLoading": "Carregando...",
