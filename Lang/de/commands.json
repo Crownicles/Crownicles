@@ -143,7 +143,8 @@
       "warning_male": "{emote:collectors.warning} *Wenn Sie Ihren Vertrauten vorzeitig zurückrufen, bricht das Vertrauensverhältnis. Er wird ohne Beute und mit geschundenem Herzen zurückkehren...*.",
       "warning_female": "{emote:collectors.warning} *Die Vertraute vorzeitig zu rufen, wird das Vertrauensverhältnis zerstören. Sie wird ohne Beute und mit geschundenem Herzen zurückkehren...*."
     },
-    "inProgressFoodInfo": "\n{emote:expedition.food} **Vorräte mitgenommen:** {{amount, number}} Rationen",
+    "inProgressFoodInfo_one": "\n{emote:expedition.food} **Mitgenommener Proviant:** {{count, number}} Ration",
+    "inProgressFoodInfo_other": "\n{emote:expedition.food} **Vorräte mitgenommen:** {{count, number}} Rationen",
     "recallButton": "Rückruf",
     "closeButton": "Die Erkundung fortsetzen",
     "chooseExpeditionTitle": "{{pseudo}}Neue Sendungen verfügbar",
@@ -170,7 +171,8 @@
     "startedTitle": "{{pseudo}}Expedition gestartet!",
     "expeditionStarted_male": "Mit einem enthusiastischen Sprung rennt {{petDisplay}} auf **{{location}}** zu! Sie sehen ihm nach, wie er mit hoffnungsvollem Herzen am Horizont verschwindet.\n\n{emote:clocks.1} Geplante Rückkehr: {{returnTime}}",
     "expeditionStarted_female": "Mit einem enthusiastischen Sprung rennt {{petDisplay}} auf **{{location}}** zu! Sie sehen ihr nach, wie sie mit hoffnungsvollem Herzen am Horizont verschwindet.\n\n{emote:clocks.1} Geplante Rückkehr: {{returnTime}}",
-    "foodConsumed": "\n{emote:expedition.food} Mitgeführter Proviant : **{{amount, number}}** Rationen",
+    "foodConsumed_one": "\n{emote:expedition.food} Mitgenommener Proviant : **{{count, number}}** Ration",
+    "foodConsumed_other": "\n{emote:expedition.food} Mitgeführter Proviant : **{{count, number}}** Rationen",
     "foodConsumedDetails": "\n{emote:expedition.food} **Mitgeführte Provisionen:** {{foodDetails}}",
     "insufficientFoodWarning": {
       "noGuild": "\n\n{emote:collectors.warning} **Sie haben keine Gilde, die Rationen** für Ihren Vertrauten zubereitet. Das Risiko, dass diese Expedition scheitert, ist **verdreifacht**.",
@@ -696,7 +698,7 @@
     },
     "guild": {
       "fieldName": "Gilde:",
-      "fieldValue": "{emote:guild.icon} {{guild}}"
+      "fieldValue": ":stadium: {{guild}}"
     },
     "information": {
       "fieldName": "Information:",
@@ -712,7 +714,7 @@
     },
     "mission": {
       "fieldName": "Aufgaben:",
-      "fieldValue": "{emote:unitValues.gem} {{gems, number}} | {emote:missions.book} {{campaign, number}}% "
+      "fieldValue": ":gem: {{gems, number}} | :book: {{campaign, number}}% "
     },
     "noTimeLeft": {
       "fieldName": "Restdauer:",
@@ -736,7 +738,7 @@
     },
     "statistics": {
       "fieldName": "Statistik:",
-      "fieldValue": "{emote:unitValues.energy} {{cumulativeHealth, number}} / {{cumulativeMaxHealth, number}} | {emote:unitValues.attack} {{cumulativeAttack, number}} | {emote:unitValues.defense} {{cumulativeDefense, number}} | {emote:unitValues.speed} {{cumulativeSpeed, number}} | {emote:unitValues.breath} {{baseBreath, number}} / {{maxBreath, number}} | {emote:unitValues.breathRegen} {{breathRegen}}"
+      "fieldValue": ":zap: {{cumulativeHealth, number}} / {{cumulativeMaxHealth, number}} | :dagger: {{cumulativeAttack, number}} | :shield: {{cumulativeDefense, number}} | :rocket: {{cumulativeSpeed, number}} | :wind_blowing_face: {{baseBreath, number}} / {{maxBreath, number}} | :lungs: {{breathRegen}}"
     },
     "timeLeft": {
       "fieldName": "Restdauer:",
@@ -805,7 +807,8 @@
     "tokensUsedSuccessDescription_other": "{emote:unitValues.token} Du hast **{{count}} Chips** ausgegeben, um auf deiner Reise voranzukommen.\n\n{{nextStep}}",
     "tokensNextStepArrived": "{emote:messages.info} Sie sind am Ziel angekommen! Nutzen Sie {command:report} , um zu sehen, was Sie erwartet.",
     "tokensNextStepSmallEvent": "{emote:messages.info} Auf der Straße wartet ein Ereignis auf Sie. Nutzen Sie {command:report} , um es herauszufinden.",
-    "tokensUsedRefused": "{emote:messages.refuse} **{{pseudo}}** hat sich entschieden, keine Chips zu verwenden.",
+    "tokensUsedRefusedTitle": "{{pseudo}}, Stornierung",
+    "tokensUsedRefusedDescription": "{emote:messages.refuse} Sie haben sich entschieden, Ihre Token zu behalten.",
     "buyHealButton": "Sich pflegen",
     "notEnoughMoneyHealButton": "Unzureichendes Geld",
     "buyHealLoading": "Laden...",
