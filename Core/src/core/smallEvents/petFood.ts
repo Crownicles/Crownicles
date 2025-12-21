@@ -311,10 +311,11 @@ export const smallEventFuncs: SmallEventFuncs = {
 		return petEntity.lovePoints < PetConstants.MAX_LOVE_POINTS;
 	},
 
-	executeSmallEvent: (response, player, context): Promise<void> => {
+	executeSmallEvent: async (response, player, context): Promise<void> => {
 		const properties = SmallEventDataController.instance.getById(SmallEventConstants.PET_FOOD.SMALL_EVENT_NAME).getProperties<PetFoodProperties>();
 		const foodType = getFoodType(player);
-		const collector = new ReactionCollectorPetFoodSmallEvent(foodType);
+		const petEntity = (await PetEntity.findByPk(player.petId))!;
+		const collector = new ReactionCollectorPetFoodSmallEvent(foodType, petEntity.sex);
 		const endCallback = getEndCallback(player, foodType, properties);
 		const collectorInstance = new ReactionCollectorInstance(
 			collector,
