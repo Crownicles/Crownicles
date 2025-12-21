@@ -26,6 +26,7 @@ import {
 import { ItemWithDetails } from "../../../../Lib/src/types/ItemWithDetails";
 import { SmallEventConstants } from "../../../../Lib/src/constants/SmallEventConstants";
 import { MissionsController } from "../missions/MissionsController";
+import { PlayerTalismansManager } from "../database/game/models/PlayerTalismans";
 
 /**
  * Check if the small event can be executed for this player
@@ -326,8 +327,9 @@ async function handlePlayerWithoutTalisman(
 	}
 
 	// All conditions met - give the talisman
-	player.hasTalisman = true;
-	await player.save();
+	const talismans = await PlayerTalismansManager.getOfPlayer(player.id);
+	talismans.hasTalisman = true;
+	await talismans.save();
 
 	response.push(makePacket(SmallEventExpeditionAdvicePacket, {
 		...basePacketData,
@@ -350,7 +352,8 @@ async function executeSmallEvent(
 ): Promise<void> {
 	await MissionsController.update(player, response, { missionId: "meetVelanna" });
 
-	if (player.hasTalisman) {
+	const talismans = await PlayerTalismansManager.getOfPlayer(player.id);
+	if (talismans.hasTalisman) {
 		await handlePlayerWithTalisman(response, player, context);
 	}
 	else {

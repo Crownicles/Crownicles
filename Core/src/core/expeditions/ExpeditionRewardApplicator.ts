@@ -4,6 +4,7 @@ import {
 import { ExpeditionRewardDataWithItem } from "./ExpeditionRewardCalculator";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import Player from "../database/game/models/Player";
+import { PlayerTalismansManager } from "../database/game/models/PlayerTalismans";
 import {
 	giveItemToPlayer, getItemByIdAndCategory
 } from "../utils/ItemUtils";
@@ -116,6 +117,8 @@ export async function applyExpeditionRewards(
 	});
 
 	if (rewards.cloneTalismanFound) {
-		player.hasCloneTalisman = true;
+		const talismans = await PlayerTalismansManager.getOfPlayer(player.id);
+		talismans.hasCloneTalisman = true;
+		await talismans.save();
 	}
 }

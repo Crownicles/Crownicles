@@ -1,6 +1,7 @@
 import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
 import { generateRandomRarity } from "./ItemUtils";
 import { PetExpeditions } from "../database/game/models/PetExpedition";
+import { PlayerTalismansManager } from "../database/game/models/PlayerTalismans";
 import Player from "../database/game/models/Player";
 import { MathUtils } from "./MathUtils";
 
@@ -34,7 +35,8 @@ export abstract class PetUtils {
 		}
 
 		// Pet is on expedition - check if clone talisman allows usage
-		if (!player.hasCloneTalisman) {
+		const talismans = await PlayerTalismansManager.getOfPlayer(player.id);
+		if (!talismans.hasCloneTalisman) {
 			// No clone talisman = pet not available while on expedition
 			return false;
 		}
@@ -54,7 +56,12 @@ export abstract class PetUtils {
 	 * @returns true if the pet is a clone (on expedition with clone talisman)
 	 */
 	static async isPetClone(player: Player): Promise<boolean> {
-		if (!player.petId || !player.hasCloneTalisman) {
+		if (!player.petId) {
+			return false;
+		}
+
+		const talismans = await PlayerTalismansManager.getOfPlayer(player.id);
+		if (!talismans.hasCloneTalisman) {
 			return false;
 		}
 

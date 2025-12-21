@@ -142,10 +142,6 @@ export class Player extends Model {
 
 	declare banned: boolean;
 
-	declare hasTalisman: boolean;
-
-	declare hasCloneTalisman: boolean;
-
 	declare updatedAt: Date;
 
 	declare createdAt: Date;
@@ -1682,14 +1678,6 @@ export function initModel(sequelize: Sequelize): void {
 			defaultValue: 0
 		},
 		banned: {
-			type: DataTypes.BOOLEAN,
-			defaultValue: false
-		},
-		hasTalisman: {
-			type: DataTypes.BOOLEAN,
-			defaultValue: false
-		},
-		hasCloneTalisman: {
 			type: DataTypes.BOOLEAN,
 			defaultValue: false
 		},
