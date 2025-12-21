@@ -13,7 +13,7 @@
     "{emote:itemNatures.4} Defensa + {{power, number}} durante las batallas",
     "{emote:itemNatures.5} Avance rápido a {{power}} cada día",
     "{emote:itemNatures.6} Dinero + {{power, number}} por día",
-    "{emote:itemNatures.7} Énergie + {{power, number}} par jour"
+    "{emote:itemNatures.7} Energía + {{power, number}} por día"
   ],
   "potionsFieldName": "Poción :",
   "potionsNatures": [
