@@ -14,6 +14,7 @@ import { Armor } from "../../data/Armor";
 import { Potion } from "../../data/Potion";
 import { ObjectItem } from "../../data/ObjectItem";
 import { InventoryInfos } from "../../core/database/game/models/InventoryInfo";
+import { PlayerTalismansManager } from "../../core/database/game/models/PlayerTalismans";
 import { MainItem } from "../../data/MainItem";
 import {
 	commandRequires, CommandUtils
@@ -38,12 +39,13 @@ export default class InventoryCommand {
 		const items = await InventorySlots.getOfPlayer(toCheckPlayer.id);
 		const invInfo = await InventoryInfos.getOfPlayer(toCheckPlayer.id);
 		const equippedPotionSlot = items.find(item => item.isPotion() && item.isEquipped());
+		const talismans = await PlayerTalismansManager.getOfPlayer(toCheckPlayer.id);
 
 		response.push(makePacket(CommandInventoryPacketRes, {
 			foundPlayer: true,
 			keycloakId: toCheckPlayer.keycloakId,
-			hasTalisman: toCheckPlayer.hasTalisman,
-			hasCloneTalisman: toCheckPlayer.hasCloneTalisman,
+			hasTalisman: talismans.hasTalisman,
+			hasCloneTalisman: talismans.hasCloneTalisman,
 			data: {
 				weapon: (items.find(item => item.isWeapon() && item.isEquipped()).getItem() as MainItem).getDisplayPacket(maxStatsValues),
 				armor: (items.find(item => item.isArmor() && item.isEquipped()).getItem() as MainItem).getDisplayPacket(maxStatsValues),

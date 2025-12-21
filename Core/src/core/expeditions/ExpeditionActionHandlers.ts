@@ -28,6 +28,7 @@ import { calculateRewardIndex } from "./ExpeditionRewardCalculator";
 import { PendingExpeditionsCache } from "./PendingExpeditionsCache";
 import { crowniclesInstance } from "../../index";
 import { ScheduledExpeditionNotifications } from "../database/game/models/ScheduledExpeditionNotification";
+import { PlayerTalismansManager } from "../database/game/models/PlayerTalismans";
 
 /**
  * Context for handling expedition selection
@@ -102,7 +103,8 @@ async function validateExpeditionSelection(
 	} = ctx;
 
 	// Validate requirements
-	if (!player.hasTalisman || !player.petId) {
+	const talismans = await PlayerTalismansManager.getOfPlayer(player.id);
+	if (!talismans.hasTalisman || !player.petId) {
 		return createExpeditionSelectFailure(ExpeditionConstants.ERROR_CODES.INVALID_STATE);
 	}
 

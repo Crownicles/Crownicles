@@ -15,6 +15,7 @@ import {
 	commandRequires, CommandUtils
 } from "../../core/utils/CommandUtils";
 import { PetExpeditions } from "../../core/database/game/models/PetExpedition";
+import { PlayerTalismansManager } from "../../core/database/game/models/PlayerTalismans";
 import {
 	ExpeditionConstants, ExpeditionLocationType
 } from "../../../../Lib/src/constants/ExpeditionConstants";
@@ -52,10 +53,15 @@ export default class PetCommand {
 			}
 		}
 
+		// Get talisman status if viewing own pet
+		const hasTalisman = isOwnerViewingOwnPet
+			? (await PlayerTalismansManager.getOfPlayer(player.id)).hasTalisman
+			: undefined;
+
 		response.push(makePacket(CommandPetPacketRes, {
 			askedKeycloakId: toCheckPlayer?.keycloakId,
 			pet: pet.asOwnedPet(),
-			hasTalisman: isOwnerViewingOwnPet ? player.hasTalisman : undefined,
+			hasTalisman,
 			expeditionInProgress: expeditionInfo
 		}));
 	}

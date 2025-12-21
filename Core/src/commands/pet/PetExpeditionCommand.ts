@@ -11,6 +11,7 @@ import {
 import {
 	PetExpedition, PetExpeditions
 } from "../../core/database/game/models/PetExpedition";
+import { PlayerTalismansManager } from "../../core/database/game/models/PlayerTalismans";
 import { PetDataController } from "../../data/Pet";
 import { ExpeditionConstants } from "../../../../Lib/src/constants/ExpeditionConstants";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
@@ -138,8 +139,8 @@ async function checkAndAwardExpeditionBadge(
 /**
  * Check basic requirements (talisman and pet)
  */
-async function checkBasicRequirements(player: Player): Promise<CommandPetExpeditionPacketRes | null> {
-	if (!player.hasTalisman) {
+async function checkBasicRequirements(player: Player, hasTalisman: boolean): Promise<CommandPetExpeditionPacketRes | null> {
+	if (!hasTalisman) {
 		return buildCannotStartResponse(ExpeditionConstants.ERROR_CODES.NO_TALISMAN, false);
 	}
 
@@ -197,8 +198,11 @@ export default class PetExpeditionCommand {
 		_packet: CommandPetExpeditionPacketReq,
 		context: PacketContext
 	): Promise<void> {
+		// Get player talismans
+		const talismans = await PlayerTalismansManager.getOfPlayer(player.id);
+
 		// Check basic requirements
-		const basicCheckResult = await checkBasicRequirements(player);
+		const basicCheckResult = await checkBasicRequirements(player, talismans.hasTalisman);
 		if (basicCheckResult) {
 			response.push(basicCheckResult);
 			return;
@@ -223,7 +227,7 @@ export default class PetExpeditionCommand {
 
 		// All requirements met - show expedition choice
 		const guildInfo = await getGuildFoodInfo(player, petModel);
-		const expeditions = generateThreeExpeditions(player.mapLinkId, player.hasCloneTalisman);
+		const expeditions = generateThreeExpeditions(player.mapLinkId, talismans.hasCloneTalisman);
 
 		// Store expeditions in cache for later retrieval
 		PendingExpeditionsCache.set(context.keycloakId, expeditions);
@@ -258,6 +262,9 @@ export default class PetExpeditionCommand {
 		const petModel = PetDataController.instance.getById(petEntity.typeId);
 		const expeditionData = activeExpedition.toExpeditionData();
 
+		// Get player talismans
+		const talismans = await PlayerTalismansManager.getOfPlayer(player.id);
+
 		// Get the required food from the stored reward index
 		const foodRequired = ExpeditionConstants.FOOD_CONSUMPTION[activeExpedition.rewardIndex];
 
@@ -273,7 +280,7 @@ export default class PetExpeditionCommand {
 			effectiveRisk,
 			expedition: expeditionData,
 			rewardIndex: activeExpedition.rewardIndex,
-			hasCloneTalisman: player.hasCloneTalisman,
+			hasCloneTalisman: talismans.hasCloneTalisman,
 			playerCurrentTokens: player.tokens
 		});
 
