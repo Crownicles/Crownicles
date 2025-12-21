@@ -31,9 +31,16 @@ export async function petFoodCollector(context: PacketContext, packet: ReactionC
 	const data = packet.data.data;
 	const lng = interaction!.userLanguage;
 
+	// Get the sex context for gendered translations
+	const sexContext = data.petSex === StringConstants.SEX.MALE.short
+		? StringConstants.SEX.MALE.long
+		: StringConstants.SEX.FEMALE.long;
+
 	const embed = new CrowniclesSmallEventEmbed(
 		SmallEventConstants.PET_FOOD.SMALL_EVENT_NAME,
-		`${i18n.t(`smallEvents:petFood.intro.${data.foodType}`, { lng })}\n\n${CrowniclesIcons.collectors.question} ${i18n.t("smallEvents:petFood.choices.investigate", { lng })}\n${CrowniclesIcons.smallEvents.pet} ${i18n.t("smallEvents:petFood.choices.sendPet", { lng })}\n${CrowniclesIcons.smallEvents.doNothing} ${i18n.t("smallEvents:petFood.choices.continue", { lng })}`,
+		`${i18n.t(`smallEvents:petFood.intro.${data.foodType}`, {
+			lng, context: sexContext
+		})}\n\n${CrowniclesIcons.collectors.question} ${i18n.t("smallEvents:petFood.choices.investigate", { lng })}\n${CrowniclesIcons.smallEvents.pet} ${i18n.t("smallEvents:petFood.choices.sendPet", { lng })}\n${CrowniclesIcons.smallEvents.doNothing} ${i18n.t("smallEvents:petFood.choices.continue", { lng })}`,
 		interaction.user,
 		lng
 	);

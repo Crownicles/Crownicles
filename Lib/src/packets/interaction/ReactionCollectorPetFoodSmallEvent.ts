@@ -4,6 +4,7 @@ import {
 	ReactionCollectorData,
 	ReactionCollectorReaction
 } from "./ReactionCollectorPacket";
+import { SexTypeShort } from "../../constants/StringConstants";
 
 export class ReactionCollectorPetFoodInvestigateReaction extends ReactionCollectorReaction {}
 export class ReactionCollectorPetFoodSendPetReaction extends ReactionCollectorReaction {}
@@ -11,6 +12,8 @@ export class ReactionCollectorPetFoodContinueReaction extends ReactionCollectorR
 
 export class ReactionCollectorPetFoodSmallEventData extends ReactionCollectorData {
 	foodType!: string;
+
+	petSex!: SexTypeShort;
 }
 
 type PetFoodSmallEventReaction = ReactionCollectorPetFoodInvestigateReaction | ReactionCollectorPetFoodSendPetReaction | ReactionCollectorPetFoodContinueReaction;
@@ -22,9 +25,12 @@ export type ReactionCollectorPetFoodSmallEventPacket = ReactionCollectorCreation
 export class ReactionCollectorPetFoodSmallEvent extends ReactionCollector {
 	private readonly foodType: string;
 
-	constructor(foodType: string) {
+	private readonly petSex: SexTypeShort;
+
+	constructor(foodType: string, petSex: SexTypeShort) {
 		super();
 		this.foodType = foodType;
+		this.petSex = petSex;
 	}
 
 	/**
@@ -43,7 +49,8 @@ export class ReactionCollectorPetFoodSmallEvent extends ReactionCollector {
 				this.buildReaction(ReactionCollectorPetFoodContinueReaction, {})
 			],
 			data: this.buildData(ReactionCollectorPetFoodSmallEventData, {
-				foodType: this.foodType
+				foodType: this.foodType,
+				petSex: this.petSex
 			})
 		};
 	}
