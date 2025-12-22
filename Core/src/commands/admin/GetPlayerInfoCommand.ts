@@ -8,6 +8,7 @@ import {
 	CommandGetPlayerInfoRes
 } from "../../../../Lib/src/packets/commands/CommandGetPlayerInfo";
 import { RightGroup } from "../../../../Lib/src/types/RightGroup";
+import { PlayerBadgesManager } from "../../core/database/game/models/PlayerBadges";
 
 /**
  * A command that returns information about a player
@@ -38,7 +39,7 @@ export default class GetPlayerInfoCommand {
 		}
 
 		if (packet.dataToGet.badges) {
-			res.data.badges = player.getBadges();
+			res.data.badges = await PlayerBadgesManager.getOfPlayer(player.id);
 		}
 
 		response.push(res);

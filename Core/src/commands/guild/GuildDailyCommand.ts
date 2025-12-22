@@ -35,6 +35,7 @@ import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
 
 const guildDailyLockManager = new LockManager();
 import { Badge } from "../../../../Lib/src/types/Badge";
+import { PlayerBadgesManager } from "../../core/database/game/models/PlayerBadges";
 
 type GuildLike = {
 	guild: Guild; members: Player[];
@@ -227,8 +228,8 @@ async function fullHealEveryMember(guildLike: GuildLike, response: CrowniclesPac
  */
 async function awardGuildBadgeToMembers(guildLike: GuildLike, response: CrowniclesPacket[], rewardPacket: CommandGuildDailyRewardPacket): Promise<void> {
 	let membersThatOwnTheBadge = 0;
-	await genericAwardingFunction(guildLike.members, member => {
-		if (!member.addBadge(Badge.POWERFUL_GUILD)) {
+	await genericAwardingFunction(guildLike.members, async member => {
+		if (!await PlayerBadgesManager.addBadge(member.id, Badge.POWERFUL_GUILD)) {
 			membersThatOwnTheBadge++;
 		}
 	});
@@ -270,8 +271,8 @@ async function awardGuildSuperBadgeToMembers(guildLike: GuildLike, response: Cro
 		return;
 	}
 
-	await genericAwardingFunction(guildLike.members, member => {
-		if (!member.addBadge(Badge.VERY_POWERFUL_GUILD)) {
+	await genericAwardingFunction(guildLike.members, async member => {
+		if (!await PlayerBadgesManager.addBadge(member.id, Badge.VERY_POWERFUL_GUILD)) {
 			membersThatOwnTheBadge++;
 		}
 	});

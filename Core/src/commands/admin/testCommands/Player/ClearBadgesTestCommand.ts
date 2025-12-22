@@ -1,6 +1,7 @@
 import {
 	ExecuteTestCommandLike, ITestCommand
 } from "../../../../core/CommandsTest";
+import { PlayerBadgesManager } from "../../../../core/database/game/models/PlayerBadges";
 
 export const commandInfo: ITestCommand = {
 	name: "clearbadges",
@@ -11,8 +12,7 @@ export const commandInfo: ITestCommand = {
  * Delete all badges of the player
  */
 const clearBadgesTestCommand: ExecuteTestCommandLike = async player => {
-	player.badges = null;
-	await player.save();
+	await PlayerBadgesManager.setBadges(player.id, []);
 	return "Vous avez supprimé vos badges !";
 };
 

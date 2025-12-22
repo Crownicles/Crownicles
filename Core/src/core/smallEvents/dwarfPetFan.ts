@@ -18,6 +18,7 @@ import { SmallEventConstants } from "../../../../Lib/src/constants/SmallEventCon
 import { MissionsController } from "../missions/MissionsController";
 import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
 import { PetUtils } from "../utils/PetUtils";
+import { PlayerBadgesManager } from "../database/game/models/PlayerBadges";
 
 /**
  * Return true if the player has a pet AND the pet is not feisty AND the dwarf never saw this pet from it
@@ -87,8 +88,8 @@ async function manageAllPetsAreSeen(response: CrowniclesPacket[], player: Player
 		return;
 	}
 
-	if (!player.hasBadge(Badge.ANIMAL_LOVER)) {
-		player.addBadge(Badge.ANIMAL_LOVER);
+	if (!await PlayerBadgesManager.hasBadge(player.id, Badge.ANIMAL_LOVER)) {
+		await PlayerBadgesManager.addBadge(player.id, Badge.ANIMAL_LOVER);
 		response.push(makePacket(SmallEventDwarfPetFanPacket, {
 			interactionName: SmallEventConstants.DWARF_PET_FAN.INTERACTIONS_NAMES.BADGE
 		}));

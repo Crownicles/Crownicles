@@ -10,7 +10,6 @@ export abstract class PlayersConstants {
 		MONEY: 0,
 		TOKENS: 10,
 		CLASS: 0,
-		BADGES: null as unknown as string,
 		GUILD_ID: null as unknown as number,
 		LAST_PET_FREE: new Date(0),
 		EFFECT: Effect.NOT_STARTED.id,

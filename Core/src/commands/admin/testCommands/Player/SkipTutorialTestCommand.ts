@@ -5,6 +5,7 @@ import {
 } from "../../../../core/CommandsTest";
 import { TravelTime } from "../../../../core/maps/TravelTime";
 import { MapLinkDataController } from "../../../../data/MapLink";
+import { PlayerBadgesManager } from "../../../../core/database/game/models/PlayerBadges";
 
 export const commandInfo: ITestCommand = {
 	name: "skiptutorial",
@@ -23,7 +24,7 @@ const skipTutorialTestCommand: ExecuteTestCommandLike = async player => {
 	player.money = 0;
 	player.defenseGloryPoints = 100;
 	player.attackGloryPoints = 100;
-	player.badges = null;
+	await PlayerBadgesManager.setBadges(player.id, []);
 	player.effectEndDate = new Date();
 	player.effectDuration = 0;
 	player.health = player.getMaxHealth();
