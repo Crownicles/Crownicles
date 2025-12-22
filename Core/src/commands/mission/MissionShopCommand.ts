@@ -58,6 +58,7 @@ import { getAiPetBehavior } from "../../core/fights/PetAssistManager";
 import { PetUtils } from "../../core/utils/PetUtils";
 import { Badge } from "../../../../Lib/src/types/Badge";
 import { DwarfPetsSeen } from "../../core/database/game/models/DwarfPetsSeen";
+import { PlayerBadgesManager } from "../../core/database/game/models/PlayerBadges";
 
 /**
  * Calculate the amount of money the player will have if he buys some with gems
@@ -249,12 +250,11 @@ function getBadgeShopItem(): ShopItem {
 		amounts: [1],
 		buyCallback: async (response: CrowniclesPacket[], playerId: number): Promise<boolean> => {
 			const player = await Players.getById(playerId);
-			if (player.hasBadge(Badge.MISSION_COMPLETER)) {
+			if (await PlayerBadgesManager.hasBadge(player.id, Badge.MISSION_COMPLETER)) {
 				response.push(makePacket(CommandMissionShopAlreadyHadBadge, {}));
 				return false;
 			}
-			player.addBadge(Badge.MISSION_COMPLETER);
-			await player.save();
+			await PlayerBadgesManager.addBadge(player.id, Badge.MISSION_COMPLETER);
 			response.push(makePacket(CommandMissionShopBadge, {}));
 			return true;
 		}

@@ -28,10 +28,10 @@ import {
 	commandRequires, CommandUtils
 } from "../../core/utils/CommandUtils";
 import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
-import { Badge } from "../../../../Lib/src/types/Badge";
 import { ClassConstants } from "../../../../Lib/src/constants/ClassConstants";
 import { Effect } from "../../../../Lib/src/types/Effect";
 import { TokensConstants } from "../../../../Lib/src/constants/TokensConstants";
+import { PlayerBadgesManager } from "../../core/database/game/models/PlayerBadges";
 
 /**
  * Get the current campaign progression of the player
@@ -151,16 +151,6 @@ function buildRankData(rank: number, numberOfPlayers: number, score: number): {
 	};
 }
 
-/**
- * Parse badges from player data
- */
-function parseBadges(badgesString: string | null): Badge[] {
-	if (!badgesString || badgesString === "") {
-		return [];
-	}
-	return badgesString.split(",") as Badge[];
-}
-
 export default class ProfileCommand {
 	@commandRequires(CommandProfilePacketReq, {
 		notBlocked: false,
@@ -198,11 +188,12 @@ export default class ProfileCommand {
 
 		const petModel = petEntity ? PetDataController.instance.getById(petEntity.typeId) : null;
 		const destinationId = toCheckPlayer.getDestinationId();
+		const badges = await PlayerBadgesManager.getOfPlayer(toCheckPlayer.id);
 
 		response.push(makePacket(CommandProfilePacketRes, {
 			keycloakId: toCheckPlayer.keycloakId,
 			playerData: {
-				badges: parseBadges(toCheckPlayer.badges),
+				badges,
 				guild: guild?.name,
 				level: toCheckPlayer.level,
 				rank: buildRankData(rank, numberOfPlayers, toCheckPlayer.score),

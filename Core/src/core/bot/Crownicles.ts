@@ -50,6 +50,7 @@ import { ScheduledDailyBonusNotifications } from "../database/game/models/Schedu
 import { ScheduledExpeditionNotifications } from "../database/game/models/ScheduledExpeditionNotification";
 import { ExpeditionFinishedNotificationPacket } from "../../../../Lib/src/packets/notifications/ExpeditionFinishedNotificationPacket";
 import { ChristmasBonusAnnouncementPacket } from "../../../../Lib/src/packets/announcements/ChristmasBonusAnnouncementPacket";
+import { PlayerBadgesManager } from "../database/game/models/PlayerBadges";
 
 export class Crownicles {
 	public readonly packetListener: PacketListenerServer;
@@ -157,7 +158,7 @@ export class Crownicles {
 		const winner = await Crownicles.findSeasonWinner();
 		if (winner !== null) {
 			PacketUtils.announce(makePacket(TopWeekFightAnnouncementPacket, { winnerKeycloakId: winner.keycloakId }), MqttTopicUtils.getDiscordTopWeekFightAnnouncementTopic(botConfig.PREFIX));
-			winner.addBadge(Badge.TOP_GLORY);
+			await PlayerBadgesManager.addBadge(winner.id, Badge.TOP_GLORY);
 			await winner.save();
 		}
 		else {
@@ -188,7 +189,7 @@ export class Crownicles {
 		});
 		if (winner !== null) {
 			PacketUtils.announce(makePacket(TopWeekAnnouncementPacket, { winnerKeycloakId: winner.keycloakId }), MqttTopicUtils.getDiscordTopWeekAnnouncementTopic(botConfig.PREFIX));
-			winner.addBadge(Badge.TOP_WEEK);
+			await PlayerBadgesManager.addBadge(winner.id, Badge.TOP_WEEK);
 			await winner.save();
 		}
 		else {

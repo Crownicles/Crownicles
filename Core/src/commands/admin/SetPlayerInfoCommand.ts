@@ -9,6 +9,7 @@ import {
 	CommandSetPlayerInfoRes
 } from "../../../../Lib/src/packets/commands/CommandSetPlayerInfo";
 import { RightGroup } from "../../../../Lib/src/types/RightGroup";
+import { PlayerBadgesManager } from "../../core/database/game/models/PlayerBadges";
 
 /**
  * A command that modify information about a player
@@ -35,7 +36,7 @@ export default class SetPlayerInfoCommand {
 		}
 
 		if (packet.dataToSet.badges) {
-			player.setBadges(packet.dataToSet.badges);
+			await PlayerBadgesManager.setBadges(player.id, packet.dataToSet.badges);
 		}
 
 		await player.save();

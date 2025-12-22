@@ -1,6 +1,7 @@
 import {
 	ExecuteTestCommandLike, ITestCommand, TypeKey
 } from "../../../../core/CommandsTest";
+import { PlayerTalismansManager } from "../../../../core/database/game/models/PlayerTalismans";
 
 export const commandInfo: ITestCommand = {
 	name: "talisman",
@@ -92,7 +93,8 @@ const talismanTestCommand: ExecuteTestCommandLike = async (player, args) => {
 	} = validateTalismanArgs(args);
 	const isGiving = action === TALISMAN_ACTIONS.GIVE;
 	const config = TALISMAN_CONFIGS[talismanType];
-	const hasTalisman = player[config.hasProperty];
+	const talismans = await PlayerTalismansManager.getOfPlayer(player.id);
+	const hasTalisman = talismans[config.hasProperty];
 
 	if (isGiving && hasTalisman) {
 		return config.alreadyHasMessage;
@@ -101,8 +103,8 @@ const talismanTestCommand: ExecuteTestCommandLike = async (player, args) => {
 		return config.doesNotHaveMessage;
 	}
 
-	player[config.hasProperty] = isGiving;
-	await player.save();
+	talismans[config.hasProperty] = isGiving;
+	await talismans.save();
 
 	return isGiving ? config.giveMessage : config.removeMessage;
 };

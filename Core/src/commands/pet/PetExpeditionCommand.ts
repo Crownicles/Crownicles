@@ -45,6 +45,7 @@ import {
 } from "../../core/expeditions/ExpeditionCollectorFactory";
 import { MissionsController } from "../../core/missions/MissionsController";
 import { MissionSlots } from "../../core/database/game/models/MissionSlot";
+import { PlayerBadgesManager } from "../../core/database/game/models/PlayerBadges";
 
 /**
  * Expedition log parameters
@@ -123,14 +124,13 @@ async function checkAndAwardExpeditionBadge(
 	player: Player,
 	expeditionSuccessful: boolean
 ): Promise<string | undefined> {
-	if (!expeditionSuccessful || player.hasBadge(Badge.EXPERT_EXPEDITEUR)) {
+	if (!expeditionSuccessful || await PlayerBadgesManager.hasBadge(player.id, Badge.EXPERT_EXPEDITEUR)) {
 		return undefined;
 	}
 
 	const successfulExpeditions = await LogsReadRequests.countSuccessfulExpeditions(player.keycloakId);
 	if (successfulExpeditions >= ExpeditionConstants.BADGE.EXPERT_EXPEDITEUR_THRESHOLD) {
-		player.addBadge(Badge.EXPERT_EXPEDITEUR);
-		await player.save();
+		await PlayerBadgesManager.addBadge(player.id, Badge.EXPERT_EXPEDITEUR);
 		return Badge.EXPERT_EXPEDITEUR;
 	}
 	return undefined;

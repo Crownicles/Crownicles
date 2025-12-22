@@ -30,6 +30,7 @@ import Guild, { Guilds } from "../database/game/models/Guild";
 import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
 import { Badge } from "../../../../Lib/src/types/Badge";
 import { PetUtils } from "../utils/PetUtils";
+import { PlayerBadgesManager } from "../database/game/models/PlayerBadges";
 
 /**
  * Check top interactions
@@ -59,12 +60,13 @@ function checkTop(otherPlayerRank: number, interactionsList: InteractOtherPlayer
  * @param otherPlayer
  * @param interactionsList
  */
-function checkBadges(otherPlayer: Player, interactionsList: InteractOtherPlayerInteraction[]): void {
-	if (otherPlayer.badges) {
-		if (otherPlayer.hasBadge(Badge.POWERFUL_GUILD) || otherPlayer.hasBadge(Badge.VERY_POWERFUL_GUILD)) {
+async function checkBadges(otherPlayer: Player, interactionsList: InteractOtherPlayerInteraction[]): Promise<void> {
+	const badges = await PlayerBadgesManager.getOfPlayer(otherPlayer.id);
+	if (badges.length > 0) {
+		if (badges.includes(Badge.POWERFUL_GUILD) || badges.includes(Badge.VERY_POWERFUL_GUILD)) {
 			interactionsList.push(InteractOtherPlayerInteraction.POWERFUL_GUILD);
 		}
-		if (otherPlayer.hasBadge(Badge.TECHNICAL_TEAM)) {
+		if (badges.includes(Badge.TECHNICAL_TEAM)) {
 			interactionsList.push(InteractOtherPlayerInteraction.STAFF_MEMBER);
 		}
 	}
@@ -272,7 +274,7 @@ async function getAvailableInteractions(otherPlayer: Player, player: Player, num
 		Players.getWeeklyRankById(otherPlayer.id)
 	]);
 	checkTop(otherPlayerRank, interactionsList);
-	checkBadges(otherPlayer, interactionsList);
+	await checkBadges(otherPlayer, interactionsList);
 	checkLevel(otherPlayer, interactionsList);
 	checkClass(otherPlayer, player, interactionsList);
 	checkGuild(otherPlayer, player, interactionsList);

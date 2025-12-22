@@ -29,6 +29,7 @@ import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
 import { PetFood } from "../../../../Lib/src/types/PetFood";
 import { Badge } from "../../../../Lib/src/types/Badge";
 import { PetUtils } from "../utils/PetUtils";
+import { PlayerBadgesManager } from "../database/game/models/PlayerBadges";
 
 /**
  * Return all possibilities the player can get on this small event.
@@ -155,12 +156,11 @@ async function managePickedInteraction(packet: SmallEventPetPacket, response: Cr
 			break;
 
 		case PetConstants.PET_INTERACTIONS_NAMES.WIN_BADGE:
-			if (player.hasBadge(Badge.LEGENDARY_PET)) {
-				packet.interactionName = PetConstants.PET_INTERACTIONS_NAMES.NOTHING;
-				break;
-			}
-			player.addBadge(Badge.LEGENDARY_PET);
+		if (await PlayerBadgesManager.hasBadge(player.id, Badge.LEGENDARY_PET)) {
+			packet.interactionName = PetConstants.PET_INTERACTIONS_NAMES.NOTHING;
 			break;
+		}
+		await PlayerBadgesManager.addBadge(player.id, Badge.LEGENDARY_PET);
 
 		case PetConstants.PET_INTERACTIONS_NAMES.LOSE_HEALTH:
 			packet.amount = RandomUtils.rangedInt(SmallEventConstants.PET.HEALTH);
