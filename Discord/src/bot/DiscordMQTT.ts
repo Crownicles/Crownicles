@@ -40,6 +40,8 @@ export class DiscordMQTT {
 
 	static topWeekFightAnnouncementMqttClient: MqttClient;
 
+	static christmasBonusAnnouncementMqttClient: MqttClient;
+
 	static packetListener: PacketListenerClient = new PacketListenerClient();
 
 	static asyncPacketSender: AsyncCorePacketSender = new AsyncCorePacketSender();
@@ -50,6 +52,7 @@ export class DiscordMQTT {
 		this.connectSubscribeAndHandleGlobal();
 		this.connectSubscribeAndHandleTopWeekAnnouncement();
 		this.connectSubscribeAndHandleTopWeekFightAnnouncement();
+		this.connectSubscribeAndHandleChristmasBonusAnnouncement();
 
 		if (isMainShard) {
 			this.connectSubscribeAndHandleNotifications();
@@ -255,6 +258,22 @@ export class DiscordMQTT {
 		});
 	}
 
+	private static handleChristmasBonusAnnouncementMqttMessage(): void {
+		DiscordMQTT.christmasBonusAnnouncementMqttClient.on("message", async (_topic, message) => {
+			if (message.toString() === "") {
+				CrowniclesLogger.debug("No Christmas bonus announcement in the MQTT topic");
+				return;
+			}
+
+			if (await DiscordAnnouncement.canAnnounce()) {
+				await DiscordAnnouncement.announceChristmasBonus(JSON.parse(message.toString()));
+
+				// Clear the announcement so it doesn't get processed again
+				DiscordMQTT.christmasBonusAnnouncementMqttClient.publish(MqttTopicUtils.getDiscordChristmasBonusAnnouncementTopic(discordConfig.PREFIX), "", { retain: true });
+			}
+		});
+	}
+
 	private static handleNotificationMqttMessage(): void {
 		DiscordMQTT.notificationMqttClient.on("message", (_topic, message) => {
 			if (message.toString() === "") {
@@ -315,6 +334,16 @@ export class DiscordMQTT {
 		});
 
 		this.handleTopWeekFightAnnouncementMqttMessage();
+	}
+
+	private static connectSubscribeAndHandleChristmasBonusAnnouncement(): void {
+		DiscordMQTT.christmasBonusAnnouncementMqttClient = connect(discordConfig.MQTT_HOST, DEFAULT_MQTT_CLIENT_OPTIONS);
+
+		DiscordMQTT.christmasBonusAnnouncementMqttClient.on("connect", () => {
+			DiscordMQTT.subscribeTo(DiscordMQTT.christmasBonusAnnouncementMqttClient, MqttTopicUtils.getDiscordChristmasBonusAnnouncementTopic(discordConfig.PREFIX), false);
+		});
+
+		this.handleChristmasBonusAnnouncementMqttMessage();
 	}
 
 	private static connectSubscribeAndHandleNotifications(): void {

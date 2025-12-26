@@ -7,6 +7,8 @@ export abstract class MqttTopicUtils {
 
 	private static readonly DISCORD_TOP_WEEK_FIGHT_ANNOUNCEMENT_TOPIC = "crownicles_discord_top_week_fight_announcement";
 
+	private static readonly DISCORD_CHRISTMAS_BONUS_ANNOUNCEMENT_TOPIC = "crownicles_discord_christmas_bonus_announcement";
+
 	private static readonly NOTIFICATIONS = "crownicles_notifications";
 
 	private static readonly NOTIFICATIONS_CONSUMER = "notifications-consumer";
@@ -30,6 +32,10 @@ export abstract class MqttTopicUtils {
 
 	static getDiscordTopWeekFightAnnouncementTopic(prefix: string): string {
 		return `${prefix}/${MqttTopicUtils.DISCORD_TOP_WEEK_FIGHT_ANNOUNCEMENT_TOPIC}`;
+	}
+
+	static getDiscordChristmasBonusAnnouncementTopic(prefix: string): string {
+		return `${prefix}/${MqttTopicUtils.DISCORD_CHRISTMAS_BONUS_ANNOUNCEMENT_TOPIC}`;
 	}
 
 	static getNotificationsTopic(prefix: string): string {
