@@ -24,6 +24,7 @@ import { Effect } from "../../../../Lib/src/types/Effect";
 import {
 	HEAL_VALIDATION_REASONS
 } from "../../core/report/ReportValidationConstants";
+import { TokensConstants } from "../../../../Lib/src/constants/TokensConstants";
 
 // Import refactored services
 import { sendTravelPath } from "../../core/report/ReportTravelService";
@@ -57,6 +58,20 @@ async function needSmallEvent(player: Player, date: Date): Promise<boolean> {
 	return (await TravelTime.getTravelData(player, date)).nextSmallEventTime <= date.valueOf();
 }
 
+/**
+ * Check for missions that can be completed passively (without player action).
+ * Currently checks:
+ * - maxTokensReached: if tokens have passively reached max (e.g., from 3 free daily tokens)
+ * @param player - The player whose passive missions to check
+ * @param response - The response packets
+ */
+async function checkPassiveMissions(player: Player, response: CrowniclesPacket[]): Promise<void> {
+	// Check if tokens are at max - mission may have been completed passively through daily free tokens
+	if (player.level >= TokensConstants.LEVEL_TO_UNLOCK && player.tokens >= TokensConstants.MAX) {
+		await MissionsController.update(player, response, { missionId: "maxTokensReached" });
+	}
+}
+
 export default class ReportCommand {
 	@commandRequires(CommandReportPacketReq, {
 		notBlocked: true,
@@ -83,6 +98,9 @@ export default class ReportCommand {
 		);
 
 		await MissionsController.update(player, response, { missionId: "commandReport" });
+
+		// Check for passively completable missions (e.g., tokens reaching max from daily free tokens)
+		await checkPassiveMissions(player, response);
 
 		const currentDate = new Date();
 
