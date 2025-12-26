@@ -243,6 +243,11 @@ export class CommandPetExpeditionCancelPacketRes extends CrowniclesPacket {
 	loveLost!: number;
 
 	/**
+	 * Whether this was the first (free) cancellation of the week
+	 */
+	isFreeCancellation!: boolean;
+
+	/**
 	 * Pet information for display
 	 */
 	pet!: PetBasicInfo;

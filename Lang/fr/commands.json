@@ -188,6 +188,9 @@
       "verySlow_male": "\n\n{emote:expedition.slow} *Votre compagnon se déplace avec une lenteur déconcertante, s'arrêtant fréquemment pour renifler les environs. L'expédition sera bien plus longue que prévu...*",
       "verySlow_female": "\n\n{emote:expedition.slow} *Votre compagne se déplace avec une lenteur déconcertante, s'arrêtant fréquemment pour renifler les environs. L'expédition sera bien plus longue que prévu...*"
     },
+    "freeCancelledTitle": "{{pseudo}}, départ annulé",
+    "freeCancelled_male": "{{petDisplay}} penche la tête sur le côté, un peu déçu mais compréhensif. Après tout, ce n'est que partie remise ! Il trotte joyeusement vers vous, prêt à repartir dès que vous le souhaiterez.\n\n{emote:collectors.warning} *Attention : les prochaines annulations cette semaine feront perdre des points d'amour à votre familier.*",
+    "freeCancelled_female": "{{petDisplay}} penche la tête sur le côté, un peu déçue mais compréhensive. Après tout, ce n'est que partie remise ! Elle trotte joyeusement vers vous, prête à repartir dès que vous le souhaiterez.\n\n{emote:collectors.warning} *Attention : les prochaines annulations cette semaine feront perdre des points d'amour à votre familier.*",
     "cancelledTitle": "{{pseudo}}, départ annulé",
     "cancelled_male": "Voyant votre hésitation, {{petDisplay}} baisse la tête, déçu. Il pensait partir à l'aventure... Vous sentez que la confiance entre vous s'effrite légèrement. Votre compagnon vous lance un regard blessé avant de s'éloigner, la queue basse.",
     "cancelled_female": "Voyant votre hésitation, {{petDisplay}} baisse la tête, déçue. Elle pensait partir à l'aventure... Vous sentez que la confiance entre vous s'effrite légèrement. Votre compagne vous lance un regard blessé avant de s'éloigner, la queue basse.",

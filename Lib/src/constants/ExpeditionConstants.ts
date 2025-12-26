@@ -230,7 +230,7 @@ export abstract class ExpeditionConstants {
 	static readonly LOVE_CHANGES = {
 		CANCEL_BEFORE_DEPARTURE_BASE: -15,
 		RECALL_DURING_EXPEDITION: -25,
-		TOTAL_FAILURE: -10,
+		TOTAL_FAILURE: -3,
 		TOTAL_SUCCESS: 5
 	};
 

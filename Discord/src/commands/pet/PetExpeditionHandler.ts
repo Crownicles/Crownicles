@@ -196,6 +196,11 @@ const EXPEDITION_CANCEL_KEYS: ExpeditionLoveLossKeys = {
 	description: "commands:petExpedition.cancelled"
 };
 
+const EXPEDITION_FREE_CANCEL_KEYS: ExpeditionLoveLossKeys = {
+	title: "commands:petExpedition.freeCancelledTitle",
+	description: "commands:petExpedition.freeCancelled"
+};
+
 const EXPEDITION_RECALL_KEYS: ExpeditionLoveLossKeys = {
 	title: "commands:petExpedition.recalledTitle",
 	description: "commands:petExpedition.recalled"
@@ -241,7 +246,8 @@ export async function handleExpeditionCancelRes(
 	context: PacketContext,
 	packet: CommandPetExpeditionCancelPacketRes
 ): Promise<void> {
-	await handleExpeditionLoveLossResponse(context, packet, EXPEDITION_CANCEL_KEYS);
+	const keys = packet.isFreeCancellation ? EXPEDITION_FREE_CANCEL_KEYS : EXPEDITION_CANCEL_KEYS;
+	await handleExpeditionLoveLossResponse(context, packet, keys);
 }
 
 /**
