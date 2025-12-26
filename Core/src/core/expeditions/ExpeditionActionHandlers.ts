@@ -64,10 +64,10 @@ function foodPlanToDetails(plan: FoodConsumptionPlan): FoodConsumptionDetail[] {
 
 /**
  * Calculate progressive love loss based on recent cancellations
- * Love lost = base * (1 + recentCancellations), capped at MAX_CANCELLATION_LOVE_LOSS
+ * First cancellation of the week is free, then Love lost = base * recentCancellations, capped at MAX_CANCELLATION_LOVE_LOSS
  */
 function calculateProgressiveLoveLoss(baseLoveLost: number, recentCancellations: number): number {
-	const loveLost = Math.abs(baseLoveLost) * (1 + recentCancellations);
+	const loveLost = Math.abs(baseLoveLost) * recentCancellations;
 	return Math.min(loveLost, ExpeditionConstants.CAPS.MAX_CANCELLATION_LOVE_LOSS);
 }
 
@@ -324,17 +324,23 @@ export async function handleExpeditionCancel(
 		loveChange
 	).then();
 
-	// Apply love loss for cancellation
-	await petEntity.changeLovePoints({
-		player,
-		amount: loveChange,
-		response,
-		reason: NumberChangeReason.SMALL_EVENT
-	});
-	await petEntity.save();
+	// Determine if this is a free cancellation
+	const isFreeCancellation = recentCancellations === 0;
+
+	// Apply love loss for cancellation (only if not free)
+	if (!isFreeCancellation) {
+		await petEntity.changeLovePoints({
+			player,
+			amount: loveChange,
+			response,
+			reason: NumberChangeReason.SMALL_EVENT
+		});
+		await petEntity.save();
+	}
 
 	response.push(makePacket(CommandPetExpeditionCancelPacketRes, {
 		loveLost,
+		isFreeCancellation,
 		pet: petEntity.getBasicInfo()
 	}));
 }
