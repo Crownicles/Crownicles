@@ -7,6 +7,7 @@ import { TopWeekAnnouncementPacket } from "../../../Lib/src/packets/announcement
 import { LANGUAGE } from "../../../Lib/src/Language";
 import { KeycloakUtils } from "../../../Lib/src/keycloak/KeycloakUtils";
 import { TopWeekFightAnnouncementPacket } from "../../../Lib/src/packets/announcements/TopWeekFightAnnouncementPacket";
+import { ChristmasBonusAnnouncementPacket } from "../../../Lib/src/packets/announcements/ChristmasBonusAnnouncementPacket";
 import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 import { CrowniclesLogger } from "../../../Lib/src/logs/CrowniclesLogger";
 import { escapeUsername } from "../utils/StringUtils";
@@ -26,6 +27,23 @@ export abstract class DiscordAnnouncement {
 		}
 		catch (e) {
 			CrowniclesLogger.errorWithObj("Error while sending top announcement in english channel", e);
+		}
+	}
+
+	private static async announceChristmas(messageFr: string, messageEn: string): Promise<void> {
+		try {
+			const frenchChannel = await crowniclesClient!.channels.fetch(discordConfig.FRENCH_ANNOUNCEMENT_CHANNEL_ID);
+			await (frenchChannel as TextChannel).send({ content: messageFr });
+		}
+		catch (e) {
+			CrowniclesLogger.errorWithObj("Error while sending Christmas announcement in french channel", e);
+		}
+		try {
+			const englishChannel = await crowniclesClient!.channels.fetch(discordConfig.ENGLISH_ANNOUNCEMENT_CHANNEL_ID);
+			await (englishChannel as TextChannel).send({ content: messageEn });
+		}
+		catch (e) {
+			CrowniclesLogger.errorWithObj("Error while sending Christmas announcement in english channel", e);
 		}
 	}
 
@@ -86,5 +104,13 @@ export abstract class DiscordAnnouncement {
 			const messageEn = i18n.t("bot:seasonEndAnnouncementNoWinner", { lng: LANGUAGE.ENGLISH });
 			await this.announceTop(messageFr, messageEn);
 		}
+	}
+
+	static async announceChristmasBonus(packet: ChristmasBonusAnnouncementPacket): Promise<void> {
+		CrowniclesLogger.info(`Announcing Christmas bonus (preAnnouncement: ${packet.isPreAnnouncement})...`);
+		const translationKey = packet.isPreAnnouncement ? "bot:christmasBonusPreAnnouncement" : "bot:christmasBonusApplied";
+		const messageFr = i18n.t(translationKey, { lng: LANGUAGE.FRENCH });
+		const messageEn = i18n.t(translationKey, { lng: LANGUAGE.ENGLISH });
+		await this.announceChristmas(messageFr, messageEn);
 	}
 }
