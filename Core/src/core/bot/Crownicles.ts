@@ -39,13 +39,14 @@ import { Badge } from "../../../../Lib/src/types/Badge";
 import { FightsManager } from "../fights/FightsManager";
 import { TokensConstants } from "../../../../Lib/src/constants/TokensConstants";
 import {
-	DayOfTheWeek, setDailyCronJob, setWeeklyCronJob
+	DayOfTheWeek, setDailyCronJob, setWeeklyCronJob, setYearlyCronJob, shouldRunYearlyEventImmediately
 } from "../utils/CronInterface";
 import { EnergyFullNotificationPacket } from "../../../../Lib/src/packets/notifications/EnergyFullNotificationPacket";
 import { DailyBonusNotificationPacket } from "../../../../Lib/src/packets/notifications/DailyBonusNotificationPacket";
 import { ScheduledDailyBonusNotifications } from "../database/game/models/ScheduledDailyBonusNotification";
 import { ScheduledExpeditionNotifications } from "../database/game/models/ScheduledExpeditionNotification";
 import { ExpeditionFinishedNotificationPacket } from "../../../../Lib/src/packets/notifications/ExpeditionFinishedNotificationPacket";
+import { ChristmasBonusAnnouncementPacket } from "../../../../Lib/src/packets/announcements/ChristmasBonusAnnouncementPacket";
 
 export class Crownicles {
 	public readonly packetListener: PacketListenerServer;
@@ -390,6 +391,72 @@ export class Crownicles {
 		setTimeout(Crownicles.expeditionNotifications, TimeoutFunctionsConstants.REPORT_NOTIFICATIONS);
 	}
 
+	/**
+	 * Christmas bonus constants
+	 */
+	private static readonly CHRISTMAS = {
+		/** Delay in milliseconds between announcement and bonus when both run immediately (4 hours) */
+		IMMEDIATE_DELAY_MS: 4 * 60 * 60 * 1000,
+
+		/** Schedule for the pre-announcement at 12:00 on December 25th */
+		PRE_ANNOUNCEMENT_SCHEDULE: {
+			month: 12,
+			day: 25,
+			hour: 12
+		},
+
+		/** Schedule for the bonus at 16:00 on December 25th */
+		BONUS_SCHEDULE: {
+			month: 12,
+			day: 25,
+			hour: 16
+		}
+	};
+
+	/**
+	 * Send a pre-announcement for the Christmas bonus (a few hours before)
+	 */
+	static christmasPreAnnouncement(): void {
+		if (!PacketUtils.isMqttConnected()) {
+			CrowniclesLogger.error("MQTT is not connected, can't announce Christmas bonus. Trying again in 1 minute");
+			setTimeout(Crownicles.christmasPreAnnouncement, 60000);
+			return;
+		}
+
+		CrowniclesLogger.info("Sending Christmas pre-announcement...");
+		PacketUtils.announce(
+			makePacket(ChristmasBonusAnnouncementPacket, { isPreAnnouncement: true }),
+			MqttTopicUtils.getDiscordChristmasBonusAnnouncementTopic(botConfig.PREFIX)
+		);
+	}
+
+	/**
+	 * Apply the Christmas bonus: set all players' tokens to max and announce it
+	 */
+	static async christmasBonus(): Promise<void> {
+		if (!PacketUtils.isMqttConnected()) {
+			CrowniclesLogger.error("MQTT is not connected, can't apply Christmas bonus. Trying again in 1 minute");
+			setTimeout(Crownicles.christmasBonus, 60000);
+			return;
+		}
+
+		CrowniclesLogger.info("Applying Christmas token bonus to all players...");
+
+		// Set all players' tokens to maximum
+		await Player.update(
+			{ tokens: TokensConstants.MAX },
+			{ where: {} }
+		);
+
+		// Announce the bonus
+		PacketUtils.announce(
+			makePacket(ChristmasBonusAnnouncementPacket, { isPreAnnouncement: false }),
+			MqttTopicUtils.getDiscordChristmasBonusAnnouncementTopic(botConfig.PREFIX)
+		);
+
+		CrowniclesLogger.info("Christmas token bonus applied to all players!");
+	}
+
 
 	/**
 	 * Sets the maintenance mode of the bot
@@ -454,5 +521,35 @@ export class Crownicles {
 		await setDailyCronJob(Crownicles.dailyTimeout, await Settings.NEXT_DAILY_RESET.getValue() < Date.now());
 		await setWeeklyCronJob(Crownicles.seasonEnd, await Settings.NEXT_SEASON_RESET.getValue() < Date.now(), DayOfTheWeek.SUNDAY);
 		await setWeeklyCronJob(Crownicles.weeklyTimeout, await Settings.NEXT_WEEKLY_RESET.getValue() < Date.now(), DayOfTheWeek.MONDAY);
+
+		// Christmas bonus events (yearly - both on Dec 25th: announcement at 12:00, bonus at 16:00)
+		const shouldRunPreAnnouncement = shouldRunYearlyEventImmediately(Crownicles.CHRISTMAS.PRE_ANNOUNCEMENT_SCHEDULE);
+		const shouldRunBonus = shouldRunYearlyEventImmediately(Crownicles.CHRISTMAS.BONUS_SCHEDULE);
+
+		await setYearlyCronJob(
+			Crownicles.christmasPreAnnouncement,
+			shouldRunPreAnnouncement,
+			Crownicles.CHRISTMAS.PRE_ANNOUNCEMENT_SCHEDULE
+		);
+
+		// If both events should run immediately, delay the bonus by 4 hours after the announcement
+		if (shouldRunPreAnnouncement && shouldRunBonus) {
+			CrowniclesLogger.info(`Christmas bonus will be applied in ${Crownicles.CHRISTMAS.IMMEDIATE_DELAY_MS / 1000 / 60 / 60} hours (delayed from immediate execution)`);
+			setTimeout(Crownicles.christmasBonus, Crownicles.CHRISTMAS.IMMEDIATE_DELAY_MS);
+
+			// Still set up the yearly cron for future years, but don't run immediately
+			await setYearlyCronJob(
+				Crownicles.christmasBonus,
+				false, // Don't run immediately, we already scheduled it with setTimeout
+				Crownicles.CHRISTMAS.BONUS_SCHEDULE
+			);
+		}
+		else {
+			await setYearlyCronJob(
+				Crownicles.christmasBonus,
+				shouldRunBonus,
+				Crownicles.CHRISTMAS.BONUS_SCHEDULE
+			);
+		}
 	}
 }
