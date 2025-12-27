@@ -61,7 +61,11 @@ async function needSmallEvent(player: Player, date: Date): Promise<boolean> {
 /**
  * Check for missions that can be completed passively (without player action).
  * Currently checks:
- * - maxTokensReached: if tokens have passively reached max (e.g., from 3 free daily tokens)
+ * - maxTokensReached: if tokens have passively reached max (e.g., from daily free tokens via bulk SQL update)
+ *
+ * Note: Daily free tokens are added via Sequelize.literal bulk update which bypasses Player.addTokens,
+ * so we need to check for maxTokensReached here when the player does a report.
+ *
  * @param player - The player whose passive missions to check
  * @param response - The response packets
  */
