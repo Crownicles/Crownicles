@@ -421,6 +421,14 @@ export class Crownicles {
 			return;
 		}
 
+		// Check if we already applied the bonus this year
+		const currentYear = new Date().getFullYear();
+		const lastBonusYear = await Settings.LAST_CHRISTMAS_BONUS_YEAR.getValue();
+		if (lastBonusYear >= currentYear) {
+			CrowniclesLogger.info(`Christmas bonus already applied for year ${currentYear}, skipping...`);
+			return;
+		}
+
 		CrowniclesLogger.info("Applying Christmas token bonus to all players...");
 
 		// Set all players' tokens to maximum
@@ -428,6 +436,9 @@ export class Crownicles {
 			{ tokens: TokensConstants.MAX },
 			{ where: {} }
 		);
+
+		// Save the year to prevent duplicate execution
+		await Settings.LAST_CHRISTMAS_BONUS_YEAR.setValue(currentYear);
 
 		// Announce the bonus
 		PacketUtils.announce(
@@ -504,8 +515,17 @@ export class Crownicles {
 		await setWeeklyCronJob(Crownicles.weeklyTimeout, await Settings.NEXT_WEEKLY_RESET.getValue() < Date.now(), DayOfTheWeek.MONDAY);
 
 		// Christmas bonus events (yearly - both on Dec 25th: announcement at 12:00, bonus at 16:00)
-		const shouldRunPreAnnouncement = shouldRunYearlyEventImmediately(ChristmasConstants.PRE_ANNOUNCEMENT_SCHEDULE);
-		const shouldRunBonus = shouldRunYearlyEventImmediately(ChristmasConstants.BONUS_SCHEDULE);
+		// Check if we already applied the bonus this year before deciding to run immediately
+		const currentYear = new Date().getFullYear();
+		const lastBonusYear = await Settings.LAST_CHRISTMAS_BONUS_YEAR.getValue();
+		const alreadyDoneThisYear = lastBonusYear >= currentYear;
+
+		const shouldRunPreAnnouncement = !alreadyDoneThisYear && shouldRunYearlyEventImmediately(ChristmasConstants.PRE_ANNOUNCEMENT_SCHEDULE);
+		const shouldRunBonus = !alreadyDoneThisYear && shouldRunYearlyEventImmediately(ChristmasConstants.BONUS_SCHEDULE);
+
+		if (alreadyDoneThisYear) {
+			CrowniclesLogger.info(`Christmas bonus already applied for year ${currentYear}, skipping immediate execution`);
+		}
 
 		await setYearlyCronJob(
 			Crownicles.christmasPreAnnouncement,
