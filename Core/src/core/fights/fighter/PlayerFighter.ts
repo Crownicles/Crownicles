@@ -1,8 +1,7 @@
-import { Fighter } from "./Fighter";
+import { PlayerBaseFighter } from "./PlayerBaseFighter";
 import Player from "../../database/game/models/Player";
 import { InventorySlots } from "../../database/game/models/InventorySlot";
 import { PlayerActiveObjects } from "../../database/game/models/PlayerActiveObjects";
-import { checkDrinkPotionMissions } from "../../utils/ItemUtils";
 import { BlockingUtils } from "../../utils/BlockingUtils";
 import { BlockingConstants } from "../../../../../Lib/src/constants/BlockingConstants";
 import { FightView } from "../FightView";
@@ -19,45 +18,25 @@ import {
 	FightAction, FightActionDataController
 } from "../../../data/FightAction";
 import { CrowniclesPacket } from "../../../../../Lib/src/packets/CrowniclesPacket";
-import { Potion } from "../../../data/Potion";
-import PetEntity, { PetEntities } from "../../database/game/models/PetEntity";
-import {
-	FightConstants, FightRole
-} from "../../../../../Lib/src/constants/FightConstants";
-import { InventoryConstants } from "../../../../../Lib/src/constants/InventoryConstants";
+import { PetEntities } from "../../database/game/models/PetEntity";
+import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
 import { PetConstants } from "../../../../../Lib/src/constants/PetConstants";
 import { PetUtils } from "../../utils/PetUtils";
 
 /**
  * Fighter
- * Class representing a player in a fight
+ * Class representing a human-controlled player in a fight
  */
-export class PlayerFighter extends Fighter {
-	public player: Player;
-
-	public pet?: PetEntity;
-
+export class PlayerFighter extends PlayerBaseFighter {
 	private pveMembers: {
 		attack: number; speed: number;
 	}[];
 
 	private petAssisted: boolean;
 
-	private fightRole: FightRole = FightConstants.FIGHT_ROLES.ATTACKER;
-
 	public constructor(player: Player, playerClass: Class) {
-		super(player.level, FightActionDataController.instance.getListById(playerClass.fightActionsIds));
-		this.player = player;
+		super(player, FightActionDataController.instance.getListById(playerClass.fightActionsIds));
 		this.petAssisted = false;
-	}
-
-	/**
-	 * Set the fight role (attacker or defender)
-	 * This affects whether the pet can participate if on expedition
-	 * @param role The role of the fighter in this fight
-	 */
-	public setFightRole(role: FightRole): void {
-		this.fightRole = role;
 	}
 
 	/**
@@ -83,7 +62,7 @@ export class PlayerFighter extends Fighter {
 	async startFight(_fightView: FightView, startStatus: FighterStatus, response: CrowniclesPacket[]): Promise<void> {
 		this.status = startStatus;
 
-		await this.consumePotionIfNeeded(response);
+		await this.consumeFightPotionIfNeeded(response, FightConstants.POTION_NO_DRINK_PROBABILITY.PLAYER);
 		this.block();
 	}
 
@@ -161,26 +140,6 @@ export class PlayerFighter extends Fighter {
 				this.pet = await PetEntities.getById(this.player.petId);
 			}
 		}
-	}
-
-	/**
-	 * Delete the potion from the inventory of the player if needed
-	 * @param response
-	 */
-	public async consumePotionIfNeeded(response: CrowniclesPacket[]): Promise<void> {
-		// Potions have a chance of not being consumed
-		if (RandomUtils.crowniclesRandom.realZeroToOneInclusive() < FightConstants.POTION_NO_DRINK_PROBABILITY.PLAYER) {
-			return;
-		}
-		const inventorySlots = await InventorySlots.getOfPlayer(this.player.id);
-		const drankPotion = inventorySlots.find(slot => slot.isPotion() && slot.isEquipped())
-			.getItem() as Potion;
-		if (!drankPotion.isFightPotion()) {
-			return;
-		}
-		await this.player.drinkPotion(InventoryConstants.DEFAULT_SLOT_VALUE);
-		await this.player.save();
-		await checkDrinkPotionMissions(response, this.player, drankPotion, await InventorySlots.getOfPlayer(this.player.id));
 	}
 
 	/**

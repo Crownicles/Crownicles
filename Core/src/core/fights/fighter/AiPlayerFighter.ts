@@ -1,8 +1,6 @@
-import { Fighter } from "./Fighter";
+import { PlayerBaseFighter } from "./PlayerBaseFighter";
 import { Player } from "../../database/game/models/Player";
-import {
-	InventorySlot, InventorySlots
-} from "../../database/game/models/InventorySlot";
+import { InventorySlots } from "../../database/game/models/InventorySlot";
 import { PlayerActiveObjects } from "../../database/game/models/PlayerActiveObjects";
 import { FightView } from "../FightView";
 import { RandomUtils } from "../../../../../Lib/src/utils/RandomUtils";
@@ -16,11 +14,7 @@ import {
 } from "../AiBehaviorController";
 import PetEntity, { PetEntities } from "../../database/game/models/PetEntity";
 import { FighterStatus } from "../FighterStatus";
-import { Potion } from "../../../data/Potion";
-import { checkDrinkPotionMissions } from "../../utils/ItemUtils";
-import {
-	FightConstants, FightRole
-} from "../../../../../Lib/src/constants/FightConstants";
+import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
 import { PetConstants } from "../../../../../Lib/src/constants/PetConstants";
 import { PetUtils } from "../../utils/PetUtils";
 
@@ -32,13 +26,9 @@ type AiPlayerFighterOptions = {
 
 /**
  * Fighter
- * Class representing a player in a fight
+ * Class representing an AI-controlled player in a fight
  */
-export class AiPlayerFighter extends Fighter {
-	public player: Player;
-
-	public pet?: PetEntity;
-
+export class AiPlayerFighter extends PlayerBaseFighter {
 	private class: Class;
 
 	private readonly classBehavior: ClassBehavior;
@@ -51,25 +41,14 @@ export class AiPlayerFighter extends Fighter {
 
 	private readonly preloadedPetEntity?: PetEntity | null;
 
-	private fightRole: FightRole = FightConstants.FIGHT_ROLES.DEFENDER;
-
 	public constructor(player: Player, playerClass: Class, options: AiPlayerFighterOptions = {}) {
-		super(player.level, FightActionDataController.instance.getListById(playerClass.fightActionsIds));
-		this.player = player;
+		super(player, FightActionDataController.instance.getListById(playerClass.fightActionsIds));
+		this.fightRole = FightConstants.FIGHT_ROLES.DEFENDER;
 		this.class = playerClass;
 		this.classBehavior = getAiClassBehavior(playerClass.id);
 		this.allowPotionConsumption = options.allowPotionConsumption ?? true;
 		this.preloadedActiveObjects = options.preloadedActiveObjects;
 		this.preloadedPetEntity = options.preloadedPetEntity;
-	}
-
-	/**
-	 * Set the fight role (attacker or defender)
-	 * This affects whether the pet can participate if on expedition
-	 * @param role The role of the fighter in this fight
-	 */
-	public setFightRole(role: FightRole): void {
-		this.fightRole = role;
 	}
 
 	/**
@@ -80,52 +59,9 @@ export class AiPlayerFighter extends Fighter {
 	 */
 	async startFight(_fightView: FightView, startStatus: FighterStatus, response: CrowniclesPacket[]): Promise<void> {
 		this.status = startStatus;
-		await this.consumePotionIfNeeded(response);
-	}
-
-	/**
-	 * Get the current remaining usages for a potion slot
-	 * @param potionSlot The inventory slot containing the potion
-	 * @param potion The potion data
-	 * @returns The current remaining usages
-	 */
-	private getRemainingUsages(potionSlot: InstanceType<typeof InventorySlot>, potion: Potion): number {
-		const storedUsages = potionSlot.remainingPotionUsages;
-		if (storedUsages && storedUsages > 0) {
-			return storedUsages;
+		if (this.allowPotionConsumption) {
+			await this.consumeFightPotionIfNeeded(response, 0);
 		}
-		return potion.usages || 1;
-	}
-
-	/**
-	 * Delete the potion from the inventory of the player if needed
-	 * @param response
-	 */
-	public async consumePotionIfNeeded(response: CrowniclesPacket[]): Promise<void> {
-		if (!this.allowPotionConsumption) {
-			return;
-		}
-		const inventorySlots = await InventorySlots.getOfPlayer(this.player.id);
-		const potionSlot = inventorySlots.find(slot => slot.isPotion() && slot.isEquipped());
-		if (!potionSlot) {
-			return;
-		}
-
-		const drankPotion = potionSlot.getItem() as Potion;
-		if (!drankPotion.isFightPotion()) {
-			return;
-		}
-
-		const currentUsages = this.getRemainingUsages(potionSlot, drankPotion) - 1;
-		if (currentUsages > 0) {
-			potionSlot.remainingPotionUsages = currentUsages;
-			await potionSlot.save();
-		}
-		else {
-			await this.player.drinkPotion(potionSlot.slot);
-			await this.player.save();
-		}
-		await checkDrinkPotionMissions(response, this.player, drankPotion, await InventorySlots.getOfPlayer(this.player.id));
 	}
 
 
