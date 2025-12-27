@@ -20,8 +20,8 @@ export abstract class FightConstants {
 	};
 
 	static readonly POTION_NO_DRINK_PROBABILITY = {
-		PLAYER: 0.3,
-		AI: 0.85
+		PLAYER: 0,
+		AI: 0.1
 	};
 
 	// Random variation of the damage a fight action will deal (between -this value and +this value)

@@ -54,10 +54,10 @@ export abstract class PlayerBaseFighter extends Fighter {
 	/**
 	 * Consume a fight potion if applicable, decrementing usage count
 	 * @param response The response packets
-	 * @param noDrinkProbability Probability that the potion won't be consumed
+	 * @param skipProbability Probability that the potion consumption will be skipped (0 = always consume, 1 = never consume)
 	 */
-	protected async consumeFightPotionIfNeeded(response: CrowniclesPacket[], noDrinkProbability: number): Promise<void> {
-		if (Math.random() < noDrinkProbability) {
+	protected async consumeFightPotionIfNeeded(response: CrowniclesPacket[], skipProbability: number): Promise<void> {
+		if (Math.random() < skipProbability) {
 			return;
 		}
 
@@ -81,6 +81,6 @@ export abstract class PlayerBaseFighter extends Fighter {
 			await this.player.drinkPotion(potionSlot.slot);
 			await this.player.save();
 		}
-		await checkDrinkPotionMissions(response, this.player, drankPotion, await InventorySlots.getOfPlayer(this.player.id));
+		await checkDrinkPotionMissions(response, this.player, drankPotion, inventorySlots);
 	}
 }
