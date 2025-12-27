@@ -1,6 +1,8 @@
 import { Fighter } from "./Fighter";
 import { Player } from "../../database/game/models/Player";
-import { InventorySlots } from "../../database/game/models/InventorySlot";
+import {
+	InventorySlot, InventorySlots
+} from "../../database/game/models/InventorySlot";
 import { PlayerActiveObjects } from "../../database/game/models/PlayerActiveObjects";
 import { FightView } from "../FightView";
 import { RandomUtils } from "../../../../../Lib/src/utils/RandomUtils";
@@ -82,6 +84,20 @@ export class AiPlayerFighter extends Fighter {
 	}
 
 	/**
+	 * Get the current remaining usages for a potion slot
+	 * @param potionSlot The inventory slot containing the potion
+	 * @param potion The potion data
+	 * @returns The current remaining usages
+	 */
+	private getRemainingUsages(potionSlot: InstanceType<typeof InventorySlot>, potion: Potion): number {
+		const storedUsages = potionSlot.remainingPotionUsages;
+		if (storedUsages && storedUsages > 0) {
+			return storedUsages;
+		}
+		return potion.usages || 1;
+	}
+
+	/**
 	 * Delete the potion from the inventory of the player if needed
 	 * @param response
 	 */
@@ -99,11 +115,8 @@ export class AiPlayerFighter extends Fighter {
 		if (!drankPotion.isFightPotion()) {
 			return;
 		}
-		let currentUsages = potionSlot.remainingPotionUsages;
-		if (currentUsages === undefined || currentUsages === null || currentUsages <= 0) {
-			currentUsages = drankPotion.usages || 1;
-		}
-		currentUsages--;
+
+		const currentUsages = this.getRemainingUsages(potionSlot, drankPotion) - 1;
 		if (currentUsages > 0) {
 			potionSlot.remainingPotionUsages = currentUsages;
 			await potionSlot.save();
