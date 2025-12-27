@@ -38,6 +38,8 @@ export interface SupportItemDisplayPacket {
 	power: number;
 	maxPower: number;
 	itemCategory: number;
+	usages?: number;
+	maxUsages?: number;
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)

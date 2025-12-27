@@ -120,15 +120,22 @@ export class DiscordItemUtils {
 	}
 
 	static getPotionField(displayPacket: SupportItemDisplayPacket, lng: Language): EmbedField {
+		let value = i18n.t(`items:potionsNatures.${displayPacket.nature}`, {
+			lng,
+			power: displayPacket.nature === ItemNature.TIME_SPEEDUP ? i18n.formatDuration(displayPacket.power, lng) : displayPacket.power
+		});
+		if (displayPacket.maxUsages && displayPacket.maxUsages > 1) {
+			const current = displayPacket.usages !== undefined && displayPacket.usages !== null
+				? displayPacket.usages
+				: displayPacket.maxUsages;
+			value = `**${current}/${displayPacket.maxUsages}** | ${value}`;
+		}
 		return DiscordItemUtils.getClassicItemField(
 			"potions",
 			DisplayUtils.getItemIcon({
 				id: displayPacket.id, category: displayPacket.itemCategory
 			}),
-			i18n.t(`items:potionsNatures.${displayPacket.nature}`, {
-				lng,
-				power: displayPacket.nature === ItemNature.TIME_SPEEDUP ? i18n.formatDuration(displayPacket.power, lng) : displayPacket.power
-			}),
+			value,
 			displayPacket,
 			lng
 		);

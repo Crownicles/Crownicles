@@ -6,9 +6,12 @@ import { SupportItem } from "./SupportItem";
 import { RandomUtils } from "../../../Lib/src/utils/RandomUtils";
 import { ObjectItem } from "./ObjectItem";
 import { SupportItemDisplayPacket } from "../../../Lib/src/packets/commands/CommandInventoryPacket";
+import {StatValues} from "../../../Lib/src/types/StatValues";
 
 export class Potion extends SupportItem {
 	categoryName = "potions";
+
+	public readonly usages: number;
 
 	public getCategory(): ItemCategory {
 		return ItemCategory.POTION;
@@ -23,14 +26,23 @@ export class Potion extends SupportItem {
 		return this.power;
 	}
 
-	public getDisplayPacket(): SupportItemDisplayPacket {
+	public getDisplayPacket(maxStatsValue: StatValues, itemUsages?: number): SupportItemDisplayPacket {
+		let usagesToDisplay: number | undefined;
+		let maxUsagesToDisplay: number | undefined;
+		if (this.isFightPotion()){
+			maxUsagesToDisplay = this.usages || 1;
+			usagesToDisplay = (itemUsages !== undefined && itemUsages !== null) ? itemUsages : maxUsagesToDisplay;
+		}
+
 		return {
 			itemCategory: this.getCategory(),
 			maxPower: this.power,
 			nature: this.nature,
 			power: this.power,
 			rarity: this.rarity,
-			id: this.id
+			id: this.id,
+			usages: usagesToDisplay,
+			maxUsages: maxUsagesToDisplay
 		};
 	}
 }

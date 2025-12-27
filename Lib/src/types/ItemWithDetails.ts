@@ -12,6 +12,8 @@ export interface ItemWithDetails {
 	detailsSupportItem?: {
 		nature: ItemNature;
 		power: number;
+		usages?: number;
+		maxUsages?: number;
 	};
 
 	detailsMainItem?: {

@@ -37,6 +37,7 @@ export default class InventoryCommand {
 		const maxStatsValues = toCheckPlayer.getMaxStatsValue();
 		const items = await InventorySlots.getOfPlayer(toCheckPlayer.id);
 		const invInfo = await InventoryInfos.getOfPlayer(toCheckPlayer.id);
+		const equippedPotionSlot = items.find(item => item.isPotion() && item.isEquipped());
 
 		response.push(makePacket(CommandInventoryPacketRes, {
 			foundPlayer: true,
@@ -46,7 +47,7 @@ export default class InventoryCommand {
 			data: {
 				weapon: (items.find(item => item.isWeapon() && item.isEquipped()).getItem() as MainItem).getDisplayPacket(maxStatsValues),
 				armor: (items.find(item => item.isArmor() && item.isEquipped()).getItem() as MainItem).getDisplayPacket(maxStatsValues),
-				potion: (items.find(item => item.isPotion() && item.isEquipped()).getItem() as ObjectItem).getDisplayPacket(maxStatsValues),
+				potion: (equippedPotionSlot.getItem() as Potion).getDisplayPacket(maxStatsValues, equippedPotionSlot.usagesPotionAiFight),
 				object: (items.find(item => item.isObject() && item.isEquipped()).getItem() as ObjectItem).getDisplayPacket(maxStatsValues),
 				backupWeapons: items.filter(item => item.isWeapon() && !item.isEquipped()).map(item =>
 					({
@@ -58,7 +59,7 @@ export default class InventoryCommand {
 					})),
 				backupPotions: items.filter(item => item.isPotion() && !item.isEquipped()).map(item =>
 					({
-						display: (item.getItem() as Potion).getDisplayPacket(), slot: item.slot
+						display: (item.getItem() as Potion).getDisplayPacket(maxStatsValues, item.usagesPotionAiFight), slot: item.slot
 					})),
 				backupObjects: items.filter(item => item.isObject() && !item.isEquipped()).map(item =>
 					({
