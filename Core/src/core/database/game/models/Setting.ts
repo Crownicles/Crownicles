@@ -122,6 +122,14 @@ export class Settings {
 		"nextDailyReset",
 		(): Promise<number> => Promise.resolve(0)
 	);
+
+	/**
+	 * The last year the Christmas bonus was applied (to avoid running it twice in the same year)
+	 */
+	public static readonly LAST_CHRISTMAS_BONUS_YEAR = new SettingClassNumber(
+		"lastChristmasBonusYear",
+		(): Promise<number> => Promise.resolve(0)
+	);
 }
 
 export function initModel(sequelize: Sequelize): void {
