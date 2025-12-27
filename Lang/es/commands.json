@@ -188,6 +188,9 @@
       "verySlow_male": "\n\n{emote:expedition.slow} *Tu compañero se mueve con una lentitud desconcertante, deteniéndose con frecuencia para husmear. La expedición durará mucho más de lo previsto...",
       "verySlow_female": "\n\n{emote:expedition.slow} *Tu compañero se mueve con una lentitud desconcertante, deteniéndose con frecuencia para husmear. La expedición durará mucho más de lo previsto..."
     },
+    "freeCancelledTitle": "{{pseudo}}salida cancelada",
+    "freeCancelled_male": "{{petDisplay}} penche la tête sur le côté, un peu déçu mais compréhensif. Après tout, ce n'est que partie remise ! Il trotte joyeusement vers vous, prêt à repartir dès que vous le souhaiterez.\n\n{emote:collectors.warning} *Attention : les prochaines annulations cette semaine feront perdre des points d'amour à votre familier.*",
+    "freeCancelled_female": "{{petDisplay}} penche la tête sur le côté, un peu déçue mais compréhensive. Après tout, ce n'est que partie remise ! Elle trotte joyeusement vers vous, prête à repartir dès que vous le souhaiterez.\n\n{emote:collectors.warning} *Attention : les prochaines annulations cette semaine feront perdre des points d'amour à votre familier.*",
     "cancelledTitle": "{{pseudo}}salida cancelada",
     "cancelled_male": "Al ver sus dudas, {{petDisplay}} agacha la cabeza, decepcionado. Creía que iba a vivir una aventura... Sientes que la confianza entre vosotros se resquebraja ligeramente. Tu compañero te lanza una mirada dolida antes de alejarse, con la cola baja.",
     "cancelled_female": "Al ver sus dudas, {{petDisplay}} inclina la cabeza, decepcionada. Creía que iba a vivir una aventura... Sientes que la confianza entre vosotros se resquebraja ligeramente. Tu compañera te lanza una mirada dolida antes de alejarse, con la cola baja.",
