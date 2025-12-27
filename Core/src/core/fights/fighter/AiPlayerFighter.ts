@@ -90,19 +90,26 @@ export class AiPlayerFighter extends Fighter {
 		if (!this.allowPotionConsumption) {
 			return;
 		}
-
-		// Potions have a chance of not being consumed
-		if (RandomUtils.crowniclesRandom.realZeroToOneInclusive() < FightConstants.POTION_NO_DRINK_PROBABILITY.AI) {
-			return;
-		}
 		const inventorySlots = await InventorySlots.getOfPlayer(this.player.id);
-		const drankPotion = inventorySlots.find(slot => slot.isPotion() && slot.isEquipped())
-			.getItem() as Potion;
+		const potionSlot = inventorySlots.find(slot => slot.isPotion() && slot.isEquipped());
+		if (!potionSlot) return;
+
+		const drankPotion = potionSlot.getItem() as Potion;
 		if (!drankPotion.isFightPotion()) {
 			return;
 		}
-		await this.player.drinkPotion(InventoryConstants.DEFAULT_SLOT_VALUE);
-		await this.player.save();
+		let currentUsages = potionSlot.usagesPotionAiFight;
+		if (currentUsages === undefined || currentUsages === null || currentUsages <= 0) {
+			currentUsages = drankPotion.usages || 1;
+		}
+		currentUsages--;
+		if (currentUsages > 0) {
+			potionSlot.usagesPotionAiFight = currentUsages;
+			await potionSlot.save();
+		} else {
+			await this.player.drinkPotion(potionSlot.slot);
+			await this.player.save();
+		}
 		await checkDrinkPotionMissions(response, this.player, drankPotion, await InventorySlots.getOfPlayer(this.player.id));
 	}
 

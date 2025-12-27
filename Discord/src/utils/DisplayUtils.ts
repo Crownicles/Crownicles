@@ -342,6 +342,20 @@ export class DisplayUtils {
 	}
 
 	private static getPotionDisplayWithStats(itemWithDetails: ItemWithDetails, lng: Language): string {
+		let values = i18n.t(`items:potionsNatures.${itemWithDetails.detailsSupportItem!.nature}`, {
+			power: itemWithDetails.detailsSupportItem!.nature === ItemNature.TIME_SPEEDUP
+				? i18n.formatDuration(itemWithDetails.detailsSupportItem!.power, lng)
+				: itemWithDetails.detailsSupportItem!.power,
+			lng
+		});
+		const details = itemWithDetails.detailsSupportItem;
+		if (details && details.maxUsages && details.maxUsages > 1) {
+			const current = details.usages !== undefined && details.usages !== null
+				? details.usages
+				: details.maxUsages;
+
+			values = `**${current}/${details.maxUsages}** | ${values}`;
+		}
 		const itemField: string = i18n.t("items:itemsField", {
 			name: i18n.t(`models:potions.${itemWithDetails.id}`, {
 				lng
@@ -351,12 +365,7 @@ export class DisplayUtils {
 				id: itemWithDetails.id
 			}),
 			rarity: i18n.t(`items:rarities.${itemWithDetails.rarity}`, { lng }),
-			values: i18n.t(`items:potionsNatures.${itemWithDetails.detailsSupportItem!.nature}`, {
-				power: itemWithDetails.detailsSupportItem!.nature === ItemNature.TIME_SPEEDUP
-					? i18n.formatDuration(itemWithDetails.detailsSupportItem!.power, lng)
-					: itemWithDetails.detailsSupportItem!.power,
-				lng
-			}),
+			values: values,
 			lng
 		});
 		return itemWithDetails.id === 0 ? itemField.split("|")[0] : itemField;
