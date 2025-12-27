@@ -514,8 +514,10 @@ export class Crownicles {
 		await setWeeklyCronJob(Crownicles.seasonEnd, await Settings.NEXT_SEASON_RESET.getValue() < Date.now(), DayOfTheWeek.SUNDAY);
 		await setWeeklyCronJob(Crownicles.weeklyTimeout, await Settings.NEXT_WEEKLY_RESET.getValue() < Date.now(), DayOfTheWeek.MONDAY);
 
-		// Christmas bonus events (yearly - both on Dec 25th: announcement at 12:00, bonus at 16:00)
-		// Check if we already applied the bonus this year before deciding to run immediately
+		/*
+		 * Christmas bonus events (yearly - both on Dec 25th: announcement at 12:00, bonus at 16:00)
+		 * Check if we already applied the bonus this year before deciding to run immediately
+		 */
 		const currentYear = new Date().getFullYear();
 		const lastBonusYear = await Settings.LAST_CHRISTMAS_BONUS_YEAR.getValue();
 		const alreadyDoneThisYear = lastBonusYear >= currentYear;
