@@ -260,7 +260,7 @@ export class InventorySlots {
 		}
 		await InventorySlot.update({
 			itemId: itemToPutInMain.itemId,
-			usagesPotionAiFight: itemToPutInReserve.usagesPotionAiFight
+			usagesPotionAiFight: itemToPutInMain.usagesPotionAiFight
 		}, {
 			where: {
 				playerId: player.id,
