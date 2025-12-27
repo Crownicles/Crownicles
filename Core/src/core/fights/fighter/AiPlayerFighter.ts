@@ -19,7 +19,6 @@ import { checkDrinkPotionMissions } from "../../utils/ItemUtils";
 import {
 	FightConstants, FightRole
 } from "../../../../../Lib/src/constants/FightConstants";
-import { InventoryConstants } from "../../../../../Lib/src/constants/InventoryConstants";
 import { PetConstants } from "../../../../../Lib/src/constants/PetConstants";
 import { PetUtils } from "../../utils/PetUtils";
 
@@ -92,7 +91,9 @@ export class AiPlayerFighter extends Fighter {
 		}
 		const inventorySlots = await InventorySlots.getOfPlayer(this.player.id);
 		const potionSlot = inventorySlots.find(slot => slot.isPotion() && slot.isEquipped());
-		if (!potionSlot) return;
+		if (!potionSlot) {
+			return;
+		}
 
 		const drankPotion = potionSlot.getItem() as Potion;
 		if (!drankPotion.isFightPotion()) {
@@ -106,7 +107,8 @@ export class AiPlayerFighter extends Fighter {
 		if (currentUsages > 0) {
 			potionSlot.usagesPotionAiFight = currentUsages;
 			await potionSlot.save();
-		} else {
+		}
+		else {
 			await this.player.drinkPotion(potionSlot.slot);
 			await this.player.save();
 		}

@@ -62,7 +62,7 @@ import { MathUtils } from "../../../utils/MathUtils";
 // skipcq: JS-C1003 - moment does not expose itself as an ES Module.
 import * as moment from "moment";
 import { ClassConstants } from "../../../../../../Lib/src/constants/ClassConstants";
-import {Potion} from "../../../../data/Potion";
+import { Potion } from "../../../../data/Potion";
 
 export type PlayerEditValueParameters = {
 	player: Player;
@@ -606,7 +606,7 @@ export class Player extends Model {
 		const invInfo = await InventoryInfos.getOfPlayer(this.id);
 		const category = item.getCategory();
 		let initialUsages = null;
-		if(item instanceof Potion && item.isFightPotion()){
+		if (item instanceof Potion && item.isFightPotion()) {
 			initialUsages = item.usages || 1;
 		}
 		const equippedItem = invSlots.filter(slot => slot.itemCategory === category && slot.isEquipped())[0];
