@@ -662,7 +662,8 @@ export class Player extends Model {
 		if (itemSlot === 0) {
 			await InventorySlot.update(
 				{
-					itemId: InventoryConstants.POTION_DEFAULT_ID
+					itemId: InventoryConstants.POTION_DEFAULT_ID,
+					remainingPotionUsages: null
 				},
 				{
 					where: {

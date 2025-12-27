@@ -165,8 +165,16 @@ async function dontKeepOriginalItem(response: CrowniclesPacket[], player: Player
 	response.push(makePacket(ItemAcceptPacket, {
 		itemWithDetails: toItemWithDetails(item)
 	}));
+
+	// Calculate remainingPotionUsages for fight potions
+	let remainingPotionUsages: number | null = null;
+	if (item instanceof Potion && item.isFightPotion()) {
+		remainingPotionUsages = item.usages || 1;
+	}
+
 	await InventorySlot.update({
-		itemId: item.id
+		itemId: item.id,
+		remainingPotionUsages
 	}, {
 		where: {
 			slot: itemToReplace.slot,
