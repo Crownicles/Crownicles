@@ -60,7 +60,7 @@ export class AiPlayerFighter extends PlayerBaseFighter {
 	async startFight(_fightView: FightView, startStatus: FighterStatus, response: CrowniclesPacket[]): Promise<void> {
 		this.status = startStatus;
 		if (this.allowPotionConsumption) {
-			await this.consumeFightPotionIfNeeded(response, 0);
+			await this.consumeFightPotionIfNeeded(response, FightConstants.POTION_NO_DRINK_PROBABILITY.AI);
 		}
 	}
 
