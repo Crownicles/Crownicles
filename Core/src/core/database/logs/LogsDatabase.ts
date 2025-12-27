@@ -107,7 +107,6 @@ import { LogsCommandOrigins } from "./models/LogsCommandOrigins";
 import { LogsCommandSubOrigins } from "./models/LogsCommandSubOrigins";
 import { ReactionCollectorReactPacket } from "../../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { LogsPlayersTeleportations } from "./models/LogsPlayersTeleportations";
-import { AiPlayerFighter } from "../../fights/fighter/AiPlayerFighter";
 import { LogsExpeditions } from "./models/LogsExpeditions";
 
 /**
@@ -1006,6 +1005,9 @@ export class LogsDatabase extends Database {
 	public async logFight(fight: FightController): Promise<number | null> {
 		const fightInitiator = fight.fightInitiator;
 		const nonFightInitiator = fight.getNonFightInitiatorFighter();
+
+		// Dynamically import to avoid circular dependencies
+		const { AiPlayerFighter } = await import("../../fights/fighter/AiPlayerFighter");
 
 		if (!(nonFightInitiator instanceof PlayerFighter) && !(nonFightInitiator instanceof AiPlayerFighter)) {
 			return null;
