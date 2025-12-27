@@ -2,5 +2,6 @@
   "fallbackEmote": "⚗️",
   "rarity": 4,
   "power": 90,
-  "nature": 4
+  "nature": 4,
+  "usages": 4
 }
