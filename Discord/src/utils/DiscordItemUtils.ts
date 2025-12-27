@@ -9,7 +9,9 @@ import {
 	FightItemNatures, itemCategoryToString, ItemNature
 } from "../../../Lib/src/constants/ItemConstants";
 import { StatValues } from "../../../Lib/src/types/StatValues";
-import { DisplayUtils } from "./DisplayUtils";
+import {
+	DisplayUtils, formatPotionUsagesPrefix
+} from "./DisplayUtils";
 
 
 type Value = {
@@ -120,16 +122,12 @@ export class DiscordItemUtils {
 	}
 
 	static getPotionField(displayPacket: SupportItemDisplayPacket, lng: Language): EmbedField {
-		let value = i18n.t(`items:potionsNatures.${displayPacket.nature}`, {
+		const natureValue = i18n.t(`items:potionsNatures.${displayPacket.nature}`, {
 			lng,
 			power: displayPacket.nature === ItemNature.TIME_SPEEDUP ? i18n.formatDuration(displayPacket.power, lng) : displayPacket.power
 		});
-		if (displayPacket.maxUsages && displayPacket.maxUsages > 1) {
-			const current = displayPacket.usages !== undefined && displayPacket.usages !== null
-				? displayPacket.usages
-				: displayPacket.maxUsages;
-			value = `**${current}/${displayPacket.maxUsages}** | ${value}`;
-		}
+		const usagesPrefix = formatPotionUsagesPrefix(displayPacket.usages, displayPacket.maxUsages);
+		const value = `${usagesPrefix}${natureValue}`;
 		return DiscordItemUtils.getClassicItemField(
 			"potions",
 			DisplayUtils.getItemIcon({

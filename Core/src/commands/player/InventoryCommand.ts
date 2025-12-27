@@ -47,7 +47,7 @@ export default class InventoryCommand {
 			data: {
 				weapon: (items.find(item => item.isWeapon() && item.isEquipped()).getItem() as MainItem).getDisplayPacket(maxStatsValues),
 				armor: (items.find(item => item.isArmor() && item.isEquipped()).getItem() as MainItem).getDisplayPacket(maxStatsValues),
-				potion: (equippedPotionSlot.getItem() as Potion).getDisplayPacket(maxStatsValues, equippedPotionSlot.usagesPotionAiFight),
+				potion: (equippedPotionSlot.getItem() as Potion).getDisplayPacket(maxStatsValues, equippedPotionSlot.remainingPotionUsages),
 				object: (items.find(item => item.isObject() && item.isEquipped()).getItem() as ObjectItem).getDisplayPacket(maxStatsValues),
 				backupWeapons: items.filter(item => item.isWeapon() && !item.isEquipped()).map(item =>
 					({
@@ -59,7 +59,7 @@ export default class InventoryCommand {
 					})),
 				backupPotions: items.filter(item => item.isPotion() && !item.isEquipped()).map(item =>
 					({
-						display: (item.getItem() as Potion).getDisplayPacket(maxStatsValues, item.usagesPotionAiFight), slot: item.slot
+						display: (item.getItem() as Potion).getDisplayPacket(maxStatsValues, item.remainingPotionUsages), slot: item.slot
 					})),
 				backupObjects: items.filter(item => item.isObject() && !item.isEquipped()).map(item =>
 					({

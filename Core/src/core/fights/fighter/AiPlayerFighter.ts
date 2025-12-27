@@ -99,13 +99,13 @@ export class AiPlayerFighter extends Fighter {
 		if (!drankPotion.isFightPotion()) {
 			return;
 		}
-		let currentUsages = potionSlot.usagesPotionAiFight;
+		let currentUsages = potionSlot.remainingPotionUsages;
 		if (currentUsages === undefined || currentUsages === null || currentUsages <= 0) {
 			currentUsages = drankPotion.usages || 1;
 		}
 		currentUsages--;
 		if (currentUsages > 0) {
-			potionSlot.usagesPotionAiFight = currentUsages;
+			potionSlot.remainingPotionUsages = currentUsages;
 			await potionSlot.save();
 		}
 		else {
