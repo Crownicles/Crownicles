@@ -17,6 +17,20 @@ import {
 import { KeycloakUtils } from "../../../Lib/src/keycloak/KeycloakUtils";
 import { keycloakConfig } from "../bot/CrowniclesShard";
 
+/**
+ * Format potion usages prefix for display (e.g., "**3/4** | ")
+ * @param usages Current remaining usages
+ * @param maxUsages Maximum usages for the potion
+ * @returns Formatted prefix string or empty string if not applicable
+ */
+export function formatPotionUsagesPrefix(usages: number | undefined, maxUsages: number | undefined): string {
+	if (!maxUsages || maxUsages <= 1) {
+		return "";
+	}
+	const current = usages ?? maxUsages;
+	return `**${current}/${maxUsages}** | `;
+}
+
 export class DisplayUtils {
 	/**
 	 * Display the item name with its icon
@@ -342,20 +356,15 @@ export class DisplayUtils {
 	}
 
 	private static getPotionDisplayWithStats(itemWithDetails: ItemWithDetails, lng: Language): string {
-		let values = i18n.t(`items:potionsNatures.${itemWithDetails.detailsSupportItem!.nature}`, {
-			power: itemWithDetails.detailsSupportItem!.nature === ItemNature.TIME_SPEEDUP
-				? i18n.formatDuration(itemWithDetails.detailsSupportItem!.power, lng)
-				: itemWithDetails.detailsSupportItem!.power,
+		const details = itemWithDetails.detailsSupportItem!;
+		const natureValue = i18n.t(`items:potionsNatures.${details.nature}`, {
+			power: details.nature === ItemNature.TIME_SPEEDUP
+				? i18n.formatDuration(details.power, lng)
+				: details.power,
 			lng
 		});
-		const details = itemWithDetails.detailsSupportItem;
-		if (details && details.maxUsages && details.maxUsages > 1) {
-			const current = details.usages !== undefined && details.usages !== null
-				? details.usages
-				: details.maxUsages;
-
-			values = `**${current}/${details.maxUsages}** | ${values}`;
-		}
+		const usagesPrefix = formatPotionUsagesPrefix(details.usages, details.maxUsages);
+		const values = `${usagesPrefix}${natureValue}`;
 		const itemField: string = i18n.t("items:itemsField", {
 			name: i18n.t(`models:potions.${itemWithDetails.id}`, {
 				lng
@@ -365,7 +374,7 @@ export class DisplayUtils {
 				id: itemWithDetails.id
 			}),
 			rarity: i18n.t(`items:rarities.${itemWithDetails.rarity}`, { lng }),
-			values: values,
+			values,
 			lng
 		});
 		return itemWithDetails.id === 0 ? itemField.split("|")[0] : itemField;

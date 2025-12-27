@@ -36,7 +36,7 @@ export class InventorySlot extends Model {
 
 	declare itemId: number;
 
-	declare usagesPotionAiFight: number;
+	declare remainingPotionUsages: number;
 
 	declare updatedAt: Date;
 
@@ -249,7 +249,7 @@ export class InventorySlots {
 		else {
 			await InventorySlot.update({
 				itemId: itemToPutInReserve.itemId,
-				usagesPotionAiFight: itemToPutInReserve.usagesPotionAiFight
+				remainingPotionUsages: itemToPutInReserve.remainingPotionUsages
 			}, {
 				where: {
 					playerId: player.id,
@@ -260,7 +260,7 @@ export class InventorySlots {
 		}
 		await InventorySlot.update({
 			itemId: itemToPutInMain.itemId,
-			usagesPotionAiFight: itemToPutInMain.usagesPotionAiFight
+			remainingPotionUsages: itemToPutInMain.remainingPotionUsages
 		}, {
 			where: {
 				playerId: player.id,
@@ -276,11 +276,11 @@ export class InventorySlots {
 			itemCategory: itemToDeposit.slot.itemCategory,
 			itemId: itemToDeposit.slot.itemId,
 			slot: itemToDeposit.freeSlot,
-			usagesPotionAiFight: itemToDeposit.slot.usagesPotionAiFight
+			remainingPotionUsages: itemToDeposit.slot.remainingPotionUsages
 		});
 		await InventorySlot.update({
 			itemId: 0,
-			usagesPotionAiFight: null
+			remainingPotionUsages: null
 		}, {
 			where: {
 				playerId: player.id,
@@ -309,7 +309,7 @@ export function initModel(sequelize: Sequelize): void {
 			type: DataTypes.INTEGER,
 			defaultValue: 0
 		},
-		usagesPotionAiFight: {
+		remainingPotionUsages: {
 			type: DataTypes.INTEGER,
 			allowNull: true,
 			defaultValue: null

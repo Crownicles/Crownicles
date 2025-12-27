@@ -613,7 +613,7 @@ export class Player extends Model {
 		if (equippedItem && equippedItem.itemId === 0) {
 			await InventorySlot.update({
 				itemId: item.id,
-				usagesPotionAiFight: initialUsages
+				remainingPotionUsages: initialUsages
 			}, {
 				where: {
 					playerId: this.id,
@@ -635,7 +635,7 @@ export class Player extends Model {
 					itemCategory: category,
 					itemId: item.id,
 					slot: i,
-					usagesPotionAiFight: initialUsages
+					remainingPotionUsages: initialUsages
 				});
 				return true;
 			}
