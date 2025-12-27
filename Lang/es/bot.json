@@ -35,6 +35,8 @@
   "notificationEnergyFull": "Has recuperado toda tu energía.",
   "notificationDailyBonus": "Su bonificación diaria está disponible.",
   "notificationPetExpedition": "{{petDisplay}} ha vuelto de una expedición y ¡quizás ha traído tesoros!",
+  "christmasBonusPreAnnouncement": "{emote:announcements.christmas} **Bonus de Noël à venir !** {emote:announcements.christmas}\n\nDans quelques heures, tous les joueurs recevront un cadeau spécial : leur stock de jetons sera rempli au maximum ! Profitez bien de cette période festive !",
+  "christmasBonusApplied": "{emote:announcements.christmas} **Joyeux Noël !** {emote:announcements.gift}\n\nLe Père Noël est passé ! Votre stock de jetons a été rempli au maximum. Profitez de ce cadeau pour partir à l'aventure !",
   "supportMessage": "{{langFlag}} Si necesitas ayuda, selecciona tu idioma con los botones de abajo. Si no la necesitas, ignora este mensaje.\n{emote:collectors.warning} **¡Todos los mensajes enviados aquí pueden ser leídos por una persona!**\n",
   "commandDisabledInDM": "{{langFlag}} Hola, los comandos están deshabilitados en los mensajes privados. ¡Ve a un servidor para jugar!\nSi necesitas ayuda, haz clic en el botón correspondiente a tu idioma a continuación.\n"
 }
