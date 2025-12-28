@@ -98,6 +98,7 @@ import { GenericItem } from "../../../data/GenericItem";
 import { MapLink } from "../../../data/MapLink";
 import { FightController } from "../../fights/FightController";
 import { PlayerFighter } from "../../fights/fighter/PlayerFighter";
+import { PlayerBaseFighter } from "../../fights/fighter/PlayerBaseFighter";
 import { MonsterFighter } from "../../fights/fighter/MonsterFighter";
 import { Effect } from "../../../../../Lib/src/types/Effect";
 import { getDatabaseConfiguration } from "../../bot/CrowniclesConfig";
@@ -1006,10 +1007,8 @@ export class LogsDatabase extends Database {
 		const fightInitiator = fight.fightInitiator;
 		const nonFightInitiator = fight.getNonFightInitiatorFighter();
 
-		// Dynamically import to avoid circular dependencies
-		const { AiPlayerFighter } = await import("../../fights/fighter/AiPlayerFighter");
-
-		if (!(nonFightInitiator instanceof PlayerFighter) && !(nonFightInitiator instanceof AiPlayerFighter)) {
+		// Check if non-fight initiator is a player-based fighter (PlayerFighter or AiPlayerFighter)
+		if (!(nonFightInitiator instanceof PlayerBaseFighter)) {
 			return null;
 		}
 
