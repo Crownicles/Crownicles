@@ -451,6 +451,30 @@ function canPotionBeDrunkImmediately(item: GenericItem, canDrinkImmediately: boo
 }
 
 /**
+ * Checks if a fight potion has been partially used (has remaining usages less than max)
+ * @param slot - The inventory slot containing the potion
+ * @param maxUsages - The maximum usages for this potion type
+ * @returns true if the potion has been partially used
+ */
+function isPotionPartiallyUsed(slot: InventorySlot, maxUsages: number): boolean {
+	const remaining = slot.remainingPotionUsages;
+
+	// If remaining is null/undefined, it's considered full (legacy or freshly added)
+	return remaining !== null && remaining !== undefined && remaining < maxUsages;
+}
+
+/**
+ * Checks if any fight potion in the inventory has been partially used
+ * @param potion - The potion type to check against
+ * @param slots - All potion slots to check
+ * @returns true if any potion has been partially used
+ */
+function hasAnyPartiallyUsedPotion(potion: Potion, slots: InventorySlot[]): boolean {
+	const maxUsages = potion.usages || 1;
+	return slots.some(slot => isPotionPartiallyUsed(slot, maxUsages));
+}
+
+/**
  * Determines if an item should be auto-sold when player gets it
  * Auto-sell happens when all inventory slots of that category already have the same item
  * Exception: Fight potions won't auto-sell if any copy has been partially used (to allow "refill")
@@ -465,25 +489,14 @@ function shouldAutoSellItem(item: GenericItem, sameTypeSlots: InventorySlot[]): 
 	}
 
 	// Check if all slots have the same item ID as the new item
-	const allSameItem = sameTypeSlots.length === sameTypeSlots.filter(slot => slot.itemId === item.id).length;
+	const allSameItem = sameTypeSlots.every(slot => slot.itemId === item.id);
 	if (!allSameItem) {
 		return false;
 	}
 
-	/*
-	 * For fight potions, don't auto-sell if any potion has been partially used
-	 * This allows players to "refill" their partially used potion
-	 */
+	// For fight potions, don't auto-sell if any potion has been partially used
 	if ((item as Potion).isFightPotion?.()) {
-		const potionItem = item as Potion;
-		const maxUsages = potionItem.usages || 1;
-		const hasPartiallyUsedPotion = sameTypeSlots.some(slot => {
-			const remaining = slot.remainingPotionUsages;
-
-			// If remaining is null/undefined, it's considered full (legacy or freshly added)
-			return remaining !== null && remaining !== undefined && remaining < maxUsages;
-		});
-		return !hasPartiallyUsedPotion;
+		return !hasAnyPartiallyUsedPotion(item as Potion, sameTypeSlots);
 	}
 
 	return true;
