@@ -470,13 +470,16 @@ function shouldAutoSellItem(item: GenericItem, sameTypeSlots: InventorySlot[]): 
 		return false;
 	}
 
-	// For fight potions, don't auto-sell if any potion has been partially used
-	// This allows players to "refill" their partially used potion
+	/*
+	 * For fight potions, don't auto-sell if any potion has been partially used
+	 * This allows players to "refill" their partially used potion
+	 */
 	if ((item as Potion).isFightPotion?.()) {
 		const potionItem = item as Potion;
 		const maxUsages = potionItem.usages || 1;
 		const hasPartiallyUsedPotion = sameTypeSlots.some(slot => {
 			const remaining = slot.remainingPotionUsages;
+
 			// If remaining is null/undefined, it's considered full (legacy or freshly added)
 			return remaining !== null && remaining !== undefined && remaining < maxUsages;
 		});
