@@ -451,6 +451,42 @@ function canPotionBeDrunkImmediately(item: GenericItem, canDrinkImmediately: boo
 }
 
 /**
+ * Determines if an item should be auto-sold when player gets it
+ * Auto-sell happens when all inventory slots of that category already have the same item
+ * Exception: Fight potions won't auto-sell if any copy has been partially used (to allow "refill")
+ * @param item - The new item being given to the player
+ * @param sameTypeSlots - All inventory slots of the same item category
+ * @returns true if the item should be auto-sold
+ */
+function shouldAutoSellItem(item: GenericItem, sameTypeSlots: InventorySlot[]): boolean {
+	// Drinkable potions are never auto-sold (player can drink them)
+	if (item.getCategory() === ItemCategory.POTION && !(item as Potion).isFightPotion()) {
+		return false;
+	}
+
+	// Check if all slots have the same item ID as the new item
+	const allSameItem = sameTypeSlots.length === sameTypeSlots.filter(slot => slot.itemId === item.id).length;
+	if (!allSameItem) {
+		return false;
+	}
+
+	// For fight potions, don't auto-sell if any potion has been partially used
+	// This allows players to "refill" their partially used potion
+	if ((item as Potion).isFightPotion?.()) {
+		const potionItem = item as Potion;
+		const maxUsages = potionItem.usages || 1;
+		const hasPartiallyUsedPotion = sameTypeSlots.some(slot => {
+			const remaining = slot.remainingPotionUsages;
+			// If remaining is null/undefined, it's considered full (legacy or freshly added)
+			return remaining !== null && remaining !== undefined && remaining < maxUsages;
+		});
+		return !hasPartiallyUsedPotion;
+	}
+
+	return true;
+}
+
+/**
  * Gives an item to a player
  * @param response
  * @param context
@@ -487,11 +523,8 @@ export async function giveItemToPlayer(
 	const items = inventorySlots.filter((slot: InventorySlot) => slot.itemCategory === category);
 	const itemToReplace = inventorySlots.filter((slot: InventorySlot) => (maxSlots === 1 ? slot.isEquipped() : slot.slot === 1) && slot.itemCategory === category)[0];
 	const canDrinkThisPotion = canPotionBeDrunkImmediately(item, canDrinkImmediately);
-	const autoSell = item.getCategory() !== ItemCategory.POTION || (item as Potion).isFightPotion() // Because we can't drink immediately these potions
-		? items.length === items.filter((slot: InventorySlot) => slot.itemId === item.id).length
-		: false;
 
-	if (autoSell) {
+	if (shouldAutoSellItem(item, items)) {
 		await sellOrKeepItem(response, whoIsConcerned, {
 			item
 		}, {

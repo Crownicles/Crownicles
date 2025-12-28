@@ -297,14 +297,16 @@ describe('ItemUtils - giveItemToPlayer', () => {
 			expect(mockResponse).toHaveLength(2); // ItemFoundPacket + ReactionCollectorInstance
 		});
 
-		it('should auto-sell fight potions when all are same', async () => {
+		it('should auto-sell fight potions when all are same and fully charged', async () => {
 			// Arrange
 			mockItem.isFightPotion.mockReturnValue(true);
+			mockItem.usages = 5;
 			mockInventorySlots[0] = {
 				playerId: 1,
 				slot: 0,
 				itemCategory: ItemCategory.POTION,
 				itemId: mockItem.id,
+				remainingPotionUsages: null, // null means full (legacy or freshly added)
 				isEquipped: vi.fn().mockReturnValue(true),
 				isPotion: vi.fn().mockReturnValue(true),
 				getItem: vi.fn().mockReturnValue(mockItem)
@@ -313,8 +315,30 @@ describe('ItemUtils - giveItemToPlayer', () => {
 			// Act
 			await giveItemToPlayer(mockResponse, mockContext, mockPlayer, mockItem);
 
-			// Assert - should trigger auto-sell
+			// Assert - should trigger auto-sell since potion is at full usages
 			expect(mockResponse.length).toBeGreaterThanOrEqual(1);
+		});
+
+		it('should not auto-sell fight potions when partially used', async () => {
+			// Arrange
+			mockItem.isFightPotion.mockReturnValue(true);
+			mockItem.usages = 5;
+			mockInventorySlots[0] = {
+				playerId: 1,
+				slot: 0,
+				itemCategory: ItemCategory.POTION,
+				itemId: mockItem.id,
+				remainingPotionUsages: 3, // Partially used (3 out of 5)
+				isEquipped: vi.fn().mockReturnValue(true),
+				isPotion: vi.fn().mockReturnValue(true),
+				getItem: vi.fn().mockReturnValue(mockItem)
+			};
+
+			// Act
+			await giveItemToPlayer(mockResponse, mockContext, mockPlayer, mockItem);
+
+			// Assert - should NOT auto-sell, allow player to refill
+			expect(mockResponse).toHaveLength(2); // ItemFoundPacket + ReactionCollectorInstance
 		});
 	});
 
