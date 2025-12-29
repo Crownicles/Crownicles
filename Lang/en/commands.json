@@ -188,6 +188,9 @@
       "verySlow_male": "\n\n{emote:expedition.slow} *Your companion moves with disconcerting slowness, stopping frequently to sniff around. The expedition will take much longer than expected...*.",
       "verySlow_female": "\n\n{emote:expedition.slow} *Your companion moves with disconcerting slowness, stopping frequently to sniff around. The expedition will take much longer than expected...*."
     },
+    "freeCancelledTitle": "{{pseudo}}departure cancelled",
+    "freeCancelled_male": "{{petDisplay}} tilts the tone on the side, a little bit bit but understandable. That's all about it! They're happy to be back to you, ready to go back wherever you want.\n\n{emote:collectors.warning} *Attention: future cancellations this week will cause your pet to lose love points*",
+    "freeCancelled_female": "{{petDisplay}} leans the tone on the side, a little bit bit bit but understandable. That's all about it! She'll be happy about you and get back where you want to go.\n\n{emote:collectors.warning} *Attention: future cancellations this week will cause your pet to lose love points*",
     "cancelledTitle": "{{pseudo}}departure cancelled",
     "cancelled_male": "Seeing your hesitation, {{petDisplay}} bows his head in disappointment. He thought he was going on an adventure... You can feel the trust between you crumbling slightly. Your companion gives you a hurt look before walking away, tail low.",
     "cancelled_female": "Seeing your hesitation, {{petDisplay}} bows her head in disappointment. She thought she was going on an adventure... You can feel the trust between you crumbling slightly. Your companion gives you a hurt look before walking away, tail low.",
