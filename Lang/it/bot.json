@@ -35,8 +35,8 @@
   "notificationEnergyFull": "Avete recuperato tutta la vostra energia.",
   "notificationDailyBonus": "Il vostro bonus giornaliero è disponibile.",
   "notificationPetExpedition": "{{petDisplay}} è tornato dalla sua spedizione e potrebbe aver portato con sé un tesoro!",
-  "christmasBonusPreAnnouncement": "{emote:announcements.christmas} **Bonus de Noël à venir !** {emote:announcements.christmas}\n\nDans quelques heures, tous les joueurs recevront un cadeau spécial : leur stock de jetons sera rempli au maximum ! Profitez bien de cette période festive !",
-  "christmasBonusApplied": "{emote:announcements.christmas} **Joyeux Noël !** {emote:announcements.gift}\n\nLe Père Noël est passé ! Votre stock de jetons a été rempli au maximum. Profitez de ce cadeau pour partir à l'aventure !",
+  "christmasBonusPreAnnouncement": "{emote:announcements.christmas} **Bonus di Natale in arrivo!** {emote:announcements.christmas} Tra poche ore, tutti i giocatori riceveranno un regalo speciale: il loro stock di gettoni sarà riempito al massimo! Godetevi questo periodo festivo!",
+  "christmasBonusApplied": "{emote:announcements.christmas} **Buon Natale!** {emote:announcements.gift} Babbo Natale è passato! Il tuo stock di gettoni è stato riempito al massimo. Goditi questo regalo per partire all'avventura!",
   "supportMessage": "{{langFlag}} Se hai bisogno di aiuto, seleziona la tua lingua usando i pulsanti qui sotto. Se non hai bisogno di aiuto, ignora questo messaggio.\n{emote:collectors.warning} **Ogni messaggio inviato qui può essere letto da un essere umano!**\n",
   "commandDisabledInDM": "{{langFlag}} Ciao, i comandi sono disabilitati nei messaggi privati. Vai su un server per giocare!\nSe desideri aiuto, clicca sul pulsante corrispondente alla tua lingua qui sotto.\n"
 }
