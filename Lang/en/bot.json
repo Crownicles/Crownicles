@@ -35,6 +35,8 @@
   "notificationEnergyFull": "You've got all your energy back.",
   "notificationDailyBonus": "Your daily bonus is available.",
   "notificationPetExpedition": "{{petDisplay}} is back from his expedition and may have brought back some treasures!",
+  "christmasBonusPreAnnouncement": "{emote:announcements.christmas} **Christmas Bonus<unk> l to come! * {emote:announcements.christmas}\n\nIn a few hours, all players will receive a special gift: their token stock will be filled to the full! Enjoy this festive period!",
+  "christmasBonusApplied": "{emote:announcements.christmas} **Happy Noe<unk> l!** {emote:announcements.gift}\n\nPeaceful Noe<unk> l was passed! Your token stock has been filled to the maximum. Take advantage of this gift to set off on adventure!",
   "supportMessage": "{{langFlag}} If you need help, select your language using the buttons below. If you don't need help, ignore this message.\n{emote:collectors.warning} **Every message sent here can be read by a human!**\n",
   "commandDisabledInDM": "{{langFlag}} Hello, commands are disabled in private messages. Please go to a server to play!\nIf you would like help, click the button corresponding to your language below.\n"
 }
