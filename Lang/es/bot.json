@@ -35,6 +35,8 @@
   "notificationEnergyFull": "Has recuperado toda tu energía.",
   "notificationDailyBonus": "Su bonificación diaria está disponible.",
   "notificationPetExpedition": "{{petDisplay}} ha vuelto de una expedición y ¡quizás ha traído tesoros!",
+  "christmasBonusPreAnnouncement": "{emote:announcements.christmas} **¡Próximo bono de Navidad!** {emote:announcements.christmas}\n\n¡En unas horas, todos los jugadores recibirán un regalo especial: su inventario de fichas se llenará al máximo! ¡Disfruten de este período festivo!",
+  "christmasBonusApplied": "{emote:announcements.christmas} **¡Feliz Navidad!** {emote:announcements.gift}\n\n¡Papá Noel ha pasado! Su inventario de fichas se ha llenado al máximo. ¡Aproveche este regalo para irse de aventura!",
   "supportMessage": "{{langFlag}} Si necesitas ayuda, selecciona tu idioma con los botones de abajo. Si no la necesitas, ignora este mensaje.\n{emote:collectors.warning} **¡Todos los mensajes enviados aquí pueden ser leídos por una persona!**\n",
   "commandDisabledInDM": "{{langFlag}} Hola, los comandos están deshabilitados en los mensajes privados. ¡Ve a un servidor para jugar!\nSi necesitas ayuda, haz clic en el botón correspondiente a tu idioma a continuación.\n"
 }
