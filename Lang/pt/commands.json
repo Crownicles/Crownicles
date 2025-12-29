@@ -188,6 +188,9 @@
       "verySlow_male": "\n\n{emote:expedition.slow} *O seu companheiro move-se com uma lentidão desconcertante, parando frequentemente para farejar. A expedição vai demorar muito mais do que o previsto...",
       "verySlow_female": "\n\n{emote:expedition.slow} *O seu companheiro move-se com uma lentidão desconcertante, parando frequentemente para farejar. A expedição vai demorar muito mais do que o previsto..."
     },
+    "freeCancelledTitle": "{{pseudo}}partida cancelada",
+    "freeCancelled_male": "{{petDisplay}} penche la tête sur le côté, un peu déçu mais compréhensif. Après tout, ce n'est que partie remise ! Il trotte joyeusement vers vous, prêt à repartir dès que vous le souhaiterez.\n\n{emote:collectors.warning} *Attention : les prochaines annulations cette semaine feront perdre des points d'amour à votre familier.*",
+    "freeCancelled_female": "{{petDisplay}} penche la tête sur le côté, un peu déçue mais compréhensive. Après tout, ce n'est que partie remise ! Elle trotte joyeusement vers vous, prête à repartir dès que vous le souhaiterez.\n\n{emote:collectors.warning} *Attention : les prochaines annulations cette semaine feront perdre des points d'amour à votre familier.*",
     "cancelledTitle": "{{pseudo}}partida cancelada",
     "cancelled_male": "Ao ver a tua hesitação, {{petDisplay}} baixa a cabeça em sinal de deceção. Ele pensava que ia partir à aventura... Sente-se a confiança entre vocês a desfazer-se ligeiramente. O teu companheiro lança-te um olhar magoado antes de se afastar, de cauda baixa.",
     "cancelled_female": "Ao ver a tua hesitação, {{petDisplay}} inclina a cabeça em sinal de deceção. Ela pensava que ia partir à aventura... Sente-se a confiança entre vocês a desfazer-se ligeiramente. A tua companheira lança-te um olhar magoado antes de se afastar, de cauda baixa.",

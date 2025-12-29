@@ -188,6 +188,9 @@
       "verySlow_male": "\n\n{emote:expedition.slow} *Ihr Begleiter bewegt sich verwirrend langsam und bleibt häufig stehen, um die Umgebung zu beschnuppern. Die Expedition wird viel länger dauern als erwartet...*.",
       "verySlow_female": "\n\n{emote:expedition.slow} *Ihre Begleiterin bewegt sich verblüffend langsam und bleibt häufig stehen, um die Umgebung zu beschnuppern. Die Expedition wird viel länger dauern als erwartet...*."
     },
+    "freeCancelledTitle": "{{pseudo}}Abgesagte Abreise",
+    "freeCancelled_male": "{{petDisplay}} legt den Kopf schief, etwas enttäuscht, aber verständnisvoll. Schließlich ist es ja nur eine Verschiebung! Fröhlich trottet es auf dich zu, bereit, jederzeit wieder zu gehen.\n\n{emote:collectors.warning} *Warnung: Weitere Absagen in dieser Woche führen dazu, dass dein Begleiter Zuneigungspunkte verliert.*",
+    "freeCancelled_female": "{{petDisplay}} legt den Kopf schief, etwas enttäuscht, aber verständnisvoll. Schließlich ist es ja nur eine Verschiebung! Fröhlich trottet sie auf dich zu, bereit, jederzeit wieder zu gehen.\n\n{emote:collectors.warning} *Warnung: Weitere Absagen in dieser Woche führen dazu, dass dein Begleiter Zuneigungspunkte verliert.*",
     "cancelledTitle": "{{pseudo}}Abgesagte Abreise",
     "cancelled_male": "Als er Ihr Zögern sieht, senkt {{petDisplay}} enttäuscht den Kopf. Er dachte, er würde ein Abenteuer erleben... Sie spüren, dass das Vertrauen zwischen Ihnen leicht schwindet. Ihr Begleiter wirft Ihnen einen verletzten Blick zu, bevor er sich mit gesenktem Schwanz entfernt.",
     "cancelled_female": "Als sie ihr Zögern sieht, senkt {{petDisplay}} enttäuscht den Kopf. Sie dachte, sie würde ein Abenteuer erleben... Sie spüren, dass das Vertrauen zwischen Ihnen leicht schwindet. Ihre Begleiterin wirft Ihnen einen verletzten Blick zu, bevor sie sich mit gesenktem Schwanz entfernt.",

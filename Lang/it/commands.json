@@ -188,6 +188,9 @@
       "verySlow_male": "\n\n{emote:expedition.slow} *Il vostro compagno si muove con una lentezza sconcertante, fermandosi spesso ad annusare in giro. La spedizione durerà molto più del previsto...",
       "verySlow_female": "\n\n{emote:expedition.slow} *Il vostro compagno si muove con una lentezza sconcertante, fermandosi spesso ad annusare in giro. La spedizione durerà molto più del previsto..."
     },
+    "freeCancelledTitle": "{{pseudo}}partenza annullata",
+    "freeCancelled_male": "{{petDisplay}} penche la tête sur le côté, un peu déçu mais compréhensif. Après tout, ce n'est que partie remise ! Il trotte joyeusement vers vous, prêt à repartir dès que vous le souhaiterez.\n\n{emote:collectors.warning} *Attention : les prochaines annulations cette semaine feront perdre des points d'amour à votre familier.*",
+    "freeCancelled_female": "{{petDisplay}} penche la tête sur le côté, un peu déçue mais compréhensive. Après tout, ce n'est que partie remise ! Elle trotte joyeusement vers vous, prête à repartir dès que vous le souhaiterez.\n\n{emote:collectors.warning} *Attention : les prochaines annulations cette semaine feront perdre des points d'amour à votre familier.*",
     "cancelledTitle": "{{pseudo}}partenza annullata",
     "cancelled_male": "Vedendo la sua esitazione, {{petDisplay}} china la testa per la delusione. Pensava di vivere un'avventura... Sentite che la fiducia tra di voi si sta leggermente sgretolando. Il vostro compagno vi lancia uno sguardo ferito prima di allontanarsi, con la coda bassa.",
     "cancelled_female": "Vedendo la sua esitazione, {{petDisplay}} china la testa per la delusione. Pensava di vivere un'avventura... Sentite che la fiducia tra di voi si sta leggermente sgretolando. La vostra compagna vi lancia uno sguardo ferito prima di allontanarsi, con la coda bassa.",
