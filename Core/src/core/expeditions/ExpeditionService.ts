@@ -17,6 +17,11 @@ import { MapConstants } from "../../../../Lib/src/constants/MapConstants";
 import { MathUtils } from "../utils/MathUtils";
 
 /**
+ * Counter to ensure unique expedition IDs even when generated in the same millisecond
+ */
+let expeditionIdCounter = 0;
+
+/**
  * Get expedition location type from map location
  * Uses expeditionType override if defined, otherwise derives from map type
  * @param mapLocation - The map location (can be null/undefined)
@@ -37,9 +42,11 @@ function getExpeditionTypeFromMapLocation(mapLocation: MapLocation | null): Expe
 
 /**
  * Generate a unique expedition ID
+ * Uses timestamp + counter + random number to ensure uniqueness even in rapid succession
  */
 function generateExpeditionId(): string {
-	return `${ExpeditionConstants.ID_GENERATION.PREFIX}_${Date.now()}_${RandomUtils.randInt(
+	expeditionIdCounter = (expeditionIdCounter + 1) % ExpeditionConstants.ID_GENERATION.RANDOM_MAX;
+	return `${ExpeditionConstants.ID_GENERATION.PREFIX}_${Date.now()}_${expeditionIdCounter}_${RandomUtils.randInt(
 		ExpeditionConstants.ID_GENERATION.RANDOM_MIN,
 		ExpeditionConstants.ID_GENERATION.RANDOM_MAX
 	)}`;
