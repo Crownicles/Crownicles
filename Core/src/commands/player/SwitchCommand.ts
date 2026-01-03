@@ -20,6 +20,23 @@ import {
 import { ObjectItem } from "../../data/ObjectItem";
 import { MainItem } from "../../data/MainItem";
 import { BlockingUtils } from "../../core/utils/BlockingUtils";
+import { Potion } from "../../data/Potion";
+import { GenericItem } from "../../data/GenericItem";
+import {
+	MainItemDisplayPacket, SupportItemDisplayPacket
+} from "../../../../Lib/src/packets/commands/CommandInventoryPacket";
+
+/**
+ * Get the display packet for an inventory slot item, handling potions specially
+ * @param slot The inventory slot containing the item
+ */
+function getItemDisplayPacket(slot: InventorySlot): MainItemDisplayPacket | SupportItemDisplayPacket {
+	const item = slot.getItem() as GenericItem;
+	if (item instanceof Potion) {
+		return item.getDisplayPacket({}, slot.remainingPotionUsages);
+	}
+	return (item as MainItem | ObjectItem).getDisplayPacket();
+}
 
 
 /**
@@ -38,8 +55,8 @@ async function switchItems(
 	const toBackItem = inventorySlots.filter(slot => slot.isEquipped() && slot.itemCategory === toEquipItem.itemCategory)[0];
 	await InventorySlots.switchItemSlots(player, toEquipItem, toBackItem);
 	response.push(makePacket(CommandSwitchSuccess, {
-		itemBackedUp: (toBackItem.getItem() as MainItem | ObjectItem).getDisplayPacket(),
-		itemEquipped: (toEquipItem.getItem() as MainItem | ObjectItem).getDisplayPacket()
+		itemBackedUp: getItemDisplayPacket(toBackItem),
+		itemEquipped: getItemDisplayPacket(toEquipItem)
 	}));
 }
 
@@ -86,7 +103,7 @@ export default class SwitchCommand {
 
 		toSwitchItems = sortPlayerItemList(toSwitchItems);
 
-		const collector = new ReactionCollectorSwitchItem(toSwitchItems.map((item: InventorySlot) => (item.getItem() as MainItem | ObjectItem).getDisplayPacket()));
+		const collector = new ReactionCollectorSwitchItem(toSwitchItems.map((slot: InventorySlot) => getItemDisplayPacket(slot)));
 
 		// Create a reaction collector which will let the player choose the mission he wants to skip
 		const packet = new ReactionCollectorInstance(
