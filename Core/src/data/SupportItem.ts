@@ -20,5 +20,5 @@ export abstract class SupportItem extends GenericItem {
 		return this.nature === ItemNature.SPEED ? this.power : 0;
 	}
 
-	public abstract getDisplayPacket(maxStatsValue: StatValues, itemUsages?: number): SupportItemDisplayPacket;
+	public abstract getDisplayPacket(maxStatsValue?: StatValues, itemUsages?: number): SupportItemDisplayPacket;
 }

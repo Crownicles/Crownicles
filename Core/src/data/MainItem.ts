@@ -1,6 +1,8 @@
 import { GenericItem } from "./GenericItem";
 import { MainItemDisplayPacket } from "../../../Lib/src/packets/commands/CommandInventoryPacket";
-import { StatValues } from "../../../Lib/src/types/StatValues";
+import {
+	NO_STAT_COMPARISON, StatValues
+} from "../../../Lib/src/types/StatValues";
 import { InventoryConstants } from "../../../Lib/src/constants/InventoryConstants";
 
 export abstract class MainItem extends GenericItem {
@@ -19,11 +21,7 @@ export abstract class MainItem extends GenericItem {
 		return this.speed ?? 0;
 	}
 
-	public getDisplayPacket(maxStatsValue: StatValues = {
-		attack: Infinity,
-		defense: Infinity,
-		speed: Infinity
-	}): MainItemDisplayPacket {
+	public getDisplayPacket(maxStatsValue: StatValues = NO_STAT_COMPARISON): MainItemDisplayPacket {
 		return {
 			itemCategory: this.getCategory(),
 			attack: {

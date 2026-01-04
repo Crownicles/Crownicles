@@ -8,7 +8,9 @@ import { EmbedField } from "discord.js";
 import {
 	FightItemNatures, itemCategoryToString, ItemNature
 } from "../../../Lib/src/constants/ItemConstants";
-import { StatValues } from "../../../Lib/src/types/StatValues";
+import {
+	NO_STAT_COMPARISON, StatValues
+} from "../../../Lib/src/types/StatValues";
 import {
 	DisplayUtils, formatPotionUsagesPrefix
 } from "./DisplayUtils";
@@ -52,11 +54,7 @@ export class DiscordItemUtils {
 	 */
 	static getValues(attack: number, defense: number, speed: number, language: Language, maxStatsValue: StatValues | null = null): string {
 		if (!maxStatsValue) {
-			maxStatsValue = {
-				attack: Infinity,
-				defense: Infinity,
-				speed: Infinity
-			};
+			maxStatsValue = NO_STAT_COMPARISON;
 		}
 		const values: string[] = [];
 		DiscordItemUtils.getStringValueFor(language, values, {

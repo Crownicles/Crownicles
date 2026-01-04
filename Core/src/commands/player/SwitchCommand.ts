@@ -25,6 +25,7 @@ import { GenericItem } from "../../data/GenericItem";
 import {
 	MainItemDisplayPacket, SupportItemDisplayPacket
 } from "../../../../Lib/src/packets/commands/CommandInventoryPacket";
+import { NO_STAT_COMPARISON } from "../../../../Lib/src/types/StatValues";
 
 /**
  * Get the display packet for an inventory slot item, handling potions specially
@@ -33,7 +34,7 @@ import {
 function getItemDisplayPacket(slot: InventorySlot): MainItemDisplayPacket | SupportItemDisplayPacket {
 	const item = slot.getItem() as GenericItem;
 	if (item instanceof Potion) {
-		return item.getDisplayPacket({}, slot.remainingPotionUsages);
+		return item.getDisplayPacket(NO_STAT_COMPARISON, slot.remainingPotionUsages);
 	}
 	return (item as MainItem | ObjectItem).getDisplayPacket();
 }

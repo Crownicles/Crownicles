@@ -6,7 +6,9 @@ import { SupportItem } from "./SupportItem";
 import { RandomUtils } from "../../../Lib/src/utils/RandomUtils";
 import { ObjectItem } from "./ObjectItem";
 import { SupportItemDisplayPacket } from "../../../Lib/src/packets/commands/CommandInventoryPacket";
-import { StatValues } from "../../../Lib/src/types/StatValues";
+import {
+	NO_STAT_COMPARISON, StatValues
+} from "../../../Lib/src/types/StatValues";
 
 export class Potion extends SupportItem {
 	categoryName = "potions";
@@ -26,7 +28,7 @@ export class Potion extends SupportItem {
 		return this.power;
 	}
 
-	public getDisplayPacket(_maxStatsValue: StatValues, itemUsages?: number): SupportItemDisplayPacket {
+	public getDisplayPacket(_maxStatsValue: StatValues = NO_STAT_COMPARISON, itemUsages?: number): SupportItemDisplayPacket {
 		let usagesToDisplay: number | undefined;
 		let maxUsagesToDisplay: number | undefined;
 		if (this.isFightPotion()) {

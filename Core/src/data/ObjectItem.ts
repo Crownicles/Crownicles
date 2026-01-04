@@ -5,7 +5,9 @@ import { ItemDataController } from "./DataController";
 import { SupportItem } from "./SupportItem";
 import { RandomUtils } from "../../../Lib/src/utils/RandomUtils";
 import { SupportItemDisplayPacket } from "../../../Lib/src/packets/commands/CommandInventoryPacket";
-import { StatValues } from "../../../Lib/src/types/StatValues";
+import {
+	NO_STAT_COMPARISON, StatValues
+} from "../../../Lib/src/types/StatValues";
 
 export class ObjectItem extends SupportItem {
 	categoryName = "objects";
@@ -18,11 +20,7 @@ export class ObjectItem extends SupportItem {
 		return this.power;
 	}
 
-	public getDisplayPacket(maxStatsValue: StatValues = {
-		attack: Infinity,
-		defense: Infinity,
-		speed: Infinity
-	}): SupportItemDisplayPacket {
+	public getDisplayPacket(maxStatsValue: StatValues = NO_STAT_COMPARISON): SupportItemDisplayPacket {
 		let maxPower: number;
 		switch (this.nature) {
 			case ItemNature.ATTACK:
