@@ -1,11 +1,9 @@
-import {
-	DataTypes, QueryInterface
-} from "sequelize";
+import { QueryInterface } from "sequelize";
 
 /**
  * This migration adds foreign key constraints to the database schema.
  * Before running, ensure data integrity by removing orphaned records.
- * 
+ *
  * FK relationships:
  * - player_badges.playerId -> players.id
  * - player_talismans.playerId -> players.id
@@ -137,7 +135,9 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 		fields: ["playerId"],
 		type: "foreign key",
 		name: "fk_player_badges_playerId",
-		references: { table: "players", field: "id" },
+		references: {
+			table: "players", field: "id"
+		},
 		onDelete: "CASCADE",
 		onUpdate: "CASCADE"
 	});
@@ -146,7 +146,9 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 		fields: ["playerId"],
 		type: "foreign key",
 		name: "fk_player_talismans_playerId",
-		references: { table: "players", field: "id" },
+		references: {
+			table: "players", field: "id"
+		},
 		onDelete: "CASCADE",
 		onUpdate: "CASCADE"
 	});
@@ -155,7 +157,9 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 		fields: ["playerId"],
 		type: "foreign key",
 		name: "fk_mission_slots_playerId",
-		references: { table: "players", field: "id" },
+		references: {
+			table: "players", field: "id"
+		},
 		onDelete: "CASCADE",
 		onUpdate: "CASCADE"
 	});
@@ -164,7 +168,9 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 		fields: ["playerId"],
 		type: "foreign key",
 		name: "fk_inventory_slots_playerId",
-		references: { table: "players", field: "id" },
+		references: {
+			table: "players", field: "id"
+		},
 		onDelete: "CASCADE",
 		onUpdate: "CASCADE"
 	});
@@ -173,7 +179,9 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 		fields: ["playerId"],
 		type: "foreign key",
 		name: "fk_inventory_infos_playerId",
-		references: { table: "players", field: "id" },
+		references: {
+			table: "players", field: "id"
+		},
 		onDelete: "CASCADE",
 		onUpdate: "CASCADE"
 	});
@@ -182,7 +190,9 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 		fields: ["playerId"],
 		type: "foreign key",
 		name: "fk_player_missions_infos_playerId",
-		references: { table: "players", field: "id" },
+		references: {
+			table: "players", field: "id"
+		},
 		onDelete: "CASCADE",
 		onUpdate: "CASCADE"
 	});
@@ -191,7 +201,9 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 		fields: ["playerId"],
 		type: "foreign key",
 		name: "fk_player_small_events_playerId",
-		references: { table: "players", field: "id" },
+		references: {
+			table: "players", field: "id"
+		},
 		onDelete: "CASCADE",
 		onUpdate: "CASCADE"
 	});
@@ -200,7 +212,9 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 		fields: ["playerId"],
 		type: "foreign key",
 		name: "fk_player_active_objects_playerId",
-		references: { table: "players", field: "id" },
+		references: {
+			table: "players", field: "id"
+		},
 		onDelete: "CASCADE",
 		onUpdate: "CASCADE"
 	});
@@ -209,7 +223,9 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 		fields: ["playerId"],
 		type: "foreign key",
 		name: "fk_scheduled_report_notifications_playerId",
-		references: { table: "players", field: "id" },
+		references: {
+			table: "players", field: "id"
+		},
 		onDelete: "CASCADE",
 		onUpdate: "CASCADE"
 	});
@@ -218,7 +234,9 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 		fields: ["playerId"],
 		type: "foreign key",
 		name: "fk_scheduled_expedition_notifications_playerId",
-		references: { table: "players", field: "id" },
+		references: {
+			table: "players", field: "id"
+		},
 		onDelete: "CASCADE",
 		onUpdate: "CASCADE"
 	});
@@ -227,7 +245,9 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 		fields: ["playerId"],
 		type: "foreign key",
 		name: "fk_scheduled_daily_bonus_notifications_playerId",
-		references: { table: "players", field: "id" },
+		references: {
+			table: "players", field: "id"
+		},
 		onDelete: "CASCADE",
 		onUpdate: "CASCADE"
 	});
@@ -236,7 +256,9 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 		fields: ["playerId"],
 		type: "foreign key",
 		name: "fk_pet_expeditions_playerId",
-		references: { table: "players", field: "id" },
+		references: {
+			table: "players", field: "id"
+		},
 		onDelete: "CASCADE",
 		onUpdate: "CASCADE"
 	});
@@ -245,7 +267,9 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 		fields: ["playerId"],
 		type: "foreign key",
 		name: "fk_dwarf_pets_seen_playerId",
-		references: { table: "players", field: "id" },
+		references: {
+			table: "players", field: "id"
+		},
 		onDelete: "CASCADE",
 		onUpdate: "CASCADE"
 	});
@@ -255,7 +279,9 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 		fields: ["guildId"],
 		type: "foreign key",
 		name: "fk_guild_pets_guildId",
-		references: { table: "guilds", field: "id" },
+		references: {
+			table: "guilds", field: "id"
+		},
 		onDelete: "CASCADE",
 		onUpdate: "CASCADE"
 	});
@@ -264,7 +290,9 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 		fields: ["petEntityId"],
 		type: "foreign key",
 		name: "fk_guild_pets_petEntityId",
-		references: { table: "pet_entities", field: "id" },
+		references: {
+			table: "pet_entities", field: "id"
+		},
 		onDelete: "CASCADE",
 		onUpdate: "CASCADE"
 	});
@@ -274,7 +302,9 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 		fields: ["guildId"],
 		type: "foreign key",
 		name: "fk_players_guildId",
-		references: { table: "guilds", field: "id" },
+		references: {
+			table: "guilds", field: "id"
+		},
 		onDelete: "SET NULL",
 		onUpdate: "CASCADE"
 	});
@@ -283,7 +313,9 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 		fields: ["petId"],
 		type: "foreign key",
 		name: "fk_players_petId",
-		references: { table: "pet_entities", field: "id" },
+		references: {
+			table: "pet_entities", field: "id"
+		},
 		onDelete: "SET NULL",
 		onUpdate: "CASCADE"
 	});

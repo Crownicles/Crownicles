@@ -400,6 +400,14 @@ function verifyMembers(members: Player[], response: CrowniclesPacket[]): boolean
 	return true;
 }
 
+/**
+ * Generate and give a daily reward to guild members
+ * @param guild - The guild receiving the reward
+ * @param members - The guild members to reward
+ * @param response - The response packets array
+ * @param forcedReward - Optional forced reward type for testing
+ * @returns The reward packet containing reward details
+ */
 async function generateAndGiveReward(guild: Guild, members: Player[], response: CrowniclesPacket[], forcedReward?: string): Promise<CommandGuildDailyRewardPacket> {
 	const guildLike = {
 		guild, members
