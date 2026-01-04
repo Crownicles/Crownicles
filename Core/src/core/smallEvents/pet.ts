@@ -156,11 +156,12 @@ async function managePickedInteraction(packet: SmallEventPetPacket, response: Cr
 			break;
 
 		case PetConstants.PET_INTERACTIONS_NAMES.WIN_BADGE:
-		if (await PlayerBadgesManager.hasBadge(player.id, Badge.LEGENDARY_PET)) {
-			packet.interactionName = PetConstants.PET_INTERACTIONS_NAMES.NOTHING;
+			if (await PlayerBadgesManager.hasBadge(player.id, Badge.LEGENDARY_PET)) {
+				packet.interactionName = PetConstants.PET_INTERACTIONS_NAMES.NOTHING;
+				break;
+			}
+			await PlayerBadgesManager.addBadge(player.id, Badge.LEGENDARY_PET);
 			break;
-		}
-		await PlayerBadgesManager.addBadge(player.id, Badge.LEGENDARY_PET);
 
 		case PetConstants.PET_INTERACTIONS_NAMES.LOSE_HEALTH:
 			packet.amount = RandomUtils.rangedInt(SmallEventConstants.PET.HEALTH);

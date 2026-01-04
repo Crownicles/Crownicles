@@ -38,7 +38,9 @@ export class PlayerBadgesManager {
 	 */
 	public static async hasBadge(playerId: number, badge: Badge): Promise<boolean> {
 		const existing = await PlayerBadges.findOne({
-			where: { playerId, badge }
+			where: {
+				playerId, badge
+			}
 		});
 		return existing !== null;
 	}
@@ -51,7 +53,9 @@ export class PlayerBadgesManager {
 	 */
 	public static async addBadge(playerId: number, badge: Badge): Promise<boolean> {
 		const [, created] = await PlayerBadges.findOrCreate({
-			where: { playerId, badge }
+			where: {
+				playerId, badge
+			}
 		});
 		return created;
 	}
@@ -67,7 +71,9 @@ export class PlayerBadgesManager {
 		});
 		if (badges.length > 0) {
 			await PlayerBadges.bulkCreate(
-				badges.map(badge => ({ playerId, badge }))
+				badges.map(badge => ({
+					playerId, badge
+				}))
 			);
 		}
 	}

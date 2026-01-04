@@ -1,8 +1,7 @@
 import { QueryInterface } from "sequelize";
 
 export async function up({ context }: { context: QueryInterface }): Promise<void> {
-	// Add index on scheduledAt for scheduled notification tables
-	// These are commonly queried with WHERE scheduledAt < now() to find pending notifications
+	// Add index on scheduledAt for scheduled notification tables. These are commonly queried with WHERE scheduledAt < now() to find pending notifications
 
 	await context.addIndex("scheduled_report_notifications", ["scheduledAt"], {
 		name: "idx_scheduled_report_notifications_scheduledAt"

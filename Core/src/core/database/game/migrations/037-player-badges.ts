@@ -17,8 +17,7 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 		createdAt: { type: DataTypes.DATE }
 	});
 
-	// Migrate data from players table to player_badges
-	// The badges column contains comma-separated values like "badge1,badge2,badge3"
+	// Migrate data from players table to player_badges. The badges column contains comma-separated values like "badge1,badge2,badge3"
 	await context.sequelize.query(`
 		INSERT INTO player_badges (playerId, badge, updatedAt, createdAt)
 		SELECT 

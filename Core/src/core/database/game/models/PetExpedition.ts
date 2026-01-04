@@ -245,7 +245,7 @@ export function initModel(sequelize: Sequelize): void {
 			allowNull: false
 		},
 		locationType: {
-			type: DataTypes.ENUM(...Object.values(ExpeditionConstants.EXPEDITION_LOCATION_TYPES)),
+			type: DataTypes.ENUM(...Object.values(ExpeditionConstants.EXPEDITION_LOCATION_TYPES)), // eslint-disable-line new-cap
 			allowNull: false
 		},
 		mapLocationId: {
@@ -254,7 +254,7 @@ export function initModel(sequelize: Sequelize): void {
 			defaultValue: 1
 		},
 		status: {
-			type: DataTypes.ENUM(...Object.values(ExpeditionConstants.STATUS)),
+			type: DataTypes.ENUM(...Object.values(ExpeditionConstants.STATUS)), // eslint-disable-line new-cap
 			allowNull: false,
 			defaultValue: ExpeditionConstants.STATUS.IN_PROGRESS
 		},
