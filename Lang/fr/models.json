@@ -1082,8 +1082,8 @@
     },
     "1114": {
       "description": "",
-      "name": "Gorge de l'ombre",
-      "particle": "vers la"
+      "name": "Ravin des Abysses",
+      "particle": "vers le"
     },
     "12": {
       "description": "Une grande plaine vide nordique sans grand intérêt.",
@@ -1247,6 +1247,10 @@
     }
   },
   "map_types": {
+    "abyss": {
+      "name": "",
+      "prefix": "du"
+    },
     "be": {
       "name": "Plage",
       "prefix": "de la"
@@ -1259,6 +1263,10 @@
       "name": "",
       "prefix": "de la"
     },
+    "cavern": {
+      "name": "",
+      "prefix": "de la"
+    },
     "ci": {
       "name": "Ville",
       "prefix": "de la"
@@ -1266,6 +1274,10 @@
     "continent": {
       "name": "",
       "prefix": "du"
+    },
+    "creek": {
+      "name": "",
+      "prefix": "de la"
     },
     "crystalCavern": {
       "name": "Caverne de cristal",
