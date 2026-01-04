@@ -45,13 +45,11 @@ export default class LeagueRewardCommand {
 		// Block player before checking hasClaimedLeagueReward to prevent race condition
 		BlockingUtils.blockPlayer(player.keycloakId, BlockingConstants.REASONS.LEAGUE_REWARD);
 
-		if (await player.hasClaimedLeagueReward()) {
-			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.LEAGUE_REWARD);
-			response.push(makePacket(CommandLeagueRewardAlreadyClaimedPacketRes, {}));
-			return;
-		}
-
 		try {
+			if (await player.hasClaimedLeagueReward()) {
+				response.push(makePacket(CommandLeagueRewardAlreadyClaimedPacketRes, {}));
+				return;
+			}
 			const leagueLastSeason = player.getLeagueLastSeason();
 			const scoreToAward = await player.getLastSeasonScoreToAward();
 			const moneyToAward = leagueLastSeason.getMoneyToAward();
