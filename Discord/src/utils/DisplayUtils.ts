@@ -16,6 +16,7 @@ import {
 } from "./StringUtils";
 import { KeycloakUtils } from "../../../Lib/src/keycloak/KeycloakUtils";
 import { keycloakConfig } from "../bot/CrowniclesShard";
+import { NO_STAT_COMPARISON } from "../../../Lib/src/types/StatValues";
 
 /**
  * Format potion usages prefix for display (e.g., "**3/4** | ")
@@ -385,11 +386,7 @@ export class DisplayUtils {
 		const power = itemWithDetails.detailsSupportItem!.power;
 
 		// Default max stats values if not provided
-		const maxStats = itemWithDetails.maxStats ?? {
-			attack: Infinity,
-			defense: Infinity,
-			speed: Infinity
-		};
+		const maxStats = itemWithDetails.maxStats ?? NO_STAT_COMPARISON;
 
 		switch (nature) {
 			case ItemNature.TIME_SPEEDUP:
