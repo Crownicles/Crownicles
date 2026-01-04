@@ -710,14 +710,20 @@ export class LogsDatabase extends Database {
 	public async log15BestTopWeek(): Promise<void> {
 		const players = await Players.getPlayersTop(1, 15, true);
 		const now = getDateLogs();
-		for (let i = 0; i < players.length; i++) {
-			const player = await LogsDatabase.findOrCreatePlayer(players[i].keycloakId);
+		let position = 1;
+		for (const gamePlayer of players) {
+			// Skip players without a valid keycloakId (can happen with corrupted data or old records)
+			if (!gamePlayer.keycloakId) {
+				continue;
+			}
+			const player = await LogsDatabase.findOrCreatePlayer(gamePlayer.keycloakId);
 			await LogsPlayers15BestTopweek.create({
 				playerId: player.id,
-				position: i + 1,
-				topWeekScore: players[i].weeklyScore,
+				position,
+				topWeekScore: gamePlayer.weeklyScore,
 				date: now
 			});
+			position++;
 		}
 	}
 
@@ -1306,14 +1312,20 @@ export class LogsDatabase extends Database {
 	public async log15BestSeason(): Promise<void> {
 		const players = await Players.getPlayersGloryTop(1, 15);
 		const now = getDateLogs();
-		for (let i = 0; i < players.length; i++) {
-			const player = await LogsDatabase.findOrCreatePlayer(players[i].keycloakId);
+		let position = 1;
+		for (const gamePlayer of players) {
+			// Skip players without a valid keycloakId (can happen with corrupted data or old records)
+			if (!gamePlayer.keycloakId) {
+				continue;
+			}
+			const player = await LogsDatabase.findOrCreatePlayer(gamePlayer.keycloakId);
 			await LogsPlayers15BestSeason.create({
 				playerId: player.id,
-				position: i + 1,
-				seasonGlory: players[i].getGloryPoints(),
+				position,
+				seasonGlory: gamePlayer.getGloryPoints(),
 				date: now
 			});
+			position++;
 		}
 	}
 
