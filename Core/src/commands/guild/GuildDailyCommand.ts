@@ -30,10 +30,10 @@ import {
 import { BlockingUtils } from "../../core/utils/BlockingUtils";
 import { Maps } from "../../core/maps/Maps";
 import { LockManager } from "../../../../Lib/src/locks/LockManager";
-
-const guildDailyLockManager = new LockManager();
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
 import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
+
+const guildDailyLockManager = new LockManager();
 import { Badge } from "../../../../Lib/src/types/Badge";
 
 type GuildLike = {
