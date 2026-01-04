@@ -20,6 +20,8 @@ import {
 } from "../../../../Lib/src/utils/TimeUtils";
 import { FightConstants } from "../../../../Lib/src/constants/FightConstants";
 import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
+import { BlockingUtils } from "../../core/utils/BlockingUtils";
+import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
 
 export default class LeagueRewardCommand {
 	@commandRequires(CommandLeagueRewardPacketReq, {
@@ -39,42 +41,55 @@ export default class LeagueRewardCommand {
 			response.push(makePacket(CommandLeagueRewardNoPointsPacketRes, {}));
 			return;
 		}
+
+		// Block player before checking hasClaimedLeagueReward to prevent race condition
+		BlockingUtils.blockPlayer(player.keycloakId, BlockingConstants.REASONS.LEAGUE_REWARD);
+
 		if (await player.hasClaimedLeagueReward()) {
+			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.LEAGUE_REWARD);
 			response.push(makePacket(CommandLeagueRewardAlreadyClaimedPacketRes, {}));
 			return;
 		}
-		const leagueLastSeason = player.getLeagueLastSeason();
-		const scoreToAward = await player.getLastSeasonScoreToAward();
-		const moneyToAward = leagueLastSeason.getMoneyToAward();
-		const xpToAward = leagueLastSeason.getXPToAward();
 
-		await player.addScore({
-			response,
-			amount: scoreToAward,
-			reason: NumberChangeReason.LEAGUE_REWARD
-		});
-		await player.addMoney({
-			response,
-			amount: moneyToAward,
-			reason: NumberChangeReason.LEAGUE_REWARD
-		});
-		await player.addExperience({
-			response,
-			amount: xpToAward,
-			reason: NumberChangeReason.LEAGUE_REWARD
-		});
-		const item = leagueLastSeason.generateRewardItem();
-		await giveItemToPlayer(response, context, player, item);
-		crowniclesInstance.logsDatabase.logPlayerLeagueReward(player.keycloakId, leagueLastSeason.id)
-			.then();
-		await player.save();
-		response.push(makePacket(CommandLeagueRewardSuccessPacketRes, {
-			score: scoreToAward,
-			money: moneyToAward,
-			xp: xpToAward,
-			gloryPoints: player.gloryPointsLastSeason,
-			oldLeagueId: leagueLastSeason.id,
-			rank: await Players.getLastSeasonGloryRankById(player.id)
-		}));
+		try {
+			const leagueLastSeason = player.getLeagueLastSeason();
+			const scoreToAward = await player.getLastSeasonScoreToAward();
+			const moneyToAward = leagueLastSeason.getMoneyToAward();
+			const xpToAward = leagueLastSeason.getXPToAward();
+
+			await player.addScore({
+				response,
+				amount: scoreToAward,
+				reason: NumberChangeReason.LEAGUE_REWARD
+			});
+			await player.addMoney({
+				response,
+				amount: moneyToAward,
+				reason: NumberChangeReason.LEAGUE_REWARD
+			});
+			await player.addExperience({
+				response,
+				amount: xpToAward,
+				reason: NumberChangeReason.LEAGUE_REWARD
+			});
+			const item = leagueLastSeason.generateRewardItem();
+			await giveItemToPlayer(response, context, player, item);
+
+			// Log the reward claim synchronously to ensure it's recorded before unblock
+			await crowniclesInstance.logsDatabase.logPlayerLeagueReward(player.keycloakId, leagueLastSeason.id);
+			await player.save();
+
+			response.push(makePacket(CommandLeagueRewardSuccessPacketRes, {
+				score: scoreToAward,
+				money: moneyToAward,
+				xp: xpToAward,
+				gloryPoints: player.gloryPointsLastSeason,
+				oldLeagueId: leagueLastSeason.id,
+				rank: await Players.getLastSeasonGloryRankById(player.id)
+			}));
+		}
+		finally {
+			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.LEAGUE_REWARD);
+		}
 	}
 }
