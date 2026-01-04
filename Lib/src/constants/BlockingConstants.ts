@@ -21,6 +21,7 @@ export abstract class BlockingConstants {
 		GUILD_LEAVE: "guildLeave",
 		GUILD_SHOP: "guildShop",
 		GUILD_SHOP_CONFIRMATION: "guildShopConfirmation",
+		LEAGUE_REWARD: "leagueReward",
 		LOTTERY: "lottery",
 		MERCHANT: "merchant",
 		MISSION_SHOP: "missionShop",

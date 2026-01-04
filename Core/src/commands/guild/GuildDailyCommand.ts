@@ -29,6 +29,9 @@ import {
 } from "../../core/utils/CommandUtils";
 import { BlockingUtils } from "../../core/utils/BlockingUtils";
 import { Maps } from "../../core/maps/Maps";
+import { LockManager } from "../../../../Lib/src/locks/LockManager";
+
+const guildDailyLockManager = new LockManager();
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
 import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
 import { Badge } from "../../../../Lib/src/types/Badge";
@@ -421,33 +424,41 @@ export default class GuildDailyCommand {
 		whereAllowed: [WhereAllowed.CONTINENT]
 	})
 	static async execute(response: CrowniclesPacket[], player: Player, _packet: CommandGuildDailyPacketReq, _context: PacketContext, forcedReward?: string): Promise<void> {
-		const guild = await Guilds.getById(player.guildId);
+		// Acquire lock to prevent race condition when multiple members spam the command
+		const lock = guildDailyLockManager.getLock(player.guildId);
+		const release = await lock.acquire();
+		try {
+			const guild = await Guilds.getById(player.guildId);
 
-		// Verify if the cooldown is over
-		const time = Date.now() - guild.lastDailyAt.valueOf();
-		if (millisecondsToHours(time) < GuildDailyConstants.TIME_BETWEEN_DAILIES) {
-			response.push(makePacket(CommandGuildDailyCooldownErrorPacket, {
-				totalTime: GuildDailyConstants.TIME_BETWEEN_DAILIES,
-				remainingTime: hoursToMilliseconds(GuildDailyConstants.TIME_BETWEEN_DAILIES) - time
-			}));
-			return;
+			// Verify if the cooldown is over (re-check after acquiring lock)
+			const time = Date.now() - guild.lastDailyAt.valueOf();
+			if (millisecondsToHours(time) < GuildDailyConstants.TIME_BETWEEN_DAILIES) {
+				response.push(makePacket(CommandGuildDailyCooldownErrorPacket, {
+					totalTime: GuildDailyConstants.TIME_BETWEEN_DAILIES,
+					remainingTime: hoursToMilliseconds(GuildDailyConstants.TIME_BETWEEN_DAILIES) - time
+				}));
+				return;
+			}
+
+			// Verify if no member blocks the guild daily
+			const members = await Players.getByGuild(guild.id);
+			if (!verifyMembers(members, response)) {
+				return;
+			}
+
+			// Update the last daily time
+			guild.lastDailyAt = new Date();
+			await guild.save();
+
+			// Generate and give the rewards
+			const rewardPacket = await generateAndGiveReward(guild, members, response, forcedReward);
+			response.push(rewardPacket);
+
+			// Send notifications and update players missions
+			await notifyAndUpdatePlayers(player.keycloakId, members, response, rewardPacket);
 		}
-
-		// Verify if no member blocks the guild daily
-		const members = await Players.getByGuild(guild.id);
-		if (!verifyMembers(members, response)) {
-			return;
+		finally {
+			release();
 		}
-
-		// Update the last daily time
-		guild.lastDailyAt = new Date();
-		await guild.save();
-
-		// Generate and give the rewards
-		const rewardPacket = await generateAndGiveReward(guild, members, response, forcedReward);
-		response.push(rewardPacket);
-
-		// Send notifications and update players missions
-		await notifyAndUpdatePlayers(player.keycloakId, members, response, rewardPacket);
 	}
 }

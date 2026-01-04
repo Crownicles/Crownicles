@@ -120,7 +120,11 @@ export default class DailyBonusCommand {
 		whereAllowed: [WhereAllowed.CONTINENT]
 	})
 	async execute(response: CrowniclesPacket[], player: Player, _packet: CrowniclesPacket, context: PacketContext): Promise<void> {
+		// Block player immediately to prevent concurrent executions
+		BlockingUtils.blockPlayer(player.keycloakId, BlockingConstants.REASONS.DAILY_BONUS);
+
 		if (await dailyNotReady(player, response)) {
+			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.DAILY_BONUS);
 			return;
 		}
 
@@ -128,6 +132,7 @@ export default class DailyBonusCommand {
 
 		if (usableObjects.length === 0) {
 			response.push(makePacket(CommandDailyBonusNoAvailableObject, {}));
+			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.DAILY_BONUS);
 			return;
 		}
 
@@ -137,6 +142,7 @@ export default class DailyBonusCommand {
 			await activateDailyItem(player, item, response);
 			crowniclesInstance.logsDatabase.logPlayerDaily(player.keycloakId, item)
 				.then();
+			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.DAILY_BONUS);
 			return;
 		}
 
@@ -171,7 +177,6 @@ export default class DailyBonusCommand {
 			},
 			endCallback
 		)
-			.block(player.keycloakId, BlockingConstants.REASONS.DAILY_BONUS)
 			.build();
 
 		response.push(collectorPacket);
