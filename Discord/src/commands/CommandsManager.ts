@@ -160,17 +160,17 @@ export class CommandsManager {
 		const pending = getPendingDeletion(authorId);
 		if (pending) {
 			if (isValidConfirmationPhrase(content)) {
-				// User confirmed - proceed with account deletion
-				const result = await KeycloakUtils.anonymizeUser(keycloakConfig, pending.keycloakId);
+				// User confirmed - proceed with account deletion (delete Keycloak user completely)
+				const result = await KeycloakUtils.deleteUser(keycloakConfig, pending.keycloakId);
 				clearPendingDeletion(authorId);
 
 				if (result.isError) {
 					await message.reply(i18n.t("bot:accountDeletion.error", { lng: pending.language }));
-					CrowniclesLogger.error(`Failed to anonymize user ${pending.keycloakId}: ${JSON.stringify(result.payload)}`);
+					CrowniclesLogger.error(`Failed to delete user ${pending.keycloakId}: status=${result.status}, payload=${JSON.stringify(result.payload)}`);
 				}
 				else {
 					await message.reply(i18n.t("bot:accountDeletion.success", { lng: pending.language }));
-					CrowniclesLogger.info(`Successfully anonymized user ${pending.keycloakId} (Discord: ${authorId})`);
+					CrowniclesLogger.info(`Successfully deleted Keycloak user ${pending.keycloakId} (Discord: ${authorId})`);
 				}
 				return true;
 			}

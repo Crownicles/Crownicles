@@ -37,16 +37,16 @@ export const DELETION_CONFIRMATION_PHRASES: Record<string, string> = {
 };
 
 /**
- * Generates a deterministic 8-character hex code for account deletion
+ * Generates a deterministic 16-character hex code for account deletion
  * The code is derived from the keycloakId and the bot's startup secret
  * @param keycloakId - The user's Keycloak ID
- * @returns An 8-character uppercase hex string
+ * @returns A 16-character uppercase hex string
  */
 export function generateDeletionCode(keycloakId: string): string {
 	return crypto.createHmac("sha256", BOT_DELETION_SECRET)
 		.update(keycloakId)
 		.digest("hex")
-		.substring(0, 8)
+		.substring(0, 16)
 		.toUpperCase();
 }
 

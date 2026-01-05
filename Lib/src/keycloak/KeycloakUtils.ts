@@ -652,59 +652,52 @@ export class KeycloakUtils {
 	}
 
 	/**
-	 * Anonymize a user's personal data in Keycloak for GDPR compliance
-	 * Sets discordId to "0" and gameUsername to "Deleted User"
-	 * Also changes the username to prevent conflicts if the user wants to re-register
+	/**
+	 * Delete a Keycloak user completely (for account deletion GDPR compliance)
+	 * This removes the user from Keycloak but does not affect game data in the database
 	 * @param keycloakConfig
-	 * @param keycloakId - The Keycloak ID of the user to anonymize
+	 * @param keycloakId
 	 */
-	public static async anonymizeUser(keycloakConfig: KeycloakConfig, keycloakId: string): Promise<ApiCallReturnType<Record<string, never>>> {
+	public static async deleteUser(keycloakConfig: KeycloakConfig, keycloakId: string): Promise<ApiCallReturnType<Record<string, never>>> {
 		const checkAndQueryToken = await this.checkAndQueryToken(keycloakConfig);
 		if (checkAndQueryToken.isError) {
-			return checkAndQueryToken;
-		}
-
-		// Get the current user to retrieve existing attributes
-		const userResult = await this.getUserByKeycloakId(keycloakConfig, keycloakId);
-		if (userResult.isError || !("user" in userResult.payload)) {
 			return {
-				status: userResult.status,
-				payload: userResult.payload as { error?: object },
-				isError: true
+				...checkAndQueryToken,
+				payload: { error: { details: "Token check failed", original: checkAndQueryToken.payload } }
 			};
 		}
 
-		const user = userResult.payload.user;
-		const attributes = user.attributes;
-
-		// Clear the cache entry for this discord ID
-		const oldDiscordId = user.attributes.discordId?.[0];
-		if (oldDiscordId && oldDiscordId !== "0") {
-			KeycloakUtils.keycloakDiscordToIdMap.delete(oldDiscordId);
+		// Get the current user to clear the cache
+		const userResult = await this.getUserByKeycloakId(keycloakConfig, keycloakId);
+		if (!userResult.isError && "user" in userResult.payload) {
+			const oldDiscordId = userResult.payload.user.attributes?.discordId?.[0];
+			if (oldDiscordId && oldDiscordId !== "0") {
+				KeycloakUtils.keycloakDiscordToIdMap.delete(oldDiscordId);
+			}
 		}
 
-		// Anonymize personal data
-		attributes.discordId = ["0"];
-		attributes.gameUsername = ["Utilisateur supprimé"];
-
-		// Generate a unique deleted username to prevent conflicts on re-registration
-		const deletedUsername = `deleted-${keycloakId.substring(0, 8)}-${Date.now()}`;
-
-		// Send the update request to Keycloak
+		// Delete the user from Keycloak
 		const res = await fetch(`${keycloakConfig.url}/admin/realms/${keycloakConfig.realm}/users/${keycloakId}`, {
-			method: "PUT",
+			method: "DELETE",
 			headers: {
 				"Authorization": `Bearer ${this.keycloakToken}`,
 				"Content-Type": "application/json"
-			},
-			body: JSON.stringify({
-				username: deletedUsername,
-				attributes
-			})
+			}
 		});
 
 		if (!res.ok) {
-			return formatApiCallError(res);
+			let errorBody = "";
+			try {
+				errorBody = await res.text();
+			}
+			catch {
+				errorBody = "Could not read error body";
+			}
+			return {
+				status: res.status,
+				payload: { error: { details: `Keycloak DELETE failed: ${res.status} ${res.statusText}`, body: errorBody } },
+				isError: true
+			};
 		}
 
 		return formatApiCallOk(res, {});

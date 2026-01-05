@@ -230,8 +230,12 @@ export class LogsDatabase extends Database {
 	/**
 	 * Find or create a player in the log database
 	 * @param keycloakId
+	 * @throws Error if keycloakId is invalid
 	 */
 	static async findOrCreatePlayer(keycloakId: string): Promise<LogsPlayers> {
+		if (!keycloakId) {
+			throw new Error("Cannot find or create player with invalid keycloakId");
+		}
 		return (await LogsPlayers.findOrCreate({
 			where: { keycloakId }
 		}))[0];
