@@ -395,10 +395,22 @@
       "name_one": "Attaque maudite",
       "name_other": "Attaques maudites"
     },
+    "cursedByTheSea": {
+      "name": "damné par la mer",
+      "new": "est damné par la mer...",
+      "active": "est damné par la mer...",
+      "stop": "est condamné par les eaux maudites."
+    },
+    "cursedOfTheSea": {
+      "description": "La mer maudit son adversaire, le condamnant à un destin funeste.",
+      "customMessage": "comdamne son adversaire à être damné par la mer.",
+      "name_one": "Malédiction de la mer",
+      "name_other": "Malédictions de la mer"
+    },
     "darkAttack": {
       "description": "Ignore la défense de l'adversaire. Plus efficace contre un joueur ayant une attaque élevée. Aveugle l'adversaire ou rend au lanceur une partie de son souffle perdu. L'altération \"aveuglé\" dure au moins 1 tour et rend l'adversaire incapable d'attaquer parfois, tout en réduisant sa défense et sa vitesse.",
       "name_one": "Attaque sombre",
-      "name_other": "Attaques sombres"
+      "name_other": "Attaques so mbres"
     },
     "defenseBuff": {
       "description": "Plus cette action est effectuée à la suite, plus le bonus de défense est important.",
@@ -609,6 +621,11 @@
     "mudShotAttack": {
       "name_one": "Attaque tir de boue",
       "name_other": "Attaques tir de boue"
+    },
+    "mutiny": {
+      "customMessage": "invoque les fantômes de son vieil équipage, c'est une révolte total !",
+      "name_one": "Mutinerie",
+      "name_other": "Mutineries"
     },
     "none": {
       "customMessage": "ne peut pas attaquer."
