@@ -654,6 +654,7 @@ export class KeycloakUtils {
 	/**
 	 * Anonymize a user's personal data in Keycloak for GDPR compliance
 	 * Sets discordId to "0" and gameUsername to "Deleted User"
+	 * Also changes the username to prevent conflicts if the user wants to re-register
 	 * @param keycloakConfig
 	 * @param keycloakId - The Keycloak ID of the user to anonymize
 	 */
@@ -676,15 +677,18 @@ export class KeycloakUtils {
 		const user = userResult.payload.user;
 		const attributes = user.attributes;
 
-		// Anonymize personal data
-		attributes.discordId = ["0"];
-		attributes.gameUsername = ["Utilisateur supprimé"];
-
 		// Clear the cache entry for this discord ID
 		const oldDiscordId = user.attributes.discordId?.[0];
 		if (oldDiscordId && oldDiscordId !== "0") {
 			KeycloakUtils.keycloakDiscordToIdMap.delete(oldDiscordId);
 		}
+
+		// Anonymize personal data
+		attributes.discordId = ["0"];
+		attributes.gameUsername = ["Utilisateur supprimé"];
+
+		// Generate a unique deleted username to prevent conflicts on re-registration
+		const deletedUsername = `deleted-${keycloakId.substring(0, 8)}-${Date.now()}`;
 
 		// Send the update request to Keycloak
 		const res = await fetch(`${keycloakConfig.url}/admin/realms/${keycloakConfig.realm}/users/${keycloakId}`, {
@@ -693,7 +697,10 @@ export class KeycloakUtils {
 				"Authorization": `Bearer ${this.keycloakToken}`,
 				"Content-Type": "application/json"
 			},
-			body: JSON.stringify({ attributes })
+			body: JSON.stringify({
+				username: deletedUsername,
+				attributes
+			})
 		});
 
 		if (!res.ok) {

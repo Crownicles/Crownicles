@@ -1,5 +1,6 @@
 import * as crypto from "crypto";
 import { Collection } from "discord.js";
+import { Language } from "../../../Lib/src/Language";
 
 /**
  * Secret generated at bot startup - changes on each restart for additional security
@@ -8,11 +9,12 @@ import { Collection } from "discord.js";
 const BOT_DELETION_SECRET = crypto.randomBytes(32).toString("hex");
 
 /**
- * Store pending deletion confirmations: discordId -> { keycloakId, expiresAt }
+ * Store pending deletion confirmations: discordId -> { keycloakId, language, expiresAt }
  * Used to track users who have entered a valid code and need to type the confirmation phrase
  */
 const pendingDeletions = new Collection<string, {
 	keycloakId: string;
+	language: Language;
 	expiresAt: number;
 }>();
 
@@ -62,10 +64,12 @@ export function verifyDeletionCode(keycloakId: string, code: string): boolean {
  * Sets a pending deletion for a user after they've entered a valid code
  * @param discordId - The user's Discord ID
  * @param keycloakId - The user's Keycloak ID
+ * @param language - The user's preferred language
  */
-export function setPendingDeletion(discordId: string, keycloakId: string): void {
+export function setPendingDeletion(discordId: string, keycloakId: string, language: Language): void {
 	pendingDeletions.set(discordId, {
 		keycloakId,
+		language,
 		expiresAt: Date.now() + DELETION_CONFIRMATION_TIMEOUT
 	});
 }
@@ -75,7 +79,7 @@ export function setPendingDeletion(discordId: string, keycloakId: string): void 
  * @param discordId - The user's Discord ID
  * @returns The pending deletion info or null if not found/expired
  */
-export function getPendingDeletion(discordId: string): { keycloakId: string } | null {
+export function getPendingDeletion(discordId: string): { keycloakId: string; language: Language } | null {
 	const pending = pendingDeletions.get(discordId);
 	if (!pending) {
 		return null;
@@ -84,7 +88,7 @@ export function getPendingDeletion(discordId: string): { keycloakId: string } | 
 		pendingDeletions.delete(discordId);
 		return null;
 	}
-	return { keycloakId: pending.keycloakId };
+	return { keycloakId: pending.keycloakId, language: pending.language };
 }
 
 /**

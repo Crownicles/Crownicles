@@ -165,11 +165,11 @@ export class CommandsManager {
 				clearPendingDeletion(authorId);
 
 				if (result.isError) {
-					await message.reply(i18n.t("bot:accountDeletion.error", { lng: LANGUAGE.FRENCH }));
+					await message.reply(i18n.t("bot:accountDeletion.error", { lng: pending.language }));
 					CrowniclesLogger.error(`Failed to anonymize user ${pending.keycloakId}: ${JSON.stringify(result.payload)}`);
 				}
 				else {
-					await message.reply(i18n.t("bot:accountDeletion.success", { lng: LANGUAGE.FRENCH }));
+					await message.reply(i18n.t("bot:accountDeletion.success", { lng: pending.language }));
 					CrowniclesLogger.info(`Successfully anonymized user ${pending.keycloakId} (Discord: ${authorId})`);
 				}
 				return true;
@@ -177,7 +177,7 @@ export class CommandsManager {
 
 			// User sent something else while pending - cancel and inform
 			clearPendingDeletion(authorId);
-			await message.reply(i18n.t("bot:accountDeletion.cancelled", { lng: LANGUAGE.FRENCH }));
+			await message.reply(i18n.t("bot:accountDeletion.cancelled", { lng: pending.language }));
 			return true;
 		}
 
@@ -186,22 +186,22 @@ export class CommandsManager {
 		if (code) {
 			// Look up the user in Keycloak
 			const user = await KeycloakUtils.getDiscordUser(keycloakConfig, authorId, message.author.displayName);
-			if (user.isError) {
+			if (user.isError || !user.payload.user) {
 				await message.reply(i18n.t("bot:accountDeletion.userNotFound", { lng: LANGUAGE.FRENCH }));
 				return true;
 			}
 
 			// Verify the code matches
+			const userLanguage = KeycloakUtils.getUserLanguage(user.payload.user);
 			if (!verifyDeletionCode(user.payload.user.id, code)) {
-				await message.reply(i18n.t("bot:accountDeletion.invalidCode", { lng: LANGUAGE.FRENCH }));
+				await message.reply(i18n.t("bot:accountDeletion.invalidCode", { lng: userLanguage }));
 				return true;
 			}
 
-			// Code is valid - get user's language and ask for confirmation phrase
-			const userLanguage = KeycloakUtils.getUserLanguage(user.payload.user);
+			// Code is valid - ask for confirmation phrase
 			const confirmationPhrase = getConfirmationPhrase(userLanguage);
 
-			setPendingDeletion(authorId, user.payload.user.id);
+			setPendingDeletion(authorId, user.payload.user.id, userLanguage);
 
 			await message.reply(i18n.t("bot:accountDeletion.confirmPrompt", {
 				lng: userLanguage,
