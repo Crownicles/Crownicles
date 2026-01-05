@@ -12,7 +12,7 @@ import { FightConstants } from "../../../../../../../Lib/src/constants/FightCons
 
 const use: FightActionFunc = (sender, receiver) => {
 	const receiverLastAction = receiver.fightActionsHistory[receiver.fightActionsHistory.length - 1];
-	if (receiverLastAction && FightActionType.DISTANCE === receiverLastAction.type) {
+	if (receiverLastAction && FightActionType.PHYSICAL === receiverLastAction.type) {
 		return {
 			...customMessageActionResult(),
 			damages: 0
@@ -35,6 +35,7 @@ const use: FightActionFunc = (sender, receiver) => {
 		}
 	);
 
+
 	receiver.nextFightAction = FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.NONE);
 	return result;
 };
@@ -44,8 +45,8 @@ export default use;
 function getAttackInfo(): attackInfo {
 	return {
 		minDamage: 25,
-		averageDamage: 60,
-		maxDamage: 130
+		averageDamage: 40,
+		maxDamage: 115
 	};
 }
 
