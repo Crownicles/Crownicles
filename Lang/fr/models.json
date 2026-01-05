@@ -410,7 +410,7 @@
     "darkAttack": {
       "description": "Ignore la défense de l'adversaire. Plus efficace contre un joueur ayant une attaque élevée. Aveugle l'adversaire ou rend au lanceur une partie de son souffle perdu. L'altération \"aveuglé\" dure au moins 1 tour et rend l'adversaire incapable d'attaquer parfois, tout en réduisant sa défense et sa vitesse.",
       "name_one": "Attaque sombre",
-      "name_other": "Attaques so mbres"
+      "name_other": "Attaques sombres"
     },
     "defenseBuff": {
       "description": "Plus cette action est effectuée à la suite, plus le bonus de défense est important.",
