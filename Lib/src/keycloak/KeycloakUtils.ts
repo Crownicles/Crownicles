@@ -652,6 +652,58 @@ export class KeycloakUtils {
 	}
 
 	/**
+	 * Anonymize a user's personal data in Keycloak for GDPR compliance
+	 * Sets discordId to "0" and gameUsername to "Deleted User"
+	 * @param keycloakConfig
+	 * @param keycloakId - The Keycloak ID of the user to anonymize
+	 */
+	public static async anonymizeUser(keycloakConfig: KeycloakConfig, keycloakId: string): Promise<ApiCallReturnType<Record<string, never>>> {
+		const checkAndQueryToken = await this.checkAndQueryToken(keycloakConfig);
+		if (checkAndQueryToken.isError) {
+			return checkAndQueryToken;
+		}
+
+		// Get the current user to retrieve existing attributes
+		const userResult = await this.getUserByKeycloakId(keycloakConfig, keycloakId);
+		if (userResult.isError || !("user" in userResult.payload)) {
+			return {
+				status: userResult.status,
+				payload: userResult.payload as { error?: object },
+				isError: true
+			};
+		}
+
+		const user = userResult.payload.user;
+		const attributes = user.attributes;
+
+		// Anonymize personal data
+		attributes.discordId = ["0"];
+		attributes.gameUsername = ["Utilisateur supprimé"];
+
+		// Clear the cache entry for this discord ID
+		const oldDiscordId = user.attributes.discordId?.[0];
+		if (oldDiscordId && oldDiscordId !== "0") {
+			KeycloakUtils.keycloakDiscordToIdMap.delete(oldDiscordId);
+		}
+
+		// Send the update request to Keycloak
+		const res = await fetch(`${keycloakConfig.url}/admin/realms/${keycloakConfig.realm}/users/${keycloakId}`, {
+			method: "PUT",
+			headers: {
+				"Authorization": `Bearer ${this.keycloakToken}`,
+				"Content-Type": "application/json"
+			},
+			body: JSON.stringify({ attributes })
+		});
+
+		if (!res.ok) {
+			return formatApiCallError(res);
+		}
+
+		return formatApiCallOk(res, {});
+	}
+
+	/**
 	 * Send a get request to keycloak to retrieve a user from it's discordId
 	 * @param keycloakConfig
 	 * @param discordId

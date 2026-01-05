@@ -382,5 +382,15 @@
   "fightHistory": {
     "name": "fighthistory",
     "description": "Display the history of your fights."
+  },
+  "deletecode": {
+    "name": "deletecode",
+    "description": "Generate a deletion code for a user's account.",
+    "options": {
+      "discordid": {
+        "name": "discordid",
+        "description": "The Discord ID of the user."
+      }
+    }
   }
 }

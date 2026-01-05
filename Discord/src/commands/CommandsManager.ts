@@ -48,6 +48,15 @@ import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 import { DiscordConstants } from "../DiscordConstants";
 import { CrowniclesLogger } from "../../../Lib/src/logs/CrowniclesLogger";
 import { disableRows } from "../utils/DiscordCollectorUtils";
+import {
+	clearPendingDeletion,
+	extractDeletionCode,
+	getConfirmationPhrase,
+	getPendingDeletion,
+	isValidConfirmationPhrase,
+	setPendingDeletion,
+	verifyDeletionCode
+} from "../utils/AccountDeletionUtils";
 
 export class CommandsManager {
 	static commands = new Map<string, ICommand>();
@@ -126,10 +135,82 @@ export class CommandsManager {
 		if (author === discordConfig.DM_MANAGER_ID) {
 			return;
 		}
+
+		// Handle account deletion flow for regular messages
 		if (message instanceof Message) {
+			const deletionHandled = await this.handleAccountDeletionDM(message);
+			if (deletionHandled) {
+				return;
+			}
 			await this.sendBackDMMessageToSupportChannel(message);
 		}
 		await this.sendHelperMessage(message);
+	}
+
+	/**
+	 * Handle account deletion DM messages
+	 * Returns true if the message was handled as part of the deletion flow
+	 * @param message
+	 */
+	private static async handleAccountDeletionDM(message: Message): Promise<boolean> {
+		const authorId = message.author.id;
+		const content = message.content.trim();
+
+		// Check if user has a pending deletion and is typing the confirmation phrase
+		const pending = getPendingDeletion(authorId);
+		if (pending) {
+			if (isValidConfirmationPhrase(content)) {
+				// User confirmed - proceed with account deletion
+				const result = await KeycloakUtils.anonymizeUser(keycloakConfig, pending.keycloakId);
+				clearPendingDeletion(authorId);
+
+				if (result.isError) {
+					await message.reply(i18n.t("bot:accountDeletion.error", { lng: LANGUAGE.FRENCH }));
+					CrowniclesLogger.error(`Failed to anonymize user ${pending.keycloakId}: ${JSON.stringify(result.payload)}`);
+				}
+				else {
+					await message.reply(i18n.t("bot:accountDeletion.success", { lng: LANGUAGE.FRENCH }));
+					CrowniclesLogger.info(`Successfully anonymized user ${pending.keycloakId} (Discord: ${authorId})`);
+				}
+				return true;
+			}
+
+			// User sent something else while pending - cancel and inform
+			clearPendingDeletion(authorId);
+			await message.reply(i18n.t("bot:accountDeletion.cancelled", { lng: LANGUAGE.FRENCH }));
+			return true;
+		}
+
+		// Check if user is initiating deletion with "DELETE ACCOUNT <code>"
+		const code = extractDeletionCode(content);
+		if (code) {
+			// Look up the user in Keycloak
+			const user = await KeycloakUtils.getDiscordUser(keycloakConfig, authorId, message.author.displayName);
+			if (user.isError) {
+				await message.reply(i18n.t("bot:accountDeletion.userNotFound", { lng: LANGUAGE.FRENCH }));
+				return true;
+			}
+
+			// Verify the code matches
+			if (!verifyDeletionCode(user.payload.user.id, code)) {
+				await message.reply(i18n.t("bot:accountDeletion.invalidCode", { lng: LANGUAGE.FRENCH }));
+				return true;
+			}
+
+			// Code is valid - get user's language and ask for confirmation phrase
+			const userLanguage = KeycloakUtils.getUserLanguage(user.payload.user);
+			const confirmationPhrase = getConfirmationPhrase(userLanguage);
+
+			setPendingDeletion(authorId, user.payload.user.id);
+
+			await message.reply(i18n.t("bot:accountDeletion.confirmPrompt", {
+				lng: userLanguage,
+				phrase: confirmationPhrase
+			}));
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
