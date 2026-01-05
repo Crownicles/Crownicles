@@ -6,6 +6,7 @@ export const FightAlterations = {
 	CONCENTRATED: "concentrated",
 	CONFUSED: "confused",
 	CURSED: "cursed",
+	CURSED_BY_THE_SEA: "cursedByTheSea",
 	DIRTY: "dirty",
 	FROZEN: "frozen",
 	FULL: "full",

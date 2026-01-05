@@ -1,12 +1,12 @@
 {
-  "baseEnergyValue": 30,
-  "attackRatio": 80,
-  "defenseRatio": 50,
+  "baseEnergyValue": 40,
+  "attackRatio": 200,
+  "defenseRatio": 20,
   "speedRatio": 70,
   "breath": 18,
-  "maxBreath": 25,
-  "breathRegen": 4,
-  "rewardFactor": 0.35,
+  "maxBreath": 30,
+  "breathRegen": 5,
+  "rewardFactor": 0.6,
   "attacks": [
     {
       "id": "cursedAttack",

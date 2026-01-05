@@ -1540,6 +1540,10 @@
       "name": "Yuki-Onna",
       "description": "Une femme esprit des neiges. Elle est très belle mais aussi très dangereuse. Elle peut geler ses proies d'un simple regard et les faire disparaître dans la neige."
     },
+    "captainCrow": {
+      "name": "Capitaine Crow",
+      "description": "Fantôme du légendaire Capitaine Crow !"
+    },
     "celestialGuardian": {
       "name": "Gardien céleste",
       "description": "Le gardien des portes sacrées. Empêcher les aventuriers de passer est son devoir, et il utilisera son marteau divin pour vous faire comprendre que vous n'êtes pas le bienvenu."
