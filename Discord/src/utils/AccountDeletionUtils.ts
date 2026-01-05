@@ -105,7 +105,7 @@ export function clearPendingDeletion(discordId: string): void {
  * @returns The extracted code or null if not a delete account message
  */
 export function extractDeletionCode(content: string): string | null {
-	const match = content.trim().match(/^DELETE\s+ACCOUNT\s+([A-Fa-f0-9]{8})$/i);
+	const match = content.trim().match(/^DELETE\s+ACCOUNT\s+([A-Fa-f0-9]{16})$/i);
 	return match ? match[1].toUpperCase() : null;
 }
 
