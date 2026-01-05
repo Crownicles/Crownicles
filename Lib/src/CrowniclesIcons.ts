@@ -1433,7 +1433,8 @@ export const CrowniclesIcons: {
 		turtle: "🐢",
 		waterSpirit: "✨",
 		mermaid: "🧜‍♀️",
-		kraken: "🦑"
+		kraken: "🦑",
+		captainCrow: "🏴‍☠️"
 	},
 	armors: {
 		0: "⬛",
