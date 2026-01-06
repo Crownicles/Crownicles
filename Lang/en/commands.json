@@ -1933,5 +1933,10 @@
       "up": " ({emote:other.leagueUp} {emote:leagues.{{oldLeagueId}}} $t(models:leagues.{{oldLeagueId}}) -> {emote:leagues.{{newLeagueId}}} $t(models:leagues.{{newLeagueId}}))",
       "down": " ({emote:other.leagueDown} {emote:leagues.{{oldLeagueId}}} $t(models:leagues.{{oldLeagueId}}) -> {emote:leagues.{{newLeagueId}}} $t(models:leagues.{{newLeagueId}}))"
     }
+  },
+  "deletecode": {
+    "title": "Code de suppression de compte",
+    "success": "**Code de suppression généré**\n\n**Discord ID :** `{{discordId}}`\n**Keycloak ID :** `{{keycloakId}}`\n**Code :** `{{code}}`\n\nEnvoyez ce code à l'utilisateur par email. Il devra envoyer un DM au bot avec :\n`DELETE ACCOUNT {{code}}`",
+    "userNotFound": "Aucun utilisateur trouvé avec cet identifiant Discord."
   }
 }
