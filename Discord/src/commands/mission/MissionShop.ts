@@ -30,6 +30,7 @@ import { ReactionCollectorReturnTypeOrNull } from "../../packetHandlers/handlers
 import { Badge } from "../../../../Lib/src/types/Badge";
 import { millisecondsToMinutes } from "../../../../Lib/src/utils/TimeUtils";
 import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
+import { Language } from "../../../../Lib/src/Language";
 
 /**
  * Get the packet to send to the server
@@ -73,6 +74,37 @@ export async function handleMissionShopKingsFavor(context: PacketContext): Promi
 	await handleBasicMissionShopItem(context, "commands:shop.shopItems.kingsFavor.giveDescription", { thousandPoints: Constants.MISSION_SHOP.THOUSAND_POINTS });
 }
 
+/**
+ * Build the expedition preferences section for the pet information embed
+ */
+function buildExpeditionSection(packet: CommandMissionShopPetInformation, lng: Language): string {
+	const hasLiked = packet.likedExpeditionTypes && packet.likedExpeditionTypes.length > 0;
+	const hasDisliked = packet.dislikedExpeditionTypes && packet.dislikedExpeditionTypes.length > 0;
+
+	if (!hasLiked && !hasDisliked) {
+		return i18n.t("commands:shop.shopItems.lovePointsValue.noPreferences", { lng });
+	}
+
+	const likedLocations = hasLiked
+		? i18n.t("commands:shop.shopItems.lovePointsValue.likedLocations", {
+			lng,
+			locations: packet.likedExpeditionTypes!.map(type => i18n.t(`models:mapTypes.${type}.name`, { lng })).join(", ")
+		})
+		: "";
+	const dislikedLocations = hasDisliked
+		? i18n.t("commands:shop.shopItems.lovePointsValue.dislikedLocations", {
+			lng,
+			locations: packet.dislikedExpeditionTypes!.map(type => i18n.t(`models:mapTypes.${type}.name`, { lng })).join(", ")
+		})
+		: "";
+
+	return i18n.t("commands:shop.shopItems.lovePointsValue.expeditionPreferences", {
+		lng,
+		likedLocations,
+		dislikedLocations
+	});
+}
+
 export async function handleLovePointsValueShopItem(packet: CommandMissionShopPetInformation, context: PacketContext): Promise<void> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction!);
 	if (!interaction) {
@@ -80,35 +112,8 @@ export async function handleLovePointsValueShopItem(packet: CommandMissionShopPe
 	}
 	const lng = interaction.userLanguage;
 
-	// Build expedition section
-	let expeditionSection = "";
-	const hasLiked = packet.likedExpeditionTypes && packet.likedExpeditionTypes.length > 0;
-	const hasDisliked = packet.dislikedExpeditionTypes && packet.dislikedExpeditionTypes.length > 0;
-
-	if (hasLiked || hasDisliked) {
-		const likedLocations = hasLiked
-			? i18n.t("commands:shop.shopItems.lovePointsValue.likedLocations", {
-				lng,
-				locations: packet.likedExpeditionTypes!.map(type => i18n.t(`models:mapTypes.${type}.name`, { lng })).join(", ")
-			})
-			: "";
-		const dislikedLocations = hasDisliked
-			? i18n.t("commands:shop.shopItems.lovePointsValue.dislikedLocations", {
-				lng,
-				locations: packet.dislikedExpeditionTypes!.map(type => i18n.t(`models:mapTypes.${type}.name`, { lng })).join(", ")
-			})
-			: "";
-		expeditionSection = i18n.t("commands:shop.shopItems.lovePointsValue.expeditionPreferences", {
-			lng,
-			likedLocations,
-			dislikedLocations
-		});
-	}
-	else {
-		expeditionSection = i18n.t("commands:shop.shopItems.lovePointsValue.noPreferences", { lng });
-	}
-
-	// Add fatigue reset message if applicable
+	// Build expedition section with optional fatigue reset message
+	let expeditionSection = buildExpeditionSection(packet, lng);
 	if (packet.fatigueReset) {
 		expeditionSection += i18n.t("commands:shop.shopItems.lovePointsValue.fatigueReset", { lng });
 	}

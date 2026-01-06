@@ -71,7 +71,7 @@ function calculateGemsToMoneyRatio(): number {
 	 * Returns the decimal part of a number
 	 * @param x
 	 */
-	const frac = function(x: number): number {
+	const frac = function (x: number): number {
 		return x >= 0 ? x % 1 : 1 + x % 1;
 	};
 	return Constants.MISSION_SHOP.BASE_RATIO
@@ -147,6 +147,23 @@ function getAThousandPointsShopItem(): ShopItem {
 	};
 }
 
+/**
+ * Check if the pet's fatigue should be reset and reset it if needed
+ * @returns true if the fatigue was reset, false otherwise
+ */
+async function resetPetFatigueIfNeeded(pet: { lastExpeditionEndDate: Date | null; save: () => Promise<unknown> }): Promise<boolean> {
+	if (!pet.lastExpeditionEndDate) {
+		return false;
+	}
+	const timeSinceLastExpedition = Date.now() - pet.lastExpeditionEndDate.valueOf();
+	if (timeSinceLastExpedition >= ExpeditionConstants.FATIGUE_DURATION_MS) {
+		return false;
+	}
+	pet.lastExpeditionEndDate = null;
+	await pet.save();
+	return true;
+}
+
 function getValueLovePointsPetShopItem(): ShopItem {
 	return {
 		id: ShopItemType.LOVE_POINTS_VALUE,
@@ -169,15 +186,7 @@ function getValueLovePointsPetShopItem(): ShopItem {
 			const dislikedExpeditionTypes = preferences?.disliked ? [...preferences.disliked] : [];
 
 			// Reset fatigue if pet is tired from a recent expedition
-			let fatigueReset = false;
-			if (pet.lastExpeditionEndDate) {
-				const timeSinceLastExpedition = Date.now() - pet.lastExpeditionEndDate.valueOf();
-				if (timeSinceLastExpedition < ExpeditionConstants.FATIGUE_DURATION_MS) {
-					pet.lastExpeditionEndDate = null;
-					await pet.save();
-					fatigueReset = true;
-				}
-			}
+			const fatigueReset = await resetPetFatigueIfNeeded(pet);
 
 			response.push(makePacket(CommandMissionShopPetInformation, {
 				nickname: pet.nickname,
