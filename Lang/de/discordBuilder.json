@@ -382,5 +382,15 @@
   "fightHistory": {
     "name": "Kampfhistorisch",
     "description": "Die Historisch der Kämpfe anzeigen."
+  },
+  "deletecode": {
+    "name": "deletecode",
+    "description": "Générer un code de suppression de compte pour un utilisateur.",
+    "options": {
+      "discordid": {
+        "name": "discordid",
+        "description": "L'identifiant Discord de l'utilisateur."
+      }
+    }
   }
 }
