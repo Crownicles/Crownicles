@@ -1,4 +1,7 @@
-import * as crypto from "crypto";
+import {
+	createHmac,
+	randomBytes
+} from "crypto";
 import { Collection } from "discord.js";
 import { Language } from "../../../Lib/src/Language";
 
@@ -6,7 +9,7 @@ import { Language } from "../../../Lib/src/Language";
  * Secret generated at bot startup - changes on each restart for additional security
  * This means deletion codes become invalid after a bot restart
  */
-const BOT_DELETION_SECRET = crypto.randomBytes(32).toString("hex");
+const BOT_DELETION_SECRET = randomBytes(32).toString("hex");
 
 /**
  * Store pending deletion confirmations: discordId -> { keycloakId, language, expiresAt }
@@ -61,7 +64,7 @@ export const DELETION_CONFIRMATION_PHRASES: Record<string, string> = {
  * @returns A 16-character uppercase hex string
  */
 export function generateDeletionCode(keycloakId: string): string {
-	return crypto.createHmac("sha256", BOT_DELETION_SECRET)
+	return createHmac("sha256", BOT_DELETION_SECRET)
 		.update(keycloakId)
 		.digest("hex")
 		.substring(0, 16)
