@@ -79,7 +79,9 @@ export function setPendingDeletion(discordId: string, keycloakId: string, langua
  * @param discordId - The user's Discord ID
  * @returns The pending deletion info or null if not found/expired
  */
-export function getPendingDeletion(discordId: string): { keycloakId: string; language: Language } | null {
+export function getPendingDeletion(discordId: string): {
+	keycloakId: string; language: Language;
+} | null {
 	const pending = pendingDeletions.get(discordId);
 	if (!pending) {
 		return null;
@@ -88,7 +90,9 @@ export function getPendingDeletion(discordId: string): { keycloakId: string; lan
 		pendingDeletions.delete(discordId);
 		return null;
 	}
-	return { keycloakId: pending.keycloakId, language: pending.language };
+	return {
+		keycloakId: pending.keycloakId, language: pending.language
+	};
 }
 
 /**

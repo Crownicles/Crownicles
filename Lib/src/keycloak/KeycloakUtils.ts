@@ -652,7 +652,7 @@ export class KeycloakUtils {
 	}
 
 	/**
-	/**
+	 * /**
 	 * Delete a Keycloak user completely (for account deletion GDPR compliance)
 	 * This removes the user from Keycloak but does not affect game data in the database
 	 * @param keycloakConfig
@@ -663,7 +663,9 @@ export class KeycloakUtils {
 		if (checkAndQueryToken.isError) {
 			return {
 				...checkAndQueryToken,
-				payload: { error: { details: "Token check failed", original: checkAndQueryToken.payload } }
+				payload: { error: {
+					details: "Token check failed", original: checkAndQueryToken.payload
+				} }
 			};
 		}
 
@@ -695,7 +697,9 @@ export class KeycloakUtils {
 			}
 			return {
 				status: res.status,
-				payload: { error: { details: `Keycloak DELETE failed: ${res.status} ${res.statusText}`, body: errorBody } },
+				payload: { error: {
+					details: `Keycloak DELETE failed: ${res.status} ${res.statusText}`, body: errorBody
+				} },
 				isError: true
 			};
 		}
