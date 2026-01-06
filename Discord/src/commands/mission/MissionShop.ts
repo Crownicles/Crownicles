@@ -79,6 +79,40 @@ export async function handleLovePointsValueShopItem(packet: CommandMissionShopPe
 		return;
 	}
 	const lng = interaction.userLanguage;
+
+	// Build expedition section
+	let expeditionSection = "";
+	const hasLiked = packet.likedExpeditionTypes && packet.likedExpeditionTypes.length > 0;
+	const hasDisliked = packet.dislikedExpeditionTypes && packet.dislikedExpeditionTypes.length > 0;
+
+	if (hasLiked || hasDisliked) {
+		const likedLocations = hasLiked
+			? i18n.t("commands:shop.shopItems.lovePointsValue.likedLocations", {
+				lng,
+				locations: packet.likedExpeditionTypes!.map(type => i18n.t(`models:mapTypes.${type}.name`, { lng })).join(", ")
+			})
+			: "";
+		const dislikedLocations = hasDisliked
+			? i18n.t("commands:shop.shopItems.lovePointsValue.dislikedLocations", {
+				lng,
+				locations: packet.dislikedExpeditionTypes!.map(type => i18n.t(`models:mapTypes.${type}.name`, { lng })).join(", ")
+			})
+			: "";
+		expeditionSection = i18n.t("commands:shop.shopItems.lovePointsValue.expeditionPreferences", {
+			lng,
+			likedLocations,
+			dislikedLocations
+		});
+	}
+	else {
+		expeditionSection = i18n.t("commands:shop.shopItems.lovePointsValue.noPreferences", { lng });
+	}
+
+	// Add fatigue reset message if applicable
+	if (packet.fatigueReset) {
+		expeditionSection += i18n.t("commands:shop.shopItems.lovePointsValue.fatigueReset", { lng });
+	}
+
 	await interaction.followUp({
 		embeds: [
 			new CrowniclesEmbed()
@@ -99,10 +133,11 @@ export async function handleLovePointsValueShopItem(packet: CommandMissionShopPe
 					diet: PetUtils.getDietDisplay(packet.diet, lng),
 					force: packet.force,
 					speed: packet.speed,
-					feedDelay: i18n.formatDuration(millisecondsToMinutes(packet.feedDelay), lng), // We want to display this in a readable format
+					feedDelay: i18n.formatDuration(millisecondsToMinutes(packet.feedDelay), lng),
 					nextFeed: PetUtils.getFeedCooldownDisplay(packet.nextFeed, lng),
 					commentOnFightEffect: StringUtils.getRandomTranslation(`commands:shop.shopItems.lovePointsValue.commentOnFightEffect.${packet.fightAssistId}`, lng),
 					commentOnResult: StringUtils.getRandomTranslation(`commands:shop.shopItems.lovePointsValue.advice.${packet.loveLevel}`, lng),
+					expeditionSection,
 					dwarfPet: packet.randomPetDwarf
 						? StringUtils.getRandomTranslation("commands:shop.shopItems.lovePointsValue.dwarf", lng, {
 							pet: PetUtils.petToShortString(lng, undefined, packet.randomPetDwarf.typeId, packet.randomPetDwarf.sex),
