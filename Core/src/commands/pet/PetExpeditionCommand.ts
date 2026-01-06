@@ -176,6 +176,14 @@ function checkStartRequirements(
 		return buildCannotStartResponse(ExpeditionConstants.ERROR_CODES.NOT_ON_CONTINENT, true, petEntity);
 	}
 
+	// Check if pet is still tired from a recent expedition
+	if (petEntity.lastExpeditionEndDate) {
+		const timeSinceLastExpedition = Date.now() - petEntity.lastExpeditionEndDate.valueOf();
+		if (timeSinceLastExpedition < ExpeditionConstants.FATIGUE_DURATION_MS) {
+			return buildCannotStartResponse(ExpeditionConstants.ERROR_CODES.PET_TIRED, true, petEntity);
+		}
+	}
+
 	return null;
 }
 
@@ -268,8 +276,10 @@ export default class PetExpeditionCommand {
 		// Get the required food from the stored reward index
 		const foodRequired = ExpeditionConstants.FOOD_CONSUMPTION[activeExpedition.rewardIndex];
 
-		// Calculate effective risk with food penalty if insufficient food was consumed
-		// Also applies extra failure risk if pet dislikes the location and expedition is short
+		/*
+		 * Calculate effective risk with food penalty if insufficient food was consumed
+		 * Also applies extra failure risk if pet dislikes the location and expedition is short
+		 */
 		const effectiveRisk = calculateEffectiveRisk({
 			expedition: expeditionData,
 			petModel,
@@ -295,8 +305,11 @@ export default class PetExpeditionCommand {
 				response,
 				reason: NumberChangeReason.SMALL_EVENT
 			});
-			await petEntity.save();
 		}
+
+		// Set fatigue timestamp (pet will be tired for 2 hours)
+		petEntity.lastExpeditionEndDate = new Date();
+		await petEntity.save();
 
 		// Apply rewards
 		if (outcome.rewards) {
