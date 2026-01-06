@@ -38,5 +38,14 @@
   "christmasBonusPreAnnouncement": "{emote:announcements.christmas} **Bonus di Natale in arrivo!** {emote:announcements.christmas} Tra poche ore, tutti i giocatori riceveranno un regalo speciale: il loro stock di gettoni sarà riempito al massimo! Godetevi questo periodo festivo!",
   "christmasBonusApplied": "{emote:announcements.christmas} **Buon Natale!** {emote:announcements.gift} Babbo Natale è passato! Il tuo stock di gettoni è stato riempito al massimo. Goditi questo regalo per partire all'avventura!",
   "supportMessage": "{{langFlag}} Se hai bisogno di aiuto, seleziona la tua lingua usando i pulsanti qui sotto. Se non hai bisogno di aiuto, ignora questo messaggio.\n{emote:collectors.warning} **Ogni messaggio inviato qui può essere letto da un essere umano!**\n",
-  "commandDisabledInDM": "{{langFlag}} Ciao, i comandi sono disabilitati nei messaggi privati. Vai su un server per giocare!\nSe desideri aiuto, clicca sul pulsante corrispondente alla tua lingua qui sotto.\n"
+  "commandDisabledInDM": "{{langFlag}} Ciao, i comandi sono disabilitati nei messaggi privati. Vai su un server per giocare!\nSe desideri aiuto, clicca sul pulsante corrispondente alla tua lingua qui sotto.\n",
+  "accountDeletion": {
+    "confirmPrompt": "{emote:collectors.warning} **ATTENTION : Cette action est IMMÉDIATE et PERMANENTE.**\n\nVotre compte sera anonymisé et toutes vos données personnelles seront supprimées. Cette action est irréversible.\n\nPour confirmer, tapez exactement la phrase suivante :\n`{{phrase}}`",
+    "success": "{emote:collectors.accept} Votre compte a été anonymisé avec succès. Toutes vos données personnelles ont été supprimées. Cette action est irréversible.",
+    "error": "{emote:collectors.refuse} Une erreur s'est produite lors de l'anonymisation de votre compte. Veuillez contacter le support.",
+    "cancelled": "{emote:collectors.refuse} La suppression a été annulée. Si vous souhaitez recommencer, veuillez utiliser à nouveau le code de suppression fourni.",
+    "invalidCode": "{emote:collectors.refuse} Le code de suppression est invalide ou a expiré. Veuillez contacter le support pour obtenir un nouveau code.",
+    "userNotFound": "{emote:collectors.refuse} Aucun compte n'est associé à votre identifiant Discord.",
+    "rateLimited": "{emote:collectors.refuse} Trop de tentatives incorrectes. Veuillez réessayer dans 15 minutes."
+  }
 }
