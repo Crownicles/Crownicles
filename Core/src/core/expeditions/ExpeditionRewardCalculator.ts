@@ -282,8 +282,10 @@ export function calculateRewards(params: RewardCalculationParams): ExpeditionRew
 		applyPartialSuccessPenalty(rewards);
 	}
 
-	// Apply pet preference multiplier (liked = x1, neutral = x0.5, disliked = x0.25)
-	// Tokens are NOT affected by pet preferences
+	/*
+	 * Apply pet preference multiplier (liked = x1, neutral = x0.5, disliked = x0.25)
+	 * Tokens are NOT affected by pet preferences
+	 */
 	const petPreference = getPetExpeditionPreference(petTypeId, expedition.locationType);
 	const preferenceMultiplier = PET_PREFERENCE_REWARD_MULTIPLIERS[petPreference];
 

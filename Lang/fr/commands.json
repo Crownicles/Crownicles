@@ -327,7 +327,8 @@
       "invalidState": "Les astres ne sont pas alignés en votre faveur. Réessayez plus tard.",
       "expeditionInProgress": "Votre familier explore déjà de lointaines contrées.",
       "generic": "Une force mystérieuse empêche votre requête. Les sages conseillent de réessayer.",
-      "notOnContinent": "Le $t(commands:inventory.talismans.anchorTalisman) refuse de s'activer en ces terres étranges. Sa magie ancestrale ne semble fonctionner que sur le continent principal du royaume. Retournez sur les routes familières pour envoyer votre familier en expédition."
+      "notOnContinent": "Le $t(commands:inventory.talismans.anchorTalisman) refuse de s'activer en ces terres étranges. Sa magie ancestrale ne semble fonctionner que sur le continent principal du royaume. Retournez sur les routes familières pour envoyer votre familier en expédition.",
+      "petTired": "Votre familier est encore fatigué de sa dernière expédition. Laissez-le se reposer quelques heures avant de l'envoyer à nouveau."
     }
   },
   "guild": {

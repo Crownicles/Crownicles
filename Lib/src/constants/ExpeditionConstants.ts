@@ -220,9 +220,15 @@ export abstract class ExpeditionConstants {
 	 * Requirements to start an expedition
 	 */
 	static readonly REQUIREMENTS = {
-		MIN_LOVE_POINTS: 50,
+		MIN_LOVE_POINTS: 20,
 		MIN_LEVEL_FOR_TALISMAN: 20
 	};
+
+	/**
+	 * Duration of pet fatigue after completing an expedition (in milliseconds)
+	 * Pet cannot start a new expedition during this time
+	 */
+	static readonly FATIGUE_DURATION_MS = 2 * 60 * 60 * 1000; // 2 hours
 
 	/**
 	 * Love points changes during expedition lifecycle
@@ -419,7 +425,8 @@ export abstract class ExpeditionConstants {
 		NO_TALISMAN: "noTalisman",
 		INSUFFICIENT_LOVE: "insufficientLove",
 		PET_HUNGRY: "petHungry",
-		NOT_ON_CONTINENT: "notOnContinent"
+		NOT_ON_CONTINENT: "notOnContinent",
+		PET_TIRED: "petTired"
 	} as const;
 
 	/**
