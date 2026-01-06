@@ -652,7 +652,6 @@ export class KeycloakUtils {
 	}
 
 	/**
-	 * /**
 	 * Delete a Keycloak user completely (for account deletion GDPR compliance)
 	 * This removes the user from Keycloak but does not affect game data in the database
 	 * @param keycloakConfig
@@ -669,14 +668,8 @@ export class KeycloakUtils {
 			};
 		}
 
-		// Get the current user to clear the cache
-		const userResult = await this.getUserByKeycloakId(keycloakConfig, keycloakId);
-		if (!userResult.isError && "user" in userResult.payload) {
-			const oldDiscordId = userResult.payload.user.attributes?.discordId?.[0];
-			if (oldDiscordId && oldDiscordId !== "0") {
-				KeycloakUtils.keycloakDiscordToIdMap.delete(oldDiscordId);
-			}
-		}
+		// Clear the cache before deleting
+		await this.clearUserFromCache(keycloakConfig, keycloakId);
 
 		// Delete the user from Keycloak
 		const res = await fetch(`${keycloakConfig.url}/admin/realms/${keycloakConfig.realm}/users/${keycloakId}`, {
@@ -688,13 +681,7 @@ export class KeycloakUtils {
 		});
 
 		if (!res.ok) {
-			let errorBody = "";
-			try {
-				errorBody = await res.text();
-			}
-			catch {
-				errorBody = "Could not read error body";
-			}
+			const errorBody = await this.safeReadResponseBody(res);
 			return {
 				status: res.status,
 				payload: { error: {
@@ -705,6 +692,33 @@ export class KeycloakUtils {
 		}
 
 		return formatApiCallOk(res, {});
+	}
+
+	/**
+	 * Clear user from internal cache before deletion
+	 */
+	private static async clearUserFromCache(keycloakConfig: KeycloakConfig, keycloakId: string): Promise<void> {
+		const userResult = await this.getUserByKeycloakId(keycloakConfig, keycloakId);
+		if (userResult.isError || !("user" in userResult.payload)) {
+			return;
+		}
+
+		const oldDiscordId = userResult.payload.user.attributes?.discordId?.[0];
+		if (oldDiscordId && oldDiscordId !== "0") {
+			KeycloakUtils.keycloakDiscordToIdMap.delete(oldDiscordId);
+		}
+	}
+
+	/**
+	 * Safely read response body for error logging
+	 */
+	private static async safeReadResponseBody(res: Response): Promise<string> {
+		try {
+			return await res.text();
+		}
+		catch {
+			return "Could not read error body";
+		}
 	}
 
 	/**

@@ -45,6 +45,7 @@
     "error": "{emote:collectors.refuse} Une erreur s'est produite lors de l'anonymisation de votre compte. Veuillez contacter le support.",
     "cancelled": "{emote:collectors.refuse} La suppression a été annulée. Si vous souhaitez recommencer, veuillez utiliser à nouveau le code de suppression fourni.",
     "invalidCode": "{emote:collectors.refuse} Le code de suppression est invalide ou a expiré. Veuillez contacter le support pour obtenir un nouveau code.",
-    "userNotFound": "{emote:collectors.refuse} Aucun compte n'est associé à votre identifiant Discord."
+    "userNotFound": "{emote:collectors.refuse} Aucun compte n'est associé à votre identifiant Discord.",
+    "rateLimited": "{emote:collectors.refuse} Trop de tentatives incorrectes. Veuillez réessayer dans 15 minutes."
   }
 }

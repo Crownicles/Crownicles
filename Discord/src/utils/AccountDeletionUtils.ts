@@ -19,6 +19,24 @@ const pendingDeletions = new Collection<string, {
 }>();
 
 /**
+ * Track failed code attempts for rate limiting: discordId -> { attempts, resetAt }
+ */
+const failedAttempts = new Collection<string, {
+	attempts: number;
+	resetAt: number;
+}>();
+
+/**
+ * Maximum allowed failed attempts before temporary block
+ */
+const MAX_FAILED_ATTEMPTS = 15;
+
+/**
+ * Time in milliseconds to block after too many failed attempts (15 minutes)
+ */
+const RATE_LIMIT_DURATION = 15 * 60 * 1000;
+
+/**
  * Time in milliseconds for how long a deletion confirmation is valid (5 minutes)
  */
 const DELETION_CONFIRMATION_TIMEOUT = 5 * 60 * 1000;
@@ -58,6 +76,50 @@ export function generateDeletionCode(keycloakId: string): string {
  */
 export function verifyDeletionCode(keycloakId: string, code: string): boolean {
 	return generateDeletionCode(keycloakId) === code.toUpperCase().trim();
+}
+
+/**
+ * Checks if a user is rate limited from attempting deletion codes
+ * @param discordId - The user's Discord ID
+ * @returns True if the user is currently rate limited
+ */
+export function isRateLimited(discordId: string): boolean {
+	const record = failedAttempts.get(discordId);
+	if (!record) {
+		return false;
+	}
+	if (Date.now() > record.resetAt) {
+		failedAttempts.delete(discordId);
+		return false;
+	}
+	return record.attempts >= MAX_FAILED_ATTEMPTS;
+}
+
+/**
+ * Records a failed deletion code attempt for rate limiting
+ * @param discordId - The user's Discord ID
+ */
+export function recordFailedAttempt(discordId: string): void {
+	const record = failedAttempts.get(discordId);
+	const now = Date.now();
+
+	if (!record || now > record.resetAt) {
+		failedAttempts.set(discordId, {
+			attempts: 1,
+			resetAt: now + RATE_LIMIT_DURATION
+		});
+	}
+	else {
+		record.attempts++;
+	}
+}
+
+/**
+ * Clears failed attempts after successful code verification
+ * @param discordId - The user's Discord ID
+ */
+export function clearFailedAttempts(discordId: string): void {
+	failedAttempts.delete(discordId);
 }
 
 /**
