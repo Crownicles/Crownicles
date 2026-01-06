@@ -216,15 +216,25 @@ export class LogsReadRequests {
 	 * @param eventId
 	 */
 	static async getLastEventDate(keycloakId: string, eventId: number): Promise<Date | null> {
+		// Skip if keycloakId is invalid (can happen with deleted/corrupted players)
+		if (!keycloakId) {
+			return null;
+		}
+
 		// Get all possibilities id for the big event
 		const possibilityIds = (await LogsPossibilities.findAll({
 			where: { bigEventId: eventId }
 		})).map(possibility => possibility.id);
 
 		// Get logs player id
-		const playerId = (await LogsPlayers.findOne({
+		const logsPlayer = await LogsPlayers.findOne({
 			where: { keycloakId }
-		})).id;
+		});
+
+		// If player doesn't exist in logs yet, they haven't done this event before
+		if (!logsPlayer) {
+			return null;
+		}
 
 		// Find the last one
 		const lastEvent = await LogsPlayersPossibilities.findOne({
@@ -233,7 +243,7 @@ export class LogsReadRequests {
 				possibilityId: {
 					[Op.in]: possibilityIds
 				},
-				playerId
+				playerId: logsPlayer.id
 			}
 		});
 

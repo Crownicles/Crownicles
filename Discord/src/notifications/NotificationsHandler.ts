@@ -48,7 +48,7 @@ export abstract class NotificationsHandler {
 
 		const getUser = await KeycloakUtils.getUserByKeycloakId(keycloakConfig, keycloakId);
 
-		if (getUser.isError || !getUser.payload.user.attributes.discordId) {
+		if (getUser.isError || !getUser.payload.user.attributes.discordId || getUser.payload.user.attributes.discordId[0] === "0") {
 			throw `Keycloak user with id ${keycloakId} not found or missing discordId`;
 		}
 		const discordId = getUser.payload.user.attributes.discordId[0];

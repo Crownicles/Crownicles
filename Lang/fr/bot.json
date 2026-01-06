@@ -38,5 +38,14 @@
   "christmasBonusPreAnnouncement": "{emote:announcements.christmas} **Bonus de Noël à venir !** {emote:announcements.christmas}\n\nDans quelques heures, tous les joueurs recevront un cadeau spécial : leur stock de jetons sera rempli au maximum ! Profitez bien de cette période festive !",
   "christmasBonusApplied": "{emote:announcements.christmas} **Joyeux Noël !** {emote:announcements.gift}\n\nLe Père Noël est passé ! Votre stock de jetons a été rempli au maximum. Profitez de ce cadeau pour partir à l'aventure !",
   "supportMessage": "{{langFlag}} Si vous avez besoin d'aide, sélectionnez votre langue en utilisant les boutons ci-dessous. Si vous n'avez pas besoin d'aide, ignorez ce message.\n{emote:collectors.warning} **Chaque message envoyé ici peut être lu par un humain !**\n",
-  "commandDisabledInDM": "{{langFlag}} Bonjour, les commandes sont désactivées en messages privés. Merci d'aller sur un serveur pour jouer !\nSi vous souhaitez obtenir de l'aide, cliquez sur le bouton correspondant à votre langue ci-dessous.\n"
+  "commandDisabledInDM": "{{langFlag}} Bonjour, les commandes sont désactivées en messages privés. Merci d'aller sur un serveur pour jouer !\nSi vous souhaitez obtenir de l'aide, cliquez sur le bouton correspondant à votre langue ci-dessous.\n",
+  "accountDeletion": {
+    "confirmPrompt": "{emote:collectors.warning} **ATTENTION : Cette action est IMMÉDIATE et PERMANENTE.**\n\nVotre compte sera anonymisé et toutes vos données personnelles seront supprimées. Cette action est irréversible.\n\nPour confirmer, tapez exactement la phrase suivante :\n`{{phrase}}`",
+    "success": "{emote:collectors.accept} Votre compte a été anonymisé avec succès. Toutes vos données personnelles ont été supprimées. Cette action est irréversible.",
+    "error": "{emote:collectors.refuse} Une erreur s'est produite lors de l'anonymisation de votre compte. Veuillez contacter le support.",
+    "cancelled": "{emote:collectors.refuse} La suppression a été annulée. Si vous souhaitez recommencer, veuillez utiliser à nouveau le code de suppression fourni.",
+    "invalidCode": "{emote:collectors.refuse} Le code de suppression est invalide ou a expiré. Veuillez contacter le support pour obtenir un nouveau code.",
+    "userNotFound": "{emote:collectors.refuse} Aucun compte n'est associé à votre identifiant Discord.",
+    "rateLimited": "{emote:collectors.refuse} Trop de tentatives incorrectes. Veuillez réessayer dans 15 minutes."
+  }
 }
