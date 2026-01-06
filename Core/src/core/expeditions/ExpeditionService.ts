@@ -1,6 +1,7 @@
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import {
-	ExpeditionConstants, ExpeditionLocationType
+	ExpeditionConstants, ExpeditionLocationType,
+	getPetExpeditionPreference, DISLIKED_SHORT_EXPEDITION_FAILURE_BONUS, DISLIKED_EXPEDITION_DURATION_THRESHOLD_MINUTES
 } from "../../../../Lib/src/constants/ExpeditionConstants";
 import {
 	ExpeditionData
@@ -298,6 +299,7 @@ export function generateThreeExpeditions(mapLinkId: number, hasCloneTalisman: bo
 export interface EffectiveRiskParams {
 	expedition: ExpeditionData;
 	petModel: Pet;
+	petTypeId: number;
 	petLovePoints: number;
 	foodConsumed: number | null;
 	foodRequired: number | null;
@@ -306,10 +308,11 @@ export interface EffectiveRiskParams {
 /**
  * Calculate the effective risk based on pet stats and expedition parameters
  * If insufficient food was consumed, the risk is multiplied by NO_FOOD_RISK_MULTIPLIER
+ * If pet dislikes the location and expedition is shorter than 12 hours, adds 10% extra failure risk
  */
 export function calculateEffectiveRisk(params: EffectiveRiskParams): number {
 	const {
-		expedition, petModel, petLovePoints, foodConsumed, foodRequired
+		expedition, petModel, petTypeId, petLovePoints, foodConsumed, foodRequired
 	} = params;
 
 	let effectiveRisk = expedition.riskRate
@@ -324,6 +327,12 @@ export function calculateEffectiveRisk(params: EffectiveRiskParams): number {
 
 	if (hasInsufficientFood) {
 		effectiveRisk *= ExpeditionConstants.NO_FOOD_RISK_MULTIPLIER;
+	}
+
+	// Apply extra failure risk if pet dislikes the location and expedition is shorter than 12 hours
+	const petPreference = getPetExpeditionPreference(petTypeId, expedition.locationType);
+	if (petPreference === "disliked" && expedition.durationMinutes < DISLIKED_EXPEDITION_DURATION_THRESHOLD_MINUTES) {
+		effectiveRisk += DISLIKED_SHORT_EXPEDITION_FAILURE_BONUS;
 	}
 
 	return MathUtils.clamp(effectiveRisk, 0, ExpeditionConstants.PERCENTAGE.MAX);
@@ -348,6 +357,7 @@ export interface ExpeditionOutcomeParams {
 	rewardIndex: number;
 	hasCloneTalisman: boolean;
 	playerCurrentTokens: number;
+	petTypeId: number;
 }
 
 /**
@@ -371,7 +381,8 @@ export function determineExpeditionOutcome(params: ExpeditionOutcomeParams): Exp
 		rewardIndex: params.rewardIndex,
 		isPartialSuccess: partialSuccess,
 		hasCloneTalisman: params.hasCloneTalisman,
-		playerCurrentTokens: params.playerCurrentTokens
+		playerCurrentTokens: params.playerCurrentTokens,
+		petTypeId: params.petTypeId
 	});
 
 	return {
