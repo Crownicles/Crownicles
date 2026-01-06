@@ -50,6 +50,21 @@ export class CommandMissionShopPetInformation extends CrowniclesPacket {
 
 	feedDelay!: number;
 
+	/**
+	 * Expedition location types that this pet likes (e.g., "forest", "mountain")
+	 */
+	likedExpeditionTypes?: string[];
+
+	/**
+	 * Expedition location types that this pet dislikes (e.g., "desert", "swamp")
+	 */
+	dislikedExpeditionTypes?: string[];
+
+	/**
+	 * Whether the pet's fatigue was reset by visiting the vet
+	 */
+	fatigueReset?: boolean;
+
 	randomPetDwarf?: {
 		typeId: number;
 		sex: SexTypeShort;

@@ -1202,6 +1202,16 @@ export function getPetExpeditionPreference(petTypeId: number, locationType: Expe
 	return "neutral";
 }
 
+/**
+ * Get the raw expedition preferences for a pet (liked and disliked location types)
+ * Returns undefined if the pet has no specific preferences
+ */
+export function getPetExpeditionPreferences(petTypeId: number): {
+	liked: readonly ExpeditionLocationType[]; disliked: readonly ExpeditionLocationType[];
+} | undefined {
+	return PET_EXPEDITION_PREFERENCES[petTypeId];
+}
+
 export type ExpeditionStatus = (typeof ExpeditionConstants.STATUS)[keyof typeof ExpeditionConstants.STATUS];
 export type ExpeditionLocationType = (typeof ExpeditionConstants.EXPEDITION_LOCATION_TYPES)[keyof typeof ExpeditionConstants.EXPEDITION_LOCATION_TYPES];
 export type RewardWeights = Record<"money" | "experience" | "points", number>;

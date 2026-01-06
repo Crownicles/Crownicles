@@ -59,6 +59,9 @@ import { PetUtils } from "../../core/utils/PetUtils";
 import { Badge } from "../../../../Lib/src/types/Badge";
 import { DwarfPetsSeen } from "../../core/database/game/models/DwarfPetsSeen";
 import { PlayerBadgesManager } from "../../core/database/game/models/PlayerBadges";
+import {
+	ExpeditionConstants, getPetExpeditionPreferences
+} from "../../../../Lib/src/constants/ExpeditionConstants";
 
 /**
  * Calculate the amount of money the player will have if he buys some with gems
@@ -159,6 +162,23 @@ function getValueLovePointsPetShopItem(): ShopItem {
 			const petModel = PetDataController.instance.getById(pet.typeId);
 			const randomPetNotShownToDwarfId = await DwarfPetsSeen.getRandomPetNotSeenId(player);
 			const randomPetDwarfModel = randomPetNotShownToDwarfId !== 0 ? PetDataController.instance.getById(randomPetNotShownToDwarfId) : null;
+
+			// Get pet expedition preferences
+			const preferences = getPetExpeditionPreferences(pet.typeId);
+			const likedExpeditionTypes = preferences?.liked ? [...preferences.liked] : [];
+			const dislikedExpeditionTypes = preferences?.disliked ? [...preferences.disliked] : [];
+
+			// Reset fatigue if pet is tired from a recent expedition
+			let fatigueReset = false;
+			if (pet.lastExpeditionEndDate) {
+				const timeSinceLastExpedition = Date.now() - pet.lastExpeditionEndDate.valueOf();
+				if (timeSinceLastExpedition < ExpeditionConstants.FATIGUE_DURATION_MS) {
+					pet.lastExpeditionEndDate = null;
+					await pet.save();
+					fatigueReset = true;
+				}
+			}
+
 			response.push(makePacket(CommandMissionShopPetInformation, {
 				nickname: pet.nickname,
 				petId: pet.id,
@@ -173,6 +193,9 @@ function getValueLovePointsPetShopItem(): ShopItem {
 				feedDelay: petModel.feedDelay * PetConstants.BREED_COOLDOWN,
 				fightAssistId: getAiPetBehavior(petModel.id).id,
 				ageCategory: PetUtils.getAgeCategory(pet.id),
+				likedExpeditionTypes,
+				dislikedExpeditionTypes,
+				fatigueReset,
 				...randomPetDwarfModel && {
 					randomPetDwarf: {
 						typeId: randomPetDwarfModel.id,
