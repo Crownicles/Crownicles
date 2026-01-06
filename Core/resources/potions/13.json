@@ -1,7 +1,7 @@
 {
-  "fallbackEmote": "⚗️",
+  "fallbackEmote": "\u2697\ufe0f",
   "rarity": 2,
   "power": 25,
   "nature": 4,
-  "usages": 3
+  "usages": 2
 }
