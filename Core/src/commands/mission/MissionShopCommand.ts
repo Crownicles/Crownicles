@@ -71,7 +71,7 @@ function calculateGemsToMoneyRatio(): number {
 	 * Returns the decimal part of a number
 	 * @param x
 	 */
-	const frac = function (x: number): number {
+	const frac = function(x: number): number {
 		return x >= 0 ? x % 1 : 1 + x % 1;
 	};
 	return Constants.MISSION_SHOP.BASE_RATIO
@@ -151,7 +151,9 @@ function getAThousandPointsShopItem(): ShopItem {
  * Check if the pet's fatigue should be reset and reset it if needed
  * @returns true if the fatigue was reset, false otherwise
  */
-async function resetPetFatigueIfNeeded(pet: { lastExpeditionEndDate: Date | null; save: () => Promise<unknown> }): Promise<boolean> {
+async function resetPetFatigueIfNeeded(pet: {
+	lastExpeditionEndDate: Date | null; save: () => Promise<unknown>;
+}): Promise<boolean> {
 	if (!pet.lastExpeditionEndDate) {
 		return false;
 	}
