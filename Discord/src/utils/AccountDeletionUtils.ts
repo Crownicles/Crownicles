@@ -7,10 +7,20 @@ import { Collection } from "discord.js";
 import { Language } from "../../../Lib/src/Language";
 
 /**
+ * Size in bytes for the bot deletion secret
+ */
+const SECRET_SIZE_BYTES = 32;
+
+/**
+ * Length of the deletion code in hexadecimal characters
+ */
+const DELETION_CODE_LENGTH = 16;
+
+/**
  * Secret generated at bot startup - changes on each restart for additional security
  * This means deletion codes become invalid after a bot restart
  */
-const BOT_DELETION_SECRET = randomBytes(32).toString("hex");
+const BOT_DELETION_SECRET = randomBytes(SECRET_SIZE_BYTES).toString("hex");
 
 /**
  * Store pending deletion confirmations: discordId -> { keycloakId, language, expiresAt }
@@ -59,16 +69,16 @@ export const DELETION_CONFIRMATION_PHRASES: Record<string, string> = {
 };
 
 /**
- * Generates a deterministic 16-character hex code for account deletion
+ * Generates a deterministic deletion code for account deletion
  * The code is derived from the keycloakId and the bot's startup secret
  * @param keycloakId - The user's Keycloak ID
- * @returns A 16-character uppercase hex string
+ * @returns An uppercase hex string of DELETION_CODE_LENGTH characters
  */
 export function generateDeletionCode(keycloakId: string): string {
 	return createHmac("sha256", BOT_DELETION_SECRET)
 		.update(keycloakId)
 		.digest("hex")
-		.substring(0, 16)
+		.substring(0, DELETION_CODE_LENGTH)
 		.toUpperCase();
 }
 
@@ -176,12 +186,17 @@ export function clearPendingDeletion(discordId: string): void {
 }
 
 /**
+ * Regex pattern to match the DELETE ACCOUNT command with a valid deletion code
+ */
+const DELETE_ACCOUNT_PATTERN = new RegExp(`^DELETE\\s+ACCOUNT\\s+([A-Fa-f0-9]{${DELETION_CODE_LENGTH}})$`, "i");
+
+/**
  * Checks if a message content matches the DELETE ACCOUNT pattern
  * @param content - The message content
  * @returns The extracted code or null if not a delete account message
  */
 export function extractDeletionCode(content: string): string | null {
-	const match = content.trim().match(/^DELETE\s+ACCOUNT\s+([A-Fa-f0-9]{16})$/i);
+	const match = content.trim().match(DELETE_ACCOUNT_PATTERN);
 	return match ? match[1].toUpperCase() : null;
 }
 
