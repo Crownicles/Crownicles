@@ -191,7 +191,12 @@ export class CommandsManager {
 			clearPendingDeletion(authorId);
 
 			if (result.isError) {
-				await message.reply(i18n.t("bot:accountDeletion.error", { lng: pending.language }));
+				try {
+					await message.reply(i18n.t("bot:accountDeletion.error", { lng: pending.language }));
+				}
+				catch (replyError) {
+					CrowniclesLogger.warn(`Failed to send error reply to user ${authorId}: ${replyError}`);
+				}
 				CrowniclesLogger.errorWithObj("Failed to delete user", {
 					keycloakId: pending.keycloakId,
 					discordId: authorId,
@@ -200,7 +205,12 @@ export class CommandsManager {
 				});
 			}
 			else {
-				await message.reply(i18n.t("bot:accountDeletion.success", { lng: pending.language }));
+				try {
+					await message.reply(i18n.t("bot:accountDeletion.success", { lng: pending.language }));
+				}
+				catch (replyError) {
+					CrowniclesLogger.warn(`Failed to send success reply to user ${authorId}: ${replyError}`);
+				}
 				CrowniclesLogger.info(`Successfully deleted Keycloak user ${pending.keycloakId} (Discord: ${authorId})`);
 			}
 			return true;
@@ -208,7 +218,12 @@ export class CommandsManager {
 
 		// User sent something else while pending - cancel and inform
 		clearPendingDeletion(authorId);
-		await message.reply(i18n.t("bot:accountDeletion.cancelled", { lng: pending.language }));
+		try {
+			await message.reply(i18n.t("bot:accountDeletion.cancelled", { lng: pending.language }));
+		}
+		catch (replyError) {
+			CrowniclesLogger.warn(`Failed to send cancellation reply to user ${authorId}: ${replyError}`);
+		}
 		return true;
 	}
 

@@ -652,10 +652,17 @@ export class KeycloakUtils {
 	}
 
 	/**
-	 * Delete a Keycloak user completely (for account deletion GDPR compliance)
-	 * This removes the user from Keycloak but does not affect game data in the database
-	 * @param keycloakConfig
-	 * @param keycloakId
+	 * Delete a Keycloak user completely (for account deletion / GDPR compliance).
+	 *
+	 * This method removes the authentication account from Keycloak but does not delete
+	 * or modify any game data stored in Crownicles databases. Game data such as pet names,
+	 * guild names, and guild descriptions are intentionally preserved as they were voluntarily
+	 * entered by the user in free-text fields. Under GDPR, such user-generated content in
+	 * non-required fields is not subject to automatic deletion. The player's character will
+	 * continue to appear in leaderboards under an anonymized name ("Pseudo 404").
+	 *
+	 * @param keycloakConfig - Keycloak realm configuration to use for the deletion request.
+	 * @param keycloakId - ID of the user to delete in Keycloak.
 	 */
 	public static async deleteUser(keycloakConfig: KeycloakConfig, keycloakId: string): Promise<ApiCallReturnType<Record<string, never>>> {
 		const checkAndQueryToken = await this.checkAndQueryToken(keycloakConfig);
@@ -707,6 +714,9 @@ export class KeycloakUtils {
 		if (oldDiscordId && oldDiscordId !== "0") {
 			KeycloakUtils.keycloakDiscordToIdMap.delete(oldDiscordId);
 		}
+
+		// Clear any cached group information for this user
+		KeycloakUtils.keycloakUserGroupsMap.delete(keycloakId);
 	}
 
 	/**

@@ -1,6 +1,7 @@
 import {
 	createHmac,
-	randomBytes
+	randomBytes,
+	timingSafeEqual
 } from "crypto";
 import { Collection } from "discord.js";
 import { Language } from "../../../Lib/src/Language";
@@ -49,12 +50,12 @@ const DELETION_CONFIRMATION_TIMEOUT = 5 * 60 * 1000;
  * Key is the language code, value is the exact phrase to type
  */
 export const DELETION_CONFIRMATION_PHRASES: Record<string, string> = {
-	fr: "CONFIRMER QUE JE SOUHAITE SUPPRIMER MON COMPTE ET QUE JE NE POURRAIS PAS LE RECUPERER",
+	fr: "CONFIRMER QUE JE SOUHAITE SUPPRIMER MON COMPTE ET QUE JE NE POURRAI PAS LE RÉCUPÉRER",
 	en: "CONFIRM THAT I WANT TO DELETE MY ACCOUNT AND THAT I WILL NOT BE ABLE TO RECOVER IT",
-	es: "CONFIRMAR QUE DESEO ELIMINAR MI CUENTA Y QUE NO PODRE RECUPERARLA",
-	de: "BESTATIGEN DASS ICH MEIN KONTO LOSCHEN MOCHTE UND DASS ICH ES NICHT WIEDERHERSTELLEN KANN",
-	it: "CONFERMARE CHE DESIDERO ELIMINARE IL MIO ACCOUNT E CHE NON POTRO RECUPERARLO",
-	pt: "CONFIRMAR QUE DESEJO EXCLUIR MINHA CONTA E QUE NAO PODEREI RECUPERA LA"
+	es: "CONFIRMAR QUE DESEO ELIMINAR MI CUENTA Y QUE NO PODRÉ RECUPERARLA",
+	de: "BESTÄTIGEN DASS ICH MEIN KONTO LÖSCHEN MÖCHTE UND DASS ICH ES NICHT WIEDERHERSTELLEN KANN",
+	it: "CONFERMARE CHE DESIDERO ELIMINARE IL MIO ACCOUNT E CHE NON POTRÒ RECUPERARLO",
+	pt: "CONFIRMAR QUE DESEJO EXCLUIR MINHA CONTA E QUE NÃO PODEREI RECUPERÁ-LA"
 };
 
 /**
@@ -73,12 +74,18 @@ export function generateDeletionCode(keycloakId: string): string {
 
 /**
  * Verifies if a given code matches the expected deletion code for a keycloakId
+ * Uses timing-safe comparison to prevent timing attacks
  * @param keycloakId - The user's Keycloak ID
  * @param code - The code provided by the user
  * @returns True if the code is valid
  */
 export function verifyDeletionCode(keycloakId: string, code: string): boolean {
-	return generateDeletionCode(keycloakId) === code.toUpperCase().trim();
+	const expected = generateDeletionCode(keycloakId);
+	const provided = code.trim().toUpperCase();
+	if (expected.length !== provided.length) {
+		return false;
+	}
+	return timingSafeEqual(Buffer.from(expected, "utf8"), Buffer.from(provided, "utf8"));
 }
 
 /**
