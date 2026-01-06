@@ -2,7 +2,8 @@ import {
 	ExpeditionData, ExpeditionRewardData
 } from "../../../../Lib/src/packets/commands/CommandPetExpeditionPacket";
 import {
-	ExpeditionConstants, ExpeditionLocationType
+	ExpeditionConstants, ExpeditionLocationType,
+	getPetExpeditionPreference, PET_PREFERENCE_REWARD_MULTIPLIERS
 } from "../../../../Lib/src/constants/ExpeditionConstants";
 import { TokensConstants } from "../../../../Lib/src/constants/TokensConstants";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
@@ -109,6 +110,7 @@ export interface RewardCalculationParams {
 	isPartialSuccess: boolean;
 	hasCloneTalisman: boolean;
 	playerCurrentTokens: number;
+	petTypeId: number;
 }
 
 /**
@@ -267,10 +269,11 @@ function generateItemReward(rewardIndex: number): ItemReward {
 
 /**
  * Calculate rewards based on expedition parameters and location
+ * Applies pet preference multipliers to money, experience, and points (not tokens)
  */
 export function calculateRewards(params: RewardCalculationParams): ExpeditionRewardDataWithItem {
 	const {
-		expedition, rewardIndex, isPartialSuccess, hasCloneTalisman, playerCurrentTokens
+		expedition, rewardIndex, isPartialSuccess, hasCloneTalisman, playerCurrentTokens, petTypeId
 	} = params;
 	const rewards = calculateBaseRewards(rewardIndex, expedition.locationType);
 	const tokens = calculateTokensReward(rewardIndex, expedition.hasBonusTokens ?? false, playerCurrentTokens, expedition.durationMinutes);
@@ -278,6 +281,15 @@ export function calculateRewards(params: RewardCalculationParams): ExpeditionRew
 	if (isPartialSuccess) {
 		applyPartialSuccessPenalty(rewards);
 	}
+
+	// Apply pet preference multiplier (liked = x1, neutral = x0.5, disliked = x0.25)
+	// Tokens are NOT affected by pet preferences
+	const petPreference = getPetExpeditionPreference(petTypeId, expedition.locationType);
+	const preferenceMultiplier = PET_PREFERENCE_REWARD_MULTIPLIERS[petPreference];
+
+	rewards.money = Math.round(rewards.money * preferenceMultiplier);
+	rewards.experience = Math.round(rewards.experience * preferenceMultiplier);
+	rewards.points = Math.round(rewards.points * preferenceMultiplier);
 
 	// Generate random item reward (always given on success)
 	const itemReward = generateItemReward(rewardIndex);

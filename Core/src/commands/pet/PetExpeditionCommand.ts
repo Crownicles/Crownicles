@@ -269,9 +269,11 @@ export default class PetExpeditionCommand {
 		const foodRequired = ExpeditionConstants.FOOD_CONSUMPTION[activeExpedition.rewardIndex];
 
 		// Calculate effective risk with food penalty if insufficient food was consumed
+		// Also applies extra failure risk if pet dislikes the location and expedition is short
 		const effectiveRisk = calculateEffectiveRisk({
 			expedition: expeditionData,
 			petModel,
+			petTypeId: petEntity.typeId,
 			petLovePoints: petEntity.lovePoints,
 			foodConsumed: activeExpedition.foodConsumed,
 			foodRequired
@@ -281,7 +283,8 @@ export default class PetExpeditionCommand {
 			expedition: expeditionData,
 			rewardIndex: activeExpedition.rewardIndex,
 			hasCloneTalisman: talismans.hasCloneTalisman,
-			playerCurrentTokens: player.tokens
+			playerCurrentTokens: player.tokens,
+			petTypeId: petEntity.typeId
 		});
 
 		// Apply love change

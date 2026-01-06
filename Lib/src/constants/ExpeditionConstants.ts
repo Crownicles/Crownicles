@@ -776,6 +776,425 @@ export abstract class ExpeditionConstants {
 	} as const;
 }
 
+/**
+ * Pet expedition preference type
+ */
+export type PetExpeditionPreference = "liked" | "neutral" | "disliked";
+
+/**
+ * Pet expedition preference configuration
+ */
+export interface PetExpeditionPreferenceConfig {
+	liked: ExpeditionLocationType[];
+	disliked: ExpeditionLocationType[];
+}
+
+/**
+ * Reward multipliers based on pet preference for expedition location
+ */
+export const PET_PREFERENCE_REWARD_MULTIPLIERS: Record<PetExpeditionPreference, number> = {
+	liked: 1,
+	neutral: 0.5,
+	disliked: 0.25
+};
+
+/**
+ * Additional failure risk for disliked expeditions shorter than 12 hours
+ */
+export const DISLIKED_SHORT_EXPEDITION_FAILURE_BONUS = 10;
+
+/**
+ * Threshold duration in minutes below which disliked expeditions have extra failure risk
+ */
+export const DISLIKED_EXPEDITION_DURATION_THRESHOLD_MINUTES = 720; // 12 hours
+
+/**
+ * Pet expedition preferences by pet type ID
+ * Each pet has preferred (liked) and disliked expedition location types
+ * Locations not in either list are considered neutral
+ *
+ * Categories:
+ * - Canines (dogs, wolves, foxes): like forests, plains | dislike deserts, swamps
+ * - Felines (cats, lions, tigers): like ruins, plains | dislike swamps, coasts
+ * - Birds: like mountains, forests | dislike caves, swamps
+ * - Rodents: like plains, caves | dislike mountains, coasts
+ * - Reptiles: like deserts, swamps | dislike mountains, coasts
+ * - Aquatic: like coasts, swamps | dislike deserts, mountains
+ * - Bears: like caves, mountains | dislike deserts, coasts
+ * - Primates: like forests, ruins | dislike deserts, caves
+ * - Equines: like plains, mountains | dislike swamps, caves
+ * - Farm animals: like plains, forests | dislike mountains, caves
+ * - Mythical/Special: balanced preferences
+ */
+export const PET_EXPEDITION_PREFERENCES: Record<number, PetExpeditionPreferenceConfig> = {
+	// 0 - No pet (default neutral)
+	0: {
+		liked: [], disliked: []
+	},
+
+	// Canines - Dogs, wolves, foxes (like forests/plains, dislike deserts/swamps)
+	1: {
+		liked: ["forest", "plains"], disliked: ["desert", "swamp"]
+	}, // Dog
+	2: {
+		liked: ["forest", "plains"], disliked: ["desert", "swamp"]
+	}, // Poodle
+	20: {
+		liked: ["forest", "plains"], disliked: ["desert", "cave"]
+	}, // Fox
+	28: {
+		liked: ["forest", "mountain"], disliked: ["desert", "swamp"]
+	}, // Wolf
+
+	// Felines - Cats, lions, tigers (like ruins/plains, dislike swamps/coasts)
+	3: {
+		liked: ["ruins", "plains"], disliked: ["swamp", "coast"]
+	}, // Cat
+	4: {
+		liked: ["ruins", "cave"], disliked: ["swamp", "coast"]
+	}, // Black cat
+	56: {
+		liked: ["forest", "plains"], disliked: ["swamp", "coast"]
+	}, // Tiger
+	57: {
+		liked: ["plains", "desert"], disliked: ["swamp", "cave"]
+	}, // Lion
+	60: {
+		liked: ["forest", "mountain"], disliked: ["swamp", "coast"]
+	}, // Leopard
+
+	// Rodents - Mice, hamsters, rabbits (like plains/caves, dislike mountains/coasts)
+	5: {
+		liked: ["plains", "cave"], disliked: ["mountain", "coast"]
+	}, // Mouse
+	6: {
+		liked: ["plains", "cave"], disliked: ["mountain", "coast"]
+	}, // Hamster
+	7: {
+		liked: ["plains", "forest"], disliked: ["cave", "desert"]
+	}, // Rabbit
+	35: {
+		liked: ["forest", "ruins"], disliked: ["desert", "coast"]
+	}, // Raccoon
+	40: {
+		liked: ["forest", "plains"], disliked: ["desert", "coast"]
+	}, // Chipmunk
+	41: {
+		liked: ["forest", "plains"], disliked: ["desert", "cave"]
+	}, // Hedgehog
+	93: {
+		liked: ["ruins", "cave"], disliked: ["forest", "coast"]
+	}, // Rat
+
+	// Farm animals - Cows, pigs, sheep (like plains/forests, dislike mountains/caves)
+	8: {
+		liked: ["plains", "forest"], disliked: ["mountain", "cave"]
+	}, // Cow
+	9: {
+		liked: ["plains", "forest"], disliked: ["mountain", "desert"]
+	}, // Pig
+	17: {
+		liked: ["plains", "mountain"], disliked: ["swamp", "cave"]
+	}, // Sheep
+	18: {
+		liked: ["mountain", "plains"], disliked: ["swamp", "cave"]
+	}, // Goat
+	96: {
+		liked: ["plains", "desert"], disliked: ["swamp", "cave"]
+	}, // Donkey
+
+	// Poultry - Chickens, ducks, geese (like plains/forests, dislike mountains/caves)
+	10: {
+		liked: ["plains", "forest"], disliked: ["mountain", "cave"]
+	}, // Chicken
+	12: {
+		liked: ["coast", "plains"], disliked: ["mountain", "cave"]
+	}, // Duck
+	19: {
+		liked: ["plains", "forest"], disliked: ["mountain", "cave"]
+	}, // Turkey
+	92: {
+		liked: ["plains", "forest"], disliked: ["mountain", "cave"]
+	}, // Chick
+	97: {
+		liked: ["plains", "coast"], disliked: ["mountain", "cave"]
+	}, // Goose
+
+	// Birds - Various flying birds (like mountains/forests, dislike caves/swamps)
+	11: {
+		liked: ["mountain", "forest"], disliked: ["cave", "swamp"]
+	}, // Bird
+	26: {
+		liked: ["forest", "ruins"], disliked: ["cave", "desert"]
+	}, // Owl
+	27: {
+		liked: ["cave", "ruins"], disliked: ["plains", "coast"]
+	}, // Bat
+	33: {
+		liked: ["coast", "plains"], disliked: ["cave", "desert"]
+	}, // Swan
+	34: {
+		liked: ["coast", "swamp"], disliked: ["cave", "mountain"]
+	}, // Flamingo
+	53: {
+		liked: ["forest", "plains"], disliked: ["cave", "desert"]
+	}, // Peacock
+	54: {
+		liked: ["forest", "plains"], disliked: ["cave", "desert"]
+	}, // Parrot
+	58: {
+		liked: ["mountain", "plains"], disliked: ["cave", "swamp"]
+	}, // Eagle
+	62: {
+		liked: ["plains", "forest"], disliked: ["cave", "swamp"]
+	}, // Dove
+	94: {
+		liked: ["forest", "plains"], disliked: ["cave", "desert"]
+	}, // Blackbird
+	95: {
+		liked: ["ruins", "forest"], disliked: ["coast", "swamp"]
+	}, // Crow
+	59: {
+		liked: ["forest", "plains"], disliked: ["mountain", "cave"]
+	}, // Dodo
+
+	// Equines - Horses, zebras (like plains/mountains, dislike swamps/caves)
+	13: {
+		liked: ["plains", "mountain"], disliked: ["swamp", "cave"]
+	}, // Horse
+	47: {
+		liked: ["plains", "desert"], disliked: ["swamp", "cave"]
+	}, // Zebra
+	98: {
+		liked: ["forest", "mountain"], disliked: ["swamp", "desert"]
+	}, // Elk
+
+	// Reptiles - Snakes, lizards, turtles (like deserts/swamps, dislike mountains/coasts)
+	14: {
+		liked: ["coast", "swamp"], disliked: ["mountain", "desert"]
+	}, // Turtle
+	15: {
+		liked: ["desert", "swamp"], disliked: ["mountain", "coast"]
+	}, // Snake
+	16: {
+		liked: ["desert", "ruins"], disliked: ["mountain", "coast"]
+	}, // Lizard
+	44: {
+		liked: ["desert", "cave"], disliked: ["coast", "forest"]
+	}, // Scorpion
+	45: {
+		liked: ["swamp", "coast"], disliked: ["mountain", "desert"]
+	}, // Crocodile
+
+	// Bears (like caves/mountains, dislike deserts/coasts)
+	21: {
+		liked: ["cave", "mountain"], disliked: ["desert", "coast"]
+	}, // Bear
+	42: {
+		liked: ["mountain", "coast"], disliked: ["desert", "swamp"]
+	}, // Polar bear
+	43: {
+		liked: ["forest", "mountain"], disliked: ["desert", "coast"]
+	}, // Panda
+
+	// Amphibians (like swamps/coasts, dislike deserts/mountains)
+	23: {
+		liked: ["swamp", "coast"], disliked: ["desert", "mountain"]
+	}, // Frog
+
+	// Primates - Monkeys, apes (like forests/ruins, dislike deserts/caves)
+	24: {
+		liked: ["forest", "ruins"], disliked: ["desert", "cave"]
+	}, // Monkey
+	90: {
+		liked: ["forest", "swamp"], disliked: ["desert", "mountain"]
+	}, // Orangutan
+	91: {
+		liked: ["forest", "mountain"], disliked: ["desert", "coast"]
+	}, // Gorilla
+
+	// Arctic animals (like mountains/coasts, dislike deserts/swamps)
+	25: {
+		liked: ["coast", "mountain"], disliked: ["desert", "swamp"]
+	}, // Penguin
+	72: {
+		liked: ["coast", "mountain"], disliked: ["desert", "swamp"]
+	}, // Penguin (alternative)
+	30: {
+		liked: ["coast", "cave"], disliked: ["desert", "plains"]
+	}, // Seal
+
+	// Australian animals (like plains/deserts, dislike caves/swamps)
+	22: {
+		liked: ["forest", "plains"], disliked: ["desert", "cave"]
+	}, // Koala
+	52: {
+		liked: ["plains", "desert"], disliked: ["cave", "swamp"]
+	}, // Kangaroo
+
+	// African savanna (like plains/deserts, dislike caves/swamps)
+	31: {
+		liked: ["swamp", "coast"], disliked: ["desert", "mountain"]
+	}, // Hippo
+	46: {
+		liked: ["plains", "forest"], disliked: ["cave", "mountain"]
+	}, // Elephant
+	48: {
+		liked: ["plains", "desert"], disliked: ["cave", "swamp"]
+	}, // Rhino
+	51: {
+		liked: ["plains", "forest"], disliked: ["cave", "swamp"]
+	}, // Giraffe
+
+	// Desert animals (like deserts/plains, dislike coasts/swamps)
+	29: {
+		liked: ["forest", "plains"], disliked: ["desert", "coast"]
+	}, // Boar
+	32: {
+		liked: ["mountain", "desert"], disliked: ["swamp", "coast"]
+	}, // Llama
+	49: {
+		liked: ["desert", "plains"], disliked: ["coast", "swamp"]
+	}, // Dromedary
+	50: {
+		liked: ["desert", "plains"], disliked: ["coast", "swamp"]
+	}, // Camel
+
+	// Forest small mammals
+	36: {
+		liked: ["forest", "plains"], disliked: ["desert", "coast"]
+	}, // Skunk
+	37: {
+		liked: ["forest", "plains"], disliked: ["desert", "coast"]
+	}, // Badger
+	38: {
+		liked: ["forest", "coast"], disliked: ["desert", "mountain"]
+	}, // Beaver
+	39: {
+		liked: ["forest", "swamp"], disliked: ["desert", "mountain"]
+	}, // Sloth
+	55: {
+		liked: ["coast", "forest"], disliked: ["desert", "mountain"]
+	}, // Otter
+	87: {
+		liked: ["forest", "plains"], disliked: ["desert", "cave"]
+	}, // Deer
+	88: {
+		liked: ["plains", "swamp"], disliked: ["desert", "cave"]
+	}, // Water buffalo
+	89: {
+		liked: ["plains", "mountain"], disliked: ["swamp", "cave"]
+	}, // Bison
+
+	// Aquatic animals (like coasts/swamps, dislike deserts/mountains)
+	71: {
+		liked: ["coast", "swamp"], disliked: ["desert", "mountain"]
+	}, // Octopus
+	73: {
+		liked: ["coast", "swamp"], disliked: ["desert", "mountain"]
+	}, // Fish
+	74: {
+		liked: ["coast", "swamp"], disliked: ["desert", "mountain"]
+	}, // Tropical fish
+	75: {
+		liked: ["coast", "swamp"], disliked: ["desert", "mountain"]
+	}, // Pufferfish
+	76: {
+		liked: ["coast", "swamp"], disliked: ["desert", "mountain"]
+	}, // Jellyfish
+	77: {
+		liked: ["coast", "cave"], disliked: ["desert", "mountain"]
+	}, // Shark
+	78: {
+		liked: ["coast", "plains"], disliked: ["desert", "mountain"]
+	}, // Whale
+	79: {
+		liked: ["coast", "plains"], disliked: ["desert", "mountain"]
+	}, // Whale
+	80: {
+		liked: ["coast", "swamp"], disliked: ["desert", "mountain"]
+	}, // Shrimp
+	81: {
+		liked: ["coast", "cave"], disliked: ["desert", "mountain"]
+	}, // Lobster
+	82: {
+		liked: ["coast", "plains"], disliked: ["desert", "cave"]
+	}, // Dolphin
+	86: {
+		liked: ["coast", "swamp"], disliked: ["desert", "mountain"]
+	}, // Crab
+	85: {
+		liked: ["forest", "swamp"], disliked: ["desert", "mountain"]
+	}, // Snail
+
+	// Mythical creatures
+	61: {
+		liked: ["mountain", "plains"], disliked: ["swamp", "cave"]
+	}, // Mammoth
+	63: {
+		liked: ["forest", "plains"], disliked: ["cave", "swamp"]
+	}, // Unicorn
+	64: {
+		liked: ["mountain", "cave"], disliked: ["coast", "swamp"]
+	}, // Dragon
+	65: {
+		liked: ["plains", "forest"], disliked: ["coast", "cave"]
+	}, // T-Rex
+	83: {
+		liked: ["mountain", "desert"], disliked: ["coast", "swamp"]
+	}, // Phoenix
+	84: {
+		liked: ["plains", "forest"], disliked: ["desert", "cave"]
+	}, // Diplodocus
+
+	// Special/Seasonal
+	66: {
+		liked: ["ruins", "coast"], disliked: ["cave", "mountain"]
+	}, // Stitch
+	67: {
+		liked: ["mountain", "plains"], disliked: ["desert", "swamp"]
+	}, // Snowman
+	68: {
+		liked: ["coast", "plains"], disliked: ["mountain", "cave"]
+	}, // Scarlet duck
+	69: {
+		liked: ["mountain", "plains"], disliked: ["desert", "swamp"]
+	}, // Snowman
+	70: {
+		liked: ["ruins", "desert"], disliked: ["forest", "swamp"]
+	}, // Alien
+	99: {
+		liked: ["ruins", "cave"], disliked: ["coast", "plains"]
+	}, // Jack-o-lantern
+	100: {
+		liked: ["ruins", "cave"], disliked: ["plains", "coast"]
+	}, // Ghost
+	101: {
+		liked: ["cave", "ruins"], disliked: ["plains", "coast"]
+	} // Vampire
+};
+
+/**
+ * Get pet expedition preference for a given location type
+ */
+export function getPetExpeditionPreference(petTypeId: number, locationType: ExpeditionLocationType): PetExpeditionPreference {
+	const preferences = PET_EXPEDITION_PREFERENCES[petTypeId];
+
+	if (!preferences) {
+		return "neutral";
+	}
+
+	if (preferences.liked.includes(locationType)) {
+		return "liked";
+	}
+
+	if (preferences.disliked.includes(locationType)) {
+		return "disliked";
+	}
+
+	return "neutral";
+}
+
 export type ExpeditionStatus = (typeof ExpeditionConstants.STATUS)[keyof typeof ExpeditionConstants.STATUS];
 export type ExpeditionLocationType = (typeof ExpeditionConstants.EXPEDITION_LOCATION_TYPES)[keyof typeof ExpeditionConstants.EXPEDITION_LOCATION_TYPES];
 export type RewardWeights = Record<"money" | "experience" | "points", number>;
