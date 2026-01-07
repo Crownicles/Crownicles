@@ -1,10 +1,18 @@
 import { QueryInterface } from "sequelize";
+import { CrowniclesLogger } from "../../../../../../Lib/src/logs/CrowniclesLogger";
 
 // Error codes
 const TABLE_NOT_FOUND_ERRNO = 1146;
 const KEY_COLUMN_DOES_NOT_EXIST_ERRNO = 1072;
 const DUPLICATE_KEY_ERRNO = 1061;
 const INDEX_NOT_FOUND_ERRNO = 1091;
+
+const IGNORABLE_ADD_INDEX_ERRNOS = [
+	TABLE_NOT_FOUND_ERRNO,
+	KEY_COLUMN_DOES_NOT_EXIST_ERRNO,
+	DUPLICATE_KEY_ERRNO
+];
+const IGNORABLE_REMOVE_INDEX_ERRNOS = [TABLE_NOT_FOUND_ERRNO, INDEX_NOT_FOUND_ERRNO];
 
 /**
  * Safely add an index, ignoring errors if table/column doesn't exist or index already exists
@@ -15,9 +23,10 @@ async function safeAddIndex(context: QueryInterface, tableName: string, columns:
 	}
 	catch (e) {
 		const errno = (e as { original?: { errno?: number } }).original?.errno;
-		if (errno !== TABLE_NOT_FOUND_ERRNO && errno !== KEY_COLUMN_DOES_NOT_EXIST_ERRNO && errno !== DUPLICATE_KEY_ERRNO) {
+		if (!IGNORABLE_ADD_INDEX_ERRNOS.includes(errno!)) {
 			throw e;
 		}
+		CrowniclesLogger.debug(`Migration 018: Ignoring error ${errno} for addIndex ${options.name} on ${tableName}`);
 
 		// Table/column doesn't exist or index already exists - skip
 	}
@@ -32,9 +41,10 @@ async function safeRemoveIndex(context: QueryInterface, tableName: string, index
 	}
 	catch (e) {
 		const errno = (e as { original?: { errno?: number } }).original?.errno;
-		if (errno !== TABLE_NOT_FOUND_ERRNO && errno !== INDEX_NOT_FOUND_ERRNO) {
+		if (!IGNORABLE_REMOVE_INDEX_ERRNOS.includes(errno!)) {
 			throw e;
 		}
+		CrowniclesLogger.debug(`Migration 018: Ignoring error ${errno} for removeIndex ${indexName} on ${tableName}`);
 
 		// Table or index doesn't exist - skip
 	}

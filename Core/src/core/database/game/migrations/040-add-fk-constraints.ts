@@ -1,4 +1,5 @@
 import { QueryInterface } from "sequelize";
+import { CrowniclesLogger } from "../../../../../../Lib/src/logs/CrowniclesLogger";
 
 // Error codes for table/constraint not found
 const TABLE_NOT_FOUND_ERRNO = 1146;
@@ -7,6 +8,15 @@ const DUPLICATE_KEY_ERRNO = 1061;
 const UNKNOWN_COLUMN_ERRNO = 1054;
 const KEY_COLUMN_DOES_NOT_EXIST_ERRNO = 1072;
 const CANT_CREATE_TABLE_ERRNO = 1005; // Duplicate FK name
+
+const IGNORABLE_ERRNOS = [
+	TABLE_NOT_FOUND_ERRNO,
+	CONSTRAINT_NOT_FOUND_ERRNO,
+	DUPLICATE_KEY_ERRNO,
+	UNKNOWN_COLUMN_ERRNO,
+	KEY_COLUMN_DOES_NOT_EXIST_ERRNO,
+	CANT_CREATE_TABLE_ERRNO
+];
 
 /**
  * Safely execute a query, ignoring table not found or unknown column errors
@@ -20,6 +30,7 @@ async function safeQuery(context: QueryInterface, sql: string): Promise<void> {
 		if (errno !== TABLE_NOT_FOUND_ERRNO && errno !== UNKNOWN_COLUMN_ERRNO) {
 			throw e;
 		}
+		CrowniclesLogger.debug(`Migration 040: Ignoring error ${errno} for query: ${sql.substring(0, 100)}...`);
 
 		// Table or column doesn't exist - that's fine, skip cleanup
 	}
@@ -34,15 +45,10 @@ async function safeAddConstraint(context: QueryInterface, tableName: string, opt
 	}
 	catch (e) {
 		const errno = (e as { original?: { errno?: number } }).original?.errno;
-		if (
-			errno !== TABLE_NOT_FOUND_ERRNO
-			&& errno !== DUPLICATE_KEY_ERRNO
-			&& errno !== UNKNOWN_COLUMN_ERRNO
-			&& errno !== KEY_COLUMN_DOES_NOT_EXIST_ERRNO
-			&& errno !== CANT_CREATE_TABLE_ERRNO
-		) {
+		if (!IGNORABLE_ERRNOS.includes(errno!)) {
 			throw e;
 		}
+		CrowniclesLogger.debug(`Migration 040: Ignoring error ${errno} for addConstraint on ${tableName}`);
 
 		// Table/column doesn't exist or constraint already exists - skip
 	}
@@ -60,6 +66,7 @@ async function safeRemoveConstraint(context: QueryInterface, tableName: string, 
 		if (errno !== TABLE_NOT_FOUND_ERRNO && errno !== CONSTRAINT_NOT_FOUND_ERRNO) {
 			throw e;
 		}
+		CrowniclesLogger.debug(`Migration 040: Ignoring error ${errno} for removeConstraint ${constraintName} on ${tableName}`);
 
 		// Table or constraint doesn't exist - skip
 	}

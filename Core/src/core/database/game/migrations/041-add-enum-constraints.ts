@@ -1,4 +1,5 @@
 import { QueryInterface } from "sequelize";
+import { CrowniclesLogger } from "../../../../../../Lib/src/logs/CrowniclesLogger";
 
 // Error codes for table not found
 const TABLE_NOT_FOUND_ERRNO = 1146;
@@ -15,6 +16,7 @@ async function safeQuery(context: QueryInterface, sql: string): Promise<void> {
 		if (errno !== TABLE_NOT_FOUND_ERRNO) {
 			throw e;
 		}
+		CrowniclesLogger.debug(`Migration 041: Ignoring error ${errno} for query: ${sql.substring(0, 100)}...`);
 
 		// Table doesn't exist - skip
 	}
