@@ -13,8 +13,9 @@ import { adminCommand } from "../../core/utils/CommandUtils";
 export default class TestListCommand {
 	@adminCommand(CommandTestListPacketReq, () => true)
 	execute(response: CrowniclesPacket[], _packet: CommandTestListPacketReq): void {
-		// Get all test commands from CommandsTest
-		const commands = Object.values(CommandsTest.testCommandsArray)
+		// Get all test commands from CommandsTest (handle case where not yet initialized)
+		const commandsArray = CommandsTest.testCommandsArray ?? {};
+		const commands = Object.values(commandsArray)
 			.filter((cmd, index, self) =>
 
 				// Remove duplicates (aliases point to same command)
