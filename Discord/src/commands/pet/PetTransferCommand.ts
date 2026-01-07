@@ -3,6 +3,7 @@ import {
 	makePacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
+	CommandPetTransferFreeSuccessPacket,
 	CommandPetTransferPacketReq,
 	CommandPetTransferSuccessPacket
 } from "../../../../Lib/src/packets/commands/CommandPetTransferPacket";
@@ -23,6 +24,7 @@ import { ReactionCollectorReturnTypeOrNull } from "../../packetHandlers/handlers
 import {
 	ReactionCollectorPetTransferData,
 	ReactionCollectorPetTransferDepositReaction,
+	ReactionCollectorPetTransferFreeReaction,
 	ReactionCollectorPetTransferPacket,
 	ReactionCollectorPetTransferSwitchReaction,
 	ReactionCollectorPetTransferWithdrawReaction
@@ -84,6 +86,43 @@ export async function handlePetTransferSuccess(context: PacketContext, packet: C
 	});
 }
 
+export async function handlePetTransferFreeSuccess(context: PacketContext, packet: CommandPetTransferFreeSuccessPacket): Promise<void> {
+	const interaction = MessagesUtils.getCurrentInteraction(context);
+
+	if (!interaction) {
+		return;
+	}
+
+	const lng = interaction.userLanguage ?? context.discord?.language ?? LANGUAGE.DEFAULT_LANGUAGE;
+
+	const petDisplay = `${DisplayUtils.getPetIcon(packet.petId, packet.petSex)} ${DisplayUtils.getPetNicknameOrTypeName(packet.petNickname, packet.petId, packet.petSex, lng)}`;
+
+	let description = i18n.t("commands:petTransfer.confirmFree", {
+		lng, pet: petDisplay
+	});
+
+	if (packet.freeCost > 0) {
+		description += `\n${i18n.t("commands:petTransfer.confirmFreeFeistyCost", {
+			lng, cost: packet.freeCost
+		})}`;
+	}
+
+	if (packet.luckyMeat) {
+		description += `\n${i18n.t("commands:petTransfer.confirmFreeLuckyMeat", { lng })}`;
+	}
+
+	await interaction.editReply({
+		embeds: [
+			new CrowniclesEmbed()
+				.formatAuthor(i18n.t("commands:petTransfer.confirmFreeTitle", {
+					lng,
+					pseudo: escapeUsername(interaction.user.displayName)
+				}), interaction.user)
+				.setDescription(description)
+		]
+	});
+}
+
 type ReactionMap = {
 	reaction: {
 		type: string;
@@ -95,6 +134,7 @@ type ReactionMap = {
 const depositCustomId = "deposit";
 const switchCustomId = "switch";
 const withdrawCustomId = "withdraw";
+const freeCustomId = "free";
 const refuseCustomId = "refuse";
 const backCustomId = "back";
 
@@ -104,6 +144,7 @@ function getMainMenuComponents(
 		deposit?: ReactionMap;
 		switches: ReactionMap[];
 		withdraws: ReactionMap[];
+		frees: ReactionMap[];
 		refuse?: ReactionMap;
 	},
 	lng: Language
@@ -143,6 +184,16 @@ function getMainMenuComponents(
 				.setLabel(i18n.t("commands:petTransfer.withdrawButton", { lng }))
 				.setStyle(ButtonStyle.Secondary)
 				.setCustomId(withdrawCustomId)
+		));
+	}
+
+	if (reactions.frees.length > 0) {
+		rows.push(new ActionRowBuilder<ButtonBuilder>().addComponents(
+			new ButtonBuilder()
+				.setEmoji(parseEmoji(CrowniclesIcons.petTransfer.free)!)
+				.setLabel(i18n.t("commands:petTransfer.freeButton", { lng }))
+				.setStyle(ButtonStyle.Danger)
+				.setCustomId(freeCustomId)
 		));
 	}
 
@@ -237,6 +288,28 @@ function getWithdrawComponents(
 	return rows;
 }
 
+function getFreeComponents(
+	data: ReactionCollectorPetTransferData,
+	reactions: ReactionMap[],
+	lng: Language
+): ActionRowBuilder<MessageActionRowComponentBuilder>[] {
+	const rows = [];
+
+	rows.push(new ActionRowBuilder<StringSelectMenuBuilder>()
+		.addComponents(
+			getShelterPetSelectMenu(
+				data,
+				reactions,
+				i18n.t("commands:petTransfer.freePlaceholder", { lng }),
+				lng
+			)
+		));
+
+	rows.push(new ActionRowBuilder<ButtonBuilder>().addComponents(getBackButton(lng)));
+
+	return rows;
+}
+
 async function handlePetTransferCollect(
 	inMainMenu: boolean,
 	packet: ReactionCollectorPetTransferPacket,
@@ -250,6 +323,7 @@ async function handlePetTransferCollect(
 		mainMenuEmbed: CrowniclesEmbed;
 		switchComponents: ActionRowBuilder<MessageActionRowComponentBuilder>[];
 		withdrawComponents: ActionRowBuilder<MessageActionRowComponentBuilder>[];
+		freeComponents: ActionRowBuilder<MessageActionRowComponentBuilder>[];
 		mainMenuComponents: ActionRowBuilder<ButtonBuilder>[];
 	},
 	currentComponents: ActionRowBuilder<MessageActionRowComponentBuilder>[]
@@ -290,6 +364,15 @@ async function handlePetTransferCollect(
 				});
 				inMainMenu = false;
 				updatedComponents = discord.withdrawComponents;
+				break;
+
+			case freeCustomId:
+				await discord.collectedInteraction.update({
+					embeds: [discord.mainMenuEmbed],
+					components: discord.freeComponents
+				});
+				inMainMenu = false;
+				updatedComponents = discord.freeComponents;
 				break;
 
 			case refuseCustomId:
@@ -367,6 +450,11 @@ export async function handlePetTransferReactionCollector(context: PacketContext,
 		index
 	}))
 		.filter(reaction => reaction.reaction.type === ReactionCollectorPetTransferWithdrawReaction.name);
+	const freeReactions = packet.reactions.map((reaction, index) => ({
+		reaction,
+		index
+	}))
+		.filter(reaction => reaction.reaction.type === ReactionCollectorPetTransferFreeReaction.name);
 	const refuseReaction = packet.reactions.map((reaction, index) => ({
 		reaction,
 		index
@@ -381,10 +469,12 @@ export async function handlePetTransferReactionCollector(context: PacketContext,
 		deposit: depositReaction,
 		switches: switchReactions,
 		withdraws: withdrawReactions,
+		frees: freeReactions,
 		refuse: refuseReaction
 	}, lng);
 	const switchComponents = switchReactions.length !== 0 ? getSwitchComponents(data, switchReactions, lng) : [];
 	const withdrawComponents = withdrawReactions.length !== 0 ? getWithdrawComponents(data, withdrawReactions, lng) : [];
+	const freeComponents = freeReactions.length !== 0 ? getFreeComponents(data, freeReactions, lng) : [];
 
 	const msg = await interaction?.editReply({
 		embeds: [mainMenuEmbed],
@@ -417,6 +507,7 @@ export async function handlePetTransferReactionCollector(context: PacketContext,
 				mainMenuEmbed,
 				switchComponents,
 				withdrawComponents,
+				freeComponents,
 				mainMenuComponents
 			},
 			currentComponents
