@@ -5,15 +5,33 @@ import "winston-daily-rotate-file";
 import { Constants } from "../constants/Constants";
 import LokiTransport = require("winston-loki");
 
+/**
+ * Safely stringify an object, handling circular references
+ * @param obj - Object to stringify
+ * @returns JSON string or "[Circular]" placeholder for circular refs
+ */
+function safeStringify(obj: unknown): string {
+	const seen = new WeakSet();
+	return JSON.stringify(obj, (_key, value) => {
+		if (typeof value === "object" && value !== null) {
+			if (seen.has(value)) {
+				return "[Circular]";
+			}
+			seen.add(value);
+		}
+		return value;
+	});
+}
+
 const myFormatWithLabel = format.printf(({
 	level, message, metadata, label, timestamp
 }) =>
-	`${timestamp} [${label}] [${level.toUpperCase()}]: ${message}${metadata && Object.keys(metadata).length > 0 ? ` ${JSON.stringify(metadata)}` : ""}`);
+	`${timestamp} [${label}] [${level.toUpperCase()}]: ${message}${metadata && Object.keys(metadata).length > 0 ? ` ${safeStringify(metadata)}` : ""}`);
 
 const myFormat = format.printf(({
 	level, message, metadata, timestamp
 }) =>
-	`${timestamp} [${level.toUpperCase()}]: ${message}${metadata && Object.keys(metadata).length > 0 ? ` ${JSON.stringify(metadata)}` : ""}`);
+	`${timestamp} [${level.toUpperCase()}]: ${message}${metadata && Object.keys(metadata).length > 0 ? ` ${safeStringify(metadata)}` : ""}`);
 
 type LogMetadata = { [key: string]: unknown } & {
 	error?: never;
