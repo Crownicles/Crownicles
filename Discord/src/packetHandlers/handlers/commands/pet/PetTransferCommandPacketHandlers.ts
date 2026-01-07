@@ -5,6 +5,9 @@ import {
 	CommandPetTransferAnotherMemberTransferringErrorPacket,
 	CommandPetTransferCancelErrorPacket,
 	CommandPetTransferFeistyErrorPacket,
+	CommandPetTransferFreeCooldownErrorPacket,
+	CommandPetTransferFreeMissingMoneyErrorPacket,
+	CommandPetTransferFreeSuccessPacket,
 	CommandPetTransferNoPetErrorPacket,
 	CommandPetTransferPetOnExpeditionErrorPacket,
 	CommandPetTransferSituationChangedErrorPacket,
@@ -12,8 +15,12 @@ import {
 } from "../../../../../../Lib/src/packets/commands/CommandPetTransferPacket";
 import { KeycloakUtils } from "../../../../../../Lib/src/keycloak/KeycloakUtils";
 import { keycloakConfig } from "../../../../bot/CrowniclesShard";
-import { handlePetTransferSuccess } from "../../../../commands/pet/PetTransferCommand";
+import {
+	handlePetTransferFreeSuccess,
+	handlePetTransferSuccess
+} from "../../../../commands/pet/PetTransferCommand";
 import { escapeUsername } from "../../../../utils/StringUtils";
+import { printTimeBeforeDate } from "../../../../../../Lib/src/utils/TimeUtils";
 
 export default class PetTransferCommandPacketHandlers {
 	@packetHandler(CommandPetTransferAnotherMemberTransferringErrorPacket)
@@ -56,5 +63,24 @@ export default class PetTransferCommandPacketHandlers {
 	@packetHandler(CommandPetTransferPetOnExpeditionErrorPacket)
 	async petOnExpeditionError(context: PacketContext, _packet: CommandPetTransferPetOnExpeditionErrorPacket): Promise<void> {
 		await handleClassicError(context, "commands:petTransfer.petOnExpedition");
+	}
+
+	@packetHandler(CommandPetTransferFreeCooldownErrorPacket)
+	async freeCooldownError(context: PacketContext, packet: CommandPetTransferFreeCooldownErrorPacket): Promise<void> {
+		await handleClassicError(context, "commands:petTransfer.freeCooldown", {
+			time: printTimeBeforeDate(packet.cooldownRemainingTimeMs + new Date().valueOf())
+		});
+	}
+
+	@packetHandler(CommandPetTransferFreeMissingMoneyErrorPacket)
+	async freeMissingMoneyError(context: PacketContext, packet: CommandPetTransferFreeMissingMoneyErrorPacket): Promise<void> {
+		await handleClassicError(context, "commands:petTransfer.freeMissingMoney", {
+			missingMoney: packet.missingMoney
+		});
+	}
+
+	@packetHandler(CommandPetTransferFreeSuccessPacket)
+	async freeSuccess(context: PacketContext, packet: CommandPetTransferFreeSuccessPacket): Promise<void> {
+		await handlePetTransferFreeSuccess(context, packet);
 	}
 }

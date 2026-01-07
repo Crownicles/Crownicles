@@ -180,6 +180,7 @@ export const CrowniclesIcons: {
 		deposit: string;
 		switch: string;
 		withdraw: string;
+		free: string;
 	};
 	other: { [otherId: string]: string };
 	guild: {
@@ -2278,7 +2279,8 @@ export const CrowniclesIcons: {
 	petTransfer: {
 		deposit: "📥",
 		switch: "🔄",
-		withdraw: "📤"
+		withdraw: "📤",
+		free: "🕊️"
 	},
 	other: {
 		trash: "🗑️",
