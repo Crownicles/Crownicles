@@ -494,6 +494,11 @@ export class LogsDatabase extends Database {
 			return;
 		}
 
+		// Skip logging for invalid keycloakId (system commands or deleted players)
+		if (!keycloakId) {
+			return;
+		}
+
 		const player = await LogsDatabase.findOrCreatePlayer(keycloakId);
 		const [commandOrigin] = await LogsCommandOrigins.findOrCreate({
 			where: { name: origin }
