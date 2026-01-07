@@ -10,7 +10,7 @@ import LokiTransport = require("winston-loki");
  * @param obj - Object to stringify
  * @returns JSON string or "[Circular]" placeholder for circular refs
  */
-function safeStringify(obj: unknown): string {
+export function safeStringify(obj: unknown): string {
 	const seen = new WeakSet();
 	return JSON.stringify(obj, (_key, value) => {
 		if (typeof value === "object" && value !== null) {
