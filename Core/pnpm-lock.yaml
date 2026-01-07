@@ -21,8 +21,8 @@ importers:
         specifier: 5.2.1
         version: 5.2.1
       mariadb:
-        specifier: 3.4.5
-        version: 3.4.5
+        specifier: 3.0.2
+        version: 3.0.2
       moment:
         specifier: 2.30.1
         version: 2.30.1
@@ -37,7 +37,7 @@ importers:
         version: 2.1.0
       sequelize:
         specifier: 6.37.7
-        version: 6.37.7(mariadb@3.4.5)
+        version: 6.37.7(mariadb@3.0.2)
       source-map-support:
         specifier: 0.5.21
         version: 0.5.21
@@ -664,8 +664,8 @@ packages:
   '@types/ms@2.1.0':
     resolution: {integrity: sha512-GsCCIZDE/p3i96vtEqx+7dBUGXrc7zeSK3wwPHIaRThS+9OhWIXRqzs4d6k1SVU8g91DrNRWxWUGhp5KXQb2VA==}
 
-  '@types/node@24.10.4':
-    resolution: {integrity: sha512-vnDVpYPMzs4wunl27jHrfmwojOGKya0xyM3sH+UE5iv5uPS6vX7UIoh6m+vQc5LGBq52HBKPIn/zcSZVzeDEZg==}
+  '@types/node@17.0.45':
+    resolution: {integrity: sha512-w+tIMs3rq2afQdsPJlODhoUEKzFP1ayaoyl1CcnwtIlsVe7K7bA1NGm4s3PraqTLlXnbIN84zuBlxBWo1u9BLw==}
 
   '@types/node@25.0.2':
     resolution: {integrity: sha512-gWEkeiyYE4vqjON/+Obqcoeffmk0NF15WSBwSs7zwVA2bAbTaE0SJ7P0WNGoJn8uE7fiaV5a7dKYIJriEqOrmA==}
@@ -1419,6 +1419,10 @@ packages:
     resolution: {integrity: sha512-Jo6dJ04CmSjuznwJSS3pUeWmd/H0ffTlkXXgwZi+eq1UCmqQwCh+eLsYOYCwY991i2Fah4h1BEMCx4qThGbsiA==}
     engines: {node: '>=10'}
 
+  lru-cache@7.18.3:
+    resolution: {integrity: sha512-jumlc0BIUrS3qJGgIkWZsyfAM7NCWiBcCDhnd+3NNM5KbBmLTgHVfWBcg6W+rLUsIpzpERPsvwUP7CckAQSOoA==}
+    engines: {node: '>=12'}
+
   luxon@3.7.2:
     resolution: {integrity: sha512-vtEhXh/gNjI9Yg1u4jX/0YVPMvxzHuGgCm6tC5kZyb08yjGWGnqAjGJvcXbqQR2P3MyMEFnRbpcdFS6PBcLqew==}
     engines: {node: '>=12'}
@@ -1433,9 +1437,9 @@ packages:
     resolution: {integrity: sha512-hXdUTZYIVOt1Ex//jAQi+wTZZpUpwBj/0QsOzqegb3rGMMeJiSEu5xLHnYfBrRV4RH2+OCSOO95Is/7x1WJ4bw==}
     engines: {node: '>=10'}
 
-  mariadb@3.4.5:
-    resolution: {integrity: sha512-gThTYkhIS5rRqkVr+Y0cIdzr+GRqJ9sA2Q34e0yzmyhMCwyApf3OKAC1jnF23aSlIOqJuyaUFUcj7O1qZslmmQ==}
-    engines: {node: '>= 14'}
+  mariadb@3.0.2:
+    resolution: {integrity: sha512-dVjiQZ6RW0IXFnX+T/ZEmnqs724DgkQsXqfCyInXn0XxVfO2Px6KbS4M3Ny6UiBg0zJ93SHHvfVBgYO4ZnFvvw==}
+    engines: {node: '>= 12'}
 
   math-intrinsics@1.1.0:
     resolution: {integrity: sha512-/IXtbwEk5HTPyEwyKX6hGkYXxM9nbj64B+ilVJnC/R6B0pH5G4V3b0pVbL7DBj4tkhBAppbQUlf6F6Xl9LHu1g==}
@@ -2538,9 +2542,7 @@ snapshots:
 
   '@types/ms@2.1.0': {}
 
-  '@types/node@24.10.4':
-    dependencies:
-      undici-types: 7.16.0
+  '@types/node@17.0.45': {}
 
   '@types/node@25.0.2':
     dependencies:
@@ -3380,6 +3382,8 @@ snapshots:
     dependencies:
       yallist: 4.0.0
 
+  lru-cache@7.18.3: {}
+
   luxon@3.7.2: {}
 
   magic-string@0.30.21:
@@ -3396,13 +3400,14 @@ snapshots:
     dependencies:
       semver: 7.7.3
 
-  mariadb@3.4.5:
+  mariadb@3.0.2:
     dependencies:
       '@types/geojson': 7946.0.16
-      '@types/node': 24.10.4
+      '@types/node': 17.0.45
       denque: 2.1.0
       iconv-lite: 0.6.3
-      lru-cache: 10.4.3
+      lru-cache: 7.18.3
+      moment-timezone: 0.5.48
 
   math-intrinsics@1.1.0: {}
 
@@ -3716,7 +3721,7 @@ snapshots:
 
   sequelize-pool@7.1.0: {}
 
-  sequelize@6.37.7(mariadb@3.4.5):
+  sequelize@6.37.7(mariadb@3.0.2):
     dependencies:
       '@types/debug': 4.1.12
       '@types/validator': 13.15.2
@@ -3735,7 +3740,7 @@ snapshots:
       validator: 13.15.15
       wkx: 0.5.0
     optionalDependencies:
-      mariadb: 3.4.5
+      mariadb: 3.0.2
     transitivePeerDependencies:
       - supports-color
 
