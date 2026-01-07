@@ -203,6 +203,9 @@ export class LogsDatabase extends Database {
 		const logPetEntity = await LogsDatabase.findOrCreatePetEntity(soldPet);
 		const seller = await LogsDatabase.findOrCreatePlayer(sellerId);
 		const buyer = await LogsDatabase.findOrCreatePlayer(buyerId);
+		if (!seller || !buyer) {
+			return;
+		}
 		await LogsPetsSells.create({
 			petId: logPetEntity.id,
 			sellerId: seller.id,
@@ -220,6 +223,9 @@ export class LogsDatabase extends Database {
 	public static async logGuildLeave(guild: Guild | GuildLikeType, leftKeycloakId: string): Promise<void> {
 		const logGuild = await LogsDatabase.findOrCreateGuild(guild);
 		const leftPlayer = await LogsDatabase.findOrCreatePlayer(leftKeycloakId);
+		if (!leftPlayer) {
+			return;
+		}
 		await LogsGuildsLeaves.create({
 			guildId: logGuild.id,
 			leftPlayer: leftPlayer.id,
@@ -230,11 +236,11 @@ export class LogsDatabase extends Database {
 	/**
 	 * Find or create a player in the log database
 	 * @param keycloakId
-	 * @throws Error if keycloakId is invalid
+	 * @returns The player or null if keycloakId is invalid
 	 */
-	static async findOrCreatePlayer(keycloakId: string): Promise<LogsPlayers> {
+	static async findOrCreatePlayer(keycloakId: string): Promise<LogsPlayers | null> {
 		if (!keycloakId) {
-			throw new Error("Cannot find or create player with invalid keycloakId");
+			return null;
 		}
 		return (await LogsPlayers.findOrCreate({
 			where: { keycloakId }
@@ -248,6 +254,9 @@ export class LogsDatabase extends Database {
 	 */
 	public static async logGuildCreation(creatorKeycloakId: string, guild: Guild): Promise<void> {
 		const creator = await LogsDatabase.findOrCreatePlayer(creatorKeycloakId);
+		if (!creator) {
+			return;
+		}
 		const guildInstance = await LogsDatabase.findOrCreateGuild(guild);
 		await LogsGuildsCreations.create({
 			guildId: guildInstance.id,
@@ -266,6 +275,9 @@ export class LogsDatabase extends Database {
 		const logGuild = await LogsDatabase.findOrCreateGuild(guild);
 		const joiningPlayer = await LogsDatabase.findOrCreatePlayer(joinedKeycloakId);
 		const invitingPlayer = await LogsDatabase.findOrCreatePlayer(inviterKeycloakId);
+		if (!joiningPlayer || !invitingPlayer) {
+			return;
+		}
 		await LogsGuildsJoins.create({
 			guildId: logGuild.id,
 			adderId: invitingPlayer.id,
@@ -310,6 +322,9 @@ export class LogsDatabase extends Database {
 	 */
 	private static async logPlayerAndNumber(keycloakId: string, valueFieldName: string, value: number, model: ModelStatic<Model<unknown, unknown>>): Promise<void> {
 		const player = await LogsDatabase.findOrCreatePlayer(keycloakId);
+		if (!player) {
+			return;
+		}
 		const values: { [key: string]: string | number } = {
 			playerId: player.id,
 			date: getDateLogs()
@@ -325,6 +340,9 @@ export class LogsDatabase extends Database {
 	 */
 	private static async logSimplePlayerDate(keycloakId: string, model: ModelStatic<Model<unknown, unknown>>): Promise<void> {
 		const player = await LogsDatabase.findOrCreatePlayer(keycloakId);
+		if (!player) {
+			return;
+		}
 		await model.create({
 			playerId: player.id,
 			date: getDateLogs()
@@ -341,6 +359,9 @@ export class LogsDatabase extends Database {
 	 */
 	private static async logMissionChange(keycloakId: string, missionId: string, variant: number, objective: number, model: ModelStatic<Model<unknown, unknown>>): Promise<void> {
 		const player = await LogsDatabase.findOrCreatePlayer(keycloakId);
+		if (!player) {
+			return;
+		}
 		const [mission] = await LogsMissions.findOrCreate({
 			where: {
 				name: missionId,
@@ -364,6 +385,9 @@ export class LogsDatabase extends Database {
 	 */
 	private static async logNumberChange(keycloakId: string, value: number, reason: NumberChangeReason, model: ModelStatic<Model<unknown, unknown>>): Promise<void> {
 		const player = await LogsDatabase.findOrCreatePlayer(keycloakId);
+		if (!player) {
+			return;
+		}
 		await model.create({
 			playerId: player.id,
 			value,
@@ -383,9 +407,10 @@ export class LogsDatabase extends Database {
 		item: GenericItem,
 		model: { create: (values?: unknown, options?: CreateOptions<unknown>) => Promise<Model<unknown, unknown>> }
 	): Promise<void> {
-		const [player] = await LogsPlayers.findOrCreate({
-			where: { keycloakId }
-		});
+		const player = await LogsDatabase.findOrCreatePlayer(keycloakId);
+		if (!player) {
+			return;
+		}
 		await model.create({
 			playerId: player.id,
 			itemId: item.id,
@@ -500,6 +525,10 @@ export class LogsDatabase extends Database {
 		}
 
 		const player = await LogsDatabase.findOrCreatePlayer(keycloakId);
+		if (!player) {
+			// Skip logging if player has invalid keycloakId (e.g., system commands)
+			return;
+		}
 		const [commandOrigin] = await LogsCommandOrigins.findOrCreate({
 			where: { name: origin }
 		});
@@ -525,6 +554,9 @@ export class LogsDatabase extends Database {
 	 */
 	public async logSmallEvent(keycloakId: string, name: string): Promise<void> {
 		const player = await LogsDatabase.findOrCreatePlayer(keycloakId);
+		if (!player) {
+			return;
+		}
 		const [smallEvent] = await LogsSmallEvents.findOrCreate({
 			where: { name }
 		});
@@ -544,6 +576,9 @@ export class LogsDatabase extends Database {
 	 */
 	public async logBigEvent(keycloakId: string, eventId: number, possibilityName: string, outcome: string): Promise<void> {
 		const player = await LogsDatabase.findOrCreatePlayer(keycloakId);
+		if (!player) {
+			return;
+		}
 		const [possibility] = await LogsPossibilities.findOrCreate({
 			where: {
 				bigEventId: eventId,
@@ -568,6 +603,9 @@ export class LogsDatabase extends Database {
 	 */
 	public async logAlteration(keycloakId: string, alterationId: string, reason: NumberChangeReason, duration: number): Promise<void> {
 		const player = await LogsDatabase.findOrCreatePlayer(keycloakId);
+		if (!player) {
+			return;
+		}
 		switch (alterationId) {
 			case Effect.OCCUPIED.id:
 				await LogsPlayersOccupiedAlterations.create({
@@ -700,6 +738,9 @@ export class LogsDatabase extends Database {
 	 */
 	public async logNewTravel(keycloakId: string, mapLink: MapLink): Promise<void> {
 		const player = await LogsDatabase.findOrCreatePlayer(keycloakId);
+		if (!player) {
+			return;
+		}
 		const [maplinkLog] = await LogsMapLinks.findOrCreate({
 			where: {
 				start: mapLink.startMap,
@@ -726,6 +767,9 @@ export class LogsDatabase extends Database {
 				continue;
 			}
 			const player = await LogsDatabase.findOrCreatePlayer(gamePlayer.keycloakId);
+			if (!player) {
+				continue;
+			}
 			await LogsPlayers15BestTopweek.create({
 				playerId: player.id,
 				position,
@@ -775,6 +819,9 @@ export class LogsDatabase extends Database {
 			return;
 		}
 		const player = await LogsDatabase.findOrCreatePlayer(keycloakId);
+		if (!player) {
+			return;
+		}
 		await LogsPlayersTimewarps.create({
 			playerId: player.id,
 			time,
@@ -843,6 +890,9 @@ export class LogsDatabase extends Database {
 	public async logGuildKick(kickedKeycloakId: string, guild: Guild): Promise<void> {
 		const logGuild = await LogsDatabase.findOrCreateGuild(guild);
 		const kickedPlayer = await LogsDatabase.findOrCreatePlayer(kickedKeycloakId);
+		if (!kickedPlayer) {
+			return;
+		}
 		await LogsGuildsKicks.create({
 			guildId: logGuild.id,
 			kickedPlayer: kickedPlayer.id,
@@ -858,6 +908,9 @@ export class LogsDatabase extends Database {
 	 */
 	public async logClassicalShopBuyout(keycloakId: string, shopItem: ShopItemType, amount = 1): Promise<void> {
 		const logPlayer = await LogsDatabase.findOrCreatePlayer(keycloakId);
+		if (!logPlayer) {
+			return;
+		}
 		await LogsClassicalShopBuyouts.create({
 			playerId: logPlayer.id,
 			shopItem,
@@ -874,6 +927,9 @@ export class LogsDatabase extends Database {
 	 */
 	public async logGuildShopBuyout(keycloakId: string, shopItem: ShopItemType, amount: number): Promise<void> {
 		const logPlayer = await LogsDatabase.findOrCreatePlayer(keycloakId);
+		if (!logPlayer) {
+			return;
+		}
 		await LogsGuildShopBuyouts.create({
 			playerId: logPlayer.id,
 			shopItem,
