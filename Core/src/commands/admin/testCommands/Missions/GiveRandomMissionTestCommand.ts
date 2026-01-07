@@ -13,7 +13,10 @@ export const commandInfo: ITestCommand = {
 	typeWaited: {
 		difficulty: TypeKey.STRING
 	},
-	description: "Attribue une mission aléatoire avec la difficulté spécifiée. Difficultés : easy (e), medium (m), hard (h). Nécessite un slot de mission libre"
+	description: "Attribue une mission aléatoire avec la difficulté spécifiée. Difficultés : easy (e), medium (m), hard (h). Nécessite un slot de mission libre",
+	argSuggestions: {
+		difficulty: ["easy", "medium", "hard", "e", "m", "h"]
+	}
 };
 
 /**

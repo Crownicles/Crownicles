@@ -7,6 +7,8 @@ export class CommandTestPacketReq extends CrowniclesPacket {
 	keycloakId!: string;
 
 	command?: string;
+
+	args?: string;
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)

@@ -3,7 +3,19 @@ import { MissionDifficulty } from "../../../../core/missions/MissionDifficulty";
 import {
 	ExecuteTestCommandLike, ITestCommand, TypeKey
 } from "../../../../core/CommandsTest";
-import { MissionDataController } from "../../../../data/Mission";
+import { Mission, MissionDataController } from "../../../../data/Mission";
+
+const missionIds = MissionDataController.instance.getAll()
+	.filter((m: Mission) => !m.campaignOnly)
+	.map((m: Mission) => m.id);
+
+const difficulties = ["e", "m", "h"];
+
+// Generate full suggestions: sample mission IDs combined with difficulties
+const sampleMissionIds = missionIds.slice(0, 8); // Take first 8 missions
+const missionFullSuggestions = sampleMissionIds.flatMap(missionId =>
+	difficulties.map(diff => `${missionId} ${diff}`)
+).slice(0, 25);
 
 export const commandInfo: ITestCommand = {
 	name: "giveMission",
@@ -13,7 +25,12 @@ export const commandInfo: ITestCommand = {
 		"mission id": TypeKey.STRING,
 		"difficulty": TypeKey.STRING
 	},
-	description: "Permet de se donner une mission spécifique. Voir Core/resources/missions/ pour la liste des IDs disponibles. Difficultés : easy (e), medium (m), hard (h)"
+	description: "Permet de se donner une mission spécifique. Voir Core/resources/missions/ pour la liste des IDs disponibles. Difficultés : easy (e), medium (m), hard (h)",
+	argSuggestions: {
+		"mission id": missionIds,
+		"difficulty": ["easy", "medium", "hard", "e", "m", "h"]
+	},
+	fullSuggestions: missionFullSuggestions
 };
 
 /**

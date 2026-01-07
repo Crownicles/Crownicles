@@ -11,7 +11,18 @@ export const commandInfo: ITestCommand = {
 		"points": TypeKey.INTEGER,
 		"type (0 = defensif 1 = attack)": TypeKey.INTEGER
 	},
-	description: "Permet de définir les points de gloire d'attaque ou de défense d'un joueur pour tester les mécaniques PvP. Type : 0 = défensif, 1 = attaque"
+	description: "Permet de définir les points de gloire d'attaque ou de défense d'un joueur pour tester les mécaniques PvP. Type : 0 = défensif, 1 = attaque",
+	argSuggestions: {
+		"points": ["100", "500", "1000", "2000", "5000"],
+		"type (0 = defensif 1 = attack)": ["0", "1"]
+	},
+	fullSuggestions: [
+		"100 0", "100 1",
+		"500 0", "500 1",
+		"1000 0", "1000 1",
+		"2000 0", "2000 1",
+		"5000 0", "5000 1"
+	]
 };
 
 /**

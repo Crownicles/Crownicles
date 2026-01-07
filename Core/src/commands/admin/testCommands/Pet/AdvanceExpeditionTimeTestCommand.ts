@@ -8,7 +8,8 @@ export const commandInfo: ITestCommand = {
 	aliases: ["aexp"],
 	commandFormat: "<time>",
 	typeWaited: { time: TypeKey.INTEGER },
-	description: "Fait avancer le temps d'une expédition de familier de <time> minutes. Permet de simuler la fin d'une expédition sans attendre"
+	description: "Fait avancer le temps d'une expédition de familier de <time> minutes. Permet de simuler la fin d'une expédition sans attendre",
+	argSuggestions: { time: ["1", "30", "60", "120", "240", "480"] }
 };
 
 /**

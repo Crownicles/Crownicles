@@ -8,7 +8,8 @@ export const commandInfo: ITestCommand = {
 	aliases: ["health"],
 	commandFormat: "<health>",
 	typeWaited: { health: TypeKey.INTEGER },
-	description: "Définit les points de vie actuels du joueur testeur. Ne peut pas dépasser les points de vie maximum. Utilisez 0 pour tuer le joueur"
+	description: "Définit les points de vie actuels du joueur testeur. Ne peut pas dépasser les points de vie maximum. Utilisez 0 pour tuer le joueur",
+	argSuggestions: { health: ["0", "1", "10", "50", "100", "200", "500"] }
 };
 
 /**

@@ -17,7 +17,8 @@ export const commandInfo: ITestCommand = {
 	aliases: ["se"],
 	commandFormat: "<seName>",
 	typeWaited: { seName: TypeKey.STRING },
-	description: strings.join("\n")
+	description: strings.join("\n"),
+	argSuggestions: { seName: smallEventsKeys }
 };
 
 const smallEventsKeysLower = smallEventsKeys.map(seName => seName.toLowerCase());

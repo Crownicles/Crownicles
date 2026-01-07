@@ -13,7 +13,8 @@ export const commandInfo: ITestCommand = {
 	aliases: ["sendnotif"],
 	commandFormat: "<type>",
 	typeWaited: { type: TypeKey.STRING },
-	description: "Envoie une notification de test au joueur. Types disponibles : 'report' (destination atteinte), 'guildDaily' (mission de guilde). Utile pour tester l'affichage des notifications"
+	description: "Envoie une notification de test au joueur. Types disponibles : 'report' (destination atteinte), 'gd' (mission de guilde). Utile pour tester l'affichage des notifications",
+	argSuggestions: { type: ["report", "gd"] }
 };
 
 /**

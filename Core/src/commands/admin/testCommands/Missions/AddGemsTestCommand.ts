@@ -8,7 +8,8 @@ export const commandInfo: ITestCommand = {
 	name: "addgem",
 	commandFormat: "<gem>",
 	typeWaited: { gem: TypeKey.INTEGER },
-	description: "Ajoute un nombre spécifique de gemmes au joueur testeur."
+	description: "Ajoute un nombre spécifique de gemmes au joueur testeur.",
+	argSuggestions: { gem: ["1", "5", "10", "25", "50", "100"] }
 };
 
 /**

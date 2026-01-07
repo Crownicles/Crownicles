@@ -11,7 +11,8 @@ export const commandInfo: ITestCommand = {
 	aliases: ["block"],
 	commandFormat: "<time>",
 	typeWaited: { time: TypeKey.INTEGER },
-	description: "Bloque votre joueur pendant un temps donné (en secondes). Utile pour tester les mécaniques de blocage temporaire et les cooldowns"
+	description: "Bloque votre joueur pendant un temps donné (en secondes). Utile pour tester les mécaniques de blocage temporaire et les cooldowns",
+	argSuggestions: { time: ["1", "5", "10", "30", "60", "120"] }
 };
 
 /**

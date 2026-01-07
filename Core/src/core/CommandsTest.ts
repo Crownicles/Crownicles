@@ -163,6 +163,19 @@ class ArgumentValue {
 	}
 }
 
+/**
+ * Represents an autocomplete suggestion
+ */
+export interface IAutocompleteSuggestion {
+	name: string;
+	value: string;
+}
+
+/**
+ * Function type for getting autocomplete suggestions
+ */
+export type GetAutocompleteSuggestionsLike = (argIndex: number, partialValue: string) => Promise<IAutocompleteSuggestion[]>;
+
 export interface ITestCommand {
 	name: string;
 	aliases?: string[];
@@ -172,6 +185,9 @@ export interface ITestCommand {
 	description: string;
 	execute?: ExecuteTestCommandLike;
 	category?: string;
+	getAutocompleteSuggestions?: GetAutocompleteSuggestionsLike;
+	argSuggestions?: { [argName: string]: string[] }; // Static suggestions for each argument
+	fullSuggestions?: string[]; // Complete argument combinations (e.g., "5 m", "8 f")
 }
 
 /**
@@ -592,6 +608,42 @@ export class CommandsTest {
 			throw new Error(`Commande Test non définie : ${name.value}`);
 		}
 		return commandTestCurrent;
+	}
+
+	/**
+	 * Get autocomplete suggestions for a test command's arguments
+	 * @param commandName - The name of the test command
+	 * @param argIndex - The index of the argument being typed (0-based)
+	 * @param partialValue - The partial value the user has typed so far
+	 * @returns Array of suggestions
+	 */
+	static async getAutocompleteSuggestions(commandName: string, argIndex: number, partialValue: string): Promise<IAutocompleteSuggestion[]> {
+		try {
+			const command = CommandsTest.getTestCommand(commandName);
+
+			// If the command has a custom autocomplete handler, use it
+			if (command.getAutocompleteSuggestions) {
+				return await command.getAutocompleteSuggestions(argIndex, partialValue);
+			}
+
+			// Default: if command has typeWaited, return type hints
+			if (command.typeWaited) {
+				const argNames = Object.keys(command.typeWaited);
+				if (argIndex < argNames.length) {
+					const argName = argNames[argIndex];
+					const argType = command.typeWaited[argName];
+					return [{
+						name: `<${argName}> (${argType})`,
+						value: partialValue || ""
+					}];
+				}
+			}
+
+			return [];
+		}
+		catch {
+			return [];
+		}
 	}
 
 	static getAllCommandsFromCategory(category: string): ITestCommand[] {

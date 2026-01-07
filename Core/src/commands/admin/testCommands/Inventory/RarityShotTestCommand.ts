@@ -12,7 +12,17 @@ export const commandInfo: ITestCommand = {
 		rarityMin: TypeKey.INTEGER,
 		rarityMax: TypeKey.INTEGER
 	},
-	description: "Teste le générateur de rareté d'objets en effectuant X tirages entre les raretés min et max spécifiées. Raretés valides : 1-8. Affiche les statistiques de distribution"
+	description: "Teste le générateur de rareté d'objets en effectuant X tirages entre les raretés min et max spécifiées. Raretés valides : 1-8. Affiche les statistiques de distribution",
+	argSuggestions: {
+		nbTirages: ["10", "100", "1000", "10000"],
+		rarityMin: ["1", "2", "3", "4"],
+		rarityMax: ["5", "6", "7", "8"]
+	},
+	fullSuggestions: [
+		"100 1 8", "1000 1 8", "10000 1 8",
+		"100 1 4", "100 5 8",
+		"1000 1 4", "1000 5 8"
+	]
 };
 
 /**

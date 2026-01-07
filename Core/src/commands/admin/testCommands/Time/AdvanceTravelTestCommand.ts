@@ -9,7 +9,8 @@ export const commandInfo: ITestCommand = {
 	aliases: ["atravel"],
 	commandFormat: "<time>",
 	typeWaited: { time: TypeKey.INTEGER },
-	description: "Fait avancer le temps de voyage du joueur de X minutes. Permet de simuler la fin d'un déplacement sans attendre"
+	description: "Fait avancer le temps de voyage du joueur de X minutes. Permet de simuler la fin d'un déplacement sans attendre",
+	argSuggestions: { time: ["1", "5", "10", "30", "60", "120", "240", "480"] }
 };
 
 /**
