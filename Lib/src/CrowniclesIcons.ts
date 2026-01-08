@@ -154,6 +154,8 @@ export const CrowniclesIcons: {
 		recall: string;
 		speed: string;
 		slow: string;
+		liked: string;
+		disliked: string;
 	};
 	leagues: {
 		[leagueId: string]: string;
@@ -2243,7 +2245,9 @@ export const CrowniclesIcons: {
 		cloneTalisman: "🧬",
 		recall: "🏠",
 		speed: "🚀",
-		slow: "🐌"
+		slow: "🐌",
+		liked: "💚",
+		disliked: "💔"
 	},
 	leagues: {
 		0: "🌲",
