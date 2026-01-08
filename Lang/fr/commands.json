@@ -851,7 +851,15 @@
     "confirmDesc": "{emote:collectors.warning} Êtes-vous sur de vouloir libérer **{{pet}}** ? Il n'est pas possible d'annuler une fois l'action effectuée.",
     "acceptedDesc": "Adieu **{{pet}}**...",
     "isFeisty": "{emote:collectors.warning} Attention, la libération d'un familier fielleux vous coûtera {{cost, number}} {emote:unitValues.money}.",
-    "petOnExpedition": "Votre familier est actuellement en expédition et ne peut pas être libéré."
+    "petOnExpedition": "Votre familier est actuellement en expédition et ne peut pas être libéré.",
+    "selectionTitle": "{{pseudo}}, libération d'un familier",
+    "selectionDesc": "Choisissez un familier à libérer :",
+    "selectPlaceholder": "Sélectionnez un familier à libérer",
+    "ownPetOption": "Votre familier personnel",
+    "shelterPetOption": "{{rarity}} | {{sex}} | {{loveLevel}}",
+    "cancelButton": "Annuler",
+    "feistyCostPaid": "La libération vous a coûté {{cost, number}} {emote:unitValues.money}.",
+    "luckyMeat": "Le familier vous a laissé un morceau de viande en partant ! {emote:food.carnivorousFood}"
   },
   "petNick": {
     "successTitle": "{{pseudo}}, changement du surnom du familier",
