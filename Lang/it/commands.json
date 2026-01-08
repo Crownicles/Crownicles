@@ -1935,8 +1935,8 @@
     }
   },
   "deletecode": {
-    "title": "Code de suppression de compte",
-    "success": "**Code de suppression généré**\n\n**Discord ID :** `{{discordId}}`\n**Keycloak ID :** `{{keycloakId}}`\n**Code :** `{{code}}`\n\nEnvoyez ce code à l'utilisateur par email. Il devra envoyer un DM au bot avec :\n`DELETE ACCOUNT {{code}}`",
-    "userNotFound": "Aucun utilisateur trouvé avec cet identifiant Discord."
+    "title": "Codice di cancellazione dell'account",
+    "success": "**Codice di cancellazione generato**\n\n**Discord ID :** `{{discordId}}`\n**Keycloak ID :** `{{keycloakId}}`\n**Codice :** `{{code}}`\n\nInviare questo codice all'utente via email. L'utente deve inviare un DM al bot con scritto:\n`DELETE ACCOUNT {{code}}`",
+    "userNotFound": "Nessun utente trovato con questo ID Discord."
   }
 }
