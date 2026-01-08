@@ -23,15 +23,10 @@ export class ReactionCollectorPetTransferSwitchReaction extends ReactionCollecto
 	petEntityId!: number;
 }
 
-export class ReactionCollectorPetTransferFreeReaction extends ReactionCollectorReaction {
-	petEntityId!: number;
-}
-
 type PetTransferReaction =
 	| ReactionCollectorPetTransferDepositReaction
 	| ReactionCollectorPetTransferWithdrawReaction
-	| ReactionCollectorPetTransferSwitchReaction
-	| ReactionCollectorPetTransferFreeReaction;
+	| ReactionCollectorPetTransferSwitchReaction;
 export type ReactionCollectorPetTransferPacket = ReactionCollectorCreationPacket<
 	ReactionCollectorPetTransferData,
 	PetTransferReaction

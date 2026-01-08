@@ -210,18 +210,16 @@ async function freePetFromShelter(
 /**
  * Build the shelter pets entities array for collector
  */
-async function buildShelterPetsEntities(guildPets: GuildPet[]): Promise<{
+function buildShelterPetsEntities(guildPets: GuildPet[]): Promise<{
 	petEntityId: number;
 	pet: OwnedPet;
 }[]> {
-	const shelterPetsEntities = [];
-	for (const guildPet of guildPets) {
-		shelterPetsEntities.push({
+	return Promise.all(
+		guildPets.map(async guildPet => ({
 			petEntityId: guildPet.petEntityId,
 			pet: (await PetEntities.getById(guildPet.petEntityId)).asOwnedPet()
-		});
-	}
-	return shelterPetsEntities;
+		}))
+	);
 }
 
 /**

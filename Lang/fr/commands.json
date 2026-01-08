@@ -179,8 +179,8 @@
       "guildNoFood": "\n\n{emote:collectors.warning} **La guilde est à court de provisions.** Votre guilde n'a pas pu fournir assez de rations, votre familier est donc parti sans ravitaillement. Les risques d'échec sont **triplés**. Reconstituez les stocks de votre guilde avant la prochaine expédition !"
     },
     "tiredPetWarning": {
-      "male": "\n\n{emote:effects.sleeping} *Épuisé par sa précédente expédition, votre animal accepte tout de même de partir à nouveau, mais dans cet état de fatigue, il ne sera pas capable de rapporter certaines ressources.*",
-      "female": "\n\n{emote:effects.sleeping} *Épuisée par sa précédente expédition, votre familier accepte tout de même de partir à nouveau, mais dans cet état de fatigue, elle ne sera pas capable de rapporter certaines ressources.*"
+      "male": "\n\n{emote:effects.sleeping} *Épuisé par sa précédente expédition, votre compagnon accepte tout de même de partir à nouveau, mais dans cet état de fatigue, il ne sera pas capable de rapporter certaines ressources.*",
+      "female": "\n\n{emote:effects.sleeping} *Épuisée par sa précédente expédition, votre compagne accepte tout de même de partir à nouveau, mais dans cet état de fatigue, elle ne sera pas capable de rapporter certaines ressources.*"
     },
     "speedModifier": {
       "veryFast_male": "\n\n{emote:expedition.speed} *Ses pattes véloces fendent l'air avec une grâce inégalée. Votre compagnon atteindra sa destination bien plus vite que prévu !*",
