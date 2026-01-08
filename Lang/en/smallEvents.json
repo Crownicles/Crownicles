@@ -1720,16 +1720,16 @@
       "When **{{pet}}** appears, Talvar's face turns into a mask of disapproval. Your companion looks defeated and devoid of all joie de vivre. The anger of the venerable friend of beasts pours out like a tumultuous torrent! His reproaches reverberate all the way to the peaks of Celestrum, engraving in you the sacred precepts of love for creatures. You flee, wracked with contrition, vowing to make your protégé the very embodiment of animal happiness."
     ],
     "petIsFeisty_f": [
-      "Quand vous lui montrez votre fidèle **{{pet}}**, les traits du sage nain se durcissent. La pauvre créature semble abattue et vous suit d'un pas traînant, l'œil terne. La colère de Talvar s'embrase tel un brasier ! Ses imprécations résonnent dans les vallées tandis qu'il vous admoneste sur l'art noble de soigner les animaux. Vous vous éloignez penaud, promettant par votre honneur de revenir avec un compagnon radieux et pleine de vie.",
+      "When you show him your trusty **{{pet}}**, the wise dwarf's features harden. The poor creature looks despondent and follows you with a shuffling step, his eyes dull. Talvar's anger blazes like an inferno! His imprecations echo through the valleys as he admonishes you on the noble art of caring for animals. You walk away sheepishly, pledging your honor to return with a radiant, lively companion.",
       "When **{{pet}}** appears before him, Talvar's mood instantly darkens. Your faithful friend seems depressed and visibly lacking in vitality. The fury of the protector of creatures explodes like an erupting volcano! His admonitions reverberate to the echoes of Mount Celestrum, rudely teaching you the responsibilities of an animal guardian. You withdraw, mortified, vowing to transform your protégée into a symbol of joy and health.",
-      "À la vue de votre **{{pet}}**, le courroux de Talvar se déchaîne tel un orage dévastateur. La malheureuse créature traîne tristement, l'allure languissante et l'esprit brisé. L'ire du sage nain jaillit comme une tempête ! Ses objurgations résonnent dans toute la région, vous rappelant impitoyablement vos devoirs sacrés envers votre compagnon. Vous partez, accablé de honte, déterminé à racheter vos négligences.",
+      "At the sight of your **{{pet}}**, Talvar's wrath is unleashed like a devastating storm. The unfortunate creature shuffles sadly along, languid and broken in spirit. The wise dwarf's ire shoots up like a storm! His objurgations echo throughout the region, mercilessly reminding you of your sacred duties towards your companion. You leave, overcome with shame, determined to make up for your negligence.",
       "As soon as **{{pet}}** appears, Talvar's expression turns stormy. Your poor friend looks exhausted and staggers forward. The wrath of the venerable protector of beasts erupts like a cataclysm! His admonitions cross the valleys, etching the laws of animal respect into your conscience. You duck away, overwhelmed by guilt, determined to turn your protégé into a fulfilled creature.",
       "When **{{pet}}** appears, Talvar's eyes flash with reproach. The creature seems discouraged and moves with alarming slowness. The legendary guardian's indignation surges like an avalanche! His recriminations reverberate to the far reaches of Celestrum's lands, sternly instructing you in the art of animal care. You retreat, remorseful and determined to prove your worth.",
-      "À l'instant où **{{pet}}** se présente, la fureur de Talvar se déchaîne comme un ouragan. Votre fidèle amie paraît abattue et se traîne misérablement. La rage du sage protecteur explose tel un séisme ! Ses réprimandes résonnent jusque dans l'écho du Mont Célestrum, vous rappelant avec force vos obligations sacrées. Vous prenez congé, écrasé par votre indignité, jurant de devenir le maître exemplaire que votre compagnon mérite.",
+      "The moment **{{pet}}** appears, Talvar's fury is unleashed like a hurricane. Your faithful friend looks dejected and drags herself along miserably. The sage protector's rage explodes like an earthquake! His reprimands echo off Mount Celestrum, forcefully reminding you of your sacred obligations. You take your leave, crushed by your indignity, vowing to become the exemplary master your companion deserves.",
       "As soon as **{{pet}}** appears, Talvar's mood takes a turn for the worse. Your poor protégée seems melancholy and sorely lacking in energy. The wrath of the venerable friend of creatures bursts forth like wildfire! His warnings reverberate across the land, mercilessly teaching you the precepts of animal respect. You slip away, overwhelmed by shame, determined to transform your friend into the embodiment of happiness.",
       "When **{{pet}}** enters his field of vision, a storm rises in the old dwarf's eyes. The creature looks dejected and moves with palpable sadness. The legendary protector's anger erupts like an infernal inferno! His objurgations echo up to the peaks of Celestrum, etching in you the sacred responsibilities of the guardian. You withdraw, wracked with contrition, determined to honor the trust of your faithful friend.",
-      "Quand **{{pet}}** se manifeste, le visage de Talvar se transforme en masque de réprobation. Votre compagnon affiche une mine défaite et semble privée de toute joie de vivre. La fureur du sage ami des bêtes se déverse comme un torrent tumultueux ! Ses admonitions retentissent dans toute la région, vous rappelant impitoyablement l'art noble du soin aux créatures. Vous vous enfuyez, submergé par la culpabilité, jurant de faire de votre protégée un modèle de vitalité.",
-      "À la vue de **{{pet}}**, le courroux de Talvar explose tel un volcan en fusion. Votre fidèle amie semble découragée et avance avec une lenteur désolante. L'indignation du vénérable protecteur des créatures déferle comme une catastrophe naturelle ! Ses reproches traversent les vallées, vous enseignant durement les devoirs du maître responsable. Vous partez, mortifié mais déterminé, promettant de revenir avec un compagnon resplendissant de bonheur et de santé."
+      "When **{{pet}}** appears, Talvar's face turns into a mask of disapproval. Your companion looks defeated and devoid of all joie de vivre. The fury of the wise friend of beasts pours out like a tumultuous torrent! His admonitions echo throughout the region, ruthlessly reminding you of the noble art of caring for creatures. You flee, overwhelmed by guilt, vowing to make your protégée a model of vitality.",
+      "At the sight of **{{pet}}**, Talvar's wrath explodes like a molten volcano. Your faithful friend seems discouraged and moves forward with a desolate slowness. The indignation of the venerable protector of creatures surges like a natural disaster! His reproaches cross the valleys, sternly teaching you the duties of a responsible master. You leave, mortified but determined, promising to return with a companion resplendent with happiness and health."
     ],
     "reward": {
       "gem": "**{{amount, number}} {emote:unitValues.gem}**",
@@ -1785,15 +1785,15 @@
     ],
     "petAlreadySeen_f": [
       "You proudly present your loyal companion **{{pet}}**, but Talvar's unerring memory reminds him that he has already had the honor of beholding a creature of this noble species. Nevertheless, his eyes sparkle with contentment as he observes the devoted care you bestow on your protégée. He praises you with the solemnity of a wise man blessing a faithful guardian. Your journey continues, enriched by his blessing.",
-      "Quand **{{pet}}** apparaît à vos côtés, un sourire attendri illumine le visage de Talvar. Sa sagesse lui rappelle une rencontre antérieure similaire, mais son cœur s'épanouit en contemplant la joie évidente de votre compagnon. Il acquiesce avec approbation, admirant le lien harmonieux qui vous unit. Ses paroles bienveillantes résonnent comme une mélodie tandis qu'il célèbre votre dévouement exemplaire.",
+      "When **{{pet}}** appears at your side, a tender smile lights up Talvar's face. His wisdom reminds him of a similar previous encounter, but his heart blossoms as he contemplates your companion's obvious joy. He nods approvingly, admiring the harmonious bond between you. His kind words ring out like a melody as he celebrates your exemplary dedication.",
       "The appearance of **{{pet}}** awakens a familiar echo in Talvar, but his enchantment remains intact. He scrutinizes the vitality emanating from your protégée with renewed attention. His eyes shine with satisfaction at this living proof of your excellence. His warm congratulations accompany your departure, cementing your reputation as an exemplary guardian.",
-      "À la vue de **{{pet}}**, Talvar plisse les yeux avec la perspicacité de celui qui a côtoyé mille créatures. Il reconnaît l'espèce, mais s'émerveille de la personnalité unique de votre compagnon. Sa voix grave vibre d'approbation tandis qu'il loue l'épanouissement qu'il observe. Ses paroles d'encouragement vous accompagneront longtemps, témoignage de votre maîtrise croissante dans l'art du soin animal.",
+      "At the sight of **{{pet}}**, Talvar squints with the insight of one who has been around a thousand creatures. He recognizes the species, but marvels at the unique personality of your companion. His deep voice vibrates with approval as he praises the blossoming he observes. His words of encouragement will stay with you for a long time, a testament to your growing mastery of the art of animal care.",
       "As soon as **{{pet}}** appears, Talvar's memory kicks in, but his admiration remains intact. He mentally assesses the progress you've made, noting with pleasure the improvement in your protégée's well-being. His approving smile rewards your tireless efforts. He gives you valuable advice before letting you continue, enriched by his ancestral wisdom.",
-      "Quand **{{pet}}** fait son apparition, Talvar incline pensivement la tête. Bien qu'il connaisse cette espèce, il célèbre la relation exceptionnelle que vous avez créée avec votre compagnon. Ses yeux scintillent de fierté devant cette démonstration d'amour animal. Ses paroles encourageantes résonnent longtemps après votre départ, gravant en vous l'importance sacrée de votre mission.",
-      "L'arrivée de **{{pet}}** provoque chez Talvar un moment de contemplation. Sa sagesse millénaire lui permet d'évaluer le chemin parcouru depuis votre première rencontre. Il s'émerveille de la transformation de votre compagnon sous vos soins dévoués. Ses félicitations sincères s'accompagnent d'un geste amical, confirmant votre statut de protectrice reconnue.",
+      "When **{{pet}}** appears, Talvar bows his head thoughtfully. Although he knows this species, he celebrates the exceptional relationship you've created with your companion. His eyes sparkle with pride at this demonstration of animal love. His encouraging words echo long after you've left, engraving in you the sacred importance of your mission.",
+      "The arrival of **{{pet}}** provokes a moment of contemplation in Talvar. His age-old wisdom allows him to assess how far you've come since you first met. He marvels at the transformation of your companion under your devoted care. His sincere congratulations are accompanied by a friendly gesture, confirming your status as a recognized protector.",
       "The moment **{{pet}}** introduces himself, Talvar smiles with the tenderness of a wise man rediscovering a familiar soul. Although a connoisseur of this species, he is delighted to see your protégé's obvious blossoming. His paternal blessing envelops you, testimony to your evolution towards perfect mastery of the art of creature protection.",
       "As soon as **{{pet}}** appears, a flash of recognition lights up Talvar's eyes. He silently compares with his memories, savoring the improvements achieved. His warm approval rewards your perseverance in the path of animal protection. His words of wisdom will long guide you, shining star in your quest for excellence.",
-      "Lorsque **{{pet}}** entre dans son champ de vision, Talvar acquiesce avec la satisfaction du mentor qui voit ses enseignements fructifier. Bien qu'il soit familier de cette espèce, il célèbre l'unicité de votre compagnon et la qualité de vos attentions. Son regard empli de fierté vous accompagne tandis que vous reprenez votre route, porteuse de sa bénédiction et de ses encouragements maternels."
+      "When **{{pet}}** enters his field of vision, Talvar nods with the satisfaction of a mentor who sees his teachings bear fruit. Although he is familiar with this species, he celebrates the uniqueness of your companion and the quality of your attentions. His look of pride accompanies you as you continue on your way, bearing his blessing and maternal encouragement."
     ],
     "noPet": [
       "Although no creature accompanies you to these lands, Talvar graces you with a look of fatherly benevolence. His deep voice resonates with ancestral wisdom as he advises you to welcome an animal companion into your existence, for these pure beings bring joy and comfort to the souls of travelers. You bow your head respectfully to his words of wisdom and continue on your way, his advice engraved in your memory.",
@@ -1815,7 +1815,7 @@
       "Talvar watches **{{pet}}** with unusual intensity. He begins to speak before pausing, searching for words. He explains that this creature gives off an energy he's never felt before, as if its essence were divided between two places. A shiver runs through his silver beard. He hands you {{reward}} with a slightly trembling hand, clearly disturbed by this supernatural encounter."
     ],
     "petIsClone_f": [
-      "À la vue de **{{pet}}**, Talvar plisse les yeux avec perplexité. Il approche son visage de la créature, l'examine sous tous les angles, puis recule avec un air troublé. Il murmure que ce compagnon dégage une aura singulière, comme si elle était à la fois ici et ailleurs. Malgré ses doutes, il vous remet {{reward}}, mais son regard reste fixé sur votre familier avec une curiosité mêlée d'inquiétude.",
+      "At the sight of **{{pet}}**, Talvar squints in bewilderment. He brings his face close to the creature, examines it from every angle, then steps back with a troubled air. He murmurs that this companion exudes a singular aura, as if it were both here and elsewhere. Despite his doubts, he hands you over {{reward}}, but his gaze remains fixed on your familiar with curiosity mingled with concern.",
       "Talvar stops dead in his tracks as he catches sight of **{{pet}}**. His bushy eyebrows furrow as he hesitantly reaches for the creature. He murmurs that he's never seen anything like it and that the creature seems blurred, like a reflection in murky water. He shakes his head, confused by the vision, but offers you {{reward}}all the same. You leave with the feeling that something strange has just happened.",
       "When **{{pet}}** appears in front of Talvar, the old dwarf blinks several times. He grumbles that his eyes are playing tricks on him and that this creature seems translucent at times. He circles around your companion, puzzled. Finally, he shrugs his shoulders and hands you {{reward}}, while continuing to cast wary glances at the spectral familiar.",
       "Talvar's gaze freezes on **{{pet}}**, and an expression of confusion invades his features. He declares in an uncertain voice that he senses something unusual about this creature, that it's there but not quite, like an echo or a projection. Despite his obvious confusion, his generosity prevails and he offers you {{reward}}, but his mind remains visibly preoccupied by this mystery.",
@@ -1830,7 +1830,7 @@
     "clonePetAlreadySeen_f": [
       "Talvar squints at **{{pet}}**, then shakes his head vigorously. He grumbles that he's seen a creature like this before, but this one is... different. He circles the creature, puzzled, mumbling that it's like seeing a reflection that doesn't quite match the original. He dismisses you with a wave of his hand, clearly disturbed by the anomaly.",
       "The old dwarf stops dead in his tracks as he catches sight of **{{pet}}**. His bushy eyebrows furrow as he examines the creature from every angle. He declares that he knows this type of familiar, that he has admired it before, but that this one gives off a strange aura, as if it existed in two places at once. He mumbles some incomprehensible words and waves you on your way.",
-      "À la vue de **{{pet}}**, Talvar fait un pas en arrière, le regard troublé. Il affirme avoir déjà contemplé cette espèce, mais ce compagnon-ci lui semble floue, irréelle. Il tend une main hésitante vers la créature avant de la retirer brusquement, comme s'il avait touché quelque chose de surnaturel. Il vous souhaite bonne route d'une voix mal assurée.",
+      "At the sight of **{{pet}}**, Talvar takes a step backwards, his gaze troubled. He claims to have contemplated this species before, but this companion seems blurred, unreal. He hesitantly extends a hand towards the creature before abruptly withdrawing it, as if he had touched something supernatural. He wishes you a safe journey in an uncertain voice.",
       "The wise dwarf observes{{pet}}** with unusual suspicion. He confides that he has already had the pleasure of admiring a creature of this kind, but that this one makes him uneasy. He murmurs that this creature seems to be there without really being there, like an echo or a living shadow. He shakes his head and walks away, letting slip that he must meditate on this mystery."
     ],
     "badge": [
@@ -1941,15 +1941,15 @@
   "petFood": {
     "intro": {
       "badSmell_male": "Your faithful companion suddenly stops, nostrils flaring. His ears perk up as he picks up a nauseating odor wafting from a dark copse. Something foul is stagnating there, abandoned for days perhaps, and your pet seems fascinated by the stench that would make many a creature recoil.",
-      "badSmell_female": "Votre fidèle amie s'immobilise brusquement, les narines frémissantes. Ses oreilles se dressent tandis qu'elle capte une odeur nauséabonde s'échappant d'un taillis sombre. Quelque chose de fétide y croupit, abandonné depuis des jours peut-être, et la bête semble fascinée par cette puanteur qui ferait reculer bien des créatures.",
+      "badSmell_female": "Your faithful friend suddenly stops, nostrils flaring. Her ears perk up as she picks up a nauseating odor wafting from a dark copse. Something foul is stagnating there, abandoned for days perhaps, and the beast seems fascinated by the stench that would make many a creature recoil.",
       "goodSmell_male": "Your travelling companion suddenly becomes agitated, wagging his tail enthusiastically, eyes shining with excitement. A sweet, tantalizing scent wafts through the air. He leaps up joyfully, drawn like a butterfly by the light towards this promising fragrance that awakens his appetite.",
-      "goodSmell_female": "Votre amie à quatre pattes s'agite soudainement, remuant la queue avec enthousiasme, les yeux brillants d'excitation. Une senteur alléchante et sucrée flotte dans l'air. Elle se met à bondir joyeusement, attirée tel un papillon par la lumière vers cette fragrance prometteuse qui éveille son appétit.",
+      "goodSmell_female": "Your four-legged friend suddenly becomes agitated, wagging her tail enthusiastically, eyes shining with excitement. A tantalizingly sweet scent wafts through the air. She jumps up joyfully, drawn like a butterfly by the light towards this promising fragrance that awakens her appetite.",
       "vegetarian_male": "Your faithful pet slows his pace and tilts his head to one side, intrigued by a bushy grove lining the path. Between the wild grasses and silvery ferns, he seems to have discerned something edible through the vegetation.",
-      "vegetarian_female": "Votre créature de compagnie ralentit son allure et penche la tête sur le côté, intriguée par un bosquet touffu bordant le sentier. Entre les herbes folles et les fougères argentées, elle semble avoir discerné quelque chose de comestible à travers la végétation.",
+      "vegetarian_female": "Your pet slows her pace and tilts her head to one side, intrigued by a bushy grove lining the path. Between the wild grasses and silvery ferns, she seems to have discerned something edible through the vegetation.",
       "meat_male": "Your companion stops dead in his tracks, muscles tense, staring with intense, predatory gaze at a body of water shimmering under the setting sun. His lips curl up slightly, revealing sharp fangs, as he sniffs the air with absolute concentration. He's obviously spotted prey...",
-      "meat_female": "Votre fidèle bête s'arrête net, les muscles tendus, fixant d'un regard intense et prédateur un point d'eau miroitant sous le soleil couchant. Ses babines se retroussent légèrement, dévoilant des crocs acérés, tandis qu'elle flaire l'air avec une concentration absolue. Elle a manifestement repéré une proie...",
+      "meat_female": "Your faithful beast stops dead in its tracks, muscles taut, staring with intense, predatory gaze at a body of water shimmering under the setting sun. Her lips curl up slightly, revealing sharp fangs, as she sniffs the air with absolute concentration. She's obviously spotted prey...",
       "soup_male": "A familiar, comforting scent tickles your nostrils: the unctuous aroma of soup simmering in a copper pot. Your faithful companion perks up his ears and rushes to an abandoned campsite by the roadside, where a black iron cauldron still hangs over dying embers. Could this be the ultimate soup?",
-      "soup_female": "Une senteur familière et réconfortante vient chatouiller vos narines : un fumet onctueux de potage mijotant dans une marmite de cuivre. Votre fidèle amie dresse aussitôt les oreilles et se précipite vers un campement abandonné en bordure de chemin, où repose encore un chaudron de fer noir suspendu au-dessus de braises mourantes. Se pourrait-il qu'il s'agisse de soupe ultime ?"
+      "soup_female": "A familiar, comforting scent tickles your nostrils: the unctuous aroma of soup simmering in a copper pot. Your faithful friend immediately perks up her ears and rushes to an abandoned campsite by the roadside, where a black iron cauldron still hangs over dying embers. Could this be the ultimate soup?"
     },
     "choices": {
       "investigate": "See for yourself",
@@ -1958,24 +1958,24 @@
     },
     "outcomes": {
       "found_by_player_male": "You cautiously approach and, after pushing aside the branches and meticulously searching every nook and cranny for {{time}} {emote:effects.occupied}, you finally get your hands on {{foodName}}. You offer it to your companion, who accepts it gratefully and devours the gift with satisfied growls.",
-      "found_by_player_female": "Vous vous approchez prudemment et, après avoir écarté les branchages et fouillé méticuleusement les recoins pendant **{{time}}** {emote:effects.occupied}, vous mettez enfin la main sur **{{foodName}}**. Vous l'offrez à votre fidèle amie qui l'accepte avec reconnaissance, dévorant son présent avec des grognements de satisfaction.",
+      "found_by_player_female": "You approach cautiously and, after pushing aside the branches and meticulously searching the nooks and crannies for **{{time}}** {emote:effects.occupied}, you finally lay your hands on **{{foodName}}**. You offer it to your faithful friend, who accepts it gratefully, devouring her gift with grunts of satisfaction.",
       "found_by_player_soup_male": "You cautiously approach the abandoned cauldron. After {{time}} {emote:effects.occupied} spent making sure no danger is lurking, you discover with satisfaction {{foodName}} still gently simmering. You pour a generous portion into a bowl and present it to your companion, who eagerly laps up the comforting dish, tail wagging with delight.",
-      "found_by_player_soup_female": "Vous vous approchez prudemment du chaudron abandonné. Après **{{time}}** {emote:effects.occupied} passées à vérifier qu'aucun danger ne rôde, vous découvrez avec satisfaction **{{foodName}}** qui mijote encore doucement. Vous en versez une généreuse portion dans une écuelle que vous présentez à votre fidèle amie, laquelle lape goulûment ce mets réconfortant en remuant la queue de contentement.",
+      "found_by_player_soup_female": "You cautiously approach the abandoned cauldron. After **{{time}}** {emote:effects.occupied} checking that no danger lurks, you discover with satisfaction **{{foodName}}** still simmering gently. You pour a generous portion into a bowl and present it to your faithful friend, who greedily laps up the comfort food, wagging her tail in contentment.",
       "found_by_pet_male": "Your pet takes off with a nimble leap and disappears for a moment into the thicket. He soon returns to you with a proud, triumphant trot, holding **{{foodName}}** delicately between his fangs. His eyes shine with pride as he settles down to savor his find with enthusiastic chewing noises.",
-      "found_by_pet_female": "Votre créature s'élance d'un bond agile et disparaît quelques instants dans les fourrés. Elle revient bientôt vers vous d'un trot fier et triomphant, tenant délicatement **{{foodName}}** entre ses crocs. Ses yeux brillent de fierté tandis qu'elle s'installe pour savourer sa trouvaille avec des bruits de mastication enthousiastes.",
+      "found_by_pet_female": "Your creature takes off with a nimble leap and disappears for a moment into the thicket. She soon returns to you with a proud, triumphant trot, holding **{{foodName}}** delicately between her fangs. Her eyes sparkle with pride as she settles down to savor her find with enthusiastic chewing noises.",
       "found_by_pet_soup_male": "Your pet is rushing to the abandoned camp and plunges its muzzle into the smoking cauldron. It comes back to you a few moments later, the still glittering babies obviously tasted **{{foodName}}** with obvious pleasure. His painful eyes and his exhilarating tail testify to his gourmet satisfaction.",
-      "found_by_pet_soup_female": "Votre créature trotte prestement vers le campement abandonné et plonge son museau dans le chaudron fumant. Elle revient vers vous quelques instants plus tard, les babines encore luisantes, ayant manifestement savouré **{{foodName}}** avec un plaisir évident. Son regard pétillant et sa queue frétillante témoignent de sa satisfaction gourmande.",
+      "found_by_pet_soup_female": "Your creature trots swiftly towards the abandoned camp and dips its snout into the steaming cauldron. She returns to you a few moments later, her lips still glistening, having clearly savored **{{foodName}}** with obvious pleasure. Her sparkling eyes and wagging tail testify to her greedy satisfaction.",
       "found_anyway_male": "Just as you're about to set off on your merry way, your faithful companion suddenly leaps into the surrounding bushes. He emerges victoriously with **{{foodName}}** which he gobbles up on the spot with a voracious appetite, his tail wagging with contentment.",
-      "found_anyway_female": "Alors même que vous vous apprêtiez à reprendre votre route sans plus vous préoccuper de cette distraction, votre fidèle amie bondit soudainement vers les buissons environnants. Elle en ressort victorieusement avec **{{foodName}}** qu'elle engloutit sur-le-champ avec un appétit vorace, la queue frétillante de contentement.",
+      "found_anyway_female": "Just as you're about to set off on your way with no further concern for this distraction, your faithful friend suddenly leaps into the surrounding bushes. She emerges victoriously with **{{foodName}}** which she gobbles up on the spot with a voracious appetite, her tail wagging with contentment.",
       "found_anyway_soup_male": "Just as you're about to set off on your journey with no further concern for the camp, your faithful companion rushes to the abandoned cauldron. Before you can stop him, he greedily laps up **{{foodName}}** with groans of delight, clearly delighted by this unexpected windfall.",
-      "found_anyway_soup_female": "Alors même que vous vous apprêtiez à reprendre votre route sans plus vous préoccuper de ce campement, votre fidèle amie se précipite vers le chaudron abandonné. Avant que vous ne puissiez l'en empêcher, elle lape goulûment **{{foodName}}** avec des gémissements de délice, manifestement ravie de cette aubaine inattendue.",
+      "found_anyway_soup_female": "Just as you're about to set off on your journey with no further concern for the camp, your faithful friend rushes to the abandoned cauldron. Before you can stop her, she greedily laps up **{{foodName}}** with moans of delight, clearly delighted by this unexpected windfall.",
       "player_failed": "You spend {{time}} {emote:effects.occupied} grueling moments meticulously scouring the surroundings, pushing aside brambles and thorns, turning over stones and rotten stumps, but despite all your relentless efforts, you find nothing of any worth. The time invested proves as futile as a treasure hunt in an empty chest.",
       "pet_failed_male": "Your companion dashes off determinedly into the thicket, only to return a few moments later with a ponderous gait, ears low and tail hanging low. His disappointed look and plaintive squeaks betray his failure: the trail has proved fruitless and his efforts have produced nothing but bitterness.",
-      "pet_failed_female": "Votre amie s'élance avec détermination dans les fourrés, mais revient quelques instants plus tard d'une démarche pesante, les oreilles basses et la queue pendante. Son regard déçu et ses couinements plaintifs trahissent son échec : la piste s'est avérée infructueuse et ses efforts n'ont produit qu'amertume.",
+      "pet_failed_female": "Your friend bolts determinedly into the thicket, only to return a few moments later with a ponderous gait, ears low and tail hanging low. Her disappointed look and plaintive squeaks betray her failure: the trail has proved fruitless and her efforts have produced nothing but bitterness.",
       "pet_failed_soup_male": "Your companion trots towards the abandoned camp and takes a long sniff at the cauldron, but alas, it turns out to be empty or its contents already cooled and inedible. He returns to you with a disappointed gait, ears low and tail hanging low, clearly frustrated by this culinary disappointment.",
-      "pet_failed_soup_female": "Votre amie trotte vers le campement abandonné et renifle longuement le chaudron, mais celui-ci s'avère hélas vide ou son contenu déjà refroidi et immangeable. Elle revient vers vous d'une démarche déçue, les oreilles basses et la queue pendante, manifestement frustrée par cette déconvenue culinaire.",
+      "pet_failed_soup_female": "Your friend trots towards the abandoned camp and takes a long sniff at the cauldron, but alas, it turns out to be empty or its contents already cooled and inedible. She returns to you with a disappointed gait, ears low and tail hanging low, clearly frustrated by this culinary disappointment.",
       "nothing_male": "You wisely decide not to linger any longer in these parts, judging that time is short and that your quest cannot suffer such detours. With a resolute gesture, you ask your companion to follow you, and together you set off towards the horizon that beckons.",
-      "nothing_female": "Vous décidez sagement de ne point vous attarder davantage en ces lieux, jugeant que le temps presse et que votre quête ne saurait souffrir de tels détours. D'un geste résolu, vous enjoignez votre amie à vous suivre et reprenez ensemble votre chemin vers l'horizon qui vous appelle."
+      "nothing_female": "You wisely decide not to linger any longer in these parts, judging that time is short and that your quest cannot suffer such detours. With a resolute gesture, you beckon your friend to follow you, and set off together towards the horizon that beckons."
     },
     "foodNames": {
       "badSmell": [
@@ -2047,11 +2047,11 @@
     },
     "love": {
       "plus_male": "Your faithful companion gazes at you with eyes shining with gratitude and affection. He rubs against your legs with satisfied purrs, clearly demonstrating that this impromptu feast has strengthened the bonds of trust and friendship between you!",
-      "plus_female": "Votre fidèle amie vous contemple avec des yeux brillants de gratitude et d'affection. Elle se frotte contre vos jambes en émettant des ronronnements satisfaits, manifestant clairement que ce festin improvisé a renforcé les liens de confiance et d'amitié qui vous unissent !",
+      "plus_female": "Your faithful friend gazes at you with eyes shining with gratitude and affection. She rubs against your legs with satisfied purrs, clearly demonstrating that this impromptu feast has strengthened the bonds of trust and friendship between you!",
       "minus_male": "Your pet stares at you with a dark, silently reproachful gaze, lips curled into a disapproving pout. He ostentatiously turns his head away with a disgruntled growl, clearly offended by this pittance unworthy of his delicate palate...",
-      "minus_female": "Votre créature vous fixe d'un regard noir chargé de reproches silencieux, les babines retroussées en une moue désapprobatrice. Elle détourne ostensiblement la tête en poussant un grognement mécontent, visiblement offensée par cette pitance indigne de son palais délicat...",
+      "minus_female": "Your creature stares at you with a black look of silent reproach, lips curled into a disapproving pout. She ostentatiously turns her head away with a disgruntled growl, clearly offended by this pittance unworthy of her delicate palate...",
       "neutral_male": "Your road companion swallows his meal with an almost philosophical detachment, without showing any overlapping enthusiasm or special taste.",
-      "neutral_female": "Votre amie de route engloutit son repas avec un détachement presque philosophique, sans montrer ni enthousiasme débordant ni dégoût particulier."
+      "neutral_female": "Your friend wolfed down her meal with an almost philosophical detachment, showing neither overflowing enthusiasm nor particular disgust."
     }
   },
   "badPet": {
@@ -2068,8 +2068,8 @@
       "The ground trembles slightly beneath your feet, announcing the approach of a massive presence. An imposing dwarf, wider than he is tall, emerges from a rockslide. His gaze sweeps along the path, settling on **{{pet}}** with incandescent hatred. His arm muscles twitch as he lifts a heavy blacksmith's mallet."
     ],
     "intro_female": [
-      "Un nain trapu surgit d'un rocher, sa barbe rousse hirsute et son regard empli d'une haine viscérale. À la vue de **{{pet}}**, il crache au sol avec dégoût et brandit un bâton noueux. Votre amie recule, les oreilles plaquées contre son crâne. L'inconnu se présente comme Moltiar et jure qu'il n'a rien à voir avec son frère adorateur de bestioles.",
-      "Une voix rauque et colérique vous interpelle soudainement. Un nain au visage marqué par une vieille cicatrice s'avance, ses yeux injectés de sang fixés sur **{{pet}}** avec fureur. Il fait tournoyer une massue cloutée d'un geste menaçant. Votre amie tremble de tous ses membres.",
+      "A stocky dwarf emerges from a rock, his red beard shaggy and his gaze filled with visceral hatred. At the sight of **{{pet}}**, he spits at the ground in disgust and brandishes a gnarled stick. Your friend recoils, ears pressed to her skull. The stranger introduces himself as Moltiar and swears he has nothing to do with her bug-worshipping brother.",
+      "A hoarse, angry voice suddenly calls out to you. A dwarf with a scarred face strides forward, his bloodshot eyes fixed on{{pet}}** with fury. He twirls a studded club in a menacing gesture. Your friend shakes all over.",
       "Emerging from behind a rock formation, a crazy-looking dwarf plants himself in front of you, blocking your path. His right hand bears the scars of an ancient bite. He stares **{{pet}}** with burning hatred and draws a chipped dagger. Moltiar grumbles that, unlike his brother Talvar, he knows a nuisance when he sees one.",
       "A guttural growl startles you. A burly dwarf emerges from a crevice, his braided beard rattling with bone beads. As soon as he spots **{{pet}}**, his face twists in disgust. He points an accusing finger at you, his other hand firmly gripping a rusty axe.",
       "Your path is suddenly blocked by a stocky, hostile figure. The dwarf wears an expression of pure repulsion as he discovers **{{pet}}** beside you. An old wound crosses his forearm, testimony to a painful past. He grips a war hammer. Moltiar growls that he won't let these loathsome creatures roam his lands, no matter what his naive brother may think.",
@@ -2081,24 +2081,24 @@
     ],
     "choices": {
       "intimidate_male": "Order your companion to intimidate the dwarf",
-      "intimidate_female": "Ordonner à votre amie d'intimider le nain",
+      "intimidate_female": "Order your friend to intimidate the dwarf",
       "plead": "Try to reason with the dwarf with words",
       "giveMeat": "Offer meat to the dwarf to soften him up",
       "giveVeg": "Offer vegetables to the dwarf as a sign of peace",
       "flee_male": "Running away with your companion",
-      "flee_female": "Fuir avec votre amie",
+      "flee_female": "Running away with your girlfriend",
       "hide_male": "Hiding your companion",
-      "hide_female": "Cacher votre amie",
+      "hide_female": "Hiding your friend",
       "wait": "Waiting for the dwarf's anger to subside",
       "protect_male": "Stepping in to protect your companion",
-      "protect_female": "Vous interposer pour protéger votre amie",
+      "protect_female": "Stepping in to protect your friend",
       "distract": "Diverting the dwarf's attention",
       "calm_male": "Trying to calm your frightened companion",
-      "calm_female": "Tenter de calmer votre amie apeurée",
+      "calm_female": "Trying to calm your frightened friend",
       "imposer_male": "Let your companion prevail over the dwarf",
-      "imposer_female": "Laisser votre amie s'imposer face au nain",
+      "imposer_female": "Let your friend stand up to the dwarf",
       "energize_male": "Encouraging your companion to hang in there",
-      "energize_female": "Encourager votre amie à tenir bon"
+      "energize_female": "Encourage your friend to hang in there"
     },
     "outcomes": {
       "intimidate": {
@@ -2107,16 +2107,16 @@
           "Adopting a menacing posture, **{{pet}}** growls with surprising ferocity at the hostile dwarf. The latter, seeing that the confrontation could turn ugly, spits a final insult before retreating. Your companion seems satisfied to have stood up to the aggressor."
         ],
         "success_female": [
-          "Obéissant à votre ordre, **{{pet}}** se dresse de toute sa hauteur et pousse un grondement impressionnant. Moltiar, surpris par cette démonstration de force, recule d'un pas mal assuré et marmonne quelques insultes en s'éloignant à contrecœur. Votre amie vous regarde fièrement.",
-          "Adoptant une posture menaçante, **{{pet}}** grogne avec une férocité surprenante face au nain hostile. Ce dernier, voyant que la confrontation pourrait mal tourner, crache une dernière insulte avant de battre en retraite. Votre amie semble satisfaite d'avoir tenu tête à l'agresseur."
+          "Obeying your command, **{{pet}}** rises to its full height and lets out an impressive growl. Moltiar, taken aback by this show of strength, staggers back and mutters a few insults as he reluctantly walks away. Your friend looks at you proudly.",
+          "Adopting a menacing stance, **{{pet}}** growls with surprising ferocity at the hostile dwarf. The latter, seeing that the confrontation could turn ugly, spits a final insult before retreating. Your friend seems satisfied to have stood up to the aggressor."
         ],
         "fail_male": [
           "By your command, **{{pet}}** tries to seem menacing, but the dwarf laughs cruel in front of this pathetical show. He wanks his sock and your companion turns back precipitously, damaged.",
           "Attempting to appear threatening,{{pet}}** only succeeds in amusing the dwarf, who kicks him. Your companion squeals in pain and gives you a reproachful look for exposing him like that."
         ],
         "fail_female": [
-          "Obéissant à votre ordre, **{{pet}}** tente de paraître menaçante, mais le nain éclate d'un rire cruel devant cette démonstration pathétique. Il brandit son bâton et votre amie recule précipitamment, humiliée.",
-          "Tentant de paraître menaçante, **{{pet}}** ne parvient qu'à amuser le nain qui lui assène un coup de pied. Votre amie couine de douleur et vous lance un regard de reproche pour l'avoir exposée ainsi."
+          "Obeying your order, **{{pet}}** tries to look threatening, but the dwarf bursts into cruel laughter at this pathetic display. He brandishes his stick and your friend backs away, humiliated.",
+          "Attempting to appear threatening,{{pet}}** only succeeds in amusing the dwarf, who kicks her. Your friend squeals in pain and gives you a reproachful look for exposing her like that."
         ]
       },
       "plead": {
@@ -2125,7 +2125,7 @@
           "Your measured words echo in the tense silence. You mention mutual respect between travelers, and the dwarf, despite his obvious hatred of animals, concedes that you seem to have your beast under control. He grumbles away. **{{pet}}** gradually calms down."
         ],
         "success_female": [
-          "Vous tentez de raisonner Moltiar par des paroles apaisantes, lui expliquant que votre amie ne représente aucune menace. Quelque chose dans votre voix sincère semble toucher une corde sensible, et il finit par baisser son arme en grognant. **{{pet}}** apprécie votre diplomatie.",
+          "You try to reason with Moltiar, explaining that your friend poses no threat. Something in your sincere voice seems to strike a chord, and he finally lowers his weapon with a growl. **{{pet}}** appreciates your diplomacy.",
           "Your measured words echo in the tense silence. You mention mutual respect between travelers, and the dwarf, despite his obvious hatred of animals, concedes that you seem to have your beast under control. He grumbles away. **{{pet}}** gradually calms down."
         ],
         "fail_male": [
@@ -2235,7 +2235,7 @@
           "Running away turns out to be the right decision. You run efficiently with **{{pet}}** who follows without difficulty, leaving the furious but helpless dwarf behind. You've teamed up."
         ],
         "success_female": [
-          "Vous prenez vos jambes à votre cou avec **{{pet}}** sur vos talons. Votre vitesse combinée vous permet de distancer rapidement Moltiar qui, trop corpulent, renonce à vous poursuivre en hurlant des jurons. Votre amie halète mais semble satisfaite.",
+          "You take to your heels with **{{pet}}** on your heels. Your combined speed enables you to quickly outrun Moltiar, who, being too corpulent, gives up chasing you, shouting curses. Your friend gasps but seems satisfied.",
           "Running away turns out to be the right decision. You run efficiently with **{{pet}}** who follows without difficulty, leaving the furious but helpless dwarf behind. You've teamed up."
         ],
         "fail_male": [
@@ -2243,8 +2243,8 @@
           "You take to your heels in an inglorious stampede. Unfortunately, **{{pet}}** can't keep up with you and lags behind. The dwarf takes the opportunity to poke him with his stick before you come back for him. Your companion is furious at this botched escape."
         ],
         "fail_female": [
-          "La panique vous submerge et vous détalez maladroitement avec **{{pet}}** sur vos talons. Moltiar, plus rapide que prévu, vous rattrape et bouscule violemment votre amie au passage. Vous parvenez finalement à vous échapper, mais **{{pet}}** vous en veut de cette fuite précipitée.",
-          "Vous prenez vos jambes à votre cou dans une débandade peu glorieuse. Malheureusement, **{{pet}}** ne peut suivre votre rythme et reste à la traîne. Le nain en profite pour lui donner un coup de bâton avant que vous ne reveniez la chercher. Votre amie est furieuse de cette fuite ratée."
+          "Panic overwhelms you and you clumsily scurry away with **{{pet}}** hot on your heels. Moltiar, faster than expected, catches up with you and violently shoves your friend in the process. You finally manage to escape, but **{{pet}}** blames you for your hasty escape.",
+          "You take to your heels in an inglorious stampede. Unfortunately, **{{pet}}** can't keep up with you and lags behind. The dwarf takes the opportunity to poke her with his stick before you come back for her. Your friend is furious at this botched escape."
         ]
       },
       "hide": {
@@ -2253,16 +2253,16 @@
           "You find an ideal place to hide **{{pet}}** under your cape. The dwarf, no longer seeing the object of his hatred, finally calms down and continues on his way. Your companion seems reassured by your protection."
         ],
         "success_female": [
-          "Vous repérez rapidement un renfoncement dans les rochers et y dissimulez **{{pet}}** avant que le nain ne la remarque. Ce dernier, ne voyant plus la bête, perd tout intérêt et s'éloigne en maugréant. Votre amie apprécie votre discrétion.",
-          "Vous trouvez un endroit idéal pour cacher **{{pet}}** sous votre cape. Le nain, ne voyant plus l'objet de sa haine, finit par se calmer et poursuivre son chemin. Votre amie semble rassurée par votre protection."
+          "You quickly spot an indentation in the rocks and conceal **{{pet}}** before the dwarf notices it. The dwarf, no longer seeing the beast, loses interest and grumbles away. Your friend appreciates your discretion.",
+          "You find an ideal place to hide **{{pet}}** under your cape. The dwarf, no longer seeing the object of his hatred, finally calms down and continues on his way. Your friend seems reassured by your protection."
         ],
         "fail_male": [
           "You try to hide **{{pet}}** in a corner, but Moltiar catches you in the act. He roars with anger and manhandles your companion. He gives you a reproachful look.",
           "Your attempt at concealment fails miserably when **{{pet}}** lets out a nervous groan, revealing his hiding place. The dwarf rushes towards him and shoves him violently. Your companion suffers from this mishap."
         ],
         "fail_female": [
-          "Vous tentez de dissimuler **{{pet}}** dans un recoin, mais Moltiar vous surprend en pleine manœuvre. Il rugit de colère et malmène votre amie. Celle-ci vous lance un regard lourd de reproches.",
-          "Votre tentative de dissimulation échoue lamentablement quand **{{pet}}** pousse un gémissement nerveux, révélant sa cachette. Le nain se rue vers elle et la bouscule violemment. Votre amie souffre de cette mésaventure."
+          "You try to hide **{{pet}}** in a corner, but Moltiar catches you in the act. He roars with anger and manhandles your friend. She gives you a reproachful look.",
+          "Your attempt at concealment fails miserably when **{{pet}}** lets out a nervous groan, revealing her hiding place. The dwarf rushes towards her and shoves her violently. Your friend suffers from this mishap."
         ]
       },
       "wait": {
@@ -2279,8 +2279,8 @@
           "The wait drags on and **{{pet}}** begins to moan in anguish. The dwarf, emboldened by your inaction, becomes increasingly threatening. Your companion reproaches you for doing nothing."
         ],
         "fail_female": [
-          "Vous décidez d'attendre immobile, mais le nain interprète votre passivité comme de la faiblesse. Il s'approche davantage et menace **{{pet}}** de plus belle. Votre amie piétine nerveusement, stressée par cette inaction.",
-          "L'attente s'éternise et **{{pet}}** commence à gémir d'angoisse. Le nain, enhardi par votre inaction, se fait de plus en plus menaçant. Votre amie vous reproche de ne rien faire."
+          "You decide to wait motionless, but the dwarf interprets your passivity as weakness. He moves closer and threatens **{{pet}}** even more. Your friend stomps nervously, stressed by this inaction.",
+          "The wait drags on and **{{pet}}** begins to moan in anguish. The dwarf, emboldened by your inaction, becomes increasingly threatening. Your friend reproaches you for doing nothing."
         ]
       },
       "protect": {
@@ -2289,16 +2289,16 @@
           "You protect **{{pet}}** by confidently standing up to the hostile dwarf. The dwarf, realizing that you won't give in, prefers to back away, spitting insults. Your companion looks at you with renewed affection."
         ],
         "success_female": [
-          "Dans un élan de bravoure protectrice, vous placez fermement votre corps entre Moltiar et **{{pet}}**. Votre détermination impressionne l'agresseur qui, voyant que vous êtes prêt à vous battre, décide de ne point provoquer davantage. Votre amie est touchée par votre courage.",
-          "Vous protégez **{{pet}}** en vous interposant avec assurance face au nain hostile. Celui-ci, réalisant que vous ne céderez pas, préfère reculer en crachant des insultes. Votre amie vous regarde avec une affection renouvelée."
+          "In a burst of protective bravery, you place your body firmly between Moltiar and **{{pet}}**. Your determination impresses the aggressor who, seeing that you're ready to fight, decides not to provoke further. Your friend is touched by your courage.",
+          "You protect **{{pet}}** by confidently standing up to the hostile dwarf. The dwarf, realizing that you won't give in, prefers to back away, spitting insults. Your friend looks at you with renewed affection."
         ],
         "fail_male": [
           "In a fit of bravery, you step in between Moltiar and **{{pet}}**. Unfortunately, the dwarf is stronger than you thought. He brutally pushes you away and takes advantage of the situation to strike your companion. You feel powerless in the face of this show of force.",
           "You try to protect{{pet}}** by placing yourself in front of him, but your posture lacks confidence. The dwarf easily sidesteps you and shoves your companion, who gives you a disappointed look at your inability to defend him."
         ],
         "fail_female": [
-          "Dans un élan de bravoure, vous vous interposez entre Moltiar et **{{pet}}**. Malheureusement, le nain est plus fort que vous ne le pensiez. Il vous repousse brutalement et en profite pour frapper votre amie. Vous vous sentez impuissant face à cette démonstration de force.",
-          "Vous tentez de protéger **{{pet}}** en vous plaçant devant elle, mais votre posture manque d'assurance. Le nain vous contourne aisément et bouscule votre amie qui vous lance un regard déçu par votre incapacité à la défendre."
+          "In a fit of bravery, you step in between Moltiar and **{{pet}}**. Unfortunately, the dwarf is stronger than you thought. He brutally pushes you away and takes advantage of the situation to strike your friend. You feel powerless in the face of this show of force.",
+          "You try to protect{{pet}}** by placing yourself in front of her, but your posture lacks confidence. The dwarf easily sidesteps you and jostles your friend, who gives you a disappointed look at your inability to defend her."
         ]
       },
       "distract": {
@@ -2325,7 +2325,7 @@
           "Your soothing words and confident demeanor succeed in calming **{{pet}}**. Once relaxed, he exudes an assurance that makes the dwarf hesitate. The latter, less sure of himself in the face of this serenity, prefers to leave."
         ],
         "success_female": [
-          "Vous parvenez à apaiser **{{pet}}** par des caresses rassurantes malgré la menace du nain. Votre amie, reprenant confiance, cesse de trembler. Le nain, voyant que vous maîtrisez votre bête, semble moins enclin à l'attaquer et finit par s'éloigner.",
+          "You manage to soothe **{{pet}}** with reassuring caresses despite the dwarf's threat. Your friend regains confidence and stops trembling. The dwarf, seeing that you have your beast under control, seems less inclined to attack and eventually moves away.",
           "Your soothing words and confident attitude manage to calm **{{pet}}**. Once expanded, she has insurance that makes the dwarf feel happy, and the dwarf is less likely to be faced with this term, prefers to leave."
         ],
         "fail_male": [
@@ -2333,7 +2333,7 @@
           "Your supposedly soothing words betray your own terror. **{{pet}}**, sensing your fear, understands that the situation is serious and his panic worsens."
         ],
         "fail_female": [
-          "Vous tentez d'apaiser **{{pet}}** par des caresses, mais votre propre nervosité face au nain hostile se transmet à votre amie. Au lieu de se calmer, elle devient encore plus agitée et gémissante.",
+          "You try to soothe **{{pet}}** with caresses, but your own nervousness about the hostile dwarf is transmitted to your friend. Instead of calming down, she becomes even more agitated and moaning.",
           "Your supposedly soothing words betray your own terror. **{{pet}}**, sensing your fear, understands that the situation is serious and his panic worsens."
         ]
       },
@@ -2344,14 +2344,14 @@
         ],
         "success_female": [
           "You let **{{pet}}** move confidently towards the dwarf. His natural presence and rare beauty seem to bewilder the assailant who, despite his hatred, recognizes that he is dealing with an exceptional specimen. He retreats, impressed in spite of himself.",
-          "Se posant calmement face au nain, **{{pet}}** dégage une aura de majesté indéniable. Le nain, bien que haïssant les animaux, ne peut s'empêcher de reconnaître la noblesse de votre amie et s'éloigne prudemment."
+          "Standing calmly in front of the dwarf, **{{pet}}** exudes an undeniable aura of majesty. The dwarf, despite his hatred of animals, can't help but recognize your friend's nobility and cautiously moves away."
         ],
         "fail_male": [
           "You try to let **{{pet}}** stand up to Moltiar, but your intimidated companion fails to appear threatening. The dwarf laughs scornfully and shoves him aside.",
           "**{{pet}}** tries to look imposing in front of the dwarf, but his appearance is not enough to impress him. The dwarf looks at him mockingly before kicking him."
         ],
         "fail_female": [
-          "Vous tentez de laisser **{{pet}}** s'imposer face à Moltiar, mais votre amie, intimidée, ne parvient pas à paraître menaçante. Le nain éclate d'un rire méprisant et la bouscule sans ménagement.",
+          "You try to let **{{pet}}** stand up to Moltiar, but your intimidated friend fails to look threatening. The dwarf laughs scornfully and shoves her aside.",
           "**{{pet}}** tries to be imposing against the dwarf, but its appearance is not enough to impress it. The dwarf looks at her with mockery before kicking her."
         ]
       },
@@ -2361,16 +2361,16 @@
           "Your words of encouragement restore **{{pet}}**'s confidence, and he rises to his feet with determination. The dwarf, seeing that your companion won't give in, gives up his aggression and leaves, growling."
         ],
         "success_female": [
-          "Vous encouragez **{{pet}}** avec des paroles enthousiastes. Galvanisée par votre soutien, votre amie retrouve toute sa vigueur et se dresse fièrement face à Moltiar. Ce dernier, surpris par ce regain d'énergie, préfère ne point prendre de risque et s'éloigne.",
-          "Vos mots d'encouragement redonnent confiance à **{{pet}}** qui se redresse avec détermination. Le nain, voyant que votre amie ne se laissera pas faire, renonce à son agression et part en grognant."
+          "You encourage **{{pet}}** with enthusiastic words. Galvanized by your support, your friend regains all her vigor and proudly stands up to Moltiar. The latter, surprised by this renewed energy, prefers not to take any risks and walks away.",
+          "Your words of encouragement restore **{{pet}}**'s confidence and she rises to her feet with determination. The dwarf, seeing that your friend won't give in, gives up his aggression and leaves, growling."
         ],
         "fail_male": [
           "You try to encourage **{{pet}}** with words, but your voice lacks conviction in the face of the dwarf's threat. Your companion, already terrified, can't find the courage he needs and cowers even further.",
           "Your attempts to galvanize **{{pet}}** fall flat. The dwarf takes advantage of this moment of weakness to bully your companion, who blames you for not protecting him better."
         ],
         "fail_female": [
-          "Vous tentez d'encourager **{{pet}}** avec des paroles, mais votre voix manque de conviction face à la menace du nain. Votre amie, déjà terrorisée, ne trouve point le courage nécessaire et se recroqueville davantage.",
-          "Vos tentatives pour galvaniser **{{pet}}** tombent à plat. Le nain profite de ce moment de faiblesse pour malmener votre amie qui vous en veut de ne pas l'avoir mieux protégée."
+          "You try to encourage **{{pet}}** with words, but your voice lacks conviction in the face of the dwarf's threat. Your friend, already terrified, can't find the courage she needs and cowers even further.",
+          "Your attempts to galvanize **{{pet}}** fall flat. The dwarf takes advantage of this moment of weakness to bully your friend, who blames you for not protecting her better."
         ]
       }
     }
