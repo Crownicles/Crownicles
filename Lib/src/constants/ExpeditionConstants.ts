@@ -364,19 +364,19 @@ export abstract class ExpeditionConstants {
 		],
 
 		/**
-		 * Experience rewards ranging from 50 to 3500
+		 * Experience rewards ranging from 35 to 2450 (reduced by 30%)
 		 */
 		EXPERIENCE: [
-			50,
-			150,
-			350,
-			600,
-			950,
-			1400,
-			1950,
-			2550,
-			3000,
-			3500
+			35,
+			105,
+			245,
+			420,
+			665,
+			980,
+			1365,
+			1785,
+			2100,
+			2450
 		],
 
 		/**
@@ -801,7 +801,7 @@ export interface PetExpeditionPreferenceConfig {
  */
 export const PET_PREFERENCE_REWARD_MULTIPLIERS: Record<PetExpeditionPreference, number> = {
 	liked: 1,
-	neutral: 0.5,
+	neutral: 0.8,
 	disliked: 0.25
 };
 

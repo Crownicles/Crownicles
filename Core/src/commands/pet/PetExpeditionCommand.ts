@@ -176,13 +176,8 @@ function checkStartRequirements(
 		return buildCannotStartResponse(ExpeditionConstants.ERROR_CODES.NOT_ON_CONTINENT, true, petEntity);
 	}
 
-	// Check if pet is still tired from a recent expedition
-	if (petEntity.lastExpeditionEndDate) {
-		const timeSinceLastExpedition = Date.now() - petEntity.lastExpeditionEndDate.valueOf();
-		if (timeSinceLastExpedition < ExpeditionConstants.FATIGUE_DURATION_MS) {
-			return buildCannotStartResponse(ExpeditionConstants.ERROR_CODES.PET_TIRED, true, petEntity);
-		}
-	}
+	// Note: Tired pets CAN start expeditions, but will only receive tokens on success
+	// The fatigue check is done at expedition creation time in ExpeditionActionHandlers
 
 	return null;
 }
@@ -294,7 +289,8 @@ export default class PetExpeditionCommand {
 			rewardIndex: activeExpedition.rewardIndex,
 			hasCloneTalisman: talismans.hasCloneTalisman,
 			playerCurrentTokens: player.tokens,
-			petTypeId: petEntity.typeId
+			petTypeId: petEntity.typeId,
+			wasStartedWhileTired: activeExpedition.wasStartedWhileTired
 		});
 
 		// Apply love change
