@@ -358,6 +358,7 @@ export interface ExpeditionOutcomeParams {
 	hasCloneTalisman: boolean;
 	playerCurrentTokens: number;
 	petTypeId: number;
+	wasStartedWhileTired: boolean;
 }
 
 /**
@@ -382,7 +383,8 @@ export function determineExpeditionOutcome(params: ExpeditionOutcomeParams): Exp
 		isPartialSuccess: partialSuccess,
 		hasCloneTalisman: params.hasCloneTalisman,
 		playerCurrentTokens: params.playerCurrentTokens,
-		petTypeId: params.petTypeId
+		petTypeId: params.petTypeId,
+		wasStartedWhileTired: params.wasStartedWhileTired
 	});
 
 	return {

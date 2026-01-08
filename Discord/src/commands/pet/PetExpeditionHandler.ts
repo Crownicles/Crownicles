@@ -158,6 +158,14 @@ export async function handleExpeditionChoiceRes(
 		description += i18n.t(`commands:petExpedition.insufficientFoodWarning.${warningKey}`, { lng });
 	}
 
+	// Add tired pet warning if applicable (pet started expedition while tired, only tokens will be rewarded)
+	if (packet.wasStartedWhileTired) {
+		description += i18n.t("commands:petExpedition.tiredPetWarning", {
+			lng,
+			context: sexContext
+		});
+	}
+
 	// Add speed modifier message (only if actual time differs significantly from displayed time)
 	if (packet.expedition && packet.originalDisplayDurationMinutes) {
 		const actualDuration = packet.expedition.durationMinutes;

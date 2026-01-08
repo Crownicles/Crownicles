@@ -48,6 +48,8 @@ export class PetExpedition extends Model {
 
 	declare hasCloneTalismanBonus: boolean;
 
+	declare wasStartedWhileTired: boolean;
+
 	declare updatedAt: Date;
 
 	declare createdAt: Date;
@@ -158,9 +160,10 @@ export class PetExpeditions {
 		durationMinutes: number;
 		foodConsumed: number;
 		rewardIndex: number;
+		wasStartedWhileTired?: boolean;
 	}): PetExpedition {
 		const {
-			playerId, petId, expeditionData, durationMinutes, foodConsumed, rewardIndex
+			playerId, petId, expeditionData, durationMinutes, foodConsumed, rewardIndex, wasStartedWhileTired
 		} = params;
 		const startDate = new Date();
 		const endDate = new Date(startDate.getTime() + minutesToMilliseconds(durationMinutes));
@@ -180,7 +183,8 @@ export class PetExpeditions {
 			rewardIndex,
 			isDistantExpedition: expeditionData.isDistantExpedition ?? false,
 			hasBonusTokens: expeditionData.hasBonusTokens ?? false,
-			hasCloneTalismanBonus: expeditionData.hasCloneTalismanBonus ?? false
+			hasCloneTalismanBonus: expeditionData.hasCloneTalismanBonus ?? false,
+			wasStartedWhileTired: wasStartedWhileTired ?? false
 		});
 	}
 
@@ -279,6 +283,11 @@ export function initModel(sequelize: Sequelize): void {
 			defaultValue: false
 		},
 		hasCloneTalismanBonus: {
+			type: DataTypes.BOOLEAN,
+			allowNull: false,
+			defaultValue: false
+		},
+		wasStartedWhileTired: {
 			type: DataTypes.BOOLEAN,
 			allowNull: false,
 			defaultValue: false
