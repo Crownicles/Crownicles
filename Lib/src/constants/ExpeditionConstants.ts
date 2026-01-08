@@ -425,8 +425,7 @@ export abstract class ExpeditionConstants {
 		NO_TALISMAN: "noTalisman",
 		INSUFFICIENT_LOVE: "insufficientLove",
 		PET_HUNGRY: "petHungry",
-		NOT_ON_CONTINENT: "notOnContinent",
-		PET_TIRED: "petTired"
+		NOT_ON_CONTINENT: "notOnContinent"
 	} as const;
 
 	/**
