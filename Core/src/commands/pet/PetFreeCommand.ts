@@ -224,6 +224,174 @@ async function buildShelterPetsEntities(guildPets: GuildPet[]): Promise<{
 	return shelterPetsEntities;
 }
 
+/**
+ * Build reactions array for shelter pets selection collector
+ */
+async function buildShelterPetReactions(
+	player: Player,
+	playerPet: PetEntity | null,
+	shelterPets: {
+		petEntityId: number; pet: OwnedPet;
+	}[]
+): Promise<CrowniclesPacket[]> {
+	const reactions: CrowniclesPacket[] = [];
+
+	// Add player's own pet as an option if available and not on expedition
+	const petOnExpedition = playerPet && await PetUtils.isPetOnExpedition(player.id);
+	if (playerPet && !petOnExpedition) {
+		const missingMoney = getMissingMoneyToFreePet(player, playerPet);
+		if (missingMoney <= 0) {
+			reactions.push(makePacket(ReactionCollectorPetFreeSelectReaction, {
+				petEntityId: playerPet.id
+			}));
+		}
+	}
+
+	// Add shelter pets
+	for (const shelterPet of shelterPets) {
+		reactions.push(makePacket(ReactionCollectorPetFreeSelectReaction, {
+			petEntityId: shelterPet.petEntityId
+		}));
+	}
+
+	reactions.push(makePacket(ReactionCollectorRefuseReaction, {}));
+	return reactions;
+}
+
+/**
+ * Create end callback for shelter selection collector
+ */
+function createShelterSelectionEndCallback(
+	player: Player,
+	playerPet: PetEntity | null
+): EndCallback {
+	return async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
+		const reaction = collector.getFirstReaction();
+
+		if (reaction && reaction.reaction.type === ReactionCollectorPetFreeSelectReaction.name) {
+			const selectedPetEntityId = (reaction.reaction.data as ReactionCollectorPetFreeSelectReaction).petEntityId;
+
+			await player.reload();
+
+			if (playerPet && selectedPetEntityId === playerPet.id) {
+				await acceptPetFree(player, playerPet, response);
+			}
+			else {
+				await freePetFromShelter(response, player, selectedPetEntityId);
+			}
+		}
+		else {
+			response.push(makePacket(CommandPetFreeRefusePacketRes, {}));
+		}
+
+		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.PET_FREE);
+	};
+}
+
+/**
+ * Create end callback for simple pet free collector
+ */
+function createSimplePetFreeEndCallback(player: Player, playerPet: PetEntity): EndCallback {
+	return async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
+		const reaction = collector.getFirstReaction();
+
+		if (reaction && reaction.reaction.type === ReactionCollectorAcceptReaction.name) {
+			await acceptPetFree(player, playerPet, response);
+		}
+		else {
+			response.push(makePacket(CommandPetFreeRefusePacketRes, {}));
+		}
+
+		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.PET_FREE);
+	};
+}
+
+/**
+ * Build and return a reaction collector packet for pet free
+ */
+function buildPetFreeCollectorPacket(
+	collector: ReactionCollectorPetFree | ReactionCollectorPetFreeSelection,
+	context: PacketContext,
+	player: Player,
+	endCallback: EndCallback
+): CrowniclesPacket {
+	return new ReactionCollectorInstance(
+		collector,
+		context,
+		{
+			allowedPlayerKeycloakIds: [player.keycloakId],
+			reactionLimit: 1
+		},
+		endCallback
+	)
+		.block(player.keycloakId, BlockingConstants.REASONS.PET_FREE)
+		.build();
+}
+
+/**
+ * Handle the shelter pets selection flow
+ */
+async function handleShelterPetsFlow(
+	response: CrowniclesPacket[],
+	player: Player,
+	playerPet: PetEntity | null,
+	shelterPets: {
+		petEntityId: number; pet: OwnedPet;
+	}[],
+	context: PacketContext
+): Promise<void> {
+	const reactions = await buildShelterPetReactions(player, playerPet, shelterPets);
+
+	const collector = new ReactionCollectorPetFreeSelection(
+		playerPet?.asOwnedPet(),
+		shelterPets,
+		reactions
+	);
+
+	const endCallback = createShelterSelectionEndCallback(player, playerPet);
+	response.push(buildPetFreeCollectorPacket(collector, context, player, endCallback));
+}
+
+/**
+ * Handle the simple pet free flow (no shelter pets)
+ */
+function handleSimplePetFreeFlow(
+	response: CrowniclesPacket[],
+	player: Player,
+	playerPet: PetEntity,
+	context: PacketContext
+): void {
+	const collector = new ReactionCollectorPetFree(
+		playerPet.typeId,
+		playerPet.sex as SexTypeShort,
+		playerPet.nickname,
+		playerPet.isFeisty() ? PetFreeConstants.FREE_FEISTY_COST : 0
+	);
+
+	const endCallback = createSimplePetFreeEndCallback(player, playerPet);
+	response.push(buildPetFreeCollectorPacket(collector, context, player, endCallback));
+}
+
+/**
+ * Check if the player has no pets to free
+ */
+function hasNoPetsToFree(playerPet: PetEntity | null, shelterPetsCount: number): boolean {
+	return !playerPet && shelterPetsCount === 0;
+}
+
+/**
+ * Check if player's pet is blocked on expedition with no alternatives
+ */
+async function isPetBlockedOnExpeditionWithNoAlternatives(
+	player: Player,
+	playerPet: PetEntity | null,
+	shelterPetsCount: number
+): Promise<boolean> {
+	return Boolean(playerPet)
+		&& await PetUtils.isPetOnExpedition(player.id)
+		&& shelterPetsCount === 0;
+}
+
 export default class PetFreeCommand {
 	@commandRequires(CommandPetFreePacketReq, {
 		notBlocked: true,
@@ -232,40 +400,24 @@ export default class PetFreeCommand {
 	})
 	async execute(response: CrowniclesPacket[], player: Player, _packet: CommandPetFreePacketReq, context: PacketContext): Promise<void> {
 		const playerPet = await PetEntities.getById(player.petId);
+		const shelterPets = player.guildId
+			? await buildShelterPetsEntities(await GuildPets.getOfGuild(player.guildId))
+			: [];
 
-		// Get shelter pets if player has a guild
-		let shelterPets: {
-			petEntityId: number; pet: OwnedPet;
-		}[] = [];
-		if (player.guildId) {
-			const guildPets = await GuildPets.getOfGuild(player.guildId);
-			shelterPets = await buildShelterPetsEntities(guildPets);
+		if (hasNoPetsToFree(playerPet, shelterPets.length)) {
+			response.push(makePacket(CommandPetFreePacketRes, { foundPet: false }));
+			return;
 		}
 
-		// No pet and no shelter pets = error
-		if (!playerPet && shelterPets.length === 0) {
+		if (await isPetBlockedOnExpeditionWithNoAlternatives(player, playerPet, shelterPets.length)) {
 			response.push(makePacket(CommandPetFreePacketRes, {
-				foundPet: false
+				foundPet: true,
+				petCanBeFreed: false,
+				petOnExpedition: true
 			}));
 			return;
 		}
 
-		// Check if pet is on expedition (only applies to player's own pet)
-		if (playerPet && await PetUtils.isPetOnExpedition(player.id)) {
-			// If player has no shelter pets either, show error
-			if (shelterPets.length === 0) {
-				response.push(makePacket(CommandPetFreePacketRes, {
-					foundPet: true,
-					petCanBeFreed: false,
-					petOnExpedition: true
-				}));
-				return;
-			}
-
-			// Otherwise, player can still free shelter pets but not their own
-		}
-
-		// Check cooldown (applies to all pet free operations)
 		const cooldownRemainingTimeMs = getCooldownRemainingTimeMs(player);
 		if (cooldownRemainingTimeMs > 0) {
 			response.push(makePacket(CommandPetFreePacketRes, {
@@ -276,82 +428,11 @@ export default class PetFreeCommand {
 			return;
 		}
 
-		// If player has shelter pets, show selection menu
 		if (shelterPets.length > 0) {
-			// Build reactions for shelter pets selection
-			const reactions = [];
-
-			// Add player's own pet as an option if available and not on expedition
-			const petOnExpedition = playerPet && await PetUtils.isPetOnExpedition(player.id);
-			if (playerPet && !petOnExpedition) {
-				// Check if player has enough money for own pet
-				const missingMoney = getMissingMoneyToFreePet(player, playerPet);
-				if (missingMoney <= 0) {
-					reactions.push(makePacket(ReactionCollectorPetFreeSelectReaction, {
-						petEntityId: playerPet.id
-					}));
-				}
-			}
-
-			// Add shelter pets
-			for (const shelterPet of shelterPets) {
-				reactions.push(makePacket(ReactionCollectorPetFreeSelectReaction, {
-					petEntityId: shelterPet.petEntityId
-				}));
-			}
-
-			reactions.push(makePacket(ReactionCollectorRefuseReaction, {}));
-
-			const collector = new ReactionCollectorPetFreeSelection(
-				playerPet?.asOwnedPet(),
-				shelterPets,
-				reactions
-			);
-
-			const endCallback: EndCallback = async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
-				const reaction = collector.getFirstReaction();
-
-				if (reaction && reaction.reaction.type === ReactionCollectorPetFreeSelectReaction.name) {
-					const selectedPetEntityId = (reaction.reaction.data as ReactionCollectorPetFreeSelectReaction).petEntityId;
-
-					await player.reload();
-
-					// Check if selected pet is player's own pet
-					if (playerPet && selectedPetEntityId === playerPet.id) {
-						await acceptPetFree(player, playerPet, response);
-					}
-					else {
-						// Free from shelter
-						await freePetFromShelter(response, player, selectedPetEntityId);
-					}
-				}
-				else {
-					response.push(makePacket(CommandPetFreeRefusePacketRes, {}));
-				}
-
-				BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.PET_FREE);
-			};
-
-			const collectorPacket = new ReactionCollectorInstance(
-				collector,
-				context,
-				{
-					allowedPlayerKeycloakIds: [player.keycloakId],
-					reactionLimit: 1
-				},
-				endCallback
-			)
-				.block(player.keycloakId, BlockingConstants.REASONS.PET_FREE)
-				.build();
-
-			response.push(collectorPacket);
+			await handleShelterPetsFlow(response, player, playerPet, shelterPets, context);
 			return;
 		}
 
-		/*
-		 * No shelter pets, only player's own pet - use simple flow
-		 * Check money
-		 */
 		const missingMoney = getMissingMoneyToFreePet(player, playerPet!);
 		if (missingMoney > 0) {
 			response.push(makePacket(CommandPetFreePacketRes, {
@@ -362,39 +443,6 @@ export default class PetFreeCommand {
 			return;
 		}
 
-		// Send simple accept/refuse collector
-		const collector = new ReactionCollectorPetFree(
-			playerPet!.typeId,
-			playerPet!.sex as SexTypeShort,
-			playerPet!.nickname,
-			playerPet!.isFeisty() ? PetFreeConstants.FREE_FEISTY_COST : 0
-		);
-
-		const endCallback: EndCallback = async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
-			const reaction = collector.getFirstReaction();
-
-			if (reaction && reaction.reaction.type === ReactionCollectorAcceptReaction.name) {
-				await acceptPetFree(player, playerPet!, response);
-			}
-			else {
-				response.push(makePacket(CommandPetFreeRefusePacketRes, {}));
-			}
-
-			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.PET_FREE);
-		};
-
-		const collectorPacket = new ReactionCollectorInstance(
-			collector,
-			context,
-			{
-				allowedPlayerKeycloakIds: [player.keycloakId],
-				reactionLimit: 1
-			},
-			endCallback
-		)
-			.block(player.keycloakId, BlockingConstants.REASONS.PET_FREE)
-			.build();
-
-		response.push(collectorPacket);
+		handleSimplePetFreeFlow(response, player, playerPet!, context);
 	}
 }

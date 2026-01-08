@@ -154,23 +154,42 @@ export async function createPetFreeCollector(context: PacketContext, packet: Rea
 	return await DiscordCollectorUtils.createAcceptRefuseCollector(interaction, embed, packet, context);
 }
 
+/**
+ * Helper function to build a simple response embed with author formatting
+ */
+function buildSimpleResponseEmbed(
+	interaction: CrowniclesInteraction,
+	titleKey: string,
+	description: string,
+	isError: boolean = false
+): CrowniclesEmbed {
+	const lng = interaction.userLanguage;
+	const embed = new CrowniclesEmbed()
+		.formatAuthor(i18n.t(titleKey, {
+			lng,
+			pseudo: escapeUsername(interaction.user.displayName)
+		}), interaction.user)
+		.setDescription(description);
+
+	if (isError) {
+		embed.setErrorColor();
+	}
+
+	return embed;
+}
+
 export async function handleCommandPetFreeRefusePacketRes(context: PacketContext): Promise<void> {
 	const originalInteraction = DiscordCache.getInteraction(context.discord!.interaction!);
 	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
 	if (buttonInteraction && originalInteraction) {
 		const lng = originalInteraction.userLanguage;
-		await buttonInteraction.editReply({
-			embeds: [
-				new CrowniclesEmbed().formatAuthor(i18n.t("commands:petFree.canceledTitle", {
-					lng,
-					pseudo: escapeUsername(originalInteraction.user.displayName)
-				}), originalInteraction.user)
-					.setDescription(
-						i18n.t("commands:petFree.canceledDesc", { lng })
-					)
-					.setErrorColor()
-			]
-		});
+		const embed = buildSimpleResponseEmbed(
+			originalInteraction,
+			"commands:petFree.canceledTitle",
+			i18n.t("commands:petFree.canceledDesc", { lng }),
+			true
+		);
+		await buttonInteraction.editReply({ embeds: [embed] });
 	}
 }
 
@@ -179,20 +198,15 @@ export async function handleCommandPetFreeAcceptPacketRes(packet: CommandPetFree
 	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
 	if (buttonInteraction && originalInteraction) {
 		const lng = originalInteraction.userLanguage;
-		await buttonInteraction.editReply({
-			embeds: [
-				new CrowniclesEmbed().formatAuthor(i18n.t("commands:petFree.title", {
-					lng,
-					pseudo: escapeUsername(originalInteraction.user.displayName)
-				}), originalInteraction.user)
-					.setDescription(
-						i18n.t("commands:petFree.acceptedDesc", {
-							lng,
-							pet: PetUtils.petToShortString(lng, packet.petNickname, packet.petId, packet.petSex)
-						})
-					)
-			]
-		});
+		const embed = buildSimpleResponseEmbed(
+			originalInteraction,
+			"commands:petFree.title",
+			i18n.t("commands:petFree.acceptedDesc", {
+				lng,
+				pet: PetUtils.petToShortString(lng, packet.petNickname, packet.petId, packet.petSex)
+			})
+		);
+		await buttonInteraction.editReply({ embeds: [embed] });
 	}
 }
 
@@ -205,18 +219,15 @@ export async function handleCommandPetFreeShelterSuccessPacketRes(packet: Comman
 	}
 
 	const lng = interaction.userLanguage;
-
 	const petDisplay = PetUtils.petToShortString(lng, packet.petNickname, packet.petId, packet.petSex);
 
 	let description = i18n.t("commands:petFree.acceptedDesc", {
-		lng,
-		pet: petDisplay
+		lng, pet: petDisplay
 	});
 
 	if (packet.freeCost > 0) {
 		description += `\n${i18n.t("commands:petFree.feistyCostPaid", {
-			lng,
-			cost: packet.freeCost
+			lng, cost: packet.freeCost
 		})}`;
 	}
 
@@ -224,14 +235,33 @@ export async function handleCommandPetFreeShelterSuccessPacketRes(packet: Comman
 		description += `\n${i18n.t("commands:petFree.luckyMeat", { lng })}`;
 	}
 
+	const embed = buildSimpleResponseEmbed(interaction, "commands:petFree.title", description);
+	await interaction.editReply({
+		embeds: [embed], components: []
+	});
+}
+
+/**
+ * Helper function to send an error embed response for shelter pet operations
+ */
+async function sendShelterErrorResponse(
+	context: PacketContext,
+	errorMessage: string
+): Promise<void> {
+	const interaction = MessagesUtils.getCurrentInteraction(context);
+
+	if (!interaction) {
+		return;
+	}
+
 	await interaction.editReply({
 		embeds: [
-			new CrowniclesEmbed()
-				.formatAuthor(i18n.t("commands:petFree.title", {
-					lng,
-					pseudo: escapeUsername(interaction.user.displayName)
-				}), interaction.user)
-				.setDescription(description)
+			new CrowniclesErrorEmbed(
+				interaction.user,
+				context,
+				interaction,
+				errorMessage
+			)
 		],
 		components: []
 	});
@@ -240,53 +270,33 @@ export async function handleCommandPetFreeShelterSuccessPacketRes(packet: Comman
 // Handle shelter pet free cooldown error
 export async function handleCommandPetFreeShelterCooldownErrorPacketRes(packet: CommandPetFreeShelterCooldownErrorPacketRes, context: PacketContext): Promise<void> {
 	const interaction = MessagesUtils.getCurrentInteraction(context);
-
 	if (!interaction) {
 		return;
 	}
 
-	const lng = interaction.userLanguage;
-
-	await interaction.editReply({
-		embeds: [
-			new CrowniclesErrorEmbed(
-				interaction.user,
-				context,
-				interaction,
-				i18n.t("error:cooldownPetFree", {
-					lng,
-					remainingTime: printTimeBeforeDate(packet.cooldownRemainingTimeMs + new Date().valueOf())
-				})
-			)
-		],
-		components: []
-	});
+	await sendShelterErrorResponse(
+		context,
+		i18n.t("error:cooldownPetFree", {
+			lng: interaction.userLanguage,
+			remainingTime: printTimeBeforeDate(packet.cooldownRemainingTimeMs + new Date().valueOf())
+		})
+	);
 }
 
 // Handle shelter pet free missing money error
 export async function handleCommandPetFreeShelterMissingMoneyErrorPacketRes(packet: CommandPetFreeShelterMissingMoneyErrorPacketRes, context: PacketContext): Promise<void> {
 	const interaction = MessagesUtils.getCurrentInteraction(context);
-
 	if (!interaction) {
 		return;
 	}
 
-	const lng = interaction.userLanguage;
-
-	await interaction.editReply({
-		embeds: [
-			new CrowniclesErrorEmbed(
-				interaction.user,
-				context,
-				interaction,
-				i18n.t("error:notEnoughMoney", {
-					lng,
-					money: packet.missingMoney
-				})
-			)
-		],
-		components: []
-	});
+	await sendShelterErrorResponse(
+		context,
+		i18n.t("error:notEnoughMoney", {
+			lng: interaction.userLanguage,
+			money: packet.missingMoney
+		})
+	);
 }
 
 const selectPetCustomId = "selectPet";

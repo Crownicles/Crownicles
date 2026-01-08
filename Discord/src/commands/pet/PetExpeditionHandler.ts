@@ -24,6 +24,7 @@ import {
 	ButtonInteraction, StringSelectMenuInteraction
 } from "discord.js";
 import { PetBasicInfo } from "../../../../Lib/src/types/PetBasicInfo";
+import { Language } from "../../../../Lib/src/Language";
 
 // Import from new modules
 import {
@@ -116,6 +117,59 @@ export async function handleExpeditionStatusRes(
 }
 
 /**
+ * Get the speed modifier message if applicable
+ */
+function getSpeedModifierMessage(
+	packet: CommandPetExpeditionChoicePacketRes,
+	lng: Language,
+	sexContext: string
+): string {
+	if (!packet.expedition || !packet.originalDisplayDurationMinutes) {
+		return "";
+	}
+
+	const speedCategory = getSpeedCategory(packet.expedition.durationMinutes, packet.originalDisplayDurationMinutes);
+	if (speedCategory === ExpeditionConstants.SPEED_CATEGORIES.NORMAL) {
+		return "";
+	}
+
+	return i18n.t(`commands:petExpedition.speedModifier.${speedCategory}`, {
+		lng,
+		context: sexContext
+	});
+}
+
+/**
+ * Get the tired pet warning message if applicable
+ */
+function getTiredPetWarningMessage(
+	wasStartedWhileTired: boolean | undefined,
+	lng: Language,
+	sexContext: string
+): string {
+	if (!wasStartedWhileTired) {
+		return "";
+	}
+	return i18n.t("commands:petExpedition.tiredPetWarning", {
+		lng, context: sexContext
+	});
+}
+
+/**
+ * Get the insufficient food warning message if applicable
+ */
+function getInsufficientFoodWarningMessage(
+	packet: CommandPetExpeditionChoicePacketRes,
+	lng: Language
+): string {
+	if (!packet.insufficientFood) {
+		return "";
+	}
+	const warningKey = packet.insufficientFoodCause === "guildNoFood" ? "guildNoFood" : "noGuild";
+	return i18n.t(`commands:petExpedition.insufficientFoodWarning.${warningKey}`, { lng });
+}
+
+/**
  * Handle expedition choice confirmation
  */
 export async function handleExpeditionChoiceRes(
@@ -141,43 +195,17 @@ export async function handleExpeditionChoiceRes(
 	const petDisplay = getPetDisplayString(expedition.pet, lng);
 	const sexContext = getSexContext(expedition.pet.petSex);
 
-	let description = i18n.t("commands:petExpedition.expeditionStarted", {
+	const description = i18n.t("commands:petExpedition.expeditionStarted", {
 		lng,
 		context: sexContext,
 		petDisplay,
 		location: `${locationEmoji} ${locationName}`,
 		returnTime: finishInTimeDisplay(new Date(expedition.endTime))
-	});
-
-	// Add food consumption details
-	description += getFoodConsumedDescription(packet, lng);
-
-	// Add insufficient food warning if applicable
-	if (packet.insufficientFood) {
-		const warningKey = packet.insufficientFoodCause === "guildNoFood" ? "guildNoFood" : "noGuild";
-		description += i18n.t(`commands:petExpedition.insufficientFoodWarning.${warningKey}`, { lng });
-	}
-
-	// Add tired pet warning if applicable (pet started expedition while tired, only tokens will be rewarded)
-	if (packet.wasStartedWhileTired) {
-		description += i18n.t("commands:petExpedition.tiredPetWarning", {
-			lng,
-			context: sexContext
-		});
-	}
-
-	// Add speed modifier message (only if actual time differs significantly from displayed time)
-	if (packet.expedition && packet.originalDisplayDurationMinutes) {
-		const actualDuration = packet.expedition.durationMinutes;
-		const displayedDuration = packet.originalDisplayDurationMinutes;
-		const speedCategory = getSpeedCategory(actualDuration, displayedDuration);
-		if (speedCategory !== ExpeditionConstants.SPEED_CATEGORIES.NORMAL) {
-			description += i18n.t(`commands:petExpedition.speedModifier.${speedCategory}`, {
-				lng,
-				context: sexContext
-			});
-		}
-	}
+	})
+		+ getFoodConsumedDescription(packet, lng)
+		+ getInsufficientFoodWarningMessage(packet, lng)
+		+ getTiredPetWarningMessage(packet.wasStartedWhileTired, lng, sexContext)
+		+ getSpeedModifierMessage(packet, lng, sexContext);
 
 	const embed = buildExpeditionStartedEmbed(interaction, description);
 	await sendResponse(context, embed);
