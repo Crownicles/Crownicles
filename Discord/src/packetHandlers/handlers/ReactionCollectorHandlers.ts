@@ -19,8 +19,14 @@ import { ReactionCollectorGoToPVEIslandData } from "../../../../Lib/src/packets/
 import { goToPVEIslandCollector } from "../../smallEvents/goToPVEIsland";
 import { ReactionCollectorLotteryData } from "../../../../Lib/src/packets/interaction/ReactionCollectorLottery";
 import { lotteryCollector } from "../../smallEvents/lottery";
-import { ReactionCollectorPetFreeData } from "../../../../Lib/src/packets/interaction/ReactionCollectorPetFree";
-import { createPetFreeCollector } from "../../commands/pet/PetFreeCommand";
+import {
+	ReactionCollectorPetFreeData,
+	ReactionCollectorPetFreeSelectionData
+} from "../../../../Lib/src/packets/interaction/ReactionCollectorPetFree";
+import {
+	createPetFreeCollector,
+	createPetFreeSelectionCollector
+} from "../../commands/pet/PetFreeCommand";
 import { ReactionCollectorInteractOtherPlayersPoorData } from "../../../../Lib/src/packets/interaction/ReactionCollectorInteractOtherPlayers";
 import { interactOtherPlayersCollector } from "../../smallEvents/interactOtherPlayers";
 import { ReactionCollectorLimogesData } from "../../../../Lib/src/packets/interaction/ReactionCollectorLimoges";
@@ -140,6 +146,7 @@ export default class ReactionCollectorHandler {
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorGoToPVEIslandData.name, goToPVEIslandCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorJoinBoatData.name, createJoinBoatCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorPetFreeData.name, createPetFreeCollector);
+		ReactionCollectorHandler.collectorMap.set(ReactionCollectorPetFreeSelectionData.name, createPetFreeSelectionCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorGuildCreateData.name, createGuildCreateCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorGuildKickData.name, createGuildKickCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorGuildDescriptionData.name, createGuildDescriptionCollector);
