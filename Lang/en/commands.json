@@ -143,7 +143,7 @@
       "warning_male": "{emote:collectors.warning} *Calling your pet back prematurely will break the bond of trust. He'll return with no loot and a bruised heart...*",
       "warning_female": "{emote:collectors.warning} *Calling your pet back prematurely will break the bond of trust. She'll return lootless and heartbroken...*"
     },
-    "inProgressFoodInfo_one": "{emote:expedition.food} Provisions carried: {{count, number}} ration(s)",
+    "inProgressFoodInfo_one": "\n{emote:expedition.food} **Packed provisions:** {{count, number}} rations",
     "inProgressFoodInfo_other": "\n{emote:expedition.food} **Packed provisions:** {{count, number}} rations",
     "recallButton": "Call back",
     "closeButton": "Continue exploring",
@@ -171,7 +171,7 @@
     "startedTitle": "{{pseudo}}expedition launched!",
     "expeditionStarted_male": "With an enthusiastic leap, {{petDisplay}} dashes off to **{{location}}**! You watch him disappear over the horizon, your heart full of hope.\n\n{emote:clocks.1} Scheduled return: {{returnTime}}",
     "expeditionStarted_female": "With an enthusiastic leap, {{petDisplay}} dashes off to **{{location}}**! You watch her disappear over the horizon, your heart full of hope.\n\n{emote:clocks.1} Scheduled return: {{returnTime}}",
-    "foodConsumed_one": "{emote:expedition.food} Provisions carried: **{{count, number}}** ration\n",
+    "foodConsumed_one": "\n{emote:expedition.food} Provisions carried : **{{count, number}}** ration",
     "foodConsumed_other": "\n{emote:expedition.food} Provisions carried : **{{count, number}}** rations",
     "foodConsumedDetails": "\n{emote:expedition.food} **Provisions taken:** {{foodDetails}}",
     "insufficientFoodWarning": {
@@ -188,9 +188,9 @@
       "verySlow_male": "\n\n{emote:expedition.slow} *Your companion moves with disconcerting slowness, stopping frequently to sniff around. The expedition will take much longer than expected...*.",
       "verySlow_female": "\n\n{emote:expedition.slow} *Your companion moves with disconcerting slowness, stopping frequently to sniff around. The expedition will take much longer than expected...*."
     },
-    "freeCancelledTitle": "{{pseudo}}departure cancelled",
-    "freeCancelled_male": "{{petDisplay}} tilts the tone on the side, a little bit bit but understandable. That's all about it! They're happy to be back to you, ready to go back wherever you want.\n\n{emote:collectors.warning} *Attention: future cancellations this week will cause your pet to lose love points*",
-    "freeCancelled_female": "{{petDisplay}} leans the tone on the side, a little bit bit bit but understandable. That's all about it! She'll be happy about you and get back where you want to go.\n\n{emote:collectors.warning} *Attention: future cancellations this week will cause your pet to lose love points*",
+    "freeCancelledTitle": "{{pseudo}}, departure cancelled",
+    "freeCancelled_male": "{{petDisplay}} tilts its head to the side, a little disappointed but understanding. After all, it's just postponed! It trots cheerfully towards you, ready to set off again whenever you wish.\n\n{emote:collectors.warning} *Warning: future cancellations this week will cause your pet to lose affection points.*",
+    "freeCancelled_female": "{{petDisplay}} tilts her head to one side, a little disappointed but understanding. After all, it's only a matter of time! She trots happily towards you, ready to set off again as soon as you wish.\n\n{emote:collectors.warning} *Warning: any further cancellations this week will cause your pet to lose love points",
     "cancelledTitle": "{{pseudo}}departure cancelled",
     "cancelled_male": "Seeing your hesitation, {{petDisplay}} bows his head in disappointment. He thought he was going on an adventure... You can feel the trust between you crumbling slightly. Your companion gives you a hurt look before walking away, tail low.",
     "cancelled_female": "Seeing your hesitation, {{petDisplay}} bows her head in disappointment. She thought she was going on an adventure... You can feel the trust between you crumbling slightly. Your companion gives you a hurt look before walking away, tail low.",
@@ -283,19 +283,19 @@
       "trivial": "Easy",
       "easy": "Accessible",
       "moderate": "Demanding",
-      "challenging": "Ardu",
+      "challenging": "Difficult",
       "treacherous": "Merciless"
     },
     "mapLocationExpeditions": {
       "1": "the Mysterious Reefs of Sentinel Beach",
       "2": "the Secret Trails of the Voie Champêtre",
-      "3": "les Prairies Cachées du Berceau",
+      "3": "the Hidden Meadows of the Cradle",
       "4": "the depths of the Old Man's Forest",
       "5": "the Forgotten Labyrinths of the Daedalus Path",
       "6": "the Secret Cellars of Boug-Coton",
       "7": "the Forgotten Tombs of the Valley of the Kings",
       "8": "the Mystical Passages of the Crossroads of Destiny",
-      "9": "les Pavés Anciens de la Grande Rue",
+      "9": "the Old Cobblestones of the Main Street",
       "10": "the Lost Catacombs of Ville Forte",
       "11": "Great Axis Ambushes",
       "12": "the Plains of the Expanse",
@@ -1935,8 +1935,8 @@
     }
   },
   "deletecode": {
-    "title": "Code de suppression de compte",
-    "success": "**Code de suppression généré**\n\n**Discord ID :** `{{discordId}}`\n**Keycloak ID :** `{{keycloakId}}`\n**Code :** `{{code}}`\n\nEnvoyez ce code à l'utilisateur par email. Il devra envoyer un DM au bot avec :\n`DELETE ACCOUNT {{code}}`",
-    "userNotFound": "Aucun utilisateur trouvé avec cet identifiant Discord."
+    "title": "Account deletion code",
+    "success": "**Deletion code generated**\n\n**Discord ID :** `{{discordId}}`\n**Keycloak ID :** `{{keycloakId}}`\n**Code :** `{{code}}`\n\nSend this code to the user by email. He will have to send a DM to the bot with:\n`DELETE ACCOUNT {{code}}`",
+    "userNotFound": "No users found with this Discord ID."
   }
 }
