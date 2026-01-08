@@ -176,8 +176,10 @@ function checkStartRequirements(
 		return buildCannotStartResponse(ExpeditionConstants.ERROR_CODES.NOT_ON_CONTINENT, true, petEntity);
 	}
 
-	// Note: Tired pets CAN start expeditions, but will only receive tokens on success
-	// The fatigue check is done at expedition creation time in ExpeditionActionHandlers
+	/*
+	 * Note: Tired pets CAN start expeditions, but will only receive tokens on success
+	 * The fatigue check is done at expedition creation time in ExpeditionActionHandlers
+	 */
 
 	return null;
 }
