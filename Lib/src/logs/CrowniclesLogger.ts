@@ -11,6 +11,9 @@ import LokiTransport = require("winston-loki");
  * @returns JSON string or "[Circular]" placeholder for circular refs
  */
 export function safeStringify(obj: unknown): string {
+	if (obj === undefined) {
+		return "undefined";
+	}
 	const seen = new WeakSet();
 	return JSON.stringify(obj, (_key, value) => {
 		if (typeof value === "object" && value !== null) {

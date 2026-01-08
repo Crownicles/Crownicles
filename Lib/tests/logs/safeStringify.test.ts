@@ -22,8 +22,8 @@ describe("safeStringify", () => {
 	});
 
 	it("should handle undefined", () => {
-		// undefined is not valid JSON, JSON.stringify returns undefined
-		expect(safeStringify(undefined)).toBeUndefined();
+		// undefined is handled explicitly to always return a string
+		expect(safeStringify(undefined)).toBe("undefined");
 	});
 
 	it("should handle primitive values", () => {

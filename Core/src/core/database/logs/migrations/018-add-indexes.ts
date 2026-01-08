@@ -23,7 +23,7 @@ async function safeAddIndex(context: QueryInterface, tableName: string, columns:
 	}
 	catch (e) {
 		const errno = (e as { original?: { errno?: number } }).original?.errno;
-		if (!IGNORABLE_ADD_INDEX_ERRNOS.includes(errno!)) {
+		if (errno === undefined || !IGNORABLE_ADD_INDEX_ERRNOS.includes(errno)) {
 			throw e;
 		}
 		CrowniclesLogger.debug(`Migration 018: Ignoring error ${errno} for addIndex ${options.name} on ${tableName}`);
@@ -41,7 +41,7 @@ async function safeRemoveIndex(context: QueryInterface, tableName: string, index
 	}
 	catch (e) {
 		const errno = (e as { original?: { errno?: number } }).original?.errno;
-		if (!IGNORABLE_REMOVE_INDEX_ERRNOS.includes(errno!)) {
+		if (errno === undefined || !IGNORABLE_REMOVE_INDEX_ERRNOS.includes(errno)) {
 			throw e;
 		}
 		CrowniclesLogger.debug(`Migration 018: Ignoring error ${errno} for removeIndex ${indexName} on ${tableName}`);

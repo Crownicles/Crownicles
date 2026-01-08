@@ -45,7 +45,7 @@ async function safeAddConstraint(context: QueryInterface, tableName: string, opt
 	}
 	catch (e) {
 		const errno = (e as { original?: { errno?: number } }).original?.errno;
-		if (!IGNORABLE_ERRNOS.includes(errno!)) {
+		if (errno === undefined || !IGNORABLE_ERRNOS.includes(errno)) {
 			throw e;
 		}
 		CrowniclesLogger.debug(`Migration 040: Ignoring error ${errno} for addConstraint on ${tableName}`);
