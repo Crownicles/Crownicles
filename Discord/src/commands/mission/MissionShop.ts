@@ -31,6 +31,8 @@ import { Badge } from "../../../../Lib/src/types/Badge";
 import { millisecondsToMinutes } from "../../../../Lib/src/utils/TimeUtils";
 import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
 import { Language } from "../../../../Lib/src/Language";
+import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
+import { ExpeditionLocationType } from "../../../../Lib/src/constants/ExpeditionConstants";
 
 /**
  * Get the packet to send to the server
@@ -75,6 +77,15 @@ export async function handleMissionShopKingsFavor(context: PacketContext): Promi
 }
 
 /**
+ * Format an expedition location type with its emoji and name
+ */
+function formatLocationType(type: string, lng: Language): string {
+	const emoji = CrowniclesIcons.expedition.locations[type as ExpeditionLocationType] ?? "";
+	const name = i18n.t(`models:mapTypes.${type}.name`, { lng });
+	return `${emoji} ${name}`;
+}
+
+/**
  * Build the expedition preferences section for the pet information embed
  */
 function buildExpeditionSection(packet: CommandMissionShopPetInformation, lng: Language): string {
@@ -88,13 +99,13 @@ function buildExpeditionSection(packet: CommandMissionShopPetInformation, lng: L
 	const likedLocations = hasLiked
 		? i18n.t("commands:shop.shopItems.lovePointsValue.likedLocations", {
 			lng,
-			locations: packet.likedExpeditionTypes!.map(type => i18n.t(`models:mapTypes.${type}.name`, { lng })).join(", ")
+			locations: packet.likedExpeditionTypes!.map(type => formatLocationType(type, lng)).join(", ")
 		})
 		: "";
 	const dislikedLocations = hasDisliked
 		? i18n.t("commands:shop.shopItems.lovePointsValue.dislikedLocations", {
 			lng,
-			locations: packet.dislikedExpeditionTypes!.map(type => i18n.t(`models:mapTypes.${type}.name`, { lng })).join(", ")
+			locations: packet.dislikedExpeditionTypes!.map(type => formatLocationType(type, lng)).join(", ")
 		})
 		: "";
 
