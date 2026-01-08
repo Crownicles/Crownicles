@@ -385,11 +385,11 @@
   },
   "deletecode": {
     "name": "deletecode",
-    "description": "Générer un code de suppression de compte pour un utilisateur.",
+    "description": "Genera un codice di cancellazione dell'account per un utente.",
     "options": {
       "discordid": {
-        "name": "discordid",
-        "description": "L'identifiant Discord de l'utilisateur."
+        "name": "discordante",
+        "description": "L'ID Discord dell'utente."
       }
     }
   }
