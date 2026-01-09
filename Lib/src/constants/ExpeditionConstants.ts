@@ -679,7 +679,7 @@ export abstract class ExpeditionConstants {
 		/**
 		 * Number of successful expeditions required to earn the expert expediteur badge
 		 */
-		EXPERT_EXPEDITEUR_THRESHOLD: 300
+		EXPERT_EXPEDITEUR_THRESHOLD: 550
 	};
 
 	/**
