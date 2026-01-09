@@ -291,8 +291,7 @@ export default class PetExpeditionCommand {
 			rewardIndex: activeExpedition.rewardIndex,
 			hasCloneTalisman: talismans.hasCloneTalisman,
 			playerCurrentTokens: player.tokens,
-			petTypeId: petEntity.typeId,
-			wasStartedWhileTired: activeExpedition.wasStartedWhileTired
+			petTypeId: petEntity.typeId
 		});
 
 		// Apply love change
@@ -305,7 +304,7 @@ export default class PetExpeditionCommand {
 			});
 		}
 
-		// Set fatigue timestamp (pet will be tired for 2 hours)
+		// Update last expedition end date for tracking
 		petEntity.lastExpeditionEndDate = new Date();
 		await petEntity.save();
 

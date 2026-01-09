@@ -28,7 +28,6 @@ import { calculateRewardIndex } from "./ExpeditionRewardCalculator";
 import { PendingExpeditionsCache } from "./PendingExpeditionsCache";
 import { crowniclesInstance } from "../../index";
 import { ScheduledExpeditionNotifications } from "../database/game/models/ScheduledExpeditionNotification";
-import { checkIsPetTired } from "./ExpeditionService";
 import { PlayerTalismansManager } from "../database/game/models/PlayerTalismans";
 
 /**
@@ -52,7 +51,6 @@ interface ExpeditionSelectSuccessParams {
 	speedDurationModifier: number;
 	originalDisplayDurationMinutes: number;
 	hasGuild: boolean;
-	wasStartedWhileTired: boolean;
 }
 
 /**
@@ -135,7 +133,6 @@ interface ExpeditionCreationData {
 	foodPlan: FoodConsumptionPlan;
 	adjustedDurationMinutes: number;
 	rewardIndex: number;
-	wasStartedWhileTired: boolean;
 }
 
 /**
@@ -143,7 +140,7 @@ interface ExpeditionCreationData {
  */
 async function createAndSaveExpedition(data: ExpeditionCreationData): Promise<PetExpedition> {
 	const {
-		player, petEntity, expeditionData, foodPlan, adjustedDurationMinutes, rewardIndex, wasStartedWhileTired
+		player, petEntity, expeditionData, foodPlan, adjustedDurationMinutes, rewardIndex
 	} = data;
 
 	const expedition = PetExpeditions.createExpedition({
@@ -152,8 +149,7 @@ async function createAndSaveExpedition(data: ExpeditionCreationData): Promise<Pe
 		expeditionData,
 		durationMinutes: adjustedDurationMinutes,
 		foodConsumed: foodPlan.totalRations,
-		rewardIndex,
-		wasStartedWhileTired
+		rewardIndex
 	});
 	await expedition.save();
 
@@ -208,7 +204,7 @@ function logExpeditionStart(params: ExpeditionLogStartParams): void {
  */
 function buildExpeditionSelectSuccessResponse(params: ExpeditionSelectSuccessParams): CommandPetExpeditionChoicePacketRes {
 	const {
-		expedition, petEntity, foodPlan, rationsRequired, speedDurationModifier, originalDisplayDurationMinutes, hasGuild, wasStartedWhileTired
+		expedition, petEntity, foodPlan, rationsRequired, speedDurationModifier, originalDisplayDurationMinutes, hasGuild
 	} = params;
 	const insufficientFood = foodPlan.totalRations < rationsRequired;
 
@@ -222,8 +218,7 @@ function buildExpeditionSelectSuccessResponse(params: ExpeditionSelectSuccessPar
 			? !hasGuild ? ExpeditionConstants.INSUFFICIENT_FOOD_CAUSES.NO_GUILD : ExpeditionConstants.INSUFFICIENT_FOOD_CAUSES.GUILD_NO_FOOD
 			: undefined,
 		speedDurationModifier,
-		originalDisplayDurationMinutes,
-		wasStartedWhileTired
+		originalDisplayDurationMinutes
 	});
 }
 
@@ -262,9 +257,6 @@ export async function handleExpeditionSelect(
 	const adjustedDurationMinutes = Math.round(expeditionData.durationMinutes * speedDurationModifier);
 	const rewardIndex = calculateRewardIndex(expeditionData);
 
-	// Check if pet is tired at expedition start (affects rewards - only tokens if tired)
-	const wasStartedWhileTired = await checkIsPetTired(petEntity.lastExpeditionEndDate, player.keycloakId);
-
 	// Create and save expedition
 	const expedition = await createAndSaveExpedition({
 		player,
@@ -272,8 +264,7 @@ export async function handleExpeditionSelect(
 		expeditionData,
 		foodPlan,
 		adjustedDurationMinutes,
-		rewardIndex,
-		wasStartedWhileTired
+		rewardIndex
 	});
 
 	// Log and clean up
@@ -294,8 +285,7 @@ export async function handleExpeditionSelect(
 		rationsRequired,
 		speedDurationModifier,
 		originalDisplayDurationMinutes: expeditionData.displayDurationMinutes,
-		hasGuild: Boolean(player.guildId),
-		wasStartedWhileTired
+		hasGuild: Boolean(player.guildId)
 	}));
 }
 

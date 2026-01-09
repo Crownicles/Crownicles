@@ -111,7 +111,6 @@ export interface RewardCalculationParams {
 	hasCloneTalisman: boolean;
 	playerCurrentTokens: number;
 	petTypeId: number;
-	wasStartedWhileTired: boolean;
 }
 
 /**
@@ -271,29 +270,14 @@ function generateItemReward(rewardIndex: number): ItemReward {
 /**
  * Calculate rewards based on expedition parameters and location
  * Applies pet preference multipliers to money, experience, and points (not tokens)
- * If pet was tired at expedition start, only tokens are rewarded
  */
 export function calculateRewards(params: RewardCalculationParams): ExpeditionRewardDataWithItem {
 	const {
-		expedition, rewardIndex, isPartialSuccess, hasCloneTalisman, playerCurrentTokens, petTypeId, wasStartedWhileTired
+		expedition, rewardIndex, isPartialSuccess, hasCloneTalisman, playerCurrentTokens, petTypeId
 	} = params;
 
-	// Calculate tokens first (always given regardless of fatigue)
+	// Calculate tokens first
 	const tokens = calculateTokensReward(rewardIndex, expedition.hasBonusTokens ?? false, playerCurrentTokens, expedition.durationMinutes);
-
-	// If pet was tired at start, only tokens are rewarded (no money, xp, points, items, or talismans)
-	if (wasStartedWhileTired) {
-		return {
-			money: 0,
-			experience: 0,
-			points: 0,
-			itemId: 0,
-			itemCategory: 0,
-			tokens,
-			cloneTalismanFound: false,
-			itemGiven: false
-		};
-	}
 
 	const rewards = calculateBaseRewards(rewardIndex, expedition.locationType);
 

@@ -48,8 +48,6 @@ export class PetExpedition extends Model {
 
 	declare hasCloneTalismanBonus: boolean;
 
-	declare wasStartedWhileTired: boolean;
-
 	declare updatedAt: Date;
 
 	declare createdAt: Date;
@@ -160,10 +158,9 @@ export class PetExpeditions {
 		durationMinutes: number;
 		foodConsumed: number;
 		rewardIndex: number;
-		wasStartedWhileTired?: boolean;
 	}): PetExpedition {
 		const {
-			playerId, petId, expeditionData, durationMinutes, foodConsumed, rewardIndex, wasStartedWhileTired
+			playerId, petId, expeditionData, durationMinutes, foodConsumed, rewardIndex
 		} = params;
 		const startDate = new Date();
 		const endDate = new Date(startDate.getTime() + minutesToMilliseconds(durationMinutes));
@@ -183,8 +180,7 @@ export class PetExpeditions {
 			rewardIndex,
 			isDistantExpedition: expeditionData.isDistantExpedition ?? false,
 			hasBonusTokens: expeditionData.hasBonusTokens ?? false,
-			hasCloneTalismanBonus: expeditionData.hasCloneTalismanBonus ?? false,
-			wasStartedWhileTired: wasStartedWhileTired ?? false
+			hasCloneTalismanBonus: expeditionData.hasCloneTalismanBonus ?? false
 		});
 	}
 

@@ -230,12 +230,6 @@ export class CommandPetExpeditionChoicePacketRes extends CrowniclesPacket {
 	 * Used to calculate the speed category message (fast/slow) correctly
 	 */
 	originalDisplayDurationMinutes?: number;
-
-	/**
-	 * Whether the pet was tired when starting the expedition
-	 * If true, only tokens will be rewarded on success
-	 */
-	wasStartedWhileTired?: boolean;
 }
 
 /**

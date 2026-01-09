@@ -140,22 +140,6 @@ function getSpeedModifierMessage(
 }
 
 /**
- * Get the tired pet warning message if applicable
- */
-function getTiredPetWarningMessage(
-	wasStartedWhileTired: boolean | undefined,
-	lng: Language,
-	sexContext: string
-): string {
-	if (!wasStartedWhileTired) {
-		return "";
-	}
-	return i18n.t(`commands:petExpedition.tiredPetWarning.${sexContext}`, {
-		lng
-	});
-}
-
-/**
  * Get the insufficient food warning message if applicable
  */
 function getInsufficientFoodWarningMessage(
@@ -204,7 +188,6 @@ export async function handleExpeditionChoiceRes(
 	})
 		+ getFoodConsumedDescription(packet, lng)
 		+ getInsufficientFoodWarningMessage(packet, lng)
-		+ getTiredPetWarningMessage(packet.wasStartedWhileTired, lng, sexContext)
 		+ getSpeedModifierMessage(packet, lng, sexContext);
 
 	const embed = buildExpeditionStartedEmbed(interaction, description);

@@ -17,7 +17,6 @@ import {
 } from "../../data/MapLocation";
 import { MapConstants } from "../../../../Lib/src/constants/MapConstants";
 import { MathUtils } from "../utils/MathUtils";
-import { LogsReadRequests } from "../database/logs/LogsReadRequests";
 
 /**
  * Counter to ensure unique expedition IDs even when generated in the same millisecond
@@ -364,7 +363,6 @@ export interface ExpeditionOutcomeParams {
 	hasCloneTalisman: boolean;
 	playerCurrentTokens: number;
 	petTypeId: number;
-	wasStartedWhileTired: boolean;
 }
 
 /**
@@ -389,8 +387,7 @@ export function determineExpeditionOutcome(params: ExpeditionOutcomeParams): Exp
 		isPartialSuccess: partialSuccess,
 		hasCloneTalisman: params.hasCloneTalisman,
 		playerCurrentTokens: params.playerCurrentTokens,
-		petTypeId: params.petTypeId,
-		wasStartedWhileTired: params.wasStartedWhileTired
+		petTypeId: params.petTypeId
 	});
 
 	return {
@@ -399,35 +396,4 @@ export function determineExpeditionOutcome(params: ExpeditionOutcomeParams): Exp
 		rewards,
 		loveChange: partialSuccess ? 0 : ExpeditionConstants.LOVE_CHANGES.TOTAL_SUCCESS
 	};
-}
-
-/**
- * Check if a pet is currently tired from a recent expedition
- * Pet is NOT tired if:
- * - No expedition has been completed yet
- * - Fatigue duration has passed since last expedition
- * - Less than FATIGUE_FREE_DAILY_EXPEDITIONS have been completed today
- *
- * @param lastExpeditionEndDate - The date when the pet's last expedition ended (null if never)
- * @param playerKeycloakId - The keycloak ID of the player (needed to count daily expeditions)
- */
-export async function checkIsPetTired(lastExpeditionEndDate: Date | null, playerKeycloakId: string): Promise<boolean> {
-	if (!lastExpeditionEndDate) {
-		return false;
-	}
-	const timeSinceLastExpedition = Date.now() - lastExpeditionEndDate.valueOf();
-
-	// If fatigue duration has passed, not tired
-	if (timeSinceLastExpedition >= ExpeditionConstants.FATIGUE_DURATION_MS) {
-		return false;
-	}
-
-	// If within fatigue window, check if daily free expeditions quota allows skipping fatigue
-	const completedToday = await LogsReadRequests.countCompletedExpeditionsToday(playerKeycloakId);
-
-	/*
-	 * If completed expeditions today are within the free quota, not tired
-	 * Note: we check > because the just-completed expedition is already logged
-	 */
-	return completedToday > ExpeditionConstants.FATIGUE_FREE_DAILY_EXPEDITIONS;
 }
