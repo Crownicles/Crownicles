@@ -87,10 +87,9 @@ describe("safeStringify", () => {
 		const shared = { value: "shared" };
 		const obj = { a: shared, b: shared };
 
-		// Note: WeakSet will mark the second reference as circular
-		// This is a known limitation
+		// Shared references are NOT circular - they should both be serialized
 		const result = safeStringify(obj);
 		expect(result).toContain('"a":{"value":"shared"}');
-		expect(result).toContain('"b":"[Circular]"');
+		expect(result).toContain('"b":{"value":"shared"}');
 	});
 });

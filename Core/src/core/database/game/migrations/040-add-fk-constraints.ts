@@ -19,7 +19,7 @@ const IGNORABLE_ERRNOS = [
 ];
 
 /**
- * Safely execute a query, ignoring table not found or unknown column errors
+ * Safely execute a query, ignoring table not found, unknown column, or other common migration errors
  */
 async function safeQuery(context: QueryInterface, sql: string): Promise<void> {
 	try {
@@ -27,12 +27,12 @@ async function safeQuery(context: QueryInterface, sql: string): Promise<void> {
 	}
 	catch (e) {
 		const errno = (e as { original?: { errno?: number } }).original?.errno;
-		if (errno !== TABLE_NOT_FOUND_ERRNO && errno !== UNKNOWN_COLUMN_ERRNO) {
+		if (errno === undefined || !IGNORABLE_ERRNOS.includes(errno)) {
 			throw e;
 		}
 		CrowniclesLogger.debug(`Migration 040: Ignoring error ${errno} for query: ${sql.substring(0, 100)}...`);
 
-		// Table or column doesn't exist - that's fine, skip cleanup
+		// Table/column doesn't exist or constraint error - that's fine, skip
 	}
 }
 
