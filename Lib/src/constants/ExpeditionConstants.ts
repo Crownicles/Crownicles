@@ -539,6 +539,27 @@ export abstract class ExpeditionConstants {
 	};
 
 	/**
+	 * Terrain difficulty configuration for risk generation
+	 * Each terrain has a skew factor that biases the probability distribution
+	 * All terrains can generate risk values from 0 to 100, but with different probabilities
+	 * skewFactor: Controls the probability bias (0.3 to 3.0)
+	 * Values below 1: Biases toward lower risk (safer terrain)
+	 * Value equal to 1: Uniform distribution (neutral)
+	 * Values above 1: Biases toward higher risk (dangerous terrain)
+	 * The formula uses power transformation: risk = 100 * random^skewFactor
+	 */
+	static readonly TERRAIN_DIFFICULTY: Record<ExpeditionLocationType, TerrainDifficultyConfig> = {
+		plains: { skewFactor: 0.5 },
+		coast: { skewFactor: 0.65 },
+		forest: { skewFactor: 0.75 },
+		desert: { skewFactor: 1.0 },
+		mountain: { skewFactor: 1.2 },
+		swamp: { skewFactor: 1.4 },
+		ruins: { skewFactor: 1.6 },
+		cave: { skewFactor: 1.8 }
+	};
+
+	/**
 	 * Talisman small event constants
 	 */
 	static readonly TALISMAN_EVENT = {
@@ -1215,3 +1236,34 @@ export type ExpeditionStatus = (typeof ExpeditionConstants.STATUS)[keyof typeof 
 export type ExpeditionLocationType = (typeof ExpeditionConstants.EXPEDITION_LOCATION_TYPES)[keyof typeof ExpeditionConstants.EXPEDITION_LOCATION_TYPES];
 export type RewardWeights = Record<"money" | "experience" | "points", number>;
 export type SpeedCategory = (typeof ExpeditionConstants.SPEED_CATEGORIES)[keyof typeof ExpeditionConstants.SPEED_CATEGORIES];
+
+/**
+ * Configuration for terrain-based risk generation using power transformation
+ */
+export interface TerrainDifficultyConfig {
+	skewFactor: number;
+}
+
+/**
+ * Generate a risk value based on terrain type using power transformation
+ * All terrains can produce values from 0 to 100, but with different probability distributions
+ * - Plains (skew 0.5): Higher probability of low risk, but high risk still possible
+ * - Cave (skew 1.8): Higher probability of high risk, but low risk still possible
+ * @param locationType - The terrain/location type
+ * @param random - Random value between 0 and 1 (typically from RandomUtils.crowniclesRandom.realZeroToOneInclusive())
+ * @returns Risk value between 0 and 100, with probability biased by terrain difficulty
+ */
+export function generateTerrainBasedRisk(locationType: ExpeditionLocationType, random: number): number {
+	const config = ExpeditionConstants.TERRAIN_DIFFICULTY[locationType];
+
+	/*
+	 * Power transformation: random^skewFactor
+	 * - skewFactor < 1: Maps uniform distribution to favor higher values (inverse power)
+	 * - skewFactor > 1: Maps uniform distribution to favor lower values
+	 * We invert the result so that higher skew = higher risk tendency
+	 */
+	const transformedRandom = Math.pow(random, 1 / config.skewFactor);
+
+	// Scale to 0-100 and round
+	return Math.round(transformedRandom * 100);
+}

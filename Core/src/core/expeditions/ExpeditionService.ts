@@ -1,7 +1,8 @@
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import {
 	ExpeditionConstants, ExpeditionLocationType,
-	getPetExpeditionPreference, DISLIKED_SHORT_EXPEDITION_FAILURE_BONUS, DISLIKED_EXPEDITION_DURATION_THRESHOLD_MINUTES
+	getPetExpeditionPreference, DISLIKED_SHORT_EXPEDITION_FAILURE_BONUS, DISLIKED_EXPEDITION_DURATION_THRESHOLD_MINUTES,
+	generateTerrainBasedRisk
 } from "../../../../Lib/src/constants/ExpeditionConstants";
 import {
 	ExpeditionData
@@ -84,7 +85,11 @@ function generateExpeditionWithConstraints(params: ExpeditionGenerationParams): 
 		durationRange.max
 	);
 
-	const riskRate = RandomUtils.rangedInt(ExpeditionConstants.RISK_RATE);
+	// Generate terrain-based risk using the location type's difficulty curve
+	const riskRate = generateTerrainBasedRisk(
+		locationType,
+		RandomUtils.crowniclesRandom.realZeroToOneInclusive()
+	);
 
 	const difficulty = RandomUtils.rangedInt(ExpeditionConstants.DIFFICULTY);
 
