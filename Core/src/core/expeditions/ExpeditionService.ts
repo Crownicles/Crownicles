@@ -425,7 +425,9 @@ export async function checkIsPetTired(lastExpeditionEndDate: Date | null, player
 	// If within fatigue window, check if daily free expeditions quota allows skipping fatigue
 	const completedToday = await LogsReadRequests.countCompletedExpeditionsToday(playerKeycloakId);
 
-	// If completed expeditions today are within the free quota, not tired
-	// Note: we check > because the just-completed expedition is already logged
+	/*
+	 * If completed expeditions today are within the free quota, not tired
+	 * Note: we check > because the just-completed expedition is already logged
+	 */
 	return completedToday > ExpeditionConstants.FATIGUE_FREE_DAILY_EXPEDITIONS;
 }

@@ -181,6 +181,7 @@ async function createPetEmbed(
 	if (packet.expeditionInProgress) {
 		description += `\n\n${generateExpeditionRPText(packet.expeditionInProgress, packet.pet, lng)}`;
 	}
+
 	// Add tired pet warning if pet is tired and no expedition in progress
 	else if (packet.isPetTired) {
 		const sexContext = getSexContext(packet.pet.sex as SexTypeShort);
