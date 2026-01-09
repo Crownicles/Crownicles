@@ -80,7 +80,10 @@ function calculateGemsToMoneyRatio(): number {
 			- Constants.MISSION_SHOP.RANGE_MISSION_MONEY);
 }
 
-
+/**
+ * Creates the money shop item configuration
+ * @returns Shop item for purchasing money with gems
+ */
 function getMoneyShopItem(): ShopItem {
 	return {
 		id: ShopItemType.MONEY,
@@ -106,6 +109,10 @@ function getMoneyShopItem(): ShopItem {
 	};
 }
 
+/**
+ * Creates the valuable item shop item configuration
+ * @returns Shop item for purchasing a random rare item
+ */
 function getValuableItemShopItem(): ShopItem {
 	return {
 		id: ShopItemType.TREASURE,
@@ -122,6 +129,10 @@ function getValuableItemShopItem(): ShopItem {
 	};
 }
 
+/**
+ * Creates the thousand points shop item configuration
+ * @returns Shop item for purchasing score points (king's favor)
+ */
 function getAThousandPointsShopItem(): ShopItem {
 	return {
 		id: ShopItemType.KINGS_FAVOR,
@@ -166,6 +177,10 @@ async function resetPetFatigueIfNeeded(pet: {
 	return true;
 }
 
+/**
+ * Creates the pet information shop item configuration
+ * @returns Shop item for viewing detailed pet information and preferences
+ */
 function getValueLovePointsPetShopItem(): ShopItem {
 	return {
 		id: ShopItemType.LOVE_POINTS_VALUE,
@@ -220,6 +235,12 @@ function getValueLovePointsPetShopItem(): ShopItem {
 	};
 }
 
+/**
+ * Creates the end callback for the skip mission shop item
+ * @param player - The player who is skipping the mission
+ * @param missionList - The list of missions available to skip
+ * @returns Callback function to handle mission skip completion
+ */
 function getEndCallbackSkipMissionShopItem(player: Player, missionList: MissionSlot[]): (collector: ReactionCollectorInstance, response: CrowniclesPacket[]) => Promise<void> {
 	return async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]) => {
 		const firstReaction = collector.getFirstReaction();
@@ -241,6 +262,10 @@ function getEndCallbackSkipMissionShopItem(player: Player, missionList: MissionS
 	};
 }
 
+/**
+ * Creates the skip mission shop item configuration
+ * @returns Shop item for skipping and replacing a current mission
+ */
 function getSkipMapMissionShopItem(): ShopItem {
 	return {
 		id: ShopItemType.SKIP_MISSION,
@@ -277,6 +302,10 @@ function getSkipMapMissionShopItem(): ShopItem {
 	};
 }
 
+/**
+ * Creates the badge shop item configuration
+ * @returns Shop item for purchasing the quest master badge
+ */
 function getBadgeShopItem(): ShopItem {
 	return {
 		id: ShopItemType.QUEST_MASTER_BADGE,

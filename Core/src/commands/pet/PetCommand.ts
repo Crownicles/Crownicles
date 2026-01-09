@@ -27,6 +27,12 @@ export default class PetCommand {
 		disallowedEffects: CommandUtils.DISALLOWED_EFFECTS.NOT_STARTED_OR_DEAD,
 		whereAllowed: CommandUtils.WHERE.EVERYWHERE
 	})
+	/**
+	 * Displays information about a player's pet
+	 * @param response - Array to collect response packets
+	 * @param player - The player executing the command
+	 * @param packet - The request packet with optional target player
+	 */
 	async execute(response: CrowniclesPacket[], player: Player, packet: CommandPetPacketReq): Promise<void> {
 		const toCheckPlayer = await Players.getAskedPlayer(packet.askedPlayer, player);
 		const pet = await PetEntities.getById(toCheckPlayer.petId);
