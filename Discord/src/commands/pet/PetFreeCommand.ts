@@ -64,7 +64,7 @@ export async function handleCommandPetFreePacketRes(packet: CommandPetFreePacket
 	if (!interaction) {
 		return;
 	}
-	const lng = interaction.userLanguage;
+	const lng = interaction.userLanguage ?? context.discord?.language ?? LANGUAGE.DEFAULT_LANGUAGE;
 
 	if (!packet.foundPet) {
 		await interaction.reply({
@@ -131,7 +131,7 @@ export async function createPetFreeCollector(context: PacketContext, packet: Rea
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
 	await interaction.deferReply();
 	const data = packet.data.data;
-	const lng = interaction.userLanguage;
+	const lng = interaction.userLanguage ?? context.discord?.language ?? LANGUAGE.DEFAULT_LANGUAGE;
 
 	const embed = new CrowniclesEmbed().formatAuthor(i18n.t("commands:petFree.title", {
 		lng,
@@ -163,9 +163,10 @@ function buildSimpleResponseEmbed(
 	interaction: CrowniclesInteraction,
 	titleKey: string,
 	description: string,
-	isError: boolean = false
+	isError: boolean = false,
+	lngOverride?: Language
 ): CrowniclesEmbed {
-	const lng = interaction.userLanguage;
+	const lng = lngOverride ?? interaction.userLanguage;
 	const embed = new CrowniclesEmbed()
 		.formatAuthor(i18n.t(titleKey, {
 			lng,
@@ -189,7 +190,8 @@ export async function handleCommandPetFreeRefusePacketRes(context: PacketContext
 			originalInteraction,
 			"commands:petFree.canceledTitle",
 			i18n.t("commands:petFree.canceledDesc", { lng }),
-			true
+			true,
+			lng
 		);
 		await buttonInteraction.editReply({ embeds: [embed] });
 	}
@@ -206,7 +208,9 @@ export async function handleCommandPetFreeAcceptPacketRes(packet: CommandPetFree
 			i18n.t("commands:petFree.acceptedDesc", {
 				lng,
 				pet: PetUtils.petToShortString(lng, packet.petNickname, packet.petId, packet.petSex)
-			})
+			}),
+			false,
+			lng
 		);
 		await buttonInteraction.editReply({ embeds: [embed] });
 	}
@@ -237,7 +241,7 @@ export async function handleCommandPetFreeShelterSuccessPacketRes(packet: Comman
 		description += `\n${i18n.t("commands:petFree.luckyMeat", { lng })}`;
 	}
 
-	const embed = buildSimpleResponseEmbed(interaction, "commands:petFree.title", description);
+	const embed = buildSimpleResponseEmbed(interaction, "commands:petFree.title", description, false, lng);
 	await interaction.editReply({
 		embeds: [embed], components: []
 	});
@@ -276,10 +280,11 @@ export async function handleCommandPetFreeShelterCooldownErrorPacketRes(packet: 
 		return;
 	}
 
+	const lng = interaction.userLanguage ?? context.discord?.language ?? LANGUAGE.DEFAULT_LANGUAGE;
 	await sendShelterErrorResponse(
 		context,
 		i18n.t("error:cooldownPetFree", {
-			lng: interaction.userLanguage,
+			lng,
 			remainingTime: printTimeBeforeDate(packet.cooldownRemainingTimeMs + new Date().valueOf())
 		})
 	);
@@ -292,10 +297,11 @@ export async function handleCommandPetFreeShelterMissingMoneyErrorPacketRes(pack
 		return;
 	}
 
+	const lng = interaction.userLanguage ?? context.discord?.language ?? LANGUAGE.DEFAULT_LANGUAGE;
 	await sendShelterErrorResponse(
 		context,
 		i18n.t("error:notEnoughMoney", {
-			lng: interaction.userLanguage,
+			lng,
 			money: packet.missingMoney
 		})
 	);
@@ -373,7 +379,7 @@ export async function createPetFreeSelectionCollector(
 	await interaction.deferReply();
 
 	const data = packet.data.data;
-	const lng = interaction.userLanguage;
+	const lng = interaction.userLanguage ?? context.discord?.language ?? LANGUAGE.DEFAULT_LANGUAGE;
 
 	// Build reactions map
 	const selectReactions: ReactionMap[] = packet.reactions
