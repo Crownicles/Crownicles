@@ -226,9 +226,15 @@ export abstract class ExpeditionConstants {
 
 	/**
 	 * Duration of pet fatigue after completing an expedition (in milliseconds)
-	 * Pet cannot start a new expedition during this time
+	 * Pet cannot start a new expedition during this time (unless daily exemption applies)
 	 */
 	static readonly FATIGUE_DURATION_MS = 2 * 60 * 60 * 1000; // 2 hours
+
+	/**
+	 * Number of expeditions per day that don't trigger fatigue
+	 * The first N completed expeditions of the day won't make the pet tired
+	 */
+	static readonly FATIGUE_FREE_DAILY_EXPEDITIONS = 2;
 
 	/**
 	 * Love points changes during expedition lifecycle

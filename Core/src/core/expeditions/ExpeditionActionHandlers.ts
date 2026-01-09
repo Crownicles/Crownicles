@@ -28,6 +28,7 @@ import { calculateRewardIndex } from "./ExpeditionRewardCalculator";
 import { PendingExpeditionsCache } from "./PendingExpeditionsCache";
 import { crowniclesInstance } from "../../index";
 import { ScheduledExpeditionNotifications } from "../database/game/models/ScheduledExpeditionNotification";
+import { checkIsPetTired } from "./ExpeditionService";
 import { PlayerTalismansManager } from "../database/game/models/PlayerTalismans";
 
 /**
@@ -135,17 +136,6 @@ interface ExpeditionCreationData {
 	adjustedDurationMinutes: number;
 	rewardIndex: number;
 	wasStartedWhileTired: boolean;
-}
-
-/**
- * Check if a pet is currently tired from a recent expedition
- */
-function isPetTired(petEntity: PetEntity): boolean {
-	if (!petEntity.lastExpeditionEndDate) {
-		return false;
-	}
-	const timeSinceLastExpedition = Date.now() - petEntity.lastExpeditionEndDate.valueOf();
-	return timeSinceLastExpedition < ExpeditionConstants.FATIGUE_DURATION_MS;
 }
 
 /**
@@ -273,7 +263,7 @@ export async function handleExpeditionSelect(
 	const rewardIndex = calculateRewardIndex(expeditionData);
 
 	// Check if pet is tired at expedition start (affects rewards - only tokens if tired)
-	const wasStartedWhileTired = isPetTired(petEntity);
+	const wasStartedWhileTired = await checkIsPetTired(petEntity.lastExpeditionEndDate, player.keycloakId);
 
 	// Create and save expedition
 	const expedition = await createAndSaveExpedition({
