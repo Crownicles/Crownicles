@@ -150,8 +150,8 @@ function getTiredPetWarningMessage(
 	if (!wasStartedWhileTired) {
 		return "";
 	}
-	return i18n.t("commands:petExpedition.tiredPetWarning", {
-		lng, context: sexContext
+	return i18n.t(`commands:petExpedition.tiredPetWarning.${sexContext}`, {
+		lng
 	});
 }
 

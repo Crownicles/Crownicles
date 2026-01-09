@@ -41,6 +41,11 @@ export class CommandPetPacketRes extends CrowniclesPacket {
 	 * Current expedition in progress, if any
 	 */
 	expeditionInProgress?: PetExpeditionInfo;
+
+	/**
+	 * Whether the pet is tired from a recent expedition (cannot earn certain rewards)
+	 */
+	isPetTired?: boolean;
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
