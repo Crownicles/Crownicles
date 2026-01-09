@@ -834,18 +834,9 @@ export const DISLIKED_EXPEDITION_DURATION_THRESHOLD_MINUTES = 720; // 12 hours
  * Each pet has preferred (liked) and disliked expedition location types
  * Locations not in either list are considered neutral
  *
- * Categories:
- * - Canines (dogs, wolves, foxes): like forests, plains | dislike deserts, swamps
- * - Felines (cats, lions, tigers): like ruins, plains | dislike swamps, coasts
- * - Birds: like mountains, forests | dislike caves, swamps
- * - Rodents: like plains, caves | dislike mountains, coasts
- * - Reptiles: like deserts, swamps | dislike mountains, coasts
- * - Aquatic: like coasts, swamps | dislike deserts, mountains
- * - Bears: like caves, mountains | dislike deserts, coasts
- * - Primates: like forests, ruins | dislike deserts, caves
- * - Equines: like plains, mountains | dislike swamps, caves
- * - Farm animals: like plains, forests | dislike mountains, caves
- * - Mythical/Special: balanced preferences
+ * Preferences are based purely on RP (natural habitat and animal behavior):
+ * - 1 to 4 liked locations per pet
+ * - 0 to 4 disliked locations per pet
  */
 export const PET_EXPEDITION_PREFERENCES: Record<number, PetExpeditionPreferenceConfig> = {
 	// 0 - No pet (default neutral)
@@ -853,346 +844,1083 @@ export const PET_EXPEDITION_PREFERENCES: Record<number, PetExpeditionPreferenceC
 		liked: [], disliked: []
 	},
 
-	// Canines - Dogs, wolves, foxes (like forests/plains, dislike deserts/swamps)
+	/*
+	 * ===== CANINES =====
+	 * Dog - Loyal companion, adaptable to most terrains
+	 */
 	1: {
-		liked: ["forest", "plains"], disliked: ["desert", "swamp"]
-	}, // Dog
+		liked: [
+			"forest",
+			"plains",
+			"mountain"
+		],
+		disliked: ["swamp"]
+	},
+
+	// Poodle - Elegant pet, prefers civilized or mild terrains
 	2: {
-		liked: ["forest", "plains"], disliked: ["desert", "swamp"]
-	}, // Poodle
+		liked: [
+			"plains",
+			"ruins"
+		],
+		disliked: ["swamp", "cave"]
+	},
+
+	// Fox - Forest dweller, cunning and adaptable
 	20: {
-		liked: ["forest", "plains"], disliked: ["desert", "cave"]
-	}, // Fox
+		liked: [
+			"forest",
+			"plains"
+		],
+		disliked: ["desert"]
+	},
+
+	// Wolf - Wild pack hunter, thrives in wilderness
 	28: {
-		liked: ["forest", "mountain"], disliked: ["desert", "swamp"]
-	}, // Wolf
+		liked: [
+			"forest",
+			"mountain",
+			"plains"
+		],
+		disliked: ["desert"]
+	},
 
-	// Felines - Cats, lions, tigers (like ruins/plains, dislike swamps/coasts)
+	/*
+	 * ===== FELINES =====
+	 * Cat - Curious explorer, loves mysterious and cozy places
+	 */
 	3: {
-		liked: ["ruins", "plains"], disliked: ["swamp", "coast"]
-	}, // Cat
+		liked: [
+			"ruins",
+			"forest",
+			"plains"
+		],
+		disliked: ["swamp"]
+	},
+
+	// Black cat - Mysterious, thrives in shadows and ancient places
 	4: {
-		liked: ["ruins", "cave"], disliked: ["swamp", "coast"]
-	}, // Black cat
+		liked: [
+			"ruins",
+			"cave",
+			"forest"
+		],
+		disliked: ["desert"]
+	},
+
+	// Tiger - Jungle apex predator, needs dense cover
 	56: {
-		liked: ["forest", "plains"], disliked: ["swamp", "coast"]
-	}, // Tiger
+		liked: [
+			"forest",
+			"swamp"
+		],
+		disliked: ["desert", "coast"]
+	},
+
+	// Lion - Savanna king, open terrain hunter
 	57: {
-		liked: ["plains", "desert"], disliked: ["swamp", "cave"]
-	}, // Lion
+		liked: [
+			"plains",
+			"desert"
+		],
+		disliked: ["swamp", "forest"]
+	},
+
+	// Leopard - Versatile big cat, climber
 	60: {
-		liked: ["forest", "mountain"], disliked: ["swamp", "coast"]
-	}, // Leopard
+		liked: [
+			"forest",
+			"mountain"
+		],
+		disliked: ["coast"]
+	},
 
-	// Rodents - Mice, hamsters, rabbits (like plains/caves, dislike mountains/coasts)
+	/*
+	 * ===== RODENTS =====
+	 * Mouse - Small and adaptable, hides anywhere
+	 */
 	5: {
-		liked: ["plains", "cave"], disliked: ["mountain", "coast"]
-	}, // Mouse
+		liked: [
+			"plains",
+			"cave",
+			"ruins"
+		],
+		disliked: []
+	},
+
+	// Hamster - Burrow dweller, loves dry places
 	6: {
-		liked: ["plains", "cave"], disliked: ["mountain", "coast"]
-	}, // Hamster
+		liked: [
+			"plains",
+			"desert",
+			"cave"
+		],
+		disliked: ["swamp"]
+	},
+
+	// Rabbit - Meadow creature, fast runner
 	7: {
-		liked: ["plains", "forest"], disliked: ["cave", "desert"]
-	}, // Rabbit
+		liked: [
+			"plains",
+			"forest"
+		],
+		disliked: ["desert", "swamp"]
+	},
+
+	// Raccoon - Clever scavenger, loves civilization remnants
 	35: {
-		liked: ["forest", "ruins"], disliked: ["desert", "coast"]
-	}, // Raccoon
+		liked: [
+			"forest",
+			"ruins"
+		],
+		disliked: ["desert"]
+	},
+
+	// Chipmunk - Forest floor dweller
 	40: {
-		liked: ["forest", "plains"], disliked: ["desert", "coast"]
-	}, // Chipmunk
+		liked: [
+			"forest",
+			"mountain"
+		],
+		disliked: ["desert", "coast"]
+	},
+
+	// Hedgehog - Woodland creature
 	41: {
-		liked: ["forest", "plains"], disliked: ["desert", "cave"]
-	}, // Hedgehog
+		liked: [
+			"forest",
+			"plains"
+		],
+		disliked: ["desert"]
+	},
+
+	// Rat - Ultimate survivor, thrives in ruins
 	93: {
-		liked: ["ruins", "cave"], disliked: ["forest", "coast"]
-	}, // Rat
+		liked: [
+			"ruins",
+			"cave",
+			"swamp"
+		],
+		disliked: []
+	},
 
-	// Farm animals - Cows, pigs, sheep (like plains/forests, dislike mountains/caves)
+	/*
+	 * ===== FARM ANIMALS =====
+	 * Cow - Pastoral grazer, needs open fields
+	 */
 	8: {
-		liked: ["plains", "forest"], disliked: ["mountain", "cave"]
-	}, // Cow
+		liked: [
+			"plains",
+			"forest"
+		],
+		disliked: ["mountain", "desert"]
+	},
+
+	// Pig - Forager, loves mud and forests
 	9: {
-		liked: ["plains", "forest"], disliked: ["mountain", "desert"]
-	}, // Pig
+		liked: [
+			"plains",
+			"forest",
+			"swamp"
+		],
+		disliked: ["desert"]
+	},
+
+	// Sheep - Mountain grazer, fluffy
 	17: {
-		liked: ["plains", "mountain"], disliked: ["swamp", "cave"]
-	}, // Sheep
+		liked: [
+			"plains",
+			"mountain"
+		],
+		disliked: ["swamp", "desert"]
+	},
+
+	// Goat - Sure-footed climber, explorers ruins
 	18: {
-		liked: ["mountain", "plains"], disliked: ["swamp", "cave"]
-	}, // Goat
+		liked: [
+			"mountain",
+			"ruins",
+			"plains"
+		],
+		disliked: ["swamp"]
+	},
+
+	// Donkey - Hardy pack animal, versatile
 	96: {
-		liked: ["plains", "desert"], disliked: ["swamp", "cave"]
-	}, // Donkey
+		liked: [
+			"plains",
+			"mountain",
+			"desert"
+		],
+		disliked: ["swamp"]
+	},
 
-	// Poultry - Chickens, ducks, geese (like plains/forests, dislike mountains/caves)
+	/*
+	 * ===== POULTRY =====
+	 * Chicken - Farm bird, stays near settlements
+	 */
 	10: {
-		liked: ["plains", "forest"], disliked: ["mountain", "cave"]
-	}, // Chicken
+		liked: [
+			"plains",
+			"forest"
+		],
+		disliked: ["mountain", "cave"]
+	},
+
+	// Duck - Waterfowl, loves wetlands
 	12: {
-		liked: ["coast", "plains"], disliked: ["mountain", "cave"]
-	}, // Duck
+		liked: [
+			"coast",
+			"swamp",
+			"plains"
+		],
+		disliked: ["desert", "cave"]
+	},
+
+	// Turkey - Forest ground bird
 	19: {
-		liked: ["plains", "forest"], disliked: ["mountain", "cave"]
-	}, // Turkey
+		liked: [
+			"forest",
+			"plains"
+		],
+		disliked: ["desert", "coast"]
+	},
+
+	// Chick - Baby bird, fragile
 	92: {
-		liked: ["plains", "forest"], disliked: ["mountain", "cave"]
-	}, // Chick
+		liked: [
+			"plains",
+			"forest"
+		],
+		disliked: [
+			"mountain",
+			"cave",
+			"swamp"
+		]
+	},
+
+	// Goose - Aggressive waterfowl
 	97: {
-		liked: ["plains", "coast"], disliked: ["mountain", "cave"]
-	}, // Goose
+		liked: [
+			"plains",
+			"coast",
+			"swamp"
+		],
+		disliked: ["desert", "cave"]
+	},
 
-	// Birds - Various flying birds (like mountains/forests, dislike caves/swamps)
+	/*
+	 * ===== BIRDS =====
+	 * Bird - Generic songbird, forest dweller
+	 */
 	11: {
-		liked: ["mountain", "forest"], disliked: ["cave", "swamp"]
-	}, // Bird
+		liked: [
+			"forest",
+			"plains",
+			"mountain"
+		],
+		disliked: ["cave"]
+	},
+
+	// Owl - Nocturnal hunter, forest and darkness
 	26: {
-		liked: ["forest", "ruins"], disliked: ["cave", "desert"]
-	}, // Owl
+		liked: [
+			"forest",
+			"ruins",
+			"cave"
+		],
+		disliked: ["desert"]
+	},
+
+	// Bat - Cave dweller, nocturnal
 	27: {
-		liked: ["cave", "ruins"], disliked: ["plains", "coast"]
-	}, // Bat
+		liked: [
+			"cave",
+			"ruins",
+			"forest"
+		],
+		disliked: ["desert", "plains"]
+	},
+
+	// Swan - Elegant water bird
 	33: {
-		liked: ["coast", "plains"], disliked: ["cave", "desert"]
-	}, // Swan
+		liked: [
+			"coast",
+			"swamp",
+			"plains"
+		],
+		disliked: ["desert", "cave"]
+	},
+
+	// Flamingo - Wetland specialist
 	34: {
-		liked: ["coast", "swamp"], disliked: ["cave", "mountain"]
-	}, // Flamingo
+		liked: [
+			"coast",
+			"swamp"
+		],
+		disliked: [
+			"cave",
+			"mountain",
+			"desert"
+		]
+	},
+
+	// Peacock - Forest display bird
 	53: {
-		liked: ["forest", "plains"], disliked: ["cave", "desert"]
-	}, // Peacock
+		liked: [
+			"forest",
+			"ruins",
+			"plains"
+		],
+		disliked: ["desert"]
+	},
+
+	// Parrot - Tropical rainforest bird
 	54: {
-		liked: ["forest", "plains"], disliked: ["cave", "desert"]
-	}, // Parrot
+		liked: [
+			"forest",
+			"coast",
+			"ruins"
+		],
+		disliked: ["mountain", "desert"]
+	},
+
+	// Eagle - Mountain apex predator, soars high
 	58: {
-		liked: ["mountain", "plains"], disliked: ["cave", "swamp"]
-	}, // Eagle
+		liked: [
+			"mountain",
+			"plains"
+		],
+		disliked: ["cave", "swamp"]
+	},
+
+	// Dove - Peaceful bird, near civilization
 	62: {
-		liked: ["plains", "forest"], disliked: ["cave", "swamp"]
-	}, // Dove
+		liked: [
+			"plains",
+			"forest",
+			"ruins"
+		],
+		disliked: ["cave"]
+	},
+
+	// Blackbird - Common forest bird
 	94: {
-		liked: ["forest", "plains"], disliked: ["cave", "desert"]
-	}, // Blackbird
+		liked: [
+			"forest",
+			"plains",
+			"ruins"
+		],
+		disliked: ["desert"]
+	},
+
+	// Crow - Intelligent scavenger, loves mysteries
 	95: {
-		liked: ["ruins", "forest"], disliked: ["coast", "swamp"]
-	}, // Crow
+		liked: [
+			"ruins",
+			"forest",
+			"plains"
+		],
+		disliked: []
+	},
+
+	// Dodo - Extinct island bird, tropical
 	59: {
-		liked: ["forest", "plains"], disliked: ["mountain", "cave"]
-	}, // Dodo
+		liked: [
+			"forest",
+			"coast",
+			"plains"
+		],
+		disliked: ["mountain", "cave"]
+	},
 
-	// Equines - Horses, zebras (like plains/mountains, dislike swamps/caves)
+	/*
+	 * ===== EQUINES =====
+	 * Horse - Open terrain runner, dislikes confined spaces
+	 */
 	13: {
-		liked: ["plains", "mountain"], disliked: ["swamp", "cave"]
-	}, // Horse
+		liked: [
+			"plains",
+			"mountain"
+		],
+		disliked: ["swamp", "cave"]
+	},
+
+	// Zebra - African savanna specialist
 	47: {
-		liked: ["plains", "desert"], disliked: ["swamp", "cave"]
-	}, // Zebra
+		liked: [
+			"plains",
+			"desert"
+		],
+		disliked: [
+			"swamp",
+			"cave",
+			"forest"
+		]
+	},
+
+	// Elk - Forest and mountain dweller
 	98: {
-		liked: ["forest", "mountain"], disliked: ["swamp", "desert"]
-	}, // Elk
+		liked: [
+			"forest",
+			"mountain"
+		],
+		disliked: ["desert", "coast"]
+	},
 
-	// Reptiles - Snakes, lizards, turtles (like deserts/swamps, dislike mountains/coasts)
+	/*
+	 * ===== REPTILES =====
+	 * Turtle - Slow, loves water and beaches
+	 */
 	14: {
-		liked: ["coast", "swamp"], disliked: ["mountain", "desert"]
-	}, // Turtle
+		liked: [
+			"coast",
+			"swamp",
+			"plains"
+		],
+		disliked: ["desert", "mountain"]
+	},
+
+	// Snake - Desert and swamp adapted, cold-blooded
 	15: {
-		liked: ["desert", "swamp"], disliked: ["mountain", "coast"]
-	}, // Snake
+		liked: [
+			"desert",
+			"swamp",
+			"ruins"
+		],
+		disliked: ["mountain"]
+	},
+
+	// Lizard - Desert basker, cave explorer
 	16: {
-		liked: ["desert", "ruins"], disliked: ["mountain", "coast"]
-	}, // Lizard
+		liked: [
+			"desert",
+			"ruins",
+			"cave"
+		],
+		disliked: ["swamp"]
+	},
+
+	// Scorpion - Desert specialist
 	44: {
-		liked: ["desert", "cave"], disliked: ["coast", "forest"]
-	}, // Scorpion
+		liked: [
+			"desert",
+			"cave",
+			"ruins"
+		],
+		disliked: [
+			"coast",
+			"swamp",
+			"forest"
+		]
+	},
+
+	// Crocodile - Apex swamp predator
 	45: {
-		liked: ["swamp", "coast"], disliked: ["mountain", "desert"]
-	}, // Crocodile
+		liked: [
+			"swamp",
+			"coast"
+		],
+		disliked: ["desert", "mountain"]
+	},
 
-	// Bears (like caves/mountains, dislike deserts/coasts)
+	/*
+	 * ===== BEARS =====
+	 * Bear - Forest and mountain omnivore
+	 */
 	21: {
-		liked: ["cave", "mountain"], disliked: ["desert", "coast"]
-	}, // Bear
+		liked: [
+			"forest",
+			"mountain",
+			"cave"
+		],
+		disliked: ["desert"]
+	},
+
+	// Polar bear - Arctic specialist
 	42: {
-		liked: ["mountain", "coast"], disliked: ["desert", "swamp"]
-	}, // Polar bear
+		liked: [
+			"coast",
+			"mountain"
+		],
+		disliked: [
+			"desert",
+			"swamp",
+			"forest"
+		]
+	},
+
+	// Panda - Bamboo forest specialist
 	43: {
-		liked: ["forest", "mountain"], disliked: ["desert", "coast"]
-	}, // Panda
+		liked: [
+			"forest",
+			"mountain"
+		],
+		disliked: ["desert", "coast"]
+	},
 
-	// Amphibians (like swamps/coasts, dislike deserts/mountains)
+	/*
+	 * ===== AMPHIBIANS =====
+	 * Frog - Wetland creature, needs moisture
+	 */
 	23: {
-		liked: ["swamp", "coast"], disliked: ["desert", "mountain"]
-	}, // Frog
+		liked: [
+			"swamp",
+			"coast",
+			"forest"
+		],
+		disliked: ["desert", "mountain"]
+	},
 
-	// Primates - Monkeys, apes (like forests/ruins, dislike deserts/caves)
+	/*
+	 * ===== PRIMATES =====
+	 * Monkey - Forest canopy dweller
+	 */
 	24: {
-		liked: ["forest", "ruins"], disliked: ["desert", "cave"]
-	}, // Monkey
+		liked: [
+			"forest",
+			"ruins"
+		],
+		disliked: ["desert", "coast"]
+	},
+
+	// Orangutan - Rainforest specialist
 	90: {
-		liked: ["forest", "swamp"], disliked: ["desert", "mountain"]
-	}, // Orangutan
+		liked: [
+			"forest",
+			"swamp"
+		],
+		disliked: ["desert", "mountain"]
+	},
+
+	// Gorilla - Dense forest dweller
 	91: {
-		liked: ["forest", "mountain"], disliked: ["desert", "coast"]
-	}, // Gorilla
+		liked: [
+			"forest",
+			"mountain"
+		],
+		disliked: ["desert", "coast"]
+	},
 
-	// Arctic animals (like mountains/coasts, dislike deserts/swamps)
+	/*
+	 * ===== ARCTIC ANIMALS =====
+	 * Penguin - Cold coast specialist
+	 */
 	25: {
-		liked: ["coast", "mountain"], disliked: ["desert", "swamp"]
-	}, // Penguin
+		liked: [
+			"coast",
+			"mountain"
+		],
+		disliked: [
+			"desert",
+			"forest",
+			"swamp"
+		]
+	},
+
+	// Emperor Penguin - Antarctic specialist
 	72: {
-		liked: ["coast", "mountain"], disliked: ["desert", "swamp"]
-	}, // Penguin (alternative)
+		liked: [
+			"coast",
+			"mountain"
+		],
+		disliked: [
+			"desert",
+			"forest",
+			"swamp"
+		]
+	},
+
+	// Seal - Marine mammal, coast caves
 	30: {
-		liked: ["coast", "cave"], disliked: ["desert", "plains"]
-	}, // Seal
+		liked: [
+			"coast",
+			"cave"
+		],
+		disliked: ["desert", "forest"]
+	},
 
-	// Australian animals (like plains/deserts, dislike caves/swamps)
+	/*
+	 * ===== AUSTRALIAN =====
+	 * Koala - Tree hugger, eucalyptus lover
+	 */
 	22: {
-		liked: ["forest", "plains"], disliked: ["desert", "cave"]
-	}, // Koala
+		liked: ["forest"],
+		disliked: [
+			"desert",
+			"cave",
+			"swamp"
+		]
+	},
+
+	// Kangaroo - Outback hopper
 	52: {
-		liked: ["plains", "desert"], disliked: ["cave", "swamp"]
-	}, // Kangaroo
+		liked: [
+			"plains",
+			"desert"
+		],
+		disliked: ["cave", "swamp"]
+	},
 
-	// African savanna (like plains/deserts, dislike caves/swamps)
+	/*
+	 * ===== AFRICAN SAVANNA =====
+	 * Hippo - River and wetland giant
+	 */
 	31: {
-		liked: ["swamp", "coast"], disliked: ["desert", "mountain"]
-	}, // Hippo
+		liked: [
+			"swamp",
+			"coast"
+		],
+		disliked: [
+			"desert",
+			"mountain",
+			"cave"
+		]
+	},
+
+	// Elephant - Savanna and forest giant
 	46: {
-		liked: ["plains", "forest"], disliked: ["cave", "mountain"]
-	}, // Elephant
+		liked: [
+			"plains",
+			"forest"
+		],
+		disliked: ["cave", "mountain"]
+	},
+
+	// Rhino - Savanna grazer
 	48: {
-		liked: ["plains", "desert"], disliked: ["cave", "swamp"]
-	}, // Rhino
+		liked: [
+			"plains",
+			"swamp"
+		],
+		disliked: ["cave", "mountain"]
+	},
+
+	// Giraffe - Tall savanna browser
 	51: {
-		liked: ["plains", "forest"], disliked: ["cave", "swamp"]
-	}, // Giraffe
+		liked: [
+			"plains",
+			"forest"
+		],
+		disliked: [
+			"cave",
+			"mountain",
+			"swamp"
+		]
+	},
 
-	// Desert animals (like deserts/plains, dislike coasts/swamps)
+	/*
+	 * ===== DESERT ANIMALS =====
+	 * Boar - Forest forager, root digger
+	 */
 	29: {
-		liked: ["forest", "plains"], disliked: ["desert", "coast"]
-	}, // Boar
+		liked: [
+			"forest",
+			"swamp",
+			"plains"
+		],
+		disliked: ["desert"]
+	},
+
+	// Llama - Mountain and highland dweller
 	32: {
-		liked: ["mountain", "desert"], disliked: ["swamp", "coast"]
-	}, // Llama
+		liked: [
+			"mountain",
+			"desert",
+			"plains"
+		],
+		disliked: ["swamp"]
+	},
+
+	// Dromedary - Desert endurance specialist
 	49: {
-		liked: ["desert", "plains"], disliked: ["coast", "swamp"]
-	}, // Dromedary
+		liked: [
+			"desert",
+			"plains"
+		],
+		disliked: [
+			"coast",
+			"swamp",
+			"forest"
+		]
+	},
+
+	// Camel - Desert caravan animal
 	50: {
-		liked: ["desert", "plains"], disliked: ["coast", "swamp"]
-	}, // Camel
+		liked: [
+			"desert",
+			"plains"
+		],
+		disliked: [
+			"coast",
+			"swamp",
+			"forest"
+		]
+	},
 
-	// Forest small mammals
+	/*
+	 * ===== FOREST MAMMALS =====
+	 * Skunk - Woodland creature with defense spray
+	 */
 	36: {
-		liked: ["forest", "plains"], disliked: ["desert", "coast"]
-	}, // Skunk
+		liked: [
+			"forest",
+			"plains"
+		],
+		disliked: ["desert"]
+	},
+
+	// Badger - Burrowing forest dweller
 	37: {
-		liked: ["forest", "plains"], disliked: ["desert", "coast"]
-	}, // Badger
+		liked: [
+			"forest",
+			"plains",
+			"cave"
+		],
+		disliked: ["desert"]
+	},
+
+	// Beaver - Dam builder, needs water
 	38: {
-		liked: ["forest", "coast"], disliked: ["desert", "mountain"]
-	}, // Beaver
+		liked: [
+			"forest",
+			"coast",
+			"swamp"
+		],
+		disliked: ["desert", "mountain"]
+	},
+
+	// Sloth - Tropical canopy dweller, very slow
 	39: {
-		liked: ["forest", "swamp"], disliked: ["desert", "mountain"]
-	}, // Sloth
+		liked: [
+			"forest",
+			"swamp"
+		],
+		disliked: ["desert", "mountain"]
+	},
+
+	// Otter - Playful swimmer, rivers and coasts
 	55: {
-		liked: ["coast", "forest"], disliked: ["desert", "mountain"]
-	}, // Otter
+		liked: [
+			"coast",
+			"swamp",
+			"forest"
+		],
+		disliked: ["desert"]
+	},
+
+	// Deer - Forest and meadow graceful runner
 	87: {
-		liked: ["forest", "plains"], disliked: ["desert", "cave"]
-	}, // Deer
+		liked: [
+			"forest",
+			"plains"
+		],
+		disliked: ["desert", "swamp"]
+	},
+
+	// Water buffalo - Wetland grazer
 	88: {
-		liked: ["plains", "swamp"], disliked: ["desert", "cave"]
-	}, // Water buffalo
+		liked: [
+			"plains",
+			"swamp",
+			"forest"
+		],
+		disliked: ["desert"]
+	},
+
+	// Bison - Great plains grazer
 	89: {
-		liked: ["plains", "mountain"], disliked: ["swamp", "cave"]
-	}, // Bison
+		liked: [
+			"plains",
+			"mountain"
+		],
+		disliked: ["swamp", "cave"]
+	},
 
-	// Aquatic animals (like coasts/swamps, dislike deserts/mountains)
+	/*
+	 * ===== AQUATIC =====
+	 * Octopus - Intelligent sea creature, reef and cave dweller
+	 */
 	71: {
-		liked: ["coast", "swamp"], disliked: ["desert", "mountain"]
-	}, // Octopus
+		liked: [
+			"coast",
+			"cave"
+		],
+		disliked: [
+			"desert",
+			"mountain",
+			"plains"
+		]
+	},
+
+	// Fish - Ocean dweller
 	73: {
-		liked: ["coast", "swamp"], disliked: ["desert", "mountain"]
-	}, // Fish
+		liked: [
+			"coast",
+			"swamp"
+		],
+		disliked: [
+			"desert",
+			"mountain",
+			"plains"
+		]
+	},
+
+	// Tropical fish - Coral reef beauty
 	74: {
-		liked: ["coast", "swamp"], disliked: ["desert", "mountain"]
-	}, // Tropical fish
+		liked: [
+			"coast",
+			"swamp"
+		],
+		disliked: ["desert", "mountain"]
+	},
+
+	// Pufferfish - Coastal defender
 	75: {
-		liked: ["coast", "swamp"], disliked: ["desert", "mountain"]
-	}, // Pufferfish
+		liked: [
+			"coast",
+			"swamp"
+		],
+		disliked: ["desert", "mountain"]
+	},
+
+	// Jellyfish - Ocean drifter
 	76: {
-		liked: ["coast", "swamp"], disliked: ["desert", "mountain"]
-	}, // Jellyfish
+		liked: [
+			"coast",
+			"swamp"
+		],
+		disliked: [
+			"desert",
+			"mountain",
+			"plains"
+		]
+	},
+
+	// Shark - Apex ocean predator
 	77: {
-		liked: ["coast", "cave"], disliked: ["desert", "mountain"]
-	}, // Shark
+		liked: ["coast"],
+		disliked: [
+			"desert",
+			"mountain",
+			"forest",
+			"plains"
+		]
+	},
+
+	// Whale - Ocean giant
 	78: {
-		liked: ["coast", "plains"], disliked: ["desert", "mountain"]
-	}, // Whale
+		liked: ["coast"],
+		disliked: [
+			"desert",
+			"mountain",
+			"forest",
+			"plains"
+		]
+	},
+
+	// Whale 2 - Another ocean giant
 	79: {
-		liked: ["coast", "plains"], disliked: ["desert", "mountain"]
-	}, // Whale
+		liked: ["coast"],
+		disliked: [
+			"desert",
+			"mountain",
+			"forest",
+			"plains"
+		]
+	},
+
+	// Shrimp - Bottom dweller, shallow waters
 	80: {
-		liked: ["coast", "swamp"], disliked: ["desert", "mountain"]
-	}, // Shrimp
+		liked: [
+			"coast",
+			"swamp",
+			"cave"
+		],
+		disliked: ["desert", "mountain"]
+	},
+
+	// Lobster - Ocean floor scavenger
 	81: {
-		liked: ["coast", "cave"], disliked: ["desert", "mountain"]
-	}, // Lobster
+		liked: [
+			"coast",
+			"cave"
+		],
+		disliked: [
+			"desert",
+			"mountain",
+			"plains"
+		]
+	},
+
+	// Dolphin - Intelligent ocean mammal
 	82: {
-		liked: ["coast", "plains"], disliked: ["desert", "cave"]
-	}, // Dolphin
+		liked: ["coast"],
+		disliked: [
+			"desert",
+			"mountain",
+			"cave"
+		]
+	},
+
+	// Crab - Shore and cave dweller
 	86: {
-		liked: ["coast", "swamp"], disliked: ["desert", "mountain"]
-	}, // Crab
+		liked: [
+			"coast",
+			"swamp",
+			"cave"
+		],
+		disliked: ["desert"]
+	},
+
+	// Snail - Slow, damp loving
 	85: {
-		liked: ["forest", "swamp"], disliked: ["desert", "mountain"]
-	}, // Snail
+		liked: [
+			"forest",
+			"swamp",
+			"ruins"
+		],
+		disliked: ["desert"]
+	},
 
-	// Mythical creatures
+	/*
+	 * ===== MYTHICAL CREATURES =====
+	 * Mammoth - Ancient ice age beast
+	 */
 	61: {
-		liked: ["mountain", "plains"], disliked: ["swamp", "cave"]
-	}, // Mammoth
-	63: {
-		liked: ["forest", "plains"], disliked: ["cave", "swamp"]
-	}, // Unicorn
-	64: {
-		liked: ["mountain", "cave"], disliked: ["coast", "swamp"]
-	}, // Dragon
-	65: {
-		liked: ["plains", "forest"], disliked: ["coast", "cave"]
-	}, // T-Rex
-	83: {
-		liked: ["mountain", "desert"], disliked: ["coast", "swamp"]
-	}, // Phoenix
-	84: {
-		liked: ["plains", "forest"], disliked: ["desert", "cave"]
-	}, // Diplodocus
+		liked: [
+			"mountain",
+			"plains"
+		],
+		disliked: [
+			"desert",
+			"swamp",
+			"coast"
+		]
+	},
 
-	// Special/Seasonal
+	// Unicorn - Magical forest creature
+	63: {
+		liked: [
+			"forest",
+			"plains"
+		],
+		disliked: ["cave", "swamp"]
+	},
+
+	// Dragon - Mountain and cave dwelling legend
+	64: {
+		liked: [
+			"mountain",
+			"cave",
+			"ruins"
+		],
+		disliked: ["swamp"]
+	},
+
+	// T-Rex - Ancient apex predator
+	65: {
+		liked: [
+			"plains",
+			"forest",
+			"swamp"
+		],
+		disliked: ["coast", "cave"]
+	},
+
+	// Phoenix - Fire bird, high places
+	83: {
+		liked: [
+			"mountain",
+			"desert",
+			"ruins"
+		],
+		disliked: ["coast", "swamp"]
+	},
+
+	// Diplodocus - Gentle giant herbivore
+	84: {
+		liked: [
+			"plains",
+			"forest",
+			"swamp"
+		],
+		disliked: ["cave", "mountain"]
+	},
+
+	/*
+	 * ===== SPECIAL/SEASONAL =====
+	 * Stitch - Chaotic alien experiment
+	 */
 	66: {
-		liked: ["ruins", "coast"], disliked: ["cave", "mountain"]
-	}, // Stitch
+		liked: [
+			"ruins",
+			"coast",
+			"cave"
+		],
+		disliked: []
+	},
+
+	// Snowman - Cold loving, melts in heat
 	67: {
-		liked: ["mountain", "plains"], disliked: ["desert", "swamp"]
-	}, // Snowman
+		liked: ["mountain"],
+		disliked: ["desert", "swamp"]
+	},
+
+	// Scarlet duck - Magical water bird
 	68: {
-		liked: ["coast", "plains"], disliked: ["mountain", "cave"]
-	}, // Scarlet duck
+		liked: [
+			"coast",
+			"swamp",
+			"plains"
+		],
+		disliked: ["desert"]
+	},
+
+	// Snow person - Cold creature
 	69: {
-		liked: ["mountain", "plains"], disliked: ["desert", "swamp"]
-	}, // Snowman
+		liked: ["mountain"],
+		disliked: ["desert", "swamp"]
+	},
+
+	// Alien - Cosmic explorer, curious about everything
 	70: {
-		liked: ["ruins", "desert"], disliked: ["forest", "swamp"]
-	}, // Alien
+		liked: [
+			"ruins",
+			"desert",
+			"cave"
+		],
+		disliked: []
+	},
+
+	// Jack-o-lantern - Halloween spirit, haunted places
 	99: {
-		liked: ["ruins", "cave"], disliked: ["coast", "plains"]
-	}, // Jack-o-lantern
+		liked: [
+			"ruins",
+			"cave",
+			"swamp"
+		],
+		disliked: ["coast", "desert"]
+	},
+
+	// Ghost - Ethereal spirit, haunts old places
 	100: {
-		liked: ["ruins", "cave"], disliked: ["plains", "coast"]
-	}, // Ghost
+		liked: [
+			"ruins",
+			"cave"
+		],
+		disliked: ["plains"]
+	},
+
+	// Vampire - Nocturnal undead, avoids sunlight
 	101: {
-		liked: ["cave", "ruins"], disliked: ["plains", "coast"]
-	} // Vampire
+		liked: [
+			"cave",
+			"ruins",
+			"forest"
+		],
+		disliked: ["plains", "desert"]
+	}
 };
 
 /**
