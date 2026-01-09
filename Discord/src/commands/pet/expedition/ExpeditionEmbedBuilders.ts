@@ -4,7 +4,9 @@ import { CrowniclesErrorEmbed } from "../../../messages/CrowniclesErrorEmbed";
 import {
 	escapeUsername, StringUtils
 } from "../../../utils/StringUtils";
-import { ExpeditionLocationType } from "../../../../../Lib/src/constants/ExpeditionConstants";
+import {
+	ExpeditionLocationType, getPetExpeditionPreference
+} from "../../../../../Lib/src/constants/ExpeditionConstants";
 import { Language } from "../../../../../Lib/src/Language";
 import { CrowniclesIcons } from "../../../../../Lib/src/CrowniclesIcons";
 import { StringConstants } from "../../../../../Lib/src/constants/StringConstants";
@@ -166,9 +168,15 @@ interface ExpeditionResolutionContext {
 function formatRewards(
 	rewards: ExpeditionRewardData,
 	lng: Language,
-	badgeEarned?: string
+	badgeEarned?: string,
+	dislikedContext?: { sexContext: string }
 ): string {
 	const lines: string[] = [i18n.t("commands:petExpedition.rewards.title", { lng })];
+
+	// Show warning if pet disliked the expedition
+	if (dislikedContext) {
+		lines.push(i18n.t(`commands:petExpedition.rewards.dislikedExpedition.${dislikedContext.sexContext}`, { lng }));
+	}
 
 	if (rewards.money > 0) {
 		lines.push(i18n.t("commands:petExpedition.rewards.money", {
@@ -222,6 +230,10 @@ function buildResolutionData(
 		pseudo, sexContext, petDisplay, location, lng
 	} = ctx;
 
+	// Check if pet disliked the expedition for reward display
+	const petPreference = getPetExpeditionPreference(packet.pet.petTypeId, packet.expedition.locationType);
+	const dislikedContext = petPreference === "disliked" ? { sexContext } : undefined;
+
 	if (packet.totalFailure) {
 		return {
 			title: i18n.t("commands:petExpedition.failureTitle", {
@@ -236,7 +248,7 @@ function buildResolutionData(
 	}
 
 	if (packet.partialSuccess) {
-		const rewardText = packet.rewards ? formatRewards(packet.rewards, lng, packet.badgeEarned) : "";
+		const rewardText = packet.rewards ? formatRewards(packet.rewards, lng, packet.badgeEarned, dislikedContext) : "";
 		const loveChangeKey = packet.loveChange >= 0
 			? "commands:petExpedition.loveChangePartialPositive"
 			: "commands:petExpedition.loveChangePartialNegative";
@@ -252,7 +264,7 @@ function buildResolutionData(
 		};
 	}
 
-	const rewardText = packet.rewards ? formatRewards(packet.rewards, lng, packet.badgeEarned) : "";
+	const rewardText = packet.rewards ? formatRewards(packet.rewards, lng, packet.badgeEarned, dislikedContext) : "";
 	return {
 		title: i18n.t("commands:petExpedition.successTitle", {
 			lng, pseudo
