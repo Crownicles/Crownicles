@@ -43,7 +43,9 @@ import {
 	ButtonStyle,
 	Message
 } from "discord.js";
-import { Language } from "../../../../Lib/src/Language";
+import {
+	Language, LANGUAGE
+} from "../../../../Lib/src/Language";
 import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 import { sendInteractionNotForYou } from "../../utils/ErrorUtils";
 import { MessagesUtils } from "../../utils/MessagesUtils";
@@ -182,7 +184,7 @@ export async function handleCommandPetFreeRefusePacketRes(context: PacketContext
 	const originalInteraction = DiscordCache.getInteraction(context.discord!.interaction!);
 	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
 	if (buttonInteraction && originalInteraction) {
-		const lng = originalInteraction.userLanguage;
+		const lng = originalInteraction.userLanguage ?? context.discord?.language ?? LANGUAGE.DEFAULT_LANGUAGE;
 		const embed = buildSimpleResponseEmbed(
 			originalInteraction,
 			"commands:petFree.canceledTitle",
@@ -197,7 +199,7 @@ export async function handleCommandPetFreeAcceptPacketRes(packet: CommandPetFree
 	const originalInteraction = DiscordCache.getInteraction(context.discord!.interaction!);
 	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
 	if (buttonInteraction && originalInteraction) {
-		const lng = originalInteraction.userLanguage;
+		const lng = originalInteraction.userLanguage ?? context.discord?.language ?? LANGUAGE.DEFAULT_LANGUAGE;
 		const embed = buildSimpleResponseEmbed(
 			originalInteraction,
 			"commands:petFree.title",
@@ -218,7 +220,7 @@ export async function handleCommandPetFreeShelterSuccessPacketRes(packet: Comman
 		return;
 	}
 
-	const lng = interaction.userLanguage;
+	const lng = interaction.userLanguage ?? context.discord?.language ?? LANGUAGE.DEFAULT_LANGUAGE;
 	const petDisplay = PetUtils.petToShortString(lng, packet.petNickname, packet.petId, packet.petSex);
 
 	let description = i18n.t("commands:petFree.acceptedDesc", {

@@ -290,7 +290,8 @@ export function calculateRewards(params: RewardCalculationParams): ExpeditionRew
 			itemId: 0,
 			itemCategory: 0,
 			tokens,
-			cloneTalismanFound: false
+			cloneTalismanFound: false,
+			itemGiven: false
 		};
 	}
 
@@ -324,6 +325,7 @@ export function calculateRewards(params: RewardCalculationParams): ExpeditionRew
 			rewardIndex,
 			hasCloneTalisman,
 			isPartialSuccess
-		})
+		}),
+		itemGiven: true
 	};
 }
