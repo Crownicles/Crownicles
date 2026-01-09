@@ -19,7 +19,6 @@ import { PlayerTalismansManager } from "../../core/database/game/models/PlayerTa
 import {
 	ExpeditionConstants, ExpeditionLocationType
 } from "../../../../Lib/src/constants/ExpeditionConstants";
-import { checkIsPetTired } from "../../core/expeditions/ExpeditionService";
 
 export default class PetCommand {
 	@commandRequires(CommandPetPacketReq, {
@@ -65,17 +64,11 @@ export default class PetCommand {
 			? (await PlayerTalismansManager.getOfPlayer(player.id)).hasTalisman
 			: undefined;
 
-		// Check if pet is tired (recently completed an expedition, accounting for daily free expeditions)
-		const isPetTired = isOwnerViewingOwnPet
-			? await checkIsPetTired(pet.lastExpeditionEndDate, player.keycloakId)
-			: undefined;
-
 		response.push(makePacket(CommandPetPacketRes, {
 			askedKeycloakId: toCheckPlayer?.keycloakId,
 			pet: pet.asOwnedPet(),
 			hasTalisman,
-			expeditionInProgress: expeditionInfo,
-			isPetTired
+			expeditionInProgress: expeditionInfo
 		}));
 	}
 }

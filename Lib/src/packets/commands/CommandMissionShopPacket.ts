@@ -60,11 +60,6 @@ export class CommandMissionShopPetInformation extends CrowniclesPacket {
 	 */
 	dislikedExpeditionTypes?: string[];
 
-	/**
-	 * Whether the pet's fatigue was reset by visiting the vet
-	 */
-	fatigueReset?: boolean;
-
 	randomPetDwarf?: {
 		typeId: number;
 		sex: SexTypeShort;

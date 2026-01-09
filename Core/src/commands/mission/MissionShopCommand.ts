@@ -59,9 +59,7 @@ import { PetUtils } from "../../core/utils/PetUtils";
 import { Badge } from "../../../../Lib/src/types/Badge";
 import { DwarfPetsSeen } from "../../core/database/game/models/DwarfPetsSeen";
 import { PlayerBadgesManager } from "../../core/database/game/models/PlayerBadges";
-import {
-	ExpeditionConstants, getPetExpeditionPreferences
-} from "../../../../Lib/src/constants/ExpeditionConstants";
+import { getPetExpeditionPreferences } from "../../../../Lib/src/constants/ExpeditionConstants";
 
 /**
  * Calculate the amount of money the player will have if he buys some with gems
@@ -159,25 +157,6 @@ function getAThousandPointsShopItem(): ShopItem {
 }
 
 /**
- * Check if the pet's fatigue should be reset and reset it if needed
- * @returns true if the fatigue was reset, false otherwise
- */
-async function resetPetFatigueIfNeeded(pet: {
-	lastExpeditionEndDate: Date | null; save: () => Promise<unknown>;
-}): Promise<boolean> {
-	if (!pet.lastExpeditionEndDate) {
-		return false;
-	}
-	const timeSinceLastExpedition = Date.now() - pet.lastExpeditionEndDate.valueOf();
-	if (timeSinceLastExpedition >= ExpeditionConstants.FATIGUE_DURATION_MS) {
-		return false;
-	}
-	pet.lastExpeditionEndDate = null;
-	await pet.save();
-	return true;
-}
-
-/**
  * Creates the pet information shop item configuration
  * @returns Shop item for viewing detailed pet information and preferences
  */
@@ -202,9 +181,6 @@ function getValueLovePointsPetShopItem(): ShopItem {
 			const likedExpeditionTypes = preferences?.liked ? [...preferences.liked] : [];
 			const dislikedExpeditionTypes = preferences?.disliked ? [...preferences.disliked] : [];
 
-			// Reset fatigue if pet is tired from a recent expedition
-			const fatigueReset = await resetPetFatigueIfNeeded(pet);
-
 			response.push(makePacket(CommandMissionShopPetInformation, {
 				nickname: pet.nickname,
 				petId: pet.id,
@@ -221,7 +197,6 @@ function getValueLovePointsPetShopItem(): ShopItem {
 				ageCategory: PetUtils.getAgeCategory(pet.id),
 				likedExpeditionTypes,
 				dislikedExpeditionTypes,
-				fatigueReset,
 				...randomPetDwarfModel && {
 					randomPetDwarf: {
 						typeId: randomPetDwarfModel.id,

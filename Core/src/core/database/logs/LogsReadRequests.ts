@@ -564,24 +564,4 @@ export class LogsReadRequests {
 			}
 		});
 	}
-
-	/**
-	 * Count the number of completed expeditions for a player today
-	 * @param keycloakId - The keycloak id of the player
-	 */
-	static async countCompletedExpeditionsToday(keycloakId: string): Promise<number> {
-		const logPlayer = await LogsDatabase.findOrCreatePlayer(keycloakId);
-		const startOfDay = new Date();
-		startOfDay.setHours(0, 0, 0, 0);
-
-		return LogsExpeditions.count({
-			where: {
-				playerId: logPlayer.id,
-				action: ExpeditionConstants.LOG_ACTION.COMPLETE,
-				date: {
-					[Op.gte]: startOfDay.valueOf()
-				}
-			}
-		});
-	}
 }

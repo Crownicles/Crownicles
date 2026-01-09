@@ -123,11 +123,7 @@ export async function handleLovePointsValueShopItem(packet: CommandMissionShopPe
 	}
 	const lng = interaction.userLanguage;
 
-	// Build expedition section with optional fatigue reset message
-	let expeditionSection = buildExpeditionSection(packet, lng);
-	if (packet.fatigueReset) {
-		expeditionSection += i18n.t("commands:shop.shopItems.lovePointsValue.fatigueReset", { lng });
-	}
+	const expeditionSection = buildExpeditionSection(packet, lng);
 
 	await interaction.followUp({
 		embeds: [

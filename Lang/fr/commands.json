@@ -55,11 +55,7 @@
     "expeditionButton": "Expédition",
     "expeditionButtonDisabled": "Expédition (indisponible)",
     "recallButton": "Rappeler",
-    "finishExpeditionButton": "Terminer l'exploration",
-    "tiredPetWarning": {
-      "male": "\n\n{emote:effects.sleeping} *Votre compagnon semble épuisé par sa récente expédition. S'il repart maintenant, il ne sera pas capable de rapporter certaines ressources.*",
-      "female": "\n\n{emote:effects.sleeping} *Votre compagne semble épuisée par sa récente expédition. Si elle repart maintenant, elle ne sera pas capable de rapporter certaines ressources.*"
-    }
+    "finishExpeditionButton": "Terminer l'exploration"
   },
   "petExpedition": {
     "title": "Expéditions de familier",
@@ -181,10 +177,6 @@
     "insufficientFoodWarning": {
       "noGuild": "\n\n{emote:collectors.warning} **Vous n'avez pas de guilde pour préparer des rations** pour votre familier. Les risques d'échec de cette expédition sont **triplés**.",
       "guildNoFood": "\n\n{emote:collectors.warning} **La guilde est à court de provisions.** Votre guilde n'a pas pu fournir assez de rations, votre familier est donc parti sans ravitaillement. Les risques d'échec sont **triplés**. Reconstituez les stocks de votre guilde avant la prochaine expédition !"
-    },
-    "tiredPetWarning": {
-      "male": "\n\n{emote:effects.sleeping} *Épuisé par sa précédente expédition, votre compagnon accepte tout de même de partir à nouveau, mais dans cet état de fatigue, il ne sera pas capable de rapporter certaines ressources.*",
-      "female": "\n\n{emote:effects.sleeping} *Épuisée par sa précédente expédition, votre compagne accepte tout de même de partir à nouveau, mais dans cet état de fatigue, elle ne sera pas capable de rapporter certaines ressources.*"
     },
     "speedModifier": {
       "veryFast_male": "\n\n{emote:expedition.speed} *Ses pattes véloces fendent l'air avec une grâce inégalée. Votre compagnon atteindra sa destination bien plus vite que prévu !*",
@@ -1021,7 +1013,6 @@
         "likedLocations": "{emote:expedition.liked} Prospère dans : {{locations}}\n",
         "dislikedLocations": "{emote:expedition.disliked} Se méfie de : {{locations}}",
         "noPreferences": "\n\n{emote:expedition.map} **Affinités d'exploration** : J'observe chez votre familier une remarquable capacité d'adaptation. Son instinct lui permet de s'acclimater à tous types de terrains sans difficulté particulière.",
-        "fatigueReset": "\n\n{emote:effects.occupied} **Soins prodigués** : Après un examen approfondi, j'ai administré à votre familier une décoction revigorante de ma composition. Ses muscles endoloris par sa récente expédition ont retrouvé toute leur vigueur. Il est fin prêt pour de nouvelles aventures !",
         "petIsHungry": "{emote:effects.starving} affamé",
         "commentOnFightEffect": {
           "bite": [
