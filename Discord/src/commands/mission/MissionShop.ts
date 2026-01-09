@@ -81,7 +81,7 @@ export async function handleMissionShopKingsFavor(context: PacketContext): Promi
  */
 function formatLocationType(type: string, lng: Language): string {
 	const emoji = CrowniclesIcons.expedition.locations[type as ExpeditionLocationType] ?? "";
-	const name = i18n.t(`models:mapTypes.${type}.name`, { lng });
+	const name = i18n.t(`models:map_types.${type}.name`, { lng });
 	return `${emoji} ${name}`;
 }
 
