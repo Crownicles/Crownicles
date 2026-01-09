@@ -58,11 +58,19 @@ export default class PetCommand {
 			? (await PlayerTalismansManager.getOfPlayer(player.id)).hasTalisman
 			: undefined;
 
+		// Check if pet is tired (recently completed an expedition)
+		let isPetTired: boolean | undefined;
+		if (isOwnerViewingOwnPet && pet.lastExpeditionEndDate) {
+			const timeSinceLastExpedition = Date.now() - pet.lastExpeditionEndDate.valueOf();
+			isPetTired = timeSinceLastExpedition < ExpeditionConstants.FATIGUE_DURATION_MS;
+		}
+
 		response.push(makePacket(CommandPetPacketRes, {
 			askedKeycloakId: toCheckPlayer?.keycloakId,
 			pet: pet.asOwnedPet(),
 			hasTalisman,
-			expeditionInProgress: expeditionInfo
+			expeditionInProgress: expeditionInfo,
+			isPetTired
 		}));
 	}
 }

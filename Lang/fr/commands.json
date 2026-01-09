@@ -55,7 +55,11 @@
     "expeditionButton": "Expédition",
     "expeditionButtonDisabled": "Expédition (indisponible)",
     "recallButton": "Rappeler",
-    "finishExpeditionButton": "Terminer l'exploration"
+    "finishExpeditionButton": "Terminer l'exploration",
+    "tiredPetWarning": {
+      "male": "\n\n{emote:effects.sleeping} *Votre compagnon semble épuisé par sa récente expédition. S'il repart maintenant, il ne sera pas capable de rapporter certaines ressources.*",
+      "female": "\n\n{emote:effects.sleeping} *Votre compagne semble épuisée par sa récente expédition. Si elle repart maintenant, elle ne sera pas capable de rapporter certaines ressources.*"
+    }
   },
   "petExpedition": {
     "title": "Expéditions de familier",
