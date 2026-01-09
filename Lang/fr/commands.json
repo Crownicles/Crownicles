@@ -265,8 +265,8 @@
     "rewards": {
       "title": "\n\n**Butin rapporté :**",
       "dislikedExpedition": {
-        "male": "\n{emote:effects.grumpy} *Votre compagnon n'a pas apprécié cette destination. Son manque d'enthousiasme a considérablement réduit ses trouvailles.*",
-        "female": "\n{emote:effects.grumpy} *Votre compagne n'a pas apprécié cette destination. Son manque d'enthousiasme a considérablement réduit ses trouvailles.*"
+        "male": "\n{emote:expedition.disliked} *Votre compagnon n'a pas apprécié cette destination. Son manque d'enthousiasme a considérablement réduit ses trouvailles.*",
+        "female": "\n{emote:expedition.disliked} *Votre compagne n'a pas apprécié cette destination. Son manque d'enthousiasme a considérablement réduit ses trouvailles.*"
       },
       "money": "{emote:unitValues.money} Argent gagné : **{{amount, number}}** !",
       "experience": "{emote:unitValues.xp} Expérience gagnée : **{{amount, number}}** !",
