@@ -163,7 +163,7 @@ function buildSimpleResponseEmbed(
 	interaction: CrowniclesInteraction,
 	titleKey: string,
 	description: string,
-	isError: boolean = false,
+	isError = false,
 	lngOverride?: Language
 ): CrowniclesEmbed {
 	const lng = lngOverride ?? interaction.userLanguage;

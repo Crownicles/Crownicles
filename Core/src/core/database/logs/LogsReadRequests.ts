@@ -429,6 +429,11 @@ export class LogsReadRequests {
 		});
 	}
 
+	/**
+	 * Counts how many times a player has traveled to PVE islands this week
+	 * @param keycloakId - The keycloak id of the player
+	 * @returns Number of PVE island travels this week
+	 */
 	private static async travelsOnPveIslandsCountThisWeekRequest(keycloakId: string): Promise<number> {
 		return await LogsPlayersTravels.count({
 			where: {
@@ -459,6 +464,12 @@ export class LogsReadRequests {
 		});
 	}
 
+	/**
+	 * Checks if a player has joined a specific guild this week
+	 * @param keycloakId - The keycloak id of the player
+	 * @param guildId - The guild id to check
+	 * @returns True if the player joined the guild this week
+	 */
 	private static async joinGuildThisWeekRequest(keycloakId: string, guildId: number): Promise<boolean> {
 		return await LogsGuildsJoins.count({
 			where: {
