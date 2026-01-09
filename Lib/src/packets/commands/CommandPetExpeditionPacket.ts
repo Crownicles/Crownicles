@@ -301,6 +301,11 @@ export interface ExpeditionRewardData {
 	 * Whether the clone talisman was found during this expedition
 	 */
 	cloneTalismanFound?: boolean;
+
+	/**
+	 * Whether an item was given during this expedition
+	 */
+	itemGiven?: boolean;
 }
 
 /**

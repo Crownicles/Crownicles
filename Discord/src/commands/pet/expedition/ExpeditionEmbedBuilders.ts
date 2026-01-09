@@ -195,8 +195,10 @@ function formatRewards(
 		}));
 	}
 
-	// Item is always given on successful expeditions (shown in separate embed via giveItemToPlayer)
-	lines.push(i18n.t("commands:petExpedition.rewards.item", { lng }));
+	// Item is only given when itemGiven is true (not when pet was tired at start)
+	if (rewards.itemGiven) {
+		lines.push(i18n.t("commands:petExpedition.rewards.item", { lng }));
+	}
 	if (rewards.cloneTalismanFound) {
 		lines.push(i18n.t("commands:petExpedition.rewards.cloneTalisman", { lng }));
 	}
