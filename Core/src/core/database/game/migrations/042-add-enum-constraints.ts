@@ -1,4 +1,29 @@
 import { QueryInterface } from "sequelize";
+<<<<<<< HEAD:Core/src/core/database/game/migrations/042-add-enum-constraints.ts
+=======
+import { CrowniclesLogger } from "../../../../../../Lib/src/logs/CrowniclesLogger";
+
+// Error codes for table not found
+const TABLE_NOT_FOUND_ERRNO = 1146;
+
+/**
+ * Safely execute a query, ignoring table not found errors
+ */
+async function safeQuery(context: QueryInterface, sql: string): Promise<void> {
+	try {
+		await context.sequelize.query(sql);
+	}
+	catch (e) {
+		const errno = (e as { original?: { errno?: number } }).original?.errno;
+		if (errno !== TABLE_NOT_FOUND_ERRNO) {
+			throw e;
+		}
+		CrowniclesLogger.debug(`Migration 042: Ignoring error ${errno} for query: ${sql.substring(0, 100)}...`);
+
+		// Table doesn't exist - skip
+	}
+}
+>>>>>>> 057d9a2f8 (fix(migrations): correct typos and renumber migrations 036-042):Core/src/core/database/game/migrations/041-add-enum-constraints.ts
 
 /**
  * Add ENUM constraints to status and locationType columns in pet_expeditions table.
