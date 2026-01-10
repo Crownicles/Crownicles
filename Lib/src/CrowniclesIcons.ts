@@ -155,7 +155,7 @@ export const CrowniclesIcons: {
 		};
 		reward: string;
 		duration: string;
-		difficulty: {
+		terrain: {
 			trivial: string;
 			easy: string;
 			moderate: string;
@@ -2262,12 +2262,12 @@ export const CrowniclesIcons: {
 		},
 		reward: "🎁",
 		duration: "⏱️",
-		difficulty: {
+		terrain: {
 			trivial: "🌸",
-			easy: "🍃",
-			moderate: "⚔️",
-			challenging: "⚠️",
-			treacherous: "☠️"
+			easy: "🌲",
+			moderate: "⛰️",
+			challenging: "🏔️",
+			treacherous: "🌋"
 		},
 		food: "🍖",
 		love: "💕",
