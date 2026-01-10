@@ -2252,8 +2252,8 @@ export const CrowniclesIcons: {
 		loot: "💰",
 		risk: {
 			trivial: "🌿",
-			veryLow: "🌤️",
-			low: "☀️",
+			veryLow: "☀️",
+			low: "🌤️",
 			moderate: "⚡",
 			high: "🔥",
 			veryHigh: "⚠️",
