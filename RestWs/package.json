@@ -23,7 +23,7 @@
     "@protobuf-ts/plugin": "2.11.1",
     "@types/node": "25.0.2",
     "fastify": "5.6.2",
-    "mariadb": "3.4.5",
+    "mariadb": "3.0.2",
     "moment": "2.30.1",
     "mqtt": "5.14.1",
     "prom-client": "15.1.3",

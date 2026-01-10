@@ -5,15 +5,72 @@ import "winston-daily-rotate-file";
 import { Constants } from "../constants/Constants";
 import LokiTransport = require("winston-loki");
 
+/**
+ * Truncate ancestors array to remove objects no longer in the current traversal path.
+ * @param ancestors - Stack of objects in current traversal
+ * @param currentContext - The object containing the key being stringified
+ */
+function truncateAncestors(ancestors: object[], currentContext: unknown): void {
+	if (typeof currentContext !== "object" || currentContext === null) {
+		return;
+	}
+
+	const contextIndex = ancestors.indexOf(currentContext);
+	if (contextIndex !== -1) {
+		// Remove any objects added after this one (we've left those branches)
+		ancestors.length = contextIndex + 1;
+	}
+}
+
+/**
+ * Check if a value is a circular reference and handle it.
+ * @param ancestors - Stack of objects in current traversal
+ * @param value - The value being serialized
+ * @returns "[Circular]" if circular, the original value otherwise
+ */
+function handleCircularReference(ancestors: object[], value: unknown): unknown {
+	if (typeof value !== "object" || value === null) {
+		return value;
+	}
+
+	if (ancestors.includes(value)) {
+		return "[Circular]";
+	}
+
+	ancestors.push(value);
+	return value;
+}
+
+/**
+ * Safely stringify an object, handling circular references.
+ * Uses a stack-based approach to track the current traversal path,
+ * allowing legitimate shared references while detecting true cycles.
+ * @param obj - Object to stringify
+ * @returns JSON string or "[Circular]" placeholder for circular refs
+ */
+export function safeStringify(obj: unknown): string {
+	if (obj === undefined) {
+		return "undefined";
+	}
+
+	// Track the current path of objects being serialized (stack approach)
+	const ancestors: object[] = [];
+
+	return JSON.stringify(obj, function(this: unknown, _key, value) {
+		truncateAncestors(ancestors, this);
+		return handleCircularReference(ancestors, value);
+	});
+}
+
 const myFormatWithLabel = format.printf(({
 	level, message, metadata, label, timestamp
 }) =>
-	`${timestamp} [${label}] [${level.toUpperCase()}]: ${message}${metadata && Object.keys(metadata).length > 0 ? ` ${JSON.stringify(metadata)}` : ""}`);
+	`${timestamp} [${label}] [${level.toUpperCase()}]: ${message}${metadata && Object.keys(metadata).length > 0 ? ` ${safeStringify(metadata)}` : ""}`);
 
 const myFormat = format.printf(({
 	level, message, metadata, timestamp
 }) =>
-	`${timestamp} [${level.toUpperCase()}]: ${message}${metadata && Object.keys(metadata).length > 0 ? ` ${JSON.stringify(metadata)}` : ""}`);
+	`${timestamp} [${level.toUpperCase()}]: ${message}${metadata && Object.keys(metadata).length > 0 ? ` ${safeStringify(metadata)}` : ""}`);
 
 type LogMetadata = { [key: string]: unknown } & {
 	error?: never;

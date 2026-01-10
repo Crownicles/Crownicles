@@ -812,7 +812,7 @@ export async function down({ context }: { context: QueryInterface }): Promise<vo
 	await context.dropTable("objects");
 	await context.dropTable("pet_entities");
 	await context.dropTable("pets");
-	await context.dropTable("player_mission_info");
+	await context.dropTable("player_missions_info");
 	await context.dropTable("player_small_events");
 	await context.dropTable("players");
 	await context.dropTable("possibilities");
