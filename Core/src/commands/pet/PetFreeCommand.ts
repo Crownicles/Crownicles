@@ -259,29 +259,39 @@ async function buildShelterPetReactions(
 }
 
 /**
+ * Execute the pet free action based on confirmation data
+ */
+async function executePetFreeFromConfirmation(
+	player: Player,
+	confirmData: ReactionCollectorPetFreeShelterConfirmData,
+	response: CrowniclesPacket[]
+): Promise<void> {
+	if (confirmData.isFromShelter) {
+		await freePetFromShelter(response, player, confirmData.petEntityId);
+		return;
+	}
+
+	const playerPet = await PetEntities.getById(confirmData.petEntityId);
+	if (playerPet) {
+		await acceptPetFree(player, playerPet, response);
+	}
+	else {
+		response.push(makePacket(CommandPetFreeRefusePacketRes, {}));
+	}
+}
+
+/**
  * Create end callback for shelter pet confirmation collector (accept/refuse after selection)
  */
 function createShelterConfirmEndCallback(player: Player): EndCallback {
 	return async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
 		const reaction = collector.getFirstReaction();
+		const isAccepted = reaction && reaction.reaction.type === ReactionCollectorAcceptReaction.name;
 
-		if (reaction && reaction.reaction.type === ReactionCollectorAcceptReaction.name) {
+		if (isAccepted) {
 			const confirmData = collector.creationPacket.data.data as ReactionCollectorPetFreeShelterConfirmData;
-
 			await player.reload();
-
-			if (confirmData.isFromShelter) {
-				await freePetFromShelter(response, player, confirmData.petEntityId);
-			}
-			else {
-				const playerPet = await PetEntities.getById(confirmData.petEntityId);
-				if (playerPet) {
-					await acceptPetFree(player, playerPet, response);
-				}
-				else {
-					response.push(makePacket(CommandPetFreeRefusePacketRes, {}));
-				}
-			}
+			await executePetFreeFromConfirmation(player, confirmData, response);
 		}
 		else {
 			response.push(makePacket(CommandPetFreeRefusePacketRes, {}));
@@ -341,14 +351,14 @@ function createShelterSelectionEndCallback(
 			}
 
 			// Create confirmation collector
-			const confirmCollector = new ReactionCollectorPetFreeShelterConfirm(
-				selectedPetEntityId,
+			const confirmCollector = new ReactionCollectorPetFreeShelterConfirm({
+				petEntityId: selectedPetEntityId,
 				petId,
 				petSex,
 				petNickname,
 				freeCost,
 				isFromShelter
-			);
+			});
 
 			const confirmEndCallback = createShelterConfirmEndCallback(player);
 
