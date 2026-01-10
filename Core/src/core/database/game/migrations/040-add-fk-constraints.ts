@@ -84,9 +84,7 @@ async function safeRemoveConstraint(context: QueryInterface, tableName: string, 
  * - inventory_info.playerId -> players.id
  * - player_missions_info.playerId -> players.id
  * - player_small_events.playerId -> players.id
- * - player_active_objects.playerId -> players.id
  * - scheduled_report_notifications.playerId -> players.id
- * - scheduled_expedition_notifications.playerId -> players.id
  * - scheduled_daily_bonus_notifications.playerId -> players.id
  * - guild_pets.guildId -> guilds.id
  * - guild_pets.petEntityId -> pet_entities.id
@@ -128,9 +126,9 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 		WHERE playerId NOT IN (SELECT id FROM players)
 	`);
 
-	// Clean orphaned player_missions_infos
+	// Clean orphaned player_missions_info
 	await safeQuery(context, `
-		DELETE FROM player_missions_infos 
+		DELETE FROM player_missions_info 
 		WHERE playerId NOT IN (SELECT id FROM players)
 	`);
 
@@ -140,21 +138,9 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 		WHERE playerId NOT IN (SELECT id FROM players)
 	`);
 
-	// Clean orphaned player_active_objects
-	await safeQuery(context, `
-		DELETE FROM player_active_objects 
-		WHERE playerId NOT IN (SELECT id FROM players)
-	`);
-
 	// Clean orphaned scheduled_report_notifications
 	await safeQuery(context, `
 		DELETE FROM scheduled_report_notifications 
-		WHERE playerId NOT IN (SELECT id FROM players)
-	`);
-
-	// Clean orphaned scheduled_expedition_notifications
-	await safeQuery(context, `
-		DELETE FROM scheduled_expedition_notifications 
 		WHERE playerId NOT IN (SELECT id FROM players)
 	`);
 
@@ -258,10 +244,10 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 		onUpdate: "CASCADE"
 	});
 
-	await safeAddConstraint(context, "player_missions_infos", {
+	await safeAddConstraint(context, "player_missions_info", {
 		fields: ["playerId"],
 		type: "foreign key",
-		name: "fk_player_missions_infos_playerId",
+		name: "fk_player_missions_info_playerId",
 		references: {
 			table: "players", field: "id"
 		},
@@ -280,32 +266,10 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 		onUpdate: "CASCADE"
 	});
 
-	await safeAddConstraint(context, "player_active_objects", {
-		fields: ["playerId"],
-		type: "foreign key",
-		name: "fk_player_active_objects_playerId",
-		references: {
-			table: "players", field: "id"
-		},
-		onDelete: "CASCADE",
-		onUpdate: "CASCADE"
-	});
-
 	await safeAddConstraint(context, "scheduled_report_notifications", {
 		fields: ["playerId"],
 		type: "foreign key",
 		name: "fk_scheduled_report_notifications_playerId",
-		references: {
-			table: "players", field: "id"
-		},
-		onDelete: "CASCADE",
-		onUpdate: "CASCADE"
-	});
-
-	await safeAddConstraint(context, "scheduled_expedition_notifications", {
-		fields: ["playerId"],
-		type: "foreign key",
-		name: "fk_scheduled_expedition_notifications_playerId",
 		references: {
 			table: "players", field: "id"
 		},
@@ -400,11 +364,9 @@ export async function down({ context }: { context: QueryInterface }): Promise<vo
 	await safeRemoveConstraint(context, "mission_slots", "fk_mission_slots_playerId");
 	await safeRemoveConstraint(context, "inventory_slots", "fk_inventory_slots_playerId");
 	await safeRemoveConstraint(context, "inventory_info", "fk_inventory_info_playerId");
-	await safeRemoveConstraint(context, "player_missions_infos", "fk_player_missions_infos_playerId");
+	await safeRemoveConstraint(context, "player_missions_info", "fk_player_missions_info_playerId");
 	await safeRemoveConstraint(context, "player_small_events", "fk_player_small_events_playerId");
-	await safeRemoveConstraint(context, "player_active_objects", "fk_player_active_objects_playerId");
 	await safeRemoveConstraint(context, "scheduled_report_notifications", "fk_scheduled_report_notifications_playerId");
-	await safeRemoveConstraint(context, "scheduled_expedition_notifications", "fk_scheduled_expedition_notifications_playerId");
 	await safeRemoveConstraint(context, "scheduled_daily_bonus_notifications", "fk_scheduled_daily_bonus_notifications_playerId");
 	await safeRemoveConstraint(context, "pet_expeditions", "fk_pet_expeditions_playerId");
 	await safeRemoveConstraint(context, "dwarf_pets_seen", "fk_dwarf_pets_seen_playerId");
