@@ -8,16 +8,16 @@ import { simpleDamageFightAction } from "../../templates/SimpleDamageFightAction
 
 function getAttackInfo(): attackInfo {
 	return {
-		minDamage: 110,
-		averageDamage: 320,
-		maxDamage: 500
+		minDamage: 100,
+		averageDamage: 280,
+		maxDamage: 450
 	};
 }
 
 function getStatsInfo(sender: Fighter, receiver: Fighter): statsInfo {
 	return {
 		attackerStats: [sender.getAttack()],
-		defenderStats: [receiver.getDefense() * 0.4],
+		defenderStats: [receiver.getDefense() * 0.3],
 		statsEffect: [1]
 	};
 }
@@ -40,7 +40,7 @@ const use: FightActionFunc = (sender, receiver, _fightAction) => {
 
 	FightActionController.applyAlteration(result, {
 		selfTarget: false,
-		alteration: FightAlterations.SUBMERGED
+		alteration: FightAlterations.CURSED_BY_THE_SEA
 	}, receiver);
 
 	return {

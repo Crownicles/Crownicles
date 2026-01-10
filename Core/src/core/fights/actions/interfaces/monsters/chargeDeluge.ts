@@ -8,12 +8,13 @@ import {
 import { FightConstants } from "../../../../../../../Lib/src/constants/FightConstants";
 
 const use: FightActionFunc = sender => {
+	// Cannot be used if maelstrom has already been used
 	const maelstromCount = sender.fightActionsHistory.filter(action => action.id === FightConstants.FIGHT_ACTIONS.MONSTER.MAELSTROM_ATTACK).length;
 	const delugeCount = sender.fightActionsHistory.filter(action => action.id === FightConstants.FIGHT_ACTIONS.MONSTER.DELUGE).length;
 	if (maelstromCount >= 1 || delugeCount >= 1) {
 		return defaultMaxUsesFightActionResult();
 	}
-	sender.nextFightAction = FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.MONSTER.CHARGE_MAELSTROM_ATTACK);
+	sender.nextFightAction = FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.MONSTER.DELUGE);
 	return customMessageActionResult();
 };
 
