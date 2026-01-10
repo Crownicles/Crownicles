@@ -27,7 +27,11 @@ async function safeQuery(context: QueryInterface, sql: string): Promise<void> {
 	}
 	catch (e) {
 		const errno = (e as { original?: { errno?: number } }).original?.errno;
-		if (errno === undefined || !IGNORABLE_ERRNOS.includes(errno)) {
+		if (errno === undefined) {
+			CrowniclesLogger.warn(`Migration 041: Unexpected error structure in safeQuery (no errno found): ${String(e)}`);
+			throw e;
+		}
+		if (!IGNORABLE_ERRNOS.includes(errno)) {
 			throw e;
 		}
 		CrowniclesLogger.debug(`Migration 041: Ignoring error ${errno} for query: ${sql.substring(0, 100)}...`);
@@ -45,7 +49,11 @@ async function safeAddConstraint(context: QueryInterface, tableName: string, opt
 	}
 	catch (e) {
 		const errno = (e as { original?: { errno?: number } }).original?.errno;
-		if (errno === undefined || !IGNORABLE_ERRNOS.includes(errno)) {
+		if (errno === undefined) {
+			CrowniclesLogger.warn(`Migration 041: Unexpected error structure in safeAddConstraint on ${tableName} (no errno found): ${String(e)}`);
+			throw e;
+		}
+		if (!IGNORABLE_ERRNOS.includes(errno)) {
 			throw e;
 		}
 		CrowniclesLogger.debug(`Migration 041: Ignoring error ${errno} for addConstraint on ${tableName}`);
@@ -63,6 +71,10 @@ async function safeRemoveConstraint(context: QueryInterface, tableName: string, 
 	}
 	catch (e) {
 		const errno = (e as { original?: { errno?: number } }).original?.errno;
+		if (errno === undefined) {
+			CrowniclesLogger.warn(`Migration 041: Unexpected error structure in safeRemoveConstraint ${constraintName} on ${tableName} (no errno found): ${String(e)}`);
+			throw e;
+		}
 		if (errno !== TABLE_NOT_FOUND_ERRNO && errno !== CONSTRAINT_NOT_FOUND_ERRNO) {
 			throw e;
 		}
