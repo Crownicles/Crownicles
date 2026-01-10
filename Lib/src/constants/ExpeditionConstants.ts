@@ -1094,7 +1094,6 @@ export const PET_EXPEDITION_PREFERENCES: Record<number, PetExpeditionPreferenceC
 		],
 		disliked: [
 			"mountain",
-			"cave",
 			"swamp"
 		]
 	},
@@ -1158,11 +1157,7 @@ export const PET_EXPEDITION_PREFERENCES: Record<number, PetExpeditionPreferenceC
 			"coast",
 			"swamp"
 		],
-		disliked: [
-			"cave",
-			"mountain",
-			"desert"
-		]
+		disliked: ["cave", "desert"]
 	},
 
 	// Peacock - Forest display bird
@@ -1252,11 +1247,7 @@ export const PET_EXPEDITION_PREFERENCES: Record<number, PetExpeditionPreferenceC
 			"plains",
 			"desert"
 		],
-		disliked: [
-			"swamp",
-			"cave",
-			"forest"
-		]
+		disliked: ["swamp", "forest"]
 	},
 
 	// Elk - Forest and mountain dweller
@@ -1308,11 +1299,7 @@ export const PET_EXPEDITION_PREFERENCES: Record<number, PetExpeditionPreferenceC
 			"cave",
 			"ruins"
 		],
-		disliked: [
-			"coast",
-			"swamp",
-			"forest"
-		]
+		disliked: ["coast", "swamp"]
 	},
 
 	// Crocodile - Apex swamp predator
@@ -1343,11 +1330,7 @@ export const PET_EXPEDITION_PREFERENCES: Record<number, PetExpeditionPreferenceC
 			"coast",
 			"mountain"
 		],
-		disliked: [
-			"desert",
-			"swamp",
-			"forest"
-		]
+		disliked: ["desert", "swamp"]
 	},
 
 	// Panda - Bamboo forest specialist
@@ -1411,11 +1394,7 @@ export const PET_EXPEDITION_PREFERENCES: Record<number, PetExpeditionPreferenceC
 			"coast",
 			"mountain"
 		],
-		disliked: [
-			"desert",
-			"forest",
-			"swamp"
-		]
+		disliked: ["desert", "swamp"]
 	},
 
 	// Emperor Penguin - Antarctic specialist
@@ -1424,11 +1403,7 @@ export const PET_EXPEDITION_PREFERENCES: Record<number, PetExpeditionPreferenceC
 			"coast",
 			"mountain"
 		],
-		disliked: [
-			"desert",
-			"forest",
-			"swamp"
-		]
+		disliked: ["desert", "swamp"]
 	},
 
 	// Seal - Marine mammal, coast caves
@@ -1446,11 +1421,7 @@ export const PET_EXPEDITION_PREFERENCES: Record<number, PetExpeditionPreferenceC
 	 */
 	22: {
 		liked: ["forest"],
-		disliked: [
-			"desert",
-			"cave",
-			"swamp"
-		]
+		disliked: ["desert", "cave"]
 	},
 
 	// Kangaroo - Outback hopper
@@ -1471,11 +1442,7 @@ export const PET_EXPEDITION_PREFERENCES: Record<number, PetExpeditionPreferenceC
 			"swamp",
 			"coast"
 		],
-		disliked: [
-			"desert",
-			"mountain",
-			"cave"
-		]
+		disliked: ["desert", "mountain"]
 	},
 
 	// Elephant - Savanna and forest giant
@@ -1502,11 +1469,7 @@ export const PET_EXPEDITION_PREFERENCES: Record<number, PetExpeditionPreferenceC
 			"plains",
 			"forest"
 		],
-		disliked: [
-			"cave",
-			"mountain",
-			"swamp"
-		]
+		disliked: ["cave", "swamp"]
 	},
 
 	/*
@@ -1538,11 +1501,7 @@ export const PET_EXPEDITION_PREFERENCES: Record<number, PetExpeditionPreferenceC
 			"desert",
 			"plains"
 		],
-		disliked: [
-			"coast",
-			"swamp",
-			"forest"
-		]
+		disliked: ["coast", "swamp"]
 	},
 
 	// Camel - Desert caravan animal
@@ -1551,11 +1510,7 @@ export const PET_EXPEDITION_PREFERENCES: Record<number, PetExpeditionPreferenceC
 			"desert",
 			"plains"
 		],
-		disliked: [
-			"coast",
-			"swamp",
-			"forest"
-		]
+		disliked: ["coast", "swamp"]
 	},
 
 	/*
@@ -1646,11 +1601,7 @@ export const PET_EXPEDITION_PREFERENCES: Record<number, PetExpeditionPreferenceC
 			"coast",
 			"cave"
 		],
-		disliked: [
-			"desert",
-			"mountain",
-			"plains"
-		]
+		disliked: ["desert", "mountain"]
 	},
 
 	// Fish - Ocean dweller
@@ -1659,11 +1610,7 @@ export const PET_EXPEDITION_PREFERENCES: Record<number, PetExpeditionPreferenceC
 			"coast",
 			"swamp"
 		],
-		disliked: [
-			"desert",
-			"mountain",
-			"plains"
-		]
+		disliked: ["desert", "mountain"]
 	},
 
 	// Tropical fish - Coral reef beauty
@@ -1690,44 +1637,25 @@ export const PET_EXPEDITION_PREFERENCES: Record<number, PetExpeditionPreferenceC
 			"coast",
 			"swamp"
 		],
-		disliked: [
-			"desert",
-			"mountain",
-			"plains"
-		]
+		disliked: ["desert", "mountain"]
 	},
 
 	// Shark - Apex ocean predator
 	77: {
 		liked: ["coast"],
-		disliked: [
-			"desert",
-			"mountain",
-			"forest",
-			"plains"
-		]
+		disliked: ["desert", "mountain"]
 	},
 
 	// Whale - Ocean giant
 	78: {
 		liked: ["coast"],
-		disliked: [
-			"desert",
-			"mountain",
-			"forest",
-			"plains"
-		]
+		disliked: ["desert", "mountain"]
 	},
 
 	// Whale 2 - Another ocean giant
 	79: {
 		liked: ["coast"],
-		disliked: [
-			"desert",
-			"mountain",
-			"forest",
-			"plains"
-		]
+		disliked: ["desert", "mountain"]
 	},
 
 	// Shrimp - Bottom dweller, shallow waters
@@ -1746,21 +1674,13 @@ export const PET_EXPEDITION_PREFERENCES: Record<number, PetExpeditionPreferenceC
 			"coast",
 			"cave"
 		],
-		disliked: [
-			"desert",
-			"mountain",
-			"plains"
-		]
+		disliked: ["desert", "mountain"]
 	},
 
 	// Dolphin - Intelligent ocean mammal
 	82: {
 		liked: ["coast"],
-		disliked: [
-			"desert",
-			"mountain",
-			"cave"
-		]
+		disliked: ["desert", "mountain"]
 	},
 
 	// Crab - Shore and cave dweller
@@ -1792,11 +1712,7 @@ export const PET_EXPEDITION_PREFERENCES: Record<number, PetExpeditionPreferenceC
 			"mountain",
 			"plains"
 		],
-		disliked: [
-			"desert",
-			"swamp",
-			"coast"
-		]
+		disliked: ["desert", "swamp"]
 	},
 
 	// Unicorn - Magical forest creature
