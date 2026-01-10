@@ -157,16 +157,23 @@ export async function createPetFreeCollector(context: PacketContext, packet: Rea
 }
 
 /**
+ * Options for building a simple response embed
+ */
+interface SimpleEmbedOptions {
+	interaction: CrowniclesInteraction;
+	titleKey: string;
+	description: string;
+	isError?: boolean;
+}
+
+/**
  * Helper function to build a simple response embed with author formatting
  */
-function buildSimpleResponseEmbed(
-	interaction: CrowniclesInteraction,
-	titleKey: string,
-	description: string,
-	isError = false,
-	lngOverride?: Language
-): CrowniclesEmbed {
-	const lng = lngOverride ?? interaction.userLanguage;
+function buildSimpleResponseEmbed(options: SimpleEmbedOptions): CrowniclesEmbed {
+	const {
+		interaction, titleKey, description, isError = false
+	} = options;
+	const lng = interaction.userLanguage;
 	const embed = new CrowniclesEmbed()
 		.formatAuthor(i18n.t(titleKey, {
 			lng,
@@ -186,13 +193,12 @@ export async function handleCommandPetFreeRefusePacketRes(context: PacketContext
 	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
 	if (buttonInteraction && originalInteraction) {
 		const lng = originalInteraction.userLanguage ?? context.discord?.language ?? LANGUAGE.DEFAULT_LANGUAGE;
-		const embed = buildSimpleResponseEmbed(
-			originalInteraction,
-			"commands:petFree.canceledTitle",
-			i18n.t("commands:petFree.canceledDesc", { lng }),
-			true,
-			lng
-		);
+		const embed = buildSimpleResponseEmbed({
+			interaction: originalInteraction,
+			titleKey: "commands:petFree.canceledTitle",
+			description: i18n.t("commands:petFree.canceledDesc", { lng }),
+			isError: true
+		});
 		await buttonInteraction.editReply({ embeds: [embed] });
 	}
 }
@@ -202,16 +208,14 @@ export async function handleCommandPetFreeAcceptPacketRes(packet: CommandPetFree
 	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
 	if (buttonInteraction && originalInteraction) {
 		const lng = originalInteraction.userLanguage ?? context.discord?.language ?? LANGUAGE.DEFAULT_LANGUAGE;
-		const embed = buildSimpleResponseEmbed(
-			originalInteraction,
-			"commands:petFree.title",
-			i18n.t("commands:petFree.acceptedDesc", {
+		const embed = buildSimpleResponseEmbed({
+			interaction: originalInteraction,
+			titleKey: "commands:petFree.title",
+			description: i18n.t("commands:petFree.acceptedDesc", {
 				lng,
 				pet: PetUtils.petToShortString(lng, packet.petNickname, packet.petId, packet.petSex)
-			}),
-			false,
-			lng
-		);
+			})
+		});
 		await buttonInteraction.editReply({ embeds: [embed] });
 	}
 }
@@ -241,7 +245,9 @@ export async function handleCommandPetFreeShelterSuccessPacketRes(packet: Comman
 		description += `\n${i18n.t("commands:petFree.luckyMeat", { lng })}`;
 	}
 
-	const embed = buildSimpleResponseEmbed(interaction, "commands:petFree.title", description, false, lng);
+	const embed = buildSimpleResponseEmbed({
+		interaction, titleKey: "commands:petFree.title", description
+	});
 	await interaction.editReply({
 		embeds: [embed], components: []
 	});
