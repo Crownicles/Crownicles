@@ -37,34 +37,24 @@ export class ReactionCollectorPetFreeShelterConfirmData extends ReactionCollecto
 
 export type ReactionCollectorPetFreeShelterConfirmPacket = AcceptRefusePacket<ReactionCollectorPetFreeShelterConfirmData>;
 
+/**
+ * Options for creating a shelter pet free confirmation collector
+ */
+export interface ShelterConfirmOptions {
+	petEntityId: number;
+	petId: number;
+	petSex: SexTypeShort;
+	petNickname: string | undefined;
+	freeCost: number;
+	isFromShelter: boolean;
+}
+
 export class ReactionCollectorPetFreeShelterConfirm extends ReactionCollector {
-	private readonly petEntityId: number;
+	private readonly options: ShelterConfirmOptions;
 
-	private readonly petId: number;
-
-	private readonly petSex: SexTypeShort;
-
-	private readonly petNickname: string | undefined;
-
-	private readonly freeCost: number;
-
-	private readonly isFromShelter: boolean;
-
-	constructor(
-		petEntityId: number,
-		petId: number,
-		petSex: SexTypeShort,
-		petNickname: string | undefined,
-		freeCost: number,
-		isFromShelter: boolean
-	) {
+	constructor(options: ShelterConfirmOptions) {
 		super();
-		this.petEntityId = petEntityId;
-		this.petId = petId;
-		this.petSex = petSex;
-		this.petNickname = petNickname;
-		this.freeCost = freeCost;
-		this.isFromShelter = isFromShelter;
+		this.options = options;
 	}
 
 	creationPacket(id: string, endTime: number): ReactionCollectorPetFreeShelterConfirmPacket {
@@ -76,12 +66,12 @@ export class ReactionCollectorPetFreeShelterConfirm extends ReactionCollector {
 				this.buildReaction(ReactionCollectorRefuseReaction, {})
 			],
 			data: this.buildData(ReactionCollectorPetFreeShelterConfirmData, {
-				petEntityId: this.petEntityId,
-				petId: this.petId,
-				petSex: this.petSex,
-				petNickname: this.petNickname,
-				freeCost: this.freeCost,
-				isFromShelter: this.isFromShelter
+				petEntityId: this.options.petEntityId,
+				petId: this.options.petId,
+				petSex: this.options.petSex,
+				petNickname: this.options.petNickname,
+				freeCost: this.options.freeCost,
+				isFromShelter: this.options.isFromShelter
 			})
 		};
 	}

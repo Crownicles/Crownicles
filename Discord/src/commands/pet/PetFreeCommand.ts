@@ -47,6 +47,7 @@ import {
 import {
 	Language, LANGUAGE
 } from "../../../../Lib/src/Language";
+import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
 import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 import { sendInteractionNotForYou } from "../../utils/ErrorUtils";
 import { MessagesUtils } from "../../utils/MessagesUtils";
@@ -128,12 +129,24 @@ export async function handleCommandPetFreePacketRes(packet: CommandPetFreePacket
 	}
 }
 
-export async function createPetFreeCollector(context: PacketContext, packet: ReactionCollectorPetFreePacket): Promise<ReactionCollectorReturnTypeOrNull> {
-	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
-	await interaction.deferReply();
-	const data = packet.data.data;
-	const lng = interaction.userLanguage ?? context.discord?.language ?? LANGUAGE.DEFAULT_LANGUAGE;
+/**
+ * Data needed to build a pet free confirmation embed
+ */
+interface PetFreeConfirmEmbedData {
+	petId: number;
+	petSex: SexTypeShort;
+	petNickname?: string;
+	freeCost: number;
+}
 
+/**
+ * Build the confirmation embed for freeing a pet
+ */
+function buildPetFreeConfirmEmbed(
+	interaction: CrowniclesInteraction,
+	data: PetFreeConfirmEmbedData,
+	lng: Language
+): CrowniclesEmbed {
 	const embed = new CrowniclesEmbed().formatAuthor(i18n.t("commands:petFree.title", {
 		lng,
 		pseudo: escapeUsername(interaction.user.displayName)
@@ -153,6 +166,17 @@ export async function createPetFreeCollector(context: PacketContext, packet: Rea
 			})
 		});
 	}
+
+	return embed;
+}
+
+export async function createPetFreeCollector(context: PacketContext, packet: ReactionCollectorPetFreePacket): Promise<ReactionCollectorReturnTypeOrNull> {
+	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
+	await interaction.deferReply();
+	const data = packet.data.data;
+	const lng = interaction.userLanguage ?? context.discord?.language ?? LANGUAGE.DEFAULT_LANGUAGE;
+
+	const embed = buildPetFreeConfirmEmbed(interaction, data, lng);
 
 	return await DiscordCollectorUtils.createAcceptRefuseCollector(interaction, embed, packet, context);
 }
@@ -173,25 +197,7 @@ export async function createPetFreeShelterConfirmCollector(
 	const data = packet.data.data;
 	const lng = interaction.userLanguage ?? context.discord?.language ?? LANGUAGE.DEFAULT_LANGUAGE;
 
-	const embed = new CrowniclesEmbed().formatAuthor(i18n.t("commands:petFree.title", {
-		lng,
-		pseudo: escapeUsername(interaction.user.displayName)
-	}), interaction.user)
-		.setDescription(
-			i18n.t("commands:petFree.confirmDesc", {
-				lng,
-				pet: PetUtils.petToShortString(lng, data.petNickname, data.petId, data.petSex)
-			})
-		);
-
-	if (data.freeCost) {
-		embed.setFooter({
-			text: i18n.t("commands:petFree.isFeisty", {
-				lng,
-				cost: data.freeCost
-			})
-		});
-	}
+	const embed = buildPetFreeConfirmEmbed(interaction, data, lng);
 
 	return await DiscordCollectorUtils.createAcceptRefuseCollector(interaction, embed, packet, context);
 }
