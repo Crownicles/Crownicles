@@ -1,92 +1,8 @@
 import { QueryInterface } from "sequelize";
-import { CrowniclesLogger } from "../../../../../../Lib/src/logs/CrowniclesLogger";
-
-// Error codes for table/constraint not found
-const TABLE_NOT_FOUND_ERRNO = 1146;
-const CONSTRAINT_NOT_FOUND_ERRNO = 1091;
-const DUPLICATE_KEY_ERRNO = 1061;
-const UNKNOWN_COLUMN_ERRNO = 1054;
-const KEY_COLUMN_DOES_NOT_EXIST_ERRNO = 1072;
-const CANT_CREATE_TABLE_ERRNO = 1005; // Duplicate FK name
-
-const IGNORABLE_ERRNOS = [
-	TABLE_NOT_FOUND_ERRNO,
-	CONSTRAINT_NOT_FOUND_ERRNO,
-	DUPLICATE_KEY_ERRNO,
-	UNKNOWN_COLUMN_ERRNO,
-	KEY_COLUMN_DOES_NOT_EXIST_ERRNO,
-	CANT_CREATE_TABLE_ERRNO
-];
-
-/**
- * Safely execute a query, ignoring table not found, unknown column, or other common migration errors
- */
-async function safeQuery(context: QueryInterface, sql: string): Promise<void> {
-	try {
-		await context.sequelize.query(sql);
-	}
-	catch (e) {
-		const errno = (e as { original?: { errno?: number } }).original?.errno;
-		if (errno === undefined) {
-			CrowniclesLogger.warn(`Migration 041: Unexpected error structure in safeQuery (no errno found): ${String(e)}`);
-			throw e;
-		}
-		if (!IGNORABLE_ERRNOS.includes(errno)) {
-			throw e;
-		}
-		CrowniclesLogger.debug(`Migration 041: Ignoring error ${errno} for query: ${sql.substring(0, 100)}...`);
-
-		// Table/column doesn't exist or constraint error - that's fine, skip
-	}
-}
-
-/**
- * Safely add a constraint, ignoring duplicate key or missing table/column errors
- */
-async function safeAddConstraint(context: QueryInterface, tableName: string, options: Parameters<typeof context.addConstraint>[1]): Promise<void> {
-	try {
-		await context.addConstraint(tableName, options);
-	}
-	catch (e) {
-		const errno = (e as { original?: { errno?: number } }).original?.errno;
-		if (errno === undefined) {
-			CrowniclesLogger.warn(`Migration 041: Unexpected error structure in safeAddConstraint on ${tableName} (no errno found): ${String(e)}`);
-			throw e;
-		}
-		if (!IGNORABLE_ERRNOS.includes(errno)) {
-			throw e;
-		}
-		CrowniclesLogger.debug(`Migration 041: Ignoring error ${errno} for addConstraint on ${tableName}`);
-
-		// Table/column doesn't exist or constraint already exists - skip
-	}
-}
-
-/**
- * Safely remove a constraint, ignoring not found errors
- */
-async function safeRemoveConstraint(context: QueryInterface, tableName: string, constraintName: string): Promise<void> {
-	try {
-		await context.removeConstraint(tableName, constraintName);
-	}
-	catch (e) {
-		const errno = (e as { original?: { errno?: number } }).original?.errno;
-		if (errno === undefined) {
-			CrowniclesLogger.warn(`Migration 041: Unexpected error structure in safeRemoveConstraint ${constraintName} on ${tableName} (no errno found): ${String(e)}`);
-			throw e;
-		}
-		if (errno !== TABLE_NOT_FOUND_ERRNO && errno !== CONSTRAINT_NOT_FOUND_ERRNO) {
-			throw e;
-		}
-		CrowniclesLogger.debug(`Migration 041: Ignoring error ${errno} for removeConstraint ${constraintName} on ${tableName}`);
-
-		// Table or constraint doesn't exist - skip
-	}
-}
 
 /**
  * This migration adds foreign key constraints to the database schema.
- * Before running, ensure data integrity by removing orphaned records.
+ * Before running, it cleans up orphaned records to ensure data integrity.
  *
  * FK relationships:
  * - player_badges.playerId -> players.id
@@ -106,102 +22,25 @@ async function safeRemoveConstraint(context: QueryInterface, tableName: string, 
  * - dwarf_pets_seen.playerId -> players.id
  */
 export async function up({ context }: { context: QueryInterface }): Promise<void> {
-	// First, clean up orphaned records before adding FK constraints
+	// Clean up orphaned records before adding FK constraints
+	await context.sequelize.query("DELETE FROM player_badges WHERE playerId NOT IN (SELECT id FROM players)");
+	await context.sequelize.query("DELETE FROM player_talismans WHERE playerId NOT IN (SELECT id FROM players)");
+	await context.sequelize.query("DELETE FROM mission_slots WHERE playerId NOT IN (SELECT id FROM players)");
+	await context.sequelize.query("DELETE FROM inventory_slots WHERE playerId NOT IN (SELECT id FROM players)");
+	await context.sequelize.query("DELETE FROM inventory_info WHERE playerId NOT IN (SELECT id FROM players)");
+	await context.sequelize.query("DELETE FROM player_missions_info WHERE playerId NOT IN (SELECT id FROM players)");
+	await context.sequelize.query("DELETE FROM player_small_events WHERE playerId NOT IN (SELECT id FROM players)");
+	await context.sequelize.query("DELETE FROM scheduled_report_notifications WHERE playerId NOT IN (SELECT id FROM players)");
+	await context.sequelize.query("DELETE FROM scheduled_daily_bonus_notifications WHERE playerId NOT IN (SELECT id FROM players)");
+	await context.sequelize.query("DELETE FROM guild_pets WHERE guildId NOT IN (SELECT id FROM guilds)");
+	await context.sequelize.query("DELETE FROM guild_pets WHERE petEntityId NOT IN (SELECT id FROM pet_entities)");
+	await context.sequelize.query("DELETE FROM pet_expeditions WHERE playerId NOT IN (SELECT id FROM players)");
+	await context.sequelize.query("DELETE FROM dwarf_pets_seen WHERE playerId NOT IN (SELECT id FROM players)");
+	await context.sequelize.query("UPDATE players SET guildId = NULL WHERE guildId IS NOT NULL AND guildId NOT IN (SELECT id FROM guilds)");
+	await context.sequelize.query("UPDATE players SET petId = NULL WHERE petId IS NOT NULL AND petId NOT IN (SELECT id FROM pet_entities)");
 
-	// Clean orphaned player_badges
-	await safeQuery(context, `
-		DELETE FROM player_badges 
-		WHERE playerId NOT IN (SELECT id FROM players)
-	`);
-
-	// Clean orphaned player_talismans
-	await safeQuery(context, `
-		DELETE FROM player_talismans 
-		WHERE playerId NOT IN (SELECT id FROM players)
-	`);
-
-	// Clean orphaned mission_slots
-	await safeQuery(context, `
-		DELETE FROM mission_slots 
-		WHERE playerId NOT IN (SELECT id FROM players)
-	`);
-
-	// Clean orphaned inventory_slots
-	await safeQuery(context, `
-		DELETE FROM inventory_slots 
-		WHERE playerId NOT IN (SELECT id FROM players)
-	`);
-
-	// Clean orphaned inventory_info
-	await safeQuery(context, `
-		DELETE FROM inventory_info 
-		WHERE playerId NOT IN (SELECT id FROM players)
-	`);
-
-	// Clean orphaned player_missions_info
-	await safeQuery(context, `
-		DELETE FROM player_missions_info 
-		WHERE playerId NOT IN (SELECT id FROM players)
-	`);
-
-	// Clean orphaned player_small_events
-	await safeQuery(context, `
-		DELETE FROM player_small_events 
-		WHERE playerId NOT IN (SELECT id FROM players)
-	`);
-
-	// Clean orphaned scheduled_report_notifications
-	await safeQuery(context, `
-		DELETE FROM scheduled_report_notifications 
-		WHERE playerId NOT IN (SELECT id FROM players)
-	`);
-
-	// Clean orphaned scheduled_daily_bonus_notifications
-	await safeQuery(context, `
-		DELETE FROM scheduled_daily_bonus_notifications 
-		WHERE playerId NOT IN (SELECT id FROM players)
-	`);
-
-	// Clean orphaned guild_pets (guildId)
-	await safeQuery(context, `
-		DELETE FROM guild_pets 
-		WHERE guildId NOT IN (SELECT id FROM guilds)
-	`);
-
-	// Clean orphaned guild_pets (petEntityId)
-	await safeQuery(context, `
-		DELETE FROM guild_pets 
-		WHERE petEntityId NOT IN (SELECT id FROM pet_entities)
-	`);
-
-	// Clean orphaned pet_expeditions
-	await safeQuery(context, `
-		DELETE FROM pet_expeditions 
-		WHERE playerId NOT IN (SELECT id FROM players)
-	`);
-
-	// Clean orphaned dwarf_pets_seen
-	await safeQuery(context, `
-		DELETE FROM dwarf_pets_seen 
-		WHERE playerId NOT IN (SELECT id FROM players)
-	`);
-
-	// Set invalid player.guildId to NULL
-	await safeQuery(context, `
-		UPDATE players SET guildId = NULL 
-		WHERE guildId IS NOT NULL AND guildId NOT IN (SELECT id FROM guilds)
-	`);
-
-	// Set invalid player.petId to NULL
-	await safeQuery(context, `
-		UPDATE players SET petId = NULL 
-		WHERE petId IS NOT NULL AND petId NOT IN (SELECT id FROM pet_entities)
-	`);
-
-	// Now add FK constraints
-
-	// Player-related FKs with CASCADE delete (when player is deleted, related data is deleted)
-	await safeAddConstraint(context, "player_badges", {
+	// Add FK constraints - Player-related (CASCADE delete)
+	await context.addConstraint("player_badges", {
 		fields: ["playerId"],
 		type: "foreign key",
 		name: "fk_player_badges_playerId",
@@ -212,7 +51,7 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 		onUpdate: "CASCADE"
 	});
 
-	await safeAddConstraint(context, "player_talismans", {
+	await context.addConstraint("player_talismans", {
 		fields: ["playerId"],
 		type: "foreign key",
 		name: "fk_player_talismans_playerId",
@@ -223,7 +62,7 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 		onUpdate: "CASCADE"
 	});
 
-	await safeAddConstraint(context, "mission_slots", {
+	await context.addConstraint("mission_slots", {
 		fields: ["playerId"],
 		type: "foreign key",
 		name: "fk_mission_slots_playerId",
@@ -234,7 +73,7 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 		onUpdate: "CASCADE"
 	});
 
-	await safeAddConstraint(context, "inventory_slots", {
+	await context.addConstraint("inventory_slots", {
 		fields: ["playerId"],
 		type: "foreign key",
 		name: "fk_inventory_slots_playerId",
@@ -245,7 +84,7 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 		onUpdate: "CASCADE"
 	});
 
-	await safeAddConstraint(context, "inventory_info", {
+	await context.addConstraint("inventory_info", {
 		fields: ["playerId"],
 		type: "foreign key",
 		name: "fk_inventory_info_playerId",
@@ -256,7 +95,7 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 		onUpdate: "CASCADE"
 	});
 
-	await safeAddConstraint(context, "player_missions_info", {
+	await context.addConstraint("player_missions_info", {
 		fields: ["playerId"],
 		type: "foreign key",
 		name: "fk_player_missions_info_playerId",
@@ -267,7 +106,7 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 		onUpdate: "CASCADE"
 	});
 
-	await safeAddConstraint(context, "player_small_events", {
+	await context.addConstraint("player_small_events", {
 		fields: ["playerId"],
 		type: "foreign key",
 		name: "fk_player_small_events_playerId",
@@ -278,7 +117,7 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 		onUpdate: "CASCADE"
 	});
 
-	await safeAddConstraint(context, "scheduled_report_notifications", {
+	await context.addConstraint("scheduled_report_notifications", {
 		fields: ["playerId"],
 		type: "foreign key",
 		name: "fk_scheduled_report_notifications_playerId",
@@ -289,7 +128,7 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 		onUpdate: "CASCADE"
 	});
 
-	await safeAddConstraint(context, "scheduled_daily_bonus_notifications", {
+	await context.addConstraint("scheduled_daily_bonus_notifications", {
 		fields: ["playerId"],
 		type: "foreign key",
 		name: "fk_scheduled_daily_bonus_notifications_playerId",
@@ -300,7 +139,7 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 		onUpdate: "CASCADE"
 	});
 
-	await safeAddConstraint(context, "pet_expeditions", {
+	await context.addConstraint("pet_expeditions", {
 		fields: ["playerId"],
 		type: "foreign key",
 		name: "fk_pet_expeditions_playerId",
@@ -311,7 +150,7 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 		onUpdate: "CASCADE"
 	});
 
-	await safeAddConstraint(context, "dwarf_pets_seen", {
+	await context.addConstraint("dwarf_pets_seen", {
 		fields: ["playerId"],
 		type: "foreign key",
 		name: "fk_dwarf_pets_seen_playerId",
@@ -323,7 +162,7 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 	});
 
 	// Guild pet FKs
-	await safeAddConstraint(context, "guild_pets", {
+	await context.addConstraint("guild_pets", {
 		fields: ["guildId"],
 		type: "foreign key",
 		name: "fk_guild_pets_guildId",
@@ -334,7 +173,7 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 		onUpdate: "CASCADE"
 	});
 
-	await safeAddConstraint(context, "guild_pets", {
+	await context.addConstraint("guild_pets", {
 		fields: ["petEntityId"],
 		type: "foreign key",
 		name: "fk_guild_pets_petEntityId",
@@ -346,7 +185,7 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 	});
 
 	// Player optional references (SET NULL on delete)
-	await safeAddConstraint(context, "players", {
+	await context.addConstraint("players", {
 		fields: ["guildId"],
 		type: "foreign key",
 		name: "fk_players_guildId",
@@ -357,7 +196,7 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 		onUpdate: "CASCADE"
 	});
 
-	await safeAddConstraint(context, "players", {
+	await context.addConstraint("players", {
 		fields: ["petId"],
 		type: "foreign key",
 		name: "fk_players_petId",
@@ -371,19 +210,19 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 
 export async function down({ context }: { context: QueryInterface }): Promise<void> {
 	// Remove all FK constraints
-	await safeRemoveConstraint(context, "player_badges", "fk_player_badges_playerId");
-	await safeRemoveConstraint(context, "player_talismans", "fk_player_talismans_playerId");
-	await safeRemoveConstraint(context, "mission_slots", "fk_mission_slots_playerId");
-	await safeRemoveConstraint(context, "inventory_slots", "fk_inventory_slots_playerId");
-	await safeRemoveConstraint(context, "inventory_info", "fk_inventory_info_playerId");
-	await safeRemoveConstraint(context, "player_missions_info", "fk_player_missions_info_playerId");
-	await safeRemoveConstraint(context, "player_small_events", "fk_player_small_events_playerId");
-	await safeRemoveConstraint(context, "scheduled_report_notifications", "fk_scheduled_report_notifications_playerId");
-	await safeRemoveConstraint(context, "scheduled_daily_bonus_notifications", "fk_scheduled_daily_bonus_notifications_playerId");
-	await safeRemoveConstraint(context, "pet_expeditions", "fk_pet_expeditions_playerId");
-	await safeRemoveConstraint(context, "dwarf_pets_seen", "fk_dwarf_pets_seen_playerId");
-	await safeRemoveConstraint(context, "guild_pets", "fk_guild_pets_guildId");
-	await safeRemoveConstraint(context, "guild_pets", "fk_guild_pets_petEntityId");
-	await safeRemoveConstraint(context, "players", "fk_players_guildId");
-	await safeRemoveConstraint(context, "players", "fk_players_petId");
+	await context.removeConstraint("player_badges", "fk_player_badges_playerId");
+	await context.removeConstraint("player_talismans", "fk_player_talismans_playerId");
+	await context.removeConstraint("mission_slots", "fk_mission_slots_playerId");
+	await context.removeConstraint("inventory_slots", "fk_inventory_slots_playerId");
+	await context.removeConstraint("inventory_info", "fk_inventory_info_playerId");
+	await context.removeConstraint("player_missions_info", "fk_player_missions_info_playerId");
+	await context.removeConstraint("player_small_events", "fk_player_small_events_playerId");
+	await context.removeConstraint("scheduled_report_notifications", "fk_scheduled_report_notifications_playerId");
+	await context.removeConstraint("scheduled_daily_bonus_notifications", "fk_scheduled_daily_bonus_notifications_playerId");
+	await context.removeConstraint("pet_expeditions", "fk_pet_expeditions_playerId");
+	await context.removeConstraint("dwarf_pets_seen", "fk_dwarf_pets_seen_playerId");
+	await context.removeConstraint("guild_pets", "fk_guild_pets_guildId");
+	await context.removeConstraint("guild_pets", "fk_guild_pets_petEntityId");
+	await context.removeConstraint("players", "fk_players_guildId");
+	await context.removeConstraint("players", "fk_players_petId");
 }
