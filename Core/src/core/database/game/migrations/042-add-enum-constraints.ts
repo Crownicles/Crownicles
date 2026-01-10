@@ -15,6 +15,10 @@ async function safeQuery(context: QueryInterface, sql: string): Promise<void> {
 	}
 	catch (e) {
 		const errno = (e as { original?: { errno?: number } }).original?.errno;
+		if (errno === undefined) {
+			CrowniclesLogger.warn(`Migration 042: Unexpected error structure in safeQuery (no errno found): ${String(e)}`);
+			throw e;
+		}
 		if (errno !== TABLE_NOT_FOUND_ERRNO) {
 			throw e;
 		}
