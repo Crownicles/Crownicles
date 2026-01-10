@@ -6,6 +6,7 @@ import {
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { CommandsTest } from "../../core/CommandsTest";
 import { adminCommand } from "../../core/utils/CommandUtils";
+import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 
 /**
  * Command to get the list of all available test commands for autocomplete
@@ -14,6 +15,9 @@ export default class TestListCommand {
 	@adminCommand(CommandTestListPacketReq, () => true)
 	execute(response: CrowniclesPacket[], _packet: CommandTestListPacketReq): void {
 		// Get all test commands from CommandsTest (handle case where not yet initialized)
+		if (!CommandsTest.testCommandsArray) {
+			CrowniclesLogger.warn("TestListCommand: testCommandsArray is not initialized yet - CommandsTest.init() may not have been called");
+		}
 		const commandsArray = CommandsTest.testCommandsArray ?? {};
 		const commands = Object.values(commandsArray)
 			.filter((cmd, index, self) =>
