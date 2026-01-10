@@ -5,21 +5,31 @@ import { MissionDifficulty } from "../MissionDifficulty";
 /**
  * Get a numeric category level from a risk rate value
  * Higher values = more dangerous = higher category level
+ * 8 categories: trivial(0), veryLow(1), low(2), moderate(3), high(4), veryHigh(5), extreme(6), desperate(7)
  */
 function getRiskCategoryLevel(riskRate: number): number {
+	if (riskRate <= ExpeditionConstants.RISK_DISPLAY_CATEGORIES.TRIVIAL.MAX) {
+		return 0; // trivial
+	}
 	if (riskRate <= ExpeditionConstants.RISK_DISPLAY_CATEGORIES.VERY_LOW.MAX) {
-		return 0; // veryLow
+		return 1; // veryLow
 	}
 	if (riskRate <= ExpeditionConstants.RISK_DISPLAY_CATEGORIES.LOW.MAX) {
-		return 1; // low
+		return 2; // low
 	}
-	if (riskRate <= ExpeditionConstants.RISK_DISPLAY_CATEGORIES.MEDIUM.MAX) {
-		return 2; // medium
+	if (riskRate <= ExpeditionConstants.RISK_DISPLAY_CATEGORIES.MODERATE.MAX) {
+		return 3; // moderate
 	}
 	if (riskRate <= ExpeditionConstants.RISK_DISPLAY_CATEGORIES.HIGH.MAX) {
-		return 3; // high
+		return 4; // high
 	}
-	return 4; // veryHigh
+	if (riskRate <= ExpeditionConstants.RISK_DISPLAY_CATEGORIES.VERY_HIGH.MAX) {
+		return 5; // veryHigh
+	}
+	if (riskRate <= ExpeditionConstants.RISK_DISPLAY_CATEGORIES.EXTREME.MAX) {
+		return 6; // extreme
+	}
+	return 7; // desperate
 }
 
 export const missionInterface: IMission = {
@@ -33,18 +43,18 @@ export const missionInterface: IMission = {
 
 	/**
 	 * Generate a random risk variant based on difficulty
-	 * Easy: 30 (moderate risk)
-	 * Medium: 50 (challenging risk)
-	 * Hard: 70 (treacherous risk)
+	 * Easy: 45 (moderate risk)
+	 * Medium: 58 (high risk)
+	 * Hard: 72 (veryHigh risk)
 	 */
 	generateRandomVariant: difficulty => {
 		switch (difficulty) {
 			case MissionDifficulty.MEDIUM:
-				return 50;
+				return 58;
 			case MissionDifficulty.HARD:
-				return 70;
+				return 72;
 			default:
-				return 30;
+				return 45;
 		}
 	},
 

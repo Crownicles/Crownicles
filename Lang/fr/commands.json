@@ -138,7 +138,7 @@
     "inProgressDescription": {
       "intro": "{{petDisplay}} arpente actuellement des terres lointaines et mystérieuses !",
       "destination": "{emote:expedition.map} **Destination :** **{{location}}**",
-      "risk": "{emote:expedition.risk} **Dangerosité :** {{risk}}",
+      "risk": "{{riskEmoji}} **Dangerosité :** {{risk}}",
       "returnTime": "{emote:clocks.1} **Retour prévu :** {{returnTime}}",
       "warning_male": "{emote:collectors.warning} *Rappeler votre familier prématurément brisera le lien de confiance. Il reviendra sans butin et le cœur meurtri...*",
       "warning_female": "{emote:collectors.warning} *Rappeler votre familier prématurément brisera le lien de confiance. Elle reviendra sans butin et le cœur meurtrie...*"
@@ -154,9 +154,9 @@
     "expeditionOption": {
       "header": "**{{number}}.** {{location}}",
       "duration": "{emote:expedition.duration} Durée estimée : {{duration}}",
-      "risk": "{emote:expedition.risk} Dangerosité : {{risk}}",
+      "difficulty": "{{difficultyEmoji}} Difficulté du terrain : {{difficulty}}",
+      "risk": "{{riskEmoji}} Dangerosité : {{risk}}",
       "reward": "{emote:expedition.reward} Récompenses estimées : {{reward}}",
-      "difficulty": "{emote:expedition.difficulty} Difficulté du terrain : {{difficulty}}",
       "food": "{emote:expedition.food} Provisions requises : {{foodDisplay}}",
       "cloneTalismanBonus": "{emote:expedition.cloneTalisman} *Un étrange pressentiment vous envahit... Les rumeurs parlent d'un artefact légendaire peut-être caché en ces terres.*",
       "bonusTokens": "{emote:unitValues.token} *Cette région regorge de trésors anciens ! Votre familier pourrait y découvrir une fortune en jetons perdus...*"
@@ -202,7 +202,7 @@
       "talisman": {
         "intro": "Le $t(models:talisman.anchor) vibre intensément dans votre sacoche : {{petDisplay}} est de retour de son expédition vers **{{location}}** !"
       },
-      "risk": "{emote:expedition.risk} Dangerosité : {{risk}}",
+      "risk": "{{riskEmoji}} Dangerosité : {{risk}}",
       "impatience_male": "*Votre compagnon trépigne d'impatience, pressé de vous montrer ce qu'il a rapporté !*",
       "impatience_female": "*Votre compagne trépigne d'impatience, pressée de vous montrer ce qu'elle a rapporté !*"
     },
@@ -270,11 +270,14 @@
       "badgeEarned": "{emote:badges.expert_expediteur} Un badge vous a été offert : **Expéditeur Expert** !"
     },
     "riskCategories": {
-      "veryLow": "Paisible",
-      "low": "Peu risqué",
-      "medium": "Modéré",
+      "trivial": "Tranquille",
+      "veryLow": "Serein",
+      "low": "Hasardeux",
+      "moderate": "Risqué",
       "high": "Dangereux",
-      "veryHigh": "Périlleux"
+      "veryHigh": "Périlleux",
+      "extreme": "Mortel",
+      "desperate": "Désespéré"
     },
     "rewardCategories": {
       "meager": "Maigres",
@@ -284,11 +287,11 @@
       "legendary": "Exceptionnelles"
     },
     "difficultyCategories": {
-      "trivial": "Aisé",
-      "easy": "Accessible",
+      "trivial": "Paisible",
+      "easy": "Accueillant",
       "moderate": "Exigeant",
-      "challenging": "Ardu",
-      "treacherous": "Impitoyable"
+      "challenging": "Redoutable",
+      "treacherous": "Mortel"
     },
     "mapLocationExpeditions": {
       "1": "les Récifs Mystérieux de la Plage Sentinelle",

@@ -18,28 +18,40 @@ export abstract class ExpeditionConstants {
 	/**
 	 * Risk rate categories for display purposes
 	 * Risk rate is a percentage from 0 to 100
-	 * 5 categories: veryLow (0-15), low (16-30), medium (31-50), high (51-70), veryHigh (71+)
+	 * 8 categories: trivial (0-10), veryLow (11-20), low (21-32), moderate (33-45), high (46-58), veryHigh (59-72), extreme (73-86), desperate (87+)
 	 */
 	static readonly RISK_DISPLAY_CATEGORIES = {
+		TRIVIAL: {
+			MAX: 10,
+			NAME: "trivial"
+		},
 		VERY_LOW: {
-			MAX: 15,
+			MAX: 20,
 			NAME: "veryLow"
 		},
 		LOW: {
-			MAX: 30,
+			MAX: 32,
 			NAME: "low"
 		},
-		MEDIUM: {
-			MAX: 50,
-			NAME: "medium"
+		MODERATE: {
+			MAX: 45,
+			NAME: "moderate"
 		},
 		HIGH: {
-			MAX: 70,
+			MAX: 58,
 			NAME: "high"
 		},
 		VERY_HIGH: {
-			MAX: 100,
+			MAX: 72,
 			NAME: "veryHigh"
+		},
+		EXTREME: {
+			MAX: 86,
+			NAME: "extreme"
+		},
+		DESPERATE: {
+			MAX: 100,
+			NAME: "desperate"
 		}
 	};
 
@@ -682,19 +694,28 @@ export abstract class ExpeditionConstants {
 	 * @returns The category name key for translations
 	 */
 	static getRiskCategoryName(riskRate: number): string {
+		if (riskRate <= ExpeditionConstants.RISK_DISPLAY_CATEGORIES.TRIVIAL.MAX) {
+			return ExpeditionConstants.RISK_DISPLAY_CATEGORIES.TRIVIAL.NAME;
+		}
 		if (riskRate <= ExpeditionConstants.RISK_DISPLAY_CATEGORIES.VERY_LOW.MAX) {
 			return ExpeditionConstants.RISK_DISPLAY_CATEGORIES.VERY_LOW.NAME;
 		}
 		if (riskRate <= ExpeditionConstants.RISK_DISPLAY_CATEGORIES.LOW.MAX) {
 			return ExpeditionConstants.RISK_DISPLAY_CATEGORIES.LOW.NAME;
 		}
-		if (riskRate <= ExpeditionConstants.RISK_DISPLAY_CATEGORIES.MEDIUM.MAX) {
-			return ExpeditionConstants.RISK_DISPLAY_CATEGORIES.MEDIUM.NAME;
+		if (riskRate <= ExpeditionConstants.RISK_DISPLAY_CATEGORIES.MODERATE.MAX) {
+			return ExpeditionConstants.RISK_DISPLAY_CATEGORIES.MODERATE.NAME;
 		}
 		if (riskRate <= ExpeditionConstants.RISK_DISPLAY_CATEGORIES.HIGH.MAX) {
 			return ExpeditionConstants.RISK_DISPLAY_CATEGORIES.HIGH.NAME;
 		}
-		return ExpeditionConstants.RISK_DISPLAY_CATEGORIES.VERY_HIGH.NAME;
+		if (riskRate <= ExpeditionConstants.RISK_DISPLAY_CATEGORIES.VERY_HIGH.MAX) {
+			return ExpeditionConstants.RISK_DISPLAY_CATEGORIES.VERY_HIGH.NAME;
+		}
+		if (riskRate <= ExpeditionConstants.RISK_DISPLAY_CATEGORIES.EXTREME.MAX) {
+			return ExpeditionConstants.RISK_DISPLAY_CATEGORIES.EXTREME.NAME;
+		}
+		return ExpeditionConstants.RISK_DISPLAY_CATEGORIES.DESPERATE.NAME;
 	}
 
 	/**
