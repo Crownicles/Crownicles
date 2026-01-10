@@ -30,7 +30,7 @@ async function safeQuery(context: QueryInterface, sql: string): Promise<void> {
 		if (errno === undefined || !IGNORABLE_ERRNOS.includes(errno)) {
 			throw e;
 		}
-		CrowniclesLogger.debug(`Migration 040: Ignoring error ${errno} for query: ${sql.substring(0, 100)}...`);
+		CrowniclesLogger.debug(`Migration 041: Ignoring error ${errno} for query: ${sql.substring(0, 100)}...`);
 
 		// Table/column doesn't exist or constraint error - that's fine, skip
 	}
@@ -48,7 +48,7 @@ async function safeAddConstraint(context: QueryInterface, tableName: string, opt
 		if (errno === undefined || !IGNORABLE_ERRNOS.includes(errno)) {
 			throw e;
 		}
-		CrowniclesLogger.debug(`Migration 040: Ignoring error ${errno} for addConstraint on ${tableName}`);
+		CrowniclesLogger.debug(`Migration 041: Ignoring error ${errno} for addConstraint on ${tableName}`);
 
 		// Table/column doesn't exist or constraint already exists - skip
 	}
@@ -66,7 +66,7 @@ async function safeRemoveConstraint(context: QueryInterface, tableName: string, 
 		if (errno !== TABLE_NOT_FOUND_ERRNO && errno !== CONSTRAINT_NOT_FOUND_ERRNO) {
 			throw e;
 		}
-		CrowniclesLogger.debug(`Migration 040: Ignoring error ${errno} for removeConstraint ${constraintName} on ${tableName}`);
+		CrowniclesLogger.debug(`Migration 041: Ignoring error ${errno} for removeConstraint ${constraintName} on ${tableName}`);
 
 		// Table or constraint doesn't exist - skip
 	}
