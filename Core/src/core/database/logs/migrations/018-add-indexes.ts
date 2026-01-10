@@ -38,7 +38,7 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 	await context.addIndex("players_gems", ["playerId", "date"], { name: "idx_player_date" });
 
 	// fights_results - for fight history queries
-	await context.addIndex("fights_results", ["player1Id"], { name: "idx_player1" });
+	await context.addIndex("fights_results", ["fightInitiatorId"], { name: "idx_fightInitiator" });
 	await context.addIndex("fights_results", ["player2Id"], { name: "idx_player2" });
 	await context.addIndex("fights_results", ["date"], { name: "idx_date" });
 }
@@ -58,7 +58,7 @@ export async function down({ context }: { context: QueryInterface }): Promise<vo
 	await context.removeIndex("players_standard_alterations", "idx_player_date");
 	await context.removeIndex("players_health", "idx_player_date");
 	await context.removeIndex("players_gems", "idx_player_date");
-	await context.removeIndex("fights_results", "idx_player1");
+	await context.removeIndex("fights_results", "idx_fightInitiator");
 	await context.removeIndex("fights_results", "idx_player2");
 	await context.removeIndex("fights_results", "idx_date");
 }
