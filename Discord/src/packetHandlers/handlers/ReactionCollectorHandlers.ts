@@ -21,11 +21,13 @@ import { ReactionCollectorLotteryData } from "../../../../Lib/src/packets/intera
 import { lotteryCollector } from "../../smallEvents/lottery";
 import {
 	ReactionCollectorPetFreeData,
-	ReactionCollectorPetFreeSelectionData
+	ReactionCollectorPetFreeSelectionData,
+	ReactionCollectorPetFreeShelterConfirmData
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorPetFree";
 import {
 	createPetFreeCollector,
-	createPetFreeSelectionCollector
+	createPetFreeSelectionCollector,
+	createPetFreeShelterConfirmCollector
 } from "../../commands/pet/PetFreeCommand";
 import { ReactionCollectorInteractOtherPlayersPoorData } from "../../../../Lib/src/packets/interaction/ReactionCollectorInteractOtherPlayers";
 import { interactOtherPlayersCollector } from "../../smallEvents/interactOtherPlayers";
@@ -147,6 +149,7 @@ export default class ReactionCollectorHandler {
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorJoinBoatData.name, createJoinBoatCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorPetFreeData.name, createPetFreeCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorPetFreeSelectionData.name, createPetFreeSelectionCollector);
+		ReactionCollectorHandler.collectorMap.set(ReactionCollectorPetFreeShelterConfirmData.name, createPetFreeShelterConfirmCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorGuildCreateData.name, createGuildCreateCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorGuildKickData.name, createGuildKickCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorGuildDescriptionData.name, createGuildDescriptionCollector);
