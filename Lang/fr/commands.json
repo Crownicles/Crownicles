@@ -244,6 +244,8 @@
     "loveChangePartialNegative": "\n\n{emote:expedition.love} Les difficultés rencontrées ont quelque peu ébranlé la confiance de votre familier. Quelques caresses et friandises l'aideront à se remettre.",
     "loveChangePartialPositive": "\n\n{emote:expedition.love} Malgré les embûches, cette aventure a renforcé légèrement le lien entre vous. Votre compagnon apprécie que vous lui fassiez confiance.",
     "loveChangeSuccess": "\n\n{emote:expedition.love} Cette expédition réussie a renforcé le lien qui vous unit. Votre familier vous regarde avec une admiration renouvelée !",
+    "petLikedExpedition_m": "\n\n{emote:expedition.liked} *Votre compagnon a adoré cette expédition ! Ce type de destination correspond parfaitement à ses goûts, ce qui a décuplé son enthousiasme et son efficacité.*",
+    "petLikedExpedition_f": "\n\n{emote:expedition.liked} *Votre familier a adoré cette expédition ! Ce type de destination correspond parfaitement à ses goûts, ce qui a décuplé son enthousiasme et son efficacité.*",
     "duration": {
       "minutes": "{{count}} minute",
       "minutes_other": "{{count}} minutes",
@@ -258,7 +260,7 @@
       "title": "\n\n**Butin rapporté :**",
       "dislikedExpedition": {
         "male": "\n{emote:expedition.disliked} *Votre compagnon n'a pas apprécié cette destination. Son manque d'enthousiasme a considérablement réduit ses trouvailles.*",
-        "female": "\n{emote:expedition.disliked} *Votre compagne n'a pas apprécié cette destination. Son manque d'enthousiasme a considérablement réduit ses trouvailles.*"
+        "female": "\n{emote:expedition.disliked} *Votre familier n'a pas apprécié cette destination. Son manque d'enthousiasme a considérablement réduit ses trouvailles.*"
       },
       "money": "{emote:unitValues.money} Argent gagné : **{{amount, number}}** !",
       "experience": "{emote:unitValues.xp} Expérience gagnée : **{{amount, number}}** !",
