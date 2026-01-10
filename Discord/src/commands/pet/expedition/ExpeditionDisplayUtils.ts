@@ -75,19 +75,19 @@ export function getTranslatedRewardCategoryName(rewardIndex: number, lng: Langua
 }
 
 /**
- * Get translated difficulty category name for display
+ * Get translated terrain category name for display
  */
-export function getTranslatedDifficultyCategoryName(difficulty: number, lng: Language): string {
+export function getTranslatedTerrainCategoryName(difficulty: number, lng: Language): string {
 	const categoryKey = ExpeditionConstants.getDifficultyCategoryName(difficulty);
-	return i18n.t(`commands:petExpedition.difficultyCategories.${categoryKey}`, { lng });
+	return i18n.t(`commands:petExpedition.terrainCategories.${categoryKey}`, { lng });
 }
 
 /**
- * Get the emoji for a difficulty category
+ * Get the emoji for a terrain category
  */
-export function getDifficultyEmoji(difficulty: number): string {
-	const categoryKey = ExpeditionConstants.getDifficultyCategoryName(difficulty) as keyof typeof CrowniclesIcons.expedition.difficulty;
-	return CrowniclesIcons.expedition.difficulty[categoryKey];
+export function getTerrainEmoji(difficulty: number): string {
+	const categoryKey = ExpeditionConstants.getDifficultyCategoryName(difficulty) as keyof typeof CrowniclesIcons.expedition.terrain;
+	return CrowniclesIcons.expedition.terrain[categoryKey];
 }
 
 /**
@@ -256,10 +256,14 @@ export function buildExpeditionOptionText(
 		lng,
 		duration: displayDuration
 	});
-	const difficulty = i18n.t("commands:petExpedition.expeditionOption.difficulty", {
+
+	// Calculate terrain impact on risk: difficulty / 4 (formula coefficient)
+	const terrainImpact = Math.round(exp.difficulty / ExpeditionConstants.EFFECTIVE_RISK_FORMULA.DIFFICULTY_DIVISOR);
+	const terrain = i18n.t("commands:petExpedition.expeditionOption.terrain", {
 		lng,
-		difficultyEmoji: getDifficultyEmoji(exp.difficulty),
-		difficulty: getTranslatedDifficultyCategoryName(exp.difficulty, lng)
+		terrainEmoji: getTerrainEmoji(exp.difficulty),
+		terrain: getTranslatedTerrainCategoryName(exp.difficulty, lng),
+		terrainImpact
 	});
 	const risk = i18n.t("commands:petExpedition.expeditionOption.risk", {
 		lng,
@@ -275,8 +279,8 @@ export function buildExpeditionOptionText(
 		foodDisplay
 	});
 
-	// Order: header, duration, difficulty (new position), risk, reward, food
-	let optionText = `\n\n${header}\n${duration}\n${difficulty}\n${risk}\n${reward}\n${food}`;
+	// Order: header, duration, risk (main factor), terrain, reward, food
+	let optionText = `\n\n${header}\n${duration}\n${risk}\n${terrain}\n${reward}\n${food}`;
 
 	// Add clone talisman bonus tag if present
 	if (exp.hasCloneTalismanBonus) {

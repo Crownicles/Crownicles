@@ -194,24 +194,24 @@ describe("dangerousExpedition mission", () => {
 
 	describe("generateRandomVariant", () => {
 		it("should return 45 for EASY difficulty (moderate risk)", () => {
-			const result = missionInterface.generateRandomVariant(MissionDifficulty.EASY);
+			const result = missionInterface.generateRandomVariant(MissionDifficulty.EASY, null as never);
 			expect(result).toBe(45);
 		});
 
 		it("should return 58 for MEDIUM difficulty (high risk)", () => {
-			const result = missionInterface.generateRandomVariant(MissionDifficulty.MEDIUM);
+			const result = missionInterface.generateRandomVariant(MissionDifficulty.MEDIUM, null as never);
 			expect(result).toBe(58);
 		});
 
 		it("should return 72 for HARD difficulty (veryHigh risk)", () => {
-			const result = missionInterface.generateRandomVariant(MissionDifficulty.HARD);
+			const result = missionInterface.generateRandomVariant(MissionDifficulty.HARD, null as never);
 			expect(result).toBe(72);
 		});
 	});
 
 	describe("initialNumberDone", () => {
 		it("should return 0", () => {
-			const result = missionInterface.initialNumberDone();
+			const result = missionInterface.initialNumberDone(null as never, 0);
 			expect(result).toBe(0);
 		});
 	});

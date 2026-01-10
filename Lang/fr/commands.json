@@ -154,7 +154,7 @@
     "expeditionOption": {
       "header": "**{{number}}.** {{location}}",
       "duration": "{emote:expedition.duration} Durée estimée : {{duration}}",
-      "difficulty": "{{difficultyEmoji}} Difficulté du terrain : {{difficulty}}",
+      "terrain": "{{terrainEmoji}} Terrain : {{terrain}} *(+{{terrainImpact}}% risque)*",
       "risk": "{{riskEmoji}} Dangerosité : {{risk}}",
       "reward": "{emote:expedition.reward} Récompenses estimées : {{reward}}",
       "food": "{emote:expedition.food} Provisions requises : {{foodDisplay}}",
@@ -286,12 +286,12 @@
       "bountiful": "Abondantes",
       "legendary": "Exceptionnelles"
     },
-    "difficultyCategories": {
+    "terrainCategories": {
       "trivial": "Paisible",
-      "easy": "Accueillant",
-      "moderate": "Exigeant",
-      "challenging": "Redoutable",
-      "treacherous": "Mortel"
+      "easy": "Praticable",
+      "moderate": "Accidenté",
+      "challenging": "Hostile",
+      "treacherous": "Périlleux"
     },
     "mapLocationExpeditions": {
       "1": "les Récifs Mystérieux de la Plage Sentinelle",
