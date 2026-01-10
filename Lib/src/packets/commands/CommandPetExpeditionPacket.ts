@@ -346,6 +346,11 @@ export class CommandPetExpeditionResolvePacketRes extends CrowniclesPacket {
 	 * Badge earned during this expedition (e.g., expert expediteur)
 	 */
 	badgeEarned?: string;
+
+	/**
+	 * True if the pet liked this expedition type (for special message)
+	 */
+	petLikedExpedition!: boolean;
 }
 
 /**

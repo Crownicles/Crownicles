@@ -239,6 +239,14 @@ function buildResolutionData(
 	const petPreference = getPetExpeditionPreference(packet.pet.petTypeId, packet.expedition.locationType);
 	const dislikedContext = petPreference === "disliked" ? { sexContext } : undefined;
 
+	// Build liked expedition message if applicable
+	const likedMessage = packet.petLikedExpedition && !packet.totalFailure
+		? `\n${i18n.t("commands:petExpedition.petLikedExpedition", {
+			lng,
+			context: sexContext
+		})}`
+		: "";
+
 	if (packet.totalFailure) {
 		return {
 			title: i18n.t("commands:petExpedition.failureTitle", {
@@ -265,7 +273,7 @@ function buildResolutionData(
 				context: sexContext,
 				petDisplay,
 				location
-			}) + rewardText + i18n.t(loveChangeKey, { lng })
+			}) + rewardText + i18n.t(loveChangeKey, { lng }) + likedMessage
 		};
 	}
 
@@ -278,7 +286,7 @@ function buildResolutionData(
 			context: sexContext,
 			petDisplay,
 			location
-		}) + rewardText + i18n.t("commands:petExpedition.loveChangeSuccess", { lng })
+		}) + rewardText + i18n.t("commands:petExpedition.loveChangeSuccess", { lng }) + likedMessage
 	};
 }
 

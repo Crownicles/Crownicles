@@ -243,7 +243,13 @@ export abstract class ExpeditionConstants {
 		CANCEL_BEFORE_DEPARTURE_BASE: -15,
 		RECALL_DURING_EXPEDITION: -25,
 		TOTAL_FAILURE: -3,
-		TOTAL_SUCCESS: 5
+		PARTIAL_SUCCESS: 2,
+		TOTAL_SUCCESS: 5,
+
+		/**
+		 * Multiplier for love gained when pet likes the expedition type (total success only)
+		 */
+		LIKED_EXPEDITION_MULTIPLIER: 2
 	};
 
 	/**
@@ -844,6 +850,11 @@ export const PET_PREFERENCE_REWARD_MULTIPLIERS: Record<PetExpeditionPreference, 
  * Additional failure risk for disliked expeditions shorter than 12 hours
  */
 export const DISLIKED_SHORT_EXPEDITION_FAILURE_BONUS = 10;
+
+/**
+ * Failure risk reduction bonus for liked expeditions
+ */
+export const LIKED_EXPEDITION_FAILURE_REDUCTION = 5;
 
 /**
  * Threshold duration in minutes below which disliked expeditions have extra failure risk

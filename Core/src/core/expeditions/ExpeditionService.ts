@@ -2,7 +2,7 @@ import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import {
 	ExpeditionConstants, ExpeditionLocationType,
 	getPetExpeditionPreference, DISLIKED_SHORT_EXPEDITION_FAILURE_BONUS, DISLIKED_EXPEDITION_DURATION_THRESHOLD_MINUTES,
-	generateTerrainBasedRisk
+	generateTerrainBasedRisk, LIKED_EXPEDITION_FAILURE_REDUCTION
 } from "../../../../Lib/src/constants/ExpeditionConstants";
 import {
 	ExpeditionData
@@ -314,6 +314,7 @@ export interface EffectiveRiskParams {
  * Calculate the effective risk based on pet stats and expedition parameters
  * If insufficient food was consumed, the risk is multiplied by NO_FOOD_RISK_MULTIPLIER
  * If pet dislikes the location and expedition is shorter than 12 hours, adds 10% extra failure risk
+ * If pet likes the location, reduces failure risk by 5%
  */
 export function calculateEffectiveRisk(params: EffectiveRiskParams): number {
 	const {
@@ -334,10 +335,17 @@ export function calculateEffectiveRisk(params: EffectiveRiskParams): number {
 		effectiveRisk *= ExpeditionConstants.NO_FOOD_RISK_MULTIPLIER;
 	}
 
-	// Apply extra failure risk if pet dislikes the location and expedition is shorter than 12 hours
+	// Apply preference-based risk modifiers
 	const petPreference = getPetExpeditionPreference(petTypeId, expedition.locationType);
+
+	// Apply extra failure risk if pet dislikes the location and expedition is shorter than 12 hours
 	if (petPreference === "disliked" && expedition.durationMinutes < DISLIKED_EXPEDITION_DURATION_THRESHOLD_MINUTES) {
 		effectiveRisk += DISLIKED_SHORT_EXPEDITION_FAILURE_BONUS;
+	}
+
+	// Apply failure reduction if pet likes the location
+	if (petPreference === "liked") {
+		effectiveRisk -= LIKED_EXPEDITION_FAILURE_REDUCTION;
 	}
 
 	return MathUtils.clamp(effectiveRisk, 0, ExpeditionConstants.PERCENTAGE.MAX);
@@ -351,6 +359,11 @@ export interface ExpeditionOutcome {
 	partialSuccess: boolean;
 	rewards: ExpeditionRewardDataWithItem | undefined;
 	loveChange: number;
+
+	/**
+	 * True if the pet liked this expedition type
+	 */
+	petLikedExpedition: boolean;
 }
 
 /**
@@ -366,9 +379,26 @@ export interface ExpeditionOutcomeParams {
 }
 
 /**
+ * Calculate the love change based on expedition outcome and pet preference
+ */
+function calculateLoveChange(partialSuccess: boolean, petLikedExpedition: boolean): number {
+	if (partialSuccess) {
+		return ExpeditionConstants.LOVE_CHANGES.PARTIAL_SUCCESS;
+	}
+
+	// Total success - apply liked multiplier if applicable
+	const baseLove = ExpeditionConstants.LOVE_CHANGES.TOTAL_SUCCESS;
+	return petLikedExpedition
+		? baseLove * ExpeditionConstants.LOVE_CHANGES.LIKED_EXPEDITION_MULTIPLIER
+		: baseLove;
+}
+
+/**
  * Determine expedition outcome based on effective risk
  */
 export function determineExpeditionOutcome(params: ExpeditionOutcomeParams): ExpeditionOutcome {
+	const petPreference = getPetExpeditionPreference(params.petTypeId, params.expedition.locationType);
+	const petLikedExpedition = petPreference === "liked";
 	const totalFailure = RandomUtils.crowniclesRandom.bool(params.effectiveRisk / ExpeditionConstants.PERCENTAGE.MAX);
 
 	if (totalFailure) {
@@ -376,7 +406,8 @@ export function determineExpeditionOutcome(params: ExpeditionOutcomeParams): Exp
 			totalFailure: true,
 			partialSuccess: false,
 			rewards: undefined,
-			loveChange: ExpeditionConstants.LOVE_CHANGES.TOTAL_FAILURE
+			loveChange: ExpeditionConstants.LOVE_CHANGES.TOTAL_FAILURE,
+			petLikedExpedition
 		};
 	}
 
@@ -394,6 +425,7 @@ export function determineExpeditionOutcome(params: ExpeditionOutcomeParams): Exp
 		totalFailure: false,
 		partialSuccess,
 		rewards,
-		loveChange: partialSuccess ? 0 : ExpeditionConstants.LOVE_CHANGES.TOTAL_SUCCESS
+		loveChange: calculateLoveChange(partialSuccess, petLikedExpedition),
+		petLikedExpedition
 	};
 }
