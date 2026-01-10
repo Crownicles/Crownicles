@@ -45,8 +45,6 @@ export class PetEntity extends Model {
 
 	declare hungrySince: Date;
 
-	declare lastExpeditionEndDate: Date;
-
 	declare creationDate: Date;
 
 	declare updatedAt: Date;
@@ -302,10 +300,6 @@ export function initModel(sequelize: Sequelize): void {
 		nickname: { type: DataTypes.TEXT },
 		lovePoints: { type: DataTypes.INTEGER },
 		hungrySince: {
-			type: DataTypes.DATE,
-			defaultValue: null
-		},
-		lastExpeditionEndDate: {
 			type: DataTypes.DATE,
 			defaultValue: null
 		},
