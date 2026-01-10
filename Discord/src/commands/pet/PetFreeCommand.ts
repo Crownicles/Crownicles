@@ -429,6 +429,10 @@ export async function createPetFreeSelectionCollector(
 			return;
 		}
 
+		// Disable components immediately when a valid choice is made
+		disableRows(components);
+		await msg.edit({ components });
+
 		if (collectedInteraction.customId === cancelCustomId) {
 			await collectedInteraction.deferReply();
 			DiscordCollectorUtils.sendReaction(
