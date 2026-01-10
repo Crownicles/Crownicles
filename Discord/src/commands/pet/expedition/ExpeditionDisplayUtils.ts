@@ -59,6 +59,14 @@ export function getTranslatedRiskCategoryName(riskRate: number, lng: Language): 
 }
 
 /**
+ * Get the emoji for a risk category
+ */
+export function getRiskEmoji(riskRate: number): string {
+	const categoryKey = ExpeditionConstants.getRiskCategoryName(riskRate) as keyof typeof CrowniclesIcons.expedition.risk;
+	return CrowniclesIcons.expedition.risk[categoryKey];
+}
+
+/**
  * Get translated reward category name for display based on reward index
  */
 export function getTranslatedRewardCategoryName(rewardIndex: number, lng: Language): string {
@@ -72,6 +80,14 @@ export function getTranslatedRewardCategoryName(rewardIndex: number, lng: Langua
 export function getTranslatedDifficultyCategoryName(difficulty: number, lng: Language): string {
 	const categoryKey = ExpeditionConstants.getDifficultyCategoryName(difficulty);
 	return i18n.t(`commands:petExpedition.difficultyCategories.${categoryKey}`, { lng });
+}
+
+/**
+ * Get the emoji for a difficulty category
+ */
+export function getDifficultyEmoji(difficulty: number): string {
+	const categoryKey = ExpeditionConstants.getDifficultyCategoryName(difficulty) as keyof typeof CrowniclesIcons.expedition.difficulty;
+	return CrowniclesIcons.expedition.difficulty[categoryKey];
 }
 
 /**
@@ -151,7 +167,8 @@ export function buildInProgressDescription(params: InProgressDescriptionParams):
 	});
 	const risk = i18n.t("commands:petExpedition.inProgressDescription.risk", {
 		lng,
-		risk: getTranslatedRiskCategoryName(riskRate, lng)
+		risk: getTranslatedRiskCategoryName(riskRate, lng),
+		riskEmoji: getRiskEmoji(riskRate)
 	});
 	const returnTimeText = i18n.t("commands:petExpedition.inProgressDescription.returnTime", {
 		lng,
@@ -239,24 +256,27 @@ export function buildExpeditionOptionText(
 		lng,
 		duration: displayDuration
 	});
+	const difficulty = i18n.t("commands:petExpedition.expeditionOption.difficulty", {
+		lng,
+		difficultyEmoji: getDifficultyEmoji(exp.difficulty),
+		difficulty: getTranslatedDifficultyCategoryName(exp.difficulty, lng)
+	});
 	const risk = i18n.t("commands:petExpedition.expeditionOption.risk", {
 		lng,
+		riskEmoji: getRiskEmoji(exp.riskRate),
 		risk: getTranslatedRiskCategoryName(exp.riskRate, lng)
 	});
 	const reward = i18n.t("commands:petExpedition.expeditionOption.reward", {
 		lng,
 		reward: getTranslatedRewardCategoryName(exp.rewardIndex, lng)
 	});
-	const difficulty = i18n.t("commands:petExpedition.expeditionOption.difficulty", {
-		lng,
-		difficulty: getTranslatedDifficultyCategoryName(exp.difficulty, lng)
-	});
 	const food = i18n.t("commands:petExpedition.expeditionOption.food", {
 		lng,
 		foodDisplay
 	});
 
-	let optionText = `\n\n${header}\n${duration}\n${risk}\n${reward}\n${difficulty}\n${food}`;
+	// Order: header, duration, difficulty (new position), risk, reward, food
+	let optionText = `\n\n${header}\n${duration}\n${difficulty}\n${risk}\n${reward}\n${food}`;
 
 	// Add clone talisman bonus tag if present
 	if (exp.hasCloneTalismanBonus) {

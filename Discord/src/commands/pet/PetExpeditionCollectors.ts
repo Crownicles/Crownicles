@@ -31,7 +31,8 @@ import {
 	getSexContext,
 	getTranslatedRiskCategoryName,
 	buildExpeditionOptionText,
-	getPetDisplayString
+	getPetDisplayString,
+	getRiskEmoji
 } from "./expedition/ExpeditionDisplayUtils";
 
 /**
@@ -296,7 +297,8 @@ function buildFinishedExpeditionEmbed(
 	});
 	const risk = i18n.t("commands:petExpedition.finishedDescription.risk", {
 		lng,
-		risk: getTranslatedRiskCategoryName(data.riskRate, lng)
+		risk: getTranslatedRiskCategoryName(data.riskRate, lng),
+		riskEmoji: getRiskEmoji(data.riskRate)
 	});
 	const impatience = i18n.t("commands:petExpedition.finishedDescription.impatience", {
 		lng,

@@ -143,10 +143,25 @@ export const CrowniclesIcons: {
 		};
 		map: string;
 		loot: string;
-		risk: string;
+		risk: {
+			trivial: string;
+			veryLow: string;
+			low: string;
+			moderate: string;
+			high: string;
+			veryHigh: string;
+			extreme: string;
+			desperate: string;
+		};
 		reward: string;
 		duration: string;
-		difficulty: string;
+		difficulty: {
+			trivial: string;
+			easy: string;
+			moderate: string;
+			challenging: string;
+			treacherous: string;
+		};
 		food: string;
 		love: string;
 		talisman: string;
@@ -2235,10 +2250,25 @@ export const CrowniclesIcons: {
 		},
 		map: "🗺️",
 		loot: "💰",
-		risk: "⚠️",
+		risk: {
+			trivial: "🌿",
+			veryLow: "🌤️",
+			low: "☀️",
+			moderate: "⚡",
+			high: "🔥",
+			veryHigh: "⚠️",
+			extreme: "💀",
+			desperate: "⚰️"
+		},
 		reward: "🎁",
 		duration: "⏱️",
-		difficulty: "📊",
+		difficulty: {
+			trivial: "🌸",
+			easy: "🍃",
+			moderate: "⚔️",
+			challenging: "⚠️",
+			treacherous: "☠️"
+		},
 		food: "🍖",
 		love: "💕",
 		talisman: "🔮",
