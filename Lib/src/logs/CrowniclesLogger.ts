@@ -6,6 +6,42 @@ import { Constants } from "../constants/Constants";
 import LokiTransport = require("winston-loki");
 
 /**
+ * Truncate ancestors array to remove objects no longer in the current traversal path.
+ * @param ancestors - Stack of objects in current traversal
+ * @param currentContext - The object containing the key being stringified
+ */
+function truncateAncestors(ancestors: object[], currentContext: unknown): void {
+	if (typeof currentContext !== "object" || currentContext === null) {
+		return;
+	}
+
+	const contextIndex = ancestors.indexOf(currentContext);
+	if (contextIndex !== -1) {
+		// Remove any objects added after this one (we've left those branches)
+		ancestors.length = contextIndex + 1;
+	}
+}
+
+/**
+ * Check if a value is a circular reference and handle it.
+ * @param ancestors - Stack of objects in current traversal
+ * @param value - The value being serialized
+ * @returns "[Circular]" if circular, the original value otherwise
+ */
+function handleCircularReference(ancestors: object[], value: unknown): unknown {
+	if (typeof value !== "object" || value === null) {
+		return value;
+	}
+
+	if (ancestors.includes(value)) {
+		return "[Circular]";
+	}
+
+	ancestors.push(value);
+	return value;
+}
+
+/**
  * Safely stringify an object, handling circular references.
  * Uses a stack-based approach to track the current traversal path,
  * allowing legitimate shared references while detecting true cycles.
@@ -17,43 +53,12 @@ export function safeStringify(obj: unknown): string {
 		return "undefined";
 	}
 
-	/*
-	 * Track the current path of objects being serialized (stack approach)
-	 * This allows shared references while detecting true circular references
-	 */
+	// Track the current path of objects being serialized (stack approach)
 	const ancestors: object[] = [];
 
 	return JSON.stringify(obj, function(this: unknown, _key, value) {
-		/*
-		 * `this` is the object containing the key being stringified
-		 * When we move to a sibling or parent, we need to pop ancestors
-		 */
-
-		/*
-		 * Remove ancestors that are no longer in our current path
-		 * Find where `this` is in our stack and truncate after it
-		 */
-		if (typeof this === "object" && this !== null) {
-			const thisIndex = ancestors.indexOf(this);
-			if (thisIndex !== -1) {
-				/*
-				 * We're processing a key within an object we've seen
-				 * Remove any objects added after this one (we've left those branches)
-				 */
-				ancestors.length = thisIndex + 1;
-			}
-		}
-
-		if (typeof value === "object" && value !== null) {
-			// Check if value is in our current traversal path (true cycle)
-			if (ancestors.includes(value)) {
-				return "[Circular]";
-			}
-
-			// Add to path while we're serializing this object's contents
-			ancestors.push(value);
-		}
-		return value;
+		truncateAncestors(ancestors, this);
+		return handleCircularReference(ancestors, value);
 	});
 }
 
