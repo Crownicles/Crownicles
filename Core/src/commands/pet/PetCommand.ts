@@ -26,6 +26,7 @@ export default class PetCommand {
 		disallowedEffects: CommandUtils.DISALLOWED_EFFECTS.NOT_STARTED_OR_DEAD,
 		whereAllowed: CommandUtils.WHERE.EVERYWHERE
 	})
+
 	/**
 	 * Displays information about a player's pet
 	 * @param response - Array to collect response packets
