@@ -27,7 +27,9 @@ import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstan
 import {
 	ReactionCollectorPetFree,
 	ReactionCollectorPetFreeSelectReaction,
-	ReactionCollectorPetFreeSelection
+	ReactionCollectorPetFreeSelection,
+	ReactionCollectorPetFreeShelterConfirm,
+	ReactionCollectorPetFreeShelterConfirmData
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorPetFree";
 import { LogsDatabase } from "../../core/database/logs/LogsDatabase";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
@@ -257,25 +259,28 @@ async function buildShelterPetReactions(
 }
 
 /**
- * Create end callback for shelter selection collector
+ * Create end callback for shelter pet confirmation collector (accept/refuse after selection)
  */
-function createShelterSelectionEndCallback(
-	player: Player,
-	playerPet: PetEntity | null
-): EndCallback {
+function createShelterConfirmEndCallback(player: Player): EndCallback {
 	return async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
 		const reaction = collector.getFirstReaction();
 
-		if (reaction && reaction.reaction.type === ReactionCollectorPetFreeSelectReaction.name) {
-			const selectedPetEntityId = (reaction.reaction.data as ReactionCollectorPetFreeSelectReaction).petEntityId;
+		if (reaction && reaction.reaction.type === ReactionCollectorAcceptReaction.name) {
+			const confirmData = collector.creationPacket.data.data as ReactionCollectorPetFreeShelterConfirmData;
 
 			await player.reload();
 
-			if (playerPet && selectedPetEntityId === playerPet.id) {
-				await acceptPetFree(player, playerPet, response);
+			if (confirmData.isFromShelter) {
+				await freePetFromShelter(response, player, confirmData.petEntityId);
 			}
 			else {
-				await freePetFromShelter(response, player, selectedPetEntityId);
+				const playerPet = await PetEntities.getById(confirmData.petEntityId);
+				if (playerPet) {
+					await acceptPetFree(player, playerPet, response);
+				}
+				else {
+					response.push(makePacket(CommandPetFreeRefusePacketRes, {}));
+				}
 			}
 		}
 		else {
@@ -283,6 +288,89 @@ function createShelterSelectionEndCallback(
 		}
 
 		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.PET_FREE);
+	};
+}
+
+/**
+ * Create end callback for shelter selection collector - now creates a confirmation collector
+ */
+function createShelterSelectionEndCallback(
+	player: Player,
+	playerPet: PetEntity | null,
+	shelterPets: {
+		petEntityId: number; pet: OwnedPet;
+	}[],
+	context: PacketContext
+): EndCallback {
+	return (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): void => {
+		const reaction = collector.getFirstReaction();
+
+		if (reaction && reaction.reaction.type === ReactionCollectorPetFreeSelectReaction.name) {
+			const selectedPetEntityId = (reaction.reaction.data as ReactionCollectorPetFreeSelectReaction).petEntityId;
+			const isFromShelter = !playerPet || selectedPetEntityId !== playerPet.id;
+
+			// Find the selected pet's info
+			let petId: number;
+			let petSex: SexTypeShort;
+			let petNickname: string | undefined;
+			let freeCost = 0;
+
+			if (isFromShelter) {
+				const shelterPet = shelterPets.find(sp => sp.petEntityId === selectedPetEntityId);
+				if (!shelterPet) {
+					response.push(makePacket(CommandPetFreeRefusePacketRes, {}));
+					BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.PET_FREE);
+					return;
+				}
+				petId = shelterPet.pet.typeId;
+				petSex = shelterPet.pet.sex;
+				petNickname = shelterPet.pet.nickname ?? undefined;
+
+				// Check if pet would be feisty (loveLevel = FEISTY or lower)
+				if (shelterPet.pet.loveLevel <= PetConstants.LOVE_LEVEL.FEISTY) {
+					freeCost = PetFreeConstants.FREE_FEISTY_COST;
+				}
+			}
+			else {
+				petId = playerPet!.typeId;
+				petSex = playerPet!.sex as SexTypeShort;
+				petNickname = playerPet!.nickname ?? undefined;
+				if (playerPet!.isFeisty()) {
+					freeCost = PetFreeConstants.FREE_FEISTY_COST;
+				}
+			}
+
+			// Create confirmation collector
+			const confirmCollector = new ReactionCollectorPetFreeShelterConfirm(
+				selectedPetEntityId,
+				petId,
+				petSex,
+				petNickname,
+				freeCost,
+				isFromShelter
+			);
+
+			const confirmEndCallback = createShelterConfirmEndCallback(player);
+
+			// Keep the player blocked during confirmation
+			const confirmPacket = new ReactionCollectorInstance(
+				confirmCollector,
+				context,
+				{
+					allowedPlayerKeycloakIds: [player.keycloakId],
+					reactionLimit: 1
+				},
+				confirmEndCallback
+			)
+				.block(player.keycloakId, BlockingConstants.REASONS.PET_FREE)
+				.build();
+
+			response.push(confirmPacket);
+		}
+		else {
+			response.push(makePacket(CommandPetFreeRefusePacketRes, {}));
+			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.PET_FREE);
+		}
 	};
 }
 
@@ -346,7 +434,7 @@ async function handleShelterPetsFlow(
 		reactions
 	);
 
-	const endCallback = createShelterSelectionEndCallback(player, playerPet);
+	const endCallback = createShelterSelectionEndCallback(player, playerPet, shelterPets, context);
 	response.push(buildPetFreeCollectorPacket(collector, context, player, endCallback));
 }
 

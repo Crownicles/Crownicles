@@ -26,7 +26,8 @@ import {
 	ReactionCollectorPetFreePacket,
 	ReactionCollectorPetFreeSelectionData,
 	ReactionCollectorPetFreeSelectionPacket,
-	ReactionCollectorPetFreeSelectReaction
+	ReactionCollectorPetFreeSelectReaction,
+	ReactionCollectorPetFreeShelterConfirmPacket
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorPetFree";
 import { PetUtils } from "../../utils/PetUtils";
 import { ReactionCollectorReturnTypeOrNull } from "../../packetHandlers/handlers/ReactionCollectorHandlers";
@@ -130,6 +131,45 @@ export async function handleCommandPetFreePacketRes(packet: CommandPetFreePacket
 export async function createPetFreeCollector(context: PacketContext, packet: ReactionCollectorPetFreePacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
 	await interaction.deferReply();
+	const data = packet.data.data;
+	const lng = interaction.userLanguage ?? context.discord?.language ?? LANGUAGE.DEFAULT_LANGUAGE;
+
+	const embed = new CrowniclesEmbed().formatAuthor(i18n.t("commands:petFree.title", {
+		lng,
+		pseudo: escapeUsername(interaction.user.displayName)
+	}), interaction.user)
+		.setDescription(
+			i18n.t("commands:petFree.confirmDesc", {
+				lng,
+				pet: PetUtils.petToShortString(lng, data.petNickname, data.petId, data.petSex)
+			})
+		);
+
+	if (data.freeCost) {
+		embed.setFooter({
+			text: i18n.t("commands:petFree.isFeisty", {
+				lng,
+				cost: data.freeCost
+			})
+		});
+	}
+
+	return await DiscordCollectorUtils.createAcceptRefuseCollector(interaction, embed, packet, context);
+}
+
+/**
+ * Create collector for shelter pet free confirmation (after selection)
+ */
+export async function createPetFreeShelterConfirmCollector(
+	context: PacketContext,
+	packet: ReactionCollectorPetFreeShelterConfirmPacket
+): Promise<ReactionCollectorReturnTypeOrNull> {
+	const interaction = MessagesUtils.getCurrentInteraction(context);
+
+	if (!interaction) {
+		return null;
+	}
+
 	const data = packet.data.data;
 	const lng = interaction.userLanguage ?? context.discord?.language ?? LANGUAGE.DEFAULT_LANGUAGE;
 

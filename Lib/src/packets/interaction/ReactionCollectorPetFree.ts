@@ -20,6 +20,73 @@ export class ReactionCollectorPetFreeData extends ReactionCollectorData {
 	freeCost!: number;
 }
 
+// Data for shelter pet free confirmation collector (after selection)
+export class ReactionCollectorPetFreeShelterConfirmData extends ReactionCollectorData {
+	petEntityId!: number;
+
+	petId!: number;
+
+	petSex!: SexTypeShort;
+
+	petNickname?: string;
+
+	freeCost!: number;
+
+	isFromShelter!: boolean;
+}
+
+export type ReactionCollectorPetFreeShelterConfirmPacket = AcceptRefusePacket<ReactionCollectorPetFreeShelterConfirmData>;
+
+export class ReactionCollectorPetFreeShelterConfirm extends ReactionCollector {
+	private readonly petEntityId: number;
+
+	private readonly petId: number;
+
+	private readonly petSex: SexTypeShort;
+
+	private readonly petNickname: string | undefined;
+
+	private readonly freeCost: number;
+
+	private readonly isFromShelter: boolean;
+
+	constructor(
+		petEntityId: number,
+		petId: number,
+		petSex: SexTypeShort,
+		petNickname: string | undefined,
+		freeCost: number,
+		isFromShelter: boolean
+	) {
+		super();
+		this.petEntityId = petEntityId;
+		this.petId = petId;
+		this.petSex = petSex;
+		this.petNickname = petNickname;
+		this.freeCost = freeCost;
+		this.isFromShelter = isFromShelter;
+	}
+
+	creationPacket(id: string, endTime: number): ReactionCollectorPetFreeShelterConfirmPacket {
+		return {
+			id,
+			endTime,
+			reactions: [
+				this.buildReaction(ReactionCollectorAcceptReaction, {}),
+				this.buildReaction(ReactionCollectorRefuseReaction, {})
+			],
+			data: this.buildData(ReactionCollectorPetFreeShelterConfirmData, {
+				petEntityId: this.petEntityId,
+				petId: this.petId,
+				petSex: this.petSex,
+				petNickname: this.petNickname,
+				freeCost: this.freeCost,
+				isFromShelter: this.isFromShelter
+			})
+		};
+	}
+}
+
 export type ReactionCollectorPetFreePacket = AcceptRefusePacket<ReactionCollectorPetFreeData>;
 
 export class ReactionCollectorPetFree extends ReactionCollector {
