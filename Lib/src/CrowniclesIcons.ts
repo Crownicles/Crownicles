@@ -1407,7 +1407,8 @@ export const CrowniclesIcons: {
 		waterSpirit: "✨",
 		mermaid: "🧜‍♀️",
 		kraken: "🦑",
-		captainCrow: "🏴‍☠️"
+		captainCrow: "🏴‍☠️",
+		leviathan: "🐉"
 	},
 	armors: {
 		0: "⬛",
@@ -1948,6 +1949,7 @@ export const CrowniclesIcons: {
 	},
 	fightActions: {
 		abyssalEmbraceAttack: "➰",
+		abyssalHunger: "🦈",
 		aerialDiveAttack: "🦅",
 		alliesArePresent: "💀",
 		ambush: "😶‍🌫️",
@@ -1966,6 +1968,7 @@ export const CrowniclesIcons: {
 		chargeChargeRadiantBlastAttack: "☀️",
 		chargeChargingAttack: "🧲",
 		chargeClubSmashAttack: "🏏",
+		chargeDeluge: "⛈️",
 		chargeMaelstromAttack: "🌀",
 		chargeRadiantBlastAttack: "☀️",
 		chargeUltimateAttack: "☄️",
@@ -1984,14 +1987,17 @@ export const CrowniclesIcons: {
 		cursedOfTheSea: "🔱",
 		darkAttack: "✴️",
 		defenseBuff: "🧘",
+		deluge: "⛈️",
 		dirty: "🗑️",
 		divineAttack: "🙏",
+		divineLightning: "⚡",
 		earthquake: "🌎",
 		energeticAttack: "⚡",
 		eruptionAttack: "🌋",
 		familyMealAttack: "🍽️",
 		fireAttack: "🔥",
 		frozen: "🥶",
+		frostedFangs: "🦷",
 		frozenKissAttack: "💋",
 		full: "😴",
 		getDirty: "💩",

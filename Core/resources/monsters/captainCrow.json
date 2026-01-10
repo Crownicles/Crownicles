@@ -1,6 +1,6 @@
 {
   "baseEnergyValue": 40,
-  "attackRatio": 200,
+  "attackRatio": 50,
   "defenseRatio": 20,
   "speedRatio": 70,
   "breath": 18,
@@ -9,7 +9,7 @@
   "rewardFactor": 0.6,
   "attacks": [
     {
-      "id": "cursedAttack",
+      "id": "breathTakingAttack",
       "minLevel": 0,
       "weight": 4
     },

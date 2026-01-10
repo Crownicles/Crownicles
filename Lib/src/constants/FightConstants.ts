@@ -142,10 +142,15 @@ export abstract class FightConstants {
 				INKJET: "inkJet",
 				WATERY_GUST: "wateryGust",
 				CHARGE_CHARGE_MAELSTROM_ATTACK: "chargeChargeMaelstromAttack",
+				CHARGE_DELUGE: "chargeDeluge",
 				CHARGE_MAELSTROM_ATTACK: "chargeMaelstromAttack",
+				DELUGE: "deluge",
+				DIVINE_LIGHTNING: "divineLightning",
+				FROSTED_FANGS: "frostedFangs",
 				MAELSTROM_ATTACK: "maelstromAttack",
 				TENTACLE_BLOW_ATTACK: "tentacleBlowAttack",
-				ABYSSAL_EMBRACE_ATTACK: "abyssalEmbraceAttack"
+				ABYSSAL_EMBRACE_ATTACK: "abyssalEmbraceAttack",
+				ABYSSAL_HUNGER: "abyssalHunger"
 			},
 			PET: {
 				BITE: "bite",
@@ -260,7 +265,9 @@ export abstract class FightConstants {
 		FightConstants.FIGHT_ACTIONS.MONSTER.HEAT_MUD_ATTACK,
 		FightConstants.FIGHT_ACTIONS.MONSTER.HEAT_DRAIN_ATTACK,
 		FightConstants.FIGHT_ACTIONS.MONSTER.CHARGE_CHARGE_MAELSTROM_ATTACK,
+		FightConstants.FIGHT_ACTIONS.MONSTER.CHARGE_DELUGE,
 		FightConstants.FIGHT_ACTIONS.MONSTER.CHARGE_MAELSTROM_ATTACK,
+		FightConstants.FIGHT_ACTIONS.MONSTER.DELUGE,
 		FightConstants.FIGHT_ACTIONS.MONSTER.MAELSTROM_ATTACK
 	];
 

@@ -203,6 +203,11 @@
       "name_one": "Attaque étreinte abyssale",
       "name_other": "Attaques étreintes abyssales"
     },
+    "abyssalHunger": {
+      "customMessage": "sent la faiblesse de sa proie et attaque avec une férocité redoublée, ses yeux brillant d'une lueur prédatrice.",
+      "name_one": "Faim abyssale",
+      "name_other": "Faims abyssales"
+    },
     "aerialDiveAttack": {
       "customMessage": "s'élance dans les airs pour plonger sur son adversaire, mais celui-ci parvient à le maintenir à distance grâce à ses attaques.",
       "name_one": "Attaque plongée aérienne",
@@ -309,6 +314,11 @@
     "chargeClubSmashAttack": {
       "name_one": "Attaque gourdin",
       "name_other": "Attaques gourdin"
+    },
+    "chargeDeluge": {
+      "customMessage": "concentre son énergie primordiale, le ciel s'obscurcit et des éclairs commencent à zébrer le ciel.",
+      "name_one": "Déluge",
+      "name_other": "Déluges"
     },
     "chargeMaelstromAttack": {
       "customMessage": "continue de concentrer son énergie, prêt à libérer une puissance dévastatrice.",
@@ -418,6 +428,11 @@
       "name_one": "Boost de la défense",
       "name_other": "Boosts de la défense"
     },
+    "deluge": {
+      "customMessage": "déchaîne une tempête cataclysmique, la foudre et les trombes d'eau s'abattent sur tout.",
+      "name_one": "Déluge",
+      "name_other": "Déluges"
+    },
     "dirty": {
       "name": "répugnant",
       "new": "est absolument répugnant, ses attaques s'en retrouvent renforcées.",
@@ -428,6 +443,11 @@
       "description": "La précision de cette attaque augmente avec la durée du combat. Fait partie du groupe des \"actions des dieux\". Échoue si 2 actions des dieux ont déjà été effectuées dans le combat.",
       "name_one": "Attaque divine",
       "name_other": "Attaques divines"
+    },
+    "divineLightning": {
+      "customMessage": "invoque la foudre des cieux qui s'abat sur l'adversaire.",
+      "name_one": "Foudre divine",
+      "name_other": "Foudres divines"
     },
     "earthquake": {
       "customMessage": "fait trembler la terre, seul les adversaires les plus solides parviennent à y résister.",
@@ -467,6 +487,11 @@
       "name": "gelé",
       "active": "est gelé.",
       "stop": "n'est plus gelé."
+    },
+    "frostedFangs": {
+      "customMessage": "mord violemment avec ses crocs givrés, laissant une marque glaciale.",
+      "name_one": "Crocs givrés",
+      "name_other": "Crocs givrés"
     },
     "frozenKissAttack": {
       "name_one": "Attaque baiser gelé",
@@ -1570,6 +1595,10 @@
     },
     "kraken": {
       "name": "Kraken",
+      "description": ""
+    },
+    "leviathan": {
+      "name": "Léviathan",
       "description": ""
     }
   },
