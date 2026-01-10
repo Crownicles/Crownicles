@@ -178,32 +178,37 @@ function formatRewards(
 		lines.push(i18n.t(`commands:petExpedition.rewards.dislikedExpedition.${dislikedContext.sexContext}`, { lng }));
 	}
 
-	if (rewards.money > 0) {
-		lines.push(i18n.t("commands:petExpedition.rewards.money", {
-			lng,
-			amount: rewards.money
-		}));
+	// Add numeric rewards using a mapping approach
+	const numericRewards = [
+		{
+			key: "money", value: rewards.money
+		},
+		{
+			key: "experience", value: rewards.experience
+		},
+		{
+			key: "points", value: rewards.points
+		}
+	];
+
+	for (const {
+		key, value
+	} of numericRewards) {
+		if (value > 0) {
+			lines.push(i18n.t(`commands:petExpedition.rewards.${key}`, {
+				lng, amount: value
+			}));
+		}
 	}
-	if (rewards.experience > 0) {
-		lines.push(i18n.t("commands:petExpedition.rewards.experience", {
-			lng,
-			amount: rewards.experience
-		}));
-	}
-	if (rewards.points > 0) {
-		lines.push(i18n.t("commands:petExpedition.rewards.points", {
-			lng,
-			amount: rewards.points
-		}));
-	}
+
+	// Tokens have a different i18n key structure (count instead of amount)
 	if (rewards.tokens && rewards.tokens > 0) {
 		lines.push(i18n.t("commands:petExpedition.rewards.tokens", {
-			lng,
-			count: rewards.tokens
+			lng, count: rewards.tokens
 		}));
 	}
 
-	// Item is only given when itemGiven is true (not when pet was tired at start)
+	// Boolean rewards
 	if (rewards.itemGiven) {
 		lines.push(i18n.t("commands:petExpedition.rewards.item", { lng }));
 	}
