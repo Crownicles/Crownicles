@@ -256,14 +256,10 @@ export function buildExpeditionOptionText(
 		lng,
 		duration: displayDuration
 	});
-
-	// Calculate terrain impact on risk: difficulty / 4 (formula coefficient)
-	const terrainImpact = Math.round(exp.difficulty / ExpeditionConstants.EFFECTIVE_RISK_FORMULA.DIFFICULTY_DIVISOR);
 	const terrain = i18n.t("commands:petExpedition.expeditionOption.terrain", {
 		lng,
 		terrainEmoji: getTerrainEmoji(exp.difficulty),
-		terrain: getTranslatedTerrainCategoryName(exp.difficulty, lng),
-		terrainImpact
+		terrain: getTranslatedTerrainCategoryName(exp.difficulty, lng)
 	});
 	const risk = i18n.t("commands:petExpedition.expeditionOption.risk", {
 		lng,

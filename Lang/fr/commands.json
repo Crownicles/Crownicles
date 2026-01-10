@@ -154,7 +154,7 @@
     "expeditionOption": {
       "header": "**{{number}}.** {{location}}",
       "duration": "{emote:expedition.duration} Durée estimée : {{duration}}",
-      "terrain": "{{terrainEmoji}} Terrain : {{terrain}} *(+{{terrainImpact}}% risque)*",
+      "terrain": "{{terrainEmoji}} Terrain : {{terrain}}",
       "risk": "{{riskEmoji}} Dangerosité : {{risk}}",
       "reward": "{emote:expedition.reward} Récompenses estimées : {{reward}}",
       "food": "{emote:expedition.food} Provisions requises : {{foodDisplay}}",
