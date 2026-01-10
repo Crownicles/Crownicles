@@ -31,6 +31,7 @@ async function safeRemoveIndex(context: QueryInterface, tableName: string, index
 		// Ignore "can't drop" errors (index doesn't exist)
 		if (error instanceof Error && "original" in error) {
 			const dbError = error as Error & { original?: { errno?: number } };
+
 			// 1091 = Can't DROP; check that column/key exists
 			if (dbError.original?.errno === 1091) {
 				return;
