@@ -283,11 +283,6 @@ export function initModel(sequelize: Sequelize): void {
 			allowNull: false,
 			defaultValue: false
 		},
-		wasStartedWhileTired: {
-			type: DataTypes.BOOLEAN,
-			allowNull: false,
-			defaultValue: false
-		},
 		updatedAt: {
 			type: DataTypes.DATE,
 			defaultValue: moment()
