@@ -262,20 +262,14 @@ describe("ExpeditionConstants", () => {
 			expect(petsWithInvalidLiked).toHaveLength(0);
 		});
 
-		it("each pet should have 1 to 2 disliked expedition locations", () => {
+		it("each pet should have 0 to 2 disliked expedition locations", () => {
 			const petsWithInvalidDisliked: { id: number; name: string; count: number }[] = [];
 
 			for (const [petIdStr, prefs] of Object.entries(PET_EXPEDITION_PREFERENCES)) {
 				const petId = Number(petIdStr);
-
-				// Skip NO_PET (id 0) which has 0 disliked
-				if (petId === PetConstants.PETS.NO_PET) {
-					continue;
-				}
-
 				const dislikedCount = prefs.disliked.length;
 
-				if (dislikedCount < 1 || dislikedCount > 2) {
+				if (dislikedCount < 0 || dislikedCount > 2) {
 					const petName = Object.entries(PetConstants.PETS).find(([, id]) => id === petId)?.[0] ?? "UNKNOWN";
 					petsWithInvalidDisliked.push({ id: petId, name: petName, count: dislikedCount });
 				}
@@ -283,7 +277,7 @@ describe("ExpeditionConstants", () => {
 
 			if (petsWithInvalidDisliked.length > 0) {
 				const errorMsg = petsWithInvalidDisliked
-					.map(p => `  ${p.name} (${p.id}): ${p.count} disliked locations (expected 1-2)`)
+					.map(p => `  ${p.name} (${p.id}): ${p.count} disliked locations (expected 0-2)`)
 					.join("\n");
 				expect.fail(`The following pets have invalid disliked count:\n${errorMsg}`);
 			}
