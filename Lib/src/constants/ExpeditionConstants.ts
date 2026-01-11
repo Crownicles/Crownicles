@@ -977,7 +977,7 @@ export const PET_EXPEDITION_PREFERENCES: Record<number, PetExpeditionPreferenceC
 			"cave",
 			"ruins"
 		],
-		disliked: []
+		disliked: ["coast"]
 	},
 
 	// Hamster - Burrow dweller, loves dry places
@@ -1033,7 +1033,7 @@ export const PET_EXPEDITION_PREFERENCES: Record<number, PetExpeditionPreferenceC
 			"cave",
 			"swamp"
 		],
-		disliked: []
+		disliked: ["plains"]
 	},
 
 	/*
@@ -1248,7 +1248,7 @@ export const PET_EXPEDITION_PREFERENCES: Record<number, PetExpeditionPreferenceC
 			"forest",
 			"plains"
 		],
-		disliked: []
+		disliked: ["swamp"]
 	},
 
 	// Dodo - Extinct island bird, tropical
@@ -1806,7 +1806,7 @@ export const PET_EXPEDITION_PREFERENCES: Record<number, PetExpeditionPreferenceC
 			"coast",
 			"cave"
 		],
-		disliked: []
+		disliked: ["swamp"]
 	},
 
 	// Snowman - Cold loving, melts in heat
@@ -1838,7 +1838,7 @@ export const PET_EXPEDITION_PREFERENCES: Record<number, PetExpeditionPreferenceC
 			"desert",
 			"cave"
 		],
-		disliked: []
+		disliked: ["swamp"]
 	},
 
 	// Jack-o-lantern - Halloween spirit, haunted places
