@@ -9,6 +9,7 @@ import {
 	DISLIKED_EXPEDITION_DURATION_THRESHOLD_MINUTES,
 	PET_EXPEDITION_PREFERENCES
 } from "../../src/constants/ExpeditionConstants";
+import { PetConstants } from "../../src/constants/PetConstants";
 
 describe("ExpeditionConstants", () => {
 	describe("getPetExpeditionPreference", () => {
@@ -216,6 +217,78 @@ describe("ExpeditionConstants", () => {
 			expect(PET_EXPEDITION_PREFERENCES[0]).toBeDefined();
 			expect(PET_EXPEDITION_PREFERENCES[0].liked).toEqual([]);
 			expect(PET_EXPEDITION_PREFERENCES[0].disliked).toEqual([]);
+		});
+
+		it("should have preferences defined for all pets (except NO_PET)", () => {
+			const allPetIds = Object.values(PetConstants.PETS).filter(id => id !== PetConstants.PETS.NO_PET);
+			const petsWithoutPreferences: number[] = [];
+
+			for (const petId of allPetIds) {
+				if (!PET_EXPEDITION_PREFERENCES[petId]) {
+					petsWithoutPreferences.push(petId);
+				}
+			}
+
+			if (petsWithoutPreferences.length > 0) {
+				const petNames = Object.entries(PetConstants.PETS)
+					.filter(([, id]) => petsWithoutPreferences.includes(id))
+					.map(([name, id]) => `${name} (${id})`);
+				expect.fail(`The following pets don't have expedition preferences defined:\n  ${petNames.join("\n  ")}`);
+			}
+
+			expect(petsWithoutPreferences).toHaveLength(0);
+		});
+
+		it("each pet should have 0 to 4 liked expedition locations", () => {
+			const petsWithInvalidLiked: { id: number; name: string; count: number }[] = [];
+
+			for (const [petIdStr, prefs] of Object.entries(PET_EXPEDITION_PREFERENCES)) {
+				const petId = Number(petIdStr);
+				const likedCount = prefs.liked.length;
+
+				if (likedCount < 0 || likedCount > 4) {
+					const petName = Object.entries(PetConstants.PETS).find(([, id]) => id === petId)?.[0] ?? "UNKNOWN";
+					petsWithInvalidLiked.push({ id: petId, name: petName, count: likedCount });
+				}
+			}
+
+			if (petsWithInvalidLiked.length > 0) {
+				const errorMsg = petsWithInvalidLiked
+					.map(p => `  ${p.name} (${p.id}): ${p.count} liked locations (expected 0-4)`)
+					.join("\n");
+				expect.fail(`The following pets have invalid liked count:\n${errorMsg}`);
+			}
+
+			expect(petsWithInvalidLiked).toHaveLength(0);
+		});
+
+		it("each pet should have 1 to 2 disliked expedition locations", () => {
+			const petsWithInvalidDisliked: { id: number; name: string; count: number }[] = [];
+
+			for (const [petIdStr, prefs] of Object.entries(PET_EXPEDITION_PREFERENCES)) {
+				const petId = Number(petIdStr);
+
+				// Skip NO_PET (id 0) which has 0 disliked
+				if (petId === PetConstants.PETS.NO_PET) {
+					continue;
+				}
+
+				const dislikedCount = prefs.disliked.length;
+
+				if (dislikedCount < 1 || dislikedCount > 2) {
+					const petName = Object.entries(PetConstants.PETS).find(([, id]) => id === petId)?.[0] ?? "UNKNOWN";
+					petsWithInvalidDisliked.push({ id: petId, name: petName, count: dislikedCount });
+				}
+			}
+
+			if (petsWithInvalidDisliked.length > 0) {
+				const errorMsg = petsWithInvalidDisliked
+					.map(p => `  ${p.name} (${p.id}): ${p.count} disliked locations (expected 1-2)`)
+					.join("\n");
+				expect.fail(`The following pets have invalid disliked count:\n${errorMsg}`);
+			}
+
+			expect(petsWithInvalidDisliked).toHaveLength(0);
 		});
 
 		it("each pet should have arrays for liked and disliked", () => {
