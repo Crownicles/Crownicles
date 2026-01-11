@@ -285,6 +285,34 @@ describe("ExpeditionConstants", () => {
 			expect(petsWithInvalidDisliked).toHaveLength(0);
 		});
 
+		it("each pet (except NO_PET) should have at least one preference (not 0 liked AND 0 disliked)", () => {
+			const petsWithNoPreferences: { id: number; name: string }[] = [];
+
+			for (const [petIdStr, prefs] of Object.entries(PET_EXPEDITION_PREFERENCES)) {
+				const petId = Number(petIdStr);
+
+				// Skip NO_PET (id 0) which is allowed to have empty preferences
+				if (petId === PetConstants.PETS.NO_PET) {
+					continue;
+				}
+
+				// Check if both liked and disliked are empty
+				if (prefs.liked.length === 0 && prefs.disliked.length === 0) {
+					const petName = Object.entries(PetConstants.PETS).find(([, id]) => id === petId)?.[0] ?? "UNKNOWN";
+					petsWithNoPreferences.push({ id: petId, name: petName });
+				}
+			}
+
+			if (petsWithNoPreferences.length > 0) {
+				const errorMsg = petsWithNoPreferences
+					.map(p => `  ${p.name} (${p.id})`)
+					.join("\n");
+				expect.fail(`The following pets have no preferences (0 liked AND 0 disliked):\n${errorMsg}`);
+			}
+
+			expect(petsWithNoPreferences).toHaveLength(0);
+		});
+
 		it("each pet should have arrays for liked and disliked", () => {
 			for (const [petId, prefs] of Object.entries(PET_EXPEDITION_PREFERENCES)) {
 				expect(Array.isArray(prefs.liked)).toBe(true);
