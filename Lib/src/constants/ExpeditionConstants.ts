@@ -1067,7 +1067,7 @@ export const PET_EXPEDITION_PREFERENCES: Record<number, PetExpeditionPreferenceC
 		disliked: ["swamp", "desert"]
 	},
 
-	// Goat - Sure-footed climber, explorers ruins
+	// Goat - Sure-footed climber, explores ruins
 	18: {
 		liked: [
 			"mountain",
