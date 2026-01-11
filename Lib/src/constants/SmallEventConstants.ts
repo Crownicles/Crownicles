@@ -37,7 +37,7 @@ export abstract class SmallEventConstants {
 			MAX: 50
 		},
 
-		SLEEPING_PROBABILITY: 0.7
+		SLEEPING_PROBABILITY: 0.5
 	};
 
 	static readonly BIG_BAD = {
