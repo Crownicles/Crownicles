@@ -383,7 +383,8 @@ export interface ExpeditionOutcomeParams {
  */
 function calculateLoveChange(partialSuccess: boolean, petLikedExpedition: boolean): number {
 	if (partialSuccess) {
-		return ExpeditionConstants.LOVE_CHANGES.PARTIAL_SUCCESS;
+		// Partial success only gives love points if pet liked the expedition
+		return petLikedExpedition ? ExpeditionConstants.LOVE_CHANGES.PARTIAL_SUCCESS : 0;
 	}
 
 	// Total success - apply liked multiplier if applicable

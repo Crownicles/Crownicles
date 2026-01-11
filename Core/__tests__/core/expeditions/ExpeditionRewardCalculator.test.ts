@@ -4,9 +4,7 @@ import {
 import {
 	calculateRewards, RewardCalculationParams
 } from "../../../src/core/expeditions/ExpeditionRewardCalculator";
-import {
-	ExpeditionConstants, PET_PREFERENCE_REWARD_MULTIPLIERS
-} from "../../../../Lib/src/constants/ExpeditionConstants";
+import { PET_PREFERENCE_REWARD_MULTIPLIERS } from "../../../../Lib/src/constants/ExpeditionConstants";
 
 // Helper to create expedition data
 function createExpeditionData(overrides: Partial<{
