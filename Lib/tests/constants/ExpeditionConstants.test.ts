@@ -314,14 +314,14 @@ describe("ExpeditionConstants", () => {
 		});
 
 		it("each pet should have arrays for liked and disliked", () => {
-			for (const [petId, prefs] of Object.entries(PET_EXPEDITION_PREFERENCES)) {
+			for (const [, prefs] of Object.entries(PET_EXPEDITION_PREFERENCES)) {
 				expect(Array.isArray(prefs.liked)).toBe(true);
 				expect(Array.isArray(prefs.disliked)).toBe(true);
 			}
 		});
 
 		it("should not have overlapping liked and disliked terrains for any pet", () => {
-			for (const [petId, prefs] of Object.entries(PET_EXPEDITION_PREFERENCES)) {
+			for (const [, prefs] of Object.entries(PET_EXPEDITION_PREFERENCES)) {
 				const overlap = prefs.liked.filter(terrain => prefs.disliked.includes(terrain));
 				expect(overlap).toEqual([]);
 			}
@@ -330,7 +330,7 @@ describe("ExpeditionConstants", () => {
 		it("should only contain valid expedition location types", () => {
 			const validTypes = Object.values(ExpeditionConstants.EXPEDITION_LOCATION_TYPES);
 
-			for (const [petId, prefs] of Object.entries(PET_EXPEDITION_PREFERENCES)) {
+			for (const [, prefs] of Object.entries(PET_EXPEDITION_PREFERENCES)) {
 				for (const terrain of prefs.liked) {
 					expect(validTypes).toContain(terrain);
 				}
@@ -359,7 +359,7 @@ describe("ExpeditionConstants", () => {
 		});
 
 		it("should have reasonable skew factors (between 0 and 3)", () => {
-			for (const [terrain, config] of Object.entries(ExpeditionConstants.TERRAIN_DIFFICULTY)) {
+			for (const [, config] of Object.entries(ExpeditionConstants.TERRAIN_DIFFICULTY)) {
 				expect(config.skewFactor).toBeGreaterThan(0);
 				expect(config.skewFactor).toBeLessThanOrEqual(3);
 			}
