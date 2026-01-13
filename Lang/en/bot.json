@@ -35,8 +35,17 @@
   "notificationEnergyFull": "You've got all your energy back.",
   "notificationDailyBonus": "Your daily bonus is available.",
   "notificationPetExpedition": "{{petDisplay}} is back from his expedition and may have brought back some treasures!",
-  "christmasBonusPreAnnouncement": "{emote:announcements.christmas} **Christmas Bonus<unk> l to come! * {emote:announcements.christmas}\n\nIn a few hours, all players will receive a special gift: their token stock will be filled to the full! Enjoy this festive period!",
-  "christmasBonusApplied": "{emote:announcements.christmas} **Happy Noe<unk> l!** {emote:announcements.gift}\n\nPeaceful Noe<unk> l was passed! Your token stock has been filled to the maximum. Take advantage of this gift to set off on adventure!",
+  "christmasBonusPreAnnouncement": "{emote:announcements.christmas} **Christmas Bonus Coming Soon!** {emote:announcements.christmas}\n\nIn a few hours, all players will receive a special gift: their token supply will be fully replenished! Enjoy this festive season!",
+  "christmasBonusApplied": "{emote:announcements.christmas} **Merry Christmas** {emote:announcements.gift}\n\nSanta has come! Your stock of tokens has been filled to capacity. Take advantage of this gift to go on an adventure!",
   "supportMessage": "{{langFlag}} If you need help, select your language using the buttons below. If you don't need help, ignore this message.\n{emote:collectors.warning} **Every message sent here can be read by a human!**\n",
-  "commandDisabledInDM": "{{langFlag}} Hello, commands are disabled in private messages. Please go to a server to play!\nIf you would like help, click the button corresponding to your language below.\n"
+  "commandDisabledInDM": "{{langFlag}} Hello, commands are disabled in private messages. Please go to a server to play!\nIf you would like help, click the button corresponding to your language below.\n",
+  "accountDeletion": {
+    "confirmPrompt": "{emote:collectors.warning} **WARNING: This action is IMMEDIATE and PERMANENT. **\n\nYour account will be anonymized and all your personal data will be deleted. This action is irreversible.\n\nTo confirm, type exactly the following phrase:\n`{{phrase}}`",
+    "success": "{emote:collectors.accept} Your account has been successfully anonymized. All your personal data has been deleted. This action is irreversible.",
+    "error": "{emote:collectors.refuse} An error has occurred while anonymizing your account. Please contact support.",
+    "cancelled": "{emote:collectors.refuse} The deletion has been cancelled. If you wish to start again, please use the deletion code provided.",
+    "invalidCode": "{emote:collectors.refuse} The deletion code is invalid or has expired. Please contact support to obtain a new code.",
+    "userNotFound": "{emote:collectors.refuse} No account is associated with your Discord login.",
+    "rateLimited": "{emote:collectors.refuse} Too many incorrect attempts. Please try again in 15 minutes."
+  }
 }
