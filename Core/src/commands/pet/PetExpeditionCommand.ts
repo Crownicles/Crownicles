@@ -248,6 +248,12 @@ export default class PetExpeditionCommand {
 		player: Player,
 		context: PacketContext
 	): Promise<void> {
+		// Cannot recall pet on PVE island (bug #3929) - must be on boat or main continent
+		if (Maps.isOnPveIsland(player) && !Maps.isOnBoat(player)) {
+			response.push(makePacket(CommandPetExpeditionErrorPacket, { errorCode: ExpeditionConstants.ERROR_CODES.CANNOT_RECALL_ON_ISLAND }));
+			return;
+		}
+
 		// Validate prerequisites
 		const validation = await validateExpeditionPrerequisites(player.id, player.petId);
 		if (validation.success === false) {
