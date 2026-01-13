@@ -137,7 +137,7 @@
     "inProgressDescription": {
       "intro": "{{petDisplay}} sta esplorando terre lontane e misteriose!",
       "destination": "{emote:expedition.map} **Destinazione:** **{{location}}**",
-      "risk": "{{riskEmoji}} **Dangerosité :** {{risk}}",
+      "risk": "{{riskEmoji}} **Pericolo:** {{risk}}",
       "returnTime": "{emote:clocks.1} **Ritorno previsto:** {{returnTime}}",
       "warning_male": "{emote:collectors.warning} *Richiamare prematuramente il vostro animale domestico romperà il legame di fiducia. Tornerà senza bottino e con il cuore ferito...*.",
       "warning_female": "{emote:collectors.warning} *Richiamare prematuramente il vostro familiare romperà il legame di fiducia. Tornerà senza bottino e con il cuore ferito...*."
@@ -153,8 +153,8 @@
     "expeditionOption": {
       "header": "**{{number}}.** {{location}}",
       "duration": "{emote:expedition.duration} Durata stimata: {{duration}}",
-      "terrain": "{{terrainEmoji}} Terrain : {{terrain}}",
-      "risk": "{{riskEmoji}} Dangerosité : {{risk}}",
+      "terrain": "{{terrainEmoji}} Terreno: {{terrain}}",
+      "risk": "{{riskEmoji}} Pericolosità: {{risk}}",
       "reward": "{emote:expedition.reward} Ricompense stimate: {{reward}}",
       "food": "{emote:expedition.food} Disposizioni necessarie: {{foodDisplay}}",
       "cloneTalismanBonus": "{emote:expedition.cloneTalisman} *Una strana sensazione vi assale... Si dice che un manufatto leggendario possa essere nascosto in queste terre.",
@@ -201,7 +201,7 @@
       "talisman": {
         "intro": "$t(models:talisman.anchor) vibra intensamente nella vostra borsa: {{petDisplay}} è tornato dalla sua spedizione a **{{location}}** !"
       },
-      "risk": "{{riskEmoji}} Dangerosité : {{risk}}",
+      "risk": "{{riskEmoji}} Pericolosità: {{risk}}",
       "impatience_male": "*Il vostro compagno è impaziente di mostrarvi ciò che ha portato con sé!",
       "impatience_female": "*La tua compagna non vede l'ora di mostrarti cosa ha portato con sé!"
     },
@@ -243,8 +243,8 @@
     "loveChangePartialNegative": "\n\n{emote:expedition.love} Le difficoltà incontrate hanno in qualche modo scosso la fiducia del vostro animale. Un po' di coccole e di croccantini lo aiuteranno a riprendersi.",
     "loveChangePartialPositive": "\n\n{emote:expedition.love} Nonostante le insidie, questa avventura ha leggermente rafforzato il legame tra voi. Il vostro partner apprezza il fatto che vi fidiate di lui.",
     "loveChangeSuccess": "\n\n{emote:expedition.love} Questa spedizione di successo ha rafforzato il legame tra voi. Il vostro animale domestico vi guarda con rinnovata ammirazione!",
-    "petLikedExpedition_male": "\n\n{emote:expedition.liked} *Votre compagnon a adoré cette expédition ! Ce type de destination correspond parfaitement à ses goûts, ce qui a décuplé son enthousiasme et son efficacité.*",
-    "petLikedExpedition_female": "\n\n{emote:expedition.liked} *Votre familier a adoré cette expédition ! Ce type de destination correspond parfaitement à ses goûts, ce qui a décuplé son enthousiasme et son efficacité.*",
+    "petLikedExpedition_male": "\n\n{emote:expedition.liked} *Il vostro accompagnatore ha apprezzato questa spedizione! Questo tipo di destinazione si adatta perfettamente ai suoi gusti, il che ha decuplicato il suo entusiasmo e la sua efficienza*.",
+    "petLikedExpedition_female": "\n\n{emote:expedition.liked} *Il vostro animale domestico ha amato questa spedizione! Questo tipo di destinazione si adatta perfettamente ai suoi gusti, il che ha decuplicato il suo entusiasmo e la sua efficienza*.",
     "duration": {
       "minutes": "{{count}} minuto",
       "minutes_other": "{{count}} minuti",
@@ -258,8 +258,8 @@
     "rewards": {
       "title": "\n\n**Obiettivo riportato:**",
       "dislikedExpedition": {
-        "male": "\n{emote:expedition.disliked} *Votre compagnon n'a pas apprécié cette destination. Son manque d'enthousiasme a considérablement réduit ses trouvailles.*",
-        "female": "\n{emote:expedition.disliked} *Votre familier n'a pas apprécié cette destination. Son manque d'enthousiasme a considérablement réduit ses trouvailles.*"
+        "male": "\n{emote:expedition.disliked} *Il vostro compagno non ha apprezzato questa destinazione. La sua mancanza di entusiasmo ha ridotto notevolmente i suoi ritrovamenti.",
+        "female": "\n{emote:expedition.disliked} *Il vostro animale domestico non ha apprezzato questa destinazione. La sua mancanza di entusiasmo ha ridotto notevolmente i suoi ritrovamenti."
       },
       "money": "{emote:unitValues.money} Soldi guadagnati : **{{amount, number}}** !",
       "experience": "{emote:unitValues.xp} Esperienza acquisita : **{{amount, number}}** !",
@@ -271,14 +271,14 @@
       "badgeEarned": "{emote:badges.expert_expediteur} Ti è stato offerto un badge: **Esperto mittente** !"
     },
     "riskCategories": {
-      "trivial": "Tranquille",
+      "trivial": "Tranquillo",
       "veryLow": "Serein",
-      "low": "Hasardeux",
-      "moderate": "Risqué",
+      "low": "Casuale",
+      "moderate": "Rischioso",
       "high": "Pericoloso",
       "veryHigh": "Pericoloso",
-      "extreme": "Mortel",
-      "desperate": "Désespéré"
+      "extreme": "Mortale",
+      "desperate": "Disperato"
     },
     "rewardCategories": {
       "meager": "Meagro",
@@ -289,9 +289,9 @@
     },
     "terrainCategories": {
       "trivial": "Tranquillo",
-      "easy": "Praticable",
-      "moderate": "Accidenté",
-      "challenging": "Hostile",
+      "easy": "Pratico",
+      "moderate": "Incidente",
+      "challenging": "Ostile",
       "treacherous": "Pericoloso"
     },
     "mapLocationExpeditions": {
@@ -336,7 +336,7 @@
       "expeditionInProgress": "Il vostro animale domestico sta già esplorando terre lontane.",
       "generic": "Una forza misteriosa impedisce la vostra richiesta. I saggi consigliano di riprovare.",
       "notOnContinent": "$t(models:talisman.anchor) si rifiuta di funzionare in queste strane terre. La sua magia ancestrale sembra funzionare solo sul continente principale del regno. Tornate alle strade conosciute per inviare il vostro famiglio in spedizione.",
-      "cannotRecallOnIsland": "Pour une raison inconnue, il semblerait que les pouvoirs du $t(models:talisman.anchor) ne fonctionnent pas ici. Le rappel de votre familier ne peut s'effectuer qu'une fois de retour sur le continent ou sur le bateau."
+      "cannotRecallOnIsland": "Per qualche motivo, sembra che i poteri di $t(models:talisman.anchor) non funzionino qui. Il vostro animale può essere richiamato solo una volta tornati sul continente o sulla nave."
     }
   },
   "guild": {
@@ -698,7 +698,7 @@
       "top_1_before_reset": ":first_place: `Persona che ha per primo ottenuto il primo posto della dopo il reset`",
       "very_powerful_guild": ":mirror_ball: `Membro di una gilda molto potente`",
       "animal_lover": "Persona che ha mostrato tutti gli animali domestici a Talvar il nano",
-      "expert_expediteur": "Personne ayant réussi de nombreuses expéditions avec son familier"
+      "expert_expediteur": "Una persona che ha portato a termine con successo numerose spedizioni con il proprio animale domestico"
     },
     "fightRanked": {
       "fieldName": "Gloria e lega :",
@@ -858,13 +858,13 @@
     "isFeisty": "{emote:collectors.warning} Attenzione: liberare un animale con la febbre vi costerà {{cost, number}} {emote:unitValues.money}.",
     "petOnExpedition": "Il vostro animale è in fase di spedizione e non può essere rilasciato.",
     "selectionTitle": "{{pseudo}}, liberare un animale di compagnia",
-    "selectionDesc": "Choisissez un familier à libérer :",
-    "selectPlaceholder": "Sélectionnez un familier à libérer",
-    "ownPetOption": "Votre familier personnel",
+    "selectionDesc": "Scegliere un animale da liberare:",
+    "selectPlaceholder": "Selezionare un animale da liberare",
+    "ownPetOption": "Il vostro animale domestico personale",
     "shelterPetOption": "{{rarity}} | {{sex}} {{loveLevel}}",
     "cancelButton": "Annullamento",
-    "feistyCostPaid": "La libération vous a coûté {{cost, number}} {emote:unitValues.money}.",
-    "luckyMeat": "Le familier vous a laissé un morceau de viande en partant ! {emote:food.carnivorousFood}"
+    "feistyCostPaid": "La liberazione vi è costata {{cost, number}} {emote:unitValues.money}.",
+    "luckyMeat": "Il familiare ti ha lasciato un pezzo di carne quando te ne sei andato! {emote:food.carnivorousFood}"
   },
   "petNick": {
     "successTitle": "{{pseudo}}Cambiare il soprannome dell'animale domestico",
@@ -1013,11 +1013,11 @@
         "name": "{emote:shopItems.lovePointsValue} Veterinario di corte",
         "info": "Ottenere informazioni dettagliate sul vostro animale domestico.",
         "giveTitle": "{{pseudo}}acquisto effettuato!",
-        "giveDesc": "Après avoir longuement étudié votre animal et son état de santé, le vétérinaire vous donne son rapport :\n\n**{{petName}}** {{commentOnResult}}\n{emote:petInformation.loveScore} **Score d'amour** : {{actualLP, number}} / {{maxLovePoints, number}}\n{emote:petInformation.diet} **Régime alimentaire** : {{diet}}\n{emote:petInformation.force} **Force** : {{force, number}}\n{emote:petInformation.speed} **Vitesse** : {{speed, number}}\n{emote:petInformation.feedDelay} **Intervalle entre repas** : {{feedDelay}}\n{emote:petInformation.nextFeed} **Prochaine faim** : {{nextFeed}}\n{emote:petInformation.age} **Âge** : {{commentOnPetAge}}\n\n{emote:petInformation.fightEffect} **Effet de combat** : {{commentOnFightEffect}}{{expeditionSection}}\n\n {{dwarfPet}}",
-        "expeditionPreferences": "\n\n{emote:expedition.map} **Affinités d'exploration** :\n{{likedLocations}}{{dislikedLocations}}",
-        "likedLocations": "{emote:expedition.liked} Prospère dans : {{locations}}",
-        "dislikedLocations": "\n{emote:expedition.disliked} Se méfie de : {{locations}}",
-        "noPreferences": "\n\n{emote:expedition.map} **Affinités d'exploration** : J'observe chez votre familier une remarquable capacité d'adaptation. Son instinct lui permet de s'acclimater à tous types de terrains sans difficulté particulière.",
+        "giveDesc": "Dopo un esame approfondito del vostro animale e del suo stato di salute, il veterinario vi consegnerà il suo rapporto:\n\n**{{petName}}** {{commentOnResult}}\n{emote:petInformation.loveScore} **Punteggio di amore**: {{actualLP, number}} / {{maxLovePoints, number}}\n{emote:petInformation.diet} **Dieta**: {{diet}}\n{emote:petInformation.force} **Forza**: {{force, number}}\n{emote:petInformation.speed} **Velocità** : {{speed, number}}\n{emote:petInformation.feedDelay} **Intervallo pasto** : {{feedDelay}}\n{emote:petInformation.nextFeed} **Fame successiva**: {{nextFeed}}\n{emote:petInformation.age} **Età**: {{commentOnPetAge}}\n\n{emote:petInformation.fightEffect} **Effetto di combattimento**: {{commentOnFightEffect}}{{expeditionSection}}\n\n {{dwarfPet}}",
+        "expeditionPreferences": "\n\n{emote:expedition.map} **Incentivi all'esplorazione**:\n{{likedLocations}}{{dislikedLocations}}",
+        "likedLocations": "{emote:expedition.liked} Prosperità in: {{locations}}",
+        "dislikedLocations": "\n{emote:expedition.disliked} Diffidare di : {{locations}}",
+        "noPreferences": "\n\n{emote:expedition.map} **Benefici per l'esplorazione**: il vostro animale domestico ha una notevole capacità di adattamento. Il suo istinto gli permette di acclimatarsi a tutti i tipi di terreno senza particolari difficoltà.",
         "petIsHungry": "{emote:effects.starving} affamato",
         "commentOnFightEffect": {
           "bite": [
