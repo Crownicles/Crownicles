@@ -278,6 +278,12 @@
     "Las expediciones a los pantanos dan más puntos que otros destinos.",
     "El número máximo de tokens que puedes acumular es de 20.",
     "La tienda limita la adquisición de tokens a 10 por día y 30 por semana. ¡Gestiona bien tus compras!",
-    "El resultado de una expedición tiene un impacto en el afecto de tu mascota: un éxito aumenta el afecto, un fracaso lo disminuye."
+    "El resultado de una expedición tiene un impacto en el afecto de tu mascota: un éxito aumenta el afecto, un fracaso lo disminuye.",
+    "Chaque familier a des préférences d'expédition : il apprécie certains environnements et en déteste d'autres. Le vétérinaire peut vous révéler ses préférences.",
+    "Envoyer votre familier dans un lieu qu'il apprécie augmente les récompenses de l'expédition. À l'inverse, les lieux qu'il n'aime pas réduisent les gains.",
+    "Si vous envoyez votre familier dans un lieu qu'il n'aime pas pour une expédition courte, le risque d'échec augmente. Les longues expéditions ne sont pas affectées.",
+    "En expédition, la Dangerosité est le facteur principal d'échec. Le Terrain ajoute un modificateur secondaire et peut rendre l'expédition plus difficile.",
+    "Certains terrains d'expédition sont plus risqués que d'autres : les plaines et les côtes sont relativement sûres, tandis que les grottes et les ruines présentent plus de dangers.",
+    "Si vous êtes membre d'une guilde, vous pouvez libérer les familiers du refuge en plus du vôtre grâce à la commande {command:petfree}."
   ]
 }
