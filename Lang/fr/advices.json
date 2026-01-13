@@ -278,6 +278,12 @@
     "Les expéditions vers les marais rapportent plus de points que les autres destinations.",
     "Le nombre maximum de jetons que vous pouvez accumuler est de 20.",
     "Le magasin limite l'acquisition de jetons à 10 par jour et 30 par semaine. Gérez bien vos achats !",
-    "Le résultat d'une expédition a un impact sur l'affection de votre familier : un succès augmente l'affection, un échec la diminue."
+    "Le résultat d'une expédition a un impact sur l'affection de votre familier : un succès augmente l'affection, un échec la diminue.",
+    "Chaque familier a des préférences d'expédition : il apprécie certains environnements et en déteste d'autres. Le vétérinaire peut vous révéler ses préférences.",
+    "Envoyer votre familier dans un lieu qu'il apprécie augmente les récompenses de l'expédition. À l'inverse, les lieux qu'il n'aime pas réduisent les gains.",
+    "Si vous envoyez votre familier dans un lieu qu'il n'aime pas pour une expédition courte, le risque d'échec augmente. Les longues expéditions ne sont pas affectées.",
+    "En expédition, la Dangerosité est le facteur principal d'échec. Le Terrain ajoute un modificateur secondaire et peut rendre l'expédition plus difficile.",
+    "Certains terrains d'expédition sont plus risqués que d'autres : les plaines et les côtes sont relativement sûres, tandis que les grottes et les ruines présentent plus de dangers.",
+    "Si vous êtes membre d'une guilde, vous pouvez libérer les familiers du refuge en plus du vôtre grâce à la commande {command:petfree}."
   ]
 }
