@@ -1217,16 +1217,16 @@
       "name": "Deserto"
     },
     "swamp": {
-      "name": "Marais"
+      "name": "Pântano"
     },
     "cave": {
-      "name": "Grotte"
+      "name": "Gruta"
     },
     "plains": {
       "name": "Planície"
     },
     "coast": {
-      "name": "Côte"
+      "name": "Costa"
     }
   },
   "missions": {
