@@ -138,7 +138,7 @@
     "inProgressDescription": {
       "intro": "{{petDisplay}} durchstreift derzeit ferne und geheimnisvolle Länder!",
       "destination": "{emote:expedition.map} **Ziel:** **{{location}}**",
-      "risk": "{emote:expedition.risk} **Gefährlichkeit:** {{risk}}",
+      "risk": "{{riskEmoji}} **Dangerosité :** {{risk}}",
       "returnTime": "{emote:clocks.1} ** Geplante Rückkehr:** {{returnTime}}",
       "warning_male": "{emote:collectors.warning} *Wenn Sie Ihren Vertrauten vorzeitig zurückrufen, bricht das Vertrauensverhältnis. Er wird ohne Beute und mit geschundenem Herzen zurückkehren...*.",
       "warning_female": "{emote:collectors.warning} *Die Vertraute vorzeitig zu rufen, wird das Vertrauensverhältnis zerstören. Sie wird ohne Beute und mit geschundenem Herzen zurückkehren...*."
@@ -154,9 +154,9 @@
     "expeditionOption": {
       "header": "**{{number}}.** {{location}}",
       "duration": "{emote:expedition.duration} Geschätzte Dauer: {{duration}}",
-      "risk": "{emote:expedition.risk} Gefährlichkeit: {{risk}}",
+      "terrain": "{{terrainEmoji}} Terrain : {{terrain}}",
+      "risk": "{{riskEmoji}} Dangerosité : {{risk}}",
       "reward": "{emote:expedition.reward} Geschätzte Belohnungen: {{reward}}",
-      "difficulty": "{emote:expedition.difficulty} Schwierigkeitsgrad des Geländes: {{difficulty}}",
       "food": "{emote:expedition.food} Erforderliche Rückstellungen: {{foodDisplay}}",
       "cloneTalismanBonus": "{emote:expedition.cloneTalisman} *Eine seltsame Vorahnung überkommt Sie... Gerüchte sprechen von einem legendären Artefakt, das vielleicht in diesem Land versteckt ist.",
       "bonusTokens": "{emote:unitValues.token} *Diese Region ist voller alter Schätze! Ihr Vertrauter könnte dort ein Vermögen an verlorenen Chips entdecken...*."
@@ -202,7 +202,7 @@
       "talisman": {
         "intro": "Der $t(models:talisman.anchor) vibriert intensiv in Ihrer Tasche: {{petDisplay}} ist wieder aus dem Versand nach **{{location}}**!"
       },
-      "risk": "{emote:expedition.risk} Gefährlichkeit: {{risk}}",
+      "risk": "{{riskEmoji}} Dangerosité : {{risk}}",
       "impatience_male": "*Ihr Begleiter stampft ungeduldig auf und will Ihnen unbedingt zeigen, was er mitgebracht hat!*",
       "impatience_female": "*Ihre Begleiterin stampft ungeduldig auf, weil sie es eilig hat, Ihnen zu zeigen, was sie mitgebracht hat!*"
     },
@@ -244,6 +244,8 @@
     "loveChangePartialNegative": "\n\n{emote:expedition.love} Die Schwierigkeiten, auf die Sie gestoßen sind, haben das Vertrauen Ihres Haustiers etwas erschüttert. Ein paar Streicheleinheiten und Leckerlis werden ihm helfen, sich wieder zu erholen.",
     "loveChangePartialPositive": "\n\n{emote:expedition.love} Trotz aller Stolpersteine hat dieses Abenteuer die Bindung zwischen Ihnen leicht gestärkt. Ihr Partner schätzt es, dass Sie ihm vertrauen.",
     "loveChangeSuccess": "\n\n{emote:expedition.love} Diese erfolgreiche Expedition hat das Band zwischen euch gestärkt. Ihr Vertrauter sieht Sie mit erneuter Bewunderung an!",
+    "petLikedExpedition_male": "\n\n{emote:expedition.liked} *Votre compagnon a adoré cette expédition ! Ce type de destination correspond parfaitement à ses goûts, ce qui a décuplé son enthousiasme et son efficacité.*",
+    "petLikedExpedition_female": "\n\n{emote:expedition.liked} *Votre familier a adoré cette expédition ! Ce type de destination correspond parfaitement à ses goûts, ce qui a décuplé son enthousiasme et son efficacité.*",
     "duration": {
       "minutes": "{{count}} Minute",
       "minutes_other": "{{count}} Minuten",
@@ -256,6 +258,10 @@
     },
     "rewards": {
       "title": "\n\n**Butin berichtet:**",
+      "dislikedExpedition": {
+        "male": "\n{emote:expedition.disliked} *Votre compagnon n'a pas apprécié cette destination. Son manque d'enthousiasme a considérablement réduit ses trouvailles.*",
+        "female": "\n{emote:expedition.disliked} *Votre familier n'a pas apprécié cette destination. Son manque d'enthousiasme a considérablement réduit ses trouvailles.*"
+      },
       "money": "{emote:unitValues.money} Verdientes Geld : **{{amount, number}}**!",
       "experience": "{emote:unitValues.xp} Gewonnene Erfahrung : **{{amount, number}}**!",
       "points": "{emote:unitValues.score} Gewonnene Punkte : **{{amount, number}}**!",
@@ -266,11 +272,14 @@
       "badgeEarned": "{emote:badges.expert_expediteur} Ein Abzeichen wurde Ihnen angeboten: **Expert Publisher**!"
     },
     "riskCategories": {
-      "veryLow": "Friedlich",
-      "low": "Wenig riskant",
-      "medium": "Mäßig",
+      "trivial": "Tranquille",
+      "veryLow": "Serein",
+      "low": "Hasardeux",
+      "moderate": "Risqué",
       "high": "Gefährlich",
-      "veryHigh": "Gefährlich"
+      "veryHigh": "Gefährlich",
+      "extreme": "Mortel",
+      "desperate": "Désespéré"
     },
     "rewardCategories": {
       "meager": "Mager",
@@ -279,12 +288,12 @@
       "bountiful": "Reichlich",
       "legendary": "Außergewöhnliche"
     },
-    "difficultyCategories": {
-      "trivial": "Leicht",
-      "easy": "Zugänglich",
-      "moderate": "Anspruchsvoll",
-      "challenging": "Ardu",
-      "treacherous": "Erbarmungslos"
+    "terrainCategories": {
+      "trivial": "Friedlich",
+      "easy": "Praticable",
+      "moderate": "Accidenté",
+      "challenging": "Hostile",
+      "treacherous": "Gefährlich"
     },
     "mapLocationExpeditions": {
       "1": "die geheimnisvollen Riffe am Presidio-Strand",
@@ -689,7 +698,7 @@
       "top_1_before_reset": "Personen, die nach dem Reset den ersten Platz in der Rangfolge erreicht haben.",
       "very_powerful_guild": "Mitglied einer sehr mächtigen Gilde",
       "animal_lover": "Person, die Talvar dem Zwerg alle Vertrauten gezeigt hat",
-      "expert_expediteur": "Person, die 150 Expeditionen mit ihrem Vertrauten erfolgreich abgeschlossen hat"
+      "expert_expediteur": "Personne ayant réussi de nombreuses expéditions avec son familier"
     },
     "fightRanked": {
       "fieldName": "Ruhm und Liga :",
@@ -847,7 +856,15 @@
     "confirmDesc": ":warning: Sind Sie sicher, dass Sie **{{pet}}** befreien wollen? Es ist nicht möglich, eine einmal durchgeführte Aktion rückgängig zu machen.",
     "acceptedDesc": "Adieu **{{pet}}**...",
     "isFeisty": "{emote:collectors.warning} Achtung: Die Befreiung eines galligen Vertrauten kostet Sie {{cost, number}} {emote:unitValues.money}.",
-    "petOnExpedition": "Ihr Vertrauter befindet sich derzeit auf einer Expedition und kann nicht befreit werden."
+    "petOnExpedition": "Ihr Vertrauter befindet sich derzeit auf einer Expedition und kann nicht befreit werden.",
+    "selectionTitle": "{{pseudo}}Befreiung eines Vertrauten",
+    "selectionDesc": "Choisissez un familier à libérer :",
+    "selectPlaceholder": "Sélectionnez un familier à libérer",
+    "ownPetOption": "Votre familier personnel",
+    "shelterPetOption": "{{rarity}} | {{sex}} | {{loveLevel}}",
+    "cancelButton": "Abbrechen",
+    "feistyCostPaid": "La libération vous a coûté {{cost, number}} {emote:unitValues.money}.",
+    "luckyMeat": "Le familier vous a laissé un morceau de viande en partant ! {emote:food.carnivorousFood}"
   },
   "petNick": {
     "successTitle": "{{pseudo}}Änderung des Spitznamens des Vertrauten",
@@ -996,7 +1013,11 @@
         "name": "{emote:shopItems.lovePointsValue} Hoftierarzt",
         "info": "Erhalten Sie detaillierte Informationen über Ihren Vertrauten.",
         "giveTitle": "{{pseudo}}Ich bin sehr zufrieden.",
-        "giveDesc": "Nachdem der Tierarzt Ihr Tier und seinen Gesundheitszustand ausgiebig untersucht hat, gibt er Ihnen seinen Bericht :\n\n**{{petName}}** {{commentOnResult}}\n{emote:petInformation.loveScore} **Liebeswert**: {{actualLP, number}} / {{maxLovePoints, number}}\n{emote:petInformation.diet} **Diät**: {{diet}}\n{emote:petInformation.force} **Stärke**: {{force, number}}\n{emote:petInformation.speed} **Geschwindigkeit**: {{speed, number}}\n{emote:petInformation.feedDelay} **Intervall zwischen den Mahlzeiten**: {{feedDelay}}\n{emote:petInformation.nextFeed} **Nächster Hunger**: {{nextFeed}}\n{emote:petInformation.age} **Alter**: {{commentOnPetAge}}\n\n{emote:petInformation.fightEffect} **Kampffähigkeit**: {{commentOnFightEffect}}\n\n {{dwarfPet}}",
+        "giveDesc": "Après avoir longuement étudié votre animal et son état de santé, le vétérinaire vous donne son rapport :\n\n**{{petName}}** {{commentOnResult}}\n{emote:petInformation.loveScore} **Score d'amour** : {{actualLP, number}} / {{maxLovePoints, number}}\n{emote:petInformation.diet} **Régime alimentaire** : {{diet}}\n{emote:petInformation.force} **Force** : {{force, number}}\n{emote:petInformation.speed} **Vitesse** : {{speed, number}}\n{emote:petInformation.feedDelay} **Intervalle entre repas** : {{feedDelay}}\n{emote:petInformation.nextFeed} **Prochaine faim** : {{nextFeed}}\n{emote:petInformation.age} **Âge** : {{commentOnPetAge}}\n\n{emote:petInformation.fightEffect} **Effet de combat** : {{commentOnFightEffect}}{{expeditionSection}}\n\n {{dwarfPet}}",
+        "expeditionPreferences": "\n\n{emote:expedition.map} **Affinités d'exploration** :\n{{likedLocations}}{{dislikedLocations}}",
+        "likedLocations": "{emote:expedition.liked} Prospère dans : {{locations}}",
+        "dislikedLocations": "\n{emote:expedition.disliked} Se méfie de : {{locations}}",
+        "noPreferences": "\n\n{emote:expedition.map} **Affinités d'exploration** : J'observe chez votre familier une remarquable capacité d'adaptation. Son instinct lui permet de s'acclimater à tous types de terrains sans difficulté particulière.",
         "petIsHungry": "{emote:effects.starving} hungrig",
         "commentOnFightEffect": {
           "bite": [
