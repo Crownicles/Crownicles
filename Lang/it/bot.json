@@ -38,5 +38,14 @@
   "christmasBonusPreAnnouncement": "{emote:announcements.christmas} **Bonus di Natale in arrivo!** {emote:announcements.christmas} Tra poche ore, tutti i giocatori riceveranno un regalo speciale: il loro stock di gettoni sarà riempito al massimo! Godetevi questo periodo festivo!",
   "christmasBonusApplied": "{emote:announcements.christmas} **Buon Natale!** {emote:announcements.gift} Babbo Natale è passato! Il tuo stock di gettoni è stato riempito al massimo. Goditi questo regalo per partire all'avventura!",
   "supportMessage": "{{langFlag}} Se hai bisogno di aiuto, seleziona la tua lingua usando i pulsanti qui sotto. Se non hai bisogno di aiuto, ignora questo messaggio.\n{emote:collectors.warning} **Ogni messaggio inviato qui può essere letto da un essere umano!**\n",
-  "commandDisabledInDM": "{{langFlag}} Ciao, i comandi sono disabilitati nei messaggi privati. Vai su un server per giocare!\nSe desideri aiuto, clicca sul pulsante corrispondente alla tua lingua qui sotto.\n"
+  "commandDisabledInDM": "{{langFlag}} Ciao, i comandi sono disabilitati nei messaggi privati. Vai su un server per giocare!\nSe desideri aiuto, clicca sul pulsante corrispondente alla tua lingua qui sotto.\n",
+  "accountDeletion": {
+    "confirmPrompt": "{emote:collectors.warning} **Attenzione: questa azione è IMMEDIATA e PERMANENTE **\n\nIl vostro account sarà anonimizzato e tutti i vostri dati personali saranno cancellati. Questa azione è irreversibile.\n\nPer confermare, digitare esattamente la seguente frase:\n`{{phrase}}`",
+    "success": "{emote:collectors.accept} Il vostro account è stato anonimizzato con successo. Tutti i vostri dati personali sono stati cancellati. Questa azione è irreversibile.",
+    "error": "{emote:collectors.refuse} Si è verificato un errore durante l'anonimizzazione dell'account. Contattare l'assistenza.",
+    "cancelled": "{emote:collectors.refuse} La cancellazione è stata annullata. Se si desidera ricominciare, utilizzare nuovamente il codice di cancellazione fornito.",
+    "invalidCode": "{emote:collectors.refuse} Il codice di cancellazione non è valido o è scaduto. Contattare l'assistenza per ottenere un nuovo codice.",
+    "userNotFound": "{emote:collectors.refuse} Nessun account è associato al tuo nome utente Discord.",
+    "rateLimited": "{emote:collectors.refuse} Troppi tentativi errati. Riprovare tra 15 minuti."
+  }
 }
