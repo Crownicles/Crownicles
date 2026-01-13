@@ -279,11 +279,11 @@
     "The maximum number of tokens you can accumulate is 20.",
     "The store limits token purchases to 10 per day and 30 per week. Be careful with your purchases!",
     "The result of an expedition has an impact on your pet's affection: success increases affection, failure decreases it.",
-    "Chaque familier a des préférences d'expédition : il apprécie certains environnements et en déteste d'autres. Le vétérinaire peut vous révéler ses préférences.",
-    "Envoyer votre familier dans un lieu qu'il apprécie augmente les récompenses de l'expédition. À l'inverse, les lieux qu'il n'aime pas réduisent les gains.",
-    "Si vous envoyez votre familier dans un lieu qu'il n'aime pas pour une expédition courte, le risque d'échec augmente. Les longues expéditions ne sont pas affectées.",
-    "En expédition, la Dangerosité est le facteur principal d'échec. Le Terrain ajoute un modificateur secondaire et peut rendre l'expédition plus difficile.",
-    "Certains terrains d'expédition sont plus risqués que d'autres : les plaines et les côtes sont relativement sûres, tandis que les grottes et les ruines présentent plus de dangers.",
-    "Si vous êtes membre d'une guilde, vous pouvez libérer les familiers du refuge en plus du vôtre grâce à la commande {command:petfree}."
+    "Every pet has its own expedition preferences: it likes certain environments and dislikes others. Your veterinarian can tell you what these preferences are.",
+    "Sending your pet to a place it likes increases the rewards of the expedition. Conversely, places they don't like reduce their rewards.",
+    "If you send your pet on a short expedition to a place it doesn't like, the risk of failure increases. Long expeditions are not affected.",
+    "On expeditions, Danger is the main factor in failure. Terrain adds a secondary modifier and can make expeditions more difficult.",
+    "Some expedition terrains are riskier than others: plains and coasts are relatively safe, while caves and ruins present more danger.",
+    "If you're a member of a guild, you can free the shelter's pets in addition to your own with the command {command:petfree}."
   ]
 }
