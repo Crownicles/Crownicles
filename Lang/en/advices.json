@@ -278,6 +278,12 @@
     "Expeditions to the swamps earn more points than other destinations.",
     "The maximum number of tokens you can accumulate is 20.",
     "The store limits token purchases to 10 per day and 30 per week. Be careful with your purchases!",
-    "The result of an expedition has an impact on your pet's affection: success increases affection, failure decreases it."
+    "The result of an expedition has an impact on your pet's affection: success increases affection, failure decreases it.",
+    "Every pet has its own expedition preferences: it likes certain environments and dislikes others. Your veterinarian can tell you what these preferences are.",
+    "Sending your pet to a place it likes increases the rewards of the expedition. Conversely, places they don't like reduce their rewards.",
+    "If you send your pet on a short expedition to a place it doesn't like, the risk of failure increases. Long expeditions are not affected.",
+    "On expeditions, Danger is the main factor in failure. Terrain adds a secondary modifier and can make expeditions more difficult.",
+    "Some expedition terrains are riskier than others: plains and coasts are relatively safe, while caves and ruins present more danger.",
+    "If you're a member of a guild, you can free the shelter's pets in addition to your own with the command {command:petfree}."
   ]
 }

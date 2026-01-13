@@ -278,6 +278,12 @@
     "Le spedizioni nelle paludi guadagnano più punti rispetto alle altre destinazioni.",
     "Il numero massimo di gettoni che si possono accumulare è 20.",
     "Il negozio limita l'acquisto di gettoni a 10 al giorno e 30 alla settimana. Fate attenzione ai vostri acquisti!",
-    "Il risultato di una spedizione ha un impatto sull'affetto del vostro animale: il successo aumenta l'affetto, il fallimento lo diminuisce."
+    "Il risultato di una spedizione ha un impatto sull'affetto del vostro animale: il successo aumenta l'affetto, il fallimento lo diminuisce.",
+    "Tutti gli animali domestici hanno le loro preferenze: amano certi ambienti e non ne amano altri. Il veterinario può dirvi quali sono queste preferenze.",
+    "Mandare l'animale in un luogo che gli piace aumenta le ricompense della spedizione. Al contrario, mandarlo in un luogo che non gli piace riduce le ricompense.",
+    "Se si invia l'animale in una spedizione breve in un luogo che non gli piace, il rischio di fallimento aumenta. Le spedizioni lunghe non ne risentono.",
+    "Nelle spedizioni, il pericolo è il principale fattore di fallimento. Il terreno aggiunge un modificatore secondario e può rendere le spedizioni più difficili.",
+    "Alcuni siti di spedizione sono più rischiosi di altri: le pianure e le coste sono relativamente sicure, mentre le grotte e le rovine sono più pericolose.",
+    "Se siete membri di una gilda, potete usare il comando {command:petfree}per liberare gli animali del rifugio e i vostri."
   ]
 }

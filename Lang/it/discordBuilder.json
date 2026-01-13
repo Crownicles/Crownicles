@@ -382,5 +382,15 @@
   "fightHistory": {
     "name": "storiacombattimento",
     "description": "Visualizza la storia della battaglia."
+  },
+  "deletecode": {
+    "name": "deletecode",
+    "description": "Genera un codice di cancellazione dell'account per un utente.",
+    "options": {
+      "discordid": {
+        "name": "discordante",
+        "description": "L'ID Discord dell'utente."
+      }
+    }
   }
 }

@@ -1206,6 +1206,27 @@
     "hauntedHouse": {
       "name": "",
       "prefix": "de la"
+    },
+    "forest": {
+      "name": "Bosque"
+    },
+    "mountain": {
+      "name": "Montaña"
+    },
+    "desert": {
+      "name": "Desierto"
+    },
+    "swamp": {
+      "name": "Marsh"
+    },
+    "cave": {
+      "name": "Gruta"
+    },
+    "plains": {
+      "name": "Llanura"
+    },
+    "coast": {
+      "name": "Costa"
     }
   },
   "missions": {

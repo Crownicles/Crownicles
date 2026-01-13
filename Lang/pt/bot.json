@@ -35,8 +35,17 @@
   "notificationEnergyFull": "Recuperou toda a sua energia.",
   "notificationDailyBonus": "O seu bónus diário está disponível.",
   "notificationPetExpedition": "{{petDisplay}} regressou da sua expedição e pode ter trazido um tesouro!",
-  "christmasBonusPreAnnouncement": "{emote:announcements.christmas} **Bonus de Noël à venir !** {emote:announcements.christmas}\n\nDans quelques heures, tous les joueurs recevront un cadeau spécial : leur stock de jetons sera rempli au maximum ! Profitez bien de cette période festive !",
-  "christmasBonusApplied": "{emote:announcements.christmas} **Joyeux Noël !** {emote:announcements.gift}\n\nLe Père Noël est passé ! Votre stock de jetons a été rempli au maximum. Profitez de ce cadeau pour partir à l'aventure !",
+  "christmasBonusPreAnnouncement": "{emote:announcements.christmas} **Bônus de Natal chegando!** {emote:announcements.christmas}\\n\\nEm algumas horas, todos os jogadores receberão um presente especial: seu estoque de fichas será preenchido ao máximo! Aproveite bem esta época festiva!",
+  "christmasBonusApplied": "{emote:announcements.christmas} **Feliz Natal!** {emote:announcements.gift}\\n\\nO Papai Noel passou! Seu estoque de fichas foi preenchido ao máximo. Aproveite este presente para partir em uma aventura!",
   "supportMessage": "{{langFlag}} Se precisar de ajuda, seleccione o seu idioma através dos botões abaixo. Se não precisar de ajuda, ignore esta mensagem. \n{emote:collectors.warning} **Todas as mensagens aqui enviadas podem ser lidas por um ser humano!**\n",
-  "commandDisabledInDM": "{{langFlag}} Olá, os comandos estão desativados em mensagens privadas. Por favor, vá para um servidor para jogar!\nSe quiser ajuda, clique no botão correspondente ao seu idioma abaixo. \n"
+  "commandDisabledInDM": "{{langFlag}} Olá, os comandos estão desativados em mensagens privadas. Por favor, vá para um servidor para jogar!\nSe quiser ajuda, clique no botão correspondente ao seu idioma abaixo. \n",
+  "accountDeletion": {
+    "confirmPrompt": "{emote:collectors.warning} **ADVERTÊNCIA: Esta ação é IMEDIATA e PERMANENTE **\n\nA sua conta será anonimizada e todos os seus dados pessoais serão eliminados. Esta ação é irreversível.\n\nPara confirmar, digite exatamente a seguinte frase:\n`{{phrase}}`",
+    "success": "{emote:collectors.accept} A sua conta foi anonimizada com sucesso. Todos os seus dados pessoais foram eliminados. Esta ação é irreversível.",
+    "error": "{emote:collectors.refuse} Ocorreu um erro ao tornar a sua conta anónima. Contacte a assistência.",
+    "cancelled": "{emote:collectors.refuse} A eliminação foi cancelada. Se pretender recomeçar, utilize novamente o código de eliminação fornecido.",
+    "invalidCode": "{emote:collectors.refuse} O código de eliminação é inválido ou expirou. Contacte o suporte para obter um novo código.",
+    "userNotFound": "{emote:collectors.refuse} Nenhuma conta está associada ao seu nome de utilizador Discord.",
+    "rateLimited": "{emote:collectors.refuse} Demasiadas tentativas incorrectas. Tente novamente dentro de 15 minutos."
+  }
 }

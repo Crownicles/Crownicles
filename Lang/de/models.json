@@ -1206,6 +1206,27 @@
     "hauntedHouse": {
       "name": "",
       "prefix": "von"
+    },
+    "forest": {
+      "name": "Wälder"
+    },
+    "mountain": {
+      "name": "Berg"
+    },
+    "desert": {
+      "name": "Dessert"
+    },
+    "swamp": {
+      "name": "Sumpf"
+    },
+    "cave": {
+      "name": "Höhle"
+    },
+    "plains": {
+      "name": "Plain"
+    },
+    "coast": {
+      "name": "Küste"
     }
   },
   "missions": {

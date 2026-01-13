@@ -1206,6 +1206,27 @@
     "hauntedHouse": {
       "name": "",
       "prefix": "do"
+    },
+    "forest": {
+      "name": "Floresta"
+    },
+    "mountain": {
+      "name": "Montanha"
+    },
+    "desert": {
+      "name": "Deserto"
+    },
+    "swamp": {
+      "name": "Pântano"
+    },
+    "cave": {
+      "name": "Gruta"
+    },
+    "plains": {
+      "name": "Planície"
+    },
+    "coast": {
+      "name": "Costa"
     }
   },
   "missions": {
@@ -1782,7 +1803,7 @@
     "92": "Lodo de troll",
     "93": "Lágrima de Titã",
     "94": "Barra ChocoChoc",
-    "95": "Potion méga incroyable de vitesse"
+    "95": "Poção de velocidade mega incrível"
   },
   "weapons": {
     "0": "Punho",
