@@ -7,7 +7,7 @@ import { MissionUtils as MissionUtilsLib } from "../../../Lib/src/utils/MissionU
 import {
 	dateDisplay, hoursToMilliseconds
 } from "../../../Lib/src/utils/TimeUtils";
-import { getTranslatedRiskCategoryName } from "../commands/pet/expedition/ExpeditionDisplayUtils";
+import { getTranslatedRiskCategoryNameWithEmoji } from "../commands/pet/expedition/ExpeditionDisplayUtils";
 
 export class MissionUtils {
 	/**
@@ -81,7 +81,7 @@ export class MissionUtils {
 	private static readonly variantTextHandlers: Record<string, (mission: BaseMission, lng: Language) => string> = {
 		fromPlaceToPlace: (mission, lng) => MissionUtils.manageFromPlaceToPlaceVariant(mission, lng),
 		chooseClassTier: mission => String(mission.missionVariant + 1),
-		dangerousExpedition: (mission, lng) => getTranslatedRiskCategoryName(mission.missionVariant, lng),
+		dangerousExpedition: (mission, lng) => getTranslatedRiskCategoryNameWithEmoji(mission.missionVariant, lng),
 		longExpedition: (mission, lng) => i18n.formatDuration(mission.missionVariant, lng)
 	};
 
