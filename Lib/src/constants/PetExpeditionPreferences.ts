@@ -1,9 +1,18 @@
 import type { ExpeditionLocationType } from "./ExpeditionConstants";
 
 /**
+ * Pet expedition preference constants to avoid magic strings
+ */
+export const PetExpeditionPreferences = {
+	LIKED: "liked",
+	NEUTRAL: "neutral",
+	DISLIKED: "disliked"
+} as const;
+
+/**
  * Pet expedition preference type
  */
-export type PetExpeditionPreference = "liked" | "neutral" | "disliked";
+export type PetExpeditionPreference = typeof PetExpeditionPreferences[keyof typeof PetExpeditionPreferences];
 
 /**
  * Pet expedition preference configuration
@@ -17,9 +26,9 @@ export interface PetExpeditionPreferenceConfig {
  * Reward multipliers based on pet preference for expedition location
  */
 export const PET_PREFERENCE_REWARD_MULTIPLIERS: Record<PetExpeditionPreference, number> = {
-	liked: 1,
-	neutral: 0.8,
-	disliked: 0.25
+	[PetExpeditionPreferences.LIKED]: 1,
+	[PetExpeditionPreferences.NEUTRAL]: 0.8,
+	[PetExpeditionPreferences.DISLIKED]: 0.25
 };
 
 /**
@@ -42,9 +51,7 @@ export const DISLIKED_EXPEDITION_DURATION_THRESHOLD_MINUTES = 720; // 12 hours
  * Each pet has preferred (liked) and disliked expedition location types
  * Locations not in either list are considered neutral
  *
- * Preferences are based purely on RP (natural habitat and animal behavior):
- * - 1 to 4 liked locations per pet
- * - 0 to 2 disliked locations per pet
+ * Preferences can be seen here https://crownicles.github.io/Tools/generators/pet-preferences-visualizer.html
  */
 export const PET_EXPEDITION_PREFERENCES: Record<number, PetExpeditionPreferenceConfig> = {
 	// 0 - No pet (default neutral)
@@ -1054,18 +1061,18 @@ export function getPetExpeditionPreference(petTypeId: number, locationType: Expe
 	const preferences = PET_EXPEDITION_PREFERENCES[petTypeId];
 
 	if (!preferences) {
-		return "neutral";
+		return PetExpeditionPreferences.NEUTRAL;
 	}
 
 	if (preferences.liked.includes(locationType)) {
-		return "liked";
+		return PetExpeditionPreferences.LIKED;
 	}
 
 	if (preferences.disliked.includes(locationType)) {
-		return "disliked";
+		return PetExpeditionPreferences.DISLIKED;
 	}
 
-	return "neutral";
+	return PetExpeditionPreferences.NEUTRAL;
 }
 
 /**

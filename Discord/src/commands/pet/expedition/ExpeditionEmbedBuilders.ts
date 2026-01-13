@@ -5,7 +5,7 @@ import {
 	escapeUsername, StringUtils
 } from "../../../utils/StringUtils";
 import {
-	ExpeditionLocationType, getPetExpeditionPreference
+	ExpeditionLocationType, getPetExpeditionPreference, PetExpeditionPreferences
 } from "../../../../../Lib/src/constants/ExpeditionConstants";
 import { Language } from "../../../../../Lib/src/Language";
 import { CrowniclesIcons } from "../../../../../Lib/src/CrowniclesIcons";
@@ -237,7 +237,7 @@ function buildResolutionData(
 
 	// Check if pet disliked the expedition for reward display
 	const petPreference = getPetExpeditionPreference(packet.pet.petTypeId, packet.expedition.locationType);
-	const dislikedContext = petPreference === "disliked" ? { sexContext } : undefined;
+	const dislikedContext = petPreference === PetExpeditionPreferences.DISLIKED ? { sexContext } : undefined;
 
 	// Build liked expedition message if applicable
 	const likedMessage = packet.petLikedExpedition && !packet.totalFailure

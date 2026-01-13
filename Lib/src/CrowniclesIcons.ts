@@ -143,16 +143,7 @@ export const CrowniclesIcons: {
 		};
 		map: string;
 		loot: string;
-		risk: {
-			trivial: string;
-			veryLow: string;
-			low: string;
-			moderate: string;
-			high: string;
-			veryHigh: string;
-			extreme: string;
-			desperate: string;
-		};
+		risk: Record<string, string>;
 		reward: string;
 		duration: string;
 		terrain: {

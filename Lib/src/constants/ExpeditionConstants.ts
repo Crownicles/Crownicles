@@ -831,6 +831,7 @@ export {
 	DISLIKED_SHORT_EXPEDITION_FAILURE_BONUS,
 	LIKED_EXPEDITION_FAILURE_REDUCTION,
 	DISLIKED_EXPEDITION_DURATION_THRESHOLD_MINUTES,
+	PetExpeditionPreferences,
 	getPetExpeditionPreference,
 	getPetExpeditionPreferences
 } from "./PetExpeditionPreferences";
@@ -873,4 +874,28 @@ export function generateTerrainBasedRisk(locationType: ExpeditionLocationType, r
 
 	// Scale to 0-100 and round
 	return Math.round(transformedRandom * 100);
+}
+
+/**
+ * Risk category thresholds in ascending order for math-based category calculation
+ */
+const RISK_THRESHOLDS = [
+	ExpeditionConstants.RISK_DISPLAY_CATEGORIES.TRIVIAL.MAX,
+	ExpeditionConstants.RISK_DISPLAY_CATEGORIES.VERY_LOW.MAX,
+	ExpeditionConstants.RISK_DISPLAY_CATEGORIES.LOW.MAX,
+	ExpeditionConstants.RISK_DISPLAY_CATEGORIES.MODERATE.MAX,
+	ExpeditionConstants.RISK_DISPLAY_CATEGORIES.HIGH.MAX,
+	ExpeditionConstants.RISK_DISPLAY_CATEGORIES.VERY_HIGH.MAX,
+	ExpeditionConstants.RISK_DISPLAY_CATEGORIES.EXTREME.MAX
+] as const;
+
+/**
+ * Get a numeric category level from a risk rate value using math-based threshold comparison
+ * Higher values = more dangerous = higher category level
+ * 8 categories: trivial(0), veryLow(1), low(2), moderate(3), high(4), veryHigh(5), extreme(6), desperate(7)
+ * @param riskRate - Risk percentage from 0 to 100
+ * @returns Category level from 0 (trivial) to 7 (desperate)
+ */
+export function getRiskCategoryLevel(riskRate: number): number {
+	return RISK_THRESHOLDS.filter(threshold => riskRate > threshold).length;
 }
