@@ -278,6 +278,12 @@
     "Expeditionen in die Sümpfe bringen mehr Punkte als andere Ziele.",
     "Die maximale Anzahl an Chips, die Sie ansammeln können, beträgt 20.",
     "Das Geschäft beschränkt den Erwerb von Tokens auf 10 pro Tag und 30 pro Woche. Verwalten Sie Ihre Einkäufe gut!",
-    "Das Ergebnis einer Expedition wirkt sich auf die Zuneigung Ihres Begleiters aus: Ein Erfolg erhöht die Zuneigung, ein Misserfolg verringert sie."
+    "Das Ergebnis einer Expedition wirkt sich auf die Zuneigung Ihres Begleiters aus: Ein Erfolg erhöht die Zuneigung, ein Misserfolg verringert sie.",
+    "Chaque familier a des préférences d'expédition : il apprécie certains environnements et en déteste d'autres. Le vétérinaire peut vous révéler ses préférences.",
+    "Envoyer votre familier dans un lieu qu'il apprécie augmente les récompenses de l'expédition. À l'inverse, les lieux qu'il n'aime pas réduisent les gains.",
+    "Si vous envoyez votre familier dans un lieu qu'il n'aime pas pour une expédition courte, le risque d'échec augmente. Les longues expéditions ne sont pas affectées.",
+    "En expédition, la Dangerosité est le facteur principal d'échec. Le Terrain ajoute un modificateur secondaire et peut rendre l'expédition plus difficile.",
+    "Certains terrains d'expédition sont plus risqués que d'autres : les plaines et les côtes sont relativement sûres, tandis que les grottes et les ruines présentent plus de dangers.",
+    "Si vous êtes membre d'une guilde, vous pouvez libérer les familiers du refuge en plus du vôtre grâce à la commande {command:petfree}."
   ]
 }
