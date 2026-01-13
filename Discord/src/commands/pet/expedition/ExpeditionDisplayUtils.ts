@@ -67,6 +67,13 @@ export function getRiskEmoji(riskRate: number): string {
 }
 
 /**
+ * Get translated risk category name with emoji for display (useful for missions)
+ */
+export function getTranslatedRiskCategoryNameWithEmoji(riskRate: number, lng: Language): string {
+	return `${getRiskEmoji(riskRate)} ${getTranslatedRiskCategoryName(riskRate, lng)}`;
+}
+
+/**
  * Get translated reward category name for display based on reward index
  */
 export function getTranslatedRewardCategoryName(rewardIndex: number, lng: Language): string {
