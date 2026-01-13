@@ -1211,22 +1211,22 @@
       "name": "Wälder"
     },
     "mountain": {
-      "name": "Montagne"
+      "name": "Berg"
     },
     "desert": {
       "name": "Dessert"
     },
     "swamp": {
-      "name": "Marais"
+      "name": "Sumpf"
     },
     "cave": {
-      "name": "Grotte"
+      "name": "Höhle"
     },
     "plains": {
       "name": "Plain"
     },
     "coast": {
-      "name": "Côte"
+      "name": "Küste"
     }
   },
   "missions": {
