@@ -38,5 +38,14 @@
   "christmasBonusPreAnnouncement": "{emote:announcements.christmas} **Weihnachtsbonus in Kürze!** {emote:announcements.christmas}\n\nIn wenigen Stunden erhalten alle Spieler ein besonderes Geschenk: Ihr Token-Vorrat wird vollständig aufgefüllt! Genießt die Festtage!",
   "christmasBonusApplied": "{emote:announcements.christmas} **Frohe Weihnachten!** {emote:announcements.gift}\n\nDer Weihnachtsmann war da! Dein Token-Vorrat wurde maximal aufgefüllt. Nutze dieses Geschenk, um dich ins Abenteuer zu stürzen!",
   "supportMessage": "{{langFlag}} Wenn Sie Hilfe benötigen, wählen Sie Ihre Sprache mithilfe der Schaltflächen unten aus. Wenn Sie keine Hilfe benötigen, ignorieren Sie diese Nachricht.\n{emote:collectors.warning} **Jede hier gesendete Nachricht kann von einem Menschen gelesen werden!**\n",
-  "commandDisabledInDM": "{{langFlag}} Hallo, Befehle sind in privaten Nachrichten deaktiviert. Bitte gehe zum Spielen auf einen Server!\nWenn du Hilfe benötigst, klicke unten auf die Schaltfläche für deine Sprache.\n"
+  "commandDisabledInDM": "{{langFlag}} Hallo, Befehle sind in privaten Nachrichten deaktiviert. Bitte gehe zum Spielen auf einen Server!\nWenn du Hilfe benötigst, klicke unten auf die Schaltfläche für deine Sprache.\n",
+  "accountDeletion": {
+    "confirmPrompt": "{emote:collectors.warning} **WARNUNG: Diese Aktion ist SOFORT und DAUERHAFT.**\n\nIhr Konto wird anonymisiert und alle Ihre persönlichen Daten werden gelöscht. Diese Aktion kann nicht rückgängig gemacht werden.\n\nZur Bestätigung geben Sie genau den folgenden Satz ein:\n`{{phrase}}`.",
+    "success": "{emote:collectors.accept} Ihr Konto wurde erfolgreich anonymisiert. Alle Ihre persönlichen Daten wurden gelöscht. Diese Aktion kann nicht rückgängig gemacht werden.",
+    "error": "{emote:collectors.refuse} Bei der Anonymisierung Ihres Kontos ist ein Fehler aufgetreten. Bitte wenden Sie sich an den Support.",
+    "cancelled": "{emote:collectors.refuse} Der Löschvorgang wurde abgebrochen. Wenn Sie es erneut versuchen möchten, verwenden Sie bitte erneut den bereitgestellten Löschcode.",
+    "invalidCode": "{emote:collectors.refuse} Der Löschcode ist ungültig oder abgelaufen. Bitte wenden Sie sich an den Support, um einen neuen Code zu erhalten.",
+    "userNotFound": "{emote:collectors.refuse} Mit Ihrem Discord-Benutzernamen ist kein Konto verknüpft.",
+    "rateLimited": "{emote:collectors.refuse} Zu viele falsche Versuche. Bitte versuchen Sie es in 15 Minuten erneut."
+  }
 }
