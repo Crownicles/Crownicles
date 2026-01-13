@@ -107,7 +107,7 @@ export async function handleExpeditionStatusRes(
 
 	// Check if player can't start an expedition (error cases)
 	if (!packet.canStartExpedition) {
-		await interaction.followUp({ embeds: [buildCannotStartEmbed(interaction, packet)] });
+		await interaction.followUp({ embeds: [buildCannotStartEmbed(interaction, packet, context)] });
 	}
 
 	/*
@@ -307,8 +307,6 @@ export async function handleExpeditionError(
 		return;
 	}
 
-	await interaction.followUp({
-		embeds: [buildExpeditionErrorEmbed(interaction, packet.errorCode, context)],
-		ephemeral: true
-	});
+	const embed = buildExpeditionErrorEmbed(interaction, packet.errorCode, context);
+	await sendResponse(context, embed as unknown as CrowniclesEmbed);
 }
