@@ -130,8 +130,9 @@ function getCannotStartDescription(
  */
 export function buildCannotStartEmbed(
 	interaction: CrowniclesInteraction,
-	packet: CommandPetExpeditionPacketRes
-): CrowniclesEmbed {
+	packet: CommandPetExpeditionPacketRes,
+	context: PacketContext
+): CrowniclesErrorEmbed {
 	const lng = interaction.userLanguage;
 	const petDisplay = packet.pet
 		? getPetDisplayString(packet.pet, lng)
@@ -139,16 +140,12 @@ export function buildCannotStartEmbed(
 
 	const sexContext = packet.pet ? getSexContext(packet.pet.petSex) : StringConstants.SEX.MALE.long;
 
-	return new CrowniclesEmbed()
-		.formatAuthor(
-			i18n.t("commands:petExpedition.unavailableTitle", {
-				lng,
-				pseudo: escapeUsername(interaction.user.displayName)
-			}),
-			interaction.user
-		)
-		.setDescription(getCannotStartDescription(packet, lng, petDisplay, sexContext))
-		.setErrorColor();
+	return new CrowniclesErrorEmbed(
+		interaction.user,
+		context,
+		interaction,
+		getCannotStartDescription(packet, lng, petDisplay, sexContext)
+	);
 }
 
 /**
