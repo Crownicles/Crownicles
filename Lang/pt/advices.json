@@ -279,11 +279,11 @@
     "O número máximo de fichas que pode acumular é 20.",
     "A loja limita a compra de fichas a 10 por dia e 30 por semana. Cuidado com as suas compras!",
     "O resultado de uma expedição tem um impacto no afeto do seu animal de estimação: o sucesso aumenta o afeto, o fracasso diminui-o.",
-    "Chaque familier a des préférences d'expédition : il apprécie certains environnements et en déteste d'autres. Le vétérinaire peut vous révéler ses préférences.",
-    "Envoyer votre familier dans un lieu qu'il apprécie augmente les récompenses de l'expédition. À l'inverse, les lieux qu'il n'aime pas réduisent les gains.",
-    "Si vous envoyez votre familier dans un lieu qu'il n'aime pas pour une expédition courte, le risque d'échec augmente. Les longues expéditions ne sont pas affectées.",
-    "En expédition, la Dangerosité est le facteur principal d'échec. Le Terrain ajoute un modificateur secondaire et peut rendre l'expédition plus difficile.",
-    "Certains terrains d'expédition sont plus risqués que d'autres : les plaines et les côtes sont relativement sûres, tandis que les grottes et les ruines présentent plus de dangers.",
-    "Si vous êtes membre d'une guilde, vous pouvez libérer les familiers du refuge en plus du vôtre grâce à la commande {command:petfree}."
+    "Todos os animais de estimação têm as suas próprias preferências: gostam de certos ambientes e não gostam de outros. O seu veterinário pode dizer-lhe quais são essas preferências.",
+    "Enviar o seu animal de estimação para um local de que ele gosta aumenta as recompensas da expedição. Pelo contrário, enviá-lo para sítios de que ele não gosta reduz as suas recompensas.",
+    "Se enviar o seu animal de estimação numa expedição curta para um local de que ele não gosta, o risco de fracasso aumenta. As expedições longas não são afectadas.",
+    "Nas expedições, o Perigo é o principal fator de fracasso. O terreno acrescenta um modificador secundário e pode tornar as expedições mais difíceis.",
+    "Alguns locais de expedição são mais arriscados do que outros: as planícies e as costas são relativamente seguras, enquanto as grutas e as ruínas são mais perigosas.",
+    "Se fores membro de uma associação, podes usar o comando {command:petfree}para libertar as mascotes do abrigo e as tuas próprias."
   ]
 }
