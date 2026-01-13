@@ -19,6 +19,7 @@ import { Effect } from "../../../../Lib/src/types/Effect";
 import { TravelTime } from "../../core/maps/TravelTime";
 import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
 import { PossibilityOutcomeCondition } from "./PossibilityOutcomeCondition";
+import { BigEventConstants } from "../../../../Lib/src/constants/BigEventConstants";
 
 async function applyOutcomeScore(outcome: PossibilityOutcome, time: number, player: Player, response: CrowniclesPacket[]): Promise<number> {
 	const scoreChange = TravelTime.timeTravelledToScore(time)
@@ -33,20 +34,20 @@ async function applyOutcomeScore(outcome: PossibilityOutcome, time: number, play
 }
 
 async function applyOutcomeExperience(outcome: PossibilityOutcome, player: Player, response: CrowniclesPacket[]): Promise<number> {
-	let experienceChange = 150
-		+ (outcome.health > 0 ? 200 : 0)
-		+ (outcome.randomItem ? 300 : 0)
-		+ (outcome.money > 0 ? 100 : 0);
+	let experienceChange = BigEventConstants.EXPERIENCE.BASE
+		+ (outcome.health > 0 ? BigEventConstants.EXPERIENCE.HEALTH_BONUS : 0)
+		+ (outcome.randomItem ? BigEventConstants.EXPERIENCE.RANDOM_ITEM_BONUS : 0)
+		+ (outcome.money > 0 ? BigEventConstants.EXPERIENCE.MONEY_BONUS : 0);
 	switch (outcome.effect ?? Effect.NO_EFFECT.id) {
 		case Effect.OCCUPIED.id:
-			experienceChange -= 125;
+			experienceChange -= BigEventConstants.EXPERIENCE.OCCUPIED_PENALTY;
 			break;
 		case Effect.SLEEPING.id:
 		case Effect.STARVING.id:
-			experienceChange -= 130;
+			experienceChange -= BigEventConstants.EXPERIENCE.SLEEPING_STARVING_PENALTY;
 			break;
 		case Effect.CONFOUNDED.id:
-			experienceChange -= 140;
+			experienceChange -= BigEventConstants.EXPERIENCE.CONFOUNDED_PENALTY;
 			break;
 		case Effect.NO_EFFECT.id:
 			break;
