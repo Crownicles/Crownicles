@@ -29,22 +29,17 @@ import { PacketContext } from "../../../../../Lib/src/packets/CrowniclesPacket";
  */
 export function buildNoTalismanEmbed(
 	interaction: CrowniclesInteraction,
-	packet: CommandPetExpeditionPacketRes
-): CrowniclesEmbed {
+	packet: CommandPetExpeditionPacketRes,
+	context: PacketContext
+): CrowniclesErrorEmbed {
 	const lng = interaction.userLanguage;
 	const sexContext = packet.pet ? getSexContext(packet.pet.petSex) : StringConstants.SEX.MALE.long;
-	return new CrowniclesEmbed()
-		.formatAuthor(
-			i18n.t("commands:petExpedition.unavailableTitle", {
-				lng,
-				pseudo: escapeUsername(interaction.user.displayName)
-			}),
-			interaction.user
-		)
-		.setDescription(
-			StringUtils.getRandomTranslation("commands:petExpedition.noTalisman", lng, { context: sexContext })
-		)
-		.setErrorColor();
+	return new CrowniclesErrorEmbed(
+		interaction.user,
+		context,
+		interaction,
+		StringUtils.getRandomTranslation("commands:petExpedition.noTalisman", lng, { context: sexContext })
+	);
 }
 
 /**

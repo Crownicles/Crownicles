@@ -90,7 +90,7 @@ export async function handleExpeditionStatusRes(
 
 	// Check if player has talisman
 	if (!packet.hasTalisman) {
-		await interaction.followUp({ embeds: [buildNoTalismanEmbed(interaction, packet)] });
+		await interaction.followUp({ embeds: [buildNoTalismanEmbed(interaction, packet, context)] });
 		return;
 	}
 
