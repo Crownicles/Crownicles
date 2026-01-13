@@ -137,6 +137,90 @@ async function checkAndAwardExpeditionBadge(
 }
 
 /**
+ * Finalize expedition: log completion, clean up scheduled notification, and mark as completed
+ */
+async function finalizeExpedition(
+	player: Player,
+	petEntity: PetEntity,
+	activeExpedition: PetExpedition,
+	expeditionData: ExpeditionData,
+	expeditionSuccess: boolean,
+	outcome: {
+		rewards?: object;
+		loveChange?: number;
+	}
+): Promise<void> {
+	await ScheduledExpeditionNotifications.deleteByExpeditionId(activeExpedition.id);
+	await PetExpeditions.completeExpedition(activeExpedition);
+
+	crowniclesInstance.logsDatabase.logExpeditionComplete(
+		player.keycloakId,
+		petEntity.id,
+		extractExpeditionLogParams(expeditionData, activeExpedition, expeditionSuccess),
+		outcome.rewards,
+		outcome.loveChange
+	).then();
+}
+
+/**
+ * Apply outcome effects: love change and rewards
+ */
+async function applyOutcomeEffects(
+	outcome: ReturnType<typeof determineExpeditionOutcome>,
+	player: Player,
+	petEntity: PetEntity,
+	response: CrowniclesPacket[],
+	context: PacketContext
+): Promise<void> {
+	if (outcome.loveChange) {
+		await petEntity.changeLovePoints({
+			player,
+			amount: outcome.loveChange,
+			response,
+			reason: NumberChangeReason.SMALL_EVENT
+		});
+	}
+	await petEntity.save();
+
+	if (outcome.rewards) {
+		await applyExpeditionRewards(outcome.rewards, player, response, context);
+	}
+	await player.save();
+}
+
+/**
+ * Calculate risk and determine expedition outcome
+ */
+async function calculateOutcome(
+	petEntity: PetEntity,
+	activeExpedition: PetExpedition,
+	expeditionData: ExpeditionData,
+	player: Player
+): Promise<ReturnType<typeof determineExpeditionOutcome>> {
+	const petModel = PetDataController.instance.getById(petEntity.typeId);
+	const talismans = await PlayerTalismansManager.getOfPlayer(player.id);
+	const foodRequired = ExpeditionConstants.FOOD_CONSUMPTION[activeExpedition.rewardIndex];
+
+	const effectiveRisk = calculateEffectiveRisk({
+		expedition: expeditionData,
+		petModel,
+		petTypeId: petEntity.typeId,
+		petLovePoints: petEntity.lovePoints,
+		foodConsumed: activeExpedition.foodConsumed,
+		foodRequired
+	});
+
+	return determineExpeditionOutcome({
+		effectiveRisk,
+		expedition: expeditionData,
+		rewardIndex: activeExpedition.rewardIndex,
+		hasCloneTalisman: talismans.hasCloneTalisman,
+		playerCurrentTokens: player.tokens,
+		petTypeId: petEntity.typeId
+	});
+}
+
+/**
  * Check basic requirements (talisman and pet)
  */
 async function checkBasicRequirements(player: Player, hasTalisman: boolean): Promise<CommandPetExpeditionPacketRes | null> {
@@ -262,71 +346,19 @@ export default class PetExpeditionCommand {
 		}
 
 		const {
-			activeExpedition,
-			petEntity
+			activeExpedition, petEntity
 		} = validation;
-		const petModel = PetDataController.instance.getById(petEntity.typeId);
 		const expeditionData = activeExpedition.toExpeditionData();
 
-		// Get player talismans
-		const talismans = await PlayerTalismansManager.getOfPlayer(player.id);
+		// Calculate risk and determine outcome
+		const outcome = await calculateOutcome(petEntity, activeExpedition, expeditionData, player);
 
-		// Get the required food from the stored reward index
-		const foodRequired = ExpeditionConstants.FOOD_CONSUMPTION[activeExpedition.rewardIndex];
+		// Apply outcome effects (love change and rewards)
+		await applyOutcomeEffects(outcome, player, petEntity, response, context);
 
-		/*
-		 * Calculate effective risk with food penalty if insufficient food was consumed
-		 * Also applies extra failure risk if pet dislikes the location and expedition is short
-		 */
-		const effectiveRisk = calculateEffectiveRisk({
-			expedition: expeditionData,
-			petModel,
-			petTypeId: petEntity.typeId,
-			petLovePoints: petEntity.lovePoints,
-			foodConsumed: activeExpedition.foodConsumed,
-			foodRequired
-		});
-		const outcome = determineExpeditionOutcome({
-			effectiveRisk,
-			expedition: expeditionData,
-			rewardIndex: activeExpedition.rewardIndex,
-			hasCloneTalisman: talismans.hasCloneTalisman,
-			playerCurrentTokens: player.tokens,
-			petTypeId: petEntity.typeId
-		});
-
-		// Apply love change
-		if (outcome.loveChange) {
-			await petEntity.changeLovePoints({
-				player,
-				amount: outcome.loveChange,
-				response,
-				reason: NumberChangeReason.SMALL_EVENT
-			});
-		}
-
-		await petEntity.save();
-
-		// Apply rewards
-		if (outcome.rewards) {
-			await applyExpeditionRewards(outcome.rewards, player, response, context);
-		}
-
-		await player.save();
-
-		// Mark expedition as completed and remove scheduled notification
-		await ScheduledExpeditionNotifications.deleteByExpeditionId(activeExpedition.id);
-		await PetExpeditions.completeExpedition(activeExpedition);
-
-		// Log expedition completion to database (include stored reward index)
+		// Finalize expedition (log, cleanup, mark completed)
 		const expeditionSuccess = !outcome.totalFailure;
-		crowniclesInstance.logsDatabase.logExpeditionComplete(
-			player.keycloakId,
-			petEntity.id,
-			extractExpeditionLogParams(expeditionData, activeExpedition, expeditionSuccess),
-			outcome.rewards,
-			outcome.loveChange
-		).then();
+		await finalizeExpedition(player, petEntity, activeExpedition, expeditionData, expeditionSuccess, outcome);
 
 		// Update expedition missions
 		await updateExpeditionMissions(player, response, expeditionData, expeditionSuccess);
