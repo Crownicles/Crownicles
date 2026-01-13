@@ -2,7 +2,7 @@ import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import {
 	ExpeditionConstants, ExpeditionLocationType,
 	getPetExpeditionPreference, DISLIKED_SHORT_EXPEDITION_FAILURE_BONUS, DISLIKED_EXPEDITION_DURATION_THRESHOLD_MINUTES,
-	generateTerrainBasedRisk, LIKED_EXPEDITION_FAILURE_REDUCTION
+	generateTerrainBasedRisk, LIKED_EXPEDITION_FAILURE_REDUCTION, PetExpeditionPreferences
 } from "../../../../Lib/src/constants/ExpeditionConstants";
 import {
 	ExpeditionData
@@ -339,13 +339,13 @@ export function calculateEffectiveRisk(params: EffectiveRiskParams): number {
 	const petPreference = getPetExpeditionPreference(petTypeId, expedition.locationType);
 
 	// Apply extra failure risk if pet dislikes the location and expedition is shorter than 12 hours
-	if (petPreference === "disliked" && expedition.durationMinutes < DISLIKED_EXPEDITION_DURATION_THRESHOLD_MINUTES) {
-		effectiveRisk += DISLIKED_SHORT_EXPEDITION_FAILURE_BONUS;
+	if (petPreference === PetExpeditionPreferences.DISLIKED && expedition.durationMinutes < DISLIKED_EXPEDITION_DURATION_THRESHOLD_MINUTES) {
+		return MathUtils.clamp(effectiveRisk + DISLIKED_SHORT_EXPEDITION_FAILURE_BONUS, 0, ExpeditionConstants.PERCENTAGE.MAX);
 	}
 
 	// Apply failure reduction if pet likes the location
-	if (petPreference === "liked") {
-		effectiveRisk -= LIKED_EXPEDITION_FAILURE_REDUCTION;
+	if (petPreference === PetExpeditionPreferences.LIKED) {
+		return MathUtils.clamp(effectiveRisk - LIKED_EXPEDITION_FAILURE_REDUCTION, 0, ExpeditionConstants.PERCENTAGE.MAX);
 	}
 
 	return MathUtils.clamp(effectiveRisk, 0, ExpeditionConstants.PERCENTAGE.MAX);
@@ -388,10 +388,9 @@ function calculateLoveChange(partialSuccess: boolean, petLikedExpedition: boolea
 	}
 
 	// Total success - apply liked multiplier if applicable
-	const baseLove = ExpeditionConstants.LOVE_CHANGES.TOTAL_SUCCESS;
 	return petLikedExpedition
-		? baseLove * ExpeditionConstants.LOVE_CHANGES.LIKED_EXPEDITION_MULTIPLIER
-		: baseLove;
+		? ExpeditionConstants.LOVE_CHANGES.TOTAL_SUCCESS * ExpeditionConstants.LOVE_CHANGES.LIKED_EXPEDITION_MULTIPLIER
+		: ExpeditionConstants.LOVE_CHANGES.TOTAL_SUCCESS;
 }
 
 /**
@@ -399,7 +398,7 @@ function calculateLoveChange(partialSuccess: boolean, petLikedExpedition: boolea
  */
 export function determineExpeditionOutcome(params: ExpeditionOutcomeParams): ExpeditionOutcome {
 	const petPreference = getPetExpeditionPreference(params.petTypeId, params.expedition.locationType);
-	const petLikedExpedition = petPreference === "liked";
+	const petLikedExpedition = petPreference === PetExpeditionPreferences.LIKED;
 	const totalFailure = RandomUtils.crowniclesRandom.bool(params.effectiveRisk / ExpeditionConstants.PERCENTAGE.MAX);
 
 	if (totalFailure) {
