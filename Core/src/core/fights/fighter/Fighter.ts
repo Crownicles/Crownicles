@@ -7,6 +7,7 @@ import { FightAlteration } from "../../../data/FightAlteration";
 import { FightAction } from "../../../data/FightAction";
 import { CrowniclesPacket } from "../../../../../Lib/src/packets/CrowniclesPacket";
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
+import { FightActionType } from "../../../../../Lib/src/types/FightActionType";
 
 type FighterStats = {
 	energy: number;
@@ -28,6 +29,13 @@ export type FightStatModifier = {
 type FightDamageMultiplier = {
 	value: number;
 	turns: number;
+};
+
+type FightTypeResistance = {
+	type: FightActionType;
+	value: number;
+	turns: number;
+	reflectDamage?: boolean;
 };
 
 export abstract class Fighter {
@@ -52,6 +60,8 @@ export abstract class Fighter {
 	private defenseModifiers: FightStatModifier[];
 
 	private speedModifiers: FightStatModifier[];
+
+	private resistances: FightTypeResistance[];
 
 	private ready: boolean;
 
@@ -79,6 +89,7 @@ export abstract class Fighter {
 		this.alterationTurn = 0;
 		this.level = level;
 		this.damageMultipliers = [];
+		this.resistances = [];
 
 		this.availableFightActions = new Map();
 		for (const fightAction of availableFightActions) {
@@ -233,6 +244,10 @@ export abstract class Fighter {
 		this.speedModifiers.push(modifier);
 	}
 
+	public applyResistance(resistance: FightTypeResistance): void {
+		this.resistances.push(resistance);
+	}
+
 	/**
 	 * Remove all attack modifiers for an origin
 	 * @param origin
@@ -305,6 +320,27 @@ export abstract class Fighter {
 
 		return multiplier;
 	}
+
+	public getResistanceMultiplier(type: FightActionType): number {
+		let multiplier = 1;
+		for (const resistance of this.resistances) {
+			if (resistance.type === type) {
+				multiplier *= 1 - resistance.value;
+			}
+		}
+		return multiplier;
+	}
+
+	public getReflectedDamage(type: FightActionType, originalDamage: number): number {
+		let reflectedDamage = 0;
+		for (const resistance of this.resistances) {
+			if (resistance.type === type && resistance.reflectDamage) {
+				reflectedDamage += Math.round(originalDamage * resistance.value);
+			}
+		}
+		return reflectedDamage;
+	}
+
 
 	/**
 	 * Damage the fighter
@@ -486,6 +522,11 @@ export abstract class Fighter {
 		this.damageMultipliers = this.damageMultipliers.filter(damageMultiplier => {
 			damageMultiplier.turns--;
 			return damageMultiplier.turns >= 0;
+		});
+
+		this.resistances = this.resistances.filter(resistance => {
+			resistance.turns--;
+			return resistance.turns > 0;
 		});
 	}
 
