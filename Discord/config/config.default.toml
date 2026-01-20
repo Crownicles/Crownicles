@@ -78,3 +78,9 @@ password = ""
 # Webserver port. # Web server port. The web server is used to serve different utilities endpoints (metrics, log level configuration, etc.)
 # The shard ID will be added to the port to create the webserver port
 webserver_port = 10124
+
+[security]
+# Secret used for generating account deletion codes. MUST be the same across all shards.
+# Generate with: openssl rand -hex 32
+# WARNING: Changing this will invalidate all pending deletion codes
+deletion_secret = ""

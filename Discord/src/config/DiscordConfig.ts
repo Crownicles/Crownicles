@@ -34,6 +34,7 @@ export interface CrowniclesConfig {
 	LOKI_HOST?: string;
 	LOKI_USERNAME?: string;
 	LOKI_PASSWORD?: string;
+	DELETION_SECRET: string;
 }
 
 type ConfigStructure = {
@@ -82,6 +83,9 @@ type ConfigStructure = {
 			password: string;
 		};
 	};
+	security: {
+		deletion_secret: string;
+	};
 };
 
 /**
@@ -117,7 +121,8 @@ export function loadConfig(): CrowniclesConfig {
 		LOGGER_LOCATIONS: config.logs.locations,
 		LOKI_HOST: config.logs.loki?.host,
 		LOKI_USERNAME: config.logs.loki?.username,
-		LOKI_PASSWORD: config.logs.loki?.password
+		LOKI_PASSWORD: config.logs.loki?.password,
+		DELETION_SECRET: config.security.deletion_secret
 	};
 }
 

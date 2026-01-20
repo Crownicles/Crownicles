@@ -5,6 +5,7 @@ import {
 } from "crypto";
 import { Collection } from "discord.js";
 import { Language } from "../../../Lib/src/Language";
+import { discordConfig } from "../bot/CrowniclesShard";
 
 /**
  * Size in bytes for the bot deletion secret
@@ -17,10 +18,18 @@ const SECRET_SIZE_BYTES = 32;
 const DELETION_CODE_LENGTH = 16;
 
 /**
- * Secret generated at bot startup - changes on each restart for additional security
- * This means deletion codes become invalid after a bot restart
+ * Gets the deletion secret from config (shared across all shards) or falls back to a random one
+ * The config secret is preferred as it persists across restarts and is shared between shards
  */
-const BOT_DELETION_SECRET = randomBytes(SECRET_SIZE_BYTES).toString("hex");
+function getDeletionSecret(): string {
+	if (discordConfig.DELETION_SECRET && discordConfig.DELETION_SECRET.length > 0) {
+		return discordConfig.DELETION_SECRET;
+	}
+
+	// Fallback for backwards compatibility - will log a warning
+	console.warn("[AccountDeletion] No deletion_secret configured in config.toml. Using random secret (codes will not persist across restarts or work across shards).");
+	return randomBytes(SECRET_SIZE_BYTES).toString("hex");
+}
 
 /**
  * Store pending deletion confirmations: discordId -> { keycloakId, language, expiresAt }
@@ -70,12 +79,12 @@ export const DELETION_CONFIRMATION_PHRASES: Record<string, string> = {
 
 /**
  * Generates a deterministic deletion code for account deletion
- * The code is derived from the keycloakId and the bot's startup secret
+ * The code is derived from the keycloakId and the configured deletion secret
  * @param keycloakId - The user's Keycloak ID
  * @returns An uppercase hex string of DELETION_CODE_LENGTH characters
  */
 export function generateDeletionCode(keycloakId: string): string {
-	return createHmac("sha256", BOT_DELETION_SECRET)
+	return createHmac("sha256", getDeletionSecret())
 		.update(keycloakId)
 		.digest("hex")
 		.substring(0, DELETION_CODE_LENGTH)
