@@ -6,6 +6,7 @@ import {
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	SmallEventGoToPVEIslandAcceptPacket,
+	SmallEventGoToPVEIslandNoAnswerPacket,
 	SmallEventGoToPVEIslandNotEnoughGemsPacket,
 	SmallEventGoToPVEIslandRefusePacket
 } from "../../../../Lib/src/packets/smallEvents/SmallEventGoToPVEIslandPacket";
@@ -50,7 +51,11 @@ export const smallEventFuncs: SmallEventFuncs = {
 
 			const reaction = collector.getFirstReaction();
 
-			if (reaction && reaction.reaction.type === ReactionCollectorAcceptReaction.name) {
+			if (reaction === null) {
+				// Timeout - no response from user
+				response.push(makePacket(SmallEventGoToPVEIslandNoAnswerPacket, {}));
+			}
+			else if (reaction.reaction.type === ReactionCollectorAcceptReaction.name) {
 				const missionInfo = await PlayerMissionsInfos.getOfPlayer(player.id);
 				if (missionInfo.gems < price) {
 					response.push(makePacket(SmallEventGoToPVEIslandNotEnoughGemsPacket, {}));
@@ -78,6 +83,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 				}));
 			}
 			else {
+				// User clicked refuse button
 				response.push(makePacket(SmallEventGoToPVEIslandRefusePacket, {}));
 			}
 		};
