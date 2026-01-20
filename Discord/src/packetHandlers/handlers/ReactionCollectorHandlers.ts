@@ -214,24 +214,43 @@ export default class ReactionCollectorHandler {
 
 	@packetHandler(ReactionCollectorStopPacket)
 	async collectorStop(_context: PacketContext, packet: ReactionCollectorStopPacket): Promise<void> {
-		const collectors = ReactionCollectorHandler.collectorsCache.get(packet.id);
-		if (collectors) {
-			collectors.filter(c => !c.ended).forEach(c => c.stop());
-			ReactionCollectorHandler.collectorsCache.delete(packet.id);
+		const collector = ReactionCollectorHandler.collectorsCache.get(packet.id);
+		if (!collector) {
+			CrowniclesLogger.warn(`Collector stop received for collector with ID ${packet.id} but no collector was found with this ID`);
+			return;
 		}
+		collector.forEach(c => {
+			if (c.ended) {
+				CrowniclesLogger.warn(`Collector stop received for collector with ID ${packet.id} but collector was already stopped`);
+				return;
+			}
+			c.stop();
+		});
+		ReactionCollectorHandler.collectorsCache.delete(packet.id);
 		await Promise.resolve();
 	}
 
 	@packetHandler(ReactionCollectorEnded)
 	async collectorEnded(_context: PacketContext, _packet: ReactionCollectorEnded): Promise<void> {
-		await Promise.resolve();
+		// Ignore
 	}
 
 	@packetHandler(ReactionCollectorResetTimerPacketRes)
 	async collectorResetTimer(_context: PacketContext, packet: ReactionCollectorResetTimerPacketRes): Promise<void> {
-		ReactionCollectorHandler.collectorsCache.get(packet.reactionCollectorId)
-			?.filter(c => !c.ended)
-			.forEach(c => c.resetTimer({ time: packet.endTime - Date.now() }));
+		const collector = ReactionCollectorHandler.collectorsCache.get(packet.reactionCollectorId);
+		if (!collector) {
+			CrowniclesLogger.warn(`Collector reset timer received for collector with ID ${packet.reactionCollectorId} but no collector was found with this ID`);
+			return;
+		}
+		collector.forEach(c => {
+			if (c.ended) {
+				CrowniclesLogger.warn(`Collector reset timer received for collector with ID ${packet.reactionCollectorId} but collector was already stopped`);
+				return;
+			}
+			c.resetTimer({
+				time: packet.endTime - Date.now()
+			});
+		});
 		await Promise.resolve();
 	}
 }
