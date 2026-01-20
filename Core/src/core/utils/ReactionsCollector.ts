@@ -147,20 +147,19 @@ export class ReactionCollectorInstance {
 			return;
 		}
 		this.hasEnded = true;
+		clearTimeout(this.endTimeout);
 		collectors.delete(this.id);
-		if (isResponseProvided) {
-			response.push(makePacket(ReactionCollectorStopPacket, {
-				id: this.id
-			}));
+		if (!isResponseProvided) {
+			response = [];
 		}
+		response.push(makePacket(ReactionCollectorStopPacket, {
+			id: this.id
+		}));
 		if (this.endCallback) {
-			if (!isResponseProvided) {
-				response = [];
-			}
 			await this.endCallback(this, response);
-			if (!isResponseProvided && response.length !== 0) {
-				PacketUtils.sendPackets(this._context, response);
-			}
+		}
+		if (!isResponseProvided) {
+			PacketUtils.sendPackets(this._context, response);
 		}
 	}
 
