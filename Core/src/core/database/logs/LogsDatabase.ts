@@ -1086,6 +1086,14 @@ export class LogsDatabase extends Database {
 		const fightInitiatorId = (await LogsDatabase.findOrCreatePlayer(fightInitiator.player.keycloakId)).id;
 		const nonFightInitiatorId = (await LogsDatabase.findOrCreatePlayer(nonFightInitiator.player.keycloakId)).id;
 
+		/*
+		 * Reload players from DB to get current glory values
+		 * This fixes a race condition where concurrent fights would use stale glory values
+		 * from when the fighter was created, instead of the current values
+		 */
+		const freshFightInitiator = await Players.getById(fightInitiator.player.id);
+		const freshNonFightInitiator = await Players.getById(nonFightInitiator.player.id);
+
 		const winner = fight.getWinnerFighter() === fightInitiator ? 1 : 2;
 
 		// Get pet type IDs if pets exist
@@ -1100,11 +1108,11 @@ export class LogsDatabase extends Database {
 			turn: fight.turn,
 			winner: fight.isADraw() ? 0 : winner,
 			friendly: false,
-			fightInitiatorInitialDefenseGlory: fightInitiator.player.defenseGloryPoints,
-			fightInitiatorInitialAttackGlory: fightInitiator.player.attackGloryPoints,
+			fightInitiatorInitialDefenseGlory: freshFightInitiator.defenseGloryPoints,
+			fightInitiatorInitialAttackGlory: freshFightInitiator.attackGloryPoints,
 			fightInitiatorClassId: fightInitiator.player.class,
-			player2InitialDefenseGlory: nonFightInitiator.player.defenseGloryPoints,
-			player2InitialAttackGlory: nonFightInitiator.player.attackGloryPoints,
+			player2InitialDefenseGlory: freshNonFightInitiator.defenseGloryPoints,
+			player2InitialAttackGlory: freshNonFightInitiator.attackGloryPoints,
 			player2ClassId: nonFightInitiator.player.class,
 			fightInitiatorPetTypeId,
 			player2PetTypeId: nonFightInitiatorPetTypeId,
