@@ -1,34 +1,27 @@
 import {
 	createHmac,
-	randomBytes,
 	timingSafeEqual
 } from "crypto";
 import { Collection } from "discord.js";
 import { Language } from "../../../Lib/src/Language";
+import { CrowniclesLogger } from "../../../Lib/src/logs/CrowniclesLogger";
 import { discordConfig } from "../bot/CrowniclesShard";
+import { DiscordConstants } from "../DiscordConstants";
 
 /**
- * Size in bytes for the bot deletion secret
- */
-const SECRET_SIZE_BYTES = 32;
-
-/**
- * Length of the deletion code in hexadecimal characters
- */
-const DELETION_CODE_LENGTH = 16;
-
-/**
- * Gets the deletion secret from config (shared across all shards) or falls back to a random one
- * The config secret is preferred as it persists across restarts and is shared between shards
+ * Gets the deletion secret from config (shared across all shards) or falls back to the default one
+ * The config secret is preferred as it's unique to each bot instance
  */
 function getDeletionSecret(): string {
 	if (discordConfig.DELETION_SECRET && discordConfig.DELETION_SECRET.length > 0) {
+		if (discordConfig.DELETION_SECRET.length < DiscordConstants.ACCOUNT_DELETION.MIN_SECRET_LENGTH) {
+			CrowniclesLogger.warn("[AccountDeletion] deletion_secret is shorter than recommended (64 chars). Consider using: openssl rand -hex 32");
+		}
 		return discordConfig.DELETION_SECRET;
 	}
 
-	// Fallback for backwards compatibility - will log a warning
-	console.warn("[AccountDeletion] No deletion_secret configured in config.toml. Using random secret (codes will not persist across restarts or work across shards).");
-	return randomBytes(SECRET_SIZE_BYTES).toString("hex");
+	CrowniclesLogger.warn("[AccountDeletion] No deletion_secret configured in config.toml. Using default secret. For production, set a unique deletion_secret.");
+	return DiscordConstants.ACCOUNT_DELETION.DEFAULT_SECRET;
 }
 
 /**
@@ -50,44 +43,22 @@ const failedAttempts = new Collection<string, {
 }>();
 
 /**
- * Maximum allowed failed attempts before temporary block
- */
-const MAX_FAILED_ATTEMPTS = 15;
-
-/**
- * Time in milliseconds to block after too many failed attempts (15 minutes)
- */
-const RATE_LIMIT_DURATION = 15 * 60 * 1000;
-
-/**
- * Time in milliseconds for how long a deletion confirmation is valid (5 minutes)
- */
-const DELETION_CONFIRMATION_TIMEOUT = 5 * 60 * 1000;
-
-/**
  * The confirmation phrases that users must type to confirm account deletion
- * Key is the language code, value is the exact phrase to type
+ * Re-exported from DiscordConstants for convenience
  */
-export const DELETION_CONFIRMATION_PHRASES: Record<string, string> = {
-	fr: "CONFIRMER QUE JE SOUHAITE SUPPRIMER MON COMPTE ET QUE JE NE POURRAI PAS LE RÉCUPÉRER",
-	en: "CONFIRM THAT I WANT TO DELETE MY ACCOUNT AND THAT I WILL NOT BE ABLE TO RECOVER IT",
-	es: "CONFIRMAR QUE DESEO ELIMINAR MI CUENTA Y QUE NO PODRÉ RECUPERARLA",
-	de: "BESTÄTIGEN DASS ICH MEIN KONTO LÖSCHEN MÖCHTE UND DASS ICH ES NICHT WIEDERHERSTELLEN KANN",
-	it: "CONFERMARE CHE DESIDERO ELIMINARE IL MIO ACCOUNT E CHE NON POTRÒ RECUPERARLO",
-	pt: "CONFIRMAR QUE DESEJO EXCLUIR MINHA CONTA E QUE NÃO PODEREI RECUPERÁ-LA"
-};
+export const DELETION_CONFIRMATION_PHRASES = DiscordConstants.ACCOUNT_DELETION.CONFIRMATION_PHRASES;
 
 /**
  * Generates a deterministic deletion code for account deletion
  * The code is derived from the keycloakId and the configured deletion secret
  * @param keycloakId - The user's Keycloak ID
- * @returns An uppercase hex string of DELETION_CODE_LENGTH characters
+ * @returns An uppercase hex string of CODE_LENGTH characters
  */
 export function generateDeletionCode(keycloakId: string): string {
 	return createHmac("sha256", getDeletionSecret())
 		.update(keycloakId)
 		.digest("hex")
-		.substring(0, DELETION_CODE_LENGTH)
+		.substring(0, DiscordConstants.ACCOUNT_DELETION.CODE_LENGTH)
 		.toUpperCase();
 }
 
@@ -121,7 +92,7 @@ export function isRateLimited(discordId: string): boolean {
 		failedAttempts.delete(discordId);
 		return false;
 	}
-	return record.attempts >= MAX_FAILED_ATTEMPTS;
+	return record.attempts >= DiscordConstants.ACCOUNT_DELETION.MAX_FAILED_ATTEMPTS;
 }
 
 /**
@@ -135,7 +106,7 @@ export function recordFailedAttempt(discordId: string): void {
 	if (!record || now > record.resetAt) {
 		failedAttempts.set(discordId, {
 			attempts: 1,
-			resetAt: now + RATE_LIMIT_DURATION
+			resetAt: now + DiscordConstants.ACCOUNT_DELETION.RATE_LIMIT_DURATION_MS
 		});
 	}
 	else {
@@ -161,7 +132,7 @@ export function setPendingDeletion(discordId: string, keycloakId: string, langua
 	pendingDeletions.set(discordId, {
 		keycloakId,
 		language,
-		expiresAt: Date.now() + DELETION_CONFIRMATION_TIMEOUT
+		expiresAt: Date.now() + DiscordConstants.ACCOUNT_DELETION.CONFIRMATION_TIMEOUT_MS
 	});
 }
 
@@ -197,7 +168,7 @@ export function clearPendingDeletion(discordId: string): void {
 /**
  * Regex pattern to match the DELETE ACCOUNT command with a valid deletion code
  */
-const DELETE_ACCOUNT_PATTERN = new RegExp(`^DELETE\\s+ACCOUNT\\s+([A-Fa-f0-9]{${DELETION_CODE_LENGTH}})$`, "i");
+const DELETE_ACCOUNT_PATTERN = new RegExp(`^DELETE\\s+ACCOUNT\\s+([A-Fa-f0-9]{${DiscordConstants.ACCOUNT_DELETION.CODE_LENGTH}})$`, "i");
 
 /**
  * Checks if a message content matches the DELETE ACCOUNT pattern
