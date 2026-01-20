@@ -75,7 +75,7 @@ username = ""
 password = ""
 
 [others]
-# Webserver port. # Web server port. The web server is used to serve different utilities endpoints (metrics, log level configuration, etc.)
+# Web server port. The web server is used to serve different utilities endpoints (metrics, log level configuration, etc.)
 # The shard ID will be added to the port to create the webserver port
 webserver_port = 10124
 
