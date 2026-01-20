@@ -6,6 +6,27 @@ import {
 	it,
 	vi
 } from "vitest";
+import { LANGUAGE } from "../../../Lib/src/Language";
+
+// Mock CrowniclesLogger to avoid "Logger not initialized" error
+vi.mock("../../../Lib/src/logs/CrowniclesLogger", () => ({
+	CrowniclesLogger: {
+		warn: vi.fn(),
+		error: vi.fn(),
+		info: vi.fn(),
+		debug: vi.fn(),
+		isInitialized: vi.fn(() => true)
+	}
+}));
+
+// Mock discordConfig to provide a test deletion secret
+vi.mock("../../src/bot/CrowniclesShard", () => ({
+	discordConfig: {
+		DELETION_SECRET: "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+	}
+}));
+
+// Import after mocks are set up
 import {
 	clearFailedAttempts,
 	clearPendingDeletion,
@@ -20,7 +41,6 @@ import {
 	setPendingDeletion,
 	verifyDeletionCode
 } from "../../src/utils/AccountDeletionUtils";
-import { LANGUAGE } from "../../../Lib/src/Language";
 
 describe("AccountDeletionUtils", () => {
 	const testKeycloakId = "test-keycloak-id-12345";
