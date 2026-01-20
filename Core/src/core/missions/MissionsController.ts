@@ -414,7 +414,16 @@ export class MissionsController {
 
 		// Update the daily mission blob if the params match
 		missionInfo.dailyMissionBlob = missionInterface.updateSaveBlob(dailyMission.missionVariant, missionInfo.dailyMissionBlob, missionInformation.params);
-		missionInfo.dailyMissionNumberDone += missionInformation.count;
+
+		// Handle set mode (replace) vs increment mode for daily missions
+		if (missionInformation.set) {
+			// For "set" missions (like earnTokensInOneExpedition), only update if the new value is higher
+			missionInfo.dailyMissionNumberDone = Math.max(missionInfo.dailyMissionNumberDone, missionInformation.count);
+		}
+		else {
+			missionInfo.dailyMissionNumberDone += missionInformation.count;
+		}
+
 		if (missionInfo.dailyMissionNumberDone > dailyMission.missionObjective) {
 			missionInfo.dailyMissionNumberDone = dailyMission.missionObjective;
 		}
