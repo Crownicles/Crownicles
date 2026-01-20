@@ -18,6 +18,7 @@ import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 import { SmallEventBoatAdvicePacket } from "../../../../Lib/src/packets/smallEvents/SmallEventBoatAdvicePacket";
 import {
 	SmallEventGoToPVEIslandAcceptPacket,
+	SmallEventGoToPVEIslandNoAnswerPacket,
 	SmallEventGoToPVEIslandNotEnoughGemsPacket,
 	SmallEventGoToPVEIslandRefusePacket
 } from "../../../../Lib/src/packets/smallEvents/SmallEventGoToPVEIslandPacket";
@@ -199,6 +200,25 @@ export default class SmallEventsHandler {
 		const interaction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
 		const lng = context.discord!.language;
 		await interaction?.editReply({
+			embeds: [
+				new CrowniclesSmallEventEmbed(
+					"goToPVEIsland",
+					i18n.t("smallEvents:goToPVEIsland.endStoryRefuse", { lng }),
+					interaction.user,
+					lng
+				)
+			]
+		});
+	}
+
+	@packetHandler(SmallEventGoToPVEIslandNoAnswerPacket)
+	async smallEventGoToPVEIslandNoAnswer(context: PacketContext, _packet: SmallEventGoToPVEIslandNoAnswerPacket): Promise<void> {
+		const interaction = DiscordCache.getInteraction(context.discord!.interaction);
+		if (!interaction) {
+			return;
+		}
+		const lng = interaction.userLanguage;
+		await interaction.followUp({
 			embeds: [
 				new CrowniclesSmallEventEmbed(
 					"goToPVEIsland",
