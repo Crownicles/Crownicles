@@ -1,6 +1,6 @@
 import { GDPRAnonymizer } from "../GDPRAnonymizer";
 import {
-	toCSV, GDPRCsvFiles
+	GDPRCsvFiles, streamToCSV, toCSV
 } from "../CSVUtils";
 import { LogsPetsSells } from "../../../../core/database/logs/models/LogsPetsSells";
 import { LogsExpeditions } from "../../../../core/database/logs/models/LogsExpeditions";
@@ -18,32 +18,41 @@ export async function exportLogsPets(
 	newPets: LogsPlayersNewPets[],
 	csvFiles: GDPRCsvFiles
 ): Promise<void> {
-	// 68. Pets sold
-	const petsSold = await LogsPetsSells.findAll({ where: { sellerId: logsPlayerId } });
-	if (petsSold.length > 0) {
-		csvFiles["logs/68_pets_sold.csv"] = toCSV(petsSold.map(p => ({
+	// 68. Pets sold - use streamToCSV
+	const petsSoldCsv = await streamToCSV(
+		LogsPetsSells,
+		{ sellerId: logsPlayerId },
+		p => ({
 			petId: p.petId,
 			buyerId: anonymizer.anonymizePlayerId(p.buyerId, false),
 			price: p.price,
 			date: p.date
-		})));
+		})
+	);
+	if (petsSoldCsv) {
+		csvFiles["logs/68_pets_sold.csv"] = petsSoldCsv;
 	}
 
-	// 69. Pets bought
-	const petsBought = await LogsPetsSells.findAll({ where: { buyerId: logsPlayerId } });
-	if (petsBought.length > 0) {
-		csvFiles["logs/69_pets_bought.csv"] = toCSV(petsBought.map(p => ({
+	// 69. Pets bought - use streamToCSV
+	const petsBoughtCsv = await streamToCSV(
+		LogsPetsSells,
+		{ buyerId: logsPlayerId },
+		p => ({
 			petId: p.petId,
 			sellerId: anonymizer.anonymizePlayerId(p.sellerId, false),
 			price: p.price,
 			date: p.date
-		})));
+		})
+	);
+	if (petsBoughtCsv) {
+		csvFiles["logs/69_pets_bought.csv"] = petsBoughtCsv;
 	}
 
-	// 70. Expeditions
-	const expeditions = await LogsExpeditions.findAll({ where: { playerId: logsPlayerId } });
-	if (expeditions.length > 0) {
-		csvFiles["logs/70_expeditions.csv"] = toCSV(expeditions.map(e => ({
+	// 70. Expeditions - use streamToCSV
+	const expeditionsCsv = await streamToCSV(
+		LogsExpeditions,
+		{ playerId: logsPlayerId },
+		e => ({
 			petId: e.petId,
 			mapLocationId: e.mapLocationId,
 			locationType: e.locationType,
@@ -57,25 +66,36 @@ export async function exportLogsPets(
 			tokens: e.tokens,
 			loveChange: e.loveChange,
 			date: e.date
-		})));
+		})
+	);
+	if (expeditionsCsv) {
+		csvFiles["logs/70_expeditions.csv"] = expeditionsCsv;
 	}
 
-	// 71. Unlocks (bought freedom)
-	const unlocksBuyer = await LogsUnlocks.findAll({ where: { buyerId: logsPlayerId } });
-	if (unlocksBuyer.length > 0) {
-		csvFiles["logs/71_unlocks_bought.csv"] = toCSV(unlocksBuyer.map(u => ({
+	// 71. Unlocks (bought freedom) - use streamToCSV
+	const unlocksBuyerCsv = await streamToCSV(
+		LogsUnlocks,
+		{ buyerId: logsPlayerId },
+		u => ({
 			freedPlayerId: anonymizer.anonymizePlayerId(u.releasedId, false),
 			date: u.date
-		})));
+		})
+	);
+	if (unlocksBuyerCsv) {
+		csvFiles["logs/71_unlocks_bought.csv"] = unlocksBuyerCsv;
 	}
 
-	// 72. Unlocks (was freed by someone)
-	const unlocksFreed = await LogsUnlocks.findAll({ where: { releasedId: logsPlayerId } });
-	if (unlocksFreed.length > 0) {
-		csvFiles["logs/72_unlocks_received.csv"] = toCSV(unlocksFreed.map(u => ({
+	// 72. Unlocks (was freed by someone) - use streamToCSV
+	const unlocksFreedCsv = await streamToCSV(
+		LogsUnlocks,
+		{ releasedId: logsPlayerId },
+		u => ({
 			buyerId: anonymizer.anonymizePlayerId(u.buyerId, false),
 			date: u.date
-		})));
+		})
+	);
+	if (unlocksFreedCsv) {
+		csvFiles["logs/72_unlocks_received.csv"] = unlocksFreedCsv;
 	}
 
 	// 73. Pet nicknames (need to find pet entities owned by player first)

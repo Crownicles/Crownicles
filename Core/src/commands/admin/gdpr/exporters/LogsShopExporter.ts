@@ -1,5 +1,5 @@
 import {
-	toCSV, GDPRCsvFiles
+	streamToCSV, GDPRCsvFiles
 } from "../CSVUtils";
 import { LogsClassicalShopBuyouts } from "../../../../core/database/logs/models/LogsClassicalShopBuyouts";
 import { LogsGuildShopBuyouts } from "../../../../core/database/logs/models/LogsGuildShopBuyouts";
@@ -21,84 +21,128 @@ export async function exportLogsShop(
 	csvFiles: GDPRCsvFiles
 ): Promise<void> {
 	// 49. Classical shop buyouts
-	const classicalBuyouts = await LogsClassicalShopBuyouts.findAll({ where: { playerId: logsPlayerId } });
-	if (classicalBuyouts.length > 0) {
-		csvFiles["logs/49_classical_shop_buyouts.csv"] = toCSV(classicalBuyouts.map(b => ({
+	const classicalBuyoutsCsv = await streamToCSV(
+		LogsClassicalShopBuyouts,
+		{ playerId: logsPlayerId },
+		b => ({
 			shopItem: b.shopItem, amount: b.amount, date: b.date
-		})));
+		})
+	);
+	if (classicalBuyoutsCsv) {
+		csvFiles["logs/49_classical_shop_buyouts.csv"] = classicalBuyoutsCsv;
 	}
 
 	// 50. Guild shop buyouts
-	const guildBuyouts = await LogsGuildShopBuyouts.findAll({ where: { playerId: logsPlayerId } });
-	if (guildBuyouts.length > 0) {
-		csvFiles["logs/50_guild_shop_buyouts.csv"] = toCSV(guildBuyouts.map(b => ({
+	const guildBuyoutsCsv = await streamToCSV(
+		LogsGuildShopBuyouts,
+		{ playerId: logsPlayerId },
+		b => ({
 			shopItem: b.shopItem, amount: b.amount, date: b.date
-		})));
+		})
+	);
+	if (guildBuyoutsCsv) {
+		csvFiles["logs/50_guild_shop_buyouts.csv"] = guildBuyoutsCsv;
 	}
 
 	// 51. Mission shop buyouts
-	const missionBuyouts = await LogsMissionShopBuyouts.findAll({ where: { playerId: logsPlayerId } });
-	if (missionBuyouts.length > 0) {
-		csvFiles["logs/51_mission_shop_buyouts.csv"] = toCSV(missionBuyouts.map(b => ({
+	const missionBuyoutsCsv = await streamToCSV(
+		LogsMissionShopBuyouts,
+		{ playerId: logsPlayerId },
+		b => ({
 			shopItem: b.shopItem, date: b.date
-		})));
+		})
+	);
+	if (missionBuyoutsCsv) {
+		csvFiles["logs/51_mission_shop_buyouts.csv"] = missionBuyoutsCsv;
 	}
 
 	// 52-55. Item gains (armor, weapon, object, potion)
-	const armorGains = await LogsItemGainsArmor.findAll({ where: { playerId: logsPlayerId } });
-	if (armorGains.length > 0) {
-		csvFiles["logs/52_item_gains_armor.csv"] = toCSV(armorGains.map(i => ({
+	const armorGainsCsv = await streamToCSV(
+		LogsItemGainsArmor,
+		{ playerId: logsPlayerId },
+		i => ({
 			itemId: i.itemId, date: i.getDataValue("date" as keyof typeof i)
-		})));
+		})
+	);
+	if (armorGainsCsv) {
+		csvFiles["logs/52_item_gains_armor.csv"] = armorGainsCsv;
 	}
 
-	const weaponGains = await LogsItemGainsWeapon.findAll({ where: { playerId: logsPlayerId } });
-	if (weaponGains.length > 0) {
-		csvFiles["logs/53_item_gains_weapon.csv"] = toCSV(weaponGains.map(i => ({
+	const weaponGainsCsv = await streamToCSV(
+		LogsItemGainsWeapon,
+		{ playerId: logsPlayerId },
+		i => ({
 			itemId: i.itemId, date: i.getDataValue("date" as keyof typeof i)
-		})));
+		})
+	);
+	if (weaponGainsCsv) {
+		csvFiles["logs/53_item_gains_weapon.csv"] = weaponGainsCsv;
 	}
 
-	const objectGains = await LogsItemGainsObject.findAll({ where: { playerId: logsPlayerId } });
-	if (objectGains.length > 0) {
-		csvFiles["logs/54_item_gains_object.csv"] = toCSV(objectGains.map(i => ({
+	const objectGainsCsv = await streamToCSV(
+		LogsItemGainsObject,
+		{ playerId: logsPlayerId },
+		i => ({
 			itemId: i.itemId, date: i.getDataValue("date" as keyof typeof i)
-		})));
+		})
+	);
+	if (objectGainsCsv) {
+		csvFiles["logs/54_item_gains_object.csv"] = objectGainsCsv;
 	}
 
-	const potionGains = await LogsItemGainsPotion.findAll({ where: { playerId: logsPlayerId } });
-	if (potionGains.length > 0) {
-		csvFiles["logs/55_item_gains_potion.csv"] = toCSV(potionGains.map(i => ({
+	const potionGainsCsv = await streamToCSV(
+		LogsItemGainsPotion,
+		{ playerId: logsPlayerId },
+		i => ({
 			itemId: i.itemId, date: i.getDataValue("date" as keyof typeof i)
-		})));
+		})
+	);
+	if (potionGainsCsv) {
+		csvFiles["logs/55_item_gains_potion.csv"] = potionGainsCsv;
 	}
 
 	// 56-59. Item sells
-	const armorSells = await LogsItemSellsArmor.findAll({ where: { playerId: logsPlayerId } });
-	if (armorSells.length > 0) {
-		csvFiles["logs/56_item_sells_armor.csv"] = toCSV(armorSells.map(i => ({
+	const armorSellsCsv = await streamToCSV(
+		LogsItemSellsArmor,
+		{ playerId: logsPlayerId },
+		i => ({
 			itemId: i.itemId, date: i.getDataValue("date" as keyof typeof i)
-		})));
+		})
+	);
+	if (armorSellsCsv) {
+		csvFiles["logs/56_item_sells_armor.csv"] = armorSellsCsv;
 	}
 
-	const weaponSells = await LogsItemSellsWeapon.findAll({ where: { playerId: logsPlayerId } });
-	if (weaponSells.length > 0) {
-		csvFiles["logs/57_item_sells_weapon.csv"] = toCSV(weaponSells.map(i => ({
+	const weaponSellsCsv = await streamToCSV(
+		LogsItemSellsWeapon,
+		{ playerId: logsPlayerId },
+		i => ({
 			itemId: i.itemId, date: i.getDataValue("date" as keyof typeof i)
-		})));
+		})
+	);
+	if (weaponSellsCsv) {
+		csvFiles["logs/57_item_sells_weapon.csv"] = weaponSellsCsv;
 	}
 
-	const objectSells = await LogsItemSellsObject.findAll({ where: { playerId: logsPlayerId } });
-	if (objectSells.length > 0) {
-		csvFiles["logs/58_item_sells_object.csv"] = toCSV(objectSells.map(i => ({
+	const objectSellsCsv = await streamToCSV(
+		LogsItemSellsObject,
+		{ playerId: logsPlayerId },
+		i => ({
 			itemId: i.itemId, date: i.getDataValue("date" as keyof typeof i)
-		})));
+		})
+	);
+	if (objectSellsCsv) {
+		csvFiles["logs/58_item_sells_object.csv"] = objectSellsCsv;
 	}
 
-	const potionSells = await LogsItemSellsPotion.findAll({ where: { playerId: logsPlayerId } });
-	if (potionSells.length > 0) {
-		csvFiles["logs/59_item_sells_potion.csv"] = toCSV(potionSells.map(i => ({
+	const potionSellsCsv = await streamToCSV(
+		LogsItemSellsPotion,
+		{ playerId: logsPlayerId },
+		i => ({
 			itemId: i.itemId, date: i.getDataValue("date" as keyof typeof i)
-		})));
+		})
+	);
+	if (potionSellsCsv) {
+		csvFiles["logs/59_item_sells_potion.csv"] = potionSellsCsv;
 	}
 }
