@@ -16,7 +16,7 @@ export class CommandExportGDPRReq extends CrowniclesPacket {
  * Contains all player data as CSV strings, with anonymized identifiers
  * Each key is the table name, value is the CSV content
  */
-@sendablePacket(PacketDirection.NONE)
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandExportGDPRRes extends CrowniclesPacket {
 	/**
 	 * Whether the player exists in the database
