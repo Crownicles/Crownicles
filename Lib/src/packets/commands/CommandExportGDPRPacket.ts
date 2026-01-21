@@ -15,8 +15,9 @@ export class CommandExportGDPRReq extends CrowniclesPacket {
  * GDPR export response packet
  * Contains all player data as CSV strings, with anonymized identifiers
  * Each key is the table name, value is the CSV content
+ * Note: Uses NONE direction because response is handled inline via callback in Discord command
  */
-@sendablePacket(PacketDirection.BACK_TO_FRONT)
+@sendablePacket(PacketDirection.NONE)
 export class CommandExportGDPRRes extends CrowniclesPacket {
 	/**
 	 * Whether the player exists in the database
