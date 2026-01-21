@@ -1959,5 +1959,13 @@
     "title": "Account deletion code",
     "success": "**Deletion code generated**\n\n**Discord ID :** `{{discordId}}`\n**Keycloak ID :** `{{keycloakId}}`\n**Code :** `{{code}}`\n\nSend this code to the user by email. He will have to send a DM to the bot with:\n`DELETE ACCOUNT {{code}}`",
     "userNotFound": "No users found with this Discord ID."
+  },
+  "exportgdpr": {
+    "title": "GDPR Export",
+    "success": "The GDPR export has been generated successfully.\n\n**Anonymized player ID:** `{{anonymizedId}}`\n**Generated files:** {{fileCount}}",
+    "userNotFound": "No player found with this Discord ID.",
+    "playerNotFound": "This player does not exist in the database.",
+    "error": "An error occurred during export: {{error}}",
+    "fileName": "gdpr_export_{{anonymizedId}}.zip"
   }
 }
