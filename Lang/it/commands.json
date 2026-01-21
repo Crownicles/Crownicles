@@ -864,7 +864,7 @@
     "shelterPetOption": "{{rarity}} | {{sex}} {{loveLevel}}",
     "cancelButton": "Annullamento",
     "feistyCostPaid": "La liberazione vi è costata {{cost, number}} {emote:unitValues.money}.",
-    "luckyMeat": "Il familiare ti ha lasciato un pezzo di carne quando te ne sei andato! {emote:food.carnivorousFood}"
+    "luckyMeat": "Le familier vous a laissé un morceau de viande en partant ! {emote:foods.carnivorousFood}"
   },
   "petNick": {
     "successTitle": "{{pseudo}}Cambiare il soprannome dell'animale domestico",
