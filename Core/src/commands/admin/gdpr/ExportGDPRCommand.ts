@@ -20,12 +20,18 @@ import { exportLogsFights } from "./exporters/LogsFightsExporter";
 import { exportLogsShop } from "./exporters/LogsShopExporter";
 import { exportLogsGuild } from "./exporters/LogsGuildExporter";
 import { exportLogsPets } from "./exporters/LogsPetsExporter";
+import { PacketUtils } from "../../../core/utils/PacketUtils";
+import { GDPRExportCompleteNotificationPacket } from "../../../../../Lib/src/packets/notifications/GDPRExportCompleteNotificationPacket";
+import { CrowniclesLogger } from "../../../../../Lib/src/logs/CrowniclesLogger";
 
 /**
  * A command that exports all GDPR-relevant player data
  * Data is anonymized: own player gets consistent hash, other players are redacted
  *
  * This command implements GDPR Article 15 - Right of access
+ *
+ * The export runs in background to avoid blocking the main thread.
+ * The result is sent as a DM to the admin who requested the export.
  */
 export default class ExportGDPRCommand {
 	static verifyRights(context: PacketContext): boolean {
@@ -38,10 +44,34 @@ export default class ExportGDPRCommand {
 
 		if (!player) {
 			response.push(makePacket(CommandExportGDPRRes, {
-				exists: false,
-				csvFiles: {},
-				anonymizedPlayerId: ""
+				started: false,
+				error: "Player not found"
 			}));
+			return;
+		}
+
+		// Respond immediately that export has started
+		response.push(makePacket(CommandExportGDPRRes, {
+			started: true
+		}));
+
+		// Run export in background (don't await)
+		ExportGDPRCommand.runExportInBackground(packet.keycloakId, packet.requesterKeycloakId)
+			.catch(error => {
+				CrowniclesLogger.errorWithObj("GDPR export background job failed", error);
+			});
+	}
+
+	/**
+	 * Run the GDPR export in background
+	 * This method processes data with small delays between operations to avoid blocking
+	 */
+	private static async runExportInBackground(playerKeycloakId: string, requesterKeycloakId: string): Promise<void> {
+		const player = await Players.getByKeycloakId(playerKeycloakId);
+
+		if (!player) {
+			// Should not happen since we checked before, but handle it anyway
+			ExportGDPRCommand.sendNotification(requesterKeycloakId, playerKeycloakId, {}, "", "Player not found");
 			return;
 		}
 
@@ -49,8 +79,11 @@ export default class ExportGDPRCommand {
 		const csvFiles: GDPRCsvFiles = {};
 
 		try {
+			CrowniclesLogger.info(`Starting GDPR export for player ${anonymizer.getAnonymizedPlayerId()}`);
+
 			// Export player core data (files 01-14)
 			await exportPlayerData(player, anonymizer, csvFiles);
+			await ExportGDPRCommand.yieldToEventLoop();
 
 			// Export logs database data if player exists in logs
 			const logsPlayer = await LogsPlayers.findOne({ where: { keycloakId: player.keycloakId } });
@@ -60,21 +93,27 @@ export default class ExportGDPRCommand {
 
 				// Export player stats history (files 15-34)
 				await exportLogsPlayerStats(logsPlayerId, csvFiles);
+				await ExportGDPRCommand.yieldToEventLoop();
 
 				// Export missions and achievements (files 35-44)
 				const { newPets } = await exportLogsMissions(logsPlayerId, csvFiles);
+				await ExportGDPRCommand.yieldToEventLoop();
 
 				// Export fights data (files 45-48)
 				await exportLogsFights(logsPlayerId, anonymizer, csvFiles);
+				await ExportGDPRCommand.yieldToEventLoop();
 
 				// Export shop and items data (files 49-59)
 				await exportLogsShop(logsPlayerId, csvFiles);
+				await ExportGDPRCommand.yieldToEventLoop();
 
 				// Export guild data (files 60-67, 74)
 				await exportLogsGuild(logsPlayerId, anonymizer, csvFiles);
+				await ExportGDPRCommand.yieldToEventLoop();
 
 				// Export pets and expeditions data (files 68-73)
 				await exportLogsPets(logsPlayerId, anonymizer, newPets, csvFiles);
+				await ExportGDPRCommand.yieldToEventLoop();
 			}
 
 			// Add metadata file - calculate count before adding metadata
@@ -89,19 +128,49 @@ export default class ExportGDPRCommand {
 				}
 			]);
 
-			response.push(makePacket(CommandExportGDPRRes, {
-				exists: true,
-				csvFiles,
-				anonymizedPlayerId: anonymizer.getAnonymizedPlayerId()
-			}));
+			CrowniclesLogger.info(`GDPR export complete for player ${anonymizer.getAnonymizedPlayerId()}, ${fileCount} files generated`);
+
+			// Send notification with the result
+			ExportGDPRCommand.sendNotification(requesterKeycloakId, playerKeycloakId, csvFiles, anonymizer.getAnonymizedPlayerId());
 		}
 		catch (error) {
-			response.push(makePacket(CommandExportGDPRRes, {
-				exists: true,
-				error: error instanceof Error ? error.message : "Unknown error during export",
-				csvFiles: {},
-				anonymizedPlayerId: anonymizer.getAnonymizedPlayerId()
-			}));
+			CrowniclesLogger.errorWithObj(`GDPR export failed for player ${anonymizer.getAnonymizedPlayerId()}`, error);
+			ExportGDPRCommand.sendNotification(
+				requesterKeycloakId,
+				playerKeycloakId,
+				{},
+				anonymizer.getAnonymizedPlayerId(),
+				error instanceof Error ? error.message : "Unknown error during export"
+			);
 		}
+	}
+
+	/**
+	 * Small delay to yield control back to the event loop
+	 * This prevents blocking the main thread during heavy export operations
+	 */
+	private static yieldToEventLoop(): Promise<void> {
+		return new Promise(resolve => setImmediate(resolve));
+	}
+
+	/**
+	 * Send the GDPR export result as a notification
+	 */
+	private static sendNotification(
+		requesterKeycloakId: string,
+		exportedPlayerKeycloakId: string,
+		csvFiles: GDPRCsvFiles,
+		anonymizedPlayerId: string,
+		error?: string
+	): void {
+		PacketUtils.sendNotifications([
+			makePacket(GDPRExportCompleteNotificationPacket, {
+				keycloakId: requesterKeycloakId,
+				exportedPlayerKeycloakId,
+				csvFiles,
+				anonymizedPlayerId,
+				error
+			})
+		]);
 	}
 }

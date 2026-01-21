@@ -20,15 +20,10 @@ import {
 	CommandExportGDPRReq,
 	CommandExportGDPRRes
 } from "../../../../Lib/src/packets/commands/CommandExportGDPRPacket";
-import { AttachmentBuilder } from "discord.js";
-
-// skipcq: JS-C1003 - archiver does not expose itself as an ES Module.
-
-const archiver = require("archiver") as typeof import("archiver");
 
 /**
  * Admin command to export all GDPR data for a player
- * Returns a ZIP file with CSV files containing anonymized personal data
+ * The export runs in background and the result is sent as a DM to the admin
  */
 async function handleExportResponse(
 	interaction: CrowniclesInteraction,
@@ -43,21 +38,7 @@ async function handleExportResponse(
 	const lng = interaction.userLanguage;
 	const exportPacket = packet as CommandExportGDPRRes;
 
-	if (!exportPacket.exists) {
-		await interaction.editReply({
-			embeds: [
-				new CrowniclesErrorEmbed(
-					interaction.user,
-					context,
-					interaction,
-					i18n.t("commands:exportgdpr.playerNotFound", { lng })
-				)
-			]
-		});
-		return;
-	}
-
-	if (exportPacket.error) {
+	if (!exportPacket.started) {
 		await interaction.editReply({
 			embeds: [
 				new CrowniclesErrorEmbed(
@@ -65,7 +46,8 @@ async function handleExportResponse(
 					context,
 					interaction,
 					i18n.t("commands:exportgdpr.error", {
-						lng, error: exportPacket.error
+						lng,
+						error: exportPacket.error ?? "Unknown error"
 					})
 				)
 			]
@@ -73,47 +55,13 @@ async function handleExportResponse(
 		return;
 	}
 
-	// Create ZIP file from CSV files
-	const archive = archiver("zip", { zlib: { level: 9 } });
-	const chunks: Buffer[] = [];
-
-	// Collect data as it streams
-	archive.on("data", (chunk: Buffer) => chunks.push(chunk));
-
-	// Create promise that resolves when archiving is complete
-	const archivePromise = new Promise<Buffer>((resolve, reject) => {
-		archive.on("end", () => resolve(Buffer.concat(chunks)));
-		archive.on("error", reject);
-	});
-
-	// Add each CSV file to the archive
-	for (const [filename, content] of Object.entries(exportPacket.csvFiles)) {
-		archive.append(content, { name: filename });
-	}
-
-	await archive.finalize();
-
-	// Wait for archive to complete
-	const zipBuffer = await archivePromise;
-	const fileName = i18n.t("commands:exportgdpr.fileName", {
-		lng,
-		anonymizedId: exportPacket.anonymizedPlayerId
-	});
-
-	// Send the ZIP file
-	const attachment = new AttachmentBuilder(zipBuffer, { name: fileName });
-
+	// Export started successfully - inform the user that they will receive a DM
 	await interaction.editReply({
 		embeds: [
 			new CrowniclesEmbed()
 				.formatAuthor(i18n.t("commands:exportgdpr.title", { lng }), interaction.user)
-				.setDescription(i18n.t("commands:exportgdpr.success", {
-					lng,
-					anonymizedId: exportPacket.anonymizedPlayerId,
-					fileCount: Object.keys(exportPacket.csvFiles).length
-				}))
-		],
-		files: [attachment]
+				.setDescription(i18n.t("commands:exportgdpr.started", { lng }))
+		]
 	});
 }
 
@@ -149,10 +97,16 @@ async function getPacket(interaction: CrowniclesInteraction, keycloakUser: Keycl
 
 	await interaction.deferReply({ ephemeral: true });
 
-	// Send request to Core for GDPR export
+	/*
+	 * Send request to Core for GDPR export
+	 * The result will be sent as a DM to the requesting admin (keycloakUser.id)
+	 */
 	await DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse(
 		context,
-		makePacket(CommandExportGDPRReq, { keycloakId: targetUser.payload.user.id }),
+		makePacket(CommandExportGDPRReq, {
+			keycloakId: targetUser.payload.user.id,
+			requesterKeycloakId: keycloakUser.id
+		}),
 		(responseContext, responsePacketName, responsePacket) =>
 			handleExportResponse(interaction, responseContext, responsePacketName, responsePacket)
 	);

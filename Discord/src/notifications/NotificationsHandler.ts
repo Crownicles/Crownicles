@@ -1,5 +1,6 @@
 import { NotificationsSerializedPacket } from "../../../Lib/src/packets/notifications/NotificationsSerializedPacket";
 import {
+	AttachmentBuilder,
 	BaseGuildTextChannel, TextChannel, User
 } from "discord.js";
 import { CrowniclesEmbed } from "../messages/CrowniclesEmbed";
@@ -27,7 +28,11 @@ import { GuildStatusChangeNotificationPacket } from "../../../Lib/src/packets/no
 import { EnergyFullNotificationPacket } from "../../../Lib/src/packets/notifications/EnergyFullNotificationPacket";
 import { DailyBonusNotificationPacket } from "../../../Lib/src/packets/notifications/DailyBonusNotificationPacket";
 import { ExpeditionFinishedNotificationPacket } from "../../../Lib/src/packets/notifications/ExpeditionFinishedNotificationPacket";
+import { GDPRExportCompleteNotificationPacket } from "../../../Lib/src/packets/notifications/GDPRExportCompleteNotificationPacket";
 import { SexTypeShort } from "../../../Lib/src/constants/StringConstants";
+
+// skipcq: JS-C1003 - archiver does not expose itself as an ES Module.
+const archiver = require("archiver") as typeof import("archiver");
 
 export abstract class NotificationsHandler {
 	/**
@@ -139,6 +144,13 @@ export abstract class NotificationsHandler {
 				});
 				notificationType = NotificationsTypes.PET_EXPEDITION;
 				break;
+			}
+			case GDPRExportCompleteNotificationPacket.name: {
+				// GDPR export is handled separately - send DM directly with ZIP attachment
+				const gdprPacket = notification.packet as GDPRExportCompleteNotificationPacket;
+				const gdprDiscordUser = await crowniclesClient.users.fetch(discordId);
+				await NotificationsHandler.handleGDPRExportComplete(gdprDiscordUser, gdprPacket, lng);
+				return; // Don't use standard notification flow
 			}
 			default:
 				throw `Unknown notification type: ${notification.type}`;
@@ -257,6 +269,91 @@ export abstract class NotificationsHandler {
 			await notificationConfiguration.save();
 
 			await NotificationsHandler.sendDmNotification(user, `${content}\n\n${i18n.t("bot:notificationsNoChannelAccess", { lng })}`, lng);
+		}
+	}
+
+	/**
+	 * Handle GDPR export completion notification
+	 * Creates a ZIP file from CSV files and sends it as a DM attachment
+	 * @param user The Discord user to send the export to
+	 * @param packet The GDPR export completion packet
+	 * @param lng The user's language
+	 */
+	private static async handleGDPRExportComplete(
+		user: User,
+		packet: GDPRExportCompleteNotificationPacket,
+		lng: Language
+	): Promise<void> {
+		if (packet.error) {
+			const errorEmbed = new CrowniclesEmbed()
+				.formatAuthor(i18n.t("notifications:gdprExport.title", { lng }), user)
+				.setDescription(i18n.t("notifications:gdprExport.error", {
+					lng,
+					error: packet.error
+				}));
+
+			await user.send({ embeds: [errorEmbed] }).catch(e => {
+				CrowniclesLogger.errorWithObj(`Failed to send GDPR error DM to user ${user.id}`, e);
+			});
+			return;
+		}
+
+		try {
+			// Create ZIP file from CSV files
+			const archive = archiver("zip", { zlib: { level: 9 } });
+			const chunks: Buffer[] = [];
+
+			archive.on("data", (chunk: Buffer) => chunks.push(chunk));
+
+			const archivePromise = new Promise<Buffer>((resolve, reject) => {
+				archive.on("end", () => resolve(Buffer.concat(chunks)));
+				archive.on("error", reject);
+			});
+
+			// Add each CSV file to the archive
+			for (const [filename, content] of Object.entries(packet.csvFiles)) {
+				archive.append(content, { name: filename });
+			}
+
+			await archive.finalize();
+
+			const zipBuffer = await archivePromise;
+			const fileName = i18n.t("notifications:gdprExport.fileName", {
+				lng,
+				anonymizedId: packet.anonymizedPlayerId
+			});
+
+			const attachment = new AttachmentBuilder(zipBuffer, { name: fileName });
+
+			const successEmbed = new CrowniclesEmbed()
+				.formatAuthor(i18n.t("notifications:gdprExport.title", { lng }), user)
+				.setDescription(i18n.t("notifications:gdprExport.success", {
+					lng,
+					anonymizedId: packet.anonymizedPlayerId,
+					fileCount: Object.keys(packet.csvFiles).length
+				}));
+
+			await user.send({
+				embeds: [successEmbed],
+				files: [attachment]
+			});
+
+			CrowniclesLogger.info(`GDPR export DM sent to user ${user.id} for player ${packet.anonymizedPlayerId}`);
+		}
+		catch (error) {
+			CrowniclesLogger.errorWithObj(`Failed to create or send GDPR export ZIP to user ${user.id}`, error);
+
+			// Try to send error message
+			const errorEmbed = new CrowniclesEmbed()
+				.formatAuthor(i18n.t("notifications:gdprExport.title", { lng }), user)
+				.setDescription(i18n.t("notifications:gdprExport.error", {
+					lng,
+					error: error instanceof Error ? error.message : "Failed to create ZIP file"
+				}));
+
+			await user.send({ embeds: [errorEmbed] }).catch(() => {
+				// Ignore - already logged above
+			});
 		}
 	}
 }
