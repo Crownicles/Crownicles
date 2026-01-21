@@ -864,7 +864,7 @@
     "shelterPetOption": "{{rarity}} | {{sex}} | {{loveLevel}}",
     "cancelButton": "Abbrechen",
     "feistyCostPaid": "Die Befreiung hat Sie {{cost, number}} {emote:unitValues.money}gekostet.",
-    "luckyMeat": "Der Vertraute hat Ihnen ein Stück Fleisch hinterlassen, als er ging! {emote:food.carnivorousFood}"
+    "luckyMeat": "Le familier vous a laissé un morceau de viande en partant ! {emote:foods.carnivorousFood}"
   },
   "petNick": {
     "successTitle": "{{pseudo}}Änderung des Spitznamens des Vertrauten",
