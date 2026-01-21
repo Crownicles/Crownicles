@@ -864,7 +864,7 @@
     "shelterPetOption": "{{rarity}} | {{sex}} {{loveLevel}}",
     "cancelButton": "Cancel",
     "feistyCostPaid": "The liberation cost you {{cost, number}} {emote:unitValues.money}.",
-    "luckyMeat": "The familiar left you a piece of meat when you left! {emote:food.carnivorousFood}"
+    "luckyMeat": "Le familier vous a laissé un morceau de viande en partant ! {emote:foods.carnivorousFood}"
   },
   "petNick": {
     "successTitle": "{{pseudo}}, changing the pet's nickname",
