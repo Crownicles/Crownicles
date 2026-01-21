@@ -864,7 +864,7 @@
     "shelterPetOption": "{{rarity}} | {{sex}} {{loveLevel}}",
     "cancelButton": "Cancelar",
     "feistyCostPaid": "La liberación le costó {{cost, number}} {emote:unitValues.money}.",
-    "luckyMeat": "¡El familiar te dejó un trozo de carne cuando te fuiste! {emote:food.carnivorousFood}"
+    "luckyMeat": "Le familier vous a laissé un morceau de viande en partant ! {emote:foods.carnivorousFood}"
   },
   "petNick": {
     "successTitle": "{{pseudo}}cambiar el apodo de la mascota",
