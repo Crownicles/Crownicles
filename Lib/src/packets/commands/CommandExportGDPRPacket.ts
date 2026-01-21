@@ -8,37 +8,32 @@ import {
  */
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandExportGDPRReq extends CrowniclesPacket {
+	/**
+	 * The keycloakId of the player to export data for
+	 */
 	keycloakId!: string;
+
+	/**
+	 * The keycloakId of the admin requesting the export
+	 * The result will be sent as a DM to this user
+	 */
+	requesterKeycloakId!: string;
 }
 
 /**
  * GDPR export response packet
- * Contains all player data as CSV strings, with anonymized identifiers
- * Each key is the table name, value is the CSV content
- * Note: Uses NONE direction because response is handled inline via callback in Discord command
+ * Simple acknowledgment that the export has started
+ * The actual data will be sent via GDPRExportCompleteNotificationPacket as a DM
  */
 @sendablePacket(PacketDirection.NONE)
 export class CommandExportGDPRRes extends CrowniclesPacket {
 	/**
-	 * Whether the player exists in the database
+	 * Whether the export has started successfully
 	 */
-	exists!: boolean;
+	started!: boolean;
 
 	/**
-	 * Error message if export failed
+	 * Error message if export could not start (e.g., player not found)
 	 */
 	error?: string;
-
-	/**
-	 * Map of table names to CSV content
-	 * Keys are filenames (e.g., "player.csv", "inventory.csv")
-	 * Values are the CSV content with anonymized data
-	 */
-	csvFiles!: Record<string, string>;
-
-	/**
-	 * The anonymized ID used for the player in all files
-	 * This allows the user to cross-reference their data
-	 */
-	anonymizedPlayerId!: string;
 }

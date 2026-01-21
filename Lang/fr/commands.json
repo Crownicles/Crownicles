@@ -1963,6 +1963,7 @@
   "exportgdpr": {
     "title": "Export RGPD",
     "success": "L'export RGPD a été généré avec succès.\n\n**ID anonymisé du joueur :** `{{anonymizedId}}`\n**Fichiers générés :** {{fileCount}}",
+    "started": "L'export RGPD a été lancé. Vous recevrez le résultat en message privé une fois l'export terminé.",
     "userNotFound": "Aucun joueur trouvé avec cet identifiant Discord.",
     "playerNotFound": "Ce joueur n'existe pas dans la base de données.",
     "error": "Une erreur s'est produite lors de l'export : {{error}}",
