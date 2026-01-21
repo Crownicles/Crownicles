@@ -1,5 +1,5 @@
 import {
-	toCSV, GDPRCsvFiles
+	streamToCSV, fetchWithPagination, GDPRCsvFiles
 } from "../CSVUtils";
 import { LogsPlayersNewPets } from "../../../../core/database/logs/models/LogsPlayersNewPets";
 import { LogsPlayersCommands } from "../../../../core/database/logs/models/LogsPlayersCommands";
@@ -27,83 +27,126 @@ export async function exportLogsMissions(
 	csvFiles: GDPRCsvFiles
 ): Promise<LogsMissionsExportResult> {
 	// 35. New pets obtained
-	const newPets = await LogsPlayersNewPets.findAll({ where: { playerId: logsPlayerId } });
-	if (newPets.length > 0) {
-		csvFiles["logs/35_pets_obtained.csv"] = toCSV(newPets.map(p => ({
+	const newPets = await fetchWithPagination(
+		LogsPlayersNewPets,
+		{ playerId: logsPlayerId },
+		p => p
+	);
+	const petsCsv = await streamToCSV(
+		LogsPlayersNewPets,
+		{ playerId: logsPlayerId },
+		p => ({
 			petId: p.petId, date: p.date
-		})));
+		})
+	);
+	if (petsCsv) {
+		csvFiles["logs/35_pets_obtained.csv"] = petsCsv;
 	}
 
 	// 36. Commands used (anonymized - only command name, not content)
-	const commands = await LogsPlayersCommands.findAll({ where: { playerId: logsPlayerId } });
-	if (commands.length > 0) {
-		csvFiles["logs/36_commands_used.csv"] = toCSV(commands.map(c => ({
+	const commandsCsv = await streamToCSV(
+		LogsPlayersCommands,
+		{ playerId: logsPlayerId },
+		c => ({
 			commandId: c.commandId, date: c.date
-		})));
+		})
+	);
+	if (commandsCsv) {
+		csvFiles["logs/36_commands_used.csv"] = commandsCsv;
 	}
 
 	// 37. Top 15 best season appearances
-	const best15Season = await LogsPlayers15BestSeason.findAll({ where: { playerId: logsPlayerId } });
-	if (best15Season.length > 0) {
-		csvFiles["logs/37_top15_season.csv"] = toCSV(best15Season.map(b => ({
+	const best15SeasonCsv = await streamToCSV(
+		LogsPlayers15BestSeason,
+		{ playerId: logsPlayerId },
+		b => ({
 			position: b.position, seasonGlory: b.seasonGlory, date: b.date
-		})));
+		})
+	);
+	if (best15SeasonCsv) {
+		csvFiles["logs/37_top15_season.csv"] = best15SeasonCsv;
 	}
 
 	// 38. Top 15 best topweek appearances
-	const best15Topweek = await LogsPlayers15BestTopweek.findAll({ where: { playerId: logsPlayerId } });
-	if (best15Topweek.length > 0) {
-		csvFiles["logs/38_top15_topweek.csv"] = toCSV(best15Topweek.map(b => ({
+	const best15TopweekCsv = await streamToCSV(
+		LogsPlayers15BestTopweek,
+		{ playerId: logsPlayerId },
+		b => ({
 			position: b.position, topWeekScore: b.topWeekScore, date: b.date
-		})));
+		})
+	);
+	if (best15TopweekCsv) {
+		csvFiles["logs/38_top15_topweek.csv"] = best15TopweekCsv;
 	}
 
 	// 39. League rewards
-	const leagueRewards = await LogsPlayerLeagueReward.findAll({ where: { playerId: logsPlayerId } });
-	if (leagueRewards.length > 0) {
-		csvFiles["logs/39_league_rewards.csv"] = toCSV(leagueRewards.map(l => ({
+	const leagueRewardsCsv = await streamToCSV(
+		LogsPlayerLeagueReward,
+		{ playerId: logsPlayerId },
+		l => ({
 			leagueLastSeason: l.leagueLastSeason, date: l.date
-		})));
+		})
+	);
+	if (leagueRewardsCsv) {
+		csvFiles["logs/39_league_rewards.csv"] = leagueRewardsCsv;
 	}
 
 	// 40. Missions found
-	const missionsFound = await LogsMissionsFound.findAll({ where: { playerId: logsPlayerId } });
-	if (missionsFound.length > 0) {
-		csvFiles["logs/40_missions_found.csv"] = toCSV(missionsFound.map(m => ({
+	const missionsFoundCsv = await streamToCSV(
+		LogsMissionsFound,
+		{ playerId: logsPlayerId },
+		m => ({
 			missionId: m.missionId, date: m.date
-		})));
+		})
+	);
+	if (missionsFoundCsv) {
+		csvFiles["logs/40_missions_found.csv"] = missionsFoundCsv;
 	}
 
 	// 41. Missions finished
-	const missionsFinished = await LogsMissionsFinished.findAll({ where: { playerId: logsPlayerId } });
-	if (missionsFinished.length > 0) {
-		csvFiles["logs/41_missions_finished.csv"] = toCSV(missionsFinished.map(m => ({
+	const missionsFinishedCsv = await streamToCSV(
+		LogsMissionsFinished,
+		{ playerId: logsPlayerId },
+		m => ({
 			missionId: m.missionId, date: m.date
-		})));
+		})
+	);
+	if (missionsFinishedCsv) {
+		csvFiles["logs/41_missions_finished.csv"] = missionsFinishedCsv;
 	}
 
 	// 42. Missions failed
-	const missionsFailed = await LogsMissionsFailed.findAll({ where: { playerId: logsPlayerId } });
-	if (missionsFailed.length > 0) {
-		csvFiles["logs/42_missions_failed.csv"] = toCSV(missionsFailed.map(m => ({
+	const missionsFailedCsv = await streamToCSV(
+		LogsMissionsFailed,
+		{ playerId: logsPlayerId },
+		m => ({
 			missionId: m.missionId, date: m.date
-		})));
+		})
+	);
+	if (missionsFailedCsv) {
+		csvFiles["logs/42_missions_failed.csv"] = missionsFailedCsv;
 	}
 
 	// 43. Daily missions finished
-	const missionsDailyFinished = await LogsMissionsDailyFinished.findAll({ where: { playerId: logsPlayerId } });
-	if (missionsDailyFinished.length > 0) {
-		csvFiles["logs/43_daily_missions_finished.csv"] = toCSV(missionsDailyFinished.map(m => ({
-			date: m.date
-		})));
+	const missionsDailyFinishedCsv = await streamToCSV(
+		LogsMissionsDailyFinished,
+		{ playerId: logsPlayerId },
+		m => ({ date: m.date })
+	);
+	if (missionsDailyFinishedCsv) {
+		csvFiles["logs/43_daily_missions_finished.csv"] = missionsDailyFinishedCsv;
 	}
 
 	// 44. Campaign progresses
-	const campaignProgresses = await LogsMissionsCampaignProgresses.findAll({ where: { playerId: logsPlayerId } });
-	if (campaignProgresses.length > 0) {
-		csvFiles["logs/44_campaign_progresses.csv"] = toCSV(campaignProgresses.map(c => ({
+	const campaignProgressesCsv = await streamToCSV(
+		LogsMissionsCampaignProgresses,
+		{ playerId: logsPlayerId },
+		c => ({
 			number: c.number, date: c.date
-		})));
+		})
+	);
+	if (campaignProgressesCsv) {
+		csvFiles["logs/44_campaign_progresses.csv"] = campaignProgressesCsv;
 	}
 
 	return { newPets };

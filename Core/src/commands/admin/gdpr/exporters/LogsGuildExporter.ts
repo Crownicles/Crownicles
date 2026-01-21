@@ -1,6 +1,6 @@
 import { GDPRAnonymizer } from "../GDPRAnonymizer";
 import {
-	toCSV, GDPRCsvFiles
+	fetchWithPagination, GDPRCsvFiles, streamToCSV, toCSV
 } from "../CSVUtils";
 import { LogsGuildsCreations } from "../../../../core/database/logs/models/LogsGuildCreations";
 import { LogsGuildsJoins } from "../../../../core/database/logs/models/LogsGuildJoins";
@@ -28,72 +28,104 @@ export async function exportLogsGuild(
 	anonymizer: GDPRAnonymizer,
 	csvFiles: GDPRCsvFiles
 ): Promise<LogsGuildExportResult> {
-	// 60. Guilds created
-	const guildsCreated = await LogsGuildsCreations.findAll({ where: { creatorId: logsPlayerId } });
+	// 60. Guilds created - use fetchWithPagination because we need guildIds for later query
+	const guildsCreated = await fetchWithPagination(
+		LogsGuildsCreations,
+		{ creatorId: logsPlayerId },
+		g => g
+	);
 	if (guildsCreated.length > 0) {
 		csvFiles["logs/60_guilds_created.csv"] = toCSV(guildsCreated.map(g => ({
 			guildId: anonymizer.anonymizeGuildId(g.guildId), date: g.date
 		})));
 	}
 
-	// 61. Guilds joined (as the one being added)
-	const guildsJoined = await LogsGuildsJoins.findAll({ where: { addedId: logsPlayerId } });
-	if (guildsJoined.length > 0) {
-		csvFiles["logs/61_guilds_joined.csv"] = toCSV(guildsJoined.map(g => ({
+	// 61. Guilds joined (as the one being added) - use streamToCSV
+	const guildsJoinedCsv = await streamToCSV(
+		LogsGuildsJoins,
+		{ addedId: logsPlayerId },
+		g => ({
 			guildId: anonymizer.anonymizeGuildId(g.guildId),
 			addedBy: anonymizer.anonymizePlayerId(g.adderId, false),
 			date: g.date
-		})));
+		})
+	);
+	if (guildsJoinedCsv) {
+		csvFiles["logs/61_guilds_joined.csv"] = guildsJoinedCsv;
 	}
 
-	// 62. Guilds kicked from
-	const guildsKicked = await LogsGuildsKicks.findAll({ where: { kickedPlayer: logsPlayerId } });
-	if (guildsKicked.length > 0) {
-		csvFiles["logs/62_guilds_kicked.csv"] = toCSV(guildsKicked.map(g => ({
+	// 62. Guilds kicked from - use streamToCSV
+	const guildsKickedCsv = await streamToCSV(
+		LogsGuildsKicks,
+		{ kickedPlayer: logsPlayerId },
+		g => ({
 			guildId: anonymizer.anonymizeGuildId(g.guildId), date: g.date
-		})));
+		})
+	);
+	if (guildsKickedCsv) {
+		csvFiles["logs/62_guilds_kicked.csv"] = guildsKickedCsv;
 	}
 
-	// 63. Guilds left
-	const guildsLeft = await LogsGuildsLeaves.findAll({ where: { leftPlayer: logsPlayerId } });
-	if (guildsLeft.length > 0) {
-		csvFiles["logs/63_guilds_left.csv"] = toCSV(guildsLeft.map(g => ({
+	// 63. Guilds left - use streamToCSV
+	const guildsLeftCsv = await streamToCSV(
+		LogsGuildsLeaves,
+		{ leftPlayer: logsPlayerId },
+		g => ({
 			guildId: anonymizer.anonymizeGuildId(g.guildId), date: g.date
-		})));
+		})
+	);
+	if (guildsLeftCsv) {
+		csvFiles["logs/63_guilds_left.csv"] = guildsLeftCsv;
 	}
 
-	// 64. Became guild chief
-	const becameChief = await LogsGuildsChiefsChanges.findAll({ where: { newChief: logsPlayerId } });
-	if (becameChief.length > 0) {
-		csvFiles["logs/64_became_guild_chief.csv"] = toCSV(becameChief.map(g => ({
+	// 64. Became guild chief - use streamToCSV
+	const becameChiefCsv = await streamToCSV(
+		LogsGuildsChiefsChanges,
+		{ newChief: logsPlayerId },
+		g => ({
 			guildId: anonymizer.anonymizeGuildId(g.guildId), date: g.date
-		})));
+		})
+	);
+	if (becameChiefCsv) {
+		csvFiles["logs/64_became_guild_chief.csv"] = becameChiefCsv;
 	}
 
-	// 65. Became guild elder
-	const becameElder = await LogsGuildsEldersAdds.findAll({ where: { addedElder: logsPlayerId } });
-	if (becameElder.length > 0) {
-		csvFiles["logs/65_became_guild_elder.csv"] = toCSV(becameElder.map(g => ({
+	// 65. Became guild elder - use streamToCSV
+	const becameElderCsv = await streamToCSV(
+		LogsGuildsEldersAdds,
+		{ addedElder: logsPlayerId },
+		g => ({
 			guildId: anonymizer.anonymizeGuildId(g.guildId), date: g.date
-		})));
+		})
+	);
+	if (becameElderCsv) {
+		csvFiles["logs/65_became_guild_elder.csv"] = becameElderCsv;
 	}
 
-	// 66. Removed from guild elder
-	const removedElder = await LogsGuildsEldersRemoves.findAll({ where: { removedElder: logsPlayerId } });
-	if (removedElder.length > 0) {
-		csvFiles["logs/66_removed_guild_elder.csv"] = toCSV(removedElder.map(g => ({
+	// 66. Removed from guild elder - use streamToCSV
+	const removedElderCsv = await streamToCSV(
+		LogsGuildsEldersRemoves,
+		{ removedElder: logsPlayerId },
+		g => ({
 			guildId: anonymizer.anonymizeGuildId(g.guildId), date: g.date
-		})));
+		})
+	);
+	if (removedElderCsv) {
+		csvFiles["logs/66_removed_guild_elder.csv"] = removedElderCsv;
 	}
 
-	// 67. Guild descriptions written by this player
-	const descriptionsWritten = await LogsGuildsDescriptionChanges.findAll({ where: { playerId: logsPlayerId } });
-	if (descriptionsWritten.length > 0) {
-		csvFiles["logs/67_guild_descriptions_written.csv"] = toCSV(descriptionsWritten.map(d => ({
+	// 67. Guild descriptions written by this player - use streamToCSV
+	const descriptionsWrittenCsv = await streamToCSV(
+		LogsGuildsDescriptionChanges,
+		{ playerId: logsPlayerId },
+		d => ({
 			guildId: anonymizer.anonymizeGuildId(d.guildId),
 			description: d.description,
 			date: d.date
-		})));
+		})
+	);
+	if (descriptionsWrittenCsv) {
+		csvFiles["logs/67_guild_descriptions_written.csv"] = descriptionsWrittenCsv;
 	}
 
 	// 74. Guild names (for guilds created by this player)
