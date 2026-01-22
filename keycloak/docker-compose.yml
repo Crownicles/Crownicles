@@ -21,7 +21,16 @@ services:
       - 8080:8080
     volumes:
       -  ../../keycloak/data:/opt/keycloak/data
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 768M
     environment:
+      # JVM config: 1280m heap + 192m metaspace = 1472m, leaving ~500m for JVM overhead
+      # ExitOnOutOfMemoryError ensures clean shutdown instead of hanging on OOM
+      JAVA_OPTS_APPEND: -Xms512m -Xmx1280m -XX:MaxMetaspaceSize=192m -XX:+ExitOnOutOfMemoryError
       # JAVA_OPTS: -XX:UseSVE=0 # Uncomment for macOS due to a keycloak bug https://github.com/keycloak/keycloak/issues/36008
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
