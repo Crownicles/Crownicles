@@ -1,0 +1,5 @@
+{
+  "type": "creek",
+  "canBeGoToPlaceMissionDestination": false,
+  "attribute": "pve_island"
+}

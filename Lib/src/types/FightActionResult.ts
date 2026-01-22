@@ -1,5 +1,6 @@
 import { FightStatModifierOperation } from "./FightStatModifierOperation";
 import { FightActionStatus } from "./FightActionStatus";
+import { FightActionType } from "./FightActionType";
 
 export enum FightStatBuffed {
 	ATTACK,
@@ -20,10 +21,20 @@ export interface FightActionBuff {
 	duration?: number;
 }
 
+export interface FightActionTypeResistance {
+	selfTarget: boolean;
+	type: FightActionType;
+	value: number;
+	duration?: number;
+	reflectDamage?: boolean; // Si true, renvoie les dégâts résistés
+}
+
 export interface FightActionResult {
 	fail?: boolean;
 	buffs?: FightActionBuff[];
+	resistances?: FightActionTypeResistance[];
 	damages?: number;
+	reflectedDamages?: number; // Dégâts renvoyés à l'attaquant
 	attackStatus: FightActionStatus;
 	alterations?: FightAlterationApplied[];
 	customMessage?: boolean; // If true, the attack should be displayed with a custom message

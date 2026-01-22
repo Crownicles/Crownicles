@@ -1,0 +1,40 @@
+{
+  "baseEnergyValue": 40,
+  "attackRatio": 50,
+  "defenseRatio": 20,
+  "speedRatio": 70,
+  "breath": 18,
+  "maxBreath": 30,
+  "breathRegen": 5,
+  "rewardFactor": 0.6,
+  "attacks": [
+    {
+      "id": "breathTakingAttack",
+      "minLevel": 0,
+      "weight": 4
+    },
+    {
+      "id": "ambush",
+      "minLevel": 0,
+      "weight": 3
+    },
+    {
+      "id": "cursedOfTheSea",
+      "minLevel": 0,
+      "weight": 3
+    },
+    {
+      "id": "mutiny",
+      "minLevel": 80,
+      "weight": 2
+    },
+    {
+      "id": "spectralRevengeAttack",
+      "minLevel": 50,
+      "weight": 2
+    }
+  ],
+  "maps": [
+    1111
+  ]
+}

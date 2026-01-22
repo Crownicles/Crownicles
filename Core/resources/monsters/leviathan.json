@@ -1,0 +1,40 @@
+{
+  "baseEnergyValue": 700,
+  "attackRatio": 250,
+  "defenseRatio": 70,
+  "speedRatio": 180,
+  "breath": 10,
+  "maxBreath": 60,
+  "breathRegen": 12,
+  "rewardFactor": 1.8,
+  "attacks": [
+    {
+      "id": "divineLightning",
+      "minLevel": 0,
+      "weight": 5
+    },
+    {
+      "id": "frostedFangs",
+      "minLevel": 0,
+      "weight": 2
+    },
+    {
+      "id": "abyssalHunger",
+      "minLevel": 80,
+      "weight": 3
+    },
+    {
+      "id": "chargeDeluge",
+      "minLevel": 100,
+      "weight": 1
+    },
+    {
+      "id": "chargeChargeMaelstromAttack",
+      "minLevel": 100,
+      "weight": 1
+    }
+  ],
+  "maps": [
+    1114
+  ]
+}

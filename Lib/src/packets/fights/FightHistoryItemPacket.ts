@@ -24,6 +24,7 @@ export class CommandFightHistoryItemPacket extends CrowniclesPacket {
 	fightActionEffectDealt?: { // Stat change for the opponent in % (10 = 10%) can be negative
 		newAlteration?: string;
 		damages?: number;
+		reflectedDamages?: number; // Dégâts renvoyés à l'attaquant
 		defense?: number;
 		attack?: number;
 		speed?: number;

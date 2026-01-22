@@ -7,8 +7,15 @@ import {
 	defaultDamageFightAlterationResult, defaultHealFightAlterationResult
 } from "../../../FightController";
 import { RandomUtils } from "../../../../../../../Lib/src/utils/RandomUtils";
+import { MonsterFighter } from "../../../fighter/MonsterFighter";
+
+const IMMUNE_MONSTERS = ["waterSpirit"];
 
 const use: FightAlterationFunc = (affected, _fightAlteration, opponent) => {
+	if (affected instanceof MonsterFighter && IMMUNE_MONSTERS.includes(affected.monster.id)) {
+		return defaultHealFightAlterationResult(affected);
+	}
+
 	// 10 % chance to be healed from the burn on turn 2 or 80 % chance on turn 3 and later
 	if (RandomUtils.crowniclesRandom.bool(0.1) && affected.alterationTurn === 2 || RandomUtils.crowniclesRandom.bool(0.8) && affected.alterationTurn > 2) {
 		return defaultHealFightAlterationResult(affected);
