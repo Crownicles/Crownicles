@@ -18,7 +18,7 @@
     "eslint": "eslint src",
     "eslintFix": "eslint src --fix",
     "tsc": "tsc",
-    "dockerStart": "node dist/Discord/src/index.js",
+    "dockerStart": "node --max-old-space-size=768 dist/Discord/src/index.js",
     "interface": "i18next-resources-for-ts interface -i ../Lang/en -o ./src/@types/resources.d.ts"
   },
   "dependencies": {

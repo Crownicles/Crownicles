@@ -18,7 +18,7 @@
     "eslint": "eslint src",
     "eslintFix": "eslint src --fix",
     "tsc": "tsc",
-    "dockerStart": "node dist/Core/src/index.js",
+    "dockerStart": "node --max-old-space-size=512 dist/Core/src/index.js",
     "start-profiler": "pnpm run tsc && node --prof dist/Core/src/index.js"
   },
   "dependencies": {
