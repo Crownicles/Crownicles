@@ -15,7 +15,7 @@
     "eslint": "eslint src",
     "eslintFix": "eslint src --fix",
     "tsc": "tsc",
-    "dockerStart": "node dist/RestWs/src/index.js",
+    "dockerStart": "node --max-old-space-size=512 dist/RestWs/src/index.js",
     "build:protobuf": "mkdir -p src/@types && mkdir -p dist/RestWs/src/@types && pbjs -t static-module -p protobufs --force-number -o dist/RestWs/src/@types/protobufs-client.js protobufs/from_client/**/*.proto && pbts -o src/@types/protobufs-client.d.ts dist/RestWs/src/@types/protobufs-client.js && pbjs -t static-module -p protobufs --force-number -o dist/RestWs/src/@types/protobufs-server.js protobufs/from_server/**/*.proto && pbts -o src/@types/protobufs-server.d.ts dist/RestWs/src/@types/protobufs-server.js && sed -i 's/export interface \\([A-Za-z0-9]\\+\\) {/export interface \\1 extends FromClientPacket {/g' src/@types/protobufs-client.d.ts && sed -i 's/export interface \\([A-Za-z0-9]\\+\\) {/export interface \\1 extends FromServerPacket {/g' src/@types/protobufs-server.d.ts && sed -i '1s/^/export interface FromClientPacket {}\\n/' src/@types/protobufs-client.d.ts && sed -i '1s/^/export interface FromServerPacket {}\\n/' src/@types/protobufs-server.d.ts"
   },
   "dependencies": {
