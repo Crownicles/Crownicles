@@ -1,5 +1,5 @@
 import {
-	Client, Guild, IntentsBitField, Partials, TextChannel
+	Client, GuildMember, Guild, IntentsBitField, Options, Partials, TextChannel
 } from "discord.js";
 import { Constants } from "../../../Lib/src/constants/Constants";
 import { loadConfig } from "../config/DiscordConfig";
@@ -14,6 +14,7 @@ import {
 import { DiscordDatabase } from "../database/discord/DiscordDatabase";
 import { CrowniclesDiscordWebServer } from "./CrowniclesDiscordWebServer";
 import { CrowniclesLogger } from "../../../Lib/src/logs/CrowniclesLogger";
+import { DiscordConstants } from "../DiscordConstants";
 import "source-map-support/register";
 
 process.on("uncaughtException", error => {
@@ -113,7 +114,34 @@ async function connectAndStartBot(): Promise<void> {
 				timeout: Constants.MAX_TIME_BOT_RESPONSE
 			},
 			shardCount,
-			shards: [shardId]
+			shards: [shardId],
+
+			// RAM optimization: limit Discord.js cache sizes
+			makeCache: Options.cacheWithLimits({
+				...Options.DefaultMakeCacheSettings,
+				MessageManager: DiscordConstants.CACHE.MESSAGE_LIMIT,
+				GuildMemberManager: {
+					maxSize: DiscordConstants.CACHE.GUILD_MEMBER_LIMIT,
+					keepOverLimit: (member): boolean => member.id === client.user?.id
+				},
+				PresenceManager: 0,
+				ReactionManager: DiscordConstants.CACHE.REACTION_LIMIT,
+				ThreadManager: DiscordConstants.CACHE.THREAD_LIMIT
+			}),
+
+			// Auto-sweep old cache entries periodically
+			sweepers: {
+				...Options.DefaultSweeperSettings,
+				messages: {
+					interval: DiscordConstants.CACHE.MESSAGE_SWEEP_INTERVAL,
+					lifetime: DiscordConstants.CACHE.MESSAGE_LIFETIME
+				},
+				guildMembers: {
+					interval: DiscordConstants.CACHE.GUILD_MEMBER_SWEEP_INTERVAL,
+					filter: (): (member: GuildMember) => boolean =>
+						(member: GuildMember): boolean => member.id !== client.user?.id
+				}
+			}
 		}
 	);
 

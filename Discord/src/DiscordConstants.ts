@@ -13,6 +13,46 @@ export abstract class DiscordConstants {
 	static EMPTY_MESSAGE = "_ _";
 
 	/**
+	 * Discord.js cache configuration for RAM optimization
+	 */
+	static CACHE = {
+		/**
+		 * Maximum messages cached per channel
+		 */
+		MESSAGE_LIMIT: 50,
+
+		/**
+		 * Maximum guild members to cache
+		 */
+		GUILD_MEMBER_LIMIT: 500,
+
+		/**
+		 * Maximum reactions cached per message
+		 */
+		REACTION_LIMIT: 50,
+
+		/**
+		 * Maximum threads cached per guild
+		 */
+		THREAD_LIMIT: 50,
+
+		/**
+		 * Interval in seconds for sweeping old messages
+		 */
+		MESSAGE_SWEEP_INTERVAL: 300,
+
+		/**
+		 * Lifetime in seconds for cached messages before sweep
+		 */
+		MESSAGE_LIFETIME: 600,
+
+		/**
+		 * Interval in seconds for sweeping guild members
+		 */
+		GUILD_MEMBER_SWEEP_INTERVAL: 600
+	};
+
+	/**
 	 * Account deletion related constants
 	 */
 	static ACCOUNT_DELETION = {
