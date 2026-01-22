@@ -1246,7 +1246,7 @@
     "dailyPotionsStock": "Acheter tout le stock de potions du jour",
     "doReports_one": "Faire {{count}} rapport",
     "doReports_other": "Faire {{count}} rapports",
-    "drinkAlcohol": "Boire une potion contenant de l'alcool",
+    "drinkAlcohol": "Boire une boisson alcoolisée",
     "drinkEnergyPotion_one": "Boire {{count}} potion d'énergie",
     "drinkEnergyPotion_other": "Boire {{count}} potions d'énergie",
     "drinkPotionRarity": "Boire une potion de rareté {{variantText}} ou supérieure",
