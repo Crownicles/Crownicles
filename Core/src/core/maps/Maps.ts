@@ -173,12 +173,14 @@ export class Maps {
 	}
 
 	/**
-	 * Get all the members of the player's guild on a boat
+	 * Get all the members of the player's guild on a boat that can be joined
 	 */
 	static getGuildMembersOnBoat(player: Player): Promise<Player[]> {
 		if (!player.guildId) {
 			return Promise.resolve([]);
 		}
+
+		const minStartTravelDate = new Date(Date.now() - PVEConstants.TIME_AFTER_INACTIVITY_ON_BOAT_IS_NOT_ACCEPTED);
 
 		return Player.findAll({
 			where: {
@@ -186,7 +188,8 @@ export class Maps {
 				mapLinkId: {
 					[Op.in]: MapCache.boatEntryMapLinks
 				},
-				id: { [Op.not]: player.id }
+				id: { [Op.not]: player.id },
+				startTravelDate: { [Op.gte]: minStartTravelDate }
 			}
 		});
 	}
