@@ -30,6 +30,34 @@ function sanitizeCsvValue(value: string): string {
 }
 
 /**
+ * Check if a string value requires quoting in CSV format
+ */
+function requiresQuoting(value: string): boolean {
+	return value.includes(",") || value.includes('"') || value.includes("\n");
+}
+
+/**
+ * Format a single value for CSV output
+ * Handles null, undefined, Date, string (with sanitization), and other types
+ */
+function formatValueToCsv(value: unknown): string {
+	if (value === null || value === undefined) {
+		return "";
+	}
+	if (value instanceof Date) {
+		return value.toISOString();
+	}
+	if (typeof value === "string") {
+		const sanitized = sanitizeCsvValue(value);
+		if (requiresQuoting(sanitized)) {
+			return `"${sanitized.replace(/"/g, '""')}"`;
+		}
+		return sanitized;
+	}
+	return String(value);
+}
+
+/**
  * Convert an array of objects to CSV format
  * @param data Array of objects to convert
  * @param columns Optional array of column names to include (defaults to all keys from first object)
@@ -48,26 +76,7 @@ export function toCSV(data: Record<string, unknown>[], columns?: string[]): stri
 
 	// Data rows
 	for (const row of data) {
-		const values = headers.map(header => {
-			const value = row[header];
-			if (value === null || value === undefined) {
-				return "";
-			}
-			if (value instanceof Date) {
-				return value.toISOString();
-			}
-			if (typeof value === "string") {
-				// Sanitize against CSV injection attacks
-				const sanitized = sanitizeCsvValue(value);
-
-				// Escape quotes and wrap in quotes if needed
-				if (sanitized.includes(",") || sanitized.includes('"') || sanitized.includes("\n")) {
-					return `"${sanitized.replace(/"/g, '""')}"`;
-				}
-				return sanitized;
-			}
-			return String(value);
-		});
+		const values = headers.map(header => formatValueToCsv(row[header]));
 		csvRows.push(values.join(","));
 	}
 
@@ -109,9 +118,8 @@ export async function fetchWithPagination<T extends Model, R>(
 ): Promise<R[]> {
 	const allData: R[] = [];
 	let offset = 0;
-	let hasMore = true;
 
-	while (hasMore) {
+	while (true) {
 		const batch = await model.findAll({
 			where,
 			limit: BATCH_SIZE,
@@ -120,20 +128,25 @@ export async function fetchWithPagination<T extends Model, R>(
 		});
 
 		if (batch.length === 0) {
-			hasMore = false;
+			break;
 		}
-		else {
-			for (const row of batch) {
-				allData.push(transform(row));
-			}
-			offset += BATCH_SIZE;
 
-			// Yield to event loop after each batch to prevent blocking
-			await yieldToEventLoop();
-		}
+		allData.push(...batch.map(transform));
+		offset += BATCH_SIZE;
+
+		// Yield to event loop after each batch to prevent blocking
+		await yieldToEventLoop();
 	}
 
 	return allData;
+}
+
+/**
+ * Convert a data record to a CSV row string using the provided headers
+ */
+function recordToCsvRow(data: Record<string, unknown>, headers: string[]): string {
+	const values = headers.map(header => formatValueToCsv(data[header]));
+	return values.join(",");
 }
 
 /**
@@ -154,12 +167,10 @@ export async function streamToCSV<T extends Model>(
 	columns?: string[]
 ): Promise<string> {
 	const csvRows: string[] = [];
-	let headersSet = false;
-	let headers: string[] = [];
+	let headers: string[] | null = null;
 	let offset = 0;
-	let hasMore = true;
 
-	while (hasMore) {
+	while (true) {
 		const batch = await model.findAll({
 			where,
 			limit: BATCH_SIZE,
@@ -168,44 +179,24 @@ export async function streamToCSV<T extends Model>(
 		});
 
 		if (batch.length === 0) {
-			hasMore = false;
+			break;
 		}
-		else {
-			for (const row of batch) {
-				const data = transform(row);
 
-				// Set headers from first row
-				if (!headersSet) {
-					headers = columns ?? Object.keys(data);
-					csvRows.push(headers.join(","));
-					headersSet = true;
-				}
+		for (const row of batch) {
+			const data = transform(row);
 
-				// Build row
-				const values = headers.map(header => {
-					const value = data[header];
-					if (value === null || value === undefined) {
-						return "";
-					}
-					if (value instanceof Date) {
-						return value.toISOString();
-					}
-					if (typeof value === "string") {
-						const sanitized = sanitizeCsvValue(value);
-						if (sanitized.includes(",") || sanitized.includes('"') || sanitized.includes("\n")) {
-							return `"${sanitized.replace(/"/g, '""')}"`;
-						}
-						return sanitized;
-					}
-					return String(value);
-				});
-				csvRows.push(values.join(","));
+			// Set headers from first row
+			if (!headers) {
+				headers = columns ?? Object.keys(data);
+				csvRows.push(headers.join(","));
 			}
-			offset += BATCH_SIZE;
 
-			// Yield to event loop after each batch
-			await yieldToEventLoop();
+			csvRows.push(recordToCsvRow(data, headers));
 		}
+		offset += BATCH_SIZE;
+
+		// Yield to event loop after each batch
+		await yieldToEventLoop();
 	}
 
 	return csvRows.join("\n");

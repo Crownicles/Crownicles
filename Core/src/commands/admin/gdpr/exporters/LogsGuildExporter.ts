@@ -21,26 +21,13 @@ export interface LogsGuildExportResult {
 }
 
 /**
- * Exports guild-related data from logs database (files 60-67, 74)
+ * Exports guild membership events (joined, kicked, left)
  */
-export async function exportLogsGuild(
+async function exportGuildMembershipEvents(
 	logsPlayerId: number,
 	anonymizer: GDPRAnonymizer,
 	csvFiles: GDPRCsvFiles
-): Promise<LogsGuildExportResult> {
-	// 60. Guilds created - use fetchWithPagination because we need guildIds for later query
-	const guildsCreated = await fetchWithPagination(
-		LogsGuildsCreations,
-		{ creatorId: logsPlayerId },
-		g => g
-	);
-	if (guildsCreated.length > 0) {
-		csvFiles["logs/60_guilds_created.csv"] = toCSV(guildsCreated.map(g => ({
-			guildId: anonymizer.anonymizeGuildId(g.guildId), date: g.date
-		})));
-	}
-
-	// 61. Guilds joined (as the one being added) - use streamToCSV
+): Promise<void> {
 	const guildsJoinedCsv = await streamToCSV(
 		LogsGuildsJoins,
 		{ addedId: logsPlayerId },
@@ -54,7 +41,6 @@ export async function exportLogsGuild(
 		csvFiles["logs/61_guilds_joined.csv"] = guildsJoinedCsv;
 	}
 
-	// 62. Guilds kicked from - use streamToCSV
 	const guildsKickedCsv = await streamToCSV(
 		LogsGuildsKicks,
 		{ kickedPlayer: logsPlayerId },
@@ -66,7 +52,6 @@ export async function exportLogsGuild(
 		csvFiles["logs/62_guilds_kicked.csv"] = guildsKickedCsv;
 	}
 
-	// 63. Guilds left - use streamToCSV
 	const guildsLeftCsv = await streamToCSV(
 		LogsGuildsLeaves,
 		{ leftPlayer: logsPlayerId },
@@ -77,8 +62,16 @@ export async function exportLogsGuild(
 	if (guildsLeftCsv) {
 		csvFiles["logs/63_guilds_left.csv"] = guildsLeftCsv;
 	}
+}
 
-	// 64. Became guild chief - use streamToCSV
+/**
+ * Exports guild role changes (chief, elder)
+ */
+async function exportGuildRoleChanges(
+	logsPlayerId: number,
+	anonymizer: GDPRAnonymizer,
+	csvFiles: GDPRCsvFiles
+): Promise<void> {
 	const becameChiefCsv = await streamToCSV(
 		LogsGuildsChiefsChanges,
 		{ newChief: logsPlayerId },
@@ -90,7 +83,6 @@ export async function exportLogsGuild(
 		csvFiles["logs/64_became_guild_chief.csv"] = becameChiefCsv;
 	}
 
-	// 65. Became guild elder - use streamToCSV
 	const becameElderCsv = await streamToCSV(
 		LogsGuildsEldersAdds,
 		{ addedElder: logsPlayerId },
@@ -102,7 +94,6 @@ export async function exportLogsGuild(
 		csvFiles["logs/65_became_guild_elder.csv"] = becameElderCsv;
 	}
 
-	// 66. Removed from guild elder - use streamToCSV
 	const removedElderCsv = await streamToCSV(
 		LogsGuildsEldersRemoves,
 		{ removedElder: logsPlayerId },
@@ -113,8 +104,16 @@ export async function exportLogsGuild(
 	if (removedElderCsv) {
 		csvFiles["logs/66_removed_guild_elder.csv"] = removedElderCsv;
 	}
+}
 
-	// 67. Guild descriptions written by this player - use streamToCSV
+/**
+ * Exports guild descriptions written by the player
+ */
+async function exportGuildDescriptions(
+	logsPlayerId: number,
+	anonymizer: GDPRAnonymizer,
+	csvFiles: GDPRCsvFiles
+): Promise<void> {
 	const descriptionsWrittenCsv = await streamToCSV(
 		LogsGuildsDescriptionChanges,
 		{ playerId: logsPlayerId },
@@ -127,6 +126,36 @@ export async function exportLogsGuild(
 	if (descriptionsWrittenCsv) {
 		csvFiles["logs/67_guild_descriptions_written.csv"] = descriptionsWrittenCsv;
 	}
+}
+
+/**
+ * Exports guild-related data from logs database (files 60-67, 74)
+ */
+export async function exportLogsGuild(
+	logsPlayerId: number,
+	anonymizer: GDPRAnonymizer,
+	csvFiles: GDPRCsvFiles
+): Promise<LogsGuildExportResult> {
+	// 60. Guilds created
+	const guildsCreated = await fetchWithPagination(
+		LogsGuildsCreations,
+		{ creatorId: logsPlayerId },
+		g => g
+	);
+	if (guildsCreated.length > 0) {
+		csvFiles["logs/60_guilds_created.csv"] = toCSV(guildsCreated.map(g => ({
+			guildId: anonymizer.anonymizeGuildId(g.guildId), date: g.date
+		})));
+	}
+
+	// 61-63. Membership events
+	await exportGuildMembershipEvents(logsPlayerId, anonymizer, csvFiles);
+
+	// 64-66. Role changes
+	await exportGuildRoleChanges(logsPlayerId, anonymizer, csvFiles);
+
+	// 67. Guild descriptions
+	await exportGuildDescriptions(logsPlayerId, anonymizer, csvFiles);
 
 	// 74. Guild names (for guilds created by this player)
 	const createdGuildIds = guildsCreated.map(g => g.guildId);

@@ -25,6 +25,17 @@ import { GDPRExportCompleteNotificationPacket } from "../../../../../Lib/src/pac
 import { CrowniclesLogger } from "../../../../../Lib/src/logs/CrowniclesLogger";
 
 /**
+ * Parameters for GDPR export notification
+ */
+interface GDPRNotificationParams {
+	requesterKeycloakId: string;
+	exportedPlayerKeycloakId: string;
+	csvFiles: GDPRCsvFiles;
+	anonymizedPlayerId: string;
+	error?: string;
+}
+
+/**
  * A command that exports all GDPR-relevant player data
  * Data is anonymized: own player gets consistent hash, other players are redacted
  *
@@ -71,7 +82,13 @@ export default class ExportGDPRCommand {
 
 		if (!player) {
 			// Should not happen since we checked before, but handle it anyway
-			ExportGDPRCommand.sendNotification(requesterKeycloakId, playerKeycloakId, {}, "", "Player not found");
+			ExportGDPRCommand.sendNotification({
+				requesterKeycloakId,
+				exportedPlayerKeycloakId: playerKeycloakId,
+				csvFiles: {},
+				anonymizedPlayerId: "",
+				error: "Player not found"
+			});
 			return;
 		}
 
@@ -131,17 +148,22 @@ export default class ExportGDPRCommand {
 			CrowniclesLogger.info(`GDPR export complete for player ${anonymizer.getAnonymizedPlayerId()}, ${fileCount} files generated`);
 
 			// Send notification with the result
-			ExportGDPRCommand.sendNotification(requesterKeycloakId, playerKeycloakId, csvFiles, anonymizer.getAnonymizedPlayerId());
+			ExportGDPRCommand.sendNotification({
+				requesterKeycloakId,
+				exportedPlayerKeycloakId: playerKeycloakId,
+				csvFiles,
+				anonymizedPlayerId: anonymizer.getAnonymizedPlayerId()
+			});
 		}
 		catch (error) {
 			CrowniclesLogger.errorWithObj(`GDPR export failed for player ${anonymizer.getAnonymizedPlayerId()}`, error);
-			ExportGDPRCommand.sendNotification(
+			ExportGDPRCommand.sendNotification({
 				requesterKeycloakId,
-				playerKeycloakId,
-				{},
-				anonymizer.getAnonymizedPlayerId(),
-				error instanceof Error ? error.message : "Unknown error during export"
-			);
+				exportedPlayerKeycloakId: playerKeycloakId,
+				csvFiles: {},
+				anonymizedPlayerId: anonymizer.getAnonymizedPlayerId(),
+				error: error instanceof Error ? error.message : "Unknown error during export"
+			});
 		}
 	}
 
@@ -156,20 +178,14 @@ export default class ExportGDPRCommand {
 	/**
 	 * Send the GDPR export result as a notification
 	 */
-	private static sendNotification(
-		requesterKeycloakId: string,
-		exportedPlayerKeycloakId: string,
-		csvFiles: GDPRCsvFiles,
-		anonymizedPlayerId: string,
-		error?: string
-	): void {
+	private static sendNotification(params: GDPRNotificationParams): void {
 		PacketUtils.sendNotifications([
 			makePacket(GDPRExportCompleteNotificationPacket, {
-				keycloakId: requesterKeycloakId,
-				exportedPlayerKeycloakId,
-				csvFiles,
-				anonymizedPlayerId,
-				error
+				keycloakId: params.requesterKeycloakId,
+				exportedPlayerKeycloakId: params.exportedPlayerKeycloakId,
+				csvFiles: params.csvFiles,
+				anonymizedPlayerId: params.anonymizedPlayerId,
+				error: params.error
 			})
 		]);
 	}
