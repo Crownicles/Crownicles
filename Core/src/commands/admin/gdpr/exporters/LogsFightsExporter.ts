@@ -8,18 +8,29 @@ import { LogsPveFightsResults } from "../../../../core/database/logs/models/Logs
 import { LogsPveFightsActionsUsed } from "../../../../core/database/logs/models/LogsPveFightsActionsUsed";
 import { Op } from "sequelize";
 
+type WinnerResult = "me" | "opponent" | "draw";
+
 /**
- * Exports fights data from logs database (files 45-48)
+ * Determine the winner result from the perspective of a specific player
  */
-export async function exportLogsFights(
+function getWinnerResult(winner: number, myPosition: 1 | 2): WinnerResult {
+	if (winner === myPosition) {
+		return "me";
+	}
+	if (winner !== 0 && winner !== myPosition) {
+		return "opponent";
+	}
+	return "draw";
+}
+
+/**
+ * Fetches and exports PvP fights where the player was initiator or opponent
+ */
+async function exportPvpFights(
 	logsPlayerId: number,
 	anonymizer: GDPRAnonymizer,
 	csvFiles: GDPRCsvFiles
-): Promise<void> {
-	/*
-	 * 45. PvP Fights (where player was initiator OR opponent)
-	 * Use fetchWithPagination because we need the fight IDs for actions query
-	 */
+): Promise<number[]> {
 	const fightsAsInitiator = await fetchWithPagination(
 		LogsFightsResults,
 		{ fightInitiatorId: logsPlayerId },
@@ -31,11 +42,12 @@ export async function exportLogsFights(
 			myPoints: f.fightInitiatorPoints,
 			opponentPoints: f.player2Points,
 			turns: f.turn,
-			winner: f.winner === 1 ? "me" : f.winner === 2 ? "opponent" : "draw",
+			winner: getWinnerResult(f.winner, 1),
 			friendly: f.friendly,
 			date: f.date
 		})
 	);
+
 	const fightsAsOpponent = await fetchWithPagination(
 		LogsFightsResults,
 		{ player2Id: logsPlayerId },
@@ -47,31 +59,46 @@ export async function exportLogsFights(
 			myPoints: f.player2Points,
 			opponentPoints: f.fightInitiatorPoints,
 			turns: f.turn,
-			winner: f.winner === 2 ? "me" : f.winner === 1 ? "opponent" : "draw",
+			winner: getWinnerResult(f.winner, 2),
 			friendly: f.friendly,
 			date: f.date
 		})
 	);
+
 	const allFights = [...fightsAsInitiator, ...fightsAsOpponent];
 	if (allFights.length > 0) {
 		csvFiles["logs/45_pvp_fights.csv"] = toCSV(allFights);
 	}
 
-	/*
-	 * 46. Fight actions used (for player's fights)
-	 * Keep findAll with Op.in since IDs are already filtered
-	 */
-	const fightIds = [...new Set([...fightsAsInitiator.map(f => f.id), ...fightsAsOpponent.map(f => f.id)])];
-	if (fightIds.length > 0) {
-		const fightActions = await LogsFightsActionsUsed.findAll({ where: { fightId: { [Op.in]: fightIds } } });
-		if (fightActions.length > 0) {
-			csvFiles["logs/46_pvp_fight_actions.csv"] = toCSV(fightActions.map(a => ({
-				fightId: a.fightId, actionId: a.actionId, player: a.player, count: a.count
-			})));
-		}
+	return [...new Set([...fightsAsInitiator.map(f => f.id), ...fightsAsOpponent.map(f => f.id)])];
+}
+
+/**
+ * Exports PvP fight actions for the given fight IDs
+ */
+async function exportPvpFightActions(
+	fightIds: number[],
+	csvFiles: GDPRCsvFiles
+): Promise<void> {
+	if (fightIds.length === 0) {
+		return;
 	}
 
-	// 47. PvE Fights - use streamToCSV for direct CSV output
+	const fightActions = await LogsFightsActionsUsed.findAll({ where: { fightId: { [Op.in]: fightIds } } });
+	if (fightActions.length > 0) {
+		csvFiles["logs/46_pvp_fight_actions.csv"] = toCSV(fightActions.map(a => ({
+			fightId: a.fightId, actionId: a.actionId, player: a.player, count: a.count
+		})));
+	}
+}
+
+/**
+ * Exports PvE fights and their actions
+ */
+async function exportPveFights(
+	logsPlayerId: number,
+	csvFiles: GDPRCsvFiles
+): Promise<void> {
 	const pveFightsCsv = await streamToCSV(
 		LogsPveFightsResults,
 		{ playerId: logsPlayerId },
@@ -87,19 +114,37 @@ export async function exportLogsFights(
 		csvFiles["logs/47_pve_fights.csv"] = pveFightsCsv;
 	}
 
-	// 48. PvE fight actions - need to fetch PvE fight IDs first
+	// Fetch PvE fight IDs for actions query
 	const pveFightIds = await fetchWithPagination(
 		LogsPveFightsResults,
 		{ playerId: logsPlayerId },
 		f => f.id
 	);
-	if (pveFightIds.length > 0) {
-		// Keep findAll with Op.in since IDs are already filtered
-		const pveActions = await LogsPveFightsActionsUsed.findAll({ where: { pveFightId: { [Op.in]: pveFightIds } } });
-		if (pveActions.length > 0) {
-			csvFiles["logs/48_pve_fight_actions.csv"] = toCSV(pveActions.map(a => ({
-				pveFightId: a.pveFightId, actionId: a.actionId, count: a.count
-			})));
-		}
+
+	if (pveFightIds.length === 0) {
+		return;
 	}
+
+	const pveActions = await LogsPveFightsActionsUsed.findAll({ where: { pveFightId: { [Op.in]: pveFightIds } } });
+	if (pveActions.length > 0) {
+		csvFiles["logs/48_pve_fight_actions.csv"] = toCSV(pveActions.map(a => ({
+			pveFightId: a.pveFightId, actionId: a.actionId, count: a.count
+		})));
+	}
+}
+
+/**
+ * Exports fights data from logs database (files 45-48)
+ */
+export async function exportLogsFights(
+	logsPlayerId: number,
+	anonymizer: GDPRAnonymizer,
+	csvFiles: GDPRCsvFiles
+): Promise<void> {
+	// 45-46. PvP Fights and actions
+	const fightIds = await exportPvpFights(logsPlayerId, anonymizer, csvFiles);
+	await exportPvpFightActions(fightIds, csvFiles);
+
+	// 47-48. PvE Fights and actions
+	await exportPveFights(logsPlayerId, csvFiles);
 }

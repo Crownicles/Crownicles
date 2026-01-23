@@ -23,133 +23,66 @@ import { LogsPlayersVotes } from "../../../../core/database/logs/models/LogsPlay
 import { LogsPlayersDailies } from "../../../../core/database/logs/models/LogsPlayersDailies";
 
 /**
- * Exports player stats history from logs database (files 15-34)
+ * Helper to export a stat with value and reason
  */
-export async function exportLogsPlayerStats(
+async function exportStatWithReason<T extends {
+	value: number; reason: string; date: Date;
+}>(
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	model: any,
 	logsPlayerId: number,
+	fileName: string,
 	csvFiles: GDPRCsvFiles
 ): Promise<void> {
-	// 15. Score history
-	const scoreHistoryCsv = await streamToCSV(
-		LogsPlayersScore,
+	const csv = await streamToCSV(
+		model,
 		{ playerId: logsPlayerId },
-		s => ({
+		(s: T) => ({
 			value: s.value, reason: s.reason, date: s.date
 		})
 	);
-	if (scoreHistoryCsv) {
-		csvFiles["logs/15_score_history.csv"] = scoreHistoryCsv;
+	if (csv) {
+		csvFiles[fileName] = csv;
 	}
+}
 
-	// 16. Level history
-	const levelHistoryCsv = await streamToCSV(
+/**
+ * Exports core player stats (score, level, experience, money, health, energy)
+ */
+async function exportCoreStats(logsPlayerId: number, csvFiles: GDPRCsvFiles): Promise<void> {
+	await exportStatWithReason(LogsPlayersScore, logsPlayerId, "logs/15_score_history.csv", csvFiles);
+
+	const levelCsv = await streamToCSV(
 		LogsPlayersLevel,
 		{ playerId: logsPlayerId },
 		l => ({
 			level: l.level, date: l.date
 		})
 	);
-	if (levelHistoryCsv) {
-		csvFiles["logs/16_level_history.csv"] = levelHistoryCsv;
+	if (levelCsv) {
+		csvFiles["logs/16_level_history.csv"] = levelCsv;
 	}
 
-	// 17. Experience history
-	const expHistoryCsv = await streamToCSV(
-		LogsPlayersExperience,
-		{ playerId: logsPlayerId },
-		e => ({
-			value: e.value, reason: e.reason, date: e.date
-		})
-	);
-	if (expHistoryCsv) {
-		csvFiles["logs/17_experience_history.csv"] = expHistoryCsv;
-	}
+	await exportStatWithReason(LogsPlayersExperience, logsPlayerId, "logs/17_experience_history.csv", csvFiles);
+	await exportStatWithReason(LogsPlayersMoney, logsPlayerId, "logs/18_money_history.csv", csvFiles);
+	await exportStatWithReason(LogsPlayersHealth, logsPlayerId, "logs/19_health_history.csv", csvFiles);
+	await exportStatWithReason(LogsPlayersEnergy, logsPlayerId, "logs/20_energy_history.csv", csvFiles);
+}
 
-	// 18. Money history
-	const moneyHistoryCsv = await streamToCSV(
-		LogsPlayersMoney,
-		{ playerId: logsPlayerId },
-		m => ({
-			value: m.value, reason: m.reason, date: m.date
-		})
-	);
-	if (moneyHistoryCsv) {
-		csvFiles["logs/18_money_history.csv"] = moneyHistoryCsv;
-	}
+/**
+ * Exports currency stats (gems, rage, tokens, glory points)
+ */
+async function exportCurrencyStats(logsPlayerId: number, csvFiles: GDPRCsvFiles): Promise<void> {
+	await exportStatWithReason(LogsPlayersGems, logsPlayerId, "logs/21_gems_history.csv", csvFiles);
+	await exportStatWithReason(LogsPlayersRage, logsPlayerId, "logs/22_rage_history.csv", csvFiles);
+	await exportStatWithReason(LogsPlayersTokens, logsPlayerId, "logs/23_tokens_history.csv", csvFiles);
+	await exportStatWithReason(LogsPlayersGloryPoints, logsPlayerId, "logs/24_glory_points_history.csv", csvFiles);
+}
 
-	// 19. Health history
-	const healthHistoryCsv = await streamToCSV(
-		LogsPlayersHealth,
-		{ playerId: logsPlayerId },
-		h => ({
-			value: h.value, reason: h.reason, date: h.date
-		})
-	);
-	if (healthHistoryCsv) {
-		csvFiles["logs/19_health_history.csv"] = healthHistoryCsv;
-	}
-
-	// 20. Energy history
-	const energyHistoryCsv = await streamToCSV(
-		LogsPlayersEnergy,
-		{ playerId: logsPlayerId },
-		e => ({
-			value: e.value, reason: e.reason, date: e.date
-		})
-	);
-	if (energyHistoryCsv) {
-		csvFiles["logs/20_energy_history.csv"] = energyHistoryCsv;
-	}
-
-	// 21. Gems history
-	const gemsHistoryCsv = await streamToCSV(
-		LogsPlayersGems,
-		{ playerId: logsPlayerId },
-		g => ({
-			value: g.value, reason: g.reason, date: g.date
-		})
-	);
-	if (gemsHistoryCsv) {
-		csvFiles["logs/21_gems_history.csv"] = gemsHistoryCsv;
-	}
-
-	// 22. Rage history
-	const rageHistoryCsv = await streamToCSV(
-		LogsPlayersRage,
-		{ playerId: logsPlayerId },
-		r => ({
-			value: r.value, reason: r.reason, date: r.date
-		})
-	);
-	if (rageHistoryCsv) {
-		csvFiles["logs/22_rage_history.csv"] = rageHistoryCsv;
-	}
-
-	// 23. Tokens history
-	const tokensHistoryCsv = await streamToCSV(
-		LogsPlayersTokens,
-		{ playerId: logsPlayerId },
-		t => ({
-			value: t.value, reason: t.reason, date: t.date
-		})
-	);
-	if (tokensHistoryCsv) {
-		csvFiles["logs/23_tokens_history.csv"] = tokensHistoryCsv;
-	}
-
-	// 24. Glory points history
-	const gloryHistoryCsv = await streamToCSV(
-		LogsPlayersGloryPoints,
-		{ playerId: logsPlayerId },
-		g => ({
-			value: g.value, reason: g.reason, date: g.date
-		})
-	);
-	if (gloryHistoryCsv) {
-		csvFiles["logs/24_glory_points_history.csv"] = gloryHistoryCsv;
-	}
-
-	// 25. Class changes
+/**
+ * Exports movement and class changes
+ */
+async function exportMovementStats(logsPlayerId: number, csvFiles: GDPRCsvFiles): Promise<void> {
 	const classChangesCsv = await streamToCSV(
 		LogsPlayersClassChanges,
 		{ playerId: logsPlayerId },
@@ -161,7 +94,6 @@ export async function exportLogsPlayerStats(
 		csvFiles["logs/25_class_changes.csv"] = classChangesCsv;
 	}
 
-	// 26. Travels
 	const travelsCsv = await streamToCSV(
 		LogsPlayersTravels,
 		{ playerId: logsPlayerId },
@@ -173,7 +105,6 @@ export async function exportLogsPlayerStats(
 		csvFiles["logs/26_travels.csv"] = travelsCsv;
 	}
 
-	// 27. Teleportations
 	const teleportationsCsv = await streamToCSV(
 		LogsPlayersTeleportations,
 		{ playerId: logsPlayerId },
@@ -185,7 +116,6 @@ export async function exportLogsPlayerStats(
 		csvFiles["logs/27_teleportations.csv"] = teleportationsCsv;
 	}
 
-	// 28. Timewarps
 	const timewarpsCsv = await streamToCSV(
 		LogsPlayersTimewarps,
 		{ playerId: logsPlayerId },
@@ -196,8 +126,12 @@ export async function exportLogsPlayerStats(
 	if (timewarpsCsv) {
 		csvFiles["logs/28_timewarps.csv"] = timewarpsCsv;
 	}
+}
 
-	// 29. Possibilities (event choices)
+/**
+ * Exports events and alterations
+ */
+async function exportEventsAndAlterations(logsPlayerId: number, csvFiles: GDPRCsvFiles): Promise<void> {
 	const possibilitiesCsv = await streamToCSV(
 		LogsPlayersPossibilities,
 		{ playerId: logsPlayerId },
@@ -209,7 +143,6 @@ export async function exportLogsPlayerStats(
 		csvFiles["logs/29_event_possibilities.csv"] = possibilitiesCsv;
 	}
 
-	// 30. Small events seen
 	const smallEventsCsv = await streamToCSV(
 		LogsPlayersSmallEvents,
 		{ playerId: logsPlayerId },
@@ -221,7 +154,6 @@ export async function exportLogsPlayerStats(
 		csvFiles["logs/30_small_events.csv"] = smallEventsCsv;
 	}
 
-	// 31. Standard alterations
 	const standardAlterationsCsv = await streamToCSV(
 		LogsPlayersStandardAlterations,
 		{ playerId: logsPlayerId },
@@ -233,7 +165,6 @@ export async function exportLogsPlayerStats(
 		csvFiles["logs/31_standard_alterations.csv"] = standardAlterationsCsv;
 	}
 
-	// 32. Occupied alterations
 	const occupiedAlterationsCsv = await streamToCSV(
 		LogsPlayersOccupiedAlterations,
 		{ playerId: logsPlayerId },
@@ -244,8 +175,12 @@ export async function exportLogsPlayerStats(
 	if (occupiedAlterationsCsv) {
 		csvFiles["logs/32_occupied_alterations.csv"] = occupiedAlterationsCsv;
 	}
+}
 
-	// 33. Votes
+/**
+ * Exports daily activities (votes, dailies)
+ */
+async function exportDailyActivities(logsPlayerId: number, csvFiles: GDPRCsvFiles): Promise<void> {
 	const votesCsv = await streamToCSV(
 		LogsPlayersVotes,
 		{ playerId: logsPlayerId },
@@ -255,7 +190,6 @@ export async function exportLogsPlayerStats(
 		csvFiles["logs/33_votes.csv"] = votesCsv;
 	}
 
-	// 34. Dailies
 	const dailiesCsv = await streamToCSV(
 		LogsPlayersDailies,
 		{ playerId: logsPlayerId },
@@ -266,4 +200,27 @@ export async function exportLogsPlayerStats(
 	if (dailiesCsv) {
 		csvFiles["logs/34_dailies.csv"] = dailiesCsv;
 	}
+}
+
+/**
+ * Exports player stats history from logs database (files 15-34)
+ */
+export async function exportLogsPlayerStats(
+	logsPlayerId: number,
+	csvFiles: GDPRCsvFiles
+): Promise<void> {
+	// 15-20. Core stats (score, level, experience, money, health, energy)
+	await exportCoreStats(logsPlayerId, csvFiles);
+
+	// 21-24. Currency stats (gems, rage, tokens, glory points)
+	await exportCurrencyStats(logsPlayerId, csvFiles);
+
+	// 25-28. Movement and class changes
+	await exportMovementStats(logsPlayerId, csvFiles);
+
+	// 29-32. Events and alterations
+	await exportEventsAndAlterations(logsPlayerId, csvFiles);
+
+	// 33-34. Daily activities
+	await exportDailyActivities(logsPlayerId, csvFiles);
 }
