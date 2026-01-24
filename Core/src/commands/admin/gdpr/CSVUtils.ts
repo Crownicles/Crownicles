@@ -118,8 +118,9 @@ export async function fetchWithPagination<T extends Model, R>(
 ): Promise<R[]> {
 	const allData: R[] = [];
 	let offset = 0;
+	let hasMoreData = true;
 
-	while (true) {
+	while (hasMoreData) {
 		const batch = await model.findAll({
 			where,
 			limit: BATCH_SIZE,
@@ -127,14 +128,15 @@ export async function fetchWithPagination<T extends Model, R>(
 		});
 
 		if (batch.length === 0) {
-			break;
+			hasMoreData = false;
 		}
+		else {
+			allData.push(...batch.map(transform));
+			offset += BATCH_SIZE;
 
-		allData.push(...batch.map(transform));
-		offset += BATCH_SIZE;
-
-		// Yield to event loop after each batch to prevent blocking
-		await yieldToEventLoop();
+			// Yield to event loop after each batch to prevent blocking
+			await yieldToEventLoop();
+		}
 	}
 
 	return allData;
@@ -168,8 +170,9 @@ export async function streamToCSV<T extends Model>(
 	const csvRows: string[] = [];
 	let headers: string[] | null = null;
 	let offset = 0;
+	let hasMoreData = true;
 
-	while (true) {
+	while (hasMoreData) {
 		const batch = await model.findAll({
 			where,
 			limit: BATCH_SIZE,
@@ -177,24 +180,25 @@ export async function streamToCSV<T extends Model>(
 		});
 
 		if (batch.length === 0) {
-			break;
+			hasMoreData = false;
 		}
+		else {
+			for (const row of batch) {
+				const data = transform(row);
 
-		for (const row of batch) {
-			const data = transform(row);
+				// Set headers from first row
+				if (!headers) {
+					headers = columns ?? Object.keys(data);
+					csvRows.push(headers.join(","));
+				}
 
-			// Set headers from first row
-			if (!headers) {
-				headers = columns ?? Object.keys(data);
-				csvRows.push(headers.join(","));
+				csvRows.push(recordToCsvRow(data, headers));
 			}
+			offset += BATCH_SIZE;
 
-			csvRows.push(recordToCsvRow(data, headers));
+			// Yield to event loop after each batch
+			await yieldToEventLoop();
 		}
-		offset += BATCH_SIZE;
-
-		// Yield to event loop after each batch
-		await yieldToEventLoop();
 	}
 
 	return csvRows.join("\n");
