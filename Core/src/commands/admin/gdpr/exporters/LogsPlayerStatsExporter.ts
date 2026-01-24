@@ -27,7 +27,7 @@ import { LogsPlayersDailies } from "../../../../core/database/logs/models/LogsPl
  * Creates a where clause for player ID lookup
  */
 function playerIdWhere(logsPlayerId: number): WhereOptions {
-	return playerIdWhere(logsPlayerId);
+	return { playerId: logsPlayerId };
 }
 
 /**

@@ -123,8 +123,7 @@ export async function fetchWithPagination<T extends Model, R>(
 		const batch = await model.findAll({
 			where,
 			limit: BATCH_SIZE,
-			offset,
-			order: [["id", "ASC"]]
+			offset
 		});
 
 		if (batch.length === 0) {
@@ -174,8 +173,7 @@ export async function streamToCSV<T extends Model>(
 		const batch = await model.findAll({
 			where,
 			limit: BATCH_SIZE,
-			offset,
-			order: [["id", "ASC"]]
+			offset
 		});
 
 		if (batch.length === 0) {

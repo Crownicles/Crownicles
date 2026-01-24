@@ -2,6 +2,7 @@ import {
 	ExecuteTestCommandLike, ITestCommand, TypeKey
 } from "../../../../core/CommandsTest";
 import Player from "../../../../core/database/game/models/Player";
+import { LogsPlayers } from "../../../../core/database/logs/models/LogsPlayers";
 
 export const commandInfo: ITestCommand = {
 	name: "claimscore",
@@ -10,6 +11,21 @@ export const commandInfo: ITestCommand = {
 	typeWaited: { score: TypeKey.INTEGER },
 	description: "Associe un joueur (par score) à votre keycloakId, ou crée un keycloakId basé sur le discordId fourni."
 };
+
+/**
+ * Update keycloakId in logs database if the old keycloakId exists there
+ */
+async function updateLogsKeycloakId(oldKeycloakId: string | null, newKeycloakId: string): Promise<boolean> {
+	if (!oldKeycloakId) {
+		return false;
+	}
+	const logsPlayer = await LogsPlayers.findOne({ where: { keycloakId: oldKeycloakId } });
+	if (logsPlayer) {
+		await LogsPlayers.update({ keycloakId: newKeycloakId }, { where: { keycloakId: oldKeycloakId } });
+		return true;
+	}
+	return false;
+}
 
 /**
  * Claim a player by score, optionally linking to a specific Discord ID
@@ -45,12 +61,17 @@ const claimScoreTestCommand: ExecuteTestCommandLike = async (player, args) => {
 		 * The keycloakId itself should be a UUID, but we use a deterministic fake one.
 		 */
 		const fakeKeycloakId = `discord-${discordId}`;
+
+		// Update logs database first
+		const logsUpdated = await updateLogsKeycloakId(oldKeycloakId, fakeKeycloakId);
+
 		targetPlayer.keycloakId = fakeKeycloakId;
 		await targetPlayer.save();
 
 		return `✅ Joueur #${targetPlayer.id} (score: ${targetScore}) lié au Discord ${discordId} !\n`
 			+ `Nouveau keycloakId: ${fakeKeycloakId}\n`
 			+ `Ancien keycloakId: ${oldKeycloakId ?? "null"}\n`
+			+ `Logs mis à jour: ${logsUpdated ? "oui" : "non (ancien keycloak non trouvé dans logs)"}\n`
 			+ `⚠️ Ce lien est local uniquement (pas dans Keycloak).`;
 	}
 
@@ -60,6 +81,9 @@ const claimScoreTestCommand: ExecuteTestCommandLike = async (player, args) => {
 	}
 
 	const myKeycloakId = player.keycloakId;
+
+	// Update logs database - transfer target's logs to my keycloakId
+	const logsUpdated = await updateLogsKeycloakId(oldKeycloakId, myKeycloakId);
 
 	// Remove keycloakId from current player (to avoid duplicates)
 	player.keycloakId = `old-${player.id}-${Date.now()}`;
@@ -71,6 +95,7 @@ const claimScoreTestCommand: ExecuteTestCommandLike = async (player, args) => {
 
 	return `✅ Vous contrôlez maintenant le joueur #${targetPlayer.id} (score: ${targetScore}) !\n`
 		+ `Ancien keycloakId de la cible: ${oldKeycloakId ?? "null"}\n`
+		+ `Logs mis à jour: ${logsUpdated ? "oui" : "non (ancien keycloak non trouvé dans logs)"}\n`
 		+ `Votre ancien joueur (#${player.id}) a été dissocié.\n`
 		+ `⚠️ Relancez une commande pour charger votre nouveau profil.`;
 };
