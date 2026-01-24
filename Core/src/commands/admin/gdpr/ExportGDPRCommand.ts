@@ -45,10 +45,21 @@ interface GDPRNotificationParams {
  * The result is sent as a DM to the admin who requested the export.
  */
 export default class ExportGDPRCommand {
+	/**
+	 * Verifies that the user has admin rights to execute this command
+	 * @param context The packet context containing user information
+	 * @returns True if the user has admin rights, false otherwise
+	 */
 	static verifyRights(context: PacketContext): boolean {
 		return context.rightGroups?.includes(RightGroup.ADMIN) ?? false;
 	}
 
+	/**
+	 * Execute the GDPR export command
+	 * Starts the export in background and responds immediately
+	 * @param response Array to push response packets to
+	 * @param packet The request packet containing player and requester keycloakIds
+	 */
 	@adminCommand(CommandExportGDPRReq, ExportGDPRCommand.verifyRights)
 	async execute(response: CrowniclesPacket[], packet: CommandExportGDPRReq): Promise<void> {
 		const player = await Players.getByKeycloakId(packet.keycloakId);
