@@ -30,9 +30,7 @@ import { DailyBonusNotificationPacket } from "../../../Lib/src/packets/notificat
 import { ExpeditionFinishedNotificationPacket } from "../../../Lib/src/packets/notifications/ExpeditionFinishedNotificationPacket";
 import { GDPRExportCompleteNotificationPacket } from "../../../Lib/src/packets/notifications/GDPRExportCompleteNotificationPacket";
 import { SexTypeShort } from "../../../Lib/src/constants/StringConstants";
-
-// skipcq: JS-C1003 - archiver does not expose itself as an ES Module.
-const archiver = require("archiver") as typeof import("archiver");
+import archiver from "archiver";
 
 export abstract class NotificationsHandler {
 	/**
