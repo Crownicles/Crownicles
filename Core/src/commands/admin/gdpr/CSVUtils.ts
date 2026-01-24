@@ -151,28 +151,33 @@ function recordToCsvRow(data: Record<string, unknown>, headers: string[]): strin
 }
 
 /**
+ * Context for CSV batch processing
+ */
+interface CSVBatchContext<T extends Model> {
+	batch: T[];
+	transform: (row: T) => Record<string, unknown>;
+	csvRows: string[];
+	headers: string[] | null;
+	columns?: string[];
+}
+
+/**
  * Process a batch of model rows and add them to CSV rows
  * Extracts the nested logic from streamToCSV to reduce complexity
  */
-function processBatchToCSV<T extends Model>(
-	batch: T[],
-	transform: (row: T) => Record<string, unknown>,
-	csvRows: string[],
-	headers: string[] | null,
-	columns?: string[]
-): string[] {
-	let currentHeaders = headers;
+function processBatchToCSV<T extends Model>(context: CSVBatchContext<T>): string[] {
+	let currentHeaders = context.headers;
 
-	for (const row of batch) {
-		const data = transform(row);
+	for (const row of context.batch) {
+		const data = context.transform(row);
 
 		// Set headers from first row
 		if (!currentHeaders) {
-			currentHeaders = columns ?? Object.keys(data);
-			csvRows.push(currentHeaders.join(","));
+			currentHeaders = context.columns ?? Object.keys(data);
+			context.csvRows.push(currentHeaders.join(","));
 		}
 
-		csvRows.push(recordToCsvRow(data, currentHeaders));
+		context.csvRows.push(recordToCsvRow(data, currentHeaders));
 	}
 
 	return currentHeaders ?? [];
@@ -212,7 +217,9 @@ export async function streamToCSV<T extends Model>(
 			continue;
 		}
 
-		headers = processBatchToCSV(batch, transform, csvRows, headers, columns);
+		headers = processBatchToCSV({
+			batch, transform, csvRows, headers, columns
+		});
 		offset += BATCH_SIZE;
 
 		// Yield to event loop after each batch
