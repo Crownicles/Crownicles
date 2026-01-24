@@ -68,11 +68,15 @@ const claimScoreTestCommand: ExecuteTestCommandLike = async (player, args) => {
 		targetPlayer.keycloakId = fakeKeycloakId;
 		await targetPlayer.save();
 
-		return `✅ Joueur #${targetPlayer.id} (score: ${targetScore}) lié au Discord ${discordId} !\n`
-			+ `Nouveau keycloakId: ${fakeKeycloakId}\n`
-			+ `Ancien keycloakId: ${oldKeycloakId ?? "null"}\n`
-			+ `Logs mis à jour: ${logsUpdated ? "oui" : "non (ancien keycloak non trouvé dans logs)"}\n`
-			+ `⚠️ Ce lien est local uniquement (pas dans Keycloak).`;
+		return `✅ Joueur #${targetPlayer.id} (score: ${targetScore}) lié au Discord ${discordId} !
+`
+			+ `Nouveau keycloakId: ${fakeKeycloakId}
+`
+			+ `Ancien keycloakId: ${oldKeycloakId ?? "null"}
+`
+			+ `Logs mis à jour: ${logsUpdated ? "oui" : "non (ancien keycloak non trouvé dans logs)"}
+`
+			+ "⚠️ Ce lien est local uniquement (pas dans Keycloak).";
 	}
 
 	// No discord ID provided - transfer current session to this player
@@ -93,11 +97,15 @@ const claimScoreTestCommand: ExecuteTestCommandLike = async (player, args) => {
 	targetPlayer.keycloakId = myKeycloakId;
 	await targetPlayer.save();
 
-	return `✅ Vous contrôlez maintenant le joueur #${targetPlayer.id} (score: ${targetScore}) !\n`
-		+ `Ancien keycloakId de la cible: ${oldKeycloakId ?? "null"}\n`
-		+ `Logs mis à jour: ${logsUpdated ? "oui" : "non (ancien keycloak non trouvé dans logs)"}\n`
-		+ `Votre ancien joueur (#${player.id}) a été dissocié.\n`
-		+ `⚠️ Relancez une commande pour charger votre nouveau profil.`;
+	return `✅ Vous contrôlez maintenant le joueur #${targetPlayer.id} (score: ${targetScore}) !
+`
+		+ `Ancien keycloakId de la cible: ${oldKeycloakId ?? "null"}
+`
+		+ `Logs mis à jour: ${logsUpdated ? "oui" : "non (ancien keycloak non trouvé dans logs)"}
+`
+		+ `Votre ancien joueur (#${player.id}) a été dissocié.
+`
+		+ "⚠️ Relancez une commande pour charger votre nouveau profil.";
 };
 
 commandInfo.execute = claimScoreTestCommand;
