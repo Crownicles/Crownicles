@@ -1,6 +1,7 @@
 import {
 	streamToCSV, GDPRCsvFiles
 } from "../CSVUtils";
+import { WhereOptions } from "sequelize";
 import { LogsPlayersScore } from "../../../../core/database/logs/models/LogsPlayersScore";
 import { LogsPlayersLevel } from "../../../../core/database/logs/models/LogsPlayersLevel";
 import { LogsPlayersExperience } from "../../../../core/database/logs/models/LogsPlayersExperience";
@@ -23,10 +24,17 @@ import { LogsPlayersVotes } from "../../../../core/database/logs/models/LogsPlay
 import { LogsPlayersDailies } from "../../../../core/database/logs/models/LogsPlayersDailies";
 
 /**
+ * Creates a where clause for player ID lookup
+ */
+function playerIdWhere(logsPlayerId: number): WhereOptions {
+	return playerIdWhere(logsPlayerId);
+}
+
+/**
  * Helper to export a stat with value and reason
  */
 async function exportStatWithReason<T extends {
-	value: number; reason: string; date: Date;
+	value: number; reason: string; date: number;
 }>(
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	model: any,
@@ -36,7 +44,7 @@ async function exportStatWithReason<T extends {
 ): Promise<void> {
 	const csv = await streamToCSV(
 		model,
-		{ playerId: logsPlayerId },
+		playerIdWhere(logsPlayerId),
 		(s: T) => ({
 			value: s.value, reason: s.reason, date: s.date
 		})
@@ -54,7 +62,7 @@ async function exportCoreStats(logsPlayerId: number, csvFiles: GDPRCsvFiles): Pr
 
 	const levelCsv = await streamToCSV(
 		LogsPlayersLevel,
-		{ playerId: logsPlayerId },
+		playerIdWhere(logsPlayerId),
 		l => ({
 			level: l.level, date: l.date
 		})
@@ -85,7 +93,7 @@ async function exportCurrencyStats(logsPlayerId: number, csvFiles: GDPRCsvFiles)
 async function exportMovementStats(logsPlayerId: number, csvFiles: GDPRCsvFiles): Promise<void> {
 	const classChangesCsv = await streamToCSV(
 		LogsPlayersClassChanges,
-		{ playerId: logsPlayerId },
+		playerIdWhere(logsPlayerId),
 		c => ({
 			classId: c.classId, date: c.date
 		})
@@ -96,7 +104,7 @@ async function exportMovementStats(logsPlayerId: number, csvFiles: GDPRCsvFiles)
 
 	const travelsCsv = await streamToCSV(
 		LogsPlayersTravels,
-		{ playerId: logsPlayerId },
+		playerIdWhere(logsPlayerId),
 		t => ({
 			mapLinkId: t.mapLinkId, date: t.date
 		})
@@ -107,7 +115,7 @@ async function exportMovementStats(logsPlayerId: number, csvFiles: GDPRCsvFiles)
 
 	const teleportationsCsv = await streamToCSV(
 		LogsPlayersTeleportations,
-		{ playerId: logsPlayerId },
+		playerIdWhere(logsPlayerId),
 		t => ({
 			originMapLinkId: t.originMapLinkId, newMapLinkId: t.newMapLinkId, date: t.date
 		})
@@ -118,7 +126,7 @@ async function exportMovementStats(logsPlayerId: number, csvFiles: GDPRCsvFiles)
 
 	const timewarpsCsv = await streamToCSV(
 		LogsPlayersTimewarps,
-		{ playerId: logsPlayerId },
+		playerIdWhere(logsPlayerId),
 		t => ({
 			time: t.time, reason: t.reason, date: t.date
 		})
@@ -134,7 +142,7 @@ async function exportMovementStats(logsPlayerId: number, csvFiles: GDPRCsvFiles)
 async function exportEventsAndAlterations(logsPlayerId: number, csvFiles: GDPRCsvFiles): Promise<void> {
 	const possibilitiesCsv = await streamToCSV(
 		LogsPlayersPossibilities,
-		{ playerId: logsPlayerId },
+		playerIdWhere(logsPlayerId),
 		p => ({
 			possibilityId: p.possibilityId, date: p.date
 		})
@@ -145,7 +153,7 @@ async function exportEventsAndAlterations(logsPlayerId: number, csvFiles: GDPRCs
 
 	const smallEventsCsv = await streamToCSV(
 		LogsPlayersSmallEvents,
-		{ playerId: logsPlayerId },
+		playerIdWhere(logsPlayerId),
 		s => ({
 			smallEventId: s.smallEventId, date: s.date
 		})
@@ -156,7 +164,7 @@ async function exportEventsAndAlterations(logsPlayerId: number, csvFiles: GDPRCs
 
 	const standardAlterationsCsv = await streamToCSV(
 		LogsPlayersStandardAlterations,
-		{ playerId: logsPlayerId },
+		playerIdWhere(logsPlayerId),
 		a => ({
 			alterationId: a.alterationId, reason: a.reason, date: a.date
 		})
@@ -167,7 +175,7 @@ async function exportEventsAndAlterations(logsPlayerId: number, csvFiles: GDPRCs
 
 	const occupiedAlterationsCsv = await streamToCSV(
 		LogsPlayersOccupiedAlterations,
-		{ playerId: logsPlayerId },
+		playerIdWhere(logsPlayerId),
 		a => ({
 			duration: a.duration, reason: a.reason, date: a.date
 		})
@@ -183,7 +191,7 @@ async function exportEventsAndAlterations(logsPlayerId: number, csvFiles: GDPRCs
 async function exportDailyActivities(logsPlayerId: number, csvFiles: GDPRCsvFiles): Promise<void> {
 	const votesCsv = await streamToCSV(
 		LogsPlayersVotes,
-		{ playerId: logsPlayerId },
+		playerIdWhere(logsPlayerId),
 		v => ({ date: v.date })
 	);
 	if (votesCsv) {
@@ -192,7 +200,7 @@ async function exportDailyActivities(logsPlayerId: number, csvFiles: GDPRCsvFile
 
 	const dailiesCsv = await streamToCSV(
 		LogsPlayersDailies,
-		{ playerId: logsPlayerId },
+		playerIdWhere(logsPlayerId),
 		d => ({
 			itemId: d.itemId, date: d.getDataValue("date" as keyof typeof d)
 		})
