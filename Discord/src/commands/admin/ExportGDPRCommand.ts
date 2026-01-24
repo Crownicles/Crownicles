@@ -65,6 +65,13 @@ async function handleExportResponse(
 	});
 }
 
+/**
+ * Handle the GDPR export slash command
+ * Validates the target user exists in Keycloak and sends export request to Core
+ * @param interaction The Discord interaction
+ * @param keycloakUser The authenticated Keycloak user (admin)
+ * @returns null (response handled via MQTT callback)
+ */
 async function getPacket(interaction: CrowniclesInteraction, keycloakUser: KeycloakUser): Promise<null> {
 	const lng = interaction.userLanguage;
 	const context = await PacketUtils.createPacketContext(interaction, keycloakUser);
@@ -78,10 +85,13 @@ async function getPacket(interaction: CrowniclesInteraction, keycloakUser: Keycl
 	// Get the target Discord ID from the command options
 	const targetDiscordId = interaction.options.getString("discordid", true);
 
+	// Defer reply early to avoid timeout on long Keycloak lookups
+	await interaction.deferReply({ ephemeral: true });
+
 	// Look up the target user in Keycloak
 	const targetUser = await KeycloakUtils.getDiscordUser(keycloakConfig, targetDiscordId, null);
 	if (targetUser.isError || !targetUser.payload.user) {
-		await interaction.reply({
+		await interaction.editReply({
 			embeds: [
 				new CrowniclesErrorEmbed(
 					interaction.user,
@@ -89,13 +99,10 @@ async function getPacket(interaction: CrowniclesInteraction, keycloakUser: Keycl
 					interaction,
 					i18n.t("commands:exportgdpr.userNotFound", { lng })
 				)
-			],
-			ephemeral: true
+			]
 		});
 		return null;
 	}
-
-	await interaction.deferReply({ ephemeral: true });
 
 	/*
 	 * Send request to Core for GDPR export
