@@ -151,6 +151,34 @@ function recordToCsvRow(data: Record<string, unknown>, headers: string[]): strin
 }
 
 /**
+ * Process a batch of model rows and add them to CSV rows
+ * Extracts the nested logic from streamToCSV to reduce complexity
+ */
+function processBatchToCSV<T extends Model>(
+	batch: T[],
+	transform: (row: T) => Record<string, unknown>,
+	csvRows: string[],
+	headers: string[] | null,
+	columns?: string[]
+): string[] {
+	let currentHeaders = headers;
+
+	for (const row of batch) {
+		const data = transform(row);
+
+		// Set headers from first row
+		if (!currentHeaders) {
+			currentHeaders = columns ?? Object.keys(data);
+			csvRows.push(currentHeaders.join(","));
+		}
+
+		csvRows.push(recordToCsvRow(data, currentHeaders));
+	}
+
+	return currentHeaders ?? [];
+}
+
+/**
  * Stream data to CSV format with pagination
  * Instead of loading all data in memory, this processes data in batches
  * and builds the CSV string incrementally
@@ -181,24 +209,14 @@ export async function streamToCSV<T extends Model>(
 
 		if (batch.length === 0) {
 			hasMoreData = false;
+			continue;
 		}
-		else {
-			for (const row of batch) {
-				const data = transform(row);
 
-				// Set headers from first row
-				if (!headers) {
-					headers = columns ?? Object.keys(data);
-					csvRows.push(headers.join(","));
-				}
+		headers = processBatchToCSV(batch, transform, csvRows, headers, columns);
+		offset += BATCH_SIZE;
 
-				csvRows.push(recordToCsvRow(data, headers));
-			}
-			offset += BATCH_SIZE;
-
-			// Yield to event loop after each batch
-			await yieldToEventLoop();
-		}
+		// Yield to event loop after each batch
+		await yieldToEventLoop();
 	}
 
 	return csvRows.join("\n");
