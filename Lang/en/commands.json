@@ -1963,6 +1963,7 @@
   "exportgdpr": {
     "title": "GDPR Export",
     "success": "The GDPR export has been generated successfully.\n\n**Anonymized player ID:** `{{anonymizedId}}`\n**Generated files:** {{fileCount}}",
+    "started": "The GDPR export has been started. You will receive the result via DM once the export is complete.",
     "userNotFound": "No player found with this Discord ID.",
     "playerNotFound": "This player does not exist in the database.",
     "error": "An error occurred during export: {{error}}",
