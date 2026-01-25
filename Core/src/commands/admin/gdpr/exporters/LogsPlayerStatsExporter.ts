@@ -22,6 +22,7 @@ import { LogsPlayersStandardAlterations } from "../../../../core/database/logs/m
 import { LogsPlayersOccupiedAlterations } from "../../../../core/database/logs/models/LogsPlayersOccupiedAlterations";
 import { LogsPlayersVotes } from "../../../../core/database/logs/models/LogsPlayersVotes";
 import { LogsPlayersDailies } from "../../../../core/database/logs/models/LogsPlayersDailies";
+import { LogsPlayersCommandsStats } from "../../../../core/database/logs/models/LogsPlayersCommandsStats";
 
 /**
  * Creates a where clause for player ID lookup
@@ -211,7 +212,28 @@ async function exportDailyActivities(logsPlayerId: number, csvFiles: GDPRCsvFile
 }
 
 /**
- * Exports player stats history from logs database (files 15-34)
+ * Exports command usage statistics (aggregated by week)
+ */
+async function exportCommandStats(logsPlayerId: number, csvFiles: GDPRCsvFiles): Promise<void> {
+	const commandStatsCsv = await streamToCSV(
+		LogsPlayersCommandsStats,
+		playerIdWhere(logsPlayerId),
+		c => ({
+			commandId: c.commandId,
+			originId: c.originId,
+			subOriginId: c.subOriginId,
+			year: c.year,
+			week: c.week,
+			count: c.getDataValue("count" as keyof typeof c)
+		})
+	);
+	if (commandStatsCsv) {
+		csvFiles["logs/75_command_stats.csv"] = commandStatsCsv;
+	}
+}
+
+/**
+ * Exports player stats history from logs database (files 15-34, 75)
  */
 export async function exportLogsPlayerStats(
 	logsPlayerId: number,
@@ -231,4 +253,7 @@ export async function exportLogsPlayerStats(
 
 	// 33-34. Daily activities
 	await exportDailyActivities(logsPlayerId, csvFiles);
+
+	// 75. Command usage statistics
+	await exportCommandStats(logsPlayerId, csvFiles);
 }
