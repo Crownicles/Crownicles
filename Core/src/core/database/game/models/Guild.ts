@@ -3,7 +3,9 @@ import {
 } from "sequelize";
 import { MissionsController } from "../../../missions/MissionsController";
 import { getFoodIndexOf } from "../../../utils/FoodUtils";
-import Player, { Players } from "./Player";
+import Player, {
+	EditValueParameters, Players
+} from "./Player";
 import {
 	GuildPet, GuildPets
 } from "./GuildPet";
@@ -111,14 +113,14 @@ export class Guild extends Model {
 
 	/**
 	 * Add experience to the guild
-	 * @param experience the experience to add
-	 * @param response the response packets
-	 * @param reason The reason of the experience change
+	 * @param parameters The parameters for adding experience
 	 */
-	public async addExperience(experience: number, response: CrowniclesPacket[], reason: NumberChangeReason): Promise<void> {
+	public async addExperience(parameters: EditValueParameters): Promise<void> {
 		if (this.isAtMaxLevel()) {
 			return;
 		}
+
+		let experience = parameters.amount;
 
 		// We assume that you cannot go level max -2 to max with 1 xp addition
 		if (this.level === GuildConstants.MAX_LEVEL - 1) {
@@ -129,9 +131,9 @@ export class Guild extends Model {
 		}
 		this.experience += experience;
 		this.setExperience(this.experience);
-		crowniclesInstance.logsDatabase.logGuildExperienceChange(this, reason)
+		crowniclesInstance.logsDatabase.logGuildExperienceChange(this, parameters.reason)
 			.then();
-		await this.levelUpIfNeeded(response);
+		await this.levelUpIfNeeded(parameters.response);
 	}
 
 	/**
@@ -239,22 +241,20 @@ export class Guild extends Model {
 
 	/**
 	 * Add guild points
-	 * @param points
-	 * @param response
-	 * @param reason
+	 * @param parameters The parameters for adding score
 	 */
-	public async addScore(points: number, response: CrowniclesPacket[], reason: NumberChangeReason): Promise<void> {
-		this.score += points;
-		if (points > 0) {
+	public async addScore(parameters: EditValueParameters): Promise<void> {
+		this.score += parameters.amount;
+		if (parameters.amount > 0) {
 			for (const member of await Players.getByGuild(this.id)) {
-				await MissionsController.update(member, response, {
+				await MissionsController.update(member, parameters.response, {
 					missionId: "guildHasPoints",
 					count: this.score,
 					set: true
 				});
 			}
 		}
-		crowniclesInstance.logsDatabase.logGuildPointsChange(this, reason)
+		crowniclesInstance.logsDatabase.logGuildPointsChange(this, parameters.reason)
 			.then();
 	}
 

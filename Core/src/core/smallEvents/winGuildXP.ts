@@ -24,7 +24,9 @@ export const smallEventFuncs: SmallEventFuncs = {
 			SmallEventConstants.GUILD_EXPERIENCE.MIN + guild.level,
 			SmallEventConstants.GUILD_EXPERIENCE.MAX + guild.level * 2
 		);
-		await guild.addExperience(xpWon, response, NumberChangeReason.SMALL_EVENT);
+		await guild.addExperience({
+			amount: xpWon, response, reason: NumberChangeReason.SMALL_EVENT
+		});
 		await guild.save();
 		response.push(makePacket(SmallEventWinGuildXPPacket, {
 			amount: xpWon,

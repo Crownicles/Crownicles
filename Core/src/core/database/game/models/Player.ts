@@ -979,12 +979,12 @@ export class Player extends Model {
 		return dateOfLastLeagueReward !== null && !(dateOfLastLeagueReward < millisecondsToSeconds(getOneDayAgo()));
 	}
 
-	public async addRage(rage: number, reason: NumberChangeReason, response: CrowniclesPacket[]): Promise<void> {
-		await this.setRage(this.rage + rage, reason);
-		if (rage > 0) {
-			await MissionsController.update(this, response, {
+	public async addRage(parameters: EditValueParameters): Promise<void> {
+		await this.setRage(this.rage + parameters.amount, parameters.reason);
+		if (parameters.amount > 0) {
+			await MissionsController.update(this, parameters.response, {
 				missionId: "gainRage",
-				count: rage
+				count: parameters.amount
 			});
 		}
 	}
@@ -1028,7 +1028,9 @@ export class Player extends Model {
 				if (guildPointsLost > playerGuild.score) {
 					guildPointsLost = playerGuild.score;
 				}
-				await playerGuild.addScore(-guildPointsLost, response, NumberChangeReason.PVE_ISLAND);
+				await playerGuild.addScore({
+					amount: -guildPointsLost, response, reason: NumberChangeReason.PVE_ISLAND
+				});
 				await playerGuild.save();
 			}
 		}

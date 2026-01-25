@@ -32,7 +32,9 @@ const guildXpTestCommand: ExecuteTestCommandLike = async (player, args, response
 	if (guild.isAtMaxLevel()) {
 		throw new Error("Erreur gxp : la guilde est déjà niveau max !");
 	}
-	await guild.addExperience(xp, response, NumberChangeReason.TEST);
+	await guild.addExperience({
+		amount: xp, response, reason: NumberChangeReason.TEST
+	});
 	await guild.save();
 	return `Votre guilde a maintenant ${args[0]} :star: !`;
 };

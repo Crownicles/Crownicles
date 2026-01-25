@@ -45,7 +45,9 @@ async function giveGuildXp(response: CrowniclesPacket[], playerId: number, price
 		const guild = (await Guilds.getById(player.guildId))!;
 
 		const xpToAdd = GuildUtils.calculateAmountOfXPToAdd(price);
-		await guild.addExperience(xpToAdd, response, NumberChangeReason.SHOP);
+		await guild.addExperience({
+			amount: xpToAdd, response, reason: NumberChangeReason.SHOP
+		});
 		await guild.save();
 
 		response.push(makePacket(CommandGuildShopGiveXp, { xp: xpToAdd }));

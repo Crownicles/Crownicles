@@ -45,9 +45,7 @@ describe("EditValueParameters consistency", () => {
 			expect(playerCode).toMatch(/addHealth\(parameters:\s*HealthEditValueParameters\)/);
 		});
 
-		// This test documents a known inconsistency - addRage uses positional params
-		// When refactored, update this test to expect EditValueParameters
-		it.skip("addRage should use EditValueParameters (TODO: refactor)", () => {
+		it("addRage should use EditValueParameters", () => {
 			expect(playerCode).toMatch(/addRage\(parameters:\s*EditValueParameters\)/);
 		});
 	});
@@ -60,13 +58,11 @@ describe("EditValueParameters consistency", () => {
 			guildCode = fs.readFileSync(guildFilePath, "utf-8");
 		});
 
-		// These tests document known inconsistencies - Guild functions use positional params
-		// When refactored, update these tests to expect EditValueParameters
-		it.skip("addExperience should use EditValueParameters (TODO: refactor)", () => {
+		it("addExperience should use EditValueParameters", () => {
 			expect(guildCode).toMatch(/addExperience\(parameters:\s*EditValueParameters\)/);
 		});
 
-		it.skip("addScore should use EditValueParameters (TODO: refactor)", () => {
+		it("addScore should use EditValueParameters", () => {
 			expect(guildCode).toMatch(/addScore\(parameters:\s*EditValueParameters\)/);
 		});
 	});

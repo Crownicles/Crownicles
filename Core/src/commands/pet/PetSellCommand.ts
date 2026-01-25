@@ -113,7 +113,9 @@ async function verifyBuyerRequirements(response: CrowniclesPacket[], sellerInfor
 async function executePetSell(collector: ReactionCollectorInstance, response: CrowniclesPacket[], sellerInformation: SellerInformation, buyer: Player): Promise<void> {
 	// Add guild XP
 	const xpToAdd = GuildUtils.calculateAmountOfXPToAdd(sellerInformation.petCost);
-	await sellerInformation.guild.addExperience(xpToAdd, response, NumberChangeReason.PET_SELL);
+	await sellerInformation.guild.addExperience({
+		amount: xpToAdd, response, reason: NumberChangeReason.PET_SELL
+	});
 
 	// Make buyer spend money
 	await buyer.spendMoney({

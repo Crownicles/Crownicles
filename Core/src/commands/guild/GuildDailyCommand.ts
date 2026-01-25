@@ -187,7 +187,9 @@ async function awardPersonalXpToMembers(guildLike: GuildLike, response: Crownicl
  */
 async function awardGuildXp(guildLike: GuildLike, response: CrowniclesPacket[], rewardPacket: CommandGuildDailyRewardPacket): Promise<void> {
 	const xpGuildWon = RandomUtils.rangedInt(GuildDailyConstants.XP, guildLike.guild.level, guildLike.guild.level * GuildDailyConstants.XP_MULTIPLIER);
-	await guildLike.guild.addExperience(xpGuildWon, response, NumberChangeReason.GUILD_DAILY);
+	await guildLike.guild.addExperience({
+		amount: xpGuildWon, response, reason: NumberChangeReason.GUILD_DAILY
+	});
 	await guildLike.guild.save();
 	rewardPacket.guildXp = xpGuildWon;
 	crowniclesInstance.logsDatabase.logGuildDaily(guildLike.guild, GuildDailyConstants.REWARD_TYPES.GUILD_XP).then();
