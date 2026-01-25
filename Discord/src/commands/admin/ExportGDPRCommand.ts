@@ -12,33 +12,31 @@ import { KeycloakUser } from "../../../../Lib/src/keycloak/KeycloakUser";
 import { PacketUtils } from "../../utils/PacketUtils";
 import CommandRequirementHandlers from "../../packetHandlers/handlers/CommandRequirementHandlers";
 import {
-	CrowniclesPacket, makePacket, PacketContext
+	makePacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { RequirementRightPacket } from "../../../../Lib/src/packets/commands/requirements/RequirementRightPacket";
-import { DiscordMQTT } from "../../bot/DiscordMQTT";
 import {
 	CommandExportGDPRReq,
 	CommandExportGDPRRes
 } from "../../../../Lib/src/packets/commands/CommandExportGDPRPacket";
+import { DiscordCache } from "../../bot/DiscordCache";
 
 /**
- * Admin command to export all GDPR data for a player
- * The export runs in background and the result is sent as a DM to the admin
+ * Handle GDPR export response packet
+ * Called by the packet handler when Core responds to the export request
  */
-async function handleExportResponse(
-	interaction: CrowniclesInteraction,
+export async function handleCommandExportGDPRRes(
 	context: PacketContext,
-	packetName: string,
-	packet: CrowniclesPacket
+	packet: CommandExportGDPRRes
 ): Promise<void> {
-	if (packetName !== CommandExportGDPRRes.name) {
+	const interaction = DiscordCache.getInteraction(context.discord!.interaction);
+	if (!interaction) {
 		return;
 	}
 
 	const lng = interaction.userLanguage;
-	const exportPacket = packet as CommandExportGDPRRes;
 
-	if (!exportPacket.started) {
+	if (!packet.started) {
 		await interaction.editReply({
 			embeds: [
 				new CrowniclesErrorEmbed(
@@ -47,7 +45,7 @@ async function handleExportResponse(
 					interaction,
 					i18n.t("commands:exportgdpr.error", {
 						lng,
-						error: exportPacket.error ?? "Unknown error"
+						error: packet.error ?? "Unknown error"
 					})
 				)
 			]
@@ -70,9 +68,9 @@ async function handleExportResponse(
  * Validates the target user exists in Keycloak and sends export request to Core
  * @param interaction The Discord interaction
  * @param keycloakUser The authenticated Keycloak user (admin)
- * @returns null (response handled via MQTT callback)
+ * @returns The export request packet or null if validation fails
  */
-async function getPacket(interaction: CrowniclesInteraction, keycloakUser: KeycloakUser): Promise<null> {
+async function getPacket(interaction: CrowniclesInteraction, keycloakUser: KeycloakUser): Promise<CommandExportGDPRReq | null> {
 	const lng = interaction.userLanguage;
 	const context = await PacketUtils.createPacketContext(interaction, keycloakUser);
 
@@ -104,21 +102,11 @@ async function getPacket(interaction: CrowniclesInteraction, keycloakUser: Keycl
 		return null;
 	}
 
-	/*
-	 * Send request to Core for GDPR export
-	 * The result will be sent as a DM to the requesting admin (keycloakUser.id)
-	 */
-	await DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse(
-		context,
-		makePacket(CommandExportGDPRReq, {
-			keycloakId: targetUser.payload.user.id,
-			requesterKeycloakId: keycloakUser.id
-		}),
-		(responseContext, responsePacketName, responsePacket) =>
-			handleExportResponse(interaction, responseContext, responsePacketName, responsePacket)
-	);
-
-	return null;
+	// Return the packet - response will be handled by ExportGDPRCommandPacketHandlers
+	return makePacket(CommandExportGDPRReq, {
+		keycloakId: targetUser.payload.user.id,
+		requesterKeycloakId: keycloakUser.id
+	});
 }
 
 export const commandInfo: ICommand = {
