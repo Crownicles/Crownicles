@@ -155,8 +155,6 @@ function getEndCallback(player: Player): EndCallback {
 
 		await applyOutcome(outcome, selectedEvent, collector.context, player, response);
 
-		await player.killIfNeeded(response, NumberChangeReason.SMALL_EVENT);
-
 		await selectedEvent.checkMissionsWitchAction(player, outcome, response);
 	};
 }

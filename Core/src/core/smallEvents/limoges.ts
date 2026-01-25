@@ -111,7 +111,6 @@ async function applyUnfavorableOutcome(
 		case SmallEventLimogesPenaltyType.HEALTH: {
 			amount = RandomUtils.rangedInt(properties.penalty.health);
 			await player.addHealth(-amount, response, NumberChangeReason.SMALL_EVENT);
-			await player.killIfNeeded(response, NumberChangeReason.SMALL_EVENT);
 			await player.save();
 			break;
 		}

@@ -422,12 +422,18 @@ export class Player extends Model {
 
 	/**
 	 * Check if we need to kill the player (mouahaha)
+	 * This method is idempotent - calling it multiple times when the player is already dead will not duplicate effects
 	 * @param response
 	 * @param reason
 	 */
 	public async killIfNeeded(response: CrowniclesPacket[], reason: NumberChangeReason): Promise<boolean> {
 		if (this.health > 0) {
 			return false;
+		}
+
+		// Check if already dead to avoid duplicate effects/packets
+		if (this.effectId === Effect.DEAD.id) {
+			return true;
 		}
 		await TravelTime.applyEffect(this, Effect.DEAD, 0, new Date(), reason);
 		const packet = makePacket(PlayerDeathPacket, {});
@@ -793,18 +799,21 @@ export class Player extends Model {
 
 	/**
 	 * Add health to the player
+	 * Note: This method automatically calls killIfNeeded after updating health
 	 * @param health
 	 * @param response
 	 * @param reason
 	 * @param missionHealthParameter
+	 * @returns true if the player was killed, false otherwise
 	 */
 	public async addHealth(health: number, response: CrowniclesPacket[], reason: NumberChangeReason, missionHealthParameter: MissionHealthParameter = {
 		overHealCountsForMission: true,
 		shouldPokeMission: true
-	}): Promise<void> {
+	}): Promise<boolean> {
 		await this.setHealth(this.health + health, response, missionHealthParameter);
 		crowniclesInstance.logsDatabase.logHealthChange(this.keycloakId, this.health, reason)
 			.then();
+		return await this.killIfNeeded(response, reason);
 	}
 
 	/**
