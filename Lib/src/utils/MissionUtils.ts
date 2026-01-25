@@ -7,7 +7,7 @@ export type FromPlaceToPlaceParams = {
 	fromMap: number; toMap: number; time: number; orderMatter: boolean;
 };
 
-export class MissionUtils {
+export abstract class MissionUtils {
 	static fromPlaceToPlaceDataFromSaveBlob(saveBlob: Buffer): FromPlaceToPlaceBlobData | null {
 		return saveBlob
 			? {

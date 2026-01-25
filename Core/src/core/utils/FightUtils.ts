@@ -3,7 +3,7 @@ import { Fighter } from "../fights/fighter/Fighter";
 /**
  * Utility functions for fight calculations
  */
-export class FightUtils {
+export abstract class FightUtils {
 	private static readonly PET_FORCE_BALANCE = {
 		COEFF_QUADRATIC: 0.005,
 		COEFF_LINEAR: 0.15

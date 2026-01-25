@@ -19,7 +19,7 @@ export class ScheduledReportNotification extends Model {
 	declare createdAt: Date;
 }
 
-export class ScheduledReportNotifications {
+export abstract class ScheduledReportNotifications {
 	static async scheduleNotification(playerId: number, keycloakId: string, mapId: number, scheduledAt: Date): Promise<void> {
 		await ScheduledReportNotification.upsert({
 			playerId,

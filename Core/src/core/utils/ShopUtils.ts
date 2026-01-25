@@ -29,7 +29,7 @@ export type ShopInformations = {
 	logger: (keycloakId: string, shopItemName: ShopItemType, amount?: number) => Promise<void>;
 };
 
-export class ShopUtils {
+export abstract class ShopUtils {
 	public static async createAndSendShopCollector(
 		context: PacketContext,
 		response: CrowniclesPacket[],

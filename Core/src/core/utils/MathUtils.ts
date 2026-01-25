@@ -1,7 +1,7 @@
 /**
  * Math functions
  */
-export class MathUtils {
+export abstract class MathUtils {
 	/**
 	 * Clamp a value between a minimum and a maximum
 	 * @param value

@@ -128,7 +128,7 @@ export class PetExpedition extends Model {
 	}
 }
 
-export class PetExpeditions {
+export abstract class PetExpeditions {
 	/**
 	 * Get the current expedition for a player (if any)
 	 */

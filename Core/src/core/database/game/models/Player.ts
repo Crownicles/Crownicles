@@ -1134,7 +1134,7 @@ export class Player extends Model {
 /**
  * This class is used to store information about players
  */
-export class Players {
+export abstract class Players {
 	/**
 	 * Get or create a player
 	 * @param keycloakId

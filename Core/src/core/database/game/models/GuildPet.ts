@@ -23,7 +23,7 @@ export class GuildPet extends Model {
 /**
  * This class is used to information about pets that are in a shelter
  */
-export class GuildPets {
+export abstract class GuildPets {
 	/**
 	 * Add pet to a shelter
 	 * @param guild

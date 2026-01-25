@@ -9,7 +9,7 @@ import {
 } from "../../../Lib/src/utils/TimeUtils";
 import { getTranslatedRiskCategoryNameWithEmoji } from "../commands/pet/expedition/ExpeditionDisplayUtils";
 
-export class MissionUtils {
+export abstract class MissionUtils {
 	/**
 	 * Get the displayable version of a mission (only the plain objective)
 	 * @param mission

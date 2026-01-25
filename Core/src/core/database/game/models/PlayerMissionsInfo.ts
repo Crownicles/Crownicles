@@ -60,7 +60,7 @@ export class PlayerMissionsInfo extends Model {
 /**
  * This class is used to treat the missions of a player
  */
-export class PlayerMissionsInfos {
+export abstract class PlayerMissionsInfos {
 	/**
 	 * Get the missions of a player
 	 * @param playerId

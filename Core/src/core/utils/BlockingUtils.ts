@@ -16,7 +16,7 @@ type BlockingInfo = {
 /**
  * Functions to call when you want to manage the blocking of a player
  */
-export class BlockingUtils {
+export abstract class BlockingUtils {
 	private static blockedPlayers: Map<string, BlockingInfo[]> = new Map();
 
 	/**

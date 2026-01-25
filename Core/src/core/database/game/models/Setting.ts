@@ -97,7 +97,7 @@ export class Setting extends Model {
 	declare createdAt: Date;
 }
 
-export class Settings {
+export abstract class Settings {
 	public static readonly SHOP_POTION = new SettingClassNumber(
 		"shopPotion",
 		(): number => PotionDataController.instance.randomShopPotion().id

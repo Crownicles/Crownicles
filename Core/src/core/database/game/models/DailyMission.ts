@@ -34,7 +34,7 @@ export class DailyMission extends Model {
 	declare createdAt: Date;
 }
 
-export class DailyMissions {
+export abstract class DailyMissions {
 	static async queryDailyMission(): Promise<DailyMission | null> {
 		return await DailyMission.findOne();
 	}

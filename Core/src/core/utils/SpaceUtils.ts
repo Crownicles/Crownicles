@@ -44,7 +44,7 @@ export interface NearEarthObject {
 	is_sentry_object: boolean;
 }
 
-export class SpaceUtils {
+export abstract class SpaceUtils {
 	private static cachedNeoFeed: NearEarthObject[] | undefined = undefined;
 
 	private static cachedNeoFeedDate: string | undefined = undefined;

@@ -5,7 +5,7 @@ import { SexTypeShort } from "../../../Lib/src/constants/StringConstants";
 import { finishInTimeDisplay } from "../../../Lib/src/utils/TimeUtils";
 import { DisplayUtils } from "./DisplayUtils";
 
-export class PetUtils {
+export abstract class PetUtils {
 	/**
 	 * Generate a short pet string containing only the pet emote and the nickname (or type name if the pet has no nickname)
 	 * @param lng
