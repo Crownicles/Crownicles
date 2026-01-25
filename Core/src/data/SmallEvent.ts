@@ -7,9 +7,9 @@ import {
 } from "../../../Lib/src/packets/CrowniclesPacket";
 
 export class SmallEvent extends Data<string> {
-	public readonly rarity: number;
+	public readonly rarity!: number;
 
-	private readonly properties: { [key: string]: unknown };
+	private readonly properties!: { [key: string]: unknown };
 
 	async execute(context: PacketContext, response: CrowniclesPacket[], player: Player): Promise<void> {
 		const smallEventFunction = SmallEventDataController.getSmallEventFunction(this.id);

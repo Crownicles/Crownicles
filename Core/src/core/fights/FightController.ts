@@ -47,7 +47,7 @@ export class FightController {
 
 	private state: FightState;
 
-	private endCallback: (fight: FightController, response: CrowniclesPacket[]) => Promise<void>;
+	private endCallback!: (fight: FightController, response: CrowniclesPacket[]) => Promise<void>;
 
 	private readonly overtimeBehavior: FightOvertimeBehavior;
 

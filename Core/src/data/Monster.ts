@@ -4,31 +4,31 @@ import { RandomUtils } from "../../../Lib/src/utils/RandomUtils";
 import { PVEConstants } from "../../../Lib/src/constants/PVEConstants";
 
 export class Monster extends Data<string> {
-	public readonly emoji: string;
+	public readonly emoji!: string;
 
-	public readonly baseEnergyValue: number;
+	public readonly baseEnergyValue!: number;
 
-	public readonly attackRatio: number;
+	public readonly attackRatio!: number;
 
-	public readonly defenseRatio: number;
+	public readonly defenseRatio!: number;
 
-	public readonly speedRatio: number;
+	public readonly speedRatio!: number;
 
-	public readonly breath: number;
+	public readonly breath!: number;
 
-	public readonly maxBreath: number;
+	public readonly maxBreath!: number;
 
-	public readonly breathRegen: number;
+	public readonly breathRegen!: number;
 
-	public readonly rewardFactor: number;
+	public readonly rewardFactor!: number;
 
-	public readonly attacks: {
+	public readonly attacks!: {
 		id: string;
 		minLevel: number;
 		weight: number;
 	}[];
 
-	public readonly maps: number[];
+	public readonly maps!: number[];
 
 
 	/**

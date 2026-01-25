@@ -320,7 +320,7 @@ export class LogsDatabase extends Database {
 	 * @param value
 	 * @param model
 	 */
-	private static async logPlayerAndNumber(keycloakId: string, valueFieldName: string, value: number, model: ModelStatic<Model<unknown, unknown>>): Promise<void> {
+	private static async logPlayerAndNumber(keycloakId: string, valueFieldName: string, value: number, model: ModelStatic<Model<object, object>>): Promise<void> {
 		const player = await LogsDatabase.findOrCreatePlayer(keycloakId);
 		if (!player) {
 			return;
@@ -338,7 +338,7 @@ export class LogsDatabase extends Database {
 	 * @param keycloakId
 	 * @param model
 	 */
-	private static async logSimplePlayerDate(keycloakId: string, model: ModelStatic<Model<unknown, unknown>>): Promise<void> {
+	private static async logSimplePlayerDate(keycloakId: string, model: ModelStatic<Model<object, object>>): Promise<void> {
 		const player = await LogsDatabase.findOrCreatePlayer(keycloakId);
 		if (!player) {
 			return;
@@ -357,7 +357,7 @@ export class LogsDatabase extends Database {
 	 * @param objective
 	 * @param model
 	 */
-	private static async logMissionChange(keycloakId: string, missionId: string, variant: number, objective: number, model: ModelStatic<Model<unknown, unknown>>): Promise<void> {
+	private static async logMissionChange(keycloakId: string, missionId: string, variant: number, objective: number, model: ModelStatic<Model<object, object>>): Promise<void> {
 		const player = await LogsDatabase.findOrCreatePlayer(keycloakId);
 		if (!player) {
 			return;
@@ -383,7 +383,7 @@ export class LogsDatabase extends Database {
 	 * @param reason
 	 * @param model
 	 */
-	private static async logNumberChange(keycloakId: string, value: number, reason: NumberChangeReason, model: ModelStatic<Model<unknown, unknown>>): Promise<void> {
+	private static async logNumberChange(keycloakId: string, value: number, reason: NumberChangeReason, model: ModelStatic<Model<object, object>>): Promise<void> {
 		const player = await LogsDatabase.findOrCreatePlayer(keycloakId);
 		if (!player) {
 			return;
@@ -803,7 +803,7 @@ export class LogsDatabase extends Database {
 				itemCategoryDatabase = LogsItemGainsPotion;
 				break;
 			default:
-				break;
+				throw new Error(`Unknown item category: ${item.categoryName}`);
 		}
 		return LogsDatabase.logItem(keycloakId, item, itemCategoryDatabase);
 	}
@@ -853,7 +853,7 @@ export class LogsDatabase extends Database {
 				itemCategoryDatabase = LogsItemSellsPotion;
 				break;
 			default:
-				break;
+				throw new Error(`Unknown item category: ${item.categoryName}`);
 		}
 		return LogsDatabase.logItem(keycloakId, item, itemCategoryDatabase);
 	}
@@ -975,6 +975,9 @@ export class LogsDatabase extends Database {
 	 */
 	public async logMissionShopBuyout(keycloakId: string, shopItem: ShopItemType): Promise<void> {
 		const logPlayer = await LogsDatabase.findOrCreatePlayer(keycloakId);
+		if (!logPlayer) {
+			return;
+		}
 		await LogsMissionShopBuyouts.create({
 			playerId: logPlayer.id,
 			shopItem,
@@ -1048,9 +1051,17 @@ export class LogsDatabase extends Database {
 	 */
 	public async logGuildElderRemove(guild: Guild, removedPlayerId: number): Promise<void> {
 		const logGuild = await LogsDatabase.findOrCreateGuild(guild);
+		const removedPlayer = await Players.getById(removedPlayerId);
+		if (!removedPlayer) {
+			return;
+		}
+		const logPlayer = await LogsDatabase.findOrCreatePlayer(removedPlayer.keycloakId);
+		if (!logPlayer) {
+			return;
+		}
 		await LogsGuildsEldersRemoves.create({
 			guildId: logGuild.id,
-			removedElder: (await LogsDatabase.findOrCreatePlayer((await Players.getById(removedPlayerId)).keycloakId)).id,
+			removedElder: logPlayer.id,
 			date: getDateLogs()
 		});
 	}
@@ -1062,10 +1073,17 @@ export class LogsDatabase extends Database {
 	 */
 	public async logGuildChiefChange(guild: Guild, newChiefId: number): Promise<void> {
 		const logGuild = await LogsDatabase.findOrCreateGuild(guild);
-		const logNewChiefId = (await LogsDatabase.findOrCreatePlayer((await Players.getById(newChiefId)).keycloakId)).id;
+		const newChief = await Players.getById(newChiefId);
+		if (!newChief) {
+			return;
+		}
+		const logNewChief = await LogsDatabase.findOrCreatePlayer(newChief.keycloakId);
+		if (!logNewChief) {
+			return;
+		}
 		await LogsGuildsChiefsChanges.create({
 			guildId: logGuild.id,
-			newChief: logNewChiefId,
+			newChief: logNewChief.id,
 			date: getDateLogs()
 		});
 	}

@@ -13,7 +13,7 @@ import {
 export class Potion extends SupportItem {
 	categoryName = "potions";
 
-	public readonly usages: number;
+	public readonly usages!: number;
 
 	public getCategory(): ItemCategory {
 		return ItemCategory.POTION;

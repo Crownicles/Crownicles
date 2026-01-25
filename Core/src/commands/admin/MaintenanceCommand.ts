@@ -12,7 +12,7 @@ import { RightGroup } from "../../../../Lib/src/types/RightGroup";
 
 export default class MaintenanceCommand {
 	@adminCommand(CommandMaintenancePacketReq, (context: PacketContext, _packet: CommandMaintenancePacketReq): boolean => {
-		return context.rightGroups?.includes(RightGroup.ADMIN) || context.rightGroups?.includes(RightGroup.MAINTENANCE);
+		return !!context.rightGroups?.includes(RightGroup.ADMIN) || !!context.rightGroups?.includes(RightGroup.MAINTENANCE);
 	})
 	execute(response: CrowniclesPacket[], packet: CommandMaintenancePacketReq): void {
 		try {

@@ -5,11 +5,11 @@ import { Data } from "./Data";
 import { MapConstants } from "../../../Lib/src/constants/MapConstants";
 
 export class MapLink extends Data<number> {
-	public readonly startMap: number;
+	public readonly startMap!: number;
 
-	public readonly endMap: number;
+	public readonly endMap!: number;
 
-	public readonly tripDuration: number;
+	public readonly tripDuration!: number;
 
 	public readonly forcedImage?: string;
 }

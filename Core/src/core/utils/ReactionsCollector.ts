@@ -48,7 +48,7 @@ export function createDefaultFilter(allowedPlayerKeycloakIds: string[]): FilterF
 const collectors: Map<string, ReactionCollectorInstance> = new Map<string, ReactionCollectorInstance>();
 
 export class ReactionCollectorInstance {
-	private id: string;
+	private id!: string;
 
 	private model: ReactionCollector;
 
@@ -70,9 +70,9 @@ export class ReactionCollectorInstance {
 
 	private readonly mainPacket: boolean;
 
-	private endedByTime: boolean;
+	private endedByTime!: boolean;
 
-	private endTimeout: NodeJS.Timeout;
+	private endTimeout!: NodeJS.Timeout;
 
 	public constructor(reactionCollector: ReactionCollector, context: PacketContext, collectorOptions: CollectorOptions, endCallback: EndCallback, collectCallback: CollectCallback = null) {
 		this.model = reactionCollector;
@@ -86,7 +86,7 @@ export class ReactionCollectorInstance {
 		this.reactionLimit = collectorOptions.reactionLimit ?? 1;
 	}
 
-	private _hasEnded: boolean;
+	private _hasEnded!: boolean;
 
 	get hasEnded(): boolean {
 		return this._hasEnded;
@@ -100,7 +100,7 @@ export class ReactionCollectorInstance {
 		return this.endedByTime;
 	}
 
-	private _creationPacket: ReactionCollectorCreationPacket;
+	private _creationPacket!: ReactionCollectorCreationPacket;
 
 	get creationPacket(): ReactionCollectorCreationPacket {
 		return this._creationPacket;

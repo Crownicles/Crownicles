@@ -13,10 +13,10 @@ export class Possibility {
 	/**
 	 * Possibility outcomes
 	 */
-	public readonly outcomes: { [key: string]: PossibilityOutcome };
+	public readonly outcomes!: { [key: string]: PossibilityOutcome };
 
 	/**
 	 * Possibility tags
 	 */
-	public readonly tags: string[];
+	public readonly tags!: string[];
 }

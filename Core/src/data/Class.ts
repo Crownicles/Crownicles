@@ -5,27 +5,27 @@ import { RandomUtils } from "../../../Lib/src/utils/RandomUtils";
 import { ClassKind } from "../../../Lib/src/types/ClassKind";
 
 export class Class extends Data<number> {
-	public readonly attack: number;
+	public readonly attack!: number;
 
-	public readonly baseBreath: number;
+	public readonly baseBreath!: number;
 
-	public readonly breathRegen: number;
+	public readonly breathRegen!: number;
 
-	public readonly classGroup: number;
+	public readonly classGroup!: number;
 
-	public readonly defense: number;
+	public readonly defense!: number;
 
-	public readonly fightPoint: number;
+	public readonly fightPoint!: number;
 
-	public readonly health: number;
+	public readonly health!: number;
 
-	public readonly maxBreath: number;
+	public readonly maxBreath!: number;
 
-	public readonly speed: number;
+	public readonly speed!: number;
 
-	public readonly fightActionsIds: string[];
+	public readonly fightActionsIds!: string[];
 
-	public readonly classKind: ClassKind;
+	public readonly classKind!: ClassKind;
 
 
 	public getClassStats(level: number): ClassStats {

@@ -18,6 +18,7 @@
     "resolveJsonModule": true,
     "target": "es6",
     "allowSyntheticDefaultImports": true,
+    "strict": true,
     "lib": [
       "ES2022",
       "dom"

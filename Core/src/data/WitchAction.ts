@@ -15,15 +15,15 @@ import { GenerateRandomItemOptions } from "../core/utils/ItemUtils";
  * Base class for all witch actions
  */
 export class WitchAction extends Data<string> {
-	public readonly isIngredient: boolean;
+	public readonly isIngredient!: boolean;
 
-	public readonly forceEffect: boolean;
+	public readonly forceEffect!: boolean;
 
-	public readonly effectName: string;
+	public readonly effectName!: string;
 
-	public readonly timePenalty: number;
+	public readonly timePenalty!: number;
 
-	private outcomeProbabilities: OutcomeProbabilities;
+	private outcomeProbabilities!: OutcomeProbabilities;
 
 	/**
 	 * Use the function stored in the witchAction ts file to generate the potion following specific characteristics
