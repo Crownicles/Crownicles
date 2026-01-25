@@ -2,7 +2,7 @@ import {
 	DataTypes, Model
 } from "sequelize";
 
-export class LogsShopBuyouts extends Model {
+export abstract class LogsShopBuyouts extends Model {
 	declare readonly playerId: number;
 
 	declare readonly shopItem: number;

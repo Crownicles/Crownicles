@@ -122,8 +122,8 @@ const EXPORTED_TABLES = {
 	"ScheduledDailyBonusNotification": "12_scheduled_notifications.csv",
 	"ScheduledReportNotification": "12_scheduled_notifications.csv",
 	"ScheduledExpeditionNotification": "12_scheduled_notifications.csv",
-	"Guild": "13_guild_membership.csv (via player.guildId)",
-	"GuildPet": "14_guild_pets.csv (via player.guildId)",
+	"Guild": "13_guild_membership.csv",
+	"GuildPet": "14_guild_pets.csv",
 
 	// ============ LOGS DATABASE - Player Stats (LogsPlayerStatsExporter) ============
 	"LogsPlayersScore": "logs/15_score_history.csv",
