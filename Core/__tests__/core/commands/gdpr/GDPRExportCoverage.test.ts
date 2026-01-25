@@ -16,6 +16,51 @@ import * as path from "path";
  * This test will fail if a new table with personal data is added without being handled.
  */
 
+// ============================================================================
+// FORBIDDEN FIELDS - These should NEVER appear in exports without anonymization
+// ============================================================================
+const FORBIDDEN_EXPORT_FIELDS = {
+	// Raw identifiers that could identify users
+	"discordId": "Discord user ID - should never be exported (Discord service only)",
+	"discordUserId": "Discord user ID - should never be exported",
+	"discordChannelId": "Discord channel ID - not personal data but should not be exported",
+	"email": "Email address - should never be exported",
+	"ipAddress": "IP address - should never be exported",
+	"ip": "IP address - should never be exported",
+
+	// Security-related fields
+	"password": "Password hash - should never be exported",
+	"passwordHash": "Password hash - should never be exported",
+	"token": "Authentication token - should never be exported",
+	"accessToken": "Access token - should never be exported",
+	"refreshToken": "Refresh token - should never be exported",
+	"secret": "Secret key - should never be exported",
+
+	// Fields that should be anonymized, not exported raw
+	// Note: keycloakId of the requesting player IS exported as a hash, but others are REDACTED
+	// These are allowed when properly anonymized via GDPRAnonymizer
+	"banned": "Ban status - administrative decision, not personal data under GDPR Art. 15"
+};
+
+// Fields that ARE allowed but must use anonymization
+const FIELDS_REQUIRING_ANONYMIZATION = [
+	"playerId", // Must use anonymizePlayerId()
+	"keycloakId", // Must use anonymizeKeycloakId() or getAnonymizedPlayerId()
+	"guildId", // Must use anonymizeGuildId()
+	"fightInitiatorId", // Must use anonymizePlayerId()
+	"player2Id", // Must use anonymizePlayerId()
+	"addedId", // Must use anonymizePlayerId()
+	"adderId", // Must use anonymizePlayerId()
+	"kickedPlayer", // Must use anonymizePlayerId()
+	"leftPlayer", // Must use anonymizePlayerId()
+	"newChief", // Must use anonymizePlayerId()
+	"addedElder", // Must use anonymizePlayerId()
+	"removedElder", // Must use anonymizePlayerId()
+	"sellerId", // Must use anonymizePlayerId()
+	"buyerId", // Must use anonymizePlayerId()
+	"releasedId" // Must use anonymizePlayerId()
+];
+
 // Tables containing playerId or keycloakId that are INTENTIONALLY NOT EXPORTED
 // Each exclusion must have a documented reason
 const EXCLUDED_TABLES = {
@@ -283,6 +328,191 @@ To fix this:
 		expect(
 			emptyReasons,
 			`The following tables in EXCLUDED_TABLES have empty reasons: ${emptyReasons.join(", ")}`
+		).toEqual([]);
+	});
+});
+
+/**
+ * GDPR Data Leak Prevention Tests
+ *
+ * These tests analyze the exporter source code to ensure no sensitive
+ * fields are exported without proper anonymization.
+ */
+describe("GDPR Export Data Leak Prevention", () => {
+	const exportersDir = path.resolve(__dirname, "../../../../src/commands/admin/gdpr/exporters");
+
+	/**
+	 * Get all exporter files
+	 */
+	function getExporterFiles(): string[] {
+		if (!fs.existsSync(exportersDir)) {
+			return [];
+		}
+		return fs.readdirSync(exportersDir)
+			.filter(file => file.endsWith(".ts") && !file.endsWith(".d.ts"));
+	}
+
+	/**
+	 * Check if an exporter file exports a forbidden field directly (without anonymization)
+	 * This looks for patterns like `fieldName: row.forbiddenField` in transform functions
+	 */
+	function findForbiddenFieldExports(filePath: string): { field: string; reason: string }[] {
+		const content = fs.readFileSync(filePath, "utf-8");
+		const violations: { field: string; reason: string }[] = [];
+
+		for (const [field, reason] of Object.entries(FORBIDDEN_EXPORT_FIELDS)) {
+			// Check for direct field access patterns in export mappings
+			// Patterns like: `fieldName: something.forbiddenField` or `forbiddenField: value`
+			const directExportPattern = new RegExp(
+				`(?:${field}\\s*:|:\\s*\\w+\\.${field})(?![\\w])`,
+				"gi"
+			);
+
+			if (directExportPattern.test(content)) {
+				violations.push({ field, reason });
+			}
+		}
+
+		return violations;
+	}
+
+	/**
+	 * Check that player references use anonymization
+	 * Looks for fields that should use anonymizePlayerId but might not
+	 */
+	function findUnAnonymizedPlayerReferences(filePath: string): string[] {
+		const content = fs.readFileSync(filePath, "utf-8");
+		const violations: string[] = [];
+
+		for (const field of FIELDS_REQUIRING_ANONYMIZATION) {
+			// Look for the field being used in an export context
+			const fieldUsagePattern = new RegExp(`[.\\s]${field}[,\\s)}]`, "g");
+			const matches = content.match(fieldUsagePattern);
+
+			if (matches) {
+				// Check if this field usage is also accompanied by anonymization
+				// We look for anonymize calls on the same field nearby
+				const anonymizePatterns = [
+					new RegExp(`anonymizePlayerId\\([^)]*${field}`, "g"),
+					new RegExp(`anonymizeKeycloakId\\([^)]*${field}`, "g"),
+					new RegExp(`anonymizeGuildId\\([^)]*${field}`, "g"),
+					new RegExp(`getAnonymizedPlayerId\\(`, "g")
+				];
+
+				const hasAnonymization = anonymizePatterns.some(pattern => pattern.test(content));
+
+				// Special case: if the field is used but the file doesn't have ANY anonymization
+				// and the file uses these fields, it might be a problem
+				// However, for most cases we can't perfectly detect this statically
+				// So we do a simpler check: if the file exports these fields AND doesn't import GDPRAnonymizer
+
+				if (!content.includes("GDPRAnonymizer") && !hasAnonymization) {
+					// Check if the field is being directly exported
+					const directExportCheck = new RegExp(
+						`${field}\\s*:\\s*(?:\\w+\\.)?${field}[,\\s})]`,
+						"g"
+					);
+					if (directExportCheck.test(content)) {
+						violations.push(field);
+					}
+				}
+			}
+		}
+
+		return [...new Set(violations)];
+	}
+
+	it("should not export forbidden fields in any exporter", () => {
+		const exporterFiles = getExporterFiles();
+		const allViolations: { file: string; field: string; reason: string }[] = [];
+
+		for (const file of exporterFiles) {
+			const filePath = path.join(exportersDir, file);
+			const violations = findForbiddenFieldExports(filePath);
+
+			for (const violation of violations) {
+				allViolations.push({
+					file,
+					field: violation.field,
+					reason: violation.reason
+				});
+			}
+		}
+
+		expect(
+			allViolations,
+			`The following forbidden fields are being exported without proper handling:
+${allViolations.map(v => `  - ${v.file}: "${v.field}" - ${v.reason}`).join("\n")}
+
+To fix this:
+1. Remove the field from the export
+2. OR if it's actually safe, add an exception with documentation`
+		).toEqual([]);
+	});
+
+	it("should anonymize all player-identifying fields", () => {
+		const exporterFiles = getExporterFiles();
+		const allViolations: { file: string; fields: string[] }[] = [];
+
+		for (const file of exporterFiles) {
+			const filePath = path.join(exportersDir, file);
+			const violations = findUnAnonymizedPlayerReferences(filePath);
+
+			if (violations.length > 0) {
+				allViolations.push({ file, fields: violations });
+			}
+		}
+
+		expect(
+			allViolations,
+			`The following files may export player-identifying fields without anonymization:
+${allViolations.map(v => `  - ${v.file}: ${v.fields.join(", ")}`).join("\n")}
+
+Player IDs and references must be anonymized using GDPRAnonymizer:
+- Use anonymizePlayerId() for other players (returns "OTHER_PLAYER_X")
+- Use getAnonymizedPlayerId() for the requesting player's own ID
+- Use anonymizeGuildId() for guild IDs`
+		).toEqual([]);
+	});
+
+	it("should only export data that belongs to the requesting player", () => {
+		// This test verifies the export logic by checking that queries filter by playerId
+		const exporterFiles = getExporterFiles();
+		const filesWithoutPlayerFilter: string[] = [];
+
+		for (const file of exporterFiles) {
+			const filePath = path.join(exportersDir, file);
+			const content = fs.readFileSync(filePath, "utf-8");
+
+			// Skip PlayerDataExporter as it uses the player object directly
+			if (file === "PlayerDataExporter.ts") {
+				continue;
+			}
+
+			// Check that the file uses playerId in queries
+			const hasPlayerIdFilter =
+				content.includes("playerId") ||
+				content.includes("logsPlayerId") ||
+				content.includes("playerIdWhere");
+
+			// Also check for explicit player-scoped queries
+			const hasExplicitPlayerQuery =
+				content.includes("where: { playerId") ||
+				content.includes("where: playerIdWhere") ||
+				content.includes("{ playerId: logsPlayerId }");
+
+			if (!hasPlayerIdFilter && !hasExplicitPlayerQuery) {
+				filesWithoutPlayerFilter.push(file);
+			}
+		}
+
+		expect(
+			filesWithoutPlayerFilter,
+			`The following exporters may not properly filter by player ID:
+${filesWithoutPlayerFilter.map(f => `  - ${f}`).join("\n")}
+
+All GDPR exports must only include data belonging to the requesting player.
+Ensure queries filter by playerId or logsPlayerId.`
 		).toEqual([]);
 	});
 });
