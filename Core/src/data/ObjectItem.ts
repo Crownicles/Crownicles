@@ -58,4 +58,11 @@ export class ObjectItemDataController extends ItemDataController<ObjectItem> {
 		return RandomUtils.crowniclesRandom.pick(this.getValuesArray()
 			.filter(item => item.nature === nature && item.rarity === rarity));
 	}
+
+	/**
+	 * Check if any object with the given nature and rarity exists
+	 */
+	public override hasItemWithNatureAndRarity(nature: number, rarity: number): boolean {
+		return this.getValuesArray().some(item => item.nature === nature && item.rarity === rarity);
+	}
 }

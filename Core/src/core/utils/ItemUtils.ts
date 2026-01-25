@@ -630,11 +630,47 @@ export type GenerateRandomItemOptions = {
 };
 
 /**
+ * Get all available rarities for a given category and optional subType within the specified rarity range
+ * @param controller The item data controller
+ * @param minRarity Minimum rarity to consider
+ * @param maxRarity Maximum rarity to consider
+ * @param subType Optional subType filter (for potions and objects)
+ * @returns Array of rarities that have at least one item available
+ */
+function getAvailableRarities(
+	controller: ItemDataController<GenericItem>,
+	minRarity: ItemRarity,
+	maxRarity: ItemRarity,
+	subType?: ItemNature
+): ItemRarity[] {
+	const availableRarities: ItemRarity[] = [];
+
+	for (let rarity = minRarity; rarity <= maxRarity; rarity++) {
+		if (subType !== undefined) {
+			// For potions/objects with subType, check if any item matches both nature and rarity
+			if (controller.hasItemWithNatureAndRarity(subType, rarity)) {
+				availableRarities.push(rarity);
+			}
+		}
+		else {
+			// For other categories, just check if any item exists with this rarity
+			const itemsIds = controller.getAllIdsForRarity(rarity);
+			if (itemsIds.length > 0) {
+				availableRarities.push(rarity);
+			}
+		}
+	}
+
+	return availableRarities;
+}
+
+/**
  * Generates a random item given its category and the rarity limits
  * @param itemCategory
  * @param minRarity
  * @param maxRarity
  * @param itemSubType
+ * @throws Error if minRarity > maxRarity or if no item exists with the given criteria
  */
 export function generateRandomItem(
 	{
@@ -644,12 +680,49 @@ export function generateRandomItem(
 		subType
 	}: GenerateRandomItemOptions
 ): GenericItem {
-	const rarity = generateRandomRarity(minRarity ?? ItemRarity.COMMON, maxRarity ?? ItemRarity.MYTHICAL);
+	const effectiveMinRarity = minRarity ?? ItemRarity.COMMON;
+	const effectiveMaxRarity = maxRarity ?? ItemRarity.MYTHICAL;
+
+	// Validate rarity range
+	if (effectiveMinRarity > effectiveMaxRarity) {
+		throw new Error(
+			`Invalid rarity range: minRarity (${effectiveMinRarity}) > maxRarity (${effectiveMaxRarity})`
+		);
+	}
+
 	const category = itemCategory ?? generateRandomItemCategory();
 	const controller = controllers[category];
-	if ([ItemCategory.POTION, ItemCategory.OBJECT].includes(category) && subType !== undefined) { // 0 (no effect) is a false value
+
+	// Get available rarities for the given criteria
+	const hasSubType = [ItemCategory.POTION, ItemCategory.OBJECT].includes(category) && subType !== undefined;
+	const availableRarities = getAvailableRarities(
+		controller,
+		effectiveMinRarity,
+		effectiveMaxRarity,
+		hasSubType ? subType : undefined
+	);
+
+	// Check if any item exists with the criteria
+	if (availableRarities.length === 0) {
+		const subTypeInfo = hasSubType ? `, subType: ${subType}` : "";
+		throw new Error(
+			`No item exists with criteria: category: ${category}, rarity: [${effectiveMinRarity}-${effectiveMaxRarity}]${subTypeInfo}`
+		);
+	}
+
+	// Generate rarity only from available rarities
+	const clampedMinRarity = Math.min(...availableRarities) as ItemRarity;
+	const clampedMaxRarity = Math.max(...availableRarities) as ItemRarity;
+
+	let rarity: ItemRarity;
+	do {
+		rarity = generateRandomRarity(clampedMinRarity, clampedMaxRarity);
+	} while (!availableRarities.includes(rarity));
+
+	if (hasSubType) {
 		return (controller as PotionDataController | ObjectItemDataController).randomItem(subType, rarity);
 	}
+
 	const itemsIds = controller.getAllIdsForRarity(rarity);
 	return controller.getById(itemsIds[RandomUtils.crowniclesRandom.integer(0, itemsIds.length - 1)])!;
 }
