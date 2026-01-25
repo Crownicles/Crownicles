@@ -167,6 +167,7 @@ export default class DailyBonusCommand {
 				return;
 			}
 			const objectItem = usableObject.getItem() as ObjectItem;
+
 			// Reload inventoryInfo as it may have changed during reaction collection
 			const freshInventoryInfo = await InventoryInfos.getOfPlayer(player.id);
 			await activateDailyItem(
