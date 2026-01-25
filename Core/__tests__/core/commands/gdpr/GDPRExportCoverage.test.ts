@@ -68,7 +68,6 @@ const EXCLUDED_TABLES = {
 	// Reference/lookup tables (no personal data, just game configuration)
 	"DailyMission": "Global daily mission, not player-specific",
 	"Setting": "Global game settings, not player data",
-	"FeralPet": "File is empty, table not used",
 
 	// ============ LOGS DATABASE - Reference Tables ============
 	// These are lookup/definition tables, not player activity logs
