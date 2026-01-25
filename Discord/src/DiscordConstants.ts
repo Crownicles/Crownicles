@@ -100,4 +100,25 @@ export abstract class DiscordConstants {
 			pt: "CONFIRMAR QUE DESEJO EXCLUIR MINHA CONTA E QUE NÃO PODEREI RECUPERÁ-LA"
 		} as Record<string, string>
 	};
+
+	/**
+	 * GDPR export related constants
+	 */
+	static GDPR_EXPORT = {
+		/**
+		 * Maximum allowed size for the GDPR export ZIP file in MB
+		 * Discord's upload limit is 25MB, we use 20MB to be safe
+		 */
+		MAX_FILE_SIZE_MB: 20,
+
+		/**
+		 * Compression level for the ZIP archive (0-9, where 9 is maximum compression)
+		 */
+		ZIP_COMPRESSION_LEVEL: 9,
+
+		/**
+		 * Number of bytes in a megabyte (used for size calculations)
+		 */
+		BYTES_PER_MB: 1024 * 1024
+	};
 }

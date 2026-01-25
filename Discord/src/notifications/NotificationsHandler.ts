@@ -31,6 +31,54 @@ import { ExpeditionFinishedNotificationPacket } from "../../../Lib/src/packets/n
 import { GDPRExportCompleteNotificationPacket } from "../../../Lib/src/packets/notifications/GDPRExportCompleteNotificationPacket";
 import { SexTypeShort } from "../../../Lib/src/constants/StringConstants";
 import archiver from "archiver";
+import { DiscordConstants } from "../DiscordConstants";
+
+/**
+ * Create a ZIP buffer from CSV files
+ */
+async function createGDPRZipBuffer(csvFiles: Record<string, string>): Promise<Buffer> {
+	const archive = archiver("zip", { zlib: { level: DiscordConstants.GDPR_EXPORT.ZIP_COMPRESSION_LEVEL } });
+	const chunks: Buffer[] = [];
+
+	archive.on("data", (chunk: Buffer) => chunks.push(chunk));
+
+	const archivePromise = new Promise<Buffer>((resolve, reject) => {
+		archive.on("end", () => resolve(Buffer.concat(chunks)));
+		archive.on("error", reject);
+	});
+
+	for (const [filename, content] of Object.entries(csvFiles)) {
+		archive.append(content, { name: filename });
+	}
+
+	await archive.finalize();
+
+	const zipBuffer = await archivePromise;
+	const fileSizeMB = zipBuffer.length / DiscordConstants.GDPR_EXPORT.BYTES_PER_MB;
+	const maxFileSizeMB = DiscordConstants.GDPR_EXPORT.MAX_FILE_SIZE_MB;
+
+	if (fileSizeMB > maxFileSizeMB) {
+		throw new Error(`Export too large (${fileSizeMB.toFixed(1)} MB > ${maxFileSizeMB} MB limit)`);
+	}
+
+	return zipBuffer;
+}
+
+/**
+ * Send a GDPR error embed to a user
+ */
+async function sendGDPRErrorEmbed(user: User, lng: Language, errorMessage: string): Promise<void> {
+	const errorEmbed = new CrowniclesEmbed()
+		.formatAuthor(i18n.t("notifications:gdprExport.title", { lng }), user)
+		.setDescription(i18n.t("notifications:gdprExport.error", {
+			lng,
+			error: errorMessage
+		}));
+
+	await user.send({ embeds: [errorEmbed] }).catch(e => {
+		CrowniclesLogger.errorWithObj(`Failed to send GDPR error DM to user ${user.id}`, e);
+	});
+}
 
 export abstract class NotificationsHandler {
 	/**
@@ -283,53 +331,17 @@ export abstract class NotificationsHandler {
 		lng: Language
 	): Promise<void> {
 		if (packet.error) {
-			const errorEmbed = new CrowniclesEmbed()
-				.formatAuthor(i18n.t("notifications:gdprExport.title", { lng }), user)
-				.setDescription(i18n.t("notifications:gdprExport.error", {
-					lng,
-					error: packet.error
-				}));
-
-			await user.send({ embeds: [errorEmbed] }).catch(e => {
-				CrowniclesLogger.errorWithObj(`Failed to send GDPR error DM to user ${user.id}`, e);
-			});
+			await sendGDPRErrorEmbed(user, lng, packet.error);
 			return;
 		}
 
 		try {
-			// Create ZIP file from CSV files
-			const archive = archiver("zip", { zlib: { level: 9 } });
-			const chunks: Buffer[] = [];
-
-			archive.on("data", (chunk: Buffer) => chunks.push(chunk));
-
-			const archivePromise = new Promise<Buffer>((resolve, reject) => {
-				archive.on("end", () => resolve(Buffer.concat(chunks)));
-				archive.on("error", reject);
-			});
-
-			// Add each CSV file to the archive
-			for (const [filename, content] of Object.entries(packet.csvFiles)) {
-				archive.append(content, { name: filename });
-			}
-
-			await archive.finalize();
-
-			const zipBuffer = await archivePromise;
-
-			// Check file size - Discord limit is 25MB, we use 20MB to be safe
-			const MAX_FILE_SIZE_MB = 20;
-			const fileSizeMB = zipBuffer.length / (1024 * 1024);
-			if (fileSizeMB > MAX_FILE_SIZE_MB) {
-				throw new Error(`Export too large (${fileSizeMB.toFixed(1)} MB > ${MAX_FILE_SIZE_MB} MB limit)`);
-			}
+			const zipBuffer = await createGDPRZipBuffer(packet.csvFiles);
 
 			const fileName = i18n.t("notifications:gdprExport.fileName", {
 				lng,
 				anonymizedId: packet.anonymizedPlayerId
 			});
-
-			const attachment = new AttachmentBuilder(zipBuffer, { name: fileName });
 
 			const successEmbed = new CrowniclesEmbed()
 				.formatAuthor(i18n.t("notifications:gdprExport.title", { lng }), user)
@@ -341,25 +353,14 @@ export abstract class NotificationsHandler {
 
 			await user.send({
 				embeds: [successEmbed],
-				files: [attachment]
+				files: [new AttachmentBuilder(zipBuffer, { name: fileName })]
 			});
 
 			CrowniclesLogger.info(`GDPR export DM sent to user ${user.id} for player ${packet.anonymizedPlayerId}`);
 		}
 		catch (error) {
 			CrowniclesLogger.errorWithObj(`Failed to create or send GDPR export ZIP to user ${user.id}`, error);
-
-			// Try to send error message
-			const errorEmbed = new CrowniclesEmbed()
-				.formatAuthor(i18n.t("notifications:gdprExport.title", { lng }), user)
-				.setDescription(i18n.t("notifications:gdprExport.error", {
-					lng,
-					error: error instanceof Error ? error.message : "Failed to create ZIP file"
-				}));
-
-			await user.send({ embeds: [errorEmbed] }).catch(() => {
-				// Ignore - already logged above
-			});
+			await sendGDPRErrorEmbed(user, lng, error instanceof Error ? error.message : "Failed to create ZIP file");
 		}
 	}
 }
