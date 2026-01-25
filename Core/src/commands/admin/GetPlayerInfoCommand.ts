@@ -22,7 +22,7 @@ export default class GetPlayerInfoCommand {
 		}
 
 		// Players who have the right to set badges can access the badges only
-		return Object.keys(packet.dataToGet).length === 1 && packet.dataToGet.badges && context.rightGroups?.includes(RightGroup.BADGES);
+		return Object.keys(packet.dataToGet).length === 1 && !!packet.dataToGet.badges && !!context.rightGroups?.includes(RightGroup.BADGES);
 	}
 
 	@adminCommand(CommandGetPlayerInfoReq, GetPlayerInfoCommand.verifyRights)

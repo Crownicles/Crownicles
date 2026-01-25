@@ -33,7 +33,7 @@ export class AiPlayerFighter extends PlayerBaseFighter {
 
 	private readonly classBehavior: ClassBehavior;
 
-	private glory: number;
+	private glory!: number;
 
 	private readonly allowPotionConsumption: boolean;
 

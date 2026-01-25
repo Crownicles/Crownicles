@@ -4,7 +4,7 @@ import { MissionDifficulty } from "../core/missions/MissionDifficulty";
 import { RandomUtils } from "../../../Lib/src/utils/RandomUtils";
 
 export class Mission extends Data<string> {
-	public readonly campaignOnly: boolean;
+	public readonly campaignOnly!: boolean;
 
 	public readonly difficulties?: {
 		easy?: number[];

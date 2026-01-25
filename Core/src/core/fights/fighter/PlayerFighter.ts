@@ -28,7 +28,7 @@ import { PetUtils } from "../../utils/PetUtils";
  * Class representing a human-controlled player in a fight
  */
 export class PlayerFighter extends PlayerBaseFighter {
-	private pveMembers: {
+	private pveMembers!: {
 		attack: number; speed: number;
 	}[];
 

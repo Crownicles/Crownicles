@@ -12,17 +12,17 @@ export class BigEvent extends Data<number> {
 	/**
 	 * The big event triggers
 	 */
-	public readonly triggers: BigEventTrigger[];
+	public readonly triggers!: BigEventTrigger[];
 
 	/**
 	 * The big event possibilities
 	 */
-	private readonly possibilities: { [key: string]: Possibility };
+	private readonly possibilities!: { [key: string]: Possibility };
 
 	/**
 	 * Big event tags
 	 */
-	public readonly tags: string[];
+	public readonly tags!: string[];
 
 	/**
 	 * The possibility condition is checked to choose to allow the possibility or not

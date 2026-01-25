@@ -7,13 +7,13 @@ import { FightController } from "../core/fights/FightController";
 import { FightActionResult } from "../../../Lib/src/types/FightActionResult";
 
 export class FightAction extends Data<string> {
-	public readonly breath: number;
+	public readonly breath!: number;
 
-	public readonly missionVariant: number;
+	public readonly missionVariant!: number;
 
-	public readonly type: FightActionType;
+	public readonly type!: FightActionType;
 
-	private _weightForRandomSelection: number;
+	private _weightForRandomSelection!: number;
 
 
 	public use(sender: Fighter, receiver: Fighter, turn: number, fight: FightController): FightActionResult {
