@@ -81,6 +81,10 @@ type MissionHealthParameter = {
 	overHealCountsForMission: boolean;
 };
 
+export type HealthEditValueParameters = EditValueParameters & {
+	missionHealthParameter?: MissionHealthParameter;
+};
+
 type ressourcesLostOnPveFaint = {
 	moneyLost: number;
 	guildPointsLost: number;
@@ -373,9 +377,14 @@ export class Player extends Model {
 		});
 
 		if (healthRestored) {
-			await this.addHealth(this.getMaxHealth() - this.health, response, NumberChangeReason.LEVEL_UP, {
-				shouldPokeMission: true,
-				overHealCountsForMission: false
+			await this.addHealth({
+				amount: this.getMaxHealth() - this.health,
+				response,
+				reason: NumberChangeReason.LEVEL_UP,
+				missionHealthParameter: {
+					shouldPokeMission: true,
+					overHealCountsForMission: false
+				}
 			});
 		}
 
@@ -810,20 +819,18 @@ export class Player extends Model {
 	/**
 	 * Add health to the player
 	 * Note: This method automatically calls killIfNeeded after updating health
-	 * @param health
-	 * @param response
-	 * @param reason
-	 * @param missionHealthParameter
+	 * @param parameters - Health edit parameters including amount, response, reason, and optional mission parameters
 	 * @returns true if the player is dead after the update, false otherwise
 	 */
-	public async addHealth(health: number, response: CrowniclesPacket[], reason: NumberChangeReason, missionHealthParameter: MissionHealthParameter = {
-		overHealCountsForMission: true,
-		shouldPokeMission: true
-	}): Promise<boolean> {
-		await this.setHealth(this.health + health, response, missionHealthParameter);
-		crowniclesInstance.logsDatabase.logHealthChange(this.keycloakId, this.health, reason)
+	public async addHealth(parameters: HealthEditValueParameters): Promise<boolean> {
+		const missionHealthParameter = parameters.missionHealthParameter ?? {
+			overHealCountsForMission: true,
+			shouldPokeMission: true
+		};
+		await this.setHealth(this.health + parameters.amount, parameters.response, missionHealthParameter);
+		crowniclesInstance.logsDatabase.logHealthChange(this.keycloakId, this.health, parameters.reason)
 			.then();
-		return await this.killIfNeeded(response, reason);
+		return await this.killIfNeeded(parameters.response, parameters.reason);
 	}
 
 	/**

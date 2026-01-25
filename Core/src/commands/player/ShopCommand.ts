@@ -156,9 +156,14 @@ function getRegenShopItem(): ShopItem {
 		amounts: [1],
 		buyCallback: async (response, playerId): Promise<boolean> => {
 			const player = await Players.getById(playerId);
-			await player.addHealth(player.getMaxHealth() - player.health, response, NumberChangeReason.SHOP, {
-				shouldPokeMission: true,
-				overHealCountsForMission: false
+			await player.addHealth({
+				amount: player.getMaxHealth() - player.health,
+				response,
+				reason: NumberChangeReason.SHOP,
+				missionHealthParameter: {
+					shouldPokeMission: true,
+					overHealCountsForMission: false
+				}
 			});
 			await player.save();
 			response.push(makePacket(CommandShopFullRegen, {}));

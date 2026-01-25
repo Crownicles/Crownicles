@@ -13,9 +13,14 @@ export const commandInfo: ITestCommand = {
  * Kill yourself
  */
 const playerSuicideTestCommand: ExecuteTestCommandLike = async (player, _args, response) => {
-	await player.addHealth(-player.health, response, NumberChangeReason.TEST, {
-		overHealCountsForMission: true,
-		shouldPokeMission: true
+	await player.addHealth({
+		amount: -player.health,
+		response,
+		reason: NumberChangeReason.TEST,
+		missionHealthParameter: {
+			overHealCountsForMission: true,
+			shouldPokeMission: true
+		}
 	});
 	await player.save();
 
