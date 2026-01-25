@@ -316,6 +316,14 @@ export abstract class NotificationsHandler {
 			await archive.finalize();
 
 			const zipBuffer = await archivePromise;
+
+			// Check file size - Discord limit is 25MB, we use 20MB to be safe
+			const MAX_FILE_SIZE_MB = 20;
+			const fileSizeMB = zipBuffer.length / (1024 * 1024);
+			if (fileSizeMB > MAX_FILE_SIZE_MB) {
+				throw new Error(`Export too large (${fileSizeMB.toFixed(1)} MB > ${MAX_FILE_SIZE_MB} MB limit)`);
+			}
+
 			const fileName = i18n.t("notifications:gdprExport.fileName", {
 				lng,
 				anonymizedId: packet.anonymizedPlayerId
