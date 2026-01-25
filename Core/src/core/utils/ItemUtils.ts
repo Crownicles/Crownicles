@@ -669,7 +669,7 @@ function getAvailableRarities(
  * @param itemCategory
  * @param minRarity
  * @param maxRarity
- * @param itemSubType
+ * @param subType
  * @throws Error if minRarity > maxRarity or if no item exists with the given criteria
  */
 export function generateRandomItem(

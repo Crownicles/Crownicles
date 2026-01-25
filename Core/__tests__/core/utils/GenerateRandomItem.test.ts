@@ -1,5 +1,5 @@
 import {
-	beforeAll, describe, expect, it
+	describe, expect, it
 } from "vitest";
 import {
 	generateRandomItem, generateRandomRarity
@@ -56,7 +56,7 @@ describe("generateRandomItem", () => {
 		});
 
 		it("should throw error when no item exists with the criteria", () => {
-			// ItemNature.NONE with high rarity range - likely no items exist
+			// Use a non-existent ItemNature value with a broad rarity range so no items match
 			expect(() => generateRandomItem({
 				itemCategory: ItemCategory.POTION,
 				subType: 999 as ItemNature, // Non-existent nature
