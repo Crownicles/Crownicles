@@ -61,7 +61,6 @@ export const smallEventFuncs: SmallEventFuncs = {
 			moneyLost: moneyLoss,
 			effectId: effect
 		}));
-		await player.killIfNeeded(response, NumberChangeReason.SMALL_EVENT);
 		await player.save();
 	}
 };

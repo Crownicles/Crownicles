@@ -70,7 +70,6 @@ async function manageClassicReward(response: CrowniclesPacket[], player: Player,
 			break;
 		case Outcome.LIFE:
 			await player.addHealth(-result.amount, response, reason);
-			await player.killIfNeeded(response, reason);
 			break;
 		case Outcome.ENERGY:
 			player.addEnergy(-result.amount, reason);

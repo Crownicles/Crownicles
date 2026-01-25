@@ -42,7 +42,6 @@ export const smallEventFuncs: SmallEventFuncs = {
 		}
 		response.push(makePacket(SmallEventSmallBadPacket, packet));
 
-		await player.killIfNeeded(response, NumberChangeReason.SMALL_EVENT);
 		await player.save();
 	}
 };
