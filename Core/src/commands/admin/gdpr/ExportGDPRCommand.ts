@@ -2,7 +2,7 @@ import { adminCommand } from "../../../core/utils/CommandUtils";
 import {
 	CrowniclesPacket, makePacket, PacketContext
 } from "../../../../../Lib/src/packets/CrowniclesPacket";
-import { Players } from "../../../core/database/game/models/Player";
+import Player, { Players } from "../../../core/database/game/models/Player";
 import {
 	CommandExportGDPRReq,
 	CommandExportGDPRRes
@@ -11,7 +11,7 @@ import { RightGroup } from "../../../../../Lib/src/types/RightGroup";
 import { LogsPlayers } from "../../../core/database/logs/models/LogsPlayers";
 import { GDPRAnonymizer } from "./GDPRAnonymizer";
 import {
-	toCSV, GDPRCsvFiles
+	toCSV, GDPRCsvFiles, yieldToEventLoop
 } from "./CSVUtils";
 import { exportPlayerData } from "./exporters/PlayerDataExporter";
 import { exportLogsPlayerStats } from "./exporters/LogsPlayerStatsExporter";
@@ -33,6 +33,61 @@ interface GDPRNotificationParams {
 	csvFiles: GDPRCsvFiles;
 	anonymizedPlayerId: string;
 	error?: string;
+}
+
+/**
+ * Export all logs database data for a player
+ */
+async function exportLogsData(
+	player: Player,
+	anonymizer: GDPRAnonymizer,
+	csvFiles: GDPRCsvFiles
+): Promise<void> {
+	const logsPlayer = await LogsPlayers.findOne({ where: { keycloakId: player.keycloakId } });
+	if (!logsPlayer) {
+		return;
+	}
+
+	const logsPlayerId = logsPlayer.id;
+
+	// Export player stats history (files 15-34)
+	await exportLogsPlayerStats(logsPlayerId, csvFiles);
+	await yieldToEventLoop();
+
+	// Export missions and achievements (files 35-44)
+	const { newPets } = await exportLogsMissions(logsPlayerId, csvFiles);
+	await yieldToEventLoop();
+
+	// Export fights data (files 45-48)
+	await exportLogsFights(logsPlayerId, anonymizer, csvFiles);
+	await yieldToEventLoop();
+
+	// Export shop and items data (files 49-59)
+	await exportLogsShop(logsPlayerId, csvFiles);
+	await yieldToEventLoop();
+
+	// Export guild data (files 60-67, 74)
+	await exportLogsGuild(logsPlayerId, anonymizer, csvFiles);
+	await yieldToEventLoop();
+
+	// Export pets and expeditions data (files 68-73)
+	await exportLogsPets(logsPlayerId, anonymizer, newPets, csvFiles);
+	await yieldToEventLoop();
+}
+
+/**
+ * Send the GDPR export result as a notification
+ */
+function sendNotification(params: GDPRNotificationParams): void {
+	PacketUtils.sendNotifications([
+		makePacket(GDPRExportCompleteNotificationPacket, {
+			keycloakId: params.requesterKeycloakId,
+			exportedPlayerKeycloakId: params.exportedPlayerKeycloakId,
+			csvFiles: params.csvFiles,
+			anonymizedPlayerId: params.anonymizedPlayerId,
+			error: params.error
+		})
+	]);
 }
 
 /**
@@ -93,7 +148,7 @@ export default class ExportGDPRCommand {
 
 		if (!player) {
 			// Should not happen since we checked before, but handle it anyway
-			ExportGDPRCommand.sendNotification({
+			sendNotification({
 				requesterKeycloakId,
 				exportedPlayerKeycloakId: playerKeycloakId,
 				csvFiles: {},
@@ -111,38 +166,10 @@ export default class ExportGDPRCommand {
 
 			// Export player core data (files 01-14)
 			await exportPlayerData(player, anonymizer, csvFiles);
-			await ExportGDPRCommand.yieldToEventLoop();
+			await yieldToEventLoop();
 
-			// Export logs database data if player exists in logs
-			const logsPlayer = await LogsPlayers.findOne({ where: { keycloakId: player.keycloakId } });
-
-			if (logsPlayer) {
-				const logsPlayerId = logsPlayer.id;
-
-				// Export player stats history (files 15-34)
-				await exportLogsPlayerStats(logsPlayerId, csvFiles);
-				await ExportGDPRCommand.yieldToEventLoop();
-
-				// Export missions and achievements (files 35-44)
-				const { newPets } = await exportLogsMissions(logsPlayerId, csvFiles);
-				await ExportGDPRCommand.yieldToEventLoop();
-
-				// Export fights data (files 45-48)
-				await exportLogsFights(logsPlayerId, anonymizer, csvFiles);
-				await ExportGDPRCommand.yieldToEventLoop();
-
-				// Export shop and items data (files 49-59)
-				await exportLogsShop(logsPlayerId, csvFiles);
-				await ExportGDPRCommand.yieldToEventLoop();
-
-				// Export guild data (files 60-67, 74)
-				await exportLogsGuild(logsPlayerId, anonymizer, csvFiles);
-				await ExportGDPRCommand.yieldToEventLoop();
-
-				// Export pets and expeditions data (files 68-73)
-				await exportLogsPets(logsPlayerId, anonymizer, newPets, csvFiles);
-				await ExportGDPRCommand.yieldToEventLoop();
-			}
+			// Export logs database data (files 15-73)
+			await exportLogsData(player, anonymizer, csvFiles);
 
 			// Add metadata file - calculate count before adding metadata
 			const fileCount = Object.keys(csvFiles).length + 1; // +1 for metadata itself
@@ -159,7 +186,7 @@ export default class ExportGDPRCommand {
 			CrowniclesLogger.info(`GDPR export complete for player ${anonymizer.getAnonymizedPlayerId()}, ${fileCount} files generated`);
 
 			// Send notification with the result
-			ExportGDPRCommand.sendNotification({
+			sendNotification({
 				requesterKeycloakId,
 				exportedPlayerKeycloakId: playerKeycloakId,
 				csvFiles,
@@ -168,7 +195,7 @@ export default class ExportGDPRCommand {
 		}
 		catch (error) {
 			CrowniclesLogger.errorWithObj(`GDPR export failed for player ${anonymizer.getAnonymizedPlayerId()}`, error);
-			ExportGDPRCommand.sendNotification({
+			sendNotification({
 				requesterKeycloakId,
 				exportedPlayerKeycloakId: playerKeycloakId,
 				csvFiles: {},
@@ -176,28 +203,5 @@ export default class ExportGDPRCommand {
 				error: error instanceof Error ? error.message : "Unknown error during export"
 			});
 		}
-	}
-
-	/**
-	 * Small delay to yield control back to the event loop
-	 * This prevents blocking the main thread during heavy export operations
-	 */
-	private static yieldToEventLoop(): Promise<void> {
-		return new Promise(resolve => setImmediate(resolve));
-	}
-
-	/**
-	 * Send the GDPR export result as a notification
-	 */
-	private static sendNotification(params: GDPRNotificationParams): void {
-		PacketUtils.sendNotifications([
-			makePacket(GDPRExportCompleteNotificationPacket, {
-				keycloakId: params.requesterKeycloakId,
-				exportedPlayerKeycloakId: params.exportedPlayerKeycloakId,
-				csvFiles: params.csvFiles,
-				anonymizedPlayerId: params.anonymizedPlayerId,
-				error: params.error
-			})
-		]);
 	}
 }
