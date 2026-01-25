@@ -25,7 +25,7 @@ export class CommandExportGDPRReq extends CrowniclesPacket {
  * Simple acknowledgment that the export has started
  * The actual data will be sent via GDPRExportCompleteNotificationPacket as a DM
  */
-@sendablePacket(PacketDirection.NONE)
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandExportGDPRRes extends CrowniclesPacket {
 	/**
 	 * Whether the export has started successfully
