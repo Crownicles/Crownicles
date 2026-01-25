@@ -864,7 +864,7 @@
     "shelterPetOption": "{{rarity}} | {{sex}} {{loveLevel}}",
     "cancelButton": "Cancelar",
     "feistyCostPaid": "A libertação custou-vos {{cost, number}} {emote:unitValues.money}.",
-    "luckyMeat": "O familiar deixou-te um pedaço de carne quando te foste embora! {emote:food.carnivorousFood}"
+    "luckyMeat": "Le familier vous a laissé un morceau de viande en partant ! {emote:foods.carnivorousFood}"
   },
   "petNick": {
     "successTitle": "{{pseudo}}alterar a alcunha do animal de estimação",
@@ -1959,5 +1959,14 @@
     "title": "Código de eliminação de conta",
     "success": "**Código de eliminação gerado**\n\n**ID do registo :** `{{discordId}}`\n**ID do teclado :** `{{keycloakId}}`\n**Código :** `{{code}}`\n\nEnviar este código para o utilizador por email. O utilizador deve enviar um DM para o bot com:\n`DELETE ACCOUNT {{code}}`",
     "userNotFound": "Não foram encontrados utilizadores com este ID Discord."
+  },
+  "exportgdpr": {
+    "title": "Export RGPD",
+    "success": "L'export RGPD a été généré avec succès.\n\n**ID anonymisé du joueur :** `{{anonymizedId}}`\n**Fichiers générés :** {{fileCount}}",
+    "started": "L'export RGPD a été lancé. Vous recevrez le résultat en message privé une fois l'export terminé.",
+    "userNotFound": "Aucun joueur trouvé avec cet identifiant Discord.",
+    "playerNotFound": "Ce joueur n'existe pas dans la base de données.",
+    "error": "Une erreur s'est produite lors de l'export : {{error}}",
+    "fileName": "export_rgpd_{{anonymizedId}}.zip"
   }
 }
