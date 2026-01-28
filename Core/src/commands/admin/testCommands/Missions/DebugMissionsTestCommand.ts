@@ -28,7 +28,7 @@ Campaign blob: ${missionsInfo.campaignBlob}
 📜 Missions
 ${missionSlots.map(missionSlot => {
 	const mission = MissionDataController.instance.getById(missionSlot.missionId);
-	return `${mission.id} (id: ${missionSlot.missionId}
+	return `${mission?.id ?? "unknown"} (id: ${missionSlot.missionId}
 				)
 -> ID DB: ${missionSlot.id}
 
@@ -40,7 +40,7 @@ ${missionSlots.map(missionSlot => {
 
 -> Expiration date: ${missionSlot.expiresAt ? new Date(missionSlot.expiresAt).toISOString() : "Never"}
 
--> Campaign only: ${mission.campaignOnly}
+-> Campaign only: ${mission?.campaignOnly ?? "unknown"}
 
 -> Save blob: ${missionSlot.saveBlob}
 

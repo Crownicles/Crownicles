@@ -85,7 +85,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 	canBeExecuted: Maps.isOnContinent,
 	executeSmallEvent: async (response, player, context): Promise<void> => {
 		const playerClassId = player.class;
-		const classKind = ClassDataController.instance.getById(playerClassId).classKind;
+		const classKind = ClassDataController.instance.getById(playerClassId)!.classKind;
 		const issue = RandomUtils.crowniclesRandom.pick(ClassConstants.CLASS_SMALL_EVENT_INTERACTIONS[classKind.toUpperCase() as keyof typeof ClassConstants.CLASS_SMALL_EVENT_INTERACTIONS]);
 		const packet: SmallEventClassPacket = {
 			classKind,

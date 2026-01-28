@@ -13,7 +13,7 @@ export const commandInfo: ITestCommand = {
  * Display all possible events
  */
 const possibleEventsTestCommand: ExecuteTestCommandLike = async player => {
-	const mapId = player.getDestinationId();
+	const mapId = player.getDestinationId()!;
 
 	const possibleEvents = BigEventDataController.instance.getEventsNotFiltered(mapId);
 	let str = `Current datetime: ${Date.now()
@@ -21,7 +21,7 @@ const possibleEventsTestCommand: ExecuteTestCommandLike = async player => {
 	for (const event of possibleEvents) {
 		str += `Event n°**${event.id}**\nTriggers :\n`;
 		for (const trigger of event.triggers) {
-			str += `- ${JSON.stringify(trigger)} : **${await verifyTrigger(event, trigger, mapId, player)}**\n`;
+			str += `- ${JSON.stringify(trigger)} : **${await verifyTrigger(event, trigger, mapId!, player)}**\n`;
 		}
 		str += "\n";
 	}

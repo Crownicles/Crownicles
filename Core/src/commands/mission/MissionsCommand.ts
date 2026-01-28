@@ -30,7 +30,7 @@ export default class MissionsCommand {
 			? packet.askedPlayer.keycloakId === context.keycloakId
 				? player
 				: await Players.getByKeycloakId(packet.askedPlayer.keycloakId)
-			: await Players.getByRank(packet.askedPlayer.rank);
+			: await Players.getByRank(packet.askedPlayer.rank!);
 
 		if (!toCheckPlayer?.hasStartedToPlay()) {
 			response.push(makePacket(CommandMissionPlayerNotFoundPacket, {}));
@@ -46,7 +46,7 @@ export default class MissionsCommand {
 		const baseMissions = MissionsController.prepareMissionSlots(await MissionSlots.getOfPlayer(toCheckPlayer.id));
 
 		baseMissions.push(MissionsController.prepareBaseMission({
-			...(await DailyMissions.getOrGenerate()).toJSON(),
+			...(await DailyMissions.getOrGenerate())!.toJSON(),
 
 			/*
 			 * We are using the expiresAt field to store the last time the daily mission was completed,

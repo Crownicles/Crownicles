@@ -36,7 +36,7 @@ export class MissionSlot extends Model {
 
 	declare createdAt: Date;
 
-	declare saveBlob: Buffer;
+	declare saveBlob: Buffer | null;
 
 
 	public isCompleted(): boolean {

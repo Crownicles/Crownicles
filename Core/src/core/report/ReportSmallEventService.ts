@@ -42,7 +42,7 @@ async function checkSmallEventEligibility(
 
 	return {
 		key,
-		rarity: SmallEventDataController.instance.getById(key).rarity
+		rarity: SmallEventDataController.instance.getById(key)!.rarity
 	};
 }
 

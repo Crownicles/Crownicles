@@ -34,7 +34,7 @@ import { PacketUtils } from "../../core/utils/PacketUtils";
  * @param promotedPlayer
  * @param response
  */
-async function isEligible(player: Player, promotedPlayer: Player, response: CrowniclesPacket[]): Promise<boolean> {
+async function isEligible(player: Player, promotedPlayer: Player | null, response: CrowniclesPacket[]): Promise<boolean> {
 	if (promotedPlayer === null) {
 		response.push(makePacket(CommandGuildElderFoundPlayerPacketRes, {}));
 		return false;
@@ -58,7 +58,7 @@ async function isEligible(player: Player, promotedPlayer: Player, response: Crow
 		return false;
 	}
 
-	if (promotedPlayer.id === guild.elderId) {
+	if (promotedPlayer.id === guild!.elderId) {
 		response.push(makePacket(CommandGuildElderAlreadyElderPacketRes, {}));
 		return false;
 	}
@@ -79,7 +79,7 @@ async function acceptGuildElder(player: Player, promotedPlayer: Player, response
 	if (!await isEligible(player, promotedPlayer, response)) {
 		return;
 	}
-	const guild = await Guilds.getById(player.guildId);
+	const guild = (await Guilds.getById(player.guildId))!;
 	guild.elderId = promotedPlayer.id;
 
 	await Promise.all([
@@ -116,21 +116,21 @@ export default class GuildElderCommand {
 		if (!await isEligible(player, promotedPlayer, response)) {
 			return;
 		}
-		const guildName = (await Guilds.getById(player.guildId)).name;
+		const guildName = (await Guilds.getById(player.guildId))!.name;
 
 		const collector = new ReactionCollectorGuildElder(
 			guildName,
-			promotedPlayer.keycloakId
+			promotedPlayer!.keycloakId
 		);
 
 		const endCallback: EndCallback = async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
 			const reaction = collector.getFirstReaction();
 			if (reaction && reaction.reaction.type === ReactionCollectorAcceptReaction.name) {
-				await acceptGuildElder(player, promotedPlayer, response);
+				await acceptGuildElder(player, promotedPlayer!, response);
 			}
 			else {
 				response.push(makePacket(CommandGuildElderRefusePacketRes, {
-					promotedKeycloakId: promotedPlayer.keycloakId
+					promotedKeycloakId: promotedPlayer!.keycloakId
 				}));
 			}
 			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.GUILD_ELDER);

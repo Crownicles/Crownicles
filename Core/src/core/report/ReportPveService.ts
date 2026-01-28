@@ -31,6 +31,7 @@ import { Maps } from "../maps/Maps";
 import { Effect } from "../../../../Lib/src/types/Effect";
 import { millisecondsToSeconds } from "../../../../Lib/src/utils/TimeUtils";
 import { crowniclesInstance } from "../../index";
+import { MapLink } from "../../data/MapLink";
 
 /**
  * PVE fight rewards structure
@@ -56,7 +57,7 @@ interface GuildRewardsResult {
 type ChooseDestinationCallback = (
 	context: PacketContext,
 	player: Player,
-	forcedLink: null,
+	forcedLink: MapLink | null,
 	response: CrowniclesPacket[]
 ) => Promise<void>;
 
@@ -112,6 +113,12 @@ async function applyGuildRewards(
 	}
 
 	const guild = await Guilds.getById(player.guildId);
+	if (!guild) {
+		return {
+			guildXp: 0,
+			guildPoints: 0
+		};
+	}
 	await guild.addScore(rewards.guildScore, endFightResponse, NumberChangeReason.PVE_FIGHT);
 	await guild.addExperience(rewards.guildXp, endFightResponse, NumberChangeReason.PVE_FIGHT);
 	await guild.save();
@@ -237,7 +244,11 @@ function createCollectorEndCallback(
 			return;
 		}
 
-		const playerFighter = new PlayerFighter(player, ClassDataController.instance.getById(player.class));
+		const playerClass = ClassDataController.instance.getById(player.class);
+		if (!playerClass) {
+			throw new Error("Player class not found");
+		}
+		const playerFighter = new PlayerFighter(player, playerClass);
 		playerFighter.setFightRole(FightConstants.FIGHT_ROLES.ATTACKER);
 		await playerFighter.loadStats();
 		playerFighter.setBaseEnergy(playerFighter.getMaxEnergy() - player.fightPointsLost);
@@ -266,7 +277,7 @@ export async function doPVEBoss(
 	chooseDestinationFn: ChooseDestinationCallback
 ): Promise<void> {
 	const seed = player.id + millisecondsToSeconds(player.startTravelDate.valueOf());
-	const mapId = player.getDestination().id;
+	const mapId = player.getDestination()!.id;
 	const monsterObj = MonsterDataController.instance.getRandomMonster(mapId, seed);
 	const randomLevel = player.level - PVEConstants.MONSTER_LEVEL_RANDOM_RANGE / 2 + seed % PVEConstants.MONSTER_LEVEL_RANDOM_RANGE;
 

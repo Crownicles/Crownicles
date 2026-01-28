@@ -241,7 +241,7 @@ export async function handleExpeditionSelect(
 	}
 
 	const expeditionData = PendingExpeditionsCache.findExpedition(keycloakId, expeditionId)!;
-	const petModel = PetDataController.instance.getById(petEntity.typeId);
+	const petModel = PetDataController.instance.getById(petEntity.typeId)!;
 	const rationsRequired = expeditionData.foodCost ?? ExpeditionConstants.DEFAULT_FOOD_COST;
 
 	// Calculate optimal food consumption plan

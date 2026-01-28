@@ -4,7 +4,7 @@ import { LogsPlayers } from "./models/LogsPlayers";
 import { LogsPlayersHealth } from "./models/LogsPlayersHealth";
 import { LogsPlayersExperience } from "./models/LogsPlayersExperience";
 import {
-	CreateOptions, Model, ModelStatic, Op
+	Model, ModelStatic, Op
 } from "sequelize";
 import { LogsPlayersLevel } from "./models/LogsPlayersLevel";
 import { LogsPlayersScore } from "./models/LogsPlayersScore";
@@ -405,7 +405,7 @@ export class LogsDatabase extends Database {
 	private static async logItem(
 		keycloakId: string,
 		item: GenericItem,
-		model: { create: (values?: unknown, options?: CreateOptions<unknown>) => Promise<Model<unknown, unknown>> }
+		model: ModelStatic<Model>
 	): Promise<void> {
 		const player = await LogsDatabase.findOrCreatePlayer(keycloakId);
 		if (!player) {
@@ -786,9 +786,7 @@ export class LogsDatabase extends Database {
 	 * @param item
 	 */
 	public logItemGain(keycloakId: string, item: GenericItem): Promise<unknown> {
-		let itemCategoryDatabase: {
-			create: (values?: unknown, options?: CreateOptions<unknown>) => Promise<Model<unknown, unknown>>;
-		};
+		let itemCategoryDatabase: ModelStatic<Model>;
 		switch (item.categoryName) {
 			case "weapons":
 				itemCategoryDatabase = LogsItemGainsWeapon;
@@ -836,9 +834,7 @@ export class LogsDatabase extends Database {
 	 * @param item
 	 */
 	public logItemSell(keycloakId: string, item: GenericItem): Promise<unknown> {
-		let itemCategoryDatabase: {
-			create: (values?: unknown, options?: CreateOptions<unknown>) => Promise<Model<unknown, unknown>>;
-		};
+		let itemCategoryDatabase: ModelStatic<Model>;
 		switch (item.categoryName) {
 			case "weapons":
 				itemCategoryDatabase = LogsItemSellsWeapon;
@@ -1101,8 +1097,13 @@ export class LogsDatabase extends Database {
 			return null;
 		}
 
-		const fightInitiatorId = (await LogsDatabase.findOrCreatePlayer(fightInitiator.player.keycloakId)).id;
-		const nonFightInitiatorId = (await LogsDatabase.findOrCreatePlayer(nonFightInitiator.player.keycloakId)).id;
+		const fightInitiatorPlayer = await LogsDatabase.findOrCreatePlayer(fightInitiator.player.keycloakId);
+		const nonFightInitiatorPlayer = await LogsDatabase.findOrCreatePlayer(nonFightInitiator.player.keycloakId);
+		if (!fightInitiatorPlayer || !nonFightInitiatorPlayer) {
+			return null;
+		}
+		const fightInitiatorId = fightInitiatorPlayer.id;
+		const nonFightInitiatorId = nonFightInitiatorPlayer.id;
 
 		/*
 		 * Reload players from DB to get current glory values
@@ -1111,6 +1112,9 @@ export class LogsDatabase extends Database {
 		 */
 		const freshFightInitiator = await Players.getById(fightInitiator.player.id);
 		const freshNonFightInitiator = await Players.getById(nonFightInitiator.player.id);
+		if (!freshFightInitiator || !freshNonFightInitiator) {
+			return null;
+		}
 
 		const winner = fight.getWinnerFighter() === fightInitiator ? 1 : 2;
 
@@ -1173,7 +1177,11 @@ export class LogsDatabase extends Database {
 		const monster = fight.getNonFightInitiatorFighter() as MonsterFighter | null;
 
 		if (player && monster) {
-			const playerId = (await LogsDatabase.findOrCreatePlayer(player.player.keycloakId)).id;
+			const logPlayer = await LogsDatabase.findOrCreatePlayer(player.player.keycloakId);
+			if (!logPlayer) {
+				return;
+			}
+			const playerId = logPlayer.id;
 			const monsterStats = monster.getBaseStats();
 			const winner = fight.getWinnerFighter();
 			const fightResult = await LogsPveFightsResults.create({
@@ -1250,6 +1258,9 @@ export class LogsDatabase extends Database {
 	 */
 	public async logGuildDescriptionChange(keycloakId: string, guild: Guild): Promise<void> {
 		const player = await LogsDatabase.findOrCreatePlayer(keycloakId);
+		if (!player) {
+			return;
+		}
 		const guildInstance = await LogsDatabase.findOrCreateGuild(guild);
 		await LogsGuildsDescriptionChanges.create({
 			guildId: guildInstance.id,
@@ -1315,6 +1326,9 @@ export class LogsDatabase extends Database {
 	public async logPlayerNewPet(keycloakId: string, petEntity: PetEntity): Promise<void> {
 		const petEntityInstance = await LogsDatabase.findOrCreatePetEntity(petEntity);
 		const playerInstance = await LogsDatabase.findOrCreatePlayer(keycloakId);
+		if (!playerInstance) {
+			return;
+		}
 		await LogsPlayersNewPets.create({
 			playerId: playerInstance.id,
 			petId: petEntityInstance.id,
@@ -1330,6 +1344,9 @@ export class LogsDatabase extends Database {
 	public async logGuildElderAdd(guild: Guild, addedPlayerId: string): Promise<void> {
 		const logGuild = await LogsDatabase.findOrCreateGuild(guild);
 		const player = await LogsDatabase.findOrCreatePlayer(addedPlayerId);
+		if (!player) {
+			return;
+		}
 		await LogsGuildsEldersAdds.create({
 			guildId: logGuild.id,
 			addedElder: player.id,
@@ -1366,8 +1383,11 @@ export class LogsDatabase extends Database {
 	 * @param reason
 	 * @param fightId
 	 */
-	public async logPlayersAttackGloryPoints(keycloakId: string, gloryPoints: number, reason: NumberChangeReason, fightId: number = null): Promise<void> {
+	public async logPlayersAttackGloryPoints(keycloakId: string, gloryPoints: number, reason: NumberChangeReason, fightId: number = -1): Promise<void> {
 		const player = await LogsDatabase.findOrCreatePlayer(keycloakId);
+		if (!player) {
+			return;
+		}
 		await LogsPlayersGloryPoints.create({
 			playerId: player.id,
 			value: gloryPoints,
@@ -1385,8 +1405,11 @@ export class LogsDatabase extends Database {
 	 * @param reason
 	 * @param fightId
 	 */
-	public async logPlayersDefenseGloryPoints(keycloakId: string, gloryPoints: number, reason: NumberChangeReason, fightId: number = null): Promise<void> {
+	public async logPlayersDefenseGloryPoints(keycloakId: string, gloryPoints: number, reason: NumberChangeReason, fightId: number = -1): Promise<void> {
 		const player = await LogsDatabase.findOrCreatePlayer(keycloakId);
+		if (!player) {
+			return;
+		}
 		await LogsPlayersGloryPoints.create({
 			playerId: player.id,
 			value: gloryPoints,
@@ -1410,6 +1433,9 @@ export class LogsDatabase extends Database {
 				continue;
 			}
 			const player = await LogsDatabase.findOrCreatePlayer(gamePlayer.keycloakId);
+			if (!player) {
+				continue;
+			}
 			await LogsPlayers15BestSeason.create({
 				playerId: player.id,
 				position,
@@ -1427,6 +1453,9 @@ export class LogsDatabase extends Database {
 	 */
 	public async logPlayerLeagueReward(keycloakId: string, leagueLastSeason: number): Promise<void> {
 		const player = await LogsDatabase.findOrCreatePlayer(keycloakId);
+		if (!player) {
+			return;
+		}
 		await LogsPlayerLeagueReward.create({
 			playerId: player.id,
 			leagueLastSeason,
@@ -1442,6 +1471,9 @@ export class LogsDatabase extends Database {
 	 */
 	public async logTeleportation(keycloakId: string, originMapLinkId: number, newMapLinkId: number): Promise<void> {
 		const player = await LogsDatabase.findOrCreatePlayer(keycloakId);
+		if (!player) {
+			return;
+		}
 		await LogsPlayersTeleportations.create({
 			playerId: player.id,
 			originMapLinkId,
@@ -1459,6 +1491,9 @@ export class LogsDatabase extends Database {
 		data: Partial<ExpeditionLogData>
 	): Promise<void> {
 		const player = await LogsDatabase.findOrCreatePlayer(keycloakId);
+		if (!player) {
+			return;
+		}
 		const petEntity = await LogsDatabase.findOrCreatePetEntityByGameId(petGameId);
 		await LogsExpeditions.create({
 			playerId: player.id,
@@ -1563,6 +1598,9 @@ export class LogsDatabase extends Database {
 	 */
 	public async countRecentExpeditionCancellations(keycloakId: string, days: number): Promise<number> {
 		const logPlayer = await LogsDatabase.findOrCreatePlayer(keycloakId);
+		if (!logPlayer) {
+			return 0;
+		}
 		const cutoffDate = getDateLogs() - daysToSeconds(days);
 
 		return LogsExpeditions.count({

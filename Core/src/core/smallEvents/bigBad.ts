@@ -25,8 +25,8 @@ export const smallEventFuncs: SmallEventFuncs = {
 	canBeExecuted: Maps.isOnContinent,
 	executeSmallEvent: async (response, player): Promise<void> => {
 		const outRand: SmallEventBigBadKind = RandomUtils.crowniclesRandom.integer(0, 2);
-		let lifeLoss, seFallen, moneyLoss, effect;
-		const bigBadProperties = SmallEventDataController.instance.getById("bigBad").getProperties<BigBadProperties>();
+		let lifeLoss = 0, seFallen = "", moneyLoss = 0, effect;
+		const bigBadProperties = SmallEventDataController.instance.getById("bigBad")!.getProperties<BigBadProperties>();
 		switch (outRand) {
 			case SmallEventBigBadKind.LIFE_LOSS:
 				lifeLoss = RandomUtils.rangedInt(SmallEventConstants.BIG_BAD.HEALTH);
@@ -35,12 +35,16 @@ export const smallEventFuncs: SmallEventFuncs = {
 			case SmallEventBigBadKind.ALTERATION:
 				seFallen = RandomUtils.crowniclesRandom.pick(Object.keys(bigBadProperties.alterationStories));
 				effect = bigBadProperties.alterationStories[seFallen].alte;
-				await TravelTime.applyEffect(player, Effect.getById(effect), 0, new Date(), NumberChangeReason.SMALL_EVENT);
-				if (bigBadProperties.alterationStories[seFallen].tags) {
-					for (const tag of bigBadProperties.alterationStories[seFallen].tags) {
+				const resolvedEffect = Effect.getById(effect);
+				if (resolvedEffect) {
+					await TravelTime.applyEffect(player, resolvedEffect, 0, new Date(), NumberChangeReason.SMALL_EVENT);
+				}
+				const tags = bigBadProperties.alterationStories[seFallen].tags;
+				if (tags) {
+					for (const tag of tags) {
 						await MissionsController.update(player, response, {
 							missionId: tag,
-							params: { tags: bigBadProperties.alterationStories[seFallen].tags }
+							params: { tags }
 						});
 					}
 				}

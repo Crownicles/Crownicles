@@ -7,11 +7,11 @@ async function verifyConditionCanAcceptPet(condition: PossibilityCondition, play
 		return true;
 	}
 
-	let guild: Guild;
+	let guild: Guild | null;
 
 	// Search for a user's guild
 	try {
-		guild = await Guilds.getById(player.guildId);
+		guild = await Guilds.getById(player.guildId) ?? null;
 	}
 	catch {
 		guild = null;

@@ -12,12 +12,12 @@ export const commandInfo: ITestCommand = {
 };
 
 const deleteJoinGuildTestCommand: ExecuteTestCommandLike = async player => {
-	const logsGuild = await LogsGuilds.findOne({
+	const logsGuild = (await LogsGuilds.findOne({
 		where: { gameId: player.guildId }
-	});
-	const logsPlayer = await LogsPlayers.findOne({
+	}))!;
+	const logsPlayer = (await LogsPlayers.findOne({
 		where: { keycloakId: player.keycloakId }
-	});
+	}))!;
 	await LogsGuildsJoins.destroy({
 		where: {
 			guildId: logsGuild.id,

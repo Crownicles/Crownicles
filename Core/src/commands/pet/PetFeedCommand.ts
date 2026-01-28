@@ -147,9 +147,9 @@ function getWithGuildPetFeedEndCallback(player: Player, authorPet: PetEntity, gu
 			amount: PetConstants.PET_FOOD_LOVE_POINTS_AMOUNT[foodIndex],
 			reason: NumberChangeReason.PET_FEED
 		};
-		if (petModel.diet && (foodReaction.food === PetFood.SALAD || foodReaction.food === PetFood.MEAT)) {
+		if (petModel?.diet && (foodReaction.food === PetFood.SALAD || foodReaction.food === PetFood.MEAT)) {
 			let result = CommandPetFeedResult.DISLIKE;
-			if (petModel.canEatMeat() && foodReaction.food === PetFood.MEAT || petModel.canEatVegetables() && foodReaction.food === PetFood.SALAD) {
+			if ((petModel.canEatMeat() && foodReaction.food === PetFood.MEAT) || (petModel.canEatVegetables() && foodReaction.food === PetFood.SALAD)) {
 				await authorPet.changeLovePoints(changeLovePointsParameters);
 				result = CommandPetFeedResult.VERY_HAPPY;
 			}
@@ -182,6 +182,10 @@ function getWithGuildPetFeedEndCallback(player: Player, authorPet: PetEntity, gu
  */
 async function withGuildPetFeed(context: PacketContext, response: CrowniclesPacket[], player: Player, authorPet: PetEntity): Promise<void> {
 	const guild = await Guilds.getById(player.guildId);
+	if (!guild) {
+		response.push(makePacket(CommandPetFeedGuildStorageEmptyErrorPacket, {}));
+		return;
+	}
 	const reactions = [];
 
 	for (const food of Object.values(PetConstants.PET_FOOD)) {
@@ -240,7 +244,7 @@ export default class PetFeedCommand {
 			return;
 		}
 
-		const cooldownTime = authorPet.getFeedCooldown(PetDataController.instance.getById(authorPet.typeId));
+		const cooldownTime = authorPet.getFeedCooldown(PetDataController.instance.getById(authorPet.typeId)!);
 		if (cooldownTime > 0) {
 			response.push(makePacket(CommandPetFeedNotHungryErrorPacket, {
 				pet: authorPet.asOwnedPet()

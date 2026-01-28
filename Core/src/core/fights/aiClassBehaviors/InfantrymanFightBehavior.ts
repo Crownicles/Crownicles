@@ -17,7 +17,7 @@ class InfantryManFightBehavior implements ClassBehavior {
 
 	private isOpponentCharging(opponent: PlayerFighter | AiPlayerFighter): boolean {
 		const opponentLastAction = opponent.getLastFightActionUsed();
-		return opponentLastAction && (
+		return opponentLastAction !== null && (
 			(opponentLastAction.id === FightConstants.FIGHT_ACTIONS.PLAYER.RESTING
 				&& this.isOpponentKnightLike(opponent)
 				&& RandomUtils.crowniclesRandom.bool(0.6))
@@ -67,7 +67,7 @@ class InfantryManFightBehavior implements ClassBehavior {
 		const opponent = fightView.fightController.getDefendingFighter() as PlayerFighter | AiPlayerFighter; // AI will never fight monsters
 
 		if (shouldProtect(opponent, me, fightView.fightController.turn)) {
-			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.PROTECTION);
+			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.PROTECTION)!;
 		}
 
 		// Priority is to use powerful attacks
@@ -77,13 +77,13 @@ class InfantryManFightBehavior implements ClassBehavior {
 			&& me.getBreath() >= FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.POWERFUL_ATTACK)
 		) {
 			this.powerfulAttacksUsedMap++;
-			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.POWERFUL_ATTACK);
+			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.POWERFUL_ATTACK)!;
 		}
 
 		if (me.getBreath() >= FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.CHARGE_CHARGING_ATTACK)
 			&& this.shouldUseChargingAttack(me, opponent, fightView, powerfulAttacksUsed)
 		) {
-			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.CHARGE_CHARGING_ATTACK);
+			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.CHARGE_CHARGING_ATTACK)!;
 		}
 
 		return piercingOrSimpleAttack(opponent, me);

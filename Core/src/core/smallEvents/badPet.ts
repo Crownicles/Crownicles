@@ -517,8 +517,8 @@ async function canBeExecuted(player: Player): Promise<boolean> {
 	}
 
 	// Moltiar avoids Mount Celestrum where Talvar resides
-	const destination = player.getDestination();
-	const origin = player.getPreviousMap();
+	const destination = player.getDestination()!;
+	const origin = player.getPreviousMap()!;
 	if ([destination.id, origin.id].some(mapId => mapId === MapConstants.LOCATIONS_IDS.MOUNT_CELESTRUM)) {
 		return false;
 	}

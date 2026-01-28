@@ -34,14 +34,14 @@ import { PacketUtils } from "../../core/utils/PacketUtils";
 async function acceptGuildElderRemove(player: Player, demotedElder: Player, response: CrowniclesPacket[]): Promise<void> {
 	await player.reload();
 	await demotedElder.reload();
-	const guild = await Guilds.getById(player.guildId);
+	const guild = (await Guilds.getById(player.guildId))!;
 
 	// Do all necessary checks again just in case something changed during the menu
 	if (!guild.elderId) {
 		response.push(makePacket(CommandGuildElderRemoveNoElderPacket, {}));
 		return;
 	}
-	guild.elderId = null;
+	guild.elderId = null as unknown as number;
 
 	await Promise.all([
 		demotedElder.save(),
@@ -84,13 +84,13 @@ export default class GuildElderRemoveCommand {
 		whereAllowed: CommandUtils.WHERE.EVERYWHERE
 	})
 	async execute(response: CrowniclesPacket[], player: Player, _packet: CommandGuildElderRemovePacketReq, context: PacketContext): Promise<void> {
-		const guild = await Guilds.getById(player.guildId);
+		const guild = (await Guilds.getById(player.guildId))!;
 
 		if (!guild.elderId) {
 			response.push(makePacket(CommandGuildElderRemoveNoElderPacket, {}));
 			return;
 		}
-		const demotedElder = await Players.getById(guild.elderId);
+		const demotedElder = (await Players.getById(guild.elderId))!;
 		const guildName = guild.name;
 
 		const collector = new ReactionCollectorGuildElderRemove(

@@ -123,7 +123,7 @@ function getEndCallback(player: Player): EndCallback {
 
 		const reaction = collector.getFirstReaction();
 		const selectedEvent = reaction
-			? WitchActionDataController.instance.getById((reaction.reaction.data as ReactionCollectorWitchReaction).id)
+			? WitchActionDataController.instance.getById((reaction.reaction.data as ReactionCollectorWitchReaction).id) ?? WitchActionDataController.instance.getDoNothing()
 			: WitchActionDataController.instance.getDoNothing();
 		const outcome = selectedEvent.generateOutcome();
 
@@ -167,9 +167,9 @@ export const smallEventFuncs: SmallEventFuncs = {
 	executeSmallEvent: (response, player, context, testArgs?: string[]) => {
 		const events: WitchEventSelection = testArgs
 			? {
-				randomAdvice: WitchActionDataController.instance.getById(testArgs[0]),
-				randomIngredient: WitchActionDataController.instance.getById(testArgs[1]),
-				fullRandom: WitchActionDataController.instance.getById(testArgs[2])
+				randomAdvice: WitchActionDataController.instance.getById(testArgs[0])!,
+				randomIngredient: WitchActionDataController.instance.getById(testArgs[1])!,
+				fullRandom: WitchActionDataController.instance.getById(testArgs[2])!
 			}
 			: getRandomWitchEvents(player.class === ClassConstants.CLASSES_ID.MYSTIC_MAGE);
 

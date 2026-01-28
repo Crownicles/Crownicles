@@ -43,7 +43,7 @@ const use: FightActionFunc = (sender, receiver) => {
 		}, receiver);
 	}
 
-	sender.nextFightAction = FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.MONSTER.IS_STUCK_IN_POLAR_EMBRACE);
+	sender.nextFightAction = FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.MONSTER.IS_STUCK_IN_POLAR_EMBRACE) ?? null;
 	return result;
 };
 

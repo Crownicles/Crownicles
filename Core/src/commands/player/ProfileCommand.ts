@@ -46,15 +46,12 @@ function getCampaignProgression(missionsInfo: PlayerMissionsInfo): number {
 /**
  * Build pet data for profile
  */
-function buildPetData(petEntity: PetEntity | null, petModel: Pet | null): {
+function buildPetData(petEntity: PetEntity, petModel: Pet): {
 	typeId: number;
 	sex: SexTypeShort;
 	nickname: string;
 	rarity: number;
-} | null {
-	if (!petEntity || !petModel) {
-		return null;
-	}
+} {
 	return {
 		typeId: petModel.id,
 		sex: petEntity.sex as SexTypeShort,
@@ -187,6 +184,7 @@ export default class ProfileCommand {
 			: await Players.getGloryRankById(toCheckPlayer.id);
 
 		const petModel = petEntity ? PetDataController.instance.getById(petEntity.typeId) : null;
+		const petData = petEntity && petModel ? buildPetData(petEntity, petModel) : undefined;
 		const destinationId = toCheckPlayer.getDestinationId();
 		const badges = await PlayerBadgesManager.getOfPlayer(toCheckPlayer.id);
 
@@ -194,21 +192,21 @@ export default class ProfileCommand {
 			keycloakId: toCheckPlayer.keycloakId,
 			playerData: {
 				badges,
-				guild: guild?.name,
+				guild: guild?.name ?? undefined,
 				level: toCheckPlayer.level,
 				rank: buildRankData(rank, numberOfPlayers, toCheckPlayer.score),
 				classId: toCheckPlayer.class,
-				color: toCheckPlayer.getProfileColor(),
-				pet: buildPetData(petEntity, petModel),
-				destinationId,
-				mapTypeId: destinationId ? MapLocationDataController.instance.getById(destinationId).type : null,
+				color: toCheckPlayer.getProfileColor() ?? undefined,
+				pet: petData,
+				destinationId: destinationId ?? undefined,
+				mapTypeId: destinationId ? MapLocationDataController.instance.getById(destinationId)?.type : undefined,
 				effect: buildEffectData(toCheckPlayer),
-				fightRanking: await buildFightRankingData(toCheckPlayer, gloryRank),
+				fightRanking: await buildFightRankingData(toCheckPlayer, gloryRank) ?? undefined,
 				missions: {
 					gems: missionsInfo.gems,
 					campaignProgression: getCampaignProgression(missionsInfo)
 				},
-				stats: buildStatsData(toCheckPlayer, playerActiveObjects),
+				stats: buildStatsData(toCheckPlayer, playerActiveObjects) ?? undefined,
 				experience: {
 					value: toCheckPlayer.experience,
 					max: toCheckPlayer.getExperienceNeededToLevelUp()

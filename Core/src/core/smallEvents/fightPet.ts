@@ -60,7 +60,7 @@ function retrieveSelectedEvent(collector: ReactionCollectorInstance): FightPetAc
 		return FightPetActionDataController.instance.getNothing();
 	}
 
-	return FightPetActionDataController.instance.getById(reaction.actionId);
+	return FightPetActionDataController.instance.getById(reaction.actionId)!;
 }
 
 export const smallEventFuncs: SmallEventFuncs = {

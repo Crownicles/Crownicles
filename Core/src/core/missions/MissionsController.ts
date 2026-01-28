@@ -187,8 +187,8 @@ export class MissionsController {
 		completedMissions.push(...await Campaign.updatePlayerCampaign(specialMissionCompletion.campaign, player));
 		for (const mission of missionSlots.filter(mission => mission.isCompleted() && !mission.isCampaign())) {
 			completedMissions.push({
-				missionType: MissionType.NORMAL,
 				...mission.toJSON(),
+				missionType: MissionType.NORMAL,
 				gemsToWin: 0 // Don't win gems in secondary missions
 			});
 			crowniclesInstance.logsDatabase.logMissionFinished(player.keycloakId, mission.missionId, mission.missionVariant, mission.missionObjective)
@@ -198,8 +198,8 @@ export class MissionsController {
 		if (specialMissionCompletion.daily) {
 			const dailyMission = await DailyMissions.getOrGenerate();
 			completedMissions.push({
-				missionType: MissionType.DAILY,
 				...dailyMission.toJSON(),
+				missionType: MissionType.DAILY,
 				moneyToWin: Math.round(dailyMission.moneyToWin * Constants.MISSIONS.DAILY_MISSION_MONEY_MULTIPLIER), // Daily missions gives less money than secondary missions
 				pointsToWin: Math.round(dailyMission.pointsToWin * Constants.MISSIONS.DAILY_MISSION_POINTS_MULTIPLIER) // Daily missions give more points than secondary missions
 			});
@@ -274,10 +274,10 @@ export class MissionsController {
 			baseMission.expiresAt = new Date(baseMission.expiresAt).toString();
 		}
 		if (MissionUtils.isRequiredFightActionId(baseMission)) {
-			baseMission.fightAction = FightActionController.variantToFightActionId(baseMission.missionVariant);
+			baseMission.fightAction = FightActionController.variantToFightActionId(baseMission.missionVariant) ?? undefined;
 		}
 		if (MissionUtils.isRequiredMapLocationMapType(baseMission)) {
-			baseMission.mapType = MapLocationDataController.instance.getById(baseMission.missionVariant).type;
+			baseMission.mapType = MapLocationDataController.instance.getById(baseMission.missionVariant)!.type;
 		}
 		return baseMission;
 	}
@@ -292,55 +292,65 @@ export class MissionsController {
 
 	public static generateRandomDailyMissionProperties(): GeneratedMission {
 		const mission = MissionDataController.instance.getRandomDailyMission();
+
+		// Daily missions always return a valid GeneratedMission since daily=true bypasses difficulty filtering
 		return this.generateMissionProperties(mission.id, MissionDifficulty.EASY, {
 			mission,
 			daily: true
-		});
+		})!;
 	}
 
 	public static generateMissionProperties(missionId: string, difficulty: MissionDifficulty, {
-		mission = null,
+		mission,
 		daily = false,
-		player = null
-	}: GenerateMissionPropertiesOptions): GeneratedMission {
-		if (!mission) {
-			mission = MissionDataController.instance.getById(missionId);
-			if (!mission) {
+		player
+	}: GenerateMissionPropertiesOptions): GeneratedMission | null {
+		let resolvedMission = mission;
+		if (!resolvedMission) {
+			resolvedMission = MissionDataController.instance.getById(missionId);
+			if (!resolvedMission) {
 				return null;
 			}
 		}
-		const generatedMission = {
-			mission,
-			index: this.generateMissionIndex(mission, difficulty),
-			variant: this.getMissionInterface(mission.id)
-				.generateRandomVariant(difficulty, player)
-		};
+		const missionIndex = this.generateMissionIndex(resolvedMission, difficulty);
+		const variant = this.getMissionInterface(resolvedMission.id)
+			.generateRandomVariant(difficulty, player as Player);
 		if (!daily) {
-			return generatedMission.index === null ? null : generatedMission;
+			if (missionIndex === null) {
+				return null;
+			}
+			return {
+				mission: resolvedMission,
+				index: missionIndex,
+				variant
+			};
 		}
-		generatedMission.index = RandomUtils.crowniclesRandom.pick(mission.dailyIndexes);
-		return generatedMission;
+		return {
+			mission: resolvedMission,
+			index: RandomUtils.crowniclesRandom.pick(resolvedMission.dailyIndexes!),
+			variant
+		};
 	}
 
-	public static async addMissionToPlayer(player: Player, missionId: string, difficulty: MissionDifficulty, mission: Mission = null): Promise<MissionSlot> {
+	public static async addMissionToPlayer(player: Player, missionId: string, difficulty: MissionDifficulty, mission?: Mission): Promise<MissionSlot> {
 		const prop = this.generateMissionProperties(missionId, difficulty, {
 			mission,
 			daily: false,
 			player
-		});
-		const missionData = MissionDataController.instance.getById(missionId);
+		})!;
+		const missionData = MissionDataController.instance.getById(missionId)!;
 		const missionSlot = await MissionSlot.create({
 			playerId: player.id,
 			missionId: prop.mission.id,
 			missionVariant: prop.variant,
-			missionObjective: missionData.objectives[prop.index],
-			expiresAt: new Date(Date.now() + hoursToMilliseconds(missionData.expirations[prop.index])),
+			missionObjective: missionData.objectives![prop.index],
+			expiresAt: new Date(Date.now() + hoursToMilliseconds(missionData.expirations![prop.index])),
 			numberDone: await this.getMissionInterface(missionId)
 				.initialNumberDone(player, prop.variant),
-			gemsToWin: missionData.gems[prop.index],
-			pointsToWin: missionData.points[prop.index],
-			xpToWin: missionData.xp[prop.index],
-			moneyToWin: missionData.money[prop.index]
+			gemsToWin: missionData.gems![prop.index],
+			pointsToWin: missionData.points![prop.index],
+			xpToWin: missionData.xp![prop.index],
+			moneyToWin: missionData.money![prop.index]
 		});
 		const retMission = await MissionSlots.getById(missionSlot.id);
 		crowniclesInstance.logsDatabase.logMissionFound(player.keycloakId, retMission.missionId, retMission.missionVariant, retMission.missionObjective)
@@ -369,15 +379,15 @@ export class MissionsController {
 		return MissionDifficulty.EASY;
 	}
 
-	private static generateMissionIndex(mission: Mission, difficulty: MissionDifficulty): number {
+	private static generateMissionIndex(mission: Mission, difficulty: MissionDifficulty): number | null {
 		if (difficulty === MissionDifficulty.EASY && mission.canBeEasy()) {
-			return RandomUtils.crowniclesRandom.pick(mission.difficulties.easy);
+			return RandomUtils.crowniclesRandom.pick(mission.difficulties!.easy!);
 		}
 		if (difficulty === MissionDifficulty.MEDIUM && mission.canBeMedium()) {
-			return RandomUtils.crowniclesRandom.pick(mission.difficulties.medium);
+			return RandomUtils.crowniclesRandom.pick(mission.difficulties!.medium!);
 		}
 		if (difficulty === MissionDifficulty.HARD && mission.canBeHard()) {
-			return RandomUtils.crowniclesRandom.pick(mission.difficulties.hard);
+			return RandomUtils.crowniclesRandom.pick(mission.difficulties!.hard!);
 		}
 		return null;
 	}
@@ -408,20 +418,20 @@ export class MissionsController {
 		}
 		const dailyMission = await DailyMissions.getOrGenerate();
 		if (dailyMission.missionId !== missionInformation.missionId
-			|| !missionInterface.areParamsMatchingVariantAndBlob(dailyMission.missionVariant, missionInformation.params, missionInfo.dailyMissionBlob)) {
+			|| !missionInterface.areParamsMatchingVariantAndBlob(dailyMission.missionVariant, missionInformation.params!, missionInfo.dailyMissionBlob)) {
 			return specialMissionCompletion;
 		}
 
 		// Update the daily mission blob if the params match
-		missionInfo.dailyMissionBlob = missionInterface.updateSaveBlob(dailyMission.missionVariant, missionInfo.dailyMissionBlob, missionInformation.params);
+		missionInfo.dailyMissionBlob = missionInterface.updateSaveBlob(dailyMission.missionVariant, missionInfo.dailyMissionBlob, missionInformation.params!);
 
 		// Handle set mode (replace) vs increment mode for daily missions
-		if (missionInformation.set) {
+		if (missionInformation.set!) {
 			// For "set" missions (like earnTokensInOneExpedition), only update if the new value is higher
-			missionInfo.dailyMissionNumberDone = Math.max(missionInfo.dailyMissionNumberDone, missionInformation.count);
+			missionInfo.dailyMissionNumberDone = Math.max(missionInfo.dailyMissionNumberDone, missionInformation.count!);
 		}
 		else {
-			missionInfo.dailyMissionNumberDone += missionInformation.count;
+			missionInfo.dailyMissionNumberDone += missionInformation.count!;
 		}
 
 		if (missionInfo.dailyMissionNumberDone > dailyMission.missionObjective) {
@@ -449,14 +459,14 @@ export class MissionsController {
 	private static async checkMissionSlots(missionInterface: IMission, missionInformations: MissionInformations, missionSlots: MissionSlot[]): Promise<boolean> {
 		let completedCampaign = false;
 		for (const mission of missionSlots.filter(missionSlot => missionSlot.missionId === missionInformations.missionId)) {
-			const paramsMatch = missionInterface.areParamsMatchingVariantAndBlob(mission.missionVariant, missionInformations.params, mission.saveBlob);
+			const paramsMatch = missionInterface.areParamsMatchingVariantAndBlob(mission.missionVariant, missionInformations.params!, mission.saveBlob);
 			if (paramsMatch && !mission.hasExpired() && !mission.isCompleted()) {
 				await this.updateMission(mission, missionInformations);
 				completedCampaign = completedCampaign || mission.isCampaign() && mission.isCompleted();
 			}
 
 			// Update blob if mission is not completed AND either params match OR mission explicitly wants to always update blob
-			if (this.shouldUpdateBlob(mission, paramsMatch, missionInterface.alwaysUpdateBlob)) {
+			if (this.shouldUpdateBlob(mission, paramsMatch, missionInterface.alwaysUpdateBlob!)) {
 				await this.updateBlob(missionInterface, mission, missionInformations);
 			}
 		}
@@ -481,7 +491,7 @@ export class MissionsController {
 	 * @param missionInformations
 	 */
 	private static async updateBlob(missionInterface: IMission, mission: MissionSlot, missionInformations: MissionInformations): Promise<void> {
-		const saveBlob = missionInterface.updateSaveBlob(mission.missionVariant, mission.saveBlob, missionInformations.params);
+		const saveBlob = missionInterface.updateSaveBlob(mission.missionVariant, mission.saveBlob, missionInformations.params!);
 		if (saveBlob !== mission.saveBlob) {
 			mission.saveBlob = saveBlob;
 			await mission.save();
@@ -494,7 +504,7 @@ export class MissionsController {
 	 * @param missionInformations
 	 */
 	private static async updateMission(mission: MissionSlot, missionInformations: MissionInformations): Promise<void> {
-		mission.numberDone = Math.min(mission.missionObjective, missionInformations.set ? missionInformations.count : mission.numberDone + missionInformations.count);
+		mission.numberDone = Math.min(mission.missionObjective, missionInformations.set! ? missionInformations.count! : mission.numberDone + missionInformations.count!);
 		await mission.save();
 	}
 }

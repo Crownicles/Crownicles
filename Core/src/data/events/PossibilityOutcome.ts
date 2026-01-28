@@ -35,9 +35,9 @@ async function applyOutcomeScore(outcome: PossibilityOutcome, time: number, play
 
 async function applyOutcomeExperience(outcome: PossibilityOutcome, player: Player, response: CrowniclesPacket[]): Promise<number> {
 	let experienceChange = BigEventConstants.EXPERIENCE.BASE
-		+ (outcome.health > 0 ? BigEventConstants.EXPERIENCE.HEALTH_BONUS : 0)
+		+ ((outcome.health ?? 0) > 0 ? BigEventConstants.EXPERIENCE.HEALTH_BONUS : 0)
 		+ (outcome.randomItem ? BigEventConstants.EXPERIENCE.RANDOM_ITEM_BONUS : 0)
-		+ (outcome.money > 0 ? BigEventConstants.EXPERIENCE.MONEY_BONUS : 0);
+		+ ((outcome.money ?? 0) > 0 ? BigEventConstants.EXPERIENCE.MONEY_BONUS : 0);
 	switch (outcome.effect ?? Effect.NO_EFFECT.id) {
 		case Effect.OCCUPIED.id:
 			experienceChange -= BigEventConstants.EXPERIENCE.OCCUPIED_PENALTY;
@@ -54,7 +54,7 @@ async function applyOutcomeExperience(outcome: PossibilityOutcome, player: Playe
 		default:
 			experienceChange = 0;
 	}
-	if (outcome.health < 0 || outcome.oneshot === true || experienceChange < 0) {
+	if ((outcome.health ?? 0) < 0 || outcome.oneshot === true || experienceChange < 0) {
 		experienceChange = 0;
 	}
 	experienceChange += outcome.bonusExperience ?? 0;
@@ -75,7 +75,7 @@ async function applyOutcomeEffect(outcome: PossibilityOutcome, player: Player): 
 } | undefined> {
 	await player.setLastReportWithEffect(
 		outcome.lostTime ?? 0,
-		Effect.getById(outcome.effect) ?? Effect.NO_EFFECT,
+		Effect.getById(outcome.effect ?? Effect.NO_EFFECT.id) ?? Effect.NO_EFFECT,
 		NumberChangeReason.BIG_EVENT
 	);
 
@@ -166,7 +166,7 @@ async function applyOutcomeGivePet(outcome: PossibilityOutcome, player: Player, 
 	if (outcome.givePet) {
 		const petId = RandomUtils.crowniclesRandom.pick(outcome.givePet.petIds);
 		const sex = RandomUtils.crowniclesRandom.bool() ? PetConstants.SEX.MALE : PetConstants.SEX.FEMALE;
-		const pet = PetEntities.createPet(petId, sex, null);
+		const pet = PetEntities.createPet(petId, sex, "");
 		await pet.giveToPlayer(player, response);
 	}
 }
@@ -183,25 +183,25 @@ function applyOutcomeNextEvent(outcome: PossibilityOutcome, player: Player): voi
 	}
 }
 
-function getNextMapLink(outcome: PossibilityOutcome, player: Player): MapLink {
+function getNextMapLink(outcome: PossibilityOutcome, player: Player): MapLink | null {
 	if (outcome.mapLink) {
-		return MapLinkDataController.instance.getById(outcome.mapLink);
+		return MapLinkDataController.instance.getById(outcome.mapLink) ?? null;
 	}
 
 	if (outcome.mapTypesDestination || outcome.mapTypesExcludeDestination) {
 		let allowedMapTypes = Maps.getConnectedMapTypes(player, !outcome.mapTypesDestination);
 		if (outcome.mapTypesDestination) {
-			allowedMapTypes = allowedMapTypes.filter(mapType => outcome.mapTypesDestination.includes(mapType));
+			allowedMapTypes = allowedMapTypes.filter(mapType => outcome.mapTypesDestination!.includes(mapType));
 		}
 		if (outcome.mapTypesExcludeDestination) {
-			allowedMapTypes = allowedMapTypes.filter(mapType => !outcome.mapTypesExcludeDestination.includes(mapType));
+			allowedMapTypes = allowedMapTypes.filter(mapType => !outcome.mapTypesExcludeDestination!.includes(mapType));
 		}
 
 		return RandomUtils.crowniclesRandom.pick(
 			MapLinkDataController.instance.getMapLinksWithMapTypes(
 				allowedMapTypes,
-				player.getDestinationId(),
-				!outcome.mapTypesDestination ? player.getPreviousMapId() : null
+				player.getDestinationId() ?? -1,
+				!outcome.mapTypesDestination ? player.getPreviousMapId() ?? -1 : -1
 			)
 		);
 	}
@@ -223,7 +223,7 @@ type ApplyOutcome = {
  * @param context
  * @param response
  */
-export async function applyPossibilityOutcome(possibilityOutcome: ApplyOutcome, player: Player, context: PacketContext, response: CrowniclesPacket[]): Promise<MapLink> {
+export async function applyPossibilityOutcome(possibilityOutcome: ApplyOutcome, player: Player, context: PacketContext, response: CrowniclesPacket[]): Promise<MapLink | null> {
 	// Score
 	const score = await applyOutcomeScore(possibilityOutcome.outcome[1], possibilityOutcome.time, player, response);
 

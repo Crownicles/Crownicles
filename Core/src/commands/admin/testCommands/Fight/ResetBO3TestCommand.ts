@@ -20,7 +20,7 @@ export const commandInfo: ITestCommand = {
  * Reset the BO3 against a player
  */
 const bo3TestCommand: ExecuteTestCommandLike = async (player, args) => {
-	const otherPlayer = await Players.getByKeycloakId(args[0]);
+	const otherPlayer = (await Players.getByKeycloakId(args[0]))!;
 	const fightsBO3 = await LogsFightsResults.findAll({
 		where: {
 			[Op.or]: [

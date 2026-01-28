@@ -7,7 +7,7 @@ import { FightConstants } from "../../../../../../../Lib/src/constants/FightCons
 
 const use: FightActionFunc = (sender: Fighter) => {
 	// Set the next fight action of the sender to be the club smash attack
-	sender.nextFightAction = FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.MONSTER.CLUB_SMASH_ATTACK);
+	sender.nextFightAction = FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.MONSTER.CLUB_SMASH_ATTACK) ?? null;
 	return defaultFightActionResult();
 };
 

@@ -22,8 +22,8 @@ function getAttackInfo(): attackInfo {
 }
 
 function getStatsInfo(sender: Fighter, receiver: Fighter): statsInfo {
-	const petId = (sender as PlayerFighter).pet.typeId;
-	const petData = PetDataController.instance.getById(petId);
+	const petId = (sender as PlayerFighter).pet!.typeId;
+	const petData = PetDataController.instance.getById(petId)!;
 	return {
 		attackerStats: [
 			FightUtils.calculatePetStatFromForce(petData.force, sender.level),
@@ -57,7 +57,7 @@ const use: PetAssistanceFunc = (fighter, opponent, _turn, _fightController): Pro
 		stat: FightStatBuffed.ENERGY,
 		operator: FightStatModifierOperation.ADDITION,
 		value: damages
-	}, fighter, this);
+	}, fighter, undefined);
 
 	return Promise.resolve(result);
 };

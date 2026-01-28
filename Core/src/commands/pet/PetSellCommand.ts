@@ -124,7 +124,7 @@ async function executePetSell(collector: ReactionCollectorInstance, response: Cr
 
 	// Switch the pet owner and love points
 	buyer.petId = sellerInformation.pet.id;
-	sellerInformation.player.petId = null;
+	sellerInformation.player.petId = null as unknown as number;
 	sellerInformation.pet.lovePoints = PetConstants.BASE_LOVE;
 
 	// Save the changes
@@ -181,11 +181,19 @@ async function acceptPetSellCallback(collector: ReactionCollectorInstance, initi
 		return;
 	}
 
+	const pet = await PetEntities.getById(initiatorPlayer.petId);
+	const petModel = PetDataController.instance.getById(pet!.typeId);
+	const guild = await Guilds.getById(initiatorPlayer.guildId);
+	if (!pet || !petModel || !guild) {
+		response.push(makePacket(CommandPetSellInitiatorSituationChangedErrorPacket, {}));
+		await collector.end(response);
+		return;
+	}
 	const sellerInformation: SellerInformation = {
 		player: initiatorPlayer,
-		pet: await PetEntities.getById(initiatorPlayer.petId),
-		petModel: PetDataController.instance.getById(initiatorPlayer.petId),
-		guild: await Guilds.getById(initiatorPlayer.guildId),
+		pet,
+		petModel,
+		guild,
 		petCost: price
 	};
 
@@ -236,7 +244,7 @@ function createAndPushCollector(player: Player, packet: CommandPetSellPacketReq,
 		collector,
 		context,
 		{
-			allowedPlayerKeycloakIds: packet.askedPlayer.keycloakId ? [player.keycloakId, packet.askedPlayer.keycloakId] : null,
+			allowedPlayerKeycloakIds: packet.askedPlayer.keycloakId ? [player.keycloakId, packet.askedPlayer.keycloakId] : undefined,
 			reactionLimit: -1
 		},
 		endCallback,
@@ -287,8 +295,12 @@ export default class PetSellCommand {
 			return;
 		}
 
-		const sellerInformation = {
-			player, pet, petModel: PetDataController.instance.getById(pet.typeId), guild, petCost: packet.price
+		const petModel = PetDataController.instance.getById(pet.typeId);
+		if (!petModel) {
+			return;
+		}
+		const sellerInformation: SellerInformation = {
+			player, pet, petModel, guild, petCost: packet.price
 		};
 
 		if (missingRequirementsToSellPet(response, sellerInformation)) {

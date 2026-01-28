@@ -504,9 +504,9 @@ describe('ItemUtils - giveItemToPlayer', () => {
 				id: 1,
 				category: ItemCategory.WEAPON,
 				rarity: ItemRarity.LEGENDARY,
-				detailsSupportItem: null,
+				detailsSupportItem: undefined,
 				detailsMainItem: expect.any(Object),
-				maxStats: null
+				maxStats: undefined
 			});
 		});
 
@@ -527,8 +527,8 @@ describe('ItemUtils - giveItemToPlayer', () => {
 				category: ItemCategory.POTION,
 				rarity: ItemRarity.RARE,
 				detailsSupportItem: expect.any(Object),
-				detailsMainItem: null,
-				maxStats: null
+				detailsMainItem: undefined,
+				maxStats: undefined
 			});
 		});
 	});

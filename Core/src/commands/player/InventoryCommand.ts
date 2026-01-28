@@ -47,10 +47,10 @@ export default class InventoryCommand {
 			hasTalisman: talismans.hasTalisman,
 			hasCloneTalisman: talismans.hasCloneTalisman,
 			data: {
-				weapon: (items.find(item => item.isWeapon() && item.isEquipped()).getItem() as MainItem).getDisplayPacket(maxStatsValues),
-				armor: (items.find(item => item.isArmor() && item.isEquipped()).getItem() as MainItem).getDisplayPacket(maxStatsValues),
-				potion: (equippedPotionSlot.getItem() as Potion).getDisplayPacket(maxStatsValues, equippedPotionSlot.remainingPotionUsages),
-				object: (items.find(item => item.isObject() && item.isEquipped()).getItem() as ObjectItem).getDisplayPacket(maxStatsValues),
+				weapon: (items.find(item => item.isWeapon() && item.isEquipped())!.getItem() as MainItem).getDisplayPacket(maxStatsValues),
+				armor: (items.find(item => item.isArmor() && item.isEquipped())!.getItem() as MainItem).getDisplayPacket(maxStatsValues),
+				potion: (equippedPotionSlot!.getItem() as Potion).getDisplayPacket(maxStatsValues, equippedPotionSlot!.remainingPotionUsages),
+				object: (items.find(item => item.isObject() && item.isEquipped())!.getItem() as ObjectItem).getDisplayPacket(maxStatsValues),
 				backupWeapons: items.filter(item => item.isWeapon() && !item.isEquipped()).map(item =>
 					({
 						display: (item.getItem() as Weapon).getDisplayPacket(maxStatsValues), slot: item.slot

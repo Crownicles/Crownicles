@@ -111,7 +111,7 @@ async function applyMalus(
 
 	const packet = makePacket(SmallEventGobletsGamePacket, {
 		malus,
-		goblet: reaction?.data.id,
+		goblet: reaction?.data.id ?? "",
 		value: 0,
 		strategy
 	});
@@ -150,6 +150,9 @@ export const smallEventFuncs: SmallEventFuncs = {
 	canBeExecuted: player => {
 		const destination = player.getDestination();
 		const origin = player.getPreviousMap();
+		if (!destination || !origin) {
+			return false;
+		}
 		return Maps.isOnContinent(player)
 			&& ![destination.id, origin.id].some(mapId =>
 				[

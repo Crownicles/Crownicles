@@ -34,7 +34,7 @@ const use: FightActionFunc = (sender, receiver, fightAction) => {
 		value: 1.5
 	}, sender, fightAction);
 
-	sender.nextFightAction = FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.CHARGING_ATTACK);
+	sender.nextFightAction = FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.CHARGING_ATTACK) ?? null;
 	return result;
 };
 

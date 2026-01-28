@@ -33,9 +33,10 @@ async function executeSingleTestCommand(params: {
 		commandTestCurrent = CommandsTest.getTestCommand(testCommand);
 	}
 	catch (e) {
+		const error = e as Error;
 		response.push(makePacket(CommandTestPacketRes, {
 			commandName: testCommand,
-			result: `:x: | Commande test ${testCommand} inexistante : \`\`\`${e.stack}\`\`\``,
+			result: `:x: | Commande test ${testCommand} inexistante : \`\`\`${error.stack}\`\`\``,
 			isError: true
 		}));
 		return;
@@ -59,7 +60,7 @@ async function executeSingleTestCommand(params: {
 			? parseTestCommandArgs(argsTest, commandTestCurrent.typeWaited).values
 			: argsTest;
 
-		const messageToDisplay = await commandTestCurrent.execute(player, parsedArgs, response, context);
+		const messageToDisplay = await commandTestCurrent.execute!(player, parsedArgs, response, context);
 
 		// Only send response if there's a message to display
 		if (messageToDisplay) {
@@ -71,10 +72,11 @@ async function executeSingleTestCommand(params: {
 		}
 	}
 	catch (e) {
-		CrowniclesLogger.errorWithObj(`Error while executing test command ${testCommand}`, e);
+		const error = e as Error;
+		CrowniclesLogger.errorWithObj(`Error while executing test command ${testCommand}`, error);
 		response.push(makePacket(CommandTestPacketRes, {
 			commandName: testCommand,
-			result: `:x: | Une erreur est survenue pendant la commande test ${testCommand} : \`\`\`${e.stack}\`\`\``,
+			result: `:x: | Une erreur est survenue pendant la commande test ${testCommand} : \`\`\`${error.stack}\`\`\``,
 			isError: true
 		}));
 	}
@@ -115,7 +117,7 @@ export default class TestCommand {
 
 		let testCommands: string[];
 		try {
-			testCommands = packet.command.split(" && ");
+			testCommands = packet.command?.split(" && ") ?? ["list"];
 		}
 		catch {
 			testCommands = ["list"];

@@ -56,6 +56,9 @@ export type PersonalFightDailySummary = {
 export class LogsReadRequests {
 	static async getLastTimeThePlayerHasEditedHisClass(playerKeycloakId: string): Promise<Date> {
 		const logPlayer = await LogsDatabase.findOrCreatePlayer(playerKeycloakId);
+		if (!logPlayer) {
+			return new Date(0);
+		}
 		return LogsPlayersClassChanges.findOne({
 			where: { playerId: logPlayer.id },
 			order: [["date", "DESC"]],
@@ -71,6 +74,9 @@ export class LogsReadRequests {
 	static async getAmountOfDailyPotionsBoughtByPlayer(playerKeycloakId: string): Promise<number> {
 		const dateOfLastDailyPotionReset = await this.getDateOfLastDailyPotionReset();
 		const logPlayer = await LogsDatabase.findOrCreatePlayer(playerKeycloakId);
+		if (!logPlayer) {
+			return 0;
+		}
 		return LogsClassicalShopBuyouts.count({
 			where: {
 				playerId: logPlayer.id,
@@ -89,6 +95,9 @@ export class LogsReadRequests {
 	static async getAmountOfTokensBoughtByPlayerToday(playerKeycloakId: string): Promise<number> {
 		const todayMidnight = dateToLogs(getTodayMidnight());
 		const logPlayer = await LogsDatabase.findOrCreatePlayer(playerKeycloakId);
+		if (!logPlayer) {
+			return 0;
+		}
 		return await LogsClassicalShopBuyouts.sum("amount", {
 			where: {
 				playerId: logPlayer.id,
@@ -105,6 +114,9 @@ export class LogsReadRequests {
 	static async getAmountOfTokensBoughtByPlayerThisWeek(playerKeycloakId: string): Promise<number> {
 		const startOfWeek = Math.floor(millisecondsToSeconds(getNextSundayMidnight() - daysToMilliseconds(TimeConstants.DAYS_IN_WEEK)));
 		const logPlayer = await LogsDatabase.findOrCreatePlayer(playerKeycloakId);
+		if (!logPlayer) {
+			return 0;
+		}
 		return await LogsClassicalShopBuyouts.sum("amount", {
 			where: {
 				playerId: logPlayer.id,
@@ -204,6 +216,9 @@ export class LogsReadRequests {
 	 */
 	static async getDateOfLastLeagueReward(playerKeycloakId: string): Promise<number | null> {
 		const logPlayer = await LogsDatabase.findOrCreatePlayer(playerKeycloakId);
+		if (!logPlayer) {
+			return null;
+		}
 		return LogsPlayerLeagueReward.findOne({
 			order: [["date", "DESC"]],
 			where: { playerId: logPlayer.id }
@@ -418,6 +433,9 @@ export class LogsReadRequests {
 	static async getAmountOfHealEnergyBoughtByPlayerThisWeek(playerKeycloakId: string): Promise<number> {
 		const dateOfLastSeasonReset = await this.getDateOfLastSeasonReset();
 		const logPlayer = await LogsDatabase.findOrCreatePlayer(playerKeycloakId);
+		if (!logPlayer) {
+			return 0;
+		}
 		return LogsClassicalShopBuyouts.count({
 			where: {
 				playerId: logPlayer.id,
@@ -534,6 +552,9 @@ export class LogsReadRequests {
 	 */
 	static async getSmallEventEncounterCount(keycloakId: string, smallEventName: string): Promise<number> {
 		const logPlayer = await LogsDatabase.findOrCreatePlayer(keycloakId);
+		if (!logPlayer) {
+			return 0;
+		}
 		const smallEvent = await LogsSmallEvents.findOne({
 			where: { name: smallEventName }
 		});
@@ -556,6 +577,9 @@ export class LogsReadRequests {
 	 */
 	static async countSuccessfulExpeditions(keycloakId: string): Promise<number> {
 		const logPlayer = await LogsDatabase.findOrCreatePlayer(keycloakId);
+		if (!logPlayer) {
+			return 0;
+		}
 		return LogsExpeditions.count({
 			where: {
 				playerId: logPlayer.id,

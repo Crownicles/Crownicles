@@ -111,7 +111,7 @@ export class PetEntity extends Model {
 	 * @param response
 	 */
 	public async giveToPlayer(player: Player, response: CrowniclesPacket[]): Promise<PET_ENTITY_GIVE_RETURN> {
-		let guild: Guild;
+		let guild: Guild | null;
 		let returnValue: PET_ENTITY_GIVE_RETURN;
 		const packet = makePacket(PlayerReceivePetPacket, {
 			giveInGuild: false,
@@ -137,7 +137,7 @@ export class PetEntity extends Model {
 		}
 		else if (!noRoomInGuild && player.petId !== null) {
 			await this.save();
-			await GuildPets.addPet(guild, this, true)
+			await GuildPets.addPet(guild!, this, true)
 				.save();
 			packet.giveInGuild = true;
 			returnValue = PET_ENTITY_GIVE_RETURN.GUILD;
@@ -165,6 +165,9 @@ export class PetEntity extends Model {
 	 */
 	public asOwnedPet(): OwnedPet {
 		const petModel = PetDataController.instance.getById(this.typeId);
+		if (!petModel) {
+			throw new Error(`Pet model not found for typeId ${this.typeId}`);
+		}
 		return {
 			typeId: this.typeId,
 			nickname: this.nickname,
@@ -189,7 +192,7 @@ export class PetEntity extends Model {
 }
 
 export class PetEntities {
-	static async getById(id: number): Promise<PetEntity> {
+	static async getById(id: number): Promise<PetEntity | null> {
 		return await PetEntity.findOne({
 			where: { id }
 		});
@@ -249,7 +252,7 @@ export class PetEntities {
                        WHERE lovePoints >= ${PetConstants.TRAINED_LOVE_THRESHOLD}`;
 		return (<{
 			count: number;
-		}[]>(await PetEntity.sequelize.query(query, {
+		}[]>(await PetEntity.sequelize!.query(query, {
 			type: QueryTypes.SELECT
 		})))[0].count;
 	}
@@ -260,7 +263,7 @@ export class PetEntities {
                        WHERE lovePoints <= ${PetConstants.LOVE_LEVELS[0]}`;
 		return (<{
 			count: number;
-		}[]>(await PetEntity.sequelize.query(query, {
+		}[]>(await PetEntity.sequelize!.query(query, {
 			type: QueryTypes.SELECT
 		})))[0].count;
 	}
@@ -271,7 +274,7 @@ export class PetEntities {
                        WHERE sex = :sex`;
 		return (<{
 			count: number;
-		}[]>(await PetEntity.sequelize.query(query, {
+		}[]>(await PetEntity.sequelize!.query(query, {
 			type: QueryTypes.SELECT,
 			replacements: { sex }
 		})))[0].count;
@@ -282,7 +285,7 @@ export class PetEntities {
                        FROM pet_entities`;
 		return (<{
 			count: number;
-		}[]>(await PetEntity.sequelize.query(query, {
+		}[]>(await PetEntity.sequelize!.query(query, {
 			type: QueryTypes.SELECT
 		})))[0].count;
 	}

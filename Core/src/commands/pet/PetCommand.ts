@@ -35,6 +35,10 @@ export default class PetCommand {
 	 */
 	async execute(response: CrowniclesPacket[], player: Player, packet: CommandPetPacketReq): Promise<void> {
 		const toCheckPlayer = await Players.getAskedPlayer(packet.askedPlayer, player);
+		if (!toCheckPlayer) {
+			response.push(makePacket(CommandPetPetNotFound, {}));
+			return;
+		}
 		const pet = await PetEntities.getById(toCheckPlayer.petId);
 		if (!pet) {
 			response.push(makePacket(CommandPetPetNotFound, {}));

@@ -81,7 +81,7 @@ async function acceptUnlock(player: Player, freedPlayer: Player, response: Crown
  * @param freedPlayer The player who will be freed from the prison
  * @param response The response to send
  */
-function unlockCannotBeDone(player: Player, freedPlayer: Player, response: CrowniclesPacket[]): boolean {
+function unlockCannotBeDone(player: Player, freedPlayer: Player | null, response: CrowniclesPacket[]): boolean {
 	if (freedPlayer === null || !freedPlayer.hasStartedToPlay()) {
 		response.push(makePacket(CommandUnlockNoPlayerFound, {}));
 		return true;
@@ -112,7 +112,7 @@ export default class UnlockCommand {
 	async execute(response: CrowniclesPacket[], player: Player, packet: CommandUnlockPacketReq, context: PacketContext): Promise<void> {
 		const freedPlayer = await Players.getAskedPlayer(packet.askedPlayer, player);
 
-		if (unlockCannotBeDone(player, freedPlayer, response)) {
+		if (unlockCannotBeDone(player, freedPlayer, response) || !freedPlayer) {
 			return;
 		}
 
@@ -124,7 +124,7 @@ export default class UnlockCommand {
 		const endCallback: EndCallback = async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
 			const reaction = collector.getFirstReaction();
 			if (reaction && reaction.reaction.type === ReactionCollectorAcceptReaction.name) {
-				await acceptUnlock(player, freedPlayer, response);
+				await acceptUnlock(player, freedPlayer!, response);
 			}
 			else {
 				response.push(makePacket(CommandUnlockRefusePacketRes, {}));

@@ -415,7 +415,7 @@ async function generateAndGiveReward(guild: Guild, members: Player[], response: 
 
 	const rewardPacket = makePacket(CommandGuildDailyRewardPacket, { guildName: guild.name });
 	const reward = forcedReward ?? generateRandomProperty(guild);
-	await linkToFunction.get(reward)(guildLike, response, rewardPacket); // Give the award
+	await linkToFunction.get(reward)!(guildLike, response, rewardPacket); // Give the award
 
 	if (!guildLike.guild.isPetShelterFull(await GuildPets.getOfGuild(guildLike.guild.id)) && RandomUtils.crowniclesRandom.realZeroToOneInclusive() <= GuildDailyConstants.PET_DROP_CHANCE) {
 		await awardGuildWithNewPet(guildLike.guild, rewardPacket);
@@ -437,7 +437,7 @@ export default class GuildDailyCommand {
 		const lock = guildDailyLockManager.getLock(player.guildId);
 		const release = await lock.acquire();
 		try {
-			const guild = await Guilds.getById(player.guildId);
+			const guild = (await Guilds.getById(player.guildId))!;
 
 			// Verify if the cooldown is over (re-check after acquiring lock)
 			const time = Date.now() - guild.lastDailyAt.valueOf();

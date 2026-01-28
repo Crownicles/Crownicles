@@ -19,6 +19,9 @@ export const commandInfo: ITestCommand = {
  */
 const jailPlayerTestCommand: ExecuteTestCommandLike = async (player, args) => {
 	const jailPlayer = await Players.getByKeycloakId(player.keycloakId);
+	if (!jailPlayer) {
+		throw new Error("Ce joueur n'existe pas !");
+	}
 	if (jailPlayer.effectId === Effect.NOT_STARTED.id) {
 		// Prevent the non initialized player to mess with the game's travel logic
 		throw new Error("Ce joueur n'a pas encore démarré l'aventure, laissez lui le temps de commencer !");

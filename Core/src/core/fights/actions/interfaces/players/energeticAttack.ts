@@ -40,7 +40,7 @@ const use: FightActionFunc = (sender, receiver, fightAction) => {
 	 */
 	// calculate total division factor including monster penalty
 	const divisionFactor = (timeAttackWasUsed <= 2 ? 2 : 20) * (receiver instanceof MonsterFighter ? 2.5 : 1);
-	const recoveredEnergy = Math.round(result.damages / divisionFactor);
+	const recoveredEnergy = Math.round(result.damages! / divisionFactor);
 	const cappedRecoveredEnergy = Math.min(recoveredEnergy, 200 + RandomUtils.variationInt(10));
 
 	FightActionController.applyBuff(result, {

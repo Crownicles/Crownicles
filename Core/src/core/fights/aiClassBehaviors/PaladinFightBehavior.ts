@@ -28,22 +28,22 @@ class PaladinFightBehavior implements ClassBehavior {
 		const divineAndUltimateAttacksUsed = usedGodMoves >= 2 && usedUltimateAttacks > 0;
 
 		if (this.shouldUseUltimateAttack(me, usedUltimateAttacks)) {
-			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.CHARGE_ULTIMATE_ATTACK);
+			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.CHARGE_ULTIMATE_ATTACK)!;
 		}
 
 		if (this.shouldUseDivineAttack(me, fightView, opponent, usedGodMoves, usedUltimateAttacks)) {
-			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.DIVINE_ATTACK);
+			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.DIVINE_ATTACK)!;
 		}
 
 		if (this.shouldUseShieldAttack(me, opponent, divineAndUltimateAttacksUsed)) {
-			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.SHIELD_ATTACK);
+			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.SHIELD_ATTACK)!;
 		}
 
 		if (this.shouldUseRamAttack(me, opponent, divineAndUltimateAttacksUsed)) {
-			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.RAM_ATTACK);
+			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.RAM_ATTACK)!;
 		}
 
-		return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.SIMPLE_ATTACK);
+		return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.SIMPLE_ATTACK)!;
 	}
 
 	/**
@@ -74,7 +74,7 @@ class PaladinFightBehavior implements ClassBehavior {
 			return false;
 		}
 
-		const opponentLastActionId = opponent.getLastFightActionUsed() ? opponent.getLastFightActionUsed().id : null;
+		const opponentLastActionId = opponent.getLastFightActionUsed()?.id ?? null;
 		const isLastOpponentAttackIsDivineAttack = opponentLastActionId === FightConstants.FIGHT_ACTIONS.PLAYER.DIVINE_ATTACK;
 		const isOpponentPaladinType = opponent.player.class === ClassConstants.CLASSES_ID.PALADIN
 			|| opponent.player.class === ClassConstants.CLASSES_ID.LUMINOUS_PALADIN;
@@ -167,7 +167,7 @@ class PaladinFightBehavior implements ClassBehavior {
 	): boolean {
 		const ramAttackBreathCost = FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.RAM_ATTACK);
 		return (
-			(!opponent.hasFightAlteration() || opponent.alteration.id === FightConstants.FIGHT_ACTIONS.ALTERATION.STUNNED)
+			(!opponent.hasFightAlteration() || opponent.alteration?.id === FightConstants.FIGHT_ACTIONS.ALTERATION.STUNNED)
 			&& (me.getBreath() > 17 || divineAndUltimateAttacksUsed
 				|| opponent.getLastFightActionUsed()?.id === FightConstants.FIGHT_ACTIONS.PLAYER.CANON_ATTACK && opponent.getBreath() >= 2)
 			&& me.getBreath() >= ramAttackBreathCost

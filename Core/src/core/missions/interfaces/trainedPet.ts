@@ -6,7 +6,7 @@ export const missionInterface: IMission = {
 
 	generateRandomVariant: () => 0,
 
-	initialNumberDone: async player => player.petId && (await PetEntities.getById(player.petId)).getLoveLevelNumber() >= 5 ? 1 : 0,
+	initialNumberDone: async player => player.petId && (await PetEntities.getById(player.petId))!.getLoveLevelNumber() >= 5 ? 1 : 0,
 
 	updateSaveBlob: () => null
 };

@@ -10,7 +10,7 @@ import { FightStatModifierOperation } from "../../../../../../../Lib/src/types/F
 const use: PetAssistanceFunc = (fighter, _opponent, _turn, _fightController): Promise<PetAssistanceResult | null> => {
 	// 80 % of the time, nothing happens
 	if (RandomUtils.crowniclesRandom.bool(0.80) || fighter.getBreath() === fighter.getMaxBreath()) {
-		return null;
+		return Promise.resolve(null);
 	}
 
 	const result: PetAssistanceResult = {
@@ -23,7 +23,7 @@ const use: PetAssistanceFunc = (fighter, _opponent, _turn, _fightController): Pr
 		stat: FightStatBuffed.BREATH,
 		operator: FightStatModifierOperation.ADDITION,
 		value: 1
-	}, fighter, this);
+	}, fighter, undefined);
 
 	return Promise.resolve(result);
 };

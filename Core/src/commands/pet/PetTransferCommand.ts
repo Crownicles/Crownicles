@@ -67,6 +67,12 @@ async function validatePlayerPetForTransfer(
 
 	const playerPet = await PetEntities.getById(player.petId);
 
+	if (!playerPet) {
+		CrowniclesLogger.warn(`Player tried to ${operationName} but pet not found in database`);
+		response.push(makePacket(CommandPetTransferSituationChangedErrorPacket, {}));
+		return { isValid: false };
+	}
+
 	if (playerPet.isFeisty()) {
 		CrowniclesLogger.warn(`Player tried to ${operationName} with a feisty pet`);
 		response.push(makePacket(CommandPetTransferSituationChangedErrorPacket, {}));
@@ -120,11 +126,16 @@ async function deposePetToGuild(
 	}
 
 	const guild = await Guilds.getById(player.guildId);
+	if (!guild) {
+		CrowniclesLogger.warn("Player tried to transfer a pet to the guild but guild not found");
+		response.push(makePacket(CommandPetTransferSituationChangedErrorPacket, {}));
+		return;
+	}
 
-	player.petId = null;
+	(player.petId as number | null) = null;
 	await player.save();
 	await GuildPets.addPet(guild, validation.playerPet, false).save();
-	crowniclesInstance.logsDatabase.logPetTransfer(validation.playerPet, null).then();
+	crowniclesInstance.logsDatabase.logPetTransfer(validation.playerPet, null!).then();
 
 	response.push(makePacket(CommandPetTransferSuccessPacket, {
 		oldPet: validation.playerPet.asOwnedPet()
@@ -152,12 +163,17 @@ async function withdrawPetFromGuild(
 	await MissionsController.update(player, response, { missionId: "havePet" });
 	await toWithdrawPet.destroy();
 	PetEntities.getById(toWithdrawPet.petEntityId).then(petEntity => {
-		crowniclesInstance.logsDatabase.logPetTransfer(null, petEntity).then();
+		if (petEntity) {
+			crowniclesInstance.logsDatabase.logPetTransfer(null!, petEntity).then();
+		}
 	});
 
-	response.push(makePacket(CommandPetTransferSuccessPacket, {
-		newPet: (await PetEntities.getById(toWithdrawPet.petEntityId)).asOwnedPet()
-	}));
+	const newPet = await PetEntities.getById(toWithdrawPet.petEntityId);
+	if (newPet) {
+		response.push(makePacket(CommandPetTransferSuccessPacket, {
+			newPet: newPet.asOwnedPet()
+		}));
+	}
 }
 
 async function switchPetWithGuild(
@@ -181,6 +197,12 @@ async function switchPetWithGuild(
 	await toSwitchPet.save();
 
 	const newPlayerPet = await PetEntities.getById(player.petId);
+
+	if (!newPlayerPet) {
+		CrowniclesLogger.warn("Player tried to switch a pet with the guild but the new pet was not found");
+		response.push(makePacket(CommandPetTransferSituationChangedErrorPacket, {}));
+		return;
+	}
 
 	crowniclesInstance.logsDatabase.logPetTransfer(validation.playerPet, newPlayerPet).then();
 
@@ -217,7 +239,7 @@ function getEndCallback(player: Player) {
 				await deposePetToGuild(response, player);
 			}
 		}
-		else {
+		else if (withdrawPetEntityId !== null) {
 			await withdrawPetFromGuild(response, player, withdrawPetEntityId);
 		}
 	};
@@ -284,10 +306,13 @@ async function buildGuildPetsEntities(
 }[]> {
 	const guildPetsEntities = [];
 	for (const guildPet of guildPets) {
-		guildPetsEntities.push({
-			petEntityId: guildPet.petEntityId,
-			pet: (await PetEntities.getById(guildPet.petEntityId)).asOwnedPet()
-		});
+		const petEntity = await PetEntities.getById(guildPet.petEntityId);
+		if (petEntity) {
+			guildPetsEntities.push({
+				petEntityId: guildPet.petEntityId,
+				pet: petEntity.asOwnedPet()
+			});
+		}
 	}
 	return guildPetsEntities;
 }
@@ -323,6 +348,10 @@ export default class PetTransferCommand {
 		}
 
 		const guild = await Guilds.getById(player.guildId);
+		if (!guild) {
+			response.push(makePacket(CommandPetTransferNoPetErrorPacket, {}));
+			return;
+		}
 		const guildPets = await GuildPets.getOfGuild(player.guildId);
 
 		// Build reactions - returns null if no valid transfer options
@@ -335,7 +364,7 @@ export default class PetTransferCommand {
 		const guildPetsEntities = await buildGuildPetsEntities(guildPets);
 
 		const collector = new ReactionCollectorPetTransfer(
-			playerPet?.asOwnedPet(),
+			playerPet?.asOwnedPet() as OwnedPet,
 			guildPetsEntities,
 			reactions
 		);

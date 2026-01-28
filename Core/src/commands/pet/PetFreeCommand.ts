@@ -73,8 +73,8 @@ function getMissingMoneyToFreePet(player: Player, playerPet: PetEntity): number 
  * @param guild
  * @param pPet
  */
-function generateLuckyMeat(guild: Guild, pPet: PetEntity): boolean {
-	return guild && guild.carnivorousFood + 1 <= GuildConstants.MAX_PET_FOOD[getFoodIndexOf(PetConstants.PET_FOOD.CARNIVOROUS_FOOD)]
+function generateLuckyMeat(guild: Guild | null, pPet: PetEntity): boolean {
+	return guild !== null && guild.carnivorousFood + 1 <= GuildConstants.MAX_PET_FOOD[getFoodIndexOf(PetConstants.PET_FOOD.CARNIVOROUS_FOOD)]
 		&& RandomUtils.crowniclesRandom.realZeroToOneInclusive() <= PetFreeConstants.GIVE_MEAT_PROBABILITY
 		&& !pPet.isFeisty();
 }
@@ -105,18 +105,18 @@ async function acceptPetFree(player: Player, playerPet: PetEntity, response: Cro
 	LogsDatabase.logPetFree(playerPet).then();
 
 	await playerPet.destroy();
-	player.petId = null;
+	player.petId = 0;
 	player.lastPetFree = new Date();
 	await player.save();
 
-	let guild: Guild;
+	let guild: Guild | null = null;
 	let luckyMeat = false;
 	try {
 		guild = await Guilds.getById(player.guildId);
 		luckyMeat = generateLuckyMeat(guild, playerPet);
-		if (luckyMeat) {
-			guild!.carnivorousFood += PetFreeConstants.MEAT_GIVEN;
-			await guild!.save();
+		if (luckyMeat && guild) {
+			guild.carnivorousFood += PetFreeConstants.MEAT_GIVEN;
+			await guild.save();
 		}
 	}
 	catch {
@@ -151,6 +151,11 @@ async function freePetFromShelter(
 	}
 
 	const petEntity = await PetEntities.getById(guildPet.petEntityId);
+	if (!petEntity) {
+		CrowniclesLogger.warn("Player tried to free a pet from the guild but the pet entity was not found");
+		response.push(makePacket(CommandPetFreeRefusePacketRes, {}));
+		return;
+	}
 
 	// Check cooldown
 	const cooldownRemainingTimeMs = getCooldownRemainingTimeMs(player);
@@ -191,7 +196,7 @@ async function freePetFromShelter(
 	try {
 		guild = await Guilds.getById(player.guildId);
 		luckyMeat = generateLuckyMeat(guild, petEntity);
-		if (luckyMeat) {
+		if (luckyMeat && guild) {
 			guild.carnivorousFood += PetFreeConstants.MEAT_GIVEN;
 			await guild.save();
 		}
@@ -212,16 +217,23 @@ async function freePetFromShelter(
 /**
  * Build the shelter pets entities array for collector
  */
-function buildShelterPetsEntities(guildPets: GuildPet[]): Promise<{
+async function buildShelterPetsEntities(guildPets: GuildPet[]): Promise<{
 	petEntityId: number;
 	pet: OwnedPet;
 }[]> {
-	return Promise.all(
-		guildPets.map(async guildPet => ({
-			petEntityId: guildPet.petEntityId,
-			pet: (await PetEntities.getById(guildPet.petEntityId)).asOwnedPet()
-		}))
-	);
+	const results: {
+		petEntityId: number; pet: OwnedPet;
+	}[] = [];
+	for (const guildPet of guildPets) {
+		const petEntity = await PetEntities.getById(guildPet.petEntityId);
+		if (petEntity) {
+			results.push({
+				petEntityId: guildPet.petEntityId,
+				pet: petEntity.asOwnedPet()
+			});
+		}
+	}
+	return results;
 }
 
 /**

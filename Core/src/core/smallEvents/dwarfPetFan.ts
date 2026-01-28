@@ -165,6 +165,9 @@ export const smallEventFuncs: SmallEventFuncs = {
 	canBeExecuted: player => {
 		const destination = player.getDestination();
 		const origin = player.getPreviousMap();
+		if (!destination || !origin) {
+			return false;
+		}
 		return Maps.isOnContinent(player)
 			&& [destination.id, origin.id].some(mapId =>
 				[MapConstants.LOCATIONS_IDS.MOUNT_CELESTRUM].includes(mapId));
@@ -173,7 +176,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 		await MissionsController.update(player, response, { missionId: "meetTalvar" });
 
 		const petEntity = await PetEntities.getById(player.petId);
-		if (!await canContinueSmallEvent(response, player, petEntity)) {
+		if (!petEntity || !await canContinueSmallEvent(response, player, petEntity)) {
 			return;
 		}
 

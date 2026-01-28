@@ -244,13 +244,13 @@ const aiFightTestCommand: ExecuteTestCommandLike = async (_player, args, respons
 	for (let i = 0; i < amount; i++) {
 		const fighter1 = new AiPlayerFighter(
 			player1,
-			ClassDataController.instance.getById(player1.class)
+			ClassDataController.instance.getById(player1.class)!
 		);
 		await fighter1.loadStats();
 
 		const fighter2 = new AiPlayerFighter(
 			player2,
-			ClassDataController.instance.getById(player2.class)
+			ClassDataController.instance.getById(player2.class)!
 		);
 		await fighter2.loadStats();
 
@@ -306,12 +306,12 @@ const aiFightTestCommand: ExecuteTestCommandLike = async (_player, args, respons
 		await fightController.startFight(response);
 	}
 
-	const class1 = ClassDataController.instance.getById(player1.class);
-	const class2 = ClassDataController.instance.getById(player2.class);
+	const class1 = ClassDataController.instance.getById(player1.class)!;
+	const class2 = ClassDataController.instance.getById(player2.class)!;
 	const petEntity1 = player1.petId ? await PetEntities.getById(player1.petId) : null;
 	const petEntity2 = player2.petId ? await PetEntities.getById(player2.petId) : null;
-	const pet1 = petEntity1 ? PetDataController.instance.getById(petEntity1.typeId) : null;
-	const pet2 = petEntity2 ? PetDataController.instance.getById(petEntity2.typeId) : null;
+	const pet1 = petEntity1 ? PetDataController.instance.getById(petEntity1.typeId) ?? null : null;
+	const pet2 = petEntity2 ? PetDataController.instance.getById(petEntity2.typeId) ?? null : null;
 
 	const resultParams: FightResultParams = {
 		stats,

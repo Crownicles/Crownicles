@@ -148,7 +148,7 @@ class ArgumentValue {
 	 */
 	getType(): TypeKey {
 		for (const typeIn of typeVariableChecks.keys()) {
-			if (typeVariableChecks.get(typeIn)(this.value)) {
+			if (typeVariableChecks.get(typeIn)!(this.value)) {
 				return typeIn;
 			}
 		}

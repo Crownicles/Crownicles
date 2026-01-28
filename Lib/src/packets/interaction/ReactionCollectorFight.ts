@@ -8,7 +8,7 @@ import {
 import { SexTypeShort } from "../../constants/StringConstants";
 
 type PlayerStats = {
-	pet: {
+	pet?: {
 		petTypeId: number;
 		petSex: SexTypeShort;
 		petNickname: string;

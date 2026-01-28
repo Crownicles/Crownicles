@@ -22,7 +22,11 @@ function verifyTriggerDate(trigger: BigEventTrigger): boolean {
 
 	const date = new Date();
 	for (const [timeScale, timeRange] of Object.entries(trigger.date)) {
-		const value = dateFunctions[timeScale as keyof DateFormat](date);
+		const dateFunc = dateFunctions[timeScale as keyof typeof dateFunctions];
+		if (!dateFunc) {
+			continue;
+		}
+		const value = dateFunc(date);
 		if ((timeRange?.from ?? -1) > value || (timeRange?.to ?? 99999) < value) {
 			return false;
 		}
@@ -68,7 +72,7 @@ export async function verifyTrigger(bigEvent: BigEvent, trigger: BigEventTrigger
 	return (trigger.mapId ? mapId === trigger.mapId : true)
 		&& (trigger.level ? player.level > trigger.level : true)
 		&& verifyTriggerDate(trigger)
-		&& (trigger.mapAttributes ? trigger.mapAttributes.includes(player.getDestination().attribute) : true)
+		&& (trigger.mapAttributes ? trigger.mapAttributes.includes(player.getDestination()!.attribute) : true)
 		&& await verifyOncePer(bigEvent, trigger, player);
 }
 

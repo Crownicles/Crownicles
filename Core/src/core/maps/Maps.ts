@@ -36,8 +36,8 @@ export class Maps {
 			player.mapLinkId = MapLinkDataController.instance.getRandomLinkOnMainContinent().id;
 		}
 
-		const map = player.getDestinationId();
-		const previousMap = player.getPreviousMapId();
+		const map = player.getDestinationId()!;
+		const previousMap = player.getPreviousMapId()!;
 
 		const nextMaps = [];
 
@@ -59,9 +59,9 @@ export class Maps {
 	 */
 	static getConnectedMapTypes(player: Player, excludePlayerLink: boolean): string[] {
 		return (
-			MapLocationDataController.instance.getMapTypesConnected(player.getDestinationId(), excludePlayerLink
-				? player.getPreviousMapId()
-				: null)
+			MapLocationDataController.instance.getMapTypesConnected(player.getDestinationId()!, excludePlayerLink
+				? player.getPreviousMapId() ?? -1
+				: -1)
 		);
 	}
 
@@ -206,7 +206,7 @@ export class Maps {
 
 		await TravelTime.removeEffect(player, reason);
 
-		const mapLinkJoinBoat = MapLinkDataController.instance.getById(await Settings.PVE_ISLAND.getValue());
+		const mapLinkJoinBoat = MapLinkDataController.instance.getById(await Settings.PVE_ISLAND.getValue())!;
 		const travelTime = minutesToMilliseconds(mapLinkJoinBoat.tripDuration);
 		const otherPlayerStartTime = options.anotherMemberOnBoat ? options.anotherMemberOnBoat.startTravelDate.valueOf() : null;
 		const timeSinceOtherPlayerStarted = Date.now() - (otherPlayerStartTime ?? 0);

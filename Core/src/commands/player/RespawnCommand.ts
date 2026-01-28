@@ -50,9 +50,12 @@ export default class RespawnCommand {
 
 		await Maps.stopTravel(player);
 		const newlink = MapLinkDataController.instance.getLinkByLocations(
-			player.getPreviousMapId(),
-			player.getDestinationId()
+			player.getPreviousMapId()!,
+			player.getDestinationId()!
 		);
+		if (!newlink) {
+			throw new Error("Failed to find map link for respawn");
+		}
 
 		await TravelTime.removeEffect(player, NumberChangeReason.RESPAWN);
 		await Maps.startTravel(player, newlink, Date.now());

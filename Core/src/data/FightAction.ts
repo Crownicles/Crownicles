@@ -17,10 +17,14 @@ export class FightAction extends Data<string> {
 
 
 	public use(sender: Fighter, receiver: Fighter, turn: number, fight: FightController): FightActionResult {
-		const result = FightActionDataController.getFightActionFunction(this.id)(sender, receiver, this, turn, fight);
-		receiver.damage(result.damages);
+		const fightActionFunc = FightActionDataController.getFightActionFunction(this.id);
+		if (!fightActionFunc) {
+			throw new Error(`Fight action function not found for id: ${this.id}`);
+		}
+		const result = fightActionFunc(sender, receiver, this, turn, fight);
+		receiver.damage(result.damages ?? 0);
 		if (result.usedAction) {
-			receiver.damage(result.usedAction.result.damages);
+			receiver.damage(result.usedAction.result.damages ?? 0);
 		}
 		return result;
 	}
@@ -55,7 +59,7 @@ export class FightActionDataController extends DataControllerString<FightAction>
 		throw new Error(`FightAction with id ${id} not found`);
 	}
 
-	public static getFightActionFunction(id: string): FightActionFunc {
+	public static getFightActionFunction(id: string): FightActionFunc | undefined {
 		if (!FightActionDataController.fightActionsFunctionsCache) {
 			FightActionDataController.fightActionsFunctionsCache = new Map<string, FightActionFunc>();
 			FightActionDataController.loadFightActionsFromFolder("dist/Core/src/core/fights/actions/interfaces/players", "../core/fights/actions/interfaces/players");
@@ -81,7 +85,7 @@ export class FightActionDataController extends DataControllerString<FightAction>
 	}
 
 	getNone(): FightAction {
-		return this.getById("none");
+		return this.getById("none")!;
 	}
 
 	getAllKeys(): IterableIterator<string> {
@@ -91,7 +95,7 @@ export class FightActionDataController extends DataControllerString<FightAction>
 	getListById(fightActionsIds: string[]): FightAction[] {
 		const fightActions: FightAction[] = [];
 		for (const fightActionId of fightActionsIds) {
-			fightActions.push(this.getById(fightActionId));
+			fightActions.push(this.getById(fightActionId)!);
 		}
 		return fightActions;
 	}

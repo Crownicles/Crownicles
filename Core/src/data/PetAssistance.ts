@@ -29,7 +29,7 @@ export class PetAssistanceDataController extends DataControllerString<PetAssista
 			PetAssistanceDataController.loadPetAssistancesFromFolder("dist/Core/src/core/fights/actions/interfaces/pets", "../core/fights/actions/interfaces/pets");
 		}
 
-		return PetAssistanceDataController.petAssistanceFunctionsCache.get(id);
+		return PetAssistanceDataController.petAssistanceFunctionsCache.get(id)!;
 	}
 
 	private static loadPetAssistancesFromFolder(path: string, relativePath: string): void {

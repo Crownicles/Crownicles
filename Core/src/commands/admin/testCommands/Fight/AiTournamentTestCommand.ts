@@ -402,7 +402,7 @@ async function initializePlayerStats(
 	fighterResources: Map<number, TournamentFighterResources>
 ): Promise<void> {
 	for (const player of eligiblePlayers) {
-		const classData = ClassDataController.instance.getById(player.class);
+		const classData = ClassDataController.instance.getById(player.class)!;
 		const activeObjects: PlayerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
 		const petEntity = player.petId ? await PetEntities.getById(player.petId) : null;
 

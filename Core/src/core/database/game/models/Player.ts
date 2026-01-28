@@ -146,7 +146,7 @@ export class Player extends Model {
 	/**
 	 * Get the destination id of a player
 	 */
-	getDestinationId(): number {
+	getDestinationId(): number | null {
 		const link = MapLinkDataController.instance.getById(this.mapLinkId);
 		return link ? link.endMap : null;
 	}
@@ -154,23 +154,23 @@ export class Player extends Model {
 	/**
 	 * Get the mapLocation object of the destination of the player
 	 */
-	public getDestination(): MapLocation {
+	public getDestination(): MapLocation | null {
 		const link = MapLinkDataController.instance.getById(this.mapLinkId);
-		return link ? MapLocationDataController.instance.getById(link.endMap) : null;
+		return link ? MapLocationDataController.instance.getById(link.endMap) ?? null : null;
 	}
 
 	/**
 	 * Get the origin mapLocation object of the player
 	 */
-	public getPreviousMap(): MapLocation {
+	public getPreviousMap(): MapLocation | null {
 		const link = MapLinkDataController.instance.getById(this.mapLinkId);
-		return link ? MapLocationDataController.instance.getById(link.startMap) : null;
+		return link ? MapLocationDataController.instance.getById(link.startMap) ?? null : null;
 	}
 
 	/**
 	 * Get the origin id of the player
 	 */
-	public getPreviousMapId(): number {
+	public getPreviousMapId(): number | null {
 		const link = MapLinkDataController.instance.getById(this.mapLinkId);
 		return link ? link.startMap : null;
 	}
@@ -178,7 +178,7 @@ export class Player extends Model {
 	/**
 	 * Get the current trip duration of a player
 	 */
-	public getCurrentTripDuration(): number {
+	public getCurrentTripDuration(): number | null {
 		const link = MapLinkDataController.instance.getById(this.mapLinkId);
 		return link ? minutesToHours(link.tripDuration) : null;
 	}
@@ -528,6 +528,9 @@ export class Player extends Model {
 	 */
 	public async getNbPlayersOnYourMap(): Promise<number> {
 		const oppositeLink = MapLinkDataController.instance.getInverseLinkOf(this.mapLinkId);
+		if (!oppositeLink) {
+			return 0;
+		}
 
 		const query = `SELECT COUNT(*) as count
 		               FROM players
@@ -538,7 +541,7 @@ export class Player extends Model {
 		return Math.round(
 			(<{
 				count: number;
-			}[]>(await Player.sequelize.query(query, {
+			}[]>(await Player.sequelize!.query(query, {
 				replacements: {
 					link: this.mapLinkId,
 					linkInverse: oppositeLink.id
@@ -607,7 +610,10 @@ export class Player extends Model {
 		})
 			.then(async item => {
 				if (item) {
-					await crowniclesInstance.logsDatabase.logItemSell(this.keycloakId, item.getItem());
+					const itemData = item.getItem();
+					if (itemData) {
+						await crowniclesInstance.logsDatabase.logItemSell(this.keycloakId, itemData);
+					}
 				}
 			});
 		if (itemSlot === 0) {
@@ -637,7 +643,7 @@ export class Player extends Model {
 	}
 
 	public getMaxStatsValue(): StatValues {
-		const playerClass = ClassDataController.instance.getById(this.class);
+		const playerClass = ClassDataController.instance.getById(this.class)!;
 		return {
 			attack: playerClass.getAttackValue(this.level),
 			defense: playerClass.getDefenseValue(this.level),
@@ -699,7 +705,7 @@ export class Player extends Model {
 	 * @param playerActiveObjects
 	 */
 	public getCumulativeAttack(playerActiveObjects: PlayerActiveObjects): number {
-		const playerAttack = ClassDataController.instance.getById(this.class)
+		const playerAttack = ClassDataController.instance.getById(this.class)!
 			.getAttackValue(this.level);
 		const attack = playerAttack
 			+ (playerActiveObjects.weapon.getAttack() < playerAttack
@@ -720,7 +726,7 @@ export class Player extends Model {
 	 * @param playerActiveObjects
 	 */
 	public getCumulativeDefense(playerActiveObjects: PlayerActiveObjects): number {
-		const playerDefense = ClassDataController.instance.getById(this.class)
+		const playerDefense = ClassDataController.instance.getById(this.class)!
 			.getDefenseValue(this.level);
 		const defense = playerDefense
 			+ (playerActiveObjects.weapon.getDefense() < playerDefense
@@ -741,7 +747,7 @@ export class Player extends Model {
 	 * @param playerActiveObjects
 	 */
 	public getCumulativeSpeed(playerActiveObjects: PlayerActiveObjects): number {
-		const playerSpeed = ClassDataController.instance.getById(this.class)
+		const playerSpeed = ClassDataController.instance.getById(this.class)!
 			.getSpeedValue(this.level);
 		const speed = playerSpeed
 			+ (playerActiveObjects.weapon.getSpeed() < playerSpeed
@@ -773,7 +779,7 @@ export class Player extends Model {
 	 * Return the player max health
 	 */
 	public getMaxHealth(): number {
-		const playerClass = ClassDataController.instance.getById(this.class);
+		const playerClass = ClassDataController.instance.getById(this.class)!;
 		return playerClass.getMaxHealthValue(this.level);
 	}
 
@@ -781,7 +787,7 @@ export class Player extends Model {
 	 * Get the player max cumulative energy
 	 */
 	public getMaxCumulativeEnergy(): number {
-		const playerClass = ClassDataController.instance.getById(this.class);
+		const playerClass = ClassDataController.instance.getById(this.class)!;
 		return playerClass.getMaxCumulativeEnergyValue(this.level);
 	}
 
@@ -841,7 +847,7 @@ export class Player extends Model {
 		await Maps.stopTravel(this);
 		await Maps.startTravel(
 			this,
-			MapLinkDataController.instance.getById(MapConstants.WATER_MAP_LINKS[RandomUtils.randInt(0, MapConstants.WATER_MAP_LINKS.length)]),
+			MapLinkDataController.instance.getById(MapConstants.WATER_MAP_LINKS[RandomUtils.randInt(0, MapConstants.WATER_MAP_LINKS.length)])!,
 			Date.now()
 		);
 		await TravelTime.applyEffect(this, Effect.CONFOUNDED, 0, new Date(), NumberChangeReason.PVE_ISLAND);
@@ -853,7 +859,7 @@ export class Player extends Model {
 	 * Get the amount of breath a player has at the beginning of a fight
 	 */
 	public getBaseBreath(): number {
-		const playerClass = ClassDataController.instance.getById(this.class);
+		const playerClass = ClassDataController.instance.getById(this.class)!;
 		return playerClass.baseBreath;
 	}
 
@@ -861,7 +867,7 @@ export class Player extends Model {
 	 * Get the max amount of breath a player can have
 	 */
 	public getMaxBreath(): number {
-		const playerClass = ClassDataController.instance.getById(this.class);
+		const playerClass = ClassDataController.instance.getById(this.class)!;
 		return playerClass.maxBreath;
 	}
 
@@ -869,14 +875,14 @@ export class Player extends Model {
 	 * Get the amount of breath a player will get at the end of each turn
 	 */
 	public getBreathRegen(): number {
-		const playerClass = ClassDataController.instance.getById(this.class);
+		const playerClass = ClassDataController.instance.getById(this.class)!;
 		return playerClass.breathRegen;
 	}
 
 	/**
 	 * Get the profile's color of the player
 	 */
-	public getProfileColor(): string {
+	public getProfileColor(): string | null {
 		if (this.level < FightConstants.REQUIRED_LEVEL) {
 			return null;
 		}
@@ -906,7 +912,7 @@ export class Player extends Model {
 	 * @param response
 	 * @param fightId
 	 */
-	public async setGloryPoints(gloryPoints: number, isDefense: boolean, reason: NumberChangeReason, response: CrowniclesPacket[], fightId: number | null = null): Promise<void> {
+	public async setGloryPoints(gloryPoints: number, isDefense: boolean, reason: NumberChangeReason, response: CrowniclesPacket[], fightId?: number): Promise<void> {
 		if (isDefense) {
 			this.defenseGloryPoints = gloryPoints;
 			await crowniclesInstance.logsDatabase.logPlayersDefenseGloryPoints(this.keycloakId, gloryPoints, reason, fightId);
@@ -944,7 +950,7 @@ export class Player extends Model {
 		const dateOfLastLeagueReward = await LogsReadRequests.getDateOfLastLeagueReward(this.keycloakId);
 
 		// Beware, the date of the last league reward is in seconds
-		return dateOfLastLeagueReward && !(dateOfLastLeagueReward < millisecondsToSeconds(getOneDayAgo()));
+		return dateOfLastLeagueReward !== null && !(dateOfLastLeagueReward < millisecondsToSeconds(getOneDayAgo()));
 	}
 
 	public async addRage(rage: number, reason: NumberChangeReason, response: CrowniclesPacket[]): Promise<void> {
@@ -992,11 +998,13 @@ export class Player extends Model {
 			+ RandomUtils.crowniclesRandom.integer(-PVEConstants.RANDOM_RANGE_FOR_GUILD_POINTS_LOST_ON_DEATH, PVEConstants.RANDOM_RANGE_FOR_GUILD_POINTS_LOST_ON_DEATH);
 		if (this.hasAGuild()) {
 			const playerGuild = await Guilds.getById(this.guildId);
-			if (guildPointsLost > playerGuild.score) {
-				guildPointsLost = playerGuild.score;
+			if (playerGuild) {
+				if (guildPointsLost > playerGuild.score) {
+					guildPointsLost = playerGuild.score;
+				}
+				await playerGuild.addScore(-guildPointsLost, response, NumberChangeReason.PVE_ISLAND);
+				await playerGuild.save();
 			}
-			await playerGuild.addScore(-guildPointsLost, response, NumberChangeReason.PVE_ISLAND);
-			await playerGuild.save();
 		}
 		return {
 			moneyLost,
@@ -1157,7 +1165,7 @@ export class Players {
 			? askedPlayer.keycloakId === originalPlayer.keycloakId
 				? originalPlayer
 				: await Players.getByKeycloakId(askedPlayer.keycloakId)
-			: await Players.getByRank(askedPlayer.rank);
+			: await Players.getByRank(askedPlayer.rank!);
 	}
 
 	/**
@@ -1204,7 +1212,7 @@ export class Players {
 		               FROM (SELECT id, RANK() OVER (ORDER BY ${orderBy} desc, level desc) ranking
 		                     FROM players ${condition}) subquery
 		               WHERE subquery.id = ${playerId}`;
-		return ((await Player.sequelize.query(query, { type: QueryTypes.SELECT }))[0] as {
+		return ((await Player.sequelize!.query(query, { type: QueryTypes.SELECT }))[0] as {
 			ranking: number;
 		}).ranking;
 	}
@@ -1218,7 +1226,7 @@ export class Players {
 		               FROM players
 		               WHERE players.${weekOnly ? "weeklyScore" : "score"}
 			                     > ${Constants.MINIMAL_PLAYER_SCORE}`;
-		return ((await Player.sequelize.query(query, { type: QueryTypes.SELECT }))[0] as {
+		return ((await Player.sequelize!.query(query, { type: QueryTypes.SELECT }))[0] as {
 			nbPlayers: number;
 		}).nbPlayers;
 	}
@@ -1231,7 +1239,7 @@ export class Players {
 		               FROM players
 		               WHERE players.fightCountdown
 			                     <= ${FightConstants.FIGHT_COUNTDOWN_MAXIMAL_VALUE}`;
-		return ((await Player.sequelize.query(query, { type: QueryTypes.SELECT }))[0] as {
+		return ((await Player.sequelize!.query(query, { type: QueryTypes.SELECT }))[0] as {
 			nbPlayers: number;
 		}).nbPlayers;
 	}
@@ -1305,7 +1313,7 @@ export class Players {
 		                            RANK() OVER (ORDER BY weeklyScore desc, level desc) weeklyRank
 		                     FROM players) subquery
 		               WHERE subquery.rank = :rank`;
-		const res = await Player.sequelize.query(query, {
+		const res = await Player.sequelize!.query(query, {
 			replacements: { rank },
 			type: QueryTypes.SELECT,
 			mapToModel: true,
@@ -1325,7 +1333,7 @@ export class Players {
 		                            RANK() OVER (ORDER BY weeklyScore desc, level desc) weeklyRank
 		                     FROM players) subquery
 		               WHERE subquery.id = :id`;
-		const playerToReturn = (await Player.sequelize.query<Player>(query, {
+		const playerToReturn = (await Player.sequelize!.query<Player>(query, {
 			replacements: { id },
 			type: QueryTypes.SELECT
 		}))[0] as Player;
@@ -1342,7 +1350,7 @@ export class Players {
 		return Math.round(
 			(<{
 				avg: number;
-			}[]>(await Player.sequelize.query(query, {
+			}[]>(await Player.sequelize!.query(query, {
 				type: QueryTypes.SELECT
 			})))[0].avg
 		);
@@ -1358,7 +1366,7 @@ export class Players {
 		return Math.round(
 			(<{
 				avg: number;
-			}[]>(await Player.sequelize.query(query, {
+			}[]>(await Player.sequelize!.query(query, {
 				type: QueryTypes.SELECT
 			})))[0].avg
 		);
@@ -1373,7 +1381,7 @@ export class Players {
 		               WHERE effectId = "${Effect.NOT_STARTED.id}"`;
 		return (<{
 			count: number;
-		}[]>(await Player.sequelize.query(query, {
+		}[]>(await Player.sequelize!.query(query, {
 			type: QueryTypes.SELECT
 		})))[0].count;
 	}
@@ -1387,7 +1395,7 @@ export class Players {
 		               WHERE score > ${Constants.MINIMAL_PLAYER_SCORE}`;
 		return (<{
 			count: number;
-		}[]>(await Player.sequelize.query(query, {
+		}[]>(await Player.sequelize!.query(query, {
 			type: QueryTypes.SELECT
 		})))[0].count;
 	}
@@ -1402,7 +1410,7 @@ export class Players {
 		return Math.round(
 			(<{
 				avg: number;
-			}[]>(await Player.sequelize.query(query, {
+			}[]>(await Player.sequelize!.query(query, {
 				type: QueryTypes.SELECT
 			})))[0].avg
 		);
@@ -1418,7 +1426,7 @@ export class Players {
 		return Math.round(
 			(<{
 				avg: number;
-			}[]>(await Player.sequelize.query(query, {
+			}[]>(await Player.sequelize!.query(query, {
 				type: QueryTypes.SELECT
 			})))[0].avg
 		);
@@ -1433,7 +1441,7 @@ export class Players {
 		               WHERE score > ${Constants.MINIMAL_PLAYER_SCORE}`;
 		return (<{
 			sum: number;
-		}[]>(await Player.sequelize.query(query, {
+		}[]>(await Player.sequelize!.query(query, {
 			type: QueryTypes.SELECT
 		})))[0].sum;
 	}
@@ -1446,7 +1454,7 @@ export class Players {
 		               FROM players`;
 		return (<{
 			max: number;
-		}[]>(await Player.sequelize.query(query, {
+		}[]>(await Player.sequelize!.query(query, {
 			type: QueryTypes.SELECT
 		})))[0].max;
 	}
@@ -1464,7 +1472,7 @@ export class Players {
 		return Math.round(
 			(<{
 				count: number;
-			}[]>(await Player.sequelize.query(query, {
+			}[]>(await Player.sequelize!.query(query, {
 				replacements: { class: classEntity.id },
 				type: QueryTypes.SELECT
 			})))[0].count
@@ -1668,7 +1676,7 @@ export function initModel(sequelize: Sequelize): void {
 				await ScheduledReportNotifications.bulkDelete([pendingReportNotification]);
 			}
 
-			if (travelEndDate > now) {
+			if (destinationId !== null && travelEndDate > now) {
 				await ScheduledReportNotifications.scheduleNotification(instance.id, instance.keycloakId, destinationId, travelEndDate);
 				return;
 			}
@@ -1677,7 +1685,7 @@ export function initModel(sequelize: Sequelize): void {
 				PacketUtils.sendNotifications([
 					makePacket(ReachDestinationNotificationPacket, {
 						keycloakId: pendingReportNotification.keycloakId,
-						mapType: MapLocationDataController.instance.getById(pendingReportNotification.mapId).type,
+						mapType: MapLocationDataController.instance.getById(pendingReportNotification.mapId)!.type,
 						mapId: pendingReportNotification.mapId
 					})
 				]);

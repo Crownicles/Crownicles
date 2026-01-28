@@ -21,7 +21,7 @@ export default class MaintenanceCommand {
 			response.push(makePacket(CommandMaintenancePacketRes, { enabled: packet.enable }));
 		}
 		catch (err) {
-			response.push(makePacket(ErrorPacket, { message: err.message }));
+			response.push(makePacket(ErrorPacket, { message: (err as Error).message }));
 		}
 	}
 }

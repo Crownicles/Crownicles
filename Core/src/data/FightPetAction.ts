@@ -26,7 +26,7 @@ export class FightPetActionDataController extends DataControllerString<FightPetA
 			FightPetActionDataController.fightPetActionsFunctionsCache = new Map<string, FightPetActionFunc>();
 			FightPetActionDataController.loadFightPetActionsFromFolder("dist/Core/src/core/smallEvents/fightPet", "../core/smallEvents/fightPet");
 		}
-		return FightPetActionDataController.fightPetActionsFunctionsCache.get(id);
+		return FightPetActionDataController.fightPetActionsFunctionsCache.get(id)!;
 	}
 
 	private static loadFightPetActionsFromFolder(path: string, relativePath: string): void {
@@ -49,6 +49,6 @@ export class FightPetActionDataController extends DataControllerString<FightPetA
 	}
 
 	getNothing(): FightPetAction {
-		return this.getById("doNothing");
+		return this.getById("doNothing")!;
 	}
 }

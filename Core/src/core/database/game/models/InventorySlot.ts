@@ -43,16 +43,16 @@ export class InventorySlot extends Model {
 	declare createdAt: Date;
 
 
-	getItem(): GenericItem {
+	getItem(): GenericItem | null {
 		switch (this.itemCategory) {
 			case ItemCategory.WEAPON:
-				return WeaponDataController.instance.getById(this.itemId);
+				return WeaponDataController.instance.getById(this.itemId) ?? null;
 			case ItemCategory.ARMOR:
-				return ArmorDataController.instance.getById(this.itemId);
+				return ArmorDataController.instance.getById(this.itemId) ?? null;
 			case ItemCategory.POTION:
-				return PotionDataController.instance.getById(this.itemId);
+				return PotionDataController.instance.getById(this.itemId) ?? null;
 			case ItemCategory.OBJECT:
-				return ObjectItemDataController.instance.getById(this.itemId);
+				return ObjectItemDataController.instance.getById(this.itemId) ?? null;
 			default:
 				return null;
 		}
@@ -121,7 +121,7 @@ export class InventorySlots {
 	 * Return the main weapon slot of the player or null if the inventory of the player has not been initialized
 	 * @param playerId
 	 */
-	static async getMainWeaponSlot(playerId: number): Promise<InventorySlot> | null {
+	static async getMainWeaponSlot(playerId: number): Promise<InventorySlot | null> {
 		return await InventorySlot.findOne({
 			where: {
 				playerId,
@@ -135,7 +135,7 @@ export class InventorySlots {
 	 * Return the main armor slot of the player or null if the inventory of the player has not been initialized
 	 * @param playerId
 	 */
-	static async getMainArmorSlot(playerId: number): Promise<InventorySlot> | null {
+	static async getMainArmorSlot(playerId: number): Promise<InventorySlot | null> {
 		return await InventorySlot.findOne({
 			where: {
 				playerId,
@@ -149,7 +149,7 @@ export class InventorySlots {
 	 * Return the main potion slot of the player or null if the inventory of the player has not been initialized
 	 * @param playerId
 	 */
-	static async getMainPotionSlot(playerId: number): Promise<InventorySlot> | null {
+	static async getMainPotionSlot(playerId: number): Promise<InventorySlot | null> {
 		return await InventorySlot.findOne({
 			where: {
 				playerId,
@@ -163,7 +163,7 @@ export class InventorySlots {
 	 * Return the main object slot of the player or null if the inventory of the player has not been initialized
 	 * @param playerId
 	 */
-	static async getMainObjectSlot(playerId: number): Promise<InventorySlot> | null {
+	static async getMainObjectSlot(playerId: number): Promise<InventorySlot | null> {
 		return await InventorySlot.findOne({
 			where: {
 				playerId,
@@ -179,10 +179,10 @@ export class InventorySlots {
 	static async getMainSlotsItems(playerId: number): Promise<PlayerActiveObjects> {
 		await this.getOfPlayer(playerId);
 		return {
-			weapon: <Weapon>(await (await InventorySlots.getMainWeaponSlot(playerId)).getItem()),
-			armor: <Armor>(await (await InventorySlots.getMainArmorSlot(playerId)).getItem()),
-			potion: <Potion>(await (await InventorySlots.getMainPotionSlot(playerId)).getItem()),
-			object: <ObjectItem>(await (await InventorySlots.getMainObjectSlot(playerId)).getItem())
+			weapon: <Weapon>(await InventorySlots.getMainWeaponSlot(playerId))!.getItem(),
+			armor: <Armor>(await InventorySlots.getMainArmorSlot(playerId))!.getItem(),
+			potion: <Potion>(await InventorySlots.getMainPotionSlot(playerId))!.getItem(),
+			object: <ObjectItem>(await InventorySlots.getMainObjectSlot(playerId))!.getItem()
 		};
 	}
 
@@ -222,7 +222,7 @@ export class InventorySlots {
 		let count = 0;
 		for (const obj of objs) {
 			if (obj.getItem()
-				.tags
+				?.tags
 				?.includes(tag)) {
 				count++;
 			}

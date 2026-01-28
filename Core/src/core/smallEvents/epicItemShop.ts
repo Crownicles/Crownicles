@@ -32,8 +32,8 @@ class ShopSmallEvent extends Shop<
 	ReactionCollectorEpicShopSmallEvent
 > {
 	getPriceMultiplier(player: Player): number {
-		const destination = player.getDestination();
-		const origin = player.getPreviousMap();
+		const destination = player.getDestination()!;
+		const origin = player.getPreviousMap()!;
 		if (destination.id === MapConstants.LOCATIONS_IDS.ROAD_OF_WONDERS || origin.id === MapConstants.LOCATIONS_IDS.ROAD_OF_WONDERS) {
 			return SmallEventConstants.EPIC_ITEM_SHOP.ROAD_OF_WONDERS_MULTIPLIER;
 		}

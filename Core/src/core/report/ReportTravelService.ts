@@ -227,22 +227,22 @@ export async function sendTravelPath(
 	const tokenCostResult = calculateTokenCost(effectId ?? Effect.NO_EFFECT.id, timeData.effectRemainingTime);
 
 	response.push(makePacket(CommandReportTravelSummaryRes, {
-		effect: travelSummaryData.effect,
+		effect: travelSummaryData.effect ?? undefined,
 		startTime: travelSummaryData.startTime,
 		arriveTime: travelSummaryData.arriveTime,
-		effectEndTime: travelSummaryData.effectEndTime,
+		effectEndTime: travelSummaryData.effectEndTime ?? undefined,
 		effectDuration: travelSummaryData.effectDuration,
 		points: await buildPointsData(player, showEnergy),
 		energy: buildEnergyData(player, showEnergy),
 		endMap: {
-			id: endMap.id,
-			type: endMap.type
+			id: endMap?.id ?? 0,
+			type: endMap?.type ?? ""
 		},
 		nextStopTime: travelSummaryData.nextSmallEventTime,
-		lastSmallEventId: travelSummaryData.lastSmallEventId,
+		lastSmallEventId: travelSummaryData.lastSmallEventId ?? undefined,
 		startMap: {
-			id: startMap.id,
-			type: startMap.type
+			id: startMap?.id ?? 0,
+			type: startMap?.type ?? ""
 		},
 		isOnBoat: travelSummaryData.isOnBoat,
 		tokens: buildTokenData(tokenCostResult, player),

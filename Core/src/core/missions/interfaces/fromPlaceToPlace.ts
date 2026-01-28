@@ -28,6 +28,9 @@ export const missionInterface: IMission = {
 		}
 		const variantParams = MissionUtils.fromPlaceToPlaceParamsFromVariant(variant);
 		const saveData = MissionUtils.fromPlaceToPlaceDataFromSaveBlob(saveBlob);
+		if (!saveData) {
+			return false;
+		}
 		const otherMap = params.mapId as number;
 
 		return saveData.startTimestamp + hoursToMilliseconds(variantParams.time) > Date.now()
@@ -50,6 +53,9 @@ export const missionInterface: IMission = {
 			return null;
 		}
 		const saveData = MissionUtils.fromPlaceToPlaceDataFromSaveBlob(saveBlob);
+		if (!saveData) {
+			return null;
+		}
 		if (saveData.startMap === params.mapId) {
 			return saveBlobFromData(Date.now(), params.mapId);
 		}

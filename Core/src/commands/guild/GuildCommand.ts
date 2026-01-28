@@ -23,7 +23,7 @@ export default class GuildCommand {
 		disallowedEffects: CommandUtils.DISALLOWED_EFFECTS.NOT_STARTED_OR_DEAD_OR_JAILED
 	})
 	async execute(response: CrowniclesPacket[], player: Player, packet: CommandGuildPacketReq): Promise<void> {
-		let guild: Guild;
+		let guild: Guild | null = null;
 		const toCheckPlayer = await Players.getAskedPlayer(packet.askedPlayer, player);
 		if (packet.askedGuildName) {
 			try {
@@ -33,11 +33,11 @@ export default class GuildCommand {
 				guild = null;
 			}
 		}
-		else {
-			guild = toCheckPlayer.guildId ? await Guilds.getById(toCheckPlayer.guildId) : null;
+		else if (toCheckPlayer?.guildId) {
+			guild = await Guilds.getById(toCheckPlayer.guildId);
 		}
 
-		if (!guild) {
+		if (!guild || !toCheckPlayer) {
 			response.push(makePacket(CommandGuildPacketRes, {
 				foundGuild: false
 			}));

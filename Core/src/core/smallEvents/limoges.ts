@@ -179,7 +179,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 	canBeExecuted: Maps.isOnContinent,
 
 	executeSmallEvent(response, player, context): void {
-		const properties = SmallEventDataController.instance.getById("limoges")
+		const properties = SmallEventDataController.instance.getById("limoges")!
 			.getProperties<LimogesProperties>();
 		const question = getRandomQuestion(properties);
 		const collector = createCollector(question);

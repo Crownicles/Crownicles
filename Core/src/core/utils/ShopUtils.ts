@@ -58,8 +58,8 @@ export class ShopUtils {
 				return;
 			}
 			const buyResult = await shopCategories
-				.find(category => category.id === reactionInstance.shopCategoryId).items
-				.find(item => item.id === reactionInstance.shopItemId).buyCallback(response, player.id, context, reactionInstance.amount);
+				.find(category => category.id === reactionInstance.shopCategoryId)!.items
+				.find(item => item.id === reactionInstance.shopItemId)!.buyCallback(response, player.id, context, reactionInstance.amount);
 			if (buyResult) {
 				// Get fresh PlayerMissionsInfo after buyCallback in case missions updated gem count
 				const currentPlayerInfo = additionalShopData.currency === ShopCurrency.MONEY ? player : await PlayerMissionsInfos.getOfPlayer(player.id);

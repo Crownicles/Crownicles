@@ -16,29 +16,35 @@ class MysticMageFightBehavior implements ClassBehavior {
 		const opponent = fightView.fightController.getDefendingFighter();
 		const actions = FightConstants.FIGHT_ACTIONS.PLAYER;
 
+		// Early return if no opponent (should not happen in normal gameplay)
+		if (!opponent) {
+			return FightActionDataController.instance.getById(actions.BREATH_TAKING_ATTACK)!;
+		}
+
 		/*
 		 * Dark attack if:
 		 * - opponent is charging a two-turn attack without alterations
 		 * - player is dying soon
 		 */
+		const lastOpponentActionId = opponent.getLastFightActionUsed()?.id;
 		if (
 			me.getBreath() >= FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.DARK_ATTACK)
 			&& (
 
 				// Case 1: Cancel opponent's two-turn attack
-				[
+				lastOpponentActionId !== undefined && [
 					FightConstants.FIGHT_ACTIONS.PLAYER.RESTING,
 					FightConstants.FIGHT_ACTIONS.PLAYER.CANON_ATTACK,
 					FightConstants.FIGHT_ACTIONS.PLAYER.CHARGE_ULTIMATE_ATTACK,
 					FightConstants.FIGHT_ACTIONS.PLAYER.CHARGE_CHARGING_ATTACK
-				].includes(opponent.getLastFightActionUsed()?.id)
+				].includes(lastOpponentActionId)
 				&& !opponent.hasFightAlteration()
 
 				// Case 2: Player is dying
 				|| me.getEnergy() < 150 && opponent.getEnergy() > 300
 			)
 		) {
-			return FightActionDataController.instance.getById(actions.DARK_ATTACK);
+			return FightActionDataController.instance.getById(actions.DARK_ATTACK)!;
 		}
 
 		/*
@@ -46,13 +52,13 @@ class MysticMageFightBehavior implements ClassBehavior {
 		 * After turn 13, skip if cursed attack has not been used
 		 */
 		if (
-			(!opponent.hasFightAlteration() || opponent.alteration.id === FightConstants.FIGHT_ACTIONS.ALTERATION.BURNED)
+			(!opponent.hasFightAlteration() || opponent.alteration?.id === FightConstants.FIGHT_ACTIONS.ALTERATION.BURNED)
 			&& me.getBreath() >= FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.FIRE_ATTACK)
 			&& fightView.fightController.turn > 1
 			&& (fightView.fightController.turn <= this.cursedAttackTurn
 				|| this.cursedAttackUsed)
 		) {
-			return FightActionDataController.instance.getById(actions.FIRE_ATTACK);
+			return FightActionDataController.instance.getById(actions.FIRE_ATTACK)!;
 		}
 
 		// Poison attack if opponent < 65 HP or if we are in the first turn
@@ -63,7 +69,7 @@ class MysticMageFightBehavior implements ClassBehavior {
 			|| fightView.fightController.turn <= 1
 			&& !opponent.hasFightAlteration()
 		) {
-			return FightActionDataController.instance.getById(actions.POISONOUS_ATTACK);
+			return FightActionDataController.instance.getById(actions.POISONOUS_ATTACK)!;
 		}
 
 		if (
@@ -81,23 +87,23 @@ class MysticMageFightBehavior implements ClassBehavior {
 			)
 		) {
 			this.cursedAttackUsed = true;
-			return FightActionDataController.instance.getById(actions.CURSED_ATTACK);
+			return FightActionDataController.instance.getById(actions.CURSED_ATTACK)!;
 		}
 
 		// If breath > 10, always use dark attack
 		if (me.getBreath() > 10 && opponent.hasFightAlteration()) {
-			return FightActionDataController.instance.getById(actions.DARK_ATTACK);
+			return FightActionDataController.instance.getById(actions.DARK_ATTACK)!;
 		}
 
 		// If enough breath for dark attack, random choice between dark and breathtaking
 		if (me.getBreath() >= 8) {
 			return RandomUtils.crowniclesRandom.bool(0.3)
-				? FightActionDataController.instance.getById(actions.DARK_ATTACK)
-				: FightActionDataController.instance.getById(actions.BREATH_TAKING_ATTACK);
+				? FightActionDataController.instance.getById(actions.DARK_ATTACK)!
+				: FightActionDataController.instance.getById(actions.BREATH_TAKING_ATTACK)!;
 		}
 
 		// Default to breathtaking attack
-		return FightActionDataController.instance.getById(actions.BREATH_TAKING_ATTACK);
+		return FightActionDataController.instance.getById(actions.BREATH_TAKING_ATTACK)!;
 	}
 }
 

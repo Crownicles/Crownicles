@@ -197,7 +197,7 @@ async function managePickedInteraction(packet: SmallEventPetPacket, response: Cr
 			LogsDatabase.logPetFree(petEntity)
 				.then();
 			await petEntity.destroy();
-			player.petId = null;
+			player.petId = 0;
 			break;
 		default:
 			break;
@@ -208,7 +208,11 @@ export const smallEventFuncs: SmallEventFuncs = {
 	canBeExecuted: async player => Maps.isOnContinent(player) && await PetUtils.isPetAvailable(player, PetConstants.AVAILABILITY_CONTEXT.SMALL_EVENT),
 	executeSmallEvent: async (response, player, context): Promise<void> => {
 		const petEntity = await PetEntities.getById(player.petId);
-		const pet = PetDataController.instance.getById(petEntity.typeId);
+		if (!petEntity) {
+			response.push(makePacket(ErrorPacket, { message: "SmallEvent Pet : pet entity not found" }));
+			return;
+		}
+		const pet = PetDataController.instance.getById(petEntity.typeId)!;
 		const possibleIssues = generatePossibleIssues(petEntity, pet);
 		const randomPet = PetEntities.generateRandomPetEntityNotGuild();
 		const packet: SmallEventPetPacket = {

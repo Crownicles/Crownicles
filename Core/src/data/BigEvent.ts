@@ -45,7 +45,7 @@ export class BigEvent extends Data<number> {
 export class BigEventDataController extends DataControllerNumber<BigEvent> {
 	static readonly instance: BigEventDataController = new BigEventDataController("events");
 
-	private globalEvents: BigEvent[] = null;
+	private globalEvents: BigEvent[] | null = null;
 
 	private mapEvents: Map<number, BigEvent[]> = new Map();
 
@@ -68,10 +68,10 @@ export class BigEventDataController extends DataControllerNumber<BigEvent> {
 			this.mapEvents.set(mapId, mapEvents);
 		}
 		else {
-			mapEvents = this.mapEvents.get(mapId);
+			mapEvents = this.mapEvents.get(mapId)!;
 		}
 
-		return this.globalEvents.concat(mapEvents);
+		return this.globalEvents!.concat(mapEvents);
 	}
 
 	/**
@@ -100,7 +100,7 @@ export class BigEventDataController extends DataControllerNumber<BigEvent> {
 	 * @param mapId
 	 * @param player
 	 */
-	public async getRandomEvent(mapId: number, player: Player): Promise<BigEvent> {
+	public async getRandomEvent(mapId: number, player: Player): Promise<BigEvent | null> {
 		const possibleEvents = await this.getAvailableEvents(mapId, player);
 
 		if (possibleEvents.length === 0) {

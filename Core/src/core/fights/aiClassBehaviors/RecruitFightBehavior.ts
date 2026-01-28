@@ -22,17 +22,17 @@ export function piercingOrSimpleAttack(opponent: PlayerFighter | AiPlayerFighter
 			|| RandomUtils.crowniclesRandom.bool(0.2))
 		&& me.getBreath() >= FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.PIERCING_ATTACK)
 	) {
-		return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.PIERCING_ATTACK);
+		return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.PIERCING_ATTACK)!;
 	}
 
 	// Fallback to simple attack or protection if not enough breath
 	if (
 		me.getBreath() >= FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.SIMPLE_ATTACK)
 	) {
-		return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.SIMPLE_ATTACK);
+		return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.SIMPLE_ATTACK)!;
 	}
 
-	return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.PROTECTION);
+	return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.PROTECTION)!;
 }
 
 /**
@@ -62,7 +62,7 @@ class RecruitFightBehavior implements ClassBehavior {
 		const opponent = fightView.fightController.getDefendingFighter() as PlayerFighter | AiPlayerFighter; // AI will never fight monsters
 
 		if (shouldProtect(opponent, me, fightView.fightController.turn)) {
-			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.PROTECTION);
+			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.PROTECTION)!;
 		}
 
 		return piercingOrSimpleAttack(opponent, me);

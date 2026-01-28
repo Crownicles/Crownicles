@@ -35,10 +35,10 @@ export class MapLocation extends Data<number> {
                           OR mapLinkId = :id2;`;
 		return (<{
 			count: number;
-		}[]>(await Player.sequelize.query(query, {
+		}[]>(await Player.sequelize!.query(query, {
 			replacements: {
-				id1: mapLink1.id,
-				id2: mapLink2.id
+				id1: mapLink1?.id ?? -1,
+				id2: mapLink2?.id ?? -1
 			},
 			type: QueryTypes.SELECT
 		})))[0].count;
@@ -48,7 +48,7 @@ export class MapLocation extends Data<number> {
 export class MapLocationDataController extends DataControllerNumber<MapLocation> {
 	static readonly instance: MapLocationDataController = new MapLocationDataController("mapLocations");
 
-	private missionsMapsCache: MapLocation[] = null;
+	private missionsMapsCache: MapLocation[] | null = null;
 
 	newInstance(): MapLocation {
 		return new MapLocation();
@@ -131,11 +131,11 @@ export class MapLocationDataController extends DataControllerNumber<MapLocation>
 						 AND players.mapLinkId = :id1
 					       OR players.mapLinkId = :id2
                        ORDER BY RAND();`;
-		return await Player.sequelize.query(query, {
+		return await Player.sequelize!.query(query, {
 			replacements: {
 				playerId,
-				id1: mapLink1.id,
-				id2: mapLink2 ? mapLink2.id : -1
+				id1: mapLink1?.id ?? -1,
+				id2: mapLink2?.id ?? -1
 			},
 			type: QueryTypes.SELECT
 		});

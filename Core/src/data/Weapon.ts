@@ -6,7 +6,8 @@ export class Weapon extends MainItem {
 	categoryName = "weapons";
 
 	public getAttack(): number {
-		return Math.round(1.15053 * Math.pow(this.multiplier(), 2.3617) * Math.pow(1.0569 + 0.1448 / this.multiplier(), this.rawAttack)) + (this.attack ?? 0);
+		const rawAtk = this.rawAttack ?? 0;
+		return Math.round(1.15053 * Math.pow(this.multiplier(), 2.3617) * Math.pow(1.0569 + 0.1448 / this.multiplier(), rawAtk)) + (this.attack ?? 0);
 	}
 
 	public getCategory(): ItemCategory {
@@ -18,7 +19,7 @@ export class Weapon extends MainItem {
 	}
 
 	public getItemAddedValue(): number {
-		return this.rawAttack;
+		return this.rawAttack ?? 0;
 	}
 }
 

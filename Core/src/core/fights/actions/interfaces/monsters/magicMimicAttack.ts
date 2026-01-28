@@ -16,7 +16,7 @@ const use: FightActionFunc = (sender, receiver, _fightAction, turn, fight) => {
 	}
 
 	const attackToUse = lastAttack.type === FightActionType.MAGIC ? lastAttack.id : FightConstants.FIGHT_ACTIONS.PLAYER.SIMPLE_ATTACK;
-	const launchedResult = FightActionDataController.getFightActionFunction(attackToUse)(sender, receiver, lastAttack, turn, fight);
+	const launchedResult = FightActionDataController.getFightActionFunction(attackToUse)!(sender, receiver, lastAttack, turn, fight);
 	const result = defaultFightActionResult();
 	result.usedAction = {
 		id: attackToUse,

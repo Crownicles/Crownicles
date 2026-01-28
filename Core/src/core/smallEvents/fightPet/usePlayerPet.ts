@@ -47,7 +47,7 @@ export const fightPetAction: FightPetActionFunc = async (player, pet) => {
 		return false;
 	}
 
-	const playerPet = PetDataController.instance.getById(playerPetEntity.typeId);
+	const playerPet = PetDataController.instance.getById(playerPetEntity.typeId)!;
 	const petLoveBonusOrMalus = calculateLoveBonusOrMalus(playerPetEntity.getLoveLevelNumber());
 	const dietBonusOrMalus = calculateDietBonusOrMalus(pet.diet, playerPet.diet);
 

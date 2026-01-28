@@ -36,13 +36,13 @@ const petTestCommand: ExecuteTestCommandLike = async (player, args, response) =>
 		throw new Error(`Erreur pet : id invalide. L'id doit être compris entre 0 et ${maxIdPet} !`);
 	}
 
-	pet = PetEntities.createPet(petId, args[1], null);
+	pet = PetEntities.createPet(petId, args[1], "");
 	await pet.save();
 	player.setPet(pet);
 	await player.save();
 	await MissionsController.update(player, response, { missionId: "havePet" });
 
-	pet = await PetEntities.getById(pet.id); // Recall needed to refresh the pet
+	pet = (await PetEntities.getById(pet.id))!; // Recall needed to refresh the pet
 	return `Vous avez un nouveau pet :\n${pet.typeId} !`;
 };
 

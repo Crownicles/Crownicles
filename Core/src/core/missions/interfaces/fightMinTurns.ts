@@ -9,8 +9,8 @@ export const missionInterface: IMission = {
 	},
 
 	generateRandomVariant: (difficulty, _player) => {
-		const mission = MissionDataController.instance.getById("fightMinTurns");
-		const difficulties = mission.difficulties;
+		const mission = MissionDataController.instance.getById("fightMinTurns")!;
+		const difficulties = mission.difficulties!;
 
 		let indexes: number[];
 		if (difficulty === 0) { // EASY

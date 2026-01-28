@@ -19,7 +19,7 @@ export default class GuildStorageCommand {
 		guildNeeded: true,
 		disallowedEffects: CommandUtils.DISALLOWED_EFFECTS.NOT_STARTED_OR_DEAD
 	}) async execute(response: CrowniclesPacket[], player: Player): Promise<void> {
-		const guild = await Guilds.getById(player.guildId);
+		const guild = (await Guilds.getById(player.guildId))!;
 		const foods: FoodStorage[] = [];
 		for (const foodKey of Object.values(PetConstants.PET_FOOD)) {
 			foods.push({
