@@ -226,10 +226,13 @@ export class FightController {
 		fightAction = breathScenarioOutcome.fightAction;
 		const result = breathScenarioOutcome.result;
 
-		// Check if we need to use the out-of-breath action instead
+		/*
+		 * Check if we need to use the out-of-breath action instead
+		 * If the result is a fight alteration result, that means that the player did not have enough breath
+		 * FightAlteration extends FightAction, so this cast is safe
+		 */
 		if ("state" in result) {
-			// If the result is a fight alteration result, that means that the player did not have enough breath
-			fightAction = FightAlterationDataController.instance.getById(FightConstants.FIGHT_ACTIONS.ALTERATION.OUT_OF_BREATH) as unknown as FightAction;
+			fightAction = FightAlterationDataController.instance.getById(FightConstants.FIGHT_ACTIONS.ALTERATION.OUT_OF_BREATH)!;
 		}
 		this._fightView.addActionToHistory(response, attacker, fightAction, result);
 
@@ -320,9 +323,10 @@ export class FightController {
 		// Handle out of breath scenario
 		if (!enoughBreath) {
 			if (RandomUtils.crowniclesRandom.bool(FightConstants.OUT_OF_BREATH_FAILURE_PROBABILITY)) {
+				// FightAlteration extends FightAction, so this assignment is type-safe
 				const outOfBreathAction = FightAlterationDataController.instance.getById(FightConstants.FIGHT_ACTIONS.ALTERATION.OUT_OF_BREATH)!;
 				result = outOfBreathAction.happen(attacker, defender, this.turn, this);
-				fightAction = outOfBreathAction as unknown as FightAction;
+				fightAction = outOfBreathAction;
 			}
 			else {
 				attacker.setBreath(0);

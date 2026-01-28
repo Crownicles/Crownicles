@@ -85,7 +85,7 @@ export async function createFightCollector(context: PacketContext, packet: React
 					lng,
 					id: data.playerStats.classId
 				}),
-				pet: data.playerStats.pet.petTypeId
+				pet: data.playerStats.pet?.petTypeId
 					? i18n.t(data.playerStats.pet.isOnExpedition ? "commands:fight.petOnExpedition" : "commands:fight.pet", {
 						lng,
 						petInfo: PetUtils.petToShortString(lng, data.playerStats.pet.petNickname, data.playerStats.pet.petTypeId, data.playerStats.pet.petSex)
