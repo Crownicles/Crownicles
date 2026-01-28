@@ -1383,7 +1383,7 @@ export class LogsDatabase extends Database {
 	 * @param reason
 	 * @param fightId
 	 */
-	public async logPlayersAttackGloryPoints(keycloakId: string, gloryPoints: number, reason: NumberChangeReason, fightId: number = -1): Promise<void> {
+	public async logPlayersAttackGloryPoints(keycloakId: string, gloryPoints: number, reason: NumberChangeReason, fightId = -1): Promise<void> {
 		const player = await LogsDatabase.findOrCreatePlayer(keycloakId);
 		if (!player) {
 			return;
@@ -1405,7 +1405,7 @@ export class LogsDatabase extends Database {
 	 * @param reason
 	 * @param fightId
 	 */
-	public async logPlayersDefenseGloryPoints(keycloakId: string, gloryPoints: number, reason: NumberChangeReason, fightId: number = -1): Promise<void> {
+	public async logPlayersDefenseGloryPoints(keycloakId: string, gloryPoints: number, reason: NumberChangeReason, fightId = -1): Promise<void> {
 		const player = await LogsDatabase.findOrCreatePlayer(keycloakId);
 		if (!player) {
 			return;
