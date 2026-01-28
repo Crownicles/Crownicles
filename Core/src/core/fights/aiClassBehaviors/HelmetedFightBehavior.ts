@@ -16,12 +16,13 @@ import { intenseOrSimpleAttack } from "./GlovedFightBehavior";
  * @param me
  */
 export function shouldUseShieldAttack(opponent: AiPlayerFighter | PlayerFighter, me: AiPlayerFighter): boolean {
-	return ([
+	const lastActionId = opponent.getLastFightActionUsed()?.id;
+	return (lastActionId !== undefined && [
 		FightConstants.FIGHT_ACTIONS.PLAYER.CHARGE_ULTIMATE_ATTACK,
 		FightConstants.FIGHT_ACTIONS.PLAYER.CHARGE_CHARGING_ATTACK,
 		FightConstants.FIGHT_ACTIONS.PLAYER.BOOMERANG_ATTACK,
 		FightConstants.FIGHT_ACTIONS.PLAYER.CANON_ATTACK
-	].includes(opponent.getLastFightActionUsed()?.id)
+	].includes(lastActionId)
 			|| opponent.getBreath() > opponent.getMaxBreath() * 0.85)
 		&& me.getBreath() >= FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.SHIELD_ATTACK)
 		&& RandomUtils.crowniclesRandom.bool(0.8);
@@ -43,11 +44,11 @@ class TankFightBehavior implements ClassBehavior {
 				ClassConstants.CLASSES_ID.HORSE_RIDER
 			].includes(opponent.player.class)
 		) {
-			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.DEFENSE_BUFF);
+			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.DEFENSE_BUFF)!;
 		}
 
 		if (shouldUseShieldAttack(opponent, me)) {
-			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.SHIELD_ATTACK);
+			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.SHIELD_ATTACK)!;
 		}
 
 		return intenseOrSimpleAttack(me, opponent);

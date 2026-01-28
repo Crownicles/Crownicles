@@ -22,7 +22,7 @@ const use: FightActionFunc = (sender, receiver) => {
 		}
 	);
 	if (nbOfMonsters <= 3) {
-		sender.nextFightAction = FightActionDataController.instance.getById("packAttack");
+		sender.nextFightAction = FightActionDataController.instance.getById("packAttack") ?? null;
 	}
 	return result;
 };

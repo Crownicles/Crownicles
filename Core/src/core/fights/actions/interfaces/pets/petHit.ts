@@ -21,8 +21,8 @@ function getAttackInfo(): attackInfo {
 }
 
 function getStatsInfo(sender: Fighter, receiver: Fighter): statsInfo {
-	const petId = (sender as PlayerFighter).pet.typeId;
-	const petData = PetDataController.instance.getById(petId);
+	const petId = (sender as PlayerFighter).pet!.typeId;
+	const petData = PetDataController.instance.getById(petId)!;
 	return {
 		attackerStats: [
 			FightUtils.calculatePetStatFromForce(petData.force, sender.level),
@@ -41,12 +41,12 @@ function getStatsInfo(sender: Fighter, receiver: Fighter): statsInfo {
 
 const use: PetAssistanceFunc = (fighter, opponent, turn, _fightController): Promise<PetAssistanceResult | null> => {
 	if (RandomUtils.crowniclesRandom.bool(0.85) || turn <= 2) {
-		return null;
+		return Promise.resolve(null);
 	}
 
 	// Only do something if the last action was a physical attack
-	if (!opponent.getLastFightActionUsed() || opponent.getLastFightActionUsed().type !== FightActionType.PHYSICAL) {
-		return null;
+	if (!opponent.getLastFightActionUsed() || opponent.getLastFightActionUsed()!.type !== FightActionType.PHYSICAL) {
+		return Promise.resolve(null);
 	}
 
 	return Promise.resolve({

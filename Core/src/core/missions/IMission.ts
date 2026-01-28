@@ -20,7 +20,7 @@ export type IMission = {
 	 * @param params - the params of the mission
 	 * @param saveBlob - some binary data to save in the mission
 	 */
-	areParamsMatchingVariantAndBlob(variant: number, params: MissionParams, saveBlob: Buffer): boolean;
+	areParamsMatchingVariantAndBlob(variant: number, params: MissionParams, saveBlob: Buffer | null): boolean;
 
 	/**
 	 * Get the advancement of the mission at the beginning of the mission (maybe the player has already done it)
@@ -35,7 +35,7 @@ export type IMission = {
 	 * @param saveBlob - the binary data to save
 	 * @param params - identical to the update of the mission
 	 */
-	updateSaveBlob(variant: number, saveBlob: Buffer, params: MissionParams): Buffer;
+	updateSaveBlob(variant: number, saveBlob: Buffer | null, params: MissionParams): Buffer | null;
 
 	/**
 	 * Whether to always update the saveBlob even when params don't match

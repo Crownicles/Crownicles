@@ -48,7 +48,7 @@ import { PostFightPetLoveOutcomes } from "../../../../Lib/src/constants/PetConst
 import { PetUtils } from "../../core/utils/PetUtils";
 
 type PlayerStats = {
-	pet: {
+	pet?: {
 		petTypeId: number;
 		petSex: SexTypeShort;
 		petNickname: string;
@@ -95,12 +95,7 @@ async function getPlayerStats(player: Player): Promise<PlayerStats> {
 				petNickname: petEntity.nickname,
 				isOnExpedition: await PetUtils.isPetOnExpedition(player.id)
 			}
-			: {
-				petTypeId: null,
-				petSex: null,
-				petNickname: null,
-				isOnExpedition: false
-			},
+			: undefined,
 		classId: player.class,
 		fightRanking: {
 			glory: player.getGloryPoints()
@@ -214,12 +209,12 @@ async function updatePlayersEloAndCooldowns(
 	const player2NewRating = EloUtils.calculateNewRating(defender.defenseGloryPoints, attacker.attackGloryPoints, defenderGameResult, player2KFactor);
 
 	// Change glory and fightCountdown and save
-	await attacker.setGloryPoints(player1NewRating, false, NumberChangeReason.FIGHT, response, fightLogId);
+	await attacker.setGloryPoints(player1NewRating, false, NumberChangeReason.FIGHT, response, fightLogId ?? undefined);
 	attacker.fightCountdown--;
 	if (attacker.fightCountdown < 0) {
 		attacker.fightCountdown = 0;
 	}
-	await defender.setGloryPoints(player2NewRating, true, NumberChangeReason.FIGHT, response, fightLogId);
+	await defender.setGloryPoints(player2NewRating, true, NumberChangeReason.FIGHT, response, fightLogId ?? undefined);
 	defender.fightCountdown--;
 	if (defender.fightCountdown < 0) {
 		defender.fightCountdown = 0;
@@ -342,6 +337,10 @@ async function fightEndCallback(fight: FightController, response: CrowniclesPack
 	const opponentPlayer = nonFightInitiator instanceof PlayerFighter || nonFightInitiator instanceof AiPlayerFighter
 		? await Players.getById(nonFightInitiator.player.id)
 		: null;
+
+	if (!initiatorPlayer || !opponentPlayer) {
+		return;
+	}
 
 	const playerDailyFightSummary = await LogsReadRequests.getPersonalInitiatedFightDailySummary(
 		fight.fightInitiator.player.keycloakId
@@ -510,10 +509,15 @@ function fightValidationEndCallback(player: Player, context: PacketContext): End
 				BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.FIGHT_CONFIRMATION);
 				return;
 			}
-			const askingFighter = new PlayerFighter(player, ClassDataController.instance.getById(player.class));
+			const playerClass = ClassDataController.instance.getById(player.class);
+			const opponentClass = ClassDataController.instance.getById(opponent.class);
+			if (!playerClass || !opponentClass) {
+				throw new Error("Class not found for player or opponent");
+			}
+			const askingFighter = new PlayerFighter(player, playerClass);
 			askingFighter.setFightRole(FightConstants.FIGHT_ROLES.ATTACKER);
 			await askingFighter.loadStats();
-			const incomingFighter = new AiPlayerFighter(opponent, ClassDataController.instance.getById(opponent.class));
+			const incomingFighter = new AiPlayerFighter(opponent, opponentClass);
 			incomingFighter.setFightRole(FightConstants.FIGHT_ROLES.DEFENDER);
 			await incomingFighter.loadStats();
 

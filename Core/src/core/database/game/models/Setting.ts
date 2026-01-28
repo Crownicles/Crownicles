@@ -25,7 +25,7 @@ class SettingClassNumber {
 		});
 
 		if (settingInstance) {
-			value = settingInstance.dataNumber;
+			value = settingInstance.dataNumber ?? await this.defaultValue();
 		}
 		else {
 			value = await this.defaultValue();
@@ -65,7 +65,7 @@ class SettingClassString {
 		});
 
 		if (settingInstance) {
-			value = settingInstance.dataString;
+			value = settingInstance.dataString ?? await this.defaultValue();
 		}
 		else {
 			value = await this.defaultValue();

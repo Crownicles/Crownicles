@@ -15,7 +15,7 @@ const shouldSkipPetPetrified = (turn: number, opponent: Fighter): boolean => {
 
 const use: PetAssistanceFunc = (_fighter, opponent, turn, _fightController): Promise<PetAssistanceResult | null> => {
 	if (shouldSkipPetPetrified(turn, opponent)) {
-		return null;
+		return Promise.resolve(null);
 	}
 
 	// Check if opponent is a mage - petrification doesn't work on mages

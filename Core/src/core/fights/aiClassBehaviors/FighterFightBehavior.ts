@@ -19,7 +19,7 @@ class FighterFightBehavior implements ClassBehavior {
 		const opponent = fightView.fightController.getDefendingFighter() as PlayerFighter | AiPlayerFighter; // AI will never fight monsters
 
 		if (shouldProtect(opponent, me, fightView.fightController.turn)) {
-			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.PROTECTION);
+			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.PROTECTION)!;
 		}
 
 		// Priority is to use powerful attacks
@@ -29,7 +29,7 @@ class FighterFightBehavior implements ClassBehavior {
 			&& me.getBreath() >= FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.POWERFUL_ATTACK)
 		) {
 			this.powerfulAttacksUsedMap++;
-			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.POWERFUL_ATTACK);
+			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.POWERFUL_ATTACK)!;
 		}
 
 		return piercingOrSimpleAttack(opponent, me);

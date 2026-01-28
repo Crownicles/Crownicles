@@ -10,7 +10,7 @@ import { defaultFailFightActionResult } from "../../../../../../../Lib/src/types
 import { simpleDamageFightAction } from "../../templates/SimpleDamageFightActionTemplate";
 
 const use: FightActionFunc = (sender, receiver) => {
-	if (!receiver.getLastFightActionUsed() || receiver.getLastFightActionUsed().type !== FightActionType.PHYSICAL) {
+	if (!receiver.getLastFightActionUsed() || receiver.getLastFightActionUsed()!.type !== FightActionType.PHYSICAL) {
 		return defaultFailFightActionResult();
 	}
 	const result = simpleDamageFightAction(

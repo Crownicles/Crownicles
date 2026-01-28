@@ -16,6 +16,10 @@ const mapInfoTestCommand: ExecuteTestCommandLike = async player => {
 	const prevMap = player.getPreviousMap();
 	const travelling = Maps.isTravelling(player);
 
+	if (!currMap) {
+		return "🗺️ Map debugging : No current map found";
+	}
+
 	return `🗺️ Map debugging :
 Previous map : ${prevMap ? `${prevMap.id} (id: ${prevMap.id})` : "None"}
 ${travelling ? "Next map" : "Current map"} : ${currMap.id} (id: ${currMap.id})
@@ -26,7 +30,7 @@ ${travelling
 			.map(map => `${map} (id: ${map})`)
 			.join("\n")
 	}`}
-Players : :speech_balloon: ${await currMap.playersCount(prevMap.id)} player(s) on this map`;
+Players : :speech_balloon: ${await currMap.playersCount(prevMap?.id ?? 0)} player(s) on this map`;
 };
 
 commandInfo.execute = mapInfoTestCommand;

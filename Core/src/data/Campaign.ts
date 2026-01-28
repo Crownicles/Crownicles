@@ -10,7 +10,7 @@ export type CampaignMission = {
 };
 
 export class CampaignData {
-	private static missions: CampaignMission[] = null;
+	private static missions: CampaignMission[] | null = null;
 
 	public static getMissions(): CampaignMission[] {
 		if (!CampaignData.missions) {
@@ -18,6 +18,6 @@ export class CampaignData {
 				.toString("utf8")).missions;
 		}
 
-		return CampaignData.missions;
+		return CampaignData.missions!;
 	}
 }

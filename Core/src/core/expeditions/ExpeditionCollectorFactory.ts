@@ -47,7 +47,7 @@ import { Guilds } from "../database/game/models/Guild";
  * Reaction handler type for expedition collectors
  */
 type ExpeditionReactionHandler = (
-	reaction: { reaction: { type: string } } | undefined,
+	reaction: { reaction: { type: string } } | null,
 	player: Player,
 	resp: CrowniclesPacket[]
 ) => Promise<void>;
@@ -152,12 +152,12 @@ function buildExpeditionCollector(
 		collector,
 		context,
 		{
-			allowedPlayerKeycloakIds: [context.keycloakId],
+			allowedPlayerKeycloakIds: [context.keycloakId!],
 			reactionLimit: 1
 		},
 		endCallback
 	)
-		.block(context.keycloakId, BlockingConstants.REASONS.PET_EXPEDITION)
+		.block(context.keycloakId!, BlockingConstants.REASONS.PET_EXPEDITION)
 		.build();
 }
 
@@ -170,9 +170,9 @@ function createExpeditionEndCallback(
 ): EndCallback {
 	return async (collectorInstance: ReactionCollectorInstance, resp: CrowniclesPacket[]): Promise<void> => {
 		const reaction = collectorInstance.getFirstReaction();
-		BlockingUtils.unblockPlayer(context.keycloakId, BlockingConstants.REASONS.PET_EXPEDITION);
+		BlockingUtils.unblockPlayer(context.keycloakId!, BlockingConstants.REASONS.PET_EXPEDITION);
 
-		const reloadedPlayer = await Players.getByKeycloakId(context.keycloakId);
+		const reloadedPlayer = await Players.getByKeycloakId(context.keycloakId!);
 		if (!reloadedPlayer) {
 			return;
 		}
@@ -244,9 +244,9 @@ export function createExpeditionChoiceCollector(params: ExpeditionChoiceParams):
 
 	const endCallback: EndCallback = async (collectorInstance: ReactionCollectorInstance, resp: CrowniclesPacket[]): Promise<void> => {
 		const reaction = collectorInstance.getFirstReaction();
-		BlockingUtils.unblockPlayer(context.keycloakId, BlockingConstants.REASONS.PET_EXPEDITION_CHOICE);
+		BlockingUtils.unblockPlayer(context.keycloakId!, BlockingConstants.REASONS.PET_EXPEDITION_CHOICE);
 
-		const reloadedPlayer = await Players.getByKeycloakId(context.keycloakId);
+		const reloadedPlayer = await Players.getByKeycloakId(context.keycloakId!);
 		if (!reloadedPlayer) {
 			return;
 		}
@@ -260,7 +260,7 @@ export function createExpeditionChoiceCollector(params: ExpeditionChoiceParams):
 					player: reloadedPlayer,
 					petEntity: reloadedPetEntity,
 					expeditionId: selectReaction.expedition.id,
-					keycloakId: context.keycloakId
+					keycloakId: context.keycloakId!
 				};
 				await handleExpeditionSelect(selectContext, resp);
 			}
@@ -274,12 +274,12 @@ export function createExpeditionChoiceCollector(params: ExpeditionChoiceParams):
 		collector,
 		context,
 		{
-			allowedPlayerKeycloakIds: [context.keycloakId],
+			allowedPlayerKeycloakIds: [context.keycloakId!],
 			reactionLimit: 1
 		},
 		endCallback
 	)
-		.block(context.keycloakId, BlockingConstants.REASONS.PET_EXPEDITION_CHOICE)
+		.block(context.keycloakId!, BlockingConstants.REASONS.PET_EXPEDITION_CHOICE)
 		.build();
 }
 

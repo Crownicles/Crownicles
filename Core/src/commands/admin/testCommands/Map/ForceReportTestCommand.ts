@@ -17,7 +17,7 @@ export const commandInfo: ITestCommand = {
  * Force a report with a given event id
  */
 const forceReportTestCommand: ExecuteTestCommandLike = async (player, args, response, context) => {
-	await CommandsTest.getTestCommand("atravel").execute(player, ["5000"], response, context);
+	await CommandsTest.getTestCommand("atravel")!.execute!(player, ["5000"], response, context);
 	await ReportCommand.execute(response, player, makePacket(CommandReportPacketReq, {}), context, null, parseInt(args[0], 10));
 	return `Event ${args[0] === "-1" ? "aléatoire" : args[0]} forcé !`;
 };

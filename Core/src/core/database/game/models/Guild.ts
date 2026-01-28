@@ -80,9 +80,12 @@ export class Guild extends Model {
 	 */
 	public async completelyDestroyAndDeleteFromTheDatabase(): Promise<void> {
 		const pets = await GuildPets.getOfGuild(this.id);
-		const guildPetsEntities = [];
+		const guildPetsEntities: PetEntity[] = [];
 		for (const guildPet of pets) {
-			guildPetsEntities.push(await PetEntities.getById(guildPet.petEntityId));
+			const petEntity = await PetEntities.getById(guildPet.petEntityId);
+			if (petEntity) {
+				guildPetsEntities.push(petEntity);
+			}
 		}
 
 		crowniclesInstance.logsDatabase.logGuildDestroy(this, await Players.getByGuild(this.id), guildPetsEntities)
@@ -267,7 +270,7 @@ export class Guild extends Model {
                        FROM (SELECT id, RANK() OVER (ORDER BY score desc, level desc) ranking
                              FROM guilds) subquery
                        WHERE subquery.id = :id`;
-		return ((await Guild.sequelize.query(query, {
+		return ((await Guild.sequelize!.query(query, {
 			replacements: { id: this.id },
 			type: QueryTypes.SELECT
 		}))[0] as {
@@ -298,13 +301,13 @@ export class Guild extends Model {
 }
 
 export class Guilds {
-	static getById(id: number): Promise<Guild> {
+	static getById(id: number): Promise<Guild | null> {
 		return Promise.resolve(Guild.findOne({
 			where: { id }
 		}));
 	}
 
-	static getByName(name: string): Promise<Guild> {
+	static getByName(name: string): Promise<Guild | null> {
 		return Promise.resolve(Guild.findOne({
 			where: { name }
 		}));
@@ -316,7 +319,7 @@ export class Guilds {
 		return Math.round(
 			(<{
 				avg: number;
-			}[]>(await Guild.sequelize.query(query, {
+			}[]>(await Guild.sequelize!.query(query, {
 				type: QueryTypes.SELECT
 			})))[0].avg
 		);
@@ -340,7 +343,7 @@ export class Guilds {
 		});
 	}
 
-	static async ofPlayer(player: Player): Promise<Guild> {
+	static async ofPlayer(player: Player): Promise<Guild | null> {
 		try {
 			return await Guilds.getById(player.guildId);
 		}

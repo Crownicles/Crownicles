@@ -36,7 +36,7 @@ export class WitchAction extends Data<string> {
 	public async checkMissionsWitchAction(player: Player, outcome: WitchActionOutcomeType, response: CrowniclesPacket[]): Promise<void> {
 		const withActionFunctions = WitchActionDataController.getWitchActionFunction(this.id);
 		if (withActionFunctions?.checkMissions) {
-			await withActionFunctions.checkMissions(player, outcome, response, this.tags);
+			await withActionFunctions.checkMissions(player, outcome, response, this.tags ?? []);
 		}
 	}
 
@@ -148,7 +148,7 @@ export class WitchActionDataController extends DataControllerString<WitchAction>
 	}
 
 	getDoNothing(): WitchAction {
-		return this.getById("nothing");
+		return this.getById("nothing")!;
 	}
 
 	getAll(): WitchAction[] {

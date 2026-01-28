@@ -37,11 +37,11 @@ const use: FightActionFunc = (sender, receiver, fightAction) => {
 			alteration: FightAlterations.STUNNED
 		}, sender);
 		if (result.alterations) {
-			result.damages *= 1.5;
+			result.damages! *= 1.5;
 		}
 	}
 
-	result.damages = Math.round(result.damages);
+	result.damages = Math.round(result.damages!);
 
 	// Reduce the speed of the opponent by 15 %
 	FightActionController.applyBuff(result, {
@@ -49,7 +49,7 @@ const use: FightActionFunc = (sender, receiver, fightAction) => {
 		stat: FightStatBuffed.SPEED,
 		operator: FightStatModifierOperation.MULTIPLIER,
 		value: 0.85
-	}, receiver, fightAction);
+	}, receiver, fightAction!);
 
 	return result;
 };

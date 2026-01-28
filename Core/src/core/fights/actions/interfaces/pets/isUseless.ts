@@ -6,7 +6,7 @@ import { RandomUtils } from "../../../../../../../Lib/src/utils/RandomUtils";
 
 const use: PetAssistanceFunc = (_fighter, _opponent, _turn, _fightController): Promise<PetAssistanceResult | null> => {
 	if (RandomUtils.crowniclesRandom.bool(0.9)) {
-		return null;
+		return Promise.resolve(null);
 	}
 	return Promise.resolve({
 		assistanceStatus: PetAssistanceState.GENERAL_EFFECT

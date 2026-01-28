@@ -104,9 +104,9 @@ function getProbabilities(type: string): { [key: string]: number } {
  * @returns The food type identifier
  */
 function getFoodType(player: Player): string {
-	const mapLink = MapLinkDataController.instance.getById(player.mapLinkId);
-	const endMap = MapLocationDataController.instance.getById(mapLink.endMap);
-	const startMap = MapLocationDataController.instance.getById(mapLink.startMap);
+	const mapLink = MapLinkDataController.instance.getById(player.mapLinkId)!;
+	const endMap = MapLocationDataController.instance.getById(mapLink.endMap)!;
+	const startMap = MapLocationDataController.instance.getById(mapLink.startMap)!;
 
 	if (endMap.id === MapConstants.LOCATIONS_IDS.ROAD_OF_WONDERS || startMap.id === MapConstants.LOCATIONS_IDS.ROAD_OF_WONDERS) {
 		return SmallEventConstants.PET_FOOD.FOOD_TYPES.SOUP;
@@ -179,7 +179,7 @@ async function applyOutcome(
 		foodType, outcome, properties, wasInvestigating
 	} = eventData;
 	const petEntity = (await PetEntity.findByPk(player.petId))!;
-	const petModel = PetDataController.instance.getById(petEntity.typeId);
+	const petModel = PetDataController.instance.getById(petEntity.typeId)!;
 	let loveChange = 0;
 
 	if ([
@@ -230,7 +230,7 @@ async function handleInvestigateReaction(player: Player, properties: PetFoodProp
 async function handleSendPetReaction(player: Player): Promise<string> {
 	// Pet existence is guaranteed by canBeExecuted
 	const petEntity = (await PetEntity.findByPk(player.petId))!;
-	const petModel = PetDataController.instance.getById(petEntity.typeId);
+	const petModel = PetDataController.instance.getById(petEntity.typeId)!;
 	const now = Date.now();
 	const hungrySince = petEntity.hungrySince ? new Date(petEntity.hungrySince).getTime() : now;
 	const diffHours = millisecondsToHours(now - hungrySince);
@@ -312,7 +312,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 	},
 
 	executeSmallEvent: async (response, player, context): Promise<void> => {
-		const properties = SmallEventDataController.instance.getById(SmallEventConstants.PET_FOOD.SMALL_EVENT_NAME).getProperties<PetFoodProperties>();
+		const properties = SmallEventDataController.instance.getById(SmallEventConstants.PET_FOOD.SMALL_EVENT_NAME)!.getProperties<PetFoodProperties>();
 		const foodType = getFoodType(player);
 		const petEntity = (await PetEntity.findByPk(player.petId))!;
 		const collector = new ReactionCollectorPetFoodSmallEvent(foodType, petEntity.sex);

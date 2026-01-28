@@ -136,7 +136,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 	canBeExecuted: Maps.isOnContinent,
 
 	executeSmallEvent(response, player, context): void {
-		const dataLottery = SmallEventDataController.instance.getById("lottery")
+		const dataLottery = SmallEventDataController.instance.getById("lottery")!
 			.getProperties<LotteryProperties>();
 
 		const collector = new ReactionCollectorLottery();
@@ -175,13 +175,13 @@ export const smallEventFuncs: SmallEventFuncs = {
 
 				const lostTime = await effectIfGoodRisk(levelKey, player, dataLottery);
 
-				const rewardType = RandomUtils.crowniclesRandom.pick(rewardTypes);
+				const rewardType = RandomUtils.crowniclesRandom.pick(rewardTypes)!;
 
 				if (RandomUtils.crowniclesRandom.bool(dataLottery.successRate[levelKey]) && (guild || rewardType !== SmallEventConstants.LOTTERY.REWARD_TYPES.GUILD_XP)) {
 					const coefficient = dataLottery.coefficients[levelKey];
 					await giveRewardToPlayer(response, {
 						player,
-						guild
+						guild: guild!
 					}, rewardType, {
 						coefficient,
 						lostTime,

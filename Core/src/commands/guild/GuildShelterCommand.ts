@@ -31,12 +31,12 @@ export default class GuildShelterCommand {
 
 		const ownedPets = [];
 		for (const pet of pets) {
-			ownedPets.push((await PetEntities.getById(pet.petEntityId)).asOwnedPet());
+			ownedPets.push((await PetEntities.getById(pet.petEntityId))!.asOwnedPet());
 		}
 
 		response.push(makePacket(CommandGuildShelterPacketRes, {
 			pets: ownedPets,
-			guildName: (await Guilds.getById(player.guildId)).name,
+			guildName: (await Guilds.getById(player.guildId))!.name,
 			maxCount: PetConstants.SLOTS
 		}));
 	}

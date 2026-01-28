@@ -55,7 +55,7 @@ function foodAmount(player: Player, currentFoodLevel: number, ultimate: boolean)
  * @param player
  * @param guild
  */
-function generateReward(player: Player, guild: Guild): string {
+function generateReward(player: Player, guild: Guild | null): string {
 	if (!guild) {
 		return SmallEventConstants.ULTIMATE_FOOD_MERCHANT.INTERACTIONS_NAMES.MONEY;
 	}
@@ -82,10 +82,10 @@ function generateReward(player: Player, guild: Guild): string {
  * @param player
  * @param guild
  */
-async function giveReward(packet: SmallEventUltimateFoodMerchantPacket, response: CrowniclesPacket[], context: PacketContext, player: Player, guild: Guild): Promise<void> {
+async function giveReward(packet: SmallEventUltimateFoodMerchantPacket, response: CrowniclesPacket[], context: PacketContext, player: Player, guild: Guild | null): Promise<void> {
 	switch (packet.interactionName) {
 		case SmallEventConstants.ULTIMATE_FOOD_MERCHANT.INTERACTIONS_NAMES.ULTIMATE_FOOD:
-			packet.amount = foodAmount(player, guild.ultimateFood, true);
+			packet.amount = foodAmount(player, guild!.ultimateFood, true);
 			await giveFoodToGuild(response, player, SmallEventConstants.ULTIMATE_FOOD_MERCHANT.INTERACTIONS_NAMES.ULTIMATE_FOOD, packet.amount, NumberChangeReason.SMALL_EVENT);
 			break;
 		case SmallEventConstants.ULTIMATE_FOOD_MERCHANT.INTERACTIONS_NAMES.ITEM:
@@ -95,7 +95,7 @@ async function giveReward(packet: SmallEventUltimateFoodMerchantPacket, response
 			}));
 			break;
 		case SmallEventConstants.ULTIMATE_FOOD_MERCHANT.INTERACTIONS_NAMES.COMMON_FOOD:
-			packet.amount = foodAmount(player, guild.commonFood, false);
+			packet.amount = foodAmount(player, guild!.commonFood, false);
 			await giveFoodToGuild(response, player, SmallEventConstants.ULTIMATE_FOOD_MERCHANT.INTERACTIONS_NAMES.COMMON_FOOD, packet.amount, NumberChangeReason.SMALL_EVENT);
 			break;
 		case SmallEventConstants.ULTIMATE_FOOD_MERCHANT.INTERACTIONS_NAMES.MONEY:
@@ -120,7 +120,7 @@ async function giveReward(packet: SmallEventUltimateFoodMerchantPacket, response
 export const smallEventFuncs: SmallEventFuncs = {
 	canBeExecuted: Maps.isOnContinent,
 	executeSmallEvent: async (response, player, context): Promise<void> => {
-		let guild: Guild;
+		let guild: Guild | null;
 		try {
 			guild = await Guilds.getById(player.guildId);
 		}

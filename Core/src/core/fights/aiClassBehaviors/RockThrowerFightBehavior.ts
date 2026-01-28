@@ -49,7 +49,7 @@ export function shouldStartCanonSequence(
 		&& (me.getSpeed() * 0.75 > opponent.getSpeed()
 			|| (me.getBreath() >= 10 // If ai is not able to use boomerang, be more lenient on speed requirement
 				&& opponent.hasFightAlteration()
-				&& opponent.alteration.id !== FightConstants.FIGHT_ACTIONS.ALTERATION.TARGETED))
+				&& opponent.alteration?.id !== FightConstants.FIGHT_ACTIONS.ALTERATION.TARGETED))
 		&& (opponent.player.class !== ClassConstants.CLASSES_ID.MYSTIC_MAGE
 			|| (opponent.player.class === ClassConstants.CLASSES_ID.MYSTIC_MAGE
 				&& me.hasFightAlteration()))
@@ -90,7 +90,7 @@ class RockThrowerFightBehavior implements ClassBehavior {
 		// Continue a canon attack sequence if appropriate
 		if (shouldContinueCanonSequence(me, this.isGoingForChainedCanonAttack, this.canonAttackUsed, turn)) {
 			this.canonAttackUsed++;
-			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.CANON_ATTACK);
+			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.CANON_ATTACK)!;
 		}
 
 		// Clear the chained canon attack flag if 3 canon attacks have been used or not enough breath for the third
@@ -105,28 +105,28 @@ class RockThrowerFightBehavior implements ClassBehavior {
 
 		// If opponent is very low health, finish them
 		if (opponent.getEnergy() <= opponent.getMaxEnergy() * 0.06) {
-			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.QUICK_ATTACK);
+			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.QUICK_ATTACK)!;
 		}
 
 		// Play boomerang when possible if the opponent has no alteration
 		if (shouldUseBoomerang(opponent, me, this.isGoingForChainedCanonAttack)) {
-			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.BOOMERANG_ATTACK);
+			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.BOOMERANG_ATTACK)!;
 		}
 
 		// Start a canon attack sequence if appropriate
 		if (shouldStartCanonSequence(opponent, me, this.canonAttackUsed, this.isGoingForChainedCanonAttack)) {
 			this.isGoingForChainedCanonAttack = true;
 			this.canonAttackUsed++;
-			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.CANON_ATTACK);
+			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.CANON_ATTACK)!;
 		}
 
 		// Quick attack when we have enough breath
 		if (me.getBreath() >= FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.QUICK_ATTACK)) {
-			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.QUICK_ATTACK);
+			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.QUICK_ATTACK)!;
 		}
 
 		// Canon attack as fallback
-		return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.CANON_ATTACK);
+		return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.CANON_ATTACK)!;
 	}
 }
 

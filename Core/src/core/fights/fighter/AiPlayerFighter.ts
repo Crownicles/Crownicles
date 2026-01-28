@@ -31,7 +31,7 @@ type AiPlayerFighterOptions = {
 export class AiPlayerFighter extends PlayerBaseFighter {
 	private class: Class;
 
-	private readonly classBehavior: ClassBehavior;
+	private readonly classBehavior: ClassBehavior | undefined;
 
 	private glory!: number;
 
@@ -75,7 +75,7 @@ export class AiPlayerFighter extends PlayerBaseFighter {
 		}
 
 		if (this.preloadedPetEntity !== undefined) {
-			this.pet = this.preloadedPetEntity;
+			this.pet = this.preloadedPetEntity ?? undefined;
 			return;
 		}
 
@@ -84,7 +84,7 @@ export class AiPlayerFighter extends PlayerBaseFighter {
 			? PetConstants.AVAILABILITY_CONTEXT.ATTACK_FIGHT
 			: PetConstants.AVAILABILITY_CONTEXT.DEFENSE_FIGHT;
 		const isPetAvailable = await PetUtils.isPetAvailable(this.player, petAvailabilityContext);
-		this.pet = isPetAvailable ? await PetEntities.getById(this.player.petId) : undefined;
+		this.pet = isPetAvailable ? await PetEntities.getById(this.player.petId) ?? undefined : undefined;
 	}
 
 	/**
@@ -122,7 +122,7 @@ export class AiPlayerFighter extends PlayerBaseFighter {
 		}
 		else {
 			// Fallback to a simple attack if no behavior is defined
-			fightAction = FightActionDataController.instance.getById("simpleAttack");
+			fightAction = FightActionDataController.instance.getById("simpleAttack")!;
 		}
 		await fightView.fightController.executeFightAction(fightAction, true, response);
 	}

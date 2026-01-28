@@ -10,7 +10,7 @@ import { MonsterFighter } from "../../../fighter/MonsterFighter";
 const use: PetAssistanceFunc = (fighter, opponent, turn, _fightController): Promise<PetAssistanceResult | null> => {
 	// If not turn 4 or 5, do nothing, and if the opponent is a monster, do nothing
 	if (turn < 4 || turn > 5 || opponent instanceof MonsterFighter) {
-		return null;
+		return Promise.resolve(null);
 	}
 
 	const result: PetAssistanceResult = {
@@ -30,7 +30,7 @@ const use: PetAssistanceFunc = (fighter, opponent, turn, _fightController): Prom
 			stat: FightStatBuffed.ENERGY,
 			operator: FightStatModifierOperation.ADDITION,
 			value: pointsToHealFighter
-		}, fighter, this);
+		}, fighter, undefined);
 	}
 	if (pointsToHealOpponent > 0) {
 		FightActionController.applyBuff(result, {
@@ -38,7 +38,7 @@ const use: PetAssistanceFunc = (fighter, opponent, turn, _fightController): Prom
 			stat: FightStatBuffed.ENERGY,
 			operator: FightStatModifierOperation.ADDITION,
 			value: pointsToHealOpponent
-		}, opponent, this);
+		}, opponent, undefined);
 	}
 	return Promise.resolve(result);
 };

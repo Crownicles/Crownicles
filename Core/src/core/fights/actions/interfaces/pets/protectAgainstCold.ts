@@ -12,7 +12,7 @@ const use: PetAssistanceFunc = (fighter, _opponent, _turn, _fightController): Pr
 			assistanceStatus: PetAssistanceState.SUCCESS
 		});
 	}
-	return null;
+	return Promise.resolve(null);
 };
 
 export default use;

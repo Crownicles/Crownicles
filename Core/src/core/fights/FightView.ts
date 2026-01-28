@@ -57,12 +57,12 @@ export class FightView {
 		response.push(makePacket(CommandFightIntroduceFightersPacket, {
 			fightId: this.fightController.id,
 			fightInitiatorKeycloakId: fighter.player.keycloakId,
-			fightOpponentKeycloakId: opponent instanceof MonsterFighter ? null : opponent.player.keycloakId,
-			fightOpponentMonsterId: opponent instanceof MonsterFighter ? opponent.monster.id : null,
+			fightOpponentKeycloakId: opponent instanceof MonsterFighter ? undefined : opponent.player.keycloakId,
+			fightOpponentMonsterId: opponent instanceof MonsterFighter ? opponent.monster.id : undefined,
 			fightInitiatorActions,
 			fightOpponentActions,
-			fightInitiatorPet: fighter.pet ? fighter.pet.asOwnedPet() : null,
-			fightOpponentPet: opponent instanceof MonsterFighter || !opponent.pet ? null : opponent.pet.asOwnedPet()
+			fightInitiatorPet: fighter.pet ? fighter.pet.asOwnedPet() : undefined,
+			fightOpponentPet: opponent instanceof MonsterFighter || !opponent.pet ? undefined : opponent.pet.asOwnedPet()
 		}));
 	}
 
@@ -76,14 +76,17 @@ export class FightView {
 		}
 		const playingFighter = this.fightController.getPlayingFighter();
 		const defendingFighter = this.fightController.getDefendingFighter();
+		if (!playingFighter || !defendingFighter) {
+			return;
+		}
 		response.push(makePacket(CommandFightStatusPacket, {
 			fightId: this.fightController.id,
 			numberOfTurn: this.fightController.turn,
 			maxNumberOfTurn: FightConstants.MAX_TURNS,
 			activeFighter: {
-				keycloakId: playingFighter instanceof MonsterFighter ? null : playingFighter.player.keycloakId,
-				monsterId: playingFighter instanceof MonsterFighter ? playingFighter.monster.id : null,
-				glory: playingFighter instanceof MonsterFighter ? null : playingFighter.player.getGloryPoints(),
+				keycloakId: playingFighter instanceof MonsterFighter ? undefined : playingFighter.player.keycloakId,
+				monsterId: playingFighter instanceof MonsterFighter ? playingFighter.monster.id : undefined,
+				glory: playingFighter instanceof MonsterFighter ? undefined : playingFighter.player.getGloryPoints(),
 				stats: {
 					power: playingFighter.getEnergy(),
 					attack: playingFighter.getAttack(),
@@ -95,9 +98,9 @@ export class FightView {
 				}
 			},
 			defendingFighter: {
-				keycloakId: defendingFighter instanceof MonsterFighter ? null : defendingFighter.player.keycloakId,
-				monsterId: defendingFighter instanceof MonsterFighter ? defendingFighter.monster.id : null,
-				glory: defendingFighter instanceof MonsterFighter ? null : defendingFighter.player.getGloryPoints(),
+				keycloakId: defendingFighter instanceof MonsterFighter ? undefined : defendingFighter.player.keycloakId,
+				monsterId: defendingFighter instanceof MonsterFighter ? defendingFighter.monster.id : undefined,
+				glory: defendingFighter instanceof MonsterFighter ? undefined : defendingFighter.player.getGloryPoints(),
 				stats: {
 					power: defendingFighter.getEnergy(),
 					attack: defendingFighter.getAttack(),
@@ -170,7 +173,7 @@ export class FightView {
 				return acc;
 			}, {} as {
 				attack?: number; defense?: number; speed?: number; breath?: number; energy?: number;
-			});
+			}) ?? {};
 
 		/**
 		 * Return the pet if the action is a pet assistance and the fighter has a pet
@@ -180,21 +183,21 @@ export class FightView {
 		const getPetIfRelevant = (
 			fighter: PlayerFighter | MonsterFighter | AiPlayerFighter,
 			fightActionResult: FightActionResult | FightAlterationResult | PetAssistanceResult
-		): OwnedPet | null => {
+		): OwnedPet | undefined => {
 			// Check if the fighter is a player (not a monster) and has a cached pet
 			if (!(fighter instanceof MonsterFighter) && fighter.pet) {
 				if ("assistanceStatus" in fightActionResult) {
 					return fighter.pet.asOwnedPet();
 				}
 			}
-			return null;
+			return undefined;
 		};
-		const usedFightActionId = Object.prototype.hasOwnProperty.call(fightActionResult, "usedAction") ? (fightActionResult as FightActionResult).usedAction.id : null;
-		fightActionResult = Object.prototype.hasOwnProperty.call(fightActionResult, "usedAction") ? (fightActionResult as FightActionResult).usedAction.result : fightActionResult;
+		const usedFightActionId = Object.prototype.hasOwnProperty.call(fightActionResult, "usedAction") ? (fightActionResult as FightActionResult).usedAction!.id : undefined;
+		fightActionResult = Object.prototype.hasOwnProperty.call(fightActionResult, "usedAction") ? (fightActionResult as FightActionResult).usedAction!.result : fightActionResult;
 		response.push(makePacket(CommandFightHistoryItemPacket, {
 			fightId: this.fightController.id,
-			fighterKeycloakId: fighter instanceof MonsterFighter ? null : fighter.player.keycloakId,
-			monsterId: fighter instanceof MonsterFighter ? fighter.monster.id : null,
+			fighterKeycloakId: fighter instanceof MonsterFighter ? undefined : fighter.player.keycloakId,
+			monsterId: fighter instanceof MonsterFighter ? fighter.monster.id : undefined,
 
 			/*
 			 * Sometimes fightActionResult.usedAction is not the same
@@ -214,13 +217,13 @@ export class FightView {
 			fightActionEffectDealt:
 				{
 					...buildStatsChange(false),
-					newAlteration: "alterations" in fightActionResult && fightActionResult.alterations?.find(alt => !alt.selfTarget)?.alteration || null,
+					newAlteration: "alterations" in fightActionResult && fightActionResult.alterations?.find(alt => !alt.selfTarget)?.alteration || undefined,
 					damages: fightActionResult.damages
 				},
 			fightActionEffectReceived:
 				{
 					...buildStatsChange(true),
-					newAlteration: "alterations" in fightActionResult && fightActionResult.alterations?.find(alt => alt.selfTarget)?.alteration || null,
+					newAlteration: "alterations" in fightActionResult && fightActionResult.alterations?.find(alt => alt.selfTarget)?.alteration || undefined,
 					damages:
 					fightActionResult.buffs?.find(
 						buff => buff.selfTarget && buff.stat === FightStatBuffed.DAMAGE && buff.operator === FightStatModifierOperation.ADDITION
@@ -299,14 +302,14 @@ export class FightView {
 		}
 		response.push(makePacket(CommandFightEndOfFightPacket, {
 			winner: {
-				keycloakId: winner instanceof MonsterFighter ? null : winner.player.keycloakId,
-				monsterId: winner instanceof MonsterFighter ? winner.monster.id : null,
+				keycloakId: winner instanceof MonsterFighter ? undefined : winner.player.keycloakId,
+				monsterId: winner instanceof MonsterFighter ? winner.monster.id : undefined,
 				finalEnergy: winner.getEnergy(),
 				maxEnergy: winner.getMaxEnergy()
 			},
 			looser: {
-				keycloakId: loser instanceof MonsterFighter ? null : loser.player.keycloakId,
-				monsterId: loser instanceof MonsterFighter ? loser.monster.id : null,
+				keycloakId: loser instanceof MonsterFighter ? undefined : loser.player.keycloakId,
+				monsterId: loser instanceof MonsterFighter ? loser.monster.id : undefined,
 				finalEnergy: loser.getEnergy(),
 				maxEnergy: loser.getMaxEnergy()
 			},

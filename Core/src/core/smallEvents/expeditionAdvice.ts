@@ -64,8 +64,14 @@ async function checkTalismanConditions(player: Player): Promise<TalismanConditio
 	}
 
 	const petEntity = await PetEntities.getById(player.petId);
+	if (!petEntity) {
+		return {
+			conditionMet: false,
+			interactionType: ExpeditionAdviceInteractionType.CONDITION_NOT_MET_NO_PET
+		};
+	}
 	const petInfo = petEntity.getBasicInfo();
-	const petModel = PetDataController.instance.getById(petEntity.typeId);
+	const petModel = PetDataController.instance.getById(petEntity.typeId)!;
 
 	// Condition 2: Pet is not hungry (has been fed recently)
 	if (petEntity.getFeedCooldown(petModel) <= 0) {
@@ -226,7 +232,7 @@ async function applyExpeditionBonusRewards(
 		// 35% chance: combat potion
 		const potion = generateRandomCombatPotion();
 		rewards.bonusCombatPotion = potion;
-		const potionInstance = PotionDataController.instance.getById(potion.id);
+		const potionInstance = PotionDataController.instance.getById(potion.id)!;
 		await giveItemToPlayer(response, context, player, potionInstance);
 	}
 
@@ -274,7 +280,7 @@ async function handlePlayerWithoutTalisman(
 ): Promise<void> {
 	// Get encounter count for progressive lore
 	const encounterCount = await LogsReadRequests.getSmallEventEncounterCount(
-		context.keycloakId,
+		context.keycloakId!,
 		SmallEventConstants.EXPEDITION_ADVICE.SMALL_EVENT_NAME
 	);
 

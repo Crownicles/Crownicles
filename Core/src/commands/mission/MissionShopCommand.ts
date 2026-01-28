@@ -172,7 +172,11 @@ function getValueLovePointsPetShopItem(): ShopItem {
 				return false;
 			}
 			const pet = await PetEntities.getById(player.petId);
-			const petModel = PetDataController.instance.getById(pet.typeId);
+			if (!pet) {
+				response.push(makePacket(CommandMissionShopNoPet, {}));
+				return false;
+			}
+			const petModel = PetDataController.instance.getById(pet.typeId)!;
 			const randomPetNotShownToDwarfId = await DwarfPetsSeen.getRandomPetNotSeenId(player);
 			const randomPetDwarfModel = randomPetNotShownToDwarfId !== 0 ? PetDataController.instance.getById(randomPetNotShownToDwarfId) : null;
 
@@ -192,8 +196,8 @@ function getValueLovePointsPetShopItem(): ShopItem {
 				nextFeed: pet.getFeedCooldown(petModel),
 				force: petModel.force,
 				speed: petModel.speed,
-				feedDelay: petModel.feedDelay * PetConstants.BREED_COOLDOWN,
-				fightAssistId: getAiPetBehavior(petModel.id).id,
+				feedDelay: (petModel.feedDelay ?? 1) * PetConstants.BREED_COOLDOWN,
+				fightAssistId: getAiPetBehavior(petModel.id)?.id ?? "",
 				ageCategory: PetUtils.getAgeCategory(pet.id),
 				likedExpeditionTypes,
 				dislikedExpeditionTypes,

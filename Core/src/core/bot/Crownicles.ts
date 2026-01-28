@@ -250,7 +250,7 @@ export class Crownicles {
 	 * Find the winner of the season
 	 */
 	private static async findSeasonWinner(): Promise<Player> {
-		return await Player.findOne({
+		return (await Player.findOne({
 			where: {
 				fightCountdown: {
 					[Op.lte]: FightConstants.FIGHT_COUNTDOWN_MAXIMAL_VALUE
@@ -262,7 +262,7 @@ export class Crownicles {
 				["score", "DESC"]
 			],
 			limit: 1
-		});
+		}))!;
 	}
 
 	/**
@@ -345,7 +345,7 @@ export class Crownicles {
 			if (notifications.length !== 0) {
 				PacketUtils.sendNotifications(notifications.map(notification => makePacket(ReachDestinationNotificationPacket, {
 					keycloakId: notification.keycloakId,
-					mapType: MapLocationDataController.instance.getById(notification.mapId).type,
+					mapType: MapLocationDataController.instance.getById(notification.mapId)!.type,
 					mapId: notification.mapId
 				})));
 				await ScheduledReportNotifications.bulkDelete(notifications);

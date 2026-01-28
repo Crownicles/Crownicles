@@ -31,7 +31,7 @@ export class FightsManager {
 				}
 			}
 			catch (e) {
-				CrowniclesLogger.error("Error while purging fights", e);
+				CrowniclesLogger.errorWithObj("Error while purging fights", e);
 			}
 		}
 	}

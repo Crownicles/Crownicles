@@ -19,8 +19,8 @@ function getAttackInfo(): attackInfo {
 }
 
 function getStatsInfo(sender: Fighter, receiver: Fighter): statsInfo {
-	const petId = (sender as PlayerFighter).pet.typeId;
-	const petData = PetDataController.instance.getById(petId);
+	const petId = (sender as PlayerFighter).pet!.typeId;
+	const petData = PetDataController.instance.getById(petId)!;
 	return {
 		attackerStats: [
 			FightUtils.calculatePetStatFromForce(petData.force, sender.level),
@@ -40,7 +40,7 @@ function getStatsInfo(sender: Fighter, receiver: Fighter): statsInfo {
 const use: PetAssistanceFunc = (fighter, opponent, turn, _fightController): Promise<PetAssistanceResult | null> => {
 	// Attack every 8 turns
 	if (!(turn % 8 === 7 || turn % 8 === 6)) {
-		return null;
+		return Promise.resolve(null);
 	}
 	return Promise.resolve({
 		damages: FightActionController.getAttackDamage(getStatsInfo(fighter, opponent), fighter, getAttackInfo(), true),

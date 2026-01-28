@@ -375,6 +375,9 @@ export default class ShopCommand {
 		const tokensAlreadyPurchasedToday = await LogsReadRequests.getAmountOfTokensBoughtByPlayerToday(player.keycloakId);
 		const tokensAlreadyPurchasedThisWeek = await LogsReadRequests.getAmountOfTokensBoughtByPlayerThisWeek(player.keycloakId);
 		const potion = PotionDataController.instance.getById(await Settings.SHOP_POTION.getValue());
+		if (!potion) {
+			throw new Error("Shop potion not found");
+		}
 
 		const shopCategories: ShopCategory[] = [
 			{

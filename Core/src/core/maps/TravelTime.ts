@@ -117,7 +117,7 @@ export class TravelTime {
 
 		// Basic variables
 		const effectStartTime = effectEndTime - effectDuration;
-		const tripDuration = minutesToMilliseconds(MapLinkDataController.instance.getById(player.mapLinkId).tripDuration);
+		const tripDuration = minutesToMilliseconds(MapLinkDataController.instance.getById(player.mapLinkId)!.tripDuration);
 		const travelEndTime = travelStartTime + effectDuration + tripDuration;
 		let effectRemainingTime = effectEndTime - date.valueOf();
 		if (effectRemainingTime < 0) {

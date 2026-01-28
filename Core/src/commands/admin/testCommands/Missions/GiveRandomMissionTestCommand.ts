@@ -31,7 +31,7 @@ const giveRandomMissionTestCommand: ExecuteTestCommandLike = async (player, args
 		player,
 		difficulty === "e" ? MissionDifficulty.EASY : difficulty === "m" ? MissionDifficulty.MEDIUM : MissionDifficulty.HARD
 	);
-	const mission = MissionDataController.instance.getById(missionSlot.missionId);
+	const mission = MissionDataController.instance.getById(missionSlot.missionId)!;
 
 	return `Vous avez reçu la mission suivante:
 **Mission ID :** ${mission.id}

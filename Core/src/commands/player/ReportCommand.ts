@@ -43,9 +43,13 @@ import {
  * Initiates a new player on the map
  */
 async function initiateNewPlayerOnTheAdventure(player: Player): Promise<void> {
+	const startMapLink = MapLinkDataController.instance.getById(Constants.BEGINNING.START_MAP_LINK);
+	if (!startMapLink) {
+		throw new Error("Start map link not found");
+	}
 	await Maps.startTravel(
 		player,
-		MapLinkDataController.instance.getById(Constants.BEGINNING.START_MAP_LINK),
+		startMapLink,
 		getTimeFromXHoursAgo(Constants.REPORT.HOURS_USED_TO_CALCULATE_FIRST_REPORT_REWARD).valueOf()
 	);
 	await player.save();

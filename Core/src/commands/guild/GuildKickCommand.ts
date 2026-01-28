@@ -46,11 +46,14 @@ async function acceptGuildKick(player: Player, kickedPlayer: Player, response: C
 	}
 
 	const guild = await Guilds.getById(player.guildId);
-	kickedPlayer.guildId = null;
+	if (!guild) {
+		return;
+	}
+	kickedPlayer.guildId = null as unknown as number;
 
 	if (guild.elderId === kickedPlayer.id) {
 		crowniclesInstance.logsDatabase.logGuildElderRemove(guild, guild.elderId).then();
-		guild.elderId = null;
+		guild.elderId = null as unknown as number;
 	}
 	await Promise.all([
 		kickedPlayer.save(),
@@ -77,7 +80,7 @@ async function acceptGuildKick(player: Player, kickedPlayer: Player, response: C
  * @param kickedPlayer The player to kick
  * @param response The response to send
  */
-async function isNotEligible(player: Player, kickedPlayer: Player, response: CrowniclesPacket[]): Promise<boolean> {
+async function isNotEligible(player: Player, kickedPlayer: Player | null, response: CrowniclesPacket[]): Promise<boolean> {
 	if (kickedPlayer === null) {
 		// No user provided
 		response.push(makePacket(CommandGuildKickPacketRes, {
@@ -142,28 +145,34 @@ export default class GuildKickCommand {
 			return;
 		}
 
-		BlockingUtils.blockPlayer(kickedPlayer.keycloakId, BlockingConstants.REASONS.GUILD_KICK);
+		// kickedPlayer is guaranteed non-null after isNotEligible check
+		const validKickedPlayer = kickedPlayer!;
 
-		const guildName = (await Guilds.getById(player.guildId)).name;
+		BlockingUtils.blockPlayer(validKickedPlayer.keycloakId, BlockingConstants.REASONS.GUILD_KICK);
+
+		const guild = await Guilds.getById(player.guildId);
+		if (!guild) {
+			return;
+		}
 
 		// Send collector
 		const collector = new ReactionCollectorGuildKick(
-			guildName,
-			kickedPlayer.keycloakId
+			guild.name,
+			validKickedPlayer.keycloakId
 		);
 
 		const endCallback: EndCallback = async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
 			const reaction = collector.getFirstReaction();
 			if (reaction && reaction.reaction.type === ReactionCollectorAcceptReaction.name) {
-				await acceptGuildKick(player, kickedPlayer, response);
+				await acceptGuildKick(player, validKickedPlayer, response);
 			}
 			else {
 				response.push(makePacket(CommandGuildKickRefusePacketRes, {
-					kickedKeycloakId: kickedPlayer.keycloakId
+					kickedKeycloakId: validKickedPlayer.keycloakId
 				}));
 			}
 			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.GUILD_KICK);
-			BlockingUtils.unblockPlayer(kickedPlayer.keycloakId, BlockingConstants.REASONS.GUILD_KICK);
+			BlockingUtils.unblockPlayer(validKickedPlayer.keycloakId, BlockingConstants.REASONS.GUILD_KICK);
 		};
 
 		const collectorPacket = new ReactionCollectorInstance(

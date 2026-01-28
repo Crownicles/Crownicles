@@ -51,6 +51,6 @@ export class LeagueDataController extends DataControllerNumber<League> {
 	public getByGlory(gloryPoints: number): League {
 		return this.getValuesArray()
 			.find(league => league.minGloryPoints <= gloryPoints
-				&& league.maxGloryPoints >= gloryPoints);
+				&& league.maxGloryPoints >= gloryPoints)!;
 	}
 }

@@ -1,7 +1,7 @@
 import { Crownicles } from "./core/bot/Crownicles";
 import { loadConfig } from "./core/bot/CrowniclesConfig";
 import {
-	CrowniclesPacket, makePacket, PacketContext, PacketLike
+	CrowniclesPacket, makePacket, PacketContext
 } from "../../Lib/src/packets/CrowniclesPacket";
 import {
 	ErrorMaintenancePacket,
@@ -44,7 +44,8 @@ CrowniclesLogger.init(botConfig.LOG_LEVEL, botConfig.LOG_LOCATIONS, { app: "Core
 		password: botConfig.LOKI_PASSWORD
 	}
 	: undefined);
-export let crowniclesInstance: Crownicles = null;
+// eslint-disable-next-line prefer-const
+export let crowniclesInstance: Crownicles;
 
 CrowniclesLogger.info(`${CoreConstants.OPENING_LINE} - ${process.env.npm_package_version}`);
 
@@ -65,7 +66,10 @@ mqttClient.on("connect", () => {
 });
 
 function globalStopOfPlayers(response: CrowniclesPacket[], dataJson: {
-	context: PacketContext; packet: PacketLike<unknown>;
+	context: PacketContext;
+	packet: {
+		name: string; data: unknown;
+	};
 }): boolean {
 	if (
 		botConfig.MODE_MAINTENANCE
@@ -92,7 +96,12 @@ function globalStopOfPlayers(response: CrowniclesPacket[], dataJson: {
 
 mqttClient.on("message", async (topic, message) => {
 	const messageString = message.toString();
-	const dataJson = JSON.parse(messageString);
+	const dataJson: {
+		context: PacketContext;
+		packet: {
+			name: string; data: unknown;
+		};
+	} = JSON.parse(messageString);
 	CrowniclesLogger.debug(`Received message from topic ${topic}`, { packet: dataJson });
 	if (!Object.hasOwn(dataJson, "packet") || !Object.hasOwn(dataJson, "context")) {
 		CrowniclesLogger.error("Wrong packet format", { packet: messageString });
@@ -110,16 +119,18 @@ mqttClient.on("message", async (topic, message) => {
 			response.push(makePacket(ErrorPacket, { message: errorMessage }));
 		}
 		else {
-			crowniclesInstance.logsDatabase.logCommandUsage(context.keycloakId, context.frontEndOrigin, context.frontEndSubOrigin, dataJson.packet.name)
-				.then();
+			if (context.keycloakId) {
+				crowniclesInstance.logsDatabase.logCommandUsage(context.keycloakId, context.frontEndOrigin, context.frontEndSubOrigin, dataJson.packet.name)
+					.then();
+			}
 			CrowniclesCoreMetrics.incrementPacketCount(dataJson.packet.name);
 			const startTime = Date.now();
 			try {
-				await listener(response, context, dataJson.packet.data);
+				await listener(response, context, dataJson.packet.data as CrowniclesPacket);
 			}
 			catch (error) {
 				CrowniclesLogger.errorWithObj(`Error while processing packet '${dataJson.packet.name}'`, error);
-				response.push(makePacket(ErrorPacket, { message: error.message }));
+				response.push(makePacket(ErrorPacket, { message: error instanceof Error ? error.message : String(error) }));
 				CrowniclesCoreMetrics.incrementPacketErrorCount(dataJson.packet.name);
 			}
 			CrowniclesCoreMetrics.observePacketTime(dataJson.packet.name, millisecondsToSeconds(Date.now() - startTime));

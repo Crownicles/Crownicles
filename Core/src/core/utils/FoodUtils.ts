@@ -20,7 +20,7 @@ export function getFoodIndexOf(food: string): number {
 export async function giveFoodToGuild(response: CrowniclesPacket[], player: Player, selectedFood: string, quantity: number, reason: NumberChangeReason): Promise<void> {
 	const guild = await Guilds.getById(player.guildId);
 	const selectedFoodIndex = getFoodIndexOf(selectedFood);
-	if (guild.isStorageFullFor(selectedFood, quantity)) {
+	if (!guild || guild.isStorageFullFor(selectedFood, quantity)) {
 		response.push(makePacket(NoFoodSpaceInGuildPacket, {
 			food: selectedFood as PetFood,
 			quantity

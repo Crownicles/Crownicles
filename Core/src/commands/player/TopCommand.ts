@@ -64,7 +64,7 @@ async function getTopScore(initiator: Player, page: number, timing: TopTiming): 
 			attributes: {
 				1: {
 					effectId: player.currentEffectFinished(new Date(now)) ? undefined : player.effectId,
-					mapType: TravelTime.getTravelDataSimplified(player, new Date(now)).travelEndTime > now ? undefined : player.getDestination().type,
+					mapType: TravelTime.getTravelDataSimplified(player, new Date(now)).travelEndTime > now ? undefined : player.getDestination()?.type,
 					afk: player.isInactive()
 				},
 				2: timing === TopTiming.WEEK ? player.weeklyScore : player.score,
@@ -135,7 +135,8 @@ async function getTopGuild(initiator: Player, page: number): Promise<CrowniclesP
 
 	const minRank = (page - 1) * TopConstants.GUILDS_PER_PAGE + 1;
 	const maxRank = Math.min(page * TopConstants.GUILDS_PER_PAGE, totalElements);
-	const rank = initiator.guildId === null ? -1 : await (await Guilds.getById(initiator.guildId)).getRanking();
+	const playerGuild = initiator.guildId === null ? null : await Guilds.getById(initiator.guildId);
+	const rank = playerGuild ? await playerGuild.getRanking() : -1;
 
 	const guilds = await Guilds.getRankedGuilds(minRank, maxRank);
 

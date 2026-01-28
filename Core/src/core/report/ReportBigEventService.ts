@@ -8,7 +8,9 @@ import {
 	Player, Players
 } from "../database/game/models/Player";
 import { MissionsController } from "../missions/MissionsController";
-import { MapLinkDataController } from "../../data/MapLink";
+import {
+	MapLink, MapLinkDataController
+} from "../../data/MapLink";
 import {
 	BigEvent, BigEventDataController
 } from "../../data/BigEvent";
@@ -42,7 +44,7 @@ import { millisecondsToMinutes } from "../../../../Lib/src/utils/TimeUtils";
 type ChooseDestinationCallback = (
 	context: PacketContext,
 	player: Player,
-	forcedLink: ReturnType<typeof MapLinkDataController.instance.getById> | null,
+	forcedLink: MapLink | null,
 	response: CrowniclesPacket[],
 	mainPacket?: boolean
 ) => Promise<void>;
@@ -56,7 +58,7 @@ export async function completeMissionsBigEvent(player: Player, response: Crownic
 		params: { travelTime: player.getCurrentTripDuration() }
 	});
 
-	const endMapId = MapLinkDataController.instance.getById(player.mapLinkId).endMap;
+	const endMapId = MapLinkDataController.instance.getById(player.mapLinkId)!.endMap;
 
 	await MissionsController.update(player, response, {
 		missionId: "goToPlace",
@@ -173,7 +175,7 @@ async function doPossibility(params: DoPossibilityParams): Promise<void> {
 	let { player } = params;
 
 	player = await Players.getOrRegister(player.keycloakId);
-	player.nextEvent = null;
+	player.nextEvent = 0;
 
 	// Special case: first event end
 	if (handleFirstEventEnd(event, possibility[0], player, response)) {
@@ -301,17 +303,18 @@ export async function doRandomBigEvent(
 	let event: BigEvent;
 
 	if (eventId === -1 || !eventId) {
-		const mapId = player.getDestinationId();
-		event = await BigEventDataController.instance.getRandomEvent(mapId, player);
-		if (!event) {
+		const mapId = player.getDestinationId()!;
+		const randomEvent = await BigEventDataController.instance.getRandomEvent(mapId, player);
+		if (!randomEvent) {
 			response.push(makePacket(ErrorPacket, {
 				message: "It seems that there is no event here... It's a bug, please report it to the Crownicles staff."
 			}));
 			return;
 		}
+		event = randomEvent;
 	}
 	else {
-		event = BigEventDataController.instance.getById(eventId);
+		event = BigEventDataController.instance.getById(eventId)!;
 	}
 
 	await Maps.stopTravel(player);

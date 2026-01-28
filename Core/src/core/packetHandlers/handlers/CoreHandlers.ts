@@ -18,7 +18,7 @@ export default class CoreHandlers {
 
 	@packetHandler(ChangeBlockingReasonPacket)
 	changeBlockingReason(_response: CrowniclesPacket[], context: PacketContext, packet: ChangeBlockingReasonPacket): void {
-		BlockingUtils.changeBlockingReason(context.keycloakId, packet);
+		BlockingUtils.changeBlockingReason(context.keycloakId!, packet);
 	}
 
 	@packetHandler(ReactionCollectorResetTimerPacketReq)

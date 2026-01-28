@@ -11,8 +11,8 @@ import { FightConstants } from "../../../../../../Lib/src/constants/FightConstan
 export function simpleAlterationFightAction(target: Fighter, alteration: FightAlterationApplied): FightActionResult {
 	const result = defaultFightActionResult();
 	FightActionController.applyAlteration(result, alteration, target);
-	if (target.alteration.id === FightConstants.FIGHT_ACTIONS.ALTERATION.CONCENTRATED) {
+	if (target.alteration?.id === FightConstants.FIGHT_ACTIONS.ALTERATION.CONCENTRATED) {
 		result.customMessage = true;
 	}
-	return updateFightActionResultFromSuccessTest(result, result.alterations?.length > 0);
+	return updateFightActionResultFromSuccessTest(result, (result.alterations?.length ?? 0) > 0);
 }

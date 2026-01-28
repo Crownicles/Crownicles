@@ -75,7 +75,7 @@ export class PlayerFighter extends PlayerBaseFighter {
 	 */
 	async endFight(winner: boolean, response: CrowniclesPacket[], bug: boolean, turnCount: number): Promise<void> {
 		await this.player.reload();
-		this.player.setEnergyLost(this.stats.maxEnergy - this.stats.energy, NumberChangeReason.FIGHT);
+		this.player.setEnergyLost(this.stats.maxEnergy! - this.stats.energy!, NumberChangeReason.FIGHT);
 		await this.player.save();
 
 		if (bug) {
@@ -94,7 +94,7 @@ export class PlayerFighter extends PlayerBaseFighter {
 			await MissionsController.update(this.player, response, {
 				missionId: "fightHealthPercent",
 				params: {
-					remainingPercent: this.stats.energy / this.stats.maxEnergy
+					remainingPercent: this.stats.energy! / this.stats.maxEnergy!
 				}
 			});
 			await MissionsController.update(this.player, response, {
@@ -137,7 +137,7 @@ export class PlayerFighter extends PlayerBaseFighter {
 				: PetConstants.AVAILABILITY_CONTEXT.DEFENSE_FIGHT;
 			const isPetAvailable = await PetUtils.isPetAvailable(this.player, petAvailabilityContext);
 			if (isPetAvailable) {
-				this.pet = await PetEntities.getById(this.player.petId);
+				this.pet = await PetEntities.getById(this.player.petId) ?? undefined;
 			}
 		}
 	}
@@ -172,7 +172,7 @@ export class PlayerFighter extends PlayerBaseFighter {
 			}
 
 			if (this.pveMembers.length !== 0 && RandomUtils.crowniclesRandom.realZeroToOneInclusive() < PVEConstants.GUILD_ATTACK_PROBABILITY) {
-				actions.set("guildAttack", FightActionDataController.instance.getById("guildAttack"));
+				actions.set("guildAttack", FightActionDataController.instance.getById("guildAttack")!);
 			}
 		}
 		fightView.displayFightActionMenu(response, this, actions);

@@ -39,9 +39,9 @@ function shouldUseIntenseAttack(
 function chooseFinishingMove(me: AiPlayerFighter, opponent: PlayerFighter): FightAction {
 	if (me.getBreath() >= FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.QUICK_ATTACK)
 		&& me.getSpeed() > opponent.getSpeed()) {
-		return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.QUICK_ATTACK);
+		return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.QUICK_ATTACK)!;
 	}
-	return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.SABOTAGE_ATTACK);
+	return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.SABOTAGE_ATTACK)!;
 }
 
 class GunnerFightBehavior implements ClassBehavior {
@@ -56,7 +56,7 @@ class GunnerFightBehavior implements ClassBehavior {
 		// Use canon attack again if used last turn to get 1.5x damage
 		if (shouldContinueCanonSequence(me, this.isGoingForChainedCanonAttack, this.canonAttackUsed, turn)) {
 			this.canonAttackUsed++;
-			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.CANON_ATTACK);
+			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.CANON_ATTACK)!;
 		}
 
 		// Clear the chained canon attack flag if not enough breath to continue
@@ -74,33 +74,33 @@ class GunnerFightBehavior implements ClassBehavior {
 
 		// Play boomerang when possible if the opponent has no alteration
 		if (shouldUseBoomerang(opponent, me, this.isGoingForChainedCanonAttack)) {
-			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.BOOMERANG_ATTACK);
+			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.BOOMERANG_ATTACK)!;
 		}
 
 		// After a boomerang, decide to focus on canon attack strategy
 		if (shouldStartCanonSequence(opponent, me, this.canonAttackUsed, this.isGoingForChainedCanonAttack)) {
 			this.isGoingForChainedCanonAttack = true;
 			this.canonAttackUsed++;
-			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.CANON_ATTACK);
+			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.CANON_ATTACK)!;
 		}
 
 		// If the opponent has higher speed or close to it, and we have enough breath, use intense attack
 		if (shouldUseIntenseAttack(opponent, me, this.isGoingForChainedCanonAttack)) {
-			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.INTENSE_ATTACK);
+			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.INTENSE_ATTACK)!;
 		}
 
 		// If the opponent has higher speed or close to it, use sabotage attack
 		if (shouldUseSabotage(opponent, me)) {
-			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.SABOTAGE_ATTACK);
+			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.SABOTAGE_ATTACK)!;
 		}
 
 		// Quick attack in other scenarios
 		if (me.getBreath() >= FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.QUICK_ATTACK)) {
-			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.QUICK_ATTACK);
+			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.QUICK_ATTACK)!;
 		}
 
 		// Fallback to canon attack if we don't have enough breath for a quick attack
-		return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.CANON_ATTACK);
+		return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.CANON_ATTACK)!;
 	}
 }
 

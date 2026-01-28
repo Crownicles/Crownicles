@@ -18,9 +18,12 @@ const petFreeTestCommand: ExecuteTestCommandLike = async player => {
 		throw new Error("Erreur petfree : vous n'avez pas de pet !");
 	}
 	const playerPet = await PetEntities.getById(player.petId);
+	if (!playerPet) {
+		throw new Error("Erreur petfree : pet introuvable !");
+	}
 	LogsDatabase.logPetFree(playerPet).then();
 	await playerPet.destroy();
-	player.petId = null;
+	(player.petId as number | null) = null;
 	await player.save();
 	return "Vous avez libéré votre pet de force !";
 };

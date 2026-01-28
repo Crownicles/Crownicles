@@ -45,6 +45,11 @@ function getEndCallback(player: Player) {
 		const newClass = ClassDataController.instance.getById(selectedClass);
 		const level = player.level;
 
+		if (!oldClass || !newClass) {
+			response.push(makePacket(CommandClassesCancelErrorPacket, {}));
+			return;
+		}
+
 		player.class = selectedClass;
 		await player.addHealth(Math.ceil(
 			player.health / oldClass.getMaxHealthValue(level) * newClass.getMaxHealthValue(level)
@@ -80,7 +85,8 @@ export default class ClassesCommand {
 	async execute(response: CrowniclesPacket[], player: Player, _packet: CommandClassesPacketReq, context: PacketContext): Promise<void> {
 		const allClasses = ClassDataController.instance.getByGroup(player.getClassGroup())
 			.filter(c => c.id !== player.class);
-		const currentClassGroup = ClassDataController.instance.getById(player.class).classGroup;
+		const currentClass = ClassDataController.instance.getById(player.class);
+		const currentClassGroup = currentClass!.classGroup;
 		const lastTimeThePlayerHasEditedHisClass = await LogsReadRequests.getLastTimeThePlayerHasEditedHisClass(player.keycloakId);
 		if (Date.now() - lastTimeThePlayerHasEditedHisClass.getTime() < secondsToMilliseconds(ClassConstants.TIME_BEFORE_CHANGE_CLASS[currentClassGroup])) {
 			response.push(makePacket(CommandClassesCooldownErrorPacket, {

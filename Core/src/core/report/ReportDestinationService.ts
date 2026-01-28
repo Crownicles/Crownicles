@@ -32,14 +32,21 @@ function buildMapReaction(
 	player: Player,
 	mapId: number
 ): ReactionCollectorChooseDestinationReaction {
-	const mapLink = MapLinkDataController.instance.getLinkByLocations(player.getDestinationId(), mapId);
-	const mapTypeId = MapLocationDataController.instance.getById(mapId).type;
+	const mapLink = MapLinkDataController.instance.getLinkByLocations(player.getDestinationId()!, mapId);
+	if (!mapLink) {
+		throw new Error(`No map link found between ${player.getDestinationId()} and ${mapId}`);
+	}
+	const mapLocation = MapLocationDataController.instance.getById(mapId);
+	if (!mapLocation) {
+		throw new Error(`No map location found for mapId ${mapId}`);
+	}
+	const mapTypeId = mapLocation.type;
 	const isPveMap = MapCache.allPveMapLinks.includes(mapLink.id);
 
 	return {
 		mapId,
 		mapTypeId,
-		tripDuration: isPveMap || RandomUtils.crowniclesRandom.bool() ? mapLink.tripDuration : null
+		tripDuration: isPveMap || RandomUtils.crowniclesRandom.bool() ? mapLink.tripDuration : undefined
 	};
 }
 
@@ -54,8 +61,14 @@ function createDestinationEndCallback(player: Player): EndCallback {
 			? (firstReaction.reaction.data as ReactionCollectorChooseDestinationReaction).mapId
 			: (RandomUtils.crowniclesRandom.pick(collector.creationPacket.reactions).data as ReactionCollectorChooseDestinationReaction).mapId;
 
-		const newLink = MapLinkDataController.instance.getLinkByLocations(player.getDestinationId(), mapId);
+		const newLink = MapLinkDataController.instance.getLinkByLocations(player.getDestinationId()!, mapId);
+		if (!newLink) {
+			throw new Error(`No map link found between ${player.getDestinationId()} and ${mapId}`);
+		}
 		const endMap = MapLocationDataController.instance.getById(mapId);
+		if (!endMap) {
+			throw new Error(`No map location found for mapId ${mapId}`);
+		}
 
 		await Maps.startTravel(player, newLink, Date.now());
 
@@ -73,16 +86,26 @@ function createDestinationEndCallback(player: Player): EndCallback {
  * Automatically chooses a destination at random / based on the forced link
  */
 async function automaticChooseDestination(
-	forcedLink: MapLink,
+	forcedLink: MapLink | null,
 	player: Player,
 	destinationMaps: number[],
 	response: CrowniclesPacket[]
 ): Promise<void> {
-	const newLink = forcedLink && forcedLink.id !== -1
-		? forcedLink
-		: MapLinkDataController.instance.getLinkByLocations(player.getDestinationId(), destinationMaps[0]);
+	let newLink: MapLink | undefined;
+	if (forcedLink && forcedLink.id !== -1) {
+		newLink = forcedLink;
+	}
+	else {
+		newLink = MapLinkDataController.instance.getLinkByLocations(player.getDestinationId()!, destinationMaps[0]);
+	}
+	if (!newLink) {
+		throw new Error(`No map link found for automatic destination from ${player.getDestinationId()} to ${destinationMaps[0]}`);
+	}
 
 	const endMap = MapLocationDataController.instance.getById(newLink.endMap);
+	if (!endMap) {
+		throw new Error(`No map location found for mapId ${newLink.endMap}`);
+	}
 	await Maps.startTravel(player, newLink, Date.now());
 
 	response.push(makePacket(CommandReportChooseDestinationRes, {
@@ -125,7 +148,7 @@ export async function chooseDestination(
 	}
 
 	if (shouldAutoChooseDestination(player, destinationMaps, forcedLink)) {
-		await automaticChooseDestination(forcedLink!, player, destinationMaps, response);
+		await automaticChooseDestination(forcedLink, player, destinationMaps, response);
 		return;
 	}
 

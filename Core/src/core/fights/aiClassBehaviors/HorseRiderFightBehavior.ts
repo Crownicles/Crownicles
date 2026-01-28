@@ -26,9 +26,9 @@ class HorseRiderFightBehavior implements ClassBehavior {
 		 * ENDGAME STRATEGY: Try to force a draw if victory seems impossible
 		 * Still rest even if we've done it 4 times, because the goal is to stall
 		 */
-		if (me.getEnergy() < 125 && opponent.getEnergy() > 400) {
+		if (opponent && me.getEnergy() < 125 && opponent.getEnergy() > 400) {
 			this.restCount++;
-			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.RESTING);
+			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.RESTING)!;
 		}
 
 		// HEAVY ATTACK STRATEGY: Use after resting or randomly (10% chance) if we have enough breath and haven't used it too often
@@ -41,7 +41,7 @@ class HorseRiderFightBehavior implements ClassBehavior {
 			&& me.getBreath() >= 7
 		) {
 			this.heavyAttackCount++;
-			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.HEAVY_ATTACK);
+			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.HEAVY_ATTACK)!;
 		}
 
 		if (me.getBreath() > 4
@@ -49,10 +49,10 @@ class HorseRiderFightBehavior implements ClassBehavior {
 			&& RandomUtils.crowniclesRandom.bool(0.9)
 			&& this.restCount < 4) {
 			this.restCount++;
-			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.RESTING);
+			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.RESTING)!;
 		}
 
-		return simpleOrQuickAttack(me, opponent);
+		return simpleOrQuickAttack(me, opponent!);
 	}
 }
 

@@ -146,7 +146,7 @@ export default class DailyBonusCommand {
 			return;
 		}
 
-		const collector = new ReactionCollectorDailyBonus(usableObjects.map(i => toItemWithDetails(i.getItem())));
+		const collector = new ReactionCollectorDailyBonus(usableObjects.map(i => toItemWithDetails(i.getItem()!)));
 
 		const endCallback: EndCallback = async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
 			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.DAILY_BONUS);
@@ -158,7 +158,11 @@ export default class DailyBonusCommand {
 			}
 
 			const objectDetails = (reaction.reaction.data as ReactionCollectorDailyBonusReaction).object;
-			const objectItem = usableObjects.find(uo => uo.itemId === objectDetails.id && uo.itemCategory === objectDetails.category).getItem() as ObjectItem;
+			const usableObject = usableObjects.find(uo => uo.itemId === objectDetails.id && uo.itemCategory === objectDetails.category);
+			if (!usableObject) {
+				return;
+			}
+			const objectItem = usableObject.getItem() as ObjectItem;
 			await activateDailyItem(
 				await player.reload(),
 				objectItem,

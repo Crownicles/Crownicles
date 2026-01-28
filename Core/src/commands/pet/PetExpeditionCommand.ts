@@ -157,8 +157,8 @@ async function finalizeExpedition(
 		player.keycloakId,
 		petEntity.id,
 		extractExpeditionLogParams(expeditionData, activeExpedition, expeditionSuccess),
-		outcome.rewards,
-		outcome.loveChange
+		outcome.rewards ?? null,
+		outcome.loveChange ?? 0
 	).then();
 }
 
@@ -197,7 +197,7 @@ async function calculateOutcome(
 	expeditionData: ExpeditionData,
 	player: Player
 ): Promise<ReturnType<typeof determineExpeditionOutcome>> {
-	const petModel = PetDataController.instance.getById(petEntity.typeId);
+	const petModel = PetDataController.instance.getById(petEntity.typeId)!;
 	const talismans = await PlayerTalismansManager.getOfPlayer(player.id);
 	const foodRequired = ExpeditionConstants.FOOD_CONSUMPTION[activeExpedition.rewardIndex];
 
@@ -246,7 +246,7 @@ async function checkBasicRequirements(player: Player, hasTalisman: boolean): Pro
 function checkStartRequirements(
 	player: Player,
 	petEntity: PetEntity,
-	petModel: ReturnType<typeof PetDataController.instance.getById>
+	petModel: NonNullable<ReturnType<typeof PetDataController.instance.getById>>
 ): CommandPetExpeditionPacketRes | null {
 	if (petEntity.lovePoints < ExpeditionConstants.REQUIREMENTS.MIN_LOVE_POINTS) {
 		return buildCannotStartResponse(ExpeditionConstants.ERROR_CODES.INSUFFICIENT_LOVE, true, petEntity);
@@ -293,7 +293,7 @@ export default class PetExpeditionCommand {
 		}
 
 		const petEntity = (await PetEntities.getById(player.petId!))!;
-		const petModel = PetDataController.instance.getById(petEntity.typeId);
+		const petModel = PetDataController.instance.getById(petEntity.typeId)!;
 
 		// Handle expedition in progress
 		const activeExpedition = await PetExpeditions.getActiveExpeditionForPlayer(player.id);
@@ -311,10 +311,10 @@ export default class PetExpeditionCommand {
 
 		// All requirements met - show expedition choice
 		const guildInfo = await getGuildFoodInfo(player, petModel);
-		const expeditions = generateThreeExpeditions(player.mapLinkId, talismans.hasCloneTalisman);
+		const expeditions = generateThreeExpeditions(player.mapLinkId!, talismans.hasCloneTalisman);
 
 		// Store expeditions in cache for later retrieval
-		PendingExpeditionsCache.set(context.keycloakId, expeditions);
+		PendingExpeditionsCache.set(context.keycloakId!, expeditions);
 
 		response.push(createExpeditionChoiceCollector({
 			petEntity,

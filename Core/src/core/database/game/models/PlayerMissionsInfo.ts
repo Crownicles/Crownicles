@@ -23,7 +23,7 @@ export class PlayerMissionsInfo extends Model {
 
 	declare lastDailyMissionCompleted: Date;
 
-	declare dailyMissionBlob: Buffer;
+	declare dailyMissionBlob: Buffer | null;
 
 	declare campaignProgression: number;
 

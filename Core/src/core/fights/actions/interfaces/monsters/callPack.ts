@@ -20,7 +20,7 @@ const use: FightActionFunc = (sender, receiver) => {
 		}
 	);
 	result.customMessage = true;
-	sender.nextFightAction = FightActionDataController.instance.getById("packAttack");
+	sender.nextFightAction = FightActionDataController.instance.getById("packAttack") ?? null;
 	return result;
 };
 

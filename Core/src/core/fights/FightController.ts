@@ -113,7 +113,7 @@ export class FightController {
 	 * Get the playing fighter or null if the fight is not running
 	 * @returns
 	 */
-	public getPlayingFighter(): PlayerFighter | MonsterFighter | AiPlayerFighter {
+	public getPlayingFighter(): PlayerFighter | MonsterFighter | AiPlayerFighter | null {
 		return this.state === FightState.RUNNING ? this.fighters[0] : null;
 	}
 
@@ -121,7 +121,7 @@ export class FightController {
 	 * Get the defending fighter or null if the fight is not running
 	 * @returns
 	 */
-	public getDefendingFighter(): PlayerFighter | MonsterFighter | AiPlayerFighter {
+	public getDefendingFighter(): PlayerFighter | MonsterFighter | AiPlayerFighter | null {
 		return this.state === FightState.RUNNING ? this.fighters[1] : null;
 	}
 
@@ -184,14 +184,14 @@ export class FightController {
 	 * Get the winner fighter of the fight
 	 * @returns the winner fighter or null if there is no winner
 	 */
-	public getWinnerFighter(): PlayerFighter | MonsterFighter | AiPlayerFighter {
+	public getWinnerFighter(): PlayerFighter | MonsterFighter | AiPlayerFighter | null {
 		return this.fighters[0].isDead() ? this.fighters[1].isDead() ? null : this.fighters[1] : this.fighters[0];
 	}
 
 	/**
 	 * Get the looser fighter of the fight
 	 */
-	public getLooserFighter(): PlayerFighter | MonsterFighter | AiPlayerFighter {
+	public getLooserFighter(): PlayerFighter | MonsterFighter | AiPlayerFighter | null {
 		return this.fighters[0].isDead() ? this.fighters[0] : this.fighters[1].isDead() ? this.fighters[1]	: null;
 	}
 
@@ -215,12 +215,12 @@ export class FightController {
 		}
 
 		if (endTurn) {
-			this.getPlayingFighter().nextFightAction = null;
+			this.getPlayingFighter()!.nextFightAction = null;
 		}
 
 		// Get the current fighters
-		const attacker = this.getPlayingFighter();
-		const defender = this.getDefendingFighter();
+		const attacker = this.getPlayingFighter()!;
+		const defender = this.getDefendingFighter()!;
 
 		const breathScenarioOutcome = this.handleOutOfBreathScenarios(attacker, fightAction, defender);
 		fightAction = breathScenarioOutcome.fightAction;
@@ -229,7 +229,7 @@ export class FightController {
 		// Check if we need to use the out-of-breath action instead
 		if ("state" in result) {
 			// If the result is a fight alteration result, that means that the player did not have enough breath
-			fightAction = FightAlterationDataController.instance.getById(FightConstants.FIGHT_ACTIONS.ALTERATION.OUT_OF_BREATH);
+			fightAction = FightAlterationDataController.instance.getById(FightConstants.FIGHT_ACTIONS.ALTERATION.OUT_OF_BREATH) as unknown as FightAction;
 		}
 		this._fightView.addActionToHistory(response, attacker, fightAction, result);
 
@@ -245,7 +245,7 @@ export class FightController {
 		if (endTurn) {
 			this.turn++;
 			this.invertFighters();
-			this.getPlayingFighter()
+			this.getPlayingFighter()!
 				.regenerateBreath(this.turn < 3);
 			await this.prepareNextTurn(response);
 		}
@@ -268,8 +268,8 @@ export class FightController {
 	 * @param response
 	 */
 	private async executeFightAlteration(alteration: FightAlteration, response: CrowniclesPacket[]): Promise<void> {
-		const result = alteration.happen(this.getPlayingFighter(), this.getDefendingFighter(), this.turn, this);
-		this._fightView.addActionToHistory(response, this.getPlayingFighter(), alteration, result);
+		const result = alteration.happen(this.getPlayingFighter()!, this.getDefendingFighter()!, this.turn, this);
+		this._fightView.addActionToHistory(response, this.getPlayingFighter()!, alteration, result);
 		if (this.hadEnded()) {
 			await this.endFight(response);
 			return;
@@ -283,8 +283,8 @@ export class FightController {
 	 * @param response
 	 */
 	private async executePetAssistance(petAssistance: PetAssistance, response: CrowniclesPacket[]): Promise<void> {
-		const attacker = this.getPlayingFighter();
-		const defender = this.getDefendingFighter();
+		const attacker = this.getPlayingFighter()!;
+		const defender = this.getDefendingFighter()!;
 		const result = await petAssistance.execute(attacker, defender, this.turn, this);
 		if (!result) {
 			return;
@@ -320,9 +320,9 @@ export class FightController {
 		// Handle out of breath scenario
 		if (!enoughBreath) {
 			if (RandomUtils.crowniclesRandom.bool(FightConstants.OUT_OF_BREATH_FAILURE_PROBABILITY)) {
-				const outOfBreathAction = FightAlterationDataController.instance.getById(FightConstants.FIGHT_ACTIONS.ALTERATION.OUT_OF_BREATH);
+				const outOfBreathAction = FightAlterationDataController.instance.getById(FightConstants.FIGHT_ACTIONS.ALTERATION.OUT_OF_BREATH)!;
 				result = outOfBreathAction.happen(attacker, defender, this.turn, this);
-				fightAction = outOfBreathAction;
+				fightAction = outOfBreathAction as unknown as FightAction;
 			}
 			else {
 				attacker.setBreath(0);
@@ -373,8 +373,8 @@ export class FightController {
 
 
 		if (this.getPlayingFighter()
-			.hasFightAlteration()) {
-			await this.executeFightAlteration(this.getPlayingFighter().alteration, response);
+			?.hasFightAlteration()) {
+			await this.executeFightAlteration(this.getPlayingFighter()!.alteration!, response);
 		}
 		if (this.state !== FightState.RUNNING) {
 			// A player was killed by a fight alteration, no need to continue the fight
@@ -383,20 +383,20 @@ export class FightController {
 
 		this._fightView.displayFightStatus(response);
 
-		this.getPlayingFighter()
+		this.getPlayingFighter()!
 			.reduceCounters();
 
 		// If the player is fighting a monster, and it's his first turn, then use the "rage explosion" action without changing turns
 		if (this.turn < 3 && this.getDefendingFighter() instanceof MonsterFighter && (this.getPlayingFighter() as PlayerFighter).player.rage > 0) {
-			await this.executeFightAction(FightActionDataController.instance.getById("rageExplosion"), false, response);
+			await this.executeFightAction(FightActionDataController.instance.getById("rageExplosion")!, false, response);
 			if (this.hadEnded()) {
 				return;
 			}
 		}
 
-		if (this.getPlayingFighter().nextFightAction === null) {
+		if (this.getPlayingFighter()?.nextFightAction === null) {
 			try {
-				await this.getPlayingFighter()
+				await this.getPlayingFighter()!
 					.chooseAction(this._fightView, response);
 			}
 			catch (e) {
@@ -404,8 +404,8 @@ export class FightController {
 				await this.endBugFight(response);
 			}
 		}
-		else {
-			await this.executeFightAction(this.getPlayingFighter().nextFightAction, true, response);
+		else if (this.getPlayingFighter()!.nextFightAction) {
+			await this.executeFightAction(this.getPlayingFighter()!.nextFightAction!, true, response);
 		}
 	}
 
@@ -498,9 +498,9 @@ export class FightController {
 	public hadEnded(): boolean {
 		return (
 			this.state !== FightState.RUNNING
-			|| this.getPlayingFighter()
+			|| this.getPlayingFighter()!
 				.isDeadOrBug()
-			|| this.getDefendingFighter()
+			|| this.getDefendingFighter()!
 				.isDeadOrBug());
 	}
 }

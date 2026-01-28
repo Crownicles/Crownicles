@@ -10,7 +10,7 @@ import { RandomUtils } from "../../../../../../../Lib/src/utils/RandomUtils";
 const use: PetAssistanceFunc = (_fighter, opponent, turn, _fightController): Promise<PetAssistanceResult | null> => {
 	// Only do something if the last action was a physical attack
 	if (turn > 1 && opponent.getLastFightActionUsed()?.type !== FightActionType.PHYSICAL) {
-		return null;
+		return Promise.resolve(null);
 	}
 
 	const result: PetAssistanceResult = {

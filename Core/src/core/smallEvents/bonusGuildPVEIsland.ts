@@ -50,6 +50,9 @@ type Winnings = {
 
 async function manageGuildReward(response: CrowniclesPacket[], player: Player, result: Winnings): Promise<void> {
 	const guild = await Guilds.getById(player.guildId);
+	if (!guild) {
+		return;
+	}
 	if (guild.isAtMaxLevel()) {
 		result.isExperienceGain = false;
 	}
@@ -96,7 +99,7 @@ async function applyPossibility(
 	issue: SmallEventBonusGuildPVEIslandResultType,
 	rewardKind: Outcome
 ): Promise<Winnings> {
-	const rewardRange = SmallEventDataController.instance.getById("bonusGuildPVEIsland")
+	const rewardRange = SmallEventDataController.instance.getById("bonusGuildPVEIsland")!
 		.getProperties<BonusGuildPVEIslandProperties>().ranges[rewardKind];
 	const result = {
 		amount: RandomUtils.randInt(rewardRange.min, rewardRange.max),
@@ -114,7 +117,7 @@ async function applyPossibility(
 export const smallEventFuncs: SmallEventFuncs = {
 	canBeExecuted: Maps.isOnPveIsland,
 	executeSmallEvent: async (response, player): Promise<void> => {
-		const bonusGuildPVEIslandProperties = SmallEventDataController.instance.getById("bonusGuildPVEIsland")
+		const bonusGuildPVEIslandProperties = SmallEventDataController.instance.getById("bonusGuildPVEIsland")!
 			.getProperties<BonusGuildPVEIslandProperties>();
 		const event: number = RandomUtils.randInt(0, bonusGuildPVEIslandProperties.events.length);
 		const probabilities = RandomUtils.randInt(0, 100);

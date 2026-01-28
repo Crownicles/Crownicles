@@ -16,7 +16,7 @@ export class MonsterFighter extends Fighter {
 		const attacks: FightAction[] = [];
 		for (const attack of monster.attacks) {
 			if (level >= attack.minLevel) {
-				const monsterAttackToAdd = FightActionDataController.instance.getById(attack.id);
+				const monsterAttackToAdd = FightActionDataController.instance.getById(attack.id)!;
 				monsterAttackToAdd.setWeightForRandomSelection(attack.weight);
 				attacks.push(monsterAttackToAdd);
 			}

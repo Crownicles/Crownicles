@@ -40,6 +40,13 @@ async function acceptGuildLeave(player: Player, response: CrowniclesPacket[]): P
 		return;
 	}
 	const guild = await Guilds.getById(player.guildId);
+
+	// Guild no longer exists
+	if (!guild) {
+		response.push(makePacket(CommandGuildLeaveNotInAGuildPacketRes, {}));
+		return;
+	}
+
 	if (player.id === guild.chiefId) {
 		// The guild's chief is leaving
 		if (guild.elderId !== null) {
@@ -47,9 +54,9 @@ async function acceptGuildLeave(player: Player, response: CrowniclesPacket[]): P
 			crowniclesInstance.logsDatabase.logGuildChiefChange(guild, guild.elderId).then();
 
 			// An elder can recover the guild
-			player.guildId = null;
+			player.guildId = 0 as unknown as number;
 			const elder = await Players.getById(guild.elderId);
-			guild.elderId = null;
+			guild.elderId = 0 as unknown as number;
 			guild.chiefId = elder.id;
 			response.push(makePacket(CommandGuildLeaveAcceptPacketRes, {
 				newChiefKeycloakId: elder.keycloakId,
@@ -82,10 +89,10 @@ async function acceptGuildLeave(player: Player, response: CrowniclesPacket[]): P
 	if (guild.elderId === player.id) {
 		// The guild's elder is leaving
 		crowniclesInstance.logsDatabase.logGuildElderRemove(guild, guild.elderId).then();
-		guild.elderId = null;
+		guild.elderId = 0 as unknown as number;
 	}
 	LogsDatabase.logGuildLeave(guild, player.keycloakId).then();
-	player.guildId = null;
+	player.guildId = 0 as unknown as number;
 	response.push(makePacket(CommandGuildLeaveAcceptPacketRes, {
 		guildName: guild.name
 	}));
@@ -116,13 +123,13 @@ export default class GuildLeaveCommand {
 		whereAllowed: CommandUtils.WHERE.EVERYWHERE
 	})
 	async execute(response: CrowniclesPacket[], player: Player, _packet: CommandGuildLeavePacketReq, context: PacketContext): Promise<void> {
-		const guild = await Guilds.getById(player.guildId);
+		const guild = (await Guilds.getById(player.guildId))!;
 		const newChief = guild.chiefId === player.id && guild.elderId ? await Players.getById(guild.elderId) : null;
 
 		const collector = new ReactionCollectorGuildLeave(
 			guild.name,
 			guild.chiefId === player.id && guild.elderId === null,
-			newChief?.keycloakId
+			newChief?.keycloakId ?? ""
 		);
 
 		const collectorPacket = new ReactionCollectorInstance(

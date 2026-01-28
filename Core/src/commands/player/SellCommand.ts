@@ -43,6 +43,9 @@ function getEndCallback(player: Player) {
 
 		const sellItem = firstReaction.reaction.data as ReactionCollectorSellItemReaction;
 		const itemInstance = getItemByIdAndCategory(sellItem.item.id, sellItem.item.category);
+		if (!itemInstance) {
+			return;
+		}
 
 		crowniclesInstance.logsDatabase.logItemSell(player.keycloakId, itemInstance).then();
 
@@ -103,14 +106,17 @@ export default class SellCommand {
 		toSellItems = sortPlayerItemList(toSellItems);
 
 		const collector = new ReactionCollectorSell(
-			toSellItems.map(slot => ({
-				item: {
-					id: slot.itemId,
-					category: slot.itemCategory
-				},
-				slot: slot.slot,
-				price: slot.itemCategory === ItemCategory.POTION ? 0 : getItemValue(slot.getItem())
-			}))
+			toSellItems.map(slot => {
+				const item = slot.getItem();
+				return {
+					item: {
+						id: slot.itemId,
+						category: slot.itemCategory
+					},
+					slot: slot.slot,
+					price: slot.itemCategory === ItemCategory.POTION || !item ? 0 : getItemValue(item)
+				};
+			})
 		);
 
 		const packet = new ReactionCollectorInstance(

@@ -43,8 +43,8 @@ export class Campaign {
 		while (campaign.isCompleted()) {
 			if (completedCampaign || firstMissionChecked) {
 				completedMissions.push({
-					missionType: MissionType.CAMPAIGN,
 					...campaign.toJSON(),
+					missionType: MissionType.CAMPAIGN,
 					pointsToWin: 0 // Campaign doesn't give points
 				});
 				missionInfo.campaignBlob = `${missionInfo.campaignBlob.slice(0, missionInfo.campaignProgression - 1)}1${missionInfo.campaignBlob.slice(missionInfo.campaignProgression)}`;

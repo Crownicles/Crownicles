@@ -9,18 +9,18 @@ import { CrowniclesPacket } from "../../../../../Lib/src/packets/CrowniclesPacke
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
 
 type FighterStats = {
-	energy: number;
-	maxEnergy: number;
-	speed: number;
-	defense: number;
-	attack: number;
-	breath: number;
-	maxBreath: number;
-	breathRegen: number;
+	energy: number | null;
+	maxEnergy: number | null;
+	speed: number | null;
+	defense: number | null;
+	attack: number | null;
+	breath: number | null;
+	maxBreath: number | null;
+	breathRegen: number | null;
 };
 
 export type FightStatModifier = {
-	origin: FightAction;
+	origin: FightAction | null;
 	operation: FightStatModifierOperation;
 	value: number;
 };
@@ -31,7 +31,7 @@ type FightDamageMultiplier = {
 };
 
 export abstract class Fighter {
-	public nextFightAction: FightAction;
+	public nextFightAction: FightAction | null;
 
 	public fightActionsHistory: (FightAction | FightAlteration)[];
 
@@ -41,7 +41,7 @@ export abstract class Fighter {
 
 	public readonly level: number;
 
-	public alteration: FightAlteration;
+	public alteration: FightAlteration | null;
 
 	protected stats: FighterStats;
 
@@ -126,56 +126,56 @@ export abstract class Fighter {
 	 * Get fighter attack
 	 */
 	public getAttack(): number {
-		return this.calculateModifiedStat(this.stats.attack, this.attackModifiers);
+		return this.calculateModifiedStat(this.stats.attack!, this.attackModifiers);
 	}
 
 	/**
 	 * Get fighter defense
 	 */
 	public getDefense(): number {
-		return this.calculateModifiedStat(this.stats.defense, this.defenseModifiers);
+		return this.calculateModifiedStat(this.stats.defense!, this.defenseModifiers);
 	}
 
 	/**
 	 * Get fighter speed
 	 */
 	public getSpeed(): number {
-		return this.calculateModifiedStat(this.stats.speed, this.speedModifiers);
+		return this.calculateModifiedStat(this.stats.speed!, this.speedModifiers);
 	}
 
 	/**
 	 * Get energy
 	 */
 	public getEnergy(): number {
-		return this.stats.energy;
+		return this.stats.energy!;
 	}
 
 	/**
 	 * Get the maximum energy
 	 */
 	public getMaxEnergy(): number {
-		return this.stats.maxEnergy;
+		return this.stats.maxEnergy!;
 	}
 
 	/**
 	 * Get the breath of the fighter
 	 */
 	public getBreath(): number {
-		return this.stats.breath;
+		return this.stats.breath!;
 	}
 
 	/**
 	 * Get the maximum breath of the fighter
 	 */
 	public getMaxBreath(): number {
-		return this.stats.maxBreath;
+		return this.stats.maxBreath!;
 	}
 
 	/**
 	 * Get the regeneration amount breath of the fighter per turn
 	 */
 	public getRegenBreath(): number {
-		return this.stats.breathRegen;
+		return this.stats.breathRegen!;
 	}
 
 	/**
@@ -183,14 +183,14 @@ export abstract class Fighter {
 	 * @param value The new breath
 	 */
 	public addBreath(value: number): number {
-		this.stats.breath += value;
-		if (this.stats.breath < 0) {
+		this.stats.breath! += value;
+		if (this.stats.breath! < 0) {
 			this.stats.breath = 0;
 		}
-		else if (this.stats.breath > this.stats.maxBreath) {
+		else if (this.stats.breath! > this.stats.maxBreath!) {
 			this.stats.breath = this.stats.maxBreath;
 		}
-		return this.stats.breath;
+		return this.stats.breath!;
 	}
 
 	/**
@@ -314,13 +314,13 @@ export abstract class Fighter {
 	public damage(value: number): number {
 		// Return current energy if no damage value
 		if (!value) {
-			return this.stats.energy;
+			return this.stats.energy!;
 		}
 
 		// Apply damage
-		this.stats.energy = Math.max(0, this.stats.energy - value);
+		this.stats.energy = Math.max(0, this.stats.energy! - value);
 
-		return this.stats.energy;
+		return this.stats.energy!;
 	}
 
 	/**
@@ -329,12 +329,12 @@ export abstract class Fighter {
 	 * @returns The new value of energy
 	 */
 	public heal(value: number): number {
-		this.stats.energy += value;
+		this.stats.energy! += value;
 		const max = this.getMaxEnergy();
-		if (this.stats.energy > max) {
+		if (this.stats.energy! > max) {
 			this.stats.energy = max;
 		}
-		return this.stats.energy;
+		return this.stats.energy!;
 	}
 
 	/**
@@ -365,7 +365,7 @@ export abstract class Fighter {
 		const playerFightActionsHistory = new Map<string, number>();
 		this.fightActionsHistory.forEach(action => {
 			if (playerFightActionsHistory.has(action.id)) {
-				playerFightActionsHistory.set(action.id, playerFightActionsHistory.get(action.id) + 1);
+				playerFightActionsHistory.set(action.id, playerFightActionsHistory.get(action.id)! + 1);
 			}
 			else {
 				playerFightActionsHistory.set(action.id, 1);
@@ -461,8 +461,8 @@ export abstract class Fighter {
 	 * @param breathCost
 	 */
 	useBreath(breathCost: number): boolean {
-		if (this.stats.breath >= breathCost) {
-			this.stats.breath -= breathCost;
+		if (this.stats.breath! >= breathCost) {
+			this.stats.breath! -= breathCost;
 			return true;
 		}
 		return false;
@@ -473,8 +473,8 @@ export abstract class Fighter {
 	 * @param half - if true, the breath regeneration is divided by 2
 	 */
 	regenerateBreath(half: boolean): void {
-		this.stats.breath += half ? Math.ceil(this.stats.breathRegen / 2) : this.stats.breathRegen;
-		if (this.stats.breath > this.stats.maxBreath) {
+		this.stats.breath! += half ? Math.ceil(this.stats.breathRegen! / 2) : this.stats.breathRegen!;
+		if (this.stats.breath! > this.stats.maxBreath!) {
 			this.stats.breath = this.stats.maxBreath;
 		}
 	}

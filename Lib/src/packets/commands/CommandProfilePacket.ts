@@ -67,7 +67,7 @@ export class CommandProfilePacketRes extends CrowniclesPacket {
 			rarity: number;
 			nickname: string;
 		};
-		color: string;
+		color?: string;
 		level: number;
 		badges: Badge[];
 		health: {
