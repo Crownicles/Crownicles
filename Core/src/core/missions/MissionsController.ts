@@ -426,12 +426,13 @@ export class MissionsController {
 		missionInfo.dailyMissionBlob = missionInterface.updateSaveBlob(dailyMission.missionVariant, missionInfo.dailyMissionBlob, missionInformation.params!);
 
 		// Handle set mode (replace) vs increment mode for daily missions
-		if (missionInformation.set!) {
+		const count = missionInformation.count ?? 1;
+		if (missionInformation.set) {
 			// For "set" missions (like earnTokensInOneExpedition), only update if the new value is higher
-			missionInfo.dailyMissionNumberDone = Math.max(missionInfo.dailyMissionNumberDone, missionInformation.count!);
+			missionInfo.dailyMissionNumberDone = Math.max(missionInfo.dailyMissionNumberDone, count);
 		}
 		else {
-			missionInfo.dailyMissionNumberDone += missionInformation.count!;
+			missionInfo.dailyMissionNumberDone += count;
 		}
 
 		if (missionInfo.dailyMissionNumberDone > dailyMission.missionObjective) {
@@ -504,7 +505,8 @@ export class MissionsController {
 	 * @param missionInformations
 	 */
 	private static async updateMission(mission: MissionSlot, missionInformations: MissionInformations): Promise<void> {
-		mission.numberDone = Math.min(mission.missionObjective, missionInformations.set! ? missionInformations.count! : mission.numberDone + missionInformations.count!);
+		const count = missionInformations.count ?? 1;
+		mission.numberDone = Math.min(mission.missionObjective, missionInformations.set ? count : mission.numberDone + count);
 		await mission.save();
 	}
 }
