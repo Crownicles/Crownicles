@@ -32,7 +32,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 				lifeLoss = RandomUtils.rangedInt(SmallEventConstants.BIG_BAD.HEALTH);
 				await player.addHealth(-lifeLoss, response, NumberChangeReason.SMALL_EVENT);
 				break;
-			case SmallEventBigBadKind.ALTERATION:
+			case SmallEventBigBadKind.ALTERATION: {
 				seFallen = RandomUtils.crowniclesRandom.pick(Object.keys(bigBadProperties.alterationStories));
 				effect = bigBadProperties.alterationStories[seFallen].alte;
 				const resolvedEffect = Effect.getById(effect);
@@ -49,6 +49,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 					}
 				}
 				break;
+			}
 			default:
 				moneyLoss = RandomUtils.rangedInt(SmallEventConstants.BIG_BAD.MONEY);
 				await player.addMoney({
