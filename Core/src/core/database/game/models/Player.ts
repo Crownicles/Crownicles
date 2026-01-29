@@ -28,6 +28,14 @@ import { PlayerLeavePveIslandPacket } from "../../../../../../Lib/src/packets/ev
 import { PlayerLevelUpPacket } from "../../../../../../Lib/src/packets/events/PlayerLevelUpPacket";
 import { MapLinkDataController } from "../../../../data/MapLink";
 import {
+	EditValueParameters, HealthEditValueParameters, MissionHealthParameter
+} from "../EditValueParameters";
+
+// Re-export for backward compatibility
+export {
+	EditValueParameters, HealthEditValueParameters, MissionHealthParameter
+} from "../EditValueParameters";
+import {
 	MapLocation, MapLocationDataController
 } from "../../../../data/MapLocation";
 import { crowniclesInstance } from "../../../../index";
@@ -68,21 +76,6 @@ export type PlayerEditValueParameters = {
 	amount: number;
 	response: CrowniclesPacket[];
 	reason: NumberChangeReason;
-};
-
-export type EditValueParameters = {
-	amount: number;
-	response: CrowniclesPacket[];
-	reason: NumberChangeReason;
-};
-
-type MissionHealthParameter = {
-	shouldPokeMission: boolean;
-	overHealCountsForMission: boolean;
-};
-
-export type HealthEditValueParameters = EditValueParameters & {
-	missionHealthParameter?: MissionHealthParameter;
 };
 
 type ressourcesLostOnPveFaint = {

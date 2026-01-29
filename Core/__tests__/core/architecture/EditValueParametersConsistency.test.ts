@@ -68,23 +68,23 @@ describe("EditValueParameters consistency", () => {
 	});
 
 	describe("Type definitions", () => {
-		const playerFilePath = path.join(coreModelsPath, "Player.ts");
-		let playerCode: string;
+		const editValueParametersFilePath = path.join(__dirname, "../../../src/core/database/game/EditValueParameters.ts");
+		let editValueParametersCode: string;
 
 		beforeAll(() => {
-			playerCode = fs.readFileSync(playerFilePath, "utf-8");
+			editValueParametersCode = fs.readFileSync(editValueParametersFilePath, "utf-8");
 		});
 
 		it("should export EditValueParameters type", () => {
-			expect(playerCode).toMatch(/export type EditValueParameters\s*=/);
+			expect(editValueParametersCode).toMatch(/export type EditValueParameters\s*=/);
 		});
 
 		it("should export HealthEditValueParameters type", () => {
-			expect(playerCode).toMatch(/export type HealthEditValueParameters\s*=/);
+			expect(editValueParametersCode).toMatch(/export type HealthEditValueParameters\s*=/);
 		});
 
 		it("HealthEditValueParameters should extend EditValueParameters", () => {
-			expect(playerCode).toMatch(/HealthEditValueParameters\s*=\s*EditValueParameters\s*&/);
+			expect(editValueParametersCode).toMatch(/HealthEditValueParameters\s*=\s*EditValueParameters\s*&/);
 		});
 	});
 
