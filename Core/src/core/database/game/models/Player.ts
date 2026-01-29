@@ -433,6 +433,16 @@ export class Player extends Model {
 
 		// Check if already dead to avoid duplicate effects/packets
 		if (this.effectId === Effect.DEAD.id) {
+			/*
+			 * A previous lethal change may already have pushed a PlayerDeathPacket into the response.
+			 * To preserve idempotency while allowing callers to control ordering, move any existing
+			 * PlayerDeathPacket to the end of the response array without duplicating it.
+			 */
+			const existingIndex = response.findIndex(packet => packet instanceof PlayerDeathPacket);
+			if (existingIndex !== -1 && existingIndex !== response.length - 1) {
+				const [deathPacket] = response.splice(existingIndex, 1);
+				response.push(deathPacket);
+			}
 			return true;
 		}
 		await TravelTime.applyEffect(this, Effect.DEAD, 0, new Date(), reason);
@@ -804,7 +814,7 @@ export class Player extends Model {
 	 * @param response
 	 * @param reason
 	 * @param missionHealthParameter
-	 * @returns true if the player was killed, false otherwise
+	 * @returns true if the player is dead after the update, false otherwise
 	 */
 	public async addHealth(health: number, response: CrowniclesPacket[], reason: NumberChangeReason, missionHealthParameter: MissionHealthParameter = {
 		overHealCountsForMission: true,

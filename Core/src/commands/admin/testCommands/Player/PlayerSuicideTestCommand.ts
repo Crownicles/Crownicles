@@ -17,7 +17,7 @@ const playerSuicideTestCommand: ExecuteTestCommandLike = async (player, _args, r
 		overHealCountsForMission: true,
 		shouldPokeMission: true
 	});
-	await Promise.all([player.save(), player.save()]);
+	await player.save();
 
 	return "Vous vous êtes suicidé avec succès !";
 };

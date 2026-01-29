@@ -20,14 +20,10 @@ export const smallEventFuncs: SmallEventFuncs = {
 		switch (packet.issue) {
 			case SmallEventBadIssue.HEALTH:
 				packet.amount = RandomUtils.rangedInt(SmallEventConstants.SMALL_BAD.HEALTH);
-				await player.addHealth(-packet.amount, response, NumberChangeReason.SMALL_EVENT);
 				break;
 
 			case SmallEventBadIssue.MONEY:
 				packet.amount = RandomUtils.rangedInt(SmallEventConstants.SMALL_BAD.MONEY);
-				await player.addMoney({
-					amount: -packet.amount, response, reason: NumberChangeReason.SMALL_EVENT
-				});
 				break;
 
 			default: {
@@ -36,11 +32,29 @@ export const smallEventFuncs: SmallEventFuncs = {
 					? Effect.SLEEPING
 					: Effect.OCCUPIED;
 				packet.effectId = effect.id;
-				await TravelTime.applyEffect(player, effect, packet.amount, new Date(), NumberChangeReason.SMALL_EVENT);
 				break;
 			}
 		}
+
+		// Push the small event packet before applying effects to ensure correct packet order
 		response.push(makePacket(SmallEventSmallBadPacket, packet));
+
+		// Apply the effects after the small event packet is sent
+		switch (packet.issue) {
+			case SmallEventBadIssue.HEALTH:
+				await player.addHealth(-packet.amount, response, NumberChangeReason.SMALL_EVENT);
+				break;
+
+			case SmallEventBadIssue.MONEY:
+				await player.addMoney({
+					amount: -packet.amount, response, reason: NumberChangeReason.SMALL_EVENT
+				});
+				break;
+
+			default:
+				await TravelTime.applyEffect(player, packet.effectId === Effect.SLEEPING.id ? Effect.SLEEPING : Effect.OCCUPIED, packet.amount, new Date(), NumberChangeReason.SMALL_EVENT);
+				break;
+		}
 
 		await player.save();
 	}
