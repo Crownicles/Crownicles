@@ -3,7 +3,7 @@ import {
 } from "vitest";
 import * as fs from "fs";
 import * as path from "path";
-import { HealthEditValueParameters } from "../../../src/core/database/game/models/Player";
+import { HealthEditValueParameters } from "../../../src/core/database/game/EditValueParameters";
 
 /**
  * These tests verify architectural consistency across the codebase.

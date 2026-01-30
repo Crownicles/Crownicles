@@ -30,11 +30,6 @@ import { MapLinkDataController } from "../../../../data/MapLink";
 import {
 	EditValueParameters, HealthEditValueParameters, MissionHealthParameter
 } from "../EditValueParameters";
-
-// Re-export for backward compatibility
-export {
-	EditValueParameters, HealthEditValueParameters, MissionHealthParameter
-} from "../EditValueParameters";
 import {
 	MapLocation, MapLocationDataController
 } from "../../../../data/MapLocation";

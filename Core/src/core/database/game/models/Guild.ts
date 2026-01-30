@@ -3,9 +3,8 @@ import {
 } from "sequelize";
 import { MissionsController } from "../../../missions/MissionsController";
 import { getFoodIndexOf } from "../../../utils/FoodUtils";
-import Player, {
-	EditValueParameters, Players
-} from "./Player";
+import Player, { Players } from "./Player";
+import { EditValueParameters } from "../EditValueParameters";
 import {
 	GuildPet, GuildPets
 } from "./GuildPet";
