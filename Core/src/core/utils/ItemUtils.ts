@@ -713,7 +713,9 @@ function selectRandomItemFromController(
 	}
 
 	const itemsIds = controller.getAllIdsForRarity(rarity);
-	return controller.getById(itemsIds[RandomUtils.crowniclesRandom.integer(0, itemsIds.length - 1)]);
+
+	// The item is guaranteed to exist since itemsIds comes from the controller's own data
+	return controller.getById(itemsIds[RandomUtils.crowniclesRandom.integer(0, itemsIds.length - 1)])!;
 }
 
 /**
