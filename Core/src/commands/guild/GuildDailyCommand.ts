@@ -99,15 +99,15 @@ async function healEveryMember(guildLike: GuildLike, response: CrowniclesPacket[
 	const healthWon = Math.round(guildLike.guild.level * GuildDailyConstants.LEVEL_MULTIPLIER) + 1;
 	await genericAwardingFunction(guildLike.members, async member => {
 		if (member.effectId !== Effect.DEAD.id) {
-			await member.addHealth(
-				fullHeal ? member.getMaxHealth() : healthWon,
+			await member.addHealth({
+				amount: fullHeal ? member.getMaxHealth() : healthWon,
 				response,
-				NumberChangeReason.GUILD_DAILY,
-				{
+				reason: NumberChangeReason.GUILD_DAILY,
+				missionHealthParameter: {
 					shouldPokeMission: true,
 					overHealCountsForMission: !fullHeal
 				}
-			);
+			});
 		}
 	});
 	if (fullHeal) {
@@ -133,15 +133,15 @@ async function alterationHealEveryMember(guildLike: GuildLike, response: Crownic
 	await genericAwardingFunction(guildLike.members, async member => {
 		if (member.currentEffectFinished(now)) {
 			if (needsHeal) {
-				await member.addHealth(
-					healthWon,
+				await member.addHealth({
+					amount: healthWon,
 					response,
-					NumberChangeReason.GUILD_DAILY,
-					{
+					reason: NumberChangeReason.GUILD_DAILY,
+					missionHealthParameter: {
 						shouldPokeMission: true,
 						overHealCountsForMission: true
 					}
-				);
+				});
 			}
 		}
 		else if (member.effectId !== Effect.DEAD.id && member.effectId !== Effect.JAILED.id) {
@@ -187,7 +187,9 @@ async function awardPersonalXpToMembers(guildLike: GuildLike, response: Crownicl
  */
 async function awardGuildXp(guildLike: GuildLike, response: CrowniclesPacket[], rewardPacket: CommandGuildDailyRewardPacket): Promise<void> {
 	const xpGuildWon = RandomUtils.rangedInt(GuildDailyConstants.XP, guildLike.guild.level, guildLike.guild.level * GuildDailyConstants.XP_MULTIPLIER);
-	await guildLike.guild.addExperience(xpGuildWon, response, NumberChangeReason.GUILD_DAILY);
+	await guildLike.guild.addExperience({
+		amount: xpGuildWon, response, reason: NumberChangeReason.GUILD_DAILY
+	});
 	await guildLike.guild.save();
 	rewardPacket.guildXp = xpGuildWon;
 	crowniclesInstance.logsDatabase.logGuildDaily(guildLike.guild, GuildDailyConstants.REWARD_TYPES.GUILD_XP).then();

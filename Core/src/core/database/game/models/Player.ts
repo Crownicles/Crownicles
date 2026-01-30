@@ -28,6 +28,9 @@ import { PlayerLeavePveIslandPacket } from "../../../../../../Lib/src/packets/ev
 import { PlayerLevelUpPacket } from "../../../../../../Lib/src/packets/events/PlayerLevelUpPacket";
 import { MapLinkDataController } from "../../../../data/MapLink";
 import {
+	EditValueParameters, HealthEditValueParameters, MissionHealthParameter
+} from "../EditValueParameters";
+import {
 	MapLocation, MapLocationDataController
 } from "../../../../data/MapLocation";
 import { crowniclesInstance } from "../../../../index";
@@ -68,17 +71,6 @@ export type PlayerEditValueParameters = {
 	amount: number;
 	response: CrowniclesPacket[];
 	reason: NumberChangeReason;
-};
-
-export type EditValueParameters = {
-	amount: number;
-	response: CrowniclesPacket[];
-	reason: NumberChangeReason;
-};
-
-type MissionHealthParameter = {
-	shouldPokeMission: boolean;
-	overHealCountsForMission: boolean;
 };
 
 type ressourcesLostOnPveFaint = {
@@ -373,9 +365,14 @@ export class Player extends Model {
 		});
 
 		if (healthRestored) {
-			await this.addHealth(this.getMaxHealth() - this.health, response, NumberChangeReason.LEVEL_UP, {
-				shouldPokeMission: true,
-				overHealCountsForMission: false
+			await this.addHealth({
+				amount: this.getMaxHealth() - this.health,
+				response,
+				reason: NumberChangeReason.LEVEL_UP,
+				missionHealthParameter: {
+					shouldPokeMission: true,
+					overHealCountsForMission: false
+				}
 			});
 		}
 
@@ -810,20 +807,18 @@ export class Player extends Model {
 	/**
 	 * Add health to the player
 	 * Note: This method automatically calls killIfNeeded after updating health
-	 * @param health
-	 * @param response
-	 * @param reason
-	 * @param missionHealthParameter
+	 * @param parameters - Health edit parameters including amount, response, reason, and optional mission parameters
 	 * @returns true if the player is dead after the update, false otherwise
 	 */
-	public async addHealth(health: number, response: CrowniclesPacket[], reason: NumberChangeReason, missionHealthParameter: MissionHealthParameter = {
-		overHealCountsForMission: true,
-		shouldPokeMission: true
-	}): Promise<boolean> {
-		await this.setHealth(this.health + health, response, missionHealthParameter);
-		crowniclesInstance.logsDatabase.logHealthChange(this.keycloakId, this.health, reason)
+	public async addHealth(parameters: HealthEditValueParameters): Promise<boolean> {
+		const missionHealthParameter = parameters.missionHealthParameter ?? {
+			overHealCountsForMission: true,
+			shouldPokeMission: true
+		};
+		await this.setHealth(this.health + parameters.amount, parameters.response, missionHealthParameter);
+		crowniclesInstance.logsDatabase.logHealthChange(this.keycloakId, this.health, parameters.reason)
 			.then();
-		return await this.killIfNeeded(response, reason);
+		return await this.killIfNeeded(parameters.response, parameters.reason);
 	}
 
 	/**
@@ -972,12 +967,12 @@ export class Player extends Model {
 		return dateOfLastLeagueReward !== null && !(dateOfLastLeagueReward < millisecondsToSeconds(getOneDayAgo()));
 	}
 
-	public async addRage(rage: number, reason: NumberChangeReason, response: CrowniclesPacket[]): Promise<void> {
-		await this.setRage(this.rage + rage, reason);
-		if (rage > 0) {
-			await MissionsController.update(this, response, {
+	public async addRage(parameters: EditValueParameters): Promise<void> {
+		await this.setRage(this.rage + parameters.amount, parameters.reason);
+		if (parameters.amount > 0) {
+			await MissionsController.update(this, parameters.response, {
 				missionId: "gainRage",
-				count: rage
+				count: parameters.amount
 			});
 		}
 	}
@@ -1021,7 +1016,9 @@ export class Player extends Model {
 				if (guildPointsLost > playerGuild.score) {
 					guildPointsLost = playerGuild.score;
 				}
-				await playerGuild.addScore(-guildPointsLost, response, NumberChangeReason.PVE_ISLAND);
+				await playerGuild.addScore({
+					amount: -guildPointsLost, response, reason: NumberChangeReason.PVE_ISLAND
+				});
 				await playerGuild.save();
 			}
 		}

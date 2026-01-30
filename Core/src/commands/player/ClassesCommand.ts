@@ -51,11 +51,16 @@ function getEndCallback(player: Player) {
 		}
 
 		player.class = selectedClass;
-		await player.addHealth(Math.ceil(
-			player.health / oldClass.getMaxHealthValue(level) * newClass.getMaxHealthValue(level)
-		) - player.health, response, NumberChangeReason.CLASS, {
-			shouldPokeMission: false,
-			overHealCountsForMission: false
+		await player.addHealth({
+			amount: Math.ceil(
+				player.health / oldClass.getMaxHealthValue(level) * newClass.getMaxHealthValue(level)
+			) - player.health,
+			response,
+			reason: NumberChangeReason.CLASS,
+			missionHealthParameter: {
+				shouldPokeMission: false,
+				overHealCountsForMission: false
+			}
 		});
 		player.setEnergyLost(Math.ceil(
 			player.fightPointsLost / oldClass.getMaxCumulativeEnergyValue(level) * newClass.getMaxCumulativeEnergyValue(level)

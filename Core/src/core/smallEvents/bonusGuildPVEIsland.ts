@@ -56,8 +56,15 @@ async function manageGuildReward(response: CrowniclesPacket[], player: Player, r
 	if (guild.isAtMaxLevel()) {
 		result.isExperienceGain = false;
 	}
-	const caller = (result.isExperienceGain ? guild.addExperience : guild.addScore).bind(guild);
-	await caller(result.amount, response, NumberChangeReason.SMALL_EVENT);
+	const params = {
+		amount: result.amount, response, reason: NumberChangeReason.SMALL_EVENT
+	};
+	if (result.isExperienceGain) {
+		await guild.addExperience(params);
+	}
+	else {
+		await guild.addScore(params);
+	}
 	await guild.save();
 }
 
@@ -72,7 +79,11 @@ async function manageClassicReward(response: CrowniclesPacket[], player: Player,
 			});
 			break;
 		case Outcome.LIFE:
-			await player.addHealth(-result.amount, response, reason);
+			await player.addHealth({
+				amount: -result.amount,
+				response,
+				reason
+			});
 			break;
 		case Outcome.ENERGY:
 			player.addEnergy(-result.amount, reason);

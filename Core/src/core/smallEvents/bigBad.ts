@@ -30,7 +30,11 @@ export const smallEventFuncs: SmallEventFuncs = {
 		switch (outRand) {
 			case SmallEventBigBadKind.LIFE_LOSS:
 				lifeLoss = RandomUtils.rangedInt(SmallEventConstants.BIG_BAD.HEALTH);
-				await player.addHealth(-lifeLoss, response, NumberChangeReason.SMALL_EVENT);
+				await player.addHealth({
+					amount: -lifeLoss,
+					response,
+					reason: NumberChangeReason.SMALL_EVENT
+				});
 				break;
 			case SmallEventBigBadKind.ALTERATION: {
 				seFallen = RandomUtils.crowniclesRandom.pick(Object.keys(bigBadProperties.alterationStories));

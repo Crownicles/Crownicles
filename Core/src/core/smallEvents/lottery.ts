@@ -105,7 +105,9 @@ async function giveRewardToPlayer(
 			}));
 			break;
 		case SmallEventConstants.LOTTERY.REWARD_TYPES.GUILD_XP:
-			await guild.addExperience(SmallEventConstants.LOTTERY.REWARDS.GUILD_EXPERIENCE * coefficient, response, NumberChangeReason.SMALL_EVENT);
+			await guild.addExperience({
+				amount: SmallEventConstants.LOTTERY.REWARDS.GUILD_EXPERIENCE * coefficient, response, reason: NumberChangeReason.SMALL_EVENT
+			});
 			await guild.save();
 			response.push(makePacket(SmallEventLotteryWinPacket, {
 				winAmount: SmallEventConstants.LOTTERY.REWARDS.GUILD_EXPERIENCE * coefficient,

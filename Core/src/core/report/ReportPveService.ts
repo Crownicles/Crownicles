@@ -119,8 +119,12 @@ async function applyGuildRewards(
 			guildPoints: 0
 		};
 	}
-	await guild.addScore(rewards.guildScore, endFightResponse, NumberChangeReason.PVE_FIGHT);
-	await guild.addExperience(rewards.guildXp, endFightResponse, NumberChangeReason.PVE_FIGHT);
+	await guild.addScore({
+		amount: rewards.guildScore, response: endFightResponse, reason: NumberChangeReason.PVE_FIGHT
+	});
+	await guild.addExperience({
+		amount: rewards.guildXp, response: endFightResponse, reason: NumberChangeReason.PVE_FIGHT
+	});
 	await guild.save();
 
 	return {

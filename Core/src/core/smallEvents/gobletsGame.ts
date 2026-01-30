@@ -70,7 +70,11 @@ async function manageHealthLost(
 	if (malus === SmallEventGobletsGameMalus.END) {
 		packet.value = Math.round(packet.value * SmallEventConstants.GOBLETS_GAME.HEALTH_LOST.END_INTENSIFIER - SmallEventConstants.GOBLETS_GAME.HEALTH_LOST.END_ADJUSTER);
 	}
-	await player.addHealth(-packet.value, response, NumberChangeReason.SMALL_EVENT);
+	await player.addHealth({
+		amount: -packet.value,
+		response,
+		reason: NumberChangeReason.SMALL_EVENT
+	});
 }
 
 /**

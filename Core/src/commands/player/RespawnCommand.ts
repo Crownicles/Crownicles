@@ -35,9 +35,14 @@ export default class RespawnCommand {
 			return;
 		}
 		const lostScore = Math.round(player.score * RespawnConstants.SCORE_REMOVAL_MULTIPLIER);
-		await player.addHealth(player.getMaxHealth() - player.health, response, NumberChangeReason.RESPAWN, {
-			shouldPokeMission: false,
-			overHealCountsForMission: false
+		await player.addHealth({
+			amount: player.getMaxHealth() - player.health,
+			response,
+			reason: NumberChangeReason.RESPAWN,
+			missionHealthParameter: {
+				shouldPokeMission: false,
+				overHealCountsForMission: false
+			}
 		});
 		await player.addScore({
 			amount: -lostScore,

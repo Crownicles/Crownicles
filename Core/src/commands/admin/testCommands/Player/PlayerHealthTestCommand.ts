@@ -19,9 +19,14 @@ const playerHealthTestCommand: ExecuteTestCommandLike = async (player, args, res
 	if (health < 0) {
 		throw new Error("Erreur vie : vie donnée inférieure à 0 interdit !");
 	}
-	await player.addHealth(parseInt(args[0], 10) - player.health, response, NumberChangeReason.TEST, {
-		overHealCountsForMission: false,
-		shouldPokeMission: false
+	await player.addHealth({
+		amount: parseInt(args[0], 10) - player.health,
+		response,
+		reason: NumberChangeReason.TEST,
+		missionHealthParameter: {
+			overHealCountsForMission: false,
+			shouldPokeMission: false
+		}
 	});
 	await player.save();
 

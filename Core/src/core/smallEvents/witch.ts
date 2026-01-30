@@ -96,11 +96,11 @@ async function applyOutcome(outcome: WitchActionOutcomeType, selectedEvent: Witc
 		await selectedEvent.giveEffect(player);
 	}
 	if (outcome === WitchActionOutcomeType.LIFE_LOSS) {
-		await player.addHealth(
-			-SmallEventConstants.WITCH.BASE_LIFE_POINTS_REMOVED_AMOUNT,
+		await player.addHealth({
+			amount: -SmallEventConstants.WITCH.BASE_LIFE_POINTS_REMOVED_AMOUNT,
 			response,
-			NumberChangeReason.SMALL_EVENT
-		);
+			reason: NumberChangeReason.SMALL_EVENT
+		});
 	}
 	else if (outcome === WitchActionOutcomeType.POTION) {
 		const potionToGive: GenerateRandomItemOptions = selectedEvent.generatePotionWitchAction() ?? {};

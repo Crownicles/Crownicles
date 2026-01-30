@@ -147,7 +147,11 @@ async function managePickedInteraction(packet: SmallEventPetPacket, response: Cr
 				break;
 			}
 			packet.amount = RandomUtils.rangedInt(SmallEventConstants.PET.HEALTH);
-			await player.addHealth(packet.amount, response, NumberChangeReason.SMALL_EVENT);
+			await player.addHealth({
+				amount: packet.amount,
+				response,
+				reason: NumberChangeReason.SMALL_EVENT
+			});
 			await MissionsController.update(player, response, { missionId: "petEarnHealth" });
 			break;
 
@@ -165,7 +169,11 @@ async function managePickedInteraction(packet: SmallEventPetPacket, response: Cr
 
 		case PetConstants.PET_INTERACTIONS_NAMES.LOSE_HEALTH:
 			packet.amount = RandomUtils.rangedInt(SmallEventConstants.PET.HEALTH);
-			await player.addHealth(-packet.amount, response, NumberChangeReason.SMALL_EVENT);
+			await player.addHealth({
+				amount: -packet.amount,
+				response,
+				reason: NumberChangeReason.SMALL_EVENT
+			});
 			break;
 
 		case PetConstants.PET_INTERACTIONS_NAMES.LOSE_MONEY:

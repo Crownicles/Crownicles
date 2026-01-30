@@ -20,6 +20,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 		switch (packet.issue) {
 			case SmallEventBadIssue.HEALTH:
 				packet.amount = RandomUtils.rangedInt(SmallEventConstants.SMALL_BAD.HEALTH);
+
 				break;
 
 			case SmallEventBadIssue.MONEY:
@@ -42,7 +43,11 @@ export const smallEventFuncs: SmallEventFuncs = {
 		// Apply the effects after the small event packet is sent
 		switch (packet.issue) {
 			case SmallEventBadIssue.HEALTH:
-				await player.addHealth(-packet.amount, response, NumberChangeReason.SMALL_EVENT);
+				await player.addHealth({
+					amount: -packet.amount,
+					response,
+					reason: NumberChangeReason.SMALL_EVENT
+				});
 				break;
 
 			case SmallEventBadIssue.MONEY:
