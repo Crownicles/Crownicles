@@ -191,7 +191,7 @@ export class PetEntity extends Model {
 	}
 }
 
-export class PetEntities {
+export abstract class PetEntities {
 	static async getById(id: number): Promise<PetEntity | null> {
 		return await PetEntity.findOne({
 			where: { id }

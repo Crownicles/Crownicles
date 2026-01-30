@@ -16,7 +16,9 @@ import { InventorySlots } from "../../core/database/game/models/InventorySlot";
 import { crowniclesInstance } from "../../index";
 import { ObjectItem } from "../../data/ObjectItem";
 import { ItemNature } from "../../../../Lib/src/constants/ItemConstants";
-import { InventoryInfos } from "../../core/database/game/models/InventoryInfo";
+import {
+	InventoryInfo, InventoryInfos
+} from "../../core/database/game/models/InventoryInfo";
 import { millisecondsToHours } from "../../../../Lib/src/utils/TimeUtils";
 import { DailyConstants } from "../../../../Lib/src/constants/DailyConstants";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
@@ -52,11 +54,10 @@ function isWrongObjectForDaily(activeObject: ObjectItem): boolean {
 
 /**
  * Check if the player is ready to get his daily bonus
- * @param player
+ * @param inventoryInfo
  * @param response
  */
-async function dailyNotReady(player: Player, response: CrowniclesPacket[]): Promise<boolean> {
-	const inventoryInfo = await InventoryInfos.getOfPlayer(player.id);
+function dailyNotReady(inventoryInfo: InventoryInfo, response: CrowniclesPacket[]): boolean {
 	const lastDailyTimestamp = inventoryInfo.getLastDailyAtTimestamp();
 	if (millisecondsToHours(Date.now() - lastDailyTimestamp) < DailyConstants.TIME_BETWEEN_DAILIES) {
 		response.push(makePacket(CommandDailyBonusInCooldown, {
@@ -72,9 +73,10 @@ async function dailyNotReady(player: Player, response: CrowniclesPacket[]): Prom
  * Activate the daily item
  * @param player
  * @param activeObject
+ * @param inventoryInfo
  * @param response
  */
-async function activateDailyItem(player: Player, activeObject: ObjectItem, response: CrowniclesPacket[]): Promise<void> {
+async function activateDailyItem(player: Player, activeObject: ObjectItem, inventoryInfo: InventoryInfo, response: CrowniclesPacket[]): Promise<void> {
 	const packet = makePacket(CommandDailyBonusPacketRes, {
 		value: activeObject.power,
 		itemNature: activeObject.nature
@@ -98,7 +100,6 @@ async function activateDailyItem(player: Player, activeObject: ObjectItem, respo
 			});
 			break;
 	}
-	const inventoryInfo = await InventoryInfos.getOfPlayer(player.id);
 	inventoryInfo.updateLastDailyAt();
 	await Promise.all([
 		inventoryInfo.save(),
@@ -123,7 +124,10 @@ export default class DailyBonusCommand {
 		// Block player immediately to prevent concurrent executions
 		BlockingUtils.blockPlayer(player.keycloakId, BlockingConstants.REASONS.DAILY_BONUS);
 
-		if (await dailyNotReady(player, response)) {
+		// Get inventory info once and pass it to functions that need it
+		const inventoryInfo = await InventoryInfos.getOfPlayer(player.id);
+
+		if (dailyNotReady(inventoryInfo, response)) {
 			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.DAILY_BONUS);
 			return;
 		}
@@ -139,7 +143,7 @@ export default class DailyBonusCommand {
 		const equippedUsableObject = usableObjects.find(uo => uo.isEquipped());
 		if (equippedUsableObject) {
 			const item = equippedUsableObject.getItem() as ObjectItem;
-			await activateDailyItem(player, item, response);
+			await activateDailyItem(player, item, inventoryInfo, response);
 			crowniclesInstance.logsDatabase.logPlayerDaily(player.keycloakId, item)
 				.then();
 			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.DAILY_BONUS);
@@ -163,9 +167,13 @@ export default class DailyBonusCommand {
 				return;
 			}
 			const objectItem = usableObject.getItem() as ObjectItem;
+
+			// Reload inventoryInfo as it may have changed during reaction collection
+			const freshInventoryInfo = await InventoryInfos.getOfPlayer(player.id);
 			await activateDailyItem(
 				await player.reload(),
 				objectItem,
+				freshInventoryInfo,
 				response
 			);
 			crowniclesInstance.logsDatabase.logPlayerDaily(player.keycloakId, objectItem)

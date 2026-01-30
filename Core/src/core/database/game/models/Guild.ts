@@ -300,7 +300,7 @@ export class Guild extends Model {
 	}
 }
 
-export class Guilds {
+export abstract class Guilds {
 	static getById(id: number): Promise<Guild | null> {
 		return Promise.resolve(Guild.findOne({
 			where: { id }

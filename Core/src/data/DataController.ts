@@ -95,4 +95,15 @@ export abstract class ItemDataController<U extends GenericItem> extends DataCont
 
 		return this.idsForRarityCache.get(rarity)!;
 	}
+
+	/**
+	 * Check if any item with the given nature and rarity exists.
+	 * Override in subclasses that support nature filtering (Potion, ObjectItem).
+	 * @param _nature The nature to check (unused in base class)
+	 * @param rarity The rarity to check
+	 * @returns true if at least one item matches
+	 */
+	public hasItemWithNatureAndRarity(_nature: number, rarity: number): boolean {
+		return this.getAllIdsForRarity(rarity).length > 0;
+	}
 }

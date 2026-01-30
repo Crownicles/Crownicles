@@ -2,7 +2,7 @@ import { FightController } from "./FightController";
 import { FightConstants } from "../../../../Lib/src/constants/FightConstants";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 
-export class FightsManager {
+export abstract class FightsManager {
 	private static fights = new Map<string, FightController>();
 
 	public static init(): void {

@@ -22,7 +22,7 @@ type Value = {
 	typeValue: "attack" | "defense" | "speed";
 };
 
-export class DiscordItemUtils {
+export abstract class DiscordItemUtils {
 	/**
 	 * Get a stat value of an item into its string form
 	 * @param lng

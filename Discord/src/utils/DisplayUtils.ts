@@ -32,7 +32,7 @@ export function formatPotionUsagesPrefix(usages: number | undefined, maxUsages: 
 	return `**${current}/${maxUsages}** | `;
 }
 
-export class DisplayUtils {
+export abstract class DisplayUtils {
 	/**
 	 * Display the item name with its icon
 	 * @param item

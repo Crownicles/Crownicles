@@ -20,7 +20,7 @@ export class PlayerSmallEvent extends Model {
 	declare createdAt: Date;
 }
 
-export class PlayerSmallEvents {
+export abstract class PlayerSmallEvents {
 	static createPlayerSmallEvent(playerId: number, eventType: string, time: number): PlayerSmallEvent {
 		return PlayerSmallEvent.build({
 			playerId,

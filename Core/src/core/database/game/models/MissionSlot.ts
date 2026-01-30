@@ -64,7 +64,7 @@ export class MissionSlot extends Model {
 	}
 }
 
-export class MissionSlots {
+export abstract class MissionSlots {
 	static getById(id: number): Promise<MissionSlot> {
 		return Promise.resolve(MissionSlot.findOne(
 			{

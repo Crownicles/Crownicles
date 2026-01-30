@@ -13,7 +13,7 @@ export function escapeUsername(username: string): string {
 	return fixedName;
 }
 
-export class StringUtils {
+export abstract class StringUtils {
 	static getRandomTranslation(tr: string, lng: Language, replacements: { [key: string]: unknown } = {}): string {
 		// If context is provided, append it to the translation key for array translations
 		const translationKey = replacements.context ? `${tr}_${replacements.context}` : tr;

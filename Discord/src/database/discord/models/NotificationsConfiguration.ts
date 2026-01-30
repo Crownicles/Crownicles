@@ -68,7 +68,7 @@ export class NotificationsConfiguration extends Model {
 	declare createdAt: Date;
 }
 
-export class NotificationsConfigurations {
+export abstract class NotificationsConfigurations {
 	static async getOrRegister(discordId: string): Promise<NotificationsConfiguration> {
 		return (await NotificationsConfiguration.findOrCreate(
 			{ where: { discordId } }

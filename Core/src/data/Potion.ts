@@ -62,6 +62,13 @@ export class PotionDataController extends ItemDataController<Potion> {
 	}
 
 	/**
+	 * Check if any potion with the given nature and rarity exists
+	 */
+	public override hasItemWithNatureAndRarity(nature: number, rarity: number): boolean {
+		return this.getValuesArray().some(item => item.nature === nature && item.rarity === rarity);
+	}
+
+	/**
 	 * Get a random shop potion
 	 * @param excludeId Prevent the potion to be with this id
 	 */

@@ -79,7 +79,7 @@ export class InventoryInfo extends Model {
 /**
  * This class is used to treat the inventory info of a player
  */
-export class InventoryInfos {
+export abstract class InventoryInfos {
 	/**
 	 * Get the inventory info of a player
 	 * @param playerId

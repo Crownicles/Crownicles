@@ -35,7 +35,7 @@ export interface ScheduleNotificationParams {
 	scheduledAt: Date;
 }
 
-export class ScheduledExpeditionNotifications {
+export abstract class ScheduledExpeditionNotifications {
 	static async scheduleNotification(params: ScheduleNotificationParams): Promise<void> {
 		await ScheduledExpeditionNotification.upsert({ ...params });
 	}

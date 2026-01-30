@@ -51,7 +51,7 @@ function formatApiCallOk<T extends object>(res: Response, payload: T): ApiCallRe
 	};
 }
 
-export class KeycloakUtils {
+export abstract class KeycloakUtils {
 	private static keycloakToken: string | null = null;
 
 	private static keycloakTokenExpirationDate: number | null = null;
