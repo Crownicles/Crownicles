@@ -199,7 +199,7 @@ export class ReactionCollectorInstance {
 	}
 }
 
-export class ReactionCollectorController {
+export abstract class ReactionCollectorController {
 	public static async reactPacket(response: CrowniclesPacket[], packet: ReactionCollectorReactPacket): Promise<void> {
 		const collector = collectors.get(packet.id);
 		if (!collector || collector.hasEnded) {

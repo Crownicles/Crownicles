@@ -16,7 +16,7 @@ import { ReportConstants } from "../../../../Lib/src/constants/ReportConstants";
 /**
  * Travel time functions class
  */
-export class TravelTime {
+export abstract class TravelTime {
 	/*
 	 * Understand travel time
 	 *

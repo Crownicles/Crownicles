@@ -53,7 +53,7 @@ type SpecialMissionCompletion = {
 	campaign: boolean;
 };
 
-export class MissionsController {
+export abstract class MissionsController {
 	static getMissionInterface(missionId: string): IMission {
 		try {
 			return (require(`./interfaces/${missionId}`) as {

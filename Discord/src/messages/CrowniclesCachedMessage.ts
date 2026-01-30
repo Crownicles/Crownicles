@@ -67,7 +67,7 @@ export abstract class CrowniclesCachedMessage<T extends CrowniclesPacket = Crown
 
 type MessageLike<Message extends CrowniclesCachedMessage> = new (originalMessageId: string) => Message;
 
-export class CrowniclesCachedMessages {
+export abstract class CrowniclesCachedMessages {
 	static cachedMessages: Map<string, CrowniclesCachedMessage> = new Map<string, CrowniclesCachedMessage>();
 
 	static createCachedMessage(message: CrowniclesCachedMessage): void {
