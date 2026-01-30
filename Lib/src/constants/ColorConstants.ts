@@ -6,4 +6,6 @@ export class ColorConstants {
 	static readonly SUCCESSFUL: HexColorString = <HexColorString>"#5EAD45";
 
 	static readonly GOLD: HexColorString = <HexColorString>"#FFAC33";
+
+	static readonly PROFILE_DEFAULT: HexColorString = <HexColorString>"#878787";
 }

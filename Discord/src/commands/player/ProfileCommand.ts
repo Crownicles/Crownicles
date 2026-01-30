@@ -25,6 +25,7 @@ import { millisecondsToMinutes } from "../../../../Lib/src/utils/TimeUtils";
 import { DisplayUtils } from "../../utils/DisplayUtils";
 import { Badge } from "../../../../Lib/src/types/Badge";
 import { TokensConstants } from "../../../../Lib/src/constants/TokensConstants";
+import { ColorConstants } from "../../../../Lib/src/constants/ColorConstants";
 
 /**
  * Display the profile of a player
@@ -280,7 +281,7 @@ export async function handleCommandProfilePacketRes(packet: CommandProfilePacket
 	const reply = await interaction.reply({
 		embeds: [
 			new CrowniclesEmbed()
-				.setColor(<ColorResolvable>packet.playerData!.color)
+				.setColor(<ColorResolvable>(packet.playerData.color ?? ColorConstants.PROFILE_DEFAULT))
 				.setTitle(i18n.t("commands:profile.title", {
 					lng,
 					effectId: titleEffect,
