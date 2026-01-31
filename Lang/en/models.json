@@ -1246,7 +1246,7 @@
     "dailyPotionsStock": "Buy the whole stock of daily potions",
     "doReports_one": "Do {{count}} report",
     "doReports_other": "Do {{count}} reports",
-    "drinkAlcohol": "Drink a potion containing alcohol",
+    "drinkAlcohol": "Drink an alcoholic beverage",
     "drinkEnergyPotion_one": "Drink {{count}} energy potion",
     "drinkEnergyPotion_other": "Drink {{count}} energy potions",
     "drinkPotionRarity": "Drink a potion of rarity {{variantText}} or more",

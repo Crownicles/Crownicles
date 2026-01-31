@@ -864,7 +864,7 @@
     "shelterPetOption": "{{rarity}} | {{sex}} {{loveLevel}}",
     "cancelButton": "Cancelar",
     "feistyCostPaid": "La liberación le costó {{cost, number}} {emote:unitValues.money}.",
-    "luckyMeat": "¡El familiar te dejó un trozo de carne cuando te fuiste! {emote:food.carnivorousFood}"
+    "luckyMeat": "¡El familiar te dejó un trozo de carne cuando te fuiste! {emote:foods.carnivorousFood}"
   },
   "petNick": {
     "successTitle": "{{pseudo}}cambiar el apodo de la mascota",
@@ -1959,5 +1959,14 @@
     "title": "Código de eliminación de cuenta",
     "success": "**Código de borrado generado**\n\n**Discord ID :** `{{discordId}}`\n**Keycloak ID :** `{{keycloakId}}`\n**Código :** `{{code}}`\n\nEnvía este código al usuario por email. Ellos deben enviar un DM al bot con:\n`DELETE ACCOUNT {{code}}`",
     "userNotFound": "No se han encontrado usuarios con este Discord ID."
+  },
+  "exportgdpr": {
+    "title": "Exportar RGPD",
+    "success": "La exportación RGPD se ha generado correctamente.\n\n**ID del jugador anonimizado:** `{{anonymizedId}}`\n**Archivos generados:** {{fileCount}}",
+    "started": "Se ha iniciado la exportación del RGPD. Recibirás el resultado en un mensaje privado una vez finalizada la exportación.",
+    "userNotFound": "No se han encontrado jugadores con este Discord ID.",
+    "playerNotFound": "Este jugador no existe en la base de datos.",
+    "error": "Se ha producido un error durante la exportación: {{error}}",
+    "fileName": "export_rgpd_{{anonymizedId}}.zip"
   }
 }

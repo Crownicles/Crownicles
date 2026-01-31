@@ -40,5 +40,11 @@
   },
   "fightChallenge": {
     "description": "{emote:fightCommand.crossedSwords} ¡Has sido atacado por **{{attackerPseudo}}** ! Averigua el resultado de este combate usando el comando `/historyfight`."
+  },
+  "gdprExport": {
+    "title": "Exportación de RGPD completada",
+    "success": "La exportación RGPD se ha generado correctamente.\n\n**ID del jugador anonimizado:** `{{anonymizedId}}`\n**Archivos generados:** {{fileCount}}\n\nEl archivo ZIP está disponible como archivo adjunto.",
+    "error": "Se ha producido un error durante la exportación RGPD: {{error}}",
+    "fileName": "export_rgpd_{{anonymizedId}}.zip"
   }
 }

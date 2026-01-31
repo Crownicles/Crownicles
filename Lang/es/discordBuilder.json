@@ -392,5 +392,15 @@
         "description": "ID de Discord del usuario."
       }
     }
+  },
+  "exportgdpr": {
+    "name": "exportrgpd",
+    "description": "Exportar todos los datos personales de un jugador (RGPD Art. 15).",
+    "options": {
+      "discordid": {
+        "name": "discordid",
+        "description": "ID de Discord del jugador."
+      }
+    }
   }
 }
