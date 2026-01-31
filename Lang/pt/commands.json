@@ -864,7 +864,7 @@
     "shelterPetOption": "{{rarity}} | {{sex}} {{loveLevel}}",
     "cancelButton": "Cancelar",
     "feistyCostPaid": "A libertação custou-vos {{cost, number}} {emote:unitValues.money}.",
-    "luckyMeat": "Le familier vous a laissé un morceau de viande en partant ! {emote:foods.carnivorousFood}"
+    "luckyMeat": "O familiar deixou-te um pedaço de carne quando te foste embora! {emote:foods.carnivorousFood}"
   },
   "petNick": {
     "successTitle": "{{pseudo}}alterar a alcunha do animal de estimação",
@@ -1961,12 +1961,12 @@
     "userNotFound": "Não foram encontrados utilizadores com este ID Discord."
   },
   "exportgdpr": {
-    "title": "Export RGPD",
-    "success": "L'export RGPD a été généré avec succès.\n\n**ID anonymisé du joueur :** `{{anonymizedId}}`\n**Fichiers générés :** {{fileCount}}",
-    "started": "L'export RGPD a été lancé. Vous recevrez le résultat en message privé une fois l'export terminé.",
-    "userNotFound": "Aucun joueur trouvé avec cet identifiant Discord.",
-    "playerNotFound": "Ce joueur n'existe pas dans la base de données.",
-    "error": "Une erreur s'est produite lors de l'export : {{error}}",
+    "title": "Exportação RGPD",
+    "success": "A exportação do RGPD foi gerada com sucesso.\n\n**ID do jogador anónimo:** `{{anonymizedId}}`\n** Ficheiros gerados:** {{fileCount}}",
+    "started": "A exportação do RGPD foi iniciada. Receberá o resultado numa mensagem privada assim que a exportação estiver concluída.",
+    "userNotFound": "Não foram encontrados jogadores com esta ID de Discórdia.",
+    "playerNotFound": "Este jogador não existe na base de dados.",
+    "error": "Ocorreu um erro durante a exportação: {{error}}",
     "fileName": "export_rgpd_{{anonymizedId}}.zip"
   }
 }
