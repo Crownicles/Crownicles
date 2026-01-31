@@ -42,9 +42,9 @@
     "description": "{emote:fightCommand.crossedSwords} Você foi atacado por **{{attackerPseudo}}** ! Descubra o resultado desta luta usando o comando `/historyfight`."
   },
   "gdprExport": {
-    "title": "Export RGPD terminé",
-    "success": "L'export RGPD a été généré avec succès.\n\n**ID anonymisé du joueur :** `{{anonymizedId}}`\n**Fichiers générés :** {{fileCount}}\n\nLe fichier ZIP est disponible en pièce jointe.",
-    "error": "Une erreur s'est produite lors de l'export RGPD : {{error}}",
+    "title": "Exportação do RGPD concluída",
+    "success": "A exportação do RGPD foi gerada com sucesso.\n\n**ID do jogador anonimizado:** `{{anonymizedId}}`\n**Arquivos gerados:** {{fileCount}}\n\nO arquivo ZIP está disponível como anexo.",
+    "error": "Ocorreu um erro durante a exportação do RGPD: {{error}}",
     "fileName": "export_rgpd_{{anonymizedId}}.zip"
   }
 }
