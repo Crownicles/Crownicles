@@ -178,7 +178,7 @@ async function applyOutcome(
 	const {
 		foodType, outcome, properties, wasInvestigating
 	} = eventData;
-	const petEntity = (await PetEntity.findByPk(player.petId))!;
+	const petEntity = (await PetEntity.findByPk(player.petId!))!;
 	const petModel = PetDataController.instance.getById(petEntity.typeId)!;
 	let loveChange = 0;
 
@@ -229,7 +229,7 @@ async function handleInvestigateReaction(player: Player, properties: PetFoodProp
  */
 async function handleSendPetReaction(player: Player): Promise<string> {
 	// Pet existence is guaranteed by canBeExecuted
-	const petEntity = (await PetEntity.findByPk(player.petId))!;
+	const petEntity = (await PetEntity.findByPk(player.petId!))!;
 	const petModel = PetDataController.instance.getById(petEntity.typeId)!;
 	const now = Date.now();
 	const hungrySince = petEntity.hungrySince ? new Date(petEntity.hungrySince).getTime() : now;
@@ -314,7 +314,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 	executeSmallEvent: async (response, player, context): Promise<void> => {
 		const properties = SmallEventDataController.instance.getById(SmallEventConstants.PET_FOOD.SMALL_EVENT_NAME)!.getProperties<PetFoodProperties>();
 		const foodType = getFoodType(player);
-		const petEntity = (await PetEntity.findByPk(player.petId))!;
+		const petEntity = (await PetEntity.findByPk(player.petId!))!;
 		const collector = new ReactionCollectorPetFoodSmallEvent(foodType, petEntity.sex);
 		const endCallback = getEndCallback(player, foodType, properties);
 		const collectorInstance = new ReactionCollectorInstance(

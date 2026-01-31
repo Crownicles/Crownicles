@@ -105,7 +105,7 @@ export class Player extends Model {
 
 	declare nextEvent: number;
 
-	declare petId: number;
+	declare petId: number | null;
 
 	declare lastPetFree: Date;
 

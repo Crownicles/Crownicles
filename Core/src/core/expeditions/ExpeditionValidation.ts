@@ -28,11 +28,11 @@ export type ExpeditionValidationResult = ExpeditionValidationSuccess | Expeditio
 /**
  * Validate expedition prerequisites before resolution
  * @param playerId - The player's database ID
- * @param petId - The pet's database ID (must be provided, validated by caller)
+ * @param petId - The pet's database ID (can be null if no pet)
  */
 export async function validateExpeditionPrerequisites(
 	playerId: number,
-	petId: number
+	petId: number | null
 ): Promise<ExpeditionValidationResult> {
 	const activeExpedition = await PetExpeditions.getActiveExpeditionForPlayer(playerId);
 	if (!activeExpedition) {

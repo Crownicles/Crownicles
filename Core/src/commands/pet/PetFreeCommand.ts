@@ -105,7 +105,7 @@ async function acceptPetFree(player: Player, playerPet: PetEntity, response: Cro
 	LogsDatabase.logPetFree(playerPet).then();
 
 	await playerPet.destroy();
-	player.petId = 0;
+	player.petId = null;
 	player.lastPetFree = new Date();
 	await player.save();
 
