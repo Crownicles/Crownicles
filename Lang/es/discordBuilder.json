@@ -395,11 +395,11 @@
   },
   "exportgdpr": {
     "name": "exportrgpd",
-    "description": "Exporter toutes les données personnelles d'un joueur (RGPD Art. 15).",
+    "description": "Exportar todos los datos personales de un jugador (RGPD Art. 15).",
     "options": {
       "discordid": {
         "name": "discordid",
-        "description": "L'identifiant Discord du joueur."
+        "description": "ID de Discord del jugador."
       }
     }
   }
