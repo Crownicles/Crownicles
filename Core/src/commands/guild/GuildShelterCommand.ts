@@ -22,7 +22,7 @@ export default class GuildShelterCommand {
 		whereAllowed: CommandUtils.WHERE.EVERYWHERE
 	})
 	async execute(response: CrowniclesPacket[], player: Player): Promise<void> {
-		const pets = await GuildPets.getOfGuild(player.guildId);
+		const pets = await GuildPets.getOfGuild(player.guildId!);
 
 		if (pets.length === 0) {
 			response.push(makePacket(CommandGuildShelterNoPetErrorPacket, {}));

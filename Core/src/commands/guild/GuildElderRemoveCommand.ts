@@ -41,7 +41,7 @@ async function acceptGuildElderRemove(player: Player, demotedElder: Player, resp
 		response.push(makePacket(CommandGuildElderRemoveNoElderPacket, {}));
 		return;
 	}
-	guild.elderId = null as unknown as number;
+	guild.elderId = null;
 
 	await Promise.all([
 		demotedElder.save(),

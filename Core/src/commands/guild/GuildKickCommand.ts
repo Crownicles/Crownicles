@@ -49,11 +49,11 @@ async function acceptGuildKick(player: Player, kickedPlayer: Player, response: C
 	if (!guild) {
 		return;
 	}
-	kickedPlayer.guildId = null as unknown as number;
+	kickedPlayer.guildId = null;
 
 	if (guild.elderId === kickedPlayer.id) {
 		crowniclesInstance.logsDatabase.logGuildElderRemove(guild, guild.elderId).then();
-		guild.elderId = null as unknown as number;
+		guild.elderId = null;
 	}
 	await Promise.all([
 		kickedPlayer.save(),

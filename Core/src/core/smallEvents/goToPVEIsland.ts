@@ -33,6 +33,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 			&& Maps.isNearWater(player)
 			&& player.hasEnoughEnergyToFight()
 			&& await PlayerSmallEvents.playerSmallEventCount(player.id, "goToPVEIsland") === 0
+			&& player.guildId !== null
 			&& await LogsReadRequests.getCountPVEIslandThisWeek(player.keycloakId, player.guildId) < PVEConstants.TRAVEL_COST.length;
 	},
 

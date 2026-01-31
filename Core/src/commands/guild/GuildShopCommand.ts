@@ -39,7 +39,7 @@ const giveXpLockManager = new LockManager();
 async function giveGuildXp(response: CrowniclesPacket[], playerId: number, price: number): Promise<boolean> {
 	const player = (await Players.getById(playerId))!;
 
-	const lock = giveXpLockManager.getLock(player.guildId);
+	const lock = giveXpLockManager.getLock(player.guildId!);
 	const release = await lock.acquire();
 	try {
 		const guild = (await Guilds.getById(player.guildId))!;
