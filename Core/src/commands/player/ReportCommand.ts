@@ -358,7 +358,7 @@ async function handleUpgradeHomeReaction(player: Player, city: City, data: React
 		return;
 	}
 
-	home.level = HomeLevel.getNextUpgrade(home.getLevel(), player.level).level;
+	home.level = HomeLevel.getNextUpgrade(home.getLevel()!, player.level)!.level;
 
 	await player.spendMoney({
 		response,
@@ -502,7 +502,7 @@ async function openRoyalMarket(player: Player, context: PacketContext, response:
 	await ShopUtils.createAndSendShopCollector(context, response, {
 		shopCategories,
 		player,
-		logger: crowniclesInstance?.logsDatabase.logMissionShopBuyout,
+		logger: crowniclesInstance?.logsDatabase.logMissionShopBuyout.bind(crowniclesInstance?.logsDatabase),
 		additionalShopData: {
 			currency: ShopCurrency.GEM,
 			gemToMoneyRatio: calculateGemsToMoneyRatio()
@@ -516,14 +516,15 @@ async function sendCityCollector(context: PacketContext, response: CrowniclesPac
 	const isEnchanterHere = await Settings.ENCHANTER_CITY.getValue() === city.id;
 	const enchantmentId = isEnchanterHere ? await Settings.ENCHANTER_ENCHANTMENT_ID.getValue() : null;
 	const isPlayerMage = player.class === ClassConstants.CLASSES_ID.MYSTIC_MAGE;
-	const enchantment = ItemEnchantment.getById(enchantmentId);
+	const enchantment = enchantmentId ? ItemEnchantment.getById(enchantmentId) : null;
 	const home = await Homes.getOfPlayer(player.id);
-	const nextHomeUpgrade = home ? HomeLevel.getNextUpgrade(home.getLevel(), player.level) : null;
+	const homeLevel = home?.getLevel() ?? null;
+	const nextHomeUpgrade = homeLevel ? HomeLevel.getNextUpgrade(homeLevel, player.level) : null;
 
 	const collectorData: ReactionCollectorCityData = {
 		enterCityTimestamp: TravelTime.getTravelDataSimplified(player, currentDate).travelStartTime,
-		mapTypeId: MapLocationDataController.instance.getById(player.getDestinationId()).type,
-		mapLocationId: player.getDestinationId(),
+		mapTypeId: MapLocationDataController.instance.getById(player.getDestinationId()!)!.type,
+		mapLocationId: player.getDestinationId()!,
 		inns: city.inns.map(inn => ({
 			innId: inn.id,
 			meals: city.getTodayInnMeals(inn, new Date()).map(meal => ({
@@ -548,7 +549,7 @@ async function sendCityCollector(context: PacketContext, response: CrowniclesPac
 			current: player.getHealth(playerActiveObjects),
 			max: player.getMaxHealth(playerActiveObjects)
 		},
-		enchanter: isEnchanterHere
+		enchanter: isEnchanterHere && enchantment
 			? {
 				enchantableItems: playerInventory.filter(i => (i.isWeapon() || i.isArmor()) && i.itemId !== 0 && !i.itemEnchantmentId).map(i => ({
 					category: i.itemCategory,
@@ -557,32 +558,32 @@ async function sendCityCollector(context: PacketContext, response: CrowniclesPac
 				})),
 				isInventoryEmpty: playerInventory.filter(i => (i.isWeapon() || i.isArmor()) && i.itemId !== 0).length === 0,
 				hasAtLeastOneEnchantedItem: playerInventory.filter(i => (i.isWeapon() || i.isArmor()) && Boolean(i.itemEnchantmentId)).length > 0,
-				enchantmentId,
+				enchantmentId: enchantmentId!,
 				enchantmentCost: enchantment.getEnchantmentCost(isPlayerMage),
 				enchantmentType: enchantment.kind.type.id,
 				mageReduction: isPlayerMage
 			}
-			: null,
+			: undefined,
 		home: {
-			owned: home && home.cityId === city.id
+			owned: home && home.cityId === city.id && homeLevel
 				? { level: home.level }
-				: null,
+				: undefined,
 			manage: {
-				newPrice: home ? null : city.getHomeLevelPrice(HomeLevel.getInitialLevel(), await Homes.getHomesCount()),
-				upgrade: nextHomeUpgrade && home && home.cityId === city.id
+				newPrice: home ? undefined : city.getHomeLevelPrice(HomeLevel.getInitialLevel(), await Homes.getHomesCount()),
+				upgrade: nextHomeUpgrade && home && home.cityId === city.id && homeLevel
 					? {
 						price: city.getHomeLevelPrice(nextHomeUpgrade, await Homes.getHomesCount()),
-						oldFeatures: home.getLevel().features,
+						oldFeatures: homeLevel.features,
 						newFeatures: nextHomeUpgrade.features
 					}
-					: null,
-				movePrice: home && home.cityId !== city.id ? city.getHomeLevelPrice(home.getLevel(), await Homes.getHomesCount()) : null,
+					: undefined,
+				movePrice: home && home.cityId !== city.id && homeLevel ? city.getHomeLevelPrice(homeLevel, await Homes.getHomesCount()) : undefined,
 				currentMoney: player.money
 			}
 		}
 	};
 
-	if (!collectorData.home.manage.newPrice && !collectorData.home.manage.upgrade && !collectorData.home.manage.movePrice) {
+	if (!collectorData.home.manage?.newPrice && !collectorData.home.manage?.upgrade && !collectorData.home.manage?.movePrice) {
 		delete collectorData.home.manage;
 	}
 
@@ -610,7 +611,7 @@ async function sendCityCollector(context: PacketContext, response: CrowniclesPac
 async function initiateNewPlayerOnTheAdventure(player: Player): Promise<void> {
 	await Maps.startTravel(
 		player,
-		MapLinkDataController.instance.getById(Constants.BEGINNING.START_MAP_LINK),
+		MapLinkDataController.instance.getById(Constants.BEGINNING.START_MAP_LINK)!,
 		getTimeFromXHoursAgo(Constants.REPORT.HOURS_USED_TO_CALCULATE_FIRST_REPORT_REWARD)
 			.valueOf()
 	);
@@ -629,7 +630,7 @@ async function completeMissionsBigEvent(player: Player, response: CrowniclesPack
 			travelTime: player.getCurrentTripDuration()
 		}
 	});
-	const endMapId = MapLinkDataController.instance.getById(player.mapLinkId).endMap;
+	const endMapId = MapLinkDataController.instance.getById(player.mapLinkId)!.endMap;
 	await MissionsController.update(player, response, {
 		missionId: "goToPlace",
 		params: { mapId: endMapId }
@@ -752,11 +753,11 @@ async function doEvent(event: BigEvent, player: Player, time: number, context: P
 		const reaction = collector.getFirstReaction();
 
 		if (!reaction) {
-			await doPossibility(event, possibilities.find(possibility => possibility[0] === "end"), player, time, context, response);
+			await doPossibility(event, possibilities.find(possibility => possibility[0] === "end")!, player, time, context, response);
 		}
 		else {
 			const reactionName = (reaction.reaction.data as ReactionCollectorBigEventPossibilityReaction).name;
-			await doPossibility(event, possibilities.find(possibility => possibility[0] === reactionName), player, time, context, response);
+			await doPossibility(event, possibilities.find(possibility => possibility[0] === reactionName)!, player, time, context, response);
 		}
 	};
 
@@ -794,7 +795,7 @@ async function doRandomBigEvent(
 		time = ReportConstants.TIME_LIMIT;
 	}
 
-	let event;
+	let event: BigEvent;
 
 	// NextEvent is defined?
 	if (player.nextEvent) {
@@ -802,15 +803,16 @@ async function doRandomBigEvent(
 	}
 
 	if (forceSpecificEvent === -1 || !forceSpecificEvent) {
-		const mapId = player.getDestinationId();
-		event = await BigEventDataController.instance.getRandomEvent(mapId, player);
-		if (!event) {
+		const mapId = player.getDestinationId()!;
+		const randomEvent = await BigEventDataController.instance.getRandomEvent(mapId, player);
+		if (!randomEvent) {
 			response.push(makePacket(ErrorPacket, { message: "It seems that there is no event here... It's a bug, please report it to the Crownicles staff." }));
 			return;
 		}
+		event = randomEvent;
 	}
 	else {
-		event = BigEventDataController.instance.getById(forceSpecificEvent);
+		event = BigEventDataController.instance.getById(forceSpecificEvent)!;
 	}
 	await Maps.stopTravel(player);
 	await doEvent(event, player, time, context, response);
@@ -845,10 +847,10 @@ function addDestinationResToResponse(
  * @param response
  */
 async function automaticChooseDestination(forcedLink: MapLink, player: Player, destinationMaps: number[], response: CrowniclesPacket[]): Promise<void> {
-	const newLink = forcedLink && forcedLink.id !== -1 ? forcedLink : MapLinkDataController.instance.getLinkByLocations(player.getDestinationId(), destinationMaps[0]);
-	const endMap = MapLocationDataController.instance.getById(newLink.endMap);
+	const newLink = forcedLink && forcedLink.id !== -1 ? forcedLink : MapLinkDataController.instance.getLinkByLocations(player.getDestinationId()!, destinationMaps[0])!;
+	const endMap = MapLocationDataController.instance.getById(newLink.endMap)!;
 	await Maps.startTravel(player, newLink, Date.now());
-	addDestinationResToResponse(response, newLink, endMap.type, newLink.tripDuration);
+	addDestinationResToResponse(response, newLink, endMap.type, newLink.tripDuration!);
 }
 
 /**
@@ -877,19 +879,19 @@ async function chooseDestination(
 	if ((!Maps.isOnPveIsland(player) || destinationMaps.length === 1)
 		&& (forcedLink || destinationMaps.length === 1 && player.mapLinkId !== Constants.BEGINNING.LAST_MAP_LINK)
 	) {
-		await automaticChooseDestination(forcedLink, player, destinationMaps, response);
+		await automaticChooseDestination(forcedLink!, player, destinationMaps, response);
 		return;
 	}
 
 	const mapReactions: ReactionCollectorChooseDestinationReaction[] = destinationMaps.map(mapId => {
-		const mapLink = MapLinkDataController.instance.getLinkByLocations(player.getDestinationId(), mapId);
-		const mapTypeId = MapLocationDataController.instance.getById(mapId).type;
+		const mapLink = MapLinkDataController.instance.getLinkByLocations(player.getDestinationId()!, mapId)!;
+		const mapTypeId = MapLocationDataController.instance.getById(mapId)!.type;
 		const isPveMap = MapCache.allPveMapLinks.includes(mapLink.id);
 
 		return {
 			mapId,
 			mapTypeId,
-			tripDuration: isPveMap || RandomUtils.crowniclesRandom.bool() ? mapLink.tripDuration : null,
+			tripDuration: isPveMap || RandomUtils.crowniclesRandom.bool() ? mapLink.tripDuration! : undefined,
 			enterInCity: Boolean(CityDataController.instance.getCityByMapLinkId(mapLink.id))
 		};
 	});
@@ -904,12 +906,12 @@ async function chooseDestination(
 		const mapId = firstReaction
 			? (firstReaction.reaction.data as ReactionCollectorChooseDestinationReaction).mapId
 			: (RandomUtils.crowniclesRandom.pick(collector.creationPacket.reactions).data as ReactionCollectorChooseDestinationReaction).mapId;
-		const newLink = MapLinkDataController.instance.getLinkByLocations(player.getDestinationId(), mapId);
-		const endMap = MapLocationDataController.instance.getById(mapId);
+		const newLink = MapLinkDataController.instance.getLinkByLocations(player.getDestinationId()!, mapId)!;
+		const endMap = MapLocationDataController.instance.getById(mapId)!;
 
 		await Maps.startTravel(player, newLink, Date.now());
 
-		addDestinationResToResponse(response, newLink, endMap.type, newLink.tripDuration);
+		addDestinationResToResponse(response, newLink, endMap.type, newLink.tripDuration!);
 
 		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.CHOOSE_DESTINATION);
 	};
@@ -951,14 +953,14 @@ async function sendTravelPath(player: Player, response: CrowniclesPacket[], date
 	const timeData = await TravelTime.getTravelData(player, date);
 	const showEnergy = Maps.isOnPveIsland(player) || Maps.isOnBoat(player);
 	const lastMiniEvent = await PlayerSmallEvents.getLastOfPlayer(player.id);
-	const endMap = player.getDestination();
-	const startMap = player.getPreviousMap();
+	const endMap = player.getDestination()!;
+	const startMap = player.getPreviousMap()!;
 	const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
 	response.push(makePacket(CommandReportTravelSummaryRes, {
-		effect: effectId,
+		effect: effectId ?? undefined,
 		startTime: timeData.travelStartTime,
 		arriveTime: timeData.travelEndTime,
-		effectEndTime: effectId ? timeData.effectEndTime : null,
+		effectEndTime: effectId ? timeData.effectEndTime : undefined,
 		effectDuration: timeData.effectDuration,
 		points: {
 			show: !showEnergy,
@@ -974,7 +976,7 @@ async function sendTravelPath(player: Player, response: CrowniclesPacket[], date
 			type: endMap.type
 		},
 		nextStopTime: timeData.nextSmallEventTime,
-		lastSmallEventId: lastMiniEvent ? lastMiniEvent.eventType : null,
+		lastSmallEventId: lastMiniEvent ? lastMiniEvent.eventType : undefined,
 		startMap: {
 			id: startMap.id,
 			type: startMap.type
@@ -1041,13 +1043,15 @@ async function handlePveFightRewards(
 
 	if (player.guildId) {
 		const guild = await Guilds.getById(player.guildId);
-		await guild.addScore(rewards.guildScore, endFightResponse, NumberChangeReason.PVE_FIGHT);
-		await guild.addExperience(rewards.guildXp, endFightResponse, NumberChangeReason.PVE_FIGHT);
-		await guild.save();
-		if (guild.level < GuildConstants.MAX_LEVEL) {
-			guildXp = rewards.guildXp;
+		if (guild) {
+			await guild.addScore({ amount: rewards.guildScore, response: endFightResponse, reason: NumberChangeReason.PVE_FIGHT });
+			await guild.addExperience({ amount: rewards.guildXp, response: endFightResponse, reason: NumberChangeReason.PVE_FIGHT });
+			await guild.save();
+				if (guild.level < GuildConstants.MAX_LEVEL) {
+				guildXp = rewards.guildXp;
+			}
+			guildPoints = rewards.guildScore;
 		}
-		guildPoints = rewards.guildScore;
 	}
 	return {
 		guildXp, guildPoints
@@ -1066,14 +1070,14 @@ async function doPVEBoss(
 	context: PacketContext
 ): Promise<void> {
 	const seed = player.id + millisecondsToSeconds(player.startTravelDate.valueOf());
-	const mapId = player.getDestination().id;
+	const mapId = player.getDestination()!.id;
 	const monsterObj = MonsterDataController.instance.getRandomMonster(mapId, seed);
 	const randomLevel = player.level - PVEConstants.MONSTER_LEVEL_RANDOM_RANGE / 2 + seed % PVEConstants.MONSTER_LEVEL_RANDOM_RANGE;
 
 	/**
 	 * Handle rewards after the PVE fight completes
 	 */
-	const fightCallback = async (fight: FightController, endFightResponse: CrowniclesPacket[]): Promise<void> => {
+	const fightCallback = async (fight: FightController | null, endFightResponse: CrowniclesPacket[]): Promise<void> => {
 		const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
 		if (fight) {
 			const rewards = monsterObj.getRewards(randomLevel);
@@ -1160,8 +1164,8 @@ async function doPVEBoss(
 			return;
 		}
 
-		const playerFighter = new RealPlayerFighter(player, ClassDataController.instance.getById(player.class));
-		await playerFighter.loadStats("MonsterFighter");
+		const playerFighter = new RealPlayerFighter(player, ClassDataController.instance.getById(player.class)!);
+		await playerFighter.loadStats();
 		playerFighter.setBaseEnergy(playerFighter.getMaxEnergy() - player.fightPointsLost);
 
 		const fight = new FightController(
@@ -1206,22 +1210,22 @@ async function getRandomSmallEvent(response: CrowniclesPacket[], player: Player,
 		const file = await import(`../../core/smallEvents/${key}.js`);
 		if (!file.smallEventFuncs?.canBeExecuted) {
 			response.push(makePacket(ErrorPacket, { message: `${key} doesn't contain a canBeExecuted function` }));
-			return null;
+			return undefined!;
 		}
 		if (await (file.smallEventFuncs as SmallEventFuncs).canBeExecuted(player, playerActiveObjects)) {
 			updatedKeys.push(key);
-			totalSmallEventsRarity += SmallEventDataController.instance.getById(key).rarity;
+			totalSmallEventsRarity += SmallEventDataController.instance.getById(key)!.rarity;
 		}
 	}
 	const randomNb = RandomUtils.randInt(1, totalSmallEventsRarity + 1);
 	let sum = 0;
 	for (const updatedKey of updatedKeys) {
-		sum += SmallEventDataController.instance.getById(updatedKey).rarity;
+		sum += SmallEventDataController.instance.getById(updatedKey)!.rarity;
 		if (sum >= randomNb) {
 			return updatedKey;
 		}
 	}
-	return null;
+	return undefined!;
 }
 
 /**
@@ -1231,7 +1235,7 @@ async function getRandomSmallEvent(response: CrowniclesPacket[], player: Player,
  * @param context
  * @param forced
  */
-async function executeSmallEvent(response: CrowniclesPacket[], player: Player, context: PacketContext, forced: string): Promise<void> {
+async function executeSmallEvent(response: CrowniclesPacket[], player: Player, context: PacketContext, forced: string | null): Promise<void> {
 	const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
 
 	// Pick a random event

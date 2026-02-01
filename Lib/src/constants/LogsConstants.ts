@@ -58,7 +58,9 @@ export enum NumberChangeReason {
 	INN_MEAL,
 	INN_ROOM,
 	ENCHANT_ITEM,
-	BUY_HOME
+	BUY_HOME,
+	UPGRADE_HOME,
+	MOVE_HOME
 }
 
 export enum ShopItemType {

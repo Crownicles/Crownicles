@@ -40,23 +40,25 @@ export class InventorySlot extends Model {
 
 	declare itemLevel: number;
 
-	declare itemEnchantmentId?: string;
+	declare itemEnchantmentId: string | null;
+
+	declare remainingPotionUsages: number;
 
 	declare updatedAt: Date;
 
 	declare createdAt: Date;
 
 
-	getItem(): GenericItem {
+	getItem(): GenericItem | null {
 		switch (this.itemCategory) {
 			case ItemCategory.WEAPON:
-				return WeaponDataController.instance.getById(this.itemId);
+				return WeaponDataController.instance.getById(this.itemId) ?? null;
 			case ItemCategory.ARMOR:
-				return ArmorDataController.instance.getById(this.itemId);
+				return ArmorDataController.instance.getById(this.itemId) ?? null;
 			case ItemCategory.POTION:
-				return PotionDataController.instance.getById(this.itemId);
+				return PotionDataController.instance.getById(this.itemId) ?? null;
 			case ItemCategory.OBJECT:
-				return ObjectItemDataController.instance.getById(this.itemId);
+				return ObjectItemDataController.instance.getById(this.itemId) ?? null;
 			default:
 				return null;
 		}
@@ -83,7 +85,7 @@ export class InventorySlot extends Model {
 	}
 
 	itemWithDetails(player: Player): ItemWithDetails {
-		return toItemWithDetails(player, this.getItem(), this.itemLevel, this.itemEnchantmentId);
+		return toItemWithDetails(player, this.getItem()!, this.itemLevel, this.itemEnchantmentId);
 	}
 }
 
@@ -137,7 +139,7 @@ export class InventorySlots {
 	 * Return the main weapon slot of the player or null if the inventory of the player has not been initialized
 	 * @param playerId
 	 */
-	static async getMainWeaponSlot(playerId: number): Promise<InventorySlot> | null {
+	static async getMainWeaponSlot(playerId: number): Promise<InventorySlot | null> {
 		return await InventorySlot.findOne({
 			where: {
 				playerId,
@@ -151,7 +153,7 @@ export class InventorySlots {
 	 * Return the main armor slot of the player or null if the inventory of the player has not been initialized
 	 * @param playerId
 	 */
-	static async getMainArmorSlot(playerId: number): Promise<InventorySlot> | null {
+	static async getMainArmorSlot(playerId: number): Promise<InventorySlot | null> {
 		return await InventorySlot.findOne({
 			where: {
 				playerId,
@@ -165,7 +167,7 @@ export class InventorySlots {
 	 * Return the main potion slot of the player or null if the inventory of the player has not been initialized
 	 * @param playerId
 	 */
-	static async getMainPotionSlot(playerId: number): Promise<InventorySlot> | null {
+	static async getMainPotionSlot(playerId: number): Promise<InventorySlot | null> {
 		return await InventorySlot.findOne({
 			where: {
 				playerId,
@@ -179,7 +181,7 @@ export class InventorySlots {
 	 * Return the main object slot of the player or null if the inventory of the player has not been initialized
 	 * @param playerId
 	 */
-	static async getMainObjectSlot(playerId: number): Promise<InventorySlot> | null {
+	static async getMainObjectSlot(playerId: number): Promise<InventorySlot | null> {
 		return await InventorySlot.findOne({
 			where: {
 				playerId,
@@ -195,27 +197,27 @@ export class InventorySlots {
 	static async getMainSlotsItems(playerId: number): Promise<PlayerActiveObjects> {
 		const slots = await this.getOfPlayer(playerId);
 
-		const weaponSlot = slots.find(s => s.itemCategory === ItemCategory.WEAPON && s.isEquipped());
-		const armorSlot = slots.find(s => s.itemCategory === ItemCategory.ARMOR && s.isEquipped());
-		const potionSlot = slots.find(s => s.itemCategory === ItemCategory.POTION && s.isEquipped());
-		const objectSlot = slots.find(s => s.itemCategory === ItemCategory.OBJECT && s.isEquipped());
+		const weaponSlot = slots.find(s => s.itemCategory === ItemCategory.WEAPON && s.isEquipped())!;
+		const armorSlot = slots.find(s => s.itemCategory === ItemCategory.ARMOR && s.isEquipped())!;
+		const potionSlot = slots.find(s => s.itemCategory === ItemCategory.POTION && s.isEquipped())!;
+		const objectSlot = slots.find(s => s.itemCategory === ItemCategory.OBJECT && s.isEquipped())!;
 
 		return {
 			weapon: {
-				item: <Weapon>weaponSlot.getItem(),
+				item: weaponSlot.getItem() as Weapon,
 				itemLevel: weaponSlot.itemLevel,
 				itemEnchantmentId: weaponSlot.itemEnchantmentId
 			},
 			armor: {
-				item: <Armor>armorSlot.getItem(),
+				item: armorSlot.getItem() as Armor,
 				itemLevel: armorSlot.itemLevel,
 				itemEnchantmentId: armorSlot.itemEnchantmentId
 			},
 			potion: {
-				item: <Potion>potionSlot.getItem()
+				item: potionSlot.getItem() as Potion
 			},
 			object: {
-				item: <ObjectItem>objectSlot.getItem()
+				item: objectSlot.getItem() as ObjectItem
 			}
 		};
 	}
@@ -325,36 +327,28 @@ export class InventorySlots {
 	}
 
 	static slotsToActiveObjects(slots: InventorySlot[]): PlayerActiveObjects {
-		const weaponSlot = slots.find(s => s.itemCategory === ItemCategory.WEAPON && s.isEquipped());
-		const armorSlot = slots.find(s => s.itemCategory === ItemCategory.ARMOR && s.isEquipped());
-		const potionSlot = slots.find(s => s.itemCategory === ItemCategory.POTION && s.isEquipped());
-		const objectSlot = slots.find(s => s.itemCategory === ItemCategory.OBJECT && s.isEquipped());
+		const weaponSlot = slots.find(s => s.itemCategory === ItemCategory.WEAPON && s.isEquipped())!;
+		const armorSlot = slots.find(s => s.itemCategory === ItemCategory.ARMOR && s.isEquipped())!;
+		const potionSlot = slots.find(s => s.itemCategory === ItemCategory.POTION && s.isEquipped())!;
+		const objectSlot = slots.find(s => s.itemCategory === ItemCategory.OBJECT && s.isEquipped())!;
 
 		return {
-			weapon: weaponSlot
-				? {
-					item: <Weapon>weaponSlot.getItem(),
-					itemLevel: weaponSlot.itemLevel,
-					itemEnchantmentId: weaponSlot.itemEnchantmentId
-				}
-				: null,
-			armor: armorSlot
-				? {
-					item: <Armor>armorSlot.getItem(),
-					itemLevel: armorSlot.itemLevel,
-					itemEnchantmentId: armorSlot.itemEnchantmentId
-				}
-				: null,
-			potion: potionSlot
-				? {
-					item: <Potion>potionSlot.getItem()
-				}
-				: null,
-			object: objectSlot
-				? {
-					item: <ObjectItem>objectSlot.getItem()
-				}
-				: null
+			weapon: {
+				item: weaponSlot.getItem() as Weapon,
+				itemLevel: weaponSlot.itemLevel,
+				itemEnchantmentId: weaponSlot.itemEnchantmentId
+			},
+			armor: {
+				item: armorSlot.getItem() as Armor,
+				itemLevel: armorSlot.itemLevel,
+				itemEnchantmentId: armorSlot.itemEnchantmentId
+			},
+			potion: {
+				item: potionSlot.getItem() as Potion
+			},
+			object: {
+				item: objectSlot.getItem() as ObjectItem
+			}
 		};
 	}
 

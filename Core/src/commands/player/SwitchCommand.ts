@@ -48,10 +48,10 @@ async function switchItems(
 
 	response.push(makePacket(CommandSwitchSuccess, {
 		itemBackedUp: toBackItemInstance instanceof MainItem
-			? toBackItemInstance.getDisplayPacket(toBackItem.itemLevel, toBackItem.itemEnchantmentId, player.getMaxStatsValue())
+			? toBackItemInstance.getDisplayPacket(toBackItem.itemLevel, toBackItem.itemEnchantmentId ?? undefined, player.getMaxStatsValue())
 			: (toBackItemInstance as SupportItem).getDisplayPacket(player.getMaxStatsValue()),
 		itemEquipped: toEquipItemInstance instanceof MainItem
-			? toEquipItemInstance.getDisplayPacket(toEquipItem.itemLevel, toEquipItem.itemEnchantmentId, player.getMaxStatsValue())
+			? toEquipItemInstance.getDisplayPacket(toEquipItem.itemLevel, toEquipItem.itemEnchantmentId ?? undefined, player.getMaxStatsValue())
 			: (toEquipItemInstance as SupportItem).getDisplayPacket(player.getMaxStatsValue())
 	}));
 }
@@ -102,7 +102,7 @@ export default class SwitchCommand {
 		const collector = new ReactionCollectorSwitchItem(toSwitchItems.map((item: InventorySlot) => {
 			const itemInstance = item.getItem();
 			if (itemInstance instanceof MainItem) {
-				return itemInstance.getDisplayPacket(item.itemLevel, item.itemEnchantmentId, player.getMaxStatsValue());
+				return itemInstance.getDisplayPacket(item.itemLevel, item.itemEnchantmentId ?? undefined, player.getMaxStatsValue());
 			}
 			else if (itemInstance instanceof SupportItem) {
 				return itemInstance.getDisplayPacket(player.getMaxStatsValue());

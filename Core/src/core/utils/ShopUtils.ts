@@ -26,7 +26,7 @@ export type ShopInformations = {
 	shopCategories: ShopCategory[];
 	player: Player;
 	additionalShopData?: additionalShopData & { currency?: ShopCurrency };
-	logger: (keycloakId: string, shopItemName: ShopItemType, amount?: number) => Promise<void>;
+	logger?: (keycloakId: string, shopItemName: ShopItemType, amount?: number) => Promise<void>;
 };
 
 export abstract class ShopUtils {
@@ -64,7 +64,7 @@ export abstract class ShopUtils {
 				// Get fresh PlayerMissionsInfo after buyCallback in case missions updated gem count
 				const currentPlayerInfo = additionalShopData.currency === ShopCurrency.MONEY ? player : await PlayerMissionsInfos.getOfPlayer(player.id);
 				await this.manageCurrencySpending(currentPlayerInfo, reactionInstance, response);
-				logger(player.keycloakId, reactionInstance.shopItemId, reactionInstance.amount).then();
+				logger?.(player.keycloakId, reactionInstance.shopItemId, reactionInstance.amount).then();
 			}
 		};
 

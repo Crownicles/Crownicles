@@ -23,6 +23,7 @@ import {
 import { Constants } from "../../../../Lib/src/constants/Constants";
 import { LogsDatabase } from "../database/logs/LogsDatabase";
 import { ErrorPacket } from "../../../../Lib/src/packets/commands/ErrorPacket";
+import { InventorySlots } from "../database/game/models/InventorySlot";
 import { MissionsController } from "../missions/MissionsController";
 import { giveFoodToGuild } from "../utils/FoodUtils";
 import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
@@ -85,6 +86,7 @@ function pickRandomInteraction(possibleIssues: PetInteraction[]): string {
  * @param petEntity
  */
 async function managePickedInteraction(packet: SmallEventPetPacket, response: CrowniclesPacket[], context: PacketContext, player: Player, petEntity: PetEntity): Promise<void> {
+	const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
 	switch (packet.interactionName) {
 		case PetConstants.PET_INTERACTIONS_NAMES.WIN_ENERGY:
 			if (player.fightPointsLost === 0) {
@@ -92,7 +94,7 @@ async function managePickedInteraction(packet: SmallEventPetPacket, response: Cr
 				break;
 			}
 			packet.amount = RandomUtils.rangedInt(SmallEventConstants.PET.ENERGY);
-			player.addEnergy(packet.amount, NumberChangeReason.SMALL_EVENT);
+			player.addEnergy(packet.amount, NumberChangeReason.SMALL_EVENT, playerActiveObjects);
 			break;
 
 		case PetConstants.PET_INTERACTIONS_NAMES.WIN_FOOD:

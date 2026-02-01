@@ -41,7 +41,7 @@ export default class DrinkCommand {
 			return;
 		}
 
-		const collector = new ReactionCollectorDrink(potions.map(i => toItemWithDetails(player, i.getItem(), i.itemLevel, i.itemEnchantmentId)));
+		const collector = new ReactionCollectorDrink(potions.map(i => toItemWithDetails(player, i.getItem()!, i.itemLevel, i.itemEnchantmentId)));
 
 		const endCallback: EndCallback = async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
 			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.DRINK);
@@ -53,7 +53,7 @@ export default class DrinkCommand {
 			}
 
 			const potionDetails = (reaction.reaction.data as ReactionCollectorDrinkReaction).potion;
-			const potionSlot = potions.find(p => p.itemId === potionDetails.id && p.itemCategory === potionDetails.itemCategory);
+			const potionSlot = potions.find(p => p.itemId === potionDetails.id && p.itemCategory === potionDetails.itemCategory)!;
 			const potion = potionSlot.getItem() as Potion;
 			await consumePotion(response, potion, player, await InventorySlots.getPlayerActiveObjects(player.id));
 			await player.drinkPotion(potionSlot.slot);

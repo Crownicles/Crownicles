@@ -257,7 +257,7 @@ export default class ShopCommand {
 		_packet: CommandShopPacketReq,
 		context: PacketContext
 	): Promise<void> {
-		const potion = PotionDataController.instance.getById(await Settings.SHOP_POTION.getValue());
+		const potion = PotionDataController.instance.getById(await Settings.SHOP_POTION.getValue())!;
 
 		const shopCategories: ShopCategory[] = [
 			{

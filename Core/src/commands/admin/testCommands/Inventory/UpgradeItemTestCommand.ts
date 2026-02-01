@@ -20,10 +20,10 @@ const upgradeItemTestCommand: ExecuteTestCommandLike = async (player, args) => {
 	let itemSlot: InventorySlot;
 
 	if (args[0] === "weapon") {
-		itemSlot = await InventorySlots.getMainWeaponSlot(player.id);
+		itemSlot = (await InventorySlots.getMainWeaponSlot(player.id))!;
 	}
 	else if (args[0] === "armor") {
-		itemSlot = await InventorySlots.getMainArmorSlot(player.id);
+		itemSlot = (await InventorySlots.getMainArmorSlot(player.id))!;
 	}
 	else {
 		throw Error("Catégorie inconnue. Elle doit être 'weapon' ou 'armor'");

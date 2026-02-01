@@ -325,7 +325,7 @@ function buildPlayerGloryInfo(player: Player, oldGlory: number): FightRewardPack
 async function fightEndCallback(fight: FightController, response: CrowniclesPacket[]): Promise<void> {
 	notifyDefenderOfAttack(fight);
 
-	const fightLogId = await crowniclesInstance?.logsDatabase.logFight(fight);
+	const fightLogId = await crowniclesInstance?.logsDatabase.logFight(fight) ?? null;
 	const gameResults = getGameResultFromFight(fight);
 
 	const fightInitiator = fight.fightInitiator;

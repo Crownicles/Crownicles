@@ -98,7 +98,7 @@ export async function checkDrinkPotionMissions(response: CrowniclesPacket[], pla
 
 export function toItemWithDetails(player: Player, item: GenericItem, itemLevel: number, itemEnchantmentId: string | null): ItemWithDetails {
 	return item instanceof MainItem
-		? (item as MainItem).getDisplayPacket(itemLevel, itemEnchantmentId, player.getMaxStatsValue())
+		? (item as MainItem).getDisplayPacket(itemLevel, itemEnchantmentId ?? undefined, player.getMaxStatsValue())
 		: (item as SupportItem).getDisplayPacket(player.getMaxStatsValue());
 }
 
@@ -265,9 +265,9 @@ function getMoreThan2ItemsSwitchingEndCallback(whoIsConcerned: WhoIsConcerned, t
 
 		if (reaction?.reaction.type === ReactionCollectorItemChoiceItemReaction.name) {
 			const itemReaction = reaction.reaction.data as ReactionCollectorItemChoiceItemReaction;
-			const invSlot = tradableItems.find(i => i.slot === itemReaction.slot);
+			const invSlot = tradableItems.find(i => i.slot === itemReaction.slot)!;
 			concernedItems.itemToReplace = invSlot;
-			concernedItems.itemToReplaceInstance = invSlot.getItem();
+			concernedItems.itemToReplaceInstance = invSlot.getItem() ?? undefined;
 		}
 		else {
 			sellKeepOptions.keepOriginal = true;
@@ -325,7 +325,7 @@ function manageMoreThan2ItemsSwitching(
 	},
 	tradableItems.map(i => ({
 		slot: i.slot,
-		itemWithDetails: toItemWithDetails(whoIsConcerned.player, i.getItem(), i.itemLevel, i.itemEnchantmentId)
+		itemWithDetails: toItemWithDetails(whoIsConcerned.player, i.getItem()!, i.itemLevel, i.itemEnchantmentId)
 	})),
 	canDrinkThisPotion);
 
@@ -468,7 +468,7 @@ export async function giveItemToPlayer(
 		return;
 	}
 
-	const itemToReplaceInstance = itemToReplace.getItem();
+	const itemToReplaceInstance = itemToReplace.getItem()!;
 
 	response.push(new ReactionCollectorInstance(
 		new ReactionCollectorItemAccept(
@@ -560,7 +560,7 @@ export function generateRandomItem(
 		return (controller as PotionDataController | ObjectItemDataController).randomItem(subType, rarity);
 	}
 	const itemsIds = controller.getAllIdsForRarity(rarity);
-	return controller.getById(itemsIds[RandomUtils.crowniclesRandom.integer(0, itemsIds.length - 1)]);
+	return controller.getById(itemsIds[RandomUtils.crowniclesRandom.integer(0, itemsIds.length - 1)])!;
 }
 
 
@@ -576,7 +576,7 @@ export async function giveRandomItem(context: PacketContext, response: Crownicle
 
 type TemporarySlotAndItemType = {
 	slot: InventorySlot;
-	item: GenericItem;
+	item: GenericItem | null;
 };
 
 
@@ -593,7 +593,7 @@ export function sortPlayerItemList(items: InventorySlot[]): InventorySlot[] {
 			(a: TemporarySlotAndItemType, b: TemporarySlotAndItemType) =>
 				(a.slot.itemCategory !== b.slot.itemCategory
 					? a.slot.itemCategory - b.slot.itemCategory
-					: getItemValue(b.item) - getItemValue(a.item))
+					: getItemValue(b.item!) - getItemValue(a.item!))
 		)
 		.map(e => e.slot);
 }
@@ -605,14 +605,14 @@ export function sortPlayerItemList(items: InventorySlot[]): InventorySlot[] {
  * @param rarity
  */
 export function haveRarityOrMore(slots: InventorySlot[], rarity: ItemRarity): boolean {
-	return !slots.every(slot => slot.getItem().rarity < rarity);
+	return !slots.every(slot => slot.getItem()!.rarity < rarity);
 }
 
 /**
  * Get a portion of the model corresponding to the category number
  * @param category
  */
-function getCategoryDataByName(category: ItemCategory): ItemDataController<GenericItem> {
+function getCategoryDataByName(category: ItemCategory): ItemDataController<GenericItem> | null {
 	switch (category) {
 		case ItemCategory.WEAPON:
 			return WeaponDataController.instance;
@@ -632,12 +632,12 @@ function getCategoryDataByName(category: ItemCategory): ItemDataController<Gener
  * @param itemId
  * @param category
  */
-export function getItemByIdAndCategory(itemId: number, category: ItemCategory): GenericItem {
+export function getItemByIdAndCategory(itemId: number, category: ItemCategory): GenericItem | null {
 	const categoryDataController = getCategoryDataByName(category);
 	if (!categoryDataController) {
 		return null;
 	}
-	return itemId <= categoryDataController.getMaxId() && itemId > 0 ? categoryDataController.getById(itemId) : null;
+	return itemId <= categoryDataController.getMaxId() && itemId > 0 ? categoryDataController.getById(itemId) ?? null : null;
 }
 
 /**

@@ -119,8 +119,8 @@ function buildStatsData(player: Player, playerActiveObjects: PlayerActiveObjects
 		defense: player.getCumulativeDefense(playerActiveObjects),
 		speed: player.getCumulativeSpeed(playerActiveObjects),
 		energy: {
-			value: player.getCumulativeEnergy(),
-			max: player.getMaxCumulativeEnergy()
+			value: player.getCumulativeEnergy(playerActiveObjects),
+			max: player.getMaxCumulativeEnergy(playerActiveObjects)
 		},
 		breath: {
 			base: player.getBaseBreath(),

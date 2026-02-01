@@ -26,31 +26,18 @@ import { FightConstants } from "../../../../../Lib/src/constants/FightConstants"
 export class RealPlayerFighter extends PlayerFighter {
 	public consumePotionProbability = FightConstants.POTION_NO_DRINK_PROBABILITY.PLAYER;
 
-	private pveMembers: {
-		attack: number; speed: number;
-	}[];
-
-	private petAssisted: boolean;
-
 	public constructor(player: Player, playerClass: Class) {
 		super(player, playerClass);
-		this.petAssisted = false;
-	}
-
-	/**
-	 * Mark that the pet has assisted during the fight
-	 */
-	public markPetAssisted(): void {
-		this.petAssisted = true;
 	}
 
 	/**
 	 * Function called when the fight starts
 	 * @param fightView The fight view
 	 * @param startStatus The first status of a player
+	 * @param response The response packets
 	 */
-	async startFight(fightView: FightView, startStatus: FighterStatus): Promise<void> {
-		await super.startFight(fightView, startStatus);
+	async startFight(fightView: FightView, startStatus: FighterStatus, response: CrowniclesPacket[]): Promise<void> {
+		await super.startFight(fightView, startStatus, response);
 		this.block();
 	}
 
@@ -63,7 +50,7 @@ export class RealPlayerFighter extends PlayerFighter {
 	 */
 	async endFight(winner: boolean, response: CrowniclesPacket[], bug: boolean, turnCount: number): Promise<void> {
 		await this.player.reload();
-		this.player.setEnergyLost(this.stats.maxEnergy - this.stats.energy, NumberChangeReason.FIGHT, await InventorySlots.getPlayerActiveObjects(this.player.id));
+		this.player.setEnergyLost(this.stats.maxEnergy! - this.stats.energy!, NumberChangeReason.FIGHT, await InventorySlots.getPlayerActiveObjects(this.player.id));
 		await this.player.save();
 
 		if (bug) {
@@ -72,7 +59,7 @@ export class RealPlayerFighter extends PlayerFighter {
 
 		await this.manageMissionsOf(response);
 
-		if (this.petAssisted) {
+		if (this.hasPetAssisted()) {
 			await MissionsController.update(this.player, response, {
 				missionId: "petAssistedFight"
 			});
@@ -82,7 +69,7 @@ export class RealPlayerFighter extends PlayerFighter {
 			await MissionsController.update(this.player, response, {
 				missionId: "fightHealthPercent",
 				params: {
-					remainingPercent: this.stats.energy / this.stats.maxEnergy
+					remainingPercent: this.stats.energy! / this.stats.maxEnergy!
 				}
 			});
 			await MissionsController.update(this.player, response, {
@@ -135,7 +122,7 @@ export class RealPlayerFighter extends PlayerFighter {
 			}
 
 			if (this.pveMembers.length !== 0 && RandomUtils.crowniclesRandom.realZeroToOneInclusive() < PVEConstants.GUILD_ATTACK_PROBABILITY) {
-				actions.set("guildAttack", FightActionDataController.instance.getById("guildAttack"));
+				actions.set("guildAttack", FightActionDataController.instance.getById("guildAttack")!);
 			}
 		}
 		fightView.displayFightActionMenu(response, this, actions);
@@ -148,57 +135,5 @@ export class RealPlayerFighter extends PlayerFighter {
 		attack: number; speed: number;
 	}[] {
 		return this.pveMembers;
-	}
-
-	/**
-	 * Check the fight action history of a fighter
-	 * @param response
-	 */
-	private async checkFightActionHistory(response: CrowniclesPacket[]): Promise<void> {
-		const playerFightActionsHistory: Map<string, number> = this.getFightActionCount();
-
-		// Iterate on each action in the history
-		for (const [action, count] of playerFightActionsHistory) {
-			await MissionsController.update(this.player, response, {
-				missionId: "fightAttacks",
-				count,
-				params: { attackType: action }
-			});
-		}
-	}
-
-	/**
-	 * Manage the mission of a fighter
-	 * @param response
-	 */
-	private async manageMissionsOf(response: CrowniclesPacket[]): Promise<void> {
-		await this.checkFightActionHistory(response);
-
-		await MissionsController.update(this.player, response, { missionId: "anyFight" });
-
-		const slots = await MissionSlots.getOfPlayer(this.player.id);
-		for (const slot of slots) {
-			if (slot.missionId === "fightStreak") {
-				const lastDay = slot.saveBlob ? slot.saveBlob.readInt32LE() : 0;
-				const currDay = getDayNumber();
-				if (lastDay === currDay - 1) {
-					await MissionsController.update(this.player, response, { missionId: "fightStreak" });
-				}
-				else if (lastDay !== currDay) {
-					await MissionsController.update(this.player, response, {
-						missionId: "fightStreak",
-						count: 1,
-						set: true
-					});
-				}
-			}
-		}
-	}
-
-	/**
-	 * Check if the pet has assisted during the fight
-	 */
-	public hasPetAssisted(): boolean {
-		return this.petAssisted;
 	}
 }

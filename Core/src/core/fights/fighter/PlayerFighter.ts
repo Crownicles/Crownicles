@@ -28,11 +28,11 @@ import { PetUtils } from "../../utils/PetUtils";
  * Class representing a human-controlled player in a fight
  */
 export class PlayerFighter extends PlayerBaseFighter {
-	private pveMembers!: {
+	protected pveMembers!: {
 		attack: number; speed: number;
 	}[];
 
-	private petAssisted: boolean;
+	protected petAssisted: boolean;
 
 	public constructor(player: Player, playerClass: Class) {
 		super(player, FightActionDataController.instance.getListById(playerClass.fightActionsIds));
@@ -75,7 +75,8 @@ export class PlayerFighter extends PlayerBaseFighter {
 	 */
 	async endFight(winner: boolean, response: CrowniclesPacket[], bug: boolean, turnCount: number): Promise<void> {
 		await this.player.reload();
-		this.player.setEnergyLost(this.stats.maxEnergy! - this.stats.energy!, NumberChangeReason.FIGHT);
+		const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(this.player.id);
+		this.player.setEnergyLost(this.stats.maxEnergy! - this.stats.energy!, NumberChangeReason.FIGHT, playerActiveObjects);
 		await this.player.save();
 
 		if (bug) {
@@ -122,8 +123,8 @@ export class PlayerFighter extends PlayerBaseFighter {
 	 */
 	public async loadStats(): Promise<void> {
 		const playerActiveObjects: PlayerActiveObjects = await InventorySlots.getPlayerActiveObjects(this.player.id);
-		this.stats.energy = this.player.getCumulativeEnergy();
-		this.stats.maxEnergy = this.player.getMaxCumulativeEnergy();
+		this.stats.energy = this.player.getCumulativeEnergy(playerActiveObjects);
+		this.stats.maxEnergy = this.player.getMaxCumulativeEnergy(playerActiveObjects);
 		this.stats.attack = this.player.getCumulativeAttack(playerActiveObjects);
 		this.stats.defense = this.player.getCumulativeDefense(playerActiveObjects);
 		this.stats.speed = this.player.getCumulativeSpeed(playerActiveObjects);
@@ -191,7 +192,7 @@ export class PlayerFighter extends PlayerBaseFighter {
 	 * Check the fight action history of a fighter
 	 * @param response
 	 */
-	private async checkFightActionHistory(response: CrowniclesPacket[]): Promise<void> {
+	protected async checkFightActionHistory(response: CrowniclesPacket[]): Promise<void> {
 		const playerFightActionsHistory: Map<string, number> = this.getFightActionCount();
 
 		// Iterate on each action in the history
@@ -208,7 +209,7 @@ export class PlayerFighter extends PlayerBaseFighter {
 	 * Manage the mission of a fighter
 	 * @param response
 	 */
-	private async manageMissionsOf(response: CrowniclesPacket[]): Promise<void> {
+	protected async manageMissionsOf(response: CrowniclesPacket[]): Promise<void> {
 		await this.checkFightActionHistory(response);
 
 		await MissionsController.update(this.player, response, { missionId: "anyFight" });

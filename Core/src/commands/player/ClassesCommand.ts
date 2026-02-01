@@ -13,6 +13,7 @@ import {
 } from "../../../../Lib/src/packets/commands/CommandClassesPacket";
 import { ClassDataController } from "../../data/Class";
 import { LogsReadRequests } from "../../core/database/logs/LogsReadRequests";
+import { InventorySlots } from "../../core/database/game/models/InventorySlot";
 import { ReactionCollectorInstance } from "../../core/utils/ReactionsCollector";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
 import {
@@ -51,6 +52,7 @@ function getEndCallback(player: Player) {
 		}
 
 		player.class = selectedClass;
+		const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
 		await player.addHealthSimple({
 			amount: Math.ceil(
 				player.getHealthValue() / oldClass.getMaxHealthValue(level) * newClass.getMaxHealthValue(level)
@@ -64,7 +66,7 @@ function getEndCallback(player: Player) {
 		});
 		player.setEnergyLost(Math.ceil(
 			player.fightPointsLost / oldClass.getMaxCumulativeEnergyValue(level) * newClass.getMaxCumulativeEnergyValue(level)
-		), NumberChangeReason.CLASS);
+		), NumberChangeReason.CLASS, playerActiveObjects);
 		await MissionsController.update(player, response, { missionId: "chooseClass" });
 		await MissionsController.update(player, response, {
 			missionId: "chooseClassTier",

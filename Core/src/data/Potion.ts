@@ -10,6 +10,8 @@ import { SupportItemDetails } from "../../../Lib/src/types/SupportItemDetails";
 export class Potion extends SupportItem {
 	categoryName = "potions";
 
+	public readonly usages!: number;
+
 	public getCategory(): ItemCategory {
 		return ItemCategory.POTION;
 	}

@@ -82,9 +82,10 @@ async function activateDailyItem(player: Player, activeObject: ObjectItem, inven
 		itemNature: activeObject.nature
 	});
 	response.push(packet);
+	const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
 	switch (packet.itemNature) {
 		case ItemNature.ENERGY:
-			player.addEnergy(activeObject.power, NumberChangeReason.DAILY);
+			player.addEnergy(activeObject.power, NumberChangeReason.DAILY, playerActiveObjects);
 			break;
 		case ItemNature.HEALTH:
 			await player.addHealthSimple({
@@ -154,7 +155,7 @@ export default class DailyBonusCommand {
 			return;
 		}
 
-		const collector = new ReactionCollectorDailyBonus(usableObjects.map(i => toItemWithDetails(i.getItem()!)));
+		const collector = new ReactionCollectorDailyBonus(usableObjects.map(i => toItemWithDetails(player, i.getItem()!, i.itemLevel, i.itemEnchantmentId)));
 
 		const endCallback: EndCallback = async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
 			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.DAILY_BONUS);
@@ -166,7 +167,7 @@ export default class DailyBonusCommand {
 			}
 
 			const objectDetails = (reaction.reaction.data as ReactionCollectorDailyBonusReaction).object;
-			const usableObject = usableObjects.find(uo => uo.itemId === objectDetails.id && uo.itemCategory === objectDetails.category);
+			const usableObject = usableObjects.find(uo => uo.itemId === objectDetails.id && uo.itemCategory === objectDetails.itemCategory);
 			if (!usableObject) {
 				return;
 			}

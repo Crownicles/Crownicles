@@ -120,11 +120,11 @@ export class Player extends Model {
 
 	declare badges: string;
 
-	declare guildId: number;
+	declare guildId: number | null;
 
-	declare nextEvent: number;
+	declare nextEvent: number | null;
 
-	declare petId: number;
+	declare petId: number | null;
 
 	declare lastPetFree: Date;
 

@@ -45,8 +45,6 @@ class SettingClassNumber {
 	}
 }
 
-// Currently keeping it for a future update
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 class SettingClassString {
 	private readonly name: string;
 
@@ -134,17 +132,17 @@ export abstract class Settings {
 	/**
 	 * The city where the enchanter is currently located
 	 */
-	public static readonly ENCHANTER_CITY = new SettingClassNumber(
+	public static readonly ENCHANTER_CITY = new SettingClassString(
 		"enchanterCity",
-		(): Promise<number> => Promise.resolve(1)
+		(): Promise<string> => Promise.resolve("capital")
 	);
 
 	/**
 	 * The current enchantment offered by the enchanter
 	 */
-	public static readonly ENCHANTER_ENCHANTMENT_ID = new SettingClassNumber(
+	public static readonly ENCHANTER_ENCHANTMENT_ID = new SettingClassString(
 		"enchanterEnchantmentId",
-		(): Promise<number> => Promise.resolve(1)
+		(): Promise<string> => Promise.resolve("pvpAttack1")
 	);
 }
 

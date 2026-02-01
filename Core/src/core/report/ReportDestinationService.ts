@@ -46,7 +46,8 @@ function buildMapReaction(
 	return {
 		mapId,
 		mapTypeId,
-		tripDuration: isPveMap || RandomUtils.crowniclesRandom.bool() ? mapLink.tripDuration : undefined
+		tripDuration: isPveMap || RandomUtils.crowniclesRandom.bool() ? mapLink.tripDuration : undefined,
+		enterInCity: mapLocation.cityId !== null
 	};
 }
 

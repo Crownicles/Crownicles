@@ -15,6 +15,7 @@ import Player from "../database/game/models/Player";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { Guilds } from "../database/game/models/Guild";
+import { InventorySlots } from "../database/game/models/InventorySlot";
 
 enum Outcome {
 	EXPERIENCE = "experience",
@@ -70,6 +71,7 @@ async function manageGuildReward(response: CrowniclesPacket[], player: Player, r
 
 async function manageClassicReward(response: CrowniclesPacket[], player: Player, result: Winnings, rewardKind: Outcome): Promise<void> {
 	const reason = NumberChangeReason.SMALL_EVENT;
+	const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
 	switch (rewardKind) {
 		case Outcome.MONEY:
 			await player.addMoney({
@@ -86,8 +88,8 @@ async function manageClassicReward(response: CrowniclesPacket[], player: Player,
 			});
 			break;
 		case Outcome.ENERGY:
-			player.addEnergy(-result.amount, reason);
-			if (player.getCumulativeEnergy() <= 0) {
+			player.addEnergy(-result.amount, reason, playerActiveObjects);
+			if (player.getCumulativeEnergy(playerActiveObjects) <= 0) {
 				await player.leavePVEIslandIfNoEnergy(response);
 			}
 			break;
@@ -96,7 +98,7 @@ async function manageClassicReward(response: CrowniclesPacket[], player: Player,
 				amount: result.amount,
 				response,
 				reason
-			});
+			}, playerActiveObjects);
 			break;
 		default:
 			break;

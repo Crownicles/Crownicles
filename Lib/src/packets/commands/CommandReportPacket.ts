@@ -112,6 +112,44 @@ export class CommandReportBigEventResultRes extends CrowniclesPacket {
 	oneshot!: boolean;
 }
 
+@sendablePacket(PacketDirection.FRONT_TO_BACK)
+export class CommandReportUseTokensPacketReq extends CrowniclesPacket {
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportUseTokensAcceptPacketRes extends CrowniclesPacket {
+	tokensSpent!: number;
+
+	isArrived!: boolean;
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportUseTokensRefusePacketRes extends CrowniclesPacket {
+}
+
+@sendablePacket(PacketDirection.FRONT_TO_BACK)
+export class CommandReportBuyHealPacketReq extends CrowniclesPacket {
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportBuyHealAcceptPacketRes extends CrowniclesPacket {
+	healPrice!: number;
+
+	isArrived!: boolean;
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportBuyHealRefusePacketRes extends CrowniclesPacket {
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportBuyHealNoAlterationPacketRes extends CrowniclesPacket {
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportBuyHealCannotHealOccupiedPacketRes extends CrowniclesPacket {
+}
+
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandReportStayInCity extends CrowniclesPacket {}
 

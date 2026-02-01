@@ -50,7 +50,7 @@ const shiftLogsDateTestCommand: ExecuteTestCommandLike = async (_player, args) =
 
 		// Update each table
 		for (const table of tablesWithDate) {
-			const [, rowsAffected] = await crowniclesInstance?.logsDatabase.sequelize.query(
+			const [, rowsAffected] = await crowniclesInstance!.logsDatabase!.sequelize.query(
 				`UPDATE \`${table.TABLE_NAME}\` SET date = date - :seconds`,
 				{
 					replacements: { seconds: secondsToShift },

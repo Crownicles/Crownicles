@@ -84,11 +84,11 @@ async function getDepositCandidates(
  */
 async function deposeItem(response: CrowniclesPacket[], player: Player, itemToDeposit: DepositCandidate): Promise<void> {
 	await InventorySlots.deposeItem(player, itemToDeposit);
-	const item = itemToDeposit.slot.getItem();
+	const item = itemToDeposit.slot.getItem()!;
 	const category = item.getCategory();
 	response.push(makePacket(CommandDepositSuccessPacket, {
 		item: category === ItemCategory.WEAPON || category === ItemCategory.ARMOR
-			? (item as MainItem).getDisplayPacket(itemToDeposit.slot.itemLevel, itemToDeposit.slot.itemEnchantmentId)
+			? (item as MainItem).getDisplayPacket(itemToDeposit.slot.itemLevel, itemToDeposit.slot.itemEnchantmentId ?? undefined)
 			: (item as ObjectItem).getDisplayPacket()
 	}));
 }
@@ -120,9 +120,9 @@ function manageMoreThanOneItemToDepositEndCallback(player: Player, depositCandid
  */
 function manageMoreThanOneItemToDeposit(response: CrowniclesPacket[], context: PacketContext, player: Player, depositCandidates: DepositCandidate[]): void {
 	const collector = new ReactionCollectorDeposeItem(depositCandidates.map((item: DepositCandidate) => {
-		const itemInstance = item.slot.getItem();
+		const itemInstance = item.slot.getItem()!;
 		return itemInstance instanceof MainItem
-			? (itemInstance as MainItem).getDisplayPacket(item.slot.itemLevel, item.slot.itemEnchantmentId)
+			? (itemInstance as MainItem).getDisplayPacket(item.slot.itemLevel, item.slot.itemEnchantmentId ?? undefined)
 			: (itemInstance as ObjectItem).getDisplayPacket();
 	}));
 

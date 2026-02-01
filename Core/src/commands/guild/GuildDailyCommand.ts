@@ -169,7 +169,7 @@ async function alterationHealEveryMember(guildLike: GuildLike, response: Crownic
 async function awardPersonalXpToMembers(guildLike: GuildLike, response: CrowniclesPacket[], rewardPacket: CommandGuildDailyRewardPacket): Promise<void> {
 	const xpWon = RandomUtils.rangedInt(GuildDailyConstants.XP, guildLike.guild.level, guildLike.guild.level * GuildDailyConstants.XP_MULTIPLIER);
 	await genericAwardingFunction(guildLike.members, member => {
-		member.addExperience({
+		member.addExperienceSimple({
 			amount: xpWon,
 			response,
 			reason: NumberChangeReason.GUILD_DAILY

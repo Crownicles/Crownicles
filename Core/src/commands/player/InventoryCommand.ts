@@ -51,17 +51,17 @@ export default class InventoryCommand {
 			foundPlayer: true,
 			keycloakId: toCheckPlayer.keycloakId,
 			data: {
-				weapon: (weapon.getItem() as MainItem).getDisplayPacket(weapon.itemLevel, weapon.itemEnchantmentId, maxStatsValues),
-				armor: (armor.getItem() as MainItem).getDisplayPacket(armor.itemLevel, armor.itemEnchantmentId, maxStatsValues),
-				potion: (potion.getItem() as Potion).getDisplayPacket(),
-				object: (object.getItem() as ObjectItem).getDisplayPacket(maxStatsValues),
+				weapon: (weapon!.getItem() as MainItem).getDisplayPacket(weapon!.itemLevel, weapon!.itemEnchantmentId ?? undefined, maxStatsValues),
+				armor: (armor!.getItem() as MainItem).getDisplayPacket(armor!.itemLevel, armor!.itemEnchantmentId ?? undefined, maxStatsValues),
+				potion: (potion!.getItem() as Potion).getDisplayPacket(),
+				object: (object!.getItem() as ObjectItem).getDisplayPacket(maxStatsValues),
 				backupWeapons: backupWeapons.map(item =>
 					({
-						display: (item.getItem() as Weapon).getDisplayPacket(item.itemLevel, item.itemEnchantmentId, maxStatsValues), slot: item.slot
+						display: (item.getItem() as Weapon).getDisplayPacket(item.itemLevel, item.itemEnchantmentId ?? undefined, maxStatsValues), slot: item.slot
 					})),
 				backupArmors: backupArmors.map(item =>
 					({
-						display: (item.getItem() as Armor).getDisplayPacket(item.itemLevel, item.itemEnchantmentId, maxStatsValues), slot: item.slot
+						display: (item.getItem() as Armor).getDisplayPacket(item.itemLevel, item.itemEnchantmentId ?? undefined, maxStatsValues), slot: item.slot
 					})),
 				backupPotions: backupPotions.map(item =>
 					({

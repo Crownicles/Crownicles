@@ -6,7 +6,7 @@ import {
 } from "../../../data/FightAction";
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
 import { RandomUtils } from "../../../../../Lib/src/utils/RandomUtils";
-import { RealPlayerFighter } from "../fighter/RealPlayerFighter";
+import { PlayerFighter } from "../fighter/PlayerFighter";
 import { ClassConstants } from "../../../../../Lib/src/constants/ClassConstants";
 
 /**
@@ -14,7 +14,7 @@ import { ClassConstants } from "../../../../../Lib/src/constants/ClassConstants"
  * @param me
  * @param opponent
  */
-export function intenseOrSimpleAttack(me: AiPlayerFighter, opponent: AiPlayerFighter | RealPlayerFighter): FightAction {
+export function intenseOrSimpleAttack(me: AiPlayerFighter, opponent: AiPlayerFighter | PlayerFighter): FightAction {
 	if (
 		me.getEnergy() < opponent.getEnergy()
 		&& opponent.getEnergy() > opponent.getMaxEnergy() * 0.15
@@ -30,7 +30,7 @@ export function intenseOrSimpleAttack(me: AiPlayerFighter, opponent: AiPlayerFig
 
 class GlovedFightBehavior implements ClassBehavior {
 	chooseAction(me: AiPlayerFighter, fightView: FightView): FightAction {
-		const opponent = fightView.fightController.getDefendingFighter() as AiPlayerFighter | RealPlayerFighter;
+		const opponent = fightView.fightController.getDefendingFighter() as AiPlayerFighter | PlayerFighter;
 
 		if (
 			me.getDefense() < 600
