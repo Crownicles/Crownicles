@@ -20,6 +20,8 @@ import { TravelTime } from "../../core/maps/TravelTime";
 import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
 import { PossibilityOutcomeCondition } from "./PossibilityOutcomeCondition";
 import { BigEventConstants } from "../../../../Lib/src/constants/BigEventConstants";
+import { PlayerActiveObjects } from "../../core/database/game/models/PlayerActiveObjects";
+import { InventorySlots } from "../../core/database/game/models/InventorySlot";
 
 async function applyOutcomeScore(outcome: PossibilityOutcome, time: number, player: Player, response: CrowniclesPacket[]): Promise<number> {
 	const scoreChange = TravelTime.timeTravelledToScore(time)
@@ -128,9 +130,9 @@ async function applyOutcomeMoney(outcome: PossibilityOutcome, time: number, play
 	return moneyChange;
 }
 
-function applyOutcomeEnergy(outcome: PossibilityOutcome, player: Player): number {
+function applyOutcomeEnergy(outcome: PossibilityOutcome, player: Player, playerActiveObjects: PlayerActiveObjects): number {
 	if (outcome.energy && outcome.energy !== 0) {
-		player.addEnergy(outcome.energy, NumberChangeReason.BIG_EVENT);
+		player.addEnergy(outcome.energy, NumberChangeReason.BIG_EVENT, playerActiveObjects);
 		return outcome.energy;
 	}
 	return 0;
@@ -232,6 +234,9 @@ type ApplyOutcome = {
  * @param response
  */
 export async function applyPossibilityOutcome(possibilityOutcome: ApplyOutcome, player: Player, context: PacketContext, response: CrowniclesPacket[]): Promise<MapLink | null> {
+	// Get player active objects for energy changes
+	const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
+
 	// Score
 	const score = await applyOutcomeScore(possibilityOutcome.outcome[1], possibilityOutcome.time, player, response);
 
@@ -242,7 +247,7 @@ export async function applyPossibilityOutcome(possibilityOutcome: ApplyOutcome, 
 	const health = await applyOutcomeHealth(possibilityOutcome.outcome[1], player, response);
 
 	// Energy
-	const energy = applyOutcomeEnergy(possibilityOutcome.outcome[1], player);
+	const energy = applyOutcomeEnergy(possibilityOutcome.outcome[1], player, playerActiveObjects);
 
 	// Gems
 	const gems = await applyOutcomeGems(possibilityOutcome.outcome[1], player);

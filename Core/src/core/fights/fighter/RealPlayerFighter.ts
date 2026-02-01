@@ -3,8 +3,6 @@ import { BlockingUtils } from "../../utils/BlockingUtils";
 import { BlockingConstants } from "../../../../../Lib/src/constants/BlockingConstants";
 import { FightView } from "../FightView";
 import { MissionsController } from "../../missions/MissionsController";
-import { MissionSlots } from "../../database/game/models/MissionSlot";
-import { getDayNumber } from "../../../../../Lib/src/utils/TimeUtils";
 import { NumberChangeReason } from "../../../../../Lib/src/constants/LogsConstants";
 import { FighterStatus } from "../FighterStatus";
 import { Maps } from "../../maps/Maps";

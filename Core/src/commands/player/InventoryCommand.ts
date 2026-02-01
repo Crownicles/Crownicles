@@ -18,6 +18,7 @@ import { MainItem } from "../../data/MainItem";
 import {
 	commandRequires, CommandUtils
 } from "../../core/utils/CommandUtils";
+import { PlayerTalismansManager } from "../../core/database/game/models/PlayerTalismans";
 
 export default class InventoryCommand {
 	@commandRequires(CommandInventoryPacketReq, {
@@ -37,6 +38,7 @@ export default class InventoryCommand {
 		const maxStatsValues = toCheckPlayer.getMaxStatsValue();
 		const items = await InventorySlots.getOfPlayer(toCheckPlayer.id);
 		const invInfo = await InventoryInfos.getOfPlayer(toCheckPlayer.id);
+		const talismans = await PlayerTalismansManager.getOfPlayer(toCheckPlayer.id);
 
 		const weapon = items.find(item => item.isWeapon() && item.isEquipped());
 		const armor = items.find(item => item.isArmor() && item.isEquipped());
@@ -50,6 +52,8 @@ export default class InventoryCommand {
 		response.push(makePacket(CommandInventoryPacketRes, {
 			foundPlayer: true,
 			keycloakId: toCheckPlayer.keycloakId,
+			hasTalisman: talismans.hasTalisman,
+			hasCloneTalisman: talismans.hasCloneTalisman,
 			data: {
 				weapon: (weapon!.getItem() as MainItem).getDisplayPacket(weapon!.itemLevel, weapon!.itemEnchantmentId ?? undefined, maxStatsValues),
 				armor: (armor!.getItem() as MainItem).getDisplayPacket(armor!.itemLevel, armor!.itemEnchantmentId ?? undefined, maxStatsValues),

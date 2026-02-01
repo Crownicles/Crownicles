@@ -201,8 +201,10 @@ function createFightCallback(
 	randomLevel: number,
 	context: PacketContext,
 	chooseDestinationFn: ChooseDestinationCallback
-): (fight: FightController | null, endFightResponse: CrowniclesPacket[], playerActiveObjects: PlayerActiveObjects) => Promise<void> {
-	return async (fight: FightController | null, endFightResponse: CrowniclesPacket[], playerActiveObjects: PlayerActiveObjects): Promise<void> => {
+): (fight: FightController | null, endFightResponse: CrowniclesPacket[]) => Promise<void> {
+	return async (fight: FightController | null, endFightResponse: CrowniclesPacket[]): Promise<void> => {
+		const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
+
 		if (fight && monsterObj) {
 			const rewards = monsterObj.getRewards(randomLevel);
 			player.fightPointsLost = fight.fightInitiator.getMaxEnergy() - fight.fightInitiator.getEnergy();
@@ -241,7 +243,7 @@ function createCollectorEndCallback(
 	monsterFighter: MonsterFighter,
 	_randomLevel: number,
 	context: PacketContext,
-	fightCallback: (fight: FightController | null, endFightResponse: CrowniclesPacket[], playerActiveObjects: PlayerActiveObjects) => Promise<void>
+	fightCallback: (fight: FightController | null, endFightResponse: CrowniclesPacket[]) => Promise<void>
 ): EndCallback {
 	return async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]) => {
 		const firstReaction = collector.getFirstReaction();

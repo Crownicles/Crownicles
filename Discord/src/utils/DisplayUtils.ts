@@ -312,4 +312,16 @@ export class DisplayUtils {
 
 		return escapeUsername(getUser.payload.user.attributes.gameUsername[0]);
 	}
+
+	/**
+	 * Format a number with thousands separators according to the language
+	 * @param value
+	 * @param lng
+	 */
+	static formatNumber(value: number, lng: Language): string {
+		if (!Number.isFinite(value)) {
+			return String(value);
+		}
+		return new Intl.NumberFormat(lng, { useGrouping: true }).format(value);
+	}
 }

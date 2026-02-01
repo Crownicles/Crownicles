@@ -1044,10 +1044,14 @@ async function handlePveFightRewards(
 	if (player.guildId) {
 		const guild = await Guilds.getById(player.guildId);
 		if (guild) {
-			await guild.addScore({ amount: rewards.guildScore, response: endFightResponse, reason: NumberChangeReason.PVE_FIGHT });
-			await guild.addExperience({ amount: rewards.guildXp, response: endFightResponse, reason: NumberChangeReason.PVE_FIGHT });
+			await guild.addScore({
+				amount: rewards.guildScore, response: endFightResponse, reason: NumberChangeReason.PVE_FIGHT
+			});
+			await guild.addExperience({
+				amount: rewards.guildXp, response: endFightResponse, reason: NumberChangeReason.PVE_FIGHT
+			});
 			await guild.save();
-				if (guild.level < GuildConstants.MAX_LEVEL) {
+			if (guild.level < GuildConstants.MAX_LEVEL) {
 				guildXp = rewards.guildXp;
 			}
 			guildPoints = rewards.guildScore;

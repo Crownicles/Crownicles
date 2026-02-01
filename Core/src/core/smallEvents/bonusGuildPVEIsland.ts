@@ -90,7 +90,7 @@ async function manageClassicReward(response: CrowniclesPacket[], player: Player,
 		case Outcome.ENERGY:
 			player.addEnergy(-result.amount, reason, playerActiveObjects);
 			if (player.getCumulativeEnergy(playerActiveObjects) <= 0) {
-				await player.leavePVEIslandIfNoEnergy(response);
+				await player.leavePVEIslandIfNoEnergy(response, playerActiveObjects);
 			}
 			break;
 		case Outcome.EXPERIENCE:

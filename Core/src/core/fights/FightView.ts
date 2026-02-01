@@ -2,7 +2,6 @@ import { FightController } from "./FightController";
 import {
 	CrowniclesPacket, makePacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
-import { RealPlayerFighter } from "./fighter/RealPlayerFighter";
 import { PlayerFighter } from "./fighter/PlayerFighter";
 import { MonsterFighter } from "./fighter/MonsterFighter";
 import { FightConstants } from "../../../../Lib/src/constants/FightConstants";

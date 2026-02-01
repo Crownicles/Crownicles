@@ -42,4 +42,14 @@ export class CommandInventoryPacketRes extends CrowniclesPacket {
 			objects: number;
 		};
 	};
+
+	/**
+	 * Whether the player has the expedition talisman
+	 */
+	hasTalisman?: boolean;
+
+	/**
+	 * Whether the player has the clone talisman (pet counts in defense fights and small events while on expedition)
+	 */
+	hasCloneTalisman?: boolean;
 }

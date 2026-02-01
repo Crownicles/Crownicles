@@ -17,7 +17,7 @@ import {
 import { DisplayUtils } from "../../utils/DisplayUtils";
 import { DiscordCollectorUtils } from "../../utils/DiscordCollectorUtils";
 import { ReactionCollectorDrinkReaction } from "../../../../Lib/src/packets/interaction/ReactionCollectorDrink";
-import { minutesDisplay } from "../../../../Lib/src/utils/TimeUtils";
+import { minutesDisplayIntl } from "../../../../Lib/src/utils/TimeUtils";
 import { ReactionCollectorReturnTypeOrNull } from "../../packetHandlers/handlers/ReactionCollectorHandlers";
 import { escapeUsername } from "../../utils/StringUtils";
 import {
@@ -171,7 +171,7 @@ export async function handleDrinkConsumePotion(context: PacketContext, packet: C
 				}), interaction.user)
 				.setDescription(
 					i18n.t(`commands:drink.${keyDesc}`, {
-						value: packet.itemNature === ItemNature.TIME_SPEEDUP ? minutesDisplay(packet.value, lng) : packet.value,
+						value: packet.itemNature === ItemNature.TIME_SPEEDUP ? minutesDisplayIntl(packet.value, lng) : packet.value,
 						nature: ItemConstants.NATURE_ID_TO_NAME[packet.itemNature],
 						lng
 					})

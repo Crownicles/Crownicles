@@ -762,7 +762,9 @@ export class Player extends Model {
 	public getMaxStatsValue(): StatValues {
 		const playerClass = ClassDataController.instance.getById(this.class);
 		if (!playerClass) {
-			return { attack: 0, defense: 0, speed: 0 };
+			return {
+				attack: 0, defense: 0, speed: 0
+			};
 		}
 		return {
 			attack: playerClass.getAttackValue(this.level),

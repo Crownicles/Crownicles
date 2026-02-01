@@ -37,7 +37,7 @@ import { Effect } from "../../../../Lib/src/types/Effect";
 import {
 	millisecondsToHours,
 	millisecondsToMinutes,
-	minutesDisplay,
+	minutesDisplayIntl,
 	printTimeBeforeDate
 } from "../../../../Lib/src/utils/TimeUtils";
 import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
@@ -57,6 +57,9 @@ import { DisplayUtils } from "../../utils/DisplayUtils";
 import { MessagesUtils } from "../../utils/MessagesUtils";
 import { PetUtils } from "../../utils/PetUtils";
 import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
+import { ReactionCollectorUseTokensPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorUseTokens";
+import { ReactionCollectorBuyHealPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorBuyHeal";
+import { createConfirmationCollector } from "../../utils/ReportConfirmationCollector";
 
 async function getPacket(interaction: CrowniclesInteraction): Promise<CommandReportPacketReq> {
 	await interaction.deferReply();
@@ -203,7 +206,7 @@ function getReportResultConditionTriplets(packet: CommandReportBigEventResultRes
 		[
 			packet.effect?.name === Effect.OCCUPIED.id,
 			"timeLost",
-			{ timeLost: packet.effect ? minutesDisplay(packet.effect.time, lng) : 0 }
+			{ timeLost: packet.effect ? minutesDisplayIntl(packet.effect.time, lng) : 0 }
 		]
 	];
 }
@@ -218,12 +221,12 @@ export async function reportResult(packet: CommandReportBigEventResultRes, conte
 	const lng = interaction.userLanguage;
 
 	const result = getReportResultConditionTriplets(packet, lng)
-		.map(triplet => (triplet[0]
+		.map(triplet => triplet[0]
 			? i18n.t(`commands:report.${triplet[1]}`, {
 				lng,
 				...triplet[2]
 			})
-			: ""))
+			: "")
 		.join("");
 
 	const content = i18n.t("commands:report.doPossibility", {
@@ -273,8 +276,8 @@ export async function chooseDestinationCollector(context: PacketContext, packet:
 
 			// If the trip duration is hidden, the translation module is used with a 2 hours placeholder and the 2 is replaced by a ? afterward
 			const duration = destinationReaction.tripDuration
-				? minutesDisplay(destinationReaction.tripDuration, lng)
-				: minutesDisplay(120, lng)
+				? minutesDisplayIntl(destinationReaction.tripDuration, lng)
+				: minutesDisplayIntl(120, lng)
 					.replace("2", "?");
 			return `${
 				CrowniclesIcons.mapTypes[destinationReaction.mapTypeId]
@@ -769,6 +772,38 @@ export async function handleMoveHome(packet: CommandReportMoveHomeRes, context: 
 
 	await interaction.editReply({
 		embeds: [embed]
+	});
+}
+
+/**
+ * Create the confirmation collector for buying heal
+ */
+export async function createBuyHealCollector(context: PacketContext, packet: ReactionCollectorBuyHealPacket): Promise<ReactionCollectorReturnTypeOrNull> {
+	const data = packet.data.data;
+
+	return await createConfirmationCollector(context, packet, {
+		titleKey: "commands:report.buyHealConfirmTitle",
+		descriptionKey: "commands:report.buyHealConfirmDescription",
+		descriptionParams: {
+			price: data.healPrice,
+			playerMoney: data.playerMoney
+		}
+	});
+}
+
+/**
+ * Create the confirmation collector for using tokens
+ */
+export async function createUseTokensCollector(context: PacketContext, packet: ReactionCollectorUseTokensPacket): Promise<ReactionCollectorReturnTypeOrNull> {
+	const data = packet.data.data;
+
+	return await createConfirmationCollector(context, packet, {
+		titleKey: "commands:report.useTokensConfirmTitle",
+		descriptionKey: "commands:report.useTokensConfirmDescription",
+		descriptionParams: {
+			count: data.cost,
+			playerTokens: data.playerTokens
+		}
 	});
 }
 

@@ -4,7 +4,7 @@ import { EmbedField } from "discord.js";
 import {
 	FightItemNatures, itemCategoryToString, ItemNature
 } from "../../../Lib/src/constants/ItemConstants";
-import { minutesDisplay } from "../../../Lib/src/utils/TimeUtils";
+import { minutesDisplayIntl } from "../../../Lib/src/utils/TimeUtils";
 import { DisplayUtils } from "./DisplayUtils";
 import { ItemEnchantment } from "../../../Lib/src/types/ItemEnchantment";
 import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
@@ -93,7 +93,7 @@ export class DiscordItemUtils {
 			}),
 			i18n.t(`items:potionsNatures.${displayPacket.nature}`, {
 				lng,
-				power: displayPacket.nature === ItemNature.TIME_SPEEDUP ? minutesDisplay(displayPacket.power, lng) : displayPacket.power
+				power: displayPacket.nature === ItemNature.TIME_SPEEDUP ? minutesDisplayIntl(displayPacket.power, lng) : displayPacket.power
 			}),
 			displayPacket,
 			lng
@@ -116,7 +116,7 @@ export class DiscordItemUtils {
 		return i18n.t(`items:objectsNatures.${nature}`, {
 			lng,
 			power: nature === ItemNature.TIME_SPEEDUP
-				? minutesDisplay(power, lng)
+				? minutesDisplayIntl(power, lng)
 				: FightItemNatures.includes(nature) && maxPower < power
 					? i18n.t("items:nerfDisplay", {
 						lng,
@@ -131,7 +131,7 @@ export class DiscordItemUtils {
 		return i18n.t(`items:potionsNatures.${nature}`, {
 			lng,
 			power: nature === ItemNature.TIME_SPEEDUP
-				? minutesDisplay(power, lng)
+				? minutesDisplayIntl(power, lng)
 				: power
 		});
 	}

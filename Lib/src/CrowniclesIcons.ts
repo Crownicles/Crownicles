@@ -135,6 +135,32 @@ export const CrowniclesIcons: {
 		petButton: string;
 		pet: string;
 	};
+	expedition: {
+		locations: {
+			[locationId: string]: string;
+		};
+		map: string;
+		loot: string;
+		risk: Record<string, string>;
+		reward: string;
+		duration: string;
+		terrain: {
+			trivial: string;
+			easy: string;
+			moderate: string;
+			challenging: string;
+			treacherous: string;
+		};
+		food: string;
+		love: string;
+		talisman: string;
+		cloneTalisman: string;
+		recall: string;
+		speed: string;
+		slow: string;
+		liked: string;
+		disliked: string;
+	};
 	leagues: {
 		[leagueId: string]: string;
 	};
@@ -2278,6 +2304,48 @@ export const CrowniclesIcons: {
 	petCommand: {
 		petButton: "🖐️",
 		pet: "😻"
+	},
+	expedition: {
+		locations: {
+			forest: "🌲",
+			mountain: "⛰️",
+			desert: "🏜️",
+			swamp: "🌿",
+			ruins: "🏛️",
+			cave: "🕳️",
+			plains: "🌾",
+			coast: "🌊"
+		},
+		map: "🗺️",
+		loot: "💰",
+		risk: {
+			trivial: "🌿",
+			veryLow: "☀️",
+			low: "🌤️",
+			moderate: "⚡",
+			high: "🔥",
+			veryHigh: "⚠️",
+			extreme: "💀",
+			desperate: "⚰️"
+		},
+		reward: "🎁",
+		duration: "⏱️",
+		terrain: {
+			trivial: "🌸",
+			easy: "🌲",
+			moderate: "⛰️",
+			challenging: "🏔️",
+			treacherous: "🌋"
+		},
+		food: "🍖",
+		love: "💕",
+		talisman: "🔮",
+		cloneTalisman: "🧬",
+		recall: "🏠",
+		speed: "🚀",
+		slow: "🐌",
+		liked: "💚",
+		disliked: "💔"
 	},
 	leagues: {
 		0: "🌲",

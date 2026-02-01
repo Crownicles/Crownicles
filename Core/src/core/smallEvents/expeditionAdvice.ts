@@ -139,13 +139,13 @@ async function checkTalismanConditions(player: Player): Promise<TalismanConditio
 /**
  * Generate a random combat potion (SPECIAL or EPIC rarity) for Velanna's rewards
  */
-function generateRandomCombatPotion(): ItemWithDetails {
+function generateRandomCombatPotion(player: Player): ItemWithDetails {
 	const bonusConfig = ExpeditionConstants.TALISMAN_EVENT.BONUS_IF_PET_IN_EXPEDITION;
 	const rarity = RandomUtils.crowniclesRandom.integer(bonusConfig.COMBAT_POTION_MIN_RARITY, bonusConfig.COMBAT_POTION_MAX_RARITY);
 	const nature = RandomUtils.crowniclesRandom.pick(FightItemNatures);
 
 	const potion = PotionDataController.instance.randomItem(nature, rarity);
-	return toItemWithDetails(potion);
+	return toItemWithDetails(player, potion, 0, null);
 }
 
 /**
@@ -217,7 +217,7 @@ async function applyExpeditionBonusRewards(
 	if (roll < bonusConfig.ITEM_THRESHOLD) {
 		// 5% chance: random item
 		const item = generateRandomItem({});
-		rewards.bonusItem = toItemWithDetails(item);
+		rewards.bonusItem = toItemWithDetails(player, item, 0, null);
 		await giveItemToPlayer(response, context, player, item);
 	}
 	else if (roll < bonusConfig.MONEY_THRESHOLD) {
@@ -231,7 +231,7 @@ async function applyExpeditionBonusRewards(
 	}
 	else if (roll < bonusConfig.POTION_THRESHOLD) {
 		// 35% chance: combat potion
-		const potion = generateRandomCombatPotion();
+		const potion = generateRandomCombatPotion(player);
 		rewards.bonusCombatPotion = potion;
 		const potionInstance = PotionDataController.instance.getById(potion.id)!;
 		await giveItemToPlayer(response, context, player, potionInstance);

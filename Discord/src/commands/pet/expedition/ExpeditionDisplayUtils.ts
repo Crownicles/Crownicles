@@ -120,7 +120,7 @@ export function getExpeditionLocationName(
  * Get pet display string with icon and name
  */
 export function getPetDisplayString(pet: PetBasicInfo, lng: Language): string {
-	return `${DisplayUtils.getPetIcon(pet.petTypeId, pet.petSex)} **${DisplayUtils.getPetNicknameOrTypeName(pet.petNickname, pet.petTypeId, pet.petSex, lng)}**`;
+	return `${DisplayUtils.getPetIcon(pet.petTypeId, pet.petSex)} **${DisplayUtils.getPetNicknameOrTypeName(pet.petNickname ?? null, pet.petTypeId, pet.petSex, lng)}**`;
 }
 
 /**

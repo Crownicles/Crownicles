@@ -11,6 +11,8 @@ import { ErrorPacket } from "../../../../Lib/src/packets/commands/ErrorPacket";
 import { PlayerSmallEvents } from "../database/game/models/PlayerSmallEvent";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { crowniclesInstance } from "../../index";
+import { InventorySlots } from "../database/game/models/InventorySlot";
+import { PlayerActiveObjects } from "../database/game/models/PlayerActiveObjects";
 
 /**
  * Small event eligibility result
@@ -104,7 +106,8 @@ async function loadAndExecuteSmallEvent(
 	event: string,
 	response: CrowniclesPacket[],
 	player: Player,
-	context: PacketContext
+	context: PacketContext,
+	playerActiveObjects: PlayerActiveObjects
 ): Promise<void> {
 	const filename = `${event}.js`;
 
@@ -118,7 +121,7 @@ async function loadAndExecuteSmallEvent(
 			const smallEventRecord = PlayerSmallEvents.createPlayerSmallEvent(player.id, event, Date.now());
 			await smallEventRecord.save();
 
-			await smallEvent.executeSmallEvent(response, player, context);
+			await smallEvent.executeSmallEvent(response, player, context, playerActiveObjects);
 			await MissionsController.update(player, response, { missionId: "doReports" });
 		}
 		catch (e) {
@@ -148,5 +151,6 @@ export async function executeSmallEvent(
 		return;
 	}
 
-	await loadAndExecuteSmallEvent(event, response, player, context);
+	const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
+	await loadAndExecuteSmallEvent(event, response, player, context, playerActiveObjects);
 }
