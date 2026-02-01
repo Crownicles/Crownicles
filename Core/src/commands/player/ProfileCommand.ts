@@ -212,8 +212,8 @@ export default class ProfileCommand {
 					max: toCheckPlayer.getExperienceNeededToLevelUp()
 				},
 				health: {
-					value: toCheckPlayer.health,
-					max: toCheckPlayer.getMaxHealth()
+					value: toCheckPlayer.getHealthValue(),
+					max: toCheckPlayer.getMaxHealthBase()
 				},
 				money: toCheckPlayer.money,
 				tokens: toCheckPlayer.level >= TokensConstants.LEVEL_TO_UNLOCK ? toCheckPlayer.tokens : undefined,

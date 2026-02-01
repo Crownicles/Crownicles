@@ -62,7 +62,7 @@ async function managePickedInteraction(player: Player, packet: SmallEventClassPa
 
 		case ClassConstants.CLASS_SMALL_EVENT_INTERACTIONS_NAMES.WIN_HEALTH:
 			packet.amount = RandomUtils.rangedInt(SmallEventConstants.CLASS.HEALTH);
-			await player.addHealth({
+			await player.addHealthSimple({
 				amount: packet.amount,
 				response,
 				reason: NumberChangeReason.SMALL_EVENT

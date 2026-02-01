@@ -142,12 +142,12 @@ async function managePickedInteraction(packet: SmallEventPetPacket, response: Cr
 			break;
 
 		case PetConstants.PET_INTERACTIONS_NAMES.WIN_HEALTH:
-			if (player.health === player.getMaxHealth()) {
+			if (player.getHealthValue() === player.getMaxHealthBase()) {
 				packet.interactionName = PetConstants.PET_INTERACTIONS_NAMES.NOTHING;
 				break;
 			}
 			packet.amount = RandomUtils.rangedInt(SmallEventConstants.PET.HEALTH);
-			await player.addHealth({
+			await player.addHealthSimple({
 				amount: packet.amount,
 				response,
 				reason: NumberChangeReason.SMALL_EVENT
@@ -169,7 +169,7 @@ async function managePickedInteraction(packet: SmallEventPetPacket, response: Cr
 
 		case PetConstants.PET_INTERACTIONS_NAMES.LOSE_HEALTH:
 			packet.amount = RandomUtils.rangedInt(SmallEventConstants.PET.HEALTH);
-			await player.addHealth({
+			await player.addHealthSimple({
 				amount: -packet.amount,
 				response,
 				reason: NumberChangeReason.SMALL_EVENT

@@ -91,7 +91,7 @@ async function applyOutcomeEffect(outcome: PossibilityOutcome, player: Player): 
 
 async function applyOutcomeHealth(outcome: PossibilityOutcome, player: Player, response: CrowniclesPacket[]): Promise<number> {
 	if (outcome.health && outcome.health !== 0) {
-		await player.addHealth({
+		await player.addHealthSimple({
 			amount: outcome.health,
 			response,
 			reason: NumberChangeReason.BIG_EVENT
@@ -177,8 +177,8 @@ async function applyOutcomeGivePet(outcome: PossibilityOutcome, player: Player, 
 
 async function applyOutcomeOneshot(outcome: PossibilityOutcome, player: Player, response: CrowniclesPacket[]): Promise<void> {
 	if (outcome.oneshot === true) {
-		await player.addHealth({
-			amount: -player.health,
+		await player.addHealthSimple({
+			amount: -player.getHealthValue(),
 			response,
 			reason: NumberChangeReason.BIG_EVENT
 		});

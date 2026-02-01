@@ -86,6 +86,10 @@ type MissionHealthParameter = {
 	overHealCountsForMission: boolean;
 };
 
+export type HealthEditValueParameters = EditValueParameters & {
+	missionHealthParameter?: MissionHealthParameter;
+};
+
 type ressourcesLostOnPveFaint = {
 	moneyLost: number;
 	guildPointsLost: number;
@@ -197,7 +201,7 @@ export class Player extends Model {
 	/**
 	 * Get the destination id of a player
 	 */
-	getDestinationId(): number {
+	getDestinationId(): number | null {
 		const link = MapLinkDataController.instance.getById(this.mapLinkId);
 		return link ? link.endMap : null;
 	}
@@ -205,23 +209,23 @@ export class Player extends Model {
 	/**
 	 * Get the mapLocation object of the destination of the player
 	 */
-	public getDestination(): MapLocation {
+	public getDestination(): MapLocation | null {
 		const link = MapLinkDataController.instance.getById(this.mapLinkId);
-		return link ? MapLocationDataController.instance.getById(link.endMap) : null;
+		return link ? MapLocationDataController.instance.getById(link.endMap) ?? null : null;
 	}
 
 	/**
 	 * Get the origin mapLocation object of the player
 	 */
-	public getPreviousMap(): MapLocation {
+	public getPreviousMap(): MapLocation | null {
 		const link = MapLinkDataController.instance.getById(this.mapLinkId);
-		return link ? MapLocationDataController.instance.getById(link.startMap) : null;
+		return link ? MapLocationDataController.instance.getById(link.startMap) ?? null : null;
 	}
 
 	/**
 	 * Get the origin id of the player
 	 */
-	public getPreviousMapId(): number {
+	public getPreviousMapId(): number | null {
 		const link = MapLinkDataController.instance.getById(this.mapLinkId);
 		return link ? link.startMap : null;
 	}
@@ -229,7 +233,7 @@ export class Player extends Model {
 	/**
 	 * Get the current trip duration of a player
 	 */
-	public getCurrentTripDuration(): number {
+	public getCurrentTripDuration(): number | null {
 		const link = MapLinkDataController.instance.getById(this.mapLinkId);
 		return link ? minutesToHours(link.tripDuration) : null;
 	}
@@ -420,6 +424,7 @@ export class Player extends Model {
 			classesTier5Unlocked: newLevel === ClassConstants.GROUP4LEVEL,
 			missionSlotUnlocked: newLevel === Constants.MISSIONS.SLOT_2_LEVEL || newLevel === Constants.MISSIONS.SLOT_3_LEVEL,
 			pveUnlocked: newLevel === PVEConstants.MIN_LEVEL,
+			tokensUnlocked: newLevel === TokensConstants.LEVEL_TO_UNLOCK,
 			statsIncreased: true
 		});
 
@@ -581,6 +586,10 @@ export class Player extends Model {
 	public async getNbPlayersOnYourMap(): Promise<number> {
 		const oppositeLink = MapLinkDataController.instance.getInverseLinkOf(this.mapLinkId);
 
+		if (!oppositeLink || !Player.sequelize) {
+			return 0;
+		}
+
 		const query = `SELECT COUNT(*) as count
 		               FROM players
 		               WHERE (mapLinkId = :link
@@ -679,6 +688,9 @@ export class Player extends Model {
 
 	public getMaxStatsValue(): StatValues {
 		const playerClass = ClassDataController.instance.getById(this.class);
+		if (!playerClass) {
+			return { attack: 0, defense: 0, speed: 0 };
+		}
 		return {
 			attack: playerClass.getAttackValue(this.level),
 			defense: playerClass.getDefenseValue(this.level),
@@ -812,7 +824,16 @@ export class Player extends Model {
 	}
 
 	/**
-	 * Return the player max health
+	 * Return the player max health (base value without enchantments)
+	 * Use getMaxHealth(playerActiveObjects) when enchantments should be considered
+	 */
+	public getMaxHealthBase(): number {
+		const playerClass = ClassDataController.instance.getById(this.class);
+		return playerClass?.getMaxHealthValue(this.level) ?? 100;
+	}
+
+	/**
+	 * Return the player max health (with enchantment bonuses)
 	 */
 	public getMaxHealth(playerActiveObjects: PlayerActiveObjects): number {
 		const playerClass = ClassDataController.instance.getById(this.class);
@@ -822,7 +843,7 @@ export class Player extends Model {
 		const multiplier = (weaponEnchant?.kind === ItemEnchantmentKind.MAX_HEALTH ? EnchantmentConstants.MAX_HEALTH_MULTIPLIER[weaponEnchant.level - 1] ?? 1 : 1)
 			* (armorEnchant?.kind === ItemEnchantmentKind.MAX_HEALTH ? EnchantmentConstants.MAX_HEALTH_MULTIPLIER[armorEnchant.level - 1] ?? 1 : 1);
 
-		return Math.round(playerClass.getMaxHealthValue(this.level) * multiplier);
+		return Math.round((playerClass?.getMaxHealthValue(this.level) ?? 100) * multiplier);
 	}
 
 	/**
@@ -862,7 +883,36 @@ export class Player extends Model {
 	}
 
 	/**
-	 * Get the health of the player
+	 * Simplified addHealth method without enchantment support.
+	 * Use addHealth() with playerActiveObjects when enchantments should be considered.
+	 * This method uses the base max health (without enchantments).
+	 * @param parameters - Object containing amount, response, reason, and optional missionHealthParameter
+	 */
+	public async addHealthSimple(parameters: HealthEditValueParameters): Promise<boolean> {
+		const maxHealth = this.getMaxHealthBase();
+		if (this.health > maxHealth) {
+			this.health = maxHealth;
+		}
+		const missionParam: MissionHealthParameter = parameters.missionHealthParameter ?? {
+			overHealCountsForMission: true,
+			shouldPokeMission: true
+		};
+		await this.setHealthSimple(this.health + parameters.amount, parameters.response, missionParam);
+		crowniclesInstance.logsDatabase.logHealthChange(this.keycloakId, this.health, parameters.reason)
+			.then();
+		return this.health > 0;
+	}
+
+	/**
+	 * Get the raw health value of the player (without max capping from enchantments)
+	 * Use getHealth(playerActiveObjects) when enchantments should be considered for capping
+	 */
+	public getHealthValue(): number {
+		return this.health;
+	}
+
+	/**
+	 * Get the health of the player (capped to max health with enchantments)
 	 * @param playerActiveObjects
 	 */
 	public getHealth(playerActiveObjects: PlayerActiveObjects): number {
@@ -1197,6 +1247,36 @@ export class Player extends Model {
 	 */
 	public setHealthNoCheck(health: number): void {
 		this.health = health;
+	}
+
+	/**
+	 * Simplified setHealth without enchantment support
+	 * @param health
+	 * @param response
+	 * @param missionHealthParameter
+	 */
+	private async setHealthSimple(health: number, response: CrowniclesPacket[], missionHealthParameter: MissionHealthParameter = {
+		overHealCountsForMission: true,
+		shouldPokeMission: true
+	}): Promise<void> {
+		const maxHealth = this.getMaxHealthBase();
+		const difference = (health > maxHealth && !missionHealthParameter.overHealCountsForMission ? maxHealth : health < 0 ? 0 : health)
+			- this.health;
+		if (difference > 0 && missionHealthParameter.shouldPokeMission) {
+			await MissionsController.update(this, response, {
+				missionId: "earnLifePoints",
+				count: difference
+			});
+		}
+		if (health < 0) {
+			this.health = 0;
+		}
+		else if (health > maxHealth) {
+			this.health = maxHealth;
+		}
+		else {
+			this.health = health;
+		}
 	}
 }
 

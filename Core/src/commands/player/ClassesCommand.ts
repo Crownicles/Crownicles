@@ -51,10 +51,10 @@ function getEndCallback(player: Player) {
 		}
 
 		player.class = selectedClass;
-		await player.addHealth({
+		await player.addHealthSimple({
 			amount: Math.ceil(
-				player.health / oldClass.getMaxHealthValue(level) * newClass.getMaxHealthValue(level)
-			) - player.health,
+				player.getHealthValue() / oldClass.getMaxHealthValue(level) * newClass.getMaxHealthValue(level)
+			) - player.getHealthValue(),
 			response,
 			reason: NumberChangeReason.CLASS,
 			missionHealthParameter: {

@@ -235,7 +235,7 @@ export async function exportPlayerData(
 	csvFiles["01_player.csv"] = toCSV([
 		{
 			anonymizedId: anonymizer.getAnonymizedPlayerId(),
-			health: player.health,
+			health: player.getHealthValue(),
 			score: player.score,
 			weeklyScore: player.weeklyScore,
 			level: player.level,

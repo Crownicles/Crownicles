@@ -79,7 +79,7 @@ async function genericAwardingFunction(members: Player[], awardingFunctionForAMe
  * @param guildLike
  */
 function doesSomeoneNeedsHeal(guildLike: GuildLike): boolean {
-	return guildLike.members.some(member => member.health < member.getMaxHealth());
+	return guildLike.members.some(member => member.getHealthValue() < member.getMaxHealthBase());
 }
 
 /**
@@ -99,8 +99,8 @@ async function healEveryMember(guildLike: GuildLike, response: CrowniclesPacket[
 	const healthWon = Math.round(guildLike.guild.level * GuildDailyConstants.LEVEL_MULTIPLIER) + 1;
 	await genericAwardingFunction(guildLike.members, async member => {
 		if (member.effectId !== Effect.DEAD.id) {
-			await member.addHealth({
-				amount: fullHeal ? member.getMaxHealth() : healthWon,
+			await member.addHealthSimple({
+				amount: fullHeal ? member.getMaxHealthBase() : healthWon,
 				response,
 				reason: NumberChangeReason.GUILD_DAILY,
 				missionHealthParameter: {
@@ -133,7 +133,7 @@ async function alterationHealEveryMember(guildLike: GuildLike, response: Crownic
 	await genericAwardingFunction(guildLike.members, async member => {
 		if (member.currentEffectFinished(now)) {
 			if (needsHeal) {
-				await member.addHealth({
+				await member.addHealthSimple({
 					amount: healthWon,
 					response,
 					reason: NumberChangeReason.GUILD_DAILY,

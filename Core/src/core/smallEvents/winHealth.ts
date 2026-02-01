@@ -11,11 +11,11 @@ export const smallEventFuncs: SmallEventFuncs = {
 		if (!Maps.isOnContinent(player)) {
 			return false;
 		}
-		return player.health < player.getMaxHealth();
+		return player.getHealthValue() < player.getMaxHealthBase();
 	},
 	executeSmallEvent: async (response, player): Promise<void> => {
 		const healthWon = RandomUtils.rangedInt(SmallEventConstants.HEALTH);
-		await player.addHealth({
+		await player.addHealthSimple({
 			amount: healthWon,
 			response,
 			reason: NumberChangeReason.SMALL_EVENT
