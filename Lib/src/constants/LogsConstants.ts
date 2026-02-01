@@ -52,7 +52,13 @@ export enum NumberChangeReason {
 	RAGE_EXPLOSION_ACTION,
 	JOIN_BOAT,
 	REPORT_TOKENS,
-	EXPEDITION
+	EXPEDITION,
+
+	// Cities feature
+	INN_MEAL,
+	INN_ROOM,
+	ENCHANT_ITEM,
+	BUY_HOME
 }
 
 export enum ShopItemType {

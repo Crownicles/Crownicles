@@ -130,6 +130,22 @@ export abstract class Settings {
 		"lastChristmasBonusYear",
 		(): Promise<number> => Promise.resolve(0)
 	);
+
+	/**
+	 * The city where the enchanter is currently located
+	 */
+	public static readonly ENCHANTER_CITY = new SettingClassNumber(
+		"enchanterCity",
+		(): Promise<number> => Promise.resolve(1)
+	);
+
+	/**
+	 * The current enchantment offered by the enchanter
+	 */
+	public static readonly ENCHANTER_ENCHANTMENT_ID = new SettingClassNumber(
+		"enchanterEnchantmentId",
+		(): Promise<number> => Promise.resolve(1)
+	);
 }
 
 export function initModel(sequelize: Sequelize): void {

@@ -56,6 +56,8 @@ import { StatValues } from "../../../../../../Lib/src/types/StatValues";
 import { ReachDestinationNotificationPacket } from "../../../../../../Lib/src/packets/notifications/ReachDestinationNotificationPacket";
 import { CrowniclesLogger } from "../../../../../../Lib/src/logs/CrowniclesLogger";
 import { Badge } from "../../../../../../Lib/src/types/Badge";
+import { TokensConstants } from "../../../../../../Lib/src/constants/TokensConstants";
+import { MathUtils } from "../../../utils/MathUtils";
 
 // skipcq: JS-C1003 - moment does not expose itself as an ES Module.
 import * as moment from "moment";
@@ -107,6 +109,8 @@ export class Player extends Model {
 	declare experience: number;
 
 	declare money: number;
+
+	declare tokens: number;
 
 	declare class: number;
 
@@ -295,6 +299,75 @@ export class Player extends Model {
 		});
 		parameters.amount = -parameters.amount;
 		return this.addMoney(parameters);
+	}
+
+	/**
+	 * Add or remove tokens to the player
+	 * @param parameters
+	 */
+	public async addTokens(parameters: EditValueParameters): Promise<Player> {
+		const previousTokens = this.tokens;
+		const newTokens = MathUtils.clamp(
+			this.tokens + parameters.amount,
+			0,
+			TokensConstants.MAX
+		);
+
+		if (newTokens === previousTokens) {
+			return this;
+		}
+
+		this.setTokens(newTokens);
+		await crowniclesInstance.logsDatabase.logTokensChange(this.keycloakId, this.tokens, parameters.reason);
+
+		// Track missions for earning tokens
+		const actualChange = newTokens - previousTokens;
+		if (actualChange > 0) {
+			let newPlayer = await MissionsController.update(this, parameters.response, {
+				missionId: "earnTokens",
+				count: actualChange
+			});
+
+			/*
+			 * Clone the mission entity and player to this player model and the entity instance passed in the parameters
+			 * As the money and experience may have changed, we update the models of the caller
+			 */
+			Object.assign(this, newPlayer);
+
+			// Check if max tokens reached
+			if (this.tokens === TokensConstants.MAX) {
+				newPlayer = await MissionsController.update(this, parameters.response, {
+					missionId: "maxTokensReached"
+				});
+				Object.assign(this, newPlayer);
+			}
+		}
+
+		return this;
+	}
+
+	/**
+	 * Use tokens (for missions tracking) - only for spending tokens
+	 * @param parameters
+	 */
+	public async useTokens(parameters: EditValueParameters): Promise<Player> {
+		const tokensToUse = Math.abs(parameters.amount);
+
+		// Track missions for using tokens
+		let newPlayer = await MissionsController.update(this, parameters.response, {
+			missionId: "useTokens",
+			count: tokensToUse
+		});
+		Object.assign(this, newPlayer);
+
+		newPlayer = await MissionsController.update(this, parameters.response, {
+			missionId: "spendTokens",
+			count: tokensToUse
+		});
+		Object.assign(this, newPlayer);
+
+		parameters.amount = -tokensToUse;
+		return this.addTokens(parameters);
 	}
 
 	/**
@@ -1037,6 +1110,14 @@ export class Player extends Model {
 	}
 
 	/**
+	 * Set the tokens of a player clamped between 0 and the maximum capacity
+	 * @param tokens
+	 */
+	private setTokens(tokens: number): void {
+		this.tokens = MathUtils.clamp(tokens, 0, TokensConstants.MAX);
+	}
+
+	/**
 	 * Add points to the weekly score of the player
 	 * @param weeklyScore
 	 */
@@ -1589,6 +1670,10 @@ export function initModel(sequelize: Sequelize): void {
 		money: {
 			type: DataTypes.INTEGER,
 			defaultValue: PlayersConstants.PLAYER_DEFAULT_VALUES.MONEY
+		},
+		tokens: {
+			type: DataTypes.INTEGER,
+			defaultValue: PlayersConstants.PLAYER_DEFAULT_VALUES.TOKENS
 		},
 		class: {
 			type: DataTypes.INTEGER,

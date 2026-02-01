@@ -520,4 +520,8 @@ export abstract class SmallEventConstants {
 			CONDITIONS: "conditions"
 		}
 	} as const;
+
+	static readonly FIND_MATERIAL = {
+		SMALL_EVENT_NAME: "findMaterial"
+	} as const;
 }
