@@ -93,7 +93,7 @@ async function findGuildPetOrFail(
 	petEntityId: number,
 	operationName: string
 ): Promise<GuildPet | null> {
-	const guildPets = await GuildPets.getOfGuild(player.guildId);
+	const guildPets = await GuildPets.getOfGuild(player.guildId!);
 	const guildPet = guildPets.find(gp => gp.petEntityId === petEntityId);
 
 	if (!guildPet) {
@@ -118,7 +118,7 @@ async function deposePetToGuild(
 		return;
 	}
 
-	const guildPets = await GuildPets.getOfGuild(player.guildId);
+	const guildPets = await GuildPets.getOfGuild(player.guildId!);
 	if (guildPets.length >= PetConstants.SLOTS) {
 		CrowniclesLogger.warn("Player tried to transfer a pet to the guild but the shelter is full");
 		response.push(makePacket(CommandPetTransferSituationChangedErrorPacket, {}));
@@ -326,7 +326,7 @@ export default class PetTransferCommand {
 	})
 	async execute(response: CrowniclesPacket[], player: Player, _packet: CommandPetTransferPacketReq, context: PacketContext): Promise<void> {
 		// Check if another guild member is transferring
-		const transferringMemberId = await checkGuildMemberTransferring(player.guildId);
+		const transferringMemberId = await checkGuildMemberTransferring(player.guildId!);
 		if (transferringMemberId) {
 			response.push(makePacket(CommandPetTransferAnotherMemberTransferringErrorPacket, {
 				keycloakId: transferringMemberId
@@ -347,12 +347,12 @@ export default class PetTransferCommand {
 			return;
 		}
 
-		const guild = await Guilds.getById(player.guildId);
+		const guild = await Guilds.getById(player.guildId!);
 		if (!guild) {
 			response.push(makePacket(CommandPetTransferNoPetErrorPacket, {}));
 			return;
 		}
-		const guildPets = await GuildPets.getOfGuild(player.guildId);
+		const guildPets = await GuildPets.getOfGuild(player.guildId!);
 
 		// Build reactions - returns null if no valid transfer options
 		const reactions = buildTransferReactions(playerPet, guild, guildPets);

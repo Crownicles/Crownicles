@@ -54,9 +54,9 @@ async function acceptGuildLeave(player: Player, response: CrowniclesPacket[]): P
 			crowniclesInstance.logsDatabase.logGuildChiefChange(guild, guild.elderId).then();
 
 			// An elder can recover the guild
-			player.guildId = 0 as unknown as number;
+			player.guildId = null;
 			const elder = await Players.getById(guild.elderId);
-			guild.elderId = 0 as unknown as number;
+			guild.elderId = null;
 			guild.chiefId = elder.id;
 			response.push(makePacket(CommandGuildLeaveAcceptPacketRes, {
 				newChiefKeycloakId: elder.keycloakId,
@@ -89,10 +89,10 @@ async function acceptGuildLeave(player: Player, response: CrowniclesPacket[]): P
 	if (guild.elderId === player.id) {
 		// The guild's elder is leaving
 		crowniclesInstance.logsDatabase.logGuildElderRemove(guild, guild.elderId).then();
-		guild.elderId = 0 as unknown as number;
+		guild.elderId = null;
 	}
 	LogsDatabase.logGuildLeave(guild, player.keycloakId).then();
-	player.guildId = 0 as unknown as number;
+	player.guildId = null;
 	response.push(makePacket(CommandGuildLeaveAcceptPacketRes, {
 		guildName: guild.name
 	}));

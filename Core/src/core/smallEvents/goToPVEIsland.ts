@@ -29,6 +29,9 @@ import { TravelTime } from "../maps/TravelTime";
 
 export const smallEventFuncs: SmallEventFuncs = {
 	async canBeExecuted(player: Player): Promise<boolean> {
+		if (!player.guildId) {
+			return false;
+		}
 		return player.level >= PVEConstants.MIN_LEVEL
 			&& Maps.isNearWater(player)
 			&& player.hasEnoughEnergyToFight()

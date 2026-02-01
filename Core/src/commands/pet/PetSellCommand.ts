@@ -126,7 +126,7 @@ async function executePetSell(collector: ReactionCollectorInstance, response: Cr
 
 	// Switch the pet owner and love points
 	buyer.petId = sellerInformation.pet.id;
-	sellerInformation.player.petId = null as unknown as number;
+	sellerInformation.player.petId = null;
 	sellerInformation.pet.lovePoints = PetConstants.BASE_LOVE;
 
 	// Save the changes

@@ -105,7 +105,7 @@ async function acceptPetFree(player: Player, playerPet: PetEntity, response: Cro
 	LogsDatabase.logPetFree(playerPet).then();
 
 	await playerPet.destroy();
-	player.petId = 0;
+	player.petId = null;
 	player.lastPetFree = new Date();
 	await player.save();
 
@@ -141,7 +141,7 @@ async function freePetFromShelter(
 	petEntityId: number
 ): Promise<void> {
 	// Get guild pets and find the one to free
-	const guildPets = await GuildPets.getOfGuild(player.guildId);
+	const guildPets = await GuildPets.getOfGuild(player.guildId!);
 	const guildPet = guildPets.find(gp => gp.petEntityId === petEntityId);
 
 	if (!guildPet) {

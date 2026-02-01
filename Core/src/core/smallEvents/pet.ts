@@ -204,7 +204,7 @@ async function managePickedInteraction(packet: SmallEventPetPacket, response: Cr
 			LogsDatabase.logPetFree(petEntity)
 				.then();
 			await petEntity.destroy();
-			player.petId = 0;
+			player.petId = null;
 			break;
 		default:
 			break;

@@ -192,7 +192,11 @@ export class PetEntity extends Model {
 }
 
 export abstract class PetEntities {
-	static async getById(id: number): Promise<PetEntity | null> {
+	static async getById(id: number | null): Promise<PetEntity | null> {
+		// Also handle legacy 0 sentinel value
+		if (!id) {
+			return null;
+		}
 		return await PetEntity.findOne({
 			where: { id }
 		});

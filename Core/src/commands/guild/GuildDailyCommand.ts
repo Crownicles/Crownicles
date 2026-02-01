@@ -436,7 +436,7 @@ export default class GuildDailyCommand {
 	})
 	static async execute(response: CrowniclesPacket[], player: Player, _packet: CommandGuildDailyPacketReq, _context: PacketContext, forcedReward?: string): Promise<void> {
 		// Acquire lock to prevent race condition when multiple members spam the command
-		const lock = guildDailyLockManager.getLock(player.guildId);
+		const lock = guildDailyLockManager.getLock(player.guildId!);
 		const release = await lock.acquire();
 		try {
 			const guild = (await Guilds.getById(player.guildId))!;

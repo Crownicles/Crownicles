@@ -48,7 +48,7 @@ export class Guild extends Model {
 
 	declare chiefId: number;
 
-	declare elderId: number;
+	declare elderId: number | null;
 
 	declare creationDate: Date;
 
@@ -174,7 +174,7 @@ export class Guild extends Model {
 	/**
 	 * Get the guild's elder id
 	 */
-	public getElderId(): number {
+	public getElderId(): number | null {
 		return this.elderId;
 	}
 
@@ -300,7 +300,11 @@ export class Guild extends Model {
 }
 
 export abstract class Guilds {
-	static getById(id: number): Promise<Guild | null> {
+	static getById(id: number | null): Promise<Guild | null> {
+		// Also handle legacy 0 sentinel value
+		if (!id) {
+			return Promise.resolve(null);
+		}
 		return Promise.resolve(Guild.findOne({
 			where: { id }
 		}));
