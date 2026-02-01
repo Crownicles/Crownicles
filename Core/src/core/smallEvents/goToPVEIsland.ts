@@ -29,11 +29,13 @@ import { TravelTime } from "../maps/TravelTime";
 
 export const smallEventFuncs: SmallEventFuncs = {
 	async canBeExecuted(player: Player): Promise<boolean> {
+		if (!player.guildId) {
+			return false;
+		}
 		return player.level >= PVEConstants.MIN_LEVEL
 			&& Maps.isNearWater(player)
 			&& player.hasEnoughEnergyToFight()
 			&& await PlayerSmallEvents.playerSmallEventCount(player.id, "goToPVEIsland") === 0
-			&& player.guildId !== null
 			&& await LogsReadRequests.getCountPVEIslandThisWeek(player.keycloakId, player.guildId) < PVEConstants.TRAVEL_COST.length;
 	},
 
