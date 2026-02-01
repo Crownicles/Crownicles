@@ -301,7 +301,8 @@ export class Guild extends Model {
 
 export abstract class Guilds {
 	static getById(id: number | null): Promise<Guild | null> {
-		if (id === null) {
+		// Also handle legacy 0 sentinel value
+		if (!id) {
 			return Promise.resolve(null);
 		}
 		return Promise.resolve(Guild.findOne({

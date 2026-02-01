@@ -466,7 +466,7 @@ export class Player extends Model {
 	 * Check if the player is in guild
 	 */
 	public hasAGuild(): boolean {
-		return this.guildId !== null;
+		return !!this.guildId;
 	}
 
 	/**
