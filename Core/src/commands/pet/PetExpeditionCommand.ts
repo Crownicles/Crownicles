@@ -46,6 +46,8 @@ import {
 import { MissionsController } from "../../core/missions/MissionsController";
 import { MissionSlots } from "../../core/database/game/models/MissionSlot";
 import { PlayerBadgesManager } from "../../core/database/game/models/PlayerBadges";
+import { InventorySlots } from "../../core/database/game/models/InventorySlot";
+import { PlayerActiveObjects } from "../../core/database/game/models/PlayerActiveObjects";
 
 /**
  * Expedition log parameters
@@ -170,7 +172,8 @@ async function applyOutcomeEffects(
 	player: Player,
 	petEntity: PetEntity,
 	response: CrowniclesPacket[],
-	context: PacketContext
+	context: PacketContext,
+	playerActiveObjects: PlayerActiveObjects
 ): Promise<void> {
 	if (outcome.loveChange) {
 		await petEntity.changeLovePoints({
@@ -183,7 +186,7 @@ async function applyOutcomeEffects(
 	await petEntity.save();
 
 	if (outcome.rewards) {
-		await applyExpeditionRewards(outcome.rewards, player, response, context);
+		await applyExpeditionRewards(outcome.rewards, player, response, context, playerActiveObjects);
 	}
 	await player.save();
 }
@@ -353,8 +356,11 @@ export default class PetExpeditionCommand {
 		// Calculate risk and determine outcome
 		const outcome = await calculateOutcome(petEntity, activeExpedition, expeditionData, player);
 
+		// Get player active objects for experience rewards
+		const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
+
 		// Apply outcome effects (love change and rewards)
-		await applyOutcomeEffects(outcome, player, petEntity, response, context);
+		await applyOutcomeEffects(outcome, player, petEntity, response, context, playerActiveObjects);
 
 		// Finalize expedition (log, cleanup, mark completed)
 		const expeditionSuccess = !outcome.totalFailure;

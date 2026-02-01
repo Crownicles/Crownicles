@@ -731,7 +731,7 @@ export class Player extends Model {
 		})
 			.then(async item => {
 				if (item) {
-					await crowniclesInstance?.logsDatabase.logItemSell(this.keycloakId, item.getItem());
+					await crowniclesInstance?.logsDatabase.logItemSell(this.keycloakId, item.getItem()!);
 				}
 			});
 		if (itemSlot === 0) {

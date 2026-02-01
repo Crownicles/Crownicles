@@ -258,7 +258,7 @@ export class InventorySlots {
 		let count = 0;
 		for (const obj of objs) {
 			if (obj.getItem()
-				.tags
+				?.tags
 				?.includes(tag)) {
 				count++;
 			}

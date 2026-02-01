@@ -270,7 +270,7 @@ export class LogsReadRequests {
 	 * @param keycloakId
 	 * @param guildId
 	 */
-	static async getCountPVEIslandThisWeek(keycloakId: string, guildId: number): Promise<number> {
+	static async getCountPVEIslandThisWeek(keycloakId: string, guildId: number | null): Promise<number> {
 		if (guildId && await this.joinGuildThisWeekRequest(keycloakId, guildId)) {
 			return PVEConstants.TRAVEL_COST.length;
 		}

@@ -44,6 +44,16 @@ export class CommandReportTravelSummaryRes extends CrowniclesPacket {
 	};
 
 	lastSmallEventId?: string;
+
+	tokens?: {
+		cost: number;
+		playerTokens: number;
+	};
+
+	heal?: {
+		price: number;
+		playerMoney: number;
+	};
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)

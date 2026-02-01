@@ -60,7 +60,7 @@ export class CrowniclesSunday {
 	/**
 	 * Find the winner of the season
 	 */
-	private static async findSeasonWinner(): Promise<Player> {
+	private static async findSeasonWinner(): Promise<Player | null> {
 		return await Player.findOne({
 			where: {
 				fightCountdown: {

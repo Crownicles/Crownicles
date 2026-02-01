@@ -230,8 +230,8 @@ async function sellOrKeepItem(
 	const player = whoIsConcerned.player;
 	await player.reload();
 	if (!keepOriginal) {
-		await dontKeepOriginalItem(response, player, item, itemToReplace);
-		item = itemToReplaceInstance;
+		await dontKeepOriginalItem(response, player, item, itemToReplace!);
+		item = itemToReplaceInstance!;
 		resaleMultiplier = 1;
 	}
 	let money = 0;
@@ -244,7 +244,7 @@ async function sellOrKeepItem(
 		}
 		await manageMoneyPayment(response, player, item, money);
 	}
-	await manageItemRefusal(response, whoIsConcerned, item, money, autoSell);
+	await manageItemRefusal(response, whoIsConcerned, item, money, autoSell ?? false);
 }
 
 /**

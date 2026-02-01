@@ -2,6 +2,7 @@ import {
 	SmallEventDataController, SmallEventFuncs
 } from "../../data/SmallEvent";
 import Player from "../database/game/models/Player";
+import { InventorySlots } from "../database/game/models/InventorySlot";
 import { Maps } from "../maps/Maps";
 import {
 	EndCallback, ReactionCollectorInstance
@@ -75,7 +76,8 @@ async function giveRewardToPlayer(
 		coefficient,
 		lostTime,
 		levelKey
-	}: RewardParams
+	}: RewardParams,
+	playerActiveObjects: Awaited<ReturnType<typeof InventorySlots.getPlayerActiveObjects>>
 ): Promise<void> {
 	switch (rewardType) {
 		case SmallEventConstants.LOTTERY.REWARD_TYPES.XP:
@@ -83,7 +85,7 @@ async function giveRewardToPlayer(
 				amount: SmallEventConstants.LOTTERY.REWARDS.EXPERIENCE * coefficient,
 				response,
 				reason: NumberChangeReason.SMALL_EVENT
-			});
+			}, playerActiveObjects);
 			response.push(makePacket(SmallEventLotteryWinPacket, {
 				winAmount: SmallEventConstants.LOTTERY.REWARDS.EXPERIENCE * coefficient,
 				lostTime,
@@ -181,6 +183,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 
 				if (RandomUtils.crowniclesRandom.bool(dataLottery.successRate[levelKey]) && (guild || rewardType !== SmallEventConstants.LOTTERY.REWARD_TYPES.GUILD_XP)) {
 					const coefficient = dataLottery.coefficients[levelKey];
+					const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
 					await giveRewardToPlayer(response, {
 						player,
 						guild: guild!
@@ -188,7 +191,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 						coefficient,
 						lostTime,
 						levelKey
-					});
+					}, playerActiveObjects);
 
 					await player.save();
 				}

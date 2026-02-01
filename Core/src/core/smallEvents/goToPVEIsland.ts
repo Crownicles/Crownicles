@@ -33,9 +33,10 @@ export const smallEventFuncs: SmallEventFuncs = {
 		if (!player.guildId) {
 			return false;
 		}
+		const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
 		return player.level >= PVEConstants.MIN_LEVEL
 			&& Maps.isNearWater(player)
-			&& player.hasEnoughEnergyToFight()
+			&& player.hasEnoughEnergyToFight(playerActiveObjects)
 			&& await PlayerSmallEvents.playerSmallEventCount(player.id, "goToPVEIsland") === 0
 			&& await LogsReadRequests.getCountPVEIslandThisWeek(player.keycloakId, player.guildId) < PVEConstants.TRAVEL_COST.length;
 	},

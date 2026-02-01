@@ -32,6 +32,8 @@ import { Effect } from "../../../../Lib/src/types/Effect";
 import { millisecondsToSeconds } from "../../../../Lib/src/utils/TimeUtils";
 import { crowniclesInstance } from "../../index";
 import { MapLink } from "../../data/MapLink";
+import { InventorySlots } from "../database/game/models/InventorySlot";
+import { PlayerActiveObjects } from "../database/game/models/PlayerActiveObjects";
 
 /**
  * PVE fight rewards structure
@@ -140,7 +142,8 @@ async function handlePveFightRewards(
 	fight: FightController,
 	player: Player,
 	rewards: PveFightRewards,
-	endFightResponse: CrowniclesPacket[]
+	endFightResponse: CrowniclesPacket[],
+	playerActiveObjects: PlayerActiveObjects
 ): Promise<GuildRewardsResult> {
 	if (!fight.isADraw()) {
 		const winner = fight.getWinnerFighter();
@@ -158,7 +161,7 @@ async function handlePveFightRewards(
 		amount: rewards.xp,
 		reason: NumberChangeReason.PVE_FIGHT,
 		response: endFightResponse
-	});
+	}, playerActiveObjects);
 
 	return await applyGuildRewards(player, rewards, endFightResponse);
 }
@@ -198,8 +201,8 @@ function createFightCallback(
 	randomLevel: number,
 	context: PacketContext,
 	chooseDestinationFn: ChooseDestinationCallback
-): (fight: FightController | null, endFightResponse: CrowniclesPacket[]) => Promise<void> {
-	return async (fight: FightController | null, endFightResponse: CrowniclesPacket[]): Promise<void> => {
+): (fight: FightController | null, endFightResponse: CrowniclesPacket[], playerActiveObjects: PlayerActiveObjects) => Promise<void> {
+	return async (fight: FightController | null, endFightResponse: CrowniclesPacket[], playerActiveObjects: PlayerActiveObjects): Promise<void> => {
 		if (fight && monsterObj) {
 			const rewards = monsterObj.getRewards(randomLevel);
 			player.fightPointsLost = fight.fightInitiator.getMaxEnergy() - fight.fightInitiator.getEnergy();
@@ -208,20 +211,20 @@ function createFightCallback(
 			const isWinOrDraw = fight.isADraw() || fight.getWinnerFighter() instanceof PlayerFighter;
 
 			if (isWinOrDraw) {
-				const guildResult = await handlePveFightRewards(fight, player, rewards, endFightResponse);
+				const guildResult = await handlePveFightRewards(fight, player, rewards, endFightResponse, playerActiveObjects);
 				sendMonsterRewardPacket(endFightResponse, rewards, guildResult, fight);
 				await MissionsController.update(player, endFightResponse, { missionId: "winBoss" });
 			}
 			else {
 				// Make sure the player has no energy left after a loss even if he leveled up
-				player.setEnergyLost(player.getMaxCumulativeEnergy(), NumberChangeReason.PVE_FIGHT);
+				player.setEnergyLost(player.getMaxCumulativeEnergy(playerActiveObjects), NumberChangeReason.PVE_FIGHT, playerActiveObjects);
 			}
 
 			await player.save();
 			crowniclesInstance?.logsDatabase.logPveFight(fight).then();
 		}
 
-		if (!await player.leavePVEIslandIfNoEnergy(endFightResponse)) {
+		if (!await player.leavePVEIslandIfNoEnergy(endFightResponse, playerActiveObjects)) {
 			await Maps.stopTravel(player);
 			await player.setLastReportWithEffect(0, Effect.NO_EFFECT, NumberChangeReason.BIG_EVENT);
 			await chooseDestinationFn(context, player, null, endFightResponse);
@@ -238,7 +241,7 @@ function createCollectorEndCallback(
 	monsterFighter: MonsterFighter,
 	_randomLevel: number,
 	context: PacketContext,
-	fightCallback: (fight: FightController | null, endFightResponse: CrowniclesPacket[]) => Promise<void>
+	fightCallback: (fight: FightController | null, endFightResponse: CrowniclesPacket[], playerActiveObjects: PlayerActiveObjects) => Promise<void>
 ): EndCallback {
 	return async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]) => {
 		const firstReaction = collector.getFirstReaction();

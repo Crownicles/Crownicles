@@ -124,7 +124,7 @@ export class FightView {
 	 */
 	addActionToHistory(
 		response: CrowniclesPacket[],
-		fighter: PlayerFighter | MonsterFighter,
+		fighter: PlayerFighter | MonsterFighter | AiPlayerFighter,
 		fightAction: FightAction,
 		fightActionResult: FightActionResult | FightAlterationResult | PetAssistanceResult
 	): void {
@@ -182,7 +182,7 @@ export class FightView {
 		 * @param fightActionResult
 		 */
 		const getPetIfRelevant = (
-			fighter: PlayerFighter | MonsterFighter,
+			fighter: PlayerFighter | MonsterFighter | AiPlayerFighter,
 			fightActionResult: FightActionResult | FightAlterationResult | PetAssistanceResult
 		): OwnedPet | undefined => {
 			// Check if the fighter is a player (not a monster) and has a cached pet
@@ -294,8 +294,8 @@ export class FightView {
 	 */
 	outroFight(
 		response: CrowniclesPacket[],
-		loser: PlayerFighter | MonsterFighter,
-		winner: PlayerFighter | MonsterFighter,
+		loser: PlayerFighter | MonsterFighter | AiPlayerFighter,
+		winner: PlayerFighter | MonsterFighter | AiPlayerFighter,
 		draw: boolean
 	): void {
 		if (this.fightController.isSilentMode()) {
