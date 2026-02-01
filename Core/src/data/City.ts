@@ -5,35 +5,35 @@ import { HomeConstants } from "../../../Lib/src/constants/HomeConstants";
 import { HomeLevel } from "../../../Lib/src/types/HomeLevel";
 
 export class InnMeal {
-	public readonly id: string;
+	public readonly id!: string;
 
-	public readonly price: number;
+	public readonly price!: number;
 
-	public readonly energy: number;
+	public readonly energy!: number;
 }
 
 export class InnRoom {
-	public readonly id: string;
+	public readonly id!: string;
 
-	public readonly price: number;
+	public readonly price!: number;
 
-	public readonly health: number;
+	public readonly health!: number;
 }
 
 export class CityInn {
-	public readonly id: string;
+	public readonly id!: string;
 
-	public readonly meals: InnMeal[];
+	public readonly meals!: InnMeal[];
 
-	public readonly rooms: InnRoom[];
+	public readonly rooms!: InnRoom[];
 }
 
 export class City extends Data<string> {
-	public readonly mapLinks: number[];
+	public readonly mapLinks!: number[];
 
-	public readonly maps: number[];
+	public readonly maps!: number[];
 
-	public readonly inns: CityInn[];
+	public readonly inns!: CityInn[];
 
 	public readonly shops?: string[];
 
@@ -84,9 +84,9 @@ export class City extends Data<string> {
 export class CityDataController extends DataControllerString<City> {
 	static readonly instance: CityDataController = new CityDataController("cities");
 
-	static mapLinksCache: Map<number, City> = null;
+	static mapLinksCache: Map<number, City> | null = null;
 
-	static mapCache: Map<number, City> = null;
+	static mapCache: Map<number, City> | null = null;
 
 	newInstance(): City {
 		return new City();
@@ -96,21 +96,21 @@ export class CityDataController extends DataControllerString<City> {
 		if (!CityDataController.mapLinksCache) {
 			this.initMapLinksCache();
 		}
-		return CityDataController.mapLinksCache.get(mapLinkId);
+		return CityDataController.mapLinksCache!.get(mapLinkId);
 	}
 
 	getCityByMapId(mapId: number): City | undefined {
 		if (!CityDataController.mapCache) {
 			this.initMapCache();
 		}
-		return CityDataController.mapCache.get(mapId);
+		return CityDataController.mapCache!.get(mapId);
 	}
 
 	getRandomCity(): City {
 		if (!CityDataController.mapCache) {
 			this.initMapCache();
 		}
-		return RandomUtils.crowniclesRandom.pick(Array.from(CityDataController.mapCache.values()));
+		return RandomUtils.crowniclesRandom.pick(Array.from(CityDataController.mapCache!.values()));
 	}
 
 	private initMapLinksCache(): void {

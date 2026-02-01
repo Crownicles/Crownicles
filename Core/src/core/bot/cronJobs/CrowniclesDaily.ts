@@ -36,10 +36,10 @@ export class CrowniclesDaily {
 		CrowniclesDaily.randomPotion()
 			.finally(() => null);
 		CrowniclesDaily.randomLovePointsLoose()
-			.then(petLoveChange => crowniclesInstance.logsDatabase.logDailyTimeout(petLoveChange)
+			.then(petLoveChange => crowniclesInstance?.logsDatabase.logDailyTimeout(petLoveChange)
 				.then());
 		CrowniclesDaily.reloadEnchanter().then();
-		crowniclesInstance.logsDatabase.log15BestTopWeek()
+		crowniclesInstance?.logsDatabase.log15BestTopWeek()
 			.then();
 	}
 
@@ -53,7 +53,7 @@ export class CrowniclesDaily {
 		const newPotionId = PotionDataController.instance.randomShopPotion(previousPotionId).id;
 		await Settings.SHOP_POTION.setValue(newPotionId);
 		CrowniclesLogger.info("New potion in shop", { newPotionId });
-		crowniclesInstance.logsDatabase.logDailyPotion(newPotionId)
+		crowniclesInstance?.logsDatabase.logDailyPotion(newPotionId)
 			.then();
 	}
 

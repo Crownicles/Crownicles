@@ -33,7 +33,7 @@ const shiftLogsDateTestCommand: ExecuteTestCommandLike = async (_player, args) =
 
 	try {
 		// Get all tables that have a 'date' column
-		const tablesWithDate = await crowniclesInstance.logsDatabase.sequelize.query<{ TABLE_NAME: string }>(
+		const tablesWithDate = await crowniclesInstance?.logsDatabase.sequelize.query<{ TABLE_NAME: string }>(
 			`SELECT DISTINCT TABLE_NAME 
 			 FROM information_schema.COLUMNS 
 			 WHERE TABLE_SCHEMA = DATABASE() 
@@ -50,7 +50,7 @@ const shiftLogsDateTestCommand: ExecuteTestCommandLike = async (_player, args) =
 
 		// Update each table
 		for (const table of tablesWithDate) {
-			const [, rowsAffected] = await crowniclesInstance.logsDatabase.sequelize.query(
+			const [, rowsAffected] = await crowniclesInstance?.logsDatabase.sequelize.query(
 				`UPDATE \`${table.TABLE_NAME}\` SET date = date - :seconds`,
 				{
 					replacements: { seconds: secondsToShift },

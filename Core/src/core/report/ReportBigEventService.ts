@@ -133,7 +133,7 @@ function handleFirstEventEnd(
 		return false;
 	}
 
-	crowniclesInstance.logsDatabase.logBigEvent(player.keycloakId, event.id, possibilityName, "0").then();
+	crowniclesInstance?.logsDatabase.logBigEvent(player.keycloakId, event.id, possibilityName, "0").then();
 
 	response.push(makePacket(CommandReportBigEventResultRes, {
 		eventId: event.id,
@@ -186,7 +186,7 @@ async function doPossibility(params: DoPossibilityParams): Promise<void> {
 	const validOutcomes = await getValidOutcomes(possibility[1], player);
 	const randomOutcome = RandomUtils.crowniclesRandom.pick(validOutcomes);
 
-	crowniclesInstance.logsDatabase.logBigEvent(player.keycloakId, event.id, possibility[0], randomOutcome[0]).then();
+	crowniclesInstance?.logsDatabase.logBigEvent(player.keycloakId, event.id, possibility[0], randomOutcome[0]).then();
 
 	const newMapLink = await applyPossibilityOutcome({
 		eventId: event.id,

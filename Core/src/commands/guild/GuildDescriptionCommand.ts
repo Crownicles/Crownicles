@@ -40,7 +40,7 @@ async function acceptGuildDescription(player: Player, description: string, respo
 	guild.guildDescription = description;
 	response.push(makePacket(CommandGuildDescriptionAcceptPacketRes, {}));
 	await guild.save();
-	crowniclesInstance.logsDatabase.logGuildDescriptionChange(player.keycloakId, guild).then();
+	crowniclesInstance?.logsDatabase.logGuildDescriptionChange(player.keycloakId, guild).then();
 }
 
 function endCallback(player: Player, description: string): EndCallback {

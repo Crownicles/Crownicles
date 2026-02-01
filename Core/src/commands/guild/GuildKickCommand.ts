@@ -52,14 +52,14 @@ async function acceptGuildKick(player: Player, kickedPlayer: Player, response: C
 	kickedPlayer.guildId = null;
 
 	if (guild.elderId === kickedPlayer.id) {
-		crowniclesInstance.logsDatabase.logGuildElderRemove(guild, guild.elderId).then();
+		crowniclesInstance?.logsDatabase.logGuildElderRemove(guild, guild.elderId).then();
 		guild.elderId = null;
 	}
 	await Promise.all([
 		kickedPlayer.save(),
 		guild.save()
 	]);
-	crowniclesInstance.logsDatabase.logGuildKick(player.keycloakId, guild).then();
+	crowniclesInstance?.logsDatabase.logGuildKick(player.keycloakId, guild).then();
 
 	response.push(makePacket(CommandGuildKickAcceptPacketRes, {
 		kickedKeycloakId: kickedPlayer.keycloakId,

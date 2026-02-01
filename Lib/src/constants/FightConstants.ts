@@ -42,6 +42,16 @@ export abstract class FightConstants {
 	// Out-of-breath attack failure probability
 	static readonly OUT_OF_BREATH_FAILURE_PROBABILITY = 0.8;
 
+	// Default breath values (fallback when player class is not found)
+	static readonly DEFAULT_BASE_BREATH = 4;
+
+	static readonly DEFAULT_MAX_BREATH = 10;
+
+	static readonly DEFAULT_BREATH_REGEN = 4;
+
+	// Default player max cumulative energy (fallback when player class is not found)
+	static readonly PLAYER_MAX_ENERGY = 100;
+
 	// Divider of the damage a fight action will deal if it is a miss
 	static readonly FAILURE_DIVIDERS = [
 		0.25,

@@ -3,6 +3,7 @@ import {
 	CrowniclesPacket, makePacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import Player from "../database/game/models/Player";
+import { PlayerActiveObjects } from "../database/game/models/PlayerActiveObjects";
 import { PetEntities } from "../database/game/models/PetEntity";
 import { ExpeditionConstants } from "../../../../Lib/src/constants/ExpeditionConstants";
 import { PetUtils } from "../utils/PetUtils";
@@ -354,6 +355,7 @@ async function executeSmallEvent(
 	response: CrowniclesPacket[],
 	player: Player,
 	context: PacketContext,
+	_playerActiveObjects: PlayerActiveObjects,
 	_testArgs?: string[]
 ): Promise<void> {
 	await MissionsController.update(player, response, { missionId: "meetVelanna" });

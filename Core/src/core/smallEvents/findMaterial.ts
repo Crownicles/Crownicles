@@ -26,7 +26,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 			throw new Error(`No material found for rarity ${MaterialRarity[materialRarity]}`);
 		}
 
-		await Materials.giveMaterial(player.id, material.id, 1);
+		await Materials.giveMaterial(player.id, parseInt(material.id, 10), 1);
 
 		response.push(makePacket(SmallEventFindMaterialPacket, {
 			materialId: material.id,

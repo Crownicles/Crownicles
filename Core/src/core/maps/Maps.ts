@@ -79,7 +79,7 @@ export class Maps {
 		player.startTravelDate = new Date(time);
 		await player.save();
 
-		crowniclesInstance.logsDatabase.logNewTravel(player.keycloakId, newLink)
+		crowniclesInstance?.logsDatabase.logNewTravel(player.keycloakId, newLink)
 			.then();
 	}
 

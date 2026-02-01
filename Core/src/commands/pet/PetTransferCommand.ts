@@ -135,7 +135,7 @@ async function deposePetToGuild(
 	(player.petId as number | null) = null;
 	await player.save();
 	await GuildPets.addPet(guild, validation.playerPet, false).save();
-	crowniclesInstance.logsDatabase.logPetTransfer(validation.playerPet, null!).then();
+	crowniclesInstance?.logsDatabase.logPetTransfer(validation.playerPet, null!).then();
 
 	response.push(makePacket(CommandPetTransferSuccessPacket, {
 		oldPet: validation.playerPet.asOwnedPet()
@@ -164,7 +164,7 @@ async function withdrawPetFromGuild(
 	await toWithdrawPet.destroy();
 	PetEntities.getById(toWithdrawPet.petEntityId).then(petEntity => {
 		if (petEntity) {
-			crowniclesInstance.logsDatabase.logPetTransfer(null!, petEntity).then();
+			crowniclesInstance?.logsDatabase.logPetTransfer(null!, petEntity).then();
 		}
 	});
 
@@ -204,7 +204,7 @@ async function switchPetWithGuild(
 		return;
 	}
 
-	crowniclesInstance.logsDatabase.logPetTransfer(validation.playerPet, newPlayerPet).then();
+	crowniclesInstance?.logsDatabase.logPetTransfer(validation.playerPet, newPlayerPet).then();
 
 	response.push(makePacket(CommandPetTransferSuccessPacket, {
 		oldPet: validation.playerPet.asOwnedPet(),

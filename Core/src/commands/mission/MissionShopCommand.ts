@@ -342,7 +342,7 @@ export default class MissionShopCommand {
 		await ShopUtils.createAndSendShopCollector(context, response, {
 			shopCategories,
 			player,
-			logger: crowniclesInstance.logsDatabase.logMissionShopBuyout,
+			logger: crowniclesInstance?.logsDatabase.logMissionShopBuyout,
 			additionalShopData: {
 				currency: ShopCurrency.GEM,
 				gemToMoneyRatio: calculateGemsToMoneyRatio()

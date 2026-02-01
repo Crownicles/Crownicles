@@ -190,7 +190,7 @@ function getBuySlotExtensionShopItemCallback(playerId: number, price: number): E
 			response,
 			reason: NumberChangeReason.SHOP
 		});
-		crowniclesInstance.logsDatabase.logClassicalShopBuyout(player.keycloakId, ShopItemType.SLOT_EXTENSION)
+		crowniclesInstance?.logsDatabase.logClassicalShopBuyout(player.keycloakId, ShopItemType.SLOT_EXTENSION)
 			.then();
 		invInfo.addSlotForCategory(category);
 		await Promise.all([player.save(), invInfo.save()]);
@@ -288,7 +288,7 @@ export default class ShopCommand {
 				remainingPotions: ShopConstants.MAX_DAILY_POTION_BUYOUTS - await LogsReadRequests.getAmountOfDailyPotionsBoughtByPlayer(player.keycloakId),
 				dailyPotion: toItemWithDetails(player, potion, 0, null)
 			},
-			logger: crowniclesInstance.logsDatabase.logClassicalShopBuyout
+			logger: crowniclesInstance?.logsDatabase.logClassicalShopBuyout
 		});
 	}
 }

@@ -45,7 +45,7 @@ export class CrowniclesMonday {
 	 * End the top week
 	 */
 	static async topWeekEnd(): Promise<void> {
-		crowniclesInstance.logsDatabase.log15BestTopWeek()
+		crowniclesInstance?.logsDatabase.log15BestTopWeek()
 			.then();
 		const winner = await Player.findOne({
 			where: {
@@ -69,7 +69,7 @@ export class CrowniclesMonday {
 		CrowniclesLogger.info("Weekly leaderboard has been reset !");
 		await PlayerMissionsInfo.resetShopBuyout();
 		CrowniclesLogger.info("All players can now buy again points from the mission shop !");
-		crowniclesInstance.logsDatabase.logTopWeekEnd()
+		crowniclesInstance?.logsDatabase.logTopWeekEnd()
 			.then();
 	}
 

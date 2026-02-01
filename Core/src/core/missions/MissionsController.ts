@@ -192,7 +192,7 @@ export abstract class MissionsController {
 				missionType: MissionType.NORMAL,
 				gemsToWin: 0 // Don't win gems in secondary missions
 			});
-			crowniclesInstance.logsDatabase.logMissionFinished(player.keycloakId, mission.missionId, mission.missionVariant, mission.missionObjective)
+			crowniclesInstance?.logsDatabase.logMissionFinished(player.keycloakId, mission.missionId, mission.missionVariant, mission.missionObjective)
 				.then();
 			await mission.destroy();
 		}
@@ -204,7 +204,7 @@ export abstract class MissionsController {
 				moneyToWin: Math.round(dailyMission.moneyToWin * Constants.MISSIONS.DAILY_MISSION_MONEY_MULTIPLIER), // Daily missions gives less money than secondary missions
 				pointsToWin: Math.round(dailyMission.pointsToWin * Constants.MISSIONS.DAILY_MISSION_POINTS_MULTIPLIER) // Daily missions give more points than secondary missions
 			});
-			crowniclesInstance.logsDatabase.logMissionDailyFinished(player.keycloakId)
+			crowniclesInstance?.logsDatabase.logMissionDailyFinished(player.keycloakId)
 				.then();
 		}
 		await player.save();
@@ -242,7 +242,7 @@ export abstract class MissionsController {
 		for (const mission of missionSlots) {
 			if (mission.hasExpired()) {
 				expiredMissions.push(mission);
-				crowniclesInstance.logsDatabase.logMissionFailed(player.keycloakId, mission.missionId, mission.missionVariant, mission.missionObjective)
+				crowniclesInstance?.logsDatabase.logMissionFailed(player.keycloakId, mission.missionId, mission.missionVariant, mission.missionObjective)
 					.then();
 				await mission.destroy();
 			}
@@ -354,7 +354,7 @@ export abstract class MissionsController {
 			moneyToWin: missionData.money![prop.index]
 		});
 		const retMission = await MissionSlots.getById(missionSlot.id);
-		crowniclesInstance.logsDatabase.logMissionFound(player.keycloakId, retMission.missionId, retMission.missionVariant, retMission.missionObjective)
+		crowniclesInstance?.logsDatabase.logMissionFound(player.keycloakId, retMission.missionId, retMission.missionVariant, retMission.missionObjective)
 			.then();
 		return retMission;
 	}

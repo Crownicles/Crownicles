@@ -162,7 +162,7 @@ function getEndCallback(player: Player): EndCallback {
 export const smallEventFuncs: SmallEventFuncs = {
 	canBeExecuted: Maps.isOnContinent,
 
-	executeSmallEvent: (response, player, context, testArgs?: string[]) => {
+	executeSmallEvent: (response, player, context, _playerActiveObjects, testArgs?: string[]) => {
 		const events: WitchEventSelection = testArgs
 			? {
 				randomAdvice: WitchActionDataController.instance.getById(testArgs[0])!,

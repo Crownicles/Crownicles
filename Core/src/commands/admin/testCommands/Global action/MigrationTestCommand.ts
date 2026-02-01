@@ -17,10 +17,10 @@ export const commandInfo: ITestCommand = {
 
 function getDatabaseFromName(databaseName: string): LogsDatabase | GameDatabase {
 	if (databaseName === "logs") {
-		return crowniclesInstance.logsDatabase;
+		return crowniclesInstance?.logsDatabase;
 	}
 	else if (databaseName === "game") {
-		return crowniclesInstance.gameDatabase;
+		return crowniclesInstance!.gameDatabase;
 	}
 	throw new Error(`Unknown database name "${databaseName}"`);
 }

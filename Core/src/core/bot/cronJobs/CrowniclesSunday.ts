@@ -39,7 +39,7 @@ export class CrowniclesSunday {
 		 */
 		await Settings.NEXT_SEASON_RESET.setValue(await Settings.NEXT_SEASON_RESET.getValue() + 7 * 24 * 60 * 60 * 1000);
 
-		crowniclesInstance.logsDatabase.log15BestSeason()
+		crowniclesInstance?.logsDatabase.log15BestSeason()
 			.then();
 		const winner = await CrowniclesSunday.findSeasonWinner();
 		if (winner !== null) {
@@ -53,7 +53,7 @@ export class CrowniclesSunday {
 		await CrowniclesSunday.seasonEndQueries();
 
 		CrowniclesLogger.info("Season has been ended !");
-		crowniclesInstance.logsDatabase.logSeasonEnd()
+		crowniclesInstance?.logsDatabase.logSeasonEnd()
 			.then();
 	}
 

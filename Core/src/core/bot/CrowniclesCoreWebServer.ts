@@ -23,7 +23,7 @@ export abstract class CrowniclesCoreWebServer {
 
 		app.post("/maintenance", (req: Request, res: Response) => {
 			const enabled = req.query.enabled === "1";
-			crowniclesInstance.setMaintenance(enabled, false);
+			crowniclesInstance!.setMaintenance(enabled, false);
 			CrowniclesLogger.info("Maintenance mode changed", { enabled });
 			res.status(200).send("OK");
 		});

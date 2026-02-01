@@ -44,7 +44,7 @@ CrowniclesLogger.init(botConfig.LOG_LEVEL, botConfig.LOG_LOCATIONS, { app: "Core
 		password: botConfig.LOKI_PASSWORD
 	}
 	: undefined);
-export let crowniclesInstance: Crownicles = null;
+export let crowniclesInstance: Crownicles | null = null;
 
 CrowniclesLogger.info(`${CoreConstants.OPENING_LINE} - ${process.env.npm_package_version}`);
 
@@ -65,7 +65,7 @@ mqttClient.on("connect", () => {
 });
 
 function globalStopOfPlayers(response: CrowniclesPacket[], dataJson: {
-	context: PacketContext; packet: PacketLike<unknown>;
+	context: PacketContext; packet: PacketLike<CrowniclesPacket>;
 }): boolean {
 	if (
 		botConfig.MODE_MAINTENANCE
@@ -101,6 +101,10 @@ mqttClient.on("message", async (topic, message) => {
 	const response: CrowniclesPacket[] = [];
 	const context: PacketContext = dataJson.context;
 
+	if (!crowniclesInstance) {
+		CrowniclesLogger.error("Crownicles instance not initialized");
+		return;
+	}
 
 	if (!globalStopOfPlayers(response, dataJson)) {
 		const listener = crowniclesInstance.packetListener.getListener(dataJson.packet.name);
@@ -111,7 +115,7 @@ mqttClient.on("message", async (topic, message) => {
 		}
 		else {
 			if (context.keycloakId) {
-				crowniclesInstance.logsDatabase.logCommandUsage(context.keycloakId, context.frontEndOrigin, context.frontEndSubOrigin, dataJson.packet.name)
+				crowniclesInstance?.logsDatabase.logCommandUsage(context.keycloakId, context.frontEndOrigin, context.frontEndSubOrigin, dataJson.packet.name)
 					.then();
 			}
 			else {
@@ -122,9 +126,9 @@ mqttClient.on("message", async (topic, message) => {
 			try {
 				await listener(response, context, dataJson.packet.data);
 			}
-			catch (error) {
+			catch (error: unknown) {
 				CrowniclesLogger.errorWithObj(`Error while processing packet '${dataJson.packet.name}'`, error);
-				response.push(makePacket(ErrorPacket, { message: error.message }));
+				response.push(makePacket(ErrorPacket, { message: error instanceof Error ? error.message : String(error) }));
 				CrowniclesCoreMetrics.incrementPacketErrorCount(dataJson.packet.name);
 			}
 			CrowniclesCoreMetrics.observePacketTime(dataJson.packet.name, millisecondsToSeconds(Date.now() - startTime));

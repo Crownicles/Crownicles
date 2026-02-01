@@ -75,9 +75,9 @@ export class Crownicles {
 		Crownicles.randomPotion()
 			.finally(() => null);
 		Crownicles.randomLovePointsLoose()
-			.then(petLoveChange => crowniclesInstance.logsDatabase.logDailyTimeout(petLoveChange)
+			.then(petLoveChange => crowniclesInstance?.logsDatabase.logDailyTimeout(petLoveChange)
 				.then());
-		crowniclesInstance.logsDatabase.log15BestTopWeek()
+		crowniclesInstance?.logsDatabase.log15BestTopWeek()
 			.then();
 	}
 
@@ -90,7 +90,7 @@ export class Crownicles {
 		const newPotionId = PotionDataController.instance.randomShopPotion(previousPotionId).id;
 		await Settings.SHOP_POTION.setValue(newPotionId);
 		CrowniclesLogger.info("New potion in shop", { newPotionId });
-		crowniclesInstance.logsDatabase.logDailyPotion(newPotionId)
+		crowniclesInstance?.logsDatabase.logDailyPotion(newPotionId)
 			.then();
 	}
 
@@ -138,7 +138,7 @@ export class Crownicles {
 		 */
 		await Settings.NEXT_SEASON_RESET.setValue(await Settings.NEXT_SEASON_RESET.getValue() + 7 * 24 * 60 * 60 * 1000);
 
-		crowniclesInstance.logsDatabase.log15BestSeason()
+		crowniclesInstance?.logsDatabase.log15BestSeason()
 			.then();
 		const winner = await Crownicles.findSeasonWinner();
 		if (winner !== null) {
@@ -152,7 +152,7 @@ export class Crownicles {
 		await Crownicles.seasonEndQueries();
 
 		CrowniclesLogger.info("Season has been ended !");
-		crowniclesInstance.logsDatabase.logSeasonEnd()
+		crowniclesInstance?.logsDatabase.logSeasonEnd()
 			.then();
 	}
 
@@ -160,7 +160,7 @@ export class Crownicles {
 	 * End the top week
 	 */
 	static async topWeekEnd(): Promise<void> {
-		crowniclesInstance.logsDatabase.log15BestTopWeek()
+		crowniclesInstance?.logsDatabase.log15BestTopWeek()
 			.then();
 		const winner = await Player.findOne({
 			where: {
@@ -184,7 +184,7 @@ export class Crownicles {
 		CrowniclesLogger.info("Weekly leaderboard has been reset !");
 		await PlayerMissionsInfo.resetShopBuyout();
 		CrowniclesLogger.info("All players can now buy again points from the mission shop !");
-		crowniclesInstance.logsDatabase.logTopWeekEnd()
+		crowniclesInstance?.logsDatabase.logTopWeekEnd()
 			.then();
 	}
 

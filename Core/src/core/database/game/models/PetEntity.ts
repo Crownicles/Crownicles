@@ -88,7 +88,7 @@ export class PetEntity extends Model {
 		else if (this.lovePoints < 0) {
 			this.lovePoints = 0;
 		}
-		crowniclesInstance.logsDatabase.logPetLoveChange(this, parameters.reason)
+		crowniclesInstance?.logsDatabase.logPetLoveChange(this, parameters.reason)
 			.then();
 		await MissionsController.update(parameters.player, parameters.response, {
 			missionId: "tamedPet",

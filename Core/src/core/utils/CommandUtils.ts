@@ -284,7 +284,7 @@ export const commandRequires = <T extends CrowniclesPacket>(packet: PacketLike<T
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Decorator needs flexible signature to accept methods with varying parameter counts
 	(target: unknown, prop: string, descriptor: TypedPropertyDescriptor<any>): void => {
 		const originalMethod = descriptor.value as WithPlayerPacketListenerCallbackServer;
-		crowniclesInstance.packetListener.addPacketListener<T>(packet, async (response: CrowniclesPacket[], context: PacketContext, packet: T): Promise<void> => {
+		crowniclesInstance!.packetListener.addPacketListener<T>(packet, async (response: CrowniclesPacket[], context: PacketContext, packet: T): Promise<void> => {
 			if (!context.keycloakId) {
 				return;
 			}
@@ -321,7 +321,7 @@ export const adminCommand = <T extends CrowniclesPacket>(packet: PacketLike<T>, 
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Decorator needs flexible signature to accept methods with varying parameter counts
 	(target: unknown, prop: string, descriptor: TypedPropertyDescriptor<any>): void => {
 		const originalMethod = descriptor.value as WithoutPlayerPacketListenerCallbackServer;
-		crowniclesInstance.packetListener.addPacketListener<T>(packet, async (response: CrowniclesPacket[], context: PacketContext, packet: T): Promise<void> => {
+		crowniclesInstance!.packetListener.addPacketListener<T>(packet, async (response: CrowniclesPacket[], context: PacketContext, packet: T): Promise<void> => {
 			if (!verifyRightGroups(context, packet)) {
 				response.push(makePacket(RequirementRightPacket, {}));
 				return;

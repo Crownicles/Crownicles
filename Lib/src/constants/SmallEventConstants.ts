@@ -522,6 +522,8 @@ export abstract class SmallEventConstants {
 	} as const;
 
 	static readonly FIND_MATERIAL = {
-		SMALL_EVENT_NAME: "findMaterial"
+		SMALL_EVENT_NAME: "findMaterial",
+		RARE_PROBABILITY: 0.1,
+		UNCOMMON_PROBABILITY: 0.3
 	} as const;
 }

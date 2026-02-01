@@ -74,7 +74,7 @@ export default class LeagueRewardCommand {
 			await giveItemToPlayer(response, context, player, item);
 
 			// Log the reward claim synchronously to ensure it's recorded before unblock
-			await crowniclesInstance.logsDatabase.logPlayerLeagueReward(player.keycloakId, leagueLastSeason.id);
+			await crowniclesInstance?.logsDatabase.logPlayerLeagueReward(player.keycloakId, leagueLastSeason.id);
 			await player.save();
 
 			response.push(makePacket(CommandLeagueRewardSuccessPacketRes, {

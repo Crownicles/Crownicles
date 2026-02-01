@@ -148,7 +148,7 @@ export default class DailyBonusCommand {
 		if (equippedUsableObject) {
 			const item = equippedUsableObject.getItem() as ObjectItem;
 			await activateDailyItem(player, item, inventoryInfo, response);
-			crowniclesInstance.logsDatabase.logPlayerDaily(player.keycloakId, item)
+			crowniclesInstance?.logsDatabase.logPlayerDaily(player.keycloakId, item)
 				.then();
 			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.DAILY_BONUS);
 			return;
@@ -180,7 +180,7 @@ export default class DailyBonusCommand {
 				freshInventoryInfo,
 				response
 			);
-			crowniclesInstance.logsDatabase.logPlayerDaily(player.keycloakId, objectItem)
+			crowniclesInstance?.logsDatabase.logPlayerDaily(player.keycloakId, objectItem)
 				.then();
 		};
 

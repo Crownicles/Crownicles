@@ -71,7 +71,7 @@ function getEndCallback(player: Player) {
 			params: { tier: newClass.classGroup }
 		});
 		await player.save();
-		crowniclesInstance.logsDatabase.logPlayerClassChange(player.keycloakId, newClass.id)
+		crowniclesInstance?.logsDatabase.logPlayerClassChange(player.keycloakId, newClass.id)
 			.then();
 
 		response.push(makePacket(CommandClassesChangeSuccessPacket, {

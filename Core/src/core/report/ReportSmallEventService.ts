@@ -112,7 +112,7 @@ async function loadAndExecuteSmallEvent(
 		const smallEventModule = require.resolve(`../smallEvents/${filename}`);
 		try {
 			const smallEvent: SmallEventFuncs = require(smallEventModule).smallEventFuncs;
-			crowniclesInstance.logsDatabase.logSmallEvent(player.keycloakId, event).then();
+			crowniclesInstance?.logsDatabase.logSmallEvent(player.keycloakId, event).then();
 
 			// Save the small event BEFORE execution so it gets affected by timeTravel() if the event succeeds
 			const smallEventRecord = PlayerSmallEvents.createPlayerSmallEvent(player.id, event, Date.now());

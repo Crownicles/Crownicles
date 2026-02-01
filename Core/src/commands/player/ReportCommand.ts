@@ -130,7 +130,7 @@ export default class ReportCommand {
 		player: Player,
 		_packet: CommandReportPacketReq,
 		context: PacketContext,
-		forceSmallEvent: string = null,
+		forceSmallEvent: string | null = null,
 		forceSpecificEvent = -1
 	): Promise<void> {
 		if (player.score === 0 && player.effectId === Effect.NOT_STARTED.id) {
@@ -258,6 +258,10 @@ async function handleInnRoomReaction(
 
 async function handleEnchantReaction(player: Player, reaction: ReactionCollectorEnchantReaction, response: CrowniclesPacket[]): Promise<void> {
 	const enchantment = ItemEnchantment.getById(await Settings.ENCHANTER_ENCHANTMENT_ID.getValue());
+	if (!enchantment) {
+		CrowniclesLogger.error("No enchantment found for enchanter. Check ENCHANTER_ENCHANTMENT_ID setting.");
+		return;
+	}
 	const isPlayerMage = player.class === ClassConstants.CLASSES_ID.MYSTIC_MAGE;
 	const price = enchantment.getEnchantmentCost(isPlayerMage);
 
@@ -268,7 +272,7 @@ async function handleEnchantReaction(player: Player, reaction: ReactionCollector
 	if (!hasEnoughMoney || !hasEnoughGems) {
 		response.push(makePacket(CommandReportEnchantNotEnoughCurrenciesRes, {
 			missingMoney: hasEnoughMoney ? 0 : price.money - player.money,
-			missingGems: hasEnoughGems ? 0 : price.gems - playerMissionsInfo.gems
+			missingGems: hasEnoughGems ? 0 : price.gems - (playerMissionsInfo?.gems ?? 0)
 		}));
 		return;
 	}
@@ -290,7 +294,7 @@ async function handleEnchantReaction(player: Player, reaction: ReactionCollector
 			reason: NumberChangeReason.ENCHANT_ITEM
 		});
 	}
-	if (price.gems > 0) {
+	if (price.gems > 0 && playerMissionsInfo) {
 		await playerMissionsInfo.spendGems(price.gems, response, NumberChangeReason.ENCHANT_ITEM);
 	}
 
@@ -309,7 +313,7 @@ async function handleEnchantReaction(player: Player, reaction: ReactionCollector
 async function handleBuyHomeReaction(player: Player, city: City, data: ReactionCollectorCityData, response: CrowniclesPacket[]): Promise<void> {
 	await player.reload();
 
-	if (data.home.manage.newPrice === null) {
+	if (!data.home.manage?.newPrice) {
 		CrowniclesLogger.error(`Player ${player.keycloakId} tried to buy a home in city ${city.id} but no home is available to buy. It shouldn't happen because the player must not be able to switch while in the collector.`);
 		return;
 	}
@@ -337,7 +341,7 @@ async function handleBuyHomeReaction(player: Player, city: City, data: ReactionC
 async function handleUpgradeHomeReaction(player: Player, city: City, data: ReactionCollectorCityData, response: CrowniclesPacket[]): Promise<void> {
 	await player.reload();
 
-	if (!data.home.manage.upgrade) {
+	if (!data.home.manage?.upgrade) {
 		CrowniclesLogger.error(`Player ${player.keycloakId} tried to upgrade a home in city ${city.id} but no upgrade is available. It shouldn't happen because the player must not be able to switch while in the collector.`);
 		return;
 	}
@@ -375,7 +379,7 @@ async function handleUpgradeHomeReaction(player: Player, city: City, data: React
 async function handleMoveHomeReaction(player: Player, city: City, data: ReactionCollectorCityData, response: CrowniclesPacket[]): Promise<void> {
 	await player.reload();
 
-	if (!data.home.manage.movePrice) {
+	if (!data.home.manage?.movePrice) {
 		CrowniclesLogger.error(`Player ${player.keycloakId} tried to move a home to city ${city.id} but no home is available to move. It shouldn't happen because the player must not be able to switch while in the collector.`);
 		return;
 	}
@@ -498,7 +502,7 @@ async function openRoyalMarket(player: Player, context: PacketContext, response:
 	await ShopUtils.createAndSendShopCollector(context, response, {
 		shopCategories,
 		player,
-		logger: crowniclesInstance.logsDatabase.logMissionShopBuyout,
+		logger: crowniclesInstance?.logsDatabase.logMissionShopBuyout,
 		additionalShopData: {
 			currency: ShopCurrency.GEM,
 			gemToMoneyRatio: calculateGemsToMoneyRatio()
@@ -660,7 +664,7 @@ async function doPossibility(
 	player.nextEvent = null;
 
 	if (event.id === 0 && possibility[0] === "end") { // Don't do anything if the player ends the first report
-		crowniclesInstance.logsDatabase.logBigEvent(player.keycloakId, event.id, possibility[0], "0")
+		crowniclesInstance?.logsDatabase.logBigEvent(player.keycloakId, event.id, possibility[0], "0")
 			.then();
 		response.push(makePacket(CommandReportBigEventResultRes, {
 			eventId: event.id,
@@ -690,7 +694,7 @@ async function doPossibility(
 
 	const randomOutcome = RandomUtils.crowniclesRandom.pick(validOutcomes);
 
-	crowniclesInstance.logsDatabase.logBigEvent(player.keycloakId, event.id, possibility[0], randomOutcome[0])
+	crowniclesInstance?.logsDatabase.logBigEvent(player.keycloakId, event.id, possibility[0], randomOutcome[0])
 		.then();
 
 	const newMapLink = await applyPossibilityOutcome({
@@ -858,7 +862,7 @@ async function automaticChooseDestination(forcedLink: MapLink, player: Player, d
 async function chooseDestination(
 	context: PacketContext,
 	player: Player,
-	forcedLink: MapLink,
+	forcedLink: MapLink | null,
 	response: CrowniclesPacket[],
 	mainPacket = true
 ): Promise<void> {
@@ -943,7 +947,7 @@ async function needSmallEvent(player: Player, date: Date): Promise<boolean> {
  * @param date
  * @param effectId
  */
-async function sendTravelPath(player: Player, response: CrowniclesPacket[], date: Date, effectId: string = null): Promise<void> {
+async function sendTravelPath(player: Player, response: CrowniclesPacket[], date: Date, effectId: string | null = null): Promise<void> {
 	const timeData = await TravelTime.getTravelData(player, date);
 	const showEnergy = Maps.isOnPveIsland(player) || Maps.isOnBoat(player);
 	const lastMiniEvent = await PlayerSmallEvents.getLastOfPlayer(player.id);
@@ -1107,7 +1111,7 @@ async function doPVEBoss(
 
 			await player.save();
 
-			crowniclesInstance.logsDatabase.logPveFight(fight)
+			crowniclesInstance?.logsDatabase.logPveFight(fight)
 				.then();
 		}
 
@@ -1243,7 +1247,7 @@ async function executeSmallEvent(response: CrowniclesPacket[], player: Player, c
 		const smallEventModule = require.resolve(`../../core/smallEvents/${filename}`);
 		try {
 			const smallEvent: SmallEventFuncs = require(smallEventModule).smallEventFuncs;
-			crowniclesInstance.logsDatabase.logSmallEvent(player.keycloakId, event)
+			crowniclesInstance?.logsDatabase.logSmallEvent(player.keycloakId, event)
 				.then();
 
 			// Save the small event BEFORE execution so it gets affected by timeTravel() if the event succeeds

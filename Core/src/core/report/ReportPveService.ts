@@ -218,7 +218,7 @@ function createFightCallback(
 			}
 
 			await player.save();
-			crowniclesInstance.logsDatabase.logPveFight(fight).then();
+			crowniclesInstance?.logsDatabase.logPveFight(fight).then();
 		}
 
 		if (!await player.leavePVEIslandIfNoEnergy(endFightResponse)) {

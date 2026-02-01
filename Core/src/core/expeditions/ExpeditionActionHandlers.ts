@@ -186,7 +186,7 @@ function logExpeditionStart(params: ExpeditionLogStartParams): void {
 		playerKeycloakId, petEntityId, expeditionData, adjustedDurationMinutes, foodConsumed, rewardIndex
 	} = params;
 
-	crowniclesInstance.logsDatabase.logExpeditionStart(
+	crowniclesInstance?.logsDatabase.logExpeditionStart(
 		playerKeycloakId,
 		petEntityId,
 		{
@@ -308,7 +308,7 @@ export async function handleExpeditionCancel(
 	}
 
 	// Calculate progressive penalty based on recent cancellations
-	const recentCancellations = await crowniclesInstance.logsDatabase.countRecentExpeditionCancellations(
+	const recentCancellations = await crowniclesInstance?.logsDatabase.countRecentExpeditionCancellations(
 		player.keycloakId,
 		ExpeditionConstants.CANCELLATION_PENALTY.LOOKBACK_DAYS
 	);
@@ -320,7 +320,7 @@ export async function handleExpeditionCancel(
 	const loveChange = -loveLost;
 
 	// Log expedition cancellation to database
-	crowniclesInstance.logsDatabase.logExpeditionCancel(
+	crowniclesInstance?.logsDatabase.logExpeditionCancel(
 		player.keycloakId,
 		petEntity.id,
 		loveChange
@@ -373,7 +373,7 @@ export async function handleExpeditionRecall(
 	}
 
 	// Calculate progressive penalty based on recent cancellations (includes both cancel and recall)
-	const recentCancellations = await crowniclesInstance.logsDatabase.countRecentExpeditionCancellations(
+	const recentCancellations = await crowniclesInstance?.logsDatabase.countRecentExpeditionCancellations(
 		player.keycloakId,
 		ExpeditionConstants.CANCELLATION_PENALTY.LOOKBACK_DAYS
 	);
@@ -385,7 +385,7 @@ export async function handleExpeditionRecall(
 	const loveChange = -loveLost;
 
 	// Log expedition recall to database
-	crowniclesInstance.logsDatabase.logExpeditionRecall(
+	crowniclesInstance?.logsDatabase.logExpeditionRecall(
 		player.keycloakId,
 		petEntity.id,
 		{

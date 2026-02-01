@@ -143,7 +143,7 @@ async function dontKeepOriginalItem(response: CrowniclesPacket[], player: Player
 		missionId: "haveItemRarity",
 		params: { rarity: item.rarity }
 	});
-	crowniclesInstance.logsDatabase.logItemGain(player.keycloakId, item)
+	crowniclesInstance?.logsDatabase.logItemGain(player.keycloakId, item)
 		.then();
 }
 
@@ -168,7 +168,7 @@ async function manageMoneyPayment(response: CrowniclesPacket[], player: Player, 
 		missionId: "sellItems"
 	});
 	await player.save();
-	crowniclesInstance.logsDatabase.logItemSell(player.keycloakId, item)
+	crowniclesInstance?.logsDatabase.logItemSell(player.keycloakId, item)
 		.then();
 }
 
@@ -355,7 +355,7 @@ async function manageGiveItemRelateds(response: CrowniclesPacket[], player: Play
 		missionId: "haveItemRarity",
 		params: { rarity: item.rarity }
 	});
-	crowniclesInstance.logsDatabase.logItemGain(player.keycloakId, item)
+	crowniclesInstance?.logsDatabase.logItemGain(player.keycloakId, item)
 		.then();
 }
 

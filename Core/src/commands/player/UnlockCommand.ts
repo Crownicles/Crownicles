@@ -59,7 +59,7 @@ async function acceptUnlock(player: Player, freedPlayer: Player, response: Crown
 		freedPlayer.save()
 	]);
 
-	crowniclesInstance.logsDatabase.logUnlock(player.keycloakId, freedPlayer.keycloakId).then();
+	crowniclesInstance?.logsDatabase.logUnlock(player.keycloakId, freedPlayer.keycloakId).then();
 
 	response.push(makePacket(CommandUnlockAcceptPacketRes, {
 		unlockedKeycloakId: freedPlayer.keycloakId

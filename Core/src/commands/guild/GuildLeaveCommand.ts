@@ -50,8 +50,8 @@ async function acceptGuildLeave(player: Player, response: CrowniclesPacket[]): P
 	if (player.id === guild.chiefId) {
 		// The guild's chief is leaving
 		if (guild.elderId !== null) {
-			crowniclesInstance.logsDatabase.logGuildElderRemove(guild, guild.elderId).then();
-			crowniclesInstance.logsDatabase.logGuildChiefChange(guild, guild.elderId).then();
+			crowniclesInstance?.logsDatabase.logGuildElderRemove(guild, guild.elderId).then();
+			crowniclesInstance?.logsDatabase.logGuildChiefChange(guild, guild.elderId).then();
 
 			// An elder can recover the guild
 			player.guildId = null;
@@ -88,7 +88,7 @@ async function acceptGuildLeave(player: Player, response: CrowniclesPacket[]): P
 	}
 	if (guild.elderId === player.id) {
 		// The guild's elder is leaving
-		crowniclesInstance.logsDatabase.logGuildElderRemove(guild, guild.elderId).then();
+		crowniclesInstance?.logsDatabase.logGuildElderRemove(guild, guild.elderId).then();
 		guild.elderId = null;
 	}
 	LogsDatabase.logGuildLeave(guild, player.keycloakId).then();

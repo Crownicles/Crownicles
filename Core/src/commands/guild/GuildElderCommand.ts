@@ -86,7 +86,7 @@ async function acceptGuildElder(player: Player, promotedPlayer: Player, response
 		promotedPlayer.save(),
 		guild.save()
 	]);
-	crowniclesInstance.logsDatabase.logGuildElderAdd(guild, promotedPlayer.keycloakId).then();
+	crowniclesInstance?.logsDatabase.logGuildElderAdd(guild, promotedPlayer.keycloakId).then();
 
 	response.push(makePacket(CommandGuildElderAcceptPacketRes, {
 		promotedKeycloakId: promotedPlayer.keycloakId,

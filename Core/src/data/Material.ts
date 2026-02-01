@@ -5,9 +5,9 @@ import { MaterialRarity } from "../../../Lib/src/types/MaterialRarity";
 import { RandomUtils } from "../../../Lib/src/utils/RandomUtils";
 
 export class Material extends Data<string> {
-	public readonly type: MaterialType;
+	public readonly type!: MaterialType;
 
-	public readonly rarity: MaterialRarity;
+	public readonly rarity!: MaterialRarity;
 }
 
 export class MaterialDataController extends DataControllerString<Material> {

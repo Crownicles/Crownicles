@@ -262,7 +262,7 @@ export class Player extends Model {
 			Object.assign(this, newPlayer);
 		}
 		await this.setScore(this.score, parameters.response);
-		crowniclesInstance.logsDatabase.logScoreChange(this.keycloakId, this.score, parameters.reason)
+		crowniclesInstance?.logsDatabase.logScoreChange(this.keycloakId, this.score, parameters.reason)
 			.then();
 		this.addWeeklyScore(parameters.amount);
 		return this;
@@ -287,7 +287,7 @@ export class Player extends Model {
 			Object.assign(this, newPlayer);
 		}
 		this.setMoney(this.money);
-		crowniclesInstance.logsDatabase.logMoneyChange(this.keycloakId, this.money, parameters.reason)
+		crowniclesInstance?.logsDatabase.logMoneyChange(this.keycloakId, this.money, parameters.reason)
 			.then();
 		return this;
 	}
@@ -322,7 +322,7 @@ export class Player extends Model {
 		}
 
 		this.setTokens(newTokens);
-		await crowniclesInstance.logsDatabase.logTokensChange(this.keycloakId, this.tokens, parameters.reason);
+		await crowniclesInstance?.logsDatabase.logTokensChange(this.keycloakId, this.tokens, parameters.reason);
 
 		// Track missions for earning tokens
 		const actualChange = newTokens - previousTokens;
@@ -439,6 +439,47 @@ export class Player extends Model {
 	}
 
 	/**
+	 * Simplified level up packet without enchantment support.
+	 * Uses base max health for level up healing.
+	 * @param response
+	 * @param newLevel
+	 */
+	public async addLevelUpPacketSimple(response: CrowniclesPacket[], newLevel: number): Promise<void> {
+		const healthRestored = newLevel % 10 === 0;
+
+		const packet = makePacket(PlayerLevelUpPacket, {
+			keycloakId: this.keycloakId,
+			level: newLevel,
+			fightUnlocked: newLevel === FightConstants.REQUIRED_LEVEL,
+			guildUnlocked: newLevel === GuildConstants.REQUIRED_LEVEL,
+			healthRestored,
+			classesTier1Unlocked: newLevel === ClassConstants.REQUIRED_LEVEL,
+			classesTier2Unlocked: newLevel === ClassConstants.GROUP1LEVEL,
+			classesTier3Unlocked: newLevel === ClassConstants.GROUP2LEVEL,
+			classesTier4Unlocked: newLevel === ClassConstants.GROUP3LEVEL,
+			classesTier5Unlocked: newLevel === ClassConstants.GROUP4LEVEL,
+			missionSlotUnlocked: newLevel === Constants.MISSIONS.SLOT_2_LEVEL || newLevel === Constants.MISSIONS.SLOT_3_LEVEL,
+			pveUnlocked: newLevel === PVEConstants.MIN_LEVEL,
+			tokensUnlocked: newLevel === TokensConstants.LEVEL_TO_UNLOCK,
+			statsIncreased: true
+		});
+
+		if (healthRestored) {
+			await this.addHealthSimple({
+				amount: this.getMaxHealthBase() - this.health,
+				response,
+				reason: NumberChangeReason.LEVEL_UP,
+				missionHealthParameter: {
+					shouldPokeMission: true,
+					overHealCountsForMission: false
+				}
+			});
+		}
+
+		response.push(packet);
+	}
+
+	/**
 	 * Level up a player if he has enough experience
 	 * @param response
 	 * @param playerActiveObjects
@@ -450,10 +491,10 @@ export class Player extends Model {
 
 		const xpNeeded = this.getExperienceNeededToLevelUp();
 		this.experience -= xpNeeded;
-		crowniclesInstance.logsDatabase.logExperienceChange(this.keycloakId, this.experience, NumberChangeReason.LEVEL_UP)
+		crowniclesInstance?.logsDatabase.logExperienceChange(this.keycloakId, this.experience, NumberChangeReason.LEVEL_UP)
 			.then();
 		const newLevel = ++this.level;
-		crowniclesInstance.logsDatabase.logLevelChange(this.keycloakId, this.level)
+		crowniclesInstance?.logsDatabase.logLevelChange(this.keycloakId, this.level)
 			.then();
 		Object.assign(this, await MissionsController.update(this, response, {
 			missionId: "reachLevel",
@@ -464,6 +505,34 @@ export class Player extends Model {
 		await this.addLevelUpPacket(response, newLevel, playerActiveObjects);
 
 		await this.levelUpIfNeeded(response, playerActiveObjects);
+	}
+
+	/**
+	 * Simplified level up check without enchantment support.
+	 * Uses base max health for level up healing.
+	 * @param response
+	 */
+	public async levelUpIfNeededSimple(response: CrowniclesPacket[]): Promise<void> {
+		if (!this.needLevelUp()) {
+			return;
+		}
+
+		const xpNeeded = this.getExperienceNeededToLevelUp();
+		this.experience -= xpNeeded;
+		crowniclesInstance?.logsDatabase.logExperienceChange(this.keycloakId, this.experience, NumberChangeReason.LEVEL_UP)
+			.then();
+		const newLevel = ++this.level;
+		crowniclesInstance?.logsDatabase.logLevelChange(this.keycloakId, this.level)
+			.then();
+		Object.assign(this, await MissionsController.update(this, response, {
+			missionId: "reachLevel",
+			count: newLevel,
+			set: true
+		}));
+
+		await this.addLevelUpPacketSimple(response, newLevel);
+
+		await this.levelUpIfNeededSimple(response);
 	}
 
 	/**
@@ -599,7 +668,7 @@ export class Player extends Model {
 		return Math.round(
 			(<{
 				count: number;
-			}[]>(await Player.sequelize.query(query, {
+			}[]>(await Player.sequelize!.query(query, {
 				replacements: {
 					link: this.mapLinkId,
 					linkInverse: oppositeLink.id
@@ -660,7 +729,11 @@ export class Player extends Model {
 				itemCategory: ItemCategory.POTION
 			}
 		})
-			.then(async item => await crowniclesInstance.logsDatabase.logItemSell(this.keycloakId, item.getItem()));
+			.then(async item => {
+				if (item) {
+					await crowniclesInstance?.logsDatabase.logItemSell(this.keycloakId, item.getItem());
+				}
+			});
 		if (itemSlot === 0) {
 			await InventorySlot.update(
 				{
@@ -712,7 +785,7 @@ export class Player extends Model {
 	 */
 	public async addExperience(parameters: EditValueParameters, playerActiveObjects: PlayerActiveObjects): Promise<Player> {
 		this.experience += parameters.amount;
-		crowniclesInstance.logsDatabase.logExperienceChange(this.keycloakId, this.experience, parameters.reason)
+		crowniclesInstance?.logsDatabase.logExperienceChange(this.keycloakId, this.experience, parameters.reason)
 			.then();
 		if (parameters.amount > 0) {
 			const newPlayer = await MissionsController.update(this, parameters.response, {
@@ -732,6 +805,27 @@ export class Player extends Model {
 	}
 
 	/**
+	 * Simplified addExperience method without enchantment support.
+	 * Use addExperience() with playerActiveObjects when enchantments should be considered.
+	 * @param parameters - Object containing amount, response, and reason
+	 */
+	public async addExperienceSimple(parameters: EditValueParameters): Promise<Player> {
+		this.experience += parameters.amount;
+		crowniclesInstance?.logsDatabase.logExperienceChange(this.keycloakId, this.experience, parameters.reason)
+			.then();
+		if (parameters.amount > 0) {
+			const newPlayer = await MissionsController.update(this, parameters.response, {
+				missionId: "earnXP",
+				count: parameters.amount
+			});
+			Object.assign(this, newPlayer);
+		}
+
+		await this.levelUpIfNeededSimple(parameters.response);
+		return this;
+	}
+
+	/**
 	 * Get the number of secondary missions a player can have at maximum
 	 */
 	public getMissionSlotsNumber(): number {
@@ -744,7 +838,7 @@ export class Player extends Model {
 	 */
 	public setPet(petEntity: PetEntity): void {
 		this.petId = petEntity.id;
-		crowniclesInstance.logsDatabase.logPlayerNewPet(this.keycloakId, petEntity)
+		crowniclesInstance?.logsDatabase.logPlayerNewPet(this.keycloakId, petEntity)
 			.then();
 	}
 
@@ -838,8 +932,8 @@ export class Player extends Model {
 	public getMaxHealth(playerActiveObjects: PlayerActiveObjects): number {
 		const playerClass = ClassDataController.instance.getById(this.class);
 
-		const weaponEnchant = ItemEnchantment.getById(playerActiveObjects.weapon.itemEnchantmentId);
-		const armorEnchant = ItemEnchantment.getById(playerActiveObjects.armor.itemEnchantmentId);
+		const weaponEnchant = playerActiveObjects.weapon.itemEnchantmentId ? ItemEnchantment.getById(playerActiveObjects.weapon.itemEnchantmentId) : null;
+		const armorEnchant = playerActiveObjects.armor.itemEnchantmentId ? ItemEnchantment.getById(playerActiveObjects.armor.itemEnchantmentId) : null;
 		const multiplier = (weaponEnchant?.kind === ItemEnchantmentKind.MAX_HEALTH ? EnchantmentConstants.MAX_HEALTH_MULTIPLIER[weaponEnchant.level - 1] ?? 1 : 1)
 			* (armorEnchant?.kind === ItemEnchantmentKind.MAX_HEALTH ? EnchantmentConstants.MAX_HEALTH_MULTIPLIER[armorEnchant.level - 1] ?? 1 : 1);
 
@@ -852,14 +946,14 @@ export class Player extends Model {
 	public getMaxCumulativeEnergy(playerActiveObjects: PlayerActiveObjects): number {
 		const playerClass = ClassDataController.instance.getById(this.class);
 
-		const weaponEnchant = ItemEnchantment.getById(playerActiveObjects.weapon.itemEnchantmentId);
-		const armorEnchant = ItemEnchantment.getById(playerActiveObjects.armor.itemEnchantmentId);
+		const weaponEnchant = playerActiveObjects.weapon.itemEnchantmentId ? ItemEnchantment.getById(playerActiveObjects.weapon.itemEnchantmentId) : null;
+		const armorEnchant = playerActiveObjects.armor.itemEnchantmentId ? ItemEnchantment.getById(playerActiveObjects.armor.itemEnchantmentId) : null;
 		const multiplier = (weaponEnchant?.kind === ItemEnchantmentKind.MAX_ENERGY
 			? EnchantmentConstants.MAX_ENERGY_MULTIPLIER[weaponEnchant.level - 1] ?? 1
 			: 1)
 			* (armorEnchant?.kind === ItemEnchantmentKind.MAX_ENERGY ? EnchantmentConstants.MAX_ENERGY_MULTIPLIER[armorEnchant.level - 1] ?? 1 : 1);
 
-		return Math.round(playerClass.getMaxCumulativeEnergyValue(this.level) * multiplier);
+		return Math.round((playerClass?.getMaxCumulativeEnergyValue(this.level) ?? FightConstants.PLAYER_MAX_ENERGY) * multiplier);
 	}
 
 	/**
@@ -878,7 +972,7 @@ export class Player extends Model {
 			this.health = this.getMaxHealth(playerActiveObjects);
 		}
 		await this.setHealth(this.health + health, response, playerActiveObjects, missionHealthParameter);
-		crowniclesInstance.logsDatabase.logHealthChange(this.keycloakId, this.health, reason)
+		crowniclesInstance?.logsDatabase.logHealthChange(this.keycloakId, this.health, reason)
 			.then();
 	}
 
@@ -898,7 +992,7 @@ export class Player extends Model {
 			shouldPokeMission: true
 		};
 		await this.setHealthSimple(this.health + parameters.amount, parameters.response, missionParam);
-		crowniclesInstance.logsDatabase.logHealthChange(this.keycloakId, this.health, parameters.reason)
+		crowniclesInstance?.logsDatabase.logHealthChange(this.keycloakId, this.health, parameters.reason)
 			.then();
 		return this.health > 0;
 	}
@@ -940,7 +1034,7 @@ export class Player extends Model {
 	 */
 	public setEnergyLost(energy: number, reason: NumberChangeReason, playerActiveObjects: PlayerActiveObjects): void {
 		this.fightPointsLost = Math.min(energy, this.getMaxCumulativeEnergy(playerActiveObjects));
-		crowniclesInstance.logsDatabase.logEnergyChange(this.keycloakId, this.fightPointsLost, reason)
+		crowniclesInstance?.logsDatabase.logEnergyChange(this.keycloakId, this.fightPointsLost, reason)
 			.then();
 	}
 
@@ -963,11 +1057,14 @@ export class Player extends Model {
 		});
 		response.push(packet);
 		await Maps.stopTravel(this);
-		await Maps.startTravel(
-			this,
-			MapLinkDataController.instance.getById(MapConstants.WATER_MAP_LINKS[RandomUtils.randInt(0, MapConstants.WATER_MAP_LINKS.length)]),
-			Date.now()
-		);
+		const mapLink = MapLinkDataController.instance.getById(MapConstants.WATER_MAP_LINKS[RandomUtils.randInt(0, MapConstants.WATER_MAP_LINKS.length)]);
+		if (mapLink) {
+			await Maps.startTravel(
+				this,
+				mapLink,
+				Date.now()
+			);
+		}
 		await TravelTime.applyEffect(this, Effect.CONFOUNDED, 0, new Date(), NumberChangeReason.PVE_ISLAND);
 		await PlayerSmallEvents.removeSmallEventsOfPlayer(this.id);
 		return true;
@@ -978,7 +1075,7 @@ export class Player extends Model {
 	 */
 	public getBaseBreath(): number {
 		const playerClass = ClassDataController.instance.getById(this.class);
-		return playerClass.baseBreath;
+		return playerClass?.baseBreath ?? FightConstants.DEFAULT_BASE_BREATH;
 	}
 
 	/**
@@ -986,7 +1083,7 @@ export class Player extends Model {
 	 */
 	public getMaxBreath(): number {
 		const playerClass = ClassDataController.instance.getById(this.class);
-		return playerClass.maxBreath;
+		return playerClass?.maxBreath ?? FightConstants.DEFAULT_MAX_BREATH;
 	}
 
 	/**
@@ -994,13 +1091,13 @@ export class Player extends Model {
 	 */
 	public getBreathRegen(): number {
 		const playerClass = ClassDataController.instance.getById(this.class);
-		return playerClass.breathRegen;
+		return playerClass?.breathRegen ?? FightConstants.DEFAULT_BREATH_REGEN;
 	}
 
 	/**
 	 * Get the profile's color of the player
 	 */
-	public getProfileColor(): string {
+	public getProfileColor(): string | null {
 		if (this.level < FightConstants.REQUIRED_LEVEL) {
 			return null;
 		}
@@ -1033,11 +1130,11 @@ export class Player extends Model {
 	public async setGloryPoints(gloryPoints: number, isDefense: boolean, reason: NumberChangeReason, response: CrowniclesPacket[], fightId: number | null = null): Promise<void> {
 		if (isDefense) {
 			this.defenseGloryPoints = gloryPoints;
-			await crowniclesInstance.logsDatabase.logPlayersDefenseGloryPoints(this.keycloakId, gloryPoints, reason, fightId);
+			await crowniclesInstance?.logsDatabase.logPlayersDefenseGloryPoints(this.keycloakId, gloryPoints, reason, fightId ?? undefined);
 		}
 		else {
 			this.attackGloryPoints = gloryPoints;
-			await crowniclesInstance.logsDatabase.logPlayersAttackGloryPoints(this.keycloakId, gloryPoints, reason, fightId);
+			await crowniclesInstance?.logsDatabase.logPlayersAttackGloryPoints(this.keycloakId, gloryPoints, reason, fightId ?? undefined);
 		}
 		Object.assign(this, await MissionsController.update(this, response, {
 			missionId: "reachGlory",
@@ -1067,7 +1164,7 @@ export class Player extends Model {
 		const dateOfLastLeagueReward = await LogsReadRequests.getDateOfLastLeagueReward(this.keycloakId);
 
 		// Beware, the date of the last league reward is in seconds
-		return dateOfLastLeagueReward && !(dateOfLastLeagueReward < millisecondsToSeconds(getOneDayAgo()));
+		return dateOfLastLeagueReward !== null && !(dateOfLastLeagueReward < millisecondsToSeconds(getOneDayAgo()));
 	}
 
 	public async addRage(rage: number, reason: NumberChangeReason, response: CrowniclesPacket[]): Promise<void> {
@@ -1082,7 +1179,7 @@ export class Player extends Model {
 
 	public async setRage(rage: number, reason: NumberChangeReason): Promise<void> {
 		this.rage = rage;
-		crowniclesInstance.logsDatabase.logRageChange(this.keycloakId, this.rage, reason)
+		crowniclesInstance?.logsDatabase.logRageChange(this.keycloakId, this.rage, reason)
 			.then();
 		await this.save();
 	}
@@ -1115,11 +1212,17 @@ export class Player extends Model {
 			+ RandomUtils.crowniclesRandom.integer(-PVEConstants.RANDOM_RANGE_FOR_GUILD_POINTS_LOST_ON_DEATH, PVEConstants.RANDOM_RANGE_FOR_GUILD_POINTS_LOST_ON_DEATH);
 		if (this.hasAGuild()) {
 			const playerGuild = await Guilds.getById(this.guildId);
-			if (guildPointsLost > playerGuild.score) {
-				guildPointsLost = playerGuild.score;
+			if (playerGuild) {
+				if (guildPointsLost > playerGuild.score) {
+					guildPointsLost = playerGuild.score;
+				}
+				await playerGuild.addScore({
+					amount: -guildPointsLost,
+					response,
+					reason: NumberChangeReason.PVE_ISLAND
+				});
+				await playerGuild.save();
 			}
-			await playerGuild.addScore(-guildPointsLost, response, NumberChangeReason.PVE_ISLAND);
-			await playerGuild.save();
 		}
 		return {
 			moneyLost,
@@ -1333,7 +1436,7 @@ export class Players {
 			? askedPlayer.keycloakId === originalPlayer.keycloakId
 				? originalPlayer
 				: await Players.getByKeycloakId(askedPlayer.keycloakId)
-			: await Players.getByRank(askedPlayer.rank);
+			: await Players.getByRank(askedPlayer.rank ?? 1);
 	}
 
 	/**
@@ -1380,7 +1483,7 @@ export class Players {
 		               FROM (SELECT id, RANK() OVER (ORDER BY ${orderBy} desc, level desc) ranking
 		                     FROM players ${condition}) subquery
 		               WHERE subquery.id = ${playerId}`;
-		return ((await Player.sequelize.query(query))[0][0] as {
+		return ((await Player.sequelize!.query(query))[0][0] as {
 			ranking: number;
 		}).ranking;
 	}
@@ -1394,7 +1497,7 @@ export class Players {
 		               FROM players
 		               WHERE players.${weekOnly ? "weeklyScore" : "score"}
 			                     > ${Constants.MINIMAL_PLAYER_SCORE}`;
-		const queryResult = await Player.sequelize.query(query);
+		const queryResult = await Player.sequelize!.query(query);
 		return (queryResult[0][0] as {
 			nbPlayers: number;
 		}).nbPlayers;
@@ -1408,7 +1511,7 @@ export class Players {
 		               FROM players
 		               WHERE players.fightCountdown
 			                     <= ${FightConstants.FIGHT_COUNTDOWN_MAXIMAL_VALUE}`;
-		const queryResult = await Player.sequelize.query(query);
+		const queryResult = await Player.sequelize!.query(query);
 		return (queryResult[0][0] as {
 			nbPlayers: number;
 		}).nbPlayers;
@@ -1483,7 +1586,7 @@ export class Players {
 		                            RANK() OVER (ORDER BY weeklyScore desc, level desc) weeklyRank
 		                     FROM players) subquery
 		               WHERE subquery.rank = :rank`;
-		const res = await Player.sequelize.query(query, {
+		const res = await Player.sequelize!.query(query, {
 			replacements: { rank },
 			type: QueryTypes.SELECT,
 			mapToModel: true,
@@ -1503,7 +1606,7 @@ export class Players {
 		                            RANK() OVER (ORDER BY weeklyScore desc, level desc) weeklyRank
 		                     FROM players) subquery
 		               WHERE subquery.id = :id`;
-		const playerToReturn = (await Player.sequelize.query<Player>(query, {
+		const playerToReturn = (await Player.sequelize!.query<Player>(query, {
 			replacements: { id },
 			type: QueryTypes.SELECT
 		}))[0] as Player;
@@ -1520,7 +1623,7 @@ export class Players {
 		return Math.round(
 			(<{
 				avg: number;
-			}[]>(await Player.sequelize.query(query, {
+			}[]>(await Player.sequelize!.query(query, {
 				type: QueryTypes.SELECT
 			})))[0].avg
 		);
@@ -1536,7 +1639,7 @@ export class Players {
 		return Math.round(
 			(<{
 				avg: number;
-			}[]>(await Player.sequelize.query(query, {
+			}[]>(await Player.sequelize!.query(query, {
 				type: QueryTypes.SELECT
 			})))[0].avg
 		);
@@ -1551,7 +1654,7 @@ export class Players {
 		               WHERE effectId = "${Effect.NOT_STARTED.id}"`;
 		return (<{
 			count: number;
-		}[]>(await Player.sequelize.query(query, {
+		}[]>(await Player.sequelize!.query(query, {
 			type: QueryTypes.SELECT
 		})))[0].count;
 	}
@@ -1565,7 +1668,7 @@ export class Players {
 		               WHERE score > ${Constants.MINIMAL_PLAYER_SCORE}`;
 		return (<{
 			count: number;
-		}[]>(await Player.sequelize.query(query, {
+		}[]>(await Player.sequelize!.query(query, {
 			type: QueryTypes.SELECT
 		})))[0].count;
 	}
@@ -1580,7 +1683,7 @@ export class Players {
 		return Math.round(
 			(<{
 				avg: number;
-			}[]>(await Player.sequelize.query(query, {
+			}[]>(await Player.sequelize!.query(query, {
 				type: QueryTypes.SELECT
 			})))[0].avg
 		);
@@ -1596,7 +1699,7 @@ export class Players {
 		return Math.round(
 			(<{
 				avg: number;
-			}[]>(await Player.sequelize.query(query, {
+			}[]>(await Player.sequelize!.query(query, {
 				type: QueryTypes.SELECT
 			})))[0].avg
 		);
@@ -1611,7 +1714,7 @@ export class Players {
 		               WHERE score > ${Constants.MINIMAL_PLAYER_SCORE}`;
 		return (<{
 			sum: number;
-		}[]>(await Player.sequelize.query(query, {
+		}[]>(await Player.sequelize!.query(query, {
 			type: QueryTypes.SELECT
 		})))[0].sum;
 	}
@@ -1624,7 +1727,7 @@ export class Players {
 		               FROM players`;
 		return (<{
 			max: number;
-		}[]>(await Player.sequelize.query(query, {
+		}[]>(await Player.sequelize!.query(query, {
 			type: QueryTypes.SELECT
 		})))[0].max;
 	}
@@ -1642,7 +1745,7 @@ export class Players {
 		return Math.round(
 			(<{
 				count: number;
-			}[]>(await Player.sequelize.query(query, {
+			}[]>(await Player.sequelize!.query(query, {
 				replacements: { class: classEntity.id },
 				type: QueryTypes.SELECT
 			})))[0].count
@@ -1857,6 +1960,7 @@ export function initModel(sequelize: Sequelize): void {
 
 			if (
 				travelEndDate > now
+				&& destinationId !== null
 				&& !CityDataController.instance.getCityByMapLinkId(instance.mapLinkId) // Don't schedule notifications for cities
 			) {
 				await ScheduledReportNotifications.scheduleNotification(instance.id, instance.keycloakId, destinationId, travelEndDate);
@@ -1864,13 +1968,16 @@ export function initModel(sequelize: Sequelize): void {
 			}
 
 			if (pendingReportNotification && destinationId === pendingReportNotification.mapId) {
-				PacketUtils.sendNotifications([
-					makePacket(ReachDestinationNotificationPacket, {
-						keycloakId: pendingReportNotification.keycloakId,
-						mapType: MapLocationDataController.instance.getById(pendingReportNotification.mapId).type,
-						mapId: pendingReportNotification.mapId
-					})
-				]);
+				const mapLocation = MapLocationDataController.instance.getById(pendingReportNotification.mapId);
+				if (mapLocation) {
+					PacketUtils.sendNotifications([
+						makePacket(ReachDestinationNotificationPacket, {
+							keycloakId: pendingReportNotification.keycloakId,
+							mapType: mapLocation.type,
+							mapId: pendingReportNotification.mapId
+						})
+					]);
+				}
 			}
 		};
 

@@ -47,7 +47,7 @@ async function acceptGuildElderRemove(player: Player, demotedElder: Player, resp
 		demotedElder.save(),
 		guild.save()
 	]);
-	crowniclesInstance.logsDatabase.logGuildElderRemove(guild, demotedElder.id).then();
+	crowniclesInstance?.logsDatabase.logGuildElderRemove(guild, demotedElder.id).then();
 
 	response.push(makePacket(CommandGuildElderRemoveAcceptPacketRes, {
 		demotedKeycloakId: demotedElder.keycloakId,

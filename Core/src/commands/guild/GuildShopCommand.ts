@@ -201,7 +201,7 @@ export default class GuildShopCommand {
 		await ShopUtils.createAndSendShopCollector(context, response, {
 			shopCategories,
 			player,
-			logger: (keycloakId, shopItemName, amount) => crowniclesInstance.logsDatabase.logGuildShopBuyout(keycloakId, shopItemName, amount ?? 1)
+			logger: (keycloakId, shopItemName, amount) => crowniclesInstance?.logsDatabase.logGuildShopBuyout(keycloakId, shopItemName, amount ?? 1)
 		});
 	}
 }

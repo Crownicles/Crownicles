@@ -153,7 +153,7 @@ async function finalizeExpedition(
 	await ScheduledExpeditionNotifications.deleteByExpeditionId(activeExpedition.id);
 	await PetExpeditions.completeExpedition(activeExpedition);
 
-	crowniclesInstance.logsDatabase.logExpeditionComplete(
+	crowniclesInstance?.logsDatabase.logExpeditionComplete(
 		player.keycloakId,
 		petEntity.id,
 		extractExpeditionLogParams(expeditionData, activeExpedition, expeditionSuccess),
