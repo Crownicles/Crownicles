@@ -5,7 +5,7 @@ export const missionInterface: IMission = {
 
 	generateRandomVariant: () => 0,
 
-	initialNumberDone: player => (player.petId ? 1 : 0),
+	initialNumberDone: player => player.petId ? 1 : 0,
 
 	updateSaveBlob: () => null
 };

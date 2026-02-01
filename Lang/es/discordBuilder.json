@@ -59,7 +59,7 @@
   },
   "petFree": {
     "description": "Libera una mascota.",
-    "name": "libererfamilier"
+    "name": "liberarfamiliar"
   },
   "petNick": {
     "description": "Ponle un nombre a tu mascota.",
@@ -73,7 +73,7 @@
   },
   "guildCreate": {
     "description": "Crear un nuevo gremio.",
-    "name": "creaciónguilde",
+    "name": "creacióngremio",
     "options": {
       "guildName": {
         "description": "El nombre del gremio.",
@@ -83,7 +83,7 @@
   },
   "guildDescription": {
     "description": "Cambiar la descripción del gremio.",
-    "name": "descripciónguilde",
+    "name": "descripcióngremio",
     "options": {
       "description": {
         "description": "Descripción.",
@@ -93,7 +93,7 @@
   },
   "guildInvite": {
     "description": "Recluta a un nuevo miembro para tu gremio.",
-    "name": "invitaciónguilde",
+    "name": "invitacióngremio",
     "options": {
       "user": {
         "description": "El usuario a reclutar.",
@@ -215,11 +215,11 @@
   },
   "guildShop": {
     "description": "Muestra la tienda del gremio.",
-    "name": "magasinguilde"
+    "name": "tiendagremio"
   },
   "guildKick": {
     "description": "Excluir a un miembro del gremio.",
-    "name": "excludeguilde",
+    "name": "excluirgremio",
     "options": {
       "rank": {
         "description": "La clasificación del jugador que debe ser excluido del gremio.",
@@ -233,11 +233,11 @@
   },
   "guildDaily": {
     "description": "Recoge la recompensa diaria del gremio.",
-    "name": "bonusjournalierguilde"
+    "name": "bonusdiariogremio"
   },
   "guildElder": {
     "description": "Asciende a un miembro del gremio al rango de anciano.",
-    "name": "aineguilde",
+    "name": "ancianogremio",
     "options": {
       "user": {
         "description": "El usuario que será promocionado como senior.",
@@ -247,11 +247,11 @@
   },
   "guildElderRemove": {
     "description": "Destituir al miembro de mayor edad del gremio.",
-    "name": "deleteaineguilde"
+    "name": "eliminarancianogremio"
   },
   "guildLeave": {
     "description": "Dejando el gremio.",
-    "name": "dejarguilde"
+    "name": "dejargremio"
   },
   "daily": {
     "description": "Utiliza tu objeto equipado para obtener una bonificación diaria.",
@@ -312,11 +312,11 @@
     "name": "combate"
   },
   "switch": {
-    "name": "interruptor",
+    "name": "cambiar",
     "description": "Cambia el objeto activo por uno de los objetos de tu reserva."
   },
   "deposit": {
-    "name": "regístrese en",
+    "name": "depositar",
     "description": "Deposita uno de tus objetos activos."
   },
   "drink": {
@@ -324,7 +324,7 @@
     "description": "Bebe una poción."
   },
   "petSell": {
-    "name": "vender casa familiar",
+    "name": "venderfamiliar",
     "description": "Vender una mascota a otro jugador.",
     "options": {
       "price": {
@@ -346,23 +346,23 @@
     "description": "Equipo de venta."
   },
   "petTransfer": {
-    "name": "transfererfamilier",
+    "name": "transferirfamiliar",
     "description": "Transfiere una mascota al refugio del gremio o desde él."
   },
   "petFeed": {
-    "name": "feedfamiliar",
+    "name": "alimentarfamiliar",
     "description": "Alimente a su mascota."
   },
   "guildShelter": {
-    "name": "abriguilde",
+    "name": "refugiogremio",
     "description": "Muestra información sobre el refugio del gremio."
   },
   "leagueReward": {
-    "name": "bonusligue",
+    "name": "bonusliga",
     "description": "Recoge la recompensa vinculada a tu liga."
   },
   "guildStorage": {
-    "name": "entrepotguilde",
+    "name": "almacéngremio",
     "description": "Muestra el contenido del almacén del gremio."
   },
   "joinBoat": {
@@ -382,5 +382,25 @@
   "fightHistory": {
     "name": "historiacombate",
     "description": "Ver historial de batallas."
+  },
+  "deletecode": {
+    "name": "deletecode",
+    "description": "Generar un código de eliminación de cuenta para un usuario.",
+    "options": {
+      "discordid": {
+        "name": "discordid",
+        "description": "ID de Discord del usuario."
+      }
+    }
+  },
+  "exportgdpr": {
+    "name": "exportrgpd",
+    "description": "Exportar todos los datos personales de un jugador (RGPD Art. 15).",
+    "options": {
+      "discordid": {
+        "name": "discordid",
+        "description": "ID de Discord del jugador."
+      }
+    }
   }
 }

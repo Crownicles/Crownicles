@@ -20,8 +20,8 @@ export abstract class FightConstants {
 	};
 
 	static readonly POTION_NO_DRINK_PROBABILITY = {
-		PLAYER: 0.3,
-		AI: 0.85
+		PLAYER: 0,
+		AI: 0.1
 	};
 
 	// Random variation of the damage a fight action will deal (between -this value and +this value)
@@ -301,4 +301,17 @@ export abstract class FightConstants {
 
 	// Time limit for a player to be considered active for opponent search (in days)
 	static readonly ACTIVE_PLAYER_TIME_LIMIT_DAYS = 14;
+
+	/**
+	 * Fight roles for determining pet availability during expedition
+	 */
+	static readonly FIGHT_ROLES = {
+		ATTACKER: "attacker",
+		DEFENDER: "defender"
+	} as const;
 }
+
+/**
+ * Type representing the role of a fighter in a fight
+ */
+export type FightRole = (typeof FightConstants.FIGHT_ROLES)[keyof typeof FightConstants.FIGHT_ROLES];

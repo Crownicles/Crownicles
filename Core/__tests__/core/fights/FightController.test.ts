@@ -11,16 +11,28 @@ vi.mock('../../../src/core/fights/FightsManager', () => ({
 
 vi.mock('../../../src/core/fights/FightView', () => {
 	return {
-		FightView: vi.fn().mockImplementation((context, fightController) => ({
-			context,
-			fightController,
-			outroFight: outroFightMock,
-			displayBugFight: vi.fn(),
-			introduceFight: vi.fn(),
-			displayFightStatus: vi.fn(),
-			addActionToHistory: vi.fn(),
-			displayAiChooseAction: vi.fn()
-		}))
+		FightView: class {
+			public context: unknown;
+
+			public fightController: unknown;
+
+			public outroFight = outroFightMock;
+
+			public displayBugFight = vi.fn();
+
+			public introduceFight = vi.fn();
+
+			public displayFightStatus = vi.fn();
+
+			public addActionToHistory = vi.fn();
+
+			public displayAiChooseAction = vi.fn();
+
+			public constructor(context: unknown, fightController: unknown) {
+				this.context = context;
+				this.fightController = fightController;
+			}
+		}
 	};
 });
 

@@ -16,7 +16,7 @@ type BlockingInfo = {
 /**
  * Functions to call when you want to manage the blocking of a player
  */
-export class BlockingUtils {
+export abstract class BlockingUtils {
 	private static blockedPlayers: Map<string, BlockingInfo[]> = new Map();
 
 	/**
@@ -29,7 +29,7 @@ export class BlockingUtils {
 		if (!BlockingUtils.blockedPlayers.get(keycloakId)) {
 			BlockingUtils.blockedPlayers.set(keycloakId, []);
 		}
-		BlockingUtils.blockedPlayers.get(keycloakId).push({
+		BlockingUtils.blockedPlayers.get(keycloakId)!.push({
 			reason,
 			limitTimestamp: maxTime !== 0 ? Date.now() + maxTime : 0,
 			startTimestamp: Date.now()
@@ -46,7 +46,7 @@ export class BlockingUtils {
 		if (!BlockingUtils.blockedPlayers.get(keycloakId)) {
 			BlockingUtils.blockedPlayers.set(keycloakId, []);
 		}
-		BlockingUtils.blockedPlayers.get(keycloakId).push({
+		BlockingUtils.blockedPlayers.get(keycloakId)!.push({
 			reason,
 			limitTimestamp: endTimestamp,
 			startTimestamp: Date.now()
@@ -61,8 +61,9 @@ export class BlockingUtils {
 	static unblockPlayer(keycloakId: string, reason: BlockingReason): void {
 		const blockedPlayer = BlockingUtils.blockedPlayers.get(keycloakId);
 		if (blockedPlayer) {
-			BlockingUtils.blockedPlayers.set(keycloakId, blockedPlayer.filter(v => v.reason !== reason));
-			if (BlockingUtils.blockedPlayers.get(keycloakId).length === 0) {
+			const filtered = blockedPlayer.filter(v => v.reason !== reason);
+			BlockingUtils.blockedPlayers.set(keycloakId, filtered);
+			if (filtered.length === 0) {
 				BlockingUtils.blockedPlayers.delete(keycloakId);
 			}
 		}

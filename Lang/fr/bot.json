@@ -2,8 +2,8 @@
   "command404": "Il semble que cette commande n'existe pas... Merci de signaler ce bug à l'équipe du Bot",
   "dmHelpMessage": "<:crownicles:529305485963427840> **Quel est ce bot ? Comment jouer ?**\n\nUne présentation rapide du bot est disponible ici : https://crownicles.com\nUn guide complet pour découvrir le bot est disponible ici : https://guide.crownicles.com\n\n{emote:other.incoming} **Comment ajouter le bot à mon serveur ?**\nLe lien pour ajouter le bot sur votre serveur est disponible sur le serveur du bot. https://discord.gg/5JqrMtZ\n\n{emote:effects.dead} **Je viens de mourir, le bot m'a dit de faire {command:respawn} ...**\n\nLes commandes ne fonctionnent pas en message privé. Effectuez cette commande sur un serveur dans lequel le bot peut parler.\n\n{emote:messages.description} **Je cherche la liste des commandes.**\n\nLa liste des commandes est disponible en effectuant la commande {command:help} dans un salon dans lequel le bot peut parler.\n\n{emote:collectors.question} **J'ai une autre question.**\n\nRejoignez le serveur Discord du bot et posez votre question, notre staff sera ravi de vous aider !",
   "dmHelpMessageTitle": "Voilà quelques informations qui pourraient vous aider.",
-  "joinGuild": "**{emote:other.incoming} Serveur Discord rejoint :** `{{guild}}` | {emote:userKind.human} : `{{humans}}` | {emote:userKind.robot} : `{{robots}}` | Ratio bot/Humain : `{{ratio}}` % | Validation : {{validation}}",
-  "leaveGuild": "**{emote:other.outgoing} Serveur Discord quitté :** `{{guild}}` | {emote:userKind.human} : `{{humans}}` | {emote:userKind.robot} : `{{robots}}` | Ratio bot/Humain : `{{ratio}` % | Validation : {{validation}}",
+  "joinGuild": "**{emote:other.incoming} Serveur Discord rejoint :** `{{guild}}` | {emote:userKind.human} : `{{humans, number}}` | {emote:userKind.robot} : `{{robots, number}}` | Ratio bot/Humain : `{{ratio, number}}` % | Validation : {{validation}}",
+  "leaveGuild": "**{emote:other.outgoing} Serveur Discord quitté :** `{{guild}}` | {emote:userKind.human} : `{{humans, number}}` | {emote:userKind.robot} : `{{robots, number}}` | Ratio bot/Humain : `{{ratio, number}}` % | Validation : {{validation}}",
   "maintenance": "Crownicles est actuellement en maintenance. Pour plus d'informations, voici différents liens :\n\n{emote:networks.website} https://status.crownicles.com\n{emote:networks.discord} https://discord.gg/5JqrMtZ",
   "mentionHelp": "{emote:languages.fr} Bonjour !\n\n{emote:other.right} Suite à un changement opéré par Discord, vous devez utiliser des \"commandes slash\" pour interagir avec Crownicles. Utilisez le préfixe `/` suivi du nom de la commande que vous souhaitez utiliser.\n\n{emote:other.why} Vous ne savez pas par où commencer ? Utilisez {command:help} !\n\n{emote:languages.en} You speak english? Change the language with {command:language}\n\nSi vous avez besoin d'aide, n'hésitez pas à rejoindre le serveur support: https://discord.gg/5JqrMtZ",
   "noChannelAccess": "{emote:other.look}  | **Bonjour ! Vous recevez ce message car vous avez tenté d'utiliser une de mes commandes dans un salon où je n'ai aucune permissions !**\n\nVotre requête a donc été annulée. Pour résoudre ce problème merci d'envoyer un message au propriétaire du serveur sur lequel vous avez essayé de m'utiliser. Si vous ne parvenez pas à résoudre ce problème je vous invite à rejoindre le Discord support du bot disponible à adresse suivante : https://discord.gg/5JqrMtZ !",
@@ -16,7 +16,7 @@
   "seasonEndAnnouncement": "{emote:unitValues.glory} **La saison de combat est terminée ! Le gagnant est :** {{mention}}",
   "seasonEndAnnouncementNoWinner": "{emote:unitValues.glory} **La saison de combat est terminée ! Malheureusement, il n'y a pas de participant et donc de gagnant cette saison.**",
   "seasonEndIsNow": "{emote:unitValues.glory} La saison de combat est en cours de réinitialisation ! Le gagnant sera annoncé sous peu sur le serveur du bot ! Le jeu reprendra dans moins de 20 minutes !",
-  "serverList": "**{emote:other.outgoing} Serveur {{count}} :** `{{guild}}` | {emote:userKind.human} : `{{humans}}` | {emote:userKind.robot} : `{{robots}}` | Ratio bot/Humain : `{{ratio}}` % | Validation : {{validation}}",
+  "serverList": "**{emote:other.outgoing} Serveur {{count}} :** `{{guild}}` | {emote:userKind.human} : `{{humans, number}}` | {emote:userKind.robot} : `{{robots, number}}` | Ratio bot/Humain : `{{ratio, number}}` % | Validation : {{validation}}",
   "supportAlert": "{emote:messages.dm} | **Nouveau message privé reçu !** \n`Auteur: {{username}} (id : {{id}})\n\n`",
   "topWeekAnnouncement": "{emote:announcements.trophy} **Le classement de la semaine est terminé ! Le gagnant est :** {{mention}}",
   "topWeekAnnouncementNoWinner": "{emote:announcements.trophy} **Le classement de la semaine est terminé ! Malheureusement, il n'y a pas de participant et donc de gagnant cette semaine.**",
@@ -34,6 +34,18 @@
   },
   "notificationEnergyFull": "Vous avez récupéré toute votre énergie.",
   "notificationDailyBonus": "Votre bonus journalier est disponible.",
+  "notificationPetExpedition": "{{petDisplay}} est de retour d'expédition et a peut-être ramené des trésors !",
+  "christmasBonusPreAnnouncement": "{emote:announcements.christmas} **Bonus de Noël à venir !** {emote:announcements.christmas}\n\nDans quelques heures, tous les joueurs recevront un cadeau spécial : leur stock de jetons sera rempli au maximum ! Profitez bien de cette période festive !",
+  "christmasBonusApplied": "{emote:announcements.christmas} **Joyeux Noël !** {emote:announcements.gift}\n\nLe Père Noël est passé ! Votre stock de jetons a été rempli au maximum. Profitez de ce cadeau pour partir à l'aventure !",
   "supportMessage": "{{langFlag}} Si vous avez besoin d'aide, sélectionnez votre langue en utilisant les boutons ci-dessous. Si vous n'avez pas besoin d'aide, ignorez ce message.\n{emote:collectors.warning} **Chaque message envoyé ici peut être lu par un humain !**\n",
-  "commandDisabledInDM": "{{langFlag}} Bonjour, les commandes sont désactivées en messages privés. Merci d'aller sur un serveur pour jouer !\nSi vous souhaitez obtenir de l'aide, cliquez sur le bouton correspondant à votre langue ci-dessous.\n"
+  "commandDisabledInDM": "{{langFlag}} Bonjour, les commandes sont désactivées en messages privés. Merci d'aller sur un serveur pour jouer !\nSi vous souhaitez obtenir de l'aide, cliquez sur le bouton correspondant à votre langue ci-dessous.\n",
+  "accountDeletion": {
+    "confirmPrompt": "{emote:collectors.warning} **ATTENTION : Cette action est IMMÉDIATE et PERMANENTE.**\n\nVotre compte sera anonymisé et toutes vos données personnelles seront supprimées. Cette action est irréversible.\n\nPour confirmer, tapez exactement la phrase suivante :\n`{{phrase}}`",
+    "success": "{emote:collectors.accept} Votre compte a été anonymisé avec succès. Toutes vos données personnelles ont été supprimées. Cette action est irréversible.",
+    "error": "{emote:collectors.refuse} Une erreur s'est produite lors de l'anonymisation de votre compte. Veuillez contacter le support.",
+    "cancelled": "{emote:collectors.refuse} La suppression a été annulée. Si vous souhaitez recommencer, veuillez utiliser à nouveau le code de suppression fourni.",
+    "invalidCode": "{emote:collectors.refuse} Le code de suppression est invalide ou a expiré. Veuillez contacter le support pour obtenir un nouveau code.",
+    "userNotFound": "{emote:collectors.refuse} Aucun compte n'est associé à votre identifiant Discord.",
+    "rateLimited": "{emote:collectors.refuse} Trop de tentatives incorrectes. Veuillez réessayer dans 15 minutes."
+  }
 }

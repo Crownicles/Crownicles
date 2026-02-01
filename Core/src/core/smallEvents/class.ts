@@ -17,25 +17,16 @@ import {
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import Player from "../database/game/models/Player";
 import { ClassKind } from "../../../../Lib/src/types/ClassKind";
-import { PlayerActiveObjects } from "../database/game/models/PlayerActiveObjects";
 
 /**
  * Manage the different interactions
  * @param player
- * @param playerActiveObjects
  * @param packet
  * @param response
  * @param context
  * @param classKind
  */
-async function managePickedInteraction(
-	player: Player,
-	playerActiveObjects: PlayerActiveObjects,
-	packet: SmallEventClassPacket,
-	response: CrowniclesPacket[],
-	context: PacketContext,
-	classKind: ClassKind
-): Promise<void> {
+async function managePickedInteraction(player: Player, packet: SmallEventClassPacket, response: CrowniclesPacket[], context: PacketContext, classKind: ClassKind): Promise<void> {
 	let item;
 
 	switch (packet.interactionName) {
@@ -71,7 +62,11 @@ async function managePickedInteraction(
 
 		case ClassConstants.CLASS_SMALL_EVENT_INTERACTIONS_NAMES.WIN_HEALTH:
 			packet.amount = RandomUtils.rangedInt(SmallEventConstants.CLASS.HEALTH);
-			await player.addHealth(packet.amount, response, NumberChangeReason.SMALL_EVENT, playerActiveObjects);
+			await player.addHealth({
+				amount: packet.amount,
+				response,
+				reason: NumberChangeReason.SMALL_EVENT
+			});
 			break;
 
 		case ClassConstants.CLASS_SMALL_EVENT_INTERACTIONS_NAMES.WIN_MONEY:
@@ -92,15 +87,15 @@ async function managePickedInteraction(
 
 export const smallEventFuncs: SmallEventFuncs = {
 	canBeExecuted: Maps.isOnContinent,
-	executeSmallEvent: async (response, player, context, playerActiveObjects): Promise<void> => {
+	executeSmallEvent: async (response, player, context): Promise<void> => {
 		const playerClassId = player.class;
-		const classKind = ClassDataController.instance.getById(playerClassId).classKind;
+		const classKind = ClassDataController.instance.getById(playerClassId)!.classKind;
 		const issue = RandomUtils.crowniclesRandom.pick(ClassConstants.CLASS_SMALL_EVENT_INTERACTIONS[classKind.toUpperCase() as keyof typeof ClassConstants.CLASS_SMALL_EVENT_INTERACTIONS]);
 		const packet: SmallEventClassPacket = {
 			classKind,
 			interactionName: issue
 		};
-		await managePickedInteraction(player, playerActiveObjects, packet, response, context, classKind);
+		await managePickedInteraction(player, packet, response, context, classKind);
 		response.unshift(makePacket(SmallEventClassPacket, packet));
 	}
 };

@@ -11,6 +11,7 @@ import {
 	CommandPetSellAlreadyHavePetError,
 	CommandPetSellNotEnoughMoneyError,
 	CommandPetSellInitiatorSituationChangedErrorPacket,
+	CommandPetSellPetOnExpeditionErrorPacket,
 	CommandPetSellSuccessPacket, CommandPetSellNoOneAvailableErrorPacket
 } from "../../../../../../Lib/src/packets/commands/CommandPetSellPacket";
 import { PacketContext } from "../../../../../../Lib/src/packets/CrowniclesPacket";
@@ -21,6 +22,11 @@ export default class PetSellCommandPacketHandlers {
 	@packetHandler(CommandPetSellNoPetErrorPacket)
 	async handleNoPetError(context: PacketContext, _packet: CommandPetSellNoPetErrorPacket): Promise<void> {
 		await handleClassicError(context, "commands:petSell.noPet");
+	}
+
+	@packetHandler(CommandPetSellPetOnExpeditionErrorPacket)
+	async handlePetOnExpeditionError(context: PacketContext, _packet: CommandPetSellPetOnExpeditionErrorPacket): Promise<void> {
+		await handleClassicError(context, "commands:petSell.petOnExpedition");
 	}
 
 	@packetHandler(CommandPetSellNotInGuildErrorPacket)

@@ -18,6 +18,7 @@ import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 import { SmallEventBoatAdvicePacket } from "../../../../Lib/src/packets/smallEvents/SmallEventBoatAdvicePacket";
 import {
 	SmallEventGoToPVEIslandAcceptPacket,
+	SmallEventGoToPVEIslandNoAnswerPacket,
 	SmallEventGoToPVEIslandNotEnoughGemsPacket,
 	SmallEventGoToPVEIslandRefusePacket
 } from "../../../../Lib/src/packets/smallEvents/SmallEventGoToPVEIslandPacket";
@@ -33,11 +34,14 @@ import {
 	SmallEventInteractOtherPlayersPacket,
 	SmallEventInteractOtherPlayersRefuseToGivePoorPacket
 } from "../../../../Lib/src/packets/smallEvents/SmallEventInteractOtherPlayers";
-import { interactOtherPlayerGetPlayerDisplay } from "../../smallEvents/interactOtherPlayers";
-import { SmallEventLeagueRewardPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventLeagueReward";
 import {
-	minutesDisplay, printTimeBeforeDate
-} from "../../../../Lib/src/utils/TimeUtils";
+	handleEffectInteraction,
+	handleNoPlayerInteraction,
+	handleOtherInteractions,
+	interactOtherPlayerGetPlayerDisplay
+} from "../../smallEvents/interactOtherPlayers";
+import { SmallEventLeagueRewardPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventLeagueReward";
+import { printTimeBeforeDate } from "../../../../Lib/src/utils/TimeUtils";
 import { SmallEventWinGuildXPPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventWinGuildXPPacket";
 import { SmallEventBonusGuildPVEIslandPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventBonusGuildPVEIslandPacket";
 import { SmallEventBotFactsPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventBotFactsPacket";
@@ -61,7 +65,9 @@ import { SmallEventWitchResultPacket } from "../../../../Lib/src/packets/smallEv
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { witchResult } from "../../smallEvents/witch";
 import { DisplayUtils } from "../../utils/DisplayUtils";
-import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
+import {
+	SexTypeShort, StringConstants
+} from "../../../../Lib/src/constants/StringConstants";
 import {
 	SmallEventSpaceInitialPacket,
 	SmallEventSpaceResultPacket
@@ -95,9 +101,10 @@ import { getPetFoodDescription } from "../../smallEvents/petFood";
 import { SmallEventHauntedPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventHauntedPacket";
 import { SmallEventPetFoodPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventPetFoodPacket";
 import { SmallEventBadPetPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventBadPetPacket";
-import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
-import { Language } from "../../../../Lib/src/Language";
-import { SmallEventFindMaterialPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventFindMaterialPacket";
+import {
+	SmallEventExpeditionAdvicePacket,
+	ExpeditionAdviceInteractionType
+} from "../../../../Lib/src/packets/smallEvents/SmallEventExpeditionAdvicePacket";
 
 const PET_TIME_INTERACTIONS = new Set([
 	"gainTime",
@@ -112,7 +119,7 @@ export default class SmallEventsHandler {
 			return;
 		}
 		const lng = interaction.userLanguage;
-		const timeDisplay = minutesDisplay(packet.amount, lng);
+		const timeDisplay = i18n.formatDuration(packet.amount, lng);
 		const description = getRandomSmallEventIntro(lng)
 			+ StringUtils.getRandomTranslation("smallEvents:advanceTime.stories", lng, {
 				time: packet.amount,
@@ -204,6 +211,25 @@ export default class SmallEventsHandler {
 		});
 	}
 
+	@packetHandler(SmallEventGoToPVEIslandNoAnswerPacket)
+	async smallEventGoToPVEIslandNoAnswer(context: PacketContext, _packet: SmallEventGoToPVEIslandNoAnswerPacket): Promise<void> {
+		const interaction = DiscordCache.getInteraction(context.discord!.interaction);
+		if (!interaction) {
+			return;
+		}
+		const lng = interaction.userLanguage;
+		await interaction.followUp({
+			embeds: [
+				new CrowniclesSmallEventEmbed(
+					"goToPVEIsland",
+					i18n.t("smallEvents:goToPVEIsland.endStoryRefuse", { lng }),
+					interaction.user,
+					lng
+				)
+			]
+		});
+	}
+
 	@packetHandler(SmallEventGoToPVEIslandNotEnoughGemsPacket)
 	async smallEventGoToPVEIslandNotEnoughGems(context: PacketContext, _packet: SmallEventGoToPVEIslandNotEnoughGemsPacket): Promise<void> {
 		const interaction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
@@ -252,7 +278,7 @@ export default class SmallEventsHandler {
 	async smallEventLotteryLose(context: PacketContext, packet: SmallEventLotteryLosePacket): Promise<void> {
 		const interaction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
 		const lng = context.discord!.language;
-		const lostTimeDisplay = minutesDisplay(packet.lostTime, lng);
+		const lostTimeDisplay = i18n.formatDuration(packet.lostTime, lng);
 		await interaction?.editReply({
 			embeds: [
 				new CrowniclesSmallEventEmbed(
@@ -274,7 +300,7 @@ export default class SmallEventsHandler {
 	async smallEventLotteryWin(context: PacketContext, packet: SmallEventLotteryWinPacket): Promise<void> {
 		const interaction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
 		const lng = context.discord!.language;
-		const lostTimeDisplay = minutesDisplay(packet.lostTime, lng);
+		const lostTimeDisplay = i18n.formatDuration(packet.lostTime, lng);
 		await interaction?.editReply({
 			embeds: [
 				new CrowniclesSmallEventEmbed(
@@ -294,83 +320,6 @@ export default class SmallEventsHandler {
 		});
 	}
 
-	/**
-	 * Handles the case where no player is found for the interaction
-	 * @param interaction
-	 * @param lng
-	 */
-	private static async handleNoPlayerInteraction(interaction: CrowniclesInteraction, lng: Language): Promise<void> {
-		await interaction.editReply({
-			embeds: [
-				new CrowniclesSmallEventEmbed(
-					"interactOtherPlayers",
-					StringUtils.getRandomTranslation("smallEvents:interactOtherPlayers.no_one", lng),
-					interaction.user,
-					lng
-				)
-			]
-		});
-	}
-
-	/**
-	 * Handles the case where the interaction is an effect
-	 * @param interaction
-	 * @param packet
-	 * @param lng
-	 * @param playerDisplay
-	 */
-	private static async handleEffectInteraction(interaction: CrowniclesInteraction, packet: SmallEventInteractOtherPlayersPacket, lng: Language, playerDisplay: string): Promise<void> {
-		await interaction.editReply({
-			embeds: [
-				new CrowniclesSmallEventEmbed(
-					"interactOtherPlayers",
-					StringUtils.getRandomTranslation(`smallEvents:interactOtherPlayers.effect.${packet.data!.effectId}`, lng, { playerDisplay }),
-					interaction.user,
-					lng
-				)
-			]
-		});
-	}
-
-	/**
-	 * Handles the case where the interaction is not an effect
-	 * @param interaction
-	 * @param packet
-	 * @param lng
-	 * @param playerDisplay
-	 */
-	private static async handleOtherInteractions(interaction: CrowniclesInteraction, packet: SmallEventInteractOtherPlayersPacket, lng: Language, playerDisplay: string): Promise<void> {
-		const hasPetInfo = packet.data!.petId && packet.data!.petSex;
-		await interaction.editReply({
-			embeds: [
-				new CrowniclesSmallEventEmbed(
-					"interactOtherPlayers",
-					StringUtils.getRandomTranslation(
-						`smallEvents:interactOtherPlayers.${InteractOtherPlayerInteraction[packet.playerInteraction!].toLowerCase()}`,
-						lng,
-						{
-							playerDisplay,
-							level: packet.data!.level,
-							class: DisplayUtils.getClassDisplay(packet.data!.classId, lng),
-							classPlural: DisplayUtils.getClassDisplay(packet.data!.classId, lng, true),
-							advice: StringUtils.getRandomTranslation("advices:advices", lng),
-							petEmote: hasPetInfo ? DisplayUtils.getPetIcon(packet.data!.petId!, packet.data!.petSex!) : "",
-							petName: hasPetInfo ? DisplayUtils.getPetNicknameOrTypeName(packet.data!.petName ?? null, packet.data!.petId!, packet.data!.petSex!, lng) : "",
-							guildName: packet.data!.guildName,
-							weapon: DisplayUtils.getSimpleWeaponDisplay(packet.data!.weaponId, lng),
-							armor: DisplayUtils.getSimpleArmorDisplay(packet.data!.armorId, lng),
-							object: DisplayUtils.getSimpleObjectDisplay(packet.data!.objectId, lng),
-							potion: DisplayUtils.getSimplePotionDisplay(packet.data!.potionId, lng)
-						}
-					),
-					interaction.user,
-					lng
-				)
-			]
-		});
-	}
-
-
 	@packetHandler(SmallEventInteractOtherPlayersPacket)
 	async smallEventInteractOtherPlayers(context: PacketContext, packet: SmallEventInteractOtherPlayersPacket): Promise<void> {
 		const interaction = DiscordCache.getInteraction(context.discord!.interaction);
@@ -380,7 +329,7 @@ export default class SmallEventsHandler {
 		const lng = interaction.userLanguage;
 
 		if (!packet.keycloakId) {
-			await SmallEventsHandler.handleNoPlayerInteraction(interaction, lng);
+			await handleNoPlayerInteraction(interaction, lng);
 			return;
 		}
 
@@ -391,11 +340,11 @@ export default class SmallEventsHandler {
 		const playerDisplay = await interactOtherPlayerGetPlayerDisplay(packet.keycloakId, packet.data.rank, lng);
 
 		if (packet.playerInteraction === InteractOtherPlayerInteraction.EFFECT) {
-			await SmallEventsHandler.handleEffectInteraction(interaction, packet, lng, playerDisplay);
+			await handleEffectInteraction(interaction, packet, lng, playerDisplay);
 			return;
 		}
 
-		await SmallEventsHandler.handleOtherInteractions(interaction, packet, lng, playerDisplay);
+		await handleOtherInteractions(interaction, packet, lng, playerDisplay);
 	}
 
 	@packetHandler(SmallEventInteractOtherPlayersAcceptToGivePoorPacket)
@@ -737,14 +686,21 @@ export default class SmallEventsHandler {
 		const interaction = DiscordCache.getInteraction(context.discord!.interaction);
 		const lng = interaction!.userLanguage;
 		const amountDisplay = packet.issue === SmallEventBadIssue.TIME
-			? minutesDisplay(packet.amount, lng)
+			? i18n.formatDuration(packet.amount, lng)
 			: packet.amount;
+
+		// For TIME issue, choose translation key based on effectId
+		let translationKey = `smallEvents:smallBad.${packet.issue}.stories`;
+		if (packet.issue === SmallEventBadIssue.TIME && packet.effectId) {
+			translationKey = `smallEvents:smallBad.${packet.issue}.${packet.effectId}.stories`;
+		}
+
 		await interaction?.editReply({
 			embeds: [
 				new CrowniclesSmallEventEmbed(
 					"smallBad",
 					getRandomSmallEventIntro(lng)
-					+ StringUtils.getRandomTranslation(`smallEvents:smallBad.${packet.issue}.stories`, lng, { amount: amountDisplay }),
+					+ StringUtils.getRandomTranslation(translationKey, lng, { amount: amountDisplay }),
 					interaction.user,
 					lng
 				)
@@ -791,7 +747,7 @@ export default class SmallEventsHandler {
 		const interaction = DiscordCache.getInteraction(context.discord!.interaction);
 		const lng = interaction!.userLanguage;
 		const amountDisplay = packet.amount && PET_TIME_INTERACTIONS.has(packet.interactionName)
-			? minutesDisplay(packet.amount, lng)
+			? i18n.formatDuration(packet.amount, lng)
 			: packet.amount;
 		await interaction?.editReply({
 			embeds: [
@@ -899,11 +855,16 @@ export default class SmallEventsHandler {
 			return;
 		}
 		const lng = interaction.userLanguage;
+
+		// Get the sex context for gendered translations
+		const sexContext = packet.isFemale ? StringConstants.SEX.FEMALE.long : StringConstants.SEX.MALE.long;
 		await interaction.followUp({
 			embeds: [
 				new CrowniclesSmallEventEmbed(
 					"fightPet",
-					i18n.t(`smallEvents:fightPet.fightPetActions.${packet.fightPetActionId}.${packet.isSuccess ? "success" : "failure"}`, { lng })
+					i18n.t(`smallEvents:fightPet.fightPetActions.${packet.fightPetActionId}.${packet.isSuccess ? "success" : "failure"}`, {
+						lng, context: sexContext
+					})
 					+ (packet.isSuccess
 						? i18n.t("smallEvents:fightPet.rageUpFormat", {
 							lng,
@@ -924,6 +885,18 @@ export default class SmallEventsHandler {
 			return;
 		}
 		const lng = interaction.userLanguage;
+
+		/*
+		 * For ITEM result, the item display is handled by the ItemFound system
+		 * We just need to display a different message
+		 */
+		const resultKey = packet.malus === SmallEventGobletsGameMalus.ITEM
+			? "smallEvents:gobletsGame.results.item"
+			: `smallEvents:gobletsGame.results.${packet.malus}`;
+
+		const goblet = packet.goblet ?? RandomUtils.crowniclesRandom.pick(Object.keys(CrowniclesIcons.goblets));
+		const gobletEmote = CrowniclesIcons.goblets[goblet] ?? "";
+
 		await interaction.followUp({
 			embeds: [
 				new CrowniclesEmbed()
@@ -935,11 +908,11 @@ export default class SmallEventsHandler {
 						interaction.user
 					)
 					.setDescription(
-						i18n.t(`{emote:goblets.{{goblet}}} $t(smallEvents:gobletsGame.results.${packet.malus})`, {
+						`${gobletEmote} ${i18n.t(resultKey, {
 							lng,
-							quantity: packet.malus === SmallEventGobletsGameMalus.TIME ? minutesDisplay(packet.value, lng) : packet.value,
-							goblet: packet.goblet ?? RandomUtils.crowniclesRandom.pick(Object.keys(CrowniclesIcons.goblets))
-						})
+							quantity: packet.malus === SmallEventGobletsGameMalus.TIME ? i18n.formatDuration(packet.value, lng) : packet.value,
+							goblet
+						})}`
 					)
 			]
 		});
@@ -1003,17 +976,19 @@ export default class SmallEventsHandler {
 		const interaction = DiscordCache.getInteraction(context.discord!.interaction);
 		const lng = interaction!.userLanguage;
 		const keyReward = packet.isGemReward ? "gem" : "money";
+		const hasPetInfo = packet.petTypeId !== undefined;
 		await interaction?.editReply({
 			embeds: [
 				new CrowniclesSmallEventEmbed(
 					"dwarfPetFan",
 					`${StringUtils.getRandomTranslation("smallEvents:dwarfPetFan.intro", lng)} ${StringUtils.getRandomTranslation(`smallEvents:dwarfPetFan.${packet.interactionName}`, lng, {
-						context: packet.petTypeId ? packet.petSex : "m",
-						pet: packet.petTypeId ? PetUtils.petToShortString(lng, packet.petNickname, packet.petTypeId!, packet.petSex!) : "",
-						reward: i18n.t(`smallEvents:dwarfPetFan.reward.${keyReward}`, {
-							lng,
-							amount: packet.amount
-						})
+						...hasPetInfo ? { context: packet.petSex } : {},
+						pet: hasPetInfo ? PetUtils.petToShortString(lng, packet.petNickname, packet.petTypeId!, packet.petSex!) : "",
+						reward: packet.amount !== undefined
+							? i18n.t(`smallEvents:dwarfPetFan.reward.${keyReward}`, {
+								lng, amount: packet.amount
+							})
+							: ""
 					})}`,
 					interaction.user,
 					lng
@@ -1070,11 +1045,18 @@ export default class SmallEventsHandler {
 
 		const petDisplay = PetUtils.petToShortString(lng, packet.petNickname, packet.petId, packet.sex as SexTypeShort);
 
+		// Get the sex context for gendered translations
+		const sexContext = packet.sex === StringConstants.SEX.MALE.short
+			? StringConstants.SEX.MALE.long
+			: StringConstants.SEX.FEMALE.long;
+
 		const outcomeKey = packet.loveLost === 0 ? "success" : "fail";
 		const description = StringUtils.getRandomTranslation(
 			`smallEvents:badPet.outcomes.${packet.interactionType}.${outcomeKey}`,
 			lng,
-			{ pet: petDisplay }
+			{
+				pet: petDisplay, context: sexContext
+			}
 		);
 
 		const embed = new CrowniclesSmallEventEmbed(
@@ -1089,25 +1071,120 @@ export default class SmallEventsHandler {
 		});
 	}
 
-	@packetHandler(SmallEventFindMaterialPacket)
-	async smallEventFindMaterial(context: PacketContext, packet: SmallEventFindMaterialPacket): Promise<void> {
+	@packetHandler(SmallEventExpeditionAdvicePacket)
+	async smallEventExpeditionAdvice(context: PacketContext, packet: SmallEventExpeditionAdvicePacket): Promise<void> {
 		const interaction = DiscordCache.getInteraction(context.discord!.interaction);
-		const lng = interaction!.userLanguage;
+		if (!interaction) {
+			return;
+		}
+		const lng = interaction.userLanguage;
 
-		await interaction?.editReply({
-			embeds: [
-				new CrowniclesSmallEventEmbed(
-					"findMaterial",
-					`${getRandomSmallEventIntro(lng)
-					+ i18n.t(`smallEvents:findMaterial.typesStories.${packet.materialType}`, { lng })}\n${i18n.t(`smallEvents:findMaterial.foundStories.${packet.materialRarity}`, {
-						lng,
-						materialEmote: CrowniclesIcons.materials[packet.materialId],
-						materialId: packet.materialId
-					})}`,
-					interaction.user,
+		let story: string;
+
+		switch (packet.interactionType) {
+			case ExpeditionAdviceInteractionType.TALISMAN_INTRO: {
+				// Talisman introduction (first 2 encounters, displayed in order)
+				const introTexts: string[] = i18n.t("smallEvents:expeditionAdvice.talismanIntro", {
+					returnObjects: true,
 					lng
-				)
-			]
+				});
+				story = introTexts[packet.encounterCount! - 1] ?? introTexts[0];
+				break;
+			}
+
+			case ExpeditionAdviceInteractionType.CONDITION_NOT_MET_NO_PET:
+				story = StringUtils.getRandomTranslation("smallEvents:expeditionAdvice.conditions.noPet", lng);
+				break;
+
+			case ExpeditionAdviceInteractionType.CONDITION_NOT_MET_PET_HUNGRY: {
+				const petDisplayHungry = packet.petTypeId !== undefined
+					? PetUtils.petToShortString(lng, packet.petNickname, packet.petTypeId, packet.petSex as SexTypeShort)
+					: i18n.t("commands:pet.defaultPetName", { lng });
+				story = StringUtils.getRandomTranslation("smallEvents:expeditionAdvice.conditions.petHungry", lng, {
+					pet: petDisplayHungry
+				});
+				break;
+			}
+
+			case ExpeditionAdviceInteractionType.CONDITION_NOT_MET_PET_FEISTY: {
+				const petDisplayFeisty = packet.petTypeId !== undefined
+					? PetUtils.petToShortString(lng, packet.petNickname, packet.petTypeId, packet.petSex as SexTypeShort)
+					: i18n.t("commands:pet.defaultPetName", { lng });
+				story = StringUtils.getRandomTranslation("smallEvents:expeditionAdvice.conditions.petFeisty", lng, {
+					pet: petDisplayFeisty
+				});
+				break;
+			}
+
+			case ExpeditionAdviceInteractionType.CONDITION_NOT_MET_PET_NOT_SEEN_BY_TALVAR: {
+				const petDisplayTalvar = packet.petTypeId !== undefined
+					? PetUtils.petToShortString(lng, packet.petNickname, packet.petTypeId, packet.petSex as SexTypeShort)
+					: i18n.t("commands:pet.defaultPetName", { lng });
+				story = StringUtils.getRandomTranslation("smallEvents:expeditionAdvice.conditions.petNotSeenByTalvar", lng, {
+					pet: petDisplayTalvar
+				});
+				break;
+			}
+
+			case ExpeditionAdviceInteractionType.CONDITION_NOT_MET_NO_GUILD:
+				story = StringUtils.getRandomTranslation("smallEvents:expeditionAdvice.conditions.noGuild", lng);
+				break;
+
+			case ExpeditionAdviceInteractionType.CONDITION_NOT_MET_LEVEL_TOO_LOW:
+				story = StringUtils.getRandomTranslation("smallEvents:expeditionAdvice.conditions.levelTooLow", lng, {
+					requiredLevel: packet.requiredLevel,
+					playerLevel: packet.playerLevel,
+					count: packet.consolationTokensAmount
+				});
+				break;
+
+			case ExpeditionAdviceInteractionType.TALISMAN_RECEIVED: {
+				const petDisplayReceived = packet.petTypeId !== undefined
+					? PetUtils.petToShortString(lng, packet.petNickname, packet.petTypeId, packet.petSex as SexTypeShort)
+					: i18n.t("commands:pet.defaultPetName", { lng });
+				story = StringUtils.getRandomTranslation("smallEvents:expeditionAdvice.talismanReceived", lng, {
+					pet: petDisplayReceived
+				});
+				break;
+			}
+
+			case ExpeditionAdviceInteractionType.EXPEDITION_BONUS: {
+				const petDisplayBonus = packet.petTypeId !== undefined
+					? PetUtils.petToShortString(lng, packet.petNickname, packet.petTypeId, packet.petSex as SexTypeShort)
+					: i18n.t("commands:pet.defaultPetName", { lng });
+
+				// Determine which translation to use based on rewards
+				let translationKey: string;
+				if (packet.bonusCombatPotion) {
+					translationKey = "smallEvents:expeditionAdvice.expeditionBonus.combatPotion";
+				}
+				else if (packet.bonusItem) {
+					translationKey = "smallEvents:expeditionAdvice.expeditionBonus.pointsAndItem";
+				}
+				else if (packet.bonusMoney) {
+					translationKey = "smallEvents:expeditionAdvice.expeditionBonus.pointsAndMoney";
+				}
+				else {
+					translationKey = "smallEvents:expeditionAdvice.expeditionBonus.points";
+				}
+
+				story = i18n.t(translationKey, {
+					lng,
+					pet: petDisplayBonus,
+					bonusPoints: packet.bonusPoints,
+					bonusMoney: packet.bonusMoney
+				});
+				break;
+			}
+
+			case ExpeditionAdviceInteractionType.ADVICE:
+			default:
+				story = StringUtils.getRandomTranslation("smallEvents:expeditionAdvice.advice", lng);
+				break;
+		}
+
+		await interaction.editReply({
+			embeds: [new CrowniclesSmallEventEmbed("expeditionAdvice", story, interaction.user, lng)]
 		});
 	}
 }

@@ -15,10 +15,9 @@ import {
 	CommandGuildCreatePacketRes
 } from "../../../../Lib/src/packets/commands/CommandGuildCreatePacket";
 import { GuildConstants } from "../../../../Lib/src/constants/GuildConstants";
-import { ReactionCollectorCreationPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import { DiscordCollectorUtils } from "../../utils/DiscordCollectorUtils";
-import { ReactionCollectorGuildCreateData } from "../../../../Lib/src/packets/interaction/ReactionCollectorGuildCreate";
+import { ReactionCollectorGuildCreatePacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorGuildCreate";
 import { GuildCreateConstants } from "../../../../Lib/src/constants/GuildCreateConstants";
 import { LANGUAGE } from "../../../../Lib/src/Language";
 import { ReactionCollectorReturnTypeOrNull } from "../../packetHandlers/handlers/ReactionCollectorHandlers";
@@ -88,10 +87,10 @@ export async function handleCommandGuildCreatePacketRes(packet: CommandGuildCrea
 }
 
 
-export async function createGuildCreateCollector(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
+export async function createGuildCreateCollector(context: PacketContext, packet: ReactionCollectorGuildCreatePacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
 	await interaction.deferReply();
-	const data = packet.data.data as ReactionCollectorGuildCreateData;
+	const data = packet.data.data;
 	const lng = interaction.userLanguage;
 
 	const embed = new CrowniclesEmbed().formatAuthor(i18n.t("commands:guildCreate.title", {

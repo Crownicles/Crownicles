@@ -21,7 +21,7 @@ export default class GetResourcesCommand {
 		}
 
 		// Players who have the right to see badges can access the badges only
-		return Object.keys(packet).length === 1 && packet.badges && context.rightGroups?.includes(RightGroup.BADGES);
+		return Object.keys(packet).length === 1 && Boolean(packet.badges) && Boolean(context.rightGroups?.includes(RightGroup.BADGES));
 	}
 
 	@adminCommand(CommandGetResourcesReq, GetResourcesCommand.verifyRights)

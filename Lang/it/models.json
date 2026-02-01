@@ -5,7 +5,7 @@
     "10": "Scudo pesante",
     "100": "Tramarmor",
     "101": "Scudo termico",
-    "102": "Armatura in mithril",
+    "102": "Armatura di mitrilica",
     "103": "Pettorale",
     "104": "Protezione della piastra 4",
     "105": "Cuirass",
@@ -169,7 +169,7 @@
   },
   "classFormat": "{emote:classes.{{id}} $t(models:classes.{{id}})}",
   "classPluralFormat": "{emote:classes.{{id}}} $t(models:classes_plural.{{id}})",
-  "classWithStatsFormat": "{emote:classes.{{id}}} $t(models:classes.{{id}}) :\n{emote:unitValues.energy} {{energy}} | {emote:unitValues.attack} {{attack}} | {emote:unitValues.defense} {{defense}} | {emote:unitValues.speed} {{speed}} | {emote:unitValues.breath} {{initialBreath}} / {{maxBreath}} | {emote:unitValues.health} {{health}}",
+  "classWithStatsFormat": "{emote:classes.{{id}}} $t(models:classes.{{id}}) :\n{emote:unitValues.energy} {{energy, number}} | {emote:unitValues.attack} {{attack, number}} | {emote:unitValues.defense} {{defense, number}} | {emote:unitValues.speed} {{speed, number}} | {emote:unitValues.breath} {{initialBreath, number}} / {{maxBreath, number}} | {emote:unitValues.health} {{health, number}}",
   "class_descriptions": {
     "0": "Una classe semplice. Abbastanza equilibrata.",
     "1": "Una classe semplice. Abbastanza equilibrata.",
@@ -1206,6 +1206,27 @@
     "hauntedHouse": {
       "name": "",
       "prefix": "della"
+    },
+    "forest": {
+      "name": "Foresta"
+    },
+    "mountain": {
+      "name": "Montagna"
+    },
+    "desert": {
+      "name": "Deserto"
+    },
+    "swamp": {
+      "name": "Palude"
+    },
+    "cave": {
+      "name": "Grotta"
+    },
+    "plains": {
+      "name": "Pianura"
+    },
+    "coast": {
+      "name": "Costa"
     }
   },
   "missions": {
@@ -1213,6 +1234,8 @@
     "anyFight_other": "Fare {{count}} combattimenti",
     "bigFeast": "Partecipare a un grande banchetto",
     "buyItemFromAlderic": "Acquista un articolo da Aldéric",
+    "buyTokensFromShop_one": "Acquista {{count}} token {emote:unitValues.token} nel negozio",
+    "buyTokensFromShop_other": "Acquista i gettoni {{count}} {emote:unitValues.token} nel negozio",
     "buyUltimateSoups_one": "Acquistare almeno {{count}} zuppa ultime",
     "buyUltimateSoups_other": "Acquistare almeno {{count}} zuppe ultime",
     "chooseClass": "{emote:classes.0} Scegliere una classe diversa da Recluta",
@@ -1223,7 +1246,7 @@
     "dailyPotionsStock": "Acquistare tutta la scorta di pozioni del giorno",
     "doReports_one": "Fare {{count}} rapporto",
     "doReports_other": "Fare {{count}} rapporti",
-    "drinkAlcohol": "Bere una pozione che contiene del alcol",
+    "drinkAlcohol": "Bere una bevanda alcolica",
     "drinkEnergyPotion_one": "Bere {{count}} pozione d'energia",
     "drinkEnergyPotion_other": "Bere {{count}} pozione d'energia",
     "drinkPotionRarity": "Bevete una pozione di rarità {{variantText}} o superiore",
@@ -1231,11 +1254,15 @@
     "drinkPotionWithoutEffect_other": "Bere {{count}} pozione senza effetto",
     "drinkPotion_one": "Bere {{count}} pozione",
     "drinkPotion_other": "Bere {{count}} pozione",
-    "earnLifePoints_one": "Guadagna {{count}} punti di vita",
-    "earnLifePoints_other": "Guadagnare {{count}} punti di vita",
-    "earnMoney": "{{count}} {emote:unitValues.money}Raccolta",
-    "earnPoints": "{{count}} {emote:unitValues.score}Vincere",
-    "earnXP": "{{count}} {emote:unitValues.xp}Vincere",
+    "earnLifePoints_one": "Guadagna {{count}} punti ferita {emote:unitValues.health}",
+    "earnLifePoints_other": "Guadagna {{count}} punti ferita {emote:unitValues.health}",
+    "earnMoney": "Raccolta {{count, number}} {emote:unitValues.money}",
+    "earnPoints": "Win {{count, number}} {emote:unitValues.score}",
+    "earnTokens_one": "Vinci {{count}} {emote:unitValues.token}",
+    "earnTokens_other": "Vinci {{count}} {emote:unitValues.token}",
+    "earnTokensInOneExpedition_one": "Vincete {{count}} {emote:unitValues.token} gettoni in un'unica spedizione",
+    "earnTokensInOneExpedition_other": "Vincere {{count}} tokens {emote:unitValues.token} in un'unica spedizione",
+    "earnXP": "Win {{count, number}} {emote:unitValues.xp}",
     "exploreDifferentPlaces": "Esplorare {{count}} diversi posti",
     "fightAttacks": "Fare {{count}} {{variantText}} nei combattimenti",
     "fightHealthPercent_one": "Vincere {{count}} affronti con meno di {{variantText}}% di vostra vita rimanente",
@@ -1247,14 +1274,14 @@
     "findOrBuyItem_other": "Trova o acquista {{count}} oggetti",
     "finishWithAttack": "Usare {{count}} volte {{variantText}} per finire il tuo avversario",
     "fromPlaceToPlace": "{{variantText}}",
-    "gainRage_one": "Vincere {{count}} punto di rabbia sconfiggendo degli animali selvatici",
-    "gainRage_other": "Vincere {{count}} punti di rabbia sconfiggendo degli animali selvatici",
+    "gainRage_one": "Ottenete {{count}} punti rabbia {emote:unitValues.rage} sconfiggendo gli animali selvatici.",
+    "gainRage_other": "Guadagna {{count}} punti rabbia {emote:unitValues.rage} sconfiggendo gli animali selvatici",
     "goToPlace": "{{variantText}}Viaggio a",
     "guildDailyFromSomeoneElse": "Ricevere una ricompensa di gilda senza averla reclamata",
     "guildDaily_one": "Ricevere {{count}} ricompensa di gilda",
     "guildDaily_other": "Ricevere {{count}} ricompense di gilda",
-    "guildHasPoints": "Aiutate la vostra gilda a ottenere più di {{count}} punti di gilda",
-    "guildLevel": "Fare parte di una gilda di livello {{count}} o superiore",
+    "guildHasPoints": "Aiuta la tua gilda a ottenere più {{count, number}} punti gilda {emote:unitValues.guildPoint}",
+    "guildLevel": "Fare parte di una gilda di livello {{count, number}} o superiore",
     "haveItemRarity": "Equipaggiamento raro {{variantText}} o superiore",
     "havePet": "Avere un animale domestico con sé",
     "petCaress": "Accarezzare il proprio animale domestico",
@@ -1264,6 +1291,8 @@
     "joinMemberOnBoat": "Unirsi a un membro sull'isola",
     "joinPVEIsland": "Raggiungere l'isola misteriosa",
     "kingsMoneyValue": "{emote:unitValues.money} Ottenere meno di 6.500 in denaro del re",
+    "maxTokensReached_one": "Raggiungere il numero massimo di gettoni {emote:unitValues.token} {{count}} volte",
+    "maxTokensReached_other": "Raggiungere il numero massimo di gettoni {emote:unitValues.token} {{count}} volte",
     "meetDifferentPlayers_one": "Incontrare {{count}} giocatore",
     "meetDifferentPlayers_other": "Incontrare {{count}} giocatori diversi",
     "meetGruffo": "Incontrare Gruffo",
@@ -1271,8 +1300,18 @@
     "meetSirRowan_one": "Ricevere consigli di combattimento da Sir Rowan su {{count}}",
     "meetSirRowan_other": "Ottenete i consigli di combattimento di Sir Rowan su {{count}}",
     "meetTalvar": "Incontrare Talvar",
+    "meetVelanna": "Incontrare Velanna",
+    "doExpeditions_one": "{{count}} spedizione",
+    "doExpeditions_other": "{{count}} spedizioni",
+    "longExpedition": "Una spedizione di successo di almeno {{variantText}}",
+    "dangerousExpedition": "Una spedizione riuscita di \"{{variantText}}\" o di livello di pericolo superiore",
+    "expeditionStreak_one": "Una spedizione di successo su {{count}}",
+    "expeditionStreak_other": "Successo di fila per le spedizioni di {{count}}",
+    "dailyStreak_one": "Eseguire la missione giornaliera {{count}} giorno consecutivo",
+    "dailyStreak_other": "Completare la missione giornaliera {{count}} giorni di fila",
+    "showCloneToTalvar": "Mostrare a Talvar un clone",
     "petEarnHealth": "Ottenere della vita con un animale domestico",
-    "reachGlory": "Avere {{count}} punti gloria o più",
+    "reachGlory": "{{count}} punti gloria {emote:unitValues.glory} o più",
     "reachLevel": "Raggiungere il livello {{count}}",
     "reachScore": "{{count}} {emote:unitValues.score}Punteggio superiore",
     "recoverAlteration_one": "Recuperarsi da {{count}} alterazione di stato",
@@ -1284,13 +1323,17 @@
     "sellOrTradePet": "Vendere un animale domestico a un altro giocatore",
     "showPetsToTalvar_one": "Mostra {{count}} a Talvar",
     "showPetsToTalvar_other": "Mostrare a Talvar gli animali di {{count}}",
-    "spendGems": "Spendere delle gemme nel negozio delle missioni",
-    "spendMoney": "Spendere {{count}} monete",
+    "spendGems": "Spendere le gemme {emote:unitValues.gem} nel negozio di missioni.",
+    "spendMoney": "Spend {{count, number}} {emote:unitValues.money}",
+    "spendTokens_one": "Spendere il gettone {{count}} {emote:unitValues.token}",
+    "spendTokens_other": "Spendere {{count}} {emote:unitValues.token}",
     "tamedPet": "Avere un animale domestico addomesticato o allenato",
     "trainedPet": "Avere un animale domestico addestrato",
     "travelHours_one": "Fare {{count}} viaggio di almeno {{variantText}} ore",
     "travelHours_other": "Fare {{count}} viaggi di almeno {{variantText}} ore",
     "unlock": "Liberare Qualcuno di prigione",
+    "useTokens_one": "Utilizzare {{count}} {emote:unitValues.token} per andare avanti",
+    "useTokens_other": "Utilizzare {{count}} {emote:unitValues.token} per andare avanti",
     "wealthyPayForPVEIsland": "Acquistare un viaggio su un'isola misteriosa al prezzo massimo",
     "winBoss_one": "Vincere {{count}} combatto di boss",
     "winBoss_other": "Vincere {{count}} combatti di boss"
@@ -1464,7 +1507,7 @@
     "100_male": "Fantasma",
     "100_female": "Fantasma",
     "101_male": "Vampiro",
-    "101_female": "Vampiressa",
+    "101_female": "Vampiro",
     "10_female": "Gallina",
     "10_male": "Gallo",
     "11_female": "Uccello",
@@ -1759,7 +1802,8 @@
     "91": "Acqua di mare",
     "92": "Bava di troll",
     "93": "Lacrima di titano",
-    "94": "Barretta ChocoChoc"
+    "94": "Barretta ChocoChoc",
+    "95": "Incredibile pozione Mega Velocità"
   },
   "weapons": {
     "0": "Pugni",
@@ -1884,6 +1928,10 @@
     "male": "Maschio",
     "female": "Femmina"
   },
+  "talisman": {
+    "anchor": "{emote:expedition.talisman} **Talismano dell'Incoronazione",
+    "clone": "{emote:expedition.cloneTalisman} **Talismano di clonazione"
+  },
   "ordinals": {
     "get_feminine_ordinal_one": "1a",
     "get_feminine_ordinal_other": "{{count}}th",
@@ -1892,7 +1940,7 @@
   },
   "guilds": {
     "levelUpTitle": "{emote:unitValues.xp} La gilda {{guild}} sta salendo di livello!",
-    "levelUpDesc": "La gilda è ora di livello **{{level}}** !"
+    "levelUpDesc": "La gilda è ora di livello **{{level, number}}**!"
   },
   "players": {
     "koTitle": "{{pseudo}}sei stato messo al tappeto!",
@@ -1900,12 +1948,12 @@
     "koDmTitle": "Ciao Combattente!",
     "koDmDesc": "Sembra che tu sia stato messo al tappeto... {emote:effects.dead}\nGrazie alle nostre tecnologie avanzate, siamo riusciti ad alterare gli eventi in modo tale da salvarti da una morte agonizzante! {emote:other.tada}\nPurtroppo l'operazione è costosa e il tuo punteggio è stato influenzato da questa morte... \n\nPer ricominciare a giocare, vai su {command:respawn}.",
     "leavePVEIslandTitle": "{{pseudo}}svenimento",
-    "leavePVEIslandDescStart": "{emote:effects.confounded} Sentite che le vostre forze si stanno esaurendo, siete allo stremo delle forze. Si sviene sul pavimento...\n\n{emote:unitValues.lostMoney} Denaro perso: **{{moneyLost}}**",
-    "leavePVEIslandMalusGuildPoints": "\n{emote:unitValues.guildPoint} Punti gilda persi: **{{guildPointsLost}}**",
+    "leavePVEIslandDescStart": "{emote:effects.confounded} Sentite che le vostre forze si stanno esaurendo, siete allo stremo delle forze. Si sviene sul pavimento...\n\n{emote:unitValues.lostMoney} Denaro perso: **{{moneyLost, number}}**",
+    "leavePVEIslandMalusGuildPoints": "\n{emote:unitValues.guildPoint} Punti gilda persi: **{{guildPointsLost, number}}**",
     "leavePVEIslandDescEnd": "\n\nUna barca vi preleverà e vi riporterà su una costa della terraferma.",
     "levelUp": {
       "title": "{{pseudo}}Stai salendo di livello!",
-      "description": "{emote:unitValues.xp} Ora sei al livello **{{level}}** !\n\n",
+      "description": "{emote:unitValues.xp} Ora sei al livello **{{level, number}}**!\n\n",
       "rewards": {
         "healthRestored": "{emote:unitValues.health} | La vostra vita è stata ripristinata.",
         "fightUnlocked": "{emote:unitValues.attack} | Battaglie sbloccate con i comandi {command:fight} e {command:fighthistory} ! Per ulteriori informazioni sulle battaglie, eseguire il comando {command:help}.",
@@ -1914,6 +1962,7 @@
         "classTier": "{emote:commands.classes} | Classi di livello {{tier}} sbloccate! Per ulteriori informazioni sulle classi, utilizzare i comandi {command:classesinfo} e {command:help}.",
         "newMissionSlot": "{emote:missions.sideMission} | Nuovo slot di missione sbloccato! Per ulteriori informazioni sulle missioni, utilizzare il comando {command:missions}.",
         "pveUnlocked": "{emote:other.island} | Accesso alle isole remote sbloccate! Incontratevi in un punto di ristoro per vivere nuove avventure!",
+        "tokensUnlocked": "{emote:unitValues.token} | Gettoni sbloccati! Ora potete usare i vostri gettoni per avanzare più velocemente con il comando {command:report}.",
         "statsIncreased": "{emote:other.increase} | Statistiche migliorate."
       }
     }

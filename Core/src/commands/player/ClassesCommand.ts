@@ -28,7 +28,6 @@ import { crowniclesInstance } from "../../index";
 import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
 import { ClassConstants } from "../../../../Lib/src/constants/ClassConstants";
 import { secondsToMilliseconds } from "../../../../Lib/src/utils/TimeUtils";
-import { InventorySlots } from "../../core/database/game/models/InventorySlot";
 
 function getEndCallback(player: Player) {
 	return async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
@@ -45,19 +44,27 @@ function getEndCallback(player: Player) {
 		const oldClass = ClassDataController.instance.getById(player.class);
 		const newClass = ClassDataController.instance.getById(selectedClass);
 		const level = player.level;
-		const activeObjects = await InventorySlots.getPlayerActiveObjects(player.id);
-		const healthBefore = player.getHealth(activeObjects);
+
+		if (!oldClass || !newClass) {
+			response.push(makePacket(CommandClassesCancelErrorPacket, {}));
+			return;
+		}
 
 		player.class = selectedClass;
-		await player.addHealth(Math.ceil(
-			healthBefore / oldClass.getMaxHealthValue(level) * newClass.getMaxHealthValue(level)
-		) - healthBefore, response, NumberChangeReason.CLASS, activeObjects, {
-			shouldPokeMission: false,
-			overHealCountsForMission: false
+		await player.addHealth({
+			amount: Math.ceil(
+				player.health / oldClass.getMaxHealthValue(level) * newClass.getMaxHealthValue(level)
+			) - player.health,
+			response,
+			reason: NumberChangeReason.CLASS,
+			missionHealthParameter: {
+				shouldPokeMission: false,
+				overHealCountsForMission: false
+			}
 		});
 		player.setEnergyLost(Math.ceil(
 			player.fightPointsLost / oldClass.getMaxCumulativeEnergyValue(level) * newClass.getMaxCumulativeEnergyValue(level)
-		), NumberChangeReason.CLASS, activeObjects);
+		), NumberChangeReason.CLASS);
 		await MissionsController.update(player, response, { missionId: "chooseClass" });
 		await MissionsController.update(player, response, {
 			missionId: "chooseClassTier",
@@ -83,7 +90,8 @@ export default class ClassesCommand {
 	async execute(response: CrowniclesPacket[], player: Player, _packet: CommandClassesPacketReq, context: PacketContext): Promise<void> {
 		const allClasses = ClassDataController.instance.getByGroup(player.getClassGroup())
 			.filter(c => c.id !== player.class);
-		const currentClassGroup = ClassDataController.instance.getById(player.class).classGroup;
+		const currentClass = ClassDataController.instance.getById(player.class);
+		const currentClassGroup = currentClass!.classGroup;
 		const lastTimeThePlayerHasEditedHisClass = await LogsReadRequests.getLastTimeThePlayerHasEditedHisClass(player.keycloakId);
 		if (Date.now() - lastTimeThePlayerHasEditedHisClass.getTime() < secondsToMilliseconds(ClassConstants.TIME_BEFORE_CHANGE_CLASS[currentClassGroup])) {
 			response.push(makePacket(CommandClassesCooldownErrorPacket, {

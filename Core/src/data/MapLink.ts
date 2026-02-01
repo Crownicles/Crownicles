@@ -5,11 +5,11 @@ import { Data } from "./Data";
 import { MapConstants } from "../../../Lib/src/constants/MapConstants";
 
 export class MapLink extends Data<number> {
-	public readonly startMap: number;
+	public readonly startMap!: number;
 
-	public readonly endMap: number;
+	public readonly endMap!: number;
 
-	public readonly tripDuration: number;
+	public readonly tripDuration!: number;
 
 	public readonly forcedImage?: string;
 }
@@ -24,7 +24,7 @@ export class MapLinkDataController extends DataControllerNumber<MapLink> {
 	public generateRandomMapLinkDifferentOfCurrent(currentMapLinkId: number): MapLink {
 		let generatedMapLink = this.getRandomLinkOnMainContinent();
 		if (generatedMapLink.id === currentMapLinkId) { // If the player is already on the destination, get the inverse link
-			generatedMapLink = this.getInverseLinkOf(currentMapLinkId);
+			generatedMapLink = this.getInverseLinkOf(currentMapLinkId)!;
 		}
 		return generatedMapLink;
 	}
@@ -41,7 +41,7 @@ export class MapLinkDataController extends DataControllerNumber<MapLink> {
 			.filter(mapLink => {
 				const startMap = MapLocationDataController.instance.getById(mapLink.startMap);
 				const endMap = MapLocationDataController.instance.getById(mapLink.endMap);
-				return startMap.attribute === MapConstants.MAP_ATTRIBUTES.CONTINENT1 && endMap.attribute === MapConstants.MAP_ATTRIBUTES.CONTINENT1;
+				return startMap?.attribute === MapConstants.MAP_ATTRIBUTES.CONTINENT1 && endMap?.attribute === MapConstants.MAP_ATTRIBUTES.CONTINENT1;
 			});
 		return RandomUtils.crowniclesRandom.pick(mapLinks);
 	}
@@ -51,7 +51,7 @@ export class MapLinkDataController extends DataControllerNumber<MapLink> {
 	 * @param idStartPoint
 	 * @param idEndPoint
 	 */
-	public getLinkByLocations(idStartPoint: number, idEndPoint: number): MapLink {
+	public getLinkByLocations(idStartPoint: number, idEndPoint: number): MapLink | undefined {
 		return this.getValuesArray()
 			.find(mapLink => mapLink.startMap === idStartPoint && mapLink.endMap === idEndPoint);
 	}
@@ -69,8 +69,11 @@ export class MapLinkDataController extends DataControllerNumber<MapLink> {
 	 * Get the inverse link of a map link (where start and end are inverted)
 	 * @param idMapLink
 	 */
-	public getInverseLinkOf(idMapLink: number): MapLink {
+	public getInverseLinkOf(idMapLink: number): MapLink | undefined {
 		const currMapLink = this.data.get(idMapLink);
+		if (!currMapLink) {
+			return undefined;
+		}
 		return this.getValuesArray()
 			.find(mapLink => mapLink.startMap === currMapLink.endMap && mapLink.endMap === currMapLink.startMap);
 	}
@@ -87,7 +90,7 @@ export class MapLinkDataController extends DataControllerNumber<MapLink> {
 			.filter(
 				mapLink => mapLink.startMap === startMapId
 					&& mapLink.endMap !== blackListId
-					&& mapTypes.includes(MapLocationDataController.instance.getById(mapLink.endMap).type)
+					&& mapTypes.includes(MapLocationDataController.instance.getById(mapLink.endMap)?.type ?? "")
 			);
 	}
 
@@ -102,7 +105,7 @@ export class MapLinkDataController extends DataControllerNumber<MapLink> {
 				mapLink => {
 					const startMap = MapLocationDataController.instance.getById(mapLink.startMap);
 					const endMap = MapLocationDataController.instance.getById(mapLink.endMap);
-					return startMap.attribute === attributeFrom && endMap.attribute === attributeTo;
+					return startMap?.attribute === attributeFrom && endMap?.attribute === attributeTo;
 				}
 			);
 	}

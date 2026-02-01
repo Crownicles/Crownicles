@@ -48,7 +48,7 @@ export function createDefaultFilter(allowedPlayerKeycloakIds: string[]): FilterF
 const collectors: Map<string, ReactionCollectorInstance> = new Map<string, ReactionCollectorInstance>();
 
 export class ReactionCollectorInstance {
-	private id: string;
+	private id!: string;
 
 	private model: ReactionCollector;
 
@@ -58,7 +58,7 @@ export class ReactionCollectorInstance {
 
 	private readonly time: number;
 
-	private readonly collectCallback: CollectCallback;
+	private readonly collectCallback?: CollectCallback;
 
 	private readonly _context: PacketContext;
 
@@ -70,11 +70,11 @@ export class ReactionCollectorInstance {
 
 	private readonly mainPacket: boolean;
 
-	private endedByTime: boolean;
+	private endedByTime!: boolean;
 
-	private endTimeout: NodeJS.Timeout;
+	private endTimeout!: NodeJS.Timeout;
 
-	public constructor(reactionCollector: ReactionCollector, context: PacketContext, collectorOptions: CollectorOptions, endCallback: EndCallback, collectCallback: CollectCallback = null) {
+	public constructor(reactionCollector: ReactionCollector, context: PacketContext, collectorOptions: CollectorOptions, endCallback: EndCallback, collectCallback?: CollectCallback) {
 		this.model = reactionCollector;
 		this.filter = collectorOptions.allowedPlayerKeycloakIds ? createDefaultFilter(collectorOptions.allowedPlayerKeycloakIds) : (): boolean => true;
 		this.time = collectorOptions.time ?? Constants.MESSAGES.COLLECTOR_TIME;
@@ -86,7 +86,7 @@ export class ReactionCollectorInstance {
 		this.reactionLimit = collectorOptions.reactionLimit ?? 1;
 	}
 
-	private _hasEnded: boolean;
+	private _hasEnded!: boolean;
 
 	get hasEnded(): boolean {
 		return this._hasEnded;
@@ -100,7 +100,7 @@ export class ReactionCollectorInstance {
 		return this.endedByTime;
 	}
 
-	private _creationPacket: ReactionCollectorCreationPacket;
+	private _creationPacket!: ReactionCollectorCreationPacket;
 
 	get creationPacket(): ReactionCollectorCreationPacket {
 		return this._creationPacket;
@@ -141,26 +141,23 @@ export class ReactionCollectorInstance {
 		await this.end();
 	}
 
-	public async end(response: CrowniclesPacket[] = null): Promise<void> {
-		const isResponseProvided = response !== null;
+	public async end(response?: CrowniclesPacket[]): Promise<void> {
+		const isResponseProvided = response !== undefined;
 		if (this.hasEnded) {
 			return;
 		}
 		this.hasEnded = true;
+		clearTimeout(this.endTimeout);
 		collectors.delete(this.id);
-		if (isResponseProvided) {
-			response.push(makePacket(ReactionCollectorStopPacket, {
-				id: this.id
-			}));
-		}
+		const packets: CrowniclesPacket[] = response ?? [];
+		packets.push(makePacket(ReactionCollectorStopPacket, {
+			id: this.id
+		}));
 		if (this.endCallback) {
-			if (!isResponseProvided) {
-				response = [];
-			}
-			await this.endCallback(this, response);
-			if (!isResponseProvided && response.length !== 0) {
-				PacketUtils.sendPackets(this._context, response);
-			}
+			await this.endCallback(this, packets);
+		}
+		if (!isResponseProvided) {
+			PacketUtils.sendPackets(this._context, packets);
 		}
 	}
 
@@ -202,9 +199,9 @@ export class ReactionCollectorInstance {
 	}
 }
 
-export class ReactionCollectorController {
+export abstract class ReactionCollectorController {
 	public static async reactPacket(response: CrowniclesPacket[], packet: ReactionCollectorReactPacket): Promise<void> {
-		const collector: ReactionCollectorInstance = collectors.get(packet.id);
+		const collector = collectors.get(packet.id);
 		if (!collector || collector.hasEnded) {
 			const packet: ReactionCollectorEnded = makePacket(ReactionCollectorEnded, {});
 			response.push(packet);
@@ -215,7 +212,7 @@ export class ReactionCollectorController {
 	}
 
 	public static resetTimer(response: CrowniclesPacket[], packet: ReactionCollectorResetTimerPacketReq): void {
-		const collector: ReactionCollectorInstance = collectors.get(packet.reactionCollectorId);
+		const collector = collectors.get(packet.reactionCollectorId);
 		if (collector && !collector.hasEnded) {
 			collector.resetTimer();
 			response.push(makePacket(ReactionCollectorResetTimerPacketRes, {

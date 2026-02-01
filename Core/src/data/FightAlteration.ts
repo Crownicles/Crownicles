@@ -30,7 +30,7 @@ export class FightAlterationDataController extends DataControllerString<FightAlt
 			FightAlterationDataController.loadFightAlterationsFromFolder("dist/Core/src/core/fights/actions/interfaces/alterations", "../core/fights/actions/interfaces/alterations");
 		}
 
-		return FightAlterationDataController.fightAlterationsFunctionsCache.get(id);
+		return FightAlterationDataController.fightAlterationsFunctionsCache.get(id)!;
 	}
 
 	private static loadFightAlterationsFromFolder(path: string, relativePath: string): void {

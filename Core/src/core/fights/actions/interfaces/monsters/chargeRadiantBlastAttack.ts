@@ -5,7 +5,7 @@ import { customMessageActionResult } from "../../../../../../../Lib/src/types/Fi
 import { FightConstants } from "../../../../../../../Lib/src/constants/FightConstants";
 
 const use: FightActionFunc = sender => {
-	sender.nextFightAction = FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.MONSTER.RADIANT_BLAST_ATTACK);
+	sender.nextFightAction = FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.MONSTER.RADIANT_BLAST_ATTACK) ?? null;
 	return customMessageActionResult();
 };
 

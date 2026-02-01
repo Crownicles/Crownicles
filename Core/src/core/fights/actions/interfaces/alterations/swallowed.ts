@@ -12,14 +12,14 @@ const use: FightAlterationFunc = (affected, _fightAlteration, _opponent) => {
 	}
 
 	if (affected.alterationTurn < 2) {
-		affected.nextFightAction = FightActionDataController.instance.getNone();
+		affected.nextFightAction = FightActionDataController.instance.getNone() ?? null;
 		return {
 			state: FightAlterationState.NO_ACTION
 		};
 	}
 
 	// Turn 3, fighter made it to the back door
-	affected.nextFightAction = FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.GET_DIRTY);
+	affected.nextFightAction = FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.GET_DIRTY) ?? null;
 	return defaultHealFightAlterationResult(affected);
 };
 

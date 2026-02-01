@@ -14,10 +14,9 @@ import {
 	CommandGuildKickPacketRes,
 	CommandGuildKickRefusePacketRes
 } from "../../../../Lib/src/packets/commands/CommandGuildKickPacket";
-import { ReactionCollectorCreationPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import { DiscordCollectorUtils } from "../../utils/DiscordCollectorUtils";
-import { ReactionCollectorGuildKickData } from "../../../../Lib/src/packets/interaction/ReactionCollectorGuildKick";
+import { ReactionCollectorGuildKickPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorGuildKick";
 import { PacketUtils } from "../../utils/PacketUtils";
 import {
 	sendErrorMessage, SendManner
@@ -87,10 +86,10 @@ export async function handleCommandGuildKickPacketRes(packet: CommandGuildKickPa
  * @param packet
  * @param context
  */
-export async function createGuildKickCollector(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
+export async function createGuildKickCollector(context: PacketContext, packet: ReactionCollectorGuildKickPacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
 	await interaction.deferReply();
-	const data = packet.data.data as ReactionCollectorGuildKickData;
+	const data = packet.data.data;
 	const lng = interaction.userLanguage;
 	const embed = new CrowniclesEmbed().formatAuthor(i18n.t("commands:guildKick.title", {
 		lng,

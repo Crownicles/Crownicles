@@ -39,7 +39,7 @@ const guildPetTestCommand: ExecuteTestCommandLike = async (player, args) => {
 		throw new Error(`Erreur guildpet : id invalide. L'id doit être compris entre 0 et ${maxIdPet} !`);
 	}
 
-	const pet = PetEntities.createPet(petId, args[1], null);
+	const pet = PetEntities.createPet(petId, args[1], "");
 	await pet.save();
 
 	await GuildPets.addPet(guild, pet, true).save();

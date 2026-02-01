@@ -22,7 +22,7 @@ export default class GuildShelterCommand {
 		whereAllowed: CommandUtils.WHERE.EVERYWHERE
 	})
 	async execute(response: CrowniclesPacket[], player: Player): Promise<void> {
-		const pets = await GuildPets.getOfGuild(player.guildId);
+		const pets = await GuildPets.getOfGuild(player.guildId!);
 
 		if (pets.length === 0) {
 			response.push(makePacket(CommandGuildShelterNoPetErrorPacket, {}));
@@ -31,12 +31,12 @@ export default class GuildShelterCommand {
 
 		const ownedPets = [];
 		for (const pet of pets) {
-			ownedPets.push((await PetEntities.getById(pet.petEntityId)).asOwnedPet());
+			ownedPets.push((await PetEntities.getById(pet.petEntityId))!.asOwnedPet());
 		}
 
 		response.push(makePacket(CommandGuildShelterPacketRes, {
 			pets: ownedPets,
-			guildName: (await Guilds.getById(player.guildId)).name,
+			guildName: (await Guilds.getById(player.guildId))!.name,
 			maxCount: PetConstants.SLOTS
 		}));
 	}

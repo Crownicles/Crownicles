@@ -95,6 +95,7 @@ async topScoreRes(context: PacketContext, packet: CommandTopPacketResScore): Pro
 - Discord service generates types: `pnpm interface` creates `src/@types/resources.d.ts`
 - Use `i18n.t("namespace:key", { lng })` pattern
 - NEVER edit something else than the french translations, other languages are synced from there in crowdin, so any change will be overwritten.
+- **NEVER use direct speech** (dialogue with quotes like `<< >>` or `" "`) in translations. All text should be narrative/descriptive, not conversational.
 
 ### Docker Development
 - Each service has a `Dockerfile`

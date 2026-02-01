@@ -5,9 +5,9 @@ import {
 	FightAction, FightActionDataController
 } from "../../../data/FightAction";
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
+import { PlayerFighter } from "../fighter/PlayerFighter";
 import { MonsterFighter } from "../fighter/MonsterFighter";
 import { RandomUtils } from "../../../../../Lib/src/utils/RandomUtils";
-import { PlayerFighter } from "../fighter/PlayerFighter";
 
 class EsquireFightBehavior implements ClassBehavior {
 	private restCount = 0; // Track how many times we've rested
@@ -25,18 +25,18 @@ class EsquireFightBehavior implements ClassBehavior {
 		 * ENDGAME STRATEGY: Try to force a draw if victory seems impossible
 		 * Still rest even if we've done it 4 times, because the goal is to stall
 		 */
-		if (me.getEnergy() < 75 && opponent.getEnergy() > 200) {
+		if (opponent && me.getEnergy() < 75 && opponent.getEnergy() > 200) {
 			this.restCount++;
-			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.RESTING);
+			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.RESTING)!;
 		}
 
 		// REST WHEN NEEDED: Not enough breath for actions (only if we haven't rested 4 times)
 		if (me.getBreath() < 2 && this.restCount < 4) {
 			this.restCount++;
-			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.RESTING);
+			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.RESTING)!;
 		}
 
-		return simpleOrQuickAttack(me, opponent);
+		return simpleOrQuickAttack(me, opponent!, this.restCount);
 	}
 }
 
@@ -44,8 +44,9 @@ class EsquireFightBehavior implements ClassBehavior {
  * Choose between a simple or quick attack based on speed comparison and breath
  * @param me
  * @param opponent
+ * @param restCount
  */
-export function simpleOrQuickAttack(me: AiPlayerFighter, opponent: PlayerFighter | MonsterFighter): FightAction {
+export function simpleOrQuickAttack(me: AiPlayerFighter, opponent: PlayerFighter | MonsterFighter | AiPlayerFighter, restCount = 0): FightAction {
 	// Other attacks based on speed comparison
 	const mySpeed = me.getSpeed();
 	const opponentSpeed = opponent.getSpeed();
@@ -55,10 +56,10 @@ export function simpleOrQuickAttack(me: AiPlayerFighter, opponent: PlayerFighter
 	 * If we're very low on breath but have already rested 4 times, still try to attack
 	 * 85% chance to use quick attack when conditions are met to add variability
 	 */
-	if (mySpeed > opponentSpeed && (me.getBreath() >= 3 || this.restCount >= 4) && RandomUtils.crowniclesRandom.bool(0.85)) {
-		return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.QUICK_ATTACK);
+	if (mySpeed > opponentSpeed && (me.getBreath() >= 3 || restCount >= 4) && RandomUtils.crowniclesRandom.bool(0.85)) {
+		return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.QUICK_ATTACK)!;
 	}
-	return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.SIMPLE_ATTACK);
+	return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.SIMPLE_ATTACK)!;
 }
 
 export default EsquireFightBehavior;

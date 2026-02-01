@@ -23,6 +23,15 @@ export class ReactionCollectorPetTransferSwitchReaction extends ReactionCollecto
 	petEntityId!: number;
 }
 
+type PetTransferReaction =
+	| ReactionCollectorPetTransferDepositReaction
+	| ReactionCollectorPetTransferWithdrawReaction
+	| ReactionCollectorPetTransferSwitchReaction;
+export type ReactionCollectorPetTransferPacket = ReactionCollectorCreationPacket<
+	ReactionCollectorPetTransferData,
+	PetTransferReaction
+>;
+
 export class ReactionCollectorPetTransfer extends ReactionCollector {
 	private readonly ownPet: OwnedPet;
 
@@ -41,7 +50,7 @@ export class ReactionCollectorPetTransfer extends ReactionCollector {
 		this.reactions = reactions;
 	}
 
-	creationPacket(id: string, endTime: number): ReactionCollectorCreationPacket {
+	creationPacket(id: string, endTime: number): ReactionCollectorPetTransferPacket {
 		return {
 			id,
 			endTime,

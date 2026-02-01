@@ -5,11 +5,11 @@ import { GenericItem } from "./GenericItem";
 import { generateRandomItem } from "../core/utils/ItemUtils";
 
 export class League extends Data<number> {
-	public readonly color: string;
+	public readonly color!: string;
 
-	public readonly minGloryPoints: number;
+	public readonly minGloryPoints!: number;
 
-	public readonly maxGloryPoints: number;
+	public readonly maxGloryPoints!: number;
 
 
 	/**
@@ -51,6 +51,6 @@ export class LeagueDataController extends DataControllerNumber<League> {
 	public getByGlory(gloryPoints: number): League {
 		return this.getValuesArray()
 			.find(league => league.minGloryPoints <= gloryPoints
-				&& league.maxGloryPoints >= gloryPoints);
+				&& league.maxGloryPoints >= gloryPoints)!;
 	}
 }

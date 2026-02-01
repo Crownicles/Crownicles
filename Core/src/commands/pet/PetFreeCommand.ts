@@ -1,7 +1,7 @@
 import {
 	CrowniclesPacket, makePacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
-import { Player } from "../../core/database/game/models/Player";
+import Player from "../../core/database/game/models/Player";
 import {
 	PetEntities, PetEntity
 } from "../../core/database/game/models/PetEntity";
@@ -9,16 +9,28 @@ import {
 	CommandPetFreeAcceptPacketRes,
 	CommandPetFreePacketReq,
 	CommandPetFreePacketRes,
-	CommandPetFreeRefusePacketRes
+	CommandPetFreeRefusePacketRes,
+	CommandPetFreeShelterSuccessPacketRes,
+	CommandPetFreeShelterCooldownErrorPacketRes,
+	CommandPetFreeShelterMissingMoneyErrorPacketRes
 } from "../../../../Lib/src/packets/commands/CommandPetFreePacket";
 import { BlockingUtils } from "../../core/utils/BlockingUtils";
 import { PetFreeConstants } from "../../../../Lib/src/constants/PetFreeConstants";
 import {
 	EndCallback, ReactionCollectorInstance
 } from "../../core/utils/ReactionsCollector";
-import { ReactionCollectorAcceptReaction } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
+import {
+	ReactionCollectorAcceptReaction,
+	ReactionCollectorRefuseReaction
+} from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
-import { ReactionCollectorPetFree } from "../../../../Lib/src/packets/interaction/ReactionCollectorPetFree";
+import {
+	ReactionCollectorPetFree,
+	ReactionCollectorPetFreeSelectReaction,
+	ReactionCollectorPetFreeSelection,
+	ReactionCollectorPetFreeShelterConfirm,
+	ReactionCollectorPetFreeShelterConfirmData
+} from "../../../../Lib/src/packets/interaction/ReactionCollectorPetFree";
 import { LogsDatabase } from "../../core/database/logs/LogsDatabase";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import Guild, { Guilds } from "../../core/database/game/models/Guild";
@@ -30,6 +42,12 @@ import {
 } from "../../core/utils/CommandUtils";
 import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
 import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
+import { PetUtils } from "../../core/utils/PetUtils";
+import {
+	GuildPet, GuildPets
+} from "../../core/database/game/models/GuildPet";
+import { OwnedPet } from "../../../../Lib/src/types/OwnedPet";
+import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 
 
 /**
@@ -55,8 +73,8 @@ function getMissingMoneyToFreePet(player: Player, playerPet: PetEntity): number 
  * @param guild
  * @param pPet
  */
-function generateLuckyMeat(guild: Guild, pPet: PetEntity): boolean {
-	return guild && guild.carnivorousFood + 1 <= GuildConstants.MAX_PET_FOOD[getFoodIndexOf(PetConstants.PET_FOOD.CARNIVOROUS_FOOD)]
+function generateLuckyMeat(guild: Guild | null, pPet: PetEntity): boolean {
+	return guild !== null && guild.carnivorousFood + 1 <= GuildConstants.MAX_PET_FOOD[getFoodIndexOf(PetConstants.PET_FOOD.CARNIVOROUS_FOOD)]
 		&& RandomUtils.crowniclesRandom.realZeroToOneInclusive() <= PetFreeConstants.GIVE_MEAT_PROBABILITY
 		&& !pPet.isFeisty();
 }
@@ -91,14 +109,14 @@ async function acceptPetFree(player: Player, playerPet: PetEntity, response: Cro
 	player.lastPetFree = new Date();
 	await player.save();
 
-	let guild: Guild;
+	let guild: Guild | null = null;
 	let luckyMeat = false;
 	try {
 		guild = await Guilds.getById(player.guildId);
 		luckyMeat = generateLuckyMeat(guild, playerPet);
-		if (luckyMeat) {
-			guild!.carnivorousFood += PetFreeConstants.MEAT_GIVEN;
-			await guild!.save();
+		if (luckyMeat && guild) {
+			guild.carnivorousFood += PetFreeConstants.MEAT_GIVEN;
+			await guild.save();
 		}
 	}
 	catch {
@@ -114,6 +132,374 @@ async function acceptPetFree(player: Player, playerPet: PetEntity, response: Cro
 	}));
 }
 
+/**
+ * Free a pet from the guild shelter
+ */
+async function freePetFromShelter(
+	response: CrowniclesPacket[],
+	player: Player,
+	petEntityId: number
+): Promise<void> {
+	// Get guild pets and find the one to free
+	const guildPets = await GuildPets.getOfGuild(player.guildId!);
+	const guildPet = guildPets.find(gp => gp.petEntityId === petEntityId);
+
+	if (!guildPet) {
+		CrowniclesLogger.warn("Player tried to free a pet from the guild but the pet is not in the guild");
+		response.push(makePacket(CommandPetFreeRefusePacketRes, {}));
+		return;
+	}
+
+	const petEntity = await PetEntities.getById(guildPet.petEntityId);
+	if (!petEntity) {
+		CrowniclesLogger.warn("Player tried to free a pet from the guild but the pet entity was not found");
+		response.push(makePacket(CommandPetFreeRefusePacketRes, {}));
+		return;
+	}
+
+	// Check cooldown
+	const cooldownRemainingTimeMs = getCooldownRemainingTimeMs(player);
+	if (cooldownRemainingTimeMs > 0) {
+		response.push(makePacket(CommandPetFreeShelterCooldownErrorPacketRes, { cooldownRemainingTimeMs }));
+		return;
+	}
+
+	// Check money for feisty pets
+	const missingMoney = getMissingMoneyToFreePet(player, petEntity);
+	if (missingMoney > 0) {
+		response.push(makePacket(CommandPetFreeShelterMissingMoneyErrorPacketRes, { missingMoney }));
+		return;
+	}
+
+	// Deduct money if feisty
+	if (petEntity.isFeisty()) {
+		await player.spendMoney({
+			amount: PetFreeConstants.FREE_FEISTY_COST,
+			response,
+			reason: NumberChangeReason.PET_FREE
+		});
+	}
+
+	LogsDatabase.logPetFree(petEntity).then();
+
+	// Remove pet from guild shelter
+	await guildPet.destroy();
+	await petEntity.destroy();
+
+	// Update player's lastPetFree
+	player.lastPetFree = new Date();
+	await player.save();
+
+	// Check for lucky meat
+	let guild: Guild | null = null;
+	let luckyMeat = false;
+	try {
+		guild = await Guilds.getById(player.guildId);
+		luckyMeat = generateLuckyMeat(guild, petEntity);
+		if (luckyMeat && guild) {
+			guild.carnivorousFood += PetFreeConstants.MEAT_GIVEN;
+			await guild.save();
+		}
+	}
+	catch {
+		// Continue regardless of error
+	}
+
+	response.push(makePacket(CommandPetFreeShelterSuccessPacketRes, {
+		petId: petEntity.typeId,
+		petSex: petEntity.sex as SexTypeShort,
+		petNickname: petEntity.nickname,
+		freeCost: petEntity.isFeisty() ? PetFreeConstants.FREE_FEISTY_COST : 0,
+		luckyMeat
+	}));
+}
+
+/**
+ * Build the shelter pets entities array for collector
+ */
+async function buildShelterPetsEntities(guildPets: GuildPet[]): Promise<{
+	petEntityId: number;
+	pet: OwnedPet;
+}[]> {
+	const results: {
+		petEntityId: number; pet: OwnedPet;
+	}[] = [];
+	for (const guildPet of guildPets) {
+		const petEntity = await PetEntities.getById(guildPet.petEntityId);
+		if (petEntity) {
+			results.push({
+				petEntityId: guildPet.petEntityId,
+				pet: petEntity.asOwnedPet()
+			});
+		}
+	}
+	return results;
+}
+
+/**
+ * Build reactions array for shelter pets selection collector
+ */
+async function buildShelterPetReactions(
+	player: Player,
+	playerPet: PetEntity | null,
+	shelterPets: {
+		petEntityId: number; pet: OwnedPet;
+	}[]
+): Promise<CrowniclesPacket[]> {
+	const reactions: CrowniclesPacket[] = [];
+
+	// Add player's own pet as an option if available and not on expedition
+	const petOnExpedition = playerPet && await PetUtils.isPetOnExpedition(player.id);
+	if (playerPet && !petOnExpedition) {
+		const missingMoney = getMissingMoneyToFreePet(player, playerPet);
+		if (missingMoney <= 0) {
+			reactions.push(makePacket(ReactionCollectorPetFreeSelectReaction, {
+				petEntityId: playerPet.id
+			}));
+		}
+	}
+
+	// Add shelter pets
+	for (const shelterPet of shelterPets) {
+		reactions.push(makePacket(ReactionCollectorPetFreeSelectReaction, {
+			petEntityId: shelterPet.petEntityId
+		}));
+	}
+
+	reactions.push(makePacket(ReactionCollectorRefuseReaction, {}));
+	return reactions;
+}
+
+/**
+ * Execute the pet free action based on confirmation data
+ */
+async function executePetFreeFromConfirmation(
+	player: Player,
+	confirmData: ReactionCollectorPetFreeShelterConfirmData,
+	response: CrowniclesPacket[]
+): Promise<void> {
+	if (confirmData.isFromShelter) {
+		await freePetFromShelter(response, player, confirmData.petEntityId);
+		return;
+	}
+
+	const playerPet = await PetEntities.getById(confirmData.petEntityId);
+	if (playerPet) {
+		await acceptPetFree(player, playerPet, response);
+	}
+	else {
+		response.push(makePacket(CommandPetFreeRefusePacketRes, {}));
+	}
+}
+
+/**
+ * Create end callback for shelter pet confirmation collector (accept/refuse after selection)
+ */
+function createShelterConfirmEndCallback(player: Player): EndCallback {
+	return async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
+		const reaction = collector.getFirstReaction();
+		const isAccepted = reaction && reaction.reaction.type === ReactionCollectorAcceptReaction.name;
+
+		if (isAccepted) {
+			const confirmData = collector.creationPacket.data.data as ReactionCollectorPetFreeShelterConfirmData;
+			await player.reload();
+			await executePetFreeFromConfirmation(player, confirmData, response);
+		}
+		else {
+			response.push(makePacket(CommandPetFreeRefusePacketRes, {}));
+		}
+
+		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.PET_FREE);
+	};
+}
+
+/**
+ * Create end callback for shelter selection collector - now creates a confirmation collector
+ */
+function createShelterSelectionEndCallback(
+	player: Player,
+	playerPet: PetEntity | null,
+	shelterPets: {
+		petEntityId: number; pet: OwnedPet;
+	}[],
+	context: PacketContext
+): EndCallback {
+	return (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): void => {
+		const reaction = collector.getFirstReaction();
+
+		if (reaction && reaction.reaction.type === ReactionCollectorPetFreeSelectReaction.name) {
+			const selectedPetEntityId = (reaction.reaction.data as ReactionCollectorPetFreeSelectReaction).petEntityId;
+			const isFromShelter = !playerPet || selectedPetEntityId !== playerPet.id;
+
+			// Find the selected pet's info
+			let petId: number;
+			let petSex: SexTypeShort;
+			let petNickname: string | undefined;
+			let freeCost = 0;
+
+			if (isFromShelter) {
+				const shelterPet = shelterPets.find(sp => sp.petEntityId === selectedPetEntityId);
+				if (!shelterPet) {
+					response.push(makePacket(CommandPetFreeRefusePacketRes, {}));
+					BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.PET_FREE);
+					return;
+				}
+				petId = shelterPet.pet.typeId;
+				petSex = shelterPet.pet.sex;
+				petNickname = shelterPet.pet.nickname ?? undefined;
+
+				// Check if pet would be feisty (loveLevel = FEISTY or lower)
+				if (shelterPet.pet.loveLevel <= PetConstants.LOVE_LEVEL.FEISTY) {
+					freeCost = PetFreeConstants.FREE_FEISTY_COST;
+				}
+			}
+			else {
+				petId = playerPet!.typeId;
+				petSex = playerPet!.sex as SexTypeShort;
+				petNickname = playerPet!.nickname ?? undefined;
+				if (playerPet!.isFeisty()) {
+					freeCost = PetFreeConstants.FREE_FEISTY_COST;
+				}
+			}
+
+			// Create confirmation collector
+			const confirmCollector = new ReactionCollectorPetFreeShelterConfirm({
+				petEntityId: selectedPetEntityId,
+				petId,
+				petSex,
+				petNickname,
+				freeCost,
+				isFromShelter
+			});
+
+			const confirmEndCallback = createShelterConfirmEndCallback(player);
+
+			// Keep the player blocked during confirmation
+			const confirmPacket = new ReactionCollectorInstance(
+				confirmCollector,
+				context,
+				{
+					allowedPlayerKeycloakIds: [player.keycloakId],
+					reactionLimit: 1
+				},
+				confirmEndCallback
+			)
+				.block(player.keycloakId, BlockingConstants.REASONS.PET_FREE)
+				.build();
+
+			response.push(confirmPacket);
+		}
+		else {
+			response.push(makePacket(CommandPetFreeRefusePacketRes, {}));
+			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.PET_FREE);
+		}
+	};
+}
+
+/**
+ * Create end callback for simple pet free collector
+ */
+function createSimplePetFreeEndCallback(player: Player, playerPet: PetEntity): EndCallback {
+	return async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
+		const reaction = collector.getFirstReaction();
+
+		if (reaction && reaction.reaction.type === ReactionCollectorAcceptReaction.name) {
+			await acceptPetFree(player, playerPet, response);
+		}
+		else {
+			response.push(makePacket(CommandPetFreeRefusePacketRes, {}));
+		}
+
+		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.PET_FREE);
+	};
+}
+
+/**
+ * Build and return a reaction collector packet for pet free
+ */
+function buildPetFreeCollectorPacket(
+	collector: ReactionCollectorPetFree | ReactionCollectorPetFreeSelection,
+	context: PacketContext,
+	player: Player,
+	endCallback: EndCallback
+): CrowniclesPacket {
+	return new ReactionCollectorInstance(
+		collector,
+		context,
+		{
+			allowedPlayerKeycloakIds: [player.keycloakId],
+			reactionLimit: 1
+		},
+		endCallback
+	)
+		.block(player.keycloakId, BlockingConstants.REASONS.PET_FREE)
+		.build();
+}
+
+/**
+ * Handle the shelter pets selection flow
+ */
+async function handleShelterPetsFlow(
+	response: CrowniclesPacket[],
+	player: Player,
+	playerPet: PetEntity | null,
+	shelterPets: {
+		petEntityId: number; pet: OwnedPet;
+	}[],
+	context: PacketContext
+): Promise<void> {
+	const reactions = await buildShelterPetReactions(player, playerPet, shelterPets);
+
+	const collector = new ReactionCollectorPetFreeSelection(
+		playerPet?.asOwnedPet(),
+		shelterPets,
+		reactions
+	);
+
+	const endCallback = createShelterSelectionEndCallback(player, playerPet, shelterPets, context);
+	response.push(buildPetFreeCollectorPacket(collector, context, player, endCallback));
+}
+
+/**
+ * Handle the simple pet free flow (no shelter pets)
+ */
+function handleSimplePetFreeFlow(
+	response: CrowniclesPacket[],
+	player: Player,
+	playerPet: PetEntity,
+	context: PacketContext
+): void {
+	const collector = new ReactionCollectorPetFree(
+		playerPet.typeId,
+		playerPet.sex as SexTypeShort,
+		playerPet.nickname,
+		playerPet.isFeisty() ? PetFreeConstants.FREE_FEISTY_COST : 0
+	);
+
+	const endCallback = createSimplePetFreeEndCallback(player, playerPet);
+	response.push(buildPetFreeCollectorPacket(collector, context, player, endCallback));
+}
+
+/**
+ * Check if the player has no pets to free
+ */
+function hasNoPetsToFree(playerPet: PetEntity | null, shelterPetsCount: number): boolean {
+	return !playerPet && shelterPetsCount === 0;
+}
+
+/**
+ * Check if player's pet is blocked on expedition with no alternatives
+ */
+async function isPetBlockedOnExpeditionWithNoAlternatives(
+	player: Player,
+	playerPet: PetEntity | null,
+	shelterPetsCount: number
+): Promise<boolean> {
+	return Boolean(playerPet)
+		&& await PetUtils.isPetOnExpedition(player.id)
+		&& shelterPetsCount === 0;
+}
+
 export default class PetFreeCommand {
 	@commandRequires(CommandPetFreePacketReq, {
 		notBlocked: true,
@@ -122,14 +508,24 @@ export default class PetFreeCommand {
 	})
 	async execute(response: CrowniclesPacket[], player: Player, _packet: CommandPetFreePacketReq, context: PacketContext): Promise<void> {
 		const playerPet = await PetEntities.getById(player.petId);
-		if (!playerPet) {
+		const shelterPets = player.guildId
+			? await buildShelterPetsEntities(await GuildPets.getOfGuild(player.guildId))
+			: [];
+
+		if (hasNoPetsToFree(playerPet, shelterPets.length)) {
+			response.push(makePacket(CommandPetFreePacketRes, { foundPet: false }));
+			return;
+		}
+
+		if (await isPetBlockedOnExpeditionWithNoAlternatives(player, playerPet, shelterPets.length)) {
 			response.push(makePacket(CommandPetFreePacketRes, {
-				foundPet: false
+				foundPet: true,
+				petCanBeFreed: false,
+				petOnExpedition: true
 			}));
 			return;
 		}
 
-		// Check cooldown
 		const cooldownRemainingTimeMs = getCooldownRemainingTimeMs(player);
 		if (cooldownRemainingTimeMs > 0) {
 			response.push(makePacket(CommandPetFreePacketRes, {
@@ -140,8 +536,12 @@ export default class PetFreeCommand {
 			return;
 		}
 
-		// Check money
-		const missingMoney = getMissingMoneyToFreePet(player, playerPet);
+		if (shelterPets.length > 0) {
+			await handleShelterPetsFlow(response, player, playerPet, shelterPets, context);
+			return;
+		}
+
+		const missingMoney = getMissingMoneyToFreePet(player, playerPet!);
 		if (missingMoney > 0) {
 			response.push(makePacket(CommandPetFreePacketRes, {
 				foundPet: true,
@@ -151,39 +551,6 @@ export default class PetFreeCommand {
 			return;
 		}
 
-		// Send collector
-		const collector = new ReactionCollectorPetFree(
-			playerPet.typeId,
-			playerPet.sex as SexTypeShort,
-			playerPet.nickname,
-			playerPet.isFeisty() ? PetFreeConstants.FREE_FEISTY_COST : 0
-		);
-
-		const endCallback: EndCallback = async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
-			const reaction = collector.getFirstReaction();
-
-			if (reaction && reaction.reaction.type === ReactionCollectorAcceptReaction.name) {
-				await acceptPetFree(player, playerPet, response);
-			}
-			else {
-				response.push(makePacket(CommandPetFreeRefusePacketRes, {}));
-			}
-
-			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.PET_FREE);
-		};
-
-		const collectorPacket = new ReactionCollectorInstance(
-			collector,
-			context,
-			{
-				allowedPlayerKeycloakIds: [player.keycloakId],
-				reactionLimit: 1
-			},
-			endCallback
-		)
-			.block(player.keycloakId, BlockingConstants.REASONS.PET_FREE)
-			.build();
-
-		response.push(collectorPacket);
+		handleSimplePetFreeFlow(response, player, playerPet!, context);
 	}
 }

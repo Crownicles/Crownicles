@@ -17,7 +17,6 @@ import {
 import {
 	commandRequires, CommandUtils
 } from "../../core/utils/CommandUtils";
-import { InventorySlots } from "../../core/database/game/models/InventorySlot";
 
 export default class RespawnCommand {
 	/**
@@ -36,10 +35,14 @@ export default class RespawnCommand {
 			return;
 		}
 		const lostScore = Math.round(player.score * RespawnConstants.SCORE_REMOVAL_MULTIPLIER);
-		const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
-		await player.addHealth(player.getMaxHealth(playerActiveObjects) - player.getHealth(playerActiveObjects), response, NumberChangeReason.RESPAWN, playerActiveObjects, {
-			shouldPokeMission: false,
-			overHealCountsForMission: false
+		await player.addHealth({
+			amount: player.getMaxHealth() - player.health,
+			response,
+			reason: NumberChangeReason.RESPAWN,
+			missionHealthParameter: {
+				shouldPokeMission: false,
+				overHealCountsForMission: false
+			}
 		});
 		await player.addScore({
 			amount: -lostScore,
@@ -52,9 +55,12 @@ export default class RespawnCommand {
 
 		await Maps.stopTravel(player);
 		const newlink = MapLinkDataController.instance.getLinkByLocations(
-			player.getPreviousMapId(),
-			player.getDestinationId()
+			player.getPreviousMapId()!,
+			player.getDestinationId()!
 		);
+		if (!newlink) {
+			throw new Error("Failed to find map link for respawn");
+		}
 
 		await TravelTime.removeEffect(player, NumberChangeReason.RESPAWN);
 		await Maps.startTravel(player, newlink, Date.now());

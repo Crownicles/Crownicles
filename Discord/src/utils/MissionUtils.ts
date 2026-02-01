@@ -7,8 +7,9 @@ import { MissionUtils as MissionUtilsLib } from "../../../Lib/src/utils/MissionU
 import {
 	dateDisplay, hoursToMilliseconds
 } from "../../../Lib/src/utils/TimeUtils";
+import { getTranslatedRiskCategoryNameWithEmoji } from "../commands/pet/expedition/ExpeditionDisplayUtils";
 
-export class MissionUtils {
+export abstract class MissionUtils {
 	/**
 	 * Get the displayable version of a mission (only the plain objective)
 	 * @param mission
@@ -75,16 +76,24 @@ export class MissionUtils {
 	}
 
 	/**
+	 * Handlers for specific mission variant text generation
+	 */
+	private static readonly variantTextHandlers: Record<string, (mission: BaseMission, lng: Language) => string> = {
+		fromPlaceToPlace: (mission, lng) => MissionUtils.manageFromPlaceToPlaceVariant(mission, lng),
+		chooseClassTier: mission => String(mission.missionVariant + 1),
+		dangerousExpedition: (mission, lng) => getTranslatedRiskCategoryNameWithEmoji(mission.missionVariant, lng),
+		longExpedition: (mission, lng) => i18n.formatDuration(mission.missionVariant, lng)
+	};
+
+	/**
 	 * Get the text version of a mission variant
 	 * @param mission
 	 * @param lng
 	 */
 	private static getVariantText(mission: BaseMission, lng: Language): string {
-		if (mission.missionId === "fromPlaceToPlace") {
-			return this.manageFromPlaceToPlaceVariant(mission, lng);
-		}
-		if (mission.missionId === "chooseClassTier") {
-			return String(mission.missionVariant + 1);
+		const handler = this.variantTextHandlers[mission.missionId];
+		if (handler) {
+			return handler(mission, lng);
 		}
 		if (!MissionUtilsLib.isRequiredFightActionId(mission)) {
 			return i18n.t([`models:missionVariants.${mission.missionId}`, "models:missionVariants.default"], {

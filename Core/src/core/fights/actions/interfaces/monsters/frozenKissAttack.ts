@@ -17,7 +17,7 @@ const use: FightActionFunc = (sender, receiver) => {
 
 	// If the receiver is frozen, this attack will make less damage
 	if (receiver.alteration && receiver.alteration.id === FightAlterations.FROZEN) {
-		result.damages = Math.round(result.damages / 5);
+		result.damages = Math.round(result.damages! / 5);
 	}
 
 	return result;

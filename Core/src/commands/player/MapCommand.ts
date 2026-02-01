@@ -27,11 +27,19 @@ function getMapInformation(player: Player, destination: MapLocation, hasArrived:
 	forced: boolean;
 } {
 	const mapLink = MapLinkDataController.instance.getById(player.mapLinkId);
-	const departure = player.getPreviousMap();
+	const departure = player.getPreviousMap()!;
+
+	if (!mapLink) {
+		return {
+			name: `${language}_${destination.id}_`,
+			fallback: `en_${destination.id}_`,
+			forced: false
+		};
+	}
 
 	if (!hasArrived && mapLink.forcedImage) {
 		return {
-			name: departure.attribute === MapConstants.MAP_ATTRIBUTES.HAUNTED ? `${mapLink.forcedImage!}_${language}` : mapLink.forcedImage!,
+			name: departure.attribute === MapConstants.MAP_ATTRIBUTES.HAUNTED ? `${mapLink.forcedImage}_${language}` : mapLink.forcedImage,
 			forced: true
 		};
 	}
@@ -39,10 +47,10 @@ function getMapInformation(player: Player, destination: MapLocation, hasArrived:
 	if (hasArrived) {
 		return {
 			name: mapLink.forcedImage && departure.attribute === MapConstants.MAP_ATTRIBUTES.HAUNTED
-				? `${mapLink.forcedImage!}_${language}`
+				? `${mapLink.forcedImage}_${language}`
 				: `${language}_${destination.id}_`,
 
-			fallback: mapLink.forcedImage ? null : `en_${destination.id}_`,
+			fallback: mapLink.forcedImage ? undefined : `en_${destination.id}_`,
 			forced: Boolean(destination.forcedImage)
 		};
 	}
@@ -70,7 +78,7 @@ export class MapCommand {
 	})
 	execute(response: CrowniclesPacket[], player: Player, packet: CommandMapPacketReq): void {
 		const hasArrived = Maps.isArrived(player, new Date());
-		const destinationMap = player.getDestination();
+		const destinationMap = player.getDestination()!;
 
 		const mapInformation = getMapInformation(player, destinationMap, hasArrived, packet.language);
 

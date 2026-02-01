@@ -11,9 +11,8 @@ import {
 	DiscordCollectorUtils,
 	disableRows
 } from "../utils/DiscordCollectorUtils";
-import { ReactionCollectorCreationPacket } from "../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import {
-	ReactionCollectorFightChooseActionData,
+	ReactionCollectorFightChooseActionPacket,
 	ReactionCollectorFightChooseActionReaction
 } from "../../../Lib/src/packets/interaction/ReactionCollectorFightChooseAction";
 import { ReactionCollectorReturnTypeOrNull } from "../packetHandlers/handlers/ReactionCollectorHandlers";
@@ -21,7 +20,7 @@ import { DiscordConstants } from "../DiscordConstants";
 import { sendInteractionNotForYou } from "../utils/ErrorUtils";
 import { DisplayUtils } from "../utils/DisplayUtils";
 
-export class CrowniclesActionChooseCachedMessage extends CrowniclesCachedMessage<ReactionCollectorCreationPacket> {
+export class CrowniclesActionChooseCachedMessage extends CrowniclesCachedMessage<ReactionCollectorFightChooseActionPacket> {
 	private usernameCache?: string;
 
 	readonly duration = 30;
@@ -30,9 +29,9 @@ export class CrowniclesActionChooseCachedMessage extends CrowniclesCachedMessage
 		return "action_choose";
 	}
 
-	updateMessage = async (packet: ReactionCollectorCreationPacket, context: PacketContext): Promise<ReactionCollectorReturnTypeOrNull> => {
+	updateMessage = async (packet: ReactionCollectorFightChooseActionPacket, context: PacketContext): Promise<ReactionCollectorReturnTypeOrNull> => {
 		const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
-		const data = packet.data.data as ReactionCollectorFightChooseActionData;
+		const data = packet.data.data;
 		const lng = interaction.userLanguage;
 		if (!this.usernameCache) {
 			this.usernameCache = await DisplayUtils.getEscapedUsername(data.fighterKeycloakId, interaction.userLanguage);

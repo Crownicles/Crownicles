@@ -9,18 +9,13 @@ import {
 import { BlockingUtils } from "../utils/BlockingUtils";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
 import {
-	ReactionCollectorLottery,
-	ReactionCollectorLotteryHardReaction,
-	ReactionCollectorLotteryMediumReaction
+	ReactionCollectorLottery, ReactionCollectorLotteryHardReaction, ReactionCollectorLotteryMediumReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorLottery";
 import {
 	CrowniclesPacket, makePacket
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
-	SmallEventLotteryLosePacket,
-	SmallEventLotteryNoAnswerPacket,
-	SmallEventLotteryPoorPacket,
-	SmallEventLotteryWinPacket
+	SmallEventLotteryLosePacket, SmallEventLotteryNoAnswerPacket, SmallEventLotteryPoorPacket, SmallEventLotteryWinPacket
 } from "../../../../Lib/src/packets/smallEvents/SmallEventLotteryPacket";
 import { SmallEventConstants } from "../../../../Lib/src/constants/SmallEventConstants";
 import {
@@ -30,7 +25,6 @@ import { TravelTime } from "../maps/TravelTime";
 import { Effect } from "../../../../Lib/src/types/Effect";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
-import { PlayerActiveObjects } from "../database/game/models/PlayerActiveObjects";
 
 type LotteryProperties = {
 	successRate: {
@@ -61,7 +55,6 @@ async function effectIfGoodRisk(levelKey: LotteryLevelKey, player: Player, dataL
 
 type WhoToGive = {
 	player: Player;
-	playerActiveObjects: PlayerActiveObjects;
 	guild: Guild;
 };
 
@@ -75,7 +68,6 @@ async function giveRewardToPlayer(
 	response: CrowniclesPacket[],
 	{
 		player,
-		playerActiveObjects,
 		guild
 	}: WhoToGive,
 	rewardType: string,
@@ -91,7 +83,7 @@ async function giveRewardToPlayer(
 				amount: SmallEventConstants.LOTTERY.REWARDS.EXPERIENCE * coefficient,
 				response,
 				reason: NumberChangeReason.SMALL_EVENT
-			}, playerActiveObjects);
+			});
 			response.push(makePacket(SmallEventLotteryWinPacket, {
 				winAmount: SmallEventConstants.LOTTERY.REWARDS.EXPERIENCE * coefficient,
 				lostTime,
@@ -113,7 +105,9 @@ async function giveRewardToPlayer(
 			}));
 			break;
 		case SmallEventConstants.LOTTERY.REWARD_TYPES.GUILD_XP:
-			await guild.addExperience(SmallEventConstants.LOTTERY.REWARDS.GUILD_EXPERIENCE * coefficient, response, NumberChangeReason.SMALL_EVENT);
+			await guild.addExperience({
+				amount: SmallEventConstants.LOTTERY.REWARDS.GUILD_EXPERIENCE * coefficient, response, reason: NumberChangeReason.SMALL_EVENT
+			});
 			await guild.save();
 			response.push(makePacket(SmallEventLotteryWinPacket, {
 				winAmount: SmallEventConstants.LOTTERY.REWARDS.GUILD_EXPERIENCE * coefficient,
@@ -143,8 +137,8 @@ async function giveRewardToPlayer(
 export const smallEventFuncs: SmallEventFuncs = {
 	canBeExecuted: Maps.isOnContinent,
 
-	executeSmallEvent(response, player, context, playerActiveObjects): void {
-		const dataLottery = SmallEventDataController.instance.getById("lottery")
+	executeSmallEvent(response, player, context): void {
+		const dataLottery = SmallEventDataController.instance.getById("lottery")!
 			.getProperties<LotteryProperties>();
 
 		const collector = new ReactionCollectorLottery();
@@ -183,14 +177,13 @@ export const smallEventFuncs: SmallEventFuncs = {
 
 				const lostTime = await effectIfGoodRisk(levelKey, player, dataLottery);
 
-				const rewardType = RandomUtils.crowniclesRandom.pick(rewardTypes);
+				const rewardType = RandomUtils.crowniclesRandom.pick(rewardTypes)!;
 
 				if (RandomUtils.crowniclesRandom.bool(dataLottery.successRate[levelKey]) && (guild || rewardType !== SmallEventConstants.LOTTERY.REWARD_TYPES.GUILD_XP)) {
 					const coefficient = dataLottery.coefficients[levelKey];
 					await giveRewardToPlayer(response, {
 						player,
-						playerActiveObjects,
-						guild
+						guild: guild!
 					}, rewardType, {
 						coefficient,
 						lostTime,

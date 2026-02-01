@@ -9,12 +9,16 @@ import { LogsPlayersPossibilities } from "./models/LogsPlayersPossibilities";
 import { LogsPossibilities } from "./models/LogsPossibilities";
 import { LogsPlayers } from "./models/LogsPlayers";
 import { LogsPlayersTravels } from "./models/LogsPlayersTravels";
+import { LogsPlayersSmallEvents } from "./models/LogsPlayersSmallEvents";
+import { LogsSmallEvents } from "./models/LogsSmallEvents";
 import {
 	dateToLogs,
+	daysToMilliseconds,
 	getNextSaturdayMidnight,
 	getNextSundayMidnight,
 	getTodayMidnight,
 	hoursToMilliseconds,
+	millisecondsToSeconds,
 	minutesToMilliseconds
 } from "../../../../../Lib/src/utils/TimeUtils";
 import { LogsMapLinks } from "./models/LogsMapLinks";
@@ -26,9 +30,12 @@ import { LogsPlayersClassChanges } from "./models/LogsPlayersClassChanges";
 import Player from "../game/models/Player";
 import { MapCache } from "../../maps/MapCache";
 import { PVEConstants } from "../../../../../Lib/src/constants/PVEConstants";
+import { TimeConstants } from "../../../../../Lib/src/constants/TimeConstants";
 import { LogsGuildsJoins } from "./models/LogsGuildJoins";
 import { LogsGuilds } from "./models/LogsGuilds";
 import { MapLocationDataController } from "../../../data/MapLocation";
+import { LogsExpeditions } from "./models/LogsExpeditions";
+import { ExpeditionConstants } from "../../../../../Lib/src/constants/ExpeditionConstants";
 
 export type RankedFightResult = {
 	won: number;
@@ -49,6 +56,9 @@ export type PersonalFightDailySummary = {
 export class LogsReadRequests {
 	static async getLastTimeThePlayerHasEditedHisClass(playerKeycloakId: string): Promise<Date> {
 		const logPlayer = await LogsDatabase.findOrCreatePlayer(playerKeycloakId);
+		if (!logPlayer) {
+			return new Date(0);
+		}
 		return LogsPlayersClassChanges.findOne({
 			where: { playerId: logPlayer.id },
 			order: [["date", "DESC"]],
@@ -64,6 +74,9 @@ export class LogsReadRequests {
 	static async getAmountOfDailyPotionsBoughtByPlayer(playerKeycloakId: string): Promise<number> {
 		const dateOfLastDailyPotionReset = await this.getDateOfLastDailyPotionReset();
 		const logPlayer = await LogsDatabase.findOrCreatePlayer(playerKeycloakId);
+		if (!logPlayer) {
+			return 0;
+		}
 		return LogsClassicalShopBuyouts.count({
 			where: {
 				playerId: logPlayer.id,
@@ -73,6 +86,44 @@ export class LogsReadRequests {
 				}
 			}
 		});
+	}
+
+	/**
+	 * Get the amount of tokens a specific player has bought today
+	 * @param playerKeycloakId - The keycloak id of the player we want to check on
+	 */
+	static async getAmountOfTokensBoughtByPlayerToday(playerKeycloakId: string): Promise<number> {
+		const todayMidnight = dateToLogs(getTodayMidnight());
+		const logPlayer = await LogsDatabase.findOrCreatePlayer(playerKeycloakId);
+		if (!logPlayer) {
+			return 0;
+		}
+		return await LogsClassicalShopBuyouts.sum("amount", {
+			where: {
+				playerId: logPlayer.id,
+				shopItem: ShopItemType.TOKEN,
+				date: { [Op.gte]: todayMidnight }
+			}
+		}) ?? 0;
+	}
+
+	/**
+	 * Get the amount of tokens a specific player has bought this week
+	 * @param playerKeycloakId - The keycloak id of the player we want to check on
+	 */
+	static async getAmountOfTokensBoughtByPlayerThisWeek(playerKeycloakId: string): Promise<number> {
+		const startOfWeek = Math.floor(millisecondsToSeconds(getNextSundayMidnight() - daysToMilliseconds(TimeConstants.DAYS_IN_WEEK)));
+		const logPlayer = await LogsDatabase.findOrCreatePlayer(playerKeycloakId);
+		if (!logPlayer) {
+			return 0;
+		}
+		return await LogsClassicalShopBuyouts.sum("amount", {
+			where: {
+				playerId: logPlayer.id,
+				shopItem: ShopItemType.TOKEN,
+				date: { [Op.gt]: startOfWeek }
+			}
+		}) ?? 0;
 	}
 
 	/**
@@ -96,9 +147,7 @@ export class LogsReadRequests {
 
 		// Convert the players to log players
 		const logsPlayers = await LogsPlayers.findAll({
-			where: {
-				keycloakId: { [Op.in]: ids }
-			}
+			where: { keycloakId: { [Op.in]: ids } }
 		});
 
 		// Extract ids from players
@@ -167,6 +216,9 @@ export class LogsReadRequests {
 	 */
 	static async getDateOfLastLeagueReward(playerKeycloakId: string): Promise<number | null> {
 		const logPlayer = await LogsDatabase.findOrCreatePlayer(playerKeycloakId);
+		if (!logPlayer) {
+			return null;
+		}
 		return LogsPlayerLeagueReward.findOne({
 			order: [["date", "DESC"]],
 			where: { playerId: logPlayer.id }
@@ -179,15 +231,25 @@ export class LogsReadRequests {
 	 * @param eventId
 	 */
 	static async getLastEventDate(keycloakId: string, eventId: number): Promise<Date | null> {
+		// Skip if keycloakId is invalid (can happen with deleted/corrupted players)
+		if (!keycloakId) {
+			return null;
+		}
+
 		// Get all possibilities id for the big event
 		const possibilityIds = (await LogsPossibilities.findAll({
 			where: { bigEventId: eventId }
 		})).map(possibility => possibility.id);
 
 		// Get logs player id
-		const playerId = (await LogsPlayers.findOne({
+		const logsPlayer = await LogsPlayers.findOne({
 			where: { keycloakId }
-		})).id;
+		});
+
+		// If player doesn't exist in logs yet, they haven't done this event before
+		if (!logsPlayer) {
+			return null;
+		}
 
 		// Find the last one
 		const lastEvent = await LogsPlayersPossibilities.findOne({
@@ -196,7 +258,7 @@ export class LogsReadRequests {
 				possibilityId: {
 					[Op.in]: possibilityIds
 				},
-				playerId
+				playerId: logsPlayer.id
 			}
 		});
 
@@ -371,6 +433,9 @@ export class LogsReadRequests {
 	static async getAmountOfHealEnergyBoughtByPlayerThisWeek(playerKeycloakId: string): Promise<number> {
 		const dateOfLastSeasonReset = await this.getDateOfLastSeasonReset();
 		const logPlayer = await LogsDatabase.findOrCreatePlayer(playerKeycloakId);
+		if (!logPlayer) {
+			return 0;
+		}
 		return LogsClassicalShopBuyouts.count({
 			where: {
 				playerId: logPlayer.id,
@@ -382,6 +447,11 @@ export class LogsReadRequests {
 		});
 	}
 
+	/**
+	 * Counts how many times a player has traveled to PVE islands this week
+	 * @param keycloakId - The keycloak id of the player
+	 * @returns Number of PVE island travels this week
+	 */
 	private static async travelsOnPveIslandsCountThisWeekRequest(keycloakId: string): Promise<number> {
 		return await LogsPlayersTravels.count({
 			where: {
@@ -412,6 +482,12 @@ export class LogsReadRequests {
 		});
 	}
 
+	/**
+	 * Checks if a player has joined a specific guild this week
+	 * @param keycloakId - The keycloak id of the player
+	 * @param guildId - The guild id to check
+	 * @returns True if the player joined the guild this week
+	 */
 	private static async joinGuildThisWeekRequest(keycloakId: string, guildId: number): Promise<boolean> {
 		return await LogsGuildsJoins.count({
 			where: {
@@ -467,5 +543,49 @@ export class LogsReadRequests {
 			}
 		}
 		return ret;
+	}
+
+	/**
+	 * Get the number of times a player has encountered a specific small event
+	 * @param keycloakId - The keycloak id of the player
+	 * @param smallEventName - The name of the small event
+	 */
+	static async getSmallEventEncounterCount(keycloakId: string, smallEventName: string): Promise<number> {
+		const logPlayer = await LogsDatabase.findOrCreatePlayer(keycloakId);
+		if (!logPlayer) {
+			return 0;
+		}
+		const smallEvent = await LogsSmallEvents.findOne({
+			where: { name: smallEventName }
+		});
+
+		if (!smallEvent) {
+			return 0;
+		}
+
+		return await LogsPlayersSmallEvents.count({
+			where: {
+				playerId: logPlayer.id,
+				smallEventId: smallEvent.id
+			}
+		});
+	}
+
+	/**
+	 * Count the number of successful expeditions for a player
+	 * @param keycloakId - The keycloak id of the player
+	 */
+	static async countSuccessfulExpeditions(keycloakId: string): Promise<number> {
+		const logPlayer = await LogsDatabase.findOrCreatePlayer(keycloakId);
+		if (!logPlayer) {
+			return 0;
+		}
+		return LogsExpeditions.count({
+			where: {
+				playerId: logPlayer.id,
+				action: ExpeditionConstants.LOG_ACTION.COMPLETE,
+				success: true
+			}
+		});
 	}
 }

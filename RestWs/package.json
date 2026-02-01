@@ -1,11 +1,11 @@
 {
   "name": "crownicles_rest_ws_middleware",
-  "version": "5.1.11",
+  "version": "5.2.4.a",
   "description": "Rest API middleware package of Crownicles",
   "main": "src/index.js",
   "packageManager": "pnpm@10.9.0+sha512.0486e394640d3c1fb3c9d43d49cf92879ff74f8516959c235308f5a8f62e2e19528a65cdc2a3058f587cde71eba3d5b56327c8c33a97e4c4051ca48a10ca2d5f",
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=24.0.0"
   },
   "engineStrict": true,
   "scripts": {
@@ -15,40 +15,40 @@
     "eslint": "eslint src",
     "eslintFix": "eslint src --fix",
     "tsc": "tsc",
-    "dockerStart": "node dist/RestWs/src/index.js",
+    "dockerStart": "node --max-old-space-size=512 dist/RestWs/src/index.js",
     "build:protobuf": "mkdir -p src/@types && mkdir -p dist/RestWs/src/@types && pbjs -t static-module -p protobufs --force-number -o dist/RestWs/src/@types/protobufs-client.js protobufs/from_client/**/*.proto && pbts -o src/@types/protobufs-client.d.ts dist/RestWs/src/@types/protobufs-client.js && pbjs -t static-module -p protobufs --force-number -o dist/RestWs/src/@types/protobufs-server.js protobufs/from_server/**/*.proto && pbts -o src/@types/protobufs-server.d.ts dist/RestWs/src/@types/protobufs-server.js && sed -i 's/export interface \\([A-Za-z0-9]\\+\\) {/export interface \\1 extends FromClientPacket {/g' src/@types/protobufs-client.d.ts && sed -i 's/export interface \\([A-Za-z0-9]\\+\\) {/export interface \\1 extends FromServerPacket {/g' src/@types/protobufs-server.d.ts && sed -i '1s/^/export interface FromClientPacket {}\\n/' src/@types/protobufs-client.d.ts && sed -i '1s/^/export interface FromServerPacket {}\\n/' src/@types/protobufs-server.d.ts"
   },
   "dependencies": {
-    "@discordjs/builders": "1.11.2",
+    "@discordjs/builders": "1.13.1",
     "@protobuf-ts/plugin": "2.11.1",
-    "@types/node": "24.0.8",
-    "fastify": "5.4.0",
+    "@types/node": "25.0.2",
+    "fastify": "5.6.2",
     "mariadb": "3.0.2",
     "moment": "2.30.1",
-    "mqtt": "5.13.1",
+    "mqtt": "5.14.1",
     "prom-client": "15.1.3",
-    "protobufjs": "7.5.3",
+    "protobufjs": "7.5.4",
     "random-js": "2.1.0",
     "sequelize": "6.37.7",
     "source-map-support": "0.5.21",
     "toml": "3.0.0",
     "triple-beam": "1.4.1",
     "umzug": "3.8.2",
-    "winston": "3.17.0",
+    "winston": "3.19.0",
     "winston-daily-rotate-file": "5.0.0",
     "winston-loki": "6.1.3",
     "ws": "8.18.3"
   },
   "devDependencies": {
-    "@stylistic/eslint-plugin": "5.1.0",
+    "@stylistic/eslint-plugin": "5.6.1",
     "@types/triple-beam": "^1.3.5",
     "@types/ws": "8.18.1",
-    "@typescript-eslint/eslint-plugin": "8.35.1",
-    "@typescript-eslint/parser": "8.35.1",
-    "eslint": "9.30.0",
-    "eslint-plugin-jsdoc": "51.3.1",
+    "@typescript-eslint/eslint-plugin": "8.50.0",
+    "@typescript-eslint/parser": "8.50.0",
+    "eslint": "9.39.2",
+    "eslint-plugin-jsdoc": "61.5.0",
     "protobufjs-cli": "1.2.0",
-    "typescript": "5.8.3",
-    "typescript-eslint": "8.35.1"
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.50.0"
   }
 }

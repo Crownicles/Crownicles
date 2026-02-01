@@ -2,6 +2,7 @@ import {
 	ExecuteTestCommandLike, ITestCommand, TypeKey
 } from "../../../../core/CommandsTest";
 import { Badge } from "../../../../../../Lib/src/types/Badge";
+import { PlayerBadgesManager } from "../../../../core/database/game/models/PlayerBadges";
 
 export const commandInfo: ITestCommand = {
 	name: "givebadge",
@@ -20,12 +21,8 @@ const giveBadgeTestCommand: ExecuteTestCommandLike = async (player, args) => {
 
 	const badgesToGive = args[0] === "*" ? Object.values(Badge) : [args[0]];
 	for (const badge of badgesToGive) {
-		if (!player.hasBadge(badge as Badge)) {
-			player.addBadge(badge as Badge);
-		}
+		await PlayerBadgesManager.addBadge(player.id, badge as Badge);
 	}
-
-	await player.save();
 
 	return `Vous avez maintenant le badge ${args[0]} !`;
 };

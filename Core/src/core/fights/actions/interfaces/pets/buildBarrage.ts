@@ -17,7 +17,7 @@ const use: PetAssistanceFunc = (fighter, _opponent, _turn, _fightController): Pr
 		stat: FightStatBuffed.DEFENSE,
 		operator: FightStatModifierOperation.MULTIPLIER,
 		value: 1.02
-	}, fighter, this);
+	}, fighter, undefined);
 
 	return Promise.resolve(result);
 };

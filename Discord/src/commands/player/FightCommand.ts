@@ -3,7 +3,6 @@ import i18n from "../../translations/i18n";
 import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import { ICommand } from "../ICommand";
 import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
-import { ReactionCollectorCreationPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import {
 	makePacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
@@ -12,7 +11,7 @@ import { DiscordCollectorUtils } from "../../utils/DiscordCollectorUtils";
 import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 import { PacketUtils } from "../../utils/PacketUtils";
 import { CommandFightPacketReq } from "../../../../Lib/src/packets/commands/CommandFightPacket";
-import { ReactionCollectorFightData } from "../../../../Lib/src/packets/interaction/ReactionCollectorFight";
+import { ReactionCollectorFightPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorFight";
 import { KeycloakUser } from "../../../../Lib/src/keycloak/KeycloakUser";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { FightConstants } from "../../../../Lib/src/constants/FightConstants";
@@ -27,9 +26,7 @@ import { CommandFightHistoryItemPacket } from "../../../../Lib/src/packets/fight
 import { CrowniclesHistoryCachedMessage } from "../../messages/CrowniclesHistoryCachedMessage";
 import { CrowniclesActionChooseCachedMessage } from "../../messages/CrowniclesActionChooseCachedMessage";
 import { CommandFightEndOfFightPacket } from "../../../../Lib/src/packets/fights/EndOfFightPacket";
-import {
-	millisecondsToMinutes, minutesDisplay
-} from "../../../../Lib/src/utils/TimeUtils";
+import { millisecondsToMinutes } from "../../../../Lib/src/utils/TimeUtils";
 import { FightRewardPacket } from "../../../../Lib/src/packets/fights/FightRewardPacket";
 import { StringUtils } from "../../utils/StringUtils";
 import { ReactionCollectorReturnTypeOrNull } from "../../packetHandlers/handlers/ReactionCollectorHandlers";
@@ -39,10 +36,10 @@ import { DisplayUtils } from "../../utils/DisplayUtils";
 import { escapeUsername } from "../../../../Lib/src/utils/StringUtils";
 import { CommandFightCancelPacketReq } from "../../../../Lib/src/packets/commands/CommandFightCancelPacket";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
-import { ReactionCollectorFightChooseActionData } from "../../../../Lib/src/packets/interaction/ReactionCollectorFightChooseAction";
 import { DiscordConstants } from "../../DiscordConstants";
 import { PetUtils } from "../../utils/PetUtils";
 import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
+import { ReactionCollectorFightChooseActionPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorFightChooseAction";
 
 const buggedFights = new Set<string>();
 
@@ -65,11 +62,11 @@ function fightBugged(context: PacketContext, fightId: string): void {
  * @param packet - Reaction collector creation packet
  * @returns The collector instance or null if creation failed
  */
-export async function createFightCollector(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
+export async function createFightCollector(context: PacketContext, packet: ReactionCollectorFightPacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
 	await interaction.deferReply();
 	const lng = interaction.userLanguage;
-	const data = packet.data.data as ReactionCollectorFightData;
+	const data = packet.data.data;
 	const subTextKey = RandomUtils.crowniclesRandom.bool(FightConstants.RARE_SUB_TEXT_INTRO) ? "rare" : "common";
 	const embed = new CrowniclesEmbed().formatAuthor(i18n.t("commands:fight.title", {
 		lng,
@@ -88,8 +85,8 @@ export async function createFightCollector(context: PacketContext, packet: React
 					lng,
 					id: data.playerStats.classId
 				}),
-				pet: data.playerStats.pet.petTypeId
-					? i18n.t("commands:fight.pet", {
+				pet: data.playerStats.pet?.petTypeId
+					? i18n.t(data.playerStats.pet.isOnExpedition ? "commands:fight.petOnExpedition" : "commands:fight.pet", {
 						lng,
 						petInfo: PetUtils.petToShortString(lng, data.playerStats.pet.petNickname, data.playerStats.pet.petTypeId, data.playerStats.pet.petSex)
 					})
@@ -201,12 +198,18 @@ export async function handleCommandFightIntroduceFightersRes(context: PacketCont
 		const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
 		const lng = interaction.userLanguage;
 		const getUser = packet.fightOpponentKeycloakId ? await KeycloakUtils.getUserByKeycloakId(keycloakConfig, packet.fightOpponentKeycloakId) : undefined;
-		if (getUser?.isError) {
-			return;
+
+		let opponentDisplayName: string;
+		if (getUser && !getUser.isError) {
+			opponentDisplayName = getUser.payload.user.attributes.gameUsername[0];
 		}
-		const opponentDisplayName = getUser
-			? escapeUsername(getUser.payload.user.attributes.gameUsername[0])
-			: i18n.t(`models:monsters.${packet.fightOpponentMonsterId}.name`, { lng });
+		else if (packet.fightOpponentMonsterId) {
+			opponentDisplayName = i18n.t(`models:monsters.${packet.fightOpponentMonsterId}.name`, { lng });
+		}
+		else {
+			// Fallback for test players or unknown opponents
+			opponentDisplayName = packet.fightOpponentKeycloakId ?? "???";
+		}
 		const embed = new CrowniclesEmbed().formatAuthor(i18n.t("commands:fight.fightIntroTitle", {
 			lng,
 			fightInitiator: escapeUsername(interaction.user.displayName),
@@ -216,7 +219,9 @@ export async function handleCommandFightIntroduceFightersRes(context: PacketCont
 		addFightProfileFor(embed, lng, escapeUsername(interaction.user.displayName), packet.fightInitiatorActions, packet.fightOpponentActions.length, packet.fightInitiatorPet);
 		addFightProfileFor(embed, lng, escapeUsername(opponentDisplayName), packet.fightOpponentActions, packet.fightInitiatorActions.length, packet.fightOpponentPet);
 
-		await buttonInteraction?.editReply({ embeds: [embed] });
+		if (buttonInteraction) {
+			await buttonInteraction.editReply({ embeds: [embed] });
+		}
 		await CrowniclesCachedMessages.getOrCreate(interaction.id, CrowniclesHistoryCachedMessage)
 			.post({ content: DiscordConstants.EMPTY_MESSAGE });
 		await CrowniclesCachedMessages.getOrCreate(interaction.id, CrowniclesFightStatusCachedMessage)
@@ -293,8 +298,8 @@ export async function handleCommandFightAIFightActionChoose(context: PacketConte
  * @param packet
  * @param context
  */
-export async function handleCommandFightActionChoose(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
-	const data = packet.data.data as ReactionCollectorFightChooseActionData;
+export async function handleCommandFightActionChoose(context: PacketContext, packet: ReactionCollectorFightChooseActionPacket): Promise<ReactionCollectorReturnTypeOrNull> {
+	const data = packet.data.data;
 
 	if (buggedFights.has(data.fightId) || !context.discord?.interaction) {
 		return null;
@@ -352,7 +357,7 @@ export async function handleEndOfFight(context: PacketContext, packet: CommandFi
 		lng,
 		turn: packet.turns,
 		maxTurn: packet.maxTurns,
-		time: minutesDisplay(millisecondsToMinutes(new Date().valueOf() - interaction.createdTimestamp), lng)
+		time: i18n.formatDuration(millisecondsToMinutes(new Date().valueOf() - interaction.createdTimestamp), lng)
 	});
 
 	// Add fighter statistics for both fighters
@@ -401,33 +406,30 @@ export async function handleEndOfFight(context: PacketContext, packet: CommandFi
  * @param player1Username
  */
 function generateFightRewardField(embed: CrowniclesEmbed, packet: FightRewardPacket, lng: Language, player1Username: string): void {
+	// Ne pas afficher le field si aucune récompense n'a été gagnée
+	if (packet.money <= 0 && packet.points <= 0) {
+		return;
+	}
+
 	embed.addFields({
 		name: i18n.t("commands:fight.fightReward.scoreAndMoneyField", { lng }),
-		value: ((): string => {
-			if (packet.money <= 0 && packet.points <= 0) {
-				return i18n.t("commands:fight.fightReward.noReward", {
+		value: [
+			packet.money > 0
+				? i18n.t("commands:fight.fightReward.money", {
 					lng,
-					player: player1Username
-				});
-			}
-			return [
-				packet.money > 0
-					? i18n.t("commands:fight.fightReward.money", {
-						lng,
-						player: player1Username,
-						count: packet.money
-					})
-					: "",
-				packet.points > 0
-					? i18n.t("commands:fight.fightReward.points", {
-						lng,
-						player: player1Username,
-						count: packet.points
-					})
-					: ""
-			].filter(Boolean)
-				.join("\n");
-		})(),
+					player: player1Username,
+					count: packet.money
+				})
+				: "",
+			packet.points > 0
+				? i18n.t("commands:fight.fightReward.points", {
+					lng,
+					player: player1Username,
+					count: packet.points
+				})
+				: ""
+		].filter(Boolean)
+			.join("\n"),
 		inline: false
 	});
 }
@@ -541,45 +543,42 @@ function displayLeagueChangesIfNeeded(embed: CrowniclesEmbed, packet: FightRewar
  * @param player2Username
  */
 function generateFightRecapDescription(embed: CrowniclesEmbed, packet: FightRewardPacket, lng: Language, player1Username: string, player2Username: string): void {
-	const player1Won = packet.player1.newGlory > packet.player1.oldGlory;
-	const player2Won = packet.player2.newGlory > packet.player2.oldGlory;
 	const gloryDifference = Math.abs(packet.player1.oldGlory - packet.player2.oldGlory);
+
 	if (packet.draw) {
 		embed.setDescription(StringUtils.getRandomTranslation("commands:fight.fightReward.draw", lng, {
 			player1: player1Username,
 			player2: player2Username
 		}));
+		return;
 	}
-	else if (gloryDifference < FightConstants.ELO.ELO_DIFFERENCE_FOR_SAME_ELO) {
-		embed.setDescription(StringUtils.getRandomTranslation("commands:fight.fightReward.sameElo", lng, {
-			player1: player1Username,
-			player2: player2Username
-		}));
-	}
-	else if (player1Won && packet.player1.oldGlory > packet.player2.oldGlory) {
-		embed.setDescription(StringUtils.getRandomTranslation("commands:fight.fightReward.higherEloWins", lng, {
-			winner: player1Username,
-			loser: player2Username
-		}));
-	}
-	else if (player2Won && packet.player2.oldGlory > packet.player1.oldGlory) {
-		embed.setDescription(StringUtils.getRandomTranslation("commands:fight.fightReward.higherEloWins", lng, {
-			winner: player2Username,
-			loser: player1Username
-		}));
-	}
-	else if (player1Won && packet.player1.oldGlory < packet.player2.oldGlory) {
-		embed.setDescription(StringUtils.getRandomTranslation("commands:fight.fightReward.lowestEloWins", lng, {
-			winner: player1Username,
-			loser: player2Username
-		}));
-	}
-	else {
-		embed.setDescription(StringUtils.getRandomTranslation("commands:fight.fightReward.lowestEloWins", lng, {
-			winner: player2Username,
-			loser: player1Username
-		}));
-	}
+
+	// Use the winnerKeycloakId from the packet to determine the winner
+	const player1Won = packet.winnerKeycloakId === packet.player1.keycloakId;
+	const fightResult = {
+		winnerUsername: player1Won ? player1Username : player2Username,
+		loserUsername: player1Won ? player2Username : player1Username,
+		winnerOldGlory: player1Won ? packet.player1.oldGlory : packet.player2.oldGlory,
+		loserOldGlory: player1Won ? packet.player2.oldGlory : packet.player1.oldGlory
+	};
+
+	// Determine the translation key based on glory difference
+	const translationKey = gloryDifference < FightConstants.ELO.ELO_DIFFERENCE_FOR_SAME_ELO
+		? "commands:fight.fightReward.sameElo"
+		: fightResult.winnerOldGlory > fightResult.loserOldGlory
+			? "commands:fight.fightReward.higherEloWins"
+			: "commands:fight.fightReward.lowestEloWins";
+
+	// sameElo uses player1/player2 keys, while higherEloWins/lowestEloWins use winner/loser keys
+	const translationParams = gloryDifference < FightConstants.ELO.ELO_DIFFERENCE_FOR_SAME_ELO
+		? {
+			player1: player1Username, player2: player2Username
+		}
+		: {
+			winner: fightResult.winnerUsername, loser: fightResult.loserUsername
+		};
+
+	embed.setDescription(StringUtils.getRandomTranslation(translationKey, lng, translationParams));
 }
 
 /**

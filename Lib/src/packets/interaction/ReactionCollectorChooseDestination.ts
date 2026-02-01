@@ -19,6 +19,11 @@ export class ReactionCollectorChooseDestinationData extends ReactionCollectorDat
 
 }
 
+export type ReactionCollectorChooseDestinationPacket = ReactionCollectorCreationPacket<
+	ReactionCollectorChooseDestinationData,
+	ReactionCollectorChooseDestinationReaction
+>;
+
 export class ReactionCollectorChooseDestination extends ReactionCollector {
 	private readonly maps: ReactionCollectorChooseDestinationReaction[];
 
@@ -27,7 +32,7 @@ export class ReactionCollectorChooseDestination extends ReactionCollector {
 		this.maps = maps;
 	}
 
-	creationPacket(id: string, endTime: number): ReactionCollectorCreationPacket {
+	creationPacket(id: string, endTime: number): ReactionCollectorChooseDestinationPacket {
 		const reactions = [];
 		for (const map of this.maps) {
 			reactions.push(this.buildReaction(ReactionCollectorChooseDestinationReaction, map));

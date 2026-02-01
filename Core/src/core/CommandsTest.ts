@@ -148,7 +148,7 @@ class ArgumentValue {
 	 */
 	getType(): TypeKey {
 		for (const typeIn of typeVariableChecks.keys()) {
-			if (typeVariableChecks.get(typeIn)(this.value)) {
+			if (typeVariableChecks.get(typeIn)!(this.value)) {
 				return typeIn;
 			}
 		}
@@ -506,7 +506,7 @@ export function formatCommandFormat(commandFormat: string): string {
 
 export type ExecuteTestCommandLike = (player: Player, args: string[], response: CrowniclesPacket[], context: PacketContext) => string | Promise<string>;
 
-export class CommandsTest {
+export abstract class CommandsTest {
 	static testCommandsArray: { [commandName: string]: ITestCommand };
 
 	static testCommType: string[];

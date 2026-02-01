@@ -1,9 +1,13 @@
 import {
 	ExecuteTestCommandLike, ITestCommand, TypeKey
 } from "../../../../core/CommandsTest";
-import { Players } from "../../../../core/database/game/models/Player";
+import {
+	Players
+} from "../../../../core/database/game/models/Player";
 import { InventorySlot } from "../../../../core/database/game/models/InventorySlot";
-import { PetEntity } from "../../../../core/database/game/models/PetEntity";
+import {
+	PetEntity
+} from "../../../../core/database/game/models/PetEntity";
 import { ClassDataController } from "../../../../data/Class";
 import { ClassConstants } from "../../../../../../Lib/src/constants/ClassConstants";
 import { generateRandomItem } from "../../../../core/utils/ItemUtils";
@@ -381,6 +385,9 @@ function getAllValidPetTypes(): Pet[] {
  */
 async function createSpecificPets(specificPetId: number, count: number): Promise<PetEntity[]> {
 	const specificPetType = PetDataController.instance.getById(specificPetId);
+	if (!specificPetType) {
+		throw new Error(`Pet type with id ${specificPetId} not found`);
+	}
 	const pets: PetEntity[] = [];
 
 	for (let i = 0; i < count; i++) {
@@ -482,8 +489,8 @@ async function createPlayer(params: {
 
 	newPlayer.level = params.level;
 	newPlayer.class = params.classData.id;
-	newPlayer.petId = params.petId;
-	newPlayer.setHealthNoCheck(params.classData.getMaxHealthValue(params.level));
+	(newPlayer.petId as number | null) = params.petId;
+	newPlayer.health = params.classData.getMaxHealthValue(params.level);
 	newPlayer.experience = 0;
 	newPlayer.money = 1000;
 	newPlayer.score = 0;

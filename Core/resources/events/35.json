@@ -7,11 +7,16 @@
           "lostTime": 30,
           "money": -50,
           "tags": [
+            "drinkAlcohol",
             "moneyUsage"
           ]
         },
         "1": {},
-        "2": {}
+        "2": {
+          "tags": [
+            "drinkAlcohol"
+          ]
+        }
       }
     },
     "end": {
@@ -33,13 +38,23 @@
     "test": {
       "outcomes": {
         "0": {
-          "health": 30
+          "health": 30,
+          "tags": [
+            "drinkAlcohol"
+          ]
         },
         "1": {
           "effect": "sick",
-          "money": 250
+          "money": 250,
+          "tags": [
+            "drinkAlcohol"
+          ]
         },
-        "2": {}
+        "2": {
+          "tags": [
+            "drinkAlcohol"
+          ]
+        }
       }
     }
   },

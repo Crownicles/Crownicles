@@ -33,17 +33,20 @@ export class ReactionCollectorRefuseReaction extends ReactionCollectorReaction {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class ReactionCollectorCreationPacket extends CrowniclesPacket {
+export class ReactionCollectorCreationPacket<
+	TData extends ReactionCollectorData = ReactionCollectorData,
+	TReaction extends ReactionCollectorReaction = ReactionCollectorReaction
+> extends CrowniclesPacket {
 	id!: string;
 
 	data!: {
 		type: string;
-		data: ReactionCollectorData;
+		data: TData;
 	};
 
 	reactions!: {
 		type: string;
-		data: ReactionCollectorReaction;
+		data: TReaction;
 	}[];
 
 	endTime!: number;
@@ -78,3 +81,7 @@ export abstract class ReactionCollector {
 
 	abstract creationPacket(id: string, endTime: number, mainPacket: boolean): ReactionCollectorCreationPacket;
 }
+
+export type AcceptRefuseReaction = ReactionCollectorAcceptReaction | ReactionCollectorRefuseReaction;
+
+export type AcceptRefusePacket<TData extends ReactionCollectorData> = ReactionCollectorCreationPacket<TData, AcceptRefuseReaction>;

@@ -169,7 +169,7 @@
   },
   "classFormat": "{emote:classes.{{id}}} $t(models:classes.{{id}})",
   "classPluralFormat": "{emote:classes.{{id}}} $t(models:classes_plural.{{id}})",
-  "classWithStatsFormat": "{emote:classes.{{id}}} $t(models:classes.{{id}}) :\n{emote:unitValues.energy} {{energy}} | {emote:unitValues.attack} {{attack}} | {emote:unitValues.defense} {{defense}} | {emote:unitValues.speed} {{speed}} | {emote:unitValues.breath} {{initialBreath}} / {{maxBreath}} | {emote:unitValues.health} {{health}}",
+  "classWithStatsFormat": "{emote:classes.{{id}}} $t(models:classes.{{id}}) :\n{emote:unitValues.energy} {{energy, number}} | {emote:unitValues.attack} {{attack, number}} | {emote:unitValues.defense} {{defense, number}} | {emote:unitValues.speed} {{speed, number}} | {emote:unitValues.breath} {{initialBreath, number}} / {{maxBreath, number}} | {emote:unitValues.health} {{health, number}}",
   "class_descriptions": {
     "0": "Eine einfache Klasse. Ziemlich ausgeglichen.",
     "1": "Eine einfache Klasse. Ziemlich ausgeglichen.",
@@ -1206,6 +1206,27 @@
     "hauntedHouse": {
       "name": "",
       "prefix": "von"
+    },
+    "forest": {
+      "name": "Wälder"
+    },
+    "mountain": {
+      "name": "Berg"
+    },
+    "desert": {
+      "name": "Dessert"
+    },
+    "swamp": {
+      "name": "Sumpf"
+    },
+    "cave": {
+      "name": "Höhle"
+    },
+    "plains": {
+      "name": "Plain"
+    },
+    "coast": {
+      "name": "Küste"
     }
   },
   "missions": {
@@ -1213,6 +1234,8 @@
     "anyFight_other": "Machen {{count}} Kämpfe",
     "bigFeast": "Es ist ein großer Festmahl.",
     "buyItemFromAlderic": "Kaufe einen Gegenstand von Alderic",
+    "buyTokensFromShop_one": "Kaufe {{count}} Token {emote:unitValues.token} im Geschäft",
+    "buyTokensFromShop_other": "Kaufen Sie {{count}} Tokens {emote:unitValues.token} im Geschäft",
     "buyUltimateSoups_one": "Kaufen Sie mindestens {{count}} ultimative Suppe",
     "buyUltimateSoups_other": "Kaufen Sie mindestens {{count}} Ultimative Suppen",
     "chooseClass": "Wählen Sie eine andere Klasse als {emote:classes.0} Rekrut",
@@ -1223,7 +1246,7 @@
     "dailyPotionsStock": "Den gesamten Pot-Bestand des Tages kaufen",
     "doReports_one": "Machen {{count}} Bericht",
     "doReports_other": "Machen {{count}} Berichte",
-    "drinkAlcohol": "Trinathaltige Trüpfung",
+    "drinkAlcohol": "Ein alkoholisches Getränk trinken",
     "drinkEnergyPotion_one": "Trinke {{count}} Energietrank",
     "drinkEnergyPotion_other": "Trinke {{count}} Energietränke",
     "drinkPotionRarity": "Eine Knapphäche von {{variantText}} oder höher bohren.",
@@ -1231,11 +1254,15 @@
     "drinkPotionWithoutEffect_other": "Trinken {{count}} Tränke ohne Wirkung",
     "drinkPotion_one": "Trinken {{count}} Trank",
     "drinkPotion_other": "Trinken {{count}} Tränke",
-    "earnLifePoints_one": "Verdiene {{count}} Lebenspunkte",
-    "earnLifePoints_other": "Verdiene {{count}} Lebenspunkte",
-    "earnMoney": "Ernten {{count}} {emote:unitValues.money}",
-    "earnPoints": "Gewinnen {{count}} {emote:unitValues.score}",
-    "earnXP": "Gewinnen {{count}} {emote:unitValues.xp}",
+    "earnLifePoints_one": "Verdiene {{count}} Lebenspunkte {emote:unitValues.health}",
+    "earnLifePoints_other": "Verdiene {{count}} Lebenspunkte {emote:unitValues.health}",
+    "earnMoney": "Ernten {{count, number}} {emote:unitValues.money}",
+    "earnPoints": "Gewinnen {{count, number}} {emote:unitValues.score}",
+    "earnTokens_one": "Verdienen Sie {{count}} Token {emote:unitValues.token}",
+    "earnTokens_other": "Verdienen Sie {{count}} Token {emote:unitValues.token}",
+    "earnTokensInOneExpedition_one": "Verdienen Sie {{count}} Token {emote:unitValues.token} in einer einzigen Sendung",
+    "earnTokensInOneExpedition_other": "Verdienen Sie {{count}} Tokens {emote:unitValues.token} in einer einzigen Sendung",
+    "earnXP": "Gewinnen {{count, number}} {emote:unitValues.xp}",
     "exploreDifferentPlaces": "Erkunde {{count}} verschiedene Orte",
     "fightAttacks": "Machen {{count}} {{variantText}} in Kämpfen",
     "fightHealthPercent_one": "Gewinnen Sie {{count}} Kampf mit weniger als {{variantText}}% Ihrer verbleibenden Lebensenergie.",
@@ -1247,14 +1274,14 @@
     "findOrBuyItem_other": "Finden oder kaufen Sie {{count}} Gegenstände",
     "finishWithAttack": "Verwenden Sie {{count}} Mal die{{variantText}} , um Ihren Gegner zu erledigen.",
     "fromPlaceToPlace": "{{variantText}}",
-    "gainRage_one": "Verdiene {{count}} Wutpunkte, indem du wilde Tiere besiegst.",
-    "gainRage_other": "Verdiene {{count}} Wutpunkte, indem du wilde Tiere besiegst.",
+    "gainRage_one": "Verdiene {{count}} Wutpunkte {emote:unitValues.rage} durch das Besiegen von wilden Tieren.",
+    "gainRage_other": "Verdiene {{count}} Wutpunkte {emote:unitValues.rage} , indem du wilde Tiere besiegst.",
     "goToPlace": "Reisen Sie nach {{variantText}}",
     "guildDailyFromSomeoneElse": "Erhalten Sie eine Gilde-Belohnung, ohne sie zu beanspruchen.",
     "guildDaily_one": "Erhalte {{count}} Gildenbelohnung",
     "guildDaily_other": "Erhalten Sie {{count}} Gildenbelohnungen",
-    "guildHasPoints": "Helft eurer Gilde, mehr als {{count}} Gildenpunkte zu besitzen.",
-    "guildLevel": "Mitglied einer Gilde Stufe {{count}} oder höher sein",
+    "guildHasPoints": "Helfen Sie Ihrer Gilde, mehr {{count, number}} Gildenpunkte zu besitzen {emote:unitValues.guildPoint}",
+    "guildLevel": "Mitglied einer Gilde Stufe {{count, number}} oder höher sein",
     "haveItemRarity": "Ein Gerät mit einer Knappheit von {{variantText}} oder besser",
     "havePet": "Mit einem Vertrauten vertraut sein",
     "petCaress": "Ihren Vertrauten streicheln",
@@ -1264,6 +1291,8 @@
     "joinMemberOnBoat": "Mitglied auf der Insel beitreten",
     "joinPVEIsland": "Wiedererreichen der mysteriösen Insel",
     "kingsMoneyValue": "Erhalten Sie weniger als 6500 {emote:unitValues.money} im Geld des Königs",
+    "maxTokensReached_one": "Erreichen der maximalen Anzahl an Chips {emote:unitValues.token} {{count}} mal",
+    "maxTokensReached_other": "Erreichen der maximalen Anzahl an Chips {emote:unitValues.token} {{count}} mal",
     "meetDifferentPlayers_one": "Treffen {{count}} Spieler",
     "meetDifferentPlayers_other": "Triff {{count}} verschiedene Spieler",
     "meetGruffo": "Rencontrer Gruffo",
@@ -1271,8 +1300,18 @@
     "meetSirRowan_one": "Erhalten Sie {{count}} Kampftipps von Sir Rowan",
     "meetSirRowan_other": "Erhalten Sie {{count}} Kampftipps von Sir Rowan",
     "meetTalvar": "Talvar treffen",
+    "meetVelanna": "Velanna treffen",
+    "doExpeditions_one": "Erfolgreich {{count}} Versand",
+    "doExpeditions_other": "Erfolgreich {{count}} Sendungen",
+    "longExpedition": "Erfolgreiche Expedition von mindestens {{variantText}}",
+    "dangerousExpedition": "Erfolgreiche Durchführung einer Expedition mit der Gefährlichkeit \"{{variantText}}\" oder höher",
+    "expeditionStreak_one": "Erfolgreich {{count}} Expedition in Folge",
+    "expeditionStreak_other": "Erfolgreiche {{count}} Expeditionen hintereinander",
+    "dailyStreak_one": "Erfüllen Sie die tägliche Aufgabe {{count}} Tag in Folge",
+    "dailyStreak_other": "Erfüllen Sie die tägliche Aufgabe {{count}} Tage hintereinander",
+    "showCloneToTalvar": "Talvar einen Klon zeigen",
     "petEarnHealth": "Leben mit Hilfe eines Begleiter",
-    "reachGlory": "Haben {{count}} Ruhmespunkte oder mehr",
+    "reachGlory": "Haben {{count}} Ruhmespunkte {emote:unitValues.glory} oder mehr",
     "reachLevel": "Erreichen der Stufe {{count}}",
     "reachScore": "Eine Punktzahl von mehr als {{count}} {emote:unitValues.score}haben",
     "recoverAlteration_one": "Sich von {{count}} Zustandsveränderung erholen",
@@ -1284,13 +1323,17 @@
     "sellOrTradePet": "Einen Vertrauten an einen anderen Spieler verkaufen",
     "showPetsToTalvar_one": "Talvar {{count}} Tier gezeigt zu haben",
     "showPetsToTalvar_other": "{{count}} Tiere in Talvar gezeigt zu haben",
-    "spendGems": "Lastenaufstellung im Missionsgeschäft",
-    "spendMoney": "Ausgeben {{count}} Münzen",
+    "spendGems": "Geben Sie Edelsteine {emote:unitValues.gem} im Missionsladen aus.",
+    "spendMoney": "Ausgeben {{count, number}} {emote:unitValues.money}",
+    "spendTokens_one": "Geben Sie {{count}} Token aus {emote:unitValues.token}",
+    "spendTokens_other": "Geben Sie {{count}} Tokens aus {emote:unitValues.token}",
     "tamedPet": "Ein vertrauter oder aufrichtigeter Begleiter",
     "trainedPet": "Ein aufrechter Begleiter",
     "travelHours_one": "Machen Sie {{count}} Reise von mindestens {{variantText}} Stunde",
     "travelHours_other": "Machen Sie {{count}} Reisen von mindestens {{variantText}} Stunden.",
     "unlock": "Jemand aus dem Gefängnis freizulassen",
+    "useTokens_one": "Verwende {{count}} Token {emote:unitValues.token} , um voranzukommen",
+    "useTokens_other": "Verwende {{count}} Tokens {emote:unitValues.token} , um voranzukommen",
     "wealthyPayForPVEIsland": "Eine Reise zu einer mysteriösen Insel zu einem Höchstpreis kaufen",
     "winBoss_one": "Gewinnt {{count}} Bosskampf",
     "winBoss_other": "Gewinnen Sie {{count}} Bosskämpfe"
@@ -1464,7 +1507,7 @@
     "100_male": "Geist",
     "100_female": "Geist",
     "101_male": "Vampire",
-    "101_female": "Vampirin",
+    "101_female": "Vampire",
     "10_female": "Henne",
     "10_male": "Hahn",
     "11_female": "Vogel",
@@ -1759,7 +1802,8 @@
     "91": "Eau de Mer",
     "92": "Bave de Troll",
     "93": "Titan-Listole",
-    "94": "ChocoChoc-Tafel"
+    "94": "ChocoChoc-Tafel",
+    "95": "Erstaunlicher Mega-Geschwindigkeitstrank"
   },
   "weapons": {
     "0": "Poing",
@@ -1884,6 +1928,10 @@
     "male": "Männlich",
     "female": "Weiblich"
   },
+  "talisman": {
+    "anchor": "{emote:expedition.talisman} **Talisman der Verankerung**.",
+    "clone": "{emote:expedition.cloneTalisman} **Klon-Talisman**"
+  },
   "ordinals": {
     "get_feminine_ordinal_one": "1.",
     "get_feminine_ordinal_other": "{{count}}ème",
@@ -1892,7 +1940,7 @@
   },
   "guilds": {
     "levelUpTitle": "{emote:unitValues.xp} Die Gilde {{guild}} steigt auf!",
-    "levelUpDesc": "Die Gilde ist jetzt Level **{{level}}**!"
+    "levelUpDesc": "Die Gilde ist jetzt Level **{{level, number}}**!"
   },
   "players": {
     "koTitle": "{{pseudo}}Sie wurden k.o. geschlagen!",
@@ -1900,12 +1948,12 @@
     "koDmTitle": "Hallo Kämpfer!",
     "koDmDesc": "Es scheint, dass Sie k.o. geschlagen wurden... {emote:effects.dead}\nDank unserer fortschrittlichen Technologie war es uns möglich, die Ereignisse so zu beeinflussen, dass Ihnen ein qualvoller Tod erspart blieb! {emote:other.tada}\nLeider ist die Operation kostspielig, sodass Ihr Punktestand durch diesen Tod beeinflusst wurde... \n\nUm das Spiel erneut zu starten, gehen Sie auf {command:respawn}.",
     "leavePVEIslandTitle": "{{pseudo}}Ohnmacht",
-    "leavePVEIslandDescStart": "{emote:effects.confounded} Sie spüren, wie Ihre Kräfte Sie verlassen, Sie sind am Ende. Sie fallen ohnmächtig auf den Boden...\n\n{emote:unitValues.lostMoney} Verlorenes Geld: **{{moneyLost}}**",
-    "leavePVEIslandMalusGuildPoints": "\n{emote:unitValues.guildPoint} Verlorene Gildenpunkte : **{{guildPointsLost}}**",
+    "leavePVEIslandDescStart": "{emote:effects.confounded} Sie spüren, wie Ihre Kräfte Sie verlassen, Sie sind am Ende. Sie fallen ohnmächtig auf den Boden...\n\n{emote:unitValues.lostMoney} Verlorenes Geld: **{{moneyLost, number}}**",
+    "leavePVEIslandMalusGuildPoints": "\n{emote:unitValues.guildPoint} Verlorene Gildenpunkte : **{{guildPointsLost, number}}**",
     "leavePVEIslandDescEnd": "\n\nSie werden von einem Boot abgeholt und an eine Küste des Hauptkontinents gebracht.",
     "levelUp": {
       "title": "{{pseudo}}Sie haben sich in den letzten Jahren immer weiter gesteigert.",
-      "description": "{emote:unitValues.xp} Sie sind jetzt Level **{{level}}**!\n\n",
+      "description": "{emote:unitValues.xp} Sie sind jetzt Level **{{level, number}}**!\n\n",
       "rewards": {
         "healthRestored": "{emote:unitValues.health} | Ihr Leben wurde wiederhergestellt.",
         "fightUnlocked": "{emote:unitValues.attack} | Kämpfe, die mit den Befehlen {command:fight} und {command:fighthistory} freigeschaltet wurden! Für weitere Informationen zu den Kämpfen führen Sie den Befehl {command:help}.",
@@ -1914,6 +1962,7 @@
         "classTier": "{emote:commands.classes} | Stufenklassen {{tier}} freigeschaltet! Weitere Informationen zu den Klassen finden Sie mit den Befehlen {command:classesinfo} und {command:help}.",
         "newMissionSlot": "{emote:missions.sideMission} | Neuer Missionsplatz freigeschaltet! Weitere Informationen zu Ihren Missionen erhalten Sie mit dem Befehl {command:missions}.",
         "pveUnlocked": "{emote:other.island} | Zugang zu freigeschalteten entfernten Inseln! Treffen Sie sich an einem Wasserloch, um neue Abenteuer zu erleben!",
+        "tokensUnlocked": "{emote:unitValues.token} | Token freigeschaltet! Sie können nun Ihre Token verwenden, um schneller voranzukommen, mit dem Befehl {command:report}.",
         "statsIncreased": "{emote:other.increase} | Verbesserte Statistiken."
       }
     }

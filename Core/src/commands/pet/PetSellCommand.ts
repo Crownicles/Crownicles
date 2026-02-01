@@ -21,6 +21,7 @@ import {
 	CommandPetSellNotInGuildErrorPacket,
 	CommandPetSellOnlyOwnerCanCancelErrorPacket,
 	CommandPetSellPacketReq,
+	CommandPetSellPetOnExpeditionErrorPacket,
 	CommandPetSellSameGuildError,
 	CommandPetSellSuccessPacket
 } from "../../../../Lib/src/packets/commands/CommandPetSellPacket";
@@ -47,6 +48,7 @@ import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
 import { LogsDatabase } from "../../core/database/logs/LogsDatabase";
 import { MissionsController } from "../../core/missions/MissionsController";
 import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
+import { PetUtils } from "../../core/utils/PetUtils";
 
 type SellerInformation = {
 	player: Player; pet: PetEntity; petModel: Pet; guild: Guild; petCost: number;
@@ -111,7 +113,9 @@ async function verifyBuyerRequirements(response: CrowniclesPacket[], sellerInfor
 async function executePetSell(collector: ReactionCollectorInstance, response: CrowniclesPacket[], sellerInformation: SellerInformation, buyer: Player): Promise<void> {
 	// Add guild XP
 	const xpToAdd = GuildUtils.calculateAmountOfXPToAdd(sellerInformation.petCost);
-	await sellerInformation.guild.addExperience(xpToAdd, response, NumberChangeReason.PET_SELL);
+	await sellerInformation.guild.addExperience({
+		amount: xpToAdd, response, reason: NumberChangeReason.PET_SELL
+	});
 
 	// Make buyer spend money
 	await buyer.spendMoney({
@@ -179,11 +183,19 @@ async function acceptPetSellCallback(collector: ReactionCollectorInstance, initi
 		return;
 	}
 
+	const pet = await PetEntities.getById(initiatorPlayer.petId);
+	const petModel = PetDataController.instance.getById(pet!.typeId);
+	const guild = await Guilds.getById(initiatorPlayer.guildId);
+	if (!pet || !petModel || !guild) {
+		response.push(makePacket(CommandPetSellInitiatorSituationChangedErrorPacket, {}));
+		await collector.end(response);
+		return;
+	}
 	const sellerInformation: SellerInformation = {
 		player: initiatorPlayer,
-		pet: await PetEntities.getById(initiatorPlayer.petId),
-		petModel: PetDataController.instance.getById(initiatorPlayer.petId),
-		guild: await Guilds.getById(initiatorPlayer.guildId),
+		pet,
+		petModel,
+		guild,
 		petCost: price
 	};
 
@@ -234,7 +246,7 @@ function createAndPushCollector(player: Player, packet: CommandPetSellPacketReq,
 		collector,
 		context,
 		{
-			allowedPlayerKeycloakIds: packet.askedPlayer.keycloakId ? [player.keycloakId, packet.askedPlayer.keycloakId] : null,
+			allowedPlayerKeycloakIds: packet.askedPlayer.keycloakId ? [player.keycloakId, packet.askedPlayer.keycloakId] : undefined,
 			reactionLimit: -1
 		},
 		endCallback,
@@ -260,6 +272,12 @@ export default class PetSellCommand {
 			return;
 		}
 
+		// Check if pet is on expedition
+		if (await PetUtils.isPetOnExpedition(player.id)) {
+			response.push(makePacket(CommandPetSellPetOnExpeditionErrorPacket, {}));
+			return;
+		}
+
 		if (player.keycloakId === packet.askedPlayer.keycloakId) {
 			response.push(makePacket(CommandPetSellCantSellToYourselfErrorPacket, {}));
 			return;
@@ -279,8 +297,12 @@ export default class PetSellCommand {
 			return;
 		}
 
-		const sellerInformation = {
-			player, pet, petModel: PetDataController.instance.getById(pet.typeId), guild, petCost: packet.price
+		const petModel = PetDataController.instance.getById(pet.typeId);
+		if (!petModel) {
+			return;
+		}
+		const sellerInformation: SellerInformation = {
+			player, pet, petModel, guild, petCost: packet.price
 		};
 
 		if (missingRequirementsToSellPet(response, sellerInformation)) {

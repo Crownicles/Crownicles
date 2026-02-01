@@ -20,7 +20,7 @@ export class PlayerSmallEvent extends Model {
 	declare createdAt: Date;
 }
 
-export class PlayerSmallEvents {
+export abstract class PlayerSmallEvents {
 	static createPlayerSmallEvent(playerId: number, eventType: string, time: number): PlayerSmallEvent {
 		return PlayerSmallEvent.build({
 			playerId,
@@ -29,9 +29,9 @@ export class PlayerSmallEvents {
 		});
 	}
 
-	static async getLastOfPlayer(playerId: number): Promise<PlayerSmallEvent> {
+	static async getLastOfPlayer(playerId: number): Promise<PlayerSmallEvent | null> {
 		const playerSmallEvents = await PlayerSmallEvents.getSmallEventsOfPlayer(playerId);
-		if (!playerSmallEvents) {
+		if (!playerSmallEvents || playerSmallEvents.length === 0) {
 			return null;
 		}
 		let mostRecent = playerSmallEvents[0];
@@ -48,6 +48,9 @@ export class PlayerSmallEvents {
 			where: { playerId: player.id }
 		});
 		const tripDuration = player.getCurrentTripDuration();
+		if (tripDuration === null) {
+			return 0;
+		}
 		let somme = 0;
 		for (let i = 1; i <= numberOfSmallEventsDone; i++) {
 			/*

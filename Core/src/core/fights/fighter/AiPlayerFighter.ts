@@ -1,4 +1,7 @@
+import { PlayerBaseFighter } from "./PlayerBaseFighter";
 import { Player } from "../../database/game/models/Player";
+import { InventorySlots } from "../../database/game/models/InventorySlot";
+import { PlayerActiveObjects } from "../../database/game/models/PlayerActiveObjects";
 import { FightView } from "../FightView";
 import { RandomUtils } from "../../../../../Lib/src/utils/RandomUtils";
 import { Class } from "../../../data/Class";
@@ -11,10 +14,9 @@ import {
 } from "../AiBehaviorController";
 import PetEntity, { PetEntities } from "../../database/game/models/PetEntity";
 import { FighterStatus } from "../FighterStatus";
-import { PlayerFighter } from "./PlayerFighter";
-import { PlayerActiveObjects } from "../../database/game/models/PlayerActiveObjects";
-import { InventorySlots } from "../../database/game/models/InventorySlot";
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
+import { PetConstants } from "../../../../../Lib/src/constants/PetConstants";
+import { PetUtils } from "../../utils/PetUtils";
 
 type AiPlayerFighterOptions = {
 	allowPotionConsumption?: boolean;
@@ -24,12 +26,14 @@ type AiPlayerFighterOptions = {
 
 /**
  * Fighter
- * Class representing a player in a fight
+ * Class representing an AI-controlled player in a fight
  */
-export class AiPlayerFighter extends PlayerFighter {
-	public consumePotionProbability = FightConstants.POTION_NO_DRINK_PROBABILITY.AI;
+export class AiPlayerFighter extends PlayerBaseFighter {
+	private class: Class;
 
-	private readonly classBehavior: ClassBehavior;
+	private readonly classBehavior: ClassBehavior | undefined;
+
+	private glory!: number;
 
 	private readonly allowPotionConsumption: boolean;
 
@@ -38,7 +42,9 @@ export class AiPlayerFighter extends PlayerFighter {
 	private readonly preloadedPetEntity?: PetEntity | null;
 
 	public constructor(player: Player, playerClass: Class, options: AiPlayerFighterOptions = {}) {
-		super(player, playerClass);
+		super(player, FightActionDataController.instance.getListById(playerClass.fightActionsIds));
+		this.fightRole = FightConstants.FIGHT_ROLES.DEFENDER;
+		this.class = playerClass;
 		this.classBehavior = getAiClassBehavior(playerClass.id);
 		this.allowPotionConsumption = options.allowPotionConsumption ?? true;
 		this.preloadedActiveObjects = options.preloadedActiveObjects;
@@ -46,58 +52,59 @@ export class AiPlayerFighter extends PlayerFighter {
 	}
 
 	/**
-	 * <<<<<<< HEAD
 	 * Function called when the fight starts
 	 * @param fightView The fight view
 	 * @param startStatus The first status of a player
+	 * @param response The response packets
 	 */
-	async startFight(fightView: FightView, startStatus: FighterStatus): Promise<void> {
+	async startFight(_fightView: FightView, startStatus: FighterStatus, response: CrowniclesPacket[]): Promise<void> {
 		this.status = startStatus;
-		await this.consumePotionIfNeeded([fightView.context]);
+		if (this.allowPotionConsumption) {
+			await this.consumeFightPotionIfNeeded(response, FightConstants.POTION_NO_DRINK_PROBABILITY.AI);
+		}
 	}
 
+
 	/**
-	 * Delete the potion from the inventory of the player if needed
-	 * @param response
+	 * Load the pet entity for the fighter based on availability
 	 */
-	public async consumePotionIfNeeded(response: CrowniclesPacket[]): Promise<void> {
-		if (!this.allowPotionConsumption) {
+	private async loadPetEntity(): Promise<void> {
+		if (!this.player.petId) {
+			this.pet = undefined;
 			return;
 		}
 
-		await super.consumePotionIfNeeded(response);
-	}
+		if (this.preloadedPetEntity !== undefined) {
+			this.pet = this.preloadedPetEntity ?? undefined;
+			return;
+		}
 
+		// Check if pet is available based on fight role
+		const petAvailabilityContext = this.fightRole === FightConstants.FIGHT_ROLES.ATTACKER
+			? PetConstants.AVAILABILITY_CONTEXT.ATTACK_FIGHT
+			: PetConstants.AVAILABILITY_CONTEXT.DEFENSE_FIGHT;
+		const isPetAvailable = await PetUtils.isPetAvailable(this.player, petAvailabilityContext);
+		this.pet = isPetAvailable ? await PetEntities.getById(this.player.petId) ?? undefined : undefined;
+	}
 
 	/**
 	 * The fighter loads its various stats
 	 */
 	public async loadStats(): Promise<void> {
 		const playerActiveObjects: PlayerActiveObjects = this.preloadedActiveObjects ?? await InventorySlots.getPlayerActiveObjects(this.player.id);
-		this.stats.energy = this.player.getMaxCumulativeEnergy(playerActiveObjects);
-		this.stats.maxEnergy = this.player.getMaxCumulativeEnergy(playerActiveObjects);
+		this.stats.energy = this.player.getMaxCumulativeEnergy();
+		this.stats.maxEnergy = this.player.getMaxCumulativeEnergy();
 		this.stats.attack = this.player.getCumulativeAttack(playerActiveObjects);
 		this.stats.defense = this.player.getCumulativeDefense(playerActiveObjects);
 		this.stats.speed = this.player.getCumulativeSpeed(playerActiveObjects);
 		this.stats.breath = this.player.getBaseBreath();
 		this.stats.maxBreath = this.player.getMaxBreath();
 		this.stats.breathRegen = this.player.getBreathRegen();
-		if (this.player.petId) {
-			if (this.preloadedPetEntity !== undefined) {
-				this.pet = this.preloadedPetEntity;
-			}
-			else {
-				this.pet = await PetEntities.getById(this.player.petId);
-			}
-		}
-		else {
-			this.pet = undefined;
-		}
+		this.glory = this.player.getGloryPoints();
+		await this.loadPetEntity();
 	}
 
 	/**
-	 * =======
-	 * >>>>>>> b48bf566a (Implement items enchantments effects #3598)
 	 * Send the embed to choose an action
 	 * @param fightView
 	 * @param response
@@ -115,7 +122,7 @@ export class AiPlayerFighter extends PlayerFighter {
 		}
 		else {
 			// Fallback to a simple attack if no behavior is defined
-			fightAction = FightActionDataController.instance.getById("simpleAttack");
+			fightAction = FightActionDataController.instance.getById("simpleAttack")!;
 		}
 		await fightView.fightController.executeFightAction(fightAction, true, response);
 	}

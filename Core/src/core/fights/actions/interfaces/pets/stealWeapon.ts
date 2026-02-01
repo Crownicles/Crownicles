@@ -47,7 +47,7 @@ const use: PetAssistanceFunc = async (_fighter, opponent, turn, _fightController
 		stat: FightStatBuffed.ATTACK,
 		operator: FightStatModifierOperation.MULTIPLIER,
 		value: (totalDamage - weaponDamages) / totalDamage
-	}, opponent, this);
+	}, opponent, undefined);
 
 	// If the opponent had a weapon that impacts defense or speed, update the stats accordingly
 	if (weaponDefense !== 0) {
@@ -56,7 +56,7 @@ const use: PetAssistanceFunc = async (_fighter, opponent, turn, _fightController
 			stat: FightStatBuffed.DEFENSE,
 			operator: FightStatModifierOperation.MULTIPLIER,
 			value: (totalDefense - weaponDefense) / totalDefense
-		}, opponent, this);
+		}, opponent, undefined);
 	}
 	if (weaponSpeed !== 0) {
 		FightActionController.applyBuff(result, {
@@ -64,7 +64,7 @@ const use: PetAssistanceFunc = async (_fighter, opponent, turn, _fightController
 			stat: FightStatBuffed.SPEED,
 			operator: FightStatModifierOperation.MULTIPLIER,
 			value: (totalSpeed - weaponSpeed) / totalSpeed
-		}, opponent, this);
+		}, opponent, undefined);
 	}
 
 	return Promise.resolve(result);

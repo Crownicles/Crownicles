@@ -1,4 +1,4 @@
-ARG NODE_VERSION=23
+ARG NODE_VERSION=24
 
 # Base image to use
 FROM node:${NODE_VERSION}-alpine AS builder
@@ -19,8 +19,8 @@ COPY ./Core/package.json ./Core/pnpm-lock.yaml ./Core/tsconfig.json ./
 # Create the config directory
 RUN mkdir config
 
-# Install the dependencies
-RUN pnpm install --prod
+# Install all dependencies (including devDependencies for typescript compilation)
+RUN pnpm install
 
 # Copy the lib
 RUN mkdir ../Lib
@@ -31,9 +31,9 @@ COPY ./Lib/src ../Lib/src
 COPY ./Core/src ./src
 COPY ./Core/resources ./resources
 
-# Install the lib dependencies
+# Install all lib dependencies (including devDependencies for typescript compilation)
 WORKDIR /crownicles/Lib
-RUN pnpm install --prod
+RUN pnpm install
 WORKDIR /crownicles/Core
 
 # Compile the source code

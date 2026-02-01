@@ -135,14 +135,14 @@ function getMostRecentClassId(history: {
 }[], maxDate: number): number {
 	let maxClass: {
 		classId: number; date: number;
-	} = null;
+	} | null = null;
 	for (const c of history) {
 		if (!maxClass || c.date < maxDate && c.date > maxClass.date) {
 			maxClass = c;
 		}
 	}
 
-	return maxClass.classId;
+	return maxClass!.classId;
 }
 
 async function addClassesToFightActions(context: QueryInterface): Promise<void> {
@@ -210,7 +210,7 @@ async function addClassesToFightActions(context: QueryInterface): Promise<void> 
 				fightActionsDict,
 				fightActions,
 				fightActionName,
-				fightActionClassId
+				fightActionClassId!
 			),
 			count: fightActionUsed.count
 		});

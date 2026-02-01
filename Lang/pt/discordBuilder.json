@@ -382,5 +382,25 @@
   "fightHistory": {
     "name": "combate histórico",
     "description": "Ver o historial de batalhas."
+  },
+  "deletecode": {
+    "name": "deletecode",
+    "description": "Gerar um código de eliminação de conta para um utilizador.",
+    "options": {
+      "discordid": {
+        "name": "discordante",
+        "description": "O ID Discord do utilizador."
+      }
+    }
+  },
+  "exportgdpr": {
+    "name": "exportrgpd",
+    "description": "Exportar todos os dados pessoais de um jogador (RGPD Art. 15).",
+    "options": {
+      "discordid": {
+        "name": "discordante",
+        "description": "O ID Discord do jogador."
+      }
+    }
   }
 }

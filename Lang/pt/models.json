@@ -5,7 +5,7 @@
     "10": "Escudo pesado",
     "100": "Armadura de enredo",
     "101": "Escudo térmico",
-    "102": "armadura de mythril",
+    "102": "Armadura de Mythril",
     "103": "Placa frontal",
     "104": "Proteção do painel frontal 4",
     "105": "Cuirass",
@@ -169,7 +169,7 @@
   },
   "classFormat": "{emote:classes.{{id}} $t(models:classes.{{id}})}",
   "classPluralFormat": "{emote:classes.{{id}}} $t(models:classes_plural.{{id}})",
-  "classWithStatsFormat": "{emote:classes.{{id}}} $t(models:classes.{{id}}) :\n{emote:unitValues.energy} {{energy}} | {emote:unitValues.attack} {{attack}} | {emote:unitValues.defense} {{defense}} | {emote:unitValues.speed} {{speed}} | {emote:unitValues.breath} {{initialBreath}} / {{maxBreath}} | {emote:unitValues.health} {{health}}",
+  "classWithStatsFormat": "{emote:classes.{{id}}} $t(models:classes.{{id}}) :\n{emote:unitValues.energy} {{energy, number}} | {emote:unitValues.attack} {{attack, number}} | {emote:unitValues.defense} {{defense, number}} | {emote:unitValues.speed} {{speed, number}} | {emote:unitValues.breath} {{initialBreath, number}} / {{maxBreath, number}} | {emote:unitValues.health} {{health, number}}",
   "class_descriptions": {
     "0": "Uma aula simples. Bastante equilibrada.",
     "1": "Uma classe simples. Bastante equilibrada.",
@@ -355,7 +355,7 @@
       "afraid": "é ajudado por **{{petNickname}}** que, apesar de se lembrar perfeitamente dos acontecimentos recentes, treme demasiado de medo para conseguir recuperar o fôlego perdido."
     },
     "energeticAttack": {
-      "description": "La moitié des dégâts de cette attaque sont restitués au lanceur sous forme de soin. Ignore une partie de la défense adverse.",
+      "description": "Metade do dano deste ataque é devolvido ao atacante em forma de cura. Ignora parte da defesa adversária.",
       "name_one": "Ataque energético",
       "name_other": "Ataques energéticos"
     },
@@ -963,7 +963,7 @@
     },
     "16": {
       "description": "Pequeno caminho perigoso ao longo das margens do rio Vacarme. Cuidado para não cair.",
-      "name": "Chemin aux Loups",
+      "name": "Caminho dos Lobos",
       "particle": "para o"
     },
     "17": {
@@ -1023,7 +1023,7 @@
     },
     "25": {
       "description": "Está tudo no nome. Um rio muito apreciado pelas peixarias de Claire de Ville.",
-      "name": "Rivière aux Crabes",
+      "name": "Rio dos Caranguejos",
       "particle": "para o"
     },
     "26": {
@@ -1206,6 +1206,27 @@
     "hauntedHouse": {
       "name": "",
       "prefix": "do"
+    },
+    "forest": {
+      "name": "Floresta"
+    },
+    "mountain": {
+      "name": "Montanha"
+    },
+    "desert": {
+      "name": "Deserto"
+    },
+    "swamp": {
+      "name": "Pântano"
+    },
+    "cave": {
+      "name": "Gruta"
+    },
+    "plains": {
+      "name": "Planície"
+    },
+    "coast": {
+      "name": "Costa"
     }
   },
   "missions": {
@@ -1213,6 +1234,8 @@
     "anyFight_other": "{{count}} Lutar",
     "bigFeast": "Assistir a um grande banquete",
     "buyItemFromAlderic": "Comprar um artigo de Aldéric",
+    "buyTokensFromShop_one": "Comprar ficha {{count}} {emote:unitValues.token} na loja",
+    "buyTokensFromShop_other": "Comprar fichas {{count}} {emote:unitValues.token} na loja",
     "buyUltimateSoups_one": "{{count}} Comprar pelo menos a última sopa",
     "buyUltimateSoups_other": "{{count}} Comprar pelo menos as últimas sopas",
     "chooseClass": "{emote:classes.0} Escolha uma classe diferente de Recruta",
@@ -1223,7 +1246,7 @@
     "dailyPotionsStock": "Comprar o stock de poções do dia",
     "doReports_one": "{{count}} Reportar a",
     "doReports_other": "{{count}} Elaborar relatórios",
-    "drinkAlcohol": "Beber uma poção com álcool",
+    "drinkAlcohol": "Beber uma bebida alcoólica",
     "drinkEnergyPotion_one": "{{count}} Beber uma poção energética",
     "drinkEnergyPotion_other": "{{count}} Beber poções energéticas",
     "drinkPotionRarity": "{{variantText}} Beber uma poção de raridade ou superior",
@@ -1231,11 +1254,15 @@
     "drinkPotionWithoutEffect_other": "{{count}} Beber poções sem efeito",
     "drinkPotion_one": "{{count}} Beber poção",
     "drinkPotion_other": "{{count}} Beber poções",
-    "earnLifePoints_one": "{{count}} Ganhar pontos de vida",
-    "earnLifePoints_other": "{{count}} Ganhar pontos de vida",
-    "earnMoney": "{{count}} {emote:unitValues.money}Colheita",
-    "earnPoints": "{{count}} {emote:unitValues.score}Ganhar",
-    "earnXP": "{{count}} {emote:unitValues.xp}Ganhar",
+    "earnLifePoints_one": "Ganhar {{count}} pontos de vida {emote:unitValues.health}",
+    "earnLifePoints_other": "Ganhar {{count}} pontos de vida {emote:unitValues.health}",
+    "earnMoney": "Colheita {{count, number}} {emote:unitValues.money}",
+    "earnPoints": "Ganhar {{count, number}} {emote:unitValues.score}",
+    "earnTokens_one": "Ganhar {{count}} {emote:unitValues.token}",
+    "earnTokens_other": "Ganhar {{count}} {emote:unitValues.token}",
+    "earnTokensInOneExpedition_one": "Ganhe {{count}} {emote:unitValues.token} tokens num único envio",
+    "earnTokensInOneExpedition_other": "Ganhe tokens {{count}} {emote:unitValues.token} num único envio",
+    "earnXP": "Ganhar {{count, number}} {emote:unitValues.xp}",
     "exploreDifferentPlaces": "{{count}} Explorar diferentes locais",
     "fightAttacks": "{{count}} {{variantText}} Fazer em combates",
     "fightHealthPercent_one": "{{count}} {{variantText}}Ganhar com menos de % da sua vida restante",
@@ -1247,14 +1274,14 @@
     "findOrBuyItem_other": "{{count}} Procurar ou comprar artigos",
     "finishWithAttack": "{{count}}{{variantText}} Utilizar para acabar com o adversário",
     "fromPlaceToPlace": "{{variantText}}",
-    "gainRage_one": "{{count}} Ganhe pontos de raiva ao derrotar animais selvagens",
-    "gainRage_other": "{{count}} Ganhe pontos de raiva ao derrotar animais selvagens",
+    "gainRage_one": "Ganhe {{count}} pontos de raiva {emote:unitValues.rage} derrotando animais selvagens",
+    "gainRage_other": "Ganhe {{count}} pontos de raiva {emote:unitValues.rage} derrotando animais selvagens",
     "goToPlace": "{{variantText}}Viajar para",
     "guildDailyFromSomeoneElse": "Receber uma recompensa da guilda sem a ter reclamado",
     "guildDaily_one": "{{count}} Receber recompensa da guilda",
     "guildDaily_other": "{{count}} Receber recompensas da guilda",
-    "guildHasPoints": "{{count}} Ajuda a tua guilda a ter mais do que pontos de guilda",
-    "guildLevel": "{{count}} Fazer parte de uma guilda de nível igual ou superior",
+    "guildHasPoints": "Ajuda a tua guilda a obter mais {{count, number}} pontos de guilda {emote:unitValues.guildPoint}",
+    "guildLevel": "Fazer parte de uma guilda de nível {{count, number}} ou superior",
     "haveItemRarity": "{{variantText}} Equipamento raro ou melhor",
     "havePet": "Ter um animal de estimação consigo",
     "petCaress": "Acariciar o seu animal de estimação",
@@ -1264,6 +1291,8 @@
     "joinMemberOnBoat": "Juntar-se a um membro na ilha",
     "joinPVEIsland": "Chegar à ilha misteriosa",
     "kingsMoneyValue": "{emote:unitValues.money} Receber menos de 6.500 em dinheiro do rei",
+    "maxTokensReached_one": "Atingir o número máximo de fichas {emote:unitValues.token} {{count}} vezes",
+    "maxTokensReached_other": "Atingir o número máximo de fichas {emote:unitValues.token} {{count}} vezes",
     "meetDifferentPlayers_one": "{{count}} Conhecer o jogador",
     "meetDifferentPlayers_other": "{{count}} Conhecer jogadores diferentes",
     "meetGruffo": "Conheça o Gruffo",
@@ -1271,8 +1300,18 @@
     "meetSirRowan_one": "Receber {{count}} conselhos de luta de Sir Rowan",
     "meetSirRowan_other": "Obter {{count}} conselhos de luta de Sir Rowan",
     "meetTalvar": "Conheça Talvar",
+    "meetVelanna": "Conheça a Velanna",
+    "doExpeditions_one": "{{count}} envio",
+    "doExpeditions_other": "{{count}} carregamentos",
+    "longExpedition": "Uma expedição bem sucedida de, pelo menos, {{variantText}}",
+    "dangerousExpedition": "Uma expedição bem sucedida de nível de perigo \"{{variantText}}\" ou superior",
+    "expeditionStreak_one": "Uma expedição {{count}} bem sucedida consecutivamente",
+    "expeditionStreak_other": "Expedições consecutivas bem sucedidas em {{count}}",
+    "dailyStreak_one": "Cumprir a missão diária {{count}} dia consecutivo",
+    "dailyStreak_other": "Completar a missão diária {{count}} dias seguidos",
+    "showCloneToTalvar": "Mostrar um clone a Talvar",
     "petEarnHealth": "Obter vida de um animal de estimação",
-    "reachGlory": "{{count}} Ter pontos de glória ou mais",
+    "reachGlory": "{{count}} pontos de glória {emote:unitValues.glory} ou mais",
     "reachLevel": "{{count}}Atingir o nível",
     "reachScore": "{{count}} {emote:unitValues.score}Pontuação acima",
     "recoverAlteration_one": "{{count}} Recuperação de",
@@ -1284,13 +1323,17 @@
     "sellOrTradePet": "Vender uma mascote a outro jogador",
     "showPetsToTalvar_one": "Mostrando {{count}} para Talvar",
     "showPetsToTalvar_other": "Mostrar {{count}} animais a Talvar",
-    "spendGems": "Gastar pedras preciosas na loja da missão",
-    "spendMoney": "{{count}} Gastar moedas",
+    "spendGems": "Gastar gemas {emote:unitValues.gem} na loja de missões",
+    "spendMoney": "Gastar {{count, number}} {emote:unitValues.money}",
+    "spendTokens_one": "Gastar {{count}} token {emote:unitValues.token}",
+    "spendTokens_other": "Gastar {{count}} {emote:unitValues.token}",
     "tamedPet": "Ter um animal de estimação domesticado ou treinado",
     "trainedPet": "Ter um animal de estimação treinado",
     "travelHours_one": "{{count}} {{variantText}} Fazer uma viagem de pelo menos uma hora",
     "travelHours_other": "{{count}} {{variantText}} Fazer viagens de pelo menos horas",
     "unlock": "Libertação de uma pessoa da prisão",
+    "useTokens_one": "Utilizar {{count}} {emote:unitValues.token} para avançar",
+    "useTokens_other": "Utilizar {{count}} {emote:unitValues.token} para avançar",
     "wealthyPayForPVEIsland": "Comprar uma viagem a uma ilha misteriosa ao preço máximo",
     "winBoss_one": "{{count}} Vencer batalha de chefe",
     "winBoss_other": "{{count}} Vencer lutas contra chefes"
@@ -1464,7 +1507,7 @@
     "100_male": "Fantasma",
     "100_female": "Fantasma",
     "101_male": "Vampiro",
-    "101_female": "Vampira",
+    "101_female": "Vampiro",
     "10_female": "Galinha",
     "10_male": "Coq",
     "11_female": "Ave",
@@ -1759,7 +1802,8 @@
     "91": "Água do mar",
     "92": "Lodo de troll",
     "93": "Lágrima de Titã",
-    "94": "Barra ChocoChoc"
+    "94": "Barra ChocoChoc",
+    "95": "Poção de velocidade mega incrível"
   },
   "weapons": {
     "0": "Punho",
@@ -1884,6 +1928,10 @@
     "male": "Masculino",
     "female": "Feminino"
   },
+  "talisman": {
+    "anchor": "{emote:expedition.talisman} **Talismã de Ancoragem",
+    "clone": "{emote:expedition.cloneTalisman} **Talismã de clonagem"
+  },
   "ordinals": {
     "get_feminine_ordinal_one": "1º",
     "get_feminine_ordinal_other": "{{count}}th",
@@ -1892,7 +1940,7 @@
   },
   "guilds": {
     "levelUpTitle": "{emote:unitValues.xp} A guilda {{guild}} está a subir de nível!",
-    "levelUpDesc": "O grémio está agora no nível **{{level}}** !"
+    "levelUpDesc": "O grémio está agora no nível **{{level, number}}**!"
   },
   "players": {
     "koTitle": "{{pseudo}}foste nocauteado!",
@@ -1900,12 +1948,12 @@
     "koDmTitle": "Olá, lutador!",
     "koDmDesc": "Parece que ficaste inconsciente... {emote:effects.dead}\nGraças às nossas tecnologias avançadas, conseguimos alterar os acontecimentos de forma a salvar-te de uma morte agonizante! {emote:other.tada}\nInfelizmente, a operação é dispendiosa e a sua pontuação foi afetada por esta morte... \n\nPara recomeçar a jogar, visita {command:respawn}.",
     "leavePVEIslandTitle": "{{pseudo}}desmaio",
-    "leavePVEIslandDescStart": "{emote:effects.confounded} Sente as suas forças a esvaírem-se, está no seu limite. Desmaia no chão...\n\n{emote:unitValues.lostMoney} Dinheiro perdido: **{{moneyLost}}**",
-    "leavePVEIslandMalusGuildPoints": "\n{emote:unitValues.guildPoint} Pontos de guilda perdidos: **{{guildPointsLost}}**",
+    "leavePVEIslandDescStart": "{emote:effects.confounded} Sente as suas forças a esvaírem-se, está no seu limite. Desmaias no chão...\n\n{emote:unitValues.lostMoney} Dinheiro perdido: **{{moneyLost, number}}**",
+    "leavePVEIslandMalusGuildPoints": "\n{emote:unitValues.guildPoint} Pontos de guilda perdidos: **{{guildPointsLost, number}}**",
     "leavePVEIslandDescEnd": "\n\nUm barco vai buscá-lo e levá-lo de volta a uma costa no continente.",
     "levelUp": {
       "title": "{{pseudo}}Estás a subir um nível!",
-      "description": "{emote:unitValues.xp} Já está no nível **{{level}}** !\n\n",
+      "description": "{emote:unitValues.xp} Agora estás no nível **{{level, number}}**!\n\n",
       "rewards": {
         "healthRestored": "{emote:unitValues.health} | A tua vida foi restaurada.",
         "fightUnlocked": "{emote:unitValues.attack} | Batalhas desbloqueadas com os comandos {command:fight} e {command:fighthistory} ! Para mais informações sobre as batalhas, executar o comando {command:help}.",
@@ -1914,6 +1962,7 @@
         "classTier": "{emote:commands.classes} | Classes de nível {{tier}} desbloqueadas! Para obter mais informações sobre as classes, utilize os comandos {command:classesinfo} e {command:help}.",
         "newMissionSlot": "{emote:missions.sideMission} | Nova slot de missão desbloqueada! Para mais informações sobre as tuas missões, utiliza o comando {command:missions}.",
         "pveUnlocked": "{emote:other.island} | Acesso a ilhas remotas desbloqueadas! Encontra-te num bar para novas aventuras!",
+        "tokensUnlocked": "{emote:unitValues.token} | Tokens desbloqueados! Agora podes usar os teus tokens para avançar mais rapidamente com o comando {command:report}.",
         "statsIncreased": "{emote:other.increase} | Estatísticas melhoradas."
       }
     }
@@ -1948,7 +1997,7 @@
       "shinyElementary": "Continuas a tua busca de aventura na Gruta de Cristal, um caminho na encosta da montanha que conduz a outras paisagens. Pelas magníficas pedras preciosas que sobressaem das paredes, podes ver que o local faz jus ao seu nome. Os teus passos ecoam nas paredes que te rodeiam, o seu som chega até ti tal como a tua imagem se reflecte nos milhares de pedras preciosas. Brinca com o eco enquanto admira o local, mas de repente um som que não parece vir de si chega aos seus tímpanos. Os cristais parecem estar a bater uns contra os outros, cada vez mais alto. De repente, um aglomerado destas pedras assume uma forma humanoide com o dobro do teu tamanho. A luz que atravessa esta entidade desfaz-se num magnífico arco-íris, mas tendo em conta a agressividade da criatura para contigo, achas que vai ser necessário pôr fim a esta bela iluminação."
     },
     "1103": {
-      "celestialGuardian": "Vous sortez de la caverne de cristal et vous vous retrouvez ébloui par le soleil qui de reflète sur la neige qui vous entoure. Après plusieurs secondes pour vous habituer à la luminosité, vous apercevez des centaines de marches qui mènent à deux gigantesques portes entourées de deux statues tout aussi grandes. Vous ne comptez pas vous arrêter en si bon chemin, donc vous commencez à gravir difficilement les marches les unes après les autres. Vous faites attention à ne pas déraper sur les pierres rendues glissantes par la glace qui s'est formée dessus. Après plusieurs minutes de marche intense, vous arrivez aux pieds de la construction. Les inscriptions sur les portes ne vous sont pas familières: en effet, elles sont rédigées dans une écriture qui vous est inconnue. En tout cas, les portes sont sur votre chemin, et il vous faut les franchir pour avancer. Vous tentez donc de poser votre paume sur la pierre froide, et soudain, un mécanisme s'active et les portes commencent à grincer. Après plusieurs secondes, les portes sont enfin totalement ouvertes, mais le mécanisme ne s'arrête pourtant pas de faire du bruit. C'est alors qu'en vous retournant sur votre droite, vous remarquez que la statue commence à bouger et attraper un marteau qui est à son échelle..."
+      "celestialGuardian": "Você sai da caverna de cristal e se vê ofuscado pelo sol que reflete na neve ao seu redor. Após alguns segundos para se acostumar com a luminosidade, você avista centenas de degraus que levam a duas portas gigantescas cercadas por duas estátuas igualmente enormes. Você não pretende parar por aqui, então começa a subir os degraus com dificuldade, um após o outro. Você toma cuidado para não escorregar nas pedras tornadas escorregadias pelo gelo que se formou sobre elas. Após vários minutos de caminhada intensa, você chega aos pés da construção. As inscrições nas portas não lhe são familiares: na verdade, estão escritas em uma escrita que você desconhece. De qualquer forma, as portas estão no seu caminho, e você precisa atravessá-las para avançar. Então você tenta colocar sua palma na pedra fria, e de repente, um mecanismo se ativa e as portas começam a ranger. Após alguns segundos, as portas finalmente estão totalmente abertas, mas o mecanismo ainda não para de fazer barulho. É então que, ao se virar para a direita, você percebe que a estátua começa a se mover e pegar um martelo do seu tamanho..."
     },
     "1104": {
       "maleIceDragon": "A subida ao pico coberto de neve deixou-o exausto. A esta altitude vertiginosa, cada respiração é uma batalha contra o ar rarefeito que queima os seus pulmões. Os teus passos rangem na neve endurecida por ventos violentos que ameaçam desequilibrar-te a qualquer momento. Quando pensamos que chegámos ao cume, o chão treme debaixo dos nossos pés. Um rugido titânico rasga o ar gelado, tão poderoso que provoca uma avalanche ao longe. Ao olhar para as nuvens baixas, vê uma sombra gigantesca a pairar sobre si. De repente, cai na terra com um estrondo ensurdecedor. Um colossal dragão de gelo aterra à tua frente, com as suas escamas cristalinas a brilhar como mil diamantes. O seu hálito transforma instantaneamente o ar em névoa gelada, enquanto os seus olhos azuis árcticos olham para ti com uma inteligência milenar. Este senhor dos picos decidiu que a tua intrusão no seu domínio merece uma... resposta definitiva."

@@ -7,7 +7,7 @@ export const missionInterface: IMission = {
 
 	areParamsMatchingVariantAndBlob: (variant, params) => (params.rarity as number) >= variant,
 
-	initialNumberDone: async (player, variant) => (haveRarityOrMore(await InventorySlots.getOfPlayer(player.id), variant) ? 1 : 0),
+	initialNumberDone: async (player, variant) => haveRarityOrMore(await InventorySlots.getOfPlayer(player.id), variant) ? 1 : 0,
 
 	updateSaveBlob: () => null
 };

@@ -12,7 +12,7 @@ import {
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import {
-	ColorResolvable, EmbedField, Message, MessageReaction
+	ColorResolvable, EmbedField, Message, MessageReaction, ReactionCollector
 } from "discord.js";
 import { Constants } from "../../../../Lib/src/constants/Constants";
 import { DiscordCache } from "../../bot/DiscordCache";
@@ -21,11 +21,11 @@ import { Language } from "../../../../Lib/src/Language";
 import { KeycloakUser } from "../../../../Lib/src/keycloak/KeycloakUser";
 import { PacketUtils } from "../../utils/PacketUtils";
 import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
-import {
-	millisecondsToMinutes, minutesDisplay
-} from "../../../../Lib/src/utils/TimeUtils";
+import { millisecondsToMinutes } from "../../../../Lib/src/utils/TimeUtils";
 import { DisplayUtils } from "../../utils/DisplayUtils";
 import { Badge } from "../../../../Lib/src/types/Badge";
+import { TokensConstants } from "../../../../Lib/src/constants/TokensConstants";
+import { ColorConstants } from "../../../../Lib/src/constants/ColorConstants";
 
 /**
  * Display the profile of a player
@@ -106,21 +106,57 @@ function addField(fields: EmbedField[], fieldKey: string, shouldBeFielded: boole
 }
 
 /**
- * Generate the fields of the profile embed
- * @param packet
- * @param lng
+ * Add information field (health, money, experience, tokens)
  */
-function generateFields(packet: CommandProfilePacketRes, lng: Language): EmbedField[] {
-	const fields: EmbedField[] = [];
-	addField(fields, "information", true, {
+function addInformationField(fields: EmbedField[], packet: CommandProfilePacketRes, lng: Language): void {
+	const showTokens = packet.playerData.level >= TokensConstants.LEVEL_TO_UNLOCK;
+	addField(fields, showTokens ? "information" : "informationNoTokens", true, {
 		lng,
 		health: packet.playerData.health.value,
 		maxHealth: packet.playerData.health.max,
 		money: packet.playerData.money,
 		experience: packet.playerData.experience.value,
-		experienceNeededToLevelUp: packet.playerData.experience.max
+		experienceNeededToLevelUp: packet.playerData.experience.max,
+		tokens: packet.playerData.tokens ?? 0,
+		tokensMax: packet.playerData.tokensMax ?? TokensConstants.MAX
 	});
+}
 
+/**
+ * Add fight ranking field
+ */
+function addFightRankingField(fields: EmbedField[], packet: CommandProfilePacketRes, lng: Language): void {
+	const fightRanking = packet.playerData.fightRanking;
+	const isRanked = fightRanking && fightRanking.gloryRank !== -1;
+	const fieldKey = isRanked ? "fightRanked" : "fightUnranked";
+
+	addField(fields, fieldKey, Boolean(fightRanking), {
+		lng,
+		rank: fightRanking?.gloryRank ?? 0,
+		numberOfPlayers: fightRanking?.numberOfFighters ?? 0,
+		leagueEmoji: fightRanking?.league ? CrowniclesIcons.leagues[fightRanking.league] : "",
+		leagueId: fightRanking?.league ?? 0,
+		gloryPoints: fightRanking?.glory ?? 0
+	});
+}
+
+/**
+ * Add pet field with all pet details
+ */
+function addPetField(fields: EmbedField[], packet: CommandProfilePacketRes, lng: Language): void {
+	const pet = packet.playerData.pet;
+	addField(fields, "pet", Boolean(pet), {
+		lng,
+		rarity: pet ? DisplayUtils.getPetRarityDisplay(pet.rarity, lng) : "",
+		emote: pet ? DisplayUtils.getPetIcon(pet.typeId, pet.sex) : "",
+		name: pet ? pet.nickname ?? DisplayUtils.getPetTypeName(lng, pet.typeId, pet.sex) : ""
+	});
+}
+
+/**
+ * Add statistics field
+ */
+function addStatisticsField(fields: EmbedField[], packet: CommandProfilePacketRes, lng: Language): void {
 	addField(fields, "statistics", Boolean(packet.playerData.stats), {
 		lng,
 		baseBreath: packet.playerData.stats?.breath.base,
@@ -132,6 +168,61 @@ function generateFields(packet: CommandProfilePacketRes, lng: Language): EmbedFi
 		cumulativeMaxHealth: packet.playerData.stats?.energy.max,
 		maxBreath: packet.playerData.stats?.breath.max
 	});
+}
+
+/**
+ * Add rank and effect fields
+ */
+function addRankAndEffectFields(fields: EmbedField[], packet: CommandProfilePacketRes, lng: Language): void {
+	const rankFieldKey = packet.playerData.rank.unranked ? "unranked" : "ranking";
+	addField(fields, rankFieldKey, true, {
+		lng,
+		score: packet.playerData.rank.score,
+		rank: packet.playerData.rank.rank,
+		numberOfPlayer: packet.playerData.rank.numberOfPlayers
+	});
+
+	const effectFieldKey = packet.playerData.effect.healed ? "noTimeLeft" : "timeLeft";
+	addField(fields, effectFieldKey, Boolean(packet.playerData.effect.hasTimeDisplay), {
+		lng,
+		effectId: packet.playerData.effect.effect,
+		timeLeft: i18n.formatDuration(millisecondsToMinutes(packet.playerData.effect.timeLeft), lng)
+	});
+}
+
+/**
+ * Add location fields (class, guild, map)
+ */
+function addLocationFields(fields: EmbedField[], packet: CommandProfilePacketRes, lng: Language): void {
+	const hasClass = Boolean(packet.playerData.classId) || packet.playerData.classId === 0;
+	addField(fields, "playerClass", hasClass, {
+		lng,
+		id: packet.playerData.classId
+	});
+
+	addField(fields, "guild", Boolean(packet.playerData.guild), {
+		lng,
+		guild: packet.playerData.guild
+	});
+
+	const hasMap = Boolean(packet.playerData.destinationId && packet.playerData.mapTypeId);
+	addField(fields, "map", hasMap, {
+		lng,
+		mapTypeId: packet.playerData.mapTypeId,
+		mapName: packet.playerData.destinationId
+	});
+}
+
+/**
+ * Generate the fields of the profile embed
+ * @param packet
+ * @param lng
+ */
+function generateFields(packet: CommandProfilePacketRes, lng: Language): EmbedField[] {
+	const fields: EmbedField[] = [];
+
+	addInformationField(fields, packet, lng);
+	addStatisticsField(fields, packet, lng);
 
 	addField(fields, "mission", true, {
 		lng,
@@ -139,53 +230,10 @@ function generateFields(packet: CommandProfilePacketRes, lng: Language): EmbedFi
 		campaign: packet.playerData.missions.campaignProgression
 	});
 
-	addField(fields, packet.playerData.rank.unranked ? "unranked" : "ranking", true, {
-		lng,
-		score: packet.playerData.rank.score,
-		rank: packet.playerData.rank.rank,
-		numberOfPlayer: packet.playerData.rank.numberOfPlayers
-	});
-
-	addField(fields, packet.playerData.effect.healed ? "noTimeLeft" : "timeLeft", Boolean(packet.playerData.effect.hasTimeDisplay), {
-		lng,
-		effectId: packet.playerData.effect.effect,
-		timeLeft: minutesDisplay(millisecondsToMinutes(packet.playerData.effect.timeLeft), lng)
-	});
-
-	addField(fields, "playerClass", Boolean(packet.playerData.classId) || packet.playerData.classId === 0, {
-		lng,
-		id: packet.playerData.classId
-	});
-
-	addField(fields,
-		packet.playerData.fightRanking
-			? packet.playerData.fightRanking.gloryRank !== -1 ? "fightRanked" : "fightUnranked"
-			: "fightUnranked", Boolean(packet.playerData.fightRanking), {
-			lng,
-			rank: packet.playerData.fightRanking?.gloryRank ?? 0,
-			numberOfPlayers: packet.playerData.fightRanking?.numberOfFighters ?? 0,
-			leagueEmoji: packet.playerData.fightRanking?.league ? CrowniclesIcons.leagues[packet.playerData.fightRanking.league] : "",
-			leagueId: packet.playerData.fightRanking?.league ?? 0,
-			gloryPoints: packet.playerData.fightRanking?.glory ?? 0
-		});
-
-	addField(fields, "guild", Boolean(packet.playerData.guild), {
-		lng,
-		guild: packet.playerData.guild
-	});
-
-	addField(fields, "map", Boolean(packet.playerData.destinationId && packet.playerData.mapTypeId), {
-		lng,
-		mapTypeId: packet.playerData.mapTypeId,
-		mapName: packet.playerData.destinationId
-	});
-
-	addField(fields, "pet", Boolean(packet.playerData.pet), {
-		lng,
-		rarity: packet.playerData.pet ? DisplayUtils.getPetRarityDisplay(packet.playerData.pet.rarity, lng) : "",
-		emote: packet.playerData.pet ? DisplayUtils.getPetIcon(packet.playerData.pet.typeId, packet.playerData.pet.sex) : "",
-		name: packet.playerData.pet ? packet.playerData.pet.nickname ?? DisplayUtils.getPetTypeName(lng, packet.playerData.pet.typeId, packet.playerData.pet.sex) : ""
-	});
+	addRankAndEffectFields(fields, packet, lng);
+	addLocationFields(fields, packet, lng);
+	addFightRankingField(fields, packet, lng);
+	addPetField(fields, packet, lng);
 
 	return fields;
 }
@@ -195,6 +243,32 @@ function generateFields(packet: CommandProfilePacketRes, lng: Language): EmbedFi
  * @param packet
  * @param context
  */
+/**
+ * Handle badge reaction collection
+ */
+function handleBadgeReaction(
+	reaction: MessageReaction,
+	collector: ReactionCollector,
+	pseudo: string,
+	badges: Badge[],
+	interaction: CrowniclesInteraction,
+	lng: Language
+): void {
+	if (reaction.emoji.name === CrowniclesIcons.profile.displayAllBadgeEmote) {
+		collector.stop(); // Only one is allowed to avoid spam
+		sendMessageAllBadgesTooMuchBadges(pseudo, badges, interaction).catch(() => undefined);
+		return;
+	}
+
+	const badge = Object.entries(CrowniclesIcons.badges).find(badgeEntry => badgeEntry[1] === reaction.emoji.name);
+	if (badge) {
+		interaction.channel.send({ content: `\`${reaction.emoji.name!} ${i18n.t(`commands:profile.badges.${badge[0]}`, { lng })}\`` })
+			.then((msg: Message | null) => {
+				setTimeout(() => msg?.delete(), ProfileConstants.BADGE_DESCRIPTION_TIMEOUT);
+			});
+	}
+}
+
 export async function handleCommandProfilePacketRes(packet: CommandProfilePacketRes, context: PacketContext): Promise<void> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction);
 
@@ -207,7 +281,7 @@ export async function handleCommandProfilePacketRes(packet: CommandProfilePacket
 	const reply = await interaction.reply({
 		embeds: [
 			new CrowniclesEmbed()
-				.setColor(<ColorResolvable>packet.playerData!.color)
+				.setColor(<ColorResolvable>(packet.playerData.color ?? ColorConstants.PROFILE_DEFAULT))
 				.setTitle(i18n.t("commands:profile.title", {
 					lng,
 					effectId: titleEffect,
@@ -228,20 +302,8 @@ export async function handleCommandProfilePacketRes(packet: CommandProfilePacket
 		time: Constants.MESSAGES.COLLECTOR_TIME,
 		max: ProfileConstants.BADGE_MAXIMUM_REACTION
 	});
-	collector.on("collect", async reaction => {
-		if (reaction.emoji.name === CrowniclesIcons.profile.displayAllBadgeEmote) {
-			collector.stop(); // Only one is allowed to avoid spam
-			await sendMessageAllBadgesTooMuchBadges(pseudo, packet.playerData!.badges!, interaction);
-		}
-		else {
-			const badge = Object.entries(CrowniclesIcons.badges).find(badgeEntry => badgeEntry[1] === reaction.emoji.name);
-			if (badge) {
-				interaction.channel.send({ content: `\`${reaction.emoji.name!} ${i18n.t(`commands:profile.badges.${badge[0]}`, { lng })}\`` })
-					.then((msg: Message | null) => {
-						setTimeout(() => msg?.delete(), ProfileConstants.BADGE_DESCRIPTION_TIMEOUT);
-					});
-			}
-		}
+	collector.on("collect", reaction => {
+		handleBadgeReaction(reaction, collector, pseudo, packet.playerData!.badges!, interaction, lng);
 	});
 	if (packet.playerData?.badges.length !== 0) {
 		await displayBadges(packet.playerData!.badges, message);

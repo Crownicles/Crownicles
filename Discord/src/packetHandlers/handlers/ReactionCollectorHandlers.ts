@@ -8,15 +8,27 @@ import { ReactionCollectorBigEventData } from "../../../../Lib/src/packets/inter
 import {
 	chooseDestinationCollector,
 	createBigEventCollector,
+	createBuyHealCollector,
+	createUseTokensCollector,
 	handleStartPveFight
 } from "../../commands/player/ReportCommand";
 import { ReactionCollectorChooseDestinationData } from "../../../../Lib/src/packets/interaction/ReactionCollectorChooseDestination";
+import { ReactionCollectorUseTokensData } from "../../../../Lib/src/packets/interaction/ReactionCollectorUseTokens";
+import { ReactionCollectorBuyHealData } from "../../../../Lib/src/packets/interaction/ReactionCollectorBuyHeal";
 import { ReactionCollectorGoToPVEIslandData } from "../../../../Lib/src/packets/interaction/ReactionCollectorGoToPVEIsland";
 import { goToPVEIslandCollector } from "../../smallEvents/goToPVEIsland";
 import { ReactionCollectorLotteryData } from "../../../../Lib/src/packets/interaction/ReactionCollectorLottery";
 import { lotteryCollector } from "../../smallEvents/lottery";
-import { ReactionCollectorPetFreeData } from "../../../../Lib/src/packets/interaction/ReactionCollectorPetFree";
-import { createPetFreeCollector } from "../../commands/pet/PetFreeCommand";
+import {
+	ReactionCollectorPetFreeData,
+	ReactionCollectorPetFreeSelectionData,
+	ReactionCollectorPetFreeShelterConfirmData
+} from "../../../../Lib/src/packets/interaction/ReactionCollectorPetFree";
+import {
+	createPetFreeCollector,
+	createPetFreeSelectionCollector,
+	createPetFreeShelterConfirmCollector
+} from "../../commands/pet/PetFreeCommand";
 import { ReactionCollectorInteractOtherPlayersPoorData } from "../../../../Lib/src/packets/interaction/ReactionCollectorInteractOtherPlayers";
 import { interactOtherPlayersCollector } from "../../smallEvents/interactOtherPlayers";
 import { ReactionCollectorLimogesData } from "../../../../Lib/src/packets/interaction/ReactionCollectorLimoges";
@@ -102,6 +114,14 @@ import { ReactionCollectorDailyBonusData } from "../../../../Lib/src/packets/int
 import { handleDailyBonusCollector } from "../../commands/player/DailyBonusCommand";
 import { ReactionCollectorDeposeItemData } from "../../../../Lib/src/packets/interaction/ReactionCollectorDeposeItem";
 import { deposeItemCollector } from "../../commands/player/DepositCommand";
+import { ReactionCollectorPetExpeditionData } from "../../../../Lib/src/packets/interaction/ReactionCollectorPetExpedition";
+import { ReactionCollectorPetExpeditionChoiceData } from "../../../../Lib/src/packets/interaction/ReactionCollectorPetExpeditionChoice";
+import { ReactionCollectorPetExpeditionFinishedData } from "../../../../Lib/src/packets/interaction/ReactionCollectorPetExpeditionFinished";
+import {
+	createPetExpeditionCollector,
+	createPetExpeditionChoiceCollector,
+	createPetExpeditionFinishedCollector
+} from "../../commands/pet/PetExpeditionCollectors";
 
 // Needed because we need to accept any parameter
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -112,7 +132,16 @@ export type ReactionCollectorReturnTypeOrNull = ReactionCollectorReturnType | nu
 export default class ReactionCollectorHandler {
 	private static collectorsCache: Map<string, ReactionCollectorReturnType> = new Map();
 
-	static collectorMap: Map<string, (context: PacketContext, packet: ReactionCollectorCreationPacket) => Promise<ReactionCollectorReturnTypeOrNull>>;
+	/**
+	 * Registry of collector handlers. Uses `any` for generic parameters because TypeScript's
+	 * contravariance on function parameters prevents storing handlers with specific packet types
+	 * in a map expecting the base type. Type safety is ensured within each individual handler.
+	 */
+	static collectorMap: Map<
+		string,
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		(context: PacketContext, packet: ReactionCollectorCreationPacket<any, any>) => Promise<ReactionCollectorReturnTypeOrNull>
+	>;
 
 	static initCollectorMap(): void {
 		ReactionCollectorHandler.collectorMap = new Map();
@@ -121,6 +150,8 @@ export default class ReactionCollectorHandler {
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorGoToPVEIslandData.name, goToPVEIslandCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorJoinBoatData.name, createJoinBoatCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorPetFreeData.name, createPetFreeCollector);
+		ReactionCollectorHandler.collectorMap.set(ReactionCollectorPetFreeSelectionData.name, createPetFreeSelectionCollector);
+		ReactionCollectorHandler.collectorMap.set(ReactionCollectorPetFreeShelterConfirmData.name, createPetFreeShelterConfirmCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorGuildCreateData.name, createGuildCreateCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorGuildKickData.name, createGuildKickCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorGuildDescriptionData.name, createGuildDescriptionCollector);
@@ -159,6 +190,11 @@ export default class ReactionCollectorHandler {
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorCityData.name, ReportCityMenu.handleCityCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorDailyBonusData.name, handleDailyBonusCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorLimogesData.name, limogesCollector);
+		ReactionCollectorHandler.collectorMap.set(ReactionCollectorPetExpeditionData.name, createPetExpeditionCollector);
+		ReactionCollectorHandler.collectorMap.set(ReactionCollectorPetExpeditionChoiceData.name, createPetExpeditionChoiceCollector);
+		ReactionCollectorHandler.collectorMap.set(ReactionCollectorPetExpeditionFinishedData.name, createPetExpeditionFinishedCollector);
+		ReactionCollectorHandler.collectorMap.set(ReactionCollectorUseTokensData.name, createUseTokensCollector);
+		ReactionCollectorHandler.collectorMap.set(ReactionCollectorBuyHealData.name, createBuyHealCollector);
 	}
 
 	@packetHandler(ReactionCollectorCreationPacket)

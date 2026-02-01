@@ -7,7 +7,7 @@ import { FightAlterations } from "../../FightAlterations";
 
 const use: PetAssistanceFunc = (_fighter, opponent, turn, _fightController): Promise<PetAssistanceResult | null> => {
 	if (turn < 10 || turn > 11 || opponent.hasFightAlteration()) {
-		return null;
+		return Promise.resolve(null);
 	}
 
 	const result: PetAssistanceResult = {

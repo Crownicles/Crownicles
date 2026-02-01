@@ -58,7 +58,7 @@ export default class GuildInviteCommand {
 		}
 
 		const collector = new ReactionCollectorGuildInvite(
-			guild.name,
+			guild!.name,
 			invitedPlayer.keycloakId
 		);
 
@@ -71,14 +71,14 @@ export default class GuildInviteCommand {
 			if (!reaction || reaction.reaction.type !== ReactionCollectorAcceptReaction.name) {
 				response.push(makePacket(CommandGuildInviteRefusePacketRes, {
 					invitedPlayerKeycloakId: invitedPlayer.keycloakId,
-					guildName: guild.name
+					guildName: guild!.name
 				}));
 				return;
 			}
 			if (!await canSendInvite(invitedPlayer, guild, response)) {
 				return;
 			}
-			await acceptInvitation(invitedPlayer, player, guild, response);
+			await acceptInvitation(invitedPlayer, player, guild!, response);
 		};
 
 		const collectorPacket = new ReactionCollectorInstance(
@@ -104,7 +104,7 @@ export default class GuildInviteCommand {
  * @param guild
  * @param response
  */
-async function canSendInvite(invitedPlayer: Player, guild: Guild, response: CrowniclesPacket[]): Promise<boolean> {
+async function canSendInvite(invitedPlayer: Player, guild: Guild | null, response: CrowniclesPacket[]): Promise<boolean> {
 	const packetData = {
 		invitedPlayerKeycloakId: invitedPlayer.keycloakId,
 		guildName: guild?.name

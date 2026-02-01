@@ -1,4 +1,3 @@
-import { ReactionCollectorCreationPacket } from "../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { PacketContext } from "../../../Lib/src/packets/CrowniclesPacket";
 import { DiscordCache } from "../bot/DiscordCache";
 import { CrowniclesSmallEventEmbed } from "../messages/CrowniclesSmallEventEmbed";
@@ -9,7 +8,8 @@ import {
 import {
 	ReactionCollectorLotteryEasyReaction,
 	ReactionCollectorLotteryHardReaction,
-	ReactionCollectorLotteryMediumReaction
+	ReactionCollectorLotteryMediumReaction,
+	ReactionCollectorLotteryPacket
 } from "../../../Lib/src/packets/interaction/ReactionCollectorLottery";
 import {
 	ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, Message, parseEmoji
@@ -18,7 +18,7 @@ import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 import { sendInteractionNotForYou } from "../utils/ErrorUtils";
 import { ReactionCollectorReturnTypeOrNull } from "../packetHandlers/handlers/ReactionCollectorHandlers";
 
-export async function lotteryCollector(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
+export async function lotteryCollector(context: PacketContext, packet: ReactionCollectorLotteryPacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
 	const lng = interaction.userLanguage;
 

@@ -28,7 +28,7 @@ export type statsInfo = {
 	attackerStats: number[]; defenderStats: number[]; statsEffect: number[];
 };
 
-export class FightActionController {
+export abstract class FightActionController {
 	/**
 	 * Get the attack damage for a fight action
 	 * @param statsInfo object containing three arrays:
@@ -63,26 +63,31 @@ export class FightActionController {
 	 * @param target
 	 * @param origin
 	 */
-	static applyBuff(result: FightActionResult | FightAlterationResult | PetAssistanceResult, buff: FightActionBuff, target: Fighter, origin: FightAction | FightAlteration | PetAssistance): void {
-		origin = origin as FightAction;
+	static applyBuff(
+		result: FightActionResult | FightAlterationResult | PetAssistanceResult,
+		buff: FightActionBuff,
+		target: Fighter,
+		origin: FightAction | FightAlteration | PetAssistance | null | undefined
+	): void {
+		const originAction = (origin ?? null) as FightAction | null;
 		switch (buff.stat) {
 			case FightStatBuffed.ATTACK:
 				target.applyAttackModifier({
-					origin,
+					origin: originAction,
 					operation: buff.operator,
 					value: buff.value
 				});
 				break;
 			case FightStatBuffed.DEFENSE:
 				target.applyDefenseModifier({
-					origin,
+					origin: originAction,
 					operation: buff.operator,
 					value: buff.value
 				});
 				break;
 			case FightStatBuffed.SPEED:
 				target.applySpeedModifier({
-					origin,
+					origin: originAction,
 					operation: buff.operator,
 					value: buff.value
 				});
@@ -97,7 +102,7 @@ export class FightActionController {
 				target.damage(buff.value);
 				break;
 			case FightStatBuffed.DAMAGE_BOOST:
-				target.applyDamageMultiplier(buff.value, buff.duration);
+				target.applyDamageMultiplier(buff.value, buff.duration ?? 1);
 				break;
 			default:
 				return;
@@ -109,7 +114,11 @@ export class FightActionController {
 	}
 
 	static applyAlteration(result: FightActionResult | PetAssistanceResult, fightAlteration: FightAlterationApplied, target: Fighter): void {
-		const alteration = target.newAlteration(FightAlterationDataController.instance.getById(fightAlteration.alteration));
+		const alterationData = FightAlterationDataController.instance.getById(fightAlteration.alteration);
+		if (!alterationData) {
+			return;
+		}
+		const alteration = target.newAlteration(alterationData);
 		if (alteration.id !== fightAlteration.alteration) {
 			return;
 		}
@@ -174,7 +183,7 @@ export class FightActionController {
 	static useSecondAttack(sender: Fighter, receiver: Fighter, chosenAttack: FightAction, turn: number, fight: FightController): FightActionResult {
 		if (chosenAttack.breath > sender.getBreath()) {
 			if (Math.random() < FightConstants.OUT_OF_BREATH_FAILURE_PROBABILITY) {
-				chosenAttack = FightActionDataController.instance.getById("outOfBreath");
+				chosenAttack = FightActionDataController.instance.getById("outOfBreath")!;
 			}
 			else {
 				sender.setBreath(0);
@@ -199,14 +208,14 @@ export class FightActionController {
 	 * @param idFightAction
 	 */
 	static fightActionIdToVariant(idFightAction: string): number {
-		return FightActionDataController.instance.getById(idFightAction).missionVariant;
+		return FightActionDataController.instance.getById(idFightAction)!.missionVariant;
 	}
 
 	/**
 	 * Get the fight action id from a variant
 	 * @param variant
 	 */
-	static variantToFightActionId(variant: number): string {
+	static variantToFightActionId(variant: number): string | null {
 		for (const fightActionId of FightActionDataController.instance.getAllKeys()) {
 			if (this.fightActionIdToVariant(fightActionId) === variant) {
 				return fightActionId;

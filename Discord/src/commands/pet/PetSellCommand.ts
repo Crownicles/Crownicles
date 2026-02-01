@@ -9,13 +9,12 @@ import {
 import { ICommand } from "../ICommand";
 import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { ReactionCollectorCreationPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { DiscordCache } from "../../bot/DiscordCache";
 import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import i18n from "../../translations/i18n";
 import { DisplayUtils } from "../../utils/DisplayUtils";
 import { DiscordCollectorUtils } from "../../utils/DiscordCollectorUtils";
-import { ReactionCollectorPetSellData } from "../../../../Lib/src/packets/interaction/ReactionCollectorPetSell";
+import { ReactionCollectorPetSellPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorPetSell";
 import { handleCommandGuildDailyRewardPacket } from "../guild/GuildDailyCommand";
 import { CommandGuildDailyRewardPacket } from "../../../../Lib/src/packets/commands/CommandGuildDailyPacket";
 import { ReactionCollectorReturnTypeOrNull } from "../../packetHandlers/handlers/ReactionCollectorHandlers";
@@ -37,10 +36,10 @@ async function getPacket(interaction: CrowniclesInteraction, keycloakUser: Keycl
 	});
 }
 
-export async function createPetSellCollector(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
+export async function createPetSellCollector(context: PacketContext, packet: ReactionCollectorPetSellPacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
 	await interaction.deferReply();
-	const data = packet.data.data as ReactionCollectorPetSellData;
+	const data = packet.data.data;
 	const lng = interaction.userLanguage;
 	const buyerUser = interaction.options.getUser("user");
 

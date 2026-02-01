@@ -16,7 +16,7 @@ import { ReportConstants } from "../../../../Lib/src/constants/ReportConstants";
 /**
  * Travel time functions class
  */
-export class TravelTime {
+export abstract class TravelTime {
 	/*
 	 * Understand travel time
 	 *
@@ -117,7 +117,7 @@ export class TravelTime {
 
 		// Basic variables
 		const effectStartTime = effectEndTime - effectDuration;
-		const tripDuration = minutesToMilliseconds(MapLinkDataController.instance.getById(player.mapLinkId).tripDuration);
+		const tripDuration = minutesToMilliseconds(MapLinkDataController.instance.getById(player.mapLinkId)!.tripDuration);
 		const travelEndTime = travelStartTime + effectDuration + tripDuration;
 		let effectRemainingTime = effectEndTime - date.valueOf();
 		if (effectRemainingTime < 0) {
@@ -206,6 +206,15 @@ export class TravelTime {
 	}
 
 	/**
+	 * Check if effect uses custom duration
+	 * @param effect
+	 * @param time
+	 */
+	private static shouldUseCustomDuration(effect: Effect, time: number): boolean {
+		return effect === Effect.OCCUPIED || (effect === Effect.SLEEPING && time > 0);
+	}
+
+	/**
 	 * Apply an effect to a player
 	 * @param player
 	 * @param effect
@@ -228,7 +237,8 @@ export class TravelTime {
 
 		// Apply the new effect
 		player.effectId = effect.id;
-		if (effect === Effect.OCCUPIED) {
+		if (this.shouldUseCustomDuration(effect, time)) {
+			// OCCUPIED always uses custom duration, SLEEPING only if time > 0 is provided
 			player.effectDuration = time;
 		}
 		else {

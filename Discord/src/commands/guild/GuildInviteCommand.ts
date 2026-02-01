@@ -15,10 +15,9 @@ import {
 	makePacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket.js";
 import { DiscordCache } from "../../bot/DiscordCache.js";
-import { ReactionCollectorCreationPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket.js";
 import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed.js";
 import { DiscordCollectorUtils } from "../../utils/DiscordCollectorUtils.js";
-import { ReactionCollectorGuildInviteData } from "../../../../Lib/src/packets/interaction/ReactionCollectorGuildInvite.js";
+import { ReactionCollectorGuildInvitePacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorGuildInvite.js";
 import { ICommand } from "../ICommand.js";
 import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator.js";
 import { SlashCommandBuilder } from "@discordjs/builders";
@@ -67,10 +66,10 @@ export async function handleCommandGuildInviteError(packet: CommandGuildInviteEr
 	await interaction.reply(params);
 }
 
-export async function createGuildInviteCollector(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
+export async function createGuildInviteCollector(context: PacketContext, packet: ReactionCollectorGuildInvitePacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
 	await interaction.deferReply();
-	const data = packet.data.data as ReactionCollectorGuildInviteData;
+	const data = packet.data.data;
 	const invitedUser = interaction.options.getUser("user")!;
 	const invitedKeycloakId = await KeycloakUtils.getKeycloakIdFromDiscordId(keycloakConfig, invitedUser.id, null);
 	if (invitedKeycloakId.isError || !invitedKeycloakId.payload.keycloakId) {

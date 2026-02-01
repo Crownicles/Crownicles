@@ -18,27 +18,33 @@
       },
       "totalRewards": "{emote:missions.total} Total rewards",
       "totalDisplay": {
-        "gems": "Gems earned: {{count}} {emote:unitValues.gem}",
-        "points": "Points earned: {{count}} {emote:unitValues.score}",
-        "money": "Money earned: {{count}} {emote:unitValues.money}",
-        "xp": "Experience gained: {{count}} {emote:unitValues.xp}"
+        "gems": "Gems earned: {{count, number}} {emote:unitValues.gem}",
+        "points": "Points earned: {{count, number}} {emote:unitValues.score}",
+        "money": "Money earned: {{count, number}} {emote:unitValues.money}",
+        "xp": "Experience gained: {{count, number}} {emote:unitValues.xp}"
       },
       "noRewards": "No reward.",
       "missionDisplay": "- {{missionDescription}}{{missionsReward}}",
-      "pointsDisplay": "+{{count}} {emote:unitValues.score}",
-      "gemsDisplay": "+{{count}} {emote:unitValues.gem}",
-      "moneyDisplay": "+{{count}} {emote:unitValues.money}",
-      "xpDisplay": "+{{count}} {emote:unitValues.xp}"
+      "pointsDisplay": "+{{count, number}} {emote:unitValues.score}",
+      "gemsDisplay": "+{{count, number}} {emote:unitValues.gem}",
+      "moneyDisplay": "+{{count, number}} {emote:unitValues.money}",
+      "xpDisplay": "+{{count, number}} {emote:unitValues.xp}"
     }
   },
   "guildFood": {
     "receivedFoodTitle": "Your guild has received some food",
-    "receivedFoodDescription": "{emote:foods.{{foodId}}} Your guild has received: **{{amount}}x {{foodName}}**."
+    "receivedFoodDescription": "Your guild has received **{{amount}} {{foodName}}** {emote:foods.{{foodId}}}."
   },
   "playerFreedFromJail": {
     "description": "You have been released from prison by **{{freedByPlayer}}**!"
   },
   "fightChallenge": {
     "description": "{emote:fightCommand.crossedSwords} You have been attacked by **{{attackerPseudo}}**! Find out the result of this fight using the command `/historyfight`."
+  },
+  "gdprExport": {
+    "title": "RGPD export completed",
+    "success": "The RGPD export has been successfully generated.\n\n**anonymized player ID:** `{{anonymizedId}}`\n** files generated:** {{fileCount}}\n\nThe ZIP file is available as an attachment.",
+    "error": "An error occurred while exporting RGPD: {{error}}",
+    "fileName": "gdpr_export_{{anonymizedId}}.zip"
   }
 }

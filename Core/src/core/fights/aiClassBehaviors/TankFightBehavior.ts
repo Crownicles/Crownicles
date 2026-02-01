@@ -31,11 +31,11 @@ class TankFightBehavior implements ClassBehavior {
 				ClassConstants.CLASSES_ID.HORSE_RIDER
 			].includes(opponent.player.class)
 		) {
-			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.DEFENSE_BUFF);
+			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.DEFENSE_BUFF)!;
 		}
 
 		if (shouldUseShieldAttack(opponent, me)) {
-			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.SHIELD_ATTACK);
+			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.SHIELD_ATTACK)!;
 		}
 
 		if (
@@ -47,7 +47,7 @@ class TankFightBehavior implements ClassBehavior {
 				&& lastOpponentAction.breath > 4 // Don't copy attacks that cost a small amount of breath
 				&& RandomUtils.crowniclesRandom.bool(0.95)
 		) {
-			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.COUNTER_ATTACK);
+			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.COUNTER_ATTACK)!;
 		}
 
 		return intenseOrSimpleAttack(me, opponent);

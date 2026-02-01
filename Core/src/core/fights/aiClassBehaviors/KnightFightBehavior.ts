@@ -37,7 +37,7 @@ class KnightFightBehavior implements ClassBehavior {
 		 */
 		if (me.getEnergy() < 150 && opponent.getEnergy() > 500) {
 			this.restCount++;
-			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.RESTING);
+			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.RESTING)!;
 		}
 
 		// BENEDICTION STRATEGY
@@ -48,7 +48,7 @@ class KnightFightBehavior implements ClassBehavior {
 
 		const shouldTryBless =
 			!this.blessUsed && getUsedGodMoves(me, opponent) < 1 && (
-				(currentRound >= this.blessRoundChosen)
+				(this.blessRoundChosen !== null && currentRound >= this.blessRoundChosen)
 				|| (opponentIsPaladin
 					&& me.getLastFightActionUsed()?.id !== FightConstants.FIGHT_ACTIONS.PLAYER.RESTING // we don't want to break a resting + heavy combo
 					&& RandomUtils.crowniclesRandom.bool(0.22))
@@ -59,13 +59,13 @@ class KnightFightBehavior implements ClassBehavior {
 			if (me.getBreath() < 8) {
 				if (this.restCount < 4) {
 					this.restCount++;
-					return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.RESTING);
+					return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.RESTING)!;
 				}
 				return simpleOrQuickAttack(me, opponent);
 			}
 
 			this.blessUsed = true;
-			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.BENEDICTION);
+			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.BENEDICTION)!;
 		}
 
 		// HEAVY ATTACK STRATEGY: Use after resting or randomly (10% chance) if we have enough breath and haven't used it too often
@@ -78,20 +78,20 @@ class KnightFightBehavior implements ClassBehavior {
 			&& me.getBreath() >= 7
 		) {
 			this.heavyAttackCount++;
-			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.HEAVY_ATTACK);
+			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.HEAVY_ATTACK)!;
 		}
 
 		// REST STRATEGY: Rest if breath is above 4 but energy is below 90%, and we haven't rested too often
 		if ((me.getBreath() > 10 || RandomUtils.crowniclesRandom.bool(0.2) || this.blessUsed)
 			&& me.getBreath() >= 4
 			&& opponent.getEnergy() > 250
-			&& this.blessRoundChosen - 2 !== currentRound
-			&& this.blessRoundChosen - 1 !== currentRound
+			&& this.blessRoundChosen !== null && this.blessRoundChosen - 2 !== currentRound
+			&& this.blessRoundChosen !== null && this.blessRoundChosen - 1 !== currentRound
 			&& me.getEnergy() < (me.getMaxEnergy() * 0.9)
 			&& RandomUtils.crowniclesRandom.bool(0.9)
 			&& this.restCount < 4) {
 			this.restCount++;
-			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.RESTING);
+			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.RESTING)!;
 		}
 
 		return simpleOrQuickAttack(me, opponent);

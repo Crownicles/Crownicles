@@ -10,7 +10,7 @@ import { RandomUtils } from "../../../../../../../Lib/src/utils/RandomUtils";
 const use: PetAssistanceFunc = (fighter, _opponent, turn, _fightController): Promise<PetAssistanceResult | null> => {
 	// Execute at turn 5 / 6
 	if (turn !== 5 && turn !== 6) {
-		return null;
+		return Promise.resolve(null);
 	}
 
 	const result: PetAssistanceResult = {
@@ -23,7 +23,7 @@ const use: PetAssistanceFunc = (fighter, _opponent, turn, _fightController): Pro
 		stat: FightStatBuffed.ENERGY,
 		operator: FightStatModifierOperation.ADDITION,
 		value: RandomUtils.crowniclesRandom.integer(18, 30)
-	}, fighter, this);
+	}, fighter, undefined);
 
 	return Promise.resolve(result);
 };

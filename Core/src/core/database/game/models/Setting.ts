@@ -6,8 +6,6 @@ import { MapCache } from "../../../maps/MapCache";
 
 // skipcq: JS-C1003 - moment does not expose itself as an ES Module.
 import * as moment from "moment";
-import { ItemEnchantment } from "../../../../../../Lib/src/types/ItemEnchantment";
-import { CityDataController } from "../../../../data/City";
 
 class SettingClassNumber {
 	private readonly name: string;
@@ -27,7 +25,7 @@ class SettingClassNumber {
 		});
 
 		if (settingInstance) {
-			value = settingInstance.dataNumber;
+			value = settingInstance.dataNumber ?? await this.defaultValue();
 		}
 		else {
 			value = await this.defaultValue();
@@ -48,7 +46,7 @@ class SettingClassNumber {
 }
 
 // Currently keeping it for a future update
-
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 class SettingClassString {
 	private readonly name: string;
 
@@ -67,7 +65,7 @@ class SettingClassString {
 		});
 
 		if (settingInstance) {
-			value = settingInstance.dataString;
+			value = settingInstance.dataString ?? await this.defaultValue();
 		}
 		else {
 			value = await this.defaultValue();
@@ -99,7 +97,7 @@ export class Setting extends Model {
 	declare createdAt: Date;
 }
 
-export class Settings {
+export abstract class Settings {
 	public static readonly SHOP_POTION = new SettingClassNumber(
 		"shopPotion",
 		(): number => PotionDataController.instance.randomShopPotion().id
@@ -125,14 +123,12 @@ export class Settings {
 		(): Promise<number> => Promise.resolve(0)
 	);
 
-	public static readonly ENCHANTER_CITY = new SettingClassString(
-		"enchanterCity",
-		(): Promise<string> => Promise.resolve(CityDataController.instance.getRandomCity().id)
-	);
-
-	public static readonly ENCHANTER_ENCHANTMENT_ID = new SettingClassString(
-		"enchanterEnchantmentId",
-		(): Promise<string> => Promise.resolve(ItemEnchantment.DEFENSE_1.id)
+	/**
+	 * The last year the Christmas bonus was applied (to avoid running it twice in the same year)
+	 */
+	public static readonly LAST_CHRISTMAS_BONUS_YEAR = new SettingClassNumber(
+		"lastChristmasBonusYear",
+		(): Promise<number> => Promise.resolve(0)
 	);
 }
 

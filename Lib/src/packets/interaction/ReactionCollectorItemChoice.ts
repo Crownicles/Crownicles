@@ -23,6 +23,12 @@ export class ReactionCollectorItemChoiceRefuseReaction extends ReactionCollector
 
 }
 
+type ItemChoiceReaction = ReactionCollectorItemChoiceItemReaction | ReactionCollectorItemChoiceDrinkPotionReaction | ReactionCollectorItemChoiceRefuseReaction;
+export type ReactionCollectorItemChoicePacket = ReactionCollectorCreationPacket<
+	ReactionCollectorItemChoiceData,
+	ItemChoiceReaction
+>;
+
 export class ReactionCollectorItemChoice extends ReactionCollector {
 	private readonly data: ReactionCollectorItemChoiceData;
 
@@ -37,7 +43,7 @@ export class ReactionCollectorItemChoice extends ReactionCollector {
 		this.canDrink = canDrink;
 	}
 
-	creationPacket(id: string, endTime: number, mainPacket = true): ReactionCollectorCreationPacket {
+	creationPacket(id: string, endTime: number, mainPacket = true): ReactionCollectorItemChoicePacket {
 		const reactions = [];
 		for (const item of this.items) {
 			reactions.push(this.buildReaction(ReactionCollectorItemChoiceItemReaction, item));

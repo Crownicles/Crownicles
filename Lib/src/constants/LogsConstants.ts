@@ -51,12 +51,8 @@ export enum NumberChangeReason {
 	FIGHT_PET_SMALL_EVENT,
 	RAGE_EXPLOSION_ACTION,
 	JOIN_BOAT,
-	INN_MEAL,
-	INN_ROOM,
-	ENCHANT_ITEM,
-	BUY_HOME,
-	UPGRADE_HOME,
-	MOVE_HOME
+	REPORT_TOKENS,
+	EXPEDITION
 }
 
 export enum ShopItemType {
@@ -78,7 +74,8 @@ export enum ShopItemType {
 	SMALL_GUILD_XP,
 	ENERGY_HEAL,
 	BIG_GUILD_XP,
-	QUEST_MASTER_BADGE
+	QUEST_MASTER_BADGE,
+	TOKEN
 }
 
 export const ShopItemTypeToString: Record<ShopItemType, string> = {
@@ -100,5 +97,6 @@ export const ShopItemTypeToString: Record<ShopItemType, string> = {
 	[ShopItemType.SMALL_GUILD_XP]: "smallGuildXp",
 	[ShopItemType.ENERGY_HEAL]: "energyHeal",
 	[ShopItemType.BIG_GUILD_XP]: "bigGuildXp",
-	[ShopItemType.QUEST_MASTER_BADGE]: "questMasterBadge"
+	[ShopItemType.QUEST_MASTER_BADGE]: "questMasterBadge",
+	[ShopItemType.TOKEN]: "token"
 };

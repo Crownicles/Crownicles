@@ -51,27 +51,313 @@
       "{emote:petCommand.pet} Mit einem Blick voller Dankbarkeit ehrt **{{petName}}** Sie mit ihrer Dankbarkeit.",
       "{emote:petCommand.pet} Vor Aufregung zuckt **{{petName}}** bei der Berührung Ihrer wohlwollenden Hand.",
       "{emote:petCommand.pet} Unter Ihren fachkundigen Fingern entspannt sich **{{petName}}** in aller Ruhe."
-    ]
+    ],
+    "expeditionButton": "Versand",
+    "expeditionButtonDisabled": "Versand (nicht verfügbar)",
+    "recallButton": "Rückruf",
+    "finishExpeditionButton": "Die Erkundung abschließen"
+  },
+  "petExpedition": {
+    "title": "Vertraute Expeditionen",
+    "noTalisman_male": [
+      "Sie greifen in Ihre Satteltasche und hoffen, dort die $t(models:talisman.anchor)zu finden, doch Ihre Finger stoßen nur auf Leere. Ohne dieses uralte Artefakt würde Ihr Begleiter den Weg zu Ihnen nicht finden können. Die Alten erzählen, dass es sich irgendwo auf den Straßen des Königreichs befindet... Sie beschließen, die Expedition auf einen günstigeren Zeitpunkt zu verschieben.",
+      "Ohne den $t(models:talisman.anchor)würde Ihr Vertrauter für immer in der Ferne umherirren. Dieses wertvolle Artefakt wartet irgendwo auf den Straßen des Königreichs auf Sie. Sie beschließen, die Expedition auf einen günstigeren Zeitpunkt zu verschieben.",
+      "Ihr Begleiter starrt Sie mit erwartungsvollen Augen an und ist bereit, sich auf ein Abenteuer einzulassen. Leider besitzen Sie noch nicht die $t(models:talisman.anchor), ein wertvolles Artefakt, das es dem Vertrauten ermöglicht, seinen Herrn auch in den unwirtlichsten Gegenden zu finden. Sie beschließen, die Expedition auf einen günstigeren Zeitpunkt zu verschieben.",
+      "Legenden berichten von einem magischen Talisman, der von den ersten Trainern geschmiedet wurde und eine unzerstörbare Bindung zwischen einem Vertrauten und seinem Besitzer herstellen kann. Ohne den $t(models:talisman.anchor)wäre es verrückt, Ihren Begleiter auf eine Expedition zu schicken. Sie beschließen, die Expedition auf einen günstigeren Zeitpunkt zu verschieben."
+    ],
+    "noTalisman_female": [
+      "Sie greifen in Ihre Satteltasche und hoffen, dort die $t(models:talisman.anchor)zu finden, doch Ihre Finger stoßen nur auf Leere. Ohne dieses uralte Artefakt würde Ihre Begleiterin den Weg zu Ihnen nicht finden können. Dieses wertvolle Artefakt würde sich irgendwo auf den Straßen des Königreichs befinden. Es scheint ratsam, die Expedition auf einen günstigeren Zeitpunkt zu verschieben.",
+      "Ihre Tasche enthält nicht die $t(models:talisman.anchor). Ohne dieses Artefakt würde Ihr Vertrauter für immer in den fernen Ländern umherirren. Das Artefakt würde sich irgendwo auf den Straßen des Königreichs befinden. Es empfiehlt sich, die Expedition zu verschieben.",
+      "Ihr Vertrauter starrt Sie mit erwartungsvollen Augen an und ist bereit, sich auf ein Abenteuer einzulassen. Leider befindet sich die $t(models:talisman.anchor) nicht in Ihren Sachen. Ohne dieses wertvolle Artefakt, das es den Vertrauten ermöglicht, ihre Herren auch in den unwirtlichsten Ländern zu finden, muss die Expedition warten.",
+      "Der $t(models:talisman.anchor), ein legendäres Artefakt, das eine unzerstörbare Bindung zwischen einem Vertrauten und seinem Meister herstellen kann, ist in Ihrer Ausrüstung nicht zu finden. Ihre Begleiterin ohne ihn auf eine Expedition zu schicken, wäre reiner Wahnsinn. Die Expedition wird verschoben."
+    ],
+    "noPet": [
+      "Sie suchen die Umgebung ab, aber kein Vertrauter trottet neben Ihnen her. Die Erkundungsrouten sind viel zu gefährlich, um sie allein zu begehen. Die Expedition muss auf die Ankunft eines treuen Begleiters warten.",
+      "Eine leichte Brise wirbelt den Staub des Weges auf. Ohne einen treuen Begleiter an Ihrer Seite bleiben Expeditionen unerreichbar. Zuerst müssen Sie einen Vertrauten finden.",
+      "Der $t(models:talisman.anchor) reagiert nicht in deiner Satteltasche. Seine Magie kann nur in Anwesenheit eines Vertrauten aktiviert werden. Bevor Sie an Expeditionen denken, sollten Sie einen würdigen Begleiter finden."
+    ],
+    "insufficientLove_male": [
+      "{{petDisplay}} wirft Ihnen einen misstrauischen Blick zu und weicht einen Schritt zurück. Die Bindung zwischen euch ist noch nicht stark genug, damit er sich allein in die Wildnis wagt. Kümmern Sie sich um ihn, füttern Sie ihn und vielleicht wird er Ihnen eines Tages genug vertrauen.",
+      "Ihr Vertrauter schmiegt sich an Ihr Bein und zittert leicht. {{petDisplay}} ist noch nicht bereit, allein auf eine Expedition zu gehen. Sein Herz braucht noch mehr Zeit, um Ihnen vollständig zu vertrauen.",
+      "Die Augen von {{petDisplay}} verraten eine tiefe Besorgnis. Auf eine Expedition zu gehen erfordert eine starke Bindung zwischen einem Vertrauten und seinem Besitzer. Kümmern Sie sich weiterhin um Ihren Begleiter, um Ihre Verbundenheit zu stärken."
+    ],
+    "insufficientLove_female": [
+      "{{petDisplay}} wirft Ihnen einen misstrauischen Blick zu und weicht einen Schritt zurück. Die Bindung zwischen euch ist noch nicht stark genug, als dass sie sich allein in die Wildnis wagen würde. Kümmern Sie sich um sie, füttern Sie sie und vielleicht wird sie Ihnen eines Tages genug vertrauen.",
+      "Ihr Vertrauter schmiegt sich an Ihr Bein und zittert leicht. {{petDisplay}} ist noch nicht bereit, allein auf eine Expedition zu gehen. Ihr Herz braucht noch mehr Zeit, um Ihnen vollständig zu vertrauen.",
+      "Die Augen von {{petDisplay}} verraten eine tiefe Besorgnis. Auf eine Expedition zu gehen erfordert eine starke Bindung zwischen einem Vertrauten und seinem Besitzer. Kümmern Sie sich weiterhin gut um Ihre Begleiterin, um Ihre Bindung zu stärken."
+    ],
+    "insufficientLoveAdvice_male": [
+      "*Ihr Begleiter scheint noch zu ängstlich zu sein, um sich von Ihnen zu entfernen. Stärken Sie Ihre Bindung, bevor Sie ihn auf eine Expedition schicken.*.",
+      "*Der Blick Ihres Begleiters verrät eine gewisse Ängstlichkeit. Er braucht noch Zeit, bis er sich ohne Sie auf den Weg macht.",
+      "*Ihr Haustier vertraut Ihnen noch nicht genug, um alleine auf Entdeckungsreise zu gehen. Streicheleinheiten und Leckerlis werden das ändern."
+    ],
+    "insufficientLoveAdvice_female": [
+      "*Ihre Begleiterin scheint noch zu ängstlich zu sein, um sich von Ihnen zu entfernen. Stärken Sie Ihre Bindung, bevor Sie sie auf die Reise schicken.*.",
+      "*Der Blick Ihrer Partnerin verrät eine gewisse Ängstlichkeit. Sie braucht noch Zeit, um sich ohne Sie zu trauen.",
+      "*Ihr Haustier vertraut Ihnen noch nicht genug, um alleine auf Erkundungstour zu gehen. Streicheleinheiten und Leckerlis werden das ändern."
+    ],
+    "petHungry_male": [
+      "Der Bauch von {{petDisplay}} gibt ein lautes Knurren von sich. Mit flehenden Augen weigert sich Ihr Begleiter strikt, mit leerem Magen loszuziehen. Füttern Sie ihn, bevor Sie ihn auf ein Abenteuer schicken!",
+      "{{petDisplay}} schnüffelt angestrengt an Ihrer Tasche, in der Hoffnung, etwas Essbares zu finden. Ein hungriger Begleiter kann nicht auf eine Expedition gehen!",
+      "Ihr Vertrauter sinkt auf den Boden und ist zu schwach, um ein Abenteuer in Erwägung zu ziehen. {{petDisplay}} braucht eine gute Mahlzeit, bevor er die fernen Länder erkunden kann."
+    ],
+    "petHungry_female": [
+      "Der Bauch von {{petDisplay}} gibt ein lautes Knurren von sich. Mit flehenden Augen weigert sich Ihre Begleiterin kategorisch, mit leerem Magen loszuziehen. Füttern Sie sie, bevor Sie sie auf ein Abenteuer schicken!",
+      "{{petDisplay}} schnüffelt angestrengt an Ihrer Tasche, in der Hoffnung, etwas Essbares zu finden. Ein hungriger Begleiter kann nicht auf eine Expedition gehen!",
+      "Ihr Vertrauter sinkt auf den Boden und ist zu schwach, um ein Abenteuer in Erwägung zu ziehen. {{petDisplay}} braucht eine gute Mahlzeit, bevor er die fernen Länder erkunden kann."
+    ],
+    "expeditionStatusRP": {
+      "header": "{emote:expedition.map} **Versand in Bearbeitung**\n**{{location}}**\n{emote:clocks.1} Rücksendung: {{returnTime}}",
+      "progress": {
+        "justStarted_male": "*Ihr Vertrauter hat sich gerade mit vor Aufregung wedelndem Schwanz ins Abenteuer gestürzt.*",
+        "justStarted_female": "*Ihr Vertrauter hat sich gerade mit vor Aufregung wedelndem Schwanz ins Abenteuer gestürzt.*",
+        "ongoing_male": "*Ihr Vertrauter schreitet durch die Wildnis, immer auf der Hut vor der kleinsten Gefahr.*",
+        "ongoing_female": "*Ihr Vertrauter schreitet durch die Wildnis, aufmerksam auf die geringste Gefahr. *",
+        "almostDone_male": "*Ihr Vertrauter sollte bald seine Schnauze am Horizont zeigen.*",
+        "almostDone_female": "*Ihr Vertrauter sollte bald seine Schnauze am Horizont zeigen.*"
+      },
+      "situation": {
+        "strongPetEasyRisk_male": "* Seine natürliche Stärke lässt ihn den Gefahren dieser Expedition zuversichtlich entgegensehen. *",
+        "strongPetEasyRisk_female": "* Ihre natürliche Stärke lässt sie den Gefahren dieser Expedition zuversichtlich entgegensehen.*",
+        "strongPetHardRisk_male": "* Trotz seiner Stärke wird diese gefährliche Expedition kein Spaziergang. *",
+        "strongPetHardRisk_female": "* Trotz seiner Stärke wird diese gefährliche Expedition kein Spaziergang. *",
+        "weakPetEasyRisk_male": "* Diese friedliche Expedition passt perfekt zu seinem vorsichtigen Temperament.*",
+        "weakPetEasyRisk_female": "* Diese friedliche Expedition passt perfekt zu seinem vorsichtigen Temperament.*",
+        "weakPetHardRisk_male": "* Sie hoffen, dass er sich angesichts der Gefahren, die auf ihn warten, als listig erweisen wird.*",
+        "weakPetHardRisk_female": "* Sie hoffen, dass sie sich angesichts der Gefahren, die auf sie warten, als listig erweisen wird.*"
+      },
+      "food": {
+        "wellFed_male": "*Seine gut gefüllten Vorräte lassen ihn mit ruhigem Gewissen reisen.*",
+        "wellFed_female": "* Sein gut gefüllter Proviant lässt ihn mit ruhigem Gewissen reisen. *",
+        "noFood_male": "* Ohne Vorräte losgezogen, muss er sich selbst darum kümmern, etwas zu essen zu finden. *",
+        "noFood_female": "* Ohne Vorräte losgezogen, muss sie sich selbst darum kümmern, etwas zu essen zu finden. *"
+      }
+    },
+    "inProgressTitle": "{{pseudo}}, Versand im Gange",
+    "inProgressDescription": {
+      "intro": "{{petDisplay}} durchstreift derzeit ferne und geheimnisvolle Länder!",
+      "destination": "{emote:expedition.map} **Ziel:** **{{location}}**",
+      "risk": "{{riskEmoji}} **Gefährlichkeit:** {{risk}}",
+      "returnTime": "{emote:clocks.1} ** Geplante Rückkehr:** {{returnTime}}",
+      "warning_male": "{emote:collectors.warning} *Wenn Sie Ihren Vertrauten vorzeitig zurückrufen, bricht das Vertrauensverhältnis. Er wird ohne Beute und mit geschundenem Herzen zurückkehren...*.",
+      "warning_female": "{emote:collectors.warning} *Die Vertraute vorzeitig zu rufen, wird das Vertrauensverhältnis zerstören. Sie wird ohne Beute und mit geschundenem Herzen zurückkehren...*."
+    },
+    "inProgressFoodInfo_one": "\n{emote:expedition.food} **Mitgenommener Proviant:** {{count, number}} Ration",
+    "inProgressFoodInfo_other": "\n{emote:expedition.food} **Vorräte mitgenommen:** {{count, number}} Rationen",
+    "recallButton": "Rückruf",
+    "closeButton": "Die Erkundung fortsetzen",
+    "chooseExpeditionTitle": "{{pseudo}}Neue Sendungen verfügbar",
+    "chooseExpedition": "Der $t(models:talisman.anchor) vibriert leise in Ihrer Satteltasche. Vor Ihrem geistigen Auge erscheinen drei Reiseziele, die durch die Magie des Artefakts enthüllt werden. {{petDisplay}} stampft ungeduldig auf und ist bereit, eines dieser Länder zu erkunden:",
+    "selectPlaceholder": "Wählen Sie ein Ziel aus...",
+    "distantExpeditionPrefix": "Fernexpedition: {{location}}",
+    "expeditionOption": {
+      "header": "**{{number}}.** {{location}}",
+      "duration": "{emote:expedition.duration} Geschätzte Dauer: {{duration}}",
+      "terrain": "{{terrainEmoji}} Land: {{terrain}}",
+      "risk": "{{riskEmoji}} Gefährlichkeit: {{risk}}",
+      "reward": "{emote:expedition.reward} Geschätzte Belohnungen: {{reward}}",
+      "food": "{emote:expedition.food} Erforderliche Rückstellungen: {{foodDisplay}}",
+      "cloneTalismanBonus": "{emote:expedition.cloneTalisman} *Eine seltsame Vorahnung überkommt Sie... Gerüchte sprechen von einem legendären Artefakt, das vielleicht in diesem Land versteckt ist.",
+      "bonusTokens": "{emote:unitValues.token} *Diese Region ist voller alter Schätze! Ihr Vertrauter könnte dort ein Vermögen an verlorenen Chips entdecken...*."
+    },
+    "foodCost_one": "{{count}} Ration",
+    "foodCost_other": "{{count}} rationen",
+    "cancelButton": "Versand abbrechen",
+    "guildProvisionsInfo": "{emote:expedition.food} **Verfügbare Gildenprovisionen:** {{foodCostDisplay}}",
+    "noGuildProvisionsInfo": "{emote:collectors.warning} **Sie haben keine Gilde, die Verpflegung zubereitet.**",
+    "petImpatience_male": "*{{petDisplay}} stampft mit wedelndem Schwanz vor Ungeduld, bereit, sich ins Abenteuer zu stürzen!*",
+    "petImpatience_female": "*{{petDisplay}} stampft ungeduldig mit wedelndem Schwanz auf, bereit, sich ins Abenteuer zu stürzen!*",
+    "startedTitle": "{{pseudo}}Expedition gestartet!",
+    "expeditionStarted_male": "Mit einem enthusiastischen Sprung rennt {{petDisplay}} auf **{{location}}** zu! Sie sehen ihm nach, wie er mit hoffnungsvollem Herzen am Horizont verschwindet.\n\n{emote:clocks.1} Geplante Rückkehr: {{returnTime}}",
+    "expeditionStarted_female": "Mit einem enthusiastischen Sprung rennt {{petDisplay}} auf **{{location}}** zu! Sie sehen ihr nach, wie sie mit hoffnungsvollem Herzen am Horizont verschwindet.\n\n{emote:clocks.1} Geplante Rückkehr: {{returnTime}}",
+    "foodConsumed_one": "\n{emote:expedition.food} Mitgenommener Proviant : **{{count, number}}** Ration",
+    "foodConsumed_other": "\n{emote:expedition.food} Mitgeführter Proviant : **{{count, number}}** Rationen",
+    "foodConsumedDetails": "\n{emote:expedition.food} **Mitgeführte Provisionen:** {{foodDetails}}",
+    "insufficientFoodWarning": {
+      "noGuild": "\n\n{emote:collectors.warning} **Sie haben keine Gilde, die Rationen** für Ihren Vertrauten zubereitet. Das Risiko, dass diese Expedition scheitert, ist **verdreifacht**.",
+      "guildNoFood": "\n\n{emote:collectors.warning} **Die Gilde hat keine Vorräte mehr.** Ihre Gilde konnte nicht genügend Verpflegung bereitstellen, sodass Ihr Begleiter ohne Vorräte losgezogen ist. Das Risiko eines Misserfolgs ist **verdreifacht**. Füllen Sie die Vorräte Ihrer Gilde vor der nächsten Expedition wieder auf!"
+    },
+    "speedModifier": {
+      "veryFast_male": "\n\n{emote:expedition.speed} *Seine flinken Pfoten durchschneiden die Luft mit unvergleichlicher Anmut. Ihr Begleiter wird sein Ziel viel schneller erreichen als erwartet!*.",
+      "veryFast_female": "\n\n{emote:expedition.speed} *Seine flinken Pfoten durchschneiden die Luft mit unvergleichlicher Anmut. Ihre Begleiterin wird ihr Ziel viel schneller erreichen als erwartet!*.",
+      "fast_male": "\n\n{emote:expedition.speed} *Mit wachem und sicherem Schritt läuft Ihr Begleiter in gutem Tempo. Die Expedition wird kürzer sein als erwartet.",
+      "fast_female": "\n\n{emote:expedition.speed} *Mit wachem und sicherem Schritt eilt Ihre Begleiterin davon. Die Expedition wird kürzer sein als erwartet.",
+      "slow_male": "\n\n{emote:expedition.slow} *Seine schlurfenden Beine verlangsamen sein Vorankommen etwas. Die Expedition dauert etwas länger als erwartet.",
+      "slow_female": "\n\n{emote:expedition.slow} *Seine schlurfenden Beine verlangsamen sein Vorankommen etwas. Die Expedition dauert etwas länger als erwartet.",
+      "verySlow_male": "\n\n{emote:expedition.slow} *Ihr Begleiter bewegt sich verwirrend langsam und bleibt häufig stehen, um die Umgebung zu beschnuppern. Die Expedition wird viel länger dauern als erwartet...*.",
+      "verySlow_female": "\n\n{emote:expedition.slow} *Ihre Begleiterin bewegt sich verblüffend langsam und bleibt häufig stehen, um die Umgebung zu beschnuppern. Die Expedition wird viel länger dauern als erwartet...*."
+    },
+    "freeCancelledTitle": "{{pseudo}}Abgesagte Abreise",
+    "freeCancelled_male": "{{petDisplay}} legt den Kopf schief, etwas enttäuscht, aber verständnisvoll. Schließlich ist es ja nur eine Verschiebung! Fröhlich trottet es auf dich zu, bereit, jederzeit wieder zu gehen.\n\n{emote:collectors.warning} *Warnung: Weitere Absagen in dieser Woche führen dazu, dass dein Begleiter Zuneigungspunkte verliert.*",
+    "freeCancelled_female": "{{petDisplay}} legt den Kopf schief, etwas enttäuscht, aber verständnisvoll. Schließlich ist es ja nur eine Verschiebung! Fröhlich trottet sie auf dich zu, bereit, jederzeit wieder zu gehen.\n\n{emote:collectors.warning} *Warnung: Weitere Absagen in dieser Woche führen dazu, dass dein Begleiter Zuneigungspunkte verliert.*",
+    "cancelledTitle": "{{pseudo}}Abgesagte Abreise",
+    "cancelled_male": "Als er Ihr Zögern sieht, senkt {{petDisplay}} enttäuscht den Kopf. Er dachte, er würde ein Abenteuer erleben... Sie spüren, dass das Vertrauen zwischen Ihnen leicht schwindet. Ihr Begleiter wirft Ihnen einen verletzten Blick zu, bevor er sich mit gesenktem Schwanz entfernt.",
+    "cancelled_female": "Als sie ihr Zögern sieht, senkt {{petDisplay}} enttäuscht den Kopf. Sie dachte, sie würde ein Abenteuer erleben... Sie spüren, dass das Vertrauen zwischen Ihnen leicht schwindet. Ihre Begleiterin wirft Ihnen einen verletzten Blick zu, bevor sie sich mit gesenktem Schwanz entfernt.",
+    "recalledTitle": "{{pseudo}}, umgangssprachlich erinnert",
+    "recalled_male": "Als {{petDisplay}} Ihren Ruf hört, bricht er seine Suche ab und kehrt mit gesenktem Schwanz und vorwurfsvollem Blick zu Ihnen zurück. Er bringt nichts von seiner abgebrochenen Reise mit. Die Enttäuschung ist in seinen Augen zu sehen - er wird Ihnen noch eine Weile böse sein.",
+    "recalled_female": "Als {{petDisplay}} Ihren Ruf hört, bricht sie ihre Suche ab und kehrt mit gesenktem Schwanz und vorwurfsvollem Blick zu Ihnen zurück. Sie bringt nichts von ihrer abgebrochenen Reise mit. Die Enttäuschung ist in ihren Augen zu sehen - sie wird Ihnen noch eine Weile böse sein.",
+    "finishedTitle": "{{pseudo}}, Versand beendet!",
+    "finishedDescription": {
+      "talisman": {
+        "intro": "Der $t(models:talisman.anchor) vibriert intensiv in Ihrer Tasche: {{petDisplay}} ist wieder aus dem Versand nach **{{location}}**!"
+      },
+      "risk": "{{riskEmoji}} Gefährlichkeit: {{risk}}",
+      "impatience_male": "*Ihr Begleiter stampft ungeduldig auf und will Ihnen unbedingt zeigen, was er mitgebracht hat!*",
+      "impatience_female": "*Ihre Begleiterin stampft ungeduldig auf, weil sie es eilig hat, Ihnen zu zeigen, was sie mitgebracht hat!*"
+    },
+    "claimButton": "Entdecke die Beute",
+    "successTitle": "{{pseudo}}Die triumphale Rückkehr!",
+    "success_male": [
+      "An der Wegbiegung taucht eine vertraute Gestalt auf! {{petDisplay}} kommt von seiner Expedition zurück: **{{location}}**, mit stolzem Gang und mit Schätzen beladenen Pfoten!",
+      "Eine Staubwolke kündigt die Rückkehr von {{petDisplay}} an! Ihr tapferer Gefährte setzt nach seiner Reise zu **{{location}}** einen zufriedenen Gesichtsausdruck auf.",
+      "{{petDisplay}} tauchte aus dem Gebüsch auf, mit verfilztem Fell, aber vor Stolz leuchtenden Augen! Die Expedition zu **{{location}}** war ein voller Erfolg!"
+    ],
+    "success_female": [
+      "An der Wegbiegung taucht eine vertraute Gestalt auf! {{petDisplay}} kommt von seiner Expedition zurück: **{{location}}**, mit stolzem Gang und mit Schätzen beladenen Pfoten!",
+      "Eine Staubwolke kündigt die Rückkehr von {{petDisplay}} an! Ihre tapfere Begleiterin setzt nach ihrer Reise zu **{{location}}** einen zufriedenen Gesichtsausdruck auf.",
+      "{{petDisplay}} tauchte aus dem Gebüsch auf, mit verfilztem Fell, aber vor Stolz leuchtenden Augen! Die Expedition zu **{{location}}** war ein voller Erfolg!"
+    ],
+    "partialSuccessTitle": "{{pseudo}}Ein gemischtes Feedback",
+    "partialSuccess_male": [
+      "{{petDisplay}} kehrt leicht humpelnd von seiner Expedition nach **{{location}}** zurück. Es war ein hartes Abenteuer, aber Ihr mutiger Begleiter bringt dennoch einige Fundstücke mit nach Hause.",
+      "Mit angelegten Ohren taucht {{petDisplay}} schließlich wieder auf. Die Expedition nach **{{location}}** ist nicht wie geplant verlaufen, aber Ihr Vertrauter ist nicht mit leeren Pfoten zurückgekehrt.",
+      "Etwas zerzaust und mit Kratzern bedeckt kehrt {{petDisplay}} von seiner Reise nach **{{location}}** zurück. Trotz der Schwierigkeiten, auf die er gestoßen ist, ist es ihm gelungen, einige Schätze zu bergen."
+    ],
+    "partialSuccess_female": [
+      "{{petDisplay}} kehrt leicht humpelnd von ihrer Expedition nach **{{location}}** zurück. Es war ein hartes Abenteuer, aber Ihre mutige Begleiterin bringt dennoch einige Fundstücke mit nach Hause.",
+      "Mit angelegten Ohren taucht {{petDisplay}} schließlich wieder auf. Die Expedition nach **{{location}}** ist nicht wie geplant verlaufen, aber Ihr Vertrauter ist nicht mit leeren Pfoten zurückgekehrt.",
+      "Etwas zerzaust und mit Kratzern übersät kehrt {{petDisplay}} von ihrer Reise nach **{{location}}** zurück. Trotz der Schwierigkeiten, auf die sie gestoßen ist, ist es ihr gelungen, einige Schätze zu bergen."
+    ],
+    "failureTitle": "{{pseudo}}Eine gescheiterte Expedition",
+    "totalFailure_male": [
+      "{{petDisplay}} kehrt von **{{location}}** mit eingezogenem Schwanz und flüchtigem Blick zurück. Das Abenteuer war zu gefährlich, und Ihr Begleiter kehrt mit leeren Händen und schwerem Herzen zurück, weil er versagt hat.",
+      "Nach langer Abwesenheit taucht {{petDisplay}} endlich wieder auf, erschöpft und reumütig. Die Gefahren von **{{location}}** haben seine Suche beendet. Er schmiegt sich an Sie und bettelt um Trost.",
+      "Mit zitternden Pfoten taucht {{petDisplay}} aus den Schatten auf. Die Expedition nach **{{location}}** war ein Fehlschlag. Ihr Begleiter braucht Zeit, um sich von diesem Missgeschick zu erholen."
+    ],
+    "totalFailure_female": [
+      "{{petDisplay}} kehrt von **{{location}}** mit eingezogenem Schwanz und flüchtigem Blick zurück. Das Abenteuer war zu gefährlich, und Ihre Begleiterin kehrt mit leeren Händen und schwerem Herzen zurück, weil sie versagt hat.",
+      "Nach langer Abwesenheit taucht {{petDisplay}} endlich wieder auf, erschöpft und nachdenklich. Die Gefahren von **{{location}}** haben ihre Suche beendet. Sie schmiegt sich an dich und bettelt um Trost.",
+      "Mit zitternden Pfoten taucht {{petDisplay}} aus den Schatten auf. Die Expedition nach **{{location}}** war ein Fehlschlag. Ihr Begleiter braucht Zeit, um sich von diesem Missgeschick zu erholen."
+    ],
+    "loveChangeFailure": "\n\n{emote:expedition.love} Das Scheitern der Expedition hat die Bindung zwischen Ihnen geschwächt. Ihr Begleiter wird Zeit und Aufmerksamkeit brauchen, um wieder Vertrauen zu fassen.",
+    "loveChangePartialNegative": "\n\n{emote:expedition.love} Die Schwierigkeiten, auf die Sie gestoßen sind, haben das Vertrauen Ihres Haustiers etwas erschüttert. Ein paar Streicheleinheiten und Leckerlis werden ihm helfen, sich wieder zu erholen.",
+    "loveChangePartialPositive": "\n\n{emote:expedition.love} Trotz aller Stolpersteine hat dieses Abenteuer die Bindung zwischen Ihnen leicht gestärkt. Ihr Partner schätzt es, dass Sie ihm vertrauen.",
+    "loveChangeSuccess": "\n\n{emote:expedition.love} Diese erfolgreiche Expedition hat das Band zwischen euch gestärkt. Ihr Vertrauter sieht Sie mit erneuter Bewunderung an!",
+    "petLikedExpedition_male": "\n\n{emote:expedition.liked} *Ihr Begleiter war von dieser Expedition begeistert! Diese Art von Reiseziel entsprach genau seinem Geschmack, was seine Begeisterung und Effizienz um ein Vielfaches gesteigert hat.*.",
+    "petLikedExpedition_female": "\n\n{emote:expedition.liked} *Ihr Vertrauter war von dieser Expedition begeistert! Diese Art von Reiseziel entspricht genau seinem Geschmack, was seinen Enthusiasmus und seine Effizienz um ein Vielfaches gesteigert hat.*.",
+    "duration": {
+      "minutes": "{{count}} Minute",
+      "minutes_other": "{{count}} Minuten",
+      "hours": "{{count}} Uhrzeit",
+      "hours_other": "{{count}} Stunden",
+      "hoursMinutes": "{{hours}}h {{minutes}}min",
+      "days": "{{count}} Tag",
+      "days_other": "{{count}} Tage",
+      "daysHours": "{{days}}j {{hours}}h"
+    },
+    "rewards": {
+      "title": "\n\n**Butin berichtet:**",
+      "dislikedExpedition": {
+        "male": "\n{emote:expedition.disliked} *Ihr Begleiter hat dieses Reiseziel nicht genossen. Sein mangelnder Enthusiasmus hat seine Funde erheblich geschmälert.",
+        "female": "\n{emote:expedition.disliked} *Ihr Vertrauter hat dieses Reiseziel nicht genossen. Sein mangelnder Enthusiasmus hat seine Funde erheblich geschmälert.*"
+      },
+      "money": "{emote:unitValues.money} Verdientes Geld : **{{amount, number}}**!",
+      "experience": "{emote:unitValues.xp} Gewonnene Erfahrung : **{{amount, number}}**!",
+      "points": "{emote:unitValues.score} Gewonnene Punkte : **{{amount, number}}**!",
+      "tokens_one": "{emote:unitValues.token} Gewonnener Jeton : **{{count}}**!",
+      "tokens_other": "{emote:unitValues.token} Gewonnene Jetons : **{{count}}**!",
+      "item": "{emote:rewards.item} Sie erhalten eine zufällige Ausrüstung!",
+      "cloneTalisman": "{emote:expedition.cloneTalisman} **AUSSERGEWÖHNLICHE ENTDECKUNG!**\nIhr Vertrauter hat ein altes, vergrabenes Artefakt entdeckt: den $t(models:talisman.clone) !\nMit diesem mystischen Gegenstand kann Ihr Begleiter Sie bei der Verteidigung und bei kleineren Ereignissen unterstützen, selbst wenn er sich auf einer Expedition befindet!",
+      "badgeEarned": "{emote:badges.expert_expediteur} Ein Abzeichen wurde Ihnen angeboten: **Expert Publisher**!"
+    },
+    "riskCategories": {
+      "trivial": "Ruhig",
+      "veryLow": "Heiter",
+      "low": "Zufällig",
+      "moderate": "Riskant",
+      "high": "Gefährlich",
+      "veryHigh": "Gefährlich",
+      "extreme": "Tödlich",
+      "desperate": "Verzweifelt"
+    },
+    "rewardCategories": {
+      "meager": "Mager",
+      "modest": "Bescheidene",
+      "substantial": "Korrekt",
+      "bountiful": "Reichlich",
+      "legendary": "Außergewöhnliche"
+    },
+    "terrainCategories": {
+      "trivial": "Friedlich",
+      "easy": "Begehbar",
+      "moderate": "Verunglückt",
+      "challenging": "Feindlich",
+      "treacherous": "Gefährlich"
+    },
+    "mapLocationExpeditions": {
+      "1": "die geheimnisvollen Riffe am Presidio-Strand",
+      "2": "die geheimen Pfade des Feldwegs",
+      "3": "die Versteckten Wiesen der Wiege",
+      "4": "die Tiefen des Alten Waldes",
+      "5": "die Vergessenen Labyrinthe des Daedaluspfades",
+      "6": "die Geheimen Keller von Boug-Coton",
+      "7": "die Vergessenen Gräber im Tal der Könige",
+      "8": "die Mystischen Passagen der Kreuzung der Schicksale",
+      "9": "die Alten Pflastersteine in der Großen Straße",
+      "10": "die Verlorenen Katakomben von Ville Forte",
+      "11": "die Hinterhalte der Grand Axe",
+      "12": "die Ebenen der Ausdehnung",
+      "13": "die Verfluchten Sümpfe der Sumpfstraße",
+      "14": "die bezaubernden Nebel des Mirage-Sees",
+      "15": "die schneebedeckten Gipfel des Berges Celestrum",
+      "16": "die Tanières du Chemin aux Loups",
+      "17": "die versteckten Oasen des Coco-Resorts",
+      "18": "die tumultartigen Stromschnellen des Flusses Vacarme",
+      "19": "der Treibsand von La Dune",
+      "20": "die Friedlichen Felder der Ebenen des Gegenwaldes",
+      "21": "die Verlassenen Schenken der Wunderstraße",
+      "22": "die dunklen Galerien des Schreienden Holzes",
+      "23": "die geheimen Gassen von Claire de Ville",
+      "24": "die Steilhänge der Kletterroute",
+      "25": "die Mäander des Flusses Rivière aux Crabes",
+      "26": "die Altstadtviertel von Mergagnan",
+      "27": "die mystischen Lichtungen des Celestrum-Waldes",
+      "28": "die Unterirdischen Gänge der Schlosstore",
+      "29": "die Alkoven im Empfangssaal",
+      "32": "die Königlichen Pflastersteine auf der Straße zum Schloss"
+    },
+    "errors": {
+      "noPet": "Die Naturgeister weigern sich, Sie einen Vertrauten schicken zu lassen - weil Sie keinen besitzen!",
+      "insufficientLove": "Die Bindung zwischen Ihnen und Ihrem Partner ist zu zerbrechlich für ein solches Abenteuer.",
+      "alreadyInExpedition": "Ihr treuer Begleiter durchstreift bereits ferne Länder. Geduld!",
+      "notInExpedition": "Ihr Vertrauter befindet sich derzeit an Ihrer Seite, keineswegs auf einer Expedition.",
+      "expeditionNotComplete": "Der Gegenwind verlangsamt Ihren Vertrauten. Seine Rückkehr steht noch nicht unmittelbar bevor.",
+      "invalidState": "Die Sterne stehen nicht zu Ihren Gunsten. Versuchen Sie es später noch einmal.",
+      "expeditionInProgress": "Ihr Vertrauter erkundet bereits ferne Länder.",
+      "generic": "Eine mysteriöse Kraft verhindert Ihre Anfrage. Die Weisen raten, es noch einmal zu versuchen.",
+      "notOnContinent": "Der $t(models:talisman.anchor) weigert sich, in diesen seltsamen Ländern aktiv zu werden. Seine uralte Magie scheint nur auf dem Hauptkontinent des Königreichs zu wirken. Kehren Sie auf die vertrauten Routen zurück, um Ihren Vertrauten auf eine Expedition zu schicken.",
+      "cannotRecallOnIsland": "Aus einem unbekannten Grund scheinen die Kräfte des $t(models:talisman.anchor) hier nicht zu funktionieren. Das Zurückrufen Ihres Vertrauten kann erst erfolgen, wenn Sie wieder auf dem Festland oder auf dem Schiff sind."
+    }
   },
   "guild": {
-    "embedTitle": "Gilde {{guildName}} | Ebene {{level}}",
+    "embedTitle": "Gilde {{guildName}} | Ebene {{level, number}}",
     "description": "{emote:messages.description} `{{description}}`",
     "separator": " | ",
-    "memberInfo": "{{icon}} - **{{pseudo}}** ({{ranking}} {emote:announcements.trophy} | {{score}} {emote:unitValues.score}{{islandStatusIcon}})",
-    "members": "{emote:guild.membersCount} {{memberCount}} / {{maxGuildMembers}} Mitglieder",
+    "memberInfo": "{{icon}} - **{{pseudo}}** ({{ranking}} {emote:announcements.trophy} | {{score, number}} {emote:unitValues.score}{{islandStatusIcon}})",
+    "members": "{emote:guild.membersCount} {{memberCount, number}} / {{maxGuildMembers, number}} Mitglieder",
     "infoTitle": "Informationen",
     "islandInfo": "{emote:guild.isOnPveIsland} Alliierte auf der geheimnisvollen Insel: {{membersOnPveIsland}}",
-    "info": "{emote:unitValues.xp} {{experience}} | {emote:unitValues.guildPoint} {{guildPoints}} | {emote:announcements.trophy} {{ranking}}",
-    "xpNeeded": "{{xp}} / {{xpToLevelUp}}",
+    "info": "{emote:unitValues.xp} {{experience, number}} | {emote:unitValues.guildPoint} {{guildPoints, number}} | {emote:announcements.trophy} {{ranking}}",
+    "xpNeeded": "{{xp, number}} / {{xpToLevelUp, number}}",
     "xpMax": "Max",
-    "ranking": "{{rank}} / {{rankTotal}}",
+    "ranking": "{{rank, number}} / {{rankTotal, number}}",
     "notRanked": "Nicht klassifiziert"
   },
   "guildCreate": {
     "title": "{{pseudo}} Gründung einer Gilde",
     "canceledTitle": "{{pseudo}} Die Gründung einer Gilde wird rückgängig gemacht.",
     "canceledDesc": "Die Gründung Ihrer Gilde wurde abgebrochen.",
-    "confirmDesc": "{emote:collectors.question} Bestätigen Sie die Gründung der Gilde **{{guildName}}** für `{{price}}` {emote:unitValues.money} ?",
+    "confirmDesc": "{emote:collectors.question} Bestätigen Sie die Gründung der Gilde **{{guildName}}** für `{{price, number}}` {emote:unitValues.money} ?",
     "acceptedFooter": "Achtung: Der Staff behält sich das Recht vor, Ihre Gilde umzubenennen.",
     "acceptedDesc": "Die Gilde **{{guildName}}** wurde gegründet!"
   },
@@ -241,7 +527,7 @@
         "description": "Zeigt den Lagerort für die Missionen an."
       },
       "NOTIFICATIONS": {
-        "description": "Hiermit können Sie einstellen, wie Sie Benachrichtigungen vom Bot erhalten. Du kannst einstellen, ob du Benachrichtigungen erhalten möchtest (und bestimmen, wo sie angezeigt werden), wenn du an einem bestimmten Ort ankommst, Gildenbelohnungen, Gefängnisbefreiung, Angriffe anderer Spieler, Gildenausschlüsse, Statusänderungen innerhalb der Gilde, vollständige Energieregeneration und die Verfügbarkeit deines täglichen Bonus."
+        "description": "Hiermit können Sie einstellen, wie Sie Benachrichtigungen vom Bot erhalten. Du kannst einstellen, ob du Benachrichtigungen erhalten möchtest (und bestimmen, wo sie angezeigt werden), wenn du an einem bestimmten Ort ankommst, Gildenbelohnungen, Gefängnisbefreiung, Angriffe anderer Spieler, Gildenausschlüsse, Statusänderungen innerhalb der Gilde, vollständige Energieregeneration, Verfügbarkeit deines täglichen Bonus und das Ende von Haustier-Expeditionen."
       },
       "PET": {
         "description": "Zeigt Informationen zu Ihrem Begleiter an."
@@ -337,6 +623,12 @@
     "title": ":briefcase: ** Inventar von {{pseudo}}**",
     "weapons_one": "Waffe ({{count}}/{{max}}):",
     "weapons_other": "Waffen ({{count}}/{{max}}):",
+    "talisman": "Artefakte:",
+    "talismans": {
+      "anchorTalisman": "$t(models:talisman.anchor) - Erlaubt Ihnen, Ihren Vertrauten auf eine Expedition zu schicken",
+      "cloneTalisman": "$t(models:talisman.clone) - Ihr Vertrauter unterstützt Sie bei der Verteidigung und bei kleinen Ereignissen sogar auf Expeditionen."
+    },
+    "talismanNotOwned": "{emote:inventory.empty} **Kein Artefakt**",
     "randomItemTitle": "{{pseudo}}Sie haben etwas gefunden!",
     "randomItemAcceptTitle": "Sie haben bereits eine Ausrüstung, möchten Sie diese verkaufen?",
     "randomItemAcceptTitlePotion": "Sie haben bereits einen Trank, was möchten Sie tun?",
@@ -381,7 +673,7 @@
       "tournament_winner": "Gewinner eines Turniers",
       "technical_team": "Technisches Team",
       "first_20_members": ":helmet_with_cross: Personen, die zu den ersten 20 Personen gehören, die dem Bot-Server beigetreten sind.",
-      "top_glory": "{emote:unitValues.glory} `Person, die während einer Kampfsaison den meisten Ruhm erlangt hat`.",
+      "top_glory": "Person, die während einer Kampfsaison den meisten Ruhm erlangt hat.",
       "support": "Personen mit der Besoldungsgruppe auf dem Bot-Server-Server",
       "translator": ":earth_africa: ` Traducer `",
       "advertiser": "Person, die geholfen hat, den Bot auf einen Server mit über 2000 Mitgliedern zu bringen",
@@ -395,7 +687,7 @@
       "bot_owner": "Eigentümer des Bots",
       "mission_completer": "Badge im Missionsshop gekauft",
       "powerful_guild": "Mitglied einer leistungsfähigen Gilde",
-      "legendary_pet": "Spieler, der einen legendären Begleiter aufrichtete",
+      "legendary_pet": "Spieler, dem es gelungen ist, einen mächtigen Vertrauten abzurichten",
       "donor": ":money_with_wings: ` Donator `",
       "early_class_adopter": "Klassenadopter der ersten Stunde",
       "good_bug_reporter": "Personen, die einen nutzbaren Fehler gemeldet haben, ohne die Vorteile des Bugs zu nutzen.",
@@ -405,15 +697,16 @@
       "rich": ":money_mouth: ` Badge, gekauft im Shop `",
       "top_1_before_reset": "Personen, die nach dem Reset den ersten Platz in der Rangfolge erreicht haben.",
       "very_powerful_guild": "Mitglied einer sehr mächtigen Gilde",
-      "animal_lover": "Person, die Talvar dem Zwerg alle Vertrauten gezeigt hat"
+      "animal_lover": "Person, die Talvar dem Zwerg alle Vertrauten gezeigt hat",
+      "expert_expediteur": "Person, die mit ihrem Vertrauten viele Expeditionen erfolgreich abgeschlossen hat"
     },
     "fightRanked": {
       "fieldName": "Ruhm und Liga :",
-      "fieldValue": "{emote:announcements.trophy} {{rank}} / {{numberOfPlayers}} | {emote:unitValues.glory} {{gloryPoints}} | {emote:leagues.{{leagueId}}} $t(models:leagues.{{leagueId}})"
+      "fieldValue": "{emote:announcements.trophy} {{rank, number}} / {{numberOfPlayers, number}} | {emote:unitValues.glory} {{gloryPoints, number}} | {emote:leagues.{{leagueId}}} $t(models:leagues.{{leagueId}})"
     },
     "fightUnranked": {
       "fieldName": "Ruhm und Liga :",
-      "fieldValue": "{emote:announcements.trophy} Uncategorized | {emote:unitValues.glory} {{gloryPoints}} | {emote:leagues.{{leagueId}}} $t(models:leagues.{{leagueId}})"
+      "fieldValue": "{emote:announcements.trophy} Uncategorized | {emote:unitValues.glory} {{gloryPoints, number}} | {emote:leagues.{{leagueId}}} $t(models:leagues.{{leagueId}})"
     },
     "guild": {
       "fieldName": "Gilde:",
@@ -421,7 +714,11 @@
     },
     "information": {
       "fieldName": "Information:",
-      "fieldValue": "{emote:unitValues.health} {{health}} / {{maxHealth}} | {emote:unitValues.xp} {{experience}} / {{experienceNeededToLevelUp}} | {emote:unitValues.money} {{money}}"
+      "fieldValue": "{emote:unitValues.health} {{health, number}} / {{maxHealth, number}} | {emote:unitValues.xp} {{experience, number}} / {{experienceNeededToLevelUp, number}} | {emote:unitValues.money} {{money, number}} | {emote:unitValues.token} {{tokens, number}} / {{tokensMax, number}}"
+    },
+    "informationNoTokens": {
+      "fieldName": "Informationen :",
+      "fieldValue": "{emote:unitValues.health} {{health, number}} / {{maxHealth, number}} | {emote:unitValues.xp} {{experience, number}} / {{experienceNeededToLevelUp, number}} | {emote:unitValues.money} {{money, number}}"
     },
     "map": {
       "fieldName": "Bestimmung:",
@@ -429,15 +726,15 @@
     },
     "mission": {
       "fieldName": "Aufgaben:",
-      "fieldValue": ":gem: {{gems}} | :book: {{campaign}}% "
+      "fieldValue": ":gem: {{gems, number}} | :book: {{campaign, number}}% "
     },
     "noTimeLeft": {
       "fieldName": "Restdauer:",
-      "fieldValue": ":hospital: Mögliche Wiederherstellung des Spiels"
+      "fieldValue": "{emote:effects.healed} Mögliche Wiederherstellung des Spiels"
     },
     "pet": {
       "fieldName": "Home:",
-      "fieldValue": "Rarität: {{rarity}}\n$t(commands:pet.shortPetField)"
+      "fieldValue": "$t(commands:pet.shortPetField) | {{rarity}}"
     },
     "playerClass": {
       "fieldName": "Klasse:",
@@ -445,21 +742,21 @@
     },
     "ranking": {
       "fieldName": "Bewertung und Score:",
-      "fieldValue": "{emote:announcements.trophy} {{rank}} / {{numberOfPlayer}} | {emote:unitValues.score} {{score}}"
+      "fieldValue": "{emote:announcements.trophy} {{rank, number}} / {{numberOfPlayer, number}} | {emote:unitValues.score} {{score, number}}"
     },
     "unranked": {
       "fieldName": "Rangliste und Punktestand:",
-      "fieldValue": "{emote:announcements.trophy} Nicht klassifiziert | {emote:unitValues.score} {{score}}"
+      "fieldValue": "{emote:announcements.trophy} Uncategorized | {emote:unitValues.score} {{score, number}}"
     },
     "statistics": {
       "fieldName": "Statistik:",
-      "fieldValue": ":zap: {{cumulativeHealth}} / {{cumulativeMaxHealth}} | :dagger: {{cumulativeAttack}} | :shield: {{cumulativeDefense}} | :rocket: {{cumulativeSpeed}} | :wind_blowing_face: {{baseBreath}} / {{maxBreath}} | :lungs: {{breathRegen}}"
+      "fieldValue": ":zap: {{cumulativeHealth, number}} / {{cumulativeMaxHealth, number}} | :dagger: {{cumulativeAttack, number}} | :shield: {{cumulativeDefense, number}} | :rocket: {{cumulativeSpeed, number}} | :wind_blowing_face: {{baseBreath, number}} / {{maxBreath, number}} | :lungs: {{breathRegen}}"
     },
     "timeLeft": {
       "fieldName": "Restdauer:",
       "fieldValue": "{emote:effects.{{effectId}} {{timeLeft}}"
     },
-    "title": "{emote:effects.{{effectId}}} | {{pseudo}} | Stufe {{level}}"
+    "title": "{emote:effects.{{effectId}}} | {{pseudo}} | Stufe {{level, number}}"
   },
   "rarity": {
     "earlyAvailable": "Zu Beginn des Spiels besessen",
@@ -483,24 +780,24 @@
     "encounterMonster": [
       "Sie kommen zu Ihrem Ziel, wenn Sie plötzlich hören, dass Sie ein Geräusch hinter Ihnen hören. Ein Monster greift Sie an!"
     ],
-    "encounterMonsterStats": "> **{{emoji}} {{monsterName}} ** | ** Level {{level}}**\n> {{description}}\n\n{emote:unitValues.energy} {{energy}} | {emote:unitValues.attack} {{attack}} | {emote:unitValues.defense} {{defense}} | {emote:unitValues.speed} {{speed}}",
+    "encounterMonsterStats": "> **{{emoji}} {{monsterName}} ** | ** Level {{level, number}}**\n> {{description}}\n\n{emote:unitValues.energy} {{energy, number}} | {emote:unitValues.attack} {{attack, number}} | {emote:unitValues.defense} {{defense, number}} | {emote:unitValues.speed} {{speed, number}}",
     "endPoint": "Einreise:",
-    "energy": "** | :zap: Energie-Gewinner: **{{energy}}",
-    "experience": "** | :star: XP gewonnen: **{{experience}}",
-    "gems": "** | :gem: Geme-Gewinner: **{{gems}}",
-    "health": "** | :heart: Verlorene Vie: **{{health}}",
-    "healthLoose": "** | :broken_heart: Verlorene Vie: **{{health}}",
+    "energy": "** | :zap: Energie-Gewinner: **{{energy, number}}",
+    "experience": "** | {emote:unitValues.xp} Verdiente Erfahrung : **{{experience, number}}",
+    "gems": "** | :gem: Geme-Gewinner: **{{gems, number}}",
+    "health": "** | :heart: Verlorene Vie: **{{health, number}}",
+    "healthLoose": "** | :broken_heart: Verlorene Vie: **{{health, number}}",
     "journal": "Protokoll von {{pseudo}}",
-    "money": "** | {emote:unitValues.money} Verdientes Geld : **{{money}}",
-    "moneyLoose": "** | :money_with_wings: Argent verloren: **{{money}}",
+    "money": "** | {emote:unitValues.money} Verdientes Geld : **{{money, number}}",
+    "moneyLoose": "** | :money_with_wings: Argent verloren: **{{money, number}}",
     "rewardEmbedTitle": "{{pseudo}}Kampfbelohnungen",
-    "monsterRewardGuildXp": "{emote:unitValues.xp} Verdiente Gilden-XP : **{{guildXp}}**",
-    "monsterRewardsDescription": "{emote:unitValues.money} Silber gewonnen : **{{money}}**\n:star: XP verdient: **{{experience}}**",
-    "monsterRewardsGuildPoints": ":mirror_ball: Gilde-Gewinner: **{{guildPoints}}**",
+    "monsterRewardGuildXp": "{emote:unitValues.xp} Verdiente Gildenerfahrung : **{{guildXp, number}}**",
+    "monsterRewardsDescription": "{emote:unitValues.money} Silber gewonnen : **{{money, number}}**\n:star: XP verdient: **{{experience, number}}**",
+    "monsterRewardsGuildPoints": ":mirror_ball: Gilde-Gewinner: **{{guildPoints, number}}**",
     "monsterRewardsTitle": "{{pseudo}}, Kampfbelohnungen",
     "newBigEvent": ":flag_fr: Sie kamen zu **{{destination}}**!",
     "noFight": ":newspaper: ** Journal von {{pseudo}} : ** {{waitABitReaction}} | Sie verlassen sich schnell und finden Sie ein kleines Versteck! Das Monster wartet geduldig auf Sie.",
-    "points": ": ** :medal: Gewinner: **{{score}}",
+    "points": ": ** :medal: Gewinner: **{{score, number}}",
     "pveEvent": "{emote:commands.report} **Tagebuch von {{pseudo}} :** {{event}}\n\n{{monsterDisplay}}\n\n{emote:pveFights.startFight} Kampf beginnen\n{emote:pveFights.waitABit} Warte kurz, bevor du den Kampf beginnst\n\n*- Benutze die Tasten, um eine Aktion auszuführen*.",
     "pveFightRefused": "{emote:commands.report} **Tagebuch von {{pseudo}} :** {emote:pveFights.waitABit} | Sie beschließen, sich vorerst nicht auf einen Kampf einzulassen und suchen in einem Versteck in der Nähe Zuflucht. Letztendlich müssen Sie sich der Bestie stellen, da Sie keinen anderen Ausweg finden.",
     "remainingEnergyTitle": "Verbleibende Energie:",
@@ -510,7 +807,32 @@
     "travellingDescription": "Es läuft alles gut, seit Ihr letztes Abenteuer {{smallEventEmoji}}. Nächster Halt {{time}}.",
     "travellingDescriptionEndTravel": "Es läuft alles gut in Ihrem Abenteuer, Sie werden bald am Ziel ankommen.",
     "travellingDescriptionWithoutSmallEvent": "Es läuft alles gut in Ihrem Abenteuer. Nächster Halt {{time}}.",
-    "travellingTitle": "Sie sind gerade dabei, Fortschritte zu machen!"
+    "travellingTitle": "Sie sind gerade dabei, Fortschritte zu machen!",
+    "useTokensButton": "Weitergehen",
+    "notEnoughTokensButton": "Unzureichende Jetons",
+    "useTokensLoading": "Laden...",
+    "useTokensConfirmTitle": "{{pseudo}} Bestätigung",
+    "useTokensConfirmDescription_one": "Möchten Sie **{{count}} Token** {emote:unitValues.token} ausgeben, um in die nächste Phase des Abenteuers vorzustoßen?\n\nSie haben derzeit **{{playerTokens, number}} Token** {emote:unitValues.token}.",
+    "useTokensConfirmDescription_other": "Möchten Sie **{{count}} Tokens** {emote:unitValues.token} ausgeben, um in die nächste Phase des Abenteuers vorzustoßen?\n\nSie haben derzeit **{{playerTokens, number}} Token** {emote:unitValues.token}.",
+    "tokensUsedSuccessTitle": "{{pseudo}}Die Münzen werden verwendet!",
+    "tokensUsedSuccessDescription_one": "{emote:unitValues.token} Sie haben **{{count}} Token** ausgegeben, um auf Ihrer Reise voranzukommen.\n\n{{nextStep}}",
+    "tokensUsedSuccessDescription_other": "{emote:unitValues.token} Du hast **{{count}} Chips** ausgegeben, um auf deiner Reise voranzukommen.\n\n{{nextStep}}",
+    "tokensNextStepArrived": "{emote:messages.info} Sie sind am Ziel angekommen! Nutzen Sie {command:report} , um zu sehen, was Sie erwartet.",
+    "tokensNextStepSmallEvent": "{emote:messages.info} Auf der Straße wartet ein Ereignis auf Sie. Nutzen Sie {command:report} , um es herauszufinden.",
+    "tokensUsedRefusedTitle": "{{pseudo}}, Stornierung",
+    "tokensUsedRefusedDescription": "{emote:messages.refuse} Sie haben sich entschieden, Ihre Token zu behalten.",
+    "buyHealButton": "Sich pflegen",
+    "notEnoughMoneyHealButton": "Unzureichendes Geld",
+    "buyHealLoading": "Laden...",
+    "buyHealConfirmTitle": "{{pseudo}} Bestätigung",
+    "buyHealConfirmDescription": "Möchten Sie **{{price, number}}** {emote:unitValues.money} ausgeben, um Ihre Zustandsveränderung zu heilen und Ihre Reise sofort fortzusetzen?\n\nSie haben derzeit **{{playerMoney, number}}** {emote:unitValues.money}.",
+    "healSuccessTitle": "{{pseudo}}, Pflege abgeschlossen!",
+    "healSuccessDescription": "{emote:shopItems.healAlteration} Sie haben **{{price, number}}** {emote:unitValues.money} ausgegeben, um sich zu heilen.\n\n{{nextStep}}",
+    "healNextStepArrived": "{emote:messages.info} Sie sind am Ziel angekommen! Nutzen Sie {command:report} , um zu sehen, was Sie erwartet.",
+    "healNextStepSmallEvent": "{emote:messages.info} Auf der Straße wartet ein Ereignis auf Sie. Nutzen Sie {command:report} , um es herauszufinden.",
+    "healRefused": "{emote:messages.refuse} **{{pseudo}}** hat sich entschieden, sich nicht behandeln zu lassen.",
+    "healNoAlteration": "{emote:effects.none} Sie sind nicht Opfer einer Zustandsveränderung.",
+    "healCannotHealOccupied": "{emote:effects.occupied} Sie sind derzeit beschäftigt. Diese Alteration kann nicht geheilt werden."
   },
   "update": {
     "description": "Die aktuelle Version des Bot-Kernels lautet **{{coreVersion}}**. Das Paket für das Discord-Modul lautet **{{discordModuleVersion}}**.\n\nAlle Informationen zu den Aktualisierungen sind hier verfügbar:\nhttps://guide.draftbot.com/lore/historique-des-mises-a-jour",
@@ -533,7 +855,16 @@
     "canceledDesc": "Der Vertraute wurde nicht befreit.",
     "confirmDesc": ":warning: Sind Sie sicher, dass Sie **{{pet}}** befreien wollen? Es ist nicht möglich, eine einmal durchgeführte Aktion rückgängig zu machen.",
     "acceptedDesc": "Adieu **{{pet}}**...",
-    "isFeisty": "{emote:collectors.warning} Achtung: Die Befreiung eines galligen Begleiters kostet Sie {{cost}} {emote:unitValues.money}."
+    "isFeisty": "{emote:collectors.warning} Achtung: Die Befreiung eines galligen Vertrauten kostet Sie {{cost, number}} {emote:unitValues.money}.",
+    "petOnExpedition": "Ihr Vertrauter befindet sich derzeit auf einer Expedition und kann nicht befreit werden.",
+    "selectionTitle": "{{pseudo}}Befreiung eines Vertrauten",
+    "selectionDesc": "Wählen Sie einen Vertrauten, den Sie befreien möchten:",
+    "selectPlaceholder": "Wählen Sie einen zu befreienden Vertrauten aus",
+    "ownPetOption": "Ihr persönlicher Vertrauter",
+    "shelterPetOption": "{{rarity}} | {{sex}} | {{loveLevel}}",
+    "cancelButton": "Abbrechen",
+    "feistyCostPaid": "Die Befreiung hat Sie {{cost, number}} {emote:unitValues.money}gekostet.",
+    "luckyMeat": "Der Vertraute hat Ihnen ein Stück Fleisch hinterlassen, als er ging! {emote:foods.carnivorousFood}"
   },
   "petNick": {
     "successTitle": "{{pseudo}}Änderung des Spitznamens des Vertrauten",
@@ -544,6 +875,7 @@
     "closeShop": "Sie haben den Laden geschlossen.",
     "closeShopTitle": "{{pseudo}}, Ladenschluss",
     "noAlterationToHeal": "Sie sind nicht Opfer einer Zustandsveränderung.\n{emote:effects.none}",
+    "cannotHealOccupied": "Sie sind derzeit beschäftigt. Diese Alteration kann nicht im Laden geheilt werden. {emote:effects.occupied}",
     "success": "{{pseudo}}Erfolgreiche Transaktion!",
     "healAlteration": "🏥 Ihre Zustandsveränderungen wurden entfernt.",
     "tooManyEnergyBought": "Sie haben die maximale Menge an Energierückgewinnung für diese Woche gekauft.",
@@ -551,15 +883,19 @@
     "fullRegen": "💓 Sie wurden vollständig versorgt.",
     "alreadyHaveBadge": "Sie besitzen diesen Ausweis bereits.",
     "badgeBought": "Sie haben eine neue Marke erhalten: {emote:badges.{{badgeName}}} !",
-    "notEnoughMoney": "Sie haben nicht genug Geld, um diesen Gegenstand zu kaufen! Es fehlt Ihnen `{{missingCurrency}} {emote:unitValues.{{currency}}}`.",
+    "notEnoughMoney": "Sie haben nicht genug Geld, um diesen Gegenstand zu kaufen! Es fehlt Ihnen `{{missingCurrency, number}} {emote:unitValues.{{currency}}}`.",
     "boughtTooMuchDailyPotions": "Es gibt keinen Trank des Tages mehr, der zum Verkauf angeboten wird... Kommen Sie morgen wieder!",
+    "boughtTooMuchTokens": "Sie haben im Moment das Limit für den Kauf von Tokens erreicht. Kommen Sie später wieder!",
+    "tokensBought_one": "Sie haben **{{count}} Token** {emote:unitValues.token}gekauft.",
+    "tokensBought_other": "Sie haben **{{count}} Token** {emote:unitValues.token}gekauft.",
+    "tokensFull": "Sie besitzen bereits die höchstmögliche Anzahl an Chips!",
     "title": "🛒 Anzeige des Magazins",
-    "currentMoney": "Sie haben `{{money}}{emote:unitValues.{{currency}}}`.",
-    "shopItemsDisplaySingle": "{{name}} | `{{price}}{emote:unitValues.{{currency}}}`",
-    "shopItemsDisplayMultiple": "**{{amount}}x** {{name}} | `{{price}}{emote:unitValues.{{currency}}}`",
+    "currentMoney": "Sie haben `{{money, number}}{emote:unitValues.{{currency}}}`.",
+    "shopItemsDisplaySingle": "{{name}} | `{{price, number}}{emote:unitValues.{{currency}}}`",
+    "shopItemsDisplayMultiple": "**{{amount, number}}x** {{name}} | `{{price, number}}{emote:unitValues.{{currency}}}`",
     "shopSelectPlaceholder": "Wählen Sie einen Gegenstand zum Kauf aus",
     "buyCategorySlotSuccess": "Sie haben einen neuen Inventarplatz gekauft!",
-    "shopItemsSelectDescription": "{{price}}{emote:unitValues.{{currency}}}",
+    "shopItemsSelectDescription": "{{price, number}}{emote:unitValues.{{currency}}}",
     "closeShopButton": "❌ Laden schließen",
     "shopConfirmationTitle": "{{pseudo}}Sie haben das folgende Produkt ausgewählt:",
     "shopConfirmationTitleMultiple": "{{pseudo}}Wählen Sie eine Menge für dieses Produkt:",
@@ -568,6 +904,9 @@
       "dailyPotion_zero": "Trank des Tages (ausverkauft)",
       "dailyPotion_one": "Trank des Tages ({{count}} verfügbar)",
       "dailyPotion_other": "Trank des Tages ({{count}} verfügbar)",
+      "token_zero": "Jetons (ausverkauft)",
+      "token_one": "Jeton ({{count}} verfügbar)",
+      "token_other": "Jetons ({{count}} verfügbar)",
       "slotExtension": "Inventarerweiterungen",
       "food": "Nahrung für Begleiter",
       "guildXp": "Erfahrung in der Gilde",
@@ -616,6 +955,10 @@
       "dailyPotion": {
         "info": "Sie erhalten einen Trank, bei dem Sie entscheiden, ob Sie ihn behalten wollen oder nicht. Wenn Sie ihn bereits haben, wird er ohne Rückerstattung weggeworfen!"
       },
+      "token": {
+        "name": "{emote:unitValues.token} Jeton",
+        "info": "Mit Tokens können Sie schneller vorankommen, indem Sie bestimmte Aktionen wie Berichte beschleunigen. Sie können bis zu 10 pro Tag und 30 pro Woche kaufen."
+      },
       "smallGuildXp": {
         "name": "{emote:shopItems.smallGuildXp} Ein bisschen xp für deine Gilde",
         "info": "Sie erhalten eine zufällige Menge an Gilden-Xp, die zwischen 50 und 450 liegt."
@@ -651,9 +994,9 @@
       },
       "money": {
         "name": "{emote:unitValues.money} Geld des Königs",
-        "info": "Nach den Tageskursen des Edelsteins und nach Abzug der Königssteuer erhalten Sie `{{kingsMoneyAmount}}` {emote:unitValues.money}.",
+        "info": "Nach den Tageskursen des Edelsteins und nach Abzug der Steuer des Königs erhalten Sie `{{kingsMoneyAmount, number}}` {emote:unitValues.money}.",
         "giveTitle": "{{pseudo}}Ich bin sehr zufrieden.",
-        "giveDescription": "Sie haben `{{amount}}` {emote:unitValues.money}erhalten."
+        "giveDescription": "Sie haben `{{amount, number}}` {emote:unitValues.money}erhalten."
       },
       "treasure": {
         "name": "{emote:shopItems.treasure} Königsschatz",
@@ -662,15 +1005,19 @@
       },
       "kingsFavor": {
         "name": "{emote:unitValues.score} Inbrunst des Königs",
-        "info": "Gewährt Ihnen {{thousandPoints}} Punkte. Kann nur einmal pro Woche verwendet werden.",
+        "info": "Gewährt Ihnen {{thousandPoints, number}} Punkte. Kann nur einmal pro Woche verwendet werden.",
         "giveTitle": "{{pseudo}}Ich bin sehr zufrieden.",
-        "giveDescription": "Sie haben {{thousandPoints}} {emote:unitValues.score}erhalten. Bis nächste Woche mit neuem Eifer!"
+        "giveDescription": "Sie haben {{thousandPoints, number}} {emote:unitValues.score}erhalten. Bis nächste Woche mit neuem Eifer!"
       },
       "lovePointsValue": {
         "name": "{emote:shopItems.lovePointsValue} Hoftierarzt",
         "info": "Erhalten Sie detaillierte Informationen über Ihren Vertrauten.",
         "giveTitle": "{{pseudo}}Ich bin sehr zufrieden.",
-        "giveDesc": "Nachdem der Tierarzt Ihr Tier und seinen Gesundheitszustand ausgiebig untersucht hat, gibt er Ihnen seinen Bericht:\n\n**{{petName}}** {{commentOnResult}}\n{emote:petInformation.loveScore} **Love Score**: {{actualLP}} / 100\n{emote:petInformation.diet} **Diät**: {{diet}}\n{emote:petInformation.nextFeed} **Nächster Hunger** : {{nextFeed}}\n{emote:petInformation.age} **Alter**: {{commentOnPetAge}}\n\n{emote:petInformation.fightEffect} **Kampfeffekt**: {{commentOnFightEffect}}",
+        "giveDesc": "Nachdem der Tierarzt Ihr Tier und seinen Gesundheitszustand ausgiebig untersucht hat, gibt er Ihnen seinen Bericht :\n\n**{{petName}}** {{commentOnResult}}\n{emote:petInformation.loveScore} **Liebeswert**: {{actualLP, number}} / {{maxLovePoints, number}}\n{emote:petInformation.diet} **Diät**: {{diet}}\n{emote:petInformation.force} **Stärke**: {{force, number}}\n{emote:petInformation.speed} **Geschwindigkeit**: {{speed, number}}\n{emote:petInformation.feedDelay} **Intervall zwischen den Mahlzeiten**: {{feedDelay}}\n{emote:petInformation.nextFeed} **Nächster Hunger**: {{nextFeed}}\n{emote:petInformation.age} **Alter**: {{commentOnPetAge}}\n\n{emote:petInformation.fightEffect} **Kampffähigkeit**: {{commentOnFightEffect}}{{expeditionSection}}\n\n {{dwarfPet}}",
+        "expeditionPreferences": "\n\n{emote:expedition.map} **Explorationszulagen**:\n{{likedLocations}}{{dislikedLocations}}",
+        "likedLocations": "{emote:expedition.liked} Erfolgreich in: {{locations}}",
+        "dislikedLocations": "\n{emote:expedition.disliked} Misstrauisch gegenüber : {{locations}}",
+        "noPreferences": "\n\n{emote:expedition.map} **Erkundungsvorteile: Ich beobachte bei Ihrem Vertrauten eine bemerkenswerte Anpassungsfähigkeit. Sein Instinkt ermöglicht es ihm, sich ohne besondere Schwierigkeiten an alle Arten von Gelände zu gewöhnen.",
         "petIsHungry": "{emote:effects.starving} hungrig",
         "commentOnFightEffect": {
           "bite": [
@@ -976,7 +1323,7 @@
   "classesInfo": {
     "title": {
       "list": ":bookmark: Liste der Klassen",
-      "attack": "{{emote}} {{name}} | {{cost}} {emote:unitValues.breath}"
+      "attack": "{{emote}} {{name}} | {{cost, number}} {emote:unitValues.breath}"
     },
     "description": {
       "list": "Hier finden Sie eine Liste der für Ihren Charakter verfügbaren Klassen und deren Statistiken. Um weitere Informationen zu einer Klasse zu erhalten, wählen Sie diese aus den unten stehenden Auswahlmöglichkeiten aus.\n"
@@ -987,11 +1334,11 @@
     },
     "displays": {
       "details": "{{classDetails}}\n\n**Angriffe, die für diese Klasse verfügbar sind:**\n",
-      "class": "{emote:unitValues.energy} {{fightPoint}} | {emote:unitValues.attack} {{attack}} | {emote:unitValues.defense} {{defense}} | {emote:unitValues.speed} {{speed}} | {emote:unitValues.breath} {{baseBreath}} / {{maxBreath}} | {emote:unitValues.breathRegen} {{breathRegen}} | {emote:unitValues.health} {{health}}"
+      "class": "{emote:unitValues.energy} {{fightPoint, number}} | {emote:unitValues.attack} {{attack, number}} | {emote:unitValues.defense} {{defense, number}} | {emote:unitValues.speed} {{speed, number}} | {emote:unitValues.breath} {{baseBreath, number}} / {{maxBreath, number}} | {emote:unitValues.breathRegen} {{breathRegen}} | {emote:unitValues.health} {{health, number}}"
     }
   },
   "respawn": {
-    "response_other": "{{respawnEmote}} | ** {{pseudo}} ** Wir haben Sie erfolgreich wiederbelebt! Bitte beachte jedoch, dass {{count}} {{scoreEmote}} während der Operation von deiner Punktzahl abgezogen wurden!",
+    "response_other": "{{respawnEmote}} | ** {{pseudo}} ** Wir haben Sie erfolgreich wiederbelebt! Bitte beachte jedoch, dass {{count, number}} {{scoreEmote}} während der Operation von deinem Punktestand abgezogen wurden!",
     "response_one": "{{respawnEmote}} | ** {{pseudo}} ** Wir haben Sie erfolgreich wiederbelebt! Bitte beachte jedoch, dass dir während der Operation 1 {{scoreEmote}} von deiner Punktzahl abgezogen wurde!",
     "alreadyAlive": "Es scheint, dass Sie nicht k.o. sind... Sie brauchen unsere Dienste nicht."
   },
@@ -1004,7 +1351,8 @@
       "guildKick": "Ausschluss aus der Gilde",
       "guildStatusChange": "Änderung des Status innerhalb der Gilde",
       "energy": "Regenerierte Energie",
-      "dailyBonus": "Täglicher Bonus"
+      "dailyBonus": "Täglicher Bonus",
+      "petExpedition": "Vertrautenversand beendet"
     },
     "enableDisable": "Aktivieren/Deaktivieren",
     "sendLocationField": "Ort der Versendung :",
@@ -1033,32 +1381,32 @@
     },
     "dailyFinished": "Sie haben die heutige Mission abgeschlossen! Kehren Sie zurück {{time}}.",
     "noCurrentMissions": "Gelegentlich finden Sie zusätzliche Aufgaben, die Sie erledigen können, wenn Sie einen Bericht anfordern.",
-    "missionDisplay_campaign": "{{mission}}\n{{progressionBar}} {{current}}/{{objective}}",
-    "missionDisplay_other": "{{mission}} (expire {{time}})\n{{progressionBar}} {{current}}/{{objective}}"
+    "missionDisplay_campaign": "{{mission}}\n{{progressionBar}} {{current, number}}/{{objective, number}}",
+    "missionDisplay_other": "{{mission}} (expire {{time}})\n{{progressionBar}} {{current, number}}/{{objective, number}}"
   },
   "guildShop": {
     "noFoodStorageSpace": "Sie haben nicht genug Platz in Ihrem Lagerraum, um diese Lebensmittel zu lagern.",
     "empty": "Im Moment gibt es nichts mehr zu kaufen. Ihre Gilde ist auf der höchsten Stufe und ihr Nahrungsvorrat ist voll.",
     "giveXpTitle": "Erfolg des Kaufs",
-    "giveXp": "{emote:unitValues.xp} Ihre Gilde hat **{{xp}}** Erfahrungspunkte erhalten."
+    "giveXp": "{emote:unitValues.xp} Ihre Gilde hat **{{xp, number}}** Erfahrungspunkte erhalten."
   },
   "guildDaily": {
     "rewardTitle": "Gildenbelohnung {{guildName}} :",
     "coolDown": "Die Gildenbelohnung ist nur einmal alle {{coolDownTime}} Stunden verfügbar. Wenn ein neues Mitglied zur Gilde hinzugefügt wird, wird der Zähler zurückgesetzt. Nächste Belohnung {{time}}.",
     "pveIslandError": "Die Gildenbelohnung kann nicht erlangt werden, da sich ein Mitglied derzeit auf einer mysteriösen Insel befindet!",
     "rewards": {
-      "personalXP": "{emote:unitValues.xp} | Die Mitglieder der Gilde haben Erfahrung erhalten. `+ {{quantity}} {emote:unitValues.xp}`.",
-      "guildXP": "{emote:unitValues.xp} | Die Gilde hat Erfahrung erhalten. `+ {{quantity}} {emote:unitValues.xp}`",
-      "money": "{emote:unitValues.money} | Die Mitglieder der Gilde haben `{{quantity}} {emote:unitValues.money}` erhalten.",
+      "personalXP": "{emote:unitValues.xp} | Die Mitglieder der Gilde haben Erfahrung erhalten. `+ {{quantity, number}} {emote:unitValues.xp}`.",
+      "guildXP": "{emote:unitValues.xp} | Die Gilde hat Erfahrung erhalten. `+ {{quantity, number}} {emote:unitValues.xp}`",
+      "money": "{emote:unitValues.money} | Die Mitglieder der Gilde haben `{{quantity, number}} {emote:unitValues.money}` erhalten.",
       "item": "{emote:rewards.item} | Die Mitglieder der Gilde haben einen zufälligen Gegenstand erhalten.",
       "badge": "{emote:badges.powerful_guild} | Die Mitglieder der Gilde haben ein Abzeichen erhalten.",
       "superBadge": "{emote:badges.very_powerful_guild} | Die Mitglieder der Gilde haben ein Abzeichen erhalten.",
       "fullHeal": "{emote:shopItems.regen} | Die Mitglieder der Gilde wurden vollständig geheilt.",
       "advanceTime": "{emote:unitValues.time} | Die Mitglieder der Gilde sind um {{quantity}}h vorgerückt.",
-      "partialHeal": "{emote:rewards.partialHeal} | Die Mitglieder der Gilde wurden teilweise geheilt. `+ {{quantity}} {emote:unitValues.health}`",
-      "alterationHeal": "{emote:shopItems.healAlteration} | Die Zustandsveränderungen von Gildenmitgliedern wurden entfernt. Gesunde Mitglieder wurden teilweise geheilt. `+ {{quantity}} {emote:unitValues.health}`",
+      "partialHeal": "{emote:rewards.partialHeal} | Die Mitglieder der Gilde wurden teilweise geheilt. `+ {{quantity, number}} {emote:unitValues.health}`",
+      "alterationHeal": "{emote:shopItems.healAlteration} | Die Zustandsveränderungen von Gildenmitgliedern wurden entfernt. Gesunde Mitglieder wurden teilweise geheilt. `+ {{quantity, number}} {emote:unitValues.health}``",
       "alterationNoHeal": "{emote:shopItems.healAlteration} | Die Statusveränderungen von Gildenmitgliedern wurden entfernt.",
-      "petFood": "{emote:foods.commonFood} {{quantity}} Süßigkeiten wurden dem Inventar Ihrer Gilde hinzugefügt.",
+      "petFood": "{emote:foods.commonFood} {{quantity, number}} Süßigkeiten wurden dem Inventar deiner Gilde hinzugefügt.",
       "pet_male": "{emote:pets.{{petId}}.emoteMale} | Ein Vertrauter hat sich der Gildenhütte angeschlossen: **{{pet}}**",
       "pet_female": "{emote:pets.{{petId}}.emoteFemale} | Ein Vertrauter hat sich der Gildenhütte angeschlossen: **{{pet}}**"
     }
@@ -1088,7 +1436,7 @@
     "himself": "Wenn Sie sich nicht selbst befreien können, bitten Sie einen Freund, dies zu tun.",
     "notInJail": "Dieser Spieler befindet sich nicht im Gefängnis.",
     "title": "Befreiung von {{pseudo}}",
-    "confirmDesc": "Sind Sie sicher, dass Sie **{{pseudo}}** für **{{price}} {emote:unitValues.money}** freigeben möchten?",
+    "confirmDesc": "Sind Sie sicher, dass Sie **{{pseudo}}** für **{{price, number}}** freigeben möchten? {emote:unitValues.money}**?",
     "canceledTitle": "Befreiung abgebrochen",
     "canceledDesc": "Die Freilassung wurde rückgängig gemacht.",
     "acceptedDesc": "Sie haben **{{pseudo}}** befreit!"
@@ -1107,27 +1455,27 @@
     }
   },
   "top": {
-    "level": "Ebene {{level}}",
-    "titleScoreAllTime": "{emote:top.congrats} Anzeige der Top-Plätze {{minRank}} an {{maxRank}}",
-    "titleScoreWeekly": "{emote:top.congrats} Anzeige der wöchentlichen Top-Platzierungen {{minRank}} an {{maxRank}}",
+    "level": "Ebene {{level, number}}",
+    "titleScoreAllTime": "{emote:top.congrats} Anzeige der Top-Plätze {{minRank, number}} bis {{maxRank, number}}",
+    "titleScoreWeekly": "{emote:top.congrats} Anzeige der Tops der Woche von den Plätzen {{minRank, number}} bis {{maxRank, number}}",
     "yourRankTitle": "**Ihre Platzierung**",
-    "yourRankFirst_one": "{emote:top.congrats} Herzlichen Glückwunsch **{{pseudo}}**! Sie sind derzeit der Beste von insgesamt {{total}} Spielern!",
-    "yourRankFirst_other": "{emote:top.congrats} Herzlichen Glückwunsch **{{pseudo}}**! Sie sind derzeit der Beste von insgesamt {{total}} Spielern!",
-    "yourRank_one": "{{badge}} **{{pseudo}}**, Sie sind momentan auf Rang **{{rank}}°** von insgesamt {{total}} Spielern!",
-    "yourRank_other": "{{badge}} **{{pseudo}}**, Sie sind momentan auf Rang **{{rank}}°** von insgesamt {{total}} Spielern!",
+    "yourRankFirst_one": "{emote:top.congrats} Herzlichen Glückwunsch **{{pseudo}}**! Sie sind derzeit der Beste von insgesamt {{total, number}} Spielern!",
+    "yourRankFirst_other": "{emote:top.congrats} Herzlichen Glückwunsch **{{pseudo}}**! Sie sind derzeit der Beste von insgesamt {{total, number}} Spielern!",
+    "yourRank_one": "{{badge}} **{{pseudo}}**, du bist momentan auf Platz **{{rank, number}}** von insgesamt {{total, number}} Spielern!",
+    "yourRank_other": "{{badge}} **{{pseudo}}**, du bist momentan auf Platz **{{rank, number}}** von insgesamt {{total, number}} Spielern!",
     "yourRankNoneScore": "{emote:top.error} | Sie erscheinen leider nicht in der Top-Liste, da Sie eine Punktzahl von 100 oder weniger haben!",
-    "yourRankAtPage": "(Sie finden sich auf der Seite {{page}} / {{maxPage}})",
-    "titleGlory": "{emote:unitValues.glory} Top-Glory-Anzeige der Plätze {{minRank}} für {{maxRank}}",
-    "yourRankNoneGlory_one": "{emote:top.error} | Sie erscheinen leider nicht in der Top-Liste, weil Sie noch nicht genügend Ranglistenkämpfe absolviert haben! Du musst noch {{needFight}} Ranglistenkämpfe absolvieren.",
-    "yourRankNoneGlory_other": "{emote:top.error} | Sie erscheinen leider nicht in der Top-Liste, weil Sie noch nicht genug Ranglistenkämpfe absolviert haben! Sie müssen noch {{needFight}} Ranglistenkämpfe absolvieren.",
-    "titleGuild": "{emote:top.guild} Anzeige der Top-Gilden-Plätze {{minRank}} an {{maxRank}}",
+    "yourRankAtPage": "(Sie finden sich auf der Seite {{page, number}} / {{maxPage, number}})",
+    "titleGlory": "{emote:unitValues.glory} Anzeige des Top-Ruhmes der Plätze {{minRank, number}} bis {{maxRank, number}}",
+    "yourRankNoneGlory_one": "{emote:top.error} | Sie erscheinen leider nicht in der Top-Liste, da Sie noch nicht genügend Ranglistenkämpfe absolviert haben! Sie müssen noch {{needFight, number}} Ranglistenkämpfe absolvieren.",
+    "yourRankNoneGlory_other": "{emote:top.error} | Sie erscheinen leider nicht in der Top-Liste, da Sie noch nicht genügend Ranglistenkämpfe absolviert haben! Sie müssen noch {{needFight, number}} Ranglistenkämpfe absolvieren.",
+    "titleGuild": "{emote:top.guild} Anzeige der Top-Gilden von den Plätzen {{minRank, number}} bis {{maxRank, number}}",
     "yourRankGuildTitle": "**Rangliste deiner Gilde**",
-    "yourRankGuildFirst_one": "{emote:top.congrats} Herzlichen Glückwunsch **{{pseudo}}**! Eure Gilde ist derzeit die beste von insgesamt {{total}} Gilden!",
-    "yourRankGuildFirst_other": "{emote:top.congrats} Herzlichen Glückwunsch **{{pseudo}}**! Eure Gilde ist derzeit die beste von insgesamt {{total}} Gilden!",
-    "yourRankGuild_one": "{{badge}} **{{pseudo}}**, deine Gilde ist derzeit auf Platz **{{rank}}°** von insgesamt {{total}} Gilden!",
-    "yourRankGuild_other": "{{badge}} **{{pseudo}}**, deine Gilde ist momentan auf Platz **{{rank}}°** von insgesamt {{total}} Gilden!",
+    "yourRankGuildFirst_one": "{emote:top.congrats} Herzlichen Glückwunsch **{{pseudo}}**! Eure Gilde ist derzeit die beste von insgesamt {{total, number}} Gilden!",
+    "yourRankGuildFirst_other": "{emote:top.congrats} Herzlichen Glückwunsch **{{pseudo}}**! Eure Gilde ist derzeit die beste von insgesamt {{total, number}} Gilden!",
+    "yourRankGuild_one": "{{badge}} **{{pseudo}}**, deine Gilde ist momentan auf Platz **{{rank, number}}** von insgesamt {{total, number}} Gilden!",
+    "yourRankGuild_other": "{{badge}} **{{pseudo}}**, deine Gilde ist derzeit auf Platz **{{rank, number}}** von insgesamt {{total, number}} Gilden!",
     "yourRankNoneGuild": "{emote:top.error} | Deine Gilde erscheint leider nicht in der Top-Liste, da sie keine Gildenpunkte hat!",
-    "yourRankAtPageGuild": "(Sie finden sie auf der Seite {{page}} / {{maxPage}})",
+    "yourRankAtPageGuild": "(Sie finden sie auf der Seite {{page, number}} / {{maxPage, number}})",
     "noGuild": "{emote:top.error} | Du erscheinst nicht in dieser Rangliste, da du keiner Gilde angehörst!",
     "nobodyInTopPlayers": "Derzeit sind keine Spieler klassifiziert!",
     "nobodyInTopGlory": "Derzeit ist kein Spieler in der Rangliste! Schließe noch {{needFight}} Ranglistenkampf ab, um in der Rangliste zu erscheinen!",
@@ -1137,17 +1485,18 @@
   "fight": {
     "title": "{{pseudo}}Sie sind im Begriff, einen Kampf zu beginnen.",
     "canceledTitle": "{{pseudo}}Sie haben die Suche abgebrochen.",
-    "confirmDesc": "{emote:fightCommand.crossedSwords} | **{{pseudo}}**{{confirmSubText}}\n\n{emote:fightCommand.crossedSwords} | ** Kämpfer : {{pseudo}}** | {{glory}} | {{className}} {{pet}}\n\n{{stats}}",
+    "confirmDesc": "{emote:fightCommand.crossedSwords} | **{{pseudo}}**{{confirmSubText}}\n\n{emote:fightCommand.crossedSwords} | **Kämpfer: {{pseudo}}** | {{glory, number}} | {{className}} {{pet}}\n\n{{stats}~ }",
     "pet": "| {{petInfo}}",
+    "petOnExpedition": "| ~~{{petInfo}}~~",
     "confirmSubTexts": {
       "common": "Möchten Sie eine Kampfsuche starten?",
       "rare": "Würden Sie sich an der Suche nach einem Kämpfer beteiligen, der Ihrer persönlichen Stärke entspricht, um das anschließende Duell zu bestreiten?"
     },
     "canceledDesc": "Sie haben die Suche nach einem Kampf abgebrochen.",
     "information": {
-      "glory": "{emote:unitValues.glory} {{gloryPoints}}",
+      "glory": "{emote:unitValues.glory} {{gloryPoints, number}}",
       "class": "$t(models:classFormat)",
-      "stats": ":zap: {{cumulativeHealth}} / {{cumulativeMaxHealth}} | :dagger: {{cumulativeAttack}} | :shield: {{cumulativeDefense}} | :rocket: {{cumulativeSpeed}} | :wind_blowing_face: {{baseBreath}} / {{maxBreath}} | :lungs: {{breathRegen}}"
+      "stats": ":zap: {{cumulativeHealth, number}} / {{cumulativeMaxHealth, number}} | :dagger: {{cumulativeAttack, number}} | :shield: {{cumulativeDefense, number}} | :rocket: {{cumulativeSpeed, number}} | :wind_blowing_face: {{baseBreath, number}} / {{maxBreath, number}} | :lungs: {{breathRegen}}"
     },
     "opponentsNotFound": "Es wurde kein Gegner gefunden, der gegen Sie antreten kann. Sie können es später noch einmal versuchen.",
     "notEnoughEnergy": "Sie haben nicht genug Energie, um einen Kampf zu beginnen!",
@@ -1155,7 +1504,7 @@
     "fightIntroTitle": "{emote:fightCommand.crossedSwords} | Ein Kampf wird zwischen {{fightInitiator}} und {{opponent}} gestartet!",
     "actionsOf": "**Angriffe von {{pseudo}} :**",
     "petOf": "**Familienmitglied von {{pseudo}} :**",
-    "fightActionNameDisplay": "{{fightActionEmote}} - {{fightActionName}} | {emote:unitValues.breath} {{breathCost}}",
+    "fightActionNameDisplay": "{{fightActionEmote}} - {{fightActionName}} | {emote:unitValues.breath} {{breathCost, number}}",
     "summarize": {
       "title": "Zusammenfassung des Kampfes",
       "intro": {
@@ -1165,14 +1514,60 @@
       },
       "attacker": "{emote:unitValues.attack} | **Stürmer : {{pseudo}}**\n",
       "defender": "\n\n{emote:unitValues.defense} | **Verteidiger : {{pseudo}}**\n",
-      "stats": "{emote:unitValues.energy} {{power}} | {emote:unitValues.attack} {{attack}} | {emote:unitValues.defense} {{defense}} | {emote:unitValues.speed} {{speed}} | {emote:unitValues.breath} {{breath}} / {{maxBreath}} | {emote:unitValues.breathRegen} {{breathRegen}}"
+      "stats": "{emote:unitValues.energy} {{power, number}} | {emote:unitValues.attack} {{attack, number}} | {emote:unitValues.defense} {{defense, number}} | {emote:unitValues.speed} {{speed, number}} | {emote:unitValues.breath} {{breath, number}} / {{maxBreath, number}} | {emote:unitValues.breathRegen} {{breathRegen}}"
     },
     "end": {
       "draw": "{emote:commands.report} | **{{player1}} und {{player2}} beenden ihren Kampf mit einem Unentschieden!**\n\n",
       "win": "{emote:commands.report}| **{{winner}} gewinnt das Spiel gegen {{loser}}**\n\n",
       "gameStats": "{emote:fightCommand.gameStats} | Kampfstatistiken\n- **Runden**: {{turn}}/{{maxTurn}}\n- **Kampfzeit**: {{time}}",
       "gameStatsProlongation": "{emote:fightCommand.gameStats} | Kampfstatistik\n- **Runden**: {{turn}}/{{maxTurn}} (Verlängerungen)\n- **Kampfzeit**: {{time}}",
-      "fighterStats": "\n\n{emote:fightCommand.fighterStats} | Statistiken von {{pseudo}}\n- **Endgültiges Leben**: {{energy}}/{{maxEnergy}} {emote:unitValues.energy}"
+      "fighterStats": "\n\n{emote:fightCommand.fighterStats} | Statistiken von {{pseudo}}\n- **Endgültiges Leben**: {{energy, number}}/{{maxEnergy, number}} {emote:unitValues.energy}"
+    },
+    "petReactions": {
+      "loveGain": [
+        "{{pet}} jubelt vor Freude über den Sieg! Er hüpft stolz um {{player}}.",
+        "{{pet}} strahlt vor Stolz und hüpft freudig um {{player}} herum!",
+        "{{pet}} jubelt und zeigt seine Freude, indem er um {{player}}herumschwirrt.",
+        "{{pet}} bricht vor Glück in Tränen aus und pariert stolz vor {{player}} !",
+        "{{pet}} zeigt seine Begeisterung, indem er an die Seite von {{player}}springt.",
+        "{{pet}} sprudelt vor Freude über und schwirrt aufgeregt um {{player}} herum!",
+        "{{pet}} zeigt eine strahlende Zufriedenheit und tanzt um {{player}}.",
+        "{{pet}} strahlt Zufriedenheit aus und cabriotiert fröhlich in der Nähe von {{player}} !",
+        "{{pet}} feiert diesen Sieg, indem er fröhlich um {{player}}herumhüpft.",
+        "{{pet}} jubelt und macht begeisterte Sprünge um {{player}} !",
+        "{{pet}} zeigt seine Freude durch energische Sprünge in der Nähe von {{player}}.",
+        "{{pet}} zeigt offensichtliches Glück, wenn sie stolz um {{player}} herumschwirrt!",
+        "{{pet}} drückt seinen Stolz aus, indem er fröhlich um {{player}}herumtollt.",
+        "{{pet}} sprüht vor Enthusiasmus und wirbelt energisch in der Nähe von {{player}} herum!",
+        "{{pet}} strahlt Zufriedenheit aus und pariert siegreich vor {{player}}.",
+        "{{pet}} zeigt seine Zufriedenheit, indem er kräftig um {{player}} herumspringt!",
+        "{{pet}} jubelt vor Stolz und springt anmutig in die Nähe von {{player}}.",
+        "{{pet}} zeigt unbändige Freude beim Tanzen um {{player}} !",
+        "{{pet}} berühmt durch begeisterte Kapriolen in der Nähe von {{player}}.",
+        "{{pet}} strahlt vor Glück und dreht sich stolz um {{player}} !"
+      ],
+      "trained": [
+        "{{pet}} bleibt ruhig und zufrieden, was ein Beweis für seine hervorragende Ausbildung ist.",
+        "{{pet}} zeigt eine ruhige Selbstsicherheit, die von seiner perfekten Disziplin zeugt.",
+        "{{pet}} steht stolz da, wie der gut dressierte Gefährte, der er ist.",
+        "{{pet}} behält seine gewohnte Gelassenheit, die ein Zeichen für eine vorbildliche Dressur ist.",
+        "{{pet}} zeigt eine verhaltene Zufriedenheit, die eines gut erzogenen Tieres würdig ist.",
+        "{{pet}} behält seine legendäre Ruhe, die ein Beweis für seine erfolgreiche Dressur ist.",
+        "{{pet}} bleibt stoisch, wie ein perfekt disziplinierter Gefährte.",
+        "{{pet}} zeigt einen maßvollen Stolz, der für eine ausgezeichnete Dressur charakteristisch ist.",
+        "{{pet}} behält seine gefasste Haltung bei, die ein Zeichen für eine tadellose Erziehung ist.",
+        "{{pet}} bleibt gelassen, wie jeder bewundernswert dressierte Vertraute.",
+        "{{pet}} behält seine gewohnte Haltung, die das Ergebnis einer strengen Dressur ist.",
+        "{{pet}} bleibt unbeeindruckt, was ein Beweis für seine perfekte Konditionierung ist.",
+        "{{pet}} zeigt eine ruhige Würde, die für eine gute Dressur charakteristisch ist.",
+        "{{pet}} behält seine Souveränität bei und zeugt von seiner vorbildlichen Ausbildung.",
+        "{{pet}} bleibt ungerührt, was ein Zeichen für eine erfolgreiche Dressur ist.",
+        "{{pet}} behält seine disziplinierte Haltung bei, die ein Beweis für eine erfolgreiche Erziehung ist.",
+        "{{pet}} bleibt zusammengesetzt, wie ein perfekt ausgebildeter Geselle.",
+        "{{pet}} zeigt eine kontrollierte Gelassenheit, die das Ergebnis einer ausgezeichneten Dressur ist.",
+        "{{pet}} behält seine Contenance bei, was ein Zeichen für tadellose Disziplin ist.",
+        "{{pet}} bleibt wie jedes prächtig dressierte Tier in Pose."
+      ]
     },
     "fightActionChoose": {
       "turnIndicationTitle": "Jetzt ist {{pseudo}} an der Reihe {emote:fightCommand.crossedSwords}",
@@ -1235,22 +1630,22 @@
       "fightActionEffects": {
         "self": {
           "newAlteration": " `Sie sind jetzt {{effect}} !`",
-          "damages": " `Empfangener Schaden: {{amount}}`",
-          "defense": " `Verteidigung: {{operator}} {{amount}}%`",
-          "breath": " `Souffle: {{operator}} {{amount}}`",
-          "speed": " `Geschwindigkeit: {{operator}} {{amount}}%`",
-          "attack": " `Angriff: {{operator}} {{amount}}%`",
-          "energy": " `Gewonnene Energie: {{amount}}`"
+          "damages": " `Empfangene Schäden: {{amount, number}}`",
+          "defense": " `Verteidigung: {{operator}} {{amount, number}} %`",
+          "breath": " `Atem: {{operator}} {{amount, number}}`",
+          "speed": " `Geschwindigkeit: {{operator}} {{amount, number}} %`",
+          "attack": " `Angriff: {{operator}} {{amount, number}} %`",
+          "energy": " `Gewonnene Energie: {{amount, number}}`"
         },
         "opponent": {
           "newAlteration": " `Ihr Gegner ist nun {{effect}} !`",
-          "damages": " `Angerichteter Schaden: {{amount}}`",
-          "defense": " `Verteidigung des Gegners: {{operator}} {{amount}}%`",
-          "breath": " `Atem des Gegners: {{operator}} {{amount}}`.",
-          "speed": " `Gegnerische Geschwindigkeit: {{operator}} {{amount}}%`",
-          "attack": " `Angriff des Gegners: {{operator}} {{amount}}%`",
-          "energy": " `Energie des Gegners zurückgewonnen: {{amount}}`.",
-          "summoning": " `Berufung von {{amount}} Verbündeten`."
+          "damages": " `Angerichteter Schaden: {{amount, number}}`",
+          "defense": " `Verteidigung des Gegners: {{operator}} {{amount, number}} %`",
+          "breath": " `Atem des Gegners: {{operator}} {{amount, number}}`",
+          "speed": " `Gegnerische Geschwindigkeit: {{operator}} {{amount, number}} %`",
+          "attack": " `Angriff des Gegners: {{operator}} {{amount, number}} %`",
+          "energy": " `Energie des Gegners zurückgewonnen: {{amount, number}}`",
+          "summoning": " `Berufung von {{amount, number}} Verbündeten`."
         }
       },
       "aiChoose": "{emote:fightCommand.aiThinking} Der Gegner wählt einen Angriff..."
@@ -1258,9 +1653,10 @@
     "fightReward": {
       "title": "{emote:fightCommand.gloryChange} Kampfbelohnungen",
       "scoreAndMoneyField": "Belohnungen für den Kampf",
-      "noReward": "Sie haben alle Kampfbelohnungen aufgebraucht, kommen Sie morgen wieder.",
-      "points": "{emote:unitValues.score} Gewonnene Punkte : **{{count}}**",
-      "money": "{emote:unitValues.money} Verdientes Geld : **{{count}}**",
+      "petLoveField": "Beziehung zu Vertrautem",
+      "noReward": "{{player}} bewies, warum er als einer der Besten gilt, und gewann das Spiel mühelos.",
+      "points": "{emote:unitValues.score} Verdiente Punkte: **{{count, number}}**",
+      "money": "{emote:unitValues.money} Verdientes Geld : **{{count, number}}**",
       "gloryField": "Veränderungen der Herrlichkeit",
       "gloryNegative": "**{{player}} :** - {{count}} {emote:unitValues.glory}\n",
       "gloryPositive": "**{{player}} :** + {{count}} {emote:unitValues.glory}\n",
@@ -1351,6 +1747,7 @@
   },
   "petSell": {
     "noPet": "Sie haben keine Vertrauten zu verkaufen!",
+    "petOnExpedition": "Ihr Vertrauter befindet sich derzeit im Versand und kann nicht verkauft werden.",
     "noGuild": "Sie können Ihren Begleiter nicht verkaufen, weil Sie nicht in einer Gilde sind. Dies liegt daran, dass der Verkauf eines Begleiters Gildenerfahrung generiert.",
     "isFeisty": "Sie können einen galligen Vertrauten nicht verkaufen.",
     "badPrice": "Der Preis muss höher als `{{minPrice}}{emote:unitValues.money}` und niedriger als `{{maxPrice}}{emote:unitValues.money}` sein.",
@@ -1360,11 +1757,11 @@
     "noOneAvailable": "Leider scheint niemand verfügbar zu sein, der Ihr Haustier kaufen möchte. Ihr Verkauf wurde storniert.",
     "sameGuild": "Du kannst dieses Haustier nicht kaufen, weil der Verkäufer Mitglied deiner Gilde ist.",
     "alreadyHavePet": "Sie haben bereits einen Vertrauten in Ihrem Inventar.",
-    "notEnoughMoney": "Sie haben nicht genug Geld, um diese Transaktion durchzuführen. Es fehlt Ihnen `{{missingMoney}}{emote:unitValues.money}`.",
+    "notEnoughMoney": "Sie haben nicht genug Geld, um diese Transaktion durchzuführen. Es fehlt Ihnen `{{missingMoney, number}}{emote:unitValues.money}`.",
     "initiatorSituationChanged": "Der Verkäufer ist nicht mehr in der Lage, sein Haustier zu verkaufen. Der Verkauf wurde abgebrochen.",
     "sellTitle": "Verkauf eines Vertrauten",
     "sellTitleWithBuyer": "{{buyer}} {{seller}} möchte Ihnen ein Haustier verkaufen:",
-    "sellDescription": "{{pseudo}} möchte einen Vertrauten für `{{price}}{emote:unitValues.money}` verkaufen",
+    "sellDescription": "{{pseudo}} möchte einen Vertrauten für `{{price, number}}{emote:unitValues.money}` verkaufen",
     "maxLevelWarning": "{emote:collectors.warning} Ihre Gilde ist auf der höchsten Stufe, Sie erhalten keine Erfahrung!",
     "petFieldName": "Vertraute verkauft :",
     "sellFooter": "Weitere Informationen über den Verkauf von Haustieren erhalten Sie mit dem Befehl help petsell.",
@@ -1416,22 +1813,22 @@
   },
   "sell": {
     "noItemToSell": "Sie haben leider keine Gegenstände in Ihrem Vorrat!",
-    "confirmSell": "Sind Sie sicher, dass Sie sich von {{item}} für **{{value}}** {emote:unitValues.money} trennen wollen?",
+    "confirmSell": "Sind Sie sicher, dass Sie sich von {{item}} für **{{value, number}}** {emote:unitValues.money} trennen wollen?",
     "sellCanceled": "Der Verkauf wurde tatsächlich storniert!",
     "sellTitle": "{{pseudo}}Bestätigung :",
-    "soldMessage": "Sie haben {{item}} für **{{value}}** {emote:unitValues.money} verkauft!",
+    "soldMessage": "Sie haben {{item}} für **{{value, number}}** {emote:unitValues.money} verkauft!",
     "soldMessageTitle": "{{pseudo}}Sie haben eine Ausrüstung verkauft.",
     "potionDestroyedTitle": "Sie haben einen Trank zerstört.",
     "potionDestroyedMessage": "**{{item}}** wurde in ein Waschbecken geschüttet.",
     "soldMessageAlreadyOwnTitle": "{{pseudo}}Sie haben eine Ausrüstung erhalten, die Sie bereits besessen haben.",
     "titleChoiceEmbed": "{{pseudo}}Verkauf von Gegenständen",
-    "sellField": "{{name}} | {{value}} {emote:unitValues.money}",
+    "sellField": "{{name}} | {{value, number}} {emote:unitValues.money}",
     "throwAwayField": "{{name}} | {emote:other.trash}",
     "confirmThrowAway": "Sind Sie sicher, dass Sie {{item}} wegwerfen möchten?",
     "sellIndication": "Wählen Sie aus der folgenden Liste einen Gegenstand zum Verkaufen aus:",
     "menuPlaceholder": "Wählen Sie einen Gegenstand zum Verkaufen",
     "cancel": "Abbrechen",
-    "selectMenuDescSell": "Verkaufen für {{value}} {emote:unitValues.money}",
+    "selectMenuDescSell": "Verkaufen für {{value, number}} {emote:unitValues.money}",
     "selectMenuDescThrow": "Werfen {emote:other.trash}"
   },
   "petTransfer": {
@@ -1453,10 +1850,12 @@
     "withdrawPlaceholder": "Wählen Sie einen Begleiter zum Entfernen",
     "switchPlaceholder": "Wählen Sie einen Vertrauten, den Sie gegen {{pet}}eintauschen möchten.",
     "selectMenuPetDetails": "{{rarity}} | {{sex}} | {{loveLevel}}",
-    "feistyError": "Sie können einen galligen Begleiter nicht übertragen."
+    "feistyError": "Sie können einen galligen Begleiter nicht übertragen.",
+    "petOnExpedition": "Ihr Begleiter befindet sich derzeit auf einer Expedition und kann nicht übertragen werden."
   },
   "petFeed": {
     "noPet": "Sie haben keine Vertrauten!",
+    "petOnExpedition": "Ihr Begleiter befindet sich derzeit auf einer Expedition und kann nicht gefüttert werden.",
     "noMoney": "Sie haben nicht genug Geld, um diesen Kauf zu tätigen...",
     "notHungry": "Es scheint, dass **{{pet}}** keinen Hunger hat...",
     "guildStorageEmpty": "Das Nahrungslager Ihrer Gilde ist leer. Kaufen Sie Nahrung mit {command:guildshop}.",
@@ -1470,9 +1869,9 @@
     },
     "feedTitle": "{{pseudo}}Fütterung Ihres Haustieres",
     "feedDescription": "Wählen Sie eine Nahrung für **{{pet}}**:",
-    "feedFoodBullet": "- **{{food}}** ({{amount}} / {{maxAmount}})",
+    "feedFoodBullet": "- **{{food}}** ({{amount, number}} / {{maxAmount, number}})",
     "cancelButton": "Abbrechen",
-    "feedWithoutGuildDesc": "Möchten Sie ein Leckerli für {{pet}} kaufen?\n\n{{food}} | `{{price}}{emote:unitValues.money}`"
+    "feedWithoutGuildDesc": "Möchten Sie eine Süßigkeit für {{pet}} kaufen?\n\n{{food}} | `{{price, number}}{emote:unitValues.money}`"
   },
   "leagueReward": {
     "errors": {
@@ -1482,8 +1881,8 @@
     },
     "title": "{{pseudo}}Sie haben Ihre Liga-Belohnung erhalten!",
     "description": {
-      "first": "Sie seid die vorhergehende Liga mit **{{glory}} Ruhm geendet. \n\n**Sie geendet auf dem $t(models:ordinals.get, {\"count\": {{rank}}, \"context\":\"feminine\", \"ordinal\": true}) Platz!**\nSie letzte Liga ist: **{emote:leagues.{{leagueId}}} $t(models:leagues.{{leagueId}})**.\n\n{emote:unitValues.money} Verdientes Geld : **{{money}}** !\n{emote:unitValues.xp} Verdiente XP : **{{xp}}** !\n{emote:unitValues.score} Verdiente Punkte : **{{score}}** !\n{emote:unitValues.glory} Am Ende der Saison wurde ihnen ein Abzeichen geschenkt.\n{emote:rewards.item} Sie erhalten eine zufällige Ausrüstung!",
-      "other": "Sie haben die vorherige Liga mit **{{glory}} Ruhm abgeschlossen. {emote:unitValues.glory}**\n\n Sie schließen mit $t(models:ordinals.get, {\"count\": {{rank}}, \"ordinal\": true}) ab!\nIhre endgültige Liga ist : **{emote:leagues.{{leagueId}}}$t(models:leagues.{{leagueId}})**.\n\n{emote:unitValues.money} Verdientes Geld : **{{money}}**!\n{emote:unitValues.xp} Verdiente XP : **{{xp}}**!\n{emote:unitValues.score} Verdiente Punkte : **{{score}}** !\n{emote:rewards.item} Sie erhalten eine zufällige Ausrüstung!"
+      "first": "Sie haben die vorherige Liga mit **{{glory, number}} Ruhm beendet. {emote:unitValues.glory}**\n\n**Sie schließen auf dem $t(models:ordinals.get, {\"count\": {{rank}}, \"context\":\"feminine\", \"ordinal\": true}) Platz ab!**\nIhre endgültige Liga ist : **{emote:leagues.{{leagueId}}~ } $t(models:leagues.{{leagueId}})**.\n\n{emote:unitValues.money} Verdientes Geld: **{{money, number}}**!\n{emote:unitValues.xp} Gewonnene Erfahrung: **{{xp, number}}**!\n{emote:unitValues.score} Verdiente Punkte: **{{score, number}}**!\n{emote:unitValues.glory} Am Ende der Saison wurde dir ein Abzeichen verliehen.\n{emote:rewards.item} Sie erhalten eine zufällige Ausrüstung!",
+      "other": "Sie haben die vorherige Liga mit **{{glory, number}} Ruhm beendet. {emote:unitValues.glory}**\n\n Sie schließen mit $t(models:ordinals.get, {\"count\": {{rank}}, \"ordinal\": true}) ab!\nIhre endgültige Liga ist : **{emote:leagues.{{leagueId}}~ }$t(models:leagues.{{leagueId}})**.\n\n{emote:unitValues.money} Verdientes Geld : **{{money, number}}**!\n{emote:unitValues.xp} Gewonnene Erfahrung: **{{xp, number}}**!\n{emote:unitValues.score} Verdiente Punkte: **{{score, number}}**!\n{emote:rewards.item} Sie erhalten eine zufällige Ausrüstung!"
     }
   },
   "guildStorage": {
@@ -1494,7 +1893,7 @@
     },
     "food": {
       "title": "{emote:foods.{{foodId}}} $t(models:foods.{{foodId}}, {\"context\": \"capitalized\"})",
-      "description": "**Stock**: {{amount}}/{{maxAmount}}\n"
+      "description": "**Stock**: {{amount, number}}/{{maxAmount, number}}\n"
     }
   },
   "joinBoat": {
@@ -1512,12 +1911,12 @@
       },
       "description": {
         "confirmation": {
-          "text": "{emote:guild.isOnBoat} Sind Sie sicher, dass Sie sich Ihrer Gilde auf dem Schiff anschließen möchten?\nDer Kapitän teilt Ihnen mit, dass die Reise **{{priceText}}**.\n\nMöchten Sie auf die Insel reisen? Sie haben {emote:unitValues.energy} **{{currentEnergy}}/{{maxEnergy}}**.",
+          "text": "{emote:guild.isOnBoat} Sind Sie sicher, dass Sie sich Ihrer Gilde auf dem Schiff anschließen möchten?\nDer Kapitän weist Sie darauf hin, dass die Reise **{{priceText}}**.\n\nMöchten Sie auf die Insel reisen? Sie haben {emote:unitValues.energy} **{{currentEnergy, number}}/{{maxEnergy, number}}**.",
           "priceText_zero": "ist kostenlos",
           "priceText_other": "kostet {{gemsCost}} {emote:unitValues.gem}"
         },
         "confirmed": "{{gainScore}} Sie schließen sich Ihrer Gilde auf dem Schiff an.",
-        "confirmedScore": "**{emote:unitValues.score} Gewonnene Punkte:** {{score}}\n"
+        "confirmedScore": "**{emote:unitValues.score} Gewonnene Punkte:** {{score, number}}\n"
       }
     },
     "refuse": "Sie entscheiden sich schließlich dafür, hier zu bleiben und sich nicht Ihrer Gilde auf dem Schiff anzuschließen."
@@ -1541,7 +1940,7 @@
   "fightHistory": {
     "noHistory": "Sie haben noch keine Kämpfe in Ihrem Verlauf.",
     "title": "{{pseudo}}Geschichte der Kämpfe",
-    "historyLine": "{{date}}\n{{attackSentence}}\n**Ergebnis:** {{resultSentence}}\n**Ihr Ruhm:** {emote:unitValues.glory} {{meInitialGlory}} -> {{meFinalGlory}}{{meLeagueChange}}\n**Gegnerischer Ruhm:** {emote:unitValues.glory} {{opponentInitialGlory}} -> {{opponentFinalGlory}}",
+    "historyLine": "{{date}}\n{{attackSentence}}\n**Ergebnis:** {{resultSentence}}\n**Ihr Ruhm:** {emote:unitValues.glory} {{meInitialGlory, number}} -> {{meFinalGlory, number}}{{meLeagueChange}} }\n**Gegnerischer Ruhm:** {emote:unitValues.glory} {{opponentInitialGlory, number}} -> {{opponentFinalGlory, number}}",
     "attackSentence": {
       "attacker": "{emote:fightCommand.crossedSwords} Sie haben angegriffen **{{opponent}}** ({emote:classes.{{opponentClassId}}} $t(models:classes.{{opponentClassId}}))",
       "defender": "{emote:fightCommand.shield} Sie wurden von **{{opponent}}** ({emote:classes.{{opponentClassId}}} $t(models:classes.{{opponentClassId}})) angegriffen."
@@ -1555,5 +1954,19 @@
       "up": " ({emote:other.leagueUp} {emote:leagues.{{oldLeagueId}}} $t(models:leagues.{{oldLeagueId}}) -> {emote:leagues.{{newLeagueId}}} $t(models:leagues.{{newLeagueId}}))",
       "down": " ({emote:other.leagueDown} {emote:leagues.{{oldLeagueId}}} $t(models:leagues.{{oldLeagueId}}) -> {emote:leagues.{{newLeagueId}}} $t(models:leagues.{{newLeagueId}}))"
     }
+  },
+  "deletecode": {
+    "title": "Code zum Löschen eines Kontos",
+    "success": "**Löschcode generiert**\n\n**Discord ID:** `{{discordId}}`\n**Keycloak ID:** `{{keycloakId}}`\n` **Code:** `{{code}}`\n\nSenden Sie diesen Code per E-Mail an den Benutzer. Er muss eine DM an den Bot senden mit:\n`DELETE ACCOUNT {{code}}`",
+    "userNotFound": "Es wurden keine Nutzer mit dieser Discord-ID gefunden."
+  },
+  "exportgdpr": {
+    "title": "Export DSGVO",
+    "success": "Der RGPD-Export wurde erfolgreich generiert.\n\n**Anonymisierte Spieler-ID:** `{{anonymizedId}}`\n**Generierte Dateien:** {{fileCount}}",
+    "started": "Der DSGVO-Export wurde gestartet. Sie werden das Ergebnis in einer privaten Nachricht erhalten, sobald der Export abgeschlossen ist.",
+    "userNotFound": "Es wurden keine Spieler mit dieser Discord-ID gefunden.",
+    "playerNotFound": "Dieser Spieler existiert nicht in der Datenbank.",
+    "error": "Beim Export ist ein Fehler aufgetreten: {{error}}",
+    "fileName": "export_rgpd_{{anonymizedId}}.zip"
   }
 }

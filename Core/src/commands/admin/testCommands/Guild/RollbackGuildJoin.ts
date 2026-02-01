@@ -45,6 +45,10 @@ const rollbackGuildJoin: ExecuteTestCommandLike = async (player: Player) => {
 	});
 
 
+	if (!joinLogs) {
+		return "Aucun log de join trouvé pour votre guilde.";
+	}
+
 	// Modifier la date
 	await LogsGuildsJoins.update(
 		{ date: joinLogs.date - hoursToMilliseconds(7 * 24) }, // Soustraire 1 semaine

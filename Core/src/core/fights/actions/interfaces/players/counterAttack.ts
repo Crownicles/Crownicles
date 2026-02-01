@@ -14,7 +14,7 @@ const use: FightActionFunc = (sender, receiver, _fightAction, turn, fight) => {
 			damages: 0
 		};
 	}
-	const launchedResult = FightActionDataController.getFightActionFunction(lastAttack.id)(sender, receiver, lastAttack, turn, fight);
+	const launchedResult = FightActionDataController.getFightActionFunction(lastAttack.id)!(sender, receiver, lastAttack, turn, fight);
 	const result = defaultFightActionResult();
 	result.usedAction = {
 		id: lastAttack.id,

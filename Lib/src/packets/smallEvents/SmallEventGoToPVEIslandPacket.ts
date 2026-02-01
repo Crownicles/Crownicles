@@ -19,3 +19,8 @@ export class SmallEventGoToPVEIslandAcceptPacket extends SmallEventPacket {
 export class SmallEventGoToPVEIslandRefusePacket extends SmallEventPacket {
 
 }
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class SmallEventGoToPVEIslandNoAnswerPacket extends SmallEventPacket {
+
+}

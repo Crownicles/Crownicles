@@ -13,15 +13,20 @@ export const smallEventFuncs: SmallEventFuncs = {
 			return false;
 		}
 		const guild = await Guilds.getById(player.guildId);
-		return guild && !guild.isAtMaxLevel();
+		return Boolean(guild && !guild.isAtMaxLevel());
 	},
 	executeSmallEvent: async (response, player): Promise<void> => {
 		const guild = await Guilds.getById(player.guildId);
+		if (!guild) {
+			return;
+		}
 		const xpWon = RandomUtils.crowniclesRandom.integer(
 			SmallEventConstants.GUILD_EXPERIENCE.MIN + guild.level,
 			SmallEventConstants.GUILD_EXPERIENCE.MAX + guild.level * 2
 		);
-		await guild.addExperience(xpWon, response, NumberChangeReason.SMALL_EVENT);
+		await guild.addExperience({
+			amount: xpWon, response, reason: NumberChangeReason.SMALL_EVENT
+		});
 		await guild.save();
 		response.push(makePacket(SmallEventWinGuildXPPacket, {
 			amount: xpWon,

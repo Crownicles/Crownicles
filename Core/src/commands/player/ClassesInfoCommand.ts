@@ -35,7 +35,7 @@ export default class ClassesInfoCommand {
 
 			const attackList = [];
 			for (const attack of attacks) {
-				const attackStat = attackStats.find(attackStat => attackStat.id === attack);
+				const attackStat = attackStats.find(attackStat => attackStat.id === attack)!;
 				attackList.push({
 					id: attack,
 					cost: attackStat.breath

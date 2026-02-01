@@ -33,7 +33,7 @@ export class Pet extends Data<number> {
 export class PetDataController extends DataControllerNumber<Pet> {
 	static readonly instance: PetDataController = new PetDataController("pets");
 
-	private maxIdCache: number = null;
+	private maxIdCache: number | null = null;
 
 	newInstance(): Pet {
 		return new Pet();

@@ -8,7 +8,6 @@ import {
 } from "../../../../Lib/src/packets/commands/CommandDepositPacket";
 import { ICommand } from "../ICommand";
 import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
-import { ReactionCollectorCreationPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { ReactionCollectorReturnTypeOrNull } from "../../packetHandlers/handlers/ReactionCollectorHandlers";
 import { DiscordCache } from "../../bot/DiscordCache";
 import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
@@ -19,7 +18,7 @@ import {
 } from "../../utils/DiscordCollectorUtils";
 import { DiscordItemUtils } from "../../utils/DiscordItemUtils";
 import {
-	ReactionCollectorDeposeItemCloseReaction,
+	ReactionCollectorDeposeItemCloseReaction, ReactionCollectorDeposeItemPacket,
 	ReactionCollectorDeposeItemReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorDeposeItem";
 import { MessagesUtils } from "../../utils/MessagesUtils";
@@ -62,7 +61,7 @@ export async function handleItemDeposit(packet: CommandDepositSuccessPacket, con
 	});
 }
 
-export async function deposeItemCollector(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
+export async function deposeItemCollector(context: PacketContext, packet: ReactionCollectorDeposeItemPacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction!);
 	if (!interaction) {
 		return null;
@@ -75,8 +74,13 @@ export async function deposeItemCollector(context: PacketContext, packet: Reacti
 		}), interaction.user)
 		.setDescription(`${i18n.t("commands:deposit.depositSelectionDescription", { lng })}\n\n`);
 	const reactions: ReactionCollectorDeposeItemReaction[] = packet.reactions
-		.map(reaction => reaction.data as ReactionCollectorDeposeItemReaction)
-		.filter(reaction => reaction.item);
+		.filter(
+			(r): r is {
+				type: string; data: ReactionCollectorDeposeItemReaction;
+			} =>
+				r.type === ReactionCollectorDeposeItemReaction.name
+		)
+		.map(r => r.data);
 	return await DiscordCollectorUtils.createChoiceListCollector(interaction, {
 		packet,
 		context

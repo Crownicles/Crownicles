@@ -1,4 +1,3 @@
-import { ReactionCollectorCreationPacket } from "../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { PacketContext } from "../../../Lib/src/packets/CrowniclesPacket";
 import { DiscordCache } from "../bot/DiscordCache";
 import i18n from "../translations/i18n";
@@ -7,7 +6,7 @@ import {
 	escapeUsername, StringUtils
 } from "../utils/StringUtils";
 import { DiscordCollectorUtils } from "../utils/DiscordCollectorUtils";
-import { ReactionCollectorInteractOtherPlayersPoorData } from "../../../Lib/src/packets/interaction/ReactionCollectorInteractOtherPlayers";
+import { ReactionCollectorInteractOtherPlayersPacket } from "../../../Lib/src/packets/interaction/ReactionCollectorInteractOtherPlayers";
 import { KeycloakUtils } from "../../../Lib/src/keycloak/KeycloakUtils";
 import { keycloakConfig } from "../bot/CrowniclesShard";
 import { Language } from "../../../Lib/src/Language";
@@ -29,10 +28,10 @@ export async function interactOtherPlayerGetPlayerDisplay(keycloakId: string, ra
 	});
 }
 
-export async function interactOtherPlayersCollector(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
+export async function interactOtherPlayersCollector(context: PacketContext, packet: ReactionCollectorInteractOtherPlayersPacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
 	const lng = interaction.userLanguage;
-	const data = packet.data.data as ReactionCollectorInteractOtherPlayersPoorData;
+	const data = packet.data.data;
 	const playerDisplay = await interactOtherPlayerGetPlayerDisplay(data.keycloakId, data.rank, lng);
 
 	const embed = new CrowniclesSmallEventEmbed(

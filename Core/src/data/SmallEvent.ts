@@ -8,9 +8,9 @@ import {
 import { PlayerActiveObjects } from "../core/database/game/models/PlayerActiveObjects";
 
 export class SmallEvent extends Data<string> {
-	public readonly rarity: number;
+	public readonly rarity!: number;
 
-	private readonly properties: { [key: string]: unknown };
+	private readonly properties!: { [key: string]: unknown };
 
 	getProperties<T>(): T {
 		return <T> this.properties;
@@ -28,12 +28,12 @@ export type SmallEventFuncs = {
 export class SmallEventDataController extends DataControllerString<SmallEvent> {
 	static readonly instance: SmallEventDataController = new SmallEventDataController("smallEvents");
 
-	private static smallEventsFunctionsCache: Map<string, SmallEventFuncs> = null;
+	private static smallEventsFunctionsCache: Map<string, SmallEventFuncs> | null = null;
 
 	public static getSmallEventFunction(id: string): SmallEventFuncs {
 		SmallEventDataController.initCache();
 
-		return SmallEventDataController.smallEventsFunctionsCache.get(id);
+		return SmallEventDataController.smallEventsFunctionsCache!.get(id)!;
 	}
 
 	private static initCache(): void {
@@ -50,7 +50,7 @@ export class SmallEventDataController extends DataControllerString<SmallEvent> {
 				const smallEventFuncs = (<{
 					smallEventFuncs: SmallEventFuncs;
 				}>require(`${relativePath}/${file.substring(0, file.length - 3)}`)).smallEventFuncs;
-				SmallEventDataController.smallEventsFunctionsCache.set(
+				SmallEventDataController.smallEventsFunctionsCache!.set(
 					file.substring(0, file.length - 3),
 					smallEventFuncs
 				);
@@ -64,6 +64,6 @@ export class SmallEventDataController extends DataControllerString<SmallEvent> {
 
 	getKeys(): string[] {
 		SmallEventDataController.initCache();
-		return Array.from(SmallEventDataController.smallEventsFunctionsCache.keys());
+		return Array.from(SmallEventDataController.smallEventsFunctionsCache!.keys());
 	}
 }

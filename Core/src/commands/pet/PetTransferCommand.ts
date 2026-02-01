@@ -11,10 +11,13 @@ import {
 	CommandPetTransferFeistyErrorPacket,
 	CommandPetTransferNoPetErrorPacket,
 	CommandPetTransferPacketReq,
+	CommandPetTransferPetOnExpeditionErrorPacket,
 	CommandPetTransferSituationChangedErrorPacket,
 	CommandPetTransferSuccessPacket
 } from "../../../../Lib/src/packets/commands/CommandPetTransferPacket";
-import { PetEntities } from "../../core/database/game/models/PetEntity";
+import {
+	PetEntities, PetEntity
+} from "../../core/database/game/models/PetEntity";
 import { ReactionCollectorInstance } from "../../core/utils/ReactionsCollector";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
 import {
@@ -29,12 +32,78 @@ import {
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorPetTransfer";
 import { Guilds } from "../../core/database/game/models/Guild";
 import { BlockingUtils } from "../../core/utils/BlockingUtils";
-import { GuildPets } from "../../core/database/game/models/GuildPet";
+import {
+	GuildPet, GuildPets
+} from "../../core/database/game/models/GuildPet";
 import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
 import { crowniclesInstance } from "../../index";
 import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { MissionsController } from "../../core/missions/MissionsController";
+import { PetUtils } from "../../core/utils/PetUtils";
+import { OwnedPet } from "../../../../Lib/src/types/OwnedPet";
+
+/**
+ * Validation result for player's pet before transfer
+ */
+interface PlayerPetValidation {
+	isValid: boolean;
+	playerPet?: PetEntity;
+}
+
+/**
+ * Validate that the player has a non-feisty pet for transfer operations
+ */
+async function validatePlayerPetForTransfer(
+	response: CrowniclesPacket[],
+	player: Player,
+	operationName: string
+): Promise<PlayerPetValidation> {
+	if (!player.petId) {
+		CrowniclesLogger.warn(`Player tried to ${operationName} but has no pet`);
+		response.push(makePacket(CommandPetTransferSituationChangedErrorPacket, {}));
+		return { isValid: false };
+	}
+
+	const playerPet = await PetEntities.getById(player.petId);
+
+	if (!playerPet) {
+		CrowniclesLogger.warn(`Player tried to ${operationName} but pet not found in database`);
+		response.push(makePacket(CommandPetTransferSituationChangedErrorPacket, {}));
+		return { isValid: false };
+	}
+
+	if (playerPet.isFeisty()) {
+		CrowniclesLogger.warn(`Player tried to ${operationName} with a feisty pet`);
+		response.push(makePacket(CommandPetTransferSituationChangedErrorPacket, {}));
+		return { isValid: false };
+	}
+
+	return {
+		isValid: true, playerPet
+	};
+}
+
+/**
+ * Find a guild pet by entity ID, returning null if not found
+ */
+async function findGuildPetOrFail(
+	response: CrowniclesPacket[],
+	player: Player,
+	petEntityId: number,
+	operationName: string
+): Promise<GuildPet | null> {
+	const guildPets = await GuildPets.getOfGuild(player.guildId!);
+	const guildPet = guildPets.find(gp => gp.petEntityId === petEntityId);
+
+	if (!guildPet) {
+		CrowniclesLogger.warn(`Player tried to ${operationName} but the pet is not in the guild`);
+		response.push(makePacket(CommandPetTransferSituationChangedErrorPacket, {}));
+		return null;
+	}
+
+	return guildPet;
+}
 
 
 /**
@@ -44,21 +113,12 @@ async function deposePetToGuild(
 	response: CrowniclesPacket[],
 	player: Player
 ): Promise<void> {
-	if (!player.petId) {
-		CrowniclesLogger.warn("Player tried to transfer a pet to the guild but has no pet");
-		response.push(makePacket(CommandPetTransferSituationChangedErrorPacket, {}));
+	const validation = await validatePlayerPetForTransfer(response, player, "transfer a pet to the guild");
+	if (!validation.isValid || !validation.playerPet) {
 		return;
 	}
 
-	const playerPet = await PetEntities.getById(player.petId);
-
-	if (playerPet.isFeisty()) {
-		CrowniclesLogger.warn("Player tried to transfer a feisty pet to the guild");
-		response.push(makePacket(CommandPetTransferSituationChangedErrorPacket, {}));
-		return;
-	}
-
-	const guildPets = await GuildPets.getOfGuild(player.guildId);
+	const guildPets = await GuildPets.getOfGuild(player.guildId!);
 	if (guildPets.length >= PetConstants.SLOTS) {
 		CrowniclesLogger.warn("Player tried to transfer a pet to the guild but the shelter is full");
 		response.push(makePacket(CommandPetTransferSituationChangedErrorPacket, {}));
@@ -66,14 +126,19 @@ async function deposePetToGuild(
 	}
 
 	const guild = await Guilds.getById(player.guildId);
+	if (!guild) {
+		CrowniclesLogger.warn("Player tried to transfer a pet to the guild but guild not found");
+		response.push(makePacket(CommandPetTransferSituationChangedErrorPacket, {}));
+		return;
+	}
 
-	player.petId = null;
+	(player.petId as number | null) = null;
 	await player.save();
-	await GuildPets.addPet(guild, playerPet, false).save();
-	crowniclesInstance.logsDatabase.logPetTransfer(playerPet, null).then();
+	await GuildPets.addPet(guild, validation.playerPet, false).save();
+	crowniclesInstance.logsDatabase.logPetTransfer(validation.playerPet, null!).then();
 
 	response.push(makePacket(CommandPetTransferSuccessPacket, {
-		oldPet: playerPet.asOwnedPet()
+		oldPet: validation.playerPet.asOwnedPet()
 	}));
 }
 
@@ -88,12 +153,8 @@ async function withdrawPetFromGuild(
 		return;
 	}
 
-	const guildPets = await GuildPets.getOfGuild(player.guildId);
-	const toWithdrawPet = guildPets.find(guildPet => guildPet.petEntityId === petEntityId);
-
+	const toWithdrawPet = await findGuildPetOrFail(response, player, petEntityId, "withdraw a pet from the guild");
 	if (!toWithdrawPet) {
-		CrowniclesLogger.warn("Player tried to withdraw a pet from the guild but the pet is not in the guild");
-		response.push(makePacket(CommandPetTransferSituationChangedErrorPacket, {}));
 		return;
 	}
 
@@ -102,12 +163,17 @@ async function withdrawPetFromGuild(
 	await MissionsController.update(player, response, { missionId: "havePet" });
 	await toWithdrawPet.destroy();
 	PetEntities.getById(toWithdrawPet.petEntityId).then(petEntity => {
-		crowniclesInstance.logsDatabase.logPetTransfer(null, petEntity).then();
+		if (petEntity) {
+			crowniclesInstance.logsDatabase.logPetTransfer(null!, petEntity).then();
+		}
 	});
 
-	response.push(makePacket(CommandPetTransferSuccessPacket, {
-		newPet: (await PetEntities.getById(toWithdrawPet.petEntityId)).asOwnedPet()
-	}));
+	const newPet = await PetEntities.getById(toWithdrawPet.petEntityId);
+	if (newPet) {
+		response.push(makePacket(CommandPetTransferSuccessPacket, {
+			newPet: newPet.asOwnedPet()
+		}));
+	}
 }
 
 async function switchPetWithGuild(
@@ -115,40 +181,33 @@ async function switchPetWithGuild(
 	player: Player,
 	petEntityId: number
 ): Promise<void> {
-	if (!player.petId) {
-		CrowniclesLogger.warn("Player tried to switch a pet with the guild but has no pet");
-		response.push(makePacket(CommandPetTransferSituationChangedErrorPacket, {}));
+	const validation = await validatePlayerPetForTransfer(response, player, "switch a pet with the guild");
+	if (!validation.isValid || !validation.playerPet) {
 		return;
 	}
 
-	const playerPet = await PetEntities.getById(player.petId);
-
-	if (playerPet.isFeisty()) {
-		CrowniclesLogger.warn("Player tried to switch a feisty pet with the guild");
-		response.push(makePacket(CommandPetTransferSituationChangedErrorPacket, {}));
-		return;
-	}
-
-	const guildPets = await GuildPets.getOfGuild(player.guildId);
-	const toSwitchPet = guildPets.find(guildPet => guildPet.petEntityId === petEntityId);
-
+	const toSwitchPet = await findGuildPetOrFail(response, player, petEntityId, "switch a pet with the guild");
 	if (!toSwitchPet) {
-		CrowniclesLogger.warn("Player tried to switch a pet with the guild but the pet is not in the guild");
-		response.push(makePacket(CommandPetTransferSituationChangedErrorPacket, {}));
 		return;
 	}
 
 	player.petId = toSwitchPet.petEntityId;
-	toSwitchPet.petEntityId = playerPet.id;
+	toSwitchPet.petEntityId = validation.playerPet.id;
 	await player.save();
 	await toSwitchPet.save();
 
 	const newPlayerPet = await PetEntities.getById(player.petId);
 
-	crowniclesInstance.logsDatabase.logPetTransfer(playerPet, newPlayerPet).then();
+	if (!newPlayerPet) {
+		CrowniclesLogger.warn("Player tried to switch a pet with the guild but the new pet was not found");
+		response.push(makePacket(CommandPetTransferSituationChangedErrorPacket, {}));
+		return;
+	}
+
+	crowniclesInstance.logsDatabase.logPetTransfer(validation.playerPet, newPlayerPet).then();
 
 	response.push(makePacket(CommandPetTransferSuccessPacket, {
-		oldPet: playerPet.asOwnedPet(),
+		oldPet: validation.playerPet.asOwnedPet(),
 		newPet: newPlayerPet.asOwnedPet()
 	}));
 }
@@ -180,10 +239,82 @@ function getEndCallback(player: Player) {
 				await deposePetToGuild(response, player);
 			}
 		}
-		else {
+		else if (withdrawPetEntityId !== null) {
 			await withdrawPetFromGuild(response, player, withdrawPetEntityId);
 		}
 	};
+}
+
+/**
+ * Check if another guild member is currently transferring a pet
+ */
+async function checkGuildMemberTransferring(
+	guildId: number
+): Promise<string | null> {
+	const guildMembers = await Players.getByGuild(guildId);
+	for (const member of guildMembers) {
+		if (BlockingUtils.isPlayerBlockedWithReason(member.keycloakId, BlockingConstants.REASONS.PET_TRANSFER)) {
+			return member.keycloakId;
+		}
+	}
+	return null;
+}
+
+/**
+ * Build reactions array for pet transfer collector
+ */
+function buildTransferReactions(
+	playerPet: PetEntity | null,
+	guild: { isPetShelterFull: (pets: GuildPet[]) => boolean },
+	guildPets: GuildPet[]
+): ReactionCollectorReaction[] | null {
+	const reactions: ReactionCollectorReaction[] = [];
+
+	if (playerPet) {
+		if (!guild.isPetShelterFull(guildPets) && !playerPet.isFeisty()) {
+			reactions.push(makePacket(ReactionCollectorPetTransferDepositReaction, {}));
+		}
+		for (const guildPet of guildPets) {
+			reactions.push(makePacket(ReactionCollectorPetTransferSwitchReaction, {
+				petEntityId: guildPet.petEntityId
+			}));
+		}
+	}
+	else if (guildPets.length > 0) {
+		for (const guildPet of guildPets) {
+			reactions.push(makePacket(ReactionCollectorPetTransferWithdrawReaction, {
+				petEntityId: guildPet.petEntityId
+			}));
+		}
+	}
+	else {
+		return null; // No valid transfer options
+	}
+
+	reactions.push(makePacket(ReactionCollectorRefuseReaction, {}));
+	return reactions;
+}
+
+/**
+ * Build guild pets entities array for collector
+ */
+async function buildGuildPetsEntities(
+	guildPets: GuildPet[]
+): Promise<{
+	petEntityId: number;
+	pet: OwnedPet;
+}[]> {
+	const guildPetsEntities = [];
+	for (const guildPet of guildPets) {
+		const petEntity = await PetEntities.getById(guildPet.petEntityId);
+		if (petEntity) {
+			guildPetsEntities.push({
+				petEntityId: guildPet.petEntityId,
+				pet: petEntity.asOwnedPet()
+			});
+		}
+	}
+	return guildPetsEntities;
 }
 
 export default class PetTransferCommand {
@@ -194,17 +325,13 @@ export default class PetTransferCommand {
 		whereAllowed: [WhereAllowed.CONTINENT]
 	})
 	async execute(response: CrowniclesPacket[], player: Player, _packet: CommandPetTransferPacketReq, context: PacketContext): Promise<void> {
-		const guild = await Guilds.getById(player.guildId);
-
-		// Can't transfer pet if another guild member is transferring
-		const guildMembers = await Players.getByGuild(player.guildId);
-		for (const member of guildMembers) {
-			if (BlockingUtils.isPlayerBlockedWithReason(member.keycloakId, BlockingConstants.REASONS.PET_TRANSFER)) {
-				response.push(makePacket(CommandPetTransferAnotherMemberTransferringErrorPacket, {
-					keycloakId: member.keycloakId
-				}));
-				return;
-			}
+		// Check if another guild member is transferring
+		const transferringMemberId = await checkGuildMemberTransferring(player.guildId!);
+		if (transferringMemberId) {
+			response.push(makePacket(CommandPetTransferAnotherMemberTransferringErrorPacket, {
+				keycloakId: transferringMemberId
+			}));
+			return;
 		}
 
 		const playerPet = await PetEntities.getById(player.petId);
@@ -214,44 +341,30 @@ export default class PetTransferCommand {
 			return;
 		}
 
-		const guildPets = await GuildPets.getOfGuild(player.guildId);
-
-		const reactions: ReactionCollectorReaction[] = [];
-
-		if (playerPet) {
-			if (!guild.isPetShelterFull(guildPets) && !playerPet.isFeisty()) {
-				reactions.push(makePacket(ReactionCollectorPetTransferDepositReaction, {}));
-			}
-
-			for (const guildPet of guildPets) {
-				reactions.push(makePacket(ReactionCollectorPetTransferSwitchReaction, {
-					petEntityId: guildPet.petEntityId
-				}));
-			}
+		// Check if player's pet is on expedition
+		if (playerPet && await PetUtils.isPetOnExpedition(player.id)) {
+			response.push(makePacket(CommandPetTransferPetOnExpeditionErrorPacket, {}));
+			return;
 		}
-		else if (guildPets.length > 0) {
-			for (const guildPet of guildPets) {
-				reactions.push(makePacket(ReactionCollectorPetTransferWithdrawReaction, {
-					petEntityId: guildPet.petEntityId
-				}));
-			}
-		}
-		else {
+
+		const guild = await Guilds.getById(player.guildId!);
+		if (!guild) {
 			response.push(makePacket(CommandPetTransferNoPetErrorPacket, {}));
 			return;
 		}
-		reactions.push(makePacket(ReactionCollectorRefuseReaction, {}));
+		const guildPets = await GuildPets.getOfGuild(player.guildId!);
 
-		const guildPetsEntities = [];
-		for (const guildPet of guildPets) {
-			guildPetsEntities.push({
-				petEntityId: guildPet.petEntityId,
-				pet: (await PetEntities.getById(guildPet.petEntityId)).asOwnedPet()
-			});
+		// Build reactions - returns null if no valid transfer options
+		const reactions = buildTransferReactions(playerPet, guild, guildPets);
+		if (!reactions) {
+			response.push(makePacket(CommandPetTransferNoPetErrorPacket, {}));
+			return;
 		}
 
+		const guildPetsEntities = await buildGuildPetsEntities(guildPets);
+
 		const collector = new ReactionCollectorPetTransfer(
-			playerPet?.asOwnedPet(),
+			playerPet?.asOwnedPet() as OwnedPet,
 			guildPetsEntities,
 			reactions
 		);

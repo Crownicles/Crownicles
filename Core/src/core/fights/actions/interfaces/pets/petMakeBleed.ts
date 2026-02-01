@@ -27,7 +27,7 @@ const use: PetAssistanceFunc = (fighter, opponent, turn, _fightController): Prom
 		19,
 		20
 	].includes(turn)) {
-		return null;
+		return Promise.resolve(null);
 	}
 
 	// Check if opponent is a paladin (paladins are immune to vampires)
@@ -49,13 +49,13 @@ const use: PetAssistanceFunc = (fighter, opponent, turn, _fightController): Prom
 
 	const pointsToHealFighter = fighter.getMaxEnergy() - fighter.getEnergy();
 
-	if (pointsToHealFighter > 0 && opponent.hasFightAlteration() && opponent.alteration.id === FightAlterations.BLEEDING) {
+	if (pointsToHealFighter > 0 && opponent.hasFightAlteration() && opponent.alteration!.id === FightAlterations.BLEEDING) {
 		FightActionController.applyBuff(result, {
 			selfTarget: true,
 			stat: FightStatBuffed.ENERGY,
 			operator: FightStatModifierOperation.ADDITION,
 			value: RandomUtils.crowniclesRandom.integer(5, Math.max(fighter.getMaxEnergy() * 0.03, 15))
-		}, fighter, this);
+		}, fighter, undefined);
 	}
 
 	return Promise.resolve(result);

@@ -40,6 +40,13 @@ async function acceptGuildLeave(player: Player, response: CrowniclesPacket[]): P
 		return;
 	}
 	const guild = await Guilds.getById(player.guildId);
+
+	// Guild no longer exists
+	if (!guild) {
+		response.push(makePacket(CommandGuildLeaveNotInAGuildPacketRes, {}));
+		return;
+	}
+
 	if (player.id === guild.chiefId) {
 		// The guild's chief is leaving
 		if (guild.elderId !== null) {
@@ -116,13 +123,13 @@ export default class GuildLeaveCommand {
 		whereAllowed: CommandUtils.WHERE.EVERYWHERE
 	})
 	async execute(response: CrowniclesPacket[], player: Player, _packet: CommandGuildLeavePacketReq, context: PacketContext): Promise<void> {
-		const guild = await Guilds.getById(player.guildId);
+		const guild = (await Guilds.getById(player.guildId))!;
 		const newChief = guild.chiefId === player.id && guild.elderId ? await Players.getById(guild.elderId) : null;
 
 		const collector = new ReactionCollectorGuildLeave(
 			guild.name,
 			guild.chiefId === player.id && guild.elderId === null,
-			newChief?.keycloakId
+			newChief?.keycloakId ?? ""
 		);
 
 		const collectorPacket = new ReactionCollectorInstance(

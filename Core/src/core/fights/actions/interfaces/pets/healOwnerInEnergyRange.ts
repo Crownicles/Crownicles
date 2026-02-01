@@ -14,7 +14,7 @@ const use: PetAssistanceFunc = (fighter, _opponent, _turn, _fightController): Pr
 	// Check if the fighter's current energy is within the defined threshold
 	const currentEnergy = fighter.getEnergy();
 	if (currentEnergy < MIN_ENERGY_THRESHOLD || currentEnergy > MAX_ENERGY_THRESHOLD) {
-		return null; // Energy is not in the required range
+		return Promise.resolve(null); // Energy is not in the required range
 	}
 
 	const result: PetAssistanceResult = {
@@ -26,7 +26,7 @@ const use: PetAssistanceFunc = (fighter, _opponent, _turn, _fightController): Pr
 		stat: FightStatBuffed.ENERGY,
 		operator: FightStatModifierOperation.ADDITION,
 		value: RandomUtils.crowniclesRandom.integer(15, Math.max(fighter.getMaxEnergy() * 0.07, 20))
-	}, fighter, this);
+	}, fighter, undefined);
 
 	return Promise.resolve(result);
 };

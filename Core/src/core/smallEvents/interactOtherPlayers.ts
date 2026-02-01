@@ -29,6 +29,8 @@ import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants"
 import Guild, { Guilds } from "../database/game/models/Guild";
 import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
 import { Badge } from "../../../../Lib/src/types/Badge";
+import { PetUtils } from "../utils/PetUtils";
+import { PlayerBadgesManager } from "../database/game/models/PlayerBadges";
 
 /**
  * Check top interactions
@@ -38,14 +40,17 @@ import { Badge } from "../../../../Lib/src/types/Badge";
 function checkTop(otherPlayerRank: number, interactionsList: InteractOtherPlayerInteraction[]): void {
 	if (otherPlayerRank === 1) {
 		interactionsList.push(InteractOtherPlayerInteraction.TOP1);
+		return;
 	}
-	else if (otherPlayerRank <= 10) {
+	if (otherPlayerRank <= 10) {
 		interactionsList.push(InteractOtherPlayerInteraction.TOP10);
+		return;
 	}
-	else if (otherPlayerRank <= 50) {
+	if (otherPlayerRank <= 50) {
 		interactionsList.push(InteractOtherPlayerInteraction.TOP50);
+		return;
 	}
-	else if (otherPlayerRank <= 100) {
+	if (otherPlayerRank <= 100) {
 		interactionsList.push(InteractOtherPlayerInteraction.TOP100);
 	}
 }
@@ -55,12 +60,13 @@ function checkTop(otherPlayerRank: number, interactionsList: InteractOtherPlayer
  * @param otherPlayer
  * @param interactionsList
  */
-function checkBadges(otherPlayer: Player, interactionsList: InteractOtherPlayerInteraction[]): void {
-	if (otherPlayer.badges) {
-		if (otherPlayer.hasBadge(Badge.POWERFUL_GUILD) || otherPlayer.hasBadge(Badge.VERY_POWERFUL_GUILD)) {
+async function checkBadges(otherPlayer: Player, interactionsList: InteractOtherPlayerInteraction[]): Promise<void> {
+	const badges = await PlayerBadgesManager.getOfPlayer(otherPlayer.id);
+	if (badges.length > 0) {
+		if (badges.includes(Badge.POWERFUL_GUILD) || badges.includes(Badge.VERY_POWERFUL_GUILD)) {
 			interactionsList.push(InteractOtherPlayerInteraction.POWERFUL_GUILD);
 		}
-		if (otherPlayer.hasBadge(Badge.TECHNICAL_TEAM)) {
+		if (badges.includes(Badge.TECHNICAL_TEAM)) {
 			interactionsList.push(InteractOtherPlayerInteraction.STAFF_MEMBER);
 		}
 	}
@@ -171,10 +177,26 @@ function checkMoney(otherPlayer: Player, interactionsList: InteractOtherPlayerIn
  * @param otherPlayer
  * @param interactionsList
  */
-function checkPet(player: Player, otherPlayer: Player, interactionsList: InteractOtherPlayerInteraction[]): void {
-	if (otherPlayer.petId && otherPlayer.petId !== player.petId) {
-		interactionsList.push(InteractOtherPlayerInteraction.PET);
+async function checkPet(player: Player, otherPlayer: Player, interactionsList: InteractOtherPlayerInteraction[]): Promise<void> {
+	// Check if the other player has a different pet than the current player
+	if (!otherPlayer.petId || otherPlayer.petId === player.petId) {
+		return;
 	}
+
+	// Check if pet is a clone (on expedition with clone talisman)
+	if (await PetUtils.isPetClone(otherPlayer)) {
+		interactionsList.push(InteractOtherPlayerInteraction.PET_CLONE);
+		return;
+	}
+
+	// Check if pet is on expedition (without clone talisman)
+	if (await PetUtils.isPetOnExpedition(otherPlayer.id)) {
+		interactionsList.push(InteractOtherPlayerInteraction.PET_ON_EXPEDITION);
+		return;
+	}
+
+	// Pet is not on expedition, normal pet interaction
+	interactionsList.push(InteractOtherPlayerInteraction.PET);
 }
 
 /**
@@ -183,14 +205,16 @@ function checkPet(player: Player, otherPlayer: Player, interactionsList: Interac
  * @param guild
  * @param interactionsList
  */
-async function checkGuildResponsibilities(otherPlayer: Player, guild: Guild, interactionsList: InteractOtherPlayerInteraction[]): Promise<Guild> {
+async function checkGuildResponsibilities(otherPlayer: Player, guild: Guild | null, interactionsList: InteractOtherPlayerInteraction[]): Promise<Guild | null> {
 	if (otherPlayer.guildId) {
 		guild = await Guilds.getById(otherPlayer.guildId);
-		if (guild.chiefId === otherPlayer.id) {
-			interactionsList.push(InteractOtherPlayerInteraction.GUILD_CHIEF);
-		}
-		else if (guild.elderId === otherPlayer.id) {
-			interactionsList.push(InteractOtherPlayerInteraction.GUILD_ELDER);
+		if (guild) {
+			if (guild.chiefId === otherPlayer.id) {
+				interactionsList.push(InteractOtherPlayerInteraction.GUILD_CHIEF);
+			}
+			else if (guild.elderId === otherPlayer.id) {
+				interactionsList.push(InteractOtherPlayerInteraction.GUILD_ELDER);
+			}
 		}
 	}
 	return guild;
@@ -214,16 +238,16 @@ function checkEffects(otherPlayer: Player, interactionsList: InteractOtherPlayer
  */
 async function checkInventory(otherPlayer: Player, interactionsList: InteractOtherPlayerInteraction[]): Promise<InventorySlot[]> {
 	const invSlots = await InventorySlots.getOfPlayer(otherPlayer.id);
-	if (invSlots.find(slot => slot.isWeapon() && slot.isEquipped()).itemId !== 0) {
+	if (invSlots.find(slot => slot.isWeapon() && slot.isEquipped())?.itemId !== 0) {
 		interactionsList.push(InteractOtherPlayerInteraction.WEAPON);
 	}
-	if (invSlots.find(slot => slot.isArmor() && slot.isEquipped()).itemId !== 0) {
+	if (invSlots.find(slot => slot.isArmor() && slot.isEquipped())?.itemId !== 0) {
 		interactionsList.push(InteractOtherPlayerInteraction.ARMOR);
 	}
-	if (invSlots.find(slot => slot.isPotion() && slot.isEquipped()).itemId !== 0) {
+	if (invSlots.find(slot => slot.isPotion() && slot.isEquipped())?.itemId !== 0) {
 		interactionsList.push(InteractOtherPlayerInteraction.POTION);
 	}
-	if (invSlots.find(slot => slot.isObject() && slot.isEquipped()).itemId !== 0) {
+	if (invSlots.find(slot => slot.isObject() && slot.isEquipped())?.itemId !== 0) {
 		interactionsList.push(InteractOtherPlayerInteraction.OBJECT);
 	}
 
@@ -237,7 +261,7 @@ async function checkInventory(otherPlayer: Player, interactionsList: InteractOth
  * @param numberOfPlayers
  */
 async function getAvailableInteractions(otherPlayer: Player, player: Player, numberOfPlayers: number): Promise<{
-	guild: Guild;
+	guild: Guild | null;
 	inventorySlots: InventorySlot[];
 	interactionsList: InteractOtherPlayerInteraction[];
 }> {
@@ -253,7 +277,7 @@ async function getAvailableInteractions(otherPlayer: Player, player: Player, num
 		Players.getWeeklyRankById(otherPlayer.id)
 	]);
 	checkTop(otherPlayerRank, interactionsList);
-	checkBadges(otherPlayer, interactionsList);
+	await checkBadges(otherPlayer, interactionsList);
 	checkLevel(otherPlayer, interactionsList);
 	checkClass(otherPlayer, player, interactionsList);
 	checkGuild(otherPlayer, player, interactionsList);
@@ -261,7 +285,7 @@ async function getAvailableInteractions(otherPlayer: Player, player: Player, num
 	await checkHealth(otherPlayer, interactionsList);
 	checkRanking(otherPlayerRank, numberOfPlayers, interactionsList, playerRank);
 	checkMoney(otherPlayer, interactionsList, player);
-	checkPet(player, otherPlayer, interactionsList);
+	await checkPet(player, otherPlayer, interactionsList);
 	guild = await checkGuildResponsibilities(otherPlayer, guild, interactionsList);
 	interactionsList.push(InteractOtherPlayerInteraction.CLASS);
 	checkEffects(otherPlayer, interactionsList);
@@ -304,7 +328,12 @@ export const smallEventFuncs: SmallEventFuncs = {
 			where: { score: { [Op.gt]: 100 } }
 		});
 
-		const playersOnMap = await MapLocationDataController.instance.getPlayersOnMap(player.getDestinationId(), player.getPreviousMapId(), player.id);
+		const destinationId = player.getDestinationId();
+		if (destinationId === null) {
+			response.push(makePacket(SmallEventInteractOtherPlayersPacket, {}));
+			return;
+		}
+		const playersOnMap = await MapLocationDataController.instance.getPlayersOnMap(destinationId, player.getPreviousMapId() ?? destinationId, player.id);
 		if (playersOnMap.length === 0) {
 			response.push(makePacket(SmallEventInteractOtherPlayersPacket, {}));
 			return;
@@ -322,12 +351,13 @@ export const smallEventFuncs: SmallEventFuncs = {
 			interactionsList
 		} = await getAvailableInteractions(otherPlayer, player, numberOfPlayers);
 		const interaction = RandomUtils.crowniclesRandom.pick(interactionsList);
-		const otherPlayerRank = await Players.getRankById(otherPlayer.id) > numberOfPlayers ? undefined : await Players.getRankById(otherPlayer.id);
+		const fetchedRank = await Players.getRankById(otherPlayer.id);
+		const otherPlayerRank = fetchedRank === null || fetchedRank > numberOfPlayers ? undefined : fetchedRank;
 
 		if (interaction === InteractOtherPlayerInteraction.POOR) {
 			const collector = new ReactionCollectorInteractOtherPlayersPoor(
 				otherPlayer.keycloakId,
-				otherPlayerRank
+				otherPlayerRank ?? 0
 			);
 
 			const endCallback: EndCallback = async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
@@ -367,14 +397,14 @@ export const smallEventFuncs: SmallEventFuncs = {
 					rank: otherPlayerRank,
 					level: otherPlayer.level,
 					classId: otherPlayer.class,
-					petName: otherPlayer.petId ? otherPet.nickname : undefined,
-					petId: otherPlayer.petId ? otherPet.typeId : undefined,
-					petSex: (otherPlayer.petId ? otherPet.sex : undefined) as SexTypeShort,
+					petName: otherPlayer.petId && otherPet ? otherPet.nickname : undefined,
+					petId: otherPlayer.petId && otherPet ? otherPet.typeId : undefined,
+					petSex: (otherPlayer.petId && otherPet ? otherPet.sex : undefined) as SexTypeShort,
 					guildName: guild ? guild.name : undefined,
-					weaponId: inventorySlots.find(slot => slot.isWeapon() && slot.isEquipped()).itemId,
-					armorId: inventorySlots.find(slot => slot.isArmor() && slot.isEquipped()).itemId,
-					potionId: inventorySlots.find(slot => slot.isPotion() && slot.isEquipped()).itemId,
-					objectId: inventorySlots.find(slot => slot.isObject() && slot.isEquipped()).itemId,
+					weaponId: inventorySlots.find(slot => slot.isWeapon() && slot.isEquipped())?.itemId ?? 0,
+					armorId: inventorySlots.find(slot => slot.isArmor() && slot.isEquipped())?.itemId ?? 0,
+					potionId: inventorySlots.find(slot => slot.isPotion() && slot.isEquipped())?.itemId ?? 0,
+					objectId: inventorySlots.find(slot => slot.isObject() && slot.isEquipped())?.itemId ?? 0,
 					effectId: otherPlayer.effectId
 				}
 			}));

@@ -4,6 +4,7 @@ import {
 import { MissionsController } from "../../../missions/MissionsController";
 import { getFoodIndexOf } from "../../../utils/FoodUtils";
 import Player, { Players } from "./Player";
+import { EditValueParameters } from "../EditValueParameters";
 import {
 	GuildPet, GuildPets
 } from "./GuildPet";
@@ -47,7 +48,7 @@ export class Guild extends Model {
 
 	declare chiefId: number;
 
-	declare elderId: number;
+	declare elderId: number | null;
 
 	declare creationDate: Date;
 
@@ -80,9 +81,12 @@ export class Guild extends Model {
 	 */
 	public async completelyDestroyAndDeleteFromTheDatabase(): Promise<void> {
 		const pets = await GuildPets.getOfGuild(this.id);
-		const guildPetsEntities = [];
+		const guildPetsEntities: PetEntity[] = [];
 		for (const guildPet of pets) {
-			guildPetsEntities.push(await PetEntities.getById(guildPet.petEntityId));
+			const petEntity = await PetEntities.getById(guildPet.petEntityId);
+			if (petEntity) {
+				guildPetsEntities.push(petEntity);
+			}
 		}
 
 		crowniclesInstance.logsDatabase.logGuildDestroy(this, await Players.getByGuild(this.id), guildPetsEntities)
@@ -108,14 +112,14 @@ export class Guild extends Model {
 
 	/**
 	 * Add experience to the guild
-	 * @param experience the experience to add
-	 * @param response the response packets
-	 * @param reason The reason of the experience change
+	 * @param parameters The parameters for adding experience
 	 */
-	public async addExperience(experience: number, response: CrowniclesPacket[], reason: NumberChangeReason): Promise<void> {
+	public async addExperience(parameters: EditValueParameters): Promise<void> {
 		if (this.isAtMaxLevel()) {
 			return;
 		}
+
+		let experience = parameters.amount;
 
 		// We assume that you cannot go level max -2 to max with 1 xp addition
 		if (this.level === GuildConstants.MAX_LEVEL - 1) {
@@ -126,9 +130,9 @@ export class Guild extends Model {
 		}
 		this.experience += experience;
 		this.setExperience(this.experience);
-		crowniclesInstance.logsDatabase.logGuildExperienceChange(this, reason)
+		crowniclesInstance.logsDatabase.logGuildExperienceChange(this, parameters.reason)
 			.then();
-		await this.levelUpIfNeeded(response);
+		await this.levelUpIfNeeded(parameters.response);
 	}
 
 	/**
@@ -170,7 +174,7 @@ export class Guild extends Model {
 	/**
 	 * Get the guild's elder id
 	 */
-	public getElderId(): number {
+	public getElderId(): number | null {
 		return this.elderId;
 	}
 
@@ -236,22 +240,20 @@ export class Guild extends Model {
 
 	/**
 	 * Add guild points
-	 * @param points
-	 * @param response
-	 * @param reason
+	 * @param parameters The parameters for adding score
 	 */
-	public async addScore(points: number, response: CrowniclesPacket[], reason: NumberChangeReason): Promise<void> {
-		this.score += points;
-		if (points > 0) {
+	public async addScore(parameters: EditValueParameters): Promise<void> {
+		this.score += parameters.amount;
+		if (parameters.amount > 0) {
 			for (const member of await Players.getByGuild(this.id)) {
-				await MissionsController.update(member, response, {
+				await MissionsController.update(member, parameters.response, {
 					missionId: "guildHasPoints",
 					count: this.score,
 					set: true
 				});
 			}
 		}
-		crowniclesInstance.logsDatabase.logGuildPointsChange(this, reason)
+		crowniclesInstance.logsDatabase.logGuildPointsChange(this, parameters.reason)
 			.then();
 	}
 
@@ -267,9 +269,10 @@ export class Guild extends Model {
                        FROM (SELECT id, RANK() OVER (ORDER BY score desc, level desc) ranking
                              FROM guilds) subquery
                        WHERE subquery.id = :id`;
-		return ((await Guild.sequelize.query(query, {
-			replacements: { id: this.id }
-		}))[0][0] as {
+		return ((await Guild.sequelize!.query(query, {
+			replacements: { id: this.id },
+			type: QueryTypes.SELECT
+		}))[0] as {
 			ranking: number;
 		}).ranking;
 	}
@@ -296,14 +299,18 @@ export class Guild extends Model {
 	}
 }
 
-export class Guilds {
-	static getById(id: number): Promise<Guild> {
+export abstract class Guilds {
+	static getById(id: number | null): Promise<Guild | null> {
+		// Also handle legacy 0 sentinel value
+		if (!id) {
+			return Promise.resolve(null);
+		}
 		return Promise.resolve(Guild.findOne({
 			where: { id }
 		}));
 	}
 
-	static getByName(name: string): Promise<Guild> {
+	static getByName(name: string): Promise<Guild | null> {
 		return Promise.resolve(Guild.findOne({
 			where: { name }
 		}));
@@ -315,7 +322,7 @@ export class Guilds {
 		return Math.round(
 			(<{
 				avg: number;
-			}[]>(await Guild.sequelize.query(query, {
+			}[]>(await Guild.sequelize!.query(query, {
 				type: QueryTypes.SELECT
 			})))[0].avg
 		);
@@ -339,7 +346,7 @@ export class Guilds {
 		});
 	}
 
-	static async ofPlayer(player: Player): Promise<Guild> {
+	static async ofPlayer(player: Player): Promise<Guild | null> {
 		try {
 			return await Guilds.getById(player.guildId);
 		}

@@ -49,7 +49,7 @@ const use: PetAssistanceFunc = async (fighter, opponent, turn, _fightController)
 		stat: FightStatBuffed.BREATH,
 		operator: FightStatModifierOperation.ADDITION,
 		value: lastAction.breath
-	}, fighter, this);
+	}, fighter, undefined);
 
 	return Promise.resolve(result);
 };

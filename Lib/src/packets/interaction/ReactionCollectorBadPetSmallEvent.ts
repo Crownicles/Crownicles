@@ -21,6 +21,11 @@ export class ReactionCollectorBadPetSmallEventData extends ReactionCollectorData
 	petNickname?: string;
 }
 
+export type ReactionCollectorBadPetSmallEventPacket = ReactionCollectorCreationPacket<
+	ReactionCollectorBadPetSmallEventData,
+	ReactionCollectorBadPetReaction
+>;
+
 export class ReactionCollectorBadPetSmallEvent extends ReactionCollector {
 	private readonly reactions: ReactionCollectorBadPetReaction[];
 
@@ -44,7 +49,7 @@ export class ReactionCollectorBadPetSmallEvent extends ReactionCollector {
 	 * @param endTime - Timestamp when the collector expires
 	 * @returns The reaction collector creation packet
 	 */
-	creationPacket(id: string, endTime: number): ReactionCollectorCreationPacket {
+	creationPacket(id: string, endTime: number): ReactionCollectorBadPetSmallEventPacket {
 		return {
 			id,
 			endTime,

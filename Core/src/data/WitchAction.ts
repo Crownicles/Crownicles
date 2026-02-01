@@ -15,15 +15,15 @@ import { GenerateRandomItemOptions } from "../core/utils/ItemUtils";
  * Base class for all witch actions
  */
 export class WitchAction extends Data<string> {
-	public readonly isIngredient: boolean;
+	public readonly isIngredient!: boolean;
 
-	public readonly forceEffect: boolean;
+	public readonly forceEffect!: boolean;
 
-	public readonly effectName: string;
+	public readonly effectName!: string;
 
-	public readonly timePenalty: number;
+	public readonly timePenalty!: number;
 
-	private outcomeProbabilities: OutcomeProbabilities;
+	private outcomeProbabilities!: OutcomeProbabilities;
 
 	/**
 	 * Use the function stored in the witchAction ts file to generate the potion following specific characteristics
@@ -36,7 +36,7 @@ export class WitchAction extends Data<string> {
 	public async checkMissionsWitchAction(player: Player, outcome: WitchActionOutcomeType, response: CrowniclesPacket[]): Promise<void> {
 		const withActionFunctions = WitchActionDataController.getWitchActionFunction(this.id);
 		if (withActionFunctions?.checkMissions) {
-			await withActionFunctions.checkMissions(player, outcome, response, this.tags);
+			await withActionFunctions.checkMissions(player, outcome, response, this.tags ?? []);
 		}
 	}
 
@@ -148,7 +148,7 @@ export class WitchActionDataController extends DataControllerString<WitchAction>
 	}
 
 	getDoNothing(): WitchAction {
-		return this.getById("nothing");
+		return this.getById("nothing")!;
 	}
 
 	getAll(): WitchAction[] {

@@ -1,7 +1,7 @@
 import {
+	AcceptRefusePacket,
 	ReactionCollector,
 	ReactionCollectorAcceptReaction,
-	ReactionCollectorCreationPacket,
 	ReactionCollectorData,
 	ReactionCollectorRefuseReaction
 } from "./ReactionCollectorPacket";
@@ -11,6 +11,8 @@ export class ReactionCollectorLimogesData extends ReactionCollectorData {
 	questionId!: string;
 }
 
+export type ReactionCollectorLimogesPacket = AcceptRefusePacket<ReactionCollectorLimogesData>;
+
 export class ReactionCollectorLimoges extends ReactionCollector {
 	private readonly questionId: string;
 
@@ -19,7 +21,7 @@ export class ReactionCollectorLimoges extends ReactionCollector {
 		this.questionId = questionId;
 	}
 
-	creationPacket(id: string, endTime: number, mainPacket = true): ReactionCollectorCreationPacket {
+	creationPacket(id: string, endTime: number, mainPacket = true): ReactionCollectorLimogesPacket {
 		return {
 			id,
 			endTime,

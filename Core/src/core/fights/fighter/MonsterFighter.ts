@@ -16,7 +16,7 @@ export class MonsterFighter extends Fighter {
 		const attacks: FightAction[] = [];
 		for (const attack of monster.attacks) {
 			if (level >= attack.minLevel) {
-				const monsterAttackToAdd = FightActionDataController.instance.getById(attack.id);
+				const monsterAttackToAdd = FightActionDataController.instance.getById(attack.id)!;
 				monsterAttackToAdd.setWeightForRandomSelection(attack.weight);
 				attacks.push(monsterAttackToAdd);
 			}
@@ -55,7 +55,7 @@ export class MonsterFighter extends Fighter {
 		return Promise.resolve();
 	}
 
-	startFight(): Promise<void> {
+	startFight(_fightView: FightView, _startStatus: FighterStatus, _response: CrowniclesPacket[]): Promise<void> {
 		return Promise.resolve();
 	}
 

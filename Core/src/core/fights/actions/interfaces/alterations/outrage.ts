@@ -15,7 +15,7 @@ const use: FightAlterationFunc = (affected, fightAlteration) => {
 		affected.removeAttackModifiers(fightAlteration);
 		affected.removeSpeedModifiers(fightAlteration);
 		const result = defaultHealFightAlterationResult(affected);
-		affected.newAlteration(FightAlterationDataController.instance.getById(FightAlterations.STUNNED));
+		affected.newAlteration(FightAlterationDataController.instance.getById(FightAlterations.STUNNED)!);
 		return result;
 	}
 	const result = defaultFightAlterationResult();

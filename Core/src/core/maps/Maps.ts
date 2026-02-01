@@ -37,8 +37,8 @@ export class Maps {
 			player.mapLinkId = MapLinkDataController.instance.getRandomLinkOnMainContinent().id;
 		}
 
-		const map = player.getDestinationId();
-		const previousMap = player.getPreviousMapId();
+		const map = player.getDestinationId()!;
+		const previousMap = player.getPreviousMapId()!;
 
 		let nextMaps = MapLocationDataController.instance.getMapsConnectedIds(map, previousMap);
 
@@ -61,9 +61,9 @@ export class Maps {
 	 */
 	static getConnectedMapTypes(player: Player, excludePlayerLink: boolean): string[] {
 		return (
-			MapLocationDataController.instance.getMapTypesConnected(player.getDestinationId(), excludePlayerLink
-				? player.getPreviousMapId()
-				: null)
+			MapLocationDataController.instance.getMapTypesConnected(player.getDestinationId()!, excludePlayerLink
+				? player.getPreviousMapId() ?? -1
+				: -1)
 		);
 	}
 
@@ -175,12 +175,14 @@ export class Maps {
 	}
 
 	/**
-	 * Get all the members of the player's guild on a boat
+	 * Get all the members of the player's guild on a boat that can be joined
 	 */
 	static getGuildMembersOnBoat(player: Player): Promise<Player[]> {
 		if (!player.guildId) {
 			return Promise.resolve([]);
 		}
+
+		const minStartTravelDate = new Date(Date.now() - PVEConstants.TIME_AFTER_INACTIVITY_ON_BOAT_IS_NOT_ACCEPTED);
 
 		return Player.findAll({
 			where: {
@@ -188,7 +190,8 @@ export class Maps {
 				mapLinkId: {
 					[Op.in]: MapCache.boatEntryMapLinks
 				},
-				id: { [Op.not]: player.id }
+				id: { [Op.not]: player.id },
+				startTravelDate: { [Op.gte]: minStartTravelDate }
 			}
 		});
 	}
@@ -205,7 +208,7 @@ export class Maps {
 
 		await TravelTime.removeEffect(player, reason);
 
-		const mapLinkJoinBoat = MapLinkDataController.instance.getById(await Settings.PVE_ISLAND.getValue());
+		const mapLinkJoinBoat = MapLinkDataController.instance.getById(await Settings.PVE_ISLAND.getValue())!;
 		const travelTime = minutesToMilliseconds(mapLinkJoinBoat.tripDuration);
 		const otherPlayerStartTime = options.anotherMemberOnBoat ? options.anotherMemberOnBoat.startTravelDate.valueOf() : null;
 		const timeSinceOtherPlayerStarted = Date.now() - (otherPlayerStartTime ?? 0);

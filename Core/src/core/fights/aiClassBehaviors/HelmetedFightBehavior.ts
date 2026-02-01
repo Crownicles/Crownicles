@@ -6,7 +6,7 @@ import {
 } from "../../../data/FightAction";
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
 import { RandomUtils } from "../../../../../Lib/src/utils/RandomUtils";
-import { RealPlayerFighter } from "../fighter/RealPlayerFighter";
+import { PlayerFighter } from "../fighter/PlayerFighter";
 import { ClassConstants } from "../../../../../Lib/src/constants/ClassConstants";
 import { intenseOrSimpleAttack } from "./GlovedFightBehavior";
 
@@ -15,13 +15,14 @@ import { intenseOrSimpleAttack } from "./GlovedFightBehavior";
  * @param opponent
  * @param me
  */
-export function shouldUseShieldAttack(opponent: AiPlayerFighter | RealPlayerFighter, me: AiPlayerFighter): boolean {
-	return ([
+export function shouldUseShieldAttack(opponent: AiPlayerFighter | PlayerFighter, me: AiPlayerFighter): boolean {
+	const lastActionId = opponent.getLastFightActionUsed()?.id;
+	return (lastActionId !== undefined && [
 		FightConstants.FIGHT_ACTIONS.PLAYER.CHARGE_ULTIMATE_ATTACK,
 		FightConstants.FIGHT_ACTIONS.PLAYER.CHARGE_CHARGING_ATTACK,
 		FightConstants.FIGHT_ACTIONS.PLAYER.BOOMERANG_ATTACK,
 		FightConstants.FIGHT_ACTIONS.PLAYER.CANON_ATTACK
-	].includes(opponent.getLastFightActionUsed()?.id)
+	].includes(lastActionId)
 			|| opponent.getBreath() > opponent.getMaxBreath() * 0.85)
 		&& me.getBreath() >= FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.SHIELD_ATTACK)
 		&& RandomUtils.crowniclesRandom.bool(0.8);
@@ -29,7 +30,7 @@ export function shouldUseShieldAttack(opponent: AiPlayerFighter | RealPlayerFigh
 
 class TankFightBehavior implements ClassBehavior {
 	chooseAction(me: AiPlayerFighter, fightView: FightView): FightAction {
-		const opponent = fightView.fightController.getDefendingFighter() as AiPlayerFighter | RealPlayerFighter;
+		const opponent = fightView.fightController.getDefendingFighter() as AiPlayerFighter | PlayerFighter;
 		const turn = fightView.fightController.turn;
 
 		if (
@@ -43,11 +44,11 @@ class TankFightBehavior implements ClassBehavior {
 				ClassConstants.CLASSES_ID.HORSE_RIDER
 			].includes(opponent.player.class)
 		) {
-			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.DEFENSE_BUFF);
+			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.DEFENSE_BUFF)!;
 		}
 
 		if (shouldUseShieldAttack(opponent, me)) {
-			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.SHIELD_ATTACK);
+			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.SHIELD_ATTACK)!;
 		}
 
 		return intenseOrSimpleAttack(me, opponent);

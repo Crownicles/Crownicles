@@ -67,7 +67,7 @@ export class CommandProfilePacketRes extends CrowniclesPacket {
 			rarity: number;
 			nickname: string;
 		};
-		color: string;
+		color?: string;
 		level: number;
 		badges: Badge[];
 		health: {
@@ -79,5 +79,7 @@ export class CommandProfilePacketRes extends CrowniclesPacket {
 			max: number;
 		};
 		money: number;
+		tokens?: number;
+		tokensMax?: number;
 	};
 }

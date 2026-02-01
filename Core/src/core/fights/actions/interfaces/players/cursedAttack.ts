@@ -25,7 +25,7 @@ const use: FightActionFunc = (sender, receiver, fightAction) => {
 	);
 
 	// If the opponent has more than 40% of life, this attack will heal the sender
-	const recoveredEnergy = Math.round(result.damages * (receiver.getEnergy() - receiver.getMaxEnergy() * 0.3) / receiver.getMaxEnergy());
+	const recoveredEnergy = Math.round(result.damages! * (receiver.getEnergy() - receiver.getMaxEnergy() * 0.3) / receiver.getMaxEnergy());
 	if (receiver.getEnergy() > receiver.getMaxEnergy() * 0.4) {
 		FightActionController.applyBuff(result, {
 			selfTarget: true,

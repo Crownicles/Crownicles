@@ -35,6 +35,7 @@ import { Constants } from "../../../../Lib/src/constants/Constants";
 import { Maps } from "../maps/Maps";
 import { SmallEventConstants } from "../../../../Lib/src/constants/SmallEventConstants";
 import { Effect } from "../../../../Lib/src/types/Effect";
+import { PetUtils } from "../utils/PetUtils";
 
 type ReactionHandler = (player: Player, properties: PetFoodProperties) => Promise<string>;
 
@@ -103,9 +104,9 @@ function getProbabilities(type: string): { [key: string]: number } {
  * @returns The food type identifier
  */
 function getFoodType(player: Player): string {
-	const mapLink = MapLinkDataController.instance.getById(player.mapLinkId);
-	const endMap = MapLocationDataController.instance.getById(mapLink.endMap);
-	const startMap = MapLocationDataController.instance.getById(mapLink.startMap);
+	const mapLink = MapLinkDataController.instance.getById(player.mapLinkId)!;
+	const endMap = MapLocationDataController.instance.getById(mapLink.endMap)!;
+	const startMap = MapLocationDataController.instance.getById(mapLink.startMap)!;
 
 	if (endMap.id === MapConstants.LOCATIONS_IDS.ROAD_OF_WONDERS || startMap.id === MapConstants.LOCATIONS_IDS.ROAD_OF_WONDERS) {
 		return SmallEventConstants.PET_FOOD.FOOD_TYPES.SOUP;
@@ -144,12 +145,12 @@ const LOVE_CHANGE_HANDLERS: Record<string, (properties: PetFoodProperties, petMo
 		return SmallEventConstants.PET_FOOD.NO_LOVE_CHANGE;
 	},
 	[SmallEventConstants.PET_FOOD.FOOD_TYPES.GOOD_SMELL]: (properties: PetFoodProperties): number => properties.love.goodSmell,
-	[SmallEventConstants.PET_FOOD.FOOD_TYPES.VEGETARIAN]: (properties: PetFoodProperties, petModel: Pet): number => (petModel.diet === PetDiet.CARNIVOROUS
+	[SmallEventConstants.PET_FOOD.FOOD_TYPES.VEGETARIAN]: (properties: PetFoodProperties, petModel: Pet): number => petModel.diet === PetDiet.CARNIVOROUS
 		? SmallEventConstants.PET_FOOD.NO_LOVE_CHANGE
-		: properties.love.vegetarian),
-	[SmallEventConstants.PET_FOOD.FOOD_TYPES.MEAT]: (properties: PetFoodProperties, petModel: Pet): number => (petModel.diet === PetDiet.HERBIVOROUS
+		: properties.love.vegetarian,
+	[SmallEventConstants.PET_FOOD.FOOD_TYPES.MEAT]: (properties: PetFoodProperties, petModel: Pet): number => petModel.diet === PetDiet.HERBIVOROUS
 		? SmallEventConstants.PET_FOOD.NO_LOVE_CHANGE
-		: properties.love.meat),
+		: properties.love.meat,
 	[SmallEventConstants.PET_FOOD.FOOD_TYPES.SOUP]: (properties: PetFoodProperties): number => properties.love.soup
 };
 
@@ -170,15 +171,15 @@ function calculateLoveChange(foodType: string, properties: PetFoodProperties, pe
 async function applyOutcome(
 	player: Player,
 	eventData: {
-		foodType: string; outcome: string; properties: PetFoodProperties;
+		foodType: string; outcome: string; properties: PetFoodProperties; wasInvestigating: boolean;
 	},
 	response: CrowniclesPacket[]
 ): Promise<void> {
 	const {
-		foodType, outcome, properties
+		foodType, outcome, properties, wasInvestigating
 	} = eventData;
-	const petEntity = (await PetEntity.findByPk(player.petId))!;
-	const petModel = PetDataController.instance.getById(petEntity.typeId);
+	const petEntity = (await PetEntity.findByPk(player.petId!))!;
+	const petModel = PetDataController.instance.getById(petEntity.typeId)!;
 	let loveChange = 0;
 
 	if ([
@@ -202,7 +203,9 @@ async function applyOutcome(
 	response.push(makePacket(SmallEventPetFoodPacket, {
 		outcome,
 		foodType,
-		loveChange
+		loveChange,
+		timeLost: wasInvestigating ? SmallEventConstants.PET_FOOD.TRAVEL_TIME_PENALTY_MINUTES : undefined,
+		petSex: petEntity.sex
 	}));
 }
 
@@ -226,8 +229,8 @@ async function handleInvestigateReaction(player: Player, properties: PetFoodProp
  */
 async function handleSendPetReaction(player: Player): Promise<string> {
 	// Pet existence is guaranteed by canBeExecuted
-	const petEntity = (await PetEntity.findByPk(player.petId))!;
-	const petModel = PetDataController.instance.getById(petEntity.typeId);
+	const petEntity = (await PetEntity.findByPk(player.petId!))!;
+	const petModel = PetDataController.instance.getById(petEntity.typeId)!;
 	const now = Date.now();
 	const hungrySince = petEntity.hungrySince ? new Date(petEntity.hungrySince).getTime() : now;
 	const diffHours = millisecondsToHours(now - hungrySince);
@@ -283,8 +286,11 @@ function getEndCallback(player: Player, foodType: string, properties: PetFoodPro
 			? await handler(player, properties)
 			: SmallEventConstants.PET_FOOD.OUTCOMES.NOTHING;
 
+		// Check if the player chose to investigate (which applies the time penalty)
+		const wasInvestigating = reactionType === ReactionCollectorPetFoodInvestigateReaction.name;
+
 		await applyOutcome(player, {
-			foodType, outcome, properties
+			foodType, outcome, properties, wasInvestigating
 		}, response);
 		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.PET_FOOD_SMALL_EVENT);
 	};
@@ -295,7 +301,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 		if (!Maps.isOnContinent(player)) {
 			return false;
 		}
-		if (!player.petId) {
+		if (!player.petId || !await PetUtils.isPetAvailable(player, PetConstants.AVAILABILITY_CONTEXT.SMALL_EVENT)) {
 			return false;
 		}
 		const petEntity = await PetEntity.findByPk(player.petId);
@@ -305,10 +311,11 @@ export const smallEventFuncs: SmallEventFuncs = {
 		return petEntity.lovePoints < PetConstants.MAX_LOVE_POINTS;
 	},
 
-	executeSmallEvent: (response, player, context): Promise<void> => {
-		const properties = SmallEventDataController.instance.getById(SmallEventConstants.PET_FOOD.SMALL_EVENT_NAME).getProperties<PetFoodProperties>();
+	executeSmallEvent: async (response, player, context): Promise<void> => {
+		const properties = SmallEventDataController.instance.getById(SmallEventConstants.PET_FOOD.SMALL_EVENT_NAME)!.getProperties<PetFoodProperties>();
 		const foodType = getFoodType(player);
-		const collector = new ReactionCollectorPetFoodSmallEvent(foodType);
+		const petEntity = (await PetEntity.findByPk(player.petId!))!;
+		const collector = new ReactionCollectorPetFoodSmallEvent(foodType, petEntity.sex);
 		const endCallback = getEndCallback(player, foodType, properties);
 		const collectorInstance = new ReactionCollectorInstance(
 			collector,

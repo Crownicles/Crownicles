@@ -24,6 +24,9 @@ export class CommandPetTransferNoPetErrorPacket extends CrowniclesPacket {}
 export class CommandPetTransferFeistyErrorPacket extends CrowniclesPacket {}
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandPetTransferPetOnExpeditionErrorPacket extends CrowniclesPacket {}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandPetTransferSuccessPacket extends CrowniclesPacket {
 	oldPet?: OwnedPet;
 

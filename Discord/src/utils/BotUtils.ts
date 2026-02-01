@@ -7,7 +7,7 @@ export type ValidationInfos = {
 /**
  * Functions that are used from the bots perspective
  */
-export class BotUtils {
+export abstract class BotUtils {
 	/**
 	 * Get the server's stats of a given guild
 	 * @param guild

@@ -6,6 +6,7 @@ import {
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	SmallEventGoToPVEIslandAcceptPacket,
+	SmallEventGoToPVEIslandNoAnswerPacket,
 	SmallEventGoToPVEIslandNotEnoughGemsPacket,
 	SmallEventGoToPVEIslandRefusePacket
 } from "../../../../Lib/src/packets/smallEvents/SmallEventGoToPVEIslandPacket";
@@ -25,25 +26,27 @@ import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstan
 import { ReactionCollectorGoToPVEIsland } from "../../../../Lib/src/packets/interaction/ReactionCollectorGoToPVEIsland";
 import { ReactionCollectorAcceptReaction } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { TravelTime } from "../maps/TravelTime";
-import { PlayerActiveObjects } from "../database/game/models/PlayerActiveObjects";
 
 export const smallEventFuncs: SmallEventFuncs = {
-	async canBeExecuted(player: Player, playerActiveObjects: PlayerActiveObjects): Promise<boolean> {
+	async canBeExecuted(player: Player): Promise<boolean> {
+		if (!player.guildId) {
+			return false;
+		}
 		return player.level >= PVEConstants.MIN_LEVEL
 			&& Maps.isNearWater(player)
-			&& player.hasEnoughEnergyToFight(playerActiveObjects)
+			&& player.hasEnoughEnergyToFight()
 			&& await PlayerSmallEvents.playerSmallEventCount(player.id, "goToPVEIsland") === 0
 			&& await LogsReadRequests.getCountPVEIslandThisWeek(player.keycloakId, player.guildId) < PVEConstants.TRAVEL_COST.length;
 	},
 
-	async executeSmallEvent(response, player, context, playerActiveObjects): Promise<void> {
+	async executeSmallEvent(response, player, context): Promise<void> {
 		const price = await player.getTravelCostThisWeek();
 		const anotherMemberOnBoat = await Maps.getGuildMembersOnBoat(player);
 
 		const collector = new ReactionCollectorGoToPVEIsland(
 			price,
-			player.getCumulativeEnergy(playerActiveObjects),
-			player.getMaxCumulativeEnergy(playerActiveObjects)
+			player.getCumulativeEnergy(),
+			player.getMaxCumulativeEnergy()
 		);
 
 		const endCallback: EndCallback = async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
@@ -51,7 +54,11 @@ export const smallEventFuncs: SmallEventFuncs = {
 
 			const reaction = collector.getFirstReaction();
 
-			if (reaction && reaction.reaction.type === ReactionCollectorAcceptReaction.name) {
+			if (reaction === null) {
+				// Timeout - no response from user
+				response.push(makePacket(SmallEventGoToPVEIslandNoAnswerPacket, {}));
+			}
+			else if (reaction.reaction.type === ReactionCollectorAcceptReaction.name) {
 				const missionInfo = await PlayerMissionsInfos.getOfPlayer(player.id);
 				if (missionInfo.gems < price) {
 					response.push(makePacket(SmallEventGoToPVEIslandNotEnoughGemsPacket, {}));
@@ -79,6 +86,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 				}));
 			}
 			else {
+				// User clicked refuse button
 				response.push(makePacket(SmallEventGoToPVEIslandRefusePacket, {}));
 			}
 		};

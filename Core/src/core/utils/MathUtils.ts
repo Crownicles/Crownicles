@@ -1,7 +1,17 @@
 /**
  * Math functions
  */
-export class MathUtils {
+export abstract class MathUtils {
+	/**
+	 * Clamp a value between a minimum and a maximum
+	 * @param value
+	 * @param min
+	 * @param max
+	 */
+	public static clamp(value: number, min: number, max: number): number {
+		return Math.min(max, Math.max(min, value));
+	}
+
 	/**
 	 * This function takes both end of an interval and a percentage and returns the value of the interval
 	 * @param min

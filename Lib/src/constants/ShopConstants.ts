@@ -1,7 +1,7 @@
 export abstract class ShopConstants {
 	static readonly RANDOM_ITEM_PRICE = 350;
 
-	static readonly ALTERATION_HEAL_BASE_PRICE = 425;
+	static readonly ALTERATION_HEAL_BASE_PRICE = 510;
 
 	static readonly MAX_REDUCTION_TIME = 90; // Minutes
 
@@ -16,6 +16,18 @@ export abstract class ShopConstants {
 	static readonly MONEY_MOUTH_BADGE_PRICE = 25000;
 
 	static readonly DAILY_POTION_DISCOUNT_MULTIPLIER = 0.7;
+
+	static readonly TOKEN_PRICE = 375;
+
+	static readonly MAX_DAILY_TOKEN_BUYOUTS = 10;
+
+	static readonly MAX_WEEKLY_TOKEN_BUYOUTS = 30;
+
+	static readonly TOKEN_PURCHASE_AMOUNTS = [
+		1,
+		5,
+		10
+	];
 }
 
 export enum ShopCurrency {

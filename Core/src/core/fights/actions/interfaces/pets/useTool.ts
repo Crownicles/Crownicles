@@ -27,7 +27,7 @@ const use: PetAssistanceFunc = (fighter, _opponent, _turn, _fightController): Pr
 		stat: statToBuff,
 		operator: FightStatModifierOperation.MULTIPLIER,
 		value: 1 + RandomUtils.crowniclesRandom.integer(3, 10) / 100 // random % increase
-	}, fighter, this);
+	}, fighter, undefined);
 
 	return Promise.resolve(result);
 };

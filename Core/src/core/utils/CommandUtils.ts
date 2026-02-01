@@ -67,7 +67,7 @@ export abstract class CommandUtils {
 	static checkEffects(player: Player, response: CrowniclesPacket[], allowedEffects: Effect[], disallowedEffects: Effect[]): boolean {
 		const playerEffect = player.effectId === Effect.NOT_STARTED.id || player.effectRemainingTime() > 0 ? Effect.getById(player.effectId) : Effect.NO_EFFECT;
 
-		if (disallowedEffects.includes(playerEffect)) {
+		if (playerEffect && disallowedEffects.includes(playerEffect)) {
 			response.push(makePacket(RequirementEffectPacket, {
 				currentEffectId: player.effectId,
 				remainingTime: player.effectRemainingTime()
@@ -75,7 +75,7 @@ export abstract class CommandUtils {
 			return false;
 		}
 
-		if (allowedEffects.length !== 0 && !allowedEffects.includes(playerEffect)) {
+		if (allowedEffects.length !== 0 && (!playerEffect || !allowedEffects.includes(playerEffect))) {
 			response.push(makePacket(RequirementEffectPacket, {
 				currentEffectId: player.effectId,
 				remainingTime: player.effectRemainingTime()
@@ -143,7 +143,7 @@ export abstract class CommandUtils {
 			return false;
 		}
 
-		if (requirements.rightGroup && !context.rightGroups.includes(requirements.rightGroup)) {
+		if (requirements.rightGroup && (!context.rightGroups || !context.rightGroups.includes(requirements.rightGroup))) {
 			response.push(makePacket(RequirementRightPacket, {}));
 			return false;
 		}
@@ -153,7 +153,7 @@ export abstract class CommandUtils {
 		}
 
 		if (requirements.guildNeeded || requirements.guildRoleNeeded) {
-			if (!await CommandUtils.verifyGuildRequirements(player, response, requirements.guildRoleNeeded)) {
+			if (!await CommandUtils.verifyGuildRequirements(player, response, requirements.guildRoleNeeded ?? GuildRole.MEMBER)) {
 				return false;
 			}
 		}
@@ -265,9 +265,15 @@ export abstract class CommandUtils {
 	}
 }
 
-type WithPlayerPacketListenerCallbackServer<T extends CrowniclesPacket> = (response: CrowniclesPacket[], player: Player, packet: T, context: PacketContext) => void | Promise<void>;
+/*
+ * Using any for the callback type to allow methods with fewer parameters than the decorator passes
+ * The decorator always passes all arguments, but the method may declare fewer parameters (JavaScript ignores extra args)
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type WithPlayerPacketListenerCallbackServer = (...args: any[]) => void | Promise<void>;
 
-type WithoutPlayerPacketListenerCallbackServer<T extends CrowniclesPacket> = (response: CrowniclesPacket[], packet: T, context: PacketContext) => void | Promise<void>;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type WithoutPlayerPacketListenerCallbackServer = (...args: any[]) => void | Promise<void>;
 
 /**
  * Core command decorator to register a command handler with its requirements
@@ -275,8 +281,13 @@ type WithoutPlayerPacketListenerCallbackServer<T extends CrowniclesPacket> = (re
  * @param requirements
  */
 export const commandRequires = <T extends CrowniclesPacket>(packet: PacketLike<T>, requirements: Requirements) =>
-	(target: unknown, prop: string, descriptor: TypedPropertyDescriptor<WithPlayerPacketListenerCallbackServer<T>>): void => {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Decorator needs flexible signature to accept methods with varying parameter counts
+	(target: unknown, prop: string, descriptor: TypedPropertyDescriptor<any>): void => {
+		const originalMethod = descriptor.value as WithPlayerPacketListenerCallbackServer;
 		crowniclesInstance.packetListener.addPacketListener<T>(packet, async (response: CrowniclesPacket[], context: PacketContext, packet: T): Promise<void> => {
+			if (!context.keycloakId) {
+				return;
+			}
 			let player = await Players.getByKeycloakId(context.keycloakId);
 
 			// If the player is not registered, verify if the command is allowed to be executed and register the player if it is
@@ -294,27 +305,29 @@ export const commandRequires = <T extends CrowniclesPacket>(packet: PacketLike<T
 			}
 
 			// Warning: order of the checks is important, as appendBlockedPacket can add a packet to the response
-			if (requirements.notBlocked && BlockingUtils.appendBlockedPacket(player.keycloakId, response)) {
+			if (requirements.notBlocked && player.keycloakId && BlockingUtils.appendBlockedPacket(player.keycloakId, response)) {
 				return;
 			}
 
 			if (!await CommandUtils.verifyCommandRequirements(player, context, response, requirements)) {
 				return;
 			}
-			await descriptor.value(response, player, packet, context);
+			await originalMethod(response, player, packet, context);
 		});
-		CrowniclesLogger.info(`[${packet.name}] Registered packet handler (function '${prop}' in class '${target!.constructor.name}')`);
+		CrowniclesLogger.info(`[${packet.name}] Registered packet handler (function '${prop}' in class '${(target as { constructor: { name: string } }).constructor.name}')`);
 	};
 
 export const adminCommand = <T extends CrowniclesPacket>(packet: PacketLike<T>, verifyRightGroups: (context: PacketContext, packet: T) => boolean) =>
-	(target: unknown, prop: string, descriptor: TypedPropertyDescriptor<WithoutPlayerPacketListenerCallbackServer<T>>): void => {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Decorator needs flexible signature to accept methods with varying parameter counts
+	(target: unknown, prop: string, descriptor: TypedPropertyDescriptor<any>): void => {
+		const originalMethod = descriptor.value as WithoutPlayerPacketListenerCallbackServer;
 		crowniclesInstance.packetListener.addPacketListener<T>(packet, async (response: CrowniclesPacket[], context: PacketContext, packet: T): Promise<void> => {
 			if (!verifyRightGroups(context, packet)) {
 				response.push(makePacket(RequirementRightPacket, {}));
 				return;
 			}
 
-			await descriptor.value(response, packet, context);
+			await originalMethod(response, packet, context);
 		});
-		CrowniclesLogger.info(`[${packet.name}] Registered admin packet handler (function '${prop}' in class '${target!.constructor.name}')`);
+		CrowniclesLogger.info(`[${packet.name}] Registered admin packet handler (function '${prop}' in class '${(target as { constructor: { name: string } }).constructor.name}')`);
 	};

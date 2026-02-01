@@ -29,7 +29,7 @@ const use: FightActionFunc = (sender, receiver) => {
 		}, sender);
 
 		// If paralyzed, damages of this attack are increased
-		result.damages = Math.round(result.damages * 1.5);
+		result.damages = Math.round(result.damages! * 1.5);
 	}
 
 	return result;

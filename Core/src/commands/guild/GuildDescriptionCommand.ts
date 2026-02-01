@@ -32,7 +32,7 @@ async function acceptGuildDescription(player: Player, description: string, respo
 		response.push(makePacket(CommandGuildDescriptionNoGuildPacket, {}));
 		return;
 	}
-	const guild = await Guilds.getById(player.guildId);
+	const guild = (await Guilds.getById(player.guildId))!;
 	if (!guild.isChiefOrElder(player)) {
 		response.push(makePacket(CommandGuildDescriptionNotAnElderPacket, {}));
 		return;
@@ -70,7 +70,7 @@ export default class GuildDescriptionCommand {
 			response.push(makePacket(CommandGuildDescriptionNoGuildPacket, {}));
 			return;
 		}
-		const guild = await Guilds.getById(player.guildId);
+		const guild = (await Guilds.getById(player.guildId))!;
 		if (!guild.isChiefOrElder(player)) {
 			response.push(makePacket(CommandGuildDescriptionNotAnElderPacket, {}));
 			return;

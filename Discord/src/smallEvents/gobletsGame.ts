@@ -1,4 +1,4 @@
-import { ReactionCollectorCreationPacket } from "../../../Lib/src/packets/interaction/ReactionCollectorPacket";
+import { ReactionCollectorGobletsGamePacket } from "../../../Lib/src/packets/interaction/ReactionCollectorGobletsGame";
 import { PacketContext } from "../../../Lib/src/packets/CrowniclesPacket";
 import { DiscordCache } from "../bot/DiscordCache";
 import { CrowniclesSmallEventEmbed } from "../messages/CrowniclesSmallEventEmbed";
@@ -12,7 +12,7 @@ import { ReactionCollectorReturnTypeOrNull } from "../packetHandlers/handlers/Re
 import { Language } from "../../../Lib/src/Language";
 
 /**
- * Get the reactions for the goblet game
+ * Get the reactions for the goblet game (each goblet = one strategy)
  * @param lng
  */
 function getGobletsGameReactions(lng: Language): CrowniclesButtonReaction[] {
@@ -29,10 +29,10 @@ function getGobletsGameReactions(lng: Language): CrowniclesButtonReaction[] {
 
 /**
  * Send the goblet game message
- * @param packet
  * @param context
+ * @param packet
  */
-export async function gobletsGameCollector(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
+export async function gobletsGameCollector(context: PacketContext, packet: ReactionCollectorGobletsGamePacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
 	const lng = interaction.userLanguage;
 

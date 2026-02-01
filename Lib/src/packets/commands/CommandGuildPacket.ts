@@ -23,7 +23,7 @@ export class CommandGuildPacketRes extends CrowniclesPacket {
 		name: string;
 		description?: string;
 		chiefId: number;
-		elderId: number;
+		elderId: number | null;
 		level: number;
 		isMaxLevel: boolean;
 		experience: {

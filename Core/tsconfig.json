@@ -18,6 +18,7 @@
     "resolveJsonModule": true,
     "target": "es6",
     "allowSyntheticDefaultImports": true,
+    "strict": true,
     "lib": [
       "ES2022",
       "dom"
@@ -25,7 +26,8 @@
   },
   "include": [
     "src/**/*",
-    "test/**/*"
+    "test/**/*",
+    "../Lib/src/types/**/*.d.ts"
   ],
   "exclude": [
     "node_modules",

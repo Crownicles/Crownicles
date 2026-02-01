@@ -21,8 +21,14 @@ export class ReactionCollectorLotteryData extends ReactionCollectorData {
 
 }
 
+type LotteryReaction = ReactionCollectorLotteryEasyReaction | ReactionCollectorLotteryMediumReaction | ReactionCollectorLotteryHardReaction;
+export type ReactionCollectorLotteryPacket = ReactionCollectorCreationPacket<
+	ReactionCollectorLotteryData,
+	LotteryReaction
+>;
+
 export class ReactionCollectorLottery extends ReactionCollector {
-	creationPacket(id: string, endTime: number): ReactionCollectorCreationPacket {
+	creationPacket(id: string, endTime: number): ReactionCollectorLotteryPacket {
 		return {
 			id,
 			endTime,

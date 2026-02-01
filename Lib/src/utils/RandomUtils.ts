@@ -4,7 +4,7 @@ import { ConstantRange } from "../constants/Constants";
 /**
  * Functions concerning pseudo-randomness
  */
-export class RandomUtils {
+export abstract class RandomUtils {
 	/**
 	 * Redefining the random js library
 	 */

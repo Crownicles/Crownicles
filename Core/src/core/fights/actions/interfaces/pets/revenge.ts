@@ -36,11 +36,11 @@ function getStatsInfo(_sender: Fighter, receiver: Fighter): statsInfo {
 const use: PetAssistanceFunc = (fighter, opponent, turn, _fightController): Promise<PetAssistanceResult | null> => {
 	// Does nothing first turn.
 	if (turn < 2) {
-		return null;
+		return Promise.resolve(null);
 	}
 
 	if (opponent.getLastFightActionUsed()?.type !== FightActionType.PHYSICAL) {
-		return null;
+		return Promise.resolve(null);
 	}
 
 	return Promise.resolve({

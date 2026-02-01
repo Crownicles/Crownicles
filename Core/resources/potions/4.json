@@ -1,6 +1,7 @@
 {
   "fallbackEmote": "🍷",
   "rarity": 7,
-  "power": 255,
-  "nature": 2
+  "power": 235,
+  "nature": 2,
+  "usages": 5
 }

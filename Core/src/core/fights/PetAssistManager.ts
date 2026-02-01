@@ -12,7 +12,7 @@ const petAssistanceList = new Map<number, PetAssistance>();
 export function initializeAllPetBehaviors(): void {
 	const petBehaviors = PetConstants.PET_BEHAVIORS;
 	for (const mapping of petBehaviors) {
-		const behavior = PetAssistanceDataController.instance.getById(mapping.behaviorId);
+		const behavior = PetAssistanceDataController.instance.getById(mapping.behaviorId)!;
 		mapping.petIds.forEach(petId => registerPetBehavior(petId, behavior));
 	}
 }

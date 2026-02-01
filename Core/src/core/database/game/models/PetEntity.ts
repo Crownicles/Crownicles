@@ -26,6 +26,7 @@ import {
 	SexTypeShort, StringConstants
 } from "../../../../../../Lib/src/constants/StringConstants";
 import { OwnedPet } from "../../../../../../Lib/src/types/OwnedPet";
+import { PetBasicInfo } from "../../../../../../Lib/src/types/PetBasicInfo";
 import { CrowniclesLogger } from "../../../../../../Lib/src/logs/CrowniclesLogger";
 
 // skipcq: JS-C1003 - moment does not expose itself as an ES Module.
@@ -36,7 +37,7 @@ export class PetEntity extends Model {
 
 	declare typeId: number;
 
-	declare sex: string;
+	declare sex: SexTypeShort;
 
 	declare nickname: string;
 
@@ -110,14 +111,14 @@ export class PetEntity extends Model {
 	 * @param response
 	 */
 	public async giveToPlayer(player: Player, response: CrowniclesPacket[]): Promise<PET_ENTITY_GIVE_RETURN> {
-		let guild: Guild;
+		let guild: Guild | null;
 		let returnValue: PET_ENTITY_GIVE_RETURN;
 		const packet = makePacket(PlayerReceivePetPacket, {
 			giveInGuild: false,
 			giveInPlayerInv: false,
 			noRoomInGuild: false,
 			petTypeId: this.typeId,
-			petSex: this.sex as SexTypeShort
+			petSex: this.sex
 		});
 
 		// Search for a user's guild
@@ -136,7 +137,7 @@ export class PetEntity extends Model {
 		}
 		else if (!noRoomInGuild && player.petId !== null) {
 			await this.save();
-			await GuildPets.addPet(guild, this, true)
+			await GuildPets.addPet(guild!, this, true)
 				.save();
 			packet.giveInGuild = true;
 			returnValue = PET_ENTITY_GIVE_RETURN.GUILD;
@@ -164,20 +165,38 @@ export class PetEntity extends Model {
 	 */
 	public asOwnedPet(): OwnedPet {
 		const petModel = PetDataController.instance.getById(this.typeId);
+		if (!petModel) {
+			throw new Error(`Pet model not found for typeId ${this.typeId}`);
+		}
 		return {
 			typeId: this.typeId,
 			nickname: this.nickname,
 			rarity: petModel.rarity,
-			sex: this.sex as SexTypeShort,
+			sex: this.sex,
 			loveLevel: this.getLoveLevelNumber(),
 			force: petModel.force,
 			feedDelay: petModel.feedDelay
 		};
 	}
+
+	/**
+	 * Get basic pet information for packets and displays
+	 */
+	public getBasicInfo(): PetBasicInfo {
+		return {
+			petTypeId: this.typeId,
+			petSex: this.sex,
+			petNickname: this.nickname
+		};
+	}
 }
 
-export class PetEntities {
-	static async getById(id: number): Promise<PetEntity> {
+export abstract class PetEntities {
+	static async getById(id: number | null): Promise<PetEntity | null> {
+		// Also handle legacy 0 sentinel value
+		if (!id) {
+			return null;
+		}
 		return await PetEntity.findOne({
 			where: { id }
 		});
@@ -237,7 +256,7 @@ export class PetEntities {
                        WHERE lovePoints >= ${PetConstants.TRAINED_LOVE_THRESHOLD}`;
 		return (<{
 			count: number;
-		}[]>(await PetEntity.sequelize.query(query, {
+		}[]>(await PetEntity.sequelize!.query(query, {
 			type: QueryTypes.SELECT
 		})))[0].count;
 	}
@@ -248,7 +267,7 @@ export class PetEntities {
                        WHERE lovePoints <= ${PetConstants.LOVE_LEVELS[0]}`;
 		return (<{
 			count: number;
-		}[]>(await PetEntity.sequelize.query(query, {
+		}[]>(await PetEntity.sequelize!.query(query, {
 			type: QueryTypes.SELECT
 		})))[0].count;
 	}
@@ -259,7 +278,7 @@ export class PetEntities {
                        WHERE sex = :sex`;
 		return (<{
 			count: number;
-		}[]>(await PetEntity.sequelize.query(query, {
+		}[]>(await PetEntity.sequelize!.query(query, {
 			type: QueryTypes.SELECT,
 			replacements: { sex }
 		})))[0].count;
@@ -270,7 +289,7 @@ export class PetEntities {
                        FROM pet_entities`;
 		return (<{
 			count: number;
-		}[]>(await PetEntity.sequelize.query(query, {
+		}[]>(await PetEntity.sequelize!.query(query, {
 			type: QueryTypes.SELECT
 		})))[0].count;
 	}

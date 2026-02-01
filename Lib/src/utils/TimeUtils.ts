@@ -1,47 +1,7 @@
 import {
-	Language,
-	LANGUAGE
-} from "../Language";
-import {
 	DAYS,
 	TimeConstants
 } from "../constants/TimeConstants";
-
-/**
- * Get the elements to display the remaining time in the given language
- * @param language
- */
-function getMinutesDisplayStringConstants(language: string): {
-	hoursDisplay: string;
-	minutesDisplay: string;
-	secondsDisplay: string;
-	plural: string;
-	linkWord: string;
-} {
-	return language === ""
-		? {
-			hoursDisplay: "H",
-			minutesDisplay: "Min",
-			secondsDisplay: "s",
-			linkWord: " ",
-			plural: ""
-		}
-		: language === LANGUAGE.FRENCH
-			? {
-				hoursDisplay: "heure",
-				minutesDisplay: "minute",
-				secondsDisplay: "seconde",
-				linkWord: " et ",
-				plural: "s"
-			}
-			: {
-				hoursDisplay: "hour",
-				minutesDisplay: "minute",
-				secondsDisplay: "second",
-				linkWord: " and ",
-				plural: "s"
-			};
-}
 
 /**
  * Get the current date for logging purposes
@@ -165,6 +125,22 @@ export function hoursToSeconds(hours: number): number {
 }
 
 /**
+ * Convert days to minutes
+ * @param days
+ */
+export function daysToMinutes(days: number): number {
+	return days * TimeConstants.HOURS_IN_DAY * TimeConstants.S_TIME.MINUTE;
+}
+
+/**
+ * Convert days to seconds
+ * @param days
+ */
+export function daysToSeconds(days: number): number {
+	return days * TimeConstants.S_TIME.DAY;
+}
+
+/**
  * Check if two dates are the same day
  * @param first - first date
  * @param second - second date
@@ -274,20 +250,42 @@ export function getTimeFromXHoursAgo(hours: number): Date {
 }
 
 /**
- * Display a time in a human-readable format
+ * Display a time in a human-readable format using Intl.DurationFormat
  * @param minutes - the time in minutes
- * @param language
+ * @param lng - language code for formatting
  */
-export function minutesDisplay(minutes: number, language: Language = LANGUAGE.DEFAULT_LANGUAGE): string {
-	const hours = Math.floor(minutesToHours(minutes));
-	minutes = Math.floor(minutes % TimeConstants.S_TIME.MINUTE);
-	const displayConstantValues = getMinutesDisplayStringConstants(language);
-	const display = [
-		hours > 0 ? `${hours} ${displayConstantValues.hoursDisplay}${hours > 1 ? displayConstantValues.plural : ""}` : "",
-		minutes > 0 ? `${minutes} ${displayConstantValues.minutesDisplay}${minutes > 1 ? displayConstantValues.plural : ""}` : ""
-	].filter(v => v !== "")
-		.join(displayConstantValues.linkWord);
-	return display === "" ? "< 1 Min" : display;
+export function minutesDisplayIntl(minutes: number, lng: string): string {
+	// Compute components
+	let hours = Math.floor(minutesToHours(minutes));
+	const mins = Math.floor(minutes % TimeConstants.S_TIME.MINUTE);
+	const days = Math.floor(hours / TimeConstants.HOURS_IN_DAY);
+	hours %= TimeConstants.HOURS_IN_DAY;
+
+	// Build duration object with only non-zero values
+	const duration: Intl.DurationInput = {};
+	if (days > 0) {
+		duration.days = days;
+	}
+	if (hours > 0) {
+		duration.hours = hours;
+	}
+	if (mins > 0) {
+		duration.minutes = mins;
+	}
+
+	// If all values are 0, show "< 1 minute" using Intl formatting for localized output
+	if (Object.keys(duration).length === 0) {
+		const formatter = new Intl.DurationFormat(lng, {
+			style: "long",
+			minutesDisplay: "always"
+		});
+		return `< ${formatter.format({ minutes: 1 })}`;
+	}
+
+	const formatter = new Intl.DurationFormat(lng, {
+		style: "long"
+	});
+	return formatter.format(duration);
 }
 
 /**

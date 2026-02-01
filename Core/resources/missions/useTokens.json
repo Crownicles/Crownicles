@@ -1,0 +1,54 @@
+{
+  "campaignOnly": false,
+  "difficulties": {
+    "easy": [
+      0,
+      1
+    ],
+    "medium": [
+      2
+    ],
+    "hard": [
+      3
+    ]
+  },
+  "objectives": [
+    1,
+    5,
+    10,
+    25
+  ],
+  "gems": [
+    1,
+    0,
+    0,
+    0
+  ],
+  "xp": [
+    25,
+    50,
+    100,
+    200
+  ],
+  "money": [
+    50,
+    100,
+    200,
+    500
+  ],
+  "points": [
+    30,
+    60,
+    120,
+    300
+  ],
+  "expirations": [
+    48,
+    72,
+    96,
+    168
+  ],
+  "dailyIndexes": [
+    0
+  ]
+}

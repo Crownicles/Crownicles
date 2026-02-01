@@ -26,7 +26,7 @@ export class MissionTag implements IMission {
 		return 0;
 	}
 
-	updateSaveBlob(): Buffer {
+	updateSaveBlob(): Buffer | null {
 		return null;
 	}
 }

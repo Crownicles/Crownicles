@@ -9,9 +9,7 @@ import { CrowniclesInteraction } from "../messages/CrowniclesInteraction";
 import i18n from "../translations/i18n";
 import { CrowniclesEmbed } from "../messages/CrowniclesEmbed";
 import { escapeUsername } from "../../../Lib/src/utils/StringUtils";
-import {
-	millisecondsToMinutes, minutesDisplay
-} from "../../../Lib/src/utils/TimeUtils";
+import { millisecondsToMinutes } from "../../../Lib/src/utils/TimeUtils";
 import { Effect } from "../../../Lib/src/types/Effect";
 import { PacketContext } from "../../../Lib/src/packets/CrowniclesPacket";
 import { MessagesUtils } from "./MessagesUtils";
@@ -142,7 +140,7 @@ export function effectsErrorTextValue(escapedPseudo: string, lng: Language, self
 		}),
 		description: i18n.t(`{emote:effects.${effectId}} $t(${getDescriptionTranslationKey(effectId, self)})`, {
 			lng,
-			time: minutesDisplay(millisecondsToMinutes(effectRemainingTime), lng)
+			time: i18n.formatDuration(millisecondsToMinutes(effectRemainingTime), lng)
 		})
 	};
 }

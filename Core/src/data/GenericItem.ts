@@ -6,7 +6,7 @@ export abstract class GenericItem extends Data<number> {
 
 	abstract categoryName: string;
 
-	public slot: number;
+	public slot!: number;
 
 
 	public abstract getCategory(): number;

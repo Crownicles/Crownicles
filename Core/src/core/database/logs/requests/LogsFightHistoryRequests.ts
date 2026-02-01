@@ -27,7 +27,7 @@ export abstract class LogsFightHistoryRequests {
 	 */
 	static async getFightHistory(keycloakId: string, count: number): Promise<FightHistoryItem[]> {
 		// Get the fights of the player
-		const logPlayer = await LogsDatabase.findOrCreatePlayer(keycloakId);
+		const logPlayer = (await LogsDatabase.findOrCreatePlayer(keycloakId))!;
 		const lastFights = await LogsFightHistoryRequests.getLastFightsOfPlayer(logPlayer.id, count);
 		const fightsIds = lastFights.map(fight => fight.id);
 
@@ -59,20 +59,20 @@ export abstract class LogsFightHistoryRequests {
 		}
 
 		// Glory points logs
-		const fightInitiatorGloryPointsLog = logsGloryPoints.find(logsGloryPoint => logsGloryPoint.playerId === fight.fightInitiatorId);
-		const player2GloryPointsLog = logsGloryPoints.find(logsGloryPoint => logsGloryPoint.playerId === fight.player2Id);
+		const fightInitiatorGloryPointsLog = logsGloryPoints.find(logsGloryPoint => logsGloryPoint.playerId === fight.fightInitiatorId)!;
+		const player2GloryPointsLog = logsGloryPoints.find(logsGloryPoint => logsGloryPoint.playerId === fight.player2Id)!;
 
 		// Initial glory
-		const fightInitiatorInitialGlory = fight.fightInitiatorInitialDefenseGlory + fight.fightInitiatorInitialAttackGlory;
-		const player2InitialGlory = fight.player2InitialDefenseGlory + fight.player2InitialAttackGlory;
+		const fightInitiatorInitialGlory = fight.fightInitiatorInitialDefenseGlory! + fight.fightInitiatorInitialAttackGlory!;
+		const player2InitialGlory = fight.player2InitialDefenseGlory! + fight.player2InitialAttackGlory!;
 
 		// Glory changes
 		const fightInitiatorGloryChange = fightInitiatorGloryPointsLog.isDefense
-			? fightInitiatorGloryPointsLog.value - fight.fightInitiatorInitialDefenseGlory
-			: fightInitiatorGloryPointsLog.value - fight.fightInitiatorInitialAttackGlory;
+			? fightInitiatorGloryPointsLog.value - fight.fightInitiatorInitialDefenseGlory!
+			: fightInitiatorGloryPointsLog.value - fight.fightInitiatorInitialAttackGlory!;
 		const player2GloryChange = player2GloryPointsLog.isDefense
-			? player2GloryPointsLog.value - fight.player2InitialDefenseGlory
-			: player2GloryPointsLog.value - fight.player2InitialAttackGlory;
+			? player2GloryPointsLog.value - fight.player2InitialDefenseGlory!
+			: player2GloryPointsLog.value - fight.player2InitialAttackGlory!;
 
 		// Is initiator
 		const isInitiator = fight.fightInitiatorId === logPlayer.id;
@@ -118,8 +118,8 @@ export abstract class LogsFightHistoryRequests {
 				}
 			},
 			classes: {
-				me: isInitiator ? fight.fightInitiatorClassId : fight.player2ClassId,
-				opponent: isInitiator ? fight.player2ClassId : fight.fightInitiatorClassId
+				me: isInitiator ? fight.fightInitiatorClassId! : fight.player2ClassId!,
+				opponent: isInitiator ? fight.player2ClassId! : fight.fightInitiatorClassId!
 			}
 		};
 	}

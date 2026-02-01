@@ -38,14 +38,14 @@
   },
   "bigBad": {
     "lifeLoss": [
-      "you hear a shrill noise coming from the sky. You look up, but too late: a bird with sharp claws is swooping down on you. As it scratches you, it realizes that you're not its usual prey and immediately leaves. You contemplate your wound; it looks deep. You lose **{{lifeLoss}} {emote:unitValues.lostHealth}**.",
-      "while walking along a steep path, you slip and twist your right ankle. You lose **{{lifeLoss}} {emote:unitValues.lostHealth}**.",
-      "you see a fly circling around you. You draw your weapon in the hope of killing it, but you only manage to nick your wrist slightly, losing **{{lifeLoss}} {emote:unitValues.lostHealth}** in the process."
+      "you hear a shrill noise coming from the sky. You look up, but too late: a bird with sharp claws is swooping down on you. As it scratches you, it realizes that you're not its usual prey and immediately leaves. You contemplate your wound; it looks deep. You lose **{{lifeLoss, number}} {emote:unitValues.lostHealth}**.",
+      "while walking along a steep path, you slip and twist your right ankle. You lose **{{lifeLoss, number}} {emote:unitValues.lostHealth}**.",
+      "you see a fly circling around you. You draw your weapon in the hope of killing it, but you only manage to nick your wrist slightly, losing **{{lifeLoss, number}} in the process. {emote:unitValues.lostHealth}**."
     ],
     "moneyLoss": [
-      "you realize that your bag is torn off. After checking, you notice that your purse has disappeared, you have lost **{{moneyLost}} {emote:unitValues.lostMoney}**.",
-      "you realize that your purse is missing from your bag. You suddenly remember forgetting it in the previous tavern, you lost **{{moneyLost}} {emote:unitValues.lostMoney}**.",
-      "travelers pass next to you, hustling you, then they get up and apologize roughly. A few minutes later, you notice that your wallet has disappeared, you lost **{{moneyLost}} {emote:unitValues.lostMoney}**."
+      "you realize that your bag is torn off. After checking, you notice that your purse has disappeared, you have lost **{{moneyLost, number}} {emote:unitValues.lostMoney}**.",
+      "you realize that your purse is missing from your bag. You suddenly remember having forgotten it in the previous tavern, you lost **{{moneyLost, number}}. {emote:unitValues.lostMoney}**.",
+      "travelers pass next to you, hustling you, then they get up and apologize roughly. A few minutes later, you notice that your wallet has disappeared, you lost **{{moneyLost, number}} {emote:unitValues.lostMoney}**."
     ],
     "alterationStories": {
       "badBerries": "you spot some berries. Your stomach reminding you that you haven't eaten for several hours, you feel compelled to taste them. But you soon feel sick.",
@@ -108,13 +108,13 @@
       "you're accosted by a tall, bearded man, introducing himself as the leader of a mercenary group renowned in the region. He tells you that he can make you an incredible offer. The offer is for you to travel to a mysterious new island, where opportunity and danger coexist, as a monster hunter. He also adds that {{priceText}}."
     ],
     "priceFree": "the trip **is free**",
-    "priceMoney": "the trip **will cost {{price}} {emote:unitValues.gem}**",
-    "confirm": "Do you want to go to the island? You have {emote:unitValues.energy} **{{energy}} / {{energyMax}}**.",
+    "priceMoney": "the trip **will cost {{price, number}} {emote:unitValues.gem}**",
+    "confirm": "Do you want to go to the island? You have {emote:unitValues.energy} **{{energy, number}} / {{energyMax, number}}**.",
     "endStoryAccept": "{{gainScore}} You accept and board the boat bound for the island.",
     "endStoryAcceptWithMember": "{{gainScore}} You accept, and just as you're about to embark, you notice that a member of your guild is already on the boat, so you join him and head for the island.",
     "endStoryRefuse": "You politely decline the offer and continue on your way.",
     "notEnoughGems": "You accept, but when it's time to pay, you realize you don't have enough to pay. You leave disappointed.",
-    "confirmedScore": "**{emote:unitValues.score} Points earned:** {{score}}\n"
+    "confirmedScore": "**{emote:unitValues.score} Points earned:** {{score, number}}\n"
   },
   "lottery": {
     "intro": "You cross paths with a man who calls out to you. Curious, you stop. He suggests you take part in a game of chance he's created. You can choose between several levels of reward.\n\n{emote:collectors.lottery.easy} Small reward\n{emote:collectors.lottery.medium} Medium reward\n{emote:collectors.lottery.hard} Large reward\n",
@@ -129,15 +129,15 @@
     "hard": {
       "success": "You win the man's game. As a result, he rewards you graciously. However, you lose **{{lostTimeDisplay}} :clock2:**.",
       "fail": "You seize your chance. Unfortunately, you don't win. Maybe you'll be luckier next time. Taking part in the lottery will have cost you **{{lostTimeDisplay}} :clock2:**.",
-      "failWithMalus": "You bet a hundred coins on the man's game. You lose, however, and leave, dejected at having lost **{{money}}** {emote:unitValues.lostMoney}. Taking part in the lottery will also have cost you **{{lostTimeDisplay}} :clock2:**."
+      "failWithMalus": "You bet a hundred coins on the man's game. You lose, however, and leave, disappointed at having lost **{{money, number}}** {emote:unitValues.lostMoney}. Taking part in the lottery will also have cost you **{{lostTimeDisplay}}. :clock2:**."
     },
     "poor": "You try to trick the man into paying you a large sum of money. Unfortunately for you, the shopkeeper doubts your good faith, and unable to prove any wealth, you are ruthlessly rejected.",
     "end": "Without paying any further attention to the individual, you continue on your way.",
     "rewardTypeText": {
-      "xp": " You have won **{{reward}} {emote:unitValues.xp}**.",
-      "money": " You won **{{reward}}{emote:unitValues.money}**!",
-      "guildXp": " Your guild wins **{{reward}} {emote:unitValues.xp}**.",
-      "points": " You have won **{{reward}} {emote:unitValues.score}**."
+      "xp": " You have won **{{reward, number}} {emote:unitValues.xp}**.",
+      "money": " You won **{{reward, number}}{emote:unitValues.money}**!",
+      "guildXp": " Your guild wins **{{reward, number}} {emote:unitValues.xp}**.",
+      "points": " You have won **{{reward, number}} {emote:unitValues.score}**."
     }
   },
   "limoges": {
@@ -174,19 +174,19 @@
       }
     },
     "successStories": [
-      "The stranger bursts into a crystalline, knowing laugh: he understands your attraction but regretfully confesses that he can't take you there right now. Nevertheless, he leaves you with a spark of inspiration that earns you **{{experience}} {emote:unitValues.xp}** and **{{score}} {emote:unitValues.score}**.",
-      "Pleased by your fervor, the stranger courteously tips his wide-brimmed hat. He promises to send you a sign when the road finally opens, then discreetly slips a well-deserved reward into your pocket: **{{experience}} {emote:unitValues.xp}** and{{score}} {emote:unitValues.score}**.",
-      "Touched by the ardor of your conviction, the stranger murmurs that he hopes to cross paths with you one day under the majestic glass roofs of the Great Hall. His blessing galvanizes you and earns you: **{{experience}} {emote:unitValues.xp}** and{{score}} {emote:unitValues.score}**."
+      "The stranger bursts into a crystalline, knowing laugh: he understands your attraction, but regretfully confesses that he can't take you there today. Nevertheless, he leaves you with a spark of inspiration that earns you **{{experience, number}} {emote:unitValues.xp}** and **{{score, number}} {emote:unitValues.score}**.",
+      "Pleased by your fervor, the stranger courteously tips his wide-brimmed hat. He promises to send you a sign when the road finally opens, then discreetly slips a well-deserved reward into your pocket: **{{experience, number}} {emote:unitValues.xp}** and **{{score, number}} {emote:unitValues.score}**.",
+      "Touched by the ardor of your conviction, the stranger murmurs that he hopes to cross paths with you one day under the majestic glass roofs of the Great Hall. His blessing galvanizes you and wins you over: **{{experience, number}} {emote:unitValues.xp}** and **{{score, number}} {emote:unitValues.score}**."
     ],
     "penalties": {
-      "health": "Your lukewarm response immediately cools his enthusiasm. Disappointed, he abruptly turns his back on you. Turning away yourself, you trip on a shiny paving stone and injure yourself **{{amount}} {emote:unitValues.lostHealth}**.",
-      "money": "Vexed by your lack of wonder, he demands an obeisance \"for the upkeep of the sacred kilns and the glory of the craftsmen\". To get rid of this nuisance, you reluctantly give in **{{amount}} {emote:unitValues.lostMoney}**.",
+      "health": "Your lukewarm response immediately cools his enthusiasm. Disappointed, he abruptly turns his back on you. Turning away yourself, you trip on a shiny paving stone and injure yourself **{{amount, number}} {emote:unitValues.lostHealth}**.",
+      "money": "Vexed by your lack of wonder, he demands an obeisance \"for the upkeep of the sacred kilns and the glory of the craftsmen\". To get rid of this nuisance, you reluctantly give in to him **{{amount, number}}. {emote:unitValues.lostMoney}**.",
       "time": "The stranger stubbornly refuses to let you leave without reliving every marvel of the city in detail. His interminable ranting delays you by **{{amountDisplay}} :clock2:**."
     },
     "failureFallback": "The stranger bows with disappointed stiffness before disappearing into the throng of passers-by, leaving you to meditate bitterly on your lack of enthusiasm."
   },
   "interactOtherPlayers": {
-    "playerDisplayRanked": "**{{pseudo}}** ({{rank}} {emote:top.congrats})",
+    "playerDisplayRanked": "**{{pseudo}}** ({{rank, number}} {emote:top.congrats})",
     "playerDisplayUnranked": "**{{pseudo}}** (Unranked)",
     "no_one": [
       "You continue your path in the greatest calm. Nobody's on your way.",
@@ -225,9 +225,9 @@
       "You take a 5-minute break to clear your head. To do so, you train {{playerDisplay}}, who has just started the game."
     ],
     "advanced": [
-      "{{playerDisplay}}'s gray hair is a testament to the experience he has accumulated. He is indeed level **{{level}}**! You then continue on your way.",
-      "While out and about, you come across {{playerDisplay}}. He's a powerful hero, and is indeed level **{{level}}**!",
-      "{{playerDisplay}} is one of the best players in the game! He is currently level **{{level}}**. You're on your way after this encounter."
+      "{{playerDisplay}}'s gray hair is a testament to the experience he has accumulated. He is indeed level **{{level, number}}**! You then continue on your way.",
+      "While out and about, you come across {{playerDisplay}}. He's a powerful hero, and is indeed level **{{level, number}}**!",
+      "{{playerDisplay}} is one of the best players in the game! He is currently level **{{level, number}}**. You're on your way after this encounter."
     ],
     "same_class": [
       "On your way, you can't fail to recognize {{playerDisplay}}. He's a **{{class}}** just like you!",
@@ -299,6 +299,16 @@
       "{{playerDisplay}} passes you by and shows you his pet **{{petEmote}}** **{{petName}}**. You pet him and leave, have a nice trip!",
       "{{playerDisplay}} crosses your path with **{{petEmote}}** **{{petName}}** on his leash. You look at him in amazement and say to yourself that you'd love to have this animal too!"
     ],
+    "pet_on_expedition": [
+      "You pass {{playerDisplay}} on your way. His pet **{{petEmote}}** **{{petName}}** isn't with him today, he's sent him on an expedition! This trainer really knows how to optimize his relationship with his companion.",
+      "{{playerDisplay}} walks alone, without his trusty **{{petEmote}}** **{{petName}}**. As we talk, you learn that he's sent his pet off to explore faraway lands. A true master trainer!",
+      "{{playerDisplay}} doesn't have his pet with him today. He proudly explains that his **{{petEmote}}** **{{petName}}** has gone on an expedition. What mutual trust!"
+    ],
+    "pet_clone": [
+      "{{playerDisplay}} passes by you with... a strange translucent creature? It's **{{petEmote}}** **{{petName}}**, but something's not right. The animal seems almost ghostly, as if it's not really there...",
+      "You watch {{playerDisplay}} with a puzzled expression. His **{{petEmote}}** **{{petName}}** looks... odd. Translucent, almost ethereal. He explains that an ancient talisman allows him to keep a clone of his companion while the real one explores the world.",
+      "Is it a ghost? No, it's the **{{petEmote}}** **{{petName}}** of {{playerDisplay}}, but his silhouette is strangely transparent. The magic of a $t(models:talisman.clone), he tells you, while his real companion is on an expedition!"
+    ],
     "guild_chief": [
       "Don't panic! You pass by {{playerDisplay}}, the leader of the **{{guildName}}** guild.",
       "You pass by {{playerDisplay}}. He is the guild leader **{{guildName}}** !",
@@ -317,7 +327,7 @@
     "weapon": [
       "You meet {{playerDisplay}}, who shows you his \"**{{weapon}}**\" weapon.",
       "A passer-by comes to show off next to you, it's {{playerDisplay}} and he shows you his \"**{{weapon}}**\" weapon!",
-      "Wow! {{playerDisplay}} brandishes his magnificent \"**{{weapon}}**\" weapon at you. You go on your way in astonishment."
+      "Impressive! {{playerDisplay}} brandishes his magnificent \"{{weapon}}\" weapon at you. You resume your astonished journey."
     ],
     "armor": [
       "You meet {{playerDisplay}}, who shows you his magnificent \"**{{armor}}**\" armor.",
@@ -408,7 +418,7 @@
       "a bird approaches you and drops a tiny message in your hand...",
       "you discover an old, abandoned wooden hut, you decide to explore it and discover only an old grimoire that seems to have been lying around for years..."
     ],
-    "reward": "{emote:unitValues.money} Money: **{{money}}**\n{emote:unitValues.xp} XP: **{{xp}}**\n{emote:unitValues.score} Points: **The number of points will depend on your final ranking.**\n{emote:rewards.item} A random equipment.",
+    "reward": "{emote:unitValues.money} Money: **{{money, number}}**\n{emote:unitValues.xp} XP: **{{xp, number}}**\n{emote:unitValues.score} Points: **The number of points will depend on your final ranking.**\n{emote:rewards.item} A random equipment.",
     "endMessage": "\n\n{emote:commands.report} \"Have an adventurer belonging to the {emote:leagues.{{leagueId}}} $t(models:leagues.{{leagueId}}) that will find this text, **if you keep your glory until the end of the season**, you will be able to win these rewards:\n\n{{rewards}}\"\n\nYou will be back on your way, while enjoying your {{time}} bonus .",
     "notEnoughFight": "\n\n{emote:commands.report} \"Have an adventurer belonging to the {emote:leagues.{{leagueId}}} $t(models:leagues.{{leagueId}}) that will find this text, **if you perform some battles using the {command:fight}command**, you will be able to win these rewards:\n\n{{rewards}}\n\nYou will quickly get back on your way Fear of failing to fight enough players before the end of the {{time}} season.",
     "rewardToday": "\n\n{emote:commands.report} \"Get your reward before the end of the week by ordering {command:leaguebonus} !\"\n\nYou're on your way again, looking forward to collecting your bonus."
@@ -422,7 +432,7 @@
       "**{{guild}}** is becoming more and more popular as time goes by! We hope you continue to do so, and that's why we're offering you this xp bonus!",
       "As you enter an inn, the tenant recognizes the emblem on your shield, the symbol of the **{{guild}}** guild. He decides to offer a general round of drinks in your honor, to great effect with the other customers."
     ],
-    "end": " Your guild wins **{{xp}}** {emote:unitValues.xp}."
+    "end": " Your guild wins **{{xp, number}}** {emote:unitValues.xp}."
   },
   "winEnergy": {
     "stories": [
@@ -451,33 +461,33 @@
   },
   "winEnergyOnIsland": {
     "stories": [
-      "you see a bench on the side of the road and sit down for a few minutes. This makes you {emote:unitValues.energy} **{{energy}}**.",
-      "you detach your water bottle from your belt and quench your thirst. You win {emote:unitValues.energy} **{{energy}}**.",
-      "you take out a fruit you've been keeping in a cloth and eat it. This makes you {emote:unitValues.energy} **{{energy}}**.",
-      "you stop for a few seconds to catch your breath. You start again with a little more stamina and win {emote:unitValues.energy} **{{energy}}**.",
-      "you take out a piece of bread and satiate yourself with it. This makes you {emote:unitValues.energy} **{{energy}}**.",
-      "you sit for a few minutes and meditate to calm your mind. You recover {emote:unitValues.energy} **{{energy}}**.",
-      "you feel your muscles tense up and stop for a moment to stretch them. You recover {emote:unitValues.energy} **{{energy}}**."
+      "you see a bench by the side of the road and sit down for a few minutes. This makes you {emote:unitValues.energy} **{{energy, number}}**.",
+      "you detach your canteen from your belt and quench your thirst. You win {emote:unitValues.energy} **{{energy, number}}**.",
+      "you take out a fruit you've been keeping in a cloth and eat it. This makes you {emote:unitValues.energy} **{{energy, number}}**.",
+      "you stop for a few seconds to catch your breath. You start again with a little more stamina and win {emote:unitValues.energy} **{{energy, number}}**.",
+      "you take out a piece of bread and satiate yourself with it. This makes you {emote:unitValues.energy} **{{energy, number}}**.",
+      "you sit for a few minutes and meditate to calm your mind. You recover {emote:unitValues.energy} **{{energy, number}}**.",
+      "you feel your muscles tense up and stop for a moment to stretch them. You recover {emote:unitValues.energy} **{{energy, number}}**."
     ]
   },
   "winHealth": {
     "stories": [
-      "you come across a tree whose fruit looks appetizing. Curious, you eat a few and continue on your way. You gain **{{health}} {emote:unitValues.health}**.",
-      "you find an almost empty vial. As its contents do not seem dangerous, you finish drinking it before continuing on your way. You earn **{{health}} {emote:unitValues.health}**.",
-      "you discover an abandoned building. You decide to explore it and quickly find some food. You gain **{{health}} {emote:unitValues.health}**.",
-      "you meet a woman who claims to be able to cure all your ills. You decide to trust her and let her recite some incantations for a few minutes. You gain **{{health}} {emote:unitValues.health}**.",
-      "you meet a group of children sharing the fruits of their harvest. They offer you some pears before you set off again. You earn **{{health}} {emote:unitValues.health}**.",
-      "your gaze is drawn to what appears to be a narrow passageway between the bushes. You follow it and find some mushrooms on the ground. They don't look dangerous, so you take the risk of tasting them. You earn **{{health}} {emote:unitValues.health}**.",
-      "you hear the rustle of a tiny stream. You decide to go there and drink some of the water, which turns out to be very cool. You earn **{{health}} {emote:unitValues.health}**.",
-      "you discover whole baskets of food by a campfire. You hesitate for a few seconds before rushing to eat as much as you can. Full, you feel much better now. You earn **{{health}} {emote:unitValues.health}**.",
-      "you see an abandoned hut. You decide to enter the hut, when a shiny bottle attracts you. Fearless, you drink the contents. You gain **{{health}} {emote:unitValues.health}**.",
-      "you find a small farmhouse with a recently extinguished open fire. You hurry to steal some vegetables before the owners return and eat them. You earn **{{health}} {emote:unitValues.health}**.",
-      "you meet and chat with a monk. Impressed by your quest for the princess, he decides to dedicate a prayer to you. You earn **{{health}} {emote:unitValues.health}**.",
-      "you find some wild strawberries! After enjoying them, you continue on your way. You earn **{{health}} {emote:unitValues.health}**.",
-      "you see a package abandoned on the ground. You open it and discover some food, which you eat before continuing on your way. You gain **{{health}} {emote:unitValues.health}**.",
-      "you find a waterfall and decide to quench your thirst. You gain **{{health}} {emote:unitValues.health}**.",
-      "you come across an old man who says he has an elixir he'd be willing to give you for free. Curious, you accept and drink it. You earn **{{health}} {emote:unitValues.health}**.",
-      "you find a water bottle in an abandoned cart. You drink water and feel better. You earn **{{health}} {emote:unitValues.health}**"
+      "you come across a tree whose fruit looks appetizing. Curious, you eat a few and continue on your way. You gain **{{health, number}} {emote:unitValues.health}**.",
+      "you find an almost empty vial. As its contents do not seem dangerous, you finish drinking it before continuing on your way. You earn **{{health, number}} {emote:unitValues.health}**.",
+      "you discover an abandoned building. You decide to explore it and quickly find some food. You gain **{{health, number}} {emote:unitValues.health}**.",
+      "you meet a woman who claims to be able to cure all your ills. You decide to trust her and let her recite some incantations for a few minutes. You gain **{{health, number}} {emote:unitValues.health}**.",
+      "you meet a group of children sharing the fruits of their harvest. They offer you some pears before you set off again. You earn **{{health, number}} {emote:unitValues.health}**.",
+      "your gaze is drawn to what appears to be a narrow passageway between the bushes. You follow it and find some mushrooms on the ground. They don't look dangerous, so you take the risk of tasting them. You earn **{{health, number}} {emote:unitValues.health}**.",
+      "you hear the rustle of a tiny stream. You decide to go there and drink some of the water, which turns out to be very cool. You earn **{{health, number}} {emote:unitValues.health}**.",
+      "you discover whole baskets of food by a campfire. You hesitate for a few seconds before rushing to eat as much as you can. Full, you feel much better now. You earn **{{health, number}} {emote:unitValues.health}**.",
+      "you see an abandoned hut. You decide to enter the hut, when a shiny bottle attracts you. Fearless, you drink the contents. You gain **{{health, number}} {emote:unitValues.health}**.",
+      "you find a small farmhouse with a recently extinguished open fire. You hurry to steal some vegetables before the owners return and eat them. You earn **{{health, number}} {emote:unitValues.health}**.",
+      "you meet and chat with a monk. Impressed by your quest for the princess, he decides to dedicate a prayer to you. You earn **{{health, number}} {emote:unitValues.health}**.",
+      "you find some wild strawberries! After enjoying them, you continue on your way. You earn **{{health, number}} {emote:unitValues.health}**.",
+      "you see a package abandoned on the ground. You open it and discover some food, which you eat before continuing on your way. You gain **{{health, number}} {emote:unitValues.health}**.",
+      "you find a waterfall and decide to quench your thirst. You gain **{{health, number}} {emote:unitValues.health}**.",
+      "you come across an old man who says he has an elixir he'd be willing to give you for free. Curious, you accept and drink it. You earn **{{health, number}} {emote:unitValues.health}**.",
+      "you find a water bottle in an abandoned cart. You drink water and feel better. You earn **{{health, number}} {emote:unitValues.health}**"
     ]
   },
   "winPersonalXP": {
@@ -492,7 +502,7 @@
       "On your way, you come across a beast that doesn't seem very friendly. You decide to run away, but it quickly catches up with you. You then turn around and strike a blow. That's enough to get rid of your adversary, and you're on your way.",
       "Out of the corner of your eye, you notice a satchel full of gold fall from the pocket of an adventurer walking ahead of you. You immediately alert him and return the satchel. The adventurer thanks you for your kindness."
     ],
-    "end": " You win **{{xp}}** {emote:unitValues.xp}."
+    "end": " You win **{{xp, number}}** {emote:unitValues.xp}."
   },
   "staffMember": {
     "context": [
@@ -609,12 +619,12 @@
           ]
         },
         "3": [
-          "Once the potion is finished, the witch hands you a drink. Another burning, you clumsily escaped it on your foot. You lose **{{lifeLoss}} {emote:unitValues.lostHealth}**.",
-          "As you finished the potion, you were the victim of the old witch's clumsy who escaped the cauldron on you. You lose **{{lifeLoss}} {emote:unitValues.lostHealth}**.",
-          "Despite the good smell of the potion, the potion is not as good for health as you might have expected. You lose **{{lifeLoss}} {emote:unitValues.lostHealth}**.",
-          "The taste of the potion is weird. Maybe you should have listened to your instinct and not taste it. . You lose **{{lifeLoss}} {emote:unitValues.lostHealth}**.",
-          "The potion vapors will have made you sick. You leave without asking for your remainder but not without the advice of inhaling these steams. You lose **{{lifeLoss}} {emote:unitValues.lostHealth}**.",
-          "As the old lady apprehendes to pour the last drop into the pot a muffled sound is heard. It looks like the cauldron has exploded. You lose **{{lifeLoss}} {emote:unitValues.lostHealth}**."
+          "Once the potion is finished, the witch hands you a glass. Still burning, you clumsily drop it on your foot. You lose **{{lifeLoss, number}} {emote:unitValues.lostHealth}**.",
+          "Just as you're about to finish the potion, the old witch clumsily drops the cauldron on you. You lose **{{lifeLoss, number}} {emote:unitValues.lostHealth}**.",
+          "Although the potion smells good, it's not as good for your health as you might have hoped. You lose **{{lifeLoss, number}} {emote:unitValues.lostHealth}**.",
+          "The taste of the potion is very strange. Perhaps you should have listened to your instincts and not tasted it... You lose **{{lifeLoss, number}} {emote:unitValues.lostHealth}**.",
+          "The fumes from the potion are enough to make you ill. You leave without asking for help, but not without suffering the consequences of inhaling the fumes. You lose **{{lifeLoss, number}} {emote:unitValues.lostHealth}**.",
+          "Just as the old lady is about to pour the last drop into the cauldron, a thud is heard. The cauldron seems to have exploded. You lose **{{lifeLoss, number}} {emote:unitValues.lostHealth}**."
         ],
         "4": [
           "Unfortunately, the potion seems completely charred and undrinkable. You decide not to take the risk of drinking it and leave quickly.",
@@ -840,7 +850,7 @@
       "feistyPets": "the CAPS, or the Continental Animal Protection Society, is campaigning to help **feisty animals** get a better life. They listed **{{infoNumber}}** of them. Disappointed and reassured at the same time by this news,",
       "percentMalePets": "the CAPS, or the Continental Animal Protection Society, discovered that **{{infoNumber}}%** of the animals in the territory are males. Happy with this news,",
       "percentFemalePets": "the CAPS, or the Continental Animal Protection Society, discovered that **{{infoNumber}}%** of the animals in the territory are females. Happy with this news,",
-      "guildLevelMean": "the CGA, or Continental Guild Agency, noted that the current guilds averaged **level {{infoNumber}}**. Intrigued by this information,",
+      "guildLevelMean": "the CGA, or Continental Guild Agency, noted that the current guilds averaged **level {{infoNumber, number}}**. Intrigued by this information,",
       "nbPlayersHaventStartedTheAdventure_zero": "the CAAFS, or Continental Adventurer's Anti-Fraud Service, discovered that **no adventurer** disappeared just after they obtained their adventure license. Admirable of all these valuable adventurers,",
       "nbPlayersHaventStartedTheAdventure_one": "the CAAFS, or Continental Adventurer's Anti-Fraud Service, discovered that **an adventurer** disappeared just after he obtained his adventure license. Indignified by this person's action,",
       "nbPlayersHaventStartedTheAdventure_other": "the CAAFS, or Continental Adventurer's Anti-Fraud Service, discovered that **{{infoNumber}} adventurers** disappeared just after they obtained their adventure license. Indignified by the action of these people,",
@@ -857,29 +867,40 @@
   "smallBad": {
     "healthLost": {
       "stories": [
-        "your feet stumble on a root. Wounded, you lose **{{amount}}{emote:unitValues.lostHealth}**.",
-        "deep into your thoughts, you don't pay attention to the ground under your feet and unwillingly trip over a pebble. You hurt yourself at the knee. This ain't a serious injury, despite it being painful. You lose **{{amount}} {emote:unitValues.lostHealth}**.",
-        "you whistle while walking. Suddenly, something enters into your field of vision: it's a dog, and it's running straight at you! Before you have time to understand what is happening, the animal collides with you, but immediately leaves thereafter. Fortunately, you are only slightly injured. and only lose **{{amount}} {emote:unitValues.lostHealth}**.",
-        "you hit a galloping horse, but were only injured superficially. You lose **{{amount}} {emote:unitValues.lostHealth}**.",
-        "you were violently hit by a boar herd. You barely stand back up, and get back on your way whilst losing **{{amount}} {emote:unitValues.lostHealth}**."
+        "your feet stumble on a root. Wounded, you lose **{{amount, number}}{emote:unitValues.lostHealth}**.",
+        "deep into your thoughts, you don't pay attention to the ground under your feet and unwillingly trip over a pebble. You hurt yourself at the knee. This ain't a serious injury, despite it being painful. You lose **{{amount, number}} {emote:unitValues.lostHealth}**.",
+        "you whistle while walking. Suddenly, something enters into your field of vision: it's a dog, and it's running straight at you! Before you have time to understand what is happening, the animal collides with you, but immediately leaves thereafter. Fortunately, you are only slightly injured. and only lose **{{amount, number}} {emote:unitValues.lostHealth}**.",
+        "you hit a galloping horse, but were only injured superficially. You lose **{{amount, number}} {emote:unitValues.lostHealth}**.",
+        "you were violently hit by a boar herd. You barely stand back up, and get back on your way whilst losing **{{amount, number}} {emote:unitValues.lostHealth}**."
       ]
     },
     "timeLost": {
-      "stories": [
-        "you walk on a trap. The moment afterwards, you are suspended from the foot. Getting out of this trap may take a long time... you lose **{{amount}} :clock2:**.",
-        "it starts to rain, You ready yourself to start running to avoid being soaked when you see a stunning rainbow just a few steps away. You stop thinking about the rain and get absorbed by the show during **{{amount}} :clock2:**.",
-        "you fall from fatigue. Your adventures have been exhausting, and that is why you decide to rest for **{{amount}} :clock2:**.",
-        "while walking deep in your thoughts, you don't notice the branch on the ground. You trip on it and your stuff spreads. You lose **{{amount}} :clock2:**.",
-        "you hear a loud crashing noise coming from the understory. Your curiosity has been piqued: you want to know what it's all about, and go to inspect the area. After **{{amount}} :clock2:**, you give up without having found or understood the origin of the noise that startled you."
-      ]
+      "sleeping": {
+        "stories": [
+          "you're getting tired. Your adventures have exhausted you, so you decide to rest for **{{amount}}**. {emote:effects.sleeping}",
+          "you feel intensely tired. Your eyelids become heavy and you decide to take a restorative nap for **{{amount}}**. {emote:effects.sleeping}",
+          "Exhausted by your journey, you lie down against a tree to get some sleep. You wake up **{{amount}}** later. {emote:effects.sleeping}",
+          "fatigue overwhelms you. You find a comfortable place to rest for **{{amount}}**. {emote:effects.sleeping}",
+          "your legs no longer support you. You sit up and quickly fall asleep for **{{amount}}**. {emote:effects.sleeping}"
+        ]
+      },
+      "occupied": {
+        "stories": [
+          "you're stepping on a trap. The next thing you know, you're hanging by your foot. Getting out of the trap may take a while... you lose **{{amount}}**. {emote:effects.occupied}",
+          "it starts to rain. You're about to run to avoid getting soaked, but then you see a beautiful rainbow. You stop thinking about the rain and let yourself be absorbed by the spectacle for **{{amount}}**. {emote:effects.occupied}",
+          "As you walk along, deep in thought, you don't notice the branch on the ground. You trip over it and your belongings scatter. You lose **{{amount}}**. {emote:effects.occupied}",
+          "you hear a loud crashing noise coming from undergrowth. Your curiosity has been piqued: you want to know what it's all about, and go to inspect the area. After **{{amount}}**, you give up without having found or understood the origin of the noise that startled you. {emote:effects.occupied}",
+          "you come across an old man who seems lost. You spend **{{amount}}** helping him find his way back. {emote:effects.occupied}"
+        ]
+      }
     },
     "moneyLost": {
       "stories": [
-        "crossing a crowd, you feel a hand deeply searching you and lightening your pockets. You don't have the time to replicate that your looter has disappeared. You lost **{{amount}} {emote:unitValues.lostMoney}**.",
-        "you meet a beggar asking for some money to support his needs. Taken by a surge of mercy, you decide to give him **{{amount}} {emote:unitValues.lostMoney}**.",
-        "a masked man calls you out and threatens you with his weapon. To let him spare your life, you give him the **{{amount}} {emote:unitValues.lostMoney}** you have in your pocket, and the keys of your cart as well.",
-        "you suddenly remember forgetting your purse in the room of the last inn you passed by. You lose **{{amount}} {emote:unitValues.lostMoney}**.",
-        "you cross a cart which load protrudes and tears your bag. While you are gathering your belongings, a group of children passes by and robs you. You lose **{{amount}} {emote:unitValues.lostMoney}**."
+        "crossing a crowd, you feel a hand deeply searching you and lightening your pockets. You don't have the time to replicate that your looter has disappeared. You lost **{{amount, number}} {emote:unitValues.lostMoney}**.",
+        "you meet a beggar asking for some money to support his needs. Taken by a surge of mercy, you decide to give him **{{amount, number}} {emote:unitValues.lostMoney}**.",
+        "a masked man calls you out and threatens you with his weapon. To let him spare your life, you give him the **{{amount, number}} {emote:unitValues.lostMoney}** you have in your pocket, and the keys of your cart as well.",
+        "you suddenly remember forgetting your purse in the room of the last inn you passed by. You lose **{{amount, number}} {emote:unitValues.lostMoney}**.",
+        "you cross a cart which load protrudes and tears your bag. While you are gathering your belongings, a group of children passes by and robs you. You lose **{{amount, number}} {emote:unitValues.lostMoney}**."
       ]
     }
   },
@@ -914,18 +935,18 @@
   "pet": {
     "stories": {
       "money_m": [
-        "You see **{{pet}}** rummaging in some tall grass. He comes out with **{{amount}}** {emote:unitValues.money}, which you keep for the rest of your adventure.",
-        "You notice that **{{pet}}** is staring at the ground and decides to dig a hole. What a surprise to see him emerge with **{{amount}}** {emote:unitValues.money}!",
-        "You discover that **{{pet}}** is sniffing insistently in the direction of a bush. You decide to take a look, and seeing him return with **{{amount}}** {emote:unitValues.money} fills you with joy!",
-        "You suddenly see **{{pet}}** jump into the water. What a surprise to see him emerge with a purse of **{{amount}}** {emote:unitValues.money}!",
-        "After a short break on your journey, you see **{{pet}}** returning with a purse. It seems he has stolen it from a merchant. You decide to leave with your **{{amount}}** {emote:unitValues.money} before he notices it."
+        "You see **{{pet}}** rummaging in some tall grass. He comes out with **{{amount, number}}** {emote:unitValues.money}, which you keep for the rest of your adventure.",
+        "You notice that **{{pet}}** is staring at the ground and decides to dig a hole. What a surprise to see her emerge with **{{amount, number}}** {emote:unitValues.money}!",
+        "You discover that **{{pet}}** is sniffing insistently in the direction of a bush. You decide to take a look, and seeing him return with **{{amount, number}}** {emote:unitValues.money} fills you with joy!",
+        "You suddenly see **{{pet}}** jump into the water. What a surprise to see him emerge with a purse of **{{amount, number}}** {emote:unitValues.money}!",
+        "After a short break on your journey, you see **{{pet}}** returning with a purse. It seems he has stolen it from a merchant. You decide to leave with your **{{amount, number}}** {emote:unitValues.money} before he notices it."
       ],
       "money_f": [
-        "You see **{{pet}}** rummaging in some tall grass. She comes out with **{{amount}}** {emote:unitValues.money}, which you keep for the rest of your adventure.",
-        "You notice that **{{pet}}** is staring at the ground and decides to dig a hole. What a surprise to see her emerge with **{{amount}}** {emote:unitValues.money}!",
-        "You discover that **{{pet}}** is sniffing insistently in the direction of a bush. You decide to take a look, and seeing her return with **{{amount}}** {emote:unitValues.money} fills you with joy!",
-        "You suddenly see **{{pet}}** jump into the water. What a surprise to see her emerge with a purse of **{{amount}}** {emote:unitValues.money}!",
-        "After a short break on your journey, you see **{{pet}}** returning with a purse. It seems she has stolen it from a merchant. You decide to leave with your **{{amount}}** {emote:unitValues.money} before he notices it."
+        "You see **{{pet}}** rummaging in some tall grass. She comes out with **{{amount, number}}** {emote:unitValues.money}, which you keep for the rest of your adventure.",
+        "You notice that **{{pet}}** is staring at the ground and decides to dig a hole. What a surprise to see her emerge with **{{amount, number}}** {emote:unitValues.money}!",
+        "You discover that **{{pet}}** is sniffing insistently in the direction of a bush. You decide to take a look, and seeing her return with **{{amount, number}}** {emote:unitValues.money} fills you with joy!",
+        "You suddenly see **{{pet}}** jump into the water. What a surprise to see her emerge with a purse of **{{amount, number}}** {emote:unitValues.money}!",
+        "After a short break on your journey, you see **{{pet}}** returning with a purse. It seems she has stolen it from a merchant. You decide to leave with your **{{amount, number}}** {emote:unitValues.money} before he notices it."
       ],
       "item_m": [
         "You see **{{pet}}** digging in some tall grass. He comes out with an **item** that you can possibly keep for the rest of your adventure.",
@@ -942,24 +963,24 @@
         "After taking a short break on your ride, you see **{{pet}}** coming back with an **item**. It looks like she stole it to a merchant. You decided to leave before the merchant notices it."
       ],
       "gainEnergy_m": [
-        "Having **{{pet}}** by your side makes you happy. This makes you regain your morale and you gain **{{amount}}** {emote:unitValues.energy}.",
-        "On the edge of the road, **{{pet}}** rushes for food that seems to be in good condition and brings it to you. You eat it before it spoils and win **{{amount}}** {emote:unitValues.energy}.",
-        "After leaving for a few moments, **{{pet}}** comes back with an almost empty potion. You drink it before it is lost. This way you gain **{{amount}}** {emote:unitValues.energy}."
+        "Having **{{pet}}** by your side makes you happy. It cheers you up and you gain **{{amount, number}}** {emote:unitValues.energy}.",
+        "On the side of the road, **{{pet}}** rushes for food that seems to be in good condition and brings it back to you. You eat it before it spoils and win **{{amount, number}}** {emote:unitValues.energy}.",
+        "After leaving for a few moments, **{{pet}}** returns with an almost empty potion. You drink it before it is lost. You thus earn **{{amount, number}}** {emote:unitValues.energy}."
       ],
       "gainEnergy_f": [
-        "Having **{{pet}}** by your side makes you happy. This makes you regain your morale and you gain **{{amount}}** {emote:unitValues.energy}.",
-        "On the edge of the road, **{{pet}}** rushes for food that seems to be in good condition and brings it to you. You eat it before it spoils and win **{{amount}}** {emote:unitValues.energy}.",
-        "After leaving for a few moments, **{{pet}}** returns with an almost empty potion. You drink it before it is lost. You win **{{amount}}** {emote:unitValues.energy}."
+        "Having **{{pet}}** by your side makes you happy. It cheers you up and you gain **{{amount, number}}** {emote:unitValues.energy}.",
+        "On the side of the road, **{{pet}}** rushes for food that seems to be in good condition and brings it back to you. You eat it before it spoils and win **{{amount, number}}** {emote:unitValues.energy}.",
+        "After leaving for a few moments, **{{pet}}** returns with an almost empty potion. You drink it before it is lost. You win **{{amount, number}}** {emote:unitValues.energy}."
       ],
       "gainLife_m": [
-        "Having **{{pet}}** by your side makes you happy. It cheers you up and you gain **{{amount}}** {emote:unitValues.health}.",
-        "On the side of the road, **{{pet}}** rushes for food that seems to be in good condition and brings it back to you. You eat it before it spoils and win **{{amount}}** {emote:unitValues.health}.",
-        "After leaving for a few moments, **{{pet}}** returns with an almost empty potion. You drink it before it is lost. You thus earn **{{amount}}** {emote:unitValues.health}."
+        "Having **{{pet}}** by your side makes you happy. It cheers you up and you gain **{{amount, number}}** {emote:unitValues.health}.",
+        "On the side of the road, **{{pet}}** rushes for food that seems to be in good condition and brings it back to you. You eat it before it spoils and win **{{amount, number}}** {emote:unitValues.health}.",
+        "After leaving for a few moments, **{{pet}}** returns with an almost empty potion. You drink it before it is lost. You thus earn **{{amount, number}}** {emote:unitValues.health}."
       ],
       "gainLife_f": [
-        "Having **{{pet}}** by your side makes you happy. It cheers you up and you gain **{{amount}}** {emote:unitValues.health}.",
-        "On the side of the road, **{{pet}}** rushes for food that seems to be in good condition and brings it back to you. You eat it before it spoils and win **{{amount}}** {emote:unitValues.health}.",
-        "After leaving for a few moments, **{{pet}}** returns with an almost empty potion. You drink it before it is lost. You win **{{amount}}** {emote:unitValues.health}."
+        "Having **{{pet}}** by your side makes you happy. It cheers you up and you gain **{{amount, number}}** {emote:unitValues.health}.",
+        "On the side of the road, **{{pet}}** rushes for food that seems to be in good condition and brings it back to you. You eat it before it spoils and win **{{amount, number}}** {emote:unitValues.health}.",
+        "After leaving for a few moments, **{{pet}}** returns with an almost empty potion. You drink it before it is lost. You win **{{amount, number}}** {emote:unitValues.health}."
       ],
       "gainLove_m": [
         "It looks like **{{pet}}** is happy to have you by his side. He gains affection and becomes more trustworthy towards you.",
@@ -1003,40 +1024,47 @@
         "The flair of **{{pet}}** has enabled you to find a shortcut. Thanks to her, you've won **{{amountDisplay}}** {emote:unitValues.timeGain}.",
         "Defending **{{pet}}** against {{randomAnimal}} sauvage has been no mean feat, and this time you've found something stronger than yourself. You decide to flee, and run at full speed. Thanks to this misadventure, you now earn **{{amountDisplay}}** {emote:unitValues.timeGain} along the way."
       ],
-      "points": [
-        "People who come across you with **{{pet}}** are sure to take notice. This improves your reputation and earns you **{{amount}}** {emote:unitValues.score}.",
-        "Telling an old man about your adventures with **{{pet}}** seems to have improved your reputation. You win **{{amount}}** {emote:unitValues.score}."
+      "points_m": [
+        "People who come across you with **{{pet}}** are sure to take notice. This improves your reputation and earns you **{{amount, number}}** {emote:unitValues.score}.",
+        "Telling an old man about your adventures with **{{pet}}** seems to have improved your reputation. You win **{{amount, number}}** {emote:unitValues.score}."
       ],
-      "badge": [
+      "points_f": [
+        "People who come across you with **{{pet}}** are sure to take notice. This improves your reputation and earns you **{{amount, number}}** {emote:unitValues.score}.",
+        "Telling an old man about your adventures with **{{pet}}** seems to have improved your reputation. You win **{{amount, number}}** {emote:unitValues.score}."
+      ],
+      "badge_m": [
+        "Successfully training **{{pet}}** was a real challenge that proves your talent with the animals. You get the {{badge}} badge!"
+      ],
+      "badge_f": [
         "Successfully training **{{pet}}** was a real challenge that proves your talent with the animals. You get the {{badge}} badge!"
       ],
       "loseLife_m": [
-        "While you are trying to caress **{{pet}}**, he doesn't get along and bites your hand. You lose **{{amount}}** {emote:unitValues.lostHealth}.",
-        "Around a bend, **{{pet}}** suddenly starts running. You hold on to the leash as best you can but come away with a few scratches. You lose **{{amount}}** {emote:unitValues.lostHealth}.",
-        "You see **{{pet}}** leave. He comes back a few minutes after with some food. You eat it and severely regret it a few minutes later. You suddenly suffer from a bellyache... You lose **{{amount}}** {emote:unitValues.lostHealth}.",
-        "**{{pet}}** seems to have triggered hostilities with {{randomAnimal}}! You decide to defend him, but unfortunately the wild creature hurts you. You lose **{{amount}}** {emote:unitValues.lostHealth}.",
-        "**{{pet}}** seems to want to play and throws himself from the top of a tree. Unfortunately, his weight breaks the branch and he falls on top of you. You lose **{{amount}}** {emote:unitValues.lostHealth}."
+        "While you are trying to caress **{{pet}}**, he doesn't get along and bites your hand. You lose **{{amount, number}}** {emote:unitValues.lostHealth}.",
+        "Around a bend, **{{pet}}** suddenly starts running. You hold on to the leash as best you can but come away with a few scratches. You lose **{{amount, number}}** {emote:unitValues.lostHealth}.",
+        "You see **{{pet}}** leave. He comes back a few minutes after with some food. You eat it and severely regret it a few minutes later. You suddenly suffer from a bellyache... You lose **{{amount, number}}** {emote:unitValues.lostHealth}.",
+        "**{{pet}}** seems to have triggered hostilities with {{randomAnimal}}! You decide to defend him, but unfortunately the wild creature hurts you. You lose **{{amount, number}}** {emote:unitValues.lostHealth}.",
+        "**{{pet}}** seems to want to play and throws himself from the top of a tree. Unfortunately, his weight breaks the branch and he falls on top of you. You lose **{{amount, number}}** {emote:unitValues.lostHealth}."
       ],
       "loseLife_f": [
-        "While you are trying to caress **{{pet}}**, she doesn't get along and bites your hand. You lose **{{amount}}** {emote:unitValues.lostHealth}.",
-        "Around a bend, **{{pet}}** suddenly starts running. You hold on to the leash as best you can but come away with a few scratches. You lose **{{amount}}** {emote:unitValues.lostHealth}.",
-        "You see **{{pet}}** leave. She comes back a few minutes after with some food. You eat it and severely regret it a few minutes later. You suddenly suffer from a bellyache... You lose **{{amount}}** {emote:unitValues.lostHealth}.",
-        "**{{pet}}** seems to have triggered hostilities with {{randomAnimal}}! You decide to defend her, but unfortunately the wild creature hurts you. You lose **{{amount}}** {emote:unitValues.lostHealth}.",
-        "**{{pet}}** seems to want to play and throws herself from the top of a tree. Unfortunately, her weight breaks the branch and she falls on top of you. You lose **{{amount}}** {emote:unitValues.lostHealth}."
+        "While you are trying to caress **{{pet}}**, she doesn't get along and bites your hand. You lose **{{amount, number}}** {emote:unitValues.lostHealth}.",
+        "Around a bend, **{{pet}}** suddenly starts running. You hold on to the leash as best you can but come away with a few scratches. You lose **{{amount, number}}** {emote:unitValues.lostHealth}.",
+        "You see **{{pet}}** leave. She comes back a few minutes after with some food. You eat it and severely regret it a few minutes later. You suddenly suffer from a bellyache... You lose **{{amount, number}}** {emote:unitValues.lostHealth}.",
+        "**{{pet}}** seems to have triggered hostilities with {{randomAnimal}}! You decide to defend her, but unfortunately the wild creature hurts you. You lose **{{amount, number}}** {emote:unitValues.lostHealth}.",
+        "**{{pet}}** seems to want to play and throws herself from the top of a tree. Unfortunately, her weight breaks the branch and she falls on top of you. You lose **{{amount, number}}** {emote:unitValues.lostHealth}."
       ],
       "loseMoney_m": [
-        "You feel that **{{pet}}** steals a few pieces from your purse and hides them further. Unfortunately you can't find them again. You thus lose **{{amount}}** {emote:unitValues.lostMoney}.",
-        "You notice a large hole in your purse. **{{pet}}** had to play with it during the night! After you had counted what you had left, you notice that you are missing **{{amount}}** {emote:unitValues.lostMoney}.",
-        "While you play with **{{pet}}**, the latter shoves you and drops your purse into a crevasse. It won't be possible to recover these **{{amount}}** {emote:unitValues.lostMoney}!",
-        "You get the impression that **{{pet}}** is irritated to the point he will even hurt a passer-by. After apologizing, you decide to compensate them and leave with your head down. You lose **{{amount}}** {emote:unitValues.lostMoney}.",
-        "While wanting to play with **{{pet}}**, you strike him with a blow. Injured, you take him to a vet so he can be healed. After his recovery, the healer charges you **{{amount}}** {emote:unitValues.lostMoney}."
+        "You feel that **{{pet}}** steals a few pieces from your purse and hides them further. Unfortunately you can't find them again. You thus lose **{{amount, number}}** {emote:unitValues.lostMoney}.",
+        "You notice a large hole in your purse. **{{pet}}** had to play with it during the night! After you had counted what you had left, you notice that you are missing **{{amount, number}}** {emote:unitValues.lostMoney}.",
+        "While you play with **{{pet}}**, the latter shoves you and drops your purse into a crevasse. It won't be possible to recover these **{{amount, number}}** {emote:unitValues.lostMoney}!",
+        "You get the impression that **{{pet}}** is irritated to the point he will even hurt a passer-by. After apologizing, you decide to compensate them and leave with your head down. You lose **{{amount, number}}** {emote:unitValues.lostMoney}.",
+        "While wanting to play with **{{pet}}**, you strike him with a blow. Injured, you take him to a vet so he can be healed. After his recovery, the healer charges you **{{amount, number}}** {emote:unitValues.lostMoney}."
       ],
       "loseMoney_f": [
-        "You feel that **{{pet}}** steals a few pieces from your purse and hides them further. Unfortunately you can't find them again. You thus lose **{{amount}}** {emote:unitValues.lostMoney}.",
-        "You notice a large hole in your purse. **{{pet}}** had to play with it during the night! After you had counted what you had left, you notice that you are missing **{{amount}}** {emote:unitValues.lostMoney}.",
-        "While you play with **{{pet}}**, the latter shoves you and drops your purse into a crevasse. It won't be possible to recover these **{{amount}}** {emote:unitValues.lostMoney}!",
-        "You get the impression that **{{pet}}** is irritated to the point she will even hurt a passer-by. After apologizing, you decide to compensate them and leave with your head down. You lose **{{amount}}** {emote:unitValues.lostMoney}.",
-        "While wanting to play with **{{pet}}**, you strike her with a blow. Injured, you take her to a vet so she can be healed. After her recovery, the healer charges you **{{amount}}** {emote:unitValues.lostMoney}."
+        "You feel that **{{pet}}** steals a few pieces from your purse and hides them further. Unfortunately you can't find them again. You thus lose **{{amount, number}}** {emote:unitValues.lostMoney}.",
+        "You notice a large hole in your purse. **{{pet}}** had to play with it during the night! After you had counted what you had left, you notice that you are missing **{{amount, number}}** {emote:unitValues.lostMoney}.",
+        "While you play with **{{pet}}**, the latter shoves you and drops your purse into a crevasse. It won't be possible to recover these **{{amount, number}}** {emote:unitValues.lostMoney}!",
+        "You get the impression that **{{pet}}** is irritated to the point she will even hurt a passer-by. After apologizing, you decide to compensate them and leave with your head down. You lose **{{amount, number}}** {emote:unitValues.lostMoney}.",
+        "While wanting to play with **{{pet}}**, you strike her with a blow. Injured, you take her to a vet so she can be healed. After her recovery, the healer charges you **{{amount, number}}** {emote:unitValues.lostMoney}."
       ],
       "loseTime_m": [
         "By calling back **{{pet}}** so that he stays close to you, you lose **{{amountDisplay}}** :clock2:.",
@@ -1076,7 +1104,10 @@
         "After a long walk, **{{pet}}** is running out of breath, it looks like she can't follow you. Not waiting for her has diminished your relationship. Thus, she loses a little in love...",
         "When approaching a stand, **{{pet}}** stares with insistence on the food placed on a board. Despite her request, you decide to continue your journey. **{{pet}}** is grudging, she loses faith in you."
       ],
-      "nothing": [
+      "nothing_m": [
+        "You continue your route alongside **{{pet}}**. Nothing special happens."
+      ],
+      "nothing_f": [
         "You continue your route alongside **{{pet}}**. Nothing special happens."
       ]
     },
@@ -1126,9 +1157,9 @@
         "you see a crowd of people gathering. Wanting to see what's going on, you make way through the group and discover a bloodied object. The surrounding crowd would probably already have touched it. You leave as if nothing happened with the object in your possession."
       ],
       "winMoney": [
-        "you step onto a small mound and notice that your footsteps sound strange. You search the ground and discover a chest full of gold. You get **{{amount}} {emote:unitValues.money}**.",
-        "you meet someone who looks a little bewildered and fearful... Upon seeing you, the person apologizes and runs off. You think they've mistaken you for someone else. In their rush, the stranger has dropped a purse: you open it and discover **{{amount}} {emote:unitValues.money}**!",
-        "you decide to set up camp by putting up a tent and other things. As you dig the holes for your tent pegs, you feel something hard in the ground. While digging, you unearth a small, timeworn wooden case and find **{{amount}} {emote:unitValues.money}** !"
+        "you step onto a small mound and notice that your footsteps sound strange. You search the ground and discover a chest full of gold. You get **{{amount, number}} {emote:unitValues.money}**.",
+        "you meet someone who looks a little bewildered and fearful... Upon seeing you, the person apologizes and runs off. You think they've mistaken you for someone else. In their rush, the stranger has dropped a purse: you open it and discover **{{amount, number}} {emote:unitValues.money}**!",
+        "you decide to set up camp by putting up a tent and other things. As you dig the holes for your tent pegs, you feel something hard in the ground. While digging, you unearth a small, timeworn wooden case and find **{{amount, number}} {emote:unitValues.money}** !"
       ]
     },
     "other": {
@@ -1139,10 +1170,10 @@
         "you distractedly walk and stumble on something! While hardly getting up after your fall, you discover an item!"
       ],
       "winHealth": [
-        "you come across some villagers who remember your prowess as a frail person, and hand you a bag containing rations that you eat before continuing your journey. You win **{{amount}} {emote:unitValues.health}**.",
-        "A merchant comes up to you and asks what class you are, to which you reply that you are a frail adventurer. Remembering that frail adventurers are people with low hp, he decides to give you some fruit that was no longer viable to sell. Happy, you eat them and earn **{{amount}} {emote:unitValues.health}** then set off again.",
-        "you are approached by an old woman. She gives you a red apple, telling you it's important to eat well to become strong. You eat it with gratitude before resuming your way. You win **{{amount}}{emote:unitValues.health}**.",
-        "you are pushed by a cart. You are called out by its owner, who apologizes and tells he didn't see you because of your puny appearance and offers you some supplies. You restore yourself a bit and resume your journey. You win **{{amount}} {emote:unitValues.health}**."
+        "you come across some villagers who remember your prowess as a frail person, and hand you a bag containing rations that you eat before continuing your journey. You win **{{amount, number}} {emote:unitValues.health}**.",
+        "A merchant comes up to you and asks what class you are, to which you reply that you are a frail adventurer. Remembering that frail adventurers are people with low hp, he decides to give you some fruit that was no longer viable to sell. Happy, you eat them and earn **{{amount, number}} {emote:unitValues.health}** then set off again.",
+        "you are approached by an old woman. She gives you a red apple, telling you it's important to eat well to become strong. You eat it with gratitude before resuming your way. You win **{{amount, number}}{emote:unitValues.health}**.",
+        "you are pushed by a cart. You are called out by its owner, who apologizes and tells he didn't see you because of your puny appearance and offers you some supplies. You restore yourself a bit and resume your journey. You win **{{amount, number}} {emote:unitValues.health}**."
       ]
     }
   },
@@ -1248,97 +1279,97 @@
       {
         "intro": "The sky is gray, the temperature is average. It's an ideal weather for walking and move forward in your adventure. However, after a few steps, the frail ground gives way beneath your feet and you fall into a hole.",
         "success": {
-          "withGuild": "With the help of your guild mates, you manage to pull yourself out of the crevasse and save them in turn. This ordeal has strengthened your bond, and your guild receives **{{amount}} {emote:unitValues.{{emoteKey}}}**.",
-          "soloWithGuild": "Not losing your cold blood, you immediately apply your guild's lessons and easily climb the wall. Your guild gets **{{amount}} {emote:unitValues.{{emoteKey}}}**.",
-          "solo": "Not losing your cold blood, you apply what you learned during your adventures and easily manage to climb the wall. You receive **{{amount}} {emote:unitValues.xp}**."
+          "withGuild": "With the help of your guild mates, you manage to pull yourself out of the crevasse and save them in turn. This ordeal has strengthened your bond, and your guild receives **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
+          "soloWithGuild": "Not losing your cold blood, you immediately apply your guild's lessons and easily climb the wall. Your guild gets **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
+          "solo": "Not losing your cold blood, you apply what you learned during your adventures and easily manage to climb the wall. You receive **{{amount, number}} {emote:unitValues.xp}**."
         },
         "escape": {
           "withGuild": "Wasting no time, you and your companions hurry to examine this crevasse, which turns out to be a cave. A bit of blind walking later, you manage to emerge from the hole further on.",
           "solo": "Desperate, alone at the bottom of this crevasse, you only notice the narrow passage to your left after a few minutes. After struggling against this land that had decided to confine you, you emerge into the open air."
         },
         "lose": {
-          "withGuild": "With the help of your guild mates, you manage to pull yourself out of the crevasse and rescue them in turn. However, the one with your purse climbed up last, and accidentally dropped the money during the climb. You lose **{{amount}} {emote:unitValues.lostMoney}**.",
-          "solo": "As you try to climb the wall, the dirt crumbles under your fingers and feet, causing a landslide. Thanks to him, you manage to climb out of the crevasse, but you're pretty banged up. You lose **{{amount}} {emote:unitValues.lostHealth}**."
+          "withGuild": "With the help of your guild mates, you manage to pull yourself out of the crevasse and rescue them in turn. However, the one with your purse climbed up last, and accidentally dropped the money during the climb. You lose **{{amount, number}} {emote:unitValues.lostMoney}**.",
+          "solo": "As you try to climb the wall, the dirt crumbles under your fingers and feet, causing a landslide. Thanks to him, you manage to climb out of the crevasse, but you're pretty banged up. You lose **{{amount, number}} {emote:unitValues.lostHealth}**."
         }
       },
       {
         "intro": "You decide to rest for a while after an intense crossing of the island. But just as you lie down on the ground, the earth begins to shake.",
         "success": {
-          "withGuild": "However, you clench each other so that no one gets fallen into a crevasse. The quake ends, and you are all safe and sound. Your guild gets **{{amount}} {emote:unitValues.{{emoteKey}}}**.",
-          "soloWithGuild": "You follow the earthquake instructions given to you by your guild, and decide to take shelter under a structure which, fortunately, has not collapsed on you. Safe and sound, you promise to thank your guild as soon as you return from your expedition. Your guild wins **{{amount}} {emote:unitValues.{{emoteKey}}}**.",
-          "solo": "You attempt to hold on despite the earthquake. Fortunately, it did not cause any damage around, you continue to rest a little while admiring the sky and surroundings. You receive **{{amount}} {emote:unitValues.xp}**."
+          "withGuild": "However, you clench each other so that no one gets fallen into a crevasse. The quake ends, and you are all safe and sound. Your guild gets **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
+          "soloWithGuild": "You follow the earthquake instructions given to you by your guild, and decide to take shelter under a structure which, fortunately, has not collapsed on you. Safe and sound, you promise to thank your guild as soon as you return from your expedition. Your guild wins **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
+          "solo": "You attempt to hold on despite the earthquake. Fortunately, it did not cause any damage around, you continue to rest a little while admiring the sky and surroundings. You receive **{{amount, number}} {emote:unitValues.xp}**."
         },
         "escape": {
           "withGuild": "Panicked, your guild is trying to find a safer place to avoid any damage on any one of you. After several minutes going in circles because at least one of the members believes that this place is not safe, you no longer feel the quake. Nevertheless, you are trying to regain your trust for what will follow in your journey within the island...",
           "solo": "Panicked, you try to dodge the potential damage caused by the quake. After a few moments, the tremor is no longer felt. When you return to the place where you had intended to rest, you notice the damage caused by the earthquake. It's a good thing you hadn't stayed there..."
         },
         "lose": {
-          "withGuild": "You tell yourself that this earthquake will be short, and ask the rest of the guild to brave it. What a mistake! A boulder crashes down on you and knocks you unconscious. You lose **{{amount}} {emote:unitValues.energy}**.",
-          "solo": "Assuming that there will be only a small amount of damage, you continue to rest. However, a crevasse is forming under your body. Fearful of falling into it, you try to run as far as possible, but you slip and cut your arm. You lose **{{amount}} {emote:unitValues.lostHealth}**."
+          "withGuild": "You tell yourself that this earthquake will be short, and ask the rest of the guild to brave it. What a mistake! A boulder crashes down on you and knocks you unconscious. You lose **{{amount, number}} {emote:unitValues.energy}**.",
+          "solo": "Assuming that there will be only a small amount of damage, you continue to rest. However, a crevasse is forming under your body. Fearful of falling into it, you try to run as far as possible, but you slip and cut your arm. You lose **{{amount, number}} {emote:unitValues.lostHealth}**."
         }
       },
       {
         "intro": "You are making good progress on your adventure (with your guild mates), when your instincts alert you to danger. Gradually, an almost opaque, whitish mist rises from the uneven ground and falls from the sky, encircling you. You quickly can't see anything around you anymore.",
         "success": {
-          "withGuild": "Several pairs of eyes are better than one! Thanks to the cooperation of your visions, you and your companions manage to advance between rocks and crevasses without a single one being injured or lost. Your guild receives **{{amount}} {emote:unitValues.{{emoteKey}}}**.",
-          "soloWithGuild": "In this urgent situation, you keep your cold blood and use the tracking techniques learned from your guild to get out of the trouble without hindrance. Your guild gets **{{amount}} {emote:unitValues.{{emoteKey}}}**.",
-          "solo": "In this urgent situation, you keep your cold blood and use tracking techniques learned a little more to get out of this mess without a hitch. You receive **{{amount}} {emote:unitValues.xp}**."
+          "withGuild": "Several pairs of eyes are better than one! Thanks to the cooperation of your visions, you and your companions manage to advance between rocks and crevasses without a single one being injured or lost. Your guild receives **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
+          "soloWithGuild": "In this urgent situation, you keep your cold blood and use the tracking techniques learned from your guild to get out of the trouble without hindrance. Your guild gets **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
+          "solo": "In this urgent situation, you keep your cold blood and use tracking techniques learned a little more to get out of this mess without a hitch. You receive **{{amount, number}} {emote:unitValues.xp}**."
         },
         "escape": {
           "withGuild": "Completely lost in this dense and threatening fog, your companions and you decide to gather to parry the chill, waiting for the wind to disperse the mist.",
           "solo": "Completely tetanized by the anguish of this almost supernatural phenomenon, you panic, your pulse races and despite the coolness you feel the sweat on your pale forehead run down one by one, until the mist is dispersed by the wind."
         },
         "lose": {
-          "withGuild": "Your group is not complete, and you and your guildmates panic at the ordeal. Everyone goes their own way, and you don't ask for any more time to run back. But in your haste, you drop **{{amount}} {emote:unitValues.lostMoney}**.",
-          "solo": "Completely panicked in front of this almost menacing mist, you take your legs to your neck and run straight in front of you. This is a serious error as you are on the ground very quickly due to the fog. You lose **{{amount}} {emote:unitValues.lostHealth}**."
+          "withGuild": "Your group is not complete, and you and your guildmates panic at the ordeal. Everyone goes their own way, and you don't ask for any more time to run back. But in your haste, you drop **{{amount, number}} {emote:unitValues.lostMoney}**.",
+          "solo": "Completely panicked in front of this almost menacing mist, you take your legs to your neck and run straight in front of you. This is a serious error as you are on the ground very quickly due to the fog. You lose **{{amount, number}} {emote:unitValues.lostHealth}**."
         }
       },
       {
         "intro": "You're quietly moving on to new adventures when a sneaky, cheeky, pointy little pebble decides to make you its victim and cruelly slashes your ankle.",
         "success": {
-          "withGuild": "Luckily for you, your guild mates heal your wound and quickly get you back on your feet. Your guild gets **{{amount}} {emote:unitValues.{{emoteKey}}}**.",
-          "soloWithGuild": "Despite the pain, you manage to remember your guild's lessons and, thanks to these, to heal you quickly. Your guild gets **{{amount}} {emote:unitValues.{{emoteKey}}}**.",
-          "solo": "Despite the pain, you manage to disinfect and bandage the wound in order to get back on your way as soon as possible. You receive **{{amount}} {emote:unitValues.xp}**."
+          "withGuild": "Luckily for you, your guild mates heal your wound and quickly get you back on your feet. Your guild gets **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
+          "soloWithGuild": "Despite the pain, you manage to remember your guild's lessons and, thanks to these, to heal you quickly. Your guild gets **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
+          "solo": "Despite the pain, you manage to disinfect and bandage the wound in order to get back on your way as soon as possible. You receive **{{amount, number}} {emote:unitValues.xp}**."
         },
         "escape": {
           "withGuild": "Not wanting to be late, your guild mates decide to carry you so that you can be treated once you reach your destination.",
           "solo": "Despite the pain, you manage to continue on your way whilst hobbling."
         },
         "lose": {
-          "withGuild": "Completely helpless against this wound, your companions treat you as best they can, but the wound becomes infected and the pain, unbearable. You lose **{{amount}} {emote:unitValues.lostHealth}**.",
-          "solo": "Alone, writhing in pain in the middle of the path, you curse this proud stone and endure the dreadful pain to continue your adventure. You lose **{{amount}} {emote:unitValues.lostHealth}**."
+          "withGuild": "Completely helpless against this wound, your companions treat you as best they can, but the wound becomes infected and the pain, unbearable. You lose **{{amount, number}} {emote:unitValues.lostHealth}**.",
+          "solo": "Alone, writhing in pain in the middle of the path, you curse this proud stone and endure the dreadful pain to continue your adventure. You lose **{{amount, number}} {emote:unitValues.lostHealth}**."
         }
       },
       {
         "intro": "You're quietly walking towards your destination when large black clouds form over the area. The darkness is total.",
         "success": {
-          "withGuild": "Your guild mates are far-sighted, however, and one of them pulls a torch from his bag to light your way. Your guild receives **{{amount}} {emote:unitValues.{{emoteKey}}}**.",
-          "soloWithGuild": "It's a good thing you had a torch in your saddlebag, which one of your guild mates gave you when you left! So you can easily see your way and continue on your way. Your guild receives **{{amount}} {emote:unitValues.{{emoteKey}}}**.",
-          "solo": "Fortunately you had a torch in your pocket, prepared for your departure! This way you can easily see your way and continue your road. You receive **{{amount}} {emote:unitValues.xp}**."
+          "withGuild": "Your guild mates are far-sighted, however, and one of them pulls a torch from his bag to light your way. Your guild receives **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
+          "soloWithGuild": "It's a good thing you had a torch in your saddlebag, which one of your guild mates gave you when you left! So you can easily see your way and continue on your way. Your guild receives **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
+          "solo": "Fortunately you had a torch in your pocket, prepared for your departure! This way you can easily see your way and continue your road. You receive **{{amount, number}} {emote:unitValues.xp}**."
         },
         "escape": {
           "withGuild": "Completely blinded, you and your companions grope your way through the pitch-black darkness, helping each other to avoid obstacles, until the strange night leaves as quickly as it came.",
           "solo": "Completely blinded, you grope your way through the pitch-black darkness until the strange night leaves as quickly as it came."
         },
         "lose": {
-          "withGuild": "Completely lost against this sudden blindness, you and your companions panic and run straight ahead until this strange night goes away as quickly as it came. But in your haste, you've lost **{{amount}} {emote:unitValues.lostMoney}**.",
-          "solo": "Alone and completely lost face to this sudden blindness, you start to panic and move straight ahead without noticing the sneaky pebble that was waiting for you at that time. Tripping on the ground, you lose **{{amount}} {emote:unitValues.lostHealth}**."
+          "withGuild": "Completely lost against this sudden blindness, you and your companions panic and run straight ahead until this strange night goes away as quickly as it came. But in your haste, you've lost **{{amount, number}} {emote:unitValues.lostMoney}**.",
+          "solo": "Alone and completely lost face to this sudden blindness, you start to panic and move straight ahead without noticing the sneaky pebble that was waiting for you at that time. Tripping on the ground, you lose **{{amount, number}} {emote:unitValues.lostHealth}**."
         }
       },
       {
         "intro": "You've already been walking for some time on a path that never seems to end, when suddenly your strength fails you and you collapse from exhaustion.",
         "success": {
-          "withGuild": "Seeing your discomfort, your companions rush to support you and offer you the energy you need to get back on your feet and continue your quest. Your guild receives **{{amount}} {emote:unitValues.{{emoteKey}}}**.",
-          "soloWithGuild": "Despite this discomfort, you use what little energy you have left to pull some food offered by your guild from your inventory to regain your strength and continue your quest. Your guild receives **{{amount}} {emote:unitValues.{{emoteKey}}}**.",
-          "solo": "Despite this discomfort, you use what little energy you have left to pull some prepared food from your inventory to regain your strength and continue your quest. You receive **{{amount}} {emote:unitValues.xp}**."
+          "withGuild": "Seeing your discomfort, your companions rush to support you and offer you the energy you need to get back on your feet and continue your quest. Your guild receives **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
+          "soloWithGuild": "Despite this discomfort, you use what little energy you have left to pull some food offered by your guild from your inventory to regain your strength and continue your quest. Your guild receives **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
+          "solo": "Despite this discomfort, you use what little energy you have left to pull some prepared food from your inventory to regain your strength and continue your quest. You receive **{{amount, number}} {emote:unitValues.xp}**."
         },
         "escape": {
           "withGuild": "Fortunately, it was only a momentary discomfort, and, encouraged by your guild mates, you resume your journey with them after a few minutes' rest.",
           "solo": "Fortunately for you, it was only a momentary discomfort, and you manage to get back on the road after a few minutes' rest."
         },
         "lose": {
-          "withGuild": "Faced with this sudden discomfort, your guild mates, not knowing how to help, decide to carry you to the next stop, but exhaustion bullies you and you faint. You lose **{{amount}} {emote:unitValues.energy}**.",
-          "solo": "Completely exhausted, the sky begins to spin around you. You try to get up, but feeling like you're on a stormy sea, you faint in the middle of the road. You lose **{{amount}} {emote:unitValues.energy}**."
+          "withGuild": "Faced with this sudden discomfort, your guild mates, not knowing how to help, decide to carry you to the next stop, but exhaustion bullies you and you faint. You lose **{{amount, number}} {emote:unitValues.energy}**.",
+          "solo": "Completely exhausted, the sky begins to spin around you. You try to get up, but feeling like you're on a stormy sea, you faint in the middle of the road. You lose **{{amount, number}} {emote:unitValues.energy}**."
         }
       }
     ]
@@ -1540,26 +1571,31 @@
     }
   },
   "gobletsGame": {
-    "intro": "you meet a man who seems suspicious to you. Indeed, it approaches you and pushes you to a table, where three mysterious goblets are on. The instructions given to you are simple: you must pick a cup at random and receive the prize, whatever that would be. While you observe the objects on the table, the man slips into your back and doesn't seem to want to let you go. To get out of this situation, you force yourself to choose a cup.",
+    "intro": "you meet a man who seems suspicious to you. Indeed, it approaches you and pushes you to a table, where four mystery goblets are laid. The instructions given to you are simple: you must choose a cup, and receive the prize of any kind. While you observe the objects on the table, the man slips into your back and doesn't seem to want to let you go. To get out of this situation, you can choose a cup.",
     "goblets": {
       "metal": {
-        "description": "The metallic one, seemingly ancient, engraved with a dragon's head",
+        "description": "That in metal, seeming ancient tree, classic and balanced choice",
         "name": "metallic"
       },
       "biggest": {
-        "description": "The largest of the three, made of an unidentifiable matter",
+        "description": "Largest of four, massive and reassuring, prudent and less risky choice",
         "name": "largest"
       },
       "sparkling": {
-        "description": "The last one, carved in blue wood and glittering to such an extent that it seems enchanted",
+        "description": "The shimmering, sculpt in enchanted blue wood, the choice risks that can bring large amounts back",
         "name": "glittering"
+      },
+      "cracked": {
+        "description": "The crack, in unstable air, the choice of the better, all or nothing",
+        "name": "crack"
       }
     },
     "results": {
-      "life": "You gently lift the $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) cup and notice that there's nothing underneath. Disappointed, and a sore loser, you strike the remaining cups, which fly into the air. Noticing that there was nothing in the other cups either, you turn back to the hustler. Unfortunately, he strikes first. You lose **{{quantity}} {emote:unitValues.lostHealth}**.",
+      "life": "You gently lift the $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) cup and notice that there's nothing underneath. Disappointed, and a sore loser, you strike the remaining cups, which fly into the air. Noticing that there was nothing in the other cups either, you turn back to the hustler. Unfortunately, he strikes first. You lose **{{quantity, number}} {emote:unitValues.lostHealth}**.",
       "time": "You gently lift the cup $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) and are delighted to discover a small coin! Unfortunately, the man behind you doesn't seem to want to let you leave with your reward. You waste **{{quantity}} {emote:unitValues.time}** negotiating with him before giving up and continuing on your way.",
-      "nothing": "You gently raise the $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) cup and notice that there is nothing below. Disappointed, you are sadly getting back on your tracks, hoping you may have more luck another time.",
-      "end": "Seeing your lack of reaction, the man has the bad idea of trying to rob you. Noticing his maneuver, you intervene, but you're quickly surprised by the man's strength, as he manages to get out of the way with a sudden movement, before fleeing. You escape with a slight wound. You lose **{{quantity}} {emote:unitValues.lostHealth}**."
+      "nothing": "You gently raise the cup $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) and see that there is nothing below. The scammer sketches a smile but you notice from the corner of the eye that the other cups were just as empty. Believing that you escaped from a twisting piece, you quickly walked away, relieved to get away from it without any harm.",
+      "item": "You gently raise the cup $t(smallEvents:gobletsGame.goblets.{{goblet}}. ame) and discover a shiny shine! An item of exceptional rarity was hidden below. The scammer, stupeté, lets you leave with your precious find.",
+      "end": "Seeing your lack of reaction, the man has the bad idea of trying to rob you. Noticing his maneuver, you intervene, but you're quickly surprised by the man's strength, as he manages to get out of the way with a sudden movement, before fleeing. You escape with a slight wound. You lose **{{quantity, number}} {emote:unitValues.lostHealth}**."
     }
   },
   "shop": {
@@ -1580,7 +1616,7 @@
       "As you move quietly along your way, you come across a cart where a merchant named {{name}} is located. She offers you to buy one of her items, telling you that it might be useful to you in your adventure."
     ],
     "end": [
-      "\n\n{{item}} | `{{price}} {emote:unitValues.money}`\n\n**Type:** {{type}}"
+      "\n\n{{item}} | `{{price, number}} {emote:unitValues.money}`\n\n**Type:** {{type}}"
     ],
     "types": [
       "Weapon",
@@ -1689,15 +1725,15 @@
       "At the sight of your **{{pet}}**, Talvar's wrath is unleashed like a devastating storm. The unfortunate creature shuffles sadly along, languid and broken in spirit. The wise dwarf's ire shoots up like a storm! His objurgations echo throughout the region, mercilessly reminding you of your sacred duties towards your companion. You leave, overcome with shame, determined to make up for your negligence.",
       "As soon as **{{pet}}** appears, Talvar's expression turns stormy. Your poor friend looks exhausted and staggers forward. The wrath of the venerable protector of beasts erupts like a cataclysm! His admonitions cross the valleys, etching the laws of animal respect into your conscience. You duck away, overwhelmed by guilt, determined to turn your protégé into a fulfilled creature.",
       "When **{{pet}}** appears, Talvar's eyes flash with reproach. The creature seems discouraged and moves with alarming slowness. The legendary guardian's indignation surges like an avalanche! His recriminations reverberate to the far reaches of Celestrum's lands, sternly instructing you in the art of animal care. You retreat, remorseful and determined to prove your worth.",
-      "The moment **{{pet}}** appears, Talvar's fury is unleashed like a hurricane. Your faithful friend looks despondent and drags herself along miserably. The sage protector's rage explodes like an earthquake! His reprimands echo off Mount Celestrum, forcefully reminding you of your sacred obligations. You take your leave, crushed by your indignity, vowing to become the exemplary master your companion deserves.",
+      "The moment **{{pet}}** appears, Talvar's fury is unleashed like a hurricane. Your faithful friend looks dejected and drags herself along miserably. The sage protector's rage explodes like an earthquake! His reprimands echo off Mount Celestrum, forcefully reminding you of your sacred obligations. You take your leave, crushed by your indignity, vowing to become the exemplary master your companion deserves.",
       "As soon as **{{pet}}** appears, Talvar's mood takes a turn for the worse. Your poor protégée seems melancholy and sorely lacking in energy. The wrath of the venerable friend of creatures bursts forth like wildfire! His warnings reverberate across the land, mercilessly teaching you the precepts of animal respect. You slip away, overwhelmed by shame, determined to transform your friend into the embodiment of happiness.",
       "When **{{pet}}** enters his field of vision, a storm rises in the old dwarf's eyes. The creature looks dejected and moves with palpable sadness. The legendary protector's anger erupts like an infernal inferno! His objurgations echo up to the peaks of Celestrum, etching in you the sacred responsibilities of the guardian. You withdraw, wracked with contrition, determined to honor the trust of your faithful friend.",
-      "When **{{pet}}** appears, Talvar's face turns into a mask of disapproval. Your companion looks defeated and deprived of all joie de vivre. The fury of the wise friend of beasts pours out like a tumultuous torrent! His admonitions echo throughout the region, ruthlessly reminding you of the noble art of caring for creatures. You flee, overwhelmed by guilt, vowing to make your protégée a model of vitality.",
+      "When **{{pet}}** appears, Talvar's face turns into a mask of disapproval. Your companion looks defeated and devoid of all joie de vivre. The fury of the wise friend of beasts pours out like a tumultuous torrent! His admonitions echo throughout the region, ruthlessly reminding you of the noble art of caring for creatures. You flee, overwhelmed by guilt, vowing to make your protégée a model of vitality.",
       "At the sight of **{{pet}}**, Talvar's wrath explodes like a molten volcano. Your faithful friend seems discouraged and moves forward with a desolate slowness. The indignation of the venerable protector of creatures surges like a natural disaster! His reproaches cross the valleys, sternly teaching you the duties of a responsible master. You leave, mortified but determined, promising to return with a companion resplendent with happiness and health."
     ],
     "reward": {
-      "gem": "**{{amount}} {emote:unitValues.gem}**",
-      "money": "**{{amount}} {emote:unitValues.money}**"
+      "gem": "**{{amount, number}} {emote:unitValues.gem}**",
+      "money": "**{{amount, number}} {emote:unitValues.money}**"
     },
     "allPetsSeen": [
       "Talvar's eyes light up with recognition. He now considers you a brother in arms in the noble quest to protect creatures. After exchanging many stories about your respective companions and sharing the ancestral wisdom of trainers, he offers you {{reward}} as a token of his esteem. You part as friends, each of you returning to the road with a warm heart.",
@@ -1728,7 +1764,7 @@
       "Talvar kneels with an almost religious reverence, his calloused hands resting on his knees. He gazes **{{pet}}** in respectful silence, not daring to disturb the majesty of the moment. A blissful smile stretches his lips as he hands you {{reward}}, then resumes his journey with a light step, his soul at peace.",
       "Her eyes barely touch you, captivated entirely by the presence of **{{pet}}**. His face is transfigured with wonder. Frozen in silent contemplation, his mouth remains half-open, seized by emotion. Slowly, with the solemnity of a pilgrim before a sacred relic, he bows his head. His heart visibly touched by this grace, he offers you {{reward}} before silently walking away, filled with serenity.",
       "As soon as he sees **{{pet}}** beside you, the metamorphosis is startling: his eyes light up with a mystical radiance, and an ecstatic smile transfigures his features. He rises to his feet with a new dignity and presents you with {{reward}} as a tribute to this enchanting vision. Then, as fulfilled as a man who has glimpsed paradise, he walks away. Your journey resumes, marked by this unexpected blessing.",
-      "When **{{pet}}** enters his field of vision, Talvar lets out an exclamation of delight. His eyes widen in admiration as he observes every detail of your companion with childlike fascination. Tears of joy bead on his wrinkled eyelids. Trembling with emotion, he hands you {{reward}} as an offering to this living beauty, then walks away murmuring blessings.",
+      "When **{{pet}}** enters his field of vision, Talvar lets out an exclamation of delight. His eyes widen in admiration as he observes every detail of your companion with childlike fascination. Tears of joy bead on his wrinkled eyelids. Trembling with emotion, he holds out {{reward}} as an offering to this living beauty, then walks away murmuring blessings.",
       "The appearance of **{{pet}}** brings about an astonishing transformation in Talvar. His stooped body straightens, his dull eyes regain their former sparkle. He stretches out his trembling hands towards the creature, as if he wanted to capture this essence of perfection. With a gasp of wonder, he presents you with {{reward}}, then remains motionless, savoring this moment of absolute grace.",
       "When **{{pet}}** reveals himself to him, Talvar seems decades younger. His crystalline laughter echoes across the land, an expression of joy so pure it seems to purify the surrounding air. He almost dances on the spot, his old bones regaining a forgotten agility. With overflowing generosity, he offers you {{reward}}, then wanders off, whistling a forgotten melody.",
       "At the sight of **{{pet}}**, Talvar froze, as if struck by divine lightning. His lips murmur ancestral incantations, prayers to the deities who protect animals. His hands trace signs of blessing in the air. In a state of mystical trance, he hands you {{reward}}, then bows briefly to your companion before resuming his journey, transformed by this revelation.",
@@ -1749,15 +1785,15 @@
     ],
     "petAlreadySeen_f": [
       "You proudly present your loyal companion **{{pet}}**, but Talvar's unerring memory reminds him that he has already had the honor of beholding a creature of this noble species. Nevertheless, his eyes sparkle with contentment as he observes the devoted care you bestow on your protégée. He praises you with the solemnity of a wise man blessing a faithful guardian. Your journey continues, enriched by his blessing.",
-      "When **{{pet}}** appears at your side, a tender smile lights up Talvar's face. Her wisdom reminds him of a similar previous encounter, but his heart blossoms as he contemplates your companion's obvious joy. He nods approvingly, admiring the harmonious bond between you. His kind words ring out like a melody as he celebrates your exemplary devotion.",
+      "When **{{pet}}** appears at your side, a tender smile lights up Talvar's face. His wisdom reminds him of a similar previous encounter, but his heart blossoms as he contemplates your companion's obvious joy. He nods approvingly, admiring the harmonious bond between you. His kind words ring out like a melody as he celebrates your exemplary dedication.",
       "The appearance of **{{pet}}** awakens a familiar echo in Talvar, but his enchantment remains intact. He scrutinizes the vitality emanating from your protégée with renewed attention. His eyes shine with satisfaction at this living proof of your excellence. His warm congratulations accompany your departure, cementing your reputation as an exemplary guardian.",
-      "At the sight of **{{pet}}**, Talvar squints with the insight of one who has been around a thousand creatures. He recognizes the species, but marvels at your companion's unique personality. His deep voice vibrates with approval as he praises the blossoming he observes. His words of encouragement will stay with you for a long time, a testament to your growing mastery of the art of animal care.",
+      "At the sight of **{{pet}}**, Talvar squints with the insight of one who has been around a thousand creatures. He recognizes the species, but marvels at the unique personality of your companion. His deep voice vibrates with approval as he praises the blossoming he observes. His words of encouragement will stay with you for a long time, a testament to your growing mastery of the art of animal care.",
       "As soon as **{{pet}}** appears, Talvar's memory kicks in, but his admiration remains intact. He mentally assesses the progress you've made, noting with pleasure the improvement in your protégée's well-being. His approving smile rewards your tireless efforts. He gives you valuable advice before letting you continue, enriched by his ancestral wisdom.",
-      "When **{{pet}}** appears, Talvar bows his head thoughtfully. Although he knows this species, he's celebrating the exceptional relationship you've created with your companion. His eyes sparkle with pride at this demonstration of animal love. His encouraging words echo long after you've left, engraving in you the sacred importance of your mission.",
+      "When **{{pet}}** appears, Talvar bows his head thoughtfully. Although he knows this species, he celebrates the exceptional relationship you've created with your companion. His eyes sparkle with pride at this demonstration of animal love. His encouraging words echo long after you've left, engraving in you the sacred importance of your mission.",
       "The arrival of **{{pet}}** provokes a moment of contemplation in Talvar. His age-old wisdom allows him to assess how far you've come since you first met. He marvels at the transformation of your companion under your devoted care. His sincere congratulations are accompanied by a friendly gesture, confirming your status as a recognized protector.",
       "The moment **{{pet}}** introduces himself, Talvar smiles with the tenderness of a wise man rediscovering a familiar soul. Although a connoisseur of this species, he is delighted to see your protégé's obvious blossoming. His paternal blessing envelops you, testimony to your evolution towards perfect mastery of the art of creature protection.",
       "As soon as **{{pet}}** appears, a flash of recognition lights up Talvar's eyes. He silently compares with his memories, savoring the improvements achieved. His warm approval rewards your perseverance in the path of animal protection. His words of wisdom will long guide you, shining star in your quest for excellence.",
-      "When **{{pet}}** enters his field of vision, Talvar nods with the satisfaction of a mentor seeing his teachings bear fruit. Although familiar with this species, he celebrates the uniqueness of your companion and the quality of your attentions. His look of pride accompanies you as you continue on your way, bearing his blessing and maternal encouragement."
+      "When **{{pet}}** enters his field of vision, Talvar nods with the satisfaction of a mentor who sees his teachings bear fruit. Although he is familiar with this species, he celebrates the uniqueness of your companion and the quality of your attentions. His look of pride accompanies you as you continue on your way, bearing his blessing and maternal encouragement."
     ],
     "noPet": [
       "Although no creature accompanies you to these lands, Talvar graces you with a look of fatherly benevolence. His deep voice resonates with ancestral wisdom as he advises you to welcome an animal companion into your existence, for these pure beings bring joy and comfort to the souls of travelers. You bow your head respectfully to his words of wisdom and continue on your way, his advice engraved in your memory.",
@@ -1770,6 +1806,32 @@
       "Noticing that you're traveling without a four-legged companion, Talvar smiles with paternal indulgence. He evokes the profound mysteries of interspecies communication and the life lessons taught by our animal friends. His words resonate with age-old truths about the interconnectedness of all living things. You go on your way, your soul nourished by this age-old wisdom.",
       "Faced with your loneliness, Talvar can't help but share his philosophy of life centered on love for creatures. He tells you about the miraculous cures that the presence of animals can bring to both body and spirit. His passionate descriptions reveal a man transformed by a life devoted to these extraordinary beings. You'll leave touched by this revelation, and perhaps destined to follow a similar path.",
       "With no familiar by your side, Talvar's eyes shine with a mission to accomplish. He initiates you into the secrets of taming and the sacred rituals that seal the friendship between man and beast. His teachings resonate with ancestral traditions and forgotten knowledge. You'll continue on your way, a repository of this precious knowledge, and perhaps called upon to put it into practice in the near future."
+    ],
+    "petIsClone_m": [
+      "At the sight of **{{pet}}**, Talvar squints in bewilderment. He brings his face close to the creature, examines it from every angle, then steps back with a troubled expression. He murmurs that this companion exudes a singular aura, as if he were both here and elsewhere. Despite his doubts, he hands you over {{reward}}, but his gaze remains fixed on your familiar with curiosity mingled with concern.",
+      "Talvar stops dead in his tracks as he catches sight of **{{pet}}**. His bushy eyebrows furrow as he hesitantly reaches for the creature. He murmurs that he's never seen anything like it, and that the familiar seems blurred, like a reflection in murky water. He shakes his head, troubled by this vision, but offers you {{reward}}all the same. You leave with the feeling that something strange has just happened.",
+      "When **{{pet}}** appears in front of Talvar, the old dwarf blinks several times. He grumbles that his eyes are playing tricks on him and that this creature seems translucent at times. He circles around your companion, puzzled. Finally, he shrugs his shoulders and hands you {{reward}}, while continuing to cast wary glances at the spectral familiar.",
+      "Talvar's gaze freezes on **{{pet}}**, and an expression of confusion invades his features. He declares in an uncertain voice that he senses something unusual about this creature, that it's there but not quite, like an echo or a projection. Despite his obvious confusion, his generosity prevails and he offers you {{reward}}, but his mind remains visibly preoccupied by this mystery.",
+      "Talvar watches **{{pet}}** with unusual intensity. He begins to speak before pausing, searching for words. He explains that this creature gives off an energy he's never felt before, as if its essence were divided between two places. A shiver runs through his silver beard. He hands you {{reward}} with a slightly trembling hand, clearly disturbed by this supernatural encounter."
+    ],
+    "petIsClone_f": [
+      "At the sight of **{{pet}}**, Talvar squints in bewilderment. He brings his face close to the creature, examines it from every angle, then steps back with a troubled air. He murmurs that this companion exudes a singular aura, as if it were both here and elsewhere. Despite his doubts, he hands you over {{reward}}, but his gaze remains fixed on your familiar with curiosity mingled with concern.",
+      "Talvar stops dead in his tracks as he catches sight of **{{pet}}**. His bushy eyebrows furrow as he hesitantly reaches for the creature. He murmurs that he's never seen anything like it and that the creature seems blurred, like a reflection in murky water. He shakes his head, confused by the vision, but offers you {{reward}}all the same. You leave with the feeling that something strange has just happened.",
+      "When **{{pet}}** appears in front of Talvar, the old dwarf blinks several times. He grumbles that his eyes are playing tricks on him and that this creature seems translucent at times. He circles around your companion, puzzled. Finally, he shrugs his shoulders and hands you {{reward}}, while continuing to cast wary glances at the spectral familiar.",
+      "Talvar's gaze freezes on **{{pet}}**, and an expression of confusion invades his features. He declares in an uncertain voice that he senses something unusual about this creature, that it's there but not quite, like an echo or a projection. Despite his obvious confusion, his generosity prevails and he offers you {{reward}}, but his mind remains visibly preoccupied by this mystery.",
+      "Talvar watches **{{pet}}** with unusual intensity. He begins to speak before pausing, searching for words. He explains that this creature gives off an energy he's never felt before, as if its essence were divided between two places. A shiver runs through his silver beard. He hands you {{reward}} with a slightly trembling hand, clearly disturbed by this supernatural encounter."
+    ],
+    "clonePetAlreadySeen_m": [
+      "Talvar squints at **{{pet}}**, then shakes his head vigorously. He grumbles that he's seen a familiar like this before, but this one is... different. He circles the creature, puzzled, mumbling that it's like seeing a reflection that doesn't quite match the original. He dismisses you with a wave of his hand, clearly disturbed by the anomaly.",
+      "The old dwarf stops dead in his tracks as he catches sight of **{{pet}}**. His bushy eyebrows furrow as he examines the creature from every angle. He declares that he knows this type of familiar, that he has admired it before, but that it gives off a strange aura, as if it existed in two places at once. He mumbles some incomprehensible words and waves you on your way.",
+      "At the sight of **{{pet}}**, Talvar takes a step backwards, his gaze troubled. He claims to have contemplated this species before, but this companion seems blurred, unreal. He hesitantly extends a hand towards the creature before abruptly withdrawing it, as if he had touched something supernatural. He wishes you a safe journey in an uncertain voice.",
+      "The wise dwarf observes{{pet}}** with unusual suspicion. He confides that he has already had the pleasure of admiring a familiar of this kind, but that this one makes him uneasy. He murmurs that this creature seems to be there without really being there, like an echo or a living shadow. He shakes his head and walks away, letting slip that he must meditate on this mystery."
+    ],
+    "clonePetAlreadySeen_f": [
+      "Talvar squints at **{{pet}}**, then shakes his head vigorously. He grumbles that he's seen a creature like this before, but this one is... different. He circles the creature, puzzled, mumbling that it's like seeing a reflection that doesn't quite match the original. He dismisses you with a wave of his hand, clearly disturbed by the anomaly.",
+      "The old dwarf stops dead in his tracks as he catches sight of **{{pet}}**. His bushy eyebrows furrow as he examines the creature from every angle. He declares that he knows this type of familiar, that he has admired it before, but that this one gives off a strange aura, as if it existed in two places at once. He mumbles some incomprehensible words and waves you on your way.",
+      "At the sight of **{{pet}}**, Talvar takes a step backwards, his gaze troubled. He claims to have contemplated this species before, but this companion seems blurred, unreal. He hesitantly extends a hand towards the creature before abruptly withdrawing it, as if he had touched something supernatural. He wishes you a safe journey in an uncertain voice.",
+      "The wise dwarf observes{{pet}}** with unusual suspicion. He confides that he has already had the pleasure of admiring a creature of this kind, but that this one makes him uneasy. He murmurs that this creature seems to be there without really being there, like an echo or a living shadow. He shakes his head and walks away, letting slip that he must meditate on this mystery."
     ],
     "badge": [
       "Talvar’s gaze is serious, and then it is brightened with a glimmer of pride. Every gesture, every expression betrays a sinister admiration. It fully recognizes the value of your actions, saluting your courage, discernment, and respect for creatures. By way of recognition, he gives you the {emote:badges.animal_lover}badge, a significant meaning. This mark of esteem seals your link. You are sitting in a silence charged with respect, united by a tacit understanding that only those who worked for a cause greater than themselves."
@@ -1875,5 +1937,498 @@
     "You stop for a moment. Even your breath seems choked by the cold air. In this total stillness, you seem to hear a beat - faint, regular - like a heart buried beneath the earth.",
     "The fog thickens even further and you can barely make out your own feet. With each inhalation, the icy dampness seeps down your throat, and the whole world shrinks to a few meters around you.",
     "A distant whisper suddenly cuts through the mist, carried from nowhere. A voice? A wind? Impossible to say. You stand still, listening, aware that this place has no end and no beginning, only a breathing silence."
-  ]
+  ],
+  "petFood": {
+    "intro": {
+      "badSmell_male": "Your faithful companion suddenly stops, nostrils flaring. His ears perk up as he picks up a nauseating odor wafting from a dark copse. Something foul is stagnating there, abandoned for days perhaps, and your pet seems fascinated by the stench that would make many a creature recoil.",
+      "badSmell_female": "Your faithful friend suddenly stops, nostrils flaring. Her ears perk up as she picks up a nauseating odor wafting from a dark copse. Something foul is stagnating there, abandoned for days perhaps, and the beast seems fascinated by the stench that would make many a creature recoil.",
+      "goodSmell_male": "Your travelling companion suddenly becomes agitated, wagging his tail enthusiastically, eyes shining with excitement. A sweet, tantalizing scent wafts through the air. He leaps up joyfully, drawn like a butterfly by the light towards this promising fragrance that awakens his appetite.",
+      "goodSmell_female": "Your four-legged friend suddenly becomes agitated, wagging her tail enthusiastically, eyes shining with excitement. A tantalizingly sweet scent wafts through the air. She jumps up joyfully, drawn like a butterfly by the light towards this promising fragrance that awakens her appetite.",
+      "vegetarian_male": "Your faithful pet slows his pace and tilts his head to one side, intrigued by a bushy grove lining the path. Between the wild grasses and silvery ferns, he seems to have discerned something edible through the vegetation.",
+      "vegetarian_female": "Your pet slows her pace and tilts her head to one side, intrigued by a bushy grove lining the path. Between the wild grasses and silvery ferns, she seems to have discerned something edible through the vegetation.",
+      "meat_male": "Your companion stops dead in his tracks, muscles tense, staring with intense, predatory gaze at a body of water shimmering under the setting sun. His lips curl up slightly, revealing sharp fangs, as he sniffs the air with absolute concentration. He's obviously spotted prey...",
+      "meat_female": "Your faithful beast stops dead in its tracks, muscles taut, staring with intense, predatory gaze at a body of water shimmering under the setting sun. Her lips curl up slightly, revealing sharp fangs, as she sniffs the air with absolute concentration. She's obviously spotted prey...",
+      "soup_male": "A familiar, comforting scent tickles your nostrils: the unctuous aroma of soup simmering in a copper pot. Your faithful companion perks up his ears and rushes to an abandoned campsite by the roadside, where a black iron cauldron still hangs over dying embers. Could this be the ultimate soup?",
+      "soup_female": "A familiar, comforting scent tickles your nostrils: the unctuous aroma of soup simmering in a copper pot. Your faithful friend immediately perks up her ears and rushes to an abandoned campsite by the roadside, where a black iron cauldron still hangs over dying embers. Could this be the ultimate soup?"
+    },
+    "choices": {
+      "investigate": "See for yourself",
+      "sendPet": "Send your pet",
+      "continue": "Continue on your way"
+    },
+    "outcomes": {
+      "found_by_player_male": "You cautiously approach and, after pushing aside the branches and meticulously searching every nook and cranny for {{time}} {emote:effects.occupied}, you finally get your hands on {{foodName}}. You offer it to your companion, who accepts it gratefully and devours the gift with satisfied growls.",
+      "found_by_player_female": "You approach cautiously and, after pushing aside the branches and meticulously searching the nooks and crannies for **{{time}}** {emote:effects.occupied}, you finally lay your hands on **{{foodName}}**. You offer it to your faithful friend, who accepts it gratefully, devouring her gift with grunts of satisfaction.",
+      "found_by_player_soup_male": "You cautiously approach the abandoned cauldron. After {{time}} {emote:effects.occupied} spent making sure no danger is lurking, you discover with satisfaction {{foodName}} still gently simmering. You pour a generous portion into a bowl and present it to your companion, who eagerly laps up the comforting dish, tail wagging with delight.",
+      "found_by_player_soup_female": "You cautiously approach the abandoned cauldron. After **{{time}}** {emote:effects.occupied} checking that no danger lurks, you discover with satisfaction **{{foodName}}** still simmering gently. You pour a generous portion into a bowl and present it to your faithful friend, who greedily laps up the comfort food, wagging her tail in contentment.",
+      "found_by_pet_male": "Your pet takes off with a nimble leap and disappears for a moment into the thicket. He soon returns to you with a proud, triumphant trot, holding **{{foodName}}** delicately between his fangs. His eyes shine with pride as he settles down to savor his find with enthusiastic chewing noises.",
+      "found_by_pet_female": "Your creature takes off with a nimble leap and disappears for a moment into the thicket. She soon returns to you with a proud, triumphant trot, holding **{{foodName}}** delicately between her fangs. Her eyes sparkle with pride as she settles down to savor her find with enthusiastic chewing noises.",
+      "found_by_pet_soup_male": "Your pet is rushing to the abandoned camp and plunges its muzzle into the smoking cauldron. It comes back to you a few moments later, the still glittering babies obviously tasted **{{foodName}}** with obvious pleasure. His painful eyes and his exhilarating tail testify to his gourmet satisfaction.",
+      "found_by_pet_soup_female": "Your creature trots swiftly towards the abandoned camp and dips its snout into the steaming cauldron. She returns to you a few moments later, her lips still glistening, having clearly savored **{{foodName}}** with obvious pleasure. Her sparkling eyes and wagging tail testify to her greedy satisfaction.",
+      "found_anyway_male": "Just as you're about to set off on your merry way, your faithful companion suddenly leaps into the surrounding bushes. He emerges victoriously with **{{foodName}}** which he gobbles up on the spot with a voracious appetite, his tail wagging with contentment.",
+      "found_anyway_female": "Just as you're about to set off on your way with no further concern for this distraction, your faithful friend suddenly leaps into the surrounding bushes. She emerges victoriously with **{{foodName}}** which she gobbles up on the spot with a voracious appetite, her tail wagging with contentment.",
+      "found_anyway_soup_male": "Just as you're about to set off on your journey with no further concern for the camp, your faithful companion rushes to the abandoned cauldron. Before you can stop him, he greedily laps up **{{foodName}}** with groans of delight, clearly delighted by this unexpected windfall.",
+      "found_anyway_soup_female": "Just as you're about to set off on your journey with no further concern for the camp, your faithful friend rushes to the abandoned cauldron. Before you can stop her, she greedily laps up **{{foodName}}** with moans of delight, clearly delighted by this unexpected windfall.",
+      "player_failed": "You spend {{time}} {emote:effects.occupied} grueling moments meticulously scouring the surroundings, pushing aside brambles and thorns, turning over stones and rotten stumps, but despite all your relentless efforts, you find nothing of any worth. The time invested proves as futile as a treasure hunt in an empty chest.",
+      "pet_failed_male": "Your companion dashes off determinedly into the thicket, only to return a few moments later with a ponderous gait, ears low and tail hanging low. His disappointed look and plaintive squeaks betray his failure: the trail has proved fruitless and his efforts have produced nothing but bitterness.",
+      "pet_failed_female": "Your friend bolts determinedly into the thicket, only to return a few moments later with a ponderous gait, ears low and tail hanging low. Her disappointed look and plaintive squeaks betray her failure: the trail has proved fruitless and her efforts have produced nothing but bitterness.",
+      "pet_failed_soup_male": "Your companion trots towards the abandoned camp and takes a long sniff at the cauldron, but alas, it turns out to be empty or its contents already cooled and inedible. He returns to you with a disappointed gait, ears low and tail hanging low, clearly frustrated by this culinary disappointment.",
+      "pet_failed_soup_female": "Your friend trots towards the abandoned camp and takes a long sniff at the cauldron, but alas, it turns out to be empty or its contents already cooled and inedible. She returns to you with a disappointed gait, ears low and tail hanging low, clearly frustrated by this culinary disappointment.",
+      "nothing_male": "You wisely decide not to linger any longer in these parts, judging that time is short and that your quest cannot suffer such detours. With a resolute gesture, you ask your companion to follow you, and together you set off towards the horizon that beckons.",
+      "nothing_female": "You wisely decide not to linger any longer in these parts, judging that time is short and that your quest cannot suffer such detours. With a resolute gesture, you beckon your friend to follow you, and set off together towards the horizon that beckons."
+    },
+    "foodNames": {
+      "badSmell": [
+        "a raven's carrion in advanced decomposition",
+        "the putrid entrails of a swamp goblin",
+        "a rotten dragon egg exhaling sulfurous fumes",
+        "a piece of moldy blue cheese forgotten by a dizzy traveler",
+        "the foul-smelling remains of a rat that had died several days ago",
+        "a bat carcass infested with crawling maggots",
+        "a piece of pheasant meat abandoned by bandits",
+        "a dead fish with greenish scales floating in a stagnant pond",
+        "wild boar offal teeming with voracious flies",
+        "a sheep's belly swollen with putrefaction gases",
+        "a wolf's skull still lined with shreds of black flesh"
+      ],
+      "goodSmell": [
+        "a still-warm honey and almond tart",
+        "a slice of golden baked apple and cinnamon pie",
+        "a piece of dried meat seasoned with herbs of Provence",
+        "a sweet, juicy pear from an abandoned orchard",
+        "a crunchy bone-shaped cookie fashioned by a generous baker",
+        "a slice of hazelnut and brown sugar cake",
+        "a piece of gingerbread scented with ginger and cloves",
+        "a slice of oak-smoked bacon",
+        "a brioche roll with raisins and salted butter",
+        "a piece of mature cheddar wrapped in a linen cloth",
+        "a crêpe filled with apricot jam and sprinkled with sugar",
+        "a chocolate éclair abandoned on a low stone wall"
+      ],
+      "vegetarian": [
+        "a handful of wild berries bursting with sweet juice",
+        "an edible turnip root still full of fertile soil",
+        "a coppery forest mushroom growing under an old oak tree",
+        "a sweet, tender dandelion flower",
+        "a vermilion apple falls from a lonely apple tree",
+        "hazelnuts freshly removed from their thorny bugs",
+        "a golden corncob left in a field after harvesting",
+        "a bunch of deep purple wild grapes",
+        "crisp lettuce leaves torn from a vegetable garden",
+        "a wild carrot with a slightly bitter taste",
+        "a bouquet of tender, nutritious nettles",
+        "edible fern shoots in spring",
+        "a disembowelled pumpkin on the side of a pathway"
+      ],
+      "meat": [
+        "a silver fish still wriggling in the clear waters of a stream",
+        "a young rabbit strays from its burrow",
+        "a marrow bone still filled with tender, fatty flesh",
+        "a slice of smoked ham hanging in an open stockpot",
+        "a spicy pork sausage mislaid by a street vendor",
+        "a piece of salted bacon wrapped in a greasy cloth",
+        "the remains of a roast duck abandoned by harried travelers",
+        "a deer leg freshly butchered by a hunter",
+        "boiled beef tongue cooling on a flat stone",
+        "mutton tripe washed in spring water",
+        "a piece of grilled chicken with oriental spices",
+        "beechwood-smoked eel",
+        "the remains of a jugged hare simmering in its sauce"
+      ],
+      "soup": [
+        "steaming vegetable soup from the garden",
+        "chicken stock flavoured with thyme and bay leaves",
+        "cabbage soup with browned bacon",
+        "wild mushroom cream soup",
+        "onion soup au gratin with cheese",
+        "pot-au-feu with melting carrots and turnips",
+        "crayfish bisque seasoned with rare spices"
+      ]
+    },
+    "love": {
+      "plus_male": "Your faithful companion gazes at you with eyes shining with gratitude and affection. He rubs against your legs with satisfied purrs, clearly demonstrating that this impromptu feast has strengthened the bonds of trust and friendship between you!",
+      "plus_female": "Your faithful friend gazes at you with eyes shining with gratitude and affection. She rubs against your legs with satisfied purrs, clearly demonstrating that this impromptu feast has strengthened the bonds of trust and friendship between you!",
+      "minus_male": "Your pet stares at you with a dark, silently reproachful gaze, lips curled into a disapproving pout. He ostentatiously turns his head away with a disgruntled growl, clearly offended by this pittance unworthy of his delicate palate...",
+      "minus_female": "Your creature stares at you with a black look of silent reproach, lips curled into a disapproving pout. She ostentatiously turns her head away with a disgruntled growl, clearly offended by this pittance unworthy of her delicate palate...",
+      "neutral_male": "Your road companion swallows his meal with an almost philosophical detachment, without showing any overlapping enthusiasm or special taste.",
+      "neutral_female": "Your friend wolfed down her meal with an almost philosophical detachment, showing neither overflowing enthusiasm nor particular disgust."
+    }
+  },
+  "badPet": {
+    "intro_male": [
+      "A stocky dwarf emerges from a rock, his red beard shaggy and his gaze filled with visceral hatred. At the sight of **{{pet}}**, he spits at the ground in disgust and brandishes a gnarled stick. Your companion recoils, ears pressed to his skull. The stranger introduces himself as Moltiar and swears he has nothing to do with his bug-worshipping brother.",
+      "A hoarse, angry voice suddenly calls out to you. A dwarf with a scarred face strides forward, his bloodshot eyes fixed on{{pet}}** with fury. He twirls a studded club in a menacing gesture. Your companion shakes all over.",
+      "Emerging from behind a rock formation, a crazy-looking dwarf plants himself in front of you, blocking your path. His right hand bears the scars of an ancient bite. He stares **{{pet}}** with burning hatred and draws a chipped dagger. Moltiar grumbles that, unlike his brother Talvar, he knows a nuisance when he sees one.",
+      "A guttural growl startles you. A burly dwarf emerges from a crevice, his braided beard rattling with bone beads. As soon as he spots **{{pet}}**, his face twists in disgust. He points an accusing finger at you, his other hand firmly gripping a rusty axe.",
+      "Your path is suddenly blocked by a stocky, hostile figure. The dwarf wears an expression of pure repulsion as he discovers **{{pet}}** beside you. An old wound crosses his forearm, testimony to a painful past. He grips a war hammer. Moltiar growls that he won't let these loathsome creatures roam his lands, no matter what his naive brother may think.",
+      "The clatter of a rolling stone alerts you to a presence. A massive dwarf emerges from the shadows of a rocky overhang, immediately scrutinizing **{{pet}}** with palpable animosity. The scars on his forearms bear witness to past painful encounters. He brandishes a club with a gesture heavy with menace.",
+      "The smell of earth and rancid sweat reaches you before you even see the assailant. A dwarf emerges from a crevice, his skin tanned by the sun, his calloused hands clasped around a pickaxe. His gaze falls on **{{pet}}** and a cold rage distorts his features. He spits that his idiot brother should see what those bugs have done to him.",
+      "The crunch of boots on gravel heralds the arrival of an intruder. A dwarf with a partially bald head appears, his gray beard tied into a severe catogan. His eyes widen in horror at the sight **{{pet}}**. He steps back before brandishing a miner's knife with hateful determination.",
+      "A mocking whistle echoes through the air. Perched on a rock, a dwarf watches your progress with contempt. When he notices **{{pet}}** trotting along beside you, his expression changes to one of deep disgust. He jumps to the ground and plants himself in front of you, muttering about how his brother has corrupted too many travelers with his crazy ideas.",
+      "The ground trembles slightly beneath your feet, announcing the approach of a massive presence. An imposing dwarf, wider than he is tall, emerges from a rockslide. His gaze sweeps along the path, settling on **{{pet}}** with incandescent hatred. His arm muscles twitch as he lifts a heavy blacksmith's mallet."
+    ],
+    "intro_female": [
+      "A stocky dwarf emerges from a rock, his red beard shaggy and his gaze filled with visceral hatred. At the sight of **{{pet}}**, he spits at the ground in disgust and brandishes a gnarled stick. Your friend recoils, ears pressed to her skull. The stranger introduces himself as Moltiar and swears he has nothing to do with her bug-worshipping brother.",
+      "A hoarse, angry voice suddenly calls out to you. A dwarf with a scarred face strides forward, his bloodshot eyes fixed on{{pet}}** with fury. He twirls a studded club in a menacing gesture. Your friend shakes all over.",
+      "Emerging from behind a rock formation, a crazy-looking dwarf plants himself in front of you, blocking your path. His right hand bears the scars of an ancient bite. He stares **{{pet}}** with burning hatred and draws a chipped dagger. Moltiar grumbles that, unlike his brother Talvar, he knows a nuisance when he sees one.",
+      "A guttural growl startles you. A burly dwarf emerges from a crevice, his braided beard rattling with bone beads. As soon as he spots **{{pet}}**, his face twists in disgust. He points an accusing finger at you, his other hand firmly gripping a rusty axe.",
+      "Your path is suddenly blocked by a stocky, hostile figure. The dwarf wears an expression of pure repulsion as he discovers **{{pet}}** beside you. An old wound crosses his forearm, testimony to a painful past. He grips a war hammer. Moltiar growls that he won't let these loathsome creatures roam his lands, no matter what his naive brother may think.",
+      "The clatter of a rolling stone alerts you to a presence. A massive dwarf emerges from the shadows of a rocky overhang, immediately scrutinizing **{{pet}}** with palpable animosity. The scars on his forearms bear witness to past painful encounters. He brandishes a club with a gesture heavy with menace.",
+      "The smell of earth and rancid sweat reaches you before you even see the assailant. A dwarf emerges from a crevice, his skin tanned by the sun, his calloused hands clasped around a pickaxe. His gaze falls on **{{pet}}** and a cold rage distorts his features. He spits that his idiot brother should see what those bugs have done to him.",
+      "The crunch of boots on gravel heralds the arrival of an intruder. A dwarf with a partially bald head appears, his gray beard tied into a severe catogan. His eyes widen in horror at the sight **{{pet}}**. He steps back before brandishing a miner's knife with hateful determination.",
+      "A mocking whistle echoes through the air. Perched on a rock, a dwarf watches your progress with contempt. When he notices **{{pet}}** trotting along beside you, his expression changes to one of deep disgust. He jumps to the ground and plants himself in front of you, muttering about how his brother has corrupted too many travelers with his crazy ideas.",
+      "The ground trembles slightly beneath your feet, announcing the approach of a massive presence. An imposing dwarf, wider than he is tall, emerges from a rockslide. His gaze sweeps along the path, settling on **{{pet}}** with incandescent hatred. His arm muscles twitch as he lifts a heavy blacksmith's mallet."
+    ],
+    "choices": {
+      "intimidate_male": "Order your companion to intimidate the dwarf",
+      "intimidate_female": "Order your friend to intimidate the dwarf",
+      "plead": "Try to reason with the dwarf with words",
+      "giveMeat": "Offer meat to the dwarf to soften him up",
+      "giveVeg": "Offer vegetables to the dwarf as a sign of peace",
+      "flee_male": "Running away with your companion",
+      "flee_female": "Running away with your girlfriend",
+      "hide_male": "Hiding your companion",
+      "hide_female": "Hiding your friend",
+      "wait": "Waiting for the dwarf's anger to subside",
+      "protect_male": "Stepping in to protect your companion",
+      "protect_female": "Stepping in to protect your friend",
+      "distract": "Diverting the dwarf's attention",
+      "calm_male": "Trying to calm your frightened companion",
+      "calm_female": "Trying to calm your frightened friend",
+      "imposer_male": "Let your companion prevail over the dwarf",
+      "imposer_female": "Let your friend stand up to the dwarf",
+      "energize_male": "Encouraging your companion to hang in there",
+      "energize_female": "Encourage your friend to hang in there"
+    },
+    "outcomes": {
+      "intimidate": {
+        "success_male": [
+          "Obeying your command, **{{pet}}** rises to its full height and lets out an impressive growl. Moltiar, taken aback by this show of strength, takes an awkward step back and mutters a few insults as he reluctantly walks away. Your companion looks at you proudly.",
+          "Adopting a menacing posture, **{{pet}}** growls with surprising ferocity at the hostile dwarf. The latter, seeing that the confrontation could turn ugly, spits a final insult before retreating. Your companion seems satisfied to have stood up to the aggressor."
+        ],
+        "success_female": [
+          "Obeying your command, **{{pet}}** rises to its full height and lets out an impressive growl. Moltiar, taken aback by this show of strength, staggers back and mutters a few insults as he reluctantly walks away. Your friend looks at you proudly.",
+          "Adopting a menacing stance, **{{pet}}** growls with surprising ferocity at the hostile dwarf. The latter, seeing that the confrontation could turn ugly, spits a final insult before retreating. Your friend seems satisfied to have stood up to the aggressor."
+        ],
+        "fail_male": [
+          "By your command, **{{pet}}** tries to seem menacing, but the dwarf laughs cruel in front of this pathetical show. He wanks his sock and your companion turns back precipitously, damaged.",
+          "Attempting to appear threatening,{{pet}}** only succeeds in amusing the dwarf, who kicks him. Your companion squeals in pain and gives you a reproachful look for exposing him like that."
+        ],
+        "fail_female": [
+          "Obeying your order, **{{pet}}** tries to look threatening, but the dwarf bursts into cruel laughter at this pathetic display. He brandishes his stick and your friend backs away, humiliated.",
+          "Attempting to appear threatening,{{pet}}** only succeeds in amusing the dwarf, who kicks her. Your friend squeals in pain and gives you a reproachful look for exposing her like that."
+        ]
+      },
+      "plead": {
+        "success_male": [
+          "You try to reason with Moltiar with soothing words, explaining that your companion poses no threat. Something in your sincere voice seems to strike a chord, and he finally lowers his weapon with a growl. **{{pet}}** appreciates your diplomacy.",
+          "Your measured words echo in the tense silence. You mention mutual respect between travelers, and the dwarf, despite his obvious hatred of animals, concedes that you seem to have your beast under control. He grumbles away. **{{pet}}** gradually calms down."
+        ],
+        "success_female": [
+          "You try to reason with Moltiar, explaining that your friend poses no threat. Something in your sincere voice seems to strike a chord, and he finally lowers his weapon with a growl. **{{pet}}** appreciates your diplomacy.",
+          "Your measured words echo in the tense silence. You mention mutual respect between travelers, and the dwarf, despite his obvious hatred of animals, concedes that you seem to have your beast under control. He grumbles away. **{{pet}}** gradually calms down."
+        ],
+        "fail_male": [
+          "You try to reason with the dwarf, but your words only inflame his anger. He screams that words are not enough to defend these creatures he abhors. **{{pet}}** looks away, ashamed of your failure to protect him.",
+          "Your pathetic pleas seem to exasperate the dwarf even more. He looks at you with undisguised contempt. **{{pet}}** watches you with a mixture of disappointment and fear."
+        ],
+        "fail_female": [
+          "You try to reason the dwarf, but your words only stir up his core. It screams that words are not enough to reflect those creatures that it abhors. **{{pet}}** looks up, shameful about your failure to protect it.",
+          "Your pathetic pleas seem to exasperate the dwarf even more. He looks at you with undisguised contempt. **{{pet}}** watches you with a mixture of disappointment and fear."
+        ]
+      },
+      "giveMeatLikes": {
+        "success_male": [
+          "You quickly pull out a piece of meat and hand it to the hungry dwarf. Surprised by this offering, he accepts it with a grunt and bites into it hungrily. He waves you off before he changes his mind. **{{pet}}** seems relieved at this outcome.",
+          "The piece of meat you offer makes the dwarf hesitate. His stomach growls louder than his hatred, and he finally accepts your gift and walks away. **{{pet}}** appreciates your ingenuity in avoiding confrontation."
+        ],
+        "success_female": [
+          "You quickly pull out a piece of meat and stretch it to the hungry dwarf. Surprised by this offering, he accepts it groaning and bites in it with appeal. It signs you to move before it changes its mind. **{{pet}}** seems to be relieved of this issue.",
+          "The piece of meat you offer makes the dwarf hesitate. His stomach growls louder than his hatred, and he finally accepts your gift and walks away. **{{pet}}** appreciates your ingenuity in avoiding confrontation."
+        ],
+        "fail_male": [
+          "You pull out a piece of meat to coax Moltiar, but he throws it to the ground in disgust, refusing to be bought like that. Unfortunately, **{{pet}}** had his eye on the dish and looks at you with accusing eyes.",
+          "The piece of meat you offer is trampled by the furious dwarf. **{{pet}}** looks on in frustration, disappointed at the wasted treat."
+        ],
+        "fail_female": [
+          "You pull out a piece of meat to coax Moltiar, but he throws it to the ground in disgust, refusing to be bought like that. Unfortunately, **{{pet}}** had his eye on the dish and looks at you with accusing eyes.",
+          "The piece of meat you offer is piecemeal by the furious dwarf. **{{pet}}** watches the seal with frustration, so you can see this treat wasted."
+        ]
+      },
+      "giveMeatDislikes": {
+        "success_male": [
+          "You quickly pull out a piece of meat and hand it to the hungry dwarf. Surprised by this offering, he accepts it with a grunt and bites into it hungrily. He waves you off before he changes his mind. **{{pet}}** looks away, clearly uninterested in the food.",
+          "The piece of meat you offer makes the dwarf hesitate. His stomach growls louder than his hatred, and he finally accepts your gift and walks away. **{{pet}}** does not seem to regret this offering which was not intended for him."
+        ],
+        "success_female": [
+          "You quickly pull out a piece of meat and stretch it to the hungry dwarf. Surprised by this offering, he accepts it groaning and bites in it with appeal. It signals you to move before it changes its mind. **{{pet}}** turns the look, which is obviously not well absorbed by this food.",
+          "The piece of meat you offer makes the dwarf hesitate. His stomach growls louder than his hatred, and he finally accepts your gift and walks away. **{{pet}}** does not seem to regret this offering which was not intended for him."
+        ],
+        "fail_male": [
+          "You pull out a piece of meat to coax Moltiar, but he throws it to the ground in disgust, refusing to be bought like that. **{{pet}}**, a herbivore, doesn't seem perturbed by this loss.",
+          "The piece of meat you offer is trampled by the furious dwarf. **{{pet}}** doesn't pay much attention, as this type of food doesn't suit him."
+        ],
+        "fail_female": [
+          "You take out a piece of meat to soften Moltiar, but it throws it down to the ground with disgusting, refusing to let itself be bought like this. **{{pet}}**, herbivore, does not appear to be disrupted by this loss.",
+          "The piece of meat you offer is trampled by the furious dwarf. **{{pet}}** doesn't pay much attention, as this type of food doesn't suit him."
+        ]
+      },
+      "giveMeatNoFood": {
+        "fail_male": [
+          "You search your pockets for a piece of meat, but your guild's warehouse is desperately empty. Moltiar sneers at your dismay, while **{{pet}}** looks on in bewilderment.",
+          "You try to pull out some meat to calm the dwarf, but realize to your horror that you don't have any. Moltiar takes the opportunity to manhandle **{{pet}}**, who gives you an accusatory look."
+        ],
+        "fail_female": [
+          "You search your pockets for a piece of meat, but your guild's warehouse is desperately empty. Moltiar sneers at your dismay, while **{{pet}}** looks on in bewilderment.",
+          "You try to pull out some meat to calm the dwarf, but realize to your horror that you don't have any. Moltiar takes the opportunity to manhandle **{{pet}}**, who gives you an accusatory look."
+        ]
+      },
+      "giveVegLikes": {
+        "success_male": [
+          "You offer the dwarf some vegetables, mentioning their quality and freshness. Against all expectations, the soup-loving dwarf accepts your offering with an approving grunt and leaves. **{{pet}}** seems impressed by your instincts.",
+          "The vegetables you present to the dwarf obviously bring back more pleasant memories. He accepts them with a semblance of civility and agrees to let you pass. **{{pet}}** appreciates this peaceful resolution."
+        ],
+        "success_female": [
+          "You give the dwarf a few legumes, evoking their quality and freshness. Against all expectations, the dwarf, an amateur of soups, accepts your offering with an approving grunt and leaves. **{{pet}}** seems impressed by your instinct.",
+          "The vegetables you present to the dwarf obviously bring back more pleasant memories. He accepts them with a semblance of civility and agrees to let you pass. **{{pet}}** appreciates this peaceful resolution."
+        ],
+        "fail_male": [
+          "You hand the dwarf some vegetables in the hope of coaxing him. He bursts out laughing at this ridiculous offer and sweeps them aside with a wave of his hand. **{{pet}}** looks enviously at the wasted vegetables.",
+          "The vegetables you clumsily offer are brushed aside by the scornful dwarf. **{{pet}}** gives you a reproachful look, frustrated at seeing this food wasted."
+        ],
+        "fail_female": [
+          "You hand the dwarf some vegetables in the hope of coaxing him. He bursts out laughing at this ridiculous offer and sweeps them aside with a wave of his hand. **{{pet}}** looks enviously at the wasted vegetables.",
+          "The legumes you offer clumsily are swept away by the dwarf meéprisant. **{{pet}}** throws you a reproached, fruity look at this food lost."
+        ]
+      },
+      "giveVegDislikes": {
+        "success_male": [
+          "You offer the dwarf some vegetables, mentioning their quality and freshness. Against all expectations, the soup-loving dwarf accepts your offering with an approving grunt and leaves. **{{pet}}** seems unconcerned by this loss of vegetables.",
+          "The vegetables you present to the dwarf obviously bring back more pleasant memories. He accepts them with a semblance of civility and agrees to let you pass. **{{pet}}**, a carnivore, is not bothered by this sacrifice."
+        ],
+        "success_female": [
+          "You give the dwarf a few legumes, evoking their quality and freshness. Against all expectations, the dwarf, an amateur of soups, accepts your offering with an approving grunt and leaves. **{{pet}}** seems not to be affected by this loss of leagues.",
+          "The lessons you present to the dwarf clearly remind him of more pleasant memories. They accept them with a semblance of civility and agree to let you pass. **{{pet}}**, carnivore, is not affected by this sacrifice."
+        ],
+        "fail_male": [
+          "You hand the dwarf some vegetables in the hope of coaxing him. He bursts out laughing at this ridiculous offer and sweeps them aside with a wave of his hand. **{{pet}}** does not seem concerned by this loss.",
+          "The vegetables you clumsily offer are brushed aside by the scornful dwarf. **{{pet}}**, preferring meat, pays no attention to these wasted vegetables."
+        ],
+        "fail_female": [
+          "You stretch legumes to the dwarf in the hope of softening it. It seems to laugh at this ridiculous offer and sweeps them with a setback. **{{pet}}** does not seem to be affected by this loss.",
+          "The vegetables you clumsily offer are brushed aside by the scornful dwarf. **{{pet}}**, preferring meat, pays no attention to these wasted vegetables."
+        ]
+      },
+      "giveVegNoFood": {
+        "fail_male": [
+          "You're looking for vegetables to offer the dwarf, but your guild's warehouse contains none. Moltiar laughs at your pathetic attempt, while **{{pet}}** hangs his head in disappointment.",
+          "You want to offer some vegetables to calm the situation, but you don't have any. The dwarf takes advantage of your hesitation to jostle **{{pet}}** who looks at you reproachfully."
+        ],
+        "fail_female": [
+          "You are looking for legumes to offer the dwarf, but your guild's warehouse does not contain any of them. Moltiar mocks at your pathetical attempt while **{{pet}}** lowers the tie, then.",
+          "You want to offer some vegetables to calm the situation, but you don't have any. The dwarf takes advantage of your hesitation to jostle **{{pet}}** who looks at you reproachfully."
+        ]
+      },
+      "flee": {
+        "success_male": [
+          "You take to your heels with **{{pet}}** on your heels. Your combined speed enables you to quickly outrun Moltiar, who, being too corpulent, gives up chasing you, shouting curses. Your companion gasps but seems satisfied.",
+          "Running away turns out to be the right decision. You run efficiently with **{{pet}}** who follows without difficulty, leaving the furious but helpless dwarf behind. You've teamed up."
+        ],
+        "success_female": [
+          "You take to your heels with **{{pet}}** on your heels. Your combined speed enables you to quickly outrun Moltiar, who, being too corpulent, gives up chasing you, shouting curses. Your friend gasps but seems satisfied.",
+          "Running away turns out to be the right decision. You run efficiently with **{{pet}}** who follows without difficulty, leaving the furious but helpless dwarf behind. You've teamed up."
+        ],
+        "fail_male": [
+          "Panic overwhelms you and you clumsily scurry away with **{{pet}}** hot on your heels. Moltiar, faster than expected, catches up with you and violently shoves your companion along the way. You finally manage to escape, but **{{pet}}** blames you for your hasty escape.",
+          "You take to your heels in an inglorious stampede. Unfortunately, **{{pet}}** can't keep up with you and lags behind. The dwarf takes the opportunity to poke him with his stick before you come back for him. Your companion is furious at this botched escape."
+        ],
+        "fail_female": [
+          "Panic overwhelms you and you clumsily scurry away with **{{pet}}** hot on your heels. Moltiar, faster than expected, catches up with you and violently shoves your friend in the process. You finally manage to escape, but **{{pet}}** blames you for your hasty escape.",
+          "You take to your heels in an inglorious stampede. Unfortunately, **{{pet}}** can't keep up with you and lags behind. The dwarf takes the opportunity to poke her with his stick before you come back for her. Your friend is furious at this botched escape."
+        ]
+      },
+      "hide": {
+        "success_male": [
+          "You quickly spot an indentation in the rocks and conceal **{{pet}}** before the dwarf notices. The dwarf, no longer seeing the beast, loses interest and grumbles away. Your companion appreciates your discretion.",
+          "You find an ideal place to hide **{{pet}}** under your cape. The dwarf, no longer seeing the object of his hatred, finally calms down and continues on his way. Your companion seems reassured by your protection."
+        ],
+        "success_female": [
+          "You quickly spot an indentation in the rocks and conceal **{{pet}}** before the dwarf notices it. The dwarf, no longer seeing the beast, loses interest and grumbles away. Your friend appreciates your discretion.",
+          "You find an ideal place to hide **{{pet}}** under your cape. The dwarf, no longer seeing the object of his hatred, finally calms down and continues on his way. Your friend seems reassured by your protection."
+        ],
+        "fail_male": [
+          "You try to hide **{{pet}}** in a corner, but Moltiar catches you in the act. He roars with anger and manhandles your companion. He gives you a reproachful look.",
+          "Your attempt at concealment fails miserably when **{{pet}}** lets out a nervous groan, revealing his hiding place. The dwarf rushes towards him and shoves him violently. Your companion suffers from this mishap."
+        ],
+        "fail_female": [
+          "You try to hide **{{pet}}** in a corner, but Moltiar catches you in the act. He roars with anger and manhandles your friend. She gives you a reproachful look.",
+          "Your attempt at concealment fails miserably when **{{pet}}** lets out a nervous groan, revealing her hiding place. The dwarf rushes towards her and shoves her violently. Your friend suffers from this mishap."
+        ]
+      },
+      "wait": {
+        "success_male": [
+          "You decide to wait motionless, hoping that the dwarf's anger will subside. After long minutes of ranting, he seems to tire and finally grunts away. **{{pet}}** seems to appreciate your patience and composure.",
+          "The wait paid off. The dwarf, not finding the reaction he was hoping for, gradually loses his belligerent ardor and leaves. **{{pet}}** looks at you with respect for your wisdom."
+        ],
+        "success_female": [
+          "You decide to wait motionless, hoping that the dwarf's anger will subside. After long minutes of ranting, he seems to tire and finally grunts away. **{{pet}}** seems to appreciate your patience and composure.",
+          "The wait paid off. The dwarf, not finding the reaction he was hoping for, gradually loses his belligerent ardor and leaves. **{{pet}}** looks at you with respect for your wisdom."
+        ],
+        "fail_male": [
+          "You decide to wait motionless, but the dwarf interprets your passivity as weakness. He comes closer and threatens **{{pet}}** even more. Your companion stomps nervously, stressed by this inaction.",
+          "The wait drags on and **{{pet}}** begins to moan in anguish. The dwarf, emboldened by your inaction, becomes increasingly threatening. Your companion reproaches you for doing nothing."
+        ],
+        "fail_female": [
+          "You decide to wait motionless, but the dwarf interprets your passivity as weakness. He moves closer and threatens **{{pet}}** even more. Your friend stomps nervously, stressed by this inaction.",
+          "The wait drags on and **{{pet}}** begins to moan in anguish. The dwarf, emboldened by your inaction, becomes increasingly threatening. Your friend reproaches you for doing nothing."
+        ]
+      },
+      "protect": {
+        "success_male": [
+          "In a burst of protective bravery, you place your body firmly between Moltiar and **{{pet}}**. Your determination impresses the aggressor who, seeing that you're ready to fight, decides not to provoke further. Your companion is touched by your courage.",
+          "You protect **{{pet}}** by confidently standing up to the hostile dwarf. The dwarf, realizing that you won't give in, prefers to back away, spitting insults. Your companion looks at you with renewed affection."
+        ],
+        "success_female": [
+          "In a burst of protective bravery, you place your body firmly between Moltiar and **{{pet}}**. Your determination impresses the aggressor who, seeing that you're ready to fight, decides not to provoke further. Your friend is touched by your courage.",
+          "You protect **{{pet}}** by confidently standing up to the hostile dwarf. The dwarf, realizing that you won't give in, prefers to back away, spitting insults. Your friend looks at you with renewed affection."
+        ],
+        "fail_male": [
+          "In a fit of bravery, you step in between Moltiar and **{{pet}}**. Unfortunately, the dwarf is stronger than you thought. He brutally pushes you away and takes advantage of the situation to strike your companion. You feel powerless in the face of this show of force.",
+          "You try to protect{{pet}}** by placing yourself in front of him, but your posture lacks confidence. The dwarf easily sidesteps you and shoves your companion, who gives you a disappointed look at your inability to defend him."
+        ],
+        "fail_female": [
+          "In a fit of bravery, you step in between Moltiar and **{{pet}}**. Unfortunately, the dwarf is stronger than you thought. He brutally pushes you away and takes advantage of the situation to strike your friend. You feel powerless in the face of this show of force.",
+          "You try to protect{{pet}}** by placing yourself in front of her, but your posture lacks confidence. The dwarf easily sidesteps you and jostles your friend, who gives you a disappointed look at your inability to defend her."
+        ]
+      },
+      "distract": {
+        "success_male": [
+          "You create a diversion by loudly mentioning a well-known tavern in the opposite direction. Moltiar, whose love of beer clearly outweighs his hatred of animals, listens attentively and then moves away, intrigued. **{{pet}}** takes advantage of the confusion, impressed by your ruse.",
+          "Your diversion works perfectly. Tossing a few coins into the distance, you attract the dwarf's greedy attention. As he rushes to pick them up, **{{pet}}** and you discreetly slip away."
+        ],
+        "success_female": [
+          "You create a diversion by loudly evoking a reputed tavern in the opposite direction. Moltiar, whose love of bee visibly outstrips his hatred of animals, tends his ears and then moves away, intrigued. **{{pet}}** takes advantage of the confusion, impressed by your ruse.",
+          "Your diversion works perfectly. Tossing a few coins into the distance, you attract the dwarf's greedy attention. As he rushes to pick them up, **{{pet}}** and you discreetly slip away."
+        ],
+        "fail_male": [
+          "You try to create a diversion by gesticulating and shouting. This ridiculous display only irritates the dwarf further, and he closes in, threatening. **{{pet}}** backs away, frightened by your strange behavior.",
+          "In a desperate attempt at diversion, you throw stones at random. One of them unluckily hits **{{pet}}** who squeals in pain while the dwarf sneers wickedly."
+        ],
+        "fail_female": [
+          "You try to create a diversion by gesticulating and shouting. This ridiculous show only irritates the dwarf approaching further, threatening. **{{pet}}** is back, frightened by your weird behavior.",
+          "In a desperate attempt at diversion, you throw stones at random. One of them unluckily hits **{{pet}}** who squeals in pain while the dwarf sneers wickedly."
+        ]
+      },
+      "calm": {
+        "success_male": [
+          "You manage to soothe **{{pet}}** with reassuring caresses despite the dwarf's threat. Your companion regains confidence and stops trembling. The dwarf, seeing that you have your beast under control, seems less inclined to attack and eventually moves away.",
+          "Your soothing words and confident demeanor succeed in calming **{{pet}}**. Once relaxed, he exudes an assurance that makes the dwarf hesitate. The latter, less sure of himself in the face of this serenity, prefers to leave."
+        ],
+        "success_female": [
+          "You manage to soothe **{{pet}}** with reassuring caresses despite the dwarf's threat. Your friend regains confidence and stops trembling. The dwarf, seeing that you have your beast under control, seems less inclined to attack and eventually moves away.",
+          "Your soothing words and confident attitude manage to calm **{{pet}}**. Once expanded, she has insurance that makes the dwarf feel happy, and the dwarf is less likely to be faced with this term, prefers to leave."
+        ],
+        "fail_male": [
+          "You try to soothe **{{pet}}** with caresses, but your own nervousness about the hostile dwarf is transmitted to your companion. Instead of calming down, he becomes even more agitated and moaning.",
+          "Your supposedly soothing words betray your own terror. **{{pet}}**, sensing your fear, understands that the situation is serious and his panic worsens."
+        ],
+        "fail_female": [
+          "You try to soothe **{{pet}}** with caresses, but your own nervousness about the hostile dwarf is transmitted to your friend. Instead of calming down, she becomes even more agitated and moaning.",
+          "Your supposedly soothing words betray your own terror. **{{pet}}**, sensing your fear, understands that the situation is serious and his panic worsens."
+        ]
+      },
+      "imposer": {
+        "success_male": [
+          "You let **{{pet}}** move confidently towards the dwarf. His natural presence and rare beauty seem to bewilder the assailant who, despite his hatred, recognizes that he is dealing with an exceptional specimen. He retreats, impressed in spite of himself.",
+          "Standing calmly in front of the dwarf, **{{pet}}** exudes an aura of undeniable majesty. The dwarf, despite his hatred of animals, can't help but recognize your companion's nobility and cautiously moves away."
+        ],
+        "success_female": [
+          "You let **{{pet}}** move confidently towards the dwarf. His natural presence and rare beauty seem to bewilder the assailant who, despite his hatred, recognizes that he is dealing with an exceptional specimen. He retreats, impressed in spite of himself.",
+          "Standing calmly in front of the dwarf, **{{pet}}** exudes an undeniable aura of majesty. The dwarf, despite his hatred of animals, can't help but recognize your friend's nobility and cautiously moves away."
+        ],
+        "fail_male": [
+          "You try to let **{{pet}}** stand up to Moltiar, but your intimidated companion fails to appear threatening. The dwarf laughs scornfully and shoves him aside.",
+          "**{{pet}}** tries to look imposing in front of the dwarf, but his appearance is not enough to impress him. The dwarf looks at him mockingly before kicking him."
+        ],
+        "fail_female": [
+          "You try to let **{{pet}}** stand up to Moltiar, but your intimidated friend fails to look threatening. The dwarf laughs scornfully and shoves her aside.",
+          "**{{pet}}** tries to be imposing against the dwarf, but its appearance is not enough to impress it. The dwarf looks at her with mockery before kicking her."
+        ]
+      },
+      "energize": {
+        "success_male": [
+          "You encourage **{{pet}}** with enthusiastic words. Galvanized by your support, your companion regains all his vigor and proudly stands up to Moltiar. The latter, surprised by this renewed energy, prefers not to take any risks and walks away.",
+          "Your words of encouragement restore **{{pet}}**'s confidence, and he rises to his feet with determination. The dwarf, seeing that your companion won't give in, gives up his aggression and leaves, growling."
+        ],
+        "success_female": [
+          "You encourage **{{pet}}** with enthusiastic words. Galvanized by your support, your friend regains all her vigor and proudly stands up to Moltiar. The latter, surprised by this renewed energy, prefers not to take any risks and walks away.",
+          "Your words of encouragement restore **{{pet}}**'s confidence and she rises to her feet with determination. The dwarf, seeing that your friend won't give in, gives up his aggression and leaves, growling."
+        ],
+        "fail_male": [
+          "You try to encourage **{{pet}}** with words, but your voice lacks conviction in the face of the dwarf's threat. Your companion, already terrified, can't find the courage he needs and cowers even further.",
+          "Your attempts to galvanize **{{pet}}** fall flat. The dwarf takes advantage of this moment of weakness to bully your companion, who blames you for not protecting him better."
+        ],
+        "fail_female": [
+          "You try to encourage **{{pet}}** with words, but your voice lacks conviction in the face of the dwarf's threat. Your friend, already terrified, can't find the courage she needs and cowers even further.",
+          "Your attempts to galvanize **{{pet}}** fall flat. The dwarf takes advantage of this moment of weakness to bully your friend, who blames you for not protecting her better."
+        ]
+      }
+    }
+  },
+  "expeditionAdvice": {
+    "talismanIntro": [
+      "You come face to face with a woman with a scarred face, sitting on a large rock. Her worn leather armor bears the marks of dozens of battles. She methodically cleans a dagger with a blackened blade engraved with her name: Velanna. Without looking up, she grumbles something about an ancient artifact capable of creating bonds between a master and his beast... the $t(models:talisman.anchor). She gets up and walks away without adding anything.",
+      "A warrior appears behind you without making a sound. You recognize her by the sight of her scarred face inches from yours. Velanna wears worn leather armor, marked by dozens of battles. She whispers to you that $t(models:talisman.anchor) binds the soul of a pet to its master, enabling them to remain connected even when separated by leagues. Thanks to this artifact, you can send your pet on expeditions to bring back various riches. Then, without another word, she walks away."
+    ],
+    "conditions": {
+      "noPet": [
+        "At the bend in the path, you come across Velanna. She looks you up and down, then crosses her arms and frowns. She notices that you're traveling alone, without a companion by your side. She shakes her head, declaring that she cannot entrust you with $t(models:talisman.anchor) without a creature to bind. Come back when you've tamed a pet."
+      ],
+      "petHungry": [
+        "At the bend in the path, you meet Velanna. She examines **{{pet}}** with a critical eye, then turns to you, furious: a hungry pet wouldn't take three steps before collapsing. You owe it to yourself to feed it, otherwise the poor beast will never be able to help you in return!"
+      ],
+      "petFeisty": [
+        "At the bend in the path, you come across Velanna. She notices **{{pet}}** snarling and spitting in your direction and backs away cautiously, realizing that this feisty beast hates you. Win her trust first, otherwise your pet will never fight for you."
+      ],
+      "noGuild": [
+        "At the bend in the path, you come face to face with Velanna. She stares at you for a long moment, then sighs as she realizes that you're not in a guild. $t(models:talisman.anchor) binds souls, but doesn't fill your pet's belly! You need a supply of food, which a guild can provide."
+      ],
+      "petNotSeenByTalvar": [
+        "You pass Velanna who, after a quick greeting, kneels down to examine **{{pet}}**. After a moment, she frowns: this creature has never been introduced to Talvar. She stands up and dusts her knees, explaining that the mountain dwarf must first certify that your pet is in good health. It's an old pact between their traditions."
+      ],
+      "levelTooLow_zero": [
+        "After a bend in the road, you come face to face with Velanna. She's sizing you up from head to toe, and your level {{playerLevel}} doesn't impress her much. She grabs your arm and feels your muscles with a critical pout: you need to reach at least level {{requiredLevel}} before you're worthy of $t(models:talisman.anchor). She digs into her bag to offer you a few travel tokens, but finds that you already have enough."
+      ],
+      "levelTooLow_one": [
+        "After a bend in the road, you come face to face with Velanna. She's sizing you up from head to toe, and your level {{playerLevel}} doesn't impress her much. She grabs your arm and feels your muscles with a critical pout: you need to reach at least level {{requiredLevel}} before you're worthy of $t(models:talisman.anchor). To encourage you to keep progressing, she hands you a few travel tokens. You receive **{{count}}** {emote:unitValues.token} !"
+      ],
+      "levelTooLow_other": [
+        "After a bend in the road, you come face to face with Velanna. She's sizing you up from head to toe, and your level {{playerLevel}} doesn't impress her much. She grabs your arm and feels your muscles with a critical pout: you need to reach at least level {{requiredLevel}} before you're worthy of $t(models:talisman.anchor). To encourage you to keep progressing, she hands you a few travel tokens. You receive **{{count}}** {emote:unitValues.token} !"
+      ]
+    },
+    "talismanReceived": [
+      "Velanna watches you in silence for a few long seconds. Then, slowly, she extracts from her satchel a pendant of black stone veined with gold. The $t(models:talisman.anchor) pulses with a soft glow. You've proved yourself: take care of **{{pet}}**, for the bond between master and beast is sacred. She places the talisman in your hand and closes your fingers over it, inviting you to explore the world.\n\nYou receive the $t(models:talisman.anchor) ! You can now send your pet for shipment from {command:pet}."
+    ],
+    "expeditionBonus": {
+      "points": "Velanna emerges from the shadows and puts a hand on your shoulder. She senses the presence of **{{pet}}** leagues away and smiles, a rare sight. Your pet explores bravely and $t(models:talisman.anchor) strengthens your bond. Your perseverance pays off. You win **{{bonusPoints}} {emote:unitValues.score}**!",
+      "pointsAndMoney": "Velanna appears at your side, sniffing the air. The $t(models:talisman.anchor) link is strong and **{{pet}}** travels well. She pulls a small purse from her belt: the spirits reward those who trust their companions. She tosses you the money and promises to tell you about your successes. You win **{{bonusPoints}} {emote:unitValues.score}** and **{{bonusMoney}} {emote:unitValues.money}**!",
+      "pointsAndItem": "Velanna emerges from the thicket and watches you approvingly. She senses the link between you and **{{pet}}** through $t(models:talisman.anchor). She reaches into her bag and pulls out an object, which she hands to you: a memento of her own past expeditions, to thank you for your trust. You win **{{bonusPoints}} {emote:unitValues.score}** !",
+      "combatPotion": "Velanna appears from nowhere, a sparkling vial in hand. She nods, impressed by **{{pet}}**'s courage as he roams the wilderness. Since your companion can't help you in combat while he's on an expedition, this mixture will do the trick. You win **{{bonusPoints}} {emote:unitValues.score}**!"
+    },
+    "advice": [
+      "Velanna is waiting for you at a crossroads, arms folded. You smile stupidly, causing her to roll her eyes, overwhelmed by your simplicity. She deigns to give you her precious advice on how to avoid life making you her puppet, and teaches you that an expedition is no walk in the park. Your fellow adventurer will face dangers, predators, bad weather... but the rewards are worth it: gold, experience, rare items and tokens.",
+      "You find Velanna butchering a hare with brutal efficiency. She looks up at you without stopping her work, deigning to share with you her experience of animal expeditions. She tells you that the longer the mission, the greater the booty, but the pet will need more food for the journey. She wipes her blade on her thigh and retrieves her catch before resuming her journey.",
+      "Velanna catches you resting and kicks your canteen over. You leap to your feet, ready to listen to her every word. Deigning to share her knowledge, the warrior explains that the risk of an expedition depends on the strength of your pet: a powerful, trained beast will be able to brave the most inhospitable terrain, while a weak, fearful animal may not be able to overcome such obstacles.",
+      "Velanna appears in your camp, a woven basket under her arm. She pulls out some wild fruit and shares it with you. She explains that, to go on an expedition, a pet needs to be fed and confident: hungry or quarrelsome beasts refuse outright. She bites into an apple, then leaves with her provisions.",
+      "Velanna emerges from the tall grass, looking serious, staring at the guild emblem on your tunic. She reminds you of the importance of your tunic, as it gives you access to a stock of food to fill your pet's belly during expeditions. After all, your pet will need to refuel regularly to carry out its mission!",
+      "At the bend in a rocky path, you spot Velanna crouched atop a rock, scanning the horizon. Her sharp gaze settles on you, and she deigns to come down from her perch. She teaches you that terrain influences expedition rewards: mountains hold riches, forests forge experience, while exploring swamps will please the king. She walks away silently, leaving you to ponder her words.",
+      "You discover Velanna sitting on a stump, sharpening her dagger with methodical gestures. Her gaze falls on you and she greets you nonchalantly. She deigns to explain that prolonged expeditions bring more rewards, but deplete your guild's food reserves more quickly. She tests the edge of her blade on her thumb, then disappears between the trees.",
+      "Velanna emerges from behind a tree, startling you. Her eyes scan yours intently as she reveals an essential truth: a pet's affection determines its resistance to danger. She explains that the stronger the bond between master and beast, the greater the chances of success. She dusts off her leather tunic and leaves without looking back, leaving you to assimilate this lesson.",
+      "Velanna appears at the bend in a path, holding a $t(models:talisman.clone) glittering faintly in her palm. She twirls it between her calloused fingers, her eyes lost in the void. She confides in you that some masters, after years of practice, manage to create a spectral double of their companion, enabling him to fight alongside them while exploring distant lands. She closes her fist on the artifact and disappears into the shadows of the trees.",
+      "You discover Velanna kneeling by a stream, tracing ancestral symbols in the damp mud. She looks up at you, surprised by your intrusion, but decides to share a rare secret. She tells you that the most accomplished adventurers have discovered the art of cloning: their pets can exist in two places simultaneously, exploring the world while protecting their master in battle. She briskly erases her drawings and silently walks away.",
+      "Velanna emerges from the thicket, her face grave. She approaches you and warns you that pets dream of adventure as soon as an expedition begins. She tells you that canceling preparations or calling the beast back mid-journey breaks this sacred promise. She sticks her finger in your chest and warns you that every betrayal leaves a scar on your companion's heart, and that the wound deepens with every disappointment.",
+      "Velanna emerges from behind a mossy rock, a gnawed bone between her teeth, which she casually throws over her shoulder. She approaches you and places a hand on your shoulder. She tells you that one of her clan elders used to change his mind at the last minute, constantly calling his pet back along the way. The beast came to hate him. She warns you that the more frequent the cancellations, the more severe the loss of affection.",
+      "Velanna stands in your way, legs spread and arms crossed, a stern expression on her scarred face. She orders you to listen carefully. She explains that a familiar's eyes sparkle with excitement at the sight of an expedition map, its heart racing at the thought of the promised adventure. She tells you that canceling before departure or calling back in the middle of an exploration has the same devastating effect: a broken promise. She counts on her fingers and warns you that the loss of love doubles on the second betrayal, triples on the third. Familiars never forget."
+    ]
+  }
 }

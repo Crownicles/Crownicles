@@ -14,7 +14,7 @@ export const commandInfo: ITestCommand = {
  * Reset the campaign of the player
  */
 const resetCampaignTestCommand: ExecuteTestCommandLike = async (player, _args, response, context) => {
-	await setCampaignTestCommandInfo.execute(player, ["1"], response, context);
+	await setCampaignTestCommandInfo.execute!(player, ["1"], response, context);
 	const missionsInfo = await PlayerMissionsInfos.getOfPlayer(player.id);
 	missionsInfo.campaignBlob = Campaign.getDefaultCampaignBlob();
 	await missionsInfo.save();

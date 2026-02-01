@@ -8,6 +8,7 @@ import {
 	CommandGetPlayerInfoRes
 } from "../../../../Lib/src/packets/commands/CommandGetPlayerInfo";
 import { RightGroup } from "../../../../Lib/src/types/RightGroup";
+import { PlayerBadgesManager } from "../../core/database/game/models/PlayerBadges";
 
 /**
  * A command that returns information about a player
@@ -21,7 +22,7 @@ export default class GetPlayerInfoCommand {
 		}
 
 		// Players who have the right to set badges can access the badges only
-		return Object.keys(packet.dataToGet).length === 1 && packet.dataToGet.badges && context.rightGroups?.includes(RightGroup.BADGES);
+		return Object.keys(packet.dataToGet).length === 1 && Boolean(packet.dataToGet.badges) && Boolean(context.rightGroups?.includes(RightGroup.BADGES));
 	}
 
 	@adminCommand(CommandGetPlayerInfoReq, GetPlayerInfoCommand.verifyRights)
@@ -38,7 +39,7 @@ export default class GetPlayerInfoCommand {
 		}
 
 		if (packet.dataToGet.badges) {
-			res.data.badges = player.getBadges();
+			res.data.badges = await PlayerBadgesManager.getOfPlayer(player.id);
 		}
 
 		response.push(res);

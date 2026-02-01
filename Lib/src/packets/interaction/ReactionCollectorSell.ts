@@ -16,6 +16,12 @@ export class ReactionCollectorSellItemReaction extends ReactionCollectorReaction
 	price!: number;
 }
 
+type SellReaction = ReactionCollectorSellItemReaction | ReactionCollectorRefuseReaction;
+export type ReactionCollectorSellPacket = ReactionCollectorCreationPacket<
+	ReactionCollectorSellData,
+	SellReaction
+>;
+
 export class ReactionCollectorSell extends ReactionCollector {
 	private readonly sellItems: {
 		item: Item; slot: number; price: number;
@@ -28,7 +34,7 @@ export class ReactionCollectorSell extends ReactionCollector {
 		this.sellItems = sellItems;
 	}
 
-	creationPacket(id: string, endTime: number): ReactionCollectorCreationPacket {
+	creationPacket(id: string, endTime: number): ReactionCollectorSellPacket {
 		return {
 			id,
 			endTime,

@@ -7,15 +7,19 @@ import { SmallEventWinHealthPacket } from "../../../../Lib/src/packets/smallEven
 import { Maps } from "../maps/Maps";
 
 export const smallEventFuncs: SmallEventFuncs = {
-	canBeExecuted: (player, playerActiveObjects) => {
+	canBeExecuted: player => {
 		if (!Maps.isOnContinent(player)) {
 			return false;
 		}
-		return player.getHealth(playerActiveObjects) < player.getMaxHealth(playerActiveObjects);
+		return player.health < player.getMaxHealth();
 	},
-	executeSmallEvent: async (response, player, _context, playerActiveObjects): Promise<void> => {
+	executeSmallEvent: async (response, player): Promise<void> => {
 		const healthWon = RandomUtils.rangedInt(SmallEventConstants.HEALTH);
-		await player.addHealth(healthWon, response, NumberChangeReason.SMALL_EVENT, playerActiveObjects);
+		await player.addHealth({
+			amount: healthWon,
+			response,
+			reason: NumberChangeReason.SMALL_EVENT
+		});
 		await player.save();
 		response.push(makePacket(SmallEventWinHealthPacket, { amount: healthWon }));
 	}

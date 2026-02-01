@@ -30,7 +30,6 @@ import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants"
 import { WitchActionOutcomeType } from "../../../../Lib/src/types/WitchActionOutcomeType";
 import { Effect } from "../../../../Lib/src/types/Effect";
 import { ClassConstants } from "../../../../Lib/src/constants/ClassConstants";
-import { PlayerActiveObjects } from "../database/game/models/PlayerActiveObjects";
 
 
 type WitchEventSelection = {
@@ -90,27 +89,18 @@ async function givePotion(context: PacketContext, player: Player, potionToGive: 
  * @param selectedEvent
  * @param context
  * @param player
- * @param playerActiveObjects
  * @param response
  */
-async function applyOutcome(
-	outcome: WitchActionOutcomeType,
-	selectedEvent: WitchAction,
-	context: PacketContext,
-	player: Player,
-	playerActiveObjects: PlayerActiveObjects,
-	response: CrowniclesPacket[]
-): Promise<void> {
+async function applyOutcome(outcome: WitchActionOutcomeType, selectedEvent: WitchAction, context: PacketContext, player: Player, response: CrowniclesPacket[]): Promise<void> {
 	if (selectedEvent.forceEffect || outcome === WitchActionOutcomeType.EFFECT) {
 		await selectedEvent.giveEffect(player);
 	}
 	if (outcome === WitchActionOutcomeType.LIFE_LOSS) {
-		await player.addHealth(
-			-SmallEventConstants.WITCH.BASE_LIFE_POINTS_REMOVED_AMOUNT,
+		await player.addHealth({
+			amount: -SmallEventConstants.WITCH.BASE_LIFE_POINTS_REMOVED_AMOUNT,
 			response,
-			NumberChangeReason.SMALL_EVENT,
-			playerActiveObjects
-		);
+			reason: NumberChangeReason.SMALL_EVENT
+		});
 	}
 	else if (outcome === WitchActionOutcomeType.POTION) {
 		const potionToGive: GenerateRandomItemOptions = selectedEvent.generatePotionWitchAction() ?? {};
@@ -125,7 +115,7 @@ async function applyOutcome(
 	await player.save();
 }
 
-function getEndCallback(player: Player, playerActiveObjects: PlayerActiveObjects): EndCallback {
+function getEndCallback(player: Player): EndCallback {
 	return async (collector, response) => {
 		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.WITCH_CHOOSE);
 
@@ -133,7 +123,7 @@ function getEndCallback(player: Player, playerActiveObjects: PlayerActiveObjects
 
 		const reaction = collector.getFirstReaction();
 		const selectedEvent = reaction
-			? WitchActionDataController.instance.getById((reaction.reaction.data as ReactionCollectorWitchReaction).id)
+			? WitchActionDataController.instance.getById((reaction.reaction.data as ReactionCollectorWitchReaction).id) ?? WitchActionDataController.instance.getDoNothing()
 			: WitchActionDataController.instance.getDoNothing();
 		const outcome = selectedEvent.generateOutcome();
 
@@ -163,9 +153,7 @@ function getEndCallback(player: Player, playerActiveObjects: PlayerActiveObjects
 
 		response.push(resultPacket);
 
-		await applyOutcome(outcome, selectedEvent, collector.context, player, playerActiveObjects, response);
-
-		await player.killIfNeeded(response, NumberChangeReason.SMALL_EVENT);
+		await applyOutcome(outcome, selectedEvent, collector.context, player, response);
 
 		await selectedEvent.checkMissionsWitchAction(player, outcome, response);
 	};
@@ -174,12 +162,12 @@ function getEndCallback(player: Player, playerActiveObjects: PlayerActiveObjects
 export const smallEventFuncs: SmallEventFuncs = {
 	canBeExecuted: Maps.isOnContinent,
 
-	executeSmallEvent: (response, player, context, playerActiveObjects, testArgs?: string[]) => {
+	executeSmallEvent: (response, player, context, testArgs?: string[]) => {
 		const events: WitchEventSelection = testArgs
 			? {
-				randomAdvice: WitchActionDataController.instance.getById(testArgs[0]),
-				randomIngredient: WitchActionDataController.instance.getById(testArgs[1]),
-				fullRandom: WitchActionDataController.instance.getById(testArgs[2])
+				randomAdvice: WitchActionDataController.instance.getById(testArgs[0])!,
+				randomIngredient: WitchActionDataController.instance.getById(testArgs[1])!,
+				fullRandom: WitchActionDataController.instance.getById(testArgs[2])!
 			}
 			: getRandomWitchEvents(player.class === ClassConstants.CLASSES_ID.MYSTIC_MAGE);
 
@@ -194,7 +182,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 			{
 				allowedPlayerKeycloakIds: [player.keycloakId]
 			},
-			getEndCallback(player, playerActiveObjects)
+			getEndCallback(player)
 		)
 			.block(player.keycloakId, BlockingConstants.REASONS.WITCH_CHOOSE)
 			.build();

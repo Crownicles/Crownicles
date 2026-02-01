@@ -244,18 +244,15 @@ export default {
 			"ignoreChainWithDepth": 3
 		}
 	],
-	"@stylistic/no-confusing-arrow": [
-		"error",
-		{
-			"allowParens": true
-		}
-	],
+	"@stylistic/no-confusing-arrow": "off",
 	"@stylistic/no-extra-parens": [
 		"error",
 		"all",
 		{
-			"enforceForArrowConditionals": false,
-			"nestedBinaryExpressions": false
+			"nestedBinaryExpressions": false,
+			"ternaryOperandBinaryExpressions": false,
+			"ignoreJSX": "all",
+			"ignoredNodes": ["ArrowFunctionExpression > ConditionalExpression"]
 		}
 	],
 	"@stylistic/no-extra-semi": "error",
@@ -317,7 +314,7 @@ export default {
 		"double",
 		{
 			"avoidEscape": true,
-			"allowTemplateLiterals": true
+			"allowTemplateLiterals": "always"
 		}
 	],
 	"@stylistic/rest-spread-spacing": [
@@ -411,17 +408,5 @@ export default {
 			"multilineDetection": "brackets"
 		}
 	],
-	"@stylistic/type-annotation-spacing": [
-		"error",
-		{
-			"before": false,
-			"after": true,
-			"overrides": {
-				"arrow": {
-					"before": true,
-					"after": true
-				}
-			}
-		}
-	]
+	"@stylistic/type-annotation-spacing": "off"
 };

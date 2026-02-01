@@ -51,7 +51,7 @@ function formatApiCallOk<T extends object>(res: Response, payload: T): ApiCallRe
 	};
 }
 
-export class KeycloakUtils {
+export abstract class KeycloakUtils {
 	private static keycloakToken: string | null = null;
 
 	private static keycloakTokenExpirationDate: number | null = null;
@@ -649,6 +649,86 @@ export class KeycloakUtils {
 		}
 
 		return formatApiCallOk(res, {});
+	}
+
+	/**
+	 * Delete a Keycloak user completely (for account deletion / GDPR compliance).
+	 *
+	 * This method removes the authentication account from Keycloak but does not delete
+	 * or modify any game data stored in Crownicles databases. Game data such as pet names,
+	 * guild names, and guild descriptions are intentionally preserved as they were voluntarily
+	 * entered by the user in free-text fields. Under GDPR, such user-generated content in
+	 * non-required fields is not subject to automatic deletion. The player's character will
+	 * continue to appear in leaderboards under an anonymized name ("Pseudo 404").
+	 *
+	 * @param keycloakConfig - Keycloak realm configuration to use for the deletion request.
+	 * @param keycloakId - ID of the user to delete in Keycloak.
+	 */
+	public static async deleteUser(keycloakConfig: KeycloakConfig, keycloakId: string): Promise<ApiCallReturnType<Record<string, never>>> {
+		const checkAndQueryToken = await this.checkAndQueryToken(keycloakConfig);
+		if (checkAndQueryToken.isError) {
+			return {
+				...checkAndQueryToken,
+				payload: { error: {
+					details: "Token check failed", original: checkAndQueryToken.payload
+				} }
+			};
+		}
+
+		// Clear the cache before deleting
+		await this.clearUserFromCache(keycloakConfig, keycloakId);
+
+		// Delete the user from Keycloak
+		const res = await fetch(`${keycloakConfig.url}/admin/realms/${keycloakConfig.realm}/users/${keycloakId}`, {
+			method: "DELETE",
+			headers: {
+				"Authorization": `Bearer ${this.keycloakToken}`,
+				"Content-Type": "application/json"
+			}
+		});
+
+		if (!res.ok) {
+			const errorBody = await this.safeReadResponseBody(res);
+			return {
+				status: res.status,
+				payload: { error: {
+					details: `Keycloak DELETE failed: ${res.status} ${res.statusText}`, body: errorBody
+				} },
+				isError: true
+			};
+		}
+
+		return formatApiCallOk(res, {});
+	}
+
+	/**
+	 * Clear user from internal cache before deletion
+	 */
+	private static async clearUserFromCache(keycloakConfig: KeycloakConfig, keycloakId: string): Promise<void> {
+		const userResult = await this.getUserByKeycloakId(keycloakConfig, keycloakId);
+		if (userResult.isError || !("user" in userResult.payload)) {
+			return;
+		}
+
+		const oldDiscordId = userResult.payload.user.attributes?.discordId?.[0];
+		if (oldDiscordId && oldDiscordId !== "0") {
+			KeycloakUtils.keycloakDiscordToIdMap.delete(oldDiscordId);
+		}
+
+		// Clear any cached group information for this user
+		KeycloakUtils.keycloakUserGroupsMap.delete(keycloakId);
+	}
+
+	/**
+	 * Safely read response body for error logging
+	 */
+	private static async safeReadResponseBody(res: Response): Promise<string> {
+		try {
+			return await res.text();
+		}
+		catch {
+			return "Could not read error body";
+		}
 	}
 
 	/**

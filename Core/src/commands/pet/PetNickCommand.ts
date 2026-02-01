@@ -37,7 +37,7 @@ export default class PetNickCommand {
 			// No nickname provided, reset the nickname to None
 			response.push(makePacket(CommandPetNickPacketRes, {
 				foundPet: true,
-				newNickname: null,
+				newNickname: undefined,
 				nickNameIsAcceptable: true
 			}));
 		}
@@ -57,7 +57,7 @@ export default class PetNickCommand {
 			}));
 		}
 
-		playerPet.nickname = newPetNickName ? newPetNickName : null;
+		playerPet.nickname = newPetNickName ?? "";
 		await playerPet.save();
 
 		crowniclesInstance.logsDatabase.logPetNickname(playerPet).then();

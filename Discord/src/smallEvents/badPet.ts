@@ -1,12 +1,15 @@
 import { PacketContext } from "../../../Lib/src/packets/CrowniclesPacket";
-import { ReactionCollectorCreationPacket } from "../../../Lib/src/packets/interaction/ReactionCollectorPacket";
-import { ReactionCollectorBadPetSmallEventData } from "../../../Lib/src/packets/interaction/ReactionCollectorBadPetSmallEvent";
+import {
+	ReactionCollectorBadPetSmallEventPacket
+} from "../../../Lib/src/packets/interaction/ReactionCollectorBadPetSmallEvent";
 import { DiscordCache } from "../bot/DiscordCache";
 import { CrowniclesSmallEventEmbed } from "../messages/CrowniclesSmallEventEmbed";
 import i18n from "../translations/i18n";
 import { StringUtils } from "../utils/StringUtils";
 import { PetUtils } from "../utils/PetUtils";
-import { SexTypeShort } from "../../../Lib/src/constants/StringConstants";
+import {
+	SexTypeShort, StringConstants
+} from "../../../Lib/src/constants/StringConstants";
 import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 import {
 	ActionRowBuilder, ButtonBuilder, ButtonStyle, parseEmoji
@@ -16,26 +19,17 @@ import { DiscordCollectorUtils } from "../utils/DiscordCollectorUtils";
 import { KeycloakUtils } from "../../../Lib/src/keycloak/KeycloakUtils";
 import { keycloakConfig } from "../bot/CrowniclesShard";
 import { sendInteractionNotForYou } from "../utils/ErrorUtils";
+import { SmallEventConstants } from "../../../Lib/src/constants/SmallEventConstants";
+
+/**
+ * Valid action ID type derived from SmallEventConstants
+ */
+type BadPetActionId = typeof SmallEventConstants.BAD_PET.ACTION_IDS[keyof typeof SmallEventConstants.BAD_PET.ACTION_IDS];
 
 /**
  * List of valid action IDs for the bad pet small event
  */
-const VALID_ACTION_IDS = [
-	"intimidate",
-	"plead",
-	"giveMeat",
-	"giveVeg",
-	"flee",
-	"hide",
-	"wait",
-	"protect",
-	"distract",
-	"calm",
-	"imposer",
-	"energize"
-] as const;
-
-type BadPetActionId = typeof VALID_ACTION_IDS[number];
+const VALID_ACTION_IDS: readonly BadPetActionId[] = Object.values(SmallEventConstants.BAD_PET.ACTION_IDS);
 
 /**
  * Check if an action ID is valid
@@ -44,23 +38,33 @@ function isValidActionId(id: string): id is BadPetActionId {
 	return VALID_ACTION_IDS.includes(id as BadPetActionId);
 }
 
-export async function badPetCollector(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
+export async function badPetCollector(context: PacketContext, packet: ReactionCollectorBadPetSmallEventPacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
 	const lng = interaction.userLanguage;
-	const data = packet.data.data as ReactionCollectorBadPetSmallEventData;
+	const data = packet.data.data;
 
 	const petDisplay = PetUtils.petToShortString(lng, data.petNickname, data.petId, data.sex as SexTypeShort);
 
-	let description = `${StringUtils.getRandomTranslation("smallEvents:badPet.intro", lng, { pet: petDisplay })}\n\n`;
+	// Get the sex context for gendered translations
+	const sexContext = data.sex === StringConstants.SEX.MALE.short
+		? StringConstants.SEX.MALE.long
+		: StringConstants.SEX.FEMALE.long;
+
+	let description = `${StringUtils.getRandomTranslation("smallEvents:badPet.intro", lng, {
+		pet: petDisplay, context: sexContext
+	})}\n\n`;
 
 	const row = new ActionRowBuilder<ButtonBuilder>();
 
 	for (const reaction of packet.reactions) {
-		const actionId = (reaction.data as unknown as { id?: string }).id;
+		const reactionData = reaction.data;
+		const actionId = reactionData.id;
 		if (actionId && isValidActionId(actionId)) {
 			const icon = CrowniclesIcons.badPetSmallEvent[actionId];
 
-			description += `${icon} ${i18n.t(`smallEvents:badPet.choices.${actionId}`, { lng })}\n`;
+			description += `${icon} ${i18n.t(`smallEvents:badPet.choices.${actionId}`, {
+				lng, context: sexContext
+			})}\n`;
 
 			row.addComponents(
 				new ButtonBuilder()
@@ -107,14 +111,13 @@ export async function badPetCollector(context: PacketContext, packet: ReactionCo
 
 			// Find the reaction index based on customId
 			const reactionIndex = packet.reactions.findIndex(r => {
-				const id = (r.data as unknown as { id?: string }).id;
-				return id === buttonInteraction.customId;
+				const reactionData = r.data;
+				return reactionData.id === buttonInteraction.customId;
 			});
 
 			if (reactionIndex !== -1) {
 				DiscordCollectorUtils.sendReaction(packet, context, getReactingPlayer.payload.keycloakId, buttonInteraction, reactionIndex);
 			}
-			collector.stop();
 		}
 	});
 

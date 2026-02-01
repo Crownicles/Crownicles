@@ -13,31 +13,54 @@ import {
 
 export const smallEventFuncs: SmallEventFuncs = {
 	canBeExecuted: Maps.isOnContinent,
-	executeSmallEvent: async (response, player, _context, playerActiveObjects): Promise<void> => {
+	executeSmallEvent: async (response, player): Promise<void> => {
 		const packet: SmallEventSmallBadPacket = new SmallEventSmallBadPacket();
 		packet.issue = RandomUtils.crowniclesRandom.pick(Object.values(SmallEventBadIssue)) as SmallEventBadIssue;
 
 		switch (packet.issue) {
 			case SmallEventBadIssue.HEALTH:
 				packet.amount = RandomUtils.rangedInt(SmallEventConstants.SMALL_BAD.HEALTH);
-				await player.addHealth(-packet.amount, response, NumberChangeReason.SMALL_EVENT, playerActiveObjects);
+
 				break;
 
 			case SmallEventBadIssue.MONEY:
 				packet.amount = RandomUtils.rangedInt(SmallEventConstants.SMALL_BAD.MONEY);
+				break;
+
+			default: {
+				packet.amount = RandomUtils.rangedInt(SmallEventConstants.SMALL_BAD.TIME) * 5;
+				const effect = RandomUtils.crowniclesRandom.bool(SmallEventConstants.SMALL_BAD.SLEEPING_PROBABILITY)
+					? Effect.SLEEPING
+					: Effect.OCCUPIED;
+				packet.effectId = effect.id;
+				break;
+			}
+		}
+
+		// Push the small event packet before applying effects to ensure correct packet order
+		response.push(makePacket(SmallEventSmallBadPacket, packet));
+
+		// Apply the effects after the small event packet is sent
+		switch (packet.issue) {
+			case SmallEventBadIssue.HEALTH:
+				await player.addHealth({
+					amount: -packet.amount,
+					response,
+					reason: NumberChangeReason.SMALL_EVENT
+				});
+				break;
+
+			case SmallEventBadIssue.MONEY:
 				await player.addMoney({
 					amount: -packet.amount, response, reason: NumberChangeReason.SMALL_EVENT
 				});
 				break;
 
 			default:
-				packet.amount = RandomUtils.rangedInt(SmallEventConstants.SMALL_BAD.TIME) * 5;
-				await TravelTime.applyEffect(player, Effect.OCCUPIED, packet.amount, new Date(), NumberChangeReason.SMALL_EVENT);
+				await TravelTime.applyEffect(player, packet.effectId === Effect.SLEEPING.id ? Effect.SLEEPING : Effect.OCCUPIED, packet.amount, new Date(), NumberChangeReason.SMALL_EVENT);
 				break;
 		}
-		response.push(makePacket(SmallEventSmallBadPacket, packet));
 
-		await player.killIfNeeded(response, NumberChangeReason.SMALL_EVENT);
 		await player.save();
 	}
 };

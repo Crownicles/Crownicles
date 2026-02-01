@@ -36,6 +36,10 @@ export class CommandShopNoAlterationToHeal extends CrowniclesPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandShopCannotHealOccupied extends CrowniclesPacket {
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandShopHealAlterationDone extends CrowniclesPacket {
 }
 
@@ -49,6 +53,19 @@ export class CommandShopBadgeBought extends CrowniclesPacket {
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandShopBoughtTooMuchDailyPotions extends CrowniclesPacket {
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandShopBoughtTooMuchTokens extends CrowniclesPacket {
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandShopTokensBought extends CrowniclesPacket {
+	amount!: number;
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandShopTokensFull extends CrowniclesPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
@@ -84,7 +101,14 @@ export type additionalShopData = {
 	remainingPotions?: number;
 	dailyPotion?: ItemWithDetails;
 	gemToMoneyRatio?: number;
+	remainingTokens?: number;
 };
+
+type ShopReaction = ReactionCollectorShopItemReaction | ReactionCollectorShopCloseReaction;
+export type ReactionCollectorShopPacket = ReactionCollectorCreationPacket<
+	ReactionCollectorShopData,
+	ShopReaction
+>;
 
 export class ReactionCollectorShop extends ReactionCollector {
 	public readonly currency!: ShopCurrency.MONEY | ShopCurrency.GEM;
@@ -109,7 +133,7 @@ export class ReactionCollectorShop extends ReactionCollector {
 		this.additionalShopData = additionalShopData;
 	}
 
-	creationPacket(id: string, endTime: number): ReactionCollectorCreationPacket {
+	creationPacket(id: string, endTime: number): ReactionCollectorShopPacket {
 		const reactions = [];
 		for (const shopCategory of this.shopCategories) {
 			for (const shopItem of shopCategory.items) {

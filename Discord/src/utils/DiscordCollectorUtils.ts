@@ -78,7 +78,7 @@ export function disableRows(rows: ActionRowBuilder<MessageActionRowComponentBuil
 	});
 }
 
-export class DiscordCollectorUtils {
+export abstract class DiscordCollectorUtils {
 	private static choiceListEmotes = [
 		"1⃣",
 		"2⃣",

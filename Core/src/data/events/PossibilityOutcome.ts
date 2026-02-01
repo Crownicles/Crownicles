@@ -19,8 +19,7 @@ import { Effect } from "../../../../Lib/src/types/Effect";
 import { TravelTime } from "../../core/maps/TravelTime";
 import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
 import { PossibilityOutcomeCondition } from "./PossibilityOutcomeCondition";
-import { PlayerActiveObjects } from "../../core/database/game/models/PlayerActiveObjects";
-import { InventorySlots } from "../../core/database/game/models/InventorySlot";
+import { BigEventConstants } from "../../../../Lib/src/constants/BigEventConstants";
 
 async function applyOutcomeScore(outcome: PossibilityOutcome, time: number, player: Player, response: CrowniclesPacket[]): Promise<number> {
 	const scoreChange = TravelTime.timeTravelledToScore(time)
@@ -34,28 +33,28 @@ async function applyOutcomeScore(outcome: PossibilityOutcome, time: number, play
 	return scoreChange;
 }
 
-async function applyOutcomeExperience(outcome: PossibilityOutcome, player: Player, playerActiveObjects: PlayerActiveObjects, response: CrowniclesPacket[]): Promise<number> {
-	let experienceChange = 150
-		+ (outcome.health > 0 ? 200 : 0)
-		+ (outcome.randomItem ? 300 : 0)
-		+ (outcome.money > 0 ? 100 : 0);
+async function applyOutcomeExperience(outcome: PossibilityOutcome, player: Player, response: CrowniclesPacket[]): Promise<number> {
+	let experienceChange = BigEventConstants.EXPERIENCE.BASE
+		+ ((outcome.health ?? 0) > 0 ? BigEventConstants.EXPERIENCE.HEALTH_BONUS : 0)
+		+ (outcome.randomItem ? BigEventConstants.EXPERIENCE.RANDOM_ITEM_BONUS : 0)
+		+ ((outcome.money ?? 0) > 0 ? BigEventConstants.EXPERIENCE.MONEY_BONUS : 0);
 	switch (outcome.effect ?? Effect.NO_EFFECT.id) {
 		case Effect.OCCUPIED.id:
-			experienceChange -= 125;
+			experienceChange -= BigEventConstants.EXPERIENCE.OCCUPIED_PENALTY;
 			break;
 		case Effect.SLEEPING.id:
 		case Effect.STARVING.id:
-			experienceChange -= 130;
+			experienceChange -= BigEventConstants.EXPERIENCE.SLEEPING_STARVING_PENALTY;
 			break;
 		case Effect.CONFOUNDED.id:
-			experienceChange -= 140;
+			experienceChange -= BigEventConstants.EXPERIENCE.CONFOUNDED_PENALTY;
 			break;
 		case Effect.NO_EFFECT.id:
 			break;
 		default:
 			experienceChange = 0;
 	}
-	if (outcome.health < 0 || outcome.oneshot === true || experienceChange < 0) {
+	if ((outcome.health ?? 0) < 0 || outcome.oneshot === true || experienceChange < 0) {
 		experienceChange = 0;
 	}
 	experienceChange += outcome.bonusExperience ?? 0;
@@ -64,7 +63,7 @@ async function applyOutcomeExperience(outcome: PossibilityOutcome, player: Playe
 			amount: experienceChange,
 			reason: NumberChangeReason.BIG_EVENT,
 			response
-		}, playerActiveObjects);
+		});
 		return experienceChange;
 	}
 	return 0;
@@ -76,7 +75,7 @@ async function applyOutcomeEffect(outcome: PossibilityOutcome, player: Player): 
 } | undefined> {
 	await player.setLastReportWithEffect(
 		outcome.lostTime ?? 0,
-		Effect.getById(outcome.effect) ?? Effect.NO_EFFECT,
+		Effect.getById(outcome.effect ?? Effect.NO_EFFECT.id) ?? Effect.NO_EFFECT,
 		NumberChangeReason.BIG_EVENT
 	);
 
@@ -90,9 +89,13 @@ async function applyOutcomeEffect(outcome: PossibilityOutcome, player: Player): 
 	return undefined;
 }
 
-async function applyOutcomeHealth(outcome: PossibilityOutcome, player: Player, playerActiveObjects: PlayerActiveObjects, response: CrowniclesPacket[]): Promise<number> {
+async function applyOutcomeHealth(outcome: PossibilityOutcome, player: Player, response: CrowniclesPacket[]): Promise<number> {
 	if (outcome.health && outcome.health !== 0) {
-		await player.addHealth(outcome.health, response, NumberChangeReason.BIG_EVENT, playerActiveObjects);
+		await player.addHealth({
+			amount: outcome.health,
+			response,
+			reason: NumberChangeReason.BIG_EVENT
+		});
 		return outcome.health;
 	}
 	return 0;
@@ -125,9 +128,9 @@ async function applyOutcomeMoney(outcome: PossibilityOutcome, time: number, play
 	return moneyChange;
 }
 
-function applyOutcomeEnergy(outcome: PossibilityOutcome, player: Player, playerActiveObjects: PlayerActiveObjects): number {
+function applyOutcomeEnergy(outcome: PossibilityOutcome, player: Player): number {
 	if (outcome.energy && outcome.energy !== 0) {
-		player.addEnergy(outcome.energy, NumberChangeReason.BIG_EVENT, playerActiveObjects);
+		player.addEnergy(outcome.energy, NumberChangeReason.BIG_EVENT);
 		return outcome.energy;
 	}
 	return 0;
@@ -167,14 +170,18 @@ async function applyOutcomeGivePet(outcome: PossibilityOutcome, player: Player, 
 	if (outcome.givePet) {
 		const petId = RandomUtils.crowniclesRandom.pick(outcome.givePet.petIds);
 		const sex = RandomUtils.crowniclesRandom.bool() ? PetConstants.SEX.MALE : PetConstants.SEX.FEMALE;
-		const pet = PetEntities.createPet(petId, sex, null);
+		const pet = PetEntities.createPet(petId, sex, "");
 		await pet.giveToPlayer(player, response);
 	}
 }
 
-async function applyOutcomeOneshot(outcome: PossibilityOutcome, player: Player, playerActiveObjects: PlayerActiveObjects, response: CrowniclesPacket[]): Promise<void> {
+async function applyOutcomeOneshot(outcome: PossibilityOutcome, player: Player, response: CrowniclesPacket[]): Promise<void> {
 	if (outcome.oneshot === true) {
-		await player.addHealth(-player.getHealth(playerActiveObjects), response, NumberChangeReason.BIG_EVENT, playerActiveObjects);
+		await player.addHealth({
+			amount: -player.health,
+			response,
+			reason: NumberChangeReason.BIG_EVENT
+		});
 	}
 }
 
@@ -184,25 +191,25 @@ function applyOutcomeNextEvent(outcome: PossibilityOutcome, player: Player): voi
 	}
 }
 
-function getNextMapLink(outcome: PossibilityOutcome, player: Player): MapLink {
+function getNextMapLink(outcome: PossibilityOutcome, player: Player): MapLink | null {
 	if (outcome.mapLink) {
-		return MapLinkDataController.instance.getById(outcome.mapLink);
+		return MapLinkDataController.instance.getById(outcome.mapLink) ?? null;
 	}
 
 	if (outcome.mapTypesDestination || outcome.mapTypesExcludeDestination) {
 		let allowedMapTypes = Maps.getConnectedMapTypes(player, !outcome.mapTypesDestination);
 		if (outcome.mapTypesDestination) {
-			allowedMapTypes = allowedMapTypes.filter(mapType => outcome.mapTypesDestination.includes(mapType));
+			allowedMapTypes = allowedMapTypes.filter(mapType => outcome.mapTypesDestination!.includes(mapType));
 		}
 		if (outcome.mapTypesExcludeDestination) {
-			allowedMapTypes = allowedMapTypes.filter(mapType => !outcome.mapTypesExcludeDestination.includes(mapType));
+			allowedMapTypes = allowedMapTypes.filter(mapType => !outcome.mapTypesExcludeDestination!.includes(mapType));
 		}
 
 		return RandomUtils.crowniclesRandom.pick(
 			MapLinkDataController.instance.getMapLinksWithMapTypes(
 				allowedMapTypes,
-				player.getDestinationId(),
-				!outcome.mapTypesDestination ? player.getPreviousMapId() : null
+				player.getDestinationId() ?? -1,
+				!outcome.mapTypesDestination ? player.getPreviousMapId() ?? -1 : -1
 			)
 		);
 	}
@@ -224,9 +231,7 @@ type ApplyOutcome = {
  * @param context
  * @param response
  */
-export async function applyPossibilityOutcome(possibilityOutcome: ApplyOutcome, player: Player, context: PacketContext, response: CrowniclesPacket[]): Promise<MapLink> {
-	const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
-
+export async function applyPossibilityOutcome(possibilityOutcome: ApplyOutcome, player: Player, context: PacketContext, response: CrowniclesPacket[]): Promise<MapLink | null> {
 	// Score
 	const score = await applyOutcomeScore(possibilityOutcome.outcome[1], possibilityOutcome.time, player, response);
 
@@ -234,16 +239,16 @@ export async function applyPossibilityOutcome(possibilityOutcome: ApplyOutcome, 
 	const money = await applyOutcomeMoney(possibilityOutcome.outcome[1], possibilityOutcome.time, player, response);
 
 	// Health
-	const health = await applyOutcomeHealth(possibilityOutcome.outcome[1], player, playerActiveObjects, response);
+	const health = await applyOutcomeHealth(possibilityOutcome.outcome[1], player, response);
 
 	// Energy
-	const energy = applyOutcomeEnergy(possibilityOutcome.outcome[1], player, playerActiveObjects);
+	const energy = applyOutcomeEnergy(possibilityOutcome.outcome[1], player);
 
 	// Gems
 	const gems = await applyOutcomeGems(possibilityOutcome.outcome[1], player);
 
 	// Experience
-	const experience = await applyOutcomeExperience(possibilityOutcome.outcome[1], player, playerActiveObjects, response);
+	const experience = await applyOutcomeExperience(possibilityOutcome.outcome[1], player, response);
 
 	// Effect + lost time
 	const effect = await applyOutcomeEffect(possibilityOutcome.outcome[1], player);
@@ -277,7 +282,7 @@ export async function applyPossibilityOutcome(possibilityOutcome: ApplyOutcome, 
 	applyOutcomeNextEvent(possibilityOutcome.outcome[1], player);
 
 	// Oneshot
-	await applyOutcomeOneshot(possibilityOutcome.outcome[1], player, playerActiveObjects, response);
+	await applyOutcomeOneshot(possibilityOutcome.outcome[1], player, response);
 
 	// Forced link
 	return getNextMapLink(possibilityOutcome.outcome[1], player);

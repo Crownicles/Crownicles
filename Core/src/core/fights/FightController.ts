@@ -4,15 +4,12 @@ import { FightView } from "./FightView";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { FightConstants } from "../../../../Lib/src/constants/FightConstants";
 import {
-	PetConstants,
-	PostFightPetLoveOutcome,
-	PostFightPetLoveOutcomes,
-	PostFightPetReactionType
+	PetConstants, PostFightPetLoveOutcome, PostFightPetLoveOutcomes, PostFightPetReactionType
 } from "../../../../Lib/src/constants/PetConstants";
 import { FighterStatus } from "./FighterStatus";
 import { FightOvertimeBehavior } from "./FightOvertimeBehavior";
 import { MonsterFighter } from "./fighter/MonsterFighter";
-import { RealPlayerFighter } from "./fighter/RealPlayerFighter";
+import { PlayerFighter } from "./fighter/PlayerFighter";
 import { PVEConstants } from "../../../../Lib/src/constants/PVEConstants";
 import {
 	CrowniclesPacket, PacketContext
@@ -36,22 +33,21 @@ import { PetAssistance } from "../../data/PetAssistance";
 import { getAiPetBehavior } from "./PetAssistManager";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { FightsManager } from "./FightsManager";
-import { PlayerFighter } from "./fighter/PlayerFighter";
 
 export class FightController {
 	turn: number;
 
 	public readonly id: string;
 
-	private readonly fighters: (PlayerFighter | MonsterFighter)[];
+	private readonly fighters: (PlayerFighter | MonsterFighter | AiPlayerFighter)[];
 
-	public readonly fightInitiator: PlayerFighter;
+	public readonly fightInitiator: PlayerFighter | AiPlayerFighter;
 
 	private readonly _fightView: FightView;
 
 	private state: FightState;
 
-	private endCallback: (fight: FightController, response: CrowniclesPacket[]) => Promise<void>;
+	private endCallback!: (fight: FightController, response: CrowniclesPacket[]) => Promise<void>;
 
 	private readonly overtimeBehavior: FightOvertimeBehavior;
 
@@ -68,8 +64,8 @@ export class FightController {
 
 	public constructor(
 		fighters: {
-			fighter1: PlayerFighter;
-			fighter2: (MonsterFighter | AiPlayerFighter);
+			fighter1: PlayerFighter | AiPlayerFighter;
+			fighter2: MonsterFighter | AiPlayerFighter;
 		},
 		overtimeBehavior: FightOvertimeBehavior,
 		context: PacketContext,
@@ -91,11 +87,11 @@ export class FightController {
 	public async startFight(response: CrowniclesPacket[]): Promise<void> {
 		// Make the fighters ready
 		for (let i = 0; i < this.fighters.length; i++) {
-			await this.fighters[i].startFight(this._fightView, i === 0 ? FighterStatus.ATTACKER : FighterStatus.DEFENDER);
+			await this.fighters[i].startFight(this._fightView, i === 0 ? FighterStatus.ATTACKER : FighterStatus.DEFENDER, response);
 		}
 
 		if (!this.silentMode) {
-			this._fightView.introduceFight(response, this.fighters[0] as PlayerFighter, this.fighters[1] as MonsterFighter | AiPlayerFighter);
+			this._fightView.introduceFight(response, this.fighters[0] as PlayerFighter | AiPlayerFighter, this.fighters[1] as MonsterFighter | AiPlayerFighter);
 		}
 
 		// The player with the highest speed starts the fight
@@ -117,7 +113,7 @@ export class FightController {
 	 * Get the playing fighter or null if the fight is not running
 	 * @returns
 	 */
-	public getPlayingFighter(): PlayerFighter | MonsterFighter {
+	public getPlayingFighter(): PlayerFighter | MonsterFighter | AiPlayerFighter | null {
 		return this.state === FightState.RUNNING ? this.fighters[0] : null;
 	}
 
@@ -125,7 +121,7 @@ export class FightController {
 	 * Get the defending fighter or null if the fight is not running
 	 * @returns
 	 */
-	public getDefendingFighter(): PlayerFighter | MonsterFighter {
+	public getDefendingFighter(): PlayerFighter | MonsterFighter | AiPlayerFighter | null {
 		return this.state === FightState.RUNNING ? this.fighters[1] : null;
 	}
 
@@ -133,7 +129,7 @@ export class FightController {
 	 * Get the fighter that is not the fight initiator
 	 * @returns
 	 */
-	public getNonFightInitiatorFighter(): PlayerFighter | MonsterFighter {
+	public getNonFightInitiatorFighter(): PlayerFighter | MonsterFighter | AiPlayerFighter {
 		return this.fighters[1] === this.fightInitiator ? this.fighters[0] : this.fighters[1];
 	}
 
@@ -143,7 +139,7 @@ export class FightController {
 	 * @param bug true if the fight has bugged
 	 */
 	public async endFight(response: CrowniclesPacket[], bug = false): Promise<void> {
-		this.state = bug ? FightState.FINISHED : FightState.BUG;
+		this.state = bug ? FightState.BUG : FightState.FINISHED;
 
 		this.checkNegativeEnergy();
 
@@ -162,6 +158,7 @@ export class FightController {
 			await fighter.endFight(!isADraw && fighter === winnerFighter, response, bug, this.turn);
 		}
 
+		// Execute the callback even if the fight has bugged to ensure proper cleanup and state management
 		if (this.endCallback) {
 			await this.endCallback(this, response);
 		}
@@ -174,7 +171,7 @@ export class FightController {
 	public async endBugFight(response: CrowniclesPacket[]): Promise<void> {
 		for (const fighter of this.fighters) {
 			fighter.unblock();
-			if (fighter instanceof RealPlayerFighter) {
+			if (fighter instanceof PlayerFighter) {
 				fighter.kill();
 			}
 		}
@@ -187,14 +184,14 @@ export class FightController {
 	 * Get the winner fighter of the fight
 	 * @returns the winner fighter or null if there is no winner
 	 */
-	public getWinnerFighter(): PlayerFighter | MonsterFighter | AiPlayerFighter {
+	public getWinnerFighter(): PlayerFighter | MonsterFighter | AiPlayerFighter | null {
 		return this.fighters[0].isDead() ? this.fighters[1].isDead() ? null : this.fighters[1] : this.fighters[0];
 	}
 
 	/**
 	 * Get the looser fighter of the fight
 	 */
-	public getLooserFighter(): PlayerFighter | MonsterFighter | AiPlayerFighter {
+	public getLooserFighter(): PlayerFighter | MonsterFighter | AiPlayerFighter | null {
 		return this.fighters[0].isDead() ? this.fighters[0] : this.fighters[1].isDead() ? this.fighters[1]	: null;
 	}
 
@@ -218,21 +215,24 @@ export class FightController {
 		}
 
 		if (endTurn) {
-			this.getPlayingFighter().nextFightAction = null;
+			this.getPlayingFighter()!.nextFightAction = null;
 		}
 
 		// Get the current fighters
-		const attacker = this.getPlayingFighter();
-		const defender = this.getDefendingFighter();
+		const attacker = this.getPlayingFighter()!;
+		const defender = this.getDefendingFighter()!;
 
 		const breathScenarioOutcome = this.handleOutOfBreathScenarios(attacker, fightAction, defender);
 		fightAction = breathScenarioOutcome.fightAction;
 		const result = breathScenarioOutcome.result;
 
-		// Check if we need to use the out-of-breath action instead
+		/*
+		 * Check if we need to use the out-of-breath action instead
+		 * If the result is a fight alteration result, that means that the player did not have enough breath
+		 * FightAlteration extends FightAction, so this cast is safe
+		 */
 		if ("state" in result) {
-			// If the result is a fight alteration result, that means that the player did not have enough breath
-			fightAction = FightAlterationDataController.instance.getById(FightConstants.FIGHT_ACTIONS.ALTERATION.OUT_OF_BREATH);
+			fightAction = FightAlterationDataController.instance.getById(FightConstants.FIGHT_ACTIONS.ALTERATION.OUT_OF_BREATH)!;
 		}
 		this._fightView.addActionToHistory(response, attacker, fightAction, result);
 
@@ -248,7 +248,7 @@ export class FightController {
 		if (endTurn) {
 			this.turn++;
 			this.invertFighters();
-			this.getPlayingFighter()
+			this.getPlayingFighter()!
 				.regenerateBreath(this.turn < 3);
 			await this.prepareNextTurn(response);
 		}
@@ -271,8 +271,8 @@ export class FightController {
 	 * @param response
 	 */
 	private async executeFightAlteration(alteration: FightAlteration, response: CrowniclesPacket[]): Promise<void> {
-		const result = alteration.happen(this.getPlayingFighter(), this.getDefendingFighter(), this.turn, this);
-		this._fightView.addActionToHistory(response, this.getPlayingFighter(), alteration, result);
+		const result = alteration.happen(this.getPlayingFighter()!, this.getDefendingFighter()!, this.turn, this);
+		this._fightView.addActionToHistory(response, this.getPlayingFighter()!, alteration, result);
 		if (this.hadEnded()) {
 			await this.endFight(response);
 			return;
@@ -286,13 +286,13 @@ export class FightController {
 	 * @param response
 	 */
 	private async executePetAssistance(petAssistance: PetAssistance, response: CrowniclesPacket[]): Promise<void> {
-		const attacker = this.getPlayingFighter();
-		const defender = this.getDefendingFighter();
+		const attacker = this.getPlayingFighter()!;
+		const defender = this.getDefendingFighter()!;
 		const result = await petAssistance.execute(attacker, defender, this.turn, this);
 		if (!result) {
 			return;
 		}
-		if (attacker instanceof RealPlayerFighter) {
+		if (attacker instanceof PlayerFighter) {
 			attacker.markPetAssisted();
 		}
 		this._fightView.addActionToHistory(response, attacker, petAssistance, result);
@@ -310,9 +310,9 @@ export class FightController {
 	 * @param defender
 	 */
 	private handleOutOfBreathScenarios(
-		attacker: PlayerFighter | MonsterFighter,
+		attacker: PlayerFighter | MonsterFighter | AiPlayerFighter,
 		fightAction: FightAction,
-		defender: PlayerFighter | MonsterFighter
+		defender: PlayerFighter | MonsterFighter | AiPlayerFighter
 	): {
 		fightAction: FightAction; result: FightActionResult | FightAlterationResult;
 	} {
@@ -323,7 +323,8 @@ export class FightController {
 		// Handle out of breath scenario
 		if (!enoughBreath) {
 			if (RandomUtils.crowniclesRandom.bool(FightConstants.OUT_OF_BREATH_FAILURE_PROBABILITY)) {
-				const outOfBreathAction = FightAlterationDataController.instance.getById(FightConstants.FIGHT_ACTIONS.ALTERATION.OUT_OF_BREATH);
+				// FightAlteration extends FightAction, so this assignment is type-safe
+				const outOfBreathAction = FightAlterationDataController.instance.getById(FightConstants.FIGHT_ACTIONS.ALTERATION.OUT_OF_BREATH)!;
 				result = outOfBreathAction.happen(attacker, defender, this.turn, this);
 				fightAction = outOfBreathAction;
 			}
@@ -363,7 +364,7 @@ export class FightController {
 		}
 
 		const currentFighter = this.getPlayingFighter();
-		if ((currentFighter instanceof AiPlayerFighter || currentFighter instanceof RealPlayerFighter) && currentFighter.pet) {
+		if ((currentFighter instanceof AiPlayerFighter || currentFighter instanceof PlayerFighter) && currentFighter.pet) {
 			const petAction = getAiPetBehavior(currentFighter.pet.typeId);
 			if (petAction) {
 				await this.executePetAssistance(petAction, response);
@@ -376,8 +377,8 @@ export class FightController {
 
 
 		if (this.getPlayingFighter()
-			.hasFightAlteration()) {
-			await this.executeFightAlteration(this.getPlayingFighter().alteration, response);
+			?.hasFightAlteration()) {
+			await this.executeFightAlteration(this.getPlayingFighter()!.alteration!, response);
 		}
 		if (this.state !== FightState.RUNNING) {
 			// A player was killed by a fight alteration, no need to continue the fight
@@ -386,20 +387,20 @@ export class FightController {
 
 		this._fightView.displayFightStatus(response);
 
-		this.getPlayingFighter()
+		this.getPlayingFighter()!
 			.reduceCounters();
 
 		// If the player is fighting a monster, and it's his first turn, then use the "rage explosion" action without changing turns
 		if (this.turn < 3 && this.getDefendingFighter() instanceof MonsterFighter && (this.getPlayingFighter() as PlayerFighter).player.rage > 0) {
-			await this.executeFightAction(FightActionDataController.instance.getById("rageExplosion"), false, response);
+			await this.executeFightAction(FightActionDataController.instance.getById("rageExplosion")!, false, response);
 			if (this.hadEnded()) {
 				return;
 			}
 		}
 
-		if (this.getPlayingFighter().nextFightAction === null) {
+		if (this.getPlayingFighter()?.nextFightAction === null) {
 			try {
-				await this.getPlayingFighter()
+				await this.getPlayingFighter()!
 					.chooseAction(this._fightView, response);
 			}
 			catch (e) {
@@ -407,8 +408,8 @@ export class FightController {
 				await this.endBugFight(response);
 			}
 		}
-		else {
-			await this.executeFightAction(this.getPlayingFighter().nextFightAction, true, response);
+		else if (this.getPlayingFighter()!.nextFightAction) {
+			await this.executeFightAction(this.getPlayingFighter()!.nextFightAction!, true, response);
 		}
 	}
 
@@ -437,7 +438,7 @@ export class FightController {
 			};
 		}
 
-		if (fighter instanceof RealPlayerFighter && !fighter.hasPetAssisted()) {
+		if (fighter instanceof PlayerFighter && !fighter.hasPetAssisted()) {
 			return null;
 		}
 
@@ -501,9 +502,9 @@ export class FightController {
 	public hadEnded(): boolean {
 		return (
 			this.state !== FightState.RUNNING
-			|| this.getPlayingFighter()
+			|| this.getPlayingFighter()!
 				.isDeadOrBug()
-			|| this.getDefendingFighter()
+			|| this.getDefendingFighter()!
 				.isDeadOrBug());
 	}
 }

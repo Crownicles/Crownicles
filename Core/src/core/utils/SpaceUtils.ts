@@ -44,18 +44,18 @@ export interface NearEarthObject {
 	is_sentry_object: boolean;
 }
 
-export class SpaceUtils {
-	private static cachedNeoFeed: NearEarthObject[] = null;
+export abstract class SpaceUtils {
+	private static cachedNeoFeed: NearEarthObject[] | undefined = undefined;
 
-	private static cachedNeoFeedDate: string = null;
+	private static cachedNeoFeedDate: string | undefined = undefined;
 
 	static getNeoWSFeed(): Promise<NearEarthObject[]> {
 		const today = new Date().toISOString()
 			.slice(0, 10);
-		if (today === this.cachedNeoFeedDate) {
+		if (today === this.cachedNeoFeedDate && this.cachedNeoFeed) {
 			return Promise.resolve(this.cachedNeoFeed);
 		}
-		return new Promise(resolve => {
+		return new Promise((resolve, reject) => {
 			get("https://www.neowsapp.com/rest/v1/feed/today", res => {
 				let data = "";
 				res.on("data", chunk => {
@@ -71,8 +71,8 @@ export class SpaceUtils {
 						this.cachedNeoFeed = parsedAnswer.near_earth_objects;
 						resolve(parsedAnswer.near_earth_objects);
 					}
-					catch {
-						resolve(null);
+					catch (e) {
+						reject(e);
 					}
 				});
 			});

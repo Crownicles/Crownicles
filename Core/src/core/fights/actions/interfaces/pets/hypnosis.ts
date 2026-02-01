@@ -8,7 +8,7 @@ import { FightUtils } from "../../../../utils/FightUtils";
 
 const use: PetAssistanceFunc = (_fighter, opponent, turn, _fightController): Promise<PetAssistanceResult | null> => {
 	if (FightUtils.shouldSkipPetEffect(turn, opponent)) {
-		return null;
+		return Promise.resolve(null);
 	}
 
 	const result: PetAssistanceResult = {

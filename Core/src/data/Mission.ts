@@ -4,7 +4,7 @@ import { MissionDifficulty } from "../core/missions/MissionDifficulty";
 import { RandomUtils } from "../../../Lib/src/utils/RandomUtils";
 
 export class Mission extends Data<string> {
-	public readonly campaignOnly: boolean;
+	public readonly campaignOnly!: boolean;
 
 	public readonly difficulties?: {
 		easy?: number[];
@@ -66,7 +66,7 @@ export class MissionDataController extends DataControllerString<Mission> {
 	public getRandomDailyMission(): Mission {
 		return RandomUtils.crowniclesRandom.pick(
 			this.getValuesArray()
-				.filter(mission => mission.dailyIndexes?.length !== 0 && !mission.campaignOnly)
+				.filter(mission => mission.dailyIndexes && mission.dailyIndexes.length > 0 && !mission.campaignOnly)
 		);
 	}
 }

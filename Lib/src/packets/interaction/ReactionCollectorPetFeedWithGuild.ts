@@ -19,6 +19,12 @@ export class ReactionCollectorPetFeedWithGuildFoodReaction extends ReactionColle
 	maxAmount!: number;
 }
 
+type PetFeedWithGuildReaction = ReactionCollectorPetFeedWithGuildFoodReaction | ReactionCollectorRefuseReaction;
+export type ReactionCollectorPetFeedWithGuildPacket = ReactionCollectorCreationPacket<
+	ReactionCollectorPetFeedWithGuildData,
+	PetFeedWithGuildReaction
+>;
+
 export class ReactionCollectorPetFeedWithGuild extends ReactionCollector {
 	private readonly pet: OwnedPet;
 
@@ -34,7 +40,7 @@ export class ReactionCollectorPetFeedWithGuild extends ReactionCollector {
 		this.foods = foods;
 	}
 
-	creationPacket(id: string, endTime: number): ReactionCollectorCreationPacket {
+	creationPacket(id: string, endTime: number): ReactionCollectorPetFeedWithGuildPacket {
 		return {
 			id,
 			endTime,

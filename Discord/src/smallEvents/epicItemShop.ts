@@ -1,4 +1,4 @@
-import { ReactionCollectorCreationPacket } from "../../../Lib/src/packets/interaction/ReactionCollectorPacket";
+import { ReactionCollectorEpicShopSmallEventPacket } from "../../../Lib/src/packets/interaction/ReactionCollectorEpicShopSmallEvent";
 import { PacketContext } from "../../../Lib/src/packets/CrowniclesPacket";
 import { DiscordCache } from "../bot/DiscordCache";
 import { CrowniclesSmallEventEmbed } from "../messages/CrowniclesSmallEventEmbed";
@@ -6,7 +6,6 @@ import { StringUtils } from "../utils/StringUtils";
 import { DiscordCollectorUtils } from "../utils/DiscordCollectorUtils";
 import { DisplayUtils } from "../utils/DisplayUtils";
 import i18n from "../translations/i18n";
-import { ReactionCollectorEpicShopSmallEventData } from "../../../Lib/src/packets/interaction/ReactionCollectorEpicShopSmallEvent";
 import { ReactionCollectorReturnTypeOrNull } from "../packetHandlers/handlers/ReactionCollectorHandlers";
 import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 
@@ -15,13 +14,13 @@ import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
  * @param packet
  * @param context
  */
-export async function epicItemShopCollector(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
+export async function epicItemShopCollector(context: PacketContext, packet: ReactionCollectorEpicShopSmallEventPacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
 	if (!interaction) {
 		return null;
 	}
 	const lng = interaction.userLanguage;
-	const data = packet.data.data as ReactionCollectorEpicShopSmallEventData;
+	const data = packet.data.data;
 	const tip = data.tip ? i18n.t("smallEvents:epicItemShop.reductionTip", { lng }) : "";
 
 	const embed = new CrowniclesSmallEventEmbed(

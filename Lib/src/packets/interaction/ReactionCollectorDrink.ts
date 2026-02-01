@@ -13,6 +13,12 @@ export class ReactionCollectorDrinkReaction extends ReactionCollectorReaction {
 	potion!: ItemWithDetails;
 }
 
+type DrinkReaction = ReactionCollectorDrinkReaction | ReactionCollectorRefuseReaction;
+export type ReactionCollectorDrinkPacket = ReactionCollectorCreationPacket<
+	ReactionCollectorDrinkData,
+	DrinkReaction
+>;
+
 export class ReactionCollectorDrink extends ReactionCollector {
 	private readonly potions!: ItemWithDetails[];
 
@@ -21,7 +27,7 @@ export class ReactionCollectorDrink extends ReactionCollector {
 		this.potions = potions;
 	}
 
-	creationPacket(id: string, endTime: number): ReactionCollectorCreationPacket {
+	creationPacket(id: string, endTime: number): ReactionCollectorDrinkPacket {
 		return {
 			id,
 			endTime,

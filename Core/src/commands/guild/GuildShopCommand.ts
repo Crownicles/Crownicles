@@ -37,15 +37,17 @@ import { LockManager } from "../../../../Lib/src/locks/LockManager";
 const giveXpLockManager = new LockManager();
 
 async function giveGuildXp(response: CrowniclesPacket[], playerId: number, price: number): Promise<boolean> {
-	const player = await Players.getById(playerId);
+	const player = (await Players.getById(playerId))!;
 
-	const lock = giveXpLockManager.getLock(player.guildId);
+	const lock = giveXpLockManager.getLock(player.guildId!);
 	const release = await lock.acquire();
 	try {
-		const guild = await Guilds.getById(player.guildId);
+		const guild = (await Guilds.getById(player.guildId))!;
 
 		const xpToAdd = GuildUtils.calculateAmountOfXPToAdd(price);
-		await guild.addExperience(xpToAdd, response, NumberChangeReason.SHOP);
+		await guild.addExperience({
+			amount: xpToAdd, response, reason: NumberChangeReason.SHOP
+		});
 		await guild.save();
 
 		response.push(makePacket(CommandGuildShopGiveXp, { xp: xpToAdd }));
@@ -93,8 +95,8 @@ function getFoodShopItem(name: string, amounts: number[]): ShopItem {
 		price: GuildShopConstants.PRICES.FOOD[indexFood],
 		amounts,
 		buyCallback: async (response: CrowniclesPacket[], playerId: number, _context: PacketContext, amount: number): Promise<boolean> => {
-			const player = await Players.getById(playerId);
-			const guild = await Guilds.getById(player.guildId);
+			const player = (await Players.getById(playerId))!;
+			const guild = (await Guilds.getById(player.guildId))!;
 
 			if (guild.isStorageFullFor(name, amount)) {
 				response.push(makePacket(CommandGuildShopNoFoodStorageSpace, {}));
@@ -130,7 +132,7 @@ export default class GuildShopCommand {
 	): Promise<void> {
 		const shopCategories: ShopCategory[] = [];
 
-		const guild = await Guilds.getById(player.guildId);
+		const guild = (await Guilds.getById(player.guildId))!;
 		const commonFoodRemainingSlots = GuildConstants.MAX_COMMON_PET_FOOD - guild.commonFood;
 		const herbivorousFoodRemainingSlots = GuildConstants.MAX_HERBIVOROUS_PET_FOOD - guild.herbivorousFood;
 		const carnivorousFoodRemainingSlots = GuildConstants.MAX_CARNIVOROUS_PET_FOOD - guild.carnivorousFood;
@@ -149,7 +151,8 @@ export default class GuildShopCommand {
 			const amounts: number[] = [
 				1,
 				Math.min(5, commonFoodRemainingSlots),
-				Math.min(10, commonFoodRemainingSlots)
+				Math.min(10, commonFoodRemainingSlots),
+				Math.min(25, commonFoodRemainingSlots)
 			];
 			foodItems.push(getFoodShopItem(PetConstants.PET_FOOD.COMMON_FOOD, [...new Set(amounts)])); // Remove duplicates
 		}
@@ -158,7 +161,8 @@ export default class GuildShopCommand {
 			const amounts: number[] = [
 				1,
 				Math.min(5, herbivorousFoodRemainingSlots),
-				Math.min(10, herbivorousFoodRemainingSlots)
+				Math.min(10, herbivorousFoodRemainingSlots),
+				Math.min(15, herbivorousFoodRemainingSlots)
 			];
 			foodItems.push(getFoodShopItem(PetConstants.PET_FOOD.HERBIVOROUS_FOOD, [...new Set(amounts)])); // Remove duplicates
 		}
@@ -167,7 +171,8 @@ export default class GuildShopCommand {
 			const amounts: number[] = [
 				1,
 				Math.min(5, carnivorousFoodRemainingSlots),
-				Math.min(10, carnivorousFoodRemainingSlots)
+				Math.min(10, carnivorousFoodRemainingSlots),
+				Math.min(15, carnivorousFoodRemainingSlots)
 			];
 			foodItems.push(getFoodShopItem(PetConstants.PET_FOOD.CARNIVOROUS_FOOD, [...new Set(amounts)])); // Remove duplicates
 		}
@@ -196,7 +201,7 @@ export default class GuildShopCommand {
 		await ShopUtils.createAndSendShopCollector(context, response, {
 			shopCategories,
 			player,
-			logger: crowniclesInstance.logsDatabase.logGuildShopBuyout
+			logger: (keycloakId, shopItemName, amount) => crowniclesInstance.logsDatabase.logGuildShopBuyout(keycloakId, shopItemName, amount ?? 1)
 		});
 	}
 }

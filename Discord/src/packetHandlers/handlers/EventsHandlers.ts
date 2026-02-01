@@ -9,10 +9,7 @@ import {
 	crowniclesClient, keycloakConfig
 } from "../../bot/CrowniclesShard";
 import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
-import {
-	minutesDisplay,
-	minutesToHours
-} from "../../../../Lib/src/utils/TimeUtils";
+import { minutesToHours } from "../../../../Lib/src/utils/TimeUtils";
 import { GuildLevelUpPacket } from "../../../../Lib/src/packets/events/GuildLevelUpPacket";
 import { MissionsCompletedPacket } from "../../../../Lib/src/packets/events/MissionsCompletedPacket";
 import { MissionsExpiredPacket } from "../../../../Lib/src/packets/events/MissionsExpiredPacket";
@@ -28,6 +25,7 @@ import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
 import { DisplayUtils } from "../../utils/DisplayUtils";
 import { CrowniclesErrorEmbed } from "../../messages/CrowniclesErrorEmbed";
 import { escapeUsername } from "../../../../Lib/src/utils/StringUtils";
+import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 
 export default class EventsHandlers {
 	@packetHandler(CommandReportChooseDestinationRes)
@@ -45,7 +43,7 @@ export default class EventsHandlers {
 			pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
 		}), interaction.user);
 		let time = packet.tripDuration;
-		const timeDisplay = minutesDisplay(packet.tripDuration, lng);
+		const timeDisplay = i18n.formatDuration(packet.tripDuration, lng);
 		let i18nTr: string;
 		if (time < 60) {
 			i18nTr = "commands:report.choseMapMinutes";
@@ -110,7 +108,9 @@ export default class EventsHandlers {
 		}
 		const getUser = await KeycloakUtils.getUserByKeycloakId(keycloakConfig, packet.keycloakId!);
 		if (getUser.isError) {
-			throw new Error(`Keycloak user with id ${packet.keycloakId} not found`);
+			// User may have been deleted from Keycloak, skip this notification
+			CrowniclesLogger.warn(`Keycloak user with id ${packet.keycloakId} not found, skipping missions completed notification`);
+			return;
 		}
 		const user = getUser.payload.user;
 		const discordId = user.attributes.discordId?.[0] ? user.attributes.discordId[0] : null;
@@ -197,7 +197,9 @@ export default class EventsHandlers {
 		}
 		const getUser = await KeycloakUtils.getUserByKeycloakId(keycloakConfig, packet.keycloakId!);
 		if (getUser.isError) {
-			throw new Error(`Keycloak user with id ${packet.keycloakId} not found`);
+			// User may have been deleted from Keycloak, skip this notification
+			CrowniclesLogger.warn(`Keycloak user with id ${packet.keycloakId} not found, skipping missions expired notification`);
+			return;
 		}
 		const user = getUser.payload.user;
 		const discordId = user.attributes.discordId?.[0] ? user.attributes.discordId[0] : null;
@@ -304,7 +306,9 @@ export default class EventsHandlers {
 
 		const getUser = await KeycloakUtils.getUserByKeycloakId(keycloakConfig, packet.keycloakId!);
 		if (getUser.isError) {
-			throw new Error(`Keycloak user with id ${packet.keycloakId} not found`);
+			// User may have been deleted from Keycloak, skip this notification
+			CrowniclesLogger.warn(`Keycloak user with id ${packet.keycloakId} not found, skipping level up notification`);
+			return;
 		}
 		const user = getUser.payload.user;
 		const discordId = user.attributes.discordId?.[0] ? user.attributes.discordId[0] : null;
@@ -342,6 +346,7 @@ export default class EventsHandlers {
 			},
 			missionSlotUnlocked: { tr: "newMissionSlot" },
 			pveUnlocked: { tr: "pveUnlocked" },
+			tokensUnlocked: { tr: "tokensUnlocked" },
 			statsIncreased: { tr: "statsIncreased" }
 		};
 

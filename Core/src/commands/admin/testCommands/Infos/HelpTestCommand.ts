@@ -25,19 +25,21 @@ const helpTestCommand: ExecuteTestCommandLike = (_player, args): string => {
 	catch {
 		throw new Error(`Commande inexistante : ${args[0]}`);
 	}
-	const hasArguments = helpOnCommand.typeWaited && Object.keys(helpOnCommand.typeWaited).length !== 0;
-	const argsAmount = hasArguments ? Object.keys(helpOnCommand.typeWaited).length : 0;
-	const hasAliases = helpOnCommand.aliases && helpOnCommand.aliases.length !== 0;
+	const typeWaited = helpOnCommand.typeWaited;
+	const aliases = helpOnCommand.aliases;
+	const hasArguments = typeWaited && Object.keys(typeWaited).length !== 0;
+	const argsAmount = hasArguments ? Object.keys(typeWaited).length : 0;
+	const hasAliases = aliases && aliases.length !== 0;
 	return `**Commande test : ${helpOnCommand.name}**
 ${helpOnCommand.description}
 **Utilisation :** \`test ${helpOnCommand.name}${helpOnCommand.commandFormat === "" ? "" : ` ${helpOnCommand.commandFormat}`}\`
 ${hasArguments ? `**Argument${argsAmount === 1 ? "" : "s"} attendu${argsAmount === 1 ? "" : "s"} :**` : ""}
-${hasArguments
-	? Object.keys(helpOnCommand.typeWaited)
-		.map(arg => `- \`<${arg}>\` : ${formatTypeWaited(helpOnCommand.typeWaited[arg])}`)
+${hasArguments && typeWaited
+	? Object.keys(typeWaited)
+		.map(arg => `- \`<${arg}>\` : ${formatTypeWaited(typeWaited[arg])}`)
 		.join("\n")
 	: ""}
-${hasAliases ? `**Alias :** \`${helpOnCommand.aliases.join("`, `")}\`` : ""}`;
+${hasAliases && aliases ? `**Alias :** \`${aliases.join("`, `")}\`` : ""}`;
 };
 
 commandInfo.execute = helpTestCommand;

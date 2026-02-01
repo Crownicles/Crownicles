@@ -21,11 +21,11 @@ export function intenseOrSimpleAttack(me: AiPlayerFighter, opponent: AiPlayerFig
 		&& FightActionDataController.getFightActionBreathCost(FightConstants.FIGHT_ACTIONS.PLAYER.INTENSE_ATTACK)
 		&& RandomUtils.crowniclesRandom.bool(0.8)
 	) {
-		return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.INTENSE_ATTACK);
+		return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.INTENSE_ATTACK)!;
 	}
 
 	// Any other case, use a simple attack
-	return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.SIMPLE_ATTACK);
+	return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.SIMPLE_ATTACK)!;
 }
 
 class GlovedFightBehavior implements ClassBehavior {
@@ -43,7 +43,7 @@ class GlovedFightBehavior implements ClassBehavior {
 			].includes(opponent.player.class)
 			&& RandomUtils.crowniclesRandom.bool(0.2)
 		) {
-			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.DEFENSE_BUFF);
+			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.DEFENSE_BUFF)!;
 		}
 		return intenseOrSimpleAttack(me, opponent);
 	}

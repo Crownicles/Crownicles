@@ -9,7 +9,7 @@ import { FightStatModifierOperation } from "../../../../../../../Lib/src/types/F
 const use: PetAssistanceFunc = (fighter, _opponent, turn, _fightController): Promise<PetAssistanceResult | null> => {
 	// Execute at the start of the fight
 	if (turn > 2) {
-		return null;
+		return Promise.resolve(null);
 	}
 
 	const result: PetAssistanceResult = {
@@ -21,7 +21,7 @@ const use: PetAssistanceFunc = (fighter, _opponent, turn, _fightController): Pro
 		stat: FightStatBuffed.SPEED,
 		operator: FightStatModifierOperation.MULTIPLIER,
 		value: 1.45
-	}, fighter, this);
+	}, fighter, undefined);
 
 	return Promise.resolve(result);
 };

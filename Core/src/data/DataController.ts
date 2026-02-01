@@ -7,7 +7,7 @@ import { GenericItem } from "./GenericItem";
 export abstract class DataController<T extends string | number, U extends Data<number | string>> {
 	protected data: Map<T, U> = new Map<T, U>();
 
-	private valuesArrayCache: U[] = null;
+	private valuesArrayCache: U[] | null = null;
 
 	protected constructor(type: string, folder: string) {
 		for (const file of readdirSync(`resources/${folder}`)) {
@@ -32,7 +32,7 @@ export abstract class DataController<T extends string | number, U extends Data<n
 
 	abstract newInstance(): U;
 
-	public getById(id: T): U {
+	public getById(id: T): U | undefined {
 		return this.data.get(id);
 	}
 
@@ -70,7 +70,7 @@ export abstract class DataControllerNumber<T extends Data<number | string>> exte
 }
 
 export abstract class ItemDataController<U extends GenericItem> extends DataControllerNumber<U> {
-	private maxIdCache: number = null;
+	private maxIdCache: number | null = null;
 
 	private idsForRarityCache: Map<number, number[]> = new Map();
 
@@ -93,6 +93,17 @@ export abstract class ItemDataController<U extends GenericItem> extends DataCont
 			this.idsForRarityCache.set(rarity, items);
 		}
 
-		return this.idsForRarityCache.get(rarity);
+		return this.idsForRarityCache.get(rarity)!;
+	}
+
+	/**
+	 * Check if any item with the given nature and rarity exists.
+	 * Override in subclasses that support nature filtering (Potion, ObjectItem).
+	 * @param _nature The nature to check (unused in base class)
+	 * @param rarity The rarity to check
+	 * @returns true if at least one item matches
+	 */
+	public hasItemWithNatureAndRarity(_nature: number, rarity: number): boolean {
+		return this.getAllIdsForRarity(rarity).length > 0;
 	}
 }

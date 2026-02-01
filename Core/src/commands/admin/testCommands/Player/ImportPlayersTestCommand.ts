@@ -59,7 +59,7 @@ function readImportFile(filename: string): ImportData {
 		return JSON.parse(fileContent) as ImportData;
 	}
 	catch (error) {
-		throw new Error(`Erreur importPlayers : impossible de lire ou parser le fichier "${filename}" ! ${error.message}`);
+		throw new Error(`Erreur importPlayers : impossible de lire ou parser le fichier "${filename}" ! ${(error as Error).message}`);
 	}
 }
 

@@ -24,9 +24,11 @@ import {
 	PersonalFightDailySummary,
 	RankedFightResult
 } from "../../core/database/logs/LogsReadRequests";
-import { FightController } from "../../core/fights/FightController";
+import {
+	FightController
+} from "../../core/fights/FightController";
 import { FightOvertimeBehavior } from "../../core/fights/FightOvertimeBehavior";
-import { RealPlayerFighter } from "../../core/fights/fighter/RealPlayerFighter";
+import { PlayerFighter } from "../../core/fights/fighter/PlayerFighter";
 import { ClassDataController } from "../../data/Class";
 import { crowniclesInstance } from "../../index";
 import { EloUtils } from "../../core/utils/EloUtils";
@@ -42,14 +44,15 @@ import { PacketUtils } from "../../core/utils/PacketUtils";
 import { PlayerWasAttackedNotificationPacket } from "../../../../Lib/src/packets/notifications/PlayerWasAttackedNotificationPacket";
 import { PetEntities } from "../../core/database/game/models/PetEntity";
 import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
-import { PlayerFighter } from "../../core/fights/fighter/PlayerFighter";
 import { PostFightPetLoveOutcomes } from "../../../../Lib/src/constants/PetConstants";
+import { PetUtils } from "../../core/utils/PetUtils";
 
 type PlayerStats = {
-	pet: {
+	pet?: {
 		petTypeId: number;
 		petSex: SexTypeShort;
 		petNickname: string;
+		isOnExpedition: boolean;
 	};
 	classId: number;
 	fightRanking: { glory: number };
@@ -83,19 +86,23 @@ export const fightsDefenderCooldowns = new Map<string, number>();
 async function getPlayerStats(player: Player): Promise<PlayerStats> {
 	const playerActiveObjects = await InventorySlots.getMainSlotsItems(player.id);
 	const petEntity = await PetEntities.getById(player.petId);
+
 	return {
-		pet: {
-			petTypeId: petEntity ? petEntity.typeId! : null,
-			petSex: petEntity ? petEntity.sex as SexTypeShort : null,
-			petNickname: petEntity ? petEntity.nickname : null
-		},
+		pet: petEntity
+			? {
+				petTypeId: petEntity.typeId!,
+				petSex: petEntity.sex as SexTypeShort,
+				petNickname: petEntity.nickname,
+				isOnExpedition: await PetUtils.isPetOnExpedition(player.id)
+			}
+			: undefined,
 		classId: player.class,
 		fightRanking: {
 			glory: player.getGloryPoints()
 		},
 		energy: {
-			value: player.getCumulativeEnergy(playerActiveObjects),
-			max: player.getMaxCumulativeEnergy(playerActiveObjects)
+			value: player.getCumulativeEnergy(),
+			max: player.getMaxCumulativeEnergy()
 		},
 		attack: player.getCumulativeAttack(playerActiveObjects),
 		defense: player.getCumulativeDefense(playerActiveObjects),
@@ -202,12 +209,12 @@ async function updatePlayersEloAndCooldowns(
 	const player2NewRating = EloUtils.calculateNewRating(defender.defenseGloryPoints, attacker.attackGloryPoints, defenderGameResult, player2KFactor);
 
 	// Change glory and fightCountdown and save
-	await attacker.setGloryPoints(player1NewRating, false, NumberChangeReason.FIGHT, response, fightLogId);
+	await attacker.setGloryPoints(player1NewRating, false, NumberChangeReason.FIGHT, response, fightLogId ?? undefined);
 	attacker.fightCountdown--;
 	if (attacker.fightCountdown < 0) {
 		attacker.fightCountdown = 0;
 	}
-	await defender.setGloryPoints(player2NewRating, true, NumberChangeReason.FIGHT, response, fightLogId);
+	await defender.setGloryPoints(player2NewRating, true, NumberChangeReason.FIGHT, response, fightLogId ?? undefined);
 	defender.fightCountdown--;
 	if (defender.fightCountdown < 0) {
 		defender.fightCountdown = 0;
@@ -219,11 +226,9 @@ async function updatePlayersEloAndCooldowns(
 }
 
 /**
- * Code that will be executed when a fight ends (except if the fight has a bug)
- * @param fight
- * @param response
+ * Send notification to defending player that they were attacked
  */
-async function fightEndCallback(fight: FightController, response: CrowniclesPacket[]): Promise<void> {
+function notifyDefenderOfAttack(fight: FightController): void {
 	const defendingFighter = fight.getNonFightInitiatorFighter();
 	if (defendingFighter instanceof AiPlayerFighter) {
 		PacketUtils.sendNotifications([
@@ -233,96 +238,144 @@ async function fightEndCallback(fight: FightController, response: CrowniclesPack
 			})
 		]);
 	}
-	const fightLogId = await crowniclesInstance.logsDatabase.logFight(fight);
+}
 
+/**
+ * Get the game result for initiator based on fight outcome
+ */
+function getGameResultFromFight(fight: FightController): {
+	initiatorResult: EloGameResult;
+	defenderResult: EloGameResult;
+	isDraw: boolean;
+} {
 	const isDraw = fight.isADraw();
-
 	const winnerFighter = fight.getWinnerFighter();
+
+	if (isDraw) {
+		return {
+			initiatorResult: EloGameResult.DRAW,
+			defenderResult: EloGameResult.DRAW,
+			isDraw: true
+		};
+	}
+
+	const initiatorWon = winnerFighter === fight.fightInitiator;
+	return {
+		initiatorResult: initiatorWon ? EloGameResult.WIN : EloGameResult.LOSS,
+		defenderResult: initiatorWon ? EloGameResult.LOSS : EloGameResult.WIN,
+		isDraw: false
+	};
+}
+
+/**
+ * Handle pet love change after a fight victory
+ */
+async function handlePostFightPetLove(
+	fight: FightController,
+	response: CrowniclesPacket[]
+): Promise<FightRewardPacket["petLoveChange"]> {
+	const winnerFighter = fight.getWinnerFighter();
+	const petLoveResult = fight.getPostFightPetLoveChange(winnerFighter, PostFightPetLoveOutcomes.WIN);
+
+	if (!petLoveResult || !(winnerFighter instanceof PlayerFighter)) {
+		return undefined;
+	}
+
+	const petEntity = winnerFighter.pet;
+	if (!petEntity) {
+		return undefined;
+	}
+
+	await petEntity.changeLovePoints({
+		player: winnerFighter.player,
+		response,
+		amount: petLoveResult.loveChange,
+		reason: NumberChangeReason.FIGHT
+	});
+	await petEntity.save({ fields: ["lovePoints"] });
+
+	return {
+		keycloakId: winnerFighter.player.keycloakId,
+		loveChange: petLoveResult.loveChange,
+		reactionType: petLoveResult.reactionType,
+		petId: petEntity.typeId,
+		petSex: petEntity.sex,
+		petNickname: petEntity.nickname
+	};
+}
+
+/**
+ * Build player glory info for reward packet
+ */
+function buildPlayerGloryInfo(player: Player, oldGlory: number): FightRewardPacket["player1"] {
+	return {
+		keycloakId: player.keycloakId,
+		oldGlory,
+		newGlory: player.getGloryPoints(),
+		oldLeagueId: LeagueDataController.instance.getByGlory(oldGlory).id,
+		newLeagueId: player.getLeague().id
+	};
+}
+
+/**
+ * Code that will be executed when a fight ends (except if the fight has a bug)
+ * @param fight
+ * @param response
+ */
+async function fightEndCallback(fight: FightController, response: CrowniclesPacket[]): Promise<void> {
+	notifyDefenderOfAttack(fight);
+
+	const fightLogId = await crowniclesInstance.logsDatabase.logFight(fight);
+	const gameResults = getGameResultFromFight(fight);
 
 	const fightInitiator = fight.fightInitiator;
 	const nonFightInitiator = fight.getNonFightInitiatorFighter();
 
-	const initiatorPlayer = fightInitiator instanceof PlayerFighter
+	const initiatorPlayer = fightInitiator instanceof PlayerFighter || fightInitiator instanceof AiPlayerFighter
 		? await Players.getById(fightInitiator.player.id)
 		: null;
-	const opponentPlayer = nonFightInitiator instanceof PlayerFighter
+	const opponentPlayer = nonFightInitiator instanceof PlayerFighter || nonFightInitiator instanceof AiPlayerFighter
 		? await Players.getById(nonFightInitiator.player.id)
 		: null;
 
-	const initiatorGameResult = isDraw ? EloGameResult.DRAW : winnerFighter === fight.fightInitiator ? EloGameResult.WIN : EloGameResult.LOSS;
-	const defenderGameResult = isDraw ? EloGameResult.DRAW : winnerFighter === fight.fightInitiator ? EloGameResult.LOSS : EloGameResult.WIN;
+	if (!initiatorPlayer || !opponentPlayer) {
+		return;
+	}
 
 	const playerDailyFightSummary = await LogsReadRequests.getPersonalInitiatedFightDailySummary(
 		fight.fightInitiator.player.keycloakId
 	);
 
-	const scoreBonus = await calculateScoreReward(
-		{
-			playerDailyFightSummary,
-			initiatorGameResult,
-			initiatorPlayer
-		},
-		response
-	);
+	const fightInitiatorInfo: FightInitiatorInformation = {
+		playerDailyFightSummary,
+		initiatorGameResult: gameResults.initiatorResult,
+		initiatorPlayer
+	};
 
-	const extraMoneyBonus = await calculateMoneyReward(
-		{
-			playerDailyFightSummary,
-			initiatorGameResult,
-			initiatorPlayer
-		},
-		response
-	);
+	const scoreBonus = await calculateScoreReward(fightInitiatorInfo, response);
+	const extraMoneyBonus = await calculateMoneyReward(fightInitiatorInfo, response);
 
 	// Save glory before changing it
 	const player1OldGlory = initiatorPlayer.getGloryPoints();
 	const player2OldGlory = opponentPlayer.getGloryPoints();
-	await updatePlayersEloAndCooldowns(initiatorPlayer, opponentPlayer, initiatorGameResult, defenderGameResult, response, fightLogId);
+	await updatePlayersEloAndCooldowns(initiatorPlayer, opponentPlayer, gameResults.initiatorResult, gameResults.defenderResult, response, fightLogId);
 
-	let petLoveChange;
-	if (!isDraw) {
-		const petLoveResult = fight.getPostFightPetLoveChange(winnerFighter, PostFightPetLoveOutcomes.WIN);
-		if (petLoveResult && winnerFighter instanceof PlayerFighter) {
-			const petEntity = winnerFighter.pet;
-			if (petEntity) {
-				await petEntity.changeLovePoints({
-					player: winnerFighter.player,
-					response,
-					amount: petLoveResult.loveChange,
-					reason: NumberChangeReason.FIGHT
-				});
-				await petEntity.save({ fields: ["lovePoints"] });
+	const petLoveChange = gameResults.isDraw ? undefined : await handlePostFightPetLove(fight, response);
 
-				petLoveChange = {
-					keycloakId: winnerFighter.player.keycloakId,
-					loveChange: petLoveResult.loveChange,
-					reactionType: petLoveResult.reactionType,
-					petId: petEntity.typeId,
-					petSex: petEntity.sex,
-					petNickname: petEntity.nickname
-				};
-			}
-		}
-	}
+	// Determine winner keycloak id
+	const winnerKeycloakId = gameResults.isDraw
+		? undefined
+		: gameResults.initiatorResult === EloGameResult.WIN
+			? initiatorPlayer.keycloakId
+			: opponentPlayer.keycloakId;
 
 	response.push(makePacket(FightRewardPacket, {
 		points: scoreBonus,
 		money: extraMoneyBonus,
-		player1: {
-			keycloakId: initiatorPlayer.keycloakId,
-			oldGlory: player1OldGlory,
-			newGlory: initiatorPlayer.getGloryPoints(),
-			oldLeagueId: LeagueDataController.instance.getByGlory(player1OldGlory).id,
-			newLeagueId: initiatorPlayer.getLeague().id
-		},
-		player2: {
-			keycloakId: opponentPlayer.keycloakId,
-			oldGlory: player2OldGlory,
-			newGlory: opponentPlayer.getGloryPoints(),
-			oldLeagueId: LeagueDataController.instance.getByGlory(player2OldGlory).id,
-			newLeagueId: opponentPlayer.getLeague().id
-		},
-		draw: isDraw,
+		player1: buildPlayerGloryInfo(initiatorPlayer, player1OldGlory),
+		player2: buildPlayerGloryInfo(opponentPlayer, player2OldGlory),
+		draw: gameResults.isDraw,
+		winnerKeycloakId,
 		petLoveChange
 	}));
 }
@@ -456,9 +509,16 @@ function fightValidationEndCallback(player: Player, context: PacketContext): End
 				BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.FIGHT_CONFIRMATION);
 				return;
 			}
-			const askingFighter = new RealPlayerFighter(player, ClassDataController.instance.getById(player.class));
-			await askingFighter.loadStats("PlayerFighter");
-			const incomingFighter = new AiPlayerFighter(opponent, ClassDataController.instance.getById(opponent.class));
+			const playerClass = ClassDataController.instance.getById(player.class);
+			const opponentClass = ClassDataController.instance.getById(opponent.class);
+			if (!playerClass || !opponentClass) {
+				throw new Error("Class not found for player or opponent");
+			}
+			const askingFighter = new PlayerFighter(player, playerClass);
+			askingFighter.setFightRole(FightConstants.FIGHT_ROLES.ATTACKER);
+			await askingFighter.loadStats();
+			const incomingFighter = new AiPlayerFighter(opponent, opponentClass);
+			incomingFighter.setFightRole(FightConstants.FIGHT_ROLES.DEFENDER);
 			await incomingFighter.loadStats();
 
 			// Start fight
@@ -488,7 +548,7 @@ export default class FightCommand {
 		level: FightConstants.REQUIRED_LEVEL
 	})
 	async execute(response: CrowniclesPacket[], player: Player, _packet: CommandFightPacketReq, context: PacketContext): Promise<void> {
-		if (!player.hasEnoughEnergyToFight(await InventorySlots.getPlayerActiveObjects(player.id))) {
+		if (!player.hasEnoughEnergyToFight()) {
 			response.push(makePacket(CommandFightNotEnoughEnergyPacketRes, {}));
 			return;
 		}

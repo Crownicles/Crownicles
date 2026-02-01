@@ -12,7 +12,7 @@ const shouldSkipPetCurse = (turn: number, opponent: Fighter): boolean => {
 
 const use: PetAssistanceFunc = (_fighter, opponent, turn, _fightController): Promise<PetAssistanceResult | null> => {
 	if (shouldSkipPetCurse(turn, opponent)) {
-		return null;
+		return Promise.resolve(null);
 	}
 
 	const result: PetAssistanceResult = {

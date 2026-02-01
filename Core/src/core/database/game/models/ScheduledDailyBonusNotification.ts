@@ -17,7 +17,7 @@ export class ScheduledDailyBonusNotification extends Model {
 	declare createdAt: Date;
 }
 
-export class ScheduledDailyBonusNotifications {
+export abstract class ScheduledDailyBonusNotifications {
 	static async scheduleNotification(playerId: number, keycloakId: string, scheduledAt: Date): Promise<void> {
 		await ScheduledDailyBonusNotification.upsert({
 			playerId,
