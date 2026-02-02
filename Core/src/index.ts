@@ -6,8 +6,7 @@ import {
 import {
 	ErrorMaintenancePacket,
 	ErrorPacket,
-	ErrorResetIsNow,
-	ErrorSeasonEndIsNow
+	ErrorResetIsNow
 } from "../../Lib/src/packets/commands/ErrorPacket";
 import { connect } from "mqtt";
 import { PacketUtils } from "./core/utils/PacketUtils";
@@ -16,7 +15,7 @@ import { RightGroup } from "../../Lib/src/types/RightGroup";
 import { MqttTopicUtils } from "../../Lib/src/utils/MqttTopicUtils";
 import { CrowniclesCoreMetrics } from "./core/bot/CrowniclesCoreMetrics";
 import {
-	millisecondsToSeconds, resetIsNow, seasonEndIsNow
+	millisecondsToSeconds, resetIsNow
 } from "../../Lib/src/utils/TimeUtils";
 import { CrowniclesLogger } from "../../Lib/src/logs/CrowniclesLogger";
 import "source-map-support/register";
@@ -82,11 +81,15 @@ function globalStopOfPlayers(response: CrowniclesPacket[], dataJson: {
 		response.push(makePacket(ErrorResetIsNow, {}));
 		return true;
 	}
-	if (false && seasonEndIsNow()
-		&& !CoreConstants.BYPASS_MAINTENANCE_AND_RESETS_PACKETS.includes(dataJson.packet.name)) {
-		response.push(makePacket(ErrorSeasonEndIsNow, {}));
-		return true;
-	}
+
+	/*
+	 * TODO: Re-enable when season end feature is ready
+	 * if (seasonEndIsNow()
+	 * 	&& !CoreConstants.BYPASS_MAINTENANCE_AND_RESETS_PACKETS.includes(dataJson.packet.name)) {
+	 * 	response.push(makePacket(ErrorSeasonEndIsNow, {}));
+	 * 	return true;
+	 * }
+	 */
 	return false;
 }
 
