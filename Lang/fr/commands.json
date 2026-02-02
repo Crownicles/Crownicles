@@ -936,6 +936,12 @@
       "homes": {
         "goToOwnedHome": "Aller à votre maison",
         "goToOwnedHomeDescription": "Entrez dans votre maison pour y accéder à vos services personnels.",
+        "homeTitle": "{{pseudo}}, bienvenue chez vous !",
+        "homeIntroduction": "{emote:city.home.1} Vous entrez dans votre maison. Le calme et la sérénité de ce lieu vous apaisent.",
+        "homePlaceholder": "Choisissez une action",
+        "upgradeStationAvailable": "{emote:city.homeUpgrades.upgradeEquipment} Votre établi d'équipement vous permet d'améliorer vos armes et armures. Sélectionnez l'équipement que vous souhaitez améliorer.",
+        "upgradeStationNoItems": "{emote:city.homeUpgrades.upgradeEquipment} Votre établi d'équipement est prêt, mais vous n'avez aucun équipement améliorable pour le moment.",
+        "leaveHome": "Quitter votre maison",
         "manageHome": "Aller voir le notaire",
         "manageHomeDescriptionNew": "Allez voir le notaire pour acheter une maison.",
         "manageHomeDescriptionUpgrade": "Allez voir le notaire pour améliorer votre maison.",
