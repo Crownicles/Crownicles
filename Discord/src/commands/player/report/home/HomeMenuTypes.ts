@@ -18,6 +18,16 @@ export interface HomeFeatureHandlerContext {
 }
 
 /**
+ * Option to display in the main home menu for a feature
+ */
+export interface HomeFeatureMenuOption {
+	label: string;
+	description?: string;
+	emoji: string;
+	value: string;
+}
+
+/**
  * Interface for home feature handlers.
  * Each home feature (upgrade station, potion crafting, bed, chest, garden) should implement this.
  */
@@ -34,22 +44,49 @@ export interface HomeFeatureHandler {
 	isAvailable(ctx: HomeFeatureHandlerContext): boolean;
 
 	/**
-	 * Get description lines to add to the home menu embed
+	 * Get the menu option to show in the main home menu.
+	 * Returns null if the feature should not show an option.
+	 */
+	getMenuOption(ctx: HomeFeatureHandlerContext): HomeFeatureMenuOption | null;
+
+	/**
+	 * Get description lines to show in the main home menu
 	 */
 	getDescriptionLines(ctx: HomeFeatureHandlerContext): string[];
 
 	/**
-	 * Add options to the select menu for this feature
+	 * Handle when the user selects this feature from the main menu.
+	 * This should typically open a sub-menu with detailed options.
 	 */
-	addMenuOptions(ctx: HomeFeatureHandlerContext, selectMenu: StringSelectMenuBuilder): void;
+	handleFeatureSelection(
+		ctx: HomeFeatureHandlerContext,
+		selectInteraction: StringSelectMenuInteraction,
+		nestedMenus: CrowniclesNestedMenus
+	): Promise<void>;
 
 	/**
-	 * Handle selection from the menu. Returns true if the selection was handled.
+	 * Handle selection within the feature's sub-menu.
+	 * Returns true if the selection was handled.
 	 */
-	handleSelection(
+	handleSubMenuSelection(
 		ctx: HomeFeatureHandlerContext,
 		selectedValue: string,
 		selectInteraction: StringSelectMenuInteraction,
 		nestedMenus: CrowniclesNestedMenus
 	): Promise<boolean>;
+
+	/**
+	 * Add options to the feature's sub-menu
+	 */
+	addSubMenuOptions(ctx: HomeFeatureHandlerContext, selectMenu: StringSelectMenuBuilder): void;
+
+	/**
+	 * Get the sub-menu description
+	 */
+	getSubMenuDescription(ctx: HomeFeatureHandlerContext): string;
+
+	/**
+	 * Get the sub-menu title
+	 */
+	getSubMenuTitle(ctx: HomeFeatureHandlerContext, pseudo: string): string;
 }

@@ -1,5 +1,5 @@
 import {
-	HomeFeatureHandler, HomeFeatureHandlerContext
+	HomeFeatureHandler, HomeFeatureHandlerContext, HomeFeatureMenuOption
 } from "./HomeMenuTypes";
 import { UpgradeStationFeatureHandler } from "./UpgradeStationFeatureHandler";
 import { CrowniclesNestedMenus } from "../../../../messages/CrowniclesNestedMenus";
@@ -23,10 +23,34 @@ class HomeFeatureRegistry {
 	}
 
 	/**
+	 * Get all handlers
+	 */
+	public getHandlers(): HomeFeatureHandler[] {
+		return this.handlers;
+	}
+
+	/**
 	 * Get all available handlers for the given context
 	 */
 	public getAvailableHandlers(ctx: HomeFeatureHandlerContext): HomeFeatureHandler[] {
 		return this.handlers.filter(handler => handler.isAvailable(ctx));
+	}
+
+	/**
+	 * Get a handler by feature ID
+	 */
+	public getHandler(featureId: string): HomeFeatureHandler | undefined {
+		return this.handlers.find(h => h.featureId === featureId);
+	}
+
+	/**
+	 * Get handler by menu value
+	 */
+	public getHandlerByMenuValue(ctx: HomeFeatureHandlerContext, value: string): HomeFeatureHandler | undefined {
+		return this.handlers.find(handler => {
+			const option = handler.getMenuOption(ctx);
+			return option?.value === value;
+		});
 	}
 
 	/**
@@ -43,31 +67,58 @@ class HomeFeatureRegistry {
 	}
 
 	/**
-	 * Add all menu options from available handlers
+	 * Get all menu options for the main home menu
 	 */
-	public addAllMenuOptions(ctx: HomeFeatureHandlerContext, selectMenu: StringSelectMenuBuilder): void {
-		for (const handler of this.getAvailableHandlers(ctx)) {
-			handler.addMenuOptions(ctx, selectMenu);
+	public getMenuOptions(ctx: HomeFeatureHandlerContext): HomeFeatureMenuOption[] {
+		const options: HomeFeatureMenuOption[] = [];
+
+		for (const handler of this.handlers) {
+			const option = handler.getMenuOption(ctx);
+			if (option) {
+				options.push(option);
+			}
 		}
+
+		return options;
 	}
 
 	/**
-	 * Try to handle a selection with all registered handlers.
-	 * Returns true if any handler processed the selection.
+	 * Add all sub-menu options from a specific handler
 	 */
-	public async handleSelection(
+	public addSubMenuOptions(handler: HomeFeatureHandler, ctx: HomeFeatureHandlerContext, selectMenu: StringSelectMenuBuilder): void {
+		handler.addSubMenuOptions(ctx, selectMenu);
+	}
+
+	/**
+	 * Handle selection from main home menu
+	 */
+	public async handleMainMenuSelection(
 		ctx: HomeFeatureHandlerContext,
 		selectedValue: string,
 		selectInteraction: StringSelectMenuInteraction,
 		nestedMenus: CrowniclesNestedMenus
 	): Promise<boolean> {
-		for (const handler of this.handlers) {
-			if (await handler.handleSelection(ctx, selectedValue, selectInteraction, nestedMenus)) {
-				return true;
-			}
+		const handler = this.getHandlerByMenuValue(ctx, selectedValue);
+
+		if (handler) {
+			await handler.handleFeatureSelection(ctx, selectInteraction, nestedMenus);
+			return true;
 		}
 
 		return false;
+	}
+
+	/**
+	 * Handle selection from a feature's sub-menu
+	 */
+	public handleSubMenuSelection(
+		handler: HomeFeatureHandler,
+		ctx: HomeFeatureHandlerContext,
+		selectedValue: string,
+		selectInteraction: StringSelectMenuInteraction,
+		nestedMenus: CrowniclesNestedMenus
+	): Promise<boolean> {
+		return handler.handleSubMenuSelection(ctx, selectedValue, selectInteraction, nestedMenus);
 	}
 }
 
@@ -76,7 +127,7 @@ class HomeFeatureRegistry {
  *
  * To add a new home feature:
  * 1. Create a new handler class implementing HomeFeatureHandler
- * 2. Register it here with .register(new YourFeatureHandler())
+ * 2. Register it here with .register(new YourHandler())
  *
  * Future features to implement:
  * - BedFeatureHandler: Rest to recover health
@@ -86,11 +137,3 @@ class HomeFeatureRegistry {
  */
 export const homeFeatureRegistry = new HomeFeatureRegistry()
 	.register(new UpgradeStationFeatureHandler());
-
-/*
- * Future handlers to add:
- * .register(new BedFeatureHandler())
- * .register(new ChestFeatureHandler())
- * .register(new PotionCraftingFeatureHandler())
- * .register(new GardenFeatureHandler())
- */

@@ -2,7 +2,7 @@ import {
 	StringSelectMenuBuilder, StringSelectMenuInteraction
 } from "discord.js";
 import {
-	HomeFeatureHandler, HomeFeatureHandlerContext
+	HomeFeatureHandler, HomeFeatureHandlerContext, HomeFeatureMenuOption
 } from "./HomeMenuTypes";
 import { CrowniclesNestedMenus } from "../../../../messages/CrowniclesNestedMenus";
 import i18n from "../../../../translations/i18n";
@@ -19,36 +19,100 @@ import { ItemRarity } from "../../../../../../Lib/src/constants/ItemConstants";
 export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 	public readonly featureId = "upgradeStation";
 
-	private static readonly MENU_OPTION_PREFIX = "UPGRADE_ITEM_";
+	private static readonly MENU_VALUE = "HOME_UPGRADE_STATION";
+
+	private static readonly ITEM_PREFIX = "UPGRADE_ITEM_";
 
 	public isAvailable(ctx: HomeFeatureHandlerContext): boolean {
 		// Available if the home has an upgrade station (upgradeItemMaximumRarity > BASIC means it has one)
-		return ctx.homeData.features.upgradeItemMaximumRarity > ItemRarity.BASIC
-			|| Boolean(ctx.homeData.upgradeStation);
+		return ctx.homeData.features.upgradeItemMaximumRarity > ItemRarity.BASIC;
 	}
 
-	public getDescriptionLines(ctx: HomeFeatureHandlerContext): string[] {
-		const {
-			homeData, lng
-		} = ctx;
-		const upgradeStation = homeData.upgradeStation;
+	public getMenuOption(ctx: HomeFeatureHandlerContext): HomeFeatureMenuOption | null {
+		if (!this.isAvailable(ctx)) {
+			return null;
+		}
 
-		if (!upgradeStation) {
+		const upgradeStation = ctx.homeData.upgradeStation;
+		const itemCount = upgradeStation?.upgradeableItems.length ?? 0;
+
+		return {
+			label: i18n.t("commands:report.city.homes.upgradeStation.menuLabel", { lng: ctx.lng }),
+			description: i18n.t("commands:report.city.homes.upgradeStation.menuDescription", {
+				lng: ctx.lng,
+				count: itemCount
+			}),
+			emoji: CrowniclesIcons.city.homeUpgrades.upgradeEquipment,
+			value: UpgradeStationFeatureHandler.MENU_VALUE
+		};
+	}
+
+	public getDescriptionLines(_ctx: HomeFeatureHandlerContext): string[] {
+		if (!this.isAvailable(_ctx)) {
 			return [];
 		}
 
-		if (upgradeStation.upgradeableItems.length > 0) {
-			return [i18n.t("commands:report.city.homes.upgradeStationAvailable", { lng })];
-		}
-
-		return [i18n.t("commands:report.city.homes.upgradeStationNoItems", { lng })];
+		return [i18n.t("commands:report.city.homes.upgradeStation.available", { lng: _ctx.lng })];
 	}
 
-	public addMenuOptions(ctx: HomeFeatureHandlerContext, selectMenu: StringSelectMenuBuilder): void {
-		const {
-			homeData, lng
-		} = ctx;
-		const upgradeStation = homeData.upgradeStation;
+	public async handleFeatureSelection(
+		_ctx: HomeFeatureHandlerContext,
+		selectInteraction: StringSelectMenuInteraction,
+		nestedMenus: CrowniclesNestedMenus
+	): Promise<void> {
+		await selectInteraction.deferUpdate();
+		await nestedMenus.changeMenu("HOME_UPGRADE_STATION");
+	}
+
+	public async handleSubMenuSelection(
+		ctx: HomeFeatureHandlerContext,
+		selectedValue: string,
+		selectInteraction: StringSelectMenuInteraction,
+		nestedMenus: CrowniclesNestedMenus
+	): Promise<boolean> {
+		// Handle back to home menu
+		if (selectedValue === "BACK_TO_HOME") {
+			await selectInteraction.deferUpdate();
+			await nestedMenus.changeMenu("HOME_MENU");
+			return true;
+		}
+
+		// Handle item upgrade selection
+		if (!selectedValue.startsWith(UpgradeStationFeatureHandler.ITEM_PREFIX)) {
+			return false;
+		}
+
+		const upgradeStation = ctx.homeData.upgradeStation;
+		if (!upgradeStation) {
+			return false;
+		}
+
+		await selectInteraction.deferReply();
+
+		const index = parseInt(selectedValue.replace(UpgradeStationFeatureHandler.ITEM_PREFIX, ""), 10);
+
+		if (index < 0 || index >= upgradeStation.upgradeableItems.length) {
+			return true; // Handled but invalid index
+		}
+
+		const slot = upgradeStation.upgradeableItems[index].slot;
+		const itemCategory = upgradeStation.upgradeableItems[index].category;
+
+		const reactionIndex = ctx.packet.reactions.findIndex(
+			reaction => reaction.type === ReactionCollectorUpgradeItemReaction.name
+				&& (reaction.data as ReactionCollectorUpgradeItemReaction).slot === slot
+				&& (reaction.data as ReactionCollectorUpgradeItemReaction).itemCategory === itemCategory
+		);
+
+		if (reactionIndex !== -1) {
+			DiscordCollectorUtils.sendReaction(ctx.packet, ctx.context, ctx.context.keycloakId!, selectInteraction, reactionIndex);
+		}
+
+		return true;
+	}
+
+	public addSubMenuOptions(ctx: HomeFeatureHandlerContext, selectMenu: StringSelectMenuBuilder): void {
+		const upgradeStation = ctx.homeData.upgradeStation;
 
 		if (!upgradeStation) {
 			return;
@@ -62,7 +126,7 @@ export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 			item.details.defense.maxValue = Infinity;
 			item.details.speed.maxValue = Infinity;
 
-			const itemDisplay = DisplayUtils.getItemDisplayWithStats(item.details, lng);
+			const itemDisplay = DisplayUtils.getItemDisplayWithStats(item.details, ctx.lng);
 			const parts = itemDisplay.split(" | ");
 			const label = parts[0].split("**")[1];
 
@@ -85,7 +149,7 @@ export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 				description?: string;
 			} = {
 				label,
-				value: `${UpgradeStationFeatureHandler.MENU_OPTION_PREFIX}${i}`,
+				value: `${UpgradeStationFeatureHandler.ITEM_PREFIX}${i}`,
 				emoji: DisplayUtils.getItemIcon({
 					id: item.details.id,
 					category: item.details.itemCategory
@@ -103,42 +167,20 @@ export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 		}
 	}
 
-	public async handleSelection(
-		ctx: HomeFeatureHandlerContext,
-		selectedValue: string,
-		selectInteraction: StringSelectMenuInteraction,
-		_nestedMenus: CrowniclesNestedMenus
-	): Promise<boolean> {
-		const {
-			context, packet, homeData
-		} = ctx;
-		const upgradeStation = homeData.upgradeStation;
+	public getSubMenuDescription(ctx: HomeFeatureHandlerContext): string {
+		const upgradeStation = ctx.homeData.upgradeStation;
 
-		if (!selectedValue.startsWith(UpgradeStationFeatureHandler.MENU_OPTION_PREFIX) || !upgradeStation) {
-			return false;
+		if (!upgradeStation || upgradeStation.upgradeableItems.length === 0) {
+			return i18n.t("commands:report.city.homes.upgradeStation.noItems", { lng: ctx.lng });
 		}
 
-		await selectInteraction.deferReply();
+		return i18n.t("commands:report.city.homes.upgradeStation.selectItem", { lng: ctx.lng });
+	}
 
-		const index = parseInt(selectedValue.replace(UpgradeStationFeatureHandler.MENU_OPTION_PREFIX, ""), 10);
-
-		if (index < 0 || index >= upgradeStation.upgradeableItems.length) {
-			return true; // Handled but invalid index
-		}
-
-		const slot = upgradeStation.upgradeableItems[index].slot;
-		const itemCategory = upgradeStation.upgradeableItems[index].category;
-
-		const reactionIndex = packet.reactions.findIndex(
-			reaction => reaction.type === ReactionCollectorUpgradeItemReaction.name
-				&& (reaction.data as ReactionCollectorUpgradeItemReaction).slot === slot
-				&& (reaction.data as ReactionCollectorUpgradeItemReaction).itemCategory === itemCategory
-		);
-
-		if (reactionIndex !== -1) {
-			DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, selectInteraction, reactionIndex);
-		}
-
-		return true;
+	public getSubMenuTitle(ctx: HomeFeatureHandlerContext, pseudo: string): string {
+		return i18n.t("commands:report.city.homes.upgradeStation.title", {
+			lng: ctx.lng,
+			pseudo
+		});
 	}
 }

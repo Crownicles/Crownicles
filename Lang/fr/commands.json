@@ -972,6 +972,16 @@
         "notEnoughMoney": "Vous n'avez pas assez d'argent pour cette transaction !",
         "refuseAndLeaveNotary": "Refuser et quitter le bureau du notaire",
         "leaveNotary": "Quitter le bureau du notaire",
+        "featurePlaceholder": "Choisissez une fonctionnalité de votre maison",
+        "backToHome": "Retour au menu principal",
+        "upgradeStation": {
+          "menuLabel": "Établi d'équipement",
+          "menuDescription": "Améliorez vos armes et armures",
+          "available": "{emote:city.homeUpgrades.upgradeEquipment} Votre établi d'équipement vous permet d'améliorer vos armes et armures.",
+          "noItems": "Vous n'avez aucun équipement améliorable pour le moment.",
+          "selectItem": "Sélectionnez un équipement à améliorer",
+          "title": "{{pseudo}}, établi d'équipement"
+        },
         "upgradeChanges": {
           "betterBed": "Un meilleur lit pour un sommeil plus réparateur {emote:city.homeUpgrades.bed}",
           "chest": "Un coffre pour y ranger vos affaires {emote:city.homeUpgrades.chest}",
