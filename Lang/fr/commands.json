@@ -982,8 +982,8 @@
           "itemDetails": "{{itemDisplay}}\n\n**Amélioration :** +{{currentLevel}} → +{{nextLevel}}\n\n**Matériaux nécessaires :**\n{{materials}}",
           "confirmUpgrade": "Améliorer",
           "backToItems": "Retour à la liste",
-          "levelLimitation": "{emote:collectors.info} Les équipements de niveau +{{maxLevel}} ou plus ne peuvent être améliorés qu'au forgeron.",
-          "rarityLimitation": "{emote:collectors.info} Votre établi ne peut améliorer que les équipements jusqu'à la rareté $t(items:rarities.{{maxRarity}})."
+          "levelLimitation": "{emote:messages.info} Les équipements de niveau +{{maxLevel}} ou plus ne peuvent être améliorés qu'au forgeron.",
+          "rarityLimitation": "{emote:messages.info} Votre établi ne peut améliorer que les équipements jusqu'à la rareté $t(items:rarities.{{maxRarity}})."
         },
         "upgradeChanges": {
           "betterBed": "Un meilleur lit pour un sommeil plus réparateur {emote:city.homeUpgrades.bed}",
