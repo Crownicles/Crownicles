@@ -939,8 +939,6 @@
         "homeTitle": "{{pseudo}}, bienvenue chez vous !",
         "homeIntroduction": "{emote:city.home.1} Vous entrez dans votre maison. Le calme et la sérénité de ce lieu vous apaisent.",
         "homePlaceholder": "Choisissez une action",
-        "upgradeStationAvailable": "{emote:city.homeUpgrades.upgradeEquipment} Votre établi d'équipement vous permet d'améliorer vos armes et armures. Sélectionnez l'équipement que vous souhaitez améliorer.",
-        "upgradeStationNoItems": "{emote:city.homeUpgrades.upgradeEquipment} Votre établi d'équipement est prêt, mais vous n'avez aucun équipement améliorable pour le moment.",
         "leaveHome": "Quitter votre maison",
         "manageHome": "Aller voir le notaire",
         "manageHomeDescriptionNew": "Allez voir le notaire pour acheter une maison.",
@@ -985,7 +983,7 @@
           "confirmUpgrade": "Améliorer",
           "backToItems": "Retour à la liste",
           "levelLimitation": "{emote:collectors.info} Les équipements de niveau +{{maxLevel}} ou plus ne peuvent être améliorés qu'au forgeron.",
-          "rarityLimitation": "{emote:collectors.info} Votre établi ne peut améliorer que les équipements jusqu'à la rareité $t(items:rarities.{{maxRarity}})."
+          "rarityLimitation": "{emote:collectors.info} Votre établi ne peut améliorer que les équipements jusqu'à la rareté $t(items:rarities.{{maxRarity}})."
         },
         "upgradeChanges": {
           "betterBed": "Un meilleur lit pour un sommeil plus réparateur {emote:city.homeUpgrades.bed}",
