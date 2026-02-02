@@ -50,37 +50,24 @@ class HomeFeatureRegistry {
 	public getHandlerByMenuValue(ctx: HomeFeatureHandlerContext, value: string): HomeFeatureHandler | undefined {
 		return this.handlers.find(handler => {
 			const option = handler.getMenuOption(ctx);
-			return option?.value === value;
+			return option && option.value === value;
 		});
 	}
 
 	/**
-	 * Build combined description from all available handlers
+	 * Get all menu options for available features
 	 */
-	public buildDescription(ctx: HomeFeatureHandlerContext): string[] {
-		const lines: string[] = [];
-
-		for (const handler of this.getAvailableHandlers(ctx)) {
-			lines.push(...handler.getDescriptionLines(ctx));
-		}
-
-		return lines;
+	public getMenuOptions(ctx: HomeFeatureHandlerContext): HomeFeatureMenuOption[] {
+		return this.handlers
+			.map(handler => handler.getMenuOption(ctx))
+			.filter((option): option is HomeFeatureMenuOption => option !== null);
 	}
 
 	/**
-	 * Get all menu options for the main home menu
+	 * Get all description lines from available features
 	 */
-	public getMenuOptions(ctx: HomeFeatureHandlerContext): HomeFeatureMenuOption[] {
-		const options: HomeFeatureMenuOption[] = [];
-
-		for (const handler of this.handlers) {
-			const option = handler.getMenuOption(ctx);
-			if (option) {
-				options.push(option);
-			}
-		}
-
-		return options;
+	public getDescriptionLines(ctx: HomeFeatureHandlerContext): string[] {
+		return this.handlers.flatMap(handler => handler.getDescriptionLines(ctx));
 	}
 
 	/**

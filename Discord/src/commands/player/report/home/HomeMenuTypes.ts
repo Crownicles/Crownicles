@@ -1,5 +1,5 @@
 import {
-	ButtonInteraction, StringSelectMenuBuilder, StringSelectMenuInteraction
+	ButtonInteraction, StringSelectMenuBuilder, StringSelectMenuInteraction, User
 } from "discord.js";
 import { Language } from "../../../../../../Lib/src/Language";
 import { ReactionCollectorCityData } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorCity";
@@ -20,6 +20,9 @@ export interface HomeFeatureHandlerContext {
 	packet: ReactionCollectorCreationPacket;
 	homeData: NonNullable<ReactionCollectorCityData["home"]["owned"]>;
 	lng: Language;
+	user: User;
+	pseudo: string;
+	collectorTime: number;
 }
 
 /**

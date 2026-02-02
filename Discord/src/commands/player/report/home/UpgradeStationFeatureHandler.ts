@@ -1,5 +1,5 @@
 import {
-	ActionRowBuilder, ButtonBuilder, ButtonStyle, StringSelectMenuBuilder, StringSelectMenuInteraction
+	ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, StringSelectMenuBuilder, StringSelectMenuInteraction
 } from "discord.js";
 import {
 	ComponentInteraction,
@@ -14,6 +14,8 @@ import { DiscordCollectorUtils } from "../../../../utils/DiscordCollectorUtils";
 import {
 	ItemConstants, ItemRarity
 } from "../../../../../../Lib/src/constants/ItemConstants";
+import { CrowniclesEmbed } from "../../../../messages/CrowniclesEmbed";
+import { sendInteractionNotForYou } from "../../../../utils/ErrorUtils";
 
 /**
  * Handler for the upgrade station feature in the home.
@@ -29,6 +31,8 @@ export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 	private static readonly CONFIRM_PREFIX = "CONFIRM_UPGRADE_";
 
 	private static readonly BACK_TO_ITEMS = "BACK_TO_ITEMS";
+
+	private static readonly ITEM_DETAIL_MENU_PREFIX = "UPGRADE_ITEM_DETAIL_";
 
 	public isAvailable(ctx: HomeFeatureHandlerContext): boolean {
 		// Available if the home has an upgrade station (upgradeItemMaximumRarity > BASIC means it has one)
@@ -124,13 +128,15 @@ export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 		}
 
 		const item = upgradeStation.upgradeableItems[itemIndex];
+		const menuId = `${UpgradeStationFeatureHandler.ITEM_DETAIL_MENU_PREFIX}${itemIndex}`;
 
 		// Build material lines for description
 		const materialLines = item.requiredMaterials.map(mat => {
-			const icon = CrowniclesIcons.materials[mat.materialId] ?? "❓";
+			const icon = CrowniclesIcons.materials[mat.materialId] ?? CrowniclesIcons.collectors.question;
+			const materialName = i18n.t(`models:materials.${mat.materialId}`, { lng: ctx.lng });
 			const hasEnough = mat.playerQuantity >= mat.quantity;
-			const statusIcon = hasEnough ? "✅" : "❌";
-			return `${statusIcon} ${icon} ${mat.playerQuantity}/${mat.quantity}`;
+			const statusIcon = hasEnough ? CrowniclesIcons.collectors.accept : CrowniclesIcons.collectors.refuse;
+			return `${statusIcon} ${icon} **${materialName}** : ${mat.playerQuantity}/${mat.quantity}`;
 		});
 
 		// Get item display
@@ -161,12 +167,45 @@ export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 			.setStyle(ButtonStyle.Secondary)
 			.setEmoji(CrowniclesIcons.collectors.back);
 
-		// Update the menu with item details view
-		await componentInteraction.deferUpdate();
-		await nestedMenus.updateCurrentMenu({
-			description,
-			components: [new ActionRowBuilder<ButtonBuilder>().addComponents(backButton, confirmButton)]
+		// Create a new menu for this item's details
+		nestedMenus.registerMenu(menuId, {
+			embed: new CrowniclesEmbed()
+				.formatAuthor(
+					i18n.t("commands:report.city.homes.upgradeStation.title", {
+						lng: ctx.lng, pseudo: ctx.pseudo
+					}),
+					ctx.user
+				)
+				.setDescription(description),
+			components: [new ActionRowBuilder<ButtonBuilder>().addComponents(backButton, confirmButton)],
+			createCollector: (menus, message) => {
+				const buttonCollector = message.createMessageComponentCollector({ time: ctx.collectorTime });
+
+				buttonCollector.on("collect", async (buttonInteraction: ButtonInteraction) => {
+					if (buttonInteraction.user.id !== ctx.user.id) {
+						await sendInteractionNotForYou(buttonInteraction.user, buttonInteraction, ctx.lng);
+						return;
+					}
+
+					const buttonId = buttonInteraction.customId;
+
+					if (buttonId === UpgradeStationFeatureHandler.BACK_TO_ITEMS) {
+						await buttonInteraction.deferUpdate();
+						await menus.changeMenu("HOME_UPGRADE_STATION");
+						return;
+					}
+
+					if (buttonId.startsWith(UpgradeStationFeatureHandler.CONFIRM_PREFIX)) {
+						await this.confirmUpgrade(ctx, itemIndex, buttonInteraction);
+					}
+				});
+
+				return buttonCollector;
+			}
 		});
+
+		await componentInteraction.deferUpdate();
+		await nestedMenus.changeMenu(menuId);
 	}
 
 	/**
@@ -216,9 +255,8 @@ export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 			const parts = itemDisplay.split(" | ");
 			const label = parts[0].split("**")[1];
 
-			// Simple description: level transition with status indicator
-			const statusIcon = item.canUpgrade ? "✅" : "❌";
-			const rawDescription = `${statusIcon} +${item.details.itemLevel ?? 0} → +${item.nextLevel}`;
+			// Simple description: level transition only
+			const rawDescription = `+${item.details.itemLevel ?? 0} → +${item.nextLevel}`;
 
 			const option: {
 				label: string;
@@ -260,8 +298,8 @@ export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 			maxLevel: maxLevelAtHome
 		}));
 
-		// Explain rarity limitation based on home level
-		if (upgradeStation) {
+		// Explain rarity limitation based on home level (only if not max rarity)
+		if (upgradeStation && upgradeStation.maxUpgradeableRarity < ItemRarity.MYTHICAL) {
 			const maxRarity = upgradeStation.maxUpgradeableRarity;
 			lines.push(i18n.t("commands:report.city.homes.upgradeStation.rarityLimitation", {
 				lng: ctx.lng,
