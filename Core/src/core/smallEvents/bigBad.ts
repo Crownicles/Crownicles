@@ -30,7 +30,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 		switch (outRand) {
 			case SmallEventBigBadKind.LIFE_LOSS:
 				lifeLoss = RandomUtils.rangedInt(SmallEventConstants.BIG_BAD.HEALTH);
-				await player.addHealthSimple({
+				await player.addHealth({
 					amount: -lifeLoss,
 					response,
 					reason: NumberChangeReason.SMALL_EVENT

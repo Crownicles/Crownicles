@@ -15,7 +15,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 	},
 	executeSmallEvent: async (response, player): Promise<void> => {
 		const healthWon = RandomUtils.rangedInt(SmallEventConstants.HEALTH);
-		await player.addHealthSimple({
+		await player.addHealth({
 			amount: healthWon,
 			response,
 			reason: NumberChangeReason.SMALL_EVENT

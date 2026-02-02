@@ -767,7 +767,12 @@ export async function consumePotion(response: CrowniclesPacket[], potion: Potion
 
 	switch (potion.nature) {
 		case ItemNature.HEALTH:
-			await player.addHealth(potion.power, response, NumberChangeReason.DRINK, playerActiveObjects);
+			await player.addHealth({
+				amount: potion.power,
+				response,
+				reason: NumberChangeReason.DRINK,
+				playerActiveObjects
+			});
 			break;
 		case ItemNature.ENERGY:
 			player.addEnergy(potion.power, NumberChangeReason.DRINK, playerActiveObjects);

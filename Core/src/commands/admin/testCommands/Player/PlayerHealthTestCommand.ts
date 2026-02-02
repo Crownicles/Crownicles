@@ -19,7 +19,7 @@ const playerHealthTestCommand: ExecuteTestCommandLike = async (player, args, res
 	if (health < 0) {
 		throw new Error("Erreur vie : vie donnée inférieure à 0 interdit !");
 	}
-	await player.addHealthSimple({
+	await player.addHealth({
 		amount: parseInt(args[0], 10) - player.getHealthValue(),
 		response,
 		reason: NumberChangeReason.TEST,

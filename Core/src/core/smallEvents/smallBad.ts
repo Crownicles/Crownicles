@@ -43,7 +43,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 		// Apply the effects after the small event packet is sent
 		switch (packet.issue) {
 			case SmallEventBadIssue.HEALTH:
-				await player.addHealthSimple({
+				await player.addHealth({
 					amount: -packet.amount,
 					response,
 					reason: NumberChangeReason.SMALL_EVENT

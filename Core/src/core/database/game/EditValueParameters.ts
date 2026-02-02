@@ -12,6 +12,17 @@ export type MissionHealthParameter = {
 	overHealCountsForMission: boolean;
 };
 
+/**
+ * Import the PlayerActiveObjects type lazily to avoid circular dependencies
+ */
+type PlayerActiveObjectsType = import("./models/PlayerActiveObjects").PlayerActiveObjects;
+
 export type HealthEditValueParameters = EditValueParameters & {
 	missionHealthParameter?: MissionHealthParameter;
+
+	/**
+	 * When provided, enchantments will be considered for max health calculation.
+	 * If not provided, base max health is used.
+	 */
+	playerActiveObjects?: PlayerActiveObjectsType;
 };

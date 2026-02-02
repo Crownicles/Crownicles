@@ -41,10 +41,8 @@ describe("EditValueParameters consistency", () => {
 			expect(playerCode).toMatch(/addExperience\(parameters:\s*EditValueParameters,/);
 		});
 
-		// Note: addHealth uses positional parameters for performance/enchantment integration
-		// The simplified version addHealthSimple uses HealthEditValueParameters
-		it("addHealthSimple should use HealthEditValueParameters", () => {
-			expect(playerCode).toMatch(/addHealthSimple\(parameters:\s*HealthEditValueParameters\)/);
+		it("addHealth should use HealthEditValueParameters", () => {
+			expect(playerCode).toMatch(/addHealth\(parameters:\s*HealthEditValueParameters\)/);
 		});
 
 		// Note: addRage uses positional parameters (rage: number, reason, response) for consistency

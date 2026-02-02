@@ -241,7 +241,12 @@ async function handleInnRoomReaction(
 		return;
 	}
 
-	await player.addHealth(reaction.room.health, response, NumberChangeReason.INN_ROOM, await InventorySlots.getPlayerActiveObjects(player.id));
+	await player.addHealth({
+		amount: reaction.room.health,
+		response,
+		reason: NumberChangeReason.INN_ROOM,
+		playerActiveObjects: await InventorySlots.getPlayerActiveObjects(player.id)
+	});
 	await player.spendMoney({
 		response,
 		amount: reaction.room.price,

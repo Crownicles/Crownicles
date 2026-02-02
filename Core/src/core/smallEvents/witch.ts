@@ -96,7 +96,7 @@ async function applyOutcome(outcome: WitchActionOutcomeType, selectedEvent: Witc
 		await selectedEvent.giveEffect(player);
 	}
 	if (outcome === WitchActionOutcomeType.LIFE_LOSS) {
-		await player.addHealthSimple({
+		await player.addHealth({
 			amount: -SmallEventConstants.WITCH.BASE_LIFE_POINTS_REMOVED_AMOUNT,
 			response,
 			reason: NumberChangeReason.SMALL_EVENT

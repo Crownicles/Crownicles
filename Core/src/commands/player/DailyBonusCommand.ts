@@ -88,7 +88,7 @@ async function activateDailyItem(player: Player, activeObject: ObjectItem, inven
 			player.addEnergy(activeObject.power, NumberChangeReason.DAILY, playerActiveObjects);
 			break;
 		case ItemNature.HEALTH:
-			await player.addHealthSimple({
+			await player.addHealth({
 				amount: activeObject.power,
 				response,
 				reason: NumberChangeReason.DAILY

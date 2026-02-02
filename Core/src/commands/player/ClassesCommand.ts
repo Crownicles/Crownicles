@@ -53,7 +53,7 @@ function getEndCallback(player: Player) {
 
 		player.class = selectedClass;
 		const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
-		await player.addHealthSimple({
+		await player.addHealth({
 			amount: Math.ceil(
 				player.getHealthValue() / oldClass.getMaxHealthValue(level) * newClass.getMaxHealthValue(level)
 			) - player.getHealthValue(),

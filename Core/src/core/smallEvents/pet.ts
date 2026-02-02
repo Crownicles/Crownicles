@@ -149,7 +149,7 @@ async function managePickedInteraction(packet: SmallEventPetPacket, response: Cr
 				break;
 			}
 			packet.amount = RandomUtils.rangedInt(SmallEventConstants.PET.HEALTH);
-			await player.addHealthSimple({
+			await player.addHealth({
 				amount: packet.amount,
 				response,
 				reason: NumberChangeReason.SMALL_EVENT
@@ -171,7 +171,7 @@ async function managePickedInteraction(packet: SmallEventPetPacket, response: Cr
 
 		case PetConstants.PET_INTERACTIONS_NAMES.LOSE_HEALTH:
 			packet.amount = RandomUtils.rangedInt(SmallEventConstants.PET.HEALTH);
-			await player.addHealthSimple({
+			await player.addHealth({
 				amount: -packet.amount,
 				response,
 				reason: NumberChangeReason.SMALL_EVENT

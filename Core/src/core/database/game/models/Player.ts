@@ -88,6 +88,12 @@ type MissionHealthParameter = {
 
 export type HealthEditValueParameters = EditValueParameters & {
 	missionHealthParameter?: MissionHealthParameter;
+
+	/**
+	 * When provided, enchantments will be considered for max health calculation.
+	 * If not provided, base max health is used.
+	 */
+	playerActiveObjects?: PlayerActiveObjects;
 };
 
 type ressourcesLostOnPveFaint = {
@@ -429,9 +435,15 @@ export class Player extends Model {
 		});
 
 		if (healthRestored) {
-			await this.addHealth(this.getMaxHealth(playerActiveObjects) - this.getHealth(playerActiveObjects), response, NumberChangeReason.LEVEL_UP, playerActiveObjects, {
-				shouldPokeMission: true,
-				overHealCountsForMission: false
+			await this.addHealth({
+				amount: this.getMaxHealth(playerActiveObjects) - this.getHealth(playerActiveObjects),
+				response,
+				reason: NumberChangeReason.LEVEL_UP,
+				playerActiveObjects,
+				missionHealthParameter: {
+					shouldPokeMission: true,
+					overHealCountsForMission: false
+				}
 			});
 		}
 
@@ -465,7 +477,7 @@ export class Player extends Model {
 		});
 
 		if (healthRestored) {
-			await this.addHealthSimple({
+			await this.addHealth({
 				amount: this.getMaxHealthBase() - this.health,
 				response,
 				reason: NumberChangeReason.LEVEL_UP,
@@ -960,40 +972,32 @@ export class Player extends Model {
 
 	/**
 	 * Add health to the player
-	 * @param health
-	 * @param response
-	 * @param reason
-	 * @param playerActiveObjects
-	 * @param missionHealthParameter
+	 * @param parameters - Object containing amount, response, reason, optional missionHealthParameter and optional playerActiveObjects
+	 * When playerActiveObjects is provided, enchantments will be considered for max health calculation.
 	 */
-	public async addHealth(health: number, response: CrowniclesPacket[], reason: NumberChangeReason, playerActiveObjects: PlayerActiveObjects, missionHealthParameter: MissionHealthParameter = {
-		overHealCountsForMission: true,
-		shouldPokeMission: true
-	}): Promise<void> {
-		if (this.health > this.getMaxHealth(playerActiveObjects)) {
-			this.health = this.getMaxHealth(playerActiveObjects);
-		}
-		await this.setHealth(this.health + health, response, playerActiveObjects, missionHealthParameter);
-		crowniclesInstance?.logsDatabase.logHealthChange(this.keycloakId, this.health, reason)
-			.then();
-	}
-
-	/**
-	 * Simplified addHealth method without enchantment support.
-	 * Use addHealth() with playerActiveObjects when enchantments should be considered.
-	 * This method uses the base max health (without enchantments).
-	 * @param parameters - Object containing amount, response, reason, and optional missionHealthParameter
-	 */
-	public async addHealthSimple(parameters: HealthEditValueParameters): Promise<boolean> {
-		const maxHealth = this.getMaxHealthBase();
-		if (this.health > maxHealth) {
-			this.health = maxHealth;
-		}
+	public async addHealth(parameters: HealthEditValueParameters): Promise<boolean> {
 		const missionParam: MissionHealthParameter = parameters.missionHealthParameter ?? {
 			overHealCountsForMission: true,
 			shouldPokeMission: true
 		};
-		await this.setHealthSimple(this.health + parameters.amount, parameters.response, missionParam);
+
+		if (parameters.playerActiveObjects) {
+			// With enchantments support
+			const maxHealth = this.getMaxHealth(parameters.playerActiveObjects);
+			if (this.health > maxHealth) {
+				this.health = maxHealth;
+			}
+			await this.setHealth(this.health + parameters.amount, parameters.response, parameters.playerActiveObjects, missionParam);
+		}
+		else {
+			// Without enchantments - use base max health
+			const maxHealth = this.getMaxHealthBase();
+			if (this.health > maxHealth) {
+				this.health = maxHealth;
+			}
+			await this.setHealthSimple(this.health + parameters.amount, parameters.response, missionParam);
+		}
+
 		crowniclesInstance?.logsDatabase.logHealthChange(this.keycloakId, this.health, parameters.reason)
 			.then();
 		return this.health > 0;

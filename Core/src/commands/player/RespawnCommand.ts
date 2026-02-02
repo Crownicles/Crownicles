@@ -35,7 +35,7 @@ export default class RespawnCommand {
 			return;
 		}
 		const lostScore = Math.round(player.score * RespawnConstants.SCORE_REMOVAL_MULTIPLIER);
-		await player.addHealthSimple({
+		await player.addHealth({
 			amount: player.getMaxHealthBase() - player.getHealthValue(),
 			response,
 			reason: NumberChangeReason.RESPAWN,
