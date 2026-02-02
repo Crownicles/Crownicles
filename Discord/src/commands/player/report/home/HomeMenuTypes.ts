@@ -1,11 +1,16 @@
 import {
-	StringSelectMenuBuilder, StringSelectMenuInteraction
+	ButtonInteraction, StringSelectMenuBuilder, StringSelectMenuInteraction
 } from "discord.js";
 import { Language } from "../../../../../../Lib/src/Language";
 import { ReactionCollectorCityData } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorCity";
 import { CrowniclesNestedMenus } from "../../../../messages/CrowniclesNestedMenus";
 import { PacketContext } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import { ReactionCollectorCreationPacket } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
+
+/**
+ * Union type for component interactions (select menu or button)
+ */
+export type ComponentInteraction = StringSelectMenuInteraction | ButtonInteraction;
 
 /**
  * Data needed by home feature handlers
@@ -71,7 +76,7 @@ export interface HomeFeatureHandler {
 	handleSubMenuSelection(
 		ctx: HomeFeatureHandlerContext,
 		selectedValue: string,
-		selectInteraction: StringSelectMenuInteraction,
+		componentInteraction: ComponentInteraction,
 		nestedMenus: CrowniclesNestedMenus
 	): Promise<boolean>;
 

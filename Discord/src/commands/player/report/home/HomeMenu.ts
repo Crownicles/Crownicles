@@ -1,5 +1,5 @@
 import {
-	ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuInteraction
+	ActionRowBuilder, ButtonInteraction, StringSelectMenuBuilder, StringSelectMenuInteraction
 } from "discord.js";
 import { CrowniclesEmbed } from "../../../../messages/CrowniclesEmbed";
 import i18n from "../../../../translations/i18n";
@@ -50,26 +50,29 @@ function createFeatureSubMenu(
 			.setDescription(handler.getSubMenuDescription(handlerContext)),
 		components: [new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(selectMenu)],
 		createCollector: (nestedMenus, message): CrowniclesNestedMenuCollector => {
-			const selectMenuCollector = message.createMessageComponentCollector({ time: collectorTime });
+			const componentCollector = message.createMessageComponentCollector({ time: collectorTime });
 
-			selectMenuCollector.on("collect", async (selectInteraction: StringSelectMenuInteraction) => {
-				if (selectInteraction.user.id !== interaction.user.id) {
-					await sendInteractionNotForYou(selectInteraction.user, selectInteraction, lng);
+			componentCollector.on("collect", async (componentInteraction: StringSelectMenuInteraction | ButtonInteraction) => {
+				if (componentInteraction.user.id !== interaction.user.id) {
+					await sendInteractionNotForYou(componentInteraction.user, componentInteraction, lng);
 					return;
 				}
 
-				const selectedValue = selectInteraction.values[0];
+				// Get the selected value from either select menu or button
+				const selectedValue = componentInteraction.isStringSelectMenu()
+					? componentInteraction.values[0]
+					: componentInteraction.customId;
 
 				await homeFeatureRegistry.handleSubMenuSelection(
 					handler,
 					handlerContext,
 					selectedValue,
-					selectInteraction,
+					componentInteraction,
 					nestedMenus
 				);
 			});
 
-			return selectMenuCollector;
+			return componentCollector;
 		}
 	};
 }

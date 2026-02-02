@@ -1,7 +1,8 @@
 import {
-	StringSelectMenuBuilder, StringSelectMenuInteraction
+	ActionRowBuilder, ButtonBuilder, ButtonStyle, StringSelectMenuBuilder, StringSelectMenuInteraction
 } from "discord.js";
 import {
+	ComponentInteraction,
 	HomeFeatureHandler, HomeFeatureHandlerContext, HomeFeatureMenuOption
 } from "./HomeMenuTypes";
 import { CrowniclesNestedMenus } from "../../../../messages/CrowniclesNestedMenus";
@@ -10,7 +11,9 @@ import { DisplayUtils } from "../../../../utils/DisplayUtils";
 import { CrowniclesIcons } from "../../../../../../Lib/src/CrowniclesIcons";
 import { ReactionCollectorUpgradeItemReaction } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorCity";
 import { DiscordCollectorUtils } from "../../../../utils/DiscordCollectorUtils";
-import { ItemRarity } from "../../../../../../Lib/src/constants/ItemConstants";
+import {
+	ItemConstants, ItemRarity
+} from "../../../../../../Lib/src/constants/ItemConstants";
 
 /**
  * Handler for the upgrade station feature in the home.
@@ -22,6 +25,10 @@ export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 	private static readonly MENU_VALUE = "HOME_UPGRADE_STATION";
 
 	private static readonly ITEM_PREFIX = "UPGRADE_ITEM_";
+
+	private static readonly CONFIRM_PREFIX = "CONFIRM_UPGRADE_";
+
+	private static readonly BACK_TO_ITEMS = "BACK_TO_ITEMS";
 
 	public isAvailable(ctx: HomeFeatureHandlerContext): boolean {
 		// Available if the home has an upgrade station (upgradeItemMaximumRarity > BASIC means it has one)
@@ -67,48 +74,127 @@ export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 	public async handleSubMenuSelection(
 		ctx: HomeFeatureHandlerContext,
 		selectedValue: string,
-		selectInteraction: StringSelectMenuInteraction,
+		componentInteraction: ComponentInteraction,
 		nestedMenus: CrowniclesNestedMenus
 	): Promise<boolean> {
 		// Handle back to home menu
 		if (selectedValue === "BACK_TO_HOME") {
-			await selectInteraction.deferUpdate();
+			await componentInteraction.deferUpdate();
 			await nestedMenus.changeMenu("HOME_MENU");
 			return true;
 		}
 
-		// Handle item upgrade selection
-		if (!selectedValue.startsWith(UpgradeStationFeatureHandler.ITEM_PREFIX)) {
-			return false;
+		// Handle back to items list from detail view
+		if (selectedValue === UpgradeStationFeatureHandler.BACK_TO_ITEMS) {
+			await componentInteraction.deferUpdate();
+			await nestedMenus.changeMenu("HOME_UPGRADE_STATION");
+			return true;
 		}
 
+		// Handle item selection to show details
+		if (selectedValue.startsWith(UpgradeStationFeatureHandler.ITEM_PREFIX)) {
+			const index = parseInt(selectedValue.replace(UpgradeStationFeatureHandler.ITEM_PREFIX, ""), 10);
+			await this.showItemDetails(ctx, index, componentInteraction, nestedMenus);
+			return true;
+		}
+
+		// Handle upgrade confirmation
+		if (selectedValue.startsWith(UpgradeStationFeatureHandler.CONFIRM_PREFIX)) {
+			const index = parseInt(selectedValue.replace(UpgradeStationFeatureHandler.CONFIRM_PREFIX, ""), 10);
+			await this.confirmUpgrade(ctx, index, componentInteraction);
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Show detailed view for a selected item with material requirements
+	 */
+	private async showItemDetails(
+		ctx: HomeFeatureHandlerContext,
+		itemIndex: number,
+		componentInteraction: ComponentInteraction,
+		nestedMenus: CrowniclesNestedMenus
+	): Promise<void> {
 		const upgradeStation = ctx.homeData.upgradeStation;
-		if (!upgradeStation) {
-			return false;
+		if (!upgradeStation || itemIndex < 0 || itemIndex >= upgradeStation.upgradeableItems.length) {
+			await componentInteraction.deferUpdate();
+			return;
 		}
 
-		await selectInteraction.deferReply();
+		const item = upgradeStation.upgradeableItems[itemIndex];
 
-		const index = parseInt(selectedValue.replace(UpgradeStationFeatureHandler.ITEM_PREFIX, ""), 10);
+		// Build material lines for description
+		const materialLines = item.requiredMaterials.map(mat => {
+			const icon = CrowniclesIcons.materials[mat.materialId] ?? "❓";
+			const hasEnough = mat.playerQuantity >= mat.quantity;
+			const statusIcon = hasEnough ? "✅" : "❌";
+			return `${statusIcon} ${icon} ${mat.playerQuantity}/${mat.quantity}`;
+		});
 
-		if (index < 0 || index >= upgradeStation.upgradeableItems.length) {
-			return true; // Handled but invalid index
+		// Get item display
+		item.details.attack.maxValue = Infinity;
+		item.details.defense.maxValue = Infinity;
+		item.details.speed.maxValue = Infinity;
+		const itemDisplay = DisplayUtils.getItemDisplayWithStats(item.details, ctx.lng);
+
+		// Build description
+		const description = i18n.t("commands:report.city.homes.upgradeStation.itemDetails", {
+			lng: ctx.lng,
+			itemDisplay,
+			currentLevel: item.details.itemLevel ?? 0,
+			nextLevel: item.nextLevel,
+			materials: materialLines.join("\n")
+		});
+
+		// Build buttons
+		const confirmButton = new ButtonBuilder()
+			.setCustomId(`${UpgradeStationFeatureHandler.CONFIRM_PREFIX}${itemIndex}`)
+			.setLabel(i18n.t("commands:report.city.homes.upgradeStation.confirmUpgrade", { lng: ctx.lng }))
+			.setStyle(item.canUpgrade ? ButtonStyle.Success : ButtonStyle.Secondary)
+			.setDisabled(!item.canUpgrade);
+
+		const backButton = new ButtonBuilder()
+			.setCustomId(UpgradeStationFeatureHandler.BACK_TO_ITEMS)
+			.setLabel(i18n.t("commands:report.city.homes.upgradeStation.backToItems", { lng: ctx.lng }))
+			.setStyle(ButtonStyle.Secondary)
+			.setEmoji(CrowniclesIcons.collectors.back);
+
+		// Update the menu with item details view
+		await componentInteraction.deferUpdate();
+		await nestedMenus.updateCurrentMenu({
+			description,
+			components: [new ActionRowBuilder<ButtonBuilder>().addComponents(backButton, confirmButton)]
+		});
+	}
+
+	/**
+	 * Confirm and execute the upgrade
+	 */
+	private async confirmUpgrade(
+		ctx: HomeFeatureHandlerContext,
+		itemIndex: number,
+		componentInteraction: ComponentInteraction
+	): Promise<void> {
+		const upgradeStation = ctx.homeData.upgradeStation;
+		if (!upgradeStation || itemIndex < 0 || itemIndex >= upgradeStation.upgradeableItems.length) {
+			return;
 		}
 
-		const slot = upgradeStation.upgradeableItems[index].slot;
-		const itemCategory = upgradeStation.upgradeableItems[index].category;
+		const item = upgradeStation.upgradeableItems[itemIndex];
+
+		await componentInteraction.deferReply();
 
 		const reactionIndex = ctx.packet.reactions.findIndex(
 			reaction => reaction.type === ReactionCollectorUpgradeItemReaction.name
-				&& (reaction.data as ReactionCollectorUpgradeItemReaction).slot === slot
-				&& (reaction.data as ReactionCollectorUpgradeItemReaction).itemCategory === itemCategory
+				&& (reaction.data as ReactionCollectorUpgradeItemReaction).slot === item.slot
+				&& (reaction.data as ReactionCollectorUpgradeItemReaction).itemCategory === item.category
 		);
 
 		if (reactionIndex !== -1) {
-			DiscordCollectorUtils.sendReaction(ctx.packet, ctx.context, ctx.context.keycloakId!, selectInteraction, reactionIndex);
+			DiscordCollectorUtils.sendReaction(ctx.packet, ctx.context, ctx.context.keycloakId!, componentInteraction, reactionIndex);
 		}
-
-		return true;
 	}
 
 	public addSubMenuOptions(ctx: HomeFeatureHandlerContext, selectMenu: StringSelectMenuBuilder): void {
@@ -130,17 +216,9 @@ export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 			const parts = itemDisplay.split(" | ");
 			const label = parts[0].split("**")[1];
 
-			// Build material requirement string with icons
-			const materialReqs = item.requiredMaterials.map(mat =>
-				`${CrowniclesIcons.materials[mat.materialId] ?? "❓"} ${mat.playerQuantity}/${mat.quantity}`).join(" ");
-
-			// Format: current level → next level | material requirements
-			let rawDescription = `+${item.details.itemLevel} → +${item.nextLevel} | ${materialReqs}`;
-
-			// Mark with ❌ if player can't upgrade (missing materials)
-			if (!item.canUpgrade) {
-				rawDescription = `❌ ${rawDescription}`;
-			}
+			// Simple description: level transition with status indicator
+			const statusIcon = item.canUpgrade ? "✅" : "❌";
+			const rawDescription = `${statusIcon} +${item.details.itemLevel ?? 0} → +${item.nextLevel}`;
 
 			const option: {
 				label: string;
@@ -153,15 +231,9 @@ export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 				emoji: DisplayUtils.getItemIcon({
 					id: item.details.id,
 					category: item.details.itemCategory
-				})
+				}),
+				description: rawDescription
 			};
-
-			// Truncate description if too long (Discord limit: 100 chars)
-			if (rawDescription) {
-				option.description = rawDescription.length > 100
-					? `${rawDescription.slice(0, 99)}…`
-					: rawDescription;
-			}
 
 			selectMenu.addOptions(option);
 		}
@@ -169,12 +241,35 @@ export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 
 	public getSubMenuDescription(ctx: HomeFeatureHandlerContext): string {
 		const upgradeStation = ctx.homeData.upgradeStation;
+		const lines: string[] = [];
 
 		if (!upgradeStation || upgradeStation.upgradeableItems.length === 0) {
-			return i18n.t("commands:report.city.homes.upgradeStation.noItems", { lng: ctx.lng });
+			lines.push(i18n.t("commands:report.city.homes.upgradeStation.noItems", { lng: ctx.lng }));
+		}
+		else {
+			lines.push(i18n.t("commands:report.city.homes.upgradeStation.selectItem", { lng: ctx.lng }));
 		}
 
-		return i18n.t("commands:report.city.homes.upgradeStation.selectItem", { lng: ctx.lng });
+		// Add explanatory text about which items are not shown
+		lines.push("");
+
+		// Explain level limitation
+		const maxLevelAtHome = ItemConstants.MAX_UPGRADE_LEVEL_AT_HOME;
+		lines.push(i18n.t("commands:report.city.homes.upgradeStation.levelLimitation", {
+			lng: ctx.lng,
+			maxLevel: maxLevelAtHome
+		}));
+
+		// Explain rarity limitation based on home level
+		if (upgradeStation) {
+			const maxRarity = upgradeStation.maxUpgradeableRarity;
+			lines.push(i18n.t("commands:report.city.homes.upgradeStation.rarityLimitation", {
+				lng: ctx.lng,
+				maxRarity
+			}));
+		}
+
+		return lines.join("\n");
 	}
 
 	public getSubMenuTitle(ctx: HomeFeatureHandlerContext, pseudo: string): string {

@@ -103,4 +103,34 @@ export class CrowniclesNestedMenus {
 			this._onChangeMenu();
 		}
 	}
+
+	/**
+	 * Update the current menu's embed and/or components without changing menus.
+	 * Does NOT restart the collector - the current collector continues.
+	 */
+	public async updateCurrentMenu(updates: {
+		description?: string;
+		components?: ActionRowBuilder<MessageActionRowComponentBuilder>[];
+	}): Promise<void> {
+		if (!this._message) {
+			throw new Error("Message not sent yet");
+		}
+
+		const newEmbed = this._currentMenu.embed;
+		if (updates.description !== undefined) {
+			newEmbed.setDescription(updates.description);
+		}
+
+		const components = updates.components ?? this._currentMenu.components;
+
+		await this._message.edit({
+			embeds: [newEmbed],
+			components
+		});
+
+		// Update stored components if changed
+		if (updates.components !== undefined) {
+			this._currentMenu.components = updates.components;
+		}
+	}
 }
