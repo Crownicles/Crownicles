@@ -979,8 +979,13 @@
           "menuDescription": "Améliorez vos armes et armures",
           "available": "{emote:city.homeUpgrades.upgradeEquipment} Votre établi d'équipement vous permet d'améliorer vos armes et armures.",
           "noItems": "Vous n'avez aucun équipement améliorable pour le moment.",
-          "selectItem": "Sélectionnez un équipement à améliorer",
-          "title": "{{pseudo}}, établi d'équipement"
+          "selectItem": "Sélectionnez un équipement à améliorer :",
+          "title": "{{pseudo}}, établi d'équipement",
+          "itemDetails": "{{itemDisplay}}\n\n**Amélioration :** +{{currentLevel}} → +{{nextLevel}}\n\n**Matériaux nécessaires :**\n{{materials}}",
+          "confirmUpgrade": "Améliorer",
+          "backToItems": "Retour à la liste",
+          "levelLimitation": "ℹ️ Les équipements de niveau +{{maxLevel}} ou plus ne peuvent être améliorés qu'au forgeron.",
+          "rarityLimitation": "ℹ️ Votre établi ne peut améliorer que les équipements jusqu'à la rareté $t(items:rarities.{{maxRarity}})."
         },
         "upgradeChanges": {
           "betterBed": "Un meilleur lit pour un sommeil plus réparateur {emote:city.homeUpgrades.bed}",

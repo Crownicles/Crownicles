@@ -1,4 +1,5 @@
 import {
+	ComponentInteraction,
 	HomeFeatureHandler, HomeFeatureHandlerContext, HomeFeatureMenuOption
 } from "./HomeMenuTypes";
 import { UpgradeStationFeatureHandler } from "./UpgradeStationFeatureHandler";
@@ -115,10 +116,10 @@ class HomeFeatureRegistry {
 		handler: HomeFeatureHandler,
 		ctx: HomeFeatureHandlerContext,
 		selectedValue: string,
-		selectInteraction: StringSelectMenuInteraction,
+		componentInteraction: ComponentInteraction,
 		nestedMenus: CrowniclesNestedMenus
 	): Promise<boolean> {
-		return handler.handleSubMenuSelection(ctx, selectedValue, selectInteraction, nestedMenus);
+		return handler.handleSubMenuSelection(ctx, selectedValue, componentInteraction, nestedMenus);
 	}
 }
 
