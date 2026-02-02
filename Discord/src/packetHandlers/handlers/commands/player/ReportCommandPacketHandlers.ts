@@ -21,6 +21,9 @@ import {
 	CommandReportStayInCity,
 	CommandReportTravelSummaryRes,
 	CommandReportUpgradeHomeRes,
+	CommandReportUpgradeItemMaxLevelRes,
+	CommandReportUpgradeItemMissingMaterialsRes,
+	CommandReportUpgradeItemRes,
 	CommandReportUseTokensAcceptPacketRes,
 	CommandReportUseTokensRefusePacketRes
 } from "../../../../../../Lib/src/packets/commands/CommandReportPacket";
@@ -38,6 +41,9 @@ import {
 	handleItemEnchanted,
 	handleMoveHome,
 	handleUpgradeHome,
+	handleUpgradeItem,
+	handleUpgradeItemMaxLevel,
+	handleUpgradeItemMissingMaterials,
 	handleUseTokensAccept,
 	handleUseTokensRefuse,
 	refusePveFight,
@@ -168,5 +174,20 @@ export default class ReportCommandPacketHandlers {
 	@packetHandler(CommandReportBuyHealCannotHealOccupiedPacketRes)
 	async reportBuyHealCannotHealOccupiedRes(context: PacketContext, _packet: CommandReportBuyHealCannotHealOccupiedPacketRes): Promise<void> {
 		await handleBuyHealCannotHealOccupied(context);
+	}
+
+	@packetHandler(CommandReportUpgradeItemRes)
+	async reportUpgradeItemRes(context: PacketContext, packet: CommandReportUpgradeItemRes): Promise<void> {
+		await handleUpgradeItem(packet, context);
+	}
+
+	@packetHandler(CommandReportUpgradeItemMissingMaterialsRes)
+	async reportUpgradeItemMissingMaterialsRes(context: PacketContext, _packet: CommandReportUpgradeItemMissingMaterialsRes): Promise<void> {
+		await handleUpgradeItemMissingMaterials(context);
+	}
+
+	@packetHandler(CommandReportUpgradeItemMaxLevelRes)
+	async reportUpgradeItemMaxLevelRes(context: PacketContext, _packet: CommandReportUpgradeItemMaxLevelRes): Promise<void> {
+		await handleUpgradeItemMaxLevel(context);
 	}
 }

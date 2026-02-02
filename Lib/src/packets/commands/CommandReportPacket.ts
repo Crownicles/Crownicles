@@ -225,3 +225,16 @@ export class CommandReportUpgradeHomeRes extends CrowniclesPacket {
 export class CommandReportMoveHomeRes extends CrowniclesPacket {
 	cost!: number;
 }
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportUpgradeItemRes extends CrowniclesPacket {
+	itemCategory!: number;
+
+	newItemLevel!: number;
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportUpgradeItemMissingMaterialsRes extends CrowniclesPacket {}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportUpgradeItemMaxLevelRes extends CrowniclesPacket {}

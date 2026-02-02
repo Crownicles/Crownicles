@@ -18,6 +18,7 @@ import {
 	CommandReportSleepRoomRes,
 	CommandReportTravelSummaryRes,
 	CommandReportUpgradeHomeRes,
+	CommandReportUpgradeItemRes,
 	CommandReportUseTokensAcceptPacketRes
 } from "../../../../Lib/src/packets/commands/CommandReportPacket";
 import { ReactionCollectorCreationPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
@@ -933,6 +934,69 @@ export async function createUseTokensCollector(context: PacketContext, packet: R
 			count: data.cost,
 			playerTokens: data.playerTokens
 		}
+	});
+}
+
+export async function handleUpgradeItem(packet: CommandReportUpgradeItemRes, context: PacketContext): Promise<void> {
+	const interaction = MessagesUtils.getCurrentInteraction(context);
+	if (!interaction) {
+		return;
+	}
+
+	const lng = context.discord!.language;
+
+	const embed = new CrowniclesEmbed()
+		.formatAuthor(i18n.t("commands:report.city.homes.upgradeItemTitle", {
+			lng,
+			pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
+		}), interaction.user)
+		.setDescription(i18n.t("commands:report.city.homes.upgradeItemDescription", {
+			lng,
+			newLevel: packet.newItemLevel
+		}));
+
+	await interaction.editReply({
+		embeds: [embed]
+	});
+}
+
+export async function handleUpgradeItemMissingMaterials(context: PacketContext): Promise<void> {
+	const interaction = MessagesUtils.getCurrentInteraction(context);
+	if (!interaction) {
+		return;
+	}
+
+	const lng = context.discord!.language;
+
+	const embed = new CrowniclesEmbed()
+		.formatAuthor(i18n.t("commands:report.city.homes.upgradeItemMissingMaterialsTitle", {
+			lng,
+			pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
+		}), interaction.user)
+		.setDescription(i18n.t("commands:report.city.homes.upgradeItemMissingMaterialsDescription", { lng }));
+
+	await interaction.editReply({
+		embeds: [embed]
+	});
+}
+
+export async function handleUpgradeItemMaxLevel(context: PacketContext): Promise<void> {
+	const interaction = MessagesUtils.getCurrentInteraction(context);
+	if (!interaction) {
+		return;
+	}
+
+	const lng = context.discord!.language;
+
+	const embed = new CrowniclesEmbed()
+		.formatAuthor(i18n.t("commands:report.city.homes.upgradeItemMaxLevelTitle", {
+			lng,
+			pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
+		}), interaction.user)
+		.setDescription(i18n.t("commands:report.city.homes.upgradeItemMaxLevelDescription", { lng }));
+
+	await interaction.editReply({
+		embeds: [embed]
 	});
 }
 

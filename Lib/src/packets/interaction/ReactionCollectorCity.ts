@@ -6,7 +6,9 @@ import {
 	ReactionCollectorRefuseReaction
 } from "./ReactionCollectorPacket";
 import { MainItemDetails } from "../../types/MainItemDetails";
-import { ItemCategory } from "../../constants/ItemConstants";
+import {
+	ItemCategory, ItemRarity
+} from "../../constants/ItemConstants";
 import { HomeFeatures } from "../../types/HomeFeatures";
 
 export class ReactionCollectorCityData extends ReactionCollectorData {
@@ -64,6 +66,22 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 	home!: {
 		owned?: {
 			level: number;
+			features: HomeFeatures;
+			upgradeStation?: {
+				upgradeableItems: {
+					slot: number;
+					category: ItemCategory;
+					details: MainItemDetails;
+					nextLevel: number;
+					requiredMaterials: {
+						materialId: number;
+						quantity: number;
+						playerQuantity: number;
+					}[];
+					canUpgrade: boolean;
+				}[];
+				maxUpgradeableRarity: ItemRarity;
+			};
 		};
 		manage?: {
 			newPrice?: number;
@@ -116,6 +134,14 @@ export class ReactionCollectorCityUpgradeHomeReaction extends ReactionCollectorR
 
 export class ReactionCollectorCityMoveHomeReaction extends ReactionCollectorReaction {}
 
+export class ReactionCollectorHomeMenuReaction extends ReactionCollectorReaction {}
+
+export class ReactionCollectorUpgradeItemReaction extends ReactionCollectorReaction {
+	slot!: number;
+
+	itemCategory!: ItemCategory;
+}
+
 export class ReactionCollectorCity extends ReactionCollector {
 	private readonly data!: ReactionCollectorCityData;
 
@@ -158,6 +184,16 @@ export class ReactionCollectorCity extends ReactionCollector {
 					? [this.buildReaction(ReactionCollectorCityMoveHomeReaction, {})]
 					: [];
 
+		const homeMenuReaction = this.data.home.owned
+			? [this.buildReaction(ReactionCollectorHomeMenuReaction, {})]
+			: [];
+
+		const upgradeItemReactions = this.data.home.owned?.upgradeStation?.upgradeableItems.map(item =>
+			this.buildReaction(ReactionCollectorUpgradeItemReaction, {
+				slot: item.slot,
+				itemCategory: item.category
+			})) || [];
+
 		return {
 			id,
 			endTime,
@@ -168,7 +204,9 @@ export class ReactionCollectorCity extends ReactionCollector {
 				...roomsReactions,
 				...enchantReactions,
 				...shopReactions,
-				...homeReaction
+				...homeReaction,
+				...homeMenuReaction,
+				...upgradeItemReactions
 			],
 			data: this.buildData(ReactionCollectorCityData, {
 				...this.data

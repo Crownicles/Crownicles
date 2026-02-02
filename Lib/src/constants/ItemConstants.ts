@@ -131,6 +131,12 @@ export abstract class ItemConstants {
 
 	static MAX_UPGRADE_LEVEL = 5;
 
+	/**
+	 * Maximum level that can be upgraded at home (levels 0-1 can be upgraded to 1-2)
+	 * Higher levels require the blacksmith
+	 */
+	static MAX_UPGRADE_LEVEL_AT_HOME = 2;
+
 	static readonly UPGRADE_MATERIALS_PER_ITEM_RARITY_AND_LEVEL: {
 		[rarity in ItemRarity]: {
 			1: {

@@ -24,6 +24,9 @@ import {
 	CommandReportStayInCity,
 	CommandReportTravelSummaryRes,
 	CommandReportUpgradeHomeRes,
+	CommandReportUpgradeItemMaxLevelRes,
+	CommandReportUpgradeItemMissingMaterialsRes,
+	CommandReportUpgradeItemRes,
 	CommandReportUseTokensPacketReq
 } from "../../../../Lib/src/packets/commands/CommandReportPacket";
 import {
@@ -99,8 +102,10 @@ import {
 	ReactionCollectorCityUpgradeHomeReaction,
 	ReactionCollectorEnchantReaction,
 	ReactionCollectorExitCityReaction,
+	ReactionCollectorHomeMenuReaction,
 	ReactionCollectorInnMealReaction,
-	ReactionCollectorInnRoomReaction
+	ReactionCollectorInnRoomReaction,
+	ReactionCollectorUpgradeItemReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorCity";
 import { RequirementEffectPacket } from "../../../../Lib/src/packets/commands/requirements/RequirementEffectPacket";
 import { InventorySlots } from "../../core/database/game/models/InventorySlot";
@@ -122,6 +127,10 @@ import {
 import { Homes } from "../../core/database/game/models/Home";
 import { HomeLevel } from "../../../../Lib/src/types/HomeLevel";
 import { PostFightPetLoveOutcomes } from "../../../../Lib/src/constants/PetConstants";
+import { Materials } from "../../core/database/game/models/Material";
+import { ItemConstants } from "../../../../Lib/src/constants/ItemConstants";
+import { WeaponDataController } from "../../data/Weapon";
+import { ArmorDataController } from "../../data/Armor";
 import {
 	createBuyHealCollector,
 	createUseTokensCollector,
@@ -480,6 +489,72 @@ async function handleMoveHomeReaction(player: Player, city: City, data: Reaction
 	}));
 }
 
+async function handleUpgradeItemReaction(
+	player: Player,
+	reaction: ReactionCollectorUpgradeItemReaction,
+	data: ReactionCollectorCityData,
+	response: CrowniclesPacket[]
+): Promise<void> {
+	await player.reload();
+
+	// Find the item in the upgrade station data
+	const upgradeStation = data.home.owned?.upgradeStation;
+	if (!upgradeStation) {
+		CrowniclesLogger.error(`Player ${player.keycloakId} tried to upgrade an item but no upgrade station data available.`);
+		return;
+	}
+
+	const itemToUpgrade = upgradeStation.upgradeableItems.find(
+		item => item.slot === reaction.slot && item.category === reaction.itemCategory
+	);
+
+	if (!itemToUpgrade) {
+		CrowniclesLogger.error(`Player ${player.keycloakId} tried to upgrade an item that doesn't exist in the upgrade station.`);
+		return;
+	}
+
+	// Check if item is already at max level for home
+	if (itemToUpgrade.nextLevel > ItemConstants.MAX_UPGRADE_LEVEL_AT_HOME) {
+		response.push(makePacket(CommandReportUpgradeItemMaxLevelRes, {}));
+		return;
+	}
+
+	// Check if player has all required materials
+	if (!itemToUpgrade.canUpgrade) {
+		response.push(makePacket(CommandReportUpgradeItemMissingMaterialsRes, {}));
+		return;
+	}
+
+	// Verify and consume materials
+	const materialsToConsume = itemToUpgrade.requiredMaterials.map(m => ({
+		materialId: m.materialId,
+		quantity: m.quantity
+	}));
+
+	const consumed = await Materials.consumeMaterials(player.id, materialsToConsume);
+	if (!consumed) {
+		response.push(makePacket(CommandReportUpgradeItemMissingMaterialsRes, {}));
+		return;
+	}
+
+	// Upgrade the item
+	const inventorySlot = await InventorySlots.getOfPlayer(player.id)
+		.then(slots => slots.find(s => s.slot === reaction.slot && s.itemCategory === reaction.itemCategory));
+
+	if (!inventorySlot) {
+		CrowniclesLogger.error(`Player ${player.keycloakId} tried to upgrade an item that doesn't exist in their inventory.`);
+		return;
+	}
+
+	inventorySlot.itemLevel = itemToUpgrade.nextLevel;
+	await inventorySlot.save();
+
+	response.push(makePacket(CommandReportUpgradeItemRes, {
+		itemCategory: reaction.itemCategory,
+		newItemLevel: itemToUpgrade.nextLevel
+	}));
+}
+
 function cityCollectorEndCallback(context: PacketContext, player: Player, forceSpecificEvent: number, city: City): EndCallback {
 	return async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
 		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.REPORT_COMMAND);
@@ -517,6 +592,17 @@ function cityCollectorEndCallback(context: PacketContext, player: Player, forceS
 						city,
 						(firstReaction.reaction.data as ReactionCollectorCityShopReaction).shopId,
 						context,
+						response
+					);
+					break;
+				case ReactionCollectorHomeMenuReaction.name:
+					// Home menu reaction - currently just re-opens city menu (handled by Discord frontend)
+					break;
+				case ReactionCollectorUpgradeItemReaction.name:
+					await handleUpgradeItemReaction(
+						player,
+						firstReaction.reaction.data as ReactionCollectorUpgradeItemReaction,
+						collector.creationPacket.data.data as ReactionCollectorCityData,
 						response
 					);
 					break;
@@ -576,6 +662,84 @@ async function openRoyalMarket(player: Player, context: PacketContext, response:
 	});
 }
 
+function buildUpgradeStationData(
+	playerInventory: Awaited<ReturnType<typeof InventorySlots.getOfPlayer>>,
+	playerMaterialMap: Map<number, number>,
+	homeLevel: HomeLevel,
+	player: Player
+): NonNullable<NonNullable<ReactionCollectorCityData["home"]["owned"]>["upgradeStation"]> {
+	const maxUpgradeableRarity = homeLevel.features.upgradeItemMaximumRarity;
+	const maxLevelAtHome = ItemConstants.MAX_UPGRADE_LEVEL_AT_HOME;
+
+	const upgradeableItems: NonNullable<NonNullable<ReactionCollectorCityData["home"]["owned"]>["upgradeStation"]>["upgradeableItems"] = [];
+
+	for (const inventorySlot of playerInventory) {
+		// Only process weapons and armors with a valid item
+		if ((!inventorySlot.isWeapon() && !inventorySlot.isArmor()) || inventorySlot.itemId === 0) {
+			continue;
+		}
+
+		// Get the item data
+		const itemData = inventorySlot.isWeapon()
+			? WeaponDataController.instance.getById(inventorySlot.itemId)
+			: ArmorDataController.instance.getById(inventorySlot.itemId);
+
+		if (!itemData) {
+			continue;
+		}
+
+		// Check if item level allows upgrade at home (only levels 0-1 can be upgraded at home to 1-2)
+		const currentLevel = inventorySlot.itemLevel ?? 0;
+		if (currentLevel >= maxLevelAtHome) {
+			continue;
+		}
+
+		// Check if item rarity is allowed at this home level
+		if (itemData.rarity > maxUpgradeableRarity) {
+			continue;
+		}
+
+		const nextLevel = currentLevel + 1;
+		const requiredMaterialsRaw = itemData.getUpgradeMaterials(nextLevel);
+
+		// Aggregate materials (same material can appear multiple times)
+		const materialAggregation = new Map<number, number>();
+		for (const material of requiredMaterialsRaw) {
+			const materialIdNum = parseInt(material.id, 10);
+			materialAggregation.set(materialIdNum, (materialAggregation.get(materialIdNum) ?? 0) + 1);
+		}
+
+		const requiredMaterials: typeof upgradeableItems[number]["requiredMaterials"] = [];
+		let canUpgrade = true;
+
+		for (const [materialId, quantity] of materialAggregation) {
+			const playerQuantity = playerMaterialMap.get(materialId) ?? 0;
+			requiredMaterials.push({
+				materialId,
+				quantity,
+				playerQuantity
+			});
+			if (playerQuantity < quantity) {
+				canUpgrade = false;
+			}
+		}
+
+		upgradeableItems.push({
+			slot: inventorySlot.slot,
+			category: inventorySlot.itemCategory,
+			details: inventorySlot.itemWithDetails(player) as MainItemDetails,
+			nextLevel,
+			requiredMaterials,
+			canUpgrade
+		});
+	}
+
+	return {
+		upgradeableItems,
+		maxUpgradeableRarity
+	};
+}
+
 async function sendCityCollector(context: PacketContext, response: CrowniclesPacket[], player: Player, currentDate: Date, city: City, forceSpecificEvent: number): Promise<void> {
 	const playerInventory = await InventorySlots.getOfPlayer(player.id);
 	const playerActiveObjects = InventorySlots.slotsToActiveObjects(playerInventory);
@@ -586,6 +750,13 @@ async function sendCityCollector(context: PacketContext, response: CrowniclesPac
 	const home = await Homes.getOfPlayer(player.id);
 	const homeLevel = home?.getLevel() ?? null;
 	const nextHomeUpgrade = homeLevel ? HomeLevel.getNextUpgrade(homeLevel, player.level) : null;
+	const playerMaterials = await Materials.getPlayerMaterials(player.id);
+	const playerMaterialMap = new Map(playerMaterials.map(m => [m.materialId, m.quantity]));
+
+	// Build upgrade station data for home
+	const upgradeStation = home && home.cityId === city.id && homeLevel
+		? buildUpgradeStationData(playerInventory, playerMaterialMap, homeLevel, player)
+		: undefined;
 
 	const collectorData: ReactionCollectorCityData = {
 		enterCityTimestamp: TravelTime.getTravelDataSimplified(player, currentDate).travelStartTime,
@@ -632,7 +803,11 @@ async function sendCityCollector(context: PacketContext, response: CrowniclesPac
 			: undefined,
 		home: {
 			owned: home && home.cityId === city.id && homeLevel
-				? { level: home.level }
+				? {
+					level: home.level,
+					features: homeLevel.features,
+					upgradeStation
+				}
 				: undefined,
 			manage: {
 				newPrice: home ? undefined : city.getHomeLevelPrice(HomeLevel.getInitialLevel(), await Homes.getHomesCount()),
