@@ -681,36 +681,59 @@ function getManageHomeMenu(context: PacketContext, interaction: CrowniclesIntera
 	};
 }
 
+/**
+ * Build the city sub-menus (inns, enchanter, home, manage home)
+ */
+function buildCitySubMenus(
+	context: PacketContext,
+	interaction: CrowniclesInteraction,
+	packet: ReactionCollectorCreationPacket,
+	collectorTime: number,
+	pseudo: string
+): Map<string, CrowniclesNestedMenu> {
+	const menus = new Map<string, CrowniclesNestedMenu>();
+	const cityData = packet.data.data as ReactionCollectorCityData;
+
+	// Add inn menus
+	for (const inn of cityData.inns || []) {
+		menus.set(`INN_${inn.innId}`, getInnMenu(context, interaction, packet, inn.innId, collectorTime, pseudo));
+	}
+
+	// Add enchanter menu
+	if (cityData.enchanter) {
+		menus.set("ENCHANTER_MENU", getEnchanterMenu(context, interaction, packet, collectorTime, pseudo));
+	}
+
+	// Add home menus
+	if (cityData.home.owned) {
+		const homeMenuParams = {
+			context, interaction, packet, collectorTime, pseudo
+		};
+		menus.set("HOME_MENU", getHomeMenu(homeMenuParams));
+
+		for (const [key, menu] of getHomeSubMenus(homeMenuParams)) {
+			menus.set(key, menu);
+		}
+	}
+
+	// Add manage home menu
+	if (cityData.home.manage) {
+		menus.set("MANAGE_HOME_MENU", getManageHomeMenu(context, interaction, packet, collectorTime, pseudo));
+	}
+
+	return menus;
+}
+
 export class ReportCityMenu {
 	public static async handleCityCollector(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
 		const interaction = DiscordCache.getInteraction(context.discord!.interaction);
 		if (!interaction) {
 			throw new Error("Interaction not found");
 		}
-		const lng = interaction.userLanguage;
 		const collectorTime = packet.endTime - Date.now();
-		const pseudo = await DisplayUtils.getEscapedUsername(context.keycloakId!, lng);
+		const pseudo = await DisplayUtils.getEscapedUsername(context.keycloakId!, interaction.userLanguage);
 
-		const menus: Map<string, CrowniclesNestedMenu> = new Map<string, CrowniclesNestedMenu>();
-		for (const inn of (packet.data.data as ReactionCollectorCityData).inns || []) {
-			menus.set(`INN_${inn.innId}`, getInnMenu(context, interaction, packet, inn.innId, collectorTime, pseudo));
-		}
-		if ((packet.data.data as ReactionCollectorCityData).enchanter) {
-			menus.set("ENCHANTER_MENU", getEnchanterMenu(context, interaction, packet, collectorTime, pseudo));
-		}
-
-		if ((packet.data.data as ReactionCollectorCityData).home.owned) {
-			menus.set("HOME_MENU", getHomeMenu(context, interaction, packet, collectorTime, pseudo));
-
-			// Add sub-menus for each home feature
-			const homeSubMenus = getHomeSubMenus(context, interaction, packet, collectorTime, pseudo);
-			for (const [key, menu] of homeSubMenus) {
-				menus.set(key, menu);
-			}
-		}
-		if ((packet.data.data as ReactionCollectorCityData).home.manage) {
-			menus.set("MANAGE_HOME_MENU", getManageHomeMenu(context, interaction, packet, collectorTime, pseudo));
-		}
+		const menus = buildCitySubMenus(context, interaction, packet, collectorTime, pseudo);
 
 		const nestedMenus = new CrowniclesNestedMenus(
 			getMainMenu(context, interaction, packet, collectorTime, pseudo),
