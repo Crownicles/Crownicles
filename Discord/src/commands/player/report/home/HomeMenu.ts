@@ -13,13 +13,72 @@ import {
 import { ReactionCollectorCreationPacket } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { sendInteractionNotForYou } from "../../../../utils/ErrorUtils";
 import { homeFeatureRegistry } from "./HomeFeatureRegistry";
-import { HomeFeatureHandlerContext } from "./HomeMenuTypes";
+import {
+	HomeFeatureHandler, HomeFeatureHandlerContext
+} from "./HomeMenuTypes";
 
 /**
- * Creates the home menu for players to access home features.
+ * Creates a sub-menu for a specific home feature
+ */
+function createFeatureSubMenu(
+	handler: HomeFeatureHandler,
+	handlerContext: HomeFeatureHandlerContext,
+	interaction: CrowniclesInteraction,
+	collectorTime: number,
+	pseudo: string
+): CrowniclesNestedMenu {
+	const lng = interaction.userLanguage;
+
+	// Build select menu with feature options
+	const selectMenu = new StringSelectMenuBuilder()
+		.setCustomId(`HOME_${handler.featureId.toUpperCase()}`)
+		.setPlaceholder(i18n.t("commands:report.city.homes.featurePlaceholder", { lng }));
+
+	// Add feature-specific options
+	handler.addSubMenuOptions(handlerContext, selectMenu);
+
+	// Add back option
+	selectMenu.addOptions({
+		label: i18n.t("commands:report.city.homes.backToHome", { lng }),
+		value: "BACK_TO_HOME",
+		emoji: CrowniclesIcons.collectors.back
+	});
+
+	return {
+		embed: new CrowniclesEmbed()
+			.formatAuthor(handler.getSubMenuTitle(handlerContext, pseudo), interaction.user)
+			.setDescription(handler.getSubMenuDescription(handlerContext)),
+		components: [new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(selectMenu)],
+		createCollector: (nestedMenus, message): CrowniclesNestedMenuCollector => {
+			const selectMenuCollector = message.createMessageComponentCollector({ time: collectorTime });
+
+			selectMenuCollector.on("collect", async (selectInteraction: StringSelectMenuInteraction) => {
+				if (selectInteraction.user.id !== interaction.user.id) {
+					await sendInteractionNotForYou(selectInteraction.user, selectInteraction, lng);
+					return;
+				}
+
+				const selectedValue = selectInteraction.values[0];
+
+				await homeFeatureRegistry.handleSubMenuSelection(
+					handler,
+					handlerContext,
+					selectedValue,
+					selectInteraction,
+					nestedMenus
+				);
+			});
+
+			return selectMenuCollector;
+		}
+	};
+}
+
+/**
+ * Creates the main home menu for players to access home features.
  *
- * This menu uses a registry pattern to support multiple home features.
- * Each feature is handled by a dedicated handler (see HomeFeatureHandler interface).
+ * This menu displays available features (upgrade station, bed, chest, etc.)
+ * and allows navigation to sub-menus for each feature.
  *
  * @param context - The packet context
  * @param interaction - The Discord interaction
@@ -45,10 +104,9 @@ export function getHomeMenu(
 		lng
 	};
 
-	// Build description with introduction and feature-specific lines
+	// Build description with introduction and available features
 	const descriptionParts: string[] = [i18n.t("commands:report.city.homes.homeIntroduction", { lng })];
 
-	// Add description lines from all available features
 	const featureDescriptions = homeFeatureRegistry.buildDescription(handlerContext);
 	if (featureDescriptions.length > 0) {
 		descriptionParts.push("", ...featureDescriptions);
@@ -56,13 +114,21 @@ export function getHomeMenu(
 
 	const description = descriptionParts.join("\n");
 
-	// Build select menu
+	// Build select menu with feature options
 	const selectMenu = new StringSelectMenuBuilder()
 		.setCustomId("HOME_MENU")
 		.setPlaceholder(i18n.t("commands:report.city.homes.homePlaceholder", { lng }));
 
-	// Add options from all available features
-	homeFeatureRegistry.addAllMenuOptions(handlerContext, selectMenu);
+	// Add feature options from all available handlers
+	const menuOptions = homeFeatureRegistry.getMenuOptions(handlerContext);
+	for (const option of menuOptions) {
+		selectMenu.addOptions({
+			label: option.label,
+			description: option.description,
+			value: option.value,
+			emoji: option.emoji
+		});
+	}
 
 	// Add back option (always present)
 	selectMenu.addOptions({
@@ -98,7 +164,7 @@ export function getHomeMenu(
 				}
 
 				// Delegate to registered feature handlers
-				await homeFeatureRegistry.handleSelection(
+				await homeFeatureRegistry.handleMainMenuSelection(
 					handlerContext,
 					selectedValue,
 					selectInteraction,
@@ -109,4 +175,40 @@ export function getHomeMenu(
 			return selectMenuCollector;
 		}
 	};
+}
+
+/**
+ * Get all home sub-menus for registration in the nested menu system
+ */
+export function getHomeSubMenus(
+	context: PacketContext,
+	interaction: CrowniclesInteraction,
+	packet: ReactionCollectorCreationPacket,
+	collectorTime: number,
+	pseudo: string
+): Map<string, CrowniclesNestedMenu> {
+	const homeData = (packet.data.data as ReactionCollectorCityData).home.owned!;
+	const lng = interaction.userLanguage;
+
+	const handlerContext: HomeFeatureHandlerContext = {
+		context,
+		packet,
+		homeData,
+		lng
+	};
+
+	const subMenus = new Map<string, CrowniclesNestedMenu>();
+
+	// Create sub-menus for each available feature
+	for (const handler of homeFeatureRegistry.getAvailableHandlers(handlerContext)) {
+		const option = handler.getMenuOption(handlerContext);
+		if (option) {
+			subMenus.set(
+				option.value,
+				createFeatureSubMenu(handler, handlerContext, interaction, collectorTime, pseudo)
+			);
+		}
+	}
+
+	return subMenus;
 }

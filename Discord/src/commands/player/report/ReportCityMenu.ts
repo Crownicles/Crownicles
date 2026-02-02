@@ -39,7 +39,9 @@ import { millisecondsToSeconds } from "../../../../../Lib/src/utils/TimeUtils";
 import { HomeFeatures } from "../../../../../Lib/src/types/HomeFeatures";
 import { Language } from "../../../../../Lib/src/Language";
 import { ItemRarity } from "../../../../../Lib/src/constants/ItemConstants";
-import { getHomeMenu } from "./home";
+import {
+	getHomeMenu, getHomeSubMenus
+} from "./home";
 
 function getMainMenu(context: PacketContext, interaction: CrowniclesInteraction, packet: ReactionCollectorCreationPacket, collectorTime: number, pseudo: string): CrowniclesNestedMenu {
 	const data = packet.data.data as ReactionCollectorCityData;
@@ -699,6 +701,12 @@ export class ReportCityMenu {
 
 		if ((packet.data.data as ReactionCollectorCityData).home.owned) {
 			menus.set("HOME_MENU", getHomeMenu(context, interaction, packet, collectorTime, pseudo));
+
+			// Add sub-menus for each home feature
+			const homeSubMenus = getHomeSubMenus(context, interaction, packet, collectorTime, pseudo);
+			for (const [key, menu] of homeSubMenus) {
+				menus.set(key, menu);
+			}
 		}
 		if ((packet.data.data as ReactionCollectorCityData).home.manage) {
 			menus.set("MANAGE_HOME_MENU", getManageHomeMenu(context, interaction, packet, collectorTime, pseudo));

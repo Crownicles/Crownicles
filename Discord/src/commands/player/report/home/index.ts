@@ -4,7 +4,7 @@
  * Architecture:
  * - HomeMenuTypes.ts: Interfaces and types for the home feature system
  * - HomeFeatureRegistry.ts: Registry of all available home features
- * - HomeMenu.ts: Main menu builder using the registry
+ * - HomeMenu.ts: Main menu builder + sub-menu generator
  * - Feature handlers: Individual handlers for each home feature
  *
  * To add a new home feature:
@@ -12,9 +12,12 @@
  * 2. Register it in HomeFeatureRegistry.ts
  * 3. Add any necessary reactions in Lib/src/packets/interaction/ReactionCollectorCity.ts
  * 4. Add backend handling in Core/src/commands/player/ReportCommand.ts
+ * 5. Add translations in Lang/fr/commands.json
  */
 
-export { getHomeMenu } from "./HomeMenu";
+export {
+	getHomeMenu, getHomeSubMenus
+} from "./HomeMenu";
 export { homeFeatureRegistry } from "./HomeFeatureRegistry";
 export type {
 	HomeFeatureHandler, HomeFeatureHandlerContext
