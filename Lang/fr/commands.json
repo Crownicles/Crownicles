@@ -976,14 +976,17 @@
           "menuLabel": "Établi d'équipement",
           "menuDescription": "Améliorez vos armes et armures",
           "available": "{emote:city.homeUpgrades.upgradeEquipment} Votre établi d'équipement vous permet d'améliorer vos armes et armures.",
-          "noItems": "Vous n'avez aucun équipement améliorable pour le moment.",
-          "selectItem": "Sélectionnez un équipement à améliorer :",
           "title": "{{pseudo}}, établi d'équipement",
           "itemDetails": "{{itemDisplay}}\n\n**Amélioration :** +{{currentLevel}} → +{{nextLevel}}\n\n**Matériaux nécessaires :**\n{{materials}}",
           "confirmUpgrade": "Améliorer",
           "backToItems": "Retour à la liste",
-          "levelLimitation": "{emote:messages.info} Les équipements de niveau +{{maxLevel}} ou plus ne peuvent être améliorés qu'au forgeron.",
-          "rarityLimitation": "{emote:messages.info} Votre établi ne peut améliorer que les équipements jusqu'à la rareté $t(items:rarities.{{maxRarity}})."
+          "descriptionWithItems": "{emote:city.homeUpgrades.upgradeEquipment} Vous vous tenez devant votre établi, prêt à forger des améliorations. Votre maison dispose d'un établi {{stationQuality}} permettant de travailler les équipements jusqu'à la rareté $t(items:rarities.{{maxRarity}}). {{levelLimitation}}\n\n**Sélectionnez un équipement à améliorer :**",
+          "descriptionNoItems": "{emote:city.homeUpgrades.upgradeEquipment} Vous vous tenez devant votre établi, mais aucun de vos équipements ne peut être amélioré ici pour le moment. Votre maison dispose d'un établi {{stationQuality}} permettant de travailler les équipements jusqu'à la rareté $t(items:rarities.{{maxRarity}}). {{levelLimitation}}",
+          "stationQualityBasic": "rudimentaire",
+          "stationQualityAdvanced": "de qualité",
+          "stationQualityMaster": "de maître artisan",
+          "levelLimitationBasic": "Vos talents de forgeron amateur vous limitent aux améliorations de niveau +{{maxLevel}}, au-delà il vous faudra consulter un véritable forgeron.",
+          "levelLimitationAdvanced": "Votre maîtrise des outils vous permet d'atteindre le niveau +{{maxLevel}}, mais les améliorations supérieures nécessitent l'expertise d'un forgeron professionnel."
         },
         "upgradeChanges": {
           "betterBed": "Un meilleur lit pour un sommeil plus réparateur {emote:city.homeUpgrades.bed}",

@@ -14,6 +14,7 @@ import { DiscordCollectorUtils } from "../../../../utils/DiscordCollectorUtils";
 import { ItemRarity } from "../../../../../../Lib/src/constants/ItemConstants";
 import { CrowniclesEmbed } from "../../../../messages/CrowniclesEmbed";
 import { sendInteractionNotForYou } from "../../../../utils/ErrorUtils";
+import { Language } from "../../../../../../Lib/src/Language";
 
 /**
  * Handler for the upgrade station feature in the home.
@@ -295,35 +296,54 @@ export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 
 	public getSubMenuDescription(ctx: HomeFeatureHandlerContext): string {
 		const upgradeStation = ctx.homeData.upgradeStation;
-		const lines: string[] = [];
+		const hasItems = upgradeStation && upgradeStation.upgradeableItems.length > 0;
 
-		if (!upgradeStation || upgradeStation.upgradeableItems.length === 0) {
-			lines.push(i18n.t("commands:report.city.homes.upgradeStation.noItems", { lng: ctx.lng }));
-		}
-		else {
-			lines.push(i18n.t("commands:report.city.homes.upgradeStation.selectItem", { lng: ctx.lng }));
-		}
-
-		// Add explanatory text about which items are not shown
-		lines.push("");
-
-		// Explain level limitation based on home features
 		const maxLevelAtHome = ctx.homeData.features.maxItemUpgradeLevel;
-		lines.push(i18n.t("commands:report.city.homes.upgradeStation.levelLimitation", {
+		const maxRarity = upgradeStation?.maxUpgradeableRarity ?? ItemRarity.BASIC;
+
+		// Determine station quality description based on home level
+		const stationQuality = this.getStationQualityText(ctx.lng, maxRarity);
+
+		// Determine level limitation text
+		const levelLimitation = this.getLevelLimitationText(ctx.lng, maxLevelAtHome);
+
+		const translationKey = hasItems
+			? "commands:report.city.homes.upgradeStation.descriptionWithItems"
+			: "commands:report.city.homes.upgradeStation.descriptionNoItems";
+
+		return i18n.t(translationKey, {
 			lng: ctx.lng,
-			maxLevel: maxLevelAtHome
-		}));
+			stationQuality,
+			maxRarity,
+			levelLimitation
+		});
+	}
 
-		// Explain rarity limitation based on home level (only if not max rarity)
-		if (upgradeStation && upgradeStation.maxUpgradeableRarity < ItemRarity.MYTHICAL) {
-			const maxRarity = upgradeStation.maxUpgradeableRarity;
-			lines.push(i18n.t("commands:report.city.homes.upgradeStation.rarityLimitation", {
-				lng: ctx.lng,
-				maxRarity
-			}));
+	/**
+	 * Get the localized station quality text based on max rarity
+	 */
+	private getStationQualityText(lng: Language, maxRarity: ItemRarity): string {
+		if (maxRarity >= ItemRarity.LEGENDARY) {
+			return i18n.t("commands:report.city.homes.upgradeStation.stationQualityMaster", { lng });
 		}
+		if (maxRarity >= ItemRarity.EPIC) {
+			return i18n.t("commands:report.city.homes.upgradeStation.stationQualityAdvanced", { lng });
+		}
+		return i18n.t("commands:report.city.homes.upgradeStation.stationQualityBasic", { lng });
+	}
 
-		return lines.join("\n");
+	/**
+	 * Get the level limitation text based on max upgrade level at home
+	 */
+	private getLevelLimitationText(lng: Language, maxLevel: number): string {
+		const key = maxLevel >= 2
+			? "commands:report.city.homes.upgradeStation.levelLimitationAdvanced"
+			: "commands:report.city.homes.upgradeStation.levelLimitationBasic";
+
+		return i18n.t(key, {
+			lng,
+			maxLevel
+		});
 	}
 
 	public getSubMenuTitle(ctx: HomeFeatureHandlerContext, pseudo: string): string {
