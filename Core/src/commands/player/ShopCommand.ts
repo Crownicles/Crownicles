@@ -51,6 +51,7 @@ import {
 } from "../../core/utils/CommandUtils";
 import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
 import { Badge } from "../../../../Lib/src/types/Badge";
+import { PlayerBadgesManager } from "../../core/database/game/models/PlayerBadges";
 
 /**
  * Get the shop item for getting a random item
@@ -104,13 +105,12 @@ function getBadgeShopItem(): ShopItem {
 		price: ShopConstants.MONEY_MOUTH_BADGE_PRICE,
 		amounts: [1],
 		buyCallback: async (response, playerId): Promise<boolean> => {
-			const player = await Players.getById(playerId);
-			if (player.hasBadge(Badge.RICH)) {
+			const hasBadge = await PlayerBadgesManager.hasBadge(playerId, Badge.RICH);
+			if (hasBadge) {
 				response.push(makePacket(CommandShopAlreadyHaveBadge, {}));
 				return false;
 			}
-			player.addBadge(Badge.RICH);
-			await player.save();
+			await PlayerBadgesManager.addBadge(playerId, Badge.RICH);
 			response.push(makePacket(CommandShopBadgeBought, {}));
 			return true;
 		}

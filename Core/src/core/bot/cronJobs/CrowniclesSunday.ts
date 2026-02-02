@@ -16,6 +16,7 @@ import {
 	Op, Sequelize
 } from "sequelize";
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
+import { PlayerBadgesManager } from "../../database/game/models/PlayerBadges";
 
 export class CrowniclesSunday {
 	public static async programCronJob(): Promise<void> {
@@ -44,8 +45,7 @@ export class CrowniclesSunday {
 		const winner = await CrowniclesSunday.findSeasonWinner();
 		if (winner !== null) {
 			PacketUtils.announce(makePacket(TopWeekFightAnnouncementPacket, { winnerKeycloakId: winner.keycloakId }), MqttTopicUtils.getDiscordTopWeekFightAnnouncementTopic(botConfig.PREFIX));
-			winner.addBadge(Badge.TOP_GLORY);
-			await winner.save();
+			await PlayerBadgesManager.addBadge(winner.id, Badge.TOP_GLORY);
 		}
 		else {
 			PacketUtils.announce(makePacket(TopWeekFightAnnouncementPacket, {}), MqttTopicUtils.getDiscordTopWeekFightAnnouncementTopic(botConfig.PREFIX));

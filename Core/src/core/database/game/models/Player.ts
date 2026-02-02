@@ -55,7 +55,6 @@ import { PacketUtils } from "../../../utils/PacketUtils";
 import { StatValues } from "../../../../../../Lib/src/types/StatValues";
 import { ReachDestinationNotificationPacket } from "../../../../../../Lib/src/packets/notifications/ReachDestinationNotificationPacket";
 import { CrowniclesLogger } from "../../../../../../Lib/src/logs/CrowniclesLogger";
-import { Badge } from "../../../../../../Lib/src/types/Badge";
 import { TokensConstants } from "../../../../../../Lib/src/constants/TokensConstants";
 import { MathUtils } from "../../../utils/MathUtils";
 
@@ -106,8 +105,6 @@ export class Player extends Model {
 
 	declare class: number;
 
-	declare badges: string;
-
 	declare guildId: number | null;
 
 	declare nextEvent: number | null;
@@ -143,48 +140,6 @@ export class Player extends Model {
 	declare updatedAt: Date;
 
 	declare createdAt: Date;
-
-	/**
-	 * Add a badge to a player
-	 * @param badge
-	 */
-	public addBadge(badge: Badge): boolean {
-		if (this.badges !== null && this.badges !== "") {
-			if (!this.hasBadge(badge)) {
-				this.badges += `,${badge}`;
-			}
-			else {
-				return false;
-			}
-		}
-		else {
-			this.badges = badge;
-		}
-		return true;
-	}
-
-	/**
-	 * Check if a player has a specific badge
-	 * @param badge
-	 */
-	public hasBadge(badge: Badge): boolean {
-		return this.badges === null
-			? false
-			: this.badges.split(",")
-				.includes(badge);
-	}
-
-	public getBadges(): Badge[] {
-		if (this.badges === null) {
-			return [];
-		}
-
-		return this.badges.split(",") as Badge[];
-	}
-
-	public setBadges(badges: Badge[]): void {
-		this.badges = badges.join(",");
-	}
 
 	/**
 	 * Get the destination id of a player
@@ -1849,10 +1804,6 @@ export function initModel(sequelize: Sequelize): void {
 		class: {
 			type: DataTypes.INTEGER,
 			defaultValue: PlayersConstants.PLAYER_DEFAULT_VALUES.CLASS
-		},
-		badges: {
-			type: DataTypes.TEXT,
-			defaultValue: PlayersConstants.PLAYER_DEFAULT_VALUES.BADGES
 		},
 		guildId: {
 			type: DataTypes.INTEGER,

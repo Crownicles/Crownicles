@@ -29,6 +29,7 @@ import { MqttTopicUtils } from "../../../../Lib/src/utils/MqttTopicUtils";
 import { Badge } from "../../../../Lib/src/types/Badge";
 import { TopWeekAnnouncementPacket } from "../../../../Lib/src/packets/announcements/TopWeekAnnouncementPacket";
 import { PlayerMissionsInfo } from "../database/game/models/PlayerMissionsInfo";
+import { PlayerBadgesManager } from "../database/game/models/PlayerBadges";
 
 // skipcq: JS-C1003 - fs does not expose itself as an ES Module.
 import * as fs from "fs";
@@ -143,8 +144,7 @@ export class Crownicles {
 		const winner = await Crownicles.findSeasonWinner();
 		if (winner !== null) {
 			PacketUtils.announce(makePacket(TopWeekFightAnnouncementPacket, { winnerKeycloakId: winner.keycloakId }), MqttTopicUtils.getDiscordTopWeekFightAnnouncementTopic(botConfig.PREFIX));
-			winner.addBadge(Badge.TOP_GLORY);
-			await winner.save();
+			await PlayerBadgesManager.addBadge(winner.id, Badge.TOP_GLORY);
 		}
 		else {
 			PacketUtils.announce(makePacket(TopWeekFightAnnouncementPacket, {}), MqttTopicUtils.getDiscordTopWeekFightAnnouncementTopic(botConfig.PREFIX));
@@ -174,8 +174,7 @@ export class Crownicles {
 		});
 		if (winner !== null) {
 			PacketUtils.announce(makePacket(TopWeekAnnouncementPacket, { winnerKeycloakId: winner.keycloakId }), MqttTopicUtils.getDiscordTopWeekAnnouncementTopic(botConfig.PREFIX));
-			winner.addBadge(Badge.TOP_WEEK);
-			await winner.save();
+			await PlayerBadgesManager.addBadge(winner.id, Badge.TOP_WEEK);
 		}
 		else {
 			PacketUtils.announce(makePacket(TopWeekAnnouncementPacket, {}), MqttTopicUtils.getDiscordTopWeekAnnouncementTopic(botConfig.PREFIX));

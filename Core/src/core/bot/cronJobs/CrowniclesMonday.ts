@@ -15,6 +15,7 @@ import { MqttTopicUtils } from "../../../../../Lib/src/utils/MqttTopicUtils";
 import { Badge } from "../../../../../Lib/src/types/Badge";
 import PlayerMissionsInfo from "../../database/game/models/PlayerMissionsInfo";
 import { MapCache } from "../../maps/MapCache";
+import { PlayerBadgesManager } from "../../database/game/models/PlayerBadges";
 
 export class CrowniclesMonday {
 	public static async programCronJob(): Promise<void> {
@@ -59,8 +60,7 @@ export class CrowniclesMonday {
 		});
 		if (winner !== null) {
 			PacketUtils.announce(makePacket(TopWeekAnnouncementPacket, { winnerKeycloakId: winner.keycloakId }), MqttTopicUtils.getDiscordTopWeekAnnouncementTopic(botConfig.PREFIX));
-			winner.addBadge(Badge.TOP_WEEK);
-			await winner.save();
+			await PlayerBadgesManager.addBadge(winner.id, Badge.TOP_WEEK);
 		}
 		else {
 			PacketUtils.announce(makePacket(TopWeekAnnouncementPacket, {}), MqttTopicUtils.getDiscordTopWeekAnnouncementTopic(botConfig.PREFIX));
