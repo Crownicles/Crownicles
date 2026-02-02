@@ -36,10 +36,6 @@ export class CommandShopNoAlterationToHeal extends CrowniclesPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandShopCannotHealOccupied extends CrowniclesPacket {
-}
-
-@sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandShopHealAlterationDone extends CrowniclesPacket {
 }
 
@@ -53,19 +49,6 @@ export class CommandShopBadgeBought extends CrowniclesPacket {
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandShopBoughtTooMuchDailyPotions extends CrowniclesPacket {
-}
-
-@sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandShopBoughtTooMuchTokens extends CrowniclesPacket {
-}
-
-@sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandShopTokensBought extends CrowniclesPacket {
-	amount!: number;
-}
-
-@sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandShopTokensFull extends CrowniclesPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)

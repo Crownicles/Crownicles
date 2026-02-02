@@ -6,6 +6,7 @@ import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
 import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
 import {
 	CommandReportBigEventResultRes,
+	CommandReportBuyHealAcceptPacketRes,
 	CommandReportBuyHomeRes,
 	CommandReportChooseDestinationCityRes,
 	CommandReportEatInnMealRes,
@@ -16,7 +17,8 @@ import {
 	CommandReportRefusePveFightRes,
 	CommandReportSleepRoomRes,
 	CommandReportTravelSummaryRes,
-	CommandReportUpgradeHomeRes
+	CommandReportUpgradeHomeRes,
+	CommandReportUseTokensAcceptPacketRes
 } from "../../../../Lib/src/packets/commands/CommandReportPacket";
 import { ReactionCollectorCreationPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import {
@@ -772,6 +774,133 @@ export async function handleMoveHome(packet: CommandReportMoveHomeRes, context: 
 
 	await interaction.editReply({
 		embeds: [embed]
+	});
+}
+
+/**
+ * Handle the response when player successfully uses tokens
+ */
+export async function handleUseTokensAccept(packet: CommandReportUseTokensAcceptPacketRes, context: PacketContext): Promise<void> {
+	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
+	if (!interaction) {
+		return;
+	}
+	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
+	const lng = interaction.userLanguage;
+
+	const embed = new CrowniclesEmbed()
+		.formatAuthor(i18n.t("commands:report.tokensUsedSuccessTitle", {
+			lng,
+			pseudo: escapeUsername(interaction.user.displayName)
+		}), interaction.user)
+		.setDescription(i18n.t("commands:report.tokensUsedSuccessDescription", {
+			lng,
+			count: packet.tokensSpent,
+			nextStep: packet.isArrived
+				? i18n.t("commands:report.tokensNextStepArrived", { lng })
+				: i18n.t("commands:report.tokensNextStepSmallEvent", { lng })
+		}));
+
+	await buttonInteraction?.editReply({ embeds: [embed] });
+}
+
+/**
+ * Handle the response when player refuses to use tokens
+ */
+export async function handleUseTokensRefuse(context: PacketContext): Promise<void> {
+	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
+	if (!interaction) {
+		return;
+	}
+	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
+	const lng = interaction.userLanguage;
+
+	const embed = new CrowniclesEmbed()
+		.formatAuthor(i18n.t("commands:report.tokensUsedRefusedTitle", {
+			lng,
+			pseudo: escapeUsername(interaction.user.displayName)
+		}), interaction.user)
+		.setDescription(i18n.t("commands:report.tokensUsedRefusedDescription", { lng }))
+		.setErrorColor();
+
+	await buttonInteraction?.editReply({ embeds: [embed] });
+}
+
+/**
+ * Handle the response when player successfully buys heal
+ */
+export async function handleBuyHealAccept(packet: CommandReportBuyHealAcceptPacketRes, context: PacketContext): Promise<void> {
+	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
+	if (!interaction) {
+		return;
+	}
+	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
+	const lng = interaction.userLanguage;
+
+	const embed = new CrowniclesEmbed()
+		.formatAuthor(i18n.t("commands:report.healSuccessTitle", {
+			lng,
+			pseudo: escapeUsername(interaction.user.displayName)
+		}), interaction.user)
+		.setDescription(i18n.t("commands:report.healSuccessDescription", {
+			lng,
+			price: packet.healPrice,
+			nextStep: packet.isArrived
+				? i18n.t("commands:report.healNextStepArrived", { lng })
+				: i18n.t("commands:report.healNextStepSmallEvent", { lng })
+		}));
+
+	await buttonInteraction?.editReply({ embeds: [embed] });
+}
+
+/**
+ * Handle the response when player refuses to buy heal
+ */
+export async function handleBuyHealRefuse(context: PacketContext): Promise<void> {
+	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
+	if (!interaction) {
+		return;
+	}
+	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
+	const lng = interaction.userLanguage;
+
+	await buttonInteraction?.editReply({
+		content: i18n.t("commands:report.healRefused", {
+			lng,
+			pseudo: escapeUsername(interaction.user.displayName)
+		})
+	});
+}
+
+/**
+ * Handle the response when player has no alteration to heal
+ */
+export async function handleBuyHealNoAlteration(context: PacketContext): Promise<void> {
+	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
+	if (!interaction) {
+		return;
+	}
+	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
+	const lng = interaction.userLanguage;
+
+	await buttonInteraction?.editReply({
+		content: i18n.t("commands:report.healNoAlteration", { lng })
+	});
+}
+
+/**
+ * Handle the response when player tries to heal occupied alteration
+ */
+export async function handleBuyHealCannotHealOccupied(context: PacketContext): Promise<void> {
+	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
+	if (!interaction) {
+		return;
+	}
+	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
+	const lng = interaction.userLanguage;
+
+	await buttonInteraction?.editReply({
+		content: i18n.t("commands:report.healCannotHealOccupied", { lng })
 	});
 }
 

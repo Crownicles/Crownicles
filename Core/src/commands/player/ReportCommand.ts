@@ -3,6 +3,9 @@ import {
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	CommandReportBigEventResultRes,
+	CommandReportBuyHealCannotHealOccupiedPacketRes,
+	CommandReportBuyHealNoAlterationPacketRes,
+	CommandReportBuyHealPacketReq,
 	CommandReportBuyHomeRes,
 	CommandReportChooseDestinationCityRes,
 	CommandReportChooseDestinationRes,
@@ -20,7 +23,8 @@ import {
 	CommandReportSleepRoomRes,
 	CommandReportStayInCity,
 	CommandReportTravelSummaryRes,
-	CommandReportUpgradeHomeRes
+	CommandReportUpgradeHomeRes,
+	CommandReportUseTokensPacketReq
 } from "../../../../Lib/src/packets/commands/CommandReportPacket";
 import {
 	Player, Players
@@ -118,6 +122,13 @@ import {
 import { Homes } from "../../core/database/game/models/Home";
 import { HomeLevel } from "../../../../Lib/src/types/HomeLevel";
 import { PostFightPetLoveOutcomes } from "../../../../Lib/src/constants/PetConstants";
+import {
+	createBuyHealCollector,
+	createUseTokensCollector,
+	validateBuyHealRequest,
+	validateUseTokensRequest
+} from "../../core/report/ReportTokenHealService";
+import { HEAL_VALIDATION_REASONS } from "../../core/report/ReportValidationConstants";
 
 export default class ReportCommand {
 	@commandRequires(CommandReportPacketReq, {
@@ -199,6 +210,56 @@ export default class ReportCommand {
 
 		await sendTravelPath(player, response, currentDate, null);
 		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.REPORT_COMMAND);
+	}
+
+	@commandRequires(CommandReportUseTokensPacketReq, {
+		notBlocked: true,
+		disallowedEffects: CommandUtils.DISALLOWED_EFFECTS.DEAD,
+		whereAllowed: CommandUtils.WHERE.EVERYWHERE
+	})
+	static async useTokens(
+		response: CrowniclesPacket[],
+		player: Player,
+		_packet: CommandReportUseTokensPacketReq,
+		context: PacketContext
+	): Promise<void> {
+		const currentDate = new Date();
+		const timeData = await TravelTime.getTravelData(player, currentDate);
+
+		const validation = validateUseTokensRequest(player, player.effectId, timeData.effectRemainingTime);
+
+		if (!validation.valid) {
+			return;
+		}
+
+		createUseTokensCollector(player, validation.tokenCost, context, response);
+	}
+
+	@commandRequires(CommandReportBuyHealPacketReq, {
+		notBlocked: true,
+		disallowedEffects: CommandUtils.DISALLOWED_EFFECTS.DEAD,
+		whereAllowed: CommandUtils.WHERE.EVERYWHERE
+	})
+	static buyHeal(
+		response: CrowniclesPacket[],
+		player: Player,
+		_packet: CommandReportBuyHealPacketReq,
+		context: PacketContext
+	): void {
+		const currentDate = new Date();
+		const validation = validateBuyHealRequest(player, currentDate);
+
+		if (!validation.valid) {
+			if ("reason" in validation && validation.reason === HEAL_VALIDATION_REASONS.NO_ALTERATION) {
+				response.push(makePacket(CommandReportBuyHealNoAlterationPacketRes, {}));
+			}
+			else if ("reason" in validation && validation.reason === HEAL_VALIDATION_REASONS.OCCUPIED) {
+				response.push(makePacket(CommandReportBuyHealCannotHealOccupiedPacketRes, {}));
+			}
+			return;
+		}
+
+		createBuyHealCollector(player, validation.healPrice, context, response);
 	}
 }
 
