@@ -26,10 +26,10 @@ import { crowniclesInstance } from "../../index";
 import {
 	NumberChangeReason, ShopItemType
 } from "../../../../Lib/src/constants/LogsConstants";
-import { millisecondsToMinutes } from "../../../../Lib/src/utils/TimeUtils";
 import { Effect } from "../../../../Lib/src/types/Effect";
 import { TravelTime } from "../../core/maps/TravelTime";
 import { MissionsController } from "../../core/missions/MissionsController";
+import { calculateHealAlterationPrice } from "../../core/utils/HealAlterationUtils";
 import {
 	Potion, PotionDataController
 } from "../../data/Potion";
@@ -66,36 +66,6 @@ function getRandomItemShopItem(): ShopItem {
 			return true;
 		}
 	};
-}
-
-/**
- * Calculate the price for healing from an alteration
- * @param player
- */
-function calculateHealAlterationPrice(player: Player): number {
-	let price = ShopConstants.ALTERATION_HEAL_BASE_PRICE;
-	const remainingTime = millisecondsToMinutes(player.effectRemainingTime());
-
-	/*
-	 * If the remaining time is under one hour,
-	 * The price becomes degressive until being divided by 8 at the 15-minute marque;
-	 * Then it no longer decreases
-	 */
-	if (remainingTime < ShopConstants.MAX_REDUCTION_TIME) {
-		if (remainingTime <= ShopConstants.MIN_REDUCTION_TIME) {
-			price /= ShopConstants.MAX_PRICE_REDUCTION_DIVISOR;
-		}
-		else {
-			// Calculate the price reduction based on the remaining time
-			const priceDecreasePerMinute = (
-				ShopConstants.ALTERATION_HEAL_BASE_PRICE - ShopConstants.ALTERATION_HEAL_BASE_PRICE / ShopConstants.MAX_PRICE_REDUCTION_DIVISOR
-			) / (
-				ShopConstants.MAX_REDUCTION_TIME - ShopConstants.MIN_REDUCTION_TIME
-			);
-			price -= priceDecreasePerMinute * (ShopConstants.MAX_REDUCTION_TIME - remainingTime);
-		}
-	}
-	return Math.round(price);
 }
 
 /**
