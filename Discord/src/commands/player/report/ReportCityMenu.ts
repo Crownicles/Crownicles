@@ -19,8 +19,7 @@ import {
 	ReactionCollectorEnchantReaction,
 	ReactionCollectorExitCityReaction,
 	ReactionCollectorInnMealReaction,
-	ReactionCollectorInnRoomReaction,
-	ReactionCollectorUpgradeItemReaction
+	ReactionCollectorInnRoomReaction
 } from "../../../../../Lib/src/packets/interaction/ReactionCollectorCity";
 import {
 	ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuInteraction
@@ -40,6 +39,7 @@ import { millisecondsToSeconds } from "../../../../../Lib/src/utils/TimeUtils";
 import { HomeFeatures } from "../../../../../Lib/src/types/HomeFeatures";
 import { Language } from "../../../../../Lib/src/Language";
 import { ItemRarity } from "../../../../../Lib/src/constants/ItemConstants";
+import { getHomeMenu } from "./home";
 
 function getMainMenu(context: PacketContext, interaction: CrowniclesInteraction, packet: ReactionCollectorCreationPacket, collectorTime: number, pseudo: string): CrowniclesNestedMenu {
 	const data = packet.data.data as ReactionCollectorCityData;
@@ -666,135 +666,6 @@ function getManageHomeMenu(context: PacketContext, interaction: CrowniclesIntera
 					);
 					if (reactionIndex !== -1) {
 						DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, selectInteraction, reactionIndex);
-					}
-				}
-				else if (selectedValue === "BACK_TO_CITY") {
-					await selectInteraction.deferUpdate();
-					await nestedMenus.changeToMainMenu();
-				}
-			});
-
-			return selectMenuCollector;
-		}
-	};
-}
-
-function getHomeMenu(
-	context: PacketContext,
-	interaction: CrowniclesInteraction,
-	packet: ReactionCollectorCreationPacket,
-	collectorTime: number,
-	pseudo: string
-): CrowniclesNestedMenu {
-	const data = (packet.data.data as ReactionCollectorCityData).home.owned!;
-	const lng = interaction.userLanguage;
-
-	// Build description based on available features
-	let description = i18n.t("commands:report.city.homes.homeIntroduction", { lng });
-
-	// Show upgrade station if available
-	const upgradeStation = data.upgradeStation;
-	if (upgradeStation) {
-		if (upgradeStation.upgradeableItems.length > 0) {
-			description += `\n\n${i18n.t("commands:report.city.homes.upgradeStationAvailable", { lng })}`;
-		}
-		else {
-			description += `\n\n${i18n.t("commands:report.city.homes.upgradeStationNoItems", { lng })}`;
-		}
-	}
-
-	// Build select menu
-	const selectMenu = new StringSelectMenuBuilder()
-		.setCustomId("HOME_MENU")
-		.setPlaceholder(i18n.t("commands:report.city.homes.homePlaceholder", { lng }));
-
-	// Add upgrade items if upgrade station is available
-	if (upgradeStation) {
-		for (let i = 0; i < upgradeStation.upgradeableItems.length; i++) {
-			const item = upgradeStation.upgradeableItems[i];
-
-			// Set maxValue to Infinity to not display max values
-			item.details.attack.maxValue = Infinity;
-			item.details.defense.maxValue = Infinity;
-			item.details.speed.maxValue = Infinity;
-
-			const itemDisplay = DisplayUtils.getItemDisplayWithStats(item.details, lng);
-			const parts = itemDisplay.split(" | ");
-			const label = parts[0].split("**")[1];
-
-			// Build material requirement string
-			const materialReqs = item.requiredMaterials.map(mat =>
-				`${CrowniclesIcons.materials[mat.materialId] || "❓"} ${mat.playerQuantity}/${mat.quantity}`).join(" ");
-
-			let rawDescription = `+${item.details.itemLevel} → +${item.nextLevel} | ${materialReqs}`;
-			if (!item.canUpgrade) {
-				rawDescription = `❌ ${rawDescription}`;
-			}
-
-			const option: {
-				label: string;
-				value: string;
-				emoji: string;
-				description?: string;
-			} = {
-				label,
-				value: `UPGRADE_ITEM_${i}`,
-				emoji: DisplayUtils.getItemIcon({
-					id: item.details.id,
-					category: item.details.itemCategory
-				})
-			};
-
-			if (rawDescription) {
-				option.description = rawDescription.length > 100
-					? `${rawDescription.slice(0, 99)}…`
-					: rawDescription;
-			}
-
-			selectMenu.addOptions(option);
-		}
-	}
-
-	// Back option
-	selectMenu.addOptions({
-		label: i18n.t("commands:report.city.homes.leaveHome", { lng }),
-		value: "BACK_TO_CITY",
-		emoji: CrowniclesIcons.city.exit
-	});
-
-	return {
-		embed: new CrowniclesEmbed()
-			.formatAuthor(i18n.t("commands:report.city.homes.homeTitle", {
-				lng,
-				pseudo
-			}), interaction.user)
-			.setDescription(description),
-		components: [new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(selectMenu)],
-		createCollector: (nestedMenus, message): CrowniclesNestedMenuCollector => {
-			const selectMenuCollector = message.createMessageComponentCollector({ time: collectorTime });
-
-			selectMenuCollector.on("collect", async (selectInteraction: StringSelectMenuInteraction) => {
-				if (selectInteraction.user.id !== interaction.user.id) {
-					await sendInteractionNotForYou(selectInteraction.user, selectInteraction, lng);
-					return;
-				}
-
-				const selectedValue = selectInteraction.values[0];
-
-				if (selectedValue.startsWith("UPGRADE_ITEM_") && upgradeStation) {
-					await selectInteraction.deferReply();
-					const index = parseInt(selectedValue.replace("UPGRADE_ITEM_", ""), 10);
-					if (index >= 0 && index < upgradeStation.upgradeableItems.length) {
-						const slot = upgradeStation.upgradeableItems[index].slot;
-						const itemCategory = upgradeStation.upgradeableItems[index].category;
-						const reactionIndex = packet.reactions.findIndex(
-							reaction => reaction.type === ReactionCollectorUpgradeItemReaction.name
-								&& (reaction.data as ReactionCollectorUpgradeItemReaction).slot === slot
-								&& (reaction.data as ReactionCollectorUpgradeItemReaction).itemCategory === itemCategory
-						);
-						if (reactionIndex !== -1) {
-							DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, selectInteraction, reactionIndex);
-						}
 					}
 				}
 				else if (selectedValue === "BACK_TO_CITY") {
