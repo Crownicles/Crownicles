@@ -218,41 +218,25 @@ export async function handleCommandInventoryPacketRes(packet: CommandInventoryPa
 	];
 
 	function getButtonLabels(view: InventoryView): {
-		prev: {
-			label: string; emoji: string;
-		};
-		next: {
-			label: string; emoji: string;
-		};
+		prev: string;
+		next: string;
 	} {
 		switch (view) {
 			case InventoryView.EQUIPPED:
 				return {
-					prev: {
-						label: i18n.t("commands:inventory.seeMaterials", { lng }), emoji: CrowniclesIcons.inventory.materials
-					},
-					next: {
-						label: i18n.t("commands:inventory.seeBackupItems", { lng }), emoji: CrowniclesIcons.inventory.stock
-					}
+					prev: i18n.t("commands:inventory.seeMaterials", { lng }),
+					next: i18n.t("commands:inventory.seeBackupItems", { lng })
 				};
 			case InventoryView.BACKUP:
 				return {
-					prev: {
-						label: i18n.t("commands:inventory.seeEquippedItems", { lng }), emoji: CrowniclesIcons.inventory.equipped
-					},
-					next: {
-						label: i18n.t("commands:inventory.seeMaterials", { lng }), emoji: CrowniclesIcons.inventory.materials
-					}
+					prev: i18n.t("commands:inventory.seeEquippedItems", { lng }),
+					next: i18n.t("commands:inventory.seeMaterials", { lng })
 				};
 			case InventoryView.MATERIALS:
 			default:
 				return {
-					prev: {
-						label: i18n.t("commands:inventory.seeBackupItems", { lng }), emoji: CrowniclesIcons.inventory.stock
-					},
-					next: {
-						label: i18n.t("commands:inventory.seeEquippedItems", { lng }), emoji: CrowniclesIcons.inventory.equipped
-					}
+					prev: i18n.t("commands:inventory.seeBackupItems", { lng }),
+					next: i18n.t("commands:inventory.seeEquippedItems", { lng })
 				};
 		}
 	}
@@ -262,14 +246,12 @@ export async function handleCommandInventoryPacketRes(packet: CommandInventoryPa
 		return new ActionRowBuilder<ButtonBuilder>().addComponents(
 			new ButtonBuilder()
 				.setCustomId(prevButtonId)
-				.setLabel(labels.prev.label)
-				.setEmoji(labels.prev.emoji)
+				.setLabel(labels.prev)
 				.setStyle(ButtonStyle.Secondary),
 			new ButtonBuilder()
 				.setCustomId(nextButtonId)
-				.setLabel(labels.next.label)
-				.setEmoji(labels.next.emoji)
-				.setStyle(ButtonStyle.Primary)
+				.setLabel(labels.next)
+				.setStyle(ButtonStyle.Secondary)
 		);
 	}
 
