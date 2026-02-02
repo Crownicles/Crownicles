@@ -104,27 +104,29 @@ export function getHomeMenu(
 		context,
 		packet,
 		homeData,
-		lng
+		lng,
+		user: interaction.user,
+		pseudo,
+		collectorTime
 	};
 
-	// Build description with introduction and available features
+	// Build home description
 	const descriptionParts: string[] = [i18n.t("commands:report.city.homes.homeIntroduction", { lng })];
 
-	const featureDescriptions = homeFeatureRegistry.buildDescription(handlerContext);
+	// Add feature descriptions
+	const featureDescriptions = homeFeatureRegistry.getDescriptionLines(handlerContext);
 	if (featureDescriptions.length > 0) {
 		descriptionParts.push("", ...featureDescriptions);
 	}
 
-	const description = descriptionParts.join("\n");
-
-	// Build select menu with feature options
+	// Build main select menu
 	const selectMenu = new StringSelectMenuBuilder()
-		.setCustomId("HOME_MENU")
+		.setCustomId("HOME_MAIN_MENU")
 		.setPlaceholder(i18n.t("commands:report.city.homes.homePlaceholder", { lng }));
 
-	// Add feature options from all available handlers
-	const menuOptions = homeFeatureRegistry.getMenuOptions(handlerContext);
-	for (const option of menuOptions) {
+	// Add feature options
+	const featureOptions = homeFeatureRegistry.getMenuOptions(handlerContext);
+	for (const option of featureOptions) {
 		selectMenu.addOptions({
 			label: option.label,
 			description: option.description,
@@ -133,11 +135,11 @@ export function getHomeMenu(
 		});
 	}
 
-	// Add back option (always present)
+	// Add leave option
 	selectMenu.addOptions({
 		label: i18n.t("commands:report.city.homes.leaveHome", { lng }),
-		value: "BACK_TO_CITY",
-		emoji: CrowniclesIcons.city.exit
+		value: "LEAVE_HOME",
+		emoji: CrowniclesIcons.collectors.back
 	});
 
 	return {
@@ -146,7 +148,7 @@ export function getHomeMenu(
 				lng,
 				pseudo
 			}), interaction.user)
-			.setDescription(description),
+			.setDescription(descriptionParts.join("\n")),
 		components: [new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(selectMenu)],
 		createCollector: (nestedMenus, message): CrowniclesNestedMenuCollector => {
 			const selectMenuCollector = message.createMessageComponentCollector({ time: collectorTime });
@@ -159,14 +161,14 @@ export function getHomeMenu(
 
 				const selectedValue = selectInteraction.values[0];
 
-				// Handle back to city
-				if (selectedValue === "BACK_TO_CITY") {
+				// Handle leave home
+				if (selectedValue === "LEAVE_HOME") {
 					await selectInteraction.deferUpdate();
 					await nestedMenus.changeToMainMenu();
 					return;
 				}
 
-				// Delegate to registered feature handlers
+				// Handle feature selection
 				await homeFeatureRegistry.handleMainMenuSelection(
 					handlerContext,
 					selectedValue,
@@ -197,7 +199,10 @@ export function getHomeSubMenus(
 		context,
 		packet,
 		homeData,
-		lng
+		lng,
+		user: interaction.user,
+		pseudo,
+		collectorTime
 	};
 
 	const subMenus = new Map<string, CrowniclesNestedMenu>();

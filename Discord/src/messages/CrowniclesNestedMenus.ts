@@ -36,6 +36,13 @@ export class CrowniclesNestedMenus {
 		this._onChangeMenu = _onChangeMenu;
 	}
 
+	/**
+	 * Register a new menu dynamically
+	 */
+	public registerMenu(id: string, menu: CrowniclesNestedMenu): void {
+		this._menus.set(id, menu);
+	}
+
 	public async send(interaction: CrowniclesInteraction): Promise<Message> {
 		const msg = await interaction.editReply({
 			embeds: [this._mainMenu.embed],
