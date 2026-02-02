@@ -67,33 +67,15 @@ import {
 	ItemEnchantment, ItemEnchantmentKind
 } from "../../../../../../Lib/src/types/ItemEnchantment";
 import { EnchantmentConstants } from "../../../../../../Lib/src/constants/EnchantmentConstants";
+import {
+	EditValueParameters, HealthEditValueParameters, MissionHealthParameter
+} from "../EditValueParameters";
 
 export type PlayerEditValueParameters = {
 	player: Player;
 	amount: number;
 	response: CrowniclesPacket[];
 	reason: NumberChangeReason;
-};
-
-export type EditValueParameters = {
-	amount: number;
-	response: CrowniclesPacket[];
-	reason: NumberChangeReason;
-};
-
-type MissionHealthParameter = {
-	shouldPokeMission: boolean;
-	overHealCountsForMission: boolean;
-};
-
-export type HealthEditValueParameters = EditValueParameters & {
-	missionHealthParameter?: MissionHealthParameter;
-
-	/**
-	 * When provided, enchantments will be considered for max health calculation.
-	 * If not provided, base max health is used.
-	 */
-	playerActiveObjects?: PlayerActiveObjects;
 };
 
 type ressourcesLostOnPveFaint = {
