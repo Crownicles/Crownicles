@@ -19,6 +19,7 @@ import {
 	commandRequires, CommandUtils
 } from "../../core/utils/CommandUtils";
 import { PlayerTalismansManager } from "../../core/database/game/models/PlayerTalismans";
+import { Materials } from "../../core/database/game/models/Material";
 
 export default class InventoryCommand {
 	@commandRequires(CommandInventoryPacketReq, {
@@ -39,6 +40,7 @@ export default class InventoryCommand {
 		const items = await InventorySlots.getOfPlayer(toCheckPlayer.id);
 		const invInfo = await InventoryInfos.getOfPlayer(toCheckPlayer.id);
 		const talismans = await PlayerTalismansManager.getOfPlayer(toCheckPlayer.id);
+		const playerMaterials = await Materials.getPlayerMaterials(toCheckPlayer.id);
 
 		const weapon = items.find(item => item.isWeapon() && item.isEquipped());
 		const armor = items.find(item => item.isArmor() && item.isEquipped());
@@ -80,7 +82,11 @@ export default class InventoryCommand {
 					armors: invInfo.armorSlots,
 					potions: invInfo.potionSlots,
 					objects: invInfo.objectSlots
-				}
+				},
+				materials: playerMaterials.map(m => ({
+					materialId: m.materialId,
+					quantity: m.quantity
+				}))
 			}
 		}));
 	}
