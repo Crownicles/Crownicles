@@ -42,6 +42,7 @@ import { ItemRarity } from "../../../../../Lib/src/constants/ItemConstants";
 import {
 	getHomeMenu, getHomeSubMenus
 } from "./home";
+import { HomeMenuParams } from "./home/HomeMenuTypes";
 
 function getMainMenu(context: PacketContext, interaction: CrowniclesInteraction, packet: ReactionCollectorCreationPacket, collectorTime: number, pseudo: string): CrowniclesNestedMenu {
 	const data = packet.data.data as ReactionCollectorCityData;
@@ -684,13 +685,10 @@ function getManageHomeMenu(context: PacketContext, interaction: CrowniclesIntera
 /**
  * Build the city sub-menus (inns, enchanter, home, manage home)
  */
-function buildCitySubMenus(
-	context: PacketContext,
-	interaction: CrowniclesInteraction,
-	packet: ReactionCollectorCreationPacket,
-	collectorTime: number,
-	pseudo: string
-): Map<string, CrowniclesNestedMenu> {
+function buildCitySubMenus(params: HomeMenuParams): Map<string, CrowniclesNestedMenu> {
+	const {
+		context, interaction, packet, collectorTime, pseudo
+	} = params;
 	const menus = new Map<string, CrowniclesNestedMenu>();
 	const cityData = packet.data.data as ReactionCollectorCityData;
 
@@ -706,12 +704,9 @@ function buildCitySubMenus(
 
 	// Add home menus
 	if (cityData.home.owned) {
-		const homeMenuParams = {
-			context, interaction, packet, collectorTime, pseudo
-		};
-		menus.set("HOME_MENU", getHomeMenu(homeMenuParams));
+		menus.set("HOME_MENU", getHomeMenu(params));
 
-		for (const [key, menu] of getHomeSubMenus(homeMenuParams)) {
+		for (const [key, menu] of getHomeSubMenus(params)) {
 			menus.set(key, menu);
 		}
 	}
@@ -732,8 +727,11 @@ export class ReportCityMenu {
 		}
 		const collectorTime = packet.endTime - Date.now();
 		const pseudo = await DisplayUtils.getEscapedUsername(context.keycloakId!, interaction.userLanguage);
+		const menuParams = {
+			context, interaction, packet, collectorTime, pseudo
+		};
 
-		const menus = buildCitySubMenus(context, interaction, packet, collectorTime, pseudo);
+		const menus = buildCitySubMenus(menuParams);
 
 		const nestedMenus = new CrowniclesNestedMenus(
 			getMainMenu(context, interaction, packet, collectorTime, pseudo),

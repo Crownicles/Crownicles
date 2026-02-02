@@ -141,104 +141,114 @@ function getBackupEmbed(packet: CommandInventoryPacketRes, pseudo: string, lng: 
 	throw new Error("Inventory packet data must not be undefined");
 }
 
-function getMaterialsEmbed(packet: CommandInventoryPacketRes, pseudo: string, lng: Language): CrowniclesEmbed {
-	if (packet.data) {
-		const materials = packet.data.materials;
-		const embed = new CrowniclesEmbed()
-			.setTitle(i18n.t("commands:inventory.materialsTitle", {
-				lng,
-				pseudo
-			}));
+/**
+ * Splits an array into chunks of specified size
+ */
+function splitIntoColumns<T>(array: T[], columnCount: number): T[][] {
+	const itemsPerColumn = Math.ceil(array.length / columnCount);
+	const columns: T[][] = [];
 
-		if (materials.length === 0) {
-			embed.addFields([
-				{
-					name: i18n.t("commands:inventory.materialsField", {
-						lng,
-						count: 0
-					}),
-					value: i18n.t("commands:inventory.noMaterials", { lng }),
-					inline: false
-				}
-			]);
-			return embed;
+	for (let i = 0; i < columnCount; i++) {
+		const start = i * itemsPerColumn;
+		if (start < array.length) {
+			columns.push(array.slice(start, start + itemsPerColumn));
 		}
+	}
 
-		// Sort materials by quantity (descending) then by id
-		const sortedMaterials = [...materials].sort((a, b) => b.quantity - a.quantity || a.materialId - b.materialId);
+	return columns;
+}
 
-		// Build material lines
-		const materialLines = sortedMaterials.map(m => {
-			const emoji = CrowniclesIcons.materials[m.materialId] ?? "📦";
-			const name = i18n.t(`models:materials.${m.materialId}`, { lng });
-			return `${emoji} **${name}** x${m.quantity}`;
+/**
+ * Builds a field from a column of material lines, respecting the character limit
+ */
+function buildColumnField(
+	column: string[],
+	isFirstColumn: boolean,
+	materialsCount: number,
+	lng: Language,
+	maxFieldLength: number
+): EmbedField[] {
+	const fields: EmbedField[] = [];
+	let currentFieldValue = "";
+
+	for (const line of column) {
+		const potentialValue = currentFieldValue ? `${currentFieldValue}\n${line}` : line;
+
+		if (potentialValue.length > maxFieldLength && currentFieldValue) {
+			fields.push({
+				name: isFirstColumn && fields.length === 0
+					? i18n.t("commands:inventory.materialsField", {
+						lng, count: materialsCount
+					})
+					: "\u200B",
+				value: currentFieldValue,
+				inline: true
+			});
+			currentFieldValue = line;
+		}
+		else {
+			currentFieldValue = potentialValue;
+		}
+	}
+
+	if (currentFieldValue) {
+		fields.push({
+			name: isFirstColumn && fields.length === 0
+				? i18n.t("commands:inventory.materialsField", {
+					lng, count: materialsCount
+				})
+				: "\u200B",
+			value: currentFieldValue,
+			inline: true
 		});
+	}
 
-		// Split materials into 3 columns for inline display
-		const columnCount = 3;
-		const maxFieldLength = 1024;
-		const fields: EmbedField[] = [];
+	return fields;
+}
 
-		// Calculate items per column (distribute evenly)
-		const itemsPerColumn = Math.ceil(materialLines.length / columnCount);
+function getMaterialsEmbed(packet: CommandInventoryPacketRes, pseudo: string, lng: Language): CrowniclesEmbed {
+	if (!packet.data) {
+		throw new Error("Inventory packet data must not be undefined");
+	}
 
-		// Create column chunks
-		const columns: string[][] = [];
-		for (let i = 0; i < columnCount; i++) {
-			const start = i * itemsPerColumn;
-			const end = Math.min(start + itemsPerColumn, materialLines.length);
-			if (start < materialLines.length) {
-				columns.push(materialLines.slice(start, end));
+	const materials = packet.data.materials;
+	const embed = new CrowniclesEmbed()
+		.setTitle(i18n.t("commands:inventory.materialsTitle", {
+			lng,
+			pseudo
+		}));
+
+	if (materials.length === 0) {
+		embed.addFields([
+			{
+				name: i18n.t("commands:inventory.materialsField", {
+					lng, count: 0
+				}),
+				value: i18n.t("commands:inventory.noMaterials", { lng }),
+				inline: false
 			}
-		}
-
-		// Build fields for each column, respecting character limit
-		for (let colIndex = 0; colIndex < columns.length; colIndex++) {
-			const column = columns[colIndex];
-			let currentFieldValue = "";
-
-			for (const line of column) {
-				const potentialValue = currentFieldValue ? `${currentFieldValue}\n${line}` : line;
-
-				if (potentialValue.length > maxFieldLength) {
-					// Push current field and start new one
-					if (currentFieldValue) {
-						fields.push({
-							name: colIndex === 0 && fields.length === 0
-								? i18n.t("commands:inventory.materialsField", {
-									lng, count: materials.length
-								})
-								: "\u200B",
-							value: currentFieldValue,
-							inline: true
-						});
-					}
-					currentFieldValue = line;
-				}
-				else {
-					currentFieldValue = potentialValue;
-				}
-			}
-
-			// Add remaining content from this column
-			if (currentFieldValue) {
-				fields.push({
-					name: colIndex === 0 && fields.length === 0
-						? i18n.t("commands:inventory.materialsField", {
-							lng, count: materials.length
-						})
-						: "\u200B",
-					value: currentFieldValue,
-					inline: true
-				});
-			}
-		}
-
-		embed.addFields(fields);
+		]);
 		return embed;
 	}
 
-	throw new Error("Inventory packet data must not be undefined");
+	// Sort materials and build display lines
+	const sortedMaterials = [...materials].sort((a, b) => b.quantity - a.quantity || a.materialId - b.materialId);
+	const materialLines = sortedMaterials.map(m => {
+		const emoji = CrowniclesIcons.materials[m.materialId] ?? "📦";
+		const name = i18n.t(`models:materials.${m.materialId}`, { lng });
+		return `${emoji} **${name}** x${m.quantity}`;
+	});
+
+	// Split into columns and build fields
+	const columns = splitIntoColumns(materialLines, 3);
+	const fields: EmbedField[] = [];
+
+	for (let i = 0; i < columns.length; i++) {
+		fields.push(...buildColumnField(columns[i], i === 0, materials.length, lng, 1024));
+	}
+
+	embed.addFields(fields);
+	return embed;
 }
 
 export async function handleCommandInventoryPacketRes(packet: CommandInventoryPacketRes, context: PacketContext): Promise<void> {
