@@ -2170,7 +2170,8 @@ export const CrowniclesIcons: {
 		petRarity: "⭐",
 		glory: "✨",
 		timeGain: "⌛",
-		none: "❌"
+		none: "❌",
+		token: "🪙"
 	},
 	shopItems: {
 		randomItem: "❓",
