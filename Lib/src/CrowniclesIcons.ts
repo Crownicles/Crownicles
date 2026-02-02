@@ -2466,6 +2466,7 @@ export const CrowniclesIcons: {
 	},
 	inventory: {
 		empty: "⬛",
+		equipped: "⚔️",
 		stock: "📦",
 		materials: "🧱"
 	},
