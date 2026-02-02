@@ -123,6 +123,54 @@ export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 	}
 
 	/**
+	 * Build the description for an item's upgrade details
+	 */
+	private buildItemDescription(
+		ctx: HomeFeatureHandlerContext,
+		item: NonNullable<typeof ctx.homeData.upgradeStation>["upgradeableItems"][0]
+	): string {
+		const materialLines = item.requiredMaterials.map(mat => {
+			const icon = CrowniclesIcons.materials[mat.materialId] ?? CrowniclesIcons.collectors.question;
+			const materialName = i18n.t(`models:materials.${mat.materialId}`, { lng: ctx.lng });
+			const hasEnough = mat.playerQuantity >= mat.quantity;
+			const statusIcon = hasEnough ? CrowniclesIcons.collectors.accept : CrowniclesIcons.collectors.refuse;
+			return `${statusIcon} ${icon} **${materialName}** : ${mat.playerQuantity}/${mat.quantity}`;
+		});
+
+		item.details.attack.maxValue = Infinity;
+		item.details.defense.maxValue = Infinity;
+		item.details.speed.maxValue = Infinity;
+		const itemDisplay = DisplayUtils.getItemDisplayWithStats(item.details, ctx.lng);
+
+		return i18n.t("commands:report.city.homes.upgradeStation.itemDetails", {
+			lng: ctx.lng,
+			itemDisplay,
+			currentLevel: item.details.itemLevel ?? 0,
+			nextLevel: item.nextLevel,
+			materials: materialLines.join("\n")
+		});
+	}
+
+	/**
+	 * Build the action buttons for the item detail view
+	 */
+	private buildItemDetailButtons(ctx: HomeFeatureHandlerContext, itemIndex: number, canUpgrade: boolean): ActionRowBuilder<ButtonBuilder> {
+		const confirmButton = new ButtonBuilder()
+			.setCustomId(`${UpgradeStationFeatureHandler.CONFIRM_PREFIX}${itemIndex}`)
+			.setLabel(i18n.t("commands:report.city.homes.upgradeStation.confirmUpgrade", { lng: ctx.lng }))
+			.setStyle(canUpgrade ? ButtonStyle.Success : ButtonStyle.Secondary)
+			.setDisabled(!canUpgrade);
+
+		const backButton = new ButtonBuilder()
+			.setCustomId(UpgradeStationFeatureHandler.BACK_TO_ITEMS)
+			.setLabel(i18n.t("commands:report.city.homes.upgradeStation.backToItems", { lng: ctx.lng }))
+			.setStyle(ButtonStyle.Secondary)
+			.setEmoji(CrowniclesIcons.collectors.back);
+
+		return new ActionRowBuilder<ButtonBuilder>().addComponents(backButton, confirmButton);
+	}
+
+	/**
 	 * Show detailed view for a selected item with material requirements
 	 */
 	private async showItemDetails(
@@ -136,48 +184,10 @@ export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 			return;
 		}
 
-		const upgradeStation = ctx.homeData.upgradeStation!;
-		const item = upgradeStation.upgradeableItems[itemIndex];
+		const item = ctx.homeData.upgradeStation!.upgradeableItems[itemIndex];
 		const menuId = `${UpgradeStationFeatureHandler.ITEM_DETAIL_MENU_PREFIX}${itemIndex}`;
+		const description = this.buildItemDescription(ctx, item);
 
-		// Build material lines for description
-		const materialLines = item.requiredMaterials.map(mat => {
-			const icon = CrowniclesIcons.materials[mat.materialId] ?? CrowniclesIcons.collectors.question;
-			const materialName = i18n.t(`models:materials.${mat.materialId}`, { lng: ctx.lng });
-			const hasEnough = mat.playerQuantity >= mat.quantity;
-			const statusIcon = hasEnough ? CrowniclesIcons.collectors.accept : CrowniclesIcons.collectors.refuse;
-			return `${statusIcon} ${icon} **${materialName}** : ${mat.playerQuantity}/${mat.quantity}`;
-		});
-
-		// Get item display
-		item.details.attack.maxValue = Infinity;
-		item.details.defense.maxValue = Infinity;
-		item.details.speed.maxValue = Infinity;
-		const itemDisplay = DisplayUtils.getItemDisplayWithStats(item.details, ctx.lng);
-
-		// Build description
-		const description = i18n.t("commands:report.city.homes.upgradeStation.itemDetails", {
-			lng: ctx.lng,
-			itemDisplay,
-			currentLevel: item.details.itemLevel ?? 0,
-			nextLevel: item.nextLevel,
-			materials: materialLines.join("\n")
-		});
-
-		// Build buttons
-		const confirmButton = new ButtonBuilder()
-			.setCustomId(`${UpgradeStationFeatureHandler.CONFIRM_PREFIX}${itemIndex}`)
-			.setLabel(i18n.t("commands:report.city.homes.upgradeStation.confirmUpgrade", { lng: ctx.lng }))
-			.setStyle(item.canUpgrade ? ButtonStyle.Success : ButtonStyle.Secondary)
-			.setDisabled(!item.canUpgrade);
-
-		const backButton = new ButtonBuilder()
-			.setCustomId(UpgradeStationFeatureHandler.BACK_TO_ITEMS)
-			.setLabel(i18n.t("commands:report.city.homes.upgradeStation.backToItems", { lng: ctx.lng }))
-			.setStyle(ButtonStyle.Secondary)
-			.setEmoji(CrowniclesIcons.collectors.back);
-
-		// Create a new menu for this item's details
 		nestedMenus.registerMenu(menuId, {
 			embed: new CrowniclesEmbed()
 				.formatAuthor(
@@ -187,7 +197,7 @@ export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 					ctx.user
 				)
 				.setDescription(description),
-			components: [new ActionRowBuilder<ButtonBuilder>().addComponents(backButton, confirmButton)],
+			components: [this.buildItemDetailButtons(ctx, itemIndex, item.canUpgrade)],
 			createCollector: (menus, message) => {
 				const buttonCollector = message.createMessageComponentCollector({ time: ctx.collectorTime });
 
@@ -197,15 +207,13 @@ export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 						return;
 					}
 
-					const buttonId = buttonInteraction.customId;
-
-					if (buttonId === UpgradeStationFeatureHandler.BACK_TO_ITEMS) {
+					if (buttonInteraction.customId === UpgradeStationFeatureHandler.BACK_TO_ITEMS) {
 						await buttonInteraction.deferUpdate();
 						await menus.changeMenu("HOME_UPGRADE_STATION");
 						return;
 					}
 
-					if (buttonId.startsWith(UpgradeStationFeatureHandler.CONFIRM_PREFIX)) {
+					if (buttonInteraction.customId.startsWith(UpgradeStationFeatureHandler.CONFIRM_PREFIX)) {
 						await this.confirmUpgrade(ctx, itemIndex, buttonInteraction);
 					}
 				});

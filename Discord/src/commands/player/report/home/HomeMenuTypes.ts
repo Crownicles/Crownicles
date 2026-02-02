@@ -6,11 +6,23 @@ import { ReactionCollectorCityData } from "../../../../../../Lib/src/packets/int
 import { CrowniclesNestedMenus } from "../../../../messages/CrowniclesNestedMenus";
 import { PacketContext } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import { ReactionCollectorCreationPacket } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
+import { CrowniclesInteraction } from "../../../../messages/CrowniclesInteraction";
 
 /**
  * Union type for component interactions (select menu or button)
  */
 export type ComponentInteraction = StringSelectMenuInteraction | ButtonInteraction;
+
+/**
+ * Parameters for creating home menus
+ */
+export interface HomeMenuParams {
+	context: PacketContext;
+	interaction: CrowniclesInteraction;
+	packet: ReactionCollectorCreationPacket;
+	collectorTime: number;
+	pseudo: string;
+}
 
 /**
  * Data needed by home feature handlers

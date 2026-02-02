@@ -3,18 +3,15 @@ import {
 } from "discord.js";
 import { CrowniclesEmbed } from "../../../../messages/CrowniclesEmbed";
 import i18n from "../../../../translations/i18n";
-import { CrowniclesInteraction } from "../../../../messages/CrowniclesInteraction";
-import { PacketContext } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import { ReactionCollectorCityData } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorCity";
 import { CrowniclesIcons } from "../../../../../../Lib/src/CrowniclesIcons";
 import {
 	CrowniclesNestedMenu, CrowniclesNestedMenuCollector
 } from "../../../../messages/CrowniclesNestedMenus";
-import { ReactionCollectorCreationPacket } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { sendInteractionNotForYou } from "../../../../utils/ErrorUtils";
 import { homeFeatureRegistry } from "./HomeFeatureRegistry";
 import {
-	HomeFeatureHandler, HomeFeatureHandlerContext
+	HomeFeatureHandler, HomeFeatureHandlerContext, HomeMenuParams
 } from "./HomeMenuTypes";
 
 /**
@@ -23,11 +20,9 @@ import {
 function createFeatureSubMenu(
 	handler: HomeFeatureHandler,
 	handlerContext: HomeFeatureHandlerContext,
-	interaction: CrowniclesInteraction,
-	collectorTime: number,
-	pseudo: string
+	params: HomeMenuParams
 ): CrowniclesNestedMenu {
-	const lng = interaction.userLanguage;
+	const lng = params.interaction.userLanguage;
 
 	// Build select menu with feature options
 	const selectMenu = new StringSelectMenuBuilder()
@@ -46,14 +41,14 @@ function createFeatureSubMenu(
 
 	return {
 		embed: new CrowniclesEmbed()
-			.formatAuthor(handler.getSubMenuTitle(handlerContext, pseudo), interaction.user)
+			.formatAuthor(handler.getSubMenuTitle(handlerContext, params.pseudo), params.interaction.user)
 			.setDescription(handler.getSubMenuDescription(handlerContext)),
 		components: [new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(selectMenu)],
 		createCollector: (nestedMenus, message): CrowniclesNestedMenuCollector => {
-			const componentCollector = message.createMessageComponentCollector({ time: collectorTime });
+			const componentCollector = message.createMessageComponentCollector({ time: params.collectorTime });
 
 			componentCollector.on("collect", async (componentInteraction: StringSelectMenuInteraction | ButtonInteraction) => {
-				if (componentInteraction.user.id !== interaction.user.id) {
+				if (componentInteraction.user.id !== params.interaction.user.id) {
 					await sendInteractionNotForYou(componentInteraction.user, componentInteraction, lng);
 					return;
 				}
@@ -82,19 +77,12 @@ function createFeatureSubMenu(
  * This menu displays available features (upgrade station, bed, chest, etc.)
  * and allows navigation to sub-menus for each feature.
  *
- * @param context - The packet context
- * @param interaction - The Discord interaction
- * @param packet - The reaction collector packet containing home data
- * @param collectorTime - Time before collector expires
- * @param pseudo - Player's display name
+ * @param params - Parameters for creating the home menu
  */
-export function getHomeMenu(
-	context: PacketContext,
-	interaction: CrowniclesInteraction,
-	packet: ReactionCollectorCreationPacket,
-	collectorTime: number,
-	pseudo: string
-): CrowniclesNestedMenu {
+export function getHomeMenu(params: HomeMenuParams): CrowniclesNestedMenu {
+	const {
+		context, interaction, packet, collectorTime, pseudo
+	} = params;
 	const homeData = (packet.data.data as ReactionCollectorCityData).home.owned!;
 	const lng = interaction.userLanguage;
 
@@ -184,13 +172,10 @@ export function getHomeMenu(
 /**
  * Get all home sub-menus for registration in the nested menu system
  */
-export function getHomeSubMenus(
-	context: PacketContext,
-	interaction: CrowniclesInteraction,
-	packet: ReactionCollectorCreationPacket,
-	collectorTime: number,
-	pseudo: string
-): Map<string, CrowniclesNestedMenu> {
+export function getHomeSubMenus(params: HomeMenuParams): Map<string, CrowniclesNestedMenu> {
+	const {
+		context, interaction, packet, collectorTime, pseudo
+	} = params;
 	const homeData = (packet.data.data as ReactionCollectorCityData).home.owned!;
 	const lng = interaction.userLanguage;
 
@@ -212,7 +197,7 @@ export function getHomeSubMenus(
 		if (option) {
 			subMenus.set(
 				option.value,
-				createFeatureSubMenu(handler, handlerContext, interaction, collectorTime, pseudo)
+				createFeatureSubMenu(handler, handlerContext, params)
 			);
 		}
 	}
