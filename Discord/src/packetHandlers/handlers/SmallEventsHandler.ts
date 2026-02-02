@@ -105,6 +105,7 @@ import {
 	SmallEventExpeditionAdvicePacket,
 	ExpeditionAdviceInteractionType
 } from "../../../../Lib/src/packets/smallEvents/SmallEventExpeditionAdvicePacket";
+import { SmallEventFindMaterialPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventFindMaterialPacket";
 
 const PET_TIME_INTERACTIONS = new Set([
 	"gainTime",
@@ -1185,6 +1186,30 @@ export default class SmallEventsHandler {
 
 		await interaction.editReply({
 			embeds: [new CrowniclesSmallEventEmbed("expeditionAdvice", story, interaction.user, lng)]
+		});
+	}
+
+	@packetHandler(SmallEventFindMaterialPacket)
+	async smallEventFindMaterial(context: PacketContext, packet: SmallEventFindMaterialPacket): Promise<void> {
+		const interaction = DiscordCache.getInteraction(context.discord!.interaction);
+		const lng = interaction!.userLanguage;
+
+		const typeStory = i18n.t(`smallEvents:findMaterial.typesStories.${packet.materialType}`, { lng });
+		const foundStory = i18n.t(`smallEvents:findMaterial.foundStories.${packet.materialRarity}`, {
+			lng,
+			materialId: packet.materialId,
+			materialEmote: CrowniclesIcons.materials[packet.materialType]
+		});
+
+		await interaction?.editReply({
+			embeds: [
+				new CrowniclesSmallEventEmbed(
+					"findMaterial",
+					`${getRandomSmallEventIntro(lng)}${typeStory}\n\n${foundStory}`,
+					interaction.user,
+					lng
+				)
+			]
 		});
 	}
 }
