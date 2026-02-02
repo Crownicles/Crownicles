@@ -8,6 +8,7 @@ export class HomeLevel {
 		chestSlots: 0,
 		craftPotionMaximumRarity: ItemRarity.BASIC,
 		upgradeItemMaximumRarity: ItemRarity.BASIC,
+		maxItemUpgradeLevel: 1,
 		gardenPlots: 0,
 		gardenEarthQuality: GardenEarthQuality.POOR
 	});
@@ -17,6 +18,7 @@ export class HomeLevel {
 		chestSlots: 1,
 		craftPotionMaximumRarity: ItemRarity.UNCOMMON,
 		upgradeItemMaximumRarity: ItemRarity.UNCOMMON,
+		maxItemUpgradeLevel: 1,
 		gardenPlots: 0,
 		gardenEarthQuality: GardenEarthQuality.POOR
 	});
@@ -26,6 +28,7 @@ export class HomeLevel {
 		chestSlots: 2,
 		craftPotionMaximumRarity: ItemRarity.EXOTIC,
 		upgradeItemMaximumRarity: ItemRarity.EXOTIC,
+		maxItemUpgradeLevel: 1,
 		gardenPlots: 1,
 		gardenEarthQuality: GardenEarthQuality.POOR
 	});
@@ -35,6 +38,7 @@ export class HomeLevel {
 		chestSlots: 2,
 		craftPotionMaximumRarity: ItemRarity.RARE,
 		upgradeItemMaximumRarity: ItemRarity.RARE,
+		maxItemUpgradeLevel: 1,
 		gardenPlots: 2,
 		gardenEarthQuality: GardenEarthQuality.POOR
 	});
@@ -44,6 +48,7 @@ export class HomeLevel {
 		chestSlots: 3,
 		craftPotionMaximumRarity: ItemRarity.SPECIAL,
 		upgradeItemMaximumRarity: ItemRarity.SPECIAL,
+		maxItemUpgradeLevel: 2,
 		gardenPlots: 3,
 		gardenEarthQuality: GardenEarthQuality.AVERAGE
 	});
@@ -53,6 +58,7 @@ export class HomeLevel {
 		chestSlots: 4,
 		craftPotionMaximumRarity: ItemRarity.EPIC,
 		upgradeItemMaximumRarity: ItemRarity.EPIC,
+		maxItemUpgradeLevel: 2,
 		gardenPlots: 3,
 		gardenEarthQuality: GardenEarthQuality.AVERAGE
 	});
@@ -62,6 +68,7 @@ export class HomeLevel {
 		chestSlots: 5,
 		craftPotionMaximumRarity: ItemRarity.LEGENDARY,
 		upgradeItemMaximumRarity: ItemRarity.LEGENDARY,
+		maxItemUpgradeLevel: 2,
 		gardenPlots: 4,
 		gardenEarthQuality: GardenEarthQuality.RICH
 	});
@@ -71,6 +78,7 @@ export class HomeLevel {
 		chestSlots: 6,
 		craftPotionMaximumRarity: ItemRarity.MYTHICAL,
 		upgradeItemMaximumRarity: ItemRarity.MYTHICAL,
+		maxItemUpgradeLevel: 2,
 		gardenPlots: 5,
 		gardenEarthQuality: GardenEarthQuality.RICH
 	});

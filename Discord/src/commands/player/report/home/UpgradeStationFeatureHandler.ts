@@ -11,9 +11,7 @@ import { DisplayUtils } from "../../../../utils/DisplayUtils";
 import { CrowniclesIcons } from "../../../../../../Lib/src/CrowniclesIcons";
 import { ReactionCollectorUpgradeItemReaction } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorCity";
 import { DiscordCollectorUtils } from "../../../../utils/DiscordCollectorUtils";
-import {
-	ItemConstants, ItemRarity
-} from "../../../../../../Lib/src/constants/ItemConstants";
+import { ItemRarity } from "../../../../../../Lib/src/constants/ItemConstants";
 import { CrowniclesEmbed } from "../../../../messages/CrowniclesEmbed";
 import { sendInteractionNotForYou } from "../../../../utils/ErrorUtils";
 
@@ -309,8 +307,8 @@ export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 		// Add explanatory text about which items are not shown
 		lines.push("");
 
-		// Explain level limitation
-		const maxLevelAtHome = ItemConstants.MAX_UPGRADE_LEVEL_AT_HOME;
+		// Explain level limitation based on home features
+		const maxLevelAtHome = ctx.homeData.features.maxItemUpgradeLevel;
 		lines.push(i18n.t("commands:report.city.homes.upgradeStation.levelLimitation", {
 			lng: ctx.lng,
 			maxLevel: maxLevelAtHome

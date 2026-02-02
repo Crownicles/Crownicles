@@ -128,7 +128,6 @@ import { Homes } from "../../core/database/game/models/Home";
 import { HomeLevel } from "../../../../Lib/src/types/HomeLevel";
 import { PostFightPetLoveOutcomes } from "../../../../Lib/src/constants/PetConstants";
 import { Materials } from "../../core/database/game/models/Material";
-import { ItemConstants } from "../../../../Lib/src/constants/ItemConstants";
 import { WeaponDataController } from "../../data/Weapon";
 import { ArmorDataController } from "../../data/Armor";
 import {
@@ -513,8 +512,9 @@ async function handleUpgradeItemReaction(
 		return;
 	}
 
-	// Check if item is already at max level for home
-	if (itemToUpgrade.nextLevel > ItemConstants.MAX_UPGRADE_LEVEL_AT_HOME) {
+	// Check if item is already at max level for this home
+	const maxLevelAtHome = data.home.owned?.features.maxItemUpgradeLevel ?? 1;
+	if (itemToUpgrade.nextLevel > maxLevelAtHome) {
 		response.push(makePacket(CommandReportUpgradeItemMaxLevelRes, {}));
 		return;
 	}
@@ -669,7 +669,7 @@ function buildUpgradeStationData(
 	player: Player
 ): NonNullable<NonNullable<ReactionCollectorCityData["home"]["owned"]>["upgradeStation"]> {
 	const maxUpgradeableRarity = homeLevel.features.upgradeItemMaximumRarity;
-	const maxLevelAtHome = ItemConstants.MAX_UPGRADE_LEVEL_AT_HOME;
+	const maxLevelAtHome = homeLevel.features.maxItemUpgradeLevel;
 
 	const upgradeableItems: NonNullable<NonNullable<ReactionCollectorCityData["home"]["owned"]>["upgradeStation"]>["upgradeableItems"] = [];
 
