@@ -1,12 +1,9 @@
 import {
-	ComponentInteraction,
 	HomeFeatureHandler, HomeFeatureHandlerContext, HomeFeatureMenuOption
 } from "./HomeMenuTypes";
 import { UpgradeStationFeatureHandler } from "./UpgradeStationFeatureHandler";
 import { CrowniclesNestedMenus } from "../../../../messages/CrowniclesNestedMenus";
-import {
-	StringSelectMenuBuilder, StringSelectMenuInteraction
-} from "discord.js";
+import { StringSelectMenuInteraction } from "discord.js";
 
 /**
  * Registry for all home feature handlers.
@@ -71,13 +68,6 @@ class HomeFeatureRegistry {
 	}
 
 	/**
-	 * Add all sub-menu options from a specific handler
-	 */
-	public addSubMenuOptions(handler: HomeFeatureHandler, ctx: HomeFeatureHandlerContext, selectMenu: StringSelectMenuBuilder): void {
-		handler.addSubMenuOptions(ctx, selectMenu);
-	}
-
-	/**
 	 * Handle selection from main home menu
 	 */
 	public async handleMainMenuSelection(
@@ -94,19 +84,6 @@ class HomeFeatureRegistry {
 		}
 
 		return false;
-	}
-
-	/**
-	 * Handle selection from a feature's sub-menu
-	 */
-	public handleSubMenuSelection(
-		handler: HomeFeatureHandler,
-		ctx: HomeFeatureHandlerContext,
-		selectedValue: string,
-		componentInteraction: ComponentInteraction,
-		nestedMenus: CrowniclesNestedMenus
-	): Promise<boolean> {
-		return handler.handleSubMenuSelection(ctx, selectedValue, componentInteraction, nestedMenus);
 	}
 }
 

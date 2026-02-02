@@ -63,8 +63,7 @@ function createFeatureSubMenu(
 					? componentInteraction.values[0]
 					: componentInteraction.customId;
 
-				await homeFeatureRegistry.handleSubMenuSelection(
-					handler,
+				await handler.handleSubMenuSelection(
 					handlerContext,
 					selectedValue,
 					componentInteraction,

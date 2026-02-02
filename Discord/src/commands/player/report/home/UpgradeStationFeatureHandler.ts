@@ -34,6 +34,16 @@ export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 
 	private static readonly ITEM_DETAIL_MENU_PREFIX = "UPGRADE_ITEM_DETAIL_";
 
+	/**
+	 * Check if the given item index is valid for the upgrade station
+	 */
+	private isValidItemIndex(ctx: HomeFeatureHandlerContext, itemIndex: number): boolean {
+		const upgradeStation = ctx.homeData.upgradeStation;
+		return Boolean(upgradeStation)
+			&& itemIndex >= 0
+			&& itemIndex < (upgradeStation?.upgradeableItems.length ?? 0);
+	}
+
 	public isAvailable(ctx: HomeFeatureHandlerContext): boolean {
 		// Available if the home has an upgrade station (upgradeItemMaximumRarity > BASIC means it has one)
 		return ctx.homeData.features.upgradeItemMaximumRarity > ItemRarity.BASIC;
@@ -121,12 +131,12 @@ export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 		componentInteraction: ComponentInteraction,
 		nestedMenus: CrowniclesNestedMenus
 	): Promise<void> {
-		const upgradeStation = ctx.homeData.upgradeStation;
-		if (!upgradeStation || itemIndex < 0 || itemIndex >= upgradeStation.upgradeableItems.length) {
+		if (!this.isValidItemIndex(ctx, itemIndex)) {
 			await componentInteraction.deferUpdate();
 			return;
 		}
 
+		const upgradeStation = ctx.homeData.upgradeStation!;
 		const item = upgradeStation.upgradeableItems[itemIndex];
 		const menuId = `${UpgradeStationFeatureHandler.ITEM_DETAIL_MENU_PREFIX}${itemIndex}`;
 
@@ -216,11 +226,11 @@ export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 		itemIndex: number,
 		componentInteraction: ComponentInteraction
 	): Promise<void> {
-		const upgradeStation = ctx.homeData.upgradeStation;
-		if (!upgradeStation || itemIndex < 0 || itemIndex >= upgradeStation.upgradeableItems.length) {
+		if (!this.isValidItemIndex(ctx, itemIndex)) {
 			return;
 		}
 
+		const upgradeStation = ctx.homeData.upgradeStation!;
 		const item = upgradeStation.upgradeableItems[itemIndex];
 
 		await componentInteraction.deferReply();
