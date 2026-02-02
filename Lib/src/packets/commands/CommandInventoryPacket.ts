@@ -41,6 +41,10 @@ export class CommandInventoryPacketRes extends CrowniclesPacket {
 			potions: number;
 			objects: number;
 		};
+		materials: {
+			materialId: number;
+			quantity: number;
+		}[];
 	};
 
 	/**
