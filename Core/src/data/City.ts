@@ -37,6 +37,20 @@ export class City extends Data<string> {
 
 	public readonly shops?: string[];
 
+	/**
+	 * Whether this city has a blacksmith for item upgrades and disenchanting
+	 * Defaults to true if not specified
+	 */
+	public readonly hasBlacksmith?: boolean;
+
+	/**
+	 * Check if the city has a blacksmith
+	 * Returns true by default if not explicitly set to false
+	 */
+	public get blacksmithAvailable(): boolean {
+		return this.hasBlacksmith !== false;
+	}
+
 	public getTodayInnMeals(inn: CityInn, date: Date): InnMeal[] {
 		let seed = date.getDate();
 		seed += new Date().getMonth() * 100;

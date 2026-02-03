@@ -1,6 +1,10 @@
 import { packetHandler } from "../../../PacketHandler";
 import {
 	CommandReportBigEventResultRes,
+	CommandReportBlacksmithDisenchantRes,
+	CommandReportBlacksmithMissingMaterialsRes,
+	CommandReportBlacksmithNotEnoughMoneyRes,
+	CommandReportBlacksmithUpgradeRes,
 	CommandReportBuyHealAcceptPacketRes,
 	CommandReportBuyHealCannotHealOccupiedPacketRes,
 	CommandReportBuyHealNoAlterationPacketRes,
@@ -30,6 +34,9 @@ import {
 import { PacketContext } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	displayMonsterReward,
+	handleBlacksmithDisenchant,
+	handleBlacksmithNotEnoughMoney,
+	handleBlacksmithUpgrade,
 	handleBuyHealAccept,
 	handleBuyHealCannotHealOccupied,
 	handleBuyHealNoAlteration,
@@ -189,5 +196,26 @@ export default class ReportCommandPacketHandlers {
 	@packetHandler(CommandReportUpgradeItemMaxLevelRes)
 	async reportUpgradeItemMaxLevelRes(context: PacketContext, _packet: CommandReportUpgradeItemMaxLevelRes): Promise<void> {
 		await handleUpgradeItemMaxLevel(context);
+	}
+
+	// Blacksmith packet handlers
+	@packetHandler(CommandReportBlacksmithUpgradeRes)
+	async reportBlacksmithUpgradeRes(context: PacketContext, packet: CommandReportBlacksmithUpgradeRes): Promise<void> {
+		await handleBlacksmithUpgrade(packet, context);
+	}
+
+	@packetHandler(CommandReportBlacksmithNotEnoughMoneyRes)
+	async reportBlacksmithNotEnoughMoneyRes(context: PacketContext, _packet: CommandReportBlacksmithNotEnoughMoneyRes): Promise<void> {
+		await handleBlacksmithNotEnoughMoney(context);
+	}
+
+	@packetHandler(CommandReportBlacksmithMissingMaterialsRes)
+	async reportBlacksmithMissingMaterialsRes(context: PacketContext, _packet: CommandReportBlacksmithMissingMaterialsRes): Promise<void> {
+		await handleUpgradeItemMissingMaterials(context);
+	}
+
+	@packetHandler(CommandReportBlacksmithDisenchantRes)
+	async reportBlacksmithDisenchantRes(context: PacketContext, packet: CommandReportBlacksmithDisenchantRes): Promise<void> {
+		await handleBlacksmithDisenchant(packet, context);
 	}
 }
