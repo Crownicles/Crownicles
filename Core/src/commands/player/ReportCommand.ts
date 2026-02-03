@@ -27,7 +27,11 @@ import {
 	CommandReportUpgradeItemMaxLevelRes,
 	CommandReportUpgradeItemMissingMaterialsRes,
 	CommandReportUpgradeItemRes,
-	CommandReportUseTokensPacketReq
+	CommandReportUseTokensPacketReq,
+	CommandReportBlacksmithUpgradeRes,
+	CommandReportBlacksmithNotEnoughMoneyRes,
+	CommandReportBlacksmithMissingMaterialsRes,
+	CommandReportBlacksmithDisenchantRes
 } from "../../../../Lib/src/packets/commands/CommandReportPacket";
 import {
 	Player, Players
@@ -105,7 +109,10 @@ import {
 	ReactionCollectorHomeMenuReaction,
 	ReactionCollectorInnMealReaction,
 	ReactionCollectorInnRoomReaction,
-	ReactionCollectorUpgradeItemReaction
+	ReactionCollectorUpgradeItemReaction,
+	ReactionCollectorBlacksmithMenuReaction,
+	ReactionCollectorBlacksmithUpgradeReaction,
+	ReactionCollectorBlacksmithDisenchantReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorCity";
 import { RequirementEffectPacket } from "../../../../Lib/src/packets/commands/requirements/RequirementEffectPacket";
 import { InventorySlots } from "../../core/database/game/models/InventorySlot";
@@ -138,6 +145,7 @@ import {
 	validateUseTokensRequest
 } from "../../core/report/ReportTokenHealService";
 import { HEAL_VALIDATION_REASONS } from "../../core/report/ReportValidationConstants";
+import { BlacksmithConstants } from "../../../../Lib/src/constants/BlacksmithConstants";
 
 export default class ReportCommand {
 	@commandRequires(CommandReportPacketReq, {
@@ -582,6 +590,160 @@ async function handleUpgradeItemReaction(
 	}));
 }
 
+/**
+ * Handle blacksmith upgrade reaction
+ * Allows upgrading items to level 4 with gold cost and optionally buying missing materials
+ */
+async function handleBlacksmithUpgradeReaction(
+	player: Player,
+	reaction: ReactionCollectorBlacksmithUpgradeReaction,
+	data: ReactionCollectorCityData,
+	response: CrowniclesPacket[]
+): Promise<void> {
+	await player.reload();
+
+	const blacksmith = data.blacksmith;
+	if (!blacksmith) {
+		CrowniclesLogger.error(`Player ${player.keycloakId} tried to use blacksmith but no blacksmith data available.`);
+		return;
+	}
+
+	const itemToUpgrade = blacksmith.upgradeableItems.find(
+		item => item.slot === reaction.slot && item.category === reaction.itemCategory
+	);
+
+	if (!itemToUpgrade) {
+		CrowniclesLogger.error(`Player ${player.keycloakId} tried to upgrade an item that doesn't exist in the blacksmith.`);
+		return;
+	}
+
+	// Calculate total cost
+	let totalCost = itemToUpgrade.upgradeCost;
+	const boughtMaterials = reaction.buyMaterials && !itemToUpgrade.hasAllMaterials;
+
+	if (boughtMaterials) {
+		totalCost += itemToUpgrade.missingMaterialsCost;
+	}
+
+	// Check if player has enough money
+	if (player.money < totalCost) {
+		response.push(makePacket(CommandReportBlacksmithNotEnoughMoneyRes, {
+			missingMoney: totalCost - player.money
+		}));
+		return;
+	}
+
+	// If not buying materials, check if player has all required materials
+	if (!boughtMaterials && !itemToUpgrade.hasAllMaterials) {
+		response.push(makePacket(CommandReportBlacksmithMissingMaterialsRes, {}));
+		return;
+	}
+
+	// Consume materials (only the ones the player has)
+	const materialsToConsume = itemToUpgrade.requiredMaterials
+		.filter(m => m.playerQuantity > 0)
+		.map(m => ({
+			materialId: m.materialId,
+			quantity: Math.min(m.quantity, m.playerQuantity)
+		}));
+
+	if (materialsToConsume.length > 0) {
+		const consumed = await Materials.consumeMaterials(player.id, materialsToConsume);
+		if (!consumed) {
+			response.push(makePacket(CommandReportBlacksmithMissingMaterialsRes, {}));
+			return;
+		}
+	}
+
+	// Spend money
+	await player.spendMoney({
+		response,
+		amount: totalCost,
+		reason: NumberChangeReason.BLACKSMITH_UPGRADE
+	});
+
+	// Upgrade the item
+	const inventorySlot = await InventorySlots.getOfPlayer(player.id)
+		.then(slots => slots.find(s => s.slot === reaction.slot && s.itemCategory === reaction.itemCategory));
+
+	if (!inventorySlot) {
+		CrowniclesLogger.error(`Player ${player.keycloakId} tried to upgrade an item that doesn't exist in their inventory.`);
+		return;
+	}
+
+	inventorySlot.itemLevel = itemToUpgrade.nextLevel;
+	await inventorySlot.save();
+	await player.save();
+
+	response.push(makePacket(CommandReportBlacksmithUpgradeRes, {
+		itemCategory: reaction.itemCategory,
+		newItemLevel: itemToUpgrade.nextLevel,
+		totalCost,
+		boughtMaterials
+	}));
+}
+
+/**
+ * Handle blacksmith disenchant reaction
+ * Removes enchantment from an item for a gold cost
+ */
+async function handleBlacksmithDisenchantReaction(
+	player: Player,
+	reaction: ReactionCollectorBlacksmithDisenchantReaction,
+	data: ReactionCollectorCityData,
+	response: CrowniclesPacket[]
+): Promise<void> {
+	await player.reload();
+
+	const blacksmith = data.blacksmith;
+	if (!blacksmith) {
+		CrowniclesLogger.error(`Player ${player.keycloakId} tried to use blacksmith but no blacksmith data available.`);
+		return;
+	}
+
+	const itemToDisenchant = blacksmith.disenchantableItems.find(
+		item => item.slot === reaction.slot && item.category === reaction.itemCategory
+	);
+
+	if (!itemToDisenchant) {
+		CrowniclesLogger.error(`Player ${player.keycloakId} tried to disenchant an item that doesn't exist in the blacksmith.`);
+		return;
+	}
+
+	// Check if player has enough money
+	if (player.money < itemToDisenchant.disenchantCost) {
+		response.push(makePacket(CommandReportBlacksmithNotEnoughMoneyRes, {
+			missingMoney: itemToDisenchant.disenchantCost - player.money
+		}));
+		return;
+	}
+
+	// Spend money
+	await player.spendMoney({
+		response,
+		amount: itemToDisenchant.disenchantCost,
+		reason: NumberChangeReason.BLACKSMITH_DISENCHANT
+	});
+
+	// Remove enchantment from the item
+	const inventorySlot = await InventorySlots.getOfPlayer(player.id)
+		.then(slots => slots.find(s => s.slot === reaction.slot && s.itemCategory === reaction.itemCategory));
+
+	if (!inventorySlot) {
+		CrowniclesLogger.error(`Player ${player.keycloakId} tried to disenchant an item that doesn't exist in their inventory.`);
+		return;
+	}
+
+	inventorySlot.itemEnchantmentId = null;
+	await inventorySlot.save();
+	await player.save();
+
+	response.push(makePacket(CommandReportBlacksmithDisenchantRes, {
+		itemCategory: reaction.itemCategory,
+		cost: itemToDisenchant.disenchantCost
+	}));
+}
+
 function cityCollectorEndCallback(context: PacketContext, player: Player, forceSpecificEvent: number, city: City): EndCallback {
 	return async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
 		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.REPORT_COMMAND);
@@ -629,6 +791,25 @@ function cityCollectorEndCallback(context: PacketContext, player: Player, forceS
 					await handleUpgradeItemReaction(
 						player,
 						firstReaction.reaction.data as ReactionCollectorUpgradeItemReaction,
+						collector.creationPacket.data.data as ReactionCollectorCityData,
+						response
+					);
+					break;
+				case ReactionCollectorBlacksmithMenuReaction.name:
+					// Blacksmith menu reaction - handled by Discord frontend
+					break;
+				case ReactionCollectorBlacksmithUpgradeReaction.name:
+					await handleBlacksmithUpgradeReaction(
+						player,
+						firstReaction.reaction.data as ReactionCollectorBlacksmithUpgradeReaction,
+						collector.creationPacket.data.data as ReactionCollectorCityData,
+						response
+					);
+					break;
+				case ReactionCollectorBlacksmithDisenchantReaction.name:
+					await handleBlacksmithDisenchantReaction(
+						player,
+						firstReaction.reaction.data as ReactionCollectorBlacksmithDisenchantReaction,
 						collector.creationPacket.data.data as ReactionCollectorCityData,
 						response
 					);
@@ -767,6 +948,123 @@ function buildUpgradeStationData(
 	};
 }
 
+/**
+ * Build blacksmith data for city collector
+ * The blacksmith allows upgrading items to level 4 and disenchanting items
+ */
+function buildBlacksmithData(
+	playerInventory: Awaited<ReturnType<typeof InventorySlots.getOfPlayer>>,
+	playerMaterialMap: Map<number, number>,
+	player: Player
+): NonNullable<ReactionCollectorCityData["blacksmith"]> {
+	const upgradeableItems: NonNullable<ReactionCollectorCityData["blacksmith"]>["upgradeableItems"] = [];
+	const disenchantableItems: NonNullable<ReactionCollectorCityData["blacksmith"]>["disenchantableItems"] = [];
+
+	for (const inventorySlot of playerInventory) {
+		// Only process weapons and armors with a valid item
+		if ((!inventorySlot.isWeapon() && !inventorySlot.isArmor()) || inventorySlot.itemId === 0) {
+			continue;
+		}
+
+		// Get the item data
+		const itemData = inventorySlot.isWeapon()
+			? WeaponDataController.instance.getById(inventorySlot.itemId)
+			: ArmorDataController.instance.getById(inventorySlot.itemId);
+
+		if (!itemData) {
+			continue;
+		}
+
+		const currentLevel = inventorySlot.itemLevel ?? 0;
+
+		// Check if item can be upgraded at the blacksmith (level < MAX_UPGRADE_LEVEL)
+		if (currentLevel < BlacksmithConstants.MAX_UPGRADE_LEVEL) {
+			const nextLevel = currentLevel + 1 as 1 | 2 | 3 | 4;
+			const requiredMaterialsRaw = itemData.getUpgradeMaterials(nextLevel);
+
+			// Aggregate materials with rarity info
+			const materialAggregation = new Map<number, {
+				quantity: number; rarity: number;
+			}>();
+			for (const material of requiredMaterialsRaw) {
+				const materialIdNum = parseInt(material.id, 10);
+				const existing = materialAggregation.get(materialIdNum);
+				if (existing) {
+					existing.quantity += 1;
+				}
+				else {
+					materialAggregation.set(materialIdNum, {
+						quantity: 1,
+						rarity: material.rarity
+					});
+				}
+			}
+
+			const requiredMaterials: typeof upgradeableItems[number]["requiredMaterials"] = [];
+			const missingMaterials: {
+				rarity: number; quantity: number;
+			}[] = [];
+			let hasAllMaterials = true;
+
+			for (const [
+				materialId, {
+					quantity, rarity
+				}
+			] of materialAggregation) {
+				const playerQuantity = playerMaterialMap.get(materialId) ?? 0;
+				requiredMaterials.push({
+					materialId,
+					rarity,
+					quantity,
+					playerQuantity
+				});
+				if (playerQuantity < quantity) {
+					hasAllMaterials = false;
+					missingMaterials.push({
+						rarity,
+						quantity: quantity - playerQuantity
+					});
+				}
+			}
+
+			const upgradeCost = BlacksmithConstants.getUpgradePrice(nextLevel, itemData.rarity);
+			const missingMaterialsCost = BlacksmithConstants.getMaterialsPurchasePrice(missingMaterials);
+
+			upgradeableItems.push({
+				slot: inventorySlot.slot,
+				category: inventorySlot.itemCategory,
+				details: inventorySlot.itemWithDetails(player) as MainItemDetails,
+				nextLevel,
+				upgradeCost,
+				requiredMaterials,
+				missingMaterialsCost,
+				hasAllMaterials
+			});
+		}
+
+		// Check if item can be disenchanted (has an enchantment)
+		if (inventorySlot.itemEnchantmentId) {
+			const enchantment = ItemEnchantment.getById(inventorySlot.itemEnchantmentId);
+			if (enchantment) {
+				disenchantableItems.push({
+					slot: inventorySlot.slot,
+					category: inventorySlot.itemCategory,
+					details: inventorySlot.itemWithDetails(player) as MainItemDetails,
+					enchantmentId: inventorySlot.itemEnchantmentId,
+					enchantmentType: enchantment.kind.type.id,
+					disenchantCost: BlacksmithConstants.getDisenchantPrice(itemData.rarity)
+				});
+			}
+		}
+	}
+
+	return {
+		upgradeableItems,
+		disenchantableItems,
+		playerMoney: player.money
+	};
+}
+
 async function sendCityCollector(context: PacketContext, response: CrowniclesPacket[], player: Player, currentDate: Date, city: City, forceSpecificEvent: number): Promise<void> {
 	const playerInventory = await InventorySlots.getOfPlayer(player.id);
 	const playerActiveObjects = InventorySlots.slotsToActiveObjects(playerInventory);
@@ -783,6 +1081,11 @@ async function sendCityCollector(context: PacketContext, response: CrowniclesPac
 	// Build upgrade station data for home
 	const upgradeStation = home && home.cityId === city.id && homeLevel
 		? buildUpgradeStationData(playerInventory, playerMaterialMap, homeLevel, player)
+		: undefined;
+
+	// Build blacksmith data if city has a blacksmith
+	const blacksmith = city.blacksmithAvailable
+		? buildBlacksmithData(playerInventory, playerMaterialMap, player)
 		: undefined;
 
 	const collectorData: ReactionCollectorCityData = {
@@ -848,7 +1151,8 @@ async function sendCityCollector(context: PacketContext, response: CrowniclesPac
 				movePrice: home && home.cityId !== city.id && homeLevel ? city.getHomeLevelPrice(homeLevel, await Homes.getHomesCount()) : undefined,
 				currentMoney: player.money
 			}
-		}
+		},
+		blacksmith
 	};
 
 	if (!collectorData.home.manage?.newPrice && !collectorData.home.manage?.upgrade && !collectorData.home.manage?.movePrice) {

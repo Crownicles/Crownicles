@@ -11,6 +11,7 @@ import {
 	ItemCategory, ItemRarity
 } from "../../constants/ItemConstants";
 import { HomeFeatures } from "../../types/HomeFeatures";
+import { MaterialRarity } from "../../types/MaterialRarity";
 
 export class ReactionCollectorCityData extends ReactionCollectorData {
 	mapTypeId!: string;
@@ -93,6 +94,53 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 			currentMoney: number;
 		};
 	};
+
+	/**
+	 * Blacksmith data - available in most cities
+	 * Allows upgrading items to level 4 and disenchanting
+	 */
+	blacksmith?: {
+
+		/** Items that can be upgraded at the blacksmith */
+		upgradeableItems: {
+			slot: number;
+			category: ItemCategory;
+			details: MainItemDetails;
+			nextLevel: number;
+
+			/** Gold cost for the upgrade */
+			upgradeCost: number;
+
+			/** Materials required for the upgrade */
+			requiredMaterials: {
+				materialId: number;
+				rarity: MaterialRarity;
+				quantity: number;
+				playerQuantity: number;
+			}[];
+
+			/** Total cost to buy missing materials from the blacksmith */
+			missingMaterialsCost: number;
+
+			/** Whether the player has all required materials */
+			hasAllMaterials: boolean;
+		}[];
+
+		/** Items that can be disenchanted at the blacksmith */
+		disenchantableItems: {
+			slot: number;
+			category: ItemCategory;
+			details: MainItemDetails;
+			enchantmentId: string;
+			enchantmentType: string;
+
+			/** Gold cost to disenchant this item */
+			disenchantCost: number;
+		}[];
+
+		/** Current player money for UI display */
+		playerMoney: number;
+	};
 }
 
 export class ReactionCollectorExitCityReaction extends ReactionCollectorReaction {}
@@ -136,6 +184,26 @@ export class ReactionCollectorCityMoveHomeReaction extends ReactionCollectorReac
 export class ReactionCollectorHomeMenuReaction extends ReactionCollectorReaction {}
 
 export class ReactionCollectorUpgradeItemReaction extends ReactionCollectorReaction {
+	slot!: number;
+
+	itemCategory!: ItemCategory;
+}
+
+/** Reaction for opening the blacksmith menu */
+export class ReactionCollectorBlacksmithMenuReaction extends ReactionCollectorReaction {}
+
+/** Reaction for upgrading an item at the blacksmith */
+export class ReactionCollectorBlacksmithUpgradeReaction extends ReactionCollectorReaction {
+	slot!: number;
+
+	itemCategory!: ItemCategory;
+
+	/** Whether to buy missing materials before upgrading */
+	buyMaterials!: boolean;
+}
+
+/** Reaction for disenchanting an item at the blacksmith */
+export class ReactionCollectorBlacksmithDisenchantReaction extends ReactionCollectorReaction {
 	slot!: number;
 
 	itemCategory!: ItemCategory;
@@ -193,6 +261,30 @@ export class ReactionCollectorCity extends ReactionCollector {
 				itemCategory: item.category
 			})) || [];
 
+		// Blacksmith reactions
+		const blacksmithMenuReaction = this.data.blacksmith
+			? [this.buildReaction(ReactionCollectorBlacksmithMenuReaction, {})]
+			: [];
+
+		const blacksmithUpgradeReactions = this.data.blacksmith?.upgradeableItems.flatMap(item => [
+			this.buildReaction(ReactionCollectorBlacksmithUpgradeReaction, {
+				slot: item.slot,
+				itemCategory: item.category,
+				buyMaterials: false
+			}),
+			this.buildReaction(ReactionCollectorBlacksmithUpgradeReaction, {
+				slot: item.slot,
+				itemCategory: item.category,
+				buyMaterials: true
+			})
+		]) || [];
+
+		const blacksmithDisenchantReactions = this.data.blacksmith?.disenchantableItems.map(item =>
+			this.buildReaction(ReactionCollectorBlacksmithDisenchantReaction, {
+				slot: item.slot,
+				itemCategory: item.category
+			})) || [];
+
 		return {
 			id,
 			endTime,
@@ -205,7 +297,10 @@ export class ReactionCollectorCity extends ReactionCollector {
 				...shopReactions,
 				...homeReaction,
 				...homeMenuReaction,
-				...upgradeItemReactions
+				...upgradeItemReactions,
+				...blacksmithMenuReaction,
+				...blacksmithUpgradeReactions,
+				...blacksmithDisenchantReactions
 			],
 			data: this.buildData(ReactionCollectorCityData, {
 				...this.data
