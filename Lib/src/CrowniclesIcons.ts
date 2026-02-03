@@ -238,6 +238,12 @@ export const CrowniclesIcons: {
 		shop: string;
 		home: { [level: number]: string };
 		manageHome: string;
+		back: string;
+		blacksmith: {
+			menu: string;
+			upgrade: string;
+			disenchant: string;
+		};
 		homeUpgrades: {
 			bed: string;
 			chest: string;
@@ -2511,6 +2517,12 @@ export const CrowniclesIcons: {
 			8: "🏡"
 		},
 		manageHome: "🧑‍💼",
+		back: "↩️",
+		blacksmith: {
+			menu: "⚒️",
+			upgrade: "🔧",
+			disenchant: "✨"
+		},
 		homeUpgrades: {
 			bed: "🛏️",
 			chest: "📦",

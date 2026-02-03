@@ -238,3 +238,35 @@ export class CommandReportUpgradeItemMissingMaterialsRes extends CrowniclesPacke
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandReportUpgradeItemMaxLevelRes extends CrowniclesPacket {}
+
+// Blacksmith packets
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportBlacksmithUpgradeRes extends CrowniclesPacket {
+	itemCategory!: number;
+
+	newItemLevel!: number;
+
+	/** Total gold spent (upgrade cost + materials if bought) */
+	totalCost!: number;
+
+	/** Whether materials were purchased from the blacksmith */
+	boughtMaterials!: boolean;
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportBlacksmithNotEnoughMoneyRes extends CrowniclesPacket {
+	/** Amount of money missing */
+	missingMoney!: number;
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportBlacksmithMissingMaterialsRes extends CrowniclesPacket {}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportBlacksmithDisenchantRes extends CrowniclesPacket {
+	itemCategory!: number;
+
+	/** Gold cost paid for disenchanting */
+	cost!: number;
+}

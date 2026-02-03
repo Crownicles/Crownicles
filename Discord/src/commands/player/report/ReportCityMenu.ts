@@ -44,6 +44,9 @@ import {
 } from "./home";
 import { HomeMenuParams } from "./home/HomeMenuTypes";
 import { HomeMenuIds } from "./home/HomeMenuConstants";
+import {
+	getBlacksmithMenu, getBlacksmithSubMenus
+} from "./blacksmith/BlacksmithMenu";
 
 function getMainMenu(context: PacketContext, interaction: CrowniclesInteraction, packet: ReactionCollectorCreationPacket, collectorTime: number, pseudo: string): CrowniclesNestedMenu {
 	const data = packet.data.data as ReactionCollectorCityData;
@@ -90,6 +93,16 @@ function getMainMenu(context: PacketContext, interaction: CrowniclesInteraction,
 			description: i18n.t("commands:report.city.reactions.enchanter.description", { lng }),
 			value: "ENCHANTER_MENU",
 			emoji: CrowniclesIcons.city.enchanter
+		});
+	}
+
+	// Blacksmith option
+	if (data.blacksmith) {
+		selectMenu.addOptions({
+			label: i18n.t("commands:report.city.blacksmith.menuLabel", { lng }),
+			description: i18n.t("commands:report.city.blacksmith.menuDescription", { lng }),
+			value: "BLACKSMITH_MENU",
+			emoji: CrowniclesIcons.city.blacksmith.menu
 		});
 	}
 
@@ -179,6 +192,11 @@ function getMainMenu(context: PacketContext, interaction: CrowniclesInteraction,
 
 				if (selectedValue === HomeMenuIds.MANAGE_HOME_MENU) {
 					await nestedMenus.changeMenu(HomeMenuIds.MANAGE_HOME_MENU);
+					return;
+				}
+
+				if (selectedValue === "BLACKSMITH_MENU") {
+					await nestedMenus.changeMenu("BLACKSMITH_MENU");
 					return;
 				}
 
@@ -701,6 +719,15 @@ function buildCitySubMenus(params: HomeMenuParams): Map<string, CrowniclesNested
 	// Add enchanter menu
 	if (cityData.enchanter) {
 		menus.set("ENCHANTER_MENU", getEnchanterMenu(context, interaction, packet, collectorTime, pseudo));
+	}
+
+	// Add blacksmith menus
+	if (cityData.blacksmith) {
+		menus.set("BLACKSMITH_MENU", getBlacksmithMenu(params));
+
+		for (const [key, menu] of getBlacksmithSubMenus(params)) {
+			menus.set(key, menu);
+		}
 	}
 
 	// Add home menus
