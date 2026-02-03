@@ -986,7 +986,8 @@
           "stationQualityAdvanced": "de qualité",
           "stationQualityMaster": "de maître artisan",
           "levelLimitationBasic": "Vos talents de forgeron amateur vous limitent aux améliorations de niveau +{{maxLevel}}, au-delà il vous faudra consulter un véritable forgeron.",
-          "levelLimitationAdvanced": "Votre maîtrise des outils vous permet d'atteindre le niveau +{{maxLevel}}, mais les améliorations supérieures nécessitent l'expertise d'un forgeron professionnel."
+          "levelLimitationAdvanced": "Votre maîtrise des outils vous permet d'atteindre le niveau +{{maxLevel}}, mais les améliorations supérieures nécessitent l'expertise d'un forgeron professionnel.",
+          "placeholder": "Sélectionnez un équipement"
         },
         "upgradeChanges": {
           "betterBed": "Un meilleur lit pour un sommeil plus réparateur {emote:city.homeUpgrades.bed}",

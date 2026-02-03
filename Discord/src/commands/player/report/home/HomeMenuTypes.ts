@@ -106,6 +106,12 @@ export interface HomeFeatureHandler {
 	getSubMenuDescription(ctx: HomeFeatureHandlerContext): string;
 
 	/**
+	 * Get the sub-menu placeholder for the select menu.
+	 * If not implemented, a generic placeholder will be used.
+	 */
+	getSubMenuPlaceholder?(ctx: HomeFeatureHandlerContext): string;
+
+	/**
 	 * Get the sub-menu title
 	 */
 	getSubMenuTitle(ctx: HomeFeatureHandlerContext, pseudo: string): string;

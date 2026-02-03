@@ -688,7 +688,7 @@ function buildUpgradeStationData(
 			continue;
 		}
 
-		// Check if item level allows upgrade at home (only levels 0-1 can be upgraded at home to 1-2)
+		// Check if item level allows upgrade at home (limited by home's maxItemUpgradeLevel)
 		const currentLevel = inventorySlot.itemLevel ?? 0;
 		if (currentLevel >= maxLevelAtHome) {
 			continue;
