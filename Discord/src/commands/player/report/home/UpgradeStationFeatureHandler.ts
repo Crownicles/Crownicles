@@ -81,7 +81,7 @@ export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 		nestedMenus: CrowniclesNestedMenus
 	): Promise<void> {
 		await selectInteraction.deferUpdate();
-		await nestedMenus.changeMenu("HOME_UPGRADE_STATION");
+		await nestedMenus.changeMenu(UpgradeStationFeatureHandler.MENU_VALUE);
 	}
 
 	public async handleSubMenuSelection(
@@ -344,6 +344,10 @@ export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 			lng,
 			maxLevel
 		});
+	}
+
+	public getSubMenuPlaceholder(ctx: HomeFeatureHandlerContext): string {
+		return i18n.t("commands:report.city.homes.upgradeStation.placeholder", { lng: ctx.lng });
 	}
 
 	public getSubMenuTitle(ctx: HomeFeatureHandlerContext, pseudo: string): string {

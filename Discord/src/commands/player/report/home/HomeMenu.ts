@@ -24,10 +24,15 @@ function createFeatureSubMenu(
 ): CrowniclesNestedMenu {
 	const lng = params.interaction.userLanguage;
 
+	// Determine placeholder: allow handler to provide a feature-specific one, fallback to generic
+	const placeholder = handler.getSubMenuPlaceholder
+		? handler.getSubMenuPlaceholder(handlerContext)
+		: i18n.t("commands:report.city.homes.featurePlaceholder", { lng });
+
 	// Build select menu with feature options
 	const selectMenu = new StringSelectMenuBuilder()
 		.setCustomId(`HOME_${handler.featureId.toUpperCase()}`)
-		.setPlaceholder(i18n.t("commands:report.city.homes.featurePlaceholder", { lng }));
+		.setPlaceholder(placeholder);
 
 	// Add feature-specific options
 	handler.addSubMenuOptions(handlerContext, selectMenu);
