@@ -15,6 +15,9 @@ import { ItemRarity } from "../../../../../../Lib/src/constants/ItemConstants";
 import { CrowniclesEmbed } from "../../../../messages/CrowniclesEmbed";
 import { sendInteractionNotForYou } from "../../../../utils/ErrorUtils";
 import { Language } from "../../../../../../Lib/src/Language";
+import {
+	ADVANCED_UPGRADE_LEVEL_THRESHOLD, HomeMenuIds
+} from "./HomeMenuConstants";
 
 /**
  * Handler for the upgrade station feature in the home.
@@ -91,7 +94,7 @@ export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 		nestedMenus: CrowniclesNestedMenus
 	): Promise<boolean> {
 		// Handle back to home menu
-		if (selectedValue === "BACK_TO_HOME") {
+		if (selectedValue === HomeMenuIds.BACK_TO_HOME) {
 			await componentInteraction.deferUpdate();
 			await nestedMenus.changeMenu("HOME_MENU");
 			return true;
@@ -100,13 +103,17 @@ export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 		// Handle back to items list from detail view
 		if (selectedValue === UpgradeStationFeatureHandler.BACK_TO_ITEMS) {
 			await componentInteraction.deferUpdate();
-			await nestedMenus.changeMenu("HOME_UPGRADE_STATION");
+			await nestedMenus.changeMenu(UpgradeStationFeatureHandler.MENU_VALUE);
 			return true;
 		}
 
 		// Handle item selection to show details
 		if (selectedValue.startsWith(UpgradeStationFeatureHandler.ITEM_PREFIX)) {
 			const index = parseInt(selectedValue.replace(UpgradeStationFeatureHandler.ITEM_PREFIX, ""), 10);
+			if (Number.isNaN(index)) {
+				await componentInteraction.deferUpdate();
+				return false;
+			}
 			await this.showItemDetails(ctx, index, componentInteraction, nestedMenus);
 			return true;
 		}
@@ -114,6 +121,10 @@ export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 		// Handle upgrade confirmation
 		if (selectedValue.startsWith(UpgradeStationFeatureHandler.CONFIRM_PREFIX)) {
 			const index = parseInt(selectedValue.replace(UpgradeStationFeatureHandler.CONFIRM_PREFIX, ""), 10);
+			if (Number.isNaN(index)) {
+				await componentInteraction.deferUpdate();
+				return false;
+			}
 			await this.confirmUpgrade(ctx, index, componentInteraction);
 			return true;
 		}
@@ -336,7 +347,7 @@ export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 	 * Get the level limitation text based on max upgrade level at home
 	 */
 	private getLevelLimitationText(lng: Language, maxLevel: number): string {
-		const key = maxLevel >= 2
+		const key = maxLevel >= ADVANCED_UPGRADE_LEVEL_THRESHOLD
 			? "commands:report.city.homes.upgradeStation.levelLimitationAdvanced"
 			: "commands:report.city.homes.upgradeStation.levelLimitationBasic";
 
