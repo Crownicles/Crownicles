@@ -87,46 +87,83 @@ export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 		await nestedMenus.changeMenu(UpgradeStationFeatureHandler.MENU_VALUE);
 	}
 
+	/**
+	 * Parse an index from a prefixed selection value
+	 * @returns The parsed index or null if invalid
+	 */
+	private parseIndexFromValue(selectedValue: string, prefix: string): number | null {
+		const index = parseInt(selectedValue.replace(prefix, ""), 10);
+		return Number.isNaN(index) ? null : index;
+	}
+
+	/**
+	 * Handle navigation back to a specific menu
+	 */
+	private async handleNavigateBack(
+		componentInteraction: ComponentInteraction,
+		nestedMenus: CrowniclesNestedMenus,
+		targetMenu: string
+	): Promise<boolean> {
+		await componentInteraction.deferUpdate();
+		await nestedMenus.changeMenu(targetMenu);
+		return true;
+	}
+
+	/**
+	 * Handle item selection to show details
+	 */
+	private async handleItemSelection(
+		ctx: HomeFeatureHandlerContext,
+		selectedValue: string,
+		componentInteraction: ComponentInteraction,
+		nestedMenus: CrowniclesNestedMenus
+	): Promise<boolean> {
+		const index = this.parseIndexFromValue(selectedValue, UpgradeStationFeatureHandler.ITEM_PREFIX);
+		if (index === null) {
+			await componentInteraction.deferUpdate();
+			return false;
+		}
+		await this.showItemDetails(ctx, index, componentInteraction, nestedMenus);
+		return true;
+	}
+
+	/**
+	 * Handle upgrade confirmation
+	 */
+	private async handleUpgradeConfirmation(
+		ctx: HomeFeatureHandlerContext,
+		selectedValue: string,
+		componentInteraction: ComponentInteraction
+	): Promise<boolean> {
+		const index = this.parseIndexFromValue(selectedValue, UpgradeStationFeatureHandler.CONFIRM_PREFIX);
+		if (index === null) {
+			await componentInteraction.deferUpdate();
+			return false;
+		}
+		await this.confirmUpgrade(ctx, index, componentInteraction);
+		return true;
+	}
+
 	public async handleSubMenuSelection(
 		ctx: HomeFeatureHandlerContext,
 		selectedValue: string,
 		componentInteraction: ComponentInteraction,
 		nestedMenus: CrowniclesNestedMenus
 	): Promise<boolean> {
-		// Handle back to home menu
 		if (selectedValue === HomeMenuIds.BACK_TO_HOME) {
-			await componentInteraction.deferUpdate();
-			await nestedMenus.changeMenu("HOME_MENU");
-			return true;
+			return await this.handleNavigateBack(componentInteraction, nestedMenus, "HOME_MENU");
 		}
 
-		// Handle back to items list from detail view
 		if (selectedValue === UpgradeStationFeatureHandler.BACK_TO_ITEMS) {
-			await componentInteraction.deferUpdate();
-			await nestedMenus.changeMenu(UpgradeStationFeatureHandler.MENU_VALUE);
-			return true;
+			return await this.handleNavigateBack(componentInteraction, nestedMenus, UpgradeStationFeatureHandler.MENU_VALUE);
 		}
 
-		// Handle item selection to show details
 		if (selectedValue.startsWith(UpgradeStationFeatureHandler.ITEM_PREFIX)) {
-			const index = parseInt(selectedValue.replace(UpgradeStationFeatureHandler.ITEM_PREFIX, ""), 10);
-			if (Number.isNaN(index)) {
-				await componentInteraction.deferUpdate();
-				return false;
-			}
-			await this.showItemDetails(ctx, index, componentInteraction, nestedMenus);
-			return true;
+			return await this.handleItemSelection(ctx, selectedValue, componentInteraction, nestedMenus);
 		}
 
-		// Handle upgrade confirmation
 		if (selectedValue.startsWith(UpgradeStationFeatureHandler.CONFIRM_PREFIX)) {
-			const index = parseInt(selectedValue.replace(UpgradeStationFeatureHandler.CONFIRM_PREFIX, ""), 10);
-			if (Number.isNaN(index)) {
-				await componentInteraction.deferUpdate();
-				return false;
-			}
-			await this.confirmUpgrade(ctx, index, componentInteraction);
-			return true;
+			return await this.handleUpgradeConfirmation(ctx, selectedValue, componentInteraction);
 		}
 
 		return false;
