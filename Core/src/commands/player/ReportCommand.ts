@@ -488,6 +488,50 @@ async function handleMoveHomeReaction(player: Player, city: City, data: Reaction
 	}));
 }
 
+interface UpgradeItemValidationResult {
+	itemToUpgrade?: {
+		nextLevel: number;
+		canUpgrade: boolean;
+		requiredMaterials: {
+			materialId: number; quantity: number;
+		}[];
+		slot: number;
+		category: number;
+	};
+	error?: CrowniclesPacket;
+	logError?: string;
+}
+
+function validateUpgradeItemRequest(
+	player: Player,
+	reaction: ReactionCollectorUpgradeItemReaction,
+	data: ReactionCollectorCityData
+): UpgradeItemValidationResult {
+	const upgradeStation = data.home.owned?.upgradeStation;
+	if (!upgradeStation) {
+		return { logError: `Player ${player.keycloakId} tried to upgrade an item but no upgrade station data available.` };
+	}
+
+	const itemToUpgrade = upgradeStation.upgradeableItems.find(
+		item => item.slot === reaction.slot && item.category === reaction.itemCategory
+	);
+
+	if (!itemToUpgrade) {
+		return { logError: `Player ${player.keycloakId} tried to upgrade an item that doesn't exist in the upgrade station.` };
+	}
+
+	const maxLevelAtHome = data.home.owned?.features.maxItemUpgradeLevel ?? 1;
+	if (itemToUpgrade.nextLevel > maxLevelAtHome) {
+		return { error: makePacket(CommandReportUpgradeItemMaxLevelRes, {}) };
+	}
+
+	if (!itemToUpgrade.canUpgrade) {
+		return { error: makePacket(CommandReportUpgradeItemMissingMaterialsRes, {}) };
+	}
+
+	return { itemToUpgrade };
+}
+
 async function handleUpgradeItemReaction(
 	player: Player,
 	reaction: ReactionCollectorUpgradeItemReaction,
@@ -496,37 +540,21 @@ async function handleUpgradeItemReaction(
 ): Promise<void> {
 	await player.reload();
 
-	// Find the item in the upgrade station data
-	const upgradeStation = data.home.owned?.upgradeStation;
-	if (!upgradeStation) {
-		CrowniclesLogger.error(`Player ${player.keycloakId} tried to upgrade an item but no upgrade station data available.`);
+	const validation = validateUpgradeItemRequest(player, reaction, data);
+
+	if (validation.logError) {
+		CrowniclesLogger.error(validation.logError);
+		return;
+	}
+	if (validation.error) {
+		response.push(validation.error);
 		return;
 	}
 
-	const itemToUpgrade = upgradeStation.upgradeableItems.find(
-		item => item.slot === reaction.slot && item.category === reaction.itemCategory
-	);
+	const { itemToUpgrade } = validation;
 
-	if (!itemToUpgrade) {
-		CrowniclesLogger.error(`Player ${player.keycloakId} tried to upgrade an item that doesn't exist in the upgrade station.`);
-		return;
-	}
-
-	// Check if item is already at max level for this home
-	const maxLevelAtHome = data.home.owned?.features.maxItemUpgradeLevel ?? 1;
-	if (itemToUpgrade.nextLevel > maxLevelAtHome) {
-		response.push(makePacket(CommandReportUpgradeItemMaxLevelRes, {}));
-		return;
-	}
-
-	// Check if player has all required materials
-	if (!itemToUpgrade.canUpgrade) {
-		response.push(makePacket(CommandReportUpgradeItemMissingMaterialsRes, {}));
-		return;
-	}
-
-	// Verify and consume materials
-	const materialsToConsume = itemToUpgrade.requiredMaterials.map(m => ({
+	// Consume materials
+	const materialsToConsume = itemToUpgrade!.requiredMaterials.map(m => ({
 		materialId: m.materialId,
 		quantity: m.quantity
 	}));
@@ -546,12 +574,12 @@ async function handleUpgradeItemReaction(
 		return;
 	}
 
-	inventorySlot.itemLevel = itemToUpgrade.nextLevel;
+	inventorySlot.itemLevel = itemToUpgrade!.nextLevel;
 	await inventorySlot.save();
 
 	response.push(makePacket(CommandReportUpgradeItemRes, {
 		itemCategory: reaction.itemCategory,
-		newItemLevel: itemToUpgrade.nextLevel
+		newItemLevel: itemToUpgrade!.nextLevel
 	}));
 }
 
