@@ -27,12 +27,18 @@ import { DisplayUtils } from "../../utils/DisplayUtils";
 import { disableRows } from "../../utils/DiscordCollectorUtils";
 import { ItemWithDetails } from "../../../../Lib/src/types/ItemWithDetails";
 import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
+import { DiscordConstants } from "../../DiscordConstants";
 
 enum InventoryView {
 	EQUIPPED = 0,
 	BACKUP = 1,
 	MATERIALS = 2
 }
+
+/**
+ * Number of different views in the inventory carousel
+ */
+const INVENTORY_VIEW_COUNT = Object.keys(InventoryView).length / 2;
 
 async function getPacket(interaction: CrowniclesInteraction, keycloakUser: KeycloakUser): Promise<CommandInventoryPacketReq | null> {
 	const askedPlayer = await PacketUtils.prepareAskedPlayer(interaction, keycloakUser);
@@ -158,29 +164,35 @@ function splitIntoColumns<T>(array: T[], columnCount: number): T[][] {
 	return columns;
 }
 
+interface BuildColumnFieldParams {
+	column: string[];
+	isFirstColumn: boolean;
+	materialsCount: number;
+	lng: Language;
+}
+
 /**
  * Builds a field from a column of material lines, respecting the character limit
  */
-function buildColumnField(
-	column: string[],
-	isFirstColumn: boolean,
-	materialsCount: number,
-	lng: Language,
-	maxFieldLength: number
-): EmbedField[] {
+function buildColumnField(params: BuildColumnFieldParams): EmbedField[] {
+	const {
+		column, isFirstColumn, materialsCount, lng
+	} = params;
 	const fields: EmbedField[] = [];
 	let currentFieldValue = "";
+
+	const getFieldName = (fieldsLength: number): string => isFirstColumn && fieldsLength === 0
+		? i18n.t("commands:inventory.materialsField", {
+			lng, count: materialsCount
+		})
+		: "\u200B";
 
 	for (const line of column) {
 		const potentialValue = currentFieldValue ? `${currentFieldValue}\n${line}` : line;
 
-		if (potentialValue.length > maxFieldLength && currentFieldValue) {
+		if (potentialValue.length > DiscordConstants.EMBED.FIELD_VALUE_MAX_LENGTH && currentFieldValue) {
 			fields.push({
-				name: isFirstColumn && fields.length === 0
-					? i18n.t("commands:inventory.materialsField", {
-						lng, count: materialsCount
-					})
-					: "\u200B",
+				name: getFieldName(fields.length),
 				value: currentFieldValue,
 				inline: true
 			});
@@ -193,11 +205,7 @@ function buildColumnField(
 
 	if (currentFieldValue) {
 		fields.push({
-			name: isFirstColumn && fields.length === 0
-				? i18n.t("commands:inventory.materialsField", {
-					lng, count: materialsCount
-				})
-				: "\u200B",
+			name: getFieldName(fields.length),
 			value: currentFieldValue,
 			inline: true
 		});
@@ -234,7 +242,7 @@ function getMaterialsEmbed(packet: CommandInventoryPacketRes, pseudo: string, ln
 	// Sort materials and build display lines
 	const sortedMaterials = [...materials].sort((a, b) => b.quantity - a.quantity || a.materialId - b.materialId);
 	const materialLines = sortedMaterials.map(m => {
-		const emoji = CrowniclesIcons.materials[m.materialId] ?? "📦";
+		const emoji = CrowniclesIcons.materials[m.materialId] ?? CrowniclesIcons.inventory.stock;
 		const name = i18n.t(`models:materials.${m.materialId}`, { lng });
 		return `${emoji} **${name}** x${m.quantity}`;
 	});
@@ -244,7 +252,12 @@ function getMaterialsEmbed(packet: CommandInventoryPacketRes, pseudo: string, ln
 	const fields: EmbedField[] = [];
 
 	for (let i = 0; i < columns.length; i++) {
-		fields.push(...buildColumnField(columns[i], i === 0, materials.length, lng, 1024));
+		fields.push(...buildColumnField({
+			column: columns[i],
+			isFirstColumn: i === 0,
+			materialsCount: materials.length,
+			lng
+		}));
 	}
 
 	embed.addFields(fields);
@@ -346,10 +359,10 @@ export async function handleCommandInventoryPacketRes(packet: CommandInventoryPa
 		}
 
 		if (buttonInteraction.customId === nextButtonId) {
-			currentView = (currentView + 1) % 3 as InventoryView;
+			currentView = (currentView + 1) % INVENTORY_VIEW_COUNT as InventoryView;
 		}
 		else {
-			currentView = (currentView + 2) % 3 as InventoryView;
+			currentView = (currentView + INVENTORY_VIEW_COUNT - 1) % INVENTORY_VIEW_COUNT as InventoryView;
 		}
 
 		await buttonInteraction.update({

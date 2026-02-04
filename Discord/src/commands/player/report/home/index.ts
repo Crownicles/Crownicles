@@ -5,6 +5,7 @@
  * - HomeMenuTypes.ts: Interfaces and types for the home feature system
  * - HomeFeatureRegistry.ts: Registry of all available home features
  * - HomeMenu.ts: Main menu builder + sub-menu generator
+ * - HomeMenuConstants.ts: Constants for menu IDs and thresholds
  * - Feature handlers: Individual handlers for each home feature
  *
  * To add a new home feature:
@@ -19,6 +20,9 @@ export {
 	getHomeMenu, getHomeSubMenus
 } from "./HomeMenu";
 export { homeFeatureRegistry } from "./HomeFeatureRegistry";
+export {
+	HomeMenuIds, ADVANCED_UPGRADE_LEVEL_THRESHOLD
+} from "./HomeMenuConstants";
 export type {
 	HomeFeatureHandler, HomeFeatureHandlerContext
 } from "./HomeMenuTypes";

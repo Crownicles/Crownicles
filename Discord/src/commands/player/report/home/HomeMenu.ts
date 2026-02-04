@@ -13,6 +13,7 @@ import { homeFeatureRegistry } from "./HomeFeatureRegistry";
 import {
 	HomeFeatureHandler, HomeFeatureHandlerContext, HomeMenuParams
 } from "./HomeMenuTypes";
+import { HomeMenuIds } from "./HomeMenuConstants";
 
 /**
  * Creates a sub-menu for a specific home feature
@@ -40,7 +41,7 @@ function createFeatureSubMenu(
 	// Add back option
 	selectMenu.addOptions({
 		label: i18n.t("commands:report.city.homes.backToHome", { lng }),
-		value: "BACK_TO_HOME",
+		value: HomeMenuIds.BACK_TO_HOME,
 		emoji: CrowniclesIcons.collectors.back
 	});
 
@@ -113,7 +114,7 @@ export function getHomeMenu(params: HomeMenuParams): CrowniclesNestedMenu {
 
 	// Build main select menu
 	const selectMenu = new StringSelectMenuBuilder()
-		.setCustomId("HOME_MAIN_MENU")
+		.setCustomId(HomeMenuIds.MAIN_MENU)
 		.setPlaceholder(i18n.t("commands:report.city.homes.homePlaceholder", { lng }));
 
 	// Add feature options
@@ -130,7 +131,7 @@ export function getHomeMenu(params: HomeMenuParams): CrowniclesNestedMenu {
 	// Add leave option
 	selectMenu.addOptions({
 		label: i18n.t("commands:report.city.homes.leaveHome", { lng }),
-		value: "LEAVE_HOME",
+		value: HomeMenuIds.LEAVE_HOME,
 		emoji: CrowniclesIcons.collectors.back
 	});
 
@@ -154,7 +155,7 @@ export function getHomeMenu(params: HomeMenuParams): CrowniclesNestedMenu {
 				const selectedValue = selectInteraction.values[0];
 
 				// Handle leave home
-				if (selectedValue === "LEAVE_HOME") {
+				if (selectedValue === HomeMenuIds.LEAVE_HOME) {
 					await selectInteraction.deferUpdate();
 					await nestedMenus.changeToMainMenu();
 					return;
