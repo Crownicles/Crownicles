@@ -207,9 +207,13 @@ async function handleGiveFood(guildFoodKey: GuildFoodPropertyKey, petModel: Pet,
 		};
 	}
 
-	const dislikesLoveLost = RandomUtils.crowniclesRandom.bool(LOVE_LOST.GIVE_FOOD.DISLIKES_CHANCE)
-		? LOVE_LOST.GIVE_FOOD.DISLIKES_AMOUNT
-		: 0;
+	/*
+	 * When pet dislikes the food: DISLIKES_SUCCESS_CHANCE is the probability of SUCCESS (no love lost)
+	 * So we invert: if NOT success → lose love
+	 */
+	const dislikesLoveLost = RandomUtils.crowniclesRandom.bool(LOVE_LOST.GIVE_FOOD.DISLIKES_SUCCESS_CHANCE)
+		? 0
+		: LOVE_LOST.GIVE_FOOD.DISLIKES_AMOUNT;
 
 	return {
 		loveLost: dislikesLoveLost,
