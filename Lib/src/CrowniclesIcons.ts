@@ -2088,7 +2088,6 @@ export const CrowniclesIcons: {
 		speed: "🚀",
 		breath: "🌬️",
 		breathRegen: "🫁",
-		petRarity: "⭐",
 		glory: "✨",
 		timeGain: "⌛",
 		none: "❌"
