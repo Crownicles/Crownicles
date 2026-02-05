@@ -54,10 +54,10 @@ export async function handleCommandGuildLeaveAcceptPacketRes(packet: CommandGuil
 	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
 	const keyDesc = packet.isGuildDestroyed ? "destroySuccess" : packet.newChiefKeycloakId ? "leavingSuccessWithNewChief" : "leavingSuccess";
 	const getChief = packet.newChiefKeycloakId ? await KeycloakUtils.getUserByKeycloakId(keycloakConfig, packet.newChiefKeycloakId) : undefined;
-	if (getChief?.isError) {
+	if (getChief?.isError || (getChief && !getChief.payload.user)) {
 		return;
 	}
-	const newChiefPseudo = getChief ? escapeUsername(getChief.payload.user.attributes.gameUsername[0]) : "";
+	const newChiefPseudo = getChief?.payload.user ? escapeUsername(getChief.payload.user.attributes.gameUsername[0]) : "";
 	if (buttonInteraction && originalInteraction) {
 		const lng = originalInteraction.userLanguage;
 		await buttonInteraction.editReply({
