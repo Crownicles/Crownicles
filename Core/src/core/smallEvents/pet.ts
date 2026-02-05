@@ -32,6 +32,210 @@ import { PetUtils } from "../utils/PetUtils";
 import { PlayerBadgesManager } from "../database/game/models/PlayerBadges";
 
 /**
+ * Context object passed to interaction handlers
+ */
+interface InteractionContext {
+	packet: SmallEventPetPacket;
+	response: CrowniclesPacket[];
+	context: PacketContext;
+	player: Player;
+	petEntity: PetEntity;
+}
+
+/**
+ * Configuration for a pet interaction handler
+ */
+interface PetInteractionConfig {
+
+	/**
+	 * Condition that must be true for the interaction to proceed.
+	 * If false, interaction becomes NOTHING.
+	 */
+	canExecute?: (ctx: InteractionContext) => boolean | Promise<boolean>;
+
+	/**
+	 * Range for random amount generation (if applicable)
+	 */
+	range?: {
+		MIN: number; MAX: number;
+	};
+
+	/**
+	 * Whether the amount should be negated (for LOSE_ interactions)
+	 */
+	negateAmount?: boolean;
+
+	/**
+	 * The action to execute for this interaction
+	 */
+	execute: (ctx: InteractionContext, amount?: number) => Promise<void> | void;
+}
+
+/**
+ * Registry of all pet interaction handlers
+ */
+const INTERACTION_HANDLERS: Record<string, PetInteractionConfig> = {
+	[PetConstants.PET_INTERACTIONS_NAMES.WIN_ENERGY]: {
+		canExecute: ({ player }) => player.fightPointsLost > 0,
+		range: SmallEventConstants.PET.ENERGY,
+		execute: ({
+			packet, player
+		}, amount) => {
+			packet.amount = amount;
+			player.addEnergy(amount!, NumberChangeReason.SMALL_EVENT);
+		}
+	},
+	[PetConstants.PET_INTERACTIONS_NAMES.WIN_FOOD]: {
+		canExecute: ({ player }) => player.guildId !== null,
+		execute: async ({
+			packet, response, player
+		}) => {
+			packet.food = RandomUtils.crowniclesRandom.pick(Object.values(PetConstants.PET_FOOD)) as PetFood;
+			await giveFoodToGuild(response, player, packet.food, 1, NumberChangeReason.SMALL_EVENT);
+		}
+	},
+	[PetConstants.PET_INTERACTIONS_NAMES.WIN_POINTS]: {
+		range: SmallEventConstants.PET.POINTS,
+		execute: async ({
+			packet, response, player
+		}, amount) => {
+			packet.amount = amount;
+			await player.addScore({
+				amount: amount!,
+				response,
+				reason: NumberChangeReason.SMALL_EVENT
+			});
+		}
+	},
+	[PetConstants.PET_INTERACTIONS_NAMES.WIN_LOVE]: {
+		canExecute: ({ petEntity }) => petEntity.getLoveLevelNumber() !== PetConstants.LOVE_LEVEL.TRAINED,
+		range: SmallEventConstants.PET.LOVE_POINTS,
+		execute: async ({
+			packet, response, player, petEntity
+		}, amount) => {
+			packet.amount = amount;
+			await petEntity.changeLovePoints({
+				player,
+				amount: amount!,
+				response,
+				reason: NumberChangeReason.SMALL_EVENT
+			});
+		}
+	},
+	[PetConstants.PET_INTERACTIONS_NAMES.WIN_MONEY]: {
+		range: SmallEventConstants.PET.MONEY,
+		execute: async ({
+			packet, response, player
+		}, amount) => {
+			packet.amount = amount;
+			await player.addMoney({
+				amount: amount!,
+				response,
+				reason: NumberChangeReason.SMALL_EVENT
+			});
+		}
+	},
+	[PetConstants.PET_INTERACTIONS_NAMES.WIN_TIME]: {
+		range: SmallEventConstants.PET.TIME,
+		execute: async ({
+			packet, player
+		}, amount) => {
+			packet.amount = amount;
+			await TravelTime.timeTravel(player, amount!, NumberChangeReason.SMALL_EVENT);
+		}
+	},
+	[PetConstants.PET_INTERACTIONS_NAMES.WIN_HEALTH]: {
+		canExecute: ({ player }) => player.health < player.getMaxHealth(),
+		range: SmallEventConstants.PET.HEALTH,
+		execute: async ({
+			packet, response, player
+		}, amount) => {
+			packet.amount = amount;
+			await player.addHealth({
+				amount: amount!,
+				response,
+				reason: NumberChangeReason.SMALL_EVENT
+			});
+			await MissionsController.update(player, response, { missionId: "petEarnHealth" });
+		}
+	},
+	[PetConstants.PET_INTERACTIONS_NAMES.WIN_ITEM]: {
+		execute: async ({
+			response, context, player
+		}) => {
+			await giveRandomItem(context, response, player);
+		}
+	},
+	[PetConstants.PET_INTERACTIONS_NAMES.WIN_BADGE]: {
+		canExecute: async ({ player }) => !await PlayerBadgesManager.hasBadge(player.id, Badge.LEGENDARY_PET),
+		execute: async ({ player }) => {
+			await PlayerBadgesManager.addBadge(player.id, Badge.LEGENDARY_PET);
+		}
+	},
+	[PetConstants.PET_INTERACTIONS_NAMES.LOSE_HEALTH]: {
+		range: SmallEventConstants.PET.HEALTH,
+		negateAmount: true,
+		execute: async ({
+			packet, response, player
+		}, amount) => {
+			packet.amount = Math.abs(amount!);
+			await player.addHealth({
+				amount: amount!,
+				response,
+				reason: NumberChangeReason.SMALL_EVENT
+			});
+		}
+	},
+	[PetConstants.PET_INTERACTIONS_NAMES.LOSE_MONEY]: {
+		range: SmallEventConstants.PET.MONEY,
+		negateAmount: true,
+		execute: async ({
+			packet, response, player
+		}, amount) => {
+			packet.amount = Math.abs(amount!);
+			await player.addMoney({
+				amount: amount!,
+				response,
+				reason: NumberChangeReason.SMALL_EVENT
+			});
+		}
+	},
+	[PetConstants.PET_INTERACTIONS_NAMES.LOSE_TIME]: {
+		range: SmallEventConstants.PET.TIME,
+		execute: async ({
+			packet, player
+		}, amount) => {
+			packet.amount = amount;
+			await TravelTime.applyEffect(player, Effect.OCCUPIED, amount!, new Date(), NumberChangeReason.SMALL_EVENT);
+		}
+	},
+	[PetConstants.PET_INTERACTIONS_NAMES.LOSE_LOVE]: {
+		range: SmallEventConstants.PET.LOVE_POINTS,
+		negateAmount: true,
+		execute: async ({
+			packet, response, player, petEntity
+		}, amount) => {
+			packet.amount = Math.abs(amount!);
+			await petEntity.changeLovePoints({
+				player,
+				amount: amount!,
+				response,
+				reason: NumberChangeReason.SMALL_EVENT
+			});
+		}
+	},
+	[PetConstants.PET_INTERACTIONS_NAMES.PET_FLEE]: {
+		execute: async ({
+			player, petEntity
+		}) => {
+			LogsDatabase.logPetFree(petEntity).then();
+			await petEntity.destroy();
+			player.petId = null;
+		}
+	}
+};
+
+/**
  * Return all possibilities the player can get on this small event.
  * @param petEntity
  * @param pet
@@ -78,6 +282,7 @@ function pickRandomInteraction(possibleIssues: PetInteraction[]): string {
 
 /**
  * Manage the output for the player according to the interaction.
+ * Uses a data-driven approach with the INTERACTION_HANDLERS registry.
  * @param packet
  * @param response
  * @param context
@@ -85,130 +290,55 @@ function pickRandomInteraction(possibleIssues: PetInteraction[]): string {
  * @param petEntity
  */
 async function managePickedInteraction(packet: SmallEventPetPacket, response: CrowniclesPacket[], context: PacketContext, player: Player, petEntity: PetEntity): Promise<void> {
-	switch (packet.interactionName) {
-		case PetConstants.PET_INTERACTIONS_NAMES.WIN_ENERGY:
-			if (player.fightPointsLost === 0) {
-				packet.interactionName = PetConstants.PET_INTERACTIONS_NAMES.NOTHING;
-				break;
-			}
-			packet.amount = RandomUtils.rangedInt(SmallEventConstants.PET.ENERGY);
-			player.addEnergy(packet.amount, NumberChangeReason.SMALL_EVENT);
-			break;
-
-		case PetConstants.PET_INTERACTIONS_NAMES.WIN_FOOD:
-			if (!player.guildId) {
-				packet.interactionName = PetConstants.PET_INTERACTIONS_NAMES.NOTHING;
-				break;
-			}
-			packet.food = RandomUtils.crowniclesRandom.pick(Object.values(PetConstants.PET_FOOD)) as PetFood;
-			await giveFoodToGuild(response, player, packet.food, 1, NumberChangeReason.SMALL_EVENT);
-			break;
-
-		case PetConstants.PET_INTERACTIONS_NAMES.WIN_POINTS:
-			packet.amount = RandomUtils.rangedInt(SmallEventConstants.PET.POINTS);
-			await player.addScore({
-				amount: packet.amount,
-				response,
-				reason: NumberChangeReason.SMALL_EVENT
-			});
-			break;
-
-		case PetConstants.PET_INTERACTIONS_NAMES.WIN_LOVE:
-			if (petEntity.getLoveLevelNumber() === PetConstants.LOVE_LEVEL.TRAINED) {
-				packet.interactionName = PetConstants.PET_INTERACTIONS_NAMES.NOTHING;
-				break;
-			}
-			packet.amount = RandomUtils.rangedInt(SmallEventConstants.PET.LOVE_POINTS);
-			await petEntity.changeLovePoints({
-				player,
-				amount: packet.amount,
-				response,
-				reason: NumberChangeReason.SMALL_EVENT
-			});
-			break;
-
-		case PetConstants.PET_INTERACTIONS_NAMES.WIN_MONEY:
-			packet.amount = RandomUtils.rangedInt(SmallEventConstants.PET.MONEY);
-			await player.addMoney({
-				amount: packet.amount,
-				response,
-				reason: NumberChangeReason.SMALL_EVENT
-			});
-			break;
-
-		case PetConstants.PET_INTERACTIONS_NAMES.WIN_TIME:
-			packet.amount = RandomUtils.rangedInt(SmallEventConstants.PET.TIME);
-			await TravelTime.timeTravel(player, packet.amount, NumberChangeReason.SMALL_EVENT);
-			break;
-
-		case PetConstants.PET_INTERACTIONS_NAMES.WIN_HEALTH:
-			if (player.health === player.getMaxHealth()) {
-				packet.interactionName = PetConstants.PET_INTERACTIONS_NAMES.NOTHING;
-				break;
-			}
-			packet.amount = RandomUtils.rangedInt(SmallEventConstants.PET.HEALTH);
-			await player.addHealth({
-				amount: packet.amount,
-				response,
-				reason: NumberChangeReason.SMALL_EVENT
-			});
-			await MissionsController.update(player, response, { missionId: "petEarnHealth" });
-			break;
-
-		case PetConstants.PET_INTERACTIONS_NAMES.WIN_ITEM:
-			await giveRandomItem(context, response, player);
-			break;
-
-		case PetConstants.PET_INTERACTIONS_NAMES.WIN_BADGE:
-			if (await PlayerBadgesManager.hasBadge(player.id, Badge.LEGENDARY_PET)) {
-				packet.interactionName = PetConstants.PET_INTERACTIONS_NAMES.NOTHING;
-				break;
-			}
-			await PlayerBadgesManager.addBadge(player.id, Badge.LEGENDARY_PET);
-			break;
-
-		case PetConstants.PET_INTERACTIONS_NAMES.LOSE_HEALTH:
-			packet.amount = RandomUtils.rangedInt(SmallEventConstants.PET.HEALTH);
-			await player.addHealth({
-				amount: -packet.amount,
-				response,
-				reason: NumberChangeReason.SMALL_EVENT
-			});
-			break;
-
-		case PetConstants.PET_INTERACTIONS_NAMES.LOSE_MONEY:
-			packet.amount = RandomUtils.rangedInt(SmallEventConstants.PET.MONEY);
-			await player.addMoney({
-				amount: -packet.amount,
-				response,
-				reason: NumberChangeReason.SMALL_EVENT
-			});
-			break;
-
-		case PetConstants.PET_INTERACTIONS_NAMES.LOSE_TIME:
-			packet.amount = RandomUtils.rangedInt(SmallEventConstants.PET.TIME);
-			await TravelTime.applyEffect(player, Effect.OCCUPIED, packet.amount, new Date(), NumberChangeReason.SMALL_EVENT);
-			break;
-
-		case PetConstants.PET_INTERACTIONS_NAMES.LOSE_LOVE:
-			packet.amount = RandomUtils.rangedInt(SmallEventConstants.PET.LOVE_POINTS);
-			await petEntity.changeLovePoints({
-				player,
-				amount: -packet.amount,
-				response,
-				reason: NumberChangeReason.SMALL_EVENT
-			});
-			break;
-
-		case PetConstants.PET_INTERACTIONS_NAMES.PET_FLEE:
-			LogsDatabase.logPetFree(petEntity)
-				.then();
-			await petEntity.destroy();
-			player.petId = null;
-			break;
-		default:
-			break;
+	const handler = INTERACTION_HANDLERS[packet.interactionName];
+	if (!handler) {
+		// Unknown interaction or NOTHING - do nothing
+		return;
 	}
+
+	const ctx: InteractionContext = {
+		packet, response, context, player, petEntity
+	};
+
+	// Check if the interaction can be executed
+	const canProceed = await checkInteractionCanExecute(handler, ctx, packet);
+	if (!canProceed) {
+		return;
+	}
+
+	// Generate and apply amount
+	const amount = generateInteractionAmount(handler);
+	await handler.execute(ctx, amount);
+}
+
+/**
+ * Check if the interaction can be executed based on handler's canExecute condition
+ */
+async function checkInteractionCanExecute(
+	handler: PetInteractionConfig,
+	ctx: InteractionContext,
+	packet: SmallEventPetPacket
+): Promise<boolean> {
+	if (!handler.canExecute) {
+		return true;
+	}
+	const canExecute = await handler.canExecute(ctx);
+	if (!canExecute) {
+		packet.interactionName = PetConstants.PET_INTERACTIONS_NAMES.NOTHING;
+		return false;
+	}
+	return true;
+}
+
+/**
+ * Generate random amount for the interaction based on handler's range configuration
+ */
+function generateInteractionAmount(handler: PetInteractionConfig): number | undefined {
+	if (!handler.range) {
+		return undefined;
+	}
+	const amount = RandomUtils.rangedInt(handler.range);
+	return handler.negateAmount ? -amount : amount;
 }
 
 export const smallEventFuncs: SmallEventFuncs = {
