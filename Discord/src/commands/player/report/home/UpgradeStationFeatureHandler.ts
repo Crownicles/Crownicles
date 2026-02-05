@@ -110,37 +110,21 @@ export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 	}
 
 	/**
-	 * Handle item selection to show details
+	 * Generic handler for index-based actions (item selection, upgrade confirmation)
+	 * Extracts index from value, validates it, and calls the action handler
 	 */
-	private async handleItemSelection(
-		ctx: HomeFeatureHandlerContext,
+	private async handleIndexedAction(
 		selectedValue: string,
+		prefix: string,
 		componentInteraction: ComponentInteraction,
-		nestedMenus: CrowniclesNestedMenus
+		actionHandler: (index: number) => Promise<void>
 	): Promise<boolean> {
-		const index = this.parseIndexFromValue(selectedValue, UpgradeStationFeatureHandler.ITEM_PREFIX);
+		const index = this.parseIndexFromValue(selectedValue, prefix);
 		if (index === null) {
 			await componentInteraction.deferUpdate();
 			return false;
 		}
-		await this.showItemDetails(ctx, index, componentInteraction, nestedMenus);
-		return true;
-	}
-
-	/**
-	 * Handle upgrade confirmation
-	 */
-	private async handleUpgradeConfirmation(
-		ctx: HomeFeatureHandlerContext,
-		selectedValue: string,
-		componentInteraction: ComponentInteraction
-	): Promise<boolean> {
-		const index = this.parseIndexFromValue(selectedValue, UpgradeStationFeatureHandler.CONFIRM_PREFIX);
-		if (index === null) {
-			await componentInteraction.deferUpdate();
-			return false;
-		}
-		await this.confirmUpgrade(ctx, index, componentInteraction);
+		await actionHandler(index);
 		return true;
 	}
 
@@ -159,11 +143,21 @@ export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 		}
 
 		if (selectedValue.startsWith(UpgradeStationFeatureHandler.ITEM_PREFIX)) {
-			return await this.handleItemSelection(ctx, selectedValue, componentInteraction, nestedMenus);
+			return await this.handleIndexedAction(
+				selectedValue,
+				UpgradeStationFeatureHandler.ITEM_PREFIX,
+				componentInteraction,
+				index => this.showItemDetails(ctx, index, componentInteraction, nestedMenus)
+			);
 		}
 
 		if (selectedValue.startsWith(UpgradeStationFeatureHandler.CONFIRM_PREFIX)) {
-			return await this.handleUpgradeConfirmation(ctx, selectedValue, componentInteraction);
+			return await this.handleIndexedAction(
+				selectedValue,
+				UpgradeStationFeatureHandler.CONFIRM_PREFIX,
+				componentInteraction,
+				index => this.confirmUpgrade(ctx, index, componentInteraction)
+			);
 		}
 
 		return false;
