@@ -6,6 +6,12 @@ export const HomeMenuIds = {
 	/** Main home menu */
 	MAIN_MENU: "HOME_MAIN_MENU",
 
+	/** Home menu (navigation key) */
+	HOME_MENU: "HOME_MENU",
+
+	/** Manage home menu (notary) */
+	MANAGE_HOME_MENU: "MANAGE_HOME_MENU",
+
 	/** Option to leave the home and return to city */
 	LEAVE_HOME: "LEAVE_HOME",
 

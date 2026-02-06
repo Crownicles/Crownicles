@@ -43,6 +43,7 @@ import {
 	getHomeMenu, getHomeSubMenus
 } from "./home";
 import { HomeMenuParams } from "./home/HomeMenuTypes";
+import { HomeMenuIds } from "./home/HomeMenuConstants";
 
 function getMainMenu(context: PacketContext, interaction: CrowniclesInteraction, packet: ReactionCollectorCreationPacket, collectorTime: number, pseudo: string): CrowniclesNestedMenu {
 	const data = packet.data.data as ReactionCollectorCityData;
@@ -57,7 +58,7 @@ function getMainMenu(context: PacketContext, interaction: CrowniclesInteraction,
 		selectMenu.addOptions({
 			label: i18n.t("commands:report.city.homes.goToOwnedHome", { lng }),
 			description: i18n.t("commands:report.city.homes.goToOwnedHomeDescription", { lng }),
-			value: "HOME_MENU",
+			value: HomeMenuIds.HOME_MENU,
 			emoji: CrowniclesIcons.city.home[data.home.owned.level]
 		});
 	}
@@ -77,7 +78,7 @@ function getMainMenu(context: PacketContext, interaction: CrowniclesInteraction,
 					: i18n.t("commands:report.city.homes.manageHomeDescriptionMove", {
 						lng
 					}),
-			value: "MANAGE_HOME_MENU",
+			value: HomeMenuIds.MANAGE_HOME_MENU,
 			emoji: CrowniclesIcons.city.manageHome
 		});
 	}
@@ -171,13 +172,13 @@ function getMainMenu(context: PacketContext, interaction: CrowniclesInteraction,
 					return;
 				}
 
-				if (selectedValue === "HOME_MENU") {
-					await nestedMenus.changeMenu("HOME_MENU");
+				if (selectedValue === HomeMenuIds.HOME_MENU) {
+					await nestedMenus.changeMenu(HomeMenuIds.HOME_MENU);
 					return;
 				}
 
-				if (selectedValue === "MANAGE_HOME_MENU") {
-					await nestedMenus.changeMenu("MANAGE_HOME_MENU");
+				if (selectedValue === HomeMenuIds.MANAGE_HOME_MENU) {
+					await nestedMenus.changeMenu(HomeMenuIds.MANAGE_HOME_MENU);
 					return;
 				}
 
@@ -595,7 +596,7 @@ function getManageHomeMenu(context: PacketContext, interaction: CrowniclesIntera
 	}
 
 	const selectMenu = new StringSelectMenuBuilder()
-		.setCustomId("MANAGE_HOME_MENU")
+		.setCustomId(HomeMenuIds.MANAGE_HOME_MENU)
 		.setPlaceholder(i18n.t("commands:report.city.placeholder", { lng }));
 
 	// Add action option based on what's available
@@ -704,7 +705,7 @@ function buildCitySubMenus(params: HomeMenuParams): Map<string, CrowniclesNested
 
 	// Add home menus
 	if (cityData.home.owned) {
-		menus.set("HOME_MENU", getHomeMenu(params));
+		menus.set(HomeMenuIds.HOME_MENU, getHomeMenu(params));
 
 		for (const [key, menu] of getHomeSubMenus(params)) {
 			menus.set(key, menu);
@@ -713,7 +714,7 @@ function buildCitySubMenus(params: HomeMenuParams): Map<string, CrowniclesNested
 
 	// Add manage home menu
 	if (cityData.home.manage) {
-		menus.set("MANAGE_HOME_MENU", getManageHomeMenu(context, interaction, packet, collectorTime, pseudo));
+		menus.set(HomeMenuIds.MANAGE_HOME_MENU, getManageHomeMenu(context, interaction, packet, collectorTime, pseudo));
 	}
 
 	return menus;
