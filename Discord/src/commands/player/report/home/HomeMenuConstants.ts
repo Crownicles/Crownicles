@@ -19,7 +19,19 @@ export const HomeMenuIds = {
 	BACK_TO_HOME: "BACK_TO_HOME",
 
 	/** Upgrade station feature menu */
-	UPGRADE_STATION: "HOME_UPGRADE_STATION"
+	UPGRADE_STATION: "HOME_UPGRADE_STATION",
+
+	/** Prefix for upgrade item selection */
+	UPGRADE_ITEM_PREFIX: "UPGRADE_ITEM_",
+
+	/** Prefix for upgrade confirmation */
+	UPGRADE_CONFIRM_PREFIX: "CONFIRM_UPGRADE_",
+
+	/** Back to items list button */
+	UPGRADE_BACK_TO_ITEMS: "BACK_TO_ITEMS",
+
+	/** Prefix for item detail sub-menu */
+	UPGRADE_ITEM_DETAIL_PREFIX: "UPGRADE_ITEM_DETAIL_"
 } as const;
 
 /**

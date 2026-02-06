@@ -26,14 +26,6 @@ import {
 export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 	public readonly featureId = "upgradeStation";
 
-	private static readonly ITEM_PREFIX = "UPGRADE_ITEM_";
-
-	private static readonly CONFIRM_PREFIX = "CONFIRM_UPGRADE_";
-
-	private static readonly BACK_TO_ITEMS = "BACK_TO_ITEMS";
-
-	private static readonly ITEM_DETAIL_MENU_PREFIX = "UPGRADE_ITEM_DETAIL_";
-
 	/**
 	 * Check if the given item index is valid for the upgrade station
 	 */
@@ -136,23 +128,23 @@ export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 			return await this.handleNavigateBack(componentInteraction, nestedMenus, HomeMenuIds.HOME_MENU);
 		}
 
-		if (selectedValue === UpgradeStationFeatureHandler.BACK_TO_ITEMS) {
+		if (selectedValue === HomeMenuIds.UPGRADE_BACK_TO_ITEMS) {
 			return await this.handleNavigateBack(componentInteraction, nestedMenus, HomeMenuIds.UPGRADE_STATION);
 		}
 
-		if (selectedValue.startsWith(UpgradeStationFeatureHandler.ITEM_PREFIX)) {
+		if (selectedValue.startsWith(HomeMenuIds.UPGRADE_ITEM_PREFIX)) {
 			return await this.handleIndexedAction(
 				selectedValue,
-				UpgradeStationFeatureHandler.ITEM_PREFIX,
+				HomeMenuIds.UPGRADE_ITEM_PREFIX,
 				componentInteraction,
 				index => this.showItemDetails(ctx, index, componentInteraction, nestedMenus)
 			);
 		}
 
-		if (selectedValue.startsWith(UpgradeStationFeatureHandler.CONFIRM_PREFIX)) {
+		if (selectedValue.startsWith(HomeMenuIds.UPGRADE_CONFIRM_PREFIX)) {
 			return await this.handleIndexedAction(
 				selectedValue,
-				UpgradeStationFeatureHandler.CONFIRM_PREFIX,
+				HomeMenuIds.UPGRADE_CONFIRM_PREFIX,
 				componentInteraction,
 				index => this.confirmUpgrade(ctx, index, componentInteraction)
 			);
@@ -195,13 +187,13 @@ export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 	 */
 	private buildItemDetailButtons(ctx: HomeFeatureHandlerContext, itemIndex: number, canUpgrade: boolean): ActionRowBuilder<ButtonBuilder> {
 		const confirmButton = new ButtonBuilder()
-			.setCustomId(`${UpgradeStationFeatureHandler.CONFIRM_PREFIX}${itemIndex}`)
+			.setCustomId(`${HomeMenuIds.UPGRADE_CONFIRM_PREFIX}${itemIndex}`)
 			.setLabel(i18n.t("commands:report.city.homes.upgradeStation.confirmUpgrade", { lng: ctx.lng }))
 			.setStyle(canUpgrade ? ButtonStyle.Success : ButtonStyle.Secondary)
 			.setDisabled(!canUpgrade);
 
 		const backButton = new ButtonBuilder()
-			.setCustomId(UpgradeStationFeatureHandler.BACK_TO_ITEMS)
+			.setCustomId(HomeMenuIds.UPGRADE_BACK_TO_ITEMS)
 			.setLabel(i18n.t("commands:report.city.homes.upgradeStation.backToItems", { lng: ctx.lng }))
 			.setStyle(ButtonStyle.Secondary)
 			.setEmoji(CrowniclesIcons.collectors.back);
@@ -224,7 +216,7 @@ export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 		}
 
 		const item = ctx.homeData.upgradeStation!.upgradeableItems[itemIndex];
-		const menuId = `${UpgradeStationFeatureHandler.ITEM_DETAIL_MENU_PREFIX}${itemIndex}`;
+		const menuId = `${HomeMenuIds.UPGRADE_ITEM_DETAIL_PREFIX}${itemIndex}`;
 		const description = this.buildItemDescription(ctx, item);
 
 		nestedMenus.registerMenu(menuId, {
@@ -246,13 +238,13 @@ export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 						return;
 					}
 
-					if (buttonInteraction.customId === UpgradeStationFeatureHandler.BACK_TO_ITEMS) {
+					if (buttonInteraction.customId === HomeMenuIds.UPGRADE_BACK_TO_ITEMS) {
 						await buttonInteraction.deferUpdate();
 						await menus.changeMenu(HomeMenuIds.UPGRADE_STATION);
 						return;
 					}
 
-					if (buttonInteraction.customId.startsWith(UpgradeStationFeatureHandler.CONFIRM_PREFIX)) {
+					if (buttonInteraction.customId.startsWith(HomeMenuIds.UPGRADE_CONFIRM_PREFIX)) {
 						await this.confirmUpgrade(ctx, itemIndex, buttonInteraction);
 					}
 				});
@@ -322,7 +314,7 @@ export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 				description?: string;
 			} = {
 				label,
-				value: `${UpgradeStationFeatureHandler.ITEM_PREFIX}${i}`,
+				value: `${HomeMenuIds.UPGRADE_ITEM_PREFIX}${i}`,
 				emoji: DisplayUtils.getItemIcon({
 					id: item.details.id,
 					category: item.details.itemCategory
