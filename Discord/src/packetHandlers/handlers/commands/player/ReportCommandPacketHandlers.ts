@@ -15,6 +15,8 @@ import {
 	CommandReportEatInnMealRes,
 	CommandReportEnchantNotEnoughCurrenciesRes,
 	CommandReportErrorNoMonsterRes,
+	CommandReportHomeBedAlreadyFullRes,
+	CommandReportHomeBedRes,
 	CommandReportItemCannotBeEnchantedRes,
 	CommandReportItemEnchantedRes,
 	CommandReportMonsterRewardRes,
@@ -44,6 +46,7 @@ import {
 	handleBuyHome,
 	handleChooseDestinationCity,
 	handleEatInnMeal,
+	handleHomeBed,
 	handleInnRoom,
 	handleItemEnchanted,
 	handleMoveHome,
@@ -151,6 +154,16 @@ export default class ReportCommandPacketHandlers {
 	@packetHandler(CommandReportMoveHomeRes)
 	async reportMoveHomeRes(context: PacketContext, packet: CommandReportMoveHomeRes): Promise<void> {
 		await handleMoveHome(packet, context);
+	}
+
+	@packetHandler(CommandReportHomeBedRes)
+	async reportHomeBedRes(context: PacketContext, packet: CommandReportHomeBedRes): Promise<void> {
+		await handleHomeBed(packet, context);
+	}
+
+	@packetHandler(CommandReportHomeBedAlreadyFullRes)
+	async reportHomeBedAlreadyFullRes(context: PacketContext, _packet: CommandReportHomeBedAlreadyFullRes): Promise<void> {
+		await handleClassicError(context, "commands:report.city.homes.bed.alreadyFull");
 	}
 
 	@packetHandler(CommandReportUseTokensAcceptPacketRes)

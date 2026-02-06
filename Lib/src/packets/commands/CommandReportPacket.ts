@@ -227,6 +227,14 @@ export class CommandReportMoveHomeRes extends CrowniclesPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportHomeBedRes extends CrowniclesPacket {
+	health!: number;
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportHomeBedAlreadyFullRes extends CrowniclesPacket {}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandReportUpgradeItemRes extends CrowniclesPacket {
 	itemCategory!: number;
 

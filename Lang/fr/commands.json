@@ -1029,6 +1029,14 @@
           "levelLimitationAdvanced": "Votre maîtrise des outils vous permet d'atteindre le niv. {{maxLevel}}, mais les améliorations supérieures nécessitent l'expertise d'un forgeron professionnel.",
           "placeholder": "Sélectionnez un équipement"
         },
+        "bed": {
+          "menuLabel": "Se reposer dans votre lit",
+          "menuDescription": "Récupérez {{health}} {emote:unitValues.health} gratuitement",
+          "available": "{emote:city.homeUpgrades.bed} Votre lit vous permet de récupérer **{{health}}** {emote:unitValues.health} gratuitement.",
+          "restTitle": "{{pseudo}}, vous vous reposez !",
+          "restDescription": "{emote:city.homeUpgrades.bed} Vous vous allongez dans votre lit et fermez les yeux quelques instants. Ce petit repos vous fait le plus grand bien ! Vous récupérez **{{health}}** {emote:unitValues.health}.",
+          "alreadyFull": "Vous êtes déjà en pleine forme ! Votre lit ne vous sera utile que lorsque vous aurez besoin de vous reposer."
+        },
         "upgradeChanges": {
           "betterBed": "Un meilleur lit pour un sommeil plus réparateur {emote:city.homeUpgrades.bed}",
           "chest": "Un coffre pour y ranger vos affaires {emote:city.homeUpgrades.chest}",

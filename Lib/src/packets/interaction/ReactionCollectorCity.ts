@@ -184,6 +184,8 @@ export class ReactionCollectorCityMoveHomeReaction extends ReactionCollectorReac
 
 export class ReactionCollectorHomeMenuReaction extends ReactionCollectorReaction {}
 
+export class ReactionCollectorHomeBedReaction extends ReactionCollectorReaction {}
+
 export class ReactionCollectorUpgradeItemReaction extends ReactionCollectorReaction {
 	slot!: number;
 
@@ -256,6 +258,10 @@ export class ReactionCollectorCity extends ReactionCollector {
 			? [this.buildReaction(ReactionCollectorHomeMenuReaction, {})]
 			: [];
 
+		const homeBedReaction = this.data.home.owned
+			? [this.buildReaction(ReactionCollectorHomeBedReaction, {})]
+			: [];
+
 		const upgradeItemReactions = this.data.home.owned?.upgradeStation?.upgradeableItems.map(item =>
 			this.buildReaction(ReactionCollectorUpgradeItemReaction, {
 				slot: item.slot,
@@ -298,6 +304,7 @@ export class ReactionCollectorCity extends ReactionCollector {
 				...shopReactions,
 				...homeReaction,
 				...homeMenuReaction,
+				...homeBedReaction,
 				...upgradeItemReactions,
 				...blacksmithMenuReaction,
 				...blacksmithUpgradeReactions,

@@ -31,7 +31,9 @@ import {
 	CommandReportBlacksmithUpgradeRes,
 	CommandReportBlacksmithNotEnoughMoneyRes,
 	CommandReportBlacksmithMissingMaterialsRes,
-	CommandReportBlacksmithDisenchantRes
+	CommandReportBlacksmithDisenchantRes,
+	CommandReportHomeBedRes,
+	CommandReportHomeBedAlreadyFullRes
 } from "../../../../Lib/src/packets/commands/CommandReportPacket";
 import {
 	Player, Players
@@ -107,6 +109,7 @@ import {
 	ReactionCollectorEnchantReaction,
 	ReactionCollectorExitCityReaction,
 	ReactionCollectorHomeMenuReaction,
+	ReactionCollectorHomeBedReaction,
 	ReactionCollectorInnMealReaction,
 	ReactionCollectorInnRoomReaction,
 	ReactionCollectorUpgradeItemReaction,
@@ -788,6 +791,9 @@ function cityCollectorEndCallback(context: PacketContext, player: Player, forceS
 				case ReactionCollectorHomeMenuReaction.name:
 					// Home menu reaction - currently just re-opens city menu (handled by Discord frontend)
 					break;
+				case ReactionCollectorHomeBedReaction.name:
+					await handleHomeBedReaction(player, collector.creationPacket.data.data as ReactionCollectorCityData, response);
+					break;
 				case ReactionCollectorUpgradeItemReaction.name:
 					await handleUpgradeItemReaction(
 						player,
@@ -821,6 +827,39 @@ function cityCollectorEndCallback(context: PacketContext, player: Player, forceS
 			}
 		}
 	};
+}
+
+async function handleHomeBedReaction(
+	player: Player,
+	data: ReactionCollectorCityData,
+	response: CrowniclesPacket[]
+): Promise<void> {
+	await player.reload();
+
+	const homeData = data.home.owned;
+	if (!homeData) {
+		CrowniclesLogger.error(`Player ${player.keycloakId} tried to use home bed without owning a home.`);
+		return;
+	}
+
+	const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
+	const maxHealth = player.getMaxHealth(playerActiveObjects);
+	if (player.getHealth(playerActiveObjects) >= maxHealth) {
+		response.push(makePacket(CommandReportHomeBedAlreadyFullRes, {}));
+		return;
+	}
+
+	await player.addHealth({
+		amount: homeData.features.bedHealthRegeneration,
+		response,
+		reason: NumberChangeReason.HOME_BED,
+		playerActiveObjects
+	});
+	await TravelTime.applyEffect(player, Effect.SLEEPING, 0, new Date(), NumberChangeReason.HOME_BED);
+	await player.save();
+	response.push(makePacket(CommandReportHomeBedRes, {
+		health: homeData.features.bedHealthRegeneration
+	}));
 }
 
 async function handleCityShopReaction(

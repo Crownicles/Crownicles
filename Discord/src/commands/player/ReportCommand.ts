@@ -19,7 +19,8 @@ import {
 	CommandReportTravelSummaryRes,
 	CommandReportUpgradeHomeRes,
 	CommandReportUpgradeItemRes,
-	CommandReportUseTokensAcceptPacketRes
+	CommandReportUseTokensAcceptPacketRes,
+	CommandReportHomeBedRes
 } from "../../../../Lib/src/packets/commands/CommandReportPacket";
 import { ReactionCollectorCreationPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import {
@@ -771,6 +772,28 @@ export async function handleMoveHome(packet: CommandReportMoveHomeRes, context: 
 		.setDescription(i18n.t("commands:report.city.homes.moveHomeDescription", {
 			lng,
 			cost: packet.cost
+		}));
+
+	await interaction.editReply({
+		embeds: [embed]
+	});
+}
+
+export async function handleHomeBed(packet: CommandReportHomeBedRes, context: PacketContext): Promise<void> {
+	const interaction = MessagesUtils.getCurrentInteraction(context);
+	if (!interaction) {
+		return;
+	}
+	const lng = context.discord!.language;
+
+	const embed = new CrowniclesEmbed()
+		.formatAuthor(i18n.t("commands:report.city.homes.bed.restTitle", {
+			lng,
+			pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
+		}), interaction.user)
+		.setDescription(i18n.t("commands:report.city.homes.bed.restDescription", {
+			lng,
+			health: packet.health
 		}));
 
 	await interaction.editReply({

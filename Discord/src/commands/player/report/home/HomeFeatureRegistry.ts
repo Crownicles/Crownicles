@@ -2,6 +2,7 @@ import {
 	HomeFeatureHandler, HomeFeatureHandlerContext, HomeFeatureMenuOption
 } from "./HomeMenuTypes";
 import { UpgradeStationFeatureHandler } from "./UpgradeStationFeatureHandler";
+import { BedFeatureHandler } from "./BedFeatureHandler";
 import { CrowniclesNestedMenus } from "../../../../messages/CrowniclesNestedMenus";
 import { StringSelectMenuInteraction } from "discord.js";
 
@@ -101,4 +102,5 @@ class HomeFeatureRegistry {
  * - GardenFeatureHandler: Cultivate plants
  */
 export const homeFeatureRegistry = new HomeFeatureRegistry()
-	.register(new UpgradeStationFeatureHandler());
+	.register(new UpgradeStationFeatureHandler())
+	.register(new BedFeatureHandler());
