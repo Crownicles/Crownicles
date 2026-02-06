@@ -179,8 +179,17 @@ export default class ReportCommand {
 		}
 
 		const city = CityDataController.instance.getCityByMapLinkId(player.mapLinkId);
-		if (city && currentEffectFinished) {
-			await sendCityCollector(context, response, player, currentDate, city, forceSpecificEvent);
+		if (city) {
+			if (currentEffectFinished) {
+				await sendCityCollector(context, response, player, currentDate, city, forceSpecificEvent);
+			}
+			else {
+				response.push(makePacket(RequirementEffectPacket, {
+					currentEffectId: player.effectId,
+					remainingTime: player.effectRemainingTime()
+				}));
+				BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.REPORT_COMMAND);
+			}
 			return;
 		}
 
@@ -202,15 +211,7 @@ export default class ReportCommand {
 		}
 
 		if (!currentEffectFinished) {
-			if (city) {
-				response.push(makePacket(RequirementEffectPacket, {
-					currentEffectId: player.effectId,
-					remainingTime: player.effectRemainingTime()
-				}));
-			}
-			else {
-				await sendTravelPath(player, response, currentDate, player.effectId);
-			}
+			await sendTravelPath(player, response, currentDate, player.effectId);
 			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.REPORT_COMMAND);
 			return;
 		}
