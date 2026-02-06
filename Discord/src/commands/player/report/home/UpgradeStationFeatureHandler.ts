@@ -26,8 +26,6 @@ import {
 export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 	public readonly featureId = "upgradeStation";
 
-	private static readonly MENU_VALUE = "HOME_UPGRADE_STATION";
-
 	private static readonly ITEM_PREFIX = "UPGRADE_ITEM_";
 
 	private static readonly CONFIRM_PREFIX = "CONFIRM_UPGRADE_";
@@ -66,7 +64,7 @@ export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 				count: itemCount
 			}),
 			emoji: CrowniclesIcons.city.homeUpgrades.upgradeEquipment,
-			value: UpgradeStationFeatureHandler.MENU_VALUE
+			value: HomeMenuIds.UPGRADE_STATION
 		};
 	}
 
@@ -84,7 +82,7 @@ export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 		nestedMenus: CrowniclesNestedMenus
 	): Promise<void> {
 		await selectInteraction.deferUpdate();
-		await nestedMenus.changeMenu(UpgradeStationFeatureHandler.MENU_VALUE);
+		await nestedMenus.changeMenu(HomeMenuIds.UPGRADE_STATION);
 	}
 
 	/**
@@ -135,11 +133,11 @@ export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 		nestedMenus: CrowniclesNestedMenus
 	): Promise<boolean> {
 		if (selectedValue === HomeMenuIds.BACK_TO_HOME) {
-			return await this.handleNavigateBack(componentInteraction, nestedMenus, "HOME_MENU");
+			return await this.handleNavigateBack(componentInteraction, nestedMenus, HomeMenuIds.HOME_MENU);
 		}
 
 		if (selectedValue === UpgradeStationFeatureHandler.BACK_TO_ITEMS) {
-			return await this.handleNavigateBack(componentInteraction, nestedMenus, UpgradeStationFeatureHandler.MENU_VALUE);
+			return await this.handleNavigateBack(componentInteraction, nestedMenus, HomeMenuIds.UPGRADE_STATION);
 		}
 
 		if (selectedValue.startsWith(UpgradeStationFeatureHandler.ITEM_PREFIX)) {
@@ -250,7 +248,7 @@ export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 
 					if (buttonInteraction.customId === UpgradeStationFeatureHandler.BACK_TO_ITEMS) {
 						await buttonInteraction.deferUpdate();
-						await menus.changeMenu("HOME_UPGRADE_STATION");
+						await menus.changeMenu(HomeMenuIds.UPGRADE_STATION);
 						return;
 					}
 
