@@ -896,6 +896,7 @@
         },
         "rooms": {
           "horribleRoom": "Chambre Horrible",
+          "commonRoom": "Chambre Commune",
           "simpleRoom": "Chambre Simple",
           "comfortableRoom": "Chambre Confortable",
           "luxuryRoom": "Chambre de Luxe",
@@ -904,6 +905,7 @@
         },
         "roomsStories": {
           "horribleRoom": "{emote:city.inn} Vous entrez dans une chambre minable, avec un lit grinçant et des murs sales. L'odeur de moisi est omniprésente, et vous avez du mal à imaginer comment quelqu'un pourrait y dormir.",
+          "commonRoom": "{emote:city.inn} Vous vous installez dans un dortoir partagé avec d'autres voyageurs. Les lits sont serrés les uns contre les autres, mais au moins les draps sont propres. Le bruit des ronflements vous berce jusqu'au sommeil.",
           "simpleRoom": "{emote:city.inn} Vous entrez dans une chambre simple mais propre. Le lit est confortable, et la décoration est basique mais agréable. C'est l'endroit idéal pour se reposer après une longue journée d'aventure.",
           "comfortableRoom": "{emote:city.inn} Vous entrez dans une chambre confortable, avec un grand lit douillet et des meubles en bois massif. La décoration est chaleureuse, avec des tapis et des rideaux en tissus épais. Vous vous sentez déjà plus reposé.",
           "luxuryRoom": "{emote:city.inn} Vous entrez dans une chambre luxueuse, digne d'un noble. Le lit est immense, avec des draps en soie et des oreillers moelleux. La décoration est somptueuse, avec des tapisseries et des meubles en bois sculpté. Vous vous sentez comme un roi.",

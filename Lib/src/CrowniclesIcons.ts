@@ -2559,6 +2559,7 @@ export const CrowniclesIcons: {
 	},
 	rooms: {
 		horribleRoom: "🕸️",
+		commonRoom: "🚪",
 		simpleRoom: "🛋️",
 		comfortableRoom: "🛏️",
 		luxuryRoom: "👑",
