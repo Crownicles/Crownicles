@@ -13,6 +13,7 @@ import i18n from "../../translations/i18n";
 import { DiscordCollectorUtils } from "../../utils/DiscordCollectorUtils";
 import { ReactionCollectorGuildLeavePacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorGuildLeave";
 import { KeycloakUtils } from "../../../../Lib/src/keycloak/KeycloakUtils";
+import { KeycloakUser } from "../../../../Lib/src/keycloak/KeycloakUser";
 import { keycloakConfig } from "../../bot/CrowniclesShard";
 import { ReactionCollectorReturnTypeOrNull } from "../../packetHandlers/handlers/ReactionCollectorHandlers";
 import { escapeUsername } from "../../utils/StringUtils";
@@ -50,7 +51,7 @@ export async function createGuildLeaveCollector(context: PacketContext, packet: 
 function hasValidKeycloakUser(
 	result: Awaited<ReturnType<typeof KeycloakUtils.getUserByKeycloakId>> | undefined
 ): result is {
-	isError: false; status: number; payload: { user: Awaited<ReturnType<typeof KeycloakUtils.getUserByKeycloakId>> extends { payload: infer P } ? P extends { user: infer U } ? U : never : never };
+	isError: false; status: number; payload: { user: KeycloakUser };
 } {
 	return result !== undefined && !result.isError && result.payload.user !== undefined;
 }
