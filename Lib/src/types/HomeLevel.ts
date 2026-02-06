@@ -4,7 +4,7 @@ import { GardenEarthQuality } from "./GardenEarthQuality";
 
 export class HomeLevel {
 	public static readonly LEVEL_1 = new HomeLevel(1, 0, 1000, {
-		bedHealthRegeneration: 5,
+		bedHealthRegeneration: 1,
 		chestSlots: 0,
 		craftPotionMaximumRarity: ItemRarity.BASIC,
 		upgradeItemMaximumRarity: ItemRarity.BASIC,
@@ -14,7 +14,7 @@ export class HomeLevel {
 	});
 
 	public static readonly LEVEL_2 = new HomeLevel(2, 15, 5000, {
-		bedHealthRegeneration: 10,
+		bedHealthRegeneration: 2,
 		chestSlots: 1,
 		craftPotionMaximumRarity: ItemRarity.UNCOMMON,
 		upgradeItemMaximumRarity: ItemRarity.UNCOMMON,
@@ -24,7 +24,7 @@ export class HomeLevel {
 	});
 
 	public static readonly LEVEL_3 = new HomeLevel(3, 30, 20000, {
-		bedHealthRegeneration: 15,
+		bedHealthRegeneration: 3,
 		chestSlots: 2,
 		craftPotionMaximumRarity: ItemRarity.EXOTIC,
 		upgradeItemMaximumRarity: ItemRarity.EXOTIC,
@@ -34,7 +34,7 @@ export class HomeLevel {
 	});
 
 	public static readonly LEVEL_4 = new HomeLevel(4, 45, 50000, {
-		bedHealthRegeneration: 20,
+		bedHealthRegeneration: 4,
 		chestSlots: 2,
 		craftPotionMaximumRarity: ItemRarity.RARE,
 		upgradeItemMaximumRarity: ItemRarity.RARE,
@@ -44,7 +44,7 @@ export class HomeLevel {
 	});
 
 	public static readonly LEVEL_5 = new HomeLevel(5, 60, 75000, {
-		bedHealthRegeneration: 25,
+		bedHealthRegeneration: 5,
 		chestSlots: 3,
 		craftPotionMaximumRarity: ItemRarity.SPECIAL,
 		upgradeItemMaximumRarity: ItemRarity.SPECIAL,
@@ -54,7 +54,7 @@ export class HomeLevel {
 	});
 
 	public static readonly LEVEL_6 = new HomeLevel(6, 85, 150000, {
-		bedHealthRegeneration: 30,
+		bedHealthRegeneration: 6,
 		chestSlots: 4,
 		craftPotionMaximumRarity: ItemRarity.EPIC,
 		upgradeItemMaximumRarity: ItemRarity.EPIC,
@@ -64,7 +64,7 @@ export class HomeLevel {
 	});
 
 	public static readonly LEVEL_7 = new HomeLevel(7, 100, 250000, {
-		bedHealthRegeneration: 35,
+		bedHealthRegeneration: 7,
 		chestSlots: 5,
 		craftPotionMaximumRarity: ItemRarity.LEGENDARY,
 		upgradeItemMaximumRarity: ItemRarity.LEGENDARY,
@@ -74,7 +74,7 @@ export class HomeLevel {
 	});
 
 	public static readonly LEVEL_8 = new HomeLevel(8, 120, 450000, {
-		bedHealthRegeneration: 40,
+		bedHealthRegeneration: 8,
 		chestSlots: 6,
 		craftPotionMaximumRarity: ItemRarity.MYTHICAL,
 		upgradeItemMaximumRarity: ItemRarity.MYTHICAL,

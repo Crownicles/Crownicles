@@ -31,12 +31,12 @@
         {
           "id": "horribleRoom",
           "price": 200,
-          "health": 20
+          "health": 4
         },
         {
           "id": "commonRoom",
           "price": 500,
-          "health": 50
+          "health": 14
         }
       ]
     }
