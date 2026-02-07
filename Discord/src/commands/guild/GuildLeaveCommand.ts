@@ -37,7 +37,7 @@ export async function createGuildLeaveCollector(context: PacketContext, packet: 
 		.setDescription(
 			i18n.t(`commands:guildLeave.${keyDesc}`, {
 				lng,
-				newChiefPseudo: await DisplayUtils.getEscapedUsername(data.newChiefKeycloakId, lng),
+				newChiefPseudo: data.newChiefKeycloakId ? await DisplayUtils.getEscapedUsername(data.newChiefKeycloakId, lng) : "",
 				guildName: data.guildName
 			})
 		);
