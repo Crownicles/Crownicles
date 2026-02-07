@@ -76,9 +76,12 @@ export class Campaign {
 	}
 
 	public static async updatePlayerCampaign(completedCampaign: boolean, player: Player): Promise<CompletedMission[]> {
+		if (!completedCampaign) {
+			return [];
+		}
 		const campaign = await MissionSlots.getCampaignOfPlayer(player.id);
 		const missionsInfo = await PlayerMissionsInfos.getOfPlayer(player.id);
-		if (completedCampaign || Campaign.hasNextCampaign(missionsInfo.campaignBlob)) {
+		if (Campaign.hasNextCampaign(missionsInfo.campaignBlob)) {
 			return await this.completeCampaignMissions(player, missionsInfo, completedCampaign, campaign);
 		}
 		return [];
