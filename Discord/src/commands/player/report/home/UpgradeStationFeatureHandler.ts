@@ -56,7 +56,7 @@ export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 				count: itemCount
 			}),
 			emoji: CrowniclesIcons.city.homeUpgrades.upgradeEquipment,
-			value: HomeMenuIds.UPGRADE_STATION
+			value: HomeMenuIds.UPGRADE_STATION_MENU
 		};
 	}
 
@@ -74,7 +74,7 @@ export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 		nestedMenus: CrowniclesNestedMenus
 	): Promise<void> {
 		await selectInteraction.deferUpdate();
-		await nestedMenus.changeMenu(HomeMenuIds.UPGRADE_STATION);
+		await nestedMenus.changeMenu(HomeMenuIds.UPGRADE_STATION_MENU);
 	}
 
 	/**
@@ -129,7 +129,7 @@ export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 		}
 
 		if (selectedValue === HomeMenuIds.UPGRADE_BACK_TO_ITEMS) {
-			return await this.handleNavigateBack(componentInteraction, nestedMenus, HomeMenuIds.UPGRADE_STATION);
+			return await this.handleNavigateBack(componentInteraction, nestedMenus, HomeMenuIds.UPGRADE_STATION_MENU);
 		}
 
 		if (selectedValue.startsWith(HomeMenuIds.UPGRADE_ITEM_PREFIX)) {
@@ -240,7 +240,7 @@ export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 
 					if (buttonInteraction.customId === HomeMenuIds.UPGRADE_BACK_TO_ITEMS) {
 						await buttonInteraction.deferUpdate();
-						await menus.changeMenu(HomeMenuIds.UPGRADE_STATION);
+						await menus.changeMenu(HomeMenuIds.UPGRADE_STATION_MENU);
 						return;
 					}
 

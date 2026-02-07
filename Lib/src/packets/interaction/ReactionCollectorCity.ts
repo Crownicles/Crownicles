@@ -6,6 +6,7 @@ import {
 	ReactionCollectorRefuseReaction
 } from "./ReactionCollectorPacket";
 import { MainItemDetails } from "../../types/MainItemDetails";
+import { MaterialQuantity } from "../../types/MaterialQuantity";
 import {
 	ItemCategory, ItemRarity
 } from "../../constants/ItemConstants";
@@ -73,11 +74,9 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 					category: ItemCategory;
 					details: MainItemDetails;
 					nextLevel: number;
-					requiredMaterials: {
-						materialId: number;
-						quantity: number;
+					requiredMaterials: (MaterialQuantity & {
 						playerQuantity: number;
-					}[];
+					})[];
 					canUpgrade: boolean;
 				}[];
 				maxUpgradeableRarity: ItemRarity;
