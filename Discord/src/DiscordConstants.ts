@@ -121,4 +121,14 @@ export abstract class DiscordConstants {
 		 */
 		BYTES_PER_MB: 1024 * 1024
 	};
+
+	/**
+	 * Discord embed field limits
+	 */
+	static EMBED = {
+		/**
+		 * Maximum length of an embed field value (Discord limit)
+		 */
+		FIELD_VALUE_MAX_LENGTH: 1024
+	};
 }

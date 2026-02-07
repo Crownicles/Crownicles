@@ -1198,7 +1198,8 @@ export default class SmallEventsHandler {
 		const foundStory = i18n.t(`smallEvents:findMaterial.foundStories.${packet.materialRarity}`, {
 			lng,
 			materialId: packet.materialId,
-			materialEmote: CrowniclesIcons.materials[packet.materialType]
+			materialEmote: CrowniclesIcons.materials[packet.materialId],
+			rarityEmote: CrowniclesIcons.rarity[packet.materialRarity - 1]
 		});
 
 		await interaction?.editReply({

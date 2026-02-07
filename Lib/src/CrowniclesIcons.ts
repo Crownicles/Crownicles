@@ -2170,7 +2170,8 @@ export const CrowniclesIcons: {
 		petRarity: "⭐",
 		glory: "✨",
 		timeGain: "⌛",
-		none: "❌"
+		none: "❌",
+		token: "🪙"
 	},
 	shopItems: {
 		randomItem: "❓",
@@ -2465,7 +2466,8 @@ export const CrowniclesIcons: {
 	},
 	inventory: {
 		empty: "⬛",
-		stock: "📦"
+		stock: "📦",
+		materials: "🧱"
 	},
 	itemNatures: [
 		"❌",

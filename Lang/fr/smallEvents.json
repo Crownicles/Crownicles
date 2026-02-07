@@ -2389,9 +2389,9 @@
       "spiritual": "vous trouvez un endroit empreint de sérénité, où l'atmosphère est paisible et propice à votre bien être. Vous fouillez les environs à la recherche d'éléments ou d'objets."
     },
     "foundStories": {
-      "1": "Super ! Vous avez trouvé le matériel commun suivant : {{materialEmote}} **$t(models:materials.{{materialId}})**.",
-      "2": "Incroyable ! Vous avez mis la main sur un matériel peu commun : {{materialEmote}} **$t(models:materials.{{materialId}})**.",
-      "3": "Quelle chance inouïe ! Vous avez découvert un matériel rare : {{materialEmote}} **$t(models:materials.{{materialId}})**."
+      "1": "Super ! Vous avez trouvé le matériel {{rarityEmote}} commun suivant : {{materialEmote}} **$t(models:materials.{{materialId}})**.",
+      "2": "Incroyable ! Vous avez mis la main sur un matériel {{rarityEmote}} peu commun : {{materialEmote}} **$t(models:materials.{{materialId}})**.",
+      "3": "Quelle chance inouïe ! Vous avez découvert un matériel {{rarityEmote}} rare : {{materialEmote}} **$t(models:materials.{{materialId}})**."
     }
   },
   "expeditionAdvice": {
