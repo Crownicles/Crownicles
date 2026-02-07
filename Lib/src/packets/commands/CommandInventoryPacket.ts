@@ -3,6 +3,7 @@ import {
 } from "../CrowniclesPacket";
 import { MainItemDetails } from "../../types/MainItemDetails";
 import { SupportItemDetails } from "../../types/SupportItemDetails";
+import { MaterialQuantity } from "../../types/MaterialQuantity";
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandInventoryPacketReq extends CrowniclesPacket {
@@ -41,10 +42,7 @@ export class CommandInventoryPacketRes extends CrowniclesPacket {
 			potions: number;
 			objects: number;
 		};
-		materials: {
-			materialId: number;
-			quantity: number;
-		}[];
+		materials: MaterialQuantity[];
 	};
 
 	/**

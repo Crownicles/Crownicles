@@ -128,6 +128,7 @@ import { Homes } from "../../core/database/game/models/Home";
 import { HomeLevel } from "../../../../Lib/src/types/HomeLevel";
 import { PostFightPetLoveOutcomes } from "../../../../Lib/src/constants/PetConstants";
 import { Materials } from "../../core/database/game/models/Material";
+import { MaterialQuantity } from "../../../../Lib/src/types/MaterialQuantity";
 import { WeaponDataController } from "../../data/Weapon";
 import { ArmorDataController } from "../../data/Armor";
 import {
@@ -492,9 +493,7 @@ interface UpgradeItemValidationResult {
 	itemToUpgrade?: {
 		nextLevel: number;
 		canUpgrade: boolean;
-		requiredMaterials: {
-			materialId: number; quantity: number;
-		}[];
+		requiredMaterials: MaterialQuantity[];
 		slot: number;
 		category: number;
 	};
