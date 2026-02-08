@@ -45,6 +45,11 @@ export abstract class BlessingConstants {
 	static readonly MAX_POOL_THRESHOLD = 500000;
 
 	/**
+	 * Maximum change in threshold per cycle (to prevent wild jumps)
+	 */
+	static readonly MAX_THRESHOLD_STEP = 10000;
+
+	/**
 	 * Multiplier applied to threshold when pool expires without being filled (4-day timeout)
 	 */
 	static readonly EXPIRY_THRESHOLD_MULTIPLIER = 0.5;
