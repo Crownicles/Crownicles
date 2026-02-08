@@ -11,7 +11,9 @@ import {
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { BlessingAnnouncementPacket } from "../../../../Lib/src/packets/announcements/BlessingAnnouncementPacket";
 import { MqttTopicUtils } from "../../../../Lib/src/utils/MqttTopicUtils";
-import { botConfig } from "../../index";
+import {
+	botConfig, crowniclesInstance
+} from "../../index";
 import { datesAreOnSameDay } from "../../../../Lib/src/utils/TimeUtils";
 
 /**
@@ -154,6 +156,13 @@ export class BlessingManager {
 
 		this.cachedBlessing.poolAmount += amount;
 
+		// Log contribution
+		crowniclesInstance.logsDatabase.logBlessingContribution(
+			playerKeycloakId,
+			amount,
+			this.cachedBlessing.poolAmount
+		).then();
+
 		if (this.cachedBlessing.poolAmount >= this.cachedBlessing.poolThreshold) {
 			// Pool filled! Trigger blessing
 			await this.triggerBlessing(playerKeycloakId, response);
@@ -198,6 +207,14 @@ export class BlessingManager {
 			}),
 			MqttTopicUtils.getDiscordBlessingAnnouncementTopic(botConfig.PREFIX)
 		);
+
+		// Log activation
+		crowniclesInstance.logsDatabase.logBlessingActivation(
+			blessingType,
+			triggeredByKeycloakId,
+			newThreshold,
+			durationHours
+		).then();
 
 		// Apply one-time effects
 		if (blessingType === BlessingType.DAILY_MISSION) {
@@ -254,12 +271,17 @@ export class BlessingManager {
 		}
 
 		// Blessing expired — reset to collecting state
+		const expiredType = this.cachedBlessing.activeBlessingType;
+		const expiredThreshold = this.cachedBlessing.poolThreshold;
 		this.cachedBlessing.activeBlessingType = BlessingType.NONE;
 		this.cachedBlessing.blessingEndAt = null;
 		this.cachedBlessing.poolAmount = 0;
 		this.cachedBlessing.poolStartedAt = new Date();
 		this.dailyBonusClaimed.clear();
 		await this.cachedBlessing.save();
+
+		// Log expiration
+		crowniclesInstance.logsDatabase.logBlessingExpiration(expiredType, expiredThreshold).then();
 	}
 
 	/**
@@ -279,6 +301,7 @@ export class BlessingManager {
 		}
 
 		// Pool expired without being filled — reset with reduced threshold
+		const oldThreshold = this.cachedBlessing.poolThreshold;
 		const newThreshold = Math.max(
 			Math.round(this.cachedBlessing.poolThreshold * BlessingConstants.EXPIRY_THRESHOLD_MULTIPLIER),
 			BlessingConstants.MIN_POOL_THRESHOLD
@@ -287,6 +310,9 @@ export class BlessingManager {
 		this.cachedBlessing.poolThreshold = newThreshold;
 		this.cachedBlessing.poolStartedAt = new Date();
 		await this.cachedBlessing.save();
+
+		// Log pool expiration
+		crowniclesInstance.logsDatabase.logBlessingPoolExpiration(oldThreshold, newThreshold).then();
 	}
 
 	/**

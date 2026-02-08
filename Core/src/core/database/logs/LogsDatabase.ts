@@ -109,6 +109,8 @@ import { LogsCommandSubOrigins } from "./models/LogsCommandSubOrigins";
 import { ReactionCollectorReactPacket } from "../../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { LogsPlayersTeleportations } from "./models/LogsPlayersTeleportations";
 import { LogsExpeditions } from "./models/LogsExpeditions";
+import { LogsBlessings } from "./models/LogsBlessings";
+import { LogsBlessingsContributions } from "./models/LogsBlessingsContributions";
 
 /**
  * Data structure for expedition log entries
@@ -1609,6 +1611,74 @@ export class LogsDatabase extends Database {
 				action: { [Op.in]: [ExpeditionConstants.LOG_ACTION.CANCEL, ExpeditionConstants.LOG_ACTION.RECALL] },
 				date: { [Op.gte]: cutoffDate }
 			}
+		});
+	}
+
+	/**
+	 * Log a blessing activation
+	 */
+	public async logBlessingActivation(
+		blessingType: number,
+		triggeredByKeycloakId: string,
+		poolThreshold: number,
+		durationHours: number
+	): Promise<void> {
+		const player = await LogsDatabase.findOrCreatePlayer(triggeredByKeycloakId);
+		await LogsBlessings.create({
+			blessingType,
+			action: "activate",
+			triggeredByPlayerId: player ? player.id : null,
+			poolThreshold,
+			durationHours,
+			date: getDateLogs()
+		});
+	}
+
+	/**
+	 * Log a blessing expiration (duration over)
+	 */
+	public async logBlessingExpiration(blessingType: number, poolThreshold: number): Promise<void> {
+		await LogsBlessings.create({
+			blessingType,
+			action: "expire",
+			triggeredByPlayerId: null,
+			poolThreshold,
+			durationHours: null,
+			date: getDateLogs()
+		});
+	}
+
+	/**
+	 * Log a pool expiration (4-day timeout without filling)
+	 */
+	public async logBlessingPoolExpiration(_oldThreshold: number, newThreshold: number): Promise<void> {
+		await LogsBlessings.create({
+			blessingType: 0,
+			action: "pool_expire",
+			triggeredByPlayerId: null,
+			poolThreshold: newThreshold,
+			durationHours: null,
+			date: getDateLogs()
+		});
+	}
+
+	/**
+	 * Log a player contribution to the blessing pool
+	 */
+	public async logBlessingContribution(
+		keycloakId: string,
+		amount: number,
+		newPoolAmount: number
+	): Promise<void> {
+		const player = await LogsDatabase.findOrCreatePlayer(keycloakId);
+		if (!player) {
+			return;
+		}
+		await LogsBlessingsContributions.create({
+			playerId: player.id,
+			amount,
+			newPoolAmount,
+			date: getDateLogs()
 		});
 	}
 }

@@ -101,7 +101,10 @@ const EXCLUDED_TABLES = {
 	"LogsGuildsFoodsChanges": "Guild collective data, indexed by guildId only",
 	"LogsGuildsDailies": "Guild collective data, indexed by guildId only",
 	"LogsGuildsNewPets": "Guild collective data, indexed by guildId only",
-	"LogsGuildsDestroys": "Guild collective data, indexed by guildId only"
+	"LogsGuildsDestroys": "Guild collective data, indexed by guildId only",
+
+	// ============ LOGS DATABASE - Blessing Tables ============
+	"LogsBlessingsContributions": "Anonymous aggregated contribution data, playerId used for analytics only"
 };
 
 // Tables that ARE EXPORTED in the GDPR export
