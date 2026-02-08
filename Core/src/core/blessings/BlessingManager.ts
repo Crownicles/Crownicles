@@ -12,10 +12,6 @@ import {
 import { BlessingAnnouncementPacket } from "../../../../Lib/src/packets/announcements/BlessingAnnouncementPacket";
 import { MqttTopicUtils } from "../../../../Lib/src/utils/MqttTopicUtils";
 import { botConfig } from "../../index";
-import Player from "../database/game/models/Player";
-import {
-	Op, Sequelize
-} from "sequelize";
 import { datesAreOnSameDay } from "../../../../Lib/src/utils/TimeUtils";
 
 /**
@@ -204,9 +200,6 @@ export class BlessingManager {
 		);
 
 		// Apply one-time effects
-		if (blessingType === BlessingType.HEAL_ALL) {
-			await this.applyHealAll();
-		}
 		if (blessingType === BlessingType.DAILY_MISSION) {
 			await this.applyRetroactiveDailyMission(response);
 		}
@@ -282,17 +275,10 @@ export class BlessingManager {
 	}
 
 	/**
-	 * Effect #7: Heal all players by a fixed amount immediately
+	 * Get the health potion multiplier (1 = no boost, 2 = x2)
 	 */
-	private async applyHealAll(): Promise<void> {
-		await Player.update(
-			{
-				health: Sequelize.literal(
-					`LEAST(health + ${BlessingConstants.HEAL_ALL_HP}, maxHealth)`
-				)
-			},
-			{ where: { health: { [Op.gt]: 0 } } }
-		);
+	getHealthPotionMultiplier(): number {
+		return this.isActive(BlessingType.HEAL_ALL) ? BlessingConstants.HEALTH_POTION_MULTIPLIER : 1;
 	}
 
 	/**
@@ -377,5 +363,81 @@ export class BlessingManager {
 	 */
 	markDailyBonusClaimed(keycloakId: string): void {
 		this.dailyBonusClaimed.add(keycloakId);
+	}
+
+	// ==================== TEST COMMANDS ====================
+
+	/**
+	 * Force activate a specific blessing type (for test commands)
+	 */
+	async forceActivateBlessing(type: BlessingType, keycloakId: string, response: CrowniclesPacket[]): Promise<void> {
+		if (!this.cachedBlessing) {
+			return;
+		}
+
+		const durationHours = 12;
+		const blessingEnd = new Date(Date.now() + durationHours * 60 * 60 * 1000);
+
+		this.dailyBonusClaimed.clear();
+		this.cachedBlessing.activeBlessingType = type;
+		this.cachedBlessing.blessingEndAt = blessingEnd;
+		this.cachedBlessing.lastTriggeredByKeycloakId = keycloakId;
+		this.cachedBlessing.poolAmount = 0;
+		this.cachedBlessing.poolStartedAt = blessingEnd;
+		await this.cachedBlessing.save();
+
+		PacketUtils.announce(
+			makePacket(BlessingAnnouncementPacket, {
+				blessingType: type,
+				triggeredByKeycloakId: keycloakId,
+				durationHours
+			}),
+			MqttTopicUtils.getDiscordBlessingAnnouncementTopic(botConfig.PREFIX)
+		);
+
+		// Apply one-time effects
+		if (type === BlessingType.DAILY_MISSION) {
+			await this.applyRetroactiveDailyMission(response);
+		}
+	}
+
+	/**
+	 * Force reset the blessing state (for test commands)
+	 */
+	async forceReset(): Promise<void> {
+		if (!this.cachedBlessing) {
+			return;
+		}
+
+		this.cachedBlessing.activeBlessingType = BlessingType.NONE;
+		this.cachedBlessing.blessingEndAt = null;
+		this.cachedBlessing.poolAmount = 0;
+		this.cachedBlessing.poolStartedAt = new Date();
+		this.dailyBonusClaimed.clear();
+		await this.cachedBlessing.save();
+	}
+
+	/**
+	 * Force set the pool amount (for test commands)
+	 */
+	async forceSetPool(amount: number): Promise<void> {
+		if (!this.cachedBlessing) {
+			return;
+		}
+
+		this.cachedBlessing.poolAmount = amount;
+		await this.cachedBlessing.save();
+	}
+
+	/**
+	 * Force set the pool threshold (for test commands)
+	 */
+	async forceSetThreshold(amount: number): Promise<void> {
+		if (!this.cachedBlessing) {
+			return;
+		}
+
+		this.cachedBlessing.poolThreshold = amount;
+		await this.cachedBlessing.save();
 	}
 }

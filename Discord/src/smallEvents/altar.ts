@@ -24,10 +24,10 @@ export async function altarCollector(context: PacketContext, packet: ReactionCol
 	const lng = interaction.userLanguage;
 	const data = packet.data.data;
 
-	// Build contribution reactions (exclude the refuse reaction)
+	// Build contribution reactions (exclude the refuse reaction), sorted by ascending amount
 	const contributeReactions = packet.reactions.filter(
 		r => r.type === ReactionCollectorAltarContributeReaction.name
-	);
+	).sort((a, b) => (a.data as ReactionCollectorAltarContributeReaction).amount - (b.data as ReactionCollectorAltarContributeReaction).amount);
 
 	const embed = new CrowniclesSmallEventEmbed(
 		"altar",
