@@ -28,6 +28,7 @@ interface SmallEventEligibility {
 async function checkSmallEventEligibility(
 	key: string,
 	player: Player,
+	playerActiveObjects: PlayerActiveObjects,
 	response: CrowniclesPacket[]
 ): Promise<SmallEventEligibility | null> {
 	const file = await import(`../smallEvents/${key}.js`);
@@ -37,7 +38,7 @@ async function checkSmallEventEligibility(
 		return null;
 	}
 
-	const canExecute = await file.smallEventFuncs.canBeExecuted(player);
+	const canExecute = await (file.smallEventFuncs as SmallEventFuncs).canBeExecuted(player, playerActiveObjects);
 	if (!canExecute) {
 		return null;
 	}
@@ -53,13 +54,14 @@ async function checkSmallEventEligibility(
  */
 async function getEligibleSmallEvents(
 	player: Player,
+	playerActiveObjects: PlayerActiveObjects,
 	response: CrowniclesPacket[]
 ): Promise<SmallEventEligibility[]> {
 	const keys = SmallEventDataController.instance.getKeys();
 	const eligibleEvents: SmallEventEligibility[] = [];
 
 	for (const key of keys) {
-		const eligibility = await checkSmallEventEligibility(key, player, response);
+		const eligibility = await checkSmallEventEligibility(key, player, playerActiveObjects, response);
 		if (eligibility) {
 			eligibleEvents.push(eligibility);
 		}
@@ -87,10 +89,14 @@ function selectRandomSmallEvent(eligibleEvents: SmallEventEligibility[]): string
 }
 
 /**
- * Get a random small event
+ * Get a random small event key based on rarity weighting
  */
-async function getRandomSmallEvent(response: CrowniclesPacket[], player: Player): Promise<string | null> {
-	const eligibleEvents = await getEligibleSmallEvents(player, response);
+async function getRandomSmallEvent(
+	response: CrowniclesPacket[],
+	player: Player,
+	playerActiveObjects: PlayerActiveObjects
+): Promise<string | null> {
+	const eligibleEvents = await getEligibleSmallEvents(player, playerActiveObjects, response);
 
 	if (eligibleEvents.length === 0) {
 		return null;
@@ -143,14 +149,15 @@ export async function executeSmallEvent(
 	context: PacketContext,
 	forced: string | null
 ): Promise<void> {
+	const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
+
 	// Pick a random event or use forced one
-	const event = forced ?? await getRandomSmallEvent(response, player);
+	const event = forced ?? await getRandomSmallEvent(response, player, playerActiveObjects);
 
 	if (!event) {
 		response.push(makePacket(ErrorPacket, { message: "No small event can be executed..." }));
 		return;
 	}
 
-	const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
 	await loadAndExecuteSmallEvent(event, response, player, context, playerActiveObjects);
 }
