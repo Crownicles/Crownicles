@@ -983,7 +983,8 @@ export const CrowniclesIcons: {
 		witch: "🧹",
 		infoFight: "🏰",
 		haunted: "🦴",
-		expeditionAdvice: "🗺️"
+		expeditionAdvice: "🗺️",
+		petDropToken: "🪙"
 	},
 	pets: {
 		0: {

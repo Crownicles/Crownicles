@@ -105,6 +105,7 @@ import {
 	SmallEventExpeditionAdvicePacket,
 	ExpeditionAdviceInteractionType
 } from "../../../../Lib/src/packets/smallEvents/SmallEventExpeditionAdvicePacket";
+import { SmallEventPetDropTokenPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventPetDropTokenPacket";
 
 const PET_TIME_INTERACTIONS = new Set([
 	"gainTime",
@@ -1185,6 +1186,24 @@ export default class SmallEventsHandler {
 
 		await interaction.editReply({
 			embeds: [new CrowniclesSmallEventEmbed("expeditionAdvice", story, interaction.user, lng)]
+		});
+	}
+
+	@packetHandler(SmallEventPetDropTokenPacket)
+	async smallEventPetDropToken(context: PacketContext, packet: SmallEventPetDropTokenPacket): Promise<void> {
+		const interaction = DiscordCache.getInteraction(context.discord!.interaction);
+		const lng = interaction!.userLanguage;
+		const petDisplay = PetUtils.petToShortString(lng, packet.petNickname, packet.petTypeId, packet.petSex as SexTypeShort);
+		await interaction?.editReply({
+			embeds: [
+				new CrowniclesSmallEventEmbed(
+					"petDropToken",
+					getRandomSmallEventIntro(lng)
+					+ StringUtils.getRandomTranslation("smallEvents:petDropToken.stories", lng, { pet: petDisplay }),
+					interaction.user,
+					lng
+				)
+			]
 		});
 	}
 }
