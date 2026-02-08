@@ -95,9 +95,9 @@ export abstract class BlessingConstants {
 	static readonly PET_LOVE_MULTIPLIER = 2;
 
 	/**
-	 * HP healed for all players when healAll blessing triggers (effect #7)
+	 * Multiplier for health potion effectiveness blessing (effect #7)
 	 */
-	static readonly HEAL_ALL_HP = 10;
+	static readonly HEALTH_POTION_MULTIPLIER = 2;
 
 	/**
 	 * Multiplier for daily mission rewards blessing (effect #9)

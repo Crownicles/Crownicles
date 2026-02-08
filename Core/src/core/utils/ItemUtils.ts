@@ -24,6 +24,7 @@ import { crowniclesInstance } from "../../index";
 import { ItemRefusePacket } from "../../../../Lib/src/packets/events/ItemRefusePacket";
 import { ItemAcceptPacket } from "../../../../Lib/src/packets/events/ItemAcceptPacket";
 import { ItemFoundPacket } from "../../../../Lib/src/packets/events/ItemFoundPacket";
+import { BlessingManager } from "../blessings/BlessingManager";
 import {
 	ReactionCollectorItemChoice,
 	ReactionCollectorItemChoiceDrinkPotionReaction,
@@ -857,7 +858,7 @@ export async function consumePotion(response: CrowniclesPacket[], potion: Potion
 	switch (potion.nature) {
 		case ItemNature.HEALTH:
 			await player.addHealth({
-				amount: potion.power,
+				amount: Math.round(potion.power * BlessingManager.getInstance().getHealthPotionMultiplier()),
 				response,
 				reason: NumberChangeReason.DRINK
 			});
