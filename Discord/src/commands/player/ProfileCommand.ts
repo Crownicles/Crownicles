@@ -149,7 +149,7 @@ function addPetField(fields: EmbedField[], packet: CommandProfilePacketRes, lng:
 		lng,
 		rarity: pet ? DisplayUtils.getPetRarityDisplay(pet.rarity, lng) : "",
 		emote: pet ? DisplayUtils.getPetIcon(pet.typeId, pet.sex) : "",
-		name: pet ? pet.nickname ?? DisplayUtils.getPetTypeName(lng, pet.typeId, pet.sex) : ""
+		name: pet ? pet.nickname || DisplayUtils.getPetTypeName(lng, pet.typeId, pet.sex) : ""
 	});
 }
 
