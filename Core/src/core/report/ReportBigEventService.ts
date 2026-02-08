@@ -8,9 +8,7 @@ import {
 	Player, Players
 } from "../database/game/models/Player";
 import { MissionsController } from "../missions/MissionsController";
-import {
-	MapLink, MapLinkDataController
-} from "../../data/MapLink";
+import { MapLinkDataController } from "../../data/MapLink";
 import {
 	BigEvent, BigEventDataController
 } from "../../data/BigEvent";
@@ -37,29 +35,21 @@ import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants"
 import { ReportConstants } from "../../../../Lib/src/constants/ReportConstants";
 import { crowniclesInstance } from "../../index";
 import { millisecondsToMinutes } from "../../../../Lib/src/utils/TimeUtils";
-
-/**
- * ChooseDestination callback type
- */
-type ChooseDestinationCallback = (
-	context: PacketContext,
-	player: Player,
-	forcedLink: MapLink | null,
-	response: CrowniclesPacket[],
-	mainPacket?: boolean
-) => Promise<void>;
+import { chooseDestination } from "./ReportDestinationService";
 
 /**
  * Check all missions to check when you execute a big event
+ * @param player
+ * @param response
  */
 export async function completeMissionsBigEvent(player: Player, response: CrowniclesPacket[]): Promise<void> {
 	await MissionsController.update(player, response, {
 		missionId: "travelHours",
-		params: { travelTime: player.getCurrentTripDuration() }
+		params: {
+			travelTime: player.getCurrentTripDuration()
+		}
 	});
-
 	const endMapId = MapLinkDataController.instance.getById(player.mapLinkId)!.endMap;
-
 	await MissionsController.update(player, response, {
 		missionId: "goToPlace",
 		params: { mapId: endMapId }
@@ -75,118 +65,57 @@ export async function completeMissionsBigEvent(player: Player, response: Crownic
 }
 
 /**
- * Filter and get valid outcomes for a possibility
+ * @param event
+ * @param possibility
+ * @param player
+ * @param time
+ * @param context
+ * @param response
  */
-async function getValidOutcomes(
-	possibility: Possibility,
-	player: Player
-): Promise<[string, PossibilityOutcome][]> {
-	const entries = Object.entries(possibility.outcomes);
-	const validOutcomes: [string, PossibilityOutcome][] = [];
+async function doPossibility(
+	event: BigEvent,
+	possibility: [string, Possibility],
+	player: Player,
+	time: number,
+	context: PacketContext,
+	response: CrowniclesPacket[]
+): Promise<void> {
+	player = await Players.getOrRegister(player.keycloakId);
+	player.nextEvent = null;
 
+	if (event.id === 0 && possibility[0] === "end") { // Don't do anything if the player ends the first report
+		crowniclesInstance?.logsDatabase.logBigEvent(player.keycloakId, event.id, possibility[0], "0")
+			.then();
+		response.push(makePacket(CommandReportBigEventResultRes, {
+			eventId: event.id,
+			possibilityId: possibility[0],
+			outcomeId: "0",
+			oneshot: false,
+			money: 0,
+			energy: 0,
+			gems: 0,
+			experience: 0,
+			health: 0,
+			score: 0
+		}));
+		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.REPORT);
+		return;
+	}
+
+	// Filter the outcomes that are valid
+	const entries = Object.entries(possibility[1].outcomes);
+
+	const validOutcomes: [string, PossibilityOutcome][] = [];
 	for (const [key, outcome] of entries) {
-		const isValid = !outcome.condition || await verifyPossibilityOutcomeCondition(outcome.condition, player);
-		if (isValid) {
+		if (!outcome.condition || await verifyPossibilityOutcomeCondition(outcome.condition, player)) {
 			validOutcomes.push([key, outcome]);
 		}
 	}
 
-	return validOutcomes;
-}
-
-/**
- * Update missions based on tags from the outcome
- */
-async function updateMissionsFromTags(
-	player: Player,
-	response: CrowniclesPacket[],
-	outcome: PossibilityOutcome,
-	possibility: Possibility,
-	event: BigEvent
-): Promise<void> {
-	const tagsToVerify = (outcome.tags ?? [])
-		.concat(possibility.tags ?? [])
-		.concat(event.tags ?? []);
-
-	if (!tagsToVerify.length) {
-		return;
-	}
-
-	for (const tag of tagsToVerify) {
-		await MissionsController.update(player, response, {
-			missionId: tag,
-			params: { tags: tagsToVerify }
-		});
-	}
-}
-
-/**
- * Handle the special case of first event end possibility
- */
-function handleFirstEventEnd(
-	event: BigEvent,
-	possibilityName: string,
-	player: Player,
-	response: CrowniclesPacket[]
-): boolean {
-	if (event.id !== 0 || possibilityName !== "end") {
-		return false;
-	}
-
-	crowniclesInstance?.logsDatabase.logBigEvent(player.keycloakId, event.id, possibilityName, "0").then();
-
-	response.push(makePacket(CommandReportBigEventResultRes, {
-		eventId: event.id,
-		possibilityId: possibilityName,
-		outcomeId: "0",
-		oneshot: false,
-		money: 0,
-		energy: 0,
-		gems: 0,
-		experience: 0,
-		health: 0,
-		score: 0
-	}));
-
-	BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.REPORT);
-	return true;
-}
-
-/**
- * Parameters for executing a possibility outcome
- */
-interface DoPossibilityParams {
-	event: BigEvent;
-	possibility: [string, Possibility];
-	player: Player;
-	time: number;
-	context: PacketContext;
-	response: CrowniclesPacket[];
-	chooseDestinationFn: ChooseDestinationCallback;
-}
-
-/**
- * Execute a possibility outcome
- */
-async function doPossibility(params: DoPossibilityParams): Promise<void> {
-	const {
-		event, possibility, time, context, response, chooseDestinationFn
-	} = params;
-	let { player } = params;
-
-	player = await Players.getOrRegister(player.keycloakId);
-	player.nextEvent = 0;
-
-	// Special case: first event end
-	if (handleFirstEventEnd(event, possibility[0], player, response)) {
-		return;
-	}
-
-	// Get valid outcomes
-	const validOutcomes = await getValidOutcomes(possibility[1], player);
 	const randomOutcome = RandomUtils.crowniclesRandom.pick(validOutcomes);
 
-	crowniclesInstance?.logsDatabase.logBigEvent(player.keycloakId, event.id, possibility[0], randomOutcome[0]).then();
+	crowniclesInstance?.logsDatabase.logBigEvent(player.keycloakId, event.id, possibility[0], randomOutcome[0])
+		.then();
 
 	const newMapLink = await applyPossibilityOutcome({
 		eventId: event.id,
@@ -197,59 +126,41 @@ async function doPossibility(params: DoPossibilityParams): Promise<void> {
 
 	const isDead = await player.killIfNeeded(response, NumberChangeReason.BIG_EVENT);
 
-	// Choose destination if player is alive or has forced map link
+	/*
+	 * If the player is dead but a forced map link is provided, teleport them there
+	 * Otherwise, only choose destination if player is alive
+	 */
 	if (newMapLink || !isDead) {
-		await chooseDestinationFn(context, player, newMapLink, response, false);
+		await chooseDestination(context, player, newMapLink, response, false);
 	}
 
 	await MissionsController.update(player, response, { missionId: "doReports" });
-	await updateMissionsFromTags(player, response, randomOutcome[1], possibility[1], event);
+
+	const tagsToVerify = (randomOutcome[1].tags ?? [])
+		.concat(possibility[1].tags ?? [])
+		.concat(event.tags ?? []);
+	if (tagsToVerify.length > 0) {
+		for (const tag of tagsToVerify) {
+			await MissionsController.update(player, response, {
+				missionId: tag,
+				params: { tags: tagsToVerify }
+			});
+		}
+	}
 
 	await player.save();
 	BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.REPORT);
 }
 
 /**
- * Create the end callback for big event collector
+ * @param event
+ * @param player
+ * @param time
+ * @param context
+ * @param response
+ * @returns
  */
-function createBigEventEndCallback(
-	event: BigEvent,
-	possibilities: [string, Possibility][],
-	player: Player,
-	time: number,
-	context: PacketContext,
-	chooseDestinationFn: ChooseDestinationCallback
-): EndCallback {
-	return async (collector, response) => {
-		const reaction = collector.getFirstReaction();
-
-		const selectedPossibility = reaction
-			? possibilities.find(p => p[0] === (reaction.reaction.data as ReactionCollectorBigEventPossibilityReaction).name)
-			: possibilities.find(p => p[0] === "end");
-
-		await doPossibility({
-			event,
-			possibility: selectedPossibility!,
-			player,
-			time,
-			context,
-			response,
-			chooseDestinationFn
-		});
-	};
-}
-
-/**
- * Execute a big event
- */
-async function doEvent(
-	event: BigEvent,
-	player: Player,
-	time: number,
-	context: PacketContext,
-	response: CrowniclesPacket[],
-	chooseDestinationFn: ChooseDestinationCallback
-): Promise<void> {
+async function doEvent(event: BigEvent, player: Player, time: number, context: PacketContext, response: CrowniclesPacket[]): Promise<void> {
 	const possibilities = await event.getPossibilities(player);
 
 	const collector = new ReactionCollectorBigEvent(
@@ -257,12 +168,24 @@ async function doEvent(
 		possibilities.map(possibility => ({ name: possibility[0] }))
 	);
 
-	const endCallback = createBigEventEndCallback(event, possibilities, player, time, context, chooseDestinationFn);
+	const endCallback: EndCallback = async (collector, response) => {
+		const reaction = collector.getFirstReaction();
+
+		if (!reaction) {
+			await doPossibility(event, possibilities.find(possibility => possibility[0] === "end")!, player, time, context, response);
+		}
+		else {
+			const reactionName = (reaction.reaction.data as ReactionCollectorBigEventPossibilityReaction).name;
+			await doPossibility(event, possibilities.find(possibility => possibility[0] === reactionName)!, player, time, context, response);
+		}
+	};
 
 	const packet = new ReactionCollectorInstance(
 		collector,
 		context,
-		{ allowedPlayerKeycloakIds: [player.keycloakId] },
+		{
+			allowedPlayerKeycloakIds: [player.keycloakId]
+		},
 		endCallback
 	)
 		.block(player.keycloakId, BlockingConstants.REASONS.REPORT)
@@ -272,51 +195,44 @@ async function doEvent(
 }
 
 /**
- * Calculate capped travel time for event
- */
-function calculateEventTime(player: Player): number {
-	const travelData = TravelTime.getTravelDataSimplified(player, new Date());
-	const time = millisecondsToMinutes(travelData.playerTravelledTime);
-	return Math.min(time, ReportConstants.TIME_LIMIT);
-}
-
-/**
  * Do a random big event
+ * @param context
+ * @param response
+ * @param player
+ * @param forceSpecificEvent
  */
 export async function doRandomBigEvent(
 	context: PacketContext,
 	response: CrowniclesPacket[],
 	player: Player,
-	chooseDestinationFn: ChooseDestinationCallback,
 	forceSpecificEvent = -1
 ): Promise<void> {
 	await completeMissionsBigEvent(player, response);
-	const time = calculateEventTime(player);
-
-	let eventId = forceSpecificEvent;
-
-	// NextEvent is defined?
-	if (player.nextEvent) {
-		eventId = player.nextEvent;
+	const travelData = TravelTime.getTravelDataSimplified(player, new Date());
+	let time = millisecondsToMinutes(travelData.playerTravelledTime);
+	if (time > ReportConstants.TIME_LIMIT) {
+		time = ReportConstants.TIME_LIMIT;
 	}
 
 	let event: BigEvent;
 
-	if (eventId === -1 || !eventId) {
+	// NextEvent is defined?
+	if (player.nextEvent) {
+		forceSpecificEvent = player.nextEvent;
+	}
+
+	if (forceSpecificEvent === -1 || !forceSpecificEvent) {
 		const mapId = player.getDestinationId()!;
 		const randomEvent = await BigEventDataController.instance.getRandomEvent(mapId, player);
 		if (!randomEvent) {
-			response.push(makePacket(ErrorPacket, {
-				message: "It seems that there is no event here... It's a bug, please report it to the Crownicles staff."
-			}));
+			response.push(makePacket(ErrorPacket, { message: "It seems that there is no event here... It's a bug, please report it to the Crownicles staff." }));
 			return;
 		}
 		event = randomEvent;
 	}
 	else {
-		event = BigEventDataController.instance.getById(eventId)!;
+		event = BigEventDataController.instance.getById(forceSpecificEvent)!;
 	}
-
 	await Maps.stopTravel(player);
-	await doEvent(event, player, time, context, response, chooseDestinationFn);
+	await doEvent(event, player, time, context, response);
 }
