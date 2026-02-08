@@ -119,19 +119,36 @@ export abstract class DiscordAnnouncement {
 		CrowniclesLogger.info(`Announcing blessing type ${packet.blessingType}...`);
 		const user = await KeycloakUtils.getUserByKeycloakId(keycloakConfig, packet.triggeredByKeycloakId);
 		const playerName = user.isError ? "???" : escapeUsername(user.payload.user.attributes.gameUsername[0]);
+
+		// Resolve top contributor name
+		let topContributorName = "";
+		if (packet.topContributorKeycloakId && packet.topContributorKeycloakId !== packet.triggeredByKeycloakId) {
+			const topUser = await KeycloakUtils.getUserByKeycloakId(keycloakConfig, packet.topContributorKeycloakId);
+			topContributorName = topUser.isError ? "???" : escapeUsername(topUser.payload.user.attributes.gameUsername[0]);
+		}
+		else if (packet.topContributorKeycloakId) {
+			topContributorName = playerName;
+		}
+
 		const messageFr = i18n.t("bot:blessingAnnouncement", {
 			lng: LANGUAGE.FRENCH,
 			playerName,
 			blessingName: i18n.t(`bot:blessingNames.${packet.blessingType}`, { lng: LANGUAGE.FRENCH }),
 			blessingEffect: i18n.t(`bot:blessingEffects.${packet.blessingType}`, { lng: LANGUAGE.FRENCH }),
-			durationHours: packet.durationHours
+			durationHours: packet.durationHours,
+			topContributorName,
+			topContributorAmount: packet.topContributorAmount,
+			totalContributors: packet.totalContributors
 		});
 		const messageEn = i18n.t("bot:blessingAnnouncement", {
 			lng: LANGUAGE.ENGLISH,
 			playerName,
 			blessingName: i18n.t(`bot:blessingNames.${packet.blessingType}`, { lng: LANGUAGE.ENGLISH }),
 			blessingEffect: i18n.t(`bot:blessingEffects.${packet.blessingType}`, { lng: LANGUAGE.ENGLISH }),
-			durationHours: packet.durationHours
+			durationHours: packet.durationHours,
+			topContributorName,
+			topContributorAmount: packet.topContributorAmount,
+			totalContributors: packet.totalContributors
 		});
 		await this.announceChristmas(messageFr, messageEn);
 	}

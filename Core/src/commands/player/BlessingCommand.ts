@@ -26,13 +26,18 @@ export default class BlessingCommand {
 			canClaimDailyBonus = missionInfo.hasCompletedDailyMission();
 		}
 
+		const topContributor = blessingManager.getTopContributor();
+
 		response.push(makePacket(CommandBlessingPacketRes, {
 			activeBlessingType: blessingManager.getActiveBlessingType(),
 			blessingEndAt: blessingManager.getBlessingEndAt()?.getTime() ?? 0,
 			poolAmount: blessingManager.getPoolAmount(),
 			poolThreshold: blessingManager.getPoolThreshold(),
 			lastTriggeredByKeycloakId: blessingManager.getLastTriggeredByKeycloakId() ?? "",
-			canClaimDailyBonus
+			canClaimDailyBonus,
+			topContributorKeycloakId: topContributor?.keycloakId ?? "",
+			topContributorAmount: topContributor?.amount ?? 0,
+			totalContributors: blessingManager.getTotalContributors()
 		}));
 	}
 }

@@ -6,4 +6,10 @@ export class BlessingAnnouncementPacket extends AnnouncementPacket {
 	triggeredByKeycloakId!: string;
 
 	durationHours!: number;
+
+	topContributorKeycloakId!: string;
+
+	topContributorAmount!: number;
+
+	totalContributors!: number;
 }

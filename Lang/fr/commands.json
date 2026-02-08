@@ -766,8 +766,8 @@
   "report": {
     "adviceTitle": "Conseil :",
     "chooseDestinationIndications": "Choisissez une destination pour votre voyage:",
-  "choseMapMinutes_one": "Vous avez décidé de partir en direction {{mapPrefix}} {{mapType}} {{mapEmote}} **{{mapName}}**. Ce trajet durera environ **{{timeDisplay}}**.",
-  "choseMapMinutes_other": "Vous avez décidé de partir en direction {{mapPrefix}} {{mapType}} {{mapEmote}} **{{mapName}}**. Ce trajet durera environ **{{timeDisplay}}**.",
+    "choseMapMinutes_one": "Vous avez décidé de partir en direction {{mapPrefix}} {{mapType}} {{mapEmote}} **{{mapName}}**. Ce trajet durera environ **{{timeDisplay}}**.",
+    "choseMapMinutes_other": "Vous avez décidé de partir en direction {{mapPrefix}} {{mapType}} {{mapEmote}} **{{mapName}}**. Ce trajet durera environ **{{timeDisplay}}**.",
     "choseMap_one": "Vous avez décidé de partir en direction {{mapPrefix}} {{mapType}} {{mapEmote}} **{{mapName}}**. Ce trajet durera environ **{{time}} heure**.",
     "choseMap_other": "Vous avez décidé de partir en direction {{mapPrefix}} {{mapType}} {{mapEmote}} **{{mapName}}**. Ce trajet durera environ **{{time}} heures**.",
     "collectedPointsTitle": "Points récoltés :",
@@ -1997,6 +1997,7 @@
     },
     "claimDailyButton": "Récupérer le bonus quotidien",
     "claimDailySuccess": "✨ **Bonus de bénédiction récupéré !**\n\n{{gemsEmote}} Gemmes : +**{{gemsWon, number}}**\n{{xpEmote}} Expérience : +**{{xpWon, number}}**\n{{moneyEmote}} Argent : +**{{moneyWon, number}}**\n{{pointsEmote}} Score : +**{{pointsWon, number}}**",
-    "claimDailyFailed": "Vous ne pouvez pas récupérer ce bonus. Soit la bénédiction a expiré, soit vous l'avez déjà récupéré."
+    "claimDailyFailed": "Vous ne pouvez pas récupérer ce bonus. Soit la bénédiction a expiré, soit vous l'avez déjà récupéré.",
+    "contributors": "👑 **Plus gros contributeur :** {{topContributorName}} ({{topContributorAmount, number}} {{moneyEmote}})\n👥 **{{totalContributors}}** aventuriers ont contribué jusqu'à présent."
   }
 }

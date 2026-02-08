@@ -31,6 +31,12 @@ export class BlessingManager {
 	 */
 	private dailyBonusClaimed: Set<string> = new Set();
 
+	/**
+	 * In-memory tracker of contributions per player (keycloakId → total amount)
+	 * for the current pool cycle. Resets when a blessing is triggered or pool expires.
+	 */
+	private contributionsTracker: Map<string, number> = new Map();
+
 	static getInstance(): BlessingManager {
 		if (!BlessingManager.instance) {
 			BlessingManager.instance = new BlessingManager();
@@ -156,6 +162,12 @@ export class BlessingManager {
 
 		this.cachedBlessing.poolAmount += amount;
 
+		// Track contribution
+		this.contributionsTracker.set(
+			playerKeycloakId,
+			(this.contributionsTracker.get(playerKeycloakId) ?? 0) + amount
+		);
+
 		// Log contribution
 		crowniclesInstance.logsDatabase.logBlessingContribution(
 			playerKeycloakId,
@@ -184,6 +196,10 @@ export class BlessingManager {
 		// Reset daily bonus claims for the new blessing cycle
 		this.dailyBonusClaimed.clear();
 
+		// Snapshot contribution stats before clearing
+		const topContributor = this.getTopContributor();
+		const totalContributors = this.contributionsTracker.size;
+
 		// Calculate new threshold using dynamic pricing
 		const fillDurationMs = Date.now() - this.cachedBlessing!.poolStartedAt.getTime();
 		const fillDurationDays = fillDurationMs / (24 * 60 * 60 * 1000);
@@ -198,12 +214,18 @@ export class BlessingManager {
 		this.cachedBlessing!.poolStartedAt = blessingEnd; // Next pool starts when blessing ends
 		await this.cachedBlessing!.save();
 
+		// Clear contributions for the new cycle
+		this.contributionsTracker.clear();
+
 		// Send announcement
 		PacketUtils.announce(
 			makePacket(BlessingAnnouncementPacket, {
 				blessingType,
 				triggeredByKeycloakId,
-				durationHours
+				durationHours,
+				topContributorKeycloakId: topContributor?.keycloakId ?? "",
+				topContributorAmount: topContributor?.amount ?? 0,
+				totalContributors
 			}),
 			MqttTopicUtils.getDiscordBlessingAnnouncementTopic(botConfig.PREFIX)
 		);
@@ -278,6 +300,7 @@ export class BlessingManager {
 		this.cachedBlessing.poolAmount = 0;
 		this.cachedBlessing.poolStartedAt = new Date();
 		this.dailyBonusClaimed.clear();
+		this.contributionsTracker.clear();
 		await this.cachedBlessing.save();
 
 		// Log expiration
@@ -309,6 +332,7 @@ export class BlessingManager {
 		this.cachedBlessing.poolAmount = 0;
 		this.cachedBlessing.poolThreshold = newThreshold;
 		this.cachedBlessing.poolStartedAt = new Date();
+		this.contributionsTracker.clear();
 		await this.cachedBlessing.save();
 
 		// Log pool expiration
@@ -406,6 +430,35 @@ export class BlessingManager {
 		this.dailyBonusClaimed.add(keycloakId);
 	}
 
+	/**
+	 * Get the top contributor for the current pool cycle
+	 */
+	getTopContributor(): {
+		keycloakId: string; amount: number;
+	} | null {
+		if (this.contributionsTracker.size === 0) {
+			return null;
+		}
+		let topKeycloakId = "";
+		let topAmount = 0;
+		for (const [keycloakId, amount] of this.contributionsTracker) {
+			if (amount > topAmount) {
+				topKeycloakId = keycloakId;
+				topAmount = amount;
+			}
+		}
+		return {
+			keycloakId: topKeycloakId, amount: topAmount
+		};
+	}
+
+	/**
+	 * Get the total number of unique contributors for the current pool cycle
+	 */
+	getTotalContributors(): number {
+		return this.contributionsTracker.size;
+	}
+
 	// ==================== TEST COMMANDS ====================
 
 	/**
@@ -420,6 +473,7 @@ export class BlessingManager {
 		const blessingEnd = new Date(Date.now() + durationHours * 60 * 60 * 1000);
 
 		this.dailyBonusClaimed.clear();
+		this.contributionsTracker.clear();
 		this.cachedBlessing.activeBlessingType = type;
 		this.cachedBlessing.blessingEndAt = blessingEnd;
 		this.cachedBlessing.lastTriggeredByKeycloakId = keycloakId;
@@ -431,7 +485,10 @@ export class BlessingManager {
 			makePacket(BlessingAnnouncementPacket, {
 				blessingType: type,
 				triggeredByKeycloakId: keycloakId,
-				durationHours
+				durationHours,
+				topContributorKeycloakId: keycloakId,
+				topContributorAmount: 0,
+				totalContributors: 0
 			}),
 			MqttTopicUtils.getDiscordBlessingAnnouncementTopic(botConfig.PREFIX)
 		);
@@ -455,6 +512,7 @@ export class BlessingManager {
 		this.cachedBlessing.poolAmount = 0;
 		this.cachedBlessing.poolStartedAt = new Date();
 		this.dailyBonusClaimed.clear();
+		this.contributionsTracker.clear();
 		await this.cachedBlessing.save();
 	}
 
