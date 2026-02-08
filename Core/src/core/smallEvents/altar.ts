@@ -15,14 +15,14 @@ import { SmallEventAltarPacket } from "../../../../Lib/src/packets/smallEvents/S
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 
 /**
- * Calculate the 3 contribution amounts for a given player
+ * Calculate the 3 contribution amounts for a given player, capped at the remaining pool amount
  */
-function getContributionAmounts(player: Player): number[] {
+function getContributionAmounts(player: Player, remainingPool: number): number[] {
 	return [
 		BlessingConstants.FLAT_CONTRIBUTION,
 		Math.max(1, Math.floor(player.money * BlessingConstants.MONEY_PERCENTAGE_CONTRIBUTION)),
 		Math.max(1, player.level * BlessingConstants.LEVEL_MULTIPLIER_CONTRIBUTION)
-	];
+	].map(amount => Math.min(amount, remainingPool));
 }
 
 function getEndCallback(player: Player): EndCallback {
@@ -94,7 +94,8 @@ export const smallEventFuncs: SmallEventFuncs = {
 	},
 	executeSmallEvent: (response, player, context): void => {
 		const blessingManager = BlessingManager.getInstance();
-		const contributionAmounts = getContributionAmounts(player);
+		const remainingPool = blessingManager.getPoolThreshold() - blessingManager.getPoolAmount();
+		const contributionAmounts = getContributionAmounts(player, remainingPool);
 
 		const collector = new ReactionCollectorAltar(
 			contributionAmounts,
