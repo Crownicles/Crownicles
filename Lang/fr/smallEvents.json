@@ -2430,5 +2430,14 @@
       "Velanna surgit de derrière un rocher moussu, un os rongé entre les dents qu'elle jette négligemment par-dessus son épaule. Elle s'approche de vous et pose une main sur votre épaule. Elle vous raconte qu'un ancien de son clan avait l'habitude de changer d'avis au dernier moment, rappelant sans cesse son familier en cours de route. La bête a fini par le haïr. Elle vous avertit que plus les annulations se multiplient, plus la perte d'affection devient sévère.",
       "Velanna vous barre le chemin, jambes écartées et bras croisés, une expression sévère sur son visage balafré. Elle vous ordonne de l'écouter attentivement. Elle vous explique que les yeux d'un familier brillent d'excitation devant une carte d'expédition, son cœur s'emballe à l'idée de l'aventure promise. Elle vous apprend qu'annuler avant le départ ou rappeler en pleine exploration produit le même effet dévastateur : une promesse brisée. Elle compte sur ses doigts et vous avertit que la perte d'amour double à la deuxième trahison, triple à la troisième. Les familiers n'oublient jamais."
     ]
+  },
+  "petDropToken": {
+    "stories": [
+      "vous apercevez {{pet}}, le familier de **{{owner}}**, qui trotte joyeusement sur le même chemin que vous. En passant à côté de vous, il laisse tomber un objet brillant de sa gueule. Vous le ramassez : c'est un {emote:unitValues.token} **jeton** !",
+      "vous croisez {{pet}} de **{{owner}}** en pleine expédition sur votre route. Le familier semble vous reconnaître et dépose à vos pieds un {emote:unitValues.token} **jeton** avant de reprendre son chemin.",
+      "un bruit de pas attire votre attention. Vous découvrez {{pet}}, le familier de **{{owner}}**, qui galope sur le même trajet que vous. En vous voyant, le familier s'arrête et laisse échapper un {emote:unitValues.token} **jeton** de son pelage avant de repartir.",
+      "vous remarquez {{pet}} de **{{owner}}** qui chemine tranquillement non loin de vous. Le familier en expédition vous aperçoit et, d'un geste amical, laisse rouler un {emote:unitValues.token} **jeton** dans votre direction.",
+      "une silhouette familière se dessine au loin : c'est {{pet}}, le familier de **{{owner}}**, en pleine expédition. Il vous rejoint brièvement et fait tomber un {emote:unitValues.token} **jeton** de son collier avant de poursuivre sa mission."
+    ]
   }
 }
