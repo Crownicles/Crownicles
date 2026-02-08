@@ -4,6 +4,7 @@ import { SmallEventPetDropTokenPacket } from "../../../../Lib/src/packets/smallE
 import { Maps } from "../maps/Maps";
 import { PetExpedition } from "../database/game/models/PetExpedition";
 import { PetEntities } from "../database/game/models/PetEntity";
+import { Players } from "../database/game/models/Player";
 import { MapLinkDataController } from "../../data/MapLink";
 import { ExpeditionConstants } from "../../../../Lib/src/constants/ExpeditionConstants";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
@@ -28,7 +29,7 @@ async function findPetsOnSamePath(startMapId: number, endMapId: number, playerId
 
 export const smallEventFuncs: SmallEventFuncs = {
 	canBeExecuted: async player => {
-		if (!Maps.isOnContinent(player) || player.level < TokensConstants.LEVEL_TO_UNLOCK) {
+		if (!Maps.isOnContinent(player) || player.level < TokensConstants.LEVEL_TO_UNLOCK || player.tokens >= TokensConstants.MAX) {
 			return false;
 		}
 		const link = MapLinkDataController.instance.getById(player.mapLinkId);
@@ -52,6 +53,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 			return;
 		}
 
+		const owner = await Players.getById(expedition.playerId);
 		const petInfo = petEntity.getBasicInfo();
 
 		await player.addTokens({
@@ -62,7 +64,8 @@ export const smallEventFuncs: SmallEventFuncs = {
 		await player.save();
 
 		response.push(makePacket(SmallEventPetDropTokenPacket, {
-			...petInfo
+			...petInfo,
+			ownerKeycloakId: owner.keycloakId
 		}));
 	}
 };
