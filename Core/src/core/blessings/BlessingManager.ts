@@ -15,6 +15,12 @@ import {
 	botConfig, crowniclesInstance
 } from "../../index";
 import { datesAreOnSameDay } from "../../../../Lib/src/utils/TimeUtils";
+import { PlayerMissionsInfo } from "../database/game/models/PlayerMissionsInfo";
+import { Op } from "sequelize";
+import { DailyMissions } from "../database/game/models/DailyMission";
+import { Constants } from "../../../../Lib/src/constants/Constants";
+import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
+import { Players } from "../database/game/models/Player";
 
 /**
  * Singleton manager for global blessing state.
@@ -24,12 +30,6 @@ export class BlessingManager {
 	private static instance: BlessingManager;
 
 	private cachedBlessing: GlobalBlessing | null = null;
-
-	/**
-	 * In-memory set of keycloak IDs who have claimed the daily mission bonus
-	 * for the current blessing cycle. Resets when a new blessing is triggered or expires.
-	 */
-	private dailyBonusClaimed: Set<string> = new Set();
 
 	/**
 	 * In-memory tracker of contributions per player (keycloakId → total amount)
@@ -51,6 +51,12 @@ export class BlessingManager {
 		this.cachedBlessing = await GlobalBlessings.get();
 		await this.checkForExpiredBlessing();
 		await this.checkForExpiredPool();
+
+		// Periodically check for expired blessings/pools (every 5 minutes)
+		setInterval(async () => {
+			await this.checkForExpiredBlessing();
+			await this.checkForExpiredPool();
+		}, 5 * 60 * 1000);
 	}
 
 	/**
@@ -193,9 +199,6 @@ export class BlessingManager {
 		const durationHours = RandomUtils.randInt(BlessingConstants.MIN_DURATION_HOURS, BlessingConstants.MAX_DURATION_HOURS + 1);
 		const blessingEnd = new Date(Date.now() + durationHours * 60 * 60 * 1000);
 
-		// Reset daily bonus claims for the new blessing cycle
-		this.dailyBonusClaimed.clear();
-
 		// Snapshot contribution stats before clearing
 		const topContributor = this.getTopContributor();
 		const totalContributors = this.contributionsTracker.size;
@@ -240,7 +243,7 @@ export class BlessingManager {
 
 		// Apply one-time effects
 		if (blessingType === BlessingType.DAILY_MISSION) {
-			await this.applyRetroactiveDailyMission(response);
+			await this.applyRetroactiveDailyMission();
 		}
 	}
 
@@ -299,7 +302,6 @@ export class BlessingManager {
 		this.cachedBlessing.blessingEndAt = null;
 		this.cachedBlessing.poolAmount = 0;
 		this.cachedBlessing.poolStartedAt = new Date();
-		this.dailyBonusClaimed.clear();
 		this.contributionsTracker.clear();
 		await this.cachedBlessing.save();
 
@@ -347,16 +349,50 @@ export class BlessingManager {
 	}
 
 	/**
-	 * Effect #9: Apply retroactive daily mission bonus to players who already completed today
-	 * Players who already completed the daily mission today get an extra reward equal to their original reward
+	 * Effect #9: Apply retroactive daily mission bonus to players who already completed today.
+	 * Automatically gives the bonus to all eligible players — no manual claim needed.
 	 */
-	private async applyRetroactiveDailyMission(_response: CrowniclesPacket[]): Promise<void> {
-		/*
-		 * Retroactive bonus will be complex to implement perfectly
-		 * For now, we let the ongoing multiplier handle it for future completions
-		 * The retroactive part could be done via a bulk update or notification
-		 * This is a simplified approach - the multiplier will apply to future completions today
-		 */
+	private async applyRetroactiveDailyMission(): Promise<void> {
+		const todayStart = new Date();
+		todayStart.setHours(0, 0, 0, 0);
+
+		const completedToday = await PlayerMissionsInfo.findAll({
+			where: {
+				lastDailyMissionCompleted: { [Op.gte]: todayStart }
+			}
+		});
+
+		if (completedToday.length === 0) {
+			return;
+		}
+
+		const dailyMission = await DailyMissions.getOrGenerate();
+		const gemsWon = dailyMission.gemsToWin;
+		const xpWon = dailyMission.xpToWin;
+		const moneyWon = Math.round(dailyMission.moneyToWin * Constants.MISSIONS.DAILY_MISSION_MONEY_MULTIPLIER);
+		const pointsWon = Math.round(dailyMission.pointsToWin * Constants.MISSIONS.DAILY_MISSION_POINTS_MULTIPLIER);
+
+		for (const missionInfo of completedToday) {
+			const player = await Players.getById(missionInfo.playerId);
+			const discardedResponse: CrowniclesPacket[] = [];
+
+			await missionInfo.addGems(gemsWon, player.keycloakId, NumberChangeReason.BLESSING);
+			await player.addExperience({
+				amount: xpWon,
+				response: discardedResponse,
+				reason: NumberChangeReason.BLESSING
+			});
+			await player.addMoney({
+				amount: moneyWon,
+				response: discardedResponse,
+				reason: NumberChangeReason.BLESSING
+			});
+			await player.addScore({
+				amount: pointsWon,
+				response: discardedResponse,
+				reason: NumberChangeReason.BLESSING
+			});
+		}
 	}
 
 	/**
@@ -416,21 +452,6 @@ export class BlessingManager {
 	}
 
 	/**
-	 * Check if a player can claim the retroactive daily mission bonus.
-	 * Player can claim if: daily mission blessing is active + player completed daily today + hasn't already claimed
-	 */
-	canPlayerClaimDailyBonus(keycloakId: string): boolean {
-		return this.isActive(BlessingType.DAILY_MISSION) && !this.dailyBonusClaimed.has(keycloakId);
-	}
-
-	/**
-	 * Mark a player as having claimed the retroactive daily mission bonus
-	 */
-	markDailyBonusClaimed(keycloakId: string): void {
-		this.dailyBonusClaimed.add(keycloakId);
-	}
-
-	/**
 	 * Get the top contributor for the current pool cycle
 	 */
 	getTopContributor(): {
@@ -472,7 +493,6 @@ export class BlessingManager {
 		const durationHours = 12;
 		const blessingEnd = new Date(Date.now() + durationHours * 60 * 60 * 1000);
 
-		this.dailyBonusClaimed.clear();
 		this.contributionsTracker.clear();
 		this.cachedBlessing.activeBlessingType = type;
 		this.cachedBlessing.blessingEndAt = blessingEnd;
@@ -495,7 +515,7 @@ export class BlessingManager {
 
 		// Apply one-time effects
 		if (type === BlessingType.DAILY_MISSION) {
-			await this.applyRetroactiveDailyMission(response);
+			await this.applyRetroactiveDailyMission();
 		}
 	}
 
@@ -511,7 +531,6 @@ export class BlessingManager {
 		this.cachedBlessing.blessingEndAt = null;
 		this.cachedBlessing.poolAmount = 0;
 		this.cachedBlessing.poolStartedAt = new Date();
-		this.dailyBonusClaimed.clear();
 		this.contributionsTracker.clear();
 		await this.cachedBlessing.save();
 	}
