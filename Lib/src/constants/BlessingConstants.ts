@@ -113,4 +113,24 @@ export abstract class BlessingConstants {
 	 * Rarity of the altar small event (1 = very rare)
 	 */
 	static readonly ALTAR_RARITY = 15;
+
+	/**
+	 * Probability of getting bonus gems when contributing more than the flat amount (1%)
+	 */
+	static readonly CONTRIBUTION_BONUS_GEMS_PROBABILITY = 0.01;
+
+	/**
+	 * Number of bonus gems awarded
+	 */
+	static readonly CONTRIBUTION_BONUS_GEMS_AMOUNT = 5;
+
+	/**
+	 * Probability of getting a random item when contributing more than the flat amount (4%)
+	 */
+	static readonly CONTRIBUTION_BONUS_ITEM_PROBABILITY = 0.04;
+
+	/**
+	 * Lifetime contribution threshold to earn the Oracle Patron badge
+	 */
+	static readonly ORACLE_PATRON_THRESHOLD = 150000;
 }

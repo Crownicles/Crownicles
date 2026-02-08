@@ -2144,7 +2144,8 @@ export const CrowniclesIcons: {
 		[Badge.GOOD_BUG_REPORTER]: "🕊️",
 		[Badge.VOTER]: "🗳️",
 		[Badge.ANIMAL_LOVER]: "🐾",
-		[Badge.EXPERT_EXPEDITEUR]: "🧭"
+		[Badge.EXPERT_EXPEDITEUR]: "🧭",
+		[Badge.ORACLE_PATRON]: "🔮"
 	},
 	itemKinds: [
 		"⚔️",

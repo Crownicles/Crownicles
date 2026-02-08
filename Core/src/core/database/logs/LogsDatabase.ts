@@ -1681,4 +1681,17 @@ export class LogsDatabase extends Database {
 			date: getDateLogs()
 		});
 	}
+
+	/**
+	 * Get the total lifetime contribution amount for a player
+	 */
+	public async getLifetimeContributions(keycloakId: string): Promise<number> {
+		const player = await LogsDatabase.findOrCreatePlayer(keycloakId);
+		if (!player) {
+			return 0;
+		}
+		return await LogsBlessingsContributions.sum("amount", {
+			where: { playerId: player.id }
+		}) ?? 0;
+	}
 }

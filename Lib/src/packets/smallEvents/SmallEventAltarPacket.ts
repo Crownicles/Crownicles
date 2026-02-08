@@ -39,4 +39,19 @@ export class SmallEventAltarPacket extends SmallEventPacket {
 	 * Whether the player had enough money
 	 */
 	hasEnoughMoney!: boolean;
+
+	/**
+	 * Number of bonus gems awarded (0 if none)
+	 */
+	bonusGems!: number;
+
+	/**
+	 * Whether a bonus random item was given
+	 */
+	bonusItemGiven!: boolean;
+
+	/**
+	 * Whether the Oracle Patron badge was awarded
+	 */
+	badgeAwarded!: boolean;
 }

@@ -10,9 +10,20 @@ import {
 	ReactionCollectorAltar, ReactionCollectorAltarContributeReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorAltar";
 import Player from "../database/game/models/Player";
-import { makePacket } from "../../../../Lib/src/packets/CrowniclesPacket";
+import {
+	makePacket, PacketContext
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import { SmallEventAltarPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventAltarPacket";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
+import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
+import { PlayerMissionsInfos } from "../database/game/models/PlayerMissionsInfo";
+import {
+	generateRandomItem, giveItemToPlayer
+} from "../utils/ItemUtils";
+import { ItemRarity } from "../../../../Lib/src/constants/ItemConstants";
+import { PlayerBadgesManager } from "../database/game/models/PlayerBadges";
+import { Badge } from "../../../../Lib/src/types/Badge";
+import { crowniclesInstance } from "../../index";
 
 /**
  * Calculate the 3 contribution amounts for a given player, capped at the remaining pool amount
@@ -25,7 +36,7 @@ function getContributionAmounts(player: Player, remainingPool: number): number[]
 	].map(amount => Math.min(amount, remainingPool));
 }
 
-function getEndCallback(player: Player): EndCallback {
+function getEndCallback(player: Player, context: PacketContext): EndCallback {
 	return async (collector, response) => {
 		const reaction = collector.getFirstReaction();
 		const blessingManager = BlessingManager.getInstance();
@@ -39,7 +50,10 @@ function getEndCallback(player: Player): EndCallback {
 				blessingType: 0,
 				newPoolAmount: blessingManager.getPoolAmount(),
 				poolThreshold: blessingManager.getPoolThreshold(),
-				hasEnoughMoney: true
+				hasEnoughMoney: true,
+				bonusGems: 0,
+				bonusItemGiven: false,
+				badgeAwarded: false
 			}));
 			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.ALTAR_SMALL_EVENT);
 			return;
@@ -56,7 +70,10 @@ function getEndCallback(player: Player): EndCallback {
 				blessingType: 0,
 				newPoolAmount: blessingManager.getPoolAmount(),
 				poolThreshold: blessingManager.getPoolThreshold(),
-				hasEnoughMoney: false
+				hasEnoughMoney: false,
+				bonusGems: 0,
+				bonusItemGiven: false,
+				badgeAwarded: false
 			}));
 			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.ALTAR_SMALL_EVENT);
 			return;
@@ -72,6 +89,34 @@ function getEndCallback(player: Player): EndCallback {
 		// Contribute to pool
 		const blessingTriggered = await blessingManager.contribute(chosenAmount, player.keycloakId, response);
 
+		// Bonus rewards: only when contributing more than the flat amount
+		let bonusGems = 0;
+		let bonusItemGiven = false;
+		let badgeAwarded = false;
+
+		if (chosenAmount > BlessingConstants.FLAT_CONTRIBUTION) {
+			// 1% chance to get bonus gems
+			if (RandomUtils.crowniclesRandom.bool(BlessingConstants.CONTRIBUTION_BONUS_GEMS_PROBABILITY)) {
+				bonusGems = BlessingConstants.CONTRIBUTION_BONUS_GEMS_AMOUNT;
+				const missionInfo = await PlayerMissionsInfos.getOfPlayer(player.id);
+				await missionInfo.addGems(bonusGems, player.keycloakId, NumberChangeReason.BLESSING);
+			}
+
+			// 4% chance to get a random item with minimum rarity SPECIAL
+			if (RandomUtils.crowniclesRandom.bool(BlessingConstants.CONTRIBUTION_BONUS_ITEM_PROBABILITY)) {
+				bonusItemGiven = true;
+			}
+		}
+
+		// Check for Oracle Patron badge based on lifetime contributions (from logs DB)
+		const lifetimeTotal = await crowniclesInstance.logsDatabase.getLifetimeContributions(player.keycloakId);
+		if (lifetimeTotal >= BlessingConstants.ORACLE_PATRON_THRESHOLD) {
+			if (!await PlayerBadgesManager.hasBadge(player.id, Badge.ORACLE_PATRON)) {
+				await PlayerBadgesManager.addBadge(player.id, Badge.ORACLE_PATRON);
+				badgeAwarded = true;
+			}
+		}
+
 		response.push(makePacket(SmallEventAltarPacket, {
 			contributed: true,
 			amount: chosenAmount,
@@ -79,10 +124,21 @@ function getEndCallback(player: Player): EndCallback {
 			blessingType: blessingTriggered ? blessingManager.getActiveBlessingType() : 0,
 			newPoolAmount: blessingManager.getPoolAmount(),
 			poolThreshold: blessingManager.getPoolThreshold(),
-			hasEnoughMoney: true
+			hasEnoughMoney: true,
+			bonusGems,
+			bonusItemGiven,
+			badgeAwarded
 		}));
 
 		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.ALTAR_SMALL_EVENT);
+
+		// Give bonus item after unblocking altar (giveItemToPlayer creates its own blocking for ACCEPT_ITEM)
+		if (bonusItemGiven) {
+			await giveItemToPlayer(response, context, player, generateRandomItem({
+				minRarity: ItemRarity.SPECIAL
+			}));
+		}
+
 		await player.save();
 	};
 }
@@ -107,7 +163,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 			collector,
 			context,
 			{ allowedPlayerKeycloakIds: [player.keycloakId] },
-			getEndCallback(player)
+			getEndCallback(player, context)
 		)
 			.block(player.keycloakId, BlockingConstants.REASONS.ALTAR_SMALL_EVENT)
 			.build();
