@@ -17,7 +17,7 @@ export abstract class PetUtils {
 		return i18n.t("commands:pet.shortPetField", {
 			lng,
 			emote: DisplayUtils.getPetIcon(typeId, sex),
-			name: nickname ?? DisplayUtils.getPetTypeName(lng, typeId, sex)
+			name: nickname || DisplayUtils.getPetTypeName(lng, typeId, sex)
 		});
 	}
 
