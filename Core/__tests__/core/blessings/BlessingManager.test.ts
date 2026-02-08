@@ -301,7 +301,7 @@ describe("BlessingManager", () => {
 
 		it("should return false when a blessing ended today (same day)", () => {
 			const endedEarlierToday = new Date();
-			endedEarlierToday.setHours(endedEarlierToday.getHours() - 1);
+			endedEarlierToday.setHours(12, 0, 0, 0); // Fixed hour to avoid midnight edge case
 
 			const manager = createManager(createMockBlessing({
 				activeBlessingType: BlessingType.NONE,
