@@ -49,7 +49,7 @@ export async function altarCollector(context: PacketContext, packet: ReactionCol
 		const amount = (contributeReactions[idx].data as ReactionCollectorAltarContributeReaction).amount;
 		const button = new ButtonBuilder()
 			.setEmoji(parseEmoji(CrowniclesIcons.altarSmallEvent.contribute)!)
-			.setLabel(`${amount} ${CrowniclesIcons.unitValues.money}`)
+			.setLabel(`${amount}`)
 			.setCustomId(`contribute_${idx}`)
 			.setStyle(ButtonStyle.Primary);
 		row.addComponents(button);
