@@ -41,6 +41,10 @@ export const CrowniclesIcons: {
 		accept: string;
 		refuse: string;
 	};
+	altarSmallEvent: {
+		contribute: string;
+		refuse: string;
+	};
 	infoFightSmallEvent: {
 		showHandednessInfo: string;
 	};
@@ -984,7 +988,8 @@ export const CrowniclesIcons: {
 		infoFight: "🏰",
 		haunted: "🦴",
 		expeditionAdvice: "🗺️",
-		petDropToken: "🪙"
+		petDropToken: "🪙",
+		altar: "⛩️"
 	},
 	pets: {
 		0: {
@@ -1901,6 +1906,10 @@ export const CrowniclesIcons: {
 	},
 	cartSmallEvent: {
 		accept: "🚗",
+		refuse: "🚶"
+	},
+	altarSmallEvent: {
+		contribute: "💰",
 		refuse: "🚶"
 	},
 	infoFightSmallEvent: {

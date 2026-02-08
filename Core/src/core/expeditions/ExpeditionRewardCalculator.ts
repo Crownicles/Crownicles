@@ -7,6 +7,7 @@ import {
 } from "../../../../Lib/src/constants/ExpeditionConstants";
 import { TokensConstants } from "../../../../Lib/src/constants/TokensConstants";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
+import { BlessingManager } from "../blessings/BlessingManager";
 import {
 	generateRandomItem
 } from "../utils/ItemUtils";
@@ -85,6 +86,11 @@ function calculateTokensReward(rewardIndex: number, hasBonusTokens: boolean, pla
 		? ExpeditionConstants.BONUS_TOKENS.MIN_BONUS_TOKEN_REWARD
 		: ExpeditionConstants.BONUS_TOKENS.MIN_TOKEN_REWARD;
 	tokens = Math.max(minimumTokens, tokens);
+
+	// Apply blessing bonus token
+	if (BlessingManager.getInstance().hasExpeditionTokenBonus()) {
+		tokens += 1;
+	}
 
 	// Limit to available capacity
 	const availableSlots = TokensConstants.MAX - playerCurrentTokens;

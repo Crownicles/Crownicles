@@ -20,6 +20,7 @@ import {
 	PetEntities, PetEntity
 } from "../../core/database/game/models/PetEntity";
 import { PetDataController } from "../../data/Pet";
+import { BlessingManager } from "../../core/blessings/BlessingManager";
 import { ReactionCollectorInstance } from "../../core/utils/ReactionsCollector";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
 import { ReactionCollectorPetFeedWithoutGuild } from "../../../../Lib/src/packets/interaction/ReactionCollectorPetFeedWithoutGuild";
@@ -71,7 +72,7 @@ function getWithoutGuildPetFeedEndCallback(player: Player, authorPet: PetEntity)
 		await authorPet.changeLovePoints({
 			response,
 			player,
-			amount: PetConstants.PET_FOOD_LOVE_POINTS_AMOUNT[candyIndex],
+			amount: PetConstants.PET_FOOD_LOVE_POINTS_AMOUNT[candyIndex] * BlessingManager.getInstance().getPetLoveMultiplier(),
 			reason: NumberChangeReason.PET_FEED
 		});
 

@@ -42,6 +42,8 @@ export class DiscordMQTT {
 
 	static christmasBonusAnnouncementMqttClient: MqttClient;
 
+	static blessingAnnouncementMqttClient: MqttClient;
+
 	static packetListener: PacketListenerClient = new PacketListenerClient();
 
 	static asyncPacketSender: AsyncCorePacketSender = new AsyncCorePacketSender();
@@ -53,6 +55,7 @@ export class DiscordMQTT {
 		this.connectSubscribeAndHandleTopWeekAnnouncement();
 		this.connectSubscribeAndHandleTopWeekFightAnnouncement();
 		this.connectSubscribeAndHandleChristmasBonusAnnouncement();
+		this.connectSubscribeAndHandleBlessingAnnouncement();
 
 		if (isMainShard) {
 			this.connectSubscribeAndHandleNotifications();
@@ -152,6 +155,14 @@ export class DiscordMQTT {
 			}
 			catch (error) {
 				CrowniclesLogger.errorWithObj("Error while disconnecting top week fight announcement MQTT client", error);
+			}
+			try {
+				DiscordMQTT.blessingAnnouncementMqttClient.unsubscribe(MqttTopicUtils.getDiscordBlessingAnnouncementTopic(discordConfig.PREFIX));
+				DiscordMQTT.blessingAnnouncementMqttClient.end();
+				CrowniclesLogger.warn("Disconnected from blessing announcement MQTT client");
+			}
+			catch (error) {
+				CrowniclesLogger.errorWithObj("Error while disconnecting blessing announcement MQTT client", error);
 			}
 		}
 	}
@@ -274,6 +285,22 @@ export class DiscordMQTT {
 		});
 	}
 
+	private static handleBlessingAnnouncementMqttMessage(): void {
+		DiscordMQTT.blessingAnnouncementMqttClient.on("message", async (_topic, message) => {
+			if (message.toString() === "") {
+				CrowniclesLogger.debug("No blessing announcement in the MQTT topic");
+				return;
+			}
+
+			if (await DiscordAnnouncement.canAnnounce()) {
+				await DiscordAnnouncement.announceBlessing(JSON.parse(message.toString()));
+
+				// Clear the announcement so it doesn't get processed again
+				DiscordMQTT.blessingAnnouncementMqttClient.publish(MqttTopicUtils.getDiscordBlessingAnnouncementTopic(discordConfig.PREFIX), "", { retain: true });
+			}
+		});
+	}
+
 	private static handleNotificationMqttMessage(): void {
 		DiscordMQTT.notificationMqttClient.on("message", (_topic, message) => {
 			if (message.toString() === "") {
@@ -344,6 +371,16 @@ export class DiscordMQTT {
 		});
 
 		this.handleChristmasBonusAnnouncementMqttMessage();
+	}
+
+	private static connectSubscribeAndHandleBlessingAnnouncement(): void {
+		DiscordMQTT.blessingAnnouncementMqttClient = connect(discordConfig.MQTT_HOST, DEFAULT_MQTT_CLIENT_OPTIONS);
+
+		DiscordMQTT.blessingAnnouncementMqttClient.on("connect", () => {
+			DiscordMQTT.subscribeTo(DiscordMQTT.blessingAnnouncementMqttClient, MqttTopicUtils.getDiscordBlessingAnnouncementTopic(discordConfig.PREFIX), false);
+		});
+
+		this.handleBlessingAnnouncementMqttMessage();
 	}
 
 	private static connectSubscribeAndHandleNotifications(): void {

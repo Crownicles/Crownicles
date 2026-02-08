@@ -108,6 +108,8 @@ import {
 	ExpeditionAdviceInteractionType
 } from "../../../../Lib/src/packets/smallEvents/SmallEventExpeditionAdvicePacket";
 import { SmallEventPetDropTokenPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventPetDropTokenPacket";
+import { SmallEventAltarPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventAltarPacket";
+import { altarResult } from "../../smallEvents/altar";
 
 const PET_TIME_INTERACTIONS = new Set([
 	"gainTime",
@@ -1218,5 +1220,9 @@ export default class SmallEventsHandler {
 			]
 		});
 	}
-}
 
+	@packetHandler(SmallEventAltarPacket)
+	async smallEventAltar(context: PacketContext, packet: SmallEventAltarPacket): Promise<void> {
+		await altarResult(packet, context);
+	}
+}

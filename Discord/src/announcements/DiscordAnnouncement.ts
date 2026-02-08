@@ -8,6 +8,7 @@ import { LANGUAGE } from "../../../Lib/src/Language";
 import { KeycloakUtils } from "../../../Lib/src/keycloak/KeycloakUtils";
 import { TopWeekFightAnnouncementPacket } from "../../../Lib/src/packets/announcements/TopWeekFightAnnouncementPacket";
 import { ChristmasBonusAnnouncementPacket } from "../../../Lib/src/packets/announcements/ChristmasBonusAnnouncementPacket";
+import { BlessingAnnouncementPacket } from "../../../Lib/src/packets/announcements/BlessingAnnouncementPacket";
 import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 import { CrowniclesLogger } from "../../../Lib/src/logs/CrowniclesLogger";
 import { escapeUsername } from "../utils/StringUtils";
@@ -111,6 +112,27 @@ export abstract class DiscordAnnouncement {
 		const translationKey = packet.isPreAnnouncement ? "bot:christmasBonusPreAnnouncement" : "bot:christmasBonusApplied";
 		const messageFr = i18n.t(translationKey, { lng: LANGUAGE.FRENCH });
 		const messageEn = i18n.t(translationKey, { lng: LANGUAGE.ENGLISH });
+		await this.announceChristmas(messageFr, messageEn);
+	}
+
+	static async announceBlessing(packet: BlessingAnnouncementPacket): Promise<void> {
+		CrowniclesLogger.info(`Announcing blessing type ${packet.blessingType}...`);
+		const user = await KeycloakUtils.getUserByKeycloakId(keycloakConfig, packet.triggeredByKeycloakId);
+		const playerName = user.isError ? "???" : escapeUsername(user.payload.user.attributes.gameUsername[0]);
+		const messageFr = i18n.t("bot:blessingAnnouncement", {
+			lng: LANGUAGE.FRENCH,
+			playerName,
+			blessingName: i18n.t(`bot:blessingNames.${packet.blessingType}`, { lng: LANGUAGE.FRENCH }),
+			blessingEffect: i18n.t(`bot:blessingEffects.${packet.blessingType}`, { lng: LANGUAGE.FRENCH }),
+			durationHours: packet.durationHours
+		});
+		const messageEn = i18n.t("bot:blessingAnnouncement", {
+			lng: LANGUAGE.ENGLISH,
+			playerName,
+			blessingName: i18n.t(`bot:blessingNames.${packet.blessingType}`, { lng: LANGUAGE.ENGLISH }),
+			blessingEffect: i18n.t(`bot:blessingEffects.${packet.blessingType}`, { lng: LANGUAGE.ENGLISH }),
+			durationHours: packet.durationHours
+		});
 		await this.announceChristmas(messageFr, messageEn);
 	}
 }

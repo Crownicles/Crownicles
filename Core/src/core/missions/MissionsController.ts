@@ -28,6 +28,7 @@ import {
 import { FightActionController } from "../fights/actions/FightActionController";
 import { MissionUtils } from "../../../../Lib/src/utils/MissionUtils";
 import { MapLocationDataController } from "../../data/MapLocation";
+import { BlessingManager } from "../blessings/BlessingManager";
 
 type MissionInformations = {
 	missionId: string;
@@ -197,11 +198,14 @@ export abstract class MissionsController {
 		}
 		if (specialMissionCompletion.daily) {
 			const dailyMission = await DailyMissions.getOrGenerate();
+			const blessingMultiplier = BlessingManager.getInstance().getDailyMissionMultiplier();
 			completedMissions.push({
 				...dailyMission.toJSON(),
 				missionType: MissionType.DAILY,
-				moneyToWin: Math.round(dailyMission.moneyToWin * Constants.MISSIONS.DAILY_MISSION_MONEY_MULTIPLIER), // Daily missions gives less money than secondary missions
-				pointsToWin: Math.round(dailyMission.pointsToWin * Constants.MISSIONS.DAILY_MISSION_POINTS_MULTIPLIER) // Daily missions give more points than secondary missions
+				gemsToWin: Math.round(dailyMission.gemsToWin * blessingMultiplier),
+				xpToWin: Math.round(dailyMission.xpToWin * blessingMultiplier),
+				moneyToWin: Math.round(dailyMission.moneyToWin * Constants.MISSIONS.DAILY_MISSION_MONEY_MULTIPLIER * blessingMultiplier),
+				pointsToWin: Math.round(dailyMission.pointsToWin * Constants.MISSIONS.DAILY_MISSION_POINTS_MULTIPLIER * blessingMultiplier)
 			});
 			crowniclesInstance.logsDatabase.logMissionDailyFinished(player.keycloakId)
 				.then();
