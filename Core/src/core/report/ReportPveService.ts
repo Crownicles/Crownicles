@@ -31,6 +31,7 @@ import { Effect } from "../../../../Lib/src/types/Effect";
 import { millisecondsToSeconds } from "../../../../Lib/src/utils/TimeUtils";
 import { crowniclesInstance } from "../../index";
 import { InventorySlots } from "../database/game/models/InventorySlot";
+import { PlayerActiveObjects } from "../database/game/models/PlayerActiveObjects";
 import { chooseDestination } from "./ReportDestinationService";
 
 /**
@@ -39,6 +40,7 @@ import { chooseDestination } from "./ReportDestinationService";
  * @param player
  * @param rewards
  * @param endFightResponse
+ * @param playerActiveObjects
  */
 async function handlePveFightRewards(
 	fight: FightController,
@@ -46,7 +48,8 @@ async function handlePveFightRewards(
 	rewards: {
 		money: number; xp: number; guildScore: number; guildXp: number;
 	},
-	endFightResponse: CrowniclesPacket[]
+	endFightResponse: CrowniclesPacket[],
+	playerActiveObjects: PlayerActiveObjects
 ): Promise<{
 	guildXp: number; guildPoints: number;
 }> {
@@ -87,7 +90,7 @@ async function handlePveFightRewards(
 		amount: rewards.xp,
 		reason: NumberChangeReason.PVE_FIGHT,
 		response: endFightResponse
-	}, await InventorySlots.getPlayerActiveObjects(player.id));
+	}, playerActiveObjects);
 
 	if (player.guildId) {
 		const guild = await Guilds.getById(player.guildId);
@@ -140,7 +143,7 @@ export async function doPVEBoss(
 
 			// Only give reward if draw or win
 			if (fight.isADraw() || fight.getWinnerFighter() instanceof RealPlayerFighter) {
-				const result = await handlePveFightRewards(fight, player, rewards, endFightResponse);
+				const result = await handlePveFightRewards(fight, player, rewards, endFightResponse, playerActiveObjects);
 				guildXp = result.guildXp;
 				guildPoints = result.guildPoints;
 				endFightResponse.push(makePacket(CommandReportMonsterRewardRes, {
