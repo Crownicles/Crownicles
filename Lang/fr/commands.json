@@ -1968,5 +1968,32 @@
     "playerNotFound": "Ce joueur n'existe pas dans la base de données.",
     "error": "Une erreur s'est produite lors de l'export : {{error}}",
     "fileName": "export_rgpd_{{anonymizedId}}.zip"
+  },
+  "blessing": {
+    "title": "{emote:smallEvents.altar} Bénédictions | {{pseudo}}",
+    "active": "✨ **Bénédiction active : {{blessingName}}**\n\n{{blessingEffect}}\n\n⏳ Temps restant : {{timeLeft}}\n🙏 Déclenchée par : **{{triggeredBy}}**",
+    "collecting": "{emote:smallEvents.altar} **Cagnotte en cours de collecte**\n\nLes aventuriers se cotisent pour invoquer une bénédiction.\n\n{{moneyEmote}} Progression : **{{poolAmount, number}}** / **{{poolThreshold, number}}** ({{percentage}}%)\n\nContribuez en rencontrant l'Oracle lors de vos voyages !",
+    "blessingNames": {
+      "1": "Rage amplifiée",
+      "2": "Butin de combat",
+      "3": "Régénération d'énergie",
+      "4": "Bourse dorée",
+      "5": "Gloire accrue",
+      "6": "Amour des familiers",
+      "7": "Guérison divine",
+      "8": "Jeton d'expédition",
+      "9": "Mission quotidienne bénie"
+    },
+    "blessingEffects": {
+      "1": "La rage gagnée en combat est doublée pour tous les joueurs.",
+      "2": "Les récompenses en argent des combats sont multipliées par 4.",
+      "3": "La régénération d'énergie de combat est doublée.",
+      "4": "Tous les gains d'argent sont augmentés de 10%.",
+      "5": "Tous les gains de score sont augmentés de 10%.",
+      "6": "Les points d'amour gagnés par les familiers sont doublés.",
+      "7": "Tous les joueurs ont été soignés de 10 PV à l'activation.",
+      "8": "Les expéditions de familiers rapportent un jeton bonus.",
+      "9": "Les récompenses des missions quotidiennes sont doublées."
+    }
   }
 }

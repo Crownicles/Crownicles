@@ -65,6 +65,7 @@ import { MathUtils } from "../../../utils/MathUtils";
 import * as moment from "moment";
 import { ClassConstants } from "../../../../../../Lib/src/constants/ClassConstants";
 import { Potion } from "../../../../data/Potion";
+import { BlessingManager } from "../../../blessings/BlessingManager";
 
 export type PlayerEditValueParameters = {
 	player: Player;
@@ -190,6 +191,9 @@ export class Player extends Model {
 	 * @param parameters
 	 */
 	public async addScore(parameters: EditValueParameters): Promise<Player> {
+		if (parameters.amount > 0) {
+			parameters.amount = Math.round(parameters.amount * BlessingManager.getInstance().getScoreMultiplier());
+		}
 		this.score += parameters.amount;
 		if (parameters.amount > 0) {
 			const newPlayer = await MissionsController.update(this, parameters.response, {
@@ -210,6 +214,9 @@ export class Player extends Model {
 	 * @param parameters
 	 */
 	public async addMoney(parameters: EditValueParameters): Promise<Player> {
+		if (parameters.amount > 0) {
+			parameters.amount = Math.round(parameters.amount * BlessingManager.getInstance().getMoneyMultiplier());
+		}
 		this.money += parameters.amount;
 		if (parameters.amount > 0) {
 			const newPlayer = await MissionsController.update(this, parameters.response, {
@@ -968,7 +975,10 @@ export class Player extends Model {
 	}
 
 	public async addRage(parameters: EditValueParameters): Promise<void> {
-		await this.setRage(this.rage + parameters.amount, parameters.reason);
+		const amount = parameters.amount > 0 && BlessingManager.getInstance().isRageAmplified()
+			? parameters.amount * 2
+			: parameters.amount;
+		await this.setRage(this.rage + amount, parameters.reason);
 		if (parameters.amount > 0) {
 			await MissionsController.update(this, parameters.response, {
 				missionId: "gainRage",

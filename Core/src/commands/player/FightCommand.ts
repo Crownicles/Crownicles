@@ -46,6 +46,7 @@ import { PetEntities } from "../../core/database/game/models/PetEntity";
 import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
 import { PostFightPetLoveOutcomes } from "../../../../Lib/src/constants/PetConstants";
 import { PetUtils } from "../../core/utils/PetUtils";
+import { BlessingManager } from "../../core/blessings/BlessingManager";
 
 type PlayerStats = {
 	pet?: {
@@ -150,6 +151,9 @@ async function calculateMoneyReward(
 			0
 		);
 	}
+
+	// Apply fight loot blessing multiplier
+	extraMoneyBonus = Math.round(extraMoneyBonus * BlessingManager.getInstance().getFightLootMultiplier());
 
 	// Add money to the appropriate player
 	await fightInitiatorInformation.initiatorPlayer.addMoney({

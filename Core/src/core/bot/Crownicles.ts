@@ -40,6 +40,7 @@ import { CrowniclesCoreWebServer } from "./CrowniclesCoreWebServer";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { Badge } from "../../../../Lib/src/types/Badge";
 import { FightsManager } from "../fights/FightsManager";
+import { BlessingManager } from "../blessings/BlessingManager";
 import { TokensConstants } from "../../../../Lib/src/constants/TokensConstants";
 import {
 	DayOfTheWeek, setDailyCronJob, setWeeklyCronJob, setYearlyCronJob, shouldRunYearlyEventImmediately
@@ -278,11 +279,13 @@ export class Crownicles {
 	 * Update the fight points of the entities that lost some
 	 */
 	static async fightPowerRegenerationLoop(): Promise<void> {
+		const regenAmount = FightConstants.POINTS_REGEN_AMOUNT * BlessingManager.getInstance().getEnergyRegenMultiplier();
+
 		const notifications = await Player.findAll(
 			{
 				where: {
 					[Op.and]: [
-						{ fightPointsLost: { [Op.lte]: FightConstants.POINTS_REGEN_AMOUNT } },
+						{ fightPointsLost: { [Op.lte]: regenAmount } },
 						{ fightPointsLost: { [Op.ne]: 0 } },
 						{ mapLinkId: { [Op.in]: MapCache.regenEnergyMapLinks } }
 					]
@@ -299,7 +302,7 @@ export class Crownicles {
 		Player.update(
 			{
 				fightPointsLost: Sequelize.literal(
-					`CASE WHEN fightPointsLost - ${FightConstants.POINTS_REGEN_AMOUNT} < 0 THEN 0 ELSE fightPointsLost - ${FightConstants.POINTS_REGEN_AMOUNT} END`
+					`CASE WHEN fightPointsLost - ${regenAmount} < 0 THEN 0 ELSE fightPointsLost - ${regenAmount} END`
 				)
 			},
 			{
@@ -489,6 +492,7 @@ export class Crownicles {
 		await this.logsDatabase.init(true);
 		await MapCache.init();
 		FightsManager.init();
+		await BlessingManager.getInstance().init();
 		if (botConfig.TEST_MODE) {
 			await CommandsTest.init();
 		}

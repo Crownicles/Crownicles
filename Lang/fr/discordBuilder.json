@@ -402,5 +402,9 @@
         "description": "L'identifiant Discord du joueur."
       }
     }
+  },
+  "blessing": {
+    "name": "benediction",
+    "description": "Voir l'état actuel de la bénédiction globale."
   }
 }
