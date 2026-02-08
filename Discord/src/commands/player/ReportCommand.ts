@@ -1055,7 +1055,10 @@ export async function handleBlacksmithDisenchant(
 	});
 }
 
-export async function handleBlacksmithNotEnoughMoney(context: PacketContext): Promise<void> {
+export async function handleBlacksmithNotEnoughMoney(
+	packet: { missingMoney: number },
+	context: PacketContext
+): Promise<void> {
 	const interaction = MessagesUtils.getCurrentInteraction(context);
 	if (!interaction) {
 		return;
@@ -1068,7 +1071,30 @@ export async function handleBlacksmithNotEnoughMoney(context: PacketContext): Pr
 			lng,
 			pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
 		}), interaction.user)
-		.setDescription(i18n.t("commands:report.city.blacksmith.notEnoughMoney", { lng }));
+		.setDescription(i18n.t("commands:report.city.blacksmith.notEnoughMoney", {
+			lng,
+			missingMoney: packet.missingMoney
+		}));
+
+	await interaction.editReply({
+		embeds: [embed]
+	});
+}
+
+export async function handleBlacksmithMissingMaterials(context: PacketContext): Promise<void> {
+	const interaction = MessagesUtils.getCurrentInteraction(context);
+	if (!interaction) {
+		return;
+	}
+
+	const lng = context.discord!.language;
+
+	const embed = new CrowniclesEmbed()
+		.formatAuthor(i18n.t("commands:report.city.blacksmith.missingMaterialsTitle", {
+			lng,
+			pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
+		}), interaction.user)
+		.setDescription(i18n.t("commands:report.city.blacksmith.missingMaterialsDescription", { lng }));
 
 	await interaction.editReply({
 		embeds: [embed]
