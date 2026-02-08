@@ -131,6 +131,20 @@ export async function altarResult(packet: SmallEventAltarPacket, context: Packet
 		story = "contributed";
 	}
 
+	let bonusText = "";
+	if (packet.bonusGems > 0) {
+		bonusText += "\n\n" + StringUtils.getRandomTranslation("smallEvents:altar.bonusGems", lng, {
+			gems: packet.bonusGems,
+			gemEmote: CrowniclesIcons.unitValues.gem
+		});
+	}
+	if (packet.bonusItemGiven) {
+		bonusText += "\n\n" + StringUtils.getRandomTranslation("smallEvents:altar.bonusItem", lng);
+	}
+	if (packet.badgeAwarded) {
+		bonusText += "\n\n" + StringUtils.getRandomTranslation("smallEvents:altar.badgeAwarded", lng);
+	}
+
 	await interaction.editReply({
 		embeds: [
 			new CrowniclesSmallEventEmbed(
@@ -143,7 +157,8 @@ export async function altarResult(packet: SmallEventAltarPacket, context: Packet
 					blessingType: packet.blessingType > 0
 						? i18n.t(`smallEvents:altar.blessingNames.${packet.blessingType}`, { lng })
 						: ""
-				}),
+				})
+				+ bonusText,
 				interaction.user,
 				lng
 			)

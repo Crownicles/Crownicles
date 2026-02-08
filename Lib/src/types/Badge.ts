@@ -27,5 +27,6 @@ export enum Badge {
 	GOOD_BUG_REPORTER = "good_bug_reporter",
 	VOTER = "voter",
 	ANIMAL_LOVER = "animal_lover",
-	EXPERT_EXPEDITEUR = "expert_expediteur"
+	EXPERT_EXPEDITEUR = "expert_expediteur",
+	ORACLE_PATRON = "oracle_patron"
 }

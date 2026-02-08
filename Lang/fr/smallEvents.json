@@ -2473,6 +2473,18 @@
       "7": "Potions curatives",
       "8": "Jeton d'expédition",
       "9": "Mission quotidienne bénie"
-    }
+    },
+    "bonusGems": [
+      "L'oracle vous sourit et glisse discrètement **{{gems}}** {{gemEmote}} dans votre bourse. Les esprits récompensent votre générosité !",
+      "Une lueur jaillit de l'autel et **{{gems}}** {{gemEmote}} apparaissent dans votre main. L'oracle murmure que les dieux ont vu votre offrande."
+    ],
+    "bonusItem": [
+      "En remerciement de votre générosité, l'oracle fouille dans ses affaires et vous tend un objet mystérieux...",
+      "Les runes de l'autel s'illuminent et un équipement se matérialise devant vous. L'oracle vous fait signe de le prendre."
+    ],
+    "badgeAwarded": [
+      "L'oracle s'incline profondément devant vous. Votre dévotion envers l'autel a été remarquée par les esprits. Vous recevez le badge {emote:badges.oracle_patron} en reconnaissance de votre patronage exceptionnel !",
+      "Les runes de l'autel projettent une lumière dorée sur vous. L'oracle déclare solennellement que vous êtes désormais reconnu comme protecteur de l'Oracle. Vous obtenez le badge {emote:badges.oracle_patron} !"
+    ]
   }
 }
