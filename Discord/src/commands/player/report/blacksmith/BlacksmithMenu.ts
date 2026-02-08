@@ -248,10 +248,10 @@ function buildUpgradeDetailDescription(
 
 	// Add missing materials message if needed
 	if (!item.hasAllMaterials) {
-		description += "\n\n" + i18n.t("commands:report.city.blacksmith.missingMaterialsOffer", {
+		description += `\n\n${i18n.t("commands:report.city.blacksmith.missingMaterialsOffer", {
 			lng,
 			missingMaterialsCost: item.missingMaterialsCost
-		});
+		})}`;
 	}
 
 	return description;

@@ -115,7 +115,7 @@ import {
 	ReactionCollectorBlacksmithDisenchantReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorCity";
 import { RequirementEffectPacket } from "../../../../Lib/src/packets/commands/requirements/RequirementEffectPacket";
-import { InventorySlots } from "../../core/database/game/models/InventorySlot";
+import InventorySlot, { InventorySlots } from "../../core/database/game/models/InventorySlot";
 import { PlayerActiveObjects } from "../../core/database/game/models/PlayerActiveObjects";
 import { Settings } from "../../core/database/game/models/Setting";
 import { ItemEnchantment } from "../../../../Lib/src/types/ItemEnchantment";
@@ -131,7 +131,9 @@ import {
 	getMoneyShopItem,
 	getValuableItemShopItem
 } from "../../core/utils/MissionShopItems";
-import { Homes } from "../../core/database/game/models/Home";
+import {
+	Home, Homes
+} from "../../core/database/game/models/Home";
 import { HomeLevel } from "../../../../Lib/src/types/HomeLevel";
 import { PostFightPetLoveOutcomes } from "../../../../Lib/src/constants/PetConstants";
 import { Materials } from "../../core/database/game/models/Material";
@@ -1065,6 +1067,80 @@ function buildBlacksmithData(
 	};
 }
 
+function buildEnchanterData(
+	playerInventory: InventorySlot[],
+	player: Player,
+	enchantment: ItemEnchantment,
+	enchantmentId: string,
+	isPlayerMage: boolean
+): NonNullable<ReactionCollectorCityData["enchanter"]> {
+	const isEquipment = (i: InventorySlot): boolean => (i.isWeapon() || i.isArmor()) && i.itemId !== 0;
+
+	return {
+		enchantableItems: playerInventory
+			.filter(i => isEquipment(i) && !i.itemEnchantmentId)
+			.map(i => ({
+				category: i.itemCategory,
+				slot: i.slot,
+				details: i.itemWithDetails(player) as MainItemDetails
+			})),
+		isInventoryEmpty: playerInventory.filter(isEquipment).length === 0,
+		hasAtLeastOneEnchantedItem: playerInventory.some(i => isEquipment(i) && Boolean(i.itemEnchantmentId)),
+		enchantmentId,
+		enchantmentCost: enchantment.getEnchantmentCost(isPlayerMage),
+		enchantmentType: enchantment.kind.type.id,
+		mageReduction: isPlayerMage
+	};
+}
+
+async function buildHomeData(
+	player: Player,
+	city: City,
+	home: Home | null,
+	homeLevel: HomeLevel | null,
+	playerInventory: InventorySlot[],
+	playerMaterialMap: Map<number, number>
+): Promise<ReactionCollectorCityData["home"]> {
+	const isHomeInCity = Boolean(home && home.cityId === city.id && homeLevel);
+	const nextHomeUpgrade = homeLevel ? HomeLevel.getNextUpgrade(homeLevel, player.level) : null;
+
+	const upgradeStation = isHomeInCity
+		? buildUpgradeStationData(playerInventory, playerMaterialMap, homeLevel!, player)
+		: undefined;
+
+	const owned = isHomeInCity
+		? {
+			level: home!.level,
+			features: homeLevel!.features,
+			upgradeStation
+		}
+		: undefined;
+
+	const homesCount = await Homes.getHomesCount();
+
+	const manage: ReactionCollectorCityData["home"]["manage"] = {
+		newPrice: home ? undefined : city.getHomeLevelPrice(HomeLevel.getInitialLevel(), homesCount),
+		upgrade: nextHomeUpgrade && isHomeInCity
+			? {
+				price: city.getHomeLevelPrice(nextHomeUpgrade, homesCount),
+				oldFeatures: homeLevel!.features,
+				newFeatures: nextHomeUpgrade.features
+			}
+			: undefined,
+		movePrice: home && home.cityId !== city.id && homeLevel
+			? city.getHomeLevelPrice(homeLevel, homesCount)
+			: undefined,
+		currentMoney: player.money
+	};
+
+	const hasManageOptions = manage.newPrice || manage.upgrade || manage.movePrice;
+
+	return {
+		owned,
+		manage: hasManageOptions ? manage : undefined
+	};
+}
+
 async function sendCityCollector(context: PacketContext, response: CrowniclesPacket[], player: Player, currentDate: Date, city: City, forceSpecificEvent: number): Promise<void> {
 	const playerInventory = await InventorySlots.getOfPlayer(player.id);
 	const playerActiveObjects = InventorySlots.slotsToActiveObjects(playerInventory);
@@ -1074,14 +1150,8 @@ async function sendCityCollector(context: PacketContext, response: CrowniclesPac
 	const enchantment = enchantmentId ? ItemEnchantment.getById(enchantmentId) : null;
 	const home = await Homes.getOfPlayer(player.id);
 	const homeLevel = home?.getLevel() ?? null;
-	const nextHomeUpgrade = homeLevel ? HomeLevel.getNextUpgrade(homeLevel, player.level) : null;
 	const playerMaterials = await Materials.getPlayerMaterials(player.id);
 	const playerMaterialMap = new Map(playerMaterials.map(m => [m.materialId, m.quantity]));
-
-	// Build upgrade station data for home
-	const upgradeStation = home && home.cityId === city.id && homeLevel
-		? buildUpgradeStationData(playerInventory, playerMaterialMap, homeLevel, player)
-		: undefined;
 
 	// Build blacksmith data if city has a blacksmith
 	const blacksmith = city.blacksmithAvailable
@@ -1117,47 +1187,11 @@ async function sendCityCollector(context: PacketContext, response: CrowniclesPac
 			max: player.getMaxHealth(playerActiveObjects)
 		},
 		enchanter: isEnchanterHere && enchantment
-			? {
-				enchantableItems: playerInventory.filter(i => (i.isWeapon() || i.isArmor()) && i.itemId !== 0 && !i.itemEnchantmentId).map(i => ({
-					category: i.itemCategory,
-					slot: i.slot,
-					details: i.itemWithDetails(player) as MainItemDetails
-				})),
-				isInventoryEmpty: playerInventory.filter(i => (i.isWeapon() || i.isArmor()) && i.itemId !== 0).length === 0,
-				hasAtLeastOneEnchantedItem: playerInventory.filter(i => (i.isWeapon() || i.isArmor()) && Boolean(i.itemEnchantmentId)).length > 0,
-				enchantmentId: enchantmentId!,
-				enchantmentCost: enchantment.getEnchantmentCost(isPlayerMage),
-				enchantmentType: enchantment.kind.type.id,
-				mageReduction: isPlayerMage
-			}
+			? buildEnchanterData(playerInventory, player, enchantment, enchantmentId!, isPlayerMage)
 			: undefined,
-		home: {
-			owned: home && home.cityId === city.id && homeLevel
-				? {
-					level: home.level,
-					features: homeLevel.features,
-					upgradeStation
-				}
-				: undefined,
-			manage: {
-				newPrice: home ? undefined : city.getHomeLevelPrice(HomeLevel.getInitialLevel(), await Homes.getHomesCount()),
-				upgrade: nextHomeUpgrade && home && home.cityId === city.id && homeLevel
-					? {
-						price: city.getHomeLevelPrice(nextHomeUpgrade, await Homes.getHomesCount()),
-						oldFeatures: homeLevel.features,
-						newFeatures: nextHomeUpgrade.features
-					}
-					: undefined,
-				movePrice: home && home.cityId !== city.id && homeLevel ? city.getHomeLevelPrice(homeLevel, await Homes.getHomesCount()) : undefined,
-				currentMoney: player.money
-			}
-		},
+		home: await buildHomeData(player, city, home, homeLevel, playerInventory, playerMaterialMap),
 		blacksmith
 	};
-
-	if (!collectorData.home.manage?.newPrice && !collectorData.home.manage?.upgrade && !collectorData.home.manage?.movePrice) {
-		delete collectorData.home.manage;
-	}
 
 	const collector = new ReactionCollectorCity(collectorData);
 
