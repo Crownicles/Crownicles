@@ -7,6 +7,7 @@ import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
 import {
 	CommandReportBigEventResultRes,
 	CommandReportBuyHealAcceptPacketRes,
+	CommandReportBuyHealPacketReq,
 	CommandReportBuyHomeRes,
 	CommandReportChooseDestinationCityRes,
 	CommandReportEatInnMealRes,
@@ -19,7 +20,8 @@ import {
 	CommandReportTravelSummaryRes,
 	CommandReportUpgradeHomeRes,
 	CommandReportUpgradeItemRes,
-	CommandReportUseTokensAcceptPacketRes
+	CommandReportUseTokensAcceptPacketRes,
+	CommandReportUseTokensPacketReq
 } from "../../../../Lib/src/packets/commands/CommandReportPacket";
 import { ReactionCollectorCreationPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import {
@@ -62,6 +64,7 @@ import { PetUtils } from "../../utils/PetUtils";
 import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
 import { ReactionCollectorUseTokensPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorUseTokens";
 import { ReactionCollectorBuyHealPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorBuyHeal";
+import { PacketUtils } from "../../utils/PacketUtils";
 import { createConfirmationCollector } from "../../utils/ReportConfirmationCollector";
 
 async function getPacket(interaction: CrowniclesInteraction): Promise<CommandReportPacketReq> {
@@ -552,6 +555,151 @@ function manageEndPathDescriptions({
 }
 
 /**
+ * Generic button creation with currency check
+ */
+interface ButtonConfig {
+	customId: string;
+	hasEnough: boolean;
+	sufficientLabel: string;
+	insufficientLabel: string;
+	emoji: string;
+	sufficientStyle: ButtonStyle;
+}
+
+function createCurrencyButton(config: ButtonConfig): ButtonBuilder {
+	return new ButtonBuilder()
+		.setCustomId(config.customId)
+		.setLabel(config.hasEnough ? config.sufficientLabel : config.insufficientLabel)
+		.setEmoji(parseEmoji(config.emoji)!)
+		.setStyle(config.hasEnough ? config.sufficientStyle : ButtonStyle.Secondary)
+		.setDisabled(!config.hasEnough);
+}
+
+/**
+ * Create heal button if applicable
+ */
+function createHealButton(packet: CommandReportTravelSummaryRes, lng: Language): ButtonBuilder | null {
+	if (!packet.heal) {
+		return null;
+	}
+
+	const hasEnoughMoney = packet.heal.playerMoney >= packet.heal.price;
+	return createCurrencyButton({
+		customId: "buyHeal",
+		hasEnough: hasEnoughMoney,
+		sufficientLabel: i18n.t("commands:report.buyHealButton", { lng }),
+		insufficientLabel: i18n.t("commands:report.notEnoughMoneyHealButton", { lng }),
+		emoji: CrowniclesIcons.shopItems.healAlteration,
+		sufficientStyle: ButtonStyle.Success
+	});
+}
+
+/**
+ * Create token button if applicable
+ */
+function createTokenButton(packet: CommandReportTravelSummaryRes, lng: Language): ButtonBuilder | null {
+	if (!packet.tokens) {
+		return null;
+	}
+
+	const hasEnoughTokens = packet.tokens.playerTokens >= packet.tokens.cost;
+	return createCurrencyButton({
+		customId: "useTokens",
+		hasEnough: hasEnoughTokens,
+		sufficientLabel: i18n.t("commands:report.useTokensButton", { lng }),
+		insufficientLabel: i18n.t("commands:report.notEnoughTokensButton", { lng }),
+		emoji: CrowniclesIcons.unitValues.token,
+		sufficientStyle: ButtonStyle.Primary
+	});
+}
+
+/**
+ * Build action row with heal and token buttons
+ */
+function buildTravelActionRow(packet: CommandReportTravelSummaryRes, lng: Language): ActionRowBuilder<ButtonBuilder> | null {
+	const row = new ActionRowBuilder<ButtonBuilder>();
+
+	const healButton = createHealButton(packet, lng);
+	if (healButton) {
+		row.addComponents(healButton);
+	}
+
+	const tokenButton = createTokenButton(packet, lng);
+	if (tokenButton) {
+		row.addComponents(tokenButton);
+	}
+
+	return row.components.length > 0 ? row : null;
+}
+
+/**
+ * Check if any button is interactive (not disabled)
+ */
+function hasInteractiveButton(packet: CommandReportTravelSummaryRes): boolean {
+	const tokensInteractive = packet.tokens && packet.tokens.playerTokens >= packet.tokens.cost;
+	const healInteractive = packet.heal && packet.heal.playerMoney >= packet.heal.price;
+	return Boolean(tokensInteractive || healInteractive);
+}
+
+/**
+ * Handle button interaction in travel summary
+ */
+async function handleTravelButtonInteraction(
+	buttonInteraction: ButtonInteraction,
+	context: PacketContext,
+	lng: Language
+): Promise<void> {
+	if (buttonInteraction.customId === "useTokens") {
+		await buttonInteraction.followUp({
+			content: i18n.t("commands:report.useTokensLoading", { lng }),
+			ephemeral: false
+		}).then(msg => msg.delete().catch(() => null));
+
+		PacketUtils.sendPacketToBackend(context, makePacket(CommandReportUseTokensPacketReq, {}));
+	}
+	else if (buttonInteraction.customId === "buyHeal") {
+		await buttonInteraction.followUp({
+			content: i18n.t("commands:report.buyHealLoading", { lng }),
+			ephemeral: false
+		}).then(msg => msg.delete().catch(() => null));
+
+		PacketUtils.sendPacketToBackend(context, makePacket(CommandReportBuyHealPacketReq, {}));
+	}
+}
+
+/**
+ * Setup button collector for travel summary
+ */
+function setupTravelButtonCollector(
+	msg: NonNullable<Awaited<ReturnType<CrowniclesInteraction["editReply"]>>>,
+	row: ActionRowBuilder<ButtonBuilder>,
+	context: PacketContext,
+	lng: Language
+): void {
+	const buttonCollector = msg.createMessageComponentCollector({
+		time: Constants.MESSAGES.COLLECTOR_TIME
+	});
+
+	buttonCollector.on("collect", async (buttonInteraction: ButtonInteraction) => {
+		if (buttonInteraction.user.id !== context.discord?.user) {
+			await sendInteractionNotForYou(buttonInteraction.user, buttonInteraction, lng);
+			return;
+		}
+
+		row.components.forEach(button => button.setDisabled(true));
+		await buttonInteraction.update({ components: [row] });
+
+		await handleTravelButtonInteraction(buttonInteraction, context, lng);
+		buttonCollector.stop();
+	});
+
+	buttonCollector.on("end", async () => {
+		row.components.forEach(button => button.setDisabled(true));
+		await msg.edit({ components: [row] }).catch(() => null);
+	});
+}
+
+/**
  * Display the travel summary (embed with the travel path in between small events)
  * @param packet
  * @param context
@@ -596,7 +744,23 @@ export async function reportTravelSummary(packet: CommandReportTravelSummaryRes,
 		value: advices[Math.floor(Math.random() * advices.length)],
 		inline: true
 	});
-	await interaction.editReply({ embeds: [travelEmbed] });
+
+	// Build action row
+	const row = buildTravelActionRow(packet, lng);
+
+	if (!row) {
+		await interaction.editReply({ embeds: [travelEmbed] });
+		return;
+	}
+
+	const msg = await interaction.editReply({
+		embeds: [travelEmbed],
+		components: [row]
+	});
+
+	if (hasInteractiveButton(packet) && msg) {
+		setupTravelButtonCollector(msg, row, context, lng);
+	}
 }
 
 export async function stayInCity(context: PacketContext): Promise<void> {
