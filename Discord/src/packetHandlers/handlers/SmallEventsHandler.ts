@@ -8,6 +8,8 @@ import {
 } from "../../utils/StringUtils";
 import { getRandomSmallEventIntro } from "../../utils/SmallEventUtils";
 import { SmallEventBigBadPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventBigBadPacket";
+import { KeycloakUtils } from "../../../../Lib/src/keycloak/KeycloakUtils";
+import { keycloakConfig } from "../../bot/CrowniclesShard";
 import {
 	SmallEventBadIssue,
 	SmallEventSmallBadPacket
@@ -1192,14 +1194,24 @@ export default class SmallEventsHandler {
 	@packetHandler(SmallEventPetDropTokenPacket)
 	async smallEventPetDropToken(context: PacketContext, packet: SmallEventPetDropTokenPacket): Promise<void> {
 		const interaction = DiscordCache.getInteraction(context.discord!.interaction);
-		const lng = interaction!.userLanguage;
-		const petDisplay = PetUtils.petToShortString(lng, packet.petNickname, packet.petTypeId, packet.petSex as SexTypeShort);
-		await interaction?.editReply({
+		if (!interaction) {
+			return;
+		}
+		const lng = interaction.userLanguage;
+		const petDisplay = PetUtils.petToShortString(lng, packet.petNickname, packet.petTypeId, packet.petSex);
+		const getUser = await KeycloakUtils.getUserByKeycloakId(keycloakConfig, packet.ownerKeycloakId);
+		const ownerName = escapeUsername(!getUser.isError && getUser.payload.user.attributes.gameUsername
+			? getUser.payload.user.attributes.gameUsername[0]
+			: i18n.t("error:unknownPlayer", { lng }));
+		await interaction.editReply({
 			embeds: [
 				new CrowniclesSmallEventEmbed(
 					"petDropToken",
 					getRandomSmallEventIntro(lng)
-					+ StringUtils.getRandomTranslation("smallEvents:petDropToken.stories", lng, { pet: petDisplay }),
+					+ StringUtils.getRandomTranslation("smallEvents:petDropToken.stories", lng, {
+						pet: petDisplay,
+						owner: ownerName
+					}),
 					interaction.user,
 					lng
 				)

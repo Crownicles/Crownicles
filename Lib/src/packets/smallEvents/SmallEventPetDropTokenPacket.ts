@@ -11,4 +11,6 @@ export class SmallEventPetDropTokenPacket extends SmallEventPacket {
 	petSex!: SexTypeShort;
 
 	petNickname!: string | undefined;
+
+	ownerKeycloakId!: string;
 }
