@@ -718,19 +718,30 @@ export async function handleBlacksmithUpgradeReaction(
 		return;
 	}
 
-	// If not buying materials, check if player has all required materials
-	if (!boughtMaterials && !itemToUpgrade.hasAllMaterials) {
+	// Re-fetch material quantities from DB to avoid relying on stale collector snapshot
+	const playerMaterials = await Materials.getPlayerMaterials(player.id);
+	const playerMaterialMap = new Map(playerMaterials.map(m => [m.materialId, m.quantity]));
+
+	const freshHasAllMaterials = itemToUpgrade.requiredMaterials.every(
+		m => (playerMaterialMap.get(m.materialId) ?? 0) >= m.quantity
+	);
+
+	// If not buying materials, check if player still has all required materials
+	if (!boughtMaterials && !freshHasAllMaterials) {
 		response.push(makePacket(CommandReportBlacksmithMissingMaterialsRes, {}));
 		return;
 	}
 
-	// Consume materials (only the ones the player has)
+	// Consume materials: always consume the full required quantities
 	const materialsToConsume = itemToUpgrade.requiredMaterials
-		.filter(m => m.playerQuantity > 0)
-		.map(m => ({
-			materialId: m.materialId,
-			quantity: Math.min(m.quantity, m.playerQuantity)
-		}));
+		.map(m => {
+			const freshQuantity = playerMaterialMap.get(m.materialId) ?? 0;
+			return {
+				materialId: m.materialId,
+				quantity: Math.min(m.quantity, freshQuantity)
+			};
+		})
+		.filter(m => m.quantity > 0);
 
 	if (materialsToConsume.length > 0) {
 		const consumed = await Materials.consumeMaterials(player.id, materialsToConsume);
