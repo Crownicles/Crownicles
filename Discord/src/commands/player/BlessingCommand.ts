@@ -4,7 +4,8 @@ import { makePacket } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { CommandBlessingPacketReq } from "../../../../Lib/src/packets/commands/CommandBlessingPacketReq";
 import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
 
-function getPacket(_interaction: CrowniclesInteraction): CommandBlessingPacketReq {
+async function getPacket(interaction: CrowniclesInteraction): Promise<CommandBlessingPacketReq> {
+	await interaction.deferReply();
 	return makePacket(CommandBlessingPacketReq, {});
 }
 
