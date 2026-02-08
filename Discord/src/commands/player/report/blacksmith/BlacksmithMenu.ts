@@ -220,12 +220,24 @@ function buildUpgradeDetailDescription(
 	item: NonNullable<ReactionCollectorCityData["blacksmith"]>["upgradeableItems"][0],
 	lng: Language
 ): string {
-	// Set max values to Infinity to not display max values in stats
-	item.details.attack.maxValue = Infinity;
-	item.details.defense.maxValue = Infinity;
-	item.details.speed.maxValue = Infinity;
+	// Clone details to avoid mutating packet data
+	const detailsForDisplay = {
+		...item.details,
+		attack: {
+			...item.details.attack,
+			maxValue: Infinity
+		},
+		defense: {
+			...item.details.defense,
+			maxValue: Infinity
+		},
+		speed: {
+			...item.details.speed,
+			maxValue: Infinity
+		}
+	};
 
-	const itemDisplay = DisplayUtils.getItemDisplayWithStats(item.details, lng);
+	const itemDisplay = DisplayUtils.getItemDisplayWithStats(detailsForDisplay, lng);
 
 	// Build materials list with icons (same format as upgrade station)
 	const materialLines = item.requiredMaterials.map(m => {
@@ -456,12 +468,24 @@ export function getBlacksmithDisenchantDetailMenu(
 	const blacksmith = data.blacksmith!;
 	const item = blacksmith.disenchantableItems[itemIndex];
 
-	// Set max values to Infinity to not display max values in stats
-	item.details.attack.maxValue = Infinity;
-	item.details.defense.maxValue = Infinity;
-	item.details.speed.maxValue = Infinity;
+	// Clone details to avoid mutating packet data
+	const detailsForDisplay = {
+		...item.details,
+		attack: {
+			...item.details.attack,
+			maxValue: Infinity
+		},
+		defense: {
+			...item.details.defense,
+			maxValue: Infinity
+		},
+		speed: {
+			...item.details.speed,
+			maxValue: Infinity
+		}
+	};
 
-	const itemDisplay = DisplayUtils.getItemDisplayWithStats(item.details, lng);
+	const itemDisplay = DisplayUtils.getItemDisplayWithStats(detailsForDisplay, lng);
 	const description = i18n.t("commands:report.city.blacksmith.disenchantItemDetails", {
 		lng,
 		itemDisplay,

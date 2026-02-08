@@ -35,6 +35,7 @@ import { PacketContext } from "../../../../../../Lib/src/packets/CrowniclesPacke
 import {
 	displayMonsterReward,
 	handleBlacksmithDisenchant,
+	handleBlacksmithMissingMaterials,
 	handleBlacksmithNotEnoughMoney,
 	handleBlacksmithUpgrade,
 	handleBuyHealAccept,
@@ -205,13 +206,13 @@ export default class ReportCommandPacketHandlers {
 	}
 
 	@packetHandler(CommandReportBlacksmithNotEnoughMoneyRes)
-	async reportBlacksmithNotEnoughMoneyRes(context: PacketContext, _packet: CommandReportBlacksmithNotEnoughMoneyRes): Promise<void> {
-		await handleBlacksmithNotEnoughMoney(context);
+	async reportBlacksmithNotEnoughMoneyRes(context: PacketContext, packet: CommandReportBlacksmithNotEnoughMoneyRes): Promise<void> {
+		await handleBlacksmithNotEnoughMoney(packet, context);
 	}
 
 	@packetHandler(CommandReportBlacksmithMissingMaterialsRes)
 	async reportBlacksmithMissingMaterialsRes(context: PacketContext, _packet: CommandReportBlacksmithMissingMaterialsRes): Promise<void> {
-		await handleUpgradeItemMissingMaterials(context);
+		await handleBlacksmithMissingMaterials(context);
 	}
 
 	@packetHandler(CommandReportBlacksmithDisenchantRes)
