@@ -33,4 +33,19 @@ export class CommandBlessingPacketRes extends CrowniclesPacket {
 	 * Whether the player can claim the retroactive daily mission bonus
 	 */
 	canClaimDailyBonus!: boolean;
+
+	/**
+	 * Keycloak ID of the top contributor for the current/last pool cycle
+	 */
+	topContributorKeycloakId!: string;
+
+	/**
+	 * Amount contributed by the top contributor
+	 */
+	topContributorAmount!: number;
+
+	/**
+	 * Total number of unique contributors for the current/last pool cycle
+	 */
+	totalContributors!: number;
 }

@@ -55,13 +55,31 @@ export default class BlessingCommandPacketHandlers {
 			});
 		}
 		else {
+			// Resolve top contributor name if available
+			let topContributorLine = "";
+			if (packet.topContributorKeycloakId && packet.totalContributors > 0) {
+				let topContributorName = i18n.t("error:unknownPlayer", { lng });
+				const topUser = await KeycloakUtils.getUserByKeycloakId(keycloakConfig, packet.topContributorKeycloakId);
+				if (!topUser.isError && topUser.payload.user.attributes.gameUsername) {
+					topContributorName = escapeUsername(topUser.payload.user.attributes.gameUsername[0]);
+				}
+				topContributorLine = "\n\n" + i18n.t("commands:blessing.contributors", {
+					lng,
+					topContributorName,
+					topContributorAmount: packet.topContributorAmount,
+					totalContributors: packet.totalContributors,
+					moneyEmote: CrowniclesIcons.unitValues.money
+				});
+			}
+
 			description = i18n.t("commands:blessing.collecting", {
 				lng,
 				poolAmount: packet.poolAmount,
 				poolThreshold: packet.poolThreshold,
 				moneyEmote: CrowniclesIcons.unitValues.money,
 				percentage: Math.floor(packet.poolAmount / packet.poolThreshold * 100)
-			}) + "\n" + progressBar(packet.poolAmount, packet.poolThreshold);
+			}) + "\n" + progressBar(packet.poolAmount, packet.poolThreshold)
+				+ topContributorLine;
 		}
 
 		const embed = new CrowniclesEmbed()
