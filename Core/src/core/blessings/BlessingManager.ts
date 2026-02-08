@@ -37,6 +37,8 @@ export class BlessingManager {
 	 */
 	private contributionsTracker: Map<string, number> = new Map();
 
+	private expiryInterval: ReturnType<typeof setInterval> | null = null;
+
 	static getInstance(): BlessingManager {
 		if (!BlessingManager.instance) {
 			BlessingManager.instance = new BlessingManager();
@@ -53,7 +55,10 @@ export class BlessingManager {
 		await this.checkForExpiredPool();
 
 		// Periodically check for expired blessings/pools (every 5 minutes)
-		setInterval(async () => {
+		if (this.expiryInterval) {
+			clearInterval(this.expiryInterval);
+		}
+		this.expiryInterval = setInterval(async () => {
 			await this.checkForExpiredBlessing();
 			await this.checkForExpiredPool();
 		}, 5 * 60 * 1000);
@@ -194,7 +199,7 @@ export class BlessingManager {
 	/**
 	 * Trigger a random blessing when the pool is filled
 	 */
-	private async triggerBlessing(triggeredByKeycloakId: string, response: CrowniclesPacket[]): Promise<void> {
+	private async triggerBlessing(triggeredByKeycloakId: string, _response: CrowniclesPacket[]): Promise<void> {
 		const blessingType = RandomUtils.randInt(1, BlessingConstants.TOTAL_BLESSING_TYPES + 1) as BlessingType;
 		const durationHours = RandomUtils.randInt(BlessingConstants.MIN_DURATION_HOURS, BlessingConstants.MAX_DURATION_HOURS + 1);
 		const blessingEnd = new Date(Date.now() + durationHours * 60 * 60 * 1000);
@@ -392,6 +397,7 @@ export class BlessingManager {
 				response: discardedResponse,
 				reason: NumberChangeReason.BLESSING
 			});
+			await player.save();
 		}
 	}
 
@@ -485,7 +491,7 @@ export class BlessingManager {
 	/**
 	 * Force activate a specific blessing type (for test commands)
 	 */
-	async forceActivateBlessing(type: BlessingType, keycloakId: string, response: CrowniclesPacket[]): Promise<void> {
+	async forceActivateBlessing(type: BlessingType, keycloakId: string, _response: CrowniclesPacket[]): Promise<void> {
 		if (!this.cachedBlessing) {
 			return;
 		}

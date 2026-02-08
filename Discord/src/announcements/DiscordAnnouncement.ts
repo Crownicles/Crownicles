@@ -31,20 +31,20 @@ export abstract class DiscordAnnouncement {
 		}
 	}
 
-	private static async announceChristmas(messageFr: string, messageEn: string): Promise<void> {
+	private static async announceSimple(messageFr: string, messageEn: string): Promise<void> {
 		try {
 			const frenchChannel = await crowniclesClient!.channels.fetch(discordConfig.FRENCH_ANNOUNCEMENT_CHANNEL_ID);
 			await (frenchChannel as TextChannel).send({ content: messageFr });
 		}
 		catch (e) {
-			CrowniclesLogger.errorWithObj("Error while sending Christmas announcement in french channel", e);
+			CrowniclesLogger.errorWithObj("Error while sending announcement in french channel", e);
 		}
 		try {
 			const englishChannel = await crowniclesClient!.channels.fetch(discordConfig.ENGLISH_ANNOUNCEMENT_CHANNEL_ID);
 			await (englishChannel as TextChannel).send({ content: messageEn });
 		}
 		catch (e) {
-			CrowniclesLogger.errorWithObj("Error while sending Christmas announcement in english channel", e);
+			CrowniclesLogger.errorWithObj("Error while sending announcement in english channel", e);
 		}
 	}
 
@@ -112,7 +112,7 @@ export abstract class DiscordAnnouncement {
 		const translationKey = packet.isPreAnnouncement ? "bot:christmasBonusPreAnnouncement" : "bot:christmasBonusApplied";
 		const messageFr = i18n.t(translationKey, { lng: LANGUAGE.FRENCH });
 		const messageEn = i18n.t(translationKey, { lng: LANGUAGE.ENGLISH });
-		await this.announceChristmas(messageFr, messageEn);
+		await this.announceSimple(messageFr, messageEn);
 	}
 
 	static async announceBlessing(packet: BlessingAnnouncementPacket): Promise<void> {
@@ -150,6 +150,6 @@ export abstract class DiscordAnnouncement {
 			topContributorAmount: packet.topContributorAmount,
 			totalContributors: packet.totalContributors
 		});
-		await this.announceChristmas(messageFr, messageEn);
+		await this.announceSimple(messageFr, messageEn);
 	}
 }
