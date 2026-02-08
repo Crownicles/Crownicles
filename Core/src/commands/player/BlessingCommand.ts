@@ -15,7 +15,7 @@ export default class BlessingCommand {
 		disallowedEffects: CommandUtils.DISALLOWED_EFFECTS.NOT_STARTED,
 		whereAllowed: CommandUtils.WHERE.EVERYWHERE
 	})
-	async execute(response: CrowniclesPacket[], _player: Player, _packet: CommandBlessingPacketReq, _context: PacketContext): Promise<void> {
+	execute(response: CrowniclesPacket[], _player: Player, _packet: CommandBlessingPacketReq, _context: PacketContext): void {
 		const blessingManager = BlessingManager.getInstance();
 		const topContributor = blessingManager.getTopContributor();
 
