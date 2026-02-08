@@ -185,7 +185,7 @@ function buildColumnField(params: BuildColumnFieldParams): EmbedField[] {
 		? i18n.t("commands:inventory.materialsField", {
 			lng, count: materialsCount
 		})
-		: "\u200B";
+		: DiscordConstants.EMBED.EMPTY_FIELD_NAME;
 
 	for (const line of column) {
 		const potentialValue = currentFieldValue ? `${currentFieldValue}\n${line}` : line;

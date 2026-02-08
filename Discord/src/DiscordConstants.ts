@@ -129,6 +129,12 @@ export abstract class DiscordConstants {
 		/**
 		 * Maximum length of an embed field value (Discord limit)
 		 */
-		FIELD_VALUE_MAX_LENGTH: 1024
+		FIELD_VALUE_MAX_LENGTH: 1024,
+
+		/**
+		 * Zero-width space used as an empty field name in embeds.
+		 * Discord rejects truly empty field names, so this invisible character is used instead.
+		 */
+		EMPTY_FIELD_NAME: "\u200B"
 	};
 }
