@@ -7,7 +7,6 @@ import {
 	CommandReportBuyHealPacketReq,
 	CommandReportPacketReq,
 	CommandReportStayInCity,
-	CommandReportTravelSummaryRes,
 	CommandReportUseTokensPacketReq
 } from "../../../../Lib/src/packets/commands/CommandReportPacket";
 import { Player } from "../../core/database/game/models/Player";
@@ -21,7 +20,6 @@ import { MissionsController } from "../../core/missions/MissionsController";
 import {
 	EndCallback, ReactionCollectorInstance
 } from "../../core/utils/ReactionsCollector";
-import { PlayerSmallEvents } from "../../core/database/game/models/PlayerSmallEvent";
 import { TravelTime } from "../../core/maps/TravelTime";
 import { MapLocationDataController } from "../../data/MapLocation";
 import {
@@ -68,6 +66,7 @@ import { executeSmallEvent } from "../../core/report/ReportSmallEventService";
 import { chooseDestination } from "../../core/report/ReportDestinationService";
 import { doRandomBigEvent } from "../../core/report/ReportBigEventService";
 import { doPVEBoss } from "../../core/report/ReportPveService";
+import { sendTravelPath } from "../../core/report/ReportTravelService";
 import {
 	buildBlacksmithData,
 	buildEnchanterData,
@@ -386,47 +385,4 @@ async function initiateNewPlayerOnTheAdventure(player: Player): Promise<void> {
  */
 async function needSmallEvent(player: Player, date: Date): Promise<boolean> {
 	return (await TravelTime.getTravelData(player, date)).nextSmallEventTime <= date.valueOf();
-}
-
-/**
- * Send the location where the player is currently staying on the road
- * @param player
- * @param response
- * @param date
- * @param effectId
- */
-async function sendTravelPath(player: Player, response: CrowniclesPacket[], date: Date, effectId: string | null = null): Promise<void> {
-	const timeData = await TravelTime.getTravelData(player, date);
-	const showEnergy = Maps.isOnPveIsland(player) || Maps.isOnBoat(player);
-	const lastMiniEvent = await PlayerSmallEvents.getLastOfPlayer(player.id);
-	const endMap = player.getDestination()!;
-	const startMap = player.getPreviousMap()!;
-	const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
-	response.push(makePacket(CommandReportTravelSummaryRes, {
-		effect: effectId ?? undefined,
-		startTime: timeData.travelStartTime,
-		arriveTime: timeData.travelEndTime,
-		effectEndTime: effectId ? timeData.effectEndTime : undefined,
-		effectDuration: timeData.effectDuration,
-		points: {
-			show: !showEnergy,
-			cumulated: !showEnergy ? await PlayerSmallEvents.calculateCurrentScore(player) : 0
-		},
-		energy: {
-			show: showEnergy,
-			current: showEnergy ? player.getCumulativeEnergy(playerActiveObjects) : 0,
-			max: showEnergy ? player.getMaxCumulativeEnergy(playerActiveObjects) : 0
-		},
-		endMap: {
-			id: endMap.id,
-			type: endMap.type
-		},
-		nextStopTime: timeData.nextSmallEventTime,
-		lastSmallEventId: lastMiniEvent ? lastMiniEvent.eventType : undefined,
-		startMap: {
-			id: startMap.id,
-			type: startMap.type
-		},
-		isOnBoat: Maps.isOnBoat(player)
-	}));
 }
