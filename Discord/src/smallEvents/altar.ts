@@ -89,13 +89,14 @@ export async function altarCollector(context: PacketContext, packet: ReactionCol
 			);
 		}
 		else if (buttonInteraction.customId.startsWith("contribute_")) {
-			const contributeIdx = parseInt(buttonInteraction.customId.split("_")[1]);
+			const sortedIdx = parseInt(buttonInteraction.customId.split("_")[1]);
+			const originalIdx = packet.reactions.indexOf(contributeReactions[sortedIdx]);
 			DiscordCollectorUtils.sendReaction(
 				packet,
 				context,
 				context.keycloakId!,
 				buttonInteraction,
-				contributeIdx
+				originalIdx
 			);
 		}
 	});
