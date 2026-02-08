@@ -36,6 +36,33 @@ vi.mock("../../../../Lib/src/utils/RandomUtils", () => ({
 	RandomUtils: { randInt: vi.fn().mockReturnValue(3) }
 }));
 
+vi.mock("../../../src/core/database/game/models/PlayerMissionsInfo", () => ({
+	PlayerMissionsInfo: { findAll: vi.fn().mockResolvedValue([]) }
+}));
+
+vi.mock("../../../src/core/database/game/models/DailyMission", () => ({
+	DailyMissions: {
+		getOrGenerate: vi.fn().mockResolvedValue({
+			gemsToWin: 5,
+			xpToWin: 100,
+			moneyToWin: 50,
+			pointsToWin: 30
+		})
+	}
+}));
+
+vi.mock("../../../src/core/database/game/models/Player", () => ({
+	Players: { getById: vi.fn() }
+}));
+
+vi.mock("../../../../Lib/src/constants/Constants", () => ({
+	Constants: { MISSIONS: { DAILY_MISSION_MONEY_MULTIPLIER: 2, DAILY_MISSION_POINTS_MULTIPLIER: 2 } }
+}));
+
+vi.mock("../../../../Lib/src/constants/LogsConstants", () => ({
+	NumberChangeReason: { BLESSING: "blessing" }
+}));
+
 /**
  * Create a mock GlobalBlessing object
  */
@@ -341,49 +368,6 @@ describe("BlessingManager", () => {
 		});
 	});
 
-	describe("daily bonus claim tracking", () => {
-		it("should allow claiming when DAILY_MISSION is active and not yet claimed", () => {
-			const manager = createManager(createMockBlessing({
-				activeBlessingType: BlessingType.DAILY_MISSION,
-				blessingEndAt: new Date(Date.now() + 3600000)
-			}));
-
-			expect(manager.canPlayerClaimDailyBonus("player-1")).toBe(true);
-		});
-
-		it("should prevent double claiming", () => {
-			const manager = createManager(createMockBlessing({
-				activeBlessingType: BlessingType.DAILY_MISSION,
-				blessingEndAt: new Date(Date.now() + 3600000)
-			}));
-
-			manager.markDailyBonusClaimed("player-1");
-
-			expect(manager.canPlayerClaimDailyBonus("player-1")).toBe(false);
-		});
-
-		it("should allow different players to claim independently", () => {
-			const manager = createManager(createMockBlessing({
-				activeBlessingType: BlessingType.DAILY_MISSION,
-				blessingEndAt: new Date(Date.now() + 3600000)
-			}));
-
-			manager.markDailyBonusClaimed("player-1");
-
-			expect(manager.canPlayerClaimDailyBonus("player-1")).toBe(false);
-			expect(manager.canPlayerClaimDailyBonus("player-2")).toBe(true);
-		});
-
-		it("should not allow claiming when DAILY_MISSION is not active", () => {
-			const manager = createManager(createMockBlessing({
-				activeBlessingType: BlessingType.FIGHT_LOOT,
-				blessingEndAt: new Date(Date.now() + 3600000)
-			}));
-
-			expect(manager.canPlayerClaimDailyBonus("player-1")).toBe(false);
-		});
-	});
-
 	describe("forceReset", () => {
 		it("should reset all blessing state", async () => {
 			const mockBlessing = createMockBlessing({
@@ -393,7 +377,6 @@ describe("BlessingManager", () => {
 				lastTriggeredByKeycloakId: "test-player"
 			});
 			const manager = createManager(mockBlessing);
-			manager.markDailyBonusClaimed("player-1");
 
 			await manager.forceReset();
 
@@ -401,7 +384,6 @@ describe("BlessingManager", () => {
 			expect(mockBlessing.blessingEndAt).toBeNull();
 			expect(mockBlessing.poolAmount).toBe(0);
 			expect(mockBlessing.save).toHaveBeenCalledOnce();
-			expect(manager.canPlayerClaimDailyBonus("player-1")).toBe(false); // No daily mission active
 		});
 	});
 

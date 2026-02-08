@@ -1995,9 +1995,6 @@
       "8": "Les expéditions de familiers rapportent un jeton bonus.",
       "9": "Les récompenses des missions quotidiennes sont doublées."
     },
-    "claimDailyButton": "Récupérer le bonus quotidien",
-    "claimDailySuccess": "✨ **Bonus de bénédiction récupéré !**\n\n{{gemsEmote}} Gemmes : +**{{gemsWon, number}}**\n{{xpEmote}} Expérience : +**{{xpWon, number}}**\n{{moneyEmote}} Argent : +**{{moneyWon, number}}**\n{{pointsEmote}} Score : +**{{pointsWon, number}}**",
-    "claimDailyFailed": "Vous ne pouvez pas récupérer ce bonus. Soit la bénédiction a expiré, soit vous l'avez déjà récupéré.",
     "contributors": "👑 **Plus gros contributeur :** {{topContributorName}} ({{topContributorAmount, number}} {{moneyEmote}})\n👥 **{{totalContributors}}** aventuriers ont contribué jusqu'à présent."
   }
 }

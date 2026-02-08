@@ -58,7 +58,8 @@ const FIELDS_REQUIRING_ANONYMIZATION = [
 	"removedElder", // Must use anonymizePlayerId()
 	"sellerId", // Must use anonymizePlayerId()
 	"buyerId", // Must use anonymizePlayerId()
-	"releasedId" // Must use anonymizePlayerId()
+	"releasedId", // Must use anonymizePlayerId()
+	"triggeredByPlayerId" // Must use anonymizePlayerId()
 ];
 
 // Tables containing playerId or keycloakId that are INTENTIONALLY NOT EXPORTED
@@ -104,6 +105,7 @@ const EXCLUDED_TABLES = {
 	"LogsGuildsDestroys": "Guild collective data, indexed by guildId only",
 
 	// ============ LOGS DATABASE - Blessing Tables ============
+	"LogsBlessings": "System-level blessing activation log, triggeredByPlayerId used for analytics only",
 	"LogsBlessingsContributions": "Anonymous aggregated contribution data, playerId used for analytics only"
 };
 
@@ -244,8 +246,8 @@ function hasPersonalDataField(modelsDir: string, fileName: string): boolean {
 		|| /keycloakId\s*:\s*{/.test(content);
 
 	// Also check for other player-related foreign keys
-	const hasPlayerRef = /(?:fightInitiatorId|player2Id|addedId|adderId|kickedPlayer|leftPlayer|newChief|addedElder|removedElder|sellerId|buyerId|releasedId)\s*[?:]/.test(content)
-		|| /(?:fightInitiatorId|player2Id|addedId|adderId|kickedPlayer|leftPlayer|newChief|addedElder|removedElder|sellerId|buyerId|releasedId)\s*:\s*{/.test(content);
+	const hasPlayerRef = /(?:fightInitiatorId|player2Id|addedId|adderId|kickedPlayer|leftPlayer|newChief|addedElder|removedElder|sellerId|buyerId|releasedId|triggeredByPlayerId)\s*[?:]/.test(content)
+		|| /(?:fightInitiatorId|player2Id|addedId|adderId|kickedPlayer|leftPlayer|newChief|addedElder|removedElder|sellerId|buyerId|releasedId|triggeredByPlayerId)\s*:\s*{/.test(content);
 
 	return hasPlayerId || hasKeycloakId || hasPlayerRef;
 }
