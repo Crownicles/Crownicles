@@ -206,6 +206,14 @@ export class BlessingManager {
 	}
 
 	/**
+	 * Simulate what the new threshold would be if the pool were filled in `fillDurationDays` days.
+	 * Uses the current threshold. Useful for testing dynamic pricing.
+	 */
+	simulateNewThreshold(fillDurationDays: number): number {
+		return this.calculateNewThreshold(this.cachedBlessing!.poolThreshold, fillDurationDays);
+	}
+
+	/**
 	 * Calculate new threshold based on fill duration vs target.
 	 * Clamps the change to MAX_THRESHOLD_STEP per cycle to prevent wild jumps.
 	 */
