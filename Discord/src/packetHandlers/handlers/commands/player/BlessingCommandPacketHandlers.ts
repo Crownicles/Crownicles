@@ -14,6 +14,7 @@ import { KeycloakUtils } from "../../../../../../Lib/src/keycloak/KeycloakUtils"
 import { keycloakConfig } from "../../../../bot/CrowniclesShard";
 import { CrowniclesIcons } from "../../../../../../Lib/src/CrowniclesIcons";
 import { printTimeBeforeDate } from "../../../../../../Lib/src/utils/TimeUtils";
+import { progressBar } from "../../../../../../Lib/src/utils/StringUtils";
 import {
 	ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, Message
 } from "discord.js";
@@ -60,7 +61,7 @@ export default class BlessingCommandPacketHandlers {
 				poolThreshold: packet.poolThreshold,
 				moneyEmote: CrowniclesIcons.unitValues.money,
 				percentage: Math.floor(packet.poolAmount / packet.poolThreshold * 100)
-			});
+			}) + "\n" + progressBar(packet.poolAmount, packet.poolThreshold);
 		}
 
 		const embed = new CrowniclesEmbed()

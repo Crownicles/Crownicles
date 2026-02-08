@@ -206,7 +206,8 @@ export class BlessingManager {
 	}
 
 	/**
-	 * Calculate new threshold based on fill duration vs target
+	 * Calculate new threshold based on fill duration vs target.
+	 * Clamps the change to MAX_THRESHOLD_STEP per cycle to prevent wild jumps.
 	 */
 	private calculateNewThreshold(currentThreshold: number, fillDurationDays: number): number {
 		/*
@@ -216,6 +217,12 @@ export class BlessingManager {
 		 */
 		const ratio = BlessingConstants.TARGET_FILL_DAYS / Math.max(fillDurationDays, 0.1);
 		let newThreshold = Math.round(currentThreshold * ratio);
+
+		// Clamp the delta to MAX_THRESHOLD_STEP to prevent wild jumps
+		const delta = newThreshold - currentThreshold;
+		if (Math.abs(delta) > BlessingConstants.MAX_THRESHOLD_STEP) {
+			newThreshold = currentThreshold + Math.sign(delta) * BlessingConstants.MAX_THRESHOLD_STEP;
+		}
 
 		// Clamp to prevent extreme values
 		newThreshold = Math.max(newThreshold, BlessingConstants.MIN_POOL_THRESHOLD);
