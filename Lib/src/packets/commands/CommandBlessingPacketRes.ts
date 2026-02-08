@@ -28,4 +28,9 @@ export class CommandBlessingPacketRes extends CrowniclesPacket {
 	 * Keycloak ID of the player who triggered the current/last blessing
 	 */
 	lastTriggeredByKeycloakId!: string;
+
+	/**
+	 * Whether the player can claim the retroactive daily mission bonus
+	 */
+	canClaimDailyBonus!: boolean;
 }

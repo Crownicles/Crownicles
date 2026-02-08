@@ -27,6 +27,12 @@ export class BlessingManager {
 
 	private cachedBlessing: GlobalBlessing | null = null;
 
+	/**
+	 * In-memory set of keycloak IDs who have claimed the daily mission bonus
+	 * for the current blessing cycle. Resets when a new blessing is triggered or expires.
+	 */
+	private dailyBonusClaimed: Set<string> = new Set();
+
 	static getInstance(): BlessingManager {
 		if (!BlessingManager.instance) {
 			BlessingManager.instance = new BlessingManager();
@@ -170,6 +176,9 @@ export class BlessingManager {
 		const durationHours = RandomUtils.randInt(BlessingConstants.MIN_DURATION_HOURS, BlessingConstants.MAX_DURATION_HOURS + 1);
 		const blessingEnd = new Date(Date.now() + durationHours * 60 * 60 * 1000);
 
+		// Reset daily bonus claims for the new blessing cycle
+		this.dailyBonusClaimed.clear();
+
 		// Calculate new threshold using dynamic pricing
 		const fillDurationMs = Date.now() - this.cachedBlessing!.poolStartedAt.getTime();
 		const fillDurationDays = fillDurationMs / (24 * 60 * 60 * 1000);
@@ -241,6 +250,7 @@ export class BlessingManager {
 		this.cachedBlessing.blessingEndAt = null;
 		this.cachedBlessing.poolAmount = 0;
 		this.cachedBlessing.poolStartedAt = new Date();
+		this.dailyBonusClaimed.clear();
 		await this.cachedBlessing.save();
 	}
 
@@ -352,5 +362,20 @@ export class BlessingManager {
 	 */
 	hasExpeditionTokenBonus(): boolean {
 		return this.isActive(BlessingType.EXPEDITION_TOKEN);
+	}
+
+	/**
+	 * Check if a player can claim the retroactive daily mission bonus.
+	 * Player can claim if: daily mission blessing is active + player completed daily today + hasn't already claimed
+	 */
+	canPlayerClaimDailyBonus(keycloakId: string): boolean {
+		return this.isActive(BlessingType.DAILY_MISSION) && !this.dailyBonusClaimed.has(keycloakId);
+	}
+
+	/**
+	 * Mark a player as having claimed the retroactive daily mission bonus
+	 */
+	markDailyBonusClaimed(keycloakId: string): void {
+		this.dailyBonusClaimed.add(keycloakId);
 	}
 }
