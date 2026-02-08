@@ -18,6 +18,7 @@ import {
 } from "../../../../data/Pet";
 import { PetUtils } from "../../../utils/PetUtils";
 import { crowniclesInstance } from "../../../../index";
+import { BlessingManager } from "../../../blessings/BlessingManager";
 import {
 	CrowniclesPacket, makePacket
 } from "../../../../../../Lib/src/packets/CrowniclesPacket";
@@ -81,7 +82,11 @@ export class PetEntity extends Model {
 	}
 
 	public async changeLovePoints(parameters: PlayerEditValueParameters): Promise<void> {
-		this.lovePoints += parameters.amount;
+		// Apply blessing multiplier to love gains (not losses)
+		const amount = parameters.amount > 0
+			? Math.round(parameters.amount * BlessingManager.getInstance().getPetLoveMultiplier())
+			: parameters.amount;
+		this.lovePoints += amount;
 		if (this.lovePoints >= PetConstants.MAX_LOVE_POINTS) {
 			this.lovePoints = PetConstants.MAX_LOVE_POINTS;
 		}
