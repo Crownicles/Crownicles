@@ -21,7 +21,15 @@ vi.mock("../../../../Lib/src/utils/MqttTopicUtils", () => ({
 }));
 
 vi.mock("../../../src/index", () => ({
-	botConfig: { PREFIX: "test" }
+	botConfig: { PREFIX: "test" },
+	crowniclesInstance: {
+		logsDatabase: {
+			logBlessingContribution: vi.fn().mockResolvedValue(undefined),
+			logBlessingActivation: vi.fn().mockResolvedValue(undefined),
+			logBlessingExpiration: vi.fn().mockResolvedValue(undefined),
+			logBlessingPoolExpiration: vi.fn().mockResolvedValue(undefined)
+		}
+	}
 }));
 
 vi.mock("../../../../Lib/src/utils/RandomUtils", () => ({
