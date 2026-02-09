@@ -1,6 +1,9 @@
 import { parse } from "toml";
 import { readFileSync } from "fs";
 import { DatabaseConfiguration } from "../../../Lib/src/database/DatabaseConfiguration";
+import {
+	createMqttPrefix, MqttPrefix
+} from "../../../Lib/src/utils/MqttTopicUtils";
 
 /**
  * Represents the main constants of the bot
@@ -26,7 +29,7 @@ export interface CrowniclesConfig {
 	MARIADB_PASSWORD: string;
 	MARIADB_ROOT_PASSWORD: string;
 	MARIADB_PORT: number;
-	PREFIX: string;
+	PREFIX: MqttPrefix;
 	DBL_TOKEN: string;
 	WEB_SERVER_PORT: number;
 	LOGGER_LEVEL: string;
@@ -114,7 +117,7 @@ export function loadConfig(): CrowniclesConfig {
 		MARIADB_PASSWORD: config.database.password,
 		MARIADB_ROOT_PASSWORD: config.database.root_password,
 		MARIADB_PORT: config.database.port,
-		PREFIX: config.general.prefix,
+		PREFIX: createMqttPrefix(config.general.prefix),
 		DBL_TOKEN: config.discord_bot_list.token,
 		WEB_SERVER_PORT: config.others.webserver_port,
 		LOGGER_LEVEL: config.logs.level,

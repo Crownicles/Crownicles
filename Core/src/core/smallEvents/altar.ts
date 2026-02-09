@@ -36,6 +36,56 @@ function getContributionAmounts(player: Player, remainingPool: number): number[]
 	].map(amount => Math.min(amount, remainingPool));
 }
 
+interface AltarBonusResult {
+	bonusGems: number;
+	bonusItemGiven: boolean;
+}
+
+/**
+ * Calculate bonus rewards for a contribution above the flat amount
+ */
+async function calculateBonusRewards(chosenAmount: number, player: Player): Promise<AltarBonusResult> {
+	let bonusGems = 0;
+	let bonusItemGiven = false;
+
+	if (chosenAmount <= BlessingConstants.FLAT_CONTRIBUTION) {
+		return {
+			bonusGems,
+			bonusItemGiven
+		};
+	}
+
+	if (RandomUtils.crowniclesRandom.bool(BlessingConstants.CONTRIBUTION_BONUS_GEMS_PROBABILITY)) {
+		bonusGems = BlessingConstants.CONTRIBUTION_BONUS_GEMS_AMOUNT;
+		const missionInfo = await PlayerMissionsInfos.getOfPlayer(player.id);
+		await missionInfo.addGems(bonusGems, player.keycloakId, NumberChangeReason.BLESSING);
+	}
+
+	if (RandomUtils.crowniclesRandom.bool(BlessingConstants.CONTRIBUTION_BONUS_ITEM_PROBABILITY)) {
+		bonusItemGiven = true;
+	}
+
+	return {
+		bonusGems,
+		bonusItemGiven
+	};
+}
+
+/**
+ * Check and award the Oracle Patron badge if the player has contributed enough over their lifetime
+ */
+async function checkAndAwardOraclePatronBadge(player: Player): Promise<boolean> {
+	const lifetimeTotal = await crowniclesInstance.logsDatabase.getLifetimeContributions(player.keycloakId);
+	if (lifetimeTotal < BlessingConstants.ORACLE_PATRON_THRESHOLD) {
+		return false;
+	}
+	if (await PlayerBadgesManager.hasBadge(player.id, Badge.ORACLE_PATRON)) {
+		return false;
+	}
+	await PlayerBadgesManager.addBadge(player.id, Badge.ORACLE_PATRON);
+	return true;
+}
+
 function getEndCallback(player: Player, context: PacketContext): EndCallback {
 	return async (collector, response) => {
 		const reaction = collector.getFirstReaction();
@@ -89,33 +139,10 @@ function getEndCallback(player: Player, context: PacketContext): EndCallback {
 		// Contribute to pool
 		const blessingTriggered = await blessingManager.contribute(chosenAmount, player.keycloakId, response);
 
-		// Bonus rewards: only when contributing more than the flat amount
-		let bonusGems = 0;
-		let bonusItemGiven = false;
-		let badgeAwarded = false;
-
-		if (chosenAmount > BlessingConstants.FLAT_CONTRIBUTION) {
-			// 1% chance to get bonus gems
-			if (RandomUtils.crowniclesRandom.bool(BlessingConstants.CONTRIBUTION_BONUS_GEMS_PROBABILITY)) {
-				bonusGems = BlessingConstants.CONTRIBUTION_BONUS_GEMS_AMOUNT;
-				const missionInfo = await PlayerMissionsInfos.getOfPlayer(player.id);
-				await missionInfo.addGems(bonusGems, player.keycloakId, NumberChangeReason.BLESSING);
-			}
-
-			// 4% chance to get a random item with minimum rarity SPECIAL
-			if (RandomUtils.crowniclesRandom.bool(BlessingConstants.CONTRIBUTION_BONUS_ITEM_PROBABILITY)) {
-				bonusItemGiven = true;
-			}
-		}
-
-		// Check for Oracle Patron badge based on lifetime contributions (from logs DB)
-		const lifetimeTotal = await crowniclesInstance.logsDatabase.getLifetimeContributions(player.keycloakId);
-		if (lifetimeTotal >= BlessingConstants.ORACLE_PATRON_THRESHOLD) {
-			if (!await PlayerBadgesManager.hasBadge(player.id, Badge.ORACLE_PATRON)) {
-				await PlayerBadgesManager.addBadge(player.id, Badge.ORACLE_PATRON);
-				badgeAwarded = true;
-			}
-		}
+		const {
+			bonusGems, bonusItemGiven
+		} = await calculateBonusRewards(chosenAmount, player);
+		const badgeAwarded = await checkAndAwardOraclePatronBadge(player);
 
 		response.push(makePacket(SmallEventAltarPacket, {
 			contributed: true,

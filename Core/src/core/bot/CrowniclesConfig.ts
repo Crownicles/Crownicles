@@ -1,6 +1,9 @@
 import { parse } from "toml";
 import { readFileSync } from "fs";
 import { DatabaseConfiguration } from "../../../../Lib/src/database/DatabaseConfiguration";
+import {
+	createMqttPrefix, MqttPrefix
+} from "../../../../Lib/src/utils/MqttTopicUtils";
 
 /**
  * Represents the main constants of the bot
@@ -8,7 +11,7 @@ import { DatabaseConfiguration } from "../../../../Lib/src/database/DatabaseConf
 export interface CrowniclesConfig {
 	MODE_MAINTENANCE: boolean;
 	TEST_MODE: boolean;
-	PREFIX: string;
+	PREFIX: MqttPrefix;
 	MARIADB_HOST: string;
 	MARIADB_USER: string;
 	MARIADB_PASSWORD: string;
@@ -60,7 +63,7 @@ export function loadConfig(): CrowniclesConfig {
 	return {
 		MODE_MAINTENANCE: config.bot.maintenance,
 		TEST_MODE: config.bot.test_mode,
-		PREFIX: config.bot.prefix,
+		PREFIX: createMqttPrefix(config.bot.prefix),
 		MARIADB_HOST: config.database.host,
 		MARIADB_USER: config.database.user,
 		MARIADB_PASSWORD: config.database.password,
