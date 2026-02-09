@@ -107,8 +107,12 @@ import { LogsCommandOrigins } from "./models/LogsCommandOrigins";
 import { LogsCommandSubOrigins } from "./models/LogsCommandSubOrigins";
 import { ReactionCollectorReactPacket } from "../../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { LogsPlayersTeleportations } from "./models/LogsPlayersTeleportations";
-import { LogsExpeditionLogger } from "./LogsExpeditionLogger";
-import { LogsBlessingLogger } from "./LogsBlessingLogger";
+import {
+	LogsExpeditionLogger, ExpeditionCompleteLogInput
+} from "./LogsExpeditionLogger";
+import {
+	LogsBlessingLogger, BlessingActivationParams, BlessingContributionParams
+} from "./LogsBlessingLogger";
 
 /**
  * Data structure for expedition log entries
@@ -1500,14 +1504,8 @@ export class LogsDatabase extends Database {
 	/**
 	 * Log when a pet expedition is completed
 	 */
-	public logExpeditionComplete(
-		keycloakId: string,
-		petGameId: number,
-		params: ExpeditionCompleteParams,
-		rewards: ExpeditionRewards | null,
-		loveChange: number
-	): Promise<void> {
-		return this.expeditionLogger.logExpeditionComplete(keycloakId, petGameId, params, rewards, loveChange);
+	public logExpeditionComplete(input: ExpeditionCompleteLogInput): Promise<void> {
+		return this.expeditionLogger.logExpeditionComplete(input);
 	}
 
 	/**
@@ -1538,13 +1536,8 @@ export class LogsDatabase extends Database {
 	/**
 	 * Log a blessing activation
 	 */
-	public logBlessingActivation(
-		blessingType: number,
-		triggeredByKeycloakId: string,
-		poolThreshold: number,
-		durationHours: number
-	): Promise<void> {
-		return this.blessingLogger.logBlessingActivation(blessingType, triggeredByKeycloakId, poolThreshold, durationHours);
+	public logBlessingActivation(params: BlessingActivationParams): Promise<void> {
+		return this.blessingLogger.logBlessingActivation(params);
 	}
 
 	/**
@@ -1557,19 +1550,15 @@ export class LogsDatabase extends Database {
 	/**
 	 * Log a pool expiration (4-day timeout without filling)
 	 */
-	public logBlessingPoolExpiration(_oldThreshold: number, newThreshold: number): Promise<void> {
-		return this.blessingLogger.logBlessingPoolExpiration(_oldThreshold, newThreshold);
+	public logBlessingPoolExpiration(newThreshold: number): Promise<void> {
+		return this.blessingLogger.logBlessingPoolExpiration(newThreshold);
 	}
 
 	/**
 	 * Log a player contribution to the blessing pool
 	 */
-	public logBlessingContribution(
-		keycloakId: string,
-		amount: number,
-		newPoolAmount: number
-	): Promise<void> {
-		return this.blessingLogger.logBlessingContribution(keycloakId, amount, newPoolAmount);
+	public logBlessingContribution(params: BlessingContributionParams): Promise<void> {
+		return this.blessingLogger.logBlessingContribution(params);
 	}
 
 	/**
