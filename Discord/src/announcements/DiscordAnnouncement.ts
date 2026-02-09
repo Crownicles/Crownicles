@@ -12,6 +12,7 @@ import { BlessingAnnouncementPacket } from "../../../Lib/src/packets/announcemen
 import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 import { CrowniclesLogger } from "../../../Lib/src/logs/CrowniclesLogger";
 import { escapeUsername } from "../utils/StringUtils";
+import { resolveKeycloakPlayerName } from "../utils/KeycloakPlayerUtils";
 
 export abstract class DiscordAnnouncement {
 	private static async sendBilingualMessage(messageFr: string, messageEn: string, reactEmoji?: string): Promise<void> {
@@ -102,25 +103,12 @@ export abstract class DiscordAnnouncement {
 	static async announceBlessing(packet: BlessingAnnouncementPacket): Promise<void> {
 		CrowniclesLogger.info(`Announcing blessing type ${packet.blessingType}...`);
 
-		let playerName: string;
-		try {
-			const user = await KeycloakUtils.getUserByKeycloakId(keycloakConfig, packet.triggeredByKeycloakId);
-			playerName = user.isError ? "???" : escapeUsername(user.payload.user.attributes.gameUsername[0]);
-		}
-		catch {
-			playerName = "???";
-		}
+		const playerName = await resolveKeycloakPlayerName(packet.triggeredByKeycloakId, LANGUAGE.FRENCH);
 
 		// Resolve top contributor name
 		let topContributorName = "";
 		if (packet.topContributorKeycloakId && packet.topContributorKeycloakId !== packet.triggeredByKeycloakId) {
-			try {
-				const topUser = await KeycloakUtils.getUserByKeycloakId(keycloakConfig, packet.topContributorKeycloakId);
-				topContributorName = topUser.isError ? "???" : escapeUsername(topUser.payload.user.attributes.gameUsername[0]);
-			}
-			catch {
-				topContributorName = "???";
-			}
+			topContributorName = await resolveKeycloakPlayerName(packet.topContributorKeycloakId, LANGUAGE.FRENCH);
 		}
 		else if (packet.topContributorKeycloakId) {
 			topContributorName = playerName;

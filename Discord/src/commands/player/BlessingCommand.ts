@@ -9,7 +9,7 @@ import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
 import { DiscordCache } from "../../bot/DiscordCache";
 import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import i18n from "../../translations/i18n";
-import { resolveKeycloakPlayerName } from "../../utils/StringUtils";
+import { resolveKeycloakPlayerName } from "../../utils/KeycloakPlayerUtils";
 import { BlessingType } from "../../../../Lib/src/constants/BlessingConstants";
 import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 import { printTimeBeforeDate } from "../../../../Lib/src/utils/TimeUtils";
