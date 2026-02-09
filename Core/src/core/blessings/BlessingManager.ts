@@ -85,45 +85,30 @@ export class BlessingManager {
 	}
 
 	/**
+	 * Returns the currently active blessing type, or NONE
+	 */
+	getActiveBlessingType(): BlessingType {
+		if (!this.cachedBlessing
+			|| this.cachedBlessing.activeBlessingType === BlessingType.NONE
+			|| !this.cachedBlessing.blessingEndAt
+			|| new Date() >= this.cachedBlessing.blessingEndAt) {
+			return BlessingType.NONE;
+		}
+		return this.cachedBlessing.activeBlessingType as BlessingType;
+	}
+
+	/**
 	 * Check if a specific blessing type is currently active
 	 */
 	isActive(type: BlessingType): boolean {
-		if (!this.cachedBlessing) {
-			return false;
-		}
-		if (this.cachedBlessing.activeBlessingType !== type) {
-			return false;
-		}
-		if (!this.cachedBlessing.blessingEndAt) {
-			return false;
-		}
-		return new Date() < this.cachedBlessing.blessingEndAt;
+		return this.getActiveBlessingType() === type;
 	}
 
 	/**
 	 * Check if any blessing is currently active
 	 */
 	hasActiveBlessing(): boolean {
-		if (!this.cachedBlessing) {
-			return false;
-		}
-		if (this.cachedBlessing.activeBlessingType === BlessingType.NONE) {
-			return false;
-		}
-		if (!this.cachedBlessing.blessingEndAt) {
-			return false;
-		}
-		return new Date() < this.cachedBlessing.blessingEndAt;
-	}
-
-	/**
-	 * Returns the currently active blessing type, or NONE
-	 */
-	getActiveBlessingType(): BlessingType {
-		if (!this.hasActiveBlessing()) {
-			return BlessingType.NONE;
-		}
-		return this.cachedBlessing!.activeBlessingType as BlessingType;
+		return this.getActiveBlessingType() !== BlessingType.NONE;
 	}
 
 	/**
@@ -163,19 +148,23 @@ export class BlessingManager {
 	}
 
 	/**
+	 * Check if a blessing was already triggered today
+	 */
+	private wasBlessingTriggeredToday(): boolean {
+		return !!this.cachedBlessing?.lastBlessingTriggeredAt
+			&& datesAreOnSameDay(this.cachedBlessing.lastBlessingTriggeredAt, new Date());
+	}
+
+	/**
 	 * Check if the oracle small event should appear.
 	 * The oracle should NOT appear when:
 	 * - A blessing is currently active
 	 * - A blessing was already triggered today (max 1 per day)
 	 */
 	canOracleAppear(): boolean {
-		if (!this.cachedBlessing) {
-			return false;
-		}
-
-		// Don't appear during active blessing or if already triggered today (max 1 per day)
-		return !this.hasActiveBlessing()
-			&& !(this.cachedBlessing.lastBlessingTriggeredAt && datesAreOnSameDay(this.cachedBlessing.lastBlessingTriggeredAt, new Date()));
+		return !!this.cachedBlessing
+			&& !this.hasActiveBlessing()
+			&& !this.wasBlessingTriggeredToday();
 	}
 
 	/**

@@ -39,6 +39,7 @@ async function buildTopContributorLine(packet: CommandBlessingPacketRes, lng: La
 		topContributorName,
 		topContributorAmount: packet.topContributorAmount,
 		totalContributors: packet.totalContributors,
+		count: packet.totalContributors,
 		moneyEmote: CrowniclesIcons.unitValues.money
 	})}`;
 }

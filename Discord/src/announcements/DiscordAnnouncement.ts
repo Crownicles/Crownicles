@@ -122,7 +122,8 @@ export abstract class DiscordAnnouncement {
 			durationHours: packet.durationHours,
 			topContributorName,
 			topContributorAmount: packet.topContributorAmount,
-			totalContributors: packet.totalContributors
+			totalContributors: packet.totalContributors,
+			count: packet.totalContributors
 		});
 		const messageEn = i18n.t("bot:blessingAnnouncement", {
 			lng: LANGUAGE.ENGLISH,
@@ -132,7 +133,8 @@ export abstract class DiscordAnnouncement {
 			durationHours: packet.durationHours,
 			topContributorName,
 			topContributorAmount: packet.topContributorAmount,
-			totalContributors: packet.totalContributors
+			totalContributors: packet.totalContributors,
+			count: packet.totalContributors
 		});
 		await this.sendBilingualMessage(messageFr, messageEn);
 	}
