@@ -32,13 +32,11 @@ export async function altarCollector(context: PacketContext, packet: ReactionCol
 
 	const embed = new CrowniclesSmallEventEmbed(
 		"altar",
-		getRandomSmallEventIntro(lng)
-		+ StringUtils.getRandomTranslation("smallEvents:altar.intro", lng, {
+		`${getRandomSmallEventIntro(lng)}${StringUtils.getRandomTranslation("smallEvents:altar.intro", lng, {
 			poolAmount: data.poolAmount,
 			poolThreshold: data.poolThreshold,
 			moneyEmote: CrowniclesIcons.unitValues.money
-		})
-		+ "\n\n" + i18n.t("smallEvents:altar.menu", { lng }),
+		})}\n\n${i18n.t("smallEvents:altar.menu", { lng })}`,
 		interaction.user,
 		lng
 	);
@@ -126,16 +124,16 @@ function determineAltarStory(packet: SmallEventAltarPacket): string {
 function buildAltarBonusText(packet: SmallEventAltarPacket, lng: Language): string {
 	let bonusText = "";
 	if (packet.bonusGems > 0) {
-		bonusText += "\n\n" + StringUtils.getRandomTranslation("smallEvents:altar.bonusGems", lng, {
+		bonusText += `\n\n${StringUtils.getRandomTranslation("smallEvents:altar.bonusGems", lng, {
 			gems: packet.bonusGems,
 			gemEmote: CrowniclesIcons.unitValues.gem
-		});
+		})}`;
 	}
 	if (packet.bonusItemGiven) {
-		bonusText += "\n\n" + StringUtils.getRandomTranslation("smallEvents:altar.bonusItem", lng);
+		bonusText += `\n\n${StringUtils.getRandomTranslation("smallEvents:altar.bonusItem", lng)}`;
 	}
 	if (packet.badgeAwarded) {
-		bonusText += "\n\n" + StringUtils.getRandomTranslation("smallEvents:altar.badgeAwarded", lng);
+		bonusText += `\n\n${StringUtils.getRandomTranslation("smallEvents:altar.badgeAwarded", lng)}`;
 	}
 	return bonusText;
 }

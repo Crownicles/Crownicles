@@ -37,13 +37,13 @@ async function buildTopContributorLine(packet: CommandBlessingPacketRes, lng: La
 		return "";
 	}
 	const topContributorName = await resolveKeycloakPlayerName(packet.topContributorKeycloakId, lng);
-	return "\n\n" + i18n.t("commands:blessing.contributors", {
+	return `\n\n${i18n.t("commands:blessing.contributors", {
 		lng,
 		topContributorName,
 		topContributorAmount: packet.topContributorAmount,
 		totalContributors: packet.totalContributors,
 		moneyEmote: CrowniclesIcons.unitValues.money
-	});
+	})}`;
 }
 
 export default class BlessingCommandPacketHandlers {
@@ -74,14 +74,13 @@ export default class BlessingCommandPacketHandlers {
 		else {
 			const topContributorLine = await buildTopContributorLine(packet, lng);
 
-			description = i18n.t("commands:blessing.collecting", {
+			description = `${i18n.t("commands:blessing.collecting", {
 				lng,
 				poolAmount: packet.poolAmount,
 				poolThreshold: packet.poolThreshold,
 				moneyEmote: CrowniclesIcons.unitValues.money,
 				percentage: Math.floor(packet.poolAmount / packet.poolThreshold * 100)
-			}) + "\n" + progressBar(packet.poolAmount, packet.poolThreshold)
-				+ topContributorLine;
+			})}\n${progressBar(packet.poolAmount, packet.poolThreshold)}${topContributorLine}`;
 		}
 
 		const embed = new CrowniclesEmbed()

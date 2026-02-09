@@ -163,17 +163,9 @@ export class BlessingManager {
 			return false;
 		}
 
-		// Don't appear during active blessing
-		if (this.hasActiveBlessing()) {
-			return false;
-		}
-
-		// Check if blessing was triggered today — max 1 per day
-		if (this.cachedBlessing.lastBlessingTriggeredAt && datesAreOnSameDay(this.cachedBlessing.lastBlessingTriggeredAt, new Date())) {
-			return false;
-		}
-
-		return true;
+		// Don't appear during active blessing or if already triggered today (max 1 per day)
+		return !this.hasActiveBlessing()
+			&& !(this.cachedBlessing.lastBlessingTriggeredAt && datesAreOnSameDay(this.cachedBlessing.lastBlessingTriggeredAt, new Date()));
 	}
 
 	/**
