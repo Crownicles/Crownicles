@@ -15,7 +15,7 @@ import {
 	handleExpeditionRecallRes,
 	handleExpeditionResolveRes,
 	handleExpeditionError
-} from "../../../../commands/pet/PetExpeditionHandler";
+} from "../../../../commands/pet/expedition/PetExpeditionHandler";
 
 export default class PetExpeditionPacketHandlers {
 	@packetHandler(CommandPetExpeditionPacketRes)

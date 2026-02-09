@@ -81,7 +81,9 @@ import { LogsPlayersDailies } from "./models/LogsPlayersDailies";
 import {
 	NumberChangeReason, ShopItemType
 } from "../../../../../Lib/src/constants/LogsConstants";
-import { getDateLogs } from "../../../../../Lib/src/utils/TimeUtils";
+import {
+	dateToLogs, getDateLogs
+} from "../../../../../Lib/src/utils/TimeUtils";
 import { LogsPlayersGloryPoints } from "./models/LogsPlayersGloryPoints";
 import { LogsPlayers15BestSeason } from "./models/LogsPlayers15BestSeason";
 import { LogsSeasonEnd } from "./models/LogsSeasonEnd";
