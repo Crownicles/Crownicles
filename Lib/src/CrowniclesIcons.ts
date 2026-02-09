@@ -60,6 +60,13 @@ export const CrowniclesIcons: {
 		handshake: string;
 		refuse: string;
 	};
+	blessingCommand: {
+		active: string;
+		timeLeft: string;
+		triggeredBy: string;
+		topContributor: string;
+		contributors: string;
+	};
 	clocks: { [clockId: string]: string };
 	pveFights: {
 		waitABit: string;
@@ -1926,6 +1933,13 @@ export const CrowniclesIcons: {
 		gloryChange: "📯",
 		handshake: "🤝",
 		refuse: "❌"
+	},
+	blessingCommand: {
+		active: "✨",
+		timeLeft: "⏳",
+		triggeredBy: "🙏",
+		topContributor: "👑",
+		contributors: "👥"
 	},
 	clocks: {
 		1: "🕐",
