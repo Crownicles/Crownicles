@@ -9,32 +9,18 @@ import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
 import { DiscordCache } from "../../bot/DiscordCache";
 import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import i18n from "../../translations/i18n";
-import { escapeUsername } from "../../utils/StringUtils";
+import { resolveKeycloakPlayerName } from "../../utils/StringUtils";
 import { BlessingType } from "../../../../Lib/src/constants/BlessingConstants";
-import { KeycloakUtils } from "../../../../Lib/src/keycloak/KeycloakUtils";
-import { keycloakConfig } from "../../bot/CrowniclesShard";
 import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 import { printTimeBeforeDate } from "../../../../Lib/src/utils/TimeUtils";
-import { progressBar } from "../../../../Lib/src/utils/StringUtils";
+import {
+	escapeUsername, progressBar
+} from "../../../../Lib/src/utils/StringUtils";
 import { Language } from "../../../../Lib/src/Language";
 
 async function getPacket(interaction: CrowniclesInteraction): Promise<CommandBlessingPacketReq> {
 	await interaction.deferReply();
 	return makePacket(CommandBlessingPacketReq, {});
-}
-
-/**
- * Resolve a keycloak ID to a player display name, with a fallback for unknown players
- */
-async function resolveKeycloakPlayerName(keycloakId: string | undefined | null, lng: Language): Promise<string> {
-	if (!keycloakId) {
-		return i18n.t("error:unknownPlayer", { lng });
-	}
-	const getUser = await KeycloakUtils.getUserByKeycloakId(keycloakConfig, keycloakId);
-	if (!getUser.isError && getUser.payload.user.attributes.gameUsername) {
-		return escapeUsername(getUser.payload.user.attributes.gameUsername[0]);
-	}
-	return i18n.t("error:unknownPlayer", { lng });
 }
 
 /**
