@@ -153,13 +153,13 @@ async function finalizeExpedition(
 	await ScheduledExpeditionNotifications.deleteByExpeditionId(activeExpedition.id);
 	await PetExpeditions.completeExpedition(activeExpedition);
 
-	crowniclesInstance.logsDatabase.logExpeditionComplete(
-		player.keycloakId,
-		petEntity.id,
-		extractExpeditionLogParams(expeditionData, activeExpedition, expeditionSuccess),
-		outcome.rewards ?? null,
-		outcome.loveChange ?? 0
-	).then();
+	crowniclesInstance.logsDatabase.logExpeditionComplete({
+		keycloakId: player.keycloakId,
+		petGameId: petEntity.id,
+		params: extractExpeditionLogParams(expeditionData, activeExpedition, expeditionSuccess),
+		rewards: outcome.rewards ?? null,
+		loveChange: outcome.loveChange ?? 0
+	}).then();
 }
 
 /**

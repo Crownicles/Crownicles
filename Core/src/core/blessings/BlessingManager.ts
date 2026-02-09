@@ -193,11 +193,11 @@ export class BlessingManager {
 		);
 
 		// Log contribution
-		crowniclesInstance.logsDatabase.logBlessingContribution(
-			playerKeycloakId,
+		crowniclesInstance.logsDatabase.logBlessingContribution({
+			keycloakId: playerKeycloakId,
 			amount,
-			this.cachedBlessing.poolAmount
-		).then();
+			newPoolAmount: this.cachedBlessing.poolAmount
+		}).then();
 
 		if (this.cachedBlessing.poolAmount >= this.cachedBlessing.poolThreshold) {
 			// Pool filled! Trigger blessing
@@ -254,12 +254,12 @@ export class BlessingManager {
 		);
 
 		// Log activation
-		crowniclesInstance.logsDatabase.logBlessingActivation(
+		crowniclesInstance.logsDatabase.logBlessingActivation({
 			blessingType,
 			triggeredByKeycloakId,
-			currentThreshold,
+			poolThreshold: currentThreshold,
 			durationHours
-		).then();
+		}).then();
 
 		// Apply one-time effects
 		if (blessingType === BlessingType.DAILY_MISSION) {
@@ -346,7 +346,6 @@ export class BlessingManager {
 		}
 
 		// Pool expired without being filled — reset with reduced threshold
-		const oldThreshold = this.cachedBlessing.poolThreshold;
 		const newThreshold = Math.max(
 			Math.round(this.cachedBlessing.poolThreshold * BlessingConstants.EXPIRY_THRESHOLD_MULTIPLIER),
 			BlessingConstants.MIN_POOL_THRESHOLD
@@ -358,7 +357,7 @@ export class BlessingManager {
 		await this.cachedBlessing.save();
 
 		// Log pool expiration
-		crowniclesInstance.logsDatabase.logBlessingPoolExpiration(oldThreshold, newThreshold).then();
+		crowniclesInstance.logsDatabase.logBlessingPoolExpiration(newThreshold).then();
 	}
 
 	/**

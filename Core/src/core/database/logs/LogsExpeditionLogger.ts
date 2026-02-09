@@ -15,6 +15,26 @@ import {
 } from "./LogsDatabase";
 
 /**
+ * Parameters for logging expedition completion, grouping all needed data
+ */
+export interface ExpeditionCompleteLogInput {
+	keycloakId: string;
+	petGameId: number;
+	params: ExpeditionCompleteParams;
+	rewards: ExpeditionRewards | null;
+	loveChange: number;
+}
+
+/**
+ * Parameters for logging a simple expedition action (start or recall)
+ */
+interface ExpeditionSimpleActionInput {
+	keycloakId: string;
+	petGameId: number;
+	action: string;
+}
+
+/**
  * Handles all expedition-related logging operations.
  * Extracted from LogsDatabase to reduce class size and improve cohesion.
  */
@@ -74,6 +94,19 @@ export class LogsExpeditionLogger {
 	}
 
 	/**
+	 * Log a simple expedition action (start or recall) with params spread
+	 */
+	private async logSimpleExpeditionAction(
+		input: ExpeditionSimpleActionInput,
+		params: ExpeditionStartParams | ExpeditionRecallParams
+	): Promise<void> {
+		await this.createExpeditionLog(input.keycloakId, input.petGameId, {
+			...params,
+			action: input.action
+		});
+	}
+
+	/**
 	 * Log when a pet expedition starts
 	 */
 	async logExpeditionStart(
@@ -81,31 +114,27 @@ export class LogsExpeditionLogger {
 		petGameId: number,
 		params: ExpeditionStartParams
 	): Promise<void> {
-		await this.createExpeditionLog(keycloakId, petGameId, {
-			...params,
-			action: ExpeditionConstants.LOG_ACTION.START
-		});
+		await this.logSimpleExpeditionAction(
+			{
+				keycloakId, petGameId, action: ExpeditionConstants.LOG_ACTION.START
+			},
+			params
+		);
 	}
 
 	/**
 	 * Log when a pet expedition is completed
 	 */
-	async logExpeditionComplete(
-		keycloakId: string,
-		petGameId: number,
-		params: ExpeditionCompleteParams,
-		rewards: ExpeditionRewards | null,
-		loveChange: number
-	): Promise<void> {
-		await this.createExpeditionLog(keycloakId, petGameId, {
-			...params,
+	async logExpeditionComplete(input: ExpeditionCompleteLogInput): Promise<void> {
+		await this.createExpeditionLog(input.keycloakId, input.petGameId, {
+			...input.params,
 			action: ExpeditionConstants.LOG_ACTION.COMPLETE,
-			money: rewards?.money ?? null,
-			experience: rewards?.experience ?? null,
-			points: rewards?.points ?? null,
-			tokens: rewards?.tokens ?? null,
-			cloneTalismanFound: rewards?.cloneTalismanFound ?? null,
-			loveChange
+			money: input.rewards?.money ?? null,
+			experience: input.rewards?.experience ?? null,
+			points: input.rewards?.points ?? null,
+			tokens: input.rewards?.tokens ?? null,
+			cloneTalismanFound: input.rewards?.cloneTalismanFound ?? null,
+			loveChange: input.loveChange
 		});
 	}
 
@@ -132,10 +161,12 @@ export class LogsExpeditionLogger {
 		petGameId: number,
 		params: ExpeditionRecallParams
 	): Promise<void> {
-		await this.createExpeditionLog(keycloakId, petGameId, {
-			...params,
-			action: ExpeditionConstants.LOG_ACTION.RECALL
-		});
+		await this.logSimpleExpeditionAction(
+			{
+				keycloakId, petGameId, action: ExpeditionConstants.LOG_ACTION.RECALL
+			},
+			params
+		);
 	}
 
 	/**

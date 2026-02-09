@@ -9,6 +9,36 @@ import {
 } from "../../../../../Lib/src/utils/TimeUtils";
 
 /**
+ * Parameters for logging a blessing activation
+ */
+export interface BlessingActivationParams {
+	blessingType: number;
+	triggeredByKeycloakId: string;
+	poolThreshold: number;
+	durationHours: number;
+}
+
+/**
+ * Parameters for logging a blessing contribution
+ */
+export interface BlessingContributionParams {
+	keycloakId: string;
+	amount: number;
+	newPoolAmount: number;
+}
+
+/**
+ * Internal structure for creating blessing log entries
+ */
+interface BlessingLogEntry {
+	blessingType: number;
+	action: string;
+	triggeredByPlayerId: number | null;
+	poolThreshold: number;
+	durationHours: number | null;
+}
+
+/**
  * Handles all blessing-related logging operations.
  * Extracted from LogsDatabase to reduce class size and improve cohesion.
  */
@@ -26,22 +56,26 @@ export class LogsBlessingLogger {
 	}
 
 	/**
+	 * Create a blessing log entry with common fields
+	 */
+	private async createBlessingLog(entry: BlessingLogEntry): Promise<void> {
+		await LogsBlessings.create({
+			...entry,
+			date: getDateLogs()
+		});
+	}
+
+	/**
 	 * Log a blessing activation
 	 */
-	async logBlessingActivation(
-		blessingType: number,
-		triggeredByKeycloakId: string,
-		poolThreshold: number,
-		durationHours: number
-	): Promise<void> {
-		const player = await this.findOrCreatePlayer(triggeredByKeycloakId);
-		await LogsBlessings.create({
-			blessingType,
+	async logBlessingActivation(params: BlessingActivationParams): Promise<void> {
+		const player = await this.findOrCreatePlayer(params.triggeredByKeycloakId);
+		await this.createBlessingLog({
+			blessingType: params.blessingType,
 			action: "activate",
 			triggeredByPlayerId: player ? player.id : null,
-			poolThreshold,
-			durationHours,
-			date: getDateLogs()
+			poolThreshold: params.poolThreshold,
+			durationHours: params.durationHours
 		});
 	}
 
@@ -49,46 +83,40 @@ export class LogsBlessingLogger {
 	 * Log a blessing expiration (duration over)
 	 */
 	async logBlessingExpiration(blessingType: number, poolThreshold: number): Promise<void> {
-		await LogsBlessings.create({
+		await this.createBlessingLog({
 			blessingType,
 			action: "expire",
 			triggeredByPlayerId: null,
 			poolThreshold,
-			durationHours: null,
-			date: getDateLogs()
+			durationHours: null
 		});
 	}
 
 	/**
 	 * Log a pool expiration (4-day timeout without filling)
 	 */
-	async logBlessingPoolExpiration(_oldThreshold: number, newThreshold: number): Promise<void> {
-		await LogsBlessings.create({
+	async logBlessingPoolExpiration(newThreshold: number): Promise<void> {
+		await this.createBlessingLog({
 			blessingType: 0,
 			action: "pool_expire",
 			triggeredByPlayerId: null,
 			poolThreshold: newThreshold,
-			durationHours: null,
-			date: getDateLogs()
+			durationHours: null
 		});
 	}
 
 	/**
 	 * Log a player contribution to the blessing pool
 	 */
-	async logBlessingContribution(
-		keycloakId: string,
-		amount: number,
-		newPoolAmount: number
-	): Promise<void> {
-		const player = await this.findOrCreatePlayer(keycloakId);
+	async logBlessingContribution(params: BlessingContributionParams): Promise<void> {
+		const player = await this.findOrCreatePlayer(params.keycloakId);
 		if (!player) {
 			return;
 		}
 		await LogsBlessingsContributions.create({
 			playerId: player.id,
-			amount,
-			newPoolAmount,
+			amount: params.amount,
+			newPoolAmount: params.newPoolAmount,
 			date: getDateLogs()
 		});
 	}
