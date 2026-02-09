@@ -140,7 +140,7 @@ export class Crownicles {
 	static async seasonEnd(): Promise<void> {
 		if (!PacketUtils.isMqttConnected()) {
 			CrowniclesLogger.error("MQTT is not connected, can't announce the end of the season. Trying again in 1 minute");
-			setTimeout(Crownicles.seasonEnd, minutesToMilliseconds(1));
+			setTimeout(Crownicles.seasonEnd, TimeoutFunctionsConstants.MQTT_RETRY_DELAY);
 			return;
 		}
 
@@ -325,7 +325,7 @@ export class Crownicles {
 	static async weeklyTimeout(): Promise<void> {
 		if (!PacketUtils.isMqttConnected()) {
 			CrowniclesLogger.error("MQTT is not connected, can't announce the end of the week. Trying again in 1 minute");
-			setTimeout(Crownicles.weeklyTimeout, minutesToMilliseconds(1));
+			setTimeout(Crownicles.weeklyTimeout, TimeoutFunctionsConstants.MQTT_RETRY_DELAY);
 			return;
 		}
 
