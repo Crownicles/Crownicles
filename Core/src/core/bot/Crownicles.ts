@@ -13,7 +13,7 @@ import PetEntity from "../database/game/models/PetEntity";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { PotionDataController } from "../../data/Potion";
 import {
-	hoursToMilliseconds, minutesToMilliseconds
+	daysToMilliseconds, hoursToMilliseconds, minutesToMilliseconds
 } from "../../../../Lib/src/utils/TimeUtils";
 import { TimeoutFunctionsConstants } from "../../../../Lib/src/constants/TimeoutFunctionsConstants";
 import { ChristmasConstants } from "../../../../Lib/src/constants/ChristmasConstants";
@@ -79,7 +79,7 @@ export class Crownicles {
 		 *
 		 * The first one is set immediately so if the bot crashes before programming the next one, it will be set anyway to approximately a valid date (at 1s max of difference)
 		 */
-		await Settings.NEXT_DAILY_RESET.setValue(await Settings.NEXT_DAILY_RESET.getValue() + 24 * 60 * 60 * 1000);
+		await Settings.NEXT_DAILY_RESET.setValue(await Settings.NEXT_DAILY_RESET.getValue() + daysToMilliseconds(1));
 
 		await Player.update(
 			{
@@ -140,7 +140,7 @@ export class Crownicles {
 	static async seasonEnd(): Promise<void> {
 		if (!PacketUtils.isMqttConnected()) {
 			CrowniclesLogger.error("MQTT is not connected, can't announce the end of the season. Trying again in 1 minute");
-			setTimeout(Crownicles.seasonEnd, 60000);
+			setTimeout(Crownicles.seasonEnd, minutesToMilliseconds(1));
 			return;
 		}
 
@@ -152,7 +152,7 @@ export class Crownicles {
 		 * so if the bot crashes before programming the next one, it will be set anyway to approximately a valid date
 		 * (at 1 s max of difference)
 		 */
-		await Settings.NEXT_SEASON_RESET.setValue(await Settings.NEXT_SEASON_RESET.getValue() + 7 * 24 * 60 * 60 * 1000);
+		await Settings.NEXT_SEASON_RESET.setValue(await Settings.NEXT_SEASON_RESET.getValue() + daysToMilliseconds(7));
 
 		crowniclesInstance.logsDatabase.log15BestSeason()
 			.then();
@@ -325,7 +325,7 @@ export class Crownicles {
 	static async weeklyTimeout(): Promise<void> {
 		if (!PacketUtils.isMqttConnected()) {
 			CrowniclesLogger.error("MQTT is not connected, can't announce the end of the week. Trying again in 1 minute");
-			setTimeout(Crownicles.weeklyTimeout, 60000);
+			setTimeout(Crownicles.weeklyTimeout, minutesToMilliseconds(1));
 			return;
 		}
 
@@ -335,7 +335,7 @@ export class Crownicles {
 		 *
 		 * The first one is set immediately so if the bot crashes before programming the next one, it will be set anyway to approximately a valid date (at 1s max of difference)
 		 */
-		await Settings.NEXT_WEEKLY_RESET.setValue(await Settings.NEXT_WEEKLY_RESET.getValue() + 7 * 24 * 60 * 60 * 1000);
+		await Settings.NEXT_WEEKLY_RESET.setValue(await Settings.NEXT_WEEKLY_RESET.getValue() + daysToMilliseconds(7));
 		Crownicles.topWeekEnd()
 			.then();
 		Crownicles.newPveIsland()

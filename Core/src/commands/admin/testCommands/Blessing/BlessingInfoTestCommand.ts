@@ -3,6 +3,7 @@ import {
 } from "../../../../core/CommandsTest";
 import { BlessingManager } from "../../../../core/blessings/BlessingManager";
 import { BlessingType } from "../../../../../../Lib/src/constants/BlessingConstants";
+import { millisecondsToHours } from "../../../../../../Lib/src/utils/TimeUtils";
 
 export const commandInfo: ITestCommand = {
 	name: "blessinginfo",
@@ -19,7 +20,7 @@ const blessingInfoTestCommand: ExecuteTestCommandLike = () => {
 
 	if (blessingManager.hasActiveBlessing()) {
 		const remainingMs = endAt!.getTime() - Date.now();
-		const remainingHours = Math.round(remainingMs / (60 * 60 * 1000) * 10) / 10;
+		const remainingHours = Math.round(millisecondsToHours(remainingMs) * 10) / 10;
 		info += `✨ **Bénédiction active** : ${BlessingType[activeType]} (type ${activeType})\n`;
 		info += `⏳ Temps restant : ${remainingHours}h\n`;
 		info += `📅 Fin : ${endAt!.toISOString()}\n`;
