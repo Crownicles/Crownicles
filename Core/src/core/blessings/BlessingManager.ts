@@ -15,7 +15,7 @@ import {
 	botConfig, crowniclesInstance
 } from "../../index";
 import {
-	datesAreOnSameDay, getTodayMidnight, getTomorrowMidnight, hoursToMilliseconds, millisecondsToDays, millisecondsToHours, minutesToMilliseconds
+	datesAreOnSameDay, daysToMilliseconds, getTodayMidnight, getTomorrowMidnight, hoursToMilliseconds, millisecondsToDays, millisecondsToHours, minutesToMilliseconds
 } from "../../../../Lib/src/utils/TimeUtils";
 import { PlayerMissionsInfo } from "../database/game/models/PlayerMissionsInfo";
 import { Op } from "sequelize";
@@ -138,6 +138,14 @@ export class BlessingManager {
 	 */
 	getPoolThreshold(): number {
 		return this.cachedBlessing?.poolThreshold ?? BlessingConstants.INITIAL_POOL_THRESHOLD;
+	}
+
+	/**
+	 * Get the date when the current pool expires (poolStartedAt + POOL_EXPIRY_DAYS)
+	 */
+	getPoolExpiresAt(): Date {
+		const startedAt = this.cachedBlessing?.poolStartedAt ?? new Date();
+		return new Date(startedAt.getTime() + daysToMilliseconds(BlessingConstants.POOL_EXPIRY_DAYS));
 	}
 
 	/**

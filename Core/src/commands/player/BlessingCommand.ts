@@ -1,12 +1,13 @@
 import {
 	commandRequires, CommandUtils
 } from "../../core/utils/CommandUtils";
-import { CommandBlessingPacketReq } from "../../../../Lib/src/packets/commands/CommandBlessingPacketReq";
+import {
+	CommandBlessingPacketReq, CommandBlessingPacketRes
+} from "../../../../Lib/src/packets/commands/CommandBlessingPacket";
 import {
 	CrowniclesPacket, makePacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import Player from "../../core/database/game/models/Player";
-import { CommandBlessingPacketRes } from "../../../../Lib/src/packets/commands/CommandBlessingPacketRes";
 import { BlessingManager } from "../../core/blessings/BlessingManager";
 
 export default class BlessingCommand {
@@ -27,7 +28,8 @@ export default class BlessingCommand {
 			lastTriggeredByKeycloakId: blessingManager.getLastTriggeredByKeycloakId() ?? "",
 			topContributorKeycloakId: topContributor?.keycloakId ?? "",
 			topContributorAmount: topContributor?.amount ?? 0,
-			totalContributors: blessingManager.getTotalContributors()
+			totalContributors: blessingManager.getTotalContributors(),
+			poolExpiresAt: blessingManager.getPoolExpiresAt().getTime()
 		}));
 	}
 }

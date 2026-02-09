@@ -8,7 +8,7 @@ export const commandInfo: ITestCommand = {
 	name: "simulatethreshold",
 	aliases: ["st"],
 	commandFormat: "<daysToFill>",
-	typeWaited: { daysToFill: TypeKey.STRING },
+	typeWaited: { daysToFill: TypeKey.INTEGER },
 	minArgs: 1,
 	description: "Simule le nouveau seuil si la cagnotte était remplie en X jours"
 };
