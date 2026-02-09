@@ -37,7 +37,7 @@
   "notificationPetExpedition": "{{petDisplay}} est de retour d'expédition et a peut-être ramené des trésors !",
   "christmasBonusPreAnnouncement": "{emote:announcements.christmas} **Bonus de Noël à venir !** {emote:announcements.christmas}\n\nDans quelques heures, tous les joueurs recevront un cadeau spécial : leur stock de jetons sera rempli au maximum ! Profitez bien de cette période festive !",
   "christmasBonusApplied": "{emote:announcements.christmas} **Joyeux Noël !** {emote:announcements.gift}\n\nLe Père Noël est passé ! Votre stock de jetons a été rempli au maximum. Profitez de ce cadeau pour partir à l'aventure !",
-  "blessingAnnouncement": "{emote:smallEvents.altar} **Bénédiction activée : {{blessingName}} !**\n\nGrâce à la générosité de **{{playerName}}**, une bénédiction a été invoquée pour tous les aventuriers !\n\n✨ **Effet :** {{blessingEffect}}\n⏳ **Durée :** {{durationHours}} heures\n\n👑 **Plus gros contributeur :** {{topContributorName}} ({{topContributorAmount}} {emote:unitValues.money})\n👥 **{{totalContributors}}** aventuriers ont contribué à cette bénédiction.",
+  "blessingAnnouncement": "{emote:smallEvents.altar} **Bénédiction activée : {{blessingName}} !**\n\nGrâce à la générosité de **{{playerName}}**, une bénédiction a été invoquée pour tous les aventuriers !\n\n✨ **Effet :** {{blessingEffect}}\n⏳ **Durée :** {{durationHours}} heures\n\n👑 **Plus gros contributeur :** {{topContributorName}} ({{topContributorAmount, number}} {emote:unitValues.money})\n👥 **{{totalContributors}}** aventuriers ont contribué à cette bénédiction.",
   "blessingNames": {
     "1": "Rage amplifiée",
     "2": "Butin de combat",

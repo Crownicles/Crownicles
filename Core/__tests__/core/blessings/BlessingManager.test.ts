@@ -75,6 +75,7 @@ function createMockBlessing(overrides: Record<string, unknown> = {}): Record<str
 		activeBlessingType: BlessingType.NONE,
 		blessingEndAt: null,
 		lastTriggeredByKeycloakId: null,
+		lastBlessingTriggeredAt: null,
 		save: vi.fn().mockResolvedValue(undefined),
 		...overrides
 	};
@@ -299,26 +300,26 @@ describe("BlessingManager", () => {
 			expect(manager.canOracleAppear()).toBe(true);
 		});
 
-		it("should return false when a blessing ended today (same day)", () => {
-			const endedEarlierToday = new Date();
-			endedEarlierToday.setHours(12, 0, 0, 0); // Fixed hour to avoid midnight edge case
+		it("should return false when a blessing was triggered today (same day)", () => {
+			const triggeredEarlierToday = new Date();
+			triggeredEarlierToday.setHours(12, 0, 0, 0); // Fixed hour to avoid midnight edge case
 
 			const manager = createManager(createMockBlessing({
 				activeBlessingType: BlessingType.NONE,
-				blessingEndAt: endedEarlierToday
+				lastBlessingTriggeredAt: triggeredEarlierToday
 			}));
 
-			// Since the blessing end date is today, oracle should not appear
+			// Since the blessing was triggered today, oracle should not appear
 			expect(manager.canOracleAppear()).toBe(false);
 		});
 
-		it("should return true when a blessing ended on a different day", () => {
-			const endedYesterday = new Date();
-			endedYesterday.setDate(endedYesterday.getDate() - 1);
+		it("should return true when a blessing was triggered on a different day", () => {
+			const triggeredYesterday = new Date();
+			triggeredYesterday.setDate(triggeredYesterday.getDate() - 1);
 
 			const manager = createManager(createMockBlessing({
 				activeBlessingType: BlessingType.NONE,
-				blessingEndAt: endedYesterday
+				lastBlessingTriggeredAt: triggeredYesterday
 			}));
 
 			expect(manager.canOracleAppear()).toBe(true);

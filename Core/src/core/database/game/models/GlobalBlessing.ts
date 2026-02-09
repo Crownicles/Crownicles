@@ -20,6 +20,8 @@ export class GlobalBlessing extends Model {
 
 	declare lastTriggeredByKeycloakId: string | null;
 
+	declare lastBlessingTriggeredAt: Date | null;
+
 	declare updatedAt: Date;
 
 	declare createdAt: Date;
@@ -39,7 +41,8 @@ export abstract class GlobalBlessings {
 				poolStartedAt: new Date(),
 				activeBlessingType: BlessingType.NONE,
 				blessingEndAt: null,
-				lastTriggeredByKeycloakId: null
+				lastTriggeredByKeycloakId: null,
+				lastBlessingTriggeredAt: null
 			}
 		});
 		return blessing;
@@ -68,6 +71,9 @@ export function initModel(sequelize: Sequelize): void {
 		},
 		lastTriggeredByKeycloakId: {
 			type: DataTypes.STRING, allowNull: true
+		},
+		lastBlessingTriggeredAt: {
+			type: DataTypes.DATE, allowNull: true
 		},
 		updatedAt: { type: DataTypes.DATE },
 		createdAt: { type: DataTypes.DATE }

@@ -402,9 +402,5 @@
         "description": "The Discord ID of the player."
       }
     }
-  },
-  "blessing": {
-    "name": "blessing",
-    "description": "See the current state of the global blessing."
   }
 }
