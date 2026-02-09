@@ -59,13 +59,13 @@ export async function handleCommandBlessingPacketRes(context: PacketContext, pac
 	let description: string;
 
 	if (hasBlessing) {
-		const triggeredByName = await resolveKeycloakPlayerName(packet.lastTriggeredByKeycloakId, lng);
+		const triggeredByName = await resolveKeycloakPlayerName(packet.lastTriggeredByKeycloakId!, lng);
 
 		description = i18n.t("commands:blessing.active", {
 			lng,
 			blessingName: i18n.t(`bot:blessingNames.${packet.activeBlessingType}`, { lng }),
 			blessingEffect: i18n.t(`bot:blessingEffects.${packet.activeBlessingType}`, { lng }),
-			timeLeft: printTimeBeforeDate(packet.blessingEndAt),
+			timeLeft: printTimeBeforeDate(packet.blessingEndAt!),
 			triggeredBy: triggeredByName,
 			moneyEmote: CrowniclesIcons.unitValues.money
 		});

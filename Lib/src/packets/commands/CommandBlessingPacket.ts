@@ -14,9 +14,9 @@ export class CommandBlessingPacketRes extends CrowniclesPacket {
 	activeBlessingType!: number;
 
 	/**
-	 * When the current blessing ends (epoch ms), 0 if no active blessing
+	 * When the current blessing ends (epoch ms), only set when a blessing is active
 	 */
-	blessingEndAt!: number;
+	blessingEndAt?: number;
 
 	/**
 	 * Current pool amount
@@ -31,17 +31,17 @@ export class CommandBlessingPacketRes extends CrowniclesPacket {
 	/**
 	 * Keycloak ID of the player who triggered the current/last blessing
 	 */
-	lastTriggeredByKeycloakId!: string;
+	lastTriggeredByKeycloakId?: string;
 
 	/**
 	 * Keycloak ID of the top contributor for the current/last pool cycle
 	 */
-	topContributorKeycloakId!: string;
+	topContributorKeycloakId?: string;
 
 	/**
 	 * Amount contributed by the top contributor
 	 */
-	topContributorAmount!: number;
+	topContributorAmount?: number;
 
 	/**
 	 * Total number of unique contributors for the current/last pool cycle

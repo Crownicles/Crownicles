@@ -22,12 +22,12 @@ export default class BlessingCommand {
 
 		response.push(makePacket(CommandBlessingPacketRes, {
 			activeBlessingType: blessingManager.getActiveBlessingType(),
-			blessingEndAt: blessingManager.getBlessingEndAt()?.getTime() ?? 0,
+			blessingEndAt: blessingManager.getBlessingEndAt()?.getTime(),
 			poolAmount: blessingManager.getPoolAmount(),
 			poolThreshold: blessingManager.getPoolThreshold(),
-			lastTriggeredByKeycloakId: blessingManager.getLastTriggeredByKeycloakId() ?? "",
-			topContributorKeycloakId: topContributor?.keycloakId ?? "",
-			topContributorAmount: topContributor?.amount ?? 0,
+			lastTriggeredByKeycloakId: blessingManager.getLastTriggeredByKeycloakId() ?? undefined,
+			topContributorKeycloakId: topContributor?.keycloakId,
+			topContributorAmount: topContributor?.amount,
 			totalContributors: blessingManager.getTotalContributors(),
 			poolExpiresAt: blessingManager.getPoolExpiresAt().getTime()
 		}));
