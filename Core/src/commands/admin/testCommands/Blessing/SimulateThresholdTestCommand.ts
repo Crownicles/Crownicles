@@ -28,12 +28,7 @@ const simulateThresholdTestCommand: ExecuteTestCommandLike = (_player, args) => 
 	const delta = newThreshold - currentThreshold;
 	const sign = delta >= 0 ? "+" : "";
 
-	return `Simulation du changement de seuil :`
-		+ `\nSeuil actuel : ${currentThreshold}`
-		+ `\nDurée simulée : ${daysToFill}j (cible : ${BlessingConstants.TARGET_FILL_DAYS}j)`
-		+ `\nNouveau seuil : ${newThreshold} (${sign}${delta})`
-		+ `\nStep max : ±${BlessingConstants.MAX_THRESHOLD_STEP}`
-		+ `\nBornes : [${BlessingConstants.MIN_POOL_THRESHOLD}, ${BlessingConstants.MAX_POOL_THRESHOLD}]`;
+	return `Simulation du changement de seuil :\nSeuil actuel : ${currentThreshold}\nDurée simulée : ${daysToFill}j (cible : ${BlessingConstants.TARGET_FILL_DAYS}j)\nNouveau seuil : ${newThreshold} (${sign}${delta})\nStep max : ±${BlessingConstants.MAX_THRESHOLD_STEP}\nBornes : [${BlessingConstants.MIN_POOL_THRESHOLD}, ${BlessingConstants.MAX_POOL_THRESHOLD}]`;
 };
 
 commandInfo.execute = simulateThresholdTestCommand;
