@@ -151,8 +151,11 @@ export class BlessingManager {
 	 * Check if a blessing was already triggered today
 	 */
 	private wasBlessingTriggeredToday(): boolean {
-		return !!this.cachedBlessing?.lastBlessingTriggeredAt
-			&& datesAreOnSameDay(this.cachedBlessing.lastBlessingTriggeredAt, new Date());
+		const lastTriggered = this.cachedBlessing?.lastBlessingTriggeredAt;
+		if (!lastTriggered) {
+			return false;
+		}
+		return datesAreOnSameDay(lastTriggered, new Date());
 	}
 
 	/**
@@ -162,7 +165,7 @@ export class BlessingManager {
 	 * - A blessing was already triggered today (max 1 per day)
 	 */
 	canOracleAppear(): boolean {
-		return !!this.cachedBlessing
+		return Boolean(this.cachedBlessing)
 			&& !this.hasActiveBlessing()
 			&& !this.wasBlessingTriggeredToday();
 	}
