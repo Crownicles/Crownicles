@@ -155,12 +155,34 @@ export class LogsBlessingLogger {
 		}[];
 
 		const contributionsMap = new Map<string, number>();
+
+		if (results.length === 0) {
+			return contributionsMap;
+		}
+
+		const playerIds = results.map(row => row.playerId);
+		const players = await LogsPlayers.findAll({
+			where: {
+				id: { [Op.in]: playerIds }
+			},
+			raw: true
+		}) as unknown as {
+			id: number;
+			keycloakId: string;
+		}[];
+
+		const playerIdToKeycloakId = new Map<number, string>();
+		for (const player of players) {
+			playerIdToKeycloakId.set(player.id, player.keycloakId);
+		}
+
 		for (const row of results) {
-			const player = await LogsPlayers.findByPk(row.playerId);
-			if (player) {
-				contributionsMap.set(player.keycloakId, row.totalAmount);
+			const keycloakId = playerIdToKeycloakId.get(row.playerId);
+			if (keycloakId) {
+				contributionsMap.set(keycloakId, row.totalAmount);
 			}
 		}
+
 		return contributionsMap;
 	}
 }
