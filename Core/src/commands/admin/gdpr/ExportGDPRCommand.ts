@@ -20,6 +20,7 @@ import { exportLogsFights } from "./exporters/LogsFightsExporter";
 import { exportLogsShop } from "./exporters/LogsShopExporter";
 import { exportLogsGuild } from "./exporters/LogsGuildExporter";
 import { exportLogsPets } from "./exporters/LogsPetsExporter";
+import { exportLogsBlessings } from "./exporters/LogsBlessingsExporter";
 import { PacketUtils } from "../../../core/utils/PacketUtils";
 import { GDPRExportCompleteNotificationPacket } from "../../../../../Lib/src/packets/notifications/GDPRExportCompleteNotificationPacket";
 import { CrowniclesLogger } from "../../../../../Lib/src/logs/CrowniclesLogger";
@@ -72,6 +73,10 @@ async function exportLogsData(
 
 	// Export pets and expeditions data (files 68-73)
 	await exportLogsPets(logsPlayerId, anonymizer, newPets, csvFiles);
+	await yieldToEventLoop();
+
+	// Export blessings data (files 75-76)
+	await exportLogsBlessings(logsPlayerId, anonymizer, csvFiles);
 	await yieldToEventLoop();
 }
 
@@ -168,7 +173,7 @@ export default class ExportGDPRCommand {
 			await exportPlayerData(player, anonymizer, csvFiles);
 			await yieldToEventLoop();
 
-			// Export logs database data (files 15-73)
+			// Export logs database data (files 15-76)
 			await exportLogsData(player, anonymizer, csvFiles);
 
 			// Add metadata file - calculate count before adding metadata

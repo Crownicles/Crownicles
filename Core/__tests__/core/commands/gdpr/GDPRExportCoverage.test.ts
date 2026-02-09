@@ -102,11 +102,7 @@ const EXCLUDED_TABLES = {
 	"LogsGuildsFoodsChanges": "Guild collective data, indexed by guildId only",
 	"LogsGuildsDailies": "Guild collective data, indexed by guildId only",
 	"LogsGuildsNewPets": "Guild collective data, indexed by guildId only",
-	"LogsGuildsDestroys": "Guild collective data, indexed by guildId only",
-
-	// ============ LOGS DATABASE - Blessing Tables ============
-	"LogsBlessings": "System-level blessing activation log, triggeredByPlayerId used for analytics only",
-	"LogsBlessingsContributions": "Anonymous aggregated contribution data, playerId used for analytics only"
+	"LogsGuildsDestroys": "Guild collective data, indexed by guildId only"
 };
 
 // Tables that ARE EXPORTED in the GDPR export
@@ -202,6 +198,10 @@ const EXPORTED_TABLES = {
 
 	// ============ LOGS DATABASE - Command Stats (LogsPlayerStatsExporter) ============
 	"LogsPlayersCommandsStats": "logs/75_command_stats.csv",
+
+	// ============ LOGS DATABASE - Blessings (LogsBlessingsExporter) ============
+	"LogsBlessings": "logs/76_blessings_triggered.csv",
+	"LogsBlessingsContributions": "logs/77_blessings_contributions.csv",
 
 	// ============ LOGS DATABASE - Players Reference ============
 	"LogsPlayers": "Used for lookup only, keycloakId already in player export"
