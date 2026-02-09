@@ -26,12 +26,11 @@ export interface ExpeditionCompleteLogInput {
 }
 
 /**
- * Parameters for logging a simple expedition action (start or recall)
+ * Common identifier for expedition log entries
  */
-interface ExpeditionSimpleActionInput {
+export interface ExpeditionLogIdentifier {
 	keycloakId: string;
 	petGameId: number;
-	action: string;
 }
 
 /**
@@ -97,12 +96,13 @@ export class LogsExpeditionLogger {
 	 * Log a simple expedition action (start or recall) with params spread
 	 */
 	private async logSimpleExpeditionAction(
-		input: ExpeditionSimpleActionInput,
+		identifier: ExpeditionLogIdentifier,
+		action: string,
 		params: ExpeditionStartParams | ExpeditionRecallParams
 	): Promise<void> {
-		await this.createExpeditionLog(input.keycloakId, input.petGameId, {
+		await this.createExpeditionLog(identifier.keycloakId, identifier.petGameId, {
 			...params,
-			action: input.action
+			action
 		});
 	}
 
@@ -110,16 +110,10 @@ export class LogsExpeditionLogger {
 	 * Log when a pet expedition starts
 	 */
 	async logExpeditionStart(
-		keycloakId: string,
-		petGameId: number,
+		identifier: ExpeditionLogIdentifier,
 		params: ExpeditionStartParams
 	): Promise<void> {
-		await this.logSimpleExpeditionAction(
-			{
-				keycloakId, petGameId, action: ExpeditionConstants.LOG_ACTION.START
-			},
-			params
-		);
+		await this.logSimpleExpeditionAction(identifier, ExpeditionConstants.LOG_ACTION.START, params);
 	}
 
 	/**
@@ -141,8 +135,8 @@ export class LogsExpeditionLogger {
 	/**
 	 * Log when a pet expedition is cancelled before departure
 	 */
-	async logExpeditionCancel(keycloakId: string, petGameId: number, loveChange: number): Promise<void> {
-		await this.createExpeditionLog(keycloakId, petGameId, {
+	async logExpeditionCancel(identifier: ExpeditionLogIdentifier, loveChange: number): Promise<void> {
+		await this.createExpeditionLog(identifier.keycloakId, identifier.petGameId, {
 			mapLocationId: ExpeditionConstants.NO_MAP_LOCATION,
 			locationType: ExpeditionConstants.LOG_ACTION.CANCEL,
 			action: ExpeditionConstants.LOG_ACTION.CANCEL,
@@ -157,16 +151,10 @@ export class LogsExpeditionLogger {
 	 * Log when a pet is recalled from an expedition
 	 */
 	async logExpeditionRecall(
-		keycloakId: string,
-		petGameId: number,
+		identifier: ExpeditionLogIdentifier,
 		params: ExpeditionRecallParams
 	): Promise<void> {
-		await this.logSimpleExpeditionAction(
-			{
-				keycloakId, petGameId, action: ExpeditionConstants.LOG_ACTION.RECALL
-			},
-			params
-		);
+		await this.logSimpleExpeditionAction(identifier, ExpeditionConstants.LOG_ACTION.RECALL, params);
 	}
 
 	/**

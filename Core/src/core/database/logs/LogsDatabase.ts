@@ -108,7 +108,7 @@ import { LogsCommandSubOrigins } from "./models/LogsCommandSubOrigins";
 import { ReactionCollectorReactPacket } from "../../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { LogsPlayersTeleportations } from "./models/LogsPlayersTeleportations";
 import {
-	LogsExpeditionLogger, ExpeditionCompleteLogInput
+	LogsExpeditionLogger, ExpeditionCompleteLogInput, ExpeditionLogIdentifier
 } from "./LogsExpeditionLogger";
 import {
 	LogsBlessingLogger, BlessingActivationParams, BlessingContributionParams
@@ -1494,11 +1494,10 @@ export class LogsDatabase extends Database {
 	 * Log when a pet expedition starts
 	 */
 	public logExpeditionStart(
-		keycloakId: string,
-		petGameId: number,
+		identifier: ExpeditionLogIdentifier,
 		params: ExpeditionStartParams
 	): Promise<void> {
-		return this.expeditionLogger.logExpeditionStart(keycloakId, petGameId, params);
+		return this.expeditionLogger.logExpeditionStart(identifier, params);
 	}
 
 	/**
@@ -1511,19 +1510,18 @@ export class LogsDatabase extends Database {
 	/**
 	 * Log when a pet expedition is cancelled before departure
 	 */
-	public logExpeditionCancel(keycloakId: string, petGameId: number, loveChange: number): Promise<void> {
-		return this.expeditionLogger.logExpeditionCancel(keycloakId, petGameId, loveChange);
+	public logExpeditionCancel(identifier: ExpeditionLogIdentifier, loveChange: number): Promise<void> {
+		return this.expeditionLogger.logExpeditionCancel(identifier, loveChange);
 	}
 
 	/**
 	 * Log when a pet is recalled from an expedition
 	 */
 	public logExpeditionRecall(
-		keycloakId: string,
-		petGameId: number,
+		identifier: ExpeditionLogIdentifier,
 		params: ExpeditionRecallParams
 	): Promise<void> {
-		return this.expeditionLogger.logExpeditionRecall(keycloakId, petGameId, params);
+		return this.expeditionLogger.logExpeditionRecall(identifier, params);
 	}
 
 	/**
