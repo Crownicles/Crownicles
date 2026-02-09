@@ -3,8 +3,9 @@ import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
 import {
 	makePacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
-import { CommandBlessingPacketReq } from "../../../../Lib/src/packets/commands/CommandBlessingPacketReq";
-import { CommandBlessingPacketRes } from "../../../../Lib/src/packets/commands/CommandBlessingPacketRes";
+import {
+	CommandBlessingPacketReq, CommandBlessingPacketRes
+} from "../../../../Lib/src/packets/commands/CommandBlessingPacket";
 import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
 import { DiscordCache } from "../../bot/DiscordCache";
 import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
@@ -12,7 +13,9 @@ import i18n from "../../translations/i18n";
 import { resolveKeycloakPlayerName } from "../../utils/KeycloakPlayerUtils";
 import { BlessingType } from "../../../../Lib/src/constants/BlessingConstants";
 import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
-import { printTimeBeforeDate } from "../../../../Lib/src/utils/TimeUtils";
+import {
+	printTimeBeforeDate, finishInTimeDisplay
+} from "../../../../Lib/src/utils/TimeUtils";
 import {
 	escapeUsername, progressBar
 } from "../../../../Lib/src/utils/StringUtils";
@@ -74,7 +77,8 @@ export async function handleCommandBlessingPacketRes(context: PacketContext, pac
 			poolAmount: packet.poolAmount,
 			poolThreshold: packet.poolThreshold,
 			moneyEmote: CrowniclesIcons.unitValues.money,
-			percentage: Math.floor(packet.poolAmount / packet.poolThreshold * 100)
+			percentage: Math.floor(packet.poolAmount / packet.poolThreshold * 100),
+			poolExpiresAt: finishInTimeDisplay(new Date(packet.poolExpiresAt))
 		})}\n${progressBar(packet.poolAmount, packet.poolThreshold)}${topContributorLine}`;
 	}
 

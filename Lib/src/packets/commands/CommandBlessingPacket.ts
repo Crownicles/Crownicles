@@ -2,6 +2,10 @@ import {
 	CrowniclesPacket, PacketDirection, sendablePacket
 } from "../CrowniclesPacket";
 
+@sendablePacket(PacketDirection.FRONT_TO_BACK)
+export class CommandBlessingPacketReq extends CrowniclesPacket {
+}
+
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandBlessingPacketRes extends CrowniclesPacket {
 	/**
@@ -43,4 +47,9 @@ export class CommandBlessingPacketRes extends CrowniclesPacket {
 	 * Total number of unique contributors for the current/last pool cycle
 	 */
 	totalContributors!: number;
+
+	/**
+	 * When the current pool expires (epoch ms), 0 if a blessing is active
+	 */
+	poolExpiresAt!: number;
 }

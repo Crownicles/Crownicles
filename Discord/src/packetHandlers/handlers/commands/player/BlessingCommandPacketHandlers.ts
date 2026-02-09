@@ -2,7 +2,7 @@ import { packetHandler } from "../../../PacketHandler";
 import {
 	PacketContext
 } from "../../../../../../Lib/src/packets/CrowniclesPacket";
-import { CommandBlessingPacketRes } from "../../../../../../Lib/src/packets/commands/CommandBlessingPacketRes";
+import { CommandBlessingPacketRes } from "../../../../../../Lib/src/packets/commands/CommandBlessingPacket";
 import { handleCommandBlessingPacketRes } from "../../../../commands/player/BlessingCommand";
 
 export default class BlessingCommandPacketHandlers {

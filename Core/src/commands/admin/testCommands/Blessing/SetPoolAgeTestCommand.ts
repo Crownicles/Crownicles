@@ -10,7 +10,7 @@ export const commandInfo: ITestCommand = {
 	name: "setpoolage",
 	aliases: ["spa"],
 	commandFormat: "<hours>",
-	typeWaited: { hours: TypeKey.STRING },
+	typeWaited: { hours: TypeKey.INTEGER },
 	minArgs: 1,
 	description: "Recule la date de début de la cagnotte de X heures (ex: 84 pour 3j12h)"
 };
