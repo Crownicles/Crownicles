@@ -8,8 +8,6 @@ import {
 } from "../../utils/StringUtils";
 import { getRandomSmallEventIntro } from "../../utils/SmallEventUtils";
 import { SmallEventBigBadPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventBigBadPacket";
-import { KeycloakUtils } from "../../../../Lib/src/keycloak/KeycloakUtils";
-import { keycloakConfig } from "../../bot/CrowniclesShard";
 import {
 	SmallEventBadIssue,
 	SmallEventSmallBadPacket
@@ -110,6 +108,7 @@ import {
 import { SmallEventPetDropTokenPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventPetDropTokenPacket";
 import { SmallEventAltarPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventAltarPacket";
 import { altarResult } from "../../smallEvents/altar";
+import { resolveKeycloakPlayerName } from "../../utils/KeycloakPlayerUtils";
 
 const PET_TIME_INTERACTIONS = new Set([
 	"gainTime",
@@ -1201,10 +1200,7 @@ export default class SmallEventsHandler {
 		}
 		const lng = interaction.userLanguage;
 		const petDisplay = PetUtils.petToShortString(lng, packet.petNickname, packet.petTypeId, packet.petSex);
-		const getUser = await KeycloakUtils.getUserByKeycloakId(keycloakConfig, packet.ownerKeycloakId);
-		const ownerName = escapeUsername(!getUser.isError && getUser.payload.user.attributes.gameUsername
-			? getUser.payload.user.attributes.gameUsername[0]
-			: i18n.t("error:unknownPlayer", { lng }));
+		const ownerName = await resolveKeycloakPlayerName(packet.ownerKeycloakId, lng);
 		await interaction.editReply({
 			embeds: [
 				new CrowniclesSmallEventEmbed(

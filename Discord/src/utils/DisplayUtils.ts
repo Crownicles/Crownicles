@@ -12,10 +12,9 @@ import {
 import { OwnedPet } from "../../../Lib/src/types/OwnedPet";
 import { PetFood } from "../../../Lib/src/types/PetFood";
 import {
-	escapeUsername, StringUtils
+	StringUtils
 } from "./StringUtils";
-import { KeycloakUtils } from "../../../Lib/src/keycloak/KeycloakUtils";
-import { keycloakConfig } from "../bot/CrowniclesShard";
+import { resolveKeycloakPlayerName } from "./KeycloakPlayerUtils";
 import { NO_STAT_COMPARISON } from "../../../Lib/src/types/StatValues";
 
 /**
@@ -317,12 +316,7 @@ export abstract class DisplayUtils {
 	}
 
 	static async getEscapedUsername(keycloakId: string, lng: Language): Promise<string> {
-		const getUser = await KeycloakUtils.getUserByKeycloakId(keycloakConfig, keycloakId);
-		if (getUser.isError) {
-			return i18n.t("error:unknownPlayer", { lng });
-		}
-
-		return escapeUsername(getUser.payload.user.attributes.gameUsername[0]);
+		return await resolveKeycloakPlayerName(keycloakId, lng);
 	}
 
 	private static getStringValueFor(values: string[], maxValue: number | null, value: number, typeValue: "attack" | "defense" | "speed", lng: Language): void {
