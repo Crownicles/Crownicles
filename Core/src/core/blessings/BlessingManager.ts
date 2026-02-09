@@ -583,4 +583,16 @@ export class BlessingManager {
 		this.cachedBlessing.poolThreshold = amount;
 		await this.cachedBlessing.save();
 	}
+
+	/**
+	 * Force set the pool started at date (for test commands)
+	 */
+	async forceSetPoolStartedAt(date: Date): Promise<void> {
+		if (!this.cachedBlessing) {
+			return;
+		}
+
+		this.cachedBlessing.poolStartedAt = date;
+		await this.cachedBlessing.save();
+	}
 }
