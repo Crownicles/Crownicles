@@ -26,14 +26,17 @@ import { Badge } from "../../../../Lib/src/types/Badge";
 import { crowniclesInstance } from "../../index";
 
 /**
- * Calculate the 3 contribution amounts for a given player, capped at the remaining pool amount
+ * Calculate the contribution amounts for a given player, capped at the remaining pool amount.
+ * Filters out non-positive values, deduplicates, and sorts ascending.
  */
 function getContributionAmounts(player: Player, remainingPool: number): number[] {
-	return [
+	const cappedAmounts = [
 		BlessingConstants.FLAT_CONTRIBUTION,
 		Math.max(1, Math.floor(player.money * BlessingConstants.MONEY_PERCENTAGE_CONTRIBUTION)),
 		Math.max(1, player.level * BlessingConstants.LEVEL_MULTIPLIER_CONTRIBUTION)
 	].map(amount => Math.min(amount, remainingPool));
+
+	return Array.from(new Set(cappedAmounts.filter(amount => amount > 0))).sort((a, b) => a - b);
 }
 
 interface AltarBonusResult {
@@ -72,11 +75,12 @@ async function calculateBonusRewards(chosenAmount: number, player: Player): Prom
 }
 
 /**
- * Check and award the Oracle Patron badge if the player has contributed enough over their lifetime
+ * Check and award the Oracle Patron badge if the player has contributed enough over their lifetime.
+ * Includes recentContributionAmount to account for contributions not yet persisted in logs.
  */
-async function checkAndAwardOraclePatronBadge(player: Player): Promise<boolean> {
+async function checkAndAwardOraclePatronBadge(player: Player, recentContributionAmount: number): Promise<boolean> {
 	const lifetimeTotal = await crowniclesInstance.logsDatabase.getLifetimeContributions(player.keycloakId);
-	if (lifetimeTotal < BlessingConstants.ORACLE_PATRON_THRESHOLD) {
+	if (lifetimeTotal + recentContributionAmount < BlessingConstants.ORACLE_PATRON_THRESHOLD) {
 		return false;
 	}
 	if (await PlayerBadgesManager.hasBadge(player.id, Badge.ORACLE_PATRON)) {
@@ -142,7 +146,7 @@ function getEndCallback(player: Player, context: PacketContext): EndCallback {
 		const {
 			bonusGems, bonusItemGiven
 		} = await calculateBonusRewards(chosenAmount, player);
-		const badgeAwarded = await checkAndAwardOraclePatronBadge(player);
+		const badgeAwarded = await checkAndAwardOraclePatronBadge(player, chosenAmount);
 
 		response.push(makePacket(SmallEventAltarPacket, {
 			contributed: true,

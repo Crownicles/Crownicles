@@ -5,7 +5,8 @@
 export type MqttPrefix = string & { readonly __brand: "MqttPrefix" };
 
 /**
- * Create a validated MqttPrefix from a raw string
+ * Cast a raw string into the branded MqttPrefix type.
+ * No runtime validation is performed — the branding is purely for compile-time safety.
  */
 export function createMqttPrefix(prefix: string): MqttPrefix {
 	return prefix as MqttPrefix;
