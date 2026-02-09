@@ -13,6 +13,38 @@ import { keycloakConfig } from "../../../../bot/CrowniclesShard";
 import { CrowniclesIcons } from "../../../../../../Lib/src/CrowniclesIcons";
 import { printTimeBeforeDate } from "../../../../../../Lib/src/utils/TimeUtils";
 import { progressBar } from "../../../../../../Lib/src/utils/StringUtils";
+import { Language } from "../../../../../../Lib/src/Language";
+
+/**
+ * Resolve a keycloak ID to a player display name, with a fallback for unknown players
+ */
+async function resolveKeycloakPlayerName(keycloakId: string | undefined | null, lng: Language): Promise<string> {
+	if (!keycloakId) {
+		return i18n.t("error:unknownPlayer", { lng });
+	}
+	const getUser = await KeycloakUtils.getUserByKeycloakId(keycloakConfig, keycloakId);
+	if (!getUser.isError && getUser.payload.user.attributes.gameUsername) {
+		return escapeUsername(getUser.payload.user.attributes.gameUsername[0]);
+	}
+	return i18n.t("error:unknownPlayer", { lng });
+}
+
+/**
+ * Build the top contributor line for the collecting state, or empty string if no contributors
+ */
+async function buildTopContributorLine(packet: CommandBlessingPacketRes, lng: Language): Promise<string> {
+	if (!packet.topContributorKeycloakId || packet.totalContributors <= 0) {
+		return "";
+	}
+	const topContributorName = await resolveKeycloakPlayerName(packet.topContributorKeycloakId, lng);
+	return "\n\n" + i18n.t("commands:blessing.contributors", {
+		lng,
+		topContributorName,
+		topContributorAmount: packet.topContributorAmount,
+		totalContributors: packet.totalContributors,
+		moneyEmote: CrowniclesIcons.unitValues.money
+	});
+}
 
 export default class BlessingCommandPacketHandlers {
 	@packetHandler(CommandBlessingPacketRes)
@@ -28,14 +60,7 @@ export default class BlessingCommandPacketHandlers {
 		let description: string;
 
 		if (hasBlessing) {
-			// Resolve the name of the player who triggered the blessing
-			let triggeredByName = i18n.t("error:unknownPlayer", { lng });
-			if (packet.lastTriggeredByKeycloakId) {
-				const getUser = await KeycloakUtils.getUserByKeycloakId(keycloakConfig, packet.lastTriggeredByKeycloakId);
-				if (!getUser.isError && getUser.payload.user.attributes.gameUsername) {
-					triggeredByName = escapeUsername(getUser.payload.user.attributes.gameUsername[0]);
-				}
-			}
+			const triggeredByName = await resolveKeycloakPlayerName(packet.lastTriggeredByKeycloakId, lng);
 
 			description = i18n.t("commands:blessing.active", {
 				lng,
@@ -47,22 +72,7 @@ export default class BlessingCommandPacketHandlers {
 			});
 		}
 		else {
-			// Resolve top contributor name if available
-			let topContributorLine = "";
-			if (packet.topContributorKeycloakId && packet.totalContributors > 0) {
-				let topContributorName = i18n.t("error:unknownPlayer", { lng });
-				const topUser = await KeycloakUtils.getUserByKeycloakId(keycloakConfig, packet.topContributorKeycloakId);
-				if (!topUser.isError && topUser.payload.user.attributes.gameUsername) {
-					topContributorName = escapeUsername(topUser.payload.user.attributes.gameUsername[0]);
-				}
-				topContributorLine = "\n\n" + i18n.t("commands:blessing.contributors", {
-					lng,
-					topContributorName,
-					topContributorAmount: packet.topContributorAmount,
-					totalContributors: packet.totalContributors,
-					moneyEmote: CrowniclesIcons.unitValues.money
-				});
-			}
+			const topContributorLine = await buildTopContributorLine(packet, lng);
 
 			description = i18n.t("commands:blessing.collecting", {
 				lng,

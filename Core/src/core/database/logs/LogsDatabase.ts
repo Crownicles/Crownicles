@@ -4,7 +4,7 @@ import { LogsPlayers } from "./models/LogsPlayers";
 import { LogsPlayersHealth } from "./models/LogsPlayersHealth";
 import { LogsPlayersExperience } from "./models/LogsPlayersExperience";
 import {
-	Model, ModelStatic, Op, fn, col
+	Model, ModelStatic
 } from "sequelize";
 import { LogsPlayersLevel } from "./models/LogsPlayersLevel";
 import { LogsPlayersScore } from "./models/LogsPlayersScore";
@@ -19,7 +19,6 @@ import { LogsPlayersPossibilities } from "./models/LogsPlayersPossibilities";
 import { LogsAlterations } from "./models/LogsAlterations";
 import { LogsPlayersStandardAlterations } from "./models/LogsPlayersStandardAlterations";
 import { LogsPlayersOccupiedAlterations } from "./models/LogsPlayersOccupiedAlterations";
-import { ExpeditionConstants } from "../../../../../Lib/src/constants/ExpeditionConstants";
 import { LogsUnlocks } from "./models/LogsUnlocks";
 import { LogsPlayersClassChanges } from "./models/LogsPlayersClassChanges";
 import { LogsPlayersTravels } from "./models/LogsPlayersTravels";
@@ -82,9 +81,7 @@ import { LogsPlayersDailies } from "./models/LogsPlayersDailies";
 import {
 	NumberChangeReason, ShopItemType
 } from "../../../../../Lib/src/constants/LogsConstants";
-import {
-	dateToLogs, daysToSeconds, getDateLogs
-} from "../../../../../Lib/src/utils/TimeUtils";
+import { getDateLogs } from "../../../../../Lib/src/utils/TimeUtils";
 import { LogsPlayersGloryPoints } from "./models/LogsPlayersGloryPoints";
 import { LogsPlayers15BestSeason } from "./models/LogsPlayers15BestSeason";
 import { LogsSeasonEnd } from "./models/LogsSeasonEnd";
@@ -108,9 +105,8 @@ import { LogsCommandOrigins } from "./models/LogsCommandOrigins";
 import { LogsCommandSubOrigins } from "./models/LogsCommandSubOrigins";
 import { ReactionCollectorReactPacket } from "../../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { LogsPlayersTeleportations } from "./models/LogsPlayersTeleportations";
-import { LogsExpeditions } from "./models/LogsExpeditions";
-import { LogsBlessings } from "./models/LogsBlessings";
-import { LogsBlessingsContributions } from "./models/LogsBlessingsContributions";
+import { LogsExpeditionLogger } from "./LogsExpeditionLogger";
+import { LogsBlessingLogger } from "./LogsBlessingLogger";
 
 /**
  * Data structure for expedition log entries
@@ -178,6 +174,10 @@ export interface ExpeditionRecallParams {
  * This class is used to log all the changes in the game database
  */
 export class LogsDatabase extends Database {
+	private readonly expeditionLogger = new LogsExpeditionLogger();
+
+	private readonly blessingLogger = new LogsBlessingLogger();
+
 	constructor() {
 		super(getDatabaseConfiguration(botConfig, "logs"), `${__dirname}/models`, `${__dirname}/migrations`);
 	}
@@ -1485,243 +1485,103 @@ export class LogsDatabase extends Database {
 	}
 
 	/**
-	 * Helper method to create expedition log entries with common logic
-	 */
-	private async createExpeditionLog(
-		keycloakId: string,
-		petGameId: number,
-		data: Partial<ExpeditionLogData>
-	): Promise<void> {
-		const player = await LogsDatabase.findOrCreatePlayer(keycloakId);
-		if (!player) {
-			return;
-		}
-		const petEntity = await LogsDatabase.findOrCreatePetEntityByGameId(petGameId);
-		await LogsExpeditions.create({
-			playerId: player.id,
-			petId: petEntity.id,
-			...data,
-			date: getDateLogs()
-		});
-	}
-
-	/**
 	 * Log when a pet expedition starts
 	 */
-	public async logExpeditionStart(
+	public logExpeditionStart(
 		keycloakId: string,
 		petGameId: number,
 		params: ExpeditionStartParams
 	): Promise<void> {
-		await this.createExpeditionLog(keycloakId, petGameId, {
-			...params,
-			action: ExpeditionConstants.LOG_ACTION.START
-		});
+		return this.expeditionLogger.logExpeditionStart(keycloakId, petGameId, params);
 	}
 
 	/**
 	 * Log when a pet expedition is completed
 	 */
-	public async logExpeditionComplete(
+	public logExpeditionComplete(
 		keycloakId: string,
 		petGameId: number,
 		params: ExpeditionCompleteParams,
 		rewards: ExpeditionRewards | null,
 		loveChange: number
 	): Promise<void> {
-		await this.createExpeditionLog(keycloakId, petGameId, {
-			...params,
-			action: ExpeditionConstants.LOG_ACTION.COMPLETE,
-			money: rewards?.money ?? null,
-			experience: rewards?.experience ?? null,
-			points: rewards?.points ?? null,
-			tokens: rewards?.tokens ?? null,
-			cloneTalismanFound: rewards?.cloneTalismanFound ?? null,
-			loveChange
-		});
+		return this.expeditionLogger.logExpeditionComplete(keycloakId, petGameId, params, rewards, loveChange);
 	}
 
 	/**
 	 * Log when a pet expedition is cancelled before departure
 	 */
-	public async logExpeditionCancel(keycloakId: string, petGameId: number, loveChange: number): Promise<void> {
-		await this.createExpeditionLog(keycloakId, petGameId, {
-			mapLocationId: ExpeditionConstants.NO_MAP_LOCATION,
-			locationType: ExpeditionConstants.LOG_ACTION.CANCEL,
-			action: ExpeditionConstants.LOG_ACTION.CANCEL,
-			durationMinutes: 0,
-			rewardIndex: 0,
-			foodConsumed: 0,
-			loveChange
-		});
+	public logExpeditionCancel(keycloakId: string, petGameId: number, loveChange: number): Promise<void> {
+		return this.expeditionLogger.logExpeditionCancel(keycloakId, petGameId, loveChange);
 	}
 
 	/**
 	 * Log when a pet is recalled from an expedition
 	 */
-	public async logExpeditionRecall(
+	public logExpeditionRecall(
 		keycloakId: string,
 		petGameId: number,
 		params: ExpeditionRecallParams
 	): Promise<void> {
-		await this.createExpeditionLog(keycloakId, petGameId, {
-			...params,
-			action: ExpeditionConstants.LOG_ACTION.RECALL
-		});
-	}
-
-	/**
-	 * Find or create a pet entity in the log database by game id
-	 * @param gameId
-	 */
-	private static async findOrCreatePetEntityByGameId(gameId: number): Promise<LogsPetEntities> {
-		const existing = await LogsPetEntities.findOne({
-			where: { gameId },
-			order: [["creationTimestamp", "DESC"]]
-		});
-		if (existing) {
-			return existing;
-		}
-
-		// If not found, create a placeholder with current timestamp
-		return (await LogsPetEntities.findOrCreate({
-			where: {
-				gameId,
-				creationTimestamp: getDateLogs()
-			}
-		}))[0];
+		return this.expeditionLogger.logExpeditionRecall(keycloakId, petGameId, params);
 	}
 
 	/**
 	 * Count the number of expedition cancellations (cancel + recall) for a player in the last N days
-	 * Both cancelling during preparation and recalling during expedition count towards the progressive penalty
-	 * @param keycloakId - The keycloak id of the player
-	 * @param days - Number of days to look back
 	 */
-	public async countRecentExpeditionCancellations(keycloakId: string, days: number): Promise<number> {
-		const logPlayer = await LogsDatabase.findOrCreatePlayer(keycloakId);
-		if (!logPlayer) {
-			return 0;
-		}
-		const cutoffDate = getDateLogs() - daysToSeconds(days);
-
-		return LogsExpeditions.count({
-			where: {
-				playerId: logPlayer.id,
-				action: { [Op.in]: [ExpeditionConstants.LOG_ACTION.CANCEL, ExpeditionConstants.LOG_ACTION.RECALL] },
-				date: { [Op.gte]: cutoffDate }
-			}
-		});
+	public countRecentExpeditionCancellations(keycloakId: string, days: number): Promise<number> {
+		return this.expeditionLogger.countRecentExpeditionCancellations(keycloakId, days);
 	}
 
 	/**
 	 * Log a blessing activation
 	 */
-	public async logBlessingActivation(
+	public logBlessingActivation(
 		blessingType: number,
 		triggeredByKeycloakId: string,
 		poolThreshold: number,
 		durationHours: number
 	): Promise<void> {
-		const player = await LogsDatabase.findOrCreatePlayer(triggeredByKeycloakId);
-		await LogsBlessings.create({
-			blessingType,
-			action: "activate",
-			triggeredByPlayerId: player ? player.id : null,
-			poolThreshold,
-			durationHours,
-			date: getDateLogs()
-		});
+		return this.blessingLogger.logBlessingActivation(blessingType, triggeredByKeycloakId, poolThreshold, durationHours);
 	}
 
 	/**
 	 * Log a blessing expiration (duration over)
 	 */
-	public async logBlessingExpiration(blessingType: number, poolThreshold: number): Promise<void> {
-		await LogsBlessings.create({
-			blessingType,
-			action: "expire",
-			triggeredByPlayerId: null,
-			poolThreshold,
-			durationHours: null,
-			date: getDateLogs()
-		});
+	public logBlessingExpiration(blessingType: number, poolThreshold: number): Promise<void> {
+		return this.blessingLogger.logBlessingExpiration(blessingType, poolThreshold);
 	}
 
 	/**
 	 * Log a pool expiration (4-day timeout without filling)
 	 */
-	public async logBlessingPoolExpiration(_oldThreshold: number, newThreshold: number): Promise<void> {
-		await LogsBlessings.create({
-			blessingType: 0,
-			action: "pool_expire",
-			triggeredByPlayerId: null,
-			poolThreshold: newThreshold,
-			durationHours: null,
-			date: getDateLogs()
-		});
+	public logBlessingPoolExpiration(_oldThreshold: number, newThreshold: number): Promise<void> {
+		return this.blessingLogger.logBlessingPoolExpiration(_oldThreshold, newThreshold);
 	}
 
 	/**
 	 * Log a player contribution to the blessing pool
 	 */
-	public async logBlessingContribution(
+	public logBlessingContribution(
 		keycloakId: string,
 		amount: number,
 		newPoolAmount: number
 	): Promise<void> {
-		const player = await LogsDatabase.findOrCreatePlayer(keycloakId);
-		if (!player) {
-			return;
-		}
-		await LogsBlessingsContributions.create({
-			playerId: player.id,
-			amount,
-			newPoolAmount,
-			date: getDateLogs()
-		});
+		return this.blessingLogger.logBlessingContribution(keycloakId, amount, newPoolAmount);
 	}
 
 	/**
 	 * Get the total lifetime contribution amount for a player
 	 */
-	public async getLifetimeContributions(keycloakId: string): Promise<number> {
-		const player = await LogsDatabase.findOrCreatePlayer(keycloakId);
-		if (!player) {
-			return 0;
-		}
-		return await LogsBlessingsContributions.sum("amount", {
-			where: { playerId: player.id }
-		}) ?? 0;
+	public getLifetimeContributions(keycloakId: string): Promise<number> {
+		return this.blessingLogger.getLifetimeContributions(keycloakId);
 	}
 
 	/**
 	 * Get all contributions since a given date, grouped by player keycloakId
 	 * Used to rebuild the in-memory contributionsTracker after a restart
 	 */
-	public async getContributionsSince(since: Date): Promise<Map<string, number>> {
-		const results = await LogsBlessingsContributions.findAll({
-			attributes: [
-				"playerId",
-				[fn("SUM", col("amount")), "totalAmount"]
-			],
-			where: {
-				date: { [Op.gte]: dateToLogs(since) }
-			},
-			group: ["playerId"],
-			raw: true
-		}) as unknown as {
-			playerId: number;
-			totalAmount: number;
-		}[];
-
-		const contributionsMap = new Map<string, number>();
-		for (const row of results) {
-			const player = await LogsPlayers.findByPk(row.playerId);
-			if (player) {
-				contributionsMap.set(player.keycloakId, row.totalAmount);
-			}
-		}
-		return contributionsMap;
+	public getContributionsSince(since: Date): Promise<Map<string, number>> {
+		return this.blessingLogger.getContributionsSince(since);
 	}
 }

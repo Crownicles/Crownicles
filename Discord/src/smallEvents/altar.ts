@@ -18,6 +18,7 @@ import i18n from "../translations/i18n";
 import { sendInteractionNotForYou } from "../utils/ErrorUtils";
 import { ReactionCollectorReturnTypeOrNull } from "../packetHandlers/handlers/ReactionCollectorHandlers";
 import { SmallEventAltarPacket } from "../../../Lib/src/packets/smallEvents/SmallEventAltarPacket";
+import { Language } from "../../../Lib/src/Language";
 
 export async function altarCollector(context: PacketContext, packet: ReactionCollectorAltarPacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
@@ -109,28 +110,20 @@ export async function altarCollector(context: PacketContext, packet: ReactionCol
 	return [buttonCollector];
 }
 
-export async function altarResult(packet: SmallEventAltarPacket, context: PacketContext): Promise<void> {
-	const interaction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
-	if (!interaction) {
-		return;
-	}
-	const lng = context.discord!.language;
-
-	let story: string;
-
+function determineAltarStory(packet: SmallEventAltarPacket): string {
 	if (!packet.hasEnoughMoney) {
-		story = "notEnoughMoney";
+		return "notEnoughMoney";
 	}
-	else if (!packet.contributed) {
-		story = "refused";
+	if (!packet.contributed) {
+		return "refused";
 	}
-	else if (packet.blessingTriggered) {
-		story = "blessingTriggered";
+	if (packet.blessingTriggered) {
+		return "blessingTriggered";
 	}
-	else {
-		story = "contributed";
-	}
+	return "contributed";
+}
 
+function buildAltarBonusText(packet: SmallEventAltarPacket, lng: Language): string {
 	let bonusText = "";
 	if (packet.bonusGems > 0) {
 		bonusText += "\n\n" + StringUtils.getRandomTranslation("smallEvents:altar.bonusGems", lng, {
@@ -144,6 +137,18 @@ export async function altarResult(packet: SmallEventAltarPacket, context: Packet
 	if (packet.badgeAwarded) {
 		bonusText += "\n\n" + StringUtils.getRandomTranslation("smallEvents:altar.badgeAwarded", lng);
 	}
+	return bonusText;
+}
+
+export async function altarResult(packet: SmallEventAltarPacket, context: PacketContext): Promise<void> {
+	const interaction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
+	if (!interaction) {
+		return;
+	}
+	const lng = context.discord!.language;
+
+	const story = determineAltarStory(packet);
+	const bonusText = buildAltarBonusText(packet, lng);
 
 	await interaction.editReply({
 		embeds: [

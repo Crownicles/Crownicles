@@ -17,11 +17,12 @@ vi.mock("../../../src/core/utils/PacketUtils", () => ({
 }));
 
 vi.mock("../../../../Lib/src/utils/MqttTopicUtils", () => ({
-	MqttTopicUtils: { getDiscordBlessingAnnouncementTopic: vi.fn().mockReturnValue("test/topic") }
+	MqttTopicUtils: { getDiscordBlessingAnnouncementTopic: vi.fn().mockReturnValue("test/topic") },
+	createMqttPrefix: vi.fn().mockImplementation((prefix: string) => prefix)
 }));
 
 vi.mock("../../../src/index", () => ({
-	botConfig: { PREFIX: "test" },
+	botConfig: { PREFIX: "test" as string & { readonly __brand: "MqttPrefix" } },
 	crowniclesInstance: {
 		logsDatabase: {
 			logBlessingContribution: vi.fn().mockResolvedValue(undefined),

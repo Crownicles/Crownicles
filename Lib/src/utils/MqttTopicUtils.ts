@@ -1,3 +1,16 @@
+/**
+ * Branded type for MQTT topic prefix to avoid primitive obsession
+ * This provides type safety and ensures prefixes are validated before use
+ */
+export type MqttPrefix = string & { readonly __brand: "MqttPrefix" };
+
+/**
+ * Create a validated MqttPrefix from a raw string
+ */
+export function createMqttPrefix(prefix: string): MqttPrefix {
+	return prefix as MqttPrefix;
+}
+
 export abstract class MqttTopicUtils {
 	private static readonly CORE_TOPIC = "crownicles_core";
 
@@ -20,43 +33,43 @@ export abstract class MqttTopicUtils {
 	private static readonly WEB_SOCKET_TOPIC = "crownicles_websocket";
 
 
-	static getCoreTopic(prefix: string): string {
+	static getCoreTopic(prefix: MqttPrefix): string {
 		return `${prefix}/${MqttTopicUtils.CORE_TOPIC}`;
 	}
 
-	static getDiscordTopic(prefix: string, shardId: number): string {
+	static getDiscordTopic(prefix: MqttPrefix, shardId: number): string {
 		return `${prefix}/${MqttTopicUtils.DISCORD_TOPIC}/${shardId}`;
 	}
 
-	static getDiscordTopWeekAnnouncementTopic(prefix: string): string {
+	static getDiscordTopWeekAnnouncementTopic(prefix: MqttPrefix): string {
 		return `${prefix}/${MqttTopicUtils.DISCORD_TOP_WEEK_ANNOUNCEMENT_TOPIC}`;
 	}
 
-	static getDiscordTopWeekFightAnnouncementTopic(prefix: string): string {
+	static getDiscordTopWeekFightAnnouncementTopic(prefix: MqttPrefix): string {
 		return `${prefix}/${MqttTopicUtils.DISCORD_TOP_WEEK_FIGHT_ANNOUNCEMENT_TOPIC}`;
 	}
 
-	static getDiscordChristmasBonusAnnouncementTopic(prefix: string): string {
+	static getDiscordChristmasBonusAnnouncementTopic(prefix: MqttPrefix): string {
 		return `${prefix}/${MqttTopicUtils.DISCORD_CHRISTMAS_BONUS_ANNOUNCEMENT_TOPIC}`;
 	}
 
-	static getDiscordBlessingAnnouncementTopic(prefix: string): string {
+	static getDiscordBlessingAnnouncementTopic(prefix: MqttPrefix): string {
 		return `${prefix}/${MqttTopicUtils.DISCORD_BLESSING_ANNOUNCEMENT_TOPIC}`;
 	}
 
-	static getNotificationsTopic(prefix: string): string {
+	static getNotificationsTopic(prefix: MqttPrefix): string {
 		return `${prefix}/${MqttTopicUtils.NOTIFICATIONS}`;
 	}
 
-	static getNotificationsConsumerId(prefix: string): string {
+	static getNotificationsConsumerId(prefix: MqttPrefix): string {
 		return `${prefix}/${MqttTopicUtils.NOTIFICATIONS_CONSUMER}`;
 	}
 
-	static getDiscordShardManagerTopic(prefix: string): string {
+	static getDiscordShardManagerTopic(prefix: MqttPrefix): string {
 		return `${prefix}/${MqttTopicUtils.DISCORD_SHARD_MANAGER_TOPIC}`;
 	}
 
-	static getWebSocketTopic(prefix: string): string {
+	static getWebSocketTopic(prefix: MqttPrefix): string {
 		return `${prefix}/${MqttTopicUtils.WEB_SOCKET_TOPIC}`;
 	}
 }
