@@ -175,8 +175,11 @@ async function calculateScoreReward(fightInitiatorInformation: FightInitiatorInf
 		return 0;
 	}
 
-	// Award extra score points only to the initiator for one of his first wins of the day.
-	const scoreBonus = FightConstants.REWARDS.SCORE_BONUS_AWARD;
+	/*
+	 * Award extra score points only to the initiator for one of his first wins of the day.
+	 * Apply fight loot blessing multiplier
+	 */
+	const scoreBonus = Math.round(FightConstants.REWARDS.SCORE_BONUS_AWARD * BlessingManager.getInstance().getFightLootMultiplier());
 
 	await fightInitiatorInformation.initiatorPlayer.addScore(
 		{
