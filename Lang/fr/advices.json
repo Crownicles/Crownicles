@@ -284,6 +284,21 @@
     "Si vous envoyez votre familier dans un lieu qu'il n'aime pas pour une expédition courte, le risque d'échec augmente. Les longues expéditions ne sont pas affectées.",
     "En expédition, la Dangerosité est le facteur principal d'échec. Le Terrain ajoute un modificateur secondaire et peut rendre l'expédition plus difficile.",
     "Certains terrains d'expédition sont plus risqués que d'autres : les plaines et les côtes sont relativement sûres, tandis que les grottes et les ruines présentent plus de dangers.",
-    "Si vous êtes membre d'une guilde, vous pouvez libérer les familiers du refuge en plus du vôtre grâce à la commande {command:petfree}."
+    "Si vous êtes membre d'une guilde, vous pouvez libérer les familiers du refuge en plus du vôtre grâce à la commande {command:petfree}.",
+    "Au cours de vos voyages, vous pouvez tomber sur un oracle gardant un ancien autel. Il vous proposera de contribuer à une cagnotte collective : lorsqu'elle est pleine, une bénédiction s'active pour tous les joueurs !",
+    "Face à l'oracle, trois options de contribution s'offrent à vous : un montant fixe, un pourcentage de votre argent, ou un montant basé sur votre niveau. Choisissez selon vos moyens !",
+    "Les bénédictions profitent à tous les aventuriers du monde, pas seulement à ceux qui ont contribué. Même une petite offrande aide la communauté entière !",
+    "Il existe neuf types de bénédictions différentes : elles peuvent améliorer vos gains d'argent, de score, de butin de combat, l'affection de votre familier, et bien d'autres choses. Utilisez {command:blessing} pour voir la bénédiction active.",
+    "Lorsque vous contribuez généreusement à l'autel de l'oracle, vous avez une chance de recevoir un bonus : des gemmes ou un objet mystérieux en récompense de votre dévotion.",
+    "L'oracle n'apparaît pas pendant qu'une bénédiction est déjà active. C'est une fois la bénédiction expirée que vous pourrez de nouveau le croiser sur votre chemin.",
+    "Le seuil de la cagnotte de l'oracle s'ajuste au fil du temps : si les joueurs remplissent la cagnotte rapidement, le seuil suivant sera plus élevé. À l'inverse, s'il faut du temps, il diminuera.",
+    "Une bénédiction dure entre 8 et 24 heures. Consultez {command:blessing} pour connaître le temps restant et l'effet actif.",
+    "Si la cagnotte de l'oracle n'est pas remplie à temps, elle expire et se réinitialise avec un seuil plus adapté. n'attendez pas trop avant de contribuer !",
+    "La bénédiction de rage amplifiée double les gains de rage ce qui permet d'atteindre plus facilement les paliers supérieurs.",
+    "Quand la bénédiction de butin de combat est active, vos combats vous rapportent de meilleures récompenses. C'est le moment idéal pour enchaîner les affrontements !",
+    "La bénédiction d'amour des familiers double les gains d'affection. Profitez-en pour renforcer le lien avec votre compagnon !",
+    "Grâce à la bénédiction de missions quotidiennes, vos récompenses de missions sont doublées. Pensez à compléter vos missions pendant qu'elle est active !",
+    "Les joueurs les plus dévoués envers l'oracle finissent par être reconnus. À force de contributions, vous pourriez obtenir un badge spécial récompensant votre générosité !",
+    "Lorsqu'un familier d'un autre joueur est en expédition sur la même route que vous, il peut croiser votre chemin et vous laisser un jeton en cadeau !"
   ]
 }
