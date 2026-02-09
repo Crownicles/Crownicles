@@ -137,7 +137,7 @@ function getEndCallback(player: Player, context: PacketContext): EndCallback {
 		});
 
 		// Contribute to pool
-		const blessingTriggered = await blessingManager.contribute(chosenAmount, player.keycloakId, response);
+		const blessingTriggered = await blessingManager.contribute(chosenAmount, player.keycloakId);
 
 		const {
 			bonusGems, bonusItemGiven

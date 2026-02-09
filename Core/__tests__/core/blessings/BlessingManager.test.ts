@@ -330,9 +330,8 @@ describe("BlessingManager", () => {
 	describe("contribute", () => {
 		it("should return false when no blessing is cached", async () => {
 			const manager = createManager(null);
-			const response: unknown[] = [];
 
-			const result = await manager.contribute(100, "test-keycloak", response as never[]);
+			const result = await manager.contribute(100, "test-keycloak");
 
 			expect(result).toBe(false);
 		});
@@ -343,9 +342,8 @@ describe("BlessingManager", () => {
 				poolThreshold: 5000
 			});
 			const manager = createManager(mockBlessing);
-			const response: unknown[] = [];
 
-			const result = await manager.contribute(200, "test-keycloak", response as never[]);
+			const result = await manager.contribute(200, "test-keycloak");
 
 			expect(result).toBe(false);
 			expect(mockBlessing.poolAmount).toBe(300);
@@ -359,9 +357,8 @@ describe("BlessingManager", () => {
 				poolStartedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000) // 3 days ago
 			});
 			const manager = createManager(mockBlessing);
-			const response: unknown[] = [];
 
-			const result = await manager.contribute(200, "test-keycloak", response as never[]);
+			const result = await manager.contribute(200, "test-keycloak");
 
 			expect(result).toBe(true);
 			expect(mockBlessing.activeBlessingType).not.toBe(BlessingType.NONE);
@@ -417,9 +414,8 @@ describe("BlessingManager", () => {
 		it("should activate a specific blessing type", async () => {
 			const mockBlessing = createMockBlessing();
 			const manager = createManager(mockBlessing);
-			const response: unknown[] = [];
 
-			await manager.forceActivateBlessing(BlessingType.FIGHT_LOOT, "test-keycloak", response as never[]);
+			await manager.forceActivateBlessing(BlessingType.FIGHT_LOOT, "test-keycloak");
 
 			expect(mockBlessing.activeBlessingType).toBe(BlessingType.FIGHT_LOOT);
 			expect(mockBlessing.lastTriggeredByKeycloakId).toBe("test-keycloak");
@@ -438,6 +434,70 @@ describe("BlessingManager", () => {
 			expect(manager.getBlessingEndAt()).toBeNull();
 			expect(manager.getLastTriggeredByKeycloakId()).toBeNull();
 			expect(manager.getActiveBlessingType()).toBe(BlessingType.NONE);
+		});
+	});
+
+	describe("calculateNewThreshold (via simulateNewThreshold)", () => {
+		it("should keep threshold unchanged when filled in exactly TARGET_FILL_DAYS", () => {
+			const manager = createManager(createMockBlessing({ poolThreshold: 5000 }));
+
+			const result = manager.simulateNewThreshold(BlessingConstants.TARGET_FILL_DAYS);
+
+			expect(result).toBe(5000);
+		});
+
+		it("should increase threshold when filled faster than target", () => {
+			const manager = createManager(createMockBlessing({ poolThreshold: 5000 }));
+
+			const result = manager.simulateNewThreshold(1); // 1 day, target is 3
+
+			// ratio = 3/1 = 3, raw = 15000, delta = 10000 = MAX_THRESHOLD_STEP → clamped to 15000
+			expect(result).toBe(5000 + BlessingConstants.MAX_THRESHOLD_STEP);
+		});
+
+		it("should decrease threshold when filled slower than target", () => {
+			const manager = createManager(createMockBlessing({ poolThreshold: 5000 }));
+
+			const result = manager.simulateNewThreshold(6); // 6 days, target is 3
+
+			// ratio = 3/6 = 0.5, raw = 2500, delta = -2500
+			expect(result).toBe(2500);
+		});
+
+		it("should clamp delta to MAX_THRESHOLD_STEP for very fast fills", () => {
+			const manager = createManager(createMockBlessing({ poolThreshold: 5000 }));
+
+			const result = manager.simulateNewThreshold(0.1); // very fast
+
+			// ratio = 3/0.1 = 30, raw = 150000, delta = 145000 > MAX_THRESHOLD_STEP → 5000 + 10000
+			expect(result).toBe(5000 + BlessingConstants.MAX_THRESHOLD_STEP);
+		});
+
+		it("should not go below MIN_POOL_THRESHOLD", () => {
+			const manager = createManager(createMockBlessing({ poolThreshold: 500 }));
+
+			const result = manager.simulateNewThreshold(100); // very slow
+
+			// Result should be clamped to MIN_POOL_THRESHOLD
+			expect(result).toBe(BlessingConstants.MIN_POOL_THRESHOLD);
+		});
+
+		it("should not go above MAX_POOL_THRESHOLD", () => {
+			const manager = createManager(createMockBlessing({ poolThreshold: 495000 }));
+
+			const result = manager.simulateNewThreshold(1); // fast fill on high threshold
+
+			// ratio = 3, raw = 1485000, delta clamped → 495000 + 10000 = 505000, then clamped to MAX
+			expect(result).toBe(BlessingConstants.MAX_POOL_THRESHOLD);
+		});
+
+		it("should handle fillDurationDays of 0 by using minimum 0.1", () => {
+			const manager = createManager(createMockBlessing({ poolThreshold: 5000 }));
+
+			const result = manager.simulateNewThreshold(0);
+
+			// Math.max(0, 0.1) = 0.1 → same as very fast fill
+			expect(result).toBe(5000 + BlessingConstants.MAX_THRESHOLD_STEP);
 		});
 	});
 });
