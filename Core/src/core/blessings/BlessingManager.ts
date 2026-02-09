@@ -179,7 +179,7 @@ export class BlessingManager {
 	/**
 	 * Contribute money to the pool. Returns true if the pool was filled and a blessing triggered.
 	 */
-	async contribute(amount: number, playerKeycloakId: string, response: CrowniclesPacket[]): Promise<boolean> {
+	async contribute(amount: number, playerKeycloakId: string): Promise<boolean> {
 		if (!this.cachedBlessing) {
 			return false;
 		}
@@ -201,7 +201,7 @@ export class BlessingManager {
 
 		if (this.cachedBlessing.poolAmount >= this.cachedBlessing.poolThreshold) {
 			// Pool filled! Trigger blessing
-			await this.triggerBlessing(playerKeycloakId, response);
+			await this.triggerBlessing(playerKeycloakId);
 			return true;
 		}
 
@@ -212,7 +212,7 @@ export class BlessingManager {
 	/**
 	 * Trigger a random blessing when the pool is filled
 	 */
-	private async triggerBlessing(triggeredByKeycloakId: string, _response: CrowniclesPacket[]): Promise<void> {
+	private async triggerBlessing(triggeredByKeycloakId: string): Promise<void> {
 		const blessingType = RandomUtils.randInt(1, BlessingConstants.TOTAL_BLESSING_TYPES + 1) as BlessingType;
 		const durationHours = RandomUtils.randInt(BlessingConstants.MIN_DURATION_HOURS, BlessingConstants.MAX_DURATION_HOURS + 1);
 		const blessingEnd = new Date(Date.now() + durationHours * 60 * 60 * 1000);
@@ -391,8 +391,10 @@ export class BlessingManager {
 		const moneyWon = Math.round(dailyMission.moneyToWin * Constants.MISSIONS.DAILY_MISSION_MONEY_MULTIPLIER);
 		const pointsWon = Math.round(dailyMission.pointsToWin * Constants.MISSIONS.DAILY_MISSION_POINTS_MULTIPLIER);
 
-		for (const missionInfo of completedToday) {
-			const player = await Players.getById(missionInfo.playerId);
+		const players = await Promise.all(completedToday.map(m => Players.getById(m.playerId)));
+
+		await Promise.all(completedToday.map(async (missionInfo, index) => {
+			const player = players[index];
 			const discardedResponse: CrowniclesPacket[] = [];
 
 			await missionInfo.addGems(gemsWon, player.keycloakId, NumberChangeReason.BLESSING);
@@ -412,7 +414,7 @@ export class BlessingManager {
 				reason: NumberChangeReason.BLESSING
 			});
 			await player.save();
-		}
+		}));
 	}
 
 	/**
@@ -505,7 +507,7 @@ export class BlessingManager {
 	/**
 	 * Force activate a specific blessing type (for test commands)
 	 */
-	async forceActivateBlessing(type: BlessingType, keycloakId: string, _response: CrowniclesPacket[]): Promise<void> {
+	async forceActivateBlessing(type: BlessingType, keycloakId: string): Promise<void> {
 		if (!this.cachedBlessing) {
 			return;
 		}

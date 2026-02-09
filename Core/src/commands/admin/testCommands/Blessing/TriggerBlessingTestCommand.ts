@@ -16,7 +16,7 @@ export const commandInfo: ITestCommand = {
 	description: "Force le déclenchement d'une bénédiction. Type 1-9, ou aléatoire si non spécifié"
 };
 
-const triggerBlessingTestCommand: ExecuteTestCommandLike = async (player, args, response) => {
+const triggerBlessingTestCommand: ExecuteTestCommandLike = async (player, args) => {
 	const blessingManager = BlessingManager.getInstance();
 	let type: BlessingType;
 
@@ -30,7 +30,7 @@ const triggerBlessingTestCommand: ExecuteTestCommandLike = async (player, args, 
 		type = RandomUtils.randInt(1, BlessingConstants.TOTAL_BLESSING_TYPES + 1) as BlessingType;
 	}
 
-	await blessingManager.forceActivateBlessing(type, player.keycloakId, response);
+	await blessingManager.forceActivateBlessing(type, player.keycloakId);
 
 	return `Bénédiction de type ${type} (${BlessingType[type]}) activée avec succès !`;
 };

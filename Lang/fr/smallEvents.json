@@ -2463,17 +2463,6 @@
       "vous fouillez vos poches, mais vous n'avez pas assez d'argent pour cette offrande. L'oracle vous invite à revenir quand vous serez plus fortuné.",
       "l'oracle vous regarde compter vos pièces et secoue la tête. Vous n'avez pas les moyens de contribuer autant."
     ],
-    "blessingNames": {
-      "1": "Rage amplifiée",
-      "2": "Butin de combat",
-      "3": "Régénération d'énergie",
-      "4": "Bourse dorée",
-      "5": "Gloire accrue",
-      "6": "Amour des familiers",
-      "7": "Potions curatives",
-      "8": "Jeton d'expédition",
-      "9": "Mission quotidienne bénie"
-    },
     "bonusGems": [
       "L'oracle vous sourit et glisse discrètement **{{gems}}** {{gemEmote}} dans votre bourse. Les esprits récompensent votre générosité !",
       "Une lueur jaillit de l'autel et **{{gems}}** {{gemEmote}} apparaissent dans votre main. L'oracle murmure que les dieux ont vu votre offrande."

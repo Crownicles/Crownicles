@@ -101,14 +101,26 @@ export abstract class DiscordAnnouncement {
 
 	static async announceBlessing(packet: BlessingAnnouncementPacket): Promise<void> {
 		CrowniclesLogger.info(`Announcing blessing type ${packet.blessingType}...`);
-		const user = await KeycloakUtils.getUserByKeycloakId(keycloakConfig, packet.triggeredByKeycloakId);
-		const playerName = user.isError ? "???" : escapeUsername(user.payload.user.attributes.gameUsername[0]);
+
+		let playerName: string;
+		try {
+			const user = await KeycloakUtils.getUserByKeycloakId(keycloakConfig, packet.triggeredByKeycloakId);
+			playerName = user.isError ? "???" : escapeUsername(user.payload.user.attributes.gameUsername[0]);
+		}
+		catch {
+			playerName = "???";
+		}
 
 		// Resolve top contributor name
 		let topContributorName = "";
 		if (packet.topContributorKeycloakId && packet.topContributorKeycloakId !== packet.triggeredByKeycloakId) {
-			const topUser = await KeycloakUtils.getUserByKeycloakId(keycloakConfig, packet.topContributorKeycloakId);
-			topContributorName = topUser.isError ? "???" : escapeUsername(topUser.payload.user.attributes.gameUsername[0]);
+			try {
+				const topUser = await KeycloakUtils.getUserByKeycloakId(keycloakConfig, packet.topContributorKeycloakId);
+				topContributorName = topUser.isError ? "???" : escapeUsername(topUser.payload.user.attributes.gameUsername[0]);
+			}
+			catch {
+				topContributorName = "???";
+			}
 		}
 		else if (packet.topContributorKeycloakId) {
 			topContributorName = playerName;

@@ -64,8 +64,8 @@ export default class BlessingCommandPacketHandlers {
 
 			description = i18n.t("commands:blessing.active", {
 				lng,
-				blessingName: i18n.t(`commands:blessing.blessingNames.${packet.activeBlessingType}`, { lng }),
-				blessingEffect: i18n.t(`commands:blessing.blessingEffects.${packet.activeBlessingType}`, { lng }),
+				blessingName: i18n.t(`bot:blessingNames.${packet.activeBlessingType}`, { lng }),
+				blessingEffect: i18n.t(`bot:blessingEffects.${packet.activeBlessingType}`, { lng }),
 				timeLeft: printTimeBeforeDate(packet.blessingEndAt),
 				triggeredBy: triggeredByName,
 				moneyEmote: CrowniclesIcons.unitValues.money

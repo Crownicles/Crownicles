@@ -160,7 +160,7 @@ export async function altarResult(packet: SmallEventAltarPacket, context: Packet
 					poolAmount: packet.newPoolAmount,
 					poolThreshold: packet.poolThreshold,
 					blessingType: packet.blessingType > 0
-						? i18n.t(`smallEvents:altar.blessingNames.${packet.blessingType}`, { lng })
+						? i18n.t(`bot:blessingNames.${packet.blessingType}`, { lng })
 						: ""
 				})
 				+ bonusText,
