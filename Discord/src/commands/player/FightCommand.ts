@@ -28,7 +28,9 @@ import { CrowniclesActionChooseCachedMessage } from "../../messages/CrowniclesAc
 import { CommandFightEndOfFightPacket } from "../../../../Lib/src/packets/fights/EndOfFightPacket";
 import { millisecondsToMinutes } from "../../../../Lib/src/utils/TimeUtils";
 import { FightRewardPacket } from "../../../../Lib/src/packets/fights/FightRewardPacket";
-import { StringUtils } from "../../utils/StringUtils";
+import {
+	resolveKeycloakPlayerName, StringUtils
+} from "../../utils/StringUtils";
 import { ReactionCollectorReturnTypeOrNull } from "../../packetHandlers/handlers/ReactionCollectorHandlers";
 import { AIFightActionChoosePacket } from "../../../../Lib/src/packets/fights/AIFightActionChoosePacket";
 import { OwnedPet } from "../../../../Lib/src/types/OwnedPet";
@@ -340,11 +342,7 @@ export async function handleEndOfFight(context: PacketContext, packet: CommandFi
 	// Get names of fighters
 	const getDisplayName = async (keycloakId?: string, monsterId?: string): Promise<string> => {
 		if (keycloakId) {
-			const getUser = await KeycloakUtils.getUserByKeycloakId(keycloakConfig, keycloakId);
-			if (getUser.isError) {
-				return i18n.t("error:unknownPlayer", { lng });
-			}
-			return escapeUsername(getUser.payload.user.attributes.gameUsername[0]);
+			return await resolveKeycloakPlayerName(keycloakId, lng);
 		}
 		return i18n.t(`models:monsters.${monsterId}.name`, { lng });
 	};
