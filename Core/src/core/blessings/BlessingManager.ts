@@ -21,6 +21,7 @@ import { DailyMissions } from "../database/game/models/DailyMission";
 import { Constants } from "../../../../Lib/src/constants/Constants";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { Players } from "../database/game/models/Player";
+import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 
 /**
  * Singleton manager for global blessing state.
@@ -54,14 +55,31 @@ export class BlessingManager {
 		await this.checkForExpiredBlessing();
 		await this.checkForExpiredPool();
 
+		// Rebuild contributions tracker from logs DB for the current pool cycle
+		await this.rebuildContributionsTracker();
+
 		// Periodically check for expired blessings/pools (every 5 minutes)
 		if (this.expiryInterval) {
 			clearInterval(this.expiryInterval);
 		}
-		this.expiryInterval = setInterval(async () => {
-			await this.checkForExpiredBlessing();
-			await this.checkForExpiredPool();
+		this.expiryInterval = setInterval(() => {
+			this.checkForExpiredBlessing()
+				.then(() => this.checkForExpiredPool())
+				.catch(e => CrowniclesLogger.errorWithObj("Error in blessing expiry check", e));
 		}, 5 * 60 * 1000);
+	}
+
+	/**
+	 * Rebuild the in-memory contributions tracker from the logs database.
+	 * This ensures contributions are not lost across Core restarts.
+	 */
+	private async rebuildContributionsTracker(): Promise<void> {
+		if (!this.cachedBlessing?.poolStartedAt) {
+			return;
+		}
+		this.contributionsTracker = await crowniclesInstance.logsDatabase.getContributionsSince(
+			this.cachedBlessing.poolStartedAt
+		);
 	}
 
 	/**
@@ -151,12 +169,7 @@ export class BlessingManager {
 		}
 
 		// Check if blessing was triggered today — max 1 per day
-		if (this.cachedBlessing.blessingEndAt && datesAreOnSameDay(this.cachedBlessing.blessingEndAt, new Date())) {
-			/*
-			 * A blessing ended (or is ending) today — check if it was triggered today
-			 * We use the end date minus blessing duration to approximate trigger time
-			 * Simpler: if blessingEndAt is in the past and it's the same day, a blessing was triggered today
-			 */
+		if (this.cachedBlessing.lastBlessingTriggeredAt && datesAreOnSameDay(this.cachedBlessing.lastBlessingTriggeredAt, new Date())) {
 			return false;
 		}
 
@@ -209,14 +222,16 @@ export class BlessingManager {
 		const totalContributors = this.contributionsTracker.size;
 
 		// Calculate new threshold using dynamic pricing
+		const currentThreshold = this.cachedBlessing!.poolThreshold;
 		const fillDurationMs = Date.now() - this.cachedBlessing!.poolStartedAt.getTime();
 		const fillDurationDays = fillDurationMs / (24 * 60 * 60 * 1000);
-		const newThreshold = this.calculateNewThreshold(this.cachedBlessing!.poolThreshold, fillDurationDays);
+		const newThreshold = this.calculateNewThreshold(currentThreshold, fillDurationDays);
 
 		// Update state
 		this.cachedBlessing!.activeBlessingType = blessingType;
 		this.cachedBlessing!.blessingEndAt = blessingEnd;
 		this.cachedBlessing!.lastTriggeredByKeycloakId = triggeredByKeycloakId;
+		this.cachedBlessing!.lastBlessingTriggeredAt = new Date();
 		this.cachedBlessing!.poolAmount = 0;
 		this.cachedBlessing!.poolThreshold = newThreshold;
 		this.cachedBlessing!.poolStartedAt = blessingEnd; // Next pool starts when blessing ends
@@ -242,7 +257,7 @@ export class BlessingManager {
 		crowniclesInstance.logsDatabase.logBlessingActivation(
 			blessingType,
 			triggeredByKeycloakId,
-			newThreshold,
+			currentThreshold,
 			durationHours
 		).then();
 
@@ -503,6 +518,7 @@ export class BlessingManager {
 		this.cachedBlessing.activeBlessingType = type;
 		this.cachedBlessing.blessingEndAt = blessingEnd;
 		this.cachedBlessing.lastTriggeredByKeycloakId = keycloakId;
+		this.cachedBlessing.lastBlessingTriggeredAt = new Date();
 		this.cachedBlessing.poolAmount = 0;
 		this.cachedBlessing.poolStartedAt = blessingEnd;
 		await this.cachedBlessing.save();

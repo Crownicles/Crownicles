@@ -36,6 +36,10 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 			type: DataTypes.STRING,
 			allowNull: true
 		},
+		lastBlessingTriggeredAt: {
+			type: DataTypes.DATE,
+			allowNull: true
+		},
 		updatedAt: {
 			type: DataTypes.DATE,
 			allowNull: false
@@ -55,6 +59,7 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 			activeBlessingType: 0,
 			blessingEndAt: null,
 			lastTriggeredByKeycloakId: null,
+			lastBlessingTriggeredAt: null,
 			updatedAt: new Date(),
 			createdAt: new Date()
 		}

@@ -4,7 +4,7 @@ import { LogsPlayers } from "./models/LogsPlayers";
 import { LogsPlayersHealth } from "./models/LogsPlayersHealth";
 import { LogsPlayersExperience } from "./models/LogsPlayersExperience";
 import {
-	Model, ModelStatic, Op
+	Model, ModelStatic, Op, fn, col
 } from "sequelize";
 import { LogsPlayersLevel } from "./models/LogsPlayersLevel";
 import { LogsPlayersScore } from "./models/LogsPlayersScore";
@@ -1693,5 +1693,35 @@ export class LogsDatabase extends Database {
 		return await LogsBlessingsContributions.sum("amount", {
 			where: { playerId: player.id }
 		}) ?? 0;
+	}
+
+	/**
+	 * Get all contributions since a given date, grouped by player keycloakId
+	 * Used to rebuild the in-memory contributionsTracker after a restart
+	 */
+	public async getContributionsSince(since: Date): Promise<Map<string, number>> {
+		const results = await LogsBlessingsContributions.findAll({
+			attributes: [
+				"playerId",
+				[fn("SUM", col("amount")), "totalAmount"]
+			],
+			where: {
+				date: { [Op.gte]: dateToLogs(since) }
+			},
+			group: ["playerId"],
+			raw: true
+		}) as unknown as {
+			playerId: number;
+			totalAmount: number;
+		}[];
+
+		const contributionsMap = new Map<string, number>();
+		for (const row of results) {
+			const player = await LogsPlayers.findByPk(row.playerId);
+			if (player) {
+				contributionsMap.set(player.keycloakId, row.totalAmount);
+			}
+		}
+		return contributionsMap;
 	}
 }

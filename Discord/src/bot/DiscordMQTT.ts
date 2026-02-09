@@ -164,6 +164,14 @@ export class DiscordMQTT {
 			catch (error) {
 				CrowniclesLogger.errorWithObj("Error while disconnecting blessing announcement MQTT client", error);
 			}
+			try {
+				DiscordMQTT.christmasBonusAnnouncementMqttClient.unsubscribe(MqttTopicUtils.getDiscordChristmasBonusAnnouncementTopic(discordConfig.PREFIX));
+				DiscordMQTT.christmasBonusAnnouncementMqttClient.end();
+				CrowniclesLogger.warn("Disconnected from christmas bonus announcement MQTT client");
+			}
+			catch (error) {
+				CrowniclesLogger.errorWithObj("Error while disconnecting christmas bonus announcement MQTT client", error);
+			}
 		}
 	}
 
