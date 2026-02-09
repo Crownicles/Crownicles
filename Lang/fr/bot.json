@@ -51,7 +51,7 @@
   },
   "blessingEffects": {
     "1": "La rage gagnée en combat est doublée pour tous les joueurs.",
-    "2": "Les récompenses en argent des combats sont multipliées par 4.",
+    "2": "Les récompenses des combats (argent et points) sont multipliées par 4 (hors gloire).",
     "3": "La régénération d'énergie de combat est doublée.",
     "4": "Tous les gains d'argent sont augmentés de 10%.",
     "5": "Tous les gains de score sont augmentés de 10%.",
