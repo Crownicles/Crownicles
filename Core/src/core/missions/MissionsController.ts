@@ -4,6 +4,7 @@ import MissionSlot, { MissionSlots } from "../database/game/models/MissionSlot";
 import { DailyMissions } from "../database/game/models/DailyMission";
 import {
 	datesAreOnSameDay,
+	getTodayMidnight,
 	hoursToMilliseconds
 } from "../../../../Lib/src/utils/TimeUtils";
 import { MissionDifficulty } from "./MissionDifficulty";
@@ -120,8 +121,7 @@ export abstract class MissionsController {
 		}
 
 		// Check if the player completed the daily mission yesterday
-		const today = new Date();
-		today.setHours(0, 0, 0, 0);
+		const today = getTodayMidnight();
 		const yesterday = new Date(today);
 		yesterday.setDate(yesterday.getDate() - 1);
 
@@ -129,7 +129,6 @@ export abstract class MissionsController {
 		const lastCompleted = missionInfo.lastDailyMissionCompleted;
 		if (lastCompleted) {
 			const lastCompletedDate = new Date(lastCompleted);
-			lastCompletedDate.setHours(0, 0, 0, 0);
 
 			// If the last completion was NOT yesterday and NOT today, reset the streak
 			if (!datesAreOnSameDay(lastCompletedDate, yesterday) && !datesAreOnSameDay(lastCompletedDate, today)) {

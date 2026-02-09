@@ -117,6 +117,14 @@ export function daysToMilliseconds(days: number): number {
 }
 
 /**
+ * Convert milliseconds to days
+ * @param milliseconds
+ */
+export function millisecondsToDays(milliseconds: number): number {
+	return milliseconds / (TimeConstants.HOURS_IN_DAY * TimeConstants.MS_TIME.HOUR);
+}
+
+/**
  * Convert hours to seconds
  * @param hours
  */

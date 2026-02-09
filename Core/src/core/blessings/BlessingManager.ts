@@ -14,7 +14,9 @@ import { MqttTopicUtils } from "../../../../Lib/src/utils/MqttTopicUtils";
 import {
 	botConfig, crowniclesInstance
 } from "../../index";
-import { datesAreOnSameDay } from "../../../../Lib/src/utils/TimeUtils";
+import {
+	datesAreOnSameDay, getTodayMidnight, getTomorrowMidnight, hoursToMilliseconds, millisecondsToDays, millisecondsToHours, minutesToMilliseconds
+} from "../../../../Lib/src/utils/TimeUtils";
 import { PlayerMissionsInfo } from "../database/game/models/PlayerMissionsInfo";
 import { Op } from "sequelize";
 import { DailyMissions } from "../database/game/models/DailyMission";
@@ -66,7 +68,7 @@ export class BlessingManager {
 			this.checkForExpiredBlessing()
 				.then(() => this.checkForExpiredPool())
 				.catch(e => CrowniclesLogger.errorWithObj("Error in blessing expiry check", e));
-		}, 5 * 60 * 1000);
+		}, minutesToMilliseconds(5));
 	}
 
 	/**
@@ -206,8 +208,17 @@ export class BlessingManager {
 	 */
 	private async triggerBlessing(triggeredByKeycloakId: string): Promise<void> {
 		const blessingType = RandomUtils.randInt(1, BlessingConstants.TOTAL_BLESSING_TYPES + 1) as BlessingType;
-		const durationHours = RandomUtils.randInt(BlessingConstants.MIN_DURATION_HOURS, BlessingConstants.MAX_DURATION_HOURS + 1);
-		const blessingEnd = new Date(Date.now() + durationHours * 60 * 60 * 1000);
+		let durationHours = RandomUtils.randInt(BlessingConstants.MIN_DURATION_HOURS, BlessingConstants.MAX_DURATION_HOURS + 1);
+		let blessingEnd = new Date(Date.now() + hoursToMilliseconds(durationHours));
+
+		// Daily mission blessing must not span across two days to prevent doubling two different daily missions
+		if (blessingType === BlessingType.DAILY_MISSION) {
+			const endOfToday = getTomorrowMidnight();
+			if (blessingEnd > endOfToday) {
+				blessingEnd = endOfToday;
+				durationHours = Math.max(1, Math.floor(millisecondsToHours(endOfToday.getTime() - Date.now())));
+			}
+		}
 
 		// Snapshot contribution stats before clearing
 		const topContributor = this.getTopContributor();
@@ -216,7 +227,7 @@ export class BlessingManager {
 		// Calculate new threshold using dynamic pricing
 		const currentThreshold = this.cachedBlessing!.poolThreshold;
 		const fillDurationMs = Date.now() - this.cachedBlessing!.poolStartedAt.getTime();
-		const fillDurationDays = fillDurationMs / (24 * 60 * 60 * 1000);
+		const fillDurationDays = millisecondsToDays(fillDurationMs);
 		const newThreshold = this.calculateNewThreshold(currentThreshold, fillDurationDays);
 
 		// Update state
@@ -332,7 +343,7 @@ export class BlessingManager {
 			return;
 		}
 
-		const poolAgeDays = (Date.now() - this.cachedBlessing.poolStartedAt.getTime()) / (24 * 60 * 60 * 1000);
+		const poolAgeDays = millisecondsToDays(Date.now() - this.cachedBlessing.poolStartedAt.getTime());
 		if (poolAgeDays < BlessingConstants.POOL_EXPIRY_DAYS) {
 			return;
 		}
@@ -364,8 +375,7 @@ export class BlessingManager {
 	 * Automatically gives the bonus to all eligible players — no manual claim needed.
 	 */
 	private async applyRetroactiveDailyMission(): Promise<void> {
-		const todayStart = new Date();
-		todayStart.setHours(0, 0, 0, 0);
+		const todayStart = getTodayMidnight();
 
 		const completedToday = await PlayerMissionsInfo.findAll({
 			where: {
@@ -505,7 +515,7 @@ export class BlessingManager {
 		}
 
 		const durationHours = 12;
-		const blessingEnd = new Date(Date.now() + durationHours * 60 * 60 * 1000);
+		const blessingEnd = new Date(Date.now() + hoursToMilliseconds(durationHours));
 
 		this.contributionsTracker.clear();
 		this.cachedBlessing.activeBlessingType = type;
