@@ -119,7 +119,7 @@ import {
 	createPetExpeditionCollector,
 	createPetExpeditionChoiceCollector,
 	createPetExpeditionFinishedCollector
-} from "../../commands/pet/PetExpeditionCollectors";
+} from "../../commands/pet/expedition/PetExpeditionCollectors";
 import { ReactionCollectorAltarData } from "../../../../Lib/src/packets/interaction/ReactionCollectorAltar";
 import { altarCollector } from "../../smallEvents/altar";
 
