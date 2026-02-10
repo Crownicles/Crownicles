@@ -1971,10 +1971,10 @@
     "fileName": "export_rgpd_{{anonymizedId}}.zip"
   },
   "blessing": {
-    "titleActive": "Bénédiction active",
-    "titleCollecting": "Cagnotte en cours de collecte",
-    "active": "{emote:blessingCommand.active} **{{blessingName}}**\n\n{{blessingEffect}}\n\n{emote:blessingCommand.timeLeft} Temps restant : {{timeLeft}}\n{emote:blessingCommand.triggeredBy} Déclenchée par : **{{triggeredBy}}**",
-    "collecting": "Les aventuriers se cotisent pour invoquer une bénédiction.\n\n{{moneyEmote}} Progression : **{{poolAmount, number}}** / **{{poolThreshold, number}}**\n{emote:blessingCommand.timeLeft} Expiration de la cagnotte : {{poolExpiresAt}}\n\nContribuez en rencontrant l'Oracle lors de vos voyages !",
+    "titleActive": "Bendición activa",
+    "titleCollecting": "Gatito recogido",
+    "active": "{emote:blessingCommand.active} **{{blessingName}}**\n\n{{blessingEffect}}\n\n{emote:blessingCommand.timeLeft} Tiempo restante : {{timeLeft}}\n{emote:blessingCommand.triggeredBy} Activado por : **{{triggeredBy}}**",
+    "collecting": "Los aventureros se unen para invocar una bendición.\n\n{{moneyEmote}} Progreso: **{{poolAmount, number}}** / **{{poolThreshold, number}}**\n{emote:blessingCommand.timeLeft} Kitty expira: {{poolExpiresAt}}\n\n¡Contribuye encontrándote con el Oráculo en tus viajes!",
     "contributors_one": "{emote:blessingCommand.topContributor} **Mayor contribuyente:** {{topContributorName}} ({{topContributorAmount, number}} {{moneyEmote}})\n{emote:blessingCommand.contributors} **{{count}}** aventurero ha contribuido hasta ahora.",
     "contributors_other": "{emote:blessingCommand.topContributor} **Mayor contribuyente:** {{topContributorName}} ({{topContributorAmount, number}} {{moneyEmote}})\n{emote:blessingCommand.contributors} **{{count}}** aventureros han contribuido hasta ahora."
   }
