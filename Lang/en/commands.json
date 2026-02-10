@@ -143,7 +143,7 @@
       "warning_female": "{emote:collectors.warning} *Calling your pet back prematurely will break the bond of trust. She'll return lootless and heartbroken...*"
     },
     "inProgressFoodInfo_one": "\n{emote:expedition.food} **Packed provisions: ** {{count, number}} ration",
-    "inProgressFoodInfo_other": "\n{emote:expedition.food} **Packed provisions: ** {{count, number}} rations",
+    "inProgressFoodInfo_other": "\n{emote:expedition.food} **Provisions packed: ** {{count, number}} rations",
     "recallButton": "Call back",
     "closeButton": "Continue exploring",
     "chooseExpeditionTitle": "{{pseudo}}new shipments available",
@@ -154,7 +154,7 @@
       "header": "**{{number}}.** {{location}}",
       "duration": "{emote:expedition.duration} Estimated duration: {{duration}}",
       "terrain": "{{terrainEmoji}} Land: {{terrain}}",
-      "risk": "{{riskEmoji}} Dangerousness: {{risk}}",
+      "risk": "{{riskEmoji}} Difficulty: {{risk}}",
       "reward": "{emote:expedition.reward} Estimated awards: {{reward}}",
       "food": "{emote:expedition.food} Provisions required: {{foodDisplay}}",
       "cloneTalismanBonus": "{emote:expedition.cloneTalisman} *A strange feeling comes over you... Rumors speak of a legendary artifact that may be hidden in these lands.",
@@ -170,8 +170,8 @@
     "startedTitle": "{{pseudo}}expedition launched!",
     "expeditionStarted_male": "With an enthusiastic leap, {{petDisplay}} dashes off to **{{location}}**! You watch him disappear over the horizon, your heart full of hope.\n\n{emote:clocks.1} Scheduled return: {{returnTime}}",
     "expeditionStarted_female": "With an enthusiastic leap, {{petDisplay}} dashes off to **{{location}}**! You watch her disappear over the horizon, your heart full of hope.\n\n{emote:clocks.1} Scheduled return: {{returnTime}}",
-    "foodConsumed_one": "\n{emote:expedition.food} Provisions carried : **{{count, number}}** ration",
-    "foodConsumed_other": "\n{emote:expedition.food} Provisions carried : **{{count, number}}** rations",
+    "foodConsumed_one": "\n{emote:expedition.food} Provisions packed: **{{count, number}}** ration",
+    "foodConsumed_other": "\n{emote:expedition.food} Provisions packed: **{{count, number}}** rations",
     "foodConsumedDetails": "\n{emote:expedition.food} **Provisions taken:** {{foodDetails}}",
     "insufficientFoodWarning": {
       "noGuild": "\n\n{emote:collectors.warning} **You have no guild to prepare rations** for your pet. The risk of failure of this expedition is **tripled**.",
@@ -201,7 +201,7 @@
       "talisman": {
         "intro": "The $t(models:talisman.anchor) vibrates intensely in your bag: {{petDisplay}} is back from its expedition to **{{location}}**!"
       },
-      "risk": "{{riskEmoji}} Dangerousness: {{risk}}",
+      "risk": "{{riskEmoji}} Difficulty: {{risk}}",
       "impatience_male": "*Your companion can't wait to show you what he's got!",
       "impatience_female": "*Your companion can't wait to show you what she's brought back!"
     },
@@ -273,7 +273,7 @@
     "riskCategories": {
       "trivial": "Chill",
       "veryLow": "Serene",
-      "low": "Random",
+      "low": "Hazardous",
       "moderate": "Risky",
       "high": "Dangerous",
       "veryHigh": "Perilous",
@@ -288,9 +288,9 @@
       "legendary": "Exceptional"
     },
     "terrainCategories": {
-      "trivial": "Peaceful",
-      "easy": "Practical",
-      "moderate": "Accident",
+      "trivial": "Clear",
+      "easy": "Accessible",
+      "moderate": "Rugged",
       "challenging": "Hostile",
       "treacherous": "Perilous"
     },
@@ -303,28 +303,28 @@
       "6": "the Secret Cellars of Boug-Coton",
       "7": "the Forgotten Tombs of the Valley of the Kings",
       "8": "the Mystical Passages of the Crossroads of Destiny",
-      "9": "the Old Cobblestones of the Main Street",
+      "9": "Old Cobblestones of the Main Road",
       "10": "the Lost Catacombs of Ville Forte",
       "11": "Great Axis Ambushes",
       "12": "the Plains of the Expanse",
       "13": "the Cursed Swamps of the Swampy Road",
       "14": "the Enchanted Mists of Lake Mirage",
       "15": "the snow-covered peaks of Mount Celestrum",
-      "16": "les Tanières du Chemin aux Loups",
+      "16": "Dens of the wolves path",
       "17": "Coco Village Hidden Oases",
       "18": "the Tumultuous Rapids of the Rivière Vacarme",
       "19": "the Quicksand of La Dune",
-      "20": "les Champs Paisibles des Plaines du Contre Bois",
+      "20": "Peaceful Fields of the Plains of the Counterwood",
       "21": "the Abandoned Shops of the Route des Merveilles",
-      "22": "les Galeries Obscures du Bois Hurlant",
+      "22": "Dark Galleries of Howling Wood",
       "23": "the Secret Alleys of Claire de Ville",
       "24": "the Escarpments of the Climbing Road",
-      "25": "les Méandres de la Rivière aux Crabes",
+      "25": "Crab Rift Meanders",
       "26": "Mergagnan old quarters",
       "27": "the Mystic Glades of the Celestrum Forest",
       "28": "Les Souterrains des Portes du Château",
       "29": "the Alcoves in the Reception Room",
-      "32": "les Pavés Royaux de la Route vers le Château"
+      "32": "Royal Cobblestones of the castle road"
     },
     "errors": {
       "noPet": "Nature spirits refuse to let you send a pet... because you don't have one!",
