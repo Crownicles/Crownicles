@@ -133,7 +133,7 @@ function buildAltarBonusText(packet: SmallEventAltarPacket, lng: Language): stri
 		bonusText += `\n\n${StringUtils.getRandomTranslation("smallEvents:altar.bonusItem", lng)}`;
 	}
 	if (packet.badgeAwarded) {
-		bonusText += `\n\n${StringUtils.getRandomTranslation("smallEvents:altar.badgeAwarded", lng)}`;
+		bonusText += `\n\n${i18n.t("smallEvents:altar.badgeAwarded", { lng })}`;
 	}
 	return bonusText;
 }
