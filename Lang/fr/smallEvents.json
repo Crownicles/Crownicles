@@ -2474,6 +2474,7 @@
     "badgeAwarded": [
       "l'oracle pose un genou à terre dans un geste de révérence profonde. Les runes s'alignent pour former un symbole ancien que vous seul pouvez voir : celui du protecteur de l'Oracle. Vous recevez le badge {emote:badges.oracle_patron} en reconnaissance de votre dévotion exceptionnelle.",
       "une lumière dorée descend du ciel et vous enveloppe comme un manteau royal. Sans prononcer un mot, l'oracle déclare solennellement par son regard que vous êtes désormais reconnu parmi les gardiens de l'autel. Le badge {emote:badges.oracle_patron} apparaît à votre ceinture, scellant votre lien avec les esprits."
-    ]
+    ],
+    "firstEncounter": "au détour d'un sentier envahi par le brouillard, une lueur dorée vous attire vers un autel de pierre recouvert de runes anciennes. Un oracle au visage voilé se tient immobile devant l'édifice, comme s'il vous attendait depuis toujours.\n\nD'un geste lent, il désigne l'autel : les runes racontent l'histoire des bénédictions, ces forces ancestrales que les voyageurs peuvent éveiller en unissant leurs offrandes. Lorsque la cagnotte collective atteint son seuil, une bénédiction se répand sur tous les aventuriers du monde, leur conférant un pouvoir temporaire.\n\nL'oracle s'approche et trace du bout des doigts une marque runique sur votre poignet. La peau picote là où les lignes incandescentes se gravent, puis la sensation s'apaise. Cette marque vous lie désormais aux mystères de l'autel. Vous pourrez consulter l'état des bénédictions à tout moment grâce à la commande {command:blessing}."
   }
 }

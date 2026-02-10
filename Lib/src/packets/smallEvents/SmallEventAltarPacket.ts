@@ -54,4 +54,9 @@ export class SmallEventAltarPacket extends SmallEventPacket {
 	 * Whether the Oracle Patron badge was awarded
 	 */
 	badgeAwarded!: boolean;
+
+	/**
+	 * Whether this is the player's first encounter with the oracle
+	 */
+	firstEncounter!: boolean;
 }

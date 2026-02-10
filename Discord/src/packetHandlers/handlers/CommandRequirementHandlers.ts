@@ -12,6 +12,7 @@ import { RequirementLevelPacket } from "../../../../Lib/src/packets/commands/req
 import { RequirementRightPacket } from "../../../../Lib/src/packets/commands/requirements/RequirementRightPacket";
 import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import { RequirementWherePacket } from "../../../../Lib/src/packets/commands/requirements/RequirementWherePacket";
+import { RequirementOracleNotMetPacket } from "../../../../Lib/src/packets/commands/requirements/RequirementOracleNotMetPacket";
 import { MessagesUtils } from "../../utils/MessagesUtils";
 import { MessageFlags } from "discord-api-types/v10";
 import { DisplayUtils } from "../../utils/DisplayUtils";
@@ -89,5 +90,11 @@ export default class CommandRequirementHandlers {
 	async requirementWhere(context: PacketContext, _packet: RequirementWherePacket): Promise<void> {
 		const interaction = MessagesUtils.getCurrentInteraction(context);
 		await replyEphemeralErrorMessage(context, interaction, i18n.t("error:commandNotAvailableHere", { lng: interaction.userLanguage }));
+	}
+
+	@packetHandler(RequirementOracleNotMetPacket)
+	async requirementOracleNotMet(context: PacketContext, _packet: RequirementOracleNotMetPacket): Promise<void> {
+		const interaction = MessagesUtils.getCurrentInteraction(context);
+		await replyEphemeralErrorMessage(context, interaction, i18n.t("error:oracleNotMet", { lng: interaction.userLanguage }));
 	}
 }

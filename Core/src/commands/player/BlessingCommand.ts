@@ -9,6 +9,8 @@ import {
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import Player from "../../core/database/game/models/Player";
 import { BlessingManager } from "../../core/blessings/BlessingManager";
+import { RequirementOracleNotMetPacket } from "../../../../Lib/src/packets/commands/requirements/RequirementOracleNotMetPacket";
+import { LogsReadRequests } from "../../core/database/logs/LogsReadRequests";
 
 export default class BlessingCommand {
 	@commandRequires(CommandBlessingPacketReq, {
@@ -16,7 +18,13 @@ export default class BlessingCommand {
 		disallowedEffects: CommandUtils.DISALLOWED_EFFECTS.NOT_STARTED,
 		whereAllowed: CommandUtils.WHERE.EVERYWHERE
 	})
-	execute(response: CrowniclesPacket[], _player: Player, _packet: CommandBlessingPacketReq, _context: PacketContext): void {
+	async execute(response: CrowniclesPacket[], player: Player, _packet: CommandBlessingPacketReq, _context: PacketContext): Promise<void> {
+		const altarEncounterCount = await LogsReadRequests.getSmallEventEncounterCount(player.keycloakId, "altar");
+		if (altarEncounterCount === 0) {
+			response.push(makePacket(RequirementOracleNotMetPacket, {}));
+			return;
+		}
+
 		const blessingManager = BlessingManager.getInstance();
 		const topContributor = blessingManager.getTopContributor();
 
