@@ -284,6 +284,22 @@
     "If you send your pet on a short expedition to a place it doesn't like, the risk of failure increases. Long expeditions are not affected.",
     "On expeditions, Danger is the main factor in failure. Terrain adds a secondary modifier and can make expeditions more difficult.",
     "Some expedition terrains are riskier than others: plains and coasts are relatively safe, while caves and ruins present more danger.",
-    "If you're a member of a guild, you can free the shelter's pets in addition to your own with the command {command:petfree}."
+    "If you're a member of a guild, you can free the shelter's pets in addition to your own with the command {command:petfree}.",
+    "During your travels, you may come across an oracle guarding an ancient altar. He'll ask you to contribute to a collective kitty: when it's full, a blessing is activated for all players!",
+    "There are three options for contributing to the oracle: a fixed amount, a percentage of your money, or an amount based on your level. Choose according to your means!",
+    "Blessings benefit all the world's adventurers, not just those who have contributed. Even a small offering helps the entire community!",
+    "There are nine different types of blessing: they can improve your gains in money, score, battle loot, pet affection and much more. Use {command:blessing} to see which blessing is active.",
+    "When you contribute generously to the altar of the oracle, you have a chance of receiving a bonus: gems or a mysterious object as a reward for your devotion.",
+    "The oracle does not appear while a blessing is already active. Once the blessing has expired, you can cross paths with it again.",
+    "The oracle's jackpot threshold adjusts over time: if players fill the jackpot quickly, the next threshold will be higher. Conversely, if it takes time, it will decrease.",
+    "A blessing lasts between 8 and 24 hours. See {command:blessing} for remaining time and active effect.",
+    "If the oracle's kitty isn't filled in time, it expires and resets with a more appropriate threshold. Don't wait too long before contributing!",
+    "The Amplified Rage Blessing doubles rage gains, making it easier to reach higher levels.",
+    "When the Battle Loot Blessing is active, your battle rewards (money and points) are multiplied by 4, with the exception of glory. It's the perfect time to keep on fighting!",
+    "The Pet Love Blessing doubles affection gains. Take the opportunity to strengthen your bond with your companion!",
+    "Thanks to the blessing of daily missions, your mission rewards are doubled. Remember to complete your missions while it's active!",
+    "The blessing of daily missions is always limited to the current day: even if the duration drawn exceeds midnight, it will be shortened to apply only to the day's mission.",
+    "The most dedicated players will eventually be recognized. By dint of your contributions, you could earn a special badge rewarding your generosity!",
+    "When another player's pet is on an expedition on the same route as you, it can cross your path and leave you a token as a gift!"
   ]
 }
