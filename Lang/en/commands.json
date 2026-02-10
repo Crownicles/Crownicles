@@ -297,13 +297,13 @@
     "mapLocationExpeditions": {
       "1": "the Mysterious Reefs of Sentinel Beach",
       "2": "the Secret Trails of the Voie Champêtre",
-      "3": "the Hidden Meadows of the Cradle",
+      "3": "Hidden Meadows of The Cradle",
       "4": "the depths of the Old Man's Forest",
       "5": "the Forgotten Labyrinths of the Daedalus Path",
       "6": "the Secret Cellars of Boug-Coton",
       "7": "the Forgotten Tombs of the Valley of the Kings",
       "8": "the Mystical Passages of the Crossroads of Destiny",
-      "9": "Old Cobblestones of the Main Road",
+      "9": "Old Cobblestones of Main Road",
       "10": "the Lost Catacombs of Ville Forte",
       "11": "Great Axis Ambushes",
       "12": "the Plains of the Expanse",
@@ -314,17 +314,17 @@
       "17": "Coco Village Hidden Oases",
       "18": "the Tumultuous Rapids of the Rivière Vacarme",
       "19": "the Quicksand of La Dune",
-      "20": "Peaceful Fields of the Plains of the Counterwood",
+      "20": "Peaceful Fields of Counterwood Plains",
       "21": "the Abandoned Shops of the Route des Merveilles",
-      "22": "Dark Galleries of Howling Wood",
+      "22": "Dark Galleries of Howling Woods",
       "23": "the Secret Alleys of Claire de Ville",
       "24": "the Escarpments of the Climbing Road",
-      "25": "Crab Rift Meanders",
+      "25": "Crab's River Meanders",
       "26": "Mergagnan old quarters",
       "27": "the Mystic Glades of the Celestrum Forest",
       "28": "Les Souterrains des Portes du Château",
       "29": "the Alcoves in the Reception Room",
-      "32": "Royal Cobblestones of the castle road"
+      "32": "Royal Cobblestones of Castle Road"
     },
     "errors": {
       "noPet": "Nature spirits refuse to let you send a pet... because you don't have one!",
@@ -698,7 +698,7 @@
       "top_1_before_reset": "Person who has reached the top of the ranking after the reset",
       "very_powerful_guild": "Member of a very powerful guild",
       "animal_lover": "Person who has shown all the pets to Talvar the dwarf",
-      "expert_expediteur": "A person who has successfully completed numerous expeditions with their pet",
+      "expert_expediteur": "Person who has successfully completed numerous expeditions with their pet",
       "oracle_patron": "Protector of the Oracle, having contributed generously to many blessings"
     },
     "fightRanked": {
@@ -821,7 +821,7 @@
     "tokensNextStepArrived": "{emote:messages.info} You've arrived at your destination! Use {command:report} to see what awaits you.",
     "tokensNextStepSmallEvent": "{emote:messages.info} An event is waiting for you on the road. Use {command:report} to find out.",
     "tokensUsedRefusedTitle": "{{pseudo}}, cancellation",
-    "tokensUsedRefusedDescription": "{emote:messages.refuse} You have decided to keep your tokens.",
+    "tokensUsedRefusedDescription": "{emote:messages.refuse} You decide to keep your tokens.",
     "buyHealButton": "Taking care of yourself",
     "notEnoughMoneyHealButton": "Not enough money",
     "buyHealLoading": "Loading...",
@@ -865,7 +865,7 @@
     "shelterPetOption": "{{rarity}} | {{sex}} {{loveLevel}}",
     "cancelButton": "Cancel",
     "feistyCostPaid": "The liberation cost you {{cost, number}} {emote:unitValues.money}.",
-    "luckyMeat": "The familiar left you a piece of meat when you left! {emote:food.carnivorousFood}"
+    "luckyMeat": "The familiar left you a piece of meat when you left! {emote:foods.carnivorousFood}"
   },
   "petNick": {
     "successTitle": "{{pseudo}}, changing the pet's nickname",
@@ -1016,7 +1016,7 @@
         "giveTitle": "{{pseudo}}, purchase successful!",
         "giveDesc": "After a long examination of your pet and its state of health, the vet will give you his report:\n\n**{{petName}}** {{commentOnResult}}\n{emote:petInformation.loveScore} **Love score** : {{actualLP, number}} / {{maxLovePoints, number}}\n{emote:petInformation.diet} **Diet**: {{diet}}\n{emote:petInformation.force} **Strength**: {{force, number}}\n{emote:petInformation.speed} **Speed**: {{speed, number}}\n{emote:petInformation.feedDelay} **Meal interval**: {{feedDelay}}\n{emote:petInformation.nextFeed} **Next hunger**: {{nextFeed}}\n{emote:petInformation.age} **Age**: {{commentOnPetAge}}\n\n{emote:petInformation.fightEffect} **Fighting effect**: {{commentOnFightEffect}}{{expeditionSection}}\n\n {{dwarfPet}}",
         "expeditionPreferences": "\n\n{emote:expedition.map} **Exploration benefits**:\n{{likedLocations}}{{dislikedLocations}}",
-        "likedLocations": "{emote:expedition.liked} Prosperous in: {{locations}}",
+        "likedLocations": "{emote:expedition.liked} Thrives in: {{locations}}",
         "dislikedLocations": "\n{emote:expedition.disliked} Wary of : {{locations}}",
         "noPreferences": "\n\n{emote:expedition.map} **Exploring advantages**: I've observed in your pet a remarkable ability to adapt. Its instinct allows it to acclimatize to all types of terrain without any particular difficulty.",
         "petIsHungry": "{emote:effects.starving} hungry",
@@ -1958,12 +1958,12 @@
   },
   "deletecode": {
     "title": "Account deletion code",
-    "success": "**Deletion code generated**\n\n**Discord ID :** `{{discordId}}`\n**Keycloak ID :** `{{keycloakId}}`\n**Code :** `{{code}}`\n\nSend this code to the user by email. He will have to send a DM to the bot with:\n`DELETE ACCOUNT {{code}}`",
+    "success": "**Deletion code generated**\n\n**Discord ID: ** `{{discordId}}`\n**Keycloak ID: ** `{{keycloakId}}`\n**Code: ** `{{code}}`\n\nSend this code to the user by email. He will have to send a DM to the bot with:\n`DELETE ACCOUNT {{code}}`",
     "userNotFound": "No users found with this Discord ID."
   },
   "exportgdpr": {
     "title": "GDPR Export",
-    "success": "The GDPR export has been generated successfully.\n\n**Anonymized player ID:** `{{anonymizedId}}`\n**Generated files:** {{fileCount}}",
+    "success": "The GDPR export has been generated successfully.\n\n**Anonymized player ID: ** `{{anonymizedId}}`\n**Generated files: ** {{fileCount}}",
     "started": "The GDPR export has been started. You will receive the result via DM once the export is complete.",
     "userNotFound": "No player found with this Discord ID.",
     "playerNotFound": "This player does not exist in the database.",
@@ -1973,8 +1973,8 @@
   "blessing": {
     "title": "{emote:smallEvents.altar} Blessings | {{pseudo}}",
     "active": "{emote:blessingCommand.active} **Active blessing : {{blessingName}}**\n\n{{blessingEffect}}\n\n{emote:blessingCommand.timeLeft} Time remaining : {{timeLeft}}\n{emote:blessingCommand.triggeredBy} Triggered by : **{{triggeredBy}}**",
-    "collecting": "{emote:smallEvents.altar} **Kitty being collected**\n\nAdventurers contribute to invoke a blessing.\n\n{{moneyEmote}} Progress: **{{poolAmount, number}}** / **{{poolThreshold, number}}** ({{percentage}}%)\n{emote:blessingCommand.timeLeft} Kitty expires: {{poolExpiresAt}}\n\nContribute by meeting the Oracle on your travels!",
-    "contributors_one": "{emote:blessingCommand.topContributor} **Largest contributor:** {{topContributorName}} ({{topContributorAmount, number}} {{moneyEmote}})\n{emote:blessingCommand.contributors} **{{count}}** adventurer has contributed so far.",
+    "collecting": "{emote:smallEvents.altar} **Current pot in progress**\n\nAdventurers contribute to invoke a blessing.\n\n{{moneyEmote}} Progress: **{{poolAmount, number}}** / **{{poolThreshold, number}}** ({{percentage}}%)\n{emote:blessingCommand.timeLeft} Kitty expires: {{poolExpiresAt}}\n\nContribute by meeting the Oracle on your travels!",
+    "contributors_one": "{emote:blessingCommand.topContributor} **Largest contributor:** {{topContributorName}} ({{topContributorAmount, number}} {{moneyEmote}})\n{emote:blessingCommand.contributors} **{{count}}** adventurer have contributed so far.",
     "contributors_other": "{emote:blessingCommand.topContributor} **Largest contributor:** {{topContributorName}} ({{topContributorAmount, number}} {{moneyEmote}})\n{emote:blessingCommand.contributors} **{{count}}** adventurers have contributed so far."
   }
 }
