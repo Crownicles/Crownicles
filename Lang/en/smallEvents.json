@@ -2430,5 +2430,50 @@
       "Velanna emerges from behind a mossy rock, a gnawed bone between her teeth, which she casually throws over her shoulder. She approaches you and places a hand on your shoulder. She tells you that one of her clan elders used to change his mind at the last minute, constantly calling his pet back along the way. The beast came to hate him. She warns you that the more frequent the cancellations, the more severe the loss of affection.",
       "Velanna stands in your way, legs spread and arms crossed, a stern expression on her scarred face. She orders you to listen carefully. She explains that a familiar's eyes sparkle with excitement at the sight of an expedition map, its heart racing at the thought of the promised adventure. She tells you that canceling before departure or calling back in the middle of an exploration has the same devastating effect: a broken promise. She counts on her fingers and warns you that the loss of love doubles on the second betrayal, triples on the third. Familiars never forget."
     ]
+  },
+  "petDropToken": {
+    "stories": [
+      "you spot {{pet}}, the pet from **{{owner}}**, trotting happily along the same path as you. As he passes you, he drops a shiny object from his mouth. You pick it up: it's a {emote:unitValues.token} **jeton**!",
+      "you come across {{pet}} de **{{owner}}** on your way. The familiar seems to recognize you and lays a {emote:unitValues.token} **jeton** at your feet before moving on.",
+      "the sound of footsteps attracts your attention. You discover {{pet}}, **{{owner}}**'s pet, galloping along the same path as you. On seeing you, the pet stops and lets out a {emote:unitValues.token} **jeton** from its coat before setting off again.",
+      "you notice {{pet}} de **{{owner}}** strolling quietly along not far from you. The expedition pet spots you and, with a friendly gesture, rolls a {emote:unitValues.token} **jeton** in your direction.",
+      "a familiar silhouette emerges in the distance: it's {{pet}}, **{{owner}}**'s pet, out on an expedition. He joins you briefly and drops a {emote:unitValues.token} **jeton** from his collar before continuing his mission."
+    ]
+  },
+  "altar": {
+    "intro": [
+      "you see an ancient stone altar at the side of the path, adorned with luminous runes. A hooded oracle stands before it, hands outstretched. He whispers that the spirits of the world await a collective offering. The kitty is currently at **{{poolAmount, number}}** {{moneyEmote}} out of **{{poolThreshold, number}}** {{moneyEmote}} needed.",
+      "a golden glow draws your gaze to an altar hidden behind the trees. An old oracle beckons you to approach. He explains that travelers contribute together to a sacred offering. Currently, **{{poolAmount, number}}** {{moneyEmote}} have been gathered from the **{{poolThreshold, number}}** {{moneyEmote}} required.",
+      "you come upon a mystical altar surrounded by flickering candles. The oracle guarding it greets you with an enigmatic smile. He informs you that the blessing pool contains **{{poolAmount, number}}** {{moneyEmote}} of the **{{poolThreshold, number}}** {{moneyEmote}} needed to invoke a blessing."
+    ],
+    "menu": "How much would you like to offer at the altar?",
+    "contributed": [
+      "you place **{{amount, number}}** {{moneyEmote}} on the altar. The runes light up briefly as they accept your offering. The kitty now reaches **{{poolAmount, number}}** / **{{poolThreshold, number}}** {{moneyEmote}}.",
+      "the oracle accepts your generous contribution of **{{amount, number}}** {{moneyEmote}} with an approving nod. The common kitty now stands at **{{poolAmount, number}}** / **{{poolThreshold, number}}** {{moneyEmote}}."
+    ],
+    "refused": [
+      "you go on your way without making an offering. The oracle watches you go with a look of disappointment.",
+      "you politely decline the oracle's invitation and continue on your way."
+    ],
+    "blessingTriggered": [
+      "you place **{{amount, number}}** {{moneyEmote}} on the altar and... the runes explode with light! The oracle exclaims that the offering is complete! The blessing **{{blessingType}}** is activated for all adventurers!",
+      "your offering of **{{amount, number}}** {{moneyEmote}} completes the kitty! The altar shakes and a wave of energy spreads across the world. The oracle announces that the **{{blessingType}}** blessing is now active for all!"
+    ],
+    "notEnoughMoney": [
+      "you dig into your pockets, but you don't have enough money for this offering. The oracle invites you to come back when you're more fortunate.",
+      "the oracle watches you count your coins and shakes his head. You can't afford to contribute that much."
+    ],
+    "bonusGems": [
+      "The oracle smiles at you and discreetly slips **{{gems}}** {{gemEmote}} into your purse. The spirits reward your generosity!",
+      "A glow emanates from the altar and **{{gems}}** {{gemEmote}} appear in your hand. The oracle whispers that the gods have seen your offering."
+    ],
+    "bonusItem": [
+      "In gratitude for your generosity, the oracle rummages through his belongings and hands you a mysterious object...",
+      "The runes on the altar light up and a piece of equipment materializes in front of you. The oracle beckons you to take it."
+    ],
+    "badgeAwarded": [
+      "The oracle bows deeply before you. Your devotion to the altar has been noticed by the spirits. You receive the {emote:badges.oracle_patron} badge in recognition of your exceptional patronage!",
+      "The runes on the altar cast a golden light on you. The oracle solemnly declares that you are now recognized as the Oracle's protector. You receive the {emote:badges.oracle_patron} badge!"
+    ]
   }
 }
