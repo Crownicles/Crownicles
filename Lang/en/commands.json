@@ -137,13 +137,13 @@
     "inProgressDescription": {
       "intro": "{{petDisplay}} is currently exploring far-off and mysterious lands!",
       "destination": "{emote:expedition.map} **Destination:** **{{location}}**",
-      "risk": "{{riskEmoji}} **Danger:** {{risk}}",
+      "risk": "{{riskEmoji}} **Danger: ** {{risk}}",
       "returnTime": "{emote:clocks.1} **Scheduled return:** {{returnTime}}",
       "warning_male": "{emote:collectors.warning} *Calling your pet back prematurely will break the bond of trust. He'll return with no loot and a bruised heart...*",
       "warning_female": "{emote:collectors.warning} *Calling your pet back prematurely will break the bond of trust. She'll return lootless and heartbroken...*"
     },
-    "inProgressFoodInfo_one": "\n{emote:expedition.food} **Packed provisions:** {{count, number}} rations",
-    "inProgressFoodInfo_other": "\n{emote:expedition.food} **Packed provisions:** {{count, number}} rations",
+    "inProgressFoodInfo_one": "\n{emote:expedition.food} **Packed provisions: ** {{count, number}} ration",
+    "inProgressFoodInfo_other": "\n{emote:expedition.food} **Provisions packed: ** {{count, number}} rations",
     "recallButton": "Call back",
     "closeButton": "Continue exploring",
     "chooseExpeditionTitle": "{{pseudo}}new shipments available",
@@ -154,7 +154,7 @@
       "header": "**{{number}}.** {{location}}",
       "duration": "{emote:expedition.duration} Estimated duration: {{duration}}",
       "terrain": "{{terrainEmoji}} Land: {{terrain}}",
-      "risk": "{{riskEmoji}} Dangerousness: {{risk}}",
+      "risk": "{{riskEmoji}} Difficulty: {{risk}}",
       "reward": "{emote:expedition.reward} Estimated awards: {{reward}}",
       "food": "{emote:expedition.food} Provisions required: {{foodDisplay}}",
       "cloneTalismanBonus": "{emote:expedition.cloneTalisman} *A strange feeling comes over you... Rumors speak of a legendary artifact that may be hidden in these lands.",
@@ -170,8 +170,8 @@
     "startedTitle": "{{pseudo}}expedition launched!",
     "expeditionStarted_male": "With an enthusiastic leap, {{petDisplay}} dashes off to **{{location}}**! You watch him disappear over the horizon, your heart full of hope.\n\n{emote:clocks.1} Scheduled return: {{returnTime}}",
     "expeditionStarted_female": "With an enthusiastic leap, {{petDisplay}} dashes off to **{{location}}**! You watch her disappear over the horizon, your heart full of hope.\n\n{emote:clocks.1} Scheduled return: {{returnTime}}",
-    "foodConsumed_one": "\n{emote:expedition.food} Provisions carried : **{{count, number}}** ration",
-    "foodConsumed_other": "\n{emote:expedition.food} Provisions carried : **{{count, number}}** rations",
+    "foodConsumed_one": "\n{emote:expedition.food} Provisions packed: **{{count, number}}** ration",
+    "foodConsumed_other": "\n{emote:expedition.food} Provisions packed: **{{count, number}}** rations",
     "foodConsumedDetails": "\n{emote:expedition.food} **Provisions taken:** {{foodDetails}}",
     "insufficientFoodWarning": {
       "noGuild": "\n\n{emote:collectors.warning} **You have no guild to prepare rations** for your pet. The risk of failure of this expedition is **tripled**.",
@@ -201,7 +201,7 @@
       "talisman": {
         "intro": "The $t(models:talisman.anchor) vibrates intensely in your bag: {{petDisplay}} is back from its expedition to **{{location}}**!"
       },
-      "risk": "{{riskEmoji}} Dangerousness: {{risk}}",
+      "risk": "{{riskEmoji}} Difficulty: {{risk}}",
       "impatience_male": "*Your companion can't wait to show you what he's got!",
       "impatience_female": "*Your companion can't wait to show you what she's brought back!"
     },
@@ -243,8 +243,8 @@
     "loveChangePartialNegative": "\n\n{emote:expedition.love} The difficulties you've encountered have somewhat shaken your pet's confidence. A few cuddles and treats will help him to recover.",
     "loveChangePartialPositive": "\n\n{emote:expedition.love} Despite the pitfalls, this adventure has slightly strengthened the bond between you. Your companion appreciates that you trust him.",
     "loveChangeSuccess": "\n\n{emote:expedition.love} This successful expedition has strengthened the bond between you. Your pet looks at you with renewed admiration!",
-    "petLikedExpedition_male": "\n\n{emote:expedition.liked} *Your companion loved this expedition! This type of destination is perfectly suited to his tastes, which increased his enthusiasm and efficiency tenfold*.",
-    "petLikedExpedition_female": "\n\n{emote:expedition.liked} *Your pet loved this expedition! This type of destination is perfectly suited to his tastes, which increased his enthusiasm and efficiency tenfold *.",
+    "petLikedExpedition_male": "\n\n{emote:expedition.liked} *Your companion loved this expedition! This type of destination is perfectly suited to his tastes, which increased his enthusiasm and efficiency tenfold.*",
+    "petLikedExpedition_female": "\n\n{emote:expedition.liked} *Your pet loved this expedition! This type of destination is perfectly suited to his tastes, which increased his enthusiasm and efficiency tenfold.*",
     "duration": {
       "minutes": "{{count}} minute",
       "minutes_other": "{{count}} minutes",
@@ -253,13 +253,13 @@
       "hoursMinutes": "{{hours}}h {{minutes}}min",
       "days": "{{count}} day",
       "days_other": "{{count}} days",
-      "daysHours": "{{days}}j {{hours}}h"
+      "daysHours": "{{days}}d {{hours}}h"
     },
     "rewards": {
       "title": "\n\n**Goal reported:**",
       "dislikedExpedition": {
-        "male": "\n{emote:expedition.disliked} *Your companion did not enjoy this destination. His lack of enthusiasm considerably reduced his finds.",
-        "female": "\n{emote:expedition.disliked} *Your pet did not enjoy this destination. His lack of enthusiasm has considerably reduced his finds."
+        "male": "\n{emote:expedition.disliked} *Your companion did not enjoy this destination. His lack of enthusiasm considerably reduced his finds.*",
+        "female": "\n{emote:expedition.disliked} *Your pet did not enjoy this destination. His lack of enthusiasm has considerably reduced his finds.*"
       },
       "money": "{emote:unitValues.money} Money earned: **{{amount, number}}** !",
       "experience": "{emote:unitValues.xp} Experience gained : **{{amount, number}}** !",
@@ -271,9 +271,9 @@
       "badgeEarned": "{emote:badges.expert_expediteur} You have been offered a free badge : **Expert Consignor** !"
     },
     "riskCategories": {
-      "trivial": "Tranquille",
+      "trivial": "Chill",
       "veryLow": "Serene",
-      "low": "Random",
+      "low": "Hazardous",
       "moderate": "Risky",
       "high": "Dangerous",
       "veryHigh": "Perilous",
@@ -288,43 +288,43 @@
       "legendary": "Exceptional"
     },
     "terrainCategories": {
-      "trivial": "Peaceful",
-      "easy": "Practical",
-      "moderate": "Accident",
+      "trivial": "Clear",
+      "easy": "Accessible",
+      "moderate": "Rugged",
       "challenging": "Hostile",
       "treacherous": "Perilous"
     },
     "mapLocationExpeditions": {
       "1": "the Mysterious Reefs of Sentinel Beach",
       "2": "the Secret Trails of the Voie Champêtre",
-      "3": "the Hidden Meadows of the Cradle",
+      "3": "Hidden Meadows of The Cradle",
       "4": "the depths of the Old Man's Forest",
       "5": "the Forgotten Labyrinths of the Daedalus Path",
       "6": "the Secret Cellars of Boug-Coton",
       "7": "the Forgotten Tombs of the Valley of the Kings",
       "8": "the Mystical Passages of the Crossroads of Destiny",
-      "9": "the Old Cobblestones of the Main Street",
+      "9": "Old Cobblestones of Main Road",
       "10": "the Lost Catacombs of Ville Forte",
       "11": "Great Axis Ambushes",
       "12": "the Plains of the Expanse",
       "13": "the Cursed Swamps of the Swampy Road",
       "14": "the Enchanted Mists of Lake Mirage",
       "15": "the snow-covered peaks of Mount Celestrum",
-      "16": "les Tanières du Chemin aux Loups",
+      "16": "Dens of the wolves path",
       "17": "Coco Village Hidden Oases",
       "18": "the Tumultuous Rapids of the Rivière Vacarme",
       "19": "the Quicksand of La Dune",
-      "20": "les Champs Paisibles des Plaines du Contre Bois",
+      "20": "Peaceful Fields of Counterwood Plains",
       "21": "the Abandoned Shops of the Route des Merveilles",
-      "22": "les Galeries Obscures du Bois Hurlant",
+      "22": "Dark Galleries of Howling Woods",
       "23": "the Secret Alleys of Claire de Ville",
       "24": "the Escarpments of the Climbing Road",
-      "25": "les Méandres de la Rivière aux Crabes",
+      "25": "Crab's River Meanders",
       "26": "Mergagnan old quarters",
       "27": "the Mystic Glades of the Celestrum Forest",
       "28": "Les Souterrains des Portes du Château",
       "29": "the Alcoves in the Reception Room",
-      "32": "les Pavés Royaux de la Route vers le Château"
+      "32": "Royal Cobblestones of Castle Road"
     },
     "errors": {
       "noPet": "Nature spirits refuse to let you send a pet... because you don't have one!",
@@ -698,7 +698,7 @@
       "top_1_before_reset": "Person who has reached the top of the ranking after the reset",
       "very_powerful_guild": "Member of a very powerful guild",
       "animal_lover": "Person who has shown all the pets to Talvar the dwarf",
-      "expert_expediteur": "A person who has successfully completed numerous expeditions with their pet",
+      "expert_expediteur": "Person who has successfully completed numerous expeditions with their pet",
       "oracle_patron": "Protector of the Oracle, having contributed generously to many blessings"
     },
     "fightRanked": {
@@ -821,7 +821,7 @@
     "tokensNextStepArrived": "{emote:messages.info} You've arrived at your destination! Use {command:report} to see what awaits you.",
     "tokensNextStepSmallEvent": "{emote:messages.info} An event is waiting for you on the road. Use {command:report} to find out.",
     "tokensUsedRefusedTitle": "{{pseudo}}, cancellation",
-    "tokensUsedRefusedDescription": "{emote:messages.refuse} You have decided to keep your tokens.",
+    "tokensUsedRefusedDescription": "{emote:messages.refuse} You decide to keep your tokens.",
     "buyHealButton": "Taking care of yourself",
     "notEnoughMoneyHealButton": "Not enough money",
     "buyHealLoading": "Loading...",
@@ -865,7 +865,7 @@
     "shelterPetOption": "{{rarity}} | {{sex}} {{loveLevel}}",
     "cancelButton": "Cancel",
     "feistyCostPaid": "The liberation cost you {{cost, number}} {emote:unitValues.money}.",
-    "luckyMeat": "The familiar left you a piece of meat when you left! {emote:food.carnivorousFood}"
+    "luckyMeat": "The familiar left you a piece of meat when you left! {emote:foods.carnivorousFood}"
   },
   "petNick": {
     "successTitle": "{{pseudo}}, changing the pet's nickname",
@@ -1016,7 +1016,7 @@
         "giveTitle": "{{pseudo}}, purchase successful!",
         "giveDesc": "After a long examination of your pet and its state of health, the vet will give you his report:\n\n**{{petName}}** {{commentOnResult}}\n{emote:petInformation.loveScore} **Love score** : {{actualLP, number}} / {{maxLovePoints, number}}\n{emote:petInformation.diet} **Diet**: {{diet}}\n{emote:petInformation.force} **Strength**: {{force, number}}\n{emote:petInformation.speed} **Speed**: {{speed, number}}\n{emote:petInformation.feedDelay} **Meal interval**: {{feedDelay}}\n{emote:petInformation.nextFeed} **Next hunger**: {{nextFeed}}\n{emote:petInformation.age} **Age**: {{commentOnPetAge}}\n\n{emote:petInformation.fightEffect} **Fighting effect**: {{commentOnFightEffect}}{{expeditionSection}}\n\n {{dwarfPet}}",
         "expeditionPreferences": "\n\n{emote:expedition.map} **Exploration benefits**:\n{{likedLocations}}{{dislikedLocations}}",
-        "likedLocations": "{emote:expedition.liked} Prosperous in: {{locations}}",
+        "likedLocations": "{emote:expedition.liked} Thrives in: {{locations}}",
         "dislikedLocations": "\n{emote:expedition.disliked} Wary of : {{locations}}",
         "noPreferences": "\n\n{emote:expedition.map} **Exploring advantages**: I've observed in your pet a remarkable ability to adapt. Its instinct allows it to acclimatize to all types of terrain without any particular difficulty.",
         "petIsHungry": "{emote:effects.starving} hungry",
@@ -1958,12 +1958,12 @@
   },
   "deletecode": {
     "title": "Account deletion code",
-    "success": "**Deletion code generated**\n\n**Discord ID :** `{{discordId}}`\n**Keycloak ID :** `{{keycloakId}}`\n**Code :** `{{code}}`\n\nSend this code to the user by email. He will have to send a DM to the bot with:\n`DELETE ACCOUNT {{code}}`",
+    "success": "**Deletion code generated**\n\n**Discord ID: ** `{{discordId}}`\n**Keycloak ID: ** `{{keycloakId}}`\n**Code: ** `{{code}}`\n\nSend this code to the user by email. He will have to send a DM to the bot with:\n`DELETE ACCOUNT {{code}}`",
     "userNotFound": "No users found with this Discord ID."
   },
   "exportgdpr": {
     "title": "GDPR Export",
-    "success": "The GDPR export has been generated successfully.\n\n**Anonymized player ID:** `{{anonymizedId}}`\n**Generated files:** {{fileCount}}",
+    "success": "The GDPR export has been generated successfully.\n\n**Anonymized player ID: ** `{{anonymizedId}}`\n**Generated files: ** {{fileCount}}",
     "started": "The GDPR export has been started. You will receive the result via DM once the export is complete.",
     "userNotFound": "No player found with this Discord ID.",
     "playerNotFound": "This player does not exist in the database.",
@@ -1973,8 +1973,8 @@
   "blessing": {
     "title": "{emote:smallEvents.altar} Blessings | {{pseudo}}",
     "active": "{emote:blessingCommand.active} **Active blessing : {{blessingName}}**\n\n{{blessingEffect}}\n\n{emote:blessingCommand.timeLeft} Time remaining : {{timeLeft}}\n{emote:blessingCommand.triggeredBy} Triggered by : **{{triggeredBy}}**",
-    "collecting": "{emote:smallEvents.altar} **Kitty being collected**\n\nAdventurers contribute to invoke a blessing.\n\n{{moneyEmote}} Progress: **{{poolAmount, number}}** / **{{poolThreshold, number}}** ({{percentage}}%)\n{emote:blessingCommand.timeLeft} Kitty expires: {{poolExpiresAt}}\n\nContribute by meeting the Oracle on your travels!",
-    "contributors_one": "{emote:blessingCommand.topContributor} **Largest contributor:** {{topContributorName}} ({{topContributorAmount, number}} {{moneyEmote}})\n{emote:blessingCommand.contributors} **{{count}}** adventurer has contributed so far.",
+    "collecting": "{emote:smallEvents.altar} **Current pot in progress**\n\nAdventurers contribute to invoke a blessing.\n\n{{moneyEmote}} Progress: **{{poolAmount, number}}** / **{{poolThreshold, number}}** ({{percentage}}%)\n{emote:blessingCommand.timeLeft} Kitty expires: {{poolExpiresAt}}\n\nContribute by meeting the Oracle on your travels!",
+    "contributors_one": "{emote:blessingCommand.topContributor} **Largest contributor:** {{topContributorName}} ({{topContributorAmount, number}} {{moneyEmote}})\n{emote:blessingCommand.contributors} **{{count}}** adventurer have contributed so far.",
     "contributors_other": "{emote:blessingCommand.topContributor} **Largest contributor:** {{topContributorName}} ({{topContributorAmount, number}} {{moneyEmote}})\n{emote:blessingCommand.contributors} **{{count}}** adventurers have contributed so far."
   }
 }
