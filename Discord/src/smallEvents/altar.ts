@@ -17,7 +17,11 @@ import { getRandomSmallEventIntro } from "../utils/SmallEventUtils";
 import i18n from "../translations/i18n";
 import { sendInteractionNotForYou } from "../utils/ErrorUtils";
 import { ReactionCollectorReturnTypeOrNull } from "../packetHandlers/handlers/ReactionCollectorHandlers";
-import { SmallEventAltarPacket } from "../../../Lib/src/packets/smallEvents/SmallEventAltarPacket";
+import {
+	SmallEventAltarContributedPacket,
+	SmallEventAltarFirstEncounterPacket,
+	SmallEventAltarNoContributionPacket
+} from "../../../Lib/src/packets/smallEvents/SmallEventAltarPacket";
 import { Language } from "../../../Lib/src/Language";
 
 export async function altarCollector(context: PacketContext, packet: ReactionCollectorAltarPacket): Promise<ReactionCollectorReturnTypeOrNull> {
@@ -108,20 +112,21 @@ export async function altarCollector(context: PacketContext, packet: ReactionCol
 	return [buttonCollector];
 }
 
-function determineAltarStory(packet: SmallEventAltarPacket): string {
+function determineNoContributionStory(packet: SmallEventAltarNoContributionPacket): string {
 	if (!packet.hasEnoughMoney) {
 		return "notEnoughMoney";
 	}
-	if (!packet.contributed) {
-		return "refused";
-	}
+	return "refused";
+}
+
+function determineContributedStory(packet: SmallEventAltarContributedPacket): string {
 	if (packet.blessingTriggered) {
 		return "blessingTriggered";
 	}
 	return "contributed";
 }
 
-function buildAltarBonusText(packet: SmallEventAltarPacket, lng: Language): string {
+function buildAltarBonusText(packet: SmallEventAltarContributedPacket, lng: Language): string {
 	let bonusText = "";
 	if (packet.bonusGems > 0) {
 		bonusText += `\n\n${StringUtils.getRandomTranslation("smallEvents:altar.bonusGems", lng, {
@@ -138,35 +143,59 @@ function buildAltarBonusText(packet: SmallEventAltarPacket, lng: Language): stri
 	return bonusText;
 }
 
-export async function altarResult(packet: SmallEventAltarPacket, context: PacketContext): Promise<void> {
-	// First encounter: use the original interaction (no collector involved)
-	if (packet.firstEncounter) {
-		const interaction = DiscordCache.getInteraction(context.discord!.interaction);
-		if (!interaction) {
-			return;
-		}
-		const lng = interaction.userLanguage;
-
-		await interaction.editReply({
-			embeds: [
-				new CrowniclesSmallEventEmbed(
-					"altar",
-					`${getRandomSmallEventIntro(lng)}${i18n.t("smallEvents:altar.firstEncounter", { lng })}`,
-					interaction.user,
-					lng
-				)
-			]
-		});
+export async function altarFirstEncounter(_packet: SmallEventAltarFirstEncounterPacket, context: PacketContext): Promise<void> {
+	const interaction = DiscordCache.getInteraction(context.discord!.interaction);
+	if (!interaction) {
 		return;
 	}
+	const lng = interaction.userLanguage;
 
+	await interaction.editReply({
+		embeds: [
+			new CrowniclesSmallEventEmbed(
+				"altar",
+				`${getRandomSmallEventIntro(lng)}${i18n.t("smallEvents:altar.firstEncounter", { lng })}`,
+				interaction.user,
+				lng
+			)
+		]
+	});
+}
+
+export async function altarNoContribution(packet: SmallEventAltarNoContributionPacket, context: PacketContext): Promise<void> {
 	const interaction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
 	if (!interaction) {
 		return;
 	}
 	const lng = context.discord!.language;
 
-	const story = determineAltarStory(packet);
+	const story = determineNoContributionStory(packet);
+
+	await interaction.editReply({
+		embeds: [
+			new CrowniclesSmallEventEmbed(
+				"altar",
+				StringUtils.getRandomTranslation(`smallEvents:altar.${story}`, lng, {
+					amount: packet.amount,
+					moneyEmote: CrowniclesIcons.unitValues.money,
+					poolAmount: packet.newPoolAmount,
+					poolThreshold: packet.poolThreshold
+				}),
+				interaction.user,
+				lng
+			)
+		]
+	});
+}
+
+export async function altarContributed(packet: SmallEventAltarContributedPacket, context: PacketContext): Promise<void> {
+	const interaction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
+	if (!interaction) {
+		return;
+	}
+	const lng = context.discord!.language;
+
+	const story = determineContributedStory(packet);
 	const bonusText = buildAltarBonusText(packet, lng);
 
 	await interaction.editReply({
@@ -178,7 +207,7 @@ export async function altarResult(packet: SmallEventAltarPacket, context: Packet
 					moneyEmote: CrowniclesIcons.unitValues.money,
 					poolAmount: packet.newPoolAmount,
 					poolThreshold: packet.poolThreshold,
-					blessingType: packet.blessingType > 0
+					blessingType: packet.blessingTriggered
 						? i18n.t(`bot:blessingNames.${packet.blessingType}`, { lng })
 						: ""
 				})

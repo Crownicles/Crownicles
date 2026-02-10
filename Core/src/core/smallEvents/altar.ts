@@ -13,7 +13,11 @@ import Player from "../database/game/models/Player";
 import {
 	CrowniclesPacket, makePacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
-import { SmallEventAltarPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventAltarPacket";
+import {
+	SmallEventAltarContributedPacket,
+	SmallEventAltarFirstEncounterPacket,
+	SmallEventAltarNoContributionPacket
+} from "../../../../Lib/src/packets/smallEvents/SmallEventAltarPacket";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { PlayerMissionsInfos } from "../database/game/models/PlayerMissionsInfo";
@@ -103,18 +107,11 @@ function sendNoContribution(
 		amount?: number; hasEnoughMoney?: boolean;
 	} = {}
 ): void {
-	response.push(makePacket(SmallEventAltarPacket, {
-		contributed: false,
+	response.push(makePacket(SmallEventAltarNoContributionPacket, {
 		amount: overrides.amount ?? 0,
-		blessingTriggered: false,
-		blessingType: 0,
 		newPoolAmount: blessingManager.getPoolAmount(),
 		poolThreshold: blessingManager.getPoolThreshold(),
-		hasEnoughMoney: overrides.hasEnoughMoney ?? true,
-		bonusGems: 0,
-		bonusItemGiven: false,
-		badgeAwarded: false,
-		firstEncounter: false
+		hasEnoughMoney: overrides.hasEnoughMoney ?? true
 	}));
 	BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.ALTAR_SMALL_EVENT);
 }
@@ -155,18 +152,15 @@ function getEndCallback(player: Player, context: PacketContext): EndCallback {
 		} = await calculateBonusRewards(chosenAmount, player);
 		const badgeAwarded = await checkAndAwardOraclePatronBadge(player, chosenAmount);
 
-		response.push(makePacket(SmallEventAltarPacket, {
-			contributed: true,
+		response.push(makePacket(SmallEventAltarContributedPacket, {
 			amount: chosenAmount,
 			blessingTriggered,
 			blessingType: blessingTriggered ? blessingManager.getActiveBlessingType() : 0,
 			newPoolAmount: blessingManager.getPoolAmount(),
 			poolThreshold: blessingManager.getPoolThreshold(),
-			hasEnoughMoney: true,
 			bonusGems,
 			bonusItemGiven,
-			badgeAwarded,
-			firstEncounter: false
+			badgeAwarded
 		}));
 
 		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.ALTAR_SMALL_EVENT);
@@ -191,19 +185,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 		// Small events are logged before execution (see ReportSmallEventService), so count <= 1 means first encounter
 		const altarEncounterCount = await LogsReadRequests.getSmallEventEncounterCount(player.keycloakId, "altar");
 		if (altarEncounterCount <= 1) {
-			response.push(makePacket(SmallEventAltarPacket, {
-				contributed: false,
-				amount: 0,
-				blessingTriggered: false,
-				blessingType: 0,
-				newPoolAmount: 0,
-				poolThreshold: 0,
-				hasEnoughMoney: true,
-				bonusGems: 0,
-				bonusItemGiven: false,
-				badgeAwarded: false,
-				firstEncounter: true
-			}));
+			response.push(makePacket(SmallEventAltarFirstEncounterPacket, {}));
 			return;
 		}
 

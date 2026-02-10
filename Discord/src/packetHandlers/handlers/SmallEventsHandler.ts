@@ -106,8 +106,14 @@ import {
 	ExpeditionAdviceInteractionType
 } from "../../../../Lib/src/packets/smallEvents/SmallEventExpeditionAdvicePacket";
 import { SmallEventPetDropTokenPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventPetDropTokenPacket";
-import { SmallEventAltarPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventAltarPacket";
-import { altarResult } from "../../smallEvents/altar";
+import {
+	SmallEventAltarContributedPacket,
+	SmallEventAltarFirstEncounterPacket,
+	SmallEventAltarNoContributionPacket
+} from "../../../../Lib/src/packets/smallEvents/SmallEventAltarPacket";
+import {
+	altarContributed, altarFirstEncounter, altarNoContribution
+} from "../../smallEvents/altar";
 import { resolveKeycloakPlayerName } from "../../utils/KeycloakPlayerUtils";
 
 const PET_TIME_INTERACTIONS = new Set([
@@ -1217,8 +1223,18 @@ export default class SmallEventsHandler {
 		});
 	}
 
-	@packetHandler(SmallEventAltarPacket)
-	async smallEventAltar(context: PacketContext, packet: SmallEventAltarPacket): Promise<void> {
-		await altarResult(packet, context);
+	@packetHandler(SmallEventAltarFirstEncounterPacket)
+	async smallEventAltarFirstEncounter(context: PacketContext, packet: SmallEventAltarFirstEncounterPacket): Promise<void> {
+		await altarFirstEncounter(packet, context);
+	}
+
+	@packetHandler(SmallEventAltarNoContributionPacket)
+	async smallEventAltarNoContribution(context: PacketContext, packet: SmallEventAltarNoContributionPacket): Promise<void> {
+		await altarNoContribution(packet, context);
+	}
+
+	@packetHandler(SmallEventAltarContributedPacket)
+	async smallEventAltarContributed(context: PacketContext, packet: SmallEventAltarContributedPacket): Promise<void> {
+		await altarContributed(packet, context);
 	}
 }
