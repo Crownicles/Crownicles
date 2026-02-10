@@ -137,13 +137,13 @@
     "inProgressDescription": {
       "intro": "{{petDisplay}} is currently exploring far-off and mysterious lands!",
       "destination": "{emote:expedition.map} **Destination:** **{{location}}**",
-      "risk": "{{riskEmoji}} **Danger:** {{risk}}",
+      "risk": "{{riskEmoji}} **Danger: ** {{risk}}",
       "returnTime": "{emote:clocks.1} **Scheduled return:** {{returnTime}}",
       "warning_male": "{emote:collectors.warning} *Calling your pet back prematurely will break the bond of trust. He'll return with no loot and a bruised heart...*",
       "warning_female": "{emote:collectors.warning} *Calling your pet back prematurely will break the bond of trust. She'll return lootless and heartbroken...*"
     },
-    "inProgressFoodInfo_one": "\n{emote:expedition.food} **Packed provisions:** {{count, number}} rations",
-    "inProgressFoodInfo_other": "\n{emote:expedition.food} **Packed provisions:** {{count, number}} rations",
+    "inProgressFoodInfo_one": "\n{emote:expedition.food} **Packed provisions: ** {{count, number}} ration",
+    "inProgressFoodInfo_other": "\n{emote:expedition.food} **Packed provisions: ** {{count, number}} rations",
     "recallButton": "Call back",
     "closeButton": "Continue exploring",
     "chooseExpeditionTitle": "{{pseudo}}new shipments available",
@@ -243,8 +243,8 @@
     "loveChangePartialNegative": "\n\n{emote:expedition.love} The difficulties you've encountered have somewhat shaken your pet's confidence. A few cuddles and treats will help him to recover.",
     "loveChangePartialPositive": "\n\n{emote:expedition.love} Despite the pitfalls, this adventure has slightly strengthened the bond between you. Your companion appreciates that you trust him.",
     "loveChangeSuccess": "\n\n{emote:expedition.love} This successful expedition has strengthened the bond between you. Your pet looks at you with renewed admiration!",
-    "petLikedExpedition_male": "\n\n{emote:expedition.liked} *Your companion loved this expedition! This type of destination is perfectly suited to his tastes, which increased his enthusiasm and efficiency tenfold*.",
-    "petLikedExpedition_female": "\n\n{emote:expedition.liked} *Your pet loved this expedition! This type of destination is perfectly suited to his tastes, which increased his enthusiasm and efficiency tenfold *.",
+    "petLikedExpedition_male": "\n\n{emote:expedition.liked} *Your companion loved this expedition! This type of destination is perfectly suited to his tastes, which increased his enthusiasm and efficiency tenfold.*",
+    "petLikedExpedition_female": "\n\n{emote:expedition.liked} *Your pet loved this expedition! This type of destination is perfectly suited to his tastes, which increased his enthusiasm and efficiency tenfold.*",
     "duration": {
       "minutes": "{{count}} minute",
       "minutes_other": "{{count}} minutes",
@@ -253,13 +253,13 @@
       "hoursMinutes": "{{hours}}h {{minutes}}min",
       "days": "{{count}} day",
       "days_other": "{{count}} days",
-      "daysHours": "{{days}}j {{hours}}h"
+      "daysHours": "{{days}}d {{hours}}h"
     },
     "rewards": {
       "title": "\n\n**Goal reported:**",
       "dislikedExpedition": {
-        "male": "\n{emote:expedition.disliked} *Your companion did not enjoy this destination. His lack of enthusiasm considerably reduced his finds.",
-        "female": "\n{emote:expedition.disliked} *Your pet did not enjoy this destination. His lack of enthusiasm has considerably reduced his finds."
+        "male": "\n{emote:expedition.disliked} *Your companion did not enjoy this destination. His lack of enthusiasm considerably reduced his finds.*",
+        "female": "\n{emote:expedition.disliked} *Your pet did not enjoy this destination. His lack of enthusiasm has considerably reduced his finds.*"
       },
       "money": "{emote:unitValues.money} Money earned: **{{amount, number}}** !",
       "experience": "{emote:unitValues.xp} Experience gained : **{{amount, number}}** !",
@@ -271,7 +271,7 @@
       "badgeEarned": "{emote:badges.expert_expediteur} You have been offered a free badge : **Expert Consignor** !"
     },
     "riskCategories": {
-      "trivial": "Tranquille",
+      "trivial": "Chill",
       "veryLow": "Serene",
       "low": "Random",
       "moderate": "Risky",
