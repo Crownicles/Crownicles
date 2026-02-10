@@ -139,6 +139,27 @@ function buildAltarBonusText(packet: SmallEventAltarPacket, lng: Language): stri
 }
 
 export async function altarResult(packet: SmallEventAltarPacket, context: PacketContext): Promise<void> {
+	// First encounter: use the original interaction (no collector involved)
+	if (packet.firstEncounter) {
+		const interaction = DiscordCache.getInteraction(context.discord!.interaction);
+		if (!interaction) {
+			return;
+		}
+		const lng = interaction.userLanguage;
+
+		await interaction.editReply({
+			embeds: [
+				new CrowniclesSmallEventEmbed(
+					"altar",
+					`${getRandomSmallEventIntro(lng)}${i18n.t("smallEvents:altar.firstEncounter", { lng })}`,
+					interaction.user,
+					lng
+				)
+			]
+		});
+		return;
+	}
+
 	const interaction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
 	if (!interaction) {
 		return;
