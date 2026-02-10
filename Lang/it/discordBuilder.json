@@ -404,7 +404,7 @@
     }
   },
   "blessing": {
-    "name": "benediction",
-    "description": "Voir l'état actuel de la bénédiction globale."
+    "name": "benedizione",
+    "description": "Vedere lo stato attuale della benedizione globale."
   }
 }
