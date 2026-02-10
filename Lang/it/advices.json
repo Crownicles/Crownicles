@@ -284,6 +284,22 @@
     "Se si invia l'animale in una spedizione breve in un luogo che non gli piace, il rischio di fallimento aumenta. Le spedizioni lunghe non ne risentono.",
     "Nelle spedizioni, il pericolo è il principale fattore di fallimento. Il terreno aggiunge un modificatore secondario e può rendere le spedizioni più difficili.",
     "Alcuni siti di spedizione sono più rischiosi di altri: le pianure e le coste sono relativamente sicure, mentre le grotte e le rovine sono più pericolose.",
-    "Se siete membri di una gilda, potete usare il comando {command:petfree}per liberare gli animali del rifugio e i vostri."
+    "Se siete membri di una gilda, potete usare il comando {command:petfree}per liberare gli animali del rifugio e i vostri.",
+    "Durante i vostri viaggi, potreste imbattervi in un oracolo che custodisce un antico altare. Vi chiederà di contribuire a una cassa collettiva: quando sarà piena, si attiverà una benedizione per tutti i giocatori!",
+    "Avete tre opzioni per contribuire all'oracolo: un importo fisso, una percentuale del vostro denaro o un importo basato sul vostro livello. Scegliete quello che potete permettervi!",
+    "Le benedizioni vanno a beneficio di tutti gli avventurieri del mondo, non solo di quelli che hanno contribuito. Anche una piccola offerta aiuta l'intera comunità!",
+    "Esistono nove diversi tipi di benedizione: possono migliorare i guadagni in denaro, il punteggio, il bottino di battaglia, l'affetto degli animali domestici e molto altro ancora. Utilizzate {command:blessing} per vedere quale benedizione è attiva.",
+    "Quando si contribuisce generosamente all'altare dell'oracolo, si ha la possibilità di ricevere un bonus: gemme o un oggetto misterioso come ricompensa per la propria devozione.",
+    "L'oracolo non appare quando una benedizione è già attiva. Una volta che la benedizione è scaduta, è possibile incrociarlo di nuovo.",
+    "La soglia del jackpot dell'oracolo si regola nel tempo: se i giocatori riempiono rapidamente il jackpot, la soglia successiva sarà più alta. Al contrario, se ci vuole tempo, la soglia sarà più bassa.",
+    "Una benedizione dura tra le 8 e le 24 ore. Visitate {command:blessing} per sapere quanto tempo rimane e quale effetto è attivo.",
+    "Se il gattino dell'oracolo non viene riempito in tempo, scadrà e verrà ripristinato con una soglia più appropriata. Quindi non aspettate troppo prima di contribuire!",
+    "La Benedizione della Rabbia Amplificata raddoppia i guadagni di rabbia, facilitando il raggiungimento di livelli più alti.",
+    "Quando la Benedizione del Bottino di Battaglia è attiva, le ricompense di battaglia (denaro e punti) sono moltiplicate per 4, a eccezione della gloria. È il momento perfetto per scendere in battaglia!",
+    "La Benedizione dell'amore per gli animali domestici raddoppia i guadagni di affetto. Cogliete l'occasione per rafforzare il legame con il vostro compagno!",
+    "Grazie alla benedizione delle missioni giornaliere, le ricompense delle missioni vengono raddoppiate. Ricordatevi di completare le missioni quando è attiva!",
+    "La benedizione delle missioni giornaliere è sempre limitata al giorno in corso: anche se la durata disegnata supera la mezzanotte, sarà accorciata per essere applicata solo alla missione del giorno.",
+    "I giocatori più devoti all'oracolo saranno alla fine riconosciuti. Grazie ai vostri contributi, potreste guadagnare un distintivo speciale che premia la vostra generosità!",
+    "Quando l'animale di un altro giocatore è in spedizione sul vostro stesso percorso, può incrociare il vostro cammino e lasciarvi un gettone in regalo!"
   ]
 }

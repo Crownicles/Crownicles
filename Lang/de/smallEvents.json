@@ -2430,5 +2430,50 @@
       "Velanna kommt hinter einem moosbewachsenen Felsen hervor, einen abgenagten Knochen zwischen den Zähnen, den sie achtlos über die Schulter wirft. Sie kommt auf Sie zu und legt eine Hand auf Ihre Schulter. Sie erzählt Ihnen, dass ein Ältester ihres Clans die Angewohnheit hatte, im letzten Moment seine Meinung zu ändern und seinen Vertrauten immer wieder von unterwegs zurückzurufen. Das Tier hat ihn schließlich gehasst. Sie warnt Sie, dass der Verlust der Zuneigung umso schwerer wird, je häufiger die Absagen erfolgen.",
       "Velanna versperrt Ihnen den Weg, breitbeinig und mit verschränkten Armen, ein strenger Ausdruck auf ihrem vernarbten Gesicht. Sie befiehlt Ihnen, ihr aufmerksam zuzuhören. Sie erklärt Ihnen, dass die Augen eines Vertrauten vor Aufregung leuchten, wenn er eine Expeditionskarte sieht, und dass sein Herz bei dem Gedanken an das versprochene Abenteuer höher schlägt. Sie erklärt Ihnen, dass eine Absage vor der Abreise oder ein Rückruf während der Erkundung die gleiche verheerende Wirkung hat: ein gebrochenes Versprechen. Sie zählt an ihren Fingern ab und warnt Sie, dass sich der Verlust der Liebe beim zweiten Verrat verdoppelt, beim dritten verdreifacht. Vertraute vergessen nie."
     ]
+  },
+  "petDropToken": {
+    "stories": [
+      "sehen Sie {{pet}}, den Vertrauten von **{{owner}}**, der fröhlich auf demselben Weg wie Sie trabt. Als er an Ihnen vorbeigeht, lässt er einen glänzenden Gegenstand aus seinem Maul fallen. Sie heben es auf: Es ist ein {emote:unitValues.token} **jeton**!",
+      "treffen Sie auf Ihrem Weg auf {{pet}} von **{{owner}}**, der sich auf einer Expedition befindet. Der Vertraute scheint Sie zu erkennen und legt Ihnen einen {emote:unitValues.token} **Jeton** zu Füßen, bevor er seinen Weg fortsetzt.",
+      "Ein Geräusch von Schritten erregt Ihre Aufmerksamkeit. Sie entdecken {{pet}}, den Vertrauten von **{{owner}}**, der auf der gleichen Strecke wie Sie galoppiert. Als er Sie sieht, bleibt der Vertraute stehen und lässt einen {emote:unitValues.token} **jeton** aus seinem Fell springen, bevor er wieder losrennt.",
+      "bemerken Sie {{pet}} von **{{owner}}**, der nicht weit von Ihnen entfernt gemütlich spazieren geht. Der Vertraute auf Expedition erblickt Sie und lässt mit einer freundlichen Geste einen {emote:unitValues.token} **jeton** in Ihre Richtung rollen.",
+      "Eine vertraute Gestalt taucht in der Ferne auf: Es ist {{pet}}, der Vertraute von **{{owner}}**, der sich auf einer Expedition befindet. Er schließt sich Ihnen kurz an und lässt einen {emote:unitValues.token} **jeton** von seinem Halsband fallen, bevor er seine Mission fortsetzt."
+    ]
+  },
+  "altar": {
+    "intro": [
+      "sehen Sie am Wegesrand einen alten Steinaltar, der mit leuchtenden Runen geschmückt ist. Ein Orakel mit Kapuze steht mit ausgestreckten Händen davor. Er flüstert, dass die Geister der Welt auf eine kollektive Opfergabe warten. Der Pool steht derzeit bei **{{poolAmount, number}}** {{moneyEmote}} von **{{poolThreshold, number}}** {{moneyEmote}} benötigten.",
+      "Ein goldenes Leuchten lenkt Ihren Blick auf einen Altar, der hinter den Bäumen verborgen ist. Ein altes Orakel winkt Sie heran. Er erklärt Ihnen, dass die Reisenden gemeinsam zu einer heiligen Opfergabe beitragen. Derzeit wurden **{{poolAmount, number}}** {{moneyEmote}} von den erforderlichen **{{poolThreshold, number}}** {{moneyEmote}} gesammelt.",
+      "stoßen Sie auf einen mystischen Altar, der von flackernden Kerzen umgeben ist. Das Orakel, das ihn bewacht, begrüßt Sie mit einem rätselhaften Lächeln. Er teilt Ihnen mit, dass der Segenstopf **{{poolAmount, number}}** {{moneyEmote}} von **{{poolThreshold, number}}** {{moneyEmote}} enthält, die Sie benötigen, um einen Segen zu beschwören."
+    ],
+    "menu": "Wie viel möchten Sie vor den Altar bringen?",
+    "contributed": [
+      "legen Sie **{{amount, number}}** {{moneyEmote}} auf den Altar. Die Runen leuchten kurz auf, als sie Ihre Opfergabe annehmen. Der Topf erreicht nun **{{poolAmount, number}}** / **{{poolThreshold, number}}** {{moneyEmote}}.",
+      "das Orakel nimmt Ihre großzügige Spende von **{{amount, number}}** {{moneyEmote}} mit einem zustimmenden Nicken entgegen. Der gemeinsame Topf beläuft sich nun auf **{{poolAmount, number}}** / **{{poolThreshold, number}}** {{moneyEmote}}."
+    ],
+    "refused": [
+      "gehen Sie weiter, ohne ein Opfer zu bringen. Das Orakel sieht Ihnen enttäuscht nach.",
+      "lehnen Sie die Einladung des Orakels höflich ab und setzen Ihren Weg fort."
+    ],
+    "blessingTriggered": [
+      "legen Sie **{{amount, number}}** {{moneyEmote}} auf den Altar und... die Runen explodieren vor Licht! Das Orakel ruft aus, dass die Opfergabe vollständig ist! Der Segen **{{blessingType}}** wird für alle Abenteurer aktiviert!",
+      "Ihre Opfergabe von **{{amount, number}}** {{moneyEmote}} vervollständigt den Topf! Der Altar bebt und eine Energiewelle breitet sich über die Welt aus. Das Orakel verkündet, dass der Segen **{{blessingType}}** nun für alle aktiv ist!"
+    ],
+    "notEnoughMoney": [
+      "du durchsuchst deine Taschen, aber du hast nicht genug Geld für diese Opfergabe. Das Orakel fordert Sie auf, wiederzukommen, wenn Sie mehr Geld haben.",
+      "das Orakel sieht Ihnen beim Zählen Ihrer Münzen zu und schüttelt den Kopf. Sie können es sich nicht leisten, so viel beizutragen."
+    ],
+    "bonusGems": [
+      "Das Orakel lächelt Sie an und schiebt unauffällig **{{gems}}** {{gemEmote}} in Ihre Börse. Die Geister belohnen Ihre Großzügigkeit!",
+      "Ein Lichtschein geht vom Altar aus und **{{gems}}** {{gemEmote}} erscheinen in Ihrer Hand. Das Orakel flüstert, dass die Götter Ihre Opfergabe gesehen haben."
+    ],
+    "bonusItem": [
+      "Als Dank für Ihre Großzügigkeit wühlt das Orakel in seinen Sachen und reicht Ihnen einen geheimnisvollen Gegenstand...",
+      "Die Runen auf dem Altar leuchten auf und eine Ausrüstung materialisiert sich vor Ihnen. Das Orakel gibt Ihnen ein Zeichen, dass Sie es nehmen sollen."
+    ],
+    "badgeAwarded": [
+      "Das Orakel verneigt sich tief vor Ihnen. Ihre Hingabe an den Altar ist den Geistern aufgefallen. Sie erhalten das Abzeichen {emote:badges.oracle_patron} als Anerkennung für Ihre außergewöhnliche Schirmherrschaft!",
+      "Die Runen des Altars werfen ein goldenes Licht auf Sie. Das Orakel erklärt feierlich, dass Sie nun als Beschützer des Orakels anerkannt sind. Sie erhalten das Abzeichen {emote:badges.oracle_patron} !"
+    ]
   }
 }

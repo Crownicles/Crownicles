@@ -2430,5 +2430,50 @@
       "Velanna surge de trás de uma rocha coberta de musgo, com um osso roído entre os dentes que ela atira negligentemente por cima do ombro. Ela aproxima-se de si e coloca uma mão no seu ombro. Ela conta-lhe que um ancião do seu clã tinha o hábito de mudar de ideias no último momento, chamando constantemente o seu familiar de volta a meio do caminho. A besta acabou por odiá-lo. Ela avisa-o de que quanto mais cancelamentos se multiplicam, mais severa se torna a perda de afeição.",
       "Velanna barra-lhe o caminho, com as pernas afastadas e os braços cruzados, uma expressão severa no seu rosto marcado. Ela ordena-lhe que a ouça atentamente. Ela explica-lhe que os olhos de um familiar brilham de excitação perante um mapa de expedição, o seu coração acelera com a ideia da aventura prometida. Ela ensina-lhe que cancelar antes da partida ou chamar de volta em plena exploração produz o mesmo efeito devastador: uma promessa quebrada. Ela conta pelos dedos e avisa-o de que a perda de amor duplica à segunda traição, triplica à terceira. Os familiares nunca esquecem."
     ]
+  },
+  "petDropToken": {
+    "stories": [
+      "vês {{pet}}, a mascote de **{{owner}}**, a trotar alegremente pelo mesmo caminho que tu. Quando passa por ti, deixa cair um objeto brilhante da boca. Apanha-o: é um {emote:unitValues.token} **jeton**!",
+      "encontra {{pet}} de **{{owner}}** no seu caminho. O familiar parece reconhecer-te e deixa cair um **jeton** aos teus pés {emote:unitValues.token} antes de seguir em frente.",
+      "Um som de passos atrai a tua atenção. Descobres {{pet}}, a mascote de{{owner}}, a galopar pelo mesmo caminho que tu. Ao ver-te, a mascote pára e solta um {emote:unitValues.token} **jeton** do seu pelo antes de voltar a arrancar.",
+      "repara que {{pet}} de **{{owner}}** caminha calmamente não muito longe de si. O animal de estimação da expedição avista-o e, com um gesto amigável, rola um {emote:unitValues.token} **jeton** na sua direção.",
+      "Uma silhueta familiar surge ao longe: é {{pet}}, a mascote de **{{owner}}**, numa expedição. Ele junta-se a si por um instante e deixa cair um {emote:unitValues.token} **jeton** da sua coleira antes de continuar a sua missão."
+    ]
+  },
+  "altar": {
+    "intro": [
+      "vê-se um antigo altar de pedra ao lado do caminho, decorado com runas luminosas. Um oráculo encapuzado está diante dele, de mãos estendidas. Ele sussurra que os espíritos do mundo estão à espera de uma oferenda colectiva. O gatinho está atualmente a **{{poolAmount, number}}** {{moneyEmote}} dos **{{poolThreshold, number}}** {{moneyEmote}} necessários.",
+      "Um brilho dourado atrai o teu olhar para um altar escondido atrás das árvores. Um velho oráculo convida-o a aproximar-se. Ele explica que os viajantes estão todos a contribuir para uma oferenda sagrada. Atualmente, **{{poolAmount, number}}** {{moneyEmote}} foram recolhidos dos **{{poolThreshold, number}}** {{moneyEmote}} necessários.",
+      "depara-se com um altar místico rodeado de velas bruxuleantes. O oráculo que o guarda cumprimenta-te com um sorriso enigmático. Ele diz-te que a piscina das bênçãos contém **{{poolAmount, number}}** {{moneyEmote}} do **{{poolThreshold, number}}** {{moneyEmote}} necessário para invocar uma bênção."
+    ],
+    "menu": "Quanto é que gostaria de oferecer no altar?",
+    "contributed": [
+      "colocas **{{amount, number}}** {{moneyEmote}} no altar. As runas iluminam-se brevemente ao aceitarem a tua oferta. O gatinho chegou agora a **{{poolAmount, number}}** / **{{poolThreshold, number}}** {{moneyEmote}}.",
+      "o oráculo aceita a sua generosa contribuição de **{{amount, number}}** {{moneyEmote}} com um aceno de aprovação. O prémio total é agora de **{{poolAmount, number}}** / **{{poolThreshold, number}}** {{moneyEmote}}."
+    ],
+    "refused": [
+      "segue o seu caminho sem fazer uma oferenda. O oráculo vê-o partir com um olhar de desapontamento.",
+      "recusa educadamente o convite do oráculo e continua o seu caminho."
+    ],
+    "blessingTriggered": [
+      "colocas **{{amount, number}}** {{moneyEmote}} no altar e... as runas explodem de luz! O oráculo exclama que a oferenda está completa! A bênção **{{blessingType}}** é activada para todos os aventureiros!",
+      "a tua oferta de **{{amount, number}}** {{moneyEmote}} completa o gatinho! O altar treme e uma onda de energia espalha-se pelo mundo. O oráculo anuncia que a bênção **{{blessingType}}** está agora ativa para todos!"
+    ],
+    "notEnoughMoney": [
+      "O oráculo convida-o a regressar quando tiver mais sorte. O oráculo convida-o a regressar quando tiver mais sorte.",
+      "o oráculo observa-o a contar as suas moedas e abana a cabeça. Não podes dar-te ao luxo de contribuir com tanto."
+    ],
+    "bonusGems": [
+      "O oráculo sorri para si e, discretamente, coloca **{{gems}}** {{gemEmote}} na sua bolsa. Os espíritos recompensam a sua generosidade!",
+      "Um brilho emana do altar e **{{gems}}** {{gemEmote}} aparece na tua mão. O oráculo sussurra que os deuses viram a tua oferenda."
+    ],
+    "bonusItem": [
+      "Em agradecimento pela sua generosidade, o oráculo vasculha os seus pertences e entrega-lhe um objeto misterioso...",
+      "As runas do altar iluminam-se e uma peça de equipamento materializa-se à sua frente. O oráculo convida-o a pegar nele."
+    ],
+    "badgeAwarded": [
+      "O oráculo inclina-se profundamente perante vós. A vossa devoção ao altar foi notada pelos espíritos. Receberá a insígnia {emote:badges.oracle_patron} em reconhecimento do seu excecional patrocínio!",
+      "As runas no altar lançam uma luz dourada sobre ti. O oráculo declara solenemente que és agora reconhecido como o protetor do oráculo. Foste galardoado com o emblema {emote:badges.oracle_patron} !"
+    ]
   }
 }

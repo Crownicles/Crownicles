@@ -37,6 +37,30 @@
   "notificationPetExpedition": "{{petDisplay}} is back from his expedition and may have brought back some treasures!",
   "christmasBonusPreAnnouncement": "{emote:announcements.christmas} **Christmas Bonus Coming Soon!** {emote:announcements.christmas}\n\nIn a few hours, all players will receive a special gift: their token supply will be fully replenished! Enjoy this festive season!",
   "christmasBonusApplied": "{emote:announcements.christmas} **Merry Christmas** {emote:announcements.gift}\n\nSanta has come! Your stock of tokens has been filled to capacity. Take advantage of this gift to go on an adventure!",
+  "blessingAnnouncement_one": "{emote:smallEvents.altar} **Blessing activated: {{blessingName}} !**\n\nThanks to the generosity of **{{playerName}}**, a blessing has been invoked for all adventurers!\n\n{emote:blessingCommand.active} **Effect:** {{blessingEffect}}\n{emote:blessingCommand.timeLeft} **Duration:** {{durationHours}} hours\n\n{emote:blessingCommand.topContributor} **Largest contributor:** {{topContributorName}} ({{topContributorAmount, number}} {emote:unitValues.money})\n{emote:blessingCommand.contributors} **{{count}}** adventurer contributed to this blessing.",
+  "blessingAnnouncement_other": "{emote:smallEvents.altar} **Blessing activated: {{blessingName}} !**\n\nThanks to the generosity of **{{playerName}}**, a blessing has been invoked for all adventurers!\n\n{emote:blessingCommand.active} **Effect:** {{blessingEffect}}\n{emote:blessingCommand.timeLeft} **Duration:** {{durationHours}} hours\n\n{emote:blessingCommand.topContributor} **Largest contributor:** {{topContributorName}} ({{topContributorAmount, number}} {emote:unitValues.money})\n{emote:blessingCommand.contributors} **{{count}}** adventurers have contributed to this blessing.",
+  "blessingNames": {
+    "1": "Amplified rage",
+    "2": "Combat loot",
+    "3": "Energy regeneration",
+    "4": "Golden purse",
+    "5": "Increased glory",
+    "6": "Pet love",
+    "7": "Healing potions",
+    "8": "Shipping token",
+    "9": "Blessed daily mission"
+  },
+  "blessingEffects": {
+    "1": "Rage gained in combat is doubled for all players.",
+    "2": "Combat rewards (money and points) are multiplied by 4 (excluding glory).",
+    "3": "Combat energy regeneration is doubled.",
+    "4": "All cash earnings are increased by 10%.",
+    "5": "All score gains are increased by 20%.",
+    "6": "Love points earned by pets are doubled.",
+    "7": "The effectiveness of healing potions is doubled.",
+    "8": "Pet expeditions earn a bonus token.",
+    "9": "Daily mission rewards are doubled."
+  },
   "supportMessage": "{{langFlag}} If you need help, select your language using the buttons below. If you don't need help, ignore this message.\n{emote:collectors.warning} **Every message sent here can be read by a human!**\n",
   "commandDisabledInDM": "{{langFlag}} Hello, commands are disabled in private messages. Please go to a server to play!\nIf you would like help, click the button corresponding to your language below.\n",
   "accountDeletion": {

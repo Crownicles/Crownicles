@@ -284,6 +284,22 @@
     "Wenn Sie Ihren Vertrauten für eine kurze Expedition an einen Ort schicken, den er nicht mag, steigt das Risiko, dass er scheitert. Längere Expeditionen sind davon nicht betroffen.",
     "Bei Expeditionen ist die Gefährlichkeit der Hauptfaktor für das Scheitern. Das Terrain fügt einen sekundären Modifikator hinzu und kann die Expedition erschweren.",
     "Einige Expeditionsgebiete sind riskanter als andere: Ebenen und Küsten sind relativ sicher, während Höhlen und Ruinen mehr Gefahren bergen.",
-    "Wenn du Mitglied einer Gilde bist, kannst du mit dem Befehl {command:petfree}zusätzlich zu deinem eigenen Begleiter auch die Begleiter aus der Hütte befreien."
+    "Wenn du Mitglied einer Gilde bist, kannst du mit dem Befehl {command:petfree}zusätzlich zu deinem eigenen Begleiter auch die Begleiter aus der Hütte befreien.",
+    "Auf Ihren Reisen können Sie auf ein Orakel stoßen, das einen alten Altar bewacht. Wenn der Topf voll ist, wird ein Segen für alle Spieler aktiviert.",
+    "Im Angesicht des Orakels haben Sie drei Möglichkeiten, einen Beitrag zu leisten: einen festen Betrag, einen Prozentsatz Ihres Geldes oder einen Betrag, der sich nach Ihrer Stufe richtet. Wählen Sie nach Ihren Möglichkeiten!",
+    "Der Segen kommt allen Abenteurern auf der Welt zugute, nicht nur denjenigen, die etwas beigesteuert haben. Selbst eine kleine Spende hilft der gesamten Gemeinschaft!",
+    "Es gibt neun verschiedene Arten von Segnungen: Sie können Ihr Geld, Ihre Punktzahl, Ihre Kampfbeute, die Zuneigung Ihres Begleiters und vieles mehr verbessern. Verwenden Sie {command:blessing} , um zu sehen, welcher Segen gerade aktiv ist.",
+    "Wenn Sie großzügig zum Orakelaltar beitragen, haben Sie die Chance, einen Bonus zu erhalten: Edelsteine oder einen geheimnisvollen Gegenstand als Belohnung für Ihre Hingabe.",
+    "Das Orakel erscheint nicht, während ein Segen bereits aktiv ist. Erst wenn der Segen abgelaufen ist, können Sie ihm wieder auf Ihrem Weg begegnen.",
+    "Der Schwellenwert für den Orakel-Pool passt sich im Laufe der Zeit an: Wenn die Spieler den Pool schnell füllen, ist der nächste Schwellenwert höher. Umgekehrt wird er niedriger, wenn es länger dauert.",
+    "Ein Segen hält zwischen 8 und 24 Stunden. Besuchen Sie {command:blessing} , um die verbleibende Zeit und den aktiven Effekt zu erfahren.",
+    "Wenn der Pool des Orakels nicht rechtzeitig gefüllt wird, läuft er ab und wird mit einem passenderen Schwellenwert neu initialisiert. warten Sie nicht zu lange mit Ihrem Beitrag!",
+    "Der Segen des verstärkten Zorns verdoppelt die Zorngewinne, was das Erreichen höherer Stufen erleichtert.",
+    "Wenn der Segen der Kampfbeute aktiv ist, werden die Belohnungen für Ihre Kämpfe (Geld und Punkte) mit Ausnahme des Ruhmes um das Vierfache erhöht. Dies ist der perfekte Zeitpunkt, um einen Kampf nach dem anderen zu bestreiten!",
+    "Der Liebessegen der Begleiter verdoppelt den Zuneigungsgewinn. Nutzen Sie ihn, um die Bindung zu Ihrem Begleiter zu stärken!",
+    "Dank des täglichen Missionssegens werden Ihre Missionsbelohnungen verdoppelt. Denken Sie daran, Ihre Missionen abzuschließen, während sie aktiv ist!",
+    "Die Segnung von Tagesmissionen ist immer auf den aktuellen Tag beschränkt: Selbst wenn die ausgeloste Dauer über Mitternacht hinausgeht, wird sie verkürzt und gilt nur für die Tagesmission.",
+    "Die Spieler, die sich dem Orakel am meisten verschrieben haben, werden schließlich anerkannt. Durch viele Beiträge können Sie ein besonderes Abzeichen erhalten, das Ihre Großzügigkeit belohnt!",
+    "Wenn ein Vertrauter eines anderen Spielers auf einer Expedition auf derselben Route wie du ist, kann er deinen Weg kreuzen und dir einen Chip als Geschenk hinterlassen!"
   ]
 }

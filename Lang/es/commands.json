@@ -698,7 +698,8 @@
       "top_1_before_reset": ":first_place: Persona que alcanzó la cima de la clasificación tras el reinicio`.",
       "very_powerful_guild": ":mirror_ball: Miembro de un gremio muy poderoso",
       "animal_lover": "Persona que mostró todas las mascotas a Talvar el enano",
-      "expert_expediteur": "Una persona que ha completado con éxito numerosas expediciones con su mascota"
+      "expert_expediteur": "Una persona que ha completado con éxito numerosas expediciones con su mascota",
+      "oracle_patron": "Protector del Oráculo, habiendo contribuido generosamente a numerosas bendiciones"
     },
     "fightRanked": {
       "fieldName": "Gloria y liga :",
@@ -1968,5 +1969,12 @@
     "playerNotFound": "Este jugador no existe en la base de datos.",
     "error": "Se ha producido un error durante la exportación: {{error}}",
     "fileName": "export_rgpd_{{anonymizedId}}.zip"
+  },
+  "blessing": {
+    "title": "{emote:smallEvents.altar} Bendiciones | {{pseudo}}",
+    "active": "{emote:blessingCommand.active} **Bendición activa: {{blessingName}}**\n\n{{blessingEffect}}\n\n{emote:blessingCommand.timeLeft} Tiempo restante : {{timeLeft}}\n{emote:blessingCommand.triggeredBy} Activado por : **{{triggeredBy}}**",
+    "collecting": "{emote:smallEvents.altar} **Kitty siendo recogido**\n\nLos aventureros pagan para invocar una bendición.\n\n{{moneyEmote}} Progreso: **{{poolAmount, number}}** / **{{poolThreshold, number}}** ({{percentage}}%)\n{emote:blessingCommand.timeLeft} Gatito caduca: {{poolExpiresAt}}\n\n¡Contribuye encontrándote con el Oráculo en tus viajes!",
+    "contributors_one": "{emote:blessingCommand.topContributor} **Mayor contribuyente:** {{topContributorName}} ({{topContributorAmount, number}} {{moneyEmote}})\n{emote:blessingCommand.contributors} **{{count}}** aventurero ha contribuido hasta ahora.",
+    "contributors_other": "{emote:blessingCommand.topContributor} **Mayor contribuyente:** {{topContributorName}} ({{topContributorAmount, number}} {{moneyEmote}})\n{emote:blessingCommand.contributors} **{{count}}** aventureros han contribuido hasta ahora."
   }
 }

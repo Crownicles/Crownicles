@@ -2430,5 +2430,50 @@
       "Velanna emerge da dietro una roccia muschiosa con un osso rosicchiato tra i denti, che getta con disinvoltura sopra la spalla. Si avvicina a voi e vi mette una mano sulla spalla. Vi racconta che uno degli anziani del suo clan era solito cambiare idea all'ultimo momento, richiamando continuamente il suo animale domestico lungo il percorso. La bestia ha finito per odiarlo. Vi avverte che più sono le cancellazioni, più grave diventa la perdita di affetto.",
       "Velanna vi blocca la strada, con le gambe divaricate e le braccia incrociate, con un'espressione severa sul volto sfregiato. Vi ordina di ascoltare attentamente. Vi dice che gli occhi di un familiare brillano di eccitazione alla vista di una mappa di spedizione, il suo cuore batte forte al pensiero dell'avventura promessa. Vi dice che disdire prima della partenza o richiamare nel bel mezzo di un'esplorazione ha lo stesso effetto devastante: una promessa non mantenuta. Conta sulle dita e vi avverte che la perdita dell'amore raddoppia al secondo tradimento, triplica al terzo. I familiari non dimenticano mai."
     ]
+  },
+  "petDropToken": {
+    "stories": [
+      "si nota {{pet}}, l'animale domestico di **{{owner}}**, che trotterella felicemente lungo il vostro stesso sentiero. Mentre vi passa accanto, lascia cadere dalla bocca un oggetto luccicante. Lo raccogliete: è un {emote:unitValues.token} **jeton**!",
+      "incontrate {{pet}} de **{{owner}}** sul vostro cammino. Il familiare sembra riconoscervi e lascia cadere un **jeton** ai vostri piedi {emote:unitValues.token} prima di proseguire.",
+      "Un rumore di passi attira la vostra attenzione. Scoprite {{pet}}, l'animale domestico di{{owner}}, che galoppa lungo il vostro stesso sentiero. Vedendovi, l'animale si ferma ed emette un {emote:unitValues.token} **jeton** dal suo pelo prima di ripartire.",
+      "notate {{pet}} de **{{owner}}** che cammina tranquillamente non lontano da voi. L'animale da spedizione vi scorge e, con un gesto amichevole, fa rotolare un {emote:unitValues.token} **jeton** nella vostra direzione.",
+      "Una sagoma familiare emerge in lontananza: è {{pet}}, l'animale domestico di **{{owner}}**, in spedizione. Si unisce a voi brevemente e lascia cadere un {emote:unitValues.token} **jeton** dal collare prima di continuare la sua missione."
+    ]
+  },
+  "altar": {
+    "intro": [
+      "vedete un antico altare di pietra ai lati del sentiero, decorato con rune luminose. Un oracolo incappucciato è in piedi davanti ad esso, con le mani tese. Sussurra che gli spiriti del mondo stanno aspettando un'offerta collettiva. Il gattino è attualmente a **{{poolAmount, number}}** {{moneyEmote}} fuori dal **{{poolThreshold, number}}** {{moneyEmote}} richiesto.",
+      "Un bagliore dorato attira il vostro sguardo su un altare nascosto dietro gli alberi. Un vecchio oracolo vi fa cenno di avvicinarvi. Spiega che i viaggiatori stanno tutti contribuendo a un'offerta sacra. Attualmente sono stati raccolti **{{poolAmount, number}}** {{moneyEmote}} dai **{{poolThreshold, number}}** {{moneyEmote}} richiesti.",
+      "vi imbattete in un altare mistico circondato da candele tremolanti. L'oracolo che lo custodisce vi accoglie con un sorriso enigmatico. Vi dice che la vasca delle benedizioni contiene **{{poolAmount, number}}** {{moneyEmote}} del **{{poolThreshold, number}}** {{moneyEmote}} necessario per invocare una benedizione."
+    ],
+    "menu": "Quanto volete offrire all'altare?",
+    "contributed": [
+      "si pone **{{amount, number}}** {{moneyEmote}} sull'altare. Le rune si illuminano brevemente mentre accettano la vostra offerta. Il gattino ha raggiunto **{{poolAmount, number}}** / **{{poolThreshold, number}}** {{moneyEmote}}.",
+      "l'oracolo accetta il tuo generoso contributo di **{{amount, number}}** {{moneyEmote}} con un cenno di approvazione. Il montepremi ammonta ora a **{{poolAmount, number}}** / **{{poolThreshold, number}}** {{moneyEmote}}."
+    ],
+    "refused": [
+      "si va avanti per la propria strada senza fare un'offerta. L'oracolo vi guarda con uno sguardo di disappunto.",
+      "si declina gentilmente l'invito dell'oracolo e si prosegue per la propria strada."
+    ],
+    "blessingTriggered": [
+      "si pone **{{amount, number}}** {{moneyEmote}} sull'altare e... le rune esplodono di luce! L'oracolo esclama che l'offerta è completa! La benedizione **{{blessingType}}** è attivata per tutti gli avventurieri!",
+      "la tua offerta di **{{amount, number}}** {{moneyEmote}} completa il gattino! L'altare trema e un'onda di energia si diffonde in tutto il mondo. L'oracolo annuncia che la benedizione **{{blessingType}}** è ora attiva per tutti!"
+    ],
+    "notEnoughMoney": [
+      "vi frugate in tasca, ma non avete abbastanza denaro per questa offerta. L'oracolo vi invita a tornare quando sarete più fortunati.",
+      "l'oracolo vi guarda contare le monete e scuote la testa. Non potete permettervi di contribuire così tanto."
+    ],
+    "bonusGems": [
+      "L'oracolo vi sorride e fa scivolare discretamente **{{gems}}** {{gemEmote}} nella vostra borsa. Gli spiriti premiano la vostra generosità!",
+      "Un bagliore emana dall'altare e **{{gems}}** {{gemEmote}} appare nella tua mano. L'oracolo sussurra che gli dei hanno visto la tua offerta."
+    ],
+    "bonusItem": [
+      "In segno di gratitudine per la sua generosità, l'oracolo fruga tra le sue cose e le consegna un oggetto misterioso...",
+      "Le rune sull'altare si illuminano e un pezzo di equipaggiamento si materializza davanti a voi. L'oracolo vi invita a prenderlo."
+    ],
+    "badgeAwarded": [
+      "L'oracolo si inchina profondamente davanti a voi. La tua devozione all'altare è stata notata dagli spiriti. Riceverai il distintivo {emote:badges.oracle_patron} come riconoscimento del tuo eccezionale patrocinio!",
+      "Le rune sull'altare proiettano su di voi una luce dorata. L'oracolo dichiara solennemente che ora sei riconosciuto come protettore dell'Oracolo. Hai ricevuto il distintivo {emote:badges.oracle_patron} !"
+    ]
   }
 }
