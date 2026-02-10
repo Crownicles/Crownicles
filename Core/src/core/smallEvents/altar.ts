@@ -188,10 +188,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 		return blessingManager.canOracleAppear();
 	},
 	executeSmallEvent: async (response, player, context): Promise<void> => {
-		/*
-		 * First encounter: the log for this small event is written before executeSmallEvent,
-		 * so count <= 1 means this is the player's first time meeting the oracle
-		 */
+		// Small events are logged before execution (see ReportSmallEventService), so count <= 1 means first encounter
 		const altarEncounterCount = await LogsReadRequests.getSmallEventEncounterCount(player.keycloakId, "altar");
 		if (altarEncounterCount <= 1) {
 			response.push(makePacket(SmallEventAltarPacket, {
