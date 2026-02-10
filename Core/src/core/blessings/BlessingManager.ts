@@ -85,16 +85,23 @@ export class BlessingManager {
 	}
 
 	/**
+	 * Check if no blessing is currently active (missing cache, type NONE, no end date, or expired)
+	 */
+	private isBlessingInactive(): boolean {
+		return !this.cachedBlessing
+			|| this.cachedBlessing.activeBlessingType === BlessingType.NONE
+			|| !this.cachedBlessing.blessingEndAt
+			|| new Date() >= this.cachedBlessing.blessingEndAt;
+	}
+
+	/**
 	 * Returns the currently active blessing type, or NONE
 	 */
 	getActiveBlessingType(): BlessingType {
-		if (!this.cachedBlessing
-			|| this.cachedBlessing.activeBlessingType === BlessingType.NONE
-			|| !this.cachedBlessing.blessingEndAt
-			|| new Date() >= this.cachedBlessing.blessingEndAt) {
+		if (this.isBlessingInactive()) {
 			return BlessingType.NONE;
 		}
-		return this.cachedBlessing.activeBlessingType as BlessingType;
+		return this.cachedBlessing!.activeBlessingType as BlessingType;
 	}
 
 	/**
