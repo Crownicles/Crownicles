@@ -52,7 +52,7 @@
     "test": "prueba",
     "unlock": "liberar a alguien",
     "witchChoose": "elige una acción para la bruja",
-    "altarSmallEvent": "contribution à l'autel de l'Oracle"
+    "altarSmallEvent": "contribución al altar del Oráculo"
   },
   "commandDoesntExist": "ERROR: Comando desconocido",
   "interactionNotForYou": "Esta interacción no es para ti.",
@@ -162,7 +162,7 @@
   "banned": "Has sido expulsado del juego.",
   "aDevMessedUp": "¡Uy! Se ha producido un error. No se preocupe, no es culpa suya. Le pedimos disculpas por las molestias ocasionadas. Para resolver este problema, ponte en contacto con nuestro equipo de asistencia a través de nuestro servidor Discord: https://discord.gg/5JqrMtZ",
   "commandNotAvailableHere": "Este comando no se puede utilizar en esta ubicación.",
-  "oracleNotMet": "Cette commande ne vous est pas encore accessible.",
+  "oracleNotMet": "Este comando aún no está disponible para usted.",
   "guildFoodStorageFull": "Has recibido **{{quantity, number}}x {{food}}**, pero las reservas de comida de tu gremio están llenas. La comida se ha tirado.",
   "fightBugged": "El combate se ha cancelado debido a un problema técnico. Normalmente se debe a la eliminación de un mensaje necesario para el combate o a un problema con los permisos.",
   "resetIsNow": "{emote:announcements.trophy} ¡Se restablecen las clasificaciones de esta semana! El ganador se anunciará en breve en el servidor de bots. El juego se reanudará en menos de 5 minutos.",
