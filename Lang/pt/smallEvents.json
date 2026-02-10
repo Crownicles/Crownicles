@@ -2433,47 +2433,47 @@
   },
   "petDropToken": {
     "stories": [
-      "vous apercevez {{pet}}, le familier de **{{owner}}**, qui trotte joyeusement sur le même chemin que vous. En passant à côté de vous, il laisse tomber un objet brillant de sa gueule. Vous le ramassez : c'est un {emote:unitValues.token} **jeton** !",
-      "vous croisez {{pet}} de **{{owner}}** en pleine expédition sur votre route. Le familier semble vous reconnaître et dépose à vos pieds un {emote:unitValues.token} **jeton** avant de reprendre son chemin.",
-      "un bruit de pas attire votre attention. Vous découvrez {{pet}}, le familier de **{{owner}}**, qui galope sur le même trajet que vous. En vous voyant, le familier s'arrête et laisse échapper un {emote:unitValues.token} **jeton** de son pelage avant de repartir.",
-      "vous remarquez {{pet}} de **{{owner}}** qui chemine tranquillement non loin de vous. Le familier en expédition vous aperçoit et, d'un geste amical, laisse rouler un {emote:unitValues.token} **jeton** dans votre direction.",
-      "une silhouette familière se dessine au loin : c'est {{pet}}, le familier de **{{owner}}**, en pleine expédition. Il vous rejoint brièvement et fait tomber un {emote:unitValues.token} **jeton** de son collier avant de poursuivre sa mission."
+      "vês {{pet}}, a mascote de **{{owner}}**, a trotar alegremente pelo mesmo caminho que tu. Quando passa por ti, deixa cair um objeto brilhante da boca. Apanha-o: é um {emote:unitValues.token} **jeton**!",
+      "encontra {{pet}} de **{{owner}}** no seu caminho. O familiar parece reconhecer-te e deixa cair um **jeton** aos teus pés {emote:unitValues.token} antes de seguir em frente.",
+      "Um som de passos atrai a tua atenção. Descobres {{pet}}, a mascote de{{owner}}, a galopar pelo mesmo caminho que tu. Ao ver-te, a mascote pára e solta um {emote:unitValues.token} **jeton** do seu pelo antes de voltar a arrancar.",
+      "repara que {{pet}} de **{{owner}}** caminha calmamente não muito longe de si. O animal de estimação da expedição avista-o e, com um gesto amigável, rola um {emote:unitValues.token} **jeton** na sua direção.",
+      "Uma silhueta familiar surge ao longe: é {{pet}}, a mascote de **{{owner}}**, numa expedição. Ele junta-se a si por um instante e deixa cair um {emote:unitValues.token} **jeton** da sua coleira antes de continuar a sua missão."
     ]
   },
   "altar": {
     "intro": [
-      "vous apercevez un ancien autel de pierre au bord du chemin, orné de runes lumineuses. Un oracle encapuchonné se tient devant, les mains tendues. Il murmure que les esprits du monde attendent une offrande collective. La cagnotte est actuellement à **{{poolAmount, number}}** {{moneyEmote}} sur **{{poolThreshold, number}}** {{moneyEmote}} nécessaires.",
-      "un éclat doré attire votre regard vers un autel dissimulé derrière les arbres. Un vieil oracle vous fait signe d'approcher. Il vous explique que les voyageurs contribuent ensemble à une offrande sacrée. Actuellement, **{{poolAmount, number}}** {{moneyEmote}} ont été rassemblés sur les **{{poolThreshold, number}}** {{moneyEmote}} requis.",
-      "vous tombez sur un autel mystique entouré de bougies vacillantes. L'oracle qui le garde vous accueille avec un sourire énigmatique. Il vous informe que la cagnotte des bénédictions contient **{{poolAmount, number}}** {{moneyEmote}} sur **{{poolThreshold, number}}** {{moneyEmote}} nécessaires pour invoquer une bénédiction."
+      "vê-se um antigo altar de pedra ao lado do caminho, decorado com runas luminosas. Um oráculo encapuzado está diante dele, de mãos estendidas. Ele sussurra que os espíritos do mundo estão à espera de uma oferenda colectiva. O gatinho está atualmente a **{{poolAmount, number}}** {{moneyEmote}} dos **{{poolThreshold, number}}** {{moneyEmote}} necessários.",
+      "Um brilho dourado atrai o teu olhar para um altar escondido atrás das árvores. Um velho oráculo convida-o a aproximar-se. Ele explica que os viajantes estão todos a contribuir para uma oferenda sagrada. Atualmente, **{{poolAmount, number}}** {{moneyEmote}} foram recolhidos dos **{{poolThreshold, number}}** {{moneyEmote}} necessários.",
+      "depara-se com um altar místico rodeado de velas bruxuleantes. O oráculo que o guarda cumprimenta-te com um sorriso enigmático. Ele diz-te que a piscina das bênçãos contém **{{poolAmount, number}}** {{moneyEmote}} do **{{poolThreshold, number}}** {{moneyEmote}} necessário para invocar uma bênção."
     ],
-    "menu": "Combien souhaitez-vous offrir à l'autel ?",
+    "menu": "Quanto é que gostaria de oferecer no altar?",
     "contributed": [
-      "vous déposez **{{amount, number}}** {{moneyEmote}} sur l'autel. Les runes s'illuminent brièvement en acceptant votre offrande. La cagnotte atteint désormais **{{poolAmount, number}}** / **{{poolThreshold, number}}** {{moneyEmote}}.",
-      "l'oracle accepte votre généreuse contribution de **{{amount, number}}** {{moneyEmote}} avec un hochement de tête approbateur. La cagnotte commune s'élève maintenant à **{{poolAmount, number}}** / **{{poolThreshold, number}}** {{moneyEmote}}."
+      "colocas **{{amount, number}}** {{moneyEmote}} no altar. As runas iluminam-se brevemente ao aceitarem a tua oferta. O gatinho chegou agora a **{{poolAmount, number}}** / **{{poolThreshold, number}}** {{moneyEmote}}.",
+      "o oráculo aceita a sua generosa contribuição de **{{amount, number}}** {{moneyEmote}} com um aceno de aprovação. O prémio total é agora de **{{poolAmount, number}}** / **{{poolThreshold, number}}** {{moneyEmote}}."
     ],
     "refused": [
-      "vous passez votre chemin sans faire d'offrande. L'oracle vous regarde partir avec un air de déception.",
-      "vous déclinez poliment l'invitation de l'oracle et reprenez votre route."
+      "segue o seu caminho sem fazer uma oferenda. O oráculo vê-o partir com um olhar de desapontamento.",
+      "recusa educadamente o convite do oráculo e continua o seu caminho."
     ],
     "blessingTriggered": [
-      "vous déposez **{{amount, number}}** {{moneyEmote}} sur l'autel et... les runes explosent de lumière ! L'oracle s'exclame que l'offrande est complète ! La bénédiction **{{blessingType}}** s'active pour tous les aventuriers !",
-      "votre offrande de **{{amount, number}}** {{moneyEmote}} complète la cagnotte ! L'autel tremble et une vague d'énergie se répand dans le monde. L'oracle annonce que la bénédiction **{{blessingType}}** est désormais active pour tous !"
+      "colocas **{{amount, number}}** {{moneyEmote}} no altar e... as runas explodem de luz! O oráculo exclama que a oferenda está completa! A bênção **{{blessingType}}** é activada para todos os aventureiros!",
+      "a tua oferta de **{{amount, number}}** {{moneyEmote}} completa o gatinho! O altar treme e uma onda de energia espalha-se pelo mundo. O oráculo anuncia que a bênção **{{blessingType}}** está agora ativa para todos!"
     ],
     "notEnoughMoney": [
-      "vous fouillez vos poches, mais vous n'avez pas assez d'argent pour cette offrande. L'oracle vous invite à revenir quand vous serez plus fortuné.",
-      "l'oracle vous regarde compter vos pièces et secoue la tête. Vous n'avez pas les moyens de contribuer autant."
+      "O oráculo convida-o a regressar quando tiver mais sorte. O oráculo convida-o a regressar quando tiver mais sorte.",
+      "o oráculo observa-o a contar as suas moedas e abana a cabeça. Não podes dar-te ao luxo de contribuir com tanto."
     ],
     "bonusGems": [
-      "L'oracle vous sourit et glisse discrètement **{{gems}}** {{gemEmote}} dans votre bourse. Les esprits récompensent votre générosité !",
-      "Une lueur jaillit de l'autel et **{{gems}}** {{gemEmote}} apparaissent dans votre main. L'oracle murmure que les dieux ont vu votre offrande."
+      "O oráculo sorri para si e, discretamente, coloca **{{gems}}** {{gemEmote}} na sua bolsa. Os espíritos recompensam a sua generosidade!",
+      "Um brilho emana do altar e **{{gems}}** {{gemEmote}} aparece na tua mão. O oráculo sussurra que os deuses viram a tua oferenda."
     ],
     "bonusItem": [
-      "En remerciement de votre générosité, l'oracle fouille dans ses affaires et vous tend un objet mystérieux...",
-      "Les runes de l'autel s'illuminent et un équipement se matérialise devant vous. L'oracle vous fait signe de le prendre."
+      "Em agradecimento pela sua generosidade, o oráculo vasculha os seus pertences e entrega-lhe um objeto misterioso...",
+      "As runas do altar iluminam-se e uma peça de equipamento materializa-se à sua frente. O oráculo convida-o a pegar nele."
     ],
     "badgeAwarded": [
-      "L'oracle s'incline profondément devant vous. Votre dévotion envers l'autel a été remarquée par les esprits. Vous recevez le badge {emote:badges.oracle_patron} en reconnaissance de votre patronage exceptionnel !",
-      "Les runes de l'autel projettent une lumière dorée sur vous. L'oracle déclare solennellement que vous êtes désormais reconnu comme protecteur de l'Oracle. Vous obtenez le badge {emote:badges.oracle_patron} !"
+      "O oráculo inclina-se profundamente perante vós. A vossa devoção ao altar foi notada pelos espíritos. Receberá a insígnia {emote:badges.oracle_patron} em reconhecimento do seu excecional patrocínio!",
+      "As runas no altar lançam uma luz dourada sobre ti. O oráculo declara solenemente que és agora reconhecido como o protetor do oráculo. Foste galardoado com o emblema {emote:badges.oracle_patron} !"
     ]
   }
 }
