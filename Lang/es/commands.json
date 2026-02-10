@@ -698,7 +698,8 @@
       "top_1_before_reset": ":first_place: Persona que alcanzó la cima de la clasificación tras el reinicio`.",
       "very_powerful_guild": ":mirror_ball: Miembro de un gremio muy poderoso",
       "animal_lover": "Persona que mostró todas las mascotas a Talvar el enano",
-      "expert_expediteur": "Una persona que ha completado con éxito numerosas expediciones con su mascota"
+      "expert_expediteur": "Una persona que ha completado con éxito numerosas expediciones con su mascota",
+      "oracle_patron": "Protecteur de l'Oracle, ayant contribué généreusement à de nombreuses bénédictions"
     },
     "fightRanked": {
       "fieldName": "Gloria y liga :",
@@ -1968,5 +1969,12 @@
     "playerNotFound": "Este jugador no existe en la base de datos.",
     "error": "Se ha producido un error durante la exportación: {{error}}",
     "fileName": "export_rgpd_{{anonymizedId}}.zip"
+  },
+  "blessing": {
+    "title": "{emote:smallEvents.altar} Bénédictions | {{pseudo}}",
+    "active": "{emote:blessingCommand.active} **Bénédiction active : {{blessingName}}**\n\n{{blessingEffect}}\n\n{emote:blessingCommand.timeLeft} Temps restant : {{timeLeft}}\n{emote:blessingCommand.triggeredBy} Déclenchée par : **{{triggeredBy}}**",
+    "collecting": "{emote:smallEvents.altar} **Cagnotte en cours de collecte**\n\nLes aventuriers se cotisent pour invoquer une bénédiction.\n\n{{moneyEmote}} Progression : **{{poolAmount, number}}** / **{{poolThreshold, number}}** ({{percentage}}%)\n{emote:blessingCommand.timeLeft} Expiration de la cagnotte : {{poolExpiresAt}}\n\nContribuez en rencontrant l'Oracle lors de vos voyages !",
+    "contributors_one": "{emote:blessingCommand.topContributor} **Plus gros contributeur :** {{topContributorName}} ({{topContributorAmount, number}} {{moneyEmote}})\n{emote:blessingCommand.contributors} **{{count}}** aventurier a contribué jusqu'à présent.",
+    "contributors_other": "{emote:blessingCommand.topContributor} **Plus gros contributeur :** {{topContributorName}} ({{topContributorAmount, number}} {{moneyEmote}})\n{emote:blessingCommand.contributors} **{{count}}** aventuriers ont contribué jusqu'à présent."
   }
 }
