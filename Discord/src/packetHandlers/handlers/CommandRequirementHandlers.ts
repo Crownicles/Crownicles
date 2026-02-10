@@ -12,12 +12,34 @@ import { RequirementLevelPacket } from "../../../../Lib/src/packets/commands/req
 import { RequirementRightPacket } from "../../../../Lib/src/packets/commands/requirements/RequirementRightPacket";
 import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import { RequirementWherePacket } from "../../../../Lib/src/packets/commands/requirements/RequirementWherePacket";
-import { RequirementOracleNotMetPacket } from "../../../../Lib/src/packets/commands/requirements/RequirementOracleNotMetPacket";
+import { RequirementOracleNotMetPacket } from "../../../../Lib/src/packets/commands/CommandBlessingPacket";
 import { MessagesUtils } from "../../utils/MessagesUtils";
 import { MessageFlags } from "discord-api-types/v10";
 import { DisplayUtils } from "../../utils/DisplayUtils";
 
 export default class CommandRequirementHandlers {
+	/**
+	 * Shared helper: fetches the interaction from cache, checks it exists,
+	 * then replies with a translated ephemeral error message.
+	 */
+	private static async replyRequirementError(
+		context: PacketContext,
+		translationKey: string,
+		translationParams?: Record<string, unknown>
+	): Promise<void> {
+		const interaction = DiscordCache.getInteraction(context.discord!.interaction);
+		if (!interaction) {
+			return;
+		}
+		await replyEphemeralErrorMessage(
+			context,
+			interaction,
+			i18n.t(translationKey, {
+				lng: interaction.userLanguage, ...translationParams
+			})
+		);
+	}
+
 	@packetHandler(RequirementEffectPacket)
 	async requirementEffect(context: PacketContext, packet: RequirementEffectPacket): Promise<void> {
 		const interaction = context.discord!.buttonInteraction ? DiscordCache.getButtonInteraction(context.discord!.buttonInteraction) : DiscordCache.getInteraction(context.discord!.interaction);
@@ -45,45 +67,22 @@ export default class CommandRequirementHandlers {
 
 	@packetHandler(RequirementGuildNeededPacket)
 	async requirementGuildNeeded(context: PacketContext, _packet: RequirementGuildNeededPacket): Promise<void> {
-		const interaction = DiscordCache.getInteraction(context.discord!.interaction);
-		if (!interaction) {
-			return;
-		}
-
-		await replyEphemeralErrorMessage(context, interaction, i18n.t("error:notInAGuild", { lng: interaction.userLanguage }));
+		await CommandRequirementHandlers.replyRequirementError(context, "error:notInAGuild");
 	}
 
 	@packetHandler(RequirementGuildRolePacket)
 	async requirementGuildRole(context: PacketContext, _packet: RequirementGuildRolePacket): Promise<void> {
-		const interaction = DiscordCache.getInteraction(context.discord!.interaction);
-		if (!interaction) {
-			return;
-		}
-
-		await replyEphemeralErrorMessage(context, interaction, i18n.t("error:notAuthorizedError", { lng: interaction.userLanguage }));
+		await CommandRequirementHandlers.replyRequirementError(context, "error:notAuthorizedError");
 	}
 
 	@packetHandler(RequirementLevelPacket)
 	async requirementLevel(context: PacketContext, packet: RequirementLevelPacket): Promise<void> {
-		const interaction = DiscordCache.getInteraction(context.discord!.interaction);
-		if (!interaction) {
-			return;
-		}
-
-		await replyEphemeralErrorMessage(context, interaction, i18n.t("error:levelTooLow", {
-			lng: interaction.userLanguage,
-			level: packet.requiredLevel
-		}));
+		await CommandRequirementHandlers.replyRequirementError(context, "error:levelTooLow", { level: packet.requiredLevel });
 	}
 
 	@packetHandler(RequirementRightPacket)
 	static async requirementRight(context: PacketContext, _packet: RequirementRightPacket): Promise<void> {
-		const interaction = DiscordCache.getInteraction(context.discord!.interaction);
-		if (!interaction) {
-			return;
-		}
-
-		await replyEphemeralErrorMessage(context, interaction, i18n.t("error:notAuthorizedRight", { lng: interaction.userLanguage }));
+		await CommandRequirementHandlers.replyRequirementError(context, "error:notAuthorizedRight");
 	}
 
 	@packetHandler(RequirementWherePacket)

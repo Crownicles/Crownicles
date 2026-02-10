@@ -2,14 +2,13 @@ import {
 	commandRequires, CommandUtils
 } from "../../core/utils/CommandUtils";
 import {
-	CommandBlessingPacketReq, CommandBlessingPacketRes
+	CommandBlessingPacketReq, CommandBlessingPacketRes, RequirementOracleNotMetPacket
 } from "../../../../Lib/src/packets/commands/CommandBlessingPacket";
 import {
 	CrowniclesPacket, makePacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import Player from "../../core/database/game/models/Player";
 import { BlessingManager } from "../../core/blessings/BlessingManager";
-import { RequirementOracleNotMetPacket } from "../../../../Lib/src/packets/commands/requirements/RequirementOracleNotMetPacket";
 import { LogsReadRequests } from "../../core/database/logs/LogsReadRequests";
 
 export default class BlessingCommand {

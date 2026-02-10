@@ -19,8 +19,7 @@ import {
 import { progressBar } from "../../../../Lib/src/utils/StringUtils";
 import { Language } from "../../../../Lib/src/Language";
 
-async function getPacket(interaction: CrowniclesInteraction): Promise<CommandBlessingPacketReq> {
-	await interaction.deferReply();
+function getPacket(_interaction: CrowniclesInteraction): CommandBlessingPacketReq {
 	return makePacket(CommandBlessingPacketReq, {});
 }
 
@@ -49,6 +48,10 @@ export async function handleCommandBlessingPacketRes(context: PacketContext, pac
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction);
 	if (!interaction) {
 		return;
+	}
+
+	if (!interaction.deferred) {
+		await interaction.deferReply();
 	}
 
 	const lng = interaction.userLanguage;

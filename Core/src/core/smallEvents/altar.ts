@@ -11,7 +11,7 @@ import {
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorAltar";
 import Player from "../database/game/models/Player";
 import {
-	makePacket, PacketContext
+	CrowniclesPacket, makePacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { SmallEventAltarPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventAltarPacket";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
@@ -91,6 +91,34 @@ async function checkAndAwardOraclePatronBadge(player: Player, recentContribution
 	return true;
 }
 
+/**
+ * Send a "no contribution" altar result and unblock the player.
+ * Used for both refuse/timeout and not-enough-money cases.
+ */
+function sendNoContribution(
+	response: CrowniclesPacket[],
+	player: Player,
+	blessingManager: BlessingManager,
+	overrides: {
+		amount?: number; hasEnoughMoney?: boolean;
+	} = {}
+): void {
+	response.push(makePacket(SmallEventAltarPacket, {
+		contributed: false,
+		amount: overrides.amount ?? 0,
+		blessingTriggered: false,
+		blessingType: 0,
+		newPoolAmount: blessingManager.getPoolAmount(),
+		poolThreshold: blessingManager.getPoolThreshold(),
+		hasEnoughMoney: overrides.hasEnoughMoney ?? true,
+		bonusGems: 0,
+		bonusItemGiven: false,
+		badgeAwarded: false,
+		firstEncounter: false
+	}));
+	BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.ALTAR_SMALL_EVENT);
+}
+
 function getEndCallback(player: Player, context: PacketContext): EndCallback {
 	return async (collector, response) => {
 		const reaction = collector.getFirstReaction();
@@ -98,20 +126,7 @@ function getEndCallback(player: Player, context: PacketContext): EndCallback {
 
 		if (!reaction || reaction.reaction.type !== ReactionCollectorAltarContributeReaction.name) {
 			// Player refused or timeout
-			response.push(makePacket(SmallEventAltarPacket, {
-				contributed: false,
-				amount: 0,
-				blessingTriggered: false,
-				blessingType: 0,
-				newPoolAmount: blessingManager.getPoolAmount(),
-				poolThreshold: blessingManager.getPoolThreshold(),
-				hasEnoughMoney: true,
-				bonusGems: 0,
-				bonusItemGiven: false,
-				badgeAwarded: false,
-				firstEncounter: false
-			}));
-			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.ALTAR_SMALL_EVENT);
+			sendNoContribution(response, player, blessingManager);
 			return;
 		}
 
@@ -119,20 +134,9 @@ function getEndCallback(player: Player, context: PacketContext): EndCallback {
 
 		// Check if player has enough money
 		if (player.money < chosenAmount) {
-			response.push(makePacket(SmallEventAltarPacket, {
-				contributed: false,
-				amount: chosenAmount,
-				blessingTriggered: false,
-				blessingType: 0,
-				newPoolAmount: blessingManager.getPoolAmount(),
-				poolThreshold: blessingManager.getPoolThreshold(),
-				hasEnoughMoney: false,
-				bonusGems: 0,
-				bonusItemGiven: false,
-				badgeAwarded: false,
-				firstEncounter: false
-			}));
-			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.ALTAR_SMALL_EVENT);
+			sendNoContribution(response, player, blessingManager, {
+				amount: chosenAmount, hasEnoughMoney: false
+			});
 			return;
 		}
 
