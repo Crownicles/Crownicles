@@ -162,25 +162,26 @@ export async function altarFirstEncounter(_packet: SmallEventAltarFirstEncounter
 	});
 }
 
-export async function altarNoContribution(packet: SmallEventAltarNoContributionPacket, context: PacketContext): Promise<void> {
+/**
+ * Send an altar result embed after the player interacted with the collector
+ */
+async function sendAltarResultEmbed(
+	context: PacketContext,
+	story: string,
+	translationParams: Record<string, unknown>,
+	bonusText = ""
+): Promise<void> {
 	const interaction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
 	if (!interaction) {
 		return;
 	}
 	const lng = context.discord!.language;
 
-	const story = determineNoContributionStory(packet);
-
 	await interaction.editReply({
 		embeds: [
 			new CrowniclesSmallEventEmbed(
 				"altar",
-				StringUtils.getRandomTranslation(`smallEvents:altar.${story}`, lng, {
-					amount: packet.amount,
-					moneyEmote: CrowniclesIcons.unitValues.money,
-					poolAmount: packet.newPoolAmount,
-					poolThreshold: packet.poolThreshold
-				}),
+				StringUtils.getRandomTranslation(`smallEvents:altar.${story}`, lng, translationParams) + bonusText,
 				interaction.user,
 				lng
 			)
@@ -188,33 +189,29 @@ export async function altarNoContribution(packet: SmallEventAltarNoContributionP
 	});
 }
 
-export async function altarContributed(packet: SmallEventAltarContributedPacket, context: PacketContext): Promise<void> {
-	const interaction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
-	if (!interaction) {
-		return;
-	}
-	const lng = context.discord!.language;
-
-	const story = determineContributedStory(packet);
-	const bonusText = buildAltarBonusText(packet, lng);
-
-	await interaction.editReply({
-		embeds: [
-			new CrowniclesSmallEventEmbed(
-				"altar",
-				StringUtils.getRandomTranslation(`smallEvents:altar.${story}`, lng, {
-					amount: packet.amount,
-					moneyEmote: CrowniclesIcons.unitValues.money,
-					poolAmount: packet.newPoolAmount,
-					poolThreshold: packet.poolThreshold,
-					blessingType: packet.blessingTriggered
-						? i18n.t(`bot:blessingNames.${packet.blessingType}`, { lng })
-						: ""
-				})
-				+ bonusText,
-				interaction.user,
-				lng
-			)
-		]
+export async function altarNoContribution(packet: SmallEventAltarNoContributionPacket, context: PacketContext): Promise<void> {
+	await sendAltarResultEmbed(context, determineNoContributionStory(packet), {
+		amount: packet.amount,
+		moneyEmote: CrowniclesIcons.unitValues.money,
+		poolAmount: packet.newPoolAmount,
+		poolThreshold: packet.poolThreshold
 	});
+}
+
+export async function altarContributed(packet: SmallEventAltarContributedPacket, context: PacketContext): Promise<void> {
+	const lng = context.discord!.language;
+	await sendAltarResultEmbed(
+		context,
+		determineContributedStory(packet),
+		{
+			amount: packet.amount,
+			moneyEmote: CrowniclesIcons.unitValues.money,
+			poolAmount: packet.newPoolAmount,
+			poolThreshold: packet.poolThreshold,
+			blessingType: packet.blessingTriggered
+				? i18n.t(`bot:blessingNames.${packet.blessingType}`, { lng })
+				: ""
+		},
+		buildAltarBonusText(packet, lng)
+	);
 }
