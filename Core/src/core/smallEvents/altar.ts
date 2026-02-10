@@ -28,6 +28,7 @@ import { ItemRarity } from "../../../../Lib/src/constants/ItemConstants";
 import { PlayerBadgesManager } from "../database/game/models/PlayerBadges";
 import { Badge } from "../../../../Lib/src/types/Badge";
 import { crowniclesInstance } from "../../index";
+import { PlayerSmallEvents } from "../database/game/models/PlayerSmallEvent";
 import { LogsReadRequests } from "../database/logs/LogsReadRequests";
 
 /**
@@ -177,9 +178,10 @@ function getEndCallback(player: Player, context: PacketContext): EndCallback {
 }
 
 export const smallEventFuncs: SmallEventFuncs = {
-	canBeExecuted: (): boolean => {
+	canBeExecuted: async (player: Player): Promise<boolean> => {
 		const blessingManager = BlessingManager.getInstance();
-		return blessingManager.canOracleAppear();
+		return blessingManager.canOracleAppear()
+			&& await PlayerSmallEvents.playerSmallEventCount(player.id, "altar") === 0;
 	},
 	executeSmallEvent: async (response, player, context): Promise<void> => {
 		// Small events are logged before execution (see ReportSmallEventService), so count <= 1 means first encounter
