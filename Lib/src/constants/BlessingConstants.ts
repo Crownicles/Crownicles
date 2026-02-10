@@ -92,7 +92,7 @@ export abstract class BlessingConstants {
 	/**
 	 * Bonus percentage for score boost blessing (effect #5)
 	 */
-	static readonly SCORE_BOOST_PERCENTAGE = 0.10;
+	static readonly SCORE_BOOST_PERCENTAGE = 0.20;
 
 	/**
 	 * Multiplier for pet love blessing (effect #6)
@@ -115,9 +115,11 @@ export abstract class BlessingConstants {
 	static readonly ALTAR_RARITY = 15;
 
 	/**
-	 * Probability of getting bonus gems when contributing more than the flat amount (1%)
+	 * Contribution amount at which the player has 100% chance of getting bonus gems.
+	 * 5 gems ≈ 20 000 gold, so contributing 20 000 gold guarantees 5 gems.
+	 * Below this amount, the probability scales linearly (e.g. 10 000 gold = 50% chance).
 	 */
-	static readonly CONTRIBUTION_BONUS_GEMS_PROBABILITY = 0.01;
+	static readonly CONTRIBUTION_GEMS_FULL_PROBABILITY_AMOUNT = 20000;
 
 	/**
 	 * Number of bonus gems awarded

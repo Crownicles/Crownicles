@@ -58,7 +58,7 @@ async function calculateBonusRewards(chosenAmount: number, player: Player): Prom
 		};
 	}
 
-	if (RandomUtils.crowniclesRandom.bool(BlessingConstants.CONTRIBUTION_BONUS_GEMS_PROBABILITY)) {
+	if (RandomUtils.crowniclesRandom.bool(Math.min(1, chosenAmount / BlessingConstants.CONTRIBUTION_GEMS_FULL_PROBABILITY_AMOUNT))) {
 		bonusGems = BlessingConstants.CONTRIBUTION_BONUS_GEMS_AMOUNT;
 		const missionInfo = await PlayerMissionsInfos.getOfPlayer(player.id);
 		await missionInfo.addGems(bonusGems, player.keycloakId, NumberChangeReason.BLESSING);
