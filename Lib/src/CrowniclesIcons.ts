@@ -2159,7 +2159,7 @@ export const CrowniclesIcons: {
 		[Badge.VOTER]: "🗳️",
 		[Badge.ANIMAL_LOVER]: "🐾",
 		[Badge.EXPERT_EXPEDITEUR]: "🧭",
-		[Badge.ORACLE_PATRON]: "🔮"
+		[Badge.ORACLE_PATRON]: "⛩️"
 	},
 	itemKinds: [
 		"⚔️",
