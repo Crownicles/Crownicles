@@ -16,9 +16,7 @@ import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 import {
 	printTimeBeforeDate, finishInTimeDisplay
 } from "../../../../Lib/src/utils/TimeUtils";
-import {
-	escapeUsername, progressBar
-} from "../../../../Lib/src/utils/StringUtils";
+import { progressBar } from "../../../../Lib/src/utils/StringUtils";
 import { Language } from "../../../../Lib/src/Language";
 
 async function getPacket(interaction: CrowniclesInteraction): Promise<CommandBlessingPacketReq> {
@@ -78,16 +76,14 @@ export async function handleCommandBlessingPacketRes(context: PacketContext, pac
 			poolAmount: packet.poolAmount,
 			poolThreshold: packet.poolThreshold,
 			moneyEmote: CrowniclesIcons.unitValues.money,
-			percentage: Math.floor(packet.poolAmount / packet.poolThreshold * 100),
 			poolExpiresAt: finishInTimeDisplay(new Date(packet.poolExpiresAt))
 		})}\n${progressBar(packet.poolAmount, packet.poolThreshold)}${topContributorLine}`;
 	}
 
+	const titleKey = hasBlessing ? "commands:blessing.titleActive" : "commands:blessing.titleCollecting";
+
 	const embed = new CrowniclesEmbed()
-		.formatAuthor(i18n.t("commands:blessing.title", {
-			lng,
-			pseudo: escapeUsername(interaction.user.displayName)
-		}), interaction.user)
+		.formatAuthor(i18n.t(titleKey, { lng }), interaction.user)
 		.setDescription(description);
 
 	await interaction.editReply({ embeds: [embed] });
