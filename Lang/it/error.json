@@ -51,7 +51,8 @@
     "switch": "scambio di attrezzature",
     "test": "test",
     "unlock": "liberare qualcuno",
-    "witchChoose": "scegliere un'azione per la strega"
+    "witchChoose": "scegliere un'azione per la strega",
+    "altarSmallEvent": "contribution à l'autel de l'Oracle"
   },
   "commandDoesntExist": "ERRORE: comando sconosciuto",
   "interactionNotForYou": "Questa interazione non è per voi !",
@@ -161,6 +162,7 @@
   "banned": "Sei stato bandito dal gioco.",
   "aDevMessedUp": "Oops! Si è verificato un errore. Non si preoccupi, non è colpa sua. Ti preghiamo di accettare le nostre scuse per gli inconvenienti causati. Per risolvere questo problema, contatta il nostro team di supporto tramite il nostro server Discord: https://discord.gg/5JqrMtZ",
   "commandNotAvailableHere": "Questo comando non può essere utilizzato in questa posizione.",
+  "oracleNotMet": "Cette commande ne vous est pas encore accessible.",
   "guildFoodStorageFull": "Hai ricevuto **{{quantity, number}}x {{food}}**, ma le scorte di cibo della tua gilda sono piene. Il cibo è stato gettato via.",
   "fightBugged": "L'incontro è stato annullato a causa di un problema tecnico. Di solito ciò è dovuto alla cancellazione di un messaggio necessario per l'incontro o a un problema di permessi.",
   "resetIsNow": "{emote:announcements.trophy} Le classifiche della settimana sono in corso di reimpostazione ! Il vincitore sarà annunciato tra poco sul server del bot ! Il gioco riprenderà tra 5 minuti !",
