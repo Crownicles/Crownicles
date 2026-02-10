@@ -2442,38 +2442,36 @@
   },
   "altar": {
     "intro": [
-      "vedete un antico altare di pietra ai lati del sentiero, decorato con rune luminose. Un oracolo incappucciato è in piedi davanti ad esso, con le mani tese. Sussurra che gli spiriti del mondo stanno aspettando un'offerta collettiva. Il gattino è attualmente a **{{poolAmount, number}}** {{moneyEmote}} fuori dal **{{poolThreshold, number}}** {{moneyEmote}} richiesto.",
-      "Un bagliore dorato attira il vostro sguardo su un altare nascosto dietro gli alberi. Un vecchio oracolo vi fa cenno di avvicinarvi. Spiega che i viaggiatori stanno tutti contribuendo a un'offerta sacra. Attualmente sono stati raccolti **{{poolAmount, number}}** {{moneyEmote}} dai **{{poolThreshold, number}}** {{moneyEmote}} richiesti.",
-      "vi imbattete in un altare mistico circondato da candele tremolanti. L'oracolo che lo custodisce vi accoglie con un sorriso enigmatico. Vi dice che la vasca delle benedizioni contiene **{{poolAmount, number}}** {{moneyEmote}} del **{{poolThreshold, number}}** {{moneyEmote}} necessario per invocare una benedizione."
+      "Alla curva di un sentiero avvolto dalla nebbia, una lucentezza dorata attira lo sguardo su un altare di pietra coronato da rune che pulsano con un bagliore antico. Un oracolo con il volto nascosto sotto un velo di lino scuro sta lì, immobile come una statua. L'aria crepita di un'antica energia mentre vi dice che l'assegno dei viaggiatori ammonta a **{{poolAmount, number}}** {{moneyEmote}} dei **{{poolThreshold, number}}** {{moneyEmote}} necessari per l'invocazione.",
+      "un bagliore soprannaturale filtra attraverso il fogliame e vi guida verso una radura dimenticata dove si trova un altare di granito venato d'oro. Le candele che lo circondano bruciano senza tremolare, come se il vento stesso non osasse disturbare questo luogo sacro. L'oracolo che veglia sull'altare fa un gesto di benvenuto e vi dice che il gattino collettivo ha raggiunto **{{poolAmount, number}}** {{moneyEmote}} del **{{poolThreshold, number}}** {{moneyEmote}} necessario per risvegliare una benedizione.",
+      "Antichi sussurri sembrano emanare dalla pietra stessa mentre scoprite un altare solitario, circondato da edera e cristalli chiari. Un oracolo dagli occhi velati è in piedi davanti ad esso, con le palme aperte verso il cielo. Senza degnarvi di uno sguardo, vi dice che finora **{{poolAmount, number}}** {{moneyEmote}} del **{{poolThreshold, number}}** {{moneyEmote}} necessario sono stati collocati nella cavità dell'altare."
     ],
     "menu": "Quanto volete offrire all'altare?",
     "contributed": [
-      "si pone **{{amount, number}}** {{moneyEmote}} sull'altare. Le rune si illuminano brevemente mentre accettano la vostra offerta. Il gattino ha raggiunto **{{poolAmount, number}}** / **{{poolThreshold, number}}** {{moneyEmote}}.",
-      "l'oracolo accetta il tuo generoso contributo di **{{amount, number}}** {{moneyEmote}} con un cenno di approvazione. Il montepremi ammonta ora a **{{poolAmount, number}}** / **{{poolThreshold, number}}** {{moneyEmote}}."
+      "Le monete tintinnano contro la pietra dell'altare e le rune sfavillano con una breve luce, inghiottendo la vostra offerta di **{{amount, number}}** {{moneyEmote}}. Il montepremi ammonta ora a **{{poolAmount, number}}** / **{{poolThreshold, number}}** {{moneyEmote}}.",
+      "L'oracolo raccoglie il vostro contributo di **{{amount, number}}** {{moneyEmote}} tra le sue mani callose, poi lo pone con riverenza sull'altare. Le rune rispondono con un breve sfarfallio. Il gattino raggiunge **{{poolAmount, number}}** / **{{poolThreshold, number}}** {{moneyEmote}}."
     ],
     "refused": [
-      "si va avanti per la propria strada senza fare un'offerta. L'oracolo vi guarda con uno sguardo di disappunto.",
-      "si declina gentilmente l'invito dell'oracolo e si prosegue per la propria strada."
+      "Distogliete lo sguardo e continuate per la vostra strada. L'oracolo non dice una parola, ma il suo silenzio è carico di rimprovero.",
+      "Vi spostate, con le tasche intatte. L'oracolo vi fissa brevemente, strizzando gli occhi, poi torna all'altare per riprendere la sua veglia solitaria."
     ],
     "blessingTriggered": [
-      "si pone **{{amount, number}}** {{moneyEmote}} sull'altare e... le rune esplodono di luce! L'oracolo esclama che l'offerta è completa! La benedizione **{{blessingType}}** è attivata per tutti gli avventurieri!",
-      "la tua offerta di **{{amount, number}}** {{moneyEmote}} completa il gattino! L'altare trema e un'onda di energia si diffonde in tutto il mondo. L'oracolo annuncia che la benedizione **{{blessingType}}** è ora attiva per tutti!"
+      "Il tuo **{{amount, number}}** {{moneyEmote}} completa l'offerta. L'altare si infiamma di luce, le rune volano in spirali incandescenti e un'onda di forza attraversa il mondo intero. L'oracolo si inchina, con gli occhi spalancati: la benedizione **{{blessingType}}** è appena stata risvegliata per tutti gli avventurieri.",
+      "Nel momento in cui i vostri **{{amount, number}}** {{moneyEmote}} toccano la pietra, un ruggito sordo si leva dalle profondità dell'altare. Una luce irrompe dalle rune come una colonna d'oro, perforando il baldacchino. La benedizione **{{blessingType}}** si diffonde in tutto il mondo, trasportata da un antico respiro avvertito da tutti gli avventurieri."
     ],
     "notEnoughMoney": [
-      "vi frugate in tasca, ma non avete abbastanza denaro per questa offerta. L'oracolo vi invita a tornare quando sarete più fortunati.",
-      "l'oracolo vi guarda contare le monete e scuote la testa. Non potete permettervi di contribuire così tanto."
+      "Frugate nelle tasche e trovate solo poche monete. L'oracolo sorride con indulgenza e vi fa cenno di tornare quando il destino sarà più gentile con voi.",
+      "L'oracolo percepisce il vostro imbarazzo e distoglie modestamente lo sguardo mentre contate le vostre misere monete. Con un gesto amichevole, vi dice che ogni contributo, per quanto modesto, sarà ben accetto un altro giorno."
     ],
     "bonusGems": [
-      "L'oracolo vi sorride e fa scivolare discretamente **{{gems}}** {{gemEmote}} nella vostra borsa. Gli spiriti premiano la vostra generosità!",
-      "Un bagliore emana dall'altare e **{{gems}}** {{gemEmote}} appare nella tua mano. L'oracolo sussurra che gli dei hanno visto la tua offerta."
+      "L'altare vibra di una luce inaspettata e **{{gems}}** {{gemEmote}} si cristallizza nell'aria prima di atterrare sul vostro palmo. L'oracolo annuisce: gli spiriti antichi sanno riconoscere la generosità.",
+      "Un bagliore iridescente irrompe dalle fessure della pietra e **{{gems}}** {{gemEmote}} rotola verso di voi. L'oracolo non sembra sorpreso da questo segno di gratitudine degli spiriti."
     ],
     "bonusItem": [
-      "In segno di gratitudine per la sua generosità, l'oracolo fruga tra le sue cose e le consegna un oggetto misterioso...",
-      "Le rune sull'altare si illuminano e un pezzo di equipaggiamento si materializza davanti a voi. L'oracolo vi invita a prenderlo."
+      "Le rune sull'altare tracciano arabeschi nell'aria e un oggetto si materializza in un alone di luce. L'oracolo vi invita a prenderlo prima che l'incantesimo svanisca.",
+      "Una folata di vento mistico avvolge l'altare e, quando si dissipa, un oggetto sconosciuto giace sulla pietra, ancora caldo di magia. L'oracolo lo indica con uno sguardo."
     ],
-    "badgeAwarded": [
-      "L'oracolo si inchina profondamente davanti a voi. La tua devozione all'altare è stata notata dagli spiriti. Riceverai il distintivo {emote:badges.oracle_patron} come riconoscimento del tuo eccezionale patrocinio!",
-      "Le rune sull'altare proiettano su di voi una luce dorata. L'oracolo dichiara solennemente che ora sei riconosciuto come protettore dell'Oracolo. Hai ricevuto il distintivo {emote:badges.oracle_patron} !"
-    ]
+    "badgeAwarded": "L'oracolo è oggetto di una profonda venerazione. Le rune formano un simbolo antico: quello del protettore dell'Oracolo. Ricevi il distintivo {emote:badges.oracle_patron} come riconoscimento della tua devozione.",
+    "firstEncounter": "Un bagliore dorato attraverso la nebbia vi attira verso un altare di pietra coperto di antiche rune. Un oracolo dal volto velato è immobile davanti all'edificio.\n\nCon un gesto lento, indica l'altare: le rune raccontano la storia delle benedizioni, le forze ancestrali che i viaggiatori possono risvegliare unendo le loro offerte. Quando la cassa collettiva raggiunge la sua soglia, una benedizione viene riversata su tutti gli avventurieri del mondo, conferendo loro un potere temporaneo.\n\nL'oracolo si avvicina e traccia con la punta delle dita un segno runico sul vostro polso. La pelle formicola nel punto in cui sono incise le linee incandescenti, poi la sensazione si attenua. Questo segno ora vi collega ai misteri dell'altare. Potete controllare lo stato delle benedizioni in qualsiasi momento usando il comando {command:blessing}."
   }
 }

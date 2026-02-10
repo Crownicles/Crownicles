@@ -2442,38 +2442,36 @@
   },
   "altar": {
     "intro": [
-      "sehen Sie am Wegesrand einen alten Steinaltar, der mit leuchtenden Runen geschmückt ist. Ein Orakel mit Kapuze steht mit ausgestreckten Händen davor. Er flüstert, dass die Geister der Welt auf eine kollektive Opfergabe warten. Der Pool steht derzeit bei **{{poolAmount, number}}** {{moneyEmote}} von **{{poolThreshold, number}}** {{moneyEmote}} benötigten.",
-      "Ein goldenes Leuchten lenkt Ihren Blick auf einen Altar, der hinter den Bäumen verborgen ist. Ein altes Orakel winkt Sie heran. Er erklärt Ihnen, dass die Reisenden gemeinsam zu einer heiligen Opfergabe beitragen. Derzeit wurden **{{poolAmount, number}}** {{moneyEmote}} von den erforderlichen **{{poolThreshold, number}}** {{moneyEmote}} gesammelt.",
-      "stoßen Sie auf einen mystischen Altar, der von flackernden Kerzen umgeben ist. Das Orakel, das ihn bewacht, begrüßt Sie mit einem rätselhaften Lächeln. Er teilt Ihnen mit, dass der Segenstopf **{{poolAmount, number}}** {{moneyEmote}} von **{{poolThreshold, number}}** {{moneyEmote}} enthält, die Sie benötigen, um einen Segen zu beschwören."
+      "Auf einem nebelverhangenen Pfad lenkt ein goldener Schimmer Ihren Blick auf einen Steinaltar, der mit Runen gekrönt ist, die in einem uralten Licht pulsieren. Ein Orakel, dessen Gesicht unter einem dunklen Leinenschleier verborgen ist, steht dort regungslos wie eine Statue. Die Luft knistert vor uralter Energie, während er Ihnen mitteilt, dass sich die Reisekasse der Reisenden auf **{{poolAmount, number}}** {{moneyEmote}} von den **{{poolThreshold, number}}** {{moneyEmote}}, die für die Beschwörung benötigt werden, beläuft.",
+      "Ein übernatürlicher Lichtschein dringt durch die Baumkronen und führt Sie zu einer vergessenen Lichtung, auf der ein Altar aus goldgeädertem Granit steht. Die Kerzen um den Altar herum brennen ohne zu flackern, als ob selbst der Wind es nicht wagen würde, diesen heiligen Ort zu stören. Das Orakel, das über den Altar wacht, macht eine einladende Geste und teilt Ihnen mit, dass der kollektive Pool **{{poolAmount, number}}** {{moneyEmote}~ } von den **{{poolThreshold, number}}** {{moneyEmote}~ }, die benötigt werden, um einen Segen zu erwecken, erreicht hat.",
+      "uraltes Gemurmel scheint aus dem Stein selbst zu kommen, wenn Sie einen einsamen Altar entdecken, der mit Efeu und blassen Kristallen umrankt ist. Ein Orakel mit verschleierten Augen steht davor, die Handflächen zum Himmel geöffnet. Ohne auch nur einen Blick zu verschwenden, verkündet es Ihnen, dass bis heute **{{poolAmount, number}}** {{moneyEmote}} von den **{{poolThreshold, number}}** {{moneyEmote}} erforderlichen **{ ~ ~ }** { ~ ~ } in die Vertiefung des Altars gelegt worden sind."
     ],
     "menu": "Wie viel möchten Sie vor den Altar bringen?",
     "contributed": [
-      "legen Sie **{{amount, number}}** {{moneyEmote}} auf den Altar. Die Runen leuchten kurz auf, als sie Ihre Opfergabe annehmen. Der Topf erreicht nun **{{poolAmount, number}}** / **{{poolThreshold, number}}** {{moneyEmote}}.",
-      "das Orakel nimmt Ihre großzügige Spende von **{{amount, number}}** {{moneyEmote}} mit einem zustimmenden Nicken entgegen. Der gemeinsame Topf beläuft sich nun auf **{{poolAmount, number}}** / **{{poolThreshold, number}}** {{moneyEmote}}."
+      "Ihre Münzen klirren gegen den Stein des Altars und die Runen glühen in einem kurzen Licht und verschlingen Ihre Opfergabe von **{{amount, number}}** {{moneyEmote}}. Der Preispool beläuft sich nun auf **{{poolAmount, number}}** / **{{poolThreshold, number}}** {{moneyEmote}}.",
+      "Das Orakel sammelt Ihren Beitrag von **{{amount, number}}** {{moneyEmote}} zwischen seinen schwieligen Händen und legt ihn dann ehrfürchtig auf den Altar. Die Runen antworten mit einem kurzen Glitzern. Der Jackpot erreicht **{{poolAmount, number}}** / **{{poolThreshold, number}}** {{moneyEmote}}."
     ],
     "refused": [
-      "gehen Sie weiter, ohne ein Opfer zu bringen. Das Orakel sieht Ihnen enttäuscht nach.",
-      "lehnen Sie die Einladung des Orakels höflich ab und setzen Ihren Weg fort."
+      "Sie wenden den Blick ab und setzen Ihren Weg fort. Das Orakel spricht kein Wort, aber sein Schweigen ist schwer von Vorwürfen.",
+      "Sie gehen mit intakten Taschen weiter. Das Orakel starrt Sie kurz mit zusammengekniffenen Augen an und wendet sich dann wieder dem Altar zu, um seine einsame Wache fortzusetzen."
     ],
     "blessingTriggered": [
-      "legen Sie **{{amount, number}}** {{moneyEmote}} auf den Altar und... die Runen explodieren vor Licht! Das Orakel ruft aus, dass die Opfergabe vollständig ist! Der Segen **{{blessingType}}** wird für alle Abenteurer aktiviert!",
-      "Ihre Opfergabe von **{{amount, number}}** {{moneyEmote}} vervollständigt den Topf! Der Altar bebt und eine Energiewelle breitet sich über die Welt aus. Das Orakel verkündet, dass der Segen **{{blessingType}}** nun für alle aktiv ist!"
+      "Ihre **{{amount, number}}** {{moneyEmote}} vervollständigen die Opfergabe. Der Altar zerbricht vor Licht, die Runen fliegen in glühenden Spiralen davon und eine Welle der Kraft durchdringt die ganze Welt. Das Orakel verneigt sich mit weit aufgerissenen Augen: Der Segen **{{blessingType}}** ist soeben für alle Abenteurer erwacht.",
+      "In dem Moment, in dem deine **{{amount, number}}** {{moneyEmote}} den Stein berühren, steigt ein dumpfes Grollen aus den Tiefen des Altars auf. Ein Licht strömt wie eine goldene Säule aus den Runen und durchbricht das Blätterdach. Der Segen **{{blessingType}}** verbreitet sich in der Welt, getragen von einem uralten Hauch, den alle Abenteurer spüren."
     ],
     "notEnoughMoney": [
-      "du durchsuchst deine Taschen, aber du hast nicht genug Geld für diese Opfergabe. Das Orakel fordert Sie auf, wiederzukommen, wenn Sie mehr Geld haben.",
-      "das Orakel sieht Ihnen beim Zählen Ihrer Münzen zu und schüttelt den Kopf. Sie können es sich nicht leisten, so viel beizutragen."
+      "Sie durchsuchen Ihre Taschen und finden nur ein paar Münzen. Das Orakel lächelt und fordert Sie mit einer Geste auf, wiederzukommen, wenn das Schicksal es besser mit Ihnen meint.",
+      "Das Orakel bemerkt Ihre Verlegenheit und schaut schamhaft weg, während Sie Ihre wenigen Münzen zählen. Es gibt Ihnen mit einer freundlichen Geste zu verstehen, dass jeder noch so kleine Beitrag an einem anderen Tag willkommen ist."
     ],
     "bonusGems": [
-      "Das Orakel lächelt Sie an und schiebt unauffällig **{{gems}}** {{gemEmote}} in Ihre Börse. Die Geister belohnen Ihre Großzügigkeit!",
-      "Ein Lichtschein geht vom Altar aus und **{{gems}}** {{gemEmote}} erscheinen in Ihrer Hand. Das Orakel flüstert, dass die Götter Ihre Opfergabe gesehen haben."
+      "Der Altar vibriert in einem unerwarteten Licht und **{{gems}}** {{gemEmote}} kristallisieren in der Luft, bevor sie sich auf Ihrer Handfläche niederlassen. Das Orakel nickt: Die alten Geister wissen, wie man Großzügigkeit erkennt.",
+      "Ein schillernder Glanz springt aus den Rissen im Stein und **{{gems}}** {{gemEmote}} rollt auf Sie zu. Das Orakel scheint von diesem Zeichen der Dankbarkeit der Geister nicht überrascht zu sein."
     ],
     "bonusItem": [
-      "Als Dank für Ihre Großzügigkeit wühlt das Orakel in seinen Sachen und reicht Ihnen einen geheimnisvollen Gegenstand...",
-      "Die Runen auf dem Altar leuchten auf und eine Ausrüstung materialisiert sich vor Ihnen. Das Orakel gibt Ihnen ein Zeichen, dass Sie es nehmen sollen."
+      "Die Runen auf dem Altar zeichnen Arabesken in die Luft und ein Gegenstand materialisiert sich in einem Lichtschein. Das Orakel gibt Ihnen ein Zeichen, es zu nehmen, bevor sich der Zauber auflöst.",
+      "Ein mystischer Windstoß umhüllt den Altar und als er sich auflöst, liegt eine unbekannte Ausrüstung auf dem Stein, die noch warm von der Magie ist. Das Orakel weist mit einem Blick darauf hin."
     ],
-    "badgeAwarded": [
-      "Das Orakel verneigt sich tief vor Ihnen. Ihre Hingabe an den Altar ist den Geistern aufgefallen. Sie erhalten das Abzeichen {emote:badges.oracle_patron} als Anerkennung für Ihre außergewöhnliche Schirmherrschaft!",
-      "Die Runen des Altars werfen ein goldenes Licht auf Sie. Das Orakel erklärt feierlich, dass Sie nun als Beschützer des Orakels anerkannt sind. Sie erhalten das Abzeichen {emote:badges.oracle_patron} !"
-    ]
+    "badgeAwarded": "Das Orakel markiert eine tiefe Verbeugung. Die Runen bilden ein uraltes Symbol: das Symbol des Beschützers des Orakels. Sie erhalten das Abzeichen {emote:badges.oracle_patron} als Anerkennung für Ihre Ergebenheit.",
+    "firstEncounter": "ein goldenes Leuchten durch den Nebel zieht Sie zu einem Steinaltar, der mit alten Runen bedeckt ist. Ein Orakel mit verschleiertem Gesicht steht regungslos vor dem Gebäude.\n\nMit einer langsamen Geste deutet es auf den Altar: Die Runen erzählen die Geschichte der Segnungen, jener uralten Kräfte, die die Reisenden erwecken können, indem sie ihre Opfergaben vereinen. Wenn der kollektive Topf seine Schwelle erreicht, ergießt sich ein Segen über alle Abenteurer der Welt und verleiht ihnen vorübergehend Macht.\n\nDas Orakel tritt näher und zeichnet mit den Fingerspitzen ein Runenzeichen auf Ihr Handgelenk. Die Haut kribbelt an den Stellen, an denen die glühenden Linien eingeritzt werden, dann lässt das Gefühl nach. Dieses Zeichen verbindet Sie nun mit den Geheimnissen des Altars. Den Status der Segnungen können Sie jederzeit mit dem Befehl {command:blessing}abrufen."
   }
 }

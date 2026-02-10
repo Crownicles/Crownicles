@@ -51,7 +51,8 @@
     "switch": "equipment switch",
     "test": "test",
     "unlock": "releasing someone",
-    "witchChoose": "witch event choice"
+    "witchChoose": "witch event choice",
+    "altarSmallEvent": "contribution to the Oracle altar"
   },
   "commandDoesntExist": "ERROR: Unknown command",
   "interactionNotForYou": "This interaction is not intended for you!",
@@ -161,6 +162,7 @@
   "banned": "You have been banned from the game.",
   "aDevMessedUp": "Oops! An error has occurred. Don't worry, it's not your fault. Please accept our apologies for the inconvenience. To resolve this problem, please contact our support team via our Discord server: https://discord.gg/5JqrMtZ",
   "commandNotAvailableHere": "This command cannot be used at this location.",
+  "oracleNotMet": "This command is not yet available to you.",
   "guildFoodStorageFull": "You have received **{{quantity, number}}x {{food}}**, but your guild's food supply is full. The food has been thrown away.",
   "fightBugged": "The battle was cancelled because there was a technical problem. This is due to the deletion of a message necessary for combat or a permission issue.",
   "resetIsNow": "{emote:announcements.trophy} The weekly ranking is currently being reset. The winner will soon be announced on the bot's server! The game will resume in less than 5 minutes!",

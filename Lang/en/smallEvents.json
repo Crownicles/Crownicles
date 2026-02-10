@@ -2442,38 +2442,36 @@
   },
   "altar": {
     "intro": [
-      "you see an ancient stone altar at the side of the path, adorned with luminous runes. A hooded oracle stands before it, hands outstretched. He whispers that the spirits of the world await a collective offering. The kitty is currently at **{{poolAmount, number}}** {{moneyEmote}} out of **{{poolThreshold, number}}** {{moneyEmote}} needed.",
-      "a golden glow draws your gaze to an altar hidden behind the trees. An old oracle beckons you to approach. He explains that travelers contribute together to a sacred offering. Currently, **{{poolAmount, number}}** {{moneyEmote}} have been gathered from the **{{poolThreshold, number}}** {{moneyEmote}} required.",
-      "you come upon a mystical altar surrounded by flickering candles. The oracle guarding it greets you with an enigmatic smile. He informs you that the blessing pool contains **{{poolAmount, number}}** {{moneyEmote}} of the **{{poolThreshold, number}}** {{moneyEmote}} needed to invoke a blessing."
+      "At the bend in a mist-drenched path, a golden sheen draws your gaze to a stone altar crowned with runes pulsing with an ancient glow. An oracle with his face hidden beneath a dark linen veil stands there, motionless as a statue. The air crackles with ancient energy as he tells you that the travelers' kitty amounts to **{{poolAmount, number}}** {{moneyEmote}} out of the **{{poolThreshold, number}}** {{moneyEmote}} needed for the invocation.",
+      "an unearthly glow filters through the foliage, guiding you to a forgotten clearing where stands an altar of gold-veined granite. The surrounding candles burn without flickering, as if the wind itself dared not disturb this sacred place. The oracle who watches over the altar makes a welcoming gesture and tells you that the collective kitty has reached **{{poolAmount, number}}** {{moneyEmote}} out of the **{{poolThreshold, number}}** {{moneyEmote}} required to awaken a blessing.",
+      "Ancient whispers seem to emanate from the stone itself as you discover a solitary altar, encircled by ivy and pale crystals. A veiled-eyed oracle stands before it, palms open to the sky. Without so much as a glance, he tells you that to date, **{{poolAmount, number}}** {{moneyEmote}} of the **{{poolThreshold, number}}** {{moneyEmote}} needed have been deposited in the hollow of the altar."
     ],
     "menu": "How much would you like to offer at the altar?",
     "contributed": [
-      "you place **{{amount, number}}** {{moneyEmote}} on the altar. The runes light up briefly as they accept your offering. The kitty now reaches **{{poolAmount, number}}** / **{{poolThreshold, number}}** {{moneyEmote}}.",
-      "the oracle accepts your generous contribution of **{{amount, number}}** {{moneyEmote}} with an approving nod. The common kitty now stands at **{{poolAmount, number}}** / **{{poolThreshold, number}}** {{moneyEmote}}."
+      "Your coins clink against the altar stone and the runes blaze with brief light, swallowing your offering of **{{amount, number}}** {{moneyEmote}}. The kitty now stands at **{{poolAmount, number}}** / **{{poolThreshold, number}}** {{moneyEmote}}.",
+      "The oracle collects your contribution of **{{amount, number}}** {{moneyEmote}} between his calloused hands, then deposits it reverently on the altar. The runes respond with a brief flicker. The kitty reaches **{{poolAmount, number}}** / **{{poolThreshold, number}}** {{moneyEmote}}."
     ],
     "refused": [
-      "you go on your way without making an offering. The oracle watches you go with a look of disappointment.",
-      "you politely decline the oracle's invitation and continue on your way."
+      "You look away and continue on your way. The oracle doesn't utter a word, but his silence is heavy with reproach.",
+      "You move on, pockets intact. The oracle stares at you briefly, squinting, then turns back to the altar to resume her solitary vigil."
     ],
     "blessingTriggered": [
-      "you place **{{amount, number}}** {{moneyEmote}} on the altar and... the runes explode with light! The oracle exclaims that the offering is complete! The blessing **{{blessingType}}** is activated for all adventurers!",
-      "your offering of **{{amount, number}}** {{moneyEmote}} completes the kitty! The altar shakes and a wave of energy spreads across the world. The oracle announces that the **{{blessingType}}** blessing is now active for all!"
+      "Your **{{amount, number}}** {{moneyEmote}} complete the offering. The altar cracks with light, the runes soar in incandescent spirals and a wave of force passes through the entire world. The oracle curtsies, eyes wide: the blessing **{{blessingType}}** has just awakened for all adventurers.",
+      "The moment your **{{amount, number}}** {{moneyEmote}} touch the stone, a dull roar rises from the depths of the altar. Light bursts from the runes like a column of gold, piercing the canopy. The blessing **{{blessingType}}** spreads across the world, carried by an ancient breath felt by all adventurers."
     ],
     "notEnoughMoney": [
-      "you dig into your pockets, but you don't have enough money for this offering. The oracle invites you to come back when you're more fortunate.",
-      "the oracle watches you count your coins and shakes his head. You can't afford to contribute that much."
+      "You reach into your pockets and find only a few coins. The oracle smiles indulgently and gestures for you to return when fate has been more kind to you.",
+      "The oracle senses your embarrassment and modestly looks away as you count your meagre coins. With a friendly gesture, he lets you know that any contribution, however modest, will be welcome another day."
     ],
     "bonusGems": [
-      "The oracle smiles at you and discreetly slips **{{gems}}** {{gemEmote}} into your purse. The spirits reward your generosity!",
-      "A glow emanates from the altar and **{{gems}}** {{gemEmote}} appear in your hand. The oracle whispers that the gods have seen your offering."
+      "The altar vibrates with unexpected light and **{{gems}}** {{gemEmote}} crystallize in the air before landing in your palm. The oracle nods: ancient spirits know how to recognize generosity.",
+      "An iridescent glow emerges from the cracks in the stone and **{{gems}}** {{gemEmote}} roll towards you. The oracle doesn't seem surprised by this sign of gratitude from the spirits."
     ],
     "bonusItem": [
-      "In gratitude for your generosity, the oracle rummages through his belongings and hands you a mysterious object...",
-      "The runes on the altar light up and a piece of equipment materializes in front of you. The oracle beckons you to take it."
+      "The runes on the altar trace arabesques in the air and an object materializes in a halo of light. The oracle beckons you to take it before the enchantment wears off.",
+      "A mystical gust envelops the altar and, as it dissipates, an unknown piece of equipment lies on the stone, still warm with magic. The oracle points to it with a glance."
     ],
-    "badgeAwarded": [
-      "The oracle bows deeply before you. Your devotion to the altar has been noticed by the spirits. You receive the {emote:badges.oracle_patron} badge in recognition of your exceptional patronage!",
-      "The runes on the altar cast a golden light on you. The oracle solemnly declares that you are now recognized as the Oracle's protector. You receive the {emote:badges.oracle_patron} badge!"
-    ]
+    "badgeAwarded": "The oracle marks a profound reverence. The runes form an ancient symbol: that of the Oracle's protector. You receive the {emote:badges.oracle_patron} badge in recognition of your devotion.",
+    "firstEncounter": "a golden glow through the fog draws you to a stone altar covered with ancient runes. A veiled-faced oracle stands motionless before the edifice.\n\nWith a slow gesture, he points to the altar: the runes tell the story of blessings, ancestral forces that travelers can awaken by joining their offerings. When the collective kitty reaches its threshold, a blessing is showered on every adventurer in the world, conferring temporary power.\n\nThe oracle approaches and traces a runic mark on your wrist with his fingertips. Your skin tingles where the incandescent lines are etched, then the sensation subsides. This mark now links you to the mysteries of the altar. You can check the status of your blessings at any time using the {command:blessing}command."
   }
 }

@@ -2442,38 +2442,36 @@
   },
   "altar": {
     "intro": [
-      "ves un antiguo altar de piedra a un lado del camino, decorado con runas luminosas. Un oráculo encapuchado está de pie ante él, con las manos extendidas. Susurra que los espíritus del mundo esperan una ofrenda colectiva. El gatito está actualmente en **{{poolAmount, number}}** {{moneyEmote}} fuera del **{{poolThreshold, number}}** {{moneyEmote}} requerido.",
-      "Un resplandor dorado atrae tu mirada hacia un altar oculto tras los árboles. Un viejo oráculo te hace señas para que te acerques. Te explica que todos los viajeros están contribuyendo a una ofrenda sagrada. Actualmente, se han reunido **{{poolAmount, number}}** {{moneyEmote}} de los **{{poolThreshold, number}}** {{moneyEmote}} requeridos.",
-      "te encuentras con un altar místico rodeado de velas parpadeantes. El oráculo que lo custodia te saluda con una enigmática sonrisa. Te dice que el estanque de las bendiciones contiene **{{poolAmount, number}}** {{moneyEmote}} del **{{poolThreshold, number}}** {{moneyEmote}} necesario para invocar una bendición."
+      "En el recodo de un camino envuelto en niebla, un brillo dorado atrae tu mirada hacia un altar de piedra coronado con runas que palpitan con un resplandor ancestral. Un oráculo con el rostro oculto bajo un velo de lino oscuro permanece allí, inmóvil como una estatua. El aire crepita con antigua energía mientras te dice que el gatito de los viajeros asciende a **{{poolAmount, number}}** {{moneyEmote}} de los **{{poolThreshold, number}}** {{moneyEmote}} necesarios para la invocación.",
+      "un resplandor sobrenatural se filtra entre el follaje y te guía hasta un claro olvidado donde se alza un altar de granito veteado de oro. Las velas que lo rodean arden sin parpadear, como si el propio viento no se atreviera a perturbar este lugar sagrado. El oráculo que vigila el altar hace un gesto de bienvenida y te dice que el gatito colectivo ha alcanzado **{{poolAmount, number}}** {{moneyEmote}} del **{{poolThreshold, number}}** {{moneyEmote}} necesario para despertar una bendición.",
+      "Antiguos susurros parecen emanar de la propia piedra cuando descubres un altar solitario, rodeado de hiedra y pálidos cristales. Un oráculo de ojos velados está de pie ante él, con las palmas abiertas al cielo. Sin dirigirte siquiera una mirada, te dice que hasta la fecha, **{{poolAmount, number}}** {{moneyEmote}} del **{{poolThreshold, number}}** {{moneyEmote}} necesario se han depositado en el hueco del altar."
     ],
     "menu": "¿Cuánto te gustaría ofrecer en el altar?",
     "contributed": [
-      "colocas **{{amount, number}}** {{moneyEmote}} sobre el altar. Las runas se iluminan brevemente al aceptar tu ofrenda. El gatito ha alcanzado **{{poolAmount, number}}** / **{{poolThreshold, number}}** {{moneyEmote}}.",
-      "el oráculo acepta tu generosa contribución de **{{amount, number}}** {{moneyEmote}} con un gesto de aprobación. La bolsa de premios asciende ahora a **{{poolAmount, number}}** / **{{poolThreshold, number}}** {{moneyEmote}}."
+      "Tus monedas tintinean contra la piedra del altar y las runas resplandecen con una breve luz, tragándose tu ofrenda de **{{amount, number}}** {{moneyEmote}}. La bolsa de premios asciende ahora a **{{poolAmount, number}}** / **{{poolThreshold, number}}** {{moneyEmote}}.",
+      "El oráculo recoge tu contribución de **{{amount, number}}** {{moneyEmote}} entre sus manos callosas, y luego la deposita reverentemente sobre el altar. Las runas responden con un breve parpadeo. El gatito alcanza **{{poolAmount, number}}** / **{{poolThreshold, number}}** {{moneyEmote}}."
     ],
     "refused": [
-      "sigues tu camino sin hacer una ofrenda. El oráculo te observa con una mirada de decepción.",
-      "declinas cortésmente la invitación del oráculo y continúas tu camino."
+      "Desvía la mirada y continúa su camino. El oráculo no dice una palabra, pero su silencio está cargado de reproche.",
+      "Sigues adelante, con los bolsillos intactos. La oráculo te mira brevemente, entrecerrando los ojos, y luego se vuelve hacia el altar para reanudar su solitaria vigilia."
     ],
     "blessingTriggered": [
-      "colocas **{{amount, number}}** {{moneyEmote}} sobre el altar y... ¡las runas explotan de luz! ¡El oráculo exclama que la ofrenda está completa! ¡La bendición **{{blessingType}}** se activa para todos los aventureros!",
-      "tu ofrenda de **{{amount, number}}** {{moneyEmote}} ¡completa el gatito! El altar tiembla y una ola de energía se extiende por todo el mundo. El oráculo anuncia que la bendición **{{blessingType}}** ¡ya está activa para todo el mundo!"
+      "Tu **{{amount, number}}** {{moneyEmote}} completa la ofrenda. El altar se resquebraja de luz, las runas vuelan en espirales incandescentes y una ola de fuerza atraviesa el mundo entero. El oráculo hace una reverencia, con los ojos muy abiertos: la bendición **{{blessingType}}** acaba de ser despertada para todos los aventureros.",
+      "En el momento en que tu **{{amount, number}}** {{moneyEmote}} toca la piedra, un sordo rugido surge de las profundidades del altar. Una luz brota de las runas como una columna de oro, atravesando el dosel. La bendición **{{blessingType}}** se extiende por el mundo, llevada por un antiguo aliento que sienten todos los aventureros."
     ],
     "notEnoughMoney": [
-      "rebuscas en tus bolsillos, pero no tienes suficiente dinero para esta ofrenda. El oráculo te invita a volver cuando seas más afortunado.",
-      "el oráculo te mira contar tus monedas y sacude la cabeza. No puedes permitirte contribuir con tanto."
+      "Buscas en tus bolsillos y sólo encuentras unas pocas monedas. El oráculo sonríe con indulgencia y te hace un gesto para que vuelvas cuando el destino haya sido más benévolo contigo.",
+      "El oráculo percibe tu vergüenza y modestamente mira hacia otro lado mientras cuentas tus escasas monedas. Con un gesto amistoso, te dice que cualquier contribución, por modesta que sea, será bienvenida otro día."
     ],
     "bonusGems": [
-      "El oráculo te sonríe y discretamente desliza **{{gems}}** {{gemEmote}} en tu bolso. Los espíritus recompensan tu generosidad.",
-      "Un resplandor emana del altar y **{{gems}}** {{gemEmote}} aparece en tu mano. El oráculo susurra que los dioses han visto tu ofrenda."
+      "El altar vibra con una luz inesperada y **{{gems}}** {{gemEmote}} cristaliza en el aire antes de posarse en tu palma. El oráculo asiente: los espíritus antiguos saben reconocer la generosidad.",
+      "Un resplandor iridiscente brota de las grietas de la piedra y **{{gems}}** {{gemEmote}} rueda hacia ti. El oráculo no parece sorprendido por esta muestra de gratitud de los espíritus."
     ],
     "bonusItem": [
-      "En agradecimiento por tu generosidad, el oráculo rebusca entre sus pertenencias y te entrega un misterioso objeto...",
-      "Las runas del altar se iluminan y una pieza de equipo se materializa ante ti. El oráculo te hace señas para que lo cojas."
+      "Las runas del altar trazan arabescos en el aire y un objeto se materializa en un halo de luz. El oráculo te hace señas para que lo cojas antes de que desaparezca el encantamiento.",
+      "Una ráfaga de viento místico envuelve el altar y, cuando se disipa, una pieza desconocida yace sobre la piedra, aún caliente por la magia. El oráculo la señala con la mirada."
     ],
-    "badgeAwarded": [
-      "El oráculo se inclina profundamente ante ti. Los espíritus se han dado cuenta de tu devoción al altar. Recibirás la insignia {emote:badges.oracle_patron} en reconocimiento a tu excepcional patrocinio.",
-      "Las runas del altar proyectan una luz dorada sobre ti. El oráculo declara solemnemente que ahora se te reconoce como protector del Oráculo. Se te ha concedido la insignia {emote:badges.oracle_patron} ."
-    ]
+    "badgeAwarded": "El oráculo marca una profunda reverencia. Las runas forman un antiguo símbolo: el del protector del Oráculo. Recibes la insignia {emote:badges.oracle_patron} en reconocimiento a tu devoción.",
+    "firstEncounter": "Un resplandor dorado a través de la niebla te atrae hacia un altar de piedra cubierto de runas antiguas. Un oráculo de rostro velado permanece inmóvil frente al edificio.\n\nCon un gesto lento, señala el altar: las runas cuentan la historia de las bendiciones, las fuerzas ancestrales que los viajeros pueden despertar uniendo sus ofrendas. Cuando el cesto colectivo alcanza su umbral, una bendición se derrama sobre todos los aventureros del mundo, otorgándoles un poder temporal.\n\nEl oráculo se acerca y traza una marca rúnica en tu muñeca con la punta de los dedos. Sientes un cosquilleo en la piel donde se han grabado las líneas incandescentes, pero luego la sensación se calma. Esta marca te vincula ahora a los misterios del altar. Puedes comprobar el estado de las bendiciones en cualquier momento utilizando el comando en {command:blessing}."
   }
 }
