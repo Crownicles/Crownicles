@@ -293,7 +293,7 @@
     "The oracle does not appear while a blessing is already active. Once the blessing has expired, you can cross paths with it again.",
     "The oracle's jackpot threshold adjusts over time: if players fill the jackpot quickly, the next threshold will be higher. Conversely, if it takes time, it will decrease.",
     "A blessing lasts between 8 and 24 hours. See {command:blessing} for remaining time and active effect.",
-    "If the oracle's kitty isn't filled in time, it expires and resets with a more appropriate threshold. Don't wait too long before contributing!",
+    "Si la cagnotte de l'oracle n'est pas remplie à temps, elle expire et se réinitialise avec un seuil plus adapté. N'attendez pas trop avant de contribuer !",
     "The Amplified Rage Blessing doubles rage gains, making it easier to reach higher levels.",
     "When the Battle Loot Blessing is active, your battle rewards (money and points) are multiplied by 4, with the exception of glory. It's the perfect time to keep on fighting!",
     "The Pet Love Blessing doubles affection gains. Take the opportunity to strengthen your bond with your companion!",
