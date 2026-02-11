@@ -55,8 +55,20 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 		100, // buyTokensFromShop 10
 		103, // spendMoney 25000
 		107, // fromPlaceToPlace (7->15, 3h)
-		108 // winBossWithDifferentClasses (4 classes) - final mission
+		107 // winBossWithDifferentClasses (4 classes) - same position for consecutive
 	]);
+
+	/*
+	 * Fix campaignProgression for players who completed the campaign before this migration
+	 * Players with campaignProgression = 0 (campaign completed) need to have their progression
+	 * updated to point to the first new mission (position 10)
+	 */
+	await context.sequelize.query(`
+		UPDATE player_missions_info
+		SET campaignProgression = 10
+		WHERE campaignProgression = 0
+		  AND LENGTH(campaignBlob) > 0
+	`);
 }
 
 export async function down({ context }: { context: QueryInterface }): Promise<void> {
@@ -81,6 +93,6 @@ export async function down({ context }: { context: QueryInterface }): Promise<vo
 		100,
 		103,
 		107,
-		108
+		107
 	]);
 }

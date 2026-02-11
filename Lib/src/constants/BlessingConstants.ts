@@ -11,6 +11,35 @@ export enum BlessingType {
 	DAILY_MISSION = 9
 }
 
+/**
+ * Money factor for smart contribution calculation
+ */
+export enum SmartContributionMoneyFactor {
+	POOR = 0,
+	MIDDLE = 1,
+	RICH = 2
+}
+
+/**
+ * Remaining pool factor for smart contribution calculation
+ */
+export enum SmartContributionRemainingFactor {
+	ALMOST_FILLED = 0,
+	LOW = 1,
+	MEDIUM = 2,
+	HIGH = 3
+}
+
+/**
+ * Time urgency factor for smart contribution calculation
+ */
+export enum SmartContributionTimeFactor {
+	PLENTY_OF_TIME = 0,
+	SOME_TIME = 1,
+	LESS_TIME = 2,
+	URGENT = 3
+}
+
 export abstract class BlessingConstants {
 	/**
 	 * Duration range of a blessing in hours

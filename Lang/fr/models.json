@@ -1341,8 +1341,8 @@
     "wealthyPayForPVEIsland": "Acheter un voyage vers une île mystérieuse au prix maximal",
     "winBoss_one": "Gagner {{count}} combat de boss",
     "winBoss_other": "Gagner {{count}} combats de boss",
-    "winBossWithDifferentClasses_one": "Vaincre le boss final d'une île avec {{count}} classe (seul le dernier boss de chaque île compte)",
-    "winBossWithDifferentClasses_other": "Vaincre les boss finaux d'îles avec {{count}} classes différentes (seul le dernier boss de chaque île compte)"
+    "winBossWithDifferentClasses_one": "Vaincre un boss final d'île (seul le dernier boss de chaque île compte)",
+    "winBossWithDifferentClasses_other": "Vaincre des boss finaux d'îles en utilisant {{count}} classes différentes (seul le dernier boss de chaque île compte)"
   },
   "missionVariants": {
     "default": "{{variant}}",

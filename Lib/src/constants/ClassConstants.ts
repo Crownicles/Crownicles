@@ -1,3 +1,5 @@
+import { TimeConstants } from "./TimeConstants";
+
 export abstract class ClassConstants {
 	static readonly CLASSES_ID = {
 		RECRUIT: 0,
@@ -36,11 +38,11 @@ export abstract class ClassConstants {
 	static readonly GROUP4LEVEL = 80;
 
 	static readonly TIME_BEFORE_CHANGE_CLASS = [
-		1 * 7 * 24 * 60 * 60, // 1 week
-		1 * 7 * 24 * 60 * 60, // 1 week
-		2 * 7 * 24 * 60 * 60, // 2 weeks
-		3 * 7 * 24 * 60 * 60, // 3 weeks
-		3 * 7 * 24 * 60 * 60 // 3 weeks
+		1 * TimeConstants.S_TIME.WEEK,
+		1 * TimeConstants.S_TIME.WEEK,
+		2 * TimeConstants.S_TIME.WEEK,
+		3 * TimeConstants.S_TIME.WEEK,
+		3 * TimeConstants.S_TIME.WEEK
 	];
 
 	static readonly CLASS_KIND = {

@@ -5,7 +5,12 @@ import {
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
 import { BlockingUtils } from "../utils/BlockingUtils";
 import { BlessingManager } from "../blessings/BlessingManager";
-import { BlessingConstants } from "../../../../Lib/src/constants/BlessingConstants";
+import {
+	BlessingConstants,
+	SmartContributionMoneyFactor,
+	SmartContributionRemainingFactor,
+	SmartContributionTimeFactor
+} from "../../../../Lib/src/constants/BlessingConstants";
 import {
 	ReactionCollectorAltar, ReactionCollectorAltarContributeReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorAltar";
@@ -37,56 +42,53 @@ import {
 } from "../../../../Lib/src/utils/TimeUtils";
 
 /**
- * Calculate money factor (0-2) based on player's wealth.
- * 0 = poor, 1 = middle (50k+), 2 = rich (100k+)
+ * Calculate money factor based on player's wealth.
  */
-function getMoneyFactor(playerMoney: number): number {
+function getMoneyFactor(playerMoney: number): SmartContributionMoneyFactor {
 	if (playerMoney >= BlessingConstants.SMART_CONTRIBUTION_RICH_THRESHOLD) {
-		return 2;
+		return SmartContributionMoneyFactor.RICH;
 	}
 	if (playerMoney >= BlessingConstants.SMART_CONTRIBUTION_MIDDLE_THRESHOLD) {
-		return 1;
+		return SmartContributionMoneyFactor.MIDDLE;
 	}
-	return 0;
+	return SmartContributionMoneyFactor.POOR;
 }
 
 /**
- * Calculate remaining pool factor (0-3) based on how much is left to fill.
- * 0 = almost filled, 1 = low (7.5k+), 2 = medium (15k+), 3 = high (30k+)
+ * Calculate remaining pool factor based on how much is left to fill.
  */
-function getRemainingFactor(remaining: number): number {
+function getRemainingFactor(remaining: number): SmartContributionRemainingFactor {
 	if (remaining >= BlessingConstants.SMART_CONTRIBUTION_HIGH_REMAINING_THRESHOLD) {
-		return 3;
+		return SmartContributionRemainingFactor.HIGH;
 	}
 	if (remaining >= BlessingConstants.SMART_CONTRIBUTION_MEDIUM_REMAINING_THRESHOLD) {
-		return 2;
+		return SmartContributionRemainingFactor.MEDIUM;
 	}
 	if (remaining >= BlessingConstants.SMART_CONTRIBUTION_LOW_REMAINING_THRESHOLD) {
-		return 1;
+		return SmartContributionRemainingFactor.LOW;
 	}
-	return 0;
+	return SmartContributionRemainingFactor.ALMOST_FILLED;
 }
 
 /**
- * Calculate time factor (0-3) based on urgency.
- * 0 = plenty of time (3+ days), 1 = some time, 2 = less time (36h or less), 3 = urgent (12h or less)
+ * Calculate time factor based on urgency.
  */
-function getTimeFactor(timeRemaining: number): number {
+function getTimeFactor(timeRemaining: number): SmartContributionTimeFactor {
 	if (timeRemaining <= hoursToMilliseconds(BlessingConstants.SMART_CONTRIBUTION_URGENT_TIME_HOURS)) {
-		return 3;
+		return SmartContributionTimeFactor.URGENT;
 	}
 	if (timeRemaining <= hoursToMilliseconds(BlessingConstants.SMART_CONTRIBUTION_MEDIUM_TIME_HOURS)) {
-		return 2;
+		return SmartContributionTimeFactor.LESS_TIME;
 	}
 	if (timeRemaining <= daysToMilliseconds(BlessingConstants.SMART_CONTRIBUTION_RELAXED_TIME_DAYS)) {
-		return 1;
+		return SmartContributionTimeFactor.SOME_TIME;
 	}
-	return 0;
+	return SmartContributionTimeFactor.PLENTY_OF_TIME;
 }
 
 /**
  * Calculate the smart contribution amount based on player's money, remaining pool, and time until expiration.
- * Returns a value from SMART_CONTRIBUTION_AMOUNTS [50, 200, 250, 300, 500, 750, 1000, 1200, 1500].
+ * The score is the sum of all three factors (0-8), which indexes into SMART_CONTRIBUTION_AMOUNTS.
  */
 function calculateSmartContributionAmount(player: Player, blessingManager: BlessingManager): number {
 	const amounts = BlessingConstants.SMART_CONTRIBUTION_AMOUNTS;
