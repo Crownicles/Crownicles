@@ -25,7 +25,7 @@ export abstract class TimeConstants {
 		HOUR: 3600,
 		DAY: 86400,
 		WEEK: 604800
-	};
+	} as const;
 
 	static readonly HOURS_IN_DAY = 24;
 

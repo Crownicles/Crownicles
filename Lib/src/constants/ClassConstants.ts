@@ -38,8 +38,8 @@ export abstract class ClassConstants {
 	static readonly GROUP4LEVEL = 80;
 
 	static readonly TIME_BEFORE_CHANGE_CLASS = [
-		1 * TimeConstants.S_TIME.WEEK,
-		1 * TimeConstants.S_TIME.WEEK,
+		TimeConstants.S_TIME.WEEK,
+		TimeConstants.S_TIME.WEEK,
 		2 * TimeConstants.S_TIME.WEEK,
 		3 * TimeConstants.S_TIME.WEEK,
 		3 * TimeConstants.S_TIME.WEEK
