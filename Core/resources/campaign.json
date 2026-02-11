@@ -857,6 +857,14 @@
       "moneyToWin": 0
     },
     {
+      "missionId": "fromPlaceToPlace",
+      "missionVariant": 5267486,
+      "missionObjective": 1,
+      "gemsToWin": 5,
+      "xpToWin": 350,
+      "moneyToWin": 0
+    },
+    {
       "missionId": "meetAllOracles",
       "missionVariant": 0,
       "missionObjective": 2,
@@ -982,6 +990,14 @@
       "missionObjective": 1,
       "gemsToWin": 10,
       "xpToWin": 500,
+      "moneyToWin": 0
+    },
+    {
+      "missionId": "fromPlaceToPlace",
+      "missionVariant": 1072131,
+      "missionObjective": 1,
+      "gemsToWin": 12,
+      "xpToWin": 400,
       "moneyToWin": 0
     }
   ]
