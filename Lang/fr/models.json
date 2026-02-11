@@ -1340,7 +1340,9 @@
     "useTokens_other": "Utiliser {{count}} jetons {emote:unitValues.token} pour avancer",
     "wealthyPayForPVEIsland": "Acheter un voyage vers une île mystérieuse au prix maximal",
     "winBoss_one": "Gagner {{count}} combat de boss",
-    "winBoss_other": "Gagner {{count}} combats de boss"
+    "winBoss_other": "Gagner {{count}} combats de boss",
+    "winBossWithDifferentClasses_one": "Vaincre {{count}} boss avec {{count}} classe différente",
+    "winBossWithDifferentClasses_other": "Vaincre {{count}} boss avec {{count}} classes différentes"
   },
   "missionVariants": {
     "default": "{{variant}}",

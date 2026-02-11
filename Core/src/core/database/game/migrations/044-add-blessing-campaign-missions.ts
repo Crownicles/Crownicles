@@ -5,13 +5,13 @@ import {
 
 export async function up({ context }: { context: QueryInterface }): Promise<void> {
 	/*
-	 * Add new campaign missions (blessing + variations + fromPlaceToPlace)
+	 * Add new campaign missions (blessing + variations + fromPlaceToPlace + winBossWithDifferentClasses)
 	 * Positions are in the ORIGINAL campaign (106 missions before this migration)
 	 * The function sorts positions in descending order and inserts one by one
 	 * IMPORTANT: When inserting multiple missions consecutively, use the SAME position
 	 * for both since the algorithm processes in descending order
 	 *
-	 * Final positions after migration (125 missions total):
+	 * Final positions after migration (127 missions total):
 	 * - goToPlace (Le Berceau): position 10
 	 * - goToPlace (Boug-Coton): position 36
 	 * - meetOracle: position 49
@@ -19,18 +19,20 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 	 * - buyTokensFromShop 5: position 52
 	 * - goToPlace (Claire de Ville): position 58
 	 * - contributeToBlessing (6500): position 65
-	 * - doExpeditions 5: position 69
-	 * - goToPlace (Forêt Célestrum): position 80
-	 * - meetDifferentPlayers 5: position 87
-	 * - contributeToBlessing (16300): position 94
-	 * - doExpeditions 25: position 98
-	 * - goToPlace (Ville Forte): position 103
-	 * - fromPlaceToPlace (Chemin du Dédale -> Route Grimpante, 30h): position 108
-	 * - meetAllOracles: position 109
-	 * - earnXP 7000: position 110
-	 * - buyTokensFromShop 10: position 116
-	 * - spendMoney 25000: position 120
-	 * - fromPlaceToPlace (Vallée des Rois -> Mont Célestrum, 3h): position 125
+	 * - winBossWithDifferentClasses (2 classes): position 67
+	 * - doExpeditions 5: position 70
+	 * - goToPlace (Forêt Célestrum): position 81
+	 * - meetDifferentPlayers 5: position 88
+	 * - contributeToBlessing (16300): position 95
+	 * - doExpeditions 25: position 99
+	 * - goToPlace (Ville Forte): position 104
+	 * - fromPlaceToPlace (Chemin du Dédale -> Route Grimpante, 30h): position 109
+	 * - meetAllOracles: position 110
+	 * - earnXP 7000: position 111
+	 * - buyTokensFromShop 10: position 117
+	 * - spendMoney 25000: position 121
+	 * - fromPlaceToPlace (Vallée des Rois -> Mont Célestrum, 3h): position 126
+	 * - winBossWithDifferentClasses (4 classes): position 127
 	 */
 	await addCampaignMissionList(context, [
 		10, // goToPlace (Le Berceau)
@@ -40,6 +42,7 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 		48, // buyTokensFromShop 5
 		53, // goToPlace (Claire de Ville)
 		59, // contributeToBlessing 6500
+		60, // winBossWithDifferentClasses (2 classes)
 		62, // doExpeditions 5
 		72, // goToPlace (Forêt Célestrum)
 		78, // meetDifferentPlayers 5
@@ -51,7 +54,8 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 		95, // earnXP 7000
 		100, // buyTokensFromShop 10
 		103, // spendMoney 25000
-		107 // fromPlaceToPlace (1->23, 3h) - final mission
+		107, // fromPlaceToPlace (7->15, 3h)
+		108 // winBossWithDifferentClasses (4 classes) - final mission
 	]);
 }
 
@@ -64,6 +68,7 @@ export async function down({ context }: { context: QueryInterface }): Promise<vo
 		48,
 		53,
 		59,
+		60,
 		62,
 		72,
 		78,
@@ -75,6 +80,7 @@ export async function down({ context }: { context: QueryInterface }): Promise<vo
 		95,
 		100,
 		103,
-		107
+		107,
+		108
 	]);
 }
