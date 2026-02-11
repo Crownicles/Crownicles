@@ -44,9 +44,7 @@ import {
 } from "./home";
 import { HomeMenuParams } from "./home/HomeMenuTypes";
 import { HomeMenuIds } from "./home/HomeMenuConstants";
-import {
-	getBlacksmithMenu, getBlacksmithSubMenus
-} from "./blacksmith/BlacksmithMenu";
+import { getBlacksmithMenus } from "./blacksmith/BlacksmithMenu";
 
 function getMainMenu(context: PacketContext, interaction: CrowniclesInteraction, packet: ReactionCollectorCreationPacket, collectorTime: number, pseudo: string): CrowniclesNestedMenu {
 	const data = packet.data.data as ReactionCollectorCityData;
@@ -723,11 +721,7 @@ function buildCitySubMenus(params: HomeMenuParams): Map<string, CrowniclesNested
 
 	// Add blacksmith menus
 	if (cityData.blacksmith) {
-		menus.set("BLACKSMITH_MENU", getBlacksmithMenu(params));
-
-		for (const [key, menu] of getBlacksmithSubMenus(params)) {
-			menus.set(key, menu);
-		}
+		getBlacksmithMenus(params).forEach((menu, key) => menus.set(key, menu));
 	}
 
 	// Add home menus

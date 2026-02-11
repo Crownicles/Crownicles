@@ -556,9 +556,28 @@ export function getBlacksmithDisenchantDetailMenu(
 }
 
 /**
- * Get all blacksmith submenus for registration
+ * Register a main menu and its detail sub-menus into the provided map
  */
-export function getBlacksmithSubMenus(params: BlacksmithMenuParams): Map<string, CrowniclesNestedMenu> {
+function registerSubMenus(
+	menus: Map<string, CrowniclesNestedMenu>,
+	items: unknown[],
+	mainKey: string,
+	mainMenu: CrowniclesNestedMenu,
+	detailMenuFactory: (index: number) => CrowniclesNestedMenu
+): void {
+	if (items.length === 0) {
+		return;
+	}
+	menus.set(mainKey, mainMenu);
+	for (let i = 0; i < items.length; i++) {
+		menus.set(`${mainKey}_DETAIL_${i}`, detailMenuFactory(i));
+	}
+}
+
+/**
+ * Get all blacksmith menus (main + sub-menus) for registration
+ */
+export function getBlacksmithMenus(params: BlacksmithMenuParams): Map<string, CrowniclesNestedMenu> {
 	const data = params.packet.data.data as ReactionCollectorCityData;
 	const blacksmith = data.blacksmith;
 	const menus = new Map<string, CrowniclesNestedMenu>();
@@ -567,21 +586,23 @@ export function getBlacksmithSubMenus(params: BlacksmithMenuParams): Map<string,
 		return menus;
 	}
 
-	// Upgrade menu and detail menus
-	if (blacksmith.upgradeableItems.length > 0) {
-		menus.set("BLACKSMITH_UPGRADE_MENU", getBlacksmithUpgradeMenu(params));
-		for (let i = 0; i < blacksmith.upgradeableItems.length; i++) {
-			menus.set(`BLACKSMITH_UPGRADE_DETAIL_${i}`, getBlacksmithUpgradeDetailMenu(params, i));
-		}
-	}
+	menus.set("BLACKSMITH_MENU", getBlacksmithMenu(params));
 
-	// Disenchant menu and detail menus
-	if (blacksmith.disenchantableItems.length > 0) {
-		menus.set("BLACKSMITH_DISENCHANT_MENU", getBlacksmithDisenchantMenu(params));
-		for (let i = 0; i < blacksmith.disenchantableItems.length; i++) {
-			menus.set(`BLACKSMITH_DISENCHANT_DETAIL_${i}`, getBlacksmithDisenchantDetailMenu(params, i));
-		}
-	}
+	registerSubMenus(
+		menus,
+		blacksmith.upgradeableItems,
+		"BLACKSMITH_UPGRADE_MENU",
+		getBlacksmithUpgradeMenu(params),
+		i => getBlacksmithUpgradeDetailMenu(params, i)
+	);
+
+	registerSubMenus(
+		menus,
+		blacksmith.disenchantableItems,
+		"BLACKSMITH_DISENCHANT_MENU",
+		getBlacksmithDisenchantMenu(params),
+		i => getBlacksmithDisenchantDetailMenu(params, i)
+	);
 
 	return menus;
 }

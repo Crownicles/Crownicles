@@ -340,9 +340,24 @@ async function sendCityCollector(context: PacketContext, response: CrowniclesPac
 			max: player.getMaxHealth(playerActiveObjects)
 		},
 		enchanter: isEnchanterHere && enchantment
-			? buildEnchanterData(playerInventory, player, enchantment, enchantmentId!, isPlayerMage)
+			? buildEnchanterData(
+				{
+					inventory: playerInventory, player
+				},
+				{
+					enchantment, enchantmentId: enchantmentId!, isPlayerMage
+				}
+			)
 			: undefined,
-		home: await buildHomeData(player, city, home, homeLevel, playerInventory, playerMaterialMap),
+		home: await buildHomeData(
+			{
+				player, inventory: playerInventory, materialMap: playerMaterialMap
+			},
+			{
+				home, homeLevel
+			},
+			city
+		),
 		blacksmith
 	};
 

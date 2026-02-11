@@ -67,12 +67,19 @@ import { crowniclesInstance } from "../../index";
  * Build enchanter data for the city reaction collector
  */
 export function buildEnchanterData(
-	playerInventory: InventorySlot[],
-	player: Player,
-	enchantment: ItemEnchantment,
-	enchantmentId: string,
-	isPlayerMage: boolean
+	playerData: {
+		inventory: InventorySlot[]; player: Player;
+	},
+	enchantData: {
+		enchantment: ItemEnchantment; enchantmentId: string; isPlayerMage: boolean;
+	}
 ): NonNullable<ReactionCollectorCityData["enchanter"]> {
+	const {
+		inventory: playerInventory, player
+	} = playerData;
+	const {
+		enchantment, enchantmentId, isPlayerMage
+	} = enchantData;
 	const isEquipment = (i: InventorySlot): boolean => (i.isWeapon() || i.isArmor()) && i.itemId !== 0;
 
 	return {
@@ -96,27 +103,33 @@ export function buildEnchanterData(
  * Build home data (owned home + manage options) for the city reaction collector
  */
 export async function buildHomeData(
-	player: Player,
-	city: City,
-	home: Home | null,
-	homeLevel: HomeLevel | null,
-	playerInventory: InventorySlot[],
-	playerMaterialMap: Map<number, number>
+	playerData: {
+		player: Player; inventory: InventorySlot[]; materialMap: Map<number, number>;
+	},
+	homeData: {
+		home: Home | null; homeLevel: HomeLevel | null;
+	},
+	city: City
 ): Promise<ReactionCollectorCityData["home"]> {
+	const {
+		player, inventory: playerInventory, materialMap: playerMaterialMap
+	} = playerData;
+	const {
+		home, homeLevel
+	} = homeData;
 	const isHomeInCity = Boolean(home && home.cityId === city.id && homeLevel);
 	const nextHomeUpgrade = homeLevel ? HomeLevel.getNextUpgrade(homeLevel, player.level) : null;
 
-	const upgradeStation = isHomeInCity
-		? buildUpgradeStationData(playerInventory, playerMaterialMap, homeLevel!, player)
-		: undefined;
-
-	const owned = isHomeInCity
-		? {
+	let upgradeStation;
+	let owned;
+	if (isHomeInCity) {
+		upgradeStation = buildUpgradeStationData(playerInventory, playerMaterialMap, homeLevel!, player);
+		owned = {
 			level: home!.level,
 			features: homeLevel!.features,
 			upgradeStation
-		}
-		: undefined;
+		};
+	}
 
 	const homesCount = await Homes.getHomesCount();
 
@@ -148,7 +161,7 @@ export async function buildHomeData(
  * Determines which items can be upgraded at home and their material requirements.
  */
 export function buildUpgradeStationData(
-	playerInventory: Awaited<ReturnType<typeof InventorySlots.getOfPlayer>>,
+	playerInventory: InventorySlot[],
 	playerMaterialMap: Map<number, number>,
 	homeLevel: HomeLevel,
 	player: Player
@@ -230,7 +243,7 @@ export function buildUpgradeStationData(
  * The blacksmith allows upgrading items beyond home level and disenchanting items.
  */
 export function buildBlacksmithData(
-	playerInventory: Awaited<ReturnType<typeof InventorySlots.getOfPlayer>>,
+	playerInventory: InventorySlot[],
 	playerMaterialMap: Map<number, number>,
 	player: Player
 ): NonNullable<ReactionCollectorCityData["blacksmith"]> {
