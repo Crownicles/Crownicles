@@ -30,7 +30,7 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 	 * - earnXP 7000: position 110
 	 * - buyTokensFromShop 10: position 116
 	 * - spendMoney 25000: position 120
-	 * - fromPlaceToPlace (Plage Sentinelle -> Claire de Ville, 3h): position 125
+	 * - fromPlaceToPlace (Vallée des Rois -> Mont Célestrum, 3h): position 125
 	 */
 	await addCampaignMissionList(context, [
 		10, // goToPlace (Le Berceau)
