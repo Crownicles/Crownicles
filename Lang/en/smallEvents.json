@@ -52,16 +52,16 @@
       "gentleBreeze": "you feel the breeze gradually lulling you to sleep. Tired from your journey, it's not long before you fall asleep.",
       "mysteriousBottle": "you walk past a merchant, who calls out to you. He offers to give you a mysterious bottle that he can't sell and doesn't want to spoil. You accept and drink it down.",
       "strangeLiquid": "you see a shiny object in the distance. As you approach, you discover a bottle containing a strange liquid. Intrigued, you decide to taste the dubious mixture. You immediately regret it.",
-      "expiredProvisions": "you realize that some groceries have been lying around in your bags for a while. However, you don't want to throw them away and decide to eat them anyway. This turns out to be a bad idea, as it seems that the food had already expired.",
+      "expiredProvisions": "you realize that some provisions have been lying around in your bags for a while. However, you don't want to throw them away and decide to eat them anyway. This turns out to be a bad idea, as it seems that the food had already expired.",
       "unexpectedRider": "you are surprised by a rider who appears behind you without warning. He knocks you down and continues on his way without paying any attention to you. Stunned, you struggle to get back up.",
       "fallingBranch": "you are knocked unconscious by a huge branch falling from the dead tree under which you were standing. Wounded, you'll need some time before you can set off again.",
-      "precipiceFall": "you are caught by a deep precipice. Despite your best efforts to catch yourself, you can't avoid the fall.",
+      "precipiceFall": "you are surprised by a deep precipice. Despite your best efforts to catch yourself, you can't avoid the fall.",
       "ambushedByGroup": "you are stopped by a group who demands that you hand over your possessions. You're not intimidated, and brandish your weapon to scare them off. However, one of them takes advantage of the general panic to knock you out, before fleeing.",
       "cowStampede": "you're crossing a path when a herd of cows suddenly appears. Frightened by the mass of animals that has just brushed past you, it takes you a while to recover from your emotions.",
       "trippedOverRoot": "you trip over a root and fall headfirst. Wounded, you'll need to heal.",
       "encounterWithBearCub": "you spot a bear cub a few metres away. Afraid of being caught by its mother, you flee as fast as you can.",
       "wrongDirection": "you realize you've gone the wrong way at the last intersection. You decide not to turn back and to find your own way to your destination... You get completely lost.",
-      "chilledByColdNights": "you get caught out by the region's cold nights. If you don't wear clothes suited to this climate, you'll quickly get cold.",
+      "chilledByColdNights": "you get caught out by the region's cold nights. Without clothes suited to this climate, you quickly get cold.",
       "mistakenIdentity": "you are apprehended by guards accusing you of being a criminal actively wanted in the kingdom. You notice that the man on the poster looks like you, and try to explain. The guards don't listen, take you away and throw you in prison."
     }
   },
@@ -88,7 +88,7 @@
       "If a member of your guild wants to join you on the boat, they can run {command:joinboat}",
       "The actions available when fighting animals depend on your stats, your items, your pets, etc.",
       "The island's hostility won't do you any favors when it comes to adventure. But if you join forces with members of your guild, you'll be much stronger together",
-      "The {command:map} order shows the map of the island",
+      "The {command:map} command shows the map of the island",
       "You can choose to leave the island after each monster fight. If your energy is low, it's better to leave while you're still conscious",
       "Some actions, such as drinking potions, accessing the store or obtaining daily bonuses, are unavailable on the island",
       "Your level does not influence the number of guild points, but it does influence other rewards",
@@ -102,7 +102,7 @@
   },
   "goToPVEIsland": {
     "stories": [
-      "you notice a boat stopped on the lower side. The captain calls you and offers you an exciting adventure on a monster-infested island. It also tells you that {{priceText}}.",
+      "you notice a boat stopped on the roadside. The captain calls out to you and offers you an exciting adventure on a monster-infested island. He also tells you that {{priceText}}.",
       "a man approaches you and asks if you'd be interested in his services. He explains that he is the captain of a ship sailing between the main continent and a mysterious island full of monsters. He says he can take you there if you're looking for a rollicking adventure, and adds that {{priceText}}.",
       "you are approached by a man in sailor's clothing, bearing the king's emblem. He tells you he's trying to send some of the adventurers competing for the princess's hand to an island full of monsters, which would be useful for the kingdom to get rid of. He also says that a ship is ready to leave for this island, and asks you if you're up for it, pointing out that {{priceText}}.",
       "you're accosted by a tall, bearded man, introducing himself as the leader of a mercenary group renowned in the region. He tells you that he can make you an incredible offer. The offer is for you to travel to a mysterious new island, where opportunity and danger coexist, as a monster hunter. He also adds that {{priceText}}."
@@ -131,7 +131,7 @@
       "fail": "You seize your chance. Unfortunately, you don't win. Maybe you'll be luckier next time. Taking part in the lottery will have cost you **{{lostTimeDisplay}} :clock2:**.",
       "failWithMalus": "You bet a hundred coins on the man's game. You lose, however, and leave, disappointed at having lost **{{money, number}}** {emote:unitValues.lostMoney}. Taking part in the lottery will also have cost you **{{lostTimeDisplay}}. :clock2:**."
     },
-    "poor": "You try to trick the man into paying you a large sum of money. Unfortunately for you, the shopkeeper doubts your good faith, and unable to prove any wealth, you are ruthlessly rejected.",
+    "poor": "You try to fool the man and wager a large sum. Unfortunately for you, the merchant doubts your good faith, and unable to prove any wealth, you are ruthlessly rejected.",
     "end": "Without paying any further attention to the individual, you continue on your way.",
     "rewardTypeText": {
       "xp": " You have won **{{reward, number}} {emote:unitValues.xp}**.",
@@ -189,7 +189,7 @@
     "playerDisplayRanked": "**{{pseudo}}** ({{rank, number}} {emote:top.congrats})",
     "playerDisplayUnranked": "**{{pseudo}}** (Unranked)",
     "no_one": [
-      "You continue your path in the greatest calm. Nobody's on your way.",
+      "You continue on your path in complete calm. There's not a soul in sight.",
       "You're on your own, so you continue on your way in the greatest calm.",
       "The sun's rays breaking through the clouds warm you up as you continue your journey on this deserted road."
     ],
@@ -197,10 +197,10 @@
       "You are passing by {{playerDisplay}} on your way, the best player at the moment!",
       "As you walk along, you come across {{playerDisplay}}. He's currently at the top of the leaderboard. Your eyes filled with admiration, you decide not to hinder his progress, and continue on your way.",
       "Oh my god! It's incredible! It's the legendary {{playerDisplay}}, the greatest fighter for now! You pass him by and chat for a while. He gives you a few tips for your adventure!",
-      "Make way for {{playerDisplay}}, DraftBot's best player in the world! You pass this person and keep walking to reach your destination."
+      "Make way for {{playerDisplay}}, Crownicles's best player in the world! You pass this person and keep walking to reach your destination."
     ],
     "top10": [
-      "In your way, you meet someone who is important. Indeed, {{playerDisplay}} is in the top 10!",
+      "On your way, you meet someone important. Indeed, {{playerDisplay}} is in the top 10!",
       "Incredible! Walking along a path you meet one of the heroes of the moment! You probably know him - {{playerDisplay}} - you've seen him in the top 10! This event brightens up your day.",
       "You speak with a famous figure among the princess's competing adventurers. It's {{playerDisplay}}, who's in the top 10!"
     ],
@@ -212,7 +212,7 @@
     "top100": [
       "Perseverance leads to success - that's what {{playerDisplay}}, one of the top 100 players, tells you! You then continue on your way to your destination.",
       "Wow, you recognize one of the tournament newbies, you've seen him before in a village up north, but yes... It's {{playerDisplay}}!",
-      "As you work towards your goal, you meet {{playerDisplay}}, a rising star on DraftBot. Indeed, he's in the top 100!"
+      "As you work towards your goal, you meet {{playerDisplay}}, a rising star on Crownicles. Indeed, he's in the top 100!"
     ],
     "powerful_guild": [
       "{{playerDisplay}}, who you meet by chance on your way, is a member of a powerful guild! This is what you conclude when you see his sparkling badge.",
@@ -221,7 +221,7 @@
     ],
     "beginner": [
       "There's a beginning to everything! You meet {{playerDisplay}} as he begins his adventure dedicated to the princess.",
-      "A passer-by quickly recognizes you: it's {{playerDisplay}}. A newcomer, but a nice, friendly one!",
+      "A passer-by walks alongside you, and you quickly recognize them: it's {{playerDisplay}}. A newcomer, but a nice, friendly one!",
       "You take a 5-minute break to clear your head. To do so, you train {{playerDisplay}}, who has just started the game."
     ],
     "advanced": [
@@ -240,9 +240,9 @@
       "You meet {{playerDisplay}} from your guild! You perform the guild's secret handshake and go your separate ways."
     ],
     "staff_member": [
-      "{{playerDisplay}}, a member of the DraftBot staff, gives you some advice for the rest of your adventure:\n\n{{advice}}\n\nYou then go on your way.",
+      "{{playerDisplay}}, a member of the Crownicles staff, gives you some advice for the rest of your adventure:\n\n{{advice}}\n\nYou then go on your way.",
       "\"{{advice}}\". That's what you've been told by {{playerDisplay}}, one of the bot's famous staff members, whom you meet along the way!",
-      "You talk to {{playerDisplay}}, a member of the DraftBot team, who has some good advice for the rest of your adventure:\n\n{{advice}}"
+      "You talk to {{playerDisplay}}, a member of the Crownicles team, who has some good advice for the rest of your adventure:\n\n{{advice}}"
     ],
     "top_week": [
       "You see {{playerDisplay}} on your way, out of breath. He's not resting: in fact, he's in this week's top 5!",
