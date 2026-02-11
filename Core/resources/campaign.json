@@ -73,6 +73,14 @@
       "moneyToWin": 0
     },
     {
+      "missionId": "goToPlace",
+      "missionVariant": 3,
+      "missionObjective": 1,
+      "gemsToWin": 2,
+      "xpToWin": 100,
+      "moneyToWin": 0
+    },
+    {
       "missionId": "recoverAlteration",
       "missionVariant": 0,
       "missionObjective": 1,
@@ -273,6 +281,14 @@
       "moneyToWin": 0
     },
     {
+      "missionId": "goToPlace",
+      "missionVariant": 6,
+      "missionObjective": 1,
+      "gemsToWin": 2,
+      "xpToWin": 150,
+      "moneyToWin": 0
+    },
+    {
       "missionId": "anyFight",
       "missionVariant": 0,
       "missionObjective": 5,
@@ -393,6 +409,14 @@
       "moneyToWin": 0
     },
     {
+      "missionId": "buyTokensFromShop",
+      "missionVariant": 2,
+      "missionObjective": 5,
+      "gemsToWin": 3,
+      "xpToWin": 200,
+      "moneyToWin": 0
+    },
+    {
       "missionId": "drinkAlcohol",
       "missionVariant": 0,
       "missionObjective": 1,
@@ -430,6 +454,14 @@
       "missionObjective": 1,
       "gemsToWin": 5,
       "xpToWin": 250,
+      "moneyToWin": 0
+    },
+    {
+      "missionId": "goToPlace",
+      "missionVariant": 23,
+      "missionObjective": 1,
+      "gemsToWin": 3,
+      "xpToWin": 200,
       "moneyToWin": 0
     },
     {
@@ -513,6 +545,14 @@
       "moneyToWin": 0
     },
     {
+      "missionId": "doExpeditions",
+      "missionVariant": 2,
+      "missionObjective": 5,
+      "gemsToWin": 3,
+      "xpToWin": 250,
+      "moneyToWin": 0
+    },
+    {
       "missionId": "reachLevel",
       "missionVariant": 0,
       "missionObjective": 60,
@@ -593,6 +633,14 @@
       "moneyToWin": 0
     },
     {
+      "missionId": "goToPlace",
+      "missionVariant": 27,
+      "missionObjective": 1,
+      "gemsToWin": 4,
+      "xpToWin": 250,
+      "moneyToWin": 0
+    },
+    {
       "missionId": "bigFeast",
       "missionVariant": 0,
       "missionObjective": 1,
@@ -638,6 +686,14 @@
       "missionObjective": 5,
       "gemsToWin": 5,
       "xpToWin": 350,
+      "moneyToWin": 0
+    },
+    {
+      "missionId": "meetDifferentPlayers",
+      "missionVariant": 1,
+      "missionObjective": 5,
+      "gemsToWin": 3,
+      "xpToWin": 200,
       "moneyToWin": 0
     },
     {
@@ -721,6 +777,14 @@
       "moneyToWin": 0
     },
     {
+      "missionId": "doExpeditions",
+      "missionVariant": 6,
+      "missionObjective": 25,
+      "gemsToWin": 5,
+      "xpToWin": 400,
+      "moneyToWin": 0
+    },
+    {
       "missionId": "dangerousExpedition",
       "missionVariant": 30,
       "missionObjective": 1,
@@ -750,6 +814,14 @@
       "missionObjective": 15,
       "gemsToWin": 7,
       "xpToWin": 400,
+      "moneyToWin": 0
+    },
+    {
+      "missionId": "goToPlace",
+      "missionVariant": 10,
+      "missionObjective": 1,
+      "gemsToWin": 5,
+      "xpToWin": 300,
       "moneyToWin": 0
     },
     {
@@ -793,6 +865,14 @@
       "moneyToWin": 0
     },
     {
+      "missionId": "earnXP",
+      "missionVariant": 4,
+      "missionObjective": 7000,
+      "gemsToWin": 5,
+      "xpToWin": 0,
+      "moneyToWin": 0
+    },
+    {
       "missionId": "expeditionStreak",
       "missionVariant": 0,
       "missionObjective": 3,
@@ -833,6 +913,14 @@
       "moneyToWin": 0
     },
     {
+      "missionId": "buyTokensFromShop",
+      "missionVariant": 3,
+      "missionObjective": 10,
+      "gemsToWin": 5,
+      "xpToWin": 300,
+      "moneyToWin": 0
+    },
+    {
       "missionId": "buyItemFromAlderic",
       "missionVariant": 0,
       "missionObjective": 1,
@@ -854,6 +942,14 @@
       "missionObjective": 1,
       "gemsToWin": 7,
       "xpToWin": 400,
+      "moneyToWin": 0
+    },
+    {
+      "missionId": "spendMoney",
+      "missionVariant": 7,
+      "missionObjective": 25000,
+      "gemsToWin": 6,
+      "xpToWin": 500,
       "moneyToWin": 0
     },
     {
