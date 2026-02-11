@@ -36,11 +36,11 @@ export abstract class ClassConstants {
 	static readonly GROUP4LEVEL = 80;
 
 	static readonly TIME_BEFORE_CHANGE_CLASS = [
+		1 * 7 * 24 * 60 * 60, // 1 week
+		1 * 7 * 24 * 60 * 60, // 1 week
 		2 * 7 * 24 * 60 * 60, // 2 weeks
-		2 * 7 * 24 * 60 * 60, // 2 weeks
-		4 * 7 * 24 * 60 * 60, // 4 weeks
-		4 * 7 * 24 * 60 * 60, // 4 weeks
-		4 * 7 * 24 * 60 * 60 // 4 weeks
+		3 * 7 * 24 * 60 * 60, // 3 weeks
+		3 * 7 * 24 * 60 * 60 // 3 weeks
 	];
 
 	static readonly CLASS_KIND = {
