@@ -197,7 +197,7 @@
       "You are passing by {{playerDisplay}} on your way, the best player at the moment!",
       "As you walk along, you come across {{playerDisplay}}. He's currently at the top of the leaderboard. Your eyes filled with admiration, you decide not to hinder his progress, and continue on your way.",
       "Oh my god! It's incredible! It's the legendary {{playerDisplay}}, the greatest fighter for now! You pass him by and chat for a while. He gives you a few tips for your adventure!",
-      "Make way for {{playerDisplay}}, DraftBot's best player in the world! You pass this person and keep walking to reach your destination."
+      "Make way for {{playerDisplay}}, Crownicles's best player in the world! You pass this person and keep walking to reach your destination."
     ],
     "top10": [
       "In your way, you meet someone who is important. Indeed, {{playerDisplay}} is in the top 10!",
@@ -212,7 +212,7 @@
     "top100": [
       "Perseverance leads to success - that's what {{playerDisplay}}, one of the top 100 players, tells you! You then continue on your way to your destination.",
       "Wow, you recognize one of the tournament newbies, you've seen him before in a village up north, but yes... It's {{playerDisplay}}!",
-      "As you work towards your goal, you meet {{playerDisplay}}, a rising star on DraftBot. Indeed, he's in the top 100!"
+      "As you work towards your goal, you meet {{playerDisplay}}, a rising star on Crownicles. Indeed, he's in the top 100!"
     ],
     "powerful_guild": [
       "{{playerDisplay}}, who you meet by chance on your way, is a member of a powerful guild! This is what you conclude when you see his sparkling badge.",
@@ -240,9 +240,9 @@
       "You meet {{playerDisplay}} from your guild! You perform the guild's secret handshake and go your separate ways."
     ],
     "staff_member": [
-      "{{playerDisplay}}, a member of the DraftBot staff, gives you some advice for the rest of your adventure:\n\n{{advice}}\n\nYou then go on your way.",
+      "{{playerDisplay}}, a member of the Crownicles staff, gives you some advice for the rest of your adventure:\n\n{{advice}}\n\nYou then go on your way.",
       "\"{{advice}}\". That's what you've been told by {{playerDisplay}}, one of the bot's famous staff members, whom you meet along the way!",
-      "You talk to {{playerDisplay}}, a member of the DraftBot team, who has some good advice for the rest of your adventure:\n\n{{advice}}"
+      "You talk to {{playerDisplay}}, a member of the Crownicles team, who has some good advice for the rest of your adventure:\n\n{{advice}}"
     ],
     "top_week": [
       "You see {{playerDisplay}} on your way, out of breath. He's not resting: in fact, he's in this week's top 5!",
