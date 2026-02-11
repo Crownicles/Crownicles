@@ -37,65 +37,65 @@ import {
 } from "../../../../Lib/src/utils/TimeUtils";
 
 /**
+ * Calculate money factor (0-2) based on player's wealth.
+ * 0 = poor, 1 = middle (50k+), 2 = rich (100k+)
+ */
+function getMoneyFactor(playerMoney: number): number {
+	if (playerMoney >= BlessingConstants.SMART_CONTRIBUTION_RICH_THRESHOLD) {
+		return 2;
+	}
+	if (playerMoney >= BlessingConstants.SMART_CONTRIBUTION_MIDDLE_THRESHOLD) {
+		return 1;
+	}
+	return 0;
+}
+
+/**
+ * Calculate remaining pool factor (0-3) based on how much is left to fill.
+ * 0 = almost filled, 1 = low (7.5k+), 2 = medium (15k+), 3 = high (30k+)
+ */
+function getRemainingFactor(remaining: number): number {
+	if (remaining >= BlessingConstants.SMART_CONTRIBUTION_HIGH_REMAINING_THRESHOLD) {
+		return 3;
+	}
+	if (remaining >= BlessingConstants.SMART_CONTRIBUTION_MEDIUM_REMAINING_THRESHOLD) {
+		return 2;
+	}
+	if (remaining >= BlessingConstants.SMART_CONTRIBUTION_LOW_REMAINING_THRESHOLD) {
+		return 1;
+	}
+	return 0;
+}
+
+/**
+ * Calculate time factor (0-3) based on urgency.
+ * 0 = plenty of time (3+ days), 1 = some time, 2 = less time (36h or less), 3 = urgent (12h or less)
+ */
+function getTimeFactor(timeRemaining: number): number {
+	if (timeRemaining <= hoursToMilliseconds(BlessingConstants.SMART_CONTRIBUTION_URGENT_TIME_HOURS)) {
+		return 3;
+	}
+	if (timeRemaining <= hoursToMilliseconds(BlessingConstants.SMART_CONTRIBUTION_MEDIUM_TIME_HOURS)) {
+		return 2;
+	}
+	if (timeRemaining <= daysToMilliseconds(BlessingConstants.SMART_CONTRIBUTION_RELAXED_TIME_DAYS)) {
+		return 1;
+	}
+	return 0;
+}
+
+/**
  * Calculate the smart contribution amount based on player's money, remaining pool, and time until expiration.
  * Returns a value from SMART_CONTRIBUTION_AMOUNTS [50, 200, 250, 300, 500, 750, 1000, 1200, 1500].
- *
- * Score calculation (0-8 scale):
- * - Money factor (0-2): 0 = poor, 1 = middle, 2 = rich (100k+)
- * - Remaining factor (0-3): 0 = almost filled, 1 = low, 2 = medium, 3 = high (30k+)
- * - Time factor (0-3): 0 = plenty of time (3+ days), 1 = some time, 2 = less time, 3 = urgent (12h or less)
  */
 function calculateSmartContributionAmount(player: Player, blessingManager: BlessingManager): number {
 	const amounts = BlessingConstants.SMART_CONTRIBUTION_AMOUNTS;
-
-	// Money factor (0-2): How rich is the player?
-	let moneyFactor: number;
-	if (player.money >= BlessingConstants.SMART_CONTRIBUTION_RICH_THRESHOLD) {
-		moneyFactor = 2; // Rich
-	}
-	else if (player.money >= BlessingConstants.SMART_CONTRIBUTION_MIDDLE_THRESHOLD) {
-		moneyFactor = 1; // Middle
-	}
-	else {
-		moneyFactor = 0; // Poor
-	}
-
-	// Remaining factor (0-3): How much is left to fill?
 	const remaining = blessingManager.getPoolThreshold() - blessingManager.getPoolAmount();
-	let remainingFactor: number;
-	if (remaining >= BlessingConstants.SMART_CONTRIBUTION_HIGH_REMAINING_THRESHOLD) {
-		remainingFactor = 3; // A lot left
-	}
-	else if (remaining >= BlessingConstants.SMART_CONTRIBUTION_MEDIUM_REMAINING_THRESHOLD) {
-		remainingFactor = 2; // Medium
-	}
-	else if (remaining >= BlessingConstants.SMART_CONTRIBUTION_LOW_REMAINING_THRESHOLD) {
-		remainingFactor = 1; // Low
-	}
-	else {
-		remainingFactor = 0; // Almost filled
-	}
-
-	// Time factor (0-3): How urgent is it?
 	const timeRemaining = blessingManager.getPoolExpiresAt().getTime() - Date.now();
-	let timeFactor: number;
-	if (timeRemaining <= hoursToMilliseconds(BlessingConstants.SMART_CONTRIBUTION_URGENT_TIME_HOURS)) {
-		timeFactor = 3; // Urgent
-	}
-	else if (timeRemaining <= hoursToMilliseconds(BlessingConstants.SMART_CONTRIBUTION_MEDIUM_TIME_HOURS)) {
-		timeFactor = 2; // Less time
-	}
-	else if (timeRemaining <= daysToMilliseconds(BlessingConstants.SMART_CONTRIBUTION_RELAXED_TIME_DAYS)) {
-		timeFactor = 1; // Some time
-	}
-	else {
-		timeFactor = 0; // Plenty of time
-	}
 
-	// Total score (0-8)
-	const score = Math.min(moneyFactor + remainingFactor + timeFactor, amounts.length - 1);
+	const score = getMoneyFactor(player.money) + getRemainingFactor(remaining) + getTimeFactor(timeRemaining);
 
-	return amounts[score];
+	return amounts[Math.min(score, amounts.length - 1)];
 }
 
 /**
