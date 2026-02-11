@@ -731,7 +731,7 @@
     },
     "noTimeLeft": {
       "fieldName": "Tiempo restante :",
-      "fieldValue": "{emote:effects.healed} Posible reanudación del juego"
+      "fieldValue": ":hospital: Posible reanudación del juego"
     },
     "pet": {
       "fieldName": "Familiar :",
