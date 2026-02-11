@@ -1,11 +1,11 @@
 {
   "badges": {
-    "description": "Badges are difficult to get awards that were created to reward those who have most supported the development of the bot. The badge list is available in the bot guide.\n(via this link: https://guide.draftbot.com/v/en/notions-avancees/badges)",
-    "title": ":military_medal: Detailed information:"
+    "description": "Badges ares rare rewards created to recognize those who have most supported the development of Crownicles. The badge list is available in the bot guide.\n(via this link: https://guide.crownicles.com/v/en/notions-avancees/badges)",
+    "title": "{emote:commands.badges} Detailed information:"
   },
   "pet": {
     "embedTitle": "{{pseudo}}'s pet:",
-    "petField": "**Type:** {{emote}} {{typeName}}\n**Nickname:** {{nickname}}\n\n**Rarity:** {{rarity}}\n**Gender:** {{sex}}\n**Moral:** {{loveLevel}}",
+    "petField": "**Type: ** {{emote}} {{typeName}}\n**Nickname: ** {{nickname}}\n\n**Rarity: ** {{rarity}}\n**Gender: ** {{sex}}\n**Moral: ** {{loveLevel}}",
     "noNickname": "No nickname",
     "loveLevels": {
       "1_male": "{emote:loveLevels.0} Spiteful",
@@ -19,11 +19,11 @@
       "5_male": "{emote:loveLevels.4} Trained",
       "5_female": "{emote:loveLevels.4} Trained"
     },
-    "hungry": "{emote:effects.starving} hungry",
+    "hungry": "{emote:effects.starving} Hungry",
     "diet": {
-      "diet_null": "🥪 Omnivore",
-      "diet_herbivorous": "🥬 Herbivore",
-      "diet_carnivorous": "🥩 Carnivore"
+      "diet_null": "{emote:diet.omnivorous} Omnivorous",
+      "diet_herbivorous": "{emote:diet.herbivorous} Herbivorous",
+      "diet_carnivorous": "{emote:diet.carnivorous} Carnivorous"
     },
     "sexDisplay_f": "Female {emote:sex.female}",
     "sexDisplay_m": "Male {emote:sex.male}",
@@ -273,7 +273,7 @@
     "riskCategories": {
       "trivial": "Chill",
       "veryLow": "Serene",
-      "low": "Hazardous",
+      "low": "Random",
       "moderate": "Risky",
       "high": "Dangerous",
       "veryHigh": "Perilous",
@@ -310,7 +310,7 @@
       "13": "the Cursed Swamps of the Swampy Road",
       "14": "the Enchanted Mists of Lake Mirage",
       "15": "the snow-covered peaks of Mount Celestrum",
-      "16": "Dens of the wolves path",
+      "16": "Dens of wolf path",
       "17": "Coco Village Hidden Oases",
       "18": "the Tumultuous Rapids of the Rivière Vacarme",
       "19": "the Quicksand of La Dune",
@@ -439,7 +439,7 @@
     "commandEmbedTitle": "{{emote}} Detailed information:",
     "commands": {
       "BADGES": {
-        "description": "Badges are rewards that are very hard to get, created to honor people who helped in the bot's development. The list of badges is available on the bot guide.\n Available by this link: https://guide.draftbot.com/v/en/notions-avancees/badges"
+        "description": "Badges are rewards that are very hard to get, created to honor people who helped in the bot's development. The list of badges is available on the bot guide.\n Available by this link: https://guide.crownicles.com/v/en/notions-avancees/badges"
       },
       "CLASSES": {
         "description": "Change your class. More information about class is available through the player guide: https://guide.draftbot.com/v/en"
@@ -542,7 +542,7 @@
         "description": "Change your pet's nickname. If no name is given, the nickname will be cleared."
       },
       "PET_SELL": {
-        "description": "Allows to sell a pet. The following conditions apply: \n - The selling price must be higher than `{{petSellMinPrice}}{emote:unitValues.money}` and lower than `{{petSellMaxPrice}}{emote:unitValues.money}`. \n- The seller will not earn money for the transaction, but guild experience. \n- The seller and the buyer cannot be part of the same guild."
+        "description": "Can sell a pet. The following conditions apply: \n - the selling price must be higher at `{{petSellMinPrice}}{emote:unitValues.money}` and `{{petSellMaxPrice}}{emote:unitValues.money}`. \n- The vendor will not earn money during the transaction, but guild experience. \n- The seller and the buyer cannot be part of the same guild."
       },
       "PET_TRANSFER": {
         "description": "Allows you to transfer a pet to or from the guild. You'll have the choice of dropping the pet you're with into the shelter, swapping it with another, or removing one from the shelter."
@@ -836,12 +836,12 @@
     "healCannotHealOccupied": "{emote:effects.occupied} You are currently busy. This alteration cannot be cured."
   },
   "update": {
-    "description": "The latest version of the bot's core is **{{coreVersion}}**. The Discord module's version is **{{discordModuleVersion}}**.\n\nInformation about the changelog can be found here:\nhttps://guide.draftbot.com/v/en/lore/change-logs",
+    "description": "The latest version of the bot's core is **{{coreVersion}}**. The Discord module's version is **{{discordModuleVersion}}**.\n\nInformation about the changelog can be found here:\nhttps://guide.crownicles.com/v/en/lore/change-logs",
     "title": "{emote:messages.description} Changelog"
   },
   "vote": {
     "description": "Here is the link to support the bot:\nhttps://top.gg/bot/448110812801007618",
-    "title": "{emote:commands.vote} Vote"
+    "title": ":ballot_box: Vote"
   },
   "map": {
     "title": "{{pseudo}}, here's the map!",
@@ -1323,7 +1323,7 @@
   },
   "classesInfo": {
     "title": {
-      "list": "{emote:commands.classesInfo} Classes list",
+      "list": ":bookmark: Classes list",
       "attack": "{{emote}} {{name}} | {{cost, number}} {emote:unitValues.breath}"
     },
     "description": {
@@ -1514,7 +1514,7 @@
         "noProlongation": "[{{currentTurn}}/{{maxTurn}}]"
       },
       "attacker": "{emote:unitValues.attack} | **Attacker: {{pseudo}}**\n",
-      "defender": "\n\n{emote:unitValues.defense} | **Defender: {{pseudo}}**\n",
+      "defender": "\n\n{emote:unitValues.defense} | Defender: {{pseudo}}**\n",
       "stats": "{emote:unitValues.energy} {{power, number}} | {emote:unitValues.attack} {{attack, number}} | {emote:unitValues.defense} {{defense, number}} | {emote:unitValues.speed} {{speed, number}} | {emote:unitValues.breath} {{breath, number}} / {{maxBreath, number}} | {emote:unitValues.breathRegen} {{breathRegen}}"
     },
     "end": {
