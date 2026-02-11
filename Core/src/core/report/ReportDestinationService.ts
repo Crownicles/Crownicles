@@ -93,9 +93,10 @@ export async function chooseDestination(
 		return;
 	}
 
-	if ((!Maps.isOnPveIsland(player) || destinationMaps.length === 1)
-		&& (forcedLink || destinationMaps.length === 1 && player.mapLinkId !== Constants.BEGINNING.LAST_MAP_LINK)
-	) {
+	const canAutoChoose = (!Maps.isOnPveIsland(player) || destinationMaps.length === 1)
+		&& (forcedLink || (destinationMaps.length === 1 && player.mapLinkId !== Constants.BEGINNING.LAST_MAP_LINK));
+
+	if (canAutoChoose) {
 		await automaticChooseDestination(forcedLink, player, destinationMaps, response);
 		return;
 	}

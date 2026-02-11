@@ -217,6 +217,41 @@ export class ReactionCollectorCity extends ReactionCollector {
 		this.data = data;
 	}
 
+	private buildBlacksmithReactions(): {
+		type: string; data: ReactionCollectorReaction;
+	}[] {
+		if (!this.data.blacksmith) {
+			return [];
+		}
+
+		const menuReaction = this.buildReaction(ReactionCollectorBlacksmithMenuReaction, {});
+
+		const upgradeReactions = this.data.blacksmith.upgradeableItems.flatMap(item => [
+			this.buildReaction(ReactionCollectorBlacksmithUpgradeReaction, {
+				slot: item.slot,
+				itemCategory: item.category,
+				buyMaterials: false
+			}),
+			this.buildReaction(ReactionCollectorBlacksmithUpgradeReaction, {
+				slot: item.slot,
+				itemCategory: item.category,
+				buyMaterials: true
+			})
+		]);
+
+		const disenchantReactions = this.data.blacksmith.disenchantableItems.map(item =>
+			this.buildReaction(ReactionCollectorBlacksmithDisenchantReaction, {
+				slot: item.slot,
+				itemCategory: item.category
+			}));
+
+		return [
+			menuReaction,
+			...upgradeReactions,
+			...disenchantReactions
+		];
+	}
+
 	creationPacket(id: string, endTime: number): ReactionCollectorCreationPacket {
 		const mealsReactions = this.data.inns?.flatMap(inn =>
 			inn.meals.map(meal =>
@@ -261,30 +296,6 @@ export class ReactionCollectorCity extends ReactionCollector {
 				itemCategory: item.category
 			})) || [];
 
-		// Blacksmith reactions
-		const blacksmithMenuReaction = this.data.blacksmith
-			? [this.buildReaction(ReactionCollectorBlacksmithMenuReaction, {})]
-			: [];
-
-		const blacksmithUpgradeReactions = this.data.blacksmith?.upgradeableItems.flatMap(item => [
-			this.buildReaction(ReactionCollectorBlacksmithUpgradeReaction, {
-				slot: item.slot,
-				itemCategory: item.category,
-				buyMaterials: false
-			}),
-			this.buildReaction(ReactionCollectorBlacksmithUpgradeReaction, {
-				slot: item.slot,
-				itemCategory: item.category,
-				buyMaterials: true
-			})
-		]) || [];
-
-		const blacksmithDisenchantReactions = this.data.blacksmith?.disenchantableItems.map(item =>
-			this.buildReaction(ReactionCollectorBlacksmithDisenchantReaction, {
-				slot: item.slot,
-				itemCategory: item.category
-			})) || [];
-
 		return {
 			id,
 			endTime,
@@ -298,9 +309,7 @@ export class ReactionCollectorCity extends ReactionCollector {
 				...homeReaction,
 				...homeMenuReaction,
 				...upgradeItemReactions,
-				...blacksmithMenuReaction,
-				...blacksmithUpgradeReactions,
-				...blacksmithDisenchantReactions
+				...this.buildBlacksmithReactions()
 			],
 			data: this.buildData(ReactionCollectorCityData, {
 				...this.data

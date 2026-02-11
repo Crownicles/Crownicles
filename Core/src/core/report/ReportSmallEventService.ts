@@ -38,7 +38,7 @@ async function checkSmallEventEligibility(
 		return null;
 	}
 
-	const canExecute = await (file.smallEventFuncs as SmallEventFuncs).canBeExecuted(player, playerActiveObjects);
+	const canExecute = await file.smallEventFuncs.canBeExecuted(player, playerActiveObjects);
 	if (!canExecute) {
 		return null;
 	}
