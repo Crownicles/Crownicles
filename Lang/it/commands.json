@@ -354,7 +354,7 @@
     "notRanked": "Non Classificato"
   },
   "guildCreate": {
-    "title": "{{pseudo}}, creare una gilda",
+    "title": "{{pseudo}}, creazione di una gilda",
     "canceledTitle": "{{pseudo}}, creazione delle gilda annullata.",
     "canceledDesc": "La Creazione della vostra Gilda è stata annullata.",
     "confirmDesc": "{emote:collectors.question} Confermare la creazione della gilda **{{guildName}}** per `{{price, number}}` {emote:unitValues.money} ?",
@@ -436,7 +436,7 @@
   "help": {
     "aliasFieldTitle": "Alias",
     "aliasesFieldTitle": "Alias",
-    "commandEmbedTitle": "{{emote}} Informazione dettagliate :",
+    "commandEmbedTitle": "{{emote}} Informazione dettagliate:",
     "commands": {
       "BADGES": {
         "description": "I badge sono distinzione difficile a ottenere che sono state create per ricompensare le persone che hanno il più sostenuti il sviluppo del bot. La lista dei badge e disponibile sulla guida del bot.\n(link : https://guide.draftbot.com/notions-avancees/badges)"
@@ -714,7 +714,7 @@
       "fieldValue": ":stadium: {{guild}}"
     },
     "information": {
-      "fieldName": "Informazione :",
+      "fieldName": "Informazione:",
       "fieldValue": "{emote:unitValues.health} {{health, number}} / {{maxHealth, number}} | {emote:unitValues.xp} {{experience, number}} / {{experienceNeededToLevelUp, number}} | {emote:unitValues.money} {{money, number}} | {emote:unitValues.token} {{tokens, number}} / {{tokensMax, number}}"
     },
     "informationNoTokens": {

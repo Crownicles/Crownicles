@@ -1301,6 +1301,10 @@
     "meetSirRowan_other": "Consigue en {{count}} consejos de lucha de Sir Rowan",
     "meetTalvar": "Conoce Talvar",
     "meetVelanna": "Conoce a Velanna",
+    "meetOracle": "Rencontrer un oracle",
+    "meetAllOracles": "Rencontrer les deux oracles",
+    "contributeToBlessing_one": "Contribuer {{count, number}} {emote:unitValues.money} à une bénédiction",
+    "contributeToBlessing_other": "Contribuer {{count, number}} {emote:unitValues.money} aux bénédictions",
     "doExpeditions_one": "{{count}} envío",
     "doExpeditions_other": "{{count}} envíos",
     "longExpedition": "Una expedición exitosa de al menos {{variantText}}",
@@ -1336,7 +1340,9 @@
     "useTokens_other": "Usar {{count}} fichas {emote:unitValues.token} para avanzar",
     "wealthyPayForPVEIsland": "Comprar un viaje a una isla misteriosa al precio máximo",
     "winBoss_one": "{{count}} Gana la batalla contra el jefe",
-    "winBoss_other": "{{count}} Gana combates contra jefes"
+    "winBoss_other": "{{count}} Gana combates contra jefes",
+    "winBossWithDifferentClasses_one": "Vaincre un boss final d'île (seul le dernier boss de chaque île compte)",
+    "winBossWithDifferentClasses_other": "Vaincre des boss finaux d'îles en utilisant {{count}} classes différentes (seul le dernier boss de chaque île compte)"
   },
   "missionVariants": {
     "default": "{{variant}}",
