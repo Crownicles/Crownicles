@@ -96,7 +96,7 @@ export const CrowniclesIcons: {
 		[classKind: string]: string;
 	};
 	announcements: {
-		trophy: string; christmas: string; gift: string;
+		trophy: string; christmas: string; gift: string; blessing: string;
 	};
 	commands: {
 		[commandId: string]: string;
@@ -2078,7 +2078,7 @@ export const CrowniclesIcons: {
 		other: "⚗️"
 	},
 	announcements: {
-		trophy: "🏆", christmas: "🎄", gift: "🎁"
+		trophy: "🏆", christmas: "🎄", gift: "🎁", blessing: "⛩️"
 	},
 	commands: {
 		respawn: "👼",

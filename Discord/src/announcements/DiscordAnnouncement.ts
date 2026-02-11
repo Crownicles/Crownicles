@@ -136,6 +136,6 @@ export abstract class DiscordAnnouncement {
 			totalContributors: packet.totalContributors,
 			count: packet.totalContributors
 		});
-		await this.sendBilingualMessage(messageFr, messageEn);
+		await this.sendBilingualMessage(messageFr, messageEn, CrowniclesIcons.announcements.blessing);
 	}
 }
