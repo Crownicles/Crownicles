@@ -31,6 +31,7 @@ import { crowniclesInstance } from "../../index";
 import { PlayerSmallEvents } from "../database/game/models/PlayerSmallEvent";
 import { LogsReadRequests } from "../database/logs/LogsReadRequests";
 import { Maps } from "../maps/Maps";
+import { MissionsController } from "../missions/MissionsController";
 
 /**
  * Calculate the contribution amounts for a given player, capped at the remaining pool amount.
@@ -175,6 +176,12 @@ function getEndCallback(player: Player, context: PacketContext): EndCallback {
 		}
 
 		await player.save();
+
+		// Update blessing contribution mission
+		await MissionsController.update(player, response, {
+			missionId: "contributeToBlessing",
+			count: chosenAmount
+		});
 	};
 }
 
@@ -197,6 +204,16 @@ export const smallEventFuncs: SmallEventFuncs = {
 		return true;
 	},
 	executeSmallEvent: async (response, player, context): Promise<void> => {
+		// Update oracle missions for altar oracle
+		await MissionsController.update(player, response, {
+			missionId: "meetOracle",
+			params: { tags: ["meetOracleAltar"] }
+		});
+		await MissionsController.update(player, response, {
+			missionId: "meetAllOracles",
+			params: { oracleId: "altar" }
+		});
+
 		// Small events are logged before execution (see ReportSmallEventService), so count <= 1 means first encounter
 		const altarEncounterCount = await LogsReadRequests.getSmallEventEncounterCount(player.keycloakId, "altar");
 		if (altarEncounterCount <= 1) {

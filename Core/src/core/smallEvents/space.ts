@@ -15,6 +15,7 @@ import {
 	SmallEventSpaceInitialPacket, SmallEventSpaceResultPacket, SpaceFunctionResult
 } from "../../../../Lib/src/packets/smallEvents/SmallEventSpacePacket";
 import { PacketUtils } from "../utils/PacketUtils";
+import { MissionsController } from "../missions/MissionsController";
 
 // External library connections, naming conventions can't be easily applied
 /* eslint-disable new-cap */
@@ -136,9 +137,18 @@ async function astronomyEvent(context: PacketContext): Promise<void> {
 export const smallEventFuncs: SmallEventFuncs = {
 	canBeExecuted: Maps.isOnContinent,
 
-	executeSmallEvent(response, _player, context): void {
+	async executeSmallEvent(response, player, context): Promise<void> {
+		// Update oracle missions for space oracle
+		await MissionsController.update(player, response, {
+			missionId: "meetOracle",
+			params: { tags: ["meetOracleSpace"] }
+		});
+		await MissionsController.update(player, response, {
+			missionId: "meetAllOracles",
+			params: { oracleId: "space" }
+		});
+
 		response.push(makePacket(SmallEventSpaceInitialPacket, {}));
-		astronomyEvent(context)
-			.then();
+		await astronomyEvent(context);
 	}
 };
