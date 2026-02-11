@@ -1,7 +1,7 @@
 {
   "badges": {
     "description": "Badges are difficult to get awards that were created to reward those who have most supported the development of the bot. The badge list is available in the bot guide.\n(via this link: https://guide.draftbot.com/v/en/notions-avancees/badges)",
-    "title": "{emote:commands.badges} Detailed information:"
+    "title": ":military_medal: Detailed information:"
   },
   "pet": {
     "embedTitle": "{{pseudo}}'s pet:",
@@ -21,9 +21,9 @@
     },
     "hungry": "{emote:effects.starving} hungry",
     "diet": {
-      "diet_null": "{emote:diet.omnivorous} Omnivorous",
-      "diet_herbivorous": "{emote:diet.herbivorous} Herbivorous",
-      "diet_carnivorous": "{emote:diet.carnivorous} Carnivorous"
+      "diet_null": "🥪 Omnivore",
+      "diet_herbivorous": "🥬 Herbivore",
+      "diet_carnivorous": "🥩 Carnivore"
     },
     "sexDisplay_f": "Female {emote:sex.female}",
     "sexDisplay_m": "Male {emote:sex.male}",
@@ -341,12 +341,12 @@
   },
   "guild": {
     "embedTitle": "{{guildName}} guild | Level {{level, number}}",
-    "description": "{emote:messages.description} `{{description}}`",
+    "description": ":scroll: `{{description}}`",
     "separator": " | ",
     "memberInfo": "{{icon}} - **{{pseudo}}** ({{ranking}} {emote:announcements.trophy} | {{score, number}} {emote:unitValues.score}{{islandStatusIcon}})\n",
     "members": "{emote:guild.membersCount} {{memberCount, number}}/{{maxGuildMembers, number}} members",
     "infoTitle": "Information",
-    "islandInfo": "{emote:guild.isOnPveIsland} Number of members on the mysterious island: {{membersOnPveIsland}}\n",
+    "islandInfo": ":island: Number of members on the mysterious island: {{membersOnPveIsland}}\n",
     "info": "{emote:unitValues.xp} {{experience, number}} | {emote:unitValues.guildPoint} {{guildPoints, number}} | {emote:announcements.trophy} {{ranking}}",
     "xpNeeded": "{{xp, number}} / {{xpToLevelUp, number}}",
     "xpMax": "Max",
@@ -455,7 +455,7 @@
       },
       "FIGHT": {
         "description": "Use this command to challenge other players.\nBattles take place on a turn-by-turn basis. Each turn, you can choose an action to perform.\n\nFor more information, please visit the guide page: https://guide.crownicles.com/notions-principale/combats",
-        "image": "https://draftbot.com/public/ressources/fighthelp/en/5.1.7.png"
+        "image": "https://crownicles.com/public/ressources/fighthelp/en/5.1.7.png"
       },
       "GLORY_TOP": {
         "description": "Displays the ranking of the fights in 15 player intervals. Player's league is also displayed. Players in the same server as you are shown by a blue dot."
@@ -652,7 +652,7 @@
       "it": "Italian",
       "pt": "Portuguese"
     },
-    "newLanguageSetDescription": "DraftBot will now speak in English with you ! {emote:languageFlavors.en}",
+    "newLanguageSetDescription": "Crownicles will now speak in English with you ! {emote:languageFlavors.en}",
     "newLanguageSetTitle": "Language changed",
     "selectLanguage": "Select a language",
     "title": "{emote:commands.language} Language selection"
