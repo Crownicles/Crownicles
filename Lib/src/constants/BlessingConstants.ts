@@ -135,4 +135,59 @@ export abstract class BlessingConstants {
 	 * Lifetime contribution threshold to earn the Oracle Patron badge
 	 */
 	static readonly ORACLE_PATRON_THRESHOLD = 150000;
+
+	/**
+	 * Smart contribution amounts array (indexed by score 0-8):
+	 */
+	static readonly SMART_CONTRIBUTION_AMOUNTS = [
+		50,
+		200,
+		250,
+		300,
+		500,
+		750,
+		1000,
+		1200,
+		1500
+	] as const;
+
+	/**
+	 * Money threshold for "middle" player (50k+)
+	 */
+	static readonly SMART_CONTRIBUTION_MIDDLE_THRESHOLD = 50000;
+
+	/**
+	 * Money threshold for "rich" player (100k+)
+	 */
+	static readonly SMART_CONTRIBUTION_RICH_THRESHOLD = 100000;
+
+	/**
+	 * Remaining pool threshold for "low" remaining (7.5k+)
+	 */
+	static readonly SMART_CONTRIBUTION_LOW_REMAINING_THRESHOLD = 7500;
+
+	/**
+	 * Remaining pool threshold for "medium" remaining (15k+)
+	 */
+	static readonly SMART_CONTRIBUTION_MEDIUM_REMAINING_THRESHOLD = 15000;
+
+	/**
+	 * Remaining pool threshold for "high" remaining (30k+)
+	 */
+	static readonly SMART_CONTRIBUTION_HIGH_REMAINING_THRESHOLD = 30000;
+
+	/**
+	 * Time threshold for "urgent" (hours)
+	 */
+	static readonly SMART_CONTRIBUTION_URGENT_TIME_HOURS = 12;
+
+	/**
+	 * Time threshold for "less time" (hours)
+	 */
+	static readonly SMART_CONTRIBUTION_MEDIUM_TIME_HOURS = 36;
+
+	/**
+	 * Time threshold for "plenty of time" (days)
+	 */
+	static readonly SMART_CONTRIBUTION_RELAXED_TIME_DAYS = 3;
 }
