@@ -180,10 +180,21 @@ function getEndCallback(player: Player, context: PacketContext): EndCallback {
 
 export const smallEventFuncs: SmallEventFuncs = {
 	canBeExecuted: async (player: Player): Promise<boolean> => {
+		if (!Maps.isOnContinent(player)) {
+			return false;
+		}
+		if (await PlayerSmallEvents.playerSmallEventCount(player.id, "altar") !== 0) {
+			return false;
+		}
+
 		const blessingManager = BlessingManager.getInstance();
-		return Maps.isOnContinent(player)
-			&& blessingManager.canOracleAppear()
-			&& await PlayerSmallEvents.playerSmallEventCount(player.id, "altar") === 0;
+
+		// Allow first encounter even during active blessing
+		if (!blessingManager.canOracleAppear()) {
+			return await LogsReadRequests.getSmallEventEncounterCount(player.keycloakId, "altar") === 0;
+		}
+
+		return true;
 	},
 	executeSmallEvent: async (response, player, context): Promise<void> => {
 		// Small events are logged before execution (see ReportSmallEventService), so count <= 1 means first encounter
