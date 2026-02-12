@@ -23,18 +23,18 @@
   "totalUsersCount": "**Total user count: `{{count}}`**",
   "notificationTitle": "Notification",
   "notificationFooter": "You are receiving this message because notifications are active. To change this setting, use the command /notifications",
-  "notificationsNoChannelAccess": "{emote:messages.refuse} It seems that the bot no longer has access to your notification channel, notifications will now be sent as private messages. To change the notification mode, please run the {command:notifications} command.",
+  "notificationsNoChannelAccess": "{emote:messages.refuse} It seems that the bot no longer has access to your notification channel, notifications will now be in private messages. To change the notification mode, please run the {command:notifications} command.",
   "notificationReachDestination": "You arrived at **{{destination}}**!",
   "notificationGuildDaily": "**{{pseudo}}** has received your guild's daily bonus:\n\n{{rewards}}",
-  "notificationGuildKick": "**{{pseudo}}** has excluded you from the{{guildName}}guild.",
+  "notificationGuildKick": "**{{pseudo}}** has excluded you from the `{{guildName}}` guild.",
   "notificationGuildStatusChange": {
-    "becomeElder": "You've been promoted to senior member of the{{guildName}}guild.",
-    "becomeMember": "You have been demoted from the position of senior member of the{{guildName}}guild.",
-    "becomeChief": "You have become the head of the{{guildName}}guild."
+    "becomeElder": "You've been promoted to senior member of the `{{guildName}}` guild.",
+    "becomeMember": "You have been demoted from the position of senior member of the `{{guildName}}` guild.",
+    "becomeChief": "You have become the head of the `{{guildName}}` guild."
   },
   "notificationEnergyFull": "You've got all your energy back.",
   "notificationDailyBonus": "Your daily bonus is available.",
-  "notificationPetExpedition": "{{petDisplay}} is back from his expedition and may have brought back some treasures!",
+  "notificationPetExpedition": "{{petDisplay}} is back from its expedition and may have brought back some treasures!",
   "christmasBonusPreAnnouncement": "{emote:announcements.christmas} **Christmas Bonus Coming Soon!** {emote:announcements.christmas}\n\nIn a few hours, all players will receive a special gift: their token supply will be fully replenished! Enjoy this festive season!",
   "christmasBonusApplied": "{emote:announcements.christmas} **Merry Christmas** {emote:announcements.gift}\n\nSanta has come! Your stock of tokens has been filled to capacity. Take advantage of this gift to go on an adventure!",
   "blessingAnnouncement_one": "{emote:smallEvents.altar} **Blessing activated: {{blessingName}} !**\n\nThanks to the generosity of **{{playerName}}**, a blessing has been invoked for all adventurers!\n\n{emote:blessingCommand.active} **Effect:** {{blessingEffect}}\n{emote:blessingCommand.timeLeft} **Duration:** {{durationHours}} hours\n\n{emote:blessingCommand.topContributor} **Largest contributor:** {{topContributorName}} ({{topContributorAmount, number}} {emote:unitValues.money})\n{emote:blessingCommand.contributors} **{{count}}** adventurer contributed to this blessing.",
@@ -64,7 +64,7 @@
   "supportMessage": "{{langFlag}} If you need help, select your language using the buttons below. If you don't need help, ignore this message.\n{emote:collectors.warning} **Every message sent here can be read by a human!**\n",
   "commandDisabledInDM": "{{langFlag}} Hello, commands are disabled in private messages. Please go to a server to play!\nIf you would like help, click the button corresponding to your language below.\n",
   "accountDeletion": {
-    "confirmPrompt": "{emote:collectors.warning} **WARNING: This action is IMMEDIATE and PERMANENT. **\n\nYour account will be anonymized and all your personal data will be deleted. This action is irreversible.\n\nTo confirm, type exactly the following phrase:\n`{{phrase}}`",
+    "confirmPrompt": "{emote:collectors.warning} **WARNING: This action is IMMEDIATE and PERMANENT.**\n\nYour account will be anonymized and all your personal data will be deleted. This action is irreversible.\n\nTo confirm, type exactly the following phrase:\n`{{phrase}}`",
     "success": "{emote:collectors.accept} Your account has been successfully anonymized. All your personal data has been deleted. This action is irreversible.",
     "error": "{emote:collectors.refuse} An error has occurred while anonymizing your account. Please contact support.",
     "cancelled": "{emote:collectors.refuse} The deletion has been cancelled. If you wish to start again, please use the deletion code provided.",
