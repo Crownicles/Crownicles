@@ -33,7 +33,7 @@
     "petSell": "selling a pet",
     "petSellConfirm": "confirmation of a pet purchase",
     "petTransfer": "animal transfer",
-    "petExpedition": "expedition consultation in progress",
+    "petExpedition": "ongoing expedition consultation",
     "petExpeditionChoice": "choosing an expedition",
     "pveIsland": "PVE island small event",
     "report": "report",
@@ -67,8 +67,8 @@
   "alreadyInAGuild": "You already belong to a guild.",
   "petDoesntExist": "No pet was found.",
   "unexpectedError": "An error occurred. :(",
-  "pleaseWaitForHeal": "Please wait until your condition has been cured before continuing to play: {{time}}",
-  "pleaseWaitForHisHeal": "Please wait until their state alteration recovery is complete: {{time}}",
+  "pleaseWaitForHeal": "Please wait until your status alteration has been cured before continuing to play: {{time}}",
+  "pleaseWaitForHisHeal": "Please wait until their status alteration recovery is complete: {{time}}",
   "notEnoughMoney": "You don't have enough money to perform this action. You are missing {{money, number}} {emote:unitValues.money}.",
   "cooldownPetFree": "You can only release one pet per hour. You will be able to release another one {{remainingTime}}.",
   "unknownPlayer": "Nickname 404",
@@ -143,8 +143,8 @@
       "other": "{{pseudo}} is currently lost!"
     },
     "fished": {
-      "self": "You're currently poisoned!",
-      "other": "{{pseudo}} is currently poisoned!"
+      "self": "You are currently fished!",
+      "other": "{{pseudo}} is currently fished!"
     },
     "notStartedHint": {
       "self": "Use the {command:report} command to start your adventure!",
