@@ -383,7 +383,7 @@
       "stop": "is no longer frozen."
     },
     "full": {
-      "name": "Repairs and care of your alterations",
+      "name": "full and healed of your alterations",
       "new": "is full and needs to rest. `Speed: 0`",
       "active": "is full and needs to rest.",
       "stop": "is no longer full."
@@ -1260,8 +1260,8 @@
     "earnPoints": "Win {{count, number}} {emote:unitValues.score}",
     "earnTokens_one": "Win {{count}} token {emote:unitValues.token}",
     "earnTokens_other": "Win {{count}} {emote:unitValues.token}",
-    "earnTokensInOneExpedition_one": "Win {{count}} {emote:unitValues.token} tokens in a single shipment",
-    "earnTokensInOneExpedition_other": "Win {{count}} {emote:unitValues.token} tokens in a single shipment",
+    "earnTokensInOneExpedition_one": "Win {{count}} {emote:unitValues.token} token in a single expedition",
+    "earnTokensInOneExpedition_other": "Win {{count}} {emote:unitValues.token} tokens in a single expedition",
     "earnXP": "Win {{count, number}} {emote:unitValues.xp}",
     "exploreDifferentPlaces": "Explore {{count}} different places",
     "fightAttacks": "Do {{count}} {{variantText}} in fights",
@@ -1305,8 +1305,8 @@
     "meetAllOracles": "Meet the two oracles",
     "contributeToBlessing_one": "Contribute {{count, number}} {emote:unitValues.money} to a blessing",
     "contributeToBlessing_other": "Contribute {{count, number}} {emote:unitValues.money} to blessings",
-    "doExpeditions_one": "{{count}} shipping",
-    "doExpeditions_other": "{{count}} shipments",
+    "doExpeditions_one": "Complete {{count}} expedition",
+    "doExpeditions_other": "Complete {{count}} expeditions",
     "longExpedition": "A successful expedition of at least {{variantText}}",
     "dangerousExpedition": "Successfully complete an expedition of \"{{variantText}}\" or higher danger level",
     "expeditionStreak_one": "Successful {{count}} expedition in a row",
@@ -1968,7 +1968,7 @@
         "classTier": "{emote:commands.classes} | Level classes {{tier}} unlocked! For more information on the classes, use the commands {command:classesinfo} and {command:help}.",
         "newMissionSlot": "{emote:missions.sideMission} | New mission slot unlocked! For more information on your missions, use the command {command:missions}.",
         "pveUnlocked": "{emote:other.island} | Access to unlocked remote islands! Meet at a watering hole for new adventures!",
-        "tokensUnlocked": "{emote:unitValues.token} | Tokens unlocked! You can now use your tokens to advance faster with the {command:report}command.",
+        "tokensUnlocked": "{emote:unitValues.token} | Tokens unlocked! You can now use your tokens to advance faster with the {command:report} command.",
         "statsIncreased": "{emote:other.increase} | Improved statistics."
       }
     }
