@@ -2050,7 +2050,7 @@
       "plus_female": "Your faithful friend gazes at you with eyes shining with gratitude and affection. She rubs against your legs with satisfied purrs, clearly demonstrating that this impromptu feast has strengthened the bonds of trust and friendship between you!",
       "minus_male": "Your pet stares at you with a dark, silently reproachful gaze, lips curled into a disapproving pout. He ostentatiously turns his head away with a disgruntled growl, clearly offended by this pittance unworthy of his delicate palate...",
       "minus_female": "Your creature stares at you with a black look of silent reproach, lips curled into a disapproving pout. She ostentatiously turns her head away with a disgruntled growl, clearly offended by this pittance unworthy of her delicate palate...",
-      "neutral_male": "Your road companion swallows his meal with an almost philosophical detachment, without showing any overlapping enthusiasm or special taste.",
+      "neutral_male": "Your road companion swallows his meal with an almost philosophical detachment, showing neither overflowing enthusiasm nor particular disgust.",
       "neutral_female": "Your friend wolfed down her meal with an almost philosophical detachment, showing neither overflowing enthusiasm nor particular disgust."
     }
   },
@@ -2407,7 +2407,7 @@
       ]
     },
     "talismanReceived": [
-      "Velanna watches you in silence for a few long seconds. Then, slowly, she extracts from her satchel a pendant of black stone veined with gold. The $t(models:talisman.anchor) pulses with a soft glow. You've proved yourself: take care of **{{pet}}**, for the bond between master and beast is sacred. She places the talisman in your hand and closes your fingers over it, inviting you to explore the world.\n\nYou receive the $t(models:talisman.anchor) ! You can now send your pet for shipment from {command:pet}."
+      "Velanna watches you in silence for a few long seconds. Then, slowly, she extracts from her satchel a pendant of black stone veined with gold. The $t(models:talisman.anchor) pulses with a soft glow. You've proved yourself: take care of **{{pet}}**, for the bond between master and beast is sacred. She places the talisman in your hand and closes your fingers over it, inviting you to explore the world.\n\nYou receive the $t(models:talisman.anchor)! You can now send your pet on an expedition from {command:pet}."
     ],
     "expeditionBonus": {
       "points": "Velanna emerges from the shadows and puts a hand on your shoulder. She senses the presence of **{{pet}}** leagues away and smiles, a rare sight. Your pet explores bravely and $t(models:talisman.anchor) strengthens your bond. Your perseverance pays off. You win **{{bonusPoints}} {emote:unitValues.score}**!",
