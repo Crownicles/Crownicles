@@ -224,7 +224,7 @@
       "A little disheveled and covered in scratches, {{petDisplay}} returns from his journey to **{{location}}**. Despite the difficulties he encountered, he managed to salvage a few treasures."
     ],
     "partialSuccess_female": [
-      "{{petDisplay}} returns from her expedition to{{location}}** with a slight limp. It's been a rough adventure, but your brave companion has come back with a few finds.",
+      "{{petDisplay}} returns from her expedition to **{{location}}** with a slight limp. It's been a rough adventure, but your brave companion has come back with a few finds.",
       "Ears lowered, {{petDisplay}} finally reappears. The expedition to **{{location}}** didn't go as planned, but your pet didn't come back empty-handed.",
       "A little disheveled and covered in scratches, {{petDisplay}} returns from her journey to **{{location}}**. Despite the difficulties she has encountered, she has managed to salvage a few treasures."
     ],
@@ -232,12 +232,12 @@
     "totalFailure_male": [
       "{{petDisplay}} comes back from **{{location}}** with its tail between its legs and its eyes wandering. The adventure was too perilous, and your companion returns empty-handed, his heart heavy with failure.",
       "After a long absence, {{petDisplay}} finally reappears, exhausted and sheepish. The dangers of **{{location}}** have taken their toll on his quest. He cuddles up to you, begging for comfort.",
-      "With trembling paws, {{petDisplay}} emerges from the shadows. The expedition to{{location}}** was a failure. Your pet needs time to recover."
+      "With trembling paws, {{petDisplay}} emerges from the shadows. The expedition to **{{location}}** was a failure. Your pet needs time to recover."
     ],
     "totalFailure_female": [
       "{{petDisplay}} comes back from **{{location}}** with its tail between its legs and its eyes wandering. The adventure was too perilous, and your companion returns empty-handed, with a heavy heart for having failed.",
       "After a long absence, {{petDisplay}} finally reappears, exhausted and weary. The dangers of **{{location}}** have taken their toll on her quest. She cuddles up to you, begging for comfort.",
-      "With trembling paws, {{petDisplay}} emerges from the shadows. The expedition to{{location}}** was a failure. Your pet needs time to recover."
+      "With trembling paws, {{petDisplay}} emerges from the shadows. The expedition to **{{location}}** was a failure. Your pet needs time to recover."
     ],
     "loveChangeFailure": "\n\n{emote:expedition.love} The failure of this expedition has weakened the bond between you. Your companion will need time and attention to regain his confidence.",
     "loveChangePartialNegative": "\n\n{emote:expedition.love} The difficulties you've encountered have somewhat shaken your pet's confidence. A few cuddles and treats will help him to recover.",
@@ -265,7 +265,7 @@
       "experience": "{emote:unitValues.xp} Experience gained : **{{amount, number}}** !",
       "points": "{emote:unitValues.score} Points earned: **{{amount, number}}** !",
       "tokens_one": "{emote:unitValues.token} Token won : **{{count}}** !",
-      "tokens_other": "{emote:unitValues.token} Chips won : **{{count}}** !",
+      "tokens_other": "{emote:unitValues.token} Tokens won: **{{count}}**!",
       "item": "{emote:rewards.item} You get random equipment!",
       "cloneTalisman": "{emote:expedition.cloneTalisman} **EXCEPTIONAL DISCOVERY!\nYour pet has discovered an ancient buried artifact: the $t(models:talisman.clone) !\nThis mystical object will enable your companion to assist you in defense and in small events, even when on expedition!",
       "badgeEarned": "{emote:badges.expert_expediteur} You have been offered a free badge : **Expert Consignor** !"
@@ -442,7 +442,7 @@
         "description": "Badges are rewards that are very hard to get, created to honor people who helped in the bot's development. The list of badges is available on the bot guide.\n(Available by this link: https://guide.crownicles.com/v/en/notions-avancees/badges)"
       },
       "CLASSES": {
-        "description": "Change your class. More information about class is available through the player guide: https://guide.draftbot.com/v/en"
+        "description": "Change your class. More information about classes is available on the player guide: https://guide.crownicles.com"
       },
       "CLASSES_INFO": {
         "description": "Reads a quick comparison of statistics and class information available to the user using the command."
@@ -591,7 +591,7 @@
       }
     },
     "forMoreHelp": "{emote:messages.item} For more help: ",
-    "forMoreHelpValue": "You can visit the bot's [wiki](https://guide.draftbot.com/v/en/)!",
+    "forMoreHelpValue": "You can visit the bot's [wiki](https://guide.crownicles.com/)!",
     "guildCommands": "{emote:guild.icon} Guild:",
     "helpEmbedDescription": "{emote:messages.item} If you want more information about a particular command, click here: {command:help}, and give the command you are having problems with as a parameter. {emote:other.wink}",
     "helpEmbedTitle": "{{pseudo}}, here is the list of available commands:",
@@ -602,7 +602,7 @@
     "usageFieldTitle": "Usage",
     "utilCommands": "{emote:collectors.question} Utility:",
     "needHelp": "Need help?",
-    "needHelpDescription": "{emote:fightCommand.crossedSwords} Hello ! This message has been sent in response to a request for help.\n\nIf you need any help with the game, you can join the bot's official server!\n\nYou'll be able to take part in the game's development and get all the information you need!\n\nWe also recommend that you consult the detailed bot guide: https://guide.draftbot.com/"
+    "needHelpDescription": "{emote:fightCommand.crossedSwords} Hello! This message has been sent in response to a request for help.\n\nIf you need any help with the game, you can join the bot's official server!\n\nYou'll be able to take part in the game's development and get all the information you need!\n\nWe also recommend that you consult the detailed bot guide: https://guide.crownicles.com/"
   },
   "idea": {
     "description": "You can submit suggestions and vote for your favorites via this link:\nhttps://feedback.draftbot.com/",
@@ -822,16 +822,16 @@
     "tokensNextStepSmallEvent": "{emote:messages.info} An event is waiting for you on the road. Use {command:report} to find out.",
     "tokensUsedRefusedTitle": "{{pseudo}}, cancellation",
     "tokensUsedRefusedDescription": "{emote:messages.refuse} You decide to keep your tokens.",
-    "buyHealButton": "Taking care of yourself",
+    "buyHealButton": "Heal",
     "notEnoughMoneyHealButton": "Not enough money",
     "buyHealLoading": "Loading...",
-    "buyHealConfirmTitle": "{{pseudo}}confirmation",
+    "buyHealConfirmTitle": "{{pseudo}}, confirmation",
     "buyHealConfirmDescription": "Do you want to spend **{{price, number}}** {emote:unitValues.money} to heal your altered state and get back on the road immediately?\n\nYou currently have **{{playerMoney, number}}** {emote:unitValues.money}.",
-    "healSuccessTitle": "{{pseudo}}Care completed!",
+    "healSuccessTitle": "{{pseudo}}, healing complete!",
     "healSuccessDescription": "{emote:shopItems.healAlteration} You have spent **{{price, number}}** {emote:unitValues.money} to treat yourself.\n\n{{nextStep}}",
     "healNextStepArrived": "{emote:messages.info} You've arrived at your destination! Use {command:report} to see what's waiting for you.",
     "healNextStepSmallEvent": "{emote:messages.info} An event is waiting for you on the road. Use {command:report} to find out.",
-    "healRefused": "{emote:messages.refuse} **{{pseudo}}** has decided not to treat himself.",
+    "healRefused": "{emote:messages.refuse} **{{pseudo}}** has decided not to heal.",
     "healNoAlteration": "{emote:effects.none} You are not a victim of any alteration of state.",
     "healCannotHealOccupied": "{emote:effects.occupied} You are currently busy. This alteration cannot be cured."
   },
@@ -857,7 +857,7 @@
     "confirmDesc": "{emote:collectors.warning} Are you sure you want to release **{{pet}}**? It is not possible to undo once the action has been done.",
     "acceptedDesc": "Farewell **{{pet}}**...",
     "isFeisty": "{emote:collectors.warning} Warning: freeing a pet with a fever will cost you {{cost, number}} {emote:unitValues.money}.",
-    "petOnExpedition": "Your pet is currently on shipment and cannot be released.",
+    "petOnExpedition": "Your pet is currently on an expedition and cannot be released.",
     "selectionTitle": "{{pseudo}}, pet release",
     "selectionDesc": "Choose a pet to release:",
     "selectPlaceholder": "Select a pet to release",
@@ -1270,7 +1270,7 @@
           ],
           "2": [
             "still seems wild. Take care of your pet and earn its trust!",
-            "seems to be unapprehended. If you don't care about your pet, you will never get his love!",
+            "doesn't seem to like you. If you don't take care of your pet, you will never earn its love!",
             "doesn't seem to be happy. You should try feeding your pet."
           ],
           "3": [
@@ -1353,7 +1353,7 @@
       "guildStatusChange": "Change of guild status",
       "energy": "Regenerated energy",
       "dailyBonus": "Daily bonus",
-      "petExpedition": "Pet shipment completed"
+      "petExpedition": "Pet expedition completed"
     },
     "enableDisable": "Enable/Disable",
     "sendLocationField": "Sending place:",
