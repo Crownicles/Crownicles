@@ -2593,7 +2593,8 @@ export const CrowniclesIcons: {
 		comfortableRoom: "🛏️",
 		luxuryRoom: "👑",
 		royalSuite: "💠",
-		imperialSuite: "💎"
+		imperialSuite: "💎",
+		commonRoom: "🚪"
 	},
 	enchantmentTypes: {
 		damage: "📕",

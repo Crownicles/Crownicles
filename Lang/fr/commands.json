@@ -901,7 +901,8 @@
           "comfortableRoom": "Chambre Confortable",
           "luxuryRoom": "Chambre de Luxe",
           "royalSuite": "Suite Royale",
-          "imperialSuite": "Appartement Impérial"
+          "imperialSuite": "Appartement Impérial",
+          "commonRoom": "Chambre Commune"
         },
         "roomsStories": {
           "horribleRoom": "{emote:city.inn} Vous entrez dans une chambre minable, avec un lit grinçant et des murs sales. L'odeur de moisi est omniprésente, et vous avez du mal à imaginer comment quelqu'un pourrait y dormir.",
@@ -909,7 +910,8 @@
           "comfortableRoom": "{emote:city.inn} Vous entrez dans une chambre confortable, avec un grand lit douillet et des meubles en bois massif. La décoration est chaleureuse, avec des tapis et des rideaux en tissus épais. Vous vous sentez déjà plus reposé.",
           "luxuryRoom": "{emote:city.inn} Vous entrez dans une chambre luxueuse, digne d'un noble. Le lit est immense, avec des draps en soie et des oreillers moelleux. La décoration est somptueuse, avec des tapisseries et des meubles en bois sculpté. Vous vous sentez comme un roi.",
           "royalSuite": "{emote:city.inn} Cette suite privée donne sur les jardins du château. Un valet vous apporte une infusion chaude pendant qu'un autre prépare votre lit aux draps brodés de fils d'or.",
-          "imperialSuite": "{emote:city.inn} Les appartements impériaux sont décorés de pierres précieuses et disposent même d'un petit bain parfumé. Chaque détail respire l'opulence absolue."
+          "imperialSuite": "{emote:city.inn} Les appartements impériaux sont décorés de pierres précieuses et disposent même d'un petit bain parfumé. Chaque détail respire l'opulence absolue.",
+          "commonRoom": "{emote:city.inn} Vous vous installez dans un dortoir partagé avec d'autres voyageurs. Les lits sont serrés les uns contre les autres, mais au moins les draps sont propres. Le bruit des ronflements vous berce jusqu'au sommeil."
         },
         "roomTitle": "{{pseudo}}, vous louez une chambre !",
         "roomEndStory": "😴 Vous vous endormez et vous récupérez **{{health}}** {emote:unitValues.health}. Vous avez dépensé **{{price}}** {emote:unitValues.lostMoney} pour la nuit.",
@@ -1031,6 +1033,14 @@
           "levelLimitationBasic": "Vos talents de forgeron amateur vous limitent aux améliorations de niv. {{maxLevel}}, au-delà il vous faudra consulter un véritable forgeron.",
           "levelLimitationAdvanced": "Votre maîtrise des outils vous permet d'atteindre le niv. {{maxLevel}}, mais les améliorations supérieures nécessitent l'expertise d'un forgeron professionnel.",
           "placeholder": "Sélectionnez un équipement"
+        },
+        "bed": {
+          "menuLabel": "Se reposer dans votre lit",
+          "menuDescription": "Récupérez {{health}} {emote:unitValues.health} gratuitement",
+          "available": "{emote:city.homeUpgrades.bed} Votre lit vous permet de récupérer **{{health}}** {emote:unitValues.health} gratuitement.",
+          "restTitle": "{{pseudo}}, vous vous reposez !",
+          "restDescription": "{emote:city.homeUpgrades.bed} Vous vous allongez dans votre lit et fermez les yeux quelques instants. Ce petit repos vous fait le plus grand bien ! Vous récupérez **{{health}}** {emote:unitValues.health}.",
+          "alreadyFull": "Vous êtes déjà en pleine forme ! Votre lit ne vous sera utile que lorsque vous aurez besoin de vous reposer."
         },
         "upgradeChanges": {
           "betterBed": "Un meilleur lit pour un sommeil plus réparateur {emote:city.homeUpgrades.bed}",
