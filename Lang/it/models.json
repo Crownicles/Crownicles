@@ -1301,10 +1301,10 @@
     "meetSirRowan_other": "Ottenete i consigli di combattimento di Sir Rowan su {{count}}",
     "meetTalvar": "Incontrare Talvar",
     "meetVelanna": "Incontrare Velanna",
-    "meetOracle": "Rencontrer un oracle",
-    "meetAllOracles": "Rencontrer les deux oracles",
-    "contributeToBlessing_one": "Contribuer {{count, number}} {emote:unitValues.money} à une bénédiction",
-    "contributeToBlessing_other": "Contribuer {{count, number}} {emote:unitValues.money} aux bénédictions",
+    "meetOracle": "Incontrare un oracolo",
+    "meetAllOracles": "Incontrare i due oracoli",
+    "contributeToBlessing_one": "Contribuire {{count, number}} {emote:unitValues.money} a una benedizione",
+    "contributeToBlessing_other": "Contribuire {{count, number}} {emote:unitValues.money} alle benedizioni",
     "doExpeditions_one": "{{count}} spedizione",
     "doExpeditions_other": "{{count}} spedizioni",
     "longExpedition": "Una spedizione di successo di almeno {{variantText}}",
@@ -1341,8 +1341,8 @@
     "wealthyPayForPVEIsland": "Acquistare un viaggio su un'isola misteriosa al prezzo massimo",
     "winBoss_one": "Vincere {{count}} combatto di boss",
     "winBoss_other": "Vincere {{count}} combatti di boss",
-    "winBossWithDifferentClasses_one": "Vaincre un boss final d'île (seul le dernier boss de chaque île compte)",
-    "winBossWithDifferentClasses_other": "Vaincre des boss finaux d'îles en utilisant {{count}} classes différentes (seul le dernier boss de chaque île compte)"
+    "winBossWithDifferentClasses_one": "Sconfiggere un boss finale dell'isola (conta solo l'ultimo boss di ogni isola)",
+    "winBossWithDifferentClasses_other": "Sconfiggere i boss finali delle isole utilizzando {{count}} classi diverse (conta solo l'ultimo boss di ogni isola)"
   },
   "missionVariants": {
     "default": "{{variant}}",

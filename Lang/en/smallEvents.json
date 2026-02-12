@@ -40,12 +40,12 @@
     "lifeLoss": [
       "you hear a shrill noise coming from the sky. You look up, but too late: a bird with sharp claws is swooping down on you. As it scratches you, it realizes that you're not its usual prey and immediately leaves. You contemplate your wound; it looks deep. You lose **{{lifeLoss, number}} {emote:unitValues.lostHealth}**.",
       "while walking along a steep path, you slip and twist your right ankle. You lose **{{lifeLoss, number}} {emote:unitValues.lostHealth}**.",
-      "you see a fly circling around you. You draw your weapon in the hope of killing it, but you only manage to nick your wrist slightly, losing **{{lifeLoss, number}} in the process. {emote:unitValues.lostHealth}**."
+      "you see a fly circling around you. You draw your weapon in the hope of killing it, but you only manage to nick your wrist slightly, losing **{{lifeLoss, number}} {emote:unitValues.lostHealth}** in the process."
     ],
     "moneyLoss": [
-      "you realize that your bag is torn off. After checking, you notice that your purse has disappeared, you have lost **{{moneyLost, number}} {emote:unitValues.lostMoney}**.",
+      "you realize that your bag is torn. After checking, you notice that your purse has disappeared, you have lost **{{moneyLost, number}} {emote:unitValues.lostMoney}**.",
       "you realize that your purse is missing from your bag. You suddenly remember having forgotten it in the previous tavern, you lost **{{moneyLost, number}}. {emote:unitValues.lostMoney}**.",
-      "travelers pass next to you, hustling you, then they get up and apologize roughly. A few minutes later, you notice that your wallet has disappeared, you lost **{{moneyLost, number}} {emote:unitValues.lostMoney}**."
+      "travelers pass next to you, hustling you, then they help you back up and apologize roughly. A few minutes later, you notice that your wallet has disappeared, you lost **{{moneyLost, number}} {emote:unitValues.lostMoney}**."
     ],
     "alterationStories": {
       "badBerries": "you spot some berries. Your stomach reminding you that you haven't eaten for several hours, you feel compelled to taste them. But you soon feel sick.",
@@ -135,7 +135,7 @@
     "end": "Without paying any further attention to the individual, you continue on your way.",
     "rewardTypeText": {
       "xp": " You have won **{{reward, number}} {emote:unitValues.xp}**.",
-      "money": " You won **{{reward, number}}{emote:unitValues.money}**!",
+      "money": " You won **{{reward, number}} {emote:unitValues.money}**!",
       "guildXp": " Your guild wins **{{reward, number}} {emote:unitValues.xp}**.",
       "points": " You have won **{{reward, number}} {emote:unitValues.score}**."
     }
@@ -157,7 +157,7 @@
       "enameledJewel": "Once he's finished telling his tale, he takes a quiet step closer and murmurs in a low voice: would you like to one day contemplate with your own eyes the enamelled jewels created by the goldsmiths of this blessed city?",
       "believeExaggerated": "Watching your reaction with almost alarming attention, he scrutinizes your gaze: do you think his flamboyant descriptions are nothing more than a storyteller's boast?",
       "carryPorcelain": "As he concludes his tale, he mimes the solemn gesture of handing you an imaginary casket: would you wear this city's sacred porcelain with the reverence it deserves?",
-      "tooTiredToDream": "Noticing your shod boots and tired appearance, he pauses with compassion: would you be too weary to dream of a detour to this magnificent city?",
+      "tooTiredToDream": "Noticing your muddy boots and tired appearance, he pauses with compassion: would you be too weary to dream of a detour to this magnificent city?",
       "promiseSouvenir": "At the end of his tale, his gaze wanders off into the distance, as if he's already contemplating the city: would you praise this marvel in front of the court and grandees of this kingdom?",
       "callItMyth": "After recounting these wonders at length, a thin smile stretches his lips: do you think this marvellous city is just a legend embellished by the trouvères?",
       "followWhispers": "Suddenly lowering his voice as if to share an age-old secret, he whispers a question to you: would you follow the whispers to this enchanted city?",
@@ -176,11 +176,11 @@
     "successStories": [
       "The stranger bursts into a crystalline, knowing laugh: he understands your attraction, but regretfully confesses that he can't take you there today. Nevertheless, he leaves you with a spark of inspiration that earns you **{{experience, number}} {emote:unitValues.xp}** and **{{score, number}} {emote:unitValues.score}**.",
       "Pleased by your fervor, the stranger courteously tips his wide-brimmed hat. He promises to send you a sign when the road finally opens, then discreetly slips a well-deserved reward into your pocket: **{{experience, number}} {emote:unitValues.xp}** and **{{score, number}} {emote:unitValues.score}**.",
-      "Touched by the ardor of your conviction, the stranger murmurs that he hopes to cross paths with you one day under the majestic glass roofs of the Great Hall. His blessing galvanizes you and wins you over: **{{experience, number}} {emote:unitValues.xp}** and **{{score, number}} {emote:unitValues.score}**."
+      "Touched by the ardor of your conviction, the stranger murmurs that he hopes to cross paths with you one day under the majestic glass roofs of the Great Hall. His blessing galvanizes you and earns you: **{{experience, number}} {emote:unitValues.xp}** and **{{score, number}} {emote:unitValues.score}**."
     ],
     "penalties": {
       "health": "Your lukewarm response immediately cools his enthusiasm. Disappointed, he abruptly turns his back on you. Turning away yourself, you trip on a shiny paving stone and injure yourself **{{amount, number}} {emote:unitValues.lostHealth}**.",
-      "money": "Vexed by your lack of wonder, he demands an obeisance \"for the upkeep of the sacred kilns and the glory of the craftsmen\". To get rid of this nuisance, you reluctantly give in to him **{{amount, number}}. {emote:unitValues.lostMoney}**.",
+      "money": "Vexed by your lack of wonder, he demands an offering \"for the upkeep of the sacred kilns and the glory of the craftsmen\". To get rid of this nuisance, you reluctantly hand him **{{amount, number}} {emote:unitValues.lostMoney}**.",
       "time": "The stranger stubbornly refuses to let you leave without reliving every marvel of the city in detail. His interminable ranting delays you by **{{amountDisplay}} :clock2:**."
     },
     "failureFallback": "The stranger bows with disappointed stiffness before disappearing into the throng of passers-by, leaving you to meditate bitterly on your lack of enthusiasm."
@@ -252,7 +252,7 @@
     "low_hp": [
       "You come across {{playerDisplay}}, who is limping... He doesn't seem to be in shape... He falls to the side of the road, and you decide to help him up.",
       "You come across {{playerDisplay}}. He seems to be in a rough shape....",
-      "Even an arrow in the knee is capable of finishing off {{playerDisplay}}, who is moving slowly along his path. A healing potion would do him a great favor!"
+      "Even an arrow in the knee is capable of finishing off {{playerDisplay}}, who is moving slowly along his path. A healing potion would do him a world of good!"
     ],
     "full_hp": [
       "You've rarely seen anyone as energetic as {{playerDisplay}}... He seems to be in great shape!",
@@ -281,7 +281,7 @@
     ],
     "poor": [
       "At the sight of the clothes of {{playerDisplay}}, it seems to be having money problems... You think it would be happy if you gave him a piece.\n\n{emote:collectors.interactPoorCoin} Give him a coin\n{emote:collectors.refuse} Do not give him a coin",
-      "While walking, you meet this poor vagrant from {{playerDisplay}}. He asks you for a few coins:\n\n{emote:collectors.interactPoorCoin} Give him a coin, as you already have enough\n{emote:collectors.refuse} Don't give him a coin",
+      "While walking, you meet that poor vagrant {{playerDisplay}}. He asks you for a few coins:\n\n{emote:collectors.interactPoorCoin} Give him a coin, since you already have enough\n{emote:collectors.refuse} Don't give him a coin",
       "Misery touches everyone one day, and today it's {{playerDisplay}} who can barely afford a meal.\n\n{emote:collectors.interactPoorCoin} Give him a coin\n{emote:collectors.refuse} Don't give him a coin"
     ],
     "poor_give_money": [
@@ -373,7 +373,7 @@
       "freezing": [
         "You feel very cold when you walk. That's {{playerDisplay}}, who's close to hypothermia!",
         "{{playerDisplay}} seems to be cold. You warm him up a little and then leave.",
-        "A redundant clicking sound annoys you. You discover that it's {{playerDisplay}}'s teeth... He's frozen! Without further ado, you resume your journey."
+        "A repetitive clicking sound annoys you. You discover that it's {{playerDisplay}}'s teeth... He's frozen! Without further ado, you resume your journey."
       ],
       "feetHurt": [
         "You come across {{playerDisplay}} complaining about his feet. He explains that he's been walking too long without stopping. You give him some advice on how to avoid this in future and continue on your way.",
@@ -397,7 +397,7 @@
       ],
       "occupied": [
         "You spot {{playerDisplay}} and invite him to have a chat, but he tells you he's busy. It's only a postponement, and you each continue on your way.",
-        "While crossing the river, you come across {{playerDisplay}}, who is quite busy... You try to chat with him, but to no avail. Instead, he asks you to help him with his work.",
+        "During your journey, you come across {{playerDisplay}}, who is quite busy... You try to chat with him, but to no avail. Instead, he asks you to help him with his work.",
         "On your way, you come across {{playerDisplay}}, who seems very busy. You try to find out more, to no avail, before continuing on your way."
       ],
       "jailed": [
@@ -414,19 +414,19 @@
   "leagueReward": {
     "intrigue": [
       "you notice a large poster from the corner of your eye...",
-      "you slip on the lower side of the road and fall to the ground. As you get back up, you notice a small scroll...",
+      "you slip on the roadside and fall to the ground. As you get back up, you notice a small scroll...",
       "a bird approaches you and drops a tiny message in your hand...",
       "you discover an old, abandoned wooden hut, you decide to explore it and discover only an old grimoire that seems to have been lying around for years..."
     ],
     "reward": "{emote:unitValues.money} Money: **{{money, number}}**\n{emote:unitValues.xp} XP: **{{xp, number}}**\n{emote:unitValues.score} Points: **The number of points will depend on your final ranking.**\n{emote:rewards.item} A random equipment.",
     "endMessage": "\n\n{emote:commands.report} \"Have an adventurer belonging to the {emote:leagues.{{leagueId}}} $t(models:leagues.{{leagueId}}) that will find this text, **if you keep your glory until the end of the season**, you will be able to win these rewards:\n\n{{rewards}}\"\n\nYou will be back on your way, while enjoying your {{time}} bonus .",
     "notEnoughFight": "\n\n{emote:commands.report} \"Have an adventurer belonging to the {emote:leagues.{{leagueId}}} $t(models:leagues.{{leagueId}}) that will find this text, **if you perform some battles using the {command:fight}command**, you will be able to win these rewards:\n\n{{rewards}}\n\nYou will quickly get back on your way Fear of failing to fight enough players before the end of the {{time}} season.",
-    "rewardToday": "\n\n{emote:commands.report} \"Get your reward before the end of the week by ordering {command:leaguebonus} !\"\n\nYou're on your way again, looking forward to collecting your bonus."
+    "rewardToday": "\n\n{emote:commands.report} \"**League rewards are available!** Collect your reward before the end of the week using the {command:leaguebonus} command!\"\n\nYou resume your journey, looking forward to collecting your bonus."
   },
   "winGuildXP": {
     "stories": [
       "**{{guild}}**'s reputation seems to precede you. By learning that you are part of the guild, adventurers who have been following you for a few kilometers give you their greatest respect.",
-      "As a result of a few battles that you are victorious, you apply the **{{guild}}** guild's mark on your opponents' remains. All those who will pass here will recognize it.",
+      "After a few skirmishes from which you emerge victorious, you apply the **{{guild}}** guild's mark on your opponents' remains. All who pass by here will recognize it.",
       "Your good actions in the area have helped a large part of the population. When they ask you how they could thank you, you ask them to remember **{{guild}}**'s name.",
       "Congratulations! Over time, your guild, **{{guild}}**, becomes known throughout the whole kingdom.",
       "**{{guild}}** is becoming more and more popular as time goes by! We hope you continue to do so, and that's why we're offering you this xp bonus!",
@@ -496,7 +496,7 @@
       "On your way, you come across a strange animal. As you pass close to it, it jumps at you! You draw your sword and slay it instantly. You continue on your way, on your guard.",
       "As you are attacked by bandits, you take advantage of a moment's inattention to escape. You hurry along for a few hours before you feel safe again.",
       "At the bend in the road, a shadow throws itself at you! After a terrible battle, you crush your opponent under a boulder. Proud of your achievement, you set off again.",
-      "At the bend in a grove, a man dressed entirely in black attacks you, probably to rob you of your money. You draw your gun and manage to neutralize him.",
+      "At the bend in a grove, a man dressed entirely in black attacks you, probably to rob you of your money. You draw your weapon and manage to neutralize him.",
       "You walk quietly, observing the landscape. Suddenly, an enraged beast makes a prodigious leap, forcefully tackling you to the ground. You manage to regain the upper hand by strangling the beast with a stick.",
       "As you walk along a small stream, a stray dog jumps out at you. After a few minutes' struggle, you manage to get rid of it.",
       "On your way, you come across a beast that doesn't seem very friendly. You decide to run away, but it quickly catches up with you. You then turn around and strike a blow. That's enough to get rid of your adversary, and you're on your way.",
@@ -523,10 +523,10 @@
       "LePourfendeur": "an experienced adventurer, adept at saving money, perhaps a little too much so. Previously very active, he is now more discreet, but remains among the best",
       "Ines": "a fighter from the beginning of this world, who unfortunately fights less and less for him due to lack of time, but remains in the race for the princess, or rather the prince. Loyal supporter of Kyutism",
       "romain22222": "a great thinker, seeking as much to resolve situations optimally as to create them. He talks too much, far too much, with the minstrels and his worshippers, and avoids the tents in the forests",
-      "Asemerald": "a down-on-his-luck adventurer known for his unimaginable firepower",
+      "Asemerald": "a luck-driven adventurer known for his unimaginable firepower",
       "Izuku": "a rich inventor who created a love potion for the beautiful princess, only to have it stolen by a merchant",
       "Draft": "an ancient god who created the world in which they all live. Amazed by the his people's abilities, he wanders among them as he works to improve their experience",
-      "Royal": "a seasoned entrepreneur favors money over morality. Fond of tournaments, he won't hesitate to fight for the princess",
+      "Royal": "a seasoned entrepreneur who favors money over morality. Fond of tournaments, he won't hesitate to fight for the princess",
       "Max": "a mad inventor who loves to travel. He is the only person ever to have traveled the land of dragons. Legend has it that almost all his projects have brought mankind to the brink of extinction",
       "Eagle": "a dragon breeder, who led the kingdom's first coups",
       "DeadAngelV6": "an ordinary human who loves life, eating is one of his passions. Feed him when you see him",
@@ -552,47 +552,47 @@
   "witch": {
     "intro": [
       "you meet an old lady who seems to want you to follow her. ",
-      "you see an old woman and decide to approach it. ",
-      "you notice a woman who signs you. ",
+      "you see an old woman and decide to approach her.",
+      "you notice an elderly woman, who beckons to you.",
       "you notice the silhouette of an old lady and you decide to go see what she does. "
     ],
     "description": [
-      "It looks great, free, with a long and fine nose. ",
-      "His clothes are in a pitiful state, they seem to fall into pieces, as dust. ",
-      "She is yours, skeleton, but her eyes seem malicious. ",
-      "It is made of tarnished and dirty fabrics. ",
+      "She looks old, frail, with a long, thin nose.",
+      "Her clothes are in a pitiful state. They seem to fall apart, as if made of dust.",
+      "She is stooped, skeletal, but her gaze seems mischievous.",
+      "She is dressed in tatters of dull and dirty fabrics.",
       "You remember rumors about a clumsy witch who would wander through the kingdom. ",
-      "Completely silent, it seems capable by the years, it is fine, bony and its almost grey skin. ",
+      "Completely silent, she seems worn down by the years; she is thin, bony, with almost grey skin.",
       "She seems not to understand what you tell her. "
     ],
     "situation": [
       "You enter what seems to be her hut and discover that she is preparing a potion...",
       "You find that a cauldron is boiling on fire and the old lady seems to be preparing a potion...",
-      "You are approaching and discover that his preparation of a potion does not seem to happen as expected...",
-      "You observe the old lady prepare a potion, but you notice that her content almost borders with the cauldron...",
+      "You approach and discover that her preparation of a potion does not seem to be going as planned...",
+      "You watch the old lady prepare a potion, but you notice that its contents are almost overflowing from the cauldron...",
       "The old lady is preparing a potion, but she seems to be having trouble getting a satisfactory result...",
       "It looks like she is preparing a strange mixture in a huge cauldron..."
     ],
     "witchEventResults": {
       "ingredientIntros": [
-        "You choose **{{witchEvent}}** to potion in the hope of improving...",
-        "You take the decision of **{{witchEvent}}** from the potion while the witch turns back...",
-        "You advise the witch of **{{witchEvent}}** to his potion...",
-        "Following your advice, the witch decides **{{witchEvent}}** to his potion...",
-        "You follow your instinct and choose **{{witchEvent}}** to the dubious mixture...",
-        "You decide from **{{witchEvent}}** to the potion, since this will improve the result...",
+        "You decide to **{{witchEvent}}** to the potion in the hope of improving it...",
+        "You decide to **{{witchEvent}}** to the potion while the witch has her back turned...",
+        "You advise the witch to **{{witchEvent}}** to her potion...",
+        "Following your advice, the witch decides to **{{witchEvent}}** to her potion...",
+        "You follow your instinct and decide to **{{witchEvent}}** to the dubious mixture...",
+        "You decide to **{{witchEvent}}** to the potion, hoping this will improve the result...",
         "You dare **{{witchEvent}}** to the potion...",
-        "After studying the contents of the pot, you decide to **{{witchEvent}}** to the list of metrics..."
+        "After studying the contents of the pot, you decide to **{{witchEvent}}** to the list of ingredients..."
       ],
       "adviceIntros": [
-        "Take mercy, advise them of **{{witchEvent}}** in order to get a better result...",
-        "You decide to help the witch by advising her of **{{witchEvent}}**..."
+        "Filled with pity, you advise her to **{{witchEvent}}** in order to get a better result...",
+        "You decide to help the witch by advising her to **{{witchEvent}}**..."
       ],
       "outcomes": {
         "1": [
           "Once the potion is over, the witch gives you a drink. You decide to keep that for the rest of your adventure.",
           "Thanks to your intervention, the potion looks drinkable. You want to keep some for the rest of your adventure.",
-          "After having finished the potion, the old lady pours a game into a bottle she gives you back. You are happy to accept it before you get back on your way.",
+          "After finishing the potion, the old lady pours some into a flask that she hands you. You happily accept it before getting back on your way.",
           "The result obtained has a strange taste, but you decide to keep some potion for the continuation of your adventure."
         ],
         "2": {
@@ -634,24 +634,24 @@
     },
     "witchEventNames": {
       "bat": "Add Bat",
-      "beer": "Add bee",
-      "bigWait": "Let rest the potion",
-      "bigWarm": "Boil the potion long",
+      "beer": "Add beer",
+      "bigWait": "Let the potion rest",
+      "bigWarm": "Boil the potion for a long time",
       "blood": "Add Blood",
-      "book": "Speak Spellbook",
+      "book": "Recite a spellbook incantation",
       "bone": "Add Bone",
-      "cobweb": "Add Ringnee Canvas",
+      "cobweb": "Add a cobweb",
       "cool": "Let the potion cool down",
       "chicken": "Add Chicken",
       "crystalBall": "Recite a magic formula",
-      "distiller": "Distille potion",
+      "distiller": "Distill the potion",
       "eye": "Add an eye",
       "frog": "Add frog",
       "greenApple": "Add green apple",
-      "heart": "Add Core",
+      "heart": "Add a heart",
       "mushroom": "Add Mushroom",
       "nothing": "Do nothing",
-      "package": "Add mystery interference",
+      "package": "Add a mystery ingredient",
       "rat": "Add Rat",
       "redApple": "Add Red Apple",
       "rose": "Add a rose",
@@ -659,12 +659,12 @@
       "smallWait": "Let the potion rest a little bit",
       "smallWarm": "Warm the pot a little bit",
       "snake": "Add a snake",
-      "spider": "Add Ring",
-      "stir": "Mixing potion",
+      "spider": "Add a spider",
+      "stir": "Mix the potion",
       "teeth": "Add a tooth",
       "testTube": "Add a test tube",
       "turtle": "Add turtle",
-      "wand": "cast a spell",
+      "wand": "Cast a spell",
       "wiltedRose": "Add a faded rose",
       "worm": "Add worm"
     }
@@ -678,7 +678,7 @@
       "you encounter an oracle named **{{name}}**",
       "you pass by an oracle who is calling you out. He says his name is **{{name}}**",
       "you are called out by a man who says to be called **{{name}}**",
-      "an oracle named **{{name}}** apostrophes you",
+      "an oracle named **{{name}}** accosts you",
       "a foreigner pretending to be named **{{name}}** asks you to come closer",
       "a man who emerges from nowhere runs towards you and presents himself as **{{name}}**",
       "a suspicious unknown asks you to come closer, after which he tells you his name is **{{name}}**"
@@ -688,7 +688,7 @@
       "He says he is able to give you information about the sky as long as you give him a little time",
       "He tells you that if you give him time, he would be able to give you information about the sky",
       "He says he can give information about the sky if he is given the necessary time",
-      "He pretends to be able to read in the stars provided that you give him time",
+      "He claims to be able to read in the stars provided that you give him time",
       "He claims to be able to give you information about the sky if you give him some of your time"
     ],
     "search": [
@@ -699,7 +699,7 @@
       "Leaning on his refracting telescope, he observes the celestial vault with attention",
       "The oracle observes the sky with attention",
       "He lifts his head to carefully contemplate the sky",
-      "He starts to scrutinize intensely at the stars",
+      "He starts to intensely scrutinize the stars",
       "The man sits against a tree and contemplates the sky",
       "The man lies on the ground and looks up to the sky"
     ],
@@ -728,8 +728,8 @@
       "You leave without regretting having stopped by",
       "You go back on your way perplexed"
     ],
-    "nObjectsCrossTheSky_one": "{{count}} item will travel through",
-    "nObjectsCrossTheSky_other": "{{count}} items will pass through",
+    "nObjectsCrossTheSky_one": "{{count}} object will cross",
+    "nObjectsCrossTheSky_other": "{{count}} objects will cross",
     "days_one": "day",
     "days_other": "days",
     "specific": {
@@ -737,7 +737,7 @@
         "{{objectWhichWillCrossTheSky}} sky today",
         "object named \"{{randomObjectName}}\" with diameter of about {{randomObjectDiameter}} meters passes close to planet today",
         "object named \"{{randomObjectName}}\" passes at a distance of about {{randomObjectDistance}} million kilometers from the planet",
-        "asteroi<unk> of the name \"{{randomObjectName}}\" exceeds our planet's about {{randomObjectDistance}} million kilometers",
+        "asteroid named \"{{randomObjectName}}\" passes our planet by about {{randomObjectDistance}} million kilometers",
         "the asteroid of the name \"{{randomObjectName}}\" may be visible today",
         "the asteroid named \"{{randomObjectName}}\" will pass near the planet",
         "the asteroid named \"{{randomObjectName}}\" will pass to {{randomObjectDistance}} million kilometers of us"
@@ -822,12 +822,12 @@
     ],
     "givePetGuild_m": [
       "you see a lost **{{pet}}**. Although you already have a companion, you decide to bring him back to your guild so that someone can take care of him.",
-      "you see an errand **{{pet}}** that sems to be hungry, so you give him the remains of your last meal. He appreciates this and seems to want to follow you in your adventure. Having a companion, you leave him to the good care of your guild.",
+      "you see an errand **{{pet}}** that seems to be hungry, so you give him the remains of your last meal. He appreciates this and seems to want to follow you in your adventure. Having a companion, you leave him to the good care of your guild.",
       "you see a group of children in a circle. You come closer and find that they are abusing a poor **{{pet}}**. You make them go away, but he is too badly hurt. You managed to put him back in shape and let him have a little rest in your shelter."
     ],
     "givePetGuild_f": [
       "you see a lost **{{pet}}**. Although you already have a companion, you decide to bring her back to your guild so that someone can take care of her.",
-      "you see an errand **{{pet}}** that sems to be hungry, so you give her the remains of your last meal. She appreciates this and seems to want to follow you in your adventure. Having a companion, you leave her to the good care of your guild.",
+      "you see an errand **{{pet}}** that seems to be hungry, so you give her the remains of your last meal. She appreciates this and seems to want to follow you in your adventure. Having a companion, you leave her to the good care of your guild.",
       "you see a group of children in a circle. You come closer and find that they are abusing a poor **{{pet}}**. You make them go away, but she is too badly hurt. You managed to put her back in shape and let her have a little rest in your shelter."
     ]
   },
@@ -852,8 +852,8 @@
       "percentFemalePets": "the CAPS, or the Continental Animal Protection Society, discovered that **{{infoNumber}}%** of the animals in the territory are females. Happy with this news,",
       "guildLevelMean": "the CGA, or Continental Guild Agency, noted that the current guilds averaged **level {{infoNumber, number}}**. Intrigued by this information,",
       "nbPlayersHaventStartedTheAdventure_zero": "the CAAFS, or Continental Adventurer's Anti-Fraud Service, discovered that **no adventurer** disappeared just after they obtained their adventure license. Admirable of all these valuable adventurers,",
-      "nbPlayersHaventStartedTheAdventure_one": "the CAAFS, or Continental Adventurer's Anti-Fraud Service, discovered that **an adventurer** disappeared just after he obtained his adventure license. Indignified by this person's action,",
-      "nbPlayersHaventStartedTheAdventure_other": "the CAAFS, or Continental Adventurer's Anti-Fraud Service, discovered that **{{infoNumber}} adventurers** disappeared just after they obtained their adventure license. Indignified by the action of these people,",
+      "nbPlayersHaventStartedTheAdventure_one": "the CAAFS, or Continental Adventurer's Anti-Fraud Service, discovered that **an adventurer** disappeared just after he obtained his adventure license. Indignant at this person's action,",
+      "nbPlayersHaventStartedTheAdventure_other": "the CAAFS, or Continental Adventurer's Anti-Fraud Service, discovered that **{{infoNumber}} adventurers** disappeared just after they obtained their adventure license. Indignant at the action of these people,",
       "trainedPets_one": "the CAPS, or the Continental Animal Protection Society, wishes to congratulate the trainer of the **only trained animal**. Impressed by this achievement,",
       "trainedPets_other": "the CAPS, or the Continental Animal Protection Society, wishes to congratulate the trainers of the **{{infoNumber}} trained animals**. Impressed by this achievement,",
       "nbPlayersWithGivenClass_zero": "according to a recent adventurers census, there would be no players with the **{{infoComplement}}** class. Amazed by this news,",
@@ -867,8 +867,8 @@
   "smallBad": {
     "healthLost": {
       "stories": [
-        "your feet stumble on a root. Wounded, you lose **{{amount, number}}{emote:unitValues.lostHealth}**.",
-        "deep into your thoughts, you don't pay attention to the ground under your feet and unwillingly trip over a pebble. You hurt yourself at the knee. This ain't a serious injury, despite it being painful. You lose **{{amount, number}} {emote:unitValues.lostHealth}**.",
+        "your feet stumble on a root. Wounded, you lose **{{amount, number}} {emote:unitValues.lostHealth}**.",
+        "deep in your thoughts, you pay little attention to the ground under your feet and accidentally trip over a pebble. You hurt your knee. It's not very serious, though it is painful. You lose **{{amount, number}} {emote:unitValues.lostHealth}**.",
         "you whistle while walking. Suddenly, something enters into your field of vision: it's a dog, and it's running straight at you! Before you have time to understand what is happening, the animal collides with you, but immediately leaves thereafter. Fortunately, you are only slightly injured. and only lose **{{amount, number}} {emote:unitValues.lostHealth}**.",
         "you hit a galloping horse, but were only injured superficially. You lose **{{amount, number}} {emote:unitValues.lostHealth}**.",
         "you were violently hit by a boar herd. You barely stand back up, and get back on your way whilst losing **{{amount, number}} {emote:unitValues.lostHealth}**."
@@ -881,7 +881,7 @@
           "you feel intensely tired. Your eyelids become heavy and you decide to take a restorative nap for **{{amount}}**. {emote:effects.sleeping}",
           "Exhausted by your journey, you lie down against a tree to get some sleep. You wake up **{{amount}}** later. {emote:effects.sleeping}",
           "fatigue overwhelms you. You find a comfortable place to rest for **{{amount}}**. {emote:effects.sleeping}",
-          "your legs no longer support you. You sit up and quickly fall asleep for **{{amount}}**. {emote:effects.sleeping}"
+          "your legs no longer support you. You sit down and quickly fall asleep for **{{amount}}**. {emote:effects.sleeping}"
         ]
       },
       "occupied": {
@@ -896,7 +896,7 @@
     },
     "moneyLost": {
       "stories": [
-        "crossing a crowd, you feel a hand deeply searching you and lightening your pockets. You don't have the time to replicate that your looter has disappeared. You lost **{{amount, number}} {emote:unitValues.lostMoney}**.",
+        "crossing a crowd, you feel a hand swiftly rummaging through and lightening your pockets. You don't have time to react before your pickpocket has disappeared. You lost **{{amount, number}} {emote:unitValues.lostMoney}**.",
         "you meet a beggar asking for some money to support his needs. Taken by a surge of mercy, you decide to give him **{{amount, number}} {emote:unitValues.lostMoney}**.",
         "a masked man calls you out and threatens you with his weapon. To let him spare your life, you give him the **{{amount, number}} {emote:unitValues.lostMoney}** you have in your pocket, and the keys of your cart as well.",
         "you suddenly remember forgetting your purse in the room of the last inn you passed by. You lose **{{amount, number}} {emote:unitValues.lostMoney}**.",
@@ -928,7 +928,7 @@
       "you meet a man with a loaded mule. A few minutes later, you notice that something has fallen from his package. It is now too late to catch him up.",
       "your vision is focused on a reflection emitted by an item on the ground.",
       "you trip on a root. Furious, you strike the latter a big blow... It seems it isn't a root...",
-      "you meet a child who does not seem to speak your language. However, it looks welcoming and tends you a package...",
+      "you meet a child who does not seem to speak your language. However, it looks welcoming and hands you a package...",
       "you come across a man with a loaded mule. You decide to help him carry his load. As a thanks, he offers you an object..."
     ]
   },
@@ -936,7 +936,7 @@
     "stories": {
       "money_m": [
         "You see **{{pet}}** rummaging in some tall grass. He comes out with **{{amount, number}}** {emote:unitValues.money}, which you keep for the rest of your adventure.",
-        "You notice that **{{pet}}** is staring at the ground and decides to dig a hole. What a surprise to see her emerge with **{{amount, number}}** {emote:unitValues.money}!",
+        "You notice that **{{pet}}** is staring at the ground and decides to dig a hole. What a surprise to see him emerge with **{{amount, number}}** {emote:unitValues.money}!",
         "You discover that **{{pet}}** is sniffing insistently in the direction of a bush. You decide to take a look, and seeing him return with **{{amount, number}}** {emote:unitValues.money} fills you with joy!",
         "You suddenly see **{{pet}}** jump into the water. What a surprise to see him emerge with a purse of **{{amount, number}}** {emote:unitValues.money}!",
         "After a short break on your journey, you see **{{pet}}** returning with a purse. It seems he has stolen it from a merchant. You decide to leave with your **{{amount, number}}** {emote:unitValues.money} before he notices it."
@@ -984,17 +984,17 @@
       ],
       "gainLove_m": [
         "It looks like **{{pet}}** is happy to have you by his side. He gains affection and becomes more trustworthy towards you.",
-        "After a long walk, you decided to take care of **{{pet}}** by patting him. This moment passed with him has strengthened your bond.",
+        "After a long walk, you decide to take care of **{{pet}}** by patting him. This moment passed with him has strengthened your bond.",
         "After having left for a few moments, **{{pet}}** returns with food found further. You decide to give it to him before it is lost. He thus likes you more.",
         "Unfortunately, **{{pet}}** seems to have triggered hostilities with {{randomAnimal}} ! You decide to valiantly defend him. He loves you more and becomes more trustworthy towards you.",
-        "Oh, how cute! **{{pet}}** is a player! You also decide to have fun with him. This game strengthened your bonds."
+        "Oh, how cute! **{{pet}}** is playful! You also decide to have fun with him. This game strengthened your bonds."
       ],
       "gainLove_f": [
         "It looks like **{{pet}}** is happy to have you by her side. She gains affection and becomes more trustworthy towards you.",
         "After a long walk, you decided to take care of **{{pet}}** by patting her. This moment passed with her has strengthened your bond.",
         "After having left for a few moments, **{{pet}}** returns with food found further. You decide to give it to her before it is lost. She thus likes you more.",
         "Unfortunately, **{{pet}}** seems to have triggered hostilities with {{randomAnimal}} ! You decide to valiantly defend her. She loves you more and becomes more trustworthy towards you.",
-        "Oh, how cute! **{{pet}}** is a player! You also decide to have fun with her. This game strengthened your bonds."
+        "Oh, how cute! **{{pet}}** is playful! You also decide to have fun with her. This game strengthened your bonds."
       ],
       "food_m": [
         "**{{pet}}**'s flair has allowed you to find a **{{food}}**. You store this food and continue your journey.",
@@ -1015,14 +1015,14 @@
         "At a bend in the road, **{{pet}}** suddenly starts running. You end up being dragged along at the end of his leash, but you've won **{{amountDisplay}}** {emote:unitValues.timeGain}.",
         "What spirit! **{{pet}}** seems to be in a hurry, but you manage to keep up with him. Thanks to him, you win **{{amountDisplay}}** {emote:unitValues.timeGain}.",
         "The flair of **{{pet}}** has enabled you to find a shortcut. Thanks to him, you've won **{{amountDisplay}}** {emote:unitValues.timeGain}.",
-        "Defending **{{pet}}** against {{randomAnimal}} sauvage has been no mean feat, and this time you've found something stronger than yourself. You decide to flee, and run at full speed. Thanks to this misadventure, you now earn **{{amountDisplay}}** {emote:unitValues.timeGain} along the way."
+        "Defending **{{pet}}** against a wild {{randomAnimal}} has been no mean feat, and this time you've found something stronger than yourself. You decide to flee, and run at full speed. Thanks to this misadventure, you gain **{{amountDisplay}}** {emote:unitValues.timeGain} along the way."
       ],
       "gainTime_f": [
         "Nice to see, **{{pet}}** is in great shape. You ride on his back for a few minutes and you win **{{amountDisplay}}** {emote:unitValues.timeGain}.",
         "At a bend in the road, **{{pet}}** suddenly starts running. You end up being dragged along at the end of his leash, but you've won **{{amountDisplay}}** {emote:unitValues.timeGain}.",
         "You notice that **{{pet}}** seems to be in a hurry, yet you manage to keep up with her. Thanks to her, you win **{{amountDisplay}}** {emote:unitValues.timeGain}.",
         "The flair of **{{pet}}** has enabled you to find a shortcut. Thanks to her, you've won **{{amountDisplay}}** {emote:unitValues.timeGain}.",
-        "Defending **{{pet}}** against {{randomAnimal}} sauvage has been no mean feat, and this time you've found something stronger than yourself. You decide to flee, and run at full speed. Thanks to this misadventure, you now earn **{{amountDisplay}}** {emote:unitValues.timeGain} along the way."
+        "Defending **{{pet}}** against a wild {{randomAnimal}} has been no mean feat, and this time you've found something stronger than yourself. You decide to flee, and run at full speed. Thanks to this misadventure, you gain **{{amountDisplay}}** {emote:unitValues.timeGain} along the way."
       ],
       "points_m": [
         "People who come across you with **{{pet}}** are sure to take notice. This improves your reputation and earns you **{{amount, number}}** {emote:unitValues.score}.",
@@ -1039,29 +1039,29 @@
         "Successfully training **{{pet}}** was a real challenge that proves your talent with the animals. You get the {{badge}} badge!"
       ],
       "loseLife_m": [
-        "While you are trying to caress **{{pet}}**, he doesn't get along and bites your hand. You lose **{{amount, number}}** {emote:unitValues.lostHealth}.",
+        "While you are trying to caress **{{pet}}**, he won't have it and bites your hand. You lose **{{amount, number}}** {emote:unitValues.lostHealth}.",
         "Around a bend, **{{pet}}** suddenly starts running. You hold on to the leash as best you can but come away with a few scratches. You lose **{{amount, number}}** {emote:unitValues.lostHealth}.",
         "You see **{{pet}}** leave. He comes back a few minutes after with some food. You eat it and severely regret it a few minutes later. You suddenly suffer from a bellyache... You lose **{{amount, number}}** {emote:unitValues.lostHealth}.",
         "**{{pet}}** seems to have triggered hostilities with {{randomAnimal}}! You decide to defend him, but unfortunately the wild creature hurts you. You lose **{{amount, number}}** {emote:unitValues.lostHealth}.",
         "**{{pet}}** seems to want to play and throws himself from the top of a tree. Unfortunately, his weight breaks the branch and he falls on top of you. You lose **{{amount, number}}** {emote:unitValues.lostHealth}."
       ],
       "loseLife_f": [
-        "While you are trying to caress **{{pet}}**, she doesn't get along and bites your hand. You lose **{{amount, number}}** {emote:unitValues.lostHealth}.",
+        "While you are trying to caress **{{pet}}**, she won't have it and bites your hand. You lose **{{amount, number}}** {emote:unitValues.lostHealth}.",
         "Around a bend, **{{pet}}** suddenly starts running. You hold on to the leash as best you can but come away with a few scratches. You lose **{{amount, number}}** {emote:unitValues.lostHealth}.",
         "You see **{{pet}}** leave. She comes back a few minutes after with some food. You eat it and severely regret it a few minutes later. You suddenly suffer from a bellyache... You lose **{{amount, number}}** {emote:unitValues.lostHealth}.",
         "**{{pet}}** seems to have triggered hostilities with {{randomAnimal}}! You decide to defend her, but unfortunately the wild creature hurts you. You lose **{{amount, number}}** {emote:unitValues.lostHealth}.",
         "**{{pet}}** seems to want to play and throws herself from the top of a tree. Unfortunately, her weight breaks the branch and she falls on top of you. You lose **{{amount, number}}** {emote:unitValues.lostHealth}."
       ],
       "loseMoney_m": [
-        "You feel that **{{pet}}** steals a few pieces from your purse and hides them further. Unfortunately you can't find them again. You thus lose **{{amount, number}}** {emote:unitValues.lostMoney}.",
-        "You notice a large hole in your purse. **{{pet}}** had to play with it during the night! After you had counted what you had left, you notice that you are missing **{{amount, number}}** {emote:unitValues.lostMoney}.",
+        "You feel that **{{pet}}** steals a few coins from your purse and goes to hide them further away. Unfortunately, you can't find them again. You thus lose **{{amount, number}}** {emote:unitValues.lostMoney}.",
+        "You notice a large hole in your purse. **{{pet}}** must have played with it during the night! After counting what you had left, you notice that you are missing a total of **{{amount, number}}** {emote:unitValues.lostMoney}.",
         "While you play with **{{pet}}**, the latter shoves you and drops your purse into a crevasse. It won't be possible to recover these **{{amount, number}}** {emote:unitValues.lostMoney}!",
         "You get the impression that **{{pet}}** is irritated to the point he will even hurt a passer-by. After apologizing, you decide to compensate them and leave with your head down. You lose **{{amount, number}}** {emote:unitValues.lostMoney}.",
         "While wanting to play with **{{pet}}**, you strike him with a blow. Injured, you take him to a vet so he can be healed. After his recovery, the healer charges you **{{amount, number}}** {emote:unitValues.lostMoney}."
       ],
       "loseMoney_f": [
-        "You feel that **{{pet}}** steals a few pieces from your purse and hides them further. Unfortunately you can't find them again. You thus lose **{{amount, number}}** {emote:unitValues.lostMoney}.",
-        "You notice a large hole in your purse. **{{pet}}** had to play with it during the night! After you had counted what you had left, you notice that you are missing **{{amount, number}}** {emote:unitValues.lostMoney}.",
+        "You feel that **{{pet}}** steals a few coins from your purse and goes to hide them further away. Unfortunately, you can't find them again. You thus lose **{{amount, number}}** {emote:unitValues.lostMoney}.",
+        "You notice a large hole in your purse. **{{pet}}** must have played with it during the night! After counting what you had left, you notice that you are missing a total of **{{amount, number}}** {emote:unitValues.lostMoney}.",
         "While you play with **{{pet}}**, the latter shoves you and drops your purse into a crevasse. It won't be possible to recover these **{{amount, number}}** {emote:unitValues.lostMoney}!",
         "You get the impression that **{{pet}}** is irritated to the point she will even hurt a passer-by. After apologizing, you decide to compensate them and leave with your head down. You lose **{{amount, number}}** {emote:unitValues.lostMoney}.",
         "While wanting to play with **{{pet}}**, you strike her with a blow. Injured, you take her to a vet so she can be healed. After her recovery, the healer charges you **{{amount, number}}** {emote:unitValues.lostMoney}."
@@ -1069,14 +1069,14 @@
       "loseTime_m": [
         "By calling back **{{pet}}** so that he stays close to you, you lose **{{amountDisplay}}** :clock2:.",
         "You feel that **{{pet}}** doesn't seem to want to move. You decide to pull him by force. Because of him, you lose **{{amountDisplay}}** :clock2:.",
-        "You see **{{pet}}** running towards you, pursued by {{randomAnimal}} sauvage! You flee with him. The chase has cost you **{{amountDisplay}}** :clock2: along the way.",
+        "You see **{{pet}}** running towards you, pursued by a wild {{randomAnimal}}! You flee with him. The chase has cost you **{{amountDisplay}}** :clock2: along the way.",
         "As you enter a village, you hear a rumor that a pet resembling **{{pet}}** is attacking villagers. On seeing you, the villagers take fright of you and your pet, and you are immediately chased out of the village. As a result of this mishap, you lost **{{amountDisplay}}** :clock2: along the way.",
         "You discover that **{{pet}}** is staring at the ground and decides to dig a hole. What emerges is a closed chest. After several attempts, you manage to open it, but it's empty. This mishap has cost you **{{amountDisplay}}** :clock2:."
       ],
       "loseTime_f": [
         "If you keep calling **{{pet}}** so that she stays close to you, you lose **{{amountDisplay}}** :clock2:.",
         "You feel that **{{pet}}** doesn't seem to want to move. Nevertheless, you decide to pull her by force. Because of her, you lose **{{amountDisplay}}** :clock2:.",
-        "You see **{{pet}}** running towards you, pursued by {{randomAnimal}} sauvage! You flee with her. This chase has caused you to lose **{{amountDisplay}}** :clock2: along the way.",
+        "You see **{{pet}}** running towards you, pursued by a wild {{randomAnimal}}! You flee with her. This chase has caused you to lose **{{amountDisplay}}** :clock2: along the way.",
         "As you enter a village, you hear a rumor that a pet resembling **{{pet}}** is attacking villagers. On seeing you, the villagers take fright of you and your pet, and you are immediately chased out of the village. As a result of this mishap, you lost **{{amountDisplay}}** :clock2: along the way.",
         "You discover that **{{pet}}** is staring at the ground and decides to dig a hole. She pulls out a closed chest. After several attempts, you manage to open it, but it's empty. This mishap has cost you **{{amountDisplay}}** :clock2:."
       ],
@@ -1093,14 +1093,14 @@
         "The lack of attention to **{{pet}}** led her to flee. You lose sight of her quickly, it will be impossible to find her."
       ],
       "loseLove_m": [
-        "It looks like **{{pet}}** doesn't appreciate you that much... Travelling with him deterred this relationship even more. He loses a little in love.",
-        "As you practice fighting, **{{pet}}** passes through the fight. You strike him a blow in a moment of inadvertence. He now seems to love you a little less.",
+        "It looks like **{{pet}}** doesn't appreciate you that much... Travelling with him deteriorated this relationship even more. He loses a little in love.",
+        "As you practice fighting, **{{pet}}** passes by. You strike him a blow in a moment of inadvertence. He now seems to love you a little less.",
         "After a long walk, **{{pet}}** is running out of breath, it looks like he can't follow you. Not waiting for him has diminished your relationship. Thus, he loses a little in love...",
         "When approaching a stand, **{{pet}}** stares with insistence on the food placed on a board. Despite his request, you decide to continue your journey. **{{pet}}** is grudging, he loses faith in you."
       ],
       "loseLove_f": [
-        "It looks like **{{pet}}** doesn't appreciate you that much... Travelling with her deterred this relationship even more. She loses a little in love.",
-        "As you practice fighting, **{{pet}}** passes through the fight. You strike her a blow in a moment of inadvertence. She now seems to love you a little less.",
+        "It looks like **{{pet}}** doesn't appreciate you that much... Travelling with her deteriorated this relationship even more. She loses a little in love.",
+        "As you practice fighting, **{{pet}}** passes by. You strike her a blow in a moment of inadvertence. She now seems to love you a little less.",
         "After a long walk, **{{pet}}** is running out of breath, it looks like she can't follow you. Not waiting for her has diminished your relationship. Thus, she loses a little in love...",
         "When approaching a stand, **{{pet}}** stares with insistence on the food placed on a board. Despite her request, you decide to continue your journey. **{{pet}}** is grudging, she loses faith in you."
       ],
@@ -1172,7 +1172,7 @@
       "winHealth": [
         "you come across some villagers who remember your prowess as a frail person, and hand you a bag containing rations that you eat before continuing your journey. You win **{{amount, number}} {emote:unitValues.health}**.",
         "A merchant comes up to you and asks what class you are, to which you reply that you are a frail adventurer. Remembering that frail adventurers are people with low hp, he decides to give you some fruit that was no longer viable to sell. Happy, you eat them and earn **{{amount, number}} {emote:unitValues.health}** then set off again.",
-        "you are approached by an old woman. She gives you a red apple, telling you it's important to eat well to become strong. You eat it with gratitude before resuming your way. You win **{{amount, number}}{emote:unitValues.health}**.",
+        "you are approached by an old woman. She gives you a red apple, telling you it's important to eat well to become strong. You eat it with gratitude before resuming your way. You win **{{amount, number}} {emote:unitValues.health}**.",
         "you are pushed by a cart. You are called out by its owner, who apologizes and tells he didn't see you because of your puny appearance and offers you some supplies. You restore yourself a bit and resume your journey. You win **{{amount, number}} {emote:unitValues.health}**."
       ]
     }
@@ -1280,8 +1280,8 @@
         "intro": "The sky is gray, the temperature is average. It's an ideal weather for walking and move forward in your adventure. However, after a few steps, the frail ground gives way beneath your feet and you fall into a hole.",
         "success": {
           "withGuild": "With the help of your guild mates, you manage to pull yourself out of the crevasse and save them in turn. This ordeal has strengthened your bond, and your guild receives **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
-          "soloWithGuild": "Not losing your cold blood, you immediately apply your guild's lessons and easily climb the wall. Your guild gets **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
-          "solo": "Not losing your cold blood, you apply what you learned during your adventures and easily manage to climb the wall. You receive **{{amount, number}} {emote:unitValues.xp}**."
+          "soloWithGuild": "Keeping your composure, you immediately apply your guild's lessons and easily climb the wall. Your guild gets **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
+          "solo": "Keeping your composure, you apply what you learned during your adventures and easily manage to climb the wall. You receive **{{amount, number}} {emote:unitValues.xp}**."
         },
         "escape": {
           "withGuild": "Wasting no time, you and your companions hurry to examine this crevasse, which turns out to be a cave. A bit of blind walking later, you manage to emerge from the hole further on.",
@@ -1295,7 +1295,7 @@
       {
         "intro": "You decide to rest for a while after an intense crossing of the island. But just as you lie down on the ground, the earth begins to shake.",
         "success": {
-          "withGuild": "However, you clench each other so that no one gets fallen into a crevasse. The quake ends, and you are all safe and sound. Your guild gets **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
+          "withGuild": "However, you cling to each other to prevent anyone from falling into a crevasse. The quake ends, and you are all safe and sound. Your guild gets **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
           "soloWithGuild": "You follow the earthquake instructions given to you by your guild, and decide to take shelter under a structure which, fortunately, has not collapsed on you. Safe and sound, you promise to thank your guild as soon as you return from your expedition. Your guild wins **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
           "solo": "You attempt to hold on despite the earthquake. Fortunately, it did not cause any damage around, you continue to rest a little while admiring the sky and surroundings. You receive **{{amount, number}} {emote:unitValues.xp}**."
         },
@@ -1312,8 +1312,8 @@
         "intro": "You are making good progress on your adventure (with your guild mates), when your instincts alert you to danger. Gradually, an almost opaque, whitish mist rises from the uneven ground and falls from the sky, encircling you. You quickly can't see anything around you anymore.",
         "success": {
           "withGuild": "Several pairs of eyes are better than one! Thanks to the cooperation of your visions, you and your companions manage to advance between rocks and crevasses without a single one being injured or lost. Your guild receives **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
-          "soloWithGuild": "In this urgent situation, you keep your cold blood and use the tracking techniques learned from your guild to get out of the trouble without hindrance. Your guild gets **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
-          "solo": "In this urgent situation, you keep your cold blood and use tracking techniques learned a little more to get out of this mess without a hitch. You receive **{{amount, number}} {emote:unitValues.xp}**."
+          "soloWithGuild": "In this urgent situation, you keep your composure and use the tracking techniques learned from your guild to get out of trouble unscathed. Your guild gets **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
+          "solo": "In this urgent situation, you keep your composure and use tracking techniques learned a little earlier to get out of this mess unscathed. You receive **{{amount, number}} {emote:unitValues.xp}**."
         },
         "escape": {
           "withGuild": "Completely lost in this dense and threatening fog, your companions and you decide to gather to parry the chill, waiting for the wind to disperse the mist.",
@@ -1321,7 +1321,7 @@
         },
         "lose": {
           "withGuild": "Your group is not complete, and you and your guildmates panic at the ordeal. Everyone goes their own way, and you don't ask for any more time to run back. But in your haste, you drop **{{amount, number}} {emote:unitValues.lostMoney}**.",
-          "solo": "Completely panicked in front of this almost menacing mist, you take your legs to your neck and run straight in front of you. This is a serious error as you are on the ground very quickly due to the fog. You lose **{{amount, number}} {emote:unitValues.lostHealth}**."
+          "solo": "Completely panicked by this almost menacing mist, you take to your heels and run straight ahead. A grave mistake, as you quickly fall to the ground because of the fog. You lose **{{amount, number}} {emote:unitValues.lostHealth}**."
         }
       },
       {
@@ -1389,7 +1389,7 @@
       "you come face to face with a {{feralPet}}!",
       "you encounter a {{feralPet}}.",
       "you come across a {{feralPet}} that doesn't seem to want to let you pass.",
-      "you suddenly push a terrified squeak: a {{feralPet}} stands right in front of you!",
+      "you suddenly let out a terrified squeak: a {{feralPet}} stands right in front of you!",
       "you remain petrified after seeing a {{feralPet}}.",
       "you see a cloud of dust on the horizon that is approaching dangerously... It's a {{feralPet}}!",
       "you notice a mysterious mechanism... Curious, you decide to activate it. It doesn't take you long to regret your decision when a {{feralPet}} appears out of nowhere!",
@@ -1410,7 +1410,7 @@
       "Glad you managed to get out of it, you feel your rage against the creatures of this island rising.",
       "With your victory, you feel full of rage against the evil creatures of this island.",
       "You feel stronger than ever and your rage against the evil creatures of this island is increasing.",
-      "Proud of you, you feel your rage against the evil creatures of this island increase.",
+      "Proud of yourself, you feel your rage against the evil creatures of this island increase.",
       "No one can stop you! Your rage against evil creatures is only reinforced by this event."
     ],
     "rageUpFormat": " {{rageUpDescription}} {emote:unitValues.rage} **Rage ++**",
@@ -1445,7 +1445,7 @@
       "crazy",
       "destructive",
       "cursed",
-      "maleficent",
+      "Machiavellian",
       "malicious",
       "ferocious"
     ],
@@ -1478,7 +1478,7 @@
       "crazy",
       "destructive",
       "cursed",
-      "mischievous",
+      "Machiavellian",
       "malicious",
       "ferocious"
     ],
@@ -1520,7 +1520,7 @@
       },
       "doNothing": {
         "name": "Do nothing",
-        "success": "You are not moving an inch, and the animal seems to ignore you. You take opportunity to slip away, delighted to have been so lucky.",
+        "success": "You are not moving an inch, and the animal seems to ignore you. You take the opportunity to slip away, delighted to have been so lucky.",
         "failure": "You don't move an inch, but the animal isn't fooled and gives you a violent blow before leaving you alone. You are going back on the road, ashamed that this strategy didn't work as expected."
       },
       "lastEffort": {
@@ -1545,8 +1545,8 @@
       },
       "scream": {
         "name": "Shout",
-        "success": "You push a strident cry that makes the animal flee. You get back on your way, relieved that you could get out of it without hindrance.",
-        "failure": "You push a strident cry that makes the animal flee. However, it comes back in charge and strikes a violent blow before leaving you alone."
+        "success": "You let out a piercing cry that makes the animal flee. You get back on your way, relieved that you could get out of it without hindrance.",
+        "failure": "You let out a piercing cry that makes the animal flee. However, it comes back in charge and strikes a violent blow before leaving you alone."
       },
       "prayGod": {
         "name": "Pray to God",
@@ -1571,30 +1571,30 @@
     }
   },
   "gobletsGame": {
-    "intro": "you meet a man who seems suspicious to you. Indeed, it approaches you and pushes you to a table, where four mystery goblets are laid. The instructions given to you are simple: you must choose a cup, and receive the prize of any kind. While you observe the objects on the table, the man slips into your back and doesn't seem to want to let you go. To get out of this situation, you can choose a cup.",
+    "intro": "you meet a man who seems suspicious to you. Indeed, he approaches you and pushes you unceremoniously towards a table, on which four mysterious goblets are placed. The instructions given to you are simple: you must choose a goblet and receive the reward, whatever it may be. While you observe the objects on the table, the man slips behind you and doesn't seem to want to let you go. To get out of this situation, you decide to choose a goblet.",
     "goblets": {
       "metal": {
-        "description": "That in metal, seeming ancient tree, classic and balanced choice",
+        "description": "The metal one, seeming very ancient, the classic and balanced choice",
         "name": "metallic"
       },
       "biggest": {
-        "description": "Largest of four, massive and reassuring, prudent and less risky choice",
+        "description": "The largest of the four, massive and reassuring, the prudent and less risky choice",
         "name": "largest"
       },
       "sparkling": {
-        "description": "The shimmering, sculpt in enchanted blue wood, the choice risks that can bring large amounts back",
+        "description": "The shimmering one, sculpted in enchanted blue wood, the risky choice that can pay off big",
         "name": "glittering"
       },
       "cracked": {
-        "description": "The crack, in unstable air, the choice of the better, all or nothing",
-        "name": "crack"
+        "description": "The cracked one, looking unstable, the gambler's choice, all or nothing",
+        "name": "cracked"
       }
     },
     "results": {
       "life": "You gently lift the $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) cup and notice that there's nothing underneath. Disappointed, and a sore loser, you strike the remaining cups, which fly into the air. Noticing that there was nothing in the other cups either, you turn back to the hustler. Unfortunately, he strikes first. You lose **{{quantity, number}} {emote:unitValues.lostHealth}**.",
       "time": "You gently lift the cup $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) and are delighted to discover a small coin! Unfortunately, the man behind you doesn't seem to want to let you leave with your reward. You waste **{{quantity}} {emote:unitValues.time}** negotiating with him before giving up and continuing on your way.",
-      "nothing": "You gently raise the cup $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) and see that there is nothing below. The scammer sketches a smile but you notice from the corner of the eye that the other cups were just as empty. Believing that you escaped from a twisting piece, you quickly walked away, relieved to get away from it without any harm.",
-      "item": "You gently raise the cup $t(smallEvents:gobletsGame.goblets.{{goblet}}. ame) and discover a shiny shine! An item of exceptional rarity was hidden below. The scammer, stupeté, lets you leave with your precious find.",
+      "nothing": "You gently lift the $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) goblet and see that there is nothing underneath. The scammer smirks, but you notice out of the corner of your eye that the other goblets were just as empty. Realizing that you have escaped a cunning trap, you quickly walk away, relieved to get out of it without any harm.",
+      "item": "You gently lift the $t(smallEvents:gobletsGame.goblets.{{goblet}}.name) goblet and discover a brilliant gleam! An item of exceptional rarity was hidden underneath. The scammer, stupefied, lets you leave with your precious find.",
       "end": "Seeing your lack of reaction, the man has the bad idea of trying to rob you. Noticing his maneuver, you intervene, but you're quickly surprised by the man's strength, as he manages to get out of the way with a sudden movement, before fleeing. You escape with a slight wound. You lose **{{quantity, number}} {emote:unitValues.lostHealth}**."
     }
   },
@@ -1605,8 +1605,8 @@
       "As you plan to get back on track after a short break, a man portraying himself as \"{{name}} - wandering merchant\" offers you an exchange.",
       "Around a rock, you get face to face with a wandering merchant named {{name}}, who seems to be selling quite interesting things.",
       "As you walk quietly, a cart bearing the sign \"{{name}} - super wandering item merchant\" appears in front of you. A transaction is immediately underway.",
-      "A merchant is calling you to a certain point of your journey. He says he's called {{name}} and has items that can help you on your adventure.",
-      "After walking for hours on end, a man approaches you. You hear that he is called {{name}} – a first-class merchant. It quickly shows you one of its many items.",
+      "At a certain point in your journey, a merchant calls out to you. He says he's called {{name}} and has items that can help you on your adventure.",
+      "After walking for hours on end, a man approaches you. You hear that he is called {{name}} – a first-class merchant. He quickly shows you one of his many items.",
       "During a short break against a tree, a man comes to you and presents himself as a traveling merchant. The man whose name is {{name}} seems to offer an enchanting deal."
     ],
     "intro_f": [
@@ -1676,14 +1676,14 @@
       "As you peacefully walk along the road, your attention is drawn to the noise of the wheels of a cart. Alderic the antique dealer, a middle-aged man dressed in a picturesque way, wanders the roads as a merchant. With a friendly smile, he invites you to explore his collection of fascinating objects.",
       "Walking on a dusty stone path, a cart bearing the inscription \"Alderic the antique dealer - great item merchant\" comes into view. A transaction is about to begin.",
       "Walking quietly, a wooden trolley that attracted your curiosity appears on the horizon. On board is Alderic, a distinguished man marked by the passage of time. His cart is filled with antiques carefully arranged and he proposes to show you his treasures, all loaded with stories.",
-      "Leaving after a short break, a well-dressed individual approaches you. He introduces himself as Alderic the antique dealer, a renowned traveling merchant. His outfit, blending ancient fabrics and mysterious accessories, reflects its love for the objects of yesteryear. With an accent tinged with excitement, he tells you the story of his unique finds.",
+      "Leaving after a short break, a well-dressed individual approaches you. He introduces himself as Alderic the antique dealer, a renowned traveling merchant. His outfit, blending ancient fabrics and mysterious accessories, reflects his love for the objects of yesteryear. With an accent tinged with excitement, he tells you the story of his unique finds.",
       "During your leisurely stroll, a treasure-like cart stops in front of you. Its driver, Alderic the antique dealer, is a warm-hearted man wearing vintage clothes. He invites you to explore his collection of curiosities, each accompanied by a story that will amaze you.",
-      "During a break in the shade of a big tree, a distinguished man approaches you with a friendly smile. It's Alderic the antique dealer, a renowned merchant. His costume is an epoch and he shows you carefully his collection of ancient objects exhibited in his cart.",
-      "After long hours of walking, a middle-aged man dressed in clothes from a bygone era courteously approaches you. Presenting itself as Alderic the antique dealer, an antique enthusiast, he invites you to discover his collection of fascinating objects, telling with pleasure the story of each of them."
+      "During a break in the shade of a big tree, a distinguished man approaches you with a friendly smile. It's Alderic the antique dealer, a renowned merchant. His costume evokes a bygone era and he shows you carefully his collection of ancient objects exhibited in his cart.",
+      "After long hours of walking, a middle-aged man dressed in clothes from a bygone era courteously approaches you. Presenting himself as Alderic the antique dealer, an antique enthusiast, he invites you to discover his collection of fascinating objects, telling with pleasure the story of each of them."
     ],
     "reductionTip": "He inclines his head slightly and confides in you as an aside: \"If you intend to venture up to the Road of Wonders and manage to find me there, rest assured that I'll reserve a very advantageous offer for you.\"",
     "purchased": [
-      "Satisfied with your purchase, you will return to your road quietly.",
+      "Satisfied with your purchase, you quietly resume your journey.",
       "You hand him a purse to proceed with the purchase. Once you've acquired the item, you continue on your way."
     ],
     "notEnoughMoney": [
@@ -1708,7 +1708,7 @@
       "In this peaceful valley dominated by the majesty of Mount Celestrum, you cross paths with an extraordinary being. Talvar le Vénérable, the respected patriarch of the region's breeders and trainers, greets you with the quiet dignity of someone who has devoted his life to understanding the mysteries of the animal world."
     ],
     "petIsFeisty_m": [
-      "When you introduce your faithful companion **{{pet}}**, the old dwarf frowns his bushy eyebrows. The creature looks weary and discouraged, moving without enthusiasm. Talvar's wrath bursts like a summer storm! His voice thunders through the valleys as he lectures you harshly on the sacred duties we owe our familiars. You leave with your head bowed, solemnly vowing to return with a blooming, happy creature.",
+      "When you introduce your faithful companion **{{pet}}**, the old dwarf frowns his bushy eyebrows. The creature looks weary and discouraged, moving without enthusiasm. Talvar's wrath bursts like a summer storm! His voice thunders through the valleys as he lectures you harshly on the sacred duties we owe our pets. You leave with your head bowed, solemnly vowing to return with a blooming, happy creature.",
       "When **{{pet}}** appears at your side, Talvar's expression hardens instantly. The poor animal looks downcast and lacks vitality. The wise dwarf's fury explodes like a volcano! His reprimands echo through the echoes of Mount Celestrum as he urges you to take better care of your protégé. You walk away, mortified, promising to return with a companion resplendent in health.",
       "At the sight of your **{{pet}}**, Talvar's features twitch with displeasure. The creature shuffles sadly along, his eyes dull and his gait languid. The old sage's wrath bursts forth like a blazing inferno! His admonitions resound like thunder, reminding you of the sacred responsibilities of an animal keeper. You set off again, humiliated but determined to honor your companion as you should.",
       "As soon as **{{pet}}** appears, Talvar's face darkens dangerously. Your pet looks depressed and moves with alarming slowness. The venerable dwarf's ire shoots up like a devastating storm! His recriminations reverberate to the heights of Celestrum, teaching you harshly the art of respect for living creatures. You retreat with a heavy conscience, vowing to turn this lesson into redemption.",
@@ -1720,7 +1720,7 @@
       "When **{{pet}}** appears, Talvar's face turns into a mask of disapproval. Your companion looks defeated and devoid of all joie de vivre. The anger of the venerable friend of beasts pours out like a tumultuous torrent! His reproaches reverberate all the way to the peaks of Celestrum, engraving in you the sacred precepts of love for creatures. You flee, wracked with contrition, vowing to make your protégé the very embodiment of animal happiness."
     ],
     "petIsFeisty_f": [
-      "When you show him your trusty **{{pet}}**, the wise dwarf's features harden. The poor creature looks despondent and follows you with a shuffling step, his eyes dull. Talvar's anger blazes like an inferno! His imprecations echo through the valleys as he admonishes you on the noble art of caring for animals. You walk away sheepishly, pledging your honor to return with a radiant, lively companion.",
+      "When you show him your trusty **{{pet}}**, the wise dwarf's features harden. The poor creature looks despondent and follows you with a shuffling step, her eyes dull. Talvar's anger blazes like an inferno! His imprecations echo through the valleys as he admonishes you on the noble art of caring for animals. You walk away sheepishly, pledging your honor to return with a radiant, lively companion.",
       "When **{{pet}}** appears before him, Talvar's mood instantly darkens. Your faithful friend seems depressed and visibly lacking in vitality. The fury of the protector of creatures explodes like an erupting volcano! His admonitions reverberate to the echoes of Mount Celestrum, rudely teaching you the responsibilities of an animal guardian. You withdraw, mortified, vowing to transform your protégée into a symbol of joy and health.",
       "At the sight of your **{{pet}}**, Talvar's wrath is unleashed like a devastating storm. The unfortunate creature shuffles sadly along, languid and broken in spirit. The wise dwarf's ire shoots up like a storm! His objurgations echo throughout the region, mercilessly reminding you of your sacred duties towards your companion. You leave, overcome with shame, determined to make up for your negligence.",
       "As soon as **{{pet}}** appears, Talvar's expression turns stormy. Your poor friend looks exhausted and staggers forward. The wrath of the venerable protector of beasts erupts like a cataclysm! His admonitions cross the valleys, etching the laws of animal respect into your conscience. You duck away, overwhelmed by guilt, determined to turn your protégé into a fulfilled creature.",
@@ -1750,7 +1750,7 @@
     "newPetSeen_m": [
       "At the sight of your noble companion **{{pet}}**, the wise old man's eyes blaze with pure joy. A radiant smile lights up his weathered face, and in a burst of gratitude for this moment of grace, he hands you {{reward}}. You continue your journey, blessed by this encounter.",
       "Talvar kneels with an almost religious reverence, his calloused hands resting on his knees. He gazes **{{pet}}** in respectful silence, not daring to disturb the majesty of the moment. A blissful smile stretches his lips as he hands you {{reward}}, then resumes his journey with a light step, his soul at peace.",
-      "Her eyes barely touch you, captivated entirely by the presence of **{{pet}}**. His face is transfigured with wonder. Frozen in silent contemplation, his mouth remains half-open, seized by emotion. Slowly, with the solemnity of a pilgrim before a sacred relic, he bows his head. His heart visibly touched by this grace, he offers you {{reward}} before silently walking away, filled with serenity.",
+      "His eyes barely graze you, captivated entirely by the presence of **{{pet}}**. His face is transfigured with wonder. Frozen in silent contemplation, his mouth remains half-open, seized by emotion. Slowly, with the solemnity of a pilgrim before a sacred relic, he bows his head. His heart visibly touched by this grace, he offers you {{reward}} before silently walking away, filled with serenity.",
       "As soon as he sees **{{pet}}** beside you, the metamorphosis is startling: his eyes light up with a mystical radiance, and an ecstatic smile transfigures his features. He rises to his feet with a new dignity and presents you with {{reward}} as a tribute to this enchanting vision. Then, as fulfilled as a man who has glimpsed paradise, he walks away. Your journey resumes, marked by this unexpected blessing.",
       "When **{{pet}}** enters his field of vision, Talvar lets out an exclamation of delight. His eyes widen in admiration as he observes every detail of your companion with childlike fascination. Tears of joy bead on his wrinkled eyelids. Trembling with emotion, he holds out {{reward}} as an offering to this living beauty, then walks away murmuring blessings.",
       "The appearance of **{{pet}}** brings about an astonishing transformation in Talvar. His stooped body straightens, his dull eyes regain their former sparkle. He stretches out his trembling hands towards the creature, as if to capture this essence of perfection. With a gasp of wonder, he presents you with {{reward}}, then remains motionless, savoring this moment of absolute grace.",
@@ -1762,7 +1762,7 @@
     "newPetSeen_f": [
       "At the sight of your noble companion **{{pet}}**, the wise old man's eyes blaze with pure joy. A radiant smile lights up his weathered face, and in a burst of gratitude for this moment of grace, he hands you {{reward}}. You continue your journey, blessed by this encounter.",
       "Talvar kneels with an almost religious reverence, his calloused hands resting on his knees. He gazes **{{pet}}** in respectful silence, not daring to disturb the majesty of the moment. A blissful smile stretches his lips as he hands you {{reward}}, then resumes his journey with a light step, his soul at peace.",
-      "Her eyes barely touch you, captivated entirely by the presence of **{{pet}}**. His face is transfigured with wonder. Frozen in silent contemplation, his mouth remains half-open, seized by emotion. Slowly, with the solemnity of a pilgrim before a sacred relic, he bows his head. His heart visibly touched by this grace, he offers you {{reward}} before silently walking away, filled with serenity.",
+      "His eyes barely graze you, captivated entirely by the presence of **{{pet}}**. His face is transfigured with wonder. Frozen in silent contemplation, his mouth remains half-open, seized by emotion. Slowly, with the solemnity of a pilgrim before a sacred relic, he bows his head. His heart visibly touched by this grace, he offers you {{reward}} before silently walking away, filled with serenity.",
       "As soon as he sees **{{pet}}** beside you, the metamorphosis is startling: his eyes light up with a mystical radiance, and an ecstatic smile transfigures his features. He rises to his feet with a new dignity and presents you with {{reward}} as a tribute to this enchanting vision. Then, as fulfilled as a man who has glimpsed paradise, he walks away. Your journey resumes, marked by this unexpected blessing.",
       "When **{{pet}}** enters his field of vision, Talvar lets out an exclamation of delight. His eyes widen in admiration as he observes every detail of your companion with childlike fascination. Tears of joy bead on his wrinkled eyelids. Trembling with emotion, he holds out {{reward}} as an offering to this living beauty, then walks away murmuring blessings.",
       "The appearance of **{{pet}}** brings about an astonishing transformation in Talvar. His stooped body straightens, his dull eyes regain their former sparkle. He stretches out his trembling hands towards the creature, as if he wanted to capture this essence of perfection. With a gasp of wonder, he presents you with {{reward}}, then remains motionless, savoring this moment of absolute grace.",
@@ -1772,7 +1772,7 @@
       "The sudden appearance of **{{pet}}** stopped Talvar in his tracks. His breath caught in his throat, his hands trembled with suppressed emotion. He seems to be contemplating a divine apparition, a miracle of nature incarnate. In a gesture of reverent slowness, he hands you {{reward}}, then bows deeply to your companion. He then backs away, refusing to look away from this living marvel."
     ],
     "petAlreadySeen_m": [
-      "You proudly present your faithful companion **{{pet}}**, but Talvar's wisdom reminds him that he has already had the honor of beholding a creature of this noble species. Nevertheless, his eyes shine with satisfaction at the attentive care you lavish on your protégé. He congratulates you with the gravity of a master acknowledging his disciple's devotion. You're on your way again, toasting his approval.",
+      "You proudly present your faithful companion **{{pet}}**, but Talvar's wisdom reminds him that he has already had the honor of beholding a creature of this noble species. Nevertheless, his eyes shine with satisfaction at the attentive care you lavish on your protégé. He congratulates you with the gravity of a master acknowledging his disciple's devotion. You're on your way again, savoring his approval.",
       "When **{{pet}}** appears at your side, a nostalgic smile stretches Talvar's lips. His infallible memory reminds him of a similar encounter, but his heart warms at the sight of your companion's obvious blossoming. He nods approvingly, admiring the complicity that unites you. His kind words sound like a blessing as he salutes your exemplary dedication.",
       "The appearance of **{{pet}}** awakens an echo of déjà-vu in Talvar, but his wonder remains intact. He observes with renewed attention the vitality radiating from your protégé. His eyes sparkle with contentment at this living proof of your excellence as a guardian. His warm congratulations accompany your departure, marking your reputation as an exemplary master.",
       "At the sight of **{{pet}}**, Talvar squints with the sagacity of one who has seen a thousand creatures. He recognizes the species, but marvels at your companion's unique individuality. His deep voice resonates with approval as he praises the positive transformation he observes. His words of encouragement will stay with you for a long time, a testament to your progress in the art of animal care.",
@@ -1793,7 +1793,7 @@
       "The arrival of **{{pet}}** provokes a moment of contemplation in Talvar. His age-old wisdom allows him to assess how far you've come since you first met. He marvels at the transformation of your companion under your devoted care. His sincere congratulations are accompanied by a friendly gesture, confirming your status as a recognized protector.",
       "The moment **{{pet}}** introduces himself, Talvar smiles with the tenderness of a wise man rediscovering a familiar soul. Although a connoisseur of this species, he is delighted to see your protégé's obvious blossoming. His paternal blessing envelops you, testimony to your evolution towards perfect mastery of the art of creature protection.",
       "As soon as **{{pet}}** appears, a flash of recognition lights up Talvar's eyes. He silently compares with his memories, savoring the improvements achieved. His warm approval rewards your perseverance in the path of animal protection. His words of wisdom will long guide you, shining star in your quest for excellence.",
-      "When **{{pet}}** enters his field of vision, Talvar nods with the satisfaction of a mentor who sees his teachings bear fruit. Although he is familiar with this species, he celebrates the uniqueness of your companion and the quality of your attentions. His look of pride accompanies you as you continue on your way, bearing his blessing and maternal encouragement."
+      "When **{{pet}}** enters his field of vision, Talvar nods with the satisfaction of a mentor who sees his teachings bear fruit. Although he is familiar with this species, he celebrates the uniqueness of your companion and the quality of your attentions. His look of pride accompanies you as you continue on your way, bearing his blessing and paternal encouragement."
     ],
     "noPet": [
       "Although no creature accompanies you to these lands, Talvar graces you with a look of fatherly benevolence. His deep voice resonates with ancestral wisdom as he advises you to welcome an animal companion into your existence, for these pure beings bring joy and comfort to the souls of travelers. You bow your head respectfully to his words of wisdom and continue on your way, his advice engraved in your memory.",
@@ -1802,128 +1802,128 @@
       "Noticing that you're walking alone, Talvar inclines his head with understanding. He speaks passionately of the spiritual benefits of having an animal companion. His words paint an enchanting picture of the perfect symbiosis between man and beast. His benevolent gaze accompanies you as you meditate on these teachings, perhaps destined to transform your future.",
       "In the face of your apparent loneliness, Talvar's heart fills with compassion. He offers expert advice on the art of choosing and taming an animal companion. His passionate descriptions of the different species and their temperaments reveal an encyclopedic knowledge. You'll leave with a mind enriched by his knowledge and a soul open to the idea of a future animal friendship.",
       "Noting the absence of a creature at your side, Talvar wraps you in a fatherly gaze. He recalls with tenderness the moments of grace that the company of animals brings, those moments when the barriers between species are erased. His words paint a poetic picture of universal harmony. You continue on your way, bearing this enchanting vision and perhaps destined to make it a reality.",
-      "Talvar's lack of familiarity awakens a desire to share his all-consuming passion. He eloquently depicts the miraculous transformations that the love of an animal brings about in the human heart. His stories vibrate with touching examples of animal loyalty and courage. You'll leave moved by these testimonies and secretly attracted by the idea of experiencing these extraordinary bonds.",
+      "The absence of a pet awakens in Talvar a desire to share his all-consuming passion. He eloquently depicts the miraculous transformations that the love of an animal brings about in the human heart. His stories vibrate with touching examples of animal loyalty and courage. You leave moved by these testimonies and secretly drawn to the idea of experiencing these extraordinary bonds.",
       "Noticing that you're traveling without a four-legged companion, Talvar smiles with paternal indulgence. He evokes the profound mysteries of interspecies communication and the life lessons taught by our animal friends. His words resonate with age-old truths about the interconnectedness of all living things. You go on your way, your soul nourished by this age-old wisdom.",
       "Faced with your loneliness, Talvar can't help but share his philosophy of life centered on love for creatures. He tells you about the miraculous cures that the presence of animals can bring to both body and spirit. His passionate descriptions reveal a man transformed by a life devoted to these extraordinary beings. You'll leave touched by this revelation, and perhaps destined to follow a similar path.",
-      "With no familiar by your side, Talvar's eyes shine with a mission to accomplish. He initiates you into the secrets of taming and the sacred rituals that seal the friendship between man and beast. His teachings resonate with ancestral traditions and forgotten knowledge. You'll continue on your way, a repository of this precious knowledge, and perhaps called upon to put it into practice in the near future."
+      "With no pet by your side, Talvar's eyes shine with a mission to accomplish. He initiates you into the secrets of taming and the sacred rituals that seal the friendship between man and beast. His teachings resonate with ancestral traditions and forgotten knowledge. You continue on your way, bearer of this precious knowledge, and perhaps called upon to put it into practice in the near future."
     ],
     "petIsClone_m": [
-      "At the sight of **{{pet}}**, Talvar squints in bewilderment. He brings his face close to the creature, examines it from every angle, then steps back with a troubled expression. He murmurs that this companion exudes a singular aura, as if he were both here and elsewhere. Despite his doubts, he hands you over {{reward}}, but his gaze remains fixed on your familiar with curiosity mingled with concern.",
-      "Talvar stops dead in his tracks as he catches sight of **{{pet}}**. His bushy eyebrows furrow as he hesitantly reaches for the creature. He murmurs that he's never seen anything like it, and that the familiar seems blurred, like a reflection in murky water. He shakes his head, troubled by this vision, but offers you {{reward}}all the same. You leave with the feeling that something strange has just happened.",
-      "When **{{pet}}** appears in front of Talvar, the old dwarf blinks several times. He grumbles that his eyes are playing tricks on him and that this creature seems translucent at times. He circles around your companion, puzzled. Finally, he shrugs his shoulders and hands you {{reward}}, while continuing to cast wary glances at the spectral familiar.",
+      "At the sight of **{{pet}}**, Talvar squints in bewilderment. He brings his face close to the creature, examines it from every angle, then steps back with a troubled expression. He murmurs that this companion exudes a singular aura, as if he were both here and elsewhere. Despite his doubts, he hands you over {{reward}}, but his gaze remains fixed on your pet with curiosity mingled with concern.",
+      "Talvar stops dead in his tracks as he catches sight of **{{pet}}**. His bushy eyebrows furrow as he hesitantly reaches for the creature. He murmurs that he's never seen anything like it, and that the familiar seems blurred, like a reflection in murky water. He shakes his head, troubled by this vision, but offers you {{reward}} all the same. You leave with the feeling that something strange has just happened.",
+      "When **{{pet}}** appears in front of Talvar, the old dwarf blinks several times. He grumbles that his eyes are playing tricks on him and that this creature seems translucent at times. He circles around your companion, puzzled. Finally, he shrugs his shoulders and hands you {{reward}}, while continuing to cast wary glances at the spectral pet.",
       "Talvar's gaze freezes on **{{pet}}**, and an expression of confusion invades his features. He declares in an uncertain voice that he senses something unusual about this creature, that it's there but not quite, like an echo or a projection. Despite his obvious confusion, his generosity prevails and he offers you {{reward}}, but his mind remains visibly preoccupied by this mystery.",
       "Talvar watches **{{pet}}** with unusual intensity. He begins to speak before pausing, searching for words. He explains that this creature gives off an energy he's never felt before, as if its essence were divided between two places. A shiver runs through his silver beard. He hands you {{reward}} with a slightly trembling hand, clearly disturbed by this supernatural encounter."
     ],
     "petIsClone_f": [
-      "At the sight of **{{pet}}**, Talvar squints in bewilderment. He brings his face close to the creature, examines it from every angle, then steps back with a troubled air. He murmurs that this companion exudes a singular aura, as if it were both here and elsewhere. Despite his doubts, he hands you over {{reward}}, but his gaze remains fixed on your familiar with curiosity mingled with concern.",
-      "Talvar stops dead in his tracks as he catches sight of **{{pet}}**. His bushy eyebrows furrow as he hesitantly reaches for the creature. He murmurs that he's never seen anything like it and that the creature seems blurred, like a reflection in murky water. He shakes his head, confused by the vision, but offers you {{reward}}all the same. You leave with the feeling that something strange has just happened.",
-      "When **{{pet}}** appears in front of Talvar, the old dwarf blinks several times. He grumbles that his eyes are playing tricks on him and that this creature seems translucent at times. He circles around your companion, puzzled. Finally, he shrugs his shoulders and hands you {{reward}}, while continuing to cast wary glances at the spectral familiar.",
+      "At the sight of **{{pet}}**, Talvar squints in bewilderment. He brings his face close to the creature, examines it from every angle, then steps back with a troubled air. He murmurs that this companion exudes a singular aura, as if it were both here and elsewhere. Despite his doubts, he hands you {{reward}}, but his gaze remains fixed on your pet with curiosity mingled with concern.",
+      "Talvar stops dead in his tracks as he catches sight of **{{pet}}**. His bushy eyebrows furrow as he hesitantly reaches for the creature. He murmurs that he's never seen anything like it and that the creature seems blurred, like a reflection in murky water. He shakes his head, confused by the vision, but offers you {{reward}} all the same. You leave with the feeling that something strange has just happened.",
+      "When **{{pet}}** appears in front of Talvar, the old dwarf blinks several times. He grumbles that his eyes are playing tricks on him and that this creature seems translucent at times. He circles around your companion, puzzled. Finally, he shrugs his shoulders and hands you {{reward}}, while continuing to cast wary glances at the spectral pet.",
       "Talvar's gaze freezes on **{{pet}}**, and an expression of confusion invades his features. He declares in an uncertain voice that he senses something unusual about this creature, that it's there but not quite, like an echo or a projection. Despite his obvious confusion, his generosity prevails and he offers you {{reward}}, but his mind remains visibly preoccupied by this mystery.",
       "Talvar watches **{{pet}}** with unusual intensity. He begins to speak before pausing, searching for words. He explains that this creature gives off an energy he's never felt before, as if its essence were divided between two places. A shiver runs through his silver beard. He hands you {{reward}} with a slightly trembling hand, clearly disturbed by this supernatural encounter."
     ],
     "clonePetAlreadySeen_m": [
-      "Talvar squints at **{{pet}}**, then shakes his head vigorously. He grumbles that he's seen a familiar like this before, but this one is... different. He circles the creature, puzzled, mumbling that it's like seeing a reflection that doesn't quite match the original. He dismisses you with a wave of his hand, clearly disturbed by the anomaly.",
-      "The old dwarf stops dead in his tracks as he catches sight of **{{pet}}**. His bushy eyebrows furrow as he examines the creature from every angle. He declares that he knows this type of familiar, that he has admired it before, but that it gives off a strange aura, as if it existed in two places at once. He mumbles some incomprehensible words and waves you on your way.",
+      "Talvar squints at **{{pet}}**, then shakes his head vigorously. He grumbles that he's seen a pet like this before, but this one is... different. He circles the creature, puzzled, mumbling that it's like seeing a reflection that doesn't quite match the original. He dismisses you with a wave of his hand, clearly disturbed by the anomaly.",
+      "The old dwarf stops dead in his tracks as he catches sight of **{{pet}}**. His bushy eyebrows furrow as he examines the creature from every angle. He declares that he knows this type of pet, that he has admired it before, but that it gives off a strange aura, as if it existed in two places at once. He mumbles some incomprehensible words and waves you on your way.",
       "At the sight of **{{pet}}**, Talvar takes a step backwards, his gaze troubled. He claims to have contemplated this species before, but this companion seems blurred, unreal. He hesitantly extends a hand towards the creature before abruptly withdrawing it, as if he had touched something supernatural. He wishes you a safe journey in an uncertain voice.",
-      "The wise dwarf observes{{pet}}** with unusual suspicion. He confides that he has already had the pleasure of admiring a familiar of this kind, but that this one makes him uneasy. He murmurs that this creature seems to be there without really being there, like an echo or a living shadow. He shakes his head and walks away, letting slip that he must meditate on this mystery."
+      "The wise dwarf observes **{{pet}}** with unusual suspicion. He confides that he has already had the pleasure of admiring a familiar of this kind, but that this one makes him uneasy. He murmurs that this creature seems to be there without really being there, like an echo or a living shadow. He shakes his head and walks away, letting slip that he must meditate on this mystery."
     ],
     "clonePetAlreadySeen_f": [
       "Talvar squints at **{{pet}}**, then shakes his head vigorously. He grumbles that he's seen a creature like this before, but this one is... different. He circles the creature, puzzled, mumbling that it's like seeing a reflection that doesn't quite match the original. He dismisses you with a wave of his hand, clearly disturbed by the anomaly.",
-      "The old dwarf stops dead in his tracks as he catches sight of **{{pet}}**. His bushy eyebrows furrow as he examines the creature from every angle. He declares that he knows this type of familiar, that he has admired it before, but that this one gives off a strange aura, as if it existed in two places at once. He mumbles some incomprehensible words and waves you on your way.",
+      "The old dwarf stops dead in his tracks as he catches sight of **{{pet}}**. His bushy eyebrows furrow as he examines the creature from every angle. He declares that he knows this type of pet, that he has admired it before, but that this one gives off a strange aura, as if it existed in two places at once. He mumbles some incomprehensible words and waves you on your way.",
       "At the sight of **{{pet}}**, Talvar takes a step backwards, his gaze troubled. He claims to have contemplated this species before, but this companion seems blurred, unreal. He hesitantly extends a hand towards the creature before abruptly withdrawing it, as if he had touched something supernatural. He wishes you a safe journey in an uncertain voice.",
-      "The wise dwarf observes{{pet}}** with unusual suspicion. He confides that he has already had the pleasure of admiring a creature of this kind, but that this one makes him uneasy. He murmurs that this creature seems to be there without really being there, like an echo or a living shadow. He shakes his head and walks away, letting slip that he must meditate on this mystery."
+      "The wise dwarf observes **{{pet}}** with unusual suspicion. He confides that he has already had the pleasure of admiring a creature of this kind, but that this one makes him uneasy. He murmurs that this creature seems to be there without really being there, like an echo or a living shadow. He shakes his head and walks away, letting slip that he must meditate on this mystery."
     ],
     "badge": [
-      "Talvar’s gaze is serious, and then it is brightened with a glimmer of pride. Every gesture, every expression betrays a sinister admiration. It fully recognizes the value of your actions, saluting your courage, discernment, and respect for creatures. By way of recognition, he gives you the {emote:badges.animal_lover}badge, a significant meaning. This mark of esteem seals your link. You are sitting in a silence charged with respect, united by a tacit understanding that only those who worked for a cause greater than themselves."
+      "{emote:badges.sincerity} You have shown sincere admiration for Talvar's creature. As a sign of respect, you part carrying a badge symbolizing this meeting."
     ]
   },
   "infoFight": {
     "intro": [
-      "You hear measurements behind you. As you return, you will find a greyish-haired airman with skinned but impeccably maintained armor. His sharp eyes measure you with a professional look.\n\nThe man tells you he's been watching you for a while. He prefers himself as Sir Rowan, a former captain of the Royal Guard, and explains that he spent his life training soldiers. He tells you that he sees in you a potential that means refinement and offers you to share with you a martial knowledge that could be valuable in your future confrontations.\n\n",
-      "A warm voice echoes from you, exclaiming that yet another brave wanders these lands. A knight with a burrowed face is approaching, a paternal smile on the levers. Unfortunately his aero, his step remains that of an accomplished warrior.\n\nThe knight likes Sir Rowan and says that he once protected a kingdom, but today he prefers to protect the future by passing on his knowledge. He explains that times are hard for adventurers and that a good understanding of combat techniques can make the difference between life and death. He then proposes to explain to you a maneuver that it is essential to know about.\n\n",
-      "A firm but non-hostile voice commands you to wait. A dull armored man emerges from your field of vision, with movements betraying decades of military training.\n\nThe man looks like Sir Rowan and tells you that he commanded the Royal Guard for fifteen years before retirement. He tells you that in this field he has learned that tactical knowledge always takes precedence over brute force. It observes that you seem to be defined, but offers you to teach yourself a combat technique that is crucial to recognize on the battlefield.\n\n",
-      "Sitting on a rock, polishing its appearance, an old knight looks up to you. Its marked features tell a thousand battles, but its eyes still struggle with mischief.\n\nThe knight exclaims that he has the company and likes himself as Sir Rowan. He asks you if you know what he likes in this wandering life and explains that every encounter is an opportunity to learn or teach. He recounts that in the past, he trained the recruits in the royal barracks, but now the whole world is his living room. He announces that he will explain to you a martial technique that he had the opportunity to observe during his travels.\n\n",
-      "A slap in the air prompting you to stop. A martial-looking man is moving towards you, with a critical eye. Each detail of its equipment breathes military discipline.\n\nThe man looks like Sir Rowan, former captain of the Royal Guard, and explains that he dedicated his career to studying all forms of combat. It reminds you that tactical knowledge is what separates warriors from the victims, and offers you to explain a combat technique that it is important to know, whether to use it or to use it.\n\n",
-      "A silver-haired man approaches you with a confident step. His armor wears the scars of many fights, but his gaze remains benevolent.\n\nThe man likes Sir Rowan and tells that for many years, he served the crown by fighting all sorts of opponents. He tells you that his true vocation was to help those who take weapons to protect the innocent. He wants to share with you the knowledge of a combat technique he has encountered in his many battles.\n\n",
-      "You were called by a played voice, you turn quickly and discover a particular character. It is an ageing knight but with bright eyes that joins you with an alert step.\n\nThe knight likes Sir Rowan and explains that after twenty years of loyal service, he realized that real adventures were living here, on the roads, facing different challenges. He confides that each day he brings him his reading on the different forms of combat he can observe. He announces that he will explain to you a partial maneuver he has had the opportunity to study.\n\n",
-      "The metallic click of a sheath makes you turn the tee. An experienced man approaches, with his gestures betraying a perfect masterpiece of his equipment.\n\nThe man looks like Sir Rowan, former captain of the Royal Guard. He explains that his passion led him to study all the existing combat techniques, be they human or monstrous. He observes that you could gain additional tactical knowledge and offers you to explain a technique that it is essential to understand for any self-respecting fighter.\n\n",
-      "A calm voice calls you: \"Young traveller!\". You turn around and notice a man with grey temples who benevolently watches you, with his hands naturally resting on the pommel of his spin.\n\nThe man likes Sir Rowan and confides that the years have taught him that the true force rests in the understanding of combat techniques in all their forms. He tells that he has studied the tactics of warriors, creatures, and opponents of all types. He wants to share with you the knowledge of a maneuver that is important to know in the art of combat.\n\n",
-      "A voice says she is curious to meet someone here. Accompanied by a warm laughter, an expemented knight emerged, the air stretched despite his war equipment.\n\nThe knight likes Sir Rowan and tells him that his new life of adventurer has allowed him to discover a multitude of combat techniques that he had never met in his royal role. He explains that every encounter teaches him something new about martial art. He announces that he will share with you the knowledge of a particular technique he has observed during his travels.\n\n"
+      "You hear measured steps behind you. Turning around, you discover a mature man with graying hair, wearing a weathered but impeccably maintained armor. His sharp eyes assess you with a professional gaze.\n\nThe man points out that he has been watching you for a while. He introduces himself as Sir Rowan, former captain of the Royal Guard, and explains that he spent his life training soldiers. He tells you that he sees in you a potential that deserves to be refined and offers to share with you martial knowledge that could be invaluable in your future confrontations.\n\n",
+      "A warm voice echoes near you, exclaiming that yet another brave soul wanders these lands. A knight with a weathered face approaches, a paternal smile on his lips. Despite his age, his gait remains that of an accomplished warrior.\n\nThe knight introduces himself as Sir Rowan and recounts that he once protected a kingdom, but today he prefers to protect the future by passing on his knowledge. He explains that times are hard for adventurers and that a good understanding of combat techniques can make the difference between life and death. He then offers to explain to you a maneuver that is essential to know.\n\n",
+      "A firm but not hostile voice orders you to wait. A man in tarnished armor emerges into your field of vision, his movements betraying decades of military training.\n\nThe man introduces himself as Sir Rowan and tells you that he commanded the Royal Guard for fifteen years before retiring. He confides that in this profession, he learned that tactical knowledge always takes precedence over brute force. He observes that you seem determined, but offers to teach you a combat technique that is crucial to recognize on the battlefield.\n\n",
+      "Sitting on a rock, meticulously polishing his sword, an old knight looks up at you. His weathered features tell of a thousand battles, but his eyes still sparkle with mischief.\n\nThe knight exclaims that he has company and introduces himself as Sir Rowan. He asks if you know what he loves about this wandering life and explains that every encounter is an opportunity to learn or to teach. He recounts that he once trained recruits in the royal barracks, but now the whole world is his training ground. He announces that he is going to explain to you a martial technique that he had the opportunity to observe during his travels.\n\n",
+      "A sharp command rings through the air, ordering you to stop. A martial-looking man strides towards you with a critical gaze. Every detail of his equipment breathes military discipline.\n\nThe man introduces himself as Sir Rowan, former captain of the Royal Guard, and explains that he dedicated his career to studying all forms of combat. He points out that tactical knowledge is what separates wise warriors from victims, and offers to explain to you a combat technique that is important to know, whether to use it or to defend against it.\n\n",
+      "A silver-haired man approaches you with a confident step. His armor bears the scars of many battles, but his gaze remains benevolent.\n\nThe man introduces himself as Sir Rowan and recounts that for years, he served the crown by facing all sorts of adversaries. He confides that he came to realize his true calling was to help those who take up arms to protect the innocent. He wishes to share with you the knowledge of a combat technique he encountered in his many battles.\n\n",
+      "You are called by a cheerful voice; you turn around promptly and discover a particular character. It is an aging knight, but with lively eyes, who joins you with an alert step.\n\nThe knight introduces himself as Sir Rowan and explains that after twenty years of loyal service, he understood that the real adventures were lived here, on the roads, facing varied challenges. He confides that each day brings him its lesson on the different forms of combat he can observe. He announces that he is going to explain to you a particular maneuver that he had the opportunity to study.\n\n",
+      "The metallic clink of a scabbard makes you turn your head. An experienced man approaches, his gestures betraying a perfect mastery of his equipment.\n\nThe man introduces himself as Sir Rowan, arms master and former captain of the Royal Guard. He explains that his passion led him to study all existing combat techniques, whether human or monstrous. He observes that you could benefit from additional tactical knowledge and offers to explain to you a technique that is essential for any self-respecting fighter to understand.\n\n",
+      "A calm voice calls out to you: \"Young traveler!\". You turn around and notice a man with gray temples who watches you benevolently, his hands resting naturally on the pommel of his sword.\n\nThe man introduces himself as Sir Rowan and confides that the years have taught him that true strength lies in understanding combat techniques in all their forms. He recounts that he has studied the tactics of warriors, creatures, and adversaries of all types. He wishes to share with you the knowledge of a maneuver that is important to know in the art of combat.\n\n",
+      "A voice exclaims with curiosity at coming across someone around here. Accompanied by a warm laugh, an experienced knight emerges, looking relaxed despite his war equipment.\n\nThe knight introduces himself as Sir Rowan and recounts that his new life as an adventurer has allowed him to discover a multitude of combat techniques that he had never encountered in his royal duties. He explains that every encounter teaches him something new about martial art. He announces that he is going to share with you the knowledge of a particular technique that he observed during his travels.\n\n"
     ],
     "handednessDescription": {
       "leftHanded": "{emote:infoFightSmallEvent.showHandednessInfo} I can already see from your posture that you're a seasoned adventurer, but it's clear that your left side is more suited to combat than the other. If I had to fight you, I'd attack on your right side! You need more training to overcome this weakness.",
       "rightHanded": "{emote:infoFightSmallEvent.showHandednessInfo} I can already see from your posture that you're a seasoned adventurer, but it's clear that your right side is more suited to combat than the other. If I had to fight you, I'd attack on your left side! You need more training to overcome this weakness."
     },
     "fightActions": [
-      "{emote:fightActions.benediction} Ah, the beard! A magical technique I've seen many times on the battlefields. It is part of what we, the wives, call the \"actions of the gods\". Let me warn you: if only one divine action has already been used in the same fight, it will fail. Its effect? It reinforces all your abilities - attack, defense, speed - and here's a secret I've learned over the years: the more you wait before using it, the more spectacular your statistics will be.",
-      "{emote:fightActions.boomerangAttack} The boomerang attack, a technique I had the opportunity to observe during my service years! This long-range attack can inflict up to two tricks on your opponent, as if it were back on track. Imagine your weapon that comes back to hit a second time after the first impact - that is exactly what happens with this maneuver.",
-      "{emote:fightActions.boulderTossAttack} the rocky attack, here is a brutal but effective ranged technique! It inflicts average degae due to the small size of rocks, but be young adventurer: if it hits its its target, it can completely stun the opponent. I saw fights decide on this coup de chance.",
-      "{emote:fightActions.breathTakingAttack} Breath Theft is a sneaky maneuver I learned from watching some of my toughest opponents! This ranged attack inflicts a small amount of degae but can steal your opponent's breath or even slow it down in its movements. Never underestimate the impact of depriving an enemy of his breath.",
-      "{emote:fightActions.canonAttack} The cannon attack, ah! This is a complex technique that I had the opportunity to study at length. Its precision decreases over fast opponents, but it receives a bonus of tricks against slow opponents. This long-range attack can even slow down the enemy and become more powerful if you use it several times in a row.",
-      "{emote:fightActions.chargingAttack} The attack charged, one of my favorites during my service years! It rolls in exactly two-stroke: the first hit inflicts degae while reinforcing your defence, then the second move decreases it again, while getting away from your opponent, to the body. It is necessary to manage this flow and refluxes of protection.",
-      "{emote:fightActions.clubSmashAttack} The clubhouse requires patience, young fighter! This physical technique requires exactly one pre-pairing turn, then hits the opponent with a striking blow. I learned that anticipation makes all the difference in the effectiveness of this attack.",
-      "{emote:fightActions.concentration} The concentration, here is a mental technique that any weather must master! Be careful: it failed if you used it while you were affected by a state alteration. If it succeeds, the \"concentered\" change increases the amount of damage you will inflict on the next turn.",
-      "{emote:fightActions.counterAttack} The attack replies, the essence of tactical battle! This technique replicates with the same action your opponent has just played. But be careful: it does not work on the magic or actions of the gods, or if the opponent did not attack, that goes without saying. I have always said that observation was the key to the battle.",
-      "{emote:fightActions.cursedAttack} Cursed Attack, a technique I've seen used by partisan opponents a spell born of the accumulation of all the grudge of this world. It curses the opponent so that he may suffer the consequences in the future. Remarkably, it will heal you if the opponent still has a lot of energy at the time of attack is used.",
-      "{emote:fightActions.darkAttack} The dark, fearsome and unpredictable attack! This spell was born of the build-up of the darkest forces in the world, and only a fighter who plunged his eyes into the ability of magic can hope to use it. It uses the power of the opponent to reinforce itself while ignoring its defence. It can give you some of your lost breath or blind. Blind sometimes makes the opponent unable to attack, while reducing his defense and speed.",
-      "{emote:fightActions.defenseBuff} Strengthening defense, a technique I have often taught my recruits! The more this action is performed, the greater the defense bonus becomes. The event always pays in terms of protection.",
-      "{emote:fightActions.divineAttack} The mighty but demanding divine attack! Only fighters who have experienced their patience and experience the gods will be able to taste the full flavor of their magical power. Its precision increases with the hardness of the fight. It is part of the group of \"actions of the gods\" and fails if two divine actions have already been carried out in combat.",
-      "{emote:fightActions.energeticAttack} Energy Attack, here's a combat technique that I learned particurely! It heals the attacker half of the degae inflicted, and ignores even part of the defence. This is what I call a maneuver that feeds the fighter, but be careful: its accuracy decreases with uses, and I observed that his healing power was exhausted after three uses and that it is less effective against monsters.",
-      "{emote:fightActions.eruptionAttack} The eruption, a remote demonstration of impressive elementary power! It erupts the volcano that spits molten rocks. According to my expedition, only the fastest will be able to avoid the problems of this controlled disaster.",
-      "{emote:fightActions.familyMealAttack} The family meal, a physical... original technique! She calls for allies to hang on the opponent and poison him. The launcher then becomes reputed, replacing a potential alteration of the state of which he would be victims. I've seen a lot of strange things in combat, but this one is still morable!",
-      "{emote:fightActions.fireAttack} fire-attack is one of the most formidable skills I had ever experienced. This pure infernal concentric of power and heat pours on the opponent, the calcinant then on one or more additional towers due to the \"brute\" alteration. Meet the fighters who cast this spel! If you cast it, use this attack if you froze to heat!",
-      "{emote:fightActions.grabAndThrowAttack} the projection attack, a melee technique I have often seen in action! If the defender had the audacity to use a physical attack, the attacker can catch it and place it on the nearest rock, which can stun it in addition to inflicting degae upon it. Timing is crucial for this.",
-      "{emote:fightActions.guildAttack} Guild Attack, the perfect illustration of the group's strength! Guild members join together to perform a group attack of remarkable power, rushing to the opponent. This reminds me of the training of my Royal Guard.",
-      "{emote:fightActions.hardBiteAttack} The strong, physical, brutal and direct bit! It inflicts degae while bleeding the opponent. I learned to challenge any creature capable of such a primitive fever. If you start bleeding, a little rest will cure you.",
+      "{emote:fightActions.benediction} Ah, the benediction! A magical technique I've seen many times on the battlefields. It is part of what we, the veterans, call the \"actions of the gods\". Let me warn you: if a single divine action has already been used in the same fight, it will surely fail. Its effect? It reinforces all your abilities - attack, defense, speed - and here's a secret I've learned over the years: the more you wait before using it, the more spectacular the boost will be.",
+      "{emote:fightActions.boomerangAttack} The boomerang attack, a technique I had the opportunity to observe during my years of service! This long-range attack can inflict up to two returns of damage on your opponent, as if it came back on its trajectory. Imagine your weapon coming back to strike a second time after the first impact - that is exactly what happens with this maneuver.",
+      "{emote:fightActions.boulderTossAttack} The boulder toss, a brutal but effective ranged technique! It inflicts moderate damage due to the small size of the rocks, but beware young adventurer: if it hits its target, it can completely stun the opponent. I've seen fights decided on this stroke of luck.",
+      "{emote:fightActions.breathTakingAttack} Breath theft is a sneaky maneuver I learned from watching some of my most cunning opponents! This ranged attack inflicts a small amount of damage but can steal your opponent's breath or even slow them down. Never underestimate the impact of depriving an enemy of their breath.",
+      "{emote:fightActions.canonAttack} The cannon attack, ah! This is a complex technique I had the opportunity to study at length. Its precision drops considerably against fast opponents, but it receives a damage bonus against very slow opponents. This long-range attack can even slow down the enemy and, interestingly, becomes more powerful if you use it several times in a row.",
+      "{emote:fightActions.chargingAttack} The charging attack, one of my favorites during my years of service! It unfolds in exactly two stages: the first blow deals damage while reinforcing your defense, then the second blow decreases it again, while unleashing on your opponent in melee. You need to manage this ebb and flow of protection.",
+      "{emote:fightActions.clubSmashAttack} The club smash requires patience, young fighter! This physical technique requires exactly one preparation turn, then strikes the opponent with a blow of remarkable power. I've learned that anticipation makes all the difference in the effectiveness of this attack.",
+      "{emote:fightActions.concentration} Concentration, a mental technique that every veteran must master! Be careful though: it fails if you use it while you are affected by a state alteration. If it succeeds, the \"concentrated\" alteration considerably increases the damage you will inflict on the next turn.",
+      "{emote:fightActions.counterAttack} The counter-attack, the very essence of tactical combat! This technique replicates with the same action your opponent has just used. But be careful: it does not work against certain attacks. You'll need experience to learn which attacks can be countered, but I've always said that observation is the key to combat.",
+      "{emote:fightActions.cursedAttack} The cursed attack, a technique I've seen used by particularly cunning opponents, a spell born of the accumulation of all the grudge of this world. It curses the opponent so that they suffer the consequences in the future. Remarkably, it heals you if the opponent still has a lot of energy at the time the attack is used.",
+      "{emote:fightActions.darkAttack} The dark attack, fearsome and unpredictable! This spell was born of the build-up of the darkest forces in the world, and only a fighter who has plunged their eyes into the abyss of magic can hope to use it. It uses the power of the opponent to reinforce itself while ignoring its defense. It can restore some of your lost breath or blind the enemy. Blindness sometimes makes the opponent unable to attack, while reducing their defense and speed.",
+      "{emote:fightActions.defenseBuff} Defense strengthening, an accumulation technique I have often taught my recruits! The more this action is performed in succession, the greater the defense bonus becomes. Perseverance always pays in terms of protection.",
+      "{emote:fightActions.divineAttack} The divine attack, mighty but demanding! Only fighters who have tested their patience and perseverance before the gods will be able to taste the full flavor of its magical power. Its precision increases with the duration of the fight. It is part of the group of \"actions of the gods\" and fails if two divine actions have already been carried out in the fight.",
+      "{emote:fightActions.energeticAttack} The energetic attack, a close-combat technique I particularly appreciate! It heals the attacker for half the damage dealt, and even ignores part of the defense. This is what I call a maneuver that feeds the fighter, but be careful: its accuracy decreases with uses, and I've observed that its healing power is exhausted after three uses and that it is less effective against monsters.",
+      "{emote:fightActions.eruptionAttack} The eruption, a ranged demonstration of impressive elemental power! It erupts the volcano that spits molten rocks. In my experience, only the fastest will be able to avoid the damage of this controlled catastrophe.",
+      "{emote:fightActions.familyMealAttack} The family meal, a physical technique that is to say the least... original! It calls for allies to gang up on the opponent and poison them. The user then becomes sated, replacing any state alteration they might be suffering from. I've seen a lot of strange things in combat, but this one remains memorable!",
+      "{emote:fightActions.fireAttack} The fire attack is one of the most formidable skills I've ever had to counter. This pure infernal concentrate of power and heat pours on the opponent, then scorches them over one or more additional turns through the \"burned\" alteration. Beware of fighters who master this spell! If you're the one casting it, use this attack if you're frozen to warm yourself up!",
+      "{emote:fightActions.grabAndThrowAttack} The throw attack, a melee technique I have often seen in action! If the defender had the audacity to use a physical attack, the attacker can grab them and slam them onto the nearest rock, which can stun them in addition to dealing damage. Timing is crucial for this maneuver.",
+      "{emote:fightActions.guildAttack} Guild Attack, the perfect illustration of the group's strength! Guild members join together to perform a group attack of remarkable power, rushing to the opponent. This reminds me of the formations of my Royal Guard.",
+      "{emote:fightActions.hardBiteAttack} The powerful bite, physical, brutal and direct! It deals damage while making the opponent bleed. I've learned to be wary of any creature capable of such primitive ferocity. If you ever start bleeding, a little rest will heal you.",
       "{emote:fightActions.heavyAttack} The heavy attack is both subtle and brutal. It requires physical contact and crashes down hard on your opponent's defenses, shattering them under its powerful blows and tearing away some of their protection. However, I've noticed that it works less well if you're not rested when you use it.",
       "{emote:fightActions.intenseAttack} The intense, exhausting, physical but potentially devastating! It never fails on a faster opponent and works better on a fast opponent. Be careful, however: it forces the launcher to rest in the next turn and cannot kill the opponent. I was also able to notice that it was much less effective in the face of a high defence.",
-      "{emote:fightActions.heatDrainAttack} heat drain, a technique I've seen from some monstrous opponents! It recovers the player's heat, increasing the caster's attack and freezing the opponent. Fascinating to see how the weather can become a weapon. If you frost, you will be slowed down and you will be hurt.",
-      "{emote:fightActions.heatMudAttack} the ruggy mud attack, an ingenious magical exploitation of the environment! It heats the present mud in the area to make tears and will work better on dirty opponents. I have always been fascinated by these monsters who have adapted to their environment.",
-      "{emote:fightActions.lavaWaveAttack} The wave of lava, a physical attack of last resort of terrifying power! Used by some monsters when they feel threatened, this pure infernal focus of power and heat shifts to the opponent, the calcinant then on one or more towers thanks to the \"noisy\" alteration.",
+      "{emote:fightActions.heatDrainAttack} Heat drain, a technique I've seen from some monstrous opponents! It recovers the player's heat, increasing the caster's attack and freezing the opponent. Fascinating to see how temperature can become a weapon. If you are frozen, you will be slowed down and you will take damage.",
+      "{emote:fightActions.heatMudAttack} The hot mud attack, an ingenious magical exploitation of the environment! It heats the mud present in the arena to deal damage and will work better on dirty opponents. I've always been fascinated by these monsters who have adapted to their environment.",
+      "{emote:fightActions.lavaWaveAttack} The lava wave, a physical attack of last resort of terrifying power! Used by some monsters when they feel threatened, this pure infernal concentrate of power and heat pours on the opponent, then scorches them over one or more turns through the \"burned\" alteration.",
       "{emote:fightActions.magicMimicAttack} Magical Mimic Attack, brilliant demonstration of adaptation! It can retaliate after an attack from the opponent. The response will be much better if the opponent has just used a magic attack. The art of using the enemy's strength against itself.",
-      "{emote:fightActions.magmaBathAttack} The Magma Bath, the least restoration. . The launcher rests in lava and recovers its energy. Be careful: its healing power is greatly decreased after four uses.",
-      "{emote:fightActions.mudShotAttack} Mud Shot, a simple but effective ranged attack! It deals tricks and makes the opponent dirty. This is a technique I have often seen used by swamp monsters. Dirty can be an asset in a battle, because it increases elevation and protects you from other state alterations but it also makes it more vulnerable to some attacks.",
-      "{emote:fightActions.outrageAttack} The coley, powerful but risky emotional technique! It would have failed if you use it while you have a state alteration. The \"cole\" alteration doubles the attack but decreases the defence. After two rounds, the effect disappears and the attacker becomes confused. I saw a lot of fights lost because of an ill-conceived core.",
-      "{emote:fightActions.petrificationAttack} Petrification is a fearsome long-range control technique, because it adjusts the target for two turns while doubling its spell. An opponent locked but reinforced - you have to make the most of it.",
-      "{emote:fightActions.piercingAttack} The pierced attack, the spec of the fine strategy! This melee coprs technique almost completely ignores the opponent's defence. The attacker has a probability of levelling his opponent's defence. Each hit counts in this ability.",
+      "{emote:fightActions.magmaBathAttack} The magma bath, a recovery technique that is to say the least... extreme! The user rests in lava and recovers their energy. Be careful though: its healing power is greatly decreased after four uses.",
+      "{emote:fightActions.mudShotAttack} Mud shot, a simple but effective ranged attack! It deals damage and makes the opponent dirty. This is a technique I have often seen used by swamp monsters. Dirt can be an asset in battle, because it slightly increases the damage dealt and protects you from other state alterations, but it also makes you more vulnerable to certain attacks.",
+      "{emote:fightActions.outrageAttack} Rage, a powerful but risky emotional technique! It fails if you use it while you have a state alteration. The \"enraged\" alteration doubles the attack but lowers the defense. After two turns, the effect disappears and the attacker becomes confused. I've seen many fights lost because of poorly controlled rage.",
+      "{emote:fightActions.petrificationAttack} Petrification is a fearsome long-range control technique, because it petrifies the target for two turns while doubling its defense. An opponent immobilized but reinforced - you have to know how to take advantage of it intelligently.",
+      "{emote:fightActions.piercingAttack} The piercing attack, the specialty of fine strategists! Thanks to their keen observation, this melee technique almost completely ignores the opponent's defense. The attacker has a chance of slightly reducing their opponent's defense. Every hit counts with this technique.",
       "{emote:fightActions.poisonousAttack} The poisoned attack was developed by the kingdom's most gifted alchemists. I was able to learn from the court archives that his poison was derived from the venom of many animals. but its exact composition remains a mystical one. After a direct confrontation with the opponent, it poisons the opponent with an alteration that lasts at least three turns and inflicts some grief on the hardness. I also noticed that this attack is much more effective in the early stage!",
       "{emote:fightActions.powerfulAttack} The powerful, risky but potentially devastating attack! This physical attack reduces the opponent's speed and can do more damage, at the cost of stunning the attacker. With a lot of experience, you'll learn to perform this attack more often. Warning: after three uses, the attack's damage is reduced. You must therefore learn to use it at the right moment to optimize its effectiveness.",
-      "{emote:fightActions.protection} The protection, defensive technique I taught to all my infants! It would have failed if you use it while you have a state alteration. The \"protected\" alteration lasts for three rounds and takes you to fall victim to another alteration while offering a defensive boost.",
-      "{emote:fightActions.quickAttack} Quick Attack, perfect against slow opponents! I have often had to deal with vicious murderers who wanted my life and I had to deal with this body technique. She never failed on a slower opponent and the slower the opponent, the slower the attack. Speed has always been a major asset in combat.",
+      "{emote:fightActions.protection} Protection, a defensive technique I taught to all my infantrymen! It fails if you use it while you have a state alteration. The \"protected\" alteration lasts for three turns and prevents you from falling victim to another alteration while offering a defense boost.",
+      "{emote:fightActions.quickAttack} Quick attack, perfect against slow opponents! I have often had to deal with vile assassins who wanted my life, and I regularly had to face this melee technique. It never fails on a slower opponent, and the slower the opponent, the more damage this attack will deal. Speed has always been a major asset in combat.",
       "{emote:fightActions.rageExplosion} The explosion of rage, a brutal release of pent-up anger! It lets the rage built up within you explode during the journey, projecting it directly onto the enemy. I have seen warriors transform their frustration into a formidable weapon.",
-      "{emote:fightActions.ramAttack} The beetle attack, a brutal and physical charge technique with unpredictable effects! If the attacker is not stamped by the attack, it recovers a portion of the damage inflicted. The attack can also stun the opponent. You have to accept suffering in order to cause suffering.",
-      "{emote:fightActions.resting} The rest, basic boiling technique! It applies in the form of launcher care and will work better if you run out of energy. Rest also allows you to stop bleeding. Be careful: its healing power is greatly decreased after four uses.",
+      "{emote:fightActions.ramAttack} The ram attack, a brutal and physical charge technique with somewhat unpredictable effects! If the attacker is not stunned by the attack, they take a portion of the damage inflicted. The attack can also stun the opponent. You have to accept suffering in order to cause suffering.",
+      "{emote:fightActions.resting} Rest, a fundamental recovery technique! It heals the user and will work better if you don't have much energy left. Resting also allows you to stop your bleeding. Be careful: its healing power is greatly decreased after four uses. Even rest has its limits.",
       "{emote:fightActions.roarAttack} The roar, showing pure intimidation! It lowers the opponent's attack and speed. I have learned that sometimes fear is more effective than steel.",
       "{emote:fightActions.rockShieldAttack} The rock shield, a temporary but effective protection, on which I often broke my teeth. It halves the damage of the next attack. A defensive technique that I saw saving many monsters, and that surprised me many times by its amazing efficiency.",
-      "{emote:fightActions.sabotageAttack} sabotage attack, a sneak but effective body technique! It completely ignores the opponent's defenses and works better on an opponent with little attack. Less than a breath of breath but can paralyse the launcher - if so, degae is increased.",
-      "{emote:fightActions.shieldAttack} The shield attack, a physical technique I perfected during my service years! She uses the attacker's defense to fight, weakening the opponent and dividing his attack by three for two rounds. The best defense is the attack!",
+      "{emote:fightActions.sabotageAttack} The sabotage attack, a sneaky but effective melee technique! It completely ignores the opponent's defense and works better on an opponent with low attack. Low breath cost but can paralyze the user - if so, the damage is increased.",
+      "{emote:fightActions.shieldAttack} The shield attack, a physical technique I perfected during my service years! It uses the attacker's defense to fight, weakening the opponent and dividing his attack by three for two rounds. The best defense is the attack!",
       "{emote:fightActions.simpleAttack} the attack is simple... A simple and physical attack, nothing more to say. Sometimes a young adventurer, the basics remain the most reliable.",
-      "{emote:fightActions.slamAttack} The attack impacts, an effective slowing technique! It is a ranged attack of low power that reduces the opponent's speed. Slowing down your enemy can often be more prized than inflicting big tears.",
-      "{emote:fightActions.stealth} The discretion, a shadow art I learned to respect! It allows to hide discreetly to double the next attack. The surprise effect must never be underestimated, as it can overturn the most inequitable of combat.",
-      "{emote:fightActions.stoneSkinAttack} Rockskin, defensive reinforcement techniques! The more this action is performed, the greater the defense bonus becomes. The event turns flesh into stone, litterally.",
+      "{emote:fightActions.slamAttack} The slam attack, an effective slowing technique! It is a ranged attack of low power that reduces the opponent's speed. Slowing down your enemy can often be more valuable than dealing heavy damage.",
+      "{emote:fightActions.stealth} The discretion, a shadow art I learned to respect! It allows to hide discreetly to double the damage of the next attack. The surprise effect must never be underestimated, as it can overturn the most inequitable of combat.",
+      "{emote:fightActions.stoneSkinAttack} Stone skin, a defensive reinforcement technique! The more this action is performed in succession, the greater the defense bonus becomes. Perseverance turns flesh into stone, literally.",
       "{emote:fightActions.summonAttack} The summoning of allies, a physical technique I saw used by powerful leaders! It summons allies to attack the opponent unless it is already the victim of a state alteration. Can only be used once per fight - you have to choose the right time.",
-      "{emote:fightActions.tailWhipAttack} The tail strike, a primitive but effective attack! This powerful tail hits the opponent with a melee body, inflicting average degae with a chance to stunt. I have learned to challenge any creature with such an appendix because I can assure you that a blow of this magnitude in the middle of the stomach after one of the king's feasts is far from agreeable!",
+      "{emote:fightActions.tailWhipAttack} The tail whip, a primitive but effective attack! This powerful tail hits the opponent in melee, dealing moderate damage with a chance to stun. I have learned to be wary of any creature with such an appendage, because I can assure you that a blow of this magnitude to the stomach after one of the king's feasts is far from pleasant!",
       "{emote:fightActions.ultimateAttack} was the ultimate attack, the most powerful physical technique a fighter could possess! It requires a repair spin and can only be used once per battle. When you deploy it, make sure it is at the right time because it will only succeed if you are at the end of your strength and you no longer have much energy.",
-      "{emote:fightActions.webShotAttack} Web jet is a remote control technique! It throws a canvas roll that hurts and slows the opponent. I saw this technique turn fast opponents into easy prey.",
-      "{emote:fightActions.howlAttack} screaming, an unpredictable self-improvement technique! The monster shouts a howl that increases its attack, defends or speed. Sometimes, letting his primitive instincts speak can pay off.",
-      "{emote:fightActions.icySeductionAttack} The icy education, technique for the less... particulie! It uses a cold charm that can freeze or confuse the opponent and inflict unrest. I learned to challenge myself to all types of charms in combat.",
-      "{emote:fightActions.frozenKissAttack} the frozen kiss, attacks as surprising as they are effective! She reminds me of an adventure with one of the palace courtesans. . but I take a start! This impregnated attack of magic consists in kissing an icy kiss on the opponent, inflicting trouble. If the opponent is already frozen, the opponent will be greatly reduced. There are all sorts of combat techniques... and this one is one of the most formidable to fight!",
-      "{emote:fightActions.spectralRevengeAttack} Spectral Revenge, a mystical response I've seen among some supernatural opponents! If the last attack suffered was not magical, it counterattacks by inflicting degae on its attacker. The outer has its own combat wounds.",
+      "{emote:fightActions.webShotAttack} The web shot is a ranged control technique! It fires a web that hurts and slows the opponent. I've seen this technique turn fast opponents into easy prey.",
+      "{emote:fightActions.howlAttack} The howl, an unpredictable self-improvement technique! The monster lets out a howl that randomly increases its attack, defense or speed. Sometimes, letting primitive instincts speak can pay off.",
+      "{emote:fightActions.icySeductionAttack} Icy seduction, a technique that is to say the least... unusual! It uses a bewitchingly cold charm that can freeze or confuse the opponent while dealing damage. I've learned to be wary of all types of charms in combat.",
+      "{emote:fightActions.frozenKissAttack} The frozen kiss, an attack as surprising as it is effective! It reminds me of an adventure with one of the palace courtesans... but I digress! This magic-infused attack consists of placing an icy kiss on the opponent, dealing damage. If the opponent is already frozen, the damage is greatly reduced. There are indeed all sorts of combat techniques... and this one is one of the most formidable to face!",
+      "{emote:fightActions.spectralRevengeAttack} Spectral revenge, a mystical counter-attack I've seen among some supernatural opponents! If the last attack suffered was not magical, it counter-attacks by dealing damage to its assailant. The beyond has its own rules of combat.",
       "{emote:fightActions.ambush} The ambush, perfect tactical preparation technique! It provides an ambush that reduces opponent damage to the next round and greatly increases the launcher's hits for its next attack. The art of war is also to be able to wait for the right time.",
-      "{emote:fightActions.lightRayAttack} The radius of light, a dazzling spell! A powerful beam of light is projected around the monster that inflicts degae on the opponent and has a chance of foggy or blindness - the most freak blindness. Light can be a fearsome weapon.",
-      "{emote:fightActions.crystalShardAttack} The crystal shine attack is a precarious ranged attack! This ability inflicts more teeth on slow opponents. I learned that precision counts more than brute force with this type of attack.",
+      "{emote:fightActions.lightRayAttack} The light ray, a dazzling spell! A powerful beam of light is projected around the monster that deals damage to the opponent and has a chance to burn or blind them - blindness being the most common. Light can be a fearsome weapon.",
+      "{emote:fightActions.crystalShardAttack} The crystal shard attack is a precise ranged attack! This technique deals more damage to slow opponents. I've learned that precision counts more than brute force with this type of attack.",
       "{emote:fightActions.clawAttack} The claw attack, a primitive but direct technique! It's based on a violent claw strike. Simple, effective, brutal - sometimes the most basic techniques are the most reliable.",
-      "{emote:fightActions.callPack} The call to the pack, a coordination technique I observed in some creatures! They call their pack by attacking weakly at first, while preparting one or more pack attacks at the next turn. Unity is a strength, even in beings.",
-      "{emote:fightActions.packAttack} The Pack Attack, demonstrates collective strength in the body! The more monsters, the more powerful the attack is. I have always said that numbers can compensate for individual weaknesses.",
-      "{emote:fightActions.glacialCaveCollapseAttack} was the icy meltdown, a truly impressive long-range environmental technique! It collapses ice stalactites from the cave ceiling, but it is possible to dodge the attack by approaching the launcher in advance with a physical attack. Using the environment as a weapon, here is a strategy!",
-      "{emote:fightActions.radiantBlastAttack} is the explosive radius, a magical technique of remarkable power! It is part of the group of \"actions of the gods.\" This is a radiant attack in several rounds: the launcher concentrates its power for two turns to libe a powerful light attack, can brute or blind the opponent.",
+      "{emote:fightActions.callPack} The call of the pack, a coordination technique I observed in some creatures! They call their pack by attacking weakly at first, while preparing one or more pack attacks for the next turn. Unity is strength, even among beasts.",
+      "{emote:fightActions.packAttack} The pack attack, a demonstration of collective strength in melee! The more monsters there are, the more powerful the attack. It can repeat itself several times. I have always said that numbers can compensate for many individual weaknesses.",
+      "{emote:fightActions.glacialCaveCollapseAttack} The glacial collapse, a truly impressive long-range environmental technique! It causes ice stalactites to collapse from the cave ceiling, but it is possible to dodge the attack by approaching the attacker in advance with a physical attack. Using the environment as a weapon, now that is strategy!",
+      "{emote:fightActions.radiantBlastAttack} The radiant blast, a magical technique of remarkable power! It is part of the group of \"actions of the gods\". This is a radiant attack in several turns: the user concentrates their energy for two turns to unleash a powerful light attack, which can burn or blind the opponent.",
       "{emote:fightActions.hammerQuakeAttack} The Earthquake Hammer, a ranged technique of mass destruction! It belongs to the \"Actions of the Gods\" group. The user strikes the ground with titanic force, inflicting heavy damage to all opponents. Fortunately, earthquakes can be dodged with a flying pet.",
-      "{emote:fightActions.startPolarEmbraceAttack} The Polar Embrace, a fearsome ice control technique! This physical attack encroaches the target into icy claws, can freeze the opponent and prolong the opponent if the opponent does not challenge with a remote attack. A catch that is best avoided!",
-      "{emote:fightActions.isStuckInPolarEmbrace} Polar Embrace maintained, ruthless continuation of the previous plug! It inflicts degae on the opponent stranded in the treadmill, with a chance to freeze it. It failed if the opponent just used a physical attack.",
-      "{emote:fightActions.glacialBreathAttack} The Frostbreath is an elementary technique that is powerful and long-door! It libes an icy wind that inflicts degae on the opponent and has a chance to freeze it if the attack hits. I learned to fear the breath of ice creatures.",
-      "{emote:fightActions.blizzardRageAttack} blizzard rage, ultimate elementary! It remotely removes ice elements, which can freeze, slow down and weaken the opponent's defence. Can only be used once per fight - when nature falls apart, it is not possible to get it out more!",
-      "{emote:fightActions.aerialDiveAttack} The aetheric dive, attack from the sky to attack at a distance! It consists of melting on the opponent from the air, but failed if the target just attacked at a distance. I have always said that we need to watch its backwards... and the sky too!",
-      "{emote:fightActions.crystallineArmorAttack} Crystal Armor, offensive defensive technique! It uses the combatant's armor to inflict melee degae on the body, but only works if the opponent has just made a physical attack. Turning its protection into a weapon of response, this is tactical ingeniosity!"
+      "{emote:fightActions.startPolarEmbraceAttack} The polar embrace, a fearsome glacial control technique! This physical attack ensnares the target in icy claws, can freeze the opponent and prepares a prolonged embrace if the opponent does not defend themselves with a ranged attack. A hold that is best avoided!",
+      "{emote:fightActions.isStuckInPolarEmbrace} Polar embrace maintained, ruthless continuation of the previous hold! It deals damage to the opponent trapped in the embrace, with a chance to freeze them. It fails if the opponent just used a physical attack.",
+      "{emote:fightActions.glacialBreathAttack} The glacial breath, a powerful long-range elemental technique! It releases an icy wind that deals damage to the opponent and has a chance to freeze them if the attack hits. I've learned to fear the breath of ice creatures.",
+      "{emote:fightActions.blizzardRageAttack} Blizzard rage, the ultimate elemental unleashing! It remotely unleashes icy elements, which can freeze, slow down and weaken the opponent's defense. Can only be used once per fight - when nature is already raging, it is not possible to make it rage further!",
+      "{emote:fightActions.aerialDiveAttack} The aerial dive, an attack from the sky to strike at a distance! It consists of swooping down on the opponent from the air, but fails if the target just attacked at range. I've always said that you need to watch your back... and the sky too!",
+      "{emote:fightActions.crystallineArmorAttack} Crystalline armor, an offensive defensive technique! It uses the combatant's armor to deal melee damage, but only works if the opponent has just made a physical attack. Turning your protection into a weapon of retaliation, now that is tactical ingenuity!"
     ]
   },
   "haunted": [
@@ -1957,19 +1957,19 @@
       "continue": "Continue on your way"
     },
     "outcomes": {
-      "found_by_player_male": "You cautiously approach and, after pushing aside the branches and meticulously searching every nook and cranny for {{time}} {emote:effects.occupied}, you finally get your hands on {{foodName}}. You offer it to your companion, who accepts it gratefully and devours the gift with satisfied growls.",
+      "found_by_player_male": "You cautiously approach and, after pushing aside the branches and meticulously searching every nook and cranny for **{{time}}** {emote:effects.occupied}, you finally get your hands on **{{foodName}}**. You offer it to your companion, who accepts it gratefully and devours the gift with satisfied growls.",
       "found_by_player_female": "You approach cautiously and, after pushing aside the branches and meticulously searching the nooks and crannies for **{{time}}** {emote:effects.occupied}, you finally lay your hands on **{{foodName}}**. You offer it to your faithful friend, who accepts it gratefully, devouring her gift with grunts of satisfaction.",
-      "found_by_player_soup_male": "You cautiously approach the abandoned cauldron. After {{time}} {emote:effects.occupied} spent making sure no danger is lurking, you discover with satisfaction {{foodName}} still gently simmering. You pour a generous portion into a bowl and present it to your companion, who eagerly laps up the comforting dish, tail wagging with delight.",
+      "found_by_player_soup_male": "You cautiously approach the abandoned cauldron. After **{{time}}** {emote:effects.occupied} spent making sure no danger is lurking, you discover with satisfaction **{{foodName}}** still gently simmering. You pour a generous portion into a bowl and present it to your companion, who eagerly laps up the comforting dish, tail wagging with delight.",
       "found_by_player_soup_female": "You cautiously approach the abandoned cauldron. After **{{time}}** {emote:effects.occupied} checking that no danger lurks, you discover with satisfaction **{{foodName}}** still simmering gently. You pour a generous portion into a bowl and present it to your faithful friend, who greedily laps up the comfort food, wagging her tail in contentment.",
       "found_by_pet_male": "Your pet takes off with a nimble leap and disappears for a moment into the thicket. He soon returns to you with a proud, triumphant trot, holding **{{foodName}}** delicately between his fangs. His eyes shine with pride as he settles down to savor his find with enthusiastic chewing noises.",
       "found_by_pet_female": "Your creature takes off with a nimble leap and disappears for a moment into the thicket. She soon returns to you with a proud, triumphant trot, holding **{{foodName}}** delicately between her fangs. Her eyes sparkle with pride as she settles down to savor her find with enthusiastic chewing noises.",
-      "found_by_pet_soup_male": "Your pet is rushing to the abandoned camp and plunges its muzzle into the smoking cauldron. It comes back to you a few moments later, the still glittering babies obviously tasted **{{foodName}}** with obvious pleasure. His painful eyes and his exhilarating tail testify to his gourmet satisfaction.",
+      "found_by_pet_soup_male": "Your pet trots swiftly to the abandoned camp and plunges its muzzle into the steaming cauldron. It returns to you a few moments later, its lips still glistening, having clearly savored **{{foodName}}** with obvious pleasure. Its sparkling eyes and wagging tail attest to its gourmet satisfaction.",
       "found_by_pet_soup_female": "Your creature trots swiftly towards the abandoned camp and dips its snout into the steaming cauldron. She returns to you a few moments later, her lips still glistening, having clearly savored **{{foodName}}** with obvious pleasure. Her sparkling eyes and wagging tail testify to her greedy satisfaction.",
       "found_anyway_male": "Just as you're about to set off on your merry way, your faithful companion suddenly leaps into the surrounding bushes. He emerges victoriously with **{{foodName}}** which he gobbles up on the spot with a voracious appetite, his tail wagging with contentment.",
       "found_anyway_female": "Just as you're about to set off on your way with no further concern for this distraction, your faithful friend suddenly leaps into the surrounding bushes. She emerges victoriously with **{{foodName}}** which she gobbles up on the spot with a voracious appetite, her tail wagging with contentment.",
       "found_anyway_soup_male": "Just as you're about to set off on your journey with no further concern for the camp, your faithful companion rushes to the abandoned cauldron. Before you can stop him, he greedily laps up **{{foodName}}** with groans of delight, clearly delighted by this unexpected windfall.",
       "found_anyway_soup_female": "Just as you're about to set off on your journey with no further concern for the camp, your faithful friend rushes to the abandoned cauldron. Before you can stop her, she greedily laps up **{{foodName}}** with moans of delight, clearly delighted by this unexpected windfall.",
-      "player_failed": "You spend {{time}} {emote:effects.occupied} grueling moments meticulously scouring the surroundings, pushing aside brambles and thorns, turning over stones and rotten stumps, but despite all your relentless efforts, you find nothing of any worth. The time invested proves as futile as a treasure hunt in an empty chest.",
+      "player_failed": "You spend **{{time}}** {emote:effects.occupied} grueling moments meticulously scouring the surroundings, pushing aside brambles and thorns, turning over stones and rotten stumps, but despite all your relentless efforts, you find nothing of any worth. The time invested proves as futile as a treasure hunt in an empty chest.",
       "pet_failed_male": "Your companion dashes off determinedly into the thicket, only to return a few moments later with a ponderous gait, ears low and tail hanging low. His disappointed look and plaintive squeaks betray his failure: the trail has proved fruitless and his efforts have produced nothing but bitterness.",
       "pet_failed_female": "Your friend bolts determinedly into the thicket, only to return a few moments later with a ponderous gait, ears low and tail hanging low. Her disappointed look and plaintive squeaks betray her failure: the trail has proved fruitless and her efforts have produced nothing but bitterness.",
       "pet_failed_soup_male": "Your companion trots towards the abandoned camp and takes a long sniff at the cauldron, but alas, it turns out to be empty or its contents already cooled and inedible. He returns to you with a disappointed gait, ears low and tail hanging low, clearly frustrated by this culinary disappointment.",
@@ -1982,10 +1982,10 @@
         "a raven's carrion in advanced decomposition",
         "the putrid entrails of a swamp goblin",
         "a rotten dragon egg exhaling sulfurous fumes",
-        "a piece of moldy blue cheese forgotten by a dizzy traveler",
+        "a piece of moldy blue cheese forgotten by an absent-minded traveler",
         "the foul-smelling remains of a rat that had died several days ago",
         "a bat carcass infested with crawling maggots",
-        "a piece of pheasant meat abandoned by bandits",
+        "a piece of gamy meat abandoned by bandits",
         "a dead fish with greenish scales floating in a stagnant pond",
         "wild boar offal teeming with voracious flies",
         "a sheep's belly swollen with putrefaction gases",
@@ -2010,8 +2010,8 @@
         "an edible turnip root still full of fertile soil",
         "a coppery forest mushroom growing under an old oak tree",
         "a sweet, tender dandelion flower",
-        "a vermilion apple falls from a lonely apple tree",
-        "hazelnuts freshly removed from their thorny bugs",
+        "a vermilion apple fallen from a solitary apple tree",
+        "hazelnuts freshly fallen from their spiny husks",
         "a golden corncob left in a field after harvesting",
         "a bunch of deep purple wild grapes",
         "crisp lettuce leaves torn from a vegetable garden",
@@ -2022,10 +2022,10 @@
       ],
       "meat": [
         "a silver fish still wriggling in the clear waters of a stream",
-        "a young rabbit strays from its burrow",
+        "a young rabbit strayed far from its burrow",
         "a marrow bone still filled with tender, fatty flesh",
-        "a slice of smoked ham hanging in an open stockpot",
-        "a spicy pork sausage mislaid by a street vendor",
+        "a slice of smoked ham hanging in an open storeroom",
+        "a spicy pork sausage lost by a traveling merchant",
         "a piece of salted bacon wrapped in a greasy cloth",
         "the remains of a roast duck abandoned by harried travelers",
         "a deer leg freshly butchered by a hunter",
@@ -2050,32 +2050,32 @@
       "plus_female": "Your faithful friend gazes at you with eyes shining with gratitude and affection. She rubs against your legs with satisfied purrs, clearly demonstrating that this impromptu feast has strengthened the bonds of trust and friendship between you!",
       "minus_male": "Your pet stares at you with a dark, silently reproachful gaze, lips curled into a disapproving pout. He ostentatiously turns his head away with a disgruntled growl, clearly offended by this pittance unworthy of his delicate palate...",
       "minus_female": "Your creature stares at you with a black look of silent reproach, lips curled into a disapproving pout. She ostentatiously turns her head away with a disgruntled growl, clearly offended by this pittance unworthy of her delicate palate...",
-      "neutral_male": "Your road companion swallows his meal with an almost philosophical detachment, without showing any overlapping enthusiasm or special taste.",
+      "neutral_male": "Your traveling companion swallows his meal with an almost philosophical detachment, without showing any overflowing enthusiasm or particular disgust.",
       "neutral_female": "Your friend wolfed down her meal with an almost philosophical detachment, showing neither overflowing enthusiasm nor particular disgust."
     }
   },
   "badPet": {
     "intro_male": [
-      "A stocky dwarf emerges from a rock, his red beard shaggy and his gaze filled with visceral hatred. At the sight of **{{pet}}**, he spits at the ground in disgust and brandishes a gnarled stick. Your companion recoils, ears pressed to his skull. The stranger introduces himself as Moltiar and swears he has nothing to do with his bug-worshipping brother.",
-      "A hoarse, angry voice suddenly calls out to you. A dwarf with a scarred face strides forward, his bloodshot eyes fixed on{{pet}}** with fury. He twirls a studded club in a menacing gesture. Your companion shakes all over.",
-      "Emerging from behind a rock formation, a crazy-looking dwarf plants himself in front of you, blocking your path. His right hand bears the scars of an ancient bite. He stares **{{pet}}** with burning hatred and draws a chipped dagger. Moltiar grumbles that, unlike his brother Talvar, he knows a nuisance when he sees one.",
+      "A stocky dwarf emerges from a rock, his red beard shaggy and his gaze filled with visceral hatred. At the sight of **{{pet}}**, he spits at the ground in disgust and brandishes a gnarled stick. Your companion recoils, ears pressed to his skull. The stranger introduces himself as Moltiar and swears he has nothing to do with his critter-worshipping brother.",
+      "A hoarse, angry voice suddenly calls out to you. A dwarf with a scarred face strides forward, his bloodshot eyes fixed on **{{pet}}** with fury. He twirls a studded club in a menacing gesture. Your companion shakes all over.",
+      "Emerging from behind a rock formation, a crazy-looking dwarf plants himself in front of you, blocking your path. His right hand bears the scars of an ancient bite. He stares at **{{pet}}** with burning hatred and draws a chipped dagger. Moltiar grumbles that, unlike his brother Talvar, he knows a nuisance when he sees one.",
       "A guttural growl startles you. A burly dwarf emerges from a crevice, his braided beard rattling with bone beads. As soon as he spots **{{pet}}**, his face twists in disgust. He points an accusing finger at you, his other hand firmly gripping a rusty axe.",
       "Your path is suddenly blocked by a stocky, hostile figure. The dwarf wears an expression of pure repulsion as he discovers **{{pet}}** beside you. An old wound crosses his forearm, testimony to a painful past. He grips a war hammer. Moltiar growls that he won't let these loathsome creatures roam his lands, no matter what his naive brother may think.",
       "The clatter of a rolling stone alerts you to a presence. A massive dwarf emerges from the shadows of a rocky overhang, immediately scrutinizing **{{pet}}** with palpable animosity. The scars on his forearms bear witness to past painful encounters. He brandishes a club with a gesture heavy with menace.",
       "The smell of earth and rancid sweat reaches you before you even see the assailant. A dwarf emerges from a crevice, his skin tanned by the sun, his calloused hands clasped around a pickaxe. His gaze falls on **{{pet}}** and a cold rage distorts his features. He spits that his idiot brother should see what those bugs have done to him.",
-      "The crunch of boots on gravel heralds the arrival of an intruder. A dwarf with a partially bald head appears, his gray beard tied into a severe catogan. His eyes widen in horror at the sight **{{pet}}**. He steps back before brandishing a miner's knife with hateful determination.",
+      "The crunch of boots on gravel heralds the arrival of an intruder. A dwarf with a partially bald head appears, his gray beard tied into a severe catogan. His eyes widen in horror at the sight of **{{pet}}**. He steps back before brandishing a miner's knife with hateful determination.",
       "A mocking whistle echoes through the air. Perched on a rock, a dwarf watches your progress with contempt. When he notices **{{pet}}** trotting along beside you, his expression changes to one of deep disgust. He jumps to the ground and plants himself in front of you, muttering about how his brother has corrupted too many travelers with his crazy ideas.",
       "The ground trembles slightly beneath your feet, announcing the approach of a massive presence. An imposing dwarf, wider than he is tall, emerges from a rockslide. His gaze sweeps along the path, settling on **{{pet}}** with incandescent hatred. His arm muscles twitch as he lifts a heavy blacksmith's mallet."
     ],
     "intro_female": [
-      "A stocky dwarf emerges from a rock, his red beard shaggy and his gaze filled with visceral hatred. At the sight of **{{pet}}**, he spits at the ground in disgust and brandishes a gnarled stick. Your friend recoils, ears pressed to her skull. The stranger introduces himself as Moltiar and swears he has nothing to do with her bug-worshipping brother.",
-      "A hoarse, angry voice suddenly calls out to you. A dwarf with a scarred face strides forward, his bloodshot eyes fixed on{{pet}}** with fury. He twirls a studded club in a menacing gesture. Your friend shakes all over.",
-      "Emerging from behind a rock formation, a crazy-looking dwarf plants himself in front of you, blocking your path. His right hand bears the scars of an ancient bite. He stares **{{pet}}** with burning hatred and draws a chipped dagger. Moltiar grumbles that, unlike his brother Talvar, he knows a nuisance when he sees one.",
+      "A stocky dwarf emerges from a rock, his red beard shaggy and his gaze filled with visceral hatred. At the sight of **{{pet}}**, he spits at the ground in disgust and brandishes a gnarled stick. Your friend recoils, ears pressed to her skull. The stranger introduces himself as Moltiar and swears he has nothing to do with his bug-worshipping brother.",
+      "A hoarse, angry voice suddenly calls out to you. A dwarf with a scarred face strides forward, his bloodshot eyes fixed on **{{pet}}** with fury. He twirls a studded club in a menacing gesture. Your friend shakes all over.",
+      "Emerging from behind a rock formation, a crazy-looking dwarf plants himself in front of you, blocking your path. His right hand bears the scars of an ancient bite. He stares at **{{pet}}** with burning hatred and draws a chipped dagger. Moltiar grumbles that, unlike his brother Talvar, he knows a nuisance when he sees one.",
       "A guttural growl startles you. A burly dwarf emerges from a crevice, his braided beard rattling with bone beads. As soon as he spots **{{pet}}**, his face twists in disgust. He points an accusing finger at you, his other hand firmly gripping a rusty axe.",
       "Your path is suddenly blocked by a stocky, hostile figure. The dwarf wears an expression of pure repulsion as he discovers **{{pet}}** beside you. An old wound crosses his forearm, testimony to a painful past. He grips a war hammer. Moltiar growls that he won't let these loathsome creatures roam his lands, no matter what his naive brother may think.",
       "The clatter of a rolling stone alerts you to a presence. A massive dwarf emerges from the shadows of a rocky overhang, immediately scrutinizing **{{pet}}** with palpable animosity. The scars on his forearms bear witness to past painful encounters. He brandishes a club with a gesture heavy with menace.",
       "The smell of earth and rancid sweat reaches you before you even see the assailant. A dwarf emerges from a crevice, his skin tanned by the sun, his calloused hands clasped around a pickaxe. His gaze falls on **{{pet}}** and a cold rage distorts his features. He spits that his idiot brother should see what those bugs have done to him.",
-      "The crunch of boots on gravel heralds the arrival of an intruder. A dwarf with a partially bald head appears, his gray beard tied into a severe catogan. His eyes widen in horror at the sight **{{pet}}**. He steps back before brandishing a miner's knife with hateful determination.",
+      "The crunch of boots on gravel heralds the arrival of an intruder. A dwarf with a partially bald head appears, his gray beard tied into a severe catogan. His eyes widen in horror at the sight of **{{pet}}**. He steps back before brandishing a miner's knife with hateful determination.",
       "A mocking whistle echoes through the air. Perched on a rock, a dwarf watches your progress with contempt. When he notices **{{pet}}** trotting along beside you, his expression changes to one of deep disgust. He jumps to the ground and plants himself in front of you, muttering about how his brother has corrupted too many travelers with his crazy ideas.",
       "The ground trembles slightly beneath your feet, announcing the approach of a massive presence. An imposing dwarf, wider than he is tall, emerges from a rockslide. His gaze sweeps along the path, settling on **{{pet}}** with incandescent hatred. His arm muscles twitch as he lifts a heavy blacksmith's mallet."
     ],
@@ -2086,7 +2086,7 @@
       "giveMeat": "Offer meat to the dwarf to soften him up",
       "giveVeg": "Offer vegetables to the dwarf as a sign of peace",
       "flee_male": "Running away with your companion",
-      "flee_female": "Running away with your girlfriend",
+      "flee_female": "Running away with your friend",
       "hide_male": "Hiding your companion",
       "hide_female": "Hiding your friend",
       "wait": "Waiting for the dwarf's anger to subside",
@@ -2111,12 +2111,12 @@
           "Adopting a menacing stance, **{{pet}}** growls with surprising ferocity at the hostile dwarf. The latter, seeing that the confrontation could turn ugly, spits a final insult before retreating. Your friend seems satisfied to have stood up to the aggressor."
         ],
         "fail_male": [
-          "By your command, **{{pet}}** tries to seem menacing, but the dwarf laughs cruel in front of this pathetical show. He wanks his sock and your companion turns back precipitously, damaged.",
-          "Attempting to appear threatening,{{pet}}** only succeeds in amusing the dwarf, who kicks him. Your companion squeals in pain and gives you a reproachful look for exposing him like that."
+          "By your command, **{{pet}}** tries to appear menacing, but the dwarf bursts into cruel laughter at this pathetic display. He brandishes his stick and your companion hastily retreats, humiliated.",
+          "Attempting to appear threatening, **{{pet}}** only succeeds in amusing the dwarf, who kicks him. Your companion squeals in pain and gives you a reproachful look for exposing him like that."
         ],
         "fail_female": [
           "Obeying your order, **{{pet}}** tries to look threatening, but the dwarf bursts into cruel laughter at this pathetic display. He brandishes his stick and your friend backs away, humiliated.",
-          "Attempting to appear threatening,{{pet}}** only succeeds in amusing the dwarf, who kicks her. Your friend squeals in pain and gives you a reproachful look for exposing her like that."
+          "Attempting to appear threatening, **{{pet}}** only succeeds in amusing the dwarf, who kicks her. Your friend squeals in pain and gives you a reproachful look for exposing her like that."
         ]
       },
       "plead": {
@@ -2133,7 +2133,7 @@
           "Your pathetic pleas seem to exasperate the dwarf even more. He looks at you with undisguised contempt. **{{pet}}** watches you with a mixture of disappointment and fear."
         ],
         "fail_female": [
-          "You try to reason the dwarf, but your words only stir up his core. It screams that words are not enough to reflect those creatures that it abhors. **{{pet}}** looks up, shameful about your failure to protect it.",
+          "You try to reason with the dwarf, but your words only fuel his anger. He screams that words are not enough to defend these creatures he abhors. **{{pet}}** looks away, ashamed of your failure to protect her.",
           "Your pathetic pleas seem to exasperate the dwarf even more. He looks at you with undisguised contempt. **{{pet}}** watches you with a mixture of disappointment and fear."
         ]
       },
@@ -2143,7 +2143,7 @@
           "The piece of meat you offer makes the dwarf hesitate. His stomach growls louder than his hatred, and he finally accepts your gift and walks away. **{{pet}}** appreciates your ingenuity in avoiding confrontation."
         ],
         "success_female": [
-          "You quickly pull out a piece of meat and stretch it to the hungry dwarf. Surprised by this offering, he accepts it groaning and bites in it with appeal. It signs you to move before it changes its mind. **{{pet}}** seems to be relieved of this issue.",
+          "You quickly pull out a piece of meat and hold it out to the hungry dwarf. Surprised by this offering, he accepts it with a grunt and bites into it hungrily. He waves you off before he changes his mind. **{{pet}}** seems relieved by this outcome.",
           "The piece of meat you offer makes the dwarf hesitate. His stomach growls louder than his hatred, and he finally accepts your gift and walks away. **{{pet}}** appreciates your ingenuity in avoiding confrontation."
         ],
         "fail_male": [
@@ -2152,7 +2152,7 @@
         ],
         "fail_female": [
           "You pull out a piece of meat to coax Moltiar, but he throws it to the ground in disgust, refusing to be bought like that. Unfortunately, **{{pet}}** had his eye on the dish and looks at you with accusing eyes.",
-          "The piece of meat you offer is piecemeal by the furious dwarf. **{{pet}}** watches the seal with frustration, so you can see this treat wasted."
+          "The piece of meat you offer is trampled by the furious dwarf. **{{pet}}** watches the scene with frustration, disappointed to see this treat wasted."
         ]
       },
       "giveMeatDislikes": {
@@ -2161,7 +2161,7 @@
           "The piece of meat you offer makes the dwarf hesitate. His stomach growls louder than his hatred, and he finally accepts your gift and walks away. **{{pet}}** does not seem to regret this offering which was not intended for him."
         ],
         "success_female": [
-          "You quickly pull out a piece of meat and stretch it to the hungry dwarf. Surprised by this offering, he accepts it groaning and bites in it with appeal. It signals you to move before it changes its mind. **{{pet}}** turns the look, which is obviously not well absorbed by this food.",
+          "You quickly pull out a piece of meat and hold it out to the hungry dwarf. Surprised by this offering, he accepts it with a grunt and bites into it hungrily. He waves you off before he changes his mind. **{{pet}}** looks away, clearly uninterested in the food.",
           "The piece of meat you offer makes the dwarf hesitate. His stomach growls louder than his hatred, and he finally accepts your gift and walks away. **{{pet}}** does not seem to regret this offering which was not intended for him."
         ],
         "fail_male": [
@@ -2169,7 +2169,7 @@
           "The piece of meat you offer is trampled by the furious dwarf. **{{pet}}** doesn't pay much attention, as this type of food doesn't suit him."
         ],
         "fail_female": [
-          "You take out a piece of meat to soften Moltiar, but it throws it down to the ground with disgusting, refusing to let itself be bought like this. **{{pet}}**, herbivore, does not appear to be disrupted by this loss.",
+          "You pull out a piece of meat to coax Moltiar, but he throws it to the ground in disgust, refusing to be bought like that. **{{pet}}**, a herbivore, doesn't seem bothered by this loss.",
           "The piece of meat you offer is trampled by the furious dwarf. **{{pet}}** doesn't pay much attention, as this type of food doesn't suit him."
         ]
       },
@@ -2198,7 +2198,7 @@
         ],
         "fail_female": [
           "You hand the dwarf some vegetables in the hope of coaxing him. He bursts out laughing at this ridiculous offer and sweeps them aside with a wave of his hand. **{{pet}}** looks enviously at the wasted vegetables.",
-          "The legumes you offer clumsily are swept away by the dwarf meéprisant. **{{pet}}** throws you a reproached, fruity look at this food lost."
+          "The vegetables you clumsily offer are brushed aside by the scornful dwarf. **{{pet}}** gives you a reproachful look, frustrated at seeing this food wasted."
         ]
       },
       "giveVegDislikes": {
@@ -2207,15 +2207,15 @@
           "The vegetables you present to the dwarf obviously bring back more pleasant memories. He accepts them with a semblance of civility and agrees to let you pass. **{{pet}}**, a carnivore, is not bothered by this sacrifice."
         ],
         "success_female": [
-          "You give the dwarf a few legumes, evoking their quality and freshness. Against all expectations, the dwarf, an amateur of soups, accepts your offering with an approving grunt and leaves. **{{pet}}** seems not to be affected by this loss of leagues.",
-          "The lessons you present to the dwarf clearly remind him of more pleasant memories. They accept them with a semblance of civility and agree to let you pass. **{{pet}}**, carnivore, is not affected by this sacrifice."
+          "You offer the dwarf some vegetables, mentioning their quality and freshness. Against all expectations, the soup-loving dwarf accepts your offering with an approving grunt and leaves. **{{pet}}** doesn't seem concerned by this loss of vegetables.",
+          "The vegetables you present to the dwarf clearly bring back more pleasant memories. He accepts them with a semblance of civility and agrees to let you pass. **{{pet}}**, a carnivore, is not bothered by this sacrifice."
         ],
         "fail_male": [
           "You hand the dwarf some vegetables in the hope of coaxing him. He bursts out laughing at this ridiculous offer and sweeps them aside with a wave of his hand. **{{pet}}** does not seem concerned by this loss.",
           "The vegetables you clumsily offer are brushed aside by the scornful dwarf. **{{pet}}**, preferring meat, pays no attention to these wasted vegetables."
         ],
         "fail_female": [
-          "You stretch legumes to the dwarf in the hope of softening it. It seems to laugh at this ridiculous offer and sweeps them with a setback. **{{pet}}** does not seem to be affected by this loss.",
+          "You hand the dwarf some vegetables in the hope of coaxing him. He bursts out laughing at this ridiculous offer and sweeps them aside with a wave of his hand. **{{pet}}** doesn't seem concerned by this loss.",
           "The vegetables you clumsily offer are brushed aside by the scornful dwarf. **{{pet}}**, preferring meat, pays no attention to these wasted vegetables."
         ]
       },
@@ -2225,7 +2225,7 @@
           "You want to offer some vegetables to calm the situation, but you don't have any. The dwarf takes advantage of your hesitation to jostle **{{pet}}** who looks at you reproachfully."
         ],
         "fail_female": [
-          "You are looking for legumes to offer the dwarf, but your guild's warehouse does not contain any of them. Moltiar mocks at your pathetical attempt while **{{pet}}** lowers the tie, then.",
+          "You're looking for vegetables to offer the dwarf, but your guild's warehouse contains none. Moltiar laughs at your pathetic attempt, while **{{pet}}** hangs her head in disappointment.",
           "You want to offer some vegetables to calm the situation, but you don't have any. The dwarf takes advantage of your hesitation to jostle **{{pet}}** who looks at you reproachfully."
         ]
       },
@@ -2294,11 +2294,11 @@
         ],
         "fail_male": [
           "In a fit of bravery, you step in between Moltiar and **{{pet}}**. Unfortunately, the dwarf is stronger than you thought. He brutally pushes you away and takes advantage of the situation to strike your companion. You feel powerless in the face of this show of force.",
-          "You try to protect{{pet}}** by placing yourself in front of him, but your posture lacks confidence. The dwarf easily sidesteps you and shoves your companion, who gives you a disappointed look at your inability to defend him."
+          "You try to protect **{{pet}}** by placing yourself in front of him, but your posture lacks confidence. The dwarf easily sidesteps you and shoves your companion, who gives you a disappointed look at your inability to defend him."
         ],
         "fail_female": [
           "In a fit of bravery, you step in between Moltiar and **{{pet}}**. Unfortunately, the dwarf is stronger than you thought. He brutally pushes you away and takes advantage of the situation to strike your friend. You feel powerless in the face of this show of force.",
-          "You try to protect{{pet}}** by placing yourself in front of her, but your posture lacks confidence. The dwarf easily sidesteps you and jostles your friend, who gives you a disappointed look at your inability to defend her."
+          "You try to protect **{{pet}}** by placing yourself in front of her, but your posture lacks confidence. The dwarf easily sidesteps you and jostles your friend, who gives you a disappointed look at your inability to defend her."
         ]
       },
       "distract": {
@@ -2307,7 +2307,7 @@
           "Your diversion works perfectly. Tossing a few coins into the distance, you attract the dwarf's greedy attention. As he rushes to pick them up, **{{pet}}** and you discreetly slip away."
         ],
         "success_female": [
-          "You create a diversion by loudly evoking a reputed tavern in the opposite direction. Moltiar, whose love of bee visibly outstrips his hatred of animals, tends his ears and then moves away, intrigued. **{{pet}}** takes advantage of the confusion, impressed by your ruse.",
+          "You create a diversion by loudly mentioning a well-known tavern in the opposite direction. Moltiar, whose love of beer clearly outweighs his hatred of animals, pricks up his ears and then moves away, intrigued. **{{pet}}** takes advantage of the confusion, impressed by your ruse.",
           "Your diversion works perfectly. Tossing a few coins into the distance, you attract the dwarf's greedy attention. As he rushes to pick them up, **{{pet}}** and you discreetly slip away."
         ],
         "fail_male": [
@@ -2315,7 +2315,7 @@
           "In a desperate attempt at diversion, you throw stones at random. One of them unluckily hits **{{pet}}** who squeals in pain while the dwarf sneers wickedly."
         ],
         "fail_female": [
-          "You try to create a diversion by gesticulating and shouting. This ridiculous show only irritates the dwarf approaching further, threatening. **{{pet}}** is back, frightened by your weird behavior.",
+          "You try to create a diversion by gesticulating and shouting. This ridiculous show only irritates the dwarf approaching further, threatening. **{{pet}}** backs away, frightened by your weird behavior.",
           "In a desperate attempt at diversion, you throw stones at random. One of them unluckily hits **{{pet}}** who squeals in pain while the dwarf sneers wickedly."
         ]
       },
@@ -2326,7 +2326,7 @@
         ],
         "success_female": [
           "You manage to soothe **{{pet}}** with reassuring caresses despite the dwarf's threat. Your friend regains confidence and stops trembling. The dwarf, seeing that you have your beast under control, seems less inclined to attack and eventually moves away.",
-          "Your soothing words and confident attitude manage to calm **{{pet}}**. Once expanded, she has insurance that makes the dwarf feel happy, and the dwarf is less likely to be faced with this term, prefers to leave."
+          "Your soothing words and confident attitude manage to calm **{{pet}}**. Once relaxed, she exudes an assurance that makes the dwarf hesitate. The latter, less sure of himself in the face of this serenity, prefers to leave."
         ],
         "fail_male": [
           "You try to soothe **{{pet}}** with caresses, but your own nervousness about the hostile dwarf is transmitted to your companion. Instead of calming down, he becomes even more agitated and moaning.",
@@ -2334,7 +2334,7 @@
         ],
         "fail_female": [
           "You try to soothe **{{pet}}** with caresses, but your own nervousness about the hostile dwarf is transmitted to your friend. Instead of calming down, she becomes even more agitated and moaning.",
-          "Your supposedly soothing words betray your own terror. **{{pet}}**, sensing your fear, understands that the situation is serious and his panic worsens."
+          "Your supposedly soothing words betray your own terror. **{{pet}}**, sensing your fear, understands that the situation is serious and her panic worsens."
         ]
       },
       "imposer": {
@@ -2343,7 +2343,7 @@
           "Standing calmly in front of the dwarf, **{{pet}}** exudes an aura of undeniable majesty. The dwarf, despite his hatred of animals, can't help but recognize your companion's nobility and cautiously moves away."
         ],
         "success_female": [
-          "You let **{{pet}}** move confidently towards the dwarf. His natural presence and rare beauty seem to bewilder the assailant who, despite his hatred, recognizes that he is dealing with an exceptional specimen. He retreats, impressed in spite of himself.",
+          "You let **{{pet}}** move confidently towards the dwarf. Her natural presence and rare beauty seem to bewilder the assailant who, despite his hatred, recognizes that he is dealing with an exceptional specimen. He retreats, impressed in spite of himself.",
           "Standing calmly in front of the dwarf, **{{pet}}** exudes an undeniable aura of majesty. The dwarf, despite his hatred of animals, can't help but recognize your friend's nobility and cautiously moves away."
         ],
         "fail_male": [
@@ -2407,7 +2407,7 @@
       ]
     },
     "talismanReceived": [
-      "Velanna watches you in silence for a few long seconds. Then, slowly, she extracts from her satchel a pendant of black stone veined with gold. The $t(models:talisman.anchor) pulses with a soft glow. You've proved yourself: take care of **{{pet}}**, for the bond between master and beast is sacred. She places the talisman in your hand and closes your fingers over it, inviting you to explore the world.\n\nYou receive the $t(models:talisman.anchor) ! You can now send your pet for shipment from {command:pet}."
+      "Velanna watches you in silence for a few long seconds. Then, slowly, she extracts from her satchel a pendant of black stone veined with gold. The $t(models:talisman.anchor) pulses with a soft glow. You've proved yourself: take care of **{{pet}}**, for the bond between master and beast is sacred. She places the talisman in your hand and closes your fingers over it, inviting you to explore the world.\n\nYou receive the $t(models:talisman.anchor)! You can now send your pet on an expedition from {command:pet}."
     ],
     "expeditionBonus": {
       "points": "Velanna emerges from the shadows and puts a hand on your shoulder. She senses the presence of **{{pet}}** leagues away and smiles, a rare sight. Your pet explores bravely and $t(models:talisman.anchor) strengthens your bond. Your perseverance pays off. You win **{{bonusPoints}} {emote:unitValues.score}**!",
@@ -2419,8 +2419,8 @@
       "Velanna is waiting for you at a crossroads, arms folded. You smile stupidly, causing her to roll her eyes, overwhelmed by your simplicity. She deigns to give you her precious advice on how to avoid life making you her puppet, and teaches you that an expedition is no walk in the park. Your fellow adventurer will face dangers, predators, bad weather... but the rewards are worth it: gold, experience, rare items and tokens.",
       "You find Velanna butchering a hare with brutal efficiency. She looks up at you without stopping her work, deigning to share with you her experience of animal expeditions. She tells you that the longer the mission, the greater the booty, but the pet will need more food for the journey. She wipes her blade on her thigh and retrieves her catch before resuming her journey.",
       "Velanna catches you resting and kicks your canteen over. You leap to your feet, ready to listen to her every word. Deigning to share her knowledge, the warrior explains that the risk of an expedition depends on the strength of your pet: a powerful, trained beast will be able to brave the most inhospitable terrain, while a weak, fearful animal may not be able to overcome such obstacles.",
-      "Velanna appears in your camp, a woven basket under her arm. She pulls out some wild fruit and shares it with you. She explains that, to go on an expedition, a pet needs to be fed and confident: hungry or quarrelsome beasts refuse outright. She bites into an apple, then leaves with her provisions.",
-      "Velanna emerges from the tall grass, looking serious, staring at the guild emblem on your tunic. She reminds you of the importance of your tunic, as it gives you access to a stock of food to fill your pet's belly during expeditions. After all, your pet will need to refuel regularly to carry out its mission!",
+      "Velanna appears in your camp, a woven basket under her arm. She pulls out some wild fruit and shares it with you. She explains that, to go on an expedition, a pet needs to be fed and confident: feisty or hungry beasts refuse outright. She bites into an apple, then leaves with her provisions.",
+      "Velanna emerges from the tall grass, looking serious, staring at the guild emblem on your tunic. She reminds you of its importance, as it gives you access to a stock of food to fill your pet's belly during expeditions. After all, your pet will need to refuel regularly to carry out its mission!",
       "At the bend in a rocky path, you spot Velanna crouched atop a rock, scanning the horizon. Her sharp gaze settles on you, and she deigns to come down from her perch. She teaches you that terrain influences expedition rewards: mountains hold riches, forests forge experience, while exploring swamps will please the king. She walks away silently, leaving you to ponder her words.",
       "You discover Velanna sitting on a stump, sharpening her dagger with methodical gestures. Her gaze falls on you and she greets you nonchalantly. She deigns to explain that prolonged expeditions bring more rewards, but deplete your guild's food reserves more quickly. She tests the edge of her blade on her thumb, then disappears between the trees.",
       "Velanna emerges from behind a tree, startling you. Her eyes scan yours intently as she reveals an essential truth: a pet's affection determines its resistance to danger. She explains that the stronger the bond between master and beast, the greater the chances of success. She dusts off her leather tunic and leaves without looking back, leaving you to assimilate this lesson.",
@@ -2428,16 +2428,16 @@
       "You discover Velanna kneeling by a stream, tracing ancestral symbols in the damp mud. She looks up at you, surprised by your intrusion, but decides to share a rare secret. She tells you that the most accomplished adventurers have discovered the art of cloning: their pets can exist in two places simultaneously, exploring the world while protecting their master in battle. She briskly erases her drawings and silently walks away.",
       "Velanna emerges from the thicket, her face grave. She approaches you and warns you that pets dream of adventure as soon as an expedition begins. She tells you that canceling preparations or calling the beast back mid-journey breaks this sacred promise. She sticks her finger in your chest and warns you that every betrayal leaves a scar on your companion's heart, and that the wound deepens with every disappointment.",
       "Velanna emerges from behind a mossy rock, a gnawed bone between her teeth, which she casually throws over her shoulder. She approaches you and places a hand on your shoulder. She tells you that one of her clan elders used to change his mind at the last minute, constantly calling his pet back along the way. The beast came to hate him. She warns you that the more frequent the cancellations, the more severe the loss of affection.",
-      "Velanna stands in your way, legs spread and arms crossed, a stern expression on her scarred face. She orders you to listen carefully. She explains that a familiar's eyes sparkle with excitement at the sight of an expedition map, its heart racing at the thought of the promised adventure. She tells you that canceling before departure or calling back in the middle of an exploration has the same devastating effect: a broken promise. She counts on her fingers and warns you that the loss of love doubles on the second betrayal, triples on the third. Familiars never forget."
+      "Velanna stands in your way, legs spread and arms crossed, a stern expression on her scarred face. She orders you to listen carefully. She explains that a pet's eyes sparkle with excitement at the sight of an expedition map, its heart racing at the thought of the promised adventure. She tells you that canceling before departure or calling back in the middle of an exploration has the same devastating effect: a broken promise. She counts on her fingers and warns you that the loss of love doubl"
     ]
   },
   "petDropToken": {
     "stories": [
-      "you spot {{pet}}, the pet from **{{owner}}**, trotting happily along the same path as you. As he passes you, he drops a shiny object from his mouth. You pick it up: it's a {emote:unitValues.token} **jeton**!",
-      "you come across {{pet}} de **{{owner}}** on your way. The familiar seems to recognize you and lays a {emote:unitValues.token} **jeton** at your feet before moving on.",
-      "the sound of footsteps attracts your attention. You discover {{pet}}, **{{owner}}**'s pet, galloping along the same path as you. On seeing you, the pet stops and lets out a {emote:unitValues.token} **jeton** from its coat before setting off again.",
-      "you notice {{pet}} de **{{owner}}** strolling quietly along not far from you. The expedition pet spots you and, with a friendly gesture, rolls a {emote:unitValues.token} **jeton** in your direction.",
-      "a familiar silhouette emerges in the distance: it's {{pet}}, **{{owner}}**'s pet, out on an expedition. He joins you briefly and drops a {emote:unitValues.token} **jeton** from his collar before continuing his mission."
+      "you spot {{pet}}, **{{owner}}**'s pet, trotting happily along the same path as you. As it passes you, it drops a shiny object from its mouth. You pick it up: it's a {emote:unitValues.token} **token**!",
+      "you come across {{pet}}, **{{owner}}**'s pet, on expedition along your route. The pet seems to recognize you and lays a {emote:unitValues.token} **token** at your feet before moving on.",
+      "the sound of footsteps attracts your attention. You discover {{pet}}, **{{owner}}**'s pet, galloping along the same path as you. On seeing you, the pet stops and drops a {emote:unitValues.token} **token** from its coat before setting off again.",
+      "you notice {{pet}}, **{{owner}}**'s pet, strolling quietly along not far from you. The pet on expedition spots you and, with a friendly gesture, rolls a {emote:unitValues.token} **token** in your direction.",
+      "a familiar silhouette emerges in the distance: it's {{pet}}, **{{owner}}**'s pet, out on an expedition. It joins you briefly and drops a {emote:unitValues.token} **token** from its collar before continuing its mission."
     ]
   },
   "altar": {
@@ -2453,7 +2453,7 @@
     ],
     "refused": [
       "You look away and continue on your way. The oracle doesn't utter a word, but his silence is heavy with reproach.",
-      "You move on, pockets intact. The oracle stares at you briefly, squinting, then turns back to the altar to resume her solitary vigil."
+      "You move on, pockets intact. The oracle stares at you briefly, squinting, then turns back to the altar to resume his solitary vigil."
     ],
     "blessingTriggered": [
       "Your **{{amount, number}}** {{moneyEmote}} complete the offering. The altar cracks with light, the runes soar in incandescent spirals and a wave of force passes through the entire world. The oracle curtsies, eyes wide: the blessing **{{blessingType}}** has just awakened for all adventurers.",
