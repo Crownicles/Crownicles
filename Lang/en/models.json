@@ -231,7 +231,7 @@
     },
     "breakArmor": {
       "failure": "calls on **{{petNickname}}** who charges his opponent. Unfortunately, he misses his target completely.",
-      "success": "asks for help from his familiar, who charges at his opponent. The latter protects himself from the attack, but his equipment is carried away by **{{petNickname}}** !"
+      "success": "asks for help from its pet, who charges at its opponent. The latter protects himself from the attack, but his equipment is carried away by **{{petNickname}}** !"
     },
     "boulderTossAttack": {
       "name_one": "Boulder toss",
@@ -252,7 +252,7 @@
       "stop": "is no longer burnt."
     },
     "canonAttack": {
-      "description": "The accuracy of this attack decreases on fast opponents. A damage bonus is affected to this attack if the opponent is slow. Opponent may be slowed down by attack. Deals more damage if used multiple times in a row.",
+      "description": "The accuracy of this attack decreases on fast opponents. A damage bonus is applied to this attack if the opponent is slow. Opponent may be slowed down by attack. Deals more damage if used multiple times in a row.",
       "name_one": "Cannon attack",
       "name_other": "Cannon attacks"
     },
@@ -383,7 +383,7 @@
       "stop": "is no longer frozen."
     },
     "full": {
-      "name": "full and healed of your alterations",
+      "name": "sated and healed of your status conditions",
       "new": "is full and needs to rest. `Speed: 0`",
       "active": "is full and needs to rest.",
       "stop": "is no longer full."
@@ -475,7 +475,7 @@
       "name": "angry",
       "new": "is angry.",
       "active": "is angry.",
-      "stop": "is no longer angry but becomes giddy."
+      "stop": "is no longer angry but becomes stunned."
     },
     "outrageAttack": {
       "customMessage": "gets angry.",
@@ -569,7 +569,7 @@
       "name_other": "Quick attacks"
     },
     "rageExplosion": {
-      "description": "Explodes the rage accumulated during the trip on the enemy.",
+      "description": "Explodes the rage accumulated during the journey on the enemy.",
       "customMessage": "unleashes its rage on the enemy!",
       "name_one": "Rage explosion",
       "name_other": "Rage explosions"
@@ -583,7 +583,7 @@
       "name_other": "Ram Attacks"
     },
     "resting": {
-      "description": "Applies to the caster. The amount of energy recovered is divided by 4 after 4 uses.",
+      "description": "Applied as healing to the caster.",
       "customMessage": "rests...",
       "name_one": "Rest",
       "name_other": "Rests"
@@ -622,7 +622,7 @@
       "name_other": "Simple attacks"
     },
     "glacialCaveCollapseAttack": {
-      "customMessage": "roars so loud that ice stalactites stand out from the ceiling! But the enemy is close enough to avoid attack.",
+      "customMessage": "roars so loud that ice stalactites break off from the ceiling! But the enemy is close enough to avoid attack.",
       "name_one": "Coldbreakdown attack",
       "name_other": "Frost Fall Attacks"
     },
@@ -641,7 +641,7 @@
       "name_other": "Radiant Explosive Attacks"
     },
     "hammerQuakeAttack": {
-      "customMessage": "hit the ground with a titanic force, provoking an earthquake! But the enemy jumped up in the air with his winged companion, escaping from the jolt.",
+      "customMessage": "hits the ground with a titanic force, provoking an earthquake! But the enemy jumped up in the air with his winged companion, escaping from the jolt.",
       "name_one": "Seismic Hammer Attack",
       "name_other": "Seismic Hammer Attack"
     },
@@ -751,7 +751,7 @@
       "success": "is aided in his fight by **{{petNickname}}** who sets the arena ablaze with his fiery flames."
     },
     "spitInk": {
-      "success": "call **{{petNickname}}** who spits ink at the opponent."
+      "success": "calls **{{petNickname}}** who spits ink at the opponent."
     },
     "stealWeapon": {
       "failure": "appeals to **{{petNickname}}** for a little help, but the creature, finding no treasure worthy of his interest on the adversary, refuses to venture into hostile territory.",
@@ -770,8 +770,8 @@
     "stunned": {
       "name": "stunned",
       "active": "is stunned.",
-      "noAction": "is dazed and unable to attack.",
-      "stop": "is no longer dizzy."
+      "noAction": "is stunned and unable to attack.",
+      "stop": "is no longer stunned."
     },
     "summonAttack": {
       "name_one": "Ally Summoning",
@@ -907,17 +907,17 @@
       "particle": "of the"
     },
     "1101": {
-      "description": "An area of frozen land or climate is merciless. Permanent snow conditions make it difficult to make progress and mapping of the place, where all types of arctic animals can be crossed.",
+      "description": "A frozen land where the climate is merciless. Only the strongest adventurers dare to brave its glacial expanses.",
       "name": "Tundra",
       "particle": "of the"
     },
     "1102": {
-      "description": "A large cave in which any sunshine that comes in is multiply by the crystals making the crystal bright in it. Sharp stalactites and sharp stalagmites, synonyms of serious injuries and deadly injuries if one of them falls on us or takes a step of the way, form the caves of the cave. If you dare to venture further, you will have to choose whether to climb to the top of the snowy peak or go deeper still.",
+      "description": "A cave burrowed into the mountain, teeming with magnificent gemstones. The crystals multiply on the walls, and their reflections light up every step of the way.",
       "name": "Crystal cave",
       "particle": "of the"
     },
     "1103": {
-      "description": "Two majestic doors are located at the top of a long range of walks and climbing them will not be easy. It is said that they were built by an ancient civilization in honour of a deity.",
+      "description": "A path carved into the mountainside, featuring a long flight of steps leading to a monumental gate guarded by a mysterious figure.",
       "name": "Sacred Doors",
       "particle": "of the"
     },
@@ -932,12 +932,12 @@
       "particle": "of"
     },
     "1106": {
-      "description": "An abandoned rich village of which only ruins and settlements remain. Here you can see the roof of a manor that bent under the weight of the bell of the collapsed church. There is a silence sometimes interrupted by the cries of suffering of the railway stations.",
+      "description": "A once-thriving village, now reduced to ruins and desolation. Only the cries of suffering of lost souls remind us that life once existed here.",
       "name": "Village devastated",
       "particle": "of the"
     },
     "1107": {
-      "description": "No one has yet ventured to the point. In the distance, you see a gigantic silhouette fleeting on an ice wall.",
+      "description": "A region where the cold becomes extreme. Behind a wall of ice, explorers can glimpse a gigantic silhouette reflecting on the frozen surface.",
       "name": "Ice Nest",
       "particle": "of"
     },
@@ -997,7 +997,7 @@
       "particle": "of the"
     },
     "21": {
-      "description": "A road, very popular with the villagers. Lots of small sellers settle there for a day for making a huge market together.",
+      "description": "A road, very popular with the villagers. Lots of small sellers settle there for a day ultimately creating a huge market.",
       "name": "Road of Wonders",
       "particle": "of the"
     },
@@ -1017,22 +1017,22 @@
       "particle": "of"
     },
     "24": {
-      "description": "A very stiff road that leads to Claire de Ville. Everything depends on which way you're following it.",
+      "description": "A very steep road that leads to Claire de Ville. Everything depends on which way you're following it.",
       "name": "Climbing road",
       "particle": "of the"
     },
     "25": {
-      "description": "Everything is in the name. A river well appreciated by fishmen from Claire de Ville.",
+      "description": "Everything is in the name. A river well appreciated by fishmongers from Claire de Ville.",
       "name": "Crabs' River",
       "particle": "of"
     },
     "26": {
-      "description": "A peaceful town on the verge of the Sentinel Beach.",
+      "description": "A peaceful town on the edge of the Sentinel Beach.",
       "name": "Seawynne",
       "particle": "of"
     },
     "27": {
-      "description": "A forest on the verge of the Mount Celestrum",
+      "description": "A forest at the foot of Mount Celestrum",
       "name": "Celestrum Forest",
       "particle": "of"
     },
@@ -1042,7 +1042,7 @@
       "particle": "of"
     },
     "29": {
-      "description": "The reception room of the King's castle.",
+      "description": "A vast room adorned with numerous works of art.",
       "name": "Reception room",
       "particle": "of the"
     },
@@ -1232,8 +1232,8 @@
   "missions": {
     "anyFight_one": "Do {{count}} fight",
     "anyFight_other": "Do {{count}} fights",
-    "bigFeast": "Participate to a big feast",
-    "buyItemFromAlderic": "Buy an item at Aldéric",
+    "bigFeast": "Participate in a big feast",
+    "buyItemFromAlderic": "Buy an item from Aldéric",
     "buyTokensFromShop_one": "Buy {{count}} {emote:unitValues.token} token at the store",
     "buyTokensFromShop_other": "Buy {{count}} {emote:unitValues.token} tokens at the store",
     "buyUltimateSoups_one": "Buy at least {{count}} ultimate soup",
@@ -1241,8 +1241,8 @@
     "chooseClass": "Choose a class other than {emote:classes.0} Recruit",
     "chooseClassTier": "Get a class of tier {{variantText}} or more",
     "commandFightHistory": "View the history of people who have attacked you",
-    "commandMission": "Make order {command:missions}",
-    "commandReport": "Make order {command:report}",
+    "commandMission": "Use the {command:missions} command",
+    "commandReport": "Use the {command:report} command",
     "dailyPotionsStock": "Buy the whole stock of daily potions",
     "doReports_one": "Do {{count}} report",
     "doReports_other": "Do {{count}} reports",
@@ -1259,8 +1259,8 @@
     "earnMoney": "Harvest {{count, number}} {emote:unitValues.money}",
     "earnPoints": "Win {{count, number}} {emote:unitValues.score}",
     "earnTokens_one": "Win {{count}} token {emote:unitValues.token}",
-    "earnTokens_other": "Win {{count}} {emote:unitValues.token}",
-    "earnTokensInOneExpedition_one": "Win {{count}} {emote:unitValues.token} token in a single expedition",
+    "earnTokens_other": "Win {{count}} tokens {emote:unitValues.token}",
+    "earnTokensInOneExpedition_one": "Win {{count}} {emote:unitValues.token} tokens in a single expedition",
     "earnTokensInOneExpedition_other": "Win {{count}} {emote:unitValues.token} tokens in a single expedition",
     "earnXP": "Win {{count, number}} {emote:unitValues.xp}",
     "exploreDifferentPlaces": "Explore {{count}} different places",
@@ -1274,13 +1274,13 @@
     "findOrBuyItem_other": "Find or buy {{count}} items",
     "finishWithAttack": "Use {{count}} times the {{variantText}} to finish your opponent",
     "fromPlaceToPlace": "{{variantText}}",
-    "gainRage_one": "Earn {{count}} rage points {emote:unitValues.rage} by beating wild animals",
+    "gainRage_one": "Earn {{count}} rage point {emote:unitValues.rage} by beating wild animals",
     "gainRage_other": "Earn {{count}} rage points {emote:unitValues.rage} by defeating wild animals",
     "goToPlace": "Travel to {{variantText}}",
     "guildDailyFromSomeoneElse": "Receive a guild daily reward without asking for it",
     "guildDaily_one": "Receive {{count}} guild reward",
     "guildDaily_other": "Receive {{count}} guild rewards",
-    "guildHasPoints": "Help your guild get more {{count, number}} guild points {emote:unitValues.guildPoint}",
+    "guildHasPoints": "Help your guild get more than {{count, number}} guild points {emote:unitValues.guildPoint}",
     "guildLevel": "Be in a guild level {{count, number}} or more",
     "haveItemRarity": "Have an item with a rarity {{variantText}} or better",
     "havePet": "Have a pet with you",
@@ -1311,18 +1311,18 @@
     "dangerousExpedition": "Successfully complete an expedition of \"{{variantText}}\" or higher danger level",
     "expeditionStreak_one": "Successful {{count}} expedition in a row",
     "expeditionStreak_other": "Successful {{count}} expeditions in a row",
-    "dailyStreak_one": "Accomplish daily mission {{count}} day in a row",
+    "dailyStreak_one": "Accomplish the daily mission {{count}} day in a row",
     "dailyStreak_other": "Complete the daily mission {{count}} days in a row",
     "showCloneToTalvar": "Show Talvar a clone",
     "petEarnHealth": "Earn health with a pet",
     "reachGlory": "{{count}} glory points {emote:unitValues.glory} or more",
     "reachLevel": "Reach level {{count}}",
-    "reachScore": "Score at {{count}} {emote:unitValues.score}",
+    "reachScore": "Have a score higher than {{count}} {emote:unitValues.score}",
     "recoverAlteration_one": "Recover from {{count}} alteration",
     "recoverAlteration_other": "Recover from {{count}} alterations",
     "sellItemWithGivenCost_one": "Sell {{count}} equipment for more than {{variantText}} {emote:unitValues.money}",
     "sellItemWithGivenCost_other": "Sell {{count}} equipment for more than {{variantText}} {emote:unitValues.money}",
-    "sellItems_one": "Sell {{count}} object",
+    "sellItems_one": "Sell {{count}} item",
     "sellItems_other": "Sell {{count}} items",
     "sellOrTradePet": "Sell a pet to another player",
     "showPetsToTalvar_one": "Showing {{count}} animal to Talvar",
@@ -1337,7 +1337,7 @@
     "travelHours_other": "Do {{count}} travels of at least {{variantText}} hours",
     "unlock": "Unlock someone from jail",
     "useTokens_one": "Use {{count}} token {emote:unitValues.token} to advance",
-    "useTokens_other": "Use {{count}} {emote:unitValues.token} to advance",
+    "useTokens_other": "Use {{count}} tokens {emote:unitValues.token} to advance",
     "wealthyPayForPVEIsland": "Buy a trip to a mysterious island at a very high price",
     "winBoss_one": "Win {{count}} boss fight",
     "winBoss_other": "Win {{count}} boss fights",
@@ -1349,7 +1349,7 @@
     "drinkPotionRarity": "$t(items:rarities.{{variant}})",
     "haveItemRarity": "$t(items:rarities.{{variant}})",
     "fightMinTurns": "{{variant}}",
-    "fromPlaceToPlace_order": "Make {{place1}}-{{place2}} in less than {{time}} hours",
+    "fromPlaceToPlace_order": "Travel from {{place1}} to {{place2}} in less than {{time}} hours",
     "fromPlaceToPlace_noOrder": "{{place1}}-{{place2}} (or vice versa) in less than {{time}} hours",
     "fromPlaceToPlace_secondPart": "Reach {{place}} before {{time}}",
     "goToPlace": "{emote:mapTypes.{{mapType}}} $t(models:map_locations.{{variant}}.name)",
@@ -1383,11 +1383,11 @@
     },
     "whiteWolf": {
       "name": "White Wolf",
-      "description": "A felicitous and agile predator. Its sealed claws could seal your fate. The cold and winding trails offer a great advantage in the face of reckless adventurers."
+      "description": "A ferocious and agile predator. Its sharp claws and snow-white fur allow it to blend in with the tundra and take its prey by surprise."
     },
     "shinyElementary": {
-      "name": "Glossy elementary",
-      "description": "A cave crystals. It won't behave to use its elementary powers to get you to the other end of the way."
+      "name": "Shiny Elemental",
+      "description": "A being born from the cave's crystals. It won't hesitate to use its elemental powers to send you flying to the other end of the path."
     },
     "crocodile": {
       "name": "Crocodile",
@@ -1395,19 +1395,19 @@
     },
     "yukiOnna": {
       "name": "Yuki-Onna",
-      "description": "A snow-minded woman. She's beautiful but also dangerous. She can freeze her prey with a simple glance and make them disappear into the snow."
+      "description": "A female snow spirit who lures travelers with an enchanting melody. Behind her beauty hides a relentless force. Taking on human form, she can freeze anything in her path."
     },
     "celestialGuardian": {
-      "name": "This Keeper",
-      "description": "The guardian of the sacred gates. Empowering adventurers is his duty, and he will use his divine hammer to make you understand that you are not welcome."
+      "name": "Celestial Guardian",
+      "description": "Preventing adventurers from passing is its duty. Its sheer size and stone hammer make it a formidable opponent. Few have dared to challenge it, and fewer still have survived."
     },
     "maleIceDragon": {
       "name": "Ice Lord",
-      "description": "A majestic dragon with crystalline scale that reigns from the icy peaks. Perched on the highest peaks, he watched his territory with a watchful eye. Its icy breath can turn an adventurer into an ice statue in a few seconds, and its tight greenhouses allow it to melt on its prey from heights with deadly precision."
+      "description": "The male ice dragon rules the skies with unmatched power. Its sharp talons allow it to swoop down on its prey from the heights with deadly precision. Its icy breath can freeze an area in an instant."
     },
     "femaleIceDragon": {
       "name": "Ice Queen",
-      "description": "A fearsome dragon that farewell protects its treasure, and its progeny in the icy depths of its lair. Aggressive than her companion, she is not bewitching her fury against anyone daring to approach her nest. Its scales glitter like diamonds and its tail can break the thickest ice at once."
+      "description": "The female ice dragon fiercely protects her nest. She does not hesitate to unleash her fury on anyone who threatens her offspring. More aggressive than her male counterpart, she has a much wider range of attacks."
     }
   },
   "objects": {
@@ -1434,7 +1434,7 @@
     "27": "Magic sax",
     "28": "Terrifying guitar",
     "29": "Credit card",
-    "3": "Keratinized diamond",
+    "3": "Keraunic diamond",
     "30": "Mechanical leg",
     "31": "Cute cat with laser-throwing eyes",
     "32": "Kyu'spoon",
@@ -1447,11 +1447,11 @@
     "39": "Power of Nayru",
     "4": "Hope flower",
     "40": "Lifeless angel's ring",
-    "41": "Ornated minotaur's urn",
+    "41": "Ornate minotaur's urn",
     "42": "Bunny's clock",
     "43": "Banan'ase split",
     "44": "Big tree's apple",
-    "45": "Midas Amulett",
+    "45": "Midas Midas Amulet",
     "46": "Shooting star",
     "47": "Kyuran",
     "48": "Particle accelerator",
@@ -1459,7 +1459,7 @@
     "5": "Mojaro's Moon",
     "50": "Pegasus Boots",
     "51": "Nimbus 2000",
-    "52": "Swiping soap",
+    "52": "Slippery soap",
     "53": "Super medal",
     "54": "Hunting horn",
     "55": "Big Wallet",
@@ -1478,7 +1478,7 @@
     "67": "Kars",
     "68": "Tardis",
     "69": "Music",
-    "7": "Magic Chain",
+    "7": "Magic Chains",
     "70": "Bed",
     "71": "Buzz Lightyear figurine",
     "72": "Sun",
@@ -1925,7 +1925,7 @@
     "ultimateFood_capitalized": "Ultimate soup",
     "commonFood_one": "treat",
     "commonFood_other": "treats",
-    "commonFood_capitalized": "Sweets"
+    "commonFood_capitalized": "Treat"
   },
   "diet_omnivorous": "{emote:diet.omnivorous} Omnivorous",
   "diet_herbivorous": "{emote:diet.herbivorous} Herbivorous",
@@ -1935,8 +1935,8 @@
     "female": "Female"
   },
   "talisman": {
-    "anchor": "{emote:expedition.talisman} **Anchoring Talisman",
-    "clone": "{emote:expedition.cloneTalisman} **Cloning Talisman"
+    "anchor": "{emote:expedition.talisman} **Anchoring Talisman**",
+    "clone": "{emote:expedition.cloneTalisman} **Cloning Talisman**"
   },
   "ordinals": {
     "get_feminine_ordinal_one": "1st",
@@ -1949,11 +1949,11 @@
     "levelUpDesc": "The guild is now level **{{level, number}}**!"
   },
   "players": {
-    "koTitle": "{{pseudo}}you've been knocked out!",
+    "koTitle": "{{pseudo}}, you've been knocked out!",
     "koDesc": "{emote:effects.dead} Use the {command:respawn} command to start playing again.",
     "koDmTitle": "Hello Fighter!",
     "koDmDesc": "It seems that you've been knocked out... {emote:effects.dead}\nThanks to our advanced technologies, we were able to alter the events as such as to let you avoid an agonizing death! {emote:other.tada}\nUnfortunately, the operation is costly and your score has been affected by this death in consequence...\n\nTo restart playing, use {command:respawn}.",
-    "leavePVEIslandTitle": "{{pseudo}}fainting",
+    "leavePVEIslandTitle": "{{pseudo}}, fainting",
     "leavePVEIslandDescStart": "{emote:effects.confounded} You feel your strength leave you, you're at your wits' end. You pass out on the floor...\n\n{emote:unitValues.lostMoney} Money lost: **{{moneyLost, number}}**",
     "leavePVEIslandMalusGuildPoints": "\n{emote:unitValues.guildPoint} Guild points lost: **{{guildPointsLost, number}}**",
     "leavePVEIslandDescEnd": "\n\nA boat will pick you up and take you back to a coast on the mainland.",
@@ -1964,10 +1964,10 @@
         "healthRestored": "{emote:unitValues.health} | Your life has been restored.",
         "fightUnlocked": "{emote:unitValues.attack} | Battles unlocked with commands {command:fight} and {command:fighthistory} ! For more information about combat, execute the {command:help} command.",
         "guildUnlocked": "{emote:other.guild} | Guilds unlocked with the commands {command:guild}, {command:guildcreate}, {command:guildinvite}, {command:guildleave}, {command:guilddailybonus}, {command:guildkick} and much more! For more information on guilds, use the command {command:help}.",
-        "classUnlocked": "{emote:commands.classes} | Classes unlocked with {command:classes} and {command:classesinfo} commands! For more information on classes, use the {command:help}command.",
-        "classTier": "{emote:commands.classes} | Level classes {{tier}} unlocked! For more information on the classes, use the commands {command:classesinfo} and {command:help}.",
+        "classUnlocked": "{emote:commands.classes} | Classes unlocked with {command:classes} and {command:classesinfo} commands! For more information on classes, use the {command:help} command.",
+        "classTier": "{emote:commands.classes} | Tier {{tier}} unlocked! For more information on the classes, use the commands {command:classesinfo} and {command:help}.",
         "newMissionSlot": "{emote:missions.sideMission} | New mission slot unlocked! For more information on your missions, use the command {command:missions}.",
-        "pveUnlocked": "{emote:other.island} | Access to unlocked remote islands! Meet at a watering hole for new adventures!",
+        "pveUnlocked": "{emote:other.island} | Access to remote islands unlocked! Head to a body of water for new adventures!",
         "tokensUnlocked": "{emote:unitValues.token} | Tokens unlocked! You can now use your tokens to advance faster with the {command:report} command.",
         "statsIncreased": "{emote:other.increase} | Improved statistics."
       }
