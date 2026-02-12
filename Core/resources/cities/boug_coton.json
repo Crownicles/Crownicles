@@ -41,17 +41,17 @@
         {
           "id": "simpleRoom",
           "price": 500,
-          "health": 50
+          "health": 14
         },
         {
           "id": "comfortableRoom",
           "price": 1000,
-          "health": 100
+          "health": 35
         },
         {
           "id": "luxuryRoom",
           "price": 1500,
-          "health": 200
+          "health": 60
         }
       ]
     }

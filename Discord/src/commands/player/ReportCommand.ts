@@ -11,6 +11,7 @@ import {
 	CommandReportBuyHomeRes,
 	CommandReportChooseDestinationCityRes,
 	CommandReportEatInnMealRes,
+	CommandReportHomeBedRes,
 	CommandReportItemEnchantedRes,
 	CommandReportMonsterRewardRes,
 	CommandReportMoveHomeRes,
@@ -1259,6 +1260,28 @@ export async function handleBlacksmithMissingMaterials(context: PacketContext): 
 			pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
 		}), interaction.user)
 		.setDescription(i18n.t("commands:report.city.blacksmith.missingMaterialsDescription", { lng }));
+
+	await interaction.editReply({
+		embeds: [embed]
+	});
+}
+
+export async function handleHomeBed(packet: CommandReportHomeBedRes, context: PacketContext): Promise<void> {
+	const interaction = MessagesUtils.getCurrentInteraction(context);
+	if (!interaction) {
+		return;
+	}
+	const lng = context.discord!.language;
+
+	const embed = new CrowniclesEmbed()
+		.formatAuthor(i18n.t("commands:report.city.homes.bed.restTitle", {
+			lng,
+			pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
+		}), interaction.user)
+		.setDescription(i18n.t("commands:report.city.homes.bed.restDescription", {
+			lng,
+			health: packet.health
+		}));
 
 	await interaction.editReply({
 		embeds: [embed]

@@ -63,7 +63,8 @@ export enum NumberChangeReason {
 	UPGRADE_HOME,
 	MOVE_HOME,
 	BLACKSMITH_UPGRADE,
-	BLACKSMITH_DISENCHANT
+	BLACKSMITH_DISENCHANT,
+	HOME_BED
 }
 
 export enum ShopItemType {

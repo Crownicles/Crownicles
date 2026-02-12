@@ -36,13 +36,13 @@
       "rooms": [
         {
           "id": "royalSuite",
-          "price": 6000,
-          "health": 450
+          "price": 3500,
+          "health": 200
         },
         {
           "id": "imperialSuite",
-          "price": 9000,
-          "health": 650
+          "price": 5000,
+          "health": 300
         }
       ]
     }

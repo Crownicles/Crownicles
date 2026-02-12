@@ -270,3 +270,11 @@ export class CommandReportBlacksmithDisenchantRes extends CrowniclesPacket {
 	/** Gold cost paid for disenchanting */
 	cost!: number;
 }
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportHomeBedRes extends CrowniclesPacket {
+	health!: number;
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportHomeBedAlreadyFullRes extends CrowniclesPacket {}

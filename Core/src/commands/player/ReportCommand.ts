@@ -40,6 +40,7 @@ import {
 	ReactionCollectorCityUpgradeHomeReaction,
 	ReactionCollectorEnchantReaction,
 	ReactionCollectorExitCityReaction,
+	ReactionCollectorHomeBedReaction,
 	ReactionCollectorHomeMenuReaction,
 	ReactionCollectorInnMealReaction,
 	ReactionCollectorInnRoomReaction,
@@ -76,6 +77,7 @@ import {
 	handleBuyHomeReaction,
 	handleCityShopReaction,
 	handleEnchantReaction,
+	handleHomeBedReaction,
 	handleInnMealReaction,
 	handleInnRoomReaction,
 	handleMoveHomeReaction,
@@ -113,8 +115,17 @@ export default class ReportCommand {
 		}
 
 		const city = CityDataController.instance.getCityByMapLinkId(player.mapLinkId);
-		if (city && currentEffectFinished) {
-			await sendCityCollector(context, response, player, currentDate, city, forceSpecificEvent);
+		if (city) {
+			if (currentEffectFinished) {
+				await sendCityCollector(context, response, player, currentDate, city, forceSpecificEvent);
+			}
+			else {
+				response.push(makePacket(RequirementEffectPacket, {
+					currentEffectId: player.effectId,
+					remainingTime: player.effectRemainingTime()
+				}));
+				BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.REPORT_COMMAND);
+			}
 			return;
 		}
 
@@ -136,15 +147,7 @@ export default class ReportCommand {
 		}
 
 		if (!currentEffectFinished) {
-			if (city) {
-				response.push(makePacket(RequirementEffectPacket, {
-					currentEffectId: player.effectId,
-					remainingTime: player.effectRemainingTime()
-				}));
-			}
-			else {
-				await sendTravelPath(player, response, currentDate, player.effectId);
-			}
+			await sendTravelPath(player, response, currentDate, player.effectId);
 			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.REPORT_COMMAND);
 			return;
 		}
@@ -258,6 +261,9 @@ function cityCollectorEndCallback(context: PacketContext, player: Player, forceS
 					break;
 				case ReactionCollectorHomeMenuReaction.name:
 					// Home menu reaction - currently just re-opens city menu (handled by Discord frontend)
+					break;
+				case ReactionCollectorHomeBedReaction.name:
+					await handleHomeBedReaction(player, collector.creationPacket.data.data as ReactionCollectorCityData, response);
 					break;
 				case ReactionCollectorUpgradeItemReaction.name:
 					await handleUpgradeItemReaction(

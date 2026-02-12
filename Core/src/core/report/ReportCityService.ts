@@ -38,6 +38,8 @@ import {
 	CommandReportEatInnMealCooldownRes,
 	CommandReportEatInnMealRes,
 	CommandReportEnchantNotEnoughCurrenciesRes,
+	CommandReportHomeBedAlreadyFullRes,
+	CommandReportHomeBedRes,
 	CommandReportItemCannotBeEnchantedRes,
 	CommandReportItemEnchantedRes,
 	CommandReportMoveHomeRes,
@@ -1027,4 +1029,40 @@ export async function openRoyalMarket(player: Player, context: PacketContext, re
 			gemToMoneyRatio: calculateGemsToMoneyRatio()
 		}
 	});
+}
+
+/**
+ * Handle home bed reaction — player rests in their home bed to recover health
+ */
+export async function handleHomeBedReaction(
+	player: Player,
+	data: ReactionCollectorCityData,
+	response: CrowniclesPacket[]
+): Promise<void> {
+	await player.reload();
+
+	const homeData = data.home.owned;
+	if (!homeData) {
+		CrowniclesLogger.error(`Player ${player.keycloakId} tried to use home bed without owning a home.`);
+		return;
+	}
+
+	const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
+	const maxHealth = player.getMaxHealth(playerActiveObjects);
+	if (player.getHealth(playerActiveObjects) >= maxHealth) {
+		response.push(makePacket(CommandReportHomeBedAlreadyFullRes, {}));
+		return;
+	}
+
+	await player.addHealth({
+		amount: homeData.features.bedHealthRegeneration,
+		response,
+		reason: NumberChangeReason.HOME_BED,
+		playerActiveObjects
+	});
+	await TravelTime.applyEffect(player, Effect.SLEEPING, 0, new Date(), NumberChangeReason.HOME_BED);
+	await player.save();
+	response.push(makePacket(CommandReportHomeBedRes, {
+		health: homeData.features.bedHealthRegeneration
+	}));
 }
