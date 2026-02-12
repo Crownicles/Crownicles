@@ -281,7 +281,7 @@
     ],
     "poor": [
       "At the sight of the clothes of {{playerDisplay}}, it seems to be having money problems... You think it would be happy if you gave him a piece.\n\n{emote:collectors.interactPoorCoin} Give him a coin\n{emote:collectors.refuse} Do not give him a coin",
-      "While walking, you meet this poor vagrant from {{playerDisplay}}. He asks you for a few coins:\n\n{emote:collectors.interactPoorCoin} Give him a coin, as you already have enough\n{emote:collectors.refuse} Don't give him a coin",
+      "While walking, you meet that poor vagrant {{playerDisplay}}. He asks you for a few coins:\n\n{emote:collectors.interactPoorCoin} Give him a coin, since you already have enough\n{emote:collectors.refuse} Don't give him a coin",
       "Misery touches everyone one day, and today it's {{playerDisplay}} who can barely afford a meal.\n\n{emote:collectors.interactPoorCoin} Give him a coin\n{emote:collectors.refuse} Don't give him a coin"
     ],
     "poor_give_money": [
@@ -397,7 +397,7 @@
       ],
       "occupied": [
         "You spot {{playerDisplay}} and invite him to have a chat, but he tells you he's busy. It's only a postponement, and you each continue on your way.",
-        "While crossing the river, you come across {{playerDisplay}}, who is quite busy... You try to chat with him, but to no avail. Instead, he asks you to help him with his work.",
+        "During your journey, you come across {{playerDisplay}}, who is quite busy... You try to chat with him, but to no avail. Instead, he asks you to help him with his work.",
         "On your way, you come across {{playerDisplay}}, who seems very busy. You try to find out more, to no avail, before continuing on your way."
       ],
       "jailed": [
@@ -414,19 +414,19 @@
   "leagueReward": {
     "intrigue": [
       "you notice a large poster from the corner of your eye...",
-      "you slip on the lower side of the road and fall to the ground. As you get back up, you notice a small scroll...",
+      "you slip on the roadside and fall to the ground. As you get back up, you notice a small scroll...",
       "a bird approaches you and drops a tiny message in your hand...",
       "you discover an old, abandoned wooden hut, you decide to explore it and discover only an old grimoire that seems to have been lying around for years..."
     ],
     "reward": "{emote:unitValues.money} Money: **{{money, number}}**\n{emote:unitValues.xp} XP: **{{xp, number}}**\n{emote:unitValues.score} Points: **The number of points will depend on your final ranking.**\n{emote:rewards.item} A random equipment.",
     "endMessage": "\n\n{emote:commands.report} \"Have an adventurer belonging to the {emote:leagues.{{leagueId}}} $t(models:leagues.{{leagueId}}) that will find this text, **if you keep your glory until the end of the season**, you will be able to win these rewards:\n\n{{rewards}}\"\n\nYou will be back on your way, while enjoying your {{time}} bonus .",
     "notEnoughFight": "\n\n{emote:commands.report} \"Have an adventurer belonging to the {emote:leagues.{{leagueId}}} $t(models:leagues.{{leagueId}}) that will find this text, **if you perform some battles using the {command:fight}command**, you will be able to win these rewards:\n\n{{rewards}}\n\nYou will quickly get back on your way Fear of failing to fight enough players before the end of the {{time}} season.",
-    "rewardToday": "\n\n{emote:commands.report} \"Get your reward before the end of the week by ordering {command:leaguebonus} !\"\n\nYou're on your way again, looking forward to collecting your bonus."
+    "rewardToday": "\n\n{emote:commands.report} \"**League rewards are available!** Collect your reward before the end of the week using the {command:leaguebonus} command!\"\n\nYou resume your journey, looking forward to collecting your bonus."
   },
   "winGuildXP": {
     "stories": [
       "**{{guild}}**'s reputation seems to precede you. By learning that you are part of the guild, adventurers who have been following you for a few kilometers give you their greatest respect.",
-      "As a result of a few battles that you are victorious, you apply the **{{guild}}** guild's mark on your opponents' remains. All those who will pass here will recognize it.",
+      "After a few skirmishes from which you emerge victorious, you apply the **{{guild}}** guild's mark on your opponents' remains. All who pass by here will recognize it.",
       "Your good actions in the area have helped a large part of the population. When they ask you how they could thank you, you ask them to remember **{{guild}}**'s name.",
       "Congratulations! Over time, your guild, **{{guild}}**, becomes known throughout the whole kingdom.",
       "**{{guild}}** is becoming more and more popular as time goes by! We hope you continue to do so, and that's why we're offering you this xp bonus!",
@@ -867,8 +867,8 @@
   "smallBad": {
     "healthLost": {
       "stories": [
-        "your feet stumble on a root. Wounded, you lose **{{amount, number}}{emote:unitValues.lostHealth}**.",
-        "deep into your thoughts, you don't pay attention to the ground under your feet and unwillingly trip over a pebble. You hurt yourself at the knee. This ain't a serious injury, despite it being painful. You lose **{{amount, number}} {emote:unitValues.lostHealth}**.",
+        "your feet stumble on a root. Wounded, you lose **{{amount, number}} {emote:unitValues.lostHealth}**.",
+        "deep in your thoughts, you pay little attention to the ground under your feet and accidentally trip over a pebble. You hurt your knee. It's not very serious, though it is painful. You lose **{{amount, number}} {emote:unitValues.lostHealth}**.",
         "you whistle while walking. Suddenly, something enters into your field of vision: it's a dog, and it's running straight at you! Before you have time to understand what is happening, the animal collides with you, but immediately leaves thereafter. Fortunately, you are only slightly injured. and only lose **{{amount, number}} {emote:unitValues.lostHealth}**.",
         "you hit a galloping horse, but were only injured superficially. You lose **{{amount, number}} {emote:unitValues.lostHealth}**.",
         "you were violently hit by a boar herd. You barely stand back up, and get back on your way whilst losing **{{amount, number}} {emote:unitValues.lostHealth}**."
@@ -896,7 +896,7 @@
     },
     "moneyLost": {
       "stories": [
-        "crossing a crowd, you feel a hand deeply searching you and lightening your pockets. You don't have the time to replicate that your looter has disappeared. You lost **{{amount, number}} {emote:unitValues.lostMoney}**.",
+        "crossing a crowd, you feel a hand swiftly rummaging through and lightening your pockets. You don't have time to react before your pickpocket has disappeared. You lost **{{amount, number}} {emote:unitValues.lostMoney}**.",
         "you meet a beggar asking for some money to support his needs. Taken by a surge of mercy, you decide to give him **{{amount, number}} {emote:unitValues.lostMoney}**.",
         "a masked man calls you out and threatens you with his weapon. To let him spare your life, you give him the **{{amount, number}} {emote:unitValues.lostMoney}** you have in your pocket, and the keys of your cart as well.",
         "you suddenly remember forgetting your purse in the room of the last inn you passed by. You lose **{{amount, number}} {emote:unitValues.lostMoney}**.",
@@ -1280,8 +1280,8 @@
         "intro": "The sky is gray, the temperature is average. It's an ideal weather for walking and move forward in your adventure. However, after a few steps, the frail ground gives way beneath your feet and you fall into a hole.",
         "success": {
           "withGuild": "With the help of your guild mates, you manage to pull yourself out of the crevasse and save them in turn. This ordeal has strengthened your bond, and your guild receives **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
-          "soloWithGuild": "Not losing your cold blood, you immediately apply your guild's lessons and easily climb the wall. Your guild gets **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
-          "solo": "Not losing your cold blood, you apply what you learned during your adventures and easily manage to climb the wall. You receive **{{amount, number}} {emote:unitValues.xp}**."
+          "soloWithGuild": "Keeping your composure, you immediately apply your guild's lessons and easily climb the wall. Your guild gets **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
+          "solo": "Keeping your composure, you apply what you learned during your adventures and easily manage to climb the wall. You receive **{{amount, number}} {emote:unitValues.xp}**."
         },
         "escape": {
           "withGuild": "Wasting no time, you and your companions hurry to examine this crevasse, which turns out to be a cave. A bit of blind walking later, you manage to emerge from the hole further on.",
@@ -1295,7 +1295,7 @@
       {
         "intro": "You decide to rest for a while after an intense crossing of the island. But just as you lie down on the ground, the earth begins to shake.",
         "success": {
-          "withGuild": "However, you clench each other so that no one gets fallen into a crevasse. The quake ends, and you are all safe and sound. Your guild gets **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
+          "withGuild": "However, you cling to each other to prevent anyone from falling into a crevasse. The quake ends, and you are all safe and sound. Your guild gets **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
           "soloWithGuild": "You follow the earthquake instructions given to you by your guild, and decide to take shelter under a structure which, fortunately, has not collapsed on you. Safe and sound, you promise to thank your guild as soon as you return from your expedition. Your guild wins **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
           "solo": "You attempt to hold on despite the earthquake. Fortunately, it did not cause any damage around, you continue to rest a little while admiring the sky and surroundings. You receive **{{amount, number}} {emote:unitValues.xp}**."
         },
@@ -1312,8 +1312,8 @@
         "intro": "You are making good progress on your adventure (with your guild mates), when your instincts alert you to danger. Gradually, an almost opaque, whitish mist rises from the uneven ground and falls from the sky, encircling you. You quickly can't see anything around you anymore.",
         "success": {
           "withGuild": "Several pairs of eyes are better than one! Thanks to the cooperation of your visions, you and your companions manage to advance between rocks and crevasses without a single one being injured or lost. Your guild receives **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
-          "soloWithGuild": "In this urgent situation, you keep your cold blood and use the tracking techniques learned from your guild to get out of the trouble without hindrance. Your guild gets **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
-          "solo": "In this urgent situation, you keep your cold blood and use tracking techniques learned a little more to get out of this mess without a hitch. You receive **{{amount, number}} {emote:unitValues.xp}**."
+          "soloWithGuild": "In this urgent situation, you keep your composure and use the tracking techniques learned from your guild to get out of trouble unscathed. Your guild gets **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
+          "solo": "In this urgent situation, you keep your composure and use tracking techniques learned a little earlier to get out of this mess unscathed. You receive **{{amount, number}} {emote:unitValues.xp}**."
         },
         "escape": {
           "withGuild": "Completely lost in this dense and threatening fog, your companions and you decide to gather to parry the chill, waiting for the wind to disperse the mist.",
@@ -1802,10 +1802,10 @@
       "Noticing that you're walking alone, Talvar inclines his head with understanding. He speaks passionately of the spiritual benefits of having an animal companion. His words paint an enchanting picture of the perfect symbiosis between man and beast. His benevolent gaze accompanies you as you meditate on these teachings, perhaps destined to transform your future.",
       "In the face of your apparent loneliness, Talvar's heart fills with compassion. He offers expert advice on the art of choosing and taming an animal companion. His passionate descriptions of the different species and their temperaments reveal an encyclopedic knowledge. You'll leave with a mind enriched by his knowledge and a soul open to the idea of a future animal friendship.",
       "Noting the absence of a creature at your side, Talvar wraps you in a fatherly gaze. He recalls with tenderness the moments of grace that the company of animals brings, those moments when the barriers between species are erased. His words paint a poetic picture of universal harmony. You continue on your way, bearing this enchanting vision and perhaps destined to make it a reality.",
-      "Talvar's lack of familiarity awakens a desire to share his all-consuming passion. He eloquently depicts the miraculous transformations that the love of an animal brings about in the human heart. His stories vibrate with touching examples of animal loyalty and courage. You'll leave moved by these testimonies and secretly attracted by the idea of experiencing these extraordinary bonds.",
+      "The absence of a pet awakens in Talvar a desire to share his all-consuming passion. He eloquently depicts the miraculous transformations that the love of an animal brings about in the human heart. His stories vibrate with touching examples of animal loyalty and courage. You leave moved by these testimonies and secretly drawn to the idea of experiencing these extraordinary bonds.",
       "Noticing that you're traveling without a four-legged companion, Talvar smiles with paternal indulgence. He evokes the profound mysteries of interspecies communication and the life lessons taught by our animal friends. His words resonate with age-old truths about the interconnectedness of all living things. You go on your way, your soul nourished by this age-old wisdom.",
       "Faced with your loneliness, Talvar can't help but share his philosophy of life centered on love for creatures. He tells you about the miraculous cures that the presence of animals can bring to both body and spirit. His passionate descriptions reveal a man transformed by a life devoted to these extraordinary beings. You'll leave touched by this revelation, and perhaps destined to follow a similar path.",
-      "With no familiar by your side, Talvar's eyes shine with a mission to accomplish. He initiates you into the secrets of taming and the sacred rituals that seal the friendship between man and beast. His teachings resonate with ancestral traditions and forgotten knowledge. You'll continue on your way, a repository of this precious knowledge, and perhaps called upon to put it into practice in the near future."
+      "With no pet by your side, Talvar's eyes shine with a mission to accomplish. He initiates you into the secrets of taming and the sacred rituals that seal the friendship between man and beast. His teachings resonate with ancestral traditions and forgotten knowledge. You continue on your way, bearer of this precious knowledge, and perhaps called upon to put it into practice in the near future."
     ],
     "petIsClone_m": [
       "At the sight of **{{pet}}**, Talvar squints in bewilderment. He brings his face close to the creature, examines it from every angle, then steps back with a troubled expression. He murmurs that this companion exudes a singular aura, as if he were both here and elsewhere. Despite his doubts, he hands you over {{reward}}, but his gaze remains fixed on your familiar with curiosity mingled with concern.",
