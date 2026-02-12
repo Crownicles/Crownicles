@@ -58,7 +58,7 @@
     }
   },
   "petFree": {
-    "description": "Free a pet.",
+    "description": "Release a pet.",
     "name": "petfree"
   },
   "petNick": {
