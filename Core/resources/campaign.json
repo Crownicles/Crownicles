@@ -73,6 +73,14 @@
       "moneyToWin": 0
     },
     {
+      "missionId": "goToPlace",
+      "missionVariant": 3,
+      "missionObjective": 1,
+      "gemsToWin": 2,
+      "xpToWin": 100,
+      "moneyToWin": 0
+    },
+    {
       "missionId": "recoverAlteration",
       "missionVariant": 0,
       "missionObjective": 1,
@@ -273,6 +281,14 @@
       "moneyToWin": 0
     },
     {
+      "missionId": "goToPlace",
+      "missionVariant": 6,
+      "missionObjective": 1,
+      "gemsToWin": 2,
+      "xpToWin": 150,
+      "moneyToWin": 0
+    },
+    {
       "missionId": "anyFight",
       "missionVariant": 0,
       "missionObjective": 5,
@@ -369,11 +385,35 @@
       "moneyToWin": 0
     },
     {
+      "missionId": "meetOracle",
+      "missionVariant": 0,
+      "missionObjective": 1,
+      "gemsToWin": 2,
+      "xpToWin": 150,
+      "moneyToWin": 0
+    },
+    {
+      "missionId": "contributeToBlessing",
+      "missionVariant": 0,
+      "missionObjective": 100,
+      "gemsToWin": 3,
+      "xpToWin": 200,
+      "moneyToWin": 0
+    },
+    {
       "missionId": "joinMemberOnBoat",
       "missionVariant": 0,
       "missionObjective": 1,
       "gemsToWin": 6,
       "xpToWin": 350,
+      "moneyToWin": 0
+    },
+    {
+      "missionId": "buyTokensFromShop",
+      "missionVariant": 2,
+      "missionObjective": 5,
+      "gemsToWin": 3,
+      "xpToWin": 200,
       "moneyToWin": 0
     },
     {
@@ -414,6 +454,14 @@
       "missionObjective": 1,
       "gemsToWin": 5,
       "xpToWin": 250,
+      "moneyToWin": 0
+    },
+    {
+      "missionId": "goToPlace",
+      "missionVariant": 23,
+      "missionObjective": 1,
+      "gemsToWin": 3,
+      "xpToWin": 200,
       "moneyToWin": 0
     },
     {
@@ -465,11 +513,27 @@
       "moneyToWin": 0
     },
     {
+      "missionId": "contributeToBlessing",
+      "missionVariant": 4,
+      "missionObjective": 6500,
+      "gemsToWin": 15,
+      "xpToWin": 400,
+      "moneyToWin": 0
+    },
+    {
       "missionId": "fightHealthPercent",
       "missionVariant": 20,
       "missionObjective": 1,
       "gemsToWin": 7,
       "xpToWin": 250,
+      "moneyToWin": 0
+    },
+    {
+      "missionId": "winBossWithDifferentClasses",
+      "missionVariant": 0,
+      "missionObjective": 2,
+      "gemsToWin": 13,
+      "xpToWin": 200,
       "moneyToWin": 0
     },
     {
@@ -486,6 +550,14 @@
       "missionObjective": 5000,
       "gemsToWin": 10,
       "xpToWin": 400,
+      "moneyToWin": 0
+    },
+    {
+      "missionId": "doExpeditions",
+      "missionVariant": 2,
+      "missionObjective": 5,
+      "gemsToWin": 3,
+      "xpToWin": 250,
       "moneyToWin": 0
     },
     {
@@ -569,6 +641,14 @@
       "moneyToWin": 0
     },
     {
+      "missionId": "goToPlace",
+      "missionVariant": 27,
+      "missionObjective": 1,
+      "gemsToWin": 4,
+      "xpToWin": 250,
+      "moneyToWin": 0
+    },
+    {
       "missionId": "bigFeast",
       "missionVariant": 0,
       "missionObjective": 1,
@@ -614,6 +694,14 @@
       "missionObjective": 5,
       "gemsToWin": 5,
       "xpToWin": 350,
+      "moneyToWin": 0
+    },
+    {
+      "missionId": "meetDifferentPlayers",
+      "missionVariant": 1,
+      "missionObjective": 5,
+      "gemsToWin": 3,
+      "xpToWin": 200,
       "moneyToWin": 0
     },
     {
@@ -665,6 +753,14 @@
       "moneyToWin": 0
     },
     {
+      "missionId": "contributeToBlessing",
+      "missionVariant": 5,
+      "missionObjective": 16300,
+      "gemsToWin": 25,
+      "xpToWin": 600,
+      "moneyToWin": 0
+    },
+    {
       "missionId": "wealthyPayForPVEIsland",
       "missionVariant": 0,
       "missionObjective": 1,
@@ -686,6 +782,14 @@
       "missionObjective": 1,
       "gemsToWin": 5,
       "xpToWin": 350,
+      "moneyToWin": 0
+    },
+    {
+      "missionId": "doExpeditions",
+      "missionVariant": 6,
+      "missionObjective": 25,
+      "gemsToWin": 5,
+      "xpToWin": 400,
       "moneyToWin": 0
     },
     {
@@ -721,6 +825,14 @@
       "moneyToWin": 0
     },
     {
+      "missionId": "goToPlace",
+      "missionVariant": 10,
+      "missionObjective": 1,
+      "gemsToWin": 5,
+      "xpToWin": 300,
+      "moneyToWin": 0
+    },
+    {
       "missionId": "guildLevel",
       "missionVariant": 0,
       "missionObjective": 60,
@@ -750,6 +862,30 @@
       "missionObjective": 1,
       "gemsToWin": 5,
       "xpToWin": 225,
+      "moneyToWin": 0
+    },
+    {
+      "missionId": "fromPlaceToPlace",
+      "missionVariant": 5267486,
+      "missionObjective": 1,
+      "gemsToWin": 5,
+      "xpToWin": 350,
+      "moneyToWin": 0
+    },
+    {
+      "missionId": "meetAllOracles",
+      "missionVariant": 0,
+      "missionObjective": 2,
+      "gemsToWin": 6,
+      "xpToWin": 300,
+      "moneyToWin": 0
+    },
+    {
+      "missionId": "earnXP",
+      "missionVariant": 4,
+      "missionObjective": 7000,
+      "gemsToWin": 5,
+      "xpToWin": 0,
       "moneyToWin": 0
     },
     {
@@ -793,6 +929,14 @@
       "moneyToWin": 0
     },
     {
+      "missionId": "buyTokensFromShop",
+      "missionVariant": 3,
+      "missionObjective": 10,
+      "gemsToWin": 5,
+      "xpToWin": 300,
+      "moneyToWin": 0
+    },
+    {
       "missionId": "buyItemFromAlderic",
       "missionVariant": 0,
       "missionObjective": 1,
@@ -814,6 +958,14 @@
       "missionObjective": 1,
       "gemsToWin": 7,
       "xpToWin": 400,
+      "moneyToWin": 0
+    },
+    {
+      "missionId": "spendMoney",
+      "missionVariant": 7,
+      "missionObjective": 25000,
+      "gemsToWin": 6,
+      "xpToWin": 500,
       "moneyToWin": 0
     },
     {
@@ -846,6 +998,22 @@
       "missionObjective": 1,
       "gemsToWin": 10,
       "xpToWin": 500,
+      "moneyToWin": 0
+    },
+    {
+      "missionId": "fromPlaceToPlace",
+      "missionVariant": 7355395,
+      "missionObjective": 1,
+      "gemsToWin": 12,
+      "xpToWin": 400,
+      "moneyToWin": 0
+    },
+    {
+      "missionId": "winBossWithDifferentClasses",
+      "missionVariant": 0,
+      "missionObjective": 4,
+      "gemsToWin": 28,
+      "xpToWin": 350,
       "moneyToWin": 0
     }
   ]

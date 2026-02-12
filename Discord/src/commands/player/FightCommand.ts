@@ -28,6 +28,9 @@ import { CrowniclesActionChooseCachedMessage } from "../../messages/CrowniclesAc
 import { CommandFightEndOfFightPacket } from "../../../../Lib/src/packets/fights/EndOfFightPacket";
 import { millisecondsToMinutes } from "../../../../Lib/src/utils/TimeUtils";
 import { FightRewardPacket } from "../../../../Lib/src/packets/fights/FightRewardPacket";
+import {
+	resolveKeycloakPlayerName
+} from "../../utils/KeycloakPlayerUtils";
 import { StringUtils } from "../../utils/StringUtils";
 import { ReactionCollectorReturnTypeOrNull } from "../../packetHandlers/handlers/ReactionCollectorHandlers";
 import { AIFightActionChoosePacket } from "../../../../Lib/src/packets/fights/AIFightActionChoosePacket";
@@ -340,11 +343,7 @@ export async function handleEndOfFight(context: PacketContext, packet: CommandFi
 	// Get names of fighters
 	const getDisplayName = async (keycloakId?: string, monsterId?: string): Promise<string> => {
 		if (keycloakId) {
-			const getUser = await KeycloakUtils.getUserByKeycloakId(keycloakConfig, keycloakId);
-			if (getUser.isError) {
-				return i18n.t("error:unknownPlayer", { lng });
-			}
-			return escapeUsername(getUser.payload.user.attributes.gameUsername[0]);
+			return await resolveKeycloakPlayerName(keycloakId, lng);
 		}
 		return i18n.t(`models:monsters.${monsterId}.name`, { lng });
 	};
@@ -593,13 +592,9 @@ export async function handleFightReward(context: PacketContext, packet: FightRew
 	}
 	const lng = interaction.userLanguage;
 
-	// Get players
-	const getPlayer1 = await KeycloakUtils.getUserByKeycloakId(keycloakConfig, packet.player1.keycloakId);
-	const getPlayer2 = await KeycloakUtils.getUserByKeycloakId(keycloakConfig, packet.player2.keycloakId);
-
 	// Get usernames for both players
-	const player1Username = escapeUsername(getPlayer1.isError ? "Unknown" : getPlayer1.payload.user.attributes.gameUsername[0]);
-	const player2Username = escapeUsername(getPlayer2.isError ? "Unknown" : getPlayer2.payload.user.attributes.gameUsername[0]);
+	const player1Username = await resolveKeycloakPlayerName(packet.player1.keycloakId, lng);
+	const player2Username = await resolveKeycloakPlayerName(packet.player2.keycloakId, lng);
 
 	// Create an embed to show glory and league changes
 	const embed = new CrowniclesEmbed()

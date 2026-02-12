@@ -1,6 +1,9 @@
 import { parse } from "toml";
 import { readFileSync } from "fs";
 import { DiscordSsoConfig } from "./DiscordSsoConfig";
+import {
+	createMqttPrefix, MqttPrefix
+} from "../../../Lib/src/utils/MqttTopicUtils";
 
 /**
  * Represents the main config of the middleware
@@ -21,7 +24,7 @@ export interface RestWsConfig {
 	REST_API_DISCORD_SSO?: DiscordSsoConfig;
 	REST_API_BETA_LOGIN: boolean;
 	WEB_SOCKET_PORT: number;
-	PREFIX: string;
+	PREFIX: MqttPrefix;
 }
 
 /**
@@ -82,7 +85,7 @@ export function loadConfig(): RestWsConfig {
 			: undefined,
 		REST_API_BETA_LOGIN: config.restApi.betaLogin,
 		WEB_SOCKET_PORT: config.webSocket.port,
-		PREFIX: config.global.prefix
+		PREFIX: createMqttPrefix(config.global.prefix)
 	};
 }
 

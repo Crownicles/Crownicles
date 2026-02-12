@@ -53,6 +53,7 @@ export enum NumberChangeReason {
 	JOIN_BOAT,
 	REPORT_TOKENS,
 	EXPEDITION,
+	BLESSING,
 
 	// Cities feature
 	INN_MEAL,

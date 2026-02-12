@@ -42,6 +42,8 @@ export class DiscordMQTT {
 
 	static christmasBonusAnnouncementMqttClient: MqttClient;
 
+	static blessingAnnouncementMqttClient: MqttClient;
+
 	static packetListener: PacketListenerClient = new PacketListenerClient();
 
 	static asyncPacketSender: AsyncCorePacketSender = new AsyncCorePacketSender();
@@ -53,6 +55,7 @@ export class DiscordMQTT {
 		this.connectSubscribeAndHandleTopWeekAnnouncement();
 		this.connectSubscribeAndHandleTopWeekFightAnnouncement();
 		this.connectSubscribeAndHandleChristmasBonusAnnouncement();
+		this.connectSubscribeAndHandleBlessingAnnouncement();
 
 		if (isMainShard) {
 			this.connectSubscribeAndHandleNotifications();
@@ -88,6 +91,46 @@ export class DiscordMQTT {
 	}
 
 	/**
+	 * Safely unsubscribe and disconnect a single MQTT client
+	 */
+	private static safeDisconnectMqttClient(client: MqttClient, topic: string, name: string): void {
+		try {
+			client.unsubscribe(topic);
+			client.end();
+			CrowniclesLogger.warn(`Disconnected from ${name} MQTT client`);
+		}
+		catch (error) {
+			CrowniclesLogger.errorWithObj(`Error while disconnecting ${name} MQTT client`, error);
+		}
+	}
+
+	/**
+	 * Disconnect all MQTT clients and Discord to clean up a duplicated shard
+	 */
+	private static async disconnectDuplicatedShard(): Promise<void> {
+		try {
+			DiscordMQTT.globalMqttClient.publish(MqttTopicUtils.getDiscordShardManagerTopic(discordConfig.PREFIX), `${DiscordConstants.MQTT.SHARD_DUPLICATED_MSG}${shardId}`);
+			CrowniclesLogger.warn("Published shard duplication message to shard manager");
+		}
+		catch (error) {
+			CrowniclesLogger.errorWithObj("Error while publishing shard duplication message to shard manager", error);
+		}
+		try {
+			await crowniclesClient.destroy();
+			CrowniclesLogger.warn("Disconnected from Discord");
+		}
+		catch (error) {
+			CrowniclesLogger.errorWithObj("Error while disconnecting from Discord", error);
+		}
+		DiscordMQTT.safeDisconnectMqttClient(DiscordMQTT.globalMqttClient, MqttTopicUtils.getDiscordTopic(discordConfig.PREFIX, shardId), "global");
+		DiscordMQTT.safeDisconnectMqttClient(DiscordMQTT.notificationMqttClient, MqttTopicUtils.getNotificationsTopic(discordConfig.PREFIX), "notification");
+		DiscordMQTT.safeDisconnectMqttClient(DiscordMQTT.topWeekAnnouncementMqttClient, MqttTopicUtils.getDiscordTopWeekAnnouncementTopic(discordConfig.PREFIX), "top week announcement");
+		DiscordMQTT.safeDisconnectMqttClient(DiscordMQTT.topWeekFightAnnouncementMqttClient, MqttTopicUtils.getDiscordTopWeekFightAnnouncementTopic(discordConfig.PREFIX), "top week fight announcement");
+		DiscordMQTT.safeDisconnectMqttClient(DiscordMQTT.blessingAnnouncementMqttClient, MqttTopicUtils.getDiscordBlessingAnnouncementTopic(discordConfig.PREFIX), "blessing announcement");
+		DiscordMQTT.safeDisconnectMqttClient(DiscordMQTT.christmasBonusAnnouncementMqttClient, MqttTopicUtils.getDiscordChristmasBonusAnnouncementTopic(discordConfig.PREFIX), "christmas bonus announcement");
+	}
+
+	/**
 	 * Handles the duplicated shard message.
 	 * This function is called when a shard receives a message from another shard with the same ID.
 	 * When this happens, the shard will disconnect from all MQTT topics and Discord to avoid duplication.
@@ -107,52 +150,7 @@ export class DiscordMQTT {
 				receivedFromPid: messageParts[1],
 				pid: process.pid
 			});
-			try {
-				DiscordMQTT.globalMqttClient.publish(MqttTopicUtils.getDiscordShardManagerTopic(discordConfig.PREFIX), `${DiscordConstants.MQTT.SHARD_DUPLICATED_MSG}${shardId}`);
-				CrowniclesLogger.warn("Published shard duplication message to shard manager");
-			}
-			catch (error) {
-				CrowniclesLogger.errorWithObj("Error while publishing shard duplication message to shard manager", error);
-			}
-			try {
-				await crowniclesClient.destroy();
-				CrowniclesLogger.warn("Disconnected from Discord");
-			}
-			catch (error) {
-				CrowniclesLogger.errorWithObj("Error while disconnecting from Discord", error);
-			}
-			try {
-				DiscordMQTT.globalMqttClient.unsubscribe(MqttTopicUtils.getDiscordTopic(discordConfig.PREFIX, shardId));
-				DiscordMQTT.globalMqttClient.end();
-				CrowniclesLogger.warn("Disconnected from global MQTT client");
-			}
-			catch (error) {
-				CrowniclesLogger.errorWithObj("Error while disconnecting global MQTT client", error);
-			}
-			try {
-				DiscordMQTT.notificationMqttClient.unsubscribe(MqttTopicUtils.getNotificationsTopic(discordConfig.PREFIX));
-				DiscordMQTT.notificationMqttClient.end();
-				CrowniclesLogger.warn("Disconnected from notification MQTT client");
-			}
-			catch (error) {
-				CrowniclesLogger.errorWithObj("Error while disconnecting notification MQTT client", error);
-			}
-			try {
-				DiscordMQTT.topWeekAnnouncementMqttClient.unsubscribe(MqttTopicUtils.getDiscordTopWeekAnnouncementTopic(discordConfig.PREFIX));
-				DiscordMQTT.topWeekAnnouncementMqttClient.end();
-				CrowniclesLogger.warn("Disconnected from top week announcement MQTT client");
-			}
-			catch (error) {
-				CrowniclesLogger.errorWithObj("Error while disconnecting top week announcement MQTT client", error);
-			}
-			try {
-				DiscordMQTT.topWeekFightAnnouncementMqttClient.unsubscribe(MqttTopicUtils.getDiscordTopWeekFightAnnouncementTopic(discordConfig.PREFIX));
-				DiscordMQTT.topWeekFightAnnouncementMqttClient.end();
-				CrowniclesLogger.warn("Disconnected from top week fight announcement MQTT client");
-			}
-			catch (error) {
-				CrowniclesLogger.errorWithObj("Error while disconnecting top week fight announcement MQTT client", error);
-			}
+			await DiscordMQTT.disconnectDuplicatedShard();
 		}
 	}
 
@@ -274,6 +272,22 @@ export class DiscordMQTT {
 		});
 	}
 
+	private static handleBlessingAnnouncementMqttMessage(): void {
+		DiscordMQTT.blessingAnnouncementMqttClient.on("message", async (_topic, message) => {
+			if (message.toString() === "") {
+				CrowniclesLogger.debug("No blessing announcement in the MQTT topic");
+				return;
+			}
+
+			if (await DiscordAnnouncement.canAnnounce()) {
+				await DiscordAnnouncement.announceBlessing(JSON.parse(message.toString()));
+
+				// Clear the announcement so it doesn't get processed again
+				DiscordMQTT.blessingAnnouncementMqttClient.publish(MqttTopicUtils.getDiscordBlessingAnnouncementTopic(discordConfig.PREFIX), "", { retain: true });
+			}
+		});
+	}
+
 	private static handleNotificationMqttMessage(): void {
 		DiscordMQTT.notificationMqttClient.on("message", (_topic, message) => {
 			if (message.toString() === "") {
@@ -344,6 +358,16 @@ export class DiscordMQTT {
 		});
 
 		this.handleChristmasBonusAnnouncementMqttMessage();
+	}
+
+	private static connectSubscribeAndHandleBlessingAnnouncement(): void {
+		DiscordMQTT.blessingAnnouncementMqttClient = connect(discordConfig.MQTT_HOST, DEFAULT_MQTT_CLIENT_OPTIONS);
+
+		DiscordMQTT.blessingAnnouncementMqttClient.on("connect", () => {
+			DiscordMQTT.subscribeTo(DiscordMQTT.blessingAnnouncementMqttClient, MqttTopicUtils.getDiscordBlessingAnnouncementTopic(discordConfig.PREFIX), false);
+		});
+
+		this.handleBlessingAnnouncementMqttMessage();
 	}
 
 	private static connectSubscribeAndHandleNotifications(): void {

@@ -118,7 +118,7 @@
     "1": "Fighter",
     "10": "Archer",
     "11": "Gunner",
-    "12": "Esquire",
+    "12": "Squire",
     "13": "Horse rider",
     "14": "Pikeman",
     "15": "Knight",
@@ -135,7 +135,7 @@
     "3": "Infantryman",
     "4": "Gloved",
     "5": "Helmeted",
-    "6": "Enmeshed",
+    "6": "Mailed",
     "7": "Tank",
     "8": "Rock thrower",
     "9": "Slinger"
@@ -145,7 +145,7 @@
     "1": "Fighters",
     "10": "Archers",
     "11": "Gunners",
-    "12": "Esquires",
+    "12": "Squire",
     "13": "Horse riders",
     "14": "Pikemen",
     "15": "Knights",
@@ -162,7 +162,7 @@
     "3": "Infantrymen",
     "4": "Gloved",
     "5": "Helmeted",
-    "6": "Enmeshed",
+    "6": "Mailed",
     "7": "Tanks",
     "8": "Rock throwers",
     "9": "Slingers"
@@ -231,7 +231,7 @@
     },
     "breakArmor": {
       "failure": "calls on **{{petNickname}}** who charges his opponent. Unfortunately, he misses his target completely.",
-      "success": "asks for help from his familiar, who charges at his opponent. The latter protects himself from the attack, but his equipment is carried away by **{{petNickname}}** !"
+      "success": "asks for help from its pet, who charges at its opponent. The latter protects himself from the attack, but his equipment is carried away by **{{petNickname}}** !"
     },
     "boulderTossAttack": {
       "name_one": "Boulder toss",
@@ -252,7 +252,7 @@
       "stop": "is no longer burnt."
     },
     "canonAttack": {
-      "description": "The accuracy of this attack decreases on fast opponents. A damage bonus is affected to this attack if the opponent is slow. Opponent may be slowed down by attack. Deals more damage if used multiple times in a row.",
+      "description": "The accuracy of this attack decreases on fast opponents. A damage bonus is applied to this attack if the opponent is slow. Opponent may be slowed down by attack. Deals more damage if used multiple times in a row.",
       "name_one": "Cannon attack",
       "name_other": "Cannon attacks"
     },
@@ -295,13 +295,13 @@
     },
     "confused": {
       "name": "confused",
-      "new": "is confusing.",
-      "active": "is confusing.",
+      "new": "is confused.",
+      "active": "is confused.",
       "randomAction": "is confused and performs a random action in his confusion.",
       "stop": "is no longer confused."
     },
     "counterAttack": {
-      "description": "Reply with the same action your opponent just played. Does not work on magical or divine attacks, nor if your opponent did not attack.",
+      "description": "Retaliates with the same action your opponent just played. Does not work on certain attacks, nor if your opponent did not attack.",
       "name_one": "Counterattack",
       "customMessage": "can't counterattack.",
       "name_other": "Counterattacks"
@@ -323,7 +323,7 @@
       "stop": "suffers the consequences of the curse."
     },
     "cursedAttack": {
-      "description": "Curse the opponent, perhaps he will suffer the consequences in the future... Heals the caster if the opponent has more than 40% of his energy.",
+      "description": "Curses the opponent, who may suffer the consequences in the future... Heals the caster if the opponent has more than 40% of their energy.",
       "name_one": "Cursed attack",
       "name_other": "Cursed attacks"
     },
@@ -355,7 +355,7 @@
       "afraid": "is aided by **{{petNickname}}** who, despite remembering recent events perfectly, trembles too much with fear to be able to restore lost breath."
     },
     "energeticAttack": {
-      "description": "Half of this attack's damage is returned to the caster as healing. Ignores part of the enemy's defense.",
+      "description": "Part of this attack's damage is returned to the caster as healing. Ignores part of the opponent's defense. Healing is reduced against monsters.",
       "name_one": "Energetic attack",
       "name_other": "Energetic attacks"
     },
@@ -383,7 +383,7 @@
       "stop": "is no longer frozen."
     },
     "full": {
-      "name": "Repairs and care of your alterations",
+      "name": "sated and healed of your status conditions",
       "new": "is full and needs to rest. `Speed: 0`",
       "active": "is full and needs to rest.",
       "stop": "is no longer full."
@@ -475,7 +475,7 @@
       "name": "angry",
       "new": "is angry.",
       "active": "is angry.",
-      "stop": "is no longer angry but becomes giddy."
+      "stop": "is no longer angry but becomes stunned."
     },
     "outrageAttack": {
       "customMessage": "gets angry.",
@@ -544,7 +544,7 @@
       "success": "receives support from **{{petNickname}}** who decides to bite his opponent... The latter is suddenly not feeling well."
     },
     "powerfulAttack": {
-      "description": "This attack has a 25% chance to do more damage at the cost of a stun of the attacker. Reduces opponent speed. For 3 uses, 70% of attack damage is reduced.",
+      "description": "This attack has a 25% chance to deal more damage, at the cost of stunning the attacker. Reduces the opponent's speed. After 3 uses, the attack's damage is reduced by 70%.",
       "name_one": "Powerful Attack",
       "name_other": "Powerful Attacks"
     },
@@ -558,7 +558,7 @@
       "stop": "is no longer protected."
     },
     "protection": {
-      "description": "Échoue si vous utilisez cette action alors que vous avez une altération d'état. L'altération \"protégé\" dure 3 tours et vous empêche d'être victime d'une autre altération tout en vous offrant un boost de 30% de votre défense.",
+      "description": "Fails if you use this action while you have a status condition. The \"protected\" condition lasts 3 turns and prevents you from being afflicted by another condition while granting you a 30% defense boost.",
       "customMessage": "protects itself.",
       "name_one": "Protection",
       "name_other": "Protections"
@@ -569,7 +569,7 @@
       "name_other": "Quick attacks"
     },
     "rageExplosion": {
-      "description": "Explodes the rage accumulated during the trip on the enemy.",
+      "description": "Explodes the rage accumulated during the journey on the enemy.",
       "customMessage": "unleashes its rage on the enemy!",
       "name_one": "Rage explosion",
       "name_other": "Rage explosions"
@@ -583,7 +583,7 @@
       "name_other": "Ram Attacks"
     },
     "resting": {
-      "description": "Applies to the caster. The amount of energy recovered is divided by 4 after 4 uses.",
+      "description": "Applied as healing to the caster.",
       "customMessage": "rests...",
       "name_one": "Rest",
       "name_other": "Rests"
@@ -622,7 +622,7 @@
       "name_other": "Simple attacks"
     },
     "glacialCaveCollapseAttack": {
-      "customMessage": "roars so loud that ice stalactites stand out from the ceiling! But the enemy is close enough to avoid attack.",
+      "customMessage": "roars so loud that ice stalactites break off from the ceiling! But the enemy is close enough to avoid attack.",
       "name_one": "Coldbreakdown attack",
       "name_other": "Frost Fall Attacks"
     },
@@ -641,68 +641,68 @@
       "name_other": "Radiant Explosive Attacks"
     },
     "hammerQuakeAttack": {
-      "customMessage": "hit the ground with a titanic force, provoking an earthquake! But the enemy jumped up in the air with his winged companion, escaping from the jolt.",
+      "customMessage": "hits the ground with a titanic force, provoking an earthquake! But the enemy jumped up in the air with his winged companion, escaping from the jolt.",
       "name_one": "Seismic Hammer Attack",
       "name_other": "Seismic Hammer Attack"
     },
     "startPolarEmbraceAttack": {
       "customMessage": "failed to catch his opponent who kept him from a respectable distance due to his attacks",
       "name_one": "Polar Embrace Attack",
-      "name_other": "Polar Plate Attacks"
+      "name_other": "Polar Embrace Attacks"
     },
     "isStuckInPolarEmbrace": {
-      "customMessage": "fails to keep its hook on its opponent who manages to fend off because of his attacks",
+      "customMessage": "fails to maintain its grip on its opponent, who manages to break free thanks to its attacks",
       "name_one": "Polar Embrace Attack",
-      "name_other": "Polar Plate Attacks"
+      "name_other": "Polar Embrace Attacks"
     },
     "glacialBreathAttack": {
-      "name_one": "Chillbreath Attack",
-      "name_other": "Frost Breath Attacks"
+      "name_one": "Glacial Breath Attack",
+      "name_other": "Glacial Breath Attacks"
     },
     "blizzardRageAttack": {
-      "customMessage": "summons the blizzard's rage at his opponent, but the icy winds are already raging in the area.",
-      "name_one": "blizzard rage attack",
-      "name_other": "blizzard rage attacks"
+      "customMessage": "summons the blizzard's rage upon its opponent, but the icy winds are already raging in the arena.",
+      "name_one": "Blizzard Rage Attack",
+      "name_other": "Blizzard Rage Attacks"
     },
     "aerialDiveAttack": {
-      "customMessage": "flew into the air to dive into his opponent, but he manages to keep him at a distance thanks to his attacks.",
-      "name_one": "Aether Plunge Attack",
-      "name_other": "Aetheric Plunge Attacks"
+      "customMessage": "launches into the air to dive at its opponent, but the opponent manages to keep it at bay thanks to its attacks.",
+      "name_one": "Aerial Dive Attack",
+      "name_other": "Aerial Dive Attacks"
     },
     "crystallineArmorAttack": {
-      "customMessage": "makes its crystalline armor shine in the hope of injuring its opponent, but the tipped spikes have not been hit.",
+      "customMessage": "makes its crystalline armor shine hoping to injure its opponent, but the sharp spikes have not been touched.",
       "name_one": "Crystal Armor Attack",
       "name_other": "Crystal Armor Attacks"
     },
     "icySeductionAttack": {
-      "name_one": "Icy Deduction Attack",
-      "name_other": "Frost Deduction Attack"
+      "name_one": "Icy Seduction Attack",
+      "name_other": "Icy Seduction Attacks"
     },
     "frozenKissAttack": {
       "name_one": "Frozen Kiss Attack",
-      "name_other": "Kissed Attacks"
+      "name_other": "Frozen Kiss Attacks"
     },
     "spectralRevengeAttack": {
-      "customMessage": "failed to avenge his opponent.",
+      "customMessage": "fails to take revenge on its opponent.",
       "name_one": "Spectral Revenge",
-      "name_other": "Spectral Revapors"
+      "name_other": "Spectral Revenges"
     },
     "ambush": {
       "customMessage": "hiding to prepare ambush...",
       "name_one": "Ambush",
-      "name_other": "Ambush"
+      "name_other": "Ambushes"
     },
     "tailWhipAttack": {
       "name_one": "Tail Strike Attack",
       "name_other": "Tail Strikes"
     },
     "lightRayAttack": {
-      "name_one": "Light Radius Attack",
-      "name_other": "Light Radius Attack"
+      "name_one": "Light Ray Attack",
+      "name_other": "Light Ray Attacks"
     },
     "crystalShardAttack": {
       "name_one": "Crystal Shard Attack",
-      "name_other": "Crystal Shards Attacks"
+      "name_other": "Crystal Shard Attacks"
     },
     "clawAttack": {
       "name_one": "Claw Attack",
@@ -751,7 +751,7 @@
       "success": "is aided in his fight by **{{petNickname}}** who sets the arena ablaze with his fiery flames."
     },
     "spitInk": {
-      "success": "call **{{petNickname}}** who spits ink at the opponent."
+      "success": "calls **{{petNickname}}** who spits ink at the opponent."
     },
     "stealWeapon": {
       "failure": "appeals to **{{petNickname}}** for a little help, but the creature, finding no treasure worthy of his interest on the adversary, refuses to venture into hostile territory.",
@@ -770,8 +770,8 @@
     "stunned": {
       "name": "stunned",
       "active": "is stunned.",
-      "noAction": "is dazed and unable to attack.",
-      "stop": "is no longer dizzy."
+      "noAction": "is stunned and unable to attack.",
+      "stop": "is no longer stunned."
     },
     "summonAttack": {
       "name_one": "Ally Summoning",
@@ -907,17 +907,17 @@
       "particle": "of the"
     },
     "1101": {
-      "description": "An area of frozen land or climate is merciless. Permanent snow conditions make it difficult to make progress and mapping of the place, where all types of arctic animals can be crossed.",
+      "description": "A frozen land where the climate is merciless. Only the strongest adventurers dare to brave its glacial expanses.",
       "name": "Tundra",
       "particle": "of the"
     },
     "1102": {
-      "description": "A large cave in which any sunshine that comes in is multiply by the crystals making the crystal bright in it. Sharp stalactites and sharp stalagmites, synonyms of serious injuries and deadly injuries if one of them falls on us or takes a step of the way, form the caves of the cave. If you dare to venture further, you will have to choose whether to climb to the top of the snowy peak or go deeper still.",
+      "description": "A cave burrowed into the mountain, teeming with magnificent gemstones. The crystals multiply on the walls, and their reflections light up every step of the way.",
       "name": "Crystal cave",
       "particle": "of the"
     },
     "1103": {
-      "description": "Two majestic doors are located at the top of a long range of walks and climbing them will not be easy. It is said that they were built by an ancient civilization in honour of a deity.",
+      "description": "A path carved into the mountainside, featuring a long flight of steps leading to a monumental gate guarded by a mysterious figure.",
       "name": "Sacred Doors",
       "particle": "of the"
     },
@@ -932,12 +932,12 @@
       "particle": "of"
     },
     "1106": {
-      "description": "An abandoned rich village of which only ruins and settlements remain. Here you can see the roof of a manor that bent under the weight of the bell of the collapsed church. There is a silence sometimes interrupted by the cries of suffering of the railway stations.",
+      "description": "A once-thriving village, now reduced to ruins and desolation. Only the cries of suffering of lost souls remind us that life once existed here.",
       "name": "Village devastated",
       "particle": "of the"
     },
     "1107": {
-      "description": "No one has yet ventured to the point. In the distance, you see a gigantic silhouette fleeting on an ice wall.",
+      "description": "A region where the cold becomes extreme. Behind a wall of ice, explorers can glimpse a gigantic silhouette reflecting on the frozen surface.",
       "name": "Ice Nest",
       "particle": "of"
     },
@@ -997,7 +997,7 @@
       "particle": "of the"
     },
     "21": {
-      "description": "A road, very popular with the villagers. Lots of small sellers settle there for a day for making a huge market together.",
+      "description": "A road, very popular with the villagers. Lots of small sellers settle there for a day ultimately creating a huge market.",
       "name": "Road of Wonders",
       "particle": "of the"
     },
@@ -1017,22 +1017,22 @@
       "particle": "of"
     },
     "24": {
-      "description": "A very stiff road that leads to Claire de Ville. Everything depends on which way you're following it.",
+      "description": "A very steep road that leads to Claire de Ville. Everything depends on which way you're following it.",
       "name": "Climbing road",
       "particle": "of the"
     },
     "25": {
-      "description": "Everything is in the name. A river well appreciated by fishmen from Claire de Ville.",
+      "description": "Everything is in the name. A river well appreciated by fishmongers from Claire de Ville.",
       "name": "Crabs' River",
       "particle": "of"
     },
     "26": {
-      "description": "A peaceful town on the verge of the Sentinel Beach.",
+      "description": "A peaceful town on the edge of the Sentinel Beach.",
       "name": "Seawynne",
       "particle": "of"
     },
     "27": {
-      "description": "A forest on the verge of the Mount Celestrum",
+      "description": "A forest at the foot of Mount Celestrum",
       "name": "Celestrum Forest",
       "particle": "of"
     },
@@ -1042,7 +1042,7 @@
       "particle": "of"
     },
     "29": {
-      "description": "The reception room of the King's castle.",
+      "description": "A vast room adorned with numerous works of art.",
       "name": "Reception room",
       "particle": "of the"
     },
@@ -1232,8 +1232,8 @@
   "missions": {
     "anyFight_one": "Do {{count}} fight",
     "anyFight_other": "Do {{count}} fights",
-    "bigFeast": "Participate to a big feast",
-    "buyItemFromAlderic": "Buy an item at Aldéric",
+    "bigFeast": "Participate in a big feast",
+    "buyItemFromAlderic": "Buy an item from Aldéric",
     "buyTokensFromShop_one": "Buy {{count}} {emote:unitValues.token} token at the store",
     "buyTokensFromShop_other": "Buy {{count}} {emote:unitValues.token} tokens at the store",
     "buyUltimateSoups_one": "Buy at least {{count}} ultimate soup",
@@ -1241,8 +1241,8 @@
     "chooseClass": "Choose a class other than {emote:classes.0} Recruit",
     "chooseClassTier": "Get a class of tier {{variantText}} or more",
     "commandFightHistory": "View the history of people who have attacked you",
-    "commandMission": "Make order {command:missions}",
-    "commandReport": "Make order {command:report}",
+    "commandMission": "Use the {command:missions} command",
+    "commandReport": "Use the {command:report} command",
     "dailyPotionsStock": "Buy the whole stock of daily potions",
     "doReports_one": "Do {{count}} report",
     "doReports_other": "Do {{count}} reports",
@@ -1259,9 +1259,9 @@
     "earnMoney": "Harvest {{count, number}} {emote:unitValues.money}",
     "earnPoints": "Win {{count, number}} {emote:unitValues.score}",
     "earnTokens_one": "Win {{count}} token {emote:unitValues.token}",
-    "earnTokens_other": "Win {{count}} {emote:unitValues.token}",
-    "earnTokensInOneExpedition_one": "Win {{count}} {emote:unitValues.token} tokens in a single shipment",
-    "earnTokensInOneExpedition_other": "Win {{count}} {emote:unitValues.token} tokens in a single shipment",
+    "earnTokens_other": "Win {{count}} tokens {emote:unitValues.token}",
+    "earnTokensInOneExpedition_one": "Win {{count}} {emote:unitValues.token} tokens in a single expedition",
+    "earnTokensInOneExpedition_other": "Win {{count}} {emote:unitValues.token} tokens in a single expedition",
     "earnXP": "Win {{count, number}} {emote:unitValues.xp}",
     "exploreDifferentPlaces": "Explore {{count}} different places",
     "fightAttacks": "Do {{count}} {{variantText}} in fights",
@@ -1274,13 +1274,13 @@
     "findOrBuyItem_other": "Find or buy {{count}} items",
     "finishWithAttack": "Use {{count}} times the {{variantText}} to finish your opponent",
     "fromPlaceToPlace": "{{variantText}}",
-    "gainRage_one": "Earn {{count}} rage points {emote:unitValues.rage} by beating wild animals",
+    "gainRage_one": "Earn {{count}} rage point {emote:unitValues.rage} by beating wild animals",
     "gainRage_other": "Earn {{count}} rage points {emote:unitValues.rage} by defeating wild animals",
     "goToPlace": "Travel to {{variantText}}",
     "guildDailyFromSomeoneElse": "Receive a guild daily reward without asking for it",
     "guildDaily_one": "Receive {{count}} guild reward",
     "guildDaily_other": "Receive {{count}} guild rewards",
-    "guildHasPoints": "Help your guild get more {{count, number}} guild points {emote:unitValues.guildPoint}",
+    "guildHasPoints": "Help your guild get more than {{count, number}} guild points {emote:unitValues.guildPoint}",
     "guildLevel": "Be in a guild level {{count, number}} or more",
     "haveItemRarity": "Have an item with a rarity {{variantText}} or better",
     "havePet": "Have a pet with you",
@@ -1301,24 +1301,28 @@
     "meetSirRowan_other": "Receive {{count}} fighting tips from Sir Rowan",
     "meetTalvar": "Meet Talvar",
     "meetVelanna": "Meet Velanna",
-    "doExpeditions_one": "{{count}} shipping",
-    "doExpeditions_other": "{{count}} shipments",
+    "meetOracle": "Meet an oracle",
+    "meetAllOracles": "Meet the two oracles",
+    "contributeToBlessing_one": "Contribute {{count, number}} {emote:unitValues.money} to a blessing",
+    "contributeToBlessing_other": "Contribute {{count, number}} {emote:unitValues.money} to blessings",
+    "doExpeditions_one": "Complete {{count}} expedition",
+    "doExpeditions_other": "Complete {{count}} expeditions",
     "longExpedition": "A successful expedition of at least {{variantText}}",
     "dangerousExpedition": "Successfully complete an expedition of \"{{variantText}}\" or higher danger level",
     "expeditionStreak_one": "Successful {{count}} expedition in a row",
     "expeditionStreak_other": "Successful {{count}} expeditions in a row",
-    "dailyStreak_one": "Accomplish daily mission {{count}} day in a row",
+    "dailyStreak_one": "Accomplish the daily mission {{count}} day in a row",
     "dailyStreak_other": "Complete the daily mission {{count}} days in a row",
     "showCloneToTalvar": "Show Talvar a clone",
     "petEarnHealth": "Earn health with a pet",
     "reachGlory": "{{count}} glory points {emote:unitValues.glory} or more",
     "reachLevel": "Reach level {{count}}",
-    "reachScore": "Score at {{count}} {emote:unitValues.score}",
+    "reachScore": "Have a score higher than {{count}} {emote:unitValues.score}",
     "recoverAlteration_one": "Recover from {{count}} alteration",
     "recoverAlteration_other": "Recover from {{count}} alterations",
     "sellItemWithGivenCost_one": "Sell {{count}} equipment for more than {{variantText}} {emote:unitValues.money}",
     "sellItemWithGivenCost_other": "Sell {{count}} equipment for more than {{variantText}} {emote:unitValues.money}",
-    "sellItems_one": "Sell {{count}} object",
+    "sellItems_one": "Sell {{count}} item",
     "sellItems_other": "Sell {{count}} items",
     "sellOrTradePet": "Sell a pet to another player",
     "showPetsToTalvar_one": "Showing {{count}} animal to Talvar",
@@ -1333,17 +1337,19 @@
     "travelHours_other": "Do {{count}} travels of at least {{variantText}} hours",
     "unlock": "Unlock someone from jail",
     "useTokens_one": "Use {{count}} token {emote:unitValues.token} to advance",
-    "useTokens_other": "Use {{count}} {emote:unitValues.token} to advance",
+    "useTokens_other": "Use {{count}} tokens {emote:unitValues.token} to advance",
     "wealthyPayForPVEIsland": "Buy a trip to a mysterious island at a very high price",
     "winBoss_one": "Win {{count}} boss fight",
-    "winBoss_other": "Win {{count}} boss fights"
+    "winBoss_other": "Win {{count}} boss fights",
+    "winBossWithDifferentClasses_one": "Defeat a final island boss (only the last boss on each island counts)",
+    "winBossWithDifferentClasses_other": "Defeat final island bosses using {{count}} different classes (only the last boss on each island counts)"
   },
   "missionVariants": {
     "default": "{{variant}}",
     "drinkPotionRarity": "$t(items:rarities.{{variant}})",
     "haveItemRarity": "$t(items:rarities.{{variant}})",
     "fightMinTurns": "{{variant}}",
-    "fromPlaceToPlace_order": "Make {{place1}}-{{place2}} in less than {{time}} hours",
+    "fromPlaceToPlace_order": "Travel from {{place1}} to {{place2}} in less than {{time}} hours",
     "fromPlaceToPlace_noOrder": "{{place1}}-{{place2}} (or vice versa) in less than {{time}} hours",
     "fromPlaceToPlace_secondPart": "Reach {{place}} before {{time}}",
     "goToPlace": "{emote:mapTypes.{{mapType}}} $t(models:map_locations.{{variant}}.name)",
@@ -1377,11 +1383,11 @@
     },
     "whiteWolf": {
       "name": "White Wolf",
-      "description": "A felicitous and agile predator. Its sealed claws could seal your fate. The cold and winding trails offer a great advantage in the face of reckless adventurers."
+      "description": "A ferocious and agile predator. Its sharp claws and snow-white fur allow it to blend in with the tundra and take its prey by surprise."
     },
     "shinyElementary": {
-      "name": "Glossy elementary",
-      "description": "A cave crystals. It won't behave to use its elementary powers to get you to the other end of the way."
+      "name": "Shiny Elemental",
+      "description": "A being born from the cave's crystals. It won't hesitate to use its elemental powers to send you flying to the other end of the path."
     },
     "crocodile": {
       "name": "Crocodile",
@@ -1389,19 +1395,19 @@
     },
     "yukiOnna": {
       "name": "Yuki-Onna",
-      "description": "A snow-minded woman. She's beautiful but also dangerous. She can freeze her prey with a simple glance and make them disappear into the snow."
+      "description": "A female snow spirit who lures travelers with an enchanting melody. Behind her beauty hides a relentless force. Taking on human form, she can freeze anything in her path."
     },
     "celestialGuardian": {
-      "name": "This Keeper",
-      "description": "The guardian of the sacred gates. Empowering adventurers is his duty, and he will use his divine hammer to make you understand that you are not welcome."
+      "name": "Celestial Guardian",
+      "description": "Preventing adventurers from passing is its duty. Its sheer size and stone hammer make it a formidable opponent. Few have dared to challenge it, and fewer still have survived."
     },
     "maleIceDragon": {
       "name": "Ice Lord",
-      "description": "A majestic dragon with crystalline scale that reigns from the icy peaks. Perched on the highest peaks, he watched his territory with a watchful eye. Its icy breath can turn an adventurer into an ice statue in a few seconds, and its tight greenhouses allow it to melt on its prey from heights with deadly precision."
+      "description": "The male ice dragon rules the skies with unmatched power. Its sharp talons allow it to swoop down on its prey from the heights with deadly precision. Its icy breath can freeze an area in an instant."
     },
     "femaleIceDragon": {
       "name": "Ice Queen",
-      "description": "A fearsome dragon that farewell protects its treasure, and its progeny in the icy depths of its lair. Aggressive than her companion, she is not bewitching her fury against anyone daring to approach her nest. Its scales glitter like diamonds and its tail can break the thickest ice at once."
+      "description": "The female ice dragon fiercely protects her nest. She does not hesitate to unleash her fury on anyone who threatens her offspring. More aggressive than her male counterpart, she has a much wider range of attacks."
     }
   },
   "objects": {
@@ -1428,7 +1434,7 @@
     "27": "Magic sax",
     "28": "Terrifying guitar",
     "29": "Credit card",
-    "3": "Keratinized diamond",
+    "3": "Keraunic diamond",
     "30": "Mechanical leg",
     "31": "Cute cat with laser-throwing eyes",
     "32": "Kyu'spoon",
@@ -1441,11 +1447,11 @@
     "39": "Power of Nayru",
     "4": "Hope flower",
     "40": "Lifeless angel's ring",
-    "41": "Ornated minotaur's urn",
+    "41": "Ornate minotaur's urn",
     "42": "Bunny's clock",
     "43": "Banan'ase split",
     "44": "Big tree's apple",
-    "45": "Midas Amulett",
+    "45": "Midas Midas Amulet",
     "46": "Shooting star",
     "47": "Kyuran",
     "48": "Particle accelerator",
@@ -1453,7 +1459,7 @@
     "5": "Mojaro's Moon",
     "50": "Pegasus Boots",
     "51": "Nimbus 2000",
-    "52": "Swiping soap",
+    "52": "Slippery soap",
     "53": "Super medal",
     "54": "Hunting horn",
     "55": "Big Wallet",
@@ -1472,7 +1478,7 @@
     "67": "Kars",
     "68": "Tardis",
     "69": "Music",
-    "7": "Magic Chain",
+    "7": "Magic Chains",
     "70": "Bed",
     "71": "Buzz Lightyear figurine",
     "72": "Sun",
@@ -1537,7 +1543,7 @@
     "22_female": "Koala",
     "22_male": "Koala",
     "23_female": "Frog",
-    "23_male": "Frog",
+    "23_male": "Toad",
     "24_female": "Monkey",
     "24_male": "Monkey",
     "25_female": "Penguin",
@@ -1652,8 +1658,8 @@
     "74_male": "Tropical fish",
     "75_female": "Puffer fish",
     "75_male": "Puffer fish",
-    "76_female": "Medusa",
-    "76_male": "Medusa",
+    "76_female": "Jellyfish",
+    "76_male": "Jellyfish",
     "77_female": "Shark",
     "77_male": "Shark",
     "78_female": "Whale",
@@ -1680,7 +1686,7 @@
     "87_male": "Deer",
     "88_female": "Water buffalo",
     "88_male": "Water buffalo",
-    "89_female": "Goodbye",
+    "89_female": "Bison",
     "89_male": "Bison",
     "8_female": "Cow",
     "8_male": "Ox",
@@ -1690,7 +1696,7 @@
     "91_male": "Gorilla",
     "92_female": "Chick",
     "92_male": "Chick",
-    "93_female": "Rate",
+    "93_female": "Rat",
     "93_male": "Rat",
     "94_female": "Blackbird",
     "94_male": "Blackbird",
@@ -1700,8 +1706,8 @@
     "96_male": "Donkey",
     "97_female": "Goose",
     "97_male": "Goose",
-    "98_female": "Momentum",
-    "98_male": "Momentum",
+    "98_female": "Moose",
+    "98_male": "This mysterious herbivore seems to gain Momentum from the surrounding vegetation, increasing its strength by absorbing the surrounding nature.",
     "99_male": "Jack-o'-lantern",
     "99_female": "Jack-o'-lantern",
     "9_female": "Sow",
@@ -1919,7 +1925,7 @@
     "ultimateFood_capitalized": "Ultimate soup",
     "commonFood_one": "treat",
     "commonFood_other": "treats",
-    "commonFood_capitalized": "Sweets"
+    "commonFood_capitalized": "Treat"
   },
   "diet_omnivorous": "{emote:diet.omnivorous} Omnivorous",
   "diet_herbivorous": "{emote:diet.herbivorous} Herbivorous",
@@ -1929,8 +1935,8 @@
     "female": "Female"
   },
   "talisman": {
-    "anchor": "{emote:expedition.talisman} **Anchoring Talisman",
-    "clone": "{emote:expedition.cloneTalisman} **Cloning Talisman"
+    "anchor": "{emote:expedition.talisman} **Anchoring Talisman**",
+    "clone": "{emote:expedition.cloneTalisman} **Cloning Talisman**"
   },
   "ordinals": {
     "get_feminine_ordinal_one": "1st",
@@ -1943,11 +1949,11 @@
     "levelUpDesc": "The guild is now level **{{level, number}}**!"
   },
   "players": {
-    "koTitle": "{{pseudo}}you've been knocked out!",
+    "koTitle": "{{pseudo}}, you've been knocked out!",
     "koDesc": "{emote:effects.dead} Use the {command:respawn} command to start playing again.",
     "koDmTitle": "Hello Fighter!",
     "koDmDesc": "It seems that you've been knocked out... {emote:effects.dead}\nThanks to our advanced technologies, we were able to alter the events as such as to let you avoid an agonizing death! {emote:other.tada}\nUnfortunately, the operation is costly and your score has been affected by this death in consequence...\n\nTo restart playing, use {command:respawn}.",
-    "leavePVEIslandTitle": "{{pseudo}}fainting",
+    "leavePVEIslandTitle": "{{pseudo}}, fainting",
     "leavePVEIslandDescStart": "{emote:effects.confounded} You feel your strength leave you, you're at your wits' end. You pass out on the floor...\n\n{emote:unitValues.lostMoney} Money lost: **{{moneyLost, number}}**",
     "leavePVEIslandMalusGuildPoints": "\n{emote:unitValues.guildPoint} Guild points lost: **{{guildPointsLost, number}}**",
     "leavePVEIslandDescEnd": "\n\nA boat will pick you up and take you back to a coast on the mainland.",
@@ -1958,11 +1964,11 @@
         "healthRestored": "{emote:unitValues.health} | Your life has been restored.",
         "fightUnlocked": "{emote:unitValues.attack} | Battles unlocked with commands {command:fight} and {command:fighthistory} ! For more information about combat, execute the {command:help} command.",
         "guildUnlocked": "{emote:other.guild} | Guilds unlocked with the commands {command:guild}, {command:guildcreate}, {command:guildinvite}, {command:guildleave}, {command:guilddailybonus}, {command:guildkick} and much more! For more information on guilds, use the command {command:help}.",
-        "classUnlocked": "{emote:commands.classes} | Classes unlocked with {command:classes} and {command:classesinfo} commands! For more information on classes, use the {command:help}command.",
-        "classTier": "{emote:commands.classes} | Level classes {{tier}} unlocked! For more information on the classes, use the commands {command:classesinfo} and {command:help}.",
+        "classUnlocked": "{emote:commands.classes} | Classes unlocked with {command:classes} and {command:classesinfo} commands! For more information on classes, use the {command:help} command.",
+        "classTier": "{emote:commands.classes} | Tier {{tier}} unlocked! For more information on the classes, use the commands {command:classesinfo} and {command:help}.",
         "newMissionSlot": "{emote:missions.sideMission} | New mission slot unlocked! For more information on your missions, use the command {command:missions}.",
-        "pveUnlocked": "{emote:other.island} | Access to unlocked remote islands! Meet at a watering hole for new adventures!",
-        "tokensUnlocked": "{emote:unitValues.token} | Tokens unlocked! You can now use your tokens to advance faster with the {command:report}command.",
+        "pveUnlocked": "{emote:other.island} | Access to remote islands unlocked! Head to a body of water for new adventures!",
+        "tokensUnlocked": "{emote:unitValues.token} | Tokens unlocked! You can now use your tokens to advance faster with the {command:report} command.",
         "statsIncreased": "{emote:other.increase} | Improved statistics."
       }
     }
@@ -1975,41 +1981,41 @@
   },
   "pveMapsStory": {
     "1001": {
-      "forestTroll": "You dive into the Numerous Forest, or the volcanic ashes dance in the air like a grey snow. The reduced visibility forces you to move cautiously between century-old trees with blackened trunks. Suddenly, a deaf crack breaks the disturbing silence. The branches bend and break under immense weight. Through the ash sail, a massive silhouette emerges: a colossal troll, its rugged volcanic soot skin. Its glowing eyes broke the dusty darkened while it grows a roar that shakes the trees around. This primitive drill keeper does not clearly understand your intrusion into his domain...",
-      "slimyMutant": "The more you progress in the Numerous Forest, the more oppressive the atmosphere. Volcanic ashes seem to absorb all sounds, creating almost supernatural silence. Then you notice something strange — your own shadow seems to be moving independently of your movements. You turn abruptly and discover with horror a gelatin and verdatre mass that slowly inverts to you. But the most disturbing thing is that it begins to take your appearance, copying your traits, your veins, even your weapons. The Vaseux Mutant watches you with your own eyes, a malicious smile deforming what should be your face. This perfect mimetisme makes the fight come all the more destabilizing ..."
+      "forestTroll": "You venture deeper into the Forest of Gloom, where volcanic ashes dance in the air like grayish snow. The reduced visibility forces you to move cautiously between century-old trees with blackened trunks. Suddenly, a deep crack breaks the eerie silence. Branches bend and snap under immense weight. Through the veil of ashes, a massive silhouette emerges: a colossal troll, its rough skin smeared with volcanic soot. Its glowing red eyes pierce the dusty darkness as it lets out a roar that shakes the surrounding trees. This primitive forest guardian clearly does not appreciate your intrusion into its domain...",
+      "slimyMutant": "The further you progress into the Forest of Gloom, the more oppressive the atmosphere becomes. The volcanic ashes seem to absorb all sounds, creating an almost supernatural silence. That's when you notice something strange: your own shadow seems to move independently of your movements. You turn abruptly and discover with horror a gelatinous, greenish mass slowly undulating toward you. But the most disturbing part is that it starts taking on your appearance, copying your features, your clothes, even your weapons. The Slimy Mutant watches you with your own eyes, a malicious smile distorting what should be your face. This perfect mimicry makes the coming fight all the more unsettling..."
     },
     "1002": {
-      "skeleton": "As you progress on the path, the ruins of an ancient village appear on the horizon. At first sight, the places seem peaceful despite the collapsed roofs. You advance cautiously between the houses that have been built, scrutinizing every corner in the hope of finding a sign of life. Suddenly, in the turn of a lane, you freeze, and a dry crack rings on the ground. In front of you stands a skeleton with an empty eye, armed to the teeth, seemingly ready to listen..."
+      "skeleton": "As you progress along the path, the ruins of an ancient village appear on the horizon. At first glance, the place seems peaceful despite the collapsed roofs. You advance cautiously between the dilapidated houses, scrutinizing every corner hoping to find a sign of life. Suddenly, around the corner of an alley, you freeze. A sharp crack echoes on the cobblestones. Before you stands a skeleton with an empty gaze, armed to the teeth, seemingly ready for a fight..."
     },
     "1003": {
-      "spider": "You arrive in the middle of an abandoned mine, the old wooden frame causes the walls to collapse. You enter, cleansing the many canvases passing through, and explore the galleries. The more you move on, the more tiny slabs massage around your feet. The horror cries of these small creatures are forced to shine in the cave. You feel the ground vibrated, something big is approaching at high speed, it is nothing more than an abominal spiked of huge size, Seeing the corpses of her children to your feet, she shouts with rage and runs over you."
+      "spider": "You arrive at the entrance of an abandoned mine, the worn wooden frame keeping the walls from collapsing. You enter, clearing away the many cobwebs as you go, and explore the tunnels. The further you advance, the more tiny spiders gather around your feet. Forced to trample them, the shrill cries of these small creatures echo throughout the cavern. You feel the ground vibrate — something large is approaching at high speed. It is none other than an abominable spider of immense size. Seeing the corpses of her young at your feet, she shrieks with rage and charges straight at you."
     },
     "1004": {
-      "rockGolem": "As you walk on the steep trail, you decide to take a break. The breath is short, you drop on a rock that finally thinks you can rest after fighting all these monsters. It is then that you hear a noise similar to that of a distant landing. You get up precipitously and before your eyes a huge rock golem emerges from the slopes of the mountain. It seems slow but knowing that you should never underestimate your opponent you gain your weapon ready to face this new threat..."
+      "rockGolem": "As you trudge along the steep trail, you decide to take a break. Short of breath, you drop onto a rock, finally thinking you can rest after fighting all these monsters. But then you hear a sound like a distant landslide. You leap to your feet, and before your astonished eyes, an immense rock golem emerges from the mountainside. It seems slow, but knowing you should never underestimate your opponent, you draw your weapon, ready to face this new threat..."
     },
     "1005": {
-      "magmaTitan": "Gathering your deepest strengths, you bravely climb the volcano. The warmth of the ground permeates you, but your bravery holds you up. The touching air, loaded with magmatic lifts, makes you spin the skin. With every inspiration, the nausee wins. Your wounded wakes up, each step is heavier than the previous one, but you are running off than cut. As you think you touch the tip of your troubles, the ground trembles. The magma freezes, the lava flows and together they take shape. An entity. A colossus stands before you. Blood, foggy like this volcano, pulses into you. You prepare for the ultimate battle."
+      "magmaTitan": "Summoning your deepest reserves of strength, you bravely climb the volcano. The heat of the ground pierces through you, but your valor keeps you on your feet. The suffocating air, thick with magmatic fumes, makes your head spin. With each breath, nausea overwhelms you. Your old wounds flare up, each step heavier than the last, but you press on at all costs. Just as you think your ordeal is ending, the ground trembles. The magma solidifies, the lava flows, and together they take shape. An entity rises. A colossus stands before you. Blood, burning like this volcano, pulses through you. You prepare for the ultimate battle."
     },
     "1101": {
-      "whiteWolf": "In this ruthless tundra, every step you take deep into the cool snow. The icy wind whipps your face while the perpetual weather reduces your visibility to a few meters. Your limbs are gradually numbing despite your efforts to maintain your bloodstream. Suddenly, you notice a dark shape that moves silently through the snow curtain. You freeze, all your senses on alert. A deafened rumble pierces the howl of the wind. Then emerges from the storm two eyes of an icy blue, shining with a wild intelligence. A majestic and imposing white wolf stands in front of you. Its immaculate fur blends perfectly with its environment, and its fangs glow in the darkness. This Arctic predator judges you, evaluating whether you have a prey or a threat. His sharp gaze seems to read in your eye while he prepares to bounce..."
+      "whiteWolf": "In this merciless tundra, every step you take sinks deep into the fresh snow. The icy wind lashes your face while the perpetual storm reduces your visibility to just a few meters. Your limbs gradually go numb despite your efforts to keep your blood flowing. Suddenly, you spot a dark shape moving silently through the curtain of snow. You freeze, all your senses on alert. A deep rumble pierces through the howling wind. Then from the storm emerge two eyes of icy blue, shining with feral intelligence. A white wolf, majestic and imposing, stands before you. Its immaculate fur blends perfectly with its surroundings, and its sharp fangs gleam in the darkness. This arctic predator sizes you up, assessing whether you are prey or a threat. Its piercing gaze seems to read into your soul as it prepares to pounce..."
     },
     "1102": {
-      "shinyElementary": "You continue your adventure in the crystal cave, a path in the slopes of the mountain that allows you to access other landscapes. You can see from the beautiful gems coming out of the walls that the place bears its name. Your steps sound against the surrounding walls, their sound back to you just like your image that reflects against the thousands of precious stones. You play with the echo while admiring the place, but all of a sudden, a sound that doesn't seem to come from you until your tympans. Crystals seem to be typing each other, stronger and stronger. Suddenly, a cluster of these stones takes on a humanoi<unk> form twice as large as you. The light that crosses this entity decomposes into a beautiful rainbow, but in view of the aggression that the creation has towards you, you feel it will be necessary to stop this beautiful illumination."
+      "shinyElementary": "You continue your quest for adventure through the crystal cavern, a path carved into the mountainside that leads to other landscapes. You notice from the magnificent gems protruding from the walls that the place truly lives up to its name. Your footsteps echo against the surrounding walls, their sound bouncing back to you just like your reflection in the thousands of precious stones. You play with the echo while admiring the place, but suddenly, a sound that doesn't seem to come from you reaches your ears. Crystals seem to be clashing together, louder and louder. All at once, a cluster of these stones takes on a humanoid shape twice your size. The light passing through this entity splits into a magnificent rainbow, but given the creature's aggression toward you, you decide it will be necessary to put an end to this beautiful display."
     },
     "1103": {
-      "celestialGuardian": "You get out of the crystal cave and you find yourself dazzled by the sun reflecting on the snow around you. Takes several seconds to get used to brightness, you can see hundreds of steps that have two gigantic doors surrounded by two equally large statues. You do not intend to stop in such a good way, so you start climbing hard one after the other. You are careful not to fall on the stones made slippery by the ice that formed on it. After several minutes of intense walking, you arrive at the feet of the building. The entries on the doors are not familiar: indeed, they are written in a writing that is unknown to you. In any case, the doors are on your way, and you need to cross them to move forward. So you try to place your palm on the cold stone, and suddenly a mechanism becomes active and the doors begin to grind. After several seconds, the doors are finally completely open, but the mechanism does not stop making noise. Then when you turn on your right, you notice that the statue begins to move and catch a hammer that is on its scale..."
+      "celestialGuardian": "You exit the crystal cavern and find yourself dazzled by the sun reflecting off the snow surrounding you. After several seconds adjusting to the brightness, you spot hundreds of steps leading to two gigantic doors flanked by two equally massive statues. You don't intend to stop when you've come this far, so you begin painstakingly climbing the steps one by one. You take care not to slip on the stones made slick by the ice that has formed on them. After several minutes of arduous climbing, you arrive at the foot of the structure. The inscriptions on the doors are unfamiliar to you — indeed, they are written in a script you do not recognize. In any case, the doors are in your way, and you must pass through them to continue. You place your palm on the cold stone, and suddenly a mechanism activates and the doors begin to creak. After several seconds, the doors are finally fully open, but the mechanism doesn't stop making noise. It is then, turning to your right, that you notice one of the statues beginning to move and grasping a hammer proportioned to its enormous scale..."
     },
     "1104": {
-      "maleIceDragon": "The climb of the snowy peak has led you to full strength. At this dizzying altitude, each breathing is a fight against the rare air that bruises your lungs. Your steps crack on the hard snow by strong winds that threaten to cause you to lose balance at every moment. As you thought you had reached the top, the ground trembles beneath your feet. A titanic roar shakes the icy air, so powerful that it provokes an avalanche in the distance. Looking up towards the low clouds, you see a gigantic shadow hovering over you. Suddenly, it plunges into the earth in a deafening crack. A colossal ice dragon landed in front of you, its crystalline scales glittering like a thousand diamonds. Its breath instantly turns the air into icy fog while its blue arctic eyes fix you with a thousand intelligence. This high lord decided that your intrusion into his domain would meditate a definitive answer..."
+      "maleIceDragon": "The climb up the snowy peak has brought you to the brink of exhaustion. At this dizzying altitude, every breath is a battle against the thin air that burns your lungs. Your steps crack on the snow hardened by fierce winds that threaten to knock you off balance at every moment. Just as you thought you had reached the summit, the ground trembles beneath your feet. A titanic roar tears through the icy air, so powerful it triggers an avalanche in the distance. Looking up toward the low clouds, you see a gigantic shadow hovering above you. Suddenly, it plunges earthward with a deafening crash. A colossal ice dragon lands before you, its crystalline scales glittering like a thousand diamonds. Its breath instantly turns the air into frozen mist while its arctic blue eyes fix upon you with ancient intelligence. This lord of the peaks has decided that your intrusion into its domain deserves a... definitive response."
     },
     "1105": {
-      "crocodile": "You are cautiously approaching the shores of the underground lake, intrigued by this mystical geology. How can these waters remain liquid in such a cold? The ambient temperature should normally turn this lake into a solid ice block. You kneel down to examine the dark water, trying to pierce the secret of its abysmal depth. It was then that a bunch of bubbles slowly risen to the surface, disturbing the perfect mirror of the lake. You recover instinctively when sudden, the water starts boiling violently. A monstrous maw erupts from the depths, armed with prehistoric fangs. A giant crocodile, adapted to the extreme cold by thousands of years of evolution, emerges from its aquatic lair. Its thick and scaling skin bears the marks of countless fights. Its yellow eyes, cold like the ice that surrounds it, look at you with the relentless patience of a perfect predator. He watched in these mysterical waters devouring everything that dared to reach his territory..."
+      "crocodile": "You cautiously approach the shores of the underground lake, intrigued by this geological mystery. How can these waters remain liquid in such cold? The ambient temperature should normally turn this lake into a solid block of ice. You kneel down to examine the dark water, trying to uncover the secret of its abyssal depth. Then a series of bubbles slowly rise to the surface, disturbing the lake's perfect mirror. You instinctively step back when suddenly, the water begins to churn violently. A monstrous maw surges from the depths, armed with prehistoric fangs. A giant crocodile, adapted to the extreme cold through thousands of years of evolution, emerges from its aquatic lair. Its thick, scaly skin bears the marks of countless battles. Its yellow eyes, cold as the ice that surrounds it, fix upon you with the relentless patience of a perfect predator. It has survived in these mysterious waters by devouring everything that dared approach its territory..."
     },
     "1106": {
-      "yukiOnna": "You are in the ruins of the devastated village, or oppressive silence is broken only by the gloomy whistle of the wind through the collapsed structures. Each step echoes in this desolation, as if the stones themselves kept the memory of the tragedies passed. You are cautiously exploring the rubble, trying to imagine the nature that once reigned there. Suddenly, a crystalline melody floats in the icy air, so beautiful that it attracts you irresistibly to its source. Surrounded by a stunned house, you can see a striking silhouette. A woman in immaculate white kimono seems to slip on the snow without leaving any traces. Its long black hair floats in an invisible breeze, while its albarestre skin radiates with spectral glow. But when she turns her face towards you, you realize with horror that her eyes are two icy neant wells. The Yuki-Onna, the vengeful spirit of the snowy mountains, reveals you a smile that promises a death as beautiful as it is terrible."
+      "yukiOnna": "You enter the ruins of the devastated village, where the oppressive silence is broken only by the mournful whistle of the wind through the collapsed structures. Each step echoes strangely in this desolation, as if the very stones held the memory of past tragedies. You cautiously explore the rubble, trying to imagine the prosperity that once thrived here. Suddenly, a crystalline melody floats through the icy air, so beautiful it irresistibly draws you toward its source. Around the corner of a collapsed house, you glimpse an ethereal silhouette of striking beauty. A woman in an immaculate white kimono seems to glide over the snow without leaving any traces. Her long black hair floats in an invisible breeze while her alabaster skin radiates a spectral glow. But when she turns her face toward you, you realize with horror that her eyes are two wells of frozen void. The Yuki-Onna, vengeful spirit of the snowy mountains, reveals a grin that promises a death as beautiful as it is terrible."
     },
     "1107": {
-      "femaleIceDragon": "You are advancing in this unexplored area, guided by a curiosity. The ice wall in front of you reflects such an imposing silhouette that it challenges imagination. The closer you get into the icy count, the greater the size of the creature hidden behind this barrier. Suddenly, cracks appear in the ice, spreading like sour canvas. A deafened rumble makes the rock walls vibrate. The wall explodes in an apocalyptic fracture, throwing massive ice blocks. Through this broken crystal curtain emerges the most majestic of creatures: an ice dragon of pharaotic dimensions. Its presence seems imposing and its wings repaired almost to the stone will. It has a terrifying beauty, with its iriseed scales capturing the weak light in icy rainbows. Her eyes, deep blue like the abysses, shine with ancient wisdom and maternal fury. Behind it you see a gigantic egg with pearl reflections, pulling with mystery. You have just peeled in his nursery, and no intrusion will go unpunished in the Ice Queen's Sanctuary..."
+      "femaleIceDragon": "You advance into this unexplored region, guided by a curiosity mixed with apprehension. The ice wall before you reflects a silhouette so imposing it defies the imagination. The closer you get in the frozen gloom, the more you grasp the sheer magnitude of the creature hidden behind this barrier. Suddenly, cracks appear in the ice, spreading like spider webs. A deep rumble makes the rocky walls vibrate. The wall explodes in an apocalyptic crash, hurling massive ice blocks. Through this curtain of shattered crystals emerges the most majestic of creatures: a female ice dragon of colossal proportions. Her presence is awe-inspiring, her folded wings nearly touching the stone vaults above. She possesses a terrifying beauty, her iridescent scales catching the faint light in frozen rainbows. Her eyes, deep blue like the abyss, shine with ancient wisdom and maternal fury. Behind her, you spot a gigantic egg with pearlescent reflections, pulsing with a mysterious glow. You have just entered her nursery, and no intrusion will go unpunished in the sanctuary of the Ice Queen..."
     }
   }
 }

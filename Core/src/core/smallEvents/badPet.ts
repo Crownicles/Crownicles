@@ -208,9 +208,9 @@ async function handleGiveFood(guildFoodKey: GuildFoodPropertyKey, petModel: Pet,
 		};
 	}
 
-	const dislikesLoveLost = RandomUtils.crowniclesRandom.bool(LOVE_LOST.GIVE_FOOD.DISLIKES_CHANCE)
-		? LOVE_LOST.GIVE_FOOD.DISLIKES_AMOUNT
-		: 0;
+	const dislikesLoveLost = RandomUtils.crowniclesRandom.bool(LOVE_LOST.GIVE_FOOD.DISLIKES_SUCCESS_CHANCE)
+		? 0
+		: LOVE_LOST.GIVE_FOOD.DISLIKES_AMOUNT;
 
 	return {
 		loveLost: dislikesLoveLost,

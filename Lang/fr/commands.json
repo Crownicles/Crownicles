@@ -704,7 +704,8 @@
       "top_1_before_reset": "Personne ayant atteint la première place du classement après le reset",
       "very_powerful_guild": "Membre d'une guilde très puissante",
       "animal_lover": "Personne ayant montré tous les familiers à Talvar le nain",
-      "expert_expediteur": "Personne ayant réussi de nombreuses expéditions avec son familier"
+      "expert_expediteur": "Personne ayant réussi de nombreuses expéditions avec son familier",
+      "oracle_patron": "Protecteur de l'Oracle, ayant contribué généreusement à de nombreuses bénédictions"
     },
     "fightRanked": {
       "fieldName": "Gloire et ligue :",
@@ -772,8 +773,8 @@
   "report": {
     "adviceTitle": "Conseil :",
     "chooseDestinationIndications": "Choisissez une destination pour votre voyage:",
-  "choseMapMinutes_one": "Vous avez décidé de partir en direction {{mapPrefix}} {{mapType}} {{mapEmote}} **{{mapName}}**. Ce trajet durera environ **{{timeDisplay}}**.",
-  "choseMapMinutes_other": "Vous avez décidé de partir en direction {{mapPrefix}} {{mapType}} {{mapEmote}} **{{mapName}}**. Ce trajet durera environ **{{timeDisplay}}**.",
+    "choseMapMinutes_one": "Vous avez décidé de partir en direction {{mapPrefix}} {{mapType}} {{mapEmote}} **{{mapName}}**. Ce trajet durera environ **{{timeDisplay}}**.",
+    "choseMapMinutes_other": "Vous avez décidé de partir en direction {{mapPrefix}} {{mapType}} {{mapEmote}} **{{mapName}}**. Ce trajet durera environ **{{timeDisplay}}**.",
     "choseMap_one": "Vous avez décidé de partir en direction {{mapPrefix}} {{mapType}} {{mapEmote}} **{{mapName}}**. Ce trajet durera environ **{{time}} heure**.",
     "choseMap_other": "Vous avez décidé de partir en direction {{mapPrefix}} {{mapType}} {{mapEmote}} **{{mapName}}**. Ce trajet durera environ **{{time}} heures**.",
     "collectedPointsTitle": "Points récoltés :",
@@ -2156,5 +2157,13 @@
     "playerNotFound": "Ce joueur n'existe pas dans la base de données.",
     "error": "Une erreur s'est produite lors de l'export : {{error}}",
     "fileName": "export_rgpd_{{anonymizedId}}.zip"
+  },
+  "blessing": {
+    "titleActive": "Bénédiction active",
+    "titleCollecting": "Cagnotte en cours de collecte",
+    "active": "{emote:blessingCommand.active} **{{blessingName}}**\n\n{{blessingEffect}}\n\n{emote:blessingCommand.timeLeft} Temps restant : {{timeLeft}}\n{emote:blessingCommand.triggeredBy} Déclenchée par : **{{triggeredBy}}**",
+    "collecting": "Les aventuriers se cotisent pour invoquer une bénédiction.\n\n{{moneyEmote}} Progression : **{{poolAmount, number}}** / **{{poolThreshold, number}}**\n{emote:blessingCommand.timeLeft} Expiration de la cagnotte : {{poolExpiresAt}}\n\nContribuez en rencontrant l'Oracle lors de vos voyages !",
+    "contributors_one": "{emote:blessingCommand.topContributor} **Plus gros contributeur :** {{topContributorName}} ({{topContributorAmount, number}} {{moneyEmote}})\n{emote:blessingCommand.contributors} **{{count}}** aventurier a contribué jusqu'à présent.",
+    "contributors_other": "{emote:blessingCommand.topContributor} **Plus gros contributeur :** {{topContributorName}} ({{topContributorAmount, number}} {{moneyEmote}})\n{emote:blessingCommand.contributors} **{{count}}** aventuriers ont contribué jusqu'à présent."
   }
 }

@@ -58,7 +58,7 @@
     }
   },
   "petFree": {
-    "description": "Free a pet.",
+    "description": "Release a pet.",
     "name": "petfree"
   },
   "petNick": {
@@ -77,7 +77,7 @@
     "options": {
       "guildName": {
         "description": "The name of the guild.",
-        "name": "name"
+        "name": "description"
       }
     }
   },
@@ -402,5 +402,9 @@
         "description": "The Discord ID of the player."
       }
     }
+  },
+  "blessing": {
+    "name": "blessing",
+    "description": "See the current state of the global blessing."
   }
 }

@@ -46,6 +46,7 @@ import { PetEntities } from "../../core/database/game/models/PetEntity";
 import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
 import { PostFightPetLoveOutcomes } from "../../../../Lib/src/constants/PetConstants";
 import { PetUtils } from "../../core/utils/PetUtils";
+import { BlessingManager } from "../../core/blessings/BlessingManager";
 
 type PlayerStats = {
 	pet?: {
@@ -151,6 +152,9 @@ async function calculateMoneyReward(
 		);
 	}
 
+	// Apply fight loot blessing multiplier
+	extraMoneyBonus = Math.round(extraMoneyBonus * BlessingManager.getInstance().getFightLootMultiplier());
+
 	// Add money to the appropriate player
 	await fightInitiatorInformation.initiatorPlayer.addMoney({
 		amount: extraMoneyBonus,
@@ -171,8 +175,11 @@ async function calculateScoreReward(fightInitiatorInformation: FightInitiatorInf
 		return 0;
 	}
 
-	// Award extra score points only to the initiator for one of his first wins of the day.
-	const scoreBonus = FightConstants.REWARDS.SCORE_BONUS_AWARD;
+	/*
+	 * Award extra score points only to the initiator for one of his first wins of the day.
+	 * Apply fight loot blessing multiplier
+	 */
+	const scoreBonus = Math.round(FightConstants.REWARDS.SCORE_BONUS_AWARD * BlessingManager.getInstance().getFightLootMultiplier());
 
 	await fightInitiatorInformation.initiatorPlayer.addScore(
 		{

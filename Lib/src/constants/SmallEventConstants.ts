@@ -461,7 +461,9 @@ export abstract class SmallEventConstants {
 				NO_FOOD: 5,
 				JEALOUS_MIN: 1,
 				JEALOUS_MAX: 6,
-				DISLIKES_CHANCE: 0.2,
+
+				/** Chance of success when pet dislikes the food (no love lost) */
+				DISLIKES_SUCCESS_CHANCE: 0.2,
 				DISLIKES_AMOUNT: 1
 			},
 			FLEE: {

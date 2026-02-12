@@ -37,6 +37,30 @@
   "notificationPetExpedition": "{{petDisplay}} est de retour d'expédition et a peut-être ramené des trésors !",
   "christmasBonusPreAnnouncement": "{emote:announcements.christmas} **Bonus de Noël à venir !** {emote:announcements.christmas}\n\nDans quelques heures, tous les joueurs recevront un cadeau spécial : leur stock de jetons sera rempli au maximum ! Profitez bien de cette période festive !",
   "christmasBonusApplied": "{emote:announcements.christmas} **Joyeux Noël !** {emote:announcements.gift}\n\nLe Père Noël est passé ! Votre stock de jetons a été rempli au maximum. Profitez de ce cadeau pour partir à l'aventure !",
+  "blessingAnnouncement_one": "{emote:smallEvents.altar} **Bénédiction activée : {{blessingName}} !**\n\nGrâce à la générosité de **{{playerName}}**, une bénédiction a été invoquée pour tous les aventuriers !\n\n{emote:blessingCommand.active} **Effet :** {{blessingEffect}}\n{emote:blessingCommand.timeLeft} **Durée :** {{durationHours}} heures\n\n{emote:blessingCommand.topContributor} **Plus gros contributeur :** {{topContributorName}} ({{topContributorAmount, number}} {emote:unitValues.money})\n{emote:blessingCommand.contributors} **{{count}}** aventurier a contribué à cette bénédiction.",
+  "blessingAnnouncement_other": "{emote:smallEvents.altar} **Bénédiction activée : {{blessingName}} !**\n\nGrâce à la générosité de **{{playerName}}**, une bénédiction a été invoquée pour tous les aventuriers !\n\n{emote:blessingCommand.active} **Effet :** {{blessingEffect}}\n{emote:blessingCommand.timeLeft} **Durée :** {{durationHours}} heures\n\n{emote:blessingCommand.topContributor} **Plus gros contributeur :** {{topContributorName}} ({{topContributorAmount, number}} {emote:unitValues.money})\n{emote:blessingCommand.contributors} **{{count}}** aventuriers ont contribué à cette bénédiction.",
+  "blessingNames": {
+    "1": "Rage amplifiée",
+    "2": "Butin de combat",
+    "3": "Régénération d'énergie",
+    "4": "Bourse dorée",
+    "5": "Gloire accrue",
+    "6": "Amour des familiers",
+    "7": "Potions curatives",
+    "8": "Jeton d'expédition",
+    "9": "Mission quotidienne bénie"
+  },
+  "blessingEffects": {
+    "1": "La rage gagnée en combat est doublée pour tous les joueurs.",
+    "2": "Les récompenses des combats (argent et points) sont multipliées par 4 (hors gloire).",
+    "3": "La régénération d'énergie de combat est doublée.",
+    "4": "Tous les gains d'argent sont augmentés de 10%.",
+    "5": "Tous les gains de score sont augmentés de 20%.",
+    "6": "Les points d'amour gagnés par les familiers sont doublés.",
+    "7": "L'efficacité des potions de soin est doublée.",
+    "8": "Les expéditions de familiers rapportent un jeton bonus.",
+    "9": "Les récompenses des missions quotidiennes sont doublées."
+  },
   "supportMessage": "{{langFlag}} Si vous avez besoin d'aide, sélectionnez votre langue en utilisant les boutons ci-dessous. Si vous n'avez pas besoin d'aide, ignorez ce message.\n{emote:collectors.warning} **Chaque message envoyé ici peut être lu par un humain !**\n",
   "commandDisabledInDM": "{{langFlag}} Bonjour, les commandes sont désactivées en messages privés. Merci d'aller sur un serveur pour jouer !\nSi vous souhaitez obtenir de l'aide, cliquez sur le bouton correspondant à votre langue ci-dessous.\n",
   "accountDeletion": {

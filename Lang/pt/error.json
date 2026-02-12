@@ -51,7 +51,8 @@
     "switch": "troca de equipamentos",
     "test": "teste",
     "unlock": "libertar alguém",
-    "witchChoose": "escolher uma ação para a bruxa"
+    "witchChoose": "escolher uma ação para a bruxa",
+    "altarSmallEvent": "contribuição para o altar do Oráculo"
   },
   "commandDoesntExist": "ERRO: Comando desconhecido",
   "interactionNotForYou": "Esta interação não é para si!",
@@ -161,6 +162,7 @@
   "banned": "Foste banido do jogo.",
   "aDevMessedUp": "Ops! Ocorreu um erro. Não se preocupe, a culpa não é sua. Por favor, aceite as nossas desculpas por qualquer incómodo causado. Para resolver este problema, contacte a nossa equipa de apoio através do nosso servidor Discord: https://discord.gg/5JqrMtZ",
   "commandNotAvailableHere": "Este comando não pode ser utilizado nesta localização.",
+  "oracleNotMet": "Este comando ainda não está disponível para si.",
   "guildFoodStorageFull": "Recebeste **{{quantity, number}}x {{food}}**, mas o stock de comida da tua guilda está cheio. A comida foi deitada fora.",
   "fightBugged": "O combate foi cancelado devido a um problema técnico. Isto deve-se normalmente à eliminação de uma mensagem necessária para o combate ou a um problema com as permissões.",
   "resetIsNow": "{emote:announcements.trophy} As classificações desta semana estão a ser repostas! O vencedor será anunciado em breve no servidor bot! O jogo será retomado em menos de 5 minutos!",

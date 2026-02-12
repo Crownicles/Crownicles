@@ -354,7 +354,7 @@
     "notRanked": "Non Classificato"
   },
   "guildCreate": {
-    "title": "{{pseudo}}, creare una gilda",
+    "title": "{{pseudo}}, creazione di una gilda",
     "canceledTitle": "{{pseudo}}, creazione delle gilda annullata.",
     "canceledDesc": "La Creazione della vostra Gilda è stata annullata.",
     "confirmDesc": "{emote:collectors.question} Confermare la creazione della gilda **{{guildName}}** per `{{price, number}}` {emote:unitValues.money} ?",
@@ -436,7 +436,7 @@
   "help": {
     "aliasFieldTitle": "Alias",
     "aliasesFieldTitle": "Alias",
-    "commandEmbedTitle": "{{emote}} Informazione dettagliate :",
+    "commandEmbedTitle": "{{emote}} Informazione dettagliate:",
     "commands": {
       "BADGES": {
         "description": "I badge sono distinzione difficile a ottenere che sono state create per ricompensare le persone che hanno il più sostenuti il sviluppo del bot. La lista dei badge e disponibile sulla guida del bot.\n(link : https://guide.draftbot.com/notions-avancees/badges)"
@@ -698,7 +698,8 @@
       "top_1_before_reset": ":first_place: `Persona che ha per primo ottenuto il primo posto della dopo il reset`",
       "very_powerful_guild": ":mirror_ball: `Membro di una gilda molto potente`",
       "animal_lover": "Persona che ha mostrato tutti gli animali domestici a Talvar il nano",
-      "expert_expediteur": "Una persona che ha portato a termine con successo numerose spedizioni con il proprio animale domestico"
+      "expert_expediteur": "Una persona che ha portato a termine con successo numerose spedizioni con il proprio animale domestico",
+      "oracle_patron": "Protettore dell'Oracolo, avendo contribuito generosamente a numerose benedizioni"
     },
     "fightRanked": {
       "fieldName": "Gloria e lega :",
@@ -713,7 +714,7 @@
       "fieldValue": ":stadium: {{guild}}"
     },
     "information": {
-      "fieldName": "Informazione :",
+      "fieldName": "Informazione:",
       "fieldValue": "{emote:unitValues.health} {{health, number}} / {{maxHealth, number}} | {emote:unitValues.xp} {{experience, number}} / {{experienceNeededToLevelUp, number}} | {emote:unitValues.money} {{money, number}} | {emote:unitValues.token} {{tokens, number}} / {{tokensMax, number}}"
     },
     "informationNoTokens": {
@@ -1968,5 +1969,13 @@
     "playerNotFound": "Questo giocatore non esiste nel database.",
     "error": "Si è verificato un errore durante l'esportazione: {{error}}",
     "fileName": "export_rgpd_{{anonymizedId}}.zip"
+  },
+  "blessing": {
+    "titleActive": "Benedizione attiva",
+    "titleCollecting": "Gatto in raccolta",
+    "active": "{emote:blessingCommand.active} **{{blessingName}}**\n\n{{blessingEffect}}\n\n{emote:blessingCommand.timeLeft} Tempo rimanente : {{timeLeft}}\n{emote:blessingCommand.triggeredBy} Attivato da : **{{triggeredBy}}**",
+    "collecting": "Gli avventurieri contribuiscono per invocare una benedizione.{{moneyEmote}} Progresso: **{{poolAmount, number}}** / **{{poolThreshold, number}}**{emote:blessingCommand.timeLeft} Scadenza della raccolta: {{poolExpiresAt}}Contribuisci incontrando l'Oracolo durante i tuoi viaggi!",
+    "contributors_one": "{emote:blessingCommand.topContributor} **Grande contributore:** {{topContributorName}} ({{topContributorAmount, number}} {{moneyEmote}})\n{emote:blessingCommand.contributors} **{{count}}** avventuriero ha contribuito finora.",
+    "contributors_other": "{emote:blessingCommand.topContributor} **Grande contributore:** {{topContributorName}} ({{topContributorAmount, number}} {{moneyEmote}})\n{emote:blessingCommand.contributors} **{{count}}** gli avventurieri hanno contribuito finora."
   }
 }

@@ -2,19 +2,19 @@
   "missions": {
     "expired": {
       "title_one": "{{pseudo}}, a mission has expired",
-      "title_other": "{{pseudo}}, missions have expired",
-      "description_one": "{emote:missions.expired} **The following mission has expired:**\n{{missionsExpired}}",
-      "description_other": "{emote:missions.expired} **The following missions have expired:**\n{{missionsExpired}}"
+      "title_other": "{{pseudo}}, some missions have expired",
+      "description_one": "{emote:missions.expired} **The following mission has expired: **\n{{missionsExpired}}",
+      "description_other": "{emote:missions.expired} **The following missions have expired: **\n{{missionsExpired}}"
     },
     "completed": {
       "title_one": "{{pseudo}}, a mission has been completed.",
       "title_other": "{{pseudo}}, missions have been completed.",
       "subcategories": {
-        "campaign_one": "{emote:missions.campaign} **Campaign Mission**",
-        "campaign_other": "{emote:missions.campaign} **Campaign Missions**",
-        "daily": "{emote:missions.daily} **Daily Mission**",
+        "campaign_one": "{emote:missions.campaign} **Campaign mission**",
+        "campaign_other": "{emote:missions.campaign} **Campaign missions**",
+        "daily": "{emote:missions.daily} **Daily mission**",
         "sideMission_one": "{emote:missions.sideMission} **Secondary mission**",
-        "sideMission_other": "{emote:missions.sideMission} **Secondary Mission**"
+        "sideMission_other": "{emote:missions.sideMission} **Secondary missions**"
       },
       "totalRewards": "{emote:missions.total} Total rewards",
       "totalDisplay": {
@@ -32,19 +32,19 @@
     }
   },
   "guildFood": {
-    "receivedFoodTitle": "Your guild has received some food",
+    "receivedFoodTitle": "Your guild has received some food.",
     "receivedFoodDescription": "Your guild has received **{{amount}} {{foodName}}** {emote:foods.{{foodId}}}."
   },
   "playerFreedFromJail": {
-    "description": "You have been released from prison by **{{freedByPlayer}}**!"
+    "description": "You have been bailed out of prison by **{{freedByPlayer}}**!"
   },
   "fightChallenge": {
     "description": "{emote:fightCommand.crossedSwords} You have been attacked by **{{attackerPseudo}}**! Find out the result of this fight using the command `/historyfight`."
   },
   "gdprExport": {
-    "title": "RGPD export completed",
-    "success": "The RGPD export has been successfully generated.\n\n**anonymized player ID:** `{{anonymizedId}}`\n** files generated:** {{fileCount}}\n\nThe ZIP file is available as an attachment.",
-    "error": "An error occurred while exporting RGPD: {{error}}",
+    "title": "GDPR export completed",
+    "success": "The GDPR export has been successfully generated.\n\n**Anonymized player ID:** `{{anonymizedId}}`\n**Files generated:** {{fileCount}}\n\nThe ZIP file is available as an attachment.",
+    "error": "An error occurred while exporting GDPR: {{error}}",
     "fileName": "gdpr_export_{{anonymizedId}}.zip"
   }
 }

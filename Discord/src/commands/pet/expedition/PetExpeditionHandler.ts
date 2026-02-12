@@ -1,16 +1,16 @@
 import {
 	makePacket, PacketContext
-} from "../../../../Lib/src/packets/CrowniclesPacket";
-import { DiscordCache } from "../../bot/DiscordCache";
-import i18n from "../../translations/i18n";
-import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
-import { PacketUtils } from "../../utils/PacketUtils";
-import { escapeUsername } from "../../utils/StringUtils";
-import { finishInTimeDisplay } from "../../../../Lib/src/utils/TimeUtils";
+} from "../../../../../Lib/src/packets/CrowniclesPacket";
+import { DiscordCache } from "../../../bot/DiscordCache";
+import i18n from "../../../translations/i18n";
+import { CrowniclesEmbed } from "../../../messages/CrowniclesEmbed";
+import { PacketUtils } from "../../../utils/PacketUtils";
+import { escapeUsername } from "../../../utils/StringUtils";
+import { finishInTimeDisplay } from "../../../../../Lib/src/utils/TimeUtils";
 import {
 	ExpeditionConstants, ExpeditionLocationType
-} from "../../../../Lib/src/constants/ExpeditionConstants";
-import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
+} from "../../../../../Lib/src/constants/ExpeditionConstants";
+import { CrowniclesIcons } from "../../../../../Lib/src/CrowniclesIcons";
 import {
 	CommandPetExpeditionPacketRes,
 	CommandPetExpeditionChoicePacketRes,
@@ -19,12 +19,12 @@ import {
 	CommandPetExpeditionResolvePacketReq,
 	CommandPetExpeditionResolvePacketRes,
 	CommandPetExpeditionErrorPacket
-} from "../../../../Lib/src/packets/commands/CommandPetExpeditionPacket";
+} from "../../../../../Lib/src/packets/commands/CommandPetExpeditionPacket";
 import {
 	ButtonInteraction, StringSelectMenuInteraction
 } from "discord.js";
-import { PetBasicInfo } from "../../../../Lib/src/types/PetBasicInfo";
-import { Language } from "../../../../Lib/src/Language";
+import { PetBasicInfo } from "../../../../../Lib/src/types/PetBasicInfo";
+import { Language } from "../../../../../Lib/src/Language";
 
 // Import from new modules
 import {
@@ -33,7 +33,7 @@ import {
 	getPetDisplayString,
 	getFoodConsumedDescription,
 	getSpeedCategory
-} from "./expedition/ExpeditionDisplayUtils";
+} from "./ExpeditionDisplayUtils";
 
 import {
 	buildNoTalismanEmbed,
@@ -42,7 +42,7 @@ import {
 	buildExpeditionResolveEmbed,
 	buildExpeditionStartedEmbed,
 	buildExpeditionErrorEmbed
-} from "./expedition/ExpeditionEmbedBuilders";
+} from "./ExpeditionEmbedBuilders";
 
 /**
  * Helper to send response using the correct interaction (button/select menu or original)

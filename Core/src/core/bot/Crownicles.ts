@@ -7,7 +7,9 @@ import {
 import {
 	Op, Sequelize
 } from "sequelize";
-import { minutesToMilliseconds } from "../../../../Lib/src/utils/TimeUtils";
+import {
+	daysToMilliseconds, minutesToMilliseconds
+} from "../../../../Lib/src/utils/TimeUtils";
 import { TimeoutFunctionsConstants } from "../../../../Lib/src/constants/TimeoutFunctionsConstants";
 import { MapCache } from "../maps/MapCache";
 import { registerAllPacketHandlers } from "../packetHandlers/PacketHandler";
@@ -38,6 +40,7 @@ import { initializeAllPetBehaviors } from "../fights/PetAssistManager";
 import { CrowniclesCoreWebServer } from "./CrowniclesCoreWebServer";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { FightsManager } from "../fights/FightsManager";
+import { BlessingManager } from "../blessings/BlessingManager";
 import { EnergyFullNotificationPacket } from "../../../../Lib/src/packets/notifications/EnergyFullNotificationPacket";
 import { DailyBonusNotificationPacket } from "../../../../Lib/src/packets/notifications/DailyBonusNotificationPacket";
 import { ScheduledDailyBonusNotifications } from "../database/game/models/ScheduledDailyBonusNotification";
@@ -71,7 +74,7 @@ export class Crownicles {
 		 *
 		 * The first one is set immediately so if the bot crashes before programming the next one, it will be set anyway to approximately a valid date (at 1s max of difference)
 		 */
-		await Settings.NEXT_DAILY_RESET.setValue(await Settings.NEXT_DAILY_RESET.getValue() + 24 * 60 * 60 * 1000);
+		await Settings.NEXT_DAILY_RESET.setValue(await Settings.NEXT_DAILY_RESET.getValue() + daysToMilliseconds(1));
 
 		Crownicles.randomPotion()
 			.finally(() => null);
@@ -125,7 +128,7 @@ export class Crownicles {
 	static async seasonEnd(): Promise<void> {
 		if (!PacketUtils.isMqttConnected()) {
 			CrowniclesLogger.error("MQTT is not connected, can't announce the end of the season. Trying again in 1 minute");
-			setTimeout(Crownicles.seasonEnd, 60000);
+			setTimeout(Crownicles.seasonEnd, TimeoutFunctionsConstants.MQTT_RETRY_DELAY);
 			return;
 		}
 
@@ -137,7 +140,7 @@ export class Crownicles {
 		 * so if the bot crashes before programming the next one, it will be set anyway to approximately a valid date
 		 * (at 1 s max of difference)
 		 */
-		await Settings.NEXT_SEASON_RESET.setValue(await Settings.NEXT_SEASON_RESET.getValue() + 7 * 24 * 60 * 60 * 1000);
+		await Settings.NEXT_SEASON_RESET.setValue(await Settings.NEXT_SEASON_RESET.getValue() + daysToMilliseconds(7));
 
 		crowniclesInstance?.logsDatabase.log15BestSeason()
 			.then();
@@ -262,11 +265,13 @@ export class Crownicles {
 	 * Update the fight points of the entities that lost some
 	 */
 	static async fightPowerRegenerationLoop(): Promise<void> {
+		const regenAmount = FightConstants.POINTS_REGEN_AMOUNT * BlessingManager.getInstance().getEnergyRegenMultiplier();
+
 		const notifications = await Player.findAll(
 			{
 				where: {
 					[Op.and]: [
-						{ fightPointsLost: { [Op.lte]: FightConstants.POINTS_REGEN_AMOUNT } },
+						{ fightPointsLost: { [Op.lte]: regenAmount } },
 						{ fightPointsLost: { [Op.ne]: 0 } },
 						{ mapLinkId: { [Op.in]: MapCache.regenEnergyMapLinks } }
 					]
@@ -283,7 +288,7 @@ export class Crownicles {
 		Player.update(
 			{
 				fightPointsLost: Sequelize.literal(
-					`CASE WHEN fightPointsLost - ${FightConstants.POINTS_REGEN_AMOUNT} < 0 THEN 0 ELSE fightPointsLost - ${FightConstants.POINTS_REGEN_AMOUNT} END`
+					`CASE WHEN fightPointsLost - ${regenAmount} < 0 THEN 0 ELSE fightPointsLost - ${regenAmount} END`
 				)
 			},
 			{
@@ -298,6 +303,29 @@ export class Crownicles {
 			Crownicles.fightPowerRegenerationLoop,
 			minutesToMilliseconds(FightConstants.POINTS_REGEN_MINUTES)
 		);
+	}
+
+	/**
+	 * Execute all the daily tasks
+	 */
+	static async weeklyTimeout(): Promise<void> {
+		if (!PacketUtils.isMqttConnected()) {
+			CrowniclesLogger.error("MQTT is not connected, can't announce the end of the week. Trying again in 1 minute");
+			setTimeout(Crownicles.weeklyTimeout, TimeoutFunctionsConstants.MQTT_RETRY_DELAY);
+			return;
+		}
+
+		/*
+		 * First program the next weekly end immediately at +7 days
+		 * Then wait a bit before setting the next date, so we are sure to be past the date
+		 *
+		 * The first one is set immediately so if the bot crashes before programming the next one, it will be set anyway to approximately a valid date (at 1s max of difference)
+		 */
+		await Settings.NEXT_WEEKLY_RESET.setValue(await Settings.NEXT_WEEKLY_RESET.getValue() + daysToMilliseconds(7));
+		Crownicles.topWeekEnd()
+			.then();
+		Crownicles.newPveIsland()
+			.then();
 	}
 
 	static async reportNotifications(): Promise<void> {
@@ -375,6 +403,7 @@ export class Crownicles {
 		await this.logsDatabase.init(true);
 		await MapCache.init();
 		FightsManager.init();
+		await BlessingManager.getInstance().init();
 		if (botConfig.TEST_MODE) {
 			await CommandsTest.init();
 		}

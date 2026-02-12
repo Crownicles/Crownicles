@@ -216,6 +216,14 @@ function createFightCallback(
 				const guildResult = await handlePveFightRewards(fight, player, rewards, endFightResponse, playerActiveObjects);
 				sendMonsterRewardPacket(endFightResponse, rewards, guildResult, fight);
 				await MissionsController.update(player, endFightResponse, { missionId: "winBoss" });
+
+				// Only count final island bosses for the different classes mission
+				if (Maps.isAtPveExit(player)) {
+					await MissionsController.update(player, endFightResponse, {
+						missionId: "winBossWithDifferentClasses",
+						params: { classId: player.class }
+					});
+				}
 			}
 			else {
 				// Make sure the player has no energy left after a loss even if he leveled up

@@ -37,6 +37,30 @@
   "notificationPetExpedition": "{{petDisplay}} regressou da sua expedição e pode ter trazido um tesouro!",
   "christmasBonusPreAnnouncement": "{emote:announcements.christmas} **Bônus de Natal chegando!** {emote:announcements.christmas}\\n\\nEm algumas horas, todos os jogadores receberão um presente especial: seu estoque de fichas será preenchido ao máximo! Aproveite bem esta época festiva!",
   "christmasBonusApplied": "{emote:announcements.christmas} **Feliz Natal!** {emote:announcements.gift}\\n\\nO Papai Noel passou! Seu estoque de fichas foi preenchido ao máximo. Aproveite este presente para partir em uma aventura!",
+  "blessingAnnouncement_one": "{emote:smallEvents.altar} **Bênção activada: {{blessingName}} !**\n\nGraças à generosidade de **{{playerName}}**, uma bênção foi invocada para todos os aventureiros!\n\n{emote:blessingCommand.active} **Efeito:** {{blessingEffect}}\n{emote:blessingCommand.timeLeft} **Duração:** {{durationHours}} horas\n\n{emote:blessingCommand.topContributor} **Maior contribuinte:** {{topContributorName}} ({{topContributorAmount, number}} {emote:unitValues.money})\n{emote:blessingCommand.contributors} **{{count}}** aventureiro contribuiu para esta bênção.",
+  "blessingAnnouncement_other": "{emote:smallEvents.altar} **Bênção activada: {{blessingName}} !**\n\nGraças à generosidade de **{{playerName}}**, uma bênção foi invocada para todos os aventureiros!\n\n{emote:blessingCommand.active} **Efeito:** {{blessingEffect}}\n{emote:blessingCommand.timeLeft} **Duração:** {{durationHours}} horas\n\n{emote:blessingCommand.topContributor} **Maior contribuinte:** {{topContributorName}} ({{topContributorAmount, number}} {emote:unitValues.money})\n{emote:blessingCommand.contributors} **{{count}}** aventureiros contribuíram para esta bênção.",
+  "blessingNames": {
+    "1": "Raiva amplificada",
+    "2": "Saque de combate",
+    "3": "Regeneração de energia",
+    "4": "Bolsa de ouro",
+    "5": "Aumento da glória",
+    "6": "Amor pelos animais de estimação",
+    "7": "Poções de cura",
+    "8": "Ficha de expedição",
+    "9": "Missão diária abençoada"
+  },
+  "blessingEffects": {
+    "1": "A raiva ganha em combate é duplicada para todos os jogadores.",
+    "2": "As recompensas de combate (dinheiro e pontos) são multiplicadas por 4 (exceto a glória).",
+    "3": "A regeneração de energia de combate é duplicada.",
+    "4": "Todos os prémios em dinheiro são aumentados em 10%.",
+    "5": "Todos os ganhos de pontuação são aumentados em 20%.",
+    "6": "Os pontos de amor ganhos pelos animais de estimação são duplicados.",
+    "7": "A eficácia das poções de cura é duplicada.",
+    "8": "As expedições de animais de estimação ganham uma ficha de bónus.",
+    "9": "As recompensas das missões diárias são duplicadas."
+  },
   "supportMessage": "{{langFlag}} Se precisar de ajuda, seleccione o seu idioma através dos botões abaixo. Se não precisar de ajuda, ignore esta mensagem. \n{emote:collectors.warning} **Todas as mensagens aqui enviadas podem ser lidas por um ser humano!**\n",
   "commandDisabledInDM": "{{langFlag}} Olá, os comandos estão desativados em mensagens privadas. Por favor, vá para um servidor para jogar!\nSe quiser ajuda, clique no botão correspondente ao seu idioma abaixo. \n",
   "accountDeletion": {

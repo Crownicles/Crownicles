@@ -121,7 +121,9 @@ import {
 	createPetExpeditionCollector,
 	createPetExpeditionChoiceCollector,
 	createPetExpeditionFinishedCollector
-} from "../../commands/pet/PetExpeditionCollectors";
+} from "../../commands/pet/expedition/PetExpeditionCollectors";
+import { ReactionCollectorAltarData } from "../../../../Lib/src/packets/interaction/ReactionCollectorAltar";
+import { altarCollector } from "../../smallEvents/altar";
 
 // Needed because we need to accept any parameter
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -195,6 +197,7 @@ export default class ReactionCollectorHandler {
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorPetExpeditionFinishedData.name, createPetExpeditionFinishedCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorUseTokensData.name, createUseTokensCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorBuyHealData.name, createBuyHealCollector);
+		ReactionCollectorHandler.collectorMap.set(ReactionCollectorAltarData.name, altarCollector);
 	}
 
 	@packetHandler(ReactionCollectorCreationPacket)

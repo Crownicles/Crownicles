@@ -367,10 +367,9 @@ export class CommandsManager {
 				return;
 			}
 			const user = await KeycloakUtils.getDiscordUser(keycloakConfig, message.author.id, escapeUsername(message.author.displayName));
+			const lng = !user.isError && user.payload.user ? KeycloakUtils.getUserLanguage(user.payload.user) : LANGUAGE.DEFAULT_LANGUAGE;
 			message.channel.send({
-				content: `${i18n.t("bot:mentionHelp", {
-					lng: !user.isError ? KeycloakUtils.getUserLanguage(user.payload.user) : LANGUAGE.DEFAULT_LANGUAGE
-				})}`
+				content: `${i18n.t("bot:mentionHelp", { lng })}`
 			})
 				.then();
 		});

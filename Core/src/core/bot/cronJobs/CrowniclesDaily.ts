@@ -11,6 +11,8 @@ import {
 import { PetConstants } from "../../../../../Lib/src/constants/PetConstants";
 import { ItemEnchantment } from "../../../../../Lib/src/types/ItemEnchantment";
 import { CityDataController } from "../../../data/City";
+import Player from "../../database/game/models/Player";
+import { TokensConstants } from "../../../../../Lib/src/constants/TokensConstants";
 
 export class CrowniclesDaily {
 	public static async programCronJob(): Promise<void> {
@@ -32,6 +34,13 @@ export class CrowniclesDaily {
 			nextDaily += 24 * 60 * 60 * 1000;
 		}
 		await Settings.NEXT_DAILY_RESET.setValue(nextDaily);
+
+		await Player.update(
+			{
+				tokens: literal(`LEAST(${TokensConstants.MAX}, tokens + ${TokensConstants.DAILY.FREE_PER_DAY})`)
+			},
+			{ where: {} }
+		);
 
 		CrowniclesDaily.randomPotion()
 			.finally(() => null);

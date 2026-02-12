@@ -1,15 +1,15 @@
 {
   "badges": {
-    "description": "Badges are difficult to get awards that were created to reward those who have most supported the development of the bot. The badge list is available in the bot guide.\n(via this link: https://guide.draftbot.com/v/en/notions-avancees/badges)",
-    "title": "{emote:commands.badges} Detailed information:"
+    "description": "Badges are rare rewards created to recognize those who have most supported the development of Crownicles. The badge list is available in the bot guide.\n(via this link: https://guide.crownicles.com/v/en/notions-avancees/badges)",
+    "title": ":military_medal: Detailed information:"
   },
   "pet": {
     "embedTitle": "{{pseudo}}'s pet:",
-    "petField": "**Type:** {{emote}} {{typeName}}\n**Nickname:** {{nickname}}\n\n**Rarity:** {{rarity}}\n**Gender:** {{sex}}\n**Moral:** {{loveLevel}}",
+    "petField": "**Type:** {{emote}} {{typeName}}\n**Nickname:** {{nickname}}\n**Rarity:** {{rarity}}\n**Gender:** {{sex}}\n**Mood:** {{loveLevel}}",
     "noNickname": "No nickname",
     "loveLevels": {
-      "1_male": "{emote:loveLevels.0} Spiteful",
-      "1_female": "{emote:loveLevels.0} Spiteful",
+      "1_male": "{emote:loveLevels.0} Feisty",
+      "1_female": "{emote:loveLevels.0} Feisty",
       "2_male": "{emote:loveLevels.1} Wild",
       "2_female": "{emote:loveLevels.1} Wild",
       "3_male": "{emote:loveLevels.2} Fearful",
@@ -19,11 +19,11 @@
       "5_male": "{emote:loveLevels.4} Trained",
       "5_female": "{emote:loveLevels.4} Trained"
     },
-    "hungry": "{emote:effects.starving} hungry",
+    "hungry": "{emote:effects.starving} starving",
     "diet": {
-      "diet_null": "{emote:diet.omnivorous} Omnivorous",
-      "diet_herbivorous": "{emote:diet.herbivorous} Herbivorous",
-      "diet_carnivorous": "{emote:diet.carnivorous} Carnivorous"
+      "diet_null": "{emote:diet.omnivorous} Omnivore",
+      "diet_herbivorous": "🥬 Herbivore",
+      "diet_carnivorous": "🥩 Carnivore"
     },
     "sexDisplay_f": "Female {emote:sex.female}",
     "sexDisplay_m": "Male {emote:sex.male}",
@@ -37,33 +37,33 @@
       "{emote:petCommand.pet} With great fervor, **{{petName}}** licks your hand in devotion.",
       "{emote:petCommand.pet} The tail of **{{petName}}** is wagging with pure joy at your attentions.",
       "{emote:petCommand.pet} Eyes closed in bliss, **{{petName}}** savors your tender caresses.",
-      "{emote:petCommand.pet} A happy bounce comes to life **{{petName}}** when your hand touches it.",
-      "{emote:petCommand.pet} On its back it rolls **{{petName}}**, begging you to scratch its belly.",
-      "{emote:petCommand.pet} A soft sound of satisfaction escapes from **{{petName}}** as she snuggles up to your hand.",
+      "{emote:petCommand.pet} A happy bounce brings **{{petName}}** to life when your hand touches it.",
+      "{emote:petCommand.pet} **{{petName}}** rolls onto its back, begging you to scratch its belly.",
+      "{emote:petCommand.pet} A soft sound of satisfaction escapes from **{{petName}}** as it snuggles up to your hand.",
       "{emote:petCommand.pet} With a look of affection, **{{petName}}** gazes at you with devotion.",
-      "{emote:petCommand.pet} Against your leg rubs **{{petName}}** with the gentlest tenderness.",
-      "{emote:petCommand.pet} With your fingers scratching her ears, **{{petName}}** shivers with pure happiness.",
+      "{emote:petCommand.pet} **{{petName}}** rubs against your leg with the gentlest tenderness.",
+      "{emote:petCommand.pet} With your fingers scratching its ears, **{{petName}}** shivers with pure happiness.",
       "{emote:petCommand.pet} Around you hops **{{petName}}** in a dance of joy.",
       "{emote:petCommand.pet} Under your gentle caresses, **{{petName}}** lounges with delight.",
-      "{emote:petCommand.pet} The very air vibrates around **{{petName}}** so great is his pleasure.",
+      "{emote:petCommand.pet} The very air vibrates around **{{petName}}**, so great is its pleasure.",
       "{emote:petCommand.pet} With satisfaction, **{{petName}}** stretches under the softness of your hand.",
       "{emote:petCommand.pet} A yawn of bliss escapes **{{petName}}** during your cuddles.",
-      "{emote:petCommand.pet} With a look of gratitude, **{{petName}}** honors you with his gratitude.",
-      "{emote:petCommand.pet} With excitement, she flinches **{{petName}}** at the touch of your benevolent hand.",
-      "{emote:petCommand.pet} Under your expert fingers, **{{petName}}** relaxes in total tranquillity."
+      "{emote:petCommand.pet} **{{petName}}** honors you with a look of gratitude.",
+      "{emote:petCommand.pet} **{{petName}}** trembles with excitement at the touch of your benevolent hand.",
+      "{emote:petCommand.pet} Under your expert fingers, **{{petName}}** relaxes in total tranquility."
     ],
-    "expeditionButton": "Shipping",
-    "expeditionButtonDisabled": "Shipping (unavailable)",
+    "expeditionButton": "Expedition",
+    "expeditionButtonDisabled": "Expedition (unavailable)",
     "recallButton": "Call back",
     "finishExpeditionButton": "End exploration"
   },
   "petExpedition": {
     "title": "Pet expeditions",
     "noTalisman_male": [
-      "You put your hand on your satchel, hoping to find the $t(models:talisman.anchor), but your fingers meet only emptiness. Without this ancestral artifact, your companion could not find his way back to you. The elders tell you it lies somewhere along the kingdom's roads... You decide to postpone this expedition until a more convenient time.",
-      "Without the $t(models:talisman.anchor), your pet would be wandering for eternity in faraway lands. This precious artifact is waiting for you somewhere along the kingdom's roads. You decide to postpone this expedition until a more convenient time.",
+      "You put your hand on your bag, trying to find the $t(models:talisman.anchor), but your fingers only encounter the void. Without this ancestral artifact, your companion could not find his way back to you. The elders tell that it is somewhere on the kingdom's roads... You decide to postpone this expedition to a more favorable moment.",
+      "Without the $t(models:talisman.anchor), your pet would wander for eternity in distant lands. This precious artifact awaits you somewhere on the way to the kingdom. You decide to postpone this expedition to a more favorable moment.",
       "Your pet stares at you with hopeful eyes, ready for adventure. Unfortunately, you don't yet have $t(models:talisman.anchor), the precious artifact that enables pets to find their masters in the most hostile lands. You decide to postpone this expedition until a more convenient time.",
-      "Legends tell of a magical talisman, forged by early trainers, capable of creating an unbreakable bond between a pet and its master. Without $t(models:talisman.anchor), sending your companion on an expedition would be sheer madness. You decide to postpone the expedition until a more convenient time."
+      "Legends speak of a magical talisman, forged by the first trainers, capable of creating an unbreakable link between a familiar and his mayor. Without the $t(models:talisman.anchor), sending your companion to expedition would be pure madness. You decide to postpone this expedition to a better time."
     ],
     "noTalisman_female": [
       "You put your hand on your satchel, hoping to find the $t(models:talisman.anchor), but your fingers meet only emptiness. Without this ancestral artifact, your companion would not be able to find her way back to you. This precious object could be found somewhere along the kingdom's roads. It seems wise to postpone this expedition to a more convenient time.",
@@ -74,79 +74,79 @@
     "noPet": [
       "You scan your surroundings, but there are no pets trotting along beside you. The exploration routes are far too dangerous to venture down alone. The expedition will have to wait for the arrival of a faithful companion.",
       "A gentle breeze lifts the dust from the path. Without a faithful companion by your side, expeditions remain out of reach. You'll have to find a pet first.",
-      "The $t(models:talisman.anchor) does not react in your satchel. Its magic can only be activated in the presence of a familiar. It's a good idea to find a worthy companion before thinking about expeditions."
+      "The $t(models:talisman.anchor) does not react in your satchel. Its magic can only be activated in the presence of a pet. It's a good idea to find a worthy companion before thinking about expeditions."
     ],
     "insufficientLove_male": [
       "{{petDisplay}} gives you a wary look and takes a step back. The bond between you is not yet strong enough for him to venture out alone into the wilderness. Take care of him, feed him, and maybe one day he'll trust you enough.",
       "Your pet snuggles up against your leg, trembling slightly. {{petDisplay}} is not yet ready to go on an expedition alone. His heart needs more time to trust you completely.",
-      "{{petDisplay}} 's eyes betray deep concern. Going on an expedition requires a strong bond between a pet and its owner. Continue to care for your companion to strengthen your bond."
+      "{{petDisplay}}'s eyes betray deep concern. Going on an expedition requires a strong bond between a pet and its owner. Continue to care for your companion to strengthen your bond."
     ],
     "insufficientLove_female": [
       "{{petDisplay}} gives you a wary look and takes a step back. The bond between you is not yet strong enough for her to venture out into the wilderness alone. Take care of her, feed her, and maybe one day she'll trust you enough.",
       "Your pet snuggles up against your leg, trembling slightly. {{petDisplay}} is not yet ready to go on an expedition alone. Her heart needs more time to trust you completely.",
-      "{{petDisplay}} 's eyes betray deep concern. Going on an expedition requires a strong bond between a pet and its owner. Continue to take care of your companion to strengthen your bond."
+      "{{petDisplay}}'s eyes betray deep concern. Going on an expedition requires a strong bond between a pet and its owner. Continue to take care of your companion to strengthen your bond."
     ],
     "insufficientLoveAdvice_male": [
-      "*Your companion still seems too fearful to leave your side. Strengthen your bond before sending him off *.",
-      "*The look on your companion's face betrays a certain anxiety. He still needs time to dare to venture out without you.",
-      "*Your pet doesn't trust you enough to explore on his own. Petting and treats will remedy the situation."
+      "*Your companion still seems too fearful to leave your side. Strengthen your bond before sending him off.*",
+      "*The look on your companion's face betrays a certain anxiety. He still needs time to dare to venture out without you.*",
+      "*Your pet doesn't trust you enough to explore on his own. Petting and treats will remedy the situation.*"
     ],
     "insufficientLoveAdvice_female": [
-      "*Your companion still seems too afraid to leave your side. Strengthen your bond before sending her off *.",
-      "*The look on your companion's face betrays a certain anxiety. She still needs time to dare to venture out without you.",
-      "*Your pet still doesn't trust you enough to explore on your own. Petting and treats will remedy the situation."
+      "*Your companion still seems too afraid to leave your side. Strengthen your bond before sending her off.*",
+      "*The look on your companion's face betrays a certain anxiety. She still needs time to dare to venture out without you.*",
+      "*Your pet still doesn't trust you enough to explore on its own. Petting and treats will remedy the situation.*"
     ],
     "petHungry_male": [
-      "{{petDisplay}} 's belly emits a loud rumbling sound. With pleading eyes, your companion categorically refuses to leave on an empty stomach. Feed him before you send him off on his adventure!",
+      "{{petDisplay}}'s belly emits a loud rumbling sound. With pleading eyes, your companion categorically refuses to leave on an empty stomach. Feed him before you send him off on his adventure!",
       "{{petDisplay}} sniffs your satchel insistently, hoping to find something to sink its teeth into. A hungry pet can't go on an expedition!",
       "Your pet slumps to the ground, too weak to contemplate any kind of adventure. {{petDisplay}} needs a good meal before it can explore distant lands."
     ],
     "petHungry_female": [
-      "{{petDisplay}} 's belly emits a loud rumbling sound. With pleading eyes, your companion categorically refuses to leave on an empty stomach. Feed her before you send her off on an adventure!",
+      "{{petDisplay}}'s belly emits a loud rumbling sound. With pleading eyes, your companion categorically refuses to leave on an empty stomach. Feed her before you send her off on an adventure!",
       "{{petDisplay}} sniffs your satchel insistently, hoping to find something to sink its teeth into. A hungry pet can't go on an expedition!",
       "Your pet slumps to the ground, too weak to contemplate any kind of adventure. {{petDisplay}} needs a good meal before it can explore distant lands."
     ],
     "expeditionStatusRP": {
-      "header": "{emote:expedition.map} **Shipment in progress**\n**{{location}}**\n{emote:clocks.1} Back to {{returnTime}}",
+      "header": "{emote:expedition.map} **Expedition in progress**\n**{{location}}**\n{emote:clocks.1} Return: {{returnTime}}",
       "progress": {
-        "justStarted_male": "*Your pet has just set off on an adventure, tail wagging with excitement.",
-        "justStarted_female": "*Your pet has just set off on an adventure, tail wagging with excitement.",
-        "ongoing_male": "*Your pet makes its way through the wilderness, alert to the slightest danger.",
-        "ongoing_female": "*Your pet makes its way through the wilderness, alert to the slightest danger.",
-        "almostDone_male": "*Your pet should be on the horizon soon.",
-        "almostDone_female": "*Your pet should be on the horizon soon."
+        "justStarted_male": "*Your pet has just set off on an adventure, tail wagging with excitement.*",
+        "justStarted_female": "*Your pet has just set off on an adventure, tail wagging with excitement.*",
+        "ongoing_male": "*Your pet makes its way through the wilderness, alert to the slightest danger.*",
+        "ongoing_female": "*Your pet makes its way through the wilderness, alert to the slightest danger.*",
+        "almostDone_male": "*Your pet should be on the horizon soon.*",
+        "almostDone_female": "*Your pet should be on the horizon soon.*"
       },
       "situation": {
-        "strongPetEasyRisk_male": "*His natural strength makes him confident in the face of the perils of this expedition.",
-        "strongPetEasyRisk_female": "*Her natural strength makes her confident in the face of the perils of this expedition.",
-        "strongPetHardRisk_male": "*Despite its power, this perilous expedition will not be a walk in the park.",
-        "strongPetHardRisk_female": "*Despite its power, this perilous expedition will not be a walk in the park.",
-        "weakPetEasyRisk_male": "*This peaceful expedition suits his cautious temperament perfectly.",
-        "weakPetEasyRisk_female": "*This peaceful expedition suits his cautious temperament perfectly.",
-        "weakPetHardRisk_male": "*You hope he'll know how to be cunning in the face of the dangers that await him.",
-        "weakPetHardRisk_female": "*You hope she'll know how to be cunning in the face of the dangers that await her."
+        "strongPetEasyRisk_male": "*His natural strength makes him confident in the face of the perils of this expedition.*",
+        "strongPetEasyRisk_female": "*Her natural strength makes her confident in the face of the perils of this expedition.*",
+        "strongPetHardRisk_male": "*Despite its power, this perilous expedition will not be a walk in the park.*",
+        "strongPetHardRisk_female": "*Despite its power, this perilous expedition will not be a walk in the park.*",
+        "weakPetEasyRisk_male": "*This peaceful expedition suits his cautious temperament perfectly.*",
+        "weakPetEasyRisk_female": "*This peaceful expedition suits her cautious temperament perfectly.*",
+        "weakPetHardRisk_male": "*You hope he'll know how to be cunning in the face of the dangers that await him.*",
+        "weakPetHardRisk_female": "*You hope she'll know how to be cunning in the face of the dangers that await her.*"
       },
       "food": {
-        "wellFed_male": "*His well-stocked provisions allow him to travel with peace of mind.",
-        "wellFed_female": "*His well-stocked provisions allow him to travel with peace of mind.",
-        "noFood_male": "*Left without provisions, he will have to fend for himself to find enough to eat.",
-        "noFood_female": "*Left without provisions, she will have to fend for herself to find enough to eat."
+        "wellFed_male": "*His well-stocked provisions allow him to travel with peace of mind.*",
+        "wellFed_female": "*Her well-stocked provisions allow her to travel with peace of mind.*",
+        "noFood_male": "*Left without provisions, he will have to fend for himself to find enough to eat.*",
+        "noFood_female": "*Left without provisions, she will have to fend for herself to find enough to eat.*"
       }
     },
-    "inProgressTitle": "{{pseudo}}, shipment in progress",
+    "inProgressTitle": "{{pseudo}}, expedition in progress",
     "inProgressDescription": {
       "intro": "{{petDisplay}} is currently exploring far-off and mysterious lands!",
       "destination": "{emote:expedition.map} **Destination:** **{{location}}**",
-      "risk": "{{riskEmoji}} **Danger:** {{risk}}",
+      "risk": "{{riskEmoji}} **Danger: ** {{risk}}",
       "returnTime": "{emote:clocks.1} **Scheduled return:** {{returnTime}}",
       "warning_male": "{emote:collectors.warning} *Calling your pet back prematurely will break the bond of trust. He'll return with no loot and a bruised heart...*",
       "warning_female": "{emote:collectors.warning} *Calling your pet back prematurely will break the bond of trust. She'll return lootless and heartbroken...*"
     },
-    "inProgressFoodInfo_one": "\n{emote:expedition.food} **Packed provisions:** {{count, number}} rations",
-    "inProgressFoodInfo_other": "\n{emote:expedition.food} **Packed provisions:** {{count, number}} rations",
+    "inProgressFoodInfo_one": "\n{emote:expedition.food} **Packed provisions: ** {{count, number}} ration",
+    "inProgressFoodInfo_other": "\n{emote:expedition.food} **Provisions packed: ** {{count, number}} rations",
     "recallButton": "Call back",
     "closeButton": "Continue exploring",
-    "chooseExpeditionTitle": "{{pseudo}}new shipments available",
+    "chooseExpeditionTitle": "{{pseudo}}, new expeditions available",
     "chooseExpedition": "The $t(models:talisman.anchor) vibrates gently in your satchel. Three destinations appear in your mind's eye, revealed by the artifact's magic. {{petDisplay}} can't wait to explore one of these lands:",
     "selectPlaceholder": "Choose a destination...",
     "distantExpeditionPrefix": "Long-distance expedition: {{location}}",
@@ -154,97 +154,97 @@
       "header": "**{{number}}.** {{location}}",
       "duration": "{emote:expedition.duration} Estimated duration: {{duration}}",
       "terrain": "{{terrainEmoji}} Land: {{terrain}}",
-      "risk": "{{riskEmoji}} Dangerousness: {{risk}}",
-      "reward": "{emote:expedition.reward} Estimated awards: {{reward}}",
+      "risk": "{{riskEmoji}} Danger: {{risk}}",
+      "reward": "{emote:expedition.reward} Estimated rewards: {{reward}}",
       "food": "{emote:expedition.food} Provisions required: {{foodDisplay}}",
-      "cloneTalismanBonus": "{emote:expedition.cloneTalisman} *A strange feeling comes over you... Rumors speak of a legendary artifact that may be hidden in these lands.",
-      "bonusTokens": "{emote:unitValues.token} *This region is full of ancient treasures! Your pet could discover a fortune in lost tokens...*."
+      "cloneTalismanBonus": "{emote:expedition.cloneTalisman} *A strange feeling comes over you... Rumors speak of a legendary artifact that may be hidden in these lands.*",
+      "bonusTokens": "{emote:unitValues.token} *This region is full of ancient treasures! Your pet could discover a fortune in lost tokens...*"
     },
     "foodCost_one": "{{count}} ration",
     "foodCost_other": "{{count}} rations",
-    "cancelButton": "Cancel shipment",
+    "cancelButton": "Cancel expedition",
     "guildProvisionsInfo": "{emote:expedition.food} **Available guild provisions:** {{foodCostDisplay}}",
-    "noGuildProvisionsInfo": "{emote:collectors.warning} **You don't have a guild to prepare rations.",
-    "petImpatience_male": "*{{petDisplay}} can't wait, tail wagging, ready for adventure!",
-    "petImpatience_female": "*{{petDisplay}} can't wait, tail wagging, ready for adventure!",
-    "startedTitle": "{{pseudo}}expedition launched!",
+    "noGuildProvisionsInfo": "{emote:collectors.warning} **You don't have a guild to prepare rations.**",
+    "petImpatience_male": "*{{petDisplay}} can't wait, tail wagging, ready for adventure!*",
+    "petImpatience_female": "*{{petDisplay}} can't wait, tail wagging, ready for adventure!*",
+    "startedTitle": "{{pseudo}}, expedition launched!",
     "expeditionStarted_male": "With an enthusiastic leap, {{petDisplay}} dashes off to **{{location}}**! You watch him disappear over the horizon, your heart full of hope.\n\n{emote:clocks.1} Scheduled return: {{returnTime}}",
     "expeditionStarted_female": "With an enthusiastic leap, {{petDisplay}} dashes off to **{{location}}**! You watch her disappear over the horizon, your heart full of hope.\n\n{emote:clocks.1} Scheduled return: {{returnTime}}",
-    "foodConsumed_one": "\n{emote:expedition.food} Provisions carried : **{{count, number}}** ration",
-    "foodConsumed_other": "\n{emote:expedition.food} Provisions carried : **{{count, number}}** rations",
+    "foodConsumed_one": "\n{emote:expedition.food} Provisions packed: **{{count, number}}** ration",
+    "foodConsumed_other": "\n{emote:expedition.food} Provisions packed: **{{count, number}}** rations",
     "foodConsumedDetails": "\n{emote:expedition.food} **Provisions taken:** {{foodDetails}}",
     "insufficientFoodWarning": {
       "noGuild": "\n\n{emote:collectors.warning} **You have no guild to prepare rations** for your pet. The risk of failure of this expedition is **tripled**.",
       "guildNoFood": "\n\n{emote:collectors.warning} **Your guild was unable to provide enough rations, so your pet left without supplies. The risk of failure is **tripled**. Restock your guild before the next expedition!"
     },
     "speedModifier": {
-      "veryFast_male": "\n\n{emote:expedition.speed} *Its swift legs cut through the air with unrivalled grace. Your companion will reach his destination much faster than expected!",
-      "veryFast_female": "\n\n{emote:expedition.speed} *Its swift legs cut through the air with unrivalled grace. Your companion will reach her destination much faster than expected!",
-      "fast_male": "\n\n{emote:expedition.speed} *With an alert, confident stride, your companion makes good speed. The expedition will be shorter than expected.",
-      "fast_female": "\n\n{emote:expedition.speed} *With an alert, confident stride, your companion makes good speed. The expedition will be shorter than expected.",
-      "slow_male": "\n\n{emote:expedition.slow} *His dragging legs slow his progress somewhat. The expedition will take a little longer than expected.",
-      "slow_female": "\n\n{emote:expedition.slow} *His dragging legs slow his progress somewhat. The expedition will take a little longer than expected.",
-      "verySlow_male": "\n\n{emote:expedition.slow} *Your companion moves with disconcerting slowness, stopping frequently to sniff around. The expedition will take much longer than expected...*.",
-      "verySlow_female": "\n\n{emote:expedition.slow} *Your companion moves with disconcerting slowness, stopping frequently to sniff around. The expedition will take much longer than expected...*."
+      "veryFast_male": "\n\n{emote:expedition.speed} *Its swift legs cut through the air with unrivalled grace. Your companion will reach his destination much faster than expected!*",
+      "veryFast_female": "\n\n{emote:expedition.speed} *Its swift legs cut through the air with unrivalled grace. Your companion will reach her destination much faster than expected!*",
+      "fast_male": "\n\n{emote:expedition.speed} *With an alert, confident stride, your companion makes good speed. The expedition will be shorter than expected.*",
+      "fast_female": "\n\n{emote:expedition.speed} *With an alert, confident stride, your companion makes good speed. The expedition will be shorter than expected.*",
+      "slow_male": "\n\n{emote:expedition.slow} *His dragging legs slow his progress somewhat. The expedition will take a little longer than expected.*",
+      "slow_female": "\n\n{emote:expedition.slow} *His dragging legs slow his progress somewhat. The expedition will take a little longer than expected.*",
+      "verySlow_male": "\n\n{emote:expedition.slow} *Your companion moves with disconcerting slowness, stopping frequently to sniff around. The expedition will take much longer than expected...*",
+      "verySlow_female": "\n\n{emote:expedition.slow} *Your companion moves with disconcerting slowness, stopping frequently to sniff around. The expedition will take much longer than expected...*"
     },
     "freeCancelledTitle": "{{pseudo}}, departure cancelled",
     "freeCancelled_male": "{{petDisplay}} tilts its head to the side, a little disappointed but understanding. After all, it's just postponed! It trots cheerfully towards you, ready to set off again whenever you wish.\n\n{emote:collectors.warning} *Warning: future cancellations this week will cause your pet to lose affection points.*",
-    "freeCancelled_female": "{{petDisplay}} tilts her head to one side, a little disappointed but understanding. After all, it's only a matter of time! She trots happily towards you, ready to set off again as soon as you wish.\n\n{emote:collectors.warning} *Warning: any further cancellations this week will cause your pet to lose love points",
-    "cancelledTitle": "{{pseudo}}departure cancelled",
+    "freeCancelled_female": "{{petDisplay}} tilts her head to one side, a little disappointed but understanding. After all, it's only a matter of time! She trots happily towards you, ready to set off again as soon as you wish.\n\n{emote:collectors.warning} *Warning: any further cancellations this week will cause your pet to lose love points.*",
+    "cancelledTitle": "{{pseudo}}, departure cancelled",
     "cancelled_male": "Seeing your hesitation, {{petDisplay}} bows his head in disappointment. He thought he was going on an adventure... You can feel the trust between you crumbling slightly. Your companion gives you a hurt look before walking away, tail low.",
     "cancelled_female": "Seeing your hesitation, {{petDisplay}} bows her head in disappointment. She thought she was going on an adventure... You can feel the trust between you crumbling slightly. Your companion gives you a hurt look before walking away, tail low.",
-    "recalledTitle": "{{pseudo}}familiar reminder",
+    "recalledTitle": "{{pseudo}}, pet recalled",
     "recalled_male": "Hearing your call, {{petDisplay}} abandons his quest and returns to you, tail low and eyes full of reproach. He brings nothing back from his interrupted journey. You can see the disappointment in his eyes - he'll resent you for a while.",
     "recalled_female": "Hearing your call, {{petDisplay}} abandons her quest and returns to you, tail low and eyes full of reproach. She brings nothing back from her interrupted journey. You can see the disappointment in her eyes - she'll resent you for a while.",
-    "finishedTitle": "{{pseudo}}The expedition is over!",
+    "finishedTitle": "{{pseudo}}, expedition is over!",
     "finishedDescription": {
       "talisman": {
         "intro": "The $t(models:talisman.anchor) vibrates intensely in your bag: {{petDisplay}} is back from its expedition to **{{location}}**!"
       },
-      "risk": "{{riskEmoji}} Dangerousness: {{risk}}",
-      "impatience_male": "*Your companion can't wait to show you what he's got!",
-      "impatience_female": "*Your companion can't wait to show you what she's brought back!"
+      "risk": "{{riskEmoji}} Danger: {{risk}}",
+      "impatience_male": "*Your companion can't wait to show you what he's got!*",
+      "impatience_female": "*Your companion can't wait to show you what she's brought back!*"
     },
     "claimButton": "Discover the loot",
-    "successTitle": "{{pseudo}}triumphant return!",
+    "successTitle": "{{pseudo}}, triumphant return!",
     "success_male": [
       "At the bend in the path, a familiar figure appears! {{petDisplay}} returns from his expedition: **{{location}}**, with a proud gait and treasure-laden paws!",
       "A cloud of dust announces the return of {{petDisplay}} ! Your valiant companion looks satisfied after his journey to **{{location}}**.",
-      "{{petDisplay}} emerges from the thicket, coat matted but eyes shining with pride! The expedition to{{location}}** was a great success!"
+      "{{petDisplay}} emerges from the thicket, coat matted but eyes shining with pride! The expedition to **{{location}}** was a great success!"
     ],
     "success_female": [
-      "At the bend in the path, a familiar figure appears! {{petDisplay}} returns from his expedition: **{{location}}**, with a proud gait and treasure-laden paws!",
+      "At the bend in the path, a familiar figure appears! {{petDisplay}} returns from her expedition: **{{location}}**, with a proud gait and treasure-laden paws!",
       "A cloud of dust announces the return of {{petDisplay}} ! Your valiant companion looks satisfied after her journey to **{{location}}**.",
-      "{{petDisplay}} emerges from the thicket, coat matted but eyes shining with pride! The expedition to{{location}}** was a great success!"
+      "{{petDisplay}} emerges from the thicket, coat matted but eyes shining with pride! The expedition to **{{location}}** was a great success!"
     ],
-    "partialSuccessTitle": "{{pseudo}}a mixed reception",
+    "partialSuccessTitle": "{{pseudo}}, mixed reception",
     "partialSuccess_male": [
-      "{{petDisplay}} returns from his expedition to{{location}}** with a slight limp. It's been a rough adventure, but your courageous companion has come back with a few finds.",
+      "{{petDisplay}} returns from his expedition to **{{location}}** with a slight limp. It's been a rough adventure, but your courageous companion has come back with a few finds.",
       "Ears lowered, {{petDisplay}} finally reappears. The expedition to **{{location}}** didn't go as planned, but your pet didn't come back empty-handed.",
       "A little disheveled and covered in scratches, {{petDisplay}} returns from his journey to **{{location}}**. Despite the difficulties he encountered, he managed to salvage a few treasures."
     ],
     "partialSuccess_female": [
-      "{{petDisplay}} returns from her expedition to{{location}}** with a slight limp. It's been a rough adventure, but your brave companion has come back with a few finds.",
+      "{{petDisplay}} returns from her expedition to **{{location}}** with a slight limp. It's been a rough adventure, but your brave companion has come back with a few finds.",
       "Ears lowered, {{petDisplay}} finally reappears. The expedition to **{{location}}** didn't go as planned, but your pet didn't come back empty-handed.",
       "A little disheveled and covered in scratches, {{petDisplay}} returns from her journey to **{{location}}**. Despite the difficulties she has encountered, she has managed to salvage a few treasures."
     ],
-    "failureTitle": "{{pseudo}}failed expedition",
+    "failureTitle": "{{pseudo}}, failed expedition",
     "totalFailure_male": [
       "{{petDisplay}} comes back from **{{location}}** with its tail between its legs and its eyes wandering. The adventure was too perilous, and your companion returns empty-handed, his heart heavy with failure.",
       "After a long absence, {{petDisplay}} finally reappears, exhausted and sheepish. The dangers of **{{location}}** have taken their toll on his quest. He cuddles up to you, begging for comfort.",
-      "With trembling paws, {{petDisplay}} emerges from the shadows. The expedition to{{location}}** was a failure. Your pet needs time to recover."
+      "With trembling paws, {{petDisplay}} emerges from the shadows. The expedition to **{{location}}** was a failure. Your pet needs time to recover."
     ],
     "totalFailure_female": [
       "{{petDisplay}} comes back from **{{location}}** with its tail between its legs and its eyes wandering. The adventure was too perilous, and your companion returns empty-handed, with a heavy heart for having failed.",
-      "After a long absence, {{petDisplay}} finally reappears, exhausted and weary. The dangers of **{{location}}** have taken their toll on her quest. She cuddles up to you, begging for comfort.",
-      "With trembling paws, {{petDisplay}} emerges from the shadows. The expedition to{{location}}** was a failure. Your pet needs time to recover."
+      "After a long absence, {{petDisplay}} finally reappears, exhausted and sheepish. The dangers of **{{location}}** have taken their toll on her quest. She cuddles up to you, begging for comfort.",
+      "With trembling paws, {{petDisplay}} emerges from the shadows. The expedition to **{{location}}** was a failure. Your pet needs time to recover."
     ],
     "loveChangeFailure": "\n\n{emote:expedition.love} The failure of this expedition has weakened the bond between you. Your companion will need time and attention to regain his confidence.",
     "loveChangePartialNegative": "\n\n{emote:expedition.love} The difficulties you've encountered have somewhat shaken your pet's confidence. A few cuddles and treats will help him to recover.",
     "loveChangePartialPositive": "\n\n{emote:expedition.love} Despite the pitfalls, this adventure has slightly strengthened the bond between you. Your companion appreciates that you trust him.",
     "loveChangeSuccess": "\n\n{emote:expedition.love} This successful expedition has strengthened the bond between you. Your pet looks at you with renewed admiration!",
-    "petLikedExpedition_male": "\n\n{emote:expedition.liked} *Your companion loved this expedition! This type of destination is perfectly suited to his tastes, which increased his enthusiasm and efficiency tenfold*.",
-    "petLikedExpedition_female": "\n\n{emote:expedition.liked} *Your pet loved this expedition! This type of destination is perfectly suited to his tastes, which increased his enthusiasm and efficiency tenfold *.",
+    "petLikedExpedition_male": "\n\n{emote:expedition.liked} *Your companion loved this expedition! This type of destination is perfectly suited to his tastes, which increased his enthusiasm and efficiency tenfold.*",
+    "petLikedExpedition_female": "\n\n{emote:expedition.liked} *Your pet loved this expedition! This type of destination is perfectly suited to his tastes, which increased his enthusiasm and efficiency tenfold.*",
     "duration": {
       "minutes": "{{count}} minute",
       "minutes_other": "{{count}} minutes",
@@ -253,25 +253,25 @@
       "hoursMinutes": "{{hours}}h {{minutes}}min",
       "days": "{{count}} day",
       "days_other": "{{count}} days",
-      "daysHours": "{{days}}j {{hours}}h"
+      "daysHours": "{{days}}d {{hours}}h"
     },
     "rewards": {
       "title": "\n\n**Goal reported:**",
       "dislikedExpedition": {
-        "male": "\n{emote:expedition.disliked} *Your companion did not enjoy this destination. His lack of enthusiasm considerably reduced his finds.",
-        "female": "\n{emote:expedition.disliked} *Your pet did not enjoy this destination. His lack of enthusiasm has considerably reduced his finds."
+        "male": "\n{emote:expedition.disliked} *Your companion did not enjoy this destination. His lack of enthusiasm considerably reduced his finds.*",
+        "female": "\n{emote:expedition.disliked} *Your pet did not enjoy this destination. His lack of enthusiasm has considerably reduced his finds.*"
       },
       "money": "{emote:unitValues.money} Money earned: **{{amount, number}}** !",
       "experience": "{emote:unitValues.xp} Experience gained : **{{amount, number}}** !",
       "points": "{emote:unitValues.score} Points earned: **{{amount, number}}** !",
       "tokens_one": "{emote:unitValues.token} Token won : **{{count}}** !",
-      "tokens_other": "{emote:unitValues.token} Chips won : **{{count}}** !",
+      "tokens_other": "{emote:unitValues.token} Tokens won : **{{count}}** !",
       "item": "{emote:rewards.item} You get random equipment!",
       "cloneTalisman": "{emote:expedition.cloneTalisman} **EXCEPTIONAL DISCOVERY!\nYour pet has discovered an ancient buried artifact: the $t(models:talisman.clone) !\nThis mystical object will enable your companion to assist you in defense and in small events, even when on expedition!",
-      "badgeEarned": "{emote:badges.expert_expediteur} You have been offered a free badge : **Expert Consignor** !"
+      "badgeEarned": "{emote:badges.expert_expediteur} You have been awarded a badge: **Expert Explorer** !"
     },
     "riskCategories": {
-      "trivial": "Tranquille",
+      "trivial": "Chill",
       "veryLow": "Serene",
       "low": "Random",
       "moderate": "Risky",
@@ -283,48 +283,48 @@
     "rewardCategories": {
       "meager": "Meagre",
       "modest": "Modest",
-      "substantial": "Correct",
+      "substantial": "Decent",
       "bountiful": "Abundant",
       "legendary": "Exceptional"
     },
     "terrainCategories": {
-      "trivial": "Peaceful",
-      "easy": "Practical",
-      "moderate": "Accident",
+      "trivial": "Clear",
+      "easy": "Accessible",
+      "moderate": "Rugged",
       "challenging": "Hostile",
       "treacherous": "Perilous"
     },
     "mapLocationExpeditions": {
-      "1": "the Mysterious Reefs of Sentinel Beach",
-      "2": "the Secret Trails of the Voie Champêtre",
-      "3": "the Hidden Meadows of the Cradle",
-      "4": "the depths of the Old Man's Forest",
-      "5": "the Forgotten Labyrinths of the Daedalus Path",
+      "1": "Mysterious Reefs of Sentinel Beach",
+      "2": "Secret Trails of the Rural Path",
+      "3": "Hidden Meadows of The Cradle",
+      "4": "Depths of the Older's Forest",
+      "5": "Forgotten Labyrinths of the Daedalus Path",
       "6": "the Secret Cellars of Boug-Coton",
       "7": "the Forgotten Tombs of the Valley of the Kings",
       "8": "the Mystical Passages of the Crossroads of Destiny",
-      "9": "the Old Cobblestones of the Main Street",
+      "9": "Old Cobblestones of Main Road",
       "10": "the Lost Catacombs of Ville Forte",
-      "11": "Great Axis Ambushes",
+      "11": "The Great Road Ambushes",
       "12": "the Plains of the Expanse",
       "13": "the Cursed Swamps of the Swampy Road",
       "14": "the Enchanted Mists of Lake Mirage",
       "15": "the snow-covered peaks of Mount Celestrum",
-      "16": "les Tanières du Chemin aux Loups",
+      "16": "Dens of The wolves Path",
       "17": "Coco Village Hidden Oases",
-      "18": "the Tumultuous Rapids of the Rivière Vacarme",
+      "18": "Tumultuous Rapids of Vacarme River",
       "19": "the Quicksand of La Dune",
-      "20": "les Champs Paisibles des Plaines du Contre Bois",
-      "21": "the Abandoned Shops of the Route des Merveilles",
-      "22": "les Galeries Obscures du Bois Hurlant",
+      "20": "Peaceful Fields of Counterwood Plains",
+      "21": "Abandoned Shops of the Road Of Wonders",
+      "22": "Dark Galleries of Howling Woods",
       "23": "the Secret Alleys of Claire de Ville",
       "24": "the Escarpments of the Climbing Road",
-      "25": "les Méandres de la Rivière aux Crabes",
+      "25": "Crab's River Meanders",
       "26": "Mergagnan old quarters",
       "27": "the Mystic Glades of the Celestrum Forest",
-      "28": "Les Souterrains des Portes du Château",
+      "28": "Undergrounds of Castle Doors",
       "29": "the Alcoves in the Reception Room",
-      "32": "les Pavés Royaux de la Route vers le Château"
+      "32": "Royal Cobblestones of Castle Road"
     },
     "errors": {
       "noPet": "Nature spirits refuse to let you send a pet... because you don't have one!",
@@ -335,18 +335,18 @@
       "invalidState": "The stars are not aligned in your favor. Try again later.",
       "expeditionInProgress": "Your pet is already exploring faraway lands.",
       "generic": "A mysterious force prevents your request. The sages advise you to try again.",
-      "notOnContinent": "The $t(models:talisman.anchor) refuses to work in these strange lands. Its ancestral magic only seems to work on the kingdom's main continent. Return to the familiar roads to send your familiar on an expedition.",
+      "notOnContinent": "The $t(models:talisman.anchor) refuses to work in these strange lands. Its ancestral magic only seems to work on the kingdom's main continent. Return to the familiar roads to send your pet on an expedition.",
       "cannotRecallOnIsland": "For some reason, it seems that the powers of $t(models:talisman.anchor) do not work here. You can only recall your pet once you're back on the mainland or on the boat."
     }
   },
   "guild": {
     "embedTitle": "{{guildName}} guild | Level {{level, number}}",
-    "description": "{emote:messages.description} `{{description}}`",
+    "description": ":scroll: `{{description}}`",
     "separator": " | ",
     "memberInfo": "{{icon}} - **{{pseudo}}** ({{ranking}} {emote:announcements.trophy} | {{score, number}} {emote:unitValues.score}{{islandStatusIcon}})\n",
     "members": "{emote:guild.membersCount} {{memberCount, number}}/{{maxGuildMembers, number}} members",
     "infoTitle": "Information",
-    "islandInfo": "{emote:guild.isOnPveIsland} Number of members on the mysterious island: {{membersOnPveIsland}}\n",
+    "islandInfo": "{emote:guild.isOnPveIsland} Number of allies on the mysterious island: {{membersOnPveIsland}}\n",
     "info": "{emote:unitValues.xp} {{experience, number}} | {emote:unitValues.guildPoint} {{guildPoints, number}} | {emote:announcements.trophy} {{ranking}}",
     "xpNeeded": "{{xp, number}} / {{xpToLevelUp, number}}",
     "xpMax": "Max",
@@ -362,20 +362,20 @@
     "acceptedDesc": "The **{{guildName}}** guild has been created!"
   },
   "guildInvite": {
-    "title": "{{pseudo}}, you were invited to join a guild!",
-    "confirmDesc": "{emote:collectors.question} Would you like to join the {{guildName}} guild?",
+    "title": "{{pseudo}}, you are invited to join a guild!",
+    "confirmDesc": "{emote:collectors.question} Would you like to join the `{{guildName}}` guild?",
     "successTitle": "{{pseudo}} joined the {{guildName}} guild!",
     "successDesc": "The delay before the next guild daily reward has been reset.",
     "refusedTitle": "You haven't joined the {{guildName}} guild!",
     "errors": {
       "guildIsFull": "Your guild is full and cannot welcome more members.",
       "playerIsAlreadyInAGuild": "This player already belongs to a guild.",
-      "playerIsOnPveIsland": "{{pseudo}} cannot join the guild as it is currently on a boat or in a mystery island. {{pseudo}} must be located in the main continent in order to join a guild."
+      "playerIsOnPveIsland": "{{pseudo}} cannot join the guild as they are currently on a boat or a mysterious island. {{pseudo}} must be located on the main continent in order to join a guild."
     }
   },
   "guildKick": {
     "title": "Kick from a guild",
-    "confirmDesc": "{emote:collectors.question} Are you sure you want to expel {{kickedPseudo}} from the {{guildName}} guild?",
+    "confirmDesc": "{emote:collectors.question} Are you sure you want to expel {{kickedPseudo}} from the `{{guildName}}` guild?",
     "acceptedDesc": "{{kickedPseudo}} has been expelled from the guild!",
     "canceledTitle": "Kick cancelled",
     "canceledDesc": "{{kickedPseudo}} was not kicked from the guild!",
@@ -387,21 +387,21 @@
   "guildElder": {
     "playerNotFound": "This player was not found.",
     "notSameGuild": "This player does not belong to your guild.",
-    "notChiefError": "You must be the leader of the guild to perform this order.",
-    "chiefError": "As the leader of the guild, you may not be able to be the elder.",
-    "alreadyElder": "The player is already in your guild.",
+    "notChiefError": "You must be the leader of the guild to perform this command.",
+    "chiefError": "As the leader of the guild, you cannot be the elder.",
+    "alreadyElder": "The player is already the elder of your guild.",
     "title": "{{pseudo}}, do you confirm your choice?",
     "confirmDesc": "{emote:collectors.question} {{elderPseudo}} will become the elder of the `{{guildName}}` guild.",
     "successElderAddTitle": "{{elderPseudo}} is the new elder of the {{guildName}} guild!",
-    "acceptedDesc": "The elder assits the leader in the management of the guild. You must therefore choose it with caution. But rest assured, if you were not satisfied with your elder, you can replace it with the {command:guildelder} command, or if you have a dictator's mindset, you can definitively remove it with {command:guildelderremove}.",
+    "acceptedDesc": "The elder assists the leader in managing the guild, so choose them wisely! But don't worry, if you are not satisfied with your elder, you can replace them with the {command:guildelder} command, or if you have a dictator's mindset, you can permanently remove them with {command:guildelderremove}.",
     "canceledDesc": "The player has not been promoted as an elder.",
     "canceledTitle": "Cancellation taken into account."
   },
   "guildLeave": {
     "title": "{{pseudo}}, confirmation:",
-    "confirmDesc": "{emote:collectors.question} Do you really want to leave the {{guildName}} guild?",
-    "confirmChiefDesc": "{emote:collectors.question} Do you really want to **destroy** the {{guildName}} guild for good?",
-    "confirmChiefDescWithElder": "{emote:collectors.question} Do you really want to leave the{{guildName}}guild?\n\n{{newChiefPseudo}} will become its leader.",
+    "confirmDesc": "{emote:collectors.question} Do you really want to leave the `{{guildName}}` guild?",
+    "confirmChiefDesc": "{emote:collectors.question} Do you really want to **permanently destroy** the `{{guildName}}` guild?",
+    "confirmChiefDescWithElder": "{emote:collectors.question} Do you really want to leave the `{{guildName}}` guild?\n\n{{newChiefPseudo}} will become its leader.",
     "canceledDesc": "Your departure was cancelled.",
     "successTitle": "{{pseudo}} left the {{guildName}} guild!",
     "leavingSuccess": "You are a poor lonesome cowboy and a long way from home...",
@@ -439,10 +439,10 @@
     "commandEmbedTitle": "{{emote}} Detailed information:",
     "commands": {
       "BADGES": {
-        "description": "Badges are rewards that are very hard to get, created to honor people who helped in the bot's development. The list of badges is available on the bot guide.\n Available by this link: https://guide.draftbot.com/v/en/notions-avancees/badges"
+        "description": "Badges are rewards that are very hard to get, created to honor people who helped in the bot's development. The list of badges is available on the bot guide.\n(Available by this link: https://guide.crownicles.com/v/en/notions-avancees/badges)"
       },
       "CLASSES": {
-        "description": "Change your class. More information about class is available through the player guide: https://guide.draftbot.com/v/en"
+        "description": "Change your class. More information about classes is available through the player guide: https://guide.crownicles.com/v/en/notions-principale/classes/"
       },
       "CLASSES_INFO": {
         "description": "Reads a quick comparison of statistics and class information available to the user using the command."
@@ -455,10 +455,10 @@
       },
       "FIGHT": {
         "description": "Use this command to challenge other players.\nBattles take place on a turn-by-turn basis. Each turn, you can choose an action to perform.\n\nFor more information, please visit the guide page: https://guide.crownicles.com/notions-principale/combats",
-        "image": "https://draftbot.com/public/ressources/fighthelp/en/5.1.7.png"
+        "image": "https://crownicles.com/public/ressources/fighthelp/en/5.1.7.png"
       },
       "GLORY_TOP": {
-        "description": "Displays the ranking of the fights in 15 player intervals. Player's league is also displayed. Players in the same server as you are shown by a blue dot."
+        "description": "Displays the glory ranking in increments of 15 players. The player's league is also displayed. Players in the same server as you are shown by a blue dot."
       },
       "GUILD": {
         "description": "Displays a guild's info."
@@ -470,19 +470,19 @@
         "description": "Claims your guild's daily reward."
       },
       "GUILD_DESCRIPTION": {
-        "description": "Edit the description of your guild. Requires to be the guild's leader."
+        "description": "Edit the description of your guild. Requires being the guild's leader."
       },
       "GUILD_ELDER": {
-        "description": "Allows one to designate a guild elder, requires to be guild's leader."
+        "description": "Allows one to designate a guild elder. Requires being the guild's leader."
       },
       "GUILD_ELDER_REMOVE": {
-        "description": "Allow to remove the current guild's elder, requires to be guild's leader."
+        "description": "Allows you to remove the current guild elder. Requires being the guild leader."
       },
       "GUILD_INVITE": {
-        "description": "Invites someone to join your guild. Requires to be the guild's leader or elder."
+        "description": "Invites someone to join your guild. Requires being the guild's leader or elder."
       },
       "GUILD_KICK": {
-        "description": "Kicks a member. Requires to be the guild's leader."
+        "description": "Kicks a member. Requires being the guild's leader."
       },
       "GUILD_LEAVE": {
         "description": "Lets you leave your guild."
@@ -506,7 +506,7 @@
         "description": "Give a link to submit suggestions and vote for those already submitted."
       },
       "INVENTORY": {
-        "description": "Shows the items in your inventory, can contain 4 types of objects:\n```\n-weapons\n-armors\n-potions\n-items\n```\nThe command also shows the items stock that can contain additional items."
+        "description": "Shows the items in your inventory, which can contain 4 types of objects:\n```\n-weapons\n-armors\n-potions\n-items\n```\nThe command also shows the reserve which provides additional storage."
       },
       "JOIN_BOAT": {
         "description": "Join a guild member on a boat bound for a mysterious island."
@@ -524,7 +524,7 @@
         "description": "Displays the list of missions assigned to you."
       },
       "MISSIONS_SHOP": {
-        "description": "Display the mission's shop."
+        "description": "Display the missions shop."
       },
       "NOTIFICATIONS": {
         "description": "Allows you to set up the reception of bot notifications. You can choose to receive notifications (and determine where to display them) for arrival at a specified location, guild rewards, prison releases, attacks by other players, guild exclusions, guild status changes, full energy regeneration, availability of your daily bonus and the end of pet expeditions."
@@ -536,13 +536,13 @@
         "description": "Give some food to your pet."
       },
       "PET_FREE": {
-        "description": "Free your pet. Be careful, once it has been freed, it will be deleted forever and therefore cannot be restored. This command can only be made once per hour."
+        "description": "Free your pet. Be careful, once it has been freed, it will be deleted forever and therefore cannot be restored. This command can only be used once per hour."
       },
       "PET_NICKNAME": {
         "description": "Change your pet's nickname. If no name is given, the nickname will be cleared."
       },
       "PET_SELL": {
-        "description": "Allows to sell a pet. The following conditions apply: \n - The selling price must be higher than `{{petSellMinPrice}}{emote:unitValues.money}` and lower than `{{petSellMaxPrice}}{emote:unitValues.money}`. \n- The seller will not earn money for the transaction, but guild experience. \n- The seller and the buyer cannot be part of the same guild."
+        "description": "Can sell a pet. The following conditions apply: \n - the selling price must be higher than `{{petSellMinPrice}}{emote:unitValues.money}` and lower than `{{petSellMaxPrice}}{emote:unitValues.money}`. \n- The vendor will not earn money during the transaction, but guild experience. \n- The seller and the buyer cannot be part of the same guild."
       },
       "PET_TRANSFER": {
         "description": "Allows you to transfer a pet to or from the guild. You'll have the choice of dropping the pet you're with into the shelter, swapping it with another, or removing one from the shelter."
@@ -551,7 +551,7 @@
         "description": "Check if the bot is online.\n\n(Note: Time displayed is the response time from the bot, not your ping, a correct ping should be less than 500 ms. {emote:clocks.1})"
       },
       "PROFILE": {
-        "description": "Displays information about your character:\n\n{emote:effects.none} Health status | Nickname | Level\n\n឵឵Information :\n{emote:unitValues.health} Life | {emote:unitValues.xp} XP | {emote:unitValues.money}\n\nMoney Statistics:\n{emote:unitValues.energy} Energy | {emote:unitValues.attack} Attack | {emote:unitValues.defense} {emote:unitValues.speed} Defense | {emote:unitValues.breath} Breath | {emote:unitValues.breathRegen} Recovery\n\nMissions:\n{emote:unitValues.gem} Gems | {emote:missions.campaign} Campaign progress in %\n\nRank and score :\n{emote:top.congrats} Rank | {emote:unitValues.score} Score\n\nClass:\nSee {command:classes}\n\nGlory and League:\n{emote:unitValues.glory} Glory | See {command:top glory}\n\nGuild:\n{emote:other.guild} Guild\n\nDestination:\nSee {command:map}\n\nFamiliar:\nSee {command:pet}\n\n{emote:other.advice}-Badges are displayed on your profile as reactions."
+        "description": "Displays information about your character:\n\n{emote:effects.none} Health status | Nickname | Level\n\n឵឵឵Information :\n{emote:unitValues.health} Life | {emote:unitValues.xp} XP | {emote:unitValues.money} Money\n\nStatistics:\n{emote:unitValues.energy} Energy | {emote:unitValues.attack} Attack | {emote:unitValues.defense} Defense | {emote:unitValues.speed} Speed | {emote:unitValues.breath} Breath | {emote:unitValues.breathRegen} Recovery\n\nMissions:\n{emote:unitValues.gem} Gems | {emote:missions.campaign} Campaign progress in %\n\nRank and score :\n{emote:top.congrats} Rank | {emote:unitValues.score} Score\n\nClass:\nSee {command:classes}\n\nGlory and League:\n{emote:unitValues.glory} Glory | See {command:top glory}\n\nGuild:\n{emote:other.guild} Guild\n\nDestination:\nSee {command:map}\n\nFamiliar:\nSee {command:pet}\n\n{emote:other.advice}-Badges are displayed on your profile as reactions."
       },
       "RARITY": {
         "description": "Allows you to see the probability of getting an item by its rarity."
@@ -566,10 +566,10 @@
         "description": "Lets you sell the item currently in your reserve. The value of the item is set to be equal to its power. Potions have no resale value, but may be thrown away with this command."
       },
       "SHOP": {
-        "description": "This command allows you to spend your money to facilitate your adventure. Besides the 4 main choices which are always available, you can buy an exclusive potion every day, available on sale for only 24h."
+        "description": "This command allows you to spend your money to facilitate your adventure. Besides the 4 main choices which are always available, you can buy an exclusive potion every day, available on sale for only 24 hours."
       },
       "SWITCH": {
-        "description": "Exchanges a piece of equipment from your stockpile with what you currently own, provided it is of the same category. If no equipment in the category of the item to be equipped is owned before the order is executed, it will simply move it into the inventory."
+        "description": "Exchanges a piece of equipment from your stockpile with what you currently own, provided it is of the same category. If no equipment in the category of the item to be equipped is owned before the command is executed, it will simply move it into the inventory."
       },
       "DEPOSIT": {
         "description": "Place a piece of equipment from your main hand in your storeroom. If you only have one piece of equipment to deposit, it will be automatically put away."
@@ -591,9 +591,9 @@
       }
     },
     "forMoreHelp": "{emote:messages.item} For more help: ",
-    "forMoreHelpValue": "You can visit the bot's [wiki](https://guide.draftbot.com/v/en/)!",
+    "forMoreHelpValue": "You can visit the bot's [wiki](https://guide.crownicles.com/)!",
     "guildCommands": "{emote:guild.icon} Guild:",
-    "helpEmbedDescription": "{emote:messages.item} If you want more information about a particular order, click here: {command:help}, and give the command you are having problems with in parameters. {emote:other.wink}",
+    "helpEmbedDescription": "{emote:messages.item} If you want more information about a particular command, click here: {command:help}, and give the command you are having problems with as a parameter. {emote:other.wink}",
     "helpEmbedTitle": "{{pseudo}}, here is the list of available commands:",
     "missionCommands": "{emote:missions.sideMission} Mission:",
     "petCommands": "{emote:userKind.pet} Pets:",
@@ -602,7 +602,7 @@
     "usageFieldTitle": "Usage",
     "utilCommands": "{emote:collectors.question} Utility:",
     "needHelp": "Need help?",
-    "needHelpDescription": "{emote:fightCommand.crossedSwords} Hello ! This message has been sent in response to a request for help.\n\nIf you need any help with the game, you can join the bot's official server!\n\nYou'll be able to take part in the game's development and get all the information you need!\n\nWe also recommend that you consult the detailed bot guide: https://guide.draftbot.com/"
+    "needHelpDescription": "{emote:fightCommand.crossedSwords} Hello! This message has been sent in response to a request for help.\n\nIf you need any help with the game, you can join the bot's official server!\n\nYou'll be able to take part in the game's development and get all the information you need!\n\nWe also recommend that you consult the detailed bot guide: https://guide.crownicles.com/"
   },
   "idea": {
     "description": "You can submit suggestions and vote for your favorites via this link:\nhttps://feedback.draftbot.com/",
@@ -619,7 +619,7 @@
     "potions_other": "Potions ({{count}}/{{max}}):",
     "seeBackupItems": "{emote:collectors.switch} View backup items",
     "seeEquippedItems": "{emote:collectors.switch} View equipped items",
-    "stockTitle": "{emote:inventory.stock} **{{pseudo}}'s items stock**",
+    "stockTitle": "{emote:inventory.stock} **{{pseudo}}'s item reserve**",
     "title": "{emote:commands.inventory} **{{pseudo}}'s inventory**",
     "weapons_one": "Weapon ({{count}}/{{max}}):",
     "weapons_other": "Weapons ({{count}}/{{max}}):",
@@ -628,9 +628,9 @@
       "anchorTalisman": "$t(models:talisman.anchor) - Sends your pet on an expedition",
       "cloneTalisman": "$t(models:talisman.clone) - Your pet assists you in defense and in minor events, even on expeditions."
     },
-    "talismanNotOwned": "{emote:inventory.empty} **No artifacts",
+    "talismanNotOwned": "{emote:inventory.empty} **No artifacts**",
     "randomItemTitle": "{{pseudo}}, you found something!",
-    "randomItemAcceptTitle": "You already have an equipment, would you like to sell it?",
+    "randomItemAcceptTitle": "You already have a piece of equipment, would you like to sell it?",
     "randomItemAcceptTitlePotion": "You already have a potion, what would you like to do?",
     "randomItemFooterPotion": "Use {emote:collectors.accept} to keep the found potion and replace your current one, {emote:items.drinkPotion} to consume the found potion, {emote:collectors.refuse} to discard the found potion.",
     "randomItemFooterPotionChoice": "Use a number to replace a potion with the found potion, {emote:items.drinkPotion} to consume the found potion, {emote:collectors.refuse} to discard the found potion.",
@@ -652,7 +652,7 @@
       "it": "Italian",
       "pt": "Portuguese"
     },
-    "newLanguageSetDescription": "DraftBot will now speak in English with you ! {emote:languageFlavors.en}",
+    "newLanguageSetDescription": "Crownicles will now speak in English with you! {emote:languageFlavors.en}",
     "newLanguageSetTitle": "Language changed",
     "selectLanguage": "Select a language",
     "title": "{emote:commands.language} Language selection"
@@ -660,19 +660,19 @@
   "ping": {
     "discord": {
       "create": "{emote:commands.ping} Pong",
-      "edit": ":ping_pong: Pong\n\n**Total latency:** {{totalLatency}} ms\n**Discord latency:** {{discordApiLatency}} ms\n**Shard number:** {{shardId}}\n**Total shards:** {{totalShards}} (+main shard)"
+      "edit": "{emote:commands.ping} Pong\n\n**Total latency: ** {{totalLatency}} ms\n**Discord latency: ** {{discordApiLatency}} ms\n**Shard number: ** {{shardId}}\n**Total shards: ** {{totalShards}} (+main shard)"
     }
   },
   "profile": {
     "badgeDisplay": {
-      "numberBadge_one": "\n This player has a total of {{count}} badges!",
+      "numberBadge_one": "\n This player has a total of {{count}} badge!",
       "numberBadge_other": "\n This player has a total of {{count}} badges!",
       "title": "List of {{pseudo}}'s badges"
     },
     "badges": {
       "tournament_winner": "Tournament winner",
       "technical_team": "Member of the technical team",
-      "first_20_members": "One of the 20 first members of the bot's server",
+      "first_20_members": "One of the first 20 members of the bot's server",
       "top_glory": "Person who has won the most glory during a fighting season",
       "support": "Person who has the Support role on the bot's server",
       "translator": "Translator",
@@ -691,14 +691,15 @@
       "donor": "Donator",
       "early_class_adopter": "Early class adopter",
       "good_bug_reporter": "Person who reported an exploitable bug without taking advantage of it",
-      "redactor": "Bot's redactor",
+      "redactor": "Bot's writer",
       "voter": "Person who voted in the last 12 hours",
       "funny": "Badge given to a funny person",
       "rich": "Badge bought in the shop",
       "top_1_before_reset": "Person who has reached the top of the ranking after the reset",
       "very_powerful_guild": "Member of a very powerful guild",
       "animal_lover": "Person who has shown all the pets to Talvar the dwarf",
-      "expert_expediteur": "A person who has successfully completed numerous expeditions with their pet"
+      "expert_expediteur": "Person who has successfully completed numerous expeditions with their pet",
+      "oracle_patron": "Protector of the Oracle, having contributed generously to many blessings"
     },
     "fightRanked": {
       "fieldName": "Glory points and league:",
@@ -706,7 +707,7 @@
     },
     "fightUnranked": {
       "fieldName": "Glory points and league:",
-      "fieldValue": "{emote:announcements.trophy} Uncategorized | {emote:unitValues.glory} {{gloryPoints, number}} | {emote:leagues.{{leagueId}}} $t(models:leagues.{{leagueId}})"
+      "fieldValue": "{emote:announcements.trophy} Unranked | {emote:unitValues.glory} {{gloryPoints, number}} | {emote:leagues.{{leagueId}}} $t(models:leagues.{{leagueId}})"
     },
     "guild": {
       "fieldName": "Guild:",
@@ -811,36 +812,36 @@
     "useTokensButton": "Forward",
     "notEnoughTokensButton": "Insufficient tokens",
     "useTokensLoading": "Loading...",
-    "useTokensConfirmTitle": "{{pseudo}}confirmation",
+    "useTokensConfirmTitle": "{{pseudo}}, confirmation",
     "useTokensConfirmDescription_one": "Do you want to spend **{{count}} tokens** {emote:unitValues.token} to advance to the next stage of the adventure?\n\nYou currently have **{{playerTokens, number}} tokens** {emote:unitValues.token}.",
     "useTokensConfirmDescription_other": "Do you want to spend **{{count}} tokens** {emote:unitValues.token} to advance to the next stage of the adventure?\n\nYou currently have **{{playerTokens, number}} tokens** {emote:unitValues.token}.",
-    "tokensUsedSuccessTitle": "{{pseudo}}used tokens!",
+    "tokensUsedSuccessTitle": "{{pseudo}}, tokens used!",
     "tokensUsedSuccessDescription_one": "{emote:unitValues.token} You have spent **{{count}} token** to advance your journey.\n\n{{nextStep}}",
     "tokensUsedSuccessDescription_other": "{emote:unitValues.token} You have spent **{{count}} tokens** to advance your journey.\n\n{{nextStep}}",
     "tokensNextStepArrived": "{emote:messages.info} You've arrived at your destination! Use {command:report} to see what awaits you.",
     "tokensNextStepSmallEvent": "{emote:messages.info} An event is waiting for you on the road. Use {command:report} to find out.",
     "tokensUsedRefusedTitle": "{{pseudo}}, cancellation",
-    "tokensUsedRefusedDescription": "{emote:messages.refuse} You have decided to keep your tokens.",
-    "buyHealButton": "Taking care of yourself",
+    "tokensUsedRefusedDescription": "{emote:messages.refuse} You decide to keep your tokens.",
+    "buyHealButton": "Heal",
     "notEnoughMoneyHealButton": "Not enough money",
     "buyHealLoading": "Loading...",
-    "buyHealConfirmTitle": "{{pseudo}}confirmation",
+    "buyHealConfirmTitle": "{{pseudo}}, confirmation",
     "buyHealConfirmDescription": "Do you want to spend **{{price, number}}** {emote:unitValues.money} to heal your altered state and get back on the road immediately?\n\nYou currently have **{{playerMoney, number}}** {emote:unitValues.money}.",
-    "healSuccessTitle": "{{pseudo}}Care completed!",
+    "healSuccessTitle": "{{pseudo}}, healing complete!",
     "healSuccessDescription": "{emote:shopItems.healAlteration} You have spent **{{price, number}}** {emote:unitValues.money} to treat yourself.\n\n{{nextStep}}",
     "healNextStepArrived": "{emote:messages.info} You've arrived at your destination! Use {command:report} to see what's waiting for you.",
     "healNextStepSmallEvent": "{emote:messages.info} An event is waiting for you on the road. Use {command:report} to find out.",
-    "healRefused": "{emote:messages.refuse} **{{pseudo}}** has decided not to treat himself.",
-    "healNoAlteration": "{emote:effects.none} You are not a victim of any alteration of state.",
-    "healCannotHealOccupied": "{emote:effects.occupied} You are currently busy. This alteration cannot be cured."
+    "healRefused": "{emote:messages.refuse} **{{pseudo}}** has decided not to heal.",
+    "healNoAlteration": "{emote:effects.none} You are not a victim of any status condition.",
+    "healCannotHealOccupied": "{emote:effects.occupied} You are currently busy. This status condition cannot be cured."
   },
   "update": {
-    "description": "The latest version of the bot's core is **{{coreVersion}}**. The Discord module's version is **{{discordModuleVersion}}**.\n\nInformation about the changelog can be found here:\nhttps://guide.draftbot.com/v/en/lore/change-logs",
+    "description": "The latest version of the bot's core is **{{coreVersion}}**. The Discord module's version is **{{discordModuleVersion}}**.\n\nInformation about the changelog can be found here:\nhttps://guide.crownicles.com/v/en/lore/change-logs",
     "title": "{emote:messages.description} Changelog"
   },
   "vote": {
     "description": "Here is the link to support the bot:\nhttps://top.gg/bot/448110812801007618",
-    "title": "{emote:commands.vote} Vote"
+    "title": ":ballot_box: Vote"
   },
   "map": {
     "title": "{{pseudo}}, here's the map!",
@@ -855,16 +856,16 @@
     "canceledDesc": "The pet has not been released.",
     "confirmDesc": "{emote:collectors.warning} Are you sure you want to release **{{pet}}**? It is not possible to undo once the action has been done.",
     "acceptedDesc": "Farewell **{{pet}}**...",
-    "isFeisty": "{emote:collectors.warning} Warning: freeing a pet with a fever will cost you {{cost, number}} {emote:unitValues.money}.",
-    "petOnExpedition": "Your pet is currently on shipment and cannot be released.",
+    "isFeisty": "{emote:collectors.warning} Warning: freeing a pet feisty will cost you {{cost, number}} {emote:unitValues.money}.",
+    "petOnExpedition": "Your pet is currently on an expedition and cannot be released.",
     "selectionTitle": "{{pseudo}}, pet release",
     "selectionDesc": "Choose a pet to release:",
     "selectPlaceholder": "Select a pet to release",
     "ownPetOption": "Your personal pet",
-    "shelterPetOption": "{{rarity}} | {{sex}} {{loveLevel}}",
+    "shelterPetOption": "{{rarity}} | {{sex}} | {{loveLevel}}",
     "cancelButton": "Cancel",
     "feistyCostPaid": "The liberation cost you {{cost, number}} {emote:unitValues.money}.",
-    "luckyMeat": "The familiar left you a piece of meat when you left! {emote:food.carnivorousFood}"
+    "luckyMeat": "The pet left you a piece of meat when it left! {emote:foods.carnivorousFood}"
   },
   "petNick": {
     "successTitle": "{{pseudo}}, changing the pet's nickname",
@@ -875,7 +876,7 @@
     "closeShop": "You closed the shop.",
     "closeShopTitle": "{{pseudo}}, closing shop",
     "noAlterationToHeal": "You have not been affected by any state alteration. {emote:effects.none}",
-    "cannotHealOccupied": "You are currently busy. This alteration cannot be cured in the store. {emote:effects.occupied}",
+    "cannotHealOccupied": "You are currently busy. This status condition cannot be cured in the store. {emote:effects.occupied}",
     "success": "{{pseudo}}, transaction successful!",
     "healAlteration": "{emote:shopItems.healAlteration} Your state changes have been deleted.",
     "tooManyEnergyBought": "You purchased the maximum energy recovery amount for this week.",
@@ -885,7 +886,7 @@
     "badgeBought": "You have received a new badge: {emote:badges.{{badgeName}}}!",
     "notEnoughMoney": "You don't have enough money to buy this item! You are missing `{{missingCurrency, number}} {emote:unitValues.{{currency}}}`.",
     "boughtTooMuchDailyPotions": "There are no more potions available for sale... Come back tomorrow!",
-    "boughtTooMuchTokens": "You've reached your chip purchase limit for the moment. Please come back later!",
+    "boughtTooMuchTokens": "You've reached your token purchase limit for the moment. Please come back later!",
     "tokensBought_one": "You have purchased **{{count}} token** {emote:unitValues.token}.",
     "tokensBought_other": "You have purchased **{{count}} tokens** {emote:unitValues.token}.",
     "tokensFull": "You already have as many tokens as possible!",
@@ -961,11 +962,11 @@
       },
       "smallGuildXp": {
         "name": "{emote:shopItems.smallGuildXp} A small amount of XP for your guild",
-        "info": "You will receive a random amount of guild XP between 50 and 450."
+        "info": "You will receive a random amount of guild experience between 50 and 450."
       },
       "bigGuildXp": {
-        "name": "{emote:shopItems.bigGuildXp} A large amount of XP for your guild",
-        "info": "You will receive a random amount of guild XP between 750 and 6750."
+        "name": "{emote:shopItems.bigGuildXp} A large amount of experience for your guild",
+        "info": "You will receive a random amount of guild experience between 750 and 6750."
       },
       "commonFood": {
         "name": "{emote:foods.commonFood} Treat",
@@ -994,7 +995,7 @@
       },
       "money": {
         "name": "{emote:unitValues.money} King's money",
-        "info": "From the gem day course and after the King's tax reduction, you will receive `{{kingsMoneyAmount, number}}` {emote:unitValues.money}.",
+        "info": "From the gem day course and after the King's tax deduction, you will receive `{{kingsMoneyAmount, number}}` {emote:unitValues.money}.",
         "giveTitle": "{{pseudo}}, purchase successful!",
         "giveDescription": "You have gained `{{amount, number}}` {emote:unitValues.money}."
       },
@@ -1010,12 +1011,12 @@
         "giveDescription": "You got {{thousandPoints, number}} {emote:unitValues.score}. See you next week for a new fervor!"
       },
       "lovePointsValue": {
-        "name": "{emote:shopItems.lovePointsValue} Court veterinary",
+        "name": "{emote:shopItems.lovePointsValue} Court veterinarian",
         "info": "Get detailed information about your pet.",
         "giveTitle": "{{pseudo}}, purchase successful!",
         "giveDesc": "After a long examination of your pet and its state of health, the vet will give you his report:\n\n**{{petName}}** {{commentOnResult}}\n{emote:petInformation.loveScore} **Love score** : {{actualLP, number}} / {{maxLovePoints, number}}\n{emote:petInformation.diet} **Diet**: {{diet}}\n{emote:petInformation.force} **Strength**: {{force, number}}\n{emote:petInformation.speed} **Speed**: {{speed, number}}\n{emote:petInformation.feedDelay} **Meal interval**: {{feedDelay}}\n{emote:petInformation.nextFeed} **Next hunger**: {{nextFeed}}\n{emote:petInformation.age} **Age**: {{commentOnPetAge}}\n\n{emote:petInformation.fightEffect} **Fighting effect**: {{commentOnFightEffect}}{{expeditionSection}}\n\n {{dwarfPet}}",
         "expeditionPreferences": "\n\n{emote:expedition.map} **Exploration benefits**:\n{{likedLocations}}{{dislikedLocations}}",
-        "likedLocations": "{emote:expedition.liked} Prosperous in: {{locations}}",
+        "likedLocations": "{emote:expedition.liked} Thrives in: {{locations}}",
         "dislikedLocations": "\n{emote:expedition.disliked} Wary of : {{locations}}",
         "noPreferences": "\n\n{emote:expedition.map} **Exploring advantages**: I've observed in your pet a remarkable ability to adapt. Its instinct allows it to acclimatize to all types of terrain without any particular difficulty.",
         "petIsHungry": "{emote:effects.starving} hungry",
@@ -1038,7 +1039,7 @@
           "breakArmor": [
             "As soon as the fight kicks off, he rushes at his opponent and tries to tear off his armor or shield, often succeeding, leaving the enemy helpless.",
             "This powerful animal charges head-on from the outset; if it hits its target, helmet, breastplate or shield are dislodged and carried away from the battlefield.",
-            "Your pet makes an impressive charge to strip the enemy bare: most of the time, the armor or shield ends up wedged between its horns, becoming its booty."
+            "Your pet makes an impressive charge to strip the enemy bare: most of the time, the armor or shield ends up wedged between its horns, becoming its trophy."
           ],
           "claws": [
             "Your pet's claws are sharper than many blades! It'll use them to slash your enemies with terrifying efficiency.",
@@ -1151,7 +1152,7 @@
             "I'm observing a unique chromatic transmutation phenomenon. Your pet will recycle battle energy to heal you."
           ],
           "revenge": [
-            "Its instinct for vengeance is impressive! When you're wounded, it automatically retaliates with tenfold violence.",
+            "Their instinct for vengeance is impressive! When you're wounded, it automatically retaliates with tenfold violence.",
             "This specimen has an impressive memory for wrongs. It won't forget who hit you, and will retaliate when the time is right.",
             "Its loyalty manifests itself in a thirst for immediate justice. Every blow you receive will be returned a hundredfold by your pet."
           ],
@@ -1231,8 +1232,8 @@
             "Don't underestimate its tiny fangs! A simple bite can lead to a slow but dreadful infection."
           ],
           "crush": [
-            "His physical power is overwhelming! If your opponent hesitates, he'll find himself crushed under her weight.",
-            "This familiar waits for the right moment to strike. It will crush enemies too slow to flee, immobilizing them for good.",
+            "Its physical power is overwhelming! If the opponent hesitates, they'll find themselves crushed under its weight.",
+            "This pet waits for the right moment to strike. It will crush enemies too slow to flee, immobilizing them for good.",
             "His attack is simple but merciless: he takes advantage of the slightest mistake to crush his opponent without mercy."
           ],
           "healOwnerInEnergyRange": [
@@ -1241,7 +1242,7 @@
             "This companion watches over you relentlessly. When your strength falters, it immediately revitalizes you."
           ],
           "useTool": [
-            "Ingenious and resourceful, he uses the materials around him to create improvised fighting tools.",
+            "Ingenious and resourceful, he uses the surrounding materials to create improvised fighting tools.",
             "This pet has an amazing creative instinct. It will quickly produce useful items in the midst of a confrontation.",
             "His tactical intelligence is fascinating. He'll exploit every element of the terrain to build something to help you."
           ],
@@ -1257,30 +1258,30 @@
           ]
         },
         "ageComment_ancestor": "INCREDIBLE! Exclaims the wide-eyed vet. Your pet is an exceptionally rare specimen! It's one of the oldest ever recorded in our archives, with only {{age}} older pets ever found! A true living relic!",
-        "ageComment_veryOld": "Fascinating! Murmurs the vet, adjusting his glasses. Your pet has reached a venerable age that few of its peers know. Our records show that only {{age}} pets have lived longer. His longevity is quite remarkable!",
-        "ageComment_old": "Well, well, well! Your companion has already come a long way, notes the vet with a benevolent smile. With only {{age}} older pets in our archives, he has accumulated wisdom and experience over the years. He's a senior citizen in great shape!",
-        "ageComment_adult": "Your pet is in the prime of life, observes the vet, shaking his head. Of all our patients, {{age}} has more years behind it. He has reached full maturity, combining vigor and balance. It's the ideal time!",
-        "ageComment_other": "Your pet is still young, says the vet tenderly. {{age}} pets in our records are older than he is. He's got his whole life ahead of him and is bursting with energy! Enjoy these carefree moments of discovery.",
+        "ageComment_veryOld": "Fascinating! Murmurs the vet, adjusting his glasses. Your pet has reached a venerable age that few of its peers know. Our records show that only {{age}} pets have lived longer. Its longevity is quite remarkable!",
+        "ageComment_old": "Well, well, well! Your companion has already come a long way, notes the vet with a benevolent smile. With only {{age}} older pets in our archives, it has accumulated wisdom and experience over the years. It's a senior in great shape!",
+        "ageComment_adult": "Your pet is in the prime of life, observes the vet, nodding. Of all our patients, {{age}} have more years behind them. It has reached full maturity, combining vigor and balance. It's the ideal time!",
+        "ageComment_other": "Your pet is still young, says the vet tenderly. {{age}} pets in our records are older than it. It's got its whole life ahead of it and is bursting with energy! Enjoy these carefree moments of discovery.",
         "advice": {
           "1": [
             "seems to hate you. Be careful, or you might be a victim of a bad blow on your adventures!",
-            "seems to be unfamiliar with you. Considering how you deal with your pet, this is no surprise!",
+            "doesn't seem to really like you. Considering how you take care of your pet, this is no surprise!",
             "seems to be in a deep unease. You should try to feed your pet."
           ],
           "2": [
             "still seems wild. Take care of your pet and earn its trust!",
-            "seems to be unapprehended. If you don't care about your pet, you will never get his love!",
+            "seems to be unsettling. If you don't care about your pet, you will never get his love!",
             "doesn't seem to be happy. You should try feeding your pet."
           ],
           "3": [
             "still seems a little apprehensive. Take care of your pet and earn its trust!",
-            "still seems to be trusting you. Keep caring for your pet to get its love!",
-            "seems to be getting started on you. Try feeding your pet regularly."
+            "still seems to be wary of you. Keep caring for your pet to earn its love!",
+            "seems to be starting to get used to you. Try feeding your pet regularly."
           ],
           "4": [
             "seems to appreciate you. Keep caring for your pet to earn all the trust!",
             "seems to trust you. If you continue along this path, you will soon get all the love of your pet!",
-            "seems to have been done to you. Don't stop feeding your pet regularly."
+            "seems to have gotten used to you. Don't stop feeding your pet regularly."
           ],
           "5": [
             "seems to fully appreciate you. You don't even need to take care of your pet anymore to keep it loving you!",
@@ -1322,7 +1323,7 @@
   },
   "classesInfo": {
     "title": {
-      "list": "{emote:commands.classesInfo} Classes list",
+      "list": ":bookmark: Classes list",
       "attack": "{{emote}} {{name}} | {{cost, number}} {emote:unitValues.breath}"
     },
     "description": {
@@ -1352,7 +1353,7 @@
       "guildStatusChange": "Change of guild status",
       "energy": "Regenerated energy",
       "dailyBonus": "Daily bonus",
-      "petExpedition": "Pet shipment completed"
+      "petExpedition": "Pet expedition completed"
     },
     "enableDisable": "Enable/Disable",
     "sendLocationField": "Sending place:",
@@ -1404,7 +1405,7 @@
       "fullHeal": "{emote:shopItems.regen} | Guild members have been fully healed.",
       "advanceTime": "{emote:unitValues.time} | Guild members moved forward by {{quantity}}h.",
       "partialHeal": "{emote:rewards.partialHeal} | Guild members partially healed `+ {{quantity, number}} {emote:unitValues.health}`",
-      "alterationHeal": "{emote:shopItems.healAlteration} | Guild members' altered states have been removed. Healthy members have been partially healed. `+ {{quantity, number}} {emote:unitValues.health}`",
+      "alterationHeal": "{emote:shopItems.healAlteration} | Guild members' status conditions have been removed. Healthy members have been partially healed. `+ {{quantity, number}} {emote:unitValues.health}`",
       "alterationNoHeal": "{emote:shopItems.healAlteration} | The status changes of the guild members have been deleted.",
       "petFood": "{emote:foods.commonFood} {{quantity, number}} treats have been added to your guild's inventory.",
       "pet_male": "{emote:pets.{{petId}}.emoteMale} | A pet has joined the guild's shelter: **{{pet}}**",
@@ -1425,9 +1426,9 @@
       "money": "Money won:",
       "time": "You have moved forward"
     },
-    "collectorTitleOneObject": "{{pseudo}}confirmation of your daily reward!",
+    "collectorTitleOneObject": "{{pseudo}}, confirmation of your daily reward!",
     "collectorDescOneObject": "Would you like to use your everyday object?\n\n{{object}}",
-    "collectorTitle": "{{pseudo}}Choose your daily reward!",
+    "collectorTitle": "{{pseudo}}, choose your daily reward!",
     "collectorDesc": "Choose an object to use from the list below:",
     "collectorRefuseOption": "Cancel",
     "menuPlaceholder": "Select an object"
@@ -1466,19 +1467,19 @@
     "yourRankNoneScore": "{emote:top.error} | Unfortunately, you don't appear in the top because you have a score lower or equal to 100!",
     "yourRankAtPage": "(Please refer to page {{page, number}} / {{maxPage, number}})",
     "titleGlory": "{emote:unitValues.glory} Displaying the top glory of places {{minRank, number}} to {{maxRank, number}}",
-    "yourRankNoneGlory_one": "{emote:top.error} | Unfortunately, you are not in the top list because you have not yet completed enough ranked fights! You have yet to complete {{needFight, number}} a ranked fight.",
-    "yourRankNoneGlory_other": "{emote:top.error} | Unfortunately, you're not in the top because you haven't fought enough graded matches yet! You still need to complete {{needFight, number}} ranked fights.",
+    "yourRankNoneGlory_one": "{emote:top.error} | Unfortunately, you are not in the top list because you have not yet completed enough ranked fights! You have yet to complete {{needFight, number}} ranked fight.",
+    "yourRankNoneGlory_other": "{emote:top.error} | Unfortunately, you're not in the top because you haven't fought enough ranked fights yet! You still need to complete {{needFight, number}} ranked fights.",
     "titleGuild": "{emote:top.guild} Displaying top guilds from places {{minRank, number}} to {{maxRank, number}}",
     "yourRankGuildTitle": "**Your guild's ranking**",
     "yourRankGuildFirst_one": "{emote:top.congrats} Congratulations **{{pseudo}}**! Your guild is currently the best out of a total of {{total, number}} guilds!",
     "yourRankGuildFirst_other": "{emote:top.congrats} Congratulations **{{pseudo}}**! Your guild is currently the best out of a total of {{total, number}} guilds!",
-    "yourRankGuild_one": "{{badge}} **{{pseudo}}**, your guild is currently top **{{rank, number}}** out of a total of {{total, number}} guilds!",
-    "yourRankGuild_other": "{{badge}} **{{pseudo}}**, your guild is currently top **{{rank, number}}** out of a total of {{total, number}} guilds!",
+    "yourRankGuild_one": "{{badge}} **{{pseudo}}**, your guild is currently ranked **{{rank, number}}th** out of a total of {{total, number}} guilds!",
+    "yourRankGuild_other": "{{badge}} **{{pseudo}}**, your guild is currently ranked **{{rank, number}}th** out of a total of {{total, number}} guilds!",
     "yourRankNoneGuild": "{emote:top.error} | Unfortunately, your guild does not appear in the top because it has no guild points!",
     "yourRankAtPageGuild": "(You can find it on page {{page, number}} / {{maxPage, number}})",
     "noGuild": "{emote:top.error} | You do not appear in this ranking as you are not part of a guild!",
     "nobodyInTopPlayers": "No players are currently ranked!",
-    "nobodyInTopGlory": "No players are currently ranked! Complete {{needFight}} more class combat to appear in the ranking!",
+    "nobodyInTopGlory": "No players are currently ranked! Complete {{needFight}} more ranked combats to appear in the ranking!",
     "nobodyInTopGuilds": "There are currently no guilds in the ranking!",
     "invalidPage": "The requested page does not exist. Please try again with a page between {{minPage}} and {{maxPage}}."
   },
@@ -1513,7 +1514,7 @@
         "noProlongation": "[{{currentTurn}}/{{maxTurn}}]"
       },
       "attacker": "{emote:unitValues.attack} | **Attacker: {{pseudo}}**\n",
-      "defender": "\n\n{emote:unitValues.defense} | **Defender: {{pseudo}}**\n",
+      "defender": "\n\n{emote:unitValues.defense} | Defender: {{pseudo}}**\n",
       "stats": "{emote:unitValues.energy} {{power, number}} | {emote:unitValues.attack} {{attack, number}} | {emote:unitValues.defense} {{defense, number}} | {emote:unitValues.speed} {{speed, number}} | {emote:unitValues.breath} {{breath, number}} / {{maxBreath, number}} | {emote:unitValues.breathRegen} {{breathRegen}}"
     },
     "end": {
@@ -1527,23 +1528,23 @@
       "loveGain": [
         "{{pet}} exults in his victory! He proudly hops around {{player}}.",
         "{{pet}} beams with pride and leaps around {{player}} !",
-        "{{pet}} jubilant and joyful, circling around {{player}}.",
+        "{{pet}} is jubilant and joyful, circling around {{player}}.",
         "{{pet}} bursts with happiness and proudly parades in front of {{player}} !",
         "{{pet}} shows his enthusiasm by leaping to {{player}}'s side.",
-        "{{pet}} overflowing with joy and twirling around {{player}} with excitement!",
+        "{{pet}} overflows with joy and twirling around {{player}} with excitement!",
         "{{pet}} shows a dazzling satisfaction and dances around {{player}}.",
         "{{pet}} beaming with contentment and happily cavorting near {{player}} !",
-        "{{pet}} celebrate this victory by jumping around {{player}}.",
+        "{{pet}} celebrates this victory by jumping around {{player}}.",
         "{{pet}} exults and leaps enthusiastically around {{player}} !",
         "{{pet}} shows his joy with energetic jumps near {{player}}.",
-        "{{pet}} proudly twirling around {{player}} !",
-        "{{pet}} expresses his pride by gambolling happily around {{player}}.",
-        "{{pet}} brimming with enthusiasm and twirling with energy at {{player}} !",
+        "{{pet}} displays obvious happiness, proudly twirling around {{player}}!",
+        "{{pet}} expresses his pride by gamboling happily around {{player}}.",
+        "{{pet}} brims with enthusiasm and twirls with energy near {{player}}!",
         "{{pet}} beams with satisfaction and parades victoriously in front of {{player}}.",
         "{{pet}} shows his satisfaction by jumping around {{player}} !",
         "{{pet}} exults with pride and leaps gracefully to {{player}}.",
         "{{pet}} shows his joy by dancing around {{player}} !",
-        "{{pet}} by performing enthusiastic antics near {{player}}.",
+        "{{pet}} celebrates by performing enthusiastic antics near {{player}}.",
         "{{pet}} beams with happiness and twirls proudly around {{player}} !"
       ],
       "trained": [
@@ -1554,16 +1555,16 @@
         "{{pet}} shows a restrained satisfaction, worthy of a well-trained animal.",
         "{{pet}} retains his legendary calm, proof of his accomplished training.",
         "{{pet}} remains stoic, like a perfectly disciplined companion.",
-        "{{pet}} displays a measured pride, the hallmark of excellent dressage.",
+        "{{pet}} displays a measured pride, the hallmark of excellent training.",
         "{{pet}} maintains his poised demeanor, the sign of an impeccable upbringing.",
         "{{pet}} remains serene, like any beautifully trained pet.",
         "{{pet}} retains his customary poise, the result of rigorous training.",
         "{{pet}} remains unperturbed, proof of its perfect conditioning.",
-        "{{pet}} displays a quiet dignity, characteristic of quality dressage.",
+        "{{pet}} displays a quiet dignity, characteristic of quality training.",
         "{{pet}} maintains his poise, testifying to his exemplary training.",
         "{{pet}} remains impassive, a sign of accomplished training.",
         "{{pet}} retains his disciplined attitude, proof of a successful upbringing.",
-        "{{pet}} remains composed, like a perfectly formed companion.",
+        "{{pet}} remains composed, like a perfectly trained companion.",
         "{{pet}} displays a controlled serenity, the fruit of excellent training.",
         "{{pet}} maintains his composure, a sign of impeccable discipline.",
         "{{pet}} remains poised, like any superbly trained animal."
@@ -1584,12 +1585,12 @@
           "launches a {{attack}}! Totally brutal!",
           "uses a {{attack}}! It was a risky move, but it paid off!",
           "launches a good {{attack}}!",
-          "use a {{attack}}! It's PERFECT!",
+          "uses a {{attack}}! It's PERFECT!",
           "uses a {{attack}}! Masterful!",
           "launches a beautiful {{attack}}!",
           "performs a {{attack}}! It's perfect!",
           "uses a {{attack}}! The assault is absolutely insane!",
-          "hits his opponent with a {{attack}}! No mercy!",
+          "hits their opponent with a {{attack}}! No mercy!",
           "performs a {{attack}}! It's love at first sight!",
           "makes a {{attack}}! OH MY GOOOOOOOOOOOOOOD IT'S UNBELIEVABLE!",
           "chooses a {{attack}}! Great initiative!",
@@ -1601,7 +1602,7 @@
           "executes a {{attack}}!",
           "launches a {{attack}}!",
           "uses a {{attack}}!",
-          "realized a {{attack}}!"
+          "performs a {{attack}}!"
         ],
         "maxUses": [
           "tries to use a {{attack}}, but it failed!"
@@ -1618,7 +1619,7 @@
           "uses a {{attack}}! It wasn't the best choice...",
           "performs a {{attack}}! It's a miss!",
           "performs a {{attack}}! The attack fails miserably!",
-          "makes a poor {{attack}}! A cruel lack of technique from the French player!",
+          "makes a poor {{attack}}! A cruel lack of technique from this player!",
           "uses a {{attack}}! What a mistake!",
           "performs a {{attack}}! It was a risky move and it didn't work!",
           "launches a bad {{attack}}!",
@@ -1653,7 +1654,7 @@
     "fightReward": {
       "title": "{emote:fightCommand.gloryChange} Combat rewards",
       "scoreAndMoneyField": "Combat rewards",
-      "petLoveField": "Relationship with the familiar",
+      "petLoveField": "Relationship with the pet",
       "noReward": "{{player}} showed why he's considered one of the best by winning this match with ease.",
       "points": "{emote:unitValues.score} Points earned: **{{count, number}}**",
       "money": "{emote:unitValues.money} Money earned: **{{count, number}}**",
@@ -1664,7 +1665,7 @@
       "leagueChangeUp": "{emote:other.leagueUp} **{{player}}:** {{oldLeagueEmoji}} {{oldLeague}} -> {{newLeagueEmoji}} {{newLeague}}\n",
       "leagueChangeDown": "{emote:other.leagueDown} **{{player}}:** {{oldLeagueEmoji}} {{oldLeague}} -> {{newLeagueEmoji}} {{newLeague}}\n",
       "higherEloWins": [
-        "{{winner}} imposes itself on the field with a marked performance.",
+        "{{winner}} dominates the field with an outstanding performance.",
         "{{loser}} gave everything he had, but {{winner}} showed greater control of his game.",
         "The difference in level between the two players made itself felt in this fight.",
         "{{winner}} demonstrated its expertise by winning this tough encounter.",
@@ -1719,18 +1720,18 @@
   "deposit": {
     "titleSuccess": "{{pseudo}}, command completed!",
     "deposeSuccess": "{{item}} has been deposited in your reserve!",
-    "noItemToDeposit": "You don't need to drop off any equipment!",
+    "noItemToDeposit": "You have no equipment to deposit!",
     "cannotDeposit": "Your reserve is full.",
     "cancelled": "Action cancelled!",
-    "depositSelectionTitle": "{{pseudo}}object drop-off",
+    "depositSelectionTitle": "{{pseudo}}, depositing an item",
     "depositSelectionDescription": "Choose an object to deposit from the list below:"
   },
   "drink": {
     "errors": {
       "noAvailablePotions": "Unfortunately, you have no consumable potions in your inventory! Combat potions cannot be consumed via this command.",
-      "cancel": "You don't drink potions."
+      "cancel": "You chose not to drink a potion."
     },
-    "title": "{{pseudo}}you drank a potion!",
+    "title": "{{pseudo}}, You drank a potion!",
     "descriptionNoBonus": "{emote:unitValues.{{nature}}} You consume a potion... It doesn't seem very effective",
     "description": "{emote:unitValues.{{nature}}} $t(commands:drink.natureText.{{nature}}) **{{value}}** !",
     "natureText": {
@@ -1740,29 +1741,29 @@
     },
     "collectorTitleOneObject": "{{pseudo}}, confirmation:",
     "collectorDescOneObject": "Would you like to drink your potion?\n\n{{object}}",
-    "collectorTitle": "{{pseudo}}Choose your potion!",
+    "collectorTitle": "{{pseudo}}, choose your potion!",
     "collectorDesc": "Choose a potion to drink from the list below:",
     "collectorRefuseOption": "Cancel",
     "menuPlaceholder": "Select a potion"
   },
   "petSell": {
     "noPet": "You don't have any pet to sell!",
-    "petOnExpedition": "Your pet is currently being shipped and cannot be sold.",
-    "noGuild": "You can't sell your pet since you are not part of a guild. In fact, selling a pet rewards guild XP.",
+    "petOnExpedition": "Your pet is currently on an expedition and cannot be sold.",
+    "noGuild": "You can't sell your pet since you are not part of a guild. In fact, selling a pet rewards guild experience.",
     "isFeisty": "You can't sell a feisty pet.",
-    "badPrice": "The price must be between **{{minPrice}}** and **{{maxPrice}}{emote:unitValues.money}**.",
+    "badPrice": "The price must be between `{{minPrice}}{emote:unitValues.money}` and `{{maxPrice}}{emote:unitValues.money}`.",
     "onlyInitiatorCanCancel": "Only the seller can cancel the request!",
     "canceled": "The selling request has been canceled!",
     "cantSellToYourself": "You can't sell a pet to yourself!",
     "noOneAvailable": "Sadly, no one seems to be interested in your offer. Your request has been cancelled.",
     "sameGuild": "You can't buy this pet since the seller is part of your guild.",
     "alreadyHavePet": "You already have a pet with you.",
-    "notEnoughMoney": "You don't have enough money to buy it. You're missing **{{missingMoney, number}}{emote:unitValues.money}**.",
+    "notEnoughMoney": "You don't have enough money to buy it. You're missing `{{missingMoney, number}}{emote:unitValues.money}**.",
     "initiatorSituationChanged": "The seller is no longer able to sell their pet. The request has been cancelled.",
     "sellTitle": "Pet selling",
     "sellTitleWithBuyer": "{{buyer}}, {{seller}} wants to sell you a pet:",
-    "sellDescription": "{{pseudo}} would like to sell a pet for **{{price, number}}{emote:unitValues.money}**",
-    "maxLevelWarning": "{emote:collectors.warning} Your guild is already at max level, you won't receive any XP!",
+    "sellDescription": "{{pseudo}} would like to sell a pet for `{{price, number}}{emote:unitValues.money}**",
+    "maxLevelWarning": "{emote:collectors.warning} Your guild is already at max level, you won't receive any experience!",
     "petFieldName": "Sold pet:",
     "sellFooter": "For more information about pet sells, use the /help petsell command.",
     "successTitle": "{{pseudo}}, transaction completed!",
@@ -1800,7 +1801,7 @@
     "desc": "Choose a class from the list below for more information.",
     "display": "{{name}}\n\n{emote:commands.classesDescription} `{{description}}`\n\nWould you like to change to this class? You won't be able to change class until {{time}}.",
     "success": "{{pseudo}}, your class has been modified!",
-    "newClass": "Your new class is : **{{name}}**",
+    "newClass": "Your new class is: **{{name}}**",
     "confirm": "{{pseudo}}, you have selected the following class:",
     "error": {
       "canceledPurchase": "Class change cancelled.",
@@ -1849,9 +1850,9 @@
     "backButton": "Back",
     "withdrawPlaceholder": "Choose a pet to withdraw",
     "switchPlaceholder": "Choose a pet to exchange places with {{pet}}",
-    "selectMenuPetDetails": "{{rarity}} | {{sex}} {{loveLevel}}",
+    "selectMenuPetDetails": "{{rarity}} | {{sex}} | {{loveLevel}}",
     "feistyError": "You can't transfer a feisty pet.",
-    "petOnExpedition": "Your pet is currently being shipped and cannot be transferred."
+    "petOnExpedition": "Your pet is currently on an expedition and cannot be transferred."
   },
   "petFeed": {
     "noPet": "You don't have any pets!",
@@ -1925,7 +1926,7 @@
     "embedTitle": "{{guildName}} guild's shelter",
     "petFieldName": "Pet n°{{number}}",
     "noPetMessage": "It seems that no pets are in the shelter.",
-    "warningFull": "The shelter is full! No new pets will be accepted until all the shelter's pets have been released or sold."
+    "warningFull": "The shelter is full! No new pets will be accepted until a shelter pet has been released or sold."
   },
   "giveBadge": {
     "alreadyHaveBadge": "The player already has all the badges in the game.",
@@ -1957,16 +1958,24 @@
   },
   "deletecode": {
     "title": "Account deletion code",
-    "success": "**Deletion code generated**\n\n**Discord ID :** `{{discordId}}`\n**Keycloak ID :** `{{keycloakId}}`\n**Code :** `{{code}}`\n\nSend this code to the user by email. He will have to send a DM to the bot with:\n`DELETE ACCOUNT {{code}}`",
+    "success": "**Deletion code generated**\n\n**Discord ID: ** `{{discordId}}`\n**Keycloak ID: ** `{{keycloakId}}`\n**Code: ** `{{code}}`\n\nSend this code to the user by email. He will have to send a DM to the bot with:\n`DELETE ACCOUNT {{code}}`",
     "userNotFound": "No users found with this Discord ID."
   },
   "exportgdpr": {
     "title": "GDPR Export",
-    "success": "The GDPR export has been generated successfully.\n\n**Anonymized player ID:** `{{anonymizedId}}`\n**Generated files:** {{fileCount}}",
+    "success": "The GDPR export has been generated successfully.\n\n**Anonymized player ID: ** `{{anonymizedId}}`\n**Generated files: ** {{fileCount}}",
     "started": "The GDPR export has been started. You will receive the result via DM once the export is complete.",
     "userNotFound": "No player found with this Discord ID.",
     "playerNotFound": "This player does not exist in the database.",
     "error": "An error occurred during export: {{error}}",
     "fileName": "gdpr_export_{{anonymizedId}}.zip"
+  },
+  "blessing": {
+    "titleActive": "Active blessing",
+    "titleCollecting": "Pool being collected",
+    "active": "{emote:blessingCommand.active} **{{blessingName}}**\n\n{{blessingEffect}}\n\n{emote:blessingCommand.timeLeft} Time remaining : {{timeLeft}}\n{emote:blessingCommand.triggeredBy} Triggered by : **{{triggeredBy}}**",
+    "collecting": "Adventurers join together to invoke a blessing.\n\n{{moneyEmote}} Progression: **{{poolAmount, number}}** / **{{poolThreshold, number}}**\n{emote:blessingCommand.timeLeft} Pot expiration: {{poolExpiresAt}}\n\nContribute by meeting the Oracle on your travels!",
+    "contributors_one": "{emote:blessingCommand.topContributor} **Largest contributor:** {{topContributorName}} ({{topContributorAmount, number}} {{moneyEmote}})\n{emote:blessingCommand.contributors} **{{count}}** adventurer have contributed so far.",
+    "contributors_other": "{emote:blessingCommand.topContributor} **Largest contributor:** {{topContributorName}} ({{topContributorAmount, number}} {{moneyEmote}})\n{emote:blessingCommand.contributors} **{{count}}** adventurers have contributed so far."
   }
 }

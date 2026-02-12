@@ -1,0 +1,99 @@
+import { ICommand } from "../ICommand";
+import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
+import {
+	makePacket, PacketContext
+} from "../../../../Lib/src/packets/CrowniclesPacket";
+import {
+	CommandBlessingPacketReq, CommandBlessingPacketRes
+} from "../../../../Lib/src/packets/commands/CommandBlessingPacket";
+import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
+import { DiscordCache } from "../../bot/DiscordCache";
+import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
+import i18n from "../../translations/i18n";
+import { resolveKeycloakPlayerName } from "../../utils/KeycloakPlayerUtils";
+import { BlessingType } from "../../../../Lib/src/constants/BlessingConstants";
+import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
+import {
+	printTimeBeforeDate, finishInTimeDisplay
+} from "../../../../Lib/src/utils/TimeUtils";
+import { progressBar } from "../../../../Lib/src/utils/StringUtils";
+import { Language } from "../../../../Lib/src/Language";
+
+function getPacket(_interaction: CrowniclesInteraction): CommandBlessingPacketReq {
+	return makePacket(CommandBlessingPacketReq, {});
+}
+
+/**
+ * Build the top contributor line for the collecting state, or empty string if no contributors
+ */
+async function buildTopContributorLine(packet: CommandBlessingPacketRes, lng: Language): Promise<string> {
+	if (!packet.topContributorKeycloakId || packet.totalContributors <= 0) {
+		return "";
+	}
+	const topContributorName = await resolveKeycloakPlayerName(packet.topContributorKeycloakId, lng);
+	return `\n\n${i18n.t("commands:blessing.contributors", {
+		lng,
+		topContributorName,
+		topContributorAmount: packet.topContributorAmount,
+		totalContributors: packet.totalContributors,
+		count: packet.totalContributors,
+		moneyEmote: CrowniclesIcons.unitValues.money
+	})}`;
+}
+
+/**
+ * Handle the response of the blessing command
+ */
+export async function handleCommandBlessingPacketRes(context: PacketContext, packet: CommandBlessingPacketRes): Promise<void> {
+	const interaction = DiscordCache.getInteraction(context.discord!.interaction);
+	if (!interaction) {
+		return;
+	}
+
+	if (!interaction.deferred) {
+		await interaction.deferReply();
+	}
+
+	const lng = interaction.userLanguage;
+	const hasBlessing = packet.activeBlessingType !== BlessingType.NONE;
+
+	let description: string;
+
+	if (hasBlessing) {
+		const triggeredByName = await resolveKeycloakPlayerName(packet.lastTriggeredByKeycloakId!, lng);
+
+		description = i18n.t("commands:blessing.active", {
+			lng,
+			blessingName: i18n.t(`bot:blessingNames.${packet.activeBlessingType}`, { lng }),
+			blessingEffect: i18n.t(`bot:blessingEffects.${packet.activeBlessingType}`, { lng }),
+			timeLeft: printTimeBeforeDate(packet.blessingEndAt!),
+			triggeredBy: triggeredByName,
+			moneyEmote: CrowniclesIcons.unitValues.money
+		});
+	}
+	else {
+		const topContributorLine = await buildTopContributorLine(packet, lng);
+
+		description = `${i18n.t("commands:blessing.collecting", {
+			lng,
+			poolAmount: packet.poolAmount,
+			poolThreshold: packet.poolThreshold,
+			moneyEmote: CrowniclesIcons.unitValues.money,
+			poolExpiresAt: finishInTimeDisplay(new Date(packet.poolExpiresAt))
+		})}\n${progressBar(packet.poolAmount, packet.poolThreshold)}${topContributorLine}`;
+	}
+
+	const titleKey = hasBlessing ? "commands:blessing.titleActive" : "commands:blessing.titleCollecting";
+
+	const embed = new CrowniclesEmbed()
+		.formatAuthor(i18n.t(titleKey, { lng }), interaction.user)
+		.setDescription(description);
+
+	await interaction.editReply({ embeds: [embed] });
+}
+
+export const commandInfo: ICommand = {
+	slashCommandBuilder: SlashCommandBuilderGenerator.generateBaseCommand("blessing"),
+	getPacket,
+	mainGuildCommand: false
+};

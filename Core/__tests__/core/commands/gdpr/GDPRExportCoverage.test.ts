@@ -58,7 +58,8 @@ const FIELDS_REQUIRING_ANONYMIZATION = [
 	"removedElder", // Must use anonymizePlayerId()
 	"sellerId", // Must use anonymizePlayerId()
 	"buyerId", // Must use anonymizePlayerId()
-	"releasedId" // Must use anonymizePlayerId()
+	"releasedId", // Must use anonymizePlayerId()
+	"triggeredByPlayerId" // Must use anonymizePlayerId()
 ];
 
 // Tables containing playerId or keycloakId that are INTENTIONALLY NOT EXPORTED
@@ -200,6 +201,10 @@ const EXPORTED_TABLES = {
 	// ============ LOGS DATABASE - Command Stats (LogsPlayerStatsExporter) ============
 	"LogsPlayersCommandsStats": "logs/75_command_stats.csv",
 
+	// ============ LOGS DATABASE - Blessings (LogsBlessingsExporter) ============
+	"LogsBlessings": "logs/76_blessings_triggered.csv",
+	"LogsBlessingsContributions": "logs/77_blessings_contributions.csv",
+
 	// ============ LOGS DATABASE - Players Reference ============
 	"LogsPlayers": "Used for lookup only, keycloakId already in player export"
 };
@@ -243,8 +248,8 @@ function hasPersonalDataField(modelsDir: string, fileName: string): boolean {
 		|| /keycloakId\s*:\s*{/.test(content);
 
 	// Also check for other player-related foreign keys
-	const hasPlayerRef = /(?:fightInitiatorId|player2Id|addedId|adderId|kickedPlayer|leftPlayer|newChief|addedElder|removedElder|sellerId|buyerId|releasedId)\s*[?:]/.test(content)
-		|| /(?:fightInitiatorId|player2Id|addedId|adderId|kickedPlayer|leftPlayer|newChief|addedElder|removedElder|sellerId|buyerId|releasedId)\s*:\s*{/.test(content);
+	const hasPlayerRef = /(?:fightInitiatorId|player2Id|addedId|adderId|kickedPlayer|leftPlayer|newChief|addedElder|removedElder|sellerId|buyerId|releasedId|triggeredByPlayerId)\s*[?:]/.test(content)
+		|| /(?:fightInitiatorId|player2Id|addedId|adderId|kickedPlayer|leftPlayer|newChief|addedElder|removedElder|sellerId|buyerId|releasedId|triggeredByPlayerId)\s*:\s*{/.test(content);
 
 	return hasPlayerId || hasKeycloakId || hasPlayerRef;
 }

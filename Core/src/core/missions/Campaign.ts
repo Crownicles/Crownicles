@@ -38,20 +38,21 @@ export class Campaign {
 	}
 
 	public static async completeCampaignMissions(player: Player, missionInfo: PlayerMissionsInfo, completedCampaign: boolean, campaign: MissionSlot): Promise<CompletedMission[]> {
+		if (!completedCampaign) {
+			return [];
+		}
+
 		const completedMissions: CompletedMission[] = [];
-		let firstMissionChecked = false;
 		while (campaign.isCompleted()) {
-			if (completedCampaign || firstMissionChecked) {
-				completedMissions.push({
-					...campaign.toJSON(),
-					missionType: MissionType.CAMPAIGN,
-					pointsToWin: 0 // Campaign doesn't give points
-				});
-				missionInfo.campaignBlob = `${missionInfo.campaignBlob.slice(0, missionInfo.campaignProgression - 1)}1${missionInfo.campaignBlob.slice(missionInfo.campaignProgression)}`;
-				missionInfo.campaignProgression = this.hasNextCampaign(missionInfo.campaignBlob) ? this.findNextCampaignIndex(missionInfo.campaignBlob) + 1 : 0;
-				crowniclesInstance?.logsDatabase.logMissionCampaignProgress(player.keycloakId, missionInfo.campaignProgression)
-					.then();
-			}
+			completedMissions.push({
+				...campaign.toJSON(),
+				missionType: MissionType.CAMPAIGN,
+				pointsToWin: 0 // Campaign doesn't give points
+			});
+			missionInfo.campaignBlob = `${missionInfo.campaignBlob.slice(0, missionInfo.campaignProgression - 1)}1${missionInfo.campaignBlob.slice(missionInfo.campaignProgression)}`;
+			missionInfo.campaignProgression = this.hasNextCampaign(missionInfo.campaignBlob) ? this.findNextCampaignIndex(missionInfo.campaignBlob) + 1 : 0;
+			crowniclesInstance.logsDatabase.logMissionCampaignProgress(player.keycloakId, missionInfo.campaignProgression)
+				.then();
 			if (!this.hasNextCampaign(missionInfo.campaignBlob)) {
 				break;
 			}
@@ -67,18 +68,20 @@ export class Campaign {
 				moneyToWin: prop.moneyToWin,
 				saveBlob: null
 			});
-			firstMissionChecked = true;
 		}
-		if (completedMissions.length !== 0 || !completedCampaign) {
+		if (completedMissions.length !== 0) {
 			await Promise.all([campaign.save(), missionInfo.save()]);
 		}
 		return completedMissions;
 	}
 
 	public static async updatePlayerCampaign(completedCampaign: boolean, player: Player): Promise<CompletedMission[]> {
+		if (!completedCampaign) {
+			return [];
+		}
 		const campaign = await MissionSlots.getCampaignOfPlayer(player.id);
 		const missionsInfo = await PlayerMissionsInfos.getOfPlayer(player.id);
-		if (completedCampaign || Campaign.hasNextCampaign(missionsInfo.campaignBlob)) {
+		if (Campaign.hasNextCampaign(missionsInfo.campaignBlob)) {
 			return await this.completeCampaignMissions(player, missionsInfo, completedCampaign, campaign);
 		}
 		return [];

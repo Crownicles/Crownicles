@@ -41,6 +41,10 @@ export const CrowniclesIcons: {
 		accept: string;
 		refuse: string;
 	};
+	altarSmallEvent: {
+		contribute: string;
+		refuse: string;
+	};
 	infoFightSmallEvent: {
 		showHandednessInfo: string;
 	};
@@ -55,6 +59,13 @@ export const CrowniclesIcons: {
 		gloryChange: string;
 		handshake: string;
 		refuse: string;
+	};
+	blessingCommand: {
+		active: string;
+		timeLeft: string;
+		triggeredBy: string;
+		topContributor: string;
+		contributors: string;
 	};
 	clocks: { [clockId: string]: string };
 	pveFights: {
@@ -84,7 +95,9 @@ export const CrowniclesIcons: {
 	classKinds: {
 		[classKind: string]: string;
 	};
-	announcements: { trophy: string };
+	announcements: {
+		trophy: string; christmas: string; gift: string; blessing: string;
+	};
 	commands: {
 		[commandId: string]: string;
 	};
@@ -1066,7 +1079,10 @@ export const CrowniclesIcons: {
 		witch: "🧹",
 		infoFight: "🏰",
 		haunted: "🦴",
-		findMaterial: "🔎"
+		findMaterial: "🔎",
+		expeditionAdvice: "🗺️",
+		petDropToken: "🪙",
+		altar: "⛩️"
 	},
 	pets: {
 		0: {
@@ -1984,6 +2000,10 @@ export const CrowniclesIcons: {
 		accept: "🚗",
 		refuse: "🚶"
 	},
+	altarSmallEvent: {
+		contribute: "💰",
+		refuse: "🚶"
+	},
 	infoFightSmallEvent: {
 		showHandednessInfo: "✋"
 	},
@@ -1998,6 +2018,13 @@ export const CrowniclesIcons: {
 		gloryChange: "📯",
 		handshake: "🤝",
 		refuse: "❌"
+	},
+	blessingCommand: {
+		active: "✨",
+		timeLeft: "⏳",
+		triggeredBy: "🙏",
+		topContributor: "👑",
+		contributors: "👥"
 	},
 	clocks: {
 		1: "🕐",
@@ -2135,7 +2162,9 @@ export const CrowniclesIcons: {
 		defense: "🛡️",
 		other: "⚗️"
 	},
-	announcements: { trophy: "🏆" },
+	announcements: {
+		trophy: "🏆", christmas: "🎄", gift: "🎁", blessing: "⛩️"
+	},
 	commands: {
 		respawn: "👼",
 		classes: "📑",
@@ -2167,7 +2196,6 @@ export const CrowniclesIcons: {
 		speed: "🚀",
 		breath: "🌬️",
 		breathRegen: "🫁",
-		petRarity: "⭐",
 		glory: "✨",
 		timeGain: "⌛",
 		none: "❌",
@@ -2215,7 +2243,8 @@ export const CrowniclesIcons: {
 		[Badge.GOOD_BUG_REPORTER]: "🕊️",
 		[Badge.VOTER]: "🗳️",
 		[Badge.ANIMAL_LOVER]: "🐾",
-		[Badge.EXPERT_EXPEDITEUR]: "🗺️"
+		[Badge.EXPERT_EXPEDITEUR]: "🧭",
+		[Badge.ORACLE_PATRON]: "⛩️"
 	},
 	itemKinds: [
 		"⚔️",

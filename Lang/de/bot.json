@@ -37,6 +37,30 @@
   "notificationPetExpedition": "{{petDisplay}} ist von einer Expedition zurückgekehrt und hat vielleicht Schätze mitgebracht!",
   "christmasBonusPreAnnouncement": "{emote:announcements.christmas} **Weihnachtsbonus in Kürze!** {emote:announcements.christmas}\n\nIn wenigen Stunden erhalten alle Spieler ein besonderes Geschenk: Ihr Token-Vorrat wird vollständig aufgefüllt! Genießt die Festtage!",
   "christmasBonusApplied": "{emote:announcements.christmas} **Frohe Weihnachten!** {emote:announcements.gift}\n\nDer Weihnachtsmann war da! Dein Token-Vorrat wurde maximal aufgefüllt. Nutze dieses Geschenk, um dich ins Abenteuer zu stürzen!",
+  "blessingAnnouncement_one": "{emote:smallEvents.altar} **Segen aktiviert: {{blessingName}}!**\n\nDank der Großzügigkeit von **{{playerName}}** wurde ein Segen für alle Abenteurer heraufbeschworen!\n\n{emote:blessingCommand.active} **Wirkung:** {{blessingEffect}}\n{emote:blessingCommand.timeLeft} **Dauer:** {{durationHours}} Stunden\n\n{emote:blessingCommand.topContributor} **Größter Beitragszahler:** {{topContributorName}} ({{topContributorAmount, number}} {emote:unitValues.money})\n{emote:blessingCommand.contributors} **{{count}}** Abenteurer hat zu diesem Segen beigetragen.",
+  "blessingAnnouncement_other": "{emote:smallEvents.altar} **Segen aktiviert: {{blessingName}}!**\n\nDank der Großzügigkeit von **{{playerName}}** wurde ein Segen für alle Abenteurer heraufbeschworen!\n\n{emote:blessingCommand.active} **Wirkung:** {{blessingEffect}}\n{emote:blessingCommand.timeLeft} **Dauer:** {{durationHours}} Stunden\n\n{emote:blessingCommand.topContributor} **Größter Beitragszahler:** {{topContributorName}} ({{topContributorAmount, number}} {emote:unitValues.money})\n{emote:blessingCommand.contributors} **{{count}}** Abenteurer haben zu diesem Segen beigetragen.",
+  "blessingNames": {
+    "1": "Verstärkte Wut",
+    "2": "Kampfbeute",
+    "3": "Regeneration von Energie",
+    "4": "Goldene Börse",
+    "5": "Erhöhter Ruhm",
+    "6": "Liebe zu Vertrauten",
+    "7": "Heiltränke",
+    "8": "Versandmarke",
+    "9": "Gesegnete tägliche Mission"
+  },
+  "blessingEffects": {
+    "1": "Die im Kampf gewonnene Wut wird für alle Spieler verdoppelt.",
+    "2": "Die Belohnungen für Kämpfe (Geld und Punkte) werden um das Vierfache erhöht (ohne Ruhm).",
+    "3": "Die Regeneration von Kampfenergie wird verdoppelt.",
+    "4": "Alle Geldgewinne werden um 10% erhöht.",
+    "5": "Alle Punktzahlgewinne werden um 20% erhöht.",
+    "6": "Die von Vertrauten verdienten Liebespunkte werden verdoppelt.",
+    "7": "Die Wirksamkeit von Heiltränken wird verdoppelt.",
+    "8": "Expeditionen von Vertrauten bringen einen Bonus-Spielstein ein.",
+    "9": "Die Belohnungen für tägliche Missionen werden verdoppelt."
+  },
   "supportMessage": "{{langFlag}} Wenn Sie Hilfe benötigen, wählen Sie Ihre Sprache mithilfe der Schaltflächen unten aus. Wenn Sie keine Hilfe benötigen, ignorieren Sie diese Nachricht.\n{emote:collectors.warning} **Jede hier gesendete Nachricht kann von einem Menschen gelesen werden!**\n",
   "commandDisabledInDM": "{{langFlag}} Hallo, Befehle sind in privaten Nachrichten deaktiviert. Bitte gehe zum Spielen auf einen Server!\nWenn du Hilfe benötigst, klicke unten auf die Schaltfläche für deine Sprache.\n",
   "accountDeletion": {

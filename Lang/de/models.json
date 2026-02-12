@@ -1301,6 +1301,10 @@
     "meetSirRowan_other": "Erhalten Sie {{count}} Kampftipps von Sir Rowan",
     "meetTalvar": "Talvar treffen",
     "meetVelanna": "Velanna treffen",
+    "meetOracle": "Einem Orakel begegnen",
+    "meetAllOracles": "Den beiden Orakeln begegnen",
+    "contributeToBlessing_one": "Einen Beitrag {{count, number}} {emote:unitValues.money} zu einem Segen leisten",
+    "contributeToBlessing_other": "Beitragen {{count, number}} {emote:unitValues.money} zu Segnungen",
     "doExpeditions_one": "Erfolgreich {{count}} Versand",
     "doExpeditions_other": "Erfolgreich {{count}} Sendungen",
     "longExpedition": "Erfolgreiche Expedition von mindestens {{variantText}}",
@@ -1336,7 +1340,9 @@
     "useTokens_other": "Verwende {{count}} Tokens {emote:unitValues.token} , um voranzukommen",
     "wealthyPayForPVEIsland": "Eine Reise zu einer mysteriösen Insel zu einem Höchstpreis kaufen",
     "winBoss_one": "Gewinnt {{count}} Bosskampf",
-    "winBoss_other": "Gewinnen Sie {{count}} Bosskämpfe"
+    "winBoss_other": "Gewinnen Sie {{count}} Bosskämpfe",
+    "winBossWithDifferentClasses_one": "Besiege den Endboss einer Insel (nur der letzte Endboss jeder Insel zählt)",
+    "winBossWithDifferentClasses_other": "Besiege Endbosse auf Inseln mit {{count}} verschiedenen Klassen (nur der letzte Boss auf jeder Insel zählt)."
   },
   "missionVariants": {
     "default": "{{variant}}",

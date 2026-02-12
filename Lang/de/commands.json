@@ -698,7 +698,8 @@
       "top_1_before_reset": "Personen, die nach dem Reset den ersten Platz in der Rangfolge erreicht haben.",
       "very_powerful_guild": "Mitglied einer sehr mächtigen Gilde",
       "animal_lover": "Person, die Talvar dem Zwerg alle Vertrauten gezeigt hat",
-      "expert_expediteur": "Person, die mit ihrem Vertrauten viele Expeditionen erfolgreich abgeschlossen hat"
+      "expert_expediteur": "Person, die mit ihrem Vertrauten viele Expeditionen erfolgreich abgeschlossen hat",
+      "oracle_patron": "Beschützer des Orakels, der großzügig zu vielen Segnungen beigetragen hat"
     },
     "fightRanked": {
       "fieldName": "Ruhm und Liga :",
@@ -1968,5 +1969,13 @@
     "playerNotFound": "Dieser Spieler existiert nicht in der Datenbank.",
     "error": "Beim Export ist ein Fehler aufgetreten: {{error}}",
     "fileName": "export_rgpd_{{anonymizedId}}.zip"
+  },
+  "blessing": {
+    "titleActive": "Aktiver Segen",
+    "titleCollecting": "Pool wird gesammelt",
+    "active": "{emote:blessingCommand.active} **{{blessingName}}**\n\n{{blessingEffect}}\n\n{emote:blessingCommand.timeLeft} Verbleibende Zeit : {{timeLeft}}\n{emote:blessingCommand.triggeredBy} Ausgelöst durch: **{{triggeredBy}}**",
+    "collecting": "Abenteurer zahlen zusammen, um einen Segen zu beschwören.\n\n{{moneyEmote}} Fortschritt : **{{poolAmount, number}}** / **{{poolThreshold, number}}**\n{emote:blessingCommand.timeLeft} Verfall des Preispools: {{poolExpiresAt}}\n\nSpende, indem du das Orakel auf deinen Reisen triffst!",
+    "contributors_one": "{emote:blessingCommand.topContributor} **Größter Beitragszahler:** {{topContributorName}} ({{topContributorAmount, number}} {{moneyEmote}})\n{emote:blessingCommand.contributors} **{{count}}** Abenteurer hat bislang beigetragen.",
+    "contributors_other": "{emote:blessingCommand.topContributor} **Größter Beitragszahler:** {{topContributorName}} ({{topContributorAmount, number}} {{moneyEmote}})\n{emote:blessingCommand.contributors} **{{count}}** Abenteurer haben bislang Beiträge geleistet."
   }
 }

@@ -69,6 +69,7 @@ import { EnchantmentConstants } from "../../../../../../Lib/src/constants/Enchan
 import {
 	EditValueParameters, HealthEditValueParameters, MissionHealthParameter
 } from "../EditValueParameters";
+import { BlessingManager } from "../../../blessings/BlessingManager";
 
 export type PlayerEditValueParameters = {
 	player: Player;
@@ -196,6 +197,9 @@ export class Player extends Model {
 	 * @param parameters
 	 */
 	public async addScore(parameters: EditValueParameters): Promise<Player> {
+		if (parameters.amount > 0) {
+			parameters.amount = Math.round(parameters.amount * BlessingManager.getInstance().getScoreMultiplier());
+		}
 		this.score += parameters.amount;
 		if (parameters.amount > 0) {
 			const newPlayer = await MissionsController.update(this, parameters.response, {
@@ -216,6 +220,9 @@ export class Player extends Model {
 	 * @param parameters
 	 */
 	public async addMoney(parameters: EditValueParameters): Promise<Player> {
+		if (parameters.amount > 0) {
+			parameters.amount = Math.round(parameters.amount * BlessingManager.getInstance().getMoneyMultiplier());
+		}
 		this.money += parameters.amount;
 		if (parameters.amount > 0) {
 			const newPlayer = await MissionsController.update(this, parameters.response, {
@@ -1110,12 +1117,15 @@ export class Player extends Model {
 		return dateOfLastLeagueReward !== null && !(dateOfLastLeagueReward < millisecondsToSeconds(getOneDayAgo()));
 	}
 
-	public async addRage(rage: number, reason: NumberChangeReason, response: CrowniclesPacket[]): Promise<void> {
-		await this.setRage(this.rage + rage, reason);
-		if (rage > 0) {
-			await MissionsController.update(this, response, {
+	public async addRage(parameters: EditValueParameters): Promise<void> {
+		const amount = parameters.amount > 0 && BlessingManager.getInstance().isRageAmplified()
+			? parameters.amount * 2
+			: parameters.amount;
+		await this.setRage(this.rage + amount, parameters.reason);
+		if (parameters.amount > 0) {
+			await MissionsController.update(this, parameters.response, {
 				missionId: "gainRage",
-				count: rage
+				count: parameters.amount
 			});
 		}
 	}

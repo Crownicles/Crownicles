@@ -106,6 +106,16 @@ import {
 	ExpeditionAdviceInteractionType
 } from "../../../../Lib/src/packets/smallEvents/SmallEventExpeditionAdvicePacket";
 import { SmallEventFindMaterialPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventFindMaterialPacket";
+import { SmallEventPetDropTokenPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventPetDropTokenPacket";
+import {
+	SmallEventAltarContributedPacket,
+	SmallEventAltarFirstEncounterPacket,
+	SmallEventAltarNoContributionPacket
+} from "../../../../Lib/src/packets/smallEvents/SmallEventAltarPacket";
+import {
+	altarContributed, altarFirstEncounter, altarNoContribution
+} from "../../smallEvents/altar";
+import { resolveKeycloakPlayerName } from "../../utils/KeycloakPlayerUtils";
 
 const PET_TIME_INTERACTIONS = new Set([
 	"gainTime",
@@ -1213,5 +1223,44 @@ export default class SmallEventsHandler {
 			]
 		});
 	}
-}
 
+	@packetHandler(SmallEventPetDropTokenPacket)
+	async smallEventPetDropToken(context: PacketContext, packet: SmallEventPetDropTokenPacket): Promise<void> {
+		const interaction = DiscordCache.getInteraction(context.discord!.interaction);
+		if (!interaction) {
+			return;
+		}
+		const lng = interaction.userLanguage;
+		const petDisplay = PetUtils.petToShortString(lng, packet.petNickname, packet.petTypeId, packet.petSex);
+		const ownerName = await resolveKeycloakPlayerName(packet.ownerKeycloakId, lng);
+		await interaction.editReply({
+			embeds: [
+				new CrowniclesSmallEventEmbed(
+					"petDropToken",
+					getRandomSmallEventIntro(lng)
+					+ StringUtils.getRandomTranslation("smallEvents:petDropToken.stories", lng, {
+						pet: petDisplay,
+						owner: ownerName
+					}),
+					interaction.user,
+					lng
+				)
+			]
+		});
+	}
+
+	@packetHandler(SmallEventAltarFirstEncounterPacket)
+	async smallEventAltarFirstEncounter(context: PacketContext, packet: SmallEventAltarFirstEncounterPacket): Promise<void> {
+		await altarFirstEncounter(packet, context);
+	}
+
+	@packetHandler(SmallEventAltarNoContributionPacket)
+	async smallEventAltarNoContribution(context: PacketContext, packet: SmallEventAltarNoContributionPacket): Promise<void> {
+		await altarNoContribution(packet, context);
+	}
+
+	@packetHandler(SmallEventAltarContributedPacket)
+	async smallEventAltarContributed(context: PacketContext, packet: SmallEventAltarContributedPacket): Promise<void> {
+		await altarContributed(packet, context);
+	}
+}

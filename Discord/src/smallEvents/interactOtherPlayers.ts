@@ -2,13 +2,9 @@ import { PacketContext } from "../../../Lib/src/packets/CrowniclesPacket";
 import { DiscordCache } from "../bot/DiscordCache";
 import i18n from "../translations/i18n";
 import { CrowniclesSmallEventEmbed } from "../messages/CrowniclesSmallEventEmbed";
-import {
-	escapeUsername, StringUtils
-} from "../utils/StringUtils";
+import { StringUtils } from "../utils/StringUtils";
 import { DiscordCollectorUtils } from "../utils/DiscordCollectorUtils";
 import { ReactionCollectorInteractOtherPlayersPacket } from "../../../Lib/src/packets/interaction/ReactionCollectorInteractOtherPlayers";
-import { KeycloakUtils } from "../../../Lib/src/keycloak/KeycloakUtils";
-import { keycloakConfig } from "../bot/CrowniclesShard";
 import { Language } from "../../../Lib/src/Language";
 import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 import { ReactionCollectorReturnTypeOrNull } from "../packetHandlers/handlers/ReactionCollectorHandlers";
@@ -18,12 +14,13 @@ import {
 	SmallEventInteractOtherPlayersPacket
 } from "../../../Lib/src/packets/smallEvents/SmallEventInteractOtherPlayers";
 import { DisplayUtils } from "../utils/DisplayUtils";
+import { resolveKeycloakPlayerName } from "../utils/KeycloakPlayerUtils";
 
 export async function interactOtherPlayerGetPlayerDisplay(keycloakId: string, rank: number | undefined, lng: Language): Promise<string> {
-	const getUser = await KeycloakUtils.getUserByKeycloakId(keycloakConfig, keycloakId);
+	const pseudo = await resolveKeycloakPlayerName(keycloakId, lng);
 	return i18n.t(`smallEvents:interactOtherPlayers.playerDisplay${rank ? "Ranked" : "Unranked"}`, {
 		lng,
-		pseudo: escapeUsername(!getUser.isError && getUser.payload.user.attributes.gameUsername ? getUser.payload.user.attributes.gameUsername[0] : i18n.t("error:unknownPlayer", { lng })),
+		pseudo,
 		rank
 	});
 }

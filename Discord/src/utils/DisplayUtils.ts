@@ -12,13 +12,12 @@ import {
 import { OwnedPet } from "../../../Lib/src/types/OwnedPet";
 import { PetFood } from "../../../Lib/src/types/PetFood";
 import {
-	escapeUsername, StringUtils
+	StringUtils
 } from "./StringUtils";
-import { KeycloakUtils } from "../../../Lib/src/keycloak/KeycloakUtils";
-import { keycloakConfig } from "../bot/CrowniclesShard";
 import { DiscordItemUtils } from "./DiscordItemUtils";
 import { MainItemDetails } from "../../../Lib/src/types/MainItemDetails";
 import { SupportItemDetails } from "../../../Lib/src/types/SupportItemDetails";
+import { resolveKeycloakPlayerName } from "./KeycloakPlayerUtils";
 
 export class DisplayUtils {
 	/**
@@ -305,12 +304,7 @@ export class DisplayUtils {
 	}
 
 	static async getEscapedUsername(keycloakId: string, lng: Language): Promise<string> {
-		const getUser = await KeycloakUtils.getUserByKeycloakId(keycloakConfig, keycloakId);
-		if (getUser.isError) {
-			return i18n.t("error:unknownPlayer", { lng });
-		}
-
-		return escapeUsername(getUser.payload.user.attributes.gameUsername[0]);
+		return await resolveKeycloakPlayerName(keycloakId, lng);
 	}
 
 	/**

@@ -43,7 +43,7 @@ CrowniclesLogger.init(botConfig.LOG_LEVEL, botConfig.LOG_LOCATIONS, { app: "Core
 		password: botConfig.LOKI_PASSWORD
 	}
 	: undefined);
-export let crowniclesInstance: Crownicles | null = null;
+export let crowniclesInstance: Crownicles;
 
 CrowniclesLogger.info(`${CoreConstants.OPENING_LINE} - ${process.env.npm_package_version}`);
 

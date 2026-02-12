@@ -37,6 +37,30 @@
   "notificationPetExpedition": "{{petDisplay}} ha vuelto de una expedición y ¡quizás ha traído tesoros!",
   "christmasBonusPreAnnouncement": "{emote:announcements.christmas} **¡Próximo bono de Navidad!** {emote:announcements.christmas}\n\n¡En unas horas, todos los jugadores recibirán un regalo especial: su inventario de fichas se llenará al máximo! ¡Disfruten de este período festivo!",
   "christmasBonusApplied": "{emote:announcements.christmas} **¡Feliz Navidad!** {emote:announcements.gift}\n\n¡Papá Noel ha pasado! Su inventario de fichas se ha llenado al máximo. ¡Aproveche este regalo para irse de aventura!",
+  "blessingAnnouncement_one": "{emote:smallEvents.altar} **Bendición activada: {{blessingName}} !**\n\n¡Gracias a la generosidad de **{{playerName}}**, se ha invocado una bendición para todos los aventureros!\n\n{emote:blessingCommand.active} **Efecto:** {{blessingEffect}}\n{emote:blessingCommand.timeLeft} **Duración:** {{durationHours}} horas\n\n{emote:blessingCommand.topContributor} **Mayor contribuyente:** {{topContributorName}} ({{topContributorAmount, number}} {emote:unitValues.money})\n{emote:blessingCommand.contributors} **{{count}}** aventurero contribuyó a esta bendición.",
+  "blessingAnnouncement_other": "{emote:smallEvents.altar} **Bendición activada: {{blessingName}} !**\n\n¡Gracias a la generosidad de **{{playerName}}**, se ha invocado una bendición para todos los aventureros!\n\n{emote:blessingCommand.active} **Efecto:** {{blessingEffect}}\n{emote:blessingCommand.timeLeft} **Duración:** {{durationHours}} horas\n\n{emote:blessingCommand.topContributor} **Mayor contribuyente:** {{topContributorName}} ({{topContributorAmount, number}} {emote:unitValues.money})\n{emote:blessingCommand.contributors} **{{count}}** aventureros han contribuido a esta bendición.",
+  "blessingNames": {
+    "1": "Rabia amplificada",
+    "2": "Botín de combate",
+    "3": "Regeneración de energía",
+    "4": "Monedero de oro",
+    "5": "Mayor gloria",
+    "6": "Amor por las mascotas",
+    "7": "Pociones curativas",
+    "8": "Ficha de envío",
+    "9": "Bendita misión diaria"
+  },
+  "blessingEffects": {
+    "1": "La rabia obtenida en combate se duplica para todos los jugadores.",
+    "2": "Las recompensas de combate (dinero y puntos) se multiplican por 4 (excluida la gloria).",
+    "3": "La regeneración de energía de combate se duplica.",
+    "4": "Todas las ganancias en metálico se incrementan en un 10%.",
+    "5": "Todas las ganancias de puntuación aumentan un 20%.",
+    "6": "Los puntos de amor obtenidos por las mascotas se duplican.",
+    "7": "Se duplica la eficacia de las pociones curativas.",
+    "8": "Las expediciones de mascotas obtienen una ficha de bonificación.",
+    "9": "Las recompensas de las misiones diarias se duplican."
+  },
   "supportMessage": "{{langFlag}} Si necesitas ayuda, selecciona tu idioma con los botones de abajo. Si no la necesitas, ignora este mensaje.\n{emote:collectors.warning} **¡Todos los mensajes enviados aquí pueden ser leídos por una persona!**\n",
   "commandDisabledInDM": "{{langFlag}} Hola, los comandos están deshabilitados en los mensajes privados. ¡Ve a un servidor para jugar!\nSi necesitas ayuda, haz clic en el botón correspondiente a tu idioma a continuación.\n",
   "accountDeletion": {

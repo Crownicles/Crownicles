@@ -186,9 +186,10 @@ function logExpeditionStart(params: ExpeditionLogStartParams): void {
 		playerKeycloakId, petEntityId, expeditionData, adjustedDurationMinutes, foodConsumed, rewardIndex
 	} = params;
 
-	crowniclesInstance?.logsDatabase.logExpeditionStart(
-		playerKeycloakId,
-		petEntityId,
+	crowniclesInstance.logsDatabase.logExpeditionStart(
+		{
+			keycloakId: playerKeycloakId, petGameId: petEntityId
+		},
 		{
 			mapLocationId: expeditionData.mapLocationId!,
 			locationType: expeditionData.locationType,
@@ -320,9 +321,10 @@ export async function handleExpeditionCancel(
 	const loveChange = -loveLost;
 
 	// Log expedition cancellation to database
-	crowniclesInstance?.logsDatabase.logExpeditionCancel(
-		player.keycloakId,
-		petEntity.id,
+	crowniclesInstance.logsDatabase.logExpeditionCancel(
+		{
+			keycloakId: player.keycloakId, petGameId: petEntity.id
+		},
 		loveChange
 	).then();
 
@@ -385,9 +387,10 @@ export async function handleExpeditionRecall(
 	const loveChange = -loveLost;
 
 	// Log expedition recall to database
-	crowniclesInstance?.logsDatabase.logExpeditionRecall(
-		player.keycloakId,
-		petEntity.id,
+	crowniclesInstance.logsDatabase.logExpeditionRecall(
+		{
+			keycloakId: player.keycloakId, petGameId: petEntity.id
+		},
 		{
 			mapLocationId: activeExpedition.mapLocationId,
 			locationType: activeExpedition.locationType,

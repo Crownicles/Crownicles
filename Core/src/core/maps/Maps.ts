@@ -119,6 +119,15 @@ export class Maps {
 	}
 
 	/**
+	 * Check if the player is at the PVE exit (final boss area)
+	 * @param player
+	 */
+	static isAtPveExit(player: Player): boolean {
+		const destination = player.getDestination();
+		return destination?.attribute === MapConstants.MAP_ATTRIBUTES.PVE_EXIT;
+	}
+
+	/**
 	 * Check if the player is near the water
 	 * @param player
 	 */

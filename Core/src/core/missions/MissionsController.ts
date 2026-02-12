@@ -4,6 +4,7 @@ import MissionSlot, { MissionSlots } from "../database/game/models/MissionSlot";
 import { DailyMissions } from "../database/game/models/DailyMission";
 import {
 	datesAreOnSameDay,
+	getTodayMidnight,
 	hoursToMilliseconds
 } from "../../../../Lib/src/utils/TimeUtils";
 import { MissionDifficulty } from "./MissionDifficulty";
@@ -29,6 +30,7 @@ import { FightActionController } from "../fights/actions/FightActionController";
 import { MissionUtils } from "../../../../Lib/src/utils/MissionUtils";
 import { MapLocationDataController } from "../../data/MapLocation";
 import { InventorySlots } from "../database/game/models/InventorySlot";
+import { BlessingManager } from "../blessings/BlessingManager";
 
 type MissionInformations = {
 	missionId: string;
@@ -120,8 +122,7 @@ export abstract class MissionsController {
 		}
 
 		// Check if the player completed the daily mission yesterday
-		const today = new Date();
-		today.setHours(0, 0, 0, 0);
+		const today = getTodayMidnight();
 		const yesterday = new Date(today);
 		yesterday.setDate(yesterday.getDate() - 1);
 
@@ -129,7 +130,6 @@ export abstract class MissionsController {
 		const lastCompleted = missionInfo.lastDailyMissionCompleted;
 		if (lastCompleted) {
 			const lastCompletedDate = new Date(lastCompleted);
-			lastCompletedDate.setHours(0, 0, 0, 0);
 
 			// If the last completion was NOT yesterday and NOT today, reset the streak
 			if (!datesAreOnSameDay(lastCompletedDate, yesterday) && !datesAreOnSameDay(lastCompletedDate, today)) {
@@ -198,11 +198,14 @@ export abstract class MissionsController {
 		}
 		if (specialMissionCompletion.daily) {
 			const dailyMission = await DailyMissions.getOrGenerate();
+			const blessingMultiplier = BlessingManager.getInstance().getDailyMissionMultiplier();
 			completedMissions.push({
 				...dailyMission.toJSON(),
 				missionType: MissionType.DAILY,
-				moneyToWin: Math.round(dailyMission.moneyToWin * Constants.MISSIONS.DAILY_MISSION_MONEY_MULTIPLIER), // Daily missions gives less money than secondary missions
-				pointsToWin: Math.round(dailyMission.pointsToWin * Constants.MISSIONS.DAILY_MISSION_POINTS_MULTIPLIER) // Daily missions give more points than secondary missions
+				gemsToWin: Math.round(dailyMission.gemsToWin * blessingMultiplier),
+				xpToWin: Math.round(dailyMission.xpToWin * blessingMultiplier),
+				moneyToWin: Math.round(dailyMission.moneyToWin * Constants.MISSIONS.DAILY_MISSION_MONEY_MULTIPLIER * blessingMultiplier),
+				pointsToWin: Math.round(dailyMission.pointsToWin * Constants.MISSIONS.DAILY_MISSION_POINTS_MULTIPLIER * blessingMultiplier)
 			});
 			crowniclesInstance?.logsDatabase.logMissionDailyFinished(player.keycloakId)
 				.then();

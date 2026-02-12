@@ -2449,5 +2449,48 @@
       "Velanna surgit de derrière un rocher moussu, un os rongé entre les dents qu'elle jette négligemment par-dessus son épaule. Elle s'approche de vous et pose une main sur votre épaule. Elle vous raconte qu'un ancien de son clan avait l'habitude de changer d'avis au dernier moment, rappelant sans cesse son familier en cours de route. La bête a fini par le haïr. Elle vous avertit que plus les annulations se multiplient, plus la perte d'affection devient sévère.",
       "Velanna vous barre le chemin, jambes écartées et bras croisés, une expression sévère sur son visage balafré. Elle vous ordonne de l'écouter attentivement. Elle vous explique que les yeux d'un familier brillent d'excitation devant une carte d'expédition, son cœur s'emballe à l'idée de l'aventure promise. Elle vous apprend qu'annuler avant le départ ou rappeler en pleine exploration produit le même effet dévastateur : une promesse brisée. Elle compte sur ses doigts et vous avertit que la perte d'amour double à la deuxième trahison, triple à la troisième. Les familiers n'oublient jamais."
     ]
+  },
+  "petDropToken": {
+    "stories": [
+      "vous apercevez {{pet}}, le familier de **{{owner}}**, qui trotte joyeusement sur le même chemin que vous. En passant à côté de vous, il laisse tomber un objet brillant de sa gueule. Vous le ramassez : c'est un {emote:unitValues.token} **jeton** !",
+      "vous croisez {{pet}} de **{{owner}}** en pleine expédition sur votre route. Le familier semble vous reconnaître et dépose à vos pieds un {emote:unitValues.token} **jeton** avant de reprendre son chemin.",
+      "un bruit de pas attire votre attention. Vous découvrez {{pet}}, le familier de **{{owner}}**, qui galope sur le même trajet que vous. En vous voyant, le familier s'arrête et laisse échapper un {emote:unitValues.token} **jeton** de son pelage avant de repartir.",
+      "vous remarquez {{pet}} de **{{owner}}** qui chemine tranquillement non loin de vous. Le familier en expédition vous aperçoit et, d'un geste amical, laisse rouler un {emote:unitValues.token} **jeton** dans votre direction.",
+      "une silhouette familière se dessine au loin : c'est {{pet}}, le familier de **{{owner}}**, en pleine expédition. Il vous rejoint brièvement et fait tomber un {emote:unitValues.token} **jeton** de son collier avant de poursuivre sa mission."
+    ]
+  },
+  "altar": {
+    "intro": [
+      "au détour d'un sentier noyé de brume, un reflet doré attire votre regard vers un autel en pierre couronné de runes qui pulsent d'une lueur ancienne. Un oracle au visage dissimulé sous un voile de lin sombre se tient là, immobile comme une statue. L'air crépite d'une énergie ancienne tandis qu'il vous apprend que la cagnotte des voyageurs s'élève à **{{poolAmount, number}}** {{moneyEmote}} sur les **{{poolThreshold, number}}** {{moneyEmote}} nécessaires à l'invocation.",
+      "une lueur surnaturelle filtre entre les frondaisons et vous guide vers une clairière oubliée où se dresse un autel de granit veiné d'or. Les bougies qui l'entourent brûlent sans vaciller, comme si le vent lui-même n'osait troubler ce lieu sacré. L'oracle qui veille sur l'autel esquisse un geste de bienvenue et vous indique que la cagnotte collective atteint **{{poolAmount, number}}** {{moneyEmote}} sur les **{{poolThreshold, number}}** {{moneyEmote}} requis pour éveiller une bénédiction.",
+      "des murmures anciens semblent émaner de la pierre elle-même lorsque vous découvrez un autel solitaire, ceint de lierre et de cristaux pâles. Un oracle aux yeux voilés se tient devant, les paumes ouvertes vers le ciel. Sans même un regard, il vous annonce qu'à ce jour, **{{poolAmount, number}}** {{moneyEmote}} sur les **{{poolThreshold, number}}** {{moneyEmote}} nécessaires ont été déposés au creux de l'autel."
+    ],
+    "menu": "Combien souhaitez-vous offrir à l'autel ?",
+    "contributed": [
+      "Vos pièces tintent contre la pierre de l'autel et les runes s'embrasent d'une lumière brève, avalant votre offrande de **{{amount, number}}** {{moneyEmote}}. La cagnotte s'élève désormais à **{{poolAmount, number}}** / **{{poolThreshold, number}}** {{moneyEmote}}.",
+      "L'oracle recueille votre contribution de **{{amount, number}}** {{moneyEmote}} entre ses mains calleuses, puis la dépose avec révérence sur l'autel. Les runes répondent par un bref scintillement. La cagnotte atteint **{{poolAmount, number}}** / **{{poolThreshold, number}}** {{moneyEmote}}."
+    ],
+    "refused": [
+      "Vous détournez le regard et poursuivez votre route. L'oracle ne prononce pas un mot, mais son silence est lourd de reproches.",
+      "Vous passez votre chemin, les poches intactes. L'oracle vous fixe brièvement en plissant les yeux, puis se retourne vers l'autel pour reprendre sa veille solitaire."
+    ],
+    "blessingTriggered": [
+      "Vos **{{amount, number}}** {{moneyEmote}} complètent l'offrande. L'autel se fissure de lumière, les runes s'envolent en spirales incandescentes et une onde de force traverse le monde entier. L'oracle marque une révérence, les yeux écarquillés : la bénédiction **{{blessingType}}** vient de s'éveiller pour tous les aventuriers.",
+      "Au moment où vos **{{amount, number}}** {{moneyEmote}} touchent la pierre, un grondement sourd monte des profondeurs de l'autel. Une lumière jaillit des runes comme une colonne d'or, perçant la canopée. La bénédiction **{{blessingType}}** se répand dans le monde, portée par un souffle ancien ressenti par tous les aventuriers."
+    ],
+    "notEnoughMoney": [
+      "Vous fouillez vos poches et n'y trouvez que quelques piécettes. L'oracle esquisse un sourire indulgent et vous invite d'un geste à revenir lorsque le destin vous aura été plus favorable.",
+      "L'oracle perçoit votre embarras et détourne pudiquement le regard tandis que vous comptez vos maigres pièces. Il vous fait comprendre d'un geste amical que toute contribution, aussi modeste soit-elle, sera bienvenue un autre jour."
+    ],
+    "bonusGems": [
+      "L'autel vibre d'une lumière inattendue et **{{gems}}** {{gemEmote}} cristallisent dans l'air avant de se poser dans votre paume. L'oracle hoche la tête : les esprits anciens savent reconnaître la générosité.",
+      "Un éclat irisé jaillit des fissures de la pierre et **{{gems}}** {{gemEmote}} roulent vers vous. L'oracle ne semble pas surpris par cette marque de gratitude des esprits."
+    ],
+    "bonusItem": [
+      "Les runes de l'autel tracent des arabesques dans l'air et un objet se matérialise dans un halo de lumière. L'oracle vous fait signe de le prendre avant que l'enchantement ne se dissipe.",
+      "Une bourrasque mystique enveloppe l'autel et, lorsqu'elle se dissipe, un équipement inconnu repose sur la pierre, encore tiède de magie. L'oracle vous le désigne d'un regard."
+    ],
+    "badgeAwarded": "L'oracle marque une révérence profonde. Les runes forment un symbole ancien : celui du protecteur de l'Oracle. Vous recevez le badge {emote:badges.oracle_patron} en reconnaissance de votre dévotion.",
+    "firstEncounter": "une lueur dorée à travers le brouillard vous attire vers un autel de pierre recouvert de runes anciennes. Un oracle au visage voilé se tient immobile devant l'édifice.\n\nD'un geste lent, il désigne l'autel : les runes racontent l'histoire des bénédictions, ces forces ancestrales que les voyageurs peuvent éveiller en unissant leurs offrandes. Lorsque la cagnotte collective atteint son seuil, une bénédiction se répand sur tous les aventuriers du monde, leur conférant un pouvoir temporaire.\n\nL'oracle s'approche et trace du bout des doigts une marque runique sur votre poignet. La peau picote là où les lignes incandescentes se gravent, puis la sensation s'apaise. Cette marque vous lie désormais aux mystères de l'autel. Vous pourrez consulter l'état des bénédictions à tout moment grâce à la commande {command:blessing}."
   }
 }

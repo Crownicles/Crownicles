@@ -45,10 +45,9 @@ describe("EditValueParameters consistency", () => {
 			expect(playerCode).toMatch(/addHealth\(parameters:\s*HealthEditValueParameters\)/);
 		});
 
-		// Note: addRage uses positional parameters (rage: number, reason, response) for consistency
-		// with the game logic. This is intentional for the cities feature branch.
-		it("addRage should have rage as first parameter", () => {
-			expect(playerCode).toMatch(/addRage\(rage:\s*number/);
+		// addRage now uses EditValueParameters pattern (same as addMoney, addScore, etc.)
+		it("addRage should use EditValueParameters", () => {
+			expect(playerCode).toMatch(/addRage\(parameters:\s*EditValueParameters\)/);
 		});
 	});
 
