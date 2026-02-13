@@ -305,9 +305,9 @@ export async function buildChestData(
 			details: slot.itemWithDetails(player) as MainItemDetails
 		}));
 
-	// Build depositable items (backup inventory items with itemId !== 0)
+	// Build depositable items (all inventory items with itemId !== 0, including active items)
 	const depositableItems: NonNullable<NonNullable<ReactionCollectorCityData["home"]["owned"]>["chest"]>["depositableItems"] = playerInventory
-		.filter(inventorySlot => inventorySlot.slot > 0 && inventorySlot.itemId !== 0)
+		.filter(inventorySlot => inventorySlot.itemId !== 0)
 		.map(inventorySlot => ({
 			slot: inventorySlot.slot,
 			category: inventorySlot.itemCategory,
@@ -1211,10 +1211,17 @@ export async function handleHomeChestDepositReaction(
 	await emptyChestSlot.save();
 
 	// Clear the inventory slot
-	inventorySlot.itemId = 0;
-	inventorySlot.itemLevel = 0;
-	inventorySlot.itemEnchantmentId = null;
-	await inventorySlot.save();
+	if (inventorySlot.slot === 0) {
+		// Active slot: reset to default empty item (keep the slot row)
+		inventorySlot.itemId = 0;
+		inventorySlot.itemLevel = 0;
+		inventorySlot.itemEnchantmentId = null;
+		await inventorySlot.save();
+	}
+	else {
+		// Backup slot: destroy it since empty backup slots shouldn't persist
+		await inventorySlot.destroy();
+	}
 
 	response.push(makePacket(CommandReportHomeChestDepositRes, {
 		itemCategory: reaction.itemCategory

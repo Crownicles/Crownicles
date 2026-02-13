@@ -1,5 +1,6 @@
 import {
-	StringSelectMenuBuilder, StringSelectMenuInteraction
+	ActionRowBuilder, ButtonBuilder, ButtonStyle,
+	parseEmoji, StringSelectMenuBuilder, StringSelectMenuInteraction
 } from "discord.js";
 import {
 	ComponentInteraction,
@@ -17,6 +18,10 @@ import { DiscordCollectorUtils } from "../../../../../utils/DiscordCollectorUtil
 import { ItemCategory } from "../../../../../../../Lib/src/constants/ItemConstants";
 import { HomeMenuIds } from "../HomeMenuConstants";
 import { ChestSlotsPerCategory } from "../../../../../../../Lib/src/types/HomeFeatures";
+import { MainItemDetails } from "../../../../../../../Lib/src/types/MainItemDetails";
+import { ItemWithDetails } from "../../../../../../../Lib/src/types/ItemWithDetails";
+import { MessageActionRowComponentBuilder } from "@discordjs/builders";
+import { DiscordConstants } from "../../../../../DiscordConstants";
 
 const CATEGORY_INFO: {
 	key: keyof ChestSlotsPerCategory; category: ItemCategory; translationKey: string; emoji: string;
@@ -132,6 +137,18 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		}
 	}
 
+	private static readonly CHOICE_EMOTES = [
+		"1⃣",
+		"2⃣",
+		"3⃣",
+		"4⃣",
+		"5⃣",
+		"6⃣",
+		"7⃣",
+		"8⃣",
+		"9⃣"
+	];
+
 	private async showCategoryDetail(
 		ctx: HomeFeatureHandlerContext,
 		categoryIndex: number,
@@ -153,10 +170,11 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		const categoryChestItems = chest.chestItems.filter(item => item.category === catInfo.category);
 		const categoryDepositableItems = chest.depositableItems.filter(item => item.category === catInfo.category);
 		const maxSlots = this.getCategorySlotCount(chest.slotsPerCategory, catInfo.category);
+		const hasEmptySlots = categoryChestItems.length < maxSlots;
 
 		const menuId = `${HomeMenuIds.CHEST_CATEGORY_DETAIL_PREFIX}${categoryIndex}`;
 
-		// Build description
+		// Build description header
 		let description = i18n.t("commands:report.city.homes.chest.categoryHeader", {
 			lng: ctx.lng,
 			category: i18n.t(`commands:report.city.homes.chest.categories.${catInfo.translationKey}`, { lng: ctx.lng }),
@@ -164,68 +182,86 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 			total: maxSlots
 		});
 
-		if (categoryChestItems.length > 0) {
-			description += `\n\n${i18n.t("commands:report.city.homes.chest.storedItems", { lng: ctx.lng })}`;
-			for (const item of categoryChestItems) {
-				item.details.attack.maxValue = Infinity;
-				item.details.defense.maxValue = Infinity;
-				item.details.speed.maxValue = Infinity;
-				description += `\n• ${DisplayUtils.getItemDisplayWithStats(item.details, ctx.lng)}`;
+		// Track all choices and their actions for button mapping
+		const choices: {
+			type: "deposit" | "withdraw"; category: ItemCategory; slot: number;
+		}[] = [];
+		const rows: ActionRowBuilder<ButtonBuilder>[] = [new ActionRowBuilder<ButtonBuilder>()];
+
+		// Deposit section — items from inventory that can be stored
+		if (categoryDepositableItems.length > 0) {
+			description += `\n\n${i18n.t("commands:report.city.homes.chest.depositSection", { lng: ctx.lng })}`;
+			for (const item of categoryDepositableItems) {
+				const details = this.withUnlimitedMaxValue(item.details, catInfo.category);
+				const itemDisplay = DisplayUtils.getItemDisplayWithStats(details, ctx.lng);
+				const emoteIndex = choices.length;
+
+				if (emoteIndex < ChestFeatureHandler.CHOICE_EMOTES.length) {
+					description += `\n${ChestFeatureHandler.CHOICE_EMOTES[emoteIndex]} - ${itemDisplay}`;
+					if (!hasEmptySlots) {
+						description += ` *(${i18n.t("commands:report.city.homes.chest.chestFull", { lng: ctx.lng })})*`;
+					}
+
+					const button = new ButtonBuilder()
+						.setEmoji(parseEmoji(ChestFeatureHandler.CHOICE_EMOTES[emoteIndex])!)
+						.setCustomId(`${HomeMenuIds.CHEST_DEPOSIT_PREFIX}${catInfo.category}_${item.slot}`)
+						.setStyle(hasEmptySlots ? ButtonStyle.Secondary : ButtonStyle.Secondary)
+						.setDisabled(!hasEmptySlots);
+
+					if (rows[rows.length - 1].components.length >= DiscordConstants.MAX_BUTTONS_PER_ROW) {
+						rows.push(new ActionRowBuilder<ButtonBuilder>());
+					}
+					rows[rows.length - 1].addComponents(button);
+
+					choices.push({
+						type: "deposit", category: catInfo.category, slot: item.slot
+					});
+				}
 			}
 		}
-		else {
+
+		// Withdraw section — items in the chest that can be retrieved
+		if (categoryChestItems.length > 0) {
+			description += `\n\n${i18n.t("commands:report.city.homes.chest.withdrawSection", { lng: ctx.lng })}`;
+			for (const item of categoryChestItems) {
+				const details = this.withUnlimitedMaxValue(item.details, catInfo.category);
+				const itemDisplay = DisplayUtils.getItemDisplayWithStats(details, ctx.lng);
+				const emoteIndex = choices.length;
+
+				if (emoteIndex < ChestFeatureHandler.CHOICE_EMOTES.length) {
+					description += `\n${ChestFeatureHandler.CHOICE_EMOTES[emoteIndex]} - ${itemDisplay}`;
+
+					const button = new ButtonBuilder()
+						.setEmoji(parseEmoji(ChestFeatureHandler.CHOICE_EMOTES[emoteIndex])!)
+						.setCustomId(`${HomeMenuIds.CHEST_WITHDRAW_PREFIX}${catInfo.category}_${item.slot}`)
+						.setStyle(ButtonStyle.Secondary);
+
+					if (rows[rows.length - 1].components.length >= DiscordConstants.MAX_BUTTONS_PER_ROW) {
+						rows.push(new ActionRowBuilder<ButtonBuilder>());
+					}
+					rows[rows.length - 1].addComponents(button);
+
+					choices.push({
+						type: "withdraw", category: catInfo.category, slot: item.slot
+					});
+				}
+			}
+		}
+
+		if (choices.length === 0) {
 			description += `\n\n${i18n.t("commands:report.city.homes.chest.noStoredItems", { lng: ctx.lng })}`;
 		}
 
-		// Build select menu options
-		const selectMenu = new StringSelectMenuBuilder()
-			.setCustomId(`chest_category_${categoryIndex}_select`)
-			.setPlaceholder(i18n.t("commands:report.city.homes.chest.actionPlaceholder", { lng: ctx.lng }));
+		// Back button
+		const backButton = new ButtonBuilder()
+			.setEmoji(parseEmoji(CrowniclesIcons.collectors.refuse)!)
+			.setCustomId(HomeMenuIds.CHEST_BACK_TO_CATEGORIES)
+			.setStyle(ButtonStyle.Secondary);
 
-		// "Back" option
-		selectMenu.addOptions({
-			label: i18n.t("commands:report.city.homes.chest.backToCategories", { lng: ctx.lng }),
-			value: HomeMenuIds.CHEST_BACK_TO_CATEGORIES,
-			emoji: CrowniclesIcons.city.back
-		});
-
-		// Deposit options
-		const hasEmptySlots = categoryChestItems.length < maxSlots;
-		for (let i = 0; i < categoryDepositableItems.length; i++) {
-			const item = categoryDepositableItems[i];
-			item.details.attack.maxValue = Infinity;
-			item.details.defense.maxValue = Infinity;
-			item.details.speed.maxValue = Infinity;
-			const itemDisplay = DisplayUtils.getItemDisplayWithStats(item.details, ctx.lng);
-			const parts = itemDisplay.split(" | ");
-			const label = i18n.t("commands:report.city.homes.chest.depositLabel", { lng: ctx.lng });
-			selectMenu.addOptions({
-				label: `${label} ${parts[0].replace(/\*\*/g, "").substring(0, 80)}`,
-				value: `${HomeMenuIds.CHEST_DEPOSIT_PREFIX}${catInfo.category}_${item.slot}`,
-				emoji: DisplayUtils.getItemIcon({
-					id: item.details.id, category: item.details.itemCategory
-				}),
-				description: hasEmptySlots ? undefined : i18n.t("commands:report.city.homes.chest.chestFull", { lng: ctx.lng })
-			});
+		if (rows[rows.length - 1].components.length >= DiscordConstants.MAX_BUTTONS_PER_ROW) {
+			rows.push(new ActionRowBuilder<ButtonBuilder>());
 		}
-
-		// Withdraw options
-		for (let i = 0; i < categoryChestItems.length; i++) {
-			const item = categoryChestItems[i];
-			item.details.attack.maxValue = Infinity;
-			item.details.defense.maxValue = Infinity;
-			item.details.speed.maxValue = Infinity;
-			const itemDisplay = DisplayUtils.getItemDisplayWithStats(item.details, ctx.lng);
-			const parts = itemDisplay.split(" | ");
-			const label = i18n.t("commands:report.city.homes.chest.withdrawLabel", { lng: ctx.lng });
-			selectMenu.addOptions({
-				label: `${label} ${parts[0].replace(/\*\*/g, "").substring(0, 80)}`,
-				value: `${HomeMenuIds.CHEST_WITHDRAW_PREFIX}${catInfo.category}_${item.slot}`,
-				emoji: DisplayUtils.getItemIcon({
-					id: item.details.id, category: item.details.itemCategory
-				})
-			});
-		}
+		rows[rows.length - 1].addComponents(backButton);
 
 		const { CrowniclesEmbed } = await import("../../../../../messages/CrowniclesEmbed");
 
@@ -238,7 +274,7 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 					ctx.user
 				)
 				.setDescription(description),
-			components: [new (await import("discord.js")).ActionRowBuilder<StringSelectMenuBuilder>().addComponents(selectMenu)],
+			components: rows,
 			createCollector: (menus, message) => {
 				const collector = message.createMessageComponentCollector({ time: ctx.collectorTime });
 				collector.on("collect", async interaction => {
@@ -248,8 +284,8 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 						return;
 					}
 
-					if (interaction.isStringSelectMenu()) {
-						const value = interaction.values[0];
+					if (interaction.isButton()) {
+						const value = interaction.customId;
 						await this.handleSubMenuSelection(ctx, value, interaction, menus);
 					}
 				});
@@ -307,11 +343,17 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		}
 	}
 
-	public addSubMenuOptions(ctx: HomeFeatureHandlerContext, selectMenu: StringSelectMenuBuilder): void {
+	public addSubMenuOptions(_ctx: HomeFeatureHandlerContext, _selectMenu: StringSelectMenuBuilder): void {
+		// Chest uses custom button components instead of select menu options
+	}
+
+	public getSubMenuComponents(ctx: HomeFeatureHandlerContext): ActionRowBuilder<MessageActionRowComponentBuilder>[] {
 		const chest = ctx.homeData.chest;
 		if (!chest) {
-			return;
+			return [];
 		}
+
+		const buttons: ButtonBuilder[] = [];
 
 		for (let i = 0; i < CATEGORY_INFO.length; i++) {
 			const catInfo = CATEGORY_INFO[i];
@@ -320,15 +362,47 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 				continue;
 			}
 			const filledCount = chest.chestItems.filter(item => item.category === catInfo.category).length;
-			selectMenu.addOptions({
-				label: i18n.t(`commands:report.city.homes.chest.categories.${catInfo.translationKey}`, { lng: ctx.lng }),
-				value: `${HomeMenuIds.CHEST_CATEGORY_PREFIX}${i}`,
-				emoji: catInfo.emoji,
-				description: i18n.t("commands:report.city.homes.chest.categorySlots", {
-					lng: ctx.lng, filled: filledCount, total: maxSlots
-				})
-			});
+			buttons.push(
+				new ButtonBuilder()
+					.setCustomId(`${HomeMenuIds.CHEST_CATEGORY_PREFIX}${i}`)
+					.setLabel(`${i18n.t(`commands:report.city.homes.chest.categories.${catInfo.translationKey}`, { lng: ctx.lng })} (${filledCount}/${maxSlots})`)
+					.setEmoji(catInfo.emoji)
+					.setStyle(filledCount > 0 ? ButtonStyle.Primary : ButtonStyle.Secondary)
+			);
 		}
+
+		buttons.push(
+			new ButtonBuilder()
+				.setCustomId(HomeMenuIds.BACK_TO_HOME)
+				.setLabel(i18n.t("commands:report.city.homes.backToHome", { lng: ctx.lng }))
+				.setEmoji(CrowniclesIcons.collectors.back)
+				.setStyle(ButtonStyle.Danger)
+		);
+
+		return [new ActionRowBuilder<ButtonBuilder>().addComponents(buttons)];
+	}
+
+	/**
+	 * Clone item details with unlimited maxValue for display purposes.
+	 * Only applies to MainItemDetails (weapons/armors); support items are returned as-is.
+	 */
+	private withUnlimitedMaxValue(details: ItemWithDetails, category: ItemCategory): ItemWithDetails {
+		if (category === ItemCategory.WEAPON || category === ItemCategory.ARMOR) {
+			const mainDetails = details as MainItemDetails;
+			return {
+				...mainDetails,
+				attack: {
+					...mainDetails.attack, maxValue: Infinity
+				},
+				defense: {
+					...mainDetails.defense, maxValue: Infinity
+				},
+				speed: {
+					...mainDetails.speed, maxValue: Infinity
+				}
+			};
+		}
+		return details;
 	}
 
 	public getSubMenuDescription(ctx: HomeFeatureHandlerContext): string {
