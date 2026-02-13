@@ -780,6 +780,12 @@ export class ReportCityMenu {
 		);
 		const msg = await nestedMenus.send(interaction);
 
+		// Auto-navigate to initial menu if specified (e.g., after chest deposit/withdraw)
+		const cityData = packet.data.data as ReactionCollectorCityData;
+		if (cityData.initialMenu && menus.has(cityData.initialMenu)) {
+			await nestedMenus.changeMenu(cityData.initialMenu);
+		}
+
 		const dummyCollector = msg.createReactionCollector();
 		dummyCollector.on("end", async () => {
 			await nestedMenus.stopCurrentCollector();

@@ -10,11 +10,6 @@ import { CrowniclesNestedMenus } from "../../../../../messages/CrowniclesNestedM
 import i18n from "../../../../../translations/i18n";
 import { DisplayUtils } from "../../../../../utils/DisplayUtils";
 import { CrowniclesIcons } from "../../../../../../../Lib/src/CrowniclesIcons";
-import {
-	ReactionCollectorHomeChestDepositReaction,
-	ReactionCollectorHomeChestWithdrawReaction
-} from "../../../../../../../Lib/src/packets/interaction/ReactionCollectorCity";
-import { DiscordCollectorUtils } from "../../../../../utils/DiscordCollectorUtils";
 import { ItemCategory } from "../../../../../../../Lib/src/constants/ItemConstants";
 import { HomeMenuIds } from "../HomeMenuConstants";
 import { ChestSlotsPerCategory } from "../../../../../../../Lib/src/types/HomeFeatures";
@@ -22,6 +17,12 @@ import { MainItemDetails } from "../../../../../../../Lib/src/types/MainItemDeta
 import { ItemWithDetails } from "../../../../../../../Lib/src/types/ItemWithDetails";
 import { MessageActionRowComponentBuilder } from "@discordjs/builders";
 import { DiscordConstants } from "../../../../../DiscordConstants";
+import { DiscordMQTT } from "../../../../../bot/DiscordMQTT";
+import { makePacket } from "../../../../../../../Lib/src/packets/CrowniclesPacket";
+import {
+	CommandReportHomeChestActionReq,
+	CommandReportHomeChestActionRes
+} from "../../../../../../../Lib/src/packets/commands/CommandReportPacket";
 
 const CATEGORY_INFO: {
 	key: keyof ChestSlotsPerCategory; category: ItemCategory; translationKey: string; emoji: string;
@@ -115,12 +116,12 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		}
 
 		if (selectedValue.startsWith(HomeMenuIds.CHEST_DEPOSIT_PREFIX)) {
-			await this.handleDeposit(ctx, selectedValue, componentInteraction);
+			await this.handleDeposit(ctx, selectedValue, componentInteraction, nestedMenus);
 			return true;
 		}
 
 		if (selectedValue.startsWith(HomeMenuIds.CHEST_WITHDRAW_PREFIX)) {
-			await this.handleWithdraw(ctx, selectedValue, componentInteraction);
+			await this.handleWithdraw(ctx, selectedValue, componentInteraction, nestedMenus);
 			return true;
 		}
 
@@ -161,11 +162,72 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 			return;
 		}
 
-		const chest = ctx.homeData.chest;
-		if (!chest) {
+		if (!ctx.homeData.chest) {
 			await componentInteraction.deferUpdate();
 			return;
 		}
+
+		await componentInteraction.deferUpdate();
+		await this.registerCategoryMenu(ctx, categoryIndex, nestedMenus);
+		await nestedMenus.changeMenu(`${HomeMenuIds.CHEST_CATEGORY_DETAIL_PREFIX}${categoryIndex}`);
+	}
+
+	/**
+	 * Rebuild the category detail menu in-place after a chest action.
+	 * Called from the AsyncPacketSender callback.
+	 */
+	private async rebuildCategoryDetailMenu(
+		ctx: HomeFeatureHandlerContext,
+		categoryIndex: number,
+		nestedMenus: CrowniclesNestedMenus
+	): Promise<void> {
+		await this.registerCategoryMenu(ctx, categoryIndex, nestedMenus);
+		await nestedMenus.changeMenu(`${HomeMenuIds.CHEST_CATEGORY_DETAIL_PREFIX}${categoryIndex}`);
+	}
+
+	/**
+	 * Re-register the chest categories menu (HOME_CHEST_MENU) with updated item counts.
+	 * Called after a deposit/withdraw to keep category buttons in sync.
+	 */
+	private async refreshChestCategoriesMenu(
+		ctx: HomeFeatureHandlerContext,
+		nestedMenus: CrowniclesNestedMenus
+	): Promise<void> {
+		const { CrowniclesEmbed } = await import("../../../../../messages/CrowniclesEmbed");
+
+		nestedMenus.registerMenu(HomeMenuIds.CHEST_MENU, {
+			embed: new CrowniclesEmbed()
+				.formatAuthor(this.getSubMenuTitle(ctx, ctx.pseudo), ctx.user)
+				.setDescription(this.getSubMenuDescription(ctx)),
+			components: this.getSubMenuComponents(ctx),
+			createCollector: (menus, message) => {
+				const collector = message.createMessageComponentCollector({ time: ctx.collectorTime });
+				collector.on("collect", async interaction => {
+					if (interaction.user.id !== ctx.user.id) {
+						const { sendInteractionNotForYou } = await import("../../../../../utils/ErrorUtils");
+						await sendInteractionNotForYou(interaction.user, interaction, ctx.lng);
+						return;
+					}
+
+					if (interaction.isButton()) {
+						await this.handleSubMenuSelection(ctx, interaction.customId, interaction, menus);
+					}
+				});
+				return collector;
+			}
+		});
+	}
+
+	/**
+	 * Build and register the category detail menu with its embed, buttons and collector.
+	 */
+	private async registerCategoryMenu(
+		ctx: HomeFeatureHandlerContext,
+		categoryIndex: number,
+		nestedMenus: CrowniclesNestedMenus
+	): Promise<void> {
+		const catInfo = CATEGORY_INFO[categoryIndex];
+		const chest = ctx.homeData.chest!;
 
 		const categoryChestItems = chest.chestItems.filter(item => item.category === catInfo.category);
 		const categoryDepositableItems = chest.depositableItems.filter(item => item.category === catInfo.category);
@@ -181,6 +243,20 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 			filled: categoryChestItems.length,
 			total: maxSlots
 		});
+
+		// Inventory capacity info
+		const activeItem = categoryDepositableItems.find(item => item.slot === 0);
+		const backupCount = categoryDepositableItems.filter(item => item.slot > 0).length;
+		const maxBackup = this.getCategorySlotCount(chest.inventoryCapacity, catInfo.category);
+
+		description += `\n${i18n.t("commands:report.city.homes.chest.inventoryInfo", {
+			lng: ctx.lng,
+			equipped: activeItem
+				? "✅"
+				: "❌",
+			backupCount,
+			maxBackup
+		})}`;
 
 		// Track all choices and their actions for button mapping
 		const choices: {
@@ -292,55 +368,86 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 				return collector;
 			}
 		});
-
-		await componentInteraction.deferUpdate();
-		await nestedMenus.changeMenu(menuId);
 	}
 
 	private async handleDeposit(
 		ctx: HomeFeatureHandlerContext,
 		selectedValue: string,
-		componentInteraction: ComponentInteraction
+		componentInteraction: ComponentInteraction,
+		nestedMenus: CrowniclesNestedMenus
 	): Promise<void> {
 		// Parse "CHEST_DEPOSIT_{category}_{slot}"
 		const parts = selectedValue.replace(HomeMenuIds.CHEST_DEPOSIT_PREFIX, "").split("_");
 		const category = parseInt(parts[0], 10) as ItemCategory;
 		const slot = parseInt(parts[1], 10);
 
-		await componentInteraction.deferReply();
+		await componentInteraction.deferUpdate();
 
-		const reactionIndex = ctx.packet.reactions.findIndex(
-			reaction => reaction.type === ReactionCollectorHomeChestDepositReaction.name
-				&& (reaction.data as ReactionCollectorHomeChestDepositReaction).inventorySlot === slot
-				&& (reaction.data as ReactionCollectorHomeChestDepositReaction).itemCategory === category
-		);
-
-		if (reactionIndex !== -1) {
-			DiscordCollectorUtils.sendReaction(ctx.packet, ctx.context, ctx.context.keycloakId!, componentInteraction, reactionIndex);
-		}
+		await this.sendChestAction(ctx, "deposit", slot, category, nestedMenus);
 	}
 
 	private async handleWithdraw(
 		ctx: HomeFeatureHandlerContext,
 		selectedValue: string,
-		componentInteraction: ComponentInteraction
+		componentInteraction: ComponentInteraction,
+		nestedMenus: CrowniclesNestedMenus
 	): Promise<void> {
 		// Parse "CHEST_WITHDRAW_{category}_{slot}"
 		const parts = selectedValue.replace(HomeMenuIds.CHEST_WITHDRAW_PREFIX, "").split("_");
 		const category = parseInt(parts[0], 10) as ItemCategory;
 		const slot = parseInt(parts[1], 10);
 
-		await componentInteraction.deferReply();
+		await componentInteraction.deferUpdate();
 
-		const reactionIndex = ctx.packet.reactions.findIndex(
-			reaction => reaction.type === ReactionCollectorHomeChestWithdrawReaction.name
-				&& (reaction.data as ReactionCollectorHomeChestWithdrawReaction).chestSlot === slot
-				&& (reaction.data as ReactionCollectorHomeChestWithdrawReaction).itemCategory === category
+		await this.sendChestAction(ctx, "withdraw", slot, category, nestedMenus);
+	}
+
+	/**
+	 * Send a chest action (deposit/withdraw) directly to Core via AsyncPacketSender
+	 * and update the menu in-place with the refreshed data.
+	 */
+	private async sendChestAction(
+		ctx: HomeFeatureHandlerContext,
+		action: string,
+		slot: number,
+		itemCategory: ItemCategory,
+		nestedMenus: CrowniclesNestedMenus
+	): Promise<void> {
+		await DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse(
+			ctx.context,
+			makePacket(CommandReportHomeChestActionReq, {
+				action, slot, itemCategory
+			}),
+			async (_responseContext, _packetName, responsePacket) => {
+				const response = responsePacket as unknown as CommandReportHomeChestActionRes;
+
+				if (!response.success) {
+					/*
+					 * Stay on the same menu — the view will naturally show the error state
+					 * (e.g., full chest = disabled deposit buttons, full inventory = can't withdraw)
+					 */
+					return;
+				}
+
+				// Update chest data in context with fresh data from Core
+				if (ctx.homeData.chest) {
+					ctx.homeData.chest.chestItems = response.chestItems;
+					ctx.homeData.chest.depositableItems = response.depositableItems;
+					ctx.homeData.chest.slotsPerCategory = response.slotsPerCategory;
+					ctx.homeData.chest.inventoryCapacity = response.inventoryCapacity;
+				}
+
+				// Re-register the chest categories menu with updated counts
+				await this.refreshChestCategoriesMenu(ctx, nestedMenus);
+
+				// Find the category index from the itemCategory
+				const categoryIndex = CATEGORY_INFO.findIndex(c => c.category === itemCategory);
+				if (categoryIndex !== -1) {
+					// Rebuild and refresh the category detail view in-place
+					await this.rebuildCategoryDetailMenu(ctx, categoryIndex, nestedMenus);
+				}
+			}
 		);
-
-		if (reactionIndex !== -1) {
-			DiscordCollectorUtils.sendReaction(ctx.packet, ctx.context, ctx.context.keycloakId!, componentInteraction, reactionIndex);
-		}
 	}
 
 	public addSubMenuOptions(_ctx: HomeFeatureHandlerContext, _selectMenu: StringSelectMenuBuilder): void {

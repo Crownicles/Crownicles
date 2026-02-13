@@ -1064,6 +1064,7 @@
           },
           "categorySlots": "{{filled}}/{{total}} emplacements",
           "categoryHeader": "**{{category}}** — {{filled}}/{{total}} emplacements occupés",
+          "inventoryInfo": "🎒 Équipé : {{equipped}} | Réserve : {{backupCount}}/{{maxBackup}}",
           "storedItems": "**Contenu du coffre :**",
           "noStoredItems": "Aucun objet rangé dans cette catégorie.",
           "actionPlaceholder": "Déposer ou retirer un objet",

@@ -121,7 +121,7 @@ export default class ReportCommand {
 		const city = CityDataController.instance.getCityByMapLinkId(player.mapLinkId);
 		if (city) {
 			if (currentEffectFinished) {
-				await sendCityCollector(context, response, player, currentDate, city, forceSpecificEvent);
+				await sendCityCollector(context, response, player, currentDate, city, { forceSpecificEvent });
 			}
 			else {
 				response.push(makePacket(RequirementEffectPacket, {
@@ -320,7 +320,16 @@ function cityCollectorEndCallback(context: PacketContext, player: Player, forceS
 	};
 }
 
-async function sendCityCollector(context: PacketContext, response: CrowniclesPacket[], player: Player, currentDate: Date, city: City, forceSpecificEvent: number): Promise<void> {
+async function sendCityCollector(
+	context: PacketContext,
+	response: CrowniclesPacket[],
+	player: Player,
+	currentDate: Date,
+	city: City,
+	options: {
+		forceSpecificEvent: number; initialMenu?: string;
+	} = { forceSpecificEvent: 0 }
+): Promise<void> {
 	const playerInventory = await InventorySlots.getOfPlayer(player.id);
 	const playerActiveObjects = InventorySlots.slotsToActiveObjects(playerInventory);
 	const isEnchanterHere = await Settings.ENCHANTER_CITY.getValue() === city.id;
@@ -384,7 +393,8 @@ async function sendCityCollector(context: PacketContext, response: CrowniclesPac
 			},
 			city
 		),
-		blacksmith
+		blacksmith,
+		initialMenu: options.initialMenu
 	};
 
 	const collector = new ReactionCollectorCity(collectorData);
@@ -396,7 +406,7 @@ async function sendCityCollector(context: PacketContext, response: CrowniclesPac
 			allowedPlayerKeycloakIds: [player.keycloakId],
 			reactionLimit: 1
 		},
-		cityCollectorEndCallback(context, player, forceSpecificEvent, city)
+		cityCollectorEndCallback(context, player, options.forceSpecificEvent, city)
 	)
 		.block(player.keycloakId, BlockingConstants.REASONS.REPORT_COMMAND)
 		.build();

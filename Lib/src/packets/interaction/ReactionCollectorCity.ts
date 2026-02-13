@@ -6,6 +6,7 @@ import {
 	ReactionCollectorRefuseReaction
 } from "./ReactionCollectorPacket";
 import { MainItemDetails } from "../../types/MainItemDetails";
+import { ItemWithDetails } from "../../types/ItemWithDetails";
 import { MaterialQuantity } from "../../types/MaterialQuantity";
 import {
 	ItemCategory, ItemRarity
@@ -21,6 +22,12 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 	mapLocationId!: number;
 
 	enterCityTimestamp!: number;
+
+	/**
+	 * If set, the Discord side should auto-navigate to this menu after rendering.
+	 * Used to keep the player in the chest menu after a deposit/withdraw action.
+	 */
+	initialMenu?: string;
 
 	inns?: {
 		innId: string;
@@ -88,14 +95,17 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 				chestItems: {
 					slot: number;
 					category: ItemCategory;
-					details: MainItemDetails;
+					details: ItemWithDetails;
 				}[];
 				depositableItems: {
 					slot: number;
 					category: ItemCategory;
-					details: MainItemDetails;
+					details: ItemWithDetails;
 				}[];
 				slotsPerCategory: ChestSlotsPerCategory;
+
+				/** Max backup slots per category in the player's inventory */
+				inventoryCapacity: ChestSlotsPerCategory;
 			};
 		};
 		manage?: {
