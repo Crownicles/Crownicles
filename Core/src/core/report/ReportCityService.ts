@@ -16,7 +16,9 @@ import {
 	ReactionCollectorInnRoomReaction,
 	ReactionCollectorUpgradeItemReaction,
 	ReactionCollectorBlacksmithUpgradeReaction,
-	ReactionCollectorBlacksmithDisenchantReaction
+	ReactionCollectorBlacksmithDisenchantReaction,
+	ReactionCollectorHomeChestDepositReaction,
+	ReactionCollectorHomeChestWithdrawReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorCity";
 import { WeaponDataController } from "../../data/Weapon";
 import { ArmorDataController } from "../../data/Armor";
@@ -38,6 +40,10 @@ import {
 	CommandReportEatInnMealCooldownRes,
 	CommandReportEatInnMealRes,
 	CommandReportEnchantNotEnoughCurrenciesRes,
+	CommandReportHomeChestDepositRes,
+	CommandReportHomeChestFullRes,
+	CommandReportHomeChestInventoryFullRes,
+	CommandReportHomeChestWithdrawRes,
 	CommandReportHomeBedAlreadyFullRes,
 	CommandReportHomeBedRes,
 	CommandReportItemCannotBeEnchantedRes,
@@ -51,8 +57,13 @@ import {
 	CommandReportUpgradeItemRes
 } from "../../../../Lib/src/packets/commands/CommandReportPacket";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
+import { ItemCategory } from "../../../../Lib/src/constants/ItemConstants";
 import { TravelTime } from "../maps/TravelTime";
 import { Effect } from "../../../../Lib/src/types/Effect";
+import {
+	HomeChestSlots
+} from "../database/game/models/HomeChestSlot";
+import InventoryInfo from "../database/game/models/InventoryInfo";
 import { ClassConstants } from "../../../../Lib/src/constants/ClassConstants";
 import { Settings } from "../database/game/models/Setting";
 import PlayerMissionsInfo, { PlayerMissionsInfos } from "../database/game/models/PlayerMissionsInfo";
@@ -147,13 +158,16 @@ export async function buildHomeData(
 	const nextHomeUpgrade = homeLevel ? HomeLevel.getNextUpgrade(homeLevel, player.level) : null;
 
 	let upgradeStation;
+	let chest;
 	let owned;
 	if (isHomeInCity) {
 		upgradeStation = buildUpgradeStationData(playerInventory, playerMaterialMap, homeLevel!, player);
+		chest = await buildChestData(home!, homeLevel!, playerInventory, player);
 		owned = {
 			level: home!.level,
 			features: homeLevel!.features,
-			upgradeStation
+			upgradeStation,
+			chest
 		};
 	}
 
@@ -261,6 +275,49 @@ export function buildUpgradeStationData(
 	return {
 		upgradeableItems,
 		maxUpgradeableRarity
+	};
+}
+
+/**
+ * Build chest data for the home feature in the city collector.
+ * Loads items currently stored in the chest and items that can be deposited from the player's inventory.
+ */
+export async function buildChestData(
+	home: Home,
+	homeLevel: HomeLevel,
+	playerInventory: InventorySlot[],
+	player: Player
+): Promise<NonNullable<NonNullable<ReactionCollectorCityData["home"]["owned"]>["chest"]>> {
+	const slotsPerCategory = homeLevel.features.chestSlots;
+
+	// Ensure chest slots exist for the current home level
+	await HomeChestSlots.ensureSlotsForLevel(home.id, slotsPerCategory);
+
+	// Load all chest slots
+	const allChestSlots = await HomeChestSlots.getOfHome(home.id);
+
+	// Build chest items (non-empty slots)
+	const chestItems: NonNullable<NonNullable<ReactionCollectorCityData["home"]["owned"]>["chest"]>["chestItems"] = allChestSlots
+		.filter(slot => slot.itemId !== 0)
+		.map(slot => ({
+			slot: slot.slot,
+			category: slot.itemCategory,
+			details: slot.itemWithDetails(player) as MainItemDetails
+		}));
+
+	// Build depositable items (backup inventory items with itemId !== 0)
+	const depositableItems: NonNullable<NonNullable<ReactionCollectorCityData["home"]["owned"]>["chest"]>["depositableItems"] = playerInventory
+		.filter(inventorySlot => inventorySlot.slot > 0 && inventorySlot.itemId !== 0)
+		.map(inventorySlot => ({
+			slot: inventorySlot.slot,
+			category: inventorySlot.itemCategory,
+			details: inventorySlot.itemWithDetails(player) as MainItemDetails
+		}));
+
+	return {
+		chestItems,
+		depositableItems,
+		slotsPerCategory
 	};
 }
 
@@ -642,7 +699,50 @@ export async function handleUpgradeHomeReaction(player: Player, city: City, data
 		return;
 	}
 
-	home.level = HomeLevel.getNextUpgrade(home.getLevel()!, player.level)!.level;
+	const oldLevel = home.getLevel()!;
+	const newLevel = HomeLevel.getNextUpgrade(oldLevel, player.level)!;
+	home.level = newLevel.level;
+
+	// Apply inventory bonus delta between old and new level
+	const oldBonus = oldLevel.features.inventoryBonus;
+	const newBonus = newLevel.features.inventoryBonus;
+	const inventoryInfo = await InventoryInfo.findOne({ where: { playerId: player.id } });
+
+	if (inventoryInfo) {
+		const bonusCategories: {
+			key: keyof typeof oldBonus; category: ItemCategory;
+		}[] = [
+			{
+				key: "weapon", category: ItemCategory.WEAPON
+			},
+			{
+				key: "armor", category: ItemCategory.ARMOR
+			},
+			{
+				key: "potion", category: ItemCategory.POTION
+			},
+			{
+				key: "object", category: ItemCategory.OBJECT
+			}
+		];
+
+		let bonusApplied = false;
+
+		for (const {
+			key, category
+		} of bonusCategories) {
+			const delta = newBonus[key] - oldBonus[key];
+
+			for (let i = 0; i < delta; i++) {
+				inventoryInfo.addSlotForCategory(category);
+				bonusApplied = true;
+			}
+		}
+
+		if (bonusApplied) {
+			await inventoryInfo.save();
+		}
+	}
 
 	await player.spendMoney({
 		response,
@@ -1064,5 +1164,133 @@ export async function handleHomeBedReaction(
 	await player.save();
 	response.push(makePacket(CommandReportHomeBedRes, {
 		health: homeData.features.bedHealthRegeneration
+	}));
+}
+
+/**
+ * Handle home chest deposit reaction — player stores an item from inventory into the chest
+ */
+export async function handleHomeChestDepositReaction(
+	player: Player,
+	data: ReactionCollectorCityData,
+	reaction: ReactionCollectorHomeChestDepositReaction,
+	response: CrowniclesPacket[]
+): Promise<void> {
+	await player.reload();
+
+	const homeData = data.home.owned;
+	if (!homeData?.chest) {
+		CrowniclesLogger.error(`Player ${player.keycloakId} tried to deposit into chest without valid chest data.`);
+		return;
+	}
+
+	const home = await Homes.getOfPlayer(player.id);
+	if (!home) {
+		CrowniclesLogger.error(`Player ${player.keycloakId} tried to deposit into chest but has no home.`);
+		return;
+	}
+
+	// Find the inventory slot the player wants to deposit
+	const inventorySlot = await InventorySlots.getItem(player.id, reaction.inventorySlot, reaction.itemCategory);
+	if (!inventorySlot || inventorySlot.itemId === 0) {
+		CrowniclesLogger.error(`Player ${player.keycloakId} tried to deposit empty/invalid inventory slot.`);
+		return;
+	}
+
+	// Find an empty chest slot for this category
+	const emptyChestSlot = await HomeChestSlots.findEmptySlot(home.id, reaction.itemCategory);
+	if (!emptyChestSlot) {
+		response.push(makePacket(CommandReportHomeChestFullRes, {}));
+		return;
+	}
+
+	// Move item from inventory to chest
+	emptyChestSlot.itemId = inventorySlot.itemId;
+	emptyChestSlot.itemLevel = inventorySlot.itemLevel;
+	emptyChestSlot.itemEnchantmentId = inventorySlot.itemEnchantmentId;
+	await emptyChestSlot.save();
+
+	// Clear the inventory slot
+	inventorySlot.itemId = 0;
+	inventorySlot.itemLevel = 0;
+	inventorySlot.itemEnchantmentId = null;
+	await inventorySlot.save();
+
+	response.push(makePacket(CommandReportHomeChestDepositRes, {
+		itemCategory: reaction.itemCategory
+	}));
+}
+
+/**
+ * Handle home chest withdraw reaction — player retrieves an item from the chest into their inventory
+ */
+export async function handleHomeChestWithdrawReaction(
+	player: Player,
+	data: ReactionCollectorCityData,
+	reaction: ReactionCollectorHomeChestWithdrawReaction,
+	response: CrowniclesPacket[]
+): Promise<void> {
+	await player.reload();
+
+	const homeData = data.home.owned;
+	if (!homeData?.chest) {
+		CrowniclesLogger.error(`Player ${player.keycloakId} tried to withdraw from chest without valid chest data.`);
+		return;
+	}
+
+	const home = await Homes.getOfPlayer(player.id);
+	if (!home) {
+		CrowniclesLogger.error(`Player ${player.keycloakId} tried to withdraw from chest but has no home.`);
+		return;
+	}
+
+	// Find the chest slot the player wants to withdraw
+	const chestSlot = await HomeChestSlots.getSlot(home.id, reaction.chestSlot, reaction.itemCategory);
+	if (!chestSlot || chestSlot.itemId === 0) {
+		CrowniclesLogger.error(`Player ${player.keycloakId} tried to withdraw empty/invalid chest slot.`);
+		return;
+	}
+
+	// Find an empty backup inventory slot for this category
+	const inventoryInfo = await InventoryInfo.findOne({ where: { playerId: player.id } });
+
+	// Check if player has an available inventory slot
+	const playerInventory = await InventorySlots.getOfPlayer(player.id);
+	const categorySlots = playerInventory.filter(s => s.itemCategory === reaction.itemCategory && s.slot > 0);
+	const maxSlots = inventoryInfo ? inventoryInfo.slotLimitForCategory(reaction.itemCategory) : 1;
+	const emptyInventorySlot = categorySlots.find(s => s.itemId === 0);
+
+	if (!emptyInventorySlot && categorySlots.length >= maxSlots) {
+		response.push(makePacket(CommandReportHomeChestInventoryFullRes, {}));
+		return;
+	}
+
+	if (emptyInventorySlot) {
+		// Use existing empty slot
+		emptyInventorySlot.itemId = chestSlot.itemId;
+		emptyInventorySlot.itemLevel = chestSlot.itemLevel;
+		emptyInventorySlot.itemEnchantmentId = chestSlot.itemEnchantmentId;
+		await emptyInventorySlot.save();
+	}
+	else {
+		// Create a new inventory slot
+		await InventorySlot.create({
+			playerId: player.id,
+			slot: categorySlots.length + 1,
+			itemCategory: reaction.itemCategory,
+			itemId: chestSlot.itemId,
+			itemLevel: chestSlot.itemLevel,
+			itemEnchantmentId: chestSlot.itemEnchantmentId
+		});
+	}
+
+	// Clear the chest slot
+	chestSlot.itemId = 0;
+	chestSlot.itemLevel = 0;
+	chestSlot.itemEnchantmentId = null;
+	await chestSlot.save();
+
+	response.push(makePacket(CommandReportHomeChestWithdrawRes, {
+		itemCategory: reaction.itemCategory
 	}));
 }

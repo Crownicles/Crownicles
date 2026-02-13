@@ -34,7 +34,26 @@ export const HomeMenuIds = {
 	UPGRADE_CONFIRM_PREFIX: "CONFIRM_UPGRADE_",
 
 	/** Prefix for item detail sub-menu */
-	UPGRADE_ITEM_DETAIL_PREFIX: "UPGRADE_ITEM_DETAIL_"
+	UPGRADE_ITEM_DETAIL_PREFIX: "UPGRADE_ITEM_DETAIL_",
+
+	// --- Chest feature ---
+	/** Chest feature menu */
+	CHEST_MENU: "HOME_CHEST_MENU",
+
+	/** Prefix for chest category selection */
+	CHEST_CATEGORY_PREFIX: "CHEST_CAT_",
+
+	/** Prefix for chest deposit action */
+	CHEST_DEPOSIT_PREFIX: "CHEST_DEPOSIT_",
+
+	/** Prefix for chest withdraw action */
+	CHEST_WITHDRAW_PREFIX: "CHEST_WITHDRAW_",
+
+	/** Back to chest categories */
+	CHEST_BACK_TO_CATEGORIES: "CHEST_BACK_CATEGORIES",
+
+	/** Prefix for chest category detail sub-menu */
+	CHEST_CATEGORY_DETAIL_PREFIX: "CHEST_CAT_DETAIL_"
 } as const;
 
 /**

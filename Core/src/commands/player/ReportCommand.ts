@@ -42,6 +42,8 @@ import {
 	ReactionCollectorExitCityReaction,
 	ReactionCollectorHomeBedReaction,
 	ReactionCollectorHomeMenuReaction,
+	ReactionCollectorHomeChestDepositReaction,
+	ReactionCollectorHomeChestWithdrawReaction,
 	ReactionCollectorInnMealReaction,
 	ReactionCollectorInnRoomReaction,
 	ReactionCollectorUpgradeItemReaction,
@@ -78,6 +80,8 @@ import {
 	handleCityShopReaction,
 	handleEnchantReaction,
 	handleHomeBedReaction,
+	handleHomeChestDepositReaction,
+	handleHomeChestWithdrawReaction,
 	handleInnMealReaction,
 	handleInnRoomReaction,
 	handleMoveHomeReaction,
@@ -264,6 +268,22 @@ function cityCollectorEndCallback(context: PacketContext, player: Player, forceS
 					break;
 				case ReactionCollectorHomeBedReaction.name:
 					await handleHomeBedReaction(player, collector.creationPacket.data.data as ReactionCollectorCityData, response);
+					break;
+				case ReactionCollectorHomeChestDepositReaction.name:
+					await handleHomeChestDepositReaction(
+						player,
+						collector.creationPacket.data.data as ReactionCollectorCityData,
+						firstReaction.reaction.data as ReactionCollectorHomeChestDepositReaction,
+						response
+					);
+					break;
+				case ReactionCollectorHomeChestWithdrawReaction.name:
+					await handleHomeChestWithdrawReaction(
+						player,
+						collector.creationPacket.data.data as ReactionCollectorCityData,
+						firstReaction.reaction.data as ReactionCollectorHomeChestWithdrawReaction,
+						response
+					);
 					break;
 				case ReactionCollectorUpgradeItemReaction.name:
 					await handleUpgradeItemReaction(

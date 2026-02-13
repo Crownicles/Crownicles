@@ -1042,6 +1042,44 @@
           "restDescription": "{emote:city.homeUpgrades.bed} Vous vous allongez dans votre lit et fermez les yeux quelques instants. Ce petit repos vous fait le plus grand bien ! Vous récupérez **{{health}}** {emote:unitValues.health}.",
           "alreadyFull": "Vous êtes déjà en pleine forme ! Votre lit ne vous sera utile que lorsque vous aurez besoin de vous reposer."
         },
+        "chest": {
+          "menuLabel": "Coffre de rangement",
+          "menuDescription": "{{filled}}/{{total}} emplacements utilisés",
+          "available": "{emote:city.homeUpgrades.chest} Votre coffre vous permet de stocker des objets de rechange.",
+          "title": "{{pseudo}}, coffre de rangement",
+          "placeholder": "Choisissez une catégorie",
+          "descriptionWithItems": "{emote:city.homeUpgrades.chest} Votre coffre contient quelques objets. Sélectionnez une catégorie pour consulter son contenu ou y ranger de nouveaux objets.",
+          "descriptionEmpty": "{emote:city.homeUpgrades.chest} Votre coffre est vide pour le moment. Sélectionnez une catégorie pour y ranger des objets de votre inventaire.",
+          "categories": {
+            "weapons": "Armes",
+            "armors": "Armures",
+            "potions": "Potions",
+            "objects": "Objets"
+          },
+          "categoryNames": {
+            "0": "arme",
+            "1": "armure",
+            "2": "potion",
+            "3": "objet"
+          },
+          "categorySlots": "{{filled}}/{{total}} emplacements",
+          "categoryHeader": "**{{category}}** — {{filled}}/{{total}} emplacements occupés",
+          "storedItems": "**Contenu du coffre :**",
+          "noStoredItems": "Aucun objet rangé dans cette catégorie.",
+          "actionPlaceholder": "Déposer ou retirer un objet",
+          "backToCategories": "← Retour aux catégories",
+          "depositLabel": "Déposer :",
+          "withdrawLabel": "Retirer :",
+          "chestFull": "Coffre plein pour cette catégorie",
+          "depositTitle": "{{pseudo}}, objet déposé !",
+          "depositDescription": "{emote:city.homeUpgrades.chest} Vous rangez soigneusement votre {{category}} dans le coffre. Elle y sera en sécurité jusqu'à votre retour.",
+          "withdrawTitle": "{{pseudo}}, objet récupéré !",
+          "withdrawDescription": "{emote:city.homeUpgrades.chest} Vous récupérez votre {{category}} du coffre et la rangez dans votre inventaire.",
+          "errors": {
+            "chestFull": "Votre coffre est plein pour cette catégorie ! Améliorez votre maison pour obtenir plus d'emplacements.",
+            "inventoryFull": "Votre inventaire est plein pour cette catégorie ! Libérez de la place avant de retirer un objet du coffre."
+          }
+        },
         "upgradeChanges": {
           "betterBed": "Un meilleur lit pour un sommeil plus réparateur {emote:city.homeUpgrades.bed}",
           "chest": "Un coffre pour y ranger vos affaires {emote:city.homeUpgrades.chest}",
@@ -1052,7 +1090,8 @@
           "betterUpgradeItemStation": "Un meilleur établi d'équipement pour améliorer des armes et armures plus puissantes {emote:city.homeUpgrades.upgradeEquipment}",
           "garden": "Un jardin pour cultiver des plantes {emote:city.homeUpgrades.garden}",
           "biggerGarden": "Un plus grand jardin pour cultiver encore plus de plantes {emote:city.homeUpgrades.garden}",
-          "betterGardenEarth": "Une terre améliorée pour faire pousser des plantes plus rapidement {emote:city.homeUpgrades.earthQuality}"
+          "betterGardenEarth": "Une terre améliorée pour faire pousser des plantes plus rapidement {emote:city.homeUpgrades.earthQuality}",
+          "inventoryBonus": "Des emplacements d'inventaire supplémentaires permanents {emote:city.homeUpgrades.chest}"
         }
       }
     },

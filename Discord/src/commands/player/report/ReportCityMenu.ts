@@ -497,13 +497,28 @@ const formatHomeUpgradeChanges = (oldFeatures: HomeFeatures, newFeatures: HomeFe
 	const changes: string[] = [];
 
 	// Chest
-	if (oldFeatures.chestSlots !== newFeatures.chestSlots) {
-		if (oldFeatures.chestSlots === 0) {
+	const hasOldChest = oldFeatures.chestSlots.weapon + oldFeatures.chestSlots.armor + oldFeatures.chestSlots.object + oldFeatures.chestSlots.potion > 0;
+	const hasNewChest = newFeatures.chestSlots.weapon + newFeatures.chestSlots.armor + newFeatures.chestSlots.object + newFeatures.chestSlots.potion > 0;
+	const chestChanged = oldFeatures.chestSlots.weapon !== newFeatures.chestSlots.weapon
+		|| oldFeatures.chestSlots.armor !== newFeatures.chestSlots.armor
+		|| oldFeatures.chestSlots.object !== newFeatures.chestSlots.object
+		|| oldFeatures.chestSlots.potion !== newFeatures.chestSlots.potion;
+	if (chestChanged) {
+		if (!hasOldChest && hasNewChest) {
 			changes.push(i18n.t("commands:report.city.homes.upgradeChanges.chest", { lng }));
 		}
 		else {
 			changes.push(i18n.t("commands:report.city.homes.upgradeChanges.biggerChest", { lng }));
 		}
+	}
+
+	// Personal inventory bonus
+	const invBonusChanged = oldFeatures.inventoryBonus.weapon !== newFeatures.inventoryBonus.weapon
+		|| oldFeatures.inventoryBonus.armor !== newFeatures.inventoryBonus.armor
+		|| oldFeatures.inventoryBonus.object !== newFeatures.inventoryBonus.object
+		|| oldFeatures.inventoryBonus.potion !== newFeatures.inventoryBonus.potion;
+	if (invBonusChanged) {
+		changes.push(i18n.t("commands:report.city.homes.upgradeChanges.inventoryBonus", { lng }));
 	}
 
 	// Item upgrade rarity
