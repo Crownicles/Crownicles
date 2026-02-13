@@ -1074,6 +1074,7 @@
           "withdrawLabel": "Retirer :",
           "withdrawSection": "📤 **Retirer du coffre :**",
           "chestFull": "Coffre plein pour cette catégorie",
+          "inventoryFullLabel": "Inventaire plein",
           "depositTitle": "{{pseudo}}, objet déposé !",
           "depositDescription": "{emote:city.homeUpgrades.chest} Vous rangez soigneusement votre {{category}} dans le coffre. Elle y sera en sécurité jusqu'à votre retour.",
           "withdrawTitle": "{{pseudo}}, objet récupéré !",
