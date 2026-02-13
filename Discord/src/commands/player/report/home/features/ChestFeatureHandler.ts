@@ -248,6 +248,7 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		const activeItem = categoryDepositableItems.find(item => item.slot === 0);
 		const backupCount = categoryDepositableItems.filter(item => item.slot > 0).length;
 		const maxBackup = this.getCategorySlotCount(chest.inventoryCapacity, catInfo.category);
+		const isInventoryFull = activeItem !== undefined && backupCount >= maxBackup;
 
 		description += `\n${i18n.t("commands:report.city.homes.chest.inventoryInfo", {
 			lng: ctx.lng,
@@ -306,11 +307,15 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 
 				if (emoteIndex < ChestFeatureHandler.CHOICE_EMOTES.length) {
 					description += `\n${ChestFeatureHandler.CHOICE_EMOTES[emoteIndex]} - ${itemDisplay}`;
+					if (isInventoryFull) {
+						description += ` *(${i18n.t("commands:report.city.homes.chest.inventoryFullLabel", { lng: ctx.lng })})*`;
+					}
 
 					const button = new ButtonBuilder()
 						.setEmoji(parseEmoji(ChestFeatureHandler.CHOICE_EMOTES[emoteIndex])!)
 						.setCustomId(`${HomeMenuIds.CHEST_WITHDRAW_PREFIX}${catInfo.category}_${item.slot}`)
-						.setStyle(ButtonStyle.Secondary);
+						.setStyle(ButtonStyle.Secondary)
+						.setDisabled(isInventoryFull);
 
 					if (rows[rows.length - 1].components.length >= DiscordConstants.MAX_BUTTONS_PER_ROW) {
 						rows.push(new ActionRowBuilder<ButtonBuilder>());
