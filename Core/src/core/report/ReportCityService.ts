@@ -1,5 +1,7 @@
 import InventorySlot, { InventorySlots } from "../database/game/models/InventorySlot";
-import { Player } from "../database/game/models/Player";
+import {
+	Player, Players
+} from "../database/game/models/Player";
 import {
 	City
 } from "../../data/City";
@@ -7,6 +9,7 @@ import {
 	Home, Homes
 } from "../database/game/models/Home";
 import { HomeLevel } from "../../../../Lib/src/types/HomeLevel";
+import { ChestSlotsPerCategory } from "../../../../Lib/src/types/HomeFeatures";
 import { ItemEnchantment } from "../../../../Lib/src/types/ItemEnchantment";
 import { MainItemDetails } from "../../../../Lib/src/types/MainItemDetails";
 import {
@@ -40,10 +43,10 @@ import {
 	CommandReportEatInnMealCooldownRes,
 	CommandReportEatInnMealRes,
 	CommandReportEnchantNotEnoughCurrenciesRes,
-	CommandReportHomeChestDepositRes,
+	CommandReportHomeChestActionReq,
+	CommandReportHomeChestActionRes,
 	CommandReportHomeChestFullRes,
 	CommandReportHomeChestInventoryFullRes,
-	CommandReportHomeChestWithdrawRes,
 	CommandReportHomeBedAlreadyFullRes,
 	CommandReportHomeBedRes,
 	CommandReportItemCannotBeEnchantedRes,
@@ -302,7 +305,7 @@ export async function buildChestData(
 		.map(slot => ({
 			slot: slot.slot,
 			category: slot.itemCategory,
-			details: slot.itemWithDetails(player) as MainItemDetails
+			details: slot.itemWithDetails(player)
 		}));
 
 	// Build depositable items (all inventory items with itemId !== 0, including active items)
@@ -311,13 +314,23 @@ export async function buildChestData(
 		.map(inventorySlot => ({
 			slot: inventorySlot.slot,
 			category: inventorySlot.itemCategory,
-			details: inventorySlot.itemWithDetails(player) as MainItemDetails
+			details: inventorySlot.itemWithDetails(player)
 		}));
+
+	// Get inventory capacity per category (max backup slots)
+	const inventoryInfo = await InventoryInfo.findOne({ where: { playerId: player.id } });
+	const inventoryCapacity: ChestSlotsPerCategory = {
+		weapon: inventoryInfo ? inventoryInfo.slotLimitForCategory(ItemCategory.WEAPON) : 1,
+		armor: inventoryInfo ? inventoryInfo.slotLimitForCategory(ItemCategory.ARMOR) : 1,
+		potion: inventoryInfo ? inventoryInfo.slotLimitForCategory(ItemCategory.POTION) : 1,
+		object: inventoryInfo ? inventoryInfo.slotLimitForCategory(ItemCategory.OBJECT) : 1
+	};
 
 	return {
 		chestItems,
 		depositableItems,
-		slotsPerCategory
+		slotsPerCategory,
+		inventoryCapacity
 	};
 }
 
@@ -1169,39 +1182,40 @@ export async function handleHomeBedReaction(
 
 /**
  * Handle home chest deposit reaction — player stores an item from inventory into the chest
+ * @returns true if the deposit succeeded, false otherwise
  */
 export async function handleHomeChestDepositReaction(
 	player: Player,
 	data: ReactionCollectorCityData,
 	reaction: ReactionCollectorHomeChestDepositReaction,
 	response: CrowniclesPacket[]
-): Promise<void> {
+): Promise<boolean> {
 	await player.reload();
 
 	const homeData = data.home.owned;
 	if (!homeData?.chest) {
 		CrowniclesLogger.error(`Player ${player.keycloakId} tried to deposit into chest without valid chest data.`);
-		return;
+		return false;
 	}
 
 	const home = await Homes.getOfPlayer(player.id);
 	if (!home) {
 		CrowniclesLogger.error(`Player ${player.keycloakId} tried to deposit into chest but has no home.`);
-		return;
+		return false;
 	}
 
 	// Find the inventory slot the player wants to deposit
 	const inventorySlot = await InventorySlots.getItem(player.id, reaction.inventorySlot, reaction.itemCategory);
 	if (!inventorySlot || inventorySlot.itemId === 0) {
 		CrowniclesLogger.error(`Player ${player.keycloakId} tried to deposit empty/invalid inventory slot.`);
-		return;
+		return false;
 	}
 
 	// Find an empty chest slot for this category
 	const emptyChestSlot = await HomeChestSlots.findEmptySlot(home.id, reaction.itemCategory);
 	if (!emptyChestSlot) {
 		response.push(makePacket(CommandReportHomeChestFullRes, {}));
-		return;
+		return false;
 	}
 
 	// Move item from inventory to chest
@@ -1223,72 +1237,83 @@ export async function handleHomeChestDepositReaction(
 		await inventorySlot.destroy();
 	}
 
-	response.push(makePacket(CommandReportHomeChestDepositRes, {
-		itemCategory: reaction.itemCategory
-	}));
+	return true;
 }
 
 /**
  * Handle home chest withdraw reaction — player retrieves an item from the chest into their inventory
+ * @returns true if the withdraw succeeded, false otherwise
  */
 export async function handleHomeChestWithdrawReaction(
 	player: Player,
 	data: ReactionCollectorCityData,
 	reaction: ReactionCollectorHomeChestWithdrawReaction,
 	response: CrowniclesPacket[]
-): Promise<void> {
+): Promise<boolean> {
 	await player.reload();
 
 	const homeData = data.home.owned;
 	if (!homeData?.chest) {
 		CrowniclesLogger.error(`Player ${player.keycloakId} tried to withdraw from chest without valid chest data.`);
-		return;
+		return false;
 	}
 
 	const home = await Homes.getOfPlayer(player.id);
 	if (!home) {
 		CrowniclesLogger.error(`Player ${player.keycloakId} tried to withdraw from chest but has no home.`);
-		return;
+		return false;
 	}
 
 	// Find the chest slot the player wants to withdraw
 	const chestSlot = await HomeChestSlots.getSlot(home.id, reaction.chestSlot, reaction.itemCategory);
 	if (!chestSlot || chestSlot.itemId === 0) {
 		CrowniclesLogger.error(`Player ${player.keycloakId} tried to withdraw empty/invalid chest slot.`);
-		return;
+		return false;
 	}
 
-	// Find an empty backup inventory slot for this category
-	const inventoryInfo = await InventoryInfo.findOne({ where: { playerId: player.id } });
-
-	// Check if player has an available inventory slot
 	const playerInventory = await InventorySlots.getOfPlayer(player.id);
-	const categorySlots = playerInventory.filter(s => s.itemCategory === reaction.itemCategory && s.slot > 0);
-	const maxSlots = inventoryInfo ? inventoryInfo.slotLimitForCategory(reaction.itemCategory) : 1;
-	const emptyInventorySlot = categorySlots.find(s => s.itemId === 0);
 
-	if (!emptyInventorySlot && categorySlots.length >= maxSlots) {
-		response.push(makePacket(CommandReportHomeChestInventoryFullRes, {}));
-		return;
-	}
-
-	if (emptyInventorySlot) {
-		// Use existing empty slot
-		emptyInventorySlot.itemId = chestSlot.itemId;
-		emptyInventorySlot.itemLevel = chestSlot.itemLevel;
-		emptyInventorySlot.itemEnchantmentId = chestSlot.itemEnchantmentId;
-		await emptyInventorySlot.save();
+	// Priority 1: Check if the active slot (slot 0) is empty — equips the item immediately
+	const activeSlot = playerInventory.find(s => s.itemCategory === reaction.itemCategory && s.slot === 0);
+	if (activeSlot && activeSlot.itemId === 0) {
+		activeSlot.itemId = chestSlot.itemId;
+		activeSlot.itemLevel = chestSlot.itemLevel;
+		activeSlot.itemEnchantmentId = chestSlot.itemEnchantmentId;
+		await activeSlot.save();
 	}
 	else {
-		// Create a new inventory slot
-		await InventorySlot.create({
-			playerId: player.id,
-			slot: categorySlots.length + 1,
-			itemCategory: reaction.itemCategory,
-			itemId: chestSlot.itemId,
-			itemLevel: chestSlot.itemLevel,
-			itemEnchantmentId: chestSlot.itemEnchantmentId
-		});
+		// Priority 2: Check backup slots
+		const backupSlots = playerInventory.filter(s => s.itemCategory === reaction.itemCategory && s.slot > 0);
+		const inventoryInfo = await InventoryInfo.findOne({ where: { playerId: player.id } });
+		const maxSlots = inventoryInfo ? inventoryInfo.slotLimitForCategory(reaction.itemCategory) : 1;
+		const emptyBackupSlot = backupSlots.find(s => s.itemId === 0);
+
+		if (emptyBackupSlot) {
+			// Use existing empty backup slot
+			emptyBackupSlot.itemId = chestSlot.itemId;
+			emptyBackupSlot.itemLevel = chestSlot.itemLevel;
+			emptyBackupSlot.itemEnchantmentId = chestSlot.itemEnchantmentId;
+			await emptyBackupSlot.save();
+		}
+		else if (backupSlots.length < maxSlots) {
+			// Create a new backup slot — use the next slot number after the current max
+			const nextSlot = backupSlots.length > 0
+				? Math.max(...backupSlots.map(s => s.slot)) + 1
+				: 1;
+			await InventorySlot.create({
+				playerId: player.id,
+				slot: nextSlot,
+				itemCategory: reaction.itemCategory,
+				itemId: chestSlot.itemId,
+				itemLevel: chestSlot.itemLevel,
+				itemEnchantmentId: chestSlot.itemEnchantmentId
+			});
+		}
+		else {
+			// Inventory full — all backup slots occupied and at max capacity
+			response.push(makePacket(CommandReportHomeChestInventoryFullRes, {}));
+			return false;
+		}
 	}
 
 	// Clear the chest slot
@@ -1297,7 +1322,169 @@ export async function handleHomeChestWithdrawReaction(
 	chestSlot.itemEnchantmentId = null;
 	await chestSlot.save();
 
-	response.push(makePacket(CommandReportHomeChestWithdrawRes, {
-		itemCategory: reaction.itemCategory
-	}));
+	return true;
+}
+
+/**
+ * Handle a chest action request (deposit/withdraw) sent directly from Discord via AsyncPacketSender.
+ * Returns refreshed chest data for the Discord side to update the view in-place.
+ */
+export async function handleChestAction(
+	keycloakId: string,
+	packet: CommandReportHomeChestActionReq
+): Promise<Omit<CommandReportHomeChestActionRes, "name">> {
+	const player = await Players.getByKeycloakId(keycloakId);
+	if (!player) {
+		return buildChestActionError("invalid");
+	}
+
+	const home = await Homes.getOfPlayer(player.id);
+	if (!home) {
+		return buildChestActionError("invalid");
+	}
+
+	const homeLevel = home.getLevel();
+	if (!homeLevel) {
+		return buildChestActionError("invalid");
+	}
+
+	if (packet.action === "deposit") {
+		const error = await processChestDeposit(player, home, packet.slot, packet.itemCategory as ItemCategory);
+		if (error) {
+			return buildChestActionError(error);
+		}
+	}
+	else if (packet.action === "withdraw") {
+		const error = await processChestWithdraw(player, home, packet.slot, packet.itemCategory as ItemCategory);
+		if (error) {
+			return buildChestActionError(error);
+		}
+	}
+	else {
+		return buildChestActionError("invalid");
+	}
+
+	// Build refreshed chest data
+	const playerInventory = await InventorySlots.getOfPlayer(player.id);
+	const refreshedData = await buildChestData(home, homeLevel, playerInventory, player);
+
+	return {
+		success: true,
+		chestItems: refreshedData.chestItems,
+		depositableItems: refreshedData.depositableItems,
+		slotsPerCategory: refreshedData.slotsPerCategory,
+		inventoryCapacity: refreshedData.inventoryCapacity
+	};
+}
+
+function buildChestActionError(error: string): Omit<CommandReportHomeChestActionRes, "name"> {
+	return {
+		success: false,
+		error,
+		chestItems: [],
+		depositableItems: [],
+		slotsPerCategory: {
+			weapon: 0, armor: 0, object: 0, potion: 0
+		},
+		inventoryCapacity: {
+			weapon: 0, armor: 0, object: 0, potion: 0
+		}
+	};
+}
+
+async function processChestDeposit(
+	player: Player,
+	home: Home,
+	inventorySlot: number,
+	itemCategory: ItemCategory
+): Promise<string | null> {
+	const slot = await InventorySlots.getItem(player.id, inventorySlot, itemCategory);
+	if (!slot || slot.itemId === 0) {
+		return "invalid";
+	}
+
+	const emptyChestSlot = await HomeChestSlots.findEmptySlot(home.id, itemCategory);
+	if (!emptyChestSlot) {
+		return "chestFull";
+	}
+
+	// Move item to chest
+	emptyChestSlot.itemId = slot.itemId;
+	emptyChestSlot.itemLevel = slot.itemLevel;
+	emptyChestSlot.itemEnchantmentId = slot.itemEnchantmentId;
+	await emptyChestSlot.save();
+
+	// Clear inventory slot
+	if (slot.slot === 0) {
+		slot.itemId = 0;
+		slot.itemLevel = 0;
+		slot.itemEnchantmentId = null;
+		await slot.save();
+	}
+	else {
+		await slot.destroy();
+	}
+
+	return null;
+}
+
+async function processChestWithdraw(
+	player: Player,
+	home: Home,
+	chestSlotNumber: number,
+	itemCategory: ItemCategory
+): Promise<string | null> {
+	const chestSlot = await HomeChestSlots.getSlot(home.id, chestSlotNumber, itemCategory);
+	if (!chestSlot || chestSlot.itemId === 0) {
+		return "invalid";
+	}
+
+	const playerInventory = await InventorySlots.getOfPlayer(player.id);
+
+	// Priority 1: active slot (slot 0) if empty
+	const activeSlot = playerInventory.find(s => s.itemCategory === itemCategory && s.slot === 0);
+	if (activeSlot && activeSlot.itemId === 0) {
+		activeSlot.itemId = chestSlot.itemId;
+		activeSlot.itemLevel = chestSlot.itemLevel;
+		activeSlot.itemEnchantmentId = chestSlot.itemEnchantmentId;
+		await activeSlot.save();
+	}
+	else {
+		// Priority 2: backup slots
+		const backupSlots = playerInventory.filter(s => s.itemCategory === itemCategory && s.slot > 0);
+		const inventoryInfo = await InventoryInfo.findOne({ where: { playerId: player.id } });
+		const maxSlots = inventoryInfo ? inventoryInfo.slotLimitForCategory(itemCategory) : 1;
+		const emptyBackupSlot = backupSlots.find(s => s.itemId === 0);
+
+		if (emptyBackupSlot) {
+			emptyBackupSlot.itemId = chestSlot.itemId;
+			emptyBackupSlot.itemLevel = chestSlot.itemLevel;
+			emptyBackupSlot.itemEnchantmentId = chestSlot.itemEnchantmentId;
+			await emptyBackupSlot.save();
+		}
+		else if (backupSlots.length < maxSlots) {
+			const nextSlot = backupSlots.length > 0
+				? Math.max(...backupSlots.map(s => s.slot)) + 1
+				: 1;
+			await InventorySlot.create({
+				playerId: player.id,
+				slot: nextSlot,
+				itemCategory,
+				itemId: chestSlot.itemId,
+				itemLevel: chestSlot.itemLevel,
+				itemEnchantmentId: chestSlot.itemEnchantmentId
+			});
+		}
+		else {
+			return "inventoryFull";
+		}
+	}
+
+	// Clear the chest slot
+	chestSlot.itemId = 0;
+	chestSlot.itemLevel = 0;
+	chestSlot.itemEnchantmentId = null;
+	await chestSlot.save();
+
+	return null;
 }

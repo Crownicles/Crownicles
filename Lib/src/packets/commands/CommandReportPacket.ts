@@ -1,6 +1,9 @@
 import {
 	CrowniclesPacket, PacketDirection, sendablePacket
 } from "../CrowniclesPacket";
+import { ItemCategory } from "../../constants/ItemConstants";
+import { ItemWithDetails } from "../../types/ItemWithDetails";
+import { ChestSlotsPerCategory } from "../../types/HomeFeatures";
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandReportPacketReq extends CrowniclesPacket {
@@ -278,6 +281,46 @@ export class CommandReportHomeBedRes extends CrowniclesPacket {
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandReportHomeBedAlreadyFullRes extends CrowniclesPacket {}
+
+@sendablePacket(PacketDirection.FRONT_TO_BACK)
+export class CommandReportHomeChestActionReq extends CrowniclesPacket {
+	/** "deposit" or "withdraw" */
+	action!: string;
+
+	/** The inventory slot (for deposit) or chest slot (for withdraw) */
+	slot!: number;
+
+	itemCategory!: number;
+}
+
+@sendablePacket(PacketDirection.NONE)
+export class CommandReportHomeChestActionRes extends CrowniclesPacket {
+	/** Whether the action succeeded */
+	success!: boolean;
+
+	/** Error type if failed: "chestFull", "inventoryFull", "invalid" */
+	error?: string;
+
+	/** Refreshed chest items list */
+	chestItems!: {
+		slot: number;
+		category: ItemCategory;
+		details: ItemWithDetails;
+	}[];
+
+	/** Refreshed depositable items from inventory */
+	depositableItems!: {
+		slot: number;
+		category: ItemCategory;
+		details: ItemWithDetails;
+	}[];
+
+	/** Slots per category (unchanged but included for completeness) */
+	slotsPerCategory!: ChestSlotsPerCategory;
+
+	/** Max backup slots per category in the player's inventory */
+	inventoryCapacity!: ChestSlotsPerCategory;
+}
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandReportHomeChestDepositRes extends CrowniclesPacket {
