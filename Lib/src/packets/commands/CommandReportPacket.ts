@@ -278,3 +278,19 @@ export class CommandReportHomeBedRes extends CrowniclesPacket {
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandReportHomeBedAlreadyFullRes extends CrowniclesPacket {}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportHomeChestDepositRes extends CrowniclesPacket {
+	itemCategory!: number;
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportHomeChestWithdrawRes extends CrowniclesPacket {
+	itemCategory!: number;
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportHomeChestFullRes extends CrowniclesPacket {}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportHomeChestInventoryFullRes extends CrowniclesPacket {}

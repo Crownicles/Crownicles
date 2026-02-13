@@ -3,6 +3,7 @@ import {
 } from "./HomeMenuTypes";
 import { UpgradeStationFeatureHandler } from "./UpgradeStationFeatureHandler";
 import { BedFeatureHandler } from "./BedFeatureHandler";
+import { ChestFeatureHandler } from "./features/ChestFeatureHandler";
 import { CrowniclesNestedMenus } from "../../../../messages/CrowniclesNestedMenus";
 import { StringSelectMenuInteraction } from "discord.js";
 
@@ -97,10 +98,11 @@ class HomeFeatureRegistry {
  *
  * Future features to implement:
  * - BedFeatureHandler: Rest to recover health
- * - ChestFeatureHandler: Store backup items
+ * - ChestFeatureHandler: Store backup items ✅ (registered)
  * - PotionCraftingFeatureHandler: Craft potions
  * - GardenFeatureHandler: Cultivate plants
  */
 export const homeFeatureRegistry = new HomeFeatureRegistry()
 	.register(new UpgradeStationFeatureHandler())
-	.register(new BedFeatureHandler());
+	.register(new BedFeatureHandler())
+	.register(new ChestFeatureHandler());

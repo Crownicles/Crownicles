@@ -1,8 +1,15 @@
 import { ItemRarity } from "../constants/ItemConstants";
 import { GardenEarthQuality } from "./GardenEarthQuality";
 
+export interface ChestSlotsPerCategory {
+	weapon: number;
+	armor: number;
+	object: number;
+	potion: number;
+}
+
 export interface HomeFeatures {
-	chestSlots: number;
+	chestSlots: ChestSlotsPerCategory;
 	bedHealthRegeneration: number;
 	craftPotionMaximumRarity: ItemRarity;
 	upgradeItemMaximumRarity: ItemRarity;
@@ -14,4 +21,10 @@ export interface HomeFeatures {
 	maxItemUpgradeLevel: number;
 	gardenPlots: number;
 	gardenEarthQuality: GardenEarthQuality;
+
+	/**
+	 * Permanent bonus to personal inventory slot counts.
+	 * These slots are in addition to the base purchased slots and apply everywhere.
+	 */
+	inventoryBonus: ChestSlotsPerCategory;
 }

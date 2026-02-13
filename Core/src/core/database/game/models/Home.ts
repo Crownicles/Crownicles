@@ -3,6 +3,7 @@ import {
 } from "sequelize";
 import { HomeLevel } from "../../../../../../Lib/src/types/HomeLevel";
 import * as moment from "moment";
+import { HomeChestSlots } from "./HomeChestSlot";
 
 export class Home extends Model {
 	declare readonly id: number;
@@ -71,9 +72,12 @@ export class Homes {
 	}
 
 	public static async deleteOfPlayer(playerId: number): Promise<void> {
-		await Home.destroy({
-			where: { ownerId: playerId }
-		});
+		const home = await Home.findOne({ where: { ownerId: playerId } });
+
+		if (home) {
+			await HomeChestSlots.deleteOfHome(home.id);
+			await home.destroy();
+		}
 	}
 }
 
