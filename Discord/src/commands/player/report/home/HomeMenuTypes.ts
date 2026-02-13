@@ -1,6 +1,7 @@
 import {
-	ButtonInteraction, StringSelectMenuBuilder, StringSelectMenuInteraction, User
+	ActionRowBuilder, ButtonInteraction, StringSelectMenuBuilder, StringSelectMenuInteraction, User
 } from "discord.js";
+import { MessageActionRowComponentBuilder } from "@discordjs/builders";
 import { Language } from "../../../../../../Lib/src/Language";
 import { ReactionCollectorCityData } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorCity";
 import { CrowniclesNestedMenus } from "../../../../messages/CrowniclesNestedMenus";
@@ -110,6 +111,12 @@ export interface HomeFeatureHandler {
 	 * If not implemented, a generic placeholder will be used.
 	 */
 	getSubMenuPlaceholder?(ctx: HomeFeatureHandlerContext): string;
+
+	/**
+	 * Get custom components for the sub-menu instead of the default select menu.
+	 * If implemented, the default select menu will not be built.
+	 */
+	getSubMenuComponents?(ctx: HomeFeatureHandlerContext): ActionRowBuilder<MessageActionRowComponentBuilder>[];
 
 	/**
 	 * Get the sub-menu title

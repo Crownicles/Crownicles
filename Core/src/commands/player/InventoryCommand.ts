@@ -46,10 +46,10 @@ export default class InventoryCommand {
 		const armor = items.find(item => item.isArmor() && item.isEquipped());
 		const potion = items.find(item => item.isPotion() && item.isEquipped());
 		const object = items.find(item => item.isObject() && item.isEquipped());
-		const backupWeapons = items.filter(item => item.isWeapon() && !item.isEquipped());
-		const backupArmors = items.filter(item => item.isArmor() && !item.isEquipped());
-		const backupPotions = items.filter(item => item.isPotion() && !item.isEquipped());
-		const backupObjects = items.filter(item => item.isObject() && !item.isEquipped());
+		const backupWeapons = items.filter(item => item.isWeapon() && !item.isEquipped() && item.itemId !== 0);
+		const backupArmors = items.filter(item => item.isArmor() && !item.isEquipped() && item.itemId !== 0);
+		const backupPotions = items.filter(item => item.isPotion() && !item.isEquipped() && item.itemId !== 0);
+		const backupObjects = items.filter(item => item.isObject() && !item.isEquipped() && item.itemId !== 0);
 
 		response.push(makePacket(CommandInventoryPacketRes, {
 			foundPlayer: true,

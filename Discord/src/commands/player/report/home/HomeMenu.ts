@@ -1,6 +1,7 @@
 import {
 	ActionRowBuilder, ButtonInteraction, StringSelectMenuBuilder, StringSelectMenuInteraction
 } from "discord.js";
+import { MessageActionRowComponentBuilder } from "@discordjs/builders";
 import { CrowniclesEmbed } from "../../../../messages/CrowniclesEmbed";
 import i18n from "../../../../translations/i18n";
 import { ReactionCollectorCityData } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorCity";
@@ -25,31 +26,41 @@ function createFeatureSubMenu(
 ): CrowniclesNestedMenu {
 	const lng = params.interaction.userLanguage;
 
-	// Determine placeholder: allow handler to provide a feature-specific one, fallback to generic
-	const placeholder = handler.getSubMenuPlaceholder
-		? handler.getSubMenuPlaceholder(handlerContext)
-		: i18n.t("commands:report.city.homes.featurePlaceholder", { lng });
+	// Use custom components if the handler provides them, otherwise build default select menu
+	let components: ActionRowBuilder<MessageActionRowComponentBuilder>[];
 
-	// Build select menu with feature options
-	const selectMenu = new StringSelectMenuBuilder()
-		.setCustomId(`HOME_${handler.featureId.toUpperCase()}`)
-		.setPlaceholder(placeholder);
+	if (handler.getSubMenuComponents) {
+		components = handler.getSubMenuComponents(handlerContext);
+	}
+	else {
+		// Determine placeholder: allow handler to provide a feature-specific one, fallback to generic
+		const placeholder = handler.getSubMenuPlaceholder
+			? handler.getSubMenuPlaceholder(handlerContext)
+			: i18n.t("commands:report.city.homes.featurePlaceholder", { lng });
 
-	// Add feature-specific options
-	handler.addSubMenuOptions(handlerContext, selectMenu);
+		// Build select menu with feature options
+		const selectMenu = new StringSelectMenuBuilder()
+			.setCustomId(`HOME_${handler.featureId.toUpperCase()}`)
+			.setPlaceholder(placeholder);
 
-	// Add back option
-	selectMenu.addOptions({
-		label: i18n.t("commands:report.city.homes.backToHome", { lng }),
-		value: HomeMenuIds.BACK_TO_HOME,
-		emoji: CrowniclesIcons.collectors.back
-	});
+		// Add feature-specific options
+		handler.addSubMenuOptions(handlerContext, selectMenu);
+
+		// Add back option
+		selectMenu.addOptions({
+			label: i18n.t("commands:report.city.homes.backToHome", { lng }),
+			value: HomeMenuIds.BACK_TO_HOME,
+			emoji: CrowniclesIcons.collectors.back
+		});
+
+		components = [new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(selectMenu)];
+	}
 
 	return {
 		embed: new CrowniclesEmbed()
 			.formatAuthor(handler.getSubMenuTitle(handlerContext, params.pseudo), params.interaction.user)
 			.setDescription(handler.getSubMenuDescription(handlerContext)),
-		components: [new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(selectMenu)],
+		components,
 		createCollector: (nestedMenus, message): CrowniclesNestedMenuCollector => {
 			const componentCollector = message.createMessageComponentCollector({ time: params.collectorTime });
 
