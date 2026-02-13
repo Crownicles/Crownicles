@@ -43,7 +43,6 @@ CrowniclesLogger.init(botConfig.LOG_LEVEL, botConfig.LOG_LOCATIONS, { app: "Core
 		password: botConfig.LOKI_PASSWORD
 	}
 	: undefined);
-export let crowniclesInstance: Crownicles;
 
 CrowniclesLogger.info(`${CoreConstants.OPENING_LINE} - ${process.env.npm_package_version}`);
 
@@ -145,6 +144,6 @@ mqttClient.on("error", error => {
 	CrowniclesLogger.errorWithObj("MQTT error", error);
 });
 
-crowniclesInstance = new Crownicles();
+export const crowniclesInstance = new Crownicles();
 crowniclesInstance.init()
 	.then();
