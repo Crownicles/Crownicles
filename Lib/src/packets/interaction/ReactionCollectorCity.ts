@@ -246,6 +246,97 @@ export class ReactionCollectorCity extends ReactionCollector {
 		this.data = data;
 	}
 
+	private buildInnReactions(): {
+		type: string; data: ReactionCollectorReaction;
+	}[] {
+		if (!this.data.inns) {
+			return [];
+		}
+		const mealsReactions = this.data.inns.flatMap(inn =>
+			inn.meals.map(meal =>
+				this.buildReaction(ReactionCollectorInnMealReaction, {
+					innId: inn.innId,
+					meal
+				})));
+
+		const roomsReactions = this.data.inns.flatMap(inn =>
+			inn.rooms.map(room =>
+				this.buildReaction(ReactionCollectorInnRoomReaction, {
+					innId: inn.innId,
+					room
+				})));
+
+		return [
+			...mealsReactions,
+			...roomsReactions
+		];
+	}
+
+	private buildEnchanterReactions(): {
+		type: string; data: ReactionCollectorReaction;
+	}[] {
+		if (!this.data.enchanter?.enchantableItems) {
+			return [];
+		}
+		return this.data.enchanter.enchantableItems.map(item =>
+			this.buildReaction(ReactionCollectorEnchantReaction, {
+				slot: item.slot,
+				itemCategory: item.category
+			}));
+	}
+
+	private buildShopReactions(): {
+		type: string; data: ReactionCollectorReaction;
+	}[] {
+		if (!this.data.shops) {
+			return [];
+		}
+		return this.data.shops.map(shop =>
+			this.buildReaction(ReactionCollectorCityShopReaction, {
+				shopId: shop.shopId
+			}));
+	}
+
+	private buildHomeManageReaction(): {
+		type: string; data: ReactionCollectorReaction;
+	}[] {
+		const manage = this.data.home.manage;
+		if (!manage) {
+			return [];
+		}
+		if (manage.newPrice) {
+			return [this.buildReaction(ReactionCollectorCityBuyHomeReaction, {})];
+		}
+		if (manage.upgrade) {
+			return [this.buildReaction(ReactionCollectorCityUpgradeHomeReaction, {})];
+		}
+		if (manage.movePrice) {
+			return [this.buildReaction(ReactionCollectorCityMoveHomeReaction, {})];
+		}
+		return [];
+	}
+
+	private buildHomeFeatureReactions(): {
+		type: string; data: ReactionCollectorReaction;
+	}[] {
+		if (!this.data.home.owned) {
+			return [];
+		}
+		const homeMenuReaction = this.buildReaction(ReactionCollectorHomeMenuReaction, {});
+		const homeBedReaction = this.buildReaction(ReactionCollectorHomeBedReaction, {});
+		const upgradeItemReactions = this.data.home.owned.upgradeStation?.upgradeableItems.map(item =>
+			this.buildReaction(ReactionCollectorUpgradeItemReaction, {
+				slot: item.slot,
+				itemCategory: item.category
+			})) ?? [];
+
+		return [
+			homeMenuReaction,
+			homeBedReaction,
+			...upgradeItemReactions
+		];
+	}
+
 	private buildBlacksmithReactions(): {
 		type: string; data: ReactionCollectorReaction;
 	}[] {
@@ -282,67 +373,17 @@ export class ReactionCollectorCity extends ReactionCollector {
 	}
 
 	creationPacket(id: string, endTime: number): ReactionCollectorCityPacket {
-		const mealsReactions = this.data.inns?.flatMap(inn =>
-			inn.meals.map(meal =>
-				this.buildReaction(ReactionCollectorInnMealReaction, {
-					innId: inn.innId,
-					meal
-				}))) || [];
-
-		const roomsReactions = this.data.inns?.flatMap(inn =>
-			inn.rooms.map(room =>
-				this.buildReaction(ReactionCollectorInnRoomReaction, {
-					innId: inn.innId,
-					room
-				}))) || [];
-
-		const enchantReactions = this.data.enchanter?.enchantableItems.map(item =>
-			this.buildReaction(ReactionCollectorEnchantReaction, {
-				slot: item.slot,
-				itemCategory: item.category
-			})) || [];
-
-		const shopReactions = this.data.shops?.map(shop =>
-			this.buildReaction(ReactionCollectorCityShopReaction, {
-				shopId: shop.shopId
-			})) || [];
-
-		const homeReaction = this.data.home.manage?.newPrice
-			? [this.buildReaction(ReactionCollectorCityBuyHomeReaction, {})]
-			: this.data.home.manage?.upgrade
-				? [this.buildReaction(ReactionCollectorCityUpgradeHomeReaction, {})]
-				: this.data.home.manage?.movePrice
-					? [this.buildReaction(ReactionCollectorCityMoveHomeReaction, {})]
-					: [];
-
-		const homeMenuReaction = this.data.home.owned
-			? [this.buildReaction(ReactionCollectorHomeMenuReaction, {})]
-			: [];
-
-		const homeBedReaction = this.data.home.owned
-			? [this.buildReaction(ReactionCollectorHomeBedReaction, {})]
-			: [];
-
-		const upgradeItemReactions = this.data.home.owned?.upgradeStation?.upgradeableItems.map(item =>
-			this.buildReaction(ReactionCollectorUpgradeItemReaction, {
-				slot: item.slot,
-				itemCategory: item.category
-			})) || [];
-
 		return {
 			id,
 			endTime,
 			reactions: [
 				this.buildReaction(ReactionCollectorExitCityReaction, {}),
 				this.buildReaction(ReactionCollectorRefuseReaction, {}),
-				...mealsReactions,
-				...roomsReactions,
-				...enchantReactions,
-				...shopReactions,
-				...homeReaction,
-				...homeMenuReaction,
-				...homeBedReaction,
-				...upgradeItemReactions,
+				...this.buildInnReactions(),
+				...this.buildEnchanterReactions(),
+				...this.buildShopReactions(),
+				...this.buildHomeManageReaction(),
+				...this.buildHomeFeatureReactions(),
 				...this.buildBlacksmithReactions()
 			],
 			data: this.buildData(ReactionCollectorCityData, {
