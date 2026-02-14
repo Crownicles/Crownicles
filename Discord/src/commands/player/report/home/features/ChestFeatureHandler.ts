@@ -11,6 +11,7 @@ import i18n from "../../../../../translations/i18n";
 import { DisplayUtils } from "../../../../../utils/DisplayUtils";
 import { CrowniclesIcons } from "../../../../../../../Lib/src/CrowniclesIcons";
 import { ItemCategory } from "../../../../../../../Lib/src/constants/ItemConstants";
+import { Language } from "../../../../../../../Lib/src/Language";
 import { HomeMenuIds } from "../HomeMenuConstants";
 import { ChestSlotsPerCategory } from "../../../../../../../Lib/src/types/HomeFeatures";
 import { MainItemDetails } from "../../../../../../../Lib/src/types/MainItemDetails";
@@ -181,14 +182,18 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 	 * Returns the updated emote index after adding all items.
 	 */
 	private addItemSectionWithButtons(params: {
-		items: { slot: number; details: ItemWithDetails }[];
+		items: {
+			slot: number; details: ItemWithDetails;
+		}[];
 		category: ItemCategory;
 		rows: ActionRowBuilder<ButtonBuilder>[];
 		emoteIndex: number;
 		customIdPrefix: string;
 		disabled: boolean;
-		lng: string;
-	}): { description: string; emoteIndex: number } {
+		lng: Language;
+	}): {
+		description: string; emoteIndex: number;
+	} {
 		let description = "";
 		let { emoteIndex } = params;
 
@@ -210,13 +215,17 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 			emoteIndex++;
 		}
 
-		return { description, emoteIndex };
+		return {
+			description, emoteIndex
+		};
 	}
 
 	/**
 	 * Parse action params from a customId string like "PREFIX_{category}_{slot}" or "PREFIX_{category}_{slot}_{chestSlot}"
 	 */
-	private parseChestActionParams(selectedValue: string, prefix: string): { category: ItemCategory; slot: number; chestSlot?: number } {
+	private parseChestActionParams(selectedValue: string, prefix: string): {
+		category: ItemCategory; slot: number; chestSlot?: number;
+	} {
 		const parts = selectedValue.replace(prefix, "").split("_");
 		return {
 			category: parseInt(parts[0], 10) as ItemCategory,
@@ -352,11 +361,17 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 	private buildCategoryMenuContent(
 		ctx: HomeFeatureHandlerContext,
 		catInfo: typeof CATEGORY_INFO[number],
-		categoryChestItems: { slot: number; details: ItemWithDetails }[],
-		categoryDepositableItems: { slot: number; details: ItemWithDetails }[],
+		categoryChestItems: {
+			slot: number; details: ItemWithDetails;
+		}[],
+		categoryDepositableItems: {
+			slot: number; details: ItemWithDetails;
+		}[],
 		maxSlots: number,
 		hasEmptySlots: boolean
-	): { text: string; rows: ActionRowBuilder<ButtonBuilder>[] } {
+	): {
+		text: string; rows: ActionRowBuilder<ButtonBuilder>[];
+	} {
 		const chest = ctx.homeData.chest!;
 		const rows: ActionRowBuilder<ButtonBuilder>[] = [new ActionRowBuilder<ButtonBuilder>()];
 
@@ -386,10 +401,16 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 
 		// Build sections based on state
 		const bothFull = !hasEmptySlots && isInventoryFull;
-		text += this.buildCategorySections(
-			ctx, catInfo, categoryChestItems, categoryDepositableItems,
-			hasEmptySlots, isInventoryFull, bothFull, rows
-		);
+		text += this.buildCategorySections({
+			ctx,
+			catInfo,
+			chestItems: categoryChestItems,
+			depositableItems: categoryDepositableItems,
+			hasEmptySlots,
+			isInventoryFull,
+			bothFull,
+			rows
+		});
 
 		// Back button
 		this.addButtonToRow(rows, new ButtonBuilder()
@@ -397,13 +418,15 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 			.setCustomId(HomeMenuIds.CHEST_BACK_TO_CATEGORIES)
 			.setStyle(ButtonStyle.Secondary));
 
-		return { text, rows };
+		return {
+			text, rows
+		};
 	}
 
 	/**
 	 * Build warning banners for chest/inventory full states.
 	 */
-	private buildWarningBanners(lng: string, hasEmptySlots: boolean, isInventoryFull: boolean): string {
+	private buildWarningBanners(lng: Language, hasEmptySlots: boolean, isInventoryFull: boolean): string {
 		let text = "";
 		if (!hasEmptySlots) {
 			text += `\n\n⚠️ *${i18n.t("commands:report.city.homes.chest.chestFull", { lng })}*`;
@@ -417,16 +440,23 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 	/**
 	 * Build deposit/withdraw/swap sections with buttons.
 	 */
-	private buildCategorySections(
-		ctx: HomeFeatureHandlerContext,
-		catInfo: typeof CATEGORY_INFO[number],
-		chestItems: { slot: number; details: ItemWithDetails }[],
-		depositableItems: { slot: number; details: ItemWithDetails }[],
-		hasEmptySlots: boolean,
-		isInventoryFull: boolean,
-		bothFull: boolean,
-		rows: ActionRowBuilder<ButtonBuilder>[]
-	): string {
+	private buildCategorySections(params: {
+		ctx: HomeFeatureHandlerContext;
+		catInfo: typeof CATEGORY_INFO[number];
+		chestItems: {
+			slot: number; details: ItemWithDetails;
+		}[];
+		depositableItems: {
+			slot: number; details: ItemWithDetails;
+		}[];
+		hasEmptySlots: boolean;
+		isInventoryFull: boolean;
+		bothFull: boolean;
+		rows: ActionRowBuilder<ButtonBuilder>[];
+	}): string {
+		const {
+			ctx, catInfo, chestItems, depositableItems, hasEmptySlots, isInventoryFull, bothFull, rows
+		} = params;
 		let text = "";
 		let emoteIndex = 0;
 
@@ -489,9 +519,13 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		componentInteraction: ComponentInteraction,
 		nestedMenus: CrowniclesNestedMenus
 	): Promise<void> {
-		const { category, slot } = this.parseChestActionParams(selectedValue, HomeMenuIds.CHEST_DEPOSIT_PREFIX);
+		const {
+			category, slot
+		} = this.parseChestActionParams(selectedValue, HomeMenuIds.CHEST_DEPOSIT_PREFIX);
 		await componentInteraction.deferUpdate();
-		await this.sendChestAction({ ctx, action: "deposit", slot, category, nestedMenus });
+		await this.sendChestAction({
+			ctx, action: "deposit", slot, category, nestedMenus
+		});
 	}
 
 	private async handleWithdraw(
@@ -500,9 +534,13 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		componentInteraction: ComponentInteraction,
 		nestedMenus: CrowniclesNestedMenus
 	): Promise<void> {
-		const { category, slot } = this.parseChestActionParams(selectedValue, HomeMenuIds.CHEST_WITHDRAW_PREFIX);
+		const {
+			category, slot
+		} = this.parseChestActionParams(selectedValue, HomeMenuIds.CHEST_WITHDRAW_PREFIX);
 		await componentInteraction.deferUpdate();
-		await this.sendChestAction({ ctx, action: "withdraw", slot, category, nestedMenus });
+		await this.sendChestAction({
+			ctx, action: "withdraw", slot, category, nestedMenus
+		});
 	}
 
 	/**
@@ -515,7 +553,9 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		componentInteraction: ComponentInteraction,
 		nestedMenus: CrowniclesNestedMenus
 	): Promise<void> {
-		const { category, slot: inventorySlot } = this.parseChestActionParams(selectedValue, HomeMenuIds.CHEST_SWAP_SELECT_PREFIX);
+		const {
+			category, slot: inventorySlot
+		} = this.parseChestActionParams(selectedValue, HomeMenuIds.CHEST_SWAP_SELECT_PREFIX);
 		await componentInteraction.deferUpdate();
 
 		const categoryIndex = CATEGORY_INFO.findIndex(c => c.category === category);
@@ -537,9 +577,13 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		componentInteraction: ComponentInteraction,
 		nestedMenus: CrowniclesNestedMenus
 	): Promise<void> {
-		const { category, slot: inventorySlot, chestSlot } = this.parseChestActionParams(selectedValue, HomeMenuIds.CHEST_SWAP_TARGET_PREFIX);
+		const {
+			category, slot: inventorySlot, chestSlot
+		} = this.parseChestActionParams(selectedValue, HomeMenuIds.CHEST_SWAP_TARGET_PREFIX);
 		await componentInteraction.deferUpdate();
-		await this.sendChestAction({ ctx, action: "swap", slot: inventorySlot, category, nestedMenus, chestSlot });
+		await this.sendChestAction({
+			ctx, action: "swap", slot: inventorySlot, category, nestedMenus, chestSlot
+		});
 	}
 
 	/**
@@ -628,7 +672,9 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		nestedMenus: CrowniclesNestedMenus;
 		chestSlot?: number;
 	}): Promise<void> {
-		const { ctx, action, slot, category, nestedMenus, chestSlot } = params;
+		const {
+			ctx, action, slot, category, nestedMenus, chestSlot
+		} = params;
 
 		await DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse(
 			ctx.context,
