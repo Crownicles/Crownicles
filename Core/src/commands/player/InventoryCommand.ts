@@ -50,56 +50,56 @@ export default class InventoryCommand {
 			return;
 		}
 
-		response.push(makePacket(CommandInventoryPacketRes, await this.buildInventoryData(toCheckPlayer)));
+		response.push(makePacket(CommandInventoryPacketRes, await buildInventoryData(toCheckPlayer)));
 	}
+}
 
-	private async buildInventoryData(toCheckPlayer: Player): Promise<CommandInventoryPacketRes> {
-		const maxStatsValues = toCheckPlayer.getMaxStatsValue();
-		const items = await InventorySlots.getOfPlayer(toCheckPlayer.id);
-		const invInfo = await InventoryInfos.getOfPlayer(toCheckPlayer.id);
-		const talismans = await PlayerTalismansManager.getOfPlayer(toCheckPlayer.id);
-		const playerMaterials = await Materials.getPlayerMaterials(toCheckPlayer.id);
-		const home = await Homes.getOfPlayer(toCheckPlayer.id);
-		const homeBonus = home?.getLevel()?.features.inventoryBonus ?? {
-			weapon: 0, armor: 0, potion: 0, object: 0
-		};
+async function buildInventoryData(toCheckPlayer: Player): Promise<CommandInventoryPacketRes> {
+	const maxStatsValues = toCheckPlayer.getMaxStatsValue();
+	const items = await InventorySlots.getOfPlayer(toCheckPlayer.id);
+	const invInfo = await InventoryInfos.getOfPlayer(toCheckPlayer.id);
+	const talismans = await PlayerTalismansManager.getOfPlayer(toCheckPlayer.id);
+	const playerMaterials = await Materials.getPlayerMaterials(toCheckPlayer.id);
+	const home = await Homes.getOfPlayer(toCheckPlayer.id);
+	const homeBonus = home?.getLevel()?.features.inventoryBonus ?? {
+		weapon: 0, armor: 0, potion: 0, object: 0
+	};
 
-		const weapon = items.find(item => item.isWeapon() && item.isEquipped())!;
-		const armor = items.find(item => item.isArmor() && item.isEquipped())!;
-		const potion = items.find(item => item.isPotion() && item.isEquipped())!;
-		const object = items.find(item => item.isObject() && item.isEquipped())!;
+	const weapon = items.find(item => item.isWeapon() && item.isEquipped())!;
+	const armor = items.find(item => item.isArmor() && item.isEquipped())!;
+	const potion = items.find(item => item.isPotion() && item.isEquipped())!;
+	const object = items.find(item => item.isObject() && item.isEquipped())!;
 
-		return {
-			foundPlayer: true,
-			keycloakId: toCheckPlayer.keycloakId,
-			hasTalisman: talismans.hasTalisman,
-			hasCloneTalisman: talismans.hasCloneTalisman,
-			data: {
-				weapon: (weapon.getItem() as MainItem).getDisplayPacket(weapon.itemLevel, weapon.itemEnchantmentId ?? undefined, maxStatsValues),
-				armor: (armor.getItem() as MainItem).getDisplayPacket(armor.itemLevel, armor.itemEnchantmentId ?? undefined, maxStatsValues),
-				potion: (potion.getItem() as Potion).getDisplayPacket(),
-				object: (object.getItem() as ObjectItem).getDisplayPacket(maxStatsValues),
-				backupWeapons: buildMainItemBackups(items.filter(item => item.isWeapon() && !item.isEquipped() && item.itemId !== 0), maxStatsValues),
-				backupArmors: buildMainItemBackups(items.filter(item => item.isArmor() && !item.isEquipped() && item.itemId !== 0), maxStatsValues),
-				backupPotions: items.filter(item => item.isPotion() && !item.isEquipped() && item.itemId !== 0).map(item => ({
-					display: (item.getItem() as Potion).getDisplayPacket(), slot: item.slot
-				})),
-				backupObjects: items.filter(item => item.isObject() && !item.isEquipped() && item.itemId !== 0).map(item => ({
-					display: (item.getItem() as ObjectItem).getDisplayPacket(maxStatsValues), slot: item.slot
-				})),
-				slots: {
-					weapons: invInfo.weaponSlots + homeBonus.weapon,
-					armors: invInfo.armorSlots + homeBonus.armor,
-					potions: invInfo.potionSlots + homeBonus.potion,
-					objects: invInfo.objectSlots + homeBonus.object
-				},
-				materials: playerMaterials
-					.filter(m => m.quantity > 0)
-					.map(m => ({
-						materialId: m.materialId,
-						quantity: m.quantity
-					}))
-			}
-		};
-	}
+	return {
+		foundPlayer: true,
+		keycloakId: toCheckPlayer.keycloakId,
+		hasTalisman: talismans.hasTalisman,
+		hasCloneTalisman: talismans.hasCloneTalisman,
+		data: {
+			weapon: (weapon.getItem() as MainItem).getDisplayPacket(weapon.itemLevel, weapon.itemEnchantmentId ?? undefined, maxStatsValues),
+			armor: (armor.getItem() as MainItem).getDisplayPacket(armor.itemLevel, armor.itemEnchantmentId ?? undefined, maxStatsValues),
+			potion: (potion.getItem() as Potion).getDisplayPacket(),
+			object: (object.getItem() as ObjectItem).getDisplayPacket(maxStatsValues),
+			backupWeapons: buildMainItemBackups(items.filter(item => item.isWeapon() && !item.isEquipped() && item.itemId !== 0), maxStatsValues),
+			backupArmors: buildMainItemBackups(items.filter(item => item.isArmor() && !item.isEquipped() && item.itemId !== 0), maxStatsValues),
+			backupPotions: items.filter(item => item.isPotion() && !item.isEquipped() && item.itemId !== 0).map(item => ({
+				display: (item.getItem() as Potion).getDisplayPacket(), slot: item.slot
+			})),
+			backupObjects: items.filter(item => item.isObject() && !item.isEquipped() && item.itemId !== 0).map(item => ({
+				display: (item.getItem() as ObjectItem).getDisplayPacket(maxStatsValues), slot: item.slot
+			})),
+			slots: {
+				weapons: invInfo.weaponSlots + homeBonus.weapon,
+				armors: invInfo.armorSlots + homeBonus.armor,
+				potions: invInfo.potionSlots + homeBonus.potion,
+				objects: invInfo.objectSlots + homeBonus.object
+			},
+			materials: playerMaterials
+				.filter(m => m.quantity > 0)
+				.map(m => ({
+					materialId: m.materialId,
+					quantity: m.quantity
+				}))
+		}
+	};
 }
