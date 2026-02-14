@@ -8,6 +8,7 @@ import {
 import { InventoryInfos } from "../database/game/models/InventoryInfo";
 import { ItemCategory } from "../../../../Lib/src/constants/ItemConstants";
 import { buildEquipCategoryData } from "../../commands/player/EquipCommand";
+import { Homes } from "../database/game/models/Home";
 
 /**
  * Handle an equip/deposit action from AsyncPacketSender.
@@ -42,11 +43,15 @@ export async function handleEquipAction(
 	// Refresh inventory data
 	const refreshedSlots = await InventorySlots.getOfPlayer(player.id);
 	const inventoryInfo = await InventoryInfos.getOfPlayer(player.id);
+	const home = await Homes.getOfPlayer(player.id);
+	const homeBonus = home?.getLevel()?.features.inventoryBonus ?? {
+		weapon: 0, armor: 0, potion: 0, object: 0
+	};
 	const slotLimits = new Map<ItemCategory, number>([
-		[ItemCategory.WEAPON, inventoryInfo.slotLimitForCategory(ItemCategory.WEAPON)],
-		[ItemCategory.ARMOR, inventoryInfo.slotLimitForCategory(ItemCategory.ARMOR)],
-		[ItemCategory.POTION, inventoryInfo.slotLimitForCategory(ItemCategory.POTION)],
-		[ItemCategory.OBJECT, inventoryInfo.slotLimitForCategory(ItemCategory.OBJECT)]
+		[ItemCategory.WEAPON, inventoryInfo.slotLimitForCategory(ItemCategory.WEAPON) + homeBonus.weapon],
+		[ItemCategory.ARMOR, inventoryInfo.slotLimitForCategory(ItemCategory.ARMOR) + homeBonus.armor],
+		[ItemCategory.POTION, inventoryInfo.slotLimitForCategory(ItemCategory.POTION) + homeBonus.potion],
+		[ItemCategory.OBJECT, inventoryInfo.slotLimitForCategory(ItemCategory.OBJECT) + homeBonus.object]
 	]);
 
 	return {
@@ -118,7 +123,14 @@ async function processDeposit(playerId: number, category: ItemCategory): Promise
 	}
 
 	const inventoryInfo = await InventoryInfos.getOfPlayer(playerId);
-	const maxSlots = inventoryInfo.slotLimitForCategory(category);
+	const home = await Homes.getOfPlayer(playerId);
+	const homeBonus = home?.getLevel()?.features.inventoryBonus;
+	const bonusForCategory = homeBonus?.[category === ItemCategory.WEAPON
+		? "weapon"
+		: category === ItemCategory.ARMOR
+			? "armor"
+			: category === ItemCategory.POTION ? "potion" : "object"] ?? 0;
+	const maxSlots = inventoryInfo.slotLimitForCategory(category) + bonusForCategory;
 	const backupSlots = inventorySlots.filter(s => s.itemCategory === category && !s.isEquipped());
 
 	// Find an empty backup slot

@@ -70,6 +70,8 @@ import {
 	EditValueParameters, HealthEditValueParameters, MissionHealthParameter
 } from "../EditValueParameters";
 import { BlessingManager } from "../../../blessings/BlessingManager";
+import { Homes } from "./Home";
+import { getSlotCountForCategory } from "../../../../../../Lib/src/types/HomeFeatures";
 
 export type PlayerEditValueParameters = {
 	player: Player;
@@ -658,7 +660,9 @@ export class Player extends Model {
 			});
 			return true;
 		}
-		const slotsLimit = invInfo.slotLimitForCategory(category);
+		const home = await Homes.getOfPlayer(this.id);
+		const homeBonus = home?.getLevel()?.features.inventoryBonus;
+		const slotsLimit = invInfo.slotLimitForCategory(category) + (homeBonus ? getSlotCountForCategory(homeBonus, category) : 0);
 		const items = invSlots.filter(slot => slot.itemCategory === category && slot.slot < slotsLimit);
 		if (items.length >= slotsLimit) {
 			return false;

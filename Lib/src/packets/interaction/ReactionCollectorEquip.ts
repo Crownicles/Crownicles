@@ -30,9 +30,7 @@ export class ReactionCollectorEquip extends ReactionCollector {
 		return {
 			id,
 			endTime,
-			reactions: [
-				this.buildReaction(ReactionCollectorEquipCloseReaction, {})
-			],
+			reactions: [this.buildReaction(ReactionCollectorEquipCloseReaction, {})],
 			data: this.buildData(ReactionCollectorEquipData, {
 				categories: this.categories
 			}),

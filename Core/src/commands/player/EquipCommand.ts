@@ -18,6 +18,7 @@ import { ReactionCollectorInstance } from "../../core/utils/ReactionsCollector";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
 import { BlockingUtils } from "../../core/utils/BlockingUtils";
 import { ReactionCollectorEquip } from "../../../../Lib/src/packets/interaction/ReactionCollectorEquip";
+import { Homes } from "../../core/database/game/models/Home";
 
 /**
  * Build category data from player's inventory.
@@ -71,12 +72,16 @@ export default class EquipCommand {
 	async execute(response: CrowniclesPacket[], player: Player, _packet: CommandEquipPacketReq, context: PacketContext): Promise<void> {
 		const inventorySlots = await InventorySlots.getOfPlayer(player.id);
 		const inventoryInfo = await InventoryInfos.getOfPlayer(player.id);
+		const home = await Homes.getOfPlayer(player.id);
+		const homeBonus = home?.getLevel()?.features.inventoryBonus ?? {
+			weapon: 0, armor: 0, potion: 0, object: 0
+		};
 
 		const slotLimits = new Map<ItemCategory, number>([
-			[ItemCategory.WEAPON, inventoryInfo.slotLimitForCategory(ItemCategory.WEAPON)],
-			[ItemCategory.ARMOR, inventoryInfo.slotLimitForCategory(ItemCategory.ARMOR)],
-			[ItemCategory.POTION, inventoryInfo.slotLimitForCategory(ItemCategory.POTION)],
-			[ItemCategory.OBJECT, inventoryInfo.slotLimitForCategory(ItemCategory.OBJECT)]
+			[ItemCategory.WEAPON, inventoryInfo.slotLimitForCategory(ItemCategory.WEAPON) + homeBonus.weapon],
+			[ItemCategory.ARMOR, inventoryInfo.slotLimitForCategory(ItemCategory.ARMOR) + homeBonus.armor],
+			[ItemCategory.POTION, inventoryInfo.slotLimitForCategory(ItemCategory.POTION) + homeBonus.potion],
+			[ItemCategory.OBJECT, inventoryInfo.slotLimitForCategory(ItemCategory.OBJECT) + homeBonus.object]
 		]);
 
 		const categories = buildEquipCategoryData(player, inventorySlots, slotLimits);
