@@ -239,8 +239,12 @@ function getMaterialsEmbed(packet: CommandInventoryPacketRes, pseudo: string, ln
 		return embed;
 	}
 
-	// Sort materials and build display lines
-	const sortedMaterials = [...materials].sort((a, b) => b.quantity - a.quantity || a.materialId - b.materialId);
+	// Sort materials alphabetically by name
+	const sortedMaterials = [...materials].sort((a, b) => {
+		const nameA = i18n.t(`models:materials.${a.materialId}`, { lng });
+		const nameB = i18n.t(`models:materials.${b.materialId}`, { lng });
+		return nameA.localeCompare(nameB, lng);
+	});
 	const materialLines = sortedMaterials.map(m => {
 		const emoji = CrowniclesIcons.materials[m.materialId] ?? CrowniclesIcons.inventory.stock;
 		const name = i18n.t(`models:materials.${m.materialId}`, { lng });
