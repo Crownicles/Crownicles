@@ -354,7 +354,7 @@ describe('ItemUtils - giveItemToPlayer', () => {
 			const customMultiplier = 0.5;
 
 			// Act
-			await giveItemToPlayer(mockResponse, mockContext, mockPlayer, mockItem, customMultiplier);
+			await giveItemToPlayer(mockResponse, mockContext, mockPlayer, mockItem, { resaleMultiplier: customMultiplier });
 
 			// Assert
 			expect(mockResponse).toHaveLength(2);
@@ -630,7 +630,7 @@ describe('ItemUtils - giveItemToPlayer', () => {
 
 		it('should NOT allow drinking TIME_SPEEDUP potions when canDrinkImmediately is false', async () => {
 			// Act - Call with canDrinkImmediately = false (simulates big event before destination choice)
-			await giveItemToPlayer(mockResponse, mockContext, mockPlayer, mockTimePotion, 1, false);
+			await giveItemToPlayer(mockResponse, mockContext, mockPlayer, mockTimePotion, { resaleMultiplier: 1, canDrinkImmediately: false });
 
 			// Assert - Should NOT allow drinking (ReactionCollectorItemAccept with canDrink = false)
 			expect(mockResponse).toHaveLength(2); // ItemFoundPacket + ReactionCollectorInstance
@@ -642,7 +642,7 @@ describe('ItemUtils - giveItemToPlayer', () => {
 
 		it('should allow drinking TIME_SPEEDUP potions when canDrinkImmediately is true', async () => {
 			// Act - Call with canDrinkImmediately = true (default behavior, normal gameplay)
-			await giveItemToPlayer(mockResponse, mockContext, mockPlayer, mockTimePotion, 1, true);
+			await giveItemToPlayer(mockResponse, mockContext, mockPlayer, mockTimePotion, { resaleMultiplier: 1, canDrinkImmediately: true });
 
 			// Assert - Should NOT allow drinking because TIME_SPEEDUP potions cannot be drunk immediately
 			expect(mockResponse).toHaveLength(2); // ItemFoundPacket + ReactionCollectorInstance
@@ -669,7 +669,7 @@ describe('ItemUtils - giveItemToPlayer', () => {
 			};
 
 			// Act
-			await giveItemToPlayer(mockResponse, mockContext, mockPlayer, fightPotion, 1, false);
+			await giveItemToPlayer(mockResponse, mockContext, mockPlayer, fightPotion, { resaleMultiplier: 1, canDrinkImmediately: false });
 
 			// Assert - Fight potions cannot be drunk immediately anyway
 			expect(mockResponse).toHaveLength(2);
@@ -696,7 +696,7 @@ describe('ItemUtils - giveItemToPlayer', () => {
 			};
 
 			// Act - Even with canDrinkImmediately = false, non-TIME_SPEEDUP potions should be drinkable
-			await giveItemToPlayer(mockResponse, mockContext, mockPlayer, moneyPotion, 1, false);
+			await giveItemToPlayer(mockResponse, mockContext, mockPlayer, moneyPotion, { resaleMultiplier: 1, canDrinkImmediately: false });
 
 			// Assert - Should allow drinking (not a TIME_SPEEDUP potion)
 			expect(mockResponse).toHaveLength(2);
@@ -738,7 +738,7 @@ describe('ItemUtils - giveItemToPlayer', () => {
 			vi.mocked(InventorySlots.getOfPlayer).mockResolvedValue(mockInventorySlots);
 
 			// Act - Give TIME_SPEEDUP potion with canDrinkImmediately = false
-			await giveItemToPlayer(mockResponse, mockContext, mockPlayer, mockTimePotion, 1, false);
+			await giveItemToPlayer(mockResponse, mockContext, mockPlayer, mockTimePotion, { resaleMultiplier: 1, canDrinkImmediately: false });
 
 			// Assert - Should create collector but without drink option
 			expect(mockResponse.length).toBeGreaterThanOrEqual(2);
