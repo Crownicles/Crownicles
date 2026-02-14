@@ -791,12 +791,29 @@ export async function handleBlacksmithUpgradeReaction(
 		return;
 	}
 
-	// Calculate total cost
+	// Re-fetch material quantities from DB to avoid relying on stale collector snapshot
+	const playerMaterials = await Materials.getPlayerMaterials(player.id);
+	const playerMaterialMap = new Map(playerMaterials.map(m => [m.materialId, m.quantity]));
+
+	const freshHasAllMaterials = itemToUpgrade.requiredMaterials.every(
+		m => (playerMaterialMap.get(m.materialId) ?? 0) >= m.quantity
+	);
+
+	// Calculate fresh missing materials cost based on DB state
+	const freshMissingMaterials = itemToUpgrade.requiredMaterials
+		.filter(m => (playerMaterialMap.get(m.materialId) ?? 0) < m.quantity)
+		.map(m => ({
+			rarity: m.rarity,
+			quantity: m.quantity - (playerMaterialMap.get(m.materialId) ?? 0)
+		}));
+	const freshMissingMaterialsCost = BlacksmithConstants.getMaterialsPurchasePrice(freshMissingMaterials);
+
+	// Calculate total cost using fresh data
 	let totalCost = itemToUpgrade.upgradeCost;
-	const boughtMaterials = reaction.buyMaterials && !itemToUpgrade.hasAllMaterials;
+	const boughtMaterials = reaction.buyMaterials && !freshHasAllMaterials;
 
 	if (boughtMaterials) {
-		totalCost += itemToUpgrade.missingMaterialsCost;
+		totalCost += freshMissingMaterialsCost;
 	}
 
 	// Check if player has enough money
@@ -807,29 +824,18 @@ export async function handleBlacksmithUpgradeReaction(
 		return;
 	}
 
-	// Re-fetch material quantities from DB to avoid relying on stale collector snapshot
-	const playerMaterials = await Materials.getPlayerMaterials(player.id);
-	const playerMaterialMap = new Map(playerMaterials.map(m => [m.materialId, m.quantity]));
-
-	const freshHasAllMaterials = itemToUpgrade.requiredMaterials.every(
-		m => (playerMaterialMap.get(m.materialId) ?? 0) >= m.quantity
-	);
-
 	// If not buying materials, check if player still has all required materials
 	if (!boughtMaterials && !freshHasAllMaterials) {
 		response.push(makePacket(CommandReportBlacksmithMissingMaterialsRes, {}));
 		return;
 	}
 
-	// Consume materials: always consume the full required quantities
+	// Consume materials: consume full quantities required (at this point we know player has them or is buying them)
 	const materialsToConsume = itemToUpgrade.requiredMaterials
-		.map(m => {
-			const freshQuantity = playerMaterialMap.get(m.materialId) ?? 0;
-			return {
-				materialId: m.materialId,
-				quantity: Math.min(m.quantity, freshQuantity)
-			};
-		})
+		.map(m => ({
+			materialId: m.materialId,
+			quantity: Math.min(m.quantity, playerMaterialMap.get(m.materialId) ?? 0)
+		}))
 		.filter(m => m.quantity > 0);
 
 	if (materialsToConsume.length > 0) {

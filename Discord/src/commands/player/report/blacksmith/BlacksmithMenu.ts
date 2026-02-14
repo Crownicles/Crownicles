@@ -26,6 +26,7 @@ import { sendInteractionNotForYou } from "../../../../utils/ErrorUtils";
 import { DiscordCollectorUtils } from "../../../../utils/DiscordCollectorUtils";
 import { Language } from "../../../../../../Lib/src/Language";
 import { BlacksmithMenuIds } from "./BlacksmithMenuConstants";
+import { CrowniclesLogger } from "../../../../../../Lib/src/logs/CrowniclesLogger";
 
 export interface BlacksmithMenuParams {
 	context: PacketContext;
@@ -33,6 +34,36 @@ export interface BlacksmithMenuParams {
 	packet: ReactionCollectorCreationPacket;
 	collectorTime: number;
 	pseudo: string;
+}
+
+/**
+ * Type guard to check if a reaction is a blacksmith upgrade reaction
+ */
+function isBlacksmithUpgradeReaction(reaction: {
+	type: string; data: unknown;
+}): reaction is {
+	type: string; data: ReactionCollectorBlacksmithUpgradeReaction;
+} {
+	if (reaction.type !== ReactionCollectorBlacksmithUpgradeReaction.name) {
+		return false;
+	}
+	const data = reaction.data as Record<string, unknown>;
+	return typeof data.slot === "number" && typeof data.itemCategory === "number" && typeof data.buyMaterials === "boolean";
+}
+
+/**
+ * Type guard to check if a reaction is a blacksmith disenchant reaction
+ */
+function isBlacksmithDisenchantReaction(reaction: {
+	type: string; data: unknown;
+}): reaction is {
+	type: string; data: ReactionCollectorBlacksmithDisenchantReaction;
+} {
+	if (reaction.type !== ReactionCollectorBlacksmithDisenchantReaction.name) {
+		return false;
+	}
+	const data = reaction.data as Record<string, unknown>;
+	return typeof data.slot === "number" && typeof data.itemCategory === "number";
 }
 
 /**
@@ -344,14 +375,18 @@ export function getBlacksmithUpgradeDetailMenu(
 
 					// Find the reaction with matching slot, category, and buyMaterials flag
 					const reactionIndex = packet.reactions.findIndex(
-						r => r.type === ReactionCollectorBlacksmithUpgradeReaction.name
-							&& (r.data as ReactionCollectorBlacksmithUpgradeReaction).slot === item.slot
-							&& (r.data as ReactionCollectorBlacksmithUpgradeReaction).itemCategory === item.category
-							&& (r.data as ReactionCollectorBlacksmithUpgradeReaction).buyMaterials === buyMaterials
+						r => isBlacksmithUpgradeReaction(r)
+							&& r.data.slot === item.slot
+							&& r.data.itemCategory === item.category
+							&& r.data.buyMaterials === buyMaterials
 					);
 
 					if (reactionIndex !== -1) {
 						DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, buttonInteraction, reactionIndex);
+					}
+					else {
+						CrowniclesLogger.error(`Blacksmith upgrade reaction not found for slot ${item.slot}, category ${item.category}, buyMaterials ${buyMaterials}`);
+						await buttonInteraction.deleteReply();
 					}
 				}
 			});
@@ -510,13 +545,17 @@ export function getBlacksmithDisenchantDetailMenu(
 
 					// Find the reaction and send it
 					const reactionIndex = packet.reactions.findIndex(
-						r => r.type === ReactionCollectorBlacksmithDisenchantReaction.name
-							&& (r.data as ReactionCollectorBlacksmithDisenchantReaction).slot === item.slot
-							&& (r.data as ReactionCollectorBlacksmithDisenchantReaction).itemCategory === item.category
+						r => isBlacksmithDisenchantReaction(r)
+							&& r.data.slot === item.slot
+							&& r.data.itemCategory === item.category
 					);
 
 					if (reactionIndex !== -1) {
 						DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, buttonInteraction, reactionIndex);
+					}
+					else {
+						CrowniclesLogger.error(`Blacksmith disenchant reaction not found for slot ${item.slot}, category ${item.category}`);
+						await buttonInteraction.deleteReply();
 					}
 				}
 			});
