@@ -83,10 +83,12 @@ export default class InventoryCommand {
 					potions: invInfo.potionSlots,
 					objects: invInfo.objectSlots
 				},
-				materials: playerMaterials.map(m => ({
-					materialId: m.materialId,
-					quantity: m.quantity
-				}))
+				materials: playerMaterials
+					.filter(m => m.quantity > 0)
+					.map(m => ({
+						materialId: m.materialId,
+						quantity: m.quantity
+					}))
 			}
 		}));
 	}
