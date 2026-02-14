@@ -209,6 +209,33 @@ export class ReactionCollectorBlacksmithDisenchantReaction extends ReactionColle
 	itemCategory!: ItemCategory;
 }
 
+/**
+ * Union type for all city reactions
+ */
+type CityReaction =
+	| ReactionCollectorExitCityReaction
+	| ReactionCollectorRefuseReaction
+	| ReactionCollectorInnMealReaction
+	| ReactionCollectorInnRoomReaction
+	| ReactionCollectorEnchantReaction
+	| ReactionCollectorCityShopReaction
+	| ReactionCollectorCityBuyHomeReaction
+	| ReactionCollectorCityUpgradeHomeReaction
+	| ReactionCollectorCityMoveHomeReaction
+	| ReactionCollectorHomeMenuReaction
+	| ReactionCollectorUpgradeItemReaction
+	| ReactionCollectorBlacksmithMenuReaction
+	| ReactionCollectorBlacksmithUpgradeReaction
+	| ReactionCollectorBlacksmithDisenchantReaction;
+
+/**
+ * Packet type for the city reaction collector
+ */
+export type ReactionCollectorCityPacket = ReactionCollectorCreationPacket<
+	ReactionCollectorCityData,
+	CityReaction
+>;
+
 export class ReactionCollectorCity extends ReactionCollector {
 	private readonly data!: ReactionCollectorCityData;
 
@@ -252,7 +279,7 @@ export class ReactionCollectorCity extends ReactionCollector {
 		];
 	}
 
-	creationPacket(id: string, endTime: number): ReactionCollectorCreationPacket {
+	creationPacket(id: string, endTime: number): ReactionCollectorCityPacket {
 		const mealsReactions = this.data.inns?.flatMap(inn =>
 			inn.meals.map(meal =>
 				this.buildReaction(ReactionCollectorInnMealReaction, {

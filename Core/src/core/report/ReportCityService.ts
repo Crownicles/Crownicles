@@ -86,18 +86,31 @@ export function buildEnchanterData(
 	const {
 		enchantment, enchantmentId, isPlayerMage
 	} = enchantData;
-	const isEquipment = (i: InventorySlot): boolean => i.isPrimaryEquipment();
+
+	const enchantableItems: EnchanterData["enchantableItems"] = [];
+	let equipmentCount = 0;
+	let hasEnchantedItem = false;
+
+	for (const item of playerInventory) {
+		if (item.isPrimaryEquipment()) {
+			equipmentCount++;
+			if (item.itemEnchantmentId) {
+				hasEnchantedItem = true;
+			}
+			else {
+				enchantableItems.push({
+					category: item.itemCategory,
+					slot: item.slot,
+					details: item.itemWithDetails(player) as MainItemDetails
+				});
+			}
+		}
+	}
 
 	return {
-		enchantableItems: playerInventory
-			.filter(i => isEquipment(i) && !i.itemEnchantmentId)
-			.map(i => ({
-				category: i.itemCategory,
-				slot: i.slot,
-				details: i.itemWithDetails(player) as MainItemDetails
-			})),
-		isInventoryEmpty: playerInventory.filter(isEquipment).length === 0,
-		hasAtLeastOneEnchantedItem: playerInventory.some(i => isEquipment(i) && Boolean(i.itemEnchantmentId)),
+		enchantableItems,
+		isInventoryEmpty: equipmentCount === 0,
+		hasAtLeastOneEnchantedItem: hasEnchantedItem,
 		enchantmentId,
 		enchantmentCost: enchantment.getEnchantmentCost(isPlayerMage),
 		enchantmentType: enchantment.kind.type.id,
