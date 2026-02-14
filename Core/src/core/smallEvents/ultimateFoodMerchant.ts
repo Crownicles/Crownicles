@@ -1,5 +1,6 @@
 import Player from "../database/game/models/Player";
 import { GuildConstants } from "../../../../Lib/src/constants/GuildConstants";
+import { ItemConstants } from "../../../../Lib/src/constants/ItemConstants";
 import { SmallEventConstants } from "../../../../Lib/src/constants/SmallEventConstants";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import {
@@ -92,7 +93,7 @@ async function giveReward(packet: SmallEventUltimateFoodMerchantPacket, response
 			await giveItemToPlayer(response, context, player, generateRandomItem({
 				minRarity: minRarity(player),
 				maxRarity: maxRarity(player)
-			}));
+			}), { itemLevel: ItemConstants.generateRandomLootLevel() });
 			break;
 		case SmallEventConstants.ULTIMATE_FOOD_MERCHANT.INTERACTIONS_NAMES.COMMON_FOOD:
 			packet.amount = foodAmount(player, guild!.commonFood, false);
