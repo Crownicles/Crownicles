@@ -568,12 +568,6 @@
       "SHOP": {
         "description": "This command allows you to spend your money to facilitate your adventure. Besides the 4 main choices which are always available, you can buy an exclusive potion every day, available on sale for only 24 hours."
       },
-      "SWITCH": {
-        "description": "Exchanges a piece of equipment from your stockpile with what you currently own, provided it is of the same category. If no equipment in the category of the item to be equipped is owned before the command is executed, it will simply move it into the inventory."
-      },
-      "DEPOSIT": {
-        "description": "Place a piece of equipment from your main hand in your storeroom. If you only have one piece of equipment to deposit, it will be automatically put away."
-      },
       "TOP": {
         "description": "Displays the general ranking of the game in 15 player intervals. Players in the same server as you are shown by a blue dot."
       },
@@ -1712,24 +1706,6 @@
         "Spectators witnessed an epic match between two talented players on equal terms."
       ]
     }
-  },
-  "switch": {
-    "titleSuccess": "{{pseudo}}, command completed!",
-    "switchingDouble": "{{item1}} and {{item2}} were exchanged!",
-    "switchingSingle": "You have equipped: {{item1}} !",
-    "noItemToSwitch": "You have no item to equip!",
-    "cancelled": "Action cancelled!",
-    "switchSelectionTitle": "{{pseudo}}, equipping an item",
-    "switchSelectionDescription": "Choose an item from the list below:"
-  },
-  "deposit": {
-    "titleSuccess": "{{pseudo}}, command completed!",
-    "deposeSuccess": "{{item}} has been deposited in your reserve!",
-    "noItemToDeposit": "You have no equipment to deposit!",
-    "cannotDeposit": "Your reserve is full.",
-    "cancelled": "Action cancelled!",
-    "depositSelectionTitle": "{{pseudo}}, depositing an item",
-    "depositSelectionDescription": "Choose an object to deposit from the list below:"
   },
   "equip": {
     "title": "{{pseudo}}, equipment management",

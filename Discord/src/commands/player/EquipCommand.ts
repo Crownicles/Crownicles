@@ -463,15 +463,14 @@ export async function equipCollector(
 	const dummyCollector = msg.createReactionCollector();
 	dummyCollector.on("end", async () => {
 		await nestedMenus.stopCurrentCollector();
-		await msg.edit({
+		await interaction.followUp({
 			embeds: [
 				new CrowniclesEmbed()
 					.formatAuthor(i18n.t("commands:equip.closeTitle", {
 						lng: ctx.lng, pseudo
 					}), interaction.user)
 					.setDescription(i18n.t("commands:equip.closeDescription", { lng: ctx.lng }))
-			],
-			components: []
+			]
 		});
 	});
 

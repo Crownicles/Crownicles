@@ -77,8 +77,6 @@ import {
 import { ReactionCollectorFightData } from "../../../../Lib/src/packets/interaction/ReactionCollectorFight";
 import { ReactionCollectorGuildLeaveData } from "../../../../Lib/src/packets/interaction/ReactionCollectorGuildLeave";
 import { createGuildLeaveCollector } from "../../commands/guild/GuildLeaveCommand";
-import { ReactionCollectorSwitchItemData } from "../../../../Lib/src/packets/interaction/ReactionCollectorSwitchItem";
-import { switchItemCollector } from "../../commands/player/SwitchCommand";
 import { ReactionCollectorGuildElderRemoveData } from "../../../../Lib/src/packets/interaction/ReactionCollectorGuildElderRemove";
 import { createGuildElderRemoveCollector } from "../../commands/guild/GuildElderRemoveCommand";
 import { ReactionCollectorGuildDescriptionData } from "../../../../Lib/src/packets/interaction/ReactionCollectorGuildDescription";
@@ -112,8 +110,6 @@ import { ReactionCollectorCityData } from "../../../../Lib/src/packets/interacti
 import { ReportCityMenu } from "../../commands/player/report/ReportCityMenu";
 import { ReactionCollectorDailyBonusData } from "../../../../Lib/src/packets/interaction/ReactionCollectorDailyBonus";
 import { handleDailyBonusCollector } from "../../commands/player/DailyBonusCommand";
-import { ReactionCollectorDeposeItemData } from "../../../../Lib/src/packets/interaction/ReactionCollectorDeposeItem";
-import { deposeItemCollector } from "../../commands/player/DepositCommand";
 import { ReactionCollectorPetExpeditionData } from "../../../../Lib/src/packets/interaction/ReactionCollectorPetExpedition";
 import { ReactionCollectorPetExpeditionChoiceData } from "../../../../Lib/src/packets/interaction/ReactionCollectorPetExpeditionChoice";
 import { ReactionCollectorPetExpeditionFinishedData } from "../../../../Lib/src/packets/interaction/ReactionCollectorPetExpeditionFinished";
@@ -180,8 +176,6 @@ export default class ReactionCollectorHandler {
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorEpicShopSmallEventData.name, epicItemShopCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorSkipMissionShopItemData.name, skipMissionShopItemCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorFightData.name, createFightCollector);
-		ReactionCollectorHandler.collectorMap.set(ReactionCollectorSwitchItemData.name, switchItemCollector);
-		ReactionCollectorHandler.collectorMap.set(ReactionCollectorDeposeItemData.name, deposeItemCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorDrinkData.name, drinkAcceptCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorPetSellData.name, createPetSellCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorChangeClassData.name, handleChangeClassReactionCollector);

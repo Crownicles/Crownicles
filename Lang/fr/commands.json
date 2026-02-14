@@ -568,12 +568,6 @@
       "SHOP": {
         "description": "Cette commande permet de dépenser votre argent pour faciliter votre aventure. En plus des 4 choix de base qui seront disponible de façon permanente, vous pourrez, chaque jour, profiter d'une potion exclusive, disponible à la vente durant 24 heures uniquement."
       },
-      "SWITCH": {
-        "description": "Échange un équipement de votre réserve avec ce que vous possédez actuellement sous condition qu'il soit de la même catégorie. Si aucun équipement dans la catégorie de l'objet à équiper n'est possédé avant l'exécution de la commande, il ne fera que le déplacer dans l'inventaire."
-      },
-      "DEPOSIT": {
-        "description": "Dépose un équipement de votre main principale dans votre réserve. Si vous n'avez qu'un seul équipement à déposer, celui-ci sera rangé automatiquement."
-      },
       "TOP": {
         "description": "Affiche le classement général du jeu par tranche de 15 joueurs. Les joueurs dans le même serveur que vous sont marqués par une pastille bleue."
       },
@@ -1997,24 +1991,6 @@
         "Les spectateurs ont assisté à un match épique entre deux joueurs talentueux qui se sont affrontés à armes égales."
       ]
     }
-  },
-  "switch": {
-    "titleSuccess": "{{pseudo}}, commande effectuée !",
-    "switchingDouble": "{{item1}} et {{item2}} ont été échangés !",
-    "switchingSingle": "Vous avez équipé : {{item1}} !",
-    "noItemToSwitch": "Vous n'avez aucun équipement à équiper !",
-    "cancelled": "Action annulée !",
-    "switchSelectionTitle": "{{pseudo}}, équipement d'un objet",
-    "switchSelectionDescription": "Choisissez un objet à équiper dans la liste ci-dessous :"
-  },
-  "deposit": {
-    "titleSuccess": "{{pseudo}}, commande effectuée !",
-    "deposeSuccess": "{{item}} a été déposé dans votre réserve !",
-    "noItemToDeposit": "Vous n'avez aucun équipement à déposer !",
-    "cannotDeposit": "Votre réserve est pleine.",
-    "cancelled": "Action annulée !",
-    "depositSelectionTitle": "{{pseudo}}, dépose d'un objet",
-    "depositSelectionDescription": "Choisissez un objet à déposer dans la liste ci-dessous :"
   },
   "equip": {
     "title": "{{pseudo}}, gestion de l'équipement",

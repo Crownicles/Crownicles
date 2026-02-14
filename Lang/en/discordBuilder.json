@@ -311,14 +311,6 @@
     "description": "Start a fight.",
     "name": "fight"
   },
-  "switch": {
-    "name": "switch",
-    "description": "Switch the active item with one of the items in your item stock."
-  },
-  "deposit": {
-    "name": "deposit",
-    "description": "Deposit one of your active items."
-  },
   "equip": {
     "name": "equip",
     "description": "Manage your equipment: equip, store or swap your items."
