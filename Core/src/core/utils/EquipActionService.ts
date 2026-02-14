@@ -1,7 +1,9 @@
 import {
 	CommandEquipActionReq, CommandEquipActionRes
 } from "../../../../Lib/src/packets/commands/CommandEquipPacket";
-import { Players } from "../database/game/models/Player";
+import {
+	Player, Players
+} from "../database/game/models/Player";
 import {
 	InventorySlot, InventorySlots
 } from "../database/game/models/InventorySlot";
@@ -9,6 +11,7 @@ import { InventoryInfos } from "../database/game/models/InventoryInfo";
 import { ItemCategory } from "../../../../Lib/src/constants/ItemConstants";
 import { buildEquipCategoryData } from "../../commands/player/EquipCommand";
 import { Homes } from "../database/game/models/Home";
+import { getSlotCountForCategory } from "../../../../Lib/src/types/HomeFeatures";
 
 /**
  * Handle an equip/deposit action from AsyncPacketSender.
@@ -23,24 +26,28 @@ export async function handleEquipAction(
 	}
 
 	const itemCategory = packet.itemCategory as ItemCategory;
-
-	if (packet.action === "equip") {
-		const error = await processEquip(player.id, packet.slot, itemCategory);
-		if (error) {
-			return buildEquipActionError(error);
-		}
-	}
-	else if (packet.action === "deposit") {
-		const error = await processDeposit(player.id, itemCategory);
-		if (error) {
-			return buildEquipActionError(error);
-		}
-	}
-	else {
-		return buildEquipActionError("invalid");
+	const error = await executeEquipAction(packet.action, player.id, packet.slot, itemCategory);
+	if (error) {
+		return buildEquipActionError(error);
 	}
 
-	// Refresh inventory data
+	return buildRefreshedEquipData(player);
+}
+
+function executeEquipAction(action: string, playerId: number, slot: number, category: ItemCategory): Promise<string | null> {
+	switch (action) {
+		case "equip":
+			return processEquip(playerId, slot, category);
+		case "deposit":
+			return processDeposit(playerId, category);
+		default:
+			return Promise.resolve("invalid");
+	}
+}
+
+async function buildRefreshedEquipData(player: {
+	id: number; keycloakId: string;
+}): Promise<Omit<CommandEquipActionRes, "name">> {
 	const refreshedSlots = await InventorySlots.getOfPlayer(player.id);
 	const inventoryInfo = await InventoryInfos.getOfPlayer(player.id);
 	const home = await Homes.getOfPlayer(player.id);
@@ -56,7 +63,7 @@ export async function handleEquipAction(
 
 	return {
 		success: true,
-		categories: buildEquipCategoryData(player, refreshedSlots, slotLimits)
+		categories: buildEquipCategoryData(player as Player, refreshedSlots, slotLimits)
 	};
 }
 
@@ -125,37 +132,13 @@ async function processDeposit(playerId: number, category: ItemCategory): Promise
 	const inventoryInfo = await InventoryInfos.getOfPlayer(playerId);
 	const home = await Homes.getOfPlayer(playerId);
 	const homeBonus = home?.getLevel()?.features.inventoryBonus;
-	const bonusForCategory = homeBonus?.[category === ItemCategory.WEAPON
-		? "weapon"
-		: category === ItemCategory.ARMOR
-			? "armor"
-			: category === ItemCategory.POTION ? "potion" : "object"] ?? 0;
+	const bonusForCategory = homeBonus ? getSlotCountForCategory(homeBonus, category) : 0;
 	const maxSlots = inventoryInfo.slotLimitForCategory(category) + bonusForCategory;
 	const backupSlots = inventorySlots.filter(s => s.itemCategory === category && !s.isEquipped());
 
-	// Find an empty backup slot
-	const emptySlot = backupSlots.find(s => s.itemId === 0);
-	if (emptySlot) {
-		emptySlot.itemId = activeSlot.itemId;
-		emptySlot.itemLevel = activeSlot.itemLevel;
-		emptySlot.itemEnchantmentId = activeSlot.itemEnchantmentId;
-		await emptySlot.save();
-	}
-	else if (backupSlots.length < maxSlots) {
-		const nextSlot = backupSlots.length > 0
-			? Math.max(...backupSlots.map(s => s.slot)) + 1
-			: 1;
-		await InventorySlot.create({
-			playerId,
-			slot: nextSlot,
-			itemCategory: category,
-			itemId: activeSlot.itemId,
-			itemLevel: activeSlot.itemLevel,
-			itemEnchantmentId: activeSlot.itemEnchantmentId
-		});
-	}
-	else {
-		return "reserveFull";
+	const placeError = await placeItemInBackupSlot(playerId, category, activeSlot, backupSlots, maxSlots);
+	if (placeError) {
+		return placeError;
 	}
 
 	// Clear active slot
@@ -165,4 +148,38 @@ async function processDeposit(playerId: number, category: ItemCategory): Promise
 	await activeSlot.save();
 
 	return null;
+}
+
+async function placeItemInBackupSlot(
+	playerId: number,
+	category: ItemCategory,
+	source: InventorySlot,
+	backupSlots: InventorySlot[],
+	maxSlots: number
+): Promise<string | null> {
+	const emptySlot = backupSlots.find(s => s.itemId === 0);
+	if (emptySlot) {
+		emptySlot.itemId = source.itemId;
+		emptySlot.itemLevel = source.itemLevel;
+		emptySlot.itemEnchantmentId = source.itemEnchantmentId;
+		await emptySlot.save();
+		return null;
+	}
+
+	if (backupSlots.length < maxSlots) {
+		const nextSlot = backupSlots.length > 0
+			? Math.max(...backupSlots.map(s => s.slot)) + 1
+			: 1;
+		await InventorySlot.create({
+			playerId,
+			slot: nextSlot,
+			itemCategory: category,
+			itemId: source.itemId,
+			itemLevel: source.itemLevel,
+			itemEnchantmentId: source.itemEnchantmentId
+		});
+		return null;
+	}
+
+	return "reserveFull";
 }

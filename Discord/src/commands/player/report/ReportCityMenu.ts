@@ -36,7 +36,9 @@ import { ReactionCollectorReturnTypeOrNull } from "../../../packetHandlers/handl
 import { PacketUtils } from "../../../utils/PacketUtils";
 import { ReactionCollectorResetTimerPacketReq } from "../../../../../Lib/src/packets/interaction/ReactionCollectorResetTimer";
 import { millisecondsToSeconds } from "../../../../../Lib/src/utils/TimeUtils";
-import { HomeFeatures } from "../../../../../Lib/src/types/HomeFeatures";
+import {
+	ChestSlotsPerCategory, HomeFeatures
+} from "../../../../../Lib/src/types/HomeFeatures";
 import { Language } from "../../../../../Lib/src/Language";
 import { ItemRarity } from "../../../../../Lib/src/constants/ItemConstants";
 import {
@@ -493,70 +495,48 @@ function getEnchanterMenu(context: PacketContext, interaction: CrowniclesInterac
 	};
 }
 
+function hasSlotsChanged(oldSlots: ChestSlotsPerCategory, newSlots: ChestSlotsPerCategory): boolean {
+	return oldSlots.weapon !== newSlots.weapon
+		|| oldSlots.armor !== newSlots.armor
+		|| oldSlots.object !== newSlots.object
+		|| oldSlots.potion !== newSlots.potion;
+}
+
+function totalSlots(slots: ChestSlotsPerCategory): number {
+	return slots.weapon + slots.armor + slots.object + slots.potion;
+}
+
+function addNewOrUpgradeChange(changes: string[], isNew: boolean, newKey: string, upgradeKey: string, lng: Language): void {
+	changes.push(i18n.t(`commands:report.city.homes.upgradeChanges.${isNew ? newKey : upgradeKey}`, { lng }));
+}
+
 const formatHomeUpgradeChanges = (oldFeatures: HomeFeatures, newFeatures: HomeFeatures, lng: Language): string => {
 	const changes: string[] = [];
 
-	// Chest
-	const hasOldChest = oldFeatures.chestSlots.weapon + oldFeatures.chestSlots.armor + oldFeatures.chestSlots.object + oldFeatures.chestSlots.potion > 0;
-	const hasNewChest = newFeatures.chestSlots.weapon + newFeatures.chestSlots.armor + newFeatures.chestSlots.object + newFeatures.chestSlots.potion > 0;
-	const chestChanged = oldFeatures.chestSlots.weapon !== newFeatures.chestSlots.weapon
-		|| oldFeatures.chestSlots.armor !== newFeatures.chestSlots.armor
-		|| oldFeatures.chestSlots.object !== newFeatures.chestSlots.object
-		|| oldFeatures.chestSlots.potion !== newFeatures.chestSlots.potion;
-	if (chestChanged) {
-		if (!hasOldChest && hasNewChest) {
-			changes.push(i18n.t("commands:report.city.homes.upgradeChanges.chest", { lng }));
-		}
-		else {
-			changes.push(i18n.t("commands:report.city.homes.upgradeChanges.biggerChest", { lng }));
-		}
+	if (hasSlotsChanged(oldFeatures.chestSlots, newFeatures.chestSlots)) {
+		addNewOrUpgradeChange(changes, totalSlots(oldFeatures.chestSlots) === 0, "chest", "biggerChest", lng);
 	}
 
-	// Personal inventory bonus
-	const invBonusChanged = oldFeatures.inventoryBonus.weapon !== newFeatures.inventoryBonus.weapon
-		|| oldFeatures.inventoryBonus.armor !== newFeatures.inventoryBonus.armor
-		|| oldFeatures.inventoryBonus.object !== newFeatures.inventoryBonus.object
-		|| oldFeatures.inventoryBonus.potion !== newFeatures.inventoryBonus.potion;
-	if (invBonusChanged) {
+	if (hasSlotsChanged(oldFeatures.inventoryBonus, newFeatures.inventoryBonus)) {
 		changes.push(i18n.t("commands:report.city.homes.upgradeChanges.inventoryBonus", { lng }));
 	}
 
-	// Item upgrade rarity
 	if (oldFeatures.upgradeItemMaximumRarity !== newFeatures.upgradeItemMaximumRarity) {
-		if (oldFeatures.upgradeItemMaximumRarity === ItemRarity.BASIC) {
-			changes.push(i18n.t("commands:report.city.homes.upgradeChanges.upgradeItemStation", { lng }));
-		}
-		else {
-			changes.push(i18n.t("commands:report.city.homes.upgradeChanges.betterUpgradeItemStation", { lng }));
-		}
+		addNewOrUpgradeChange(changes, oldFeatures.upgradeItemMaximumRarity === ItemRarity.BASIC, "upgradeItemStation", "betterUpgradeItemStation", lng);
 	}
 
-	// Potion craft rarity
 	if (oldFeatures.craftPotionMaximumRarity !== newFeatures.craftPotionMaximumRarity) {
-		if (oldFeatures.craftPotionMaximumRarity === ItemRarity.BASIC) {
-			changes.push(i18n.t("commands:report.city.homes.upgradeChanges.craftPotionStation", { lng }));
-		}
-		else {
-			changes.push(i18n.t("commands:report.city.homes.upgradeChanges.betterCraftPotionStation", { lng }));
-		}
+		addNewOrUpgradeChange(changes, oldFeatures.craftPotionMaximumRarity === ItemRarity.BASIC, "craftPotionStation", "betterCraftPotionStation", lng);
 	}
 
-	// Bed
 	if (oldFeatures.bedHealthRegeneration !== newFeatures.bedHealthRegeneration) {
 		changes.push(i18n.t("commands:report.city.homes.upgradeChanges.betterBed", { lng }));
 	}
 
-	// Garden plots
 	if (oldFeatures.gardenPlots !== newFeatures.gardenPlots) {
-		if (oldFeatures.gardenPlots === 0) {
-			changes.push(i18n.t("commands:report.city.homes.upgradeChanges.garden", { lng }));
-		}
-		else {
-			changes.push(i18n.t("commands:report.city.homes.upgradeChanges.biggerGarden", { lng }));
-		}
+		addNewOrUpgradeChange(changes, oldFeatures.gardenPlots === 0, "garden", "biggerGarden", lng);
 	}
 
-	// Garden earth quality
 	if (oldFeatures.gardenEarthQuality !== newFeatures.gardenEarthQuality) {
 		changes.push(i18n.t("commands:report.city.homes.upgradeChanges.betterGardenEarth", { lng }));
 	}
