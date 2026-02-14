@@ -2016,6 +2016,25 @@
     "depositSelectionTitle": "{{pseudo}}, dépose d'un objet",
     "depositSelectionDescription": "Choisissez un objet à déposer dans la liste ci-dessous :"
   },
+  "equip": {
+    "title": "{{pseudo}}, gestion de l'équipement",
+    "mainDescription": "Sélectionnez une catégorie pour gérer votre équipement.",
+    "categoryHeader": "**{{category}}**",
+    "equippedSection": "🗡️ **Objet équipé :**",
+    "reserveSection": "🎒 **Réserve ({{count}}/{{max}}) :**",
+    "noEquippedItem": "Aucun objet équipé",
+    "noReserveItems": "Aucun objet en réserve",
+    "reserveFull": "Réserve pleine",
+    "noItems": "Vous n'avez aucun équipement à gérer !",
+    "closeTitle": "{{pseudo}}, fermeture de l'équipement",
+    "closeDescription": "Vous avez fermé le menu d'équipement.",
+    "categories": {
+      "weapons": "Armes",
+      "armors": "Armures",
+      "potions": "Potions",
+      "objects": "Objets"
+    }
+  },
   "drink": {
     "errors": {
       "noAvailablePotions": "Vous n'avez malheureusement aucune potion consommable dans votre inventaire ! Les potions de combats ne peuvent pas être consommées via cette commande.",
