@@ -4,6 +4,7 @@ import {
 	generateRandomItem, giveItemToPlayer
 } from "../../core/utils/ItemUtils";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
+import { ItemConstants } from "../../../../Lib/src/constants/ItemConstants";
 import { PlayerSmallEvents } from "../../core/database/game/models/PlayerSmallEvent";
 import { Maps } from "../../core/maps/Maps";
 import { PlayerMissionsInfos } from "../../core/database/game/models/PlayerMissionsInfo";
@@ -155,7 +156,9 @@ async function applyOutcomeRandomItem(outcome: PossibilityOutcome, player: Playe
 		itemCategory: outcome.randomItem.category,
 		minRarity: outcome.randomItem.rarity?.min,
 		maxRarity: outcome.randomItem.rarity?.max
-	}), 1, false);
+	}), {
+		canDrinkImmediately: false, itemLevel: ItemConstants.generateRandomLootLevel()
+	});
 }
 
 async function applyOutcomeRandomPet(outcome: PossibilityOutcome, player: Player, response: CrowniclesPacket[]): Promise<void> {

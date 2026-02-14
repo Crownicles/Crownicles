@@ -185,7 +185,7 @@ describe('ItemUtils - giveItemToPlayer', () => {
 			await giveItemToPlayer(mockResponse, mockContext, mockPlayer, mockItem);
 
 			// Assert
-			expect(mockPlayer.giveItem).toHaveBeenCalledWith(mockItem);
+			expect(mockPlayer.giveItem).toHaveBeenCalledWith(mockItem, 0);
 			expect(MissionsController.update).toHaveBeenCalledWith(
 				mockPlayer,
 				mockResponse,
@@ -232,7 +232,7 @@ describe('ItemUtils - giveItemToPlayer', () => {
 			await giveItemToPlayer(mockResponse, mockContext, mockPlayer, mockItem);
 
 			// Assert
-			expect(mockPlayer.giveItem).toHaveBeenCalledWith(mockItem);
+			expect(mockPlayer.giveItem).toHaveBeenCalledWith(mockItem, 0);
 			// Auto-sell should trigger, response may still contain ReactionCollector for confirmation
 			expect(mockResponse.length).toBeGreaterThanOrEqual(1);
 		});
@@ -375,7 +375,7 @@ describe('ItemUtils - giveItemToPlayer', () => {
 			await giveItemToPlayer(mockResponse, mockContext, mockPlayer, mockItem);
 
 			// Assert
-			expect(mockPlayer.giveItem).toHaveBeenCalledWith(mockItem);
+			expect(mockPlayer.giveItem).toHaveBeenCalledWith(mockItem, 0);
 			expect(mockResponse).toHaveLength(1);
 		});
 

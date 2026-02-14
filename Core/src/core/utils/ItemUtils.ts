@@ -133,7 +133,7 @@ async function dontKeepOriginalItem(response: CrowniclesPacket[], player: Player
 	}));
 	await InventorySlot.update({
 		itemId: item.id,
-		itemLevel: 1,
+		itemLevel: 0,
 		itemEnchantmentId: null
 	}, {
 		where: {
@@ -411,23 +411,30 @@ function canPotionBeDrunkImmediately(item: GenericItem, canDrinkImmediately: boo
 	return canDrinkImmediately;
 }
 
+type GiveItemOptions = {
+	resaleMultiplier?: number;
+	canDrinkImmediately?: boolean;
+	itemLevel?: number;
+};
+
 /**
  * Gives an item to a player
  * @param response
  * @param context
  * @param player
  * @param item
- * @param resaleMultiplier
- * @param canDrinkImmediately
+ * @param options - Optional settings for giving the item
  */
 export async function giveItemToPlayer(
 	response: CrowniclesPacket[],
 	context: PacketContext,
 	player: Player,
 	item: GenericItem,
-	resaleMultiplier = 1,
-	canDrinkImmediately = true
+	options: GiveItemOptions = {}
 ): Promise<void> {
+	const {
+		resaleMultiplier = 1, canDrinkImmediately = true, itemLevel = 0
+	} = options;
 	const inventorySlots = await InventorySlots.getOfPlayer(player.id);
 	const whoIsConcerned = {
 		player,
@@ -435,10 +442,10 @@ export async function giveItemToPlayer(
 	};
 
 	response.push(makePacket(ItemFoundPacket, {
-		itemWithDetails: toItemWithDetails(player, item, 0, null)
+		itemWithDetails: toItemWithDetails(player, item, itemLevel, null)
 	}));
 
-	if (await player.giveItem(item) === true) {
+	if (await player.giveItem(item, itemLevel) === true) {
 		await manageGiveItemRelateds(response, player, item);
 		return;
 	}
@@ -685,7 +692,7 @@ export function generateRandomItem(
  * @param player
  */
 export async function giveRandomItem(context: PacketContext, response: CrowniclesPacket[], player: Player): Promise<void> {
-	await giveItemToPlayer(response, context, player, generateRandomItem({}));
+	await giveItemToPlayer(response, context, player, generateRandomItem({}), { itemLevel: ItemConstants.generateRandomLootLevel() });
 }
 
 type TemporarySlotAndItemType = {

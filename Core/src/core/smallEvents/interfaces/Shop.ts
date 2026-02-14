@@ -99,7 +99,7 @@ export abstract class Shop<
 			if (!isValidated || !canBuy) {
 				return;
 			}
-			await giveItemToPlayer(response, collector.context, player, shopItem.item, SmallEventConstants.SHOP.RESALE_MULTIPLIER);
+			await giveItemToPlayer(response, collector.context, player, shopItem.item, { resaleMultiplier: SmallEventConstants.SHOP.RESALE_MULTIPLIER });
 			await player.spendMoney({
 				amount: shopItem.price,
 				response,
