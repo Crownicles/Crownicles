@@ -1284,32 +1284,9 @@ export async function handleChestAction(
 		return buildChestActionError("invalid");
 	}
 
-	if (packet.action === "deposit") {
-		const error = await processChestDeposit(player, home, packet.slot, packet.itemCategory as ItemCategory);
-		if (error) {
-			return buildChestActionError(error);
-		}
-	}
-	else if (packet.action === "withdraw") {
-		const error = await processChestWithdraw(player, home, packet.slot, packet.itemCategory as ItemCategory);
-		if (error) {
-			return buildChestActionError(error);
-		}
-	}
-	else if (packet.action === "swap") {
-		const error = await processChestSwap({
-			player,
-			home,
-			inventorySlotNumber: packet.slot,
-			chestSlotNumber: packet.chestSlot,
-			itemCategory: packet.itemCategory as ItemCategory
-		});
-		if (error) {
-			return buildChestActionError(error);
-		}
-	}
-	else {
-		return buildChestActionError("invalid");
+	const error = await executeChestAction(packet, player, home);
+	if (error) {
+		return buildChestActionError(error);
 	}
 
 	// Build refreshed chest data
@@ -1323,6 +1300,31 @@ export async function handleChestAction(
 		slotsPerCategory: refreshedData.slotsPerCategory,
 		inventoryCapacity: refreshedData.inventoryCapacity
 	};
+}
+
+function executeChestAction(
+	packet: CommandReportHomeChestActionReq,
+	player: Player,
+	home: Home
+): Promise<string | null> {
+	const itemCategory = packet.itemCategory as ItemCategory;
+
+	switch (packet.action) {
+		case "deposit":
+			return processChestDeposit(player, home, packet.slot, itemCategory);
+		case "withdraw":
+			return processChestWithdraw(player, home, packet.slot, itemCategory);
+		case "swap":
+			return processChestSwap({
+				player,
+				home,
+				inventorySlotNumber: packet.slot,
+				chestSlotNumber: packet.chestSlot,
+				itemCategory
+			});
+		default:
+			return Promise.resolve("invalid");
+	}
 }
 
 function buildChestActionError(error: string): Omit<CommandReportHomeChestActionRes, "name"> {
@@ -1393,6 +1395,13 @@ interface ItemPlacement {
 	itemEnchantmentId: string | null;
 }
 
+async function assignItemToSlot(slot: InventorySlot, item: ItemPlacement): Promise<void> {
+	slot.itemId = item.itemId;
+	slot.itemLevel = item.itemLevel;
+	slot.itemEnchantmentId = item.itemEnchantmentId;
+	await slot.save();
+}
+
 /**
  * Attempt to place an item in the player's inventory.
  * Returns null on success, "inventoryFull" if no space.
@@ -1408,10 +1417,7 @@ async function placeItemInInventory(
 	// Priority 1: active slot (slot 0) if empty
 	const activeSlot = playerInventory.find(s => s.itemCategory === itemCategory && s.slot === 0);
 	if (activeSlot && activeSlot.itemId === 0) {
-		activeSlot.itemId = item.itemId;
-		activeSlot.itemLevel = item.itemLevel;
-		activeSlot.itemEnchantmentId = item.itemEnchantmentId;
-		await activeSlot.save();
+		await assignItemToSlot(activeSlot, item);
 		return null;
 	}
 
@@ -1424,10 +1430,7 @@ async function placeItemInInventory(
 
 	const emptyBackupSlot = backupSlots.find(s => s.itemId === 0);
 	if (emptyBackupSlot) {
-		emptyBackupSlot.itemId = item.itemId;
-		emptyBackupSlot.itemLevel = item.itemLevel;
-		emptyBackupSlot.itemEnchantmentId = item.itemEnchantmentId;
-		await emptyBackupSlot.save();
+		await assignItemToSlot(emptyBackupSlot, item);
 		return null;
 	}
 

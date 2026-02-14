@@ -8,9 +8,7 @@ import {
 	CommandInventoryPacketReq,
 	CommandInventoryPacketRes
 } from "../../../../Lib/src/packets/commands/CommandInventoryPacket";
-import { InventorySlots } from "../../core/database/game/models/InventorySlot";
-import { Weapon } from "../../data/Weapon";
-import { Armor } from "../../data/Armor";
+import InventorySlot, { InventorySlots } from "../../core/database/game/models/InventorySlot";
 import { Potion } from "../../data/Potion";
 import { ObjectItem } from "../../data/ObjectItem";
 import { InventoryInfos } from "../../core/database/game/models/InventoryInfo";
@@ -21,6 +19,20 @@ import {
 import { PlayerTalismansManager } from "../../core/database/game/models/PlayerTalismans";
 import { Materials } from "../../core/database/game/models/Material";
 import { Homes } from "../../core/database/game/models/Home";
+import { StatValues } from "../../../../Lib/src/types/StatValues";
+
+function buildMainItemBackups(
+	items: InventorySlot[],
+	maxStats: StatValues
+): {
+	display: ReturnType<MainItem["getDisplayPacket"]>;
+	slot: number;
+}[] {
+	return items.map(item => ({
+		display: (item.getItem() as MainItem).getDisplayPacket(item.itemLevel, item.itemEnchantmentId ?? undefined, maxStats),
+		slot: item.slot
+	}));
+}
 
 export default class InventoryCommand {
 	@commandRequires(CommandInventoryPacketReq, {
@@ -37,6 +49,11 @@ export default class InventoryCommand {
 			}));
 			return;
 		}
+
+		response.push(makePacket(CommandInventoryPacketRes, await this.buildInventoryData(toCheckPlayer)));
+	}
+
+	private async buildInventoryData(toCheckPlayer: Player): Promise<CommandInventoryPacketRes> {
 		const maxStatsValues = toCheckPlayer.getMaxStatsValue();
 		const items = await InventorySlots.getOfPlayer(toCheckPlayer.id);
 		const invInfo = await InventoryInfos.getOfPlayer(toCheckPlayer.id);
@@ -47,41 +64,29 @@ export default class InventoryCommand {
 			weapon: 0, armor: 0, potion: 0, object: 0
 		};
 
-		const weapon = items.find(item => item.isWeapon() && item.isEquipped());
-		const armor = items.find(item => item.isArmor() && item.isEquipped());
-		const potion = items.find(item => item.isPotion() && item.isEquipped());
-		const object = items.find(item => item.isObject() && item.isEquipped());
-		const backupWeapons = items.filter(item => item.isWeapon() && !item.isEquipped() && item.itemId !== 0);
-		const backupArmors = items.filter(item => item.isArmor() && !item.isEquipped() && item.itemId !== 0);
-		const backupPotions = items.filter(item => item.isPotion() && !item.isEquipped() && item.itemId !== 0);
-		const backupObjects = items.filter(item => item.isObject() && !item.isEquipped() && item.itemId !== 0);
+		const weapon = items.find(item => item.isWeapon() && item.isEquipped())!;
+		const armor = items.find(item => item.isArmor() && item.isEquipped())!;
+		const potion = items.find(item => item.isPotion() && item.isEquipped())!;
+		const object = items.find(item => item.isObject() && item.isEquipped())!;
 
-		response.push(makePacket(CommandInventoryPacketRes, {
+		return {
 			foundPlayer: true,
 			keycloakId: toCheckPlayer.keycloakId,
 			hasTalisman: talismans.hasTalisman,
 			hasCloneTalisman: talismans.hasCloneTalisman,
 			data: {
-				weapon: (weapon!.getItem() as MainItem).getDisplayPacket(weapon!.itemLevel, weapon!.itemEnchantmentId ?? undefined, maxStatsValues),
-				armor: (armor!.getItem() as MainItem).getDisplayPacket(armor!.itemLevel, armor!.itemEnchantmentId ?? undefined, maxStatsValues),
-				potion: (potion!.getItem() as Potion).getDisplayPacket(),
-				object: (object!.getItem() as ObjectItem).getDisplayPacket(maxStatsValues),
-				backupWeapons: backupWeapons.map(item =>
-					({
-						display: (item.getItem() as Weapon).getDisplayPacket(item.itemLevel, item.itemEnchantmentId ?? undefined, maxStatsValues), slot: item.slot
-					})),
-				backupArmors: backupArmors.map(item =>
-					({
-						display: (item.getItem() as Armor).getDisplayPacket(item.itemLevel, item.itemEnchantmentId ?? undefined, maxStatsValues), slot: item.slot
-					})),
-				backupPotions: backupPotions.map(item =>
-					({
-						display: (item.getItem() as Potion).getDisplayPacket(), slot: item.slot
-					})),
-				backupObjects: backupObjects.map(item =>
-					({
-						display: (item.getItem() as ObjectItem).getDisplayPacket(maxStatsValues), slot: item.slot
-					})),
+				weapon: (weapon.getItem() as MainItem).getDisplayPacket(weapon.itemLevel, weapon.itemEnchantmentId ?? undefined, maxStatsValues),
+				armor: (armor.getItem() as MainItem).getDisplayPacket(armor.itemLevel, armor.itemEnchantmentId ?? undefined, maxStatsValues),
+				potion: (potion.getItem() as Potion).getDisplayPacket(),
+				object: (object.getItem() as ObjectItem).getDisplayPacket(maxStatsValues),
+				backupWeapons: buildMainItemBackups(items.filter(item => item.isWeapon() && !item.isEquipped() && item.itemId !== 0), maxStatsValues),
+				backupArmors: buildMainItemBackups(items.filter(item => item.isArmor() && !item.isEquipped() && item.itemId !== 0), maxStatsValues),
+				backupPotions: items.filter(item => item.isPotion() && !item.isEquipped() && item.itemId !== 0).map(item => ({
+					display: (item.getItem() as Potion).getDisplayPacket(), slot: item.slot
+				})),
+				backupObjects: items.filter(item => item.isObject() && !item.isEquipped() && item.itemId !== 0).map(item => ({
+					display: (item.getItem() as ObjectItem).getDisplayPacket(maxStatsValues), slot: item.slot
+				})),
 				slots: {
 					weapons: invInfo.weaponSlots + homeBonus.weapon,
 					armors: invInfo.armorSlots + homeBonus.armor,
@@ -95,6 +100,6 @@ export default class InventoryCommand {
 						quantity: m.quantity
 					}))
 			}
-		}));
+		};
 	}
 }

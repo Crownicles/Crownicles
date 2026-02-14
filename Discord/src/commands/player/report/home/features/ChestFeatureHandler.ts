@@ -96,16 +96,47 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		componentInteraction: ComponentInteraction,
 		nestedMenus: CrowniclesNestedMenus
 	): Promise<boolean> {
-		if (selectedValue === HomeMenuIds.BACK_TO_HOME) {
+		// Exact match navigation
+		const navigationTargets: Record<string, string> = {
+			[HomeMenuIds.BACK_TO_HOME]: HomeMenuIds.HOME_MENU,
+			[HomeMenuIds.CHEST_BACK_TO_CATEGORIES]: HomeMenuIds.CHEST_MENU
+		};
+
+		if (navigationTargets[selectedValue]) {
 			await componentInteraction.deferUpdate();
-			await nestedMenus.changeMenu(HomeMenuIds.HOME_MENU);
+			await nestedMenus.changeMenu(navigationTargets[selectedValue]);
 			return true;
 		}
 
-		if (selectedValue === HomeMenuIds.CHEST_BACK_TO_CATEGORIES) {
-			await componentInteraction.deferUpdate();
-			await nestedMenus.changeMenu(HomeMenuIds.CHEST_MENU);
-			return true;
+		// Prefix-based action routing
+		return this.handlePrefixAction(ctx, selectedValue, componentInteraction, nestedMenus);
+	}
+
+	private async handlePrefixAction(
+		ctx: HomeFeatureHandlerContext,
+		selectedValue: string,
+		componentInteraction: ComponentInteraction,
+		nestedMenus: CrowniclesNestedMenus
+	): Promise<boolean> {
+		const actionRoutes: {
+			prefix: string; action: string;
+		}[] = [
+			{
+				prefix: HomeMenuIds.CHEST_DEPOSIT_PREFIX, action: "deposit"
+			},
+			{
+				prefix: HomeMenuIds.CHEST_WITHDRAW_PREFIX, action: "withdraw"
+			},
+			{
+				prefix: HomeMenuIds.CHEST_SWAP_TARGET_PREFIX, action: "swap"
+			}
+		];
+
+		for (const route of actionRoutes) {
+			if (selectedValue.startsWith(route.prefix)) {
+				await this.handleChestActionByPrefix(ctx, selectedValue, componentInteraction, nestedMenus, route.prefix, route.action);
+				return true;
+			}
 		}
 
 		if (selectedValue.startsWith(HomeMenuIds.CHEST_CATEGORY_PREFIX)) {
@@ -116,23 +147,8 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 			}
 		}
 
-		if (selectedValue.startsWith(HomeMenuIds.CHEST_DEPOSIT_PREFIX)) {
-			await this.handleDeposit(ctx, selectedValue, componentInteraction, nestedMenus);
-			return true;
-		}
-
-		if (selectedValue.startsWith(HomeMenuIds.CHEST_WITHDRAW_PREFIX)) {
-			await this.handleWithdraw(ctx, selectedValue, componentInteraction, nestedMenus);
-			return true;
-		}
-
 		if (selectedValue.startsWith(HomeMenuIds.CHEST_SWAP_SELECT_PREFIX)) {
 			await this.handleSwapSelect(ctx, selectedValue, componentInteraction, nestedMenus);
-			return true;
-		}
-
-		if (selectedValue.startsWith(HomeMenuIds.CHEST_SWAP_TARGET_PREFIX)) {
-			await this.handleSwapTarget(ctx, selectedValue, componentInteraction, nestedMenus);
 			return true;
 		}
 
@@ -513,33 +529,23 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		return text;
 	}
 
-	private async handleDeposit(
+	private async handleChestActionByPrefix(
 		ctx: HomeFeatureHandlerContext,
 		selectedValue: string,
 		componentInteraction: ComponentInteraction,
-		nestedMenus: CrowniclesNestedMenus
+		nestedMenus: CrowniclesNestedMenus,
+		prefix: string,
+		action: string
 	): Promise<void> {
-		const {
-			category, slot
-		} = this.parseChestActionParams(selectedValue, HomeMenuIds.CHEST_DEPOSIT_PREFIX);
+		const params = this.parseChestActionParams(selectedValue, prefix);
 		await componentInteraction.deferUpdate();
 		await this.sendChestAction({
-			ctx, action: "deposit", slot, category, nestedMenus
-		});
-	}
-
-	private async handleWithdraw(
-		ctx: HomeFeatureHandlerContext,
-		selectedValue: string,
-		componentInteraction: ComponentInteraction,
-		nestedMenus: CrowniclesNestedMenus
-	): Promise<void> {
-		const {
-			category, slot
-		} = this.parseChestActionParams(selectedValue, HomeMenuIds.CHEST_WITHDRAW_PREFIX);
-		await componentInteraction.deferUpdate();
-		await this.sendChestAction({
-			ctx, action: "withdraw", slot, category, nestedMenus
+			ctx,
+			action,
+			slot: params.slot,
+			category: params.category,
+			nestedMenus,
+			chestSlot: params.chestSlot
 		});
 	}
 
@@ -565,25 +571,6 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 
 		await this.registerSwapTargetMenu(ctx, categoryIndex, inventorySlot, nestedMenus);
 		await nestedMenus.changeMenu(`${HomeMenuIds.CHEST_SWAP_MENU_PREFIX}${categoryIndex}_${inventorySlot}`);
-	}
-
-	/**
-	 * Handle step 2 of swap: player selected a chest item to swap with.
-	 * Execute the swap action via Core.
-	 */
-	private async handleSwapTarget(
-		ctx: HomeFeatureHandlerContext,
-		selectedValue: string,
-		componentInteraction: ComponentInteraction,
-		nestedMenus: CrowniclesNestedMenus
-	): Promise<void> {
-		const {
-			category, slot: inventorySlot, chestSlot
-		} = this.parseChestActionParams(selectedValue, HomeMenuIds.CHEST_SWAP_TARGET_PREFIX);
-		await componentInteraction.deferUpdate();
-		await this.sendChestAction({
-			ctx, action: "swap", slot: inventorySlot, category, nestedMenus, chestSlot
-		});
 	}
 
 	/**
