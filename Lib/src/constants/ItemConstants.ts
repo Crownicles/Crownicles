@@ -401,29 +401,4 @@ export abstract class ItemConstants {
 			}
 		}
 	};
-
-	/**
-	 * Chances for an item to drop with a higher level than 0
-	 * Only applies to weapons and armors
-	 * Values are percentages (5 = 5%)
-	 */
-	static readonly LOOT_LEVEL_CHANCES: Record<1 | 2, number> = {
-		1: 5,
-		2: 1
-	};
-
-	/**
-	 * Generate a random level for a looted item based on LOOT_LEVEL_CHANCES
-	 * @returns The generated level (0, 1, or 2)
-	 */
-	static generateRandomLootLevel(): number {
-		const roll = RandomUtils.crowniclesRandom.realZeroToOneInclusive() * 100;
-		if (roll < this.LOOT_LEVEL_CHANCES[2]) {
-			return 2;
-		}
-		if (roll < this.LOOT_LEVEL_CHANCES[1] + this.LOOT_LEVEL_CHANCES[2]) {
-			return 1;
-		}
-		return 0;
-	}
 }

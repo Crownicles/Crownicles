@@ -1,10 +1,9 @@
 import Player from "../../core/database/game/models/Player";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import {
-	generateRandomItem, giveItemToPlayer
+	generateRandomItem, generateRandomLootLevel, giveItemToPlayer
 } from "../../core/utils/ItemUtils";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
-import { ItemConstants } from "../../../../Lib/src/constants/ItemConstants";
 import { PlayerSmallEvents } from "../../core/database/game/models/PlayerSmallEvent";
 import { Maps } from "../../core/maps/Maps";
 import { PlayerMissionsInfos } from "../../core/database/game/models/PlayerMissionsInfo";
@@ -157,7 +156,7 @@ async function applyOutcomeRandomItem(outcome: PossibilityOutcome, player: Playe
 		minRarity: outcome.randomItem.rarity?.min,
 		maxRarity: outcome.randomItem.rarity?.max
 	}), {
-		canDrinkImmediately: false, itemLevel: ItemConstants.generateRandomLootLevel()
+		canDrinkImmediately: false, itemLevel: generateRandomLootLevel()
 	});
 }
 

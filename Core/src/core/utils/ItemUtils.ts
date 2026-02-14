@@ -684,6 +684,25 @@ export function generateRandomItem(
 	return selectRandomItemFromController(controller, rarity, effectiveSubType);
 }
 
+const LOOT_LEVEL_CHANCES: Record<1 | 2, number> = {
+	1: 5,
+	2: 1
+};
+
+/**
+ * Generate a random level for a looted item based on LOOT_LEVEL_CHANCES
+ * @returns The generated level (0, 1, or 2)
+ */
+export function generateRandomLootLevel(): number {
+	const roll = RandomUtils.crowniclesRandom.realZeroToOneInclusive() * 100;
+	if (roll < LOOT_LEVEL_CHANCES[2]) {
+		return 2;
+	}
+	if (roll < LOOT_LEVEL_CHANCES[1] + LOOT_LEVEL_CHANCES[2]) {
+		return 1;
+	}
+	return 0;
+}
 
 /**
  * Give a random item
@@ -692,7 +711,7 @@ export function generateRandomItem(
  * @param player
  */
 export async function giveRandomItem(context: PacketContext, response: CrowniclesPacket[], player: Player): Promise<void> {
-	await giveItemToPlayer(response, context, player, generateRandomItem({}), { itemLevel: ItemConstants.generateRandomLootLevel() });
+	await giveItemToPlayer(response, context, player, generateRandomItem({}), { itemLevel: generateRandomLootLevel() });
 }
 
 type TemporarySlotAndItemType = {
