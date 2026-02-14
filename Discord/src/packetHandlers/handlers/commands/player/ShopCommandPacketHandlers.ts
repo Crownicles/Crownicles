@@ -18,7 +18,7 @@ import {
 	handleCommandShopNoAlterationToHeal,
 	handleCommandShopNotEnoughMoney,
 	handleReactionCollectorBuyCategorySlotBuySuccess
-} from "../../../../commands/player/ShopCommand";
+} from "../../../../utils/ShopDisplayUtils";
 import { ReactionCollectorBuyCategorySlotBuySuccess } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorBuyCategorySlot";
 
 export default class ShopCommandPacketHandlers {

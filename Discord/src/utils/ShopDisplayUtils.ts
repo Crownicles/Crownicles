@@ -1,22 +1,19 @@
 import {
 	makePacket, PacketContext
-} from "../../../../Lib/src/packets/CrowniclesPacket";
-import { ICommand } from "../ICommand";
-import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
-import { CommandShopPacketReq } from "../../../../Lib/src/packets/commands/CommandShopPacket";
-import { DiscordCache } from "../../bot/DiscordCache";
-import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
-import i18n from "../../translations/i18n";
+} from "../../../Lib/src/packets/CrowniclesPacket";
+import { DiscordCache } from "../bot/DiscordCache";
+import { CrowniclesEmbed } from "../messages/CrowniclesEmbed";
+import i18n from "../translations/i18n";
 import {
 	sendErrorMessage, sendInteractionNotForYou, SendManner
-} from "../../utils/ErrorUtils";
-import { ReactionCollectorCreationPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
+} from "../utils/ErrorUtils";
+import { ReactionCollectorCreationPacket } from "../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import {
 	CommandShopNotEnoughCurrency,
 	ReactionCollectorShopCloseReaction,
 	ReactionCollectorShopData,
 	ReactionCollectorShopItemReaction
-} from "../../../../Lib/src/packets/interaction/ReactionCollectorShop";
+} from "../../../Lib/src/packets/interaction/ReactionCollectorShop";
 import {
 	ActionRowBuilder,
 	ButtonBuilder,
@@ -29,32 +26,28 @@ import {
 	StringSelectMenuBuilder,
 	StringSelectMenuOptionBuilder
 } from "discord.js";
-import { DisplayUtils } from "../../utils/DisplayUtils";
-import { Constants } from "../../../../Lib/src/constants/Constants";
-import { PacketUtils } from "../../utils/PacketUtils";
-import { ChangeBlockingReasonPacket } from "../../../../Lib/src/packets/utils/ChangeBlockingReasonPacket";
-import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
-import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
-import { Language } from "../../../../Lib/src/Language";
+import { DisplayUtils } from "../utils/DisplayUtils";
+import { Constants } from "../../../Lib/src/constants/Constants";
+import { PacketUtils } from "../utils/PacketUtils";
+import { ChangeBlockingReasonPacket } from "../../../Lib/src/packets/utils/ChangeBlockingReasonPacket";
+import { BlockingConstants } from "../../../Lib/src/constants/BlockingConstants";
+import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
+import { Language } from "../../../Lib/src/Language";
 import {
 	disableRows, DiscordCollectorUtils
-} from "../../utils/DiscordCollectorUtils";
+} from "../utils/DiscordCollectorUtils";
 import {
 	ReactionCollectorBuyCategorySlotCancelReaction,
 	ReactionCollectorBuyCategorySlotReaction
-} from "../../../../Lib/src/packets/interaction/ReactionCollectorBuyCategorySlot";
-import { ShopItemType } from "../../../../Lib/src/constants/LogsConstants";
+} from "../../../Lib/src/packets/interaction/ReactionCollectorBuyCategorySlot";
+import { ShopItemType } from "../../../Lib/src/constants/LogsConstants";
 import {
 	shopItemTypeFromId, shopItemTypeToId
-} from "../../../../Lib/src/utils/ShopUtils";
-import { ReactionCollectorReturnTypeOrNull } from "../../packetHandlers/handlers/ReactionCollectorHandlers";
-import { ReactionCollectorResetTimerPacketReq } from "../../../../Lib/src/packets/interaction/ReactionCollectorResetTimer";
-import { escapeUsername } from "../../utils/StringUtils";
-import { Badge } from "../../../../Lib/src/types/Badge";
-
-function getPacket(): CommandShopPacketReq {
-	return makePacket(CommandShopPacketReq, {});
-}
+} from "../../../Lib/src/utils/ShopUtils";
+import { ReactionCollectorReturnTypeOrNull } from "../packetHandlers/handlers/ReactionCollectorHandlers";
+import { ReactionCollectorResetTimerPacketReq } from "../../../Lib/src/packets/interaction/ReactionCollectorResetTimer";
+import { escapeUsername } from "../utils/StringUtils";
+import { Badge } from "../../../Lib/src/types/Badge";
 
 export async function handleCommandShopNoAlterationToHeal(context: PacketContext): Promise<void> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction!);
@@ -250,6 +243,54 @@ export async function handleCommandShopClosed(context: PacketContext): Promise<v
 	await (interaction.replied ? interaction.followUp(args) : interaction.reply(args));
 }
 
+type ShopItemNames = {
+	normal: string;
+	short: string;
+};
+
+function getShopItemNames(data: ReactionCollectorShopData, shopItemId: ShopItemType, lng: Language): ShopItemNames {
+	if (shopItemId === ShopItemType.DAILY_POTION) {
+		return {
+			normal: DisplayUtils.getItemDisplayWithStats(data.additionalShopData!.dailyPotion!, lng),
+			short: DisplayUtils.getSimpleItemDisplay({
+				id: data.additionalShopData!.dailyPotion!.id,
+				category: data.additionalShopData!.dailyPotion!.itemCategory
+			}, lng)
+		};
+	}
+	const bothNames = i18n.t(`commands:shop.shopItems.${shopItemTypeToId(shopItemId)}.name`, {
+		lng
+	});
+	return {
+		normal: `**${bothNames}**`,
+		short: bothNames
+	};
+}
+
+function getShopItemDisplay(data: ReactionCollectorShopData, reaction: ReactionCollectorShopItemReaction, lng: Language, shopItemNames: ShopItemNames, amounts: number[]): string {
+	if (amounts.length === 1 && amounts[0] === 1) {
+		return `${i18n.t("commands:shop.shopItemsDisplaySingle", {
+			lng,
+			name: shopItemNames.normal,
+			price: reaction.price,
+			currency: data.currency,
+			remainingPotions: data.additionalShopData!.remainingPotions
+		})}\n`;
+	}
+
+	let desc = "";
+	for (const amount of amounts) {
+		desc += `${i18n.t("commands:shop.shopItemsDisplayMultiple", {
+			lng,
+			name: shopItemNames.normal,
+			amount,
+			price: reaction.price * amount,
+			currency: data.currency
+		})}\n`;
+	}
+	return desc;
+}
+
 async function manageBuyoutConfirmation(packet: ReactionCollectorCreationPacket, context: PacketContext, data: ReactionCollectorShopData, reaction: ReactionCollectorShopItemReaction): Promise<void> {
 	PacketUtils.sendPacketToBackend(context, makePacket(ChangeBlockingReasonPacket, {
 		oldReason: BlockingConstants.REASONS.SHOP,
@@ -356,54 +397,6 @@ async function manageBuyoutConfirmation(packet: ReactionCollectorCreationPacket,
 	});
 }
 
-type ShopItemNames = {
-	normal: string;
-	short: string;
-};
-
-function getShopItemNames(data: ReactionCollectorShopData, shopItemId: ShopItemType, lng: Language): ShopItemNames {
-	if (shopItemId === ShopItemType.DAILY_POTION) {
-		return {
-			normal: DisplayUtils.getItemDisplayWithStats(data.additionalShopData!.dailyPotion!, lng),
-			short: DisplayUtils.getSimpleItemDisplay({
-				id: data.additionalShopData!.dailyPotion!.id,
-				category: data.additionalShopData!.dailyPotion!.itemCategory
-			}, lng)
-		};
-	}
-	const bothNames = i18n.t(`commands:shop.shopItems.${shopItemTypeToId(shopItemId)}.name`, {
-		lng
-	});
-	return {
-		normal: `**${bothNames}**`,
-		short: bothNames
-	};
-}
-
-function getShopItemDisplay(data: ReactionCollectorShopData, reaction: ReactionCollectorShopItemReaction, lng: Language, shopItemNames: ShopItemNames, amounts: number[]): string {
-	if (amounts.length === 1 && amounts[0] === 1) {
-		return `${i18n.t("commands:shop.shopItemsDisplaySingle", {
-			lng,
-			name: shopItemNames.normal,
-			price: reaction.price,
-			currency: data.currency,
-			remainingPotions: data.additionalShopData!.remainingPotions
-		})}\n`;
-	}
-
-	let desc = "";
-	for (const amount of amounts) {
-		desc += `${i18n.t("commands:shop.shopItemsDisplayMultiple", {
-			lng,
-			name: shopItemNames.normal,
-			amount,
-			price: reaction.price * amount,
-			currency: data.currency
-		})}\n`;
-	}
-	return desc;
-}
-
 export async function shopCollector(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction!)!;
 	const lng = interaction.userLanguage;
@@ -431,7 +424,7 @@ export async function shopCollector(context: PacketContext, packet: ReactionColl
 
 		shopText += `${`**${i18n.t(`commands:shop.shopCategories.${categoryId}`, {
 			lng,
-			count: data.additionalShopData!.remainingPotions
+			count: data.additionalShopData?.remainingPotions
 		})}** :\n`
 			.concat(...categoryItemsIds.map(id => {
 				const reaction = packet.reactions.find(reaction => (reaction.data as ReactionCollectorShopItemReaction).shopItemId === id)!.data as ReactionCollectorShopItemReaction;
@@ -547,9 +540,3 @@ export async function shopCollector(context: PacketContext, packet: ReactionColl
 
 	return [buttonCollector];
 }
-
-export const commandInfo: ICommand = {
-	slashCommandBuilder: SlashCommandBuilderGenerator.generateBaseCommand("shop"),
-	getPacket,
-	mainGuildCommand: false
-};

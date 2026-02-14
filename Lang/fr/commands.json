@@ -844,6 +844,18 @@
         "royalMarket": {
           "label": "Marché royal",
           "description": "Convertissez vos gemmes en or et trésors exclusifs dans la boutique privée du château."
+        },
+        "generalShop": {
+          "label": "Boutique générale",
+          "description": "Achetez la potion du jour à prix réduit ou un équipement aléatoire."
+        },
+        "stockExchange": {
+          "label": "La Bourse",
+          "description": "Consultez le taux de change des gemmes et achetez des objets de prestige."
+        },
+        "tanner": {
+          "label": "Le Tanneur",
+          "description": "Un artisan spécialisé dans le travail du cuir. Il peut fabriquer de nouvelles sacoches pour agrandir votre inventaire."
         }
       },
       "inns": {
@@ -1204,7 +1216,7 @@
       },
       "moneyMouthBadge": {
         "name": "{emote:shopItems.moneyMouthBadge} Badge \"Money Mouth\"",
-        "info": "Vous recevrez le badge automatiquement après le paiement. Pour plus d'informations sur les badges, utilisez la commande {command:help}."
+        "info": "Vous recevrez le badge automatiquement après le paiement. Pour plus d'informations sur les badges, utilisez la commande {command:help}.\n\n{emote:unitValues.gem} **Cours du jour des gemmes** : `{{kingsMoneyAmount, number}}` {emote:unitValues.money} par gemme au Marché royal."
       },
       "slotExtension": {
         "name": "{emote:shopItems.inventoryExtension} Nouvel emplacement d'inventaire",
