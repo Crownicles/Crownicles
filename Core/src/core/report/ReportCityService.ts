@@ -20,7 +20,9 @@ import {
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorCity";
 import { WeaponDataController } from "../../data/Weapon";
 import { ArmorDataController } from "../../data/Armor";
-import { BlacksmithConstants } from "../../../../Lib/src/constants/BlacksmithConstants";
+import {
+	BlacksmithConstants, ItemUpgradeLevel
+} from "../../../../Lib/src/constants/BlacksmithConstants";
 import {
 	getDisenchantPrice, getMaterialsPurchasePrice, getUpgradePrice
 } from "../../../../Lib/src/utils/BlacksmithUtils";
@@ -293,7 +295,7 @@ function buildBlacksmithUpgradeableItems(
 			continue;
 		}
 
-		const nextLevel = currentLevel + 1 as 1 | 2 | 3 | 4;
+		const nextLevel = currentLevel + 1 as ItemUpgradeLevel;
 		const requiredMaterialsRaw = itemData.getUpgradeMaterials(nextLevel);
 
 		// Aggregate materials with rarity info
