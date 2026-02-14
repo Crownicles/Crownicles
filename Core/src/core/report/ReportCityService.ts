@@ -48,7 +48,7 @@ import { TravelTime } from "../maps/TravelTime";
 import { Effect } from "../../../../Lib/src/types/Effect";
 import { ClassConstants } from "../../../../Lib/src/constants/ClassConstants";
 import { Settings } from "../database/game/models/Setting";
-import { PlayerMissionsInfos } from "../database/game/models/PlayerMissionsInfo";
+import PlayerMissionsInfo, { PlayerMissionsInfos } from "../database/game/models/PlayerMissionsInfo";
 import { Materials } from "../database/game/models/Material";
 import { MaterialQuantity } from "../../../../Lib/src/types/MaterialQuantity";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
@@ -63,6 +63,12 @@ import {
 } from "../utils/MissionShopItems";
 import { crowniclesInstance } from "../../index";
 
+// Type aliases for commonly used nested types from ReactionCollectorCityData
+type EnchanterData = NonNullable<ReactionCollectorCityData["enchanter"]>;
+type HomeData = ReactionCollectorCityData["home"];
+type UpgradeStationData = NonNullable<NonNullable<HomeData["owned"]>["upgradeStation"]>;
+type BlacksmithData = NonNullable<ReactionCollectorCityData["blacksmith"]>;
+
 /**
  * Build enchanter data for the city reaction collector
  */
@@ -73,14 +79,14 @@ export function buildEnchanterData(
 	enchantData: {
 		enchantment: ItemEnchantment; enchantmentId: string; isPlayerMage: boolean;
 	}
-): NonNullable<ReactionCollectorCityData["enchanter"]> {
+): EnchanterData {
 	const {
 		inventory: playerInventory, player
 	} = playerData;
 	const {
 		enchantment, enchantmentId, isPlayerMage
 	} = enchantData;
-	const isEquipment = (i: InventorySlot): boolean => (i.isWeapon() || i.isArmor()) && i.itemId !== 0;
+	const isEquipment = (i: InventorySlot): boolean => i.isPrimaryEquipment();
 
 	return {
 		enchantableItems: playerInventory
@@ -110,7 +116,7 @@ export async function buildHomeData(
 		home: Home | null; homeLevel: HomeLevel | null;
 	},
 	city: City
-): Promise<ReactionCollectorCityData["home"]> {
+): Promise<HomeData> {
 	const {
 		player, inventory: playerInventory, materialMap: playerMaterialMap
 	} = playerData;
@@ -133,7 +139,7 @@ export async function buildHomeData(
 
 	const homesCount = await Homes.getHomesCount();
 
-	const manage: ReactionCollectorCityData["home"]["manage"] = {
+	const manage: HomeData["manage"] = {
 		newPrice: home ? undefined : city.getHomeLevelPrice(HomeLevel.getInitialLevel(), homesCount),
 		upgrade: nextHomeUpgrade && isHomeInCity
 			? {
@@ -165,15 +171,15 @@ export function buildUpgradeStationData(
 	playerMaterialMap: Map<number, number>,
 	homeLevel: HomeLevel,
 	player: Player
-): NonNullable<NonNullable<ReactionCollectorCityData["home"]["owned"]>["upgradeStation"]> {
+): UpgradeStationData {
 	const maxUpgradeableRarity = homeLevel.features.upgradeItemMaximumRarity;
 	const maxLevelAtHome = homeLevel.features.maxItemUpgradeLevel;
 
-	const upgradeableItems: NonNullable<NonNullable<ReactionCollectorCityData["home"]["owned"]>["upgradeStation"]>["upgradeableItems"] = [];
+	const upgradeableItems: UpgradeStationData["upgradeableItems"] = [];
 
 	for (const inventorySlot of playerInventory) {
 		// Only process weapons and armors with a valid item
-		if ((!inventorySlot.isWeapon() && !inventorySlot.isArmor()) || inventorySlot.itemId === 0) {
+		if (!inventorySlot.isPrimaryEquipment()) {
 			continue;
 		}
 
@@ -239,6 +245,136 @@ export function buildUpgradeStationData(
 }
 
 /**
+ * Get the item data (weapon or armor) for an inventory slot
+ */
+function getBlacksmithItemData(inventorySlot: InventorySlot): ReturnType<typeof WeaponDataController.instance.getById> | ReturnType<typeof ArmorDataController.instance.getById> | null {
+	if (!inventorySlot.isPrimaryEquipment()) {
+		return null;
+	}
+	return inventorySlot.isWeapon()
+		? WeaponDataController.instance.getById(inventorySlot.itemId)
+		: ArmorDataController.instance.getById(inventorySlot.itemId);
+}
+
+/**
+ * Build the list of items that can be upgraded at the blacksmith
+ */
+function buildBlacksmithUpgradeableItems(
+	playerInventory: InventorySlot[],
+	playerMaterialMap: Map<number, number>,
+	player: Player
+): BlacksmithData["upgradeableItems"] {
+	const upgradeableItems: BlacksmithData["upgradeableItems"] = [];
+
+	for (const inventorySlot of playerInventory) {
+		const itemData = getBlacksmithItemData(inventorySlot);
+		if (!itemData) {
+			continue;
+		}
+
+		const currentLevel = inventorySlot.itemLevel ?? 0;
+		if (currentLevel >= BlacksmithConstants.MAX_UPGRADE_LEVEL) {
+			continue;
+		}
+
+		const nextLevel = currentLevel + 1 as 1 | 2 | 3 | 4;
+		const requiredMaterialsRaw = itemData.getUpgradeMaterials(nextLevel);
+
+		// Aggregate materials with rarity info
+		const materialAggregation = new Map<number, {
+			quantity: number; rarity: number;
+		}>();
+		for (const material of requiredMaterialsRaw) {
+			const materialIdNum = parseInt(material.id, 10);
+			const existing = materialAggregation.get(materialIdNum);
+			if (existing) {
+				existing.quantity += 1;
+			}
+			else {
+				materialAggregation.set(materialIdNum, {
+					quantity: 1,
+					rarity: material.rarity
+				});
+			}
+		}
+
+		const requiredMaterials: typeof upgradeableItems[number]["requiredMaterials"] = [];
+		const missingMaterials: {
+			rarity: number; quantity: number;
+		}[] = [];
+		let hasAllMaterials = true;
+
+		for (const [
+			materialId, {
+				quantity, rarity
+			}
+		] of materialAggregation) {
+			const playerQuantity = playerMaterialMap.get(materialId) ?? 0;
+			requiredMaterials.push({
+				materialId,
+				rarity,
+				quantity,
+				playerQuantity
+			});
+			if (playerQuantity < quantity) {
+				hasAllMaterials = false;
+				missingMaterials.push({
+					rarity,
+					quantity: quantity - playerQuantity
+				});
+			}
+		}
+
+		const upgradeCost = BlacksmithConstants.getUpgradePrice(nextLevel, itemData.rarity);
+		const missingMaterialsCost = BlacksmithConstants.getMaterialsPurchasePrice(missingMaterials);
+
+		upgradeableItems.push({
+			slot: inventorySlot.slot,
+			category: inventorySlot.itemCategory,
+			details: inventorySlot.itemWithDetails(player) as MainItemDetails,
+			nextLevel,
+			upgradeCost,
+			requiredMaterials,
+			missingMaterialsCost,
+			hasAllMaterials
+		});
+	}
+
+	return upgradeableItems;
+}
+
+/**
+ * Build the list of items that can be disenchanted at the blacksmith
+ */
+function buildBlacksmithDisenchantableItems(
+	playerInventory: InventorySlot[],
+	player: Player
+): BlacksmithData["disenchantableItems"] {
+	const disenchantableItems: BlacksmithData["disenchantableItems"] = [];
+
+	for (const inventorySlot of playerInventory) {
+		const itemData = getBlacksmithItemData(inventorySlot);
+		if (!itemData || !inventorySlot.itemEnchantmentId) {
+			continue;
+		}
+
+		const enchantment = ItemEnchantment.getById(inventorySlot.itemEnchantmentId);
+		if (enchantment) {
+			disenchantableItems.push({
+				slot: inventorySlot.slot,
+				category: inventorySlot.itemCategory,
+				details: inventorySlot.itemWithDetails(player) as MainItemDetails,
+				enchantmentId: inventorySlot.itemEnchantmentId,
+				enchantmentType: enchantment.kind.type.id,
+				disenchantCost: BlacksmithConstants.getDisenchantPrice(itemData.rarity)
+			});
+		}
+	}
+
+	return disenchantableItems;
+}
+
+/**
  * Build blacksmith data for the city collector.
  * The blacksmith allows upgrading items beyond home level and disenchanting items.
  */
@@ -246,111 +382,10 @@ export function buildBlacksmithData(
 	playerInventory: InventorySlot[],
 	playerMaterialMap: Map<number, number>,
 	player: Player
-): NonNullable<ReactionCollectorCityData["blacksmith"]> {
-	const upgradeableItems: NonNullable<ReactionCollectorCityData["blacksmith"]>["upgradeableItems"] = [];
-	const disenchantableItems: NonNullable<ReactionCollectorCityData["blacksmith"]>["disenchantableItems"] = [];
-
-	for (const inventorySlot of playerInventory) {
-		// Only process weapons and armors with a valid item
-		if ((!inventorySlot.isWeapon() && !inventorySlot.isArmor()) || inventorySlot.itemId === 0) {
-			continue;
-		}
-
-		// Get the item data
-		const itemData = inventorySlot.isWeapon()
-			? WeaponDataController.instance.getById(inventorySlot.itemId)
-			: ArmorDataController.instance.getById(inventorySlot.itemId);
-
-		if (!itemData) {
-			continue;
-		}
-
-		const currentLevel = inventorySlot.itemLevel ?? 0;
-
-		// Check if item can be upgraded at the blacksmith (level < MAX_UPGRADE_LEVEL)
-		if (currentLevel < BlacksmithConstants.MAX_UPGRADE_LEVEL) {
-			const nextLevel = currentLevel + 1 as 1 | 2 | 3 | 4;
-			const requiredMaterialsRaw = itemData.getUpgradeMaterials(nextLevel);
-
-			// Aggregate materials with rarity info
-			const materialAggregation = new Map<number, {
-				quantity: number; rarity: number;
-			}>();
-			for (const material of requiredMaterialsRaw) {
-				const materialIdNum = parseInt(material.id, 10);
-				const existing = materialAggregation.get(materialIdNum);
-				if (existing) {
-					existing.quantity += 1;
-				}
-				else {
-					materialAggregation.set(materialIdNum, {
-						quantity: 1,
-						rarity: material.rarity
-					});
-				}
-			}
-
-			const requiredMaterials: typeof upgradeableItems[number]["requiredMaterials"] = [];
-			const missingMaterials: {
-				rarity: number; quantity: number;
-			}[] = [];
-			let hasAllMaterials = true;
-
-			for (const [
-				materialId, {
-					quantity, rarity
-				}
-			] of materialAggregation) {
-				const playerQuantity = playerMaterialMap.get(materialId) ?? 0;
-				requiredMaterials.push({
-					materialId,
-					rarity,
-					quantity,
-					playerQuantity
-				});
-				if (playerQuantity < quantity) {
-					hasAllMaterials = false;
-					missingMaterials.push({
-						rarity,
-						quantity: quantity - playerQuantity
-					});
-				}
-			}
-
-			const upgradeCost = BlacksmithConstants.getUpgradePrice(nextLevel, itemData.rarity);
-			const missingMaterialsCost = BlacksmithConstants.getMaterialsPurchasePrice(missingMaterials);
-
-			upgradeableItems.push({
-				slot: inventorySlot.slot,
-				category: inventorySlot.itemCategory,
-				details: inventorySlot.itemWithDetails(player) as MainItemDetails,
-				nextLevel,
-				upgradeCost,
-				requiredMaterials,
-				missingMaterialsCost,
-				hasAllMaterials
-			});
-		}
-
-		// Check if item can be disenchanted (has an enchantment)
-		if (inventorySlot.itemEnchantmentId) {
-			const enchantment = ItemEnchantment.getById(inventorySlot.itemEnchantmentId);
-			if (enchantment) {
-				disenchantableItems.push({
-					slot: inventorySlot.slot,
-					category: inventorySlot.itemCategory,
-					details: inventorySlot.itemWithDetails(player) as MainItemDetails,
-					enchantmentId: inventorySlot.itemEnchantmentId,
-					enchantmentType: enchantment.kind.type.id,
-					disenchantCost: BlacksmithConstants.getDisenchantPrice(itemData.rarity)
-				});
-			}
-		}
-	}
-
+): BlacksmithData {
 	return {
-		upgradeableItems,
-		disenchantableItems,
+		upgradeableItems: buildBlacksmithUpgradeableItems(playerInventory, playerMaterialMap, player),
+		disenchantableItems: buildBlacksmithDisenchantableItems(playerInventory, player),
 		playerMoney: player.money
 	};
 }
@@ -421,13 +456,24 @@ export async function handleInnRoomReaction(
 }
 
 /**
- * Handle enchant reaction — player enchants an item at the enchanter
+ * Check if the enchantment conditions are met (enough currencies, valid item)
  */
-export async function handleEnchantReaction(player: Player, reaction: ReactionCollectorEnchantReaction, response: CrowniclesPacket[]): Promise<void> {
+async function checkEnchantmentConditions(
+	player: Player,
+	reaction: ReactionCollectorEnchantReaction,
+	response: CrowniclesPacket[]
+): Promise<{
+	enchantment: ItemEnchantment;
+	price: {
+		money: number; gems: number;
+	};
+	playerMissionsInfo: PlayerMissionsInfo | null;
+	itemToEnchant: InventorySlot;
+} | null> {
 	const enchantment = ItemEnchantment.getById(await Settings.ENCHANTER_ENCHANTMENT_ID.getValue());
 	if (!enchantment) {
 		CrowniclesLogger.error("No enchantment found for enchanter. Check ENCHANTER_ENCHANTMENT_ID setting.");
-		return;
+		return null;
 	}
 	const isPlayerMage = player.class === ClassConstants.CLASSES_ID.MYSTIC_MAGE;
 	const price = enchantment.getEnchantmentCost(isPlayerMage);
@@ -441,16 +487,34 @@ export async function handleEnchantReaction(player: Player, reaction: ReactionCo
 			missingMoney: hasEnoughMoney ? 0 : price.money - player.money,
 			missingGems: hasEnoughGems ? 0 : price.gems - (playerMissionsInfo?.gems ?? 0)
 		}));
-		return;
+		return null;
 	}
 
 	const itemToEnchant = await InventorySlots.getItem(player.id, reaction.slot, reaction.itemCategory);
-	if (!itemToEnchant || !(itemToEnchant.isWeapon() || itemToEnchant.isArmor()) || itemToEnchant.itemEnchantmentId) {
+	if (!itemToEnchant || !itemToEnchant.isWeaponOrArmor() || itemToEnchant.itemEnchantmentId) {
 		CrowniclesLogger.error("Player tried to enchant an item that doesn't exist or cannot be enchanted. It shouldn't happen because the player must not be able to switch items while in the collector.");
 		response.push(makePacket(CommandReportItemCannotBeEnchantedRes, {}));
-		return;
+		return null;
 	}
 
+	return {
+		enchantment, price, playerMissionsInfo, itemToEnchant
+	};
+}
+
+/**
+ * Apply the enchantment to the item and spend currencies
+ */
+async function enchantItem(
+	player: Player,
+	enchantment: ItemEnchantment,
+	price: {
+		money: number; gems: number;
+	},
+	playerMissionsInfo: PlayerMissionsInfo | null,
+	itemToEnchant: InventorySlot,
+	response: CrowniclesPacket[]
+): Promise<void> {
 	await player.reload();
 
 	itemToEnchant.itemEnchantmentId = enchantment.id;
@@ -475,6 +539,18 @@ export async function handleEnchantReaction(player: Player, reaction: ReactionCo
 		enchantmentId: enchantment.id,
 		enchantmentType: enchantment.kind.type.id
 	}));
+}
+
+/**
+ * Handle enchant reaction — player enchants an item at the enchanter
+ */
+export async function handleEnchantReaction(player: Player, reaction: ReactionCollectorEnchantReaction, response: CrowniclesPacket[]): Promise<void> {
+	const conditions = await checkEnchantmentConditions(player, reaction, response);
+	if (!conditions) {
+		return;
+	}
+
+	await enchantItem(player, conditions.enchantment, conditions.price, conditions.playerMissionsInfo, conditions.itemToEnchant, response);
 }
 
 /**

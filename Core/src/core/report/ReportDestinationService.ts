@@ -76,32 +76,10 @@ async function automaticChooseDestination(forcedLink: MapLink | null, player: Pl
 }
 
 /**
- * Sends a message so that the player can choose where to go
+ * Build the map reaction options for the destination collector
  */
-export async function chooseDestination(
-	context: PacketContext,
-	player: Player,
-	forcedLink: MapLink | null,
-	response: CrowniclesPacket[],
-	mainPacket = true
-): Promise<void> {
-	await PlayerSmallEvents.removeSmallEventsOfPlayer(player.id);
-	const destinationMaps = Maps.getNextPlayerAvailableMaps(player);
-
-	if (destinationMaps.length === 0) {
-		CrowniclesLogger.error(`Player ${player.id} hasn't any destination map (current map: ${player.getDestinationId()})`);
-		return;
-	}
-
-	const canAutoChoose = (!Maps.isOnPveIsland(player) || destinationMaps.length === 1)
-		&& (forcedLink || (destinationMaps.length === 1 && player.mapLinkId !== Constants.BEGINNING.LAST_MAP_LINK));
-
-	if (canAutoChoose) {
-		await automaticChooseDestination(forcedLink, player, destinationMaps, response);
-		return;
-	}
-
-	const mapReactions: ReactionCollectorChooseDestinationReaction[] = destinationMaps.map(mapId => {
+function buildMapReactions(player: Player, destinationMaps: number[]): ReactionCollectorChooseDestinationReaction[] {
+	return destinationMaps.map(mapId => {
 		const mapLink = MapLinkDataController.instance.getLinkByLocations(player.getDestinationId()!, mapId);
 		const mapLocation = MapLocationDataController.instance.getById(mapId);
 		if (!mapLink || !mapLocation) {
@@ -116,7 +94,19 @@ export async function chooseDestination(
 			enterInCity: Boolean(CityDataController.instance.getCityByMapLinkId(mapLink.id))
 		};
 	});
+}
 
+/**
+ * Create and send the destination choice collector to the player
+ */
+function sendDestinationCollector(
+	context: PacketContext,
+	player: Player,
+	destinationMaps: number[],
+	response: CrowniclesPacket[],
+	mainPacket: boolean
+): void {
+	const mapReactions = buildMapReactions(player, destinationMaps);
 	const collector = new ReactionCollectorChooseDestination(mapReactions);
 
 	const endCallback: EndCallback = async (collector, response) => {
@@ -152,4 +142,33 @@ export async function chooseDestination(
 		.build();
 
 	response.push(packet);
+}
+
+/**
+ * Sends a message so that the player can choose where to go
+ */
+export async function chooseDestination(
+	context: PacketContext,
+	player: Player,
+	forcedLink: MapLink | null,
+	response: CrowniclesPacket[],
+	mainPacket = true
+): Promise<void> {
+	await PlayerSmallEvents.removeSmallEventsOfPlayer(player.id);
+	const destinationMaps = Maps.getNextPlayerAvailableMaps(player);
+
+	if (destinationMaps.length === 0) {
+		CrowniclesLogger.error(`Player ${player.id} hasn't any destination map (current map: ${player.getDestinationId()})`);
+		return;
+	}
+
+	const canAutoChoose = (!Maps.isOnPveIsland(player) || destinationMaps.length === 1)
+		&& (forcedLink || (destinationMaps.length === 1 && player.mapLinkId !== Constants.BEGINNING.LAST_MAP_LINK));
+
+	if (canAutoChoose) {
+		await automaticChooseDestination(forcedLink, player, destinationMaps, response);
+		return;
+	}
+
+	sendDestinationCollector(context, player, destinationMaps, response, mainPacket);
 }

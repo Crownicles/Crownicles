@@ -25,6 +25,7 @@ import { ReactionCollectorCreationPacket } from "../../../../../../Lib/src/packe
 import { sendInteractionNotForYou } from "../../../../utils/ErrorUtils";
 import { DiscordCollectorUtils } from "../../../../utils/DiscordCollectorUtils";
 import { Language } from "../../../../../../Lib/src/Language";
+import { BlacksmithMenuIds } from "./BlacksmithMenuConstants";
 
 export interface BlacksmithMenuParams {
 	context: PacketContext;
@@ -32,6 +33,25 @@ export interface BlacksmithMenuParams {
 	packet: ReactionCollectorCreationPacket;
 	collectorTime: number;
 	pseudo: string;
+}
+
+/**
+ * Get the translation key for the blacksmith menu description based on available services
+ */
+function getDescriptionKeyBlacksmithMenu(blacksmith: NonNullable<ReactionCollectorCityData["blacksmith"]>): string {
+	const hasUpgrades = blacksmith.upgradeableItems.length > 0;
+	const hasDisenchants = blacksmith.disenchantableItems.length > 0;
+
+	if (hasUpgrades && hasDisenchants) {
+		return "commands:report.city.blacksmith.descriptionBoth";
+	}
+	if (hasUpgrades) {
+		return "commands:report.city.blacksmith.descriptionUpgradeOnly";
+	}
+	if (hasDisenchants) {
+		return "commands:report.city.blacksmith.descriptionDisenchantOnly";
+	}
+	return "commands:report.city.blacksmith.descriptionNoItems";
 }
 
 /**
@@ -46,7 +66,7 @@ export function getBlacksmithMenu(params: BlacksmithMenuParams): CrowniclesNeste
 	const blacksmith = data.blacksmith!;
 
 	const selectMenu = new StringSelectMenuBuilder()
-		.setCustomId("BLACKSMITH_MENU")
+		.setCustomId(BlacksmithMenuIds.BLACKSMITH_MENU)
 		.setPlaceholder(i18n.t("commands:report.city.blacksmith.placeholder", { lng }));
 
 	// Add upgrade items option if there are upgradeable items
@@ -54,7 +74,7 @@ export function getBlacksmithMenu(params: BlacksmithMenuParams): CrowniclesNeste
 		selectMenu.addOptions({
 			label: i18n.t("commands:report.city.blacksmith.upgradeLabel", { lng }),
 			description: i18n.t("commands:report.city.blacksmith.upgradeDescription", { lng }),
-			value: "BLACKSMITH_UPGRADE_MENU",
+			value: BlacksmithMenuIds.UPGRADE_MENU,
 			emoji: CrowniclesIcons.city.blacksmith.upgrade
 		});
 	}
@@ -64,7 +84,7 @@ export function getBlacksmithMenu(params: BlacksmithMenuParams): CrowniclesNeste
 		selectMenu.addOptions({
 			label: i18n.t("commands:report.city.blacksmith.disenchantLabel", { lng }),
 			description: i18n.t("commands:report.city.blacksmith.disenchantDescription", { lng }),
-			value: "BLACKSMITH_DISENCHANT_MENU",
+			value: BlacksmithMenuIds.DISENCHANT_MENU,
 			emoji: CrowniclesIcons.city.blacksmith.disenchant
 		});
 	}
@@ -73,27 +93,12 @@ export function getBlacksmithMenu(params: BlacksmithMenuParams): CrowniclesNeste
 	selectMenu.addOptions({
 		label: i18n.t("commands:report.city.blacksmith.backToCity", { lng }),
 		description: i18n.t("commands:report.city.blacksmith.backToCityDescription", { lng }),
-		value: "BACK_TO_CITY",
+		value: BlacksmithMenuIds.BACK_TO_CITY,
 		emoji: CrowniclesIcons.city.back
 	});
 
 	// Build description based on available services
-	const hasUpgrades = blacksmith.upgradeableItems.length > 0;
-	const hasDisenchants = blacksmith.disenchantableItems.length > 0;
-
-	let descriptionKey: string;
-	if (hasUpgrades && hasDisenchants) {
-		descriptionKey = "commands:report.city.blacksmith.descriptionBoth";
-	}
-	else if (hasUpgrades) {
-		descriptionKey = "commands:report.city.blacksmith.descriptionUpgradeOnly";
-	}
-	else if (hasDisenchants) {
-		descriptionKey = "commands:report.city.blacksmith.descriptionDisenchantOnly";
-	}
-	else {
-		descriptionKey = "commands:report.city.blacksmith.descriptionNoItems";
-	}
+	const descriptionKey = getDescriptionKeyBlacksmithMenu(blacksmith);
 
 	return {
 		embed: new CrowniclesEmbed().formatAuthor(i18n.t("commands:report.city.blacksmith.title", {
@@ -116,13 +121,13 @@ export function getBlacksmithMenu(params: BlacksmithMenuParams): CrowniclesNeste
 				await selectInteraction.deferUpdate();
 				const selectedValue = selectInteraction.values[0];
 
-				if (selectedValue === "BLACKSMITH_UPGRADE_MENU") {
-					await nestedMenus.changeMenu("BLACKSMITH_UPGRADE_MENU");
+				if (selectedValue === BlacksmithMenuIds.UPGRADE_MENU) {
+					await nestedMenus.changeMenu(BlacksmithMenuIds.UPGRADE_MENU);
 				}
-				else if (selectedValue === "BLACKSMITH_DISENCHANT_MENU") {
-					await nestedMenus.changeMenu("BLACKSMITH_DISENCHANT_MENU");
+				else if (selectedValue === BlacksmithMenuIds.DISENCHANT_MENU) {
+					await nestedMenus.changeMenu(BlacksmithMenuIds.DISENCHANT_MENU);
 				}
-				else if (selectedValue === "BACK_TO_CITY") {
+				else if (selectedValue === BlacksmithMenuIds.BACK_TO_CITY) {
 					await nestedMenus.changeToMainMenu();
 				}
 			});
@@ -144,7 +149,7 @@ export function getBlacksmithUpgradeMenu(params: BlacksmithMenuParams): Crownicl
 	const blacksmith = data.blacksmith!;
 
 	const selectMenu = new StringSelectMenuBuilder()
-		.setCustomId("BLACKSMITH_UPGRADE_SELECT")
+		.setCustomId(BlacksmithMenuIds.UPGRADE_SELECT)
 		.setPlaceholder(i18n.t("commands:report.city.blacksmith.selectItemPlaceholder", { lng }));
 
 	// Add each upgradeable item
@@ -162,7 +167,7 @@ export function getBlacksmithUpgradeMenu(params: BlacksmithMenuParams): Crownicl
 				nextLevel: item.nextLevel,
 				cost: item.upgradeCost
 			}),
-			value: `UPGRADE_ITEM_${i}`,
+			value: `${BlacksmithMenuIds.UPGRADE_ITEM_PREFIX}${i}`,
 			emoji: CrowniclesIcons.city.blacksmith.upgrade
 		});
 	}
@@ -171,7 +176,7 @@ export function getBlacksmithUpgradeMenu(params: BlacksmithMenuParams): Crownicl
 	selectMenu.addOptions({
 		label: i18n.t("commands:report.city.blacksmith.backToBlacksmith", { lng }),
 		description: i18n.t("commands:report.city.blacksmith.backToBlacksmithDescription", { lng }),
-		value: "BACK_TO_BLACKSMITH",
+		value: BlacksmithMenuIds.BACK_TO_BLACKSMITH,
 		emoji: CrowniclesIcons.city.back
 	});
 
@@ -199,12 +204,12 @@ export function getBlacksmithUpgradeMenu(params: BlacksmithMenuParams): Crownicl
 				await selectInteraction.deferUpdate();
 				const selectedValue = selectInteraction.values[0];
 
-				if (selectedValue === "BACK_TO_BLACKSMITH") {
-					await nestedMenus.changeMenu("BLACKSMITH_MENU");
+				if (selectedValue === BlacksmithMenuIds.BACK_TO_BLACKSMITH) {
+					await nestedMenus.changeMenu(BlacksmithMenuIds.BLACKSMITH_MENU);
 				}
-				else if (selectedValue.startsWith("UPGRADE_ITEM_")) {
-					const itemIndex = parseInt(selectedValue.replace("UPGRADE_ITEM_", ""), 10);
-					await nestedMenus.changeMenu(`BLACKSMITH_UPGRADE_DETAIL_${itemIndex}`);
+				else if (selectedValue.startsWith(BlacksmithMenuIds.UPGRADE_ITEM_PREFIX)) {
+					const itemIndex = parseInt(selectedValue.replace(BlacksmithMenuIds.UPGRADE_ITEM_PREFIX, ""), 10);
+					await nestedMenus.changeMenu(`${BlacksmithMenuIds.UPGRADE_MENU}_DETAIL_${itemIndex}`);
 				}
 			});
 
@@ -220,24 +225,7 @@ function buildUpgradeDetailDescription(
 	item: NonNullable<ReactionCollectorCityData["blacksmith"]>["upgradeableItems"][0],
 	lng: Language
 ): string {
-	// Clone details to avoid mutating packet data
-	const detailsForDisplay = {
-		...item.details,
-		attack: {
-			...item.details.attack,
-			maxValue: Infinity
-		},
-		defense: {
-			...item.details.defense,
-			maxValue: Infinity
-		},
-		speed: {
-			...item.details.speed,
-			maxValue: Infinity
-		}
-	};
-
-	const itemDisplay = DisplayUtils.getItemDisplayWithStats(detailsForDisplay, lng);
+	const itemDisplay = DisplayUtils.getItemDisplayWithStatsWithoutMaxValues(item.details, lng);
 
 	// Build materials list with icons (same format as upgrade station)
 	const materialLines = item.requiredMaterials.map(m => {
@@ -293,7 +281,7 @@ export function getBlacksmithUpgradeDetailMenu(
 	const canUpgradeWithMaterials = item.hasAllMaterials && blacksmith.playerMoney >= item.upgradeCost;
 	buttons.push(
 		new ButtonBuilder()
-			.setCustomId("CONFIRM_UPGRADE")
+			.setCustomId(BlacksmithMenuIds.CONFIRM_UPGRADE)
 			.setLabel(i18n.t("commands:report.city.blacksmith.confirmUpgrade", {
 				lng,
 				cost: item.upgradeCost
@@ -308,7 +296,7 @@ export function getBlacksmithUpgradeDetailMenu(
 		const canBuyAndUpgrade = blacksmith.playerMoney >= totalCost;
 		buttons.push(
 			new ButtonBuilder()
-				.setCustomId("BUY_AND_UPGRADE")
+				.setCustomId(BlacksmithMenuIds.BUY_AND_UPGRADE)
 				.setLabel(i18n.t("commands:report.city.blacksmith.buyMaterialsAndUpgrade", {
 					lng,
 					cost: totalCost
@@ -321,7 +309,7 @@ export function getBlacksmithUpgradeDetailMenu(
 	// Back button
 	buttons.push(
 		new ButtonBuilder()
-			.setCustomId("BACK_TO_UPGRADE_LIST")
+			.setCustomId(BlacksmithMenuIds.BACK_TO_UPGRADE_LIST)
 			.setLabel(i18n.t("commands:report.city.blacksmith.backToItems", { lng }))
 			.setStyle(ButtonStyle.Secondary)
 	);
@@ -344,15 +332,15 @@ export function getBlacksmithUpgradeDetailMenu(
 					return;
 				}
 
-				if (buttonInteraction.customId === "BACK_TO_UPGRADE_LIST") {
+				if (buttonInteraction.customId === BlacksmithMenuIds.BACK_TO_UPGRADE_LIST) {
 					await buttonInteraction.deferUpdate();
-					await nestedMenus.changeMenu("BLACKSMITH_UPGRADE_MENU");
+					await nestedMenus.changeMenu(BlacksmithMenuIds.UPGRADE_MENU);
 					return;
 				}
 
-				if (buttonInteraction.customId === "CONFIRM_UPGRADE" || buttonInteraction.customId === "BUY_AND_UPGRADE") {
+				if (buttonInteraction.customId === BlacksmithMenuIds.CONFIRM_UPGRADE || buttonInteraction.customId === BlacksmithMenuIds.BUY_AND_UPGRADE) {
 					await buttonInteraction.deferReply();
-					const buyMaterials = buttonInteraction.customId === "BUY_AND_UPGRADE";
+					const buyMaterials = buttonInteraction.customId === BlacksmithMenuIds.BUY_AND_UPGRADE;
 
 					// Find the reaction with matching slot, category, and buyMaterials flag
 					const reactionIndex = packet.reactions.findIndex(
@@ -385,7 +373,7 @@ export function getBlacksmithDisenchantMenu(params: BlacksmithMenuParams): Crown
 	const blacksmith = data.blacksmith!;
 
 	const selectMenu = new StringSelectMenuBuilder()
-		.setCustomId("BLACKSMITH_DISENCHANT_SELECT")
+		.setCustomId(BlacksmithMenuIds.DISENCHANT_SELECT)
 		.setPlaceholder(i18n.t("commands:report.city.blacksmith.selectItemPlaceholder", { lng }));
 
 	// Add each disenchantable item
@@ -402,7 +390,7 @@ export function getBlacksmithDisenchantMenu(params: BlacksmithMenuParams): Crown
 				enchantmentType: item.enchantmentType,
 				cost: item.disenchantCost
 			}),
-			value: `DISENCHANT_ITEM_${i}`,
+			value: `${BlacksmithMenuIds.DISENCHANT_ITEM_PREFIX}${i}`,
 			emoji: CrowniclesIcons.city.blacksmith.disenchant
 		});
 	}
@@ -411,7 +399,7 @@ export function getBlacksmithDisenchantMenu(params: BlacksmithMenuParams): Crown
 	selectMenu.addOptions({
 		label: i18n.t("commands:report.city.blacksmith.backToBlacksmith", { lng }),
 		description: i18n.t("commands:report.city.blacksmith.backToBlacksmithDescription", { lng }),
-		value: "BACK_TO_BLACKSMITH",
+		value: BlacksmithMenuIds.BACK_TO_BLACKSMITH,
 		emoji: CrowniclesIcons.city.back
 	});
 
@@ -439,12 +427,12 @@ export function getBlacksmithDisenchantMenu(params: BlacksmithMenuParams): Crown
 				await selectInteraction.deferUpdate();
 				const selectedValue = selectInteraction.values[0];
 
-				if (selectedValue === "BACK_TO_BLACKSMITH") {
-					await nestedMenus.changeMenu("BLACKSMITH_MENU");
+				if (selectedValue === BlacksmithMenuIds.BACK_TO_BLACKSMITH) {
+					await nestedMenus.changeMenu(BlacksmithMenuIds.BLACKSMITH_MENU);
 				}
-				else if (selectedValue.startsWith("DISENCHANT_ITEM_")) {
-					const itemIndex = parseInt(selectedValue.replace("DISENCHANT_ITEM_", ""), 10);
-					await nestedMenus.changeMenu(`BLACKSMITH_DISENCHANT_DETAIL_${itemIndex}`);
+				else if (selectedValue.startsWith(BlacksmithMenuIds.DISENCHANT_ITEM_PREFIX)) {
+					const itemIndex = parseInt(selectedValue.replace(BlacksmithMenuIds.DISENCHANT_ITEM_PREFIX, ""), 10);
+					await nestedMenus.changeMenu(`${BlacksmithMenuIds.DISENCHANT_MENU}_DETAIL_${itemIndex}`);
 				}
 			});
 
@@ -468,24 +456,7 @@ export function getBlacksmithDisenchantDetailMenu(
 	const blacksmith = data.blacksmith!;
 	const item = blacksmith.disenchantableItems[itemIndex];
 
-	// Clone details to avoid mutating packet data
-	const detailsForDisplay = {
-		...item.details,
-		attack: {
-			...item.details.attack,
-			maxValue: Infinity
-		},
-		defense: {
-			...item.details.defense,
-			maxValue: Infinity
-		},
-		speed: {
-			...item.details.speed,
-			maxValue: Infinity
-		}
-	};
-
-	const itemDisplay = DisplayUtils.getItemDisplayWithStats(detailsForDisplay, lng);
+	const itemDisplay = DisplayUtils.getItemDisplayWithStatsWithoutMaxValues(item.details, lng);
 	const description = i18n.t("commands:report.city.blacksmith.disenchantItemDetails", {
 		lng,
 		itemDisplay,
@@ -497,7 +468,7 @@ export function getBlacksmithDisenchantDetailMenu(
 	const canDisenchant = blacksmith.playerMoney >= item.disenchantCost;
 	const buttons: ButtonBuilder[] = [
 		new ButtonBuilder()
-			.setCustomId("CONFIRM_DISENCHANT")
+			.setCustomId(BlacksmithMenuIds.CONFIRM_DISENCHANT)
 			.setLabel(i18n.t("commands:report.city.blacksmith.confirmDisenchant", {
 				lng,
 				cost: item.disenchantCost
@@ -505,7 +476,7 @@ export function getBlacksmithDisenchantDetailMenu(
 			.setStyle(canDisenchant ? ButtonStyle.Danger : ButtonStyle.Secondary)
 			.setDisabled(!canDisenchant),
 		new ButtonBuilder()
-			.setCustomId("BACK_TO_DISENCHANT_LIST")
+			.setCustomId(BlacksmithMenuIds.BACK_TO_DISENCHANT_LIST)
 			.setLabel(i18n.t("commands:report.city.blacksmith.backToItems", { lng }))
 			.setStyle(ButtonStyle.Secondary)
 	];
@@ -528,13 +499,13 @@ export function getBlacksmithDisenchantDetailMenu(
 					return;
 				}
 
-				if (buttonInteraction.customId === "BACK_TO_DISENCHANT_LIST") {
+				if (buttonInteraction.customId === BlacksmithMenuIds.BACK_TO_DISENCHANT_LIST) {
 					await buttonInteraction.deferUpdate();
-					await nestedMenus.changeMenu("BLACKSMITH_DISENCHANT_MENU");
+					await nestedMenus.changeMenu(BlacksmithMenuIds.DISENCHANT_MENU);
 					return;
 				}
 
-				if (buttonInteraction.customId === "CONFIRM_DISENCHANT") {
+				if (buttonInteraction.customId === BlacksmithMenuIds.CONFIRM_DISENCHANT) {
 					await buttonInteraction.deferReply();
 
 					// Find the reaction and send it
@@ -586,12 +557,12 @@ export function getBlacksmithMenus(params: BlacksmithMenuParams): Map<string, Cr
 		return menus;
 	}
 
-	menus.set("BLACKSMITH_MENU", getBlacksmithMenu(params));
+	menus.set(BlacksmithMenuIds.BLACKSMITH_MENU, getBlacksmithMenu(params));
 
 	registerSubMenus(
 		menus,
 		blacksmith.upgradeableItems,
-		"BLACKSMITH_UPGRADE_MENU",
+		BlacksmithMenuIds.UPGRADE_MENU,
 		getBlacksmithUpgradeMenu(params),
 		i => getBlacksmithUpgradeDetailMenu(params, i)
 	);
@@ -599,7 +570,7 @@ export function getBlacksmithMenus(params: BlacksmithMenuParams): Map<string, Cr
 	registerSubMenus(
 		menus,
 		blacksmith.disenchantableItems,
-		"BLACKSMITH_DISENCHANT_MENU",
+		BlacksmithMenuIds.DISENCHANT_MENU,
 		getBlacksmithDisenchantMenu(params),
 		i => getBlacksmithDisenchantDetailMenu(params, i)
 	);
