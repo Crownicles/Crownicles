@@ -22,6 +22,9 @@ import { WeaponDataController } from "../../data/Weapon";
 import { ArmorDataController } from "../../data/Armor";
 import { BlacksmithConstants } from "../../../../Lib/src/constants/BlacksmithConstants";
 import {
+	getDisenchantPrice, getMaterialsPurchasePrice, getUpgradePrice
+} from "../../../../Lib/src/utils/BlacksmithUtils";
+import {
 	CrowniclesPacket, makePacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
@@ -338,8 +341,8 @@ function buildBlacksmithUpgradeableItems(
 			}
 		}
 
-		const upgradeCost = BlacksmithConstants.getUpgradePrice(nextLevel, itemData.rarity);
-		const missingMaterialsCost = BlacksmithConstants.getMaterialsPurchasePrice(missingMaterials);
+		const upgradeCost = getUpgradePrice(nextLevel, itemData.rarity);
+		const missingMaterialsCost = getMaterialsPurchasePrice(missingMaterials);
 
 		upgradeableItems.push({
 			slot: inventorySlot.slot,
@@ -379,7 +382,7 @@ function buildBlacksmithDisenchantableItems(
 				details: inventorySlot.itemWithDetails(player) as MainItemDetails,
 				enchantmentId: inventorySlot.itemEnchantmentId,
 				enchantmentType: enchantment.kind.type.id,
-				disenchantCost: BlacksmithConstants.getDisenchantPrice(itemData.rarity)
+				disenchantCost: getDisenchantPrice(itemData.rarity)
 			});
 		}
 	}
@@ -834,7 +837,7 @@ export async function handleBlacksmithUpgradeReaction(
 			rarity: m.rarity,
 			quantity: m.quantity - (playerMaterialMap.get(m.materialId) ?? 0)
 		}));
-	const freshMissingMaterialsCost = BlacksmithConstants.getMaterialsPurchasePrice(freshMissingMaterials);
+	const freshMissingMaterialsCost = getMaterialsPurchasePrice(freshMissingMaterials);
 
 	// Calculate total cost using fresh data
 	let totalCost = itemToUpgrade.upgradeCost;

@@ -3,6 +3,9 @@ import { finishInTimeDisplay } from "../../../../../Lib/src/utils/TimeUtils";
 import {
 	ExpeditionConstants, ExpeditionLocationType, SpeedCategory
 } from "../../../../../Lib/src/constants/ExpeditionConstants";
+import {
+	getDifficultyCategoryName, getRewardCategoryName, getRiskCategoryName
+} from "../../../../../Lib/src/utils/ExpeditionUtils";
 import { Language } from "../../../../../Lib/src/Language";
 import { CrowniclesIcons } from "../../../../../Lib/src/CrowniclesIcons";
 import { DisplayUtils } from "../../../utils/DisplayUtils";
@@ -54,7 +57,7 @@ export function getSexContext(sex: SexTypeShort): string {
  * Get translated risk category name for display
  */
 export function getTranslatedRiskCategoryName(riskRate: number, lng: Language): string {
-	const categoryKey = ExpeditionConstants.getRiskCategoryName(riskRate);
+	const categoryKey = getRiskCategoryName(riskRate);
 	return i18n.t(`commands:petExpedition.riskCategories.${categoryKey}`, { lng });
 }
 
@@ -62,7 +65,7 @@ export function getTranslatedRiskCategoryName(riskRate: number, lng: Language): 
  * Get the emoji for a risk category
  */
 export function getRiskEmoji(riskRate: number): string {
-	const categoryKey = ExpeditionConstants.getRiskCategoryName(riskRate) as keyof typeof CrowniclesIcons.expedition.risk;
+	const categoryKey = getRiskCategoryName(riskRate) as keyof typeof CrowniclesIcons.expedition.risk;
 	return CrowniclesIcons.expedition.risk[categoryKey];
 }
 
@@ -77,7 +80,7 @@ export function getTranslatedRiskCategoryNameWithEmoji(riskRate: number, lng: La
  * Get translated reward category name for display based on reward index
  */
 export function getTranslatedRewardCategoryName(rewardIndex: number, lng: Language): string {
-	const categoryKey = ExpeditionConstants.getRewardCategoryName(rewardIndex);
+	const categoryKey = getRewardCategoryName(rewardIndex);
 	return i18n.t(`commands:petExpedition.rewardCategories.${categoryKey}`, { lng });
 }
 
@@ -85,7 +88,7 @@ export function getTranslatedRewardCategoryName(rewardIndex: number, lng: Langua
  * Get translated terrain category name for display
  */
 export function getTranslatedTerrainCategoryName(difficulty: number, lng: Language): string {
-	const categoryKey = ExpeditionConstants.getDifficultyCategoryName(difficulty);
+	const categoryKey = getDifficultyCategoryName(difficulty);
 	return i18n.t(`commands:petExpedition.terrainCategories.${categoryKey}`, { lng });
 }
 
@@ -93,7 +96,7 @@ export function getTranslatedTerrainCategoryName(difficulty: number, lng: Langua
  * Get the emoji for a terrain category
  */
 export function getTerrainEmoji(difficulty: number): string {
-	const categoryKey = ExpeditionConstants.getDifficultyCategoryName(difficulty) as keyof typeof CrowniclesIcons.expedition.terrain;
+	const categoryKey = getDifficultyCategoryName(difficulty) as keyof typeof CrowniclesIcons.expedition.terrain;
 	return CrowniclesIcons.expedition.terrain[categoryKey];
 }
 
