@@ -566,15 +566,23 @@ export function getBlacksmithDisenchantDetailMenu(
 }
 
 /**
+ * Parameters for registering sub-menus
+ */
+interface RegisterSubMenusParams {
+	menus: Map<string, CrowniclesNestedMenu>;
+	items: unknown[];
+	mainKey: string;
+	mainMenu: CrowniclesNestedMenu;
+	detailMenuFactory: (index: number) => CrowniclesNestedMenu;
+}
+
+/**
  * Register a main menu and its detail sub-menus into the provided map
  */
-function registerSubMenus(
-	menus: Map<string, CrowniclesNestedMenu>,
-	items: unknown[],
-	mainKey: string,
-	mainMenu: CrowniclesNestedMenu,
-	detailMenuFactory: (index: number) => CrowniclesNestedMenu
-): void {
+function registerSubMenus(params: RegisterSubMenusParams): void {
+	const {
+		menus, items, mainKey, mainMenu, detailMenuFactory
+	} = params;
 	if (items.length === 0) {
 		return;
 	}
@@ -598,21 +606,21 @@ export function getBlacksmithMenus(params: BlacksmithMenuParams): Map<string, Cr
 
 	menus.set(BlacksmithMenuIds.BLACKSMITH_MENU, getBlacksmithMenu(params));
 
-	registerSubMenus(
+	registerSubMenus({
 		menus,
-		blacksmith.upgradeableItems,
-		BlacksmithMenuIds.UPGRADE_MENU,
-		getBlacksmithUpgradeMenu(params),
-		i => getBlacksmithUpgradeDetailMenu(params, i)
-	);
+		items: blacksmith.upgradeableItems,
+		mainKey: BlacksmithMenuIds.UPGRADE_MENU,
+		mainMenu: getBlacksmithUpgradeMenu(params),
+		detailMenuFactory: i => getBlacksmithUpgradeDetailMenu(params, i)
+	});
 
-	registerSubMenus(
+	registerSubMenus({
 		menus,
-		blacksmith.disenchantableItems,
-		BlacksmithMenuIds.DISENCHANT_MENU,
-		getBlacksmithDisenchantMenu(params),
-		i => getBlacksmithDisenchantDetailMenu(params, i)
-	);
+		items: blacksmith.disenchantableItems,
+		mainKey: BlacksmithMenuIds.DISENCHANT_MENU,
+		mainMenu: getBlacksmithDisenchantMenu(params),
+		detailMenuFactory: i => getBlacksmithDisenchantDetailMenu(params, i)
+	});
 
 	return menus;
 }
