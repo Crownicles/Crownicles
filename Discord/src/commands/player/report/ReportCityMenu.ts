@@ -720,7 +720,9 @@ function buildCitySubMenus(params: HomeMenuParams): Map<string, CrowniclesNested
 
 	// Add blacksmith menus
 	if (cityData.blacksmith) {
-		getBlacksmithMenus(params).forEach((menu, key) => menus.set(key, menu));
+		for (const [key, menu] of getBlacksmithMenus(params)) {
+			menus.set(key, menu);
+		}
 	}
 
 	// Add home menus
