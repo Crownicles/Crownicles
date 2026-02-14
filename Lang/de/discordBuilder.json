@@ -77,7 +77,7 @@
     "options": {
       "guildName": {
         "description": "Der Name der Gilde.",
-        "name": "Name"
+        "name": "name"
       }
     }
   },
